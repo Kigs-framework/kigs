@@ -1,0 +1,64 @@
+
+									FilePathManager 
+									User Manual
+									Version 1.0 - 22 09 2015
+
+									
+1] Introduction
+
+	A FilePathManager is a class used to manage path to typed resources and how they are search
+	
+	The FilePathManager can be init using two seperate mecanism :
+	- a "bundle file" : a list of file with associate pathes
+	- a list of pathes associated with extension
+	
+2] per extension path list
+
+The FilePathManager is generaly used as a singleton and initialized like this :
+
+*****************************************************************************************************************************
+
+	FilePathManager* pathManager=(FilePathManager*)Core::GetSingleton(_S_2_ID("FilePathManager"));
+	pathManager->AddToPath("Xml_Screens","xml");
+	pathManager->AddToPath("Resources","*");
+	
+*****************************************************************************************************************************	
+
+	Here xml files will be searched first in "Xml_Screens" directory, then in other general purpose directory ("Resources", and current execution directory)
+
+	You can also init FilePathManager with a json config file :
+	
+*****************************************************************************************************************************	
+
+	FilePathManager* pathManager=(FilePathManager*)Core::GetSingleton(_S_2_ID("FilePathManager"));
+	pathManager->InitWithConfigFile("FilePathManagerConfig.json");
+
+*****************************************************************************************************************************
+
+	where the json config file is a list of strings giving a path and an extension : 
+	
+*****************************************************************************************************************************		
+
+[	
+	"Xml_Screens","xml",
+	"Resources","*"
+] 
+
+*****************************************************************************************************************************	
+	
+3] bundle file
+
+	a bundle file gives the list of each file found in the asset directory with an associated path list (generaly only one path)
+	
+	The project in : kigs/toolsProject/BundleList can be used to generate the list of file
+	
+	Here is a sample of a bundle list file : 
+	
+*****************************************************************************************************************************		
+AppInit.xml;
+Calibri.ttf;Fonts/
+LaunchScreen.xml;
+Logo.png;
+Screen_Main.xml;
+Screen_Main1.xml;
+*****************************************************************************************************************************	
