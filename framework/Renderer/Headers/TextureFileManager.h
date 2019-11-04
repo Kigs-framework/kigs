@@ -1,0 +1,108 @@
+#ifndef _TEXTUREFILEMANAGER_H_
+#define _TEXTUREFILEMANAGER_H_
+
+#include "CoreModifiable.h"
+#include "SpriteSheetTexture.h"
+
+// ****************************************
+// * TextureFileManager class
+// * --------------------------------------
+/**
+* \file	TextureFileManager.h
+* \class	TextureFileManager
+* \ingroup Manager
+* \ingroup Renderer
+* \brief	this class is used to load / unload textures
+* \author	ukn
+* \version ukn
+* \date	ukn
+*
+* Module Dependency :<br><ul><li>ModuleRenderer</li></ul>
+*/
+// ****************************************
+class TextureFileManager : public CoreModifiable
+{
+public:
+	DECLARE_CLASS_INFO(TextureFileManager,CoreModifiable,Renderer)
+
+	/**
+	* \brief	constructor
+	* \fn		TextureFileManager(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	* \param	name : instance name
+	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
+	*/
+	TextureFileManager(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+
+	/**
+	* \brief	return TRUE if a texture with the name 'fileName' exist
+	* \fn		bool	HasTexture(const kstl::string& fileName);
+	* \param	fileName : filemane of the asked texture
+	* \return	TRUE if a texture with the name 'fileName' exist
+	*/
+	bool HasTexture(const kstl::string& fileName);
+
+	/**
+	* \brief	get a texture
+	* \fn		Texture* GetTexture(const kstl::string& fileName);
+	* \param	fileName : filemane of the asked texture
+	* \return	the asked texture if found
+	*/
+	Texture* GetTexture(const kstl::string& fileName,bool doInit=true);
+
+	SmartPointer<Texture> GetTextureManaged(const kstl::string& fileName, bool doInit = true);
+
+	/**
+	* \brief	get a texture
+	* \fn		Texture* GetTexture(const kstl::string& fileName);
+	* \param	fileName : filemane of the asked texture
+	* \return	the asked texture if found
+	*/
+	Texture* GetTexture(const kstl::string& fileName, const kstl::string& a_textureName, bool doInit=true);
+
+	/**
+	* \brief	get a spritesheey
+	* \fn		SpriteSheetTexture* GetSpriteSheetTexture(const kstl::string& fileName);
+	* \param	fileName : filemane of the asked SpriteSheet Texture
+	* \return	the asked SpriteSheetTexture if found
+	*/
+	SpriteSheetTexture* GetSpriteSheetTexture(const kstl::string& fileName);
+
+	/**
+	* \brief	add a texture
+	* \fn		void AddTexture(const kstl::string& fileName, Texture* tex);
+	* \param	fileName : filemane of the texture to add
+	* \param	tex : texture to add
+	*/
+	void AddTexture(const kstl::string& fileName, CoreModifiable* Tex);
+
+	/**
+	* \brief	unload a texture
+	* \fn 		void  UnloadTexture(Texture* tex);
+	* \param	tex : filemane of the texture to unload
+	*/
+	void UnloadTexture(Texture*);
+	void UnloadTexture(SpriteSheetTexture* Tex);
+	void UnloadAllTexture();
+	void ResetAllTexture();
+
+	void ClearCache();
+
+	CoreModifiable* CreateTexture(const kstl::string& textureName);
+	CoreModifiable* CreateSpriteSheetTexture(const kstl::string& textureName);
+
+
+	KIGS_TOOLS_ONLY(auto& GetTextureMap() const { return myTextureMap; })
+
+
+protected:
+	/**
+	* \brief	destructor
+	* \fn		~TextureFileManager();
+	*/
+	virtual ~TextureFileManager();
+
+	//! For each extension, a path list.
+	kstl::map<kstl::string, CoreModifiable*> myTextureMap;
+};
+
+#endif //_TEXTUREFILEMANAGER_H_
