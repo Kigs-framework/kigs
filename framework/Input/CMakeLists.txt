@@ -10,7 +10,7 @@ target_include_directories(Input
 		"${PLATFORM_MODULE}/Headers")
 
 if(${KIGS_PLATFORM} STREQUAL "Windows")
-	target_link_libraries(Input PUBLIC dx9)
+	target_link_libraries(Input PUBLIC dinput8 dxguid strmiids)
 endif()
 
 
