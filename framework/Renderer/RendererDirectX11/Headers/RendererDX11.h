@@ -8,7 +8,9 @@
 #include <dxgi1_2.h>
 #include <wrl/client.h>
 
+#ifdef WUP
 #include <winrt/Windows.Graphics.Holographic.h>
+#endif
 
 class RendererDX11;
 
@@ -76,12 +78,11 @@ struct DXInstance
 	//size_t m_material_buffer_hash = 0;
 	MaterialStruct m_current_material = {};
 
+#ifdef WUP
 	winrt::Windows::Graphics::Holographic::HolographicFrame mCurrentFrame{ nullptr };
 	winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters mCurrentRenderingParameters{ nullptr };
+#endif
 
-	/*bool m_vsync_enabled = true;
-	int m_videoCardMemory = 0;
-	char m_videoCardDescription[128];*/
 };
 
 enum DX11_CBUFFER_SLOTS

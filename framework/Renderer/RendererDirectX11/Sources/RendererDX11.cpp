@@ -390,12 +390,14 @@ bool RendererDX11::CreateDevice()
 	DX::ThrowIfFailed(device.As<ID3D11Device1>(&dxinstance->m_device));
 	DX::ThrowIfFailed(context.As<ID3D11DeviceContext1>(&dxinstance->m_deviceContext));
 
+#ifdef WUP
 	D3D11_FEATURE_DATA_D3D11_OPTIONS3 options;
 	dxinstance->m_device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS3, &options, sizeof(options));
 	if (!options.VPAndRTArrayIndexFromAnyShaderFeedingRasterizer && gIsHolographic)
 	{
 		KIGS_ASSERT(!"Device doesn't support stereo rendering (VPAndRTArrayIndexFromAnyShaderFeedingRasterizer is FALSE)");
 	}
+#endif
 
 #ifdef KIGS_TOOLS
 	ID3D11Debug* d3dDebug = nullptr;

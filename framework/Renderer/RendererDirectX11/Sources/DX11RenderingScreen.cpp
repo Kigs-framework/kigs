@@ -28,10 +28,6 @@
 
 using namespace winrt::Windows::Graphics::Holographic;
 using namespace winrt::Windows::Graphics::DirectX::Direct3D11;
-#endif
-
-using Microsoft::WRL::ComPtr;
-
 
 inline winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DSurface CreateDepthTextureInteropObject(
 	const Microsoft::WRL::ComPtr<ID3D11Texture2D> spTexture2D)
@@ -50,7 +46,9 @@ inline winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DSurface CreateDep
 
 	return inspectableSurface.as<winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DSurface>();
 }
+#endif
 
+using Microsoft::WRL::ComPtr;
 
 // rendering screen is too much platform specific
 //#include "Platform/Renderer/DX11RenderingScreen.inl.h"
@@ -302,9 +300,11 @@ bool DX11RenderingScreen::CreateResources()
 
 	RendererDX11* renderer = reinterpret_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
 	DXInstance* dxinstance = renderer->getDXInstance();
-
+#ifdef WUP
 	if (myIsStereo && !gIsHolographic) myIsStereo = false;
-
+#else
+	if (myIsStereo) myIsStereo = false;
+#endif
 	bool is_stereo = myIsStereo;
 
 #ifdef WUP
