@@ -52,7 +52,7 @@ public:
 	void	PrepareExport(ExportSettings* settings) override;
 	void	EndExport(ExportSettings* settings) override;
 
-	virtual void ChooseShader(TravState* state, unsigned int attribFlag) {};
+	void ChooseShader(TravState* state, unsigned int attribFlag) override {};
 	bool	isOKToUse() 
 	{ 
 		if(GetCurrentShaderProgram())
@@ -66,10 +66,10 @@ protected:
 	DECLARE_VIRTUAL_METHOD(Reload);
 	DECLARE_VIRTUAL_METHOD(Active);
 
-	virtual void	Active(TravState* state, bool resetUniform=false);
-	virtual void	Deactive(TravState* state);
+	void	Active(TravState* state, bool resetUniform=false) override;
+	void	Deactive(TravState* state) override;
 	
-	virtual void	Dealloc();
+	void	Dealloc() override;
 	virtual BuildShaderStruct*	Rebuild() override;
 
 	void	InitModifiable()  override;

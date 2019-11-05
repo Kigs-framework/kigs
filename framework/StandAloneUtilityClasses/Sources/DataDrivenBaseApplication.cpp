@@ -9,7 +9,7 @@
 #include "../GUI/Headers/DisplayDeviceCaps.h"
 #include "../CoreAnimation/Headers/ModuleCoreAnimation.h"
 #include "../LuaKigsBind/Headers/LuaKigsBindModule.h"
-#include "../StandAloneUtilityClasses/Headers/LocalizationManager.h"
+#include "LocalizationManager.h"
 #include "NotificationCenter.h"
 #include "maReference.h"
 #include "BaseUI2DLayer.h"

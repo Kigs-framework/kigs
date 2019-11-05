@@ -10,7 +10,7 @@ public:
 	DECLARE_INLINE_CONSTRUCTOR(UICustomInputItem){}
 
 protected:
-	void InitModifiable();
+	void InitModifiable() override;
 
 };
 

@@ -303,14 +303,14 @@ void Node3DDelayed::Update(const Timer&, void*)
 	}
 }
 
-void Node3DDelayed::SetShowContent(bool show)
+void Node3DDelayed::SetShowContent(bool show, bool no_async)
 {
 	DisplayState exp = !show ? DisplayState::Displayed : DisplayState::Hidden;
 	if (mDisplayState.compare_exchange_strong(exp, show ? DisplayState::Displayed : DisplayState::Hidden))
 	{
 		if (show)
 		{
-			LoadContent();
+			LoadContent(no_async);
 		}
 		else
 		{

@@ -182,10 +182,6 @@ void ModernMesh::InitModifiable()
 			SetCanFree();
 			RemoveDynamicAttribute("AABBTree");
 		}
-		else
-		{
-			int aze = 0; 
-		}
 	}
 }
 

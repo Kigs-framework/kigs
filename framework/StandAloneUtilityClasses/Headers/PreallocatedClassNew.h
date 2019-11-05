@@ -52,7 +52,6 @@ public:\
 	}
 	
 #define IMPLEMENT_PREALLOCATED_NEW(className,instanceCount) PreallocateBlocs<className,instanceCount>	className::mPreallocatedBlocks;
-#define IMPLEMENT_TEMPLATED_PREALLOCATED_NEW(className,instanceCount) template<> PreallocateBlocs<className,instanceCount>	className::mPreallocatedBlocks;
 
 namespace PreallocatedClassNew
 {

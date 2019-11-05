@@ -42,10 +42,6 @@ DEFINE_METHOD(MaterialStage, ResetContext)
 {
 	std::set<CoreModifiable*> inst;
 	GetSonInstancesByType("Texture", inst);
-
-	auto it = inst.begin();
-	auto end = inst.end();
-
 	for (auto it : inst)
 	{
 		it->as<Texture>()->SetFlag(Texture::isDirtyContext);

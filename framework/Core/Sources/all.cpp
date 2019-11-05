@@ -16,7 +16,6 @@
 #include "GenericRefCountedBaseClass.cpp"
 #include "InstanceFactory.cpp"
 #include "JSonFileParser.cpp"
-#include "LocalizationManager.cpp"
 #include "NotificationCenter.cpp"
 #include "RefCountedBaseClass.cpp"
 #include "RefCountedClass.cpp"
@@ -30,6 +29,7 @@
 // Windows.h
 #include "AnonymousModule.cpp"
 #include "ModuleBase.cpp"
+#include "LocalizationManager.cpp"
 
 #include "Platform/Core/PlatformBaseApplication.cpp"
 #include "Platform/Core/CorePlatform.cpp"

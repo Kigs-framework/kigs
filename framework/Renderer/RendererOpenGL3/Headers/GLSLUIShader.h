@@ -17,12 +17,12 @@ public:
 protected:
 	virtual ~API3DUIShader();
 
-	kstl::string GetVertexShader() override;
-	kstl::string GetFragmentShader() override;
+	std::string GetVertexShader() override;
+	std::string GetFragmentShader() override;
 
 
 	bool bgr = false;
-	virtual unsigned int CustomizeShaderFlag(TravState* state, unsigned int attrib_flag, unsigned int current_shader_flag)
+	unsigned int CustomizeShaderFlag(TravState* state, unsigned int attrib_flag, unsigned int current_shader_flag) override
 	{
 		if (current_shader_flag & ModuleRenderer::SHADER_FLAGS_USER1)
 		{

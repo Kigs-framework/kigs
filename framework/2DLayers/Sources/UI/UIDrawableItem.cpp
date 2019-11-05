@@ -6,6 +6,7 @@
 #include "Core.h"
 
 #include "ModuleRenderer.h"
+#include "TravState.h"
 
 class TravState;
 

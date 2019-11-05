@@ -1,76 +1,54 @@
 #ifndef _FIXEDSIZESTACK_H
 #define _FIXEDSIZESTACK_H
 
-
-
-template<typename objectType,unsigned int MaxSize>
+template<typename objectType, size_t MaxSize>
 class FixedSizeStack
 {
 public:
-	FixedSizeStack():myPos(-1)
+	FixedSizeStack() : myCurrentSize(0)
 	{
 	}
 
 	void	push_back(const objectType& topush)
 	{
-		++myPos;
-#ifdef _DEBUG	// check overflow in debug
-		if(myPos>=MaxSize)
-		{
-			return;
-		}
-#endif
-
-		myPreallocatedStack[myPos]=topush;
+		assert(myCurrentSize < MaxSize);
+		myPreallocatedStack[myCurrentSize] = topush;
+		++myCurrentSize;
 	}
 
 	void	push_back()
 	{
-		++myPos;
+		assert(myCurrentSize < MaxSize);
+		++myCurrentSize;
 	}
 
 	int	size() const
 	{
-		return myPos+1;
+		return myCurrentSize;
 	}
 
-	void	pop_back()
+	void pop_back()
 	{
-		myPos--;
-#ifdef _DEBUG	// check overflow in debug
-		if(myPos<0)
-		{
-			return;
-		}
-#endif
+		assert(myCurrentSize > 0);
+		myCurrentSize--;
 	}
 
 	objectType&	back()
 	{
-#ifdef _DEBUG	// check overflow in debug
-		if(myPos<0)
-		{
-			return	*(objectType*)0;
-		}
-#endif
-		return myPreallocatedStack[myPos];
+		assert(myCurrentSize > 0);
+		return myPreallocatedStack[myCurrentSize - 1];
 	}
 
-	objectType&	operator[](unsigned int index)
+	objectType&	operator[](size_t index)
 	{
-#ifdef _DEBUG	// check overflow in debug
-		if(((int)index)>myPos)
-		{
-			return *(objectType*)0;
-		}
-#endif
+		assert(index < myCurrentSize);
 		return myPreallocatedStack[index];
 	}
 
 protected:
 
 	objectType		myPreallocatedStack[MaxSize];
-	int				myPos;
+	size_t			myCurrentSize;
 };
 
 #endif //_FIXEDSIZESTACK_H

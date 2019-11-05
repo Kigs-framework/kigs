@@ -51,7 +51,7 @@ public:
 	void LoadContent(bool no_async = false);
 	void UnloadContent();
 
-	void SetShowContent(bool show);
+	void SetShowContent(bool show, bool no_async = false);
 
 	//void ChangeLoadedState(LoadedState loaded, bool no_async = false);
 
