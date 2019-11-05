@@ -5,6 +5,9 @@
 
 //! this file must define KIGS_APPLICATION_CLASS with the name of your application class
 #include "KigsApplication.h"
+
+#include <Core.h>
+
 #include <locale.h>
 #include <csignal>
 #include <windows.h>
