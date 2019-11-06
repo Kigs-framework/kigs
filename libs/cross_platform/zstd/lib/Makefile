@@ -17,6 +17,7 @@ LIBVER_MINOR := $(shell echo $(LIBVER_MINOR_SCRIPT))
 LIBVER_PATCH := $(shell echo $(LIBVER_PATCH_SCRIPT))
 LIBVER := $(shell echo $(LIBVER_SCRIPT))
 VERSION?= $(LIBVER)
+CCVER := $(shell $(CC) --version)
 
 CPPFLAGS+= -I. -I./common -DXXH_NAMESPACE=ZSTD_
 ifeq ($(OS),Windows_NT)   # MinGW assumed
@@ -45,6 +46,10 @@ ZDICT_FILES := $(sort $(wildcard dictBuilder/*.c))
 ZDEPR_FILES := $(sort $(wildcard deprecated/*.c))
 ZSTD_FILES := $(ZSTDCOMMON_FILES)
 
+ifeq ($(findstring GCC,$(CCVER)),GCC)
+decompress/zstd_decompress_block.o :	CFLAGS+=-fno-tree-vectorize
+endif
+
 ZSTD_LEGACY_SUPPORT ?= 5
 ZSTD_LIB_COMPRESSION ?= 1
 ZSTD_LIB_DECOMPRESSION ?= 1
@@ -56,6 +61,7 @@ ZSTD_FORCE_DECOMPRESS_SHORT ?= 0
 ZSTD_FORCE_DECOMPRESS_LONG ?= 0
 ZSTD_NO_INLINE ?= 0
 ZSTD_STRIP_ERROR_STRINGS ?= 0
+ZSTD_LEGACY_MULTITHREADED_API ?= 0
 
 ifeq ($(ZSTD_LIB_COMPRESSION), 0)
 	ZSTD_LIB_DICTBUILDER = 0
@@ -105,6 +111,10 @@ endif
 
 ifneq ($(ZSTD_STRIP_ERROR_STRINGS), 0)
 	CFLAGS += -DZSTD_STRIP_ERROR_STRINGS
+endif
+
+ifneq ($(ZSTD_LEGACY_MULTITHREADED_API), 0)
+	CFLAGS += -DZSTD_LEGACY_MULTITHREADED_API
 endif
 
 ifneq ($(ZSTD_LEGACY_SUPPORT), 0)
@@ -234,8 +244,6 @@ libzstd.pc:
 libzstd.pc: libzstd.pc.in
 	@echo creating pkgconfig
 	@sed -e 's|@PREFIX@|$(PREFIX)|' \
-             -e 's|@LIBDIR@|$(LIBDIR)|' \
-             -e 's|@INCLUDEDIR@|$(INCLUDEDIR)|' \
              -e 's|@VERSION@|$(VERSION)|' \
              $< >$@
 
