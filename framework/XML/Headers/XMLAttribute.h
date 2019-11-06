@@ -103,8 +103,10 @@ private:
 typedef XMLAttributeTemplate<std::string> XMLAttribute;
 typedef XMLAttributeTemplate<std::string_view> XMLAttributeStringRef;
 
+#ifndef JAVASCRIPT
 template<typename T>
 IMPLEMENT_PREALLOCATED_NEW(XMLAttributeTemplate<T>, 4096)
+#endif
 
 #if (__cplusplus >= 201703L || _MSVC_LANG  >= 201703L) && !defined(JAVASCRIPT) && !defined(__clang__)
 #include <charconv>
