@@ -1,6 +1,0 @@
-add_library(lua STATIC "")
-target_include_directories(lua PUBLIC "src")
-target_sources(lua PRIVATE "src/luaOneFile.cpp")
-if(${KIGS_PLATFORM} STREQUAL "WUP")
-	target_compile_definitions(lua PRIVATE _UWP)
-endif()

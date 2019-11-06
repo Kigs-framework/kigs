@@ -1,5 +1,0 @@
-#include "BufferedFile.cpp"
-#include "CorePackage.cpp"
-#include "FilePathManager.cpp"
-#include "ModuleFileManager.cpp"
-#include "RessourceFileManager.cpp"

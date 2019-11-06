@@ -1,1 +1,0 @@
-*.{png,jpg,tga,kpkg,a,db,msixbundle,appxbundle,pdf,gif,mp3,nbim,wav,zip,rar,dll,exe,lib} filter=lfs diff=lfs merge=lfs -text
