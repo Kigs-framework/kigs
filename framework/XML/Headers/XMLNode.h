@@ -248,8 +248,10 @@ private:
 typedef XMLNodeTemplate<std::string> XMLNode;
 typedef XMLNodeTemplate<std::string_view> XMLNodeStringRef;
 
+#ifndef JAVASCRIPT
 template<typename T>
 IMPLEMENT_PREALLOCATED_NEW(XMLNodeTemplate<T>, 4096)
+#endif
 
 template<typename StringType>
 XMLNodeTemplate<StringType>::XMLNodeTemplate(XMLNodeType type, const StringType& name) : XMLNodeBase(type), m_name(name)
