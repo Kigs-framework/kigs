@@ -20,6 +20,9 @@ extern "C" {
 #include <errno.h>
 #include <assert.h>
 
+#if defined(_MSC_VER) || defined(__MINGW32__) || defined (__MSVCRT__)
+#include <direct.h>     /* needed for _mkdir in windows */
+#endif
 
 int UTIL_fileExist(const char* filename)
 {
@@ -54,14 +57,26 @@ int UTIL_getFileStat(const char* infilename, stat_t *statbuf)
 int UTIL_setFileStat(const char *filename, stat_t *statbuf)
 {
     int res = 0;
-    struct utimbuf timebuf;
 
     if (!UTIL_isRegularFile(filename))
         return -1;
 
-    timebuf.actime = time(NULL);
-    timebuf.modtime = statbuf->st_mtime;
-    res += utime(filename, &timebuf);  /* set access and modification times */
+    /* set access and modification times */
+#if defined(_WIN32) || (PLATFORM_POSIX_VERSION < 200809L)
+    {
+        struct utimbuf timebuf;
+        timebuf.actime = time(NULL);
+        timebuf.modtime = statbuf->st_mtime;
+        res += utime(filename, &timebuf);
+    }
+#else
+    {
+        /* (atime, mtime) */
+        struct timespec timebuf[2] = { {0, UTIME_NOW} };
+        timebuf[1] = statbuf->st_mtim;
+        res += utimensat(AT_FDCWD, filename, timebuf, 0);
+    }
+#endif
 
 #if !defined(_WIN32)
     res += chown(filename, statbuf->st_uid, statbuf->st_gid);  /* Copy ownership */
@@ -87,22 +102,53 @@ U32 UTIL_isDirectory(const char* infilename)
     return 0;
 }
 
+int UTIL_compareStr(const void *p1, const void *p2) {
+    return strcmp(* (char * const *) p1, * (char * const *) p2);
+}
+
+int UTIL_isSameFile(const char* fName1, const char* fName2)
+{
+    assert(fName1 != NULL); assert(fName2 != NULL);
+#if defined(_MSC_VER) || defined(_WIN32)
+    /* note : Visual does not support file identification by inode.
+     *        inode does not work on Windows, even with a posix layer, like msys2.
+     *        The following work-around is limited to detecting exact name repetition only,
+     *        aka `filename` is considered different from `subdir/../filename` */
+    return !strcmp(fName1, fName2);
+#else
+    {   stat_t file1Stat;
+        stat_t file2Stat;
+        return UTIL_getFileStat(fName1, &file1Stat)
+            && UTIL_getFileStat(fName2, &file2Stat)
+            && (file1Stat.st_dev == file2Stat.st_dev)
+            && (file1Stat.st_ino == file2Stat.st_ino);
+    }
+#endif
+}
+
+#ifndef _MSC_VER
+/* Using this to distinguish named pipes */
+U32 UTIL_isFIFO(const char* infilename)
+{
+/* macro guards, as defined in : https://linux.die.net/man/2/lstat */
+#if PLATFORM_POSIX_VERSION >= 200112L
+    stat_t statbuf;
+    int r = UTIL_getFileStat(infilename, &statbuf);
+    if (!r && S_ISFIFO(statbuf.st_mode)) return 1;
+#endif
+    (void)infilename;
+    return 0;
+}
+#endif
+
 U32 UTIL_isLink(const char* infilename)
 {
 /* macro guards, as defined in : https://linux.die.net/man/2/lstat */
-#ifndef __STRICT_ANSI__
-#if defined(_BSD_SOURCE) \
-    || (defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE >= 500)) \
-    || (defined(_XOPEN_SOURCE) && defined(_XOPEN_SOURCE_EXTENDED)) \
-    || (defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200112L)) \
-    || (defined(__APPLE__) && defined(__MACH__)) \
-    || defined(__OpenBSD__) \
-    || defined(__FreeBSD__)
+#if PLATFORM_POSIX_VERSION >= 200112L
     int r;
     stat_t statbuf;
     r = lstat(infilename, &statbuf);
     if (!r && S_ISLNK(statbuf.st_mode)) return 1;
-#endif
 #endif
     (void)infilename;
     return 0;
@@ -212,19 +258,20 @@ int UTIL_prepareFileList(const char *dirName, char** bufStart, size_t* pos, char
     DIR *dir;
     struct dirent *entry;
     char* path;
-    int dirLength, fnameLength, pathLength, nbFiles = 0;
+    size_t dirLength, fnameLength, pathLength;
+    int nbFiles = 0;
 
     if (!(dir = opendir(dirName))) {
         UTIL_DISPLAYLEVEL(1, "Cannot open directory '%s': %s\n", dirName, strerror(errno));
         return 0;
     }
 
-    dirLength = (int)strlen(dirName);
+    dirLength = strlen(dirName);
     errno = 0;
     while ((entry = readdir(dir)) != NULL) {
         if (strcmp (entry->d_name, "..") == 0 ||
             strcmp (entry->d_name, ".") == 0) continue;
-        fnameLength = (int)strlen(entry->d_name);
+        fnameLength = strlen(entry->d_name);
         path = (char*) malloc(dirLength + fnameLength + 2);
         if (!path) { closedir(dir); return 0; }
         memcpy(path, dirName, dirLength);
@@ -236,6 +283,7 @@ int UTIL_prepareFileList(const char *dirName, char** bufStart, size_t* pos, char
 
         if (!followLinks && UTIL_isLink(path)) {
             UTIL_DISPLAYLEVEL(2, "Warning : %s is a symbolic link, ignoring\n", path);
+            free(path);
             continue;
         }
 
@@ -245,7 +293,8 @@ int UTIL_prepareFileList(const char *dirName, char** bufStart, size_t* pos, char
         } else {
             if (*bufStart + *pos + pathLength >= *bufEnd) {
                 ptrdiff_t newListSize = (*bufEnd - *bufStart) + LIST_SIZE_INCREASE;
-                *bufStart = (char*)UTIL_realloc(*bufStart, newListSize);
+                assert(newListSize >= 0);
+                *bufStart = (char*)UTIL_realloc(*bufStart, (size_t)newListSize);
                 *bufEnd = *bufStart + newListSize;
                 if (*bufStart == NULL) { free(path); closedir(dir); return 0; }
             }
@@ -279,6 +328,27 @@ int UTIL_prepareFileList(const char *dirName, char** bufStart, size_t* pos, char
 
 #endif /* #ifdef _WIN32 */
 
+int UTIL_isCompressedFile(const char *inputName, const char *extensionList[])
+{
+  const char* ext = UTIL_getFileExtension(inputName);
+  while(*extensionList!=NULL)
+  {
+    const int isCompressedExtension = strcmp(ext,*extensionList);
+    if(isCompressedExtension==0)
+      return 1;
+    ++extensionList;
+  }
+   return 0;
+}
+
+/*Utility function to get file extension from file */
+const char* UTIL_getFileExtension(const char* infilename)
+{
+   const char* extension = strrchr(infilename, '.');
+   if(!extension || extension==infilename) return "";
+   return extension;
+}
+
 /*
  * UTIL_createFileList - takes a list of files and directories (params: inputNames, inputNamesNb), scans directories,
  *                       and returns a new list of files (params: return value, allocatedBuffer, allocatedNamesNb).
@@ -294,7 +364,6 @@ UTIL_createFileList(const char **inputNames, unsigned inputNamesNb,
     unsigned i, nbFiles;
     char* buf = (char*)malloc(LIST_SIZE_INCREASE);
     char* bufend = buf + LIST_SIZE_INCREASE;
-    const char** fileTable;
 
     if (!buf) return NULL;
 
@@ -303,37 +372,39 @@ UTIL_createFileList(const char **inputNames, unsigned inputNamesNb,
             size_t const len = strlen(inputNames[i]);
             if (buf + pos + len >= bufend) {
                 ptrdiff_t newListSize = (bufend - buf) + LIST_SIZE_INCREASE;
-                buf = (char*)UTIL_realloc(buf, newListSize);
+                assert(newListSize >= 0);
+                buf = (char*)UTIL_realloc(buf, (size_t)newListSize);
                 bufend = buf + newListSize;
                 if (!buf) return NULL;
             }
             if (buf + pos + len < bufend) {
-                memcpy(buf+pos, inputNames[i], len+1);  /* with final \0 */
+                memcpy(buf+pos, inputNames[i], len+1);  /* including final \0 */
                 pos += len + 1;
                 nbFiles++;
             }
         } else {
-            nbFiles += UTIL_prepareFileList(inputNames[i], &buf, &pos, &bufend, followLinks);
+            nbFiles += (unsigned)UTIL_prepareFileList(inputNames[i], &buf, &pos, &bufend, followLinks);
             if (buf == NULL) return NULL;
     }   }
 
     if (nbFiles == 0) { free(buf); return NULL; }
 
-    fileTable = (const char**)malloc((nbFiles+1) * sizeof(const char*));
-    if (!fileTable) { free(buf); return NULL; }
+    {   const char** const fileTable = (const char**)malloc((nbFiles + 1) * sizeof(*fileTable));
+        if (!fileTable) { free(buf); return NULL; }
 
-    for (i=0, pos=0; i<nbFiles; i++) {
-        fileTable[i] = buf + pos;
-        pos += strlen(fileTable[i]) + 1;
+        for (i = 0, pos = 0; i < nbFiles; i++) {
+            fileTable[i] = buf + pos;
+            if (buf + pos > bufend) { free(buf); free((void*)fileTable); return NULL; }
+            pos += strlen(fileTable[i]) + 1;
+        }
+
+        *allocatedBuffer = buf;
+        *allocatedNamesNb = nbFiles;
+
+        return fileTable;
     }
-
-    if (buf + pos > bufend) { free(buf); free((void*)fileTable); return NULL; }
-
-    *allocatedBuffer = buf;
-    *allocatedNamesNb = nbFiles;
-
-    return fileTable;
 }
+
 
 /*-****************************************
 *  Console log
@@ -341,140 +412,11 @@ UTIL_createFileList(const char **inputNames, unsigned inputNamesNb,
 int g_utilDisplayLevel;
 
 
+
 /*-****************************************
-*  Time functions
+*  count the number of physical cores
 ******************************************/
-#if defined(_WIN32)   /* Windows */
 
-UTIL_time_t UTIL_getTime(void) { UTIL_time_t x; QueryPerformanceCounter(&x); return x; }
-
-U64 UTIL_getSpanTimeMicro(UTIL_time_t clockStart, UTIL_time_t clockEnd)
-{
-    static LARGE_INTEGER ticksPerSecond;
-    static int init = 0;
-    if (!init) {
-        if (!QueryPerformanceFrequency(&ticksPerSecond))
-            UTIL_DISPLAYLEVEL(1, "ERROR: QueryPerformanceFrequency() failure\n");
-        init = 1;
-    }
-    return 1000000ULL*(clockEnd.QuadPart - clockStart.QuadPart)/ticksPerSecond.QuadPart;
-}
-
-U64 UTIL_getSpanTimeNano(UTIL_time_t clockStart, UTIL_time_t clockEnd)
-{
-    static LARGE_INTEGER ticksPerSecond;
-    static int init = 0;
-    if (!init) {
-        if (!QueryPerformanceFrequency(&ticksPerSecond))
-            UTIL_DISPLAYLEVEL(1, "ERROR: QueryPerformanceFrequency() failure\n");
-        init = 1;
-    }
-    return 1000000000ULL*(clockEnd.QuadPart - clockStart.QuadPart)/ticksPerSecond.QuadPart;
-}
-
-#elif defined(__APPLE__) && defined(__MACH__)
-
-UTIL_time_t UTIL_getTime(void) { return mach_absolute_time(); }
-
-U64 UTIL_getSpanTimeMicro(UTIL_time_t clockStart, UTIL_time_t clockEnd)
-{
-    static mach_timebase_info_data_t rate;
-    static int init = 0;
-    if (!init) {
-        mach_timebase_info(&rate);
-        init = 1;
-    }
-    return (((clockEnd - clockStart) * (U64)rate.numer) / ((U64)rate.denom))/1000ULL;
-}
-
-U64 UTIL_getSpanTimeNano(UTIL_time_t clockStart, UTIL_time_t clockEnd)
-{
-    static mach_timebase_info_data_t rate;
-    static int init = 0;
-    if (!init) {
-        mach_timebase_info(&rate);
-        init = 1;
-    }
-    return ((clockEnd - clockStart) * (U64)rate.numer) / ((U64)rate.denom);
-}
-
-#elif (PLATFORM_POSIX_VERSION >= 200112L) \
-   && (defined(__UCLIBC__)                \
-      || (defined(__GLIBC__)              \
-          && ((__GLIBC__ == 2 && __GLIBC_MINOR__ >= 17) \
-             || (__GLIBC__ > 2))))
-
-UTIL_time_t UTIL_getTime(void)
-{
-    UTIL_time_t time;
-    if (clock_gettime(CLOCK_MONOTONIC, &time))
-        UTIL_DISPLAYLEVEL(1, "ERROR: Failed to get time\n");   /* we could also exit() */
-    return time;
-}
-
-UTIL_time_t UTIL_getSpanTime(UTIL_time_t begin, UTIL_time_t end)
-{
-    UTIL_time_t diff;
-    if (end.tv_nsec < begin.tv_nsec) {
-        diff.tv_sec = (end.tv_sec - 1) - begin.tv_sec;
-        diff.tv_nsec = (end.tv_nsec + 1000000000ULL) - begin.tv_nsec;
-    } else {
-        diff.tv_sec = end.tv_sec - begin.tv_sec;
-        diff.tv_nsec = end.tv_nsec - begin.tv_nsec;
-    }
-    return diff;
-}
-
-U64 UTIL_getSpanTimeMicro(UTIL_time_t begin, UTIL_time_t end)
-{
-    UTIL_time_t const diff = UTIL_getSpanTime(begin, end);
-    U64 micro = 0;
-    micro += 1000000ULL * diff.tv_sec;
-    micro += diff.tv_nsec / 1000ULL;
-    return micro;
-}
-
-U64 UTIL_getSpanTimeNano(UTIL_time_t begin, UTIL_time_t end)
-{
-    UTIL_time_t const diff = UTIL_getSpanTime(begin, end);
-    U64 nano = 0;
-    nano += 1000000000ULL * diff.tv_sec;
-    nano += diff.tv_nsec;
-    return nano;
-}
-
-#else   /* relies on standard C (note : clock_t measurements can be wrong when using multi-threading) */
-
-UTIL_time_t UTIL_getTime(void) { return clock(); }
-U64 UTIL_getSpanTimeMicro(UTIL_time_t clockStart, UTIL_time_t clockEnd) { return 1000000ULL * (clockEnd - clockStart) / CLOCKS_PER_SEC; }
-U64 UTIL_getSpanTimeNano(UTIL_time_t clockStart, UTIL_time_t clockEnd) { return 1000000000ULL * (clockEnd - clockStart) / CLOCKS_PER_SEC; }
-
-#endif
-
-/* returns time span in microseconds */
-U64 UTIL_clockSpanMicro(UTIL_time_t clockStart )
-{
-    UTIL_time_t const clockEnd = UTIL_getTime();
-    return UTIL_getSpanTimeMicro(clockStart, clockEnd);
-}
-
-/* returns time span in microseconds */
-U64 UTIL_clockSpanNano(UTIL_time_t clockStart )
-{
-    UTIL_time_t const clockEnd = UTIL_getTime();
-    return UTIL_getSpanTimeNano(clockStart, clockEnd);
-}
-
-void UTIL_waitForNextTick(void)
-{
-    UTIL_time_t const clockStart = UTIL_getTime();
-    UTIL_time_t clockEnd;
-    do {
-        clockEnd = UTIL_getTime();
-    } while (UTIL_getSpanTimeNano(clockStart, clockEnd) == 0);
-}
-
-/* count the number of physical cores */
 #if defined(_WIN32) || defined(WIN32)
 
 #include <windows.h>
@@ -493,8 +435,13 @@ int UTIL_countPhysicalCores(void)
         DWORD returnLength = 0;
         size_t byteOffset = 0;
 
-        glpi = (LPFN_GLPI)GetProcAddress(GetModuleHandle(TEXT("kernel32")),
-                                         "GetLogicalProcessorInformation");
+#if defined(_MSC_VER)
+/* Visual Studio does not like the following cast */
+#   pragma warning( disable : 4054 )  /* conversion from function ptr to data ptr */
+#   pragma warning( disable : 4055 )  /* conversion from data ptr to function ptr */
+#endif
+        glpi = (LPFN_GLPI)(void*)GetProcAddress(GetModuleHandle(TEXT("kernel32")),
+                                               "GetLogicalProcessorInformation");
 
         if (glpi == NULL) {
             goto failed;
@@ -612,7 +559,7 @@ int UTIL_countPhysicalCores(void)
             if (fgets(buff, BUF_SIZE, cpuinfo) != NULL) {
                 if (strncmp(buff, "siblings", 8) == 0) {
                     const char* const sep = strchr(buff, ':');
-                    if (*sep == '\0') {
+                    if (sep == NULL || *sep == '\0') {
                         /* formatting was broken? */
                         goto failed;
                     }
@@ -621,7 +568,7 @@ int UTIL_countPhysicalCores(void)
                 }
                 if (strncmp(buff, "cpu cores", 9) == 0) {
                     const char* const sep = strchr(buff, ':');
-                    if (*sep == '\0') {
+                    if (sep == NULL || *sep == '\0') {
                         /* formatting was broken? */
                         goto failed;
                     }

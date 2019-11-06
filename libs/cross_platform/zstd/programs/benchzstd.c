@@ -28,6 +28,7 @@
 #include <errno.h>
 #include <assert.h>      /* assert */
 
+#include "timefn.h"      /* UTIL_time_t */
 #include "benchfn.h"
 #include "mem.h"
 #define ZSTD_STATIC_LINKING_ONLY
@@ -87,7 +88,7 @@ static UTIL_time_t g_displayClock = UTIL_TIME_INITIALIZER;
 #endif
 #define DEBUGOUTPUT(...) { if (DEBUG) DISPLAY(__VA_ARGS__); }
 
-#define EXM_THROW_INT(errorNum, ...)  {               \
+#define RETURN_ERROR_INT(errorNum, ...)  {               \
     DEBUGOUTPUT("%s: %i: \n", __FILE__, __LINE__);    \
     DISPLAYLEVEL(1, "Error %i : ", errorNum);         \
     DISPLAYLEVEL(1, __VA_ARGS__);                     \
@@ -160,9 +161,13 @@ typedef struct {
 #define MIN(a,b)    ((a) < (b) ? (a) : (b))
 #define MAX(a,b)    ((a) > (b) ? (a) : (b))
 
-static void BMK_initCCtx(ZSTD_CCtx* ctx,
-    const void* dictBuffer, size_t dictBufferSize, int cLevel,
-    const ZSTD_compressionParameters* comprParams, const BMK_advancedParams_t* adv) {
+static void
+BMK_initCCtx(ZSTD_CCtx* ctx,
+            const void* dictBuffer, size_t dictBufferSize,
+            int cLevel,
+            const ZSTD_compressionParameters* comprParams,
+            const BMK_advancedParams_t* adv)
+{
     ZSTD_CCtx_reset(ctx, ZSTD_reset_session_and_parameters);
     if (adv->nbWorkers==1) {
         CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_nbWorkers, 0));
@@ -175,13 +180,13 @@ static void BMK_initCCtx(ZSTD_CCtx* ctx,
     CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_ldmHashLog, adv->ldmHashLog));
     CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_ldmBucketSizeLog, adv->ldmBucketSizeLog));
     CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_ldmHashRateLog, adv->ldmHashRateLog));
+    CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_windowLog, (int)comprParams->windowLog));
+    CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_hashLog, (int)comprParams->hashLog));
+    CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_chainLog, (int)comprParams->chainLog));
+    CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_searchLog, (int)comprParams->searchLog));
+    CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_minMatch, (int)comprParams->minMatch));
+    CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_targetLength, (int)comprParams->targetLength));
     CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_literalCompressionMode, (int)adv->literalCompressionMode));
-    CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_windowLog, comprParams->windowLog));
-    CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_hashLog, comprParams->hashLog));
-    CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_chainLog, comprParams->chainLog));
-    CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_searchLog, comprParams->searchLog));
-    CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_minMatch, comprParams->minMatch));
-    CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_targetLength, comprParams->targetLength));
     CHECK_Z(ZSTD_CCtx_setParameter(ctx, ZSTD_c_strategy, comprParams->strategy));
     CHECK_Z(ZSTD_CCtx_loadDictionary(ctx, dictBuffer, dictBufferSize));
 }
@@ -378,7 +383,7 @@ BMK_benchMemAdvancedNoAlloc(
         }
     }
 
-    /* warmimg up `compressedBuffer` */
+    /* warming up `compressedBuffer` */
     if (adv->mode == BMK_decodeOnly) {
         memcpy(compressedBuffer, srcBuffer, loadedCompressedSize);
     } else {
@@ -396,9 +401,9 @@ BMK_benchMemAdvancedNoAlloc(
         BMK_initCCtxArgs cctxprep;
         BMK_initDCtxArgs dctxprep;
 
-        cbp.benchFn = local_defaultCompress;
+        cbp.benchFn = local_defaultCompress;   /* ZSTD_compress2 */
         cbp.benchPayload = cctx;
-        cbp.initFn = local_initCCtx;
+        cbp.initFn = local_initCCtx;   /* BMK_initCCtx */
         cbp.initPayload = &cctxprep;
         cbp.errorFn = ZSTD_isError;
         cbp.blockCount = nbBlocks;
@@ -446,7 +451,7 @@ BMK_benchMemAdvancedNoAlloc(
                     cSize = cResult.sumOfReturn;
                     ratio = (double)srcSize / cSize;
                     {   BMK_benchResult_t newResult;
-                        newResult.cSpeed = ((U64)srcSize * TIMELOOP_NANOSEC / cResult.nanoSecPerRun);
+                        newResult.cSpeed = (U64)((double)srcSize * TIMELOOP_NANOSEC / cResult.nanoSecPerRun);
                         benchResult.cSize = cSize;
                         if (newResult.cSpeed > benchResult.cSpeed)
                             benchResult.cSpeed = newResult.cSpeed;
@@ -470,7 +475,7 @@ BMK_benchMemAdvancedNoAlloc(
                 }
 
                 {   BMK_runTime_t const dResult = BMK_extract_runTime(dOutcome);
-                    U64 const newDSpeed = (srcSize * TIMELOOP_NANOSEC / dResult.nanoSecPerRun);
+                    U64 const newDSpeed = (U64)((double)srcSize * TIMELOOP_NANOSEC / dResult.nanoSecPerRun);
                     if (newDSpeed > benchResult.dSpeed)
                         benchResult.dSpeed = newDSpeed;
                 }
@@ -507,17 +512,21 @@ BMK_benchMemAdvancedNoAlloc(
                         pos = (U32)(u - bacc);
                         bNb = pos / (128 KB);
                         DISPLAY("(sample %u, block %u, pos %u) \n", segNb, bNb, pos);
-                        if (u>5) {
-                            int n;
+                        {   size_t const lowest = (u>5) ? 5 : u;
+                            size_t n;
                             DISPLAY("origin: ");
-                            for (n=-5; n<0; n++) DISPLAY("%02X ", ((const BYTE*)srcBuffer)[u+n]);
+                            for (n=lowest; n>0; n--)
+                                DISPLAY("%02X ", ((const BYTE*)srcBuffer)[u-n]);
                             DISPLAY(" :%02X:  ", ((const BYTE*)srcBuffer)[u]);
-                            for (n=1; n<3; n++) DISPLAY("%02X ", ((const BYTE*)srcBuffer)[u+n]);
+                            for (n=1; n<3; n++)
+                                DISPLAY("%02X ", ((const BYTE*)srcBuffer)[u+n]);
                             DISPLAY(" \n");
                             DISPLAY("decode: ");
-                            for (n=-5; n<0; n++) DISPLAY("%02X ", resultBuffer[u+n]);
+                            for (n=lowest; n>0; n++)
+                                DISPLAY("%02X ", resultBuffer[u-n]);
                             DISPLAY(" :%02X:  ", resultBuffer[u]);
-                            for (n=1; n<3; n++) DISPLAY("%02X ", resultBuffer[u+n]);
+                            for (n=1; n<3; n++)
+                                DISPLAY("%02X ", resultBuffer[u+n]);
                             DISPLAY(" \n");
                         }
                         break;
@@ -525,8 +534,8 @@ BMK_benchMemAdvancedNoAlloc(
                     if (u==srcSize-1) {  /* should never happen */
                         DISPLAY("no difference detected\n");
                     }
-                }
-            }
+                }   /* for (u=0; u<srcSize; u++) */
+            }   /* if ((adv->mode == BMK_both) && (crcOrig!=crcCheck)) */
         }   /* CRC Checking */
 
         if (displayLevel == 1) {   /* hidden display mode -q, used by python speed benchmark */
@@ -745,8 +754,7 @@ static int BMK_loadFiles(void* buffer, size_t bufferSize,
     size_t pos = 0, totalSize = 0;
     unsigned n;
     for (n=0; n<nbFiles; n++) {
-        FILE* f;
-        U64 fileSize = UTIL_getFileSize(fileNamesTable[n]);
+        U64 fileSize = UTIL_getFileSize(fileNamesTable[n]);  /* last file may be shortened */
         if (UTIL_isDirectory(fileNamesTable[n])) {
             DISPLAYLEVEL(2, "Ignoring %s directory...       \n", fileNamesTable[n]);
             fileSizes[n] = 0;
@@ -757,20 +765,20 @@ static int BMK_loadFiles(void* buffer, size_t bufferSize,
             fileSizes[n] = 0;
             continue;
         }
-        f = fopen(fileNamesTable[n], "rb");
-        if (f==NULL) EXM_THROW_INT(10, "impossible to open file %s", fileNamesTable[n]);
-        DISPLAYUPDATE(2, "Loading %s...       \r", fileNamesTable[n]);
-        if (fileSize > bufferSize-pos) fileSize = bufferSize-pos, nbFiles=n;   /* buffer too small - stop after this file */
-        {   size_t const readSize = fread(((char*)buffer)+pos, 1, (size_t)fileSize, f);
-            if (readSize != (size_t)fileSize) EXM_THROW_INT(11, "could not read %s", fileNamesTable[n]);
-            pos += readSize;
-        }
-        fileSizes[n] = (size_t)fileSize;
-        totalSize += (size_t)fileSize;
-        fclose(f);
-    }
+        {   FILE* const f = fopen(fileNamesTable[n], "rb");
+            if (f==NULL) RETURN_ERROR_INT(10, "impossible to open file %s", fileNamesTable[n]);
+            DISPLAYUPDATE(2, "Loading %s...       \r", fileNamesTable[n]);
+            if (fileSize > bufferSize-pos) fileSize = bufferSize-pos, nbFiles=n;   /* buffer too small - stop after this file */
+            {   size_t const readSize = fread(((char*)buffer)+pos, 1, (size_t)fileSize, f);
+                if (readSize != (size_t)fileSize) RETURN_ERROR_INT(11, "could not read %s", fileNamesTable[n]);
+                pos += readSize;
+            }
+            fileSizes[n] = (size_t)fileSize;
+            totalSize += (size_t)fileSize;
+            fclose(f);
+    }   }
 
-    if (totalSize == 0) EXM_THROW_INT(12, "no data to bench");
+    if (totalSize == 0) RETURN_ERROR_INT(12, "no data to bench");
     return 0;
 }
 
