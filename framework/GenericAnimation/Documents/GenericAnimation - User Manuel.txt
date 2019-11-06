@@ -1,0 +1,53 @@
+
+									GenericAnimation 
+									User Manual
+									Version 1.0 - 30 06 2016
+									
+
+1] Introduction
+
+	Generic Animation module is a module defining generic ways of animating objects (mainly with skeleton / skinning at the moment). 
+	
+	The class managing an animated object is "AObject".
+	
+	AObject maintains a list of animation system ("ASystem") internaly.
+
+    ASystem maintains a list of animation channels ("AChannel"), animation channels can be organised as a tree (skeleton). Each channel can play animation streams ("AStream").
+
+    Several streams played on the same channel are blended together(each stream can be weighted), so that you can fade from an animation to another or play several animation at the same time. 	
+	
+	// create and init module
+	GenericAnimationModule* theGenericAnimation=CoreCreateModule(GenericAnimationModule, 0);
+	
+	
+	// create an animated object instance
+	AObject* animatedObject= (AObject*)(Core::GetInstanceOf("animatedObject", _S_2_ID("AObject")));
+	
+	// load a skeleton file
+	AObjectSkeletonResource* skeleton = (AObjectSkeletonResource*)(Core::GetInstanceOf("basicSkeleton", _S_2_ID("AObjectSkeletonResource")));
+	skeleton->setValue(LABEL_TO_ID(SkeletonFileName), "basicSkeleton.skl");
+	skeleton->Init();
+	
+	// add skeleton to animated object (create channel tree)
+	animatedObject->addItem(skeleton);
+
+	skeleton->Destroy();
+	
+	// attach animated object to a mesh
+	mesh->addItem(animatedObject);
+	
+	animatedObject->Init();
+	animatedObject->Destroy();
+	
+	// load an animation file
+	AnimationResourceInfo* walkAnim = theGenericAnimation->Load("walk.anim");
+	
+	// create streams with the good type and add them to channels
+	animatedObject->AddAnimation(walkAnim);
+	
+	// start playing streams
+	animatedObject->StartAnimation(walkAnim, myApplicationTimer->GetTime());
+	
+	// in update : 
+	
+	theGenericAnimation->Update(*myApplicationTimer, 0);

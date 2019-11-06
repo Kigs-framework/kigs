@@ -1,0 +1,130 @@
+
+										LUA Kigs Bind
+										User Manual
+										Version 0.8 - 16 june 2015
+
+
+
+
+1] Introduction
+
+	The Lua Kigs Bind Module exposes part of the framework to lua to allow easy scripting of gameplay features without needing to rebuild the project
+
+
+2] LuaBehaviour
+
+	A LuaBehaviour script is a special type of lua script that can be added on another CoreModifiable
+
+	the minimal syntax for a LuaBehaviour script is :
+
+	-------------------
+	local behaviour = {} -- you can call it whatever you want
+
+	-- Insert methods here
+
+	return behaviour
+	-------------------
+
+
+	The following methods can be implemented 
+
+	function behaviour:init()
+	end
+
+	function behaviour:update(current_time)
+	end
+
+	function behaviour:destroy()
+	end
+
+	function behaviour:addItem(other)
+	end
+
+	function behaviour:removeItem(other)
+	end
+
+
+
+	A) if init is present, it will be called before any update. In addition, if multiple scripts are created at the same time (i.e during a xml import), the init functions will respect the ScriptPriority.
+
+	B) if present, update is called during module's udpate function (if AutoUpdate is enabled) or when the parent's update function is called (if UpdateOnParentUpdate is enabled).
+	If AutoUpdate is on, the scripts will respect ScriptPriority
+
+	C) if present, destroy is called in the LuaBehaviour destructor (which normally occurs just before the parent's destruction)
+
+	D,E) if present, addItem and removeItem are called when another item is added/removed from the target
+
+	to add this script to another CoreModifiable simply instantiate a LuaBehaviour object and add it as a child.
+
+	i.e in xml form :
+
+	<Instance Name="MyObject" Type="MyObjectType">
+	  <Instance Name="myScript" Type="LuaBehaviour">
+	    <CoreModifiableAttribute Type="string" Name="Script" Value="#myScript.lua" Dynamic="false"/>
+	  </Instance>
+	  ...
+
+	A lua behaviour has the following attributes : 
+
+	Script (init param) : the lua script to use (from a file if it starts with '#')
+
+	AutoUpdate (default true) : the update function will be called every time the LuaKigsBindModule is updated
+	Interval (default 0) : 	if this is = 0.0 does nothing
+				otherwise the update function will not be called if this interval in seconds has not been elapsed since the last time update was called
+
+	UpdateOnParentUpdate (default false) : update will be called each time the parent object Update function is called
+
+	ScriptPriority (default 0) : define the priority of the script when using AutoUpdate (lower number = higher prioriy)
+
+
+	The notification "ReloadScript" will reload all LuaBehaviours (uninit then init) in _DEBUG
+
+
+
+
+
+3] Exposed Types
+
+	See LuaBindings.cpp
+
+	Don't forget : methods are called using the : operator, static method and attributes are accessed with .
+	local cm = CoreModifiable.ByType("MouseDevice")[1] -- Static method
+	print(cm:name()) -- method
+	local x,y = cm.PosX, cm.PosX -- attributes
+
+
+
+	calling a framework method works the same as regular methods. The boolean returned by the call is added at the end of the return values
+
+	DEFINE_METHOD(MyClass, Add)
+	{
+		double a, double b;
+		Unpack(params, a, b);
+		PUSH_RETURN_VALUE(a+b);
+		return false;
+	}
+
+	local val, return_status = cm:MyAwesomeMethod(5, 4)
+	print(val, return_status) -> prints 9 false
+
+
+
+	
+4) The behaviour object
+
+The behaviour object should be used to store per script data.
+You can access it in init and update using the "self" variable
+
+To communicate between scripts you can use the global scope (be careful of the scripts priorities !!)
+
+It has several available members :
+
+	target : CoreModifiable the script is attached to
+	script : the LuaBehaviour itself (as a CoreModifiable object) 
+
+
+5) The kigs lua module
+
+Anywhere in your scripts, you can access the global table "kigs" that contains useful defines.
+See kigs.lua for the complete list
+
