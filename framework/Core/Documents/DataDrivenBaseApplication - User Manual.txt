@@ -1,0 +1,448 @@
+
+									DataDrivenBaseApplication 
+									User Manual
+									Version 1.0 - 09 15 2015
+									Version 1.1 - 09 18 2015
+									Version 1.2 - 09 24 2015
+									Version 1.3 - 04 27 2016
+									Version 1.4 - 04 30 2016
+									Version 1.5 - 06 16 2016
+									Version 1.6 - 08 02 2017
+									Version 1.7 - 11 20 2017
+									
+1] Introduction
+
+	A DataDrivenBaseApplication is a CoreBaseApplication managing itself :
+	- windows and rendering screen init
+	- sequences, stackable sequences and transitions between sequences
+	- back (or escape) key to pop sequence stack or exit game, with or without confirmation popup 
+	
+	for a simple application (navigation between several screens with buttons, texts, images, animations...), everything can be done directly using xml files (or Kigs Editor).
+	
+V1.6 ==> 
+	a global config file is now available. If available it's loaded before AppInit.xml and then can be used to initialise other parameters in the app.
+	The global config file name is first search for current platform : 	GlobalConfig + platform name + .xml
+	
+	ie : GlobalConfigWin32.xml, GlobalConfigAndroid.xml ...
+	
+	if not found, GlobalConfig.xml is used.
+	
+	This file is not mandatory.
+	
+<== V1.6
+
+V1.7 ==>
+
+	If available, a default package file "Assets.kpkg" is loaded before all other files at DataDrivenBaseApplication init. If you want to use packaged assets with a different name, you can use "PackageFileName" parameter in "AppInit.xml" (see in 3.2) AppInit optional content ), but in this case, "AppInit.xml" and all GlobalConfig files must be set outside the packaged asset file.
+	
+	WARNING ! Don't use bundle file list for files inside packages as loading a package already fills the bundle file list.  
+	
+ <== V1.7
+
+2] Needed data
+
+	A DataDrivenBaseApplication needs at least :
+	- a AppInit.xml file 
+	V1.2 ==> - a xml file as a first sequence (default file name is LaunchScreen.xml)
+	- all the resources used by the LaunchScreen
+	
+3] AppInit.xml
+
+3.1) AppInit mandadory content
+	
+	AppInit.xml is used to init Window and RenderingScreen. The Window Sizex & Sizey is get from the parameters in AppInit.xml and check with a DisplayDeviceCaps. The Sizex & Sizey values
+	for the Window and the RenderingScreen can be adjusted by the DisplayDeviceCaps. The DesignSizeX & DesignSizeY for the RenderingScreen is not changed of course.
+	Window instance must be the root instance in the xml file, and the RenderingScreen instance must be a child of it.
+	
+*****************************************************************************************************************************
+	Simple AppInit.xml 
+*****************************************************************************************************************************	
+	
+<?xml version="1.0"?>
+<Instance Name="AppWindow" Type="Window">
+    <CoreModifiableAttribute Type="int" Name="PositionX" Value="0" Dynamic="false"/>
+	<CoreModifiableAttribute Type="int" Name="PositionY" Value="0" Dynamic="false"/>
+	<CoreModifiableAttribute Type="int" Name="SizeX" Value="1280" Dynamic="false"/>
+	<CoreModifiableAttribute Type="int" Name="SizeY" Value="800" Dynamic="false"/>
+	<CoreModifiableAttribute Type="bool" Name="FullScreen" Value="false" Dynamic="false"/>
+	<CoreModifiableAttribute Type="bool" Name="Mouse Cursor" Value="true" Dynamic="false"/>
+	<Instance Name="theRenderingScreen" Type="RenderingScreen">
+		<CoreModifiableAttribute Type="uint" Name="SizeX" Value="1280" Dynamic="false"/>
+		<CoreModifiableAttribute Type="uint" Name="SizeY" Value="800" Dynamic="false"/>
+		<CoreModifiableAttribute Type="uint" Name="DesignSizeX" Value="1280" Dynamic="false"/>
+		<CoreModifiableAttribute Type="uint" Name="DesignSizeY" Value="800" Dynamic="false"/>
+		<CoreModifiableAttribute Type="int" Name="BitsPerZ" Value="32" Dynamic="false"/>
+		<CoreModifiableAttribute Type="int" Name="Brightness" Value="0" Dynamic="false"/>
+		<CoreModifiableAttribute Type="array" Name="BackDropColor" Value="{0.0,0.0,0.0}" Dynamic="false"/>
+		<CoreModifiableAttribute Type="bool" Name="VSync" Value="true" Dynamic="false"/>
+	</Instance>
+</Instance>
+
+*****************************************************************************************************************************
+
+3.2) AppInit optional content
+
+V1.2 ==> The first sequence xml file can be given by the dynamic attribute "FirstSequenceFile" :
+*****************************************************************************************************************************
+<CoreModifiableAttribute Type="string"  Name="FirstSequenceFile" Value="FirstSequence.xml" Dynamic="true"/>
+*****************************************************************************************************************************
+if not set, the default file "LaunchScreen.xml" if used.
+
+The AppInit.xml can be used to set a confirmation PopUp when esc or back is pressed and the sequence stack is empty.
+The popup instance must be named : "ConfirmExitPopup" and must be a direct child of the Window (root) instance.
+
+The confirmation Popup must send a "OKExitConfirmationPopup" notification en confirm (OK) and a "CancelExitConfirmationPopup" notification on cancel.  
+It's the popup job to avoid the user to click on other IHM.
+
+*****************************************************************************************************************************
+Here is a sample instance for a simple confirmation popup
+*****************************************************************************************************************************
+
+	<Instance Name="ConfirmExitPopup" Type="UIPanel">
+	  <CoreModifiableAttribute Type="array" Name="Anchor" Value="{0.500000,0.500000}" Dynamic="false"/>
+	  <CoreModifiableAttribute Type="uint" Name="SizeY" Value="800" Dynamic="false"/>
+	  <CoreModifiableAttribute Type="uint" Name="SizeX" Value="1280" Dynamic="false"/>
+	  <CoreModifiableAttribute Type="float" Name="Opacity" Value="0.600000" Dynamic="false"/>
+	  <CoreModifiableAttribute Type="array" Name="Dock" Value="{0.500000,0.500000}" Dynamic="false"/>
+	  <CoreModifiableAttribute Type="array" Name="Color" Value="{0.200000,0.200000,0.200000,1.000000}" Dynamic="false"/>
+	  <CoreModifiableAttribute Type="uint" Name="Priority" Value="0" Dynamic="false"/>
+	  <Instance Name="BGBulle" Type="UIPanel">
+		<CoreModifiableAttribute Type="array" Name="Anchor" Value="{0.500000,0.500000}" Dynamic="false"/>
+		<CoreModifiableAttribute Type="uint" Name="SizeY" Value="240" Dynamic="false"/>
+		<CoreModifiableAttribute Type="uint" Name="SizeX" Value="500" Dynamic="false"/>
+		<CoreModifiableAttribute Type="uint" Name="Priority" Value="50" Dynamic="false"/>
+		<CoreModifiableAttribute Type="array" Name="Dock" Value="{0.500000,0.500000}" Dynamic="false"/>
+		<CoreModifiableAttribute Type="array" Name="Color" Value="{1.000000,1.000000,1.000000,1.000000}" Dynamic="false"/>
+		
+		<Instance Name="TextBulle" Type="UIMultilineText">            
+			<CoreModifiableAttribute Type="array" Name="Color" Value="{0.0,0.0,0.0,1.0}" Dynamic="false"/>
+			<CoreModifiableAttribute Type="array" Name="Anchor" Value="{0.500000,0.500000}" Dynamic="false"/>
+			<CoreModifiableAttribute Type="usstring" Name="Text" Value="Quitter le jeu ?" Dynamic="false"/>
+			<CoreModifiableAttribute Type="uint" Name="Priority" Value="1" Dynamic="false"/>
+			<CoreModifiableAttribute Type="uint" Name="FontSize" Value="40" Dynamic="false"/>
+			<CoreModifiableAttribute Type="string" Name="FontName" Value="Calibri.ttf" Dynamic="false"/>
+			<CoreModifiableAttribute Type="float" Name="Opacity" Value="1.000000" Dynamic="false"/>
+			<CoreModifiableAttribute Type="array" Name="Dock" Value="{0.500000,0.300000}" Dynamic="false"/>
+			<CoreModifiableAttribute Type="uint" Name="MaxSize" Value="240" Dynamic="false"/>
+		</Instance>
+		
+		<Instance Name="YesButton" Type="UIButtonText">
+		  <CoreModifiableAttribute Type="string" Name="ClickUpAction" Value="OKExitConfirmationPopup" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="array" Name="Anchor" Value="{0.500000,0.500000}" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="usstring" Name="Parameter" Value="true" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="string" Name="UpText" Value="OUI" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="array" Name="UpColor" Value="{0.0,0.0,0.0,1.0}" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="array" Name="DownColor" Value="{0.686,0.541,0.902,1.0}" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="array" Name="OverColor" Value="{0.435,0.0,0.0,1.0}" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="uint" Name="FontSize" Value="50" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="string" Name="FontName" Value="Calibri.ttf" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="array" Name="Dock" Value="{0.300000,0.70000}" Dynamic="false"/>
+		</Instance>
+		
+		<Instance Name="NoButton" Type="UIButtonText">
+		  <CoreModifiableAttribute Type="string" Name="ClickUpAction" Value="CancelExitConfirmationPopup" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="array" Name="Anchor" Value="{0.500000,0.500000}" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="usstring" Name="Parameter" Value="true" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="string" Name="UpText" Value="NON" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="array" Name="UpColor" Value="{0.0,0.0,0.0,1.0}" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="array" Name="DownColor" Value="{0.686,0.541,0.902,1.0}" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="array" Name="OverColor" Value="{0.435,0.0,0.0,1.0}" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="uint" Name="FontSize" Value="50" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="string" Name="FontName" Value="Calibri.ttf" Dynamic="false"/>
+		  <CoreModifiableAttribute Type="array" Name="Dock" Value="{0.700000,0.70000}" Dynamic="false"/>
+		</Instance>
+	  </Instance>
+	</Instance> 
+
+*****************************************************************************************************************************
+
+
+
+V1.1 ==> The AppInit.xml file can also be used to init FilePathManager.
+You can define a bundle file name using a dynamic attribute of the Window :
+
+*****************************************************************************************************************************
+<CoreModifiableAttribute Type="string"  Name="BundleFileName" Value="files.bundle" Dynamic="true"/>
+*****************************************************************************************************************************
+
+Or use a config file (json format) using a dynamic attribute of the Window :
+
+*****************************************************************************************************************************
+<CoreModifiableAttribute Type="string"  Name="FilePathManagerInitFile" Value="FilePathManager.json" Dynamic="true"/>
+*****************************************************************************************************************************
+
+see FilePathManager documentation to understand the configuration file format.
+
+V1.1 ==> The AppInit.xml file can also be used to init Localization manager.
+You can use a config file (json format) using a dynamic attribute of the Window :
+
+*****************************************************************************************************************************
+<CoreModifiableAttribute Type="string"  Name="LocalizationInitFile" Value="Localization.json" Dynamic="true"/>
+*****************************************************************************************************************************
+
+the given json file is a list of localization file associated to each langage and also define the default language :
+
+*****************************************************************************************************************************
+[	
+	"default" , "fr",
+	"fr" , "LocalizableFrancais.strings",
+	"de" , "LocalizableAllemand.strings",
+	"en" , "LocalizableAnglais.strings",
+] 
+*****************************************************************************************************************************
+
+If current langage is not found in the list, default one is used.
+
+
+V1.7 ==> 
+
+Load package file containing data. 
+
+*****************************************************************************************************************************
+<CoreModifiableAttribute Type="string"  Name="PackageFileName" Value="package.kpkg" Dynamic="true"/>
+*****************************************************************************************************************************
+
+<== V1.7
+
+4] Sequences
+
+	A sequence can be directly defined by a UI2DLayer (or even a 2DLayer, but 2DLayer should be deprecated soon) or by a DataDrivenSequence.
+	If defined by a UI2DLayer, user can add some "hand coded" effects, but can not use DataDrivenTransition.
+	
+*****************************************************************************************************************************	
+	Here is a sample LaunchScreen.xml : a "splash screen" with a fade in effects
+*****************************************************************************************************************************
+<?xml version="1.0"?>
+<Instance Name="UILayer" Type="UI2DLayer">
+	<CoreModifiableAttribute Type="int" Name="SizeY" Value="800" Dynamic="false"/>
+	<CoreModifiableAttribute Type="int" Name="SizeX" Value="1280" Dynamic="false"/>
+	<CoreModifiableAttribute Type="int" Name="Priority" Value="0" Dynamic="false"/>
+	<CoreModifiableAttribute Type="reference" Name="RenderingScreen" Value="RenderingScreen:theRenderingScreen" Dynamic="false"/>
+	<Instance Name="Interface" Type="UIItem">
+		<CoreModifiableAttribute Type="uint" Name="SizeY" Value="800" Dynamic="false"/>
+		<CoreModifiableAttribute Type="uint" Name="SizeX" Value="1280" Dynamic="false"/>
+		<CoreModifiableAttribute Type="float" Name="Opacity" Value="0.0" Dynamic="false"/>
+		<CoreModifiableAttribute Type="array" Name="Dock" Value="{0.500000,0.50000}" Dynamic="false"/>
+		<CoreModifiableAttribute Type="array" Name="Anchor" Value="{0.500000,0.50000}" Dynamic="false"/>
+		<Instance Name="Logo" Type="UIImage">
+			<CoreModifiableAttribute Type="string" Name="Texture" Value="Logo.png" Dynamic="false"/>
+			<CoreModifiableAttribute Type="uint" Name="SizeY" Value="800" Dynamic="false"/>
+			<CoreModifiableAttribute Type="uint" Name="SizeX" Value="1280" Dynamic="false"/>
+			<CoreModifiableAttribute Type="uint" Name="Priority" Value="50" Dynamic="false"/>
+		</Instance>
+	</Instance>
+	<Instance Name="FadeIn_Launcher" Type="CoreSequenceLauncher">
+		<CoreModifiableAttribute Type="bool" Name="StartOnFirstUpdate" Value="true" Dynamic="false"/>
+		<CoreModifiableAttribute Type="coreitem" Name="Sequence" Dynamic="false">
+<![CDATA[{
+"Fade":[
+{"Linear1D":[0.5,-16,0,"/theRenderingScreen->Brightness",0]},
+{ "Wait" : [  1 ] },
+{ "Notification" :  [ 0 , "StackSequence", "Screen_Main1.xml" ] }
+]
+}
+]]>
+		</CoreModifiableAttribute>
+	</Instance>
+</Instance>
+*****************************************************************************************************************************	
+
+	Here the transition to the next sequence (defined in "Screen_Main1.xml") is done directly at the end of the animation with the notification :
+	{ "Notification" :  [ 0 , "StackSequence", "Screen_Main1.xml" ] }
+	
+	StackSequence is used to push the next sequence on the stack so that esc or back key press during next sequence will bring back the application to this "splash screen".
+	
+	If the following notification is called : 
+	{ "Notification" :  [ 0 , "ChangeSequence", "Screen_Main1.xml" ] }
+	the next sequence is not pushed on the stack, so esc or back key press during the next sequence would show the confirmation pop up if available or quit the application.
+	
+	Using DataDrivenSequence as the root of the a sequence definition file is useful to :
+	- add several UI2DLayer as part of the same sequence
+	- setup Transitions using DataDrivenTransition class
+	
+5] Transitions
+
+	A DataDrivenTransition can define two transitions : the "PreviousAnim" is used to "animate" the current sequence which will be exit, the "NextAnim" is used to "animate" the sequence
+	we are in transition to. The two transitions animation are played at the same time. 
+
+*****************************************************************************************************************************	
+	Here is a sample sequence using transition
+*****************************************************************************************************************************
+<?xml version="1.0"?>
+<Instance Name="sequencemain" Type="DataDrivenSequence">
+	<Instance Name="transition" Type="DataDrivenTransition">
+		<CoreModifiableAttribute Type="coreitem" Name="PreviousAnim" Dynamic="false">
+		<![CDATA[{
+		"Fade":[
+		{"Linear1D":[0.5,0,-16,"/theRenderingScreen->Brightness",0]},
+		{ "SetValue1D" : [0.0,0.0,"Show" ]}
+		]
+		}
+		]]>
+		</CoreModifiableAttribute>
+		<CoreModifiableAttribute Type="coreitem" Name="NextAnim" Dynamic="false">
+		<![CDATA[{
+		"Fade":[
+		{ "SetValue1D" : [0.0,0.0,"Show" ]},
+		{ "Wait" : [  0.5 ] },
+		{ "SetValue1D" : [0.0,1.0,"Show" ]},
+		{"Linear1D":[0.5,-16,0,"/theRenderingScreen->Brightness",0]}
+		]
+		}
+		]]>
+		</CoreModifiableAttribute>
+	</Instance>	
+	<Instance Name="UILayer" Type="UI2DLayer">
+		<CoreModifiableAttribute Type="int" Name="SizeY" Value="800" Dynamic="false"/>
+		<CoreModifiableAttribute Type="int" Name="SizeX" Value="1280" Dynamic="false"/>
+		<CoreModifiableAttribute Type="int" Name="Priority" Value="0" Dynamic="false"/>
+		<CoreModifiableAttribute Type="reference" Name="RenderingScreen" Value="RenderingScreen:theRenderingScreen" Dynamic="false"/>
+		<Instance Name="Interface" Type="UIItem">
+			<CoreModifiableAttribute Type="uint" Name="SizeY" Value="800" Dynamic="false"/>
+			<CoreModifiableAttribute Type="uint" Name="SizeX" Value="1280" Dynamic="false"/>
+			<CoreModifiableAttribute Type="float" Name="Opacity" Value="0.0" Dynamic="false"/>
+			<CoreModifiableAttribute Type="array" Name="Dock" Value="{0.500000,0.50000}" Dynamic="false"/>
+			<CoreModifiableAttribute Type="array" Name="Anchor" Value="{0.500000,0.50000}" Dynamic="false"/>
+			<Instance Name="Logo" Type="UIImage">
+				<CoreModifiableAttribute Type="string" Name="Texture" Value="Logo.png" Dynamic="false"/>
+				<CoreModifiableAttribute Type="uint" Name="SizeY" Value="800" Dynamic="false"/>
+				<CoreModifiableAttribute Type="uint" Name="SizeX" Value="1280" Dynamic="false"/>
+				<CoreModifiableAttribute Type="uint" Name="Priority" Value="50" Dynamic="false"/>
+			</Instance>
+		</Instance>
+	</Instance>
+</Instance>
+*****************************************************************************************************************************
+	
+	Here the "PreviousAnim" do a fade to black on the currently playing sequence then hide it.
+	The "NextAnim" hide loaded sequence and wait for the fade to black on previous sequence to finish, then show the new sequence with a fade from black.
+
+*****************************************************************************************************************************
+Here is another transition sample where loaded sequence "push" current sequence with a scrolling from left to right.
+*****************************************************************************************************************************
+
+	<Instance Name="transition" Type="DataDrivenTransition">
+		<CoreModifiableAttribute Type="coreitem" Name="PreviousAnim" Dynamic="false">
+		<![CDATA[{
+		"Fade":[
+		{ "SetValue1D" : [0.0,0.0,"ClearColorBuffer" ]},
+		{"Linear2D":[0.5,[0.5,0.5],[-0.5,0.5],"Interface->Anchor",0]}
+		]
+		}
+		]]>
+		</CoreModifiableAttribute>
+		<CoreModifiableAttribute Type="coreitem" Name="NextAnim" Dynamic="false">
+		<![CDATA[{
+		"Fade":[
+		{ "SetValue1D" : [0.0,0.0,"ClearColorBuffer" ]},
+		{"Linear2D":[0.5,[1.5,0.5],[0.5,0.5],"Interface->Anchor",0]},
+		{ "SetValue1D" : [0.0,1.0,"ClearColorBuffer" ]}
+		]
+		}
+		]]>
+		</CoreModifiableAttribute>
+	</Instance>
+*****************************************************************************************************************************
+	
+	
+V1.3 ==>
+6] LUA script
+	A new XML tag is available to add to CoreModifiable Instances
+	
+*****************************************************************************************************************************
+	<LUA  N="TestLuaMethod" >
+			print(this:getName())
+	</LUA>
+*****************************************************************************************************************************
+	
+	creates a (global) Lua method named TestUpdate. When the method is called (from c++), a hidden this parameter is always given.
+
+	Mandatory LUA parameter is "Name" or "N" to give the name of the lua method and calling name from C++.
+	
+    this Lua method can be attached as a callback to the instance using "Type" or "T" parameter :
+
+*****************************************************************************************************************************
+	<Instance Name="theRenderingScreen" Type="RenderingScreen">
+		...
+		<LUA  N="LuaUpdate" T="Update" >
+			print(this:getName())
+		</LUA>
+	</Instance>
+*****************************************************************************************************************************
+
+Will be called each time the RenderingScreen update is called
+
+Available callbacks types are :
+"PreInit"
+"PostInit"
+"Uninit"
+"Destroy"
+"Update"
+"NotifyUpdate"
+"AddItem"
+"RemoveItem"
+
+Additionnal parameters can be defined, and a returned value can also be used :
+*****************************************************************************************************************************
+<LUA  N="LuaMultiply" P="X,Y">
+	print(this:getName())
+	return X*Y
+</LUA>
+*****************************************************************************************************************************
+
+You can then call the method using CoreItemOperator  :
+
+*****************************************************************************************************************************
+[../theRenderingScreen->LuaMultiply(5.0,6.0)]
+*****************************************************************************************************************************
+
+or CoreModifiableAttribute Modifier :
+
+*****************************************************************************************************************************
+<CoreModifiableAttribute Type="uint" Name="SizeX" Value="0" Dynamic="false">
+	<Modifier Type="CoreItemOperatorModifier" Value="[LuaMultiply(640,2)]/>
+</CoreModifiableAttribute>
+*****************************************************************************************************************************
+
+V1.4 ==> new LUA category : Global
+
+Name is still mandadory but is not use in the case of Global Type.
+
+All the code is set at the global level of lua code and can be used by lua methods:
+
+*****************************************************************************************************************************
+<LUA  N="GlobalCode" T="Global"  >
+	local gname = "testGlobalCode"
+	function getGName()
+		return gname
+	end
+</LUA>
+
+<LUA  N="TestLuaCode" >
+	print(getGName())
+</LUA>
+*****************************************************************************************************************************
+
+A call to TestLuaCode will print "testGlobalCode" in the console.
+
+V1.5 ==> added XML OnEvent attribute on instances
+*****************************************************************************************************************************
+<OnEvent Name="TransitionScreen" Action="TransitionScreen"/>
+or
+<OnE N="TransitionScreen" A="TransitionScreen"/>
+*****************************************************************************************************************************
+
+do the same on the current instance as this code: 
+Core::GetNotificationCenter()->addObserver(this, "TransitionScreen", "TransitionScreen"); 
+
+it's also possible to call a CoreItemOperator (see CoreItemOperator - User Manual.txt for more syntax info) like this :
+*****************************************************************************************************************************
+<OnE N="Click" A="eval(#Dock.x#=(#Dock.x#+1.0)]"/>
+*****************************************************************************************************************************
+
+in case of eval calling a method, private data and sender received from the notification are automatically passed to the method :
+*****************************************************************************************************************************
+<OnE N="TransitionScreen" A="eval([TransitionScreen()])"/>
+*****************************************************************************************************************************
+
+

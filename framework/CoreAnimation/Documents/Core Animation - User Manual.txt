@@ -1,0 +1,484 @@
+
+									Core Animation 
+									User Manual
+									Version 1.00 - 05 26 2015
+									Version 0.92 - 04 06 2015
+									Version 0.91 - 03 26 2015
+									Version 0.9 - 08 27 2014
+									
+1] Introduction
+
+	The Core Animation module can be use to animate the "CoreModifiableAttribute" values of a "CoreModifiable" instance in time.  
+	The generic way to do is to :
+	
+			- Create and initialise the module : theCoreAnimation=CoreCreateModule(ModuleCoreAnimation,0);
+			- In the main loop : CoreApplication::ProtectedUpdate() update the module theCoreAnimation->Update(*myApplicationTimer);
+			- Create sequences and add them to the Core Animation module. 
+	
+2] Sequences
+
+	A sequence is a list of action played one after the other. For the Core Animation module, a sequence is defined by an instance of 
+	CoreSequence. 
+	V0.9	==> at the moment a sequence can be defined by a JSON file or an already loaded JSON in a CoreMap<kstl::string>. 
+	V0.9	==> pause a sequence is not supported at the moment
+	
+	Creating CoreSequence "manually" should be possible in the future.
+	Once a CoreSequence has finished to play, it's removed from the Core Animation module, and destroyed if it has no more reference. 
+	
+2.1) Creating a sequence using JSON file name :
+
+    // load sequence definition in "test.json" file, and attach the sequence on the "myObjNode" CoreModifiable. You can give a timer 
+	// that will be used to play the sequence. If no timer is given, you will have to give a timer to call play and pause manually and 
+    // the Core Animation update will need to use this same timer.	
+	CoreSequence*	testSequence=theCoreAnimation->createSequenceFromJSON(myObjNode,"test.json",myApplicationTimer);
+	// Once the sequence is created, we can add it to the Core Animation module
+	theCoreAnimation->addSequence(testSequence);
+	// remove a reference, so that the sequence will be destroyed at the end
+	testSequence->Destroy();
+	// ask the sequence to start at first update and not immediately
+	testSequence->startAtFirstUpdate();
+	
+2.2) Creating a sequence using a CoreMap<kstl::string> (previously loaded JSON)
+	
+	When you have to play often the same sequence, it's better to load once the JSON file, keep an instance of the 
+	CoreMap<kstl::string>, and create the sequence each time using this same instance.
+
+	// load a sequence definition from a json file and keep a reference on the CoreMap<kstl::string>*
+	JSonFileParser L_JsonParser;
+	myBravoSequence = L_JsonParser.Get_JsonDictionary("SequenceBravo.json");
+	// create a sequence using the CoreMap<kstl::string>*
+	CoreSequence*	appearsequence=theCoreAnimation->createSequenceFromCoreMap(myTextSprite,myBravoSequence,myApplicationTimer);
+	theCoreAnimation->addSequence(appearsequence);
+	appearsequence->Destroy();
+	appearsequence->startAtFirstUpdate();	
+	
+2.3) Removing a sequence
+
+     Before launching a sequence on a instance of "CoreModifiable" it can be necessary to remove all the sequences already playing 
+	 on the instance. This can be done with :
+	 
+	 // remove all the animations on the myTextSprite instance
+	 theCoreAnimation->removeAllSequencesOnTarget(myTextSprite);
+	 
+	 It's also possible to remove one given sequence from the Core Animation Module :
+	 theCoreAnimation->removeSequence(appearsequence);
+	 
+2.4) JSON definition
+
+    A CoreSequence is defined like this in the JSON file :
+	
+{
+	"SequenceName" : 
+	[	
+		
+	] 
+}
+	 inside the [ ] array will come the CoreAction list 
+	 
+3] Actions
+
+	A CoreSequence plays a sequence of CoreAction instances. Each CoreAction type is defined in the JSON format like this :
+	
+	{ "CoreActionType" : [CoreActionParam1 , CoreActionParam2, ...] }
+	
+	For actions which directly act on values, the action type is often associated with a dimension : 1D, 2D, 3D, 4D. If no more 
+	precision is given, 1D act on a float value, 2D on a Point2D (array of 2 float values), 3D on a Point3D (array of 3 float values),
+	4D on a Quaternion (array of 4 float values). If the action type is prefixed by "Direct", it means the action change the value 
+	without using the setValue mechanisms, so also without Notification which is faster but sometimes can cause update problems.
+	The "PositionX" value of a "CoordinateSystem" instance use Notification to really move the object, so direct action will have no 
+	effect on it.
+	
+	All duration parameters are given in second.
+	
+	V1.00	==> the attribute name can now be a path in instance hierarchy. 
+	If you have a hierarchy like this :
+	
+	UIImage "background"
+	    UIImage "picture1"
+		   UIButton "button1"
+		   
+	If the sequence is attached to "background", you can animate the "button1" Dock parameter using : "picture1/button1->Dock" as parameter name.
+	    
+	
+3.1) Interpolation actions
+
+3.1.1) Linear interpolation
+
+Set an attribute from a starting value to a ending value with linear interpolation on duration
+V0.91	==>  : added relative optional parameter, this parameter is not available at the moment on DirectLinear
+V0.92	==>  : relative parameter can take 4 values : 	0 => absolute
+														1 => start and end relative
+														2 => start relative, end absolute
+														3 => start absolute, end relative
+
+**** Linear1D / DirectLinear1D ****
+
+parameters
+{ "Linear1D": [duration,start value, end value,"attribute name"] }
+V0.91	==>{ "Linear1D": [duration,start value, end value,"attribute name",isRelative] }
+
+sample
+{ "Linear1D": [1.0,0.0,10.0,"PositionX"] }
+V0.91	==>{ "Linear1D": [1.0,0.0,10.0,"PositionX",0] } // not relative
+V0.91	==>{ "Linear1D": [1.0,0.0,10.0,"PositionX",1] } //  relative
+
+**** Linear2D / DirectLinear2D ****
+
+parameters
+{ "Linear2D": [duration,[start value.x, start value.y], [end value.x, end value.y],"attribute name"] }
+V0.91	==>{ "Linear2D": [duration,[start value.x, start value.y], [end value.x, end value.y],"attribute name",isRelative] }
+
+sample
+{ "Linear2D": [2.0,[0.0,0.0],[10.0,2.0],"AnchorPoint"] }
+
+**** Linear3D / DirectLinear3D ****
+
+parameters
+{ "Linear3D": [duration,[start value.x, start value.y, start value.z], [end value.x, end value.y, end value.z],"attribute name"] }
+V0.91	==>{ "Linear3D": [duration,[start value.x, start value.y, start value.z], [end value.x, end value.y, end value.z],"attribute name",isRelative] }
+
+sample
+{ "Linear3D": [2.0,[0.0,0.0,-1.0],[10.0,2.0,3.0],"Pos"] }
+
+**** Linear4D / DirectLinear4D ****
+
+parameters
+{ "Linear4D": [duration,[start value.x, start value.y, start value.z, start value.w], 
+				  [end value.x, end value.y, end value.z, end value.w],"attribute name"] }
+V0.91	==>{ "Linear4D": [duration,[start value.x, start value.y, start value.z, start value.w], 
+				  [end value.x, end value.y, end value.z, end value.w],"attribute name",isRelative] }				  
+
+sample
+{ "Linear4D": [2.0,[0.0,0.0,0.0,1.0],[1.0,0.5,0.9,1.0],"Diffuse"] }
+
+3.1.2) Hermite interpolation
+
+Set an attribute from a starting value to a ending value with Hermite interpolation on duration. Hermite interpolation use tangent 
+(<=> speed) at starting and ending value. 
+V0.91	==>  : added relative optional parameter, this parameter is not available at the moment on DirectHermite
+
+**** Hermite1D / DirectHermite1D ****
+
+parameters
+{ "Hermite1D": [duration,start value, end value,start tangent, end tangent,"attribute name"] }
+V0.91	==>{ "Hermite1D": [duration,start value, end value,start tangent, end tangent,"attribute name",isRelative] }
+
+sample
+{ "Hermite1D": [1.0,0.0,10.0,1.0,0.0,"PositionX"] }
+
+**** Hermite2D / DirectHermite2D ****
+
+parameters
+{ "Hermite2D": [duration,[start value.x, start value.y], [end value.x, end value.y],
+									[start tangent value.x, start tangent value.y], [end tangent value.x, end tangent value.y], "attribute name"] }
+V0.91	==>{ "Hermite2D": [duration,[start value.x, start value.y], [end value.x, end value.y],
+									[start tangent value.x, start tangent value.y], [end tangent value.x, end tangent value.y], "attribute name",isRelative] }
+sample
+{ "Hermite2D": [2.0,[0.0,0.0],[10.0,2.0],[1.0,-0.5],[0.0,0.0],"AnchorPoint"] }
+
+**** Hermite3D / DirectHermite3D ****
+
+parameters
+{ "Hermite3D": [duration,[start value.x, start value.y, start value.z], [end value.x, end value.y, end value.z],
+									[start tangent value.x, start tangent value.y, start tangent value.z],
+									[end tangent value.x, end tangent value.y, end tangent value.z],"attribute name"] }
+V0.91	==>{ "Hermite3D": [duration,[start value.x, start value.y, start value.z], [end value.x, end value.y, end value.z],
+									[start tangent value.x, start tangent value.y, start tangent value.z],
+									[end tangent value.x, end tangent value.y, end tangent value.z],"attribute name",isRelative] }
+sample
+{ "Hermite3D": [2.0,[0.0,0.0,-1.0],[10.0,2.0,3.0],[0.0,0.0,0.0],[0.0,0.0,0.0],"Pos"] }
+
+**** Hermite4D / DirectHermite4D ****
+
+parameters
+{ "Hermite4D": [duration,[start value.x, start value.y, start value.z, start value.w], 
+									[end value.x, end value.y, end value.z, end value.w],
+									[start tangent value.x, start tangent value.y, start tangent value.z, start tangent value.w], 
+									[end tangent value.x, end tangent value.y, end tangent value.z, end tangent value.w],
+									"attribute name"] }
+V0.91	==>{ "Hermite4D": [duration,[start value.x, start value.y, start value.z, start value.w], 
+									[end value.x, end value.y, end value.z, end value.w],
+									[start tangent value.x, start tangent value.y, start tangent value.z, start tangent value.w], 
+									[end tangent value.x, end tangent value.y, end tangent value.z, end tangent value.w],
+									"attribute name",isRelative] }
+sample
+{ "Hermite4D": [2.0,[0.0,0.0,0.0,1.0],[1.0,0.5,0.9,1.0],
+							[0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0],"Diffuse"] }
+
+3.2) SetValue actions
+
+   SetValue action waits "duration" then set the given value to the attribute. 
+   
+**** SetValueString ****   
+
+	parameters
+{ "SetValueString" : [duration, "value" , "attribute name"] }
+
+sample
+{ "SetValueString" : [0.0, "#toto" , "text"] }
+  
+**** SetValue1D / DirectSetValueFloat1D / DirectSetValueInt1D / DirectSetValueBool1D ****   
+
+Direct 1D set value have to be typed (Float / Int / Bool) with the correct final attribute type.
+
+parameters
+{ "DirectSetValueBool1D" : [duration, value , "attribute name"] }
+
+sample
+{ "DirectSetValueBool1D" : [0.0, 1 , "Show"] }
+
+**** SetValue2D / DirectSetValue2D ****   
+   
+parameters
+{ "SetValue2D" : [duration, [value.x,value.y] , "attribute name"] }
+
+sample
+{ "SetValue2D" : [1.0, [1.0,0.0] , "Position"] }
+
+**** SetValue3D / DirectSetValue3D ****   
+   
+parameters
+{ "SetValue3D" : [duration, [value.x,value.y,value.z] , "attribute name"] }
+
+sample
+{ "SetValue3D" : [0.0, [1.0,0.0,-1.0] , "Position"] }
+
+**** SetValue4D / DirectSetValue4D ****   
+   
+parameters
+{ "SetValue4D" : [duration, [value.x,value.y,value.z,value.w] , "attribute name"] }
+
+sample
+{ "SetValue4D" : [0.0, [1.0,0.0,1.0,1.0] , "Diffuse"] }
+   
+3.3) KeyFrame actions
+
+==> 0.9	TODO : "SmoothKeyFrame". 
+
+At the moment, no interpolation is done, KeyFrame actions are the same as series of SetValue actions.
+
+**** KeyFrame1D / DirectKeyFrameFloat1D / DirectKeyFrameInt1D / DirectKeyFrameBool1D ****   
+
+Direct 1D KeyFrame have to be typed (Float / Int / Bool) with the correct final attribute type.
+
+parameters
+{ "KeyFrame1D" : ["attribute name", key1 time , key1 value,key2 time , key2 value, ... , key N time , key N value] }
+
+sample
+{ "KeyFrame1D" : ["PositionX",0.0,0.0,1.0,-5.0,1.5,-3.5,1.7,-1.0] }
+
+**** KeyFrame2D / DirectKeyFrame2D ****   
+   
+parameters
+{ "KeyFrame2D" : ["attribute name", key1 time , [key1 value.x,key1 value.y],
+												   , key2 time , [key2 value.x,key2 value.y]
+												   , ... ,
+												   key N time, [key N value.x,key N value.y] ] }
+
+sample
+{ "KeyFrame2D" : ["Pos",0.0,[0.0,0.0],
+									1.0,[-5.0,1.0],
+									1.5,[-3.5,2.0],
+									1.7,[-1.0,3.0] ] }
+
+**** KeyFrame3D / DirectKeyFrame3D ****   
+   
+parameters
+{ "KeyFrame3D" : ["attribute name", key1 time , [key1 value.x,key1 value.y,key1 value.z],
+												   , key2 time , [key2 value.x,key2 value.y,key2 value.z]
+												   , ... ,
+												   key N time, [key N value.x,key N value.y,key N value.z] ] }
+
+sample
+{ "KeyFrame3D" : ["Position",	0.0,[0.0,0.0,0.0],
+											1.0,[-5.0,1.0,0.0],
+											1.5,[-3.5,2.0,0.0],
+											1.7,[-1.0,3.0,1.0] ] }
+
+**** KeyFrame4D / DirectKeyFrame4D ****   
+    
+parameters
+{ "KeyFrame4D" : ["attribute name", key1 time , [key1 value.x,key1 value.y,key1 value.z,key1 value.w],
+												   , key2 time , [key2 value.x,key2 value.y,key2 value.z,key2 value.w]
+												   , ... ,
+												   key N time, [key N value.x,key N value.y,key N value.z,key N value.w] ] }
+
+sample
+{ "KeyFrame4D" : ["Diffuse",	0.0,[0.0,0.0,0.0,1.0],
+											1.0,[0.0,1.0,0.0,1.0],
+											1.5,[1.0,0.0,0.0,1.0],
+											1.7,[0.0,0.0,1.0,1.0] ] }
+
+3.4) Loops actions
+
+	A loop action execute the same action several time. 
+
+**** ForLoop ****   
+
+	Execute the same action N times. If N is -1, do an infinite loop.
+
+parameters
+{ "ForLoop" : [number of loop ,{ action to loop } ] }
+
+sample
+{ "ForLoop" : [3 ,{ "Hermite1D": [2.0,0.0,6.29,0.0,-4.0,"RotationX"] } ] }
+
+**** DoWhile ****   
+Execute the same action while a given attribute is true
+
+parameters
+{ "DoWhile" : ["attribute name", { action to loop } ] }
+
+sample
+{ "DoWhile" : ["Show", { "Hermite1D": [5.0,10.0,0.0,0.0,0.0,"PositionX"] } ] }
+
+3.5) Compose actions
+
+	Compose action are used to create a single action from several others. Of course it's possible to compose action using other
+	compose actions.
+
+**** Combo ****   
+A Combo action starts all its son actions together
+
+parameters
+{ "Combo" : [  {action 1},
+					 {action 2},
+					 ...,
+					  {action N} ] }
+
+sample
+{ "Combo" : [	{ "Hermite1D" : [4.0,0.0,0.0,5.0,-5.0,"RotationX"] } ,
+					{ "Hermite1D" : [3.0,0.0,0.0,5.0,-5.0,"RotationY"] } ,
+					{ "Hermite1D" : [4.0,0.0,3.14,0.0,0.0,"RotationZ"] } 
+				] 
+} 
+
+**** Serie ****   
+A Serie action plays son actions as a sequence : each one after the other.
+
+parameters
+{ "Serie" : 	 [  {action 1},
+					 {action 2},
+					 ...,
+					  {action N} ] }
+
+sample
+{ "Serie" : [	{ "Hermite1D" : [4.0,0.0,1.0,1.0,-1.0,"RotationX"] } ,
+					{ "Hermite1D" : [3.0,1.0,0.0,-1.0,-0.5,"RotationX"] } ,
+					{ "Hermite1D" : [4.0,0.0,0.0,-0.5,0.0,"RotationX"] } 
+				] 
+} 
+
+3.6) Functions
+
+==> 1.0 added a new type of action.
+    Animate a parameter using a mathematical function. 
+	See doc for CoreItemOperator to know about function syntax. A specific function for animation is available : actionTime() => return current time of the action (current "global time" - action start time) 
+	if "null" is given for one of the function, then the parameter is unchanged 
+	You can also use other parameters value in a function using the path and name of the attribute between '#' character : "0.5 * sin(#item1->opacity#)"
+	
+**** Function1D ****
+animate one dimension parameter
+
+parameters
+{ "Function1D": [duration,"function","attribute name"] }
+
+sample
+{ "Function1D": [1.0,"0.5+0.5*sin(actionTime())","Opacity"] }
+
+**** Function2D ****
+animate two dimension parameter
+
+parameters
+{ "Function2D": [duration,["function1","function2"],"attribute name"] }
+
+sample
+{ "Function2D": [2.0,["0.5+0.5*sin(actionTime())","null"],"AnchorPoint"] } // only first component of the parameter is changed
+
+**** Function3D ****
+
+parameters
+{ "Function3D": [duration,["function1","function2","function3"],"attribute name"] }
+
+sample
+{ "Function3D": [2.0,["null","abs(0.5*cos(actionTime()))","1.0"],"Pos"] }
+
+**** Function4D ****
+
+parameters
+{ "Function4D": [duration,["function1","function2","function3","function4"],"attribute name"] }
+
+sample
+{ "Function4D": [1.0,["null","0.5*actionTime()","null","1.0f-actionTime()"],"Diffuse"] }
+
+3.7) other actions
+
+**** Wait ****   
+Do nothing.
+
+parameters
+{ "Wait" : 	 [  duration ] }
+
+sample
+{ "Wait" : [	0.5] } 
+
+**** Notification ****   
+Post a message after its duration.
+an optional string can be given as notification parameter (usString* is passed as private param)
+
+parameters
+{ "Notification" :  [  duration , "notification name" ] }
+{ "Notification" :  [  duration , "notification name", "optional param" ] }
+sample
+{ "Notification" : [1.0,"Snapshot"] }
+
+**** RemoveFromParent ****   
+Remove the target object from its parent after duration. 
+
+parameters
+{ "RemoveFromParent" :  [  duration , "parent type" ] }
+
+sample
+{ "RemoveFromParent" : [1.0,"Scene3D"] }
+
+4] JSON samples
+
+***********************************************************************************************************************************
+{
+	"SequenceTest" : [	
+						{ "Linear1D": [1.0,0.0,10.0,"PositionX"] },
+						{ "Wait" : [0.5] },
+						{ "ForLoop" : [3 ,{ "Hermite1D": [2.0,0.0,6.29,0.0,-4.0,"RotationX"] } ] },
+					
+						{ "Combo" : [	{ "DoWhile" : ["Show", { "Hermite1D": [5.0,10.0,0.0,0.0,0.0,"PositionX"] } ] },
+											{ "Serie": [	{ "Hermite1D" : [4.0,0.0,0.0,5.0,-5.0,"RotationZ"] } ,
+															{ "Hermite1D" : [3.0,0.0,0.0,-5.0,0.0,"RotationZ"] } ] 
+											} 
+									 ] },
+						{ "SetValue1D" : [0.0,1.0,"Show" ]},
+						{ "Notification" : [1.0,"YesWeCan"] },
+						{ "KeyFrame1D" : ["PositionX",0.0,0.0,1.0,-5.0,1.5,-3.5,1.7,-1.0]},
+						{ "RemoveFromParent" : [1.0,"Scene3D"] }
+					 ] 
+}
+
+****************************************************************************************************************************************
+{
+	"SequenceBravo" : [	
+						{ "Serie" : [	 { "SetValue1D": [0.0,1.0,"IsVisible"] },
+											 { "SetValue1D": [0.0,1.0,"Alpha"] },
+											 { "Combo" : [ 	{ "Serie" : [	{ "Hermite1D" :  [0.4,0.1,1.0,0.0,1.0,"Scale"] } ,
+																						{ "Hermite1D" :  [0.2,1.0,1.0,1.0,0.0,"Scale"] } ] },
+																	{ "Hermite1D": [0.5,-100.0,480.0,2.0,0.0,"PositionX"] },
+																	{ "Serie" : [	{ "Hermite1D" :  [0.4,0.0,-0.5,0.0,-1.0,"Rotation"] } ,
+																						{ "Hermite1D" :  [0.2,-0.5,0.0,-1.0,0.0,"Rotation"] } ] }
+																] },
+											  { "Wait" :  [2.0] } ,
+											   { "Hermite1D": [0.4,1.0,0.0,0.0,0.0,"Alpha"] },
+											   { "SetValue1D": [0.0,0.0,"IsVisible"] }
+										   ]
+		                }
+					 ] 
+}
+
+	
