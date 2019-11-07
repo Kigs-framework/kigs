@@ -1399,6 +1399,7 @@ void	CoreModifiable::RemoveDynamicAttribute(KigsID id)
 //! add item at first or last position
 bool CoreModifiable::addItem(CoreModifiable* item, ItemPosition pos)
 {
+	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	if(item)
 	{
 #ifdef USE_LINK_TYPE
@@ -1456,12 +1457,14 @@ bool CoreModifiable::addItem(CoreModifiable* item, ItemPosition pos)
 //! add the given parent to list
 void		CoreModifiable::addUser(CoreModifiable* user)
 {
+	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	_users.push_back(user);
 }
 
 //! remove user (parent)
 void		CoreModifiable::removeUser(CoreModifiable* user)
 {
+	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	bool found=false;
 	do
 	{
@@ -1579,6 +1582,7 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 //! remove item (son)
 bool CoreModifiable::removeItem(CoreModifiable* item)
 {
+	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 #ifdef USE_LINK_TYPE
 	STRINGS_NAME_TYPE emptyLink=_S_2_ID("");
 #endif
@@ -2419,7 +2423,7 @@ CoreModifiable* CoreModifiable::FindByType(const std::list<CoreModifiable*> &Lis
 
 //! static method : return the instance corresponding to the given path, and given search start
 
-CoreModifiable* CoreModifiable::GetInstanceByGlobalPath(const std::string &path)
+CoreModifiable* CoreModifiable::GetInstanceByGlobalPath(const std::string &path, bool getRef)
 {
 	std::string RemainingPath;
 	std::string sonName = GetFirstNameInPath(path, RemainingPath);
@@ -2437,21 +2441,36 @@ CoreModifiable* CoreModifiable::GetInstanceByGlobalPath(const std::string &path)
 
 	// search using each root instances
 	std::set<CoreModifiable*> instances;
-	GetInstancesByName(searchType, sonName, instances, false);
+	GetInstancesByName(searchType, sonName, instances, false, false, getRef);
 
 	std::set<CoreModifiable*>::iterator	itset;
 	for (itset = instances.begin(); itset != instances.end(); itset++)
 	{
 		CoreModifiable*	current = (CoreModifiable*)(*itset);
 		
-		CoreModifiable*	test = current->GetInstanceByPath(RemainingPath);
+		CoreModifiable*	test = current->GetInstanceByPath(RemainingPath, getRef);
 		if (test)
 		{
+			if (getRef)
+			{
+				// release all refs 
+				for (const auto it : instances)
+				{
+					it->Destroy();
+				}
+			}
 			return test;
 		}
 		
 	}
-	
+	if (getRef)
+	{
+		// release all refs 
+		for (const auto it : instances)
+		{
+			it->Destroy();
+		}
+	}
 	return 0;
 }
 
@@ -2490,7 +2509,7 @@ std::string CoreModifiable::GetFirstNameInPath(const std::string &path, std::str
 }
 
 
-void CoreModifiable::getRootParentsWithPath(std::string &remainingpath, std::vector<CoreModifiable*>& parents)
+void CoreModifiable::getRootParentsWithPath(std::string &remainingpath, std::vector<CoreModifiable*>& parents, bool getRef)
 {
 
 	std::string::size_type pos = remainingpath.find('/');
@@ -2514,18 +2533,23 @@ void CoreModifiable::getRootParentsWithPath(std::string &remainingpath, std::vec
 		searchName = searchName.substr(pos + 1, searchName.length() - pos - 1);
 	}
 
-	recursiveGetRootParentsWithPath(searchType, searchName, parents);
+	recursiveGetRootParentsWithPath(searchType, searchName, parents, getRef);
 
 
 }
 
-void CoreModifiable::recursiveGetRootParentsWithPath(const std::string& searchType, const std::string& searchName, std::vector<CoreModifiable*>& parents)
+void CoreModifiable::recursiveGetRootParentsWithPath(const std::string& searchType, const std::string& searchName, std::vector<CoreModifiable*>& parents, bool getRef)
 {
+	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // Don't want to be modified by another thread here
 	// check this
 	if (getName() == searchName)
 	{
 		if (isSubType(searchType))
 		{
+			if (getRef)
+			{
+				this->GetRef();
+			}
 			parents.push_back(this);
 		}
 	}
@@ -2535,17 +2559,17 @@ void CoreModifiable::recursiveGetRootParentsWithPath(const std::string& searchTy
 
 	for (auto p : parentlist)
 	{
-		p->recursiveGetRootParentsWithPath(searchType, searchName, parents);
+		p->recursiveGetRootParentsWithPath(searchType, searchName, parents, getRef);
 	}
 }
 
 
 
-CoreModifiable* CoreModifiable::SearchInstance(const std::string &infos, CoreModifiable* searchStart)
+CoreModifiable* CoreModifiable::SearchInstance(const std::string &infos, CoreModifiable* searchStart, bool getRef)
 {
 	if (searchStart) // relative search ?
 	{
-		CoreModifiable* found=searchStart->GetInstanceByPath(infos);
+		CoreModifiable* found=searchStart->GetInstanceByPath(infos,getRef);
 		if (found) // if not found, search global path
 		{
 			return found;
@@ -2553,19 +2577,24 @@ CoreModifiable* CoreModifiable::SearchInstance(const std::string &infos, CoreMod
 	}
 	
 	// global search
-	return GetInstanceByGlobalPath(infos);
+	return GetInstanceByGlobalPath(infos,getRef);
 
 }
 
 //! return the instance corresponding to the given path in sons tree
 
-CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path)
+CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path, bool getRef)
 {
+	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread during search
 	std::string RemainingPath;
 	std::string sonName=GetFirstNameInPath(path,RemainingPath);
 
 	if (sonName == "")
 	{
+		if (getRef)
+		{
+			GetRef();
+		}
 		return this;
 	}
 
@@ -2578,8 +2607,7 @@ CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path)
 		std::string searchType = path.substr(1, pos-1); // remove @
 		std::string searchName = path.substr(pos + 1, path.length() - pos - 1); // remove :
 
-		std::set<CoreModifiable*> instancelist;
-		return CoreModifiable::GetFirstInstanceByName(searchType, searchName);
+		return CoreModifiable::GetFirstInstanceByName(searchType, searchName,getRef);
 	}
 
 	if(sonName == "/") // path start with / => start from root parents
@@ -2587,16 +2615,33 @@ CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path)
 		// search root of this with given name
 		std::string RemainingPathForGlobal = RemainingPath;
 		std::vector<CoreModifiable*> parents;
-		getRootParentsWithPath(RemainingPath, parents);
+		getRootParentsWithPath(RemainingPath, parents, getRef);
 		for (auto p : parents)
 		{
-			CoreModifiable* oneFound=p->GetInstanceByPath(RemainingPath);
+			CoreModifiable* oneFound=p->GetInstanceByPath(RemainingPath, getRef);
 			if (oneFound)
 			{
+				// release parents refs
+				if (getRef)
+				{
+					for (auto pa : parents)
+					{
+						pa->Destroy();
+					}
+				}
 				return oneFound;
 			}
 		}
-		return GetInstanceByGlobalPath(RemainingPathForGlobal);
+		// release parents refs
+		if (getRef)
+		{
+			for (auto pa : parents)
+			{
+				pa->Destroy();
+			}
+		}
+		return GetInstanceByGlobalPath(RemainingPathForGlobal, getRef);
+		
 	}
 
 	std::string::size_type pos = sonName.find(':');
@@ -2616,12 +2661,31 @@ CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path)
 		std::string targetName = GetFirstNameInPath(nextpath, RemainingPath);
 
 		std::set<CoreModifiable*> instances;
-		GetSonInstancesByName(searchType, targetName, instances, true);
+		GetSonInstancesByName(searchType, targetName, instances, true, getRef);
 
 		for (auto cm : instances)
 		{
-			auto result = cm->GetInstanceByPath(RemainingPath);
-			if (result) return result;
+			auto result = cm->GetInstanceByPath(RemainingPath, getRef);
+			if (result)
+			{
+				// release instances refs
+				if (getRef)
+				{
+					for (auto rel : instances)
+					{
+						rel->Destroy();
+					}
+				}
+				return result;
+			}
+		}
+		// release instances refs
+		if (getRef)
+		{
+			for (auto rel : instances)
+			{
+				rel->Destroy();
+			}
 		}
 		return nullptr;
 	}
@@ -2634,7 +2698,7 @@ CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path)
 		{
 			if ((*itfathers)->isSubType(searchType))
 			{
-				CoreModifiable* foundinpath = (*itfathers)->GetInstanceByPath(RemainingPath);
+				CoreModifiable* foundinpath = (*itfathers)->GetInstanceByPath(RemainingPath, getRef);
 				if (foundinpath != 0)
 				{
 					return foundinpath;
@@ -2653,7 +2717,7 @@ CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path)
 		{
 			if ((*itsons).myItem->isSubType(searchType))
 			{
-				auto result = (*itsons).myItem->GetInstanceByPath(RemainingPath);
+				auto result = (*itsons).myItem->GetInstanceByPath(RemainingPath, getRef);
 				if (!is_wildcard || result) return result;
 			}
 		}
@@ -2663,8 +2727,9 @@ CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path)
 	return nullptr;
 }
 
-void CoreModifiable::GetSonInstancesByName(KigsID cid, const std::string &name,std::set<CoreModifiable*>& instances,bool recursive)
+void CoreModifiable::GetSonInstancesByName(KigsID cid, const std::string &name,std::set<CoreModifiable*>& instances,bool recursive, bool getRef)
 {
+	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	std::vector<ModifiableItemStruct>::iterator itsons;
 	for(itsons=_items.begin();itsons!=_items.end();itsons++)
 	{
@@ -2673,11 +2738,15 @@ void CoreModifiable::GetSonInstancesByName(KigsID cid, const std::string &name,s
 			if((*itsons).myItem->isSubType(cid))
 			{
 				instances.insert((CoreModifiable*)(*itsons).myItem);
+				if (getRef)
+				{
+					(*itsons).myItem->GetRef();
+				}
 			}
 		}
 		if(recursive)
 		{
-			(*itsons).myItem->GetSonInstancesByName(cid,name,instances,recursive);
+			(*itsons).myItem->GetSonInstancesByName(cid,name,instances,recursive, getRef);
 		}
 	}
 }
