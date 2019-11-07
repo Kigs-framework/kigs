@@ -147,9 +147,9 @@ namespace std
 
 struct LazyContent
 {
-	std::unordered_map<KigsID, std::vector<std::pair<KigsID, CoreModifiable*>>> ConnectedTo;
-	std::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> ConnectedToMe;
-	std::unordered_map<KigsID, ModifiableMethodStruct> Methods;
+	robin_hood::unordered_map<KigsID, std::vector<std::pair<KigsID, CoreModifiable*>>, KigsIDHash> ConnectedTo;
+	robin_hood::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> ConnectedToMe;
+	robin_hood::unordered_map <KigsID, ModifiableMethodStruct, KigsIDHash> Methods;
 	std::vector<WeakRef*> WeakRefs;
 };
 
@@ -368,7 +368,7 @@ public:
 	bool isUsed() const { return !_users.empty(); }
 
 	// Search in sons for by id and name
-	void GetSonInstancesByName(KigsID cid, const std::string &name, std::set<CoreModifiable*>& instances, bool recursive = false);
+	void GetSonInstancesByName(KigsID cid, const std::string &name, std::set<CoreModifiable*>& instances, bool recursive = false, bool getRef = false);
 
 	// Search in sons for by id and name, return the first one
 	CoreModifiable* GetFirstSonByName(KigsID cid, const std::string &name, bool recursive = false);
@@ -398,7 +398,7 @@ public:
 	}
 
 	// Search in sons for by path
-	CoreModifiable* GetInstanceByPath(const std::string &path);
+	CoreModifiable* GetInstanceByPath(const std::string &path, bool getRef = false);
 
 	// Update attributes with another modifiable attributes
 	void UpdateAttributes(const CoreModifiable& tocopy);
@@ -527,7 +527,7 @@ public:
 
 	/// Method management
 	// Return the map of private methods of this CoreModifiable
-	const std::unordered_map<KigsID, ModifiableMethodStruct>* GetMethods() { if (!mLazyContent) return nullptr; return &GetLazyContent()->Methods; }
+	const robin_hood::unordered_map <KigsID, ModifiableMethodStruct, KigsIDHash>* GetMethods() { if (!mLazyContent) return nullptr; return &GetLazyContent()->Methods; }
 	// Search in private methods, type methods and aggregate methods
 	bool HasMethod(const KigsID& methodNameID) const;
 	// Add a new private method
@@ -684,7 +684,7 @@ public:
 	operator std::vector<CoreModifiableAttribute*>();
 	//@TODO check for usage
 	bool ImportAttributes(const std::string &filename);
-	/// Overloadable Methods 
+	
 	// Init the modifiable and set the _isInit flag if OK. Need to call base::InitModifiable() when overriding !
 	virtual	void InitModifiable();
 
@@ -732,7 +732,6 @@ public:
 	virtual bool GetCDataToExport(int /*index*/, std::string&/* toexport*/) { return false; }
 	virtual void ImportFromCData(const std::string&/* imported*/) {}
 	
-	/// Static Methods
 	// Search an attribute list for a specific attribute
 	static CoreModifiableAttribute*	getParameter(const std::vector<CoreModifiableAttribute*>& params, KigsID ID);
 	static void Append(std::string &XMLString, const std::list<CoreModifiable*> &toexport, bool recursive, ExportSettings* settings = nullptr);
@@ -752,12 +751,12 @@ public:
 	static CoreModifiable* Find(const std::list<CoreModifiable*> &List, const std::string &Name);
 	static CoreModifiable* FindByType(const std::list<CoreModifiable*> &List, const std::string& type);
 	
-	static  CoreModifiable* GetInstanceByGlobalPath(const std::string &path);
+	static  CoreModifiable* GetInstanceByGlobalPath(const std::string &path, bool getRef = false);
 
 	// Search instance with infos (either type:name or a path)
-	static CoreModifiable* SearchInstance(const std::string &infos, CoreModifiable* searchStart = 0);
+	static CoreModifiable* SearchInstance(const std::string &infos, CoreModifiable* searchStart = 0, bool getRef = false);
 
-	void getRootParentsWithPath(std::string &remainingpath, std::vector<CoreModifiable*>& parents);
+	void getRootParentsWithPath(std::string &remainingpath, std::vector<CoreModifiable*>& parents, bool getRef = false);
 
 	// Get the first name in a path (IWantThis/The/Remaining/Path). Return "/" if the path starts a the root
 	static  std::string GetFirstNameInPath(const std::string &path, std::string & remainingpath);
@@ -808,7 +807,7 @@ protected:
 	
 	CoreModifiable* recursiveGetRootParentByType(const KigsID& ParentClassID, int currentlevel,int &foundLevel) const;
 
-	void recursiveGetRootParentsWithPath(const std::string& searchType, const std::string& searchName, std::vector<CoreModifiable*>& parents);
+	void recursiveGetRootParentsWithPath(const std::string& searchType, const std::string& searchName, std::vector<CoreModifiable*>& parents, bool getRef = false);
 
 	void flagAsAggregateParent()
 	{

@@ -4,6 +4,7 @@
 #include "Platform/Core/CorePlatformDefines.h"
 
 #include <string>
+#include <algorithm>
 
 #ifndef _NO_KSTL_OVERLOADING_
 
@@ -44,6 +45,12 @@ static inline kstl::string ToUpperCase(const kstl::string& a_entry)
 	return str;
 }
 
+static inline void str_toupper(std::string& s) {
+	std::transform(s.begin(), s.end(), s.begin(),
+		[](unsigned char c) { return std::toupper(c); } 
+	);
+}
+
 static inline kstl::string ToLowerCase(const kstl::string& a_entry)
 {
 	std::locale loc;
@@ -53,6 +60,12 @@ static inline kstl::string ToLowerCase(const kstl::string& a_entry)
 		str += std::tolower(a_entry[i], loc);
 
 	return str;
+}
+
+static inline void str_tolower(std::string& s) {
+	std::transform(s.begin(), s.end(), s.begin(),
+		[](unsigned char c) { return std::tolower(c); } 
+	);
 }
 
 #ifdef __ANDROID__

@@ -389,7 +389,7 @@ void AddToXMLChanged(CoreModifiable* item, const std::shared_ptr<XMLBase>& xml)
 
 auto PrepareWildcardSearch(std::string search_string)
 {
-	search_string = ToLowerCase(search_string);
+	str_tolower(search_string);
 	return SplitStringByCharacter(search_string, '*');
 }
 

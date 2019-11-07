@@ -6,6 +6,7 @@
 #include "kstlunordered_map.h"
 #include <mutex>
 #include <atomic>
+#include "robin_hood.h"
 
 class CoreClassNameTree;
 class CoreTreeNode;
@@ -445,7 +446,7 @@ public:
 	//! map of children
 	kstl::unordered_map<KigsID, CoreTreeNode*> myChildren;
 
-	kstl::unordered_map<KigsID, ModifiableMethodStruct> myMethods;
+	robin_hood::unordered_map <KigsID, ModifiableMethodStruct, KigsIDHash> myMethods;
 
 	//! keep track of instance list for this class type
 	//kstl::set<RefCountedClass*, RefCountedClassNameSorter> myInstances;
