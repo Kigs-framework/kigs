@@ -1,4 +1,4 @@
-# kigs
+# kigs framework
 
 Kigs framework is a C++ modular multipurpose cross platform framework.
 Assoria used it as a basis for many projects.
