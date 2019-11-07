@@ -204,7 +204,7 @@ public:
 	//! retreive attribute label and coremodifiable path in a full path. Format is corepath->attributelabel
 	static void ParseAttributePath(const kstl::string &path, kstl::string & CoreModifiablePath, kstl::string & CoreModifiableAttributeLabel);
 	static kstl::string typeToString(CoreModifiable::ATTRIBUTE_TYPE typ);
-	static CoreModifiable::ATTRIBUTE_TYPE stringToType(const kstl::string &typ);
+	static CoreModifiable::ATTRIBUTE_TYPE stringToType(const kstl::string_view &typ);
 	
 
 	virtual CoreModifiable::ATTRIBUTE_TYPE getType() const = 0;
