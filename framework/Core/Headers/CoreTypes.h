@@ -79,11 +79,13 @@ inline unsigned int readInt32(const unsigned int* i)
 
     return result;
 }
+
 #else
 inline unsigned int readInt32(const unsigned int* i)
 {
     return *i;
 }
+
 #endif
 
 inline unsigned int rotl(unsigned int value, unsigned int shift) {
@@ -144,8 +146,7 @@ inline unsigned int    fastIDMem<0>(const unsigned int* a)
 template<>
 inline unsigned int    fastIDMem<1>(const unsigned int* a)
 {
-    unsigned int ID=0;
-    ID^=readInt32(--a);
+    unsigned int ID=readInt32(--a);
     ID=rotl(ID,6);
     return ID;
 }
@@ -153,8 +154,7 @@ inline unsigned int    fastIDMem<1>(const unsigned int* a)
 template<>
 inline unsigned int    fastIDMem<2>(const unsigned int* a)
 {
-    unsigned int ID=0;
-    ID^=readInt32(--a);
+    unsigned int ID=readInt32(--a);
     ID=rotl(ID,6);
     ID^=readInt32(--a);
     ID=rotl(ID,6);
@@ -164,8 +164,7 @@ inline unsigned int    fastIDMem<2>(const unsigned int* a)
 template<>
 inline unsigned int    fastIDMem<3>(const unsigned int* a)
 {
-    unsigned int ID=0;
-    ID^=readInt32(--a);
+    unsigned int ID=readInt32(--a);
     ID=rotl(ID,6);
     ID^=readInt32(--a);
     ID=rotl(ID,6);
@@ -174,39 +173,55 @@ inline unsigned int    fastIDMem<3>(const unsigned int* a)
     return ID;
 }
 
+template<>
+inline unsigned int    fastIDMem<4>(const unsigned int* a)
+{
+	unsigned int ID = readInt32(--a);
+	ID = rotl(ID, 6);
+	ID ^= readInt32(--a);
+	ID = rotl(ID, 6);
+	ID ^= readInt32(--a);
+	ID = rotl(ID, 6);
+	ID ^= readInt32(--a);
+	ID = rotl(ID, 6);
+	return ID;
+}
 
 template<unsigned int mask>
-inline unsigned int    fastIDMask(const unsigned int* a)
+inline unsigned int    fastIDMask(const unsigned char* a)
 {
-    printf("can not be in not specialized func here\n");
+	printf("can not be in not specialized func here\n");
 	return 0;
 }
 
 template<>
-inline unsigned int    fastIDMask<0>(const unsigned int* a)
+inline unsigned int    fastIDMask<0>(const unsigned char* a)
 {
-    return 0;
+	return 0;
 }
 
 template<>
-inline unsigned int    fastIDMask<1>(const unsigned int* a)
+inline unsigned int    fastIDMask<1>(const unsigned char* a)
 {
-    return (readInt32(a)&0x000000FF);
+	return (unsigned int)(a[0]);
 }
 
 template<>
-inline unsigned int    fastIDMask<2>(const unsigned int* a)
+inline unsigned int    fastIDMask<2>(const unsigned char* a)
 {
-    return (readInt32(a)&0x0000FFFF);
+	unsigned int a1 = (unsigned int)(a[1]);
+	return (a1 << 8) | (unsigned int)(a[0]);
 }
 
 template<>
-inline unsigned int    fastIDMask<3>(const unsigned int* a)
+inline unsigned int    fastIDMask<3>(const unsigned char* a)
 {
-    return (readInt32(a)&0x00FFFFFF);
+	unsigned int a2 = (unsigned int)(a[2]);
+	unsigned int a1 = (unsigned int)(a[1]);
+	return (a2 << 16) | (a1 << 8) | (unsigned int)(a[0]);
 }
 
-inline unsigned int    fastIDMask(const unsigned int* a,unsigned int mask)
+inline unsigned int    fastIDMask(const unsigned char* a,unsigned int mask)
 {
     switch(mask)
     {
@@ -231,7 +246,7 @@ inline unsigned int    fastGetID(const char* a)
     const int indexMask=stringSize&3;
     a+=stringSize-indexMask;
 
-    return fastIDMask<stringSize & 3>((const unsigned int*)a) ^ fastIDMem<stringSize/4 >((const unsigned int*)a);
+    return fastIDMask<indexMask>((const unsigned char*)a) ^ fastIDMem<stringSize/4 >((const unsigned int*)a) ;
 }
 
 inline unsigned int    fastGetID(const char* a,unsigned int stringSize)
@@ -239,7 +254,7 @@ inline unsigned int    fastGetID(const char* a,unsigned int stringSize)
     int indexMask=stringSize&3;
     a+=stringSize-indexMask;
 
-    return fastIDMask((const unsigned int*)a, indexMask) ^ fastIDMem((const unsigned int*)a,stringSize>>2);
+    return fastIDMask((const unsigned char*)a, indexMask) ^ fastIDMem((const unsigned int*)a,stringSize>>2);
 }
 
 #define LABEL_TO_ID(a) KigsID{#a}
