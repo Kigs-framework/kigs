@@ -219,7 +219,7 @@ void UIImage::ChangeTexture()
 			AlphaMaskTexture = myTextureName.const_ref();
 
 		//Make new Mask
-		myAlphaMask = (AlphaMask*)KigsCore::GetInstanceOf(getName(), _S_2_ID("AlphaMask"));
+		myAlphaMask = (AlphaMask*)KigsCore::GetInstanceOf(getName(), "AlphaMask");
 		myAlphaMask->setValue(LABEL_TO_ID(Threshold), 0.1);
 		myAlphaMask->setValue(LABEL_TO_ID(TextureName), AlphaMaskTexture);
 		this->addItem(myAlphaMask);

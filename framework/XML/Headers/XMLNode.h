@@ -303,29 +303,41 @@ inline void XMLNodeTemplate<std::string>::setFloat(const kfloat value)
 	m_value = szValue;
 }
 
-
+#if (__cplusplus >= 201703L || _MSVC_LANG  >= 201703L) && !defined(JAVASCRIPT) && !defined(__clang__)
+#include <charconv>
 template<typename StringType>
 int XMLNodeTemplate<StringType>::getInt()
 {
-	// when no test is required, use atoi insteed of sscanf 
-	/*
-	int temp=0;
-
-	sscanf("%d",m_value.c_str( ),temp);*/
-
-	return atoi(m_value.c_str());
+	int result = 0;
+	std::from_chars(m_value.data(), m_value.data() + m_value.size(), result);
+	return result;
 }
 
 template<typename StringType>
 kfloat XMLNodeTemplate<StringType>::getFloat()
 {
-	// when no test is required, use atof insteed of sscanf 
-	/*float temp=0.0f;
-
-	sscanf(m_value.c_str(),"%f",&temp);*/
-
-	return (kfloat)atof(m_value.c_str());
+	float result = 0.0f;
+	std::from_chars(m_value.data(), m_value.data() + m_value.size(), result);
+	return result;
 }
+#else
+template<typename StringType>
+int XMLNodeTemplate<StringType>::getInt()
+{
+	int result = 0;
+	KIGS_ERROR("Not implemented", 3);
+	return result;
+}
+
+template<typename StringType>
+kfloat XMLNodeTemplate<StringType>::getFloat()
+{
+	float result = 0.0f;
+	KIGS_ERROR("Not implemented", 3);
+	return result;
+}
+#endif
+
 
 template<typename StringType>
 void XMLNodeTemplate<StringType>::addAttribute(XMLAttributeTemplate<StringType>* attribute)

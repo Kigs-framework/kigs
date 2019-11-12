@@ -38,9 +38,9 @@ void    ABoneChannel::UpdateTransformParameters()
 
 void    ABoneChannel::SetStandStreamData()
 {
-	maInt copythis(*this,false,_S_2_ID("this"),(int)m_GroupID);
-	maInt restype(*this,false,_S_2_ID("type"),Resource_Bone_Information);
-	maInt result(*this,false,_S_2_ID("result"),0);
+	maInt copythis(*this,false,"this",(int)m_GroupID);
+	maInt restype(*this,false,"type",Resource_Bone_Information);
+	maInt result(*this,false,"result",0);
 	
 	kstl::vector<CoreModifiableAttribute*> params;
 	params.push_back(&copythis);

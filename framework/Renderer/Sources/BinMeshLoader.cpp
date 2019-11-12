@@ -568,7 +568,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 		grpStruct	newgroup;
 
-/*		MeshItemGroup* newgroup=(MeshItemGroup*)(KigsCore::GetInstanceOf(objname,_S_2_ID("MeshItemGroup")));
+/*		MeshItemGroup* newgroup=(MeshItemGroup*)(KigsCore::GetInstanceOf(objname,"MeshItemGroup"));
 
 		newgroup->myTriangleType=(TriangleType)grpdesc.triangleType;*/
 

@@ -29,7 +29,7 @@ void	AObjectSkeletonResource::InitModifiable()
 		return;
 	}
 
-	FilePathManager*	pathManager = (FilePathManager*)KigsCore::GetSingleton(_S_2_ID("FilePathManager"));
+	FilePathManager*	pathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
 
 	SmartPointer<FileHandle> fullfilenamehandle = 0;
 
@@ -43,7 +43,7 @@ void	AObjectSkeletonResource::InitModifiable()
 
 		u64 size;
 
-		SmartPointer<CoreRawBuffer> rawbuffer = ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
+		SmartPointer<CoreRawBuffer> rawbuffer = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFile(fullfilenamehandle.get(), size));
 
 		if (rawbuffer)
 		{

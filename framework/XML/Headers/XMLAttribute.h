@@ -101,6 +101,7 @@ private:
 };
 
 typedef XMLAttributeTemplate<std::string> XMLAttribute;
+typedef XMLAttributeTemplate<std::string_view> XMLAttributeStringRef;
 
 template<typename T>
 IMPLEMENT_PREALLOCATED_NEW(XMLAttributeTemplate<T>, 4096)

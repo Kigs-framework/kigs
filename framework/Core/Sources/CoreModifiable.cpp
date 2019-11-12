@@ -576,7 +576,7 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 			}
 		}
 #ifdef KIGS_TOOLS
-		if(methodNameID._id_name != "SequenceStart" && methodNameID._id_name != "SequenceEnd")
+		if(methodNameID != "SequenceStart" && methodNameID != "SequenceEnd")
 			kigsprintf("Trying to call %s but the method doesn't exists\n", methodNameID._id_name.c_str());
 #endif
 		return false;
@@ -1580,7 +1580,7 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 bool CoreModifiable::removeItem(CoreModifiable* item)
 {
 #ifdef USE_LINK_TYPE
-	STRINGS_NAME_TYPE emptyLink=_S_2_ID("");
+	STRINGS_NAME_TYPE emptyLink="";
 #endif
 
 	bool found=false, res=false;

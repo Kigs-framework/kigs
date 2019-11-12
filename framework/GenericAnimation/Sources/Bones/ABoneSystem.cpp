@@ -64,7 +64,7 @@ void ABoneSystem::SetupDraw()
 		for (unsigned int i = 0; i < aobject->getItems().size(); i++)
 		{
 			// find skeleton item
-			if (aobject->getItems().at(i).myItem->isSubType(_S_2_ID("AObjectSkeletonResource")))
+			if (aobject->getItems().at(i).myItem->isSubType("AObjectSkeletonResource"))
 			{
 				mySkeleton = (AObjectSkeletonResource*)aobject->getItems().at(i).myItem;
 				break;
@@ -101,11 +101,11 @@ void	ABoneSystem::SearchParentNode3D()
 			m_pStartingLocalToGlobalData.set(currentMatrix);
 			m_pInstantLocalToGlobalData.set(currentMatrix);
 			
-			GenericAnimationModule* animation = (GenericAnimationModule*)KigsCore::GetModule(_S_2_ID("GenericAnimationModule"));
-			CoreModifiable* shader = KigsCore::GetInstanceOf(getName()+"SkinShader", _S_2_ID("GLSLSkinShader"));
+			GenericAnimationModule* animation = (GenericAnimationModule*)KigsCore::GetModule("GenericAnimationModule");
+			CoreModifiable* shader = KigsCore::GetInstanceOf(getName()+"SkinShader", "GLSLSkinShader");
 			
 			// add matrices to shader
-			CoreModifiable* uniformMatrixArray = KigsCore::GetInstanceOf(getName() + "SkinShaderMatrix", _S_2_ID("GLSLUniformMatrixArray"));
+			CoreModifiable* uniformMatrixArray = KigsCore::GetInstanceOf(getName() + "SkinShaderMatrix", "GLSLUniformMatrixArray");
 			
 			uniformMatrixArray->setValue(LABEL_TO_ID(ArraySize), 66);
 			uniformMatrixArray->setValue(LABEL_TO_ID(Name), "bone_matrix");
