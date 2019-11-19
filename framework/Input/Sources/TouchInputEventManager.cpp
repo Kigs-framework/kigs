@@ -5,7 +5,7 @@
 #include "GazeDevice.h"
 #include "AttributePacking.h"
 #include "Timer.h"
-//#include "Scene3D.h"
+#include "Camera.h"
 
 #include "TecLibs/Math/Algorithm.h"
 
@@ -579,7 +579,10 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		return;
 	}
 
-	
+	auto camera = mGazeCamera->as<Camera>();
+	u16 any_touch_state = 0;
+	if (force_click) any_touch_state = 1;
+	v3f any_pos;
 
 	// TODO ask module input for current touch device(s) (multitouch, mouse, hololens gesture...)
 	std::unordered_map<TouchEventID, TouchEventState::TouchInfos>	Touches;
@@ -597,13 +600,18 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		mouseTouch.has_position = true;
 
 		mouseTouch.in_touch_support = 0;
+		
 		mouseTouch.touch_state = (force_click || theInputModule->GetMouse()->getButtonState(MouseDevice::LEFT) != 0) ? 1 : 0;
 		mouseTouch.touch_state |= (theInputModule->GetMouse()->getButtonState(MouseDevice::RIGHT) != 0) ? 2 : 0;
 		mouseTouch.touch_state |= (theInputModule->GetMouse()->getButtonState(MouseDevice::MIDDLE) != 0) ? 4 : 0;
 
-		theInputModule->GetMouse()->getPos(mouseTouch.posInfos.pos.x, mouseTouch.posInfos.pos.y);
+		any_touch_state = any_touch_state | mouseTouch.touch_state;
 
-		Touches[mouseTouch.ID] = mouseTouch;
+		theInputModule->GetMouse()->getPos(mouseTouch.posInfos.pos.x, mouseTouch.posInfos.pos.y);
+		any_pos = mouseTouch.posInfos.pos;
+		
+		if(!camera)
+			Touches[mouseTouch.ID] = mouseTouch;
 	}
 
 	if (mtDevice)
@@ -628,15 +636,14 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 			}
 		}
 	}
+	const GazeTouch* gt = nullptr;
 
-	
+
 	if (theInputModule->GetGaze())
 	{
-
 		auto& allTouches = theInputModule->GetGaze()->GetAllTouches();
-		auto gaze_camera = theInputModule->GetGaze()->getValue<CoreModifiable*>("GazeCamera");
-		bool any_clicked = false;
-		const GazeTouch* gt = nullptr;
+	//	auto gaze_camera = theInputModule->GetGaze()->getValue<CoreModifiable*>("GazeCamera");
+
 
 		s32 id = (s32)TouchEventID::MotionController_0;
 		for (auto& itr : allTouches)
@@ -651,10 +658,10 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 			gazeTouch.posInfos.origin = itr.second.Position;
 			gazeTouch.ID = (TouchEventID)id;
 			gazeTouch.touch_state = (force_click || itr.second.pressed) ? 1 : 0;
-			any_clicked = any_clicked || itr.second.pressed;
+			any_touch_state = any_touch_state | gazeTouch.touch_state;
 			gazeTouch.gaze_touch = &itr.second;
 			gazeTouch.posInfos.pos = itr.second.Position;
-			gazeTouch.starting_touch_support = gaze_camera;
+			gazeTouch.starting_touch_support = camera;
 			gazeTouch.posInfos.setHas3DInfos(true);
 #ifdef WUP
 			if(gIsVR) Touches[gazeTouch.ID] = gazeTouch;
@@ -667,26 +674,33 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 			++id;
 		}
 #ifdef WUP
-		if (!gIsVR)
+		//if (!gIsVR)
 #endif
+		
+	}
+	
+	if(camera)
+	{
+		TouchEventState::TouchInfos gazeTouch;
+		gazeTouch.has_position = false;
+		gazeTouch.posInfos.flag = 0;
+		gazeTouch.posInfos.dir = camera->GetGlobalViewVector();
+		gazeTouch.posInfos.origin = camera->GetGlobalPosition();
+		gazeTouch.ID = TouchEventID::Gaze;
+		gazeTouch.touch_state = any_touch_state;
+		gazeTouch.gaze_touch = gt;
+		if (gt)
 		{
-			TouchEventState::TouchInfos gazeTouch;
-			gazeTouch.has_position = false;
-			gazeTouch.posInfos.flag = 0;
-			gazeTouch.posInfos.dir = { 0, 0, 0 };
-			gazeTouch.posInfos.origin = { 0, 0, 0 };;
-			gazeTouch.ID = TouchEventID::Gaze;
-			gazeTouch.touch_state = (force_click || any_clicked) ? 1 : 0;
-			gazeTouch.gaze_touch = gt;
-			gazeTouch.posInfos.pos = { 0, 0, 0 };
-			Touches[gazeTouch.ID] = gazeTouch;
-
-			if (gt)
-			{
-				//dd::arrow(gt->Position, gt->Position + gt->Forward*0.1f, { 1,0,0 }, 0.1f);
-			}
-
+			gazeTouch.posInfos.pos = gt->Position;
+			gazeTouch.starting_touch_support = camera;
+			gazeTouch.posInfos.setHas3DInfos(true);
 		}
+		else
+		{
+			gazeTouch.has_position = true;
+			gazeTouch.posInfos.pos = any_pos;
+		}
+		Touches[gazeTouch.ID] = gazeTouch;
 	}
 
 	auto touches_copy = Touches;
@@ -699,10 +713,8 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 			Touches[t.first] = t.second;
 		}
 	}
+
 	mLastFrameTouches = touches_copy;
-
-
-
 
 	mLock = std::unique_lock<std::recursive_mutex>{ mMutex };
 	
@@ -1345,10 +1357,10 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 	}
 	else // no touch down
 	{
-		if ((current.state & 6) != 0) // check if state has changed
+		if ((current.state & 2) != 0) // check if state has changed
 		{
 			// send touch up 
-			ev.state = StateBegan; // always send touch up event (should send different event if hover or not ?)
+			ev.state = StateBegan; // always send touch up event if we sent a touch down before
 			ev.touch_state = DirectTouchEvent::TouchUp;
 			target->SimpleCall<bool>(m_methodNameID, ev);
 			manager->ManageCaptureObject(ev, target);

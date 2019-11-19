@@ -3,6 +3,7 @@
 #include "CoreModifiable.h"
 #include "TecLibs/Tec3D.h"
 
+#include "maReference.h"
 
 #include "TecLibs/Math/IntersectionAlgorithms.h"
 
@@ -614,6 +615,8 @@ protected:
 	DECLARE_METHOD(OnDestroyTouchSupportCallback);
 	
 	virtual ~TouchInputEventManager();
+
+	maReference mGazeCamera = BASE_ATTRIBUTE(GazeCamera, "");
 
 	std::unordered_map<TouchEventID, TouchEventState::TouchInfos> mLastFrameTouches;
 

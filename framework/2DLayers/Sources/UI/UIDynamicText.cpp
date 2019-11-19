@@ -192,7 +192,10 @@ void UIDynamicText::InitModifiable()
 	if (IsInit())
 	{
 		ModuleInput* theInputModule = KigsCore::GetModule<ModuleInput>();
-		if(theInputModule) mEventState = theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, EmptyFlag);
+		if(mPickable)
+			if(theInputModule) mEventState = theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, EmptyFlag);
+		if (theInputModule)
+			mPickable.changeNotificationLevel(Owner);
 	}
 }
 
@@ -883,6 +886,14 @@ void UIDynamicText::NotifyUpdate(const unsigned int labelID)
 	else if (labelID == mFont.getID() || labelID == mFontSize.getID())
 	{
 		mFontChanged = true;
+	}
+	else if (labelID == mPickable.getID())
+	{
+		ModuleInput* theInputModule = KigsCore::GetModule<ModuleInput>();
+		if (mPickable)
+			mEventState = theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, EmptyFlag);
+		else
+			theInputModule->getTouchManager()->unregisterEvent(this, Click);
 	}
 	UITexturedItem::NotifyUpdate(labelID);
 }
