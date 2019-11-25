@@ -319,10 +319,10 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 		XMLAttributeTemplate< StringType >* pathAttribute = currentNode->getAttribute("P", "Path");
 		if (pathAttribute)
 		{
-			current = SearchInstance((std::string)pathAttribute->getString(), currentModifiable);
+			current = SearchInstance((std::string)pathAttribute->getString(), currentModifiable,true);
 			if (current)
 			{
-				current->GetRef();
+				//current->GetRef(); ref already get by searchinstance
 				needInit = false;
 				importState.loadedItems.push_back(current);
 #ifdef KEEP_XML_DOCUMENT
@@ -336,10 +336,10 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 		XMLAttributeTemplate< StringType >* pathAttribute = currentNode->getAttribute("P", "Path");
 		if (pathAttribute)
 		{
-			current = SearchInstance((std::string)pathAttribute->getString(), currentModifiable);
+			current = SearchInstance((std::string)pathAttribute->getString(), currentModifiable,true);
 			if (current)
 			{
-				current->GetRef();
+				//current->GetRef(); getref already done in searchinstance
 				needInit = false;
 				importState.loadedItems.push_back(current);
 				do_not_add_as_son = true;

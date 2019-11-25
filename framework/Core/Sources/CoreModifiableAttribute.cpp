@@ -201,99 +201,113 @@ CoreModifiableAttribute::~CoreModifiableAttribute()
 
 
 //! convert string to type enum
-CoreModifiable::ATTRIBUTE_TYPE CoreModifiableAttribute::stringToType(const kstl::string &typ)
+CoreModifiable::ATTRIBUTE_TYPE CoreModifiableAttribute::stringToType(const kstl::string_view & typ_view)
 {
-	if (typ == "BOOL" || typ == "bool")
+	std::string typ(typ_view.data(), typ_view.length());
+	str_toupper(typ);
+	KigsID testtyp(typ);
+
+	
+
+	switch (typ_view.length()) // avoid doing all tests... Check only the right length ones
 	{
-		return CoreModifiable::BOOL;
+		case 3:
+		{
+			if (testtyp._id == KigsID("INT")._id)
+			{
+				return CoreModifiable::INT;
+			}
+		}
+		break;
+		case 4:
+		{
+			if (testtyp._id == KigsID("UINT")._id)
+			{
+				return CoreModifiable::UINT;
+			}
+			if (testtyp._id == KigsID("ENUM")._id)
+			{
+				return CoreModifiable::ENUM;
+			}
+			if (testtyp._id == KigsID("BOOL")._id)
+			{
+				return CoreModifiable::BOOL;
+			}
+			if (testtyp._id == KigsID("CHAR")._id)
+			{
+				return CoreModifiable::CHAR;
+			}
+			if (testtyp._id == KigsID("LONG")._id)
+			{
+				return CoreModifiable::LONG;
+			}
+		}
+		break;
+		case 5:
+		{
+			if (testtyp._id == KigsID("FLOAT")._id)
+			{
+				return CoreModifiable::FLOAT;
+			}
+			if (testtyp._id == KigsID("ARRAY")._id)
+			{
+				return CoreModifiable::ARRAY;
+			}
+			if (testtyp._id == KigsID("SHORT")._id)
+			{
+				return CoreModifiable::SHORT;
+			}
+			if (testtyp._id == KigsID("UCHAR")._id)
+			{
+				return CoreModifiable::UCHAR;
+			}
+			if (testtyp._id == KigsID("ULONG")._id)
+			{
+				return CoreModifiable::ULONG;
+			}
+		}
+		break;
+		case 6:
+		{
+			if (testtyp._id == KigsID("DOUBLE")._id)
+			{
+				return CoreModifiable::DOUBLE;
+			}
+			if (testtyp._id == KigsID("STRING")._id)
+			{
+				return CoreModifiable::STRING;
+			}
+			if (testtyp._id == KigsID("USHORT")._id)
+			{
+				return CoreModifiable::USHORT;
+			}
+		}
+		break;
+		case 8:
+		{
+			if (testtyp._id == KigsID("COREITEM")._id)
+			{
+				return CoreModifiable::COREITEM;
+			}
+			if (testtyp._id == KigsID("USSTRING")._id)
+			{
+				return CoreModifiable::USSTRING;
+			}
+		}
+		break;
+		default: // more than 8
+		{
+			if (testtyp._id == KigsID("REFERENCE")._id)
+			{
+				return CoreModifiable::REFERENCE;
+			}
+			if (testtyp._id == KigsID("COREBUFFER")._id)
+			{
+				return CoreModifiable::COREBUFFER;
+			}
+		}
+		break;
 	}
-
-	if (typ == "CHAR" || typ == "char")
-	{
-		return CoreModifiable::CHAR;
-	}
-
-	if (typ == "SHORT" || typ == "short")
-	{
-		return CoreModifiable::SHORT;
-	}
-
-	if (typ == "INT" || typ == "int")
-	{
-		return CoreModifiable::INT;
-	}
-
-	if (typ == "LONG" || typ == "long")
-	{
-		return CoreModifiable::LONG;
-	}
-
-	if (typ == "UCHAR" || typ == "uchar")
-	{
-		return CoreModifiable::UCHAR;
-	}
-
-	if (typ == "USHORT" || typ == "ushort")
-	{
-		return CoreModifiable::USHORT;
-	}
-
-	if (typ == "UINT" || typ == "uint")
-	{
-		return CoreModifiable::UINT;
-	}
-
-	if (typ == "ULONG" || typ == "ulong")
-	{
-		return CoreModifiable::ULONG;
-	}
-
-	if (typ == "FLOAT" || typ == "float")
-	{
-		return CoreModifiable::FLOAT;
-	}
-
-	if (typ == "DOUBLE" || typ == "double")
-	{
-		return CoreModifiable::DOUBLE;
-	}
-
-	if (typ == "STRING" || typ == "string")
-	{
-		return CoreModifiable::STRING;
-	}
-
-	if (typ == "ARRAY" || typ == "array")
-	{
-		return CoreModifiable::ARRAY;
-	}
-
-	if (typ == "ENUM" || typ == "enum")
-	{
-		return CoreModifiable::ENUM;
-	}
-
-	if (typ == "REFERENCE" || typ == "reference")
-	{
-		return CoreModifiable::REFERENCE;
-	}
-
-	if (typ == "COREITEM" || typ == "coreitem")
-	{
-		return CoreModifiable::COREITEM;
-	}
-
-	if (typ == "USSTRING" || typ == "usstring")
-	{
-		return CoreModifiable::USSTRING;
-	}
-
-	if (typ == "COREBUFFER" || typ == "corebuffer")
-	{
-		return CoreModifiable::COREBUFFER;
-	}
-
-
 
 	return CoreModifiable::UNKNOWN;
 }
