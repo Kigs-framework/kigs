@@ -10,5 +10,5 @@ Other platforms ( iOS, Android, HTML5... ) are still private but could also be o
 
 The main IDE to build current platform is Visual Studio C++ 2019.
 
-HowTo and framework documentation will follow soon.
+Check the [Wiki](https://github.com/assoria/kigs/wiki) to learn more about the Kigs framework...
 
