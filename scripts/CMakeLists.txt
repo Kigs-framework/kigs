@@ -378,7 +378,7 @@ elseif(${KIGS_PLATFORM} STREQUAL "Android")
 elseif(${KIGS_PLATFORM} STREQUAL "Javascript")
 	target_sources(BaseExecutable 
 		INTERFACE 
-			"${KIGS_PRIVATE_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/mainJavascript.cpp")
+			"${KIGS_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/mainJavascript.cpp")
 endif()
 
 if(${KIGS_PLATFORM} STREQUAL "Windows")
