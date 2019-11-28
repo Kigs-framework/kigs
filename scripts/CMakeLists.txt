@@ -202,6 +202,8 @@ elseif(JAVASCRIPT)
 	target_compile_definitions(Base INTERFACE JAVASCRIPT GL_ES2)
 	set(KIGS_PLATFORM Javascript)
 
+	set(CMAKE_CXX_FLAGS_STATICRELEASE "${CMAKE_CXX_FLAGS_STATICRELEASE} --closure 1")
+
 	if(${CMAKE_BUILD_TYPE} STREQUAL "StaticDebug")
 	message(STATUS "building static debug config")
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../EmscriptenLibraries/StaticDebug)
@@ -378,7 +380,7 @@ elseif(${KIGS_PLATFORM} STREQUAL "Android")
 elseif(${KIGS_PLATFORM} STREQUAL "Javascript")
 	target_sources(BaseExecutable 
 		INTERFACE 
-			"${KIGS_PRIVATE_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/mainJavascript.cpp")
+			"${KIGS_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/mainJavascript.cpp")
 endif()
 
 if(${KIGS_PLATFORM} STREQUAL "Windows")
