@@ -155,7 +155,7 @@ var LibraryJsRenderer  = {
 	},
 	KigsCreateContext: function(withWebGL)
 	{
-		myUseWebGL = withWebGL;
+        JsRenderer.myUseWebGL = withWebGL;
 		if(JsRenderer.myInitialCanvas == null && JsRenderer.myContext2D == null)
 		{
 			JsRenderer.myInitialCanvas = Module['canvas'];
@@ -224,7 +224,7 @@ var LibraryJsRenderer  = {
             }
 		}
 		
-		Browser.createContext(Module['canvas'], myUseWebGL, true);
+        Browser.createContext(Module['canvas'], JsRenderer.myUseWebGL, true);
 		
 		//add listener to window to call method when browser is resized
 		window.addEventListener("resize", BrowerResized, false);
@@ -327,7 +327,7 @@ var LibraryJsRenderer  = {
 		var stored = false;
 		var index = 0;
 		//Recherche un trou dans le tableau
-		for(i=0;i<JsRenderer.myCanvasListSize; i++)
+		for(var i=0;i<JsRenderer.myCanvasListSize; i++)
 		{
 			if(JsRenderer.myCanvasList[i] == null)
 			{
@@ -446,10 +446,10 @@ var LibraryJsRenderer  = {
 		{
             Module["preloadedImages"][filename] = null;
         }
-		tmpCanvas=document.createElement('canvas');
-        var ctx = tmpCanvas.getContext('2d');
-        tmpCanvas.width = raw.width;
-		tmpCanvas.height = raw.height;
+        JsRenderer.tmpCanvas=document.createElement('canvas');
+        var ctx = JsRenderer.tmpCanvas.getContext('2d');
+        JsRenderer.tmpCanvas.width = raw.width;
+        JsRenderer.tmpCanvas.height = raw.height;
 		
         HEAP32[width>>2]=raw.width;
         HEAP32[height>>2]=raw.height;
@@ -460,13 +460,13 @@ var LibraryJsRenderer  = {
 	JSInitImageData: function(pixels,width, height)
 	{
 		var pixelData=pixels;
-        var ctx = tmpCanvas.getContext('2d');
+        var ctx = JsRenderer.tmpCanvas.getContext('2d');
         var imageData = ctx.getImageData(0, 0, width, height);
           		
         var size = width*height;
   		var index = 0;
 
-		for (i = 0; i < size; i++) 
+		for (var i = 0; i < size; i++) 
 		{
 			
 			HEAPU8[pixelData++]=imageData.data[index++];
@@ -475,7 +475,7 @@ var LibraryJsRenderer  = {
 			HEAPU8[pixelData++]=imageData.data[index++];
 		}
 			
-		tmpCanvas=null;
+        JsRenderer.tmpCanvas=null;
 	},
 	
     JSGetFileFromURL: function(filename)
@@ -539,7 +539,7 @@ var LibraryJsRenderer  = {
         var size = width*height;
   		var index = 0;
 
-		for (i = 0; i < size; i++) 
+		for (var i = 0; i < size; i++) 
 		{
 			//var index = i *4;
 			imageData.data[index++] = HEAPU8[colors++];
@@ -588,7 +588,7 @@ var LibraryJsRenderer  = {
 			var futurText = '';
 			var newligned = false;
 
-			for(i = 0; i < str.length; i++)
+			for(var i = 0; i < str.length; i++)
 			{
 				if(newligned == false)
 				{
@@ -681,7 +681,7 @@ var LibraryJsRenderer  = {
 			var futurText = '';
 			var newligned = false;
 
-			for(i = 0; i < str.length; i++)
+			for(var i = 0; i < str.length; i++)
 			{
 				if(newligned == false)
 				{
@@ -769,7 +769,7 @@ var LibraryJsRenderer  = {
 		var p = ctx.getImageData(0, 0, JsRenderer.myCurrentCanvas.width, JsRenderer.myCurrentCanvas.height).data;
 		var index = 0;
 		var size = JsRenderer.myCurrentCanvas.width * JsRenderer.myCurrentCanvas.height;
-		for(i=0;i <  size; i++)
+		for(var i=0;i <  size; i++)
 		{
 			HEAPU8[Data++] = p[index++];
 			HEAPU8[Data++] = p[index++];
@@ -914,7 +914,7 @@ var LibraryJsRenderer  = {
 
 		var canvasX = lfoundwhObj.foundw;
 		var canvasY = FontSize * Splited.length;
-		
+        var textX, textY;
 		textX = 0;
 		var offset = 0;
 		
@@ -954,8 +954,8 @@ var LibraryJsRenderer  = {
 	    FontSize*=0.82;
 	    var myText = JsRenderer.Pointer_stringify16(TextToWrite);
   		
-		tmpCanvas=document.createElement('canvas');
-		var ctx = tmpCanvas.getContext('2d');
+        JsRenderer.tmpCanvas=document.createElement('canvas');
+        var ctx = JsRenderer.tmpCanvas.getContext('2d');
 		var myFont = UTF8ToString(FontName);
 		myFont = myFont.split(".")[0];
 		ctx.font = FontSize + "px " + myFont;
@@ -971,12 +971,12 @@ var LibraryJsRenderer  = {
 
 		var canvasX = lfoundwhObj.foundw;
 		var canvasY = FontSize * Splited.length;
-		
+        var textX, textY;
 		textX = 0;
 		var offset = 0;
 		
-		tmpCanvas.width = canvasX;
-  		tmpCanvas.height = canvasY+offset;
+        JsRenderer.tmpCanvas.width = canvasX;
+        JsRenderer.tmpCanvas.height = canvasY+offset;
 		
 		A = 1;
 		ctx.font = FontSize + "px " + myFont;
@@ -1006,8 +1006,8 @@ var LibraryJsRenderer  = {
 		    ctx.fillText(Splited[i + jumpedLines], textX, textY);
 		}
 		
-		HEAP32[width>>2]=tmpCanvas.width;
-        HEAP32[height>>2]=tmpCanvas.height;
+        HEAP32[width >> 2] = JsRenderer.tmpCanvas.width;
+        HEAP32[height >> 2] = JsRenderer.tmpCanvas.height;
 		
 	},
 	JSGetCanvasSize: function (width, height)

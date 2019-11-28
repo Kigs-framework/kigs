@@ -3,6 +3,8 @@
 
 extern "C" int	GetHTMLBodySizeX();
 extern "C" int	GetHTMLBodySizeY();
+extern "C" int	GetHTMLParentSizeX();
+extern "C" int	GetHTMLParentSizeY();
 
 IMPLEMENT_CLASS_INFO(DisplayDeviceCapsJavascript)
 
@@ -28,6 +30,23 @@ DisplayDeviceCapsJavascript::DisplayDeviceCapsJavascript(const kstl::string& nam
 
 	toAdd.myCapacityList.push_back(modeToAdd);
 	myDisplayDeviceList[toAdd.myName]=toAdd;
+
+	// add device PARENT 
+	DisplayDevice Parent;
+	Parent.myName = "PARENT";
+	Parent.myMain = false;
+
+	Point2DI parentSize(GetHTMLParentSizeX(), GetHTMLParentSizeY());
+
+	printf("Parent Size : %d %d\n", parentSize.x, parentSize.y);
+
+	modeToAdd.myWidth = parentSize.x;
+	modeToAdd.myHeight = parentSize.y;
+	modeToAdd.myBitPerPixel = 16;
+	modeToAdd.myIsCurrent = true;
+
+	Parent.myCapacityList.push_back(modeToAdd);
+	myDisplayDeviceList[Parent.myName] = Parent;
 
 }
 

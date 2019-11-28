@@ -19,6 +19,7 @@ extern "C" void	SetCanvasSize(const char* window, int sx, int sy);
 extern "C" int	GetHTMLBodySizeX();
 extern "C" int	GetHTMLBodySizeY();
 extern "C" void CreateCanvas(const char* window, int isfirst);
+extern "C" void SetAbsolutePos(const char* window,int abs);
 
 WindowJavascript*	WindowJavascript::myFirstWindow=0;
 
@@ -45,6 +46,7 @@ WindowJavascript::~WindowJavascript()
 //! init the window, and if OK, show it
 void WindowJavascript::ProtectedInit()
 {
+	
 	if (myFirstWindow == this)
 	{
 		CreateCanvas(getName().c_str(), 1);
@@ -53,6 +55,8 @@ void WindowJavascript::ProtectedInit()
 	{
 		CreateCanvas(getName().c_str(), 0);
 	}
+
+	SetAbsolutePos(getName().c_str(), myAbsolutePos?1:0);
 
 	printf("window pos : %d %d \n", myPosX.const_ref(), myPosY.const_ref());
 

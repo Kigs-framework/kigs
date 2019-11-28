@@ -47,6 +47,7 @@ protected:
     void  ProtectedInit() override;
 	
 	static	WindowJavascript*	myFirstWindow;
+	maBool myAbsolutePos = BASE_ATTRIBUTE(AbsolutePos, true);
 };    
 
 #endif //_WINDOWJAVASCRIPT_H_
