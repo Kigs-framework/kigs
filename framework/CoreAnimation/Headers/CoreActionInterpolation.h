@@ -383,9 +383,9 @@ public:
 	{
 		kfloat t2=t*t;
 		kfloat t3=t2*t;
-		a0=2*t3-3*t2+1;
-		a1=-2*t3+3*t2;
-		b0=t3-2*t2+t;
+		a0=2.0f*t3-3.0f*t2+1.0f;
+		a1=-2.0f*t3+3.0f*t2;
+		b0=t3-2.0f*t2+t;
 		b1=t3-t2;
 	}
 
