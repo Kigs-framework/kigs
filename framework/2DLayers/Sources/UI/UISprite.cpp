@@ -78,8 +78,6 @@ void UISprite::ChangeTexture()
 	
 	mySpriteSheet =  OwningRawPtrToSmartPtr(textureManager->GetSpriteSheetTexture(lTexName));
 
-	mySpriteSheet->Destroy();
-
 	SetTexture(mySpriteSheet->Get_Texture());
 	if (!myTexture)
 		return;

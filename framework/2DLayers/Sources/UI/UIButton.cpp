@@ -320,7 +320,12 @@ bool UIButton::ManageClickTouchEvent(ClickEvent& click_event)
 	}
 	else if (click_event.state == StateRecognized)
 	{
-		EmitSignal(Signals::ClickUp, this, (usString)myParameter.const_ref());
+		if (!EmitSignal(Signals::ClickUp, this, (usString)myParameter.const_ref())) // if no one connected send classic message
+		{
+			kstl::vector<CoreModifiableAttribute*> mySendParams;
+			mySendParams.push_back(&myParameter);
+			SendButtonNotifications(myClickUpAction, this, mySendParams);
+		}
 		*click_event.swallow_mask |= (1 << InputEventType::Click);
 	}
 	return true;
@@ -353,12 +358,22 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 		{
 		case DirectTouchEvent::TouchHover:
 			if (mUseHoverColor) setValue("Color", (v3f)mHoverColor), setValue("Opacity", mHoverColor[3]);
-			EmitSignal(Signals::MouseOver, this, (usString)myParameter.const_ref());
+			if(!EmitSignal(Signals::MouseOver, this, (usString)myParameter.const_ref())) // if no one connected send classic message
+			{
+				kstl::vector<CoreModifiableAttribute*> mySendParams;
+				mySendParams.push_back(&myParameter);
+				SendButtonNotifications(myMouseOverAction, this, mySendParams);
+			}
 			myIsMouseOver = true;
 			break;
 		case DirectTouchEvent::TouchDown:
 			if (mUseHoverColor)setValue("Color", (v3f)mClickedColor), setValue("Opacity", mClickedColor[3]);
-			EmitSignal(Signals::ClickDown, this, (usString)myParameter.const_ref());
+			if(!EmitSignal(Signals::ClickDown, this, (usString)myParameter.const_ref())) // if no one connected send classic message
+			{
+				kstl::vector<CoreModifiableAttribute*> mySendParams;
+				mySendParams.push_back(&myParameter);
+				SendButtonNotifications(myClickDownAction, this, mySendParams);
+			}
 			myIsDown = true;
 			break;
 		case DirectTouchEvent::TouchUp:
@@ -395,7 +410,12 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 		{
 			// hover ended
 			if (mUseHoverColor) setValue("Color", (v3f)mIdleColor), setValue("Opacity", mIdleColor[3]);
-			EmitSignal(Signals::MouseOut, this, (usString)myParameter.const_ref());
+			if(!EmitSignal(Signals::MouseOut, this, (usString)myParameter.const_ref())) // if no one connected send classic message
+			{
+				kstl::vector<CoreModifiableAttribute*> mySendParams;
+				mySendParams.push_back(&myParameter);
+				SendButtonNotifications(myMouseOutAction, this, mySendParams);
+			}
 		}
 		else
 		{
