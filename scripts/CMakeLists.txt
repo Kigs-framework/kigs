@@ -153,6 +153,12 @@ if(WIN32 OR KIGS_ANDROID)
 		target_compile_definitions(Base INTERFACE _M_ARM=7 GL_ES2 ANDROID)
 		target_link_libraries(Base INTERFACE EGL GLESv2 log)
 		set(KIGS_PLATFORM Android)
+		
+		if(NOT ANDROID_ABI)
+	     	set(ANDROID_ABI armeabi-v7a)
+			message(STATUS "set ANDROID_ABI to ${ANDROID_ABI}")
+		endif()
+		
 		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../AndroidLibraries/${ANDROID_ABI})
 		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../AndroidBinairies/${ANDROID_ABI})
 	elseif(KIGS_SWITCH)
