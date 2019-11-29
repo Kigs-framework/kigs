@@ -130,6 +130,11 @@ public:
 	Point3D GetViewVector() const { return Point3D(myViewVector[0], myViewVector[1], myViewVector[2]); }
 	Point3D GetGlobalViewVector() { return GetLocalToGlobal().XAxis.Normalized(); }
 		
+
+	std::pair<v3f, Vector3D> GetGlobalRay() { return { GetGlobalPosition(), GetGlobalViewVector() }; }
+	std::pair<v3f, Vector3D> GetRay() { return { GetPosition(), GetViewVector() }; }
+
+
 	/**
 		* \brief	set the position of the up vector
 		* \fn 		void	SetUpVector(kfloat x,kfloat y,kfloat z)

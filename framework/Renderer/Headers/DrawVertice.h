@@ -161,11 +161,14 @@ protected:
 	maBool								myIsStaticBuffer = BASE_ATTRIBUTE(IsStaticBuffer, false);
 	maInt								myDrawMode = BASE_ATTRIBUTE(DrawMode, KIGS_DRAW_MODE_TRIANGLES); 
 
-	maEnum<2>							myPreset = BASE_ATTRIBUTE(Preset, "None", "TexturedQuad");
+	maInt								myCullMode = BASE_ATTRIBUTE(CullMode, 0);
+
+	maEnum<5>							myPreset = BASE_ATTRIBUTE(Preset, "None", "TexturedQuad", "Quad", "TexturedBox", "Box");
 	maVect3DF							myPresetSize = BASE_ATTRIBUTE(PresetSize, 1, 1, 1);
 	maVect4DF							myPresetColor = BASE_ATTRIBUTE(PresetColor, 1, 1, 1, 1);
 	maVect3DF							myPresetOffset = BASE_ATTRIBUTE(PresetOffset, 0, 0, 0);
 	maVect2DF							myPresetUVSize = BASE_ATTRIBUTE(PresetUVSize, 1, 1);
+	maVect2DF							myPresetUVOffset = BASE_ATTRIBUTE(PresetUVOffset, 0, 0);
 
 #ifdef KIGS_TOOLS
 	maBool myDrawNormals = BASE_ATTRIBUTE(DrawNormals, false);

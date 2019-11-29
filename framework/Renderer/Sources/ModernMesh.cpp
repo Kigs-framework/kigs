@@ -41,8 +41,8 @@ IMPLEMENT_CLASS_INFO(ModernMesh);
 IMPLEMENT_CONSTRUCTOR(ModernMesh)
 {
 	mSortable = true;
+	mRenderPassMask = 1;
 }
-
 
 ModernMesh::~ModernMesh()
 {

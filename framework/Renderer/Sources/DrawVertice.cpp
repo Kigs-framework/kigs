@@ -15,6 +15,7 @@ IMPLEMENT_CLASS_INFO(DrawVertice);
 IMPLEMENT_CONSTRUCTOR(DrawVertice)
 {
 	mSortable = true;
+	mRenderPassMask = 1;
 }
 
 void DrawVertice::RecalculateBBox() const
@@ -154,7 +155,9 @@ void DrawVertice::NotifyUpdate(const u32 labelid)
 	else if (labelid == myPreset.getID()
 		|| labelid == myPresetColor.getID()
 		|| labelid == myPresetOffset.getID()
-		|| labelid == myPresetUVSize.getID())
+		|| labelid == myPresetSize.getID()
+		|| labelid == myPresetUVSize.getID()
+		|| labelid == myPresetUVOffset.getID())
 	{
 		SetDataFromPreset();
 	}
@@ -164,53 +167,129 @@ void DrawVertice::SetDataFromPreset()
 {
 	clearArrays();
 	std::string type = myPreset;
-	if (type == "TexturedQuad")
+	if (type != "None") myIsStaticBuffer = true;
+
+	struct vertex
 	{
-		struct vertex
-		{
-			v3f v;
-			std::array<u8, 4> c;
-			v2f uv;
-		};
+		v3f v;
+		std::array<u8, 4> c;
+	};
 
-		char* buffer = new char[sizeof(vertex) * 6];
-		memset(buffer, 0, 6 * sizeof(vertex));
+	struct textured_vertex
+	{
+		v3f v;
+		std::array<u8, 4> c;
+		v2f uv;
+	};
+	std::array<u8, 4> color = { u8(myPresetColor[0] * 255.0f), u8(myPresetColor[1] * 255.0f),u8(myPresetColor[2] * 255.0f),u8(myPresetColor[3] * 255.0f) };
 
-		vertex* vertex_buffer = reinterpret_cast<vertex*>(buffer);
+	v3f offset = myPresetOffset;
+	v3f preset_size = myPresetSize;
+	v2f uv_offset = myPresetUVOffset;
+	v2f uv_size = myPresetUVSize;
 
-		v3f offset = myPresetOffset;
-
-		v3f preset_size = myPresetSize;
-
-		vertex_buffer[0].v = v3f(-0.5f, -0.5f, 0.0f) * preset_size + offset;
-		vertex_buffer[1].v = v3f(0.5f, -0.5f, 0.0f) * preset_size + offset;
-		vertex_buffer[2].v = v3f(0.5f, 0.5f, 0.0f) * preset_size + offset;
-		vertex_buffer[3].v = v3f(-0.5f, -0.5f, 0.0f) * preset_size + offset;
-		vertex_buffer[4].v = v3f(0.5f, 0.5f, 0.0f) * preset_size + offset;
-		vertex_buffer[5].v = v3f(-0.5f, 0.5f, 0.0f) * preset_size + offset;
+	if (type == "TexturedQuad" || type == "Quad")
+	{
+		bool is_textured = type == "TexturedQuad";
+		size_t buffer_stride = (is_textured ? sizeof(textured_vertex) : sizeof(vertex));
+		size_t buffer_size = buffer_stride*6;
+		char* buffer = new char[buffer_size];
+		memset(buffer, 0, buffer_size);
+		
+		
+		reinterpret_cast<vertex*>(buffer + 0 * buffer_stride)->v = v3f(-0.5f, -0.5f, 0.0f) * preset_size + offset;
+		reinterpret_cast<vertex*>(buffer + 1 * buffer_stride)->v = v3f(0.5f, -0.5f, 0.0f) * preset_size + offset;
+		reinterpret_cast<vertex*>(buffer + 2 * buffer_stride)->v = v3f(0.5f, 0.5f, 0.0f) * preset_size + offset;
+		reinterpret_cast<vertex*>(buffer + 3 * buffer_stride)->v = v3f(-0.5f, -0.5f, 0.0f) * preset_size + offset;
+		reinterpret_cast<vertex*>(buffer + 4 * buffer_stride)->v = v3f(0.5f, 0.5f, 0.0f) * preset_size + offset;
+		reinterpret_cast<vertex*>(buffer + 5 * buffer_stride)->v = v3f(-0.5f, 0.5f, 0.0f) * preset_size + offset;
 	
-		std::array<u8, 4> color = { u8( myPresetColor[0] * 255.0f ), u8(myPresetColor[1] * 255.0f),u8( myPresetColor[2] * 255.0f),u8( myPresetColor[3] * 255.0f )};
+		reinterpret_cast<vertex*>(buffer + 0 * buffer_stride)->c = color;
+		reinterpret_cast<vertex*>(buffer + 1 * buffer_stride)->c = color;
+		reinterpret_cast<vertex*>(buffer + 2 * buffer_stride)->c = color;
+		reinterpret_cast<vertex*>(buffer + 3 * buffer_stride)->c = color;
+		reinterpret_cast<vertex*>(buffer + 4 * buffer_stride)->c = color;
+		reinterpret_cast<vertex*>(buffer + 5 * buffer_stride)->c = color;
 
-		vertex_buffer[0].c = color;
-		vertex_buffer[1].c = color;
-		vertex_buffer[2].c = color;
-		vertex_buffer[3].c = color;
-		vertex_buffer[4].c = color;
-		vertex_buffer[5].c = color;
+		if (is_textured)
+		{
+			reinterpret_cast<textured_vertex*>(buffer + 0 * buffer_stride)->uv = v2f(0, 1);
+			reinterpret_cast<textured_vertex*>(buffer + 1 * buffer_stride)->uv = v2f(1, 1);
+			reinterpret_cast<textured_vertex*>(buffer + 2 * buffer_stride)->uv = v2f(1, 0);
+			reinterpret_cast<textured_vertex*>(buffer + 3 * buffer_stride)->uv = v2f(0, 1);
+			reinterpret_cast<textured_vertex*>(buffer + 4 * buffer_stride)->uv = v2f(1, 0);
+			reinterpret_cast<textured_vertex*>(buffer + 5 * buffer_stride)->uv = v2f(0, 0);
 
-		vertex_buffer[0].uv = v2f(1, 1);
-		vertex_buffer[1].uv = v2f(0, 1);
-		vertex_buffer[2].uv = v2f(0, 0);
-		vertex_buffer[3].uv = v2f(1, 1);
-		vertex_buffer[4].uv = v2f(0, 0);
-		vertex_buffer[5].uv = v2f(1, 0);
-
-		for (int i = 0; i < 6; ++i)
-			vertex_buffer[i].uv *= (v2f)myPresetUVSize;
-
+			for (int i = 0; i < 6; ++i)
+			{
+				auto& uv = reinterpret_cast<textured_vertex*>(buffer + i * buffer_stride)->uv;
+				uv = (uv * uv_size) + uv_offset;
+			}
+				
+		}
 		SetVertexArray(buffer, 6, 12, 0);
 		SetColorArray(nullptr, 6, 4, 12);
-		SetTexCoordArray(nullptr, 6, 8, 16);
+
+		if (is_textured)
+			SetTexCoordArray(nullptr, 6, 8, 16);
+	}
+	else if (type == "Box" || type == "TexturedBox")
+	{
+		bool is_textured = type == "TexturedBox";
+		size_t buffer_stride = (is_textured ? sizeof(textured_vertex) : sizeof(vertex));
+		size_t buffer_size = buffer_stride * 6 * 6;
+		char* buffer = new char[buffer_size];
+		memset(buffer, 0, buffer_size);
+
+		v3f offset = myPresetOffset;
+		v3f preset_size = myPresetSize;
+
+		mat3 m;
+
+		for (auto face = 0; face < 6; ++face)
+		{
+			if (face < 4)
+				m.SetRotationX(face * fPI/2);
+			else
+				m.SetRotationY(face == 4 ? fPI / 2 : -fPI / 2);
+			
+			reinterpret_cast<vertex*>(buffer + (0 + face * 6) * buffer_stride)->v = (m * v3f(-0.5f, -0.5f, 0.5f) * preset_size) + offset;
+			reinterpret_cast<vertex*>(buffer + (1 + face * 6) * buffer_stride)->v = (m * v3f(0.5f, -0.5f, 0.5f) * preset_size) + offset;
+			reinterpret_cast<vertex*>(buffer + (2 + face * 6) * buffer_stride)->v = (m * v3f(0.5f, 0.5f, 0.5f) * preset_size) + offset;
+			reinterpret_cast<vertex*>(buffer + (3 + face * 6) * buffer_stride)->v = (m * v3f(-0.5f, -0.5f, 0.5f) * preset_size) + offset;
+			reinterpret_cast<vertex*>(buffer + (4 + face * 6) * buffer_stride)->v = (m * v3f(0.5f, 0.5f, 0.5f) * preset_size) + offset;
+			reinterpret_cast<vertex*>(buffer + (5 + face * 6) * buffer_stride)->v = (m * v3f(-0.5f, 0.5f, 0.5f) * preset_size) + offset;
+
+			reinterpret_cast<vertex*>(buffer + (0 + face * 6) * buffer_stride)->c = color;
+			reinterpret_cast<vertex*>(buffer + (1 + face * 6) * buffer_stride)->c = color;
+			reinterpret_cast<vertex*>(buffer + (2 + face * 6) * buffer_stride)->c = color;
+			reinterpret_cast<vertex*>(buffer + (3 + face * 6) * buffer_stride)->c = color;
+			reinterpret_cast<vertex*>(buffer + (4 + face * 6) * buffer_stride)->c = color;
+			reinterpret_cast<vertex*>(buffer + (5 + face * 6) * buffer_stride)->c = color;
+
+			if (is_textured)
+			{
+				reinterpret_cast<textured_vertex*>(buffer + (0 + face * 6) * buffer_stride)->uv = v2f(0, 1);
+				reinterpret_cast<textured_vertex*>(buffer + (1 + face * 6) * buffer_stride)->uv = v2f(1, 1);
+				reinterpret_cast<textured_vertex*>(buffer + (2 + face * 6) * buffer_stride)->uv = v2f(1, 0);
+				reinterpret_cast<textured_vertex*>(buffer + (3 + face * 6) * buffer_stride)->uv = v2f(0, 1);
+				reinterpret_cast<textured_vertex*>(buffer + (4 + face * 6) * buffer_stride)->uv = v2f(1, 0);
+				reinterpret_cast<textured_vertex*>(buffer + (5 + face * 6) * buffer_stride)->uv = v2f(0, 0);
+
+				for (int i = 0; i < 6; ++i)
+				{
+					auto& uv = reinterpret_cast<textured_vertex*>(buffer + (i + face * 6) * buffer_stride)->uv;
+					uv = (uv * uv_size) + uv_offset;
+				}
+			}
+
+		}
+
+		SetVertexArray(buffer, 6 * 6, 12, 0);
+		SetColorArray(nullptr, 6 * 6, 4, 12);
+
+		if (is_textured)
+			SetTexCoordArray(nullptr, 6 * 6, 8, 16);
 	}
 }
 
@@ -325,7 +404,7 @@ bool DrawVertice::Draw(TravState* travstate)
 		if (myVertexCount > 0)
 		{
 			auto renderer = /*(RendererOpenGL*)*/travstate->GetRenderer();
-			renderer->SetCullMode(RENDERER_CULL_NONE);
+			renderer->SetCullMode((RendererCullMode)(int)myCullMode);
 
 			int lShaderMask = ModuleRenderer::VERTEX_ARRAY_MASK | ModuleRenderer::NO_LIGHT_MASK;
 			if (myColorCount)lShaderMask |= ModuleRenderer::COLOR_ARRAY_MASK;

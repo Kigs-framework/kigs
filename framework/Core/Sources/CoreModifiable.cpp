@@ -865,7 +865,7 @@ void CoreModifiable::UpdateAttributes(const CoreModifiable& tocopy)
 		auto foundattr = _attributes.find(it->first);
 		if (foundattr != _attributes.end())
 		{
-			foundattr->second = it->second;
+			*foundattr->second = *it->second;
 		}
 	}
 }

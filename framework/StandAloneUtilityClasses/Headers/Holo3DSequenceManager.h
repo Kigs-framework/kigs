@@ -57,7 +57,6 @@ protected:
 	Panel * myCollidablePanel = nullptr;
 	Holo3DPanel * myDrawer = nullptr;
 
-	maReference mGazeManager = BASE_ATTRIBUTE(GazeManager);
 	maReference mParentNode = BASE_ATTRIBUTE(ParentNode);
 	maReference mFollowCamera = BASE_ATTRIBUTE(FollowCamera, "");
 

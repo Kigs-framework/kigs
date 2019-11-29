@@ -60,6 +60,8 @@ int ColliderGazeManager::GetHitsInRange(kstl::vector<Hit>& hits, double distBegi
 
 void ColliderGazeManager::Update(const Timer&  timer, void* addParam)
 {
+	return;
+
 	Point3D pos;
 	Vector3D norm;
 

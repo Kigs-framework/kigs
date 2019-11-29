@@ -1072,3 +1072,25 @@ mat3x4 GetLocalLookAtPoint(Node3D* node, v3f global_point, bool force_up, v3f up
 	Matrix3x4 m = Matrix3x4::LookAt(node->GetLocal().Pos, node->GetLocal().Pos + view, up);
 	return m;
 }
+
+void Node3D::ApplyLocalTransform(const Matrix3x4& transform)
+{
+	auto m = GetLocal();
+	ChangeMatrix(transform * m);
+}
+
+void Node3D::ApplyGlobalTransform(const Matrix3x4& transform)
+{
+	auto f = getFather();
+	if (!f) 
+		ApplyLocalTransform(transform);
+	else
+		ChangeMatrix(f->GetGlobalToLocal() * transform * f->GetLocalToGlobal() * GetLocal());
+}
+
+void Node3D::ChangeMatrixGlobal(const Matrix3x4& new_global_matrix)
+{
+	auto f = getFather();
+	if (!f) ChangeMatrix(new_global_matrix);
+	else ChangeMatrix(f->GetGlobalToLocal() * new_global_matrix);
+}

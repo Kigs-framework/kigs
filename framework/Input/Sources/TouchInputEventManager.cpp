@@ -930,6 +930,10 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 				SortedElementNode	sonItemToAdd;
 				
 				auto item = std::get<0>(item_tuple);
+				Hit hit = std::get<1>(item_tuple);
+				
+				//if (!hit.HitNode) 
+				//	hit = it->second.posInfos.hit;
 
 				auto foundAsTouchSupport = sonTouchSupport.find(item);
 				if (foundAsTouchSupport != sonTouchSupport.end())
@@ -940,7 +944,7 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 					if ((*foundAsTouchSupport).second.currentNodeCatchEvent) // also add it as event item
 					{
 						sonItemToAdd.element = item;
-						sonItemToAdd.hit = std::get<1>(item_tuple);
+						sonItemToAdd.hit = hit;
 						sonItemToAdd.touchSupport = cameraOrRenderingScreen->currentNode;
 						flat_tree.push_back(sonItemToAdd);
 					}
@@ -948,7 +952,7 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 				else
 				{
 					sonItemToAdd.element = item;
-					sonItemToAdd.hit = std::get<1>(item_tuple);
+					sonItemToAdd.hit = hit;
 					sonItemToAdd.touchSupport = cameraOrRenderingScreen->currentNode;
 					flat_tree.push_back(sonItemToAdd);
 				}
@@ -996,7 +1000,10 @@ void	TouchInputEventManager::LinearCallEventUpdate(kstl::vector<SortedElementNod
 				auto& touches = transformedInfosMap[element.touchSupport];
 				//auto it = std::find_if(touches.begin(), touches.end(), [touch_id](auto&& info) { return info.ID == touch_id; });
 				auto it = touches.find(touch_id);
-				it->second.object_hit = &element.hit;
+				if(!element.hit.HitNode)
+					it->second.object_hit = &it->second.posInfos.hit;
+				else
+					it->second.object_hit = &element.hit;
 				mLock.unlock();
 				currentStruct->Update(this, timer, element.element, it->second, swallowMaskCurrent);
 				mLock.lock();
@@ -1017,25 +1024,26 @@ void	TouchInputEventManager::transformTouchesInTouchSupportHierarchy(touchSuppor
 	while (itTouches != itTouchesE)
 	{
 		// copy touch infos
-		TouchEventState::TouchInfos cTouchinfos = itTouches->second;
+		TouchEventState::TouchInfos& cTouchinfosIn = itTouches->second;
+		TouchEventState::TouchInfos cTouchinfosOut = itTouches->second;
 
-		bool isIn=current->currentNode->SimpleCall<bool>("GetDataInTouchSupport", cTouchinfos.posInfos, cTouchinfos.posInfos);
-		cTouchinfos.in_touch_support = isIn ? 1 : 0;
+		bool isIn=current->currentNode->SimpleCall<bool>("GetDataInTouchSupport", cTouchinfosIn.posInfos, cTouchinfosOut.posInfos);
+		cTouchinfosOut.in_touch_support = isIn ? 1 : 0;
 
-		if (cTouchinfos.starting_touch_support && current->currentNode != cTouchinfos.starting_touch_support)
+		if (cTouchinfosOut.starting_touch_support && current->currentNode != cTouchinfosOut.starting_touch_support)
 		{
-			cTouchinfos.posInfos = itTouches->second.posInfos; // Don't transform until we find starting touch support
+			cTouchinfosOut.posInfos = itTouches->second.posInfos; // Don't transform until we find starting touch support
 		}
-		else if(current->currentNode == cTouchinfos.starting_touch_support)
+		else if(current->currentNode == cTouchinfosOut.starting_touch_support)
 		{
-			cTouchinfos.posInfos = itTouches->second.posInfos;
-			cTouchinfos.starting_touch_support = nullptr;
+			cTouchinfosOut.posInfos = itTouches->second.posInfos;
+			cTouchinfosOut.starting_touch_support = nullptr;
 		}
 
 		//if(isIn)
 		//	printf("transformed coords in %s = %f %f %f - %f %f %f\n", current->currentNode->getName().c_str(), cTouchinfos.posInfos.pos.x, cTouchinfos.posInfos.pos.y, cTouchinfos.posInfos.pos.z, cTouchinfos.tmove.x, cTouchinfos.tmove.y, cTouchinfos.tmove.z);
 
-		resultmap[current->currentNode][itTouches->first] = cTouchinfos;
+		resultmap[current->currentNode][itTouches->first] = cTouchinfosOut;
 
 		++itTouches;
 	}

@@ -99,6 +99,11 @@ public:
 
 	virtual void ChangeMatrix(const Matrix3x4& newmatrix);
 
+	void ChangeMatrixGlobal(const Matrix3x4& new_global_matrix);
+
+	void ApplyLocalTransform(const Matrix3x4& transform);
+	void ApplyGlobalTransform(const Matrix3x4& transform);
+
 	// add rendering matrix before export if needed
 	void PrepareExport(ExportSettings* settings) override;
 	void EndExport(ExportSettings* settings) override;
