@@ -44,7 +44,7 @@ public:
 	bool	isAvailable();
 
 	// return true if available else return false
-	bool	setTask(MethodCallingStruct* task,ThreadEvent* finishedevent);
+	bool	setTask(MethodCallingStruct* task,SmartPointer<ThreadEvent>& finishedevent);
 
 protected:
 

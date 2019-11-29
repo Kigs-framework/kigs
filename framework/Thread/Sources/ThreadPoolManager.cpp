@@ -20,14 +20,14 @@ void	ThreadPoolManager::InitModifiable()
 		if (myThreadCount > 0)
 		{
 
-			mySemaphore = (Semaphore*)KigsCore::GetInstanceOf("ThreadPoolManagerSemaphore", _S_2_ID("Semaphore"));
+			mySemaphore = (Semaphore*)KigsCore::GetInstanceOf("ThreadPoolManagerSemaphore", "Semaphore");
 
 			int i;
 			for (i = 0; i < (int)myThreadCount; i++)
 			{
 				char str[128];
 				snprintf(str, 128, "workerThread_%d", i+1);
-				WorkerThread*	newworker = (WorkerThread*)(KigsCore::GetInstanceOf(str, _S_2_ID("WorkerThread")));
+				WorkerThread*	newworker = (WorkerThread*)(KigsCore::GetInstanceOf(str, "WorkerThread"));
 				newworker->setSemaphore(mySemaphore);
 				newworker->setThreadPoolManager(this);
 				newworker->Init();
@@ -56,27 +56,27 @@ ThreadPoolManager::~ThreadPoolManager()
 }
 
 // return event 
-ThreadEvent*	ThreadPoolManager::setTask(MethodCallingStruct* task)
+SmartPointer<ThreadEvent>	ThreadPoolManager::setTask(MethodCallingStruct* task)
 {
 
 	// lock 
 	mySemaphore->addItem(this);
 	
 	// getAvailableEvent always returns a valid available event 
-	ThreadEvent* result = getTaskEndEvent();
+	SmartPointer<ThreadEvent> result = getTaskEndEvent();
 	result->setValue(LABEL_TO_ID(EventCounter), 1);
 	WorkerThread*	wavailable = getAvailableThread();
 	if (wavailable)
 		wavailable->setTask(task, result);
 	else
 		addTaskToQueue(task,result);
-	result->Destroy();
+
 	// unlock
 	mySemaphore->removeItem(this);
 	return result;
 }
 
-void ThreadPoolManager::addTaskToQueue(MethodCallingStruct* task,ThreadEvent* endevent)
+void ThreadPoolManager::addTaskToQueue(MethodCallingStruct* task,SmartPointer<ThreadEvent>& endevent)
 {
 	MethodEventPair	toAdd;
 	toAdd.myMethodCallingStruct = task;
@@ -102,11 +102,11 @@ WorkerThread*	ThreadPoolManager::getAvailableThread()
 }
 
 // to be called in locked block
-ThreadEvent*	ThreadPoolManager::getTaskEndEvent()
+SmartPointer<ThreadEvent>	ThreadPoolManager::getTaskEndEvent()
 {
 	
 	// if no event available, create a new one
-	ThreadEvent* newevent = (ThreadEvent*)KigsCore::GetInstanceOf("WorkerThreadEvent", _S_2_ID("ThreadEvent"));
+	SmartPointer<ThreadEvent> newevent = OwningRawPtrToSmartPtr((ThreadEvent*)KigsCore::GetInstanceOf("WorkerThreadEvent", "ThreadEvent"));
 	newevent->setSemaphore(mySemaphore);
 	newevent->Init();
 
@@ -152,9 +152,9 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 	{
 		WorkerThread*	wavailable = getAvailableThread();
 		if (wavailable)
-			wavailable->setTask(taskgroup->taskList[i], result.get());
+			wavailable->setTask(taskgroup->taskList[i], result);
 		else
-			addTaskToQueue(taskgroup->taskList[i], result.get());
+			addTaskToQueue(taskgroup->taskList[i], result);
 	}
 	
 	// unlock
@@ -172,7 +172,7 @@ bool	ThreadPoolManager::ManageQueue(WorkerThread* endedThread)
 	bool result = false;
 	if (myQueuedtasks.size())
 	{
-		endedThread->setTask(myQueuedtasks[0].myMethodCallingStruct, myQueuedtasks[0].myThreadEvent.get());
+		endedThread->setTask(myQueuedtasks[0].myMethodCallingStruct, myQueuedtasks[0].myThreadEvent);
 		myQueuedtasks.erase(myQueuedtasks.begin());
 		result = true;
 	}

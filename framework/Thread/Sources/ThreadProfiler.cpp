@@ -7,9 +7,9 @@ IMPLEMENT_CLASS_INFO(ThreadProfiler)
 ThreadProfiler::ThreadProfiler(const kstl::string& name, CLASS_NAME_TREE_ARG): CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	//rmt_CreateGlobalInstance(&rmt);
-	myTlsManager = (ThreadLocalStorageManager*)KigsCore::GetSingleton(_S_2_ID("ThreadLocalStorageManager"));
-	mySemaphore = KigsCore::GetInstanceOf("threadprofilersepmaphore", _S_2_ID("Semaphore"));
-	myGobalTimer = (Timer*)KigsCore::GetInstanceOf("ThreadProfilerTimer", _S_2_ID("Timer"));
+	myTlsManager = (ThreadLocalStorageManager*)KigsCore::GetSingleton("ThreadLocalStorageManager");
+	mySemaphore = KigsCore::GetInstanceOf("threadprofilersepmaphore", "Semaphore");
+	myGobalTimer = (Timer*)KigsCore::GetInstanceOf("ThreadProfilerTimer", "Timer");
 #ifdef DO_THREAD_PROFILING
 	myAllowNewEvents = true;
 #else
@@ -51,7 +51,7 @@ void ThreadProfiler::RegisterThread(Thread* thread)
 
 void ThreadProfiler::ExportProfile(const kstl::string path)
 {
-	FilePathManager* pathManager = (FilePathManager*)KigsCore::GetSingleton(_S_2_ID("FilePathManager"));
+	FilePathManager* pathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
 	kstl::string str = pathManager->DevicePath(path, FilePathManager::DOCUMENT_FOLDER);
 
 	SmartPointer<FileHandle> file = Platform_fopen(str.c_str(), "wb");

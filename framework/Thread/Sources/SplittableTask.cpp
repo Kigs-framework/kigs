@@ -49,7 +49,7 @@ void	SplittableTask::Update(const Timer& timer, void* addParam)
 			mySplitDataStructList[i] = updateSplitDataStruct(mySplitDataStructList[i],i, timer);
 
 			MethodCallingStruct* toadd = new MethodCallingStruct();
-			toadd->myMethodID = LABEL_TO_ID(SplittedUpdate);
+			toadd->myMethodID = KigsID("SplittedUpdate")._id;
 			toadd->myMethodInstance = this;
 			toadd->myPrivateParams = mySplitDataStructList[i];
 
