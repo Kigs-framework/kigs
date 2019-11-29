@@ -28,7 +28,7 @@ public:
 	void	InitModifiable() override;
 
 	// returns the end thread event associated to the task
-	ThreadEvent*	setTask(MethodCallingStruct* task);
+	SmartPointer<ThreadEvent>	setTask(MethodCallingStruct* task);
 
 	class TaskGroupHandle
 	{
@@ -70,12 +70,12 @@ protected:
 
 
 	WorkerThread*	getAvailableThread();
-	ThreadEvent*	getTaskEndEvent();
+	SmartPointer<ThreadEvent>	getTaskEndEvent();
 
 	Semaphore*	mySemaphore;
 
 	// queue
-	void	addTaskToQueue(MethodCallingStruct* task, ThreadEvent* endevent);
+	void	addTaskToQueue(MethodCallingStruct* task, SmartPointer<ThreadEvent>& endevent);
 
 	struct MethodEventPair
 	{

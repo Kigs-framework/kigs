@@ -10,7 +10,7 @@ ThreadLocalStorageManager::ThreadLocalStorageManager(const kstl::string& name, C
 void ThreadLocalStorageManager::InitModifiable() 
 {
 	myThreadIndexTLS = AllocateLocalStorage();
-	SetLocalStorage(myThreadIndexTLS, KigsCore::GetModule(_S_2_ID("ModuleThread")));
+	SetLocalStorage(myThreadIndexTLS, KigsCore::GetModule("ModuleThread"));
 }
 
 
