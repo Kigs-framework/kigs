@@ -558,9 +558,8 @@ inline void CoreModifiable::InsertFunction(KigsID labelID, F&& func)
 {
 	auto& methods = GetLazyContent()->Methods;
 
-	ModifiableMethodStruct toAdd;
-	toAdd.m_Method = nullptr;
-	toAdd.m_Name = "";
+	ModifiableMethodStruct& toAdd= methods[labelID];
+	toAdd.m_IsLambda = true;
 #ifdef KIGS_TOOLS
 	toAdd.xmlattr = nullptr;
 #endif
@@ -569,7 +568,7 @@ inline void CoreModifiable::InsertFunction(KigsID labelID, F&& func)
 		kigs_impl::UnpackAndCall(f, params);
 		return false;
 	};
-	methods[labelID] = std::move(toAdd);
+
 }
 
 template<typename F>
@@ -577,9 +576,8 @@ inline void CoreModifiable::InsertFunctionNoUnpack(KigsID labelID, F&& func)
 {
 	auto& methods = GetLazyContent()->Methods;
 
-	ModifiableMethodStruct toAdd;
-	toAdd.m_Method = nullptr;
-	toAdd.m_Name = "";
+	ModifiableMethodStruct& toAdd= methods[labelID];
+	toAdd.m_IsLambda = true;
 #ifdef KIGS_TOOLS
 	toAdd.xmlattr = nullptr;
 #endif
@@ -588,7 +586,6 @@ inline void CoreModifiable::InsertFunctionNoUnpack(KigsID labelID, F&& func)
 		f(params);
 		return false;
 	};
-	methods[labelID] = std::move(toAdd);
 }
 
 template<typename Ret, typename ... Args>

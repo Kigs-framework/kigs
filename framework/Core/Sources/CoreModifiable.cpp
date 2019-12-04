@@ -176,9 +176,7 @@ bool CoreModifiable::HasMethod(const KigsID& methodNameID) const
 
 void CoreModifiable::InsertMethod(KigsID labelID, RefCountedClass::ModifiableMethod method, const std::string& methodName CONNECT_PARAM)
 {
-	ModifiableMethodStruct toAdd;
-	toAdd.m_Method = method;
-	toAdd.m_Name = methodName;
+	ModifiableMethodStruct toAdd(method, methodName);
 
 #ifdef KIGS_TOOLS
 	toAdd.xmlattr = xmlattr;
@@ -583,18 +581,18 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 	}
 	CoreModifiable* localthis=(CoreModifiable*)getlocalthis;
 	bool result = false;
-	if (methodFound->m_Name != "")
+	if (methodFound->m_IsLambda)
 	{
-		maString methodName{ "methodName" , methodFound->m_Name };
-		params.insert(params.begin(), &methodName);
-		result=Call(methodFound->m_Method, sender, params, privateParams);
-		params.erase(params.begin());
+		result = methodFound->m_Function(params);
 	}
 	else
 	{
-		if (methodFound->m_Function)
+		if (methodFound->m_Name != "")
 		{
-			result = methodFound->m_Function(params);
+			maString methodName{ "methodName" , methodFound->m_Name };
+			params.insert(params.begin(), &methodName);
+			result=Call(methodFound->m_Method, sender, params, privateParams);
+			params.erase(params.begin());
 		}
 		else
 		{

@@ -336,14 +336,55 @@ private:
 	KigsID			myNameID;
 };
 
-
+#pragma pack(4)
 struct ModifiableMethodStruct
 {
-	RefCountedClass::ModifiableMethod	m_Method;
-	kstl::string						m_Name;				// if not empty, push m_Name in front of params before calling m_Method
-	std::function<bool(kstl::vector<CoreModifiableAttribute*>&)> m_Function;
+
+	ModifiableMethodStruct() : m_IsLambda(false),m_Method(nullptr), m_Function(nullptr), m_Name("")
+	{
+
+	}
+
+	ModifiableMethodStruct(const RefCountedClass::ModifiableMethod& m, const std::string& n) : m_IsLambda(false),m_Function(nullptr), m_Name(n)
+	{
+		m_Method = m;
+	}
+
+	const ModifiableMethodStruct& operator = (const ModifiableMethodStruct& other)
+	{
+		if (other.m_IsLambda)
+		{
+			m_Function = other.m_Function;
+			m_IsLambda = true;
+		}
+		else
+		{
+			m_IsLambda = false;
+			m_Function = nullptr;
+			m_Method = other.m_Method;
+			m_Name = other.m_Name;
+		}
+
+		return *this;
+	}
+
+	
+	~ModifiableMethodStruct() {  }
+
+	// as std::function is "big", and if lambda is used, m_Name and m_Method are unused, try to pack everything in a union
+	union {
+		struct {
+			kstl::string						m_Name;
+			RefCountedClass::ModifiableMethod	m_Method;
+		};
+		std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>	m_Function;
+	};
+	bool m_IsLambda;
+	
 	CONNECT_FIELD
 };
+
+#pragma pack()
 
 // ****************************************
 // * CoreTreeNode class
