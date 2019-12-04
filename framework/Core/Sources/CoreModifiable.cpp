@@ -182,7 +182,7 @@ void CoreModifiable::InsertMethod(KigsID labelID, RefCountedClass::ModifiableMet
 	toAdd.xmlattr = xmlattr;
 #endif
 	
-	GetLazyContent()->Methods[labelID] = toAdd;
+	GetLazyContent()->Methods.insert({ labelID, toAdd });
 }
 
 
@@ -581,9 +581,9 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 	}
 	CoreModifiable* localthis=(CoreModifiable*)getlocalthis;
 	bool result = false;
-	if (methodFound->m_IsLambda)
+	if (methodFound->m_Function)
 	{
-		result = methodFound->m_Function(params);
+		result = (*methodFound->m_Function)(params);
 	}
 	else
 	{
