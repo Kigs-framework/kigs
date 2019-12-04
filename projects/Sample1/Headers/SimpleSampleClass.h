@@ -13,4 +13,7 @@ protected:
 
 	// add an int attribute named "Sample1Value" with value 6
 	maInt	mTestValue = BASE_ATTRIBUTE(Sample1Value, 6);
+
+	// add given params to mTestValue
+	DECLARE_METHOD(AddValue);
 };
