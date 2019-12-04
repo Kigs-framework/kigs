@@ -485,9 +485,15 @@ void	API3DGenericMeshShader::ChooseShader(TravState* state, unsigned int attribF
 
 		defines += R"====(
 #ifdef GL_ES
+#ifdef GL_FRAGMENT_PRECISION_HIGH
 	precision highp float;
 	precision highp int;
 	precision mediump  sampler2D;
+#else
+	precision mediump float;
+	precision mediump int;
+	precision mediump  sampler2D;
+#endif
 #endif
 )====";
 
