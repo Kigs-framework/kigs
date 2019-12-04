@@ -4,6 +4,7 @@ var LibraryJsGUI  = {
 	CreateCanvas : function(thewindow,isfirst)
 	{
 		var windowname=UTF8ToString(thewindow);
+		//Module.canvas.parentElement.style.position = "relative";
 		if(isfirst==0)
 		{
 			var newcanvas = document.createElement('canvas');
@@ -55,22 +56,36 @@ var LibraryJsGUI  = {
 		var windowname=UTF8ToString(thewindow);
 		var canvas =document.getElementById(windowname);
 
-		//var canvas = Module['canvas'];
-		
-		if(canvas.absolutePositionning)
+        var isParentRelative = canvas.parentElement.position == "static";
+
+		if(canvas.absolutePositionning) // we want an absolute position in the html doc
 		{
-			canvas.style.left = posx +'px';
-			canvas.style.top = posy +'px';
-			
-			console.log("absolute canvas at : " , canvas.style.left , "  " , canvas.style.top);
+			// test if position is parent relative
+			if(isParentRelative)
+			{
+				var rect = canvas.parentElement.getBoundingClientRect();
+				canvas.style.left = (rect.left + posx) +'px';
+				canvas.style.top = (rect.top + posy) +'px';
+			}
+			else
+			{
+				canvas.style.left = posx +'px';
+				canvas.style.top = posy +'px';
+			}
 		}
-		else
+		else // want a relative position
 		{
-			var rect = canvas.parentElement.getBoundingClientRect();
-			canvas.style.left = (rect.left + posx) +'px';
-			canvas.style.top = (rect.top + posy) +'px';
-			
-			console.log("parent relative canvas at : " , (rect.left + posx) , "  " , (rect.top + posy));
+			if(isParentRelative)
+			{
+				canvas.style.left = posx +'px';
+				canvas.style.top = posy +'px';
+			}
+			else
+			{
+				var rect = canvas.parentElement.getBoundingClientRect();
+				canvas.style.left = (rect.left + posx) +'px';
+				canvas.style.top = (rect.top + posy) +'px';
+			}
 		}
 	},
 	
