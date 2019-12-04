@@ -340,36 +340,42 @@ private:
 struct ModifiableMethodStruct
 {
 
-	ModifiableMethodStruct() : m_IsLambda(false),m_Method(nullptr), m_Function(nullptr), m_Name("")
+	ModifiableMethodStruct() : m_Function(nullptr), m_Method(nullptr), m_Name("")
 	{
 
 	}
 
-	ModifiableMethodStruct(const RefCountedClass::ModifiableMethod& m, const std::string& n) : m_IsLambda(false),m_Function(nullptr), m_Name(n)
+	ModifiableMethodStruct(const RefCountedClass::ModifiableMethod& m, const std::string& n) : m_Function(nullptr), m_Method(m), m_Name(n)
 	{
-		m_Method = m;
+		
 	}
 
-	const ModifiableMethodStruct& operator = (const ModifiableMethodStruct& other)
+	ModifiableMethodStruct(const ModifiableMethodStruct& other) : m_Function(nullptr), m_Method(other.m_Method), m_Name(other.m_Name)
 	{
-		if (other.m_IsLambda)
+		if (other.m_Function)
 		{
-			m_Function = other.m_Function;
-			m_IsLambda = true;
+			// placement new at reserved UnionFunction
+			m_Function = new (&m_UnionFunction) std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>(*other.m_Function);
 		}
-		else
+	}
+
+	void	setFunction(const std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>& func)
+	{
+		if (m_Function)
 		{
-			m_IsLambda = false;
 			m_Function = nullptr;
-			m_Method = other.m_Method;
-			m_Name = other.m_Name;
 		}
+		// placement new at reserved UnionFunction
+		m_Function = new (&m_UnionFunction) std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>(func);
 
-		return *this;
 	}
-
 	
-	~ModifiableMethodStruct() {  }
+	~ModifiableMethodStruct() {
+		if (m_Function)
+		{
+			m_Function = nullptr;
+		}
+	}
 
 	// as std::function is "big", and if lambda is used, m_Name and m_Method are unused, try to pack everything in a union
 	union {
@@ -377,9 +383,9 @@ struct ModifiableMethodStruct
 			kstl::string						m_Name;
 			RefCountedClass::ModifiableMethod	m_Method;
 		};
-		std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>	m_Function;
+		std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>	m_UnionFunction;
 	};
-	bool m_IsLambda;
+	std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>* m_Function;
 	
 	CONNECT_FIELD
 };

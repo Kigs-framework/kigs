@@ -499,7 +499,7 @@ CoreTreeNode* KigsCore::AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, c
 			parent->myChildren[cid] = nextNode;
 			for (auto& pair : method_table)
 			{
-				nextNode->myMethods[pair.first] = ModifiableMethodStruct{ pair.second, "" };
+				nextNode->myMethods.insert({ pair.first, ModifiableMethodStruct{ pair.second, "" } });
 			}
 			KigsCore::Instance()->myTypeNodeMap[cid] = nextNode;
 		}
