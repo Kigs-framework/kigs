@@ -354,16 +354,23 @@ struct ModifiableMethodStruct
 	{
 		if (other.m_Function)
 		{
+			m_Name.~basic_string();
 			// placement new at reserved UnionFunction
 			m_Function = new (&m_UnionFunction) std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>(*other.m_Function);
 		}
+		
 	}
 
 	void	setFunction(const std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>& func)
 	{
 		if (m_Function)
 		{
+			m_Function->~function();
 			m_Function = nullptr;
+		}
+		else
+		{
+			m_Name.~basic_string();
 		}
 		// placement new at reserved UnionFunction
 		m_Function = new (&m_UnionFunction) std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>(func);
@@ -373,7 +380,12 @@ struct ModifiableMethodStruct
 	~ModifiableMethodStruct() {
 		if (m_Function)
 		{
+			m_Function->~function();
 			m_Function = nullptr;
+		}
+		else
+		{
+			m_Name.~basic_string();
 		}
 	}
 
