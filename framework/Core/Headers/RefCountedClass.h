@@ -350,28 +350,25 @@ struct ModifiableMethodStruct
 		
 	}
 
-	ModifiableMethodStruct(const ModifiableMethodStruct& other) : m_Function(nullptr), m_Method(other.m_Method), m_Name(other.m_Name)
+	ModifiableMethodStruct(const ModifiableMethodStruct& other) : m_Function(nullptr), m_Method(other.m_Method), m_Name("")
 	{
 		if (other.m_Function)
 		{
-<<<<<<< HEAD
 			m_Name.~basic_string();
 			// placement new at reserved UnionFunction
 			m_Function = new (&m_UnionFunction) std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>(*other.m_Function);
 		}
-		
-=======
-			// placement new at reserved UnionFunction
-			m_Function = new (&m_UnionFunction) std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>(*other.m_Function);
+		else
+		{
+			m_Name = other.m_Name;
 		}
->>>>>>> refs/subrepo/kigs/fetch
+		
 	}
 
 	void	setFunction(const std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>& func)
 	{
 		if (m_Function)
 		{
-<<<<<<< HEAD
 			m_Function->~function();
 			m_Function = nullptr;
 		}
@@ -379,10 +376,6 @@ struct ModifiableMethodStruct
 		{
 			m_Name.~basic_string();
 		}
-=======
-			m_Function = nullptr;
-		}
->>>>>>> refs/subrepo/kigs/fetch
 		// placement new at reserved UnionFunction
 		m_Function = new (&m_UnionFunction) std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>(func);
 
@@ -391,7 +384,6 @@ struct ModifiableMethodStruct
 	~ModifiableMethodStruct() {
 		if (m_Function)
 		{
-<<<<<<< HEAD
 			m_Function->~function();
 			m_Function = nullptr;
 		}
@@ -399,10 +391,6 @@ struct ModifiableMethodStruct
 		{
 			m_Name.~basic_string();
 		}
-=======
-			m_Function = nullptr;
-		}
->>>>>>> refs/subrepo/kigs/fetch
 	}
 
 	// as std::function is "big", and if lambda is used, m_Name and m_Method are unused, try to pack everything in a union
