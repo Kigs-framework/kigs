@@ -13,7 +13,7 @@ DynamicModuleHandleAndPointer PlatformLoadDLL(const std::string& dllname)
 {
 #ifndef _KIGS_ONLY_STATIC_LIB_
 
-	FilePathManager*	pathManager = (FilePathManager*)KigsCore::GetSingleton(_S_2_ID("FilePathManager"));
+	FilePathManager*	pathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
 	if (!pathManager)
 		return;
 

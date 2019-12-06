@@ -1329,12 +1329,14 @@ void CustomAttributeEditor(CoreModifiable* item)
 		auto tex = item->as<Texture>();
 		f32 w, h;
 		tex->GetSize(w, h);
+		v2f uv;
+		tex->GetRatio(uv.x, uv.y);
 
 		auto f = [&](float scale)
 		{
 			ImGui::BeginTooltip();
 			ImVec2 size = { w*scale, h*scale };
-			ImGui::Image((ImTextureID)tex, size, ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::Image((ImTextureID)tex, size, ImVec2(0, 0), uv);
 			ImGui::EndTooltip();
 		};
 

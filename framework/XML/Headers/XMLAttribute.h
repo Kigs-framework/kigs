@@ -101,6 +101,7 @@ private:
 };
 
 typedef XMLAttributeTemplate<std::string> XMLAttribute;
+typedef XMLAttributeTemplate<std::string_view> XMLAttributeStringRef;
 
 #ifndef JAVASCRIPT
 template<typename T>

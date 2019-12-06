@@ -320,7 +320,7 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 		Hit* hit;
 	};
 
-	kstl::vector<Sorter> sorter(param.toSort.size(), Sorter{nullptr, FLT_MAX });
+	kstl::vector<Sorter> sorter(param.toSort.size(), Sorter{nullptr, FLT_MAX, nullptr });
 	for (auto&& hit : hits)
 	{
 		auto n = hit.HitActor;

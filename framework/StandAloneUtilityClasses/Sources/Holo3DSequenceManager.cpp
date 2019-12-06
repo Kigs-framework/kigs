@@ -102,9 +102,9 @@ bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, to
 	Vector3D dir = posin.dir;
 
 	//! transform Ray in local mesh coordinate system if needed				
-	const Matrix3x4& inverseMatrix = mySpacialNode->GetGlobalToLocal();
-	inverseMatrix.TransformPoint(&pos);
-	inverseMatrix.TransformVector(&dir);
+	auto& g2l = mySpacialNode->GetGlobalToLocal();
+	g2l.TransformPoint(&pos);
+	g2l.TransformVector(&dir);
 
 	bool is_in = Intersection::IntersectRayPlane(pos, dir, planePos, planeNorm, dist);
 	if (is_in)
@@ -112,8 +112,20 @@ bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, to
 		pout.pos.xy = myCollidablePanel->ConvertHit(pos + ((float)dist*dir));
 		pout.pos.x = 1 - pout.pos.x;
 		pout.pos.y = 1 - pout.pos.y;
-
-		return myCollidablePanel->ValidHit(pos + dir * dist);
+		is_in = myCollidablePanel->ValidHit(pos + dir * dist);
+		if (is_in)
+		{
+			auto& l2g = mySpacialNode->GetLocalToGlobal();
+			pout.hit.HitPosition = pos + dir * dist;
+			pout.hit.HitNormal = -planeNorm;
+			l2g.TransformPoint(&pout.hit.HitPosition);
+			l2g.TransformVector(&pout.hit.HitNormal);
+			pout.hit.HitNormal.Normalize();
+			pout.hit.HitNode = mySpacialNode;
+			pout.hit.HitActor = myCollidablePanel;
+			pout.hit.HitCollisionObject = myCollidablePanel; 
+		}
+		return is_in;
 	}
 	return false;
 }

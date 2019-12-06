@@ -4,8 +4,8 @@
 #include "CoreModifiable.h"
 #include "TecLibs/Tec3D.h"
 #include "SceneNode.h"
+#include "TravState.h"
 
-class TravState;
 
 // ****************************************
 // * Drawable class
@@ -68,7 +68,7 @@ public:
 	 */
 	inline void	CheckPreDraw(TravState* travstate)
 	{
-		if(myDrawingNeeds&((unsigned int)Need_Predraw))
+		if(myDrawingNeeds&((unsigned int)Need_Predraw) && (!travstate->mCurrentPass || IsUsedInRenderPass(travstate->mCurrentPass->pass_mask)))
 			DoPreDraw(travstate);
 	}
 	/**
@@ -78,7 +78,7 @@ public:
 	 */
 	inline void	CheckDraw(TravState* travstate)
 	{
-		if(myDrawingNeeds&((unsigned int)Need_Draw))
+		if(myDrawingNeeds&((unsigned int)Need_Draw) && (!travstate->mCurrentPass || IsUsedInRenderPass(travstate->mCurrentPass->pass_mask)))
 			DoDraw(travstate);
 	}
 	/**
@@ -88,7 +88,7 @@ public:
 	 */
 	inline void	CheckPostDraw(TravState* travstate)
 	{
-		if(myDrawingNeeds&((unsigned int)Need_Postdraw))
+		if(myDrawingNeeds&((unsigned int)Need_Postdraw) && (!travstate->mCurrentPass || IsUsedInRenderPass(travstate->mCurrentPass->pass_mask)))
 			DoPostDraw(travstate);
 	}
 	
@@ -150,7 +150,7 @@ public:
 	bool IsSortable() { return mSortable; }
 
 protected:
-	maUInt mRenderPassMask = BASE_ATTRIBUTE(RenderPassMask, 1);
+	maUInt mRenderPassMask = BASE_ATTRIBUTE(RenderPassMask, 0xffffffff);
 	maBool mSortable = BASE_ATTRIBUTE(Sortable, false);
 
 	//! init the modifiable and set the _isInit flag to true if OK

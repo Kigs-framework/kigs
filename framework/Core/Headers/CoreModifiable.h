@@ -510,6 +510,23 @@ public:
 		return val;
 	}
 
+	template<typename T>
+	void setValueRecursively(KigsID id, T&& value)
+	{
+		setValue(id, value);
+		for (auto& it : getItems()) 
+			it.myItem->setValueRecursively(id, value);
+	}
+
+	template<typename T, typename Pred>
+	void setValueRecursively(KigsID id, T&& value, Pred&& predicate)
+	{
+		if(predicate(this))
+			setValue(id, value);
+		for (auto& it : getItems())
+			it.myItem->setValueRecursively(id, value, std::forward<decltype(predicate)>(predicate));
+	}
+
 	/// Dynamic attribute management
 	template<typename attribute_type, typename value_type>
 	attribute_type*	AddDynamicAttribute(KigsID ID, const value_type& value);

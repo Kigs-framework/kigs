@@ -574,7 +574,7 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 			}
 		}
 #ifdef KIGS_TOOLS
-		if(methodNameID._id_name != "SequenceStart" && methodNameID._id_name != "SequenceEnd")
+		if(methodNameID != "SequenceStart" && methodNameID != "SequenceEnd")
 			kigsprintf("Trying to call %s but the method doesn't exists\n", methodNameID._id_name.c_str());
 #endif
 		return false;
@@ -863,7 +863,7 @@ void CoreModifiable::UpdateAttributes(const CoreModifiable& tocopy)
 		auto foundattr = _attributes.find(it->first);
 		if (foundattr != _attributes.end())
 		{
-			foundattr->second = it->second;
+			*foundattr->second = *it->second;
 		}
 	}
 }
@@ -1582,7 +1582,7 @@ bool CoreModifiable::removeItem(CoreModifiable* item)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 #ifdef USE_LINK_TYPE
-	STRINGS_NAME_TYPE emptyLink=_S_2_ID("");
+	STRINGS_NAME_TYPE emptyLink="";
 #endif
 
 	bool found=false, res=false;

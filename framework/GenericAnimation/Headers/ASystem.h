@@ -150,9 +150,9 @@ void   ASystem<LocalToGlobalType>::UseAnimationLocalToGlobalData(bool b)
 		
 		// TODO
 		/*
-		maInt copythis(*this, false, _S_2_ID("this"), (int)this);
-		maInt restype(*this, false, _S_2_ID("type"), Local_To_Global_Data);
-		maInt result(*this, false, _S_2_ID("result"), 0);
+		maInt copythis(*this, false, "this", (int)this);
+		maInt restype(*this, false, "type", Local_To_Global_Data);
+		maInt result(*this, false, "result", 0);
 		
 		kstl::vector<CoreModifiableAttribute*> params;
 		params.push_back(&copythis);

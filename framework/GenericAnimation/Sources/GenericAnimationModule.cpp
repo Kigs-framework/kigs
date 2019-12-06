@@ -77,7 +77,7 @@ AnimationResourceInfo*	GenericAnimationModule::LoadAnimation(const kstl::string&
 
 	CoreRawBuffer* result=0;
 
-	FilePathManager*	pathManager=(FilePathManager*)KigsCore::GetSingleton(_S_2_ID("FilePathManager"));
+	FilePathManager*	pathManager=(FilePathManager*)KigsCore::GetSingleton("FilePathManager");
 
 	SmartPointer<FileHandle> fullfilenamehandle;
 

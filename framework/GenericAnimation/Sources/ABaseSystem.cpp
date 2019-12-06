@@ -75,7 +75,7 @@ void    ABaseSystem::SetHierarchy(AObjectSkeletonResource* hierarchy)
 			channelName+="_AnimationChannel_";
 			channelName+=charindex;
 
-            m_pChannelTab[i]=(ABaseChannel*) KigsCore::GetInstanceOf(channelName,_S_2_ID(ClassName));
+            m_pChannelTab[i]=(ABaseChannel*) KigsCore::GetInstanceOf(channelName, ClassName);
             m_pChannelTab[i]->SetGroupID(hierarchy->getUID(i));
 			m_pChannelTab[i]->SetBoneID(hierarchy->getID(i) - 1);
 
@@ -124,7 +124,7 @@ void    ABaseSystem::SetHierarchyFromSystem(ABaseSystem* sys)
 			channelName+="_AnimationChannel_";
 			channelName+=charindex;
 
-            m_pChannelTab[i]=(ABaseChannel*) KigsCore::GetInstanceOf(channelName,_S_2_ID(ClassName));
+            m_pChannelTab[i]=(ABaseChannel*) KigsCore::GetInstanceOf(channelName, ClassName);
             m_pChannelTab[i]->SetGroupID(other_channel->GetGroupID());
 			m_pChannelTab[i]->SetBoneID(other_channel->GetBoneID());
 

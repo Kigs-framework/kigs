@@ -41,8 +41,8 @@ IMPLEMENT_CLASS_INFO(ModernMesh);
 IMPLEMENT_CONSTRUCTOR(ModernMesh)
 {
 	mSortable = true;
+	mRenderPassMask = 1;
 }
-
 
 ModernMesh::~ModernMesh()
 {
@@ -1513,7 +1513,7 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 		bool disable_write = false;
 		bool no_draw = false;
 #if 1
-		if (mTestOcclusion /*&& !travstate->mDrawingInstances*/)
+		if (mTestOcclusion && (travstate->mCurrentPass->pass_mask & 1))
 		{
 			auto frame_number = travstate->GetFrameNumber();
 			if (mOcclusionQueryId == -1)

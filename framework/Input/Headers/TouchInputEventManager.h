@@ -3,6 +3,7 @@
 #include "CoreModifiable.h"
 #include "TecLibs/Tec3D.h"
 
+#include "maReference.h"
 
 #include "TecLibs/Math/IntersectionAlgorithms.h"
 
@@ -115,6 +116,7 @@ struct touchPosInfos
 	v3f				origin;							// 3D origin if available
 	v3f				pos;							// 3D position (z is 0 for 2d mouse or touch)
 	unsigned int	flag;
+	Hit				hit = {};
 
 	inline bool	has3DInfos()
 	{
@@ -614,6 +616,8 @@ protected:
 	DECLARE_METHOD(OnDestroyTouchSupportCallback);
 	
 	virtual ~TouchInputEventManager();
+
+	maReference mGazeCamera = BASE_ATTRIBUTE(GazeCamera, "");
 
 	std::unordered_map<TouchEventID, TouchEventState::TouchInfos> mLastFrameTouches;
 
