@@ -121,7 +121,7 @@ Set FileSystem = CreateObject("Scripting.FileSystemObject")
 ' Set logFile = FileSystem.CreateTextFile("CreateProjectLog.txt", Overwrite, TristateFalse)
 
 Dim strAnswer
-strAnswer = InputBox("Please enter the new project name:", "New Kigs Data Driven Project")
+strAnswer = InputBox("Please enter the new project name:", "New Kigs Console Project")
 
 'The location of the zip file.
 Dim ZipFile

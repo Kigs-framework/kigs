@@ -516,7 +516,21 @@ void DataDrivenBaseApplication::ProtectedInit()
 	
 	// device display caps to get screen resolution
 	DisplayDeviceCaps*	L_displaycaps = (DisplayDeviceCaps*)(KigsCore::GetInstanceOf("getdisplaycaps", "DisplayDeviceCaps"));
-	const kstl::vector<DisplayDeviceCaps::DisplayDeviceCapacity>*	L_capacitylist = L_displaycaps->GetMainDisplayDeviceCapacityList();
+
+	const kstl::vector<DisplayDeviceCaps::DisplayDeviceCapacity>* L_capacitylist = nullptr;
+
+
+	std::string L_DeviceName;
+	if (AppInit->getValue("DeviceName", L_DeviceName))
+	{
+		if (L_DeviceName != "")
+		{
+			L_capacitylist = L_displaycaps->GetDisplayDeviceCapacityList(L_DeviceName);
+		}
+	}
+
+	if(L_capacitylist == nullptr)
+		L_capacitylist = L_displaycaps->GetMainDisplayDeviceCapacityList();
 
 	// default
 	int L_ScreenSizeX = 1280;
@@ -549,6 +563,7 @@ void DataDrivenBaseApplication::ProtectedInit()
 	}
 	if (L_capacitylist)
 	{
+		
 		kstl::vector<DisplayDeviceCaps::DisplayDeviceCapacity>::const_iterator	it = (*L_capacitylist).begin();
 		while (it != (*L_capacitylist).end())
 		{
@@ -566,11 +581,21 @@ void DataDrivenBaseApplication::ProtectedInit()
 				}
 				else
 				{
+					// if -1 center window
 					if (L_ScreenPosX == -1)
 						L_ScreenPosX = (current.myWidth - L_ScreenSizeX) >> 1;
 
+					// if -1 center window
 					if (L_ScreenPosY == -1)
 						L_ScreenPosY = (current.myHeight - L_ScreenSizeY) >> 1;
+
+					// if negative (and not -1) set position relative to right border 
+					if(L_ScreenPosX < 0)
+						L_ScreenPosX = current.myWidth - L_ScreenSizeX + L_ScreenPosX;
+
+					// if negative (and not -1) set position relative to bottom border 
+					if (L_ScreenPosY < 0)
+						L_ScreenPosY = current.myHeight - L_ScreenSizeY + L_ScreenPosY;
 				}
 				break;
 			}

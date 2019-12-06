@@ -558,18 +558,16 @@ inline void CoreModifiable::InsertFunction(KigsID labelID, F&& func)
 {
 	auto& methods = GetLazyContent()->Methods;
 
-	ModifiableMethodStruct toAdd;
-	toAdd.m_Method = nullptr;
-	toAdd.m_Name = "";
+	ModifiableMethodStruct& toAdd = methods[labelID];
 #ifdef KIGS_TOOLS
 	toAdd.xmlattr = nullptr;
 #endif
-	toAdd.m_Function = [f = std::move(func)](kstl::vector<CoreModifiableAttribute*>& params) mutable
+	toAdd.setFunction([f = std::move(func)](kstl::vector<CoreModifiableAttribute*>& params) mutable
 	{
 		kigs_impl::UnpackAndCall(f, params);
 		return false;
-	};
-	methods[labelID] = std::move(toAdd);
+	});
+
 }
 
 template<typename F>
@@ -577,18 +575,16 @@ inline void CoreModifiable::InsertFunctionNoUnpack(KigsID labelID, F&& func)
 {
 	auto& methods = GetLazyContent()->Methods;
 
-	ModifiableMethodStruct toAdd;
-	toAdd.m_Method = nullptr;
-	toAdd.m_Name = "";
+	ModifiableMethodStruct& toAdd= methods[labelID];
+
 #ifdef KIGS_TOOLS
 	toAdd.xmlattr = nullptr;
 #endif
-	toAdd.m_Function = [f = std::move(func)](kstl::vector<CoreModifiableAttribute*>& params) mutable
+	toAdd.setFunction([f = std::move(func)](kstl::vector<CoreModifiableAttribute*>& params) mutable
 	{
 		f(params);
 		return false;
-	};
-	methods[labelID] = std::move(toAdd);
+	});
 }
 
 template<typename Ret, typename ... Args>

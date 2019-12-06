@@ -17,7 +17,7 @@ Thread::Thread(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(na
 
 Thread::~Thread()
 {
-	ThreadProfiler* threadProfiler = (ThreadProfiler*)KigsCore::GetSingleton(_S_2_ID("ThreadProfiler"));
+	ThreadProfiler* threadProfiler = (ThreadProfiler*)KigsCore::GetSingleton("ThreadProfiler");
 	if (threadProfiler)
 		threadProfiler->RemoveThread(this);
 
@@ -43,11 +43,11 @@ void Thread::KillThread ( )
 ThreadReturnType	Thread::Run(void* param)
 {
 	Thread* localThis=(Thread*)param;
-	ThreadLocalStorageManager* tls_manager = (ThreadLocalStorageManager*)KigsCore::GetSingleton(_S_2_ID("ThreadLocalStorageManager"));
+	ThreadLocalStorageManager* tls_manager = (ThreadLocalStorageManager*)KigsCore::GetSingleton("ThreadLocalStorageManager");
 	if (tls_manager)
 		tls_manager->RegisterThread(localThis);
 
-	ThreadProfiler* threadProfiler = (ThreadProfiler*)KigsCore::GetSingleton(_S_2_ID("ThreadProfiler"));
+	ThreadProfiler* threadProfiler = (ThreadProfiler*)KigsCore::GetSingleton("ThreadProfiler");
 	if (threadProfiler)
 		threadProfiler->RegisterThread(localThis);
 
@@ -78,7 +78,7 @@ void Thread::InitModifiable()
 	CoreModifiable::InitModifiable();
 	
 	// create a os dependant thread 
-	myThreadRunMethod=(ThreadRunMethod*)KigsCore::GetInstanceOf(this->getName() + "ThreadRunMethod",_S_2_ID("ThreadRunMethod"));		
+	myThreadRunMethod=(ThreadRunMethod*)KigsCore::GetInstanceOf(this->getName() + "ThreadRunMethod","ThreadRunMethod");		
 	
 	if(!myThreadRunMethod->isSubType(ThreadRunMethod::myClassID))
 	{

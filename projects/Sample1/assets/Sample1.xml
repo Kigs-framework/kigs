@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Inst N="simpleclass" T="SimpleSampleClass">
+	<Inst N="localtimer" T="Timer">
+		<Attr T="float" N="floatValue" V="12.000000" Dyn="yes"/>
+	</Inst>
+</Inst>

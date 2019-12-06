@@ -33,7 +33,7 @@ void WorkerThread::InitModifiable()
 	{
 		if (mySemaphore)
 		{
-			myThreadEvent = (ThreadEvent*)KigsCore::GetInstanceOf("WorkerThreadEvent", _S_2_ID("ThreadEvent"));
+			myThreadEvent = (ThreadEvent*)KigsCore::GetInstanceOf("WorkerThreadEvent","ThreadEvent");
 			myThreadEvent->setValue(LABEL_TO_ID(AutoReset), true);
 			myThreadEvent->setSemaphore(mySemaphore);
 			Thread::InitModifiable();
@@ -89,7 +89,7 @@ bool	WorkerThread::isAvailable()
 }
 
 // to be called in a locked block
-bool	WorkerThread::setTask(MethodCallingStruct* task,ThreadEvent* finishedevent)
+bool	WorkerThread::setTask(MethodCallingStruct* task,SmartPointer<ThreadEvent>& finishedevent)
 {
 	bool result = false;
 	if (myCurrentTask == 0)

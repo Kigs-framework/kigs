@@ -336,14 +336,77 @@ private:
 	KigsID			myNameID;
 };
 
-
+#pragma pack(4)
 struct ModifiableMethodStruct
 {
-	RefCountedClass::ModifiableMethod	m_Method;
-	kstl::string						m_Name;				// if not empty, push m_Name in front of params before calling m_Method
-	std::function<bool(kstl::vector<CoreModifiableAttribute*>&)> m_Function;
+
+	ModifiableMethodStruct() : m_Function(nullptr), m_Method(nullptr), m_Name("")
+	{
+
+	}
+
+	ModifiableMethodStruct(const RefCountedClass::ModifiableMethod& m, const std::string& n) : m_Function(nullptr), m_Method(m), m_Name(n)
+	{
+		
+	}
+
+	ModifiableMethodStruct(const ModifiableMethodStruct& other) : m_Function(nullptr), m_Method(other.m_Method), m_Name("")
+	{
+		if (other.m_Function)
+		{
+			m_Name.~basic_string();
+			// placement new at reserved UnionFunction
+			m_Function = new (&m_UnionFunction) std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>(*other.m_Function);
+		}
+		else
+		{
+			m_Name = other.m_Name;
+		}
+		
+	}
+
+	void	setFunction(const std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>& func)
+	{
+		if (m_Function)
+		{
+			m_Function->~function();
+			m_Function = nullptr;
+		}
+		else
+		{
+			m_Name.~basic_string();
+		}
+		// placement new at reserved UnionFunction
+		m_Function = new (&m_UnionFunction) std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>(func);
+
+	}
+	
+	~ModifiableMethodStruct() {
+		if (m_Function)
+		{
+			m_Function->~function();
+			m_Function = nullptr;
+		}
+		else
+		{
+			m_Name.~basic_string();
+		}
+	}
+
+	// as std::function is "big", and if lambda is used, m_Name and m_Method are unused, try to pack everything in a union
+	union {
+		struct {
+			kstl::string						m_Name;
+			RefCountedClass::ModifiableMethod	m_Method;
+		};
+		std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>	m_UnionFunction;
+	};
+	std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>* m_Function;
+	
 	CONNECT_FIELD
 };
+
+#pragma pack()
 
 // ****************************************
 // * CoreTreeNode class

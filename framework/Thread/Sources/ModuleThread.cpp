@@ -32,8 +32,8 @@ void ModuleThread::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribu
 	DECLARE_FULL_CLASS_INFO(core, ThreadProfiler, ThreadProfiler, Thread)
 
 #ifdef DO_THREAD_PROFILING
-	KigsCore::GetSingleton(_S_2_ID("ThreadLocalStorageManager"))->Init();
-	KigsCore::SetThreadProfiler(KigsCore::GetSingleton(_S_2_ID("ThreadProfiler")));
+	KigsCore::GetSingleton("ThreadLocalStorageManager")->Init();
+	KigsCore::SetThreadProfiler(KigsCore::GetSingleton("ThreadProfiler"));
 	KigsCore::GetThreadProfiler()->Init();
 #endif
 
@@ -43,8 +43,8 @@ void ModuleThread::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribu
 void ModuleThread::Close()
 {
 #ifdef DO_THREAD_PROFILING
-	KigsCore::ReleaseSingleton(_S_2_ID("ThreadProfiler"));
-	KigsCore::ReleaseSingleton(_S_2_ID("ThreadLocalStorageManager"));
+	KigsCore::ReleaseSingleton("ThreadProfiler");
+	KigsCore::ReleaseSingleton("ThreadLocalStorageManager");
 #endif
 	KigsCore::CloseMultiThread();
 	BaseClose();
