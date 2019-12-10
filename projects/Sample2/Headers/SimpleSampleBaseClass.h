@@ -9,6 +9,10 @@ public:
 	DECLARE_INLINE_CONSTRUCTOR(SimpleSampleBaseClass) { std::cout << "SimpleSampleBaseClass constructor" << std::endl; }
 
 protected:
+	
 	void InitModifiable() override;
+	virtual void Update(const Timer& timer, void* addParam)  override;
 
+	// method that add 1 to the given parameter
+	DECLARE_METHOD(incrementParam);
 };
