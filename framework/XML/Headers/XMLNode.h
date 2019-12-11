@@ -323,19 +323,32 @@ kfloat XMLNodeTemplate<StringType>::getFloat()
 	return result;
 }
 #else
-template<typename StringType>
-int XMLNodeTemplate<StringType>::getInt()
+template<>
+int XMLNodeTemplate<std::string>::getInt()
 {
-	int result = 0;
-	KIGS_ERROR("Not implemented", 3);
+	int result = atoi(m_value.c_str());
 	return result;
 }
 
-template<typename StringType>
-kfloat XMLNodeTemplate<StringType>::getFloat()
+template<>
+kfloat XMLNodeTemplate<std::string>::getFloat()
 {
-	float result = 0.0f;
-	KIGS_ERROR("Not implemented", 3);
+	float result = atof(m_value.c_str());
+	return result;
+}
+template<>
+int XMLNodeTemplate<std::string_view>::getInt()
+{
+	std::string to_string(m_value);
+	int result = atoi(to_string.c_str());
+	return result;
+}
+
+template<>
+kfloat XMLNodeTemplate<std::string_view>::getFloat()
+{
+	std::string to_string(m_value);
+	float result = atof(to_string.c_str());
 	return result;
 }
 #endif

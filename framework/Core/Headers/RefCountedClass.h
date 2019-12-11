@@ -340,17 +340,17 @@ private:
 struct ModifiableMethodStruct
 {
 
-	ModifiableMethodStruct() : m_Function(nullptr), m_Method(nullptr), m_Name("")
+	ModifiableMethodStruct() : m_Name(""), m_Method(nullptr), m_Function(nullptr)
 	{
 
 	}
 
-	ModifiableMethodStruct(const RefCountedClass::ModifiableMethod& m, const std::string& n) : m_Function(nullptr), m_Method(m), m_Name(n)
+	ModifiableMethodStruct(const RefCountedClass::ModifiableMethod& m, const std::string& n) : m_Name(n), m_Method(m), m_Function(nullptr)
 	{
 		
 	}
 
-	ModifiableMethodStruct(const ModifiableMethodStruct& other) : m_Function(nullptr), m_Method(other.m_Method), m_Name("")
+	ModifiableMethodStruct(const ModifiableMethodStruct& other) : m_Name(""), m_Method(other.m_Method), m_Function(nullptr)
 	{
 		if (other.m_Function)
 		{
