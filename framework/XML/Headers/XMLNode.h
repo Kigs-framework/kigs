@@ -308,7 +308,7 @@ inline void XMLNodeTemplate<std::string>::setFloat(const kfloat value)
 #if (__cplusplus >= 201703L || _MSVC_LANG  >= 201703L) && !defined(JAVASCRIPT) && !defined(__clang__)
 #include <charconv>
 template<typename StringType>
-int XMLNodeTemplate<StringType>::getInt()
+inline int XMLNodeTemplate<StringType>::getInt()
 {
 	int result = 0;
 	std::from_chars(m_value.data(), m_value.data() + m_value.size(), result);
@@ -316,7 +316,7 @@ int XMLNodeTemplate<StringType>::getInt()
 }
 
 template<typename StringType>
-kfloat XMLNodeTemplate<StringType>::getFloat()
+inline kfloat XMLNodeTemplate<StringType>::getFloat()
 {
 	float result = 0.0f;
 	std::from_chars(m_value.data(), m_value.data() + m_value.size(), result);
@@ -324,20 +324,20 @@ kfloat XMLNodeTemplate<StringType>::getFloat()
 }
 #else
 template<>
-int XMLNodeTemplate<std::string>::getInt()
+inline int XMLNodeTemplate<std::string>::getInt()
 {
 	int result = atoi(m_value.c_str());
 	return result;
 }
 
 template<>
-kfloat XMLNodeTemplate<std::string>::getFloat()
+inline kfloat XMLNodeTemplate<std::string>::getFloat()
 {
 	float result = atof(m_value.c_str());
 	return result;
 }
 template<>
-int XMLNodeTemplate<std::string_view>::getInt()
+inline int XMLNodeTemplate<std::string_view>::getInt()
 {
 	std::string to_string(m_value);
 	int result = atoi(to_string.c_str());
@@ -345,7 +345,7 @@ int XMLNodeTemplate<std::string_view>::getInt()
 }
 
 template<>
-kfloat XMLNodeTemplate<std::string_view>::getFloat()
+inline kfloat XMLNodeTemplate<std::string_view>::getFloat()
 {
 	std::string to_string(m_value);
 	float result = atof(to_string.c_str());
