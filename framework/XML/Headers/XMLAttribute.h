@@ -189,26 +189,48 @@ inline void XMLAttributeTemplate<std::string>::setFloat(const kfloat value)
 	m_value = szValue;
 }
 
-template<typename StringType>
-int XMLAttributeTemplate<StringType>::getInt()
+template<>
+int XMLAttributeTemplate<std::string>::getInt()
 {
 	// when no test is required, use atoi insteed of sscanf 
 	/*int temp=0;
 
 	sscanf(m_value.c_str( ), "%d",&temp);*/
 
-	return atoi(((std::string)m_value).c_str());
+	return atoi(m_value.c_str());
 }
 
-template<typename StringType>
-kfloat XMLAttributeTemplate<StringType>::getFloat()
+template<>
+int XMLAttributeTemplate<std::string_view>::getInt()
+{
+	// when no test is required, use atoi insteed of sscanf 
+	/*int temp=0;
+
+	sscanf(m_value.c_str( ), "%d",&temp);*/
+	std::string to_string(m_value);
+	return atoi(to_string.c_str());
+}
+
+template<>
+kfloat XMLAttributeTemplate<std::string>::getFloat()
 {
 	// when no test is required, use atof insteed of sscanf 
 	/*float temp=0;
 
 	sscanf(m_value.c_str( ),"%f",&temp);*/
 
-	return (kfloat)atof(((std::string)m_value).c_str());
+	return atof(m_value.c_str());
+}
+
+template<>
+kfloat XMLAttributeTemplate<std::string_view>::getFloat()
+{
+	// when no test is required, use atof insteed of sscanf 
+	/*float temp=0;
+
+	sscanf(m_value.c_str( ),"%f",&temp);*/
+	std::string to_string(m_value);
+	return atof(to_string.c_str());
 }
 #endif
 
