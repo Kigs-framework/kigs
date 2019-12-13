@@ -149,7 +149,7 @@ void UITexturedItem::PostDraw(TravState* state)
 
 int UITexturedItem::GetTransparencyType()
 {
-	if (myTexture && myOpacity == 1.0f)
+	if (myTexture && GetOpacity() == 1.0f)
 		return myTexture->GetTransparency();
 	else // overall transparency
 		return 2;

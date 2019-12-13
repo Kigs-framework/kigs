@@ -82,7 +82,6 @@ void Module2DLayers::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 
 	DECLARE_FULL_CLASS_INFO(core, UI3DLinkedItem, UI3DLinkedItem, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, PassiveColoredMask, PassiveColoredMask, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, UI3DLinkedItem, UI3DLinkedItem, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIAnimatedButton, UIAnimatedButton, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIAnimatedSprite, UIAnimatedSprite, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIBoxLayout, UIBoxLayout, 2DLayers);

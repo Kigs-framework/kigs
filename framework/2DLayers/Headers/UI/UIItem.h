@@ -22,7 +22,11 @@ public:
 	DECLARE_CONSTRUCTOR(UIItem);
 
 	/*Getter*/
-	float												GetOpacity() override { return myOpacity; }
+	float												GetOpacity() override {
+		if (myOpacity >= 0.0f) return myOpacity;
+		if (myParent) return myParent->GetOpacity(); // if opacity is < 0.0 then check parent opacity
+		return 0.0;
+	}
 	inline bool											Get_DisableBlend() const { return mybDisableBlend; }
 	inline bool                                         Get_IsHidden() const { return myIsHidden; }
 	virtual SpriteSheetTexture*							GetSpriteSheetTexture() { return NULL; }
@@ -70,7 +74,7 @@ public:
 	virtual void PreDraw(TravState* state) {} // use for texture predraw if needed
 	virtual void PostDraw(TravState* state) {} // use for texture postdraw if needed
 
-	virtual int GetTransparencyType() { return (myOpacity == 1.0f) ? 0 : 2; }
+	virtual int GetTransparencyType() { return (GetOpacity() == 1.0f) ? 0 : 2; }
 
 	virtual void SetTexUV(UIVerticesInfo * aQI) {}
 	virtual void SetVertexArray(UIVerticesInfo * aQI) {}

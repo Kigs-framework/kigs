@@ -105,7 +105,7 @@ void	UIText::ChangeText(const usString& _newText)
 	unsigned char R = (unsigned char)(myColor[0] * 255.0f);
 	unsigned char G = (unsigned char)(myColor[1] * 255.0f);
 	unsigned char B = (unsigned char)(myColor[2] * 255.0f);
-	unsigned char A = (unsigned char)(myOpacity * 255.0f);
+	unsigned char A = (unsigned char)(GetOpacity() * 255.0f);
 
 	kfloat stR, stG, stB, st_A;
 	GetStrokeColor(stR, stG, stB, st_A);
