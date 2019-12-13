@@ -245,7 +245,7 @@ void UIAnimatedSprite::PostDraw(TravState* state)
 
 int UIAnimatedSprite::GetTransparencyType()
 {
-	if (myTexture &&myTexture->Get_Texture() && myOpacity == 1.0f)
+	if (myTexture &&myTexture->Get_Texture() && GetOpacity() == 1.0f)
 		return myTexture->Get_Texture()->GetTransparency();
 	else // overall transparency
 		return 2;

@@ -15,7 +15,7 @@ public:
 	 */
 	UIPanel(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
-	void GetColor(kfloat &R,kfloat &G,kfloat &B, kfloat &A) { R=myColor[0]; G=myColor[1]; B=myColor[2]; A=myOpacity; }
+	void GetColor(kfloat &R,kfloat &G,kfloat &B, kfloat &A) { R=myColor[0]; G=myColor[1]; B=myColor[2]; A= GetOpacity(); }
 
 protected:
 	bool isAlpha(float X, float Y) override;
