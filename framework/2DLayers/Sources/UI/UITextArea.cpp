@@ -18,7 +18,7 @@ UITextArea::UITextArea(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
 	myTextColor(*this, false, "TextColor", KFLOAT_ZERO, KFLOAT_ZERO, KFLOAT_ZERO, 255.0f),
 	myText(*this, false, "Text", (kstl::string)"DefaultText"),
-	myFontName(*this, false, "FontName", ""),
+	myFont(*this, false, "Font", ""),
 	myReleaseAction(*this, false, "ReleaseAction", ""),
 	myFontSize(*this, false, "FontSize", 12),
 	myLength(*this, false, "Length", 0),
@@ -26,7 +26,7 @@ UITextArea::UITextArea(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	myCol(*this, false, "Col", 1),
 	myHasDefaultText(*this, false, "HasDefaultText", true),
 	myBold(*this, false, "Bold", false),
-	myAlignment(*this, false, "Alignment", 1)
+	myTextAlign(*this, false, "TextAlignment", 1)
 {
 	CONSTRUCT_METHOD(UITextArea, UpdateKeyBoard);
 
@@ -203,11 +203,11 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 			kstl::string key = text.substr(1, text.length() - 1);
 			LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
 			const PLATFORM_WCHAR* localized = theLocalizationManager->getLocalizedString(key.c_str());
-			myTexture->CreateFromText(localized, myFontSize, (myFontName.const_ref()).c_str(), myAlignment, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
+			myTexture->CreateFromText(localized, myFontSize, (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
 		}
 		else
 		{
-			myTexture->CreateFromText(myText.us_str(), myFontSize, (myFontName.const_ref()).c_str(), myAlignment, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
+			myTexture->CreateFromText(myText.us_str(), myFontSize, (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
 		}
 	}
 }
