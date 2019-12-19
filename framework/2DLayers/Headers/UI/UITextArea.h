@@ -21,8 +21,8 @@ public:
 
 	void			GetColor(kfloat &R, kfloat &G, kfloat &B, kfloat &A) { R = myTextColor[0]; G = myTextColor[1]; B = myTextColor[2]; A = myTextColor[3]; }
 	usString		GetText() const { return myText.us_str(); }
-	kstl::string	GetFontName() const { return myFontName.c_str(); }
-	kstl::string	GetReleaseAction() const { return myReleaseAction.c_str(); }
+	kstl::string	GetFontName() const { return myFont; }
+	kstl::string	GetReleaseAction() const { return myReleaseAction; }
 	int				GetFontSize() const { return myFontSize; }
 	int				GetLength() const { return myLength; }
 	void			SetText(const unsigned short* value) { this->ChangeText(value); myIsDefaultText = false; }
@@ -62,7 +62,7 @@ protected:
 
 	maVect4DF				myTextColor;
 	maUSString				myText;
-	maString				myFontName;
+	maString				myFont;
 	maString				myReleaseAction;
 	maUInt					myFontSize;
 	maUInt					myLength;
@@ -73,7 +73,7 @@ protected:
 	maBool					myHasDefaultText;
 	bool					myIsDefaultText;
 	maBool					myBold;
-	maUInt					myAlignment;
+	maUInt					myTextAlign;
 
 	SmartPointer<Texture>	myTexture;
 	UIVerticesInfo	*		mTextureQI; // draw BG quad

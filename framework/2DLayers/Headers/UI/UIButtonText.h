@@ -47,10 +47,10 @@ protected:
 	maVect4DF			myOverColor;
 	maVect4DF			myDownColor;
 
-	maString			myFontName;
+	maString			myFont;
 	maUInt				myFontSize;
 	maUInt				myLength;
-	maUInt				myAlignment;
+	maUInt				myTextAlign;
 };
 
 #endif //_UIBUTTONTEXT_H_
