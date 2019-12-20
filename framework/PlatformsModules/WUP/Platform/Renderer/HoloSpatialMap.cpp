@@ -222,7 +222,7 @@ HoloSpatialMap::~HoloSpatialMap()
 static std::atomic<int> sIndex = 0;
 void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::SpatialSurfaceMesh const& inMesh, SpatialMeshInfo& outInfo, SpatialMapSurfaceRecord* record_surface)
 {	
-
+#ifndef KIGS_HOLOLENS2
 	simdVal val; // 16 aligned struct for simd operation
 
 	if (outInfo.node)
@@ -329,8 +329,8 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 	int alignsize = (size + 16) / 16;
 
 	//auto vertices_format = inMesh.VertexPositions().Format();
-	
-	// allign buf on 128
+
+	// align buf on 128
 	__m128i* in128 = reinterpret_cast<__m128i*>(_mm_malloc(alignsize * sizeof(__m128i), 16));
 	memcpy(in128, buf, size);
 
@@ -432,7 +432,7 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 	{
 		CollisionManager::Get()->SetCollisionObject(mesh, collision);
 	}*/
-
+#endif
 }
 
 winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ExportTimedScan()
