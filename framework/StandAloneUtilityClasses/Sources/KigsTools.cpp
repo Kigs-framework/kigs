@@ -190,6 +190,12 @@ struct KigsToolsState
 		std::string SearchString;
 	} ResourcesWindow;
 
+	struct AdvancedSearchWindowState
+	{
+		bool SearchAttributeName = false;
+		std::string SearchAttributeNameString;
+	} AdvancedSearchWindow;
+
 };
 
 std::unique_ptr<KigsToolsState> gKigsTools;
@@ -729,14 +735,17 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const Container& instances, 
 			}
 			else
 			{
-				auto xml_node = (XMLNode*)item->GetXMLNodeForFile((XML*)gKigsTools->ActiveXMLFile.get());
-				if (xml_node->nameOneOf("Rel", "RelativePath"))
+				auto xml_node = (XMLNodeStringRef*)item->GetXMLNodeForFile((XML*)gKigsTools->ActiveXMLFile.get());
+				if (xml_node)
 				{
-					color = v4f(0.0f, 0.5f, 1.0f, 1.0);
-				}
-				else if (xml_node->getAttribute("P", "Path"))
-				{
-					color = v4f(0.0f, 1.0f, 0.5f, 1.0);
+					if (xml_node->nameOneOf("Rel", "RelativePath"))
+					{
+						color = v4f(0.0f, 0.5f, 1.0f, 1.0);
+					}
+					else if (xml_node->getAttribute("P", "Path"))
+					{
+						color = v4f(0.0f, 1.0f, 0.5f, 1.0);
+					}
 				}
 			}
 			ImGui::PushStyleColor(ImGuiCol_Text, color);

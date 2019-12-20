@@ -45,6 +45,13 @@ void ModuleFileManager::Update(const Timer& timer, void* addParam)
 #endif
 }    
 
+
+SmartPointer<CoreRawBuffer> ModuleFileManager::LoadFileToBuffer(const std::string& pFilename)
+{
+	u64 len;
+	return OwningRawPtrToSmartPtr(LoadFile(pFilename.c_str(), len));
+}
+
 // utility method 
 // load a binary file 
 // param 1 : filename
