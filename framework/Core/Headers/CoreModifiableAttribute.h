@@ -470,8 +470,8 @@ protected:
 };
 
 
-#define CALL_GETMODIFIER(level,value) if(level&4){this->_attachedModifier->CallModifier((CoreModifiableAttribute *)this,value,true);}
-#define CALL_SETMODIFIER(level,value) if(level&4){this->_attachedModifier->CallModifier((CoreModifiableAttribute *)this,value,false);}
+#define CALL_GETMODIFIER(level,value) if(level&2){this->_attachedModifier->CallModifier((CoreModifiableAttribute *)this,value,true);}
+#define CALL_SETMODIFIER(level,value) if(level&2){this->_attachedModifier->CallModifier((CoreModifiableAttribute *)this,value,false);}
 
 #define DO_NOTIFICATION(level)	if(level&1){this->_owner->NotifyUpdate(CoreModifiableAttribute::getLabel().toUInt());}
 
