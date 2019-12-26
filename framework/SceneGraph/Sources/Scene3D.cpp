@@ -4,7 +4,7 @@
 #include "TravState.h"
 #include "DrawableSorter_Camera.h"
 #include "TimeProfiler.h"
-#include "Material.h"
+#include "Material.h" 
 #include "ModuleSceneGraph.h"
 #include "CoreBaseApplication.h"
 
@@ -281,6 +281,8 @@ void Scene3D::TravDraw(TravState* state)
 
 	// remove lights
 	state->myLights = nullptr;
+	// no more camera after scene 3D 
+	state->SetCurrentCamera(nullptr);
 }
 
 

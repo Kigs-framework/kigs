@@ -710,12 +710,13 @@ void UIDynamicText::BuildVertexArray()
 		}
 		else
 		{
-			data[offset + 0].setColorF(myColor[0], myColor[1], myColor[2], myOpacity);
-			data[offset + 1].setColorF(myColor[0], myColor[1], myColor[2], myOpacity);
-			data[offset + 2].setColorF(myColor[0], myColor[1], myColor[2], myOpacity);
-			data[offset + 3].setColorF(myColor[0], myColor[1], myColor[2], myOpacity);
-			data[offset + 4].setColorF(myColor[0], myColor[1], myColor[2], myOpacity);
-			data[offset + 5].setColorF(myColor[0], myColor[1], myColor[2], myOpacity);
+			float opacity = GetOpacity();
+			data[offset + 0].setColorF(myColor[0], myColor[1], myColor[2], opacity);
+			data[offset + 1].setColorF(myColor[0], myColor[1], myColor[2], opacity);
+			data[offset + 2].setColorF(myColor[0], myColor[1], myColor[2], opacity);
+			data[offset + 3].setColorF(myColor[0], myColor[1], myColor[2], opacity);
+			data[offset + 4].setColorF(myColor[0], myColor[1], myColor[2], opacity);
+			data[offset + 5].setColorF(myColor[0], myColor[1], myColor[2], opacity);
 		}
 
 		last_cursor_pos = state.pos;
@@ -778,12 +779,14 @@ void UIDynamicText::BuildVertexArray()
 			data[offset + 4].setTexUV(space_q.s1, space_q.t1);
 			data[offset + 5].setTexUV(space_q.s0, space_q.t1);
 
-			data[offset + 0].setColorF(myColor[0], myColor[1], myColor[2], myOpacity);
-			data[offset + 1].setColorF(myColor[0], myColor[1], myColor[2], myOpacity);
-			data[offset + 2].setColorF(myColor[0], myColor[1], myColor[2], myOpacity);
-			data[offset + 3].setColorF(myColor[0], myColor[1], myColor[2], myOpacity);
-			data[offset + 4].setColorF(myColor[0], myColor[1], myColor[2], myOpacity);
-			data[offset + 5].setColorF(myColor[0], myColor[1], myColor[2], myOpacity);
+			float opacity = GetOpacity();
+
+			data[offset + 0].setColorF(myColor[0], myColor[1], myColor[2], opacity);
+			data[offset + 1].setColorF(myColor[0], myColor[1], myColor[2], opacity);
+			data[offset + 2].setColorF(myColor[0], myColor[1], myColor[2], opacity);
+			data[offset + 3].setColorF(myColor[0], myColor[1], myColor[2], opacity);
+			data[offset + 4].setColorF(myColor[0], myColor[1], myColor[2], opacity);
+			data[offset + 5].setColorF(myColor[0], myColor[1], myColor[2], opacity);
 
 			max_index++;
 		}

@@ -88,10 +88,10 @@ public:
 	}
 
 	//! return value as an int
-	int getInt( );
+	inline int getInt( );
 
 	//! return value as a kfloat
-	kfloat getFloat( );
+	inline kfloat getFloat( );
 
 private:
 	//! name
@@ -140,7 +140,7 @@ inline XMLAttributeTemplate<std::string>::XMLAttributeTemplate(const std::string
 }
 
 template<typename StringType>
-int XMLAttributeTemplate<StringType>::getInt()
+inline int XMLAttributeTemplate<StringType>::getInt()
 {
 	int result = 0;
 	std::from_chars(m_value.data(), m_value.data() + m_value.size(), result);
@@ -148,7 +148,7 @@ int XMLAttributeTemplate<StringType>::getInt()
 }
 
 template<typename StringType>
-kfloat XMLAttributeTemplate<StringType>::getFloat()
+inline kfloat XMLAttributeTemplate<StringType>::getFloat()
 {
 	float result = 0.0f;
 	std::from_chars(m_value.data(), m_value.data() + m_value.size(), result);
@@ -189,26 +189,48 @@ inline void XMLAttributeTemplate<std::string>::setFloat(const kfloat value)
 	m_value = szValue;
 }
 
-template<typename StringType>
-int XMLAttributeTemplate<StringType>::getInt()
+template<>
+inline int XMLAttributeTemplate<std::string>::getInt()
 {
 	// when no test is required, use atoi insteed of sscanf 
 	/*int temp=0;
 
 	sscanf(m_value.c_str( ), "%d",&temp);*/
 
-	return atoi(((std::string)m_value).c_str());
+	return atoi(m_value.c_str());
 }
 
-template<typename StringType>
-kfloat XMLAttributeTemplate<StringType>::getFloat()
+template<>
+inline int XMLAttributeTemplate<std::string_view>::getInt()
+{
+	// when no test is required, use atoi insteed of sscanf 
+	/*int temp=0;
+
+	sscanf(m_value.c_str( ), "%d",&temp);*/
+	std::string to_string(m_value);
+	return atoi(to_string.c_str());
+}
+
+template<>
+inline kfloat XMLAttributeTemplate<std::string>::getFloat()
 {
 	// when no test is required, use atof insteed of sscanf 
 	/*float temp=0;
 
 	sscanf(m_value.c_str( ),"%f",&temp);*/
 
-	return (kfloat)atof(((std::string)m_value).c_str());
+	return atof(m_value.c_str());
+}
+
+template<>
+inline kfloat XMLAttributeTemplate<std::string_view>::getFloat()
+{
+	// when no test is required, use atof insteed of sscanf 
+	/*float temp=0;
+
+	sscanf(m_value.c_str( ),"%f",&temp);*/
+	std::string to_string(m_value);
+	return atof(to_string.c_str());
 }
 #endif
 

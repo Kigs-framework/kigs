@@ -1,8 +1,7 @@
 #include "ModuleDDSequence.h"
 #include "BaseDDSequence.h"
 #include "BumperDDSequence.h"
-#include "GenericDDSequence.h"
-#include "Scene3DSequence.h"
+
 
 IMPLEMENT_CLASS_INFO(ModuleDDSequence);
 
@@ -19,9 +18,7 @@ void ModuleDDSequence::Init(KigsCore* core, const kstl::vector<CoreModifiableAtt
 
 	// Init system independant classes
 	DECLARE_FULL_CLASS_INFO(core, BaseDDSequence, BaseDDSequence, CoreDataDrivenSequence)
-	DECLARE_FULL_CLASS_INFO(core, Scene3DSequence, Scene3DSequence, CoreDataDrivenSequence)
 	DECLARE_FULL_CLASS_INFO(core, BumperDDSequence, BumperDDSequence, CoreDataDrivenSequence)
-	DECLARE_FULL_CLASS_INFO(core, GenericDDSequence, GenericDDSequence, CoreDataDrivenSequence)
 
 }
 

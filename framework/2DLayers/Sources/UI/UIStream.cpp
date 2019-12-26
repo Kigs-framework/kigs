@@ -70,7 +70,7 @@ void UIStream::InitModifiable()
 	
 	Texture* texture = (Texture*)KigsCore::GetInstanceOf(getName() + "_streamtex", "Texture");
 	texture->setValue("IsDynamic", true);
-	texture->AddDynamicAttribute(BOOL, "IsBGR", true);
+	texture->AddDynamicAttribute(BOOL, "IsBGR", false);
 	texture->Init();
 	SetTexture(texture);
 	texture->Destroy();
@@ -114,7 +114,7 @@ void UIStream::Update(const Timer& timer, void* v)
 		}
 		else
 		{
-			/*bool is_ended = false;
+			bool is_ended = false;
 			_framebufferstream->CallMethod("HasReachEnd", this, &is_ended);
 			if(is_ended)
 			{
@@ -128,7 +128,7 @@ void UIStream::Update(const Timer& timer, void* v)
 
 				if (!_notification_end.const_ref().empty())
 					KigsCore::GetNotificationCenter()->postNotificationName(_notification_end.const_ref(), this);
-			}*/
+			}
 		}
 	}
 }

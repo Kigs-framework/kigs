@@ -2,7 +2,6 @@
 #include "NotificationCenter.h"
 #include "Timer.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIPopUp, UIPopUp, 2DLayers);
 IMPLEMENT_CLASS_INFO(UIPopUp)
 
 IMPLEMENT_CONSTRUCTOR(UIPopUp)

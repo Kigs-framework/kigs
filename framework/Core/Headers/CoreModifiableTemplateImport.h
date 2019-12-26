@@ -333,12 +333,21 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 	}
 	else if (currentNode->nameOneOf("Rel", "RelativePath"))
 	{
-		XMLAttributeTemplate< StringType >* pathAttribute = currentNode->getAttribute("P", "Path");
-		if (pathAttribute)
+		XMLAttributeTemplate< StringType >* PathAttribute = currentNode->getAttribute("P", "Path");
+		XMLAttributeTemplate< StringType >* NameAttribute = currentNode->getAttribute("Name", "N");
+		bool rename = NameAttribute && PathAttribute;
+		if (PathAttribute)
 		{
-			current = SearchInstance((std::string)pathAttribute->getString(), currentModifiable,true);
+
+			current = SearchInstance((std::string)PathAttribute->getString(), currentModifiable,true);
 			if (current)
 			{
+				if (rename)
+				{
+					std::string name = (std::string)NameAttribute->getString();
+					current->setName(name);
+				}
+
 				//current->GetRef(); getref already done in searchinstance
 				needInit = false;
 				importState.loadedItems.push_back(current);
