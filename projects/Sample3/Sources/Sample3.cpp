@@ -2,6 +2,13 @@
 #include "SimpleClass.h"
 #include <iostream>
 
+// Kigs framework Sample3 project
+// detailed CoreModifiable attribute features :
+// - attribute declaration
+// - dynamic attribute
+// - set / get attribute values
+// - attribute getter / setter modifier
+
 IMPLEMENT_CLASS_INFO(Sample3);
 
 IMPLEMENT_CONSTRUCTOR(Sample3)

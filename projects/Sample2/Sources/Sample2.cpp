@@ -3,6 +3,13 @@
 #include "SmartPointer.h"
 #include "SimpleSampleClass.h"
 
+// Kigs framework Sample2 project
+// detailed CoreModifiable features :
+// - instance factory
+// - CoreModifiable trees
+// - Reference counting
+// - search instances by type, name, path...
+
 IMPLEMENT_CLASS_INFO(Sample2);
 
 IMPLEMENT_CONSTRUCTOR(Sample2)

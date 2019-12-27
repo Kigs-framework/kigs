@@ -8,6 +8,14 @@
 // access timer 
 #include "Timer.h"
 
+// Kigs framework Sample1 project
+// Overall features :
+// - instance factory
+// - CoreModifiable trees
+// - CoreModifiable attributes
+// - CoreModifiable methods
+// - serialization
+
 IMPLEMENT_CLASS_INFO(Sample1);
 
 IMPLEMENT_CONSTRUCTOR(Sample1)
