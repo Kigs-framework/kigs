@@ -16,9 +16,9 @@ class Timer : public CoreModifiable
 public:
 	DECLARE_CLASS_INFO(Timer, CoreModifiable, Timer);
 	DECLARE_INLINE_CONSTRUCTOR(Timer)
-	, mTime(*this, false, "Time", "GetTime", "SetTime")
+	, mTime(*this, true, "Time", "GetTime", "")
 	{}
-	WRAP_METHODS(GetTime,SetTime);
+	WRAP_METHODS(GetTime);
 
 	enum DateFormat
 	{
