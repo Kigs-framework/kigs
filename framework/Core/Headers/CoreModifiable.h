@@ -409,6 +409,9 @@ public:
 	template<typename Ret, typename... T>
 	Ret SimpleCall(KigsID methodName, T&&... params);
 
+	template<typename Ret>
+	Ret SimpleCall(KigsID methodName);
+
 	template<typename Ret, typename... T>
 	Ret InvokeReturn(KigsID methodName, T&&... params)
 	{

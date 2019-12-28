@@ -2087,7 +2087,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 
 		std::string value;
 		current->getValue(value);
-		if (defaultAttributeMap && !current->IsAClone())
+		if (defaultAttributeMap)
 		{
 			auto itfounddefault = defaultAttributeMap->find((*i).first);
 			if (itfounddefault != defaultAttributeMap->end())

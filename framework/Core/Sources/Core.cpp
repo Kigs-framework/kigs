@@ -270,10 +270,6 @@ MEMORYMANAGEMENT_END
 	myCoreInstance->myErrorList=new kstl::vector<kstl::string>;
 #endif
 
-	//! map for clones
-
-	myCoreInstance->myCloneMap=new kstl::unordered_map<CoreModifiableAttribute*,kstl::vector<CoreModifiableAttribute*> >;
-
 	//! map for references
 	myCoreInstance->myReferenceMap = new kstl::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >;
 
@@ -349,10 +345,6 @@ void KigsCore::Close(bool closeMemoryManager)
 		myCoreInstance->myErrorList->clear();
 		delete myCoreInstance->myErrorList;
 #endif
-
-
-		myCoreInstance->myCloneMap->clear();
-		delete myCoreInstance->myCloneMap;
 
 		delete myCoreInstance->myReferenceMap;
 

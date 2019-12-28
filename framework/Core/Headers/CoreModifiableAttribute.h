@@ -16,7 +16,7 @@ class CoreItem;
 // * --------------------------------------
 /*!
 * \enum	AttributeNotificationLevel
-* CoreModifiableAttribute can now notify their owner/clones that they have changed
+* CoreModifiableAttribute can now notify their owner that they have changed
 * Do do this, some dynamic type change is done with a placement new, changing the virtual
 * table of the objects. But placement new can in some cases reinit members (ie :for strings).
 * So placement new constructor must have some parameters as copy.
@@ -174,12 +174,14 @@ protected:
 	explicit CoreModifiableAttribute(InheritanceSwitch tag) {}
 
 
-	CoreModifiableAttribute(CoreModifiable* owner, KigsID ID) :
+	CoreModifiableAttribute(CoreModifiable* owner, bool isInitParam, KigsID ID) :
 		_owner(owner)
 		, _attachedModifier(nullptr)
 		, _Flags(0)
 		, _id(ID)
 	{
+		setIsInitParam(isInitParam);
+
 		if(_owner)
 			_owner->_attributes[ID] = this;
 	}
@@ -289,14 +291,46 @@ public:
 
 	CoreModifiable& getOwner() const {return *_owner;}
 	
-	virtual bool	isReadOnly() = 0;
-	virtual void	setReadOnly(bool val) = 0;
-	
-	virtual bool	isDynamic() = 0;
-	virtual void	setDynamic(bool dyn) = 0;
-	
-	virtual void	setIsInitParam(bool init) = 0;
-	virtual bool	isInitParam() = 0;
+
+	//! Read only attributes cannot be modified with setValue
+	virtual bool isReadOnly()  { return (bool)((((u32)isReadOnlyFlag) & this->_Flags) != 0); }
+	//! \brief  return true if attribute is an init attribute (necessary for the CoreModifiable Init to be done)
+	virtual bool isInitParam()  { return (bool)((((u32)isInitFlag) & this->_Flags) != 0); }
+	virtual bool isDynamic()  { return (bool)((((u32)isDynamicFlag) & this->_Flags) != 0); }
+	virtual void setReadOnly(bool val) 
+	{
+		if (val)
+		{
+			this->_Flags |= (u32)isReadOnlyFlag;
+		}
+		else
+		{
+			this->_Flags &= ~(u32)isReadOnlyFlag;
+		}
+	}
+	virtual void setDynamic(bool dyn) 
+	{
+		if (dyn)
+		{
+			this->_Flags |= (u32)isDynamicFlag;
+		}
+		else
+		{
+			this->_Flags &= ~(u32)isDynamicFlag;
+		}
+	}
+	virtual void setIsInitParam(bool init)
+	{
+		if (init)
+		{
+			this->_Flags |= (u32)isInitFlag;
+		}
+		else
+		{
+			this->_Flags &= ~(u32)isInitFlag;
+		}
+	}
+
 
 	virtual void*	getRawValue() = 0;
 	
@@ -307,10 +341,10 @@ public:
 	virtual void	changeInheritance() = 0;
 	virtual void	doPlacementNew(u32 level) = 0;
 
-	virtual bool	IsAClone() const = 0;
-
 	// Return true if the copy was done correctly
 	virtual bool	CopyAttribute(const CoreModifiableAttribute& other) = 0;
+
+
 
 protected:
 
@@ -336,20 +370,19 @@ class CoreModifiableAttributeData : public CoreModifiableAttribute
 {
 
 public:
-	CoreModifiableAttributeData(CoreModifiable& owner, bool isInitParam, KigsID ID, const T& value) : CoreModifiableAttribute(&owner, ID), _value(value)
+	CoreModifiableAttributeData(CoreModifiable& owner, bool isInitParam, KigsID ID, const T& value) : CoreModifiableAttribute(&owner, isInitParam, ID), _value(value)
 	{
-		setIsInitParam(isInitParam);
+		
 	}
-	CoreModifiableAttributeData(CoreModifiable& owner, bool isInitParam, KigsID ID) : CoreModifiableAttribute(&owner, ID), _value{}
+	CoreModifiableAttributeData(CoreModifiable& owner, bool isInitParam, KigsID ID) : CoreModifiableAttribute(&owner, isInitParam, ID), _value{}
 	{
-		setIsInitParam(isInitParam);
+		
 	}
-	CoreModifiableAttributeData(KigsID ID, const T& value) : CoreModifiableAttribute(nullptr, ID), _value{value}
+	CoreModifiableAttributeData(KigsID ID, const T& value) : CoreModifiableAttribute(nullptr, false, ID), _value{value}
 	{
 	}
 
 	explicit CoreModifiableAttributeData(InheritanceSwitch tag) : CoreModifiableAttribute(tag) {}
-
 
 
 	virtual void changeNotificationLevel(AttributeNotificationLevel level) final
@@ -362,50 +395,9 @@ public:
 	const T& const_ref() const { return _value; }
 
 	virtual void* getRawValue() final { return static_cast<void*>(&_value); }
-
-
-	virtual bool IsAClone() const final {return false;}
 	
 	friend class CoreModifiable;
 	
-	//! Read only attributes cannot be modified with setValue
-	virtual bool isReadOnly() final {return (bool)((((u32)isReadOnlyFlag)&this->_Flags)!=0);}
-	//! \brief  return true if attribute is an init attribute (necessary for the CoreModifiable Init to be done)
-	virtual bool isInitParam() final {return (bool)((((u32)isInitFlag)&this->_Flags)!=0);}
-	virtual bool isDynamic() final {return (bool)((((u32)isDynamicFlag)&this->_Flags)!=0);}
-	virtual void setReadOnly(bool val) final
-	{
-		if(val)
-		{
-			this->_Flags|=(u32)isReadOnlyFlag;
-		}
-		else
-		{
-			this->_Flags&=~(u32)isReadOnlyFlag;
-		}
-	}
-	virtual void setDynamic(bool dyn) final
-	{
-		if(dyn)
-		{
-			this->_Flags|=(u32)isDynamicFlag;
-		}
-		else
-		{
-			this->_Flags&=~(u32)isDynamicFlag;
-		}
-	}
-	virtual void setIsInitParam(bool init) final
-	{
-		if(init)
-		{
-			this->_Flags|=(u32)isInitFlag;
-		}
-		else
-		{
-			this->_Flags&=~(u32)isInitFlag;
-		}
-	}
 
 	size_t MemorySize() const final { return sizeof(T); };
 	
@@ -453,8 +445,7 @@ protected:
 		if (getType() == other.getType() && 
 			getArrayElementType() == other.getArrayElementType() && 
 			getNbArrayColumns() == other.getNbArrayColumns() &&
-			getNbArrayLines() == getNbArrayLines()
-			&& !other.IsAClone())
+			getNbArrayLines() == getNbArrayLines())
 		{
 			CopyData(static_cast<const CoreModifiableAttributeData<T>&>(other));
 			return true;
