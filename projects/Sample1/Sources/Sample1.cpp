@@ -92,8 +92,11 @@ void	Sample1::ProtectedUpdate()
 	Timer* localtimer= simpleclass->GetFirstSonByName("Timer", "localtimer")->as<Timer>();
 	double currentTime=localtimer->GetTime();
 
+	double currentTimeWithGetVal=localtimer->getValue<double>("Time");
+
 	// print current timer value in console
-	printf("current time is %lf\n", currentTime);
+	printf("current time is %lf with GetTime\n", currentTime);
+	printf("current time is %lf with getValue<double>(\"Time\");\n", currentTimeWithGetVal);
 
 	// if timer was init more than 0.1 seconde before, then exit app
 	if (currentTime > 0.1)
