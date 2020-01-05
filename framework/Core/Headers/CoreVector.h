@@ -32,7 +32,7 @@ public:
 		myVectorIterator = ((const CoreVectorIterator*)&other)->myVectorIterator;
 	}
 
-	virtual CoreItem* operator*() const;
+	virtual CoreItemSP operator*() const;
 
 	virtual CoreItemIteratorBase*	clone()
 	{
@@ -86,12 +86,12 @@ public:
 		return false;
 	}
 
-	CoreVectorIterator(CoreItem* item, unsigned int pos) : CoreItemIteratorBase(item, pos)
+	CoreVectorIterator(CoreItemSP item, unsigned int pos) : CoreItemIteratorBase(item, pos)
 	{
 
 	}
 
-	kstl::vector<RefCountedBaseClass*>::iterator	myVectorIterator;
+	kstl::vector<CoreItemSP>::iterator	myVectorIterator;
 };
 
 
@@ -154,22 +154,22 @@ public:
 		return myVector.empty();
 	}
 
-	const RefCountedBaseClass* back() const
+	const CoreItemSP back() const
 	{
 		return myVector.back();
 	}
 
-	const RefCountedBaseClass* front() const
+	const CoreItemSP front() const
 	{
 		return myVector.front();
 	}
 
-	const RefCountedBaseClass* at(CoreItem::size_type n) const
+	const CoreItemSP at(CoreItem::size_type n) const
 	{
 		return myVector.at(n);
 	}
 
-	void push_back (RefCountedBaseClass* val)
+	void push_back (CoreItemSP val)
 	{
 		val->GetRef();
 		myVector.push_back(val);
@@ -184,26 +184,14 @@ public:
 	CoreItemIterator erase(CoreItemIterator position)
 	{
 		CoreVectorIterator& pos = *(CoreVectorIterator*)position.Pointer();
-		if(*position)
-		{
-			(*position).Destroy();
-		}
-
-		CoreVectorIterator* iter = new CoreVectorIterator(this, 0);
+		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this), 0);
 		iter->myVectorIterator = myVector.erase(pos.myVectorIterator);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 	CoreItemIterator erase(CoreItemIterator first, CoreItemIterator last)
 	{
-		CoreItemIterator	start = first;
-		while(start!=last)
-		{
-			(*start).Destroy();
-			++start;
-		}
-
-		CoreVectorIterator* iter = new CoreVectorIterator(this, 0);
+		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this), 0);
 		iter->myVectorIterator = myVector.erase(((CoreVectorIterator*)first.myPointer)->myVectorIterator, ((CoreVectorIterator*)last.myPointer)->myVectorIterator);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
@@ -211,48 +199,26 @@ public:
 
 	void clear()
 	{
-		kstl::vector<RefCountedBaseClass*>::iterator	start=myVector.begin();
-		kstl::vector<RefCountedBaseClass*>::iterator	end=myVector.end();
-		while(start!=end)
-		{
-			(*start)->Destroy();
-			++start;
-		}
 		myVector.clear();
 	}
 
-	void insert(CoreItemIterator position, RefCountedBaseClass* toinsert)
+	void insert(CoreItemIterator position, CoreItemSP toinsert)
 	{
-		toinsert->GetRef();
 		myVector.insert(((CoreVectorIterator*)&position)->myVectorIterator, toinsert);
 	}
 
-	void insert(CoreItem::size_type position, RefCountedBaseClass* toinsert)
+	void insert(CoreItem::size_type position, CoreItemSP toinsert)
 	{
-		toinsert->GetRef();
 		myVector.insert(myVector.begin()+position,toinsert);
 	}
 
-	void set(CoreItem::size_type position, RefCountedBaseClass* toinsert)
+	void set(CoreItem::size_type position, CoreItemSP toinsert)
 	{
-		RefCountedBaseClass* toDestroy=0;
-		if(position<myVector.size())
-		{
-			toDestroy=myVector[position];
-			
-		}
-		toinsert->GetRef();
 		myVector[position]=toinsert;
-		if(toDestroy)
-		{
-			toDestroy->Destroy();
-		}
 	}
 
 	CoreVectorBase& operator= (const CoreVectorBase& x)
 	{
-		// copy current vector
-		kstl::vector<RefCountedBaseClass*>	todestroy=myVector;
 		myVector.clear();
 		kstl::vector<RefCountedBaseClass*>::const_iterator itstart;
 		kstl::vector<RefCountedBaseClass*>::const_iterator itend=x.end();
@@ -262,11 +228,6 @@ public:
 			myVector.push_back(*itstart);
 		}
 
-		itend=todestroy.end();
-		for(itstart=todestroy.begin();itstart!=itend;itstart++)
-		{
-			(*itstart)->Destroy();
-		}
 		return *this;
 	}
 
@@ -291,49 +252,49 @@ public:
 	}
 
 
-	virtual inline CoreItem& operator[](int i) const
+	virtual inline CoreItemSP operator[](int i) const
 	{
 		if ((i >= 0) && (i < (int)myVector.size()))
 		{
-			return *(CoreItem*)myVector[i];
+			return myVector[i];
 		}
-		return *KigsCore::Instance()->NotFoundCoreItem();
+		return CoreItemSP(nullptr);
 	}
 
-	virtual inline CoreItem& operator[](const kstl::string& key) const
+	virtual inline CoreItemSP operator[](const kstl::string& key) const
 	{
-		kstl::vector<RefCountedBaseClass*>::const_iterator it = myVector.begin();
+		kstl::vector<CoreItemSP>::const_iterator it = myVector.begin();
 
 		while (it != myVector.end())
 		{
-			if (((CoreItem*)(*it))->GetType()&(unsigned int)CoreItem::CORENAMEDITEMMASK)
+			if ((*it)->GetType()&(unsigned int)CoreItem::CORENAMEDITEMMASK)
 			{
-				if (((CoreNamedItem*)(*it))->getName() == key)
+				if (((CoreNamedItem*)(*it).get())->getName() == key)
 				{
-					return *((CoreItem*)(*it));
+					return (*it);
 				}
 			}
 		}
 
-		return *KigsCore::Instance()->NotFoundCoreItem();
+		return CoreItemSP(nullptr);
 	}
 
-	virtual inline CoreItem& operator[](const usString& key) const
+	virtual inline CoreItemSP operator[](const usString& key) const
 	{
-		kstl::vector<RefCountedBaseClass*>::const_iterator it = myVector.begin();
+		kstl::vector<CoreItemSP>::const_iterator it = myVector.begin();
 
 		while (it != myVector.end())
 		{
-			if (((CoreItem*)(*it))->GetType()&(unsigned int)CoreItem::CORENAMEDITEMMASK)
+			if ((*it)->GetType()&(unsigned int)CoreItem::CORENAMEDITEMMASK)
 			{
-				if (((CoreNamedItem*)(*it))->getName() == key.ToString())
+				if (((CoreNamedItem*)(*it).get())->getName() == key.ToString())
 				{
-					return *((CoreItem*)(*it));
+					return (*it);
 				}
 			}
 		}
 
-		return *KigsCore::Instance()->NotFoundCoreItem();
+		return CoreItemSP(nullptr);
 	}
 
 	virtual void*	getContainerStruct()
@@ -342,7 +303,7 @@ public:
 	}
 
 protected:
-	kstl::vector<RefCountedBaseClass*>	myVector;
+	kstl::vector<CoreItemSP>	myVector;
 	virtual void    ProtectedDestroy()
 	{
 		clear();

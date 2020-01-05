@@ -2,9 +2,9 @@
 #include "CoreItem.h"
 
 
-CoreItem& CoreItemIterator::operator*() const
+CoreItemSP CoreItemIterator::operator*() const
 {
-	return *(*(*myPointer));
+	return myPointer->operator*();
 }
 
 CoreItemIterator& CoreItemIterator::operator=(const CoreItemIterator & other)
@@ -56,13 +56,13 @@ bool CoreItemIterator::getKey(usString& returnedkey)
 
 
 
-CoreItem* CoreItemIteratorBase::operator*() const
+CoreItemSP CoreItemIteratorBase::operator*() const
 {
 	if (myPos == 0)
 	{
 		return myAttachedCoreItem;
 	}
-	return KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 CoreItemIteratorBase& CoreItemIteratorBase::operator=(const CoreItemIteratorBase & other)
@@ -75,23 +75,23 @@ CoreItemIteratorBase& CoreItemIteratorBase::operator=(const CoreItemIteratorBase
 
 
 // operator [] needs to be overloaded on vectors and maps
-CoreItem& CoreItem::operator[](int i) const
+CoreItemSP CoreItem::operator[](int i) const
 {
 	if (i == 0)
 	{
-		return *(CoreItem*)this; // hack
+		return CoreItemSP((CoreItem*)this, StealRefTag{}); // hack
 	}
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
-CoreItem& CoreItem::operator[](const kstl::string& key) const
+CoreItemSP CoreItem::operator[](const kstl::string& key) const
 {
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
-CoreItem& CoreItem::operator[](const usString& key) const
+CoreItemSP CoreItem::operator[](const usString& key) const
 {
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 
@@ -99,22 +99,22 @@ CoreItem& CoreItem::operator[](const usString& key) const
 
 
 
-CoreItem& CoreNamedItem::operator[](const kstl::string& key) const
+CoreItemSP CoreNamedItem::operator[](const kstl::string& key) const
 {
 	if (key == m_Name)
 	{
-		return *(CoreItem*)this; // hack
+		return CoreItemSP((CoreItem*)this, StealRefTag{}); // hack
 	}
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
-CoreItem& CoreNamedItem::operator[](const usString& key) const
+CoreItemSP CoreNamedItem::operator[](const usString& key) const
 {
 	if (key.ToString() == m_Name)
 	{
-		return  *(CoreItem*)this; // hack
+		return   CoreItemSP((CoreItem*)this, StealRefTag{}); // hack
 	}
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 

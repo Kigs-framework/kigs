@@ -798,17 +798,17 @@ void	FilePathManager::InitBundleList(const kstl::string& filename)
 void	FilePathManager::InitWithConfigFile(const kstl::string& filename)
 {
 	JSonFileParser L_JsonParser;
-	CoreItem* L_Dictionary = L_JsonParser.Get_JsonDictionary(filename);
-	if (L_Dictionary)
+	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionary(filename);
+	if (!L_Dictionary.isNil())
 	{
-		CoreItem& pathList = *L_Dictionary;
-		int nbpath = pathList.size();
+		CoreItemSP pathList = L_Dictionary;
+		int nbpath = pathList->size();
 		int i;
 		for (i = 0; i < nbpath; i += 2)
 		{
-			CoreItem& currentpathname = pathList[i];
-			CoreItem& currentpath = pathList[i + 1];
-			AddToPath((kstl::string)currentpathname, (kstl::string)currentpath);
+			CoreItemSP currentpathname = pathList[i];
+			CoreItemSP currentpath = pathList[i + 1];
+			AddToPath((kstl::string)*currentpathname.get(), (kstl::string)*currentpath.get());
 		}
 
 	}

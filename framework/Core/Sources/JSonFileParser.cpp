@@ -241,22 +241,22 @@ void JSonFileParserBase<stringType, parserType>::RecursiveParseElement(CoreMap<s
 		a_buffer += key;
 		a_buffer += "\":";
 		
-		switch((*It).GetType())
+		switch((*It)->GetType())
 		{
 			case CoreItem::COREMAP:
 			{
-				RecursiveParseElement((CoreMap<stringType>*)&(*It), a_buffer);
+				RecursiveParseElement((CoreMap<stringType>*)&(CoreItem&)(*It), a_buffer);
 				break;
 			}
 			case CoreItem::COREVECTOR:
 			{
-				RecursiveParseElement((CoreVector*)&(*It), a_buffer);
+				RecursiveParseElement((CoreVector*)&(CoreItem&)(*It), a_buffer);
 				break;
 			}
 			case CoreItem::COREVALUE:
 			{
 				//a_buffer += "\"";
-				AddValueToBuffer((CoreItem*)&(*It), a_buffer);
+				AddValueToBuffer((CoreItem*)&(CoreItem&)(*It), a_buffer);
 				a_buffer += "\n";
 				break;
 			}
@@ -277,17 +277,18 @@ void JSonFileParserBase<stringType, parserType>::RecursiveParseElement(CoreVecto
 
 	for(unsigned int i = 0; i < a_value->size(); i++)
 	{
-		if(((*a_value)[i]).GetType() & CoreItem::COREMAP)
+		CoreItemSP currentv = (*a_value)[i];
+		if(currentv->GetType() & CoreItem::COREMAP)
 		{
-			RecursiveParseElement(((CoreMap<stringType>*)&(*a_value)[i]), a_buffer);
+			RecursiveParseElement(((CoreMap<stringType>*)&(CoreItem&)currentv), a_buffer);
 		}
-		else if(((*a_value)[i]).GetType() & CoreItem::COREVECTOR)
+		else if(currentv->GetType() & CoreItem::COREVECTOR)
 		{
-			RecursiveParseElement(((CoreVector*)&(*a_value)[i]),a_buffer);
+			RecursiveParseElement(((CoreVector*)&(CoreItem&)currentv),a_buffer);
 		}
-		else if(((*a_value)[i]).GetType() & CoreItem::COREVALUE)
+		else if(currentv->GetType() & CoreItem::COREVALUE)
 		{
-			AddValueToBuffer(((CoreItem*)&(*a_value)[i]),a_buffer);
+			AddValueToBuffer(((CoreItem*)&(CoreItem&)currentv),a_buffer);
 		}
 		if(i < a_value->size()-1)
 			a_buffer += ",";
@@ -311,7 +312,7 @@ void JSonFileParserBase<stringType, parserType>::AddValueToBuffer(CoreItem* a_va
 }
 
 template <typename stringType, typename parserType>
-CoreItem*	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(const kstl::string& filename)
+CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(const kstl::string& filename)
 {
 	//Create instance of DictionaryFromJson
 	myDictionaryFromJson = (DictionaryFromJson*)CreateDictionnaryFromJSONInstance();
@@ -319,25 +320,12 @@ CoreItem*	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(const k
 
 	InitParser(filename);
 
-	CoreItem* L_TempDictionary = getDictionnary();
-
-	// get a ref before destruction
-	if(L_TempDictionary)
-		L_TempDictionary->GetRef();
+	CoreItemSP L_TempDictionary = getDictionnary();
 
 	myDictionaryFromJson->Destroy();
-	myDictionaryFromJson = NULL;
+	myDictionaryFromJson = nullptr;
 
-	if(L_TempDictionary && !L_TempDictionary->empty())
-		return L_TempDictionary;
-	else
-	{
-		if(L_TempDictionary)
-		{
-			L_TempDictionary->Destroy();
-		}
-	}
-	return NULL;
+	return L_TempDictionary;
 }
 
 // specialized
@@ -349,7 +337,7 @@ CoreModifiable*			JSonFileParserBase<kstl::string, AsciiParserUtils>::CreateDict
 }
 
 template <>
-CoreItem*	JSonFileParserBase< kstl::string, AsciiParserUtils>::getDictionnary()
+CoreItemSP	JSonFileParserBase< kstl::string, AsciiParserUtils>::getDictionnary()
 {
 	return ((DictionaryFromJson*)myDictionaryFromJson)->Get_Dictionary();
 }
@@ -381,7 +369,7 @@ CoreModifiable*			JSonFileParserBase< usString, US16ParserUtils>::CreateDictionn
 }
 
 template <>
-CoreItem*	JSonFileParserBase< usString, US16ParserUtils>::getDictionnary()
+CoreItemSP	JSonFileParserBase< usString, US16ParserUtils>::getDictionnary()
 {
 	return ((DictionaryFromJsonUTF16*)myDictionaryFromJson)->Get_Dictionary();
 }
@@ -406,7 +394,7 @@ const unsigned char*	JSonFileParserBase< usString, US16ParserUtils>::GetStringBy
 }
 
 template <typename stringType, typename parserType>
-CoreItem*	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromString(const stringType& jsonString)
+CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromString(const stringType& jsonString)
 {
 	//Create instance of DictionaryFromJson
 	myDictionaryFromJson = (DictionaryFromJson*)CreateDictionnaryFromJSONInstance();
@@ -421,25 +409,12 @@ CoreItem*	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromStri
 
 	Buff->Destroy();
 
-	CoreItem* L_TempDictionary = getDictionnary();
-
-	// get a ref before destruction
-	if(L_TempDictionary)
-		L_TempDictionary->GetRef();
+	CoreItemSP L_TempDictionary = getDictionnary();
 
 	myDictionaryFromJson->Destroy();
 	myDictionaryFromJson = NULL;
-
-	if(L_TempDictionary && !L_TempDictionary->empty())
-		return L_TempDictionary;
-	else
-	{
-		if(L_TempDictionary)
-		{
-			L_TempDictionary->Destroy();
-		}
-	}
-	return NULL;
+	
+	return L_TempDictionary;
 
 }
 
@@ -788,7 +763,7 @@ IMPLEMENT_CLASS_INFO(DictionaryFromJson);
 
 DictionaryFromJson::DictionaryFromJson(const kstl::string& name,CLASS_NAME_TREE_ARG):
 CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-,m_pCurrentObject(NULL)
+,m_pCurrentObject(nullptr)
 {
 	CONSTRUCT_METHOD(DictionaryFromJson, JSonObjectStart)
 	CONSTRUCT_METHOD(DictionaryFromJson, JSonObjectEnd)
@@ -806,14 +781,7 @@ CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 
 DictionaryFromJson::~DictionaryFromJson()
 {
-
-	if(m_pCurrentObject)
-	{
-		m_pCurrentObject->Destroy();
-	}
-
 	m_vObjectStack.clear();
-	m_pCurrentObject = NULL;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -821,19 +789,17 @@ DictionaryFromJson::~DictionaryFromJson()
 
 DEFINE_METHOD(DictionaryFromJson,JSonObjectStart)
 {
-	CoreMap<kstl::string>* toAdd = new CoreMap<kstl::string>();
+	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreMap<kstl::string>());
 
-	if (m_pCurrentObject)
+	if (!m_pCurrentObject.isNil())
 	{
 		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<kstl::string>*)m_pCurrentObject)->set(((maString*)params[0])->c_str(), toAdd);
-			toAdd->Destroy();
+			((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
 		}
 		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
-			((CoreVector*)m_pCurrentObject)->push_back(toAdd);
-			toAdd->Destroy();
+			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
 		}
 	}
 	else // first object => add it twice
@@ -866,19 +832,17 @@ DEFINE_METHOD(DictionaryFromJson,JSonObjectEnd)
 
 DEFINE_METHOD(DictionaryFromJson,JSonArrayStart)
 {
-	CoreVector* toAdd = new CoreVector();
+	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreVector());
 
 	if (m_pCurrentObject)
 	{
 		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<kstl::string>*)m_pCurrentObject)->set(((maString*)params[0])->c_str(), toAdd);
-			toAdd->Destroy();
+			((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
 		}
 		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
-			((CoreVector*)m_pCurrentObject)->push_back(toAdd);
-			toAdd->Destroy();
+			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
 		}
 	}
 	else // first object => add it twice
@@ -928,73 +892,63 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 			idx = i+1;
 			if(params[idx]->getType() == STRING)
 			{
-				CoreValue<kstl::string>* L_Value = new CoreValue<kstl::string>((*(maString*)params[idx]));
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kstl::string>((*(maString*)params[idx])));
 
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 
-				L_Value->Destroy();
 			}
 			else if(params[idx]->getType() == FLOAT)
 			{
-				CoreValue<kfloat>* L_Value = new CoreValue<kfloat>((*(maFloat*)params[idx]));
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])));
 				
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 				
-				L_Value->Destroy();
 			}
 			else if(params[idx]->getType() == INT)
 			{
-				CoreValue<int>* L_Value = new CoreValue<int>((*(maInt*)params[idx]));
-
+				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])));
 				
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 			
-				
-				L_Value->Destroy();
 			}
 			else if(params[idx]->getType() == BOOL)
 			{
-				CoreValue<bool>* L_Value = new CoreValue<bool>((*(maBool*)params[idx]));
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])));
 
-				
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key,L_Value);
-				
-				
-				L_Value->Destroy();
+					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
+
 			}
 			else if(params[idx]->getType() == UINT)
 			{
-				CoreValue<unsigned int>* L_Value = new CoreValue<unsigned int>((*(maUInt*)params[idx]));
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])));
 
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 				
-				L_Value->Destroy();
 			}
 			else if(params[idx]->getType() == DOUBLE)
 			{
-				CoreValue<double>* L_Value = new CoreValue<double>((*(maDouble*)params[idx]));
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])));
 
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 				
-				L_Value->Destroy();
 			}
 		}
 	}
@@ -1006,7 +960,7 @@ IMPLEMENT_CLASS_INFO(DictionaryFromJsonUTF16);
 
 DictionaryFromJsonUTF16::DictionaryFromJsonUTF16(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, m_pCurrentObject(NULL)
+, m_pCurrentObject(nullptr)
 {
 	CONSTRUCT_METHOD(DictionaryFromJsonUTF16, JSonObjectStart)
 	CONSTRUCT_METHOD(DictionaryFromJsonUTF16, JSonObjectEnd)
@@ -1023,14 +977,7 @@ CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 
 DictionaryFromJsonUTF16::~DictionaryFromJsonUTF16()
 {
-
-	if (m_pCurrentObject)
-	{
-		m_pCurrentObject->Destroy();
-	}
-
 	m_vObjectStack.clear();
-	m_pCurrentObject = NULL;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -1038,19 +985,17 @@ DictionaryFromJsonUTF16::~DictionaryFromJsonUTF16()
 
 DEFINE_METHOD(DictionaryFromJsonUTF16, JSonObjectStart)
 {
-	CoreMap<usString>* toAdd = new CoreMap<usString>();
+	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreMap<usString>());
 
 	if (m_pCurrentObject)
 	{
 		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<usString>*)m_pCurrentObject)->set(*((maUSString*)params[0]), toAdd);
-			toAdd->Destroy();
+			((CoreMap<usString>*)m_pCurrentObject.get())->set(*((maUSString*)params[0]), toAdd);
 		}
 		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
-			((CoreVector*)m_pCurrentObject)->push_back(toAdd);
-			toAdd->Destroy();
+			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
 		}
 	}
 	else // first object => add it twice
@@ -1083,18 +1028,18 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonObjectEnd)
 
 DEFINE_METHOD(DictionaryFromJsonUTF16, JSonArrayStart)
 {
-	CoreVector* toAdd = new CoreVector();
+	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreVector());
 
 	if (m_pCurrentObject)
 	{
 		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<usString>*)m_pCurrentObject)->set(*((maUSString*)params[0]), toAdd);
+			((CoreMap<usString>*)m_pCurrentObject.get())->set(*((maUSString*)params[0]), toAdd);
 			toAdd->Destroy();
 		}
 		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
-			((CoreVector*)m_pCurrentObject)->push_back(toAdd);
+			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
 			toAdd->Destroy();
 		}
 	}
@@ -1143,86 +1088,40 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 		{
 			usString L_Key = (const usString&)(*(maUSString*)params[i]);
 			idx = i + 1;
-			if (params[idx]->getType() == STRING)
+
+			CoreItemSP L_Value(nullptr);
+
+			switch (params[idx]->getType())
 			{
-				CoreValue<kstl::string>* L_Value = new CoreValue<kstl::string>((*(maString*)params[idx]).const_ref());
-
-				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
-				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key.ToString(), L_Value);
-
-				L_Value->Destroy();
+			case STRING:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<kstl::string>((*(maString*)params[idx]).const_ref()));
+				break;
+			case USSTRING:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<usString>((*(maUSString*)params[idx])));
+				break;
+			case FLOAT:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])));
+				break;
+			case INT:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])));
+				break;
+			case BOOL:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])));
+				break;
+			case UINT:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])));
+				break;
+			case DOUBLE:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])));
+				break;
 			}
-			else if (params[idx]->getType() == USSTRING)
+
+			if (!L_Value.isNil())
 			{
-				CoreValue<usString>* L_Value = new CoreValue<usString>((*(maUSString*)params[idx]));
-
 				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<usString>*)m_pCurrentObject)->set(L_Key, L_Value);
-
-				L_Value->Destroy();
-			}
-			else if (params[idx]->getType() == FLOAT)
-			{
-				CoreValue<kfloat>* L_Value = new CoreValue<kfloat>((*(maFloat*)params[idx]));
-
-				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
-				else
-					((CoreMap<usString>*)m_pCurrentObject)->set(L_Key, L_Value);
-
-				L_Value->Destroy();
-			}
-			else if (params[idx]->getType() == INT)
-			{
-				CoreValue<int>* L_Value = new CoreValue<int>((*(maInt*)params[idx]));
-
-
-				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
-				else
-					((CoreMap<usString>*)m_pCurrentObject)->set(L_Key, L_Value);
-
-
-				L_Value->Destroy();
-			}
-			else if (params[idx]->getType() == BOOL)
-			{
-				CoreValue<bool>* L_Value = new CoreValue<bool>((*(maBool*)params[idx]));
-
-
-				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
-				else
-					((CoreMap<usString>*)m_pCurrentObject)->set(L_Key, L_Value);
-
-
-				L_Value->Destroy();
-			}
-			else if (params[idx]->getType() == UINT)
-			{
-				CoreValue<unsigned int>* L_Value = new CoreValue<unsigned int>((*(maUInt*)params[idx]));
-
-				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
-				else
-					((CoreMap<usString>*)m_pCurrentObject)->set(L_Key, L_Value);
-
-				L_Value->Destroy();
-			}
-			else if (params[idx]->getType() == DOUBLE)
-			{
-				CoreValue<double>* L_Value = new CoreValue<double>((*(maDouble*)params[idx]));
-
-				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
-				else
-					((CoreMap<usString>*)m_pCurrentObject)->set(L_Key, L_Value);
-
-				L_Value->Destroy();
+					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
 			}
 		}
 	}

@@ -8,12 +8,39 @@
 
 class CoreItem;
 
+class CoreItemSP : public SmartPointer<CoreItem>
+{
+public:
+	CoreItemSP() : SmartPointer<CoreItem>(nullptr){}
+	CoreItemSP(CoreItem* it) : SmartPointer<CoreItem>(it, StealRefTag{}) {}
+	CoreItemSP(CoreItem* it, StealRefTag stealref) : SmartPointer<CoreItem>(it, stealref) {}
+	CoreItemSP(CoreItem* it, GetRefTag getref) : SmartPointer<CoreItem>(it, getref) {}
+	CoreItemSP(std::nullptr_t) : SmartPointer<CoreItem>(nullptr) {}
+
+	operator CoreItem&()
+	{
+		return *get();
+	}
+
+	// operator [] needs to be overloaded on vectors and maps
+	inline CoreItemSP operator[](int i) const;
+
+	inline CoreItemSP operator[](const char* key) const;
+
+	inline CoreItemSP operator[](const kstl::string& key) const;
+
+	inline CoreItemSP operator[](const usString& key) const;
+
+
+};
+
+
 class CoreItemIteratorBase : public GenericRefCountedBaseClass
 {
 public:
 
 	CoreItemIteratorBase() : GenericRefCountedBaseClass()
-		,myAttachedCoreItem(0)
+		,myAttachedCoreItem(nullptr)
 		, myPos(0xFFFFFFFF)
 	{
 		
@@ -26,7 +53,7 @@ public:
 
 	}
 
-	virtual CoreItem* operator*() const;
+	virtual CoreItemSP operator*() const;
 
 	virtual CoreItemIteratorBase& operator=(const CoreItemIteratorBase & other);
 
@@ -99,7 +126,7 @@ protected:
 
 	friend class CoreItem;
 
-	CoreItemIteratorBase(CoreItem* item, unsigned int pos) : GenericRefCountedBaseClass()
+	CoreItemIteratorBase(CoreItemSP item, unsigned int pos) : GenericRefCountedBaseClass()
 		,myAttachedCoreItem(item)
 		, myPos(pos)
 	{
@@ -107,7 +134,7 @@ protected:
 	}
 
 
-	CoreItem*		myAttachedCoreItem;
+	CoreItemSP		myAttachedCoreItem;
 	unsigned int	myPos;
 };
 
@@ -121,7 +148,7 @@ public:
 
 	}
 
-	virtual CoreItem& operator*() const;
+	virtual CoreItemSP operator*() const;
 
 	virtual CoreItemIterator& operator=(const CoreItemIterator & other);
 
@@ -143,6 +170,7 @@ protected:
 
 
 };
+
 
 // ****************************************
 // * CoreItem class
@@ -170,6 +198,8 @@ public:
 		COREVALUE			= 8,
 		CORENAMEDVALUE		= 9
 	};
+
+
 
 	typedef size_t size_type;
 
@@ -292,29 +322,29 @@ public:
 	bool isSubType(const KigsID& cid) const override {if(KigsID("CoreItem") == cid)return true;  return RefCountedBaseClass::isSubType(cid);}
 
 	// operator [] needs to be overloaded on vectors and maps
-	virtual CoreItem& operator[](int i) const;
+	virtual CoreItemSP operator[](int i) const;
 
-	CoreItem& operator[](const char* key) const
+	CoreItemSP operator[](const char* key) const
 	{
 		return (*this)[kstl::string(key)];
 	}
 
-	virtual CoreItem& operator[](const kstl::string& key) const;
+	virtual CoreItemSP operator[](const kstl::string& key) const;
 
-	virtual CoreItem& operator[](const usString& key) const;
+	virtual CoreItemSP operator[](const usString& key) const;
 
 	// operator [] needs to be overloaded on vectors and maps
 
 	virtual CoreItemIterator begin()
 	{
-		CoreItemIteratorBase* iter = new CoreItemIteratorBase(this, 0);
+		CoreItemIteratorBase* iter = new CoreItemIteratorBase(CoreItemSP(this, StealRefTag{}), 0);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 
 	virtual CoreItemIterator end()
 	{
-		CoreItemIteratorBase* iter = new CoreItemIteratorBase(this, 0xFFFFFFFF);
+		CoreItemIteratorBase* iter = new CoreItemIteratorBase(CoreItemSP(this, StealRefTag{}), 0xFFFFFFFF);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
@@ -358,9 +388,9 @@ public:
 	}
 
 
-	virtual CoreItem& operator[](const kstl::string& key) const;
+	virtual CoreItemSP operator[](const kstl::string& key) const;
 
-	virtual CoreItem& operator[](const usString& key) const;
+	virtual CoreItemSP operator[](const usString& key) const;
 
 
 protected:
@@ -368,5 +398,25 @@ protected:
 };
 
 
+// operator [] needs to be overloaded on vectors and maps
+inline CoreItemSP CoreItemSP::operator[](int i) const
+{
+	return myPointer->operator[](i);
+}
+
+inline CoreItemSP CoreItemSP::operator[](const char* key) const
+{
+	return myPointer->operator[](key);
+}
+
+inline CoreItemSP CoreItemSP::operator[](const kstl::string& key) const
+{
+	return myPointer->operator[](key);
+}
+
+inline CoreItemSP CoreItemSP::operator[](const usString& key) const
+{
+	return myPointer->operator[](key);
+}
 
 #endif // _COREITEM_H

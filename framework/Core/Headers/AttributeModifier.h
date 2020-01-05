@@ -157,15 +157,13 @@ class CoreItemOperatorModifier : public AttachedModifierBase
 {
 public:
 	CoreItemOperatorModifier() : AttachedModifierBase()
-		, myCurrentItem(0)
+		, myCurrentItem(nullptr)
 	{
 
 	}
 
 	virtual ~CoreItemOperatorModifier()
 	{
-		myCurrentItem->Destroy();
-		myCurrentItem = 0;
 
 		auto itcurrent = myContext.myVariableList.begin();
 		auto itend = myContext.myVariableList.end();
@@ -269,6 +267,6 @@ protected:
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Point2D& value);
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Point3D& value);
 
-	CoreItem*					myCurrentItem;
+	CoreItemSP					myCurrentItem;
 	CoreItemEvaluationContext	myContext;
 };

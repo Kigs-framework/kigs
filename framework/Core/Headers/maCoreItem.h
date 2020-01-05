@@ -46,13 +46,13 @@ public:
 	
 	// getValue overloads
 
-	virtual bool getValue(bool&  value) const override { if (_value.item) { value = (bool)(*_value.item.get()); return true; }  return false; }
-	virtual bool getValue(int&  value) const override { if (_value.item) { value = (int)(*_value.item.get()); return true; } return false; }
-	virtual bool getValue(unsigned int&  value) const override { if (_value.item) { value = (unsigned int)(*_value.item.get()); return true; }  return false; }
-	virtual bool getValue(kfloat&  value) const override { if (_value.item) { value = (kfloat)(*_value.item.get()); return true; }  return false; }
+	virtual bool getValue(bool&  value) const override { if (!_value.item.isNil()) { value = (bool)(*_value.item.get()); return true; }  return false; }
+	virtual bool getValue(int&  value) const override { if (!_value.item.isNil()) { value = (int)(*_value.item.get()); return true; } return false; }
+	virtual bool getValue(unsigned int&  value) const override { if (!_value.item.isNil()) { value = (unsigned int)(*_value.item.get()); return true; }  return false; }
+	virtual bool getValue(kfloat&  value) const override { if (!_value.item.isNil()) { value = (kfloat)(*_value.item.get()); return true; }  return false; }
 	virtual bool getValue(kstl::string& value) const override
 	{
-		if (_value.item)
+		if (!_value.item.isNil())
 		{
 			return _value.ExportToString(value);
 		}

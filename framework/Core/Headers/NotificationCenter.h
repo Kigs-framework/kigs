@@ -50,9 +50,10 @@ protected:
 
 	struct ObserverStruct
 	{
+
 		bool            myIsRemoved;
 		bool			myIsStringItem;
-		CoreItem*		myCurrentItem;
+		CoreItemSP		myCurrentItem = CoreItemSP(nullptr);
 		unsigned int    mySelectorID;
 		CoreModifiable* mySender;
 	};
