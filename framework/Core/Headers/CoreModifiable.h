@@ -726,7 +726,7 @@ public:
 	// remove a son. Need to call ParentClassType::removeItem(...) when overriding !
 	virtual bool removeItem(CoreModifiable* item);
 
-	// Called when an attribute that has its notification level set to Owner is modified. Need to call base::NotifyUpdate(...) when overriding !
+	// Called when an attribute that has its notification level set to Owner is modified. Need to call ParentClassType::NotifyUpdate(...) when overriding !
 	virtual void NotifyUpdate(const u32 labelid);
 
 	// By default Two modifiables are equals if they are the same type and attributes are equal. Free to override as needed
