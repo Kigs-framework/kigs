@@ -409,6 +409,9 @@ public:
 	template<typename Ret, typename... T>
 	Ret SimpleCall(KigsID methodName, T&&... params);
 
+	template<typename Ret>
+	Ret SimpleCall(KigsID methodName);
+
 	template<typename Ret, typename... T>
 	Ret InvokeReturn(KigsID methodName, T&&... params)
 	{
@@ -430,9 +433,14 @@ public:
 	// Avoid using ! call a method, with a list of CoreModifiableAttribute as parameters
 	bool CallMethod(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0, CoreModifiable* sender = 0);
 	// Avoid using ! call a meethod with the list of CoreModifiableAttribute of the given CoreModifiable as parameter
-	bool CallMethod(KigsID methodNameID, CoreModifiable* params, void* privateParams = 0, CoreModifiable* sender = 0) {	return CallMethod(methodNameID, ((std::vector<CoreModifiableAttribute*>&)(*params)), privateParams, sender); }
+	bool CallMethod(KigsID methodNameID, CoreModifiable* params, void* privateParams = 0, CoreModifiable* sender = 0) {
+		std::vector<CoreModifiableAttribute*> p = (std::vector<CoreModifiableAttribute*>) (*params);
+		return CallMethod(methodNameID, p, privateParams, sender); 
+	}
 	// Avoid using ! call a method, with the list of CoreModifiableAttribute of the given CoreModifiable as parameter
-	bool CallMethod(KigsID methodNameID, CoreModifiable& params, void* privateParams = 0, CoreModifiable* sender = 0) { return CallMethod(methodNameID, ((std::vector<CoreModifiableAttribute*>&)(params)), privateParams, sender); }
+	bool CallMethod(KigsID methodNameID, CoreModifiable& params, void* privateParams = 0, CoreModifiable* sender = 0) {
+		std::vector<CoreModifiableAttribute*> p = (std::vector<CoreModifiableAttribute*>) params;
+		return CallMethod(methodNameID, p, privateParams, sender); }
 	// Avoid using ! emit a signal, with a list of CoreModifiableAttribute as parameters
 	bool CallEmit(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0);
 

@@ -302,8 +302,19 @@ bool	OpenGLTexture::PostDraw(TravState* travstate)
 
 bool OpenGLTexture::ManagePow2Buffer(u32 aWidth, u32 aHeight, u32 aPixSize)
 {
-	if (aWidth <= myWidth && aHeight <= myHeight && aPixSize <= myPixelSize)
+	int currentSize = myPow2Width * myPow2Height * myPixelSize;
+	int newSize = aWidth * aHeight * aPixSize;
+	
+	bool reinit = (newSize * 4) < currentSize;
+
+	if ((aWidth <= myWidth) && (aHeight <= myHeight) && (aPixSize <= myPixelSize) && (!reinit) )
 		return false;
+
+	if (reinit)
+	{
+		myPow2Width = 1;
+		myPow2Height = 1;
+	}
 
 	// get pow2 size
 	while (myPow2Width < aWidth)

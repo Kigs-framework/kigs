@@ -412,15 +412,7 @@ public:
 	*/
 	static CoreModifiable* GetThreadProfiler(){ return myCoreInstance->myThreadProfiler; }
 	static void SetThreadProfiler(CoreModifiable* tp){ myCoreInstance->myThreadProfiler = tp; }
-	/**
-	 * \fn			inline static kstl::unordered_map<CoreModifiableAttribute*,kstl::vector<CoreModifiableAttribute*> >& getCloneMap()
-	 * \brief		Get a clone of the attibute map
-	 * \return		the clone of the attibute map
-	 */
-	inline static kstl::unordered_map<CoreModifiableAttribute*,kstl::vector<CoreModifiableAttribute*> >& getCloneMap()
-	{
-		return *(myCoreInstance->myCloneMap);
-	}
+
 
 	/**
 	* \fn			inline  static kstl::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >& getReferenceMap()
@@ -556,10 +548,6 @@ protected:
 
 	//! static pointer to the KigsCore singleton
 	static KigsCore*		myCoreInstance;
-
-	//! CoreModifiableAttribute clone map
-	// first the original pointer, second is a vector on clones
-	kstl::unordered_map<CoreModifiableAttribute*,kstl::vector<CoreModifiableAttribute*> >*	myCloneMap;
 
 
 	//! CoreModifiable referenced by maReference

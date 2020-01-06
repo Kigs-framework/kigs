@@ -286,6 +286,7 @@ CoreItem&	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Const
 
 			if (newfunction)
 			{
+				newfunction->GetRef();
 				AsciiParserUtils	operand(formulae);
 				formulae.SetPosition(matchkeywork.size());
 
@@ -327,6 +328,7 @@ CoreItem&	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Const
 			CoreItem* variable=getVariable(matchkeywork);
 			if (variable)
 			{
+				variable->GetRef();
 				return *variable;
 			}
 			/*// just set value as a string

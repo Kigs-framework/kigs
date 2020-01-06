@@ -35,7 +35,6 @@
 #include "UI/UIImageHighlight.h"
 #include "UI/UIItem.h"
 #include "UI/UILayout.h"
-#include "UI/UIMultilineText.h"
 #include "UI/UIPanel.h"
 #include "UI/UIPopUp.h"
 #include "UI/UIRatioKeeper.h"
@@ -82,7 +81,6 @@ void Module2DLayers::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 
 	DECLARE_FULL_CLASS_INFO(core, UI3DLinkedItem, UI3DLinkedItem, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, PassiveColoredMask, PassiveColoredMask, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, UI3DLinkedItem, UI3DLinkedItem, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIAnimatedButton, UIAnimatedButton, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIAnimatedSprite, UIAnimatedSprite, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIBoxLayout, UIBoxLayout, 2DLayers);
@@ -103,7 +101,6 @@ void Module2DLayers::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	DECLARE_FULL_CLASS_INFO(core, UIImageHighlight, UIImageHighlight, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIItem, UIItem, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UILayout, UILayout, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, UIMultilineText, UIMultilineText, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIPanel, UIPanel, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIPopUp, UIPopUp, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIRatioKeeper, UIRatioKeeper, 2DLayers);

@@ -22,7 +22,9 @@ void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 	if (!myTexture.isNil())
 	{
 		kfloat ratioX, ratioY, sx, sy;
+		unsigned int p2sx, p2sy;
 		myTexture->GetSize(sx, sy);
+		myTexture->GetPow2Size(p2sx, p2sy);
 		myTexture->GetRatio(ratioX, ratioY);
 
 		v2f uv_min = mUVMin;
@@ -33,8 +35,8 @@ void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 
 		v2f image_size{ sx*ratioX, sy*ratioY };
 
-		kfloat dx = 0.5f / sx;
-		kfloat dy = 0.5f / sy;
+		kfloat dx = 0.5f / ((float)p2sx);
+		kfloat dy = 0.5f / ((float)p2sy);
 
 		VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
 
@@ -149,7 +151,7 @@ void UITexturedItem::PostDraw(TravState* state)
 
 int UITexturedItem::GetTransparencyType()
 {
-	if (myTexture && myOpacity == 1.0f)
+	if (myTexture && GetOpacity() == 1.0f)
 		return myTexture->GetTransparency();
 	else // overall transparency
 		return 2;

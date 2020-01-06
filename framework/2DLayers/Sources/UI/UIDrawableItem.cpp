@@ -98,7 +98,7 @@ void UIDrawableItem::SetColor(UIVerticesInfo * aQI)
 	unsigned char r = (unsigned char)(myColor.getArrayBuffer()[0] * 255.0f);
 	unsigned char g = (unsigned char)(myColor.getArrayBuffer()[1] * 255.0f);
 	unsigned char b = (unsigned char)(myColor.getArrayBuffer()[2] * 255.0f);
-	unsigned char a = (unsigned char)((myOpacity>=0.0f)?myOpacity*255.0f: myParent->GetOpacity()*255.f);
+	unsigned char a = (unsigned char)(GetOpacity() *255.0f);
 
 	VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
 

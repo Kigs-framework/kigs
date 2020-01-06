@@ -1,5 +1,5 @@
 #pragma once
-#include "UI/UIImage.h"
+#include "UI/UIItem.h"
 
 // ****************************************
 // * UIPopUp class
@@ -19,10 +19,10 @@
 */
 // ****************************************
 
-class UIPopUp : public UIImage
+class UIPopUp : public UIItem
 {
 public:
-	DECLARE_CLASS_INFO(UIPopUp, UIImage, 2DLayers);
+	DECLARE_CLASS_INFO(UIPopUp, UIItem, 2DLayers);
 	DECLARE_CONSTRUCTOR(UIPopUp);
 
 	DECLARE_VIRTUAL_METHOD(HidePopUp);
