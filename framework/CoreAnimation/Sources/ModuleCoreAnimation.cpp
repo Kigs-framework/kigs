@@ -325,12 +325,11 @@ DEFINE_METHOD(ModuleCoreAnimation, OnDestroyCallBack)
 CoreSequence* ModuleCoreAnimation::createSequenceFromString(CoreModifiable* target, const kstl::string& json, Timer* reftimer)
 {
 	JSonFileParser L_JsonParser;
-	CoreMap<kstl::string>* L_Dictionary = (CoreMap<kstl::string>*)L_JsonParser.Get_JsonDictionaryFromString(json);
+	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionaryFromString(json);
 
-	if (L_Dictionary)
+	if (!L_Dictionary.isNil())
 	{
 		CoreSequence* result = createSequenceFromCoreMap(target, L_Dictionary, reftimer);
-		L_Dictionary->Destroy();
 		return result;
 	}
 	return 0;
@@ -340,19 +339,18 @@ CoreSequence*	ModuleCoreAnimation::createSequenceFromJSON(CoreModifiable* target
 {
 	
 	JSonFileParser L_JsonParser;
-	CoreMap<kstl::string>* L_Dictionary = (CoreMap<kstl::string>*)L_JsonParser.Get_JsonDictionary(file);
+	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionary(file);
 	
-	if(L_Dictionary)
+	if (!L_Dictionary.isNil())
 	{
 		CoreSequence* result=createSequenceFromCoreMap(target,L_Dictionary,reftimer);
-		L_Dictionary->Destroy();
 		return result;
 	}
 
 	return 0;
 }
 
-CoreSequence*	ModuleCoreAnimation::createSequenceFromCoreMap(CoreModifiable* target,CoreMap<kstl::string>* L_Dictionary,Timer* reftimer)
+CoreSequence*	ModuleCoreAnimation::createSequenceFromCoreMap(CoreModifiable* target, CoreItemSP& L_Dictionary,Timer* reftimer)
 {
 	CoreItemIterator iter=L_Dictionary->begin();
 
@@ -361,24 +359,23 @@ CoreSequence*	ModuleCoreAnimation::createSequenceFromCoreMap(CoreModifiable* tar
 
 	CoreSequence*	result = new CoreSequence(target, key, reftimer);
 
-	CoreItem& actions=(*iter);
+	CoreItem& actions= (CoreItem & )(*iter);
 
 	unsigned int actionindex;
 	for(actionindex = 0; actionindex<actions.size();actionindex++)
 	{
-		CoreMap<kstl::string>*	actiondesc=(CoreMap<kstl::string>*)&(actions[actionindex]);
-		CoreAction* newaction=createAction(result,actiondesc);
-		if(newaction)
+		auto	actiondesc=actions[actionindex];
+		CoreItemSP newaction=createAction(result,actiondesc);
+		if(!newaction.isNil())
 		{
 			result->push_back(newaction);
-			newaction->Destroy();
 		}
 	}
 
 	return result;
 }
 
-CoreAction*		ModuleCoreAnimation::createAction(CoreSequence* sequence,CoreMap<kstl::string>* actiondesc)
+CoreItemSP		ModuleCoreAnimation::createAction(CoreSequence* sequence, CoreItemSP& actiondesc)
 {
 	CoreItemIterator firstactiondesc = actiondesc->begin(); // only one
 
@@ -388,7 +385,7 @@ CoreAction*		ModuleCoreAnimation::createAction(CoreSequence* sequence,CoreMap<ks
 	CoreAction* newaction = (CoreAction*)myPrivateMiniFactory->CreateClassInstance(key);
 	if(newaction)
 	{
-		newaction->init(sequence,(CoreVector*)&(*firstactiondesc));
+		newaction->init(sequence,(CoreVector*)(*firstactiondesc).get());
 	}
-	return newaction;
+	return CoreItemSP(newaction, StealRefTag{});
 }

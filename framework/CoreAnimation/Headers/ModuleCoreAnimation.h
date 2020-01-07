@@ -46,8 +46,8 @@ public:
 
 	CoreSequence*   createSequenceFromString(CoreModifiable* target, const kstl::string& json, Timer* reftimer = 0);
 	CoreSequence*	createSequenceFromJSON(CoreModifiable* target,const kstl::string& file,Timer* reftimer=0);
-	CoreSequence*	createSequenceFromCoreMap(CoreModifiable* target,CoreMap<kstl::string>* sequenceDesc,Timer* reftimer=0);
-	CoreAction*		createAction(CoreSequence* sequence,CoreMap<kstl::string>* actiondesc);
+	CoreSequence*	createSequenceFromCoreMap(CoreModifiable* target,CoreItemSP& sequenceDesc,Timer* reftimer=0);
+	CoreItemSP		createAction(CoreSequence* sequence, CoreItemSP& actiondesc);
 
 	void	addSequence(CoreSequence* sequence);
     void	removeSequence(CoreSequence* sequence);

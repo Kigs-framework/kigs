@@ -57,12 +57,12 @@ bool	CoreSequence::update(const Timer& timer)
 void	CoreSequence::stop()
 {
 	// reset all actions
-	kstl::vector<RefCountedBaseClass*>::iterator itAction = myVector.begin();
-	kstl::vector<RefCountedBaseClass*>::iterator itActionEnd = myVector.end();
+	kstl::vector<CoreItemSP>::iterator itAction = myVector.begin();
+	kstl::vector<CoreItemSP>::iterator itActionEnd = myVector.end();
 
 	while (itAction != itActionEnd)
 	{
-		CoreAction* current = (CoreAction*)(*itAction);
+		CoreAction* current = (CoreAction*)(*itAction).get();
 		current->reset();
 		++itAction;
 	}
@@ -91,7 +91,7 @@ void	CoreSequence::protectedStart(kdouble time)
 	{
 		if (myVector.size())
 		{
-			CoreAction* current = (CoreAction*)myVector[myCurrentActionIndex];
+			CoreAction* current = (CoreAction*)myVector[myCurrentActionIndex].get();
 			current->setStartTime(time);
 			myStartTime = time;
 		}
@@ -108,7 +108,7 @@ void	CoreSequence::protectedUpdate(kdouble time)
 	bool done = false;
 	if (myCurrentActionIndex == 0xFFFFFFFF) return;
 
-	CoreAction* current = (CoreAction*)myVector[myCurrentActionIndex];
+	CoreAction* current = (CoreAction*)myVector[myCurrentActionIndex].get();
 	while (!done)
 	{
 		if (current->update(time)) // action is finished, start next one
@@ -117,7 +117,7 @@ void	CoreSequence::protectedUpdate(kdouble time)
 			if (myCurrentActionIndex < myVector.size())
 			{
 				kdouble previousend = current->getEndTime();
-				current = (CoreAction*)myVector[myCurrentActionIndex];
+				current = (CoreAction*)myVector[myCurrentActionIndex].get();
 				current->setStartTime(previousend);
 			}
 			else

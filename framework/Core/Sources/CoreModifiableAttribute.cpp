@@ -352,14 +352,14 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 	case (int)CoreModifiable::DOUBLE:
 	{
 		myContext.myVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kfloat>(0.0f);
-		myCurrentItem = &CoreItemOperator<kfloat>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+		myCurrentItem = CoreItemOperator<kfloat>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 	}
 	break;
 	case (int)CoreModifiable::STRING:
 	case (int)CoreModifiable::USSTRING:
 	{
 		myContext.myVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kstl::string>("");
-		myCurrentItem = &CoreItemOperator<kstl::string>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+		myCurrentItem = CoreItemOperator<kstl::string>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 	}
 	break;
 	case (int)CoreModifiable::ARRAY:
@@ -369,12 +369,12 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 		if (asize == 2)
 		{
 			myContext.myVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Point2D>();
-			myCurrentItem = &CoreItemOperator<Point2D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			myCurrentItem = CoreItemOperator<Point2D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 		}
 		else if (asize == 3)
 		{
 			myContext.myVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Point3D>();
-			myCurrentItem = &CoreItemOperator<Point3D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			myCurrentItem = CoreItemOperator<Point3D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 
 		}
 	}
@@ -390,7 +390,7 @@ void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* ca
 {
 	SetCoreItemOperatorContext(&myContext);
 	*((CoreValue<kfloat>*)myContext.myVariableList[LABEL_TO_ID(input).toUInt()]) = value;
-	value = *myCurrentItem;
+	value = *myCurrentItem.get();
 	ReleaseCoreItemOperatorContext();
 };
 

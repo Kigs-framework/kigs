@@ -494,6 +494,19 @@ Ret CoreModifiable::SimpleCall(KigsID methodNameID, T&&... params)
 	return result;
 }
 
+template<typename Ret>
+Ret CoreModifiable::SimpleCall(KigsID methodNameID)
+{
+	kstl::vector<CoreModifiableAttribute*> attr;
+	CallMethod(methodNameID, attr);
+	Ret result = {};
+	if(attr.size())
+	{
+		 attr.back()->getValue(result);
+	}
+	return result;
+}
+
 template<typename... T>
 bool CoreModifiable::SimpleCall(KigsID methodNameID, T&&... params)
 {

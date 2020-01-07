@@ -13,23 +13,20 @@ inline void CoreActionFunction<kfloat, 1>::init(CoreSequence* sequence, CoreVect
 	}
 #endif
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration = readfloat;
 
 	kstl::string readstring;
-	(*params)[1].getValue(readstring);
+	(*params)[1]->getValue(readstring);
 
 	// eval
-	CoreItem* eval = &CoreItemOperator<kfloat>::Construct(readstring, myTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
-	if (eval)
+	CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, myTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
+	if (!eval.isNil())
 	{
-		if (eval != KigsCore::Instance()->NotFoundCoreItem())
-		{
-			myFunctions[0] = eval;
-		}
+		myFunctions[0] = eval.get();		
 	}
 
-	(*params)[2].getValue(readstring);
+	(*params)[2]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 	myParamID = CharToID::GetID(readstring);
 }
@@ -46,7 +43,7 @@ inline void CoreActionFunction<Point2D, 2>::init(CoreSequence* sequence, CoreVec
 #endif
 
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration = readfloat;
 
 	kstl::string readstring;
@@ -56,16 +53,13 @@ inline void CoreActionFunction<Point2D, 2>::init(CoreSequence* sequence, CoreVec
 	{
 		readstring = (const kstl::string&)((*params)[1][i]);
 		// eval
-		CoreItem* eval = &CoreItemOperator<kfloat>::Construct(readstring, myTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
-		if (eval)
+		CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, myTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
+		if (!eval.isNil())
 		{
-			if (eval != KigsCore::Instance()->NotFoundCoreItem())
-			{
-				myFunctions[i] = eval;
-			}
+			myFunctions[i] = eval.get();
 		}
 	}
-	(*params)[2].getValue(readstring);
+	(*params)[2]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 	myParamID = CharToID::GetID(readstring);
 
@@ -82,7 +76,7 @@ inline void CoreActionFunction<Point3D, 3>::init(CoreSequence* sequence, CoreVec
 #endif
 
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration = readfloat;
 
 	kstl::string readstring;
@@ -92,16 +86,13 @@ inline void CoreActionFunction<Point3D, 3>::init(CoreSequence* sequence, CoreVec
 	{
 		readstring = (const kstl::string&)((*params)[1][i]);
 		// eval
-		CoreItem* eval = &CoreItemOperator<kfloat>::Construct(readstring, myTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
-		if (eval)
+		CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, myTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
+		if (!eval.isNil())
 		{
-			if (eval != KigsCore::Instance()->NotFoundCoreItem())
-			{
-				myFunctions[i] = eval;
-			}
+			myFunctions[i] = eval.get();
 		}
 	}
-	(*params)[2].getValue(readstring);
+	(*params)[2]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 	myParamID = CharToID::GetID(readstring);
 
@@ -119,7 +110,7 @@ inline void CoreActionFunction<Quaternion, 4>::init(CoreSequence* sequence, Core
 #endif
 
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration = readfloat;
 
 	kstl::string readstring;
@@ -129,16 +120,13 @@ inline void CoreActionFunction<Quaternion, 4>::init(CoreSequence* sequence, Core
 	{
 		readstring = (const kstl::string&)((*params)[1][i]);
 		// eval
-		CoreItem* eval = &CoreItemOperator<kfloat>::Construct(readstring, myTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
-		if (eval)
+		CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, myTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
+		if (!eval.isNil())
 		{
-			if (eval != KigsCore::Instance()->NotFoundCoreItem())
-			{
-				myFunctions[i] = eval;
-			}
+			myFunctions[i] = eval.get();
 		}
 	}
-	(*params)[2].getValue(readstring);
+	(*params)[2]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 	myParamID = CharToID::GetID(readstring);
 

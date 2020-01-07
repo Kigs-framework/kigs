@@ -18,11 +18,11 @@ void CoreActionRemoveFromParent::init(CoreSequence* sequence,CoreVector* params)
 #endif
 
 	float readfloat;
-	((CoreValue<float>&)(*params)[0]).getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
 	kstl::string readstring;
-	((CoreValue<kstl::string>&)(*params)[1]).getValue(readstring);
+	(*params)[1]->getValue(readstring);
 
 	myParentTypeID=CharToID::GetID(readstring);
 }
@@ -76,10 +76,10 @@ void CoreActionSendMessage::init(CoreSequence* sequence,CoreVector* params)
 #endif
 
 	float readfloat;
-	((CoreValue<float>&)(*params)[0]).getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
-	((CoreValue<kstl::string>&)(*params)[1]).getValue(myMessage);
+	(*params)[1]->getValue(myMessage);
 
 	if ((*params).size() > 2)
 	{
@@ -120,10 +120,10 @@ void CoreActionEmitSignal::init(CoreSequence* sequence, CoreVector* params)
 #endif
 
 	float readfloat;
-	((CoreValue<float>&)(*params)[0]).getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration = readfloat;
 
-	((CoreValue<kstl::string>&)(*params)[1]).getValue(mySignal);
+	(*params)[1]->getValue(mySignal);
 
 	if ((*params).size() > 2)
 	{
@@ -195,8 +195,11 @@ void CoreActionCombo::init(CoreSequence* sequence,CoreVector* params)
 	for(i=0;i<params->size();++i)
 	{
 		// create each action
-		CoreMap<kstl::string>* tocreate=(CoreMap<kstl::string>*)&(*params)[i];
-		CoreAction*	actiontoadd=module->createAction(sequence,tocreate);
+		CoreItemSP tocreate=(*params)[i];
+		CoreItemSP	actiontoaddSP=module->createAction(sequence,tocreate);
+		actiontoaddSP->GetRef();
+		CoreAction* actiontoadd = (CoreAction * )actiontoaddSP.get();
+
 		myList.push_back(actiontoadd);
 		if(actiontoadd->getDuration()>myDuration)
 		{
@@ -293,8 +296,10 @@ void CoreActionSerie::init(CoreSequence* sequence,CoreVector* params)
 	for(i=0;i<params->size();++i)
 	{
 		// create each action
-		CoreMap<kstl::string>* tocreate=(CoreMap<kstl::string>*)&(*params)[i];
-		CoreAction*	actiontoadd=module->createAction(sequence,tocreate);
+		CoreItemSP tocreate=(*params)[i];
+		CoreItemSP actiontoaddsp = module->createAction(sequence, tocreate);
+		actiontoaddsp->GetRef();
+		CoreAction* actiontoadd = (CoreAction * )actiontoaddsp.get();
 		myList.push_back(actiontoadd);
 		
 		if(actiontoadd->getDuration()<0.0)
@@ -386,12 +391,14 @@ void CoreActionForLoop::init(CoreSequence* sequence,CoreVector* params)
 	myDuration=-1.0;
 
 	int readint;
-	(*params)[0].getValue(readint); // loop count
+	(*params)[0]->getValue(readint); // loop count
 	myLoopCount=readint;
 
 	// create son action
-	CoreMap<kstl::string>* tocreate=(CoreMap<kstl::string>*)&(*params)[1];
-	myActionToLoop=module->createAction(sequence,tocreate);
+	CoreItemSP tocreate = (*params)[1];
+	CoreItemSP actiontoaddsp = module->createAction(sequence, tocreate);
+	actiontoaddsp->GetRef();
+	myActionToLoop = (CoreAction*)actiontoaddsp.get();
 
 	if(myActionToLoop)
 	{
@@ -474,14 +481,16 @@ void CoreActionDoWhile::init(CoreSequence* sequence,CoreVector* params)
 	myDuration=-1.0;
 
 	kstl::string readstring;
-	(*params)[0].getValue(readstring);
+	(*params)[0]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);										// parameter to test
 
 	// create son action
-	CoreMap<kstl::string>* tocreate=(CoreMap<kstl::string>*)&(*params)[1];
-	myActionToLoop=module->createAction(sequence,tocreate);
+	CoreItemSP tocreate = (*params)[1];
+	CoreItemSP actiontoaddsp = module->createAction(sequence, tocreate);
+	actiontoaddsp->GetRef();
+	myActionToLoop = (CoreAction*)actiontoaddsp.get();
 
 	if(myActionToLoop)
 	{
