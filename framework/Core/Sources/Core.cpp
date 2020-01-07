@@ -381,6 +381,9 @@ void KigsCore::Close(bool closeMemoryManager)
 #endif
 
 		delete myCoreInstance->myRootNode;
+
+		myCoreInstance->myTypeNodeMap.clear();
+
 		delete myCoreInstance;
 
 		myCoreInstance=0;

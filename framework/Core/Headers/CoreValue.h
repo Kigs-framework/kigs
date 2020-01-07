@@ -33,6 +33,19 @@ protected:
 	CoreValueBase(CoreItem::COREITEM_TYPE _type) : BaseClass(_type){}
 public:
 	
+	virtual void set(int key, const CoreItemSP& toinsert)
+	{
+		KIGS_ERROR("set called on CoreValue",1);
+	}
+	virtual void set(const kstl::string& key, const CoreItemSP& toinsert)
+	{
+		KIGS_ERROR("set called on CoreValue", 1);
+	}
+	virtual void set(const usString& key, const CoreItemSP& toinsert)
+	{
+		KIGS_ERROR("set called on CoreValue", 1);
+	}
+
 	virtual inline operator bool() const
 	{
 		return false;
@@ -60,7 +73,7 @@ public:
 
 	virtual inline operator usString() const
 	{
-		return "";
+		return usString("");
 	}
 
 	virtual inline operator Point2D() const
@@ -193,13 +206,13 @@ inline CoreValueBase<bool,CoreNamedItem>::operator  kstl::string() const
 template<>
 inline CoreValueBase<bool, CoreItem>::operator  usString() const
 {
-	return m_Value ? "true" : "false";
+	return m_Value ? usString("true") : usString("false");
 }
 
 template<>
 inline CoreValueBase<bool, CoreNamedItem>::operator  usString() const
 {
-	return m_Value ? "true" : "false";
+	return m_Value ? usString("true") : usString("false");
 }
 
 template<>
@@ -259,7 +272,7 @@ inline CoreValueBase<kfloat, CoreItem>::operator  usString() const
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%f", (kfloat)m_Value);
-	return L_Buffer;
+	return usString(L_Buffer);
 }
 
 template<>
@@ -267,7 +280,7 @@ inline CoreValueBase<kfloat, CoreNamedItem>::operator  usString() const
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%f", (kfloat)m_Value);
-	return L_Buffer;
+	return usString(L_Buffer);
 }
 
 template<>
@@ -454,14 +467,14 @@ inline CoreValueBase<int, CoreItem>::operator  usString() const
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", (int)m_Value);
-	return L_Buffer;
+	return usString(L_Buffer);
 }
 template<>
 inline CoreValueBase<int, CoreNamedItem>::operator  usString() const
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", (int)m_Value);
-	return L_Buffer;
+	return usString(L_Buffer);
 }
 
 
@@ -529,14 +542,14 @@ inline CoreValueBase<unsigned int, CoreItem>::operator usString() const
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%u", (unsigned int)m_Value);
-	return L_Buffer;
+	return usString(L_Buffer);
 }
 template<>
 inline CoreValueBase<unsigned int, CoreNamedItem>::operator usString() const
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%u", (unsigned int)m_Value);
-	return L_Buffer;
+	return usString(L_Buffer);
 }
 
 
@@ -803,7 +816,7 @@ inline CoreItem& CoreNamedValue<usString>::operator= (const kfloat& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%f", (kfloat)_value);
-	this->m_Value = L_Buffer;
+	this->m_Value = usString(L_Buffer);
 	return *this;
 }
 template<>
@@ -820,7 +833,7 @@ inline CoreItem& CoreNamedValue<usString>::operator= (const int& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
-	this->m_Value = L_Buffer;
+	this->m_Value = usString(L_Buffer);
 	return *this;
 }
 
@@ -838,7 +851,7 @@ inline CoreItem& CoreNamedValue<usString>::operator= (const unsigned int& _value
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
-	this->m_Value = L_Buffer;
+	this->m_Value = usString(L_Buffer);
 	return *this;
 }
 
@@ -856,9 +869,9 @@ template<>
 inline CoreItem& CoreNamedValue<usString>::operator= (const bool& _value)
 {
 	if (_value)
-		this->m_Value = "true";
+		this->m_Value = usString("true");
 	else
-		this->m_Value = "false";
+		this->m_Value = usString("false");
 	return *this;
 }
 
@@ -949,7 +962,7 @@ inline CoreItem& CoreValue<usString>::operator= (const kfloat& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%f", (kfloat)_value);
-	this->m_Value = L_Buffer;
+	this->m_Value = usString(L_Buffer);
 	return *this;
 }
 
@@ -967,7 +980,7 @@ inline CoreItem& CoreValue<usString>::operator= (const int& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
-	this->m_Value = L_Buffer;
+	this->m_Value = usString(L_Buffer);
 	return *this;
 }
 
@@ -985,7 +998,7 @@ inline CoreItem& CoreValue<usString>::operator= (const unsigned int& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
-	this->m_Value = L_Buffer;
+	this->m_Value = usString(L_Buffer);
 	return *this;
 }
 
@@ -1003,9 +1016,9 @@ template<>
 inline CoreItem& CoreValue<usString>::operator= (const bool& _value)
 {
 	if (_value)
-		this->m_Value = "true";
+		this->m_Value = usString("true");
 	else
-		this->m_Value = "false";
+		this->m_Value = usString("false");
 	return *this;
 	return *this;
 }

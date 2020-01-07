@@ -79,7 +79,7 @@ public:
 	virtual inline operator usString() const
 	{
 		KIGS_ERROR("cast operator called on base CoreItem", 2);
-		return "";
+		return usString("");
 	}
 
 	virtual inline operator Point2D() const
@@ -149,7 +149,7 @@ template<>
 inline CoreItemOperator<bool>::operator usString() const
 {
 	bool result = (bool)*this;
-	return result ? "true" : "false";
+	return result ? usString("true") : usString("false");
 }
 
 

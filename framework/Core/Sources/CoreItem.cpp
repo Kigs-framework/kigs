@@ -154,7 +154,7 @@ CoreItem::operator kstl::string() const
 CoreItem::operator usString() const
 {
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
-	return "";
+	return usString("");
 }
 
 CoreItem::operator Point2D() const
@@ -169,4 +169,67 @@ CoreItem::operator Point3D() const
 	Point3D result;
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
 	return result;
+}
+
+CoreItemSP	CoreItemSP::getCoreMap()
+{
+	return CoreItemSP(new CoreMap<kstl::string>(), StealRefTag{});
+}
+CoreItemSP	CoreItemSP::getCoreVector()
+{
+	return CoreItemSP(new CoreVector(), StealRefTag{});
+}
+CoreItemSP	CoreItemSP::getCoreValue(int i)
+{
+	return CoreItemSP(new CoreValue<int>(i), StealRefTag{});
+}
+CoreItemSP	CoreItemSP::getCoreValue(float f)
+{
+	return CoreItemSP(new CoreValue<float>(f), StealRefTag{});
+}
+CoreItemSP	CoreItemSP::getCoreValue(const kstl::string& s)
+{
+	return CoreItemSP(new CoreValue<kstl::string>(s), StealRefTag{});
+}
+CoreItemSP	CoreItemSP::getCoreValue(const usString& s)
+{
+	return CoreItemSP(new CoreValue<usString>(s), StealRefTag{});
+}
+
+void	CoreItemSP::set(const CoreItemSP& s, kstl::string key)
+{
+	if (myPointer->GetType() & CoreItem::COREMAP)
+	{
+		if (key.size())
+		{
+			myPointer->set(key, s);
+		}
+		else
+		{
+			KIGS_WARNING("trying to set a CoreItem map without a key value => nothing done", 1);
+		}
+	}
+	else if (myPointer->GetType() & CoreItem::COREVECTOR)
+	{
+		if (key.size())
+		{
+			KIGS_WARNING("trying to set a CoreItem vector with a key value => value was only pushed", 1);
+		}
+		((CoreVector*)myPointer)->push_back(s);
+	}
+	else 
+	{
+		KIGS_WARNING("trying to set a CoreItem on something else than a map or vector => nothing done", 1);
+	}
+}
+
+
+CoreItemIterator CoreItemSP::begin()
+{
+	return myPointer->begin();
+}
+
+CoreItemIterator CoreItemSP::end()
+{
+	return myPointer->end();
 }

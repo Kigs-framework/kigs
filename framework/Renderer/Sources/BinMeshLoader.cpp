@@ -888,35 +888,31 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 		int structSize=0;
 
-		CoreVector*	description=new CoreVector();
-		CoreNamedVector*	vertices	=new CoreNamedVector("vertices");
-		description->push_back(vertices);
-		vertices->Destroy();
+		CoreItemSP	description = CoreItemSP(new CoreVector(), StealRefTag{});
+		CoreItemSP	vertices	= CoreItemSP(new CoreNamedVector("vertices"), StealRefTag{});
+		description.set(vertices);
 
 		structSize+=3*sizeof(float);
 
 		// vertices have a color
 		if(currentgrp.myTriangleType & 6)
 		{
-			CoreNamedVector*	colors	=new CoreNamedVector("colors");
-			description->push_back(colors);
-			colors->Destroy();
+			CoreItemSP	colors	= CoreItemSP(new CoreNamedVector("colors"), StealRefTag{});
+			description.set(colors);
 			structSize+=4*sizeof(float);
 		}
 
 		// always have normals in kmesh
 		{
-			CoreNamedVector*	normal	=new CoreNamedVector("normals");
-			description->push_back(normal);
-			normal->Destroy();
+			CoreItemSP	normal	= CoreItemSP(new CoreNamedVector("normals"), StealRefTag{});
+			description.set(normal);
 			structSize+=3*sizeof(float);
 		}
 
 		if(currentgrp.myTriangleType & 8)
 		{
-			CoreNamedVector*	texCoords	=new CoreNamedVector("texCoords");
-			description->push_back(texCoords);
-			texCoords->Destroy();
+			CoreItemSP	texCoords	= CoreItemSP(new CoreNamedVector("texCoords"), StealRefTag{});
+			description.set(texCoords);
 			structSize+=2*sizeof(float);
 		}
 
@@ -925,8 +921,8 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		v[1]=new unsigned char[structSize];
 		v[2]=new unsigned char[structSize];
 
-		pMesh->StartMeshGroup(description);
-		description->Destroy();
+		pMesh->StartMeshGroup((CoreVector*)description.get());
+		
 		unsigned int tri_index;
 
 		unsigned char*	readTriangle=(unsigned char*)currentgrp.myFirstTriangle;

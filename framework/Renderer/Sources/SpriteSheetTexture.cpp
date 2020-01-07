@@ -30,29 +30,25 @@ void SpriteSheetTexture::InitModifiable()
 		{
 			//Load JsonFile
 			JSonFileParser L_JsonParser;
-			CoreMap<std::string>* L_Dictionary = (CoreMap<std::string>*)L_JsonParser.Get_JsonDictionary(mFileName);
-			if (L_Dictionary)
+			CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionary(mFileName);
+			if (!L_Dictionary.isNil())
 			{
-				CoreVector*	L_vFrames = (CoreVector*)L_Dictionary->at("frames");
+				CoreItemSP	L_vFrames = L_Dictionary["frames"];
 
-				SortAnimation(*L_vFrames);
+				SortAnimation(L_vFrames);
 
-				CoreMap<std::string>* L_Meta = (CoreMap<std::string>*)L_Dictionary->at("meta");
+				CoreItemSP L_Meta = L_Dictionary["meta"];
 
-				if (L_Meta)
+				if (!L_Meta.isNil())
 				{
 					std::string L_TextureName;
-					CoreValue<std::string>* L_Value = (CoreValue<std::string>*)L_Meta->at("image");
+					auto L_Value = L_Meta["image"];
 					L_Value->getValue(L_TextureName);
 
 					// load texture
 					TextureFileManager*	fileManager = KigsCore::GetSingleton<TextureFileManager>();
 					mTexture = fileManager->GetTextureManaged(L_TextureName);
 				}
-
-				L_Dictionary->clear();
-				L_Dictionary->Destroy();
-				L_Dictionary = nullptr;
 			}
 		}
 	}
@@ -127,16 +123,16 @@ std::set<std::string> SpriteSheetTexture::Get_AnimationList()
 //-----------------------------------------------------------------------------------------------------
 //SortAnimation
 
-void SpriteSheetTexture::SortAnimation(CoreVector& _FrameVector)
+void SpriteSheetTexture::SortAnimation(CoreItemSP& _FrameVector)
 {
 	std::vector<std::string>  str;
 	std::string AnimeName;
 	std::string CurrentName;
 
-	for (auto& it : _FrameVector)
+	for (auto it : _FrameVector)
 	{
-		CoreItem& L_Frame = it["filename"];
-		CurrentName = L_Frame.toString();
+		CoreItemSP L_Frame = it["filename"];
+		CurrentName = L_Frame->toString();
 
 		std::vector<std::string>  str = SplitStringByCharacter(CurrentName, '/');
 		
@@ -144,9 +140,9 @@ void SpriteSheetTexture::SortAnimation(CoreVector& _FrameVector)
 		auto L_FrameInfo = std::make_unique<SpriteSheetFrame>();
 		
 		{
-			CoreItem& L_map = it["frame"];
+			CoreItemSP L_map = it["frame"];
 
-			if (L_map.size())
+			if (L_map->size())
 			{
 				L_FrameInfo->FramePos_X = L_map["x"];
 				L_FrameInfo->FramePos_Y = L_map["y"];
@@ -157,9 +153,9 @@ void SpriteSheetTexture::SortAnimation(CoreVector& _FrameVector)
 		}
 
 		{
-			CoreItem& L_map = it["sourceSize"];
+			CoreItemSP L_map = it["sourceSize"];
 
-			if (L_map.size())
+			if (L_map->size())
 			{
 				L_FrameInfo->SourceSize_X = L_map["w"];
 				L_FrameInfo->SourceSize_Y = L_map["h"];
@@ -167,9 +163,9 @@ void SpriteSheetTexture::SortAnimation(CoreVector& _FrameVector)
 		}
 
 		{
-			CoreItem& L_map = it["spriteSourceSize"];
+			CoreItemSP L_map = it["spriteSourceSize"];
 
-			if (L_map.size())
+			if (L_map->size())
 			{
 				L_FrameInfo->Decal_X = L_map["x"];
 				L_FrameInfo->Decal_Y = L_map["y"];

@@ -54,7 +54,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 		
-		_value = value;
+		_value = usString(value);
 		
 		DO_NOTIFICATION(notificationLevel);
 		

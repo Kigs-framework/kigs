@@ -12,6 +12,11 @@
 #include <csignal>
 #include <windows.h>
 
+#ifdef _DEBUG
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
 #define ApplicationName(a) Stringify(a)
 #define Stringify(a) #a
 
@@ -25,7 +30,13 @@ void signal_handler(int sig)
 
 int main(int argc, char *argv[])
 {
+	
+#ifdef _DEBUG
+	// print leaks after program exits
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 	setlocale(LC_NUMERIC,"C");
+
 
 	signal(SIGINT, signal_handler);
 	signal(SIGTERM, signal_handler);
@@ -75,9 +86,9 @@ int main(int argc, char *argv[])
 	delete myApp;
 
 
-
 	//! last thing to do
 	KigsCore::Close();
+
 	return 0;
 }
 

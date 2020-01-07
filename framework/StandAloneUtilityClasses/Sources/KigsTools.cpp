@@ -2602,10 +2602,10 @@ void ReloadCurrentSequence()
 }
 
 
-void DrawAnimationCoreItemRec(const std::string& key, CoreItem& current_item)
+void DrawAnimationCoreItemRec(const std::string& key,const CoreItemSP& current_item)
 {
 	std::string name = "";
-	switch (current_item.GetType())
+	switch (current_item->GetType())
 	{
 	case CoreItem::COREVALUE: name = (std::string)current_item; break;
 	case CoreItem::CORENAMEDVALUE: name = "" + (std::string)current_item; break;
@@ -2616,15 +2616,15 @@ void DrawAnimationCoreItemRec(const std::string& key, CoreItem& current_item)
 	} 
 	if (key.size()) name = key + " : " + name;
 
-	if (ImGui::TreeNode((void*)&current_item, name.c_str()))
+	if (ImGui::TreeNode((void*)(current_item.get()), name.c_str()))
 	{
-		if (!current_item.empty())
+		if (!current_item->empty())
 		{
-			for (auto it = current_item.begin(); it != current_item.end(); ++it)
+			for (auto it = current_item->begin(); it != current_item->end(); ++it)
 			{
 				std::string nkey;
 				it.getKey(nkey);
-				DrawAnimationCoreItemRec(nkey, *it);
+				DrawAnimationCoreItemRec(nkey, (*it));
 			}
 		}
 		ImGui::TreePop();
@@ -2668,14 +2668,14 @@ void DrawAnimationEditor()
 	auto update_item = [&]()
 	{
 		JSonFileParser json_parser;
-		return OwningRawPtrToSmartPtr(json_parser.Get_JsonDictionaryFromString(json_animation));
+		return json_parser.Get_JsonDictionaryFromString(json_animation);
 	};
 
-	static SmartPointer<CoreItem> core_item = update_item();
+	static CoreItemSP core_item = update_item();
 
 	if (ImGui::Begin("AnimationEditor"))
 	{
-		DrawAnimationCoreItemRec("", *core_item.get());
+		DrawAnimationCoreItemRec("", core_item);
 	}
 	ImGui::End();
 }

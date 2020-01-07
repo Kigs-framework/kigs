@@ -7,22 +7,21 @@
 #include "TecLibs/Tec3D.h"
 
 class CoreItem;
+class CoreItemIterator;
 
 class CoreItemSP : public SmartPointer<CoreItem>
 {
 public:
 	CoreItemSP() : SmartPointer<CoreItem>(nullptr){}
-	CoreItemSP(CoreItem* it) : SmartPointer<CoreItem>(it, StealRefTag{}) {}
 	CoreItemSP(CoreItem* it, StealRefTag stealref) : SmartPointer<CoreItem>(it, stealref) {}
 	CoreItemSP(CoreItem* it, GetRefTag getref) : SmartPointer<CoreItem>(it, getref) {}
 	CoreItemSP(std::nullptr_t) : SmartPointer<CoreItem>(nullptr) {}
 
-	operator CoreItem&()
+	explicit operator CoreItem&()
 	{
 		return *get();
 	}
 
-	// operator [] needs to be overloaded on vectors and maps
 	inline CoreItemSP operator[](int i) const;
 
 	inline CoreItemSP operator[](const char* key) const;
@@ -31,6 +30,38 @@ public:
 
 	inline CoreItemSP operator[](const usString& key) const;
 
+	inline operator bool() const;
+
+	inline operator float() const;
+
+	inline operator int() const;
+
+	inline operator unsigned int() const;
+
+	inline operator kstl::string() const;
+
+	inline operator usString() const;
+
+	inline operator Point2D() const;
+
+	inline operator Point3D() const;
+
+	inline bool operator==(const CoreItemSP& other) const;
+
+	inline bool operator==(const CoreItem& other) const;
+
+
+	static	CoreItemSP	getCoreMap();
+	static	CoreItemSP	getCoreVector();
+	static  CoreItemSP	getCoreValue(int i);
+	static  CoreItemSP	getCoreValue(float f);
+	static  CoreItemSP	getCoreValue(const kstl::string& s);
+	static  CoreItemSP	getCoreValue(const usString& s);
+
+	void	set(const CoreItemSP& s, kstl::string key = "");
+
+	CoreItemIterator begin();
+	CoreItemIterator end();
 
 };
 
@@ -126,8 +157,8 @@ protected:
 
 	friend class CoreItem;
 
-	CoreItemIteratorBase(CoreItemSP item, unsigned int pos) : GenericRefCountedBaseClass()
-		,myAttachedCoreItem(item)
+	CoreItemIteratorBase(const CoreItemSP& item, unsigned int pos) : GenericRefCountedBaseClass()
+		, myAttachedCoreItem(item)
 		, myPos(pos)
 	{
 
@@ -199,7 +230,9 @@ public:
 		CORENAMEDVALUE		= 9
 	};
 
-
+	virtual void set(int key, const CoreItemSP& toinsert) {};
+	virtual void set(const kstl::string& key, const CoreItemSP& toinsert) {};
+	virtual void set(const usString& key, const CoreItemSP& toinsert) {};
 
 	typedef size_t size_type;
 
@@ -337,14 +370,14 @@ public:
 
 	virtual CoreItemIterator begin()
 	{
-		CoreItemIteratorBase* iter = new CoreItemIteratorBase(CoreItemSP(this, StealRefTag{}), 0);
+		CoreItemIteratorBase* iter = new CoreItemIteratorBase(CoreItemSP(this, GetRefTag{}), 0);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 
 	virtual CoreItemIterator end()
 	{
-		CoreItemIteratorBase* iter = new CoreItemIteratorBase(CoreItemSP(this, StealRefTag{}), 0xFFFFFFFF);
+		CoreItemIteratorBase* iter = new CoreItemIteratorBase(CoreItemSP(this, GetRefTag{}), 0xFFFFFFFF);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
@@ -418,5 +451,56 @@ inline CoreItemSP CoreItemSP::operator[](const usString& key) const
 {
 	return myPointer->operator[](key);
 }
+
+inline CoreItemSP::operator bool() const
+{
+	return myPointer->operator bool();
+}
+
+inline CoreItemSP::operator float() const
+{
+	return myPointer->operator kfloat();
+}
+
+inline CoreItemSP::operator int() const
+{
+	return myPointer->operator int();
+}
+
+inline CoreItemSP::operator unsigned int() const
+{
+	return myPointer->operator unsigned int();
+}
+
+inline CoreItemSP::operator kstl::string() const
+{
+	return myPointer->operator kstl::string();
+}
+
+inline CoreItemSP::operator usString() const
+{
+	return myPointer->operator usString();
+}
+
+inline CoreItemSP::operator Point2D() const
+{
+	return myPointer->operator Point2D();
+}
+
+inline CoreItemSP::operator Point3D() const
+{
+	return myPointer->operator Point3D();
+} 
+
+inline bool CoreItemSP::operator==(const CoreItemSP& other) const
+{
+	return myPointer->operator==(*other.get());
+}
+
+inline bool CoreItemSP::operator==(const CoreItem& other) const
+{
+	return myPointer->operator==(other);
+}
+
 
 #endif // _COREITEM_H

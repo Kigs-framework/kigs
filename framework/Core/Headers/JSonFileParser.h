@@ -16,7 +16,7 @@ class CoreItem;
 								DECLARE_METHOD(JSonArrayEnd); \
 								DECLARE_METHOD(JSonParamList); 
 
-
+// TODO : can probably be a template class 
 class DictionaryFromJson : public CoreModifiable
 {
 public:
@@ -79,9 +79,11 @@ protected:
 	bool ParseArray(parserType& Array);
 	void NotifyDelegateWithParamList();
 	void AddValueToParamList(stringType strObjName, stringType objparamValue);
-	void RecursiveParseElement(CoreMap<stringType>* a_value, stringType& a_buffer);
-	void RecursiveParseElement(CoreVector* a_value, stringType& a_buffer);
-	void AddValueToBuffer(CoreItem* a_value, stringType& a_Destbuffer);
+
+	CoreModifiableAttribute* getNewStringAttribute(const stringType& attributeName,const stringType& strObjName);
+
+	void RecursiveParseElement(CoreItem& a_value, stringType& a_buffer);
+	void AddValueToBuffer(CoreItem& a_value, stringType& a_Destbuffer);
 
 	int	GetStringByteSize(const stringType& tocheck);
 	int	GetStringCharSize();

@@ -164,17 +164,17 @@ void CoreActionLinear<kfloat>::init(CoreSequence* sequence,CoreVector* params)
 	}
 #endif
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
-	(*params)[1].getValue(readfloat);
+	(*params)[1]->getValue(readfloat);
 	myStart=readfloat;
 
-	(*params)[2].getValue(readfloat);
+	(*params)[2]->getValue(readfloat);
 	myEnd=readfloat;
 
 	kstl::string readstring;
-	(*params)[3].getValue(readstring);
+	(*params)[3]->getValue(readstring);
 
 	myTarget = checkSubTarget(readstring);
 	myParamID=CharToID::GetID(readstring);
@@ -183,7 +183,7 @@ void CoreActionLinear<kfloat>::init(CoreSequence* sequence,CoreVector* params)
 	if (params->size() == 5)
 	{
 		int readint;
-		(*params)[4].getValue(readint);
+		(*params)[4]->getValue(readint);
 
 		switch (readint)
 		{
@@ -219,7 +219,7 @@ void CoreActionLinear<Point2D>::init(CoreSequence* sequence,CoreVector* params)
 
 
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
 	Point2D	readPoint;
@@ -230,7 +230,7 @@ void CoreActionLinear<Point2D>::init(CoreSequence* sequence,CoreVector* params)
 	myEnd=readPoint;
 	
 	kstl::string readstring;
-	(*params)[3].getValue(readstring);
+	(*params)[3]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -239,7 +239,7 @@ void CoreActionLinear<Point2D>::init(CoreSequence* sequence,CoreVector* params)
 	if (params->size() == 5)
 	{
 		int readint;
-		(*params)[4].getValue(readint);
+		(*params)[4]->getValue(readint);
 		switch (readint)
 		{
 		case 0:
@@ -272,7 +272,7 @@ void CoreActionLinear<Point3D>::init(CoreSequence* sequence,CoreVector* params)
 	}
 #endif
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
 	Point3D	readPoint;
@@ -283,7 +283,7 @@ void CoreActionLinear<Point3D>::init(CoreSequence* sequence,CoreVector* params)
 	myEnd=readPoint;
 
 	kstl::string readstring;
-	(*params)[3].getValue(readstring);
+	(*params)[3]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -292,7 +292,7 @@ void CoreActionLinear<Point3D>::init(CoreSequence* sequence,CoreVector* params)
 	if (params->size() == 5)
 	{
 		int readint;
-		(*params)[4].getValue(readint);
+		(*params)[4]->getValue(readint);
 		switch (readint)
 		{
 		case 0:
@@ -325,7 +325,7 @@ void CoreActionLinear<Quaternion>::init(CoreSequence* sequence,CoreVector* param
 	}
 #endif
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
 	Quaternion	readPoint;
@@ -336,7 +336,7 @@ void CoreActionLinear<Quaternion>::init(CoreSequence* sequence,CoreVector* param
 	myEnd=readPoint;
 
 	kstl::string readstring;
-	(*params)[3].getValue(readstring);
+	(*params)[3]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -345,7 +345,7 @@ void CoreActionLinear<Quaternion>::init(CoreSequence* sequence,CoreVector* param
 	if (params->size() == 5)
 	{
 		int readint;
-		(*params)[4].getValue(readint);
+		(*params)[4]->getValue(readint);
 		switch (readint)
 		{
 		case 0:
@@ -560,23 +560,23 @@ void CoreActionHermite<kfloat>::init(CoreSequence* sequence,CoreVector* params)
 	}
 #endif
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
-	(*params)[1].getValue(readfloat);
+	(*params)[1]->getValue(readfloat);
 	p[0]=readfloat;
 
-	(*params)[2].getValue(readfloat);
+	(*params)[2]->getValue(readfloat);
 	p[1]=readfloat;
 
-	(*params)[3].getValue(readfloat);
+	(*params)[3]->getValue(readfloat);
 	p[2]=readfloat;
 
-	(*params)[4].getValue(readfloat);
+	(*params)[4]->getValue(readfloat);
 	p[3]=readfloat;
 
 	kstl::string readstring;
-	(*params)[5].getValue(readstring);
+	(*params)[5]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -585,7 +585,7 @@ void CoreActionHermite<kfloat>::init(CoreSequence* sequence,CoreVector* params)
 	if (params->size() == 7)
 	{
 		int readint;
-		(*params)[6].getValue(readint);
+		(*params)[6]->getValue(readint);
 		switch (readint)
 		{
 		case 0:
@@ -618,7 +618,7 @@ void CoreActionHermite<Point2D>::init(CoreSequence* sequence,CoreVector* params)
 #endif
 
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
 	Point2D	readPoint;
@@ -635,7 +635,7 @@ void CoreActionHermite<Point2D>::init(CoreSequence* sequence,CoreVector* params)
 	p[3]=readPoint;
 	
 	kstl::string readstring;
-	(*params)[5].getValue(readstring);
+	(*params)[5]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -644,7 +644,7 @@ void CoreActionHermite<Point2D>::init(CoreSequence* sequence,CoreVector* params)
 	if (params->size() == 7)
 	{
 		int readint;
-		(*params)[6].getValue(readint);
+		(*params)[6]->getValue(readint);
 		switch (readint)
 		{
 		case 0:
@@ -676,7 +676,7 @@ void CoreActionHermite<Point3D>::init(CoreSequence* sequence,CoreVector* params)
 	}
 #endif
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
 	Point3D	readPoint;
@@ -693,7 +693,7 @@ void CoreActionHermite<Point3D>::init(CoreSequence* sequence,CoreVector* params)
 	p[3]=readPoint;
 
 	kstl::string readstring;
-	(*params)[5].getValue(readstring);
+	(*params)[5]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -702,7 +702,7 @@ void CoreActionHermite<Point3D>::init(CoreSequence* sequence,CoreVector* params)
 	if (params->size() == 7)
 	{
 		int readint;
-		(*params)[6].getValue(readint);
+		(*params)[6]->getValue(readint);
 		switch (readint)
 		{
 		case 0:
@@ -734,7 +734,7 @@ void CoreActionHermite<Quaternion>::init(CoreSequence* sequence,CoreVector* para
 	}
 #endif
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
 	Quaternion	readPoint;
@@ -751,7 +751,7 @@ void CoreActionHermite<Quaternion>::init(CoreSequence* sequence,CoreVector* para
 	p[3]=readPoint;
 
 	kstl::string readstring;
-	(*params)[5].getValue(readstring);
+	(*params)[5]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -760,7 +760,7 @@ void CoreActionHermite<Quaternion>::init(CoreSequence* sequence,CoreVector* para
 	if (params->size() == 7)
 	{
 		int readint;
-		(*params)[6].getValue(readint);
+		(*params)[6]->getValue(readint);
 		switch (readint)
 		{
 		case 0:
@@ -909,14 +909,14 @@ void CoreActionSetValue<kfloat>::init(CoreSequence* sequence,CoreVector* params)
 	}
 #endif
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
-	(*params)[1].getValue(readfloat);
+	(*params)[1]->getValue(readfloat);
 	mySet=readfloat;
 
 	kstl::string readstring;
-	(*params)[2].getValue(readstring);
+	(*params)[2]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -935,13 +935,13 @@ void CoreActionSetValue<kstl::string>::init(CoreSequence* sequence, CoreVector* 
 #endif
 	float readfloat;
 	kstl::string readstring;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration = readfloat;
 
-	(*params)[1].getValue(readstring);
+	(*params)[1]->getValue(readstring);
 	mySet = readstring;
 
-	(*params)[2].getValue(readstring);
+	(*params)[2]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID = CharToID::GetID(readstring);
@@ -960,15 +960,15 @@ void CoreActionSetValue<int>::init(CoreSequence* sequence,CoreVector* params)
 	}
 #endif
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
 	int readint;
-	(*params)[1].getValue(readint);
+	(*params)[1]->getValue(readint);
 	mySet=readint;
 
 	kstl::string readstring;
-	(*params)[2].getValue(readstring);
+	(*params)[2]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -986,15 +986,15 @@ void CoreActionSetValue<bool>::init(CoreSequence* sequence,CoreVector* params)
 	}
 #endif
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
 	int readint;
-	(*params)[1].getValue(readint);
+	(*params)[1]->getValue(readint);
 	mySet=readint;
 
 	kstl::string readstring;
-	(*params)[2].getValue(readstring);
+	(*params)[2]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -1015,7 +1015,7 @@ void CoreActionSetValue<Point2D>::init(CoreSequence* sequence,CoreVector* params
 
 
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
 	Point2D	readPoint;
@@ -1023,7 +1023,7 @@ void CoreActionSetValue<Point2D>::init(CoreSequence* sequence,CoreVector* params
 	mySet=readPoint;
 
 	kstl::string readstring;
-	(*params)[2].getValue(readstring);
+	(*params)[2]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -1041,7 +1041,7 @@ void CoreActionSetValue<Point3D>::init(CoreSequence* sequence,CoreVector* params
 	}
 #endif
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
 	Point3D	readPoint;
@@ -1049,7 +1049,7 @@ void CoreActionSetValue<Point3D>::init(CoreSequence* sequence,CoreVector* params
 	mySet=readPoint;
 
 	kstl::string readstring;
-	(*params)[2].getValue(readstring);
+	(*params)[2]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -1068,7 +1068,7 @@ void CoreActionSetValue<Quaternion>::init(CoreSequence* sequence,CoreVector* par
 #endif
 
 	float readfloat;
-	(*params)[0].getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 
 	Quaternion	readPoint;
@@ -1076,7 +1076,7 @@ void CoreActionSetValue<Quaternion>::init(CoreSequence* sequence,CoreVector* par
 	mySet=readPoint;
 
 	kstl::string readstring;
-	(*params)[2].getValue(readstring);
+	(*params)[2]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);

@@ -518,7 +518,7 @@ void NotificationCenter::postNotificationName(unsigned int notificationID,kstl::
 				{		
 					if((currentobsStruct.mySender == 0) || (currentobsStruct.mySender == sender))
 					{
-						if (currentobsStruct.myCurrentItem)
+						if (!currentobsStruct.myCurrentItem.isNil())
 						{
 							SetCoreItemOperatorContext(&myContext);
 							myContext.myVariableList[LABEL_TO_ID(sender).toUInt()] = sender;

@@ -85,7 +85,8 @@ void	CoreSequenceLauncher::addSequencesToParents()
 		// check that we did not already create the sequence
 		if (mySequenceMap.find(parent) == mySequenceMap.end() && (CoreItem*)mySequence)
 		{
-			auto L_Sequence = OwningRawPtrToSmartPtr(L_CoreAnimation->createSequenceFromCoreMap(parent, (CoreMap<kstl::string>*)(CoreItem*)mySequence));
+			CoreItemSP sequence((CoreItem*)mySequence, GetRefTag{});
+			auto L_Sequence = OwningRawPtrToSmartPtr(L_CoreAnimation->createSequenceFromCoreMap(parent, sequence));
 			L_CoreAnimation->addSequence(L_Sequence.get());
 			if (myStartOnFirstUpdate)
 				L_Sequence->startAtFirstUpdate();

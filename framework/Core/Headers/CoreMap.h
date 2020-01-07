@@ -34,7 +34,7 @@ public:
 
 	virtual CoreItemIteratorBase*	clone()
 	{
-		CoreMapIterator*	result = new CoreMapIterator(myAttachedCoreItem.get(), myPos);
+		CoreMapIterator*	result = new CoreMapIterator(myAttachedCoreItem, myPos);
 		result->myMapIterator = myMapIterator;
 		return result;
 	}
@@ -91,7 +91,7 @@ public:
 	virtual bool	getKey(kstl::string& returnedkey);
 	virtual bool	getKey(usString& returnedkey);
 
-	CoreMapIterator(CoreItem* item, unsigned int pos) : CoreItemIteratorBase(item,pos)
+	CoreMapIterator(const CoreItemSP& item, unsigned int pos) : CoreItemIteratorBase(item,pos)
 	{
 
 	}
@@ -129,6 +129,19 @@ protected:
 
 	typedef kstl::map<map_key, CoreItemSP>	CoreMapMap;
 
+	virtual void set(int key, const CoreItemSP& toinsert)
+	{
+		KIGS_ERROR("set called on CoreMapBase", 2);
+	}
+	virtual void set(const kstl::string& key, const CoreItemSP& toinsert)
+	{
+		KIGS_ERROR("set called on CoreMapBase", 2);
+	}
+	virtual void set(const usString& key, const CoreItemSP& toinsert)
+	{
+		KIGS_ERROR("set called on CoreMapBase", 2);
+	}
+
 	
 public:
 
@@ -148,18 +161,18 @@ public:
 	friend class CoreMapIterator<map_key>;
 	
 	// wrapper on member vector
-	CoreItemIterator	 begin()
+	CoreItemIterator	 begin() override
 	{
-		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(this, 0);
+		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(CoreItemSP(this, GetRefTag{}), 0);
 		iter->myMapIterator = myMap.begin();
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 	
 
-	CoreItemIterator end()
+	CoreItemIterator end() override
 	{
-		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(this, 0);
+		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(CoreItemSP(this, GetRefTag{}), 0);
 		iter->myMapIterator = myMap.end();
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
@@ -167,7 +180,7 @@ public:
 	
 	CoreItemIterator find(const map_key& k)
 	{
-		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(this, 0);
+		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(CoreItemSP(this, GetRefTag{}), 0);
 		iter->myMapIterator = myMap.find(k);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
@@ -222,11 +235,7 @@ public:
 		myMap.clear();
 	}
 
-	void set (map_key key, CoreItemSP toinsert )
-	{
-		typename kstl::map<map_key, CoreItemSP>::iterator found = myMap.find(key);
-		myMap[key]=toinsert;
-	}
+
 
 	CoreMapBase& operator= (const CoreMapBase& x)
 	{
@@ -255,6 +264,7 @@ protected:
 	}
 };
 
+
 template<class map_key>
 class CoreNamedMap : public CoreMapBase<map_key,CoreNamedItem>
 {
@@ -272,6 +282,12 @@ public:
 	virtual inline CoreItemSP operator[](const kstl::string& key) const;
 
 	virtual inline CoreItemSP operator[](const usString& key) const;
+
+	virtual inline void set(int key, const CoreItemSP& toinsert) override;
+
+	virtual inline void set(const kstl::string& key, const CoreItemSP& toinsert) override;
+
+	virtual inline void set(const usString& key, const CoreItemSP& toinsert) override;
 
 protected:
 
@@ -430,6 +446,85 @@ inline CoreItemSP CoreNamedMap<int>::operator[](int i) const
 	return CoreItemSP(nullptr);
 }
 
+// specialised set
+template<>
+inline void CoreNamedMap<kstl::string>::set(int key, const CoreItemSP& toinsert)
+{
+	kstl::string goodType;
+
+	char intstr[64];
+	sprintf(intstr, "%d", key);
+	goodType = intstr;
+
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<usString>::set(int key, const CoreItemSP& toinsert)
+{
+	usString goodType;
+
+	char intstr[64];
+	sprintf(intstr, "%d", key);
+	goodType = usString(intstr);
+
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<int>::set(int key, const CoreItemSP& toinsert)
+{
+	int goodType = key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<kstl::string>::set(const kstl::string& key, const CoreItemSP& toinsert)
+{
+	kstl::string goodType=key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<usString>::set(const kstl::string& key, const CoreItemSP& toinsert)
+{
+	usString goodType=key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<int>::set(const kstl::string& key, const CoreItemSP& toinsert)
+{
+	int goodType = 0;
+	sscanf(key.c_str(), "%d", &goodType);
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<kstl::string>::set(const usString& key, const CoreItemSP& toinsert)
+{
+	kstl::string goodType = key.ToString();
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<usString>::set(const usString& key, const CoreItemSP& toinsert)
+{
+	usString goodType = key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<int>::set(const usString& key, const CoreItemSP& toinsert)
+{
+	kstl::string strkey = key.ToString();
+	int goodType = 0;
+	sscanf(strkey.c_str(), "%d", &goodType);
+	myMap[goodType] = toinsert;
+}
+
+
+
 template<class map_key>
 class CoreMap : public CoreMapBase<map_key,CoreItem>
 {
@@ -446,6 +541,12 @@ public:
 	virtual inline CoreItemSP operator[](int i) const;
 	virtual inline CoreItemSP operator[](const kstl::string& key) const;
 	virtual inline CoreItemSP operator[](const usString& key) const;
+
+	virtual inline void set(int key, const CoreItemSP& toinsert) override;
+
+	virtual inline void set(const kstl::string& key, const CoreItemSP& toinsert) override;
+
+	virtual inline void set(const usString& key, const CoreItemSP& toinsert) override;
 	
 };
 
@@ -657,6 +758,85 @@ inline CoreItemSP CoreMap<int>::operator[](int i)  const
 
 	return CoreItemSP(nullptr);
 }
+
+
+// specialised set
+template<>
+inline void CoreMap<kstl::string>::set(int key, const CoreItemSP& toinsert)
+{
+	kstl::string goodType;
+
+	char intstr[64];
+	sprintf(intstr, "%d", key);
+	goodType = intstr;
+
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<usString>::set(int key, const CoreItemSP& toinsert)
+{
+	usString goodType;
+
+	char intstr[64];
+	sprintf(intstr, "%d", key);
+	goodType = usString(intstr);
+
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<int>::set(int key, const CoreItemSP& toinsert)
+{
+	int goodType = key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<kstl::string>::set(const kstl::string& key, const CoreItemSP& toinsert)
+{
+	kstl::string goodType = key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<usString>::set(const kstl::string& key, const CoreItemSP& toinsert)
+{
+	usString goodType = key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<int>::set(const kstl::string& key, const CoreItemSP& toinsert)
+{
+	int goodType = 0;
+	sscanf(key.c_str(), "%d", &goodType);
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<kstl::string>::set(const usString& key, const CoreItemSP& toinsert)
+{
+	kstl::string goodType = key.ToString();
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<usString>::set(const usString& key, const CoreItemSP& toinsert)
+{
+	usString goodType = key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<int>::set(const usString& key, const CoreItemSP& toinsert)
+{
+	kstl::string strkey = key.ToString();
+	int goodType = 0;
+	sscanf(strkey.c_str(), "%d", &goodType);
+	myMap[goodType] = toinsert;
+}
+
 
 
 #endif // _COREMAP_H

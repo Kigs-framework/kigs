@@ -86,7 +86,7 @@ public:
 		return false;
 	}
 
-	CoreVectorIterator(CoreItemSP item, unsigned int pos) : CoreItemIteratorBase(item, pos)
+	CoreVectorIterator(const CoreItemSP& item, unsigned int pos) : CoreItemIteratorBase(item, pos)
 	{
 
 	}
@@ -109,6 +109,22 @@ protected:
 
 public:
 
+	virtual void set(int key, const CoreItemSP& toinsert)
+	{
+		myVector[key] = toinsert;
+	}
+	virtual void set(const kstl::string& key, const CoreItemSP& toinsert)
+	{
+		// TODO : check if key contains number ?
+		push_back(toinsert);
+	}
+	virtual void set(const usString& key, const CoreItemSP& toinsert)
+	{
+		// TODO : check if key contains number ?
+		push_back(toinsert);
+	}
+
+
 	virtual ~CoreVectorBase()
 	{
 		clear();
@@ -117,18 +133,18 @@ public:
 	friend class CoreVectorIterator;
 
 	// wrapper on member vector
-	CoreItemIterator begin()
+	CoreItemIterator begin() override
 	{
-		CoreVectorIterator* iter = new CoreVectorIterator(this, 0);
+		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this, GetRefTag{}), 0);
 		iter->myVectorIterator = myVector.begin();
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 	
 
-	CoreItemIterator end()
+	CoreItemIterator end() override
 	{
-		CoreVectorIterator* iter = new CoreVectorIterator(this, 0);
+		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this, GetRefTag{}), 0);
 		iter->myVectorIterator = myVector.end();
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
@@ -169,15 +185,13 @@ public:
 		return myVector.at(n);
 	}
 
-	void push_back (CoreItemSP val)
+	void push_back (const CoreItemSP& val)
 	{
-		val->GetRef();
 		myVector.push_back(val);
 	}
 
 	void pop_back()
 	{
-		myVector.back()->Destroy();
 		myVector.pop_back();
 	}
 
@@ -202,17 +216,17 @@ public:
 		myVector.clear();
 	}
 
-	void insert(CoreItemIterator position, CoreItemSP toinsert)
+	void insert(CoreItemIterator position, const CoreItemSP& toinsert)
 	{
 		myVector.insert(((CoreVectorIterator*)&position)->myVectorIterator, toinsert);
 	}
 
-	void insert(CoreItem::size_type position, CoreItemSP toinsert)
+	void insert(CoreItem::size_type position, const CoreItemSP& toinsert)
 	{
 		myVector.insert(myVector.begin()+position,toinsert);
 	}
 
-	void set(CoreItem::size_type position, CoreItemSP toinsert)
+	void set(CoreItem::size_type position, const CoreItemSP& toinsert)
 	{
 		myVector[position]=toinsert;
 	}
@@ -234,21 +248,21 @@ public:
 	// some utility
 	inline void	getPoint2D(Point2D& result)
 	{
-		((CoreValue<kfloat>*)myVector[0])->getValue(result.x);
-		((CoreValue<kfloat>*)myVector[1])->getValue(result.y);
+		myVector[0]->getValue(result.x);
+		myVector[1]->getValue(result.y);
 	}
 	inline void	getPoint3D(Point3D& result)
 	{
-		((CoreValue<kfloat>*)myVector[0])->getValue(result.x);
-		((CoreValue<kfloat>*)myVector[1])->getValue(result.y);
-		((CoreValue<kfloat>*)myVector[2])->getValue(result.z);
+		myVector[0]->getValue(result.x);
+		myVector[1]->getValue(result.y);
+		myVector[2]->getValue(result.z);
 	}
 	inline void	getPoint4D(Quaternion& result)
 	{
-		((CoreValue<kfloat>*)myVector[0])->getValue(result.V.x);
-		((CoreValue<kfloat>*)myVector[1])->getValue(result.V.y);
-		((CoreValue<kfloat>*)myVector[2])->getValue(result.V.z);
-		((CoreValue<kfloat>*)myVector[3])->getValue(result.w);
+		myVector[0]->getValue(result.V.x);
+		myVector[1]->getValue(result.V.y);
+		myVector[2]->getValue(result.V.z);
+		myVector[3]->getValue(result.w);
 	}
 
 

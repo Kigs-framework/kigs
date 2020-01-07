@@ -50,7 +50,7 @@ protected:
 	SmartPointer<Texture> mTexture;
 
 private:
-	void SortAnimation(CoreVector& _FrameVector);
+	void SortAnimation(CoreItemSP& _FrameVector);
 
 	//parser variables
 	std::map<std::string, std::vector<SpriteSheetFrame*>>		mAnimationList;

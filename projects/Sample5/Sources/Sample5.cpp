@@ -4,6 +4,7 @@
 #include "JSonFileParser.h"
 #include <iostream>
 
+
 IMPLEMENT_CLASS_INFO(Sample5);
 
 IMPLEMENT_CONSTRUCTOR(Sample5)
@@ -13,6 +14,9 @@ IMPLEMENT_CONSTRUCTOR(Sample5)
 
 void	Sample5::ProtectedInit()
 {
+
+
+	//_CrtSetBreakAlloc(1887);
 	// Base modules have been created at this point
 	// lets say that the update will sleep 1ms
 	SetUpdateSleepTime(1);
@@ -38,16 +42,29 @@ void	Sample5::ProtectedInit()
 		std::cout << "val 2 : " << (int)item["val2"] << std::endl;
 	}
 
-	CoreItemSP toInsert = CoreItemSP((CoreItem*)new CoreValue(52));
+	CoreItemSP toInsert = CoreItemSP::getCoreValue(52);
 
-	((CoreMap<std::string>*)item.get())->set("val2", toInsert);
+	item.set(toInsert,"val2");
 
 	CoreItemSP obj1 = item["obj1"];
 	
-	std::cout << "obj 3 : " << (float)(CoreItem&)obj1["obj3"][0] << "," << (float)(CoreItem&)obj1["obj3"][1] << "," << (std::string)(CoreItem&)obj1["obj3"][2] << "," << (std::string)(CoreItem&)obj1["obj3"][3] << std::endl;
-	std::cout << "val 1 : " << (int)(CoreItem&)item["val1"] << std::endl;
+	std::cout << "val 1 : " << (int)item["val1"] << std::endl;
+	std::cout << "val 2 : " << (int)item["val2"] << std::endl;
 
-	std::cout << "val 2 : " << (int)(CoreItem&)item["val2"] << std::endl;
+	obj1["obj3"].set(CoreItemSP::getCoreValue("lastElem"));
+
+	bool first = true;
+	std::cout << "obj 3 : [";
+	for (auto tst : obj1["obj3"])
+	{
+		if (!first)
+		{
+			std::cout << " , ";
+		}
+		first = false;
+		std::cout << (std::string)tst;
+	}
+	std::cout << "]" << std::endl;
 
 	CoreModifiable* donothing = KigsCore::GetInstanceOf("useless", "DoNothing");
 
@@ -56,7 +73,7 @@ void	Sample5::ProtectedInit()
 	donothing->setValue("item", item.get());
 
 #ifdef KIGS_TOOLS
-	Export("testCoreItemExport.xml", donothing);
+ 	Export("testCoreItemExport.xml", donothing);
 #endif
 
 	donothing->Destroy();
@@ -70,4 +87,5 @@ void	Sample5::ProtectedUpdate()
 
 void	Sample5::ProtectedClose()
 {
-}
+	
+ }

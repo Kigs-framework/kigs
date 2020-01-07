@@ -61,7 +61,7 @@ inline void CoreActionDirectKeyFrame<kfloat>::init(CoreSequence* sequence,CoreVe
 	myTarget=sequence->getTarget();
 
 	kstl::string readstring;
-	(*params)[0].getValue(readstring);
+	(*params)[0]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -73,9 +73,9 @@ inline void CoreActionDirectKeyFrame<kfloat>::init(CoreSequence* sequence,CoreVe
 	unsigned int i;
 	for(i=1;i<params->size();i+=2) // read each (time + val) couples
 	{
-		(*params)[i].getValue(readfloat);
+		(*params)[i]->getValue(readfloat);
 		L_times.push_back(readfloat);
-		(*params)[i+1].getValue(readfloat);
+		(*params)[i+1]->getValue(readfloat);
 		L_values.push_back(readfloat);
 	}
 
@@ -107,7 +107,7 @@ inline void CoreActionDirectKeyFrame<int>::init(CoreSequence* sequence,CoreVecto
 	myTarget=sequence->getTarget();
 
 	kstl::string readstring;
-	(*params)[0].getValue(readstring);
+	(*params)[0]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -120,9 +120,9 @@ inline void CoreActionDirectKeyFrame<int>::init(CoreSequence* sequence,CoreVecto
 	unsigned int i;
 	for(i=1;i<params->size();i+=2) // read each (time + val) couples
 	{
-		(*params)[i].getValue(readfloat);
+		(*params)[i]->getValue(readfloat);
 		L_times.push_back(readfloat);
-		(*params)[i+1].getValue(readint);
+		(*params)[i+1]->getValue(readint);
 		L_values.push_back(readint);
 	}
 
@@ -153,7 +153,7 @@ inline void CoreActionDirectKeyFrame<bool>::init(CoreSequence* sequence,CoreVect
 	myTarget=sequence->getTarget();
 
 	kstl::string readstring;
-	(*params)[0].getValue(readstring);
+	(*params)[0]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -166,9 +166,9 @@ inline void CoreActionDirectKeyFrame<bool>::init(CoreSequence* sequence,CoreVect
 	unsigned int i;
 	for(i=1;i<params->size();i+=2) // read each (time + val) couples
 	{
-		(*params)[i].getValue(readfloat);
+		(*params)[i]->getValue(readfloat);
 		L_times.push_back(readfloat);
-		(*params)[i+1].getValue(readint);
+		(*params)[i+1]->getValue(readint);
 		L_values.push_back(readint);
 	}
 
@@ -200,7 +200,7 @@ inline void CoreActionDirectKeyFrame<Point2D>::init(CoreSequence* sequence,CoreV
 	myTarget=sequence->getTarget();
 		
 	kstl::string readstring;
-	(*params)[0].getValue(readstring);
+	(*params)[0]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -214,7 +214,7 @@ inline void CoreActionDirectKeyFrame<Point2D>::init(CoreSequence* sequence,CoreV
 	unsigned int i;
 	for(i=1;i<params->size();i+=2) // read each (time + val) couples
 	{
-		(*params)[i].getValue(readfloat);
+		(*params)[i]->getValue(readfloat);
 		L_times.push_back(readfloat);
 		((CoreVector&)(*params)[i+1]).getPoint2D(readPoint);
 		L_values.push_back(readPoint);
@@ -245,7 +245,7 @@ inline void CoreActionDirectKeyFrame<Point3D>::init(CoreSequence* sequence,CoreV
 	myTarget=sequence->getTarget();
 		
 	kstl::string readstring;
-	(*params)[0].getValue(readstring);
+	(*params)[0]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -259,7 +259,7 @@ inline void CoreActionDirectKeyFrame<Point3D>::init(CoreSequence* sequence,CoreV
 	unsigned int i;
 	for(i=1;i<params->size();i+=2) // read each (time + val) couples
 	{
-		(*params)[i].getValue(readfloat);
+		(*params)[i]->getValue(readfloat);
 		L_times.push_back(readfloat);
 		((CoreVector&)(*params)[i+1]).getPoint3D(readPoint);
 		L_values.push_back(readPoint);
@@ -290,7 +290,7 @@ inline void CoreActionDirectKeyFrame<Quaternion>::init(CoreSequence* sequence,Co
 	myTarget=sequence->getTarget();
 		
 	kstl::string readstring;
-	(*params)[0].getValue(readstring);
+	(*params)[0]->getValue(readstring);
 	myTarget = checkSubTarget(readstring);
 
 	myParamID=CharToID::GetID(readstring);
@@ -304,7 +304,7 @@ inline void CoreActionDirectKeyFrame<Quaternion>::init(CoreSequence* sequence,Co
 	unsigned int i;
 	for(i=1;i<params->size();i+=2) // read each (time + val) couples
 	{
-		(*params)[i].getValue(readfloat);
+		(*params)[i]->getValue(readfloat);
 		L_times.push_back(readfloat);
 		((CoreVector&)(*params)[i+1]).getPoint4D(readPoint);
 		L_values.push_back(readPoint);

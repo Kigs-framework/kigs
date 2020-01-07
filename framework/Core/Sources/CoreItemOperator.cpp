@@ -177,7 +177,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 						}
 					}
 
-					return CoreItemSP((CoreItem*)opeattribute);
+					return CoreItemSP((CoreItem*)opeattribute, StealRefTag{});
 				}
 
 			}
@@ -201,7 +201,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 				if (block.length() == (formulae.length() - 2))
 				{
 					CoreModifiableAttributeOperator<operandType>* opeattribute = new CoreModifiableAttributeOperator<operandType>((const kstl::string&)block, context.myTarget);
-					return CoreItemSP((CoreItem*)opeattribute);
+					return CoreItemSP((CoreItem*)opeattribute, StealRefTag{});
 				}
 			}
 
@@ -234,7 +234,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 					// check where to add neg operator
 					NegOperator<operandType>*   neg = (new NegOperator<operandType>());
 					neg->push_back(op1);
-					return  CoreItemSP((CoreItem*)neg);
+					return  CoreItemSP((CoreItem*)neg, StealRefTag{});
 				}
 			}
 		}
@@ -254,7 +254,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 				// check where to add neg operator
 				NotOperator*   neg = (new NotOperator());
 				neg->push_back(op1);
-				return  CoreItemSP((CoreItem*)neg);
+				return  CoreItemSP((CoreItem*)neg, StealRefTag{});
 			}
 		}
 
@@ -265,7 +265,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		{
 			CoreValue<kfloat>*   corevalue = (new CoreValue<kfloat>());
 			*corevalue = value;
-			return CoreItemSP((CoreItem*)corevalue);
+			return CoreItemSP((CoreItem*)corevalue, StealRefTag{});
 		}
 		
 		// try to match other keyword
@@ -317,7 +317,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 						}
 					}
 				}
-				return CoreItemSP((CoreItem*)newfunction);
+				return CoreItemSP((CoreItem*)newfunction, StealRefTag{});
 			}
 
 			// try to find a variable with this name
@@ -333,7 +333,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 			*/
 			// dynamic var
 			variable = new DynamicVariableOperator<operandType>(matchkeywork);
-			return CoreItemSP((CoreItem*)variable);
+			return CoreItemSP((CoreItem*)variable, StealRefTag{});
 		}
 
 	}
@@ -442,22 +442,22 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 
 			}
 
-			newOperator->push_back(CoreItemSP(current.myOp1));
-			newOperator->push_back(CoreItemSP(current.myOp2));
+			newOperator->push_back(current.myOp1);
+			newOperator->push_back(current.myOp2);
 
 			// replace newOperator in previous and next 
 			if (ifound > 0)
 			{
-				FirstLevelOperatorList[ifound - 1].myOp2 = newOperator;
+				FirstLevelOperatorList[ifound - 1].myOp2 = CoreItemSP(newOperator, StealRefTag{});
 			}
 			if (ifound < ((int)FirstLevelOperatorList.size() - 1))
 			{
-				FirstLevelOperatorList[ifound + 1].myOp1 = newOperator;
+				FirstLevelOperatorList[ifound + 1].myOp1 = CoreItemSP(newOperator, StealRefTag{});
 			}
 
 			FirstLevelOperatorList.erase(itfound);
 		}
-		return CoreItemSP((CoreItem*)newOperator);
+		return CoreItemSP((CoreItem*)newOperator, StealRefTag{});
 	}
 
 
