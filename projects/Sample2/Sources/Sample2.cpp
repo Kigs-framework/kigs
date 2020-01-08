@@ -2,6 +2,18 @@
 #include "Core.h"
 #include "SmartPointer.h"
 #include "SimpleSampleClass.h"
+#include "SimpleMaterialClass.h"
+
+
+// Sample demonstrating basic CoreModifiable features :
+// instance factory, reference counting, tree organization ...
+
+// Kigs framework Sample2 project
+// detailed CoreModifiable features :
+// - instance factory
+// - CoreModifiable trees
+// - Reference counting
+// - search instances by type, name, path...
 
 // Kigs framework Sample2 project
 // detailed CoreModifiable features :
@@ -24,19 +36,26 @@ void	Sample2::ProtectedInit()
 	SetUpdateSleepTime(1);
 
 	// declare project class to instance factory
-	// now when asked for a "SimpleSampleClassBase" instance, a SimpleSampleClass instance will be created  
-	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), SimpleSampleClass, SimpleSampleClassBase, Application);
-
+	// now when asked for a "SimpleSampleClass" instance, a SimpleSampleClass instance will be created  
+	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), SimpleSampleClass, SimpleSampleClass, Application);
+	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), SimpleMaterialClass, SimpleMaterialClass, Application);
+	
 	// ask for a SimpleSampleClassBase instance named simpleclass1
-	CoreModifiable* simpleclass1 = KigsCore::GetInstanceOf("simpleclass1", "SimpleSampleClassBase");
+	CoreModifiable* simpleclass1 = KigsCore::GetInstanceOf("simpleclass1", "SimpleSampleClass");
 	// Initialise class
 	simpleclass1->Init();
 
 	// ask for two other instances
-	CoreModifiable* simpleclass2 = KigsCore::GetInstanceOf("simpleclass2", "SimpleSampleClassBase");
+	CoreModifiable* simpleclass2 = KigsCore::GetInstanceOf("simpleclass2", "SimpleSampleClass");
 	simpleclass2->Init();
-	SmartPointer<CoreModifiable> simpleclass3 = KigsCore::CreateInstance("simpleclass3", "SimpleSampleClassBase");
+	SmartPointer<CoreModifiable> simpleclass3 = KigsCore::CreateInstance("simpleclass3", "SimpleSampleClass");
 	simpleclass3->Init();
+
+	// create an instance of SimpleMaterialClass
+	CoreModifiable* material= KigsCore::GetInstanceOf("material", "SimpleMaterialClass");
+	// manage simpleclass3 and material as one unique object
+	simpleclass3->aggregateWith(material);
+	material->Destroy();
 
 	// and add simpleclass2 and simpleclass3 to simpleclass1
 	simpleclass1->addItem(simpleclass2); // simpleclass2 count ref is now 2
@@ -49,6 +68,9 @@ void	Sample2::ProtectedInit()
 	addItem(simpleclass1);
 	// and let this manage simpleclass1 life cycle
 	simpleclass1->Destroy(); // simpleclass1 count ref is now 1
+
+	// ask application to update simpleclass2 at each loop turn
+	AddAutoUpdate(simpleclass2);
 
 	// now we can get out of the method without loosing all the created instances
 
@@ -105,11 +127,20 @@ void	Sample2::ProtectedUpdate()
 	instances.clear();
 	// retreive all instances of type SimpleSampleClassBase at global scope
 	// WARNING : Here the type is the instance factory type
-	GetInstances("SimpleSampleClassBase", instances);
+	GetInstances("SimpleSampleClass", instances);
 	printf("GetInstances result :\n");
 	for (auto i : instances)
 	{
 		printf("found instance named : %s\n", i->getName().c_str());
+
+		i->SimpleCall("printMessage");
+
+		// check if i has Shininess parameter
+		float shine;
+		if (i->getValue("Shininess", shine))
+		{
+			std::cout << i->getName() << " has Shininess value of " << shine << " thanks to aggregate with SimpleMaterialClass " << std::endl;
+		}
 	}
 	instances.clear();
 	
