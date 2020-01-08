@@ -711,31 +711,31 @@ public:
 	//@TODO check for usage
 	bool ImportAttributes(const std::string &filename);
 	
-	// Init the modifiable and set the _isInit flag if OK. Need to call base::InitModifiable() when overriding !
+	// Init the modifiable and set the _isInit flag if OK. Need to call ParentClassType::InitModifiable() when overriding !
 	virtual	void InitModifiable();
 
-	// Called when init has failed or when "closing" modifiable. Need to call base::UninitModifiable() when overriding !
+	// Called when init has failed. Need to call ParentClassType::UninitModifiable() when overriding !
 	virtual	void UninitModifiable();
 	
-	// Called before the object in deleted. Need to call base::ProtectedDestroy() when overriding !
+	// Called before the object is deleted. 
 	void ProtectedDestroy() override;
 	
-	// Update method. Call to base::Update is not necessary when overriding
+	// Update method. Call to ParentClassType::Update is not necessary when overriding
 	virtual void Update(const Timer&  timer, void* addParam) {}
 
-	// add the given parent to list. Need to call base::addUser(...) when overriding !
+	// add the given parent to list. Need to call ParentClassType::addUser(...) when overriding !
 	virtual void addUser(CoreModifiable* user);
 
-	// remove the given parent from list. Need to call base::. Need to call base::addItem(...) when overriding !
+	// remove the given parent from list. Need to call ParentClassType::removeUser(...) when overriding !
 	virtual void removeUser(CoreModifiable* user);
 	
-	// add a son. Need to call base::addItem(...) when overriding !
+	// add a son. Need to call ParentClassType::addItem(...) when overriding !
 	virtual bool addItem(CoreModifiable* item, ItemPosition pos = Last);
 	
-	// remove a son. Need to call base::removeItem(...) when overriding !
+	// remove a son. Need to call ParentClassType::removeItem(...) when overriding !
 	virtual bool removeItem(CoreModifiable* item);
 
-	// Called when an attribute that has its notification level set to Owner is modified. Need to call base::NotifyUpdate(...) when overriding !
+	// Called when an attribute that has its notification level set to Owner is modified. Need to call ParentClassType::NotifyUpdate(...) when overriding !
 	virtual void NotifyUpdate(const u32 labelid);
 
 	// By default Two modifiables are equals if they are the same type and attributes are equal. Free to override as needed
