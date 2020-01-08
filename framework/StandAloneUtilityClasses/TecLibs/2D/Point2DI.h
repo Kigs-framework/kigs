@@ -193,6 +193,12 @@ struct Point2DIBase
 		return P1.x*P2.x + P1.y*P2.y;
     }
 	
+	// +---------
+	// | Acces Operators
+	// +---------
+	inline const coordType& operator[](Int i) const;
+	inline coordType& operator[](Int i);
+	
     // +---------
     // | Coordinates
     // +---------

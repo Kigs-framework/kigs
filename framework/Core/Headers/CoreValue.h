@@ -1,6 +1,7 @@
 #ifndef _COREVALUE_H
 #define _COREVALUE_H
 
+#include "Core.h"
 #include "CoreItem.h"
 #include "usString.h"
 

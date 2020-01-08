@@ -458,10 +458,10 @@ void ModernMeshItemGroup::PrepareExport(ExportSettings* settings)
 		KIGS_ASSERT(s1 == s2);
 		
 		//add general parameters
-		desc.set(CoreItemSP::getCoreValue((int)myTriangleCount),"TriangleCount");
-		desc.set(CoreItemSP::getCoreValue((int)myVertexCount), "VertexCount");
-		desc.set(CoreItemSP::getCoreValue((int)myVertexSize), "VertexSize");
-		desc.set(CoreItemSP::getCoreValue((int)myVertexArrayMask), "VertexArrayMask");
+		desc->set("TriangleCount",CoreItemSP::getCoreValue((int)myTriangleCount));
+		desc->set("VertexCount",CoreItemSP::getCoreValue((int)myVertexCount));
+		desc->set("VertexSize",CoreItemSP::getCoreValue((int)myVertexSize));
+		desc->set("VertexArrayMask",CoreItemSP::getCoreValue((int)myVertexArrayMask));
 
 		std::vector<ModernMesh::VertexElem>::iterator itstart = myVertexDesc.begin();
 		std::vector<ModernMesh::VertexElem>::iterator itend = myVertexDesc.end();
@@ -469,17 +469,17 @@ void ModernMeshItemGroup::PrepareExport(ExportSettings* settings)
 		while (itstart != itend)
 		{
 			CoreItemSP params = CoreItemSP::getCoreVector();
-			desc.set(params, (*itstart).name);
+			desc->set((*itstart).name,params);
 			
-			params.set(CoreItemSP::getCoreValue((int)(*itstart).size));
-			params.set(CoreItemSP::getCoreValue((int)(*itstart).startpos));
-			params.set(CoreItemSP::getCoreValue((int)(*itstart).mask));
-			params.set(CoreItemSP::getCoreValue((int)(*itstart).elemCount));
+			params->set("",CoreItemSP::getCoreValue((int)(*itstart).size));
+			params->set("",CoreItemSP::getCoreValue((int)(*itstart).startpos));
+			params->set("",CoreItemSP::getCoreValue((int)(*itstart).mask));
+			params->set("",CoreItemSP::getCoreValue((int)(*itstart).elemCount));
 
 			++itstart;
 		}
 
-		desc.set(CoreItemSP::getCoreValue((float)myTexCoordsScale), "TexCoordsScale");
+		desc->set("TexCoordsScale",CoreItemSP::getCoreValue((float)myTexCoordsScale));
 	}
 
 	if (!desc.isNil())

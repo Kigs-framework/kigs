@@ -109,19 +109,31 @@ protected:
 
 public:
 
-	virtual void set(int key, const CoreItemSP& toinsert)
+	virtual void set(int key, const CoreItemSP& toinsert) override
 	{
 		myVector[key] = toinsert;
 	}
-	virtual void set(const kstl::string& key, const CoreItemSP& toinsert)
+	virtual void set(const kstl::string& key, const CoreItemSP& toinsert) override
 	{
-		// TODO : check if key contains number ?
-		push_back(toinsert);
+		if (key.size())
+		{
+			// TODO : check if key contains number ?
+		}
+		else
+		{
+			push_back(toinsert);
+		}
 	}
-	virtual void set(const usString& key, const CoreItemSP& toinsert)
+	virtual void set(const usString& key, const CoreItemSP& toinsert) override
 	{
-		// TODO : check if key contains number ?
-		push_back(toinsert);
+		if (key.length())
+		{
+			// TODO : check if key contains number ?
+		}
+		else
+		{
+			push_back(toinsert);
+		}
 	}
 
 
@@ -150,7 +162,7 @@ public:
 		return toReturn;
 	}
 
-	CoreItem::size_type size() const
+	CoreItem::size_type size() const  override
 	{
 		return myVector.size();
 	}
@@ -165,7 +177,7 @@ public:
 		myVector.resize(n,0);
 	}
 
-	virtual bool empty() const
+	virtual bool empty() const  override
 	{
 		return myVector.empty();
 	}
@@ -245,28 +257,7 @@ public:
 		return *this;
 	}
 
-	// some utility
-	inline void	getPoint2D(Point2D& result)
-	{
-		myVector[0]->getValue(result.x);
-		myVector[1]->getValue(result.y);
-	}
-	inline void	getPoint3D(Point3D& result)
-	{
-		myVector[0]->getValue(result.x);
-		myVector[1]->getValue(result.y);
-		myVector[2]->getValue(result.z);
-	}
-	inline void	getPoint4D(Quaternion& result)
-	{
-		myVector[0]->getValue(result.V.x);
-		myVector[1]->getValue(result.V.y);
-		myVector[2]->getValue(result.V.z);
-		myVector[3]->getValue(result.w);
-	}
-
-
-	virtual inline CoreItemSP operator[](int i) const
+	virtual inline CoreItemSP operator[](int i) const  override
 	{
 		if ((i >= 0) && (i < (int)myVector.size()))
 		{
@@ -275,7 +266,7 @@ public:
 		return CoreItemSP(nullptr);
 	}
 
-	virtual inline CoreItemSP operator[](const kstl::string& key) const
+	virtual inline CoreItemSP operator[](const kstl::string& key) const  override
 	{
 		kstl::vector<CoreItemSP>::const_iterator it = myVector.begin();
 
@@ -293,7 +284,7 @@ public:
 		return CoreItemSP(nullptr);
 	}
 
-	virtual inline CoreItemSP operator[](const usString& key) const
+	virtual inline CoreItemSP operator[](const usString& key) const  override
 	{
 		kstl::vector<CoreItemSP>::const_iterator it = myVector.begin();
 
@@ -311,14 +302,47 @@ public:
 		return CoreItemSP(nullptr);
 	}
 
-	virtual void*	getContainerStruct()
+	virtual void*	getContainerStruct()  override
 	{
 		return &myVector;
 	}
 
+	virtual operator Point2D() const override
+	{
+		Point2D result;
+	
+		myVector[0]->getValue(result.x);
+		myVector[1]->getValue(result.y);
+
+		return result;
+	}
+
+	virtual operator Point3D() const override
+	{
+		Point3D result;
+
+		myVector[0]->getValue(result.x);
+		myVector[1]->getValue(result.y);
+		myVector[2]->getValue(result.z);
+
+		return result;
+	}
+
+	virtual operator Quaternion() const override
+	{
+		Quaternion result;
+
+		myVector[0]->getValue(result.V.x);
+		myVector[1]->getValue(result.V.y);
+		myVector[2]->getValue(result.V.z);
+		myVector[3]->getValue(result.w);
+
+		return result;
+	}
+
 protected:
 	kstl::vector<CoreItemSP>	myVector;
-	virtual void    ProtectedDestroy()
+	virtual void    ProtectedDestroy()  override
 	{
 		clear();
 		CoreItem::ProtectedDestroy();
