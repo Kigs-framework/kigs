@@ -2,6 +2,7 @@
 
 #include "CoreModifiable.h"
 #include "AttributePacking.h"
+#include "maNumeric.h"
 
 #include <map>
 #include <chrono>
@@ -14,7 +15,9 @@ class Timer : public CoreModifiable
 {
 public:
 	DECLARE_CLASS_INFO(Timer, CoreModifiable, Timer);
-	DECLARE_INLINE_CONSTRUCTOR(Timer) {}
+	DECLARE_INLINE_CONSTRUCTOR(Timer)
+	, mTime(*this, true, "Time", "GetTime", "")
+	{}
 	WRAP_METHODS(GetTime);
 
 	enum DateFormat
@@ -37,6 +40,7 @@ public:
 	};
 
 	virtual double GetTime() const;
+	virtual void SetTime(double t);
 
 	State	GetState(){return myCurrentState;}
 	virtual void SetState(State newstate);
@@ -60,6 +64,8 @@ protected:
 	void EndPause();
 
  	std::map<CheckUniqueObject, double> myTimerMap;
+
+	maComputedNumeric<double>	mTime;
 };
 
 

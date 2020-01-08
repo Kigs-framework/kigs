@@ -105,8 +105,20 @@ void JSonFileParserBase<stringType,parserType>::InitParser(const kstl::string& f
 #endif
 }
 
-
 // specialized
+template <>
+CoreModifiableAttribute* JSonFileParserBase<kstl::string, AsciiParserUtils>::getNewStringAttribute(const kstl::string& attrName,const kstl::string& strObjName)
+{
+	return new maString(*myDelegateObject, false, attrName, strObjName);
+}
+
+template <>
+CoreModifiableAttribute* JSonFileParserBase<usString, US16ParserUtils>::getNewStringAttribute(const usString& attrName,const usString& strObjName)
+{
+	kstl::string name = attrName.ToString();
+	return new maUSString(*myDelegateObject, false, name, strObjName);
+}
+
 template <>
 void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(kstl::string strObjName, kstl::string objparamValue)
 {
@@ -202,8 +214,8 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(usStrin
 template <typename stringType, typename parserType>
 bool JSonFileParserBase<stringType, parserType>::Export(CoreMap<stringType>* a_value, const kstl::string& a_fileName)
 {
-	stringType L_Buffer = "";
-	RecursiveParseElement(a_value,L_Buffer);
+	stringType L_Buffer("");
+	RecursiveParseElement(*a_value,L_Buffer);
 
 	SmartPointer<::FileHandle> L_File = Platform_fopen(a_fileName.c_str(), "wb");
 	if(L_File->myFile)
@@ -218,100 +230,94 @@ bool JSonFileParserBase<stringType, parserType>::Export(CoreMap<stringType>* a_v
 template <typename stringType, typename parserType>
 bool JSonFileParserBase<stringType, parserType>::ExportToString(CoreMap<stringType>* a_value, stringType& output)
 {
-	output="";
-	RecursiveParseElement(a_value,output);
+	output= stringType("");
+	RecursiveParseElement(*a_value,output);
 	return true;
 }
 
+
 template <typename stringType, typename parserType>
-void JSonFileParserBase<stringType, parserType>::RecursiveParseElement(CoreMap<stringType>* a_value, stringType& a_buffer)
+void JSonFileParserBase<stringType, parserType>::RecursiveParseElement(CoreItem& a_value, stringType& a_buffer)
 {
-	a_buffer += "{\n";
-	CoreItemIterator It = a_value->begin();
-	CoreItemIterator ItEnd = a_value->end();
-	while(It != ItEnd)
+	CoreItem::COREITEM_TYPE type = a_value.GetType();
+	// if value, just add value and return
+	if (type & CoreItem::COREVALUE)
 	{
-		if(It != a_value->begin())
+		AddValueToBuffer(a_value, a_buffer);
+		return;
+	}
+
+	// write header
+	if (type & CoreItem::COREMAP)
+	{
+		a_buffer += stringType("{");
+	}
+	else if (type & CoreItem::COREVECTOR)
+	{
+		a_buffer += stringType("[");
+	}
+
+	bool firstElem = true;
+	// iterate
+	CoreItemIterator It = a_value.begin();
+	CoreItemIterator ItEnd = a_value.end();
+	while (It != ItEnd)
+	{
+		// add ',' between elements
+		if (!firstElem)
 		{
-			a_buffer += ",";
-		}
-		a_buffer += "\"";
-		stringType	key;
-		It.getKey(key);
-		a_buffer += key;
-		a_buffer += "\":";
-		
-		switch((*It).GetType())
-		{
-			case CoreItem::COREMAP:
+			a_buffer += stringType(",");
+			if (type & CoreItem::COREMAP)
 			{
-				RecursiveParseElement((CoreMap<stringType>*)&(*It), a_buffer);
-				break;
-			}
-			case CoreItem::COREVECTOR:
-			{
-				RecursiveParseElement((CoreVector*)&(*It), a_buffer);
-				break;
-			}
-			case CoreItem::COREVALUE:
-			{
-				//a_buffer += "\"";
-				AddValueToBuffer((CoreItem*)&(*It), a_buffer);
-				a_buffer += "\n";
-				break;
-			}
-			default:
-			{
-				break;
+				a_buffer += stringType("\n");
 			}
 		}
+		firstElem = false;
+
+		// if in a map, then set name
+		if (type & CoreItem::COREMAP)
+		{
+			a_buffer += stringType("\"");
+			stringType	key;
+			It.getKey(key);
+			a_buffer += key;
+			a_buffer += stringType("\":");
+		}
+
+		RecursiveParseElement((CoreItem&)(*It), a_buffer);
+
 		It++;
 	}
-	a_buffer += "}\n";
-}
 
-template <typename stringType, typename parserType>
-void JSonFileParserBase<stringType, parserType>::RecursiveParseElement(CoreVector* a_value, stringType& a_buffer)
-{
-	a_buffer += "[";
-
-	for(unsigned int i = 0; i < a_value->size(); i++)
+	// write footer
+	if (type & CoreItem::COREMAP)
 	{
-		if(((*a_value)[i]).GetType() & CoreItem::COREMAP)
-		{
-			RecursiveParseElement(((CoreMap<stringType>*)&(*a_value)[i]), a_buffer);
-		}
-		else if(((*a_value)[i]).GetType() & CoreItem::COREVECTOR)
-		{
-			RecursiveParseElement(((CoreVector*)&(*a_value)[i]),a_buffer);
-		}
-		else if(((*a_value)[i]).GetType() & CoreItem::COREVALUE)
-		{
-			AddValueToBuffer(((CoreItem*)&(*a_value)[i]),a_buffer);
-		}
-		if(i < a_value->size()-1)
-			a_buffer += ",";
+		a_buffer += stringType("}");
 	}
-	a_buffer += "]\n";
+	else if (type & CoreItem::COREVECTOR)
+	{
+		a_buffer += stringType("]");
+	}
 }
 
+
 template <typename stringType, typename parserType>
-void JSonFileParserBase<stringType, parserType>::AddValueToBuffer(CoreItem* a_value, stringType& a_Destbuffer)
+void JSonFileParserBase<stringType, parserType>::AddValueToBuffer(CoreItem& a_value, stringType& a_Destbuffer)
 {
-	stringType L_Value = "";
-	a_value->getValue(L_Value);
-	if(a_value->isString())
+	stringType L_Value("");
+	a_value.getValue(L_Value);
+	if (a_value.isString())
 	{
-		a_Destbuffer += "\"";
+		a_Destbuffer += stringType("\"");
 		a_Destbuffer += L_Value;
-		a_Destbuffer += "\"";
+		a_Destbuffer += stringType("\"");
 	}
 	else
-		a_Destbuffer+=L_Value;
+		a_Destbuffer += L_Value;
 }
 
 template <typename stringType, typename parserType>
-CoreItem*	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(const kstl::string& filename)
+CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(const kstl::string& filename)
 {
 	//Create instance of DictionaryFromJson
 	myDictionaryFromJson = (DictionaryFromJson*)CreateDictionnaryFromJSONInstance();
@@ -319,25 +325,12 @@ CoreItem*	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(const k
 
 	InitParser(filename);
 
-	CoreItem* L_TempDictionary = getDictionnary();
-
-	// get a ref before destruction
-	if(L_TempDictionary)
-		L_TempDictionary->GetRef();
+	CoreItemSP L_TempDictionary = getDictionnary();
 
 	myDictionaryFromJson->Destroy();
-	myDictionaryFromJson = NULL;
+	myDictionaryFromJson = nullptr;
 
-	if(L_TempDictionary && !L_TempDictionary->empty())
-		return L_TempDictionary;
-	else
-	{
-		if(L_TempDictionary)
-		{
-			L_TempDictionary->Destroy();
-		}
-	}
-	return NULL;
+	return L_TempDictionary;
 }
 
 // specialized
@@ -349,7 +342,7 @@ CoreModifiable*			JSonFileParserBase<kstl::string, AsciiParserUtils>::CreateDict
 }
 
 template <>
-CoreItem*	JSonFileParserBase< kstl::string, AsciiParserUtils>::getDictionnary()
+CoreItemSP	JSonFileParserBase< kstl::string, AsciiParserUtils>::getDictionnary()
 {
 	return ((DictionaryFromJson*)myDictionaryFromJson)->Get_Dictionary();
 }
@@ -381,7 +374,7 @@ CoreModifiable*			JSonFileParserBase< usString, US16ParserUtils>::CreateDictionn
 }
 
 template <>
-CoreItem*	JSonFileParserBase< usString, US16ParserUtils>::getDictionnary()
+CoreItemSP	JSonFileParserBase< usString, US16ParserUtils>::getDictionnary()
 {
 	return ((DictionaryFromJsonUTF16*)myDictionaryFromJson)->Get_Dictionary();
 }
@@ -406,7 +399,7 @@ const unsigned char*	JSonFileParserBase< usString, US16ParserUtils>::GetStringBy
 }
 
 template <typename stringType, typename parserType>
-CoreItem*	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromString(const stringType& jsonString)
+CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromString(const stringType& jsonString)
 {
 	//Create instance of DictionaryFromJson
 	myDictionaryFromJson = (DictionaryFromJson*)CreateDictionnaryFromJSONInstance();
@@ -421,43 +414,29 @@ CoreItem*	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromStri
 
 	Buff->Destroy();
 
-	CoreItem* L_TempDictionary = getDictionnary();
-
-	// get a ref before destruction
-	if(L_TempDictionary)
-		L_TempDictionary->GetRef();
+	CoreItemSP L_TempDictionary = getDictionnary();
 
 	myDictionaryFromJson->Destroy();
 	myDictionaryFromJson = NULL;
-
-	if(L_TempDictionary && !L_TempDictionary->empty())
-		return L_TempDictionary;
-	else
-	{
-		if(L_TempDictionary)
-		{
-			L_TempDictionary->Destroy();
-		}
-	}
-	return NULL;
+	
+	return L_TempDictionary;
 
 }
 
-// specialized
-template <>
-bool JSonFileParserBase<kstl::string, AsciiParserUtils>::ParseBlock(AsciiParserUtils& Block)
+template <typename stringType, typename parserType>
+bool JSonFileParserBase<stringType, parserType>::ParseBlock(parserType& Block)
 {
 	// retreive obj name first (quoted word followed by ':')
-	AsciiParserUtils objName(Block);
+	parserType objName(Block);
 	while(Block.GetWord(objName,':',true))
 	{
 		// check that it's a valid name
 		if((objName[0]=='"')&&(objName[objName.length()-1]=='"'))
 		{
 			// remove quotes
-			kstl::string strObjName = objName.subString(1, objName.length() - 2);
+			stringType strObjName = objName.subString(1, objName.length() - 2);
 
-			AsciiParserUtils objValue(Block);
+			parserType objValue(Block);
 			Block.GetTrailingPart(objValue,true);
 			// check value type
 			if(objValue[0] == '[')
@@ -467,11 +446,11 @@ bool JSonFileParserBase<kstl::string, AsciiParserUtils>::ParseBlock(AsciiParserU
 					NotifyDelegateWithParamList();
 				}
 				// array
-				AsciiParserUtils newarray(Block);
+				parserType newarray(Block);
 				if (Block.GetBlockExcludeString(newarray, '[', ']'))
 				{
 					kstl::vector<CoreModifiableAttribute*>	params;
-					maString* arrayname=new maString(*myDelegateObject,false,LABEL_AND_ID(ArrayName),strObjName);
+					CoreModifiableAttribute* arrayname= getNewStringAttribute(stringType("ArrayName"),strObjName);
 					params.push_back(arrayname);
 
 					myDelegateObject->CallMethod(myJSonArrayStartID,params);
@@ -499,11 +478,11 @@ bool JSonFileParserBase<kstl::string, AsciiParserUtils>::ParseBlock(AsciiParserU
 				{
 					NotifyDelegateWithParamList();
 				}
-				AsciiParserUtils newblock(Block);
+				parserType newblock(Block);
 				if (Block.GetBlockExcludeString(newblock, '{', '}'))
 				{
 					kstl::vector<CoreModifiableAttribute*>	params;
-					maString* neobjname=new maString(*myDelegateObject,false,LABEL_AND_ID(ObjectName),strObjName);
+					CoreModifiableAttribute* neobjname = getNewStringAttribute(stringType("ObjectName"), strObjName);
 					params.push_back(neobjname);
 
 					myDelegateObject->CallMethod(myJSonObjectStartID,params);
@@ -527,11 +506,11 @@ bool JSonFileParserBase<kstl::string, AsciiParserUtils>::ParseBlock(AsciiParserU
 			else if (objValue[0] == '"')
 			{
 				// string 
-				kstl::string objparamValue;
+				stringType objparamValue;
 				{
-					AsciiParserUtils objparamValuebkl(Block);
+					parserType objparamValuebkl(Block);
 					Block.GetQuotationWord(objparamValuebkl);
-					objparamValue = (kstl::string) objparamValuebkl;
+					objparamValue = (const stringType&)objparamValuebkl;
 				}
 				Block.GoAfterNextSeparator(',');
 				Block.GoToNextNonWhitespace();
@@ -539,18 +518,10 @@ bool JSonFileParserBase<kstl::string, AsciiParserUtils>::ParseBlock(AsciiParserU
 			}
 			else // numeric or bool
 			{
-				AsciiParserUtils objparamValue(Block);
+				parserType objparamValue(Block);
 				Block.GetWord(objparamValue, ',', true);
 				AddValueToParamList(strObjName, objparamValue);
 			}
-
-/*			else
-			{
-				// string numeric or bool
-				AsciiParserUtils objparamValue(Block);
-				Block.GetWord(objparamValue,',',true);
-				AddValueToParamList(strObjName,objparamValue);
-			}*/
 		}
 	}
 
@@ -561,116 +532,6 @@ bool JSonFileParserBase<kstl::string, AsciiParserUtils>::ParseBlock(AsciiParserU
 	
 	return true;
 }
-
-template <>
-bool JSonFileParserBase<usString, US16ParserUtils>::ParseBlock(US16ParserUtils& Block)
-{
-	// retreive obj name first (quoted word followed by ':')
-	US16ParserUtils objName(Block);
-	while (Block.GetWord(objName, ':', true))
-	{
-		// check that it's a valid name
-		if ((objName[0] == '"') && (objName[objName.length() - 1] == '"'))
-		{
-			// remove quotes
-			usString strObjName(objName.subString(1, objName.length() - 2));
-			US16ParserUtils objValue(Block);
-			Block.GetTrailingPart(objValue, true);
-			// check value type
-			if (objValue[0] == '[')
-			{
-				if (myParamList.size())
-				{
-					NotifyDelegateWithParamList();
-				}
-				// array
-				US16ParserUtils newarray(Block);
-				if (Block.GetBlockExcludeString(newarray, '[', ']'))
-				{
-					kstl::vector<CoreModifiableAttribute*>	params;
-					maUSString* arrayname = new maUSString(*myDelegateObject, false, LABEL_AND_ID(ArrayName), strObjName);
-					params.push_back(arrayname);
-
-					myDelegateObject->CallMethod(myJSonArrayStartID, params);
-
-					if (!ParseArray(newarray))
-					{
-						return false;
-					}
-
-					myDelegateObject->CallMethod(myJSonArrayEndID, params);
-
-					delete arrayname;
-
-					Block.GoAfterNextSeparator(',');
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else if (objValue[0] == '{')
-			{
-				// object
-				if (myParamList.size())
-				{
-					NotifyDelegateWithParamList();
-				}
-				US16ParserUtils newblock(Block);
-				if (Block.GetBlockExcludeString(newblock, '{', '}'))
-				{
-					kstl::vector<CoreModifiableAttribute*>	params;
-					maUSString* neobjname = new maUSString(*myDelegateObject, false, LABEL_AND_ID(ObjectName), strObjName);
-					params.push_back(neobjname);
-
-					myDelegateObject->CallMethod(myJSonObjectStartID, params);
-
-					if (!ParseBlock(newblock))
-					{
-						return false;
-					}
-
-					myDelegateObject->CallMethod(myJSonObjectEndID, params);
-
-					delete neobjname;
-
-					Block.GoAfterNextSeparator(',');
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else if (objValue[0] == '"')
-			{
-				// string 
-				usString objparamValue("");
-				{
-					US16ParserUtils objparamValueblk(Block);
-					Block.GetQuotationWord(objparamValueblk);
-					objparamValue = (const usString&)objparamValueblk;
-				}
-				Block.GoAfterNextSeparator(',');
-				Block.GoToNextNonWhitespace();
-				AddValueToParamList(strObjName, objparamValue);
-			}
-			else // numeric or bool
-			{
-				US16ParserUtils objparamValue(Block);
-				Block.GetWord(objparamValue, ',', true);
-				AddValueToParamList(strObjName, objparamValue);
-			}
-		}
-	}
-	
-	if (myParamList.size())
-	{
-		NotifyDelegateWithParamList();
-	}
-	
-	return true;
-}
-
 
 template <typename stringType, typename parserType>
 bool JSonFileParserBase<stringType,parserType>::ParseArray(parserType& Array)
@@ -740,22 +601,14 @@ bool JSonFileParserBase<stringType,parserType>::ParseArray(parserType& Array)
 			}
 			Array.GoAfterNextSeparator(',');
 			Array.GoToNextNonWhitespace();
-			AddValueToParamList("", objparamValue);
+			AddValueToParamList(stringType(""), objparamValue);
 		}
 		else // numeric or bool
 		{
 			parserType objparamValue(Array);
 			Array.GetWord(objparamValue, ',', true);
-			AddValueToParamList("", objparamValue);
+			AddValueToParamList(stringType(""), objparamValue);
 		}
-
-	/*	else
-		{
-			// string numeric or bool
-			parserType objparamValue(Array);
-			Array.GetWord(objparamValue,',',true);
-			AddValueToParamList("",objparamValue);
-		}*/
 	}
 	
 	if(myParamList.size())
@@ -788,17 +641,13 @@ IMPLEMENT_CLASS_INFO(DictionaryFromJson);
 
 DictionaryFromJson::DictionaryFromJson(const kstl::string& name,CLASS_NAME_TREE_ARG):
 CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-,m_pCurrentObject(NULL)
+,m_pCurrentObject(nullptr)
 {
 	CONSTRUCT_METHOD(DictionaryFromJson, JSonObjectStart)
 	CONSTRUCT_METHOD(DictionaryFromJson, JSonObjectEnd)
 	CONSTRUCT_METHOD(DictionaryFromJson, JSonArrayStart)
 	CONSTRUCT_METHOD(DictionaryFromJson, JSonArrayEnd)
 	CONSTRUCT_METHOD(DictionaryFromJson, JSonParamList)
-
-	//m_pCurrentObject = new CoreMap<kstl::string>();
-	//m_vObjectStack.push_back(m_pCurrentObject);  // push null
-
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -806,14 +655,7 @@ CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 
 DictionaryFromJson::~DictionaryFromJson()
 {
-
-	if(m_pCurrentObject)
-	{
-		m_pCurrentObject->Destroy();
-	}
-
 	m_vObjectStack.clear();
-	m_pCurrentObject = NULL;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -821,19 +663,17 @@ DictionaryFromJson::~DictionaryFromJson()
 
 DEFINE_METHOD(DictionaryFromJson,JSonObjectStart)
 {
-	CoreMap<kstl::string>* toAdd = new CoreMap<kstl::string>();
+	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreMap<kstl::string>(), StealRefTag{});
 
-	if (m_pCurrentObject)
+	if (!m_pCurrentObject.isNil())
 	{
 		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<kstl::string>*)m_pCurrentObject)->set(((maString*)params[0])->c_str(), toAdd);
-			toAdd->Destroy();
+			((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
 		}
 		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
-			((CoreVector*)m_pCurrentObject)->push_back(toAdd);
-			toAdd->Destroy();
+			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
 		}
 	}
 	else // first object => add it twice
@@ -866,19 +706,17 @@ DEFINE_METHOD(DictionaryFromJson,JSonObjectEnd)
 
 DEFINE_METHOD(DictionaryFromJson,JSonArrayStart)
 {
-	CoreVector* toAdd = new CoreVector();
+	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreVector(), StealRefTag{});
 
-	if (m_pCurrentObject)
+	if (!m_pCurrentObject.isNil())
 	{
 		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<kstl::string>*)m_pCurrentObject)->set(((maString*)params[0])->c_str(), toAdd);
-			toAdd->Destroy();
+			((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
 		}
 		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
-			((CoreVector*)m_pCurrentObject)->push_back(toAdd);
-			toAdd->Destroy();
+			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
 		}
 	}
 	else // first object => add it twice
@@ -916,7 +754,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 	if(!params.empty())
 	{
 		bool L_IsVector = false;
-		if(m_pCurrentObject)
+		if(!m_pCurrentObject.isNil())
 		{
 			L_IsVector = (m_pCurrentObject->GetType() == CoreItem::COREVECTOR);
 		}
@@ -928,73 +766,63 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 			idx = i+1;
 			if(params[idx]->getType() == STRING)
 			{
-				CoreValue<kstl::string>* L_Value = new CoreValue<kstl::string>((*(maString*)params[idx]));
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kstl::string>((*(maString*)params[idx])), StealRefTag{});
 
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 
-				L_Value->Destroy();
 			}
 			else if(params[idx]->getType() == FLOAT)
 			{
-				CoreValue<kfloat>* L_Value = new CoreValue<kfloat>((*(maFloat*)params[idx]));
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])), StealRefTag{});
 				
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 				
-				L_Value->Destroy();
 			}
 			else if(params[idx]->getType() == INT)
 			{
-				CoreValue<int>* L_Value = new CoreValue<int>((*(maInt*)params[idx]));
-
+				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])), StealRefTag{});
 				
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 			
-				
-				L_Value->Destroy();
 			}
 			else if(params[idx]->getType() == BOOL)
 			{
-				CoreValue<bool>* L_Value = new CoreValue<bool>((*(maBool*)params[idx]));
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
 
-				
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key,L_Value);
-				
-				
-				L_Value->Destroy();
+					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
+
 			}
 			else if(params[idx]->getType() == UINT)
 			{
-				CoreValue<unsigned int>* L_Value = new CoreValue<unsigned int>((*(maUInt*)params[idx]));
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])), StealRefTag{});
 
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 				
-				L_Value->Destroy();
 			}
 			else if(params[idx]->getType() == DOUBLE)
 			{
-				CoreValue<double>* L_Value = new CoreValue<double>((*(maDouble*)params[idx]));
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])), StealRefTag{});
 
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 				
-				L_Value->Destroy();
 			}
 		}
 	}
@@ -1006,16 +834,13 @@ IMPLEMENT_CLASS_INFO(DictionaryFromJsonUTF16);
 
 DictionaryFromJsonUTF16::DictionaryFromJsonUTF16(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, m_pCurrentObject(NULL)
+, m_pCurrentObject(nullptr)
 {
 	CONSTRUCT_METHOD(DictionaryFromJsonUTF16, JSonObjectStart)
 	CONSTRUCT_METHOD(DictionaryFromJsonUTF16, JSonObjectEnd)
 	CONSTRUCT_METHOD(DictionaryFromJsonUTF16, JSonArrayStart)
 	CONSTRUCT_METHOD(DictionaryFromJsonUTF16, JSonArrayEnd)
 	CONSTRUCT_METHOD(DictionaryFromJsonUTF16, JSonParamList)
-	//m_pCurrentObject = new CoreMap<usString>();
-	//m_vObjectStack.push_back(m_pCurrentObject); 
-	
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -1023,14 +848,7 @@ CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 
 DictionaryFromJsonUTF16::~DictionaryFromJsonUTF16()
 {
-
-	if (m_pCurrentObject)
-	{
-		m_pCurrentObject->Destroy();
-	}
-
 	m_vObjectStack.clear();
-	m_pCurrentObject = NULL;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -1038,19 +856,17 @@ DictionaryFromJsonUTF16::~DictionaryFromJsonUTF16()
 
 DEFINE_METHOD(DictionaryFromJsonUTF16, JSonObjectStart)
 {
-	CoreMap<usString>* toAdd = new CoreMap<usString>();
+	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreMap<usString>(), StealRefTag{});
 
 	if (m_pCurrentObject)
 	{
 		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<usString>*)m_pCurrentObject)->set(*((maUSString*)params[0]), toAdd);
-			toAdd->Destroy();
+			((CoreMap<usString>*)m_pCurrentObject.get())->set(*((maUSString*)params[0]), toAdd);
 		}
 		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
-			((CoreVector*)m_pCurrentObject)->push_back(toAdd);
-			toAdd->Destroy();
+			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
 		}
 	}
 	else // first object => add it twice
@@ -1083,18 +899,18 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonObjectEnd)
 
 DEFINE_METHOD(DictionaryFromJsonUTF16, JSonArrayStart)
 {
-	CoreVector* toAdd = new CoreVector();
+	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreVector(), StealRefTag{});
 
 	if (m_pCurrentObject)
 	{
 		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<usString>*)m_pCurrentObject)->set(*((maUSString*)params[0]), toAdd);
+			((CoreMap<usString>*)m_pCurrentObject.get())->set(*((maUSString*)params[0]), toAdd);
 			toAdd->Destroy();
 		}
 		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
-			((CoreVector*)m_pCurrentObject)->push_back(toAdd);
+			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
 			toAdd->Destroy();
 		}
 	}
@@ -1143,86 +959,40 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 		{
 			usString L_Key = (const usString&)(*(maUSString*)params[i]);
 			idx = i + 1;
-			if (params[idx]->getType() == STRING)
+
+			CoreItemSP L_Value(nullptr);
+
+			switch (params[idx]->getType())
 			{
-				CoreValue<kstl::string>* L_Value = new CoreValue<kstl::string>((*(maString*)params[idx]).const_ref());
-
-				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
-				else
-					((CoreMap<kstl::string>*)m_pCurrentObject)->set(L_Key.ToString(), L_Value);
-
-				L_Value->Destroy();
+			case STRING:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<kstl::string>((*(maString*)params[idx]).const_ref()), StealRefTag{});
+				break;
+			case USSTRING:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<usString>((*(maUSString*)params[idx])), StealRefTag{});
+				break;
+			case FLOAT:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])), StealRefTag{});
+				break;
+			case INT:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])), StealRefTag{});
+				break;
+			case BOOL:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
+				break;
+			case UINT:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])), StealRefTag{});
+				break;
+			case DOUBLE:
+				L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])), StealRefTag{});
+				break;
 			}
-			else if (params[idx]->getType() == USSTRING)
+
+			if (!L_Value.isNil())
 			{
-				CoreValue<usString>* L_Value = new CoreValue<usString>((*(maUSString*)params[idx]));
-
 				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<usString>*)m_pCurrentObject)->set(L_Key, L_Value);
-
-				L_Value->Destroy();
-			}
-			else if (params[idx]->getType() == FLOAT)
-			{
-				CoreValue<kfloat>* L_Value = new CoreValue<kfloat>((*(maFloat*)params[idx]));
-
-				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
-				else
-					((CoreMap<usString>*)m_pCurrentObject)->set(L_Key, L_Value);
-
-				L_Value->Destroy();
-			}
-			else if (params[idx]->getType() == INT)
-			{
-				CoreValue<int>* L_Value = new CoreValue<int>((*(maInt*)params[idx]));
-
-
-				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
-				else
-					((CoreMap<usString>*)m_pCurrentObject)->set(L_Key, L_Value);
-
-
-				L_Value->Destroy();
-			}
-			else if (params[idx]->getType() == BOOL)
-			{
-				CoreValue<bool>* L_Value = new CoreValue<bool>((*(maBool*)params[idx]));
-
-
-				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
-				else
-					((CoreMap<usString>*)m_pCurrentObject)->set(L_Key, L_Value);
-
-
-				L_Value->Destroy();
-			}
-			else if (params[idx]->getType() == UINT)
-			{
-				CoreValue<unsigned int>* L_Value = new CoreValue<unsigned int>((*(maUInt*)params[idx]));
-
-				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
-				else
-					((CoreMap<usString>*)m_pCurrentObject)->set(L_Key, L_Value);
-
-				L_Value->Destroy();
-			}
-			else if (params[idx]->getType() == DOUBLE)
-			{
-				CoreValue<double>* L_Value = new CoreValue<double>((*(maDouble*)params[idx]));
-
-				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject)->push_back(L_Value);
-				else
-					((CoreMap<usString>*)m_pCurrentObject)->set(L_Key, L_Value);
-
-				L_Value->Destroy();
+					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
 			}
 		}
 	}

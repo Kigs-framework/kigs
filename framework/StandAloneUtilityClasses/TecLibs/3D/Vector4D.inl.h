@@ -108,6 +108,20 @@ Vector4D::operator const Vector3D ( void )
     return s_Vector;
 }
 
+// +---------
+// | Acces Operators
+// +---------
+const Float& Vector4D::operator[](Int i) const
+{
+	assert(i>=0 && i<4);
+	return *((&x)+i);
+}
+
+Float& Vector4D::operator[](Int i)
+{
+	assert(i>=0 && i<4);
+	return *((&x)+i);
+}
 
 // ----------------------------------------------------------------------
 // +---------

@@ -409,6 +409,9 @@ public:
 	template<typename Ret, typename... T>
 	Ret SimpleCall(KigsID methodName, T&&... params);
 
+	template<typename Ret>
+	Ret SimpleCall(KigsID methodName);
+
 	template<typename Ret, typename... T>
 	Ret InvokeReturn(KigsID methodName, T&&... params)
 	{
@@ -430,9 +433,14 @@ public:
 	// Avoid using ! call a method, with a list of CoreModifiableAttribute as parameters
 	bool CallMethod(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0, CoreModifiable* sender = 0);
 	// Avoid using ! call a meethod with the list of CoreModifiableAttribute of the given CoreModifiable as parameter
-	bool CallMethod(KigsID methodNameID, CoreModifiable* params, void* privateParams = 0, CoreModifiable* sender = 0) {	return CallMethod(methodNameID, ((std::vector<CoreModifiableAttribute*>&)(*params)), privateParams, sender); }
+	bool CallMethod(KigsID methodNameID, CoreModifiable* params, void* privateParams = 0, CoreModifiable* sender = 0) {
+		std::vector<CoreModifiableAttribute*> p = (std::vector<CoreModifiableAttribute*>) (*params);
+		return CallMethod(methodNameID, p, privateParams, sender); 
+	}
 	// Avoid using ! call a method, with the list of CoreModifiableAttribute of the given CoreModifiable as parameter
-	bool CallMethod(KigsID methodNameID, CoreModifiable& params, void* privateParams = 0, CoreModifiable* sender = 0) { return CallMethod(methodNameID, ((std::vector<CoreModifiableAttribute*>&)(params)), privateParams, sender); }
+	bool CallMethod(KigsID methodNameID, CoreModifiable& params, void* privateParams = 0, CoreModifiable* sender = 0) {
+		std::vector<CoreModifiableAttribute*> p = (std::vector<CoreModifiableAttribute*>) params;
+		return CallMethod(methodNameID, p, privateParams, sender); }
 	// Avoid using ! emit a signal, with a list of CoreModifiableAttribute as parameters
 	bool CallEmit(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0);
 
@@ -490,13 +498,14 @@ public:
 	DECLARE_GET_ARRAY_ELEMENT(std::string&);
 	DECLARE_SET_ARRAY_ELEMENT(const std::string&);
 
-#define DECLARE_SET_VALUE_VECTOR(type, nb) bool setValue(KigsID attributeLabel, type vec){ return setArrayValue(attributeLabel, &vec.x, nb); }
-#define DECLARE_GET_VALUE_VECTOR(type, nb) bool getValue(const KigsID attributeLabel, type& vec) const { return getArrayValue(attributeLabel, &vec.x, nb); }
+#define DECLARE_SET_VALUE_VECTOR(type, nb) bool setValue(KigsID attributeLabel, type vec){ return setArrayValue(attributeLabel, &vec[0], nb); }
+#define DECLARE_GET_VALUE_VECTOR(type, nb) bool getValue(const KigsID attributeLabel, type& vec) const { return getArrayValue(attributeLabel, &vec[0], nb); }
 #define DECLARE_GET_SET_VALUE_VECTOR(type, nb) DECLARE_SET_VALUE_VECTOR(type, nb) DECLARE_GET_VALUE_VECTOR(type, nb)
 
 	DECLARE_GET_SET_VALUE_VECTOR(v2f, 2);
 	DECLARE_GET_SET_VALUE_VECTOR(v3f, 3);
 	DECLARE_GET_SET_VALUE_VECTOR(v4f, 4);
+	DECLARE_GET_SET_VALUE_VECTOR(Quaternion, 4);
 
 	DECLARE_GET_SET_VALUE_VECTOR(v2i, 2);
 	DECLARE_GET_SET_VALUE_VECTOR(v3i, 3);
@@ -702,31 +711,31 @@ public:
 	//@TODO check for usage
 	bool ImportAttributes(const std::string &filename);
 	
-	// Init the modifiable and set the _isInit flag if OK. Need to call base::InitModifiable() when overriding !
+	// Init the modifiable and set the _isInit flag if OK. Need to call ParentClassType::InitModifiable() when overriding !
 	virtual	void InitModifiable();
 
-	// Called when init has failed or when "closing" modifiable. Need to call base::UninitModifiable() when overriding !
+	// Called when init has failed. Need to call ParentClassType::UninitModifiable() when overriding !
 	virtual	void UninitModifiable();
 	
-	// Called before the object in deleted. Need to call base::ProtectedDestroy() when overriding !
+	// Called before the object is deleted. 
 	void ProtectedDestroy() override;
 	
-	// Update method. Call to base::Update is not necessary when overriding
+	// Update method. Call to ParentClassType::Update is not necessary when overriding
 	virtual void Update(const Timer&  timer, void* addParam) {}
 
-	// add the given parent to list. Need to call base::addUser(...) when overriding !
+	// add the given parent to list. Need to call ParentClassType::addUser(...) when overriding !
 	virtual void addUser(CoreModifiable* user);
 
-	// remove the given parent from list. Need to call base::. Need to call base::addItem(...) when overriding !
+	// remove the given parent from list. Need to call ParentClassType::removeUser(...) when overriding !
 	virtual void removeUser(CoreModifiable* user);
 	
-	// add a son. Need to call base::addItem(...) when overriding !
+	// add a son. Need to call ParentClassType::addItem(...) when overriding !
 	virtual bool addItem(CoreModifiable* item, ItemPosition pos = Last);
 	
-	// remove a son. Need to call base::removeItem(...) when overriding !
+	// remove a son. Need to call ParentClassType::removeItem(...) when overriding !
 	virtual bool removeItem(CoreModifiable* item);
 
-	// Called when an attribute that has its notification level set to Owner is modified. Need to call base::NotifyUpdate(...) when overriding !
+	// Called when an attribute that has its notification level set to Owner is modified. Need to call ParentClassType::NotifyUpdate(...) when overriding !
 	virtual void NotifyUpdate(const u32 labelid);
 
 	// By default Two modifiables are equals if they are the same type and attributes are equal. Free to override as needed

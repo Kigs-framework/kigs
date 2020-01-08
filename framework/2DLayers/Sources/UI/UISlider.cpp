@@ -243,7 +243,7 @@ void	UISlider::ForcedRatio(int X, int Y)
 
 	if(myClickUpAction.const_ref() != "")
 	{
-		if(myParameter == "")
+		if(myParameter == usString(""))
 		{
 			KigsCore::GetNotificationCenter()->postNotificationName(myClickUpAction.const_ref(),this);
 		}
@@ -489,7 +489,7 @@ bool UISlider::TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y,
 
 			if(myClickUpAction.const_ref() != "")
 			{
-				if(myParameter == "")
+				if(myParameter == usString(""))
 				{
 					KigsCore::GetNotificationCenter()->postNotificationName(myClickUpAction.const_ref(),this);
 				}

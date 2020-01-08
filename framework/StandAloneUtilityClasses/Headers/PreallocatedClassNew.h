@@ -26,7 +26,7 @@ public:\
 	void operator delete(void * p)\
 	{\
 		std::lock_guard<std::mutex> lk(mPreallocatedBlocks.mMutex);\
-		if (!mPreallocatedBlocks.free(p))\
+		if (!mPreallocatedBlocks.prealloc_free(p))\
 		{\
 			free(p);\
 		}\
@@ -45,7 +45,7 @@ public:\
 	}\
 	void operator delete(void * p)\
 	{\
-		if (!mPreallocatedBlocks.free(p))\
+		if (!mPreallocatedBlocks.prealloc_free(p))\
 		{\
 			free(p);\
 		}\
@@ -142,7 +142,7 @@ public:
 	
 		return (void*)(mPreallocatedArray + globalIndex * PreallocatedClassNew::UpperPowerOf2(sizeof(classType)));
 	}
-	bool  free(void* p)
+	bool  prealloc_free(void* p)
 	{
 		ptrdiff_t	bstart = (ptrdiff_t)p;
 		ptrdiff_t	preallocStart = (ptrdiff_t)mPreallocatedArray;

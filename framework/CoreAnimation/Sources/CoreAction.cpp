@@ -83,7 +83,7 @@ void CoreActionWait::init(CoreSequence* sequence,CoreVector* params)
 	}
 #endif
 	float readfloat;
-	((CoreValue<float>&)(*params)[0]).getValue(readfloat);
+	(*params)[0]->getValue(readfloat);
 	myDuration=readfloat;
 }
 

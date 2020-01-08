@@ -202,7 +202,7 @@ void	UIGroupButton::TreatClick(bool _toPressed, UIItem* _sender)
 		if (pressedNumber == 0 && myNoSelectedAction.const_ref() != "")
 		{
 			kstl::vector<kstl::string>	L_ActionVect = SplitStringByCharacter(myNoSelectedAction.const_ref(), ':');
-			if (myParameter == "")
+			if (myParameter == usString(""))
 			{
 				for (unsigned int i = 0; i < L_ActionVect.size(); i++)
 					KigsCore::GetNotificationCenter()->postNotificationName(L_ActionVect[i], this);
