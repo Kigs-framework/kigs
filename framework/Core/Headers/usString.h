@@ -32,6 +32,8 @@ class	usString
 {
 public:
 	usString();
+
+	// set this one as explicit to avoid ambiguity for method with kstl::string or usString parameter called with const char* parameter
 	explicit usString(const char* str) :
 		mString(0)
 	{

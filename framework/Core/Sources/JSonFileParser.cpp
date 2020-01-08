@@ -510,7 +510,7 @@ bool JSonFileParserBase<stringType, parserType>::ParseBlock(parserType& Block)
 				{
 					parserType objparamValuebkl(Block);
 					Block.GetQuotationWord(objparamValuebkl);
-					objparamValue = (stringType) objparamValuebkl;
+					objparamValue = (const stringType&)objparamValuebkl;
 				}
 				Block.GoAfterNextSeparator(',');
 				Block.GoToNextNonWhitespace();
