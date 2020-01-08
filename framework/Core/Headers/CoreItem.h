@@ -58,7 +58,12 @@ public:
 	static  CoreItemSP	getCoreValue(const kstl::string& s);
 	static  CoreItemSP	getCoreValue(const usString& s);
 
-	void	set(const CoreItemSP& s, kstl::string key = "");
+	template<typename smartPointOn, typename ... Args>
+	static CoreItemSP getCoreItemOfType(Args&& ... args)
+	{
+		return CoreItemSP(new smartPointOn(std::forward<decltype(args)>(args)...), StealRefTag{});
+	}
+
 
 	CoreItemIterator begin();
 	CoreItemIterator end();
@@ -256,6 +261,7 @@ public:
 
 	virtual operator Point3D() const;
 
+	virtual operator Quaternion() const;
 
 	bool getValue(bool& _value) const {
 		_value = (bool)*this;
@@ -289,6 +295,11 @@ public:
 	bool getValue(Point3D& _value) const {
 		_value = (Point3D)*this;
 		return true; }
+
+	bool getValue(Quaternion& _value) const {
+		_value = (Quaternion)*this;
+		return true;
+	}
 
 	virtual bool operator==(const CoreItem& other) const
 	{

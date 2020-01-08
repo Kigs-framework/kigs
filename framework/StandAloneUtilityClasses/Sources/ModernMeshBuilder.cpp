@@ -49,7 +49,7 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 	
 	while (checkdescit != checkdescitend)
 	{
-		CoreNamedItem& found = (CoreNamedItem&)*checkdescit;
+		CoreNamedItem& found = (CoreNamedItem&)(CoreItem&)(*checkdescit);
 
 		if (found.getName() == "vertices")
 		{

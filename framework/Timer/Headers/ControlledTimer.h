@@ -17,7 +17,7 @@ public:
 		return myCurrentTime;
 	}
 
-	void SetTime(double t)
+	void SetTime(double t) override
 	{
 		myCurrentTime = t;
 	}

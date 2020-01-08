@@ -39,7 +39,7 @@ bool HTTPAsyncRequest::GetAnswer(usString& answer)
 		switch (myContentEncoding)
 		{
 		case ANSI:
-			answer = (char*)myReceivedBuffer->buffer();
+			answer = (usString)(const char*)myReceivedBuffer->buffer();
 			if (myFoundCharset != ANSI)
 			{
 				answer.replaceEscapeUnicode();
@@ -70,7 +70,7 @@ bool HTTPAsyncRequest::GetAnswer(kstl::string& answer)
 		switch (myContentEncoding)
 		{
 		case ANSI:
-			L_returnedValue = (char*)myReceivedBuffer->buffer();
+			L_returnedValue = (usString)(const char*)myReceivedBuffer->buffer();
 			if (myFoundCharset != ANSI)
 			{
 				L_returnedValue.replaceEscapeUnicode();

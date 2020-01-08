@@ -498,13 +498,14 @@ public:
 	DECLARE_GET_ARRAY_ELEMENT(std::string&);
 	DECLARE_SET_ARRAY_ELEMENT(const std::string&);
 
-#define DECLARE_SET_VALUE_VECTOR(type, nb) bool setValue(KigsID attributeLabel, type vec){ return setArrayValue(attributeLabel, &vec.x, nb); }
-#define DECLARE_GET_VALUE_VECTOR(type, nb) bool getValue(const KigsID attributeLabel, type& vec) const { return getArrayValue(attributeLabel, &vec.x, nb); }
+#define DECLARE_SET_VALUE_VECTOR(type, nb) bool setValue(KigsID attributeLabel, type vec){ return setArrayValue(attributeLabel, &vec[0], nb); }
+#define DECLARE_GET_VALUE_VECTOR(type, nb) bool getValue(const KigsID attributeLabel, type& vec) const { return getArrayValue(attributeLabel, &vec[0], nb); }
 #define DECLARE_GET_SET_VALUE_VECTOR(type, nb) DECLARE_SET_VALUE_VECTOR(type, nb) DECLARE_GET_VALUE_VECTOR(type, nb)
 
 	DECLARE_GET_SET_VALUE_VECTOR(v2f, 2);
 	DECLARE_GET_SET_VALUE_VECTOR(v3f, 3);
 	DECLARE_GET_SET_VALUE_VECTOR(v4f, 4);
+	DECLARE_GET_SET_VALUE_VECTOR(Quaternion, 4);
 
 	DECLARE_GET_SET_VALUE_VECTOR(v2i, 2);
 	DECLARE_GET_SET_VALUE_VECTOR(v3i, 3);
