@@ -10,7 +10,7 @@
 
 struct maCoreItemValue
 {
-	SmartPointer<CoreItem> item;
+	CoreItemSP item;
 	kstl::string ref_file;
 
 	void InitWithJSON(const kstl::string& currentval, CoreModifiable* owner);
@@ -93,7 +93,7 @@ public:
 		
 		if (_value.item != value)
 		{
-			_value.item = NonOwningRawPtrToSmartPtr(value);
+			_value.item = CoreItemSP(value, GetRefTag{});
 			_value.ref_file = "";
 			DO_NOTIFICATION(notificationLevel);
 		}

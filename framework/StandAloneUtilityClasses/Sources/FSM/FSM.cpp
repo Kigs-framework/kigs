@@ -48,10 +48,10 @@ void	FSM::InitModifiable()
 		{
 			// init with description
 
-			CoreItem* ItemToEval = myDescription;
+			CoreItemSP ItemToEval = CoreItemSP(myDescription, GetRefTag{});
 			
-			if(ItemToEval)
-				initFromDescription(*ItemToEval);
+			if(!ItemToEval.isNil())
+				initFromDescription(ItemToEval);
 
 			kstl::string initstate = myInitState;
 			if (initstate != "")
@@ -346,14 +346,14 @@ void	FSM::closeState(FSM_StateStruct* state)
 	state->invokeEndAction(this, 0);
 }
 
-void FSM::initFromDescription(CoreItem& description)
+void FSM::initFromDescription(CoreItemSP description)
 {
-	if (description.size())
+	if (description->size())
 	{
 	
 		beginStateMap();
 
-		CoreItem& states = description["StateMap"];
+		CoreItemSP states = description["StateMap"];
 
 		CoreItemIterator iterstate = states.begin();
 		CoreItemIterator iterstateend = states.end();
@@ -365,9 +365,9 @@ void FSM::initFromDescription(CoreItem& description)
 
 			beginStateDescription(key);
 
-			CoreItem& currentstate = *iterstate;
+			CoreItemSP currentstate = *iterstate;
 
-			if (currentstate.size())
+			if (currentstate->size())
 			{
 				initStateFromDescription(currentstate);
 			}
@@ -381,7 +381,7 @@ void FSM::initFromDescription(CoreItem& description)
 	}
 }
 
-void	FSM::initStateFromDescription(CoreItem& statedescription)
+void	FSM::initStateFromDescription(CoreItemSP statedescription)
 {
 	CoreItemIterator iterstate = statedescription.begin();
 	CoreItemIterator iterstateend = statedescription.end();
@@ -393,9 +393,9 @@ void	FSM::initStateFromDescription(CoreItem& statedescription)
 
 		if (key == "actions")
 		{
-			CoreItem& actionarray = *iterstate;
+			CoreItemSP actionarray = *iterstate;
 
-			for (u32 i = 0; i < actionarray.size(); i++)
+			for (u32 i = 0; i < actionarray->size(); i++)
 			{
 				kstl::string action(actionarray[i]);
 				if (action != "")
@@ -454,14 +454,13 @@ void	FSM::initStateFromDescription(CoreItem& statedescription)
 void FSM::initStateFromJSONFile(const kstl::string& filename)
 {
 	JSonFileParser L_JsonParser;
-	CoreItem* L_Dictionary = L_JsonParser.Get_JsonDictionary(filename);
+	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionary(filename);
 
-	initFSM_StateFromDescription(*L_Dictionary);
+	initFSM_StateFromDescription(L_Dictionary);
 
-	L_Dictionary->Destroy();
 }
 
-void	FSM::initTransitionsFromDescription(CoreItem& transitiondescription)
+void	FSM::initTransitionsFromDescription(CoreItemSP transitiondescription)
 {
 	CoreItemIterator itertrans = transitiondescription.begin();
 	CoreItemIterator itertransend = transitiondescription.end();
@@ -471,9 +470,9 @@ void	FSM::initTransitionsFromDescription(CoreItem& transitiondescription)
 		kstl::string	key;
 		itertrans.getKey(key);
 
-		CoreItem& transarray = *itertrans;
+		CoreItemSP transarray = *itertrans;
 
-		if (transarray.size() > 1)
+		if (transarray->size() > 1)
 		{
 			addTransition(key, (kstl::string)transarray[0], (kstl::string)transarray[1]);
 		}
@@ -486,10 +485,10 @@ void	FSM::initTransitionsFromDescription(CoreItem& transitiondescription)
 	}
 }
 
-void	FSM::initFSM_StateFromDescription(CoreItem& statedescription)
+void	FSM::initFSM_StateFromDescription(CoreItemSP statedescription)
 {
 
-	CoreItem&	stateInfos = statedescription["infos"];
+	CoreItemSP	stateInfos = statedescription["infos"];
 
 	kstl::string	statetype,statename,initstate;
 	
@@ -498,7 +497,7 @@ void	FSM::initFSM_StateFromDescription(CoreItem& statedescription)
 	initstate = (kstl::string)stateInfos[2];
 
 	FSM_State* newstate = (FSM_State*)KigsCore::GetInstanceOf(statename, statetype);
-	newstate->setValue("Description", (CoreItem*)&(statedescription));
+	newstate->setValue("Description", statedescription.get());
 	newstate->setValue("InitState", initstate);
 	newstate->Init();
 

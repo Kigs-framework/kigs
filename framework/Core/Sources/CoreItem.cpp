@@ -1,5 +1,8 @@
 #include "PrecompiledHeaders.h"
 #include "CoreItem.h"
+#include "CoreVector.h"
+#include "CoreMap.h"
+
 
 
 CoreItemSP CoreItemIterator::operator*() const
@@ -53,9 +56,6 @@ bool CoreItemIterator::getKey(usString& returnedkey)
 }
 
 
-
-
-
 CoreItemSP CoreItemIteratorBase::operator*() const
 {
 	if (myPos == 0)
@@ -94,11 +94,6 @@ CoreItemSP CoreItem::operator[](const usString& key) const
 	return CoreItemSP(nullptr);
 }
 
-
-
-
-
-
 CoreItemSP CoreNamedItem::operator[](const kstl::string& key) const
 {
 	if (key == m_Name)
@@ -116,10 +111,6 @@ CoreItemSP CoreNamedItem::operator[](const usString& key) const
 	}
 	return CoreItemSP(nullptr);
 }
-
-
-
-
 
 CoreItem::operator bool() const
 {
@@ -164,6 +155,14 @@ CoreItem::operator Point2D() const
 	return result;
 }
 
+CoreItem::operator Quaternion() const
+{
+	Quaternion result;
+	KIGS_ERROR("cast operator called on base CoreItem", 2);
+	return result;
+}
+
+
 CoreItem::operator Point3D() const
 {
 	Point3D result;
@@ -195,34 +194,6 @@ CoreItemSP	CoreItemSP::getCoreValue(const usString& s)
 {
 	return CoreItemSP(new CoreValue<usString>(s), StealRefTag{});
 }
-
-void	CoreItemSP::set(const CoreItemSP& s, kstl::string key)
-{
-	if (myPointer->GetType() & CoreItem::COREMAP)
-	{
-		if (key.size())
-		{
-			myPointer->set(key, s);
-		}
-		else
-		{
-			KIGS_WARNING("trying to set a CoreItem map without a key value => nothing done", 1);
-		}
-	}
-	else if (myPointer->GetType() & CoreItem::COREVECTOR)
-	{
-		if (key.size())
-		{
-			KIGS_WARNING("trying to set a CoreItem vector with a key value => value was only pushed", 1);
-		}
-		((CoreVector*)myPointer)->push_back(s);
-	}
-	else 
-	{
-		KIGS_WARNING("trying to set a CoreItem on something else than a map or vector => nothing done", 1);
-	}
-}
-
 
 CoreItemIterator CoreItemSP::begin()
 {

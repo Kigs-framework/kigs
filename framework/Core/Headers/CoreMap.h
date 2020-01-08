@@ -129,15 +129,15 @@ protected:
 
 	typedef kstl::map<map_key, CoreItemSP>	CoreMapMap;
 
-	virtual void set(int key, const CoreItemSP& toinsert)
+	virtual void set(int key, const CoreItemSP& toinsert) override
 	{
 		KIGS_ERROR("set called on CoreMapBase", 2);
 	}
-	virtual void set(const kstl::string& key, const CoreItemSP& toinsert)
+	virtual void set(const kstl::string& key, const CoreItemSP& toinsert) override
 	{
 		KIGS_ERROR("set called on CoreMapBase", 2);
 	}
-	virtual void set(const usString& key, const CoreItemSP& toinsert)
+	virtual void set(const usString& key, const CoreItemSP& toinsert) override
 	{
 		KIGS_ERROR("set called on CoreMapBase", 2);
 	}
@@ -186,7 +186,7 @@ public:
 		return toReturn;
 	}
 
-	CoreItem::size_type size() const
+	CoreItem::size_type size() const  override
 	{
 		return myMap.size();
 	}
@@ -201,7 +201,7 @@ public:
 		myMap.resize(n,0);
 	}
 
-	virtual bool empty() const
+	virtual bool empty() const  override
 	{
 		return myMap.empty();
 	}
@@ -250,14 +250,14 @@ public:
 		return *this;
 	}
 	
-	virtual void*	getContainerStruct()
+	virtual void*	getContainerStruct()  override
 	{
 		return &myMap;
 	}
 
 protected:
 	CoreMapMap myMap;
-	virtual void    ProtectedDestroy()
+	virtual void    ProtectedDestroy()  override
 	{
 		clear();
 		CoreItem::ProtectedDestroy();
@@ -277,11 +277,11 @@ public:
 	{
 		return CoreItem::operator[](key);
 	}
-	virtual inline CoreItemSP operator[](int i) const;
+	virtual inline CoreItemSP operator[](int i) const  override;
 
-	virtual inline CoreItemSP operator[](const kstl::string& key) const;
+	virtual inline CoreItemSP operator[](const kstl::string& key) const  override;
 
-	virtual inline CoreItemSP operator[](const usString& key) const;
+	virtual inline CoreItemSP operator[](const usString& key) const  override;
 
 	virtual inline void set(int key, const CoreItemSP& toinsert) override;
 
@@ -538,9 +538,9 @@ public:
 		return CoreItem::operator[](key);
 	}
 	// Specialised
-	virtual inline CoreItemSP operator[](int i) const;
-	virtual inline CoreItemSP operator[](const kstl::string& key) const;
-	virtual inline CoreItemSP operator[](const usString& key) const;
+	virtual inline CoreItemSP operator[](int i) const override;
+	virtual inline CoreItemSP operator[](const kstl::string& key) const override;
+	virtual inline CoreItemSP operator[](const usString& key) const override;
 
 	virtual inline void set(int key, const CoreItemSP& toinsert) override;
 
