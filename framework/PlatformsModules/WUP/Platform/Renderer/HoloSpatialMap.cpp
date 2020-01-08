@@ -287,18 +287,16 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 
 	mesh->StartMeshBuilder();
 
-	CoreVector* desc = new CoreVector();
-	auto cnv_vertices = new CoreNamedVector("vertices");
-	desc->push_back(cnv_vertices); cnv_vertices->Destroy();
-	auto cnv_normals = new CoreNamedVector("generate_normals");
-	desc->push_back(cnv_normals); cnv_normals->Destroy();
+	CoreItemSP desc = CoreItemSP::getCoreVector();
+	auto cnv_vertices = CoreItemSP::getCoreItemOfType<CoreNamedVector>("vertices");
+	desc->set("",cnv_vertices); 
+	auto cnv_normals = CoreItemSP::getCoreItemOfType <CoreNamedVector>("generate_normals");
+	desc->set("", cnv_normals);
 
-	auto no_merge = new CoreNamedVector("no_merge");
-	desc->push_back(no_merge); no_merge->Destroy();
+	auto no_merge = CoreItemSP::getCoreItemOfType <CoreNamedVector>("no_merge");
+	desc->set("", no_merge);
 
-	mesh->StartMeshGroup(desc);
-
-	desc->Destroy();
+	mesh->StartMeshGroup((CoreVector*)desc.get());
 
 
 	// TODO : optimize spacial map retreiving and mesh creation (vertex buffer is well indexed and we just reconstruct a 3 vertex per triangle

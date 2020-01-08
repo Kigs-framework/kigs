@@ -14,7 +14,7 @@ bool maCoreItemValue::ExportToString(kstl::string& value) const
 
 void maCoreItemValue::InitWithJSON(const kstl::string& currentval, CoreModifiable* owner)
 {
-	if(item)
+	if(!item.isNil())
 	{
 		item.Reset();
 	}

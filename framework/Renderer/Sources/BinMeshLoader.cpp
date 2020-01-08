@@ -890,7 +890,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 		CoreItemSP	description = CoreItemSP(new CoreVector(), StealRefTag{});
 		CoreItemSP	vertices	= CoreItemSP(new CoreNamedVector("vertices"), StealRefTag{});
-		description.set(vertices);
+		description->set("",vertices);
 
 		structSize+=3*sizeof(float);
 
@@ -898,21 +898,21 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		if(currentgrp.myTriangleType & 6)
 		{
 			CoreItemSP	colors	= CoreItemSP(new CoreNamedVector("colors"), StealRefTag{});
-			description.set(colors);
+			description->set("",colors);
 			structSize+=4*sizeof(float);
 		}
 
 		// always have normals in kmesh
 		{
 			CoreItemSP	normal	= CoreItemSP(new CoreNamedVector("normals"), StealRefTag{});
-			description.set(normal);
+			description->set("",normal);
 			structSize+=3*sizeof(float);
 		}
 
 		if(currentgrp.myTriangleType & 8)
 		{
 			CoreItemSP	texCoords	= CoreItemSP(new CoreNamedVector("texCoords"), StealRefTag{});
-			description.set(texCoords);
+			description->set("",texCoords);
 			structSize+=2*sizeof(float);
 		}
 

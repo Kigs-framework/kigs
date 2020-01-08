@@ -154,7 +154,7 @@ public:
 	}
 	auto& operator+=(const CoreModifiableAttribute& value)
 	{
-		usString L_tmp = "";
+		usString L_tmp = usString("");
 		if(value.getValue(L_tmp))
 			_value += L_tmp;
 		return *this;
