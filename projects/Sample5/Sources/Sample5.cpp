@@ -44,14 +44,14 @@ void	Sample5::ProtectedInit()
 
 	CoreItemSP toInsert = CoreItemSP::getCoreValue(52);
 
-	item.set(toInsert,"val2");
+	item->set("val2",toInsert);
 
 	CoreItemSP obj1 = item["obj1"];
 	
 	std::cout << "val 1 : " << (int)item["val1"] << std::endl;
 	std::cout << "val 2 : " << (int)item["val2"] << std::endl;
 
-	obj1["obj3"].set(CoreItemSP::getCoreValue("lastElem"));
+	obj1["obj3"]->set("",CoreItemSP::getCoreValue("lastElem"));
 
 	bool first = true;
 	std::cout << "obj 3 : [";
