@@ -1,14 +1,14 @@
 #include "PrecompiledHeaders.h"
 #include "CoreVector.h"
 
-CoreItem* CoreVectorIterator::operator*() const
+CoreItemSP CoreVectorIterator::operator*() const
 {
-	kstl::vector<RefCountedBaseClass*>&	vectorstruct = *(kstl::vector<RefCountedBaseClass*>*)myAttachedCoreItem->getContainerStruct();
+	kstl::vector<CoreItemSP>&	vectorstruct = *(kstl::vector<CoreItemSP>*)myAttachedCoreItem->getContainerStruct();
 
 	if (myVectorIterator != vectorstruct.end())
 	{
-		return ((CoreItem*)(*myVectorIterator));
+		return (*myVectorIterator);
 	}
 
-	return KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }

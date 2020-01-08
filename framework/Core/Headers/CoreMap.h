@@ -39,7 +39,7 @@ public:
 		return result;
 	}
 
-	virtual CoreItem* operator*() const;
+	virtual CoreItemSP operator*() const;
 
 	virtual CoreItemIteratorBase& operator=(const CoreItemIteratorBase & other)
 	{
@@ -91,12 +91,12 @@ public:
 	virtual bool	getKey(kstl::string& returnedkey);
 	virtual bool	getKey(usString& returnedkey);
 
-	CoreMapIterator(CoreItem* item, unsigned int pos) : CoreItemIteratorBase(item,pos)
+	CoreMapIterator(const CoreItemSP& item, unsigned int pos) : CoreItemIteratorBase(item,pos)
 	{
 
 	}
 
-	typedef kstl::map<map_key, RefCountedBaseClass*>	CoreMapMap;
+	typedef kstl::map<map_key, CoreItemSP>	CoreMapMap;
 
 	typename CoreMapMap::iterator	myMapIterator;
 };
@@ -127,39 +127,52 @@ protected:
 	}
 
 
-	typedef kstl::map<map_key, RefCountedBaseClass*>	CoreMapMap;
+	typedef kstl::map<map_key, CoreItemSP>	CoreMapMap;
+
+	virtual void set(int key, const CoreItemSP& toinsert) override
+	{
+		KIGS_ERROR("set called on CoreMapBase", 2);
+	}
+	virtual void set(const kstl::string& key, const CoreItemSP& toinsert) override
+	{
+		KIGS_ERROR("set called on CoreMapBase", 2);
+	}
+	virtual void set(const usString& key, const CoreItemSP& toinsert) override
+	{
+		KIGS_ERROR("set called on CoreMapBase", 2);
+	}
 
 	
 public:
 
-	baseClass * GetItem(map_key aKey)
+	CoreItemSP GetItem(map_key aKey)
 	{
-		typename kstl::map<map_key, RefCountedBaseClass*>::iterator it = myMap.find(aKey);
+		typename kstl::map<map_key, CoreItemSP>::iterator it = myMap.find(aKey);
 		if (it != myMap.end())
 		{
-			return ((baseClass*)it->second);
+			return it->second;
 		}
 		else
 		{
-			return NULL;
+			return CoreItemSP(nullptr);
 		}
 	}
 	
 	friend class CoreMapIterator<map_key>;
 	
 	// wrapper on member vector
-	CoreItemIterator	 begin()
+	CoreItemIterator	 begin() override
 	{
-		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(this, 0);
+		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(CoreItemSP(this, GetRefTag{}), 0);
 		iter->myMapIterator = myMap.begin();
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 	
 
-	CoreItemIterator end()
+	CoreItemIterator end() override
 	{
-		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(this, 0);
+		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(CoreItemSP(this, GetRefTag{}), 0);
 		iter->myMapIterator = myMap.end();
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
@@ -167,13 +180,13 @@ public:
 	
 	CoreItemIterator find(const map_key& k)
 	{
-		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(this, 0);
+		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(CoreItemSP(this, GetRefTag{}), 0);
 		iter->myMapIterator = myMap.find(k);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 
-	CoreItem::size_type size() const
+	CoreItem::size_type size() const  override
 	{
 		return myMap.size();
 	}
@@ -188,13 +201,13 @@ public:
 		myMap.resize(n,0);
 	}
 
-	virtual bool empty() const
+	virtual bool empty() const  override
 	{
 		return myMap.empty();
 	}
 
 
-	const RefCountedBaseClass* at (const map_key& n) const
+	const CoreItemSP at (const map_key& n) const
 	{
 		return myMap.at(n);
 	}
@@ -202,12 +215,7 @@ public:
 
 	CoreItemIterator erase(CoreItemIterator position)
 	{
-		CoreMapIterator<map_key>& pos = *(CoreMapIterator<map_key>*)position.myPointer;
-		if ((*(pos.myMapIterator)).second)
-		{
-			((*(pos.myMapIterator)).second)->Destroy();
-		}
-
+		CoreMapIterator<map_key>& pos = *(CoreMapIterator<map_key>*)position.Pointer();
 		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(this, 0);
 		iter->myMapIterator = myMap.erase(pos.myMapIterator);
 		CoreItemIterator	toReturn(iter);
@@ -216,17 +224,6 @@ public:
 
 	CoreItemIterator erase(CoreItemIterator first, CoreItemIterator last)
 	{
-		CoreMapIterator<map_key>& start = *(CoreMapIterator<map_key>*)first.myPointer;
-		
-		while (start != last)
-		{
-			if ((*(start.myMapIterator)).second)
-			{
-				(*(start.myMapIterator)).second->Destroy();
-			}
-			++start;
-		}
-
 		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(this, 0);
 		iter->myMapIterator = myMap.erase(((CoreMapIterator<map_key>*)first.myPointer)->myMapIterator, ((CoreMapIterator<map_key>*)last.myPointer)->myMapIterator);
 		CoreItemIterator	toReturn(iter);
@@ -235,37 +232,13 @@ public:
 
 	void clear()
 	{
-		typename kstl::map<map_key, RefCountedBaseClass*>::iterator	start = myMap.begin();
-		typename kstl::map<map_key, RefCountedBaseClass*>::iterator	end = myMap.end();
-		while(start!=end)
-		{
-			((*start).second)->Destroy();
-			++start;
-		}
 		myMap.clear();
 	}
 
-	void set (map_key key,RefCountedBaseClass* toinsert )
-	{
-		RefCountedBaseClass* toDestroy=0;
-		typename kstl::map<map_key, RefCountedBaseClass*>::iterator found = myMap.find(key);
 
-		if(found != myMap.end())
-		{
-			toDestroy=(*found).second;
-		}
-		toinsert->GetRef();
-		myMap[key]=toinsert;
-		if(toDestroy)
-		{
-			toDestroy->Destroy();
-		}
-	}
 
 	CoreMapBase& operator= (const CoreMapBase& x)
 	{
-		// copy current vector
-		kstl::map<map_key,RefCountedBaseClass*>	todestroy=myMap;
 		myMap.clear();
 		typename kstl::map<map_key, RefCountedBaseClass*>::iterator itstart;
 		typename kstl::map<map_key, RefCountedBaseClass*>::iterator itend = x.end();
@@ -274,28 +247,23 @@ public:
 		{
 			push_back(*itstart);
 		}
-
-		itend=todestroy.end();
-		for(itstart=todestroy.begin();itstart!=itend;itstart++)
-		{
-			((*itstart).second)->Destroy();
-		}
 		return *this;
 	}
 	
-	virtual void*	getContainerStruct()
+	virtual void*	getContainerStruct()  override
 	{
 		return &myMap;
 	}
 
 protected:
 	CoreMapMap myMap;
-	virtual void    ProtectedDestroy()
+	virtual void    ProtectedDestroy()  override
 	{
 		clear();
 		CoreItem::ProtectedDestroy();
 	}
 };
+
 
 template<class map_key>
 class CoreNamedMap : public CoreMapBase<map_key,CoreNamedItem>
@@ -305,12 +273,21 @@ public:
 	{
 		CoreNamedItem::m_Name=_name;
 	}
+	inline CoreItemSP operator[](const char* key) const
+	{
+		return CoreItem::operator[](key);
+	}
+	virtual inline CoreItemSP operator[](int i) const  override;
 
-	virtual inline CoreItem& operator[](int i) const;
+	virtual inline CoreItemSP operator[](const kstl::string& key) const  override;
 
-	virtual inline CoreItem& operator[](const kstl::string& key) const;
+	virtual inline CoreItemSP operator[](const usString& key) const  override;
 
-	virtual inline CoreItem& operator[](const usString& key) const;
+	virtual inline void set(int key, const CoreItemSP& toinsert) override;
+
+	virtual inline void set(const kstl::string& key, const CoreItemSP& toinsert) override;
+
+	virtual inline void set(const usString& key, const CoreItemSP& toinsert) override;
 
 protected:
 
@@ -321,33 +298,33 @@ protected:
 
 
 template<>
-inline CoreItem& CoreNamedMap<kstl::string>::operator[](const kstl::string& key) const
+inline CoreItemSP CoreNamedMap<kstl::string>::operator[](const kstl::string& key) const
 {
-	kstl::map<kstl::string, RefCountedBaseClass*>::const_iterator it = myMap.find(key);
+	kstl::map<kstl::string, CoreItemSP>::const_iterator it = myMap.find(key);
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
-inline CoreItem& CoreNamedMap<kstl::string>::operator[](const usString& key) const
+inline CoreItemSP CoreNamedMap<kstl::string>::operator[](const usString& key) const
 {
-	kstl::map<kstl::string, RefCountedBaseClass*>::const_iterator it = myMap.find(key.ToString());
+	kstl::map<kstl::string, CoreItemSP>::const_iterator it = myMap.find(key.ToString());
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
-inline CoreItem& CoreNamedMap<kstl::string>::operator[](int i) const
+inline CoreItemSP CoreNamedMap<kstl::string>::operator[](int i) const
 {
-	kstl::map<kstl::string, RefCountedBaseClass*>::const_iterator it = myMap.begin();
+	kstl::map<kstl::string, CoreItemSP>::const_iterator it = myMap.begin();
 	int current_index = 0;
 	while (current_index < i)
 	{
@@ -360,44 +337,44 @@ inline CoreItem& CoreNamedMap<kstl::string>::operator[](int i) const
 	}
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 
 // specialized usString
 
 template<>
-inline CoreItem& CoreNamedMap<usString>::operator[](const kstl::string& key) const 
+inline CoreItemSP CoreNamedMap<usString>::operator[](const kstl::string& key) const
 {
 	usString usKey(key);
-	kstl::map<usString, RefCountedBaseClass*>::const_iterator it = myMap.find(usKey);
+	kstl::map<usString, CoreItemSP>::const_iterator it = myMap.find(usKey);
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
-inline CoreItem& CoreNamedMap<usString>::operator[](const usString& key) const
+inline CoreItemSP CoreNamedMap<usString>::operator[](const usString& key) const
 {
-	kstl::map<usString, RefCountedBaseClass*>::const_iterator it = myMap.find(key);
+	kstl::map<usString, CoreItemSP>::const_iterator it = myMap.find(key);
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
-inline CoreItem& CoreNamedMap<usString>::operator[](int i) const
+inline CoreItemSP CoreNamedMap<usString>::operator[](int i) const
 {
-	kstl::map<usString, RefCountedBaseClass*>::const_iterator it = myMap.begin();
+	kstl::map<usString, CoreItemSP>::const_iterator it = myMap.begin();
 	int current_index = 0;
 	while (current_index < i)
 	{
@@ -410,64 +387,143 @@ inline CoreItem& CoreNamedMap<usString>::operator[](int i) const
 	}
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 
 // specialized int
 template<>
-inline CoreItem& CoreNamedMap<int>::operator[](const kstl::string& key) const
+inline CoreItemSP CoreNamedMap<int>::operator[](const kstl::string& key) const
 {
-	kstl::map<int, RefCountedBaseClass*>::const_iterator it = myMap.begin();
+	kstl::map<int, CoreItemSP>::const_iterator it = myMap.begin();
 	
 	while (it != myMap.end())
 	{
-		if (((CoreItem*)(*it).second)->GetType()&(unsigned int)CORENAMEDITEMMASK)
+		if (((*it).second)->GetType()&(unsigned int)CORENAMEDITEMMASK)
 		{
-			if (((CoreNamedItem*)(*it).second)->getName() == key)
+			if (((CoreNamedItem*)((*it).second).get())->getName() == key)
 			{
-				return *((CoreItem*)(*it).second);
+				return (*it).second;
 			}
 		}
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
-inline CoreItem& CoreNamedMap<int>::operator[](const usString& key) const
+inline CoreItemSP CoreNamedMap<int>::operator[](const usString& key) const
 {
-	kstl::map<int, RefCountedBaseClass*>::const_iterator it = myMap.begin();
+	kstl::map<int, CoreItemSP>::const_iterator it = myMap.begin();
 
 	while (it != myMap.end())
 	{
-		if (((CoreItem*)(*it).second)->GetType()&(unsigned int)CORENAMEDITEMMASK)
+		if (((*it).second)->GetType()&(unsigned int)CORENAMEDITEMMASK)
 		{
-			if (((CoreNamedItem*)(*it).second)->getName() == key.ToString())
+			if (((CoreNamedItem*)(*it).second.get())->getName() == key.ToString())
 			{
-				return *((CoreItem*)(*it).second);
+				return (*it).second;
 			}
 		}
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
-inline CoreItem& CoreNamedMap<int>::operator[](int i) const
+inline CoreItemSP CoreNamedMap<int>::operator[](int i) const
 {
 
-	kstl::map<int, RefCountedBaseClass*>::const_iterator it = myMap.find(i);
+	kstl::map<int, CoreItemSP>::const_iterator it = myMap.find(i);
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
+
+// specialised set
+template<>
+inline void CoreNamedMap<kstl::string>::set(int key, const CoreItemSP& toinsert)
+{
+	kstl::string goodType;
+
+	char intstr[64];
+	sprintf(intstr, "%d", key);
+	goodType = intstr;
+
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<usString>::set(int key, const CoreItemSP& toinsert)
+{
+	usString goodType;
+
+	char intstr[64];
+	sprintf(intstr, "%d", key);
+	goodType = usString(intstr);
+
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<int>::set(int key, const CoreItemSP& toinsert)
+{
+	int goodType = key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<kstl::string>::set(const kstl::string& key, const CoreItemSP& toinsert)
+{
+	kstl::string goodType=key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<usString>::set(const kstl::string& key, const CoreItemSP& toinsert)
+{
+	usString goodType=key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<int>::set(const kstl::string& key, const CoreItemSP& toinsert)
+{
+	int goodType = 0;
+	sscanf(key.c_str(), "%d", &goodType);
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<kstl::string>::set(const usString& key, const CoreItemSP& toinsert)
+{
+	kstl::string goodType = key.ToString();
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<usString>::set(const usString& key, const CoreItemSP& toinsert)
+{
+	usString goodType = key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreNamedMap<int>::set(const usString& key, const CoreItemSP& toinsert)
+{
+	kstl::string strkey = key.ToString();
+	int goodType = 0;
+	sscanf(strkey.c_str(), "%d", &goodType);
+	myMap[goodType] = toinsert;
+}
+
+
 
 template<class map_key>
 class CoreMap : public CoreMapBase<map_key,CoreItem>
@@ -477,28 +533,37 @@ public:
 	CoreMapBase<map_key,CoreItem>(CoreItem::COREMAP)
 	{
 	}
-
+	inline CoreItemSP operator[](const char* key) const
+	{
+		return CoreItem::operator[](key);
+	}
 	// Specialised
-	virtual inline CoreItem& operator[](int i) const;
-	virtual inline CoreItem& operator[](const kstl::string& key) const;
-	virtual inline CoreItem& operator[](const usString& key) const;
+	virtual inline CoreItemSP operator[](int i) const override;
+	virtual inline CoreItemSP operator[](const kstl::string& key) const override;
+	virtual inline CoreItemSP operator[](const usString& key) const override;
+
+	virtual inline void set(int key, const CoreItemSP& toinsert) override;
+
+	virtual inline void set(const kstl::string& key, const CoreItemSP& toinsert) override;
+
+	virtual inline void set(const usString& key, const CoreItemSP& toinsert) override;
 	
 };
 
 // specialized kstl::string
 
 template<>
-inline CoreItem* CoreMapIterator<kstl::string>::operator*() const
+inline CoreItemSP CoreMapIterator<kstl::string>::operator*() const
 {
 
-	kstl::map<kstl::string, RefCountedBaseClass*>&	mapstruct = *(kstl::map<kstl::string, RefCountedBaseClass*>*)myAttachedCoreItem->getContainerStruct();
+	kstl::map<kstl::string, CoreItemSP>&	mapstruct = *(kstl::map<kstl::string, CoreItemSP>*)myAttachedCoreItem->getContainerStruct();
 
 	if (myMapIterator != mapstruct.end())
 	{
-		return ((CoreItem*)(*myMapIterator).second);
+		return (*myMapIterator).second;
 	}
 
-	return KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
@@ -517,33 +582,33 @@ inline bool	 CoreMapIterator<kstl::string>::getKey(usString& returnedkey)
 
 
 template<>
-inline CoreItem& CoreMap<kstl::string>::operator[](const kstl::string& key)  const
+inline CoreItemSP CoreMap<kstl::string>::operator[](const kstl::string& key)  const
 {
-	kstl::map<kstl::string, RefCountedBaseClass*>::const_iterator it = myMap.find(key);
+	kstl::map<kstl::string, CoreItemSP>::const_iterator it = myMap.find(key);
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
-inline CoreItem& CoreMap<kstl::string>::operator[](const usString& key)  const
+inline CoreItemSP CoreMap<kstl::string>::operator[](const usString& key)  const
 {
-	kstl::map<kstl::string, RefCountedBaseClass*>::const_iterator  it = myMap.find(key.ToString());
+	kstl::map<kstl::string, CoreItemSP>::const_iterator  it = myMap.find(key.ToString());
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
-inline CoreItem& CoreMap<kstl::string>::operator[](int i)  const
+inline CoreItemSP CoreMap<kstl::string>::operator[](int i)  const
 {
-	kstl::map<kstl::string, RefCountedBaseClass*>::const_iterator  it = myMap.begin();
+	kstl::map<kstl::string, CoreItemSP>::const_iterator  it = myMap.begin();
 	int current_index = 0;
 	while (current_index < i)
 	{
@@ -556,24 +621,24 @@ inline CoreItem& CoreMap<kstl::string>::operator[](int i)  const
 	}
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 
 // specialized usString
 
 template<>
-inline CoreItem* CoreMapIterator<usString>::operator*() const
+inline CoreItemSP CoreMapIterator<usString>::operator*() const
 {
-	if (myMapIterator != ((CoreMap<usString>*)myAttachedCoreItem)->myMap.end())
+	if (myMapIterator != ((CoreMap<usString>*)myAttachedCoreItem.get())->myMap.end())
 	{
-		return ((CoreItem*)(*myMapIterator).second);
+		return ((*myMapIterator).second);
 	}
 
-	return KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
@@ -593,34 +658,34 @@ inline bool	 CoreMapIterator<usString>::getKey(usString& returnedkey)
 
 
 template<>
-inline CoreItem& CoreMap<usString>::operator[](const kstl::string& key)  const
+inline CoreItemSP CoreMap<usString>::operator[](const kstl::string& key)  const
 {
 	usString usKey(key);
-	kstl::map<usString, RefCountedBaseClass*>::const_iterator it = myMap.find(usKey);
+	kstl::map<usString, CoreItemSP>::const_iterator it = myMap.find(usKey);
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
-inline CoreItem& CoreMap<usString>::operator[](const usString& key)  const
+inline CoreItemSP CoreMap<usString>::operator[](const usString& key)  const
 {
-	kstl::map<usString, RefCountedBaseClass*>::const_iterator it = myMap.find(key);
+	kstl::map<usString, CoreItemSP>::const_iterator it = myMap.find(key);
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
-inline CoreItem& CoreMap<usString>::operator[](int i)  const
+inline CoreItemSP CoreMap<usString>::operator[](int i)  const
 {
-	kstl::map<usString, RefCountedBaseClass*>::const_iterator it = myMap.begin();
+	kstl::map<usString, CoreItemSP>::const_iterator it = myMap.begin();
 	int current_index = 0;
 	while (current_index < i)
 	{
@@ -633,10 +698,10 @@ inline CoreItem& CoreMap<usString>::operator[](int i)  const
 	}
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 
@@ -644,55 +709,134 @@ inline CoreItem& CoreMap<usString>::operator[](int i)  const
 
 // specialized int
 template<>
-inline CoreItem& CoreMap<int>::operator[](const kstl::string& key)  const
+inline CoreItemSP CoreMap<int>::operator[](const kstl::string& key)  const
 {
-	kstl::map<int, RefCountedBaseClass*>::const_iterator it = myMap.begin();
+	kstl::map<int, CoreItemSP>::const_iterator it = myMap.begin();
 
 	while (it != myMap.end())
 	{
-		if (((CoreItem*)(*it).second)->GetType()&(unsigned int)CORENAMEDITEMMASK)
+		if (((*it).second)->GetType()&(unsigned int)CORENAMEDITEMMASK)
 		{
-			if (((CoreNamedItem*)(*it).second)->getName() == key)
+			if (((CoreNamedItem*)(*it).second.get())->getName() == key)
 			{
-				return *((CoreItem*)(*it).second);
+				return (*it).second;
 			}
 		}
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
-inline CoreItem& CoreMap<int>::operator[](const usString& key)  const
+inline CoreItemSP CoreMap<int>::operator[](const usString& key)  const
 {
-	kstl::map<int, RefCountedBaseClass*>::const_iterator it = myMap.begin();
+	kstl::map<int, CoreItemSP>::const_iterator it = myMap.begin();
 
 	while (it != myMap.end())
 	{
-		if (((CoreItem*)(*it).second)->GetType()&(unsigned int)CORENAMEDITEMMASK)
+		if (((*it).second)->GetType()&(unsigned int)CORENAMEDITEMMASK)
 		{
-			if (((CoreNamedItem*)(*it).second)->getName() == key.ToString())
+			if (((CoreNamedItem*)(*it).second.get())->getName() == key.ToString())
 			{
-				return *((CoreItem*)(*it).second);
+				return (*it).second;
 			}
 		}
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 template<>
-inline CoreItem& CoreMap<int>::operator[](int i)  const
+inline CoreItemSP CoreMap<int>::operator[](int i)  const
 {
 
-	kstl::map<int, RefCountedBaseClass*>::const_iterator it = myMap.find(i);
+	kstl::map<int, CoreItemSP>::const_iterator it = myMap.find(i);
 	if (it != myMap.end())
 	{
-		return *((CoreItem*)(*it).second);
+		return (*it).second;
 	}
 
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
+
+
+// specialised set
+template<>
+inline void CoreMap<kstl::string>::set(int key, const CoreItemSP& toinsert)
+{
+	kstl::string goodType;
+
+	char intstr[64];
+	sprintf(intstr, "%d", key);
+	goodType = intstr;
+
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<usString>::set(int key, const CoreItemSP& toinsert)
+{
+	usString goodType;
+
+	char intstr[64];
+	sprintf(intstr, "%d", key);
+	goodType = usString(intstr);
+
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<int>::set(int key, const CoreItemSP& toinsert)
+{
+	int goodType = key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<kstl::string>::set(const kstl::string& key, const CoreItemSP& toinsert)
+{
+	kstl::string goodType = key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<usString>::set(const kstl::string& key, const CoreItemSP& toinsert)
+{
+	usString goodType = key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<int>::set(const kstl::string& key, const CoreItemSP& toinsert)
+{
+	int goodType = 0;
+	sscanf(key.c_str(), "%d", &goodType);
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<kstl::string>::set(const usString& key, const CoreItemSP& toinsert)
+{
+	kstl::string goodType = key.ToString();
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<usString>::set(const usString& key, const CoreItemSP& toinsert)
+{
+	usString goodType = key;
+	myMap[goodType] = toinsert;
+}
+
+template<>
+inline void CoreMap<int>::set(const usString& key, const CoreItemSP& toinsert)
+{
+	kstl::string strkey = key.ToString();
+	int goodType = 0;
+	sscanf(strkey.c_str(), "%d", &goodType);
+	myMap[goodType] = toinsert;
+}
+
 
 
 #endif // _COREMAP_H

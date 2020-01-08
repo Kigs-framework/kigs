@@ -32,7 +32,9 @@ class	usString
 {
 public:
 	usString();
-	usString(const char* str) :
+
+	// set this one as explicit to avoid ambiguity for method with kstl::string or usString parameter called with const char* parameter
+	explicit usString(const char* str) :
 		mString(0)
 	{
 		copy(str);
@@ -76,12 +78,12 @@ public:
 	{
 		return mString;
 	}
-	const char*	c_str() const
+	/*const char*	c_str() const
 	{
 		char * _Dest = new char[length()];
 		this->strcpywUtoC(_Dest, mString);
 		return _Dest;
-	}
+	}*/
 
 	inline const unsigned short& operator[](unsigned int i)const
 	{

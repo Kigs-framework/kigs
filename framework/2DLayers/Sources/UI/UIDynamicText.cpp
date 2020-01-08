@@ -939,7 +939,7 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 		current_character = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key.c_str());
 
 		if (current_character == nullptr)
-			return "";
+			return usString("");
 	}
 	usString result = current_character;
 

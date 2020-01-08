@@ -2810,7 +2810,7 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 {
 	std::string toeval = attr.substr(4, attr.length() - 4);
 	
-	CoreItem* ItemToEval=0;
+	CoreItemSP ItemToEval;
 
 	ATTRIBUTE_TYPE destType = FLOAT;
 	
@@ -2823,8 +2823,8 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 	{
 		case BOOL: // use float operator but result string will be "false" if float result is 0.0f, "true" if float result != 0  
 		{
-			ItemToEval = &CoreItemOperator<kfloat>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-			kfloat result = *ItemToEval;
+			ItemToEval = CoreItemOperator<kfloat>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			kfloat result = *ItemToEval.get();
 			if (result == 0)
 			{
 				attr = "false";
@@ -2839,8 +2839,8 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 		case USSTRING: // use string operator. WARNING not tested feature  
 		case STRING: // use string operator. WARNING not tested feature  
 		{
-			ItemToEval = &CoreItemOperator<std::string>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-			attr = (std::string)*ItemToEval;
+			ItemToEval = CoreItemOperator<std::string>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			attr = (std::string)*ItemToEval.get();
 		}
 		break;
 		case COREITEM: // don't evaluate coreitems as we want them to be evaluated when called
@@ -2850,20 +2850,16 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 		break;
 		default:  // use float operator and return a float "printed" in a string 
 		{
-			ItemToEval = &CoreItemOperator<kfloat>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			ItemToEval = CoreItemOperator<kfloat>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 
-			kfloat result = *ItemToEval;
+			kfloat result = *ItemToEval.get();
 
 			char resultBuffer[128];
 
 			sprintf(resultBuffer, "%f", result);
 			attr = resultBuffer;
 		}
-	}
-
-	if(ItemToEval)
-		ItemToEval->Destroy();
-	
+	}	
 }
 
 CoreModifiableAttribute* CoreModifiable::getParameter(const std::vector<CoreModifiableAttribute*>& params, KigsID ID)

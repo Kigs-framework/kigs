@@ -25,7 +25,7 @@ public:
 	SmartPointer(smartPointOn* point, StealRefTag stealref) : myPointer(point) {};
 	SmartPointer(smartPointOn* point, GetRefTag getref) : myPointer(point) { if(myPointer) myPointer->GetRef(); };
 
-	virtual ~SmartPointer()
+	~SmartPointer()
 	{
 		if (myPointer)
 		{

@@ -584,9 +584,9 @@ void usString::replaceEscapeUnicode()
 		return;
 	}
 
-	usString result = "";
+	usString result ("");
 
-	usString toReplace = "\\u";
+	usString toReplace("\\u");
 
 	int pos = 0;
 	int lastpos = pos;
@@ -613,10 +613,10 @@ void usString::replaceEscapeUnicode()
 
 	*this = result;
 
-	result = "";
+	result = usString("");
 
 	// also replace \n
-	toReplace = "\\n";
+	toReplace = usString("\\n");
 
 	pos = 0;
 	lastpos = pos;
@@ -651,7 +651,7 @@ void	usString::replaceAllOccurence(const usString& toReplace, const usString& Re
 		return;
 	}
 
-	usString result = "";
+	usString result("");
 
 	int pos = 0;
 	int lastpos = pos;
@@ -681,7 +681,7 @@ void	usString::replaceAt(const usString& Replacement, int start, int lenToReplac
 		return;
 	}
 
-	usString result = "";
+	usString result("");
 
 
 	result += substr(0, start);

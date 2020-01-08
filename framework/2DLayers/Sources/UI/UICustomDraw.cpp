@@ -15,7 +15,7 @@ bool UICustomDraw::TriggerMouseMove(bool over, float _MouseDeltaX, float _MouseD
 		else if (mybInside && myClickUpAction.const_ref() != "")
 		{
 			kstl::vector<kstl::string>	L_ActionVect = SplitStringByCharacter(myClickUpAction.const_ref(), ':');
-			if (myParameter == "")
+			if (myParameter == usString(""))
 			{
 				for (unsigned int i = 0; i < L_ActionVect.size(); i++)
 					KigsCore::GetNotificationCenter()->postNotificationName(L_ActionVect[i], this);

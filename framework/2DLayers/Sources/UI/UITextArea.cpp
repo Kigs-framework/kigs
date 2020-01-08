@@ -63,7 +63,7 @@ void UITextArea::NotifyUpdate(const unsigned int labelid)
 
 void	UITextArea::ReloadTexture()
 {
-	if (myTexture && myText != "")
+	if (myTexture && myText != usString(""))
 	{
 		ChangeText(myText.us_str());
 	}

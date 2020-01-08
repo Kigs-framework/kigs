@@ -447,72 +447,45 @@ void ModernMeshItemGroup::PrepareExport(ExportSettings* settings)
 	ParentClassType::PrepareExport(settings);
 	settings->PushID(getFirstParent("ModernMesh")->getName());
 
-	CoreMap<std::string>*	desc = 0;
+	CoreItemSP	desc(nullptr);
 	if (myVertexDesc.size())
 	{
-		desc = new CoreMap<std::string>();
+
+		desc = CoreItemSP(new CoreMap<std::string>(), StealRefTag{});
 
 		auto s1 = myVertexBufferArray.const_ref()->size();
 		auto s2 = myVertexCount * myVertexSize;
 		KIGS_ASSERT(s1 == s2);
 		
 		//add general parameters
-		CoreValue<int>* val = new CoreValue<int>(myTriangleCount);
-		desc->set("TriangleCount", val);
-		val->Destroy();
-
-		val = new CoreValue<int>(myVertexCount);
-		desc->set("VertexCount", val);
-		val->Destroy();
-
-		val = new CoreValue<int>(myVertexSize);
-		desc->set("VertexSize", val);
-		val->Destroy();
-
-		
-
-		val = new CoreValue<int>(myVertexArrayMask);
-		desc->set("VertexArrayMask", val);
-		val->Destroy();
+		desc->set("TriangleCount",CoreItemSP::getCoreValue((int)myTriangleCount));
+		desc->set("VertexCount",CoreItemSP::getCoreValue((int)myVertexCount));
+		desc->set("VertexSize",CoreItemSP::getCoreValue((int)myVertexSize));
+		desc->set("VertexArrayMask",CoreItemSP::getCoreValue((int)myVertexArrayMask));
 
 		std::vector<ModernMesh::VertexElem>::iterator itstart = myVertexDesc.begin();
 		std::vector<ModernMesh::VertexElem>::iterator itend = myVertexDesc.end();
 
 		while (itstart != itend)
 		{
-			CoreVector* params = new CoreVector();
-			desc->set((*itstart).name, params);
-			params->Destroy();
-
-			val = new CoreValue<int>((*itstart).size);
-			params->push_back(val);
-			val->Destroy();
-
-			val = new CoreValue<int>((*itstart).startpos);
-			params->push_back(val);
-			val->Destroy();
-
-			val = new CoreValue<int>((*itstart).mask);
-			params->push_back(val);
-			val->Destroy();
-
-			val = new CoreValue<int>((*itstart).elemCount);
-			params->push_back(val);
-			val->Destroy();
+			CoreItemSP params = CoreItemSP::getCoreVector();
+			desc->set((*itstart).name,params);
+			
+			params->set("",CoreItemSP::getCoreValue((int)(*itstart).size));
+			params->set("",CoreItemSP::getCoreValue((int)(*itstart).startpos));
+			params->set("",CoreItemSP::getCoreValue((int)(*itstart).mask));
+			params->set("",CoreItemSP::getCoreValue((int)(*itstart).elemCount));
 
 			++itstart;
 		}
 
-		CoreValue<kfloat>* texCoordsScale = new CoreValue<kfloat>(myTexCoordsScale);
-		desc->set("TexCoordsScale", texCoordsScale);
-		texCoordsScale->Destroy();
+		desc->set("TexCoordsScale",CoreItemSP::getCoreValue((float)myTexCoordsScale));
 	}
 
-	if (desc)
+	if (!desc.isNil())
 	{
 		AddDynamicAttribute(CoreModifiable::COREITEM, "VertexDescription");
-		setValue("VertexDescription", desc);
-		desc->Destroy();
+		setValue("VertexDescription", desc.get());
 	}
 }
 
@@ -537,23 +510,23 @@ void ModernMeshItemGroup::InitModifiable()
 		mBoundaries.clear();
 		mColliderBoundaries.clear();
 
-		auto& indices = (*item)["indices"];
-		for (auto& v : indices)
+		auto indices = (*item)["indices"];
+		for (auto v : indices)
 		{
 			int value = -1;
-			if (v.getValue(value))
+			if (v->getValue(value))
 			{
 				mBoundaries.push_back(value);
 			}
 		} 
 
-		auto& indices_collider = (*item)["indices_collider"];
-		if (&indices_collider != KigsCore::Instance()->NotFoundCoreItem())
+		auto indices_collider = (*item)["indices_collider"];
+		if (!indices_collider.isNil())
 		{
-			for (auto& v : indices_collider)
+			for (auto v : indices_collider)
 			{
 				int value = -1;
-				if (v.getValue(value))
+				if (v->getValue(value))
 				{
 					mColliderBoundaries.push_back(value);
 				}
@@ -566,127 +539,127 @@ void ModernMeshItemGroup::InitModifiable()
 	{
 		CoreMap<std::string>*	desc = (CoreMap<std::string>*)itdesc;
 		myVertexDesc.clear();
-		CoreValue<int>* val = (CoreValue<int>*)desc->GetItem("TriangleCount");
-		if (val)
+		CoreItemSP val = desc->GetItem("TriangleCount");
+		if (!val.isNil())
 		{
-			myTriangleCount = (*val);
+			myTriangleCount = val;
 		}
 
-		val = (CoreValue<int>*)desc->GetItem("VertexCount");
-		if (val)
+		val = desc->GetItem("VertexCount");
+		if (!val.isNil())
 		{
-			myVertexCount = (*val);
+			myVertexCount = val;
 		}
 
-		val = (CoreValue<int>*)desc->GetItem("VertexSize");
-		if (val)
+		val = desc->GetItem("VertexSize");
+		if (!val.isNil())
 		{
-			myVertexSize = (*val);
+			myVertexSize = val;
 		}
 
-		val = (CoreValue<int>*)desc->GetItem("VertexArrayMask");
-		if (val)
+		val = desc->GetItem("VertexArrayMask");
+		if (!val.isNil())
 		{
-			myVertexArrayMask = (*val);
+			myVertexArrayMask = val;
 		}
 
-		CoreValue<float>* vf = (CoreValue<float>*)desc->GetItem("TexCoordsScale");
-		if (vf)
+		val = desc->GetItem("TexCoordsScale");
+		if (!val.isNil())
 		{
-			myTexCoordsScale = (*vf);
+			myTexCoordsScale = (float)val;
 		}
 
-		CoreVector* params = (CoreVector*)desc->GetItem("vertices");
+		auto params = desc->GetItem("vertices");
 
-		if (params)
+		if (!params.isNil())
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "vertices";
-			toAdd.size = (CoreValue<int>&)(*params)[0];
-			toAdd.startpos = (CoreValue<int>&)(*params)[1];
-			toAdd.mask = (CoreValue<int>&)(*params)[2];
-			toAdd.elemCount = (CoreValue<int>&)(*params)[3];
+			toAdd.size = params[0];
+			toAdd.startpos = params[1];
+			toAdd.mask = params[2];
+			toAdd.elemCount = params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::Position3D;
 			myVertexDesc.push_back(toAdd);
 		}
 
-		params = (CoreVector*)desc->GetItem("colors");
-		if (params)
+		params = desc->GetItem("colors");
+		if (!params.isNil())
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "colors";
-			toAdd.size = (CoreValue<int>&)(*params)[0];
-			toAdd.startpos = (CoreValue<int>&)(*params)[1];
-			toAdd.mask = (CoreValue<int>&)(*params)[2];
-			toAdd.elemCount = (CoreValue<int>&)(*params)[3];
+			toAdd.size = params[0];
+			toAdd.startpos = params[1];
+			toAdd.mask = params[2];
+			toAdd.elemCount = params[3];
 			toAdd.type = toAdd.elemCount == 3 ? ModernMesh::VertexElem::Type::ColorRGB : ModernMesh::VertexElem::Type::ColorRGBA;
 			myVertexDesc.push_back(toAdd);
 		}
 
-		params = (CoreVector*)desc->GetItem("texCoords");
-		if (params)
+		params = desc->GetItem("texCoords");
+		if (!params.isNil())
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "texCoords";
-			toAdd.size = (CoreValue<int>&)(*params)[0];
-			toAdd.startpos = (CoreValue<int>&)(*params)[1];
-			toAdd.mask = (CoreValue<int>&)(*params)[2];
-			toAdd.elemCount = (CoreValue<int>&)(*params)[3];
+			toAdd.size = params[0];
+			toAdd.startpos = params[1];
+			toAdd.mask = params[2];
+			toAdd.elemCount = params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::TextureCoordinate2D;
 			myVertexDesc.push_back(toAdd);
 		}
 
-		params = (CoreVector*)desc->GetItem("normals");
-		if (params)
+		params = desc->GetItem("normals");
+		if (!params.isNil())
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "normals";
-			toAdd.size = (CoreValue<int>&)(*params)[0];
-			toAdd.startpos = (CoreValue<int>&)(*params)[1];
-			toAdd.mask = (CoreValue<int>&)(*params)[2];
-			toAdd.elemCount = (CoreValue<int>&)(*params)[3];
+			toAdd.size = params[0];
+			toAdd.startpos = params[1];
+			toAdd.mask = params[2];
+			toAdd.elemCount = params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::Normal3D;
 			myVertexDesc.push_back(toAdd);
 
 		}
 
-		params = (CoreVector*)desc->GetItem("tangents");
-		if (params)
+		params = desc->GetItem("tangents");
+		if (!params.isNil())
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "tangents";
-			toAdd.size = (CoreValue<int>&)(*params)[0];
-			toAdd.startpos = (CoreValue<int>&)(*params)[1];
-			toAdd.mask = (CoreValue<int>&)(*params)[2];
-			toAdd.elemCount = (CoreValue<int>&)(*params)[3];
+			toAdd.size = params[0];
+			toAdd.startpos = params[1];
+			toAdd.mask = params[2];
+			toAdd.elemCount = params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::Tangent3D;
 			myVertexDesc.push_back(toAdd);
 
 		}
 
-		params = (CoreVector*)desc->GetItem("bone_weights");
-		if (params)
+		params = desc->GetItem("bone_weights");
+		if (!params.isNil())
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "bone_weights";
-			toAdd.size = (CoreValue<int>&)(*params)[0];
-			toAdd.startpos = (CoreValue<int>&)(*params)[1];
-			toAdd.mask = (CoreValue<int>&)(*params)[2];
-			toAdd.elemCount = (CoreValue<int>&)(*params)[3];
+			toAdd.size = params[0];
+			toAdd.startpos = params[1];
+			toAdd.mask = params[2];
+			toAdd.elemCount = params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::BoneWeights;
 			myVertexDesc.push_back(toAdd);
 
 		}
 
-		params = (CoreVector*)desc->GetItem("bone_indexes");
-		if (params)
+		params = desc->GetItem("bone_indexes");
+		if (!params.isNil())
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "bone_indexes";
-			toAdd.size = (CoreValue<int>&)(*params)[0];
-			toAdd.startpos = (CoreValue<int>&)(*params)[1];
-			toAdd.mask = (CoreValue<int>&)(*params)[2];
-			toAdd.elemCount = (CoreValue<int>&)(*params)[3];
+			toAdd.size = params[0];
+			toAdd.startpos = params[1];
+			toAdd.mask = params[2];
+			toAdd.elemCount = params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::BoneIndexes;
 			myVertexDesc.push_back(toAdd);
 
