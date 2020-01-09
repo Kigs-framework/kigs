@@ -328,8 +328,6 @@ void UIDynamicText::IterateCharacters(std::function<bool(IterationState&)> func,
 	float line_y_extra_offset_above = 0.0f;
 	float line_y_extra_offset_under = 0.0f;
 
-	
-
 	IterationState iteration_state;
 	
 	for (; (*current_character && !break_out) || line_test_pass; )
@@ -403,7 +401,7 @@ void UIDynamicText::IterateCharacters(std::function<bool(IterationState&)> func,
 		}
 
 		bool at_least_one_char = false;
-		for (; *current_character; ++current_character)
+		for (; true; ++current_character)
 		{
 			bool force_new_line = false;
 			while (next_tag && first_character + next_tag->start_index == current_character)
@@ -423,7 +421,6 @@ void UIDynamicText::IterateCharacters(std::function<bool(IterationState&)> func,
 					KIGS_ASSERT(clickable_tag_stack.size() != 0);
 				}
 					
-
 				else if (next_tag->type == TextTag::Type::ExternalItem || next_tag->type == TextTag::Type::InlineItem)
 				{
 					v2f itemsize = ((Node2D*)next_tag->item)->GetSize();
@@ -435,19 +432,28 @@ void UIDynamicText::IterateCharacters(std::function<bool(IterationState&)> func,
 						break;
 					}
 
-					float offset_y = 0.0f;
+					v2f itemanchor = next_tag->item->getValue<v2f>("Anchor");
+
+					float offset_y = 0.0f; 
 
 					switch (next_tag->align)
 					{
-					case TextTag::ItemAlign::BottomOnBaseline: offset_y = itemsize.y; break;
-					case TextTag::ItemAlign::CenteredAroundBaseLine: offset_y = itemsize.y / 2; break;
-					case TextTag::ItemAlign::CenteredAroundHalfChar: offset_y = itemsize.y / 2 + ascent*scale*0.5f; break;
+						// bottom is on baseline
+					case TextTag::ItemAlign::BottomOnBaseline: offset_y += itemsize.y * (1.0f-itemanchor.y) ; break;
+						// anchor is on baseline
+					case TextTag::ItemAlign::CenteredAroundBaseLine: offset_y += 0.0f; break;
+						// anchor is on halfchar
+					case TextTag::ItemAlign::CenteredAroundHalfChar: offset_y += ascent*scale*0.5f; break;
 					}
 
-					line_y_extra_offset_above = std::max(line_y_extra_offset_above, std::max(offset_y - ascent*scale + (mFontSize*font_scale), 2.0f));
-					line_y_extra_offset_under = std::max(line_y_extra_offset_under, std::max(itemsize.y - offset_y, 2.0f));
-					pos.y -= offset_y;
+					float offsetUp = offset_y + itemsize.y * itemanchor.y;
+					float offsetDown = offset_y - itemsize.y * (1.0f-itemanchor.y);
 
+
+					line_y_extra_offset_above = std::max(line_y_extra_offset_above, std::max(offsetUp - ascent*scale, 2.0f));
+					line_y_extra_offset_under = std::max(line_y_extra_offset_under, std::max(- offsetDown, 2.0f));
+					pos.y -= offset_y;
+					pos.x += itemsize.x * itemanchor.x;
 					if (is_draw)
 						next_tag->item->setArrayValue("Position", &pos.x, 2);
 
@@ -463,6 +469,11 @@ void UIDynamicText::IterateCharacters(std::function<bool(IterationState&)> func,
 				break;
 
 			u16 utf16_value = *current_character;
+
+			if (utf16_value == 0)
+			{
+				break;
+			}
 			if (utf16_value == (u16)'\r') continue; // Ignore
 
 			bool break_line_after_space = false;
@@ -1100,7 +1111,6 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 			{
 				current_tag.item = static_cast<UIItem*>(cm);
 				current_tag.align = current_align_mode;
-				//cm->setValue("Anchor", "{0,0}");
 				cm->setValue("Dock", "{0,0}");
 				cm->setValue("Position", "{0,0}");
 				if (output_tags)
