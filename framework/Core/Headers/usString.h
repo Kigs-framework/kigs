@@ -85,6 +85,33 @@ public:
 		return _Dest;
 	}*/
 
+
+	bool	operator == (const char* str)
+	{
+		usString usstr(str);
+		return usstr == *this;
+	}
+
+	bool	operator == (const usString& other)
+	{
+		bool result = false;
+
+		const unsigned short* read_char1 = mString;
+		const unsigned short* read_char2 = other.mString;
+		
+		while (*read_char2 == *read_char1)
+		{
+			if (*read_char1 == 0)
+			{
+				return true;
+			}
+			++read_char2;
+			++read_char1;
+		}
+
+		return false;
+	}
+
 	inline const unsigned short& operator[](unsigned int i)const
 	{
 		// warning, no check for out of bound
