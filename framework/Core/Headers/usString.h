@@ -94,8 +94,6 @@ public:
 
 	bool	operator == (const usString& other)
 	{
-		bool result = false;
-
 		const unsigned short* read_char1 = mString;
 		const unsigned short* read_char2 = other.mString;
 		
