@@ -428,6 +428,7 @@ void	LocalizationManager::EraseMap()
 		}
 		++it;
 	}
+	m_LocalizedString.clear();
 }
 
 #include "Platform/LocalizationManager/LocalizationManager.inl.h"
