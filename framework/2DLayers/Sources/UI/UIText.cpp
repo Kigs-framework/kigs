@@ -119,12 +119,16 @@ void	UIText::ChangeText(const usString& _newText)
 	kfloat stR, stG, stB, st_A;
 	GetStrokeColor(stR, stG, stB, st_A);
 
+	LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+	float LanguageScale = 1.0f;
+	theLocalizationManager->getValue("LanguageScale", LanguageScale);
+
 	// need localization ?
 	if ((_newText.length()>0) && (_newText.us_str()[0] == ((unsigned short)'#')))
 	{
 		kstl::string text = _newText.ToString();
 		kstl::string key = text.substr(1, text.length() - 1);
-		LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+
 		PLATFORM_WCHAR* localized = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key);
 
 		bool modified = false;
@@ -132,7 +136,7 @@ void	UIText::ChangeText(const usString& _newText)
 			localized = CutText(localized, modified);
 
 		if (localized)
-			myTexture->CreateFromText(localized, myMaxLines, myMaxWidth, myFontSize, (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold, myStroke, stR, stG, stB, st_A);
+			myTexture->CreateFromText(localized, myMaxLines, myMaxWidth, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold, myStroke, stR, stG, stB, st_A);
 
 		if (modified)
 			free(localized);
@@ -146,7 +150,7 @@ void	UIText::ChangeText(const usString& _newText)
 		else
 			L_returneValue = const_cast<unsigned short*>(_newText.us_str());
 
-		myTexture->CreateFromText(L_returneValue, myMaxLines, myMaxWidth, myFontSize, (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold, myStroke, stR, stG, stB, st_A);
+		myTexture->CreateFromText(L_returneValue, myMaxLines, myMaxWidth, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold, myStroke, stR, stG, stB, st_A);
 
 		if (modified)
 			free(L_returneValue);
