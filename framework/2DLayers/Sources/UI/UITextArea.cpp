@@ -196,18 +196,23 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 		kfloat R, G, B, A = 0.0f;
 		GetColor(R, G, B, A);
 
+		LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+		float LanguageScale = 1.0f;
+		theLocalizationManager->getValue("LanguageScale", LanguageScale);
+
+
 		// need localization ?
 		const kstl::string& text = tmptxt;
 		if (text[0] == '#')
 		{
 			kstl::string key = text.substr(1, text.length() - 1);
-			LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+			
 			const PLATFORM_WCHAR* localized = theLocalizationManager->getLocalizedString(key.c_str());
-			myTexture->CreateFromText(localized, myFontSize, (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
+			myTexture->CreateFromText(localized, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
 		}
 		else
 		{
-			myTexture->CreateFromText(myText.us_str(), myFontSize, (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
+			myTexture->CreateFromText(myText.us_str(), (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
 		}
 	}
 }
