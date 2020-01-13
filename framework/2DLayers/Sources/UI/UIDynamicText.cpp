@@ -177,7 +177,12 @@ void UIDynamicText::LoadFont()
 {
 	TextureFileManager* tfm = static_cast<TextureFileManager*>(KigsCore::GetSingleton("TextureFileManager"));
 	FontMapManager* font_map_manager = static_cast<FontMapManager*>(KigsCore::GetSingleton("FontMapManager"));
-	mFontMap = font_map_manager->PrecacheFont(mFont, mFontSize);
+
+	LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+	float LanguageScale = 1.0f;
+	theLocalizationManager->getValue("LanguageScale", LanguageScale);
+
+	mFontMap = font_map_manager->PrecacheFont(mFont, mFontSize* LanguageScale);
 	if (mFontMap)
 		myTexture = tfm->GetTextureManaged(mFontMap->font_id);
 	else
@@ -288,8 +293,12 @@ void UIDynamicText::IterateCharacters(std::function<bool(IterationState&)> func,
 		break;
 	}
 
+	LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+	float LanguageScale = 1.0f;
+	theLocalizationManager->getValue("LanguageScale", LanguageScale);
+
 	float font_scale = mFontScaleFactor;
-	float scale = stbtt_ScaleForPixelHeight(&mFontMap->mFontInfo, mFontSize)*font_scale;
+	float scale = stbtt_ScaleForPixelHeight(&mFontMap->mFontInfo, mFontSize* LanguageScale)*font_scale;
 	
 	int ascent_i;
 	stbtt_GetFontVMetrics(&mFontMap->mFontInfo, &ascent_i, 0, 0);
@@ -650,7 +659,11 @@ void UIDynamicText::BuildVertexArray()
 {
 	if (!mFontMap) return;
 
-	float scale = stbtt_ScaleForPixelHeight(&mFontMap->mFontInfo, mFontSize);
+	LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+	float LanguageScale = 1.0f;
+	theLocalizationManager->getValue("LanguageScale", LanguageScale);
+
+	float scale = stbtt_ScaleForPixelHeight(&mFontMap->mFontInfo, mFontSize* LanguageScale);
 	int ascent;
 	stbtt_GetFontVMetrics(&mFontMap->mFontInfo, &ascent, 0, 0);
 	v2f position{ 0, ascent*scale };
