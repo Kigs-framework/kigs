@@ -19,22 +19,6 @@
 class ContinuousMatching;
 class CollisionManager;
 
-#ifndef KIGS_HOLOLENS2
-__declspec(align(16)) struct simdVal {
-	// default vec0 for simd operation
-	__m128i cmpl, xlo, xhi, tmpI;
-	__m128  tmpF, ratio;
-	__m128i vec0 = _mm_set1_epi16(0);
-};
-#else
-struct simdVal
-{
-	// TODO
-};
-#endif
-
-
-
 struct SpatialMeshInfo
 {
 	enum class Op

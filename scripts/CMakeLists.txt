@@ -136,7 +136,7 @@ if(WIN32 OR KIGS_ANDROID)
 			target_compile_definitions(Base INTERFACE KIGS_HOLOLENS2)
 		endif()
 
-		target_compile_options(Base INTERFACE /ZW /await)
+		target_compile_options(Base INTERFACE /await)
 		set(CMAKE_EXE_LINKER_FLAGS_STATICRELEASE "${CMAKE_EXE_LINKER_FLAGS_STATICRELEASE}")
 		set(CMAKE_EXE_LINKER_FLAGS_STATICRELEASETOOLS "${CMAKE_EXE_LINKER_FLAGS_STATICRELEASETOOLS} /DEBUG:FULL")
 		set(CMAKE_SHARED_LINKER_FLAGS_STATICRELEASE "${CMAKE_SHARED_LINKER_FLAGS_STATICRELEASE}")
@@ -386,7 +386,7 @@ elseif(${KIGS_PLATFORM} STREQUAL "WUP")
 			INTERFACE 
 				"${KIGS_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/BaseApp.cpp")
 	endif()
-	#target_link_libraries(BaseExecutable INTERFACE angle_dll_package)
+	target_link_libraries(BaseExecutable INTERFACE vccorlib)
 elseif(${KIGS_PLATFORM} STREQUAL "Android")
 	target_sources(BaseExecutable 
 		INTERFACE 

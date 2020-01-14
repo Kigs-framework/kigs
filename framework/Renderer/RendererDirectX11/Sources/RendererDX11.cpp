@@ -242,8 +242,6 @@ void RendererDX11::ProtectedFlushMatrix(TravState* state)
 		if (state->GetHolographicMode())
 		{
 			// In holographic mode, instead of view and proj we have two viewprojs, one for each render target
-			auto stereo_view_proj = state->GetCurrentCamera()->GetStereoViewProjections();
-
 			if (state->HolographicUseStackMatrix)
 			{
 				auto proj = myMatrixStack[MATRIX_MODE_PROJECTION].back();
@@ -252,6 +250,7 @@ void RendererDX11::ProtectedFlushMatrix(TravState* state)
 			}
 			else
 			{
+				auto stereo_view_proj = state->GetCurrentCamera()->GetStereoViewProjections();
 				dataPtr->stereo_viewproj[0] = stereo_view_proj[0];
 				dataPtr->stereo_viewproj[1] = stereo_view_proj[1];
 			}
@@ -348,7 +347,7 @@ void RendererDX11::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribu
 bool RendererDX11::CreateDevice()
 {
 	DXInstance* dxinstance = getDXInstance();
-
+	
 	// Set the feature level to DirectX 11.
 	static const D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0 };;
 	u32 device_creation_flags = 0;
@@ -356,39 +355,36 @@ bool RendererDX11::CreateDevice()
 	device_creation_flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 #ifdef WUP
-	if (gIsHolographic)
+	//if (gIsHolographic)
 	{
 		device_creation_flags |= D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 	}
 #endif
 
-	dxinstance->m_device.Reset();
-	dxinstance->m_deviceContext.Reset();
+	dxinstance->m_device = nullptr;
+	dxinstance->m_deviceContext = nullptr;
 
-	ComPtr<ID3D11Device> device;
-	ComPtr<ID3D11DeviceContext> context;
-	DX::ThrowIfFailed(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, device_creation_flags, featureLevels, _countof(featureLevels), D3D11_SDK_VERSION, device.GetAddressOf(), nullptr, context.GetAddressOf()));
+	winrt::com_ptr<ID3D11Device> device;
+	winrt::com_ptr<ID3D11DeviceContext> context;
+	DX::ThrowIfFailed(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, device_creation_flags, featureLevels, _countof(featureLevels), D3D11_SDK_VERSION, device.put(), nullptr, context.put()));
 
 #ifdef WUP
 	auto space = App::GetApp()->GetHolographicSpace();
 	if (space)
 	{
-		ComPtr<IDXGIDevice1> dxgiDevice;
-		winrt::check_hresult(device.As(&dxgiDevice));
+		winrt::com_ptr<IDXGIDevice1> dxgiDevice = device.as<IDXGIDevice1>();
 
 		// Wrap the native device using a WinRT interop object.
 		winrt::com_ptr<::IInspectable> object;
-		winrt::check_hresult(CreateDirect3D11DeviceFromDXGIDevice(
-			dxgiDevice.Get(),
-			(IInspectable * *)winrt::put_abi(object)));
+		winrt::check_hresult(CreateDirect3D11DeviceFromDXGIDevice(dxgiDevice.get(), object.put()));
 
 		auto d3dinteropdevice = object.as<IDirect3DDevice>();
 		space.SetDirect3D11Device(d3dinteropdevice);
 	}
 #endif
 
-	DX::ThrowIfFailed(device.As<ID3D11Device1>(&dxinstance->m_device));
-	DX::ThrowIfFailed(context.As<ID3D11DeviceContext1>(&dxinstance->m_deviceContext));
+	dxinstance->m_device = device.as<ID3D11Device1>();
+	dxinstance->m_deviceContext = context.as<ID3D11DeviceContext1>();
 
 #ifdef WUP
 	D3D11_FEATURE_DATA_D3D11_OPTIONS3 options;
@@ -428,7 +424,6 @@ bool RendererDX11::CreateDevice()
 	}
 #endif
 
-
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
@@ -459,7 +454,6 @@ bool RendererDX11::CreateDevice()
 
 	return true;
 }
-
 
 void RendererDX11::Close()
 {
@@ -496,11 +490,11 @@ void RendererDX11::Close()
 	if (S_OK == myDXInstance.m_device->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug))
 		d3dDebug->Release();
 
-	myDXInstance.m_currentRenderTarget.Reset();
-	myDXInstance.m_currentDepthStencilTarget.Reset();
-	myDXInstance.m_swapChain.Reset();
-	myDXInstance.m_deviceContext.Reset();
-	myDXInstance.m_device.Reset();
+	myDXInstance.m_currentRenderTarget = nullptr;
+	myDXInstance.m_currentDepthStencilTarget = nullptr;
+	myDXInstance.m_swapChain = nullptr;
+	myDXInstance.m_deviceContext = nullptr;
+	myDXInstance.m_device = nullptr;
 	
 	myDXInstance.m_matrixBuffer->Release();
 	myDXInstance.m_lightBuffer->Release();
@@ -553,12 +547,12 @@ void DX11RenderingState::ClearView(RendererClearMode clearMode)
 	DXInstance * dxinstance = renderer->getDXInstance();
 	if (clearMode & RENDERER_CLEAR_COLOR)
 	{
-		dxinstance->m_deviceContext->ClearRenderTargetView(dxinstance->m_currentRenderTarget.Get(), myGlobalClearValueFlag);
+		dxinstance->m_deviceContext->ClearRenderTargetView(dxinstance->m_currentRenderTarget.get(), myGlobalClearValueFlag);
 	}
 	if ((clearMode & RENDERER_CLEAR_DEPTH) || (clearMode & RENDERER_CLEAR_STENCIL))
 	{
 		u32 flag = (clearMode & RENDERER_CLEAR_DEPTH ? D3D11_CLEAR_DEPTH : 0) | (clearMode & RENDERER_CLEAR_STENCIL ? D3D11_CLEAR_STENCIL : 0);
-		dxinstance->m_deviceContext->ClearDepthStencilView(dxinstance->m_currentDepthStencilTarget.Get(), flag, 1.0f, 0);
+		dxinstance->m_deviceContext->ClearDepthStencilView(dxinstance->m_currentDepthStencilTarget.get(), flag, 1.0f, 0);
 	}
 }
 
@@ -1794,4 +1788,56 @@ void RendererDX11::startFrame(TravState* state)
 			}
 		}
 	}
+#ifdef WUP
+	static bool s_canUseWaitForNextFrameReadyAPI = true;
+	if (myDXInstance.mCurrentFrame)
+	{
+		if (s_canUseWaitForNextFrameReadyAPI)
+		{
+			try
+			{
+				myDXInstance.mHolographicSpace.WaitForNextFrameReady();
+			}
+			catch (winrt::hresult_not_implemented const& /*ex*/)
+			{
+				s_canUseWaitForNextFrameReadyAPI = false;
+			}
+		}
+		else
+		{
+			myDXInstance.mCurrentFrame.WaitForFrameToFinish();
+		}
+	}
+	if (myDXInstance.mHolographicSpace)
+	{
+		myDXInstance.mCurrentFrame = myDXInstance.mHolographicSpace.CreateNextFrame();
+		std::set<CoreModifiable*> cameras;
+		GetInstances("Camera", cameras);
+		for (auto cam : cameras)
+		{
+			auto dxcam = cam->as<Camera>();
+			auto rs = dxcam->getRenderingScreen();
+			if (!rs) continue;
+			if (!rs->IsHolographic()) continue;
+
+			auto prediction = myDXInstance.mCurrentFrame.CurrentPrediction();
+			auto poses = prediction.CameraPoses();
+
+			for (auto pose : poses)
+			{
+				rs->as<DX11RenderingScreen>()->SetRenderingParameters(myDXInstance.mCurrentFrame.GetRenderingParameters(pose));
+				rs->as<DX11RenderingScreen>()->CreateResources();
+			}
+
+			break;
+		}
+	}
+#endif
+}
+
+void RendererDX11::endFrame(TravState* state)
+{
+	ParentClassType::endFrame(state);
+
+
 }

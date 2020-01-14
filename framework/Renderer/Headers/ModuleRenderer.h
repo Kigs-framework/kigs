@@ -775,7 +775,11 @@ public:
 		myCurrentShaderProgram = p;
 	}
 
-
+	void SetDirtyMatrix()
+	{
+		myDirtyMatrix = 0xffffffff;
+		myDirtyShaderMatrix = 0xffffffff;
+	}
 
 	int getSpotLightCount() { return mySpotLightCount; }
 	int getPointLightCount() { return myPointLightCount; }
@@ -1097,7 +1101,7 @@ public:
 		myActivatedScreenList.insert(renderingscreen);
 	}
 
-	void	endFrame(TravState* state);
+	virtual void	endFrame(TravState* state);
 
 	virtual void DrawPendingInstances(TravState* state) = 0;
 
