@@ -2,6 +2,7 @@
 #define _JSONFILEPARSER_H_
 
 #include "CoreMap.h"
+#include "AsciiParserUtils.h"
 
 class CoreItem;
 
@@ -15,7 +16,7 @@ class CoreItem;
 								DECLARE_METHOD(JSonArrayEnd); \
 								DECLARE_METHOD(JSonParamList); 
 
-
+// TODO : can probably be a template class 
 class DictionaryFromJson : public CoreModifiable
 {
 public:
@@ -24,13 +25,13 @@ public:
 	//! builds an object dictionary by calling the callback of JSonFileParser
 	DictionaryFromJson(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
-	CoreItem* Get_Dictionary() const { if (m_vObjectStack.size()) return m_vObjectStack[0]; return 0; }
+	CoreItemSP Get_Dictionary() const { if (m_vObjectStack.size()) return m_vObjectStack[0]; return CoreItemSP(nullptr); }
 
 protected:
 	virtual ~DictionaryFromJson();
 
-	kstl::vector<CoreItem*>					m_vObjectStack;
-	CoreItem*								m_pCurrentObject;
+	kstl::vector<CoreItemSP>					m_vObjectStack;
+	CoreItemSP								m_pCurrentObject;
 
 	Declare_JSonDelegate;
 };
@@ -43,13 +44,13 @@ public:
 	//! builds an object dictionary by calling the callback of JSonFileParser
 	DictionaryFromJsonUTF16(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	CoreItem* Get_Dictionary() const { if (m_vObjectStack.size()) return m_vObjectStack[0]; return 0; }
+	CoreItemSP Get_Dictionary() const { if (m_vObjectStack.size()) return m_vObjectStack[0]; return CoreItemSP(nullptr); }
 
 protected:
 	virtual ~DictionaryFromJsonUTF16();
 
-	kstl::vector<CoreItem*>					m_vObjectStack;
-	CoreItem*								m_pCurrentObject;
+	kstl::vector<CoreItemSP>					m_vObjectStack;
+	CoreItemSP								m_pCurrentObject;
 
 	Declare_JSonDelegate;
 };
@@ -67,8 +68,8 @@ public:
 
 	//! parse given JSON file and retreive an object dictionary
 	JSonFileParserBase();
-	CoreItem*	Get_JsonDictionary(const kstl::string& filename);
-	CoreItem*	Get_JsonDictionaryFromString(const stringType& jsonString);
+	CoreItemSP	Get_JsonDictionary(const kstl::string& filename);
+	CoreItemSP	Get_JsonDictionaryFromString(const stringType& jsonString);
 	bool Export(CoreMap<stringType>* a_value, const kstl::string& a_fileName);
 	bool ExportToString(CoreMap<stringType>* a_value, stringType& output);
 protected:
@@ -78,9 +79,11 @@ protected:
 	bool ParseArray(parserType& Array);
 	void NotifyDelegateWithParamList();
 	void AddValueToParamList(stringType strObjName, stringType objparamValue);
-	void RecursiveParseElement(CoreMap<stringType>* a_value, stringType& a_buffer);
-	void RecursiveParseElement(CoreVector* a_value, stringType& a_buffer);
-	void AddValueToBuffer(CoreItem* a_value, stringType& a_Destbuffer);
+
+	CoreModifiableAttribute* getNewStringAttribute(const stringType& attributeName,const stringType& strObjName);
+
+	void RecursiveParseElement(CoreItem& a_value, stringType& a_buffer);
+	void AddValueToBuffer(CoreItem& a_value, stringType& a_Destbuffer);
 
 	int	GetStringByteSize(const stringType& tocheck);
 	int	GetStringCharSize();
@@ -88,15 +91,15 @@ protected:
 
 	CoreModifiable*			CreateDictionnaryFromJSONInstance();
 
-	CoreItem*	getDictionnary();
+	CoreItemSP	getDictionnary();
 
-	unsigned int				myJSonObjectStartID;
-	unsigned int				myJSonObjectEndID;
-	unsigned int				myJSonArrayStartID;
-	unsigned int				myJSonArrayEndID;
-	unsigned int				myJSonParamListID;
-	CoreModifiable*				myDelegateObject;
-	CoreModifiable*				myDictionaryFromJson;
+	unsigned int				myJSonObjectStartID=0;
+	unsigned int				myJSonObjectEndID=0;
+	unsigned int				myJSonArrayStartID=0;
+	unsigned int				myJSonArrayEndID=0;
+	unsigned int				myJSonParamListID=0;
+	CoreModifiable*				myDelegateObject=nullptr;
+	CoreModifiable*				myDictionaryFromJson=nullptr;
 
 	
 	kstl::vector<CoreModifiableAttribute*>	myParamList;

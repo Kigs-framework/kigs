@@ -1,10 +1,13 @@
 #include "PrecompiledHeaders.h"
 #include "CoreItem.h"
+#include "CoreVector.h"
+#include "CoreMap.h"
 
 
-CoreItem& CoreItemIterator::operator*() const
+
+CoreItemSP CoreItemIterator::operator*() const
 {
-	return *(*(*myPointer));
+	return myPointer->operator*();
 }
 
 CoreItemIterator& CoreItemIterator::operator=(const CoreItemIterator & other)
@@ -53,16 +56,13 @@ bool CoreItemIterator::getKey(usString& returnedkey)
 }
 
 
-
-
-
-CoreItem* CoreItemIteratorBase::operator*() const
+CoreItemSP CoreItemIteratorBase::operator*() const
 {
 	if (myPos == 0)
 	{
 		return myAttachedCoreItem;
 	}
-	return KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
 CoreItemIteratorBase& CoreItemIteratorBase::operator=(const CoreItemIteratorBase & other)
@@ -75,51 +75,42 @@ CoreItemIteratorBase& CoreItemIteratorBase::operator=(const CoreItemIteratorBase
 
 
 // operator [] needs to be overloaded on vectors and maps
-CoreItem& CoreItem::operator[](int i) const
+CoreItemSP CoreItem::operator[](int i) const
 {
 	if (i == 0)
 	{
-		return *(CoreItem*)this; // hack
+		return CoreItemSP((CoreItem*)this, StealRefTag{}); // hack
 	}
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
-CoreItem& CoreItem::operator[](const kstl::string& key) const
+CoreItemSP CoreItem::operator[](const kstl::string& key) const
 {
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
-CoreItem& CoreItem::operator[](const usString& key) const
+CoreItemSP CoreItem::operator[](const usString& key) const
 {
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
-
-
-
-
-
-CoreItem& CoreNamedItem::operator[](const kstl::string& key) const
+CoreItemSP CoreNamedItem::operator[](const kstl::string& key) const
 {
 	if (key == m_Name)
 	{
-		return *(CoreItem*)this; // hack
+		return CoreItemSP((CoreItem*)this, StealRefTag{}); // hack
 	}
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
 
-CoreItem& CoreNamedItem::operator[](const usString& key) const
+CoreItemSP CoreNamedItem::operator[](const usString& key) const
 {
 	if (key.ToString() == m_Name)
 	{
-		return  *(CoreItem*)this; // hack
+		return   CoreItemSP((CoreItem*)this, StealRefTag{}); // hack
 	}
-	return *KigsCore::Instance()->NotFoundCoreItem();
+	return CoreItemSP(nullptr);
 }
-
-
-
-
 
 CoreItem::operator bool() const
 {
@@ -154,7 +145,7 @@ CoreItem::operator kstl::string() const
 CoreItem::operator usString() const
 {
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
-	return "";
+	return usString("");
 }
 
 CoreItem::operator Point2D() const
@@ -164,9 +155,52 @@ CoreItem::operator Point2D() const
 	return result;
 }
 
+CoreItem::operator Quaternion() const
+{
+	Quaternion result;
+	KIGS_ERROR("cast operator called on base CoreItem", 2);
+	return result;
+}
+
+
 CoreItem::operator Point3D() const
 {
 	Point3D result;
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
 	return result;
+}
+
+CoreItemSP	CoreItemSP::getCoreMap()
+{
+	return CoreItemSP(new CoreMap<kstl::string>(), StealRefTag{});
+}
+CoreItemSP	CoreItemSP::getCoreVector()
+{
+	return CoreItemSP(new CoreVector(), StealRefTag{});
+}
+CoreItemSP	CoreItemSP::getCoreValue(int i)
+{
+	return CoreItemSP(new CoreValue<int>(i), StealRefTag{});
+}
+CoreItemSP	CoreItemSP::getCoreValue(float f)
+{
+	return CoreItemSP(new CoreValue<float>(f), StealRefTag{});
+}
+CoreItemSP	CoreItemSP::getCoreValue(const kstl::string& s)
+{
+	return CoreItemSP(new CoreValue<kstl::string>(s), StealRefTag{});
+}
+CoreItemSP	CoreItemSP::getCoreValue(const usString& s)
+{
+	return CoreItemSP(new CoreValue<usString>(s), StealRefTag{});
+}
+
+CoreItemIterator CoreItemSP::begin()
+{
+	return myPointer->begin();
+}
+
+CoreItemIterator CoreItemSP::end()
+{
+	return myPointer->end();
 }

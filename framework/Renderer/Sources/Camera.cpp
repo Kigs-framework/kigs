@@ -445,6 +445,8 @@ void Camera::getRay(const kfloat &ScreenX, const kfloat &ScreenY, Point3D &RayOr
 	RayDirection.Normalize();
 }
 
+
+// Pt parameter is in global coordinates
 bool Camera::Project(kfloat &ScreenX, kfloat &ScreenY, Point3D Pt)
 {
 	
@@ -496,7 +498,7 @@ bool Camera::Project(kfloat &ScreenX, kfloat &ScreenY, Point3D Pt)
 	// so if Pt is just in front of the camera, localPt.x > 0
 	// if Pt is above the camera, localPt.z > 0	
 	Point3D localPt;
-	GetLocalToGlobal().TransformPoint(&Pt, &localPt);
+	GetGlobalToLocal().TransformPoint(&Pt, &localPt);
 
 	Vector4D result;
 	result.x = frust[0] * localPt.y + frust[1] * localPt.z + frust[2] * localPt.x + frust[3];

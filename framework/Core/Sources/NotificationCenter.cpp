@@ -31,7 +31,7 @@ void NotificationCenter::addObserver(CoreModifiable* observer, const kstl::strin
 {
 	// first map : observers
 	ObserverStruct newobstruct;
-	newobstruct.myCurrentItem = 0;
+	newobstruct.myCurrentItem = nullptr;
 	newobstruct.myIsStringItem = false;
 	unsigned int selectorID = CharToID::GetID(selector);
 	newobstruct.mySelectorID = selectorID;
@@ -47,7 +47,7 @@ void NotificationCenter::addObserver(CoreModifiable* observer, const kstl::strin
 		if (selector.substr(4, 3) == "Str")
 		{
 			kstl::string toeval = selector.substr(7, selector.length() - 7);
-			CoreItem* toAdd = &CoreItemOperator<kstl::string>::Construct(toeval, observer, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			CoreItemSP toAdd = CoreItemOperator<kstl::string>::Construct(toeval, observer, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			newobstruct.myCurrentItem = toAdd;
 			newobstruct.myIsStringItem = true;
 		}
@@ -55,7 +55,7 @@ void NotificationCenter::addObserver(CoreModifiable* observer, const kstl::strin
 		{
 			kstl::string toeval = selector.substr(4, selector.length() - 4);
 
-			CoreItem* toAdd = &CoreItemOperator<kfloat>::Construct(toeval, observer, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			CoreItemSP toAdd = CoreItemOperator<kfloat>::Construct(toeval, observer, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			newobstruct.myCurrentItem = toAdd;
 		}
 		ReleaseCoreItemOperatorContext();
@@ -259,11 +259,9 @@ void NotificationCenter::protectedSetRemoveState(CheckUniqueObject& observer,con
 								if( ((*removestructit).mySender == sender) || (sender == 0))
 								{
 									(*removestructit).myIsRemoved=true;
-									if ((*removestructit).myCurrentItem)
-									{
-										(*removestructit).myCurrentItem->Destroy();
-										(*removestructit).myCurrentItem=0;
-									}
+									
+									(*removestructit).myCurrentItem=CoreItemSP(nullptr);
+									
 									break;
 								}
 							}
@@ -306,11 +304,7 @@ void NotificationCenter::protectedSetRemoveState(CheckUniqueObject& observer)
 						for(itFlag=(*vectorToRemoveit).myVector.begin();itFlag!=(*vectorToRemoveit).myVector.end();itFlag++)
 						{
 							(*itFlag).myIsRemoved=true;
-							if ((*itFlag).myCurrentItem)
-							{
-								(*itFlag).myCurrentItem->Destroy();
-								(*itFlag).myCurrentItem = 0;
-							}
+							(*itFlag).myCurrentItem = CoreItemSP(nullptr);
 						}
 						break;
 					}
@@ -524,7 +518,7 @@ void NotificationCenter::postNotificationName(unsigned int notificationID,kstl::
 				{		
 					if((currentobsStruct.mySender == 0) || (currentobsStruct.mySender == sender))
 					{
-						if (currentobsStruct.myCurrentItem)
+						if (!currentobsStruct.myCurrentItem.isNil())
 						{
 							SetCoreItemOperatorContext(&myContext);
 							myContext.myVariableList[LABEL_TO_ID(sender).toUInt()] = sender;

@@ -32,7 +32,9 @@ class	usString
 {
 public:
 	usString();
-	usString(const char* str) :
+
+	// set this one as explicit to avoid ambiguity for method with kstl::string or usString parameter called with const char* parameter
+	explicit usString(const char* str) :
 		mString(0)
 	{
 		copy(str);
@@ -76,11 +78,36 @@ public:
 	{
 		return mString;
 	}
-	const char*	c_str() const
+	/*const char*	c_str() const
 	{
 		char * _Dest = new char[length()];
 		this->strcpywUtoC(_Dest, mString);
 		return _Dest;
+	}*/
+
+
+	bool	operator == (const char* str)
+	{
+		usString usstr(str);
+		return usstr == *this;
+	}
+
+	bool	operator == (const usString& other)
+	{
+		const unsigned short* read_char1 = mString;
+		const unsigned short* read_char2 = other.mString;
+		
+		while (*read_char2 == *read_char1)
+		{
+			if (*read_char1 == 0)
+			{
+				return true;
+			}
+			++read_char2;
+			++read_char1;
+		}
+
+		return false;
 	}
 
 	inline const unsigned short& operator[](unsigned int i)const

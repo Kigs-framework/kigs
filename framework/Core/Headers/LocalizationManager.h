@@ -55,6 +55,8 @@ protected:
 
 	kstl::map<const kstl::string,PLATFORM_WCHAR* >		m_LocalizedString;
 	unsigned short										m_wbuffer[4096];
+
+	maFloat mLanguageScale = BASE_ATTRIBUTE(LanguageScale, 1.0f);
 };
 
 

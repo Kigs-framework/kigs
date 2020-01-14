@@ -47,7 +47,9 @@ struct Vector4D
     inline explicit operator const Point3D ( void );
     inline explicit operator const Vector3D ( void );
 	
-	
+	inline const Float& operator[](Int i) const;
+	inline Float& operator[](Int i);
+
     // +---------
     // | Addition/Substraction
     // +---------

@@ -67,7 +67,7 @@ public:
 		return 0u;
 	}
 
-	void initFromDescription(CoreItem& description);
+	void initFromDescription(CoreItemSP description);
 
 	void sendEventName(kstl::string notifname)
 	{
@@ -95,9 +95,9 @@ protected:
 	
 	virtual ~FSM();
 
-	void	initStateFromDescription(CoreItem& statedescription);
-	void	initTransitionsFromDescription(CoreItem& statedescription);
-	void	initFSM_StateFromDescription(CoreItem& statedescription);
+	void	initStateFromDescription(CoreItemSP statedescription);
+	void	initTransitionsFromDescription(CoreItemSP statedescription);
+	void	initFSM_StateFromDescription(CoreItemSP statedescription);
 
 	FSM_EventQueue	m_EventQueue;
 

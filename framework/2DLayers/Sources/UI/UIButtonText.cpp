@@ -15,10 +15,10 @@ IMPLEMENT_CONSTRUCTOR(UIButtonText)
 	, myUpColor(*this, false, "UpColor", 0, 0, 0, 0)
 	, myOverColor(*this, false, "OverColor", 0, 0, 0, 0)
 	, myDownColor(*this, false, "DownColor", 0, 0, 0, 0)
-	, myFontName(*this, false, "FontName", "arial.ttf")
+	, myFont(*this, false, "Font", "arial.ttf")
 	, myFontSize(*this, false, "FontSize", 12)
 	, myLength(*this, false, "Length", 0)
-	, myAlignment(*this, false, "Alignment", 1)
+	, myTextAlign(*this, false, "TextAlignment", 1)
 {
 	KigsCore::GetNotificationCenter()->addObserver(this, "ReloadTexture", "ResetContext");
 }
@@ -43,7 +43,7 @@ void UIButtonText::InitModifiable()
 		myUpText.changeNotificationLevel(Owner);
 		myDownText.changeNotificationLevel(Owner);
 		myOverText.changeNotificationLevel(Owner);
-		myFontName.changeNotificationLevel(Owner);
+		myFont.changeNotificationLevel(Owner);
 		myFontSize.changeNotificationLevel(Owner);
 	}
 }
@@ -59,7 +59,7 @@ void UIButtonText::NotifyUpdate(const unsigned int labelid)
 	if (labelid == myOverText.getLabelID())
 		ChangeTextTexture(myOverText.c_str(), 1);
 
-	if (labelid == myFontName.getLabelID() ||
+	if (labelid == myFont.getLabelID() ||
 		labelid == myFontSize.getLabelID())
 	{
 		if (myUpText.const_ref() != "")
@@ -168,12 +168,14 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 			myDownText = _text;
 			break;
 		}
-
+		LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+		float LanguageScale = 1.0f;
+		theLocalizationManager->getValue("LanguageScale", LanguageScale);
 		// need localization ?
 		if (_text[0] == '#')
 		{
 			kstl::string key = _text.substr(1, _text.length() - 1);
-			LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+			
 			PLATFORM_WCHAR* localized = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key.c_str());
 
 			bool modified = false;
@@ -181,7 +183,7 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 				localized = CutText(localized, modified);
 
 			if (localized)
-				L_Texture->CreateFromText(localized, myFontSize, myFontName.c_str(), myAlignment, 255.0f, 255.0f, 255.0f);
+				L_Texture->CreateFromText(localized, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), myFont.c_str(), myTextAlign, 255.0f, 255.0f, 255.0f);
 			if (modified)
 				free(localized);
 		}
@@ -191,7 +193,7 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 			if (myLength > 0)
 				_text = CutText(_text.c_str(), modified);
 
-			L_Texture->CreateFromText(_text.c_str(), myFontSize, myFontName.const_ref().c_str(), myAlignment, 255.0f, 255.0f, 255.0f);
+			L_Texture->CreateFromText(_text.c_str(), (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), myFont.const_ref().c_str(), myTextAlign, 255.0f, 255.0f, 255.0f);
 		}
 
 		float width, height;

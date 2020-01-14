@@ -12,6 +12,7 @@ public:
 		AUTO=0,
 		RESIZE=1,
 		SCALE=2,
+		// TODO
 		SHRINK=3,
 		REPEAT=4
 	};
@@ -39,7 +40,7 @@ protected:
 
 
 	maBool					myKeepRatio = BASE_ATTRIBUTE(KeepRatio, true);
-	maEnum<4>				myDisplayMode = BASE_ATTRIBUTE(DisplayMode, "Auto", "Resize", "Scale", "Shrink", "Repeat");
+	maEnum<5>				myDisplayMode = BASE_ATTRIBUTE(DisplayMode, "Auto", "Resize", "Scale", "Shrink", "Repeat");
 	//maBool					myAutoresizeTexture;
 	maString				myTextureName;
 	SmartPointer<SpriteSheetTexture>	mySpriteSheetTexture;

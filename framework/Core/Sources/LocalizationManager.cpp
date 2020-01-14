@@ -43,19 +43,19 @@ void LocalizationManager::setLocalizationFilePath(const char* path,bool a_eraseP
 void LocalizationManager::InitWithConfigFile(const kstl::string& filename)
 {
 	JSonFileParser L_JsonParser;
-	CoreItem* L_Dictionary = L_JsonParser.Get_JsonDictionary(filename);
+	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionary(filename);
 
-	if (L_Dictionary)
+	if (!L_Dictionary.isNil())
 	{
 		// init map
 		kstl::map<kstl::string, kstl::string>	myLangageMap;
 
-		CoreItem& pathList = *L_Dictionary;
-		int nbpath = pathList.size();
+		CoreItemSP pathList = L_Dictionary;
+		int nbpath = pathList->size();
 		int i;
 		for (i = 0; i < nbpath; i += 2)
 		{
-			myLangageMap[(kstl::string)pathList[i]] = (kstl::string)pathList[i + 1];;
+			myLangageMap[(kstl::string)(CoreItem&)pathList[i]] = (kstl::string)(CoreItem&)pathList[i + 1];;
 		}
 
 		kstl::string	L_Lang = LocalizationManager::getCurrentUserLanguage();
@@ -63,7 +63,6 @@ void LocalizationManager::InitWithConfigFile(const kstl::string& filename)
 		if (langFound != myLangageMap.end())
 		{
 			setLocalizationFilePath((*langFound).second.c_str());
-			L_Dictionary->Destroy();
 			return;
 		}
 		
@@ -76,11 +75,9 @@ void LocalizationManager::InitWithConfigFile(const kstl::string& filename)
 			if (langFound != myLangageMap.end())
 			{
 				setLocalizationFilePath((*langFound).second.c_str());
-				L_Dictionary->Destroy();
 				return;
 			}
 		}
-		L_Dictionary->Destroy();
 	}
 	KIGS_WARNING("Can not found valid langage file for localization manager", 2);
 
@@ -431,6 +428,7 @@ void	LocalizationManager::EraseMap()
 		}
 		++it;
 	}
+	m_LocalizedString.clear();
 }
 
 #include "Platform/LocalizationManager/LocalizationManager.inl.h"

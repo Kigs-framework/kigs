@@ -143,7 +143,7 @@ void UIRoundHUD::UpdateSlots()
 	points.reserve(CircleDiv + 1);
 	generateCircle(points, myRadius+ myRadiusOffset, CircleDiv,myAngleWide,myAngleStart);
 
-	v4f color(myColor[0], myColor[1], myColor[2], myOpacity);
+	v4f color(myColor[0], myColor[1], myColor[2], GetOpacity());
 	color *= 255;
 
 	auto data = reinterpret_cast<VInfo2D::Data*>(mVI.Buffer());

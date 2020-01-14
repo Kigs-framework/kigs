@@ -7,6 +7,7 @@
 //! this file must define KIGS_APPLICATION_CLASS with the name of your application class
 #include "KigsApplication.h"
 #include "emscripten.h"
+#include "Core.h"
 
 #define ApplicationName(a) Stringify(a)
 #define Stringify(a) #a

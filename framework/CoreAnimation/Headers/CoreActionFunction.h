@@ -56,12 +56,33 @@ public:
 
 protected:
 
-	virtual bool	protectedUpdate(kdouble time);
+	virtual bool	protectedUpdate(kdouble time)
+	{
+		CoreAction::protectedUpdate(time);
+		SetCoreItemOperatorContext(&myContext);
+		myContext.myTime = time;
+		dataType result;
+		if (myTarget->getValue(myParamID, result))
+		{
+			int i;
+			for (i = 0; i < dimension; i++)
+			{
+				if (myFunctions[i])
+				{
+					result[i] = *myFunctions[i];
+				}
+			}
+			myTarget->setValue(myParamID, result);
+		}
+		ReleaseCoreItemOperatorContext();
+		return false;
+	}
 
 	CoreItem*	myFunctions[dimension];
 
 	CoreItemAnimationContext	myContext;
 };
+
 
 template<>
 inline bool	CoreActionFunction<kfloat,1>::protectedUpdate(kdouble time)
@@ -77,77 +98,6 @@ inline bool	CoreActionFunction<kfloat,1>::protectedUpdate(kdouble time)
 	ReleaseCoreItemOperatorContext();
 	return false;
 }
-
-template<>
-inline bool	CoreActionFunction<Point2D,2>::protectedUpdate(kdouble time)
-{
-	CoreAction::protectedUpdate(time);
-	SetCoreItemOperatorContext(&myContext);
-	myContext.myTime = time;
-	Point2D result;
-	if (myTarget->getArrayValue(myParamID, &result.x,2))
-	{
-		int i;
-		for (i = 0; i < 2; i++)
-		{
-			if (myFunctions[i])
-			{
-				result[i] = *myFunctions[i];
-			}
-		}
-		myTarget->setArrayValue(myParamID, &result.x,2);
-	}
-	ReleaseCoreItemOperatorContext();
-	return false;
-}
-
-
-template<>
-inline bool	CoreActionFunction<Point3D,3>::protectedUpdate(kdouble time)
-{
-	CoreAction::protectedUpdate(time);
-	SetCoreItemOperatorContext(&myContext);
-	myContext.myTime = time; 
-	Point3D result;
-	if (myTarget->getArrayValue(myParamID, &result.x, 3))
-	{
-		int i;
-		for (i = 0; i < 3; i++)
-		{
-			if (myFunctions[i])
-			{
-				result[i] = *myFunctions[i];
-			}
-		}
-		myTarget->setArrayValue(myParamID, &result.x, 3);
-	}
-	ReleaseCoreItemOperatorContext();
-	return false;
-}
-
-template<>
-inline bool	CoreActionFunction<Quaternion,4>::protectedUpdate(kdouble time)
-{
-	CoreAction::protectedUpdate(time);
-	SetCoreItemOperatorContext(&myContext);
-	myContext.myTime = time; 
-	Quaternion result;
-	if (myTarget->getArrayValue(myParamID, &result.V.x, 4))
-	{
-		int i;
-		for (i = 0; i < 4; i++)
-		{
-			if (myFunctions[i])
-			{
-				result[i] = *myFunctions[i];
-			}
-		}
-		myTarget->setArrayValue(myParamID, &result.V.x, 4);
-	}
-	ReleaseCoreItemOperatorContext();
-	return false;
-}
-
 
 
 typedef CoreActionFunction < kfloat, 1 > CoreActionFunction1D;
@@ -180,30 +130,5 @@ public:
 
 protected:
 };
-/*
-template<typename operandType>
-class SequenceTimeOperator : public CoreItemOperator<operandType>
-{
-public:
 
-	virtual inline operator operandType() const
-	{
-		if (myCurrentCoreItemEvaluationContext)
-		{
-			CoreItemAnimationContext& currentContext = *((CoreItemAnimationContext*)myCurrentCoreItemEvaluationContext);
-
-			return (operandType)(currentContext.myTime - currentContext.mySequenceStartTime);
-		}
-		return ((operandType)0);
-	}
-
-	static CoreVector* create()
-	{
-		return new SequenceTimeOperator<operandType>();
-	}
-
-protected:
-
-};
-*/
 #endif //_COREACTIONFUNCTION_H_

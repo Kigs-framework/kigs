@@ -18,7 +18,7 @@ UITextArea::UITextArea(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
 	myTextColor(*this, false, "TextColor", KFLOAT_ZERO, KFLOAT_ZERO, KFLOAT_ZERO, 255.0f),
 	myText(*this, false, "Text", (kstl::string)"DefaultText"),
-	myFontName(*this, false, "FontName", ""),
+	myFont(*this, false, "Font", ""),
 	myReleaseAction(*this, false, "ReleaseAction", ""),
 	myFontSize(*this, false, "FontSize", 12),
 	myLength(*this, false, "Length", 0),
@@ -26,7 +26,7 @@ UITextArea::UITextArea(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	myCol(*this, false, "Col", 1),
 	myHasDefaultText(*this, false, "HasDefaultText", true),
 	myBold(*this, false, "Bold", false),
-	myAlignment(*this, false, "Alignment", 1)
+	myTextAlign(*this, false, "TextAlignment", 1)
 {
 	CONSTRUCT_METHOD(UITextArea, UpdateKeyBoard);
 
@@ -63,7 +63,7 @@ void UITextArea::NotifyUpdate(const unsigned int labelid)
 
 void	UITextArea::ReloadTexture()
 {
-	if (myTexture && myText != "")
+	if (myTexture && myText != usString(""))
 	{
 		ChangeText(myText.us_str());
 	}
@@ -196,18 +196,23 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 		kfloat R, G, B, A = 0.0f;
 		GetColor(R, G, B, A);
 
+		LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+		float LanguageScale = 1.0f;
+		theLocalizationManager->getValue("LanguageScale", LanguageScale);
+
+
 		// need localization ?
 		const kstl::string& text = tmptxt;
 		if (text[0] == '#')
 		{
 			kstl::string key = text.substr(1, text.length() - 1);
-			LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+			
 			const PLATFORM_WCHAR* localized = theLocalizationManager->getLocalizedString(key.c_str());
-			myTexture->CreateFromText(localized, myFontSize, (myFontName.const_ref()).c_str(), myAlignment, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
+			myTexture->CreateFromText(localized, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
 		}
 		else
 		{
-			myTexture->CreateFromText(myText.us_str(), myFontSize, (myFontName.const_ref()).c_str(), myAlignment, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
+			myTexture->CreateFromText(myText.us_str(), (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
 		}
 	}
 }

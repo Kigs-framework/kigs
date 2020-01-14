@@ -10,16 +10,16 @@ IMPLEMENT_CLASS_INFO(UIText)
 UIText::UIText(const kstl::string& name, CLASS_NAME_TREE_ARG) 
 	: UITexturedItem(name, PASS_CLASS_NAME_TREE_ARG)
 	, myText(*this, false, "Text", (kstl::string)"")
-	, myFontName(*this, false, "FontName", "arial.ttf")
+	, myFont(*this, false, "Font", "arial.ttf")
 	, myFontSize(*this, false, "FontSize", 12)
 	, myDirection(*this, false, "Direction", 0)
 	, myLength(*this, false, "Length", 0)
 	, myBold(*this, false, "Bold", false)
 	, myStroke(*this, false, "Stroke", false)
 	, myStrokeColor(*this, false, "StrokeColor", 0.0f, 0.0f, 0.0f, 255.0f)
-	, myAlignment(*this, false, "Alignment", 1)
-	, myMaxSize(*this, false, "MaxSize", 0)
-	, myMaxLineNumber(*this, false, "MaxLineNumber", 0)
+	, myTextAlign(*this, false, "TextAlignment", 1)
+	, myMaxWidth(*this, false, "MaxWidth", 128)
+	, myMaxLines(*this, false, "MaxLines", 0)
 {
 	// text don't have color array
 	unsetUserFlag(UserFlagUseColorArray);
@@ -33,10 +33,10 @@ void UIText::NotifyUpdate(const unsigned int labelid)
 		(labelid == myFontSize.getLabelID()) ||
 		(labelid == myBold.getLabelID()) ||
 		(labelid == myColor.getLabelID()) ||
-		(labelid == myFontName.getLabelID()) ||
+		(labelid == myFont.getLabelID()) ||
 		//(labelid == myOpacity.getLabelID()) ||
-		(labelid == myMaxSize.getLabelID()) ||
-		(labelid == myAlignment.getLabelID()) ||
+		(labelid == myMaxWidth.getLabelID()) ||
+		(labelid == myTextAlign.getLabelID()) ||
 		(labelid == myLength.getLabelID()))
 	{
 		ChangeText(myText.const_ref());
@@ -53,13 +53,22 @@ void UIText::InitModifiable()
 		myText.changeNotificationLevel(Owner);
 		myFontSize.changeNotificationLevel(Owner);
 		myBold.changeNotificationLevel(Owner);
-		myFontName.changeNotificationLevel(Owner);
+		myFont.changeNotificationLevel(Owner);
 		myLength.changeNotificationLevel(Owner);
 		myOpacity.changeNotificationLevel(Owner);
-		myMaxSize.changeNotificationLevel(Owner);
-		myAlignment.changeNotificationLevel(Owner);
+		myMaxWidth.changeNotificationLevel(Owner);
+		myTextAlign.changeNotificationLevel(Owner);
 
-		myTexture = KigsCore::CreateInstance(getName() + "_TEX", "Texture");
+		char	nameBuffer[256];
+		std::string name = getName();
+		if (name.length() > 128)
+		{
+			name = name.substr(0, 128);
+		}
+
+		sprintf(nameBuffer, "%s_%u_TEX", name.c_str(), getUID());
+
+		myTexture = KigsCore::CreateInstance(nameBuffer, "Texture");
 		myTexture->Init();
 		myTexture->SetRepeatUV(false, false);
 		ChangeText(myText.const_ref());
@@ -105,25 +114,29 @@ void	UIText::ChangeText(const usString& _newText)
 	unsigned char R = (unsigned char)(myColor[0] * 255.0f);
 	unsigned char G = (unsigned char)(myColor[1] * 255.0f);
 	unsigned char B = (unsigned char)(myColor[2] * 255.0f);
-	unsigned char A = (unsigned char)(myOpacity * 255.0f);
+	unsigned char A = (unsigned char)(GetOpacity() * 255.0f);
 
 	kfloat stR, stG, stB, st_A;
 	GetStrokeColor(stR, stG, stB, st_A);
+
+	LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+	float LanguageScale = 1.0f;
+	theLocalizationManager->getValue("LanguageScale", LanguageScale);
 
 	// need localization ?
 	if ((_newText.length()>0) && (_newText.us_str()[0] == ((unsigned short)'#')))
 	{
 		kstl::string text = _newText.ToString();
 		kstl::string key = text.substr(1, text.length() - 1);
-		LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
-		PLATFORM_WCHAR* localized = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key.c_str());
+
+		PLATFORM_WCHAR* localized = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key);
 
 		bool modified = false;
 		if (localized && myLength > 0)
 			localized = CutText(localized, modified);
 
 		if (localized)
-			myTexture->CreateFromText(localized, myMaxLineNumber, myMaxSize, myFontSize, (myFontName.const_ref()).c_str(), myAlignment, R, G, B, A, TinyImage::RGBA_32_8888, myBold, myStroke, stR, stG, stB, st_A);
+			myTexture->CreateFromText(localized, myMaxLines, myMaxWidth, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold, myStroke, stR, stG, stB, st_A);
 
 		if (modified)
 			free(localized);
@@ -137,7 +150,7 @@ void	UIText::ChangeText(const usString& _newText)
 		else
 			L_returneValue = const_cast<unsigned short*>(_newText.us_str());
 
-		myTexture->CreateFromText(L_returneValue, myMaxLineNumber, myMaxSize, myFontSize, (myFontName.const_ref()).c_str(), myAlignment, R, G, B, A, TinyImage::RGBA_32_8888, myBold, myStroke, stR, stG, stB, st_A);
+		myTexture->CreateFromText(L_returneValue, myMaxLines, myMaxWidth, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold, myStroke, stR, stG, stB, st_A);
 
 		if (modified)
 			free(L_returneValue);
@@ -153,7 +166,7 @@ void	UIText::ChangeText(const usString& _newText)
 		mySizeY = height;
 		myNeedUpdatePosition = true;
 	}
-	
+	SetUpNodeIfNeeded();
 }
 
 bool UIText::TriggerMouseMove(bool over, float _MouseDeltaX, float _MouseDeltaY)
