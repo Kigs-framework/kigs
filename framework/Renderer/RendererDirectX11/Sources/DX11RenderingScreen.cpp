@@ -375,7 +375,7 @@ bool DX11RenderingScreen::CreateResources()
 			{
 				m_renderTargetBuffer = cameraBackBuffer;
 			}
-			else
+			else if(m_depthStencilView)
 			{
 				// No need to recreate depth stencil
 				return true;
@@ -476,8 +476,6 @@ bool DX11RenderingScreen::CreateResources()
 	DX::ThrowIfFailed(dxinstance->m_device->CreateRenderTargetView(m_renderTargetBuffer.get(), NULL, m_renderTargetView.put()));
 	
 	if (m_depthStencilView) return true;
-
-	kigsprintf("Creating depth texture\n");
 
 	CD3D11_TEXTURE2D_DESC depthBufferDesc = {};
 
