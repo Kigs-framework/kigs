@@ -66,17 +66,16 @@ void	Sample5::ProtectedInit()
 	}
 	std::cout << "]" << std::endl;
 
-	CoreModifiable* donothing = KigsCore::GetInstanceOf("useless", "DoNothing");
+	CMSP donothing = KigsCore::GetInstanceOf("useless", "DoNothing");
 
 	donothing->AddDynamicAttribute(COREITEM,"item");
 
 	donothing->setValue("item", item.get());
 
 #ifdef KIGS_TOOLS
- 	Export("testCoreItemExport.xml", donothing);
+ 	Export("testCoreItemExport.xml", donothing.get());
 #endif
 
-	donothing->Destroy();
 }
 
 void	Sample5::ProtectedUpdate()

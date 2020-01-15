@@ -16,9 +16,9 @@ UIScrollView::UIScrollView(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	xScroll = 0;
 	yScroll = 0;
 
-	myVision = (UIControlBoxForScrollViewUI*)KigsCore::GetInstanceOf(getName() + "_MYUIControlBoxForScrollViewUI", "UIControlBoxForScrollViewUI");
+	myVision = KigsCore::GetInstanceOf(getName() + "_MYUIControlBoxForScrollViewUI", "UIControlBoxForScrollViewUI");
 	myVision->Init();
-	addItem(myVision);
+	addItem((CMSP&)myVision);
 }
 
 void UIScrollView::InitModifiable()
@@ -45,11 +45,7 @@ void UIScrollView::InitModifiable()
 
 UIScrollView::~UIScrollView()
 {
-	if (myVision)
-	{
-		myVision->Destroy();
-		myVision = NULL;
-	}
+	myVision = nullptr;
 }
 
 
@@ -76,7 +72,7 @@ bool UIScrollView::scrollTo(kfloat deltaPos)
 		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mySons.end();
 		for (; itS != itE; ++itS)
 		{
-			if ((*itS) == myVision)
+			if ((*itS) == myVision.get())
 				continue;
 
 			kfloat x, y;
@@ -168,7 +164,7 @@ void UIScrollView::SendClickUpToChildren(int buttonState, int buttonEvent, int X
 	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mySons.end();
 	while (itS != itE)
 	{
-		if (*itS == myVision)
+		if (*itS == myVision.get())
 		{
 			itS++;
 			continue;
@@ -201,7 +197,7 @@ void UIScrollView::SendClickDownToChildren(int buttonState, int buttonEvent, int
 	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mySons.end();
 	while (itS != itE)
 	{
-		if (*itS == myVision)
+		if (*itS == myVision.get())
 		{
 			itS++;
 			continue;
@@ -222,7 +218,7 @@ void UIScrollView::SendMouseMoveToChildren(bool over,float MouseDeltaX, float Mo
 	getRootLayerFather()->GetRenderingScreen()->GetMousePosInScreen(x, y, x, y);
 	while (itS != itE)
 	{
-		if ((*itS) == myVision)
+		if ((*itS) == myVision.get())
 		{
 			itS++;
 			continue;

@@ -150,27 +150,27 @@ void Node2D::PropagateNodeFlags()
 	}
 }
 
-bool Node2D::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool Node2D::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Node2D::myClassID))
 	{
 		//if (item->IsInit())
 		{
-			((Node2D*)item)->SetParent(this);
+			((Node2D*)item.get())->SetParent(this);
 			//((Node2D*)item)->PropagateNeedUpdateToFather();
 		}
 		ResortSons();
-		mySons.insert((Node2D*)item);
+		mySons.insert((Node2D*)item.get());
 	}
 	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 }
 
-bool Node2D::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
+bool Node2D::removeItem(CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Node2D::myClassID))
 	{
 		ResortSons();
-		auto it = mySons.find(static_cast<Node2D*>(item));
+		auto it = mySons.find(static_cast<Node2D*>(item.get()));
 		
 		if (it != mySons.end())
 		{

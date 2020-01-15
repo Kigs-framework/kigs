@@ -48,7 +48,7 @@ IMPLEMENT_CONSTRUCTOR(FontMapManager)
 
 FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsize)
 {
-	TextureFileManager* tfm = static_cast<TextureFileManager*>(KigsCore::GetSingleton("TextureFileManager"));
+	SP<TextureFileManager> tfm = KigsCore::GetSingleton("TextureFileManager");
 	SmartPointer<CoreRawBuffer> crb = nullptr;
 
 	char str[1024];
@@ -69,10 +69,10 @@ FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsi
 		return nullptr;
 	}
 
-	Texture* tex = tfm->GetTexture(font->font_id, false);
+	SP<Texture> tex = tfm->GetTexture(font->font_id, false);
 	tex->setValue("FileName", "");
 
-	KigsCore::Connect(tex, "Destroy", this, "OnFontTextureDestroy");
+	KigsCore::Connect(tex.get(), "Destroy", this, "OnFontTextureDestroy");
 
 	
 
@@ -142,7 +142,7 @@ FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsi
 
 void FontMapManager::ReloadTextures()
 {
- 	TextureFileManager* tfm = static_cast<TextureFileManager*>(KigsCore::GetSingleton("TextureFileManager"));
+ 	SP<TextureFileManager> tfm = KigsCore::GetSingleton("TextureFileManager");
 
 	kstl::vector<u8> bitmap_alpha;
 	kstl::vector<u8> bitmap_AI8;
@@ -168,18 +168,18 @@ void FontMapManager::ReloadTextures()
 		
 		SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(bitmap_AI8.data(), font.second.mFontMapSize, font.second.mFontMapSize, TinyImage::ImageFormat::AI88));
 
-		Texture* tex = tfm->GetTexture(font.second.font_id, false);
+		SP<Texture> tex = tfm->GetTexture(font.second.font_id, false);
 		tex->CreateFromImage(img);
 	}
 }
 
 void UIDynamicText::LoadFont()
 {
-	TextureFileManager* tfm = static_cast<TextureFileManager*>(KigsCore::GetSingleton("TextureFileManager"));
-	FontMapManager* font_map_manager = static_cast<FontMapManager*>(KigsCore::GetSingleton("FontMapManager"));
+	SP<TextureFileManager> tfm = KigsCore::GetSingleton("TextureFileManager");
+	SP<FontMapManager> font_map_manager = KigsCore::GetSingleton("FontMapManager");
 	mFontMap = font_map_manager->PrecacheFont(mFont, mFontSize);
 	if (mFontMap)
-		myTexture = tfm->GetTextureManaged(mFontMap->font_id);
+		myTexture = tfm->GetTexture(mFontMap->font_id);
 	else
 		myTexture = nullptr;
 }
@@ -853,7 +853,8 @@ void UIDynamicText::PreprocessTags()
 {
 	for (auto item : mInlineItems)
 	{
-		removeItem(item);
+		CMSP toDel(item, StealRefTag{});
+		removeItem(toDel);
 	}
 	mPreprocessedTags.clear();
 	mInlineItems.clear();
@@ -946,7 +947,7 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 	{
 		kstl::string reftext = text.ToString();
 		kstl::string key = reftext.substr(1, reftext.length() - 1);
-		LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+		SP<LocalizationManager> theLocalizationManager = KigsCore::GetSingleton("LocalizationManager");
 		current_character = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key.c_str());
 
 		if (current_character == nullptr)
@@ -1136,7 +1137,7 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 
 			if (inline_items)
 			{
-				CoreModifiable* cm = nullptr;
+				CMSP cm = nullptr;
 				if (image_path == "BLABLA")
 				{
 					cm = KigsCore::GetInstanceOf("inlineitem", "UIRenderingScreen");
@@ -1159,9 +1160,9 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 					obj->addItem(cm);
 
 				cm->Init();
-				cm->Destroy();
-				current_tag.item = cm;
-				inline_items->push_back(cm);
+				
+				current_tag.item = cm.get();
+				inline_items->push_back(cm.get());
 			}
 
 			current_tag.align = current_align_mode;

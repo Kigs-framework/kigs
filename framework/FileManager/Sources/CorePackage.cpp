@@ -323,7 +323,7 @@ void	CorePackage::Export(const kstl::string& filename)
 	FATEntry*	firstEntry = (FATEntry*)(header+1);
 
 	u64 offset=0;
-	myPackageBuilderStruct->fpm = KigsCore::GetSingleton<FilePathManager>();
+	myPackageBuilderStruct->fpm = (FilePathManager*)KigsCore::GetSingleton("FilePathManager").get();
 	myPackageBuilderStruct->FillFATExportedStruct(filetree, firstEntry, offset);
 
 	// now total size can be set

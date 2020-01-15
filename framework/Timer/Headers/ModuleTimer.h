@@ -19,9 +19,9 @@ public:
 	void Update(const Timer& timer, void* addParam) override;
 
 
-	bool	addItem(CoreModifiable *item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool	addItem(CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
 
-	bool	removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME) override;
+	bool	removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
                
 protected:
 	

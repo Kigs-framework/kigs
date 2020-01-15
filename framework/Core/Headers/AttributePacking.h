@@ -503,6 +503,14 @@ Ret CoreModifiable::SimpleCall(KigsID methodNameID)
 	if(attr.size())
 	{
 		 attr.back()->getValue(result);
+	
+		 // destroy attributes
+		 while (attr.size())
+		 {
+			 delete attr.back();
+			 attr.pop_back();
+		 }
+	
 	}
 	return result;
 }

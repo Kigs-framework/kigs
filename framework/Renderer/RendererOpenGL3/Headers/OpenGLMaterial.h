@@ -21,10 +21,10 @@ protected:
 
 	void NotifyUpdate(unsigned int labelid) override;
 
-	API3DUniformBase* uniDiffuseColor = nullptr;
-	API3DUniformBase* uniSpecularColor = nullptr;
-	API3DUniformBase* uniAmbiantColor = nullptr;
-	API3DUniformBase* uniShininess = nullptr;
+	SP<API3DUniformBase> uniDiffuseColor = nullptr;
+	SP<API3DUniformBase> uniSpecularColor = nullptr;
+	SP<API3DUniformBase> uniAmbiantColor = nullptr;
+	SP<API3DUniformBase> uniShininess = nullptr;
 };
 
 #endif //_OPENGLMATERIAL_H

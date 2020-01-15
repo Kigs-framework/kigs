@@ -41,36 +41,30 @@ void	Sample2::ProtectedInit()
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), SimpleMaterialClass, SimpleMaterialClass, Application);
 	
 	// ask for a SimpleSampleClassBase instance named simpleclass1
-	CoreModifiable* simpleclass1 = KigsCore::GetInstanceOf("simpleclass1", "SimpleSampleClass");
+	CMSP simpleclass1 = KigsCore::GetInstanceOf("simpleclass1", "SimpleSampleClass");
 	// Initialise class
 	simpleclass1->Init();
 
 	// ask for two other instances
-	CoreModifiable* simpleclass2 = KigsCore::GetInstanceOf("simpleclass2", "SimpleSampleClass");
+	CMSP simpleclass2 = KigsCore::GetInstanceOf("simpleclass2", "SimpleSampleClass");
 	simpleclass2->Init();
-	SmartPointer<CoreModifiable> simpleclass3 = KigsCore::CreateInstance("simpleclass3", "SimpleSampleClass");
+	CMSP simpleclass3 = KigsCore::GetInstanceOf("simpleclass3", "SimpleSampleClass");
 	simpleclass3->Init();
 
 	// create an instance of SimpleMaterialClass
-	CoreModifiable* material= KigsCore::GetInstanceOf("material", "SimpleMaterialClass");
+	CMSP material= KigsCore::GetInstanceOf("material", "SimpleMaterialClass");
 	// manage simpleclass3 and material as one unique object
 	simpleclass3->aggregateWith(material);
-	material->Destroy();
 
 	// and add simpleclass2 and simpleclass3 to simpleclass1
 	simpleclass1->addItem(simpleclass2); // simpleclass2 count ref is now 2
-	simpleclass1->addItem(simpleclass3.get()); // simpleclass3 count ref is now 2
-
-	// Now let simpleclass1 manage simpleclass2 and simpleclass3 life cycle
-	simpleclass2->Destroy(); // simpleclass2 count ref is now 1
+	simpleclass1->addItem(simpleclass3); // simpleclass3 count ref is now 2
 
 	// add simpleclass1 to this
 	addItem(simpleclass1);
-	// and let this manage simpleclass1 life cycle
-	simpleclass1->Destroy(); // simpleclass1 count ref is now 1
 
 	// ask application to update simpleclass2 at each loop turn
-	AddAutoUpdate(simpleclass2);
+	AddAutoUpdate(simpleclass2.get());
 
 	// now we can get out of the method without loosing all the created instances
 

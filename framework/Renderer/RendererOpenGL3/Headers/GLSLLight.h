@@ -92,17 +92,17 @@ protected:
 	Scene3D*			myScene;
 	Node3D *			myParentNode;
 
-	CoreModifiable*		myPositionUniform;
-	CoreModifiable*		myCamPosUniform;
+	CMSP		myPositionUniform;
+	CMSP		myCamPosUniform;
 
-	CoreModifiable*		myDiffuseUniform;
-	CoreModifiable*		mySpecularUniform;
-	CoreModifiable*		myAmbiantUniform;
+	CMSP		myDiffuseUniform;
+	CMSP		mySpecularUniform;
+	CMSP		myAmbiantUniform;
 
-	CoreModifiable*		myAttenuationUniform;
-	CoreModifiable*		mySpotDirUniform;
-	CoreModifiable*		mySpotCutoffUniform;
-	CoreModifiable*		mySpotExponentUniform;
+	CMSP		myAttenuationUniform;
+	CMSP		mySpotDirUniform;
+	CMSP		mySpotCutoffUniform;
+	CMSP		mySpotExponentUniform;
 	
 	unsigned int		myListUpdateFrame;
 };

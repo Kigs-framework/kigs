@@ -22,7 +22,7 @@ TravState::TravState(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifi
 //, pDrawableSorter(0)
 , pManageFrontToBackStruct(0)
 {
-	myCullingObject = (CullingObject*)(KigsCore::GetInstanceOf("myCullingObject", "CullingObject"));
+	myCullingObject = KigsCore::GetInstanceOf("myCullingObject", "CullingObject");
 	myVisibilityFrame = 0;
 	myFrame = 0;
 	myCurrentScale = 1.0f;
@@ -30,7 +30,7 @@ TravState::TravState(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifi
 
 TravState::~TravState()
 {
-	myCullingObject->Destroy();
+	
 }
 
 void TravState::DrawInstances()

@@ -97,9 +97,9 @@ int TimeProfiler::NewProfiler(const kstl::string& name)
 
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		if(KigsCore::GetProfileManager()->myProfilers[i]==0)
+		if(KigsCore::GetProfileManager()->myProfilers[i]==nullptr)
 		{
-			KigsCore::GetProfileManager()->myProfilers[i]=(TimeProfiler*)KigsCore::GetInstanceOf(name,"TimeProfiler");
+			KigsCore::GetProfileManager()->myProfilers[i]=KigsCore::GetInstanceOf(name,"TimeProfiler");
 			return i;
 		}
 	}
@@ -151,12 +151,12 @@ void TimeProfiler::ShowProfilers()
 	kdouble min=KDOUBLE_CONST(10000.0);
 	kdouble sum=KDOUBLE_CONST(0.0);
 
-	TimeProfiler* GLOBAL=0;
+	SP<TimeProfiler> GLOBAL(nullptr);
 
 	int i;
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		TimeProfiler*	current=KigsCore::GetProfileManager()->myProfilers[i];
+		SP<TimeProfiler>	current=KigsCore::GetProfileManager()->myProfilers[i];
 		if(current)
 		{
 			if(current->myWasUpdate)
@@ -187,7 +187,7 @@ void TimeProfiler::ShowProfilers()
 
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		TimeProfiler*	current=KigsCore::GetProfileManager()->myProfilers[i];
+		SP<TimeProfiler>	current=KigsCore::GetProfileManager()->myProfilers[i];
 		if(current)
 		{
 			if(current->myWasUpdate)
@@ -281,16 +281,15 @@ void TimeProfiler::DumpProfilers()
 void	GlobalProfilerManager::InitAll()
 {
 	// init common timer for all profilers
-	myGlobalTimer=(Timer*)KigsCore::GetInstanceOf("GlobalTimer","Timer");
+	myGlobalTimer=KigsCore::GetInstanceOf("GlobalTimer","Timer");
 	myGlobalTimer->Init();
 	// check is a graphic object can be created
-	myProfileDrawingObject=(CoreModifiable*)KigsCore::GetInstanceOf("myProfileDrawingObject","ProfileDrawingObject");
+	myProfileDrawingObject=KigsCore::GetInstanceOf("myProfileDrawingObject","ProfileDrawingObject");
 	
 	// if returned object is not a "real" ProfileDrawingObject, then just destroy it
 	if(!myProfileDrawingObject->HasMethod(myMethodID))
 	{
-		myProfileDrawingObject->Destroy();
-		myProfileDrawingObject=0;
+		myProfileDrawingObject=nullptr;
 	}
 
 	myIsInit=true;
@@ -301,22 +300,10 @@ void	GlobalProfilerManager::CloseAll()
 	int i;
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		TimeProfiler*	current=myProfilers[i];
-		if(current)
-		{
-			current->Destroy();
-			myProfilers[i]=0;
-		}
+		myProfilers[i]=nullptr;
 	}
-
-	// destroy common timer
-	if(myGlobalTimer)
-		myGlobalTimer->Destroy();
-
-	// destroy graphic object if needed
-	if(myProfileDrawingObject)
-	{
-		myProfileDrawingObject->Destroy();
-		myProfileDrawingObject=0;
-	}
+	
+	myGlobalTimer = nullptr;
+	myProfileDrawingObject= nullptr;
+	
 }

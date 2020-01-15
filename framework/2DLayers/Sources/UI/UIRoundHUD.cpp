@@ -55,13 +55,13 @@ void UIRoundHUD::ProtectedDraw(TravState* state)
 	ParentClassType::ProtectedDraw(state);
 }
 
-bool UIRoundHUD::addItem(CoreModifiable* item, ItemPosition pos)
+bool UIRoundHUD::addItem(CMSP& item, ItemPosition pos)
 {
 	myNeedUpdateSlots = true;
 	return ParentClassType::addItem(item, pos);
 }
 
-bool UIRoundHUD::removeItem(CoreModifiable* item)
+bool UIRoundHUD::removeItem(CMSP& item)
 {
 	myNeedUpdateSlots = true;
 	return ParentClassType::removeItem(item);

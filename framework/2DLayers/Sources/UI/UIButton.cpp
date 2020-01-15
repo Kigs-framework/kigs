@@ -279,7 +279,7 @@ bool UIButton::isAlpha(float X, float Y)
 		{
 			if (sons[i].myItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = (AlphaMask*)sons[i].myItem;
+				myAlphaMask = sons[i].myItem;
 				break;
 			}
 		}

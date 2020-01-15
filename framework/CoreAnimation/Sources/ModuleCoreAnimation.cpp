@@ -23,7 +23,6 @@ ModuleCoreAnimation::ModuleCoreAnimation(const kstl::string& name,CLASS_NAME_TRE
 
 ModuleCoreAnimation::~ModuleCoreAnimation()
 {
-	myPrivateMiniFactory->Destroy();
 }    
 
 void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
@@ -33,7 +32,7 @@ void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiable
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(),MiniInstanceFactory,MiniInstanceFactory,MiniInstanceFactory)
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreSequenceLauncher, CoreSequenceLauncher, CoreAnimation)
 	// register actions
-	myPrivateMiniFactory=(MiniInstanceFactory*)KigsCore::GetInstanceOf("myPrivateMiniFactory","MiniInstanceFactory");
+	myPrivateMiniFactory=KigsCore::GetInstanceOf("myPrivateMiniFactory","MiniInstanceFactory");
 
 	// action using "slow" setValue
 	MiniFactoryRegister(myPrivateMiniFactory,"Linear1D",CoreActionLinear<kfloat>);

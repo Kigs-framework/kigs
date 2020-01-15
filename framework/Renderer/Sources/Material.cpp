@@ -35,7 +35,7 @@ Material::~Material()
 }
 
 
-bool	Material::Equal(CoreModifiable& other)
+bool	Material::Equal(const CoreModifiable& other)
 {
 	if (other.getExactType()!=getExactType())
 		return false;
@@ -63,9 +63,11 @@ bool	Material::Equal(CoreModifiable& other)
 	//compare children
 	if (getItems().size()!=other.getItems().size())
 		return false;
-	for (size_t i=0; i<getItems().size(); i++)
-		if (!(getItems()[i]).myItem->Equal(*(other.getItems()[i]).myItem))
+	for (size_t i = 0; i < getItems().size(); i++)
+	{
+		if (!(getItems()[i]).myItem->Equal(*((other.getItems()[i]).myItem.get())))
 			return false;
+	}
 	return true;
 }
 

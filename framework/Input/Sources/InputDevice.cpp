@@ -26,23 +26,26 @@ InputDevice::~InputDevice()
 	delete[] myDeviceItems;
 }
 
-bool InputDevice::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool InputDevice::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType(Window::myClassID))
 	{
 		if (myInputWindow)
-			removeItem(myInputWindow PASS_LINK_NAME(linkName));
-		myInputWindow = (Window*)item;
+		{
+			CMSP w(myInputWindow, StealRefTag{});
+			removeItem(w PASS_LINK_NAME(linkName));
+		}
+		myInputWindow = (Window*)item.get();
 	}
 
 	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 }
 
-bool InputDevice::removeItem(CoreModifiable *item DECLARE_LINK_NAME)
+bool InputDevice::removeItem(CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType(Window::myClassID))
 	{
-		if (myInputWindow==(Window*)item)
+		if (myInputWindow==(Window*)item.get())
 			myInputWindow=NULL;		
 	}
 

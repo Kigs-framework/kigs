@@ -19,8 +19,8 @@ public:
 	DECLARE_ABSTRACT_CLASS_INFO(SceneNode,CoreModifiable,SceneGraph)
 	DECLARE_CONSTRUCTOR(SceneNode);
 	
-	bool addItem(CoreModifiable *item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
-	bool removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME) override;
+	bool addItem(CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 	bool IsInScene() const;
 

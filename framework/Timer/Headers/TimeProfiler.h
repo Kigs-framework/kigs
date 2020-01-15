@@ -2,8 +2,7 @@
 #define _TIMEPROFILER_H_
 
 #include "CoreModifiable.h"
-
-class Timer;
+#include "Timer.h"
 
 /**
  * \def MAX_PROFILER_COUNT
@@ -142,7 +141,7 @@ protected:
 	//! min deltaTime seen
 	kdouble	myMinDT;
 	//! TRUE if the profile was updated
-	bool	myWasUpdate;
+	bool	myWasUpdate=false;
 
 	/**
 	 * \brief	destructor
@@ -205,13 +204,13 @@ public:
 	void			CloseAll();
 
 	//! link to the timer
-	Timer*			myGlobalTimer;
+	SP<Timer>			myGlobalTimer;
 	//! number of profiler
 	int				myProfileCount;
 	//! list of profiler
-	TimeProfiler*	myProfilers[MAX_PROFILER_COUNT];
+	SP<TimeProfiler>	myProfilers[MAX_PROFILER_COUNT];
 	//! link to the drawing object
-	CoreModifiable*	myProfileDrawingObject;
+	CMSP				myProfileDrawingObject;
 	//! TRUE if the instance is initialized
 	bool			myIsInit;
 

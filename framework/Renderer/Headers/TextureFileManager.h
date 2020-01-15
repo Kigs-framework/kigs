@@ -47,9 +47,7 @@ public:
 	* \param	fileName : filemane of the asked texture
 	* \return	the asked texture if found
 	*/
-	Texture* GetTexture(const kstl::string& fileName,bool doInit=true);
-
-	SmartPointer<Texture> GetTextureManaged(const kstl::string& fileName, bool doInit = true);
+	SP<Texture> GetTexture(const kstl::string& fileName,bool doInit=true);
 
 	/**
 	* \brief	get a texture
@@ -57,7 +55,7 @@ public:
 	* \param	fileName : filemane of the asked texture
 	* \return	the asked texture if found
 	*/
-	Texture* GetTexture(const kstl::string& fileName, const kstl::string& a_textureName, bool doInit=true);
+	SP<Texture> GetTexture(const kstl::string& fileName, const kstl::string& a_textureName, bool doInit=true);
 
 	/**
 	* \brief	get a spritesheey
@@ -65,7 +63,7 @@ public:
 	* \param	fileName : filemane of the asked SpriteSheet Texture
 	* \return	the asked SpriteSheetTexture if found
 	*/
-	SpriteSheetTexture* GetSpriteSheetTexture(const kstl::string& fileName);
+	SP<SpriteSheetTexture> GetSpriteSheetTexture(const kstl::string& fileName);
 
 	/**
 	* \brief	add a texture
@@ -74,21 +72,22 @@ public:
 	* \param	tex : texture to add
 	*/
 	void AddTexture(const kstl::string& fileName, CoreModifiable* Tex);
+	void AddTexture(const kstl::string& fileName, CMSP& Tex);
 
 	/**
 	* \brief	unload a texture
 	* \fn 		void  UnloadTexture(Texture* tex);
 	* \param	tex : filemane of the texture to unload
 	*/
-	void UnloadTexture(Texture*);
+	void UnloadTexture(Texture* Texture);
 	void UnloadTexture(SpriteSheetTexture* Tex);
 	void UnloadAllTexture();
 	void ResetAllTexture();
 
 	void ClearCache();
 
-	CoreModifiable* CreateTexture(const kstl::string& textureName);
-	CoreModifiable* CreateSpriteSheetTexture(const kstl::string& textureName);
+	CMSP CreateTexture(const kstl::string& textureName);
+	CMSP CreateSpriteSheetTexture(const kstl::string& textureName);
 
 
 	KIGS_TOOLS_ONLY(auto& GetTextureMap() const { return myTextureMap; })
