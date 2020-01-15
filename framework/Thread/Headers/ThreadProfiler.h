@@ -110,7 +110,7 @@ public:
 	kstl::map<CoreModifiable*, unsigned int>& GetThreadIndexesMap(){ return myCircularBufferIndexes; }
 	unsigned int GetThreadCircularBufferIndex(CoreModifiable* thread){ return (myCircularBufferIndexes[thread] + THREAD_PROFILER_BUFFER_SIZE - 1) % THREAD_PROFILER_BUFFER_SIZE; }
 
-	Timer* GetThreadProfilerTimer(){ return myGobalTimer; }
+	SP<Timer>& GetThreadProfilerTimer(){ return myGobalTimer; }
 
 	void ExportProfile(const kstl::string path);
 
@@ -120,11 +120,11 @@ private:
 	
 	kstl::map<CoreModifiable*, TimeEventCircularBuffer> myCircularBufferMap;
 	kstl::map<CoreModifiable*, unsigned int> myCircularBufferIndexes;
-	Timer* myGobalTimer;
+	SP<Timer> myGobalTimer;
 
 	ThreadLocalStorageManager* myTlsManager;
 	bool myAllowNewEvents;
-	CoreModifiable* mySemaphore;
+	CMSP mySemaphore;
 };
 
 

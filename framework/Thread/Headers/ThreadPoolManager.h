@@ -66,13 +66,13 @@ protected:
 	virtual ~ThreadPoolManager();
 
 	maInt	myThreadCount;
-	kstl::vector<WorkerThread*>				myThreadList;
+	kstl::vector<SP<WorkerThread>>				myThreadList;
 
 
-	WorkerThread*	getAvailableThread();
+	SP<WorkerThread>	getAvailableThread();
 	SmartPointer<ThreadEvent>	getTaskEndEvent();
 
-	Semaphore*	mySemaphore;
+	SP<Semaphore>	mySemaphore;
 
 	// queue
 	void	addTaskToQueue(MethodCallingStruct* task, SmartPointer<ThreadEvent>& endevent);

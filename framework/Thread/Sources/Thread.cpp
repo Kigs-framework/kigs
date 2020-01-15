@@ -8,16 +8,16 @@
 IMPLEMENT_CLASS_INFO(Thread)
 
 Thread::Thread(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
-, myThreadRunMethod(NULL)
+, myThreadRunMethod(nullptr)
 , bOpen(*this,false,LABEL_AND_ID(bOpen), true)
 {
-	myThreadRunMethod =NULL;
+	
   myCurrentState=UNINITIALISED;
 }     
 
 Thread::~Thread()
 {
-	ThreadProfiler* threadProfiler = (ThreadProfiler*)KigsCore::GetSingleton("ThreadProfiler");
+	SP<ThreadProfiler> threadProfiler = KigsCore::GetSingleton("ThreadProfiler");
 	if (threadProfiler)
 		threadProfiler->RemoveThread(this);
 
@@ -33,23 +33,23 @@ void Thread::KillThread ( )
 			myThreadRunMethod->EndThread ( ); 
 			myCurrentState = FINISHED;
 		}
-		myThreadRunMethod->removeItem(this);
-		myThreadRunMethod->Destroy();
-		myThreadRunMethod=0;
+		CMSP toDel(this, GetRefTag{});
+		myThreadRunMethod->removeItem(toDel);
+		myThreadRunMethod=nullptr;
 		myProgress=-1;
 	}
 }
 
 ThreadReturnType	Thread::Run(void* param)
 {
-	Thread* localThis=(Thread*)param;
-	ThreadLocalStorageManager* tls_manager = (ThreadLocalStorageManager*)KigsCore::GetSingleton("ThreadLocalStorageManager");
+	SP<Thread> localThis((Thread*)param, StealRefTag{});
+	SP<ThreadLocalStorageManager> tls_manager = KigsCore::GetSingleton("ThreadLocalStorageManager");
 	if (tls_manager)
-		tls_manager->RegisterThread(localThis);
+		tls_manager->RegisterThread(localThis.get());
 
-	ThreadProfiler* threadProfiler = (ThreadProfiler*)KigsCore::GetSingleton("ThreadProfiler");
+	SP<ThreadProfiler> threadProfiler = KigsCore::GetSingleton("ThreadProfiler");
 	if (threadProfiler)
-		threadProfiler->RegisterThread(localThis);
+		threadProfiler->RegisterThread(localThis.get());
 
 	localThis->myProgress=0;
 	// run thread
@@ -62,8 +62,7 @@ ThreadReturnType	Thread::Run(void* param)
 	// thread is finished
 	if(localThis->myThreadRunMethod)
 	{
-		localThis->myThreadRunMethod->removeItem(localThis);
-		localThis->myThreadRunMethod->Destroy();
+		localThis->myThreadRunMethod->removeItem((CMSP&)localThis);
 		localThis->myThreadRunMethod=0;
 	}
     
@@ -78,18 +77,18 @@ void Thread::InitModifiable()
 	CoreModifiable::InitModifiable();
 	
 	// create a os dependant thread 
-	myThreadRunMethod=(ThreadRunMethod*)KigsCore::GetInstanceOf(this->getName() + "ThreadRunMethod","ThreadRunMethod");		
+	myThreadRunMethod=KigsCore::GetInstanceOf(this->getName() + "ThreadRunMethod","ThreadRunMethod");		
 	
 	if(!myThreadRunMethod->isSubType(ThreadRunMethod::myClassID))
 	{
-		myThreadRunMethod->Destroy();
-		myThreadRunMethod=0;
+		myThreadRunMethod=nullptr;
 		UninitModifiable();
 	}
 
 	if(myThreadRunMethod)
 	{
-		myThreadRunMethod->addItem(this);
+		CMSP toAdd(this, GetRefTag{});
+		myThreadRunMethod->addItem(toAdd);
  		myThreadRunMethod->Init();
 		myCurrentState=RUNNING;
 	}
