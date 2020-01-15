@@ -7,9 +7,9 @@
 
 #include "AttributePacking.h"
 #include "TouchInputEventManager.h"
+#include "../AlphaMask.h"
 
 class TravState;
-class AlphaMask;
 class Texture;
 class SpriteSheetTexture;
 class UIVerticesInfo;
@@ -98,7 +98,7 @@ protected:
 	virtual												~UIItem()
 	{
 		if (myAlphaMask)
-			myAlphaMask = NULL;
+			myAlphaMask = nullptr;
 	}
 
 	maBoolHeritage<1>									myIsHidden;
@@ -107,7 +107,7 @@ protected:
 	maBool												myIsEnabled;
 	maVect3DF											myColor;  // USE [0,1] RANGE
 	maFloat												myOpacity;
-	AlphaMask*											myAlphaMask;
+	SP<AlphaMask>										myAlphaMask;
 	maBoolHeritage<1>									mySwallowInputs;
 	bool												myFocus;
 

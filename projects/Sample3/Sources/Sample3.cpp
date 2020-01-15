@@ -23,7 +23,7 @@ void	Sample3::ProtectedInit()
 	SetUpdateSleepTime(1);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), SimpleClass, SimpleClass, Application);
 
-	SimpleClass*	instance1= KigsCore::GetInstanceOf("instance1", "SimpleClass")->as<SimpleClass>();
+	SP<SimpleClass>	instance1= KigsCore::GetInstanceOf("instance1", "SimpleClass");
 	// set values before initialization
 	instance1->setValue("IntValue", 12);
 	instance1->setValue("StringValue", "something");
@@ -50,7 +50,7 @@ void	Sample3::ProtectedInit()
 	std::cout << "String Value : " << sv << std::endl;
 
 	// create a second SimpleClass instance
-	SimpleClass* instance2 = KigsCore::GetInstanceOf("instance2", "SimpleClass")->as<SimpleClass>();
+	SP<SimpleClass> instance2 = KigsCore::GetInstanceOf("instance2", "SimpleClass");
 
 	// add a string attribute with name "DynamicAttribute" to instance 2
 	instance2->AddDynamicAttribute(CoreModifiable::STRING, "DynamicAttribute", "initValue");
@@ -112,9 +112,6 @@ void	Sample3::ProtectedInit()
 
 	// getValue now returns 2 * the stored value
 	std::cout << "Int Value with modifier : " << instance1->getValue<int>("IntValue") << std::endl;
-
-	instance1->Destroy();
-	instance2->Destroy();
 
 }
 

@@ -46,12 +46,10 @@ IMPLEMENT_CONSTRUCTOR(BaseUI2DLayer)
 BaseUI2DLayer::~BaseUI2DLayer()
 {
 	myFocusItem = NULL;
-	if(mMouseVelocityComputer)
-		mMouseVelocityComputer->Destroy();
 	delete mMultiTouchPinch;
 }
 
-void BaseUI2DLayer::DeleteChild(UIItem * aChild)
+void BaseUI2DLayer::DeleteChild(CMSP& aChild)
 {
 	myWaitToDelete.push_back(aChild);
 
@@ -60,7 +58,7 @@ void BaseUI2DLayer::DeleteChild(UIItem * aChild)
 	// first get the list of all UIItem children of aChild
 	kstl::set<CoreModifiable*> instances;
 	aChild->GetSonInstancesByType("UIItem", instances);
-	instances.insert(aChild);
+	instances.insert(aChild.get());
 
 	kstl::set<CoreModifiable*>::const_iterator	itInstances = instances.begin();
 	kstl::set<CoreModifiable*>::const_iterator	itInstancesEnd = instances.end();
@@ -80,7 +78,7 @@ void BaseUI2DLayer::DeleteChild(UIItem * aChild)
 	}
 }
 
-void BaseUI2DLayer::AddChild(UIItem * aChild, UIItem * aParent)
+void BaseUI2DLayer::AddChild(CMSP& aChild, UIItem * aParent)
 {
 	if (aParent)
 		aParent->addItem(aChild);
@@ -129,7 +127,8 @@ DEFINE_METHOD(BaseUI2DLayer, KeepClick)
 
 DEFINE_METHOD(BaseUI2DLayer, DeleteChild)
 {
-	DeleteChild((UIItem*)sender);
+	CMSP toDelete = CMSP(sender, GetRefTag{});
+	DeleteChild(toDelete);
 	return false;
 }
 
@@ -147,8 +146,8 @@ void BaseUI2DLayer::InitModifiable()
 	{
 		if (!mGlobalPriority)
 		{
-			mMouseVelocityComputer = (MouseVelocityComputer*)(KigsCore::GetInstanceOf("velocityComputer", "MouseVelocityComputer"));
-			addItem(mMouseVelocityComputer);
+			mMouseVelocityComputer = KigsCore::GetInstanceOf("velocityComputer", "MouseVelocityComputer");
+			addItem((CMSP&)mMouseVelocityComputer);
 			mMultiTouchPinch = new MultiTouchPinch();
 		}
 
@@ -163,19 +162,19 @@ void BaseUI2DLayer::InitModifiable()
 		if (instances.empty())
 		{
 			// add the root UIItem
-			myRootItem = (UIItem*)KigsCore::GetInstanceOf(getName(), "UIItem");
+			myRootItem = KigsCore::GetInstanceOf(getName(), "UIItem");
 			// set the root size to the screen size
 			kfloat X, Y;
 			GetRenderingScreen()->GetDesignSize(X, Y);
 			myRootItem->setValue("SizeX", X);
 			myRootItem->setValue("SizeY", Y);
-			addItem(myRootItem);
+			addItem((CMSP&)myRootItem);
 			myRootItem->Init();
 			myRootItem->Destroy();
 		}
 		else
 		{
-			myRootItem = (UIItem*)(*instances.begin());
+			myRootItem = CMSP(*instances.begin(), GetRefTag{});
 		}
 		instances.clear();
 
@@ -212,7 +211,7 @@ void BaseUI2DLayer::Update(const Timer& a_Timer, void* addParam)
 		return;
 	}
 
-	UpdateChildrens(a_Timer, myRootItem, addParam);
+	UpdateChildrens(a_Timer, myRootItem.get(), addParam);
 
 	if (!mGlobalPriority)
 	{
@@ -233,7 +232,7 @@ void BaseUI2DLayer::Update(const Timer& a_Timer, void* addParam)
 
 		if (!myClicKept)
 		{
-			UpdateMouseOverItem(sX, sY, dRx, dRy, myRootItem, 0);
+			UpdateMouseOverItem(sX, sY, dRx, dRy, myRootItem.get(), 0);
 		}
 		else if (!myMouseOverList.empty())
 		{
@@ -247,7 +246,7 @@ void BaseUI2DLayer::Update(const Timer& a_Timer, void* addParam)
 		else
 		{
 			myClicKept = false;
-			UpdateMouseOverItem(sX, sY, dRx, dRy, myRootItem, 0);
+			UpdateMouseOverItem(sX, sY, dRx, dRy, myRootItem.get(), 0);
 		}
 
 		if ((dRx != 0.0f) || (dRy != 0.0f))
@@ -357,7 +356,7 @@ void BaseUI2DLayer::Update(const Timer& a_Timer, void* addParam)
 
 		while (!myWaitToDelete.empty())
 		{
-			UIItem * item = myWaitToDelete.back();
+			CMSP item = myWaitToDelete.back();
 			myWaitToDelete.pop_back();
 
 			if (item->GetParents().size() == 0)
@@ -497,7 +496,7 @@ static void AccumulateToDraw(TravState* state, kstl::vector<NodeToDraw>& todraw,
 
 		if (item->isSubType(Node2D::myClassID))
 		{
-			auto node = static_cast<Node2D*>(item);
+			auto node = static_cast<Node2D*>(item.get());
 			if (node->Draw(state))
 			{
 				node->SetUpNodeIfNeeded();
@@ -510,7 +509,7 @@ static void AccumulateToDraw(TravState* state, kstl::vector<NodeToDraw>& todraw,
 		}
 		
 		if(continue_down)
-			AccumulateToDraw(state, todraw, item, depth+1, clip_count);
+			AccumulateToDraw(state, todraw, item.get(), depth+1, clip_count);
 	}
 }
 
@@ -599,12 +598,12 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 		if (mGlobalPriority)
 		{
 			kstl::vector<NodeToDraw> todraw;
-			todraw.push_back(NodeToDraw{ myRootItem, 0 });
+			todraw.push_back(NodeToDraw{ myRootItem.get(), 0 });
 
 			if (myRootItem->Draw(state))
 			{
 				myRootItem->SetUpNodeIfNeeded();
-				AccumulateToDraw(state, todraw, myRootItem);
+				AccumulateToDraw(state, todraw, myRootItem.get());
 			}
 
 			std::sort(todraw.begin(), todraw.end(), NodeToDraw::Sorter{});

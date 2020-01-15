@@ -46,7 +46,7 @@ public:
 	int UpdateImporter();
 	//using CoreModifiable::Update;
 
-	CoreModifiable*	GetImported()
+	CMSP	GetImported()
 	{
 		return myImportedRoot;
 	}
@@ -72,20 +72,20 @@ protected:
 	maFloat								myDeltaTimePerStep;
 
 	XML *								myXmlfile;
-	kstl::vector<CoreModifiable*>		myLoadedItems;
+	kstl::vector<CMSP>					myLoadedItems;
 	XMLNode*							myXMLRootNode;
 
-	CoreModifiable*						myImportedRoot;
+	CMSP								myImportedRoot;
 
 	class	ImportTree
 	{
 	public:
-		ImportTree(XMLNode*,CoreModifiable*);
+		ImportTree(XMLNode*,CMSP);
 		virtual ~ImportTree();
 
 		XMLNode*						myFatherNode;
-		CoreModifiable*					myCurrentCoreModifiable;
-		CoreModifiable*					myCurrent;
+		CMSP							myCurrentCoreModifiable;
+		CMSP							myCurrent;
 		int								myLinkID;
 		kstl::vector	<ImportTree*>	mySonsImport;
 		bool							myNeedInit;
@@ -99,7 +99,7 @@ protected:
 
 	ImportTree*		StepImport(ImportTree*);
 
-	Timer*								myTimer;
+	SP<Timer>								myTimer;
 	bool								myLoadingIsDone;
 };
 

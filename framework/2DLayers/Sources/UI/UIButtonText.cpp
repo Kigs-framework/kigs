@@ -138,7 +138,7 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 			//up texture
 			if (!myUpTexture)
 			{
-				myUpTexture = KigsCore::CreateInstance(getName() + "_UPTEX", "Texture");
+				myUpTexture = KigsCore::GetInstanceOf(getName() + "_UPTEX", "Texture");
 				myUpTexture->Init();
 			}
 
@@ -149,7 +149,7 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 			//over texture
 			if (!myOverTexture)
 			{
-				myOverTexture = KigsCore::CreateInstance(getName() + "_OVERTEX", "Texture");
+				myOverTexture = KigsCore::GetInstanceOf(getName() + "_OVERTEX", "Texture");
 				myOverTexture->Init();
 			}
 
@@ -160,7 +160,7 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 			//down texture
 			if (!myDownTexture)
 			{
-				myDownTexture = KigsCore::CreateInstance(getName() + "_DOWNTEX", "Texture");
+				myDownTexture = KigsCore::GetInstanceOf(getName() + "_DOWNTEX", "Texture");
 				myDownTexture->Init();
 			}
 
@@ -168,14 +168,14 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 			myDownText = _text;
 			break;
 		}
-		LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+		SP<LocalizationManager> theLocalizationManager = KigsCore::GetSingleton("LocalizationManager");
 		float LanguageScale = 1.0f;
 		theLocalizationManager->getValue("LanguageScale", LanguageScale);
 		// need localization ?
 		if (_text[0] == '#')
 		{
 			kstl::string key = _text.substr(1, _text.length() - 1);
-			
+
 			PLATFORM_WCHAR* localized = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key.c_str());
 
 			bool modified = false;

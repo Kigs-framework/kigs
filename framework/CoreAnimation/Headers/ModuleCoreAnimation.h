@@ -79,7 +79,7 @@ protected:
 
 	kstl::map<unsigned int,kstl::vector<CoreSequence*> >	mySequences;
 
-	MiniInstanceFactory*	myPrivateMiniFactory;
+	SP<MiniInstanceFactory>	myPrivateMiniFactory;
 
 	// animation specific CoreItemOperator Map
 	static kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myCoreItemOperatorCreateMethodMap;

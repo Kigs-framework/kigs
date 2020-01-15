@@ -98,12 +98,12 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 	// search global
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		TimeProfiler*	current=KigsCore::GetProfileManager()->myProfilers[i];
+		SP<TimeProfiler>&	current=KigsCore::GetProfileManager()->myProfilers[i];
 		if(current)
 		{
 			if(	current->getName() == "GLOBAL")
 			{
-				GLOBAL=current;
+				GLOBAL=current.get();
 			}
 		}
 	}
@@ -148,7 +148,7 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		TimeProfiler*	current=KigsCore::GetProfileManager()->myProfilers[i];
+		SP<TimeProfiler>&	current=KigsCore::GetProfileManager()->myProfilers[i];
 		if(current)
 		{
 			if(	current->getName() != "GLOBAL")

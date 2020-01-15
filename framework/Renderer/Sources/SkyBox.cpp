@@ -18,28 +18,23 @@ IMPLEMENT_CLASS_INFO(SkyBox)
 SkyBox::SkyBox(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
 m_Size(*this,false,LABEL_AND_ID(SkyBox Size),KFLOAT_CONST(5000.0f)),
 myFileName(*this,false,LABEL_AND_ID(FileName),"SkyBox.tga")
+, myTexture(nullptr)
 {
-	myTexture=0;
+	
 }
 
 SkyBox::~SkyBox()
 {
-	myTexture->Destroy();
-	myTexture=0;
+
 }
 
 void SkyBox::InitModifiable()
 {
 	Drawable::InitModifiable();
 
-	if (myTexture)
-	{
-		myTexture->Destroy();
-	}
+	SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
 
-	TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-
-	myTexture=fileManager->GetTexture(myFileName,false);
+	myTexture = fileManager->GetTexture(myFileName, false);
 	myTexture->setValue(LABEL_TO_ID(ForcePow2),true);
 	myTexture->setValue(LABEL_TO_ID(TextureType),Texture::TEXTURE_CUBE_MAP);
 	myTexture->Init();

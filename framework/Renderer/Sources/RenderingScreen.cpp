@@ -224,7 +224,7 @@ DEFINE_METHOD(RenderingScreen, ResetContext)
 	ModuleSpecificRenderer* renderer = ModuleRenderer::theGlobalRenderer; //((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	renderer->FlushState(true);
 
-	TextureFileManager*	fileManager = static_cast<TextureFileManager*>(KigsCore::GetSingleton("TextureFileManager"));
+	SP<TextureFileManager>	fileManager = KigsCore::GetSingleton("TextureFileManager");
 	fileManager->ResetAllTexture();
 
 	KigsCore::GetNotificationCenter()->postNotificationName("ResetContext", this);
@@ -285,7 +285,7 @@ void RenderingScreen::ManageFade(TravState* state)
 
 		ModuleSpecificRenderer* renderer = static_cast<ModuleSpecificRenderer*>(ModuleRenderer::theGlobalRenderer);
 
-		renderer->pushShader((ShaderBase*)renderer->getDefaultUiShader(), state);
+		renderer->pushShader((ShaderBase*)renderer->getDefaultUiShader().get(), state);
 
 		unsigned int shader_flag = ModuleRenderer::VERTEX_ARRAY_MASK | ModuleRenderer::NO_LIGHT_MASK;
 		shader_flag |= ModuleRenderer::COLOR_ARRAY_MASK;
@@ -336,7 +336,7 @@ void RenderingScreen::ManageFade(TravState* state)
 		mVI.SetFlag(UIVerticesInfo_Vertex | UIVerticesInfo_Color);
 
 		renderer->DrawUIQuad(state, &mVI);
-		renderer->popShader((ShaderBase*)renderer->getDefaultUiShader(), state);
+		renderer->popShader((ShaderBase*)renderer->getDefaultUiShader().get(), state);
 	}
 
 	//PRINTPROFILES;

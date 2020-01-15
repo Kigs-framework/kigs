@@ -3,9 +3,9 @@
 
 
 template<typename StringType>
-CoreModifiable* CoreModifiable::Import(std::shared_ptr<XMLTemplate<StringType> > xmlfile, const std::string& filename, bool noInit, bool keepImportFileName, ImportState* state, const std::string& override_name)
+CMSP CoreModifiable::Import(std::shared_ptr<XMLTemplate<StringType> > xmlfile, const std::string& filename, bool noInit, bool keepImportFileName, ImportState* state, const std::string& override_name)
 {
-	CoreModifiable* root = 0;
+	CMSP root = nullptr;
 
 	if (xmlfile)
 	{
@@ -113,9 +113,9 @@ CoreModifiable* CoreModifiable::Import(std::shared_ptr<XMLTemplate<StringType> >
 
 //! recusrive method to add sons and attributes found in the XML file
 template<typename StringType>
-CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModifiable* currentModifiable, ImportState& importState)
+CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModifiable* currentModifiable, ImportState& importState)
 {
-	CoreModifiable* current = 0;
+	CMSP current = nullptr;
 
 #ifdef KEEP_XML_DOCUMENT
 	XMLAttributeTemplate< StringType >* autoUpdate = currentNode->getAttribute("AutoUpdate");
@@ -171,7 +171,7 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 				//std::vector<s32>::const_iterator	itsonlink=linklist.begin();
 				for (itson = instances.begin(); itson != instances.end(); ++itson)
 				{
-					CoreModifiable* son = (*itson).myItem;
+					CMSP son = (*itson).myItem;
 					if (son->getName() == name)
 					{
 						if (son->isSubType(typeAttribute->getString()))
@@ -189,22 +189,20 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 			{
 				if (is_unique)
 				{
-					current = GetFirstInstanceByName(typeAttribute->getString(), name, false, true);
+					current = CMSP(GetFirstInstanceByName(typeAttribute->getString(), name, false, true), StealRefTag{});
 					reused_unique_instance = current;
 					//if (current) current->GetRef(); // already set by GetFirstInstanceByName
 				}
 
 				if (!current)
 				{
-					current = (CoreModifiable*)KigsCore::GetInstanceOf(name, typeAttribute->getString());
+					current = KigsCore::GetInstanceOf(name, typeAttribute->getString());
 #ifdef KEEP_XML_DOCUMENT
 					current->mXMLNodes[importState.current_xml_file] = currentNode;
 #endif
 				}
 				//				KIGS_ASSERT(loadedItems.find(ID)==loadedItems.end()); // two object with same ID
 				importState.loadedItems.push_back(current);
-				// add a ref on all loaded items to avoid they are destructed during the loading
-				current->GetRef();
 			}
 		}
 		else if (pathAttribute)
@@ -237,8 +235,7 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 
 				needInit = false;
 				importState.loadedItems.push_back(current);
-				current->GetRef();
-
+				
 #ifdef KEEP_XML_DOCUMENT
 				current->mXMLNodes[importState.current_xml_file] = currentNode;
 #endif
@@ -287,7 +284,7 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 
 			current = Import(path, importState.noInit, importState.keepImportFileName, &importState);
 
-			if (current == 0)
+			if (current == nullptr)
 			{
 				kigsprintf("Import error Include %s failed\n", name.c_str());
 			}
@@ -303,7 +300,6 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 				}
 				needInit = false;
 				importState.loadedItems.push_back(current);
-				current->GetRef();
 #ifdef KEEP_XML_DOCUMENT
 				current->mXMLNodes[importState.current_xml_file] = currentNode;
 #endif
@@ -319,7 +315,7 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 		XMLAttributeTemplate< StringType >* pathAttribute = currentNode->getAttribute("P", "Path");
 		if (pathAttribute)
 		{
-			current = SearchInstance((std::string)pathAttribute->getString(), currentModifiable,true);
+			current = CMSP(SearchInstance((std::string)pathAttribute->getString(), currentModifiable, true), StealRefTag{});
 			if (current)
 			{
 				//current->GetRef(); ref already get by searchinstance
@@ -339,7 +335,7 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 		if (PathAttribute)
 		{
 
-			current = SearchInstance((std::string)PathAttribute->getString(), currentModifiable,true);
+			current = CMSP(SearchInstance((std::string)PathAttribute->getString(), currentModifiable,true), StealRefTag{});
 			if (current)
 			{
 				if (rename)
@@ -363,17 +359,16 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 	{
 		std::vector<XMLNodeBase*>	sons;
 		sons.clear();
-		ImportAttributes(currentNode, current, importState, sons);
+		ImportAttributes(currentNode, current.get(), importState, sons);
 
 		// manage shared instances
-		CoreModifiable* shared = current->getSharedInstance();
+		CMSP shared = current->getSharedInstance();
 		if (shared != current)
 		{
-			current->Destroy();
 			current = shared;
 		}
 
-		ImportSons<StringType>(sons, current, importState);
+		ImportSons<StringType>(sons, current.get(), importState);
 
 		if (needInit && !importState.noInit)
 		{
@@ -383,7 +378,7 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 
 	if (current && autoUpdate)
 	{
-		KigsCore::GetCoreApplication()->AddAutoUpdate(current);
+		KigsCore::GetCoreApplication()->AddAutoUpdate(current.get());
 	}
 
 	if (current && currentModifiable)
@@ -395,7 +390,7 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 		std::vector<ModifiableItemStruct>::const_iterator itson;
 		for (itson = instances.begin(); itson != instances.end(); ++itson)
 		{
-			CoreModifiable* son = (*itson).myItem;
+			CMSP son = (*itson).myItem;
 			if (son == current)
 			{
 				sonNeedAdd = false;
@@ -416,7 +411,6 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 			{
 				current->Init();
 			}
-			current->Destroy();
 		}
 	}
 
@@ -432,9 +426,9 @@ CoreModifiable* CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNod
 }
 
 template<typename StringType>
-CoreModifiable* CoreModifiable::InitReference(XMLNodeTemplate< StringType >* currentNode, std::vector<CoreModifiable*>& loadedItems, const std::string& name)
+CMSP CoreModifiable::InitReference(XMLNodeTemplate< StringType >* currentNode, std::vector<CMSP>& loadedItems, const std::string& name)
 {
-	CoreModifiable* current = 0;
+	CMSP current = nullptr;
 	XMLAttributeTemplate< StringType >* ref = currentNode->getAttribute("Ref", "Reference");
 
 	if (ref)
@@ -442,17 +436,16 @@ CoreModifiable* CoreModifiable::InitReference(XMLNodeTemplate< StringType >* cur
 		// search modifiable by type, 1st among the already loaded items ...
 		bool WasFoundInLoaded = false;
 
-		std::vector<CoreModifiable*>::const_iterator Iter = loadedItems.begin();
-		std::vector<CoreModifiable*>::const_iterator Iterend = loadedItems.end();
+		std::vector<CMSP>::const_iterator Iter = loadedItems.begin();
+		std::vector<CMSP>::const_iterator Iterend = loadedItems.end();
 		KigsID type = ref->getString();
 		while (Iter != Iterend)
 		{
-			CoreModifiable* pLoaded = *Iter;
+			const CMSP& pLoaded = *Iter;
 			if (pLoaded->getName() == name && pLoaded->isSubType(type))
 			{
 				WasFoundInLoaded = true;
 				current = pLoaded;
-				current->GetRef();
 				break;
 			}
 			++Iter;
@@ -472,8 +465,7 @@ CoreModifiable* CoreModifiable::InitReference(XMLNodeTemplate< StringType >* cur
 			{
 				if ((*it)->getName() == name)
 				{
-					current = (CoreModifiable*)(*it);
-					current->GetRef();
+					current = CMSP((CoreModifiable*)(*it), GetRefTag{});
 					break;
 				}
 			}

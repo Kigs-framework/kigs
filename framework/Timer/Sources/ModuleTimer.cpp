@@ -58,26 +58,28 @@ void ModuleTimer::Update(const Timer& timer, void* addParam)
 }    
 
 
-bool	ModuleTimer::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ModuleTimer::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType("TimeTicker"))
 	{
-		if(myTickerList.find(item)==myTickerList.end())
+		CoreModifiable* i = item.Pointer();
+		if(myTickerList.find(i)==myTickerList.end())
 		{
-			myTickerList[item]=item;
+			myTickerList[i]=i;
 		}
 	}
 
 	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 }
 
-bool	ModuleTimer::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
+bool	ModuleTimer::removeItem(CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType("TimeTicker"))
 	{
-		if(myTickerList.find(item)!=myTickerList.end())
+		CoreModifiable* i = item.Pointer();
+		if(myTickerList.find(i)!=myTickerList.end())
 		{
-			myTickerList.erase(item);
+			myTickerList.erase(i);
 		}
 	}
 

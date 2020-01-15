@@ -368,11 +368,11 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 	// mode = 2 : T_Triangle
 	// mode = 3 : TS_Triangle
 
-	Texture *Tex;
-	Material* Mat;
-	MaterialStage*	MatStage;
+	SP<Texture> Tex(nullptr);
+	SP < Material> Mat(nullptr);
+	SP < MaterialStage>	MatStage(nullptr);
 
-	MeshItemGroup* newgroup;
+	SP<MeshItemGroup> newgroup(nullptr);
 
 	Mesh::Triangle *mTriangle=0;
 	Mesh::S_Triangle *mS_Triangle=0;
@@ -394,35 +394,30 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 				realindex=matRef;
 			}
 
-			MatStage = (MaterialStage*)(KigsCore::GetInstanceOf(myTextureList[realindex]+"MatStage","MaterialStage"));
+			MatStage = KigsCore::GetInstanceOf(myTextureList[realindex]+"MatStage","MaterialStage");
 
 
 			if(myTextureList[realindex]!="")
 			{
-			/*  Tex =	(Texture*)(KigsCore::GetInstanceOf(myTextureList[realindex],"Texture"));
-			  Tex->setValue("FileName",myTextureList[realindex]);
-			  Tex->Init();
-			  */
 
-				TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-				Tex=fileManager->GetTexture(myTextureList[realindex],false);
+				SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
+				Tex = fileManager->GetTexture(myTextureList[realindex], false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 
 				Tex->Init();
 
-				MatStage->addItem(Tex);
-				Tex->Destroy();
+				MatStage->addItem((CMSP&)Tex);
 			}
 
 			MatStage->Init();
 
 			if(myMaterialList[realindex] != "")
 			{
-				Mat =	(Material*)(KigsCore::GetInstanceOf(myMaterialList[realindex],"Material"));
+				Mat =	KigsCore::GetInstanceOf(myMaterialList[realindex],"Material");
 			}
 			else
 			{
-				Mat =	(Material*)(KigsCore::GetInstanceOf(myTextureList[realindex]+"Mat","Material"));
+				Mat =	KigsCore::GetInstanceOf(myTextureList[realindex]+"Mat","Material");
 			}
 
 			if(myMaterialStructList[matRef].subMat.size())
@@ -459,15 +454,11 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 			}
 
 
-			Mat->addItem(MatStage);
-			MatStage->Destroy();
+			Mat->addItem((CMSP&)MatStage);
 
-	/*		pMesh->addItem(Mat);
-			Mat->Destroy();
-*/
 			char L_tmpinstancename[128] = { 0 };
 			sprintf(L_tmpinstancename, "meshitem_%i", realindex);
-			newgroup = (MeshItemGroup*)(KigsCore::GetInstanceOf(L_tmpinstancename,"MeshItemGroup"));
+			newgroup = KigsCore::GetInstanceOf(L_tmpinstancename,"MeshItemGroup");
 			newgroup->Init();
 			IsFirst[i] = true;
 			currentindex[i]=0;
@@ -484,7 +475,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 						{
 							mTriangle = new Mesh::Triangle[TriangleCountByGroup[i]];
 							newgroup->myFirstTriangle = mTriangle;
-							newgroup->addItem(Mat);
+							newgroup->addItem((CMSP&)Mat);
 							newgroup->myTriangleCount = 0;
 							newgroup->myTriangleSize = sizeof(Mesh::Triangle);
 							newgroup->myTriangleType = eF_Triangle;
@@ -498,7 +489,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 						{
 							mS_Triangle = new Mesh::S_Triangle[TriangleCountByGroup[i]];
 							newgroup->myFirstTriangle = mS_Triangle;
-							newgroup->addItem(Mat);
+							newgroup->addItem((CMSP&)Mat);
 							newgroup->myTriangleCount = 0;
 							newgroup->myTriangleSize = sizeof(Mesh::S_Triangle);
 							newgroup->myTriangleType = eS_Triangle;
@@ -512,7 +503,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 						{
 							mT_Triangle = new Mesh::T_Triangle<1>[TriangleCountByGroup[i]];
 							newgroup->myFirstTriangle = mT_Triangle;
-							newgroup->addItem(Mat);
+							newgroup->addItem((CMSP&)Mat);
 							newgroup->myTriangleCount = 0;
 							newgroup->myTriangleSize = sizeof(Mesh::T_Triangle<1>);
 							newgroup->myTriangleType = eTF_Triangle;
@@ -526,7 +517,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 						{
 							mTS_Triangle = new Mesh::TS_Triangle<1>[TriangleCountByGroup[i]];
 							newgroup->myFirstTriangle = mTS_Triangle;
-							newgroup->addItem(Mat);
+							newgroup->addItem((CMSP&)Mat);
 							newgroup->myTriangleCount = 0;
 							newgroup->myTriangleSize = sizeof(Mesh::TS_Triangle<1>);
 							newgroup->myTriangleType = eTS_Triangle;
@@ -538,8 +529,8 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 					} // switch mode
 				}
 			} // For TriangleCount
-			pMesh->addItem(newgroup);
-			newgroup->Destroy();
+			pMesh->addItem((CMSP&)newgroup);
+		
 		} // if TriangleCountByGroup
 	}	// for MaterialCount
 

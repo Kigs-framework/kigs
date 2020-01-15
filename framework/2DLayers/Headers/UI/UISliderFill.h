@@ -17,10 +17,10 @@ public:
 	 */
 	UISliderFill(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	inline Texture*		GetVoidTexture() { return myVoidTexture; }
-	inline Texture*		GetStartTexture() { if (myStartPositionX > -1 && myStartPositionY > -1) return myStartTexture; else return NULL; }
-	inline Texture*		GetMiddleTexture() { if (myMiddlePositionX > -1 && myMiddlePositionY > -1) return myMiddleTexture; else return NULL; }
-	inline Texture*		GetEndTexture() { if (myEndPositionX > -1 && myEndPositionY > -1) return myEndTexture; else return NULL; }
+	inline SP<Texture>	GetVoidTexture() { return myVoidTexture; }
+	inline SP<Texture>  GetStartTexture() { if (myStartPositionX > -1 && myStartPositionY > -1) return myStartTexture; else return nullptr; }
+	inline SP<Texture>  GetMiddleTexture() { if (myMiddlePositionX > -1 && myMiddlePositionY > -1) return myMiddleTexture; else return nullptr; }
+	inline SP<Texture>  GetEndTexture() { if (myEndPositionX > -1 && myEndPositionY > -1) return myEndTexture; else return nullptr; }
 
 	inline void			Get_StartPosition(int& X, int& Y) { X = myStartPositionX; Y = myStartPositionY; }
 	inline void			Get_MiddlePosition(int& X, int& Y) { X = myMiddlePositionX; Y = myMiddlePositionY; }
@@ -48,10 +48,10 @@ protected:
 	//! Direction of Slider "Vertical" or "Horizontal")
 	maEnum<2>			myDirection;
 
-	Texture*			myStartTexture;
-	Texture*			myMiddleTexture;
-	Texture*			myEndTexture;
-	Texture*			myVoidTexture;
+	SP<Texture>			myStartTexture;
+	SP<Texture>			myMiddleTexture;
+	SP<Texture>			myEndTexture;
+	SP<Texture>			myVoidTexture;
 
 	int					myStartPositionX;
 	int					myStartPositionY;

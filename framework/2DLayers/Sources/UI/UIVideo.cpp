@@ -113,7 +113,7 @@ void UIVideo::InitModifiable()
 		if(myTexture)
 			myTexture=nullptr;
 
-		myTexture = KigsCore::CreateInstance(myVideoName, "Texture");
+		myTexture = KigsCore::GetInstanceOf(myVideoName, "Texture");
 		myTexture->setValue("Width",mySizeX);
 		myTexture->setValue("Height",mySizeY);
 		myTexture->Init();
@@ -124,7 +124,7 @@ void UIVideo::InitModifiable()
 
 		kstl::string LBufferName = myVideoName;
 		LBufferName = LBufferName + "Buffer";
-		myBufferTexture = KigsCore::CreateInstance(LBufferName, "Texture");
+		myBufferTexture = KigsCore::GetInstanceOf(LBufferName, "Texture");
 		myBufferTexture->setValue("Width",mySizeX);
 		myBufferTexture->setValue("Height",mySizeY*2);
 		myBufferTexture->Init();
@@ -166,7 +166,7 @@ bool UIVideo::isAlpha(float X, float Y)
 		{
 			if(sons[i].myItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = (AlphaMask*)sons[i].myItem;
+				myAlphaMask = sons[i].myItem;
 				break;
 			}
 		}

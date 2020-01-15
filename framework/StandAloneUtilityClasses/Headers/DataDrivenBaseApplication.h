@@ -70,14 +70,14 @@ protected:
 
 	void Update(const Timer&  timer, void* addParam) override;
 
-	CoreModifiable*	myPreviousSequence = nullptr;
+	CMSP	myPreviousSequence = nullptr;
 	maCoreItem		myAnimPrev;
 	maCoreItem		myAnimNext;
 
 	bool			myIsFirstUpdate;
 
-	kstl::vector<CoreModifiable*>	myPrevLauncherList;
-	kstl::vector<CoreModifiable*>	myNextLauncherList;
+	kstl::vector<CMSP>	myPrevLauncherList;
+	kstl::vector<CMSP>	myNextLauncherList;
 	maReference						myManager;
 };
 
@@ -97,8 +97,7 @@ public:
 	void RequestBackToPreviousState();
 
 	inline State_t			GetState() { return m_StateStack.back(); }
-	inline CoreModifiable*	GetCurrentSequence() { return myCurrentSequence; }
-	//inline CoreModifiable*	GetPreviousSequence() { return myPreviousSequence; }
+	inline CMSP&	GetCurrentSequence() { return myCurrentSequence; }
 	
 	friend class DataDrivenTransition;
 	friend class DataDrivenSequence;
@@ -151,8 +150,8 @@ protected:
 	maString			myStartingSequence = BASE_ATTRIBUTE(StartingSequence, "");
 
 
-	//CoreModifiable*		myPreviousSequence;
-	CoreModifiable*		myCurrentSequence = nullptr;
+
+	CMSP		myCurrentSequence = nullptr;
 	bool				myInTransition;
 	
 	//LayerMouseInfo * theMouseInfo = nullptr;
@@ -173,8 +172,8 @@ public:
 	DECLARE_ABSTRACT_CLASS_INFO(DataDrivenBaseApplication, CoreBaseApplication, Core);
 	DECLARE_CONSTRUCTOR(DataDrivenBaseApplication);
 
-	inline CoreModifiable*	GetExitConfirmationPopup() { return myConfirmExitPopup; }
-	inline DataDrivenSequenceManager*	GetSequenceManager() { return m_SequenceManager; }
+	inline CMSP	GetExitConfirmationPopup() { return myConfirmExitPopup; }
+	inline SP<DataDrivenSequenceManager>&	GetSequenceManager() { return m_SequenceManager; }
 
 	friend class DataDrivenSequenceManager;
 	friend class DataDrivenTransition;
@@ -215,15 +214,15 @@ protected:
 #ifdef KIGS_TOOLS
 	bool mCanUpdateNextFrame = true;
 #endif
-	CoreModifiable*		myConfirmExitPopup;
+	CMSP		myConfirmExitPopup;
 
 
 	bool				myPreviousShortcutEnabled;
 
 	// anonymous class used to store global parameters 
-	CoreModifiable*		m_GlobalConfig;
+	CMSP					m_GlobalConfig;
 
-	DataDrivenSequenceManager*	m_SequenceManager;
+	SP<DataDrivenSequenceManager>	m_SequenceManager;
 
 	// manage transition state for all sequence manager
 	kstl::unordered_map<DataDrivenTransition*, DataDrivenTransition*>						myInTransition;

@@ -42,7 +42,7 @@ void ModuleGUI::Update(const Timer& timer, void* addParam)
 	{
 		if((*it).myItem->isSubType(Window::myClassID))
 		{
-			Window* window=(Window*)(*it).myItem;
+			SP<Window>& window=(SP<Window>&)(*it).myItem;
 			window->CallUpdate(timer, addParam);
 		}
 	}            

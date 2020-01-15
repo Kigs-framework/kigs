@@ -68,9 +68,9 @@ void UIAnimatedSprite::ComputeRealSize()
 
 void UIAnimatedSprite::ChangeSpriteSheet(std::string const& filename)
 {
-	TextureFileManager* textureManager = KigsCore::GetSingleton<TextureFileManager>();
+	SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
 	myFileName = filename;
-	myTexture = OwningRawPtrToSmartPtr(textureManager->GetSpriteSheetTexture(filename));
+	myTexture = textureManager->GetSpriteSheetTexture(filename);
 	ChangeAnimation(myCurrentAnimation.c_str());
 }
 
@@ -90,7 +90,7 @@ bool UIAnimatedSprite::isAlpha(float X, float Y)
 		{
 			if (sons[i].myItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = (AlphaMask*)sons[i].myItem;
+				myAlphaMask = sons[i].myItem;
 				break;
 			}
 		}

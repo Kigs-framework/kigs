@@ -117,7 +117,7 @@ protected:
     void InitModifiable() override;
 
 	//! used texture
-	Texture*	myTexture;
+	SP<Texture>	myTexture;
 	//! size of the SkyBox
 	maFloat		m_Size;
 	//! name of the file

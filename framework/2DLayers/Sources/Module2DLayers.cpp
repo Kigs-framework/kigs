@@ -151,7 +151,7 @@ kstl::set<CoreModifiable*>	Module2DLayers::GetLayerList()
 	{
 		if ((*it).myItem->isSubType("Abstract2DLayer"))
 		{
-			layerlist.insert((*it).myItem);
+			layerlist.insert((CoreModifiable*)(*it).myItem.get());
 		}
 	}
 

@@ -254,7 +254,7 @@ public:
 	 * \param	other : coreModifiable to compare with
 	 * \return	TRUE if the 2 coreModifiable is equal
 	 */
-	bool	Equal(CoreModifiable& other) override;
+	bool	Equal(const CoreModifiable& other) override;
 
 	//! list of blend function source
 	enum BlendFuncSource
