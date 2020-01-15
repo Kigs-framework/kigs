@@ -458,7 +458,6 @@ void UIDynamicText::IterateCharacters(std::function<bool(IterationState&)> func,
 					float offsetUp = offset_y + itemsize.y * itemanchor.y;
 					float offsetDown = offset_y - itemsize.y * (1.0f-itemanchor.y);
 
-
 					line_y_extra_offset_above = std::max(line_y_extra_offset_above, std::max(offsetUp - ascent*scale, 2.0f));
 					line_y_extra_offset_under = std::max(line_y_extra_offset_under, std::max(- offsetDown, 2.0f));
 					pos.y -= offset_y;
