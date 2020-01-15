@@ -234,6 +234,13 @@ void ImGuiLayer::InitModifiable()
 		config.FontDataOwnedByAtlas = false;
 		config.MergeMode = false;
 
+		// before setting our font, release previous one
+		if (io.Fonts && myImGuiState->FontAtlasOwnedByContext)
+		{
+			io.Fonts->Locked = false;
+			IM_DELETE(io.Fonts);
+		}
+
 		io.Fonts = &mFontAtlas;
 		myImGuiState->FontAtlasOwnedByContext = false;
 		
@@ -263,12 +270,12 @@ void ImGuiLayer::InitModifiable()
 		else if(style == "HoloLens")
 			SetStyleHoloLens();
 
-		if (mFontTexture) removeItem(mFontTexture);
+		if (mFontTexture) removeItem((CMSP&)mFontTexture);
 
-		auto tex = KigsCore::CreateInstance(getName() + "_font_tex", "Texture");
-		mFontTexture = (Texture*)tex.get();
+		auto tex = KigsCore::GetInstanceOf(getName() + "_font_tex", "Texture");
+		mFontTexture = tex;
 
-		addItem(mFontTexture);
+		addItem(tex);
 
 		// Build texture atlas
 		int bpp;
@@ -278,7 +285,7 @@ void ImGuiLayer::InitModifiable()
 		mFontTexture->CreateFromImage(img);
 
 		// Store our identifier
-		io.Fonts->TexID = (void*)(intptr_t)mFontTexture;
+		io.Fonts->TexID = (void*)(intptr_t)mFontTexture.get();
 
 		// Cleanup (don't clear the input data if you want to append new fonts later)
 		io.Fonts->ClearInputData();
@@ -296,17 +303,20 @@ void ImGuiLayer::InitModifiable()
 		else
 		{
 			auto imgui_shader = GetFirstInstanceByName("API3DUIShader", "imguishader");
-			if (imgui_shader) addItem(imgui_shader);
+			if (imgui_shader)
+			{
+				CMSP toAdd(imgui_shader, StealRefTag{});
+				addItem(toAdd);
+			}
 			else
 			{
-				imgui_shader = KigsCore::GetInstanceOf("imguishader", "API3DUIShader");
-				addItem(imgui_shader);
-				imgui_shader->Destroy();
+				CMSP newimgui_shader = KigsCore::GetInstanceOf("imguishader", "API3DUIShader");
+				addItem(newimgui_shader);
 			}
 		}
 
 
-		NewFrame(mApp->GetApplicationTimer());
+		NewFrame(mApp->GetApplicationTimer().get());
 		ImGui::SetCurrentContext(old_state);
 	}
 }
@@ -584,8 +594,8 @@ void ImGuiLayer::NewFrame(Timer* timer)
 
 Texture* ImGuiLayer::GetTexture(const std::string& name)
 {
-	TextureFileManager* tfm = KigsCore::GetSingleton<TextureFileManager>();
-	auto tex = tfm->GetTextureManaged(name);
+	SP<TextureFileManager> tfm = KigsCore::GetSingleton("TextureFileManager");
+	auto tex = tfm->GetTexture(name);
 	mUsedTexturesThisFrame.push_back(tex);
 	return tex.get();
 }
@@ -626,7 +636,7 @@ void ImGuiLayer::TravDraw(TravState* state)
 	{
 		if (mRemote && ImGui::RemoteDraw(draw_data->CmdLists, draw_data->CmdListsCount))
 		{
-			NewFrame(mApp->GetApplicationTimer());
+			NewFrame(mApp->GetApplicationTimer().get());
 			ImGui::SetCurrentContext(old_state);
 			return;
 		}
@@ -638,7 +648,7 @@ void ImGuiLayer::TravDraw(TravState* state)
 
 	if (!StartDrawing(state))
 	{
-		NewFrame(mApp->GetApplicationTimer());
+		NewFrame(mApp->GetApplicationTimer().get());
 		ImGui::SetCurrentContext(old_state);
 		return;
 	}
@@ -780,7 +790,7 @@ void ImGuiLayer::TravDraw(TravState* state)
 	EndDrawing(state);
 
 
-	NewFrame(mApp->GetApplicationTimer());
+	NewFrame(mApp->GetApplicationTimer().get());
 	ImGui::SetCurrentContext(old_state);
 }
 
@@ -791,9 +801,9 @@ DEFINE_METHOD(ImGuiLayer, ResetContext)
 
 	ImGuiIO& io = ImGui::GetIO();
 
-	if (mFontTexture) removeItem(mFontTexture);
-	auto tex = KigsCore::CreateInstance(getName() + "_font_tex", "Texture");
-	mFontTexture = (Texture*)tex.get();
+	if (mFontTexture) removeItem((CMSP&)mFontTexture);
+	auto tex = KigsCore::GetInstanceOf(getName() + "_font_tex", "Texture");
+	mFontTexture = tex;
 
 	// Build texture atlas
 	//unsigned char* pixels;
@@ -806,10 +816,10 @@ DEFINE_METHOD(ImGuiLayer, ResetContext)
 
 	mFontTexture->CreateFromImage(img);
 
-	addItem(mFontTexture);
+	addItem(tex);
 
 	// Store our identifier
-	io.Fonts->TexID = (void*)(intptr_t)mFontTexture;
+	io.Fonts->TexID = (void*)(intptr_t)mFontTexture.get();
 
 	// Cleanup (don't clear the input data if you want to append new fonts later)
 	//io.Fonts->ClearInputData();
@@ -817,7 +827,7 @@ DEFINE_METHOD(ImGuiLayer, ResetContext)
 
 	// Flush current frame data
 	ImGui::Render();
-	NewFrame(KigsCore::Instance()->GetCoreApplication()->GetApplicationTimer());
+	NewFrame(KigsCore::Instance()->GetCoreApplication()->GetApplicationTimer().get());
 
 	ImGui::SetCurrentContext(old_state);
 	return false;

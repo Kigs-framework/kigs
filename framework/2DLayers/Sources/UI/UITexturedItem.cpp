@@ -173,11 +173,11 @@ void     UITexturedItem::SetTexture(Texture* t)
 
 
 
-bool UITexturedItem::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool UITexturedItem::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Texture::myClassID))
 	{
-		myTexture = NonOwningRawPtrToSmartPtr(item);
+		myTexture = item;
 
 		if (myTexture && getAttribute("HasDynamicTexture"))
 			myTexture->setValue("IsDynamic", true);
@@ -186,7 +186,7 @@ bool UITexturedItem::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK
 	return UIDrawableItem::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-bool UITexturedItem::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
+bool UITexturedItem::removeItem(CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Texture::myClassID))
 	{

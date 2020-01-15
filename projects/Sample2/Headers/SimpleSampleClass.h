@@ -17,7 +17,7 @@ protected:
 	
 	void InitModifiable() override;
 
-	virtual bool addItem(CoreModifiable* item, ItemPosition pos = Last) override;
+	virtual bool addItem(CMSP& item, ItemPosition pos = Last) override;
 
 	// int CoreModifiable attribute named CountWhenAdded
 	maInt	m_CountWhenAdded = BASE_ATTRIBUTE(CountWhenAdded,0);

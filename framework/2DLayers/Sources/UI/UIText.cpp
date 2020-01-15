@@ -68,7 +68,7 @@ void UIText::InitModifiable()
 
 		sprintf(nameBuffer, "%s_%u_TEX", name.c_str(), getUID());
 
-		myTexture = KigsCore::CreateInstance(nameBuffer, "Texture");
+		myTexture = KigsCore::GetInstanceOf(nameBuffer, "Texture");
 		myTexture->Init();
 		myTexture->SetRepeatUV(false, false);
 		ChangeText(myText.const_ref());
@@ -86,7 +86,7 @@ bool UIText::isAlpha(float X, float Y)
 		{
 			if (sons[i].myItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = (AlphaMask*)sons[i].myItem;
+				myAlphaMask = sons[i].myItem;
 				break;
 			}
 		}
@@ -119,7 +119,7 @@ void	UIText::ChangeText(const usString& _newText)
 	kfloat stR, stG, stB, st_A;
 	GetStrokeColor(stR, stG, stB, st_A);
 
-	LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+	SP<LocalizationManager> theLocalizationManager = KigsCore::GetSingleton("LocalizationManager");
 	float LanguageScale = 1.0f;
 	theLocalizationManager->getValue("LanguageScale", LanguageScale);
 

@@ -64,17 +64,17 @@ ModernMeshItemGroup::~ModernMeshItemGroup()
 	}
 }
 
-SmartPointer<ModernMesh> ModernMesh::CreateClonedMesh(const std::string& name, bool reuse_materials)
+SP<ModernMesh> ModernMesh::CreateClonedMesh(const std::string& name, bool reuse_materials)
 {
-	SmartPointer<ModernMesh> mesh = KigsCore::CreateInstance(name, "ModernMesh");
+	SP<ModernMesh> mesh = KigsCore::GetInstanceOf(name, "ModernMesh");
 	mesh->myBoundingBox = myBoundingBox;
 	mesh->myWasBuild = true;
 	mesh->Init();
 	for (auto& it : getItems())
 	{
-		SmartPointer<ModernMeshItemGroup> mesh_group = KigsCore::CreateInstance("group0", "ModernMeshItemGroup");
+		SP<ModernMeshItemGroup> mesh_group = KigsCore::GetInstanceOf("group0", "ModernMeshItemGroup");
 		mesh_group->SetupClonedMesh(it.myItem->as<ModernMeshItemGroup>());
-		mesh->addItem(mesh_group.get());
+		mesh->addItem((CMSP&)mesh_group);
 
 		if (reuse_materials)
 		{
@@ -82,7 +82,7 @@ SmartPointer<ModernMesh> ModernMesh::CreateClonedMesh(const std::string& name, b
 			{
 				if (mat.myItem->isSubType("Material"))
 				{
-					mesh_group->addItem(mat.myItem);
+					mesh_group->addItem((CMSP&)mat.myItem);
 				}
 			}
 		}
@@ -124,7 +124,7 @@ void ModernMesh::InitModifiable()
 		}
 		else if ((!myWasBuild) && (myFileName.const_ref() != ""))
 		{
-			FilePathManager*	pathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+			SP<FilePathManager>	pathManager = KigsCore::GetSingleton("FilePathManager");
 			auto filename = myFileName.const_ref();
 
 			/*if (filename.substr(filename.size() - 4) == ".xml" || filename.substr(filename.size() - 5) == ".kxml")
@@ -195,7 +195,7 @@ void ModernMesh::InitBoundingBox()
 		{
 			if ((*it).myItem->isSubType(ModernMeshItemGroup::myClassID))
 			{
-				ModernMeshItemGroup* current = (ModernMeshItemGroup*)(*it).myItem;
+				SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).myItem;
 				if (current->myVertexCount)
 				{
 					unsigned char* vertexStart = (unsigned char*)current->myVertexBufferArray.buffer();
@@ -259,46 +259,43 @@ void ModernMesh::PlaceMergeBarrier()
 	}
 }
 
-ModernMeshItemGroup*	ModernMesh::EndMeshGroup()
+SP<ModernMeshItemGroup>	ModernMesh::EndMeshGroup()
 {
-	ModernMeshItemGroup* createdGroup = 0;
+	SP<ModernMeshItemGroup> createdGroup(nullptr);
 	if (myCurrentMeshBuilder)
 	{
 		createdGroup = myCurrentMeshBuilder->EndGroup((bool)myOptimize);
 		if (createdGroup)
 		{
-			addItem(createdGroup);
-			createdGroup->Destroy();
+			addItem((CMSP&)createdGroup);
 		}
 	}
 	return createdGroup;
 }
 
-ModernMeshItemGroup*	ModernMesh::EndMeshGroup(void * vertex, int vertexCount, void * index, int indexCount)
+SP<ModernMeshItemGroup>	ModernMesh::EndMeshGroup(void * vertex, int vertexCount, void * index, int indexCount)
 {
-	ModernMeshItemGroup* createdGroup = 0;
+	SP<ModernMeshItemGroup> createdGroup(nullptr);
 	if (myCurrentMeshBuilder)
 	{
 		createdGroup = myCurrentMeshBuilder->EndGroup(vertex, vertexCount, index, indexCount);
 		if (createdGroup)
 		{
-			addItem(createdGroup);
-			createdGroup->Destroy();
+			addItem((CMSP&)createdGroup);
 		}
 	}
 	return createdGroup;
 }
 
-ModernMeshItemGroup* ModernMesh::EndMeshGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset)
+SP<ModernMeshItemGroup> ModernMesh::EndMeshGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset)
 {
-	ModernMeshItemGroup* createdGroup = 0;
+	SP<ModernMeshItemGroup> createdGroup(nullptr);
 	if (myCurrentMeshBuilder)
 	{
 		createdGroup = myCurrentMeshBuilder->EndGroup(vertex_count, vertices, normals, colors, texCoords, face_count, faces, offset);
 		if (createdGroup)
 		{
-			addItem(createdGroup);
-			createdGroup->Destroy();
+			addItem((CMSP&)createdGroup);
 		}
 	}
 	return createdGroup;
@@ -357,7 +354,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 		{
 			if (crb->size() >= settings->export_buffer_attribute_as_external_file_size_threshold)
 			{
-				CoreModifiable* compressManager = KigsCore::GetSingleton("KXMLManager");
+				CMSP compressManager = KigsCore::GetSingleton("KXMLManager");
 
 				auto poscrc = path.find("$CRCHASH$");
 				auto posmeow = path.find("$MEOWHASH$");
@@ -695,7 +692,7 @@ void ModernMesh::ComputeTangents(bool useTextureCoords)
 	{
 		if ((*it).myItem->isSubType(ModernMeshItemGroup::myClassID))
 		{
-			ModernMeshItemGroup* current = (ModernMeshItemGroup*)(*it).myItem;
+			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).myItem;
 			current->ComputeTangents(useTextureCoords);
 		}
 	}
@@ -709,7 +706,7 @@ void ModernMesh::ComputeNormals()
 	{
 		if ((*it).myItem->isSubType(ModernMeshItemGroup::myClassID))
 		{
-			ModernMeshItemGroup* current = (ModernMeshItemGroup*)(*it).myItem;
+			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).myItem;
 			current->ComputeNormals();
 		}
 	}
@@ -724,7 +721,7 @@ void ModernMesh::ApplyScaleFactor(kfloat scaleFactor)
 	{
 		if ((*it).myItem->isSubType(ModernMeshItemGroup::myClassID))
 		{
-			ModernMeshItemGroup* current = (ModernMeshItemGroup*)(*it).myItem;
+			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).myItem;
 			current->ApplyScaleFactor(scaleFactor);
 		}
 	}
@@ -738,7 +735,7 @@ void ModernMesh::FlipAxis(int axisX, int axisY, int axisZ)
 	{
 		if ((*it).myItem->isSubType(ModernMeshItemGroup::myClassID))
 		{
-			ModernMeshItemGroup* current = (ModernMeshItemGroup*)(*it).myItem;
+			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).myItem;
 			current->FlipAxis(axisX,axisY,axisZ);
 		}
 	}
@@ -752,7 +749,7 @@ void ModernMesh::GetItemGroup(std::vector<ModernMeshItemGroup*>& list)
 	{
 		if ((*it).myItem->isSubType(ModernMeshItemGroup::myClassID))
 		{
-			list.push_back(static_cast<ModernMeshItemGroup*>((*it).myItem));
+			list.push_back((ModernMeshItemGroup*)((*it).myItem.get()));
 		}
 	}
 }

@@ -560,8 +560,14 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 		{
 			return OpenGLTexture::CreateInstance(instancename, args);
 		}
-		TextureFileManager*	fileManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-		return fileManager->GetTexture(instancename, false);
+		SP<TextureFileManager>	fileManager = KigsCore::GetSingleton("TextureFileManager");
+		SP<Texture> texture = fileManager->GetTexture(instancename, false);
+		// texture will be delete when lambda exit ( as only the pointer is returned )
+		if (texture)
+		{
+			texture->GetRef(); // so get a ref before exiting
+		}
+		return texture.get(); // and return the pointer
 	} );
 
 	
@@ -627,7 +633,7 @@ void RendererOpenGL::Close()
 	}
 #endif
 
-	if (myDefaultUIShader) myDefaultUIShader->Destroy();
+	myDefaultUIShader = nullptr;
 
 #ifdef WIN32
 #ifndef WUP

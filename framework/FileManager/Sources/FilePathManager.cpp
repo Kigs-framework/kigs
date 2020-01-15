@@ -843,7 +843,7 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 	// TODO : retreive separated hostname and url
 
 
-	CoreModifiable* L_Connection = KigsCore::GetInstanceOf("myConnection", "HTTPConnect");
+	CMSP L_Connection = KigsCore::GetInstanceOf("myConnection", "HTTPConnect");
 	// check that HTTP module is OK
 	if (L_Connection->isSubType(LABEL_TO_ID(HTTPConnect)))
 	{
@@ -852,7 +852,8 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 		L_Connection->Init();
 
 		// use FILE* pointer to store connection, weird but OK
-		handle->myFile = (PLATFORM_FILE*)L_Connection;
+		handle->myFile = (PLATFORM_FILE*)L_Connection.Pointer();
+		L_Connection->GetRef();
 
 		// create HTTPASyncRequest
 
@@ -862,10 +863,10 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 
 		L_FileName += handle->myFullFileName;
 
-		CoreModifiable* request = (KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest"));
+		CMSP request = (KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest"));
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection));
+		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection.Pointer()));
 		request->Init();
 
 		CheckUniqueObject	received;
@@ -887,7 +888,6 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 			}
 		}
 
-		request->Destroy();
 	}
 
 
@@ -914,7 +914,7 @@ long int FilePathManager::HTTPfread(void * ptr, long size, long count, FileHandl
 		sprintf(params, "%li", count);
 		L_FileName += params;
 
-		CoreModifiable* request = (KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest"));
+		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
 		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection));
@@ -931,8 +931,6 @@ long int FilePathManager::HTTPfread(void * ptr, long size, long count, FileHandl
 
 			memcpy(ptr, receivedbuffer->buffer(), receivedLen);
 		}
-
-		request->Destroy();
 
 	}
 	return receivedLen;
@@ -961,7 +959,7 @@ long int FilePathManager::HTTPftell(FileHandle* handle)
 		L_Connection->getValue(LABEL_TO_ID(fileid), receivedID); // retrieve ID
 		L_FileName += receivedID;
 
-		CoreModifiable* request = (KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest"));
+		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
 		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection));
@@ -979,9 +977,6 @@ long int FilePathManager::HTTPftell(FileHandle* handle)
 				sscanf(receivedLenAscii.c_str(), "%li", &receivedLen);
 			}
 		}
-
-		request->Destroy();
-
 
 	}
 	return receivedLen;
@@ -1006,7 +1001,7 @@ int FilePathManager::HTTPfseek(FileHandle* handle, long int offset, int origin)
 		sprintf(params, "%i", origin);
 		L_FileName += params;
 
-		CoreModifiable* request = (KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest"));
+		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
 		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection));
@@ -1025,12 +1020,8 @@ int FilePathManager::HTTPfseek(FileHandle* handle, long int offset, int origin)
 			}
 		}
 
-		request->Destroy();
-
-
 	}
 	return receivedLen;
-
 
 }
 
@@ -1045,7 +1036,7 @@ int FilePathManager::HTTPfflush(FileHandle* handle)
 		L_Connection->getValue(LABEL_TO_ID(fileid), receivedID); // retrieve ID
 		L_FileName += receivedID;
 
-		CoreModifiable* request = (KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest"));
+		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
 		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection));
@@ -1059,8 +1050,6 @@ int FilePathManager::HTTPfflush(FileHandle* handle)
 		{
 
 		}
-
-		request->Destroy();
 
 	}
 	return 0;
@@ -1078,7 +1067,7 @@ int FilePathManager::HTTPfclose(FileHandle* handle)
 		L_Connection->getValue(LABEL_TO_ID(fileid), receivedID); // retrieve ID
 		L_FileName += receivedID;
 
-		CoreModifiable* request = (KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest"));
+		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
 		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection));
@@ -1092,9 +1081,6 @@ int FilePathManager::HTTPfclose(FileHandle* handle)
 		{
 
 		}
-
-		request->Destroy();
-
 
 		L_Connection->Destroy();
 		handle->myFile = 0;

@@ -56,8 +56,10 @@ void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 	DECLARE_FULL_CLASS_INFO(core, VirtualGyroscope, GyroscopeDevice, ModuleInput);
 	DECLARE_FULL_CLASS_INFO(core, VirtualAccelerometer, AccelerometerDevice, ModuleInput);
 
-	CoreModifiable* cm = KigsCore::GetInstanceOf("virtual_gyroscope", "GyroscopeDevice");
+	CMSP cm = KigsCore::GetInstanceOf("virtual_gyroscope", "GyroscopeDevice");
+	cm->GetRef();
 	cm = KigsCore::GetInstanceOf("virtual_accelerometer", "AccelerometerDevice");
+	cm->GetRef();
 #endif
 	// search for mouse, joystick and keyboard
 
@@ -140,7 +142,7 @@ void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 
 	// create TouchInputEventManager
 
-	myTouchManager = (TouchInputEventManager*)KigsCore::GetInstanceOf("toucheventmanager", "TouchInputEventManager");
+	myTouchManager = KigsCore::GetInstanceOf("toucheventmanager", "TouchInputEventManager");
 	myTouchManager->Init();
 }
 
@@ -160,7 +162,6 @@ void ModuleInput::Close()
 		(*itr)->Destroy();
 #endif
 
-	myTouchManager->Destroy();
 
 	BaseClose();
 }
@@ -218,11 +219,11 @@ bool ModuleInput::getActiveWindowPos(CoreModifiable *w, MouseDevice::MOUSE_BUTTO
 	return true;
 }
 
-bool ModuleInput::addItem(CoreModifiable* item, ItemPosition pos DECLARE_LINK_NAME)
+bool ModuleInput::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType("Window"))
 	{
-		Window* myWindow = ((Window*)item);
+		Window* myWindow = ((Window*)item.get());
 		myWindow->SetClickCallback(ModuleInput::WindowClickEvent);
 		myWindow->SetDestroyCallback(ModuleInput::WindowDestroyEvent);
 	}

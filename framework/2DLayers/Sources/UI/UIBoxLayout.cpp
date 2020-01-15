@@ -46,11 +46,11 @@ void UIBoxLayout::RecomputeLayout()
 			{
 				if ((*itsons).myItem->isSubType(Node2D::myClassID))
 				{
-					auto node = static_cast<Node2D*>(itsons->myItem);
+					auto node = (SP<Node2D>&)(itsons->myItem);
 					bool is_enabled = false;
 					node->getValue("IsHidden", is_enabled);
 					if (!is_enabled)
-						items.push_back(node);
+						items.push_back(node.get());
 				}
 			}
 		}

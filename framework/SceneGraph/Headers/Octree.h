@@ -33,7 +33,7 @@ public:
 	 * \param	subdivelevel : subdivide level
 	 * \return	the OctreeSubNode
 	 */
-	OctreeSubNode*  AddNode(SceneNode* node,int currentlevel,int maxLevel,int subdivelevel);
+	SP<OctreeSubNode>  AddNode(SP<SceneNode>& node,int currentlevel,int maxLevel,int subdivelevel);
 
 	/**
 	 * \brief	remove a node
@@ -111,7 +111,7 @@ public:
 	 * \param	index : index of the root
 	 * \return	a sub node
 	 */
-	OctreeSubNode*				GetSubNode(int index){return mySonsSubNodes[index];}
+	SP<OctreeSubNode>&				GetSubNode(int index){return mySonsSubNodes[index];}
 
 	/**
 	 * \brief	get object list
@@ -132,7 +132,7 @@ public:
 protected:
 
 	//! list of sons	
-	OctreeSubNode**					mySonsSubNodes;
+	SP<OctreeSubNode>*				mySonsSubNodes;
 	//! list of father?
 	OctreeSubNode*					myFatherSubNode;
 
@@ -189,7 +189,7 @@ public:
 
 
 	
-	bool	removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME) override;
+	bool	removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 	
 
@@ -236,7 +236,7 @@ protected:
 
 
 	//! root of the octree
-	OctreeSubNode* myRootSubNode;
+	SP<OctreeSubNode> myRootSubNode;
 
 	//! min point of the bounding box
 	maVect3DF myBBoxMin;

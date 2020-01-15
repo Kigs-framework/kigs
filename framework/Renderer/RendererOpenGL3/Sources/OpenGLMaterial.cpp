@@ -21,33 +21,29 @@ void OpenGLMaterial::InitModifiable()
 
 	if (IsInit())
 	{
-		uniDiffuseColor = (API3DUniformBase*)KigsCore::GetInstanceOf("uniformColor", "API3DUniformFloat4");
+		uniDiffuseColor = KigsCore::GetInstanceOf("uniformColor", "API3DUniformFloat4");
 		uniDiffuseColor->setValue("Name", "MaterialDiffuseColor");
 		uniDiffuseColor->setArrayValue("Value", myDiffuseColor[0], myDiffuseColor[1], myDiffuseColor[2], myDiffuseColor[3]);
 		uniDiffuseColor->Init();
-		addItem(uniDiffuseColor);
-		uniDiffuseColor->Destroy();
+		addItem((CMSP&)uniDiffuseColor);
 
-		uniSpecularColor = (API3DUniformBase*)KigsCore::GetInstanceOf("uniSpecularColor", "API3DUniformFloat4");
+		uniSpecularColor = KigsCore::GetInstanceOf("uniSpecularColor", "API3DUniformFloat4");
 		uniSpecularColor->setValue("Name", "MaterialSpecularColor");
 		uniSpecularColor->setArrayValue("Value", mySpecularColor[0], mySpecularColor[1], mySpecularColor[2], mySpecularColor[3]);
 		uniSpecularColor->Init();
-		addItem(uniSpecularColor);
-		uniSpecularColor->Destroy();
+		addItem((CMSP&)uniSpecularColor);
 
-		uniShininess = (API3DUniformBase*)KigsCore::GetInstanceOf("shininessUniform", "API3DUniformFloat");
+		uniShininess = KigsCore::GetInstanceOf("shininessUniform", "API3DUniformFloat");
 		uniShininess->setValue("Name", "MaterialShininess");
 		uniShininess->setValue("Value", myShininess);
 		uniShininess->Init();
-		addItem(uniShininess);
-		uniShininess->Destroy();
+		addItem((CMSP&)uniShininess);
 
-		uniAmbiantColor = (API3DUniformBase*)KigsCore::GetInstanceOf("uniAmbiantColor", "API3DUniformFloat4");
+		uniAmbiantColor = KigsCore::GetInstanceOf("uniAmbiantColor", "API3DUniformFloat4");
 		uniAmbiantColor->setValue("Name", "MaterialAmbiantColor");
 		uniAmbiantColor->setArrayValue("Value", myAmbientColor[0], myAmbientColor[1], myAmbientColor[2], myAmbientColor[3]);
 		uniAmbiantColor->Init();
-		addItem(uniAmbiantColor);
-		uniAmbiantColor->Destroy();
+		addItem((CMSP&)uniAmbiantColor);
 
 #ifdef KIGS_TOOLS
 		uniDiffuseColor->AddDynamicAttribute(BOOL, "NoExport", true);

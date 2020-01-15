@@ -116,7 +116,7 @@ const PLATFORM_WCHAR*	LocalizationManager::getLocalizedString(const kstl::string
 
 bool	LocalizationManager::ParseStringsFile(const char* pszFile)
 {
-	FilePathManager*	pathManager=(FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+	SP<FilePathManager>	pathManager=KigsCore::GetSingleton("FilePathManager");
 
 	kstl::string fullfilename=pszFile;
 	SmartPointer<FileHandle> fullfilenamehandle;

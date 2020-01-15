@@ -5,6 +5,7 @@
 #include "robin_hood.h"
 #include "usString.h"
 #include "TecLibs/Tec3D.h"
+#include "SmartPointer.h"
 
 #include <mutex>
 #include <memory>
@@ -153,6 +154,8 @@ struct LazyContent
 	std::vector<WeakRef*> WeakRefs;
 };
 
+typedef SmartPointer<CoreModifiable> CMSP;
+
 class ModifiableItemStruct
 {
 protected:
@@ -164,13 +167,13 @@ protected:
 	};
 
 public:
-	ModifiableItemStruct(CoreModifiable* item) : myItem(item), myItemFlag(0) {}
+	ModifiableItemStruct(const CMSP& item) : myItem(item), myItemFlag(0) {}
 
-	operator CoreModifiable*() { return myItem; }
-	CoreModifiable* operator->() { return myItem; }
-	CoreModifiable& operator*() { return *myItem; }
+	operator CMSP() { return myItem; }
+	CoreModifiable* operator->() { return myItem.Pointer(); }
+	CoreModifiable& operator*() { return *(myItem.Pointer()); }
 
-	CoreModifiable* myItem;
+	CMSP myItem;
 
 	inline bool	isAggregate() const
 	{
@@ -575,9 +578,9 @@ public:
 
 	/// Aggregate management
 	// Adds a new son as aggregate
-	bool aggregateWith(CoreModifiable* item, ItemPosition pos = Last);
+	bool aggregateWith(CMSP& item, ItemPosition pos = Last);
 	// Removes a son as aggregate
-	bool removeAggregateWith(CoreModifiable* item);
+	bool removeAggregateWith(CMSP& item);
 	// Recursive search all aggregate sons for an aggregate of the given type  
 	CoreModifiable*	getAggregateByType(KigsID id);
 	// Search parent to see if one of them is aggregate root of this, then recurse
@@ -679,9 +682,9 @@ public:
 #endif
 	// for some type of classes when we want don't want duplicated instances (textures, shaders...)
 	// return an already existing instance equivalent of this
-	virtual CoreModifiable*	getSharedInstance()
+	virtual CMSP	getSharedInstance()
 	{
-		return this;
+		return CMSP(this, GetRefTag{});
 	}
 
 	/// Link management
@@ -730,16 +733,16 @@ public:
 	virtual void removeUser(CoreModifiable* user);
 	
 	// add a son. Need to call ParentClassType::addItem(...) when overriding !
-	virtual bool addItem(CoreModifiable* item, ItemPosition pos = Last);
+	virtual bool addItem(CMSP& item, ItemPosition pos = Last);
 	
 	// remove a son. Need to call ParentClassType::removeItem(...) when overriding !
-	virtual bool removeItem(CoreModifiable* item);
+	virtual bool removeItem(CMSP& item);
 
 	// Called when an attribute that has its notification level set to Owner is modified. Need to call ParentClassType::NotifyUpdate(...) when overriding !
 	virtual void NotifyUpdate(const u32 labelid);
 
 	// By default Two modifiables are equals if they are the same type and attributes are equal. Free to override as needed
-	virtual bool Equal(CoreModifiable& other);
+	virtual bool Equal(const CoreModifiable& other);
 	virtual void SpecificReInit() {}
 
 	//@TODO check for usage
@@ -769,10 +772,10 @@ public:
 	static void	Export(std::string &XMLString, const std::list<CoreModifiable*> &toexport, bool recursive, ExportSettings* settings = nullptr);
 
 public:
-	static CoreModifiable*	Import(const std::string &filename, bool noInit = false, bool keepImportFileName = false, ImportState* state = nullptr, const std::string& override_name="");
+	static CMSP	Import(const std::string &filename, bool noInit = false, bool keepImportFileName = false, ImportState* state = nullptr, const std::string& override_name="");
 	
 	template<typename StringType>
-	static CoreModifiable*	Import(std::shared_ptr<XMLTemplate<StringType> > xmlfile, const std::string &filename, bool noInit = false, bool keepImportFileName = false, ImportState* state = nullptr, const std::string& override_name = "");
+	static CMSP	Import(std::shared_ptr<XMLTemplate<StringType> > xmlfile, const std::string &filename, bool noInit = false, bool keepImportFileName = false, ImportState* state = nullptr, const std::string& override_name = "");
 
 	static CoreModifiable* Find(const std::list<CoreModifiable*> &List, const std::string &Name);
 	static CoreModifiable* FindByType(const std::list<CoreModifiable*> &List, const std::string& type);
@@ -926,7 +929,7 @@ protected:
 			XMLNodeBase* xmlattr;
 		};
 
-		std::vector<CoreModifiable*> loadedItems;
+		std::vector<CMSP> loadedItems;
 		std::vector<ToConnect> toConnect;
 
 		bool UTF8Enc;
@@ -938,7 +941,7 @@ protected:
 	};
 
 	template<typename StringType>
-	static CoreModifiable* Import(XMLNodeTemplate<StringType> * currentNode, CoreModifiable* currentModifiable, ImportState& importState);
+	static CMSP Import(XMLNodeTemplate<StringType> * currentNode, CoreModifiable* currentModifiable, ImportState& importState);
 
 	// separated import attributes / import sons, so be sure to import attribute first
 	template<typename StringType>
@@ -956,7 +959,7 @@ protected:
 	static AttachedModifierBase* InitAttributeModifier(XMLNodeTemplate<StringType>* modifierNode, CoreModifiableAttribute* attr);
 
 	template<typename StringType>
-	static CoreModifiable*	InitReference(XMLNodeTemplate<StringType>* currentNode, std::vector<CoreModifiable*> &loadedItems, const std::string& name);
+	static CMSP	InitReference(XMLNodeTemplate<StringType>* currentNode, std::vector<CMSP> &loadedItems, const std::string& name);
 	
 	static bool AttributeNeedEval(const std::string& attr)
 	{
@@ -1014,7 +1017,7 @@ private:
 	friend class CoreModifiableAttribute;
 	friend class IMEditor;
 
-	static void	ReleaseLoadedItems(std::vector<CoreModifiable*> &loadedItems);
+	static void	ReleaseLoadedItems(std::vector<CMSP> &loadedItems);
 
 	// attribute map
 	robin_hood::unordered_map<KigsID, CoreModifiableAttribute* , KigsIDHash> _attributes;

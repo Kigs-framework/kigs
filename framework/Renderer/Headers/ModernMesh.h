@@ -92,10 +92,10 @@ public:
 	void StartMeshGroup(CoreVector* description, s32 hs32VertexBufferSize = 256, s32 hs32TriangleBufferSize = 256);
 	void AddTriangle(void* v1, void* v2, void* v3);
 	void PlaceMergeBarrier();
-	ModernMeshItemGroup* EndMeshGroup();
-	ModernMeshItemGroup* EndMeshGroup(void * vertex, s32 vertexCount, void * index, s32 indexCount);
+	SP<ModernMeshItemGroup> EndMeshGroup();
+	SP<ModernMeshItemGroup> EndMeshGroup(void * vertex, s32 vertexCount, void * index, s32 indexCount);
 
-	ModernMeshItemGroup* EndMeshGroup(s32 vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, s32 face_count, v3u* faces, v3f offset = { 0,0,0 });
+	SP<ModernMeshItemGroup> EndMeshGroup(s32 vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, s32 face_count, v3u* faces, v3f offset = { 0,0,0 });
 
 	void EndMeshBuilder();
 

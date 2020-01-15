@@ -163,8 +163,8 @@ void UIImage::ChangeTexture()
 	auto arr = SplitStringByCharacter(myCurrentTextureName, ':');
 	if (arr.size() > 1) // use spritesheet
 	{
-		TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-		mySpriteSheetTexture = OwningRawPtrToSmartPtr(textureManager->GetSpriteSheetTexture(arr[0]));
+		SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+		mySpriteSheetTexture = textureManager->GetSpriteSheetTexture(arr[0]);
 		SetTexture(mySpriteSheetTexture->Get_Texture());
 		if (myTexture)
 		{
@@ -196,10 +196,8 @@ void UIImage::ChangeTexture()
 	}
 	else
 	{
-		TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-		SetTexture(textureManager->GetTexture(myCurrentTextureName));
-		KIGS_ASSERT(myTexture->getRefCount() > 1);
-		myTexture->Destroy();
+		SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+		SetTexture(textureManager->GetTexture(myCurrentTextureName).get());
 		myTexture->GetSize(myAutoresizeValue.x, myAutoresizeValue.y);
 		mUVMin.Set(FLT_MAX, FLT_MAX);
 		mUVMax.Set(FLT_MAX, FLT_MAX);
@@ -209,34 +207,6 @@ void UIImage::ChangeTexture()
 		return;
 
 	myTexture->Init();
-
-	/*if (myAlphaMask)
-	{
-		this->removeItem(myAlphaMask);
-		myAlphaMask = NULL;
-
-		if (AlphaMaskTexture == "")
-			AlphaMaskTexture = myTextureName.const_ref();
-
-		//Make new Mask
-		myAlphaMask = (AlphaMask*)KigsCore::GetInstanceOf(getName(), "AlphaMask");
-		myAlphaMask->setValue(LABEL_TO_ID(Threshold), 0.1);
-		myAlphaMask->setValue(LABEL_TO_ID(TextureName), AlphaMaskTexture);
-		this->addItem(myAlphaMask);
-		myAlphaMask->Init();
-		myAlphaMask->Destroy();
-	}*/
-
-	//auto Size
-	/*if (myAutoresizeTexture && myTexture)
-	{
-		if (myAutoresizeValue.x != mySizeX || myAutoresizeValue.y != mySizeY)
-		{
-			mySizeX = myAutoresizeValue.x;
-			mySizeY = myAutoresizeValue.y;
-			myNeedUpdatePosition = true;
-		}
-	}*/
 }
 
 bool UIImage::isAlpha(float X, float Y)
@@ -250,7 +220,7 @@ bool UIImage::isAlpha(float X, float Y)
 		{
 			if (sons[i].myItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = (AlphaMask*)sons[i].myItem;
+				myAlphaMask = sons[i].myItem;
 				break;
 			}
 		}

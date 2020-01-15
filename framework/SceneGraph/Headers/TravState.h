@@ -137,7 +137,7 @@ public:
 	* \fn 		CullingObject* GetCullingObject() const
 	* \return	the culling object
 	*/
-	CullingObject* GetCullingObject() const {return myCullingObject;}
+	SP<CullingObject>& GetCullingObject() {return myCullingObject;}
 
 	/**
 	* \brief	get the visible frame
@@ -294,7 +294,7 @@ protected:
 	//! link to the current scene3D
 	Scene3D*			myCurrentScene;
 	//! culling object
-	CullingObject*  myCullingObject;
+	SP<CullingObject>  myCullingObject;
 
 	//! TRUE if all frames are visibles
 	bool  myAllVisible;

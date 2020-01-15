@@ -140,7 +140,7 @@ public:
 		return false;
 	}
 
-	virtual CoreModifiable*	getSharedInstance() override;
+	virtual  CMSP	getSharedInstance() override;
 
 	/**
 	* \brief	load the texture

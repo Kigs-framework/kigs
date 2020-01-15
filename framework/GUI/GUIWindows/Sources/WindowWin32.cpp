@@ -351,7 +351,7 @@ void WindowWin32::ProtectedInit()
 {
 	unsigned int i = myDisplayIndex;
 
-	DisplayDeviceCaps*	L_displaycaps = (DisplayDeviceCaps*)(KigsCore::GetInstanceOf("getdisplaycaps", "DisplayDeviceCaps"));
+	SP<DisplayDeviceCaps>	L_displaycaps = KigsCore::GetInstanceOf("getdisplaycaps", "DisplayDeviceCaps");
 	auto device = L_displaycaps->Get_DisplayDevice(i);
 	if (device == nullptr)
 		device = L_displaycaps->Get_DisplayDevice(-1); // use main if not found
@@ -493,7 +493,6 @@ void WindowWin32::ProtectedInit()
 		SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
 	}
 
-	L_displaycaps->Destroy();
 }
 
 void	WindowWin32::GetMousePosInWindow(int posx, int posy, kfloat& wposx, kfloat& wposy)
