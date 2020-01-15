@@ -127,7 +127,7 @@ void    OpenGLRenderingScreen::Release(TravState* state)
 		if (!myIsOffScreen && state)
 		{
 
-			renderer->pushShader((API3DShader*)renderer->getDefaultUiShader(), state);
+			renderer->pushShader((API3DShader*)renderer->getDefaultUiShader().get(), state);
 
 			unsigned int shader_flag = ModuleRenderer::VERTEX_ARRAY_MASK | ModuleRenderer::NO_LIGHT_MASK;
 			shader_flag |= ModuleRenderer::TEXCOORD_ARRAY_MASK;
@@ -168,7 +168,7 @@ void    OpenGLRenderingScreen::Release(TravState* state)
 
 			renderer->DrawUIQuad(state, &mVI);
 
-			renderer->popShader((API3DShader*)renderer->getDefaultUiShader(), state);
+			renderer->popShader((API3DShader*)renderer->getDefaultUiShader().get(), state);
 		}
 	}
 
@@ -345,14 +345,14 @@ void	OpenGLRenderingScreen::DelayedInit()
 
 
 		// create texture with fbo
-		TextureFileManager* texfileManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-		myFBOTexture = (Texture*)texfileManager->CreateTexture(getName());
+		SP<TextureFileManager> texfileManager = KigsCore::GetSingleton("TextureFileManager");
+		myFBOTexture = texfileManager->CreateTexture(getName());
 		myFBOTexture->setValue("Width", myFBOSizeX);
 		myFBOTexture->setValue("Height", myFBOSizeY);
 		myFBOTexture->InitForFBO();
 		myFBOTexture->SetRepeatUV(false, false);
 
-		fbo_texture_id = ((OpenGLTexture*)myFBOTexture)->GetGLID();
+		fbo_texture_id = ((OpenGLTexture*)myFBOTexture.get())->GetGLID();
 
 		renderer->ActiveTextureChannel(0);
 

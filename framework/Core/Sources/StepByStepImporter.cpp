@@ -40,9 +40,9 @@ void	StepByStepImporter::InitModifiable()
 
 		myLoadedItems.clear();
 		myXMLRootNode=(XMLNode*)myXmlfile->getRoot();
-		myImportTreeRoot=new ImportTree(myXMLRootNode,0);
+		myImportTreeRoot=new ImportTree(myXMLRootNode,CMSP(nullptr));
 		myCurrentImportedTreeNode=myImportTreeRoot;
-		myTimer=(Timer*)KigsCore::GetInstanceOf("StepByStepTimer","Timer");
+		myTimer=KigsCore::GetInstanceOf("StepByStepTimer","Timer");
 		myTimer->Init();
 		myLoadingIsDone = 0;
 	}
@@ -90,9 +90,7 @@ int StepByStepImporter::UpdateImporter()
 		// this time everything is loaded
 		myImportedRoot=myImportTreeRoot->myCurrent;
 
-
-		myTimer->Destroy();
-		myTimer=0;
+		myTimer=nullptr;
 
 		UninitModifiable();
 		myLoadingIsDone = true;
@@ -105,10 +103,10 @@ int StepByStepImporter::UpdateImporter()
 }
 
 
-StepByStepImporter::ImportTree::ImportTree(XMLNode* xmlnode,CoreModifiable* currentCM)
+StepByStepImporter::ImportTree::ImportTree(XMLNode* xmlnode,CMSP currentCM)
 {
 	myFatherNode=xmlnode;
-	myCurrentCoreModifiable=currentCM;
+	myCurrentCoreModifiable = currentCM;
 	mySonsImport.clear();
 	myNeedInit=false;
 	myIsDone=false;
@@ -134,7 +132,7 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 {
 
 	XMLNode * currentNode=treatedNode->myFatherNode;
-	CoreModifiable* currentModifiable=treatedNode->myCurrentCoreModifiable;
+	CMSP currentModifiable=treatedNode->myCurrentCoreModifiable;
 
 	if(treatedNode->myIsDone)
 	{
@@ -189,7 +187,7 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 					//kstl::vector<int>::const_iterator	itsonlink=linklist.begin();
 					for(itson=instances.begin();itson!=instances.end();++itson)
 					{
-						CoreModifiable* son=(*itson).myItem;
+						CMSP son=(*itson).myItem;
 #ifdef USE_LINK_TYPE
 						int linktypeint=(*itson).myLinkType;
 #endif
@@ -211,7 +209,7 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 				
 				if(treatedNode->myNeedInit)
 				{
-					treatedNode->myCurrent=(CoreModifiable*)KigsCore::GetInstanceOf(name,type->getString());
+					treatedNode->myCurrent=KigsCore::GetInstanceOf(name,type->getString());
 					myLoadedItems.push_back(treatedNode->myCurrent);
 				}
 				ImportTree* lastimport=0;
@@ -270,7 +268,7 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 		kstl::vector<ModifiableItemStruct>::const_iterator itson;
 		for(itson=instances.begin();itson!=instances.end();++itson)
 		{
-			CoreModifiable* son=(*itson).myItem;
+			CMSP son=(*itson).myItem;
 			if(son==treatedNode->myCurrent)
 			{
 				sonNeedAdd=false;
@@ -292,7 +290,6 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 			{
 				currentModifiable->addItem(treatedNode->myCurrent);
 			}
-			treatedNode->myCurrent->Destroy();
 		}
 	}
 

@@ -155,7 +155,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 		objname+="MeshItemGroup";
 		objname+=index;
 
-		MeshItemGroup* newgroup=(MeshItemGroup*)(KigsCore::GetInstanceOf(objname,"MeshItemGroup"));
+		SP<MeshItemGroup> newgroup=KigsCore::GetInstanceOf(objname,"MeshItemGroup");
 		newgroup->Init();
 		newgroup->myTriangleType=(TriangleType)grpdesc.triangleType;
 
@@ -163,16 +163,11 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 		objname+="Material";
 		objname+=index;
 
-		Material* newMaterial=(Material*)(KigsCore::GetInstanceOf(objname,"Material"));
+		SP<Material> newMaterial=KigsCore::GetInstanceOf(objname,"Material");
 		newMaterial->setValue(LABEL_TO_ID(BlendFuncSource),currentmat.myBlendFuncSource);
 		newMaterial->setValue(LABEL_TO_ID(BlendFuncDest),currentmat.myBlendFuncDest);
 		newMaterial->setValue(LABEL_TO_ID(BlendEnabled),currentmat.myBlendEnabled);
 
-		/*	currentmat.myBlendEnabled=true;
-		newMaterial->setValue(LABEL_TO_ID(BlendFuncSource),S_SRC_ALPHA);
-		newMaterial->setValue(LABEL_TO_ID(BlendFuncDest),D_ONE_MINUS_SRC_ALPHA);
-		newMaterial->setValue(LABEL_TO_ID(BlendEnabled),true);
-		*/
 		newMaterial->setValue(LABEL_TO_ID(MaterialColorEnabled),currentmat.myMaterialColorEnabled);
 		if(currentmat.myBlendEnabled)
 		{
@@ -221,26 +216,26 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 			objname+="MaterialStage";
 			objname+=index;
 
-			MaterialStage* MatStage = (MaterialStage*)(KigsCore::GetInstanceOf(objname,"MaterialStage"));
+			SP<MaterialStage> MatStage = (KigsCore::GetInstanceOf(objname,"MaterialStage"));
 
 			MatStage->setValue(LABEL_TO_ID(StageIndex),stagedesc.myStageIndex);
 			MatStage->setValue(LABEL_TO_ID(TexEnv),stagedesc.myTexEnv);
 
 			if(stagedesc.myTexture != "empty")
 			{
-				TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-				Texture* Tex=fileManager->GetTexture(stagedesc.myTexture,false);
+				SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
+				SP<Texture> Tex = fileManager->GetTexture(stagedesc.myTexture, false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 				Tex->Init();
 
-				MatStage->addItem(Tex);
-				Tex->Destroy();
+				MatStage->addItem((CMSP&)Tex);
+				
 			}
 
 			MatStage->Init();
 
-			newMaterial->addItem(MatStage);
-			MatStage->Destroy();
+			newMaterial->addItem((CMSP&)MatStage);
+		
 #else //NO_MULTISTAGE_RENDERING
 			// if no material stages, add texture to material directly
 			if(stagedesc.myTexture != "empty")
@@ -262,7 +257,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 		pMesh->getValue(LABEL_TO_ID(ShareMaterial),sharedMaterial);
 
 		// check existing materials
-		Material* current=0;
+		SP<Material> current(nullptr);
 		bool		found=false;
 		if(sharedMaterial)
 		{
@@ -272,9 +267,9 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 
 			for(it=instances.begin();it!=instances.end();++it)
 			{
-				current=(Material*)(*it);
-				if(current != newMaterial)
-					if(current->Equal(*newMaterial))
+				current = CMSP((Material*)(*it), StealRefTag{});
+				if(current.get() != newMaterial.get())
+					if(current->Equal(*newMaterial.get()))
 					{
 						found=true;
 						break;
@@ -288,13 +283,13 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 		}
 		if(found)
 		{
-			newgroup->addItem(current);
+			newgroup->addItem((CMSP&)current);
 		}
 		else
 		{
-			newgroup->addItem(newMaterial);
+			newgroup->addItem((CMSP&)newMaterial);
 		}
-		newMaterial->Destroy();
+		
 
 		delete[] currentmat.stages;
 
@@ -450,8 +445,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 			}
 		}
 
-		pMesh->addItem(newgroup);
-		newgroup->Destroy();
+		pMesh->addItem((CMSP&)newgroup);
 	}
 
 	OtherDataStruct datasize;
@@ -576,7 +570,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		objname+="Material";
 		objname+=index;
 
-		Material* newMaterial=(Material*)(KigsCore::GetInstanceOf(objname,"Material"));
+		SP<Material> newMaterial=KigsCore::GetInstanceOf(objname,"Material");
 		newMaterial->setValue(LABEL_TO_ID(BlendFuncSource),currentmat.myBlendFuncSource);
 		newMaterial->setValue(LABEL_TO_ID(BlendFuncDest),currentmat.myBlendFuncDest);
 		newMaterial->setValue(LABEL_TO_ID(BlendEnabled),currentmat.myBlendEnabled);
@@ -628,26 +622,26 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 			objname+="MaterialStage";
 			objname+=index;
 
-			MaterialStage* MatStage = (MaterialStage*)(KigsCore::GetInstanceOf(objname,"MaterialStage"));
+			SP<MaterialStage> MatStage = KigsCore::GetInstanceOf(objname,"MaterialStage");
 
 			MatStage->setValue(LABEL_TO_ID(StageIndex),stagedesc.myStageIndex);
 			MatStage->setValue(LABEL_TO_ID(TexEnv),stagedesc.myTexEnv);
 
 			if(stagedesc.myTexture != "empty")
 			{
-				TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-				Texture* Tex=fileManager->GetTexture(stagedesc.myTexture,false);
+				SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
+				SP<Texture> Tex = fileManager->GetTexture(stagedesc.myTexture, false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 				Tex->Init();
 
-				MatStage->addItem(Tex);
-				Tex->Destroy();
+				MatStage->addItem((CMSP&)Tex);
+				
 			}
 
 			MatStage->Init();
 
-			newMaterial->addItem(MatStage);
-			MatStage->Destroy();
+			newMaterial->addItem((CMSP&)MatStage);
+	
 #else //NO_MULTISTAGE_RENDERING
 			// if no material stages, add texture to material directly
 			if(stagedesc.myTexture != "empty")
@@ -1187,8 +1181,8 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		delete[] v[2];
 
 
-		ModernMeshItemGroup* created=pMesh->EndMeshGroup();
-		created->addItem(currentgrp.myMaterial);
+		SP<ModernMeshItemGroup> created=pMesh->EndMeshGroup();
+		created->addItem((CMSP&)currentgrp.myMaterial);
 	}
 
 
@@ -1245,10 +1239,10 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 	while(It != MeshsonsList.end())
 	{
 		//check if this children is a MeshItemGroup
-		if ( ((CoreModifiable*)(*It).myItem)->isSubType(MeshItemGroup::myClassID) )
+		if ( ((*It).myItem)->isSubType(MeshItemGroup::myClassID) )
 		{
 			nombredeGroupe++;
-			MeshItemGroup* newgroup = ((MeshItemGroup*)(*It).myItem);
+			MeshItemGroup* newgroup = ((MeshItemGroup*)(*It).myItem.get());
 
 			GroupList.push_back(newgroup);
 		}
@@ -1302,22 +1296,22 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 		while(It_ItemGroup != ItemGroupSonsList.end())
 		{
 			//check if this children is a Material
-			if ( ((CoreModifiable*)(*It_ItemGroup).myItem)->isSubType(Material::myClassID) )
+			if ( ((*It_ItemGroup).myItem)->isSubType(Material::myClassID) )
 			{
 				int value = 0;
-				((Material*)(*It_ItemGroup).myItem)->getValue("BlendFuncSource",value);
+				((*It_ItemGroup).myItem)->getValue("BlendFuncSource",value);
 				currentmat.myBlendFuncSource = (BlendFuncSource)value;
-				((Material*)(*It_ItemGroup).myItem)->getValue("BlendFuncDest",value);
+				((*It_ItemGroup).myItem)->getValue("BlendFuncDest",value);
 				currentmat.myBlendFuncDest = (BlendFuncDest)value;
 				bool bvalue = false;
-				((Material*)(*It_ItemGroup).myItem)->getValue("BlendEnabled",bvalue);
+				((*It_ItemGroup).myItem)->getValue("BlendEnabled",bvalue);
 				currentmat.myBlendEnabled = bvalue;
-				((Material*)(*It_ItemGroup).myItem)->getValue("MaterialColorEnabled",bvalue);
+				((*It_ItemGroup).myItem)->getValue("MaterialColorEnabled",bvalue);
 				currentmat.myMaterialColorEnabled = bvalue;
 
 				//ambiant Color
 				float ambiantColor[4];
-				((Material*)(*It_ItemGroup).myItem)->getArrayValue("AmbientColor", ambiantColor, 4);
+				((*It_ItemGroup).myItem)->getArrayValue("AmbientColor", ambiantColor, 4);
 				currentmat.ambient[0] = ambiantColor[0];
 				currentmat.ambient[1] = ambiantColor[1];
 				currentmat.ambient[2] = ambiantColor[2];
@@ -1325,7 +1319,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 
 				//Specular
 				float specularColor[4];
-				((Material*)(*It_ItemGroup).myItem)->getArrayValue("SpecularColor", specularColor, 4);
+				((*It_ItemGroup).myItem)->getArrayValue("SpecularColor", specularColor, 4);
 				currentmat.specular[0] = specularColor[0];
 				currentmat.specular[1] = specularColor[1];
 				currentmat.specular[2] = specularColor[2];
@@ -1333,7 +1327,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 
 				//EmissionColor
 				float emissionColor[4];
-				((Material*)(*It_ItemGroup).myItem)->getArrayValue("EmissionColor", emissionColor, 4);
+				((*It_ItemGroup).myItem)->getArrayValue("EmissionColor", emissionColor, 4);
 				currentmat.emissive[0] = emissionColor[0];
 				currentmat.emissive[1] = emissionColor[1];
 				currentmat.emissive[2] = emissionColor[2];
@@ -1341,20 +1335,20 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 
 				//DiffuseColor
 				float diffuseColor[4];
-				((Material*)(*It_ItemGroup).myItem)->getArrayValue("DiffuseColor", diffuseColor, 4);
+				((*It_ItemGroup).myItem)->getArrayValue("DiffuseColor", diffuseColor, 4);
 				currentmat.diffuse[0] = diffuseColor[0];
 				currentmat.diffuse[1] = diffuseColor[1];
 				currentmat.diffuse[2] = diffuseColor[2];
 				currentmat.diffuse[3] = 0;
 				currentmat.alpha = diffuseColor[3];
 
-				((Material*)(*It_ItemGroup).myItem)->getValue("Shininess",currentmat.shininess);
-				((Material*)(*It_ItemGroup).myItem)->getValue("Transparency",currentmat.alpha);
+				((*It_ItemGroup).myItem)->getValue("Shininess",currentmat.shininess);
+				((*It_ItemGroup).myItem)->getValue("Transparency",currentmat.alpha);
 
 				currentmat.triangleCount = newgroup->myTriangleCount;
 
 				//parcour les enfant du material
-				kstl::vector<ModifiableItemStruct> MaterialSonsList = ((Material*)(*It_ItemGroup).myItem)->getItems();
+				kstl::vector<ModifiableItemStruct> MaterialSonsList = ((*It_ItemGroup).myItem)->getItems();
 				kstl::vector<ModifiableItemStruct>::iterator It_Material = MaterialSonsList.begin();
 				unsigned int number = 0;
 
@@ -1363,13 +1357,13 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 				{
 #ifndef NO_MULTISTAGE_RENDERING
 					//check if this children is a Material
-					if ( ((CoreModifiable*)(*It_Material).myItem)->isSubType(MaterialStage::myClassID) )
+					if ( ((*It_Material).myItem)->isSubType(MaterialStage::myClassID) )
 					{
 						number++;
 					}
 #else //NO_MULTISTAGE_RENDERING
 					//check if this children is a Material
-					if ( ((CoreModifiable*)(*It_Material).myItem)->isSubType(Texture::myClassID) )
+					if ( ((*It_Material).myItem)->isSubType(Texture::myClassID) )
 					{
 						number++;
 					}
@@ -1388,10 +1382,10 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 
 #ifndef NO_MULTISTAGE_RENDERING
 					//check if this children is a Material
-					if ( ((CoreModifiable*)(*It_Material).myItem)->isSubType(MaterialStage::myClassID) )
+					if ( ((*It_Material).myItem)->isSubType(MaterialStage::myClassID) )
 					{
 						keep=true;
-						MaterialStage* MatStage = (MaterialStage*)((CoreModifiable*)(*It_Material).myItem);
+						SP<MaterialStage> MatStage = (*It_Material).myItem;
 
 						int valuematstage=0;
 						MatStage->getValue("StageIndex",valuematstage);
@@ -1413,9 +1407,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 							while(It_MatStage != MatStageSonsList.end())
 							{
 								//check if this children is a Texture
-								if ( ((CoreModifiable*)(*It_MatStage).myItem)->isSubType(Texture::myClassID) )
+								if ( ((*It_MatStage).myItem)->isSubType(Texture::myClassID) )
 								{
-									Texture* temptex = ((Texture*)(*It_MatStage).myItem);
+									SP<Texture>& temptex =(SP<Texture> &) (*It_MatStage).myItem;
 									temptex->getValue("FileName",stagedesc->myTexture);
 								}
 								It_MatStage++;

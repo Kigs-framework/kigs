@@ -40,7 +40,7 @@ public:
 	const SpriteSheetFrame*	Get_Frame(const std::string& _value);
 	const SpriteSheetFrame*	Get_AnimFrame(const std::string& _value, unsigned int _frameNumber);
 
-	virtual CoreModifiable*	getSharedInstance() override;
+	virtual  CMSP	getSharedInstance() override;
 
 protected:
 	virtual ~SpriteSheetTexture();

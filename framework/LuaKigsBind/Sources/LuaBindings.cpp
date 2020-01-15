@@ -225,7 +225,7 @@ void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 }
 
 
-static CoreModifiable* factory(const kstl::string& name, const kstl::string& type)
+static CMSP factory(const kstl::string& name, const kstl::string& type)
 {
 	return KigsCore::GetInstanceOf(name, type);
 }
@@ -579,23 +579,22 @@ int CoreModifiableAddHook(CoreModifiable* obj, lua_State* lua)
 		obj->GetSonInstancesByType("LuaNotificationHook", insts, false);
 		
 		auto hook_obj = std::find_if(insts.begin() ,insts.end(), [notif](CoreModifiable* o){ return o->getName() == notif;});
-		LuaNotificationHook* hook = nullptr;
+		SP<LuaNotificationHook> hook = nullptr;
 		if(hook_obj != insts.end())
 		{
-			hook = (LuaNotificationHook*)*hook_obj;
+			hook = SP<LuaNotificationHook>((LuaNotificationHook*)*hook_obj, StealRefTag{});
 		}
 		else
 		{
-			hook = (LuaNotificationHook*)KigsCore::GetInstanceOf(notif, "LuaNotificationHook");
-			obj->addItem(hook);
-			hook->Destroy();
+			hook = KigsCore::GetInstanceOf(notif, "LuaNotificationHook");
+			obj->addItem((CMSP&)hook);
 		}
 		
 		hook->L = L;
 		hook->lua_func = L.toValue<LuaRef>(3);
 		hook->obj = obj;
 		
-		KigsCore::GetNotificationCenter()->addObserver(hook, "CallLuaFunc", notif);
+		KigsCore::GetNotificationCenter()->addObserver(hook.get(), "CallLuaFunc", notif);
 	}
 	else
 	{
@@ -708,9 +707,9 @@ kstl::vector<CoreModifiable*> CoreModifiableGetSonByName(CoreModifiable* obj, co
 kstl::vector<CoreModifiable*> CoreModifiableChildList(CoreModifiable* obj)
 {
 	kstl::vector<CoreModifiable*> result; result.reserve(obj->getItems().size());
-	for(auto& mis : obj->getItems())
+	for(auto mis : obj->getItems())
 	{
-		result.push_back(mis.myItem);
+		result.push_back(mis.myItem.Pointer());
 	}
 	return result;
 }
@@ -1005,9 +1004,9 @@ void setup_bindings(lua_State* lua)
 		.addFactory(&factory, LUA_ARGS(kstl::string, kstl::string))
 		//.addStaticFunction("Import", LUA_FN(CoreModifiable*, CoreModifiable::Import, const kstl::string&, bool, bool), LUA_ARGS(const kstl::string&, _opt<bool>, _opt<bool>))
 		.addFunction("name", &CoreModifiable::getName)
-		.addFunction("addItem", &CoreModifiable::addItem, LUA_ARGS(CoreModifiable*, _def<CoreModifiable::ItemPosition, CoreModifiable::Last>))
+		.addFunction("addItem", &CoreModifiable::addItem, LUA_ARGS(CMSP&, _def<CoreModifiable::ItemPosition, CoreModifiable::Last>))
 		.addFunction("removeItem", &CoreModifiable::removeItem)
-		.addFunction("aggregateWith", &CoreModifiable::aggregateWith, LUA_ARGS(CoreModifiable*, _def<CoreModifiable::ItemPosition, CoreModifiable::Last>))
+		.addFunction("aggregateWith", &CoreModifiable::aggregateWith, LUA_ARGS(CMSP&, _def<CoreModifiable::ItemPosition, CoreModifiable::Last>))
 		.addFunction("removeAggregateWith", &CoreModifiable::removeAggregateWith)
 		.addFunction("parents", &CoreModifiable::GetParents)
 		.addFunction("childs", &CoreModifiableChildList)
@@ -1031,9 +1030,9 @@ void setup_bindings(lua_State* lua)
 		.addFunction("emit", &CoreModifiableEmit)
 		.addFunction("importAsSon", [](CoreModifiable* obj, const char* path)
 		{
-			auto cm = OwningRawPtrToSmartPtr(CoreModifiable::Import(path));
+			auto cm = CoreModifiable::Import(path);
 			if (cm)
-				obj->addItem(cm.get());
+				obj->addItem(cm);
 			return cm.get();
 		});
 	

@@ -51,7 +51,7 @@ class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<Aligned
 			{
 				if (ext == ".kbin")
 				{
-					CoreModifiable* uncompressManager = KigsCore::GetSingleton("KXMLManager");
+					CMSP uncompressManager = KigsCore::GetSingleton("KXMLManager");
 					if (uncompressManager)
 					{
 						uncompressManager->SimpleCall("UncompressData", loaded.get(), _value.get());

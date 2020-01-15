@@ -89,7 +89,7 @@ protected:
 	int	GetStringCharSize();
 	const unsigned char*	GetStringByteBuffer(const stringType& tocheck);
 
-	CoreModifiable*			CreateDictionnaryFromJSONInstance();
+	CMSP			CreateDictionnaryFromJSONInstance();
 
 	CoreItemSP	getDictionnary();
 
@@ -98,8 +98,8 @@ protected:
 	unsigned int				myJSonArrayStartID=0;
 	unsigned int				myJSonArrayEndID=0;
 	unsigned int				myJSonParamListID=0;
-	CoreModifiable*				myDelegateObject=nullptr;
-	CoreModifiable*				myDictionaryFromJson=nullptr;
+	CMSP						myDelegateObject=nullptr;
+	CMSP						myDictionaryFromJson=nullptr;
 
 	
 	kstl::vector<CoreModifiableAttribute*>	myParamList;

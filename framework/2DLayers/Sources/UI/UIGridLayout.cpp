@@ -67,7 +67,7 @@ void UIGridLayout::RecomputeLayout()
 			{
 				if ((*itsons).myItem->isSubType(Node2D::myClassID))
 				{
-					items.push_back((CoreModifiable*)(*itsons).myItem);
+					items.push_back((CoreModifiable*)(*itsons).myItem.get());
 				}
 			}
 		}

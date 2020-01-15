@@ -66,21 +66,21 @@ public:
 
 	/**
 	 * \brief	add item in scene tree
-	 * \fn 		bool	addItem(CoreModifiable *item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override ;
+	 * \fn 		bool	addItem(CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override ;
 	 * \param	item : item to add
 	 * \param	linkName : name of the added item
 	 * \return	TRUE if the item is added, FALSE otherwise
 	 */
-	bool	addItem(CoreModifiable *item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override ;
+	bool	addItem(CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override ;
 	
 	/**
 	 * \brief	remove item in scene tree
-	 * \fn 		bool	removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME) override ;
+	 * \fn 		bool	removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override ;
 	 * \param	item : item to remove
 	 * \param	linkName : name of the removed item
 	 * \return	TRUE if the item is removed, FALSE otherwise
 	 */
-	bool	removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME) override ;
+	bool	removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override ;
 
 	/**
 	 * \brief	retreive the bounding box of the bitmap (point min and point max)

@@ -59,7 +59,7 @@ void UISliderFill::InitModifiable()
 	if(_isInit)
 	{
 		// load texture
-		TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+		SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
 		if(myVoidTexture)
 		{
 			myVoidTexture->Destroy();
@@ -139,7 +139,7 @@ void UISliderFill::ChangeTexture(kstl::string _voidtexturename,kstl::string _sta
 {
 	if(myIsEnabled) // down and mouse over only when enabled
 	{
-		TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+		SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
 
 		if(myVoidTexture)
 		{
@@ -216,7 +216,7 @@ bool UISliderFill::isAlpha(float X, float Y)
 		{
 			if(sons[i].myItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = (AlphaMask*)sons[i].myItem;
+				myAlphaMask = sons[i].myItem;
 				break;
 			}
 		}

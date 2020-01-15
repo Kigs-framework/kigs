@@ -28,7 +28,8 @@ Texture::Texture(const kstl::string& name, CLASS_NAME_TREE_ARG) : Drawable(name,
 
 Texture::~Texture()
 {
-	TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+	SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
+
 	fileManager->UnloadTexture(this);
 }
 
@@ -59,18 +60,17 @@ void	Texture::InitModifiable()
 				UninitModifiable();
 			}
 
-			TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+			SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
 
 			if (textureManager->HasTexture(myFileName.const_ref()))
 			{
 #ifdef _DEBUG		
-				Texture* registered=textureManager->GetTexture(myFileName.const_ref());
+				SP<Texture> registered=textureManager->GetTexture(myFileName.const_ref());
 				if (registered != this)
 				{
 				//	KIGS_ERROR("texture with same name already in cache", 1);
 					printf("texture with same name (%s) already in cache \n", myFileName.const_ref().c_str());
 				}
-				registered->Destroy();
 #endif
 			}
 			else
@@ -84,15 +84,15 @@ void	Texture::InitModifiable()
 
 // for some type of classes when we want don't want duplicated instances (textures, shaders...)
 // return an already existing instance equivalent of this
-CoreModifiable*	Texture::getSharedInstance()
+CMSP	Texture::getSharedInstance()
 {
-	TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+	SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
 
 	if (textureManager->HasTexture(myFileName.const_ref()))
 	{
-		Texture* shared = textureManager->GetTexture(myFileName.const_ref());
-		shared->Destroy();
+		SP<Texture> shared = textureManager->GetTexture(myFileName.const_ref());
+		
 		return shared;
 	}
-	return this;
+	return  CMSP(this, GetRefTag{});
 }

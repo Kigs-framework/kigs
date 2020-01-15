@@ -49,8 +49,8 @@ void	Sample4::ProtectedInit()
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), MoreComplexClass, MoreComplexClass, Application);
 
 	// create one instance of each class
-	CoreModifiable* instance1 = KigsCore::GetInstanceOf("instance1", "SimpleClass");
-	CoreModifiable* instance2 = KigsCore::GetInstanceOf("instance2", "MoreComplexClass");
+	CMSP instance1 = KigsCore::GetInstanceOf("instance1", "SimpleClass");
+	CMSP instance2 = KigsCore::GetInstanceOf("instance2", "MoreComplexClass");
 
 	// create dynamic attribute on this
 	AddDynamicAttribute<maFloat, float>("FloatParam", 12.0f);
@@ -119,9 +119,6 @@ void	Sample4::ProtectedInit()
 	floatresult = instance2->SimpleCall<float>("addValues", 32, 5);
 	// this time add value should return the good result
 	std::cout << "instance2 addValues returns " << floatresult << std::endl << std::endl;
-
-	instance1->Destroy();
-	instance2->Destroy();
 
 }
 

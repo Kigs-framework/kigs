@@ -213,11 +213,11 @@ void				KigsCore::setUseAutoRelease()
 }
 
 
-
+/*
 SmartPointer<CoreModifiable> KigsCore::CreateInstance(const kstl::string& instancename, KigsID classname)
 {
 	return OwningRawPtrToSmartPtr(GetInstanceOf(instancename, classname));
-}
+}*/
 
 
 ///////////////////////////////////////////////////////////////
@@ -261,7 +261,7 @@ MEMORYMANAGEMENT_END
 	myCoreInstance->myModuleBaseInstanceMap = new kstl::unordered_map<KigsID,ModuleBase*>;
 
 	//! map for all singleton
-	myCoreInstance->mySingletonMap = new kstl::unordered_map<KigsID,CoreModifiable*>;
+	myCoreInstance->mySingletonMap = new kstl::unordered_map<KigsID,CMSP>;
 
 	myCoreInstance->myMultiThread=new bool;
 	(*myCoreInstance->myMultiThread)=false;
@@ -279,8 +279,6 @@ MEMORYMANAGEMENT_END
 	{
 		myCoreInstance->myCoreMainModuleList[i]=0;
 	}
-
-	myCoreInstance->myNotFoundCoreItem = new CoreValue<bool>(false);
 
 	//! declare DoNothingObject (created when unknown object is asked to InstanceFactory)
 	DECLARE_FULL_CLASS_INFO(myCoreInstance,DoNothingObject,DoNothingObject,KigsCore)
@@ -370,11 +368,6 @@ void KigsCore::Close(bool closeMemoryManager)
 			myCoreInstance->myAsyncRequestList = 0;
 		}
 
-		if (myCoreInstance->myNotFoundCoreItem)
-		{
-			myCoreInstance->myNotFoundCoreItem->Destroy();
-			myCoreInstance->myNotFoundCoreItem = 0;
-		}
 
 #ifdef _DEBUG
 		CoreModifiable::debugPrintfFullTree();
@@ -612,9 +605,9 @@ void KigsCore::ReleaseSemaphore()
 	}
 }
 
-CoreModifiable* KigsCore::GetSingleton(const KigsID& classname)
+CMSP KigsCore::GetSingleton(const KigsID& classname)
 {
-	CoreModifiable* found=0;
+	CMSP found=nullptr;
 	Instance()->GetSemaphore();
 
 	//! search for an already existing instance
@@ -641,11 +634,11 @@ CoreModifiable* KigsCore::GetSingleton(const KigsID& classname)
 	instancename += buffer;
 	#endif
 
-	found=Instance()->GetInstanceFactory()->GetInstance(instancename,classname);
+	found= OwningRawPtrToSmartPtr(Instance()->GetInstanceFactory()->GetInstance(instancename,classname));
 
 	Instance()->GetSemaphore();
-
-	singletonmap[classname]=found;
+	if(found)
+		singletonmap[classname]=found;
 	Instance()->ReleaseSemaphore();
 
 	return found;
@@ -658,13 +651,13 @@ void	KigsCore::CleanSingletonMap()
 	//! do nothing if no instance of the class
 	while(it!=mySingletonMap->end())
 	{
-		CoreModifiable* found = (*it).second;
+		CMSP found = (*it).second;
 		mySingletonMap->erase(it);
 
 		if(found)
 		{
 			Instance()->ReleaseSemaphore();
-			found->Destroy();
+			found = nullptr; // destroy pointed object
 			Instance()->GetSemaphore();
 		}
 		it = mySingletonMap->begin();
@@ -686,12 +679,12 @@ void KigsCore::ReleaseSingleton(KigsID classname)
 		Instance()->ReleaseSemaphore();
 		return;
 	}
-	CoreModifiable* found = (*it).second;
+	CMSP found = (*it).second;
 	singletonmap.erase(it);
 
 	Instance()->ReleaseSemaphore();
 
-	found->Destroy();
+	found=nullptr;
 }
 
 //! get the registered module given its name
@@ -858,7 +851,7 @@ MEMORYMANAGEMENT_START
 	Instance()->GetMemoryManager()->mySemaphore=(void*)KigsCore::GetInstanceOf("MemManagerSemaphore","Semaphore");
 #endif
 MEMORYMANAGEMENT_END
-	Instance()->mySemaphore=(CoreModifiable*)KigsCore::GetInstanceOf("CoreSemaphore","Semaphore");
+	Instance()->mySemaphore=KigsCore::GetInstanceOf("CoreSemaphore","Semaphore");
 }
 
 void	KigsCore::CloseMultiThread()
@@ -876,9 +869,8 @@ MEMORYMANAGEMENT_START
 MEMORYMANAGEMENT_END
 	if(myCoreInstance->mySemaphore)
 	{
-		CoreModifiable* tmp=(CoreModifiable*)myCoreInstance->mySemaphore;
-		myCoreInstance->mySemaphore=0;
-		tmp->Destroy();
+		myCoreInstance->mySemaphore=nullptr;
+	
 	}
 }
 
@@ -945,14 +937,6 @@ void KigsCore::AddToPostDestroyList(CoreModifiable* c)
 	}
 
 	myPostDestructionList->push_back(c);
-}
-
-CoreItem*	KigsCore::NotFoundCoreItem()
-{
-/*#ifdef _DEBUG
-	KIGS_WARNING("CoreItem [] returned not found item", 1);
-#endif*/
-	return myNotFoundCoreItem;
 }
 
 MEMORYMANAGEMENT_START

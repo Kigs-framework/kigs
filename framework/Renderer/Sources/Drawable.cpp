@@ -34,7 +34,7 @@ void Drawable::UpdateDrawingNeeds()
 		{
 			if((*it).myItem->isUserFlagSet(UserFlagDrawable))
 			{
-				Drawable* drawable=(Drawable*)(*it).myItem;
+				SP<Drawable>& drawable=(SP<Drawable> & )(*it).myItem;
 				drawable->UpdateDrawingNeeds();
 				myDrawingNeeds|=drawable->GetDrawingNeeds();
 			}
@@ -68,7 +68,7 @@ void Drawable::DoPreDraw(TravState* state)
 		{
 			if((*it).myItem->isUserFlagSet(UserFlagDrawable))
 			{
-				Drawable* drawable=(Drawable*)(*it).myItem;
+				SP<Drawable>& drawable=(SP<Drawable>&)(*it).myItem;
 				drawable->CheckPreDraw(state);
 			}
 		}        
@@ -89,7 +89,7 @@ void Drawable::DoDraw(TravState* state)
 		{
 			if((*it).myItem->isUserFlagSet(UserFlagDrawable))
 			{
-				Drawable* drawable=(Drawable*)(*it).myItem;
+				SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
 				drawable->CheckDraw(state);
 			}
 		}      
@@ -110,7 +110,7 @@ void Drawable::DoPostDraw(TravState* state)
 		{
 			if((*it).myItem->isUserFlagSet(UserFlagDrawable))
 			{
-				Drawable* drawable=(Drawable*)(*it).myItem;
+				SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
 				drawable->CheckPostDraw(state);
 			}
 		}       
@@ -186,17 +186,9 @@ bool Drawable::PostDraw(TravState* state)
 	return false;
 }
 
-bool Drawable::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool Drawable::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	// TODO : move this in UpdateDrawingNeeds
-	/*if(item->isUserFlagSet(UserFlagDrawable))
-	{
-		Drawable* current=(Drawable*)item;
-		if(current->m_IsTransparent)
-		{
-			m_IsTransparent=true;
-		}
-	}*/
+
 	myDrawingNeeds=(unsigned int)Not_Init;
 	
 	bool result=SceneNode::addItem(item,pos PASS_LINK_NAME(linkName));
@@ -207,7 +199,7 @@ bool Drawable::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
 
 }
 
-bool Drawable::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
+bool Drawable::removeItem(CMSP& item DECLARE_LINK_NAME)
 {
 	bool result=SceneNode::removeItem(item PASS_LINK_NAME(linkName));
 	myDrawingNeeds=(unsigned int)Not_Init;

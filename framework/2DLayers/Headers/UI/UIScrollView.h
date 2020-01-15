@@ -39,7 +39,7 @@ private:
 
 	kfloat	xScroll, yScroll;
 	int maxY, maxX;
-	UIControlBoxForScrollViewUI* myVision;
+	SP<UIControlBoxForScrollViewUI> myVision;
 	ModuleInput* myInput;
 
 };
