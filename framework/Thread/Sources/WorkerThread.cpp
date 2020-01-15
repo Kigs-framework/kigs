@@ -20,10 +20,7 @@ WorkerThread::WorkerThread(const kstl::string& name, CLASS_NAME_TREE_ARG) : Thre
 WorkerThread::~WorkerThread()
 {
 	cleanTask();
-	if (myThreadEvent)
-	{
-		myThreadEvent->Destroy();
-	}
+	myThreadEvent = nullptr;
 }
 
 //! overloaded InitModifiable method. Init thread
@@ -33,7 +30,7 @@ void WorkerThread::InitModifiable()
 	{
 		if (mySemaphore)
 		{
-			myThreadEvent = (ThreadEvent*)KigsCore::GetInstanceOf("WorkerThreadEvent","ThreadEvent");
+			myThreadEvent = KigsCore::GetInstanceOf("WorkerThreadEvent","ThreadEvent");
 			myThreadEvent->setValue(LABEL_TO_ID(AutoReset), true);
 			myThreadEvent->setSemaphore(mySemaphore);
 			Thread::InitModifiable();
@@ -74,12 +71,13 @@ void	WorkerThread::resume()
 
 void	WorkerThread::processDone()
 {
-	mySemaphore->addItem(this);
+	CMSP toAdd(this, GetRefTag{});
+	mySemaphore->addItem(toAdd);
 	cleanTask();
 	myThreadEventEnd->signal();
 	myThreadEventEnd = 0;
 	myIsAutoFeed=myParentPoolManager->ManageQueue(this);
-	mySemaphore->removeItem(this);
+	mySemaphore->removeItem(toAdd);
 }
 
 // to be called in a locked block

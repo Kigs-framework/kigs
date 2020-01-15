@@ -69,10 +69,10 @@ FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsi
 		return nullptr;
 	}
 
-	SP<Texture> tex = tfm->GetTexture(font->font_id, false);
-	tex->setValue("FileName", "");
+	font->mFontTexture = tfm->GetTexture(font->font_id, false);
+	font->mFontTexture->setValue("FileName", "");
 
-	KigsCore::Connect(tex.get(), "Destroy", this, "OnFontTextureDestroy");
+	KigsCore::Connect(font->mFontTexture.get(), "Destroy", this, "OnFontTextureDestroy");
 
 	
 
@@ -127,15 +127,15 @@ FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsi
 		bitmap_AI8[2 * i + 0] = 255;
 		bitmap_AI8[2 * i + 1] = bitmap_alpha[i];
 	}
-	tex->Init();
+	font->mFontTexture->Init();
 
 	SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(bitmap_AI8, font->mFontMapSize, font->mFontMapSize, TinyImage::ImageFormat::AI88));
-	tex->CreateFromImage(img);
+	font->mFontTexture->CreateFromImage(img);
 
 	delete[] bitmap_AI8;
 	delete[] bitmap_alpha;
 
-	return font;
+	return font; 
 }
 
 
@@ -186,7 +186,11 @@ void UIDynamicText::LoadFont()
 	mFontMap = font_map_manager->PrecacheFont(mFont, mFontSize* LanguageScale);
 
 	if (mFontMap)
+	{
 		myTexture = tfm->GetTexture(mFontMap->font_id);
+		// make sure mFontMap is destoyed when texture is destoyed
+		mFontMap->mFontTexture = nullptr;
+	}
 	else
 		myTexture = nullptr;
 }

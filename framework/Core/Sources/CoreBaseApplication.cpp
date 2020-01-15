@@ -177,7 +177,7 @@ void CoreBaseApplication::DoAutoUpdate()
 	unsigned int i = 0;
 	while (i<myAutoUpdateList.size())
 	{
-		myAutoUpdateList[i]->CallUpdate((const Timer&)myApplicationTimer, 0);
+		myAutoUpdateList[i]->CallUpdate((const Timer&)*myApplicationTimer.get(), 0);
 		i++;
 	}
 	myAutoUpdateDone = true;
@@ -215,7 +215,7 @@ void	CoreBaseApplication::UpdateApp()
 		// before real app update, manage async requests
 		KigsCore::ManageAsyncRequests();
 		PlatformBaseApplication::Update();
-		CallUpdate((const Timer&)myApplicationTimer,0);
+		CallUpdate((const Timer&)*(myApplicationTimer.get()),0);
 		ProtectedUpdate();
 		if (!myAutoUpdateDone)
 			DoAutoUpdate();

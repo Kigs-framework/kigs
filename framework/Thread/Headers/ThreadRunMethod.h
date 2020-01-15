@@ -25,12 +25,12 @@ public:
 	/*! \brief addItem
 		overload from CoreModifiable
 	*/
-	bool addItem(CoreModifiable *item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
 
 	/*! \brief removeItem
 		overload from CoreModifiable
 	*/
-	bool removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME) override;
+	bool removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 	virtual void waitDeath(unsigned long P_Time_Out = 0xFFFFFFFF) = 0;
 	virtual void sleepThread() = 0;

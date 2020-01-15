@@ -5,7 +5,7 @@ IMPLEMENT_CLASS_INFO(ThreadPoolManager)
 
 ThreadPoolManager::ThreadPoolManager(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 , myThreadCount(*this, true, LABEL_AND_ID(ThreadCount),4)
-, mySemaphore(0)
+, mySemaphore(nullptr)
 {
 	myThreadList.clear();
 	myQueuedtasks.clear();
@@ -20,15 +20,15 @@ void	ThreadPoolManager::InitModifiable()
 		if (myThreadCount > 0)
 		{
 
-			mySemaphore = (Semaphore*)KigsCore::GetInstanceOf("ThreadPoolManagerSemaphore", "Semaphore");
+			mySemaphore = KigsCore::GetInstanceOf("ThreadPoolManagerSemaphore", "Semaphore");
 
 			int i;
 			for (i = 0; i < (int)myThreadCount; i++)
 			{
 				char str[128];
 				snprintf(str, 128, "workerThread_%d", i+1);
-				WorkerThread*	newworker = (WorkerThread*)(KigsCore::GetInstanceOf(str, "WorkerThread"));
-				newworker->setSemaphore(mySemaphore);
+				SP<WorkerThread>	newworker = KigsCore::GetInstanceOf(str, "WorkerThread");
+				newworker->setSemaphore(mySemaphore.get());
 				newworker->setThreadPoolManager(this);
 				newworker->Init();
 				//newworker->setAffinityMask(1 << i);
@@ -45,14 +45,11 @@ ThreadPoolManager::~ThreadPoolManager()
 	for (i = 0; i < myThreadList.size(); i++)
 	{
 		myThreadList[i]->KillThread();
-		myThreadList[i]->Destroy();
+		myThreadList[i]=nullptr;
 	}
 	myThreadList.clear();
 
-	if (mySemaphore)
-	{
-		mySemaphore->Destroy();
-	}
+	mySemaphore = nullptr;
 }
 
 // return event 
@@ -60,19 +57,20 @@ SmartPointer<ThreadEvent>	ThreadPoolManager::setTask(MethodCallingStruct* task)
 {
 
 	// lock 
-	mySemaphore->addItem(this);
+	CMSP toAdd(this, GetRefTag{});
+	mySemaphore->addItem(toAdd);
 	
 	// getAvailableEvent always returns a valid available event 
 	SmartPointer<ThreadEvent> result = getTaskEndEvent();
 	result->setValue(LABEL_TO_ID(EventCounter), 1);
-	WorkerThread*	wavailable = getAvailableThread();
+	SP<WorkerThread>	wavailable = getAvailableThread();
 	if (wavailable)
 		wavailable->setTask(task, result);
 	else
 		addTaskToQueue(task,result);
 
 	// unlock
-	mySemaphore->removeItem(this);
+	mySemaphore->removeItem(toAdd);
 	return result;
 }
 
@@ -87,7 +85,7 @@ void ThreadPoolManager::addTaskToQueue(MethodCallingStruct* task,SmartPointer<Th
 }
 
 // to be called in locked block
-WorkerThread*	ThreadPoolManager::getAvailableThread()
+SP<WorkerThread>	ThreadPoolManager::getAvailableThread()
 {
 	unsigned int i;
 	for (i = 0; i < myThreadList.size(); i++)
@@ -98,7 +96,7 @@ WorkerThread*	ThreadPoolManager::getAvailableThread()
 		}
 	}
 	
-	return 0;
+	return nullptr;
 }
 
 // to be called in locked block
@@ -106,8 +104,8 @@ SmartPointer<ThreadEvent>	ThreadPoolManager::getTaskEndEvent()
 {
 	
 	// if no event available, create a new one
-	SmartPointer<ThreadEvent> newevent = OwningRawPtrToSmartPtr((ThreadEvent*)KigsCore::GetInstanceOf("WorkerThreadEvent", "ThreadEvent"));
-	newevent->setSemaphore(mySemaphore);
+	SmartPointer<ThreadEvent> newevent = KigsCore::GetInstanceOf("WorkerThreadEvent", "ThreadEvent");
+	newevent->setSemaphore(mySemaphore.get());
 	newevent->Init();
 
 	return newevent;
@@ -134,12 +132,13 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 {
 	TaskGroup* taskgroup = (TaskGroup*)tgh;
 	// lock 
-	mySemaphore->addItem(this);
+	CMSP toAdd(this, GetRefTag{});
+	mySemaphore->addItem(toAdd);
 	int taskgroupsize = taskgroup->taskList.size();
 	if (taskgroupsize == 0)
 	{
 		// unlock
-		mySemaphore->removeItem(this);
+		mySemaphore->removeItem(toAdd);
 		delete taskgroup;
 		return 0;
 	}
@@ -150,7 +149,7 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 	int i;
 	for (i = 0; i < taskgroupsize; i++)
 	{
-		WorkerThread*	wavailable = getAvailableThread();
+		SP<WorkerThread>	wavailable = getAvailableThread();
 		if (wavailable)
 			wavailable->setTask(taskgroup->taskList[i], result);
 		else
@@ -158,7 +157,7 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 	}
 	
 	// unlock
-	mySemaphore->removeItem(this);
+	mySemaphore->removeItem(toAdd);
 	
 	delete taskgroup;
 	return result;
