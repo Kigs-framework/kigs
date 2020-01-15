@@ -16,21 +16,22 @@ ThreadRunMethod::~ThreadRunMethod()
 
 }    
 
-bool	ThreadRunMethod::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ThreadRunMethod::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType(Thread::myClassID))
 	{
 		// there's already a thread in there
-		if((myThread)&&(myThread!=item))
+		if((myThread)&&(item !=myThread))
 		{
-			removeItem(myThread PASS_LINK_NAME(linkName));
+			CMSP toDel(myThread, GetRefTag{});
+			removeItem(toDel PASS_LINK_NAME(linkName));
 		}
-		myThread=(Thread*)item;
+		myThread=(Thread*)item.get();
 	}
 	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 }
 
-bool	ThreadRunMethod::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
+bool	ThreadRunMethod::removeItem(CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType(Thread::myClassID))
 	{

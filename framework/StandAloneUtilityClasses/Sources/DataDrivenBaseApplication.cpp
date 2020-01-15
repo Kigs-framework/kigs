@@ -105,10 +105,13 @@ void DataDrivenSequence::InitModifiable()
 					currentManager->mySequenceParametersMap[currentSequence->getName()] = savedParamsList;
 				}
 			}
-			if (currentSequence) currentSequence->SimpleCall("SequenceEnd");
-			currentManager->myCurrentSequence = nullptr;
-			currentSequence->UnInit();
-			currentSequence=nullptr;
+			if (currentSequence)
+			{
+				currentSequence->SimpleCall("SequenceEnd");
+				currentSequence->UnInit();
+				currentSequence = nullptr;
+				currentManager->myCurrentSequence = nullptr;
+			}
 		}
 	}
 

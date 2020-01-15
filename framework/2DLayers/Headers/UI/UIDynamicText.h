@@ -45,6 +45,7 @@ struct UnicodeRange
 struct FontMap
 {
 	SmartPointer<CoreRawBuffer> mFontBuffer = nullptr;
+	SP<Texture>					mFontTexture = nullptr;
 	kstl::vector<UnicodeRange> mRanges;
 	stbtt_fontinfo mFontInfo = {};
 	int mFontMapSize;
