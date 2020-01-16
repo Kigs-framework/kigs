@@ -170,7 +170,6 @@ void BaseUI2DLayer::InitModifiable()
 			myRootItem->setValue("SizeY", Y);
 			addItem((CMSP&)myRootItem);
 			myRootItem->Init();
-			myRootItem->Destroy();
 		}
 		else
 		{

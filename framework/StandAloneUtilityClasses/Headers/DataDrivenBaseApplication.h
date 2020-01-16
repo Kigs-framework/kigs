@@ -158,8 +158,6 @@ protected:
 
 	kstl::map<kstl::string, kstl::map<unsigned int, kstl::string> >	mySequenceParametersMap;
 
-	virtual ~DataDrivenSequenceManager();
-
 };
 
 extern double GlobalAppDT;
@@ -178,8 +176,7 @@ public:
 	friend class DataDrivenSequenceManager;
 	friend class DataDrivenTransition;
 protected:
-	//! destructor
-	virtual ~DataDrivenBaseApplication();
+
 
 
 	void	setInTransition(DataDrivenTransition* transition, bool active);

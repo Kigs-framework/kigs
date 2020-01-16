@@ -31,7 +31,7 @@ public:
 	void				ChangeTexture(kstl::string voidtexturename, kstl::string texturename = "", kstl::string overtexturename = "", kstl::string downtexturename = "");
 
 protected:
-	virtual		~UISliderFill();
+
 	void		InitModifiable()override;
 	void		NotifyUpdate(const unsigned int /* labelid */)override;
 	bool		isAlpha(float X, float Y)override;

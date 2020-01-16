@@ -206,7 +206,7 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 	streamName += "_AnimationStream";
 	//streamName += "_" + kstl::to_string(GetAnimCount());
 	
-	ABaseStream* stream=(ABaseStream*)KigsCore::GetInstanceOf(streamName,StreamClassName);
+	SP<ABaseStream> stream=KigsCore::GetInstanceOf(streamName,StreamClassName);
 	
 	kstl::string system_type=stream->GetSystemType();
 	
@@ -216,12 +216,12 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 	bool need_channel_init=false;
 	kstl::set<ABaseSystem*>::iterator itbegin = m_pSystemSet.begin();
 	kstl::set<ABaseSystem*>::iterator itend = m_pSystemSet.end();
-	ABaseSystem*    system = 0;
+	SP<ABaseSystem>    system = 0;
 	while (itbegin != itend)
 	{
 		if ((*itbegin)->isSubType(system_type))
 		{
-			system = (*itbegin);
+			system = CMSP((*itbegin), GetRefTag{});
 			break;
 		}
 		++itbegin;
@@ -236,12 +236,12 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 		kstl::string systemName=getName();
 		systemName += "_AnimationSystem";
 		
-		system=(ABaseSystem*) KigsCore::GetInstanceOf(systemName, system_type);
+		system=KigsCore::GetInstanceOf(systemName, system_type);
 		
 		if(system != nullptr)
 		{
 			
-			AddSystem( system );
+			AddSystem( system.get() );
 			
 			// +---------
 			// | set the hierarchy
@@ -259,13 +259,13 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 			}
 			else
 			{
-				AttachSystem(system);
+				AttachSystem(system.get());
 			}
 			need_channel_init=true;
 		}
 		else
 		{
-			stream->Destroy();
+			
 			
 			auto it = m_ALinksTable.find(info);
 			m_ALinksTable.erase(it);
@@ -275,7 +275,7 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 		}
 	}
 	
-	tmp_links->SetSystem(system);
+	tmp_links->SetSystem(system.get());
 	
 	// +---------
 	// | search for the good channel and add the streams
@@ -289,15 +289,13 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 	
 	if(channel != nullptr)
 	{
-		channel->addItem(stream);
-		stream->Destroy();
-		tmp_links->AddStream(stream,0);
+		channel->addItem((CMSP&)stream);
+		tmp_links->AddStream(stream.get(),0);
 		stream->InitFromResource(info,0);
 		one_stream_is_ok=true;
 	}
 	else
 	{
-		stream->Destroy();
 		tmp_links->m_StreamCount--;
 	}
 	
@@ -314,7 +312,7 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 		streamName += "_AnimationStream";
 		//streamName += "_" + kstl::to_string(GetAnimCount());
 		
-		stream=(ABaseStream*)KigsCore::GetInstanceOf(streamName, StreamClassName);
+		stream=KigsCore::GetInstanceOf(streamName, StreamClassName);
 		
 		g_id=info->GetStreamGroupID(i);
 		
@@ -322,16 +320,14 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 		
 		if(channel != nullptr)
 		{
-			channel->addItem(stream);
-			stream->Destroy();
-			tmp_links->AddStream(stream,streamindex);
+			channel->addItem((CMSP&)stream);
+			tmp_links->AddStream(stream.get(),streamindex);
 			++streamindex;
 			stream->InitFromResource(info,i);
 			one_stream_is_ok=true;
 		}
 		else
 		{
-			stream->Destroy();
 			tmp_links->m_StreamCount--;
 		}
 	}
@@ -351,8 +347,7 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 		delete(tmp_links);
 		if(system->GetValidStream() == nullptr)
 		{
-			RemoveSystem( system );
-			system->Destroy();
+			RemoveSystem( system.get() );
 		}
 	}
 };
@@ -392,7 +387,8 @@ void    AObject::RemoveAnimation(AnimationResourceInfo* info)
 	for(i=0;i<tmp_links->GetStreamCount();++i)
 	{
 		ABaseChannel* channel=stream_array[i]->GetChannel();
-		channel->removeItem((stream_array[i]));
+		CMSP toDel(stream_array[i], GetRefTag{});
+		channel->removeItem(toDel);
 	}
 	
 	
@@ -1175,7 +1171,7 @@ void    AObject::SetLoopFor(ABaseStream* stream,void* param)
 };
 
 
-bool	AObject::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	AObject::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType(AObjectResource::myClassID))
 	{
@@ -1184,15 +1180,16 @@ bool	AObject::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
 		
 		if (itfound != m_ObjectResourceMap.end())
 		{
-			removeItem((*itfound).second);
+			CMSP toDel((*itfound).second, GetRefTag{});
+			removeItem(toDel);
 		}
 		
-		m_ObjectResourceMap[item->getExactType()] = (AObjectResource*)item;
+		m_ObjectResourceMap[item->getExactType()] = (AObjectResource*)item.get();
 	}
 	return Drawable::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-bool	AObject::removeItem(CoreModifiable *item DECLARE_LINK_NAME)
+bool	AObject::removeItem(CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType(AObjectResource::myClassID))
 	{

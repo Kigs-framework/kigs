@@ -415,7 +415,7 @@ void AABBTree::LoadFromFile(const std::string& filename)
 
 	if (crb && filename.substr(filename.find_last_of('.')) == ".kaabb")
 	{
-		CoreModifiable* uncompressManager = KigsCore::GetSingleton("KXMLManager");
+		CMSP uncompressManager = KigsCore::GetSingleton("KXMLManager");
 		if (uncompressManager)
 		{
 			result = OwningRawPtrToSmartPtr(new CoreRawBuffer);

@@ -33,11 +33,11 @@ public:
 
 	void ChangePosition(Point3D pos) { myPosition = pos; myCurrentPos = pos; }
 
-	Node3D* GetSpatialNode() { return mySpacialNode; }
+	SP<Node3D> GetSpatialNode() { return mySpacialNode; }
 
-	CoreModifiable* GetCollidablePanel()
+	SP<Panel> GetCollidablePanel()
 	{
-		return (CoreModifiable*)myCollidablePanel;
+		return myCollidablePanel;
 	}
 
 protected:
@@ -52,10 +52,10 @@ protected:
 	void NotifyUpdate(const unsigned int labelid) override;
 
 	// Node3D placed in the scene3D for collision managment
-	Node3D * mySpacialNode = nullptr;
-	CoreModifiable * myRenderingScreen = nullptr;
-	Panel * myCollidablePanel = nullptr;
-	Holo3DPanel * myDrawer = nullptr;
+	SP<Node3D> mySpacialNode = nullptr;
+	CMSP myRenderingScreen = nullptr;
+	SP<Panel> myCollidablePanel = nullptr;
+	SP<Holo3DPanel> myDrawer = nullptr;
 
 	maReference mParentNode = BASE_ATTRIBUTE(ParentNode);
 	maReference mFollowCamera = BASE_ATTRIBUTE(FollowCamera, "");

@@ -37,24 +37,22 @@ void ModuleInputJavascript::Init(KigsCore* core, const kstl::vector<CoreModifiab
 	}
 	
 	
-	MouseJavascript* localmouse=(MouseJavascript*)core->GetInstanceOf("mouse","Mouse");
+	SP<MouseJavascript> localmouse=core->GetInstanceOf("mouse","Mouse");
 	
 	
 	if(localmouse)
 	{
 		localmouse->DoInputDeviceDescription();
-		addItem(localmouse);
-		localmouse->Destroy();
+		addItem((CMSP&)localmouse);
 	}
 	
 	
-	KeyboardJavascript* localkeyboard=(KeyboardJavascript*)core->GetInstanceOf("keyboard","Keyboard");
+	SP<KeyboardJavascript> localkeyboard=core->GetInstanceOf("keyboard","Keyboard");
 	
 	if(localkeyboard)
 	{
 		localkeyboard->DoInputDeviceDescription();
-		addItem(localkeyboard);
-		localkeyboard->Destroy();
+		addItem((CMSP&)localkeyboard);
 	}
 }       
 
@@ -74,7 +72,7 @@ void ModuleInputJavascript::Update(const Timer& /* timer */, void* addParam)
 		if((*it).myItem->isSubType(InputDevice::myClassID))
 		{
 			
-			InputDevice* device=(InputDevice*)(*it).myItem;
+			InputDevice* device=(InputDevice*)(*it).myItem.get();
 			if(!device->IsAquired())
 				device->Aquire();
 			if(device->IsAquired())
@@ -86,7 +84,7 @@ void ModuleInputJavascript::Update(const Timer& /* timer */, void* addParam)
 	
 }    
 
-bool	ModuleInputJavascript::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ModuleInputJavascript::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	
 	if(item->isSubType(JoystickDevice::myClassID))

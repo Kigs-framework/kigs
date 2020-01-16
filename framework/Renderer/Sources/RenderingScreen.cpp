@@ -119,13 +119,6 @@ void RenderingScreen::RecomputeDesignCoef()
 	myDesignCoefY=((kfloat)(int)myDesignSizeY)/((kfloat)(int)mySizeY);
 }
 
-RenderingScreen::~RenderingScreen()
-{
-	if (myFBOTexture)
-		myFBOTexture->Destroy();
-}
-
-
 v2f RenderingScreen::GlobalMousePositionToDesignPosition(v2i pos)
 {
 	v2f result{ -1, -1 };

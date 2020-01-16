@@ -68,13 +68,6 @@ public:
 	//! constructor
 	ThreadProfiler(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	virtual ~ThreadProfiler() {
-		myGobalTimer->Destroy();
-		myGobalTimer = 0;
-		mySemaphore->Destroy();
-		mySemaphore = 0;
-		//rmt_DestroyGlobalInstance(rmt);
-	}
 
 	void AddTimeEvent(TimeEventType type, const char* name, const char* function_name)
 	{

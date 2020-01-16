@@ -7,7 +7,7 @@
 bool	OpenGLTexture::CubeMapGeneration()
 {
 	bool result = true;
-	FilePathManager*	pathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+	SP<FilePathManager>	pathManager = KigsCore::GetSingleton("FilePathManager");
 	kstl::string fullfilename;
 	char asciiCount[16];
 	asciiCount[0] = 0;

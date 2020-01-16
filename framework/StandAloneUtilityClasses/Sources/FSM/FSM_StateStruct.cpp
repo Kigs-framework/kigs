@@ -43,7 +43,8 @@ void	FSM_StateStruct::invokeBeginAction(FSM* caller, void* statedata)
 	{
 		if (m_State)
 		{
-			caller->aggregateWith(m_State);
+			CMSP toAdd(m_State, GetRefTag{});
+			caller->aggregateWith(toAdd);
 			m_State->InvokeBeginAction(statedata);
 		}
 	}
@@ -66,7 +67,8 @@ void	FSM_StateStruct::invokeEndAction(FSM* caller, void* statedata)
 		if (m_State)
 		{
 			m_State->InvokeEndAction(statedata);
-			caller->removeAggregateWith(m_State);
+			CMSP toDel(m_State, GetRefTag{});
+			caller->removeAggregateWith(toDel);
 		}
 	}
 }

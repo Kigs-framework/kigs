@@ -342,15 +342,6 @@ IMPLEMENT_CONSTRUCTOR(DataDrivenSequenceManager)
 	mySequenceParametersMap.clear();
 }
 
-DataDrivenSequenceManager::~DataDrivenSequenceManager()
-{
-	if (myCurrentSequence)
-	{
-		myCurrentSequence->Destroy();
-		myCurrentSequence = 0;
-	}
-}
-
 void DataDrivenSequenceManager::ProtectedInitSequence(const kstl::string& sequence)
 {
 	// check if app manager
@@ -423,20 +414,16 @@ IMPLEMENT_CONSTRUCTOR(DataDrivenBaseApplication)
 , myRenderingScreen(0)
 , myConfirmExitPopup(0)
 , myPreviousShortcutEnabled(true)
+, m_SequenceManager(nullptr)
+, m_GlobalConfig(nullptr)
 {
 	
 	CONSTRUCT_METHOD(DataDrivenBaseApplication, Exit);
 	CONSTRUCT_METHOD(DataDrivenBaseApplication, RegisterLuaMethod);
 
-	m_SequenceManager = nullptr;
-	m_GlobalConfig = 0;
+
 }
 
-DataDrivenBaseApplication::~DataDrivenBaseApplication()
-{
-	if (m_GlobalConfig)
-		m_GlobalConfig->Destroy();
-}
 
 void DataDrivenBaseApplication::ProtectedPreInit()
 {

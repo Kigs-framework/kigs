@@ -5,11 +5,12 @@
 
 #include "GlobalEnum.h"
 #include "maReference.h"
+#include "MouseVelocityComputer.h"
 #include <deque>
 
 class UIItem;
 class ModuleInput;
-class MouseVelocityComputer;
+
 class MultiTouchPinch;
 class Node2D;
 
