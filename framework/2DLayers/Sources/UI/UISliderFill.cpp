@@ -30,15 +30,7 @@ myVoidTexture(0)
 	
 }
 
-UISliderFill::~UISliderFill()
-{
-	if(myStartTexture)
-		myStartTexture->Destroy();
-	if(myMiddleTexture)
-		myMiddleTexture->Destroy();
-	if(myEndTexture)
-		myEndTexture->Destroy();
-}
+
 
 void UISliderFill::NotifyUpdate(const unsigned int labelid )
 {
@@ -60,15 +52,7 @@ void UISliderFill::InitModifiable()
 	{
 		// load texture
 		SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
-		if(myVoidTexture)
-		{
-			myVoidTexture->Destroy();
-			myVoidTexture=0;
-		}
-		
 		myVoidTexture = textureManager->GetTexture(myVoidTextureName);
-		if(myVoidTexture)
-			myVoidTexture->GetRef();
 
 		// auto size button
 		if( (((unsigned int)mySizeX)==0) && (((unsigned int)mySizeY)==0) )
@@ -83,37 +67,21 @@ void UISliderFill::InitModifiable()
 			}
 		}
 
-		if(myStartTexture)
-		{
-			myStartTexture->Destroy();
-			myStartTexture=0;
-		}
+		
 		if(myStartTextureName.const_ref() !="")
 		{
 			myStartTexture = textureManager->GetTexture(myStartTextureName.const_ref());
-			myStartTexture->GetRef();
 		}
 
-		if(myMiddleTexture)
-		{
-			myMiddleTexture->Destroy();
-			myMiddleTexture=0;
-		}
+		
 		if(myMiddleTextureName.const_ref() !="")
 		{
 			myMiddleTexture = textureManager->GetTexture(myMiddleTextureName.const_ref());
-			myMiddleTexture->GetRef();
 		}
 
-		if(myEndTexture)
-		{
-			myEndTexture->Destroy();
-			myEndTexture=0;
-		}
 		if(myEndTextureName.const_ref() !="")
 		{
 			myEndTexture = textureManager->GetTexture(myEndTextureName.const_ref());
-			myEndTexture->GetRef();
 		}
 
 		//Init childs
@@ -141,49 +109,25 @@ void UISliderFill::ChangeTexture(kstl::string _voidtexturename,kstl::string _sta
 	{
 		SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
 
-		if(myVoidTexture)
-		{
-			myVoidTexture->Destroy();
-			myVoidTexture=0;
-		}
 		myVoidTextureName = _voidtexturename;
 		myVoidTexture = textureManager->GetTexture(myVoidTextureName);
-		myVoidTexture->GetRef();
 
-		if(myStartTexture && _starttexturename != "")
-		{
-			myStartTexture->Destroy();
-			myStartTexture=0;
-		}
 		if(_starttexturename != "")
 		{
 			myStartTextureName = _starttexturename;
 			myStartTexture = textureManager->GetTexture(myStartTextureName);
-			myStartTexture->GetRef();
 		}
 
-		if(myMiddleTexture && _middletexturename != "")
-		{
-			myMiddleTexture->Destroy();
-			myMiddleTexture=0;
-		}
 		if(_middletexturename != "")
 		{
 			myMiddleTextureName = _middletexturename;
 			myMiddleTexture = textureManager->GetTexture(myMiddleTextureName);
-			myMiddleTexture->GetRef();
 		}
 
-		if(myEndTexture && _endtexturename != "")
-		{
-			myEndTexture->Destroy();
-			myEndTexture=0;
-		}
 		if(_endtexturename != "")
 		{
 			myEndTextureName = _endtexturename;
 			myEndTexture = textureManager->GetTexture(myEndTextureName);
-			myEndTexture->GetRef();
 		}
 
 		//auto Size

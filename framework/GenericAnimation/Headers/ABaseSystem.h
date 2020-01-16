@@ -172,7 +172,7 @@ public:
 	
 	ABaseChannel*               GetRootChannel()
 	{
-		return (ABaseChannel*)mp_Root;
+		return (ABaseChannel*)mp_Root.get();
 	};
 	
 	// ******************************
@@ -307,7 +307,7 @@ public:
 	// * -
 	// ******************************
 	
-	ABaseChannel**   m_pChannelTab;
+	SP<ABaseChannel>*   m_pChannelTab;
 	IntU32       m_ChannelsCount;
 	
 	// ******************************
@@ -323,7 +323,7 @@ public:
 	bool                m_RecurseAnimate;
 	bool				m_OnlyLocalSkeletonUpdate;
 	
-	ABaseChannel*			mp_Root;
+	SP<ABaseChannel>			mp_Root;
 	
 	maInt						m_Priority;
 	

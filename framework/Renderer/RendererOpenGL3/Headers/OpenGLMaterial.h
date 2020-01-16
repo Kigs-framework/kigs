@@ -2,10 +2,10 @@
 #define _OPENGLMATERIAL_H
 
 #include "Material.h"
+#include "GLSLUniform.h"
 //#include "GLSLUniform.h"
 //#include "ModuleSceneGraph.h"
 
-class API3DUniformBase;
 
 class OpenGLMaterial : public Material
 {

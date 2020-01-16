@@ -40,8 +40,8 @@ public:
 	DECLARE_ABSTRACT_CLASS_INFO(ABaseChannel, CoreModifiable, Animation);	
 	DECLARE_CONSTRUCTOR(ABaseChannel);
 	
-	bool	addItem(CoreModifiable *item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
-	bool	removeItem(CoreModifiable *item DECLARE_DEFAULT_LINK_NAME) override;
+	bool	addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool	removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 	
 	// ******************************
 	// * IsRootChannel
@@ -98,7 +98,7 @@ public:
 		{
 			if ((*it).myItem->isSubType(ABaseChannel::myClassID))
 			{
-				((ABaseChannel*)(*it).myItem)->GetSonGroupIDList(result, count);
+				(*it).myItem->as< ABaseChannel>()->GetSonGroupIDList(result, count);
 			}
 		}
 	};
@@ -137,7 +137,7 @@ public:
 	*/
 	// ******************************
 	
-	static  void    AutoChannelTree(ABaseChannel** channels, AObjectSkeletonResource* hierarchy);
+	static  void    AutoChannelTree(SP<ABaseChannel>* channels, AObjectSkeletonResource* hierarchy);
 	
 	// ******************************
 	// * AutoChannelTree
@@ -146,7 +146,7 @@ public:
 	*/
 	// ******************************
 	
-	static  void    AutoChannelTree(ABaseChannel** channels, ABaseSystem *sys);
+	static  void    AutoChannelTree(SP<ABaseChannel>* channels, ABaseSystem *sys);
 	
 	
 	//protected:

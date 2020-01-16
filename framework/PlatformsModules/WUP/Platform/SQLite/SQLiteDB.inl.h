@@ -5,7 +5,7 @@
 
 bool SQLiteDB::ExistDatabase(const char * dbName)
 {
-	FilePathManager*	pathManager = reinterpret_cast<FilePathManager*>(KigsCore::GetSingleton("FilePathManager"));
+	SP<FilePathManager>	pathManager =KigsCore::GetSingleton("FilePathManager");
 	kstl::string L_Path;
 	kstl::string filePath = FilePathManager::DevicePath(dbName, FilePathManager::DB_STORAGE);
 	

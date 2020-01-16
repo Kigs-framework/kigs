@@ -42,7 +42,6 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
     // it while we were in the middle of enumerating it.)
     if( FAILED(hr) ) 
 	{
-		localJoystick->Destroy();
         return DIENUM_CONTINUE;
 	}
 

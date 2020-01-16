@@ -1192,7 +1192,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	{
 		grpStruct& currentgrp=(*itgrp);
 
-		currentgrp.myMaterial->Destroy();
+		currentgrp.myMaterial=nullptr;
 		delete[] ((Mesh::Triangle*)currentgrp.myFirstTriangle);
 	}
 

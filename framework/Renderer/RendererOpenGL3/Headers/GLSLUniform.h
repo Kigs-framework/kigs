@@ -5,12 +5,13 @@
 #include "Drawable.h"
 #include "maBuffer.h"
 #include "AttributePacking.h"
+#include "Texture.h"
 
 #include "Shader.h"
 
 #define KEY_TYPE unsigned int
 
-class Texture;
+
 class RendererOpenGL;
 
 class API3DUniformBase : public Drawable

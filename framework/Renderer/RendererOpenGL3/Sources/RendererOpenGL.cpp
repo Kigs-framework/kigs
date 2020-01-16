@@ -75,15 +75,6 @@ RendererOpenGL::RendererOpenGL(const kstl::string& name, CLASS_NAME_TREE_ARG) : 
 	myVBO[0] = -1; // for init check
 }
 
-RendererOpenGL::~RendererOpenGL()
-{
-	if (myUIShader)
-	{
-		myUIShader->Destroy();
-		myUIShader = 0;
-	}
-}
-
 void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 {
 	if (HasShader()) // load uniform

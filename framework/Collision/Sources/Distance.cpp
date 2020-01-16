@@ -252,7 +252,7 @@ kfloat Distance::PointMesh(const Point3D &P, const Mesh *pMesh, Mesh::Triangle* 
 	{
 		if((*it).myItem->isSubType(MeshItemGroup::myClassID))
 		{
-			MeshItemGroup* current=(MeshItemGroup*)(*it).myItem;
+			MeshItemGroup* current=(MeshItemGroup*)(*it).myItem.get();
 
 			Mesh::Triangle *Tr = (Mesh::Triangle*)current->myFirstTriangle;
 			int	sizeoftriangle=current->myTriangleSize;

@@ -563,7 +563,7 @@ bool DX11Texture::CreateFromText(const unsigned short* text, u32 _maxLineNumber,
 
 		if (!RendererDX11::myDrawer->IsInCache(fontName))
 		{
-			FilePathManager* L_PathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+			SP<FilePathManager> L_PathManager = KigsCore::GetSingleton("FilePathManager");
 			SmartPointer<FileHandle> fullfilenamehandle;
 
 			if (L_PathManager)
@@ -618,7 +618,7 @@ bool DX11Texture::Load()
 	}
 	else
 	{
-		FilePathManager*	pathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+		SP<FilePathManager>	pathManager = KigsCore::GetSingleton("FilePathManager");
 
 		std::string fileName = myFileName.const_ref();
 		auto extdot = fileName.rfind('.');
