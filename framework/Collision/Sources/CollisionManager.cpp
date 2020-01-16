@@ -277,9 +277,9 @@ void CollisionManager::RecursiveCheck(CoreModifiable* item, u32 branchMask, bool
 				branchMask = mask;
 
 			if (branchMask > 0)
-				CreateCollisionObject(cm.myItem, branchMask);
+				CreateCollisionObject((CoreModifiable*)cm.myItem.get(), branchMask);
 
-			RecursiveCheck(cm.myItem, branchMask,true);
+			RecursiveCheck((CoreModifiable*)cm.myItem.get(), branchMask,true);
 			branchMask = before;
 		}
 	}
@@ -516,7 +516,7 @@ bool CollisionManager::GetRayIntersection(Hit &hit, const Point3D &start, const 
 		{
 			dd::sphere(hit.HitPosition, Point3D(255, 255, 0), 0.01f);
 			dd::line(hit.HitPosition, hit.HitPosition + (hit.HitNormal*0.1f), Point3D(0, 0, 255));
-			hit.HitCollisionObject->DrawDebug(hit.HitPosition, &hit.HitNode->GetLocalToGlobal(), KigsCore::GetCoreApplication()->GetApplicationTimer());
+			hit.HitCollisionObject->DrawDebug(hit.HitPosition, &hit.HitNode->GetLocalToGlobal(), KigsCore::GetCoreApplication()->GetApplicationTimer().get());
 		}
 #endif
 
@@ -556,7 +556,7 @@ void CollisionManager::GetAllRayIntersection(const Point3D &start, const Vector3
 		dd::sphere(hit.HitPosition, Point3D(255, 255, 0), 0.01f);
 		dd::line(hit.HitPosition, hit.HitPosition + (hit.HitNormal*0.1f), Point3D(0, 0, 255));
 
-		hit.HitCollisionObject->DrawDebug(hit.HitPosition, &hit.HitNode->GetLocalToGlobal(), KigsCore::GetCoreApplication()->GetApplicationTimer());
+		hit.HitCollisionObject->DrawDebug(hit.HitPosition, &hit.HitNode->GetLocalToGlobal(), KigsCore::GetCoreApplication()->GetApplicationTimer().get());
 	}
 #endif
 }
@@ -645,7 +645,7 @@ bool CollisionManager::RecursiveSearchRayIntersection(CoreModifiable* lastCollid
 			}
 
 			for (auto & son : item->getItems())
-				retVal |= RecursiveSearchRayIntersection(lastCollideNode, lastNode, son.myItem, start, dir, hit, (hasCat) ? mask : lastNodeCategory, a_itemCategory, ignore_is_collidable);
+				retVal |= RecursiveSearchRayIntersection(lastCollideNode, lastNode,(CoreModifiable*) son.myItem.get(), start, dir, hit, (hasCat) ? mask : lastNodeCategory, a_itemCategory, ignore_is_collidable);
 		}
 		return retVal;
 	}
@@ -813,7 +813,7 @@ void CollisionManager::RecursiveSearchAllRayIntersection(CoreModifiable* lastCol
 
 			for (auto & son : item->getItems())
 			{
-				RecursiveSearchAllRayIntersection(lastCollideNode, lastNode, son.myItem, start, dir, hits, (hasCat) ? mask : lastNodeCategory, a_itemCategory, ignore_is_collidable);
+				RecursiveSearchAllRayIntersection(lastCollideNode, lastNode, (CoreModifiable*)son.myItem.get(), start, dir, hits, (hasCat) ? mask : lastNodeCategory, a_itemCategory, ignore_is_collidable);
 			}
 			return;
 		}
@@ -991,7 +991,7 @@ void CollisionManager::RecursiveSearchPlaneIntersection(Node3D* lastNode, CoreMo
 
 			for (auto & son : item->getItems())
 			{
-				RecursiveSearchPlaneIntersection(lastNode, son.myItem, o, n, Zone,result, (hasCat) ? mask : lastNodeCategory, a_itemCategory);
+				RecursiveSearchPlaneIntersection(lastNode, (CoreModifiable*)son.myItem.get(), o, n, Zone,result, (hasCat) ? mask : lastNodeCategory, a_itemCategory);
 			}
 			return;
 		}

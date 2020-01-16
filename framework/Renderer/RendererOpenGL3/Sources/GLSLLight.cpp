@@ -227,11 +227,7 @@ void API3DLight::NotifyUpdate(const unsigned int  labelid)
 	{
 		if (myIsDirectional)
 		{
-			if (myAttenuationUniform)
-			{
-				myAttenuationUniform->Destroy();
-				myAttenuationUniform = NULL;
-			}
+			myAttenuationUniform = nullptr;
 		}
 		else
 		{

@@ -14,7 +14,7 @@ void	Init_FSM_Management()
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), FSM_Manager, FSM_Manager, FSM);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), FSM_State, FSM_State, FSM);
 
-	FSM_Manager* manager = (FSM_Manager*)KigsCore::GetSingleton("FSM_Manager");
+	SP<FSM_Manager> manager = KigsCore::GetSingleton("FSM_Manager");
 	if (manager)
 	{
 		manager->Init();
@@ -64,7 +64,7 @@ void	FSM::InitModifiable()
 					initState((*foundState).second, 0);
 
 					// register FSM
-					FSM_Manager* manager = (FSM_Manager*)KigsCore::GetSingleton("FSM_Manager");
+					SP<FSM_Manager> manager = KigsCore::GetSingleton("FSM_Manager");
 					if (manager)
 					{
 						manager->registerFSM(this);
@@ -174,7 +174,7 @@ FSM::~FSM()
 	if (myIsAutoactivated)
 	{
 		// unregister FSM
-		FSM_Manager* manager = (FSM_Manager*)KigsCore::GetSingleton("FSM_Manager");
+		SP<FSM_Manager> manager = KigsCore::GetSingleton("FSM_Manager");
 		if (manager)
 		{
 			manager->unregisterFSM(this);
@@ -418,10 +418,10 @@ void	FSM::initStateFromDescription(CoreItemSP statedescription)
 		else if (key == "importXML") // extern file
 		{
 			kstl::string filename(*iterstate);
-			FSM_State* newstate = (FSM_State*)CoreModifiable::Import(filename);
+			SP<FSM_State> newstate = CoreModifiable::Import(filename);
 			if (newstate)
 			{
-				addStateInstance(newstate);
+				addStateInstance(newstate.get());
 			}
 		}
 		else if (key == "importJSON") // extern file
@@ -435,13 +435,11 @@ void	FSM::initStateFromDescription(CoreItemSP statedescription)
 			GetSonInstancesByName("FSM_State", instancename, instances);
 			if (instances.size() == 1)
 			{
-				FSM_State* newstate = (FSM_State*)*(instances.begin());
-				// get one ref before removing it from this
-				newstate->GetRef();
-				removeItem(newstate);
+				SP<FSM_State> newstate((FSM_State*)*(instances.begin()), GetRefTag{});
+				removeItem((CMSP&)newstate);
 
 				// then add it as a state
-				addStateInstance(newstate);
+				addStateInstance(newstate.get());
 
 			}
 		}
@@ -496,12 +494,12 @@ void	FSM::initFSM_StateFromDescription(CoreItemSP statedescription)
 	statename = (kstl::string)stateInfos[1];
 	initstate = (kstl::string)stateInfos[2];
 
-	FSM_State* newstate = (FSM_State*)KigsCore::GetInstanceOf(statename, statetype);
+	SP<FSM_State> newstate = KigsCore::GetInstanceOf(statename, statetype);
 	newstate->setValue("Description", statedescription.get());
 	newstate->setValue("InitState", initstate);
 	newstate->Init();
 
-	addStateInstance(newstate);	
+	addStateInstance(newstate.get());	
 }
 
 void FSM::sendEvent(KigsID notifID, void* eventdata)

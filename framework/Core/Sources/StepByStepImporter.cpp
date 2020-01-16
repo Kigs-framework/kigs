@@ -50,9 +50,6 @@ void	StepByStepImporter::InitModifiable()
 
 StepByStepImporter::~StepByStepImporter()
 {
-	if(myTimer)
-		myTimer->Destroy();
-
 	if(myImportTreeRoot)
 		delete myImportTreeRoot;
 

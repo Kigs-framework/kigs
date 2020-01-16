@@ -189,12 +189,6 @@ protected:
 	// recompute myDesignCoefX,myDesignCoefY;
 	void	InitModifiable() override;
 
-	/**
-	* \brief	destructor
-	* \fn 		~RenderingScreen();
-	*/
-	virtual ~RenderingScreen();
-
 	void Update(const Timer&  timer, void* /*addParam*/) override;
 
 	//! TRUE if the screen has been initialized

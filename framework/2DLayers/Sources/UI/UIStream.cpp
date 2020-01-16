@@ -30,7 +30,8 @@ void UIStream::InitModifiable()
 		if(!_video_file.const_ref().empty())
 		{
 			_framebufferstream = KigsCore::GetInstanceOf(getName() + "_stream", "MPEG4BufferStream");
-			_framebufferstream->addItem((CMSP&)KigsCore::GetCoreApplication()->GetApplicationTimer());
+			CMSP timer = KigsCore::GetCoreApplication()->GetApplicationTimer();
+			_framebufferstream->addItem(timer);
 			_framebufferstream->setValue("FileName", _video_file);
 			_framebufferstream->setValue("Format", "RGB24");
 			_framebufferstream->setValue("Volume", (float)mVolume);
