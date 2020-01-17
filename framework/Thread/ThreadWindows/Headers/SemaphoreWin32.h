@@ -23,12 +23,12 @@ public:
 	/*! \brief addItem
 		overload from CoreModifiable
 	*/
-	virtual bool				addItem(CoreModifiable *item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME);
+	virtual bool				addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME);
 
 	/*! \brief removeItem
 		overload from CoreModifiable
 	*/
-	virtual bool				removeItem(CoreModifiable *item DECLARE_DEFAULT_LINK_NAME);
+	virtual bool				removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME);
 protected:
    
 	//! destructor

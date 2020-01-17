@@ -26,7 +26,7 @@ SemaphoreWin32::~SemaphoreWin32()
 
 }    
 
-bool	SemaphoreWin32::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	SemaphoreWin32::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	DWORD dwWaitResult; 
     // Try to enter the mutex gate.
@@ -41,7 +41,7 @@ bool	SemaphoreWin32::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK
 	return true;
 }
 
-bool	SemaphoreWin32::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
+bool	SemaphoreWin32::removeItem(CMSP& item DECLARE_LINK_NAME)
 {
 	ReleaseMutex( myHandle );
 

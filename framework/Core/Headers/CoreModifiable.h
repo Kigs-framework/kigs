@@ -196,22 +196,22 @@ private:
 typedef	const int	CoreMessageType;
 
 
-#define TEST_ALLOWCHANGES_FLAG
-
 // generic flag
-#define InitFlag							(1UL)
-#define PostDestroyFlag						(2UL)
-#define RecursiveUpdateFlag					(4UL)
-#define NotificationCenterRegistered		(8UL)
-#define ReferenceRegistered					(16UL)
-#define AutoUpdateRegistered				(32UL)
-#define AggregateParentRegistered			(64UL)
-#define AggregateSonRegistered				(128UL)
-#ifdef TEST_ALLOWCHANGES_FLAG
-#define AllowChanges						(256UL)
-#endif
+#define InitFlag							(1U)
+#define PostDestroyFlag						(2U)
+#define RecursiveUpdateFlag					(4U)
+#define NotificationCenterRegistered		(8U)
+#define ReferenceRegistered					(16U)
+#define AutoUpdateRegistered				(32U)
+#define AggregateParentRegistered			(64U)
+#define AggregateSonRegistered				(128U)
+#define AllowChanges						(256U)
+
+// more generic UserFlags
+constexpr u32 UserFlagsBitSize = 16;
+constexpr u32 UserFlagsShift = (32 - UserFlagsBitSize);
 // user flag is set at 0xFF000000
-constexpr u64 UserFlags = 0xFF000000UL;
+constexpr u32 UserFlagsMask = 0xFFFFFFFF<< UserFlagsShift;
 
 #define SIGNAL_ARRAY_CONTENT(a) #a, 
 #define SIGNAL_ENUM_CONTENT(a) a, 
@@ -330,9 +330,6 @@ public:
 
 	// true if the modifiable is correctly initialized
 	bool IsInit() { return isInitFlagSet(); }
-
-	// Decrement ref count and delete the object if it's no longer used
-	void Destroy() final;
 
 	// Call Update on aggregate sons then call Update
 	void CallUpdate(const Timer& timer, void* addParam);
@@ -599,74 +596,68 @@ public:
 	}
 	
 	/// Flags
-	void flagAsNotificationCenterRegistered()
+	inline void flagAsNotificationCenterRegistered()
 	{
 		_ModifiableFlag |= (u32)NotificationCenterRegistered;
 	}
-	void unflagAsNotificationCenterRegistered()
+	inline void unflagAsNotificationCenterRegistered()
 	{
 		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)NotificationCenterRegistered;
 	}
-	bool isFlagAsNotificationCenterRegistered()
+	inline bool isFlagAsNotificationCenterRegistered()
 	{
 		return (_ModifiableFlag&(u32)NotificationCenterRegistered) != 0;
 	}
-	void flagAsReferenceRegistered()
+	inline void flagAsReferenceRegistered()
 	{
 		_ModifiableFlag |= (u32)ReferenceRegistered;
 	}
-	void unflagAsReferenceRegistered()
+	inline void unflagAsReferenceRegistered()
 	{
 		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)ReferenceRegistered;
 	}
-	bool isFlagAsReferenceRegistered()
+	inline bool isFlagAsReferenceRegistered()
 	{
 		return (_ModifiableFlag&(u32)ReferenceRegistered) != 0;
 	}
-	void flagAsAutoUpdateRegistered()
+	inline void flagAsAutoUpdateRegistered()
 	{
 		_ModifiableFlag |= (u32)AutoUpdateRegistered;
 	}
-	void unflagAsAutoUpdateRegistered()
+	inline void unflagAsAutoUpdateRegistered()
 	{
 		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)AutoUpdateRegistered;
 	}
-	bool isFlagAsAutoUpdateRegistered()
+	inline bool isFlagAsAutoUpdateRegistered()
 	{
 		return (_ModifiableFlag&(u32)AutoUpdateRegistered) != 0;
 	}
-	void flagAsPostDestroy()
+	inline void flagAsPostDestroy()
 	{
 		_ModifiableFlag |= (u32)PostDestroyFlag;
 	}
-	void setUserFlag(u8 flag)
+	inline void unflagAsPostDestroy()
 	{
-		_ModifiableFlag |= ((u32)flag) << 24;
+		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)PostDestroyFlag;
 	}
-	void unsetUserFlag(u8 flag)
+	inline bool isFlagAsPostDestroy()
 	{
-		_ModifiableFlag &= 0xFFFFFFFF ^ (((u32)flag) << 24);
+		return (_ModifiableFlag & (u32)PostDestroyFlag) != 0;
 	}
-	bool isUserFlagSet(u8 flag)
+	inline void setUserFlag(u32 flag)
 	{
-		return ((_ModifiableFlag&(((u32)flag) << 24)) != 0);
+		_ModifiableFlag |= ((u32)flag) << UserFlagsShift;
 	}
-	bool isInitFlagSet() { return ((_ModifiableFlag&((u32)InitFlag)) != 0); }
+	inline void unsetUserFlag(u32 flag)
+	{
+		_ModifiableFlag &= 0xFFFFFFFF ^ (((u32)flag) << UserFlagsShift);
+	}
+	inline bool isUserFlagSet(u32 flag)
+	{
+		return ((_ModifiableFlag&(((u32)flag) << UserFlagsShift)) != 0);
+	}
+	inline bool isInitFlagSet() { return ((_ModifiableFlag&((u32)InitFlag)) != 0); }
 
-#ifndef TEST_ALLOWCHANGES_FLAG
-	inline void flagAllowChanges()
-	{
-		mAllowChanges = true;
-	}
-	inline void unflagAllowChanges()
-	{
-		mAllowChanges = false;
-	}
-	inline bool isFlagAllowChanges()
-	{
-		return  mAllowChanges;
-	}
-#else
 	inline void flagAllowChanges()
 	{
 		_ModifiableFlag |= (u32)AllowChanges;
@@ -679,7 +670,7 @@ public:
 	{
 		return (_ModifiableFlag&(u32)AllowChanges) != 0;
 	}
-#endif
+
 	// for some type of classes when we want don't want duplicated instances (textures, shaders...)
 	// return an already existing instance equivalent of this
 	virtual CMSP	getSharedInstance()
@@ -827,6 +818,10 @@ public:
 
 
 protected:
+
+	// check if we can destroy object
+	virtual bool checkDestroy() override;
+
 	/// Internals
 	void UpdateAggregates(const Timer&  timer, void* addParam);
 	const ModifiableMethodStruct* findMethod(const KigsID& id, const CoreModifiable*& localthis) const;
@@ -1039,15 +1034,9 @@ private:
 		return mLazyContent;
 	}
 
-#ifndef TEST_ALLOWCHANGES_FLAG
-	std::atomic_bool mAllowChanges = { true };
-	int _ModifiableFlag = 0;
-#else
 	// Flags
 	int _ModifiableFlag =  AllowChanges;
-#endif
 
-	
 #ifdef KEEP_NAME_AS_STRING
 	// keep track of Decorators only on win32 to be able to export them
 	std::vector<std::string>*	_Decorators = nullptr;

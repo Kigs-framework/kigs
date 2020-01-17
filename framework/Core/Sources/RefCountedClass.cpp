@@ -404,17 +404,14 @@ void RefCountedClass::ProtectedDestructor()
 	KigsCore::Instance()->ReleaseSemaphore();
 }
 
-void	RefCountedClass::Destroy() 
+std::lock_guard<std::recursive_mutex>* RefCountedClass::lockForDestroy()
 {
+	std::lock_guard<std::recursive_mutex>* lk = nullptr;
 	if (myTypeNode)
 	{
-		std::lock_guard<std::recursive_mutex> lk{ myTypeNode->myMutex }; // lock corresponding CoreTreeNode mutex to avoid instance search founding an instance already in destroy process
-		RefCountedBaseClass::Destroy();	// can't put this outside of the if as it have to be locked
+		lk = new std::lock_guard<std::recursive_mutex>(myTypeNode->myMutex); // lock corresponding CoreTreeNode mutex to avoid instance search founding an instance already in destroy process
 	}
-	else
-	{
-		RefCountedBaseClass::Destroy(); // no locked call to destroy
-	}
+	return lk;
 }
 
 //
