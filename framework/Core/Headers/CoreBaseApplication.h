@@ -88,7 +88,7 @@ public:
 
 	const kstl::string*	HasArg(const kstl::string& arg, bool startWith=false) const;
 
-	SP<Timer>			GetApplicationTimer()
+	SP<Timer>&			GetApplicationTimer()
 	{
 		return myApplicationTimer;
 	}

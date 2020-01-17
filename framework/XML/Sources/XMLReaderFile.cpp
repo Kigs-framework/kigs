@@ -287,7 +287,7 @@ XMLBase* XMLReaderFile::ReadFile(const kstl::string& file,const char* force_as_f
 
 	// 
 	SmartPointer<FileHandle> lFileHandle;
-	SP<FilePathManager>	pathManager = KigsCore::GetSingleton("FilePathManager");
+	auto& pathManager = KigsCore::Singleton<FilePathManager>();
 	if (!pathManager.isNil())
 		lFileHandle = pathManager->FindFullName(file);
 
@@ -303,7 +303,7 @@ XMLBase* XMLReaderFile::ReadFile(const kstl::string& file,const char* force_as_f
 	}
 	else if (lFileHandle->myExtension == ".kxml" || forceFormat == "kxml") // compressed
 	{
-		CMSP uncompressManager= KigsCore::GetSingleton("KXMLManager");
+		CMSP& uncompressManager= KigsCore::GetSingleton("KXMLManager");
 		if (uncompressManager)
 		{
 			u64 size;
@@ -348,7 +348,7 @@ bool XMLReaderFile::ReadFile( const kstl::string &file ,CoreModifiable*	delegate
 {
 	bool result=false;
 
-	SP<FilePathManager>	pathManager=KigsCore::GetSingleton("FilePathManager");
+	auto& pathManager = KigsCore::Singleton<FilePathManager>();
 	SP<FileHandle> fullfilenamehandle=pathManager->FindFullName(file);
 
 	// get file extension to choose XML or BXML ?

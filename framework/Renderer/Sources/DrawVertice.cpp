@@ -133,7 +133,7 @@ void DrawVertice::InitModifiable()
 		SetDataFromPreset();
 		if (myTextureFileName.const_ref().size())
 		{
-			SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 			mypTexture = textureManager->GetTexture(myTextureFileName);
 		}
 	}
@@ -148,7 +148,7 @@ void DrawVertice::NotifyUpdate(const u32 labelid)
 		mypTexture = nullptr;
 		if (myTextureFileName.const_ref().size())
 		{
-			SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 			mypTexture = textureManager->GetTexture(myTextureFileName);
 		}
 	}

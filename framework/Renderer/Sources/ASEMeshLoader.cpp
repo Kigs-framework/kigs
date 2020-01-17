@@ -400,8 +400,8 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 			if(myTextureList[realindex]!="")
 			{
 
-				SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
-				Tex = fileManager->GetTexture(myTextureList[realindex], false);
+				auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
+				Tex = texfileManager->GetTexture(myTextureList[realindex], false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 
 				Tex->Init();

@@ -120,7 +120,7 @@ void	CoreBaseApplication::InitApp(const char* baseDataPath, bool	InitBaseModule)
 		{
 			// init path
 			// get file manager singleton
-			SP<FilePathManager>	pathManager = KigsCore::GetSingleton("FilePathManager");
+			SP<FilePathManager>&	pathManager = KigsCore::Singleton<FilePathManager>();
 
 			pathManager->AddToPath(baseDataPath, "*");
 		}

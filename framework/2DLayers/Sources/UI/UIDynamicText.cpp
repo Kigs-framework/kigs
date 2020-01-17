@@ -48,7 +48,7 @@ IMPLEMENT_CONSTRUCTOR(FontMapManager)
 
 FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsize)
 {
-	SP<TextureFileManager> tfm = KigsCore::GetSingleton("TextureFileManager");
+	auto& tfm = KigsCore::Singleton<TextureFileManager>();
 	SmartPointer<CoreRawBuffer> crb = nullptr;
 
 	char str[1024];
@@ -142,7 +142,7 @@ FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsi
 
 void FontMapManager::ReloadTextures()
 {
- 	SP<TextureFileManager> tfm = KigsCore::GetSingleton("TextureFileManager");
+	auto& tfm = KigsCore::Singleton<TextureFileManager>();
 
 	kstl::vector<u8> bitmap_alpha;
 	kstl::vector<u8> bitmap_AI8;
@@ -176,10 +176,10 @@ void FontMapManager::ReloadTextures()
 void UIDynamicText::LoadFont()
 {
 
-	SP<TextureFileManager> tfm = KigsCore::GetSingleton("TextureFileManager");
-	SP<FontMapManager> font_map_manager = KigsCore::GetSingleton("FontMapManager");
+	auto& tfm = KigsCore::Singleton<TextureFileManager>();
+	auto& font_map_manager = KigsCore::Singleton<FontMapManager>();
 
-	SP<LocalizationManager> theLocalizationManager = KigsCore::GetSingleton("LocalizationManager");
+	auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 	float LanguageScale = 1.0f;
 	theLocalizationManager->getValue("LanguageScale", LanguageScale);
 
@@ -299,7 +299,7 @@ void UIDynamicText::IterateCharacters(std::function<bool(IterationState&)> func,
 		break;
 	}
 
-	SP<LocalizationManager> theLocalizationManager = KigsCore::GetSingleton("LocalizationManager");
+	auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 	float LanguageScale = 1.0f;
 	theLocalizationManager->getValue("LanguageScale", LanguageScale);
 
@@ -664,7 +664,7 @@ void UIDynamicText::BuildVertexArray()
 {
 	if (!mFontMap) return;
 
-	SP<LocalizationManager> theLocalizationManager = KigsCore::GetSingleton("LocalizationManager");
+	auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 	float LanguageScale = 1.0f;
 	theLocalizationManager->getValue("LanguageScale", LanguageScale);
 
@@ -965,7 +965,7 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 	{
 		kstl::string reftext = text.ToString();
 		kstl::string key = reftext.substr(1, reftext.length() - 1);
-		SP<LocalizationManager> theLocalizationManager = KigsCore::GetSingleton("LocalizationManager");
+		auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 		current_character = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key.c_str());
 
 		if (current_character == nullptr)

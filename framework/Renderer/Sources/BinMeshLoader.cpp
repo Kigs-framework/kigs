@@ -223,8 +223,8 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 
 			if(stagedesc.myTexture != "empty")
 			{
-				SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
-				SP<Texture> Tex = fileManager->GetTexture(stagedesc.myTexture, false);
+				auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
+				SP<Texture> Tex = texfileManager->GetTexture(stagedesc.myTexture, false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 				Tex->Init();
 
@@ -629,8 +629,8 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 			if(stagedesc.myTexture != "empty")
 			{
-				SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
-				SP<Texture> Tex = fileManager->GetTexture(stagedesc.myTexture, false);
+				auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
+				SP<Texture> Tex = texfileManager->GetTexture(stagedesc.myTexture, false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 				Tex->Init();
 
@@ -1385,7 +1385,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					if ( ((*It_Material).myItem)->isSubType(MaterialStage::myClassID) )
 					{
 						keep=true;
-						SP<MaterialStage> MatStage = (*It_Material).myItem;
+						SP<MaterialStage>& MatStage = (SP<MaterialStage> & )(*It_Material).myItem;
 
 						int valuematstage=0;
 						MatStage->getValue("StageIndex",valuematstage);
@@ -1394,14 +1394,14 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 						stagedesc->myTexEnv = (TexEnvType)valuematstage;
 
 						//parcour les enfant
-						kstl::vector<ModifiableItemStruct> MatStageSonsList = MatStage->getItems();
+						const kstl::vector<ModifiableItemStruct>& MatStageSonsList = MatStage->getItems();
 						if ( MatStageSonsList.empty() )
 						{
 							stagedesc->myTexture = "empty";
 						}
 						else
 						{
-							kstl::vector<ModifiableItemStruct>::iterator It_MatStage = MatStageSonsList.begin();
+							kstl::vector<ModifiableItemStruct>::const_iterator It_MatStage = MatStageSonsList.begin();
 
 							//parcour les fils de mon mesh
 							while(It_MatStage != MatStageSonsList.end())

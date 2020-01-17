@@ -32,7 +32,7 @@ void	UIRenderingScreen::InitModifiable()
 		CoreModifiable* rs = (CoreModifiable*)myRenderingScreen;
 		if (rs)
 		{
-			SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
 			myTexture = rs->as<RenderingScreen>()->GetFBOTexture();
 			myTexture->setValue("TransparencyType",2);

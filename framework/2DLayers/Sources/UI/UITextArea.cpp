@@ -41,7 +41,7 @@ void	UITextArea::InitModifiable()
 {
 	UIDrawableItem::InitModifiable();
 
-	SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 	myTexture = textureManager->CreateTexture(getName());
 	myTexture->Init();
 	myTexture->SetRepeatUV(false, false);
@@ -119,7 +119,7 @@ void UITextArea::GetFocus()
 	if (theKeyboard == NULL)
 		return;
 
-	CMSP toAdd(this, StealRefTag{});
+	CMSP toAdd(this, GetRefTag{});
 
 	theKeyboard->addItem(toAdd);
 	theKeyboard->Show();
@@ -142,7 +142,7 @@ void UITextArea::LoseFocus()
 	if (theKeyboard == NULL)
 		return;
 
-	CMSP toDel(this, StealRefTag{});
+	CMSP toDel(this, GetRefTag{});
 	theKeyboard->removeItem(toDel);
 	theKeyboard->Hide();
 }
@@ -199,7 +199,7 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 		kfloat R, G, B, A = 0.0f;
 		GetColor(R, G, B, A);
 
-		SP<LocalizationManager> theLocalizationManager = KigsCore::GetSingleton("LocalizationManager");
+		auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 		float LanguageScale = 1.0f;
 		theLocalizationManager->getValue("LanguageScale", LanguageScale);
 

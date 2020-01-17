@@ -156,7 +156,7 @@ void TimeProfiler::ShowProfilers()
 	int i;
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		SP<TimeProfiler>	current=KigsCore::GetProfileManager()->myProfilers[i];
+		SP<TimeProfiler>&	current=KigsCore::GetProfileManager()->myProfilers[i];
 		if(current)
 		{
 			if(current->myWasUpdate)
@@ -187,7 +187,7 @@ void TimeProfiler::ShowProfilers()
 
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		SP<TimeProfiler>	current=KigsCore::GetProfileManager()->myProfilers[i];
+		SP<TimeProfiler>&	current=KigsCore::GetProfileManager()->myProfilers[i];
 		if(current)
 		{
 			if(current->myWasUpdate)

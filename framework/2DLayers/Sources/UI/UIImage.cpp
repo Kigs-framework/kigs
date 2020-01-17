@@ -163,7 +163,7 @@ void UIImage::ChangeTexture()
 	auto arr = SplitStringByCharacter(myCurrentTextureName, ':');
 	if (arr.size() > 1) // use spritesheet
 	{
-		SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 		mySpriteSheetTexture = textureManager->GetSpriteSheetTexture(arr[0]);
 		SetTexture(mySpriteSheetTexture->Get_Texture());
 		if (myTexture)
@@ -196,7 +196,7 @@ void UIImage::ChangeTexture()
 	}
 	else
 	{
-		SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 		SetTexture(textureManager->GetTexture(myCurrentTextureName).get());
 		myTexture->GetSize(myAutoresizeValue.x, myAutoresizeValue.y);
 		mUVMin.Set(FLT_MAX, FLT_MAX);

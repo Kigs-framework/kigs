@@ -176,6 +176,7 @@ public:
 		return result;
 	}
 
+
 protected:
 
 	smartPointOn*	myPointer;

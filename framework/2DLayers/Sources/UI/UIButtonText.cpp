@@ -127,7 +127,7 @@ void	UIButtonText::ChangeTextTexture(const unsigned short* _text, unsigned int _
 void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _texture)
 {
 	Texture* L_Texture = NULL;
-	//TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+	
 
 	kstl::string _text = a_text;
 	if (_text != "")
@@ -168,7 +168,7 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 			myDownText = _text;
 			break;
 		}
-		SP<LocalizationManager> theLocalizationManager = KigsCore::GetSingleton("LocalizationManager");
+		auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 		float LanguageScale = 1.0f;
 		theLocalizationManager->getValue("LanguageScale", LanguageScale);
 		// need localization ?
