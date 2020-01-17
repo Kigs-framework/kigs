@@ -53,7 +53,7 @@ void ThreadProfiler::RegisterThread(Thread* thread)
 
 void ThreadProfiler::ExportProfile(const kstl::string path)
 {
-	SP<FilePathManager> pathManager = KigsCore::GetSingleton("FilePathManager");
+	auto& pathManager = KigsCore::Singleton<FilePathManager>();
 	kstl::string str = pathManager->DevicePath(path, FilePathManager::DOCUMENT_FOLDER);
 
 	SmartPointer<FileHandle> file = Platform_fopen(str.c_str(), "wb");

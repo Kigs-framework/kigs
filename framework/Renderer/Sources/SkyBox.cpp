@@ -32,9 +32,9 @@ void SkyBox::InitModifiable()
 {
 	Drawable::InitModifiable();
 
-	SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
-	myTexture = fileManager->GetTexture(myFileName, false);
+	myTexture = textureManager->GetTexture(myFileName, false);
 	myTexture->setValue(LABEL_TO_ID(ForcePow2),true);
 	myTexture->setValue(LABEL_TO_ID(TextureType),Texture::TEXTURE_CUBE_MAP);
 	myTexture->Init();

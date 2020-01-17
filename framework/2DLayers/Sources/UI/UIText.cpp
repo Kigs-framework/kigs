@@ -119,7 +119,7 @@ void	UIText::ChangeText(const usString& _newText)
 	kfloat stR, stG, stB, st_A;
 	GetStrokeColor(stR, stG, stB, st_A);
 
-	SP<LocalizationManager> theLocalizationManager = KigsCore::GetSingleton("LocalizationManager");
+	auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 	float LanguageScale = 1.0f;
 	theLocalizationManager->getValue("LanguageScale", LanguageScale);
 

@@ -124,7 +124,7 @@ void ModernMesh::InitModifiable()
 		}
 		else if ((!myWasBuild) && (myFileName.const_ref() != ""))
 		{
-			SP<FilePathManager>	pathManager = KigsCore::GetSingleton("FilePathManager");
+			auto& pathManager = KigsCore::Singleton<FilePathManager>();
 			auto filename = myFileName.const_ref();
 
 			/*if (filename.substr(filename.size() - 4) == ".xml" || filename.substr(filename.size() - 5) == ".kxml")
@@ -354,7 +354,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 		{
 			if (crb->size() >= settings->export_buffer_attribute_as_external_file_size_threshold)
 			{
-				CMSP compressManager = KigsCore::GetSingleton("KXMLManager");
+				CMSP& compressManager = KigsCore::GetSingleton("KXMLManager");
 
 				auto poscrc = path.find("$CRCHASH$");
 				auto posmeow = path.find("$MEOWHASH$");

@@ -82,7 +82,7 @@ void	UIAnimatedButton::LoadTexture(SmartPointer<SpriteSheetTexture>& a_textptr, 
 	if (a_filename != "")
 	{
 		// load texture
-		SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 	
 		a_textptr = textureManager->GetSpriteSheetTexture(a_filename);
 	}

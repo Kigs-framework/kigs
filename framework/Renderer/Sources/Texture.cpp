@@ -28,9 +28,9 @@ Texture::Texture(const kstl::string& name, CLASS_NAME_TREE_ARG) : Drawable(name,
 
 Texture::~Texture()
 {
-	SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
-	fileManager->UnloadTexture(this);
+	textureManager->UnloadTexture(this);
 }
 
 // special case for FBO linked texture
@@ -60,7 +60,7 @@ void	Texture::InitModifiable()
 				UninitModifiable();
 			}
 
-			SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
 			if (textureManager->HasTexture(myFileName.const_ref()))
 			{
@@ -86,7 +86,7 @@ void	Texture::InitModifiable()
 // return an already existing instance equivalent of this
 CMSP	Texture::getSharedInstance()
 {
-	SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
 	if (textureManager->HasTexture(myFileName.const_ref()))
 	{

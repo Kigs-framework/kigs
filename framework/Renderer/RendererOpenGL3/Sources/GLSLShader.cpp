@@ -170,7 +170,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	if (str[0] == '!') // load from file
 	{
 		const char* filename = (str.c_str() + 1);
-		SP<FilePathManager>	pathManager = KigsCore::GetSingleton("FilePathManager");
+		auto& pathManager = KigsCore::Singleton<FilePathManager>();
 
 		kstl::string fullfilename;
 		if (pathManager)
@@ -207,7 +207,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	if (str[0] == '!') // load from file
 	{
 		const char* filename = (str.c_str() + 1);
-		SP<FilePathManager>	pathManager = KigsCore::GetSingleton("FilePathManager");
+		auto& pathManager = KigsCore::Singleton<FilePathManager>();
 
 		kstl::string fullfilename;
 		if (pathManager)

@@ -7,7 +7,7 @@ void UIImageHighlight::ChangeTexture()
 {
 	ParentClassType::ChangeTexture();
 
-	SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 	if (myTextureName.const_ref() != "")
 	{
 		myPLTexture = textureManager->GetTexture(myTextureName);

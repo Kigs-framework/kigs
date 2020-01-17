@@ -2147,7 +2147,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 					auto buffer = (CoreRawBuffer*)(RefCountedClass*)buffer_cuo;
 					if (buffer->size() >= settings->export_buffer_attribute_as_external_file_size_threshold)
 					{
-						CMSP compressManager = KigsCore::GetSingleton("KXMLManager");
+						CMSP& compressManager = KigsCore::GetSingleton("KXMLManager");
 						auto path = unique_id + "_" + current->getLabel()._id_name + (compressManager ? std::string(".kbin") : ".bin");
 						attribute = new XMLAttribute("V", "#" + path);
 						modifiableAttrNode->addAttribute(attribute);

@@ -127,7 +127,7 @@ DEFINE_METHOD(BaseUI2DLayer, KeepClick)
 
 DEFINE_METHOD(BaseUI2DLayer, DeleteChild)
 {
-	CMSP toDelete = CMSP(sender, GetRefTag{});
+	CMSP toDelete(sender, GetRefTag{});
 	DeleteChild(toDelete);
 	return false;
 }
@@ -355,14 +355,14 @@ void BaseUI2DLayer::Update(const Timer& a_Timer, void* addParam)
 
 		while (!myWaitToDelete.empty())
 		{
-			CMSP item = myWaitToDelete.back();
-			myWaitToDelete.pop_back();
-
+			SP<UIItem>& item = myWaitToDelete.back();
+			
 			if (item->GetParents().size() == 0)
 			{
 				KIGS_ERROR("item already deleted ?", 2);
 			}
-			item->GetParents()[0]->removeItem(item);
+			item->GetParents()[0]->removeItem((CMSP&)item);
+			myWaitToDelete.pop_back();
 		}
 	}
 }
