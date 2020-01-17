@@ -26,7 +26,7 @@ m_Color(*this,false,LABEL_AND_ID(Color),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f),KFLO
 
 void Sprite::InitModifiable()
 {
-	//TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+
 	myTexture = nullptr;
 
 	changeTexture(m_TextureFileName);
@@ -40,10 +40,10 @@ Sprite::~Sprite()
 
 void Sprite::changeTexture(kstl::string FileName)
 {
-	SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
 	m_TextureFileName = FileName;
-	myTexture = fileManager->GetTexture(m_TextureFileName);
+	myTexture = textureManager->GetTexture(m_TextureFileName);
 	
 	if (myTexture)
 	{

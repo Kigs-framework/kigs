@@ -73,7 +73,7 @@ void UISprite::ChangeTexture()
 	if (lTexName == "")
 		return;
 
-	SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
 	
 	mySpriteSheet =  textureManager->GetSpriteSheetTexture(lTexName);

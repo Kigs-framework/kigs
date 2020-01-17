@@ -9,8 +9,8 @@ IMPLEMENT_CLASS_INFO(SpriteSheetTexture);
 
 SpriteSheetTexture::~SpriteSheetTexture()
 {
-	SP<TextureFileManager>	fileManager = KigsCore::GetSingleton("TextureFileManager");
-	fileManager->UnloadTexture(this);
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+	textureManager->UnloadTexture(this);
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -46,8 +46,8 @@ void SpriteSheetTexture::InitModifiable()
 					L_Value->getValue(L_TextureName);
 
 					// load texture
-					SP<TextureFileManager>	fileManager = KigsCore::GetSingleton("TextureFileManager");
-					mTexture = fileManager->GetTexture(L_TextureName);
+					auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+					mTexture = textureManager->GetTexture(L_TextureName);
 				}
 			}
 		}
@@ -195,7 +195,7 @@ void SpriteSheetTexture::SortAnimation(CoreItemSP& _FrameVector)
 // return an already existing instance equivalent of this
 CMSP	SpriteSheetTexture::getSharedInstance()
 {
-	SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
 	if (textureManager->HasTexture(mFileName.const_ref()))
 	{

@@ -15,13 +15,13 @@ class PureVirtualFileAccessDelegate;
 	 
 	 Enrich the path like this :
 
-	 FilePathManager*	pathManager=(FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+	 auto&	pathManager=KigsCore::Singleton<FilePathManager>();
 	 pathManager->AddToPath("../Data/textures","tga"); // relative to execution directory
 	 pathManager->AddToPath("../Data","*"); // search all extension in Data
 
 	 Search for a file like this :
 
-	 FilePathManager*	pathManager=(FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+	 auto&	pathManager=KigsCore::Singleton<FilePathManager>();
 
 	 std::string fullfilename;
 	 // search for file "fileName" and return its full path in fullfilename

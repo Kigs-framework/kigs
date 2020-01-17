@@ -28,7 +28,7 @@ void UIButtonImage::InitModifiable()
 	if(_isInit)
 	{
 		// load texture
-		SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
 		myUpTexture=0;
 		myOverTexture = 0;
@@ -75,7 +75,7 @@ void UIButtonImage::NotifyUpdate(const unsigned int labelid)
 
 void UIButtonImage::ChangeTexture(kstl::string _texturename, kstl::string _overtexturename, kstl::string _downtexturename)
 {
-	SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 	if (myUpTexture)
 		myUpTexture = 0;
 

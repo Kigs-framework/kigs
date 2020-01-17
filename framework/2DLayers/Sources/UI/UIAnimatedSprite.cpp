@@ -68,7 +68,7 @@ void UIAnimatedSprite::ComputeRealSize()
 
 void UIAnimatedSprite::ChangeSpriteSheet(std::string const& filename)
 {
-	SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 	myFileName = filename;
 	myTexture = textureManager->GetSpriteSheetTexture(filename);
 	ChangeAnimation(myCurrentAnimation.c_str());

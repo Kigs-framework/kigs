@@ -440,13 +440,13 @@ void DataDrivenBaseApplication::ProtectedPreInit()
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), DataDrivenSequence, DataDrivenSequence, Core)
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), DataDrivenSequenceManager, DataDrivenSequenceManager, Core)
 	
-	SP<FilePathManager> pathManager = KigsCore::GetSingleton("FilePathManager");
+	auto& pathManager = KigsCore::Singleton<FilePathManager>();
 	pathManager->LoadPackage("Assets.kpkg");
 }
 
 void DataDrivenBaseApplication::ProtectedInit()
 {
-	SP<FilePathManager> pathManager = KigsCore::GetSingleton("FilePathManager");
+	auto& pathManager = KigsCore::Singleton<FilePathManager>();
 	bool has_kpkg = pathManager->GetLoadedPackage("Assets.kpkg");
 
 	// load an anonymous CoreModifiableInstance containing global params
@@ -489,8 +489,8 @@ void DataDrivenBaseApplication::ProtectedInit()
 	// localization init ?
 	if (AppInit->getValue("LocalizationInitFile", tmpFilename))
 	{
-		SP<LocalizationManager> L_LocalizationManager = KigsCore::GetSingleton("LocalizationManager");
-		L_LocalizationManager->InitWithConfigFile(tmpFilename);
+		auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
+		theLocalizationManager->InitWithConfigFile(tmpFilename);
 		AppInit->RemoveDynamicAttribute("LocalizationInitFile");
 	}
 	

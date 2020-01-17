@@ -71,10 +71,10 @@ void Billboard3D::InitModifiable()
 
 		if (str!="")
 		{
-			SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
+			auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
 			if(m_IsSpriteSheet)
 			{
-				myTexture = fileManager->GetSpriteSheetTexture(str);
+				myTexture = texfileManager->GetSpriteSheetTexture(str);
 
 				m_FrameNumber = myTexture->Get_FrameNumber(m_CurrentAnimation);
 				m_AnimationSpeed = 1.0f/(float)m_FramePerSecond;
@@ -94,7 +94,7 @@ void Billboard3D::InitModifiable()
 			}
 			else
 			{
-				m_Tex = fileManager->GetTexture(m_TextureFileName);
+				m_Tex = texfileManager->GetTexture(m_TextureFileName);
 
 				float ratioX,ratioY;
 				m_Tex->GetRatio(ratioX, ratioY);
@@ -119,7 +119,7 @@ void Billboard3D::NotifyUpdate(const unsigned int labelid)
 {
 	if (labelid == m_TextureFileName.getLabelID())
 	{
-		SP<TextureFileManager>	fileManager = KigsCore::GetSingleton("TextureFileManager");
+		auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
 		if (m_IsSpriteSheet)
 		{
 			if (myTexture)
@@ -136,7 +136,7 @@ void Billboard3D::NotifyUpdate(const unsigned int labelid)
 			}
 			if (m_TextureFileName.const_ref() != "")
 			{
-				myTexture = fileManager->GetSpriteSheetTexture(m_TextureFileName.const_ref());
+				myTexture = texfileManager->GetSpriteSheetTexture(m_TextureFileName.const_ref());
 
 				m_FrameNumber = myTexture->Get_FrameNumber(m_CurrentAnimation.const_ref());
 				m_AnimationSpeed = 1.0f / (float)m_FramePerSecond;
@@ -163,7 +163,7 @@ void Billboard3D::NotifyUpdate(const unsigned int labelid)
 			
 			if (m_TextureFileName.const_ref() != "")
 			{
-				m_Tex = fileManager->GetTexture(m_TextureFileName.const_ref());
+				m_Tex = texfileManager->GetTexture(m_TextureFileName.const_ref());
 
 				float ratioX, ratioY;
 				m_Tex->GetRatio(ratioX, ratioY);

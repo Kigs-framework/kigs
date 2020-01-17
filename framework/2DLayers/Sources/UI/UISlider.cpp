@@ -111,7 +111,7 @@ void UISlider::InitModifiable()
 		myIsMouseOver = false;
 
 		// load texture
-		SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 		if(myUpTexture)
 			myUpTexture=0;
 		
@@ -290,7 +290,7 @@ void UISlider::ChangeTexture(kstl::string _texturename, kstl::string _overtextur
 {
 	if(myIsEnabled) // down and mouse over only when enabled
 	{
-		SP<TextureFileManager> textureManager = KigsCore::GetSingleton("TextureFileManager");
+		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 		if(myUpTexture)
 			myUpTexture=0;
 

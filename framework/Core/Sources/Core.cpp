@@ -570,9 +570,9 @@ void KigsCore::ReleaseSemaphore()
 	}
 }
 
-CMSP KigsCore::GetSingleton(const KigsID& classname)
+CMSP& KigsCore::GetSingleton(const KigsID& classname)
 {
-	CMSP found=nullptr;
+	CMSP* found=nullptr;
 	Instance()->GetSemaphore();
 
 	//! search for an already existing instance
@@ -580,13 +580,13 @@ CMSP KigsCore::GetSingleton(const KigsID& classname)
 	auto	testFound = singletonmap.find(classname);
 	if(testFound != singletonmap.end())
 	{
-		found= (*testFound).second;
+		found= &(*testFound).second;
 	}
 	Instance()->ReleaseSemaphore();
 	//! and return it if found
 	if(found)
 	{
-		return found;
+		return *found;
 	}
 
 	//! else create a new instance
@@ -599,14 +599,23 @@ CMSP KigsCore::GetSingleton(const KigsID& classname)
 	instancename += buffer;
 	#endif
 
-	found= OwningRawPtrToSmartPtr(Instance()->GetInstanceFactory()->GetInstance(instancename,classname));
+	CMSP newone= OwningRawPtrToSmartPtr(Instance()->GetInstanceFactory()->GetInstance(instancename,classname));
 
 	Instance()->GetSemaphore();
-	if(found)
-		singletonmap[classname]=found;
+	
+	if (newone)
+	{
+		singletonmap.insert({ classname, newone });
+		testFound = singletonmap.find(classname);
+		found = &(*testFound).second;
+	}
+	
 	Instance()->ReleaseSemaphore();
+	
+	if(found)
+		return *found;
 
-	return found;
+	return Instance()->myNullPtr;
 }
 
 void	KigsCore::CleanSingletonMap()

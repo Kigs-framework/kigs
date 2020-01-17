@@ -226,8 +226,13 @@ public:
 	 * get the instance of 'classname' or call the instance factory if not exist<br>
 	 * return NULL if the factory failed
 	 */
-	static	CMSP GetSingleton(const KigsID& classname);
+	static	CMSP& GetSingleton(const KigsID& classname);
 
+	template<typename askedType>
+	static SP<askedType>& Singleton()
+	{
+		return (SP<askedType>&)GetSingleton(askedType::myClassID);
+	}
 	/**
 	 * \brief		destroy the unique instance of the given class
 	 * \param		classname : name of the class
@@ -443,6 +448,9 @@ public:
 	static void	addAsyncRequest(AsyncRequest*);
 
 protected:
+
+	// nullptr wrapper
+	CMSP	myNullPtr = nullptr;
 
 	kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myCoreItemOperatorCreateMethodMap;
 
