@@ -1483,16 +1483,17 @@ void		CoreModifiable::removeUser(CoreModifiable* user)
 	} while(found);
 }
 
-void    CoreModifiable::Destroy()
+bool    CoreModifiable::checkDestroy()
 {
-	if(_ModifiableFlag&((u32)PostDestroyFlag))
+	
+	if (isFlagAsPostDestroy())
 	{
-		_ModifiableFlag&=0xFFFFFFFF^((u32)PostDestroyFlag); // remove flag
+		unflagAsPostDestroy(); // remove flag
 		KigsCore::Instance()->AddToPostDestroyList(this);
-		return;
+		return true;
 	}
-	// call base destroy only if not in postdestroy
-	RefCountedClass::Destroy();
+
+	return RefCountedClass::checkDestroy();
 }
 
 //! Destroy method decrement refcounter and delete instance if no more used
