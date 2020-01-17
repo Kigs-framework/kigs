@@ -4,7 +4,6 @@
 #include "CoreIncludes.h"
 #include "TimerIncludes.h"
 #include "ModuleFileManager.h"
-#include "CoreAutoRelease.h"
 #include "TimeProfiler.h"
 
 //#define PRINT_REFTRACING
@@ -232,12 +231,7 @@ void	CoreBaseApplication::UpdateApp()
 		{
 			myApplicationTimer->Sleep(myUpdateSleepTime);
 		}
-		// kill autoreleased
-		CoreAutoRelease* autorelease=KigsCore::Instance()->getCoreAutoRelease();
-		if(autorelease)
-		{
-			autorelease->doAutoRelease();
-		}
+	
 		KigsCore::Instance()->ManagePostDestruction();
 		ENDPROFILE(GLOBAL)
 		myAlreadyInUpdate=false;

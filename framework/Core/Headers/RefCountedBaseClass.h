@@ -352,8 +352,6 @@ class RefCountedBaseClass : public GenericRefCountedBaseClass
 	 */
 	virtual void ProtectedDestroy() = 0;
 	
-	friend class CoreAutoRelease;
-	
 	private:
 	// don't use copy constructor and operator
 	//! brief  avoid calling copy contructor
