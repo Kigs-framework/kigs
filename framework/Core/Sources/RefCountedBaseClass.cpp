@@ -2,7 +2,7 @@
 #include "RefCountedBaseClass.h"
 
 #include "Core.h"
-#include "CoreAutoRelease.h"
+
 
 #include "InstanceFactory.h"
 
@@ -333,16 +333,6 @@ void	RefCountedBaseClass::searchObjectWithPageList(const std::vector<int>& pagel
 //! increment refcounter
 void    RefCountedBaseClass::GetRef()
 {
-	if(myRefCounter==0)
-	{
-		// check if core use auto release
-		CoreAutoRelease* autorelease=KigsCore::Instance()->getCoreAutoRelease();
-		if(autorelease)
-		{
-			autorelease->removeInstance(this);
-		}
-	}
-
 	GenericRefCountedBaseClass::GetRef();
 
 #if defined (_DEBUG) && defined(WIN32)
@@ -361,19 +351,9 @@ void     RefCountedBaseClass::Destroy()
 		if(myTraceRef)
 			TRACEREF_DELETE
 #endif
-
-		// check if core use auto release
-		CoreAutoRelease* autorelease=KigsCore::Instance()->getCoreAutoRelease();
-		if(autorelease)
-		{
-			autorelease->addInstance(this);
-			myRefCounter--;
-		}
-		else // else direct destruction
-		{
-			ProtectedDestroy();
-			GenericRefCountedBaseClass::Destroy();
-		}
+		ProtectedDestroy();
+		GenericRefCountedBaseClass::Destroy();
+		
 	}
 
 	else

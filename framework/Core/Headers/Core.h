@@ -18,7 +18,6 @@
 #include "InstanceFactory.h"
 
 class CoreModifiableAttribute;
-class CoreAutoRelease;
 class InstanceFactory;
 class RefCountedClass;
 class ModuleBase;
@@ -114,7 +113,7 @@ public:
 	 * \fn			static void Init(bool	useAutoRelease=true);
 	 * \brief		init the core unique instance and members 
 	 */
-	static void Init(bool	useAutoRelease=true);
+	static void Init();
 
 	/**
 	 * \fn			static void ModuleInit(KigsCore* core,ModuleBase* module); 
@@ -146,25 +145,7 @@ public:
 	
 	NotificationCenter* myNotificationCenter;
 	static void SetNotificationCenter(NotificationCenter* _instance);
-	static NotificationCenter* GetNotificationCenter();
-
-	/**
-	 * \fn			CoreAutoRelease*    getCoreAutoRelease();
-	 * \brief		Get the instance of CoreAutoRelease
-	 * 	
-	 */
-	CoreAutoRelease*	getCoreAutoRelease();
-		
-	/**
-	 * \fn			void				setUseAutoRelease();
-	 * \brief		create the CoreAutoRelease instance and use it
-	 * 	
-	 */
-	void				setUseAutoRelease();				
-
-protected:
-
-	CoreAutoRelease*	myCoreAutoRelease;
+	static NotificationCenter* GetNotificationCenter();			
 
 public:
 
@@ -490,7 +471,6 @@ protected:
 	KigsCore()
 	{
 		myCoreBaseApplication = NULL;
-		myCoreAutoRelease=NULL;
 		myCoreMainModuleList=NULL;
 		myPostDestructionList=NULL;
 
