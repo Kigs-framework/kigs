@@ -11,7 +11,6 @@
 #include "XML.h"
 #include "XMLReaderFile.h"
 #include "NotificationCenter.h"
-#include "CoreAutoRelease.h"
 #include "AsyncRequest.h"
 #include "JSonFileParser.h"
 #include "LocalizationManager.h"
@@ -197,43 +196,16 @@ NotificationCenter* KigsCore::GetNotificationCenter()
 	return myCoreInstance->myNotificationCenter;
 }
 
-	
-CoreAutoRelease*	KigsCore::getCoreAutoRelease()
-{
-	return myCoreAutoRelease;
-}
-	
-void				KigsCore::setUseAutoRelease()
-{
-	if(myCoreAutoRelease) // already there
-	{
-		return;
-	}
-	myCoreAutoRelease=new CoreAutoRelease();
-}
-
-
-/*
-SmartPointer<CoreModifiable> KigsCore::CreateInstance(const kstl::string& instancename, KigsID classname)
-{
-	return OwningRawPtrToSmartPtr(GetInstanceOf(instancename, classname));
-}*/
-
 
 ///////////////////////////////////////////////////////////////
 
 //! Init create the unique instance and all members (memory manager, instance factory...)
-void KigsCore::Init(bool	useAutoRelease)
+void KigsCore::Init()
 {
 	#ifdef MM_IS_INIT_BY_CORE
 	MMManagerinitCallBack();
 	#endif
 	myCoreInstance=new KigsCore();
-
-	if(useAutoRelease)
-	{
-		myCoreInstance->setUseAutoRelease();
-	}
 
 	KIGS_SET_MESSAGES_PRINTF(printf);
 
@@ -318,13 +290,6 @@ void KigsCore::Close(bool closeMemoryManager)
 
 	if(myCoreInstance)
 	{
-
-		if(myCoreInstance->myCoreAutoRelease)
-		{
-			delete myCoreInstance->myCoreAutoRelease;
-			myCoreInstance->myCoreAutoRelease=0;
-		}
-
 		myCoreInstance->CleanSingletonMap();
 		delete myCoreInstance->mySingletonMap;
 		myCoreInstance->mySingletonMap = 0;
