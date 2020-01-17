@@ -312,7 +312,7 @@ public:
 
 	WRAP_METHODS(registerTouchEvent);
 
-	SP<TouchInputEventManager>	getTouchManager()
+	SP<TouchInputEventManager>&	getTouchManager()
 	{
 		return myTouchManager;
 	}

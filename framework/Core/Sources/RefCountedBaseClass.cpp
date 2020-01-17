@@ -330,39 +330,23 @@ void	RefCountedBaseClass::searchObjectWithPageList(const std::vector<int>& pagel
 
 #endif //USE_REFCOUNTED_LINKEDLIST
 
+#if defined (_DEBUG) && defined(WIN32)
 //! increment refcounter
 void    RefCountedBaseClass::GetRef()
 {
 	GenericRefCountedBaseClass::GetRef();
-
-#if defined (_DEBUG) && defined(WIN32)
 	if(myTraceRef)
 		TRACEREF_RETAIN
-#endif
 }
+#endif
 
-
-void     RefCountedBaseClass::Destroy()
+bool     RefCountedBaseClass::checkDestroy()
 {
-
-	if(myRefCounter==1)
-	{
 #if defined (_DEBUG) && defined(WIN32)
-		if(myTraceRef)
-			TRACEREF_DELETE
+	if(myTraceRef)
+		TRACEREF_DELETE
 #endif
-		ProtectedDestroy();
-		GenericRefCountedBaseClass::Destroy();
-		
-	}
+	ProtectedDestroy();
 
-	else
-	{
-#if defined (_DEBUG) && defined(WIN32)
-		if (myTraceRef)
-			TRACEREF_RELEASE
-#endif
-		GenericRefCountedBaseClass::Destroy();
-	}
-
+	return false;
 }

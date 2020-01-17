@@ -308,18 +308,20 @@ class RefCountedBaseClass : public GenericRefCountedBaseClass
 
 	
 	/**
-	* \fn 		virtual void    Destroy();
-	* \brief	destructor (Design Patern smart pointer)
+	* \fn 		virtual bool    checkDestroy();
+	* \brief	
 	*
-	* destroy the object if there is no pointer to it
 	*/
-	virtual void			Destroy();
+	virtual bool			checkDestroy() override;
 	
 	/**
 	* \fn		void            GetRef();
 	* \brief	increment reference count
 	*/
-	void            GetRef();
+#if defined (_DEBUG) && defined(WIN32)
+	// GetRef only needs to be virtual for debug purpose
+	void            GetRef() override; 
+#endif
 	
 	protected:
 	/**

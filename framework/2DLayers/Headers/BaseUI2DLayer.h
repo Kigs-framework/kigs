@@ -59,7 +59,7 @@ public:
 	void AddChild(CMSP& aChild, UIItem * aParent=NULL);
 	void DeleteChild(CMSP& aChild);
 
-	UIItem* GetRootItem() { return myRootItem.get(); }
+	SP<UIItem>& GetRootItem() { return myRootItem; }
 
 protected:
 	virtual ~BaseUI2DLayer();
