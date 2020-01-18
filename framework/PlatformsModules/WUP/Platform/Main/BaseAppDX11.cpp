@@ -191,7 +191,7 @@ void App::Run()
 	setlocale(LC_NUMERIC, "C");
 	//! First thing to do
 
-	KigsCore::Init(false);
+	KigsCore::Init();
 
 #if defined(WUP) && 0
 	Win32OpenFilePicker();

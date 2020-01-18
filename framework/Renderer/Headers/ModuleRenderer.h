@@ -1158,8 +1158,6 @@ protected:
 	kstl::vector<ShaderBase*>		myShaderStack;
 	unsigned int					myDirtyShaderMatrix;	// set when shader has changed, so we have to push again matrix
 
-		//! One UIShader to rule them all
-	CMSP		myUIShader;
 	int mySpotLightCount = 0;
 	int myPointLightCount = 0;
 	int myDirLightCount = 0;

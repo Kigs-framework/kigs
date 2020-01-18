@@ -37,10 +37,11 @@ void     GenericRefCountedBaseClass::Destroy()
 		if (checkDestroy())
 		{
 			myRefCounter++;
-			return;
 		}
-
-		delete this;
+		else
+		{
+			delete this;
+		}
 	}
 	unlockForDestroy(lk);
 }
