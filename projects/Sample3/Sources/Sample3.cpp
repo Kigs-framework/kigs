@@ -113,6 +113,13 @@ void	Sample3::ProtectedInit()
 	// getValue now returns 2 * the stored value
 	std::cout << "Int Value with modifier : " << instance1->getValue<int>("IntValue") << std::endl;
 
+	// IntValue is set like this in the XML file :
+	// <Attr N="IntValue" V="eval(32*4)"/>
+	// so the initial value of IntValue will be set by evaluating the expression between the "eval" parenthesis 
+	// expressions can be more complex and be based on other attributes.
+	auto testAttributeImport = CoreModifiable::Import("testImport.xml");
+	std::cout << "Evaluated Int Value (eval(32*4)) : " << testAttributeImport->getValue<int>("IntValue") << std::endl;
+	
 }
 
 void	Sample3::ProtectedUpdate()
