@@ -32,7 +32,7 @@ public:
 	void	ShowPanel(bool show, bool atFront=true);
 
 	void ChangePosition(Point3D pos) { myPosition = pos; myCurrentPos = pos; }
-
+	
 	SP<Node3D>& GetSpatialNode() { return mySpacialNode; }
 
 	SP<Panel> GetCollidablePanel()
