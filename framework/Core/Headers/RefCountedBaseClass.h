@@ -318,7 +318,8 @@ class RefCountedBaseClass : public GenericRefCountedBaseClass
 	* \fn		void            GetRef();
 	* \brief	increment reference count
 	*/
-#if defined (_DEBUG) && defined(WIN32)
+
+#if defined (_DEBUG) && ( defined(WIN32) || defined(WUP))
 	// GetRef only needs to be virtual for debug purpose
 	void            GetRef() override; 
 #endif

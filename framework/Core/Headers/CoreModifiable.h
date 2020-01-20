@@ -170,8 +170,8 @@ public:
 	ModifiableItemStruct(const CMSP& item) : myItem(item), myItemFlag(0) {}
 
 	operator CMSP() { return myItem; }
-	CoreModifiable* operator->() { return myItem.Pointer(); }
-	CoreModifiable& operator*() { return *(myItem.Pointer()); }
+	CoreModifiable* operator->() const { return (CoreModifiable*)myItem.get(); }
+	CoreModifiable& operator*() const { return *((CoreModifiable*)myItem.get()); }
 
 	CMSP myItem;
 
@@ -308,11 +308,11 @@ public:
 	};
 
 	template<typename T>
-	T* as()
+	T* as() const
 	{
 		//KIGS_ASSERT(isSubType(T::myClassID));
 		static_assert(std::is_base_of<CoreModifiable, T>::value, "using as but type is not a coremodifiable");
-		return static_cast<T*>(this);
+		return (T*)static_cast<const T*>(this);
 	}
 
 	/// Modifiable managmenent
