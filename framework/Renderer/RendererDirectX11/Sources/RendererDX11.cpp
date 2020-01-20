@@ -496,7 +496,7 @@ void RendererDX11::Close()
 	for (auto obj : mySamplerStateList)
 		obj.second->Release();
 
-	if (myDefaultUIShader) myDefaultUIShader->Destroy();
+	myDefaultUIShader=nullptr;
 
 	ID3D11Debug *d3dDebug = nullptr;
 	if (S_OK == myDXInstance.m_device->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug))

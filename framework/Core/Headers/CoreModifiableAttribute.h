@@ -100,13 +100,12 @@ void doPlacementNew(u32 level) override\
 // Use this one if the underlying_type is not something used anywhere (like an internal structure)
 #define DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(name, template_name, underlying_type, enum_type) DECLARE_ATTRIBUTE_HERITAGE_IMPL(name, template_name, underlying_type, enum_type)
 
+// cast operator does not call modifiers
 #define DECLARE_ATTRIBUTE_HERITAGE(name, template_name, underlying_type, enum_type) DECLARE_ATTRIBUTE_HERITAGE_IMPL(name, template_name, underlying_type, enum_type)\
 public:\
 virtual operator CurrentAttributeType() const\
 {\
-	CurrentAttributeType tmpValue = _value;\
-	CALL_GETMODIFIER(notificationLevel, tmpValue);\
-	return tmpValue;\
+	return _value;\
 };\
 auto& operator=(const CurrentAttributeType& value)\
 {\
