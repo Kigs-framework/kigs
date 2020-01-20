@@ -330,7 +330,7 @@ void	RefCountedBaseClass::searchObjectWithPageList(const std::vector<int>& pagel
 
 #endif //USE_REFCOUNTED_LINKEDLIST
 
-#if defined (_DEBUG) && defined(WIN32)
+#if defined (_DEBUG) && ( defined(WIN32) || defined(WUP))
 //! increment refcounter
 void    RefCountedBaseClass::GetRef()
 {

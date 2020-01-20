@@ -187,6 +187,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 		if (needinit)
 		{
 			current = KigsCore::GetInstanceOf(name, type);
+			current->GetRef();
 			import.loaded.push_back(current.get());
 			import.rootObj.push_back(current.get());
 		}
@@ -223,6 +224,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 			current = CoreModifiable::Import(infos["xml"].value().toValue<std::string>(),false,false,nullptr,name);
 			if (current)
 			{
+				current->GetRef();
 				import.loaded.push_back(current.get());
 				import.rootObj.push_back(current.get());
 				needinit = false;

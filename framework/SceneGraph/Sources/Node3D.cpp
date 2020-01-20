@@ -177,7 +177,7 @@ void Node3D::PropagateDirtyFlagsToSons(SceneNode* source)
 	{
 		if (item.myItem->isUserFlagSet(UserFlagNode3D))
 		{
-			auto node = (SP<Node3D>&)(item.myItem);
+			auto& node = (SP<Node3D>&)(item.myItem);
 			node->SetFlag(LocalToGlobalMatrixIsDirty| GlobalBoundingBoxIsDirty | GlobalToLocalMatrixIsDirty);
 			node->PropagateDirtyFlagsToSons(source);
 		}
