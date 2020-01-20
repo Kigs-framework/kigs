@@ -47,7 +47,7 @@ void Node3D::EndExport(ExportSettings* settings)
 	ParentClassType::EndExport(settings);
 }
 
-bool Node3D::addItem(CoreModifiable *item,ItemPosition pos DECLARE_LINK_NAME)
+bool Node3D::addItem(CMSP& item,ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (!item) return false;
 
@@ -56,7 +56,7 @@ bool Node3D::addItem(CoreModifiable *item,ItemPosition pos DECLARE_LINK_NAME)
 		if (item->isSubType("RendererMatrix"))
 		{
 			// Support for older xml files
-			RendererMatrix* m = (RendererMatrix*)item;
+			RendererMatrix* m = (RendererMatrix*)item.get();
 			const kfloat* values = m->GetMatrixValues();
 			Matrix3x4 matrix = Matrix3x4::IdentityMatrix();
 			matrix.e[0][0] = values[0];
@@ -77,18 +77,18 @@ bool Node3D::addItem(CoreModifiable *item,ItemPosition pos DECLARE_LINK_NAME)
 		else if (item->isSubType("Camera"))
 		{
 			ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-			scenegraph->AddDefferedItem(item, DefferedAction::ADD_CAMERA);
+			scenegraph->AddDefferedItem(item.get(), DefferedAction::ADD_CAMERA);
 		}
 		else if (item->isSubType("API3DLight"))
 		{
 			ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-			scenegraph->AddDefferedItem(item, DefferedAction::ADD_LIGHT);
+			scenegraph->AddDefferedItem(item.get(), DefferedAction::ADD_LIGHT);
 
 		}
 
 		if (item->isUserFlagSet(UserFlagNode3D))
 		{
-			auto node = static_cast<Node3D*>(item);
+			auto node = static_cast<Node3D*>(item.get());
 			node->SetFlag(LocalToGlobalMatrixIsDirty);
 			node->SetFlag(GlobalToLocalMatrixIsDirty);
 			node->PropagateDirtyFlagsToSons(node);
@@ -97,13 +97,13 @@ bool Node3D::addItem(CoreModifiable *item,ItemPosition pos DECLARE_LINK_NAME)
 
 		SetFlag(BoundingBoxIsDirty);
 		SetFlag(GlobalBoundingBoxIsDirty);
-		PropagateDirtyFlagsToParents((SceneNode*)item);
+		PropagateDirtyFlagsToParents((SceneNode*)item.get());
 	}
 
 	return SceneNode::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-bool Node3D::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
+bool Node3D::removeItem(CMSP& item DECLARE_LINK_NAME)
 {
 	//! if item is a SceneNode, then scenegraph will need update after node removing
 	if(item->isSubType(SceneNode::myClassID))
@@ -111,16 +111,16 @@ bool Node3D::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
 		if (item->isSubType("Camera"))
 		{
 			ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-			scenegraph->AddDefferedItem(item, DefferedAction::REMOVE_CAMERA);
+			scenegraph->AddDefferedItem(item.get(), DefferedAction::REMOVE_CAMERA);
 		}
 		if (item->isSubType("API3DLight"))
 		{
 			ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-			scenegraph->AddDefferedItem(item, DefferedAction::REMOVE_LIGHT);
+			scenegraph->AddDefferedItem(item.get(), DefferedAction::REMOVE_LIGHT);
 		}		
 		if (item->isUserFlagSet(UserFlagNode3D))
 		{
-			auto node = static_cast<Node3D*>(item);
+			auto node = static_cast<Node3D*>(item.get());
 			node->SetFlag(LocalToGlobalMatrixIsDirty);
 			node->SetFlag(GlobalToLocalMatrixIsDirty);
 			node->PropagateDirtyFlagsToSons(node);
@@ -128,7 +128,7 @@ bool Node3D::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
 		}
 		SetFlag(BoundingBoxIsDirty);
 		SetFlag(GlobalBoundingBoxIsDirty);
-		PropagateDirtyFlagsToParents((SceneNode*)item);
+		PropagateDirtyFlagsToParents((SceneNode*)item.get());
 	}
 
 	return SceneNode::removeItem(item PASS_LINK_NAME(linkName));
@@ -177,7 +177,7 @@ void Node3D::PropagateDirtyFlagsToSons(SceneNode* source)
 	{
 		if (item.myItem->isUserFlagSet(UserFlagNode3D))
 		{
-			auto node = static_cast<Node3D*>(item.myItem);
+			auto& node = (SP<Node3D>&)(item.myItem);
 			node->SetFlag(LocalToGlobalMatrixIsDirty| GlobalBoundingBoxIsDirty | GlobalToLocalMatrixIsDirty);
 			node->PropagateDirtyFlagsToSons(source);
 		}
@@ -267,7 +267,7 @@ void Node3D::PreDrawDrawable(TravState* state)
 		{
 			if (it.myItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto d = (Drawable*)it.myItem;
+				auto& d = (SP<Drawable>&)it.myItem;
 				if (!state->mCurrentPass || d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 					d->CheckPreDraw(state);
 			}
@@ -280,7 +280,7 @@ void Node3D::PreDrawDrawable(TravState* state)
 		{
 			if (it.myItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto d = (Drawable*)it.myItem;
+				auto& d = (SP<Drawable>&)it.myItem;
 				if(d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 				{
 					d->CheckPreDraw(state);
@@ -305,7 +305,7 @@ void Node3D::DrawDrawable(TravState* state)
 		{
 			if (it.myItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto d = (Drawable*)it.myItem;
+				auto& d = (SP<Drawable>&)it.myItem;
 				if (d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 					d->CheckDraw(state);
 			}
@@ -319,12 +319,12 @@ void Node3D::DrawDrawable(TravState* state)
 		{
 			if(it.myItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto d = (Drawable*)it.myItem;
+				auto& d = (SP<Drawable>&)it.myItem;
 				if (d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 				{
 					if (d->IsRenderable() && d->IsSortable())
 					{
-						state->mCurrentPass->sorter->AddDrawable(d, state);
+						state->mCurrentPass->sorter->AddDrawable(d.get(), state);
 					}
 				}
 				/*else
@@ -345,7 +345,7 @@ void Node3D::PostDrawDrawable(TravState* state)
 		{
 			if (it.myItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto d = (Drawable*)it.myItem;
+				auto& d = (SP<Drawable>&)it.myItem;
 				if (!state->mCurrentPass || d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 					d->CheckPostDraw(state);
 			}
@@ -358,7 +358,7 @@ void Node3D::PostDrawDrawable(TravState* state)
 		{
 			if (it.myItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto d = (Drawable*)it.myItem;
+				auto& d = (SP<Drawable>&)it.myItem;
 				if (d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 				{
 					d->CheckPostDraw(state);
@@ -455,7 +455,7 @@ void Node3D::TravDraw(TravState* state)
 							}
 
 							//! recurse to sons
-							((Node3D*)(*it).myItem)->TravDraw(state);
+							((SP<Node3D>&)(*it).myItem)->TravDraw(state);
 
 	
 							if(state->mCurrentPass->sorter)
@@ -612,11 +612,11 @@ void Node3D::TravCull(TravState* state)
 			// if node3D, then full process
 			if ((*it).myItem->isUserFlagSet(UserFlagNode3D))
 			{
-				Node3D* node = (Node3D*)(*it).myItem;
+				SP<Node3D>& node = (SP<Node3D>&)(*it).myItem;
 				if (node->Cull(state, myCullingMask))
 				{
 					nodeDistPair toAdd;
-					toAdd.node = node;
+					toAdd.node = node.get();
 					const Matrix3x4& nodemat = node->GetLocalToGlobal();
 					Point3D	nodepos(nodemat.GetTranslation());
 					nodepos -= camPos;
@@ -654,11 +654,11 @@ void Node3D::TravCull(TravState* state)
 			// if node3D, then full process
 			if ((*it).myItem->isUserFlagSet(UserFlagNode3D))
 			{
-				Node3D* node = (Node3D*)(*it).myItem;
+				SP<Node3D>& node = (SP<Node3D>&)(*it).myItem;
 				if (node->Cull(state, myCullingMask))
 				{
 					nodeDistPair toAdd;
-					toAdd.node = node;
+					toAdd.node = node.get();
 					
 					BBox nodeBBox;
 					node->GetGlobalBoundingBox(nodeBBox.m_Min, nodeBBox.m_Max);
@@ -696,10 +696,10 @@ void Node3D::TravCull(TravState* state)
 			// if node3D, then full process
 			if ((*it).myItem->isUserFlagSet(UserFlagNode3D))
 			{
-				Node3D* node = (Node3D*)(*it).myItem;
+				SP<Node3D>& node = (SP<Node3D>&)(*it).myItem;
 				if (node->Cull(state, myCullingMask))
 				{
-					scenegraph->AddVisibleNode(node);
+					scenegraph->AddVisibleNode(node.get());
 					myVisibleNodeCount++;
 				}
 			}
@@ -835,7 +835,7 @@ void Node3D::RecomputeBoundingBox()
 	{
 		if ((*it).myItem->isSubType(Drawable::myClassID))
 		{
-			Drawable* drawable = (Drawable*)(*it).myItem;
+			SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
 			//hasDrawable = true;
 			//! if object has a valid BBox update return true
 			if (drawable->BBoxUpdate(0))
@@ -864,7 +864,7 @@ void Node3D::RecomputeBoundingBox()
 	{
 		if ((*it).myItem->isUserFlagSet(UserFlagNode3D))
 		{
-			Node3D* node = (Node3D*)(*it).myItem;
+			SP<Node3D>& node = (SP<Node3D>&)(*it).myItem;
 
 			if (node->mIgnoreBBox) continue;
 			
@@ -1023,7 +1023,7 @@ int	Node3D::ComputeNodePriority()
 		{
 			if (item.myItem->isUserFlagSet(UserFlagNode3D))
 			{
-				auto node = static_cast<Node3D*>(item.myItem);
+				auto& node = (SP<Node3D>&)item.myItem;
 				int currentP = node->ComputeNodePriority();
 				if (currentP > maxPriority)
 				{

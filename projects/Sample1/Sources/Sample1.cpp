@@ -33,19 +33,17 @@ void	Sample1::ProtectedInit()
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), SimpleSampleClass, SimpleSampleClass, Application);
 
 	// create an instance of SimpleSampleClass
-	CoreModifiable* simpleclass = KigsCore::GetInstanceOf("simpleclass", "SimpleSampleClass");
+	CMSP simpleclass = KigsCore::GetInstanceOf("simpleclass", "SimpleSampleClass");
 
 
 	// Ask for an instance of class Timer called "localtimer"
-	CoreModifiable* localtimer = KigsCore::GetInstanceOf("localtimer", "Timer");
+	CMSP localtimer = KigsCore::GetInstanceOf("localtimer", "Timer");
 
 	// add localtimer to this (this must inherit CoreModifiable too of course)
 	simpleclass->addItem(localtimer);
-	localtimer->Destroy();
-
+	
 	// init localtimer (timer is started)
 	localtimer->Init();
-
 
 	// search all instances of Timer
 	std::set<CoreModifiable*> alltimers;
@@ -62,20 +60,23 @@ void	Sample1::ProtectedInit()
 	// only if export is supported
 #ifdef KIGS_TOOLS 
 	// export Sample1 and its sons in Sample1.xml file
-	CoreModifiable::Export("Sample1.xml", simpleclass, true);
+	CoreModifiable::Export("Sample1.xml", simpleclass.get(), true);
 #endif // KIGS_TOOLS
 
 	// import instances from file "Sample1.xml"
-	CoreModifiable* imported=CoreModifiable::Import("Sample1.xml");
+	CMSP imported=CoreModifiable::Import("Sample1.xml");
 
-	// if file was found, destroy previously created SimpleSampleClass instance
+	// if file was found, add a ref so that imported will not be destroyed when exiting ProtectedInit
 	if (imported)
 	{
-		simpleclass->Destroy();
+		imported->GetRef();
 	}
-
+	else
+	{
+		// if the file was not found, get a ref on simpleclass to keep it alive after exiting this method
+		simpleclass->GetRef();
+	}
 	
-
 }
 
 void	Sample1::ProtectedUpdate()
@@ -87,11 +88,10 @@ void	Sample1::ProtectedUpdate()
 	// call SimpleSampleClass AddValue method directly on CoreModifiable
 	float result = simpleclass->SimpleCall<float>("AddValue", 10, 12.0f);
 	printf("result of calling AddValue = %f\n", result);
-
+	
 	// search son with given name
 	Timer* localtimer= simpleclass->GetFirstSonByName("Timer", "localtimer")->as<Timer>();
 	double currentTime=localtimer->GetTime();
-
 	double currentTimeWithGetVal=localtimer->getValue<double>("Time");
 
 	// print current timer value in console
@@ -126,6 +126,7 @@ void	Sample1::ProtectedClose()
 {
 	// destroy simpleclass (and recursively  all its sons) 
 	CoreModifiable* simpleclass = GetFirstInstance("SimpleSampleClass");
+	// here we need to destroy simpleclass only because we get a ref on it in ProtectedInit
+	// to keep it alive even if it was not add to another instance (with addItem)
 	simpleclass->Destroy();
-
 }

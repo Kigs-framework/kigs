@@ -46,7 +46,8 @@ bool	CoreActionRemoveFromParent::protectedUpdate(kdouble time)
 					if((*itparent)->isSubType(myParentTypeID))
 					{
 						myTarget->flagAsPostDestroy();
-						(*itparent)->removeItem(myTarget);
+						CMSP todel(myTarget, StealRefTag{});
+						(*itparent)->removeItem(todel);
 						return true;
 					}
 					++itparent;
@@ -55,7 +56,8 @@ bool	CoreActionRemoveFromParent::protectedUpdate(kdouble time)
 			else // remove from first found parent
 			{
 				myTarget->flagAsPostDestroy();
-				(*(parents.begin()))->removeItem(myTarget);
+				CMSP todel(myTarget, StealRefTag{});
+				(*(parents.begin()))->removeItem(todel);
 				return true;
 			}
 		}

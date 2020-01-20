@@ -85,7 +85,7 @@ void DataDrivenSequence::InitModifiable()
 
 	CoreModifiable::InitModifiable();
 
-	CoreModifiable* currentSequence = currentManager->GetCurrentSequence();
+	CMSP& currentSequence = currentManager->GetCurrentSequence();
 
 	// first search for a transition
 	kstl::set<CoreModifiable*>	instances;
@@ -99,16 +99,19 @@ void DataDrivenSequence::InitModifiable()
 			if (currentSequence->isSubType(DataDrivenSequence::myClassID))
 			{
 				kstl::map<unsigned int, kstl::string> savedParamsList;
-				((DataDrivenSequence*)currentSequence)->saveParams(savedParamsList);
+				((SP<DataDrivenSequence>&)currentSequence)->saveParams(savedParamsList);
 				if (savedParamsList.size())
 				{
 					currentManager->mySequenceParametersMap[currentSequence->getName()] = savedParamsList;
 				}
 			}
-			if (currentSequence) currentSequence->SimpleCall("SequenceEnd");
-			currentManager->myCurrentSequence = nullptr;
-			currentSequence->UnInit();
-			currentSequence->Destroy();
+			if (currentSequence)
+			{
+				currentSequence->SimpleCall("SequenceEnd");
+				currentSequence->UnInit();
+				currentSequence = nullptr;
+				currentManager->myCurrentSequence = nullptr;
+			}
 		}
 	}
 
@@ -124,7 +127,8 @@ void DataDrivenSequence::InitModifiable()
 
 	for (; it != itend; ++it)
 	{
-		scenegraph->addItem(*it);
+		CMSP toAdd(*it, GetRefTag{});
+		scenegraph->addItem(toAdd);
 	}
 }
 
@@ -145,12 +149,14 @@ void DataDrivenSequence::UninitModifiable()
 IMPLEMENT_CLASS_INFO(DataDrivenTransition)
 
 DataDrivenTransition::DataDrivenTransition(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, myPreviousSequence(0)
+, myPreviousSequence(nullptr)
 , myAnimPrev(*this, false, LABEL_AND_ID(PreviousAnim))
 , myAnimNext(*this, false, LABEL_AND_ID(NextAnim))
 , myIsFirstUpdate(false)
 , myManager(*this, true, LABEL_AND_ID(SequenceManager), "DataDrivenSequenceManager:AppSequenceManager") // default is app
-{}
+{
+
+}
 
 DataDrivenSequenceManager*	DataDrivenTransition::getManager()
 {
@@ -160,19 +166,12 @@ DataDrivenSequenceManager*	DataDrivenTransition::getManager()
 DataDrivenTransition::~DataDrivenTransition()
 {
 	setInTransition(false);
-
-	kstl::vector<CoreModifiable*>::iterator itlauncher;
-	for (itlauncher = myPrevLauncherList.begin(); itlauncher != myPrevLauncherList.end(); ++itlauncher)
-		(*itlauncher)->Destroy();
 	myPrevLauncherList.clear();
-	for (itlauncher = myNextLauncherList.begin(); itlauncher != myNextLauncherList.end(); ++itlauncher)
-		(*itlauncher)->Destroy();
 	myNextLauncherList.clear();
 
 	if (myPreviousSequence)
 	{
 		myPreviousSequence->UnInit();
-		myPreviousSequence->Destroy();
 		myPreviousSequence = 0;
 	}
 }
@@ -200,8 +199,8 @@ void DataDrivenTransition::InitModifiable()
 		return;
 	}
 	myIsFirstUpdate = true;
-	CoreModifiable* currentSequence = currentManager->GetCurrentSequence();
-	myPreviousSequence = (currentSequence) ? currentSequence : NULL;
+	CMSP& currentSequence = currentManager->GetCurrentSequence();
+	myPreviousSequence = currentSequence;
 	
 	myPrevLauncherList.clear();
 	myNextLauncherList.clear();
@@ -228,7 +227,7 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 		{
 			if (myPreviousSequence->isSubType("Scene3D"))
 			{
-				instances.insert(myPreviousSequence);
+				instances.insert(myPreviousSequence.get());
 			}
 			else
 			{
@@ -245,7 +244,7 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 				if (((CoreItem*)myAnimPrev) && (skip_mode&SkipTransition_Prev) == 0)
 				{
 					// add prev sequence animation
-					CoreModifiable*	prevsequencelauncher = (KigsCore::GetInstanceOf("prevsequencelauncher", "CoreSequenceLauncher"));
+					CMSP	prevsequencelauncher = KigsCore::GetInstanceOf("prevsequencelauncher", "CoreSequenceLauncher");
 					prevsequencelauncher->setValue("Sequence", ((CoreItem*)myAnimPrev));
 					prevsequencelauncher->setValue("StartOnFirstUpdate", true);
 					(*it)->addItem(prevsequencelauncher);
@@ -269,7 +268,7 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 			if (((CoreItem*)myAnimNext) && (skip_mode&SkipTransition_Next) == 0)
 			{
 				// add prev sequence animation
-				CoreModifiable*	nextsequencelauncher = (KigsCore::GetInstanceOf("nextsequencelauncher", "CoreSequenceLauncher"));
+				CMSP nextsequencelauncher = KigsCore::GetInstanceOf("nextsequencelauncher", "CoreSequenceLauncher");
 				nextsequencelauncher->setValue("Sequence", ((CoreItem*)myAnimNext));
 				nextsequencelauncher->setValue("StartOnFirstUpdate", true);
 				(*it)->addItem(nextsequencelauncher);
@@ -281,7 +280,7 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 	else
 	{
 		// check if transition is finished
-		kstl::vector<CoreModifiable*>::iterator itlauncher;
+		kstl::vector<CMSP>::iterator itlauncher;
 		bool	isFinished = true;
 		for (itlauncher = myPrevLauncherList.begin(); itlauncher != myPrevLauncherList.end(); ++itlauncher)
 		{
@@ -297,11 +296,7 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 
 		if (isFinished)
 		{
-			for (itlauncher = myPrevLauncherList.begin(); itlauncher != myPrevLauncherList.end(); ++itlauncher)
-				(*itlauncher)->Destroy();
 			myPrevLauncherList.clear();
-			for (itlauncher = myNextLauncherList.begin(); itlauncher != myNextLauncherList.end(); ++itlauncher)
-				(*itlauncher)->Destroy();
 			myNextLauncherList.clear();
 
 			if (myPreviousSequence)
@@ -310,14 +305,13 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 				if (myPreviousSequence->isSubType(DataDrivenSequence::myClassID))
 				{
 					kstl::map<unsigned int, kstl::string> savedParamsList;
-					((DataDrivenSequence*)myPreviousSequence)->saveParams(savedParamsList);
+					((SP<DataDrivenSequence>&)myPreviousSequence)->saveParams(savedParamsList);
 					if (savedParamsList.size())
 					{
 						currentManager->mySequenceParametersMap[myPreviousSequence->getName()] = savedParamsList;
 					}
 				}
 				myPreviousSequence->UnInit();
-				myPreviousSequence->Destroy();
 				myPreviousSequence = 0;
 			}
 			kstl::set<CoreModifiable*>	instances;
@@ -346,15 +340,6 @@ IMPLEMENT_CONSTRUCTOR(DataDrivenSequenceManager)
 	m_StateStack.clear();
 	m_RequestedState = "";
 	mySequenceParametersMap.clear();
-}
-
-DataDrivenSequenceManager::~DataDrivenSequenceManager()
-{
-	if (myCurrentSequence)
-	{
-		myCurrentSequence->Destroy();
-		myCurrentSequence = 0;
-	}
 }
 
 void DataDrivenSequenceManager::ProtectedInitSequence(const kstl::string& sequence)
@@ -412,7 +397,6 @@ void DataDrivenSequenceManager::UninitModifiable()
 	{
 		ProtectedCloseSequence(myCurrentSequence->getName());
 		myCurrentSequence->UnInit();
-		myCurrentSequence->Destroy();
 		myCurrentSequence = 0;
 	}
 }
@@ -430,20 +414,16 @@ IMPLEMENT_CONSTRUCTOR(DataDrivenBaseApplication)
 , myRenderingScreen(0)
 , myConfirmExitPopup(0)
 , myPreviousShortcutEnabled(true)
+, m_SequenceManager(nullptr)
+, m_GlobalConfig(nullptr)
 {
 	
 	CONSTRUCT_METHOD(DataDrivenBaseApplication, Exit);
 	CONSTRUCT_METHOD(DataDrivenBaseApplication, RegisterLuaMethod);
 
-	m_SequenceManager = nullptr;
-	m_GlobalConfig = 0;
+
 }
 
-DataDrivenBaseApplication::~DataDrivenBaseApplication()
-{
-	if (m_GlobalConfig)
-		m_GlobalConfig->Destroy();
-}
 
 void DataDrivenBaseApplication::ProtectedPreInit()
 {
@@ -460,13 +440,13 @@ void DataDrivenBaseApplication::ProtectedPreInit()
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), DataDrivenSequence, DataDrivenSequence, Core)
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), DataDrivenSequenceManager, DataDrivenSequenceManager, Core)
 	
-	FilePathManager* pathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+	auto& pathManager = KigsCore::Singleton<FilePathManager>();
 	pathManager->LoadPackage("Assets.kpkg");
 }
 
 void DataDrivenBaseApplication::ProtectedInit()
 {
-	FilePathManager* pathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+	auto& pathManager = KigsCore::Singleton<FilePathManager>();
 	bool has_kpkg = pathManager->GetLoadedPackage("Assets.kpkg");
 
 	// load an anonymous CoreModifiableInstance containing global params
@@ -477,11 +457,11 @@ void DataDrivenBaseApplication::ProtectedInit()
 	configFileName += ".xml";
 	m_GlobalConfig = Import(configFileName);
 
-	if (m_GlobalConfig == 0) // if no platform specific config, try generic config file
+	if (m_GlobalConfig == nullptr) // if no platform specific config, try generic config file
 		m_GlobalConfig = Import("GlobalConfig.xml");
 
 	// AppInit is the window, and have a rendering screen child
-	CoreModifiable*	AppInit = Import("AppInit.xml", true);
+	CMSP	AppInit = Import("AppInit.xml", true);
 	if (AppInit == nullptr)
 		return;
 
@@ -509,13 +489,13 @@ void DataDrivenBaseApplication::ProtectedInit()
 	// localization init ?
 	if (AppInit->getValue("LocalizationInitFile", tmpFilename))
 	{
-		LocalizationManager* L_LocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
-		L_LocalizationManager->InitWithConfigFile(tmpFilename);
+		auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
+		theLocalizationManager->InitWithConfigFile(tmpFilename);
 		AppInit->RemoveDynamicAttribute("LocalizationInitFile");
 	}
 	
 	// device display caps to get screen resolution
-	DisplayDeviceCaps*	L_displaycaps = (DisplayDeviceCaps*)(KigsCore::GetInstanceOf("getdisplaycaps", "DisplayDeviceCaps"));
+	SP<DisplayDeviceCaps>	L_displaycaps = KigsCore::GetInstanceOf("getdisplaycaps", "DisplayDeviceCaps");
 
 	const kstl::vector<DisplayDeviceCaps::DisplayDeviceCapacity>* L_capacitylist = nullptr;
 
@@ -602,7 +582,6 @@ void DataDrivenBaseApplication::ProtectedInit()
 			it++;
 		}
 	}
-	L_displaycaps->Destroy();
 
 	// reset value according to display caps
 
@@ -633,10 +612,10 @@ void DataDrivenBaseApplication::ProtectedInit()
 
 	if (instances.size() == 1)
 	{
-		myConfirmExitPopup = (*instances.begin());
+		CMSP toadd(*instances.begin(), GetRefTag{});
+		myConfirmExitPopup = toadd;
 		myConfirmExitPopup->setValue("IsHidden", true);
-		// remove this instance from AppInit, so get e ref first
-		myConfirmExitPopup->GetRef();
+		// remove this instance from AppInit
 		AppInit->removeItem(myConfirmExitPopup);
 	}
 
@@ -652,8 +631,6 @@ void DataDrivenBaseApplication::ProtectedInit()
 
 	CreateSequenceManager();
 
-	AppInit->Destroy();
-
 
 	KigsCore::GetNotificationCenter()->addObserver(this, "Exit", "OKExitConfirmationPopup");
 
@@ -665,11 +642,10 @@ void DataDrivenBaseApplication::CreateSequenceManager()
 {
 	// create manager
 
-	m_SequenceManager= (DataDrivenSequenceManager*)(KigsCore::GetInstanceOf("AppSequenceManager", "DataDrivenSequenceManager"));
+	m_SequenceManager= KigsCore::GetInstanceOf("AppSequenceManager", "DataDrivenSequenceManager");
 	m_SequenceManager->Init();
-	RemoveAutoUpdate(m_SequenceManager);
-	aggregateWith(m_SequenceManager);
-	m_SequenceManager->Destroy();
+	RemoveAutoUpdate(m_SequenceManager.get());
+	aggregateWith((CMSP&)m_SequenceManager);
 }
 
 void DataDrivenBaseApplication::setInTransition(DataDrivenTransition* transition, bool active)
@@ -709,7 +685,7 @@ void DataDrivenBaseApplication::ProtectedUpdate()
 
 	rmt_BeginCPUSample(myInputModule, 0);
 	if (HasFocus())
-		myInputModule->CallUpdate(*myApplicationTimer, 0);
+		myInputModule->CallUpdate(*myApplicationTimer.get(), 0);
 	rmt_EndCPUSample();
 
 	if (can_update)
@@ -717,11 +693,11 @@ void DataDrivenBaseApplication::ProtectedUpdate()
 		DoAutoUpdate();
 
 		rmt_BeginCPUSample(AnimationModule, 0);
-		KigsCore::Instance()->GetMainModuleInList(CoreAnimationModuleCoreIndex)->CallUpdate(*myApplicationTimer, 0);
+		KigsCore::Instance()->GetMainModuleInList(CoreAnimationModuleCoreIndex)->CallUpdate(*myApplicationTimer.get(), 0);
 		rmt_EndCPUSample();
 
 		rmt_BeginCPUSample(myLuaModule, 0);
-		myLuaModule->CallUpdate(*myApplicationTimer, 0);
+		myLuaModule->CallUpdate(*myApplicationTimer.get(), 0);
 		rmt_EndCPUSample();
 	}
 	else
@@ -735,20 +711,20 @@ void DataDrivenBaseApplication::ProtectedUpdate()
 		rmt_BeginCPUSample(myRenderer, 0);
 		render = m_SequenceManager->AllowRender();
 		if (render)
-			myRenderer->CallUpdate(*myApplicationTimer, 0);
+			myRenderer->CallUpdate(*myApplicationTimer.get(), 0);
 		rmt_EndCPUSample();
 	}
 
 	rmt_BeginCPUSample(mySceneGraph, 0);
-	mySceneGraph->CallUpdate(*myApplicationTimer, 0);
+	mySceneGraph->CallUpdate(*myApplicationTimer.get(), 0);
 	rmt_EndCPUSample();
 
 	rmt_BeginCPUSample(my2DLayers, 0);
-	my2DLayers->CallUpdate(*myApplicationTimer, 0);
+	my2DLayers->CallUpdate(*myApplicationTimer.get(), 0);
 	rmt_EndCPUSample();
 
 	rmt_BeginCPUSample(myGUI, 0);
-	myGUI->CallUpdate(*myApplicationTimer, &render);
+	myGUI->CallUpdate(*myApplicationTimer.get(), &render);
 	rmt_EndCPUSample();
 
 	if (can_update)
@@ -773,14 +749,10 @@ void DataDrivenBaseApplication::ProtectedClose()
 	
 	m_SequenceManager->UnInit();
 
-	if (myConfirmExitPopup)
-	{
-		myConfirmExitPopup->Destroy();
-		myConfirmExitPopup = 0;
-	}
+	myConfirmExitPopup = nullptr;
 
-	removeAggregateWith(m_SequenceManager);
-	m_SequenceManager = 0;
+	removeAggregateWith((CMSP&)m_SequenceManager);
+	m_SequenceManager = nullptr;
 
 	KigsCore::ReleaseSingleton("FilePathManager");
 	KigsCore::ReleaseSingleton("LocalizationManager");
@@ -806,14 +778,14 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 			
 			if (isApp)
 			{
-				isApp->removeConfirmationPopup(myCurrentSequence);
+				isApp->removeConfirmationPopup(myCurrentSequence.get());
 			}
 			
 			ProtectedCloseSequence(myCurrentSequence->getName());
 			if (myCurrentSequence->isSubType("DataDrivenSequence"))
 			{
 				kstl::map<unsigned int, kstl::string> savedParamsList;
-				((DataDrivenSequence*)myCurrentSequence)->saveParams(savedParamsList);
+				((DataDrivenSequence*)myCurrentSequence.get())->saveParams(savedParamsList);
 				if (savedParamsList.size())
 				{
 					mySequenceParametersMap[myCurrentSequence->getName()] = savedParamsList;
@@ -822,7 +794,7 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 			myCurrentSequence->UnInit();
 			
 			mySceneGraph->removeItem(myCurrentSequence);
-			myCurrentSequence->Destroy();
+			
 
 			// create empty UI2dlayer
 			myCurrentSequence = KigsCore::GetInstanceOf("Empty", "UI2DLayer");
@@ -867,10 +839,10 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 		{
 			if (isApp)
 			{
-				isApp->removeConfirmationPopup(myCurrentSequence);
+				isApp->removeConfirmationPopup(myCurrentSequence.get());
 			}
 		}
-		CoreModifiable* L_tmp = NULL;
+		CMSP L_tmp(nullptr);
 
 		L_tmp = CoreModifiable::Import(NewState);
 		
@@ -889,7 +861,7 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 			// check if params were saved for this sequence
 			if (itfound != mySequenceParametersMap.end())
 			{
-				((DataDrivenSequence*)L_tmp)->restoreParams((*itfound).second);
+				((DataDrivenSequence*)L_tmp.get())->restoreParams((*itfound).second);
 			}
 			// everything is managed by datadriven sequence init
 			myCurrentSequence = L_tmp;
@@ -909,14 +881,13 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 				if (myCurrentSequence->isSubType("DataDrivenSequence"))
 				{
 					kstl::map<unsigned int, kstl::string> savedParamsList;
-					((DataDrivenSequence*)myCurrentSequence)->saveParams(savedParamsList);
+					((DataDrivenSequence*)myCurrentSequence.get())->saveParams(savedParamsList);
 					if (savedParamsList.size())
 					{
 						mySequenceParametersMap[myCurrentSequence->getName()] = savedParamsList;
 					}
 				}
 				myCurrentSequence->UnInit();
-				myCurrentSequence->Destroy();
 			}
 			myCurrentSequence = L_tmp;
 			mySceneGraph->addItem(L_tmp);
@@ -925,7 +896,7 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 		}
 		if (isApp)
 		{
-			isApp->addConfirmationPopup(myCurrentSequence);
+			isApp->addConfirmationPopup(myCurrentSequence.get());
 		}
 	}
 }
@@ -1146,7 +1117,7 @@ CoreModifiable*	DataDrivenSequenceManager::getParentSequence(CoreModifiable* s)
 
 DEFINE_METHOD(DataDrivenSequenceManager, ChangeSequence)
 {
-	if (!IsParent(sender, myCurrentSequence))
+	if (!IsParent(sender, myCurrentSequence.get()))
 		return false;
 	
 	if (privateParams != NULL)
@@ -1169,7 +1140,7 @@ DEFINE_METHOD(DataDrivenSequenceManager, ChangeSequence)
 
 DEFINE_METHOD(DataDrivenSequenceManager, StackSequence)
 {
-	if (!IsParent(sender, myCurrentSequence))
+	if (!IsParent(sender, myCurrentSequence.get()))
 		return false;
 
 	if (privateParams != NULL)
@@ -1190,7 +1161,7 @@ DEFINE_METHOD(DataDrivenSequenceManager, StackSequence)
 
 void DataDrivenSequenceManager::SetSequence(CoreModifiable* sender, const std::string& param)
 {
-	if (!IsParent(sender, myCurrentSequence))
+	if (!IsParent(sender, myCurrentSequence.get()))
 		return;
 	m_StateStack.clear();
 	RequestStateChange(param);
@@ -1198,14 +1169,14 @@ void DataDrivenSequenceManager::SetSequence(CoreModifiable* sender, const std::s
 
 void DataDrivenSequenceManager::PushSequence(CoreModifiable* sender, const std::string& param)
 {
-	if (!IsParent(sender, myCurrentSequence))
+	if (!IsParent(sender, myCurrentSequence.get()))
 		return;
 	RequestStateChange(param);
 }
 
 void DataDrivenSequenceManager::WrapChangeSequence(CoreModifiable* sender, usString param)
 {
-	if (!IsParent(sender, myCurrentSequence))
+	if (!IsParent(sender, myCurrentSequence.get()))
 		return;
 
 	m_StateStack.clear();
@@ -1215,7 +1186,7 @@ void DataDrivenSequenceManager::WrapChangeSequence(CoreModifiable* sender, usStr
 
 void DataDrivenSequenceManager::WrapStackSequence(CoreModifiable* sender, usString param)
 {
-	if (!IsParent(sender, myCurrentSequence))
+	if (!IsParent(sender, myCurrentSequence.get()))
 		return;
 
 	RequestStateChange(param.ToString());
@@ -1224,7 +1195,7 @@ void DataDrivenSequenceManager::WrapStackSequence(CoreModifiable* sender, usStri
 
 DEFINE_METHOD(DataDrivenSequenceManager, BackSequence)
 {
-	if (!IsParent(sender, myCurrentSequence))
+	if (!IsParent(sender, myCurrentSequence.get()))
 		return false;
 
 	RequestBackToPreviousState();

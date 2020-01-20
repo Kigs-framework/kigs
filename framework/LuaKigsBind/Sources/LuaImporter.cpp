@@ -157,15 +157,6 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 			else
 				InternalImport(parent, it.value(), import);
 		}
-
-		/*if (parent)
-		{
-			for (auto obj : rootObj)
-			{
-				parent->addItem(obj);
-				obj->Destroy();
-			}
-		}*/
 		return import.rootObj.size();
 	}
 
@@ -175,7 +166,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 	// Single object
 
 	std::string name = override_name.empty() ? infos["name"].value().toValue<std::string>() : override_name;
-	CoreModifiable* current = nullptr;
+	CMSP current = nullptr;
 	bool needinit = true;
 	bool is_aggregate = infos.has("_aggregate") && infos["_aggregate"].value().toValue<bool>();
 	bool need_add = true;
@@ -197,35 +188,20 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 		{
 			current = KigsCore::GetInstanceOf(name, type);
 			current->GetRef();
-			import.loaded.push_back(current);
-			import.rootObj.push_back(current);
+			import.loaded.push_back(current.get());
+			import.rootObj.push_back(current.get());
 		}
 
 	}
 	else if (infos.has("ref"))
 	{
 
-		/*
-		XMLAttribute *pathAttribute = currentNode->getAttribute("P", "Path");
-		if (pathAttribute)
-		{
-			current = SearchInstance(pathAttribute->getString(), currentModifiable);
-			if (current)
-			{
-				current->GetRef();
-				needInit = false;
-				importState.loadedItems.push_back(current);
-			}
-		}
-		*/
-
 		auto ref_type = infos["ref"].value().toValue<std::string>();
 		auto it = std::find_if(import.loaded.begin(), import.loaded.end(), [&](CoreModifiable* item) { return item->getName() == name && item->isSubType(CharToID::GetID(ref_type)); });
 
 		if (it != import.loaded.end())
 		{
-			current = *it;
-			current->GetRef();
+			current = CMSP(*it, GetRefTag{});
 		}
 		else
 		{
@@ -234,10 +210,9 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 
 			if (instances.size())
 			{
-				current = *instances.begin();
-				current->GetRef();
-				import.loaded.push_back(current);
-				import.rootObj.push_back(current);
+				current = CMSP(*instances.begin(), GetRefTag{});
+				import.loaded.push_back(current.get());
+				import.rootObj.push_back(current.get());
 			}
 		}
 		needinit = false;
@@ -249,16 +224,9 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 			current = CoreModifiable::Import(infos["xml"].value().toValue<std::string>(),false,false,nullptr,name);
 			if (current)
 			{
-				//current->setName(name);
 				current->GetRef();
-				import.loaded.push_back(current);
-				import.rootObj.push_back(current);
-
-				/*
-				if (!import.noinit)
-					current->Init();
-				*/
-
+				import.loaded.push_back(current.get());
+				import.rootObj.push_back(current.get());
 				needinit = false;
 			}
 		}
@@ -297,12 +265,11 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 	}
 	else if (infos.has("path"))
 	{
-		current = SearchInstance(infos["name"].value<std::string>(), parent);
+		current = CMSP(SearchInstance(infos["name"].value<std::string>(), parent), GetRefTag{});
 		if (current)
 		{
-			current->GetRef();
 			needinit = false;
-			import.loaded.push_back(current);
+			import.loaded.push_back(current.get());
 			need_add = false;
 		}
 	}
@@ -313,7 +280,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 		TestPrintf("item %s\n", current->getName().c_str());
 		if (table.has("_attrs"))
 		{
-			ParseAttributes(current, table["_attrs"]);
+			ParseAttributes(current.get(), table["_attrs"]);
 		}
 
 		if (table.has("_childs"))
@@ -321,10 +288,8 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 			LuaRef childs_table = table["_childs"];
 
 			std::vector<CoreModifiable*> root;
-			InternalImport(current, childs_table, import);
+			InternalImport(current.get(), childs_table, import);
 
-			/*if (!noinit && needinit && !current->IsInit())
-			 current->Init();*/
 		}
 
 		if (!import.noinit && needinit)
@@ -339,8 +304,6 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 					parent->aggregateWith(current);
 				else
 					parent->addItem(current);
-
-				current->Destroy();
 
 				if (!import.noinit && !current->IsInit())
 					current->Init(); // mimic xml import behaviour				
@@ -612,7 +575,7 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 				toAdd = (AttachedModifierBase*)itfound->second();
 			}
 
-			if (toAdd != KigsCore::Instance()->NotFoundCoreItem())
+			if (toAdd != nullptr)
 			{
 				bool isGetter = true;
 				if (modifier.has("isGetter") && !modifier["isGetter"].value().toValue<bool>())

@@ -11,11 +11,13 @@ IMPLEMENT_CLASS_INFO(Billboard3D)
 
 Billboard3D::Billboard3D(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)
 , m_TextureFileName(*this,false,"TextureFileName","")
+, m_Tex(nullptr)
 , m_Position(*this, false, "Position", 0.0f, 0.0f, 0.0f)
 , m_Width(*this, false, "Width", 0.5f)
 , m_Height(*this, false, "Height", 0.5f)
 , myCamera(nullptr)
 , myAnchor(*this, false, "Anchor", 0.0f, 0.0f)
+, myTexture(nullptr)
 , m_CurrentAnimation(*this, false, "CurrentAnimation", "")
 , m_FramePerSecond(*this, false, "FramePerSecond", 0)
 , m_IsEnabled(*this, false, "IsEnabled", true)
@@ -31,7 +33,6 @@ Billboard3D::Billboard3D(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawabl
 	m_HorizontalVector.Set(1,0,0);
 	m_VerticalVector.Set(0,0,1);
 	m_DistanceToCamera = FLT_MAX;
-	m_Tex = nullptr;
 	m_u1 = 0.0f;
 	m_u2 = 1.0f;
 	m_v1 = 0.0f;
@@ -57,11 +58,6 @@ Billboard3D::~Billboard3D()
 			L_currentApp->RemoveAutoUpdate(this);
 		}
 	}
-
-	if (m_Tex)
-		m_Tex->Destroy();
-	if(myTexture)
-		myTexture = nullptr;
 }
 
 void Billboard3D::InitModifiable()
@@ -75,12 +71,10 @@ void Billboard3D::InitModifiable()
 
 		if (str!="")
 		{
-			TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+			auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
 			if(m_IsSpriteSheet)
 			{
-				if(myTexture)
-					myTexture = 0;
-				myTexture = OwningRawPtrToSmartPtr(fileManager->GetSpriteSheetTexture(str));
+				myTexture = texfileManager->GetSpriteSheetTexture(str);
 
 				m_FrameNumber = myTexture->Get_FrameNumber(m_CurrentAnimation);
 				m_AnimationSpeed = 1.0f/(float)m_FramePerSecond;
@@ -100,7 +94,7 @@ void Billboard3D::InitModifiable()
 			}
 			else
 			{
-				m_Tex = fileManager->GetTexture(m_TextureFileName);
+				m_Tex = texfileManager->GetTexture(m_TextureFileName);
 
 				float ratioX,ratioY;
 				m_Tex->GetRatio(ratioX, ratioY);
@@ -125,7 +119,7 @@ void Billboard3D::NotifyUpdate(const unsigned int labelid)
 {
 	if (labelid == m_TextureFileName.getLabelID())
 	{
-		TextureFileManager*	fileManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+		auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
 		if (m_IsSpriteSheet)
 		{
 			if (myTexture)
@@ -142,7 +136,7 @@ void Billboard3D::NotifyUpdate(const unsigned int labelid)
 			}
 			if (m_TextureFileName.const_ref() != "")
 			{
-				myTexture = OwningRawPtrToSmartPtr(fileManager->GetSpriteSheetTexture(m_TextureFileName.const_ref()));
+				myTexture = texfileManager->GetSpriteSheetTexture(m_TextureFileName.const_ref());
 
 				m_FrameNumber = myTexture->Get_FrameNumber(m_CurrentAnimation.const_ref());
 				m_AnimationSpeed = 1.0f / (float)m_FramePerSecond;
@@ -164,13 +158,12 @@ void Billboard3D::NotifyUpdate(const unsigned int labelid)
 					Drawable::NotifyUpdate(labelid);
 					return;
 				}
-				m_Tex->Destroy();
-				m_Tex = 0;
+				m_Tex = nullptr;
 			}
 			
 			if (m_TextureFileName.const_ref() != "")
 			{
-				m_Tex = fileManager->GetTexture(m_TextureFileName.const_ref());
+				m_Tex = texfileManager->GetTexture(m_TextureFileName.const_ref());
 
 				float ratioX, ratioY;
 				m_Tex->GetRatio(ratioX, ratioY);

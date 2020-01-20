@@ -402,16 +402,16 @@ void	ModernMeshBuilder::OptimiseTriangle::ComputeScore(OptimiseBuildVertexStruct
 	Score1 = (countCached << 24) | ((255 - minUse) << 16) | ((maxUse - minUse) << 8) | (recentlyAdded);
 }
 
-ModernMeshItemGroup* ModernMeshBuilder::EndGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset)
+SP<ModernMeshItemGroup> ModernMeshBuilder::EndGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset)
 {
 	KIGS_WARNING("Deprecated EngGroup function", 3);
 	char tmp[32];
 	sprintf(tmp, "group%d", myGroupCount++);
-	ModernMeshItemGroup* result = nullptr;
+	SP<ModernMeshItemGroup> result(nullptr);
 	if (!vertex_count) return result;
 
 	unsigned char * interleaved_vertex_buffer = new unsigned char[vertex_count*myCurrentVertexSize];
-	result = (ModernMeshItemGroup*)KigsCore::GetInstanceOf(tmp, "ModernMeshItemGroup");
+	result = KigsCore::GetInstanceOf(tmp, "ModernMeshItemGroup");
 	result->myVertexCount = vertex_count;
 	result->myVertexSize = myCurrentVertexSize;
 	result->myVertexArrayMask = myVertexArrayMask;
@@ -547,7 +547,7 @@ ModernMeshItemGroup* ModernMeshBuilder::EndGroup(int vertex_count, v3f* vertices
 	return result;
 }
 
-ModernMeshItemGroup*	ModernMeshBuilder::EndGroup(void * vertex, int vertexCount, void * index, int indexCount)
+SP<ModernMeshItemGroup>	ModernMeshBuilder::EndGroup(void * vertex, int vertexCount, void * index, int indexCount)
 {
 	KIGS_WARNING("Deprecated EngGroup function", 3);
 	Vector3D*	nArray = nullptr;
@@ -557,7 +557,7 @@ ModernMeshItemGroup*	ModernMeshBuilder::EndGroup(void * vertex, int vertexCount,
 
 	int tricount = indexCount / 3;
 
-	ModernMeshItemGroup*	result = 0;
+	SP<ModernMeshItemGroup>	result(nullptr);
 	if (vertexCount)
 	{
 		//compute normal if needed
@@ -611,7 +611,7 @@ ModernMeshItemGroup*	ModernMeshBuilder::EndGroup(void * vertex, int vertexCount,
 		unsigned char * writer = buff;
 		float * reader = (float*)vertex;
 
-		result = (ModernMeshItemGroup*)(KigsCore::GetInstanceOf(tmp, "ModernMeshItemGroup"));
+		result = KigsCore::GetInstanceOf(tmp, "ModernMeshItemGroup");
 		result->myVertexCount = vertexCount;
 		result->myVertexSize = myCurrentVertexSize;
 		result->myVertexArrayMask = myVertexArrayMask;
@@ -676,12 +676,12 @@ ModernMeshItemGroup*	ModernMeshBuilder::EndGroup(void * vertex, int vertexCount,
 	return result;
 }
 
-ModernMeshItemGroup*	ModernMeshBuilder::EndGroup(bool optimize)
+SP<ModernMeshItemGroup>	ModernMeshBuilder::EndGroup(bool optimize)
 {
 	char tmp[32];
 	sprintf(tmp, "group%d", myGroupCount++);
 
-	ModernMeshItemGroup*	result = 0;
+	SP<ModernMeshItemGroup>	result(nullptr);
 	if (myCurrentVertexBuilderSize)
 	{
 		if (myGenerateNormals)
@@ -695,7 +695,7 @@ ModernMeshItemGroup*	ModernMeshBuilder::EndGroup(bool optimize)
 		if (optimize)
 			OptimiseForCache();
 
-		result = (ModernMeshItemGroup*)(KigsCore::GetInstanceOf(tmp, "ModernMeshItemGroup"));
+		result = KigsCore::GetInstanceOf(tmp, "ModernMeshItemGroup");
 		result->myVertexBufferArray.SetBuffer(myVertexArray.getArray(), myVertexArray.size()*myCurrentVertexSize);
 		result->myVertexCount = myVertexArray.size();
 		result->myVertexSize = myCurrentVertexSize;

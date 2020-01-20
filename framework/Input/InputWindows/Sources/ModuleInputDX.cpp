@@ -31,7 +31,7 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
 
 	joystickname+=_itoa(gInstanceModuleInputDX->getJoystickCount()+1,countstring,10);
 
-	JoystickDX* localJoystick=(JoystickDX*)gInstanceModuleInputDX->getCore()->GetInstanceOf(joystickname,"Joystick");
+	SP<JoystickDX> localJoystick=gInstanceModuleInputDX->getCore()->GetInstanceOf(joystickname,"Joystick");
 
     HRESULT hr;
 
@@ -42,14 +42,12 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
     // it while we were in the middle of enumerating it.)
     if( FAILED(hr) ) 
 	{
-		localJoystick->Destroy();
         return DIENUM_CONTINUE;
 	}
 
 	localJoystick->DoInputDeviceDescription();
 
-	gInstanceModuleInputDX->addItem(localJoystick);
-	localJoystick->Destroy();
+	gInstanceModuleInputDX->addItem((CMSP&)localJoystick);
   
     return DIENUM_CONTINUE;
 }
@@ -107,59 +105,53 @@ void ModuleInputDX::Init(KigsCore* core, const kstl::vector<CoreModifiableAttrib
 			return ;
 		}
 
-		CoreModifiable * conf = CoreModifiable::Import("InputConf.xml");
+		CMSP conf = CoreModifiable::Import("InputConf.xml");
 
 		if (!conf || conf->getAttribute("NoMouse")==NULL)
 		{
-			MouseDX* localmouse = (MouseDX*)core->GetInstanceOf("mouse", "MouseDevice");
+			SP<MouseDX> localmouse = core->GetInstanceOf("mouse", "MouseDevice");
 
 			// Obtain an interface to the system mouse device.
 			if (FAILED(hr = gInstanceModuleInputDX->getDirectInput()->CreateDevice(GUID_SysMouse, &localmouse->getDirectInputMouse(), NULL)))
 			{
-				localmouse->Destroy();
-				localmouse = 0;
+				localmouse = nullptr;
 			}
 			else if (FAILED(hr = localmouse->getDirectInputMouse()->SetDataFormat(&c_dfDIMouse2)))
 			{
-				localmouse->Destroy();
-				localmouse = 0;
+				localmouse = nullptr;
 			}
 
 
 			if (localmouse)
 			{
 				localmouse->DoInputDeviceDescription();
-				addItem(localmouse);
-				localmouse->Destroy();
+				addItem((CMSP&)localmouse);
 			}
 		}
 
 		if (!conf || conf->getAttribute("NoKeyBoard") == NULL)
 		{
-			KeyboardDX* localkeyboard = (KeyboardDX*)core->GetInstanceOf("keyboard", "KeyboardDevice");
+			SP<KeyboardDX> localkeyboard = core->GetInstanceOf("keyboard", "KeyboardDevice");
 
 			// Obtain an interface to the system keyboard device.
 			if (FAILED(hr = gInstanceModuleInputDX->getDirectInput()->CreateDevice(GUID_SysKeyboard, &localkeyboard->getDirectInputKeyboard(), NULL)))
 			{
-				localkeyboard->Destroy();
-				localkeyboard = 0;
+				localkeyboard = nullptr;
 			}
 
 			if (localkeyboard)
 			{
 				localkeyboard->DoInputDeviceDescription();
-				addItem(localkeyboard);
-				localkeyboard->Destroy();
+				addItem((CMSP&)localkeyboard);
 			}
 		}
 
 		if (!conf || conf->getAttribute("NoGeolocation") == NULL)
 		{
-			GeolocationDevice* localGeolocation = (GeolocationDevice*)core->GetInstanceOf("geolocation", "GeolocationDevice");
+			SP<GeolocationDevice> localGeolocation = core->GetInstanceOf("geolocation", "GeolocationDevice");
 			if (localGeolocation)
 			{
-				addItem(localGeolocation);
-				localGeolocation->Destroy();
+				addItem((CMSP&)localGeolocation);
 			}
 		}
 
@@ -181,10 +173,6 @@ void ModuleInputDX::Init(KigsCore* core, const kstl::vector<CoreModifiableAttrib
 			localJoystick->Destroy();
 		}*/
 
-		if (conf)
-		{
-			conf->Destroy();
-		}
 	}
 }       
 
@@ -212,7 +200,7 @@ void ModuleInputDX::Update(const Timer& timer, void* addParam)
 	} 
 }    
 
-bool	ModuleInputDX::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ModuleInputDX::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType(JoystickDevice::myClassID))
 	{

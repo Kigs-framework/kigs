@@ -2,7 +2,7 @@
 #include "RefCountedBaseClass.h"
 
 #include "Core.h"
-#include "CoreAutoRelease.h"
+
 
 #include "InstanceFactory.h"
 
@@ -330,59 +330,24 @@ void	RefCountedBaseClass::searchObjectWithPageList(const std::vector<int>& pagel
 
 #endif //USE_REFCOUNTED_LINKEDLIST
 
+
+#if defined (_DEBUG) && ( defined(WIN32) || defined(WUP))
 //! increment refcounter
 void    RefCountedBaseClass::GetRef()
 {
-	if(myRefCounter==0)
-	{
-		// check if core use auto release
-		CoreAutoRelease* autorelease=KigsCore::Instance()->getCoreAutoRelease();
-		if(autorelease)
-		{
-			autorelease->removeInstance(this);
-		}
-	}
-
 	GenericRefCountedBaseClass::GetRef();
-
-#if defined (_DEBUG) && defined(WIN32)
 	if(myTraceRef)
 		TRACEREF_RETAIN
-#endif
 }
+#endif
 
-
-void     RefCountedBaseClass::Destroy()
+bool     RefCountedBaseClass::checkDestroy()
 {
-
-	if(myRefCounter==1)
-	{
 #if defined (_DEBUG) && defined(WIN32)
-		if(myTraceRef)
-			TRACEREF_DELETE
+	if(myTraceRef)
+		TRACEREF_DELETE
 #endif
+	ProtectedDestroy();
 
-		// check if core use auto release
-		CoreAutoRelease* autorelease=KigsCore::Instance()->getCoreAutoRelease();
-		if(autorelease)
-		{
-			autorelease->addInstance(this);
-			myRefCounter--;
-		}
-		else // else direct destruction
-		{
-			ProtectedDestroy();
-			GenericRefCountedBaseClass::Destroy();
-		}
-	}
-
-	else
-	{
-#if defined (_DEBUG) && defined(WIN32)
-		if (myTraceRef)
-			TRACEREF_RELEASE
-#endif
-		GenericRefCountedBaseClass::Destroy();
-	}
-
+	return false;
 }

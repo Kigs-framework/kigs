@@ -111,18 +111,18 @@ void UISlider::InitModifiable()
 		myIsMouseOver = false;
 
 		// load texture
-		TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 		if(myUpTexture)
 			myUpTexture=0;
 		
-		myUpTexture = textureManager->GetTextureManaged(myUpTextureName);
+		myUpTexture = textureManager->GetTexture(myUpTextureName);
 
 		if(myOverTexture)
 			myOverTexture=0;
 
 		if(myOverTextureName.const_ref() !="")
 		{
-			myOverTexture = textureManager->GetTextureManaged(myOverTextureName.const_ref());
+			myOverTexture = textureManager->GetTexture(myOverTextureName.const_ref());
 		}
 
 		if(myDownTexture)
@@ -130,7 +130,7 @@ void UISlider::InitModifiable()
 
 		if(myDownTextureName.const_ref() !="")
 		{
-			myDownTexture = textureManager->GetTextureManaged(myDownTextureName.const_ref());
+			myDownTexture = textureManager->GetTexture(myDownTextureName.const_ref());
 		}
 
 
@@ -290,12 +290,12 @@ void UISlider::ChangeTexture(kstl::string _texturename, kstl::string _overtextur
 {
 	if(myIsEnabled) // down and mouse over only when enabled
 	{
-		TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 		if(myUpTexture)
 			myUpTexture=0;
 
 		myUpTextureName = _texturename;
-		myUpTexture = textureManager->GetTextureManaged(myUpTextureName);
+		myUpTexture = textureManager->GetTexture(myUpTextureName);
 
 		if(myOverTexture && _overtexturename != "")
 			myOverTexture=0;
@@ -303,7 +303,7 @@ void UISlider::ChangeTexture(kstl::string _texturename, kstl::string _overtextur
 		if(_overtexturename != "")
 		{
 			myOverTextureName = _overtexturename;
-			myOverTexture = textureManager->GetTextureManaged(myOverTextureName);
+			myOverTexture = textureManager->GetTexture(myOverTextureName);
 		}
 
 		if(myDownTexture && _downtexturename != "")
@@ -312,7 +312,7 @@ void UISlider::ChangeTexture(kstl::string _texturename, kstl::string _overtextur
 		if(_downtexturename != "")
 		{
 			myOverTextureName = _downtexturename;
-			myDownTexture = textureManager->GetTextureManaged(myDownTextureName);
+			myDownTexture = textureManager->GetTexture(myDownTextureName);
 		}
 
 		//auto Size
@@ -528,7 +528,7 @@ bool UISlider::isAlpha(float X, float Y)
 		{
 			if(sons[i].myItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = (AlphaMask*)sons[i].myItem;
+				myAlphaMask = sons[i].myItem;
 				break;
 			}
 		}

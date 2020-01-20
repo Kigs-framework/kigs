@@ -33,7 +33,7 @@ void ModuleThread::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribu
 
 #ifdef DO_THREAD_PROFILING
 	KigsCore::GetSingleton("ThreadLocalStorageManager")->Init();
-	KigsCore::SetThreadProfiler(KigsCore::GetSingleton("ThreadProfiler"));
+	KigsCore::SetThreadProfiler(KigsCore::GetSingleton("ThreadProfiler").get());
 	KigsCore::GetThreadProfiler()->Init();
 #endif
 

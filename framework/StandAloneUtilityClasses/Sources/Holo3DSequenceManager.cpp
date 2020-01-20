@@ -60,18 +60,16 @@ void Holo3DSequenceManager::UninitModifiable()
 		CheckUniqueObject uo;
 		scene->getValue("RenderingScreen", uo);
 
-		if (uo == myRenderingScreen)
+		if (uo == myRenderingScreen.get())
 		{
-			mySceneGraph->removeItem(scene);
+			CMSP toDel(scene, GetRefTag{});
+			mySceneGraph->removeItem(toDel);
 		}
 	}
 
-	if(mySpacialNode)
-		mySpacialNode->Destroy();
-	mySpacialNode=nullptr;
 
-	if(myRenderingScreen)
-		myRenderingScreen->Destroy();
+	mySpacialNode=nullptr;
+	myRenderingScreen = nullptr;
 
 	//delete theMouseInfo;
 
@@ -121,9 +119,9 @@ bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, to
 			l2g.TransformPoint(&pout.hit.HitPosition);
 			l2g.TransformVector(&pout.hit.HitNormal);
 			pout.hit.HitNormal.Normalize();
-			pout.hit.HitNode = mySpacialNode;
-			pout.hit.HitActor = myCollidablePanel;
-			pout.hit.HitCollisionObject = myCollidablePanel; 
+			pout.hit.HitNode = mySpacialNode.get();
+			pout.hit.HitActor = myCollidablePanel.get();
+			pout.hit.HitCollisionObject = myCollidablePanel.get(); 
 		}
 		return is_in;
 	}
@@ -163,7 +161,7 @@ void Holo3DSequenceManager::InitModifiable()
 	myRenderingScreen->Init();
 
 	//Create Node3D
-	mySpacialNode = (Node3D*)KigsCore::GetInstanceOf("HoloUISpacialNode", "Node3D");
+	mySpacialNode = KigsCore::GetInstanceOf("HoloUISpacialNode", "Node3D");
 	mySpacialNode->AddDynamicAttribute(UINT, "CollideMask", (u64)myCollideMask);
 	mySpacialNode->Init();
 
@@ -171,21 +169,21 @@ void Holo3DSequenceManager::InitModifiable()
 	if (gIsVR) size = mySize = size*2;
 	
 	//Create collidable object
-	myCollidablePanel = (Panel*)KigsCore::GetInstanceOf("HoloUIPanel", "InterfacePanel");
-	mySpacialNode->addItem(myCollidablePanel);
+	myCollidablePanel = KigsCore::GetInstanceOf("HoloUIPanel", "InterfacePanel");
+	mySpacialNode->addItem((CMSP&)myCollidablePanel);
 	myCollidablePanel->setValue("Size", size);
 	myCollidablePanel->setValue("LinkedItem", "Holo3DSequenceManager:" + getName());
 	myCollidablePanel->Init();
-	myCollidablePanel->Destroy(); 
+
 
 	//Create drawable object
-	myDrawer = (Holo3DPanel*)KigsCore::GetInstanceOf("Holo3DPanel", "Holo3DPanel");
-	mySpacialNode->addItem(myDrawer);
+	myDrawer = KigsCore::GetInstanceOf("Holo3DPanel", "Holo3DPanel");
+	mySpacialNode->addItem((CMSP&)myDrawer);
 	myDrawer->setValue("Size", size);
 	myDrawer->setValue("DepthTest", "Disabled");
 	myDrawer->setValue("RenderPassMask", 4);
 	myDrawer->Init();
-	myDrawer->Destroy();
+
 
 	/*
 	auto customizer = KigsCore::CreateInstance("depth_test_disable", "RenderingCustomizer");
@@ -210,7 +208,7 @@ void Holo3DSequenceManager::InitModifiable()
 	theInputModule->getTouchManager()->addTouchSupport(this, (CoreModifiable*)mFollowCamera);
 
 	// add offscreen rendering screen as touch support with this as parent
-	theInputModule->getTouchManager()->addTouchSupport(myRenderingScreen, this);
+	theInputModule->getTouchManager()->addTouchSupport(myRenderingScreen.get(), this);
 }
 
 //#define DRAWDEBUG
@@ -259,14 +257,14 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 		}
 		
 		if (IsShow)
-			((CoreModifiable*)mParentNode)->addItem(mySpacialNode, ItemPosition::First);
+			((CoreModifiable*)mParentNode)->addItem((CMSP&)mySpacialNode, ItemPosition::First);
 		else
-			((CoreModifiable*)mParentNode)->removeItem(mySpacialNode);
+			((CoreModifiable*)mParentNode)->removeItem((CMSP&)mySpacialNode);
 	}
 	
 
 	// retreive texture id
-	myDrawer->SetTexture(((RenderingScreen*)myRenderingScreen)->GetFBOTexture());
+	myDrawer->SetTexture(myRenderingScreen->as<RenderingScreen>()->GetFBOTexture().get());
 	// manage positionning
 	if (!mManualPosition && (NeedRecomputePosition || !IsFixed))
 	{

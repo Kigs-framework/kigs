@@ -58,8 +58,8 @@ void	PassiveColoredMask::InitModifiable()
 		myIsDown      = false;
 		myIsMouseOver = false;
 
-		TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-		myTexture = textureManager->GetTextureManaged(myTextureName);
+		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+		myTexture = textureManager->GetTexture(myTextureName);
 
 		if(myTexture)
 		{
@@ -75,7 +75,7 @@ void	PassiveColoredMask::InitModifiable()
 			SmartPointer<Texture>	MaskTexture;
 			if(myMaskName.const_ref() != "")
 			{
-				MaskTexture = textureManager->GetTextureManaged(myMaskName);
+				MaskTexture = textureManager->GetTexture(myMaskName);
 				MaskTexture->getValue("Width",width);
 				MaskTexture->getValue("Height",height);
 

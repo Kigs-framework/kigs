@@ -14,7 +14,7 @@ bool	OpenGLTexture::CubeMapGeneration()
 	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	renderer->FlushState();
 	bool result=true;
-	FilePathManager*	pathManager=(FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+	auto& pathManager = KigsCore::Singleton<FilePathManager>();
 	kstl::string fullfilename;
 	char asciiCount[16];
 	asciiCount[0]=0;

@@ -9,8 +9,8 @@ IMPLEMENT_CLASS_INFO(SpriteSheetTexture);
 
 SpriteSheetTexture::~SpriteSheetTexture()
 {
-	TextureFileManager*	fileManager = KigsCore::GetSingleton<TextureFileManager>();
-	fileManager->UnloadTexture(this);
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+	textureManager->UnloadTexture(this);
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -46,8 +46,8 @@ void SpriteSheetTexture::InitModifiable()
 					L_Value->getValue(L_TextureName);
 
 					// load texture
-					TextureFileManager*	fileManager = KigsCore::GetSingleton<TextureFileManager>();
-					mTexture = fileManager->GetTextureManaged(L_TextureName);
+					auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+					mTexture = textureManager->GetTexture(L_TextureName);
 				}
 			}
 		}
@@ -193,15 +193,13 @@ void SpriteSheetTexture::SortAnimation(CoreItemSP& _FrameVector)
 
 // for some type of classes when we want don't want duplicated instances (textures, shaders...)
 // return an already existing instance equivalent of this
-CoreModifiable*	SpriteSheetTexture::getSharedInstance()
+CMSP	SpriteSheetTexture::getSharedInstance()
 {
-	TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
 	if (textureManager->HasTexture(mFileName.const_ref()))
 	{
-		CoreModifiable* shared = textureManager->GetSpriteSheetTexture(mFileName.const_ref());
-		shared->Destroy();
-		return shared;
+		return textureManager->GetSpriteSheetTexture(mFileName.const_ref());
 	}
-	return this;
+	return CMSP(this, GetRefTag{});
 }

@@ -18,7 +18,6 @@
 #include "InstanceFactory.h"
 
 class CoreModifiableAttribute;
-class CoreAutoRelease;
 class InstanceFactory;
 class RefCountedClass;
 class ModuleBase;
@@ -114,7 +113,7 @@ public:
 	 * \fn			static void Init(bool	useAutoRelease=true);
 	 * \brief		init the core unique instance and members 
 	 */
-	static void Init(bool	useAutoRelease=true);
+	static void Init();
 
 	/**
 	 * \fn			static void ModuleInit(KigsCore* core,ModuleBase* module); 
@@ -146,25 +145,7 @@ public:
 	
 	NotificationCenter* myNotificationCenter;
 	static void SetNotificationCenter(NotificationCenter* _instance);
-	static NotificationCenter* GetNotificationCenter();
-
-	/**
-	 * \fn			CoreAutoRelease*    getCoreAutoRelease();
-	 * \brief		Get the instance of CoreAutoRelease
-	 * 	
-	 */
-	CoreAutoRelease*	getCoreAutoRelease();
-		
-	/**
-	 * \fn			void				setUseAutoRelease();
-	 * \brief		create the CoreAutoRelease instance and use it
-	 * 	
-	 */
-	void				setUseAutoRelease();				
-
-protected:
-
-	CoreAutoRelease*	myCoreAutoRelease;
+	static NotificationCenter* GetNotificationCenter();			
 
 public:
 
@@ -219,23 +200,23 @@ public:
 	}
 
 	/**
-	* \fn			static	CoreModifiable* GetInstanceOf(const kstl::string& instancename,const STRINGS_NAME_TYPE& classname);
+	* \fn			static	CMSP GetInstanceOf(const kstl::string& instancename,const STRINGS_NAME_TYPE& classname);
 	* \brief		return an instance of the given class
 	* \param		instancename : name of the instance
 	* \param		classname : name of the class
-	* \return		an instance of the asked class or a DoNothingObject if failed
+	* \return		an CMSP (smartpointer on instance) of the asked class or a DoNothingObject if failed
 	*
 	* get the instance of 'classname' named 'instancename' or call the instance factory if not exist<br>
 	* return a DoNothingObject if the factory failed
 	*/
-	//static	CoreModifiable* GetInstanceOf(const kstl::string& instancename, const KigsID& classname);
+	//static	CMSP GetInstanceOf(const kstl::string& instancename, const KigsID& classname);
 
 
 	template<typename... Args>
-	static CoreModifiable* GetInstanceOf(const kstl::string& instancename, const KigsID& classname, Args&&... args);
+	static CMSP GetInstanceOf(const kstl::string& instancename, const KigsID& classname, Args&&... args);
 
 
-	static SmartPointer<CoreModifiable> CreateInstance(const kstl::string& instancename, KigsID classname);
+	//static CMSP CreateInstance(const kstl::string& instancename, KigsID classname);
 
 	/**
 	 * \brief		return an unique instance of the given class (Design Pattern Singleton)
@@ -245,14 +226,13 @@ public:
 	 * get the instance of 'classname' or call the instance factory if not exist<br>
 	 * return NULL if the factory failed
 	 */
-	static	CoreModifiable* GetSingleton(const KigsID& classname);
+	static	CMSP& GetSingleton(const KigsID& classname);
 
-	template<typename T>
-	static T* GetSingleton()
+	template<typename askedType>
+	static SP<askedType>& Singleton()
 	{
-		return static_cast<T*>(GetSingleton(T::myClassID));
+		return (SP<askedType>&)GetSingleton(askedType::myClassID);
 	}
-	
 	/**
 	 * \brief		destroy the unique instance of the given class
 	 * \param		classname : name of the class
@@ -467,8 +447,10 @@ public:
 	// management is done automatically
 	static void	addAsyncRequest(AsyncRequest*);
 
-	CoreItem*	NotFoundCoreItem();
 protected:
+
+	// nullptr wrapper
+	CMSP	myNullPtr = nullptr;
 
 	kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myCoreItemOperatorCreateMethodMap;
 
@@ -497,7 +479,6 @@ protected:
 	KigsCore()
 	{
 		myCoreBaseApplication = NULL;
-		myCoreAutoRelease=NULL;
 		myCoreMainModuleList=NULL;
 		myPostDestructionList=NULL;
 
@@ -505,7 +486,6 @@ protected:
 
 		myAsyncRequestList = NULL;
 
-		myNotFoundCoreItem = NULL;
 		myProfilerManager = NULL;
 	}
 	
@@ -540,7 +520,7 @@ protected:
 
 
 	//! pointer to created singletons
-	kstl::unordered_map<KigsID, CoreModifiable*>*		mySingletonMap;
+	kstl::unordered_map<KigsID, CMSP>*		mySingletonMap;
 
 	//! manage post destruction (lazy list)
 	kstl::vector<CoreModifiable*>*						myPostDestructionList;
@@ -569,7 +549,7 @@ MEMORYMANAGEMENT_END
 
 
 	//! list of semaphore
-	CoreModifiable*	mySemaphore;
+	CMSP			mySemaphore;
 	friend class	ModuleThread;
 
 
@@ -605,9 +585,8 @@ MEMORYMANAGEMENT_END
 #endif
 	//! Profilers management
 	GlobalProfilerManager*		myProfilerManager;
-	CoreModifiable*		myThreadProfiler;
+	CoreModifiable*				myThreadProfiler;
 
-	CoreItem*					myNotFoundCoreItem;
 };
 
 #if KIGS_ERROR_LEVEL==0
@@ -662,13 +641,13 @@ MEMORYMANAGEMENT_END
 
 
 template<>
-inline CoreModifiable* KigsCore::GetInstanceOf(const kstl::string& instancename, const KigsID& classname)
+inline CMSP KigsCore::GetInstanceOf(const kstl::string& instancename, const KigsID& classname)
 {
-	CoreModifiable* instance = Instance()->GetInstanceFactory()->GetInstance(instancename, classname);
+	CMSP instance = OwningRawPtrToSmartPtr(Instance()->GetInstanceFactory()->GetInstance(instancename, classname));
 	//! if instance factory fail then create a DoNothingObject (and print debug messages)
-	if (!instance)
+	if (instance.isNil())
 	{
-		instance = Instance()->GetInstanceFactory()->GetInstance(instancename, "DoNothingObject");
+		instance = OwningRawPtrToSmartPtr(Instance()->GetInstanceFactory()->GetInstance(instancename, "DoNothingObject"));
 #ifdef _DEBUG
 #ifdef KEEP_NAME_AS_STRING
 		kigsprintf("unknown object : %s of type %s \n", instancename.c_str(), classname._id_name.c_str());
@@ -677,7 +656,7 @@ inline CoreModifiable* KigsCore::GetInstanceOf(const kstl::string& instancename,
 #endif
 
 #ifdef KEEP_NAME_AS_STRING
-		if (!instance)
+		if (instance.isNil())
 			kigsprintf("ALLOCATION ERROR : %s \n", classname._id_name.c_str());
 #endif
 #endif
@@ -690,7 +669,7 @@ inline CoreModifiable* KigsCore::GetInstanceOf(const kstl::string& instancename,
 
 
 template<typename... Args>
-inline CoreModifiable* KigsCore::GetInstanceOf(const kstl::string& instancename, const KigsID& classname, Args&&... args)
+inline CMSP KigsCore::GetInstanceOf(const kstl::string& instancename, const KigsID& classname, Args&&... args)
 {	 
 	PackCoreModifiableAttributes packer{ nullptr };
 	int expander[]
@@ -698,12 +677,12 @@ inline CoreModifiable* KigsCore::GetInstanceOf(const kstl::string& instancename,
 		(packer << std::forward<Args>(args), 0)...
 	};
 	(void)expander;
-	CoreModifiable* instance = Instance()->GetInstanceFactory()->GetInstance(instancename, classname, &(kstl::vector<CoreModifiableAttribute*>&)packer);
+	CMSP instance = OwningRawPtrToSmartPtr(Instance()->GetInstanceFactory()->GetInstance(instancename, classname, &(kstl::vector<CoreModifiableAttribute*>&)packer));
 		
 	//! if instance factory fail then create a DoNothingObject (and print debug messages)
-	if (!instance)
+	if (instance.isNil())
 	{
-		instance = Instance()->GetInstanceFactory()->GetInstance(instancename, "DoNothingObject");
+		instance = OwningRawPtrToSmartPtr(Instance()->GetInstanceFactory()->GetInstance(instancename, "DoNothingObject"));
 #ifdef _DEBUG
 #ifdef KEEP_NAME_AS_STRING
 		kigsprintf("unknown object : %s of type %s \n", instancename.c_str(), classname._id_name.c_str());
@@ -712,7 +691,7 @@ inline CoreModifiable* KigsCore::GetInstanceOf(const kstl::string& instancename,
 #endif
 
 #ifdef KEEP_NAME_AS_STRING
-		if (!instance)
+		if (instance.isNil())
 			kigsprintf("ALLOCATION ERROR : %s \n", classname._id_name.c_str());
 #endif
 #endif

@@ -63,7 +63,7 @@ protected:
 	//! real thread 
 	friend class			ThreadRunMethod;
 	State					myCurrentState;
-	ThreadRunMethod*		myThreadRunMethod;
+	SP<ThreadRunMethod>		myThreadRunMethod;
 	kfloat					myProgress;
 	maBool					bOpen;
 

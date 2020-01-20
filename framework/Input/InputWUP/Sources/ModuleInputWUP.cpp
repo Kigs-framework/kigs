@@ -42,33 +42,31 @@ void ModuleInputWUP::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 
 		BaseInit(core, "InputWUP", params);
 		
-		CoreModifiable * conf = CoreModifiable::Import("InputConf.xml");
+		CMSP conf = CoreModifiable::Import("InputConf.xml");
 		
 		if (!conf || !conf->getAttribute("NoMouse"))
 		{
 			if (KigsCore::GetCoreApplication()->IsHolographic())
 			{
-				GazeDeviceWUP* localGaze = (GazeDeviceWUP*)core->GetInstanceOf("gaze", "GazeDevice");
+				SP<GazeDeviceWUP> localGaze = core->GetInstanceOf("gaze", "GazeDevice");
 				localGaze->DoInputDeviceDescription();
-				addItem(localGaze);
-				localGaze->Destroy();
+				addItem((CMSP&)localGaze);
 			}
 			else
 			{
 				auto pointerDevices = Input::PointerDevice::GetPointerDevices();
 				if (pointerDevices.Size())
 				{
-					MouseWUP* localmouse = (MouseWUP*)core->GetInstanceOf("mouse", "MouseDevice");
+					SP<MouseWUP> localmouse = core->GetInstanceOf("mouse", "MouseDevice");
 					localmouse->DoInputDeviceDescription();
-					addItem(localmouse);
-					localmouse->Destroy();
+					addItem((CMSP&)localmouse);
 				}
 			}
 		}
 		
 		if (!conf || !conf->getAttribute("NoKeyBoard"))
 		{
-			KeyboardWUP* localkeyboard = (KeyboardWUP*)core->GetInstanceOf("keyboard", "KeyboardDevice");
+			SP<KeyboardWUP> localkeyboard = core->GetInstanceOf("keyboard", "KeyboardDevice");
 
 			// Obtain an interface to the system mouse device.
 			auto capabilities = Input::KeyboardCapabilities();
@@ -82,8 +80,8 @@ void ModuleInputWUP::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 			if (localkeyboard)
 			{
 				localkeyboard->DoInputDeviceDescription();
-				addItem(localkeyboard);
-				localkeyboard->Destroy();
+				addItem((CMSP&)localkeyboard);
+				
 			}
 		}		
 	}
@@ -104,7 +102,7 @@ void ModuleInputWUP::Update(const Timer& timer, void* addParam)
 	{
 		if((*it).myItem->isSubType(InputDevice::myClassID))
 		{
-			InputDevice* device=(InputDevice*)(*it).myItem;
+			InputDevice* device=(InputDevice*)(*it).myItem.get();
 			
 			if(!device->IsAquired())
 				device->Aquire();
@@ -116,7 +114,7 @@ void ModuleInputWUP::Update(const Timer& timer, void* addParam)
 	
 }    
 
-bool	ModuleInputWUP::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ModuleInputWUP::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType(InputDevice::myClassID))
 	{

@@ -443,7 +443,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 			{
 				if ((*it).myItem->isSubType(AChannel::myClassID))
 				{
-					((AChannel*)(*it).myItem)->Animate(t, this);
+					((AChannel*)(*it).myItem.get())->Animate(t, this);
 				}
 			}
 		}
@@ -456,7 +456,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 			{
 				if ((*it).myItem->isSubType(AChannel::myClassID))
 				{
-					((AChannel*)(*it).myItem)->Animate(t, 0);
+					((AChannel*)(*it).myItem.get())->Animate(t, 0);
 				}
 			}
 		}
@@ -566,7 +566,7 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 			{
 				if ((*it).myItem->isSubType(AChannel::myClassID))
 				{
-					((AChannel*)(*it).myItem)->Animate(t, this);
+					((AChannel*)(*it).myItem.get())->Animate(t, this);
 				}
 			}
 		}
@@ -578,7 +578,7 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 			{
 				if ((*it).myItem->isSubType(AChannel::myClassID))
 				{
-					((AChannel*)(*it).myItem)->Animate(t, 0);
+					((AChannel*)(*it).myItem.get())->Animate(t, 0);
 				}
 			}
 		}

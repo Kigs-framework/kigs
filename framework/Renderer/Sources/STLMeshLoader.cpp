@@ -133,26 +133,24 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 	kstl::string objname=pMesh->getName();
 	objname+="MeshItemGroup";
 
-	MeshItemGroup* newgroup=(MeshItemGroup*)(KigsCore::GetInstanceOf(objname,"MeshItemGroup"));
+	SP<MeshItemGroup> newgroup=KigsCore::GetInstanceOf(objname,"MeshItemGroup");
 	newgroup->Init();
 	newgroup->myTriangleType=eF_Triangle;
 
 	objname=pMesh->getName();
 	objname+="Material";
 
-	Material* newMaterial=(Material*)(KigsCore::GetInstanceOf(objname,"Material"));
+	SP<Material> newMaterial=KigsCore::GetInstanceOf(objname,"Material");
 	newgroup->myTriangleCount=(int)myFacetList.size();
 
 	objname=newMaterial->getName();
 	objname+="MaterialStage";
-	MaterialStage* MatStage = (MaterialStage*)(KigsCore::GetInstanceOf(objname,"MaterialStage"));
+	SP<MaterialStage> MatStage = KigsCore::GetInstanceOf(objname,"MaterialStage");
 	MatStage->Init();
 
-	newMaterial->addItem(MatStage);
-	MatStage->Destroy();
+	newMaterial->addItem((CMSP&)MatStage);
+	newgroup->addItem((CMSP&)newMaterial);
 
-	newgroup->addItem(newMaterial);
-	newMaterial->Destroy();
 
 	// totally unoptimized !
 	Mesh::F_Triangle* tmptriangles=new Mesh::F_Triangle[newgroup->myTriangleCount];
@@ -181,8 +179,8 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 	newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
 	newgroup->myTriangleSize = sizeof(Mesh::F_Triangle);
 
-	pMesh->addItem(newgroup);
-	newgroup->Destroy();
+	pMesh->addItem((CMSP&)newgroup);
+	
 
 	return 0;
 }

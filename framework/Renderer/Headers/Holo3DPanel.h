@@ -14,8 +14,8 @@ public:
 	DECLARE_CONSTRUCTOR(Holo3DPanel);
 
 
-	bool addItem(CoreModifiable* item, ItemPosition pos = Last) override;
-	bool removeItem(CoreModifiable* item) override;
+	bool addItem(CMSP& item, ItemPosition pos = Last) override;
+	bool removeItem(CMSP& item) override;
 
 	void SetTextureID(unsigned int id) { myTextureID = id; }
 	void SetTexture(Texture* t);

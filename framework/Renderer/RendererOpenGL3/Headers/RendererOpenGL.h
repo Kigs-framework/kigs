@@ -151,7 +151,6 @@ protected:
 	};
 	std::vector<TextureUnitInfo>	myTextureUnit;
 
-	~RendererOpenGL() override;
 	RenderingState*	createNewState(RenderingState* toCopy = 0)  override
 	{
 		OpenGLRenderingState* newstate = new OpenGLRenderingState();

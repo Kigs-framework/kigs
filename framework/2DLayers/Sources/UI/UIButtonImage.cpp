@@ -28,7 +28,7 @@ void UIButtonImage::InitModifiable()
 	if(_isInit)
 	{
 		// load texture
-		TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
 		myUpTexture=0;
 		myOverTexture = 0;
@@ -36,17 +36,17 @@ void UIButtonImage::InitModifiable()
 		
 		if(myUpTextureName.const_ref() !="")
 		{
-			myUpTexture = textureManager->GetTextureManaged(myUpTextureName.const_ref());
+			myUpTexture = textureManager->GetTexture(myUpTextureName.const_ref());
 		}
 
 		if (myOverTextureName.const_ref() != "")
 		{
-			myOverTexture = textureManager->GetTextureManaged(myOverTextureName.const_ref());
+			myOverTexture = textureManager->GetTexture(myOverTextureName.const_ref());
 		}
 
 		if (myDownTextureName.const_ref() != "")
 		{
-			myDownTexture = textureManager->GetTextureManaged(myDownTextureName.const_ref());
+			myDownTexture = textureManager->GetTexture(myDownTextureName.const_ref());
 		}
 
 		myTexture = myUpTexture;
@@ -75,14 +75,14 @@ void UIButtonImage::NotifyUpdate(const unsigned int labelid)
 
 void UIButtonImage::ChangeTexture(kstl::string _texturename, kstl::string _overtexturename, kstl::string _downtexturename)
 {
-	TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 	if (myUpTexture)
 		myUpTexture = 0;
 
 	if(_texturename != "")
 	{
 		myUpTextureName = _texturename;
-		myUpTexture = textureManager->GetTextureManaged(myUpTextureName);
+		myUpTexture = textureManager->GetTexture(myUpTextureName);
 	}
 
 	if(myOverTexture && _overtexturename != "")
@@ -91,7 +91,7 @@ void UIButtonImage::ChangeTexture(kstl::string _texturename, kstl::string _overt
 	if(_overtexturename != "")
 	{
 		myOverTextureName = _overtexturename;
-		myOverTexture = textureManager->GetTextureManaged(myOverTextureName);
+		myOverTexture = textureManager->GetTexture(myOverTextureName);
 	}
 
 	if(myDownTexture && _downtexturename != "")
@@ -100,20 +100,19 @@ void UIButtonImage::ChangeTexture(kstl::string _texturename, kstl::string _overt
 	if(_downtexturename != "")
 	{
 		myDownTextureName = _downtexturename;
-		myDownTexture = textureManager->GetTextureManaged(myDownTextureName);
+		myDownTexture = textureManager->GetTexture(myDownTextureName);
 	}
 
 	if(myAlphaMask)
 	{
-		this->removeItem(myAlphaMask);
+		this->removeItem((CMSP&)myAlphaMask);
 
 		//Make new Mask
-		myAlphaMask = (AlphaMask*)KigsCore::GetInstanceOf(getName(), "AlphaMask");
+		myAlphaMask = KigsCore::GetInstanceOf(getName(), "AlphaMask");
 		myAlphaMask->setValue(LABEL_TO_ID(Threshold),0.1);
 		myAlphaMask->setValue(LABEL_TO_ID(TextureName),myUpTextureName.c_str());
-		this->addItem(myAlphaMask);
+		this->addItem((CMSP&)myAlphaMask);
 		myAlphaMask->Init();
-		myAlphaMask->Destroy();
 	}
 	//auto Size
 	if (myUpTexture && myAutoResize)

@@ -4,6 +4,7 @@
 #include "ModuleBase.h"
 #include "MouseDevice.h"
 #include "AttributePacking.h"
+#include "TouchInputEventManager.h"
 
 class MouseDevice;
 class GazeDevice;
@@ -14,7 +15,7 @@ class MultiTouchDevice;
 class GeolocationDevice;
 class GyroscopeDevice;
 class CompassDevice;
-class TouchInputEventManager;
+
 
 ModuleBase* PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 
@@ -237,13 +238,13 @@ public:
 	CompassDevice* GetCompass() { return myCompass; }
 	
    /**
-	 * \fn 		bool addItem(CoreModifiable* item,ItemPosition pos DECLARE_DEFAULT_LINK_NAME );
+	 * \fn 		bool addItem(CMSP&  item,ItemPosition pos DECLARE_DEFAULT_LINK_NAME );
 	 * \brief	method to manage CoreModifiable Tree : add a son
 	 * \param	item : item to add
 	 * \param	linkName : name of the added item
 	 * \return	TRUE if the item is added, FALSE otherwise
 	 */
-	bool addItem(CoreModifiable* item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
    
    /**
 	 * \fn 		static void WindowClickEvent(CoreModifiable *w, int buttonId, kfloat X, kfloat Y);
@@ -311,7 +312,7 @@ public:
 
 	WRAP_METHODS(registerTouchEvent);
 
-	TouchInputEventManager*	getTouchManager()
+	SP<TouchInputEventManager>&	getTouchManager()
 	{
 		return myTouchManager;
 	}
@@ -348,7 +349,7 @@ protected:
 	//! joystick count
 	unsigned int				myJoystickCount;
 
-	TouchInputEventManager*		myTouchManager;
+	SP<TouchInputEventManager>	myTouchManager;
 };
 
 #endif //_MODULEINPUT_H_

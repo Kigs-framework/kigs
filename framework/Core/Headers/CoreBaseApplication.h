@@ -5,10 +5,10 @@
 #include "Platform/Core/PlatformBaseApplication.h"
 #include "kstlvector.h"
 #include "kstlstring.h"
+#include "Timer.h"
 
 class	ModuleBase;
 class   AnonymousModule;
-class	Timer;
 
 //! useful macro to create / retreive / destroy modules 
 #define	CoreCreateModule(moduleType,params)		KigsCore::LoadKigsModule<moduleType>(#moduleType,params)
@@ -88,7 +88,7 @@ public:
 
 	const kstl::string*	HasArg(const kstl::string& arg, bool startWith=false) const;
 
-	Timer*			GetApplicationTimer()
+	SP<Timer>&			GetApplicationTimer()
 	{
 		return myApplicationTimer;
 	}
@@ -143,7 +143,7 @@ protected:
 
 	bool			myInitBaseModules;
 
-	Timer*			myApplicationTimer;
+	SP<Timer>			myApplicationTimer;
 
 	unsigned int	myUpdateSleepTime;
 

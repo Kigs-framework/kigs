@@ -17,8 +17,8 @@ public:
 	 */
 	UISlidersGroup(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	bool addItem(CoreModifiable *item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
-	bool removeItem(CoreModifiable *item DECLARE_DEFAULT_LINK_NAME)override;
+	bool addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
+	bool removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
 	void TreatMove(int X, int Y, int oldValue, int desiredValue, UIItem* sender)override;
 
 	inline int				GetRemainingValue() const { return myRemainingValue; }

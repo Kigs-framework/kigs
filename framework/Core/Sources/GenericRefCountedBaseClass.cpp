@@ -12,14 +12,36 @@ void    GenericRefCountedBaseClass::GetRef()
 }
 
 
+std::lock_guard<std::recursive_mutex>* GenericRefCountedBaseClass::lockForDestroy()
+{
+	KigsCore::Instance()->GetSemaphore();
+
+	return nullptr;
+}
+void GenericRefCountedBaseClass::unlockForDestroy(std::lock_guard<std::recursive_mutex>* lk)
+{
+	KigsCore::Instance()->ReleaseSemaphore();
+	if (lk)
+	{
+		delete lk;
+	}
+}
+
 
 void     GenericRefCountedBaseClass::Destroy()
 {
-	KigsCore::Instance()->GetSemaphore();
+	std::lock_guard<std::recursive_mutex>* lk=lockForDestroy();
 	myRefCounter--;
 	if (myRefCounter == 0)
 	{
-		delete this;
+		if (checkDestroy())
+		{
+			myRefCounter++;
+		}
+		else
+		{
+			delete this;
+		}
 	}
-	KigsCore::Instance()->ReleaseSemaphore();
+	unlockForDestroy(lk);
 }

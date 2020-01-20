@@ -168,7 +168,7 @@ protected:
 	maVect4DF	m_Color;
 
 	//! link to the texture
-	Texture*	myTexture;
+	SP<Texture>	myTexture;
 };
 
 #endif //_SPRITE_H_

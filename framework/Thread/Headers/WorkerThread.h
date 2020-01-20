@@ -77,7 +77,7 @@ protected:
 	bool	myNeedExit;
 
 	Semaphore*							mySemaphore;
-	ThreadEvent*						myThreadEvent;
+	SP<ThreadEvent>						myThreadEvent;
 	SmartPointer<ThreadEvent>			myThreadEventEnd;
 
 	ThreadPoolManager*			myParentPoolManager;

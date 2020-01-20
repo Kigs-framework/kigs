@@ -177,26 +177,9 @@ Node3D* API3DLight::GetFather()
 
 API3DLight::~API3DLight()
 {
-	if (myPositionUniform)
-		myPositionUniform->Destroy();
-	if (myCamPosUniform)
-		myCamPosUniform->Destroy();
-	if (mySpotCutoffUniform)
-		mySpotCutoffUniform->Destroy();
-	if (mySpotExponentUniform)
-		mySpotExponentUniform->Destroy();
-	if (myDiffuseUniform)
-		myDiffuseUniform->Destroy();
-	if (mySpecularUniform)
-		mySpecularUniform->Destroy();
-	if (myAmbiantUniform)
-		myAmbiantUniform->Destroy();
-	if (myAttenuationUniform)
-		myAttenuationUniform->Destroy();
-	if (mySpotDirUniform)
-		mySpotDirUniform->Destroy();
+	
 
-	myPositionUniform = myCamPosUniform = mySpotCutoffUniform = mySpotExponentUniform = myDiffuseUniform = mySpecularUniform = myAmbiantUniform = myAttenuationUniform = mySpotDirUniform = NULL;
+	myPositionUniform = myCamPosUniform = mySpotCutoffUniform = mySpotExponentUniform = myDiffuseUniform = mySpecularUniform = myAmbiantUniform = myAttenuationUniform = mySpotDirUniform = nullptr;
 
 	// notify scenegraph that I am dead
 	ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
@@ -244,11 +227,7 @@ void API3DLight::NotifyUpdate(const unsigned int  labelid)
 	{
 		if (myIsDirectional)
 		{
-			if (myAttenuationUniform)
-			{
-				myAttenuationUniform->Destroy();
-				myAttenuationUniform = NULL;
-			}
+			myAttenuationUniform = nullptr;
 		}
 		else
 		{
@@ -291,7 +270,7 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D &
 	renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_ON);
 
 	
-	static_cast<API3DUniformFloat3*>(myCamPosUniform)->SetValue(&camPos.x);
+	static_cast<API3DUniformFloat3*>(myCamPosUniform.get())->SetValue(&camPos.x);
 
 	Point3D outP;
 	Vector3D outV;
@@ -306,12 +285,12 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D &
 	{
 		outP.Normalize();
 	}
-	static_cast<API3DUniformFloat3*>(myPositionUniform)->SetValue(&outP.x);
+	static_cast<API3DUniformFloat3*>(myPositionUniform.get())->SetValue(&outP.x);
 
 	if (mySpotDirUniform)
 	{
 		lMat.TransformVector((Vector3D*)&mySpotDirection[0], &outV);
-		static_cast<API3DUniformFloat3*>(mySpotDirUniform)->SetValue(&outV.x);
+		static_cast<API3DUniformFloat3*>(mySpotDirUniform.get())->SetValue(&outV.x);
 	}
 
 	return true;
@@ -429,23 +408,23 @@ void API3DLight::DrawLight(TravState* travstate)
 	if (!myIsOn)
 		return;
 	if (myPositionUniform)
-		((API3DUniformBase*)myPositionUniform)->DoPreDraw(travstate);
+		((SP<API3DUniformBase>&)myPositionUniform)->DoPreDraw(travstate);
 	if (myCamPosUniform)
-		((API3DUniformBase*)myCamPosUniform)->DoPreDraw(travstate);
+		((SP < API3DUniformBase>&)myCamPosUniform)->DoPreDraw(travstate);
 	if (myDiffuseUniform)
-		((API3DUniformBase*)myDiffuseUniform)->DoPreDraw(travstate);
+		((SP < API3DUniformBase>&)myDiffuseUniform)->DoPreDraw(travstate);
 	if (mySpecularUniform)
-		((API3DUniformBase*)mySpecularUniform)->DoPreDraw(travstate);
+		((SP < API3DUniformBase>&)mySpecularUniform)->DoPreDraw(travstate);
 	if (myAmbiantUniform)
-		((API3DUniformBase*)myAmbiantUniform)->DoPreDraw(travstate);
+		((SP < API3DUniformBase>&)myAmbiantUniform)->DoPreDraw(travstate);
 	if (mySpotDirUniform)
-		((API3DUniformBase*)mySpotDirUniform)->DoPreDraw(travstate);
+		((SP < API3DUniformBase>&)mySpotDirUniform)->DoPreDraw(travstate);
 	if (myAttenuationUniform)
-		((API3DUniformBase*)myAttenuationUniform)->DoPreDraw(travstate);
+		((SP < API3DUniformBase>&)myAttenuationUniform)->DoPreDraw(travstate);
 	if (mySpotCutoffUniform)
-		((API3DUniformBase*)mySpotCutoffUniform)->DoPreDraw(travstate);
+		((SP < API3DUniformBase>&)mySpotCutoffUniform)->DoPreDraw(travstate);
 	if (mySpotExponentUniform)
-		((API3DUniformBase*)mySpotExponentUniform)->DoPreDraw(travstate);
+		((SP < API3DUniformBase>&)mySpotExponentUniform)->DoPreDraw(travstate);
 }
 
 void API3DLight::PostDrawLight(TravState* travstate)
@@ -453,23 +432,23 @@ void API3DLight::PostDrawLight(TravState* travstate)
 	if (!myIsOn)
 		return;
 	if (myPositionUniform)
-		((API3DUniformBase*)myPositionUniform)->DoPostDraw(travstate);
+		((SP < API3DUniformBase>&)myPositionUniform)->DoPostDraw(travstate);
 	if (myCamPosUniform)
-		((API3DUniformBase*)myCamPosUniform)->DoPostDraw(travstate);
+		((SP < API3DUniformBase>&)myCamPosUniform)->DoPostDraw(travstate);
 	if (myDiffuseUniform)
-		((API3DUniformBase*)myDiffuseUniform)->DoPostDraw(travstate);
+		((SP < API3DUniformBase>&)myDiffuseUniform)->DoPostDraw(travstate);
 	if (mySpecularUniform)
-		((API3DUniformBase*)mySpecularUniform)->DoPostDraw(travstate);
+		((SP < API3DUniformBase>&)mySpecularUniform)->DoPostDraw(travstate);
 	if (myAmbiantUniform)
-		((API3DUniformBase*)myAmbiantUniform)->DoPostDraw(travstate);
+		((SP < API3DUniformBase>&)myAmbiantUniform)->DoPostDraw(travstate);
 	if (myAttenuationUniform)
-		((API3DUniformBase*)myAttenuationUniform)->DoPostDraw(travstate);
+		((SP < API3DUniformBase>&)myAttenuationUniform)->DoPostDraw(travstate);
 	if (mySpotDirUniform)
-		((API3DUniformBase*)mySpotDirUniform)->DoPostDraw(travstate);
+		((SP < API3DUniformBase>&)mySpotDirUniform)->DoPostDraw(travstate);
 	if (mySpotCutoffUniform)
-		((API3DUniformBase*)mySpotCutoffUniform)->DoPostDraw(travstate);
+		((SP < API3DUniformBase>&)mySpotCutoffUniform)->DoPostDraw(travstate);
 	if (mySpotExponentUniform)
-		((API3DUniformBase*)mySpotExponentUniform)->DoPostDraw(travstate);
+		((SP < API3DUniformBase>&)mySpotExponentUniform)->DoPostDraw(travstate);
 }
 
 int API3DLight::GetTypeOfLight()

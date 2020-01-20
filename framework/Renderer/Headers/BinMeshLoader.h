@@ -70,11 +70,11 @@ protected:
 	class grpStruct
 	{
 	public:
-		grpStruct() : myMaterial(0),myTriangleCount(0),myTriangleSize(0),myFirstTriangle(0)
+		grpStruct() : myMaterial(nullptr),myTriangleCount(0),myTriangleSize(0),myFirstTriangle(0)
 		{
 		}
 
-		Material*		myMaterial;
+		SP<Material>		myMaterial;
 		int				myTriangleCount;
 		int				myTriangleSize;
 		void*			myFirstTriangle;
