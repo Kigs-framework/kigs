@@ -47,6 +47,7 @@ public:
 	* \fn		void            GetRef();
 	* \brief	increment reference count
 	*/
+
 #if defined (_DEBUG) && ( defined(WIN32) || defined(WUP))
 	virtual // GetRef is virtual only for debug purpose
 #endif
