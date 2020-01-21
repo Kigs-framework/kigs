@@ -283,7 +283,6 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 
 			if (newfunction)
 			{
-				newfunction->GetRef();
 				AsciiParserUtils	operand(formulae);
 				formulae.SetPosition(matchkeywork.size());
 
@@ -792,6 +791,11 @@ void CoreModifiableAttributeOperator<T>::GetAttribute() const
 				}
 				else
 				{
+					// global path, remove "/"
+					if (modifiablename[0] == '/')
+					{
+						modifiablename = modifiablename.substr(1, modifiablename.length() - 1);
+					}
 					Owner = CoreModifiable::GetInstanceByGlobalPath(modifiablename);
 				}
 			}
@@ -898,17 +902,18 @@ CoreModifiableAttributeOperator<kfloat>::operator kfloat() const
 			itOperand++;
 		}
 
-		// add param for result
-		maFloat* resultval = new maFloat(*myTarget, false, LABEL_AND_ID(Result), 0.0);
-		myAttributes.push_back(resultval);
+		// check if method adds an attribute
+		int attrCount = myAttributes.size();
 
 		// check if current context has sender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
 		void* datavariable = (void*)getVariable("data");
 		myTarget->CallMethod(myMethodID, myAttributes, datavariable, sendervariable);
 	
-		result = *resultval;
-
+		if (myAttributes.size() > attrCount)
+		{
+			 myAttributes.back()->getValue(result);
+		}
 
 		kstl::vector<CoreModifiableAttribute*>::iterator itattr = myAttributes.begin();
 		kstl::vector<CoreModifiableAttribute*>::iterator itattrEnd = myAttributes.end();
@@ -972,16 +977,18 @@ CoreModifiableAttributeOperator<kstl::string>::operator kstl::string() const
 			itOperand++;
 		}
 
-		// add param for result
-		maString* resultval = new maString(*myTarget, false, LABEL_AND_ID(Result), "");
-		myAttributes.push_back(resultval);
+		// check if method adds an attribute
+		int attrCount = myAttributes.size();
 
 		// check if current context has sender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
 		void* datavariable = (void*)getVariable("data");
 		myTarget->CallMethod(myMethodID, myAttributes, datavariable, sendervariable);
 
-		result = *resultval;
+		if (myAttributes.size() > attrCount)
+		{
+			myAttributes.back()->getValue(result);
+		}
 
 
 		kstl::vector<CoreModifiableAttribute*>::iterator itattr = myAttributes.begin();
@@ -1056,16 +1063,18 @@ CoreModifiableAttributeOperator<Point2D>::operator Point2D() const
 			itOperand++;
 		}
 
-		// add param for result
-		maVect2DF* resultval = new maVect2DF(*myTarget, false, LABEL_AND_ID(Result), 0.0f,0.0f);
-		myAttributes.push_back(resultval);
+		// check if method adds an attribute
+		int attrCount = myAttributes.size();
 
 		// check if current context has sender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
 		void* datavariable = (void*)getVariable("data");
 		myTarget->CallMethod(myMethodID, myAttributes, datavariable, sendervariable);
 
-		result = (Point2D)(*resultval);
+		if (myAttributes.size() > attrCount)
+		{
+			myAttributes.back()->getArrayValue(&result.x,2);
+		}
 
 
 		kstl::vector<CoreModifiableAttribute*>::iterator itattr = myAttributes.begin();
@@ -1141,16 +1150,18 @@ CoreModifiableAttributeOperator<Point3D>::operator Point3D() const
 			itOperand++;
 		}
 
-		// add param for result
-		maVect3DF* resultval = new maVect3DF(*myTarget, false, LABEL_AND_ID(Result), 0.0f, 0.0f,0.0f);
-		myAttributes.push_back(resultval);
+		// check if method adds an attribute
+		int attrCount = myAttributes.size();
 
 		// check if current context has sender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
 		void* datavariable = (void*)getVariable("data");
 		myTarget->CallMethod(myMethodID, myAttributes, datavariable, sendervariable);
 
-		result = *resultval;
+		if (myAttributes.size() > attrCount)
+		{
+			myAttributes.back()->getArrayValue(&result.x, 3);
+		}
 
 
 		kstl::vector<CoreModifiableAttribute*>::iterator itattr = myAttributes.begin();

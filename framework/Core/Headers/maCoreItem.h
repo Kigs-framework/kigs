@@ -8,10 +8,11 @@
 
 
 
-struct maCoreItemValue
+class maCoreItemValue
 {
-	CoreItemSP item;
-	kstl::string ref_file;
+public:
+	CoreItemSP item=nullptr;
+	kstl::string ref_file="";
 
 	void InitWithJSON(const kstl::string& currentval, CoreModifiable* owner);
 	bool ExportToString(kstl::string& value) const;

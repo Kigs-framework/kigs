@@ -2,6 +2,7 @@
 #include "CoreItem.h"
 #include "CoreVector.h"
 #include "CoreMap.h"
+#include "maCoreItem.h"
 
 
 
@@ -203,4 +204,107 @@ CoreItemIterator CoreItemSP::begin()
 CoreItemIterator CoreItemSP::end()
 {
 	return myPointer->end();
+}
+
+
+CoreItemSP::CoreItemSP(const bool& value) 
+{
+	myPointer = new CoreValue<bool>(value);
+}
+
+CoreItemSP::CoreItemSP(const kfloat& value)
+{
+	myPointer = new CoreValue<kfloat>(value);
+}
+CoreItemSP::CoreItemSP(const int& value)
+{
+	myPointer = new CoreValue<int>(value);
+}
+CoreItemSP::CoreItemSP(const unsigned int& value)
+{
+	myPointer = new CoreValue<unsigned int>(value);
+}
+CoreItemSP::CoreItemSP(const kstl::string& value, CoreModifiable* owner)
+{
+	// check eval
+	if (CoreModifiable::AttributeNeedEval(value))
+	{
+		maCoreItemValue	tmpVal;
+		tmpVal.InitWithJSON(value,owner);
+		*this = tmpVal.item;
+	}
+	else
+	{
+		myPointer = new CoreValue<kstl::string>(value);
+	}
+}
+CoreItemSP::CoreItemSP(const usString& value, CoreModifiable* owner)
+{
+	// check eval
+	if (CoreModifiable::AttributeNeedEval(value.ToString()))
+	{
+		maCoreItemValue	tmpVal;
+		tmpVal.InitWithJSON(value.ToString(), owner);
+		*this = tmpVal.item;
+	}
+	else
+	{
+		myPointer = new CoreValue<usString>(value);
+	}
+}
+CoreItemSP::CoreItemSP(const Point2D& value)
+{
+	myPointer = new CoreVector();
+
+	(*myPointer).set("", CoreItemSP(value.x));
+	(*myPointer).set("", CoreItemSP(value.y));
+}
+CoreItemSP::CoreItemSP(const Point3D& value)
+{
+	myPointer = new CoreVector();
+	(*myPointer).set("", CoreItemSP(value.x));
+	(*myPointer).set("", CoreItemSP(value.y));
+	(*myPointer).set("", CoreItemSP(value.z));
+}
+
+// empty assignement with value
+CoreItem& CoreItem::operator=(const bool& other)
+{
+	KIGS_WARNING("trying to assign base CoreItem with value", 2);
+	return *this;
+}
+CoreItem& CoreItem::operator=(const kfloat& other)
+{
+	KIGS_WARNING("trying to assign base CoreItem with value", 2);
+	return *this;
+}
+CoreItem& CoreItem::operator=(const int& other)
+{
+	KIGS_WARNING("trying to assign base CoreItem with value", 2);
+	return *this;
+}
+CoreItem& CoreItem::operator=(const unsigned int& other)
+{
+	KIGS_WARNING("trying to assign base CoreItem with value", 2);
+	return *this;
+}
+CoreItem& CoreItem::operator=(const kstl::string& other)
+{
+	KIGS_WARNING("trying to assign base CoreItem with value", 2);
+	return *this;
+}
+CoreItem& CoreItem::operator=(const usString& other)
+{
+	KIGS_WARNING("trying to assign base CoreItem with value", 2);
+	return *this;
+}
+CoreItem& CoreItem::operator=(const Point2D& other)
+{
+	KIGS_WARNING("trying to assign base CoreItem with value", 2);
+	return *this;
+}
+CoreItem& CoreItem::operator=(const Point3D& other)
+{
+	KIGS_WARNING("trying to assign base CoreItem with value", 2);
+	return *this;
 }
