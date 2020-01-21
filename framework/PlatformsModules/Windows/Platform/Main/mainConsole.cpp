@@ -12,7 +12,7 @@
 #include <csignal>
 #include <windows.h>
 
-#ifdef _DEBUG
+#ifdef KIGS_TOOLS
 #include <stdlib.h>
 #include <crtdbg.h>
 #endif
@@ -31,7 +31,7 @@ void signal_handler(int sig)
 int main(int argc, char *argv[])
 {
 	
-#ifdef _DEBUG
+#ifdef KIGS_TOOLS
 	// print leaks after program exits
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 

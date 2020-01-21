@@ -210,14 +210,14 @@ public:
 	CoreItemIterator erase(CoreItemIterator position)
 	{
 		CoreVectorIterator& pos = *(CoreVectorIterator*)position.Pointer();
-		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this), 0);
+		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this, GetRefTag{}), 0);
 		iter->myVectorIterator = myVector.erase(pos.myVectorIterator);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 	CoreItemIterator erase(CoreItemIterator first, CoreItemIterator last)
 	{
-		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this), 0);
+		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this, GetRefTag{}), 0);
 		iter->myVectorIterator = myVector.erase(((CoreVectorIterator*)first.myPointer)->myVectorIterator, ((CoreVectorIterator*)last.myPointer)->myVectorIterator);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
