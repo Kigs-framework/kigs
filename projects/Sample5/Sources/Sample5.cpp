@@ -118,13 +118,8 @@ void	Sample5::ProtectedInit()
 	// expression is evaluated again at each cast to float
 	std::cout << "Expression : eval(12.0*sin(#TestFloat#+#/Timer:ApplicationTimer->Time#)) = " << (float)(CoreItem&)myFunction << std::endl;
 
-
 	// it's also possible to call CoreModifiable methods, set CoreModifiable attributes and make some tests
-	// first reset tsteval
-	tsteval.Reset();
 	tsteval = std::string("eval(if(([/Sample5->randomNumber(0.0,2.0)]>1.0),#/Sample5->EvalResult.x#=(#/Sample5->EvalResult.x#+1);1,#/Sample5->EvalResult.y#=(#/Sample5->EvalResult.y#+1);2))");
-
-	float tstresul = (float)tsteval;
 
 	std::cout << "tsteval result = " << (float)tsteval << std::endl;
 	std::cout << "EvalResult = [ " << myEvalResult[0] << "," << myEvalResult[1] << " ]" << std::endl;

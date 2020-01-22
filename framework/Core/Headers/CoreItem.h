@@ -67,24 +67,7 @@ public:
 
 	inline bool operator==(const CoreItem& other) const;
 
-	// assignement with value
-	// if myPointer, call myPointer operator
-	// else create default value
-	inline CoreItemSP& operator=(const bool& other);
-	inline CoreItemSP& operator=(const kfloat& other);
-	inline CoreItemSP& operator=(const int& other);
-	inline CoreItemSP& operator=(const unsigned int& other);
-	inline CoreItemSP& operator=(const kstl::string& other);
-	inline CoreItemSP& operator=(const usString& other);
-	inline CoreItemSP& operator=(const Point2D& other);
-	inline CoreItemSP& operator=(const Point3D& other);
 	inline CoreItemSP& operator=(std::nullptr_t);
-	inline CoreItemSP& operator=(const char* other)
-	{
-		this->operator=(kstl::string(other));
-		return *this;
-	}
-
 
 	static	CoreItemSP	getCoreMap();
 	static	CoreItemSP	getCoreVector();
@@ -522,71 +505,6 @@ inline bool CoreItemSP::operator==(const CoreItem& other) const
 	return myPointer->operator==(other);
 }
 
-inline CoreItemSP& CoreItemSP::operator=(const bool& other)
-{
-	if (myPointer)
-		myPointer->operator =(other);
-	else
-		*this = CoreItemSP(other);
-	return *this;
-}
-
-inline CoreItemSP& CoreItemSP::operator=(const kfloat& other)
-{
-	if (myPointer)
-		myPointer->operator =(other);
-	else
-		*this = CoreItemSP(other);
-	return *this;
-}
-inline CoreItemSP& CoreItemSP::operator=(const int& other)
-{
-	if (myPointer)
-		myPointer->operator =(other);
-	else
-		*this = CoreItemSP(other);
-	return *this;
-}
-inline CoreItemSP& CoreItemSP::operator=(const unsigned int& other)
-{
-	if (myPointer)
-		myPointer->operator =(other);
-	else
-		*this = CoreItemSP(other);
-	return *this;
-}
-inline CoreItemSP& CoreItemSP::operator=(const kstl::string& other)
-{
-	if (myPointer)
-		myPointer->operator =(other);
-	else
-		*this = CoreItemSP(other);
-	return *this;
-}
-inline CoreItemSP& CoreItemSP::operator=(const usString& other)
-{
-	if (myPointer)
-		myPointer->operator =(other);
-	else
-		*this = CoreItemSP(other);
-	return *this;
-}
-inline CoreItemSP& CoreItemSP::operator=(const Point2D& other)
-{
-	if (myPointer)
-		myPointer->operator =(other);
-	else
-		*this = CoreItemSP(other);
-	return *this;
-}
-inline CoreItemSP& CoreItemSP::operator=(const Point3D& other)
-{
-	if (myPointer)
-		myPointer->operator =(other);
-	else
-		*this = CoreItemSP(other);
-	return *this;
-}
 
 inline CoreItemSP& CoreItemSP::operator=(std::nullptr_t)
 {

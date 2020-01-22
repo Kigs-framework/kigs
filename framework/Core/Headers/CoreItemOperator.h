@@ -107,10 +107,11 @@ public:
 
 protected:
 
-
+	static bool	CheckAffectation(char prevChar, int priority, AsciiParserUtils& block, kstl::vector<CoreItemOperatorStruct>& OperatorList);
 
 	static CoreItemSP	Parse(AsciiParserUtils& formulae, ConstructContext& context);
 	static kstl::vector<CoreItemOperatorStruct>	FindFirstLevelOperators(AsciiParserUtils& formulae, ConstructContext& context);
+	static kstl::vector<CoreItemOperatorStruct>	FindFirstLevelSeparator(AsciiParserUtils& formulae, ConstructContext& context);
 	static kstl::vector<kstl::string>	FindFirstLevelParams(AsciiParserUtils& formulae, ConstructContext& context);
 	static CoreItemOperator<operandType>* getOperator(const kstl::string& keyword, ConstructContext& context);
 	static RefCountedBaseClass* getVariable(const kstl::string& keyword);
