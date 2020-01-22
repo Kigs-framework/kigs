@@ -10,7 +10,7 @@
 // CoreItem features :
 // - import / export JSON objects 
 // - create/evaluate mathematical expression
-// - animate values 
+// - animate values (UIItem / XML files) 
 
 
 IMPLEMENT_CLASS_INFO(Sample5);
@@ -139,11 +139,6 @@ void	Sample5::ProtectedInit()
 void	Sample5::ProtectedUpdate()
 {
 	DataDrivenBaseApplication::ProtectedUpdate();
-
-	if (GetApplicationTimer()->GetTime() > 5.0f)
-	{
-		myNeedExit=true;
-	}
 }
 
 void	Sample5::ProtectedClose()

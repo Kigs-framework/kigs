@@ -23,3 +23,7 @@ target_sources(Sample3
 
 set_property(TARGET Sample3 PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets")
 
+if(${KIGS_PLATFORM} STREQUAL "Javascript")
+	set(CMAKE_EXECUTABLE_SUFFIX ".js")
+	set_target_properties(Sample3 PROPERTIES LINK_FLAGS "--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/assets@/ -s TOTAL_MEMORY=67108864 -s EXPORTED_FUNCTIONS='[_main]' --use-preload-plugins -s WASM=1 -s BINARYEN_METHOD='native-wasm' -s ALLOW_MEMORY_GROWTH=1" )
+endif()

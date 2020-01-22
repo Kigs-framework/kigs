@@ -136,7 +136,7 @@ protected:
 
 	void DoAutoUpdate();
 
-	bool			myNeedExit;
+	maBool			myNeedExit = BASE_ATTRIBUTE(NeedExit,false);
 	bool			myHasFocus;
 
 	volatile bool	myAlreadyInUpdate;
