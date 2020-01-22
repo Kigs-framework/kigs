@@ -1011,6 +1011,7 @@ public:
 private:
 	friend class CoreModifiableAttribute;
 	friend class IMEditor;
+	friend class CoreItemSP;
 
 	static void	ReleaseLoadedItems(std::vector<CMSP> &loadedItems);
 

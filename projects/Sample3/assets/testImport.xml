@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Inst N="simpleclass" T="SimpleClass">
+	<Attr N="IntValue" V="eval(32*4)"/>
+</Inst>

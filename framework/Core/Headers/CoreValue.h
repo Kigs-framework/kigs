@@ -922,18 +922,22 @@ public:
 	}
 	virtual CoreItem& operator=(const kstl::string& other)
 	{
+		KIGS_WARNING("trying to assign string value to non string CoreValue", 2);
 		return *this;
 	}
 	virtual CoreItem& operator=(const usString& other)
 	{
+		KIGS_WARNING("trying to assign usString value to non usString CoreValue", 2);
 		return *this;
 	}
 	virtual CoreItem& operator=(const Point2D& other)
 	{
+		KIGS_WARNING("trying to assign Point2D value to non Point2D CoreValue", 2);
 		return *this;
 	}
 	virtual CoreItem& operator=(const Point3D& other)
 	{
+		KIGS_WARNING("trying to assign Point3D value to non Point3D CoreValue", 2);
 		return *this;
 	}
 

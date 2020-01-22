@@ -12,6 +12,23 @@ class CoreItemIterator;
 class CoreItemSP : public SmartPointer<CoreItem>
 {
 public:
+
+	// constructors
+	// fast init with value 
+	CoreItemSP(const bool& value); 
+	CoreItemSP(const kfloat& other);
+	CoreItemSP(const int& other);
+	CoreItemSP(const unsigned int& other);
+	CoreItemSP(const kstl::string& other,CoreModifiable* owner=nullptr);
+	CoreItemSP(const char* other, CoreModifiable* owner = nullptr) : CoreItemSP(kstl::string(other), owner)
+	{
+	}
+	CoreItemSP(const usString& other, CoreModifiable* owner = nullptr);
+	CoreItemSP(const Point2D& other);
+	CoreItemSP(const Point3D& other);
+
+
+	// other constructors
 	CoreItemSP() : SmartPointer<CoreItem>(nullptr){}
 	CoreItemSP(CoreItem* it, StealRefTag stealref) : SmartPointer<CoreItem>(it, stealref) {}
 	CoreItemSP(CoreItem* it, GetRefTag getref) : SmartPointer<CoreItem>(it, getref) {}
@@ -50,6 +67,7 @@ public:
 
 	inline bool operator==(const CoreItem& other) const;
 
+	inline CoreItemSP& operator=(std::nullptr_t);
 
 	static	CoreItemSP	getCoreMap();
 	static	CoreItemSP	getCoreVector();
@@ -307,40 +325,14 @@ public:
 	}
 
 	// empty assignement with value
-	virtual CoreItem& operator=(const bool& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const kfloat& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const int& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const unsigned int& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const kstl::string& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const usString& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const Point2D& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const Point3D& other)
-	{
-		return *this;
-	}
-
-
+	virtual CoreItem& operator=(const bool& other);
+	virtual CoreItem& operator=(const kfloat& other);
+	virtual CoreItem& operator=(const int& other);
+	virtual CoreItem& operator=(const unsigned int& other);
+	virtual CoreItem& operator=(const kstl::string& other);
+	virtual CoreItem& operator=(const usString& other);
+	virtual CoreItem& operator=(const Point2D& other);
+	virtual CoreItem& operator=(const Point3D& other);
 
 	virtual kstl::string toString() const { return ""; }
 	
@@ -511,6 +503,13 @@ inline bool CoreItemSP::operator==(const CoreItemSP& other) const
 inline bool CoreItemSP::operator==(const CoreItem& other) const
 {
 	return myPointer->operator==(other);
+}
+
+
+inline CoreItemSP& CoreItemSP::operator=(std::nullptr_t)
+{
+	Reset();
+	return *this;
 }
 
 
