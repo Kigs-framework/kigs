@@ -256,6 +256,9 @@ public:
 	DECLARE_SET(CoreModifiable*);
 	DECLARE_SET(void*);
 	DECLARE_SET(const UTF8Char*); // Only for usstring
+	DECLARE_SET(const Point2D&);
+	DECLARE_SET(const Point3D&);
+	DECLARE_SET(const Vector4D&);
 
 #define DECLARE_GET(type) virtual bool getValue(type value) const { return false; }
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET);
@@ -265,6 +268,9 @@ public:
 	DECLARE_GET(CoreItem*&);
 	DECLARE_GET(CoreModifiable*&);
 	DECLARE_GET(void*&);
+	DECLARE_GET(Point2D&);
+	DECLARE_GET(Point3D&);
+	DECLARE_GET(Vector4D&);
 
 #define DECLARE_SETARRAYVALUE(type)	virtual bool setArrayValue(type /*value*/, u32 /* nbElements */){return false;};
 	EXPAND_MACRO_FOR_BASE_TYPES(const, *, DECLARE_SETARRAYVALUE);

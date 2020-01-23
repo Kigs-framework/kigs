@@ -257,11 +257,13 @@ public:
 
 	virtual bool getValue(kstl::string& value) const override { return CoreConvertArray2String<T>(value, getConstArrayBuffer(), getNbArrayElements()); }
 
-
+	virtual bool getValue(Point2D& value) const override { value.x = (kfloat)at(0, 0); value.y = (kfloat)at(0, 1); return true; }
+	virtual bool getValue(Point3D& value) const override { value.x = (kfloat)at(0, 0); value.y = (kfloat)at(0, 1); value.z = (kfloat)at(0, 2); return true; }
+	virtual bool getValue(Vector4D& value) const override { value.x = (kfloat)at(0, 0); value.y = (kfloat)at(0, 1); value.z = (kfloat)at(0, 2); value.w = (kfloat)at(0, 3); return true; }
 
 	using CoreModifiableAttributeData<ArrayType>::setValue;
 
-	bool setValue(Point2D pt)
+	bool setValue(const Point2D& pt) override
 	{
 		if (nbColumns < 2) return false;
 		at(0, 0) = (T)pt.x;
@@ -269,7 +271,7 @@ public:
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
-	bool setValue(Point3D pt)
+	bool setValue(const Point3D& pt) override
 	{
 		if (nbColumns < 3) return false;
 		at(0, 0) = (T)pt.x;
@@ -278,7 +280,7 @@ public:
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
-	bool setValue(Vector4D pt)
+	bool setValue(const Vector4D& pt) override
 	{
 		if (nbColumns < 4) return false;
 		at(0, 0) = (T)pt.x;
@@ -307,9 +309,30 @@ public:
 	}
 
 	
-	auto& operator=(Point2D pt) { setValue(pt); return *this; }
-	auto& operator=(Point3D pt) { setValue(pt); return *this; }
-	auto& operator=(Vector4D pt) { setValue(pt); return *this; }
+	// direct access operators
+	auto& operator=(Point2D pt) {
+		if (nbColumns < 2) return *this;
+		at(0, 0) = (T)pt.x;
+		at(0, 1) = (T)pt.y;
+		return *this; 
+	}
+	auto& operator=(Point3D pt)
+	{
+		if (nbColumns < 3) return *this;
+		at(0, 0) = (T)pt.x;
+		at(0, 1) = (T)pt.y;
+		at(0, 3) = (T)pt.z;
+		return *this; 
+	}
+
+	auto& operator=(Vector4D pt) {
+		if (nbColumns < 4) return *this;
+		at(0, 0) = (T)pt.x;
+		at(0, 1) = (T)pt.y;
+		at(0, 3) = (T)pt.z;
+		at(0, 4) = (T)pt.w;
+		return *this;
+	}
 
 	auto& operator=(Point2DI pt) { setValue(pt); return *this; }
 	auto& operator=(Point3DI pt) { setValue(pt); return *this; }
@@ -341,8 +364,6 @@ public:
 		{
 			tmpValue.x = (s32)this->at(0, 0);
 			tmpValue.y = (s32)this->at(0, 1);
-			//@ Issue modifier system doesn't handle Point2DI
-			//CALL_GETMODIFIER(notificationLevel, tmpValue);
 		}
 		return tmpValue;
 	}
@@ -355,8 +376,6 @@ public:
 			tmpValue.x = (s32)this->at(0, 0);
 			tmpValue.y = (s32)this->at(0, 1);
 			tmpValue.z = (s32)this->at(0, 2);
-			//@ Issue modifier system doesn't handle Point3DI
-			//CALL_GETMODIFIER(notificationLevel, tmpValue);
 		}
 		return tmpValue;
 	}
@@ -368,8 +387,6 @@ public:
 		{
 			tmpValue.x = (float)this->at(0, 0);
 			tmpValue.y = (float)this->at(0, 1);
-			
-			CALL_GETMODIFIER(notificationLevel, tmpValue);
 		}
 		return tmpValue;
 	}
@@ -382,8 +399,6 @@ public:
 			tmpValue.x = (float)this->at(0, 0);
 			tmpValue.y = (float)this->at(0, 1);
 			tmpValue.z = (float)this->at(0, 2);
-
-			CALL_GETMODIFIER(notificationLevel, tmpValue);
 		}
 		return tmpValue;
 	}
@@ -397,8 +412,6 @@ public:
 			tmpValue.y = (float)this->at(0, 1);
 			tmpValue.z = (float)this->at(0, 2);
 			tmpValue.w = (float)this->at(0, 3);
-			//@ Issue modifier system doesn't handle Vector4D
-			//CALL_GETMODIFIER(notificationLevel, tmpValue);
 		}
 		return tmpValue;
 	}

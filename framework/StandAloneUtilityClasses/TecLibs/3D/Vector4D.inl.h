@@ -196,6 +196,17 @@ const Vector4D& Vector4D::operator *= ( const Float& fValue )
 
     return *this;
 }
+
+const Vector4D& Vector4D::operator *= (const Vector4D& other)
+{
+    x *= other.x;
+    y *= other.y;
+    z *= other.z;
+    w *= other.w;
+
+    return *this;
+}
+
 const Vector4D& Vector4D::operator /= ( const Float& fValue )
 {
 	Float tmp=((Float)1.0) / fValue;
@@ -207,6 +218,15 @@ const Vector4D& Vector4D::operator /= ( const Float& fValue )
     return *this;
 }
 
+const Vector4D& Vector4D::operator /= (const Vector4D& other)
+{
+    x /= other.x;
+    y /= other.y;
+    z /= other.z;
+    w /= other.w;
+
+    return *this;
+}
 
 
 // ----------------------------------------------------------------------

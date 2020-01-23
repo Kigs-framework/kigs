@@ -108,6 +108,12 @@ void	CoreItemOperator<Point3D>::ConstructContextMap(kstl::unordered_map<kstl::st
 	// nothing here
 }
 
+template<>
+void	CoreItemOperator<Vector4D>::ConstructContextMap(kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>& myMap, kstl::vector<SpecificOperator>* specificList)
+{
+	// nothing here
+}
+
 
 
 template<typename operandType>
@@ -214,12 +220,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 
 					if (params.size())
 					{
-						CoreItemOperator<float>::ConstructContext	floatcontext;
-						floatcontext.myTarget = context.myTarget;
-						floatcontext.mySpecificList = context.mySpecificList;
-
-						CoreItemOperator<float>::ConstructContextMap(floatcontext.myMap, context.mySpecificList);
-
+						
 						CoreVector* opeattribute = new CoreVector();
 						CoreItemSP	op1;
 
@@ -233,7 +234,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 
 							AsciiParserUtils	param(currentParamC, currentParam.length());
 							// inside a vector, each param is a float
-							op1 = CoreItemOperator<float>::Parse(param, floatcontext);
+							op1 = CoreItemOperator<float>::Parse(param, context);
 							if (!op1.isNil())
 							{
 								opeattribute->push_back(op1);
@@ -1312,18 +1313,11 @@ CoreModifiableAttributeOperator<Point2D>::operator Point2D() const
 		{
 			if (myArrayAttributeIndex >= 0)
 			{
-				kfloat getaValue(0.0f);
-				myAttribute->getArrayElementValue(getaValue, 0, myArrayAttributeIndex);
-				result[myArrayAttributeIndex] = getaValue;
+				myAttribute->getArrayElementValue(result[myArrayAttributeIndex], 0, myArrayAttributeIndex);
 			}
 			else
 			{
-				// retreive two values
-				kfloat getaValue(0.0f);
-				myAttribute->getArrayElementValue(getaValue, 0, 0);
-				result.x = getaValue;
-				myAttribute->getArrayElementValue(getaValue, 0, 1);
-				result.y = getaValue;
+				myAttribute->getValue(result);
 			}
 		}
 	}
@@ -1361,7 +1355,7 @@ CoreModifiableAttributeOperator<Point2D>::operator Point2D() const
 
 		if (myAttributes.size() > attrCount)
 		{
-			myAttributes.back()->getArrayValue(&result.x,2);
+			myAttributes.back()->getValue(result);
 		}
 
 
@@ -1399,20 +1393,11 @@ CoreModifiableAttributeOperator<Point3D>::operator Point3D() const
 		{
 			if (myArrayAttributeIndex >= 0)
 			{
-				kfloat getaValue(0.0f);
-				myAttribute->getArrayElementValue(getaValue, 0, myArrayAttributeIndex);
-				result[myArrayAttributeIndex] = getaValue;
+				myAttribute->getArrayElementValue(result[myArrayAttributeIndex], 0, myArrayAttributeIndex);
 			}
 			else
 			{
-				// retreive three values
-				kfloat getaValue(0.0f);
-				myAttribute->getArrayElementValue(getaValue, 0, 0);
-				result.x = getaValue;
-				myAttribute->getArrayElementValue(getaValue, 0, 1);
-				result.y = getaValue;
-				myAttribute->getArrayElementValue(getaValue, 0, 2);
-				result.z = getaValue;
+				myAttribute->getValue(result);
 			}
 		}
 	}
@@ -1448,7 +1433,84 @@ CoreModifiableAttributeOperator<Point3D>::operator Point3D() const
 
 		if (myAttributes.size() > attrCount)
 		{
-			myAttributes.back()->getArrayValue(&result.x, 3);
+			myAttributes.back()->getValue(result);
+		}
+
+
+		kstl::vector<CoreModifiableAttribute*>::iterator itattr = myAttributes.begin();
+		kstl::vector<CoreModifiableAttribute*>::iterator itattrEnd = myAttributes.end();
+
+		// delete attributes and set result
+		while (itattr != itattrEnd)
+		{
+			delete (*itattr);
+
+			itattr++;
+		}
+
+		myAttributes.clear();
+
+	}
+
+	return result;
+}
+
+
+template<>
+CoreModifiableAttributeOperator<Vector4D>::operator Vector4D() const
+{
+	Vector4D	result(0.0f, 0.0f, 0.0f,0.0f);
+	if ((!myAttribute) && (!myIsMethod))
+	{
+		GetAttribute();
+	}
+	if (myIsMethod == 0)
+	{
+		if (myAttribute)
+		{
+			if (myArrayAttributeIndex >= 0)
+			{
+				myAttribute->getArrayElementValue(result[myArrayAttributeIndex], 0, myArrayAttributeIndex);
+			}
+			else
+			{
+				myAttribute->getValue(result);
+			}
+		}
+	}
+	else
+	{
+		// push attributes
+		kstl::vector<CoreModifiableAttribute*>	myAttributes;
+		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::myVector.begin();
+		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::myVector.end();
+
+
+		while (itOperand != itOperandEnd)
+		{
+			CoreModifiableAttribute* attribute = ((CoreItem*)(*itOperand).get())->createAttribute(myTarget);
+
+			if (!attribute)
+			{
+				Vector4D val = (Vector4D)(*(*itOperand).get());
+				attribute = new maVect4DF(*myTarget, false, LABEL_AND_ID(Val), &(val.x));
+			}
+			myAttributes.push_back(attribute);
+
+			itOperand++;
+		}
+
+		// check if method adds an attribute
+		int attrCount = myAttributes.size();
+
+		// check if current context has sender or data
+		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
+		void* datavariable = (void*)getVariable("data");
+		myTarget->CallMethod(myMethodID, myAttributes, datavariable, sendervariable);
+
+		if (myAttributes.size() > attrCount)
+		{
+			myAttributes.back()->getValue(result);
 		}
 
 
@@ -1487,7 +1549,7 @@ CoreItem& CoreModifiableAttributeOperator<operandType>::operator=(const operandT
 			}
 			else
 			{
-				// retreive three values
+				// set value
 				myAttribute->setValue(other);
 			}
 		}
@@ -1508,20 +1570,11 @@ CoreItem& CoreModifiableAttributeOperator<Point2D>::operator=(const Point2D& oth
 		{
 			if (myArrayAttributeIndex >= 0)
 			{
-				switch (myArrayAttributeIndex)
-				{
-				case 0:
-					myAttribute->setArrayElementValue(other.x, 0, myArrayAttributeIndex);
-					break;
-				case 1:
-					myAttribute->setArrayElementValue(other.y, 1, myArrayAttributeIndex);
-					break;
-				}
+				myAttribute->setArrayElementValue(other[myArrayAttributeIndex], 0, myArrayAttributeIndex);
 			}
 			else
 			{
-				myAttribute->setArrayElementValue(other.x, 0, myArrayAttributeIndex);
-				myAttribute->setArrayElementValue(other.y, 1, myArrayAttributeIndex);
+				myAttribute->setValue(other);
 			}
 		}
 	}
@@ -1541,30 +1594,40 @@ CoreItem& CoreModifiableAttributeOperator<Point3D>::operator=(const Point3D& oth
 		{
 			if (myArrayAttributeIndex >= 0)
 			{
-				switch (myArrayAttributeIndex)
-				{
-				case 0:
-					myAttribute->setArrayElementValue(other.x, 0, myArrayAttributeIndex);
-					break;
-				case 1:
-					myAttribute->setArrayElementValue(other.y, 1, myArrayAttributeIndex);
-					break;
-				case 2:
-					myAttribute->setArrayElementValue(other.z, 2, myArrayAttributeIndex);
-					break;
-				}
+				myAttribute->setArrayElementValue(other[myArrayAttributeIndex], 0, myArrayAttributeIndex);
 			}
 			else
 			{
-				myAttribute->setArrayElementValue(other.x, 0, myArrayAttributeIndex);
-				myAttribute->setArrayElementValue(other.y, 1, myArrayAttributeIndex);
-				myAttribute->setArrayElementValue(other.z, 2, myArrayAttributeIndex);
+				myAttribute->setValue(other);
 			}
 		}
 	}
 	return *this;
 }
 
+template<>
+CoreItem& CoreModifiableAttributeOperator<Vector4D>::operator=(const Vector4D& other)
+{
+	if ((!myAttribute) && (!myIsMethod))
+	{
+		GetAttribute();
+	}
+	if (myIsMethod == 0)
+	{
+		if (myAttribute)
+		{
+			if (myArrayAttributeIndex >= 0)
+			{
+				myAttribute->setArrayElementValue(other[myArrayAttributeIndex], 0, myArrayAttributeIndex);
+			}
+			else
+			{
+				myAttribute->setValue(other);
+			}
+		}
+	}
+	return *this;
+}
 
 
 template<>
@@ -1615,9 +1678,21 @@ DynamicVariableOperator<Point3D>::operator Point3D() const
 	return Point3D(0, 0,0);
 }
 
+template<>
+DynamicVariableOperator<Vector4D>::operator Vector4D() const
+{
+	CoreItem* var = (CoreItem*)getVariable(myVarName);
+	if (var)
+	{
+		return (Vector4D)(*var);
+	}
+	return Vector4D(0, 0, 0,0);
+}
+
 
 //template class CoreItemOperator<int>;
 template class CoreItemOperator<kfloat>;
 template class CoreItemOperator<kstl::string>;
 template class CoreItemOperator<Point2D>;
 template class CoreItemOperator<Point3D>;
+template class CoreItemOperator<Vector4D>;

@@ -35,19 +35,18 @@ public:
 	CoreItemOperatorCreateMethod	myCreateMethod;
 };
 
+class ConstructContext
+{
+public:
+	kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myMap;
+	CoreModifiable* myTarget;
+	kstl::vector<SpecificOperator>* mySpecificList;
+};
+
 template<typename operandType>
 class CoreItemOperator : public CoreVector
 {
 public:
-
-	
-	class ConstructContext
-	{
-	public:
-		kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myMap;
-		CoreModifiable*											myTarget;
-		kstl::vector<SpecificOperator>* mySpecificList;
-	};
 
 	virtual inline operator bool() const
 	{
@@ -95,6 +94,13 @@ public:
 	virtual inline operator Point3D() const
 	{
 		Point3D result;
+		KIGS_ERROR("cast operator called on base CoreItem", 2);
+		return result;
+	}
+
+	virtual inline operator Vector4D() const
+	{
+		Vector4D result;
 		KIGS_ERROR("cast operator called on base CoreItem", 2);
 		return result;
 	}
@@ -195,6 +201,13 @@ inline void	CoreItemOperator<Point3D>::defaultOperandTypeInit(Point3D& _value)
 {
 	_value.Set(0.0f, 0.0f,0.0f);
 }
+
+template<>
+inline void	CoreItemOperator<Vector4D>::defaultOperandTypeInit(Vector4D& _value)
+{
+	_value.Set(0.0f, 0.0f, 0.0f,0.0f);
+}
+
 
 
 // just evaluate each operand and return the last evaluated one
@@ -925,6 +938,17 @@ inline bool CoreModifiableAttributeOperator<Point3D>::operator == (const CoreIte
 	Point3D	othervalue;
 	other.getValue(othervalue);
 	Point3D	thisvalue;
+	getValue(thisvalue);
+
+	return (thisvalue == othervalue);
+}
+
+template<>
+inline bool CoreModifiableAttributeOperator<Vector4D>::operator == (const CoreItem& other) const
+{
+	Vector4D	othervalue;
+	other.getValue(othervalue);
+	Vector4D	thisvalue;
 	getValue(thisvalue);
 
 	return (thisvalue == othervalue);

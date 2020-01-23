@@ -24,7 +24,7 @@ public:
 		int i;
 		for (i = 0; i < dimension; i++)
 		{
-			myFunctions[i] = 0;
+			myFunctions[i] = nullptr;
 		}
 		myContext.myTime = myContext.myActionStartTime = -1.0;
 	}
@@ -34,11 +34,7 @@ public:
 		int i;
 		for (i = 0; i < dimension; i++)
 		{
-			if (myFunctions[i])
-			{
-				myFunctions[i]->Destroy();
-				myFunctions[i] = 0;
-			}
+			myFunctions[i] = nullptr;
 		}
 
 	}
@@ -64,12 +60,20 @@ protected:
 		dataType result;
 		if (myTarget->getValue(myParamID, result))
 		{
-			int i;
-			for (i = 0; i < dimension; i++)
+
+			if (myHasUniqueMultidimensionnalFunc)
 			{
-				if (myFunctions[i])
+				result = (dataType)myFunctions[0];
+			}
+			else
+			{
+				int i;
+				for (i = 0; i < dimension; i++)
 				{
-					result[i] = *myFunctions[i];
+					if (myFunctions[i])
+					{
+						result[i] = (float)myFunctions[i];
+					}
 				}
 			}
 			myTarget->setValue(myParamID, result);
@@ -78,7 +82,9 @@ protected:
 		return false;
 	}
 
-	CoreItem*	myFunctions[dimension];
+	CoreItemSP	myFunctions[dimension];
+
+	bool		myHasUniqueMultidimensionnalFunc=false;
 
 	CoreItemAnimationContext	myContext;
 };
@@ -92,7 +98,7 @@ inline bool	CoreActionFunction<kfloat,1>::protectedUpdate(kdouble time)
 	myContext.myTime = time;
 	if (myFunctions[0])
 	{
-		kfloat result = *myFunctions[0];
+		kfloat result = (kfloat)myFunctions[0];
 		myTarget->setValue(myParamID, result);
 	}
 	ReleaseCoreItemOperatorContext();
@@ -103,7 +109,7 @@ inline bool	CoreActionFunction<kfloat,1>::protectedUpdate(kdouble time)
 typedef CoreActionFunction < kfloat, 1 > CoreActionFunction1D;
 typedef CoreActionFunction < Point2D, 2 > CoreActionFunction2D;
 typedef CoreActionFunction < Point3D, 3 > CoreActionFunction3D;
-typedef CoreActionFunction < Quaternion, 4 > CoreActionFunction4D;
+typedef CoreActionFunction < Vector4D, 4 > CoreActionFunction4D;
 
 
 

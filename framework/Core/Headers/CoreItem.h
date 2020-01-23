@@ -26,7 +26,7 @@ public:
 	CoreItemSP(const usString& other, CoreModifiable* owner = nullptr);
 	CoreItemSP(const Point2D& other);
 	CoreItemSP(const Point3D& other);
-
+	CoreItemSP(const Vector4D& other);
 
 	// other constructors
 	CoreItemSP() : SmartPointer<CoreItem>(nullptr){}
@@ -62,6 +62,8 @@ public:
 	inline operator Point2D() const;
 
 	inline operator Point3D() const;
+
+	inline operator Vector4D() const;
 
 	inline bool operator==(const CoreItemSP& other) const;
 
@@ -279,7 +281,7 @@ public:
 
 	virtual operator Point3D() const;
 
-	virtual operator Quaternion() const;
+	virtual operator Vector4D() const;
 
 	bool getValue(bool& _value) const {
 		_value = (bool)*this;
@@ -314,8 +316,8 @@ public:
 		_value = (Point3D)*this;
 		return true; }
 
-	bool getValue(Quaternion& _value) const {
-		_value = (Quaternion)*this;
+	bool getValue(Vector4D& _value) const {
+		_value = (Vector4D)*this;
 		return true;
 	}
 
@@ -333,6 +335,7 @@ public:
 	virtual CoreItem& operator=(const usString& other);
 	virtual CoreItem& operator=(const Point2D& other);
 	virtual CoreItem& operator=(const Point3D& other);
+	virtual CoreItem& operator=(const Vector4D& other);
 
 	virtual kstl::string toString() const { return ""; }
 	
@@ -494,6 +497,11 @@ inline CoreItemSP::operator Point3D() const
 {
 	return myPointer->operator Point3D();
 } 
+
+inline CoreItemSP::operator Vector4D() const
+{
+	return myPointer->operator Vector4D();
+}
 
 inline bool CoreItemSP::operator==(const CoreItemSP& other) const
 {

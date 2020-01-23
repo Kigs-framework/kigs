@@ -2861,6 +2861,14 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 				sprintf(resultBuffer, "{%f,%f,%f}", result.x, result.y,result.z);
 				attr = resultBuffer;
 			}
+			else if (arraySize == 4)
+			{
+				ItemToEval = CoreItemOperator<Vector4D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+				Vector4D result = *ItemToEval.get();
+				char resultBuffer[200];
+				sprintf(resultBuffer, "{%f,%f,%f,%f}", result.x, result.y, result.z,result.w);
+				attr = resultBuffer;
+			}
 		}
 		break;
 		default:  // use float operator and return a float "printed" in a string 
