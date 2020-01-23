@@ -95,8 +95,8 @@ void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiable
 	MiniFactoryRegister(myPrivateMiniFactory, "Function3D", CoreActionFunction3D);
 	MiniFactoryRegister(myPrivateMiniFactory, "Function4D", CoreActionFunction4D);
 
-	kstl::vector<CoreItemOperator<kfloat>::SpecificOperator> specificList;
-	CoreItemOperator<kfloat>::SpecificOperator toAdd;
+	kstl::vector<SpecificOperator> specificList;
+	SpecificOperator toAdd;
 	toAdd.myKeyWord = "actionTime";
 	toAdd.myCreateMethod = &ActionTimeOperator<kfloat>::create;
 	specificList.push_back(toAdd);

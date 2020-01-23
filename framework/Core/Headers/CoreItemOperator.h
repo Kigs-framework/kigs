@@ -28,22 +28,25 @@ extern void	ReleaseCoreItemOperatorContext();
 
 typedef     CoreVector* (*CoreItemOperatorCreateMethod)();
 
+class SpecificOperator
+{
+public:
+	kstl::string	myKeyWord;	// 3 letter keyword
+	CoreItemOperatorCreateMethod	myCreateMethod;
+};
+
 template<typename operandType>
 class CoreItemOperator : public CoreVector
 {
 public:
 
-	class SpecificOperator
-	{
-	public:
-		kstl::string	myKeyWord;	// 3 letter keyword
-		CoreItemOperatorCreateMethod	myCreateMethod;
-	};
+	
 	class ConstructContext
 	{
 	public:
 		kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myMap;
 		CoreModifiable*											myTarget;
+		kstl::vector<SpecificOperator>* mySpecificList;
 	};
 
 	virtual inline operator bool() const
@@ -104,12 +107,12 @@ public:
 	static CoreItemSP	Construct(const kstl::string& formulae, CoreModifiable* target, kstl::vector<SpecificOperator>* specificList=0);
 	static CoreItemSP	Construct(const kstl::string& formulae, CoreModifiable* target, const kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap);
 	static void	ConstructContextMap(kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList = 0);
+	static CoreItemSP	Parse(AsciiParserUtils& formulae, ConstructContext& context);
 
 protected:
 
 	static bool	CheckAffectation(char prevChar, int priority, AsciiParserUtils& block, kstl::vector<CoreItemOperatorStruct>& OperatorList);
 
-	static CoreItemSP	Parse(AsciiParserUtils& formulae, ConstructContext& context);
 	static kstl::vector<CoreItemOperatorStruct>	FindFirstLevelOperators(AsciiParserUtils& formulae, ConstructContext& context);
 	static kstl::vector<CoreItemOperatorStruct>	FindFirstLevelSeparator(AsciiParserUtils& formulae, ConstructContext& context);
 	static kstl::vector<kstl::string>	FindFirstLevelParams(AsciiParserUtils& formulae, ConstructContext& context);

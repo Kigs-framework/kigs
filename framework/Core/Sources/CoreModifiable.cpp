@@ -2840,6 +2840,29 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 			// DO NOTHING
 		}
 		break;
+		case ARRAY: 
+		{
+			// check for 2D / 3D vectors
+			int arraySize = destattr->getNbArrayElements();
+			if (arraySize == 2)
+			{
+				ItemToEval = CoreItemOperator<Point2D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+
+				Point2D result = *ItemToEval.get();
+				char resultBuffer[128];
+				sprintf(resultBuffer, "{%f,%f}", result.x,result.y);
+				attr = resultBuffer;
+			}
+			else if (arraySize == 3)
+			{
+				ItemToEval = CoreItemOperator<Point3D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+				Point3D result = *ItemToEval.get();
+				char resultBuffer[128];
+				sprintf(resultBuffer, "{%f,%f,%f}", result.x, result.y,result.z);
+				attr = resultBuffer;
+			}
+		}
+		break;
 		default:  // use float operator and return a float "printed" in a string 
 		{
 			ItemToEval = CoreItemOperator<kfloat>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());

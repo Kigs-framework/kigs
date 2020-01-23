@@ -132,6 +132,11 @@ void	Sample5::ProtectedInit()
 	std::cout << "tsteval result = " << (float)tsteval << std::endl;
 	std::cout << "EvalResult = [ " << myEvalResult[0] << "," << myEvalResult[1] << " ]" << std::endl;
 
+	// It's also possible to compute 2D or 3D expressions
+	tsteval = std::string("eval2D(#/Sample5->EvalResult#+{1.0,#/Sample5->EvalResult.x#})");
+	Point2D checkresult = tsteval;
+	std::cout << "checkresult = [ " << checkresult[0] << "," << checkresult[1] << " ]" << std::endl;
+
 	// Load AppInit, GlobalConfig then launch first sequence
 	DataDrivenBaseApplication::ProtectedInit();
 }

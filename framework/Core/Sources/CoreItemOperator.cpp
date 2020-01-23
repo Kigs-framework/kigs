@@ -36,6 +36,7 @@ CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae
 
 	ConstructContext	context;
 	context.myTarget = target;
+	context.mySpecificList = specificList;
 
 	ConstructContextMap(context.myMap, specificList);
 
@@ -55,6 +56,7 @@ CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae
 	ConstructContext	context;
 	context.myTarget = target;
 	context.myMap = myMap;
+	context.mySpecificList = nullptr;
 
 	CoreItemSP	result = Parse(parser, context);
 
@@ -134,6 +136,8 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		}
 	}
 
+
+
 	if (formulae[0] == '[') // is this a modifiable method ?
 	{
 		if (formulae[formulae.length() - 1] == ']')
@@ -188,6 +192,64 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		}
 	}
 
+
+	if (formulae[0] == '{') // is this a vector
+	{
+		if (formulae[formulae.length() - 1] == '}')
+		{
+			AsciiParserUtils	block(formulae);
+			int oldpos = formulae.GetPosition();
+			formulae.SetPosition(0);
+
+			if (formulae.GetBlock(block, '{', '}'))
+			{
+
+				// test method
+				AsciiParserUtils	paramblock(block);
+				if (paramblock.length())
+				{
+
+
+					kstl::vector<kstl::string>	params = FindFirstLevelParams(paramblock, context);
+
+					if (params.size())
+					{
+						CoreItemOperator<float>::ConstructContext	floatcontext;
+						floatcontext.myTarget = context.myTarget;
+						floatcontext.mySpecificList = context.mySpecificList;
+
+						CoreItemOperator<float>::ConstructContextMap(floatcontext.myMap, context.mySpecificList);
+
+						CoreVector* opeattribute = new CoreVector();
+						CoreItemSP	op1;
+
+						kstl::vector<kstl::string>::iterator	itparambegin = params.begin();
+						kstl::vector<kstl::string>::iterator	itparamend = params.end();
+
+						while (itparambegin != itparamend)
+						{
+							kstl::string& currentParam = (*itparambegin);
+							char* currentParamC = (char*)currentParam.c_str();
+
+							AsciiParserUtils	param(currentParamC, currentParam.length());
+							// inside a vector, each param is a float
+							op1 = CoreItemOperator<float>::Parse(param, floatcontext);
+							if (!op1.isNil())
+							{
+								opeattribute->push_back(op1);
+							}
+							++itparambegin;
+						}
+
+						return CoreItemSP((CoreItem*)opeattribute, StealRefTag{});
+					}
+				}
+
+			}
+			formulae.SetPosition(oldpos);
+
+		}
+	}
 
 	if (formulae[0] == '#') // is this a modifiable attribute ?
 	{
@@ -636,6 +698,16 @@ kstl::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLev
 			BlockLevel--;
 		}
 		break;
+		case '{':
+		{
+			++BlockLevel;
+		}
+		break;
+		case '}':
+		{
+			BlockLevel--;
+		}
+		break;
 		case '#':
 		{
 			if (insideAttribute)
@@ -793,6 +865,20 @@ kstl::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLev
 		}
 		break;
 		case ']':
+		{
+			BlockLevel--;
+		}
+		break;
+		case '{':
+		{
+			if ((BlockLevel == 0) && prevIsValid)
+			{
+				CheckAffectation(prevChar, 0, block, OperatorList); // affectation priority is 0 
+			}
+			++BlockLevel;
+		}
+		break;
+		case '}':
 		{
 			BlockLevel--;
 		}
