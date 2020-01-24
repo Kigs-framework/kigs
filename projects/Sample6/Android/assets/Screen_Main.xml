@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<Inst N="sequencemain" T="DataDrivenSequence">
+	<Inst N="transition" T="DataDrivenTransition">
+		<Attr N="PreviousAnim">
+		<![CDATA[{
+		"Fade":[
+		{"Linear1D":[0.5,0,-16,"/theRenderingScreen->Brightness",0]},
+		{ "SetValue1D" : [0.0,0.0,"Show" ]}
+		]
+		}
+		]]>
+		</Attr>
+		<Attr N="NextAnim">
+		<![CDATA[{
+		"Fade":[
+		{ "SetValue1D" : [0.0,0.0,"Show" ]},
+		{ "Wait" : [  0.5 ] },
+		{ "SetValue1D" : [0.0,1.0,"Show" ]},
+		{"Linear1D":[0.5,-16,0,"/theRenderingScreen->Brightness",0]},
+		{ "Notification" :  [ 0 , "InitScreen" ] }
+		]
+		}
+		]]>
+		</Attr>
+	</Inst>
+	<Inst N="UILayer" T="UI2DLayer">
+	<Attr N="SizeY" V="800"/>
+	<Attr N="SizeX" V="1280"/>
+	<Attr N="Priority" V="50"/>
+	<Attr N="RenderingScreen" V="RenderingScreen:theRenderingScreen"/>
+		<Inst N="Interface" T="UIItem">
+			<Attr N="SizeY" V="800"/>
+			<Attr N="SizeX" V="1280"/>
+			<Inst N="background" T="UIPanel">
+				<Attr N="SizeY" V="800"/>
+				<Attr N="SizeX" V="1280"/>
+				<Attr N="Priority" V="50"/>
+				<Attr N="Anchor" V="{0.500000,0.500000}"/>
+				<Attr N="Dock" V="{0.500000,0.500000}"/>
+				<Attr N="Color" V="{0.0, 0.2, 0.4, 1.0}"/>
+			</Inst>
+		</Inst>
+	</Inst>
+</Inst>
