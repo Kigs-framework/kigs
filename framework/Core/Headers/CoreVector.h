@@ -328,13 +328,13 @@ public:
 		return result;
 	}
 
-	virtual operator Quaternion() const override
+	virtual operator Vector4D() const override
 	{
-		Quaternion result;
+		Vector4D result;
 
-		myVector[0]->getValue(result.V.x);
-		myVector[1]->getValue(result.V.y);
-		myVector[2]->getValue(result.V.z);
+		myVector[0]->getValue(result.x);
+		myVector[1]->getValue(result.y);
+		myVector[2]->getValue(result.z);
 		myVector[3]->getValue(result.w);
 
 		return result;

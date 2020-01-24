@@ -76,7 +76,9 @@ struct Vector4D
 	
     // With assignement
     inline const Vector4D& operator *= ( const Float& fValue );
+	inline const Vector4D& operator *= (const Vector4D& fValue);
     inline const Vector4D& operator /= ( const Float& fValue );
+	inline const Vector4D& operator /= (const Vector4D& other);
 	
 	
 	//// ADD LLC: Peut-etre un jour?

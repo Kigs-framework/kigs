@@ -259,8 +259,8 @@ MEMORYMANAGEMENT_END
 	DECLARE_FULL_CLASS_INFO(myCoreInstance, DictionaryFromJsonUTF16, DictionaryFromJsonUTF16, KigsCore)
 	DECLARE_FULL_CLASS_INFO(myCoreInstance, LocalizationManager, LocalizationManager, KigsCore);
 
-	kstl::vector<CoreItemOperator<kfloat>::SpecificOperator> specificList;
-	CoreItemOperator<kfloat>::SpecificOperator toAdd;
+	kstl::vector<SpecificOperator> specificList;
+	SpecificOperator toAdd;
 	toAdd.myKeyWord = "CoreItemOperatorModifier";
 	toAdd.myCreateMethod = &CoreItemOperatorModifier::create;
 	specificList.push_back(toAdd);

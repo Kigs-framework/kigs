@@ -53,6 +53,7 @@
 		{"Combo": [
 			{"Hermite2D":[4,[0.5,0.0],[0.5,1.0],[-1.0,0.0],[1.0,0.0],"Dock"]},
 			{"Linear1D":[4,0.0,3.14,"RotationAngle"]}]},
+		{ "Function2D": [6,"{0.5+0.4*sin(actionTime()),0.5+0.4*cos(actionTime())}","Dock"] },
 		{"SetValue1D":[1,1,"/Sample5->NeedExit"]}
 ]}
 ]]>

@@ -960,7 +960,7 @@ protected:
 	{
 		if (attr.size() > 6)
 		{
-			if (attr.substr(0, 5) == "eval(")
+			if (attr.substr(0, 4) == "eval")
 			{
 				if (attr[attr.size() - 1] == ')')
 				{

@@ -38,38 +38,38 @@ void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiable
 	MiniFactoryRegister(myPrivateMiniFactory,"Linear1D",CoreActionLinear<kfloat>);
 	MiniFactoryRegister(myPrivateMiniFactory,"Linear2D",CoreActionLinear<Point2D>);
 	MiniFactoryRegister(myPrivateMiniFactory,"Linear3D",CoreActionLinear<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"Linear4D",CoreActionLinear<Quaternion>);
+	MiniFactoryRegister(myPrivateMiniFactory,"Linear4D",CoreActionLinear<Vector4D>);
 	MiniFactoryRegister(myPrivateMiniFactory,"Hermite1D",CoreActionHermite<kfloat>);
 	MiniFactoryRegister(myPrivateMiniFactory,"Hermite2D",CoreActionHermite<Point2D>);
 	MiniFactoryRegister(myPrivateMiniFactory,"Hermite3D",CoreActionHermite<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"Hermite4D",CoreActionHermite<Quaternion>);
+	MiniFactoryRegister(myPrivateMiniFactory,"Hermite4D",CoreActionHermite<Vector4D>);
 	MiniFactoryRegister(myPrivateMiniFactory,"SetValueString", CoreActionSetValue<kstl::string>);
 	MiniFactoryRegister(myPrivateMiniFactory,"SetValue1D",CoreActionSetValue<kfloat>);
 	MiniFactoryRegister(myPrivateMiniFactory,"SetValue2D",CoreActionSetValue<Point2D>);
 	MiniFactoryRegister(myPrivateMiniFactory,"SetValue3D",CoreActionSetValue<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"SetValue4D",CoreActionSetValue<Quaternion>);
+	MiniFactoryRegister(myPrivateMiniFactory,"SetValue4D",CoreActionSetValue<Vector4D>);
 
 	// Keyframe
 	MiniFactoryRegister(myPrivateMiniFactory,"KeyFrame1D",CoreActionKeyFrame<kfloat>);
 	MiniFactoryRegister(myPrivateMiniFactory,"KeyFrame2D",CoreActionKeyFrame<Point2D>);
 	MiniFactoryRegister(myPrivateMiniFactory,"KeyFrame3D",CoreActionKeyFrame<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"KeyFrame4D",CoreActionKeyFrame<Quaternion>);
+	MiniFactoryRegister(myPrivateMiniFactory,"KeyFrame4D",CoreActionKeyFrame<Vector4D>);
 
 	// action using "direct" value access
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectLinear1D",CoreActionDirectLinear<kfloat>);
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectLinear2D",CoreActionDirectLinear<Point2D>);
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectLinear3D",CoreActionDirectLinear<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectLinear4D",CoreActionDirectLinear<Quaternion>);
+	MiniFactoryRegister(myPrivateMiniFactory,"DirectLinear4D",CoreActionDirectLinear<Vector4D>);
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectHermite1D",CoreActionDirectHermite<kfloat>);
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectHermite2D",CoreActionDirectHermite<Point2D>);
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectHermite3D",CoreActionDirectHermite<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectHermite4D",CoreActionDirectHermite<Quaternion>);
+	MiniFactoryRegister(myPrivateMiniFactory,"DirectHermite4D",CoreActionDirectHermite<Vector4D>);
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValueFloat1D",CoreActionDirectSetValue<kfloat>);
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValueInt1D",CoreActionDirectSetValue<int>);
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValueBool1D",CoreActionDirectSetValue<bool>);
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValue2D",CoreActionDirectSetValue<Point2D>);
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValue3D",CoreActionDirectSetValue<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValue4D",CoreActionDirectSetValue<Quaternion>);
+	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValue4D",CoreActionDirectSetValue<Vector4D>);
 
 	// direct key frame
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectKeyFrameFloat1D",CoreActionDirectKeyFrame<kfloat>);
@@ -77,7 +77,7 @@ void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiable
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectKeyFrameBool1D",CoreActionDirectKeyFrame<bool>);
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectKeyFrame2D",CoreActionDirectKeyFrame<Point2D>);
 	MiniFactoryRegister(myPrivateMiniFactory,"DirectKeyFrame3D",CoreActionDirectKeyFrame<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectKeyFrame4D",CoreActionDirectKeyFrame<Quaternion>);
+	MiniFactoryRegister(myPrivateMiniFactory,"DirectKeyFrame4D",CoreActionDirectKeyFrame<Vector4D>);
 
 	MiniFactoryRegister(myPrivateMiniFactory,"RemoveFromParent",CoreActionRemoveFromParent);
 	MiniFactoryRegister(myPrivateMiniFactory,"Notification",CoreActionSendMessage);
@@ -95,8 +95,8 @@ void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiable
 	MiniFactoryRegister(myPrivateMiniFactory, "Function3D", CoreActionFunction3D);
 	MiniFactoryRegister(myPrivateMiniFactory, "Function4D", CoreActionFunction4D);
 
-	kstl::vector<CoreItemOperator<kfloat>::SpecificOperator> specificList;
-	CoreItemOperator<kfloat>::SpecificOperator toAdd;
+	kstl::vector<SpecificOperator> specificList;
+	SpecificOperator toAdd;
 	toAdd.myKeyWord = "actionTime";
 	toAdd.myCreateMethod = &ActionTimeOperator<kfloat>::create;
 	specificList.push_back(toAdd);

@@ -28,23 +28,25 @@ extern void	ReleaseCoreItemOperatorContext();
 
 typedef     CoreVector* (*CoreItemOperatorCreateMethod)();
 
+class SpecificOperator
+{
+public:
+	kstl::string	myKeyWord;	// 3 letter keyword
+	CoreItemOperatorCreateMethod	myCreateMethod;
+};
+
+class ConstructContext
+{
+public:
+	kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myMap;
+	CoreModifiable* myTarget;
+	kstl::vector<SpecificOperator>* mySpecificList;
+};
+
 template<typename operandType>
 class CoreItemOperator : public CoreVector
 {
 public:
-
-	class SpecificOperator
-	{
-	public:
-		kstl::string	myKeyWord;	// 3 letter keyword
-		CoreItemOperatorCreateMethod	myCreateMethod;
-	};
-	class ConstructContext
-	{
-	public:
-		kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myMap;
-		CoreModifiable*											myTarget;
-	};
 
 	virtual inline operator bool() const
 	{
@@ -96,6 +98,13 @@ public:
 		return result;
 	}
 
+	virtual inline operator Vector4D() const
+	{
+		Vector4D result;
+		KIGS_ERROR("cast operator called on base CoreItem", 2);
+		return result;
+	}
+
 	static void	defaultOperandTypeInit(operandType& _value)
 	{
 		_value = (operandType)0;
@@ -104,12 +113,12 @@ public:
 	static CoreItemSP	Construct(const kstl::string& formulae, CoreModifiable* target, kstl::vector<SpecificOperator>* specificList=0);
 	static CoreItemSP	Construct(const kstl::string& formulae, CoreModifiable* target, const kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap);
 	static void	ConstructContextMap(kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList = 0);
+	static CoreItemSP	Parse(AsciiParserUtils& formulae, ConstructContext& context);
 
 protected:
 
 	static bool	CheckAffectation(char prevChar, int priority, AsciiParserUtils& block, kstl::vector<CoreItemOperatorStruct>& OperatorList);
 
-	static CoreItemSP	Parse(AsciiParserUtils& formulae, ConstructContext& context);
 	static kstl::vector<CoreItemOperatorStruct>	FindFirstLevelOperators(AsciiParserUtils& formulae, ConstructContext& context);
 	static kstl::vector<CoreItemOperatorStruct>	FindFirstLevelSeparator(AsciiParserUtils& formulae, ConstructContext& context);
 	static kstl::vector<kstl::string>	FindFirstLevelParams(AsciiParserUtils& formulae, ConstructContext& context);
@@ -192,6 +201,13 @@ inline void	CoreItemOperator<Point3D>::defaultOperandTypeInit(Point3D& _value)
 {
 	_value.Set(0.0f, 0.0f,0.0f);
 }
+
+template<>
+inline void	CoreItemOperator<Vector4D>::defaultOperandTypeInit(Vector4D& _value)
+{
+	_value.Set(0.0f, 0.0f, 0.0f,0.0f);
+}
+
 
 
 // just evaluate each operand and return the last evaluated one
@@ -922,6 +938,17 @@ inline bool CoreModifiableAttributeOperator<Point3D>::operator == (const CoreIte
 	Point3D	othervalue;
 	other.getValue(othervalue);
 	Point3D	thisvalue;
+	getValue(thisvalue);
+
+	return (thisvalue == othervalue);
+}
+
+template<>
+inline bool CoreModifiableAttributeOperator<Vector4D>::operator == (const CoreItem& other) const
+{
+	Vector4D	othervalue;
+	other.getValue(othervalue);
+	Vector4D	thisvalue;
 	getValue(thisvalue);
 
 	return (thisvalue == othervalue);

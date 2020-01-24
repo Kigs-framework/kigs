@@ -156,9 +156,9 @@ CoreItem::operator Point2D() const
 	return result;
 }
 
-CoreItem::operator Quaternion() const
+CoreItem::operator Vector4D() const
 {
-	Quaternion result;
+	Vector4D result;
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
 	return result;
 }
@@ -267,6 +267,15 @@ CoreItemSP::CoreItemSP(const Point3D& value)
 	(*myPointer).set("", CoreItemSP(value.z));
 }
 
+CoreItemSP::CoreItemSP(const Vector4D& value)
+{
+	myPointer = new CoreVector();
+	(*myPointer).set("", CoreItemSP(value.x));
+	(*myPointer).set("", CoreItemSP(value.y));
+	(*myPointer).set("", CoreItemSP(value.z));
+	(*myPointer).set("", CoreItemSP(value.w));
+}
+
 // empty assignement with value
 CoreItem& CoreItem::operator=(const bool& other)
 {
@@ -304,6 +313,11 @@ CoreItem& CoreItem::operator=(const Point2D& other)
 	return *this;
 }
 CoreItem& CoreItem::operator=(const Point3D& other)
+{
+	KIGS_WARNING("trying to assign base CoreItem with value", 2);
+	return *this;
+}
+CoreItem& CoreItem::operator=(const Vector4D& other)
 {
 	KIGS_WARNING("trying to assign base CoreItem with value", 2);
 	return *this;
