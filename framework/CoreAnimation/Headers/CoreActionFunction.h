@@ -63,7 +63,7 @@ protected:
 
 			if (myHasUniqueMultidimensionnalFunc)
 			{
-				result = (dataType)myFunctions[0];
+				result = myFunctions[0].operator dataType();
 			}
 			else
 			{

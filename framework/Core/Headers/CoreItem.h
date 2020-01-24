@@ -51,6 +51,8 @@ public:
 
 	inline operator float() const;
 
+	inline operator double() const;
+
 	inline operator int() const;
 
 	inline operator unsigned int() const;
@@ -265,6 +267,8 @@ public:
 
 	virtual operator kfloat() const;
 
+	virtual operator double() const;
+
 	virtual operator int() const;
 
 	virtual operator unsigned int() const;
@@ -276,11 +280,8 @@ public:
 	virtual operator kstl::string() const;
 
 	virtual operator usString() const;
-
 	virtual operator Point2D() const;
-
 	virtual operator Point3D() const;
-
 	virtual operator Vector4D() const;
 
 	bool getValue(bool& _value) const {
@@ -313,11 +314,11 @@ public:
 		return true; }
 
 	bool getValue(Point3D& _value) const {
-		_value = (Point3D)*this;
+		_value = this->operator Point3D();
 		return true; }
 
 	bool getValue(Vector4D& _value) const {
-		_value = (Vector4D)*this;
+		_value = this->operator Vector4D();
 		return true;
 	}
 
@@ -466,6 +467,11 @@ inline CoreItemSP::operator bool() const
 inline CoreItemSP::operator float() const
 {
 	return myPointer->operator kfloat();
+}
+
+inline CoreItemSP::operator double() const
+{
+	return myPointer->operator double();
 }
 
 inline CoreItemSP::operator int() const

@@ -105,8 +105,6 @@ void Timer::SetTime(double t)
 {
 	auto t1 = Clock::now();
 	auto dt = t1 - myT0;
-
-	long long nanot =(long long)( t * 1'000'000'000.0 ) ;
 	
 	long long diff_t = t-dt.count();
 	
