@@ -125,6 +125,12 @@ CoreItem::operator kfloat() const
 	return 0.0f;
 }
 
+CoreItem::operator double() const
+{
+	KIGS_ERROR("cast operator called on base CoreItem", 2);
+	return 0.0;
+}
+
 CoreItem::operator int() const
 {
 	KIGS_ERROR("cast operator called on base CoreItem", 2);

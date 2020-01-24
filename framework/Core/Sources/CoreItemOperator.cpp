@@ -1335,7 +1335,7 @@ CoreModifiableAttributeOperator<Point2D>::operator Point2D() const
 			
 			if (!attribute)
 			{
-				Point2D val;
+				Point2D val((Point2D)(*itOperand));
 				((*itOperand).get())->getValue(val);
 				attribute = new maVect2DF(*myTarget, false, LABEL_AND_ID(Val), &(val.x));
 			}
@@ -1415,7 +1415,7 @@ CoreModifiableAttributeOperator<Point3D>::operator Point3D() const
 
 			if (!attribute)
 			{
-				Point3D val = (Point3D)(*(*itOperand).get());
+				Point3D val = (Point3D)(*itOperand);
 				attribute = new maVect3DF(*myTarget, false, LABEL_AND_ID(Val), &(val.x));
 			}
 			myAttributes.push_back(attribute);
@@ -1492,7 +1492,7 @@ CoreModifiableAttributeOperator<Vector4D>::operator Vector4D() const
 
 			if (!attribute)
 			{
-				Vector4D val = (Vector4D)(*(*itOperand).get());
+				Vector4D val((*itOperand)->operator Vector4D());
 				attribute = new maVect4DF(*myTarget, false, LABEL_AND_ID(Val), &(val.x));
 			}
 			myAttributes.push_back(attribute);
@@ -1684,7 +1684,7 @@ DynamicVariableOperator<Vector4D>::operator Vector4D() const
 	CoreItem* var = (CoreItem*)getVariable(myVarName);
 	if (var)
 	{
-		return (Vector4D)(*var);
+		return var->operator Vector4D();
 	}
 	return Vector4D(0, 0, 0,0);
 }
