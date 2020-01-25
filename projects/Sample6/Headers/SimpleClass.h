@@ -15,10 +15,12 @@ protected:
 	// declare two signals
 	SIGNALS(SendSignal1,SendSignal2);
 
-	void	doSomething();
+	// Wrapped method
 	void	doSomethingElse();
+	WRAP_METHODS(doSomethingElse);
 
-	WRAP_METHODS(doSomething, doSomethingElse);
+	// fixed prototype CoreModifiable method
+	DECLARE_METHOD(doSomething);
 
 };
 

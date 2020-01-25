@@ -140,7 +140,7 @@ bool	CoreActionEmitSignal::protectedUpdate(kdouble time)
 	if ((time + TimeEpsilon) >= (myStartTime + myDuration))
 	{
 		setIsDone();
-		myTarget->Emit(mySignal, myTarget, myParam);
+		myTarget->EmitSignal(mySignal, myTarget, myParam);
 		return true;
 	}
 	return false;

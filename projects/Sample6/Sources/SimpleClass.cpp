@@ -10,7 +10,7 @@ IMPLEMENT_CONSTRUCTOR(SimpleClass)
 	
 }
 
-void	SimpleClass::doSomething()
+DEFINE_METHOD(SimpleClass, doSomething)
 {
 	std::cout << "doSomething method called" << std::endl;
 
@@ -18,12 +18,15 @@ void	SimpleClass::doSomething()
 	EmitSignal(Signals::SendSignal1,32,64);
 
 	EmitSignal(Signals::SendSignal2, 32, 64);
+
+	return true;
 }
 
 void	SimpleClass::doSomethingElse()
 {
 	std::cout << "doSomethingElse method called" << std::endl;
 
+	// post a notification "doSomethingElseNotif" 
 	KigsCore::GetNotificationCenter()->postNotificationName("doSomethingElseNotif", this);
 }
 

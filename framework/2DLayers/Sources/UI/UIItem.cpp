@@ -124,13 +124,13 @@ bool UIItem::CanInteract(v2f pos, bool must_contain)
 	return myIsEnabled && mybIsTouchable && !myIsHidden && !IsHiddenFlag() && (!must_contain || ContainsPoint(pos.x, pos.y)) && IsInClip(pos) ;
 }
 
-bool UIItem::TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) { Emit("MouseMove", this, over, MouseDeltaX, MouseDeltaY); return false; }
-void UIItem::TriggerMouseSwipe(int idxButton, float Vx, float Vy) { Emit("MouseSwipe", this, idxButton, Vx, Vy); }
-void UIItem::TriggerPinch(float Dx, float Dy, float DZ) { Emit("MousePinch", this, Dx, Dy, DZ); }
+bool UIItem::TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) { EmitSignal("MouseMove", this, over, MouseDeltaX, MouseDeltaY); return false; }
+void UIItem::TriggerMouseSwipe(int idxButton, float Vx, float Vy) { EmitSignal("MouseSwipe", this, idxButton, Vx, Vy); }
+void UIItem::TriggerPinch(float Dx, float Dy, float DZ) { EmitSignal("MousePinch", this, Dx, Dy, DZ); }
 
 bool UIItem::TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool& catchClick)
 {
-	Emit("MouseClick", this, buttonState, buttonEvent, X, Y, &catchClick);
+	EmitSignal("MouseClick", this, buttonState, buttonEvent, X, Y, &catchClick);
 	return false;
 }
 

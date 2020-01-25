@@ -217,7 +217,7 @@ constexpr u32 UserFlagsMask = 0xFFFFFFFF<< UserFlagsShift;
 #define SIGNAL_ENUM_CONTENT(a) a, 
 #define SIGNAL_PUSH_BACK(a) signals.push_back(#a);
 
-#define SIGNAL_CASE(a) case Signals::a: return Emit(#a, std::forward<T>(params)...); break;
+#define SIGNAL_CASE(a) case Signals::a: return CoreModifiable::EmitSignal(#a, std::forward<T>(params)...); break;
 
 #define SIGNALS(...)\
 enum class Signals : u32\
@@ -421,14 +421,15 @@ public:
 	template<typename... T>
 	bool SimpleCall(KigsID methodName, T&&... params);
 
-	void Connect(KigsID signal, CoreModifiable* other, KigsID slot CONNECT_PARAM_DEFAULT);
-	void Disconnect(KigsID signal, CoreModifiable* other, KigsID slot);
+
 
 	// Emit a signal
-	bool Emit(KigsID methodNameID);
+	bool EmitSignal(const KigsID& signalID);
 	// Emit a signal with a set of arguement. Need to include AttributePacking.h
 	template<typename... T>
-	bool Emit(KigsID methodName, T&&... params);
+	bool EmitSignal(const KigsID& signalID, T&&... params);
+	//  Emit a signal to CoreModifiable methods
+	bool EmitSignal(const KigsID& signalID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0);
 
 	// Avoid using ! call a method, with a list of CoreModifiableAttribute as parameters
 	bool CallMethod(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0, CoreModifiable* sender = 0);
@@ -441,8 +442,7 @@ public:
 	bool CallMethod(KigsID methodNameID, CoreModifiable& params, void* privateParams = 0, CoreModifiable* sender = 0) {
 		std::vector<CoreModifiableAttribute*> p = (std::vector<CoreModifiableAttribute*>) params;
 		return CallMethod(methodNameID, p, privateParams, sender); }
-	// Avoid using ! emit a signal, with a list of CoreModifiableAttribute as parameters
-	bool CallEmit(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0);
+
 
 
 	/// ID
@@ -819,6 +819,9 @@ public:
 
 protected:
 
+	void Connect(KigsID signal, CoreModifiable* other, KigsID slot CONNECT_PARAM_DEFAULT);
+	void Disconnect(KigsID signal, CoreModifiable* other, KigsID slot);
+
 	// check if we can destroy object
 	virtual bool checkDestroy() override;
 
@@ -1012,6 +1015,7 @@ private:
 	friend class CoreModifiableAttribute;
 	friend class IMEditor;
 	friend class CoreItemSP;
+	friend class KigsCore;
 
 	static void	ReleaseLoadedItems(std::vector<CMSP> &loadedItems);
 

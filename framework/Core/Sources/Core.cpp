@@ -515,11 +515,12 @@ void		KigsCore::Disconnect(CoreModifiable* a, KigsID asignalID, CoreModifiable* 
 	//Instance()->myConnectionManager->Disconnect(a, asignalID, b, bslotID);
 }
 
+/*
 bool		KigsCore::Emit(CoreModifiable* a, KigsID asignalID, kstl::vector<CoreModifiableAttribute*>& params, void* privateParams)
 {
 	return a->CallEmit(asignalID, params, privateParams);
 	//return Instance()->myConnectionManager->Emit(a, asignalID, params, privateParams);
-}
+}*/
 
 /*
 //! return an instance of the given class type with given name

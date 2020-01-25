@@ -1151,7 +1151,7 @@ void setup_bindings(lua_State* lua)
 		.addFunction("GetModule", [](const char* id) { return (CoreModifiable*)KigsCore::GetModule((std::string)id); })
 		.addFunction("PostNotification", [](const char* notif, CoreModifiable* sender, CoreModifiable* data) 
 					 {
-					 KigsCore::GetNotificationCenter()->postNotificationName(notif, sender, data);
+					 KigsCore::GetNotificationCenter()->postNotificationName((std::string)notif, sender, data);
 					 }, LUA_ARGS(const char*, _opt<CoreModifiable*>, _opt<CoreModifiable*>))
 	
 	

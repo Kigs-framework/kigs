@@ -4,6 +4,14 @@
 #include "SimpleClass.h"
 #include <iostream>
 
+// Kigs framework Sample6 project
+// Signal / Slot / Notifications features :
+// - declare signals
+// - emit signals
+// - connect to signals
+// - add/remove notification observer
+// - post notification
+
 IMPLEMENT_CLASS_INFO(Sample6);
 
 IMPLEMENT_CONSTRUCTOR(Sample6)
@@ -26,9 +34,27 @@ void	Sample6::ProtectedInit()
 	// Load AppInit, GlobalConfig then launch first sequence
 	DataDrivenBaseApplication::ProtectedInit();
 
+	// ask instance factory to add a connection on each created SimpleClass 
+	// for the PreInit signal to call this OnSimpleClassPreInit
+	KigsCore::Instance()->GetInstanceFactory()->addModifiableCallback("PreInit", this, "OnSimpleClassPreInit", "SimpleClass");
+
 	CMSP simpleclass = KigsCore::GetInstanceOf("simpleclass", "SimpleClass");
 	simpleclass->Init();
 	addItem(simpleclass);
+
+	// get the list of SimpleClass signals
+	std::cout << "simpleclass instance has following signals available" << std::endl;
+	auto signallist=simpleclass->GetSignalList();
+	for (const auto& s : signallist)
+	{
+#ifdef KEEP_NAME_AS_STRING
+		std::cout << s._id_name << std::endl;
+#else
+		std::cout << s._id << std::endl;
+#endif
+	}
+
+	std::cout << std::endl;
 
 	// add an observer on notification "doSomethingElseNotif" 
 	// call CatchNotifMethod when notif is received
@@ -43,6 +69,15 @@ void	Sample6::ProtectedInit()
 		});
 
 
+	// remove instance factory auto connection previously set
+	KigsCore::Instance()->GetInstanceFactory()->removeModifiableCallback("PreInit", this, "OnSimpleClassPreInit");
+
+
+}
+
+void    Sample6::OnSimpleClassPreInit()
+{
+	std::cout << "A simple class instance is about to be initialized" << std::endl;
 }
 
 
@@ -99,7 +134,17 @@ void	Sample6::ProtectedUpdate()
 	DataDrivenBaseApplication::ProtectedUpdate();
 
 	// emit a "runtime" signal (not declared with the SIGNALS macro) 
-	Emit("doSomething");
+	EmitSignal("doSomething");
+
+	// disconnect this so SendSignal1 will not be catched anymore
+	CoreModifiable* simplecass=GetInstanceByPath("simpleclass");
+	KigsCore::Disconnect(simplecass, "SendSignal1", this, "MethodWithParams");
+
+	static int loopcount = 0;
+	if (++loopcount > 5)
+	{
+		myNeedExit = true;
+	}
 }
 
 void	Sample6::ProtectedClose()

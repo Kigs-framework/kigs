@@ -10,9 +10,13 @@ public:
 
 protected:
 
+	// Wrapped methods
 	void	MethodWithParams(float p1, float p2);
-	WRAP_METHODS(MethodWithParams);
+	void    OnSimpleClassPreInit();
 
+	WRAP_METHODS(MethodWithParams, OnSimpleClassPreInit);
+
+	// Fixed prototype 
 	DECLARE_METHOD(CatchNotifMethod);
 
 	void	ProtectedInit() override;
