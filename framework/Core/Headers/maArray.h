@@ -321,7 +321,7 @@ public:
 		if (nbColumns < 3) return *this;
 		at(0, 0) = (T)pt.x;
 		at(0, 1) = (T)pt.y;
-		at(0, 3) = (T)pt.z;
+		at(0, 2) = (T)pt.z;
 		return *this; 
 	}
 
@@ -329,8 +329,8 @@ public:
 		if (nbColumns < 4) return *this;
 		at(0, 0) = (T)pt.x;
 		at(0, 1) = (T)pt.y;
-		at(0, 3) = (T)pt.z;
-		at(0, 4) = (T)pt.w;
+		at(0, 2) = (T)pt.z;
+		at(0, 3) = (T)pt.w;
 		return *this;
 	}
 

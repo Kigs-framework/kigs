@@ -129,7 +129,7 @@ void HTTPAsyncRequest::protectedProcess()
 		}
 		else // not a call but a notification
 		{
-			KigsCore::GetNotificationCenter()->postNotificationName(myNotificationName, this, myReceivedBuffer->buffer());
+			KigsCore::GetNotificationCenter()->postNotificationName(myNotificationName.const_ref(), this, myReceivedBuffer->buffer());
 		}
 	}
 	else
