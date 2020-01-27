@@ -530,7 +530,7 @@ bool CoreModifiable::SimpleCall(KigsID methodNameID, T&&... params)
 
 
 template<typename... T>
-inline bool CoreModifiable::Emit(KigsID methodNameID, T&&... params)
+inline bool CoreModifiable::EmitSignal(const KigsID& SignalID, T&&... params)
 {
 	if (!isFlagAllowChanges()) return false;
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
@@ -538,7 +538,7 @@ inline bool CoreModifiable::Emit(KigsID methodNameID, T&&... params)
 
 	if (!mLazyContent) return false;
 
-	auto it = GetLazyContent()->ConnectedTo.find(methodNameID);
+	auto it = GetLazyContent()->ConnectedTo.find(SignalID);
 	if(it != GetLazyContent()->ConnectedTo.end())
 	{
 		std::vector<std::pair<KigsID, CoreModifiable*>> copy = it->second;

@@ -474,7 +474,7 @@ void NotificationCenter::protectedRemoveObserver(CheckUniqueObject& observer,con
 	}
 }
 
-void NotificationCenter::postNotificationName(unsigned int notificationID,kstl::vector<CoreModifiableAttribute*>& params,CoreModifiable* sender,void* data)
+void NotificationCenter::postNotificationName(const KigsID& notificationID,kstl::vector<CoreModifiableAttribute*>& params,CoreModifiable* sender,void* data)
 {
 	std::unique_lock<std::recursive_mutex> lk{ mMutex };
 	if(myPostLevel == 0)
@@ -484,7 +484,7 @@ void NotificationCenter::postNotificationName(unsigned int notificationID,kstl::
 	myPostLevel++;
 	// search if some observers exists for this msg
 
-	if(myNotificationMap.find(notificationID) != myNotificationMap.end())
+	if(myNotificationMap.find(notificationID.toUInt()) != myNotificationMap.end())
 	{
 		// add notificationID to params
 		CoreModifiableAttribute* notificationIDAttr = 0;
@@ -498,13 +498,13 @@ void NotificationCenter::postNotificationName(unsigned int notificationID,kstl::
 
 		while(!endj)
 		{
-			NotificationCenter::ObserverStructVector& currentObsStructV=myNotificationMap[notificationID][j];
+			NotificationCenter::ObserverStructVector& currentObsStructV=myNotificationMap[notificationID.toUInt()][j];
 
 			CoreModifiable* currentobserver=(CoreModifiable*)(RefCountedBaseClass*)currentObsStructV.myObserver;
 
 			if (notificationIDAttr == 0)
 			{
-				notificationIDAttr = new maUInt(*currentobserver, false, LABEL_AND_ID(NotificationID), notificationID);
+				notificationIDAttr = new maUInt(*currentobserver, false, LABEL_AND_ID(NotificationID), notificationID.toUInt());
 				params.push_back(notificationIDAttr);
 			}
 
@@ -602,7 +602,7 @@ void NotificationCenter::postNotificationName(unsigned int notificationID,kstl::
 			}
 
 			j++;
-			if(j>=myNotificationMap[notificationID].size())
+			if(j>=myNotificationMap[notificationID.toUInt()].size())
 			{
 				endj=true;
 			}

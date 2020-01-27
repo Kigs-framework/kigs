@@ -169,7 +169,7 @@ public:
 	// remove connection between a signal and a slot 
 	static void		Disconnect(CoreModifiable* a, KigsID asignalID, CoreModifiable* b, KigsID bslotID);
 
-	static bool		Emit(CoreModifiable* a, KigsID asignalID, kstl::vector<CoreModifiableAttribute*>& params, void* privateParams);
+/*	static bool		Emit(CoreModifiable* a, KigsID asignalID, kstl::vector<CoreModifiableAttribute*>& params, void* privateParams);
 
 	template<typename... T>
 	static inline bool		Emit(CoreModifiable* a, KigsID asignalID, T&&... args)
@@ -177,7 +177,7 @@ public:
 		return a->Emit(asignalID, std::forward<T>(args)...);
 		//return Instance()->myConnectionManager->Emit(a, asignalID, std::forward<T>(args)...);
 	}
-
+	*/
 	/**
 	* \fn			kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	GetDefaultCoreItemOperatorConstructMap();
 	* \brief		return the map for CoreItemOperator creation in general purpose case

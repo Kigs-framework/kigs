@@ -609,20 +609,20 @@ bool CoreModifiable::SimpleCall(KigsID methodNameID)
 	return CallMethod(methodNameID, ((std::vector<CoreModifiableAttribute*>&)(attr)));
 }
 
-bool CoreModifiable::Emit(KigsID methodNameID)
+bool CoreModifiable::EmitSignal(const KigsID& signalID)
 {
 	std::vector<CoreModifiableAttribute*>	empty;
-	return CallEmit(methodNameID, empty);
+	return EmitSignal(signalID, empty);
 }
 
-bool CoreModifiable::CallEmit(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams)
+bool CoreModifiable::EmitSignal(const KigsID& signalID, std::vector<CoreModifiableAttribute*>& params, void* privateParams)
 {
 	if (!isFlagAllowChanges()) return false;
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	if (!isFlagAllowChanges()) return false;
 	if (!mLazyContent) return false;
 	auto& connected_to = GetLazyContent()->ConnectedTo;
-	auto it = connected_to.find(methodNameID);
+	auto it = connected_to.find(signalID);
 	if(it != connected_to.end())
 	{
 		std::vector<std::pair<KigsID, CoreModifiable*>> copy = it->second;
