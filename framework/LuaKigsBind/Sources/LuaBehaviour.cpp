@@ -11,6 +11,7 @@
 #include <ModuleBase.h>
 #include <LuaKigsBindModule.h>
 #include <ModuleFileManager.h>
+#include "LuaBindings.h"
 
 
 using namespace LuaIntf;
@@ -176,6 +177,27 @@ void	LuaBehaviour::InitModifiable()
 				myLuaModule->AddToInit(this);
 			}
 			
+			// search for methods to add to CoreModifiable
+			if (myTarget)
+			{
+				LuaRef table(L, -1);
+
+				for (auto& e : table) {
+					std::string key = e.key<std::string>();
+					if (key.substr(0, 10) == "CoreMethod")
+					{
+						std::string methodName = key.substr(10, key.size() - 10);
+						if (methodName.length())
+						{
+							LuaRef value = e.value<LuaRef>();
+							if (value.isFunction())
+							{
+								myTarget->InsertMethod(methodName, static_cast<RefCountedClass::ModifiableMethod>(&LuaBehaviour::CallLuaMethod), key);
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		myAutoUpdate.changeNotificationLevel(Owner);
@@ -268,6 +290,102 @@ DEFINE_METHOD(LuaBehaviour, ReloadScript)
 	return false;
 }
 
+
+bool    LuaBehaviour::SafePCall(int nb_args, int nb_ret)
+{
+	LuaImGuiStackProtector protector;
+	if (lua_pcall(L, nb_args, nb_ret, 0) != 0)
+	{
+		KIGS_MESSAGE(lua_tostring(L, -1));
+		lua_pop(L, 1);
+		return false;
+	}
+	return true;
+}
+
+DEFINE_METHOD(LuaBehaviour, CallLuaMethod)
+{
+	if (params.size())
+	{
+		kstl::string funcName = ((maString*)params[0])->const_ref();
+
+		int top = L.top();
+		L.getField(-1, funcName.c_str());
+
+		if (L.isNil(-1))
+		{
+			L.pop(2); // pop nil and method table
+			return false;
+		}
+
+		// check for result
+		CoreModifiableAttribute* result = 0;
+
+		int paramCount = 1; // at least one param for this
+		int returnCount = 0;
+		// push params but not result
+		kstl::vector<CoreModifiableAttribute*>::iterator	itparam = params.begin() + 1; // skip function name
+		kstl::vector<CoreModifiableAttribute*>::iterator	itend = params.end();
+		while (itparam != itend)
+		{
+			if ((*itparam)->getLabelID() == "Result")
+			{
+				result = (*itparam);
+				returnCount++;
+			}
+			else
+			{
+				PushAttribute(L, *itparam);
+				paramCount++;
+			}
+			++itparam;
+		}
+
+		LuaImGuiStackProtector protector;
+		if (returnCount == 0)
+			returnCount = LUA_MULTRET;
+
+		if (SafePCall(paramCount, returnCount))
+		{
+			int nb_results = L.top() - top;
+			if (returnCount == nb_results)
+			{
+				if (!L.isNil(-1))
+				{
+					if (returnCount > 0)
+					{
+						if (!L.isNumber(-1)) // should be number or string
+						{
+							result->setValue(L.toString(-1));
+						}
+						else
+						{
+							result->setValue(L.toNumber(-1));
+						}
+					}
+					else if (L.isBool(-1))
+					{
+						bool b = L.toBool(-1);
+						L.pop();
+						return b;
+					}
+				}
+			}
+			else
+			{
+				for (int i = 0; i < nb_results; ++i)
+				{
+					params.push_back(MakeAttributeFromLuaStack(L, -nb_results + i));
+				}
+			}
+			L.pop(nb_results);
+		}
+
+
+		L.pop(); // Pop method table;
+	}
+	return false;
+}
 
 void LuaBehaviour::OnUpdateCallback(CoreModifiable* localthis, CoreModifiable* timer)
 {

@@ -16,7 +16,7 @@ class SmartPointer
 public:
 	using ValueType = smartPointOn;
 	
-	SmartPointer() : myPointer(0) {};
+	SmartPointer() : myPointer(nullptr) {};
 	SmartPointer(std::nullptr_t) : SmartPointer() {};
 
 	// DOES NOT GET REF!
@@ -30,17 +30,17 @@ public:
 		if (myPointer)
 		{
 			myPointer->Destroy();
-			myPointer = 0;
+			myPointer = nullptr;
 		}
 	}
 
 	template<typename smartPointOnOther>
-	SmartPointer(const SmartPointer<smartPointOnOther>& smcopy) : myPointer(0)
+	SmartPointer(const SmartPointer<smartPointOnOther>& smcopy) : myPointer(nullptr)
 	{
 		*this = smcopy;
 	}
 
-	SmartPointer(const SmartPointer& other) : myPointer(0)
+	SmartPointer(const SmartPointer& other) : myPointer(nullptr)
 	{
 		*this = other;
 	}
@@ -49,7 +49,7 @@ public:
 	SmartPointer(SmartPointer&& other) noexcept
 	{
 		myPointer = other.myPointer;
-		other.myPointer = 0;
+		other.myPointer = nullptr;
 	}
 
 
@@ -59,7 +59,7 @@ public:
 
 	bool	isNil() const
 	{
-		return myPointer == 0;
+		return myPointer == nullptr;
 	}
 
 	/*
@@ -92,7 +92,7 @@ public:
 	{
 		if (myPointer) myPointer->Destroy();
 		myPointer = smmove.myPointer;
-		smmove.myPointer = 0;
+		smmove.myPointer = nullptr;
 		return *this;
 	}
 
