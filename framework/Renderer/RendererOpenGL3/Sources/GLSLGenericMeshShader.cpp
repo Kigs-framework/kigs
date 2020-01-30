@@ -5,6 +5,7 @@
 #include "RendererDefines.h"
 #include "Camera.h"
 #include "Platform/Renderer/OpenGLInclude.h"
+#include "Scene3D.h"
 
 #ifdef WUP
 extern bool gIsHolographic;
@@ -403,9 +404,10 @@ void	API3DGenericMeshShader::ChooseShader(TravState* state, unsigned int attribF
 #endif
 
 	// then suppose 4 bits per light type for light count
-	int mySpotLightCount = renderer->getSpotLightCount();
-	int myDirLightCount = renderer->getDirLightCount();
-	int myPointLightCount = renderer->getPointLightCount();
+	auto scene = state->GetScene();
+	int mySpotLightCount = scene ? scene->getSpotLightCount() : 0;
+	int myDirLightCount = scene ? scene->getDirLightCount() : 0;
+	int myPointLightCount = scene ? scene->getPointLightCount() : 0;
 
 	flag = CustomizeShaderFlag(state, attribFlag, flag);
 

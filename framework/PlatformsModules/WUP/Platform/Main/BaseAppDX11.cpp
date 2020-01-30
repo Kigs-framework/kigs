@@ -289,22 +289,3 @@ std::optional<mat3x4> App::CreateNewFrameOfReference()
 	}
 	return {};
 }
-/*
-template<typename TResult>
-bool WaitForAsyncOperation(::Windows::Foundation::IAsyncOperation<TResult>^ op)
-{
-	for (;;)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(250));
-		auto s = op->Status;
-		if (s == Windows::Foundation::AsyncStatus::Completed)
-			break;
-
-		else if (op->Status != Windows::Foundation::AsyncStatus::Started)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-*/

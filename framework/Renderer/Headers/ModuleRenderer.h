@@ -781,11 +781,6 @@ public:
 		myDirtyShaderMatrix = 0xffffffff;
 	}
 
-	int getSpotLightCount() { return mySpotLightCount; }
-	int getPointLightCount() { return myPointLightCount; }
-	int getDirLightCount() { return myDirLightCount; }
-
-
 	CoreModifiable*	getDefaultUiShader()
 	{
 		return myDefaultUIShader;
@@ -1087,7 +1082,13 @@ public:
 		myCurrentState->UninitHardwareState();
 	}
 
-	virtual void SetLightsInfo(kstl::set<CoreModifiable*>*lights) {}
+	struct LightCount
+	{
+		int spot;
+		int point;
+		int dir;
+	};
+	virtual LightCount SetLightsInfo(kstl::set<CoreModifiable*>* lights) { return {}; }
 	virtual void SendLightsInfo(TravState* travstate) {}
 	virtual void ClearLightsInfo(TravState* travstate) {}
 
@@ -1164,9 +1165,9 @@ protected:
 
 		//! One UIShader to rule them all
 	CoreModifiable*		myUIShader;
-	int mySpotLightCount = 0;
-	int myPointLightCount = 0;
-	int myDirLightCount = 0;
+	//int mySpotLightCount = 0;
+	//int myPointLightCount = 0;
+	//int myDirLightCount = 0;
 	CoreModifiable*	myDefaultUIShader;
 
 	std::unique_ptr<VertexBufferManagerBase> myVertexBufferManager;

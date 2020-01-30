@@ -55,7 +55,7 @@ IMPLEMENT_CONSTRUCTOR(RendererDX11)
 {
 }
 
-void RendererDX11::SetLightsInfo(kstl::set<CoreModifiable*>*lights)
+ModuleSpecificRenderer::LightCount RendererDX11::SetLightsInfo(kstl::set<CoreModifiable*>*lights)
 {
 	int newNumberOfDirectLights = 0;
 	int newNumberOfPointLights = 0;
@@ -83,9 +83,11 @@ void RendererDX11::SetLightsInfo(kstl::set<CoreModifiable*>*lights)
 		}
 	}
 
-	myDirLightCount = newNumberOfDirectLights;
-	myPointLightCount = newNumberOfPointLights;
-	mySpotLightCount = newNumberOfSpotLights;
+	LightCount  count;
+	count.dir = newNumberOfDirectLights;
+	count.point = newNumberOfPointLights;
+	count.spot = newNumberOfSpotLights;
+	return count;
 }
 
 void RendererDX11::SendLightsInfo(TravState* travstate)

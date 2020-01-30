@@ -307,7 +307,7 @@ public:
 
 	u32 GetActiveTextureChannel() const { return myCurrentTextureChannel; }
 
-	void SetLightsInfo(kstl::set<CoreModifiable*>*lights) override;
+	ModuleSpecificRenderer::LightCount SetLightsInfo(kstl::set<CoreModifiable*>*lights) override;
 	void SendLightsInfo(TravState* travstate) override;
 	void ClearLightsInfo(TravState* travstate) override;
 
