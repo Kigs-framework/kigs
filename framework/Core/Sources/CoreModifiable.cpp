@@ -2067,6 +2067,10 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 	{
 		CoreModifiableAttribute* current = (*i).second;
 		auto type = current->getType();
+
+		if (type == CoreModifiable::ATTRIBUTE_TYPE::RAWPTR)
+			continue;
+
 		if (current->isDynamic() && type == STRING)
 		{
 			std::vector<std::string> splitted = SplitStringByCharacter(current->getLabel()._id_name, '$');
