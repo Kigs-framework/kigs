@@ -19,15 +19,15 @@ m_Texu2(*this,false,LABEL_AND_ID(Texu2),KFLOAT_CONST(1.0f)),
 m_Texv1(*this,false,LABEL_AND_ID(Texv1),KFLOAT_CONST(0.0f)),
 m_Texv2(*this,false,LABEL_AND_ID(Texv2),KFLOAT_CONST(1.0f)),
 m_Color(*this,false,LABEL_AND_ID(Color),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f))
+, myTexture(nullptr)
 {
-	myTexture=0;
-//	m_FlagMask=FLAG_NONE;
+
 }
 
 void Sprite::InitModifiable()
 {
-	//TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-	myTexture = NULL;
+
+	myTexture = nullptr;
 
 	changeTexture(m_TextureFileName);
 	Drawable::InitModifiable();
@@ -35,28 +35,21 @@ void Sprite::InitModifiable()
 
 Sprite::~Sprite()
 {
-	if(myTexture)
-	{
-		myTexture->Destroy();
-	}
+
 }
 
 void Sprite::changeTexture(kstl::string FileName)
 {
-	TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-	if(myTexture)
-	{
-		myTexture->Destroy();
-	}
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+
 	m_TextureFileName = FileName;
-	myTexture=fileManager->GetTexture(m_TextureFileName);
+	myTexture = textureManager->GetTexture(m_TextureFileName);
 	
 	if (myTexture)
 	{
 		myTexture->SetRepeatUV(false, false); //because of bilinear filtering on the borders...
 		if (!myTexture->IsInit()) 
 			myTexture->Init();
-		myTexture->GetRef();
 	}
 }
 

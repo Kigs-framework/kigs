@@ -63,7 +63,7 @@ void    ABaseSystem::SetHierarchy(AObjectSkeletonResource* hierarchy)
 		}
 
         m_ChannelsCount=grp_count;
-        m_pChannelTab=new ABaseChannel*[grp_count];
+        m_pChannelTab=new SP<ABaseChannel>[grp_count];
 
         IntU32 i;
         for(i=0;i<grp_count;++i)
@@ -75,7 +75,7 @@ void    ABaseSystem::SetHierarchy(AObjectSkeletonResource* hierarchy)
 			channelName+="_AnimationChannel_";
 			channelName+=charindex;
 
-            m_pChannelTab[i]=(ABaseChannel*) KigsCore::GetInstanceOf(channelName, ClassName);
+            m_pChannelTab[i]=KigsCore::GetInstanceOf(channelName, ClassName);
             m_pChannelTab[i]->SetGroupID(hierarchy->getUID(i));
 			m_pChannelTab[i]->SetBoneID(hierarchy->getID(i) - 1);
 
@@ -111,12 +111,12 @@ void    ABaseSystem::SetHierarchyFromSystem(ABaseSystem* sys)
         IntU32 grp_count=sys->m_ChannelsCount;
         m_ChannelsCount=grp_count;
 
-        m_pChannelTab=new ABaseChannel*[grp_count];
+        m_pChannelTab=new SP<ABaseChannel>[grp_count];
 
         IntU32 i;
         for(i=0;i<grp_count;++i)
         {
-			ABaseChannel* other_channel=sys->m_pChannelTab[i];
+			ABaseChannel* other_channel=sys->m_pChannelTab[i].get();
 			char	charindex[10];
 			sprintf(charindex,"%d",i);
 
@@ -124,7 +124,7 @@ void    ABaseSystem::SetHierarchyFromSystem(ABaseSystem* sys)
 			channelName+="_AnimationChannel_";
 			channelName+=charindex;
 
-            m_pChannelTab[i]=(ABaseChannel*) KigsCore::GetInstanceOf(channelName, ClassName);
+            m_pChannelTab[i]= KigsCore::GetInstanceOf(channelName, ClassName);
             m_pChannelTab[i]->SetGroupID(other_channel->GetGroupID());
 			m_pChannelTab[i]->SetBoneID(other_channel->GetBoneID());
 
@@ -161,7 +161,7 @@ ABaseChannel*   ABaseSystem::GetChannelByUID(IntU32 g_id)
         {
             if(m_pChannelTab[0]->GetGroupID() == g_id)
             {
-                found=m_pChannelTab[0];
+                found=m_pChannelTab[0].get();
             }
         }
         return found;
@@ -174,11 +174,11 @@ ABaseChannel*   ABaseSystem::GetChannelByUID(IntU32 g_id)
     {
         if(m_pChannelTab[index1]->GetGroupID() == g_id)
         {
-            return     m_pChannelTab[index1];
+            return     m_pChannelTab[index1].get();
         }
         if(m_pChannelTab[index2]->GetGroupID() == g_id)
         {
-            return     m_pChannelTab[index2];
+            return     m_pChannelTab[index2].get();
         }
 
         if((index2-index1) < 2)
@@ -256,7 +256,7 @@ void    ABaseSystem::SortChannels()
         if(index != i)
         {
             // swap 
-            ABaseChannel* tmp=m_pChannelTab[index];
+            SP<ABaseChannel> tmp=m_pChannelTab[index];
             m_pChannelTab[index]=m_pChannelTab[i];
             m_pChannelTab[i]=tmp;
         }

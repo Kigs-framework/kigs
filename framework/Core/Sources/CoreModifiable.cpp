@@ -98,7 +98,7 @@ CoreModifiable*	CoreModifiable::getAggregateByType(KigsID id)
 			{
 				if ((*itc).myItem->isSubType(id))
 				{
-					return (*itc).myItem;
+					return (CoreModifiable*)(*itc).myItem.get();
 				}
 				CoreModifiable* found = (*itc).myItem->getAggregateByType(id);
 				if (found)
@@ -433,7 +433,7 @@ const ModifiableMethodStruct* CoreModifiable::recursivefindMethod(const KigsID& 
 	return nullptr;
 }
 
-bool CoreModifiable::aggregateWith(CoreModifiable* item, ItemPosition pos)
+bool CoreModifiable::aggregateWith(CMSP& item, ItemPosition pos)
 {
 	if (addItem(item, pos PASS_LINK_NAME(linkName)))
 	{
@@ -455,7 +455,7 @@ bool CoreModifiable::aggregateWith(CoreModifiable* item, ItemPosition pos)
 	return false;
 }
 
-bool CoreModifiable::removeAggregateWith(CoreModifiable* item)
+bool CoreModifiable::removeAggregateWith(CMSP& item)
 {
 	bool itemIsAlive = (item->getRefCount() > 1);
 
@@ -609,20 +609,20 @@ bool CoreModifiable::SimpleCall(KigsID methodNameID)
 	return CallMethod(methodNameID, ((std::vector<CoreModifiableAttribute*>&)(attr)));
 }
 
-bool CoreModifiable::Emit(KigsID methodNameID)
+bool CoreModifiable::EmitSignal(const KigsID& signalID)
 {
 	std::vector<CoreModifiableAttribute*>	empty;
-	return CallEmit(methodNameID, empty);
+	return EmitSignal(signalID, empty);
 }
 
-bool CoreModifiable::CallEmit(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams)
+bool CoreModifiable::EmitSignal(const KigsID& signalID, std::vector<CoreModifiableAttribute*>& params, void* privateParams)
 {
 	if (!isFlagAllowChanges()) return false;
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	if (!isFlagAllowChanges()) return false;
 	if (!mLazyContent) return false;
 	auto& connected_to = GetLazyContent()->ConnectedTo;
-	auto it = connected_to.find(methodNameID);
+	auto it = connected_to.find(signalID);
 	if(it != connected_to.end())
 	{
 		std::vector<std::pair<KigsID, CoreModifiable*>> copy = it->second;
@@ -1395,10 +1395,10 @@ void	CoreModifiable::RemoveDynamicAttribute(KigsID id)
 }
 
 //! add item at first or last position
-bool CoreModifiable::addItem(CoreModifiable* item, ItemPosition pos)
+bool CoreModifiable::addItem(const CMSP& item, ItemPosition pos)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
-	if(item)
+	if(!item.isNil())
 	{
 #ifdef USE_LINK_TYPE
 		s32 linkType=-1;
@@ -1445,7 +1445,6 @@ bool CoreModifiable::addItem(CoreModifiable* item, ItemPosition pos)
 #endif
 		
 		item->addUser(this);
-		item->GetRef();
 		EmitSignal(Signals::AddItem, this, item);
 		return true;
 	}
@@ -1484,16 +1483,17 @@ void		CoreModifiable::removeUser(CoreModifiable* user)
 	} while(found);
 }
 
-void    CoreModifiable::Destroy()
+bool    CoreModifiable::checkDestroy()
 {
-	if(_ModifiableFlag&((u32)PostDestroyFlag))
+	
+	if (isFlagAsPostDestroy())
 	{
-		_ModifiableFlag&=0xFFFFFFFF^((u32)PostDestroyFlag); // remove flag
+		unflagAsPostDestroy(); // remove flag
 		KigsCore::Instance()->AddToPostDestroyList(this);
-		return;
+		return true;
 	}
-	// call base destroy only if not in postdestroy
-	RefCountedClass::Destroy();
+
+	return RefCountedClass::checkDestroy();
 }
 
 //! Destroy method decrement refcounter and delete instance if no more used
@@ -1578,7 +1578,7 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 }
 
 //! remove item (son)
-bool CoreModifiable::removeItem(CoreModifiable* item)
+bool CoreModifiable::removeItem(const CMSP& item)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 #ifdef USE_LINK_TYPE
@@ -1623,8 +1623,7 @@ bool CoreModifiable::removeItem(CoreModifiable* item)
 		{
 			res=true;
 			item->removeUser(this);
-			EmitSignal(Signals::RemoveItem, this, item);
-			item->Destroy();
+			EmitSignal(Signals::RemoveItem, this, item.get());
 			_items.erase(it);
 			
 			
@@ -1682,7 +1681,7 @@ bool CoreModifiable::setReadOnly(KigsID id,bool val)
 	return false;
 }
 
-bool	CoreModifiable::Equal(CoreModifiable& other)
+bool	CoreModifiable::Equal(const CoreModifiable& other)
 {
 	// must be same type
 	if(getExactType()!=other.getExactType())
@@ -1722,13 +1721,13 @@ bool	CoreModifiable::Equal(CoreModifiable& other)
 	}
 	
 	// check sons
-	std::vector<ModifiableItemStruct>::iterator itsons1=_items.begin();
-	std::vector<ModifiableItemStruct>::iterator endsons1=_items.end();
-	std::vector<ModifiableItemStruct>::iterator itsons2;
+	std::vector<ModifiableItemStruct>::const_iterator itsons1=_items.begin();
+	std::vector<ModifiableItemStruct>::const_iterator endsons1=_items.end();
+	std::vector<ModifiableItemStruct>::const_iterator itsons2;
 	itsons2=other._items.begin();
 	for(;itsons1!=endsons1;++itsons1)
 	{
-		if(!(*itsons1).myItem->Equal(*(*itsons2).myItem))
+		if(!(*itsons1).myItem->Equal(*(*itsons2).myItem.get()))
 		{
 			return false;
 		}
@@ -2059,7 +2058,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 	currentNode->addAttribute(attribute);
 	const robin_hood::unordered_map<KigsID, CoreModifiableAttribute* ,KigsIDHash>* defaultAttributeMap = 0;
 	
-	CoreModifiable* defaultCopy = 0;
+	CMSP defaultCopy = nullptr;
 	defaultCopy = KigsCore::GetInstanceOf("defaultAttributeClone", GetRuntimeType());
 	defaultAttributeMap = &defaultCopy->getAttributes();
 	
@@ -2152,7 +2151,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 					auto buffer = (CoreRawBuffer*)(RefCountedClass*)buffer_cuo;
 					if (buffer->size() >= settings->export_buffer_attribute_as_external_file_size_threshold)
 					{
-						CoreModifiable* compressManager = KigsCore::GetSingleton("KXMLManager");
+						CMSP& compressManager = KigsCore::GetSingleton("KXMLManager");
 						auto path = unique_id + "_" + current->getLabel()._id_name + (compressManager ? std::string(".kbin") : ".bin");
 						attribute = new XMLAttribute("V", "#" + path);
 						modifiableAttrNode->addAttribute(attribute);
@@ -2223,11 +2222,9 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 		currentNode->addChild(modifiableAttrNode);
 	}
 	
-	if (defaultCopy)
-	{
-		defaultCopy->Destroy();
-		defaultCopy = 0;
-	}
+	
+	defaultCopy = nullptr;
+	
 	
 	// export binaries if needed (CData)
 	s32 countCData = HasCDataToExport();
@@ -2279,7 +2276,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 		std::vector<ModifiableItemStruct>::iterator e = _items.end();
 		for (; i != e; ++i)
 		{
-			CoreModifiable* current = (*i).myItem;
+			CoreModifiable* current = (*i).myItem.Pointer();
 			
 			if (current->getAttribute("NoExport")) continue;
 
@@ -2315,7 +2312,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 }
 
 //! return an new CoreModifiable instance using the description found in XML file given by name
-CoreModifiable*	CoreModifiable::Import(const std::string &filename, bool noInit, bool keepImportFileName, ImportState* state, const std::string& override_name)
+CMSP	CoreModifiable::Import(const std::string &filename, bool noInit, bool keepImportFileName, ImportState* state, const std::string& override_name)
 {
 	auto xmlbasefile = XML::ReadFile(filename, 0);
 
@@ -2393,14 +2390,9 @@ bool	CoreModifiable::ImportAttributes(const std::string &filename)
 	return result;
 }
 
-void	CoreModifiable::ReleaseLoadedItems(std::vector<CoreModifiable*> &loadedItems)
+void	CoreModifiable::ReleaseLoadedItems(std::vector<CMSP> &loadedItems)
 {
-	std::vector<CoreModifiable*>::iterator	ititems = loadedItems.begin();
-	std::vector<CoreModifiable*>::iterator	enditems = loadedItems.end();
-	for (; ititems != enditems; ++ititems)
-	{
-		(*ititems)->Destroy();
-	}
+	loadedItems.clear();
 }
 
 
@@ -2739,7 +2731,7 @@ void CoreModifiable::GetSonInstancesByName(KigsID cid, const std::string &name,s
 		{
 			if((*itsons).myItem->isSubType(cid))
 			{
-				instances.insert((CoreModifiable*)(*itsons).myItem);
+				instances.insert((CoreModifiable*)(*itsons).myItem.Pointer());
 				if (getRef)
 				{
 					(*itsons).myItem->GetRef();
@@ -2758,7 +2750,7 @@ CoreModifiable* CoreModifiable::GetFirstSonByName(KigsID cid, const std::string 
 	for (auto& son : getItems())
 	{
 		if (son.myItem->isSubType(cid) && name == son.myItem->getName())
-			return son.myItem;
+			return (CoreModifiable*)son.myItem.get();
 	}
 	if (recursive)
 	{
@@ -2778,7 +2770,7 @@ void CoreModifiable::GetSonInstancesByType(KigsID cid,std::set<CoreModifiable*>&
 	{
 		if((*itsons).myItem->isSubType(cid))
 		{
-			instances.insert((CoreModifiable*)(*itsons).myItem);
+			instances.insert((CoreModifiable*)(*itsons).myItem.get());
 		}
 		
 		if(recursive)
@@ -2793,7 +2785,7 @@ CoreModifiable* CoreModifiable::GetFirstSonByType(KigsID cid, bool recursive)
 	for (auto& son : getItems())
 	{
 		if (son.myItem->isSubType(cid))
-			return son.myItem;
+			return (CoreModifiable*)son.myItem.get();
 	}
 	if (recursive)
 	{
@@ -2852,11 +2844,42 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 			// DO NOTHING
 		}
 		break;
+		case ARRAY: 
+		{
+			// check for 2D / 3D vectors
+			int arraySize = destattr->getNbArrayElements();
+			if (arraySize == 2)
+			{
+				ItemToEval = CoreItemOperator<Point2D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+
+				Point2D result((Point2D)ItemToEval);
+				char resultBuffer[128];
+				sprintf(resultBuffer, "{%f,%f}", result.x,result.y);
+				attr = resultBuffer;
+			}
+			else if (arraySize == 3)
+			{
+				ItemToEval = CoreItemOperator<Point3D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+				Point3D result((Point3D)ItemToEval);
+				char resultBuffer[128];
+				sprintf(resultBuffer, "{%f,%f,%f}", result.x, result.y,result.z);
+				attr = resultBuffer;
+			}
+			else if (arraySize == 4)
+			{
+				ItemToEval = CoreItemOperator<Vector4D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+				Vector4D result(ItemToEval->operator Vector4D());
+				char resultBuffer[200];
+				sprintf(resultBuffer, "{%f,%f,%f,%f}", result.x, result.y, result.z,result.w);
+				attr = resultBuffer;
+			}
+		}
+		break;
 		default:  // use float operator and return a float "printed" in a string 
 		{
 			ItemToEval = CoreItemOperator<kfloat>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 
-			kfloat result = *ItemToEval.get();
+			kfloat result((kfloat)ItemToEval);
 
 			char resultBuffer[128];
 

@@ -12,11 +12,6 @@ public:
 
     OpenGLCamera(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
-	bool	addItem(CoreModifiable *item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
-	bool	removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME) override;
-
-	//kstl::set<API3DDeferredFilter*, API3DDeferredFilter::PriorityCompare>& GetFilters() { return myFilters; }
-
 protected:
 
 	//void SetAmbient(kfloat r, kfloat g, kfloat b) override;
@@ -28,8 +23,6 @@ protected:
 	virtual void PlatformProtectedRelease(TravState* state);
 
 	virtual ~OpenGLCamera();
-
-	//kstl::set<API3DDeferredFilter*, API3DDeferredFilter::PriorityCompare> myFilters;
 
 #ifdef WUP
 	bool myNeedNearFarUpdate = true;

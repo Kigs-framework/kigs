@@ -7,6 +7,7 @@
 #include "KigsApplication.h"
 
 #include <Core.h>
+#include "Timer.h"
 
 #include <locale.h>
 #include <csignal>
@@ -36,7 +37,7 @@ int main(int argc, char *argv[])
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	// use this to add a breakpoint on a given alloc number 
-	// _CrtSetBreakAlloc(18);
+	//_CrtSetBreakAlloc(18);
 #endif
 	setlocale(LC_NUMERIC,"C");
 
@@ -48,7 +49,7 @@ int main(int argc, char *argv[])
 #endif
 
 	//! First thing to do
-	KigsCore::Init(false);
+	KigsCore::Init();
 
 	// no need to register app to factory
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));
@@ -107,7 +108,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 #endif
 
 	//! First thing to do
-	KigsCore::Init(false);
+	KigsCore::Init();
 
 	// no need to register app to factory
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));

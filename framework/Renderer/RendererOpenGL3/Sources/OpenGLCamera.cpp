@@ -23,11 +23,7 @@ OpenGLCamera::OpenGLCamera(const kstl::string& name, CLASS_NAME_TREE_ARG) : Came
 
 OpenGLCamera::~OpenGLCamera()
 {
-	/*auto itr = myFilters.begin();
-	auto end = myFilters.end();
-	for (; itr != end; ++itr)
-		(*itr)->Destroy();
-	myFilters.clear();*/
+
 }
 
 bool	OpenGLCamera::ProtectedSetActive(TravState* state)
@@ -91,29 +87,4 @@ void	OpenGLCamera::ProtectedRelease(TravState* state)
 	{
 		getRenderingScreen()->Release(state);
 	}
-}
-
-/*void OpenGLCamera::SetAmbient(kfloat r, kfloat g, kfloat b)
-{
-}*/
-
-
-
-bool	OpenGLCamera::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
-{
-	/*if (item->isSubType(API3DDeferredFilter::myClassID))
-	{
-		myFilters.insert((API3DDeferredFilter*)item);
-	}*/
-
-	return Camera::addItem(item, pos PASS_LINK_NAME(linkName));
-}
-
-bool OpenGLCamera::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
-{
-	/*if (item->isSubType(API3DDeferredFilter::myClassID))
-	{
-		myFilters.erase((API3DDeferredFilter*)item);
-	}*/
-	return Camera::removeItem(item PASS_LINK_NAME(linkName));
 }

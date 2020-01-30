@@ -331,7 +331,7 @@ void	API3DUniformTexture::InitModifiable()
 	{
 		if ((myTextureName.const_ref()) != "")
 		{
-			TextureFileManager*	fileManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+			SP<TextureFileManager>	fileManager = KigsCore::GetSingleton("TextureFileManager");
 			myAttachedTexture = fileManager->GetTexture(myTextureName.const_ref(), false);
 			if (myAttachedTexture)
 				if (!myAttachedTexture->IsInit())
@@ -378,7 +378,7 @@ bool	API3DUniformTexture::Deactivate(UniformList* ul)
 	return true;
 }
 
-bool API3DUniformTexture::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool API3DUniformTexture::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Texture::myClassID)) // if texture, don't call father addItem
 	{
@@ -387,13 +387,8 @@ bool API3DUniformTexture::addItem(CoreModifiable *item, ItemPosition pos DECLARE
 			return true;
 		}
 
-		if (myAttachedTexture)
-		{
-			myAttachedTexture->Destroy();
-		}
-
-		myAttachedTexture = (Texture*)item;
-		myAttachedTexture->GetRef();
+		myAttachedTexture = item;
+		
 
 		return true;
 	}
@@ -402,14 +397,13 @@ bool API3DUniformTexture::addItem(CoreModifiable *item, ItemPosition pos DECLARE
 
 }
 
-bool API3DUniformTexture::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
+bool API3DUniformTexture::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Texture::myClassID)) // if texture, don't call father removeItem
 	{
 
 		if (item == myAttachedTexture)
 		{
-			myAttachedTexture->Destroy();
 			myAttachedTexture = 0;
 			return true;
 		}
@@ -422,14 +416,6 @@ bool API3DUniformTexture::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
 
 
 
-API3DUniformTexture::~API3DUniformTexture()
-{
-	if (myAttachedTexture)
-	{
-		myAttachedTexture->Destroy();
-		myAttachedTexture = 0;
-	}
-}
 
 #if DX11 // TODO ?
 

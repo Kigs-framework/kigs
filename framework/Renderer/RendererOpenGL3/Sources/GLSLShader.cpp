@@ -170,7 +170,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	if (str[0] == '!') // load from file
 	{
 		const char* filename = (str.c_str() + 1);
-		FilePathManager*	pathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+		auto& pathManager = KigsCore::Singleton<FilePathManager>();
 
 		kstl::string fullfilename;
 		if (pathManager)
@@ -207,7 +207,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	if (str[0] == '!') // load from file
 	{
 		const char* filename = (str.c_str() + 1);
-		FilePathManager*	pathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+		auto& pathManager = KigsCore::Singleton<FilePathManager>();
 
 		kstl::string fullfilename;
 		if (pathManager)
@@ -423,7 +423,7 @@ void	API3DShader::DoPreDraw(TravState* state)
 		{
 			if ((*it).myItem->isUserFlagSet(UserFlagDrawable))
 			{
-				Drawable* drawable = (Drawable*)(*it).myItem;
+				SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
 				drawable->CheckPreDraw(state);
 			}
 		}
@@ -443,7 +443,7 @@ void	API3DShader::DoPostDraw(TravState* state)
 		{
 			if ((*it).myItem->isUserFlagSet(UserFlagDrawable))
 			{
-				Drawable* drawable = (Drawable*)(*it).myItem;
+				SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
 				drawable->CheckPostDraw(state);
 			}
 		}
@@ -548,7 +548,10 @@ void	API3DShader::PrepareExport(ExportSettings* settings)
 					L_bAlreadyAdded = true;
 			}
 			if (!L_bAlreadyAdded)
-				addItem(static_cast<CoreModifiable*>(*(itr->second->List.begin())));
+			{
+				CMSP toAdd(CMSP(static_cast<CoreModifiable*>(*(itr->second->List.begin())), StealRefTag()));
+				addItem(toAdd);
+			}
 		}
 	}
 }
@@ -562,7 +565,10 @@ void	API3DShader::EndExport(ExportSettings* settings)
 		for (; itr != (*(myCurrentShader)->myUniforms).end(); ++itr)
 		{
 			if (!itr->second->List.empty())
-				removeItem(static_cast<CoreModifiable*>(*(itr->second->List.begin())));
+			{
+				CMSP toDel(*(itr->second->List.begin()), StealRefTag{});
+				removeItem(toDel);
+			}
 		}
 	}
 	ParentClassType::EndExport(settings);

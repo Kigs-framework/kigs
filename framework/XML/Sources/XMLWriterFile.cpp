@@ -190,7 +190,7 @@ bool XMLWriterFile::WriteFile(const kstl::string& name,XML& xml)
         {
 			if (fileext == "kxml")
 			{
-				auto kxml_manager = KigsCore::GetSingleton("KXMLManager");
+				auto& kxml_manager = KigsCore::GetSingleton("KXMLManager");
 				if (!kxml_manager)
 				{
 					KIGS_ERROR("Need to include KXMLManager in the project", 3);
@@ -230,7 +230,7 @@ void XMLWriterFile::WriteString(XML& xml, kstl::string &result, bool header, boo
 	
 	if (compress)
 	{
-		auto kxml_manager = KigsCore::GetSingleton("KXMLManager");
+		auto& kxml_manager = KigsCore::GetSingleton("KXMLManager");
 		if (!kxml_manager)
 		{
 			KIGS_ERROR("Need to include KXMLManager in the project", 3);

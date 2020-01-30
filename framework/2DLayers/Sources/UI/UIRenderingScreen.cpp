@@ -32,9 +32,9 @@ void	UIRenderingScreen::InitModifiable()
 		CoreModifiable* rs = (CoreModifiable*)myRenderingScreen;
 		if (rs)
 		{
-			TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
-			myTexture = NonOwningRawPtrToSmartPtr(rs->as<RenderingScreen>()->GetFBOTexture());
+			myTexture = rs->as<RenderingScreen>()->GetFBOTexture();
 			myTexture->setValue("TransparencyType",2);
 			myTexture->setValue("ForceNearest", (bool)myForceNearest);
 			myForceNearest.changeNotificationLevel(Owner);

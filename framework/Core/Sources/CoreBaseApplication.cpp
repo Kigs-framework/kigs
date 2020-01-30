@@ -4,7 +4,6 @@
 #include "CoreIncludes.h"
 #include "TimerIncludes.h"
 #include "ModuleFileManager.h"
-#include "CoreAutoRelease.h"
 #include "TimeProfiler.h"
 
 //#define PRINT_REFTRACING
@@ -121,14 +120,14 @@ void	CoreBaseApplication::InitApp(const char* baseDataPath, bool	InitBaseModule)
 		{
 			// init path
 			// get file manager singleton
-			FilePathManager*	pathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+			SP<FilePathManager>&	pathManager = KigsCore::Singleton<FilePathManager>();
 
 			pathManager->AddToPath(baseDataPath, "*");
 		}
 		
 		CoreCreateModule(ModuleTimer, 0);
 
-		myApplicationTimer = (Timer*)(KigsCore::GetInstanceOf("ApplicationTimer", "Timer"));
+		myApplicationTimer = KigsCore::GetInstanceOf("ApplicationTimer", "Timer");
 		myApplicationTimer->Init();
 	}
 
@@ -177,7 +176,7 @@ void CoreBaseApplication::DoAutoUpdate()
 	unsigned int i = 0;
 	while (i<myAutoUpdateList.size())
 	{
-		myAutoUpdateList[i]->CallUpdate(*myApplicationTimer, 0);
+		myAutoUpdateList[i]->CallUpdate((const Timer&)*myApplicationTimer.get(), 0);
 		i++;
 	}
 	myAutoUpdateDone = true;
@@ -194,7 +193,7 @@ void	CoreBaseApplication::UpdateApp()
 		STARTPROFILE(GLOBAL);
 		if(myInitBaseModules)
 		{
-			CoreGetModule(ModuleTimer)->CallUpdate(*myApplicationTimer,0);
+			CoreGetModule(ModuleTimer)->CallUpdate((const Timer&)myApplicationTimer,0);
 		}
 
 		// update 'auto update' instances
@@ -215,7 +214,7 @@ void	CoreBaseApplication::UpdateApp()
 		// before real app update, manage async requests
 		KigsCore::ManageAsyncRequests();
 		PlatformBaseApplication::Update();
-		CallUpdate(*myApplicationTimer,0);
+		CallUpdate((const Timer&)*(myApplicationTimer.get()),0);
 		ProtectedUpdate();
 		if (!myAutoUpdateDone)
 			DoAutoUpdate();
@@ -232,12 +231,7 @@ void	CoreBaseApplication::UpdateApp()
 		{
 			myApplicationTimer->Sleep(myUpdateSleepTime);
 		}
-		// kill autoreleased
-		CoreAutoRelease* autorelease=KigsCore::Instance()->getCoreAutoRelease();
-		if(autorelease)
-		{
-			autorelease->doAutoRelease();
-		}
+	
 		KigsCore::Instance()->ManagePostDestruction();
 		ENDPROFILE(GLOBAL)
 		myAlreadyInUpdate=false;
@@ -252,7 +246,7 @@ void	CoreBaseApplication::CloseApp()
 	if(myInitBaseModules)
 	{
 		// destroy timer
-		myApplicationTimer->Destroy();
+		myApplicationTimer = nullptr;
 
 		CoreDestroyModule(ModuleTimer);
 		CoreDestroyModule(ModuleFileManager);

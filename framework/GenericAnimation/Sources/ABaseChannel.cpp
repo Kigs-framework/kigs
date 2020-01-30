@@ -29,24 +29,24 @@ ABaseChannel::ABaseChannel(const kstl::string& name, CLASS_NAME_TREE_ARG)
 }
 
 
-bool	ABaseChannel::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ABaseChannel::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	//! if item is a stream, then add it to the streams list 
 	if(item->isSubType(ABaseStream::myClassID))
 	{
-		ABaseStream* stream=(ABaseStream*)item;
+		ABaseStream* stream=(ABaseStream*)item.get();
 		AddStream(stream);
 	}
 	
 	return CoreModifiable::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-bool	ABaseChannel::removeItem(CoreModifiable *item DECLARE_LINK_NAME)
+bool	ABaseChannel::removeItem(CMSP& item DECLARE_LINK_NAME)
 {
 	//! if item is a stream, then try to remove it from streams list
 	if(item->isSubType(ABaseStream::myClassID))
 	{		
-		ABaseStream* stream=(ABaseStream*)item;
+		ABaseStream* stream=(ABaseStream*)item.get();
 		RemoveStream(stream);
 	}
 	return CoreModifiable::removeItem(item PASS_LINK_NAME(linkName));
@@ -189,7 +189,7 @@ void        ABaseChannel::RemoveStream(ABaseStream* stream)
 // * 
 // *******************
 
-void    ABaseChannel::AutoChannelTree(ABaseChannel** channels, AObjectSkeletonResource* hierarchy)
+void    ABaseChannel::AutoChannelTree(SP<ABaseChannel>* channels, AObjectSkeletonResource* hierarchy)
 {
     IntU32 i,j;
     IntU32 grp_count=hierarchy->GetGroupCount();
@@ -202,8 +202,8 @@ void    ABaseChannel::AutoChannelTree(ABaseChannel** channels, AObjectSkeletonRe
         {
             if(hierarchy->getID(i) == hierarchy->getFatherID(j) )
             {
-                channels[j]->mp_FatherNode=channels[i];
-                tmpsonchannels[channels[i]->m_SonCount++]=channels[j];
+                channels[j]->mp_FatherNode=channels[i].get();
+                tmpsonchannels[channels[i]->m_SonCount++]=channels[j].get();
             }
         }
 		
@@ -211,8 +211,9 @@ void    ABaseChannel::AutoChannelTree(ABaseChannel** channels, AObjectSkeletonRe
         {
             for(j=0;j<(IntU32)channels[i]->m_SonCount;++j)
             {
-				channels[i]->addItem(tmpsonchannels[j]);
-				tmpsonchannels[j]->Destroy();
+                CMSP toAdd(tmpsonchannels[j], GetRefTag{});
+				channels[i]->addItem(toAdd);
+				
             }
         }
     }
@@ -221,7 +222,7 @@ void    ABaseChannel::AutoChannelTree(ABaseChannel** channels, AObjectSkeletonRe
 	
 };
 
-void    ABaseChannel::AutoChannelTree(ABaseChannel** channels,ABaseSystem* sys)
+void    ABaseChannel::AutoChannelTree(SP<ABaseChannel>* channels,ABaseSystem* sys)
 {
     IntU32 i,j;
     IntU32 grp_count=sys->m_ChannelsCount;
@@ -230,7 +231,7 @@ void    ABaseChannel::AutoChannelTree(ABaseChannel** channels,ABaseSystem* sys)
 	
     for(i=0;i<grp_count;++i)
     {
-		ABaseChannel* other_channel=sys->m_pChannelTab[i];	
+		ABaseChannel* other_channel=sys->m_pChannelTab[i].get();	
         for(j=0;j<grp_count;++j)
         {
 			ABaseChannel* father_channel=(ABaseChannel*)sys->m_pChannelTab[j]->mp_FatherNode;
@@ -239,8 +240,8 @@ void    ABaseChannel::AutoChannelTree(ABaseChannel** channels,ABaseSystem* sys)
             {
                 if(other_channel->GetGroupID() == father_channel->GetGroupID() )
                 {
-                    channels[j]->mp_FatherNode=channels[i];
-                    tmpsonchannels[channels[i]->m_SonCount++]=channels[j];
+                    channels[j]->mp_FatherNode=channels[i].get();
+                    tmpsonchannels[channels[i]->m_SonCount++]=channels[j].get();
                 }  
             }
         }
@@ -249,7 +250,8 @@ void    ABaseChannel::AutoChannelTree(ABaseChannel** channels,ABaseSystem* sys)
         {
             for(j=0;j<(IntU32)channels[i]->m_SonCount;++j)
             {
-				channels[i]->addItem(tmpsonchannels[j]);
+                CMSP toAdd(tmpsonchannels[j], GetRefTag{});
+				channels[i]->addItem(toAdd);
             }
         }
     }

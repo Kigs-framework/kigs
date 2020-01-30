@@ -102,7 +102,7 @@ protected:
 
 
 
-	Texture* mFontTexture = nullptr;
+	SP<Texture> mFontTexture = nullptr;
 	unsigned char* mPixelData = nullptr;
 	int mPixelDataWidth = 0;
 	int mPixelDataHeight = 0;

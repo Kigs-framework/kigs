@@ -18,7 +18,7 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreiveGetAsyncRequest(const char* 
 	if (myIsSynchronous || (!a_NotificationName && !a_CallbackObject))
 		return nullptr;
 
-	HTTPAsyncRequest* request = (HTTPAsyncRequest*)(KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest"));
+	SP<HTTPAsyncRequest> request = KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest");
 	request->setValue("Type", "GET");
 	request->setValue("URL", a_URLRequest);
 	request->setValue("Connection", this);
@@ -28,10 +28,10 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreiveGetAsyncRequest(const char* 
 		request->setValue("CallbackReceiver", a_CallbackObject);
 
 	request->GetRef(); //@FIXME this is very error prone
-	KigsCore::addAsyncRequest(request);
+	KigsCore::addAsyncRequest(request.get());
 
 	
-	return OwningRawPtrToSmartPtr(request);
+	return request;
 }
 
 SmartPointer<HTTPAsyncRequest> HTTPConnect::retreiveDeleteAsyncRequest(const char* a_URLRequest, const char* a_NotificationName, CoreModifiable* a_CallbackObject)
@@ -47,7 +47,7 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreivePostAsyncRequest(const char*
 	if (myIsSynchronous || (!a_NotificationName && !a_CallbackObject))
 		return nullptr;
 
-	HTTPAsyncRequest* request = (HTTPAsyncRequest*)(KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest"));
+	SP<HTTPAsyncRequest> request = KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest");
 	request->setValue("Type", "POST");
 	request->setValue("URL", a_URLRequest);
 	request->SetPostBufferValue(buffer, a_requestSize);
@@ -59,10 +59,10 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreivePostAsyncRequest(const char*
 
 	
 	request->GetRef(); //@FIXME this is very error prone
-	KigsCore::addAsyncRequest(request);
+	KigsCore::addAsyncRequest(request.get());
 	
 	
-	return OwningRawPtrToSmartPtr(request);
+	return request;
 }
 
 SmartPointer<HTTPAsyncRequest> HTTPConnect::retreivePutAsyncRequest(const char* a_URLRequest, const char* buffer, const unsigned int& a_requestSize, const char* a_NotificationName, CoreModifiable* a_CallbackObject)
@@ -78,13 +78,13 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreiveGetRequest(const char* a_URL
 	if (!myIsSynchronous)
 		return nullptr;
 
-	HTTPAsyncRequest* request = (HTTPAsyncRequest*)(KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest"));
+	SP<HTTPAsyncRequest> request = KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest");
 	request->setValue("Type", "GET");
 	request->setValue("URL", a_URLRequest);
 	request->setValue("Connection", this);
 	
 	
-	return OwningRawPtrToSmartPtr(request);
+	return request;
 }
 
 SmartPointer<HTTPAsyncRequest> HTTPConnect::retreivePostRequest(const char* a_URLRequest, const char* buffer, const unsigned int& a_requestSize)
@@ -92,13 +92,13 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreivePostRequest(const char* a_UR
 	if (!myIsSynchronous)
 		return 0;
 
-	HTTPAsyncRequest* request = (HTTPAsyncRequest*)(KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest"));
+	SP<HTTPAsyncRequest> request = KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest");
 	request->setValue("Type", "POST");
 	request->setValue("URL", a_URLRequest);
 	request->SetPostBufferValue(buffer, a_requestSize);
 	request->setValue("Connection", this);
 
-	return OwningRawPtrToSmartPtr(request);
+	return request;
 }
 
 kstl::string HTTPConnect::getHostNameWithProtocol()

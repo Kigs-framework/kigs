@@ -15,6 +15,7 @@ class SmartPointer
 {
 public:
 	using ValueType = smartPointOn;
+	using IsSP = std::true_type;
 	
 	SmartPointer() : myPointer(0) {};
 	SmartPointer(std::nullptr_t) : SmartPointer() {};
@@ -135,7 +136,7 @@ public:
 	}
 
 	//operator smartPointOn*() const { return myPointer; }
-	operator bool() const { return (bool)myPointer; }
+	operator bool() const { return myPointer != nullptr; }
 
 	bool	operator == (const smartPointOn* other) const
 	{
@@ -165,9 +166,16 @@ public:
 		myPointer = nullptr;
 	}
 	
-	smartPointOn* Pointer() { return myPointer; }
-	smartPointOn* get() { return myPointer; }
-	const smartPointOn* get() const { return myPointer; }
+	smartPointOn* Pointer() const { return myPointer; }
+	smartPointOn* get() const { return myPointer; }
+
+	template<typename othertype>
+	operator SmartPointer<othertype>() {
+
+		SmartPointer<othertype> result((othertype*)myPointer, GetRefTag{}); // create a new ref here
+		return result;
+	}
+
 
 protected:
 
@@ -199,5 +207,8 @@ SmartPointer<smartPointOn> MakeRefCounted(Args&& ... args)
 {
 	return OwningRawPtrToSmartPtr(new smartPointOn(std::forward<decltype(args)>(args)...));
 }
+
+template<typename smartPointOn>
+using SP=SmartPointer<smartPointOn>;
 
 #endif //_SMARTPOINTER_H_

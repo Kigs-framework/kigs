@@ -17,18 +17,16 @@ RessourceFileManager::~RessourceFileManager()
 
 }    
 
-CoreModifiable*	RessourceFileManager::GetRessource(const kstl::string &ClassName, const kstl::string& fileName)
+CMSP RessourceFileManager::GetRessource(const kstl::string &ClassName, const kstl::string& fileName)
 {
 	// already loaded ?
 	if(myRessourceMap.find(fileName) != myRessourceMap.end())
 	{
-		CoreModifiable *pRessource = myRessourceMap[fileName];
-		pRessource->GetRef();
-		return pRessource;
+		return myRessourceMap[fileName];
 	}
 
 	// create a new one
-	CoreModifiable* pRessource = (CoreModifiable*)(KigsCore::GetInstanceOf(ClassName+"["+fileName+"]",ClassName));
+	CMSP pRessource = KigsCore::GetInstanceOf(ClassName+"["+fileName+"]",ClassName);
 	pRessource->setValue(LABEL_TO_ID(FileName),fileName);
 	pRessource->Init();
 	addItem(pRessource);
@@ -37,7 +35,7 @@ CoreModifiable*	RessourceFileManager::GetRessource(const kstl::string &ClassName
 }
 
 //! add item. 
-bool	RessourceFileManager::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	RessourceFileManager::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	kstl::string filename;
 	if(item->getValue(LABEL_TO_ID(FileName),filename))
@@ -55,7 +53,7 @@ bool	RessourceFileManager::addItem(CoreModifiable *item, ItemPosition pos DECLAR
 }
 
 //! remove item. 
-bool	RessourceFileManager::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
+bool	RessourceFileManager::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	kstl::string filename;
 	if(item->getValue(LABEL_TO_ID(FileName),filename))
@@ -64,7 +62,7 @@ bool	RessourceFileManager::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
 		{
 			if(myRessourceMap.find(filename)!=myRessourceMap.end())
 			{
-				kstl::map<kstl::string, CoreModifiable*>::iterator	it=myRessourceMap.find(filename);
+				kstl::map<kstl::string, CMSP>::iterator	it=myRessourceMap.find(filename);
 				myRessourceMap.erase(it);				
 			}
 		}
@@ -73,7 +71,7 @@ bool	RessourceFileManager::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
 }
 
 
-void	RessourceFileManager::UnloadRessource(CoreModifiable* pRessource)
+void	RessourceFileManager::UnloadRessource(const CMSP& pRessource)
 {
 	// search this Ressource
 	removeItem(pRessource);
@@ -83,7 +81,7 @@ void	RessourceFileManager::UnloadRessource(kstl::string ressourcename)
 {
 	if(myRessourceMap.find(ressourcename)!=myRessourceMap.end())
 	{
-		kstl::map<kstl::string, CoreModifiable*>::iterator	it=myRessourceMap.find(ressourcename);
+		kstl::map<kstl::string, CMSP>::iterator	it=myRessourceMap.find(ressourcename);
 		removeItem((*it).second);
 	}
 }

@@ -136,7 +136,8 @@ CoreModifiableAttribute* MakeAttribute(T* value, CoreModifiable* owner, const ks
 // Non exposed, non coremodifiable, non fundamental type by reference
 template<typename T, REQUIRES(	!LuaStruct<stripped_type<T>>::exposed &&
 								!std::is_fundamental<std::decay_t<T>>::value &&
-								!std::is_base_of<CoreModifiable, stripped_type<T>>::value)
+								!std::is_base_of<CoreModifiable, stripped_type<T>>::value && 
+								!is_detected_v<is_smart_pointer, std::decay_t<T>>)
 >
 CoreModifiableAttribute* MakeAttribute(T& value, CoreModifiable* owner, const kstl::string& name = "ParamRef")
 {
@@ -151,7 +152,8 @@ CoreModifiableAttribute* MakeAttribute(T& value, CoreModifiable* owner, const ks
 // If the type has an equivalent CoreModifiableAttribute use that instead of a pointer to a possible temporary
 template<typename T, REQUIRES(!LuaStruct<stripped_type<T>>::exposed &&
 	!std::is_fundamental<std::decay_t<T>>::value &&
-	!std::is_base_of<CoreModifiable, stripped_type<T>>::value)
+	!std::is_base_of<CoreModifiable, stripped_type<T>>::value &&
+    !is_detected_v<is_smart_pointer, std::decay_t<T>>)
 >
 CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const kstl::string& name = "ParamRValue")
 {
@@ -165,7 +167,7 @@ CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const k
 
 // SmartPointer
 template<typename T>
-CoreModifiableAttribute* MakeAttribute(SmartPointer<T>& value, CoreModifiable* owner, const kstl::string& name = "ParamSP")
+CoreModifiableAttribute* MakeAttribute(const SmartPointer<T>& value, CoreModifiable* owner, const kstl::string& name = "ParamSP")
 {
 	RefCountedClass* ptr = static_cast<RefCountedClass*>(value.get());
 	return MakeAttributeSpec(ptr, owner, name);
@@ -264,6 +266,14 @@ namespace kigs_impl
 				value = *(T*)ptr;
 		}
 	}
+
+	template<typename T>
+	auto UnpackGetValue(SP<T>& value, CoreModifiableAttribute* attr)
+	{
+		void* ptr;
+		if (attr->getValue(ptr))
+			value = NonOwningRawPtrToSmartPtr((T*)ptr);
+	}
 	
 	template<typename T>
 	auto UnpackGetValue(ptr_to_ref<T>& value, CoreModifiableAttribute* attr) -> enable_if_t<!is_base_of<CoreModifiable, T>::value>
@@ -331,7 +341,7 @@ namespace kigs_impl
 	struct type_for_unpack
 	{
 	public:
-		typedef conditional_t<is_fundamental<T>::value, T, PtrToRefType> type;
+		typedef conditional_t<is_fundamental<T>::value, T, conditional_t<is_detected_v<is_smart_pointer, U>, U, PtrToRefType>> type;
 	};
 	
 	template<typename T>
@@ -503,6 +513,14 @@ Ret CoreModifiable::SimpleCall(KigsID methodNameID)
 	if(attr.size())
 	{
 		 attr.back()->getValue(result);
+	
+		 // destroy attributes
+		 while (attr.size())
+		 {
+			 delete attr.back();
+			 attr.pop_back();
+		 }
+	
 	}
 	return result;
 }
@@ -522,7 +540,7 @@ bool CoreModifiable::SimpleCall(KigsID methodNameID, T&&... params)
 
 
 template<typename... T>
-inline bool CoreModifiable::Emit(KigsID methodNameID, T&&... params)
+inline bool CoreModifiable::EmitSignal(const KigsID& SignalID, T&&... params)
 {
 	if (!isFlagAllowChanges()) return false;
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
@@ -530,7 +548,7 @@ inline bool CoreModifiable::Emit(KigsID methodNameID, T&&... params)
 
 	if (!mLazyContent) return false;
 
-	auto it = GetLazyContent()->ConnectedTo.find(methodNameID);
+	auto it = GetLazyContent()->ConnectedTo.find(SignalID);
 	if(it != GetLazyContent()->ConnectedTo.end())
 	{
 		std::vector<std::pair<KigsID, CoreModifiable*>> copy = it->second;

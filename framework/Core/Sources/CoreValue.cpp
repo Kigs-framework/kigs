@@ -36,6 +36,12 @@ CoreModifiableAttribute* CoreValue<Point3D>::createAttribute(CoreModifiable* tar
 }
 
 template<>
+CoreModifiableAttribute* CoreValue<Vector4D>::createAttribute(CoreModifiable* target)
+{
+	return new maVect4DF(*target, false, LABEL_AND_ID(Val), &(this->m_Value.x));
+}
+
+template<>
 CoreModifiableAttribute* CoreValue<int>::createAttribute(CoreModifiable* target)
 {
 	return new maInt(*target, false, LABEL_AND_ID(Val), (this->m_Value));

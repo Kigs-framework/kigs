@@ -781,7 +781,7 @@ public:
 		myDirtyShaderMatrix = 0xffffffff;
 	}
 
-	CoreModifiable*	getDefaultUiShader()
+	CMSP&	getDefaultUiShader()
 	{
 		return myDefaultUIShader;
 	}
@@ -1163,12 +1163,8 @@ protected:
 	kstl::vector<ShaderBase*>		myShaderStack;
 	unsigned int					myDirtyShaderMatrix;	// set when shader has changed, so we have to push again matrix
 
-		//! One UIShader to rule them all
-	CoreModifiable*		myUIShader;
-	//int mySpotLightCount = 0;
-	//int myPointLightCount = 0;
-	//int myDirLightCount = 0;
-	CoreModifiable*	myDefaultUIShader;
+	CMSP	myDefaultUIShader;
+
 
 	std::unique_ptr<VertexBufferManagerBase> myVertexBufferManager;
 

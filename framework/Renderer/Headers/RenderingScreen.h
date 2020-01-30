@@ -7,6 +7,7 @@
 #include "TravState.h"
 #include "ModuleInput.h"
 #include "TouchInputEventManager.h"
+#include "Texture.h"
 
 #include "kstlvector.h"
 
@@ -168,12 +169,12 @@ public:
 
 	void ManageFade(TravState*);
 
-	Texture* GetFBOTexture() 
+	SP<Texture> GetFBOTexture() 
 	{
 		if(myUseFBO)
 			return myFBOTexture; 
 
-		return 0;
+		return nullptr;
 	}
 
 	bool IsHolographic() { return myIsStereo; }
@@ -187,12 +188,6 @@ public:
 protected:
 	// recompute myDesignCoefX,myDesignCoefY;
 	void	InitModifiable() override;
-
-	/**
-	* \brief	destructor
-	* \fn 		~RenderingScreen();
-	*/
-	virtual ~RenderingScreen();
 
 	void Update(const Timer&  timer, void* /*addParam*/) override;
 
@@ -249,7 +244,7 @@ protected:
 	maInt				myFBOSizeX;
 	maInt				myFBOSizeY;
 
-	Texture*			myFBOTexture;
+	SP<Texture>			myFBOTexture;
 
 	virtual void		setCurrentContext() = 0;
 };

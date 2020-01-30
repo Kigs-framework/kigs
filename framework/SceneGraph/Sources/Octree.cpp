@@ -24,9 +24,9 @@ IMPLEMENT_CONSTRUCTOR(Octree)
 
 {
 	myPrecomputedCull.clear();
-	myRootSubNode = (OctreeSubNode*)(KigsCore::GetInstanceOf("myRootSubNode", "OctreeSubNode"));
-	addItem(myRootSubNode);
-	myRootSubNode->Destroy();
+	myRootSubNode = KigsCore::GetInstanceOf("myRootSubNode", "OctreeSubNode");
+	addItem((CMSP&)myRootSubNode);
+	
 	myRootSubNode->myFatherOctree = this;
 	myRootSubNode->Init();
 	myIsInReorganise = false;
@@ -69,7 +69,8 @@ void Octree::PropagateDirtyFlagsToParents(SceneNode* source)
 			myObjectNodeAssociation.erase(found);  // avoid reentrance here
 			if (subnode)
 			{
-				addItem(source);
+				CMSP toAdd(source, StealRefTag{});
+				addItem(toAdd);
 				subnode->RemoveNode(source);
 			}
 		}
@@ -142,7 +143,7 @@ DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Octree, TravState* state, unsigned int c
 		{
 			UnsetAllSonsVisible();
 
-			CullingObject::CULLING_RESULT result = CullSubNodes(state->GetCullingObject(), state);
+			CullingObject::CULLING_RESULT result = CullSubNodes(state->GetCullingObject().get(), state);
 
 			if (result == CullingObject::all_out)
 			{
@@ -229,17 +230,17 @@ CullingObject::CULLING_RESULT  Octree::CullSubNodes(CullingObject* cullobj, Trav
 
 
 // manage octree remove
-bool	Octree::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
+bool	Octree::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	bool foundsubnode = false;
 	if (item->isSubType("SceneNode"))
 	{
 		if (!item->isSubType("OctreeSubNode"))
 		{
-			OctreeSubNode* subnode = myObjectNodeAssociation[(SceneNode*)item];
+			OctreeSubNode* subnode = myObjectNodeAssociation[(SceneNode*)item.get()];
 			if (subnode)
 			{
-				foundsubnode = subnode->RemoveNode((SceneNode*)item);
+				foundsubnode = subnode->RemoveNode((SceneNode*)item.get());
 
 				// check if we can move back all nodes3D to father subnode
 				OctreeSubNode* father = subnode->GetFather();
@@ -250,7 +251,7 @@ bool	Octree::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
 						father->KillSons();
 					}
 				}
-				myObjectNodeAssociation[(SceneNode*)item] = 0;
+				myObjectNodeAssociation[(SceneNode*)item.get()] = 0;
 			}
 		}
 	}
@@ -275,20 +276,20 @@ void  Octree::ReorganiseOctree()
 		RecomputeBoundingBox();
 	}
 
-	kstl::vector<CoreModifiable*> toRemove;
+	kstl::vector<CMSP> toRemove;
 	// add all concerned object to the octree
-	for (auto& mis : getItems())
+	for (auto mis : getItems())
 	{
-		CoreModifiable* item = mis.myItem;
+		CMSP& item = mis.myItem;
 
 		if (item->isUserFlagSet(UserFlagNode3D))
 		{
 			// make sure the bounding box, matrix... are ok before adding
 			if (!item->isSubType("OctreeSubNode"))
 			{
-				OctreeSubNode* subNode = myRootSubNode->AddNode(((Node3D*)item), 0, myMaxRecursiveLevel, mySubdivideLevel);
+				SP<OctreeSubNode> subNode = myRootSubNode->AddNode((SP<SceneNode>&)item, 0, myMaxRecursiveLevel, mySubdivideLevel);
 
-				AddNodeToMap((Node3D*)item, subNode);
+				AddNodeToMap((SceneNode*)item.get(), subNode.get());
 				toRemove.push_back(item);
 			}
 		}
@@ -341,7 +342,7 @@ void  OctreeSubNode::KillSons()
 	int index;
 	for (index = 0; index < soncount; index++)
 	{
-		removeItem(mySonsSubNodes[index]);
+		removeItem((CMSP&)mySonsSubNodes[index]);
 	}
 	delete[] mySonsSubNodes;
 	mySonsSubNodes = nullptr;
@@ -367,16 +368,16 @@ bool  OctreeSubNode::SonsAreEmpty()
 	return true;
 }
 
-OctreeSubNode*  OctreeSubNode::AddNode(SceneNode* node, int currentlevel, int maxLevel, int subdivelevel)
+SP<OctreeSubNode>  OctreeSubNode::AddNode(SP<SceneNode>& node, int currentlevel, int maxLevel, int subdivelevel)
 {
 	// add it to me
 	if ((myTotalNodes < subdivelevel) || (currentlevel >= maxLevel))
 	{
-		myObjectList.push_back(node);
-		addItem(node);
+		myObjectList.push_back(node.get());
+		addItem((CMSP&)node);
 
 		myTotalNodes++;
-		return this;
+		return CMSP(this, GetRefTag{});
 	}
 	else // try to add it to sons
 	{
@@ -386,7 +387,7 @@ OctreeSubNode*  OctreeSubNode::AddNode(SceneNode* node, int currentlevel, int ma
 			Divide();
 		}
 
-		int index = FindSubNode(node);
+		int index = FindSubNode(node.get());
 		if (index != -1)
 		{
 			myTotalNodes++;
@@ -394,10 +395,10 @@ OctreeSubNode*  OctreeSubNode::AddNode(SceneNode* node, int currentlevel, int ma
 		}
 		else
 		{
-			myObjectList.push_back(node);
-			addItem(node);
+			myObjectList.push_back(node.get());
+			addItem((CMSP&)node);
 			myTotalNodes++;
-			return this;
+			return CMSP(this, GetRefTag{});
 		}
 	}
 }
@@ -406,16 +407,15 @@ void  OctreeSubNode::Divide()
 {
 	int soncount = myFatherOctree->getSubdivisionCount();
 
-	mySonsSubNodes = new OctreeSubNode*[soncount];
+	mySonsSubNodes = new SP<OctreeSubNode>[soncount];
 
 	// compute son bounding box
 	int i, j, k, index;
 
 	for (i = 0; i < soncount; i++)
 	{
-		mySonsSubNodes[i] = (OctreeSubNode*)(KigsCore::GetInstanceOf("mySonsSubNodes", "OctreeSubNode"));
-		addItem(mySonsSubNodes[i]);
-		mySonsSubNodes[i]->Destroy();
+		mySonsSubNodes[i] = KigsCore::GetInstanceOf("mySonsSubNodes", "OctreeSubNode");
+		addItem((CMSP&)mySonsSubNodes[i]);
 		mySonsSubNodes[i]->myFatherOctree = myFatherOctree;
 		mySonsSubNodes[i]->Init();
 	}
@@ -490,11 +490,14 @@ void  OctreeSubNode::Divide()
 			tmpnodes[i] = 0;
 			mySonsSubNodes[index]->myTotalNodes++;
 
-			myFatherOctree->AddNodeToMap(*it, mySonsSubNodes[index]);
+			myFatherOctree->AddNodeToMap(*it, mySonsSubNodes[index].get());
 
 			mySonsSubNodes[index]->myObjectList.push_back(*it);
-			mySonsSubNodes[index]->addItem(*it);
-			removeItem(*it);
+
+			CMSP totreat(*it, StealRefTag{});
+
+			mySonsSubNodes[index]->addItem(totreat);
+			removeItem(totreat);
 		}
 		else
 		{
@@ -571,7 +574,8 @@ bool  OctreeSubNode::RemoveNode(SceneNode* node)
 		if ((*it) == node)
 		{
 			found = true;
-			removeItem(*it);
+			CMSP todel(*it, StealRefTag{});
+			removeItem(todel);
 			myObjectList.erase(it);
 
 			break;

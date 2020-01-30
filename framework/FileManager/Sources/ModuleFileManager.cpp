@@ -60,7 +60,7 @@ SmartPointer<CoreRawBuffer> ModuleFileManager::LoadFileToBuffer(const std::strin
 // return a pointer on the loaded file in memory, must be deleted with delete[] after use
 CoreRawBuffer*	ModuleFileManager::LoadFile(const char *pFilename, u64& filelength, u64 startOffset, bool AsCharString)
 {
-	SmartPointer<FileHandle> result = KigsCore::GetSingleton("FilePathManager")->as<FilePathManager>()->FindFullName(pFilename);
+	SmartPointer<FileHandle> result = KigsCore::Singleton<FilePathManager>()->FindFullName(pFilename);
 	if (result->myStatus&FileHandle::Exist)
 	{
 		return LoadFile(result.get(), filelength, startOffset, AsCharString);
@@ -147,7 +147,8 @@ bool	ModuleFileManager::SaveFile(const char *filename, unsigned char* data, u64 
 bool	ModuleFileManager::CoreCopyFile(const char *sourceFilename, const char *destFileName, int buffLen)
 {
 	bool result = true;
-	SmartPointer<FileHandle> FileRead = KigsCore::GetSingleton("FilePathManager")->as<FilePathManager>()->FindFullName(sourceFilename);
+
+	SmartPointer<FileHandle> FileRead = KigsCore::Singleton<FilePathManager>()->FindFullName(sourceFilename);
 	if (!FileRead->myFile)
 	{
 		result=false;

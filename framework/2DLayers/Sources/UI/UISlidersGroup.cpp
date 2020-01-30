@@ -20,7 +20,7 @@ UISlidersGroup::~UISlidersGroup()
 }
 
 
-bool	UISlidersGroup::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	UISlidersGroup::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType("UIItem") && !item->getItems().empty()) 
 	{
@@ -40,8 +40,8 @@ bool	UISlidersGroup::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK
 		if(ITStart == ITEnd)
 			return false;
 
-		UISlider* temp = (UISlider*)(*ITStart).myItem;
-		mySliderList.push_back(temp);
+		
+		mySliderList.push_back((UISlider*)(*ITStart).myItem.get());
 		mySliderNumber++;
 
 		bool value = UIItem::addItem(item,pos PASS_LINK_NAME(linkName));
@@ -90,7 +90,7 @@ bool	UISlidersGroup::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK
 	}
 }
 
-bool	UISlidersGroup::removeItem(CoreModifiable *item DECLARE_LINK_NAME)
+bool	UISlidersGroup::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType("UIItem") && !item->getItems().empty()) 
 	{
@@ -110,7 +110,7 @@ bool	UISlidersGroup::removeItem(CoreModifiable *item DECLARE_LINK_NAME)
 		if(ITStart == ITEnd)
 			return false;
 
-		UISlider* temp = (UISlider*)(*ITStart).myItem;
+		UISlider* temp = (UISlider*)(*ITStart).myItem.get();
 		kstl::vector<UISlider*>::iterator ItStart =		mySliderList.begin();
 		kstl::vector<UISlider*>::iterator ItEnd =		mySliderList.end();
 		kstl::vector<UISlider*>::iterator ItSaved;

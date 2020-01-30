@@ -5,11 +5,12 @@
 
 #include "GlobalEnum.h"
 #include "maReference.h"
+#include "MouseVelocityComputer.h"
 #include <deque>
 
 class UIItem;
 class ModuleInput;
-class MouseVelocityComputer;
+
 class MultiTouchPinch;
 class Node2D;
 
@@ -55,10 +56,10 @@ public:
 	//! Do drawing here if any
 	void TravDraw(TravState* state) override;
 
-	void AddChild(UIItem* aChild, UIItem * aParent=NULL);
-	void DeleteChild(UIItem* aChild);
+	void AddChild(CMSP& aChild, UIItem * aParent=NULL);
+	void DeleteChild(CMSP& aChild);
 
-	UIItem* GetRootItem() { return myRootItem; }
+	SP<UIItem>& GetRootItem() { return myRootItem; }
 
 protected:
 	virtual ~BaseUI2DLayer();
@@ -83,9 +84,9 @@ protected:
 
 	ModuleInput* myInput;
 	// TODO : change root item management in BaseUI2DLayer (use classic additem / removeitem...)
-	UIItem* myRootItem;
+	SP<UIItem> myRootItem;
 	std::vector<UIItem*> myMouseOverList;
-	std::deque<UIItem*> myWaitToDelete;
+	std::deque<SP<UIItem>> myWaitToDelete;
 
 	int myInputFlag=UIInputEvent::NONE;
 	bool myMouseOverChanged;
@@ -93,7 +94,7 @@ protected:
 	bool myFocus;
 	UIItem* myFocusItem;
 
-	MouseVelocityComputer*	mMouseVelocityComputer = nullptr;
+	SP<MouseVelocityComputer>	mMouseVelocityComputer = nullptr;
 	MultiTouchPinch*		mMultiTouchPinch = nullptr;
 
 	maBool					mGlobalPriority = BASE_ATTRIBUTE(GlobalPriority, false);

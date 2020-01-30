@@ -38,7 +38,7 @@ void UIFlowLayout::RecomputeLayout()
 			{
 				if (son.myItem->isSubType(Node2D::myClassID))
 				{
-					items.push_back(son.myItem);
+					items.push_back(son.myItem.get());
 				}
 			}
 		}

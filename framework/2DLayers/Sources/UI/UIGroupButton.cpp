@@ -79,15 +79,15 @@ void	UIGroupButton::reComputeSize()
 //-------------------------------------------------------------------------
 //addItem
 
-bool	UIGroupButton::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	UIGroupButton::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType("UIButton"))
 	{
-		myButtonList.push_back((UIButton*)item);
+		myButtonList.push_back((UIButton*)item.get());
 		myButtonNumber++;
 
 		bool value = UIItem::addItem(item, pos PASS_LINK_NAME(linkName));
-		computeSize(myButtonNumber, item);
+		computeSize(myButtonNumber, item.get());
 
 		return value;
 	}
@@ -107,7 +107,7 @@ bool	UIGroupButton::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_
 //-------------------------------------------------------------------------
 //removeItem
 
-bool	UIGroupButton::removeItem(CoreModifiable *item DECLARE_LINK_NAME)
+bool	UIGroupButton::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType("UIButton"))
 	{
@@ -119,7 +119,7 @@ bool	UIGroupButton::removeItem(CoreModifiable *item DECLARE_LINK_NAME)
 		while (ItStart != ItEnd)
 		{
 
-			if ((*ItStart) == (UIButton*)item)
+			if ((*ItStart) == item.get())
 			{
 				ItSaved = ItStart;
 			}

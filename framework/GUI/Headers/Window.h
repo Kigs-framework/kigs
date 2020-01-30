@@ -3,7 +3,7 @@
 
 #include "CoreModifiable.h"
 #include "CoreModifiableAttribute.h"
-//#include "MouseDevice.h"
+#include "Timer.h"
 class   RenderingScreen;
 
 // ****************************************
@@ -71,9 +71,9 @@ public:
 	void SetDoubleClickCallback(ClickMessageCallbackFn Callback) {myDoubleClickCallback = Callback;}
 
 	//! add item. Manage rendering screen
-	bool	addItem(CoreModifiable *item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
 	//! remove item. Manage rendering screen
-	bool	removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME) override;
+	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 	//! return the window handle
 	void*	GetHandle(){return myHandle;}

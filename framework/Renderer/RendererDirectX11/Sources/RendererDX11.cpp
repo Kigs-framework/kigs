@@ -300,8 +300,14 @@ void RendererDX11::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribu
 		{
 			return DX11Texture::CreateInstance(instancename, args);
 		}
-		TextureFileManager* fileManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-		return fileManager->GetTexture(instancename, false);
+		SP<TextureFileManager> fileManager = KigsCore::GetSingleton("TextureFileManager");
+		SP<Texture> texture = fileManager->GetTexture(instancename, false);
+		// texture will be delete when lambda exit ( as only the pointer is returned )
+		if (texture)
+		{
+			texture->GetRef(); // so get a ref before exiting
+		}
+		return texture.get();
 	});
 
 	DECLARE_FULL_CLASS_INFO(core, DX11Camera, Camera, Renderer);
@@ -342,7 +348,7 @@ void RendererDX11::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribu
 
 	PlatformInit(core, params);
 
-	myDefaultUIShader = (ShaderBase*)KigsCore::GetInstanceOf("UIShader", "API3DUIShader");
+	myDefaultUIShader = KigsCore::GetInstanceOf("UIShader", "API3DUIShader");
 	myVertexBufferManager = std::make_unique<VertexBufferManager>();
 }
 
@@ -486,7 +492,7 @@ void RendererDX11::Close()
 	for (auto obj : mySamplerStateList)
 		obj.second->Release();
 
-	if (myDefaultUIShader) myDefaultUIShader->Destroy();
+	myDefaultUIShader=nullptr;
 
 	ID3D11Debug *d3dDebug = nullptr;
 	if (S_OK == myDXInstance.m_device->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug))

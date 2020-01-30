@@ -144,12 +144,11 @@ public:
 	DECLARE_CLASS_INFO(API3DUniformTexture, API3DUniformBase, Renderer)
 	API3DUniformTexture(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	bool	addItem(CoreModifiable *item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
-	bool	removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME) override;
+	bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 
 protected:
-	virtual ~API3DUniformTexture();
 	void InitModifiable() override;
 	void NotifyUpdate(const unsigned int  labelid) override;
 
@@ -159,7 +158,7 @@ protected:
 	maInt		myTextureChannel;
 	maString	myTextureName;
 
-	Texture*	myAttachedTexture;
+	SP<Texture>	myAttachedTexture;
 };
 #if DX11
 class API3DUniformDataTexture : public API3DUniformBase

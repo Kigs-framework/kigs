@@ -17,8 +17,8 @@ protected:
 	void ProtectedDraw(TravState* state)override;
 	//void Update(const Timer& timer, void* addParam) override;
 	void NotifyUpdate(const unsigned int /* labelid */)override;
-	bool addItem(CoreModifiable* item, ItemPosition pos = Last)override;
-	bool removeItem(CoreModifiable* item)override;
+	bool addItem(const CMSP& item, ItemPosition pos = Last)override;
+	bool removeItem(const CMSP& item)override;
 
 	void SetTexUV(UIVerticesInfo * aQI) override{}
 	void SetVertexArray(UIVerticesInfo * aQI) override {}

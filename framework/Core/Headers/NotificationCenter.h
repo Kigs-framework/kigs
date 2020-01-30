@@ -25,22 +25,11 @@ public:
 
 	void removeObserver(CoreModifiable* observer,const kstl::string& notificationName="",CoreModifiable* sender=0,bool fromDestructor=false);
 
-	void postNotificationName(const kstl::string& notificationName,kstl::vector<CoreModifiableAttribute*>& params,CoreModifiable* sender=0,void* data=0)
-	{
-		unsigned int notificationID=CharToID::GetID(notificationName);
-		postNotificationName(notificationID,params,sender,data);
-	}
-	void postNotificationName(const kstl::string& notificationName,CoreModifiable* sender=0,void* data=0)
-	{
-		unsigned int notificationID=CharToID::GetID(notificationName);
-		postNotificationName(notificationID,sender,data);
-	}
-
-	void postNotificationName(unsigned int notificationID,kstl::vector<CoreModifiableAttribute*>& params,CoreModifiable* sender=0,void* data=0);
-	void postNotificationName(unsigned int notificationID,CoreModifiable* sender=0,void* data=0)
+	void postNotificationName(const KigsID& notificationName, kstl::vector<CoreModifiableAttribute*>& params, CoreModifiable* sender = 0, void* data = 0);
+	void postNotificationName(const KigsID& notificationName, CoreModifiable* sender = 0, void* data = 0)
 	{
 		kstl::vector<CoreModifiableAttribute*> params;
-		postNotificationName(notificationID,params,sender,data);
+		postNotificationName(notificationName, params, sender, data);
 	}
 
 	void Update();

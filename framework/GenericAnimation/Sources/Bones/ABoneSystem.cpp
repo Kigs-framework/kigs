@@ -45,7 +45,7 @@ void    ABoneSystem::Animate(ATimeValue t)
 	SearchParentNode3D();
 	
 	InitLocalToGlobalData();
-	((ABoneChannel*)mp_Root)->AnimateRoot(t, this);
+	((ABoneChannel*)mp_Root.get())->AnimateRoot(t, this);
 	
 	ApplyLocalToGlobalData();
 	
@@ -66,7 +66,7 @@ void ABoneSystem::SetupDraw()
 			// find skeleton item
 			if (aobject->getItems().at(i).myItem->isSubType("AObjectSkeletonResource"))
 			{
-				mySkeleton = (AObjectSkeletonResource*)aobject->getItems().at(i).myItem;
+				mySkeleton = (AObjectSkeletonResource*)aobject->getItems().at(i).myItem.get();
 				break;
 			}
 		}
@@ -102,18 +102,17 @@ void	ABoneSystem::SearchParentNode3D()
 			m_pInstantLocalToGlobalData.set(currentMatrix);
 			
 			GenericAnimationModule* animation = (GenericAnimationModule*)KigsCore::GetModule("GenericAnimationModule");
-			CoreModifiable* shader = KigsCore::GetInstanceOf(getName()+"SkinShader", "GLSLSkinShader");
-			
+			CMSP shader = KigsCore::GetInstanceOf(getName()+"SkinShader", "GLSLSkinShader");
+			shader->GetRef();
 			// add matrices to shader
-			CoreModifiable* uniformMatrixArray = KigsCore::GetInstanceOf(getName() + "SkinShaderMatrix", "GLSLUniformMatrixArray");
+			CMSP uniformMatrixArray = KigsCore::GetInstanceOf(getName() + "SkinShaderMatrix", "GLSLUniformMatrixArray");
 			
 			uniformMatrixArray->setValue(LABEL_TO_ID(ArraySize), 66);
 			uniformMatrixArray->setValue(LABEL_TO_ID(Name), "bone_matrix");
 			uniformMatrixArray->Init();
 			shader->addItem(uniformMatrixArray);
-			uniformMatrixArray->Destroy();
 			shader->Init();
-			animation->addShader(myParentNode3D, shader);
+			animation->addShader(myParentNode3D, shader.get());
 			
 			// retreive matrix buffer
 			CheckUniqueObject retreiveMatrix;

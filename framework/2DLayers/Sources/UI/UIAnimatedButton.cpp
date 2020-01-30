@@ -82,10 +82,9 @@ void	UIAnimatedButton::LoadTexture(SmartPointer<SpriteSheetTexture>& a_textptr, 
 	if (a_filename != "")
 	{
 		// load texture
-		TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-		if (a_textptr)
-			a_textptr = 0;
-		a_textptr = OwningRawPtrToSmartPtr(textureManager->GetSpriteSheetTexture(a_filename));
+		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+	
+		a_textptr = textureManager->GetSpriteSheetTexture(a_filename);
 	}
 }
 
@@ -151,7 +150,7 @@ bool UIAnimatedButton::isAlpha(float X, float Y)
 		{
 			if(sons[i].myItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = (AlphaMask*)sons[i].myItem;
+				myAlphaMask = sons[i].myItem;
 				break;
 			}
 		}

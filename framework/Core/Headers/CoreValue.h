@@ -34,58 +34,69 @@ protected:
 	CoreValueBase(CoreItem::COREITEM_TYPE _type) : BaseClass(_type){}
 public:
 	
-	virtual void set(int key, const CoreItemSP& toinsert)
+	virtual void set(int key, const CoreItemSP& toinsert) override
 	{
 		KIGS_ERROR("set called on CoreValue",1);
 	}
-	virtual void set(const kstl::string& key, const CoreItemSP& toinsert)
+	virtual void set(const kstl::string& key, const CoreItemSP& toinsert) override
 	{
 		KIGS_ERROR("set called on CoreValue", 1);
 	}
-	virtual void set(const usString& key, const CoreItemSP& toinsert)
+	virtual void set(const usString& key, const CoreItemSP& toinsert) override
 	{
 		KIGS_ERROR("set called on CoreValue", 1);
 	}
 
-	virtual inline operator bool() const
+	virtual inline operator bool() const override
 	{
 		return false;
 	}
 
-	virtual inline operator kfloat() const
+	virtual inline operator kfloat() const override
 	{
 		return 0.0f;
 	}
 
-	virtual inline operator int() const
+	virtual inline operator double() const override
+	{
+		return 0.0f;
+	}
+
+	virtual inline operator int() const override
 	{
 		return 0;
 	}
 
-	virtual inline operator unsigned int() const
+	virtual inline operator unsigned int() const override
 	{
 		return 0;
 	}
 
-	virtual inline operator kstl::string() const
+	virtual inline operator kstl::string() const override
 	{
 		return "";
 	}
 
-	virtual inline operator usString() const
+	virtual inline operator usString() const override
 	{
 		return usString("");
 	}
 
-	virtual inline operator Point2D() const
+	virtual inline operator Point2D() const override
 	{
 		Point2D result;
 		return result;
 	}
 
-	virtual inline operator Point3D() const
+	virtual inline operator Point3D() const override
 	{
 		Point3D result;
+		return result;
+	}
+
+	virtual inline operator Vector4D() const override
+	{
+		Vector4D result;
 		return result;
 	}
 
@@ -105,14 +116,14 @@ public:
 
 	virtual bool getValue(Point3D& _value) const { return false; }*/
 
-	virtual bool operator==(const CoreItem& other) const
+	virtual bool operator==(const CoreItem& other) const override
 	{
-		return (m_Value == (T)other);
+		return (m_Value == other.operator T());
 	}
 
-	virtual kstl::string toString() const { return "";}
+	virtual kstl::string toString() const override { return "";}
 
-	virtual bool isString() const {return false;}
+	virtual bool isString() const override {return false;}
 
 	T& getByRef()
 	{
@@ -129,13 +140,13 @@ public:
 		return &m_Value;
 	}
 
-	virtual void*	getContainerStruct()
+	virtual void*	getContainerStruct() override
 	{
 		return &m_Value;
 	}
 
 protected:
-	virtual void    ProtectedDestroy()
+	virtual void    ProtectedDestroy() override
 	{
 		CoreItem::ProtectedDestroy();
 	}
@@ -186,9 +197,21 @@ inline CoreValueBase<bool,CoreItem>::operator  kfloat() const
 }
 
 template<>
+inline CoreValueBase<bool, CoreItem>::operator double() const
+{
+	return m_Value ? 1.0 : 0.0;
+}
+
+template<>
 inline CoreValueBase<bool,CoreNamedItem>::operator  kfloat() const
 {
 	return m_Value ? 1.0f : 0.0f;
+}
+
+template<>
+inline CoreValueBase<bool, CoreNamedItem>::operator double() const
+{
+	return m_Value ? 1.0 : 0.0;
 }
 
 template<>
@@ -226,6 +249,18 @@ template<>
 inline CoreValueBase<kfloat,CoreNamedItem>::operator  kfloat() const
 {
 	return m_Value;
+}
+
+template<>
+inline CoreValueBase<kfloat, CoreItem>::operator double() const
+{
+	return (double)m_Value;
+}
+
+template<>
+inline CoreValueBase<kfloat, CoreNamedItem>::operator double() const
+{
+	return (double)m_Value;
 }
 
 template<>
@@ -304,6 +339,18 @@ inline CoreValueBase<kfloat, CoreNamedItem>::operator Point3D()  const
 }
 
 template<>
+inline CoreValueBase<kfloat, CoreNamedItem>::operator Vector4D()  const
+{
+	Vector4D _value;
+	_value.x = (kfloat)m_Value;
+	_value.y = (kfloat)m_Value;
+	_value.z = (kfloat)m_Value;
+	_value.w = (kfloat)m_Value;
+	return _value;
+}
+
+
+template<>
 inline CoreValueBase<kfloat, CoreItem>::operator  Point2D() const
 {
 	Point2D _value;
@@ -319,6 +366,17 @@ inline CoreValueBase<kfloat, CoreItem>::operator Point3D()  const
 	_value.x = (kfloat)m_Value;
 	_value.y = (kfloat)m_Value;
 	_value.z = (kfloat)m_Value;
+	return _value;
+}
+
+template<>
+inline CoreValueBase<kfloat, CoreItem>::operator Vector4D()  const
+{
+	Vector4D _value;
+	_value.x = (kfloat)m_Value;
+	_value.y = (kfloat)m_Value;
+	_value.z = (kfloat)m_Value;
+	_value.w = (kfloat)m_Value;
 	return _value;
 }
 
@@ -344,6 +402,17 @@ inline CoreValueBase<Point2D, CoreNamedItem>::operator Point3D()  const
 }
 
 template<>
+inline CoreValueBase<Point2D, CoreNamedItem>::operator Vector4D()  const
+{
+	Vector4D _value;
+	_value.x = m_Value.x;
+	_value.y = m_Value.y;
+	_value.z = 0.0f;
+	_value.w = 0.0f;
+	return _value;
+}
+
+template<>
 inline CoreValueBase<Point2D, CoreItem>::operator  Point2D() const
 {
 	Point2D _value;
@@ -362,6 +431,16 @@ inline CoreValueBase<Point2D, CoreItem>::operator Point3D()  const
 	return _value;
 }
 
+template<>
+inline CoreValueBase<Point2D, CoreItem>::operator Vector4D()  const
+{
+	Vector4D _value;
+	_value.x = m_Value.x;
+	_value.y = m_Value.y;
+	_value.z = 0.0f;
+	_value.w = 0.0f;
+	return _value;
+}
 
 
 template<>
@@ -922,18 +1001,22 @@ public:
 	}
 	virtual CoreItem& operator=(const kstl::string& other)
 	{
+		KIGS_WARNING("trying to assign string value to non string CoreValue", 2);
 		return *this;
 	}
 	virtual CoreItem& operator=(const usString& other)
 	{
+		KIGS_WARNING("trying to assign usString value to non usString CoreValue", 2);
 		return *this;
 	}
 	virtual CoreItem& operator=(const Point2D& other)
 	{
+		KIGS_WARNING("trying to assign Point2D value to non Point2D CoreValue", 2);
 		return *this;
 	}
 	virtual CoreItem& operator=(const Point3D& other)
 	{
+		KIGS_WARNING("trying to assign Point3D value to non Point3D CoreValue", 2);
 		return *this;
 	}
 

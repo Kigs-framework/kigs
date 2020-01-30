@@ -5,12 +5,13 @@
 #include "Drawable.h"
 #include "maBuffer.h"
 #include "AttributePacking.h"
+#include "Texture.h"
 
 #include "Shader.h"
 
 #define KEY_TYPE unsigned int
 
-class Texture;
+
 class RendererOpenGL;
 
 class API3DUniformBase : public Drawable
@@ -133,8 +134,8 @@ public:
 	DECLARE_CLASS_INFO(API3DUniformTexture, API3DUniformBase, Renderer)
 	API3DUniformTexture(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	bool	addItem(CoreModifiable *item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
-	bool	removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME) override;
+	bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 
 protected:
@@ -148,7 +149,7 @@ protected:
 	maInt		myTextureChannel;
 	maString	myTextureName;
 
-	Texture*	myAttachedTexture;
+	SP<Texture>	myAttachedTexture = nullptr;
 };
 
 class API3DUniformDataTexture : public API3DUniformBase

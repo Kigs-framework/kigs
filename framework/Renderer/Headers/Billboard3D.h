@@ -217,7 +217,7 @@ protected:
 	//! file name of the texture
 	maString m_TextureFileName;
 	//! Pointer to a Texture... If ==NULL, Billboard should belong to a Billboard Group
-	Texture *m_Tex;
+	SP<Texture> m_Tex;
 	//! Center of BillBoard
 	maVect3DF m_Position;
 	//! Size = Width,Height
@@ -260,7 +260,7 @@ protected:
 	maFloat				m_ratio;
 
 	//! Spritesheet texture
-	SmartPointer<SpriteSheetTexture>	myTexture;
+	SP<SpriteSheetTexture>	myTexture;
 	int					m_CurrentFrame;
 	float				m_AnimationSpeed;
 	double				m_dElpasedTime;

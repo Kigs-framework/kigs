@@ -45,11 +45,11 @@ void	Window::InitModifiable()
 }
 
 //! add item, if item is a rendering screen, set the given item as the used rendering screen (to be done before init)
-bool	Window::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	Window::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType("RenderingScreen"))
 	{
-		myScreen=(RenderingScreen*)item;
+		myScreen=(RenderingScreen*)item.get();
 	}
 
 	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
@@ -57,11 +57,11 @@ bool	Window::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
 }
 
 //! remove item, if item is a rendering screen, set rendering screen pointer to 0
-bool Window::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
+bool Window::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType("RenderingScreen"))
 	{
-		myScreen=0;
+		myScreen=nullptr;
 	}
 
 	return CoreModifiable::removeItem(item PASS_LINK_NAME(linkName));

@@ -1,7 +1,6 @@
 #include "AsciiParserUtils.cpp"
 #include "AsyncRequest.cpp"
 #include "Core.cpp"
-#include "CoreAutoRelease.cpp"
 #include "CoreBaseApplication.cpp"
 #include "CoreDecorator.cpp"
 #include "CoreItem.cpp"

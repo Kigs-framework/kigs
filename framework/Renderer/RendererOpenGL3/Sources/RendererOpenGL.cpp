@@ -75,15 +75,6 @@ RendererOpenGL::RendererOpenGL(const kstl::string& name, CLASS_NAME_TREE_ARG) : 
 	myVBO[0] = -1; // for init check
 }
 
-RendererOpenGL::~RendererOpenGL()
-{
-	if (myUIShader)
-	{
-		myUIShader->Destroy();
-		myUIShader = 0;
-	}
-}
-
 void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 {
 	if (HasShader()) // load uniform
@@ -560,8 +551,14 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 		{
 			return OpenGLTexture::CreateInstance(instancename, args);
 		}
-		TextureFileManager*	fileManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-		return fileManager->GetTexture(instancename, false);
+		auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
+		SP<Texture> texture = texfileManager->GetTexture(instancename, false);
+		// texture will be delete when lambda exit ( as only the pointer is returned )
+		if (texture)
+		{
+			texture->GetRef(); // so get a ref before exiting
+		}
+		return texture.get(); // and return the pointer
 	} );
 
 	
@@ -627,7 +624,7 @@ void RendererOpenGL::Close()
 	}
 #endif
 
-	if (myDefaultUIShader) myDefaultUIShader->Destroy();
+	myDefaultUIShader = nullptr;
 
 #ifdef WIN32
 #ifndef WUP

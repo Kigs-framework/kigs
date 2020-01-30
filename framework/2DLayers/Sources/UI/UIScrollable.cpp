@@ -18,11 +18,11 @@ void UIScrollable::InitModifiable()
 	}
 }
 
-bool UIScrollable::addItem(CoreModifiable* item, ItemPosition pos)
+bool UIScrollable::addItem(const CMSP& item, ItemPosition pos)
 {
 	if (mAdjustOnAddItem && item->isSubType("Node2D"))
 	{
-		if (mySons.find((Node2D*)item) == mySons.end())
+		if (mySons.find((Node2D*)item.get()) == mySons.end())
 		{
 			v2f prev;
 			item->getArrayValue("Position", &prev.x, 2);
@@ -33,11 +33,11 @@ bool UIScrollable::addItem(CoreModifiable* item, ItemPosition pos)
 	return ParentClassType::addItem(item, pos);
 }
 
-bool UIScrollable::removeItem(CoreModifiable* item)
+bool UIScrollable::removeItem(const CMSP& item)
 {
 	if (mAdjustOnRemoveItem && item->isSubType("Node2D"))
 	{
-		if (mySons.find((Node2D*)item) != mySons.end())
+		if (mySons.find((Node2D*)item.get()) != mySons.end())
 		{
 			v2f prev;
 			item->getArrayValue("Position", &prev.x, 2);

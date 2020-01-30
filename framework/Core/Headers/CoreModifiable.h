@@ -5,6 +5,7 @@
 #include "robin_hood.h"
 #include "usString.h"
 #include "TecLibs/Tec3D.h"
+#include "SmartPointer.h"
 
 #include <mutex>
 #include <memory>
@@ -153,6 +154,8 @@ struct LazyContent
 	std::vector<WeakRef*> WeakRefs;
 };
 
+typedef SmartPointer<CoreModifiable> CMSP;
+
 class ModifiableItemStruct
 {
 protected:
@@ -164,13 +167,13 @@ protected:
 	};
 
 public:
-	ModifiableItemStruct(CoreModifiable* item) : myItem(item), myItemFlag(0) {}
+	ModifiableItemStruct(const CMSP& item) : myItem(item), myItemFlag(0) {}
 
-	operator CoreModifiable*() { return myItem; }
-	CoreModifiable* operator->() { return myItem; }
-	CoreModifiable& operator*() { return *myItem; }
+	operator CMSP() { return myItem; }
+	CoreModifiable* operator->() const { return (CoreModifiable*)myItem.get(); }
+	CoreModifiable& operator*() const { return *((CoreModifiable*)myItem.get()); }
 
-	CoreModifiable* myItem;
+	CMSP myItem;
 
 	inline bool	isAggregate() const
 	{
@@ -193,28 +196,28 @@ private:
 typedef	const int	CoreMessageType;
 
 
-#define TEST_ALLOWCHANGES_FLAG
-
 // generic flag
-#define InitFlag							(1UL)
-#define PostDestroyFlag						(2UL)
-#define RecursiveUpdateFlag					(4UL)
-#define NotificationCenterRegistered		(8UL)
-#define ReferenceRegistered					(16UL)
-#define AutoUpdateRegistered				(32UL)
-#define AggregateParentRegistered			(64UL)
-#define AggregateSonRegistered				(128UL)
-#ifdef TEST_ALLOWCHANGES_FLAG
-#define AllowChanges						(256UL)
-#endif
+#define InitFlag							(1U)
+#define PostDestroyFlag						(2U)
+#define RecursiveUpdateFlag					(4U)
+#define NotificationCenterRegistered		(8U)
+#define ReferenceRegistered					(16U)
+#define AutoUpdateRegistered				(32U)
+#define AggregateParentRegistered			(64U)
+#define AggregateSonRegistered				(128U)
+#define AllowChanges						(256U)
+
+// more generic UserFlags
+constexpr u32 UserFlagsBitSize = 16;
+constexpr u32 UserFlagsShift = (32 - UserFlagsBitSize);
 // user flag is set at 0xFF000000
-constexpr u64 UserFlags = 0xFF000000UL;
+constexpr u32 UserFlagsMask = 0xFFFFFFFF<< UserFlagsShift;
 
 #define SIGNAL_ARRAY_CONTENT(a) #a, 
 #define SIGNAL_ENUM_CONTENT(a) a, 
 #define SIGNAL_PUSH_BACK(a) signals.push_back(#a);
 
-#define SIGNAL_CASE(a) case Signals::a: return Emit(#a, std::forward<T>(params)...); break;
+#define SIGNAL_CASE(a) case Signals::a: return CoreModifiable::EmitSignal(#a, std::forward<T>(params)...); break;
 
 #define SIGNALS(...)\
 enum class Signals : u32\
@@ -305,11 +308,11 @@ public:
 	};
 
 	template<typename T>
-	T* as()
+	T* as() const
 	{
 		//KIGS_ASSERT(isSubType(T::myClassID));
 		static_assert(std::is_base_of<CoreModifiable, T>::value, "using as but type is not a coremodifiable");
-		return static_cast<T*>(this);
+		return (T*)static_cast<const T*>(this);
 	}
 
 	/// Modifiable managmenent
@@ -327,9 +330,6 @@ public:
 
 	// true if the modifiable is correctly initialized
 	bool IsInit() { return isInitFlagSet(); }
-
-	// Decrement ref count and delete the object if it's no longer used
-	void Destroy() final;
 
 	// Call Update on aggregate sons then call Update
 	void CallUpdate(const Timer& timer, void* addParam);
@@ -421,14 +421,15 @@ public:
 	template<typename... T>
 	bool SimpleCall(KigsID methodName, T&&... params);
 
-	void Connect(KigsID signal, CoreModifiable* other, KigsID slot CONNECT_PARAM_DEFAULT);
-	void Disconnect(KigsID signal, CoreModifiable* other, KigsID slot);
+
 
 	// Emit a signal
-	bool Emit(KigsID methodNameID);
+	bool EmitSignal(const KigsID& signalID);
 	// Emit a signal with a set of arguement. Need to include AttributePacking.h
 	template<typename... T>
-	bool Emit(KigsID methodName, T&&... params);
+	bool EmitSignal(const KigsID& signalID, T&&... params);
+	//  Emit a signal to CoreModifiable methods
+	bool EmitSignal(const KigsID& signalID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0);
 
 	// Avoid using ! call a method, with a list of CoreModifiableAttribute as parameters
 	bool CallMethod(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0, CoreModifiable* sender = 0);
@@ -441,8 +442,7 @@ public:
 	bool CallMethod(KigsID methodNameID, CoreModifiable& params, void* privateParams = 0, CoreModifiable* sender = 0) {
 		std::vector<CoreModifiableAttribute*> p = (std::vector<CoreModifiableAttribute*>) params;
 		return CallMethod(methodNameID, p, privateParams, sender); }
-	// Avoid using ! emit a signal, with a list of CoreModifiableAttribute as parameters
-	bool CallEmit(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0);
+
 
 
 	/// ID
@@ -575,9 +575,9 @@ public:
 
 	/// Aggregate management
 	// Adds a new son as aggregate
-	bool aggregateWith(CoreModifiable* item, ItemPosition pos = Last);
+	bool aggregateWith(CMSP& item, ItemPosition pos = Last);
 	// Removes a son as aggregate
-	bool removeAggregateWith(CoreModifiable* item);
+	bool removeAggregateWith(CMSP& item);
 	// Recursive search all aggregate sons for an aggregate of the given type  
 	CoreModifiable*	getAggregateByType(KigsID id);
 	// Search parent to see if one of them is aggregate root of this, then recurse
@@ -596,74 +596,68 @@ public:
 	}
 	
 	/// Flags
-	void flagAsNotificationCenterRegistered()
+	inline void flagAsNotificationCenterRegistered()
 	{
 		_ModifiableFlag |= (u32)NotificationCenterRegistered;
 	}
-	void unflagAsNotificationCenterRegistered()
+	inline void unflagAsNotificationCenterRegistered()
 	{
 		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)NotificationCenterRegistered;
 	}
-	bool isFlagAsNotificationCenterRegistered()
+	inline bool isFlagAsNotificationCenterRegistered()
 	{
 		return (_ModifiableFlag&(u32)NotificationCenterRegistered) != 0;
 	}
-	void flagAsReferenceRegistered()
+	inline void flagAsReferenceRegistered()
 	{
 		_ModifiableFlag |= (u32)ReferenceRegistered;
 	}
-	void unflagAsReferenceRegistered()
+	inline void unflagAsReferenceRegistered()
 	{
 		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)ReferenceRegistered;
 	}
-	bool isFlagAsReferenceRegistered()
+	inline bool isFlagAsReferenceRegistered()
 	{
 		return (_ModifiableFlag&(u32)ReferenceRegistered) != 0;
 	}
-	void flagAsAutoUpdateRegistered()
+	inline void flagAsAutoUpdateRegistered()
 	{
 		_ModifiableFlag |= (u32)AutoUpdateRegistered;
 	}
-	void unflagAsAutoUpdateRegistered()
+	inline void unflagAsAutoUpdateRegistered()
 	{
 		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)AutoUpdateRegistered;
 	}
-	bool isFlagAsAutoUpdateRegistered()
+	inline bool isFlagAsAutoUpdateRegistered()
 	{
 		return (_ModifiableFlag&(u32)AutoUpdateRegistered) != 0;
 	}
-	void flagAsPostDestroy()
+	inline void flagAsPostDestroy()
 	{
 		_ModifiableFlag |= (u32)PostDestroyFlag;
 	}
-	void setUserFlag(u8 flag)
+	inline void unflagAsPostDestroy()
 	{
-		_ModifiableFlag |= ((u32)flag) << 24;
+		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)PostDestroyFlag;
 	}
-	void unsetUserFlag(u8 flag)
+	inline bool isFlagAsPostDestroy()
 	{
-		_ModifiableFlag &= 0xFFFFFFFF ^ (((u32)flag) << 24);
+		return (_ModifiableFlag & (u32)PostDestroyFlag) != 0;
 	}
-	bool isUserFlagSet(u8 flag)
+	inline void setUserFlag(u32 flag)
 	{
-		return ((_ModifiableFlag&(((u32)flag) << 24)) != 0);
+		_ModifiableFlag |= ((u32)flag) << UserFlagsShift;
 	}
-	bool isInitFlagSet() { return ((_ModifiableFlag&((u32)InitFlag)) != 0); }
+	inline void unsetUserFlag(u32 flag)
+	{
+		_ModifiableFlag &= 0xFFFFFFFF ^ (((u32)flag) << UserFlagsShift);
+	}
+	inline bool isUserFlagSet(u32 flag)
+	{
+		return ((_ModifiableFlag&(((u32)flag) << UserFlagsShift)) != 0);
+	}
+	inline bool isInitFlagSet() { return ((_ModifiableFlag&((u32)InitFlag)) != 0); }
 
-#ifndef TEST_ALLOWCHANGES_FLAG
-	inline void flagAllowChanges()
-	{
-		mAllowChanges = true;
-	}
-	inline void unflagAllowChanges()
-	{
-		mAllowChanges = false;
-	}
-	inline bool isFlagAllowChanges()
-	{
-		return  mAllowChanges;
-	}
-#else
 	inline void flagAllowChanges()
 	{
 		_ModifiableFlag |= (u32)AllowChanges;
@@ -676,12 +670,12 @@ public:
 	{
 		return (_ModifiableFlag&(u32)AllowChanges) != 0;
 	}
-#endif
+
 	// for some type of classes when we want don't want duplicated instances (textures, shaders...)
 	// return an already existing instance equivalent of this
-	virtual CoreModifiable*	getSharedInstance()
+	virtual CMSP	getSharedInstance()
 	{
-		return this;
+		return CMSP(this, GetRefTag{});
 	}
 
 	/// Link management
@@ -730,16 +724,16 @@ public:
 	virtual void removeUser(CoreModifiable* user);
 	
 	// add a son. Need to call ParentClassType::addItem(...) when overriding !
-	virtual bool addItem(CoreModifiable* item, ItemPosition pos = Last);
+	virtual bool addItem(const CMSP& item, ItemPosition pos = Last);
 	
 	// remove a son. Need to call ParentClassType::removeItem(...) when overriding !
-	virtual bool removeItem(CoreModifiable* item);
+	virtual bool removeItem(const CMSP& item);
 
 	// Called when an attribute that has its notification level set to Owner is modified. Need to call ParentClassType::NotifyUpdate(...) when overriding !
 	virtual void NotifyUpdate(const u32 labelid);
 
 	// By default Two modifiables are equals if they are the same type and attributes are equal. Free to override as needed
-	virtual bool Equal(CoreModifiable& other);
+	virtual bool Equal(const CoreModifiable& other);
 	virtual void SpecificReInit() {}
 
 	//@TODO check for usage
@@ -769,10 +763,10 @@ public:
 	static void	Export(std::string &XMLString, const std::list<CoreModifiable*> &toexport, bool recursive, ExportSettings* settings = nullptr);
 
 public:
-	static CoreModifiable*	Import(const std::string &filename, bool noInit = false, bool keepImportFileName = false, ImportState* state = nullptr, const std::string& override_name="");
+	static CMSP	Import(const std::string &filename, bool noInit = false, bool keepImportFileName = false, ImportState* state = nullptr, const std::string& override_name="");
 	
 	template<typename StringType>
-	static CoreModifiable*	Import(std::shared_ptr<XMLTemplate<StringType> > xmlfile, const std::string &filename, bool noInit = false, bool keepImportFileName = false, ImportState* state = nullptr, const std::string& override_name = "");
+	static CMSP	Import(std::shared_ptr<XMLTemplate<StringType> > xmlfile, const std::string &filename, bool noInit = false, bool keepImportFileName = false, ImportState* state = nullptr, const std::string& override_name = "");
 
 	static CoreModifiable* Find(const std::list<CoreModifiable*> &List, const std::string &Name);
 	static CoreModifiable* FindByType(const std::list<CoreModifiable*> &List, const std::string& type);
@@ -824,6 +818,13 @@ public:
 
 
 protected:
+
+	void Connect(KigsID signal, CoreModifiable* other, KigsID slot CONNECT_PARAM_DEFAULT);
+	void Disconnect(KigsID signal, CoreModifiable* other, KigsID slot);
+
+	// check if we can destroy object
+	virtual bool checkDestroy() override;
+
 	/// Internals
 	void UpdateAggregates(const Timer&  timer, void* addParam);
 	const ModifiableMethodStruct* findMethod(const KigsID& id, const CoreModifiable*& localthis) const;
@@ -926,7 +927,7 @@ protected:
 			XMLNodeBase* xmlattr;
 		};
 
-		std::vector<CoreModifiable*> loadedItems;
+		std::vector<CMSP> loadedItems;
 		std::vector<ToConnect> toConnect;
 
 		bool UTF8Enc;
@@ -938,7 +939,7 @@ protected:
 	};
 
 	template<typename StringType>
-	static CoreModifiable* Import(XMLNodeTemplate<StringType> * currentNode, CoreModifiable* currentModifiable, ImportState& importState);
+	static CMSP Import(XMLNodeTemplate<StringType> * currentNode, CoreModifiable* currentModifiable, ImportState& importState);
 
 	// separated import attributes / import sons, so be sure to import attribute first
 	template<typename StringType>
@@ -956,13 +957,13 @@ protected:
 	static AttachedModifierBase* InitAttributeModifier(XMLNodeTemplate<StringType>* modifierNode, CoreModifiableAttribute* attr);
 
 	template<typename StringType>
-	static CoreModifiable*	InitReference(XMLNodeTemplate<StringType>* currentNode, std::vector<CoreModifiable*> &loadedItems, const std::string& name);
+	static CMSP	InitReference(XMLNodeTemplate<StringType>* currentNode, std::vector<CMSP> &loadedItems, const std::string& name);
 	
 	static bool AttributeNeedEval(const std::string& attr)
 	{
 		if (attr.size() > 6)
 		{
-			if (attr.substr(0, 5) == "eval(")
+			if (attr.substr(0, 4) == "eval")
 			{
 				if (attr[attr.size() - 1] == ')')
 				{
@@ -1013,8 +1014,10 @@ public:
 private:
 	friend class CoreModifiableAttribute;
 	friend class IMEditor;
+	friend class CoreItemSP;
+	friend class KigsCore;
 
-	static void	ReleaseLoadedItems(std::vector<CoreModifiable*> &loadedItems);
+	static void	ReleaseLoadedItems(std::vector<CMSP> &loadedItems);
 
 	// attribute map
 	robin_hood::unordered_map<KigsID, CoreModifiableAttribute* , KigsIDHash> _attributes;
@@ -1036,15 +1039,9 @@ private:
 		return mLazyContent;
 	}
 
-#ifndef TEST_ALLOWCHANGES_FLAG
-	std::atomic_bool mAllowChanges = { true };
-	int _ModifiableFlag = 0;
-#else
 	// Flags
 	int _ModifiableFlag =  AllowChanges;
-#endif
 
-	
 #ifdef KEEP_NAME_AS_STRING
 	// keep track of Decorators only on win32 to be able to export them
 	std::vector<std::string>*	_Decorators = nullptr;

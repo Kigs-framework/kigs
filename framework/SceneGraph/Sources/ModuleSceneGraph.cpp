@@ -19,10 +19,7 @@ IMPLEMENT_CONSTRUCTOR(ModuleSceneGraph)
 
 ModuleSceneGraph::~ModuleSceneGraph()
 {
-	if (myTravState)
-	{
-		myTravState->Destroy();
-	}
+
 }
 
 void ModuleSceneGraph::AddDefferedItem(void* item, DefferedAction::ENUM action)
@@ -237,7 +234,7 @@ void ModuleSceneGraph::Init(KigsCore* core, const kstl::vector<CoreModifiableAtt
 
 	CoreModifiable::GetInstances("ModuleSpecificRenderer", instances);
 
-	myTravState = (TravState*)(KigsCore::GetInstanceOf("SceneTravState", "TravState"));
+	myTravState = KigsCore::GetInstanceOf("SceneTravState", "TravState");
 
 	if (instances.size())
 		myRenderer = (ModuleSpecificRenderer*)*(instances.begin());
@@ -265,7 +262,7 @@ void ModuleSceneGraph::Update(const Timer& timer, void* addParam)
 	DoDefferedAction();
 
 	myTravState->BeginNewFrame();
-	myTravState->GetRenderer()->startFrame(myTravState);
+	myTravState->GetRenderer()->startFrame(myTravState.get());
 
 	// sort node by renderer
 	
@@ -277,34 +274,34 @@ void ModuleSceneGraph::Update(const Timer& timer, void* addParam)
 			//debugPrintfTree(20);
 			myTravState->SetScene(scene);
 			myTravState->SetTime(timer.GetTime());
-			scene->TravCull(myTravState);
-			scene->TravDraw(myTravState);
+			scene->TravCull(myTravState.get());
+			scene->TravDraw(myTravState.get());
 		}
 	}
-	myTravState->GetRenderer()->endFrame(myTravState);
+	myTravState->GetRenderer()->endFrame(myTravState.get());
 }
 
 
-bool	ModuleSceneGraph::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ModuleSceneGraph::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	// only Scene3D can be added here
 
 	if (item->isSubType("Scene3D"))
 	{
-		myScenes.insert((Scene3D*)item);
+		myScenes.insert((Scene3D*)item.get());
 		return ParentClassType::addItem(item,pos PASS_LINK_NAME(linkName));
 	}
 
 	return false;
 }
 
-bool ModuleSceneGraph::removeItem(CoreModifiable* item DECLARE_LINK_NAME)
+bool ModuleSceneGraph::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType("Scene3D"))
 	{
 		for (auto it = myScenes.begin(); it != myScenes.end(); ++it)
 		{
-			if ((*it) == ((Scene3D*)item))
+			if ((*it) == ((Scene3D*)item.get()))
 			{
 				myScenes.erase(it);
 				break;

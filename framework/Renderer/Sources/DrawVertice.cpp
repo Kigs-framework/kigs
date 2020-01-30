@@ -133,8 +133,8 @@ void DrawVertice::InitModifiable()
 		SetDataFromPreset();
 		if (myTextureFileName.const_ref().size())
 		{
-			TextureFileManager* textureManager = KigsCore::GetSingleton<TextureFileManager>();
-			mypTexture = textureManager->GetTextureManaged(myTextureFileName);
+			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+			mypTexture = textureManager->GetTexture(myTextureFileName);
 		}
 	}
 }
@@ -148,8 +148,8 @@ void DrawVertice::NotifyUpdate(const u32 labelid)
 		mypTexture = nullptr;
 		if (myTextureFileName.const_ref().size())
 		{
-			TextureFileManager* textureManager = KigsCore::GetSingleton<TextureFileManager>();
-			mypTexture = textureManager->GetTextureManaged(myTextureFileName);
+			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+			mypTexture = textureManager->GetTexture(myTextureFileName);
 		}
 	}
 	else if (labelid == myPreset.getID()

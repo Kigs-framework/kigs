@@ -291,9 +291,10 @@ public:
 
 	CoreTreeNode* GetTypeNode() const { return myTypeNode; }
 
-
-	virtual void			Destroy() override;
 protected:
+	
+	virtual std::lock_guard<std::recursive_mutex>* lockForDestroy() override;
+
 	/**
 	* \fn 		~RefCountedClass();
 	* \brief	destructor

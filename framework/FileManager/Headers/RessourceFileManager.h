@@ -36,17 +36,17 @@ public:
 		if the file was already read, and an instance already exist, return a reference on
 		the instance
 	*/
-	CoreModifiable*	GetRessource(const kstl::string &ClassName, const kstl::string& fileName);
+	CMSP GetRessource(const kstl::string &ClassName, const kstl::string& fileName);
 
 	/*! release one reference
 	*/
-	void		UnloadRessource(CoreModifiable*);
+	void		UnloadRessource(const CMSP& res);
 	void		UnloadRessource(kstl::string);
 
 	//! add item. 
-	bool	addItem(CoreModifiable *item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
 	//! remove item. 
-	bool	removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME) override;
+	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 
 protected:
@@ -54,7 +54,7 @@ protected:
     virtual ~RessourceFileManager();
 
 	//! For each extension, a path list.
-	kstl::map<kstl::string, CoreModifiable*>		myRessourceMap;
+	kstl::map<kstl::string, CMSP>		myRessourceMap;
 };
 
 #endif //_RessourceFILEMANAGER_H_

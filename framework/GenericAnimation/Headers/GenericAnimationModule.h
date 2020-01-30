@@ -70,8 +70,8 @@ public:
 		
 		while (itc != ite)
 		{
-			(*itc).first->addItem((*itc).second);
-			(*itc).second->Destroy();
+			CMSP toAdd((*itc).second, GetRefTag{});
+			(*itc).first->addItem(toAdd);
 			itc++;
 		}
 		postAddShaderList.clear();

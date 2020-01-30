@@ -19,8 +19,8 @@ public:
 	*/
 	UILayout(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	bool			addItem(CoreModifiable *item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
-	bool			removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME)override;
+	bool			addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
+	bool			removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
 
 	inline void		NeedRecomputeLayout() { myNeedRecompute = true; }
 

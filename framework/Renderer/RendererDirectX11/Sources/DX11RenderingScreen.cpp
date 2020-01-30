@@ -140,7 +140,7 @@ void DX11RenderingScreen::Release(TravState* state)
 
 		if (!myIsOffScreen && state)
 		{
-			renderer->pushShader((API3DShader*)renderer->getDefaultUiShader(), state);
+			renderer->pushShader((API3DShader*)renderer->getDefaultUiShader().get(), state);
 
 			unsigned int shader_flag = ModuleRenderer::VERTEX_ARRAY_MASK | ModuleRenderer::NO_LIGHT_MASK;
 			shader_flag |= ModuleRenderer::TEXCOORD_ARRAY_MASK;
@@ -181,7 +181,7 @@ void DX11RenderingScreen::Release(TravState* state)
 
 			renderer->DrawUIQuad(state, &mVI);
 
-			renderer->popShader((API3DShader*)renderer->getDefaultUiShader(), state);
+			renderer->popShader((API3DShader*)renderer->getDefaultUiShader().get(), state);
 		}
 	}
 
@@ -460,9 +460,9 @@ bool DX11RenderingScreen::CreateResources()
 		
 		m_renderTargetBuffer = nullptr;
 		DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&colorBufferDesc, NULL, m_renderTargetBuffer.put()));
-		if (myFBOTexture) myFBOTexture->Destroy();
-		TextureFileManager* texfileManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-		myFBOTexture = (Texture*)texfileManager->CreateTexture(getName());
+	
+		SP<TextureFileManager> texfileManager = KigsCore::GetSingleton("TextureFileManager");
+		myFBOTexture = texfileManager->CreateTexture(getName());
 		myFBOTexture->setValue("Width", wanted_x);
 		myFBOTexture->setValue("Height", wanted_y);
 		myFBOTexture->InitForFBO();

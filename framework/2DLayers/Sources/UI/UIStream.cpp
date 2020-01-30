@@ -29,8 +29,9 @@ void UIStream::InitModifiable()
 	{
 		if(!_video_file.const_ref().empty())
 		{
-			_framebufferstream = KigsCore::CreateInstance(getName() + "_stream", "MPEG4BufferStream");
-			_framebufferstream->addItem((CoreModifiable*)KigsCore::GetCoreApplication()->GetApplicationTimer());
+			_framebufferstream = KigsCore::GetInstanceOf(getName() + "_stream", "MPEG4BufferStream");
+			CMSP timer = KigsCore::GetCoreApplication()->GetApplicationTimer();
+			_framebufferstream->addItem(timer);
 			_framebufferstream->setValue("FileName", _video_file);
 			_framebufferstream->setValue("Format", "RGB24");
 			_framebufferstream->setValue("Volume", (float)mVolume);
@@ -68,12 +69,11 @@ void UIStream::InitModifiable()
 		}
 	}
 	
-	Texture* texture = (Texture*)KigsCore::GetInstanceOf(getName() + "_streamtex", "Texture");
+	SP<Texture> texture = KigsCore::GetInstanceOf(getName() + "_streamtex", "Texture");
 	texture->setValue("IsDynamic", true);
 	texture->AddDynamicAttribute(BOOL, "IsBGR", false);
 	texture->Init();
-	SetTexture(texture);
-	texture->Destroy();
+	SetTexture(texture.get());
 
 	KigsCore::GetNotificationCenter()->addObserver(this, "StartVideo", _notification_start.const_ref());
 }
@@ -133,11 +133,11 @@ void UIStream::Update(const Timer& timer, void* v)
 	}
 }
 
-bool UIStream::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool UIStream::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType("FrameBufferStream"))
 	{
-		_framebufferstream = NonOwningRawPtrToSmartPtr(item);
+		_framebufferstream = item;
 		if (_autoplay)
 		{
 			myIsPlaying = true;
@@ -148,7 +148,7 @@ bool UIStream::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
 	return UITexturedItem::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-bool UIStream::removeItem(CoreModifiable *item DECLARE_LINK_NAME)
+bool UIStream::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(_framebufferstream == item)
 	{

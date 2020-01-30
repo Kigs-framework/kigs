@@ -37,35 +37,46 @@ void TextureFileManager::AddTexture(const kstl::string& fileName, CoreModifiable
 	}
 }
 
-CoreModifiable* TextureFileManager::CreateTexture(const kstl::string& textureName)
+
+void TextureFileManager::AddTexture(const kstl::string& fileName, CMSP& Tex)
 {
-	Texture* Tex = (Texture*)(KigsCore::GetInstanceOf(textureName, "Texture", true));
-	AddTexture(textureName, Tex);
+	if (!HasTexture(fileName))
+	{
+		myTextureMap[fileName] = Tex.get();
+	}
+	else
+	{
+		KIGS_WARNING("texture already registered in Texture", 2);
+	}
+}
+
+CMSP TextureFileManager::CreateTexture(const kstl::string& textureName)
+{
+	SP<Texture> Tex = KigsCore::GetInstanceOf(textureName, "Texture", true);
+	AddTexture(textureName,(CMSP&) Tex);
 	return Tex;
 }
 
 
-CoreModifiable* TextureFileManager::CreateSpriteSheetTexture(const kstl::string& textureName)
+CMSP TextureFileManager::CreateSpriteSheetTexture(const kstl::string& textureName)
 {
-	CoreModifiable* L_pSpriteSheet = (KigsCore::GetInstanceOf(textureName, "SpriteSheetTexture"));
+	CMSP L_pSpriteSheet = KigsCore::GetInstanceOf(textureName, "SpriteSheetTexture");
 	AddTexture(textureName, L_pSpriteSheet);
-
 	return L_pSpriteSheet;
 }
 
-Texture* TextureFileManager::GetTexture(const kstl::string& fileName, bool doInit)
+SP<Texture> TextureFileManager::GetTexture(const kstl::string& fileName, bool doInit)
 {
 	// crash in editor when creating an UIImage
 	/*if (fileName == "")
 		return NULL;*/
 
-	CoreModifiable *pTex;
+	SP<Texture> pTex(nullptr);
 
 	// already loaded ?
 	if (HasTexture(fileName))
 	{
-		pTex = myTextureMap[fileName];
-		pTex->GetRef();
+		pTex = CMSP(myTextureMap[fileName], GetRefTag{});
 	}
 	else
 	{
@@ -75,27 +86,18 @@ Texture* TextureFileManager::GetTexture(const kstl::string& fileName, bool doIni
 			pTex->Init();
 	}
 
-	return (Texture*)pTex;
+	return pTex;
 }
 
-SmartPointer<Texture> TextureFileManager::GetTextureManaged(const kstl::string& fileName, bool doInit)
-{
-	bool has_texture = HasTexture(fileName);
-	SmartPointer<Texture> result = OwningRawPtrToSmartPtr(GetTexture(fileName, doInit));
-	//if (!has_texture)
-	//	result->GetRef();
-	return result;
-}
 
-Texture* TextureFileManager::GetTexture(const kstl::string& fileName, const kstl::string& a_textureName, bool doInit)
+SP<Texture> TextureFileManager::GetTexture(const kstl::string& fileName, const kstl::string& a_textureName, bool doInit)
 {
-	CoreModifiable *pTex;
+	SP<Texture> pTex;
 
 	// already loaded ?
 	if (HasTexture(a_textureName))
 	{
-		pTex = myTextureMap[a_textureName];
-		pTex->GetRef();
+		pTex = CMSP(myTextureMap[a_textureName], GetRefTag{});
 	}
 	else
 	{
@@ -105,22 +107,21 @@ Texture* TextureFileManager::GetTexture(const kstl::string& fileName, const kstl
 			pTex->Init();
 	}
 
-	return (Texture*)pTex;
+	return pTex;
 }
 
 
-SpriteSheetTexture* TextureFileManager::GetSpriteSheetTexture(const kstl::string& fileName)
+SP<SpriteSheetTexture> TextureFileManager::GetSpriteSheetTexture(const kstl::string& fileName)
 {
 	if (fileName == "")
 		return NULL;
 
-	CoreModifiable* L_pSpriteSheet;
+	SP<SpriteSheetTexture> L_pSpriteSheet;
 
 	// already loaded ?
 	if (HasTexture(fileName))
 	{
-		L_pSpriteSheet = myTextureMap[fileName];
-		L_pSpriteSheet->GetRef();
+		L_pSpriteSheet = CMSP(myTextureMap[fileName], GetRefTag{});
 	}
 	else
 	{
@@ -129,9 +130,9 @@ SpriteSheetTexture* TextureFileManager::GetSpriteSheetTexture(const kstl::string
 		L_pSpriteSheet->Init();
 	}
 
-	return (SpriteSheetTexture*)L_pSpriteSheet;
+	return L_pSpriteSheet;
 }
-
+ 
 
 void TextureFileManager::ResetAllTexture()
 {
@@ -140,7 +141,7 @@ void TextureFileManager::ResetAllTexture()
 	{
 		if ((*it).second->isSubType(Texture::myClassID))
 		{
-			static_cast<Texture*>((*it).second)->SetFlag(Texture::isDirtyContext);
+			((Texture*)(*it).second)->SetFlag(Texture::isDirtyContext);
 			(*it).second->ReInit();
 		}
 	}
@@ -148,15 +149,7 @@ void TextureFileManager::ResetAllTexture()
 
 void TextureFileManager::UnloadAllTexture()
 {
-	kstl::map<kstl::string, CoreModifiable*>::iterator	it = myTextureMap.begin();
-	while (it != myTextureMap.end())
-	{
-		CoreModifiable* t = (*it).second;
-
-		myTextureMap.erase(it);
-		//t->Destroy();
-		it = myTextureMap.begin();
-	}
+	myTextureMap.clear();
 }
 
 void TextureFileManager::UnloadTexture(Texture* Tex)
@@ -168,7 +161,6 @@ void TextureFileManager::UnloadTexture(Texture* Tex)
 		if (it->second == Tex)
 		{
 			myTextureMap.erase(it);
-			//Tex->Destroy();
 			break;
 		}
 	}
@@ -185,7 +177,6 @@ void TextureFileManager::UnloadTexture(SpriteSheetTexture* Tex)
 		if ((*it).second == Tex)
 		{
 			myTextureMap.erase(it);
-			//Tex->Destroy();
 			break;
 		}
 	}

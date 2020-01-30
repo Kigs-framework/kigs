@@ -11,20 +11,20 @@ IMPLEMENT_CLASS_INFO(MultiMesh);
 
 IMPLEMENT_CONSTRUCTOR(MultiMesh)
 {
-	_full_mesh_node = KigsCore::CreateInstance("full_mesh_node", "Node3D");
+	_full_mesh_node = KigsCore::GetInstanceOf("full_mesh_node", "Node3D");
 	_full_mesh_node->Init();
-	ParentClassType::addItem(_full_mesh_node.get());
+	ParentClassType::addItem((CMSP&)_full_mesh_node);
 }
 
 void MultiMesh::PrepareExport(ExportSettings* settings)
 {
 	ParentClassType::PrepareExport(settings);
-	ParentClassType::removeItem(_full_mesh_node.get());
+	ParentClassType::removeItem((CMSP&)_full_mesh_node);
 }
 
 void MultiMesh::EndExport(ExportSettings* settings)
 {
-	ParentClassType::addItem(_full_mesh_node.get());
+	ParentClassType::addItem((CMSP&)_full_mesh_node);
 	ParentClassType::EndExport(settings);
 }
 
@@ -49,28 +49,28 @@ void MultiMesh::TravDraw(TravState* state)
 	}
 }
 
-bool	MultiMesh::addItem(CoreModifiable *item, ItemPosition pos DECLARE_LINK_NAME)
+bool	MultiMesh::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType("Node3D"))
 	{
-		if (std::find(_subnodes.begin(), _subnodes.end(), (Node3D*)item) != _subnodes.end())
+		if (std::find(_subnodes.begin(), _subnodes.end(), (Node3D*)item.get()) != _subnodes.end())
 			return false;
 
 		if (item == _full_mesh_node.get())
 			return false;
 		
-		_subnodes.push_back((Node3D*)item);
+		_subnodes.push_back((Node3D*)item.get());
 		_need_full_mesh_recompute = true;
 		NeedBoundingBoxUpdate();
 	}
 	return ParentClassType::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-bool MultiMesh::removeItem(CoreModifiable* item)
+bool MultiMesh::removeItem(const CMSP& item)
 {
 	if (item->isSubType("Node3D"))
 	{
-		auto it = std::find(_subnodes.begin(), _subnodes.end(), (Node3D*)item);
+		auto it = std::find(_subnodes.begin(), _subnodes.end(), (Node3D*)item.get());
 		if(it != _subnodes.end())
 		{
 			_subnodes.erase(it);
@@ -101,21 +101,21 @@ void MultiMesh::RecomputeBoundingBox()
 		kstl::set<CoreModifiable*> already_inserted;
 		for (auto cm : nodes)
 		{
-			for (auto& item : cm->getItems())
+			for (auto item : cm->getItems())
 			{
 				if (item.myItem->isSubType("ModernMesh"))
 				{
-					meshes.push_back(MeshNode{ item.myItem, cm });
+					meshes.push_back(MeshNode{ item.myItem.Pointer(), cm });
 				}
-				else if(!item.myItem->isSubType("RendererMatrix") && already_inserted.find(item.myItem) == already_inserted.end())
+				else if(!item.myItem->isSubType("RendererMatrix") && already_inserted.find(item.myItem.get()) == already_inserted.end())
 				{
 					_full_mesh_node->addItem(item.myItem); 
-					already_inserted.insert(item.myItem);
+					already_inserted.insert(item.myItem.get());
 				}
 			}
 		}
-		auto full_mesh = KigsCore::CreateInstance("full_mesh", "ModernMesh");
-		SmartPointer<ModernMeshItemGroup> full_mesh_item = KigsCore::CreateInstance("group_0", "ModernMeshItemGroup");
+		auto full_mesh = KigsCore::GetInstanceOf("full_mesh", "ModernMesh");
+		SmartPointer<ModernMeshItemGroup> full_mesh_item = KigsCore::GetInstanceOf("group_0", "ModernMeshItemGroup");
 
 		unsigned int total_vertex_buffer_size = 0;
 		unsigned int total_index_count = 0;
@@ -141,7 +141,7 @@ void MultiMesh::RecomputeBoundingBox()
 					full_mesh_item->myTexCoordsScale = item->myTexCoordsScale;
 					full_mesh_item->myCullMode = item->myCullMode;
 
-					auto mat = item->GetFirstSonByType("Material");
+					auto mat = CMSP(item->GetFirstSonByType("Material"), StealRefTag{});
 					if (mat)
 						full_mesh_item->addItem(mat);
 				}
@@ -288,9 +288,9 @@ void MultiMesh::RecomputeBoundingBox()
 		full_mesh_item->myTriangleBuffer.SetBuffer(index_buffer, total_index_buffer_size);
 
 		full_mesh_item->Init();
-		full_mesh->addItem(full_mesh_item.get());
+		full_mesh->addItem((CMSP&)full_mesh_item);
 		full_mesh->Init();
-		_full_mesh_node->addItem(full_mesh.get());
+		_full_mesh_node->addItem(full_mesh);
 	}
 	ParentClassType::RecomputeBoundingBox();
 }

@@ -12,6 +12,23 @@ class CoreItemIterator;
 class CoreItemSP : public SmartPointer<CoreItem>
 {
 public:
+
+	// constructors
+	// fast init with value 
+	CoreItemSP(const bool& value); 
+	CoreItemSP(const kfloat& other);
+	CoreItemSP(const int& other);
+	CoreItemSP(const unsigned int& other);
+	CoreItemSP(const kstl::string& other,CoreModifiable* owner=nullptr);
+	CoreItemSP(const char* other, CoreModifiable* owner = nullptr) : CoreItemSP(kstl::string(other), owner)
+	{
+	}
+	CoreItemSP(const usString& other, CoreModifiable* owner = nullptr);
+	CoreItemSP(const Point2D& other);
+	CoreItemSP(const Point3D& other);
+	CoreItemSP(const Vector4D& other);
+
+	// other constructors
 	CoreItemSP() : SmartPointer<CoreItem>(nullptr){}
 	CoreItemSP(CoreItem* it, StealRefTag stealref) : SmartPointer<CoreItem>(it, stealref) {}
 	CoreItemSP(CoreItem* it, GetRefTag getref) : SmartPointer<CoreItem>(it, getref) {}
@@ -34,6 +51,8 @@ public:
 
 	inline operator float() const;
 
+	inline operator double() const;
+
 	inline operator int() const;
 
 	inline operator unsigned int() const;
@@ -46,10 +65,13 @@ public:
 
 	inline operator Point3D() const;
 
+	inline operator Vector4D() const;
+
 	inline bool operator==(const CoreItemSP& other) const;
 
 	inline bool operator==(const CoreItem& other) const;
 
+	inline CoreItemSP& operator=(std::nullptr_t);
 
 	static	CoreItemSP	getCoreMap();
 	static	CoreItemSP	getCoreVector();
@@ -245,6 +267,8 @@ public:
 
 	virtual operator kfloat() const;
 
+	virtual operator double() const;
+
 	virtual operator int() const;
 
 	virtual operator unsigned int() const;
@@ -256,12 +280,9 @@ public:
 	virtual operator kstl::string() const;
 
 	virtual operator usString() const;
-
 	virtual operator Point2D() const;
-
 	virtual operator Point3D() const;
-
-	virtual operator Quaternion() const;
+	virtual operator Vector4D() const;
 
 	bool getValue(bool& _value) const {
 		_value = (bool)*this;
@@ -293,11 +314,11 @@ public:
 		return true; }
 
 	bool getValue(Point3D& _value) const {
-		_value = (Point3D)*this;
+		_value = this->operator Point3D();
 		return true; }
 
-	bool getValue(Quaternion& _value) const {
-		_value = (Quaternion)*this;
+	bool getValue(Vector4D& _value) const {
+		_value = this->operator Vector4D();
 		return true;
 	}
 
@@ -307,40 +328,15 @@ public:
 	}
 
 	// empty assignement with value
-	virtual CoreItem& operator=(const bool& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const kfloat& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const int& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const unsigned int& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const kstl::string& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const usString& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const Point2D& other)
-	{
-		return *this;
-	}
-	virtual CoreItem& operator=(const Point3D& other)
-	{
-		return *this;
-	}
-
-
+	virtual CoreItem& operator=(const bool& other);
+	virtual CoreItem& operator=(const kfloat& other);
+	virtual CoreItem& operator=(const int& other);
+	virtual CoreItem& operator=(const unsigned int& other);
+	virtual CoreItem& operator=(const kstl::string& other);
+	virtual CoreItem& operator=(const usString& other);
+	virtual CoreItem& operator=(const Point2D& other);
+	virtual CoreItem& operator=(const Point3D& other);
+	virtual CoreItem& operator=(const Vector4D& other);
 
 	virtual kstl::string toString() const { return ""; }
 	
@@ -473,6 +469,11 @@ inline CoreItemSP::operator float() const
 	return myPointer->operator kfloat();
 }
 
+inline CoreItemSP::operator double() const
+{
+	return myPointer->operator double();
+}
+
 inline CoreItemSP::operator int() const
 {
 	return myPointer->operator int();
@@ -503,6 +504,11 @@ inline CoreItemSP::operator Point3D() const
 	return myPointer->operator Point3D();
 } 
 
+inline CoreItemSP::operator Vector4D() const
+{
+	return myPointer->operator Vector4D();
+}
+
 inline bool CoreItemSP::operator==(const CoreItemSP& other) const
 {
 	return myPointer->operator==(*other.get());
@@ -511,6 +517,13 @@ inline bool CoreItemSP::operator==(const CoreItemSP& other) const
 inline bool CoreItemSP::operator==(const CoreItem& other) const
 {
 	return myPointer->operator==(other);
+}
+
+
+inline CoreItemSP& CoreItemSP::operator=(std::nullptr_t)
+{
+	Reset();
+	return *this;
 }
 
 

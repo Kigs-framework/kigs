@@ -107,8 +107,8 @@ public:
 	ModuleSpecificRenderer*	GetRenderer(){return myRenderer;}
 
 
-	bool addItem(CoreModifiable *item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
-	bool removeItem(CoreModifiable* item DECLARE_DEFAULT_LINK_NAME) override;
+	bool addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 	/**
 	 * \brief	retreive current visible Node Index
@@ -181,7 +181,7 @@ protected:
 	void	SortSceneList();
 
 	//! current state for the culling or drawing
-	TravState*	myTravState;
+	SP<TravState>	myTravState = nullptr;
 
 	//! renderer used by the module
 	ModuleSpecificRenderer*	myRenderer;

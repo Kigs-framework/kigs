@@ -48,7 +48,7 @@ bool	CoreSequence::update(const Timer& timer)
 
 	if (myCurrentActionIndex == 0xFFFFFFFF)
 	{
-		myTarget->Emit("SequenceFinished", myTarget, this);
+		myTarget->EmitSignal("SequenceFinished", myTarget, this);
 		return true;
 	}
 	return false;

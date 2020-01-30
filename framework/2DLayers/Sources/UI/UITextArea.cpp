@@ -41,8 +41,8 @@ void	UITextArea::InitModifiable()
 {
 	UIDrawableItem::InitModifiable();
 
-	TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-	myTexture = OwningRawPtrToSmartPtr(textureManager->CreateTexture(getName()));
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+	myTexture = textureManager->CreateTexture(getName());
 	myTexture->Init();
 	myTexture->SetRepeatUV(false, false);
 }
@@ -94,7 +94,7 @@ bool UITextArea::isAlpha(float X, float Y)
 		{
 			if (sons[i].myItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = (AlphaMask*)sons[i].myItem;
+				myAlphaMask = sons[i].myItem;
 				break;
 			}
 		}
@@ -119,7 +119,9 @@ void UITextArea::GetFocus()
 	if (theKeyboard == NULL)
 		return;
 
-	theKeyboard->addItem(this);
+	CMSP toAdd(this, GetRefTag{});
+
+	theKeyboard->addItem(toAdd);
 	theKeyboard->Show();
 }
 
@@ -140,7 +142,8 @@ void UITextArea::LoseFocus()
 	if (theKeyboard == NULL)
 		return;
 
-	theKeyboard->removeItem(this);
+	CMSP toDel(this, GetRefTag{});
+	theKeyboard->removeItem(toDel);
 	theKeyboard->Hide();
 }
 
@@ -196,7 +199,7 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 		kfloat R, G, B, A = 0.0f;
 		GetColor(R, G, B, A);
 
-		LocalizationManager* theLocalizationManager = (LocalizationManager*)KigsCore::GetSingleton("LocalizationManager");
+		auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 		float LanguageScale = 1.0f;
 		theLocalizationManager->getValue("LanguageScale", LanguageScale);
 
@@ -206,7 +209,7 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 		if (text[0] == '#')
 		{
 			kstl::string key = text.substr(1, text.length() - 1);
-			
+
 			const PLATFORM_WCHAR* localized = theLocalizationManager->getLocalizedString(key.c_str());
 			myTexture->CreateFromText(localized, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold);
 		}

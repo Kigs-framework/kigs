@@ -8,7 +8,7 @@
 
 template <typename stringType, typename parserType>
 JSonFileParserBase<stringType,parserType>::JSonFileParserBase(const kstl::string& filename, CoreModifiable*	delegateObject) :
-myDelegateObject(delegateObject)
+	myDelegateObject(delegateObject, GetRefTag{})
 {
 	InitParser(filename);
 }
@@ -85,7 +85,7 @@ void JSonFileParserBase<stringType,parserType>::InitParserFromString(CoreRawBuff
 template <typename stringType, typename parserType>
 void JSonFileParserBase<stringType,parserType>::InitParser(const kstl::string& filename)
 {
-	FilePathManager*	pathManager=(FilePathManager*)KigsCore::GetSingleton("FilePathManager");
+	auto& pathManager = KigsCore::Singleton<FilePathManager>();
 
 	SmartPointer<::FileHandle> fullfilenamehandle=pathManager->FindFullName(filename);
 
@@ -109,14 +109,14 @@ void JSonFileParserBase<stringType,parserType>::InitParser(const kstl::string& f
 template <>
 CoreModifiableAttribute* JSonFileParserBase<kstl::string, AsciiParserUtils>::getNewStringAttribute(const kstl::string& attrName,const kstl::string& strObjName)
 {
-	return new maString(*myDelegateObject, false, attrName, strObjName);
+	return new maString(*myDelegateObject.get(), false, attrName, strObjName);
 }
 
 template <>
 CoreModifiableAttribute* JSonFileParserBase<usString, US16ParserUtils>::getNewStringAttribute(const usString& attrName,const usString& strObjName)
 {
 	kstl::string name = attrName.ToString();
-	return new maUSString(*myDelegateObject, false, name, strObjName);
+	return new maUSString(*myDelegateObject.get(), false, name, strObjName);
 }
 
 template <>
@@ -125,7 +125,7 @@ void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(ks
 	CoreModifiableAttribute* Value;
 	kstl::string	strvalue = objparamValue;
 
-	myParamList.push_back(new maString(*myDelegateObject, false, strObjName, strObjName));
+	myParamList.push_back(new maString(*myDelegateObject.get(), false, strObjName, strObjName));
 
 	// check if string, numeric or boolean
 	if (strvalue[0] == '"')
@@ -133,12 +133,12 @@ void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(ks
 		// string
 		// remove quotes
 		kstl::string paramValue = objparamValue.substr(1, objparamValue.length() - 2);
-		Value = new maString(*myDelegateObject, false, strObjName, paramValue);
+		Value = new maString(*myDelegateObject.get(), false, strObjName, paramValue);
 	}
 	else if ((strvalue == "true") || (strvalue == "false"))
 	{
 		// boolean
-		Value = new maBool(*myDelegateObject, false, strObjName, false);
+		Value = new maBool(*myDelegateObject.get(), false, strObjName, false);
 		Value->setValue(strvalue);
 	}
 	else
@@ -146,7 +146,7 @@ void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(ks
 		if (strvalue.find('.') != std::string::npos)
 		{
 			// float
-			Value = new maFloat(*myDelegateObject, false, strObjName, KFLOAT_ZERO);
+			Value = new maFloat(*myDelegateObject.get(), false, strObjName, KFLOAT_ZERO);
 		}
 		else
 		{
@@ -154,11 +154,11 @@ void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(ks
 			// check negative
 			if (strvalue.find('-') != std::string::npos)
 			{
-				Value = new maInt(*myDelegateObject, false, strObjName, 0);
+				Value = new maInt(*myDelegateObject.get(), false, strObjName, 0);
 			}
 			else
 			{
-				Value = new maUInt(*myDelegateObject, false, strObjName, 0);
+				Value = new maUInt(*myDelegateObject.get(), false, strObjName, 0);
 			}
 		}
 
@@ -176,19 +176,19 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(usStrin
 
 	kstl::string name = strObjName.ToString();
 
-	myParamList.push_back(new maUSString(*myDelegateObject, false, name, strObjName));
+	myParamList.push_back(new maUSString(*myDelegateObject.get(), false, name, strObjName));
 	// check if string, numeric or boolean
 	if (strvalue[0] == '"')
 	{
 		// string
 		// remove quotes
 		usString paramValue = objparamValue.substr(1, objparamValue.length() - 2);
-		Value = new maUSString(*myDelegateObject, false, name, paramValue);
+		Value = new maUSString(*myDelegateObject.get(), false, name, paramValue);
 	}
 	else if ((strvalue == "true") || (strvalue == "false"))
 	{
 		// boolean
-		Value = new maBool(*myDelegateObject, false, name, false);
+		Value = new maBool(*myDelegateObject.get(), false, name, false);
 		Value->setValue(strvalue);
 	}
 	else
@@ -196,12 +196,12 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(usStrin
 		if (strvalue.find('.') != std::string::npos)
 		{
 			// float
-			Value = new maFloat(*myDelegateObject, false, name, KFLOAT_ZERO);
+			Value = new maFloat(*myDelegateObject.get(), false, name, KFLOAT_ZERO);
 		}
 		else
 		{
 			// int
-			Value = new maInt(*myDelegateObject, false, name, 0);
+			Value = new maInt(*myDelegateObject.get(), false, name, 0);
 		}
 		Value->setValue(strvalue);
 	}
@@ -320,14 +320,13 @@ template <typename stringType, typename parserType>
 CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(const kstl::string& filename)
 {
 	//Create instance of DictionaryFromJson
-	myDictionaryFromJson = (DictionaryFromJson*)CreateDictionnaryFromJSONInstance();
+	myDictionaryFromJson = CreateDictionnaryFromJSONInstance();
 	myDelegateObject = myDictionaryFromJson;
 
 	InitParser(filename);
 
 	CoreItemSP L_TempDictionary = getDictionnary();
 
-	myDictionaryFromJson->Destroy();
 	myDictionaryFromJson = nullptr;
 
 	return L_TempDictionary;
@@ -336,15 +335,15 @@ CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(const 
 // specialized
 
 template <>
-CoreModifiable*			JSonFileParserBase<kstl::string, AsciiParserUtils>::CreateDictionnaryFromJSONInstance()
+CMSP			JSonFileParserBase<kstl::string, AsciiParserUtils>::CreateDictionnaryFromJSONInstance()
 {
-	return (CoreModifiable*)KigsCore::GetInstanceOf("L_DictionaryFromJson", "DictionaryFromJson");
+	return  KigsCore::GetInstanceOf("L_DictionaryFromJson", "DictionaryFromJson");
 }
 
 template <>
 CoreItemSP	JSonFileParserBase< kstl::string, AsciiParserUtils>::getDictionnary()
 {
-	return ((DictionaryFromJson*)myDictionaryFromJson)->Get_Dictionary();
+	return ((DictionaryFromJson*)myDictionaryFromJson.get())->Get_Dictionary();
 }
 
 
@@ -368,15 +367,15 @@ const unsigned char*	JSonFileParserBase<kstl::string, AsciiParserUtils>::GetStri
 }
 
 template <>
-CoreModifiable*			JSonFileParserBase< usString, US16ParserUtils>::CreateDictionnaryFromJSONInstance()
+CMSP			JSonFileParserBase< usString, US16ParserUtils>::CreateDictionnaryFromJSONInstance()
 {
-	return (CoreModifiable*)KigsCore::GetInstanceOf("L_DictionaryFromJson", "DictionaryFromJsonUTF16");
+	return KigsCore::GetInstanceOf("L_DictionaryFromJson", "DictionaryFromJsonUTF16");
 }
 
 template <>
 CoreItemSP	JSonFileParserBase< usString, US16ParserUtils>::getDictionnary()
 {
-	return ((DictionaryFromJsonUTF16*)myDictionaryFromJson)->Get_Dictionary();
+	return ((DictionaryFromJsonUTF16*)myDictionaryFromJson.get())->Get_Dictionary();
 }
 
 
@@ -402,7 +401,7 @@ template <typename stringType, typename parserType>
 CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromString(const stringType& jsonString)
 {
 	//Create instance of DictionaryFromJson
-	myDictionaryFromJson = (DictionaryFromJson*)CreateDictionnaryFromJSONInstance();
+	myDictionaryFromJson = CreateDictionnaryFromJSONInstance();
 	myDelegateObject = myDictionaryFromJson;
 
 	char * copybuffer = new char[GetStringByteSize(jsonString)];
@@ -416,8 +415,7 @@ CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromStr
 
 	CoreItemSP L_TempDictionary = getDictionnary();
 
-	myDictionaryFromJson->Destroy();
-	myDictionaryFromJson = NULL;
+	myDictionaryFromJson = nullptr;
 	
 	return L_TempDictionary;
 

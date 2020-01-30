@@ -227,8 +227,8 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 		outInfo.old_node = outInfo.node;
 	}
 	int index = sIndex.fetch_add(1);
-	outInfo.node = KigsCore::CreateInstance("SpacialMapNode"  + std::to_string(index), "Node3D");
-	ModernMesh* mesh = KigsCore::GetInstanceOf("SpacialMapMesh" + std::to_string(index), "ModernMesh")->as<ModernMesh>();
+	outInfo.node = KigsCore::GetInstanceOf("SpacialMapNode"  + std::to_string(index), "Node3D");
+	SP<ModernMesh> mesh = KigsCore::GetInstanceOf("SpacialMapMesh" + std::to_string(index), "ModernMesh");
 	
 	Node3D* node = outInfo.node->as<Node3D>();
 	//mesh->setValue("DrawNormals", true);
@@ -382,19 +382,16 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 #ifdef KIGS_TOOLS
 		group->mCanFreeBuffers = 3; // KEEP DATA FOR EXPORT
 #endif
-		//group->setValue("CullMode", 1);
 		mesh->EndMeshBuilder();
 		mesh->Init();
 		node->addItem(mesh);
-		//mesh->AddDynamicAttribute(BOOL, "BVH", true);
-		auto collisionBVH = SpacialMeshBVH::BuildFromMesh(mesh, meshMat, true);
+		auto collisionBVH = SpacialMeshBVH::BuildFromMesh(mesh.get(), meshMat, true);
 		if (collisionBVH)
 		{
 			mCollisionManager->SetCollisionObject(mesh, collisionBVH);
-			mContinuousMatching->RegisterSpatialMeshNode(SmartPointer<Node3D>(node, GetRefTag{}));
+			mContinuousMatching->RegisterSpatialMeshNode(outInfo.node);
 		}
 	}
-	mesh->Destroy();
 }
 
 winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ExportTimedScan()
@@ -558,11 +555,11 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ResetTimedScan()
 		{
 			if (it.second.node)
 			{
-				attach->removeItem(it.second.node.get());
+				attach->removeItem((CMSP&)it.second.node);
 			}
 			if (it.second.old_node)
 			{
-				attach->removeItem(it.second.old_node.get());
+				attach->removeItem((CMSP&)it.second.old_node);
 			}
 		}
 		mMeshList.clear();
@@ -765,7 +762,7 @@ void HoloSpatialMap::Update(const Timer& timer, void* addParam)
 					auto mesh = it.second.node->GetFirstSonByType("ModernMesh");
 					mesh->setValue("Show", mShowMeshes);
 					//kigsprintf("adding spatial mesh %u\n", mesh->getUID());
-					attach->addItem(it.second.node.get());
+					attach->addItem(it.second.node);
 				}
 			}
 
@@ -774,7 +771,7 @@ void HoloSpatialMap::Update(const Timer& timer, void* addParam)
 			{
 				if (it.second.node)
 				{
-					attach->removeItem(it.second.node.get());
+					attach->removeItem(it.second.node);
 					//it.second.node->GetRef(); ///TEST
 					//kigsprintf("deleting spatial mesh %u\n", it.second.node->GetFirstSonByType("ModernMesh")->getUID());
 				}
@@ -784,10 +781,10 @@ void HoloSpatialMap::Update(const Timer& timer, void* addParam)
 			exp = SpatialMeshInfo::Op::Update;
 			if (it.second.op.compare_exchange_strong(exp, SpatialMeshInfo::Op::None))
 			{
-				attach->removeItem(it.second.old_node.get());
+				attach->removeItem(it.second.old_node);
 				auto mesh = it.second.node->GetFirstSonByType("ModernMesh");
 				mesh->setValue("Show", mShowMeshes);
-				attach->addItem(it.second.node.get());
+				attach->addItem(it.second.node);
 				//it.second.old_node->GetRef(); ///TEST
 				//kigsprintf("deleting2 spatial mesh %u\n", it.second.old_node->GetFirstSonByType("ModernMesh")->getUID());
 				/*for (auto& kv : it.second.old_node->GetFirstSonByType("ModernMesh")->GetLazyContentNoCreate()->ConnectedTo)

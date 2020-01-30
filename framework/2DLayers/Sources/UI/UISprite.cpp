@@ -73,10 +73,10 @@ void UISprite::ChangeTexture()
 	if (lTexName == "")
 		return;
 
-	TextureFileManager* textureManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
+	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
 	
-	mySpriteSheet =  OwningRawPtrToSmartPtr(textureManager->GetSpriteSheetTexture(lTexName));
+	mySpriteSheet =  textureManager->GetSpriteSheetTexture(lTexName);
 
 	SetTexture(mySpriteSheet->Get_Texture());
 	if (!myTexture)
@@ -122,7 +122,7 @@ bool UISprite::isAlpha(float X, float Y)
 		{
 			if (sons[i].myItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = (AlphaMask*)sons[i].myItem;
+				myAlphaMask = sons[i].myItem;
 				break;
 			}
 		}

@@ -34,13 +34,31 @@ void maCoreItemValue::InitWithJSON(const kstl::string& currentval, CoreModifiabl
 			if (currentval.substr(4, 3) == "Str")
 			{
 				kstl::string toeval = currentval.substr(7, currentval.length() - 7);
-
 				item = CoreItemOperator<kstl::string>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			}
+			else if(currentval.substr(4, 2) == "2D")
+			{
+				kstl::string toeval = currentval.substr(6, currentval.length() - 6);
+				item = CoreItemOperator<Point2D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			}
+			else if (currentval.substr(4, 2) == "3D")
+			{
+				kstl::string toeval = currentval.substr(6, currentval.length() - 6);
+				item = CoreItemOperator<Point3D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			}
+			else if (currentval.substr(4, 2) == "4D")
+			{
+				kstl::string toeval = currentval.substr(6, currentval.length() - 6);
+				item = CoreItemOperator<Vector4D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			}
 			else
 			{
-				kstl::string toeval = currentval.substr(4, currentval.length() - 4);
-
+				int cutpos = 4;
+				if (currentval.substr(4, 2) == "1D")
+				{
+					cutpos = 6;
+				}
+				kstl::string toeval = currentval.substr(cutpos, currentval.length() - cutpos);
 				item = CoreItemOperator<kfloat>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			}
 		}

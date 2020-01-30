@@ -48,7 +48,8 @@ void	Scene3D::UninitModifiable()
 	{
 		// Notify scenegraph  that I am dead
 		ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
-		scenegraph->removeItem(this);
+		CMSP todel(this, GetRefTag{});
+		scenegraph->removeItem(todel);
 		Node3D::UninitModifiable();
 	}
 }
@@ -208,7 +209,7 @@ void Scene3D::TravDraw(TravState* state)
 		state->myVisibilityFrame++;
 		state->SetCurrentCamera(cam);
 		state->SetAllVisible(cam->AllVisible());
-		cam->InitCullingObject(state->GetCullingObject());
+		cam->InitCullingObject(state->GetCullingObject().get());
 		
 		// reset visibility settings
 		state->GetSceneGraph()->ResetVisibleNodeList();

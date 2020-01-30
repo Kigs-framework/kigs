@@ -697,8 +697,7 @@ void CoreModifiableContextMenu(CoreModifiable* item, CoreModifiable* parent=null
 	}
 }
 
-template<typename Container>
-void RecursiveHierarchyTree(CoreModifiable* parent, const Container& instances, bool use_filter = false)
+void RecursiveHierarchyTree(CoreModifiable* parent, const std::set<CoreModifiable*>& instances, bool use_filter = false)
 {
 	auto& state = gKigsTools->HierarchyWindow;
 	s32 max_size = 0;
@@ -710,7 +709,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const Container& instances, 
 
 	for (auto it_item : instances)
 	{
-		CoreModifiable* item = it_item;
+		auto item = it_item;
 		if (!use_filter || state.Filter.PassFilter(item->getName().c_str()) || state.Filter.PassFilter(item->getExactType().c_str()))
 		{
 			char tmpStr[2048];
@@ -787,7 +786,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const Container& instances, 
 					auto new_item = OwningRawPtrToSmartPtr(KigsCore::Instance()->GetInstanceFactory()->GetInstance("unnamed", type_id));
 					if (new_item)
 					{
-						item->addItem(new_item.get());
+						item->addItem(new_item);
 						state.SelectedItem = new_item.get();
 						state.ToExpand.push_back(item);
 					}
@@ -823,8 +822,9 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const Container& instances, 
 							}
 							else
 							{
-								data.parent->removeItem(data.item);
-								item->addItem(data.item);
+								CMSP toremove(data.item, StealRefTag{});
+								data.parent->removeItem(toremove);
+								item->addItem(toremove);
 							}
 
 							data.item->Destroy();
@@ -877,8 +877,14 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const Container& instances, 
 
 			if (opened)
 			{
-				auto copy = item->getItems(); //@NOTE(antoine) make a temp copy because we might call additem/removeitem
-				RecursiveHierarchyTree(item, copy);
+				
+				std::set<CoreModifiable*> toPass;
+				for (auto c : item->getItems())
+				{
+					toPass.insert(c.myItem.get());
+				}
+
+				RecursiveHierarchyTree(item, toPass);
 				ImGui::TreePop();
 			}
 		}
@@ -954,7 +960,13 @@ void DrawHierarchy()
 				ImGui::CollapsingHeader(tmpstr, ImGuiTreeNodeFlags_Leaf);
 				CoreModifiableContextMenu(current_scope);
 
-				RecursiveHierarchyTree(current_scope, current_scope->getItems(), true);
+				std::set<CoreModifiable*> toPass;
+				for (auto c : current_scope->getItems())
+				{
+					toPass.insert(c.myItem.get());
+				}
+
+				RecursiveHierarchyTree(current_scope, toPass, true);
 			}
 			else if (!state.Filter.IsActive())
 			{
@@ -1314,7 +1326,7 @@ void CustomAttributeEditor(CoreModifiable* item)
 		{
 			ImGui::BeginTooltip();
 			ImVec2 size = { screen->getValue<float>("FBOSizeX") * scale, screen->getValue<float>("FBOSizeY") * scale };
-			ImGui::Image((ImTextureID)screen->GetFBOTexture(), size, ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::Image((ImTextureID)screen->GetFBOTexture().get(), size, ImVec2(0, 1), ImVec2(1, 0));
 			ImGui::EndTooltip();
 		};
 		if (screen->GetFBOTexture())
@@ -2826,11 +2838,11 @@ void DrawEditor()
 			auto seq = manager->GetCurrentSequence();
 			if (gKigsTools->HierarchyWindow.Scope.size()==1 && seq)
 			{
-				PushToScope(seq);
+				PushToScope(seq.get());
 				gKigsTools->HierarchyWindow.ForceExpandAll = true;
 				if (seq->mXMLFiles.size())
 				{
-					gKigsTools->ActiveXMLItem = seq;
+					gKigsTools->ActiveXMLItem = seq.get();
 					gKigsTools->ActiveXMLFile = seq->mXMLFiles.back();
 				}
 			}

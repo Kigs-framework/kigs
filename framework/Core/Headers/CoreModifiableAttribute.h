@@ -100,13 +100,12 @@ void doPlacementNew(u32 level) override\
 // Use this one if the underlying_type is not something used anywhere (like an internal structure)
 #define DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(name, template_name, underlying_type, enum_type) DECLARE_ATTRIBUTE_HERITAGE_IMPL(name, template_name, underlying_type, enum_type)
 
+// cast operator does not call modifiers
 #define DECLARE_ATTRIBUTE_HERITAGE(name, template_name, underlying_type, enum_type) DECLARE_ATTRIBUTE_HERITAGE_IMPL(name, template_name, underlying_type, enum_type)\
 public:\
 virtual operator CurrentAttributeType() const\
 {\
-	CurrentAttributeType tmpValue = _value;\
-	CALL_GETMODIFIER(notificationLevel, tmpValue);\
-	return tmpValue;\
+	return _value;\
 };\
 auto& operator=(const CurrentAttributeType& value)\
 {\
@@ -257,6 +256,9 @@ public:
 	DECLARE_SET(CoreModifiable*);
 	DECLARE_SET(void*);
 	DECLARE_SET(const UTF8Char*); // Only for usstring
+	DECLARE_SET(const Point2D&);
+	DECLARE_SET(const Point3D&);
+	DECLARE_SET(const Vector4D&);
 
 #define DECLARE_GET(type) virtual bool getValue(type value) const { return false; }
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET);
@@ -266,6 +268,9 @@ public:
 	DECLARE_GET(CoreItem*&);
 	DECLARE_GET(CoreModifiable*&);
 	DECLARE_GET(void*&);
+	DECLARE_GET(Point2D&);
+	DECLARE_GET(Point3D&);
+	DECLARE_GET(Vector4D&);
 
 #define DECLARE_SETARRAYVALUE(type)	virtual bool setArrayValue(type /*value*/, u32 /* nbElements */){return false;};
 	EXPAND_MACRO_FOR_BASE_TYPES(const, *, DECLARE_SETARRAYVALUE);

@@ -13,28 +13,27 @@ IMPLEMENT_CLASS_INFO(ModuleImGui)
 
 ImGuiLayer* ModuleImGui::CreateDebugLayer(kfloat bg_opacity)
 {
-	ImGuiLayer* DEBUG_ImGuiDebugLayer;
+	SP<ImGuiLayer> DEBUG_ImGuiDebugLayer;
 	kstl::set<CoreModifiable*> insts;
 	CoreModifiable::GetInstancesByName("ImGuiLayer", "imgui_debug_layer", insts);
 	if (insts.size())
-		DEBUG_ImGuiDebugLayer = (ImGuiLayer*)*insts.begin();
+		DEBUG_ImGuiDebugLayer = CMSP((ImGuiLayer*)*insts.begin(), GetRefTag{});
 	else
 	{
-		DEBUG_ImGuiDebugLayer = (ImGuiLayer*)KigsCore::GetInstanceOf("imgui_debug_layer", "ImGuiLayer");
+		DEBUG_ImGuiDebugLayer = KigsCore::GetInstanceOf("imgui_debug_layer", "ImGuiLayer");
 		DEBUG_ImGuiDebugLayer->setValue("RenderingScreen", "RenderingScreen:theRenderingScreen");
 		DEBUG_ImGuiDebugLayer->setValue("Priority", INT_MIN);
 		DEBUG_ImGuiDebugLayer->setValue("ClearColorBuffer", false);
 		DEBUG_ImGuiDebugLayer->setValue("UseOldWUPKeyboard", true);
 		DEBUG_ImGuiDebugLayer->Init();
-		KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex)->addItem(DEBUG_ImGuiDebugLayer);
-		DEBUG_ImGuiDebugLayer->Destroy();
+		KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex)->addItem((CMSP&)DEBUG_ImGuiDebugLayer);
 	}
 	DEBUG_ImGuiDebugLayer->SetActiveImGuiLayer();
 	if(bg_opacity>=0.0f)
 		ImGui::GetStyle().Colors[ImGuiCol_WindowBg].w = bg_opacity;
 
 //	ImGui::GetIO().FontGlobalScale = 3.5f;
-	return DEBUG_ImGuiDebugLayer;
+	return DEBUG_ImGuiDebugLayer.get();
 }
 
 void LoadImguiBindings(lua_State*);

@@ -68,13 +68,6 @@ public:
 	//! constructor
 	ThreadProfiler(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	virtual ~ThreadProfiler() {
-		myGobalTimer->Destroy();
-		myGobalTimer = 0;
-		mySemaphore->Destroy();
-		mySemaphore = 0;
-		//rmt_DestroyGlobalInstance(rmt);
-	}
 
 	void AddTimeEvent(TimeEventType type, const char* name, const char* function_name)
 	{
@@ -110,7 +103,7 @@ public:
 	kstl::map<CoreModifiable*, unsigned int>& GetThreadIndexesMap(){ return myCircularBufferIndexes; }
 	unsigned int GetThreadCircularBufferIndex(CoreModifiable* thread){ return (myCircularBufferIndexes[thread] + THREAD_PROFILER_BUFFER_SIZE - 1) % THREAD_PROFILER_BUFFER_SIZE; }
 
-	Timer* GetThreadProfilerTimer(){ return myGobalTimer; }
+	SP<Timer>& GetThreadProfilerTimer(){ return myGobalTimer; }
 
 	void ExportProfile(const kstl::string path);
 
@@ -120,11 +113,11 @@ private:
 	
 	kstl::map<CoreModifiable*, TimeEventCircularBuffer> myCircularBufferMap;
 	kstl::map<CoreModifiable*, unsigned int> myCircularBufferIndexes;
-	Timer* myGobalTimer;
+	SP<Timer> myGobalTimer;
 
 	ThreadLocalStorageManager* myTlsManager;
 	bool myAllowNewEvents;
-	CoreModifiable* mySemaphore;
+	CMSP mySemaphore;
 };
 
 

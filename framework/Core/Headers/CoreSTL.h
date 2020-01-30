@@ -79,6 +79,9 @@ using has_second_type = decltype(std::declval<typename T::second_type&>());
 template<class T>
 using has_allocator_type = decltype(std::declval<typename T::allocator_type&>());
 
+template<class T>
+using is_smart_pointer = decltype(std::declval<typename T::IsSP&>());
+
 template <class T1, class ... T>
 inline void hash_combine(std::size_t& seed, const T1& value, const T& ... args) noexcept
 {
