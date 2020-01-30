@@ -15,6 +15,7 @@ class SmartPointer
 {
 public:
 	using ValueType = smartPointOn;
+	using IsSP = std::true_type;
 	
 	SmartPointer() : myPointer(0) {};
 	SmartPointer(std::nullptr_t) : SmartPointer() {};
@@ -165,9 +166,8 @@ public:
 		myPointer = nullptr;
 	}
 	
-	smartPointOn* Pointer() { return myPointer; }
-	smartPointOn* get() { return myPointer; }
-	const smartPointOn* get() const { return myPointer; }
+	smartPointOn* Pointer() const { return myPointer; }
+	smartPointOn* get() const { return myPointer; }
 
 	template<typename othertype>
 	operator SmartPointer<othertype>() {

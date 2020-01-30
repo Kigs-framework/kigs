@@ -1,4 +1,3 @@
-
 #include "ModuleRenderer.h"
 #include "DX11RenderingScreen.h"
 #include "math.h"
@@ -13,39 +12,46 @@
 #include "DX11Texture.h"
 #include "TextureFileManager.h"
 
-#include <dxgi.h>
+/*#include <dxgi.h>
 #include <d3dcommon.h>
-#include <d3d11.h>
+#include <d3d11.h>*/
 
-#include <wrl/client.h>
+#include <d2d1_2.h>
+#include <d3d11_4.h>
 
 #ifdef WUP
 #include "Platform/Main/BaseApp.h"
 
+#include <Windows.Graphics.DirectX.Direct3D11.Interop.h>
+
+#include <wrl/client.h>
+
 #include <winrt/Windows.Graphics.Holographic.h>
 #include <winrt/Windows.Graphics.DirectX.Direct3D11.h>
-#include <windows.graphics.directx.direct3d11.interop.h>
 
+
+using namespace Microsoft::WRL;
 using namespace winrt::Windows::Graphics::Holographic;
 using namespace winrt::Windows::Graphics::DirectX::Direct3D11;
 
-inline winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DSurface CreateDepthTextureInteropObject(
-	const Microsoft::WRL::ComPtr<ID3D11Texture2D> spTexture2D)
-{
-	// Direct3D interop APIs are used to provide the buffer to the WinRT API.
-	Microsoft::WRL::ComPtr<IDXGIResource1> depthStencilResource;
-	winrt::check_hresult(spTexture2D.As(&depthStencilResource));
-	Microsoft::WRL::ComPtr<IDXGISurface2> depthDxgiSurface;
-	winrt::check_hresult(depthStencilResource->CreateSubresourceSurface(0, &depthDxgiSurface));
-	winrt::com_ptr<::IInspectable> inspectableSurface;
-	winrt::check_hresult(
-		CreateDirect3D11SurfaceFromDXGISurface(
-			depthDxgiSurface.Get(),
-			inspectableSurface.put()
-		));
 
+inline winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DSurface CreateDepthTextureInteropObject(
+	const winrt::com_ptr<ID3D11Texture2D> spTexture2D)
+{
+	
+	// Direct3D interop APIs are used to provide the buffer to the WinRT API.
+	winrt::com_ptr<IDXGIResource1> depthStencilResource = spTexture2D.as<IDXGIResource1>();
+	winrt::com_ptr<IDXGISurface2> depthDxgiSurface;
+	winrt::check_hresult(depthStencilResource->CreateSubresourceSurface(0, depthDxgiSurface.put()));
+	winrt::com_ptr<::IInspectable> inspectableSurface;
+	winrt::check_hresult(CreateDirect3D11SurfaceFromDXGISurface(
+			depthDxgiSurface.get(),
+			inspectableSurface.put()));
+	
 	return inspectableSurface.as<winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DSurface>();
 }
+
+
 #endif
 
 using Microsoft::WRL::ComPtr;
@@ -96,8 +102,22 @@ bool DX11RenderingScreen::SetActive(TravState* state)
 		DelayedInit();
 	}
 
-	if(!m_renderTargetView.Get())
-		CreateResources();
+/*
+	auto frame_number = state->GetFrameNumber();
+	if (frame_number != mCurrentFrameNumber)
+	{
+		bool is_main_screen = !myIsOffScreen && !myUseFBO;
+		RendererDX11* renderer = reinterpret_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+		DXInstance* dxinstance = renderer->getDXInstance();
+		auto space = dxinstance->mHolographicSpace;
+
+		if (is_main_screen && space) 
+		{
+			CreateResources();
+		}
+		mCurrentFrameNumber = frame_number;
+	}
+*/
 
 	setCurrentContext();
 
@@ -190,7 +210,12 @@ void DX11RenderingScreen::Update(const Timer&  timer, void* addParam)
 
 	ParentClassType::Update(timer, addParam);
 	RendererDX11* renderer = RendererDX11::theGlobalRenderer->as<RendererDX11>();
-	
+#ifdef WUP
+	if (mRenderingParameters)
+	{
+		mRenderingParameters.CommitDirect3D11DepthBuffer(CreateDepthTextureInteropObject(m_depthStencilBuffer));
+	}
+#endif
 	if (!myIsOffScreen && !myUseFBO)
 	{
 		if (!myIsStereo)
@@ -210,8 +235,6 @@ void DX11RenderingScreen::Update(const Timer&  timer, void* addParam)
 		else
 		{
 #ifdef WUP
-			
-			renderer->getDXInstance()->mCurrentRenderingParameters.CommitDirect3D11DepthBuffer(CreateDepthTextureInteropObject(m_depthStencilBuffer));
 			auto result = renderer->getDXInstance()->mCurrentFrame.PresentUsingCurrentPrediction(myWaitVSync ? HolographicFramePresentWaitBehavior::WaitForFrameToFinish : HolographicFramePresentWaitBehavior::DoNotWaitForFrameToFinish);
 			if (result == HolographicFramePresentResult::DeviceRemoved)
 			{
@@ -308,7 +331,7 @@ bool DX11RenderingScreen::CreateResources()
 	bool is_stereo = myIsStereo;
 
 #ifdef WUP
-	if (is_stereo && !dxinstance->mCurrentRenderingParameters)
+	if (is_stereo && !mRenderingParameters)
 	{
 		return false;
 	}
@@ -331,20 +354,28 @@ bool DX11RenderingScreen::CreateResources()
 		if (is_stereo)
 		{
 #ifdef WUP
-			auto surface = dxinstance->mCurrentRenderingParameters.Direct3D11BackBuffer();			
+			auto surface = mRenderingParameters.Direct3D11BackBuffer();
 			wanted_x = surface.Description().Width;
 			wanted_y = surface.Description().Height;
+
+			if (mySizeX != wanted_x || mySizeY != wanted_y)
+			{
+				m_depthStencilView = nullptr;
+			}
+
 			mySizeX = wanted_x;
 			mySizeY = wanted_y;
+			/*myDesignSizeX = wanted_x;
+			myDesignSizeY = wanted_y;*/
 			RecomputeDesignCoef();
-			ComPtr<ID3D11Texture2D> cameraBackBuffer;
-			DX::ThrowIfFailed(surface.as<::Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>()->GetInterface(IID_PPV_ARGS(cameraBackBuffer.GetAddressOf())));
+			winrt::com_ptr<ID3D11Texture2D> cameraBackBuffer;
+			DX::ThrowIfFailed(surface.as<::Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>()->GetInterface(__uuidof(cameraBackBuffer), cameraBackBuffer.put_void()));
 
-			if (cameraBackBuffer.Get() != m_renderTargetBuffer.Get())
+			if (cameraBackBuffer.get() != m_renderTargetBuffer.get())
 			{
 				m_renderTargetBuffer = cameraBackBuffer;
 			}
-			else
+			else if(m_depthStencilView)
 			{
 				// No need to recreate depth stencil
 				return true;
@@ -375,28 +406,27 @@ bool DX11RenderingScreen::CreateResources()
 #endif
 			swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
 
-			dxinstance->m_swapChain.Reset();
+			dxinstance->m_swapChain = nullptr;
 
 			// First, retrieve the underlying DXGI Device from the D3D Device.
-			ComPtr<IDXGIDevice1> dxgiDevice;
-			DX::ThrowIfFailed(dxinstance->m_device.As(&dxgiDevice));
-
+			winrt::com_ptr<IDXGIDevice1> dxgiDevice = dxinstance->m_device.as<IDXGIDevice1>();
+			
 			// Identify the physical adapter (GPU or card) this device is running on.
-			ComPtr<IDXGIAdapter> dxgiAdapter;
-			DX::ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.GetAddressOf()));
+			winrt::com_ptr<IDXGIAdapter> dxgiAdapter;
+			DX::ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.put()));
 
 			// And obtain the factory object that created it.
-			ComPtr<IDXGIFactory2> dxgiFactory;
-			DX::ThrowIfFailed(dxgiAdapter->GetParent(IID_PPV_ARGS(dxgiFactory.GetAddressOf())));
+			winrt::com_ptr<IDXGIFactory2> dxgiFactory;
+			DX::ThrowIfFailed(dxgiAdapter->GetParent(__uuidof(dxgiFactory), dxgiFactory.put_void()));
 
 #ifdef WUP
-			auto windowPtr = static_cast<::IUnknown*>(winrt::get_abi(App::GetApp()->GetWindow()));
+			auto windowPtr = static_cast<::IUnknown*>(winrt::get_abi(dxinstance->mWindow));
 			DX::ThrowIfFailed(dxgiFactory->CreateSwapChainForCoreWindow(
-				dxinstance->m_device.Get(),
+				dxinstance->m_device.get(),
 				windowPtr,
 				&swapChainDesc,
 				nullptr,
-				dxinstance->m_swapChain.GetAddressOf()
+				dxinstance->m_swapChain.put()
 			));
 #else
 			DX::ThrowIfFailed(dxgiFactory->CreateSwapChainForHwnd(
@@ -408,8 +438,9 @@ bool DX11RenderingScreen::CreateResources()
 				dxinstance->m_swapChain.GetAddressOf()
 			));
 #endif		
-			m_renderTargetBuffer.Reset();
-			DX::ThrowIfFailed(dxinstance->m_swapChain->GetBuffer(0, IID_PPV_ARGS(m_renderTargetBuffer.GetAddressOf())));
+			m_renderTargetBuffer = nullptr;
+			DX::ThrowIfFailed(dxinstance->m_swapChain->GetBuffer(0, __uuidof(m_renderTargetBuffer), m_renderTargetBuffer.put_void()));
+			m_depthStencilView = nullptr;
 		}
 	}
 	else
@@ -427,8 +458,8 @@ bool DX11RenderingScreen::CreateResources()
 		colorBufferDesc.CPUAccessFlags = 0;
 		colorBufferDesc.MiscFlags = 0;
 		
-		m_renderTargetBuffer.Reset();
-		DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&colorBufferDesc, NULL, m_renderTargetBuffer.GetAddressOf()));
+		m_renderTargetBuffer = nullptr;
+		DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&colorBufferDesc, NULL, m_renderTargetBuffer.put()));
 	
 		SP<TextureFileManager> texfileManager = KigsCore::GetSingleton("TextureFileManager");
 		myFBOTexture = texfileManager->CreateTexture(getName());
@@ -436,11 +467,15 @@ bool DX11RenderingScreen::CreateResources()
 		myFBOTexture->setValue("Height", wanted_y);
 		myFBOTexture->InitForFBO();
 		myFBOTexture->SetRepeatUV(false, false);
-		myFBOTexture->as<DX11Texture>()->SetD3DTexture(m_renderTargetBuffer.Get());
+		myFBOTexture->as<DX11Texture>()->SetD3DTexture(m_renderTargetBuffer.get());
+
+		m_depthStencilView = nullptr;
 	}
 
-	m_renderTargetView.Reset();
-	DX::ThrowIfFailed(dxinstance->m_device->CreateRenderTargetView(m_renderTargetBuffer.Get(), NULL, m_renderTargetView.GetAddressOf()));
+	m_renderTargetView = nullptr;
+	DX::ThrowIfFailed(dxinstance->m_device->CreateRenderTargetView(m_renderTargetBuffer.get(), NULL, m_renderTargetView.put()));
+	
+	if (m_depthStencilView) return true;
 
 	CD3D11_TEXTURE2D_DESC depthBufferDesc = {};
 
@@ -476,8 +511,8 @@ bool DX11RenderingScreen::CreateResources()
 	depthBufferDesc.MiscFlags = 0;
 
 	// Create the texture for the depth buffer using the filled out description.
-	m_depthStencilBuffer.Reset();
-	DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&depthBufferDesc, NULL, m_depthStencilBuffer.GetAddressOf()));
+	m_depthStencilBuffer = nullptr;
+	DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&depthBufferDesc, NULL, m_depthStencilBuffer.put()));
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	depthStencilViewDesc.Format = depth_stencil_view_format;
@@ -486,8 +521,8 @@ bool DX11RenderingScreen::CreateResources()
 	depthStencilViewDesc.Texture2DArray.ArraySize = is_stereo ? 2 : 1;
 
 	// Create the depth stencil view.
-	m_depthStencilView.Reset();
-	DX::ThrowIfFailed(dxinstance->m_device->CreateDepthStencilView(m_depthStencilBuffer.Get(), &depthStencilViewDesc, m_depthStencilView.GetAddressOf()));
+	m_depthStencilView = nullptr;
+	DX::ThrowIfFailed(dxinstance->m_device->CreateDepthStencilView(m_depthStencilBuffer.get(), &depthStencilViewDesc, m_depthStencilView.put()));
 
 	return true;
 }
@@ -505,15 +540,15 @@ void DX11RenderingScreen::setCurrentContext()
 
 	dxinstance->m_currentRenderTarget = m_renderTargetView;
 	dxinstance->m_currentDepthStencilTarget = m_depthStencilView;
-	ID3D11RenderTargetView* render_targets[] = { m_renderTargetView.Get() };
-	dxinstance->m_deviceContext->OMSetRenderTargets(1, render_targets, m_depthStencilView.Get());
+	ID3D11RenderTargetView* render_targets[] = { m_renderTargetView.get() };
+	dxinstance->m_deviceContext->OMSetRenderTargets(1, render_targets, m_depthStencilView.get());
 	dxinstance->m_isFBORenderTarget = myUseFBO;
 }
 
 void DX11RenderingScreen::ReleaseResources()
 {
-	m_renderTargetBuffer.Reset();
-	m_renderTargetView.Reset();
-	m_depthStencilBuffer.Reset();
-	m_depthStencilView.Reset();
+	m_renderTargetBuffer = nullptr;
+	m_renderTargetView = nullptr;
+	m_depthStencilBuffer = nullptr;
+	m_depthStencilView = nullptr;
 }

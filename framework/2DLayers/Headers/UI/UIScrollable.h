@@ -10,8 +10,8 @@ public:
 	DECLARE_CLASS_INFO(UIScrollable, UIPanel, 2DLayers);
 	DECLARE_INLINE_CONSTRUCTOR(UIScrollable) {}
 	
-	bool addItem(CMSP& item, ItemPosition pos) override;
-	bool removeItem(CMSP& item) override;
+	bool addItem(const CMSP& item, ItemPosition pos) override;
+	bool removeItem(const CMSP& item) override;
 
 	void SetScroll(v2f to);
 	v2f GetCurrentScroll() const { return mCurrentScroll; }

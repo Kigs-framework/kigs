@@ -179,42 +179,53 @@ void	GazeDeviceWUP::UpdateDevice()
 			}
 
 			s->ID = id;
-			s->pressed = (time-s->Time>0.1)&&(source.args.State().IsPressed());
+			auto before = s->pressed;
+			s->pressed = (time - s->Time>0.1)&&(source.args.State().IsPressed());
+
+			/*if (before != s->pressed)
+			{
+				kigsprintf("ID: %d : %s\n", s->ID, s->pressed ? "pressed" : "not pressed");
+			}*/
 
 			if (source.args.State().Source().Controller() && source.args.State().Source().Controller().HasThumbstick())
 			{
 				myThumbstickList[id] = v2f{ (float)source.args.State().ControllerProperties().ThumbstickX(), (float)source.args.State().ControllerProperties().ThumbstickY() };
 			}
 
-			SpatialInteractionSourceLocation sourceLoc = source.args.State().Properties().TryGetLocation(App::GetApp()->GetStationaryReferenceFrame().CoordinateSystem());
-			if (sourceLoc)
+			if (itr.second.state != SourceState::Lost)
 			{
-				if (sourceLoc.SourcePointerPose())
+				SpatialInteractionSourceLocation sourceLoc = source.args.State().Properties().TryGetLocation(App::GetApp()->GetStationaryReferenceFrame().CoordinateSystem());
+				if (sourceLoc)
 				{
-					s->Position.Set(sourceLoc.SourcePointerPose().Position().x, sourceLoc.SourcePointerPose().Position().y, sourceLoc.SourcePointerPose().Position().z);
-					s->Forward.Set(sourceLoc.SourcePointerPose().ForwardDirection().x, sourceLoc.SourcePointerPose().ForwardDirection().y, sourceLoc.SourcePointerPose().ForwardDirection().z);
-					s->Up.Set(sourceLoc.SourcePointerPose().UpDirection().x, sourceLoc.SourcePointerPose().UpDirection().y, sourceLoc.SourcePointerPose().UpDirection().z);
-					s->hasPosition = true;
-				}
-				else if(sourceLoc.Position())
-				{
-					if (sourceLoc.Orientation())
+					if (sourceLoc.SourcePointerPose())
 					{
-						Quaternion q;
-						q.Set(sourceLoc.Orientation().Value().x, sourceLoc.Orientation().Value().y, sourceLoc.Orientation().Value().z, sourceLoc.Orientation().Value().w);
-						v3f forward{ 0,0,1 };
-						v3f up{ 0,1,0 };
-						s->Forward = q * forward;
-						s->Up = q * up;
+						s->Position.Set(sourceLoc.SourcePointerPose().Position().x, sourceLoc.SourcePointerPose().Position().y, sourceLoc.SourcePointerPose().Position().z);
+						s->Forward.Set(sourceLoc.SourcePointerPose().ForwardDirection().x, sourceLoc.SourcePointerPose().ForwardDirection().y, sourceLoc.SourcePointerPose().ForwardDirection().z);
+						s->Up.Set(sourceLoc.SourcePointerPose().UpDirection().x, sourceLoc.SourcePointerPose().UpDirection().y, sourceLoc.SourcePointerPose().UpDirection().z);
+						s->hasPosition = true;
 					}
-					s->Position.Set(sourceLoc.Position().Value().x, sourceLoc.Position().Value().y, sourceLoc.Position().Value().z);
-					s->hasPosition = true;
+					else if (sourceLoc.Position())
+					{
+						if (sourceLoc.Orientation())
+						{
+							Quaternion q;
+							q.Set(sourceLoc.Orientation().Value().x, sourceLoc.Orientation().Value().y, sourceLoc.Orientation().Value().z, sourceLoc.Orientation().Value().w);
+							v3f forward{ 0,0,1 };
+							v3f up{ 0,1,0 };
+							s->Forward = q * forward;
+							s->Up = q * up;
+						}
+						s->Position.Set(sourceLoc.Position().Value().x, sourceLoc.Position().Value().y, sourceLoc.Position().Value().z);
+						s->hasPosition = true;
+					}
 				}
 			}
+
 			s->state = itr.second.state;
 			if (itr.second.state == SourceState::Lost)
 			{
 				s->removed = true;
+				s->pressed = false;
 				toRemove.push_back(id);
 			}
 		}

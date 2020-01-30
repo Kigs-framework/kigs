@@ -4,6 +4,8 @@
 #include "Material.h"
 #include "RendererDefines.h"
 #include "Camera.h"
+#include "Scene3D.h"
+
 #include <d3d11.h>
 
 #ifdef WUP
@@ -435,9 +437,10 @@ void	API3DGenericMeshShader::ChooseShader(TravState* state, unsigned int attribF
 		flag |= ModuleRenderer::ShaderFlags::HOLOGRAPHIC;
 
 	// then suppose 4 bits per light type for light count
-	int mySpotLightCount = renderer->getSpotLightCount();
-	int myDirLightCount = renderer->getDirLightCount();
-	int myPointLightCount = renderer->getPointLightCount();
+	auto scene = state->GetScene();
+	int mySpotLightCount = scene ? scene->getSpotLightCount() : 0;
+	int myDirLightCount = scene ? scene->getDirLightCount() : 0;
+	int myPointLightCount = scene ? scene->getPointLightCount() : 0;
 
 	flag = CustomizeShaderFlag(state, attribFlag, flag);
 

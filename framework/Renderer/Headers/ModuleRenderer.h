@@ -775,12 +775,11 @@ public:
 		myCurrentShaderProgram = p;
 	}
 
-
-
-	int getSpotLightCount() { return mySpotLightCount; }
-	int getPointLightCount() { return myPointLightCount; }
-	int getDirLightCount() { return myDirLightCount; }
-
+	void SetDirtyMatrix()
+	{
+		myDirtyMatrix = 0xffffffff;
+		myDirtyShaderMatrix = 0xffffffff;
+	}
 
 	CMSP&	getDefaultUiShader()
 	{
@@ -1083,7 +1082,13 @@ public:
 		myCurrentState->UninitHardwareState();
 	}
 
-	virtual void SetLightsInfo(kstl::set<CoreModifiable*>*lights) {}
+	struct LightCount
+	{
+		int spot;
+		int point;
+		int dir;
+	};
+	virtual LightCount SetLightsInfo(kstl::set<CoreModifiable*>* lights) { return {}; }
 	virtual void SendLightsInfo(TravState* travstate) {}
 	virtual void ClearLightsInfo(TravState* travstate) {}
 
@@ -1097,7 +1102,7 @@ public:
 		myActivatedScreenList.insert(renderingscreen);
 	}
 
-	void	endFrame(TravState* state);
+	virtual void	endFrame(TravState* state);
 
 	virtual void DrawPendingInstances(TravState* state) = 0;
 
@@ -1158,10 +1163,8 @@ protected:
 	kstl::vector<ShaderBase*>		myShaderStack;
 	unsigned int					myDirtyShaderMatrix;	// set when shader has changed, so we have to push again matrix
 
-	int mySpotLightCount = 0;
-	int myPointLightCount = 0;
-	int myDirLightCount = 0;
 	CMSP	myDefaultUIShader;
+
 
 	std::unique_ptr<VertexBufferManagerBase> myVertexBufferManager;
 

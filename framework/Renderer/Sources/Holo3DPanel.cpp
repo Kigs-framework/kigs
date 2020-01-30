@@ -23,7 +23,7 @@ void Holo3DPanel::SetTexture(Texture* t)
 	myTexture = NonOwningRawPtrToSmartPtr(t);
 }
 
-bool Holo3DPanel::addItem(CMSP& item, ItemPosition pos)
+bool Holo3DPanel::addItem(const CMSP& item, ItemPosition pos)
 {
 	if (item->isSubType("Texture"))
 	{
@@ -32,7 +32,7 @@ bool Holo3DPanel::addItem(CMSP& item, ItemPosition pos)
 	return ParentClassType::addItem(item, pos);
 }
 
-bool Holo3DPanel::removeItem(CMSP& item)
+bool Holo3DPanel::removeItem(const CMSP& item)
 {
 	if (item == myTexture.get())
 	{

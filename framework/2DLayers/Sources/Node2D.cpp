@@ -150,7 +150,7 @@ void Node2D::PropagateNodeFlags()
 	}
 }
 
-bool Node2D::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool Node2D::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Node2D::myClassID))
 	{
@@ -165,7 +165,7 @@ bool Node2D::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 }
 
-bool Node2D::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool Node2D::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Node2D::myClassID))
 	{

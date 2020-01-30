@@ -617,7 +617,11 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 		}
 	}
 
-
+	XMLAttributeTemplate<StringType>* attrtype = currentNode->getAttribute("T", "Type");
+	if (attrtype && attrtype->getString() == "unknown")
+	{
+		return;
+	}
 
 	KigsID id = attrname->getString();
 
@@ -697,7 +701,6 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 		{
 			if ((attrdynamic->getString() == "true") || (attrdynamic->getString() == "yes"))
 			{
-				XMLAttributeTemplate<StringType>* attrtype = currentNode->getAttribute("T", "Type");
 				XMLAttributeTemplate<StringType>* attrvalue = currentNode->getAttribute("V", "Value");
 
 				if (attrvalue)

@@ -724,10 +724,10 @@ public:
 	virtual void removeUser(CoreModifiable* user);
 	
 	// add a son. Need to call ParentClassType::addItem(...) when overriding !
-	virtual bool addItem(CMSP& item, ItemPosition pos = Last);
+	virtual bool addItem(const CMSP& item, ItemPosition pos = Last);
 	
 	// remove a son. Need to call ParentClassType::removeItem(...) when overriding !
-	virtual bool removeItem(CMSP& item);
+	virtual bool removeItem(const CMSP& item);
 
 	// Called when an attribute that has its notification level set to Owner is modified. Need to call ParentClassType::NotifyUpdate(...) when overriding !
 	virtual void NotifyUpdate(const u32 labelid);

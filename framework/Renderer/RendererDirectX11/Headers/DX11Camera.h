@@ -2,7 +2,7 @@
 #define _DX11CAMERA_H
 
 #include "Camera.h"
-
+#include "Timer.h"
 class DX11Camera : public Camera
 {
 public:
@@ -11,7 +11,6 @@ public:
     DX11Camera(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	std::array<mat4, 2> GetStereoViewProjections() override { return mCurrentStereoViewproj; }
-	
 protected:
 
 	//void SetAmbient(kfloat r, kfloat g, kfloat b) override;

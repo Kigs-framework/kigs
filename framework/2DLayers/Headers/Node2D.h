@@ -112,8 +112,8 @@ public:
 
 	//inline void								 GetScaledSize(unsigned int &X, unsigned int &Y) { X = (unsigned int)((kfloat)mySizeX*(kfloat)myPreScaleX); Y = (unsigned int)((kfloat)mySizeY*(kfloat)myPreScaleY); }
 
-	bool										addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
-	bool										removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
+	bool										addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool										removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 	inline const kstl::set<Node2D*, Node2D::PriorityCompare>&	GetSons() { return mySons; }
 

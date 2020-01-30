@@ -18,6 +18,8 @@
 // - crc32_4x8bytes needs only Crc32Lookup[0..7]
 // - crc32_16bytes  needs all of Crc32Lookup
 
+#if 0
+
 #define USE 1
 
 #include <stdlib.h>
@@ -1014,4 +1016,6 @@ const uint32_t Crc32Lookup[MaxSlice][256] =
     0xF088C1A2,0x5EE05033,0x7728E4C1,0xD9407550,0x24B98D25,0x8AD11CB4,0xA319A846,0x0D7139D7,
   }
 };
+#endif
+
 #endif

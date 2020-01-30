@@ -282,7 +282,7 @@ void ModuleSceneGraph::Update(const Timer& timer, void* addParam)
 }
 
 
-bool	ModuleSceneGraph::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ModuleSceneGraph::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	// only Scene3D can be added here
 
@@ -295,7 +295,7 @@ bool	ModuleSceneGraph::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return false;
 }
 
-bool ModuleSceneGraph::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool ModuleSceneGraph::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType("Scene3D"))
 	{

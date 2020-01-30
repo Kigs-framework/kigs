@@ -45,7 +45,7 @@ void	Window::InitModifiable()
 }
 
 //! add item, if item is a rendering screen, set the given item as the used rendering screen (to be done before init)
-bool	Window::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	Window::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType("RenderingScreen"))
 	{
@@ -57,7 +57,7 @@ bool	Window::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 }
 
 //! remove item, if item is a rendering screen, set rendering screen pointer to 0
-bool Window::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool Window::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType("RenderingScreen"))
 	{

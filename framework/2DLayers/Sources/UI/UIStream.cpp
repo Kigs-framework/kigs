@@ -133,7 +133,7 @@ void UIStream::Update(const Timer& timer, void* v)
 	}
 }
 
-bool UIStream::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool UIStream::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType("FrameBufferStream"))
 	{
@@ -148,7 +148,7 @@ bool UIStream::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return UITexturedItem::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-bool UIStream::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool UIStream::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(_framebufferstream == item)
 	{

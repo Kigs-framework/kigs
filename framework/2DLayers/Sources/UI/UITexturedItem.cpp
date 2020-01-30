@@ -173,7 +173,7 @@ void     UITexturedItem::SetTexture(Texture* t)
 
 
 
-bool UITexturedItem::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool UITexturedItem::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Texture::myClassID))
 	{
@@ -186,7 +186,7 @@ bool UITexturedItem::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return UIDrawableItem::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-bool UITexturedItem::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool UITexturedItem::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Texture::myClassID))
 	{

@@ -22,8 +22,8 @@ public:
 	void     SetTexture(Texture* t);
 
 	// manage texture directly added 
-	bool	addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
-	bool	removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
+	bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 
 protected:

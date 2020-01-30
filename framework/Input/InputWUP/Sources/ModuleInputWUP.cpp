@@ -114,7 +114,7 @@ void ModuleInputWUP::Update(const Timer& timer, void* addParam)
 	
 }    
 
-bool	ModuleInputWUP::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ModuleInputWUP::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType(InputDevice::myClassID))
 	{

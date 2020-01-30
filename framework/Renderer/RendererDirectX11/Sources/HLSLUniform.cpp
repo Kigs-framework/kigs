@@ -378,7 +378,7 @@ bool	API3DUniformTexture::Deactivate(UniformList* ul)
 	return true;
 }
 
-bool API3DUniformTexture::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool API3DUniformTexture::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Texture::myClassID)) // if texture, don't call father addItem
 	{
@@ -397,7 +397,7 @@ bool API3DUniformTexture::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME
 
 }
 
-bool API3DUniformTexture::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool API3DUniformTexture::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Texture::myClassID)) // if texture, don't call father removeItem
 	{

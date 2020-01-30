@@ -1,4 +1,4 @@
-
+#include <unknwn.h> // Need to be incluced before any winrt headers to re-enable introp with windows sdk headers
 
 #include "HLSLGenericMeshShader.cpp"
 #include "HLSLLight.cpp"

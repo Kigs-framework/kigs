@@ -38,7 +38,7 @@ void	DrawableSwitch::DoPostDraw(TravState* travstate)
 	}
 }
 
-bool	DrawableSwitch::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	DrawableSwitch::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	bool result=Drawable::addItem(item,pos PASS_LINK_NAME(linkName));
 	if(result)
@@ -59,7 +59,7 @@ bool	DrawableSwitch::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return result;
 }
 
-bool	DrawableSwitch::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool	DrawableSwitch::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	bool result=Drawable::removeItem(item PASS_LINK_NAME(linkName));
 	if(result)

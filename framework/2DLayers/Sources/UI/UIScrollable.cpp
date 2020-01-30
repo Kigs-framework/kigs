@@ -18,7 +18,7 @@ void UIScrollable::InitModifiable()
 	}
 }
 
-bool UIScrollable::addItem(CMSP& item, ItemPosition pos)
+bool UIScrollable::addItem(const CMSP& item, ItemPosition pos)
 {
 	if (mAdjustOnAddItem && item->isSubType("Node2D"))
 	{
@@ -33,7 +33,7 @@ bool UIScrollable::addItem(CMSP& item, ItemPosition pos)
 	return ParentClassType::addItem(item, pos);
 }
 
-bool UIScrollable::removeItem(CMSP& item)
+bool UIScrollable::removeItem(const CMSP& item)
 {
 	if (mAdjustOnRemoveItem && item->isSubType("Node2D"))
 	{

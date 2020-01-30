@@ -7,6 +7,8 @@
 
 #include "../../../../FileManager/Headers/PureVirtualFileAccessDelegate.h"
 
+#include <winrt/Windows.Storage.h>
+
 class FileHandle;
 
 template<typename smartPointOn>
@@ -26,13 +28,13 @@ extern SmartPointer<FileHandle> Win32FindFullName(const kstl::string&	filename);
 extern void Win32CheckState(FileHandle* handle);
 extern bool Win32CreateFolderTree(FileHandle* hndl);
 
-extern SmartPointer<FileHandle> Platform_fopen(Windows::Storage::StorageFile^ file, const char * mode);
+extern SmartPointer<FileHandle> Platform_fopen(winrt::Windows::Storage::StorageFile file, const char * mode);
 
 class StorageFileFileAccess : public PureVirtualFileAccessDelegate
 {
 	public:
 
-	StorageFileFileAccess(Windows::Storage::StorageFile^ file) : myFile(file)
+	StorageFileFileAccess(winrt::Windows::Storage::StorageFile file) : myFile(file)
 	{
 
 	}
@@ -69,11 +71,11 @@ protected:
 
 	}
 
-	Windows::Storage::StorageFile^ myFile = nullptr;
-	Windows::Storage::FileProperties::BasicProperties^ myFileProperties = nullptr;
-	Windows::Storage::Streams::IRandomAccessStream^	myAccessStream = nullptr;
-	Windows::Storage::Streams::DataReader^			myDataReader = nullptr;
-	Windows::Foundation::IAsyncOperationWithProgress<unsigned int, unsigned int>^ mLastWrite = nullptr;
+	winrt::Windows::Storage::StorageFile myFile = nullptr;
+	winrt::Windows::Storage::FileProperties::BasicProperties myFileProperties = nullptr;
+	winrt::Windows::Storage::Streams::IRandomAccessStream	myAccessStream = nullptr;
+	winrt::Windows::Storage::Streams::DataReader			myDataReader = nullptr;
+	winrt::Windows::Foundation::IAsyncOperationWithProgress<unsigned int, unsigned int> mLastWrite = nullptr;
 	
 };
 

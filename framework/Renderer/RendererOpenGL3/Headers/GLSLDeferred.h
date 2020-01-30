@@ -33,8 +33,8 @@ protected:
 	void	InitModifiable() override;
 	void	TravDraw(TravState* state) override;
 
-	bool	addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
-	bool	removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
+	bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
+	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
 
 	virtual void	Dealloc();
 

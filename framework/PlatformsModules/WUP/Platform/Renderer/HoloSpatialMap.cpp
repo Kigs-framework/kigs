@@ -222,9 +222,6 @@ HoloSpatialMap::~HoloSpatialMap()
 static std::atomic<int> sIndex = 0;
 void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::SpatialSurfaceMesh const& inMesh, SpatialMeshInfo& outInfo, SpatialMapSurfaceRecord* record_surface)
 {	
-
-	simdVal val; // 16 aligned struct for simd operation
-
 	if (outInfo.node)
 	{
 		outInfo.old_node = outInfo.node;
@@ -308,7 +305,7 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 
 	
 	u8* buf = inMesh ? GetPointerToPixelData(inMesh.VertexPositions().Data(), &size) : nullptr;
-
+	auto vertex_buffer = reinterpret_cast<float*>(buf);
 
 	if (record_surface)
 	{
@@ -324,49 +321,28 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 		}
 	}
 
-	int alignsize = (size + 16) / 16;
+	auto vertices_format = inMesh.VertexPositions().Format();
 
-	//auto vertices_format = inMesh.VertexPositions().Format();
-	
-	// allign buf on 128
-	__m128i* in128 = reinterpret_cast<__m128i*>(_mm_malloc(alignsize * sizeof(__m128i), 16));
-	memcpy(in128, buf, size);
 
-	float* vertex_buffer = new float[alignsize * 6];
-
+	v4f scale = v4f(1, 1, 1, 1);
 	// retreive position scale
-	
-
 	if (inMesh)
 	{
-		auto scale = inMesh.VertexPositionScale();
-		val.ratio = { scale.x / SHRT_MAX,scale.y / SHRT_MAX,scale.z / SHRT_MAX,0 };
+		auto vertex_position_scale = inMesh.VertexPositionScale();
+		scale = { vertex_position_scale.x, vertex_position_scale.y, vertex_position_scale.z, 1.0f };
 	}
 	
 	if (record_surface && !record_surface->recording)
 	{
-		val.ratio = { record_surface->vertex_position_scale.x / SHRT_MAX, record_surface->vertex_position_scale.y / SHRT_MAX, record_surface->vertex_position_scale.z / SHRT_MAX,0 };
+		scale.xyz = record_surface->vertex_position_scale;
 	}
-	
-	float* writer = vertex_buffer;
-	__m128i* read = in128;
-	for (int i = 0; i < alignsize; i++)
-	{
-		val.cmpl = _mm_cmplt_epi16(read[i], val.vec0);
-		val.xlo = _mm_unpacklo_epi16(read[i], val.cmpl);
-		val.xhi = _mm_unpackhi_epi16(read[i], val.cmpl);
-		val.tmpF = _mm_mul_ps(_mm_cvtepi32_ps(val.xlo), val.ratio);
-		*writer++ = val.tmpF.m128_f32[0];
-		*writer++ = val.tmpF.m128_f32[1];
-		*writer++ = val.tmpF.m128_f32[2];
 
-		val.tmpF = _mm_mul_ps(_mm_cvtepi32_ps(val.xhi), val.ratio);
-		*writer++ = val.tmpF.m128_f32[0];
-		*writer++ = val.tmpF.m128_f32[1];
-		*writer++ = val.tmpF.m128_f32[2];
+	for (int i = 0; i < vertices_count; ++i)
+	{
+		reinterpret_cast<v4f*>(buf)[i].x *= scale.x;
+		reinterpret_cast<v4f*>(buf)[i].y *= scale.y;
+		reinterpret_cast<v4f*>(buf)[i].z *= scale.z;
 	}
-	
-	_mm_free(in128);
 
 	u32 indices_count = inMesh ? inMesh.TriangleIndices().ElementCount() : 0;
 	u16* indices = inMesh ? (u16*)GetPointerToPixelData(inMesh.TriangleIndices().Data(), &size) : nullptr;
@@ -379,8 +355,7 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 			{
 				__debugbreak();
 			}
-			auto scale = inMesh.VertexPositionScale();
-			record_surface->vertex_position_scale = v3f(scale.x, scale.y, scale.z);
+			record_surface->vertex_position_scale = scale.xyz;
 			record_surface->indices_count = indices_count;
 			record_surface->indices_data.resize(size);
 			memcpy(record_surface->indices_data.data(), indices, size);
@@ -396,41 +371,27 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 	for (u32 i = 0; i < indices_count; i+=3)
 	{
 		mesh->AddTriangle(
-			(void*)&vertex_buffer[3 * indices[i]],
-			(void*)&vertex_buffer[3 * indices[i + 2]],
-			(void*)&vertex_buffer[3 * indices[i + 1]]);
+			(void*)&vertex_buffer[4 * indices[i]],
+			(void*)&vertex_buffer[4 * indices[i + 2]],
+			(void*)&vertex_buffer[4 * indices[i + 1]]);
 	}
-
-	delete[] vertex_buffer;
 
 	auto group = mesh->EndMeshGroup();
-
-
+	if (group)
+	{
 #ifdef KIGS_TOOLS
-	group->mCanFreeBuffers = 3; // KEEP DATA FOR EXPORT
+		group->mCanFreeBuffers = 3; // KEEP DATA FOR EXPORT
 #endif
-	//group->setValue("CullMode", 1);
-	mesh->EndMeshBuilder();
-
-	mesh->Init();
-
-	node->addItem((CMSP&)mesh);
-	mesh->Destroy();
-
-	//mesh->AddDynamicAttribute(BOOL, "BVH", true);
-	auto collisionBVH = SpacialMeshBVH::BuildFromMesh(mesh.get(), meshMat, true);
-	if (collisionBVH)
-	{
-		mCollisionManager->SetCollisionObject(mesh.get(), collisionBVH);
-		mContinuousMatching->RegisterSpatialMeshNode(SmartPointer<Node3D>(node, GetRefTag{}));
+		mesh->EndMeshBuilder();
+		mesh->Init();
+		node->addItem(mesh);
+		auto collisionBVH = SpacialMeshBVH::BuildFromMesh(mesh.get(), meshMat, true);
+		if (collisionBVH)
+		{
+			mCollisionManager->SetCollisionObject(mesh, collisionBVH);
+			mContinuousMatching->RegisterSpatialMeshNode(outInfo.node);
+		}
 	}
-	
-	/*auto collision = AABBTree::BuildFromMesh(mesh);
-	if (collision)
-	{
-		CollisionManager::Get()->SetCollisionObject(mesh, collision);
-	}*/
-
 }
 
 winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ExportTimedScan()
@@ -714,6 +675,8 @@ void HoloSpatialMap::StartListening()
 				{
 					Surfaces::SpatialSurfaceMeshOptions options = Surfaces::SpatialSurfaceMeshOptions();
 					options.IncludeVertexNormals(false); // (mMode == 2);
+					options.VertexPositionFormat(winrt::Windows::Graphics::DirectX::DirectXPixelFormat::R32G32B32A32Float);
+
 					auto pMesh = co_await val.TryComputeLatestMeshAsync(mPrecision, options);
 					if (pMesh != nullptr)
 					{
@@ -794,10 +757,13 @@ void HoloSpatialMap::Update(const Timer& timer, void* addParam)
 			auto exp = SpatialMeshInfo::Op::Add;
 			if (it.second.op.compare_exchange_strong(exp, SpatialMeshInfo::Op::None))
 			{
-				auto mesh = it.second.node->GetFirstSonByType("ModernMesh");
-				mesh->setValue("Show", mShowMeshes);
-				//kigsprintf("adding spatial mesh %u\n", mesh->getUID());
-				attach->addItem(it.second.node);
+				if (it.second.node)
+				{
+					auto mesh = it.second.node->GetFirstSonByType("ModernMesh");
+					mesh->setValue("Show", mShowMeshes);
+					//kigsprintf("adding spatial mesh %u\n", mesh->getUID());
+					attach->addItem(it.second.node);
+				}
 			}
 
 			exp = SpatialMeshInfo::Op::Remove;

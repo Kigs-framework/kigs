@@ -52,7 +52,7 @@ public:
 
 	unsigned int	getJoystickCount(){return myJoystickCount;}
 
-	virtual bool	addItem(CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME);
+	bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
 
 
 protected:
