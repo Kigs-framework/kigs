@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include <iterator>
 
 #define FWD(a) std::forward<decltype(a)>(a)
 #define REQUIRES(...) typename std::enable_if<(__VA_ARGS__), int>::type = 0
