@@ -27,7 +27,7 @@ void	Sample7::ProtectedInit()
 
 	CMSP behaviour = KigsCore::GetInstanceOf("behaviour", "LuaBehaviour");
 	behaviour->setValue("Script", "#ScriptOnApp.lua");
-	addItem(behaviour);
+	aggregateWith(behaviour);
 	behaviour->Init();
 
 }
@@ -64,7 +64,7 @@ void	Sample7::HelloFromLua()
 
 	static int counter = 0;
 	++counter;
-	if (counter > 100)
+	if ((counter % 1000) == 0)
 	{
 		// call Lua method on Interface
 
@@ -73,7 +73,10 @@ void	Sample7::HelloFromLua()
 		{
 			instance->SimpleCall("reset",GetApplicationTimer()->GetTime());
 		}
+	}
 
-		counter = 0;
+	if (counter > 6000)
+	{
+		myNeedExit = true;
 	}
 }
