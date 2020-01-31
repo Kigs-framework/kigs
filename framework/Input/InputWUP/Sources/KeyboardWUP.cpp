@@ -3,7 +3,6 @@
 
 #include "Platform/Main/BaseApp.h"
 
-#include <collection.h>
 #include "utf8.h"
 
 #include "winrt/Windows.UI.Text.Core.h"

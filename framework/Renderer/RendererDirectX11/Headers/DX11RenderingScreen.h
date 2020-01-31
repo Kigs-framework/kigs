@@ -34,6 +34,8 @@ public:
 
 	bool IsMainRenderingScreen() { return !myUseFBO && !myIsOffScreen; }
 
+	void SetRenderingParameters(winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters params) { mRenderingParameters = params; }
+
 protected:
 	DECLARE_METHOD(Snapshot);
 
@@ -51,9 +53,12 @@ protected:
 	HGLRC myhRC = NULL;
 	HWND  myhWnd = NULL;
 
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>			m_renderTargetBuffer;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	m_renderTargetView;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>			m_depthStencilBuffer;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_depthStencilView;
+	winrt::com_ptr<ID3D11Texture2D>			m_renderTargetBuffer;
+	winrt::com_ptr<ID3D11RenderTargetView>	m_renderTargetView;
+	winrt::com_ptr<ID3D11Texture2D>			m_depthStencilBuffer;
+	winrt::com_ptr<ID3D11DepthStencilView>	m_depthStencilView;
+	
+	unsigned int mCurrentFrameNumber = -1;
+	winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters mRenderingParameters = nullptr;
 };
 

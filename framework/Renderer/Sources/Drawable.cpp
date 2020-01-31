@@ -186,7 +186,7 @@ bool Drawable::PostDraw(TravState* state)
 	return false;
 }
 
-bool Drawable::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool Drawable::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 
 	myDrawingNeeds=(unsigned int)Not_Init;
@@ -199,7 +199,7 @@ bool Drawable::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 
 }
 
-bool Drawable::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool Drawable::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	bool result=SceneNode::removeItem(item PASS_LINK_NAME(linkName));
 	myDrawingNeeds=(unsigned int)Not_Init;

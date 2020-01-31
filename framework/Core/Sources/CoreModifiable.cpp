@@ -1395,7 +1395,7 @@ void	CoreModifiable::RemoveDynamicAttribute(KigsID id)
 }
 
 //! add item at first or last position
-bool CoreModifiable::addItem(CMSP& item, ItemPosition pos)
+bool CoreModifiable::addItem(const CMSP& item, ItemPosition pos)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	if(!item.isNil())
@@ -1578,7 +1578,7 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 }
 
 //! remove item (son)
-bool CoreModifiable::removeItem(CMSP& item)
+bool CoreModifiable::removeItem(const CMSP& item)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 #ifdef USE_LINK_TYPE
@@ -2066,6 +2066,10 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 	{
 		CoreModifiableAttribute* current = (*i).second;
 		auto type = current->getType();
+
+		if (type == CoreModifiable::ATTRIBUTE_TYPE::RAWPTR)
+			continue;
+
 		if (current->isDynamic() && type == STRING)
 		{
 			std::vector<std::string> splitted = SplitStringByCharacter(current->getLabel()._id_name, '$');

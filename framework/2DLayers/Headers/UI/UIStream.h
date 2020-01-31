@@ -13,8 +13,8 @@ public:
 	virtual void InitModifiable() override;
 	virtual void Update(const Timer&, void*) override;
 
-	virtual bool addItem(CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
-	virtual bool removeItem(CMSP& item  DECLARE_DEFAULT_LINK_NAME) override;
+	virtual bool addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
+	virtual bool removeItem(const CMSP& item  DECLARE_DEFAULT_LINK_NAME) override;
 
 	//unsigned char* CurrentBuffer() { return _temp.data(); }
 

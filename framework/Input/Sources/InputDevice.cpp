@@ -26,7 +26,7 @@ InputDevice::~InputDevice()
 	delete[] myDeviceItems;
 }
 
-bool InputDevice::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool InputDevice::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType(Window::myClassID))
 	{
@@ -41,7 +41,7 @@ bool InputDevice::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 }
 
-bool InputDevice::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool InputDevice::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType(Window::myClassID))
 	{

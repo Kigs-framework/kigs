@@ -136,7 +136,7 @@ public:
 	void SetUniform1i(unsigned int loc, s32 value);
 	void ActiveTextureChannel(unsigned int channel) override;
 
-	void SetLightsInfo(kstl::set<CoreModifiable*>*lights)  override;
+	LightCount SetLightsInfo(kstl::set<CoreModifiable*>*lights)  override;
 	void SendLightsInfo(TravState* travstate) override;
 	void ClearLightsInfo(TravState* travstate) override;
 

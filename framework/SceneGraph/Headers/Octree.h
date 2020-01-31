@@ -189,7 +189,7 @@ public:
 
 
 	
-	bool	removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
+	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 	
 

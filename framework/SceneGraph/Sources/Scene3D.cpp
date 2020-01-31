@@ -180,7 +180,10 @@ void Scene3D::TravDraw(TravState* state)
 
 	if (myLightsHaveChanged)
 	{
-		state->GetRenderer()->SetLightsInfo(&myLights);
+		ModuleSpecificRenderer::LightCount count = state->GetRenderer()->SetLightsInfo(&myLights);
+		myDirLightCount = count.dir;
+		mySpotLightCount = count.spot;
+		myPointLightCount = count.point;
 		myLightsHaveChanged = false;
 	}
 	state->myLights = &myLights;

@@ -36,7 +36,7 @@ public:
 #define CM_KEY_9               0x39
 #define CM_KEY_MINUS           0xBD    /* - on main keyboard */
 #define CM_KEY_EQUALS          0xBB
-#define CM_KEY_BACK            int(Windows::System::VirtualKey::Back)    /* backspace */
+#define CM_KEY_BACK            int(winrt::Windows::System::VirtualKey::Back)    /* backspace */
 #define CM_KEY_TAB             0x0F
 
 #define CM_KEY_A               0x41

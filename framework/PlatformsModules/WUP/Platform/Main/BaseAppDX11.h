@@ -11,11 +11,13 @@
 #include <string>
 #include <vector>
 
+/*
 template <typename T>
 T^ to_cx(winrt::Windows::Foundation::IUnknown const& from)
 {
 	return safe_cast<T^>(reinterpret_cast<Platform::Object^>(winrt::get_abi(from)));
 }
+*/
 
 struct App : winrt::implements<App, winrt::Windows::ApplicationModel::Core::IFrameworkViewSource, winrt::Windows::ApplicationModel::Core::IFrameworkView>
 {
@@ -53,12 +55,9 @@ public:
 private:
 	static App* sApp;
 
-	/*
-	void InitializeEGL(winrt::Windows::Graphics::Holographic::HolographicSpace const& holographicSpace);
-	void InitializeEGL(winrt::Windows::UI::Core::CoreWindow const& window);
-	void InitializeEGLInner(winrt::Windows::Foundation::IInspectable const& windowBasis);
 
-	void CleanupEGL();*/
+	void OnHolographicDisplayIsAvailableChanged(winrt::Windows::Foundation::IInspectable, winrt::Windows::Foundation::IInspectable);
+
 
 	bool mWindowClosed = false;
 	bool mWindowVisible = true;
@@ -69,6 +68,7 @@ private:
 	winrt::Windows::UI::Core::CoreWindow mWindow{ nullptr };
 
 	winrt::Windows::Graphics::Holographic::HolographicSpace mHolographicSpace{ nullptr };
+	winrt::Windows::Perception::Spatial::SpatialLocator mSpatialLocator{ nullptr };
 	winrt::Windows::Perception::Spatial::SpatialStationaryFrameOfReference mStationaryReferenceFrame{ nullptr };
 
 	std::set<winrt::Windows::Graphics::Holographic::HolographicCamera> mCameras;

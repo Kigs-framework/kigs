@@ -58,7 +58,7 @@ void ModuleTimer::Update(const Timer& timer, void* addParam)
 }    
 
 
-bool	ModuleTimer::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ModuleTimer::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType("TimeTicker"))
 	{
@@ -72,11 +72,11 @@ bool	ModuleTimer::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 }
 
-bool	ModuleTimer::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool	ModuleTimer::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType("TimeTicker"))
 	{
-		CoreModifiable* i = item.Pointer();
+		CoreModifiable* i = item.get();
 		if(myTickerList.find(i)!=myTickerList.end())
 		{
 			myTickerList.erase(i);

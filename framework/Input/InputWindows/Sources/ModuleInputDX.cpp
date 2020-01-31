@@ -200,7 +200,7 @@ void ModuleInputDX::Update(const Timer& timer, void* addParam)
 	} 
 }    
 
-bool	ModuleInputDX::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool ModuleInputDX::addItem(const CMSP& item, ItemPosition pos)
 {
 	if(item->isSubType(JoystickDevice::myClassID))
 	{

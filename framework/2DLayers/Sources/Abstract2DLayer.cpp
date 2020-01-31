@@ -70,6 +70,6 @@ bool Abstract2DLayer::StartDrawing(TravState* state)
 void Abstract2DLayer::EndDrawing(TravState* state)
 {
 	KIGS_ASSERT(GetRenderingScreen());
-	 GetRenderingScreen()->Release(state);
+	GetRenderingScreen()->Release(state);
 }
 ///////////////////////////////////////////

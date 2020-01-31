@@ -47,7 +47,7 @@ void Node3D::EndExport(ExportSettings* settings)
 	ParentClassType::EndExport(settings);
 }
 
-bool Node3D::addItem(CMSP& item,ItemPosition pos DECLARE_LINK_NAME)
+bool Node3D::addItem(const CMSP& item,ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (!item) return false;
 
@@ -103,7 +103,7 @@ bool Node3D::addItem(CMSP& item,ItemPosition pos DECLARE_LINK_NAME)
 	return SceneNode::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-bool Node3D::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool Node3D::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	//! if item is a SceneNode, then scenegraph will need update after node removing
 	if(item->isSubType(SceneNode::myClassID))

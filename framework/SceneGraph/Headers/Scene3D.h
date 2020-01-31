@@ -146,6 +146,10 @@ public:
 
 	virtual void SortItemsFrontToBack(SortItemsFrontToBackParam& param);
 
+	int getSpotLightCount() { return mySpotLightCount; }
+	int getPointLightCount() { return myPointLightCount; }
+	int getDirLightCount() { return myDirLightCount; }
+
 protected:
 
 
@@ -161,6 +165,11 @@ protected:
 	//! link to the lights
 	kstl::set<CoreModifiable*>	    myLights;
 	bool							myLightsHaveChanged;
+
+	int mySpotLightCount = 0;
+	int myPointLightCount = 0;
+	int myDirLightCount = 0;
+
 	//! priority
 	maInt			 		        myPriority;
 	maBool							mySort3DNodesFrontToBack;

@@ -20,7 +20,7 @@ UISlidersGroup::~UISlidersGroup()
 }
 
 
-bool	UISlidersGroup::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	UISlidersGroup::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType("UIItem") && !item->getItems().empty()) 
 	{
@@ -90,7 +90,7 @@ bool	UISlidersGroup::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	}
 }
 
-bool	UISlidersGroup::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool	UISlidersGroup::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType("UIItem") && !item->getItems().empty()) 
 	{

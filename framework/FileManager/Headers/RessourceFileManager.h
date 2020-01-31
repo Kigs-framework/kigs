@@ -40,13 +40,13 @@ public:
 
 	/*! release one reference
 	*/
-	void		UnloadRessource(CMSP&);
+	void		UnloadRessource(const CMSP& res);
 	void		UnloadRessource(kstl::string);
 
 	//! add item. 
-	bool	addItem(CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
 	//! remove item. 
-	bool	removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
+	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 
 protected:

@@ -3,8 +3,7 @@
 
 #include "ModuleBase.h"
 #include "FilePathManager.h"
-
-class CoreRawBuffer;
+#include "CoreRawBuffer.h"
 
 /*! \defgroup FileManager FileManager module
  *  manage pathes for resource files
@@ -44,8 +43,9 @@ public:
 	* \note returned pointer must be deleted with delete[] after use
 	*/
 	static	CoreRawBuffer*	LoadFile(const char *pFilename, u64& filelength, u64 startOffset = 0, bool AsCharString = false);
-	static	CoreRawBuffer*	LoadFile(FileHandle *pFilename,u64& filelength,u64 startOffset=0,bool AsCharString=false);
-	
+	static	CoreRawBuffer*	LoadFile(FileHandle *pFilename,u64& filelength, u64 startOffset=0,bool AsCharString=false);
+	static	SmartPointer<CoreRawBuffer> LoadFileToBuffer(const std::string& pFilename);
+
 	/**
 	* load a text file in a string, add a 0 character at the end of the char buffer 
 	* \param pFilename name of the file
