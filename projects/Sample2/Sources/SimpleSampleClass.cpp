@@ -40,7 +40,7 @@ void	SimpleSampleClass::printMessage()
 	std::cout << "SimpleSampleClass " << getName() << " printMessage " << std::endl;
 }
 
-bool SimpleSampleClass::addItem(CMSP& item, ItemPosition pos)
+bool SimpleSampleClass::addItem(const CMSP& item, ItemPosition pos)
 {
 	if (item->isSubType("SimpleSampleClass"))
 	{
