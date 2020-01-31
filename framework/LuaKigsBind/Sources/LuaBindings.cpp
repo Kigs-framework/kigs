@@ -864,6 +864,11 @@ void setup_bindings(lua_State* lua)
 {
 	LuaState L = lua;
 	
+	LuaBinding(L).beginClass<CMSP>("CMSP")
+		.addConstructor(LUA_ARGS())
+		.addFunction("get", &CMSP::Pointer)
+		.endClass();
+
 	LuaBinding(L).beginClass<v2f>("v2f")
 		.addConstructor(LUA_ARGS(float, float))
 		.addVariable("x", &v2f::x, true)
@@ -1001,13 +1006,13 @@ void setup_bindings(lua_State* lua)
 		.endClass();
 	
 	auto cm = LuaBinding(L).beginClass<CoreModifiable>("CoreModifiable")
-		.addFactory(&factory, LUA_ARGS(kstl::string, kstl::string))
+		.addFactory(&factory, LUA_ARGS(kstl::string, kstl::string)) 
 		//.addStaticFunction("Import", LUA_FN(CoreModifiable*, CoreModifiable::Import, const kstl::string&, bool, bool), LUA_ARGS(const kstl::string&, _opt<bool>, _opt<bool>))
 		.addFunction("name", &CoreModifiable::getName)
 		.addFunction("addItem", &CoreModifiable::addItem, LUA_ARGS(CMSP&, _def<CoreModifiable::ItemPosition, CoreModifiable::Last>))
 		.addFunction("removeItem", &CoreModifiable::removeItem)
 		.addFunction("aggregateWith", &CoreModifiable::aggregateWith, LUA_ARGS(CMSP&, _def<CoreModifiable::ItemPosition, CoreModifiable::Last>))
-		.addFunction("removeAggregateWith", &CoreModifiable::removeAggregateWith)
+		.addFunction("removeAggregateWith", &CoreModifiable::removeAggregateWith, LUA_ARGS(CMSP&) )
 		.addFunction("parents", &CoreModifiable::GetParents)
 		.addFunction("childs", &CoreModifiableChildList)
 		.addFunction("items", &CoreModifiableChildList)

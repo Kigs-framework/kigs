@@ -591,7 +591,7 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 		{
 			maString methodName{ "methodName" , methodFound->m_Name };
 			params.insert(params.begin(), &methodName);
-			result=Call(methodFound->m_Method, sender, params, privateParams);
+			result= localthis->Call(methodFound->m_Method, sender, params, privateParams);
 			params.erase(params.begin());
 		}
 		else
