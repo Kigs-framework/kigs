@@ -7,8 +7,8 @@ public:
 	DECLARE_CLASS_INFO(MultiMesh, Node3D, Renderer);
 	DECLARE_CONSTRUCTOR(MultiMesh);
 
-	bool addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
-	bool removeItem(CMSP& item) override;
+	bool addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool removeItem(const CMSP& item) override;
 
 	void TravDraw(TravState* state) override;
 	

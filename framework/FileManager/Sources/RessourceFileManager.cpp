@@ -35,7 +35,7 @@ CMSP RessourceFileManager::GetRessource(const kstl::string &ClassName, const kst
 }
 
 //! add item. 
-bool	RessourceFileManager::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	RessourceFileManager::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	kstl::string filename;
 	if(item->getValue(LABEL_TO_ID(FileName),filename))
@@ -53,7 +53,7 @@ bool	RessourceFileManager::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 }
 
 //! remove item. 
-bool	RessourceFileManager::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool	RessourceFileManager::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	kstl::string filename;
 	if(item->getValue(LABEL_TO_ID(FileName),filename))
@@ -71,7 +71,7 @@ bool	RessourceFileManager::removeItem(CMSP& item DECLARE_LINK_NAME)
 }
 
 
-void	RessourceFileManager::UnloadRessource(CMSP& pRessource)
+void	RessourceFileManager::UnloadRessource(const CMSP& pRessource)
 {
 	// search this Ressource
 	removeItem(pRessource);

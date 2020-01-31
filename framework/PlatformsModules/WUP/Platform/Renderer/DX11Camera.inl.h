@@ -20,49 +20,45 @@ inline mat4 MatFromFloat4x4(const winrt::Windows::Foundation::Numerics::float4x4
 
 void DX11Camera::PlatformProtectedSetActive(TravState* state)
 {
-	if (!getRenderingScreen()->IsHolographic()) return;
-	
-	auto space = App::GetApp()->GetHolographicSpace();
-	auto frame = space.CreateNextFrame();
-	auto prediction = frame.CurrentPrediction();
-	auto poses = prediction.CameraPoses();
-	auto coordinate_system = App::GetApp()->GetStationaryReferenceFrame().CoordinateSystem();
-	
+	auto rs = getRenderingScreen()->as<DX11RenderingScreen>();
+	if (!rs->IsHolographic()) return;
+
 	RendererDX11* renderer = reinterpret_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
 	DXInstance* dxinstance = renderer->getDXInstance();
+	auto frame = dxinstance->mCurrentFrame;
 
-	dxinstance->mCurrentFrame = frame;
+	frame.UpdateCurrentPrediction();
+	auto prediction = frame.CurrentPrediction();
+	auto poses = prediction.CameraPoses();
+	auto coordinate_system = dxinstance->mStationaryReferenceFrame.CoordinateSystem();
 	
-	if (poses.Size())
+	for (auto pose : poses)
 	{
-		//kigsprintf("%d poses\n", poses.Size());
-		for (auto pose : poses)
+		auto camera = pose.HolographicCamera();
+		//camera.ViewportScaleFactor(1.0f);
+		camera.SetNearPlaneDistance(myNear);
+		camera.SetFarPlaneDistance(myFar);
+
+		auto size = camera.RenderTargetSize();
+		myViewportMinX = pose.Viewport().X / size.Width;
+		myViewportMinY = pose.Viewport().Y / size.Height;
+		myViewportSizeX = pose.Viewport().Width / size.Width;
+		myViewportSizeY = pose.Viewport().Height / size.Height;
+
+#ifdef KIGS_HOLOLENS2
+		myVerticalFOV = 29.0f;
+#else
+		myVerticalFOV = 17.5f;
+#endif
+		auto camera_projection_transform = pose.ProjectionTransform();
+		auto view_transform_container = pose.TryGetViewTransform(coordinate_system);
+		if (view_transform_container)
 		{
-			auto camera = pose.HolographicCamera();
-			//camera.ViewportScaleFactor(1.0f);
-			camera.SetNearPlaneDistance(myNear);
-			camera.SetFarPlaneDistance(myFar);
-
-			auto size = camera.RenderTargetSize();
-			myViewportMinX = pose.Viewport().X / size.Width;
-			myViewportMinY = pose.Viewport().Y / size.Height;
-			myViewportSizeX = pose.Viewport().Width / size.Width;
-			myViewportSizeY = pose.Viewport().Height / size.Height;
-
-			dxinstance->mCurrentRenderingParameters = frame.GetRenderingParameters(pose);
-			//myRenderingScreen->as<DX11RenderingScreen>()->SetCurrentHolographicParameters(frame, dxinstance->mCurrentRenderingParameters);
-			auto camera_projection_transform = pose.ProjectionTransform();
-			auto view_transform_container = pose.TryGetViewTransform(coordinate_system);
-			if (view_transform_container)
-			{
-				auto viewCoordinateSystemTransform = view_transform_container.Value();
-				mCurrentStereoViewproj[0] = MatFromFloat4x4(camera_projection_transform.Left) * MatFromFloat4x4(viewCoordinateSystemTransform.Left);
-				mCurrentStereoViewproj[1] = MatFromFloat4x4(camera_projection_transform.Right) * MatFromFloat4x4(viewCoordinateSystemTransform.Right);
-			}
+			auto viewCoordinateSystemTransform = view_transform_container.Value();
+			mCurrentStereoViewproj[0] = MatFromFloat4x4(camera_projection_transform.Left) * MatFromFloat4x4(viewCoordinateSystemTransform.Left);
+			mCurrentStereoViewproj[1] = MatFromFloat4x4(camera_projection_transform.Right) * MatFromFloat4x4(viewCoordinateSystemTransform.Right);
 		}
 	}
-
-	getRenderingScreen()->as<DX11RenderingScreen>()->CreateResources();
 
 	auto pointer_pose = SpatialPointerPose::TryGetAtTimestamp(coordinate_system, prediction.Timestamp());
 	if (pointer_pose)

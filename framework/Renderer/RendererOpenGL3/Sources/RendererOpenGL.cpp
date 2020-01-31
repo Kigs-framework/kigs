@@ -828,7 +828,7 @@ void RendererOpenGL::DeleteTexture(int count, unsigned int * id)
 	glDeleteTextures(count, id); CHECK_GLERROR;
 }
 
-void RendererOpenGL::SetLightsInfo(kstl::set<CoreModifiable*>*lights)
+ModuleSpecificRenderer::LightCount RendererOpenGL::SetLightsInfo(std::set<CoreModifiable*>*lights)
 {
 	int newNumberOfDirectLights = 0;
 	int newNumberOfPointLights = 0;
@@ -921,12 +921,13 @@ void RendererOpenGL::SetLightsInfo(kstl::set<CoreModifiable*>*lights)
 			break;
 		}
 	}
-	if (newNumberOfDirectLights != myDirLightCount || newNumberOfPointLights != myPointLightCount || newNumberOfSpotLights != mySpotLightCount)
-	{
-		myDirLightCount = newNumberOfDirectLights;
-		myPointLightCount = newNumberOfPointLights;
-		mySpotLightCount = newNumberOfSpotLights;
-	}
+
+
+	LightCount count;
+	count.dir = newNumberOfDirectLights;
+	count.spot = newNumberOfSpotLights;
+	count.point = newNumberOfPointLights;
+	return count;
 }
 
 

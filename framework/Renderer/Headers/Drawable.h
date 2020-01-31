@@ -104,21 +104,21 @@ public:
 
 	/**
 	 * \brief	add item in scene tree
-	 * \fn 		virtual bool	addItem(CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME);
+	 * \fn 		virtual bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME);
 	 * \param	item : item to add
 	 * \param	linkName : name of the added item
 	 * \return	TRUE if the item is added, FALSE otherwise
 	 */
-	bool	addItem(CMSP& item, ItemPosition pos = Last) override;
+	bool	addItem(const CMSP& item, ItemPosition pos = Last) override;
 	
 	/**
 	 * \brief	remove item in scene tree
-	 * \fn 		virtual bool	removeItem(CMSP&  item DECLARE_DEFAULT_LINK_NAME);
+	 * \fn 		virtual bool	removeItem(const CMSP&  item DECLARE_DEFAULT_LINK_NAME);
 	 * \param	item : item to remove
 	 * \param	linkName : name of the removed item
 	 * \return	TRUE if the item is removed, FALSE otherwise
 	 */
-	bool	removeItem(CMSP& item) override;
+	bool	removeItem(const CMSP& item) override;
            
 	/**
 	 * \brief	get the global position of the drawable

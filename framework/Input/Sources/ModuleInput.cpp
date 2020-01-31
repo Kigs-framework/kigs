@@ -219,7 +219,7 @@ bool ModuleInput::getActiveWindowPos(CoreModifiable *w, MouseDevice::MOUSE_BUTTO
 	return true;
 }
 
-bool ModuleInput::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool ModuleInput::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType("Window"))
 	{

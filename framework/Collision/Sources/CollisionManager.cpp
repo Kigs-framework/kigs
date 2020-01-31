@@ -305,10 +305,10 @@ bool CollisionManager::CheckType(CoreModifiable* item)
 	return false;
 }
 
-void CollisionManager::SetCollisionObject(CoreModifiable* item, CollisionBaseObject* collider)
+void CollisionManager::SetCollisionObject(const CMSP& item, CollisionBaseObject* collider)
 {
 	std::lock_guard<std::mutex> lock(mToAddMutex);
-	mToAdd.push_back({ SmartPointer<CoreModifiable>(item, GetRefTag{}), collider });
+	mToAdd.push_back({ item, collider });
 }
 
 void CollisionManager::CreateCollisionObject(CoreModifiable* item, unsigned int ColMask)
@@ -1594,7 +1594,7 @@ static void compare_tree(AABBTreeNode* a, AABBTreeNode* b)
 	}
 }
 
-bool CollisionManager::SerializeAABBTree(CoreRawBuffer* buffer, CoreModifiable* node)
+bool CollisionManager::SerializeAABBTree(CoreRawBuffer* buffer, const CMSP& node)
 {
 	auto it = mCollisionObjectMap.find(node->getUID());
 	if (it == mCollisionObjectMap.end()) return false;
@@ -1633,7 +1633,7 @@ bool CollisionManager::SerializeAABBTree(CoreRawBuffer* buffer, CoreModifiable* 
 	return true;
 }
 
-bool CollisionManager::DeserializeAABBTree(CoreRawBuffer* buffer, CoreModifiable* node)
+bool CollisionManager::DeserializeAABBTree(CoreRawBuffer* buffer, const CMSP& node)
 {
 	AABBTree* aabbtree = new AABBTree;
 	PacketReadStream stream_reader{ (u32*)buffer->data(), buffer->size() };
@@ -1642,7 +1642,7 @@ bool CollisionManager::DeserializeAABBTree(CoreRawBuffer* buffer, CoreModifiable
 	return true;
 }
 
-void CollisionManager::SetAABBTreeFromFile(const std::string& filename, CoreModifiable* node)
+void CollisionManager::SetAABBTreeFromFile(const std::string& filename, const CMSP& node)
 {
 	AABBTree* aabbtree = new AABBTree;
 	aabbtree->LoadFromFile(filename);

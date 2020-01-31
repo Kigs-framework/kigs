@@ -49,7 +49,7 @@ void MultiMesh::TravDraw(TravState* state)
 	}
 }
 
-bool	MultiMesh::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	MultiMesh::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType("Node3D"))
 	{
@@ -66,7 +66,7 @@ bool	MultiMesh::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return ParentClassType::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-bool MultiMesh::removeItem(CMSP& item)
+bool MultiMesh::removeItem(const CMSP& item)
 {
 	if (item->isSubType("Node3D"))
 	{

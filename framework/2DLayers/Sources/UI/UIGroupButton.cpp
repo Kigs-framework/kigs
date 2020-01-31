@@ -79,7 +79,7 @@ void	UIGroupButton::reComputeSize()
 //-------------------------------------------------------------------------
 //addItem
 
-bool	UIGroupButton::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	UIGroupButton::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType("UIButton"))
 	{
@@ -107,7 +107,7 @@ bool	UIGroupButton::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 //-------------------------------------------------------------------------
 //removeItem
 
-bool	UIGroupButton::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool	UIGroupButton::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType("UIButton"))
 	{

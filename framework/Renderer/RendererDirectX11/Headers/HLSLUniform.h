@@ -144,8 +144,8 @@ public:
 	DECLARE_CLASS_INFO(API3DUniformTexture, API3DUniformBase, Renderer)
 	API3DUniformTexture(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	bool	addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
-	bool	removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
+	bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 
 protected:

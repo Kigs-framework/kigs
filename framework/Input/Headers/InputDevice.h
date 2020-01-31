@@ -82,21 +82,21 @@ public:
 
 	/**
 	 * \brief	call with a pointer of a Window to set the input window (mandatory)
-	 * \fn 		virtual bool	addItem(CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME);
+	 * \fn 		virtual bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME);
 	 * \param	item : item to add
 	 * \param	linkName : name of the added item
 	 * \return	TRUE if the item is added, FALSE otherwise
 	 */
-	bool addItem(CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
 	
 	/**
 	 * \brief	call with a pointer of a Window previously added to remove it
-	 * \fn 		virtual bool	removeItem(CMSP&  item DECLARE_DEFAULT_LINK_NAME);
+	 * \fn 		virtual bool	removeItem(const CMSP&  item DECLARE_DEFAULT_LINK_NAME);
 	 * \param	item : item to remove
 	 * \param	linkName : name of the removed item
 	 * \return	TRUE if the item is removed, FALSE otherwise
 	 */
-	bool removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
+	bool removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 	/**
 	 * \brief	retreive given item state

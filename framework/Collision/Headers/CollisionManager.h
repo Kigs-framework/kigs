@@ -63,10 +63,9 @@ public:
 	DECLARE_CONSTRUCTOR(CollisionManager);
 	WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback, OnDeleteCallBack, GetAllRayIntersection, SerializeAABBTree, DeserializeAABBTree, SetAABBTreeFromFile);
 
-	bool SerializeAABBTree(CoreRawBuffer* buffer, CoreModifiable* node);
-	bool DeserializeAABBTree(CoreRawBuffer* buffer, CoreModifiable* node);
-
-	void SetAABBTreeFromFile(const std::string& filename, CoreModifiable* node);
+	bool SerializeAABBTree(CoreRawBuffer* buffer, const CMSP& node);
+	bool DeserializeAABBTree(CoreRawBuffer* buffer, const CMSP& node);
+	void SetAABBTreeFromFile(const std::string& filename, const CMSP& node);
 
 	enum Categories
 	{
@@ -110,7 +109,7 @@ public:
 	MeshCollisionInfo* GetCollisionInfoForObject(CoreModifiable* Object);
 
 	// Will take ownership of collider if collider->IsCoreModifiable is false
-	void SetCollisionObject(CoreModifiable* item, CollisionBaseObject* collider);
+	void SetCollisionObject(const CMSP& item, CollisionBaseObject* collider);
 
 	//const std::unordered_map<WeakRef, std::shared_ptr<MeshCollisionInfo>>& GetCollisionMap() { ProcessPendingItems(); return mCollisionObjectMap; }
 	const std::unordered_map<u32, std::shared_ptr<MeshCollisionInfo>>& GetCollisionMap() { ProcessPendingItems(); return mCollisionObjectMap; }

@@ -20,8 +20,8 @@ public:
 	bool	PermissionToClicRequiredFromParent(bool toPressed, UIItem* sender)override;
 
 	void	TreatClick(bool toPressed, UIItem* sender)override;
-	bool	addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
-	bool	removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
+	bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
+	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
 
 	void			reComputeSize();
 protected:

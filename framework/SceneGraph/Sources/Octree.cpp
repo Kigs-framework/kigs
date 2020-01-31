@@ -230,7 +230,7 @@ CullingObject::CULLING_RESULT  Octree::CullSubNodes(CullingObject* cullobj, Trav
 
 
 // manage octree remove
-bool	Octree::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool	Octree::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	bool foundsubnode = false;
 	if (item->isSubType("SceneNode"))

@@ -13,7 +13,7 @@ UILayout::UILayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 }
 
 
-bool UILayout::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool UILayout::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	//myNeedRecompute = true;
 	bool ret = UIPanel::addItem(item, pos PASS_LINK_NAME(linkName));
@@ -21,7 +21,7 @@ bool UILayout::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return ret;
 }
 
-bool UILayout::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool UILayout::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	//myNeedRecompute = true;
 	bool ret = UIPanel::removeItem(item PASS_LINK_NAME(linkName));

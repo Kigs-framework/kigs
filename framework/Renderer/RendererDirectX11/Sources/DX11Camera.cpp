@@ -22,11 +22,11 @@ bool	DX11Camera::ProtectedSetActive(TravState* state)
 	ModuleSpecificRenderer* renderer = state->GetRenderer();
 	if (getRenderingScreen())
 	{
+		PlatformProtectedSetActive(state);
+		
 		if (getRenderingScreen()->SetActive(state))
 		{
 			// call platform specific event on set active
-			PlatformProtectedSetActive(state);
-
 			renderer->SetClearColorValue(myClearColor[0], myClearColor[1], myClearColor[2], myClearColor[3]);
 			renderer->SetDepthValueMode(1.0);
 			renderer->SetDepthTestMode(true);

@@ -16,7 +16,7 @@ ThreadRunMethod::~ThreadRunMethod()
 
 }    
 
-bool	ThreadRunMethod::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ThreadRunMethod::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType(Thread::myClassID))
 	{
@@ -31,7 +31,7 @@ bool	ThreadRunMethod::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 }
 
-bool	ThreadRunMethod::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool	ThreadRunMethod::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType(Thread::myClassID))
 	{

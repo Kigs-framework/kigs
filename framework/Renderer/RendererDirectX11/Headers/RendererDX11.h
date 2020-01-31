@@ -10,6 +10,8 @@
 
 #ifdef WUP
 #include <winrt/Windows.Graphics.Holographic.h>
+#include <winrt/Windows.Perception.Spatial.h>
+#include "winrt/Windows.UI.Core.h"
 #endif
 
 class RendererDX11;
@@ -56,16 +58,16 @@ struct MaterialStruct
 
 struct DXInstance
 {
-	Microsoft::WRL::ComPtr<ID3D11Device1> m_device;
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext1> m_deviceContext;
-	Microsoft::WRL::ComPtr<IDXGISwapChain1> m_swapChain;
+	winrt::com_ptr<ID3D11Device1> m_device;
+	winrt::com_ptr<ID3D11DeviceContext1> m_deviceContext;
+	winrt::com_ptr<IDXGISwapChain1> m_swapChain;
 	
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
-	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterState;
+	winrt::com_ptr<ID3D11DepthStencilState> m_depthStencilState;
+	winrt::com_ptr<ID3D11RasterizerState> m_rasterState;
 
 	bool m_isFBORenderTarget = false;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_currentRenderTarget;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_currentDepthStencilTarget;
+	winrt::com_ptr<ID3D11RenderTargetView> m_currentRenderTarget;
+	winrt::com_ptr<ID3D11DepthStencilView> m_currentDepthStencilTarget;
 
 	ID3D11Buffer* m_matrixBuffer = nullptr;
 	ID3D11Buffer* m_lightBuffer = nullptr;
@@ -80,7 +82,14 @@ struct DXInstance
 
 #ifdef WUP
 	winrt::Windows::Graphics::Holographic::HolographicFrame mCurrentFrame{ nullptr };
-	winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters mCurrentRenderingParameters{ nullptr };
+	
+	//winrt::Windows::Graphics::Holographic::HolographicFramePrediction mPrediction{ nullptr };
+	//winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters mCurrentRenderingParameters{ nullptr };
+
+	winrt::Windows::UI::Core::CoreWindow mWindow{ nullptr };
+	winrt::Windows::Graphics::Holographic::HolographicSpace mHolographicSpace{ nullptr };
+	winrt::Windows::Perception::Spatial::SpatialLocator mSpatialLocator{ nullptr };
+	winrt::Windows::Perception::Spatial::SpatialStationaryFrameOfReference mStationaryReferenceFrame{ nullptr };
 #endif
 
 };
@@ -257,6 +266,7 @@ public:
 	void FlushState(bool force = false) override;
 
 	void startFrame(TravState* state) override;
+	void endFrame(TravState* state) override;
 
 	// Direct rendering method for UI
 	virtual void DrawUIQuad(TravState * state, const UIVerticesInfo * qi) override;
@@ -297,7 +307,7 @@ public:
 
 	u32 GetActiveTextureChannel() const { return myCurrentTextureChannel; }
 
-	void SetLightsInfo(kstl::set<CoreModifiable*>*lights) override;
+	ModuleSpecificRenderer::LightCount SetLightsInfo(kstl::set<CoreModifiable*>*lights) override;
 	void SendLightsInfo(TravState* travstate) override;
 	void ClearLightsInfo(TravState* travstate) override;
 

@@ -73,7 +73,7 @@ extern "C" void __declspec(dllexport) InitKigs()
 #endif
 
 		//! First thing to do
-	KigsCore::Init(false);
+	KigsCore::Init();
 
 	// no need to register app to factory
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));
