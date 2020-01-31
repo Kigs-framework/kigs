@@ -114,11 +114,6 @@ protected:
 
 	WRAP_METHODS(SetValueLua, AddLuaMethod, ConnectToLua);
 	
-	kstl::vector<LuaBehaviour*> myBehaviourSet;
-	
-	kstl::set<LuaBehaviour*> myAutoUpdateToRemoveSet;
-	kstl::set<LuaBehaviour*> myAutoUpdateToAddSet;
-	
 	kstl::vector<LuaBehaviour*> myToInitSet;
 		
 	lua_State*		myLuaState;

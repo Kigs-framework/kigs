@@ -420,18 +420,6 @@ LuaKigsBindModule::~LuaKigsBindModule()
 }
 
 
-void LuaKigsBindModule::AddToAutoUpdate(LuaBehaviour* script) 
-{
-	myAutoUpdateToAddSet.insert(script);
-	myAutoUpdateToRemoveSet.erase(script);
-}
-
-void LuaKigsBindModule::RemoveFromAutoUpdate(LuaBehaviour* script) 
-{	
-	myAutoUpdateToRemoveSet.insert(script);
-	myAutoUpdateToAddSet.erase(script);
-}
-
 void LuaKigsBindModule::AddLibrary(void(*func)(lua_State*)) 
 {
 	myLibraries.push_back(LuaCLibrary(func));
@@ -489,44 +477,8 @@ void LuaKigsBindModule::Close()
 //! module update
 void LuaKigsBindModule::Update(const Timer& timer,void* addParam)
 {
-	
 	BaseUpdate(timer, addParam);
-	// Add to auto update
-	kstl::set < LuaBehaviour* >::iterator it2 = myAutoUpdateToAddSet.begin();
-	while (it2 != myAutoUpdateToAddSet.end()) 
-	{
-		myBehaviourSet.push_back(*it2);
-		it2++;
-	}
-	myNeedResort = myNeedResort || !myAutoUpdateToAddSet.empty();
-	myAutoUpdateToAddSet.clear();
-	
-	// Remove from auto update
-	it2 = myAutoUpdateToRemoveSet.begin();
-	kstl::vector<LuaBehaviour*>::iterator current_end = myBehaviourSet.end();
-	while (it2 != myAutoUpdateToRemoveSet.end()) 
-	{
-		current_end = std::remove_if(myBehaviourSet.begin(), myBehaviourSet.end(), [&](LuaBehaviour* a) { return a == *it2; });
-		it2++;
-	}
-	myBehaviourSet.erase(current_end, myBehaviourSet.end());
-	// Removing from auto update doesn't change the relative order of the remaining items
-	myAutoUpdateToRemoveSet.clear();
-	
-	auto sorter = [](LuaBehaviour* a1, LuaBehaviour* a2)
-	{
-		if (a1->GetPriority() == a2->GetPriority())
-			return (a1) < (a2);
-		return a1->GetPriority() < a2->GetPriority();
-	};
-	// Resort script order
-	if (myNeedResort) 
-	{
-		myNeedResort = false;
-		std::sort(myBehaviourSet.begin(), myBehaviourSet.end(), sorter);
-	}
-	
-	std::sort(myToInitSet.begin(), myToInitSet.end(), sorter);
+
 	// Init scripts
 	kstl::vector<LuaBehaviour*>::iterator itset = myToInitSet.begin();
 	while (itset != myToInitSet.end())
@@ -535,19 +487,6 @@ void LuaKigsBindModule::Update(const Timer& timer,void* addParam)
 		itset++;
 	}
 	myToInitSet.clear();
-	
-	
-	// auto update
-	Timer& t = (Timer&)timer;
-	if (t.GetState() == Timer::NORMAL) 
-	{
-		itset = myBehaviourSet.begin();
-		while (itset != myBehaviourSet.end())
-		{
-			(*itset)->CallUpdate(timer,addParam);
-			itset++;
-		}
-	}
 	
 }
 

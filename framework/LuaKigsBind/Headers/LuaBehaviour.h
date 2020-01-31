@@ -26,17 +26,6 @@ public:
 	
 	friend class LuaKigsBindModule;
 
-	// execution order of the scripts
-	struct ScriptPriorityCompare
-	{
-		//! overload operator () for comparison
-		bool operator()(const LuaBehaviour * a1, const LuaBehaviour * a2) const
-		{
-			if (a1->GetPriority() == a2->GetPriority())
-				return (a1)<(a2);
-			return a1->GetPriority()<a2->GetPriority();
-		}
-	};
 	
 	DECLARE_CLASS_INFO(LuaBehaviour, CoreModifiable, LuaBind)
     
@@ -46,14 +35,7 @@ public:
     /*! virtual update. 
     */
 	void Update(const Timer& /* timer */,void* addParam) override;
-	
-	inline int GetPriority() const { return myPriority; }
 
-
-/*	Obsolete ?
-	bool push_self_ref(lua_State *L);
-	void setField(const char * name, const char* value);*/
-	
 	void InitLua(kdouble current_time);
 
 protected:
@@ -65,38 +47,36 @@ protected:
 	//! init method
 	void	InitModifiable() override;
 	void	UninitModifiable() override;
-	void	NotifyUpdate(const unsigned int  labelid) override;
 	
 	LuaKigsBindModule*		myLuaModule;
 	
 	// Lua script or reference on script file
 	maString				myScript;
-	// add this to autoupdate ?
-	maBool					myAutoUpdate;
-	maBool					myUpdateWithParent;
+
+	// enable / disable lua scripting
 	maBool					myEnabled;
+
+	// if interval is set, do update only if interval elapsed
 	maFloat					myInterval;
-	maInt				    myPriority;
-	
-	bool				    myLuaNeedInit;
-	bool				    myHasUpdate;
+	// last update time ( for interval evaluation)
 	kdouble					myLastTime;
 	
+	// check if lua needs init
+	bool				    myLuaNeedInit;
+
+	// check if we need to call lua update method
+	bool				    myHasUpdate;
+
 	CoreModifiable*			myTarget;
 	LuaIntf::LuaState       L;
 	LuaIntf::LuaRef         Self;
 	
-	void OnUpdateCallback(CoreModifiable* localthis, CoreModifiable* timer);
 	void OnAddItemCallback(CoreModifiable* localthis, CoreModifiable* item);
 	void OnRemoveItemCallback(CoreModifiable* localthis, CoreModifiable* item);
 
-	WRAP_METHODS(OnUpdateCallback, OnAddItemCallback, OnRemoveItemCallback);
-
-	bool    SafePCall(int nb_args, int nb_ret);
+	WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback);
 
 	DECLARE_METHOD(ReloadScript);
-
-	DECLARE_METHOD(CallLuaMethod);
 
 };    
 
