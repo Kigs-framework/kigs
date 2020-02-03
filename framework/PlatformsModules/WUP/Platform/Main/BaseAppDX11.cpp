@@ -5,6 +5,8 @@
 #include "FilePathManager.h"
 #include "NotificationCenter.h"
 
+#include "winrt_helpers.h"
+
 #include <thread>
 #include <mutex>
 #include <future>
@@ -40,6 +42,7 @@ bool gIsHolographic = true;
 bool gIsVR = false;
 
 std::mutex gPickedFileMutex;
+winrt::Windows::Storage::StorageFile gPickedStorageFile = nullptr;
 SmartPointer<::FileHandle> gPickedFile;
 
 using namespace winrt::Windows::System::Profile;
@@ -81,18 +84,26 @@ void App::Initialize(CoreApplicationView const& applicationView)
 				{
 					auto file = item.as<StorageFile>();
 					{
-						std::lock_guard<std::mutex> lk{ gPickedFileMutex };
-						auto name = file.Name();
-						usString str = (u16*)name.data();
-						gPickedFile = FilePathManager::CreateFileHandle(str.ToString()); //@NOTE KigsCore is not created at this point
-						gPickedFile->myVirtualFileAccess = new StorageFileFileAccess{ file };
-						gPickedFile->myUseVirtualFileAccess = true;
-
-						if (KigsCore::Instance())
+						no_await_lambda([this, file]() -> winrt::Windows::Foundation::IAsyncAction
 						{
-							KigsCore::GetNotificationCenter()->postNotificationName("WUPFileActivation");
-						}
+							co_await winrt::resume_background();
+							auto name = file.Name();
+							auto file_copy = co_await file.CopyAsync(winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder(), name, winrt::Windows::Storage::NameCollisionOption::ReplaceExisting);
+							usString str = (u16*)name.data();
+							{
+								std::lock_guard<std::mutex> lk{ gPickedFileMutex };
+								gPickedFile = FilePathManager::CreateFileHandle(to_utf8(file_copy.Path().data()));
+								//gPickedFile = FilePathManager::CreateFileHandle(str.ToString()); //@NOTE KigsCore is not created at this point
+								//gPickedFile->myVirtualFileAccess = new StorageFileFileAccess{ file };
+								//gPickedFile->myUseVirtualFileAccess = true;
+							}
+							co_await winrt::resume_foreground(mWindow.Dispatcher());
 
+							if (KigsCore::Instance())
+							{
+								KigsCore::GetNotificationCenter()->postNotificationName("WUPFileActivation");
+							}
+						});
 					}
 				}
 			}

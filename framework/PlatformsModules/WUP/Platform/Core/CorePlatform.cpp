@@ -430,10 +430,8 @@ bool		StorageFileFileAccess::Platform_fopen(::FileHandle* handle, const char * m
 	//auto readAccess = myFile->OpenReadAsync();
 	auto openasync = myFile.OpenAsync(flags&::FileHandle::Write ? winrt::Windows::Storage::FileAccessMode::ReadWrite : winrt::Windows::Storage::FileAccessMode::Read);
 	if (!WaitForAsyncOperation(openasync)) return false;
-	myFileProperties = properties.GetResults();
-
+	myFileSize = properties.GetResults().Size();
 	myAccessStream = openasync.GetResults();
-
 	handle->setOpeningFlags(flags);
 
 	return true;
@@ -455,7 +453,6 @@ long int	StorageFileFileAccess::Platform_fread(void * ptr, long size, long count
 		
 		if (myDataReader == nullptr)
 		{
-			
 			myDataReader = winrt::Windows::Storage::Streams::DataReader(myAccessStream);
 			myDataReader.InputStreamOptions(winrt::Windows::Storage::Streams::InputStreamOptions::ReadAhead);
 		}
@@ -515,6 +512,7 @@ long int	StorageFileFileAccess::Platform_fwrite(const void * ptr, long size, lon
 		//if (!WaitForAsyncOperation(flush)) return -1;
 		return size * count;
 	}
+	return 0;
 }
 
 long int	StorageFileFileAccess::Platform_ftell(::FileHandle* handle)
@@ -540,7 +538,7 @@ int			StorageFileFileAccess::Platform_fseek(::FileHandle* handle, long int offse
 			newpos += offset;
 			break;
 		case SEEK_END:
-			newpos = myFileProperties.Size() - offset;
+			newpos = myFileSize - offset;
 			break;
 		}
 
@@ -548,9 +546,9 @@ int			StorageFileFileAccess::Platform_fseek(::FileHandle* handle, long int offse
 		{
 			newpos = 0;
 		}
-		if (newpos > myFileProperties.Size())
+		if (newpos > myFileSize)
 		{
-			newpos = myFileProperties.Size();
+			newpos = myFileSize;
 		}
 
 		myAccessStream.Seek(newpos);
@@ -582,7 +580,7 @@ int			StorageFileFileAccess::Platform_fclose(::FileHandle* handle)
 		mLastWrite = nullptr;
 		myAccessStream = nullptr;
 
-		myFileProperties = nullptr;
+		myFileSize = 0;
 
 		myDataReader = nullptr;
 		//myFile = nullptr;
