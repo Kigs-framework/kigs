@@ -46,7 +46,7 @@ public:
 
 	unsigned int	getJoystickCount(){return myJoystickCount;}
 
-	bool addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
 
 protected:
     virtual ~ModuleInputJavascript();
