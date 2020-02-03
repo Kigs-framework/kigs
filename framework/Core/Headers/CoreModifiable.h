@@ -434,9 +434,15 @@ public:
 	// Avoid using ! call a method, with a list of CoreModifiableAttribute as parameters
 	bool CallMethod(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0, CoreModifiable* sender = 0);
 	// Avoid using ! call a meethod with the list of CoreModifiableAttribute of the given CoreModifiable as parameter
-	bool CallMethod(KigsID methodNameID, CoreModifiable* params, void* privateParams = 0, CoreModifiable* sender = 0) {
-		std::vector<CoreModifiableAttribute*> p = (std::vector<CoreModifiableAttribute*>) (*params);
-		return CallMethod(methodNameID, p, privateParams, sender); 
+	bool CallMethod(KigsID methodNameID, CoreModifiable * params, void* privateParams = 0, CoreModifiable * sender = 0) {
+
+		std::vector<CoreModifiableAttribute*> p;
+		if (params)
+		{
+			p = (std::vector<CoreModifiableAttribute*>) (*params);
+		}
+
+		return CallMethod(methodNameID, p, privateParams, sender);
 	}
 	// Avoid using ! call a method, with the list of CoreModifiableAttribute of the given CoreModifiable as parameter
 	bool CallMethod(KigsID methodNameID, CoreModifiable& params, void* privateParams = 0, CoreModifiable* sender = 0) {
