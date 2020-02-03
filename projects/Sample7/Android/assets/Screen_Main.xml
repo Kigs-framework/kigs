@@ -40,7 +40,7 @@
 				<Attr N="Dock" V="{0.500000,0.500000}"/>
 				<Attr N="Color" V="{0.0, 0.2, 0.4, 1.0}"/>
 			</Inst>
-			<Inst N="testLua" T="LuaBehaviour">
+			<Inst N="testLua" T="LuaBehaviour" Aggregate="true">
 				<Attr N="Script" V="#test.lua"/>
 			</Inst>
 		</Inst>
