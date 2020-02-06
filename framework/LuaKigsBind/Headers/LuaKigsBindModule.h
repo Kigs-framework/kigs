@@ -56,21 +56,13 @@ public:
     void Close() override;
 	
 	
-	//! module update
-	void Update(const Timer& timer, void* addParam) override;
-	
 	void AddToAutoUpdate(LuaBehaviour* script);
 	void RemoveFromAutoUpdate(LuaBehaviour* script);
 	
-	void AddToInit(LuaBehaviour* script);
-	void RemoveFromInit(LuaBehaviour* script);
-	
-	
+
 	lua_State* getLuaState(){ return myLuaState; }
 	
 	void ReleaseRefs(CoreModifiable* obj);
-	
-	void SetNeedResort(){ myNeedResort = true; }
 	
 	void AddLibrary(void(*func)(lua_State*));
 	
@@ -103,6 +95,11 @@ public:
 	bool	CallCoreModifiableCallback(kstl::vector<CoreModifiableAttribute*>& params,CoreModifiable* localthis);
 protected:
 	
+	void Update(const Timer& timer, void* addParam) override
+	{
+		// nothing to do
+	}
+
 	//! destructor
     virtual ~LuaKigsBindModule();    
 	DECLARE_METHOD(RegisterLuaMethod);
@@ -113,11 +110,8 @@ protected:
 	T GetGlobal(const kstl::string& name);
 
 	WRAP_METHODS(SetValueLua, AddLuaMethod, ConnectToLua);
-	
-	kstl::vector<LuaBehaviour*> myToInitSet;
-		
+
 	lua_State*		myLuaState;
-	bool myNeedResort;
 	
 	kstl::vector<LuaCLibrary> myLibraries;
 }; 
