@@ -1,11 +1,11 @@
 #pragma once
 
-#include <DataDrivenBaseApplication.h>
+#include <CoreBaseApplication.h>
 
-class Sample6 : public DataDrivenBaseApplication
+class Sample6 : public CoreBaseApplication
 {
 public:
-	DECLARE_CLASS_INFO(Sample6, DataDrivenBaseApplication, Core);
+	DECLARE_CLASS_INFO(Sample6, CoreBaseApplication, Core);
 	DECLARE_CONSTRUCTOR(Sample6);
 
 protected:
@@ -23,7 +23,4 @@ protected:
 	void	ProtectedUpdate() override;
 	void	ProtectedClose() override;
 
-	
-	void	ProtectedInitSequence(const kstl::string& sequence) override;
-	void	ProtectedCloseSequence(const kstl::string& sequence) override;
 };

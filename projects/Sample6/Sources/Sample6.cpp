@@ -21,18 +21,10 @@ IMPLEMENT_CONSTRUCTOR(Sample6)
 
 void	Sample6::ProtectedInit()
 {
-	// Base modules have been created at this point
-
-	// lets say that the update will sleep 1ms
 	SetUpdateSleepTime(1);
-
-	SP<FilePathManager>& pathManager = KigsCore::Singleton<FilePathManager>();
-	pathManager->AddToPath(".", "xml");
 
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), SimpleClass, SimpleClass, Application);
 
-	// Load AppInit, GlobalConfig then launch first sequence
-	DataDrivenBaseApplication::ProtectedInit();
 
 	// ask instance factory to add a connection on each created SimpleClass 
 	// for the PreInit signal to call this OnSimpleClassPreInit
@@ -131,7 +123,6 @@ void	Sample6::MethodWithParams(float p1, float p2)
 
 void	Sample6::ProtectedUpdate()
 {
-	DataDrivenBaseApplication::ProtectedUpdate();
 
 	// emit a "runtime" signal (not declared with the SIGNALS macro) 
 	EmitSignal("doSomething");
@@ -149,23 +140,9 @@ void	Sample6::ProtectedUpdate()
 
 void	Sample6::ProtectedClose()
 {
-	DataDrivenBaseApplication::ProtectedClose();
+
 }
 
-void	Sample6::ProtectedInitSequence(const kstl::string& sequence)
-{
-	if (sequence == "sequencemain")
-	{
-
-	}
-}
-void	Sample6::ProtectedCloseSequence(const kstl::string& sequence)
-{
-	if (sequence == "sequencemain")
-	{
-		
-	}
-}
 
 
 
