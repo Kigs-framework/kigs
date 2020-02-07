@@ -1,8 +1,6 @@
 #pragma once
 
-
-
-#include "Camera.h"
+class CoreModifiable;
 
 namespace ImGui
 {

@@ -86,23 +86,16 @@ void App::Initialize(CoreApplicationView const& applicationView)
 					{
 						no_await_lambda([this, file]() -> winrt::Windows::Foundation::IAsyncAction
 						{
-							co_await winrt::resume_background();
-							auto name = file.Name();
-							auto file_copy = co_await file.CopyAsync(winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder(), name, winrt::Windows::Storage::NameCollisionOption::ReplaceExisting);
-							usString str = (u16*)name.data();
+							auto hdl = co_await MakeHandleFromStorageFile(file);
+							//co_await winrt::resume_foreground(mWindow.Dispatcher());
 							{
 								std::lock_guard<std::mutex> lk{ gPickedFileMutex };
-								gPickedFile = FilePathManager::CreateFileHandle(to_utf8(file_copy.Path().data()));
-								//gPickedFile = FilePathManager::CreateFileHandle(str.ToString()); //@NOTE KigsCore is not created at this point
-								//gPickedFile->myVirtualFileAccess = new StorageFileFileAccess{ file };
-								//gPickedFile->myUseVirtualFileAccess = true;
+								gPickedFile = hdl;
 							}
-							co_await winrt::resume_foreground(mWindow.Dispatcher());
-
-							if (KigsCore::Instance())
+							/*if (KigsCore::Instance())
 							{
 								KigsCore::GetNotificationCenter()->postNotificationName("WUPFileActivation");
-							}
+							}*/
 						});
 					}
 				}
@@ -111,8 +104,6 @@ void App::Initialize(CoreApplicationView const& applicationView)
 		// Run() won't start until the CoreWindow is activated.
 		CoreWindow::GetForCurrentThread().Activate();
 	});
-
-	
 }
 
 void App::OnHolographicDisplayIsAvailableChanged(winrt::Windows::Foundation::IInspectable, winrt::Windows::Foundation::IInspectable)

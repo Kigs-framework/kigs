@@ -257,9 +257,9 @@ bool Win32fopen(::FileHandle* handle, const char * mode)
 	{
 		Win32CreateFolderTree(handle);
 	}
-
-	auto err = fopen_s(&handle->myFile, handle->myFullFileName.c_str(), mode);
-
+	
+	auto err = _wfopen_s(&handle->myFile, to_wchar(handle->myFullFileName).c_str(), to_wchar(mode).c_str());
+	
 	if (handle->myFile)
 	{
 		handle->myStatus |= ::FileHandle::Open;
