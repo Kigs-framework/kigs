@@ -35,7 +35,7 @@ public:
 
 	void			UpdateText(kstl::vector<int> keycodeList);
 
-	bool			TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)override;
+	//bool			TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)override;
 	bool			HasFocus()override { return myFocus; }
 	void			LoseFocus()override;
 	void			GetFocus()override;

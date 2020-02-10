@@ -28,7 +28,7 @@ public:
 	void SendClickUpToChildren(int buttonState, int buttonEvent, int X, int Y, bool & catchClick);
 	void SendClickDownToChildren(int buttonState, int buttonEvent, int X, int Y, bool & catchClick);
 	void SendFalseClickUpToChildren();
-	void SendMouseMoveToChildren(bool over,float MouseDeltaX, float MouseDeltaY);
+	//void SendMouseMoveToChildren(bool over,float MouseDeltaX, float MouseDeltaY);
 
 protected:
 	void InitModifiable()override;

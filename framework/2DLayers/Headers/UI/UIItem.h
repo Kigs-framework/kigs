@@ -44,25 +44,11 @@ public:
 	
 	bool												Draw(TravState* state) override;
 
-	// If overridden, call base class to send signals
-	virtual bool										TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY);
-	// If overridden, call base class to send signals. CatchClick set to true if someone is connected to MouseClick signal
-	virtual bool										TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick);
-	// If overridden, call base class to send signals
-	virtual void										TriggerMouseSwipe(int idxButton, float Vx, float Vy);
-	// If overridden, call base class to send signals
-	virtual void										TriggerPinch(float Dx, float Dy, float DZ);
-
-	virtual bool										PermissionToClicRequiredFromParent(bool toPressed, UIItem* sender) { return true; } // all parents allow children to clic per default
-	virtual void										TreatClick(bool toPressed, UIItem* sender) {}
-	virtual bool										PermissionToMoveRequiredFromParent(int X, int Y, int newValue, UIItem* sender) { return true; } // all parents allow children to clic per default
-	virtual void										TreatMove(int X, int Y, int oldValue, int desiredValue, UIItem* sender) {}
 	virtual bool										HasFocus() { return false; }
 	virtual void										LoseFocus() {}
 	virtual void										GetFocus() {}
 	virtual bool										isAlpha(float X, float Y) { return false; };
 
-	void												MustBeDeleted();
 	bool												ContainsPoint(kfloat X, kfloat Y);
 
 	// utility method

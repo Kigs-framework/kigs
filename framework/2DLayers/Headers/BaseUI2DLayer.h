@@ -5,13 +5,11 @@
 
 #include "GlobalEnum.h"
 #include "maReference.h"
-#include "MouseVelocityComputer.h"
 #include <deque>
 
 class UIItem;
 class ModuleInput;
 
-class MultiTouchPinch;
 class Node2D;
 
 struct NodeToDraw
@@ -56,47 +54,19 @@ public:
 	//! Do drawing here if any
 	void TravDraw(TravState* state) override;
 
-	void AddChild(CMSP& aChild, UIItem * aParent=NULL);
-	void DeleteChild(CMSP& aChild);
-
 	SP<UIItem>& GetRootItem() { return myRootItem; }
 
 protected:
-	virtual ~BaseUI2DLayer();
 	
 	void InitModifiable() override;
 
 	void UpdateChildrens(const Timer& a_timer, UIItem* current, void* addParam);
 
-	bool UpdateMouseOverItem(kfloat sX, kfloat sY, kfloat dX, kfloat dY, UIItem* current, unsigned int depth);
-
-	void Platform_GetMousePosition(kfloat & X, kfloat & Y, kfloat & sX, kfloat & sY, kfloat & dRx, kfloat & dRy);
-	int Platform_GetInputFlag();
-
 	void SortItemsFrontToBack(SortItemsFrontToBackParam& param) override;
-
-	DECLARE_METHOD(KeepClick);
-	DECLARE_METHOD(ReleaseClick);
-	DECLARE_METHOD(GetFocus);
-	DECLARE_METHOD(ReleaseFocus);
-	DECLARE_METHOD(UIItemRemovedFromRootItem);
-	DECLARE_METHOD(DeleteChild);
 
 	ModuleInput* myInput;
 	// TODO : change root item management in BaseUI2DLayer (use classic additem / removeitem...)
 	SP<UIItem> myRootItem;
-	std::vector<UIItem*> myMouseOverList;
-	std::deque<SP<UIItem>> myWaitToDelete;
 
-	int myInputFlag=UIInputEvent::NONE;
-	bool myMouseOverChanged;
-	bool myClicKept;
-	bool myFocus;
-	UIItem* myFocusItem;
-
-	SP<MouseVelocityComputer>	mMouseVelocityComputer = nullptr;
-	MultiTouchPinch*		mMultiTouchPinch = nullptr;
-
-	maBool					mGlobalPriority = BASE_ATTRIBUTE(GlobalPriority, false);
 };
 #endif //BASEUI2DLAYER_H_

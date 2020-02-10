@@ -174,11 +174,9 @@ bool Node2D::removeItem(const CMSP& item DECLARE_LINK_NAME)
 		
 		if (it != mySons.end())
 		{
-			KigsCore::GetNotificationCenter()->postNotificationName("UIItemRemovedFromRootItem", this);
 			if ((*it)->myParent == this)
 			{
 				(*it)->SetParent(nullptr);
-				//((Node2D*)item)->PropagateNeedUpdateToFather();
 			}
 			mySons.erase(it);
 		}

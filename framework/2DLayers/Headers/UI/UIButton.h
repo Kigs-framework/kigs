@@ -19,10 +19,6 @@ public:
 	bool								ManageClickTouchEvent(ClickEvent& click_event);
 	bool								ManageDirectTouchEvent(DirectTouchEvent& direct_touch);
 	
-	[[deprecated("use setValue instead")]]
-	void								StayPressed(bool b) { myStayPressed = b; }
-	[[deprecated("use setValue instead")]]
-	void								SetActionClickUp(kstl::string _Action) { myClickUpAction = _Action; }
 	[[deprecated("just don't")]]
 	void								ForcedChangeState(bool isdown) { myIsDown = isdown; ChangeState(); }
 	[[deprecated("connect to signals instead")]]
@@ -31,8 +27,6 @@ protected:
 	void								InitModifiable() override;
 	void								NotifyUpdate(const unsigned int /* labelid */) override;
 
-	bool								TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
-	bool								TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
 	bool								isAlpha(float X, float Y) override;
 
 	void								AutoSize();

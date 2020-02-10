@@ -38,8 +38,8 @@ protected:
 	void			InitModifiable() override;
 
 	bool			isAlpha(float X, float Y) override;
-	bool			TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
-	bool			TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
+	//bool			TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
+	//bool			TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
 
 	virtual void	ChangeText(const kstl::string& newText);
 	virtual void	ChangeText(const usString& newText);

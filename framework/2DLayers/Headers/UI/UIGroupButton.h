@@ -17,9 +17,6 @@ public:
 	 */
 	UIGroupButton(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	bool	PermissionToClicRequiredFromParent(bool toPressed, UIItem* sender)override;
-
-	void	TreatClick(bool toPressed, UIItem* sender)override;
 	bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
 	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
 
