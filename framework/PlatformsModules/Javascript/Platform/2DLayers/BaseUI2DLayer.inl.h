@@ -1,4 +1,4 @@
-void	BaseUI2DLayer::Platform_GetMousePosition(kfloat & X, kfloat & Y, kfloat & sX, kfloat & sY, kfloat & dRx, kfloat & dRy)
+/*void	BaseUI2DLayer::Platform_GetMousePosition(kfloat & X, kfloat & Y, kfloat & sX, kfloat & sY, kfloat & dRx, kfloat & dRy)
 {
 	myInput->GetMouse()->getPos(X, Y);
 	myInput->GetMouse()->getMouvement(dRx, dRy);
@@ -33,4 +33,4 @@ int	BaseUI2DLayer::Platform_GetInputFlag()
 	flag |= (myInput->GetMouse()->getButtonState(MouseDevice::LEFT) != 0) ? UIInputEvent::PINCH : 0; // pinch binbed on left
 
 	return flag;
-}
+}*/
