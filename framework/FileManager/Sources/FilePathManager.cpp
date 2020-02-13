@@ -879,7 +879,7 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 			if (receivedID != "")
 			{
 				// store receivedID as a dynamic attribute on L_Connection
-				L_Connection->AddDynamicAttribute(CoreModifiable::STRING, "fileid", receivedID.c_str());
+				L_Connection->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::STRING, "fileid", receivedID.c_str());
 			}
 			else
 			{

@@ -61,7 +61,7 @@ CMSP CoreModifiable::Import(std::shared_ptr<XMLTemplate<StringType> > xmlfile, c
 
 		if (keepImportFileName && filename.size())
 		{
-			root->AddDynamicAttribute(STRING, "SeparatedFile", filename.c_str());
+			root->AddDynamicAttribute(ATTRIBUTE_TYPE::STRING, "SeparatedFile", filename.c_str());
 		}
 
 		if (!state)
@@ -225,11 +225,11 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 				{
 					if constexpr (std::is_same_v<StringType, std::string_view>)
 					{
-						current->AddDynamicAttribute(STRING, "SeparatedFile", std::string(pathAttribute->getString()).c_str());
+						current->AddDynamicAttribute(ATTRIBUTE_TYPE::STRING, "SeparatedFile", std::string(pathAttribute->getString()).c_str());
 					}
 					else
 					{
-						current->AddDynamicAttribute(STRING, "SeparatedFile", pathAttribute->getString().c_str());
+						current->AddDynamicAttribute(ATTRIBUTE_TYPE::STRING, "SeparatedFile", pathAttribute->getString().c_str());
 					}
 				}
 
@@ -296,7 +296,7 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 				}*/
 				if (importState.keepImportFileName)
 				{
-					current->AddDynamicAttribute(STRING, "SeparatedFile", path.c_str());
+					current->AddDynamicAttribute(ATTRIBUTE_TYPE::STRING, "SeparatedFile", path.c_str());
 				}
 				needInit = false;
 				importState.loadedItems.push_back(current);
@@ -646,7 +646,7 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 				}
 
 				// for usstring, manage UTF-8
-				if ((attr->getType() == USSTRING) && (importState.UTF8Enc))
+				if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 				{
 					attr->setValue((const UTF8Char*)tempvalue.c_str());
 				}
@@ -677,7 +677,7 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 							EvalAttribute(tempvalue, currentModifiable, attr);
 						}
 
-						if ((attr->getType() == USSTRING) && (importState.UTF8Enc))
+						if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 						{
 							attr->setValue((const UTF8Char*)tempvalue.c_str());
 						}
@@ -708,9 +708,9 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 					if (attrtype)
 					{
 						ATTRIBUTE_TYPE atype = CoreModifiableAttribute::stringToType((std::string)attrtype->getString());
-						if (atype != UNKNOWN)
+						if (atype != ATTRIBUTE_TYPE::UNKNOWN)
 						{
-							if ((atype != ARRAY) && (atype != REFERENCE))
+							if ((atype != ATTRIBUTE_TYPE::ARRAY) && (atype != ATTRIBUTE_TYPE::REFERENCE))
 							{
 								attr = currentModifiable->AddDynamicAttribute(atype, (std::string)attrname->getString());
 								std::string tempvalue = (std::string)attrvalue->getString();
@@ -719,7 +719,7 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 									EvalAttribute(tempvalue, currentModifiable, attr);
 								}
 
-								if ((attr->getType() == USSTRING) && (importState.UTF8Enc))
+								if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 								{
 									attr->setValue((const UTF8Char*)tempvalue.c_str());
 								}
@@ -744,7 +744,7 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 						if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
 						{
 							ATTRIBUTE_TYPE atype = CoreModifiableAttribute::stringToType((std::string)attrtype->getString());
-							if ((atype != ARRAY) && (atype != REFERENCE))
+							if ((atype != ATTRIBUTE_TYPE::ARRAY) && (atype != ATTRIBUTE_TYPE::REFERENCE))
 							{
 								attr = currentModifiable->AddDynamicAttribute(atype, (std::string)attrname->getString());
 								std::string tempvalue = (std::string)sonXML->getString();
@@ -752,7 +752,7 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 								{
 									EvalAttribute(tempvalue, currentModifiable, attr);
 								}
-								if ((attr->getType() == USSTRING) && (importState.UTF8Enc))
+								if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 								{
 									attr->setValue((const UTF8Char*)tempvalue.c_str());
 								}

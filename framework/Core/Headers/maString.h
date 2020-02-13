@@ -16,7 +16,7 @@
 template<int notificationLevel>
 class maStringHeritage : public CoreModifiableAttributeData<kstl::string>
 {	
-	DECLARE_ATTRIBUTE_HERITAGE(maStringHeritage, maStringHeritage, kstl::string, CoreModifiable::STRING);
+	DECLARE_ATTRIBUTE_HERITAGE(maStringHeritage, maStringHeritage, kstl::string, CoreModifiable::ATTRIBUTE_TYPE::STRING);
 	
 public:
 
