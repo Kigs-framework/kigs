@@ -209,7 +209,7 @@ public:
 	
 
 	virtual CoreModifiable::ATTRIBUTE_TYPE getType() const = 0;
-	virtual CoreModifiable::ATTRIBUTE_TYPE getArrayElementType() const { return CoreModifiable::UNKNOWN; }
+	virtual CoreModifiable::ATTRIBUTE_TYPE getArrayElementType() const { return CoreModifiable::ATTRIBUTE_TYPE::UNKNOWN; }
 
 	virtual u32 getNbArrayElements() const { return 0; }
 	virtual u32 getNbArrayColumns() const { return 0; }
@@ -477,7 +477,7 @@ protected:
 template<int notificationLevel>
 class maRawPtrHeritage : public CoreModifiableAttributeData<void*>
 {
-	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maRawPtrHeritage, maRawPtrHeritage, void*, CoreModifiable::RAWPTR);
+	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maRawPtrHeritage, maRawPtrHeritage, void*, CoreModifiable::ATTRIBUTE_TYPE::RAWPTR);
 public:
 	
 	bool getValue(CoreModifiable*& value) const override

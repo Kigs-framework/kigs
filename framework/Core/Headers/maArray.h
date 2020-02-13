@@ -146,7 +146,7 @@ template<s32 notificationLevel, typename T, CoreModifiable::ATTRIBUTE_TYPE attri
 public:
 	using ArrayType = std::array<T, nbLines*nbColumns>;
 	
-	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maArrayHeritage, TemplateForPlacementNew, ArrayType, CoreModifiable::ARRAY);
+	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maArrayHeritage, TemplateForPlacementNew, ArrayType, CoreModifiable::ATTRIBUTE_TYPE::ARRAY);
 
 
 public:
@@ -499,16 +499,16 @@ public:
 	
 };
 
-using maMatrix22DF = maArrayHeritage<0, kfloat, CoreModifiable::FLOAT, 2, 2>;
-using maMatrix33DF = maArrayHeritage<0, kfloat, CoreModifiable::FLOAT, 3, 3>;
+using maMatrix22DF = maArrayHeritage<0, kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2, 2>;
+using maMatrix33DF = maArrayHeritage<0, kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3, 3>;
 
-using maVect2DF = maArrayHeritage<0, kfloat, CoreModifiable::FLOAT, 1, 2>;
-using maVect3DF = maArrayHeritage<0, kfloat, CoreModifiable::FLOAT, 1, 3>;
-using maVect4DF = maArrayHeritage<0, kfloat, CoreModifiable::FLOAT, 1, 4>;
-using maVect16DF = maArrayHeritage<0, kfloat, CoreModifiable::FLOAT, 1, 16>;
+using maVect2DF = maArrayHeritage<0, kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 2>;
+using maVect3DF = maArrayHeritage<0, kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 3>;
+using maVect4DF = maArrayHeritage<0, kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 4>;
+using maVect16DF = maArrayHeritage<0, kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 16>;
 
-using maVect2DI = maArrayHeritage<0, s32, CoreModifiable::INT, 1, 2>;
-using maVect3DI = maArrayHeritage<0, s32, CoreModifiable::INT, 1, 3>;
+using maVect2DI = maArrayHeritage<0, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 2>;
+using maVect3DI = maArrayHeritage<0, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 3>;
 
 
 // ****************************************

@@ -296,7 +296,7 @@ namespace kigs_impl
 		void* ptr;
 		if (attr->getValue(ptr))
 		{
-			if (attr->getType() == CoreModifiable::STRING)
+			if (attr->getType() == CoreModifiable::ATTRIBUTE_TYPE::STRING)
 				value = ((kstl::string*)ptr)->c_str();
 			else
 				value = (const char*)ptr;
