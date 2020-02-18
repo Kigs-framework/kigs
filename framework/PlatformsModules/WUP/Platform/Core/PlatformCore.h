@@ -72,7 +72,7 @@ protected:
 	}
 
 	winrt::Windows::Storage::StorageFile myFile = nullptr;
-	winrt::Windows::Storage::FileProperties::BasicProperties myFileProperties = nullptr;
+	size_t myFileSize = 0;
 	winrt::Windows::Storage::Streams::IRandomAccessStream	myAccessStream = nullptr;
 	winrt::Windows::Storage::Streams::DataReader			myDataReader = nullptr;
 	winrt::Windows::Foundation::IAsyncOperationWithProgress<unsigned int, unsigned int> mLastWrite = nullptr;

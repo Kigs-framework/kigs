@@ -166,32 +166,31 @@ protected:
 			FATEntryNode*	current = currentEntry();
 			if (current)
 			{
-				std::vector<std::string>	pathvector = pathVector();
+				std::vector<std::string_view>	pathvector = pathVector();
 				int i = 0;
 				for (i=0;i<(int)pathvector.size()-1;i++)
 				{
-					result += (pathvector[i] + "/");
+					result += pathvector[i];
+					result += "/";
 				}
 				if(full)
-					result += (pathvector[i]);
+					result += pathvector[i];
 			}
 			return result;
 		}
 
-		std::vector<std::string>	pathVector()
+		std::vector<std::string_view>	pathVector()
 		{
-			std::vector<std::string> toReturn;
+			std::vector<std::string_view> toReturn;
 			FATEntryNode*	current = currentEntry();
 			if (current)
 			{
 				for (auto it : myNodeStack)
 				{
-					if(it.entry->myName != "")
+					if(!it.entry->myName.empty())
 						toReturn.push_back(it.entry->myName);
 				}
-				
 				toReturn.push_back(myNodeStack.back().entry->mySons[myNodeStack.back().stackedSonIndex]->myName);
-				
 			}
 			return toReturn;
 		}

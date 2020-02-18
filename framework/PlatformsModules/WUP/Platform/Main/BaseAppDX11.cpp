@@ -5,6 +5,8 @@
 #include "FilePathManager.h"
 #include "NotificationCenter.h"
 
+#include "winrt_helpers.h"
+
 #include <thread>
 #include <mutex>
 #include <future>
@@ -40,6 +42,7 @@ bool gIsHolographic = true;
 bool gIsVR = false;
 
 std::mutex gPickedFileMutex;
+winrt::Windows::Storage::StorageFile gPickedStorageFile = nullptr;
 SmartPointer<::FileHandle> gPickedFile;
 
 using namespace winrt::Windows::System::Profile;
@@ -81,18 +84,19 @@ void App::Initialize(CoreApplicationView const& applicationView)
 				{
 					auto file = item.as<StorageFile>();
 					{
-						std::lock_guard<std::mutex> lk{ gPickedFileMutex };
-						auto name = file.Name();
-						usString str = (u16*)name.data();
-						gPickedFile = FilePathManager::CreateFileHandle(str.ToString()); //@NOTE KigsCore is not created at this point
-						gPickedFile->myVirtualFileAccess = new StorageFileFileAccess{ file };
-						gPickedFile->myUseVirtualFileAccess = true;
-
-						if (KigsCore::Instance())
+						no_await_lambda([this, file]() -> winrt::Windows::Foundation::IAsyncAction
 						{
-							KigsCore::GetNotificationCenter()->postNotificationName("WUPFileActivation");
-						}
-
+							auto hdl = co_await MakeHandleFromStorageFile(file);
+							//co_await winrt::resume_foreground(mWindow.Dispatcher());
+							{
+								std::lock_guard<std::mutex> lk{ gPickedFileMutex };
+								gPickedFile = hdl;
+							}
+							/*if (KigsCore::Instance())
+							{
+								KigsCore::GetNotificationCenter()->postNotificationName("WUPFileActivation");
+							}*/
+						});
 					}
 				}
 			}
@@ -100,8 +104,6 @@ void App::Initialize(CoreApplicationView const& applicationView)
 		// Run() won't start until the CoreWindow is activated.
 		CoreWindow::GetForCurrentThread().Activate();
 	});
-
-	
 }
 
 void App::OnHolographicDisplayIsAvailableChanged(winrt::Windows::Foundation::IInspectable, winrt::Windows::Foundation::IInspectable)
