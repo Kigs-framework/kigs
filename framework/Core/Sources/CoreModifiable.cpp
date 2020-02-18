@@ -563,7 +563,7 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 		CoreModifiableAttribute* foundattrib = findAttribute(methodNameID);
 		if (foundattrib)
 		{
-			if (foundattrib->getType() == COREITEM)
+			if (foundattrib->getType() == ATTRIBUTE_TYPE::COREITEM)
 			{
 				CoreItem& ItemToEval = (*(maCoreItem*)foundattrib);
 				
@@ -591,7 +591,7 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 		{
 			maString methodName{ "methodName" , methodFound->m_Name };
 			params.insert(params.begin(), &methodName);
-			result=Call(methodFound->m_Method, sender, params, privateParams);
+			result= localthis->Call(methodFound->m_Method, sender, params, privateParams);
 			params.erase(params.begin());
 		}
 		else
@@ -989,7 +989,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 	}
 	
 	
-	if ((type == CoreModifiable::ARRAY) && defaultval)
+	if ((type == CoreModifiable::ATTRIBUTE_TYPE::ARRAY) && defaultval)
 	{
 		// suppose it's a vector
 		s32 countComma = getOccurenceCount(defaultval, ',');
@@ -1018,37 +1018,37 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 			break;
 			case 5:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::FLOAT, 5>(*this, false, ID);
+				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, false, ID);
 			}
 			break;
 			case 6:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::FLOAT, 6>(*this, false, ID);
+				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, false, ID);
 			}
 			break;
 			case 7:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::FLOAT, 7>(*this, false, ID);
+				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, false, ID);
 			}
 			break;
 			case 8:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::FLOAT, 8>(*this, false, ID);
+				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, false, ID);
 			}
 			break;
 			case 9:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::FLOAT, 9>(*this, false, ID);
+				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, false, ID);
 			}
 			break;
 			case 10:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::FLOAT, 10>(*this, false, ID);
+				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, false, ID);
 			}
 			break;
 			case 12:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::FLOAT, 12>(*this, false, ID);
+				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, false, ID);
 			}
 			break;
 			case 16:
@@ -1112,57 +1112,57 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, co
 		break;
 		case 2:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::INT, 2>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 2>(*this, false, ID);
 		}
 		break;
 		case 3:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::INT, 3>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 3>(*this, false, ID);
 		}
 		break;
 		case 4:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::INT, 4>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 4>(*this, false, ID);
 		}
 		break;
 		case 5:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::INT, 5>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 5>(*this, false, ID);
 		}
 		break;
 		case 6:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::INT, 6>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 6>(*this, false, ID);
 		}
 		break;
 		case 7:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::INT, 7>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 7>(*this, false, ID);
 		}
 		break;
 		case 8:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::INT, 8>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 8>(*this, false, ID);
 		}
 		break;
 		case 9:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::INT, 9>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 9>(*this, false, ID);
 		}
 		break;
 		case 10:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::INT, 10>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 10>(*this, false, ID);
 		}
 		break;
 		case 12:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::INT, 12>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 12>(*this, false, ID);
 		}
 		break;
 		case 16:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::INT, 16>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 16>(*this, false, ID);
 		}
 		break;
 	}
@@ -1189,57 +1189,57 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, co
 		break;
 		case 2:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::FLOAT, 2>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2>(*this, false, ID);
 		}
 		break;
 		case 3:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::FLOAT, 3>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3>(*this, false, ID);
 		}
 		break;
 		case 4:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::FLOAT, 4>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 4>(*this, false, ID);
 		}
 		break;
 		case 5:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::FLOAT, 5>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, false, ID);
 		}
 		break;
 		case 6:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::FLOAT, 6>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, false, ID);
 		}
 		break;
 		case 7:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::FLOAT, 7>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, false, ID);
 		}
 		break;
 		case 8:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::FLOAT, 8>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, false, ID);
 		}
 		break;
 		case 9:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::FLOAT, 9>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, false, ID);
 		}
 		break;
 		case 10:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::FLOAT, 10>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, false, ID);
 		}
 		break;
 		case 12:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::FLOAT, 12>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, false, ID);
 		}
 		break;
 		case 16:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::FLOAT, 16>(*this, false, ID);
+			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 16>(*this, false, ID);
 		}
 		break;
 	}
@@ -1282,92 +1282,92 @@ CoreModifiableAttribute*	CoreModifiable::GenericCreateDynamicAttribute(CoreModif
 	CoreModifiableAttribute*	toadd = 0;
 	switch (type)
 	{
-		case CoreModifiable::BOOL:
+		case CoreModifiable::ATTRIBUTE_TYPE::BOOL:
 		{
 			toadd = new maBool(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::CHAR:
+		case CoreModifiable::ATTRIBUTE_TYPE::CHAR:
 		{
 			toadd = new maChar(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::SHORT:
+		case CoreModifiable::ATTRIBUTE_TYPE::SHORT:
 		{
 			toadd = new maShort(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::INT:
+		case CoreModifiable::ATTRIBUTE_TYPE::INT:
 		{
 			toadd = new maInt(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::LONG:
+		case CoreModifiable::ATTRIBUTE_TYPE::LONG:
 		{
 			toadd = new maLong(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::UCHAR:
+		case CoreModifiable::ATTRIBUTE_TYPE::UCHAR:
 		{
 			toadd = new maUChar(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::USHORT:
+		case CoreModifiable::ATTRIBUTE_TYPE::USHORT:
 		{
 			toadd = new maUShort(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::UINT:
+		case CoreModifiable::ATTRIBUTE_TYPE::UINT:
 		{
 			toadd = new maUInt(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::ULONG:
+		case CoreModifiable::ATTRIBUTE_TYPE::ULONG:
 		{
 			toadd = new maULong(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::FLOAT:
+		case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
 		{
 			toadd = new maFloat(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::DOUBLE:
+		case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 		{
 			toadd = new maDouble(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::STRING:
+		case CoreModifiable::ATTRIBUTE_TYPE::STRING:
 		{
 			toadd = new maString(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::REFERENCE:
+		case CoreModifiable::ATTRIBUTE_TYPE::REFERENCE:
 		{
 			toadd = new maReference(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::COREITEM:
+		case CoreModifiable::ATTRIBUTE_TYPE::COREITEM:
 		{
 			toadd = new maCoreItem(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::USSTRING:
+		case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 		{
 			toadd = new maUSString(*this, false, ID);
 		}
 		break;
-		case  CoreModifiable::COREBUFFER:
+		case  CoreModifiable::ATTRIBUTE_TYPE::COREBUFFER:
 		{
 			toadd = new maBuffer(*this, false, ID);
 		}
 		break;
-		case  CoreModifiable::RAWPTR:
+		case  CoreModifiable::ATTRIBUTE_TYPE::RAWPTR:
 		{
 			toadd = new maRawPtr(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::ARRAY:
+		case CoreModifiable::ATTRIBUTE_TYPE::ARRAY:
 		{
 			
 			KIGS_ERROR("Can not create a dynamic array with no default value", 1);
@@ -2012,8 +2012,8 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 				settings->current_xml_file = old_filename;
 			}
 
-			AddDynamicAttribute(STRING, "SeparatedFile", filename.c_str());
-			if(unique) AddDynamicAttribute(BOOL, "ExportUnique", true);
+			AddDynamicAttribute(ATTRIBUTE_TYPE::STRING, "SeparatedFile", filename.c_str());
+			if(unique) AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "ExportUnique", true);
 
 			currentNode->setName("Inst");
 			if (currentNode->getAttribute("P") == nullptr)
@@ -2044,7 +2044,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 			//! if already saved, just add a reference
 			XMLAttribute *attribute = new XMLAttribute("Ref", (*it)->GetRuntimeType());
 			currentNode->addAttribute( attribute );
-			if (unique) AddDynamicAttribute(BOOL, "ExportUnique", true);
+			if (unique) AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "ExportUnique", true);
 			return;
 		}
 	}
@@ -2070,7 +2070,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 		if (type == CoreModifiable::ATTRIBUTE_TYPE::RAWPTR)
 			continue;
 
-		if (current->isDynamic() && type == STRING)
+		if (current->isDynamic() && type == ATTRIBUTE_TYPE::STRING)
 		{
 			std::vector<std::string> splitted = SplitStringByCharacter(current->getLabel()._id_name, '$');
 			if (splitted.size() == 3 && splitted[1] == "LUA_CODE")
@@ -2116,7 +2116,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 			attribute = new XMLAttribute("N", current->getLabel()._id_name);
 			modifiableAttrNode->addAttribute(attribute);
 			// CoreItem special case
-			if (type == CoreModifiable::COREITEM)
+			if (type == CoreModifiable::ATTRIBUTE_TYPE::COREITEM)
 			{
 				maCoreItem* currentCoreItem = (maCoreItem*)current;
 				if (currentCoreItem->getRefFile() != "")
@@ -2267,7 +2267,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 		
 	}
 	savedList.push_back(this);
-	if (unique) AddDynamicAttribute(BOOL, "ExportUnique", true);
+	if (unique) AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "ExportUnique", true);
 
 	//! if recursive mode, save all sons
 	if (recursive)
@@ -2808,7 +2808,7 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 	
 	CoreItemSP ItemToEval;
 
-	ATTRIBUTE_TYPE destType = FLOAT;
+	ATTRIBUTE_TYPE destType = ATTRIBUTE_TYPE::FLOAT;
 	
 	// if dest attribute was given, then use its type to know what to do
 	if (destattr)
@@ -2817,7 +2817,7 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 	}
 	switch (destType)
 	{
-		case BOOL: // use float operator but result string will be "false" if float result is 0.0f, "true" if float result != 0  
+		case ATTRIBUTE_TYPE::BOOL: // use float operator but result string will be "false" if float result is 0.0f, "true" if float result != 0  
 		{
 			ItemToEval = CoreItemOperator<kfloat>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			kfloat result = *ItemToEval.get();
@@ -2832,19 +2832,19 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 
 		}
 		break;
-		case USSTRING: // use string operator. WARNING not tested feature  
-		case STRING: // use string operator. WARNING not tested feature  
+		case ATTRIBUTE_TYPE::USSTRING: // use string operator. WARNING not tested feature  
+		case ATTRIBUTE_TYPE::STRING: // use string operator. WARNING not tested feature  
 		{
 			ItemToEval = CoreItemOperator<std::string>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			attr = (std::string)*ItemToEval.get();
 		}
 		break;
-		case COREITEM: // don't evaluate coreitems as we want them to be evaluated when called
+		case ATTRIBUTE_TYPE::COREITEM: // don't evaluate coreitems as we want them to be evaluated when called
 		{
 			// DO NOTHING
 		}
 		break;
-		case ARRAY: 
+		case ATTRIBUTE_TYPE::ARRAY:
 		{
 			// check for 2D / 3D vectors
 			int arraySize = destattr->getNbArrayElements();

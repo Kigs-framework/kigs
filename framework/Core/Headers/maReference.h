@@ -34,7 +34,7 @@ struct maReferenceObject
 template<int notificationLevel>
 class maReferenceHeritage : public CoreModifiableAttributeData<maReferenceObject>
 {
-	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maReferenceHeritage, maReferenceHeritage, maReferenceObject, CoreModifiable::REFERENCE);
+	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maReferenceHeritage, maReferenceHeritage, maReferenceObject, CoreModifiable::ATTRIBUTE_TYPE::REFERENCE);
 
 
 public:

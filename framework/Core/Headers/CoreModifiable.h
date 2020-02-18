@@ -275,7 +275,7 @@ public:
 		EndExport);
 
 	// List of attribute types
-	enum ATTRIBUTE_TYPE
+	enum class ATTRIBUTE_TYPE
 	{
 		BOOL,
 		CHAR,
@@ -434,9 +434,15 @@ public:
 	// Avoid using ! call a method, with a list of CoreModifiableAttribute as parameters
 	bool CallMethod(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0, CoreModifiable* sender = 0);
 	// Avoid using ! call a meethod with the list of CoreModifiableAttribute of the given CoreModifiable as parameter
-	bool CallMethod(KigsID methodNameID, CoreModifiable* params, void* privateParams = 0, CoreModifiable* sender = 0) {
-		std::vector<CoreModifiableAttribute*> p = (std::vector<CoreModifiableAttribute*>) (*params);
-		return CallMethod(methodNameID, p, privateParams, sender); 
+	bool CallMethod(KigsID methodNameID, CoreModifiable * params, void* privateParams = 0, CoreModifiable * sender = 0) {
+
+		std::vector<CoreModifiableAttribute*> p;
+		if (params)
+		{
+			p = (std::vector<CoreModifiableAttribute*>) (*params);
+		}
+
+		return CallMethod(methodNameID, p, privateParams, sender);
 	}
 	// Avoid using ! call a method, with the list of CoreModifiableAttribute of the given CoreModifiable as parameter
 	bool CallMethod(KigsID methodNameID, CoreModifiable& params, void* privateParams = 0, CoreModifiable* sender = 0) {
@@ -1143,35 +1149,35 @@ template<CoreModifiable::ATTRIBUTE_TYPE type>
 struct EnumToType {};
 
 template<>
-struct EnumToType<CoreModifiable::BOOL> { using type = bool; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::BOOL> { using type = bool; };
 
 template<>
-struct EnumToType<CoreModifiable::CHAR> { using type = s8; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::CHAR> { using type = s8; };
 template<>
-struct EnumToType<CoreModifiable::SHORT> { using type = s16; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::SHORT> { using type = s16; };
 template<>
-struct EnumToType<CoreModifiable::INT> { using type = s32; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::INT> { using type = s32; };
 template<>
-struct EnumToType<CoreModifiable::LONG> { using type = s64; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::LONG> { using type = s64; };
 
 template<>
-struct EnumToType<CoreModifiable::UCHAR> { using type = u8; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::UCHAR> { using type = u8; };
 template<>
-struct EnumToType<CoreModifiable::USHORT> { using type = u16; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::USHORT> { using type = u16; };
 template<>
-struct EnumToType<CoreModifiable::UINT> { using type = u32; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::UINT> { using type = u32; };
 template<>
-struct EnumToType<CoreModifiable::ULONG> { using type = u64; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::ULONG> { using type = u64; };
 
 template<>
-struct EnumToType<CoreModifiable::FLOAT> { using type = float; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::FLOAT> { using type = float; };
 template<>
-struct EnumToType<CoreModifiable::DOUBLE> { using type = double; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::DOUBLE> { using type = double; };
 
 template<>
-struct EnumToType<CoreModifiable::STRING> { using type = std::string; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::STRING> { using type = std::string; };
 template<>
-struct EnumToType<CoreModifiable::USSTRING> { using type = usString; };
+struct EnumToType<CoreModifiable::ATTRIBUTE_TYPE::USSTRING> { using type = usString; };
 
 
 template<typename type>
@@ -1179,35 +1185,35 @@ struct TypeToEnum {};
 
 
 template<>
-struct TypeToEnum<bool> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::BOOL> {};
+struct TypeToEnum<bool> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::BOOL> {};
 
 template<>
-struct TypeToEnum<s8> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::CHAR> {};
+struct TypeToEnum<s8> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::CHAR> {};
 template<>
-struct TypeToEnum<s16> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::SHORT> {};
+struct TypeToEnum<s16> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::SHORT> {};
 template<>
-struct TypeToEnum<s32> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::INT> {};
+struct TypeToEnum<s32> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::INT> {};
 template<>
-struct TypeToEnum<s64> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::LONG> {};
+struct TypeToEnum<s64> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::LONG> {};
 
 template<>
-struct TypeToEnum<u8> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::UCHAR> {};
+struct TypeToEnum<u8> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::UCHAR> {};
 template<>
-struct TypeToEnum<u16> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::USHORT> {};
+struct TypeToEnum<u16> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::USHORT> {};
 template<>
-struct TypeToEnum<u32> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::UINT> {};
+struct TypeToEnum<u32> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::UINT> {};
 template<>
-struct TypeToEnum<u64> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ULONG> {};
+struct TypeToEnum<u64> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ULONG> {};
 
 template<>
-struct TypeToEnum<float> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::FLOAT> {};
+struct TypeToEnum<float> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::FLOAT> {};
 template<>
-struct TypeToEnum<double> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::DOUBLE> {};
+struct TypeToEnum<double> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::DOUBLE> {};
 
 template<>
-struct TypeToEnum<std::string> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::STRING> {};
+struct TypeToEnum<std::string> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::STRING> {};
 template<>
-struct TypeToEnum<usString> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::USSTRING> {};
+struct TypeToEnum<usString> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::USSTRING> {};
 
 
 

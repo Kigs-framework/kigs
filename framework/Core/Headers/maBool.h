@@ -15,7 +15,7 @@
 template<int notificationLevel>
 class maBoolHeritage : public CoreModifiableAttributeData<bool>
 {
-	DECLARE_ATTRIBUTE_HERITAGE(maBoolHeritage, maBoolHeritage, bool, CoreModifiable::BOOL);
+	DECLARE_ATTRIBUTE_HERITAGE(maBoolHeritage, maBoolHeritage, bool, CoreModifiable::ATTRIBUTE_TYPE::BOOL);
 
 public:
 

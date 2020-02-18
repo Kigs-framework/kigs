@@ -32,7 +32,7 @@ public:
 template<int notificationLevel>
 class maCoreItemHeritage : public CoreModifiableAttributeData<maCoreItemValue>
 {
-	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maCoreItemHeritage, maCoreItemHeritage, maCoreItemValue, CoreModifiable::COREITEM);
+	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maCoreItemHeritage, maCoreItemHeritage, maCoreItemValue, CoreModifiable::ATTRIBUTE_TYPE::COREITEM);
 
 public:
 	

@@ -11,6 +11,7 @@
 #include <ModuleBase.h>
 #include <LuaKigsBindModule.h>
 #include <ModuleFileManager.h>
+#include "LuaBindings.h"
 
 
 using namespace LuaIntf;
@@ -23,11 +24,8 @@ IMPLEMENT_CLASS_INFO(LuaBehaviour)
 IMPLEMENT_CONSTRUCTOR(LuaBehaviour)
 , myLuaModule(nullptr)
 , myScript(*this, true, LABEL_AND_ID(Script), "")
-, myAutoUpdate(*this, false, LABEL_AND_ID(AutoUpdate), true)
-, myUpdateWithParent(*this, false, LABEL_AND_ID(UpdateOnParentUpdate), false)
 , myEnabled(*this, false, LABEL_AND_ID(Enabled), true)
 , myInterval(*this, false, LABEL_AND_ID(Interval), 0.0)
-, myPriority(*this, false, LABEL_AND_ID(ScriptPriority), 0)
 , myLuaNeedInit(false)
 , myHasUpdate(false)
 , myLastTime(-1.0)
@@ -60,7 +58,6 @@ LuaBehaviour::~LuaBehaviour()
 {
 	if (myLuaModule)
 	{
-		myLuaModule->RemoveFromAutoUpdate(this);
 		myLuaModule->RemoveFromInit(this);
 	}
 	
@@ -87,6 +84,12 @@ LuaBehaviour::~LuaBehaviour()
 
 void LuaBehaviour::Update(const Timer& timer, void* addParam)
 {
+	// if no update method in lua, just return
+	if (!myHasUpdate) return;
+
+	// check if lua behaviour is enabled
+	if (!myEnabled) return;
+
 	kdouble now = timer.GetTime();
 	if (myLastTime < 0.0)
 		myLastTime = now;
@@ -95,10 +98,8 @@ void LuaBehaviour::Update(const Timer& timer, void* addParam)
 	if (dt < myInterval) return;
 	myLastTime = now;
 	
-	if (!myHasUpdate) return;
-	if (!myEnabled) return;
-	
-	if (!myLuaNeedInit)
+	// check that lua was init before calling update
+	if (!myLuaNeedInit) 
 	{ 
 		// we can't call update if we still need to init
 		Self.pushToStack();
@@ -159,7 +160,6 @@ void	LuaBehaviour::InitModifiable()
 			L.push(myTarget);
 			L.setField(-2, "target");
 			
-			KigsCore::Connect(myTarget, "Update", this, "OnUpdateCallback");
 			KigsCore::Connect(myTarget, "AddItem", this, "OnAddItemCallback");
 			KigsCore::Connect(myTarget, "RemoveItem", this, "OnRemoveItemCallback");
 	
@@ -177,13 +177,7 @@ void	LuaBehaviour::InitModifiable()
 			}
 			
 		}
-		
-		myAutoUpdate.changeNotificationLevel(Owner);
-		myPriority.changeNotificationLevel(Owner);
-		if (myAutoUpdate && myHasUpdate)
-		{
-			myLuaModule->AddToAutoUpdate(this);
-		}
+
 	}
 }
 
@@ -191,7 +185,6 @@ void LuaBehaviour::UninitModifiable()
 {
 	if (myLuaModule)
 	{
-		myLuaModule->RemoveFromAutoUpdate(this);
 		myLuaModule->RemoveFromInit(this);
 	}
 	CoreModifiable::UninitModifiable();
@@ -204,29 +197,12 @@ void LuaBehaviour::UninitModifiable()
 	
 	if (myTarget)
 	{
-		KigsCore::Disconnect(myTarget, "Update", this, "OnUpdateCallback");
 		KigsCore::Disconnect(myTarget, "AddItem", this, "OnAddItemCallback");
 		KigsCore::Disconnect(myTarget, "RemoveItem", this, "OnRemoveItemCallback");
 	}
 	myLuaModule = nullptr;
 }
 
-
-void LuaBehaviour::NotifyUpdate(const unsigned labelid) {
-	
-	if (!myLuaModule) return;
-	
-	if (labelid == myAutoUpdate.getLabelID()) {
-		if (myAutoUpdate) 
-			myLuaModule->AddToAutoUpdate(this);
-		else
-			myLuaModule->RemoveFromAutoUpdate(this);
-	}
-	else if (labelid == myPriority.getLabelID()) {
-		myLuaModule->SetNeedResort();
-	}
-	
-}
 
 
 DEFINE_METHOD(LuaBehaviour, ReloadScript) 
@@ -266,13 +242,6 @@ DEFINE_METHOD(LuaBehaviour, ReloadScript)
 	L.pop();
 
 	return false;
-}
-
-
-void LuaBehaviour::OnUpdateCallback(CoreModifiable* localthis, CoreModifiable* timer)
-{
-	if (myUpdateWithParent)
-		Update(*(Timer*)timer,0);
 }
 
 void LuaBehaviour::OnAddItemCallback(CoreModifiable* localthis, CoreModifiable* item)

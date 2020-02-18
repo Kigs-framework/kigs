@@ -762,7 +762,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 		{
 			kstl::string L_Key = (*(maString*)params[i]).const_ref();
 			idx = i+1;
-			if(params[idx]->getType() == STRING)
+			if(params[idx]->getType() == ATTRIBUTE_TYPE::STRING)
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kstl::string>((*(maString*)params[idx])), StealRefTag{});
 
@@ -772,7 +772,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 
 			}
-			else if(params[idx]->getType() == FLOAT)
+			else if(params[idx]->getType() == ATTRIBUTE_TYPE::FLOAT)
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])), StealRefTag{});
 				
@@ -782,7 +782,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 				
 			}
-			else if(params[idx]->getType() == INT)
+			else if(params[idx]->getType() == ATTRIBUTE_TYPE::INT)
 			{
 				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])), StealRefTag{});
 				
@@ -792,7 +792,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 			
 			}
-			else if(params[idx]->getType() == BOOL)
+			else if(params[idx]->getType() == ATTRIBUTE_TYPE::BOOL)
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
 
@@ -802,7 +802,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 
 			}
-			else if(params[idx]->getType() == UINT)
+			else if(params[idx]->getType() == ATTRIBUTE_TYPE::UINT)
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])), StealRefTag{});
 
@@ -812,7 +812,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 				
 			}
-			else if(params[idx]->getType() == DOUBLE)
+			else if(params[idx]->getType() == ATTRIBUTE_TYPE::DOUBLE)
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])), StealRefTag{});
 
@@ -962,25 +962,25 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 
 			switch (params[idx]->getType())
 			{
-			case STRING:
+			case ATTRIBUTE_TYPE::STRING:
 				L_Value = CoreItemSP((CoreItem*)new CoreValue<kstl::string>((*(maString*)params[idx]).const_ref()), StealRefTag{});
 				break;
-			case USSTRING:
+			case ATTRIBUTE_TYPE::USSTRING:
 				L_Value = CoreItemSP((CoreItem*)new CoreValue<usString>((*(maUSString*)params[idx])), StealRefTag{});
 				break;
-			case FLOAT:
+			case ATTRIBUTE_TYPE::FLOAT:
 				L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])), StealRefTag{});
 				break;
-			case INT:
+			case ATTRIBUTE_TYPE::INT:
 				L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])), StealRefTag{});
 				break;
-			case BOOL:
+			case ATTRIBUTE_TYPE::BOOL:
 				L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
 				break;
-			case UINT:
+			case ATTRIBUTE_TYPE::UINT:
 				L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])), StealRefTag{});
 				break;
-			case DOUBLE:
+			case ATTRIBUTE_TYPE::DOUBLE:
 				L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])), StealRefTag{});
 				break;
 			}

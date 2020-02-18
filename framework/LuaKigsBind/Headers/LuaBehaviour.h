@@ -22,23 +22,10 @@ struct lua_State;
 class LuaBehaviour : public CoreModifiable
 {
 	
-	public:
+public:
 	
 	friend class LuaKigsBindModule;
-	struct ScriptPriorityCompare
-	{
-		//! overload operator () for comparison
-		bool operator()(const LuaBehaviour * a1, const LuaBehaviour * a2) const
-		{
-			if (a1->GetPriority() == a2->GetPriority())
-				return (a1)<(a2);
-			return a1->GetPriority()<a2->GetPriority();
-		}
-	};
-	
-	
-	
-	
+
 	
 	DECLARE_CLASS_INFO(LuaBehaviour, CoreModifiable, LuaBind)
     
@@ -46,17 +33,12 @@ class LuaBehaviour : public CoreModifiable
 	LuaBehaviour(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	
     /*! virtual update. 
- */
+    */
 	void Update(const Timer& /* timer */,void* addParam) override;
-	
-	inline int GetPriority() const { return myPriority; }
-	bool push_self_ref(lua_State *L);
-	void setField(const char * name, const char* value);
-	
-	
-	
+
 	void InitLua(kdouble current_time);
-	protected:
+
+protected:
 	
 	
 	//! destructor
@@ -65,35 +47,37 @@ class LuaBehaviour : public CoreModifiable
 	//! init method
 	void	InitModifiable() override;
 	void	UninitModifiable() override;
-	void	NotifyUpdate(const unsigned int  labelid) override;
 	
-	//lua_State *			myLuaState; 
-	LuaKigsBindModule*	myLuaModule;
+	LuaKigsBindModule*		myLuaModule;
 	
-	maString			  myScript;
-	maBool				   myAutoUpdate;
-	maBool				   myUpdateWithParent;
-	maBool				   myEnabled;
-	maFloat				  myInterval;
-	maInt				    myPriority;
+	// Lua script or reference on script file
+	maString				myScript;
+
+	// enable / disable lua scripting
+	maBool					myEnabled;
+
+	// if interval is set, do update only if interval elapsed
+	maFloat					myInterval;
+	// last update time ( for interval evaluation)
+	kdouble					myLastTime;
 	
-	bool				     myLuaNeedInit;
-	bool				     myHasUpdate;
-	kdouble				  myLastTime;
+	// check if lua needs init
+	bool				    myLuaNeedInit;
+
+	// check if we need to call lua update method
+	bool				    myHasUpdate;
+
+	CoreModifiable*			myTarget;
+	LuaIntf::LuaState       L;
+	LuaIntf::LuaRef         Self;
 	
-	CoreModifiable*		  myTarget;
-	LuaIntf::LuaState        L;
-	LuaIntf::LuaRef          Self;
-	
-	void OnUpdateCallback(CoreModifiable* localthis, CoreModifiable* timer);
 	void OnAddItemCallback(CoreModifiable* localthis, CoreModifiable* item);
 	void OnRemoveItemCallback(CoreModifiable* localthis, CoreModifiable* item);
 
-	WRAP_METHODS(OnUpdateCallback, OnAddItemCallback, OnRemoveItemCallback);
+	WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback);
 
 	DECLARE_METHOD(ReloadScript);
 
-	
 };    
 
 #endif //_LUABEHAVIOUR_H_

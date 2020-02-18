@@ -43,7 +43,7 @@ void ModuleInputJavascript::Init(KigsCore* core, const kstl::vector<CoreModifiab
 	if(localmouse)
 	{
 		localmouse->DoInputDeviceDescription();
-		addItem((CMSP&)localmouse);
+		addItem(localmouse);
 	}
 	
 	
@@ -52,7 +52,7 @@ void ModuleInputJavascript::Init(KigsCore* core, const kstl::vector<CoreModifiab
 	if(localkeyboard)
 	{
 		localkeyboard->DoInputDeviceDescription();
-		addItem((CMSP&)localkeyboard);
+		addItem(localkeyboard);
 	}
 }       
 
@@ -84,7 +84,7 @@ void ModuleInputJavascript::Update(const Timer& /* timer */, void* addParam)
 	
 }    
 
-bool	ModuleInputJavascript::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ModuleInputJavascript::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	
 	if(item->isSubType(JoystickDevice::myClassID))
