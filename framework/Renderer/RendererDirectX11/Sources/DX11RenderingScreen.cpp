@@ -269,7 +269,7 @@ void DX11RenderingScreen::InitModifiable()
 		return;
 	}
 	// ask for delayed init
-	CoreModifiableAttribute* newAttr = AddDynamicAttribute(BOOL, "DelayedInit");
+	CoreModifiableAttribute* newAttr = AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "DelayedInit");
 	newAttr->setValue(true);
 #endif
 }

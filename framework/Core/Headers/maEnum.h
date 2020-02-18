@@ -37,7 +37,7 @@ class maEnumHeritage : public CoreModifiableAttributeData<maEnumValue<nbElements
 	template<int notiflevel>
 	using TemplateForPlacementNew = maEnumHeritage<notiflevel, nbElements>;
 
-	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maEnumHeritage, TemplateForPlacementNew, maEnumValue<nbElements>, CoreModifiable::ENUM);
+	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maEnumHeritage, TemplateForPlacementNew, maEnumValue<nbElements>, CoreModifiable::ATTRIBUTE_TYPE::ENUM);
 
 public:
 	

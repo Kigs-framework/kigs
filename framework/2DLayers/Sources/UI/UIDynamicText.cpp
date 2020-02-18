@@ -1162,7 +1162,7 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 					cm->setValue("RenderingScreen", "RenderingScreen:offscreen");
 					cm->setValue("SizeX", 320);
 					cm->setValue("SizeY", 240);
-					cm->AddDynamicAttribute(CoreModifiable::STRING, "Texture", image_path.c_str());
+					cm->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::STRING, "Texture", image_path.c_str());
 				}
 				else
 				{

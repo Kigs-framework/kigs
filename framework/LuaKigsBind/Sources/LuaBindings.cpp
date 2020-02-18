@@ -26,7 +26,7 @@ using namespace LuaIntf;
 template<int notificationLevel>
 class maLuaRefHeritage : public CoreModifiableAttributeData<LuaRef>
 {
-	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maLuaRefHeritage, maLuaRefHeritage, LuaRef, CoreModifiable::LUAREF);
+	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maLuaRefHeritage, maLuaRefHeritage, LuaRef, CoreModifiable::ATTRIBUTE_TYPE::LUAREF);
 	auto& operator=(const CurrentAttributeType& value)
 	{
 		_value = value; 
@@ -65,9 +65,9 @@ void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 {
 	CoreModifiable::ATTRIBUTE_TYPE type = attrib->getType();
 	
-	bool isArray = type == CoreModifiable::ARRAY;
+	bool isArray = type == CoreModifiable::ATTRIBUTE_TYPE::ARRAY;
 
-	if (type == CoreModifiable::LUAREF)
+	if (type == CoreModifiable::ATTRIBUTE_TYPE::LUAREF)
 	{
 		LuaRef ref = static_cast<CoreModifiableAttributeData<LuaRef>*>(attrib)->const_ref();
 		ref.pushToStack();
@@ -78,33 +78,33 @@ void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 		type = attrib->getArrayElementType();
 	
 	bool isInt =
-		type == CoreModifiable::CHAR ||
-		type == CoreModifiable::INT ||
-		type == CoreModifiable::SHORT ||
-		type == CoreModifiable::LONG;
+		type == CoreModifiable::ATTRIBUTE_TYPE::CHAR ||
+		type == CoreModifiable::ATTRIBUTE_TYPE::INT ||
+		type == CoreModifiable::ATTRIBUTE_TYPE::SHORT ||
+		type == CoreModifiable::ATTRIBUTE_TYPE::LONG;
 	
 	bool isUint =
-		type == CoreModifiable::UCHAR ||
-		type == CoreModifiable::USHORT ||
-		type == CoreModifiable::UINT ||
-		type == CoreModifiable::ULONG;
+		type == CoreModifiable::ATTRIBUTE_TYPE::UCHAR ||
+		type == CoreModifiable::ATTRIBUTE_TYPE::USHORT ||
+		type == CoreModifiable::ATTRIBUTE_TYPE::UINT ||
+		type == CoreModifiable::ATTRIBUTE_TYPE::ULONG;
 	
 	
 	bool isNumber =
-		type == CoreModifiable::FLOAT ||
-		type == CoreModifiable::DOUBLE;
+		type == CoreModifiable::ATTRIBUTE_TYPE::FLOAT ||
+		type == CoreModifiable::ATTRIBUTE_TYPE::DOUBLE;
 	
 	
 	if (!isArray)
 	{
-		if (type == CoreModifiable::REFERENCE)
+		if (type == CoreModifiable::ATTRIBUTE_TYPE::REFERENCE)
 		{
 			CheckUniqueObject	ModifiableRef;
 			attrib->getValue(ModifiableRef);
 			auto result = (CoreModifiable*)(RefCountedClass*)ModifiableRef;
 			L.push(result);
 		}
-		else if (type == CoreModifiable::BOOL)
+		else if (type == CoreModifiable::ATTRIBUTE_TYPE::BOOL)
 		{
 			bool b;
 			attrib->getValue(b);
@@ -130,7 +130,7 @@ void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 			attrib->getValue(value);
 			lua_pushnumber(L, value);
 		}
-		else if (type == CoreModifiable::RAWPTR)
+		else if (type == CoreModifiable::ATTRIBUTE_TYPE::RAWPTR)
 		{
 			auto it = gLuaTypeMap.find(attrib->getID());
 			void* ptr;
@@ -262,7 +262,7 @@ int CoreModifiableSetAttributeLua(lua_State* lua)
 		return 0;
 	}
 
-	if (attr && attr->getType() == CoreModifiable::LUAREF)
+	if (attr && attr->getType() == CoreModifiable::ATTRIBUTE_TYPE::LUAREF)
 	{
 		auto ref = L.toValue<LuaRef>(value_idx);
 		static_cast<CoreModifiableAttributeData<LuaRef>*>(attr)->ref() = ref;
@@ -615,14 +615,14 @@ int CoreModifiableAddDynamicAttribute(CoreModifiable* obj, lua_State* lua)
 		{
 			char str[128];
 			snprintf(str, 128, "%f", L.toNumber(3));
-			obj->AddDynamicAttribute(CoreModifiable::DOUBLE, name, str);
+			obj->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::DOUBLE, name, str);
 			break;
 		}
 		case LUA_TBOOLEAN:
-		obj->AddDynamicAttribute(CoreModifiable::BOOL, name, L.toBool(3));
+		obj->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, name, L.toBool(3));
 		break;
 		case LUA_TSTRING:
-		obj->AddDynamicAttribute(CoreModifiable::STRING, name, L.toString(3));
+		obj->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::STRING, name, L.toString(3));
 		break;
 		case LUA_TUSERDATA:
 		{
@@ -645,7 +645,7 @@ int CoreModifiableAddDynamicAttribute(CoreModifiable* obj, lua_State* lua)
 			}
 			else
 				break;
-			obj->AddDynamicAttribute(CoreModifiable::ARRAY, name, str);
+			obj->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::ARRAY, name, str);
 			break;
 		}
 		
@@ -753,7 +753,7 @@ LuaRef GetModifiableLuaData(lua_State* lua, CoreModifiable* obj)
 		L.setField(-2, "__methods"); // pop __methods
 		L.pushValueAt(-1); // push table
 		ref = L.ref(); // pops new table
-		obj->AddDynamicAttribute(CoreModifiable::INT, "LUA_REF", ref);
+		obj->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::INT, "LUA_REF", ref);
 		obj->InsertMethod("LuaReleaseCallbacks", static_cast<RefCountedClass::ModifiableMethod>(&DynamicMethodLuaReleaseCallbacks::LuaReleaseCallbacks));
 		KigsCore::Connect(obj, "Destroy", obj, "LuaReleaseCallbacks");
 	}

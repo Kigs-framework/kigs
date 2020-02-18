@@ -1190,26 +1190,26 @@ AttributeChange CheckAttributeChange(XMLNode* attr_xml, CoreModifiableAttribute*
 	if (result.attr_value)
 	{
 		result.old_value = result.attr_value->getString();
-		if (type == CoreModifiable::FLOAT)
+		if (type == CoreModifiable::ATTRIBUTE_TYPE::FLOAT)
 		{
 			float val;
 			if (CoreConvertString2Value(result.old_value, val))
 				CoreConvertValue2String(result.old_value, val);
 		}
-		else if (type == CoreModifiable::DOUBLE)
+		else if (type == CoreModifiable::ATTRIBUTE_TYPE::DOUBLE)
 		{
 			double val;
 			if (CoreConvertString2Value(result.old_value, val))
 				CoreConvertValue2String(result.old_value, val);
 		}
-		else if (type == CoreModifiable::ARRAY)
+		else if (type == CoreModifiable::ATTRIBUTE_TYPE::ARRAY)
 		{
 #define NORMALIZE_STRING(size, type) if (array_size == size)\
 				if (CoreConvertString2Array<type>(result.old_value, values, size))\
 					CoreConvertArray2String<type>(result.old_value, values, size);
 
 			int array_size = attr->getNbArrayElements();
-			if (attr->getArrayElementType() == CoreModifiable::FLOAT)
+			if (attr->getArrayElementType() == CoreModifiable::ATTRIBUTE_TYPE::FLOAT)
 			{
 				float values[16];
 				NORMALIZE_STRING(2, float);
@@ -1217,7 +1217,7 @@ AttributeChange CheckAttributeChange(XMLNode* attr_xml, CoreModifiableAttribute*
 				NORMALIZE_STRING(4, float);
 				NORMALIZE_STRING(16, float);
 			}
-			else if (attr->getArrayElementType() == CoreModifiable::DOUBLE)
+			else if (attr->getArrayElementType() == CoreModifiable::ATTRIBUTE_TYPE::DOUBLE)
 			{
 				double values[16];
 				NORMALIZE_STRING(2, double);
@@ -1225,7 +1225,7 @@ AttributeChange CheckAttributeChange(XMLNode* attr_xml, CoreModifiableAttribute*
 				NORMALIZE_STRING(4, double);
 				NORMALIZE_STRING(16, double);
 			}
-			else if (attr->getArrayElementType() == CoreModifiable::INT)
+			else if (attr->getArrayElementType() == CoreModifiable::ATTRIBUTE_TYPE::INT)
 			{
 				int values[16];
 				NORMALIZE_STRING(2, int);
@@ -1233,7 +1233,7 @@ AttributeChange CheckAttributeChange(XMLNode* attr_xml, CoreModifiableAttribute*
 				NORMALIZE_STRING(4, int);
 				NORMALIZE_STRING(16, int);
 			}
-			else if (attr->getArrayElementType() == CoreModifiable::UINT)
+			else if (attr->getArrayElementType() == CoreModifiable::ATTRIBUTE_TYPE::UINT)
 			{
 				u32 values[16];
 				NORMALIZE_STRING(2, u32);
@@ -1675,7 +1675,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 
 			std::string func_name;
 			bool is_lua_method = false;
-			if (attr->isDynamic() && attr->getType() == CoreModifiable::STRING)
+			if (attr->isDynamic() && attr->getType() == CoreModifiable::ATTRIBUTE_TYPE::STRING)
 			{
 				std::vector<std::string> splitted = SplitStringByCharacter(attr->getLabel()._id_name, '§');
 				if (splitted.size() == 3 && splitted[1] == "LUA_CODE")
@@ -1780,7 +1780,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			switch (type)
 			{
 
-			case CoreModifiable::BOOL:
+			case CoreModifiable::ATTRIBUTE_TYPE::BOOL:
 			{
 				bool value;
 				attr->getValue(value);
@@ -1797,10 +1797,10 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			}
 
 
-			case CoreModifiable::CHAR:
-			case CoreModifiable::SHORT:
-			case CoreModifiable::INT:
-			case CoreModifiable::LONG:
+			case CoreModifiable::ATTRIBUTE_TYPE::CHAR:
+			case CoreModifiable::ATTRIBUTE_TYPE::SHORT:
+			case CoreModifiable::ATTRIBUTE_TYPE::INT:
+			case CoreModifiable::ATTRIBUTE_TYPE::LONG:
 			{
 				int value;
 				attr->getValue(value);
@@ -1812,10 +1812,10 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 				DecorateAttribute(attr);
 				break;
 			}
-			case CoreModifiable::UCHAR:
-			case CoreModifiable::USHORT:
-			case CoreModifiable::UINT:
-			case CoreModifiable::ULONG:
+			case CoreModifiable::ATTRIBUTE_TYPE::UCHAR:
+			case CoreModifiable::ATTRIBUTE_TYPE::USHORT:
+			case CoreModifiable::ATTRIBUTE_TYPE::UINT:
+			case CoreModifiable::ATTRIBUTE_TYPE::ULONG:
 			{
 				int value;
 				attr->getValue(value);
@@ -1830,8 +1830,8 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			}
 
 
-			case CoreModifiable::FLOAT:
-			case CoreModifiable::DOUBLE:
+			case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
+			case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 			{
 				float value;
 				attr->getValue(value);
@@ -1845,14 +1845,14 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			}
 
 
-			case CoreModifiable::ARRAY:
+			case CoreModifiable::ATTRIBUTE_TYPE::ARRAY:
 			{
 				int size = attr->getNbArrayColumns();
 				CoreModifiable::ATTRIBUTE_TYPE array_type = attr->getArrayElementType();
 
 #define ImGuiInputArray(size, type, label, var) ImGui::Input##type##size(label, var)
 
-				if (array_type == CoreModifiable::FLOAT || array_type == CoreModifiable::DOUBLE)
+				if (array_type == CoreModifiable::ATTRIBUTE_TYPE::FLOAT || array_type == CoreModifiable::ATTRIBUTE_TYPE::DOUBLE)
 				{
 
 					bool is_color = id._id_name.find("Color") != std::string::npos || id._id_name.find("color") != std::string::npos;
@@ -1942,7 +1942,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			}
 
 
-			case CoreModifiable::ENUM:
+			case CoreModifiable::ATTRIBUTE_TYPE::ENUM:
 			{
 				auto enumElements = attr->getEnumElements();
 
@@ -1957,9 +1957,9 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 				break;
 			}
 
-			case CoreModifiable::STRING:
-			case CoreModifiable::REFERENCE:
-			case CoreModifiable::USSTRING:
+			case CoreModifiable::ATTRIBUTE_TYPE::STRING:
+			case CoreModifiable::ATTRIBUTE_TYPE::REFERENCE:
+			case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 			{
 				if (!is_lua_method)
 				{
@@ -2004,12 +2004,12 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 				break;
 			}
 
-			case CoreModifiable::COREITEM:
+			case CoreModifiable::ATTRIBUTE_TYPE::COREITEM:
 			{
 				ImGui::Text("TODO CoreItem : %s", tmpStr);
 				break;
 			}
-			case CoreModifiable::UNKNOWN: break;
+			case CoreModifiable::ATTRIBUTE_TYPE::UNKNOWN: break;
 			default: break;
 			}
 
