@@ -578,14 +578,14 @@ void	Camera::activeTouchControlledCamera(bool active)
 		// first check if not already there
 		if (getAttribute("TouchControlledData") == 0)
 		{
-			AddDynamicAttribute(RAWPTR, "TouchControlledData");
+			AddDynamicAttribute(ATTRIBUTE_TYPE::RAWPTR, "TouchControlledData");
 			touchControlledDataStruct* touchData = new touchControlledDataStruct();
 			setValue("TouchControlledData", touchData);
 		}
 
 		if (getAttribute("TargetPointDist") == 0) // attribute can be added via xml
 		{
-			AddDynamicAttribute(FLOAT, "TargetPointDist", 250.0f);
+			AddDynamicAttribute(ATTRIBUTE_TYPE::FLOAT, "TargetPointDist", 250.0f);
 		}
 
 	}

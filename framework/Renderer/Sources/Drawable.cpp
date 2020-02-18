@@ -15,7 +15,7 @@ IMPLEMENT_CLASS_INFO(Drawable)
 
 IMPLEMENT_CONSTRUCTOR(Drawable)
 {
-	AddDynamicAttribute(BOOL, "TransarencyFlag", false);
+	AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "TransarencyFlag", false);
 	setUserFlag(UserFlagDrawable);
 	myDrawingNeeds=(unsigned int)Not_Init;
 }    

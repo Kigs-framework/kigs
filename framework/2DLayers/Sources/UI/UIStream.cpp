@@ -71,7 +71,7 @@ void UIStream::InitModifiable()
 	
 	SP<Texture> texture = KigsCore::GetInstanceOf(getName() + "_streamtex", "Texture");
 	texture->setValue("IsDynamic", true);
-	texture->AddDynamicAttribute(BOOL, "IsBGR", false);
+	texture->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "IsBGR", false);
 	texture->Init();
 	SetTexture(texture.get());
 

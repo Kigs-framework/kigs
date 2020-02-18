@@ -169,7 +169,7 @@ void ModernMesh::InitModifiable()
 		auto tree = getAttribute("AABBTree");
 		if (cm && tree)
 		{
-			if (tree->getType() == STRING)
+			if (tree->getType() == ATTRIBUTE_TYPE::STRING)
 			{
 				std::string path;
 				tree->getValue(path);
@@ -481,7 +481,7 @@ void ModernMeshItemGroup::PrepareExport(ExportSettings* settings)
 
 	if (!desc.isNil())
 	{
-		AddDynamicAttribute(CoreModifiable::COREITEM, "VertexDescription");
+		AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::COREITEM, "VertexDescription");
 		setValue("VertexDescription", desc.get());
 	}
 }
