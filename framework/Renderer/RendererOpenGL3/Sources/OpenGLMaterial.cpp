@@ -46,10 +46,10 @@ void OpenGLMaterial::InitModifiable()
 		addItem((CMSP&)uniAmbiantColor);
 
 #ifdef KIGS_TOOLS
-		uniDiffuseColor->AddDynamicAttribute(BOOL, "NoExport", true);
-		uniSpecularColor->AddDynamicAttribute(BOOL, "NoExport", true);
-		uniShininess->AddDynamicAttribute(BOOL, "NoExport", true);
-		uniAmbiantColor->AddDynamicAttribute(BOOL, "NoExport", true);
+		uniDiffuseColor->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
+		uniSpecularColor->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
+		uniShininess->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
+		uniAmbiantColor->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
 #endif
 
 		myDiffuseColor.changeNotificationLevel(Owner);

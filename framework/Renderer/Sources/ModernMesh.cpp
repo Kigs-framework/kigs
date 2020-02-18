@@ -325,7 +325,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 	HDrawable::PrepareExport(settings);
 	if (myFileName.const_ref().empty())
 	{
-		AddDynamicAttribute(CoreModifiable::BOOL, "IsCreatedFromExport");
+		AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "IsCreatedFromExport");
 		setValue("IsCreatedFromExport", true);
 		//RemoveDynamicAttribute("ExportingFile");
 	}
@@ -399,7 +399,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 			else
 			{
 				cm->RemoveDynamicAttribute("AABBTree");
-				auto m = (maBuffer*)AddDynamicAttribute(COREBUFFER, "AABBTree", "");
+				auto m = (maBuffer*)AddDynamicAttribute(ATTRIBUTE_TYPE::COREBUFFER, "AABBTree", "");
 				m->const_ref()->SetBuffer(std::move(*crb.get()));
 			}
 		}
