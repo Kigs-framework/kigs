@@ -508,9 +508,9 @@ public:
 	RefCountedClass::ModifiableMethod GetMethod(KigsID id) const;
 
 	//! map of children
-	kstl::unordered_map<KigsID, CoreTreeNode*> myChildren;
+	kigs::unordered_map<KigsID, CoreTreeNode*> myChildren;
 
-	robin_hood::unordered_map <KigsID, ModifiableMethodStruct, KigsIDHash> myMethods;
+	kigs::unordered_map <KigsID, ModifiableMethodStruct> myMethods;
 
 	//! keep track of instance list for this class type
 	//kstl::set<RefCountedClass*, RefCountedClassNameSorter> myInstances;

@@ -74,7 +74,7 @@ void	KigsCore::RegisterDecorator(decorateMethod method,decorateMethod undecorate
 {
 	if(myDecoratorMap == 0)
 	{
-		myDecoratorMap=new kstl::unordered_map<KigsID,decorateMethodPair>;
+		myDecoratorMap=new kigs::unordered_map<KigsID,decorateMethodPair>;
 	}
 
 	decorateMethodPair toadd;
@@ -230,10 +230,10 @@ MEMORYMANAGEMENT_END
 	myCoreInstance->myInstanceFactory = new InstanceFactory(myCoreInstance);
 
 	//! map for all initialised modules
-	myCoreInstance->myModuleBaseInstanceMap = new kstl::unordered_map<KigsID,ModuleBase*>;
+	myCoreInstance->myModuleBaseInstanceMap = new kigs::unordered_map<KigsID,ModuleBase*>;
 
 	//! map for all singleton
-	myCoreInstance->mySingletonMap = new kstl::unordered_map<KigsID,CMSP>;
+	myCoreInstance->mySingletonMap = new kigs::unordered_map<KigsID,CMSP>;
 
 	myCoreInstance->myMultiThread=new bool;
 	(*myCoreInstance->myMultiThread)=false;
@@ -243,7 +243,7 @@ MEMORYMANAGEMENT_END
 #endif
 
 	//! map for references
-	myCoreInstance->myReferenceMap = new kstl::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >;
+	myCoreInstance->myReferenceMap = new kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >;
 
 	myCoreInstance->myCoreMainModuleList=new ModuleBase*[8];
 	int i=0;
@@ -272,7 +272,7 @@ MEMORYMANAGEMENT_END
 }
 
 
-kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	KigsCore::GetDefaultCoreItemOperatorConstructMap()
+kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	KigsCore::GetDefaultCoreItemOperatorConstructMap()
 {
 	return myCoreItemOperatorCreateMethodMap;
 }
@@ -348,7 +348,7 @@ void KigsCore::Close(bool closeMemoryManager)
 
 
 #if KIGSID_CHECK_COLLISIONS
-		std::unordered_map<u32, std::string> test;
+		kigs::unordered_map<u32, std::string> test;
 		for (auto& s : GetKigsIDCollisionStrings())
 		{
 			auto id = fastGetID(s.c_str(), (unsigned int)s.length());

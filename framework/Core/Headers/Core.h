@@ -31,22 +31,6 @@ class CoreVector;
 
 typedef     CoreVector* (*CoreItemOperatorCreateMethod)();
 
-// auto registring does not work when not in "unity" mode 
-/*inline void AddToAutoRegister(std::function<void()> f, KigsID group)
-{
-	static std::unordered_map<KigsID, std::list<std::function<void()>>> mAutoRegisterList;
-	if (f)
-		mAutoRegisterList[group].push_back(f);
-	else
-	{
-		for (auto& func : mAutoRegisterList[group]) 
-		{
-			func();
-		}
-	}
-}*/
-
-
 // keep a fast array access on main generic modules (using enum as index)
 enum CoreModuleIndex
 {
@@ -179,11 +163,11 @@ public:
 	}
 	*/
 	/**
-	* \fn			kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	GetDefaultCoreItemOperatorConstructMap();
+	* \fn			kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	GetDefaultCoreItemOperatorConstructMap();
 	* \brief		return the map for CoreItemOperator creation in general purpose case
-	* \return		kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&
+	* \return		kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&
 	*/
-	kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	GetDefaultCoreItemOperatorConstructMap();
+	kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	GetDefaultCoreItemOperatorConstructMap();
 
 	/**
 	 * \fn			static ModuleBase*		GetModule(const STRINGS_NAME_TYPE& classname);
@@ -395,11 +379,11 @@ public:
 
 
 	/**
-	* \fn			inline  static kstl::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >& getReferenceMap()
+	* \fn			inline  static kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >& getReferenceMap()
 	* \brief		Get the map of referenced CoreModifiable (maReference)
 	* \return		
 	*/
-	inline static kstl::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >& getReferenceMap()
+	inline static kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >& getReferenceMap()
 	{
 		return *(myCoreInstance->myReferenceMap);
 	}
@@ -452,7 +436,7 @@ protected:
 	// nullptr wrapper
 	CMSP	myNullPtr = nullptr;
 
-	kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myCoreItemOperatorCreateMethodMap;
+	kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myCoreItemOperatorCreateMethodMap;
 
 #if KIGS_ERROR_LEVEL<=2	
 	/**
@@ -499,7 +483,7 @@ protected:
 	InstanceFactory*	myInstanceFactory;
 
 	//! pointer to initialised modules
-	kstl::unordered_map<KigsID, ModuleBase*>*			myModuleBaseInstanceMap;
+	kigs::unordered_map<KigsID, ModuleBase*>*			myModuleBaseInstanceMap;
 
 	//! decorator map
 	struct decorateMethodPair
@@ -507,7 +491,7 @@ protected:
 		decorateMethod	m_decorate;
 		decorateMethod	m_undecorate;
 	};
-	kstl::unordered_map<KigsID, decorateMethodPair>*		myDecoratorMap;
+	kigs::unordered_map<KigsID, decorateMethodPair>*		myDecoratorMap;
 
 	// current pending async requests
 	kstl::vector<AsyncRequest*>*							myAsyncRequestList;
@@ -520,7 +504,7 @@ protected:
 
 
 	//! pointer to created singletons
-	kstl::unordered_map<KigsID, CMSP>*		mySingletonMap;
+	kigs::unordered_map<KigsID, CMSP>*		mySingletonMap;
 
 	//! manage post destruction (lazy list)
 	kstl::vector<CoreModifiable*>*						myPostDestructionList;
@@ -531,7 +515,7 @@ protected:
 
 
 	//! CoreModifiable referenced by maReference
-	kstl::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >*	myReferenceMap;
+	kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >*	myReferenceMap;
 
 
 MEMORYMANAGEMENT_START
@@ -545,7 +529,7 @@ MEMORYMANAGEMENT_END
 
 	//! pointer to the root of the class inheritance tree
 	CoreTreeNode*			 myRootNode;
-	kstl::unordered_map<KigsID, CoreTreeNode*>		myTypeNodeMap;
+	kigs::unordered_map<KigsID, CoreTreeNode*>		myTypeNodeMap;
 
 
 	//! list of semaphore

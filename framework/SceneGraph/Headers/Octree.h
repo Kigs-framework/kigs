@@ -250,7 +250,7 @@ protected:
 	maEnum<4> myQuadTreeAxis;
 
 	//! map of scene node
-	kstl::unordered_map<SceneNode*,OctreeSubNode*>  myObjectNodeAssociation;
+	kigs::unordered_map<SceneNode*,OctreeSubNode*>  myObjectNodeAssociation;
 
 	bool myIsQuadtree;
 	unsigned int myAxisMask;

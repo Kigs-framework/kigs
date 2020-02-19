@@ -81,7 +81,7 @@ protected:
 	kstl::vector<int>											myVertexMergeBarriers;
 	kstl::vector<int>											myIndicesMergeBarriers;
 	kstl::vector<BBox>											mySectionsBBox;
-	kstl::unordered_map<unsigned int, kstl::vector<BuildVertexStruct> >	myVertexBuilder;
+	kigs::unordered_map<unsigned int, kstl::vector<BuildVertexStruct> >	myVertexBuilder;
 	AbstractDynamicGrowingBuffer								myTriangles; 
 	AbstractDynamicGrowingBuffer								myVertexArray;
 	unsigned int												myCurrentVertexSize;

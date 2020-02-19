@@ -373,7 +373,7 @@ private:
 		std::string				myCachedFolder;
 	};
 
-	std::unordered_map<std::thread::id, ThreadRead> mThreadRead;
+	kigs::unordered_map<std::thread::id, ThreadRead> mThreadRead;
 
 	ThreadRead& GetCurrentThreadRead() { return mThreadRead[std::this_thread::get_id()]; }
 

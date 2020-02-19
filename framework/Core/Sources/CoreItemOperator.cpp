@@ -47,7 +47,7 @@ CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae
 }
 
 template<typename operandType>
-CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae, CoreModifiable* target, const kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap)
+CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae, CoreModifiable* target, const kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap)
 {
 	kstl::string cleanFormulae = formulae;
 	cleanFormulae.erase(std::remove_if(cleanFormulae.begin(), cleanFormulae.end(), RemoveDelimiter()), cleanFormulae.end());
@@ -65,7 +65,7 @@ CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae
 }
 
 template<typename operandType>
-void	CoreItemOperator<operandType>::ConstructContextMap(kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<operandType>::ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList)
 {
 	myMap.clear();
 	
@@ -91,25 +91,25 @@ void	CoreItemOperator<operandType>::ConstructContextMap(kstl::unordered_map<kstl
 }
 
 template<>
-void	CoreItemOperator<kstl::string>::ConstructContextMap(kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<kstl::string>::ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList)
 {
 	// nothing here
 }
 
 template<>
-void	CoreItemOperator<Point2D>::ConstructContextMap(kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<Point2D>::ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList)
 {
 	// nothing here
 }
 
 template<>
-void	CoreItemOperator<Point3D>::ConstructContextMap(kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<Point3D>::ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList)
 {
 	// nothing here
 }
 
 template<>
-void	CoreItemOperator<Vector4D>::ConstructContextMap(kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>& myMap, kstl::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<Vector4D>::ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>& myMap, kstl::vector<SpecificOperator>* specificList)
 {
 	// nothing here
 }
@@ -564,7 +564,7 @@ template<typename operandType>
 CoreItemOperator<operandType>* CoreItemOperator<operandType>::getOperator(const kstl::string& keyword, ConstructContext& context)
 {
 
-	typename kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>::const_iterator itfound = context.myMap.find(keyword);
+	typename kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>::const_iterator itfound = context.myMap.find(keyword);
 	while (itfound != context.myMap.end())
 	{
 		return  (CoreItemOperator<operandType>*)((*itfound).second());
@@ -577,7 +577,7 @@ RefCountedBaseClass* CoreItemOperator<operandType>::getVariable(const kstl::stri
 {
 	if (myCurrentCoreItemEvaluationContext)
 	{
-		kstl::unordered_map<unsigned int, RefCountedBaseClass*>::iterator	itfound = myCurrentCoreItemEvaluationContext->myVariableList.find(CharToID::GetID(keyword));
+		kigs::unordered_map<unsigned int, RefCountedBaseClass*>::iterator	itfound = myCurrentCoreItemEvaluationContext->myVariableList.find(CharToID::GetID(keyword));
 		if (itfound != myCurrentCoreItemEvaluationContext->myVariableList.end())
 		{
 			return (*itfound).second;

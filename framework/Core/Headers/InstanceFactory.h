@@ -104,11 +104,11 @@ public:
 		createMethod      GetCreateMethod(KigsID classname) const;
 
 		//!  registered class list for this module
-		kstl::unordered_map<KigsID, createMethod> myClassMap;
+		kigs::unordered_map<KigsID, createMethod> myClassMap;
 	};
 
 	//! get the registered module list
-	const kstl::unordered_map<KigsID, ModuleAssociation>& GetModuleList() { return myModuleList; }
+	const kigs::unordered_map<KigsID, ModuleAssociation>& GetModuleList() { return myModuleList; }
 
 	// auto add a callback to all created object
 	void	addModifiableCallback(const KigsID& signal, CoreModifiable* target, const KigsID& slot,KigsID filter="CoreModifiable");
@@ -122,7 +122,7 @@ protected:
 	KigsCore*     myCore;
 
 	//! map of registered modules
-	kstl::unordered_map<KigsID, ModuleAssociation> myModuleList;
+	kigs::unordered_map<KigsID, ModuleAssociation> myModuleList;
 
 	kstl::set<KigsID> myEventClassList;
 
@@ -133,7 +133,7 @@ protected:
 		KigsID						slot; // slot being called when signal is send
 	};
 
-	kstl::unordered_map<KigsID, kstl::vector<CallbackStruct>> myModifiableCallbackMap;
+	kigs::unordered_map<KigsID, kstl::vector<CallbackStruct>> myModifiableCallbackMap;
 };
 
 #endif //_INSTANCEFACTORY_H_
