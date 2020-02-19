@@ -427,7 +427,13 @@ inline bool operator!=(const KigsID& a, unsigned int id) { return a._id != id; }
 inline bool operator!=(unsigned int id, const KigsID& a) { return a._id != id; }
 
 
-
+struct KigsIDHash
+{
+	std::size_t operator()(const KigsID& k) const
+	{
+		return k._id;
+	}
+};
 
 // Hash for usage in maps
 #include <functional>
