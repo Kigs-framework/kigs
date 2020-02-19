@@ -222,6 +222,6 @@ protected:
 	SP<DataDrivenSequenceManager>	m_SequenceManager;
 
 	// manage transition state for all sequence manager
-	kstl::unordered_map<DataDrivenTransition*, DataDrivenTransition*>						myInTransition;
+	kigs::unordered_map<DataDrivenTransition*, DataDrivenTransition*>						myInTransition;
 };
 #endif //_DATADRIVENBASEAPPLICATION_H_

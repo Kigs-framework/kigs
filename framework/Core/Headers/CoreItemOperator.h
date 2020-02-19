@@ -5,8 +5,6 @@
 #include "CoreValue.h"
 #include "AsciiParserUtils.h"
 
-#include "kstlunordered_map.h"
-
 struct CoreItemOperatorStruct
 {
 	char	myOp;
@@ -19,7 +17,7 @@ struct CoreItemOperatorStruct
 
 struct CoreItemEvaluationContext
 {
-	kstl::unordered_map<unsigned int, RefCountedBaseClass*>	myVariableList;
+	kigs::unordered_map<unsigned int, RefCountedBaseClass*>	myVariableList;
 };
 
 extern	CoreItemEvaluationContext*	myCurrentCoreItemEvaluationContext;
@@ -38,7 +36,7 @@ public:
 class ConstructContext
 {
 public:
-	kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myMap;
+	kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myMap;
 	CoreModifiable* myTarget;
 	kstl::vector<SpecificOperator>* mySpecificList;
 };
@@ -111,8 +109,8 @@ public:
 	}
 
 	static CoreItemSP	Construct(const kstl::string& formulae, CoreModifiable* target, kstl::vector<SpecificOperator>* specificList=0);
-	static CoreItemSP	Construct(const kstl::string& formulae, CoreModifiable* target, const kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap);
-	static void	ConstructContextMap(kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList = 0);
+	static CoreItemSP	Construct(const kstl::string& formulae, CoreModifiable* target, const kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap);
+	static void	ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList = 0);
 	static CoreItemSP	Parse(AsciiParserUtils& formulae, ConstructContext& context);
 
 protected:

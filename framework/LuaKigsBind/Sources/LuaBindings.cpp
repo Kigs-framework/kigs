@@ -37,7 +37,7 @@ public:
 using maLuaRef = maLuaRefHeritage<0>;
 
 
-kstl::unordered_map<KigsID, const char*> gLuaTypeMap;
+kigs::unordered_map<KigsID, const char*> gLuaTypeMap;
 
 IMPLEMENT_CLASS_INFO(LuaNotificationHook);
 

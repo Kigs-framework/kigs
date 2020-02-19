@@ -109,9 +109,9 @@ struct KigsToolsState
 
 	maReference CurrentSequenceManager{ 0u, maReferenceObject{"DataDrivenSequenceManager:AppSequenceManager"} };
 
-	std::unordered_map<std::string, std::pair<std::function<void()>, bool>> CustomWidgets;
+	kigs::unordered_map<std::string, std::pair<std::function<void()>, bool>> CustomWidgets;
 
-	std::unordered_map<Timer*, Timer::State> TimerStates;
+	kigs::unordered_map<Timer*, Timer::State> TimerStates;
 	struct
 	{
 		bool MenuBar = false;
@@ -163,7 +163,7 @@ struct KigsToolsState
 	{
 		std::unordered_set<std::shared_ptr<XMLBase>> FileChanged;
 	};
-	std::unordered_map<CoreModifiable*, XMLChange> XMLChanged;
+	kigs::unordered_map<CoreModifiable*, XMLChange> XMLChanged;
 
 	maReference ActiveXMLItem;
 	std::shared_ptr<XMLBase> ActiveXMLFile;
@@ -1649,7 +1649,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 		XMLNode* node;
 	};
 
-	std::unordered_map<unsigned int, lua_method_ref> lua_methods;
+	kigs::unordered_map<unsigned int, lua_method_ref> lua_methods;
 
 	/// Attributes
 	ImGui::SetNextTreeNodeOpen(gKigsTools->CurrentSettings.AttributesOpen, ImGuiSetCond_Once);

@@ -148,9 +148,9 @@ namespace std
 
 struct LazyContent
 {
-	robin_hood::unordered_map<KigsID, std::vector<std::pair<KigsID, CoreModifiable*>>, KigsIDHash> ConnectedTo;
-	robin_hood::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> ConnectedToMe;
-	robin_hood::unordered_map <KigsID, ModifiableMethodStruct, KigsIDHash> Methods;
+	kigs::unordered_map<KigsID, std::vector<std::pair<KigsID, CoreModifiable*>>> ConnectedTo;
+	kigs::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> ConnectedToMe;
+	kigs::unordered_map <KigsID, ModifiableMethodStruct> Methods;
 	std::vector<WeakRef*> WeakRefs;
 };
 
@@ -344,7 +344,7 @@ public:
 	const std::vector<ModifiableItemStruct>& getItems() const { return _items; }
 
 	// Get the attribute list
-	const robin_hood::unordered_map<KigsID, CoreModifiableAttribute* , KigsIDHash>& getAttributes() const { return _attributes; }
+	const kigs::unordered_map<KigsID, CoreModifiableAttribute*>& getAttributes() const { return _attributes; }
 	
 	// Number of attributes
 	size_t getAttributeCount() const { return _attributes.size(); }
@@ -559,7 +559,7 @@ public:
 
 	/// Method management
 	// Return the map of private methods of this CoreModifiable
-	const robin_hood::unordered_map <KigsID, ModifiableMethodStruct, KigsIDHash>* GetMethods() { if (!mLazyContent) return nullptr; return &GetLazyContent()->Methods; }
+	const kigs::unordered_map <KigsID, ModifiableMethodStruct>* GetMethods() { if (!mLazyContent) return nullptr; return &GetLazyContent()->Methods; }
 	// Search in private methods, type methods and aggregate methods
 	bool HasMethod(const KigsID& methodNameID) const;
 	// Add a new private method
@@ -1011,7 +1011,7 @@ protected:
 
 #ifdef KEEP_XML_DOCUMENT
 public:
-	std::unordered_map<XMLBase*, XMLNodeBase*> mXMLNodes;
+	kigs::unordered_map<XMLBase*, XMLNodeBase*> mXMLNodes;
 	std::vector<std::shared_ptr<XMLBase>> mXMLFiles;
 	u32 myEditorFlag = 0;
 	LazyContent* GetLazyContentNoCreate() const { return mLazyContent; }
@@ -1026,7 +1026,7 @@ private:
 	static void	ReleaseLoadedItems(std::vector<CMSP> &loadedItems);
 
 	// attribute map
-	robin_hood::unordered_map<KigsID, CoreModifiableAttribute* , KigsIDHash> _attributes;
+	kigs::unordered_map<KigsID, CoreModifiableAttribute*> _attributes;
 	// sons vector
 	std::vector<ModifiableItemStruct>				_items;
 	// parent vector

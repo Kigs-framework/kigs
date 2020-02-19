@@ -4,8 +4,6 @@
 #include "CoreModifiable.h"
 #include "SmartPointer.h"
 
-#include <unordered_map>
-
 class CorePackage;
 class PureVirtualFileAccessDelegate;
 
@@ -184,7 +182,7 @@ public:
 	//! init bundle root
 	void	InitBundleRoot(const std::string& root) { myBundleRoot = root; }
 
-	const std::unordered_map<std::string, std::vector<std::string>>& GetBundleList() { return myBundleList; }
+	const kigs::unordered_map<std::string, std::vector<std::string>>& GetBundleList() { return myBundleList; }
 	const std::string& GetBundleRoot() { return myBundleRoot; }
 
 	//! init from config json file
@@ -253,14 +251,14 @@ protected:
 	static std::string GetDevicePathString(DeviceID);
 
 	//! For each extension, a path list. 
-	std::unordered_map<std::string, std::vector<std::string> >		myPath;	
+	kigs::unordered_map<std::string, std::vector<std::string> >		myPath;
 
 	// extern & distant path management (TODO / TO TEST)
 	std::string	myExternPath[4];
 	std::string	myDistantPath[4];
 
 	// can use bundle or not (only asset path)
-	std::unordered_map<std::string, std::vector<std::string>> myBundleList;
+	kigs::unordered_map<std::string, std::vector<std::string>> myBundleList;
 	std::string											myBundleRoot;
 
 	// retreive extension and short file name 

@@ -175,7 +175,7 @@ void	LuaBehaviour::InitModifiable()
 				{
 					std::string functionName = w.value().toValue<std::string>();
 					L.getField(-1, functionName.c_str());
-					if(L.isFunction(-1));
+					if(L.isFunction(-1))
 					{
 						myTarget->InsertFunctionNoUnpack(functionName, [functionName,this](std::vector<CoreModifiableAttribute*>& params)
 							{				

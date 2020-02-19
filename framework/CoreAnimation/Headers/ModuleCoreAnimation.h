@@ -67,7 +67,7 @@ public:
 	* \brief		return the specific map for CoreItemOperator creation in animation module
 	* \return		kstl::map<kstl::string, CoreItemOperatorCreateMethod>& 
 	*/
-	static kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	GetCoreItemOperatorConstructMap();
+	static kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	GetCoreItemOperatorConstructMap();
 
 	WRAP_METHODS(addSequence, removeSequence, removeAllSequencesOnTarget, createSequenceFromString, createSequenceFromJSON, startSequence, pauseSequence, stopSequence, startSequenceAtFirstUpdate);
 protected:
@@ -82,7 +82,7 @@ protected:
 	SP<MiniInstanceFactory>	myPrivateMiniFactory;
 
 	// animation specific CoreItemOperator Map
-	static kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myCoreItemOperatorCreateMethodMap;
+	static kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myCoreItemOperatorCreateMethodMap;
 
 }; 
 

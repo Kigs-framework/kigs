@@ -186,7 +186,7 @@ protected:
 	//! renderer used by the module
 	ModuleSpecificRenderer*	myRenderer;
 
-	kstl::unordered_map<void*, DefferedAction::ENUM> sDefferedAction;
+	kigs::unordered_map<void*, DefferedAction::ENUM> sDefferedAction;
 
 	//! list of scene
 	kstl::set<Scene3D*,Scene3DPriorityCompare>	myScenes;

@@ -70,7 +70,7 @@ public:
 	DECLARE_CLASS_INFO(FontMapManager, CoreModifiable, ModuleName);
 	DECLARE_CONSTRUCTOR(FontMapManager);
 
-	kstl::unordered_map<KigsID, FontMap> font_map;
+	kigs::unordered_map<KigsID, FontMap> font_map;
 	FontMap* PrecacheFont(const kstl::string& fontname, float fontsize);
 
 private:

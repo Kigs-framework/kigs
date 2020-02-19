@@ -299,8 +299,8 @@ protected:
 		v3f          direction;
 	};
 
-	kstl::unordered_map<TouchEventID, PotentialClick> m_CurrentClickStart;
-	kstl::unordered_map<TouchEventID, PotentialClick> m_CurrentClickEnd;
+	kigs::unordered_map<TouchEventID, PotentialClick> m_CurrentClickStart;
+	kigs::unordered_map<TouchEventID, PotentialClick> m_CurrentClickEnd;
 
 	int											m_MinClickCount;
 	int											m_MaxClickCount;
@@ -530,7 +530,7 @@ protected:
 		mCurrentPinches.clear();
 	}
 
-	kstl::unordered_map<TouchEventID, CurrentTouch> mCurrentTouches;
+	kigs::unordered_map<TouchEventID, CurrentTouch> mCurrentTouches;
 	kstl::vector<CurrentPinch> mCurrentPinches;
 	
 	float  mPinchMaxStartDistSquared = 9999999;
@@ -619,7 +619,7 @@ protected:
 
 	maReference mGazeCamera = BASE_ATTRIBUTE(GazeCamera, "");
 
-	std::unordered_map<TouchEventID, TouchEventState::TouchInfos> mLastFrameTouches;
+	kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos> mLastFrameTouches;
 
 	std::recursive_mutex mMutex;
 	std::unique_lock<std::recursive_mutex> mLock;
@@ -659,7 +659,7 @@ protected:
 			CoreModifiable*					myRootScene3D;
 		};
 
-		kstl::unordered_map<CoreModifiable*, EventMapEntry>	myEventMap;
+		kigs::unordered_map<CoreModifiable*, EventMapEntry>	myEventMap;
 	};
 
 	bool	unregisterEventOnCurrentState(StackedEventStateStruct& state,CoreModifiable* registeredObject, InputEventType type);
@@ -758,11 +758,11 @@ protected:
 
 
 	void RecursiveFlattenTreeForTouchID(kstl::vector<SortedElementNode>& flat_tree, touchSupportTreeNode* CurrentTouchSupport, 
-		kstl::unordered_map<CoreModifiable*, kstl::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >& perRenderingScreenSortedMap,
-		kstl::unordered_map<CoreModifiable*, kstl::vector<CoreModifiable*> >& perScene3DMap,
-		kstl::unordered_map<CoreModifiable*, std::unordered_map<TouchEventID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchEventID touch_id);
+		kigs::unordered_map<CoreModifiable*, kstl::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >& perRenderingScreenSortedMap,
+		kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiable*> >& perScene3DMap,
+		kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchEventID touch_id);
 
-	void	LinearCallEventUpdate(kstl::vector<SortedElementNode>& flat_tree, const Timer& timer, kstl::unordered_map<CoreModifiable*, std::unordered_map<TouchEventID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchEventID touch_id);
+	void	LinearCallEventUpdate(kstl::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchEventID touch_id);
 
 	// touch support tree list (more than one root for multiple windows)
 	kstl::vector<touchSupportTreeNode>					myTouchSupportTreeRootList;
@@ -787,5 +787,5 @@ protected:
 
 	bool mForceClick = false;
 
-	void	transformTouchesInTouchSupportHierarchy(touchSupportTreeNode* current, kstl::unordered_map<CoreModifiable*, std::unordered_map<TouchEventID, TouchEventState::TouchInfos> >& resultmap, std::unordered_map<TouchEventID, TouchEventState::TouchInfos>& Touches);
+	void	transformTouchesInTouchSupportHierarchy(touchSupportTreeNode* current, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos> >& resultmap, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos>& Touches);
 };

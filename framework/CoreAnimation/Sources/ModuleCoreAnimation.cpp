@@ -12,7 +12,7 @@
 #include "CoreSequenceLauncher.h"
 
 
-kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	ModuleCoreAnimation::myCoreItemOperatorCreateMethodMap;
+kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	ModuleCoreAnimation::myCoreItemOperatorCreateMethodMap;
 
 IMPLEMENT_CLASS_INFO(ModuleCoreAnimation)
 
@@ -109,7 +109,7 @@ void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiable
 	
 }
 
-kstl::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	ModuleCoreAnimation::GetCoreItemOperatorConstructMap()
+kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	ModuleCoreAnimation::GetCoreItemOperatorConstructMap()
 {
 	return myCoreItemOperatorCreateMethodMap;
 }
