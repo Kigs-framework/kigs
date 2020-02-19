@@ -834,7 +834,7 @@ void HoloSpatialMap::InitModifiable()
 				item->as<Node3D>()->ChangeMatrix(m);
 
 				auto mesh = item->GetFirstSonByType("ModernMesh");
-				mesh->AddDynamicAttribute(BOOL, "BVH", true);
+				mesh->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "BVH", true);
 				mesh->setValue("Show", mShowMeshes);
 				mAttachNode->addItem(item);
 				item->Destroy();

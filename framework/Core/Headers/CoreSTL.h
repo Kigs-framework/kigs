@@ -124,3 +124,12 @@ constexpr auto make_overload(Fs&&... fs)
 {
 	return overload<Fs...>(FWD(fs)...);
 }
+
+#ifndef kigs_defer
+struct kigs_defer_dummy {};
+template <class F> struct kigs_deferrer { F f; ~kigs_deferrer() { f(); } };
+template <class F> kigs_deferrer<F> operator*(kigs_defer_dummy, F f) { return { f }; }
+#define KIGS_DEFER_(LINE) zz_kigs_defer##LINE
+#define KIGS_DEFER(LINE) KIGS_DEFER_(LINE)
+#define kigs_defer auto KIGS_DEFER(__LINE__) = kigs_defer_dummy {} *[&]()
+#endif // kigs_defer

@@ -24,7 +24,7 @@ class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<Aligned
 
 	using BaseType = CoreModifiableAttributeData<SmartPointer<AlignedCoreRawBuffer<alignement, allocatedType>>>;
 
-	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maBufferHeritage, TemplateForPlacementNew, UnderlyingType, CoreModifiable::COREBUFFER);
+	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maBufferHeritage, TemplateForPlacementNew, UnderlyingType, CoreModifiable::ATTRIBUTE_TYPE::COREBUFFER);
 
 
 	void InitData()

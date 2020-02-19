@@ -537,23 +537,23 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,kstl:
 
 								switch (type)
 								{
-									case (int)CoreModifiable::BOOL:
-									case (int)CoreModifiable::CHAR:
-									case (int)CoreModifiable::SHORT:
-									case (int)CoreModifiable::INT:
-									case (int)CoreModifiable::LONG:
-									case (int)CoreModifiable::UCHAR:
-									case (int)CoreModifiable::USHORT:
-									case (int)CoreModifiable::UINT:
-									case (int)CoreModifiable::ULONG:
-									case (int)CoreModifiable::FLOAT:
-									case (int)CoreModifiable::DOUBLE:
+									case CoreModifiable::ATTRIBUTE_TYPE::BOOL:
+									case CoreModifiable::ATTRIBUTE_TYPE::CHAR:
+									case CoreModifiable::ATTRIBUTE_TYPE::SHORT:
+									case CoreModifiable::ATTRIBUTE_TYPE::INT:
+									case CoreModifiable::ATTRIBUTE_TYPE::LONG:
+									case CoreModifiable::ATTRIBUTE_TYPE::UCHAR:
+									case CoreModifiable::ATTRIBUTE_TYPE::USHORT:
+									case CoreModifiable::ATTRIBUTE_TYPE::UINT:
+									case CoreModifiable::ATTRIBUTE_TYPE::ULONG:
+									case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
+									case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 									{
 										myContext.myVariableList[(*paramscurrent)->getLabelID().toUInt()] = new CoreModifiableAttributeOperator<kfloat>((*paramscurrent));
 									}
 									break;
-									case (int)CoreModifiable::STRING:
-									case (int)CoreModifiable::USSTRING:
+									case CoreModifiable::ATTRIBUTE_TYPE::STRING:
+									case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 									{
 										myContext.myVariableList[(*paramscurrent)->getLabelID().toUInt()] = new CoreModifiableAttributeOperator<kstl::string>((*paramscurrent));
 									}

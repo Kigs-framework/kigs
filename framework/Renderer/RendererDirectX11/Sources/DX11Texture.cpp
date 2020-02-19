@@ -289,7 +289,7 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 		TextureDelayedInitData* delayedStruct = new TextureDelayedInitData();
 		delayedStruct->delayedimage = image;
 		delayedStruct->needRealloc = needRealloc;
-		CoreModifiableAttribute* newAttr = AddDynamicAttribute(RAWPTR, "DelayedInit");
+		CoreModifiableAttribute* newAttr = AddDynamicAttribute(ATTRIBUTE_TYPE::RAWPTR, "DelayedInit");
 		newAttr->setValue(delayedStruct);
 		return true;
 #endif

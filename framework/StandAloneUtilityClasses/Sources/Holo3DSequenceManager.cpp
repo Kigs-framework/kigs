@@ -162,7 +162,7 @@ void Holo3DSequenceManager::InitModifiable()
 
 	//Create Node3D
 	mySpacialNode = KigsCore::GetInstanceOf("HoloUISpacialNode", "Node3D");
-	mySpacialNode->AddDynamicAttribute(UINT, "CollideMask", (u64)myCollideMask);
+	mySpacialNode->AddDynamicAttribute(ATTRIBUTE_TYPE::UINT, "CollideMask", (u64)myCollideMask);
 	mySpacialNode->Init();
 
 	v2f size = mySize;

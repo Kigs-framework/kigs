@@ -211,14 +211,7 @@ void	FilePathManager::insertPackage(unsigned int packageID)
 			if (!it.isFolder())
 			{
 				kstl::string key = it.name();
-				if (myBundleList.find(key) == myBundleList.end())
-				{
-					kstl::vector<kstl::string> toAdd;
-					myBundleList[key] = toAdd;
-				}
-
 				myBundleList[key].push_back(packagePath+it.path(false));
-
 			}
 			++it;
 		}
@@ -346,7 +339,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 	// search in bundle
 	if (myBundleList.size())
 	{
-		kstl::map<kstl::string, kstl::vector<kstl::string> >::const_iterator foundInBundle = myBundleList.find(result->myFileName);
+		auto foundInBundle = myBundleList.find(result->myFileName);
 		if (foundInBundle != myBundleList.end())
 		{
 			const kstl::vector<kstl::string>& bundlePathVector = (*foundInBundle).second;
@@ -534,9 +527,7 @@ kstl::string	FilePathManager::DevicePath(const kstl::string&	filename, DeviceID 
 //! clear all pathes and all struct before destroying the instance
 void FilePathManager::Clear()
 {
-
-	kstl::map<kstl::string, kstl::vector<kstl::string> >::iterator	it;
-	for (it = myPath.begin(); it != myPath.end(); ++it)
+	for (auto it = myPath.begin(); it != myPath.end(); ++it)
 	{
 		kstl::vector<kstl::string>& list = (*it).second;
 		list.clear();
@@ -557,9 +548,7 @@ void FilePathManager::Clear()
 kstl::string	FilePathManager::GetPathString()
 {
 	kstl::string result = "";
-
-	kstl::map<kstl::string, kstl::vector<kstl::string> >::iterator	it;
-	for (it = myPath.begin(); it != myPath.end(); ++it)
+	for (auto it = myPath.begin(); it != myPath.end(); ++it)
 	{
 		kstl::vector<kstl::string>& list = (*it).second;
 
@@ -879,7 +868,7 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 			if (receivedID != "")
 			{
 				// store receivedID as a dynamic attribute on L_Connection
-				L_Connection->AddDynamicAttribute(CoreModifiable::STRING, "fileid", receivedID.c_str());
+				L_Connection->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::STRING, "fileid", receivedID.c_str());
 			}
 			else
 			{

@@ -10,7 +10,7 @@ public:
 	DECLARE_DECORATOR_DECORATE()
 	{
 		DECORATE_METHOD(Cull, Node3D, Node3DLodDecorator);
-		cm->AddDynamicAttribute(CoreModifiable::FLOAT, "LodCoef");
+		cm->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "LodCoef");
 		cm->setValue(LABEL_TO_ID(LodCoef), 1.0);
 		return true;
 	}

@@ -278,7 +278,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 		}
 		else // not shared, add a flag
 		{
-			newMaterial->AddDynamicAttribute(CoreModifiable::BOOL,"IsShared");
+			newMaterial->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL,"IsShared");
 			newMaterial->setValue(LABEL_TO_ID(IsShared),false);
 		}
 		if(found)
@@ -659,7 +659,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		}
 
 
-		newMaterial->AddDynamicAttribute(CoreModifiable::BOOL,"IsShared");
+		newMaterial->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL,"IsShared");
 		newMaterial->setValue(LABEL_TO_ID(IsShared),false);
 
 		newgroup.myMaterial=newMaterial;

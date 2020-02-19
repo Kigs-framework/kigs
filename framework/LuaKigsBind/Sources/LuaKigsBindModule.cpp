@@ -493,7 +493,7 @@ void LuaKigsBindModule::AddLuaMethod(CoreModifiable* obj, const kstl::string& fu
 #ifdef KIGS_TOOLS
 		char str[256];
 		snprintf(str, 256, "%d$LUA_CODE$%s", CharToID::GetID(func_name), func_name.c_str());
-		obj->AddDynamicAttribute(STRING, str, code.c_str());
+		obj->AddDynamicAttribute(ATTRIBUTE_TYPE::STRING, str, code.c_str());
 #endif
 	}
 }

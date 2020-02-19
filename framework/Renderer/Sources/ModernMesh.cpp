@@ -169,7 +169,7 @@ void ModernMesh::InitModifiable()
 		auto tree = getAttribute("AABBTree");
 		if (cm && tree)
 		{
-			if (tree->getType() == STRING)
+			if (tree->getType() == ATTRIBUTE_TYPE::STRING)
 			{
 				std::string path;
 				tree->getValue(path);
@@ -325,7 +325,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 	HDrawable::PrepareExport(settings);
 	if (myFileName.const_ref().empty())
 	{
-		AddDynamicAttribute(CoreModifiable::BOOL, "IsCreatedFromExport");
+		AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "IsCreatedFromExport");
 		setValue("IsCreatedFromExport", true);
 		//RemoveDynamicAttribute("ExportingFile");
 	}
@@ -399,7 +399,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 			else
 			{
 				cm->RemoveDynamicAttribute("AABBTree");
-				auto m = (maBuffer*)AddDynamicAttribute(COREBUFFER, "AABBTree", "");
+				auto m = (maBuffer*)AddDynamicAttribute(ATTRIBUTE_TYPE::COREBUFFER, "AABBTree", "");
 				m->const_ref()->SetBuffer(std::move(*crb.get()));
 			}
 		}
@@ -481,7 +481,7 @@ void ModernMeshItemGroup::PrepareExport(ExportSettings* settings)
 
 	if (!desc.isNil())
 	{
-		AddDynamicAttribute(CoreModifiable::COREITEM, "VertexDescription");
+		AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::COREITEM, "VertexDescription");
 		setValue("VertexDescription", desc.get());
 	}
 }

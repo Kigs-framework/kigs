@@ -17,7 +17,7 @@
 template<int notificationLevel>
 class maUSStringHeritage : public CoreModifiableAttributeData<usString>
 {
-	DECLARE_ATTRIBUTE_HERITAGE(maUSStringHeritage, maUSStringHeritage, usString, CoreModifiable::USSTRING);
+	DECLARE_ATTRIBUTE_HERITAGE(maUSStringHeritage, maUSStringHeritage, usString, CoreModifiable::ATTRIBUTE_TYPE::USSTRING);
 
 public:
 

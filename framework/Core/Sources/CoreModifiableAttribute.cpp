@@ -17,91 +17,91 @@ kstl::string CoreModifiableAttribute::typeToString(CoreModifiable::ATTRIBUTE_TYP
 {
 	switch (typ)
 	{
-	case CoreModifiable::BOOL:
+	case CoreModifiable::ATTRIBUTE_TYPE::BOOL:
 	{
 		return ("bool");
 	}
 	break;
-	case CoreModifiable::CHAR:
+	case CoreModifiable::ATTRIBUTE_TYPE::CHAR:
 	{
 		return ("char");
 	}
 	break;
-	case CoreModifiable::SHORT:
+	case CoreModifiable::ATTRIBUTE_TYPE::SHORT:
 	{
 		return ("short");
 	}
 	break;
-	case CoreModifiable::INT:
+	case CoreModifiable::ATTRIBUTE_TYPE::INT:
 	{
 		return ("int");
 	}
 	break;
-	case CoreModifiable::LONG:
+	case CoreModifiable::ATTRIBUTE_TYPE::LONG:
 	{
 		return ("long");
 	}
 	break;
-	case CoreModifiable::UCHAR:
+	case CoreModifiable::ATTRIBUTE_TYPE::UCHAR:
 	{
 		return ("uchar");
 	}
 	break;
-	case CoreModifiable::USHORT:
+	case CoreModifiable::ATTRIBUTE_TYPE::USHORT:
 	{
 		return ("ushort");
 	}
 	break;
-	case CoreModifiable::UINT:
+	case CoreModifiable::ATTRIBUTE_TYPE::UINT:
 	{
 		return ("uint");
 	}
 	break;
-	case CoreModifiable::ULONG:
+	case CoreModifiable::ATTRIBUTE_TYPE::ULONG:
 	{
 		return ("ulong");
 	}
 	break;
-	case CoreModifiable::FLOAT:
+	case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
 	{
 		return ("float");
 	}
 	break;
-	case CoreModifiable::DOUBLE:
+	case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 	{
 		return ("double");
 	}
 	break;
-	case CoreModifiable::STRING:
+	case CoreModifiable::ATTRIBUTE_TYPE::STRING:
 	{
 		return ("string");
 	}
 	break;
-	case CoreModifiable::ARRAY:
+	case CoreModifiable::ATTRIBUTE_TYPE::ARRAY:
 	{
 		return ("array");
 	}
 	break;
-	case CoreModifiable::ENUM:
+	case CoreModifiable::ATTRIBUTE_TYPE::ENUM:
 	{
 		return ("enum");
 	}
-	case CoreModifiable::REFERENCE:
+	case CoreModifiable::ATTRIBUTE_TYPE::REFERENCE:
 	{
 		return ("reference");
 	}
 	break;
-	case CoreModifiable::COREITEM:
+	case CoreModifiable::ATTRIBUTE_TYPE::COREITEM:
 	{
 		return ("coreitem");
 	}
 	break;
-	case CoreModifiable::USSTRING:
+	case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 	{
 		return ("usstring");
 	}
 	break;
-	case CoreModifiable::COREBUFFER:
+	case CoreModifiable::ATTRIBUTE_TYPE::COREBUFFER:
 	{
 		return ("corebuffer");
 	}
@@ -215,7 +215,7 @@ CoreModifiable::ATTRIBUTE_TYPE CoreModifiableAttribute::stringToType(const kstl:
 		{
 			if (testtyp._id == KigsID("INT")._id)
 			{
-				return CoreModifiable::INT;
+				return CoreModifiable::ATTRIBUTE_TYPE::INT;
 			}
 		}
 		break;
@@ -223,23 +223,23 @@ CoreModifiable::ATTRIBUTE_TYPE CoreModifiableAttribute::stringToType(const kstl:
 		{
 			if (testtyp._id == KigsID("UINT")._id)
 			{
-				return CoreModifiable::UINT;
+				return CoreModifiable::ATTRIBUTE_TYPE::UINT;
 			}
 			if (testtyp._id == KigsID("ENUM")._id)
 			{
-				return CoreModifiable::ENUM;
+				return CoreModifiable::ATTRIBUTE_TYPE::ENUM;
 			}
 			if (testtyp._id == KigsID("BOOL")._id)
 			{
-				return CoreModifiable::BOOL;
+				return CoreModifiable::ATTRIBUTE_TYPE::BOOL;
 			}
 			if (testtyp._id == KigsID("CHAR")._id)
 			{
-				return CoreModifiable::CHAR;
+				return CoreModifiable::ATTRIBUTE_TYPE::CHAR;
 			}
 			if (testtyp._id == KigsID("LONG")._id)
 			{
-				return CoreModifiable::LONG;
+				return CoreModifiable::ATTRIBUTE_TYPE::LONG;
 			}
 		}
 		break;
@@ -247,23 +247,23 @@ CoreModifiable::ATTRIBUTE_TYPE CoreModifiableAttribute::stringToType(const kstl:
 		{
 			if (testtyp._id == KigsID("FLOAT")._id)
 			{
-				return CoreModifiable::FLOAT;
+				return CoreModifiable::ATTRIBUTE_TYPE::FLOAT;
 			}
 			if (testtyp._id == KigsID("ARRAY")._id)
 			{
-				return CoreModifiable::ARRAY;
+				return CoreModifiable::ATTRIBUTE_TYPE::ARRAY;
 			}
 			if (testtyp._id == KigsID("SHORT")._id)
 			{
-				return CoreModifiable::SHORT;
+				return CoreModifiable::ATTRIBUTE_TYPE::SHORT;
 			}
 			if (testtyp._id == KigsID("UCHAR")._id)
 			{
-				return CoreModifiable::UCHAR;
+				return CoreModifiable::ATTRIBUTE_TYPE::UCHAR;
 			}
 			if (testtyp._id == KigsID("ULONG")._id)
 			{
-				return CoreModifiable::ULONG;
+				return CoreModifiable::ATTRIBUTE_TYPE::ULONG;
 			}
 		}
 		break;
@@ -271,15 +271,15 @@ CoreModifiable::ATTRIBUTE_TYPE CoreModifiableAttribute::stringToType(const kstl:
 		{
 			if (testtyp._id == KigsID("DOUBLE")._id)
 			{
-				return CoreModifiable::DOUBLE;
+				return CoreModifiable::ATTRIBUTE_TYPE::DOUBLE;
 			}
 			if (testtyp._id == KigsID("STRING")._id)
 			{
-				return CoreModifiable::STRING;
+				return CoreModifiable::ATTRIBUTE_TYPE::STRING;
 			}
 			if (testtyp._id == KigsID("USHORT")._id)
 			{
-				return CoreModifiable::USHORT;
+				return CoreModifiable::ATTRIBUTE_TYPE::USHORT;
 			}
 		}
 		break;
@@ -287,11 +287,11 @@ CoreModifiable::ATTRIBUTE_TYPE CoreModifiableAttribute::stringToType(const kstl:
 		{
 			if (testtyp._id == KigsID("COREITEM")._id)
 			{
-				return CoreModifiable::COREITEM;
+				return CoreModifiable::ATTRIBUTE_TYPE::COREITEM;
 			}
 			if (testtyp._id == KigsID("USSTRING")._id)
 			{
-				return CoreModifiable::USSTRING;
+				return CoreModifiable::ATTRIBUTE_TYPE::USSTRING;
 			}
 		}
 		break;
@@ -299,17 +299,17 @@ CoreModifiable::ATTRIBUTE_TYPE CoreModifiableAttribute::stringToType(const kstl:
 		{
 			if (testtyp._id == KigsID("REFERENCE")._id)
 			{
-				return CoreModifiable::REFERENCE;
+				return CoreModifiable::ATTRIBUTE_TYPE::REFERENCE;
 			}
 			if (testtyp._id == KigsID("COREBUFFER")._id)
 			{
-				return CoreModifiable::COREBUFFER;
+				return CoreModifiable::ATTRIBUTE_TYPE::COREBUFFER;
 			}
 		}
 		break;
 	}
 
-	return CoreModifiable::UNKNOWN;
+	return CoreModifiable::ATTRIBUTE_TYPE::UNKNOWN;
 }
 
 
@@ -339,30 +339,30 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 
 	switch (type)
 	{
-	case (int)CoreModifiable::BOOL:
-	case (int)CoreModifiable::CHAR:
-	case (int)CoreModifiable::SHORT:
-	case (int)CoreModifiable::INT:
-	case (int)CoreModifiable::LONG:
-	case (int)CoreModifiable::UCHAR:
-	case (int)CoreModifiable::USHORT:
-	case (int)CoreModifiable::UINT:
-	case (int)CoreModifiable::ULONG:
-	case (int)CoreModifiable::FLOAT:
-	case (int)CoreModifiable::DOUBLE:
+	case CoreModifiable::ATTRIBUTE_TYPE::BOOL:
+	case CoreModifiable::ATTRIBUTE_TYPE::CHAR:
+	case CoreModifiable::ATTRIBUTE_TYPE::SHORT:
+	case CoreModifiable::ATTRIBUTE_TYPE::INT:
+	case CoreModifiable::ATTRIBUTE_TYPE::LONG:
+	case CoreModifiable::ATTRIBUTE_TYPE::UCHAR:
+	case CoreModifiable::ATTRIBUTE_TYPE::USHORT:
+	case CoreModifiable::ATTRIBUTE_TYPE::UINT:
+	case CoreModifiable::ATTRIBUTE_TYPE::ULONG:
+	case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
+	case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 	{
 		myContext.myVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kfloat>(0.0f);
 		myCurrentItem = CoreItemOperator<kfloat>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 	}
 	break;
-	case (int)CoreModifiable::STRING:
-	case (int)CoreModifiable::USSTRING:
+	case CoreModifiable::ATTRIBUTE_TYPE::STRING:
+	case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 	{
 		myContext.myVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kstl::string>("");
 		myCurrentItem = CoreItemOperator<kstl::string>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 	}
 	break;
-	case (int)CoreModifiable::ARRAY:
+	case CoreModifiable::ATTRIBUTE_TYPE::ARRAY:
 	{
 		// only Point2D & Point3D
 		unsigned int asize = caller->getNbArrayElements();
