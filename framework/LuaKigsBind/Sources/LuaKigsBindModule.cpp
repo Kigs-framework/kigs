@@ -66,7 +66,6 @@ LuaImGuiStackProtector::~LuaImGuiStackProtector()
 
 IMPLEMENT_CONSTRUCTOR(LuaKigsBindModule)
 , myLuaState(nullptr)
-, myNeedResort(false)
 {
 }
 
@@ -428,19 +427,6 @@ void LuaKigsBindModule::AddLibrary(void(*func)(lua_State*))
 }
 
 
-void LuaKigsBindModule::AddToInit(LuaBehaviour* script) 
-{
-	myToInitSet.push_back(script);
-}
-
-void LuaKigsBindModule::RemoveFromInit(LuaBehaviour* script) 
-{
-	myToInitSet.erase(std::remove_if(myToInitSet.begin(), myToInitSet.end(), [script](LuaBehaviour* a) { return a == script; }), myToInitSet.end());
-}
-
-
-
-
 //! module init, register CollisionManager and BSphere objects
 void LuaKigsBindModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
@@ -473,24 +459,6 @@ void LuaKigsBindModule::Close()
 		lua_close(myLuaState);
 	myLuaState = 0;
 }    
-
-//! module update
-void LuaKigsBindModule::Update(const Timer& timer,void* addParam)
-{
-	BaseUpdate(timer, addParam);
-
-	// Init scripts
-	kstl::vector<LuaBehaviour*>::iterator itset = myToInitSet.begin();
-	while (itset != myToInitSet.end())
-	{
-		(*itset)->InitLua(timer.GetTime());
-		itset++;
-	}
-	myToInitSet.clear();
-	
-}
-
-
 
 void LuaKigsBindModule::ReleaseRefs(CoreModifiable* obj)
 {
