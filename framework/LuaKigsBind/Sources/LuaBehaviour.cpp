@@ -56,11 +56,7 @@ void LuaBehaviour::InitLua(kdouble current_time)
 
 LuaBehaviour::~LuaBehaviour()
 {
-	if (myLuaModule)
-	{
-		myLuaModule->RemoveFromInit(this);
-	}
-	
+
 	if (L && Self)
 	{
 		Self.pushToStack();
@@ -76,7 +72,6 @@ LuaBehaviour::~LuaBehaviour()
 	
 	if (myTarget)
 	{
-		KigsCore::Disconnect(myTarget, "Update", this, "OnUpdateCallback");
 		KigsCore::Disconnect(myTarget, "AddItem", this, "OnAddItemCallback");
 		KigsCore::Disconnect(myTarget, "RemoveItem", this, "OnRemoveItemCallback");
 	}
@@ -171,10 +166,60 @@ void	LuaBehaviour::InitModifiable()
 			myHasUpdate = L.isFunction(-1);
 			L.pop();
 			
-			if (myLuaNeedInit) 
+			L.getField(-1, "wrappedMethods");
+
+			if (L.isTable(-1))
 			{
-				myLuaModule->AddToInit(this);
+				LuaRef wrapped= L.toValue<LuaRef>(-1);
+				for (auto w : wrapped)
+				{
+					std::string functionName = w.value().toValue<std::string>();
+					L.getField(-1, functionName.c_str());
+					if(L.isFunction(-1))
+					{
+						myTarget->InsertFunctionNoUnpack(functionName, [functionName,this](std::vector<CoreModifiableAttribute*>& params)
+							{				
+								
+								Self.pushToStack();
+								auto top = L.top();
+								L.getField(-1, functionName.c_str());
+								
+								if (!L.isNil(-1))
+								{
+									
+									Self.pushToStack();
+
+									for (auto attr : params)
+									{
+										PushAttribute(L, attr);
+									}
+
+									if (L.pcall(params.size()+1, LUA_MULTRET, 0) != 0)
+									{
+										printf("%s\n", L.toString(-1));
+										L.pop();
+									}
+
+									int nb_results = L.top() - top;
+									for (int i = 1; i <= nb_results; ++i)
+									{
+										params.push_back(MakeAttributeFromLuaStack(L, top + i));
+									}
+
+								}
+								else
+									L.pop(1);
+
+								L.pop(1);
+
+							});
+					}
+					L.pop();
+				}
 			}
+			L.pop();
+
+			InitLua(KigsCore::GetCoreApplication()->GetApplicationTimer()->GetTime());
 			
 		}
 
@@ -183,10 +228,7 @@ void	LuaBehaviour::InitModifiable()
 
 void LuaBehaviour::UninitModifiable() 
 {
-	if (myLuaModule)
-	{
-		myLuaModule->RemoveFromInit(this);
-	}
+	
 	CoreModifiable::UninitModifiable();
 	Self = nullptr;
 	

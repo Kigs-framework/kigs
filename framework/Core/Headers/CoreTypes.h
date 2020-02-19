@@ -5,6 +5,7 @@
 #include "kTypes.h"
 #include "kstlstring.h"
 #include "robin_hood.h"
+#include <unordered_map>
 
 #ifdef RIM
 #include <stdio.h>
@@ -37,7 +38,22 @@ using f64 = double;
 using uptr = uintptr_t;
 using sptr = intptr_t;
 
-
+namespace kigs
+{
+#if defined(_DEBUG) 
+	template <typename Key, typename T, typename Hash = std::hash<Key>>
+	using unordered_map = std::unordered_map<Key, T, Hash>;
+#else
+#if (defined(WIN32) || defined(WUP))
+	// std::unordered_map seems more efficient on Windows platform
+	template <typename Key, typename T, typename Hash = std::hash<Key>>
+	using unordered_map = std::unordered_map<Key, T, Hash>;
+#else
+	template <typename Key, typename T, typename Hash = robin_hood::hash<Key>>
+	using unordered_map = robin_hood::unordered_map<Key, T, Hash>;
+#endif
+#endif
+}
 
 #if defined(_DEBUG) || defined(KIGS_TOOLS)
 	#ifndef KEEP_NAME_AS_STRING
@@ -401,28 +417,6 @@ struct KigsID
 	// Dont set this field manually!
 	unsigned int _id;
 };
-/*
-namespace std {
-
-	template <>
-	struct hash<KigsID>
-	{
-		std::size_t operator()(const KigsID& k) const
-		{
-			return (unsigned int)k;
-		}
-	};
-
-}
-*/
-
-struct KigsIDHash
-{
-	std::size_t operator()(const KigsID& k) const
-	{
-		return k._id;
-	}
-};
 
 //inline bool operator==(const KigsID& a, const KigsID& b) { return a._id == b._id; }
 inline bool operator==(const KigsID& a, unsigned int id) { return a._id == id; }
@@ -433,7 +427,13 @@ inline bool operator!=(const KigsID& a, unsigned int id) { return a._id != id; }
 inline bool operator!=(unsigned int id, const KigsID& a) { return a._id != id; }
 
 
-
+struct KigsIDHash
+{
+	std::size_t operator()(const KigsID& k) const
+	{
+		return k._id;
+	}
+};
 
 // Hash for usage in maps
 #include <functional>

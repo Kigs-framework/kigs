@@ -42,7 +42,7 @@ void  CullingObject::RemovePlane(int i)
 	myCullPlaneList.erase(myCullPlaneList.begin() + i);
 }
 
-kstl::unordered_map<Node3D*, bool> show_bbox;
+kigs::unordered_map<Node3D*, bool> show_bbox;
 
 template<bool isScaled>
 CullingObject::CULLING_RESULT CullingObject::SubCull(Node3D* node, unsigned int& cullingMask)

@@ -42,12 +42,12 @@ public:
 	virtual bool GetTouchState(u32 ID, SourceState & state) const = 0;
 	virtual const GazeTouch* GetTouchEvent(u32 ID) const = 0;
 	
-	const std::unordered_map<int, GazeTouch>& GetAllTouches() const { return myTouchList; }
-	const std::unordered_map<int, v2f>& GetAllThumbstick() const { return myThumbstickList; }
+	const kigs::unordered_map<int, GazeTouch>& GetAllTouches() const { return myTouchList; }
+	const kigs::unordered_map<int, v2f>& GetAllThumbstick() const { return myThumbstickList; }
 
 protected:
-	std::unordered_map<int, GazeTouch> myTouchList;
-	std::unordered_map<int, v2f> myThumbstickList;
+	kigs::unordered_map<int, GazeTouch> myTouchList;
+	kigs::unordered_map<int, v2f> myThumbstickList;
 
 	maReference mGazeCamera = BASE_ATTRIBUTE(GazeCamera, "Camera:camera");
 };

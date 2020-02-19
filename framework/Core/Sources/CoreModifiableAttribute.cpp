@@ -187,7 +187,7 @@ CoreModifiableAttribute::~CoreModifiableAttribute()
 {
 	if (_owner)
 	{
-		robin_hood::unordered_map<KigsID, CoreModifiableAttribute*, KigsIDHash>::const_iterator it = _owner->_attributes.find(_id);
+		kigs::unordered_map<KigsID, CoreModifiableAttribute*>::const_iterator it = _owner->_attributes.find(_id);
 		if (it != _owner->_attributes.end())
 		{
 			_owner->_attributes.erase(it);

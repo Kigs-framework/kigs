@@ -1,4 +1,5 @@
-local Sample7Script = { logo=0; startingTime=0;}
+local Sample7Script = { logo=0; startingTime=0; 
+wrappedMethods = {"reset"}; }
 
 function Sample7Script:init()
 
@@ -17,9 +18,13 @@ function Sample7Script:init()
 	-- and init logo
 	self.logo:init()
 	
-	self.target.reset = function (current_time)
-		self.startingTime = current_time
-	end
+end
+
+function Sample7Script:reset(current_time)
+   self.startingTime = current_time
+   local rotate = self.logo.RotationAngle
+   rotate = rotate + 0.1
+   self.logo.RotationAngle = rotate
 end
 
 function Sample7Script:update(current_time)

@@ -2056,7 +2056,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 	//! save all attributes
 	XMLAttribute *attribute = new XMLAttribute("T", GetRuntimeType());
 	currentNode->addAttribute(attribute);
-	const robin_hood::unordered_map<KigsID, CoreModifiableAttribute* ,KigsIDHash>* defaultAttributeMap = 0;
+	const kigs::unordered_map<KigsID, CoreModifiableAttribute*>* defaultAttributeMap = 0;
 	
 	CMSP defaultCopy = nullptr;
 	defaultCopy = KigsCore::GetInstanceOf("defaultAttributeClone", GetRuntimeType());

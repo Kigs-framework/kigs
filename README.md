@@ -1,7 +1,8 @@
 ![Kigs framework](https://github.com/assoria/kigs/wiki/data/logo.png)
 
 Kigs framework is a C++ modular multipurpose cross platform framework.
-Assoria used it as a basis for many projects.
+Assoria used it as a basis for [many projects](https://kigs-framework.org/Projects).
+
 The main goal was to be able to develop different types of applications (games, simulators, viewers...) quickly,
 in a totally independent manner (without any "black box"). 
 
