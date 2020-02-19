@@ -124,3 +124,36 @@ inline auto distBetweenLines(v3f p0, v3f v0, v3f p1, v3f v1, v3f& out0, v3f& out
 
 	return Norm(dP);   // return the closest distance
 };
+
+enum class orthonormalize_keep_axis
+{
+	x, y, z
+};
+inline mat3x4 orthonormalize_matrix(mat3x4 m, orthonormalize_keep_axis keep_axis = orthonormalize_keep_axis::y)
+{
+	m.XAxis.Normalize();
+	m.YAxis.Normalize();
+	m.ZAxis.Normalize();
+	if (keep_axis == orthonormalize_keep_axis::x)
+	{
+		m.YAxis = m.ZAxis ^ m.XAxis;
+		m.YAxis.Normalize();
+		m.ZAxis = m.XAxis ^ m.YAxis;
+		m.ZAxis.Normalize();
+	}
+	else if (keep_axis == orthonormalize_keep_axis::y)
+	{
+		m.ZAxis = m.XAxis ^ m.YAxis;
+		m.ZAxis.Normalize();
+		m.XAxis = m.YAxis ^ m.ZAxis;
+		m.XAxis.Normalize();
+	}
+	else
+	{
+		m.XAxis = m.YAxis ^ m.ZAxis;
+		m.XAxis.Normalize();
+		m.YAxis = m.ZAxis ^ m.XAxis;
+		m.YAxis.Normalize();
+	}
+	return m;
+}
