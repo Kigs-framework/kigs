@@ -43,6 +43,28 @@
 			<Inst N="testLua" T="LuaBehaviour" Aggregate="true">
 				<Attr N="Script" V="#test.lua"/>
 			</Inst>
+			
+			<Inst N="button" T="UIButtonImage">
+				<Attr N="Priority" V="10"/>
+				<Attr N="UpTexture" V="Up.png" />
+				<Attr N="DownTexture" V="Down.png" />
+				<Attr N="Dock" V="{0.9,0.1}" />
+				<Attr N="Anchor" V="{0.5,0.5}" />
+				<Connect Si="ClickUp" R="../UIPanel:panel" Sl="Click"/>
+		    </Inst>
+			<Inst N="panel" T="UIPanel">
+				<Attr N="Dock" V="{0.9,0.2}" />
+				<Attr N="Anchor" V="{0.5,0.5}" />
+				<Attr N="Priority" V="10"/>
+				<Attr N="SizeX" V="40"/>
+				<Attr N="SizeY" V="40"/>
+				<Lua N="Click">
+				local function Click()
+					local target=core.GetFirstInstanceByName("panel")
+					target.Color={1.0,0.0,0.0}
+				end
+				</Lua>
+		    </Inst>			
 		</Inst>
 	</Inst>
 </Inst>

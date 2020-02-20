@@ -1,5 +1,5 @@
 local Sample7Script = { logo=0; startingTime=0; 
-wrappedMethods = {"reset"}; }
+WRAP_METHODS = {"reset"}; }
 
 function Sample7Script:init()
 
