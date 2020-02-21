@@ -17,8 +17,8 @@ protected:
 	void	ProtectedInitSequence(const kstl::string& sequence) override;
 	void	ProtectedCloseSequence(const kstl::string& sequence) override;
 
+	// method called from Lua script
 	void	HelloFromLua();
 	WRAP_METHODS(HelloFromLua)
-
 
 };
