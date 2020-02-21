@@ -394,7 +394,7 @@ public:
 	 * \brief		Parse the given xml file, using delegateObject as delegate
 	 * \param		filename : the name of the file to parse
 	 * \param		delegateObject : the CoreModifiable used as delegate
-	 * \param		force_as_format : if nothing is specified, use real extension to define xml or bxml. Else, use "xml" or "bxml" to force the read format 
+	 * \param		force_as_format : "xml" or "kxml". if nothing is specified, use real extension to define xml or kxml.
 	 * \return		true if everything is fine
 
 		The delegateObject will receive the parse information using the following method if it declare/implement them :

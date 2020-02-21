@@ -1,6 +1,5 @@
 #include "PrecompiledHeaders.h"
 #include "XMLWriterFile.h"
-#include "BXMLWriterFile.h"
 #include "XML.h"
 #include "XMLNode.h"
 #include "XMLAttribute.h"
@@ -209,13 +208,7 @@ bool XMLWriterFile::WriteFile(const kstl::string& name,XML& xml)
             return true;
         }
     }
-    else // BXML
-    {
-        BXMLWriterFile*  writer=new BXMLWriterFile();
-        writer->WriteFile(name,xml);
-        delete writer;
-        return true;
-    }
+   
     return false;
 }
 
