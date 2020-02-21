@@ -1,6 +1,5 @@
 #include "PrecompiledHeaders.h"
 #include "XMLReaderFile.h"
-#include "BXMLReaderFile.h"
 #include "XML.h"
 #include "XMLNode.h"
 #include "XMLAttribute.h"
@@ -296,12 +295,9 @@ XMLBase* XMLReaderFile::ReadFile(const kstl::string& file,const char* force_as_f
 
 	XMLBase*	xml=0;
 
-	if(lFileHandle->myExtension ==".xml" || forceFormat=="xml")
-	{
-		XMLReaderFile reader;
-		xml=reader.ProtectedReadFile(lFileHandle.get());
-	}
-	else if (lFileHandle->myExtension == ".kxml" || forceFormat == "kxml") // compressed
+	std::string realExtension = pathManager->ResolveAlias(lFileHandle->myExtension);
+
+	if (realExtension == ".kxml" || forceFormat == "kxml") // compressed
 	{
 		CMSP& uncompressManager= KigsCore::GetSingleton("KXMLManager");
 		if (uncompressManager)
@@ -326,10 +322,10 @@ XMLBase* XMLReaderFile::ReadFile(const kstl::string& file,const char* force_as_f
 			KIGS_ERROR("trying to uncompress kxml, but KXMLManager was not declared", 1);
 		}
 	}
-	else // bxml
+	else // default is xml
 	{
-		BXMLReaderFile reader;
-		xml=reader.ReadFile(lFileHandle.get());
+		XMLReaderFile reader;
+		xml = reader.ProtectedReadFile(lFileHandle.get());
 	}
 	xml->setPath(file);
 	return xml;
@@ -351,17 +347,10 @@ bool XMLReaderFile::ReadFile( const kstl::string &file ,CoreModifiable*	delegate
 	auto& pathManager = KigsCore::Singleton<FilePathManager>();
 	SP<FileHandle> fullfilenamehandle=pathManager->FindFullName(file);
 
-	// get file extension to choose XML or BXML ?
-	if(fullfilenamehandle->myExtension==".xml" || strcmp(force_as_format, "xml")==0)
-	{
-		XMLReaderFile reader;
-		result=reader.ProtectedReadFile(fullfilenamehandle.get(),delegateObject);
-	}
-	else // bxml
-	{
-		BXMLReaderFile reader;
-		result=reader.ReadFile(fullfilenamehandle.get(),delegateObject);
-	}
+	
+	XMLReaderFile reader;
+	result=reader.ProtectedReadFile(fullfilenamehandle.get(),delegateObject);
+	
 
 	return result;
 }

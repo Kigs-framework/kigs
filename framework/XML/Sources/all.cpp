@@ -1,6 +1,3 @@
-#include "BXMLReaderFile.cpp"
-#include "BXMLStructures.cpp"
-#include "BXMLWriterFile.cpp"
 #include "MinimalXML.cpp"
 #include "XML.cpp"
 #include "XMLAttribute.cpp"

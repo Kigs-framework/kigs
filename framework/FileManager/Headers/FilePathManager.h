@@ -242,6 +242,30 @@ public:
 
 	void RemoveFromBundleList(const std::string& name) { myBundleList.erase(name); }
 
+	// extensions alias management 
+	// keep '.' in both alias and extension
+	void	AddAlias(const KigsID& alias, const std::string& extension)
+	{
+		myExtensionAlias[alias] = extension;
+	}
+	void	RemoveAlias(const KigsID& alias)
+	{
+		auto found=myExtensionAlias.find(alias);
+		if (found != myExtensionAlias.end())
+		{
+			myExtensionAlias.erase(found);
+		}
+	}
+	std::string	ResolveAlias(const std::string& alias)
+	{
+		auto found = myExtensionAlias.find(alias);
+		if (found != myExtensionAlias.end())
+		{
+			return (*found).second;
+		}
+		return alias;
+	}
+
 protected:
 
 	//! destructor
@@ -270,6 +294,10 @@ protected:
 	void	unloadPackage(unsigned int packageID);
 	unsigned int				 myPackageID;
 	std::map<int, CorePackage*> myPackageList;
+
+	// extension aliases
+	// KigsID key is KigsID(alias), second string is original 
+	kigs::unordered_map<KigsID, std::string>	myExtensionAlias;
 
 };
 
