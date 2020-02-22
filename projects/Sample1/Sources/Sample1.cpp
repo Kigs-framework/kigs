@@ -55,7 +55,7 @@ void	Sample1::ProtectedInit()
 	}
 
 	// add a dynamic attribute on instance of localtimer
-	localtimer->AddDynamicAttribute(FLOAT, "floatValue", 12.0f);
+	localtimer->AddDynamicAttribute(ATTRIBUTE_TYPE::FLOAT, "floatValue", 12.0f);
 
 	// only if export is supported
 #ifdef KIGS_TOOLS 
