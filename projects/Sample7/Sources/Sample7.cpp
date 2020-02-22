@@ -3,6 +3,13 @@
 #include <NotificationCenter.h>
 #include <iostream>
 
+// Kigs framework Sample7 project
+// Lua Binding features :
+// - LuaBehaviour class
+// - LuaImporter class
+// - Adding lua method to CoreModifiable instance
+// - Calling CoreModifiable method from Lua code
+// - ...
 
 IMPLEMENT_CLASS_INFO(Sample7);
 
@@ -21,10 +28,10 @@ void	Sample7::ProtectedInit()
 	SP<FilePathManager>& pathManager = KigsCore::Singleton<FilePathManager>();
 	pathManager->AddToPath(".", "xml");
 
-
 	// Load AppInit, GlobalConfig then launch first sequence
 	DataDrivenBaseApplication::ProtectedInit();
 
+	// create a LuaBehaviour instance and aggregate it to this
 	CMSP behaviour = KigsCore::GetInstanceOf("behaviour", "LuaBehaviour");
 	behaviour->setValue("Script", "#ScriptOnApp.lua");
 	aggregateWith(behaviour);
@@ -57,17 +64,16 @@ void	Sample7::ProtectedCloseSequence(const kstl::string& sequence)
 	}
 }
 
-
+// method called from Lua script 
 void	Sample7::HelloFromLua()
 {
 	std::cout << "Lua called me" << std::endl;
 
 	static int counter = 0;
 	++counter;
-	if ((counter % 1000) == 0)
+	if ((counter % 500) == 0)
 	{
 		// call Lua method on Interface
-
 		CoreModifiable* instance = GetFirstInstanceByName("UIItem", "Interface");
 		if (instance)
 		{
@@ -75,7 +81,7 @@ void	Sample7::HelloFromLua()
 		}
 	}
 
-	if (counter > 6000)
+	if (counter > 4000)
 	{
 		myNeedExit = true;
 	}

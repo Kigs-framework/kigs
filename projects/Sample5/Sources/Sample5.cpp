@@ -97,7 +97,7 @@ void	Sample5::ProtectedInit()
 
 	// Export JSON item as attribute of an empty object
 	CMSP donothing = KigsCore::GetInstanceOf("useless", "DoNothing");
-	donothing->AddDynamicAttribute(COREITEM, "item");
+	donothing->AddDynamicAttribute(ATTRIBUTE_TYPE::COREITEM, "item");
 	donothing->setValue("item", item.get());
 #ifdef KIGS_TOOLS
 	Export("testCoreItemExport.xml", donothing.get());

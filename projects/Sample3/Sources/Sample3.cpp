@@ -53,9 +53,9 @@ void	Sample3::ProtectedInit()
 	SP<SimpleClass> instance2 = KigsCore::GetInstanceOf("instance2", "SimpleClass");
 
 	// add a string attribute with name "DynamicAttribute" to instance 2
-	instance2->AddDynamicAttribute(CoreModifiable::STRING, "DynamicAttribute", "initValue");
+	instance2->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::STRING, "DynamicAttribute", "initValue");
 	// add a unsigned int attribute with name "DynamicAttribute" to this 
-	AddDynamicAttribute(CoreModifiable::UINT, "DynamicAttribute", 1250);
+	AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::UINT, "DynamicAttribute", 1250);
 
 	instance1->setValue("Reference", "SimpleClass:instance2");
 	instance2->setValue("Reference", "CoreBaseApplication:Sample3");

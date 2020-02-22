@@ -166,7 +166,7 @@ void	LuaBehaviour::InitModifiable()
 			myHasUpdate = L.isFunction(-1);
 			L.pop();
 			
-			L.getField(-1, "wrappedMethods");
+			L.getField(-1, "WRAP_METHODS");
 
 			std::vector<std::string>	wrappedMethodsList;
 			if (L.isTable(-1))
