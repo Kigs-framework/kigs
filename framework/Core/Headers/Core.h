@@ -464,7 +464,6 @@ protected:
 	{
 		myCoreBaseApplication = NULL;
 		myCoreMainModuleList=NULL;
-		myPostDestructionList=NULL;
 
 		myDecoratorMap=NULL;
 
@@ -506,8 +505,9 @@ protected:
 	//! pointer to created singletons
 	kigs::unordered_map<KigsID, CMSP>*		mySingletonMap;
 
-	//! manage post destruction (lazy list)
-	kstl::vector<CoreModifiable*>*						myPostDestructionList;
+	//! manage post destruction
+	std::mutex								myPostDestructionListMutex;
+	std::vector<CoreModifiable*>			myPostDestructionList;
 	void ManagePostDestruction();
 
 	//! static pointer to the KigsCore singleton
