@@ -82,6 +82,8 @@ protected:
 	DECLARE_METHOD(UIItemRemovedFromRootItem);
 	DECLARE_METHOD(DeleteChild);
 
+	COREMODIFIABLE_METHODS(KeepClick, ReleaseClick, GetFocus, ReleaseFocus, UIItemRemovedFromRootItem, DeleteChild);
+
 	ModuleInput* myInput;
 	// TODO : change root item management in BaseUI2DLayer (use classic additem / removeitem...)
 	SP<UIItem> myRootItem;

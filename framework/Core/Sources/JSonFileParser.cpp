@@ -641,11 +641,7 @@ DictionaryFromJson::DictionaryFromJson(const kstl::string& name,CLASS_NAME_TREE_
 CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 ,m_pCurrentObject(nullptr)
 {
-	CONSTRUCT_METHOD(DictionaryFromJson, JSonObjectStart)
-	CONSTRUCT_METHOD(DictionaryFromJson, JSonObjectEnd)
-	CONSTRUCT_METHOD(DictionaryFromJson, JSonArrayStart)
-	CONSTRUCT_METHOD(DictionaryFromJson, JSonArrayEnd)
-	CONSTRUCT_METHOD(DictionaryFromJson, JSonParamList)
+	
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -834,11 +830,7 @@ DictionaryFromJsonUTF16::DictionaryFromJsonUTF16(const kstl::string& name, CLASS
 CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 , m_pCurrentObject(nullptr)
 {
-	CONSTRUCT_METHOD(DictionaryFromJsonUTF16, JSonObjectStart)
-	CONSTRUCT_METHOD(DictionaryFromJsonUTF16, JSonObjectEnd)
-	CONSTRUCT_METHOD(DictionaryFromJsonUTF16, JSonArrayStart)
-	CONSTRUCT_METHOD(DictionaryFromJsonUTF16, JSonArrayEnd)
-	CONSTRUCT_METHOD(DictionaryFromJsonUTF16, JSonParamList)
+	
 }
 
 //-----------------------------------------------------------------------------------------------------

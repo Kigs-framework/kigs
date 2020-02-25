@@ -12,7 +12,7 @@ IMPLEMENT_CLASS_INFO(RendererProfileDrawingObject)
 RendererProfileDrawingObject::RendererProfileDrawingObject(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
 , myFps(*this, false, LABEL_AND_ID(Fps), "30.0")
 {
-	CONSTRUCT_METHOD(RendererProfileDrawingObject,DrawProfiles)
+
 	// global timer is pure Red, don't use this color here
 
 	// GREEN
