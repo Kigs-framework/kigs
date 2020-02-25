@@ -10,6 +10,7 @@ public:
 protected:
 
 	DECLARE_PURE_VIRTUAL_METHOD(GiveInfos);
-
+	// list all CoreModifiable methods
+	COREMODIFIABLE_METHODS(GiveInfos);
 };
 

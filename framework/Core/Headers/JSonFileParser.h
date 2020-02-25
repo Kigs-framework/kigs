@@ -10,11 +10,13 @@ class CoreItem;
 		Parse a JSon File and call delegate object at each new level and data found
 */
 
-#define Declare_JSonDelegate 	DECLARE_METHOD(JSonObjectStart); \
-								DECLARE_METHOD(JSonObjectEnd); \
-								DECLARE_METHOD(JSonArrayStart); \
-								DECLARE_METHOD(JSonArrayEnd); \
-								DECLARE_METHOD(JSonParamList); 
+#define Declare_JSonDelegate 	DECLARE_METHOD(JSonObjectStart)\
+								DECLARE_METHOD(JSonObjectEnd)\
+								DECLARE_METHOD(JSonArrayStart)\
+								DECLARE_METHOD(JSonArrayEnd)\
+								DECLARE_METHOD(JSonParamList) 
+
+#define JSonDelegateMethods		JSonObjectStart,JSonObjectEnd,JSonArrayStart,JSonArrayEnd,JSonParamList
 
 // TODO : can probably be a template class 
 class DictionaryFromJson : public CoreModifiable
@@ -34,6 +36,8 @@ protected:
 	CoreItemSP								m_pCurrentObject;
 
 	Declare_JSonDelegate;
+
+	COREMODIFIABLE_METHODS(JSonDelegateMethods);
 };
 
 class DictionaryFromJsonUTF16 : public CoreModifiable
@@ -53,6 +57,8 @@ protected:
 	CoreItemSP								m_pCurrentObject;
 
 	Declare_JSonDelegate;
+
+	COREMODIFIABLE_METHODS(JSonDelegateMethods);
 };
 
 

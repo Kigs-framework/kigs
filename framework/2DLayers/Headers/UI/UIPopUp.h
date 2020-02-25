@@ -27,6 +27,7 @@ public:
 
 	DECLARE_VIRTUAL_METHOD(HidePopUp);
 	DECLARE_VIRTUAL_METHOD(ShowPopUp);
+	COREMODIFIABLE_METHODS(HidePopUp, ShowPopUp);
 
 protected:
 	virtual ~UIPopUp();

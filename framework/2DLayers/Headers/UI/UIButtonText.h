@@ -34,6 +34,7 @@ protected:
 	char*				CutText(const char* text, bool& flag);
 
 	DECLARE_METHOD(ReloadTexture);
+	COREMODIFIABLE_METHODS(ReloadTexture);
 
 	SmartPointer<Texture>				myUpTexture;
 	SmartPointer<Texture>				myDownTexture;

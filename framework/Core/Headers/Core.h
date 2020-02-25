@@ -403,7 +403,7 @@ public:
 		DECLARE_METHOD(XMLElementEndDescription);
 		DECLARE_METHOD(XMLDeclHandler);
 		DECLARE_METHOD(XMLCharacterHandler);
-
+		COREMODIFIABLE_METHODS(XMLElementStartDescription,XMLElementEndDescription,XMLDeclHandler,XMLCharacterHandler);
 		If the format is force, the extension of the file can be anything (plist, dat, ...)
 
 

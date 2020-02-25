@@ -18,7 +18,6 @@ IMPLEMENT_CONSTRUCTOR(DebugDraw)
 {
 	dd::initialize(this);
 	myDrawingNeeds = Need_Draw;
-	CONSTRUCT_METHOD(DebugDraw, ResetContext)
 	KigsCore::GetNotificationCenter()->addObserver(this, "ResetContext", "ResetContext");
 }
 

@@ -28,7 +28,6 @@ UITextArea::UITextArea(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	myBold(*this, false, "Bold", false),
 	myTextAlign(*this, false, "TextAlignment", 1)
 {
-	CONSTRUCT_METHOD(UITextArea, UpdateKeyBoard);
 
 	unsetUserFlag(UserFlagUseColorArray);
 

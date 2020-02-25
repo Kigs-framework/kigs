@@ -1090,7 +1090,11 @@ DECLARE_METHOD(XMLElementEndDescription); \
 DECLARE_METHOD(XMLDeclHandler); \
 DECLARE_METHOD(XMLCharacterHandler);
 
+#define XMLDelegateMethods		JSonObjectStart,JSonObjectEnd,JSonArrayStart,JSonArrayEnd,JSonParamList
 
+
+
+/*
 class MethodConstructor
 {
 public:
@@ -1098,9 +1102,9 @@ public:
 	{
 		obj->InsertMethod(id, method);
 	}
-};
+};*/
 
-
+/*
 class MethodsConstructor
 {
 public:
@@ -1116,7 +1120,7 @@ public:
 	{
 
 	}
-};
+};*/
 
 class PackCoreModifiableAttributes
 {

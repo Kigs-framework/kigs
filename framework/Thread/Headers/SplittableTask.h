@@ -55,6 +55,7 @@ protected:
 	virtual ~SplittableTask();
 
 	DECLARE_METHOD(SplittedUpdate);
+	COREMODIFIABLE_METHODS(SplittedUpdate);
 
 	maReference		myThreadPoolManager;
 
