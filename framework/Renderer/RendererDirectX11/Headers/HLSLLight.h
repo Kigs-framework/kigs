@@ -57,6 +57,7 @@ protected:
 #ifdef USE_ATTFUNCTION
 	DECLARE_METHOD(SetAttenuation);
 	DECLARE_METHOD(GetAttenuation);
+	COREMODIFIABLE_METHODS(SetAttenuation, GetAttenuation);
 #endif
 
 	//! TRUE if the light is on

@@ -728,6 +728,8 @@ protected:
 	static TravState* currentState;
 
 	DECLARE_METHOD(ResetContext);
+
+	COREMODIFIABLE_METHODS(ResetContext);
 };
 
 

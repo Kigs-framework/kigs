@@ -184,7 +184,9 @@ public:
 	bool IsValidTouchSupport(Vector3D posin);
 
 	DECLARE_METHOD(ResetContext);
-	
+
+	COREMODIFIABLE_METHODS(ResetContext);
+
 protected:
 	// recompute myDesignCoefX,myDesignCoefY;
 	void	InitModifiable() override;

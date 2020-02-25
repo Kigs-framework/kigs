@@ -160,6 +160,7 @@ protected:
 
 	DECLARE_METHOD(GetIntersection);
 	DECLARE_METHOD(GetAltitude);
+	COREMODIFIABLE_METHODS(GetIntersection, GetAltitude);
 
 	/*! \brief recursive internal method
 	* return true if itersection found

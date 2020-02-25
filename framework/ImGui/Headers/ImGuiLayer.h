@@ -50,6 +50,7 @@ public:
 
 protected:
 	DECLARE_METHOD(ResetContext);
+	COREMODIFIABLE_METHODS(ResetContext);
 
 	void InitModifiable() override;
 

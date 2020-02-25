@@ -46,12 +46,7 @@ API3DLight::API3DLight(const kstl::string& name, CLASS_NAME_TREE_ARG)
 	, mySpotExponentUniform(NULL)
 	, myListUpdateFrame(0)
 {
-	CONSTRUCT_METHOD(API3DLight, SetDiffuseColor);
-	CONSTRUCT_METHOD(API3DLight, SetSpecularColor);
-#ifdef USE_ATTFUNCTION
-	CONSTRUCT_METHOD(API3DLight, SetAttenuation);
-	CONSTRUCT_METHOD(API3DLight, GetAttenuation);
-#endif
+
 }
 
 void	API3DLight::InitModifiable()

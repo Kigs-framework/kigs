@@ -61,7 +61,7 @@ public:
 
 	// callback on animated objects
 	DECLARE_METHOD(OnDestroyCallBack)
-
+	COREMODIFIABLE_METHODS(OnDestroyCallBack);
 	/**
 	* \fn			kstl::map<kstl::string, CoreItemOperatorCreateMethod>&	GetCoreItemOperatorConstructMap();
 	* \brief		return the specific map for CoreItemOperator creation in animation module

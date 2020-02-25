@@ -18,6 +18,7 @@ protected:
 
 	// Fixed prototype 
 	DECLARE_METHOD(CatchNotifMethod);
+	COREMODIFIABLE_METHODS(CatchNotifMethod);
 
 	void	ProtectedInit() override;
 	void	ProtectedUpdate() override;

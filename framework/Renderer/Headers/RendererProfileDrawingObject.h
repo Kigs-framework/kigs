@@ -16,6 +16,7 @@ public:
 protected:
 
 	DECLARE_METHOD(DrawProfiles);
+	COREMODIFIABLE_METHODS(DrawProfiles);
 
 	Vector3D	myColors[MAX_PROFILER_COUNT];
 

@@ -23,7 +23,7 @@ IMPLEMENT_CLASS_INFO(OpenGLRenderingScreen)
 
 OpenGLRenderingScreen::OpenGLRenderingScreen(const kstl::string& name, CLASS_NAME_TREE_ARG) : OpenGLPlatformRenderingScreen(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	CONSTRUCT_METHOD(OpenGLRenderingScreen, Snapshot)
+	
 }
 
 OpenGLRenderingScreen::~OpenGLRenderingScreen()

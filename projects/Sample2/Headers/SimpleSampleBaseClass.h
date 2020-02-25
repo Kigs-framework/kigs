@@ -15,4 +15,6 @@ protected:
 
 	// method that add 1 to the given parameter
 	DECLARE_METHOD(incrementParam);
+	// list all CoreModifiable methods
+	COREMODIFIABLE_METHODS(incrementParam);
 };

@@ -25,7 +25,7 @@ public:
 
 	void	ScreenShot(char * filename);
 	DECLARE_METHOD(Snapshot);
-	
+	COREMODIFIABLE_METHODS(Snapshot);
 protected:
 
 	void	DelayedInit();

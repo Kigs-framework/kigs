@@ -468,6 +468,7 @@ REGISTER_CLASS_INFO(currentClass<templatetype>, returnClassName, group)*/
 	currentClass::GetClassNameTree(TypeBranch);\
 	kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>> MethodTable;\
 	currentClass::GetMethodTable(MethodTable);\
+	currentClass::GetNotWrappedMethodTable(MethodTable);\
 	KigsCore::RegisterType(TypeBranch, MethodTable);\
 }
 
