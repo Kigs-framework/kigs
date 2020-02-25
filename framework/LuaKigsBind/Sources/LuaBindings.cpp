@@ -43,7 +43,7 @@ IMPLEMENT_CLASS_INFO(LuaNotificationHook);
 
 IMPLEMENT_CONSTRUCTOR(LuaNotificationHook)
 {
-	CONSTRUCT_METHOD(LuaNotificationHook, CallLuaFunc);
+
 }
 
 

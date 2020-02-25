@@ -31,11 +31,6 @@ Mesh::Mesh(const kstl::string& name,CLASS_NAME_TREE_ARG) : HDrawable(name,PASS_C
 , myFileName(*this, true, LABEL_AND_ID(FileName))
 , myDynamicInit(*this, false, LABEL_AND_ID(DynamicInit), false)
 {
-	CONSTRUCT_METHOD(Mesh, GetVertexPointer)
-	CONSTRUCT_METHOD(Mesh, GetColorPointer)
-	CONSTRUCT_METHOD(Mesh, GetNormalPointer)
-	CONSTRUCT_METHOD(Mesh, GetTexCoordPointer)
-
 	VertexArray = 0;
 	NormalArray = 0;
 	ColorArray = 0;

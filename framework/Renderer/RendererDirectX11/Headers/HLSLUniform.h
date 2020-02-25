@@ -109,7 +109,7 @@ public:
 	void SetValue(float aX, float aY, float aZ) { myValue[0] = aX; myValue[1] = aY;	myValue[2] = aZ; }
 	void SetValue(float *aX) { myValue[0] = aX[0]; myValue[1] = aX[1];	myValue[2] = aX[2]; }
 
-	WRAP_METHOD(WrappedSetValue);
+	WRAP_METHODS(WrappedSetValue);
 
 protected:
 	void InitModifiable() override;

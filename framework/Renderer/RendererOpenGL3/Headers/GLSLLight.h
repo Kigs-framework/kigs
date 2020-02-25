@@ -58,6 +58,9 @@ protected:
 #ifdef USE_ATTFUNCTION
 	DECLARE_METHOD(SetAttenuation);
 	DECLARE_METHOD(GetAttenuation);
+	COREMODIFIABLE_METHODS(SetDiffuseColor, SetSpecularColor, SetAttenuation, GetAttenuation);
+#else
+	COREMODIFIABLE_METHODS(SetDiffuseColor, SetSpecularColor);
 #endif
 
 	//! TRUE if the light is on

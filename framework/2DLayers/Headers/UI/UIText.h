@@ -45,7 +45,7 @@ protected:
 	virtual void	ChangeText(const usString& newText);
 	
 	DECLARE_METHOD(ReloadTexture);
-	
+	COREMODIFIABLE_METHODS(ReloadTexture);
 	unsigned short*			CutText(const unsigned short* text, bool& flag);
 
 	maUSString				myText;

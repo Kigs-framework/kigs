@@ -103,7 +103,7 @@ protected:
 	//! destructor
     virtual ~LuaKigsBindModule();    
 	DECLARE_METHOD(RegisterLuaMethod);
-
+	COREMODIFIABLE_METHODS(RegisterLuaMethod);
 	void SetValueLua(CoreModifiable* cm, const kstl::string& attrname, const kstl::string& code);
 	
 	template<typename T>

@@ -38,5 +38,5 @@ protected:
 	bool myIsPlaying;
 
 	DECLARE_METHOD(StartVideo);
-
+	COREMODIFIABLE_METHODS(StartVideo);
 };

@@ -31,7 +31,7 @@ IMPLEMENT_CONSTRUCTOR(LuaBehaviour)
 , myLastTime(-1.0)
 , myTarget(nullptr)
 {
-	CONSTRUCT_METHOD(LuaBehaviour, ReloadScript)
+	
 }
 
 

@@ -30,8 +30,8 @@ protected:
 	virtual ~UITextInput();
 
 	DECLARE_METHOD(FocusChanged);
-
-	WRAP_METHODS(UpdateKeyboard, FocusChanged);
+	COREMODIFIABLE_METHODS(FocusChanged);
+	WRAP_METHODS(UpdateKeyboard)
 
 	void NotifyUpdate(const unsigned int labelid) override;
 	bool ManageClickTouchEvent(ClickEvent& click_event) final;

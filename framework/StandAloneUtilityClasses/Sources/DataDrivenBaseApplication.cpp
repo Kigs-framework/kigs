@@ -417,10 +417,6 @@ IMPLEMENT_CONSTRUCTOR(DataDrivenBaseApplication)
 , m_SequenceManager(nullptr)
 , m_GlobalConfig(nullptr)
 {
-	
-	CONSTRUCT_METHOD(DataDrivenBaseApplication, Exit);
-	CONSTRUCT_METHOD(DataDrivenBaseApplication, RegisterLuaMethod);
-
 
 }
 

@@ -40,7 +40,7 @@ class LuaNotificationHook : public CoreModifiable
 	
 	
 	DECLARE_METHOD(CallLuaFunc);
-	
+	COREMODIFIABLE_METHODS(CallLuaFunc);
 	CoreModifiable* obj;
 	LuaIntf::LuaState L;
 	LuaIntf::LuaRef lua_func;

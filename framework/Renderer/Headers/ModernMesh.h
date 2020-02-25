@@ -253,6 +253,8 @@ protected:
 #endif
 
 	DECLARE_METHOD(ResetContext);
+
+	COREMODIFIABLE_METHODS(ResetContext);
 };
 
 

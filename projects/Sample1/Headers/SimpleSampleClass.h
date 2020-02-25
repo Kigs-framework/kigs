@@ -16,4 +16,7 @@ protected:
 
 	// add given params to mTestValue
 	DECLARE_METHOD(AddValue);
+
+	// list CoreModifiable methods
+	COREMODIFIABLE_METHODS(AddValue);
 };

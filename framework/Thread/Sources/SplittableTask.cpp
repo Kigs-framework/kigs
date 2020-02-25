@@ -10,7 +10,6 @@ SplittableTask::SplittableTask(const kstl::string& name, CLASS_NAME_TREE_ARG) : 
 , mySplitCount(*this, true, LABEL_AND_ID(SplitCount), 0)
 , myWaitFinish(*this, false, LABEL_AND_ID(WaitFinish), true)
 {
-	CONSTRUCT_METHOD(SplittableTask, SplittedUpdate)
 	mySplitDataStructList.clear();
 }
 

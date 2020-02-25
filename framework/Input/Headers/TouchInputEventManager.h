@@ -614,6 +614,8 @@ protected:
 	void dumpTouchSupportTrees();
 	DECLARE_METHOD(OnDestroyCallback);
 	DECLARE_METHOD(OnDestroyTouchSupportCallback);
+
+	COREMODIFIABLE_METHODS(OnDestroyCallback, OnDestroyTouchSupportCallback);
 	
 	virtual ~TouchInputEventManager();
 
