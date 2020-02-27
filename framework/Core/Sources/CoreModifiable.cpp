@@ -185,6 +185,11 @@ void CoreModifiable::InsertMethod(KigsID labelID, RefCountedClass::ModifiableMet
 	GetLazyContent()->Methods.insert({ labelID, toAdd });
 }
 
+void CoreModifiable::InsertUpgradeMethod(KigsID labelID, RefCountedClass::ModifiableMethod method, UpgradorBase* up)
+{
+	ModifiableMethodStruct toAdd(method, "",up);
+	GetLazyContent()->Methods.insert({ labelID, toAdd });
+}
 
 
 void CoreModifiable::RemoveMethod(KigsID labelID)
@@ -596,7 +601,18 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 		}
 		else
 		{
+			// cache upgrador
+			UpgradorBase* cachedUpgrador= localthis->myUpgrador;
+			
+			if (methodFound->m_Upgrador)
+			{
+				localthis->myUpgrador = methodFound->m_Upgrador;
+			}
+
 			result = localthis->Call(methodFound->m_Method, sender, params, privateParams);
+
+			// reset cached 
+			localthis->myUpgrador = cachedUpgrador;
 		}
 		
 	}
