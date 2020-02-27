@@ -6,6 +6,7 @@
 #include "usString.h"
 #include "TecLibs/Tec3D.h"
 #include "SmartPointer.h"
+#include "Upgrador.h"
 
 #include <mutex>
 #include <memory>
@@ -564,6 +565,9 @@ public:
 	bool HasMethod(const KigsID& methodNameID) const;
 	// Add a new private method
 	void InsertMethod(KigsID labelID, RefCountedClass::ModifiableMethod method, const std::string& methodName = "" CONNECT_PARAM_DEFAULT);
+	// Add a new private method
+	void InsertUpgradeMethod(KigsID labelID, RefCountedClass::ModifiableMethod method, UpgradorBase* up);
+
 	// Add a new lambda
 	template<typename F>
 	void InsertFunction(KigsID labelID, F&& func);
@@ -822,6 +826,37 @@ public:
 	void debugPrintfTree(int maxindent) { debugPrintfTree(0, maxindent); }
 	void debugPrintfTree(int indent, int maxindent);
 
+	// upgrador management
+	void Upgrade(UpgradorBase* toAdd)
+	{
+		toAdd->myNextUpgrador = myUpgrador;
+		myUpgrador = toAdd;
+		toAdd->UpgradeInstance(this);
+	}
+
+	void Downgrade(UpgradorBase* toRemove)
+	{
+		UpgradorBase* previous = nullptr;
+		UpgradorBase* found = myUpgrador;
+
+		while (found)
+		{
+			if (found == toRemove)
+			{
+				if (previous)
+				{
+					previous->myNextUpgrador = toRemove->myNextUpgrador;
+				}
+				else
+				{
+					myUpgrador= toRemove->myNextUpgrador;
+				}
+				toRemove->DowngradeInstance(this);
+			}
+			previous = found;
+			found = found->myNextUpgrador;
+		}
+	}
 
 protected:
 
@@ -1009,6 +1044,19 @@ protected:
 	}
 #endif
 
+	// Upgrador management
+	UpgradorBase* myUpgrador = nullptr;
+
+	UpgradorBase::UpgradorData* upgradorData()
+	{
+		if (myUpgrador)
+		{
+			return myUpgrador->myData;
+		}
+		return nullptr;
+	}
+
+
 #ifdef KEEP_XML_DOCUMENT
 public:
 	kigs::unordered_map<XMLBase*, XMLNodeBase*> mXMLNodes;
@@ -1016,6 +1064,8 @@ public:
 	u32 myEditorFlag = 0;
 	LazyContent* GetLazyContentNoCreate() const { return mLazyContent; }
 #endif
+
+
 
 private:
 	friend class CoreModifiableAttribute;
@@ -1092,35 +1142,6 @@ DECLARE_METHOD(XMLCharacterHandler);
 
 #define XMLDelegateMethods		JSonObjectStart,JSonObjectEnd,JSonArrayStart,JSonArrayEnd,JSonParamList
 
-
-
-/*
-class MethodConstructor
-{
-public:
-	MethodConstructor(CoreModifiable* obj, KigsID id, RefCountedClass::ModifiableMethod method)
-	{
-		obj->InsertMethod(id, method);
-	}
-};*/
-
-/*
-class MethodsConstructor
-{
-public:
-	struct MethodCtorParams
-	{
-		MethodCtorParams(CoreModifiable* obj, KigsID id, RefCountedClass::ModifiableMethod method)
-		{
-			obj->InsertMethod(id, method);
-		}
-	};
-
-	MethodsConstructor(std::initializer_list<MethodCtorParams> params)
-	{
-
-	}
-};*/
 
 class PackCoreModifiableAttributes
 {
