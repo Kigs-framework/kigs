@@ -20,7 +20,7 @@ void	TestUpgrador::ProtectedInit()
 	REGISTER_UPGRADOR(UpgradeSimple);
 	REGISTER_UPGRADOR(OtherUpgradeSimple);
 
-
+#ifdef TEST_EXPORT
 	SP<SimpleClass>	instance1 = KigsCore::GetInstanceOf("instance1", "SimpleClass");
 
 	instance1->setValue("StringValue", "string value");
@@ -29,6 +29,12 @@ void	TestUpgrador::ProtectedInit()
 	instance1->Upgrade("UpgradeSimple");
 	instance1->Upgrade("OtherUpgradeSimple");
 
+	Export("TestUpgrador.xml", instance1.get());
+#else
+
+	SP<SimpleClass>	instance1 = CoreModifiable::Import("TestUpgrador.xml");
+
+#endif
 	instance1->SimpleCall("DoSomethingElse");
 	EmitSignal("Signal");
 
@@ -36,6 +42,8 @@ void	TestUpgrador::ProtectedInit()
 
 	instance1->SimpleCall("DoSomethingElse");
 	EmitSignal("Signal");
+
+
 
 }
 
