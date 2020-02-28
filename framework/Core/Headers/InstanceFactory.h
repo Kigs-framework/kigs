@@ -2,7 +2,6 @@
 #define _INSTANCEFACTORY_H_
 
 #include "CoreModifiable.h"
-
 #include "kstlunordered_map.h"
 
 class KigsCore;

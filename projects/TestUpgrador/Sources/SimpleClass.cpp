@@ -45,10 +45,13 @@ void	SimpleClass::DoSomethingFun()
 	}
 }
 
+DEFINE_UPGRADOR_UPDATE(UpgradeSimple)
+{
+	GetUpgrador()->myTestData += 2;
+}
+
 DEFINE_UPGRADOR_METHOD(UpgradeSimple, DoSomethingElse)
 {
-
-	testData* localData = (testData*)upgradorData();
 
 	std::cout << "DoSomethingElse" << std::endl;
 
@@ -56,7 +59,7 @@ DEFINE_UPGRADOR_METHOD(UpgradeSimple, DoSomethingElse)
 	std::cout << "Simple class m_StringValue = " << m_StringValue.c_str() << std::endl;
 
 	// access localdata 
-	std::cout << "UpgradeSimple myTestData = " << localData->myTestData << std::endl;
+	std::cout << "UpgradeSimple myTestData = " << GetUpgrador()->myTestData << std::endl;
 
 	// access dynamic upgrade data 
 	std::cout << "UpgradorInt = " << getValue<int>("UpgradorInt") << std::endl;
@@ -65,21 +68,45 @@ DEFINE_UPGRADOR_METHOD(UpgradeSimple, DoSomethingElse)
 	return false;
 }
 
-
-// create and init UpgradorData if needed and add dynamic attributes
-void	UpgradeSimple::InitData(CoreModifiable* toUpgrade) 
+DEFINE_UPGRADOR_METHOD(OtherUpgradeSimple, DoSomethingMore)
 {
-	myData = new testData();
-	((testData*)myData)->myTestData = 12;
 
+	std::cout << "DoSomethingMore" << std::endl;
+
+	// access SimpleClass data
+	std::cout << "Simple class m_StringValue = " << m_StringValue.c_str() << std::endl;
+
+	return false;
+}
+
+
+// create and init UpgradorData if needed and add dynamic attributes and connections
+void	UpgradeSimple::Init(CoreModifiable* toUpgrade) 
+{
+	myTestData = 12;
 	toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::INT, "UpgradorInt", 56);
 }
 
 // destroy UpgradorData and remove dynamic attributes 
-void	UpgradeSimple::RemoveData(CoreModifiable* toDowngrade)
+void	UpgradeSimple::Destroy(CoreModifiable* toDowngrade)
 {
-	delete myData;
-	myData = nullptr;
-
 	toDowngrade->RemoveDynamicAttribute("UpgradorInt");
+}
+
+// create and init UpgradorData if needed and add dynamic attributes and connections
+void	OtherUpgradeSimple::Init(CoreModifiable* toUpgrade)
+{
+
+	KigsCore::Connect((CoreModifiable*)KigsCore::GetCoreApplication(), "Signal", toUpgrade, "DoSomethingMore");
+}
+
+// destroy UpgradorData and remove dynamic attributes 
+void	OtherUpgradeSimple::Destroy(CoreModifiable* toDowngrade)
+{
+	KigsCore::Disconnect((CoreModifiable*)KigsCore::GetCoreApplication(), "Signal", toDowngrade, "DoSomethingMore");
+}
+
+DEFINE_UPGRADOR_UPDATE(OtherUpgradeSimple)
+{
+	std::cout << "in OtherUpgradeSimple Update" << std::endl;
 }

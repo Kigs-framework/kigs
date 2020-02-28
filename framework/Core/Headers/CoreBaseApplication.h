@@ -6,6 +6,7 @@
 #include "kstlvector.h"
 #include "kstlstring.h"
 #include "Timer.h"
+#include "MiniInstanceFactory.h"
 
 class	ModuleBase;
 class   AnonymousModule;

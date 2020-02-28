@@ -17,6 +17,7 @@
 #include "CoreModifiable.h"
 #include "InstanceFactory.h"
 
+class MiniInstanceFactory;
 class CoreModifiableAttribute;
 class InstanceFactory;
 class RefCountedClass;
@@ -28,6 +29,7 @@ class NotificationCenter;
 class AsyncRequest;
 class CoreItem;
 class CoreVector;
+
 
 typedef     CoreVector* (*CoreItemOperatorCreateMethod)();
 
@@ -67,6 +69,9 @@ public:
 
 #define DECLARE_FULL_DECORATOR_INFO(core,decoratorClass) \
     RegisterDecoratorClass RegisterDecorator##decoratorClass(core, #decoratorClass, &decoratorClass::Decorate,&decoratorClass::UnDecorate); 
+
+#define REGISTER_UPGRADOR(name) \
+	{KigsCore::Instance()->GetUpgradorFactory()->RegisterNewClass<name>(#name);}
 
 // ****************************************
 // * KigsCore class
@@ -139,6 +144,10 @@ public:
 	 * \return		the unique instance factory
 	 */
 	InstanceFactory* GetInstanceFactory();
+	MiniInstanceFactory* GetUpgradorFactory() const
+	{
+		return myUpgradorFactory;
+	}
 
 	// create connection between a signal and a slot 
 	static void		Connect(CoreModifiable* a, KigsID asignalID, CoreModifiable* b, KigsID bslotID CONNECT_PARAM_DEFAULT);
@@ -480,7 +489,8 @@ protected:
 	~KigsCore(){}
 
 	//! pointer to instance factory singleton
-	InstanceFactory*	myInstanceFactory;
+	InstanceFactory*		myInstanceFactory;
+	MiniInstanceFactory*	myUpgradorFactory;
 
 	//! pointer to initialised modules
 	kigs::unordered_map<KigsID, ModuleBase*>*			myModuleBaseInstanceMap;
