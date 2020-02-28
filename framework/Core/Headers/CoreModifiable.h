@@ -153,6 +153,18 @@ struct LazyContent
 	kigs::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> ConnectedToMe;
 	kigs::unordered_map <KigsID, ModifiableMethodStruct> Methods;
 	std::vector<WeakRef*> WeakRefs;
+	// Upgrador management
+	UpgradorBase* myUpgrador = nullptr;
+
+	~LazyContent()
+	{
+		// linked list so delete only the first one
+		if (myUpgrador)
+		{
+			delete myUpgrador;
+			myUpgrador = nullptr;
+		}
+	}
 };
 
 typedef SmartPointer<CoreModifiable> CMSP;
@@ -827,38 +839,18 @@ public:
 	void debugPrintfTree(int indent, int maxindent);
 
 	// upgrador management
-	void Upgrade(UpgradorBase* toAdd)
-	{
-		toAdd->myNextUpgrador = myUpgrador;
-		myUpgrador = toAdd;
-		toAdd->UpgradeInstance(this);
-	}
-
-	void Downgrade(UpgradorBase* toRemove)
-	{
-		UpgradorBase* previous = nullptr;
-		UpgradorBase* found = myUpgrador;
-
-		while (found)
-		{
-			if (found == toRemove)
-			{
-				if (previous)
-				{
-					previous->myNextUpgrador = toRemove->myNextUpgrador;
-				}
-				else
-				{
-					myUpgrador= toRemove->myNextUpgrador;
-				}
-				toRemove->DowngradeInstance(this);
-			}
-			previous = found;
-			found = found->myNextUpgrador;
-		}
-	}
+	void Upgrade(const std::string& toAdd);
+	void Downgrade(const std::string& toRemove);
 
 protected:
+	// protected upgrador management
+	void Upgrade(UpgradorBase* toAdd)
+	{
+		LazyContent* c = GetLazyContent();
+		toAdd->myNextUpgrador = c->myUpgrador;
+		c->myUpgrador = toAdd;
+		toAdd->UpgradeInstance(this);
+	}
 
 	void Connect(KigsID signal, CoreModifiable* other, KigsID slot CONNECT_PARAM_DEFAULT);
 	void Disconnect(KigsID signal, CoreModifiable* other, KigsID slot);
@@ -1019,6 +1011,15 @@ protected:
 	//! create and add dynamic attribute except arrays
 	CoreModifiableAttribute*	GenericCreateDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID);
 
+	UpgradorBase* GetUpgrador()
+	{
+		if (mLazyContent)
+		{
+			return mLazyContent->myUpgrador;
+		}
+		return nullptr;
+	}
+
 #ifdef USE_LINK_TYPE
 	/*! add a new link type to the list, second parameter is used to prevent calling it
 	 outside constructor
@@ -1043,19 +1044,6 @@ protected:
 		(void)classNameTree;
 	}
 #endif
-
-	// Upgrador management
-	UpgradorBase* myUpgrador = nullptr;
-
-	UpgradorBase::UpgradorData* upgradorData()
-	{
-		if (myUpgrador)
-		{
-			return myUpgrador->myData;
-		}
-		return nullptr;
-	}
-
 
 #ifdef KEEP_XML_DOCUMENT
 public:

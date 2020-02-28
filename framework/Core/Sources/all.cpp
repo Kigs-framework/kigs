@@ -25,6 +25,7 @@
 #include "usString.cpp"
 #include "utf8_decode.cpp"
 #include "Upgrador.cpp"
+#include "MiniInstanceFactory.cpp"
 
 // Windows.h
 #include "AnonymousModule.cpp"

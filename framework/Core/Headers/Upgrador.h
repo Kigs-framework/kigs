@@ -2,7 +2,9 @@
 
 #include "RefCountedClass.h"
 
+
 class CoreModifiable;
+class Timer;
 
 #define DEFINE_UPGRADOR_METHOD(upgrador,name) DEFINE_METHOD(upgrador##::UpgradorMethods,name)
 
@@ -15,13 +17,27 @@ class CoreModifiable;
 #define UPGRADOR_METHODS(...) class UpgradorMethods : public baseclass \
 { \
  public:\
+	UpgradorType* GetUpgrador(){return (UpgradorType*)CoreModifiable::GetUpgrador();}\
+	void UpgradorUpdate(const Timer& timer, void* addParam);\
 FOR_EACH(DECLARE_METHOD, __VA_ARGS__)\
 };\
 public:\
+void	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) override\
+{\
+	((UpgradorMethods*)toUpdate)->UpgradorUpdate(timer, addParam);\
+}\
 virtual void GetMethodTable(kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& table) override\
 {\
 	FOR_EACH(UPGRADOR_METHOD_PUSH_BACK, __VA_ARGS__)\
 }
+
+#define START_UPGRADOR(name) \
+	static inline const KigsID	m_ID = #name;\
+	const KigsID& getID() const override {return m_ID; };\
+	typedef name UpgradorType; 
+
+#define DEFINE_UPGRADOR_UPDATE(upgrador) void upgrador##::UpgradorMethods::UpgradorUpdate(const Timer& timer, void* addParam) 
+
 
 class UpgradorBase
 {
@@ -31,19 +47,24 @@ protected:
 	void UpgradeInstance(CoreModifiable* toUpgrade);
 	void DowngradeInstance(CoreModifiable* toDowngrade);
 	UpgradorBase* myNextUpgrador = nullptr;
-	struct UpgradorData
+	// create and init Upgrador if needed, add dynamic attributes, connect things
+	virtual void	Init(CoreModifiable* toUpgrade) { ; }
+
+	// destroy Upgrador and remove dynamic attributes, disconnect things 
+	virtual void	Destroy(CoreModifiable* toDowngrade) {;}
+
+public:
+	virtual ~UpgradorBase()
 	{
+		if (myNextUpgrador)
+		{
+			delete myNextUpgrador;
+			myNextUpgrador = nullptr;
+		}
+	}
+	virtual void	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) = 0;
 
-	};
-
-	UpgradorData* myData = nullptr;
-
-	// create and init UpgradorData if needed and add dynamic attributes
-	virtual void	InitData(CoreModifiable* toUpgrade) { ; }
-
-	// destroy UpgradorData and remove dynamic attributes 
-	virtual void	RemoveData(CoreModifiable* toDowngrade) {;}
-
+	virtual const KigsID& getID() const = 0;
 }; 
 
 template<typename baseclass>
@@ -55,5 +76,7 @@ protected:
 
 public:
 
+
+	
 
 };

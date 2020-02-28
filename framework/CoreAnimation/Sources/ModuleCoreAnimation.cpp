@@ -29,7 +29,6 @@ void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiable
 {
     BaseInit(core,"CoreAnimation",params);
 	core->RegisterMainModuleList(this,CoreAnimationModuleCoreIndex);
-	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(),MiniInstanceFactory,MiniInstanceFactory,MiniInstanceFactory)
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreSequenceLauncher, CoreSequenceLauncher, CoreAnimation)
 	// register actions
 	myPrivateMiniFactory=KigsCore::GetInstanceOf("myPrivateMiniFactory","MiniInstanceFactory");

@@ -10,7 +10,7 @@ void UpgradorBase::UpgradeInstance(CoreModifiable* toUpgrade)
 		toUpgrade->InsertUpgradeMethod(t.first, t.second,this);
 	}
 
-	InitData(toUpgrade);
+	Init(toUpgrade);
 }
 void UpgradorBase::DowngradeInstance(CoreModifiable* toDowngrade)
 {
@@ -20,5 +20,5 @@ void UpgradorBase::DowngradeInstance(CoreModifiable* toDowngrade)
 	{
 		toDowngrade->RemoveMethod(t.first);
 	}
-	RemoveData(toDowngrade);
+	Destroy(toDowngrade);
 }

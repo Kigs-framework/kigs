@@ -17,16 +17,26 @@ void	TestUpgrador::ProtectedInit()
 
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), SimpleClass, SimpleClass, Application);
 
+	REGISTER_UPGRADOR(UpgradeSimple);
+	REGISTER_UPGRADOR(OtherUpgradeSimple);
+
+
 	SP<SimpleClass>	instance1 = KigsCore::GetInstanceOf("instance1", "SimpleClass");
 
 	instance1->setValue("StringValue", "string value");
 	instance1->Init();
 
-	UpgradeSimple* yes = new UpgradeSimple();
-	instance1->Upgrade(yes);
-
+	instance1->Upgrade("UpgradeSimple");
+	instance1->Upgrade("OtherUpgradeSimple");
 
 	instance1->SimpleCall("DoSomethingElse");
+	EmitSignal("Signal");
+
+	instance1->CallUpdate(*GetApplicationTimer().get(),nullptr);
+
+	instance1->SimpleCall("DoSomethingElse");
+	EmitSignal("Signal");
+
 }
 
 void	TestUpgrador::ProtectedUpdate()

@@ -602,17 +602,21 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 		else
 		{
 			// cache upgrador
-			UpgradorBase* cachedUpgrador= localthis->myUpgrador;
+			UpgradorBase* cachedUpgrador = nullptr;
 			
 			if (methodFound->m_Upgrador)
 			{
-				localthis->myUpgrador = methodFound->m_Upgrador;
+				cachedUpgrador = localthis->mLazyContent->myUpgrador;
+				localthis->mLazyContent->myUpgrador = methodFound->m_Upgrador;
 			}
 
 			result = localthis->Call(methodFound->m_Method, sender, params, privateParams);
 
 			// reset cached 
-			localthis->myUpgrador = cachedUpgrador;
+			if (cachedUpgrador)
+			{
+				localthis->mLazyContent->myUpgrador = cachedUpgrador;
+			}
 		}
 		
 	}
@@ -1559,6 +1563,14 @@ void    CoreModifiable::ProtectedDestroy()
 				}
 			}
 		}
+
+		// delete Upgradors
+		if (mLazyContent->myUpgrador)
+		{
+			// linked list, each delete call next delete
+			delete mLazyContent->myUpgrador;
+			mLazyContent->myUpgrador = nullptr;
+		}
 	}
 }
 
@@ -1591,6 +1603,23 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 
 	EmitSignal(Signals::Update, this, (CoreModifiable*)&timer);
 	Update(timer, addParam);
+	// Upgrador updage
+	if (mLazyContent)
+	{
+		UpgradorBase* found = mLazyContent->myUpgrador;
+		while (found)
+		{
+			// set current at first place in the list so cache first one
+			UpgradorBase* cached = mLazyContent->myUpgrador;
+			mLazyContent->myUpgrador = found;
+
+			found->UpgradorUpdate(this,timer,addParam);
+			found = found->myNextUpgrador;
+
+			// reset cached
+			mLazyContent->myUpgrador = cached;
+		}
+	}
 }
 
 //! remove item (son)
@@ -1654,6 +1683,39 @@ void CoreModifiable::NotifyUpdate(const u32 labelid)
 	EmitSignal(Signals::NotifyUpdate, this, labelid); 
 }
 
+void CoreModifiable::Upgrade(const std::string& toAdd)
+{
+	UpgradorBase* newone = (UpgradorBase*)KigsCore::Instance()->GetUpgradorFactory()->CreateClassInstance(toAdd);
+	if(newone)
+		Upgrade(newone);
+}
+void CoreModifiable::Downgrade(const std::string& toRemove)
+{
+	if (!mLazyContent)
+		return;
+
+	UpgradorBase* previous = nullptr;
+	UpgradorBase* found = mLazyContent->myUpgrador;
+
+	while (found)
+	{
+		if (found->getID() == toRemove)
+		{
+			if (previous)
+			{
+				previous->myNextUpgrador = found->myNextUpgrador;
+			}
+			else
+			{
+				mLazyContent->myUpgrador = found->myNextUpgrador;
+			}
+			found->DowngradeInstance(this);
+			break;
+		}
+		previous = found;
+		found = found->myNextUpgrador;
+	}
+}
 
 CoreModifiable* CoreModifiable::getFirstParent(KigsID ParentClassID) const
 {
