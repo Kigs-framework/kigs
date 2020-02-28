@@ -2344,6 +2344,20 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 		}
 		
 	}
+
+	// export Upgrador
+	UpgradorBase* upgradorfound = GetUpgrador();
+	while (upgradorfound)
+	{
+		XMLNode* upgradorNode = new XMLNode();
+		upgradorNode->setType(XML_NODE_ELEMENT);
+		upgradorNode->setName("Upgrd");
+		XMLAttribute* UpgradorAttribute = new XMLAttribute("N", upgradorfound->getID()._id_name);
+		upgradorNode->addAttribute(UpgradorAttribute);
+		currentNode->addChild(upgradorNode);
+		upgradorfound = upgradorfound->myNextUpgrador;
+	}
+
 	savedList.push_back(this);
 	if (unique) AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "ExportUnique", true);
 
