@@ -16,18 +16,17 @@ void	TestUpgrador::ProtectedInit()
 	SetUpdateSleepTime(1);
 
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), SimpleClass, SimpleClass, Application);
+	DECLARE_CLASS_ALIAS(KigsCore::Instance(), ComplexClass, SimpleClass, UpgradeSimple, OtherUpgradeSimple);
 
 	REGISTER_UPGRADOR(UpgradeSimple);
 	REGISTER_UPGRADOR(OtherUpgradeSimple);
 
+#define TEST_EXPORT
 #ifdef TEST_EXPORT
-	SP<SimpleClass>	instance1 = KigsCore::GetInstanceOf("instance1", "SimpleClass");
+	SP<SimpleClass>	instance1 = KigsCore::GetInstanceOf("instance1", "ComplexClass");
 
 	instance1->setValue("StringValue", "string value");
 	instance1->Init();
-
-	instance1->Upgrade("UpgradeSimple");
-	instance1->Upgrade("OtherUpgradeSimple");
 
 	Export("TestUpgrador.xml", instance1.get());
 #else
@@ -42,8 +41,6 @@ void	TestUpgrador::ProtectedInit()
 
 	instance1->SimpleCall("DoSomethingElse");
 	EmitSignal("Signal");
-
-
 
 }
 
