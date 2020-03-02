@@ -27,7 +27,7 @@
 #include "UI/UIImageHighlight.cpp"
 #include "UI/UIItem.cpp"
 #include "UI/UILayout.cpp"
-#include "UI/UIPanel.cpp"
+//#include "UI/UIPanel.cpp"
 #include "UI/UIPopUp.cpp"
 #include "UI/UIRatioKeeper.cpp"
 #include "UI/UIRenderingScreen.cpp"

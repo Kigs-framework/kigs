@@ -79,6 +79,7 @@ public:
 	virtual void SetTexUV(UIVerticesInfo * aQI) {}
 	virtual void SetVertexArray(UIVerticesInfo * aQI) {}
 	virtual void SetColor(UIVerticesInfo * aQI) {}
+	void GetColor(kfloat& R, kfloat& G, kfloat& B, kfloat& A) { R = myColor[0]; G = myColor[1]; B = myColor[2]; A = GetOpacity(); }
 
 	virtual UIVerticesInfo * GetVerticesInfo() { return NULL;/* mQI; */ }
 

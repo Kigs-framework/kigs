@@ -2,20 +2,39 @@
 #include "NotificationCenter.h"
 #include "Timer.h"
 
-IMPLEMENT_CLASS_INFO(UIPopUp)
 
-IMPLEMENT_CONSTRUCTOR(UIPopUp)
+// connect pop up to events and create attributes
+void	PopUpUpgrador::Init(CoreModifiable* toUpgrade)
 {
-	KigsCore::GetNotificationCenter()->addObserver(this, "HidePopUp", "HidePopUp");
-	KigsCore::GetNotificationCenter()->addObserver(this, "ShowPopUp", "ShowPopUp");
+	KigsCore::GetNotificationCenter()->addObserver(toUpgrade, "HidePopUp", "HidePopUp");
+	KigsCore::GetNotificationCenter()->addObserver(toUpgrade, "ShowPopUp", "ShowPopUp");
+
+	toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::INT, "NumSignal", 0);
+	toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "CloseAll", true);
+	toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::INT, "StayOpen", 0);
+	toUpgrade->AddDynamicVectorAttribute("ActiveColor",(float*) &Point3D( 0.2f, 1.0f, 0.2f ),3);
+	toUpgrade->AddDynamicVectorAttribute("UsedColor", (float*)&Point3D(0.4f, 0.4f, 0.4f), 3);
+
 }
 
-UIPopUp:: ~UIPopUp()
+//  remove dynamic attributes and disconnect events
+void	PopUpUpgrador::Destroy(CoreModifiable* toDowngrade)
 {
-	Hide();
+	Hide((UIItem*)toDowngrade);
+
+	KigsCore::GetNotificationCenter()->removeObserver(toDowngrade, "HidePopUp");
+	KigsCore::GetNotificationCenter()->removeObserver(toDowngrade, "ShowPopUp");
+
+	toDowngrade->RemoveDynamicAttribute("NumSignal");
+	toDowngrade->RemoveDynamicAttribute("CloseAll");
+	toDowngrade->RemoveDynamicAttribute("StayOpen");
+	toDowngrade->RemoveDynamicAttribute("ActiveColor");
+	toDowngrade->RemoveDynamicAttribute("UsedColor");
+
 }
 
-DEFINE_METHOD(UIPopUp, HidePopUp)
+// HidePopUp slot
+DEFINE_UPGRADOR_METHOD(PopUpUpgrador, HidePopUp)
 {
 	kstl::string tmp = "";
 	if (privateParams != nullptr)
@@ -28,42 +47,44 @@ DEFINE_METHOD(UIPopUp, HidePopUp)
 		params[0]->getValue(tmp);
 	}
 
-	if (atoi(tmp.c_str()) == myNumSignalPopUp.const_ref())
+	if (atoi(tmp.c_str()) == getValue<int>("NumSignal"))
 	{
-		Hide();
+		GetUpgrador()->Hide(this);
 		// catch if only me to hide
 		return true;
 	}
 	else if (tmp == "true" && sender != this)
 	{
-		Hide();
+		GetUpgrador()->Hide(this);
 	}
 
 
 	return false;
 }
 
-DEFINE_METHOD(UIPopUp, ShowPopUp)
+
+// ShowPopUp slot
+DEFINE_UPGRADOR_METHOD(PopUpUpgrador, ShowPopUp)
 {
 	if (!params.empty())
 	{
 		kstl::string tmp;
 		params[0]->getValue(tmp);
 		
-		if (atoi(tmp.c_str()) == myNumSignalPopUp.const_ref())
+		if (atoi(tmp.c_str()) == getValue<int>("NumSignal"))
 		{
 			if (!myIsHidden)
 			{
-				Hide();
+				GetUpgrador()->Hide(this);
 				return false;
 			}
 			kstl::vector<CoreModifiableAttribute*> mySendParams;
-			mySendParams.push_back(&myCloseAll);
+			mySendParams.push_back(getAttribute("CloseAll"));
 			KigsCore::GetNotificationCenter()->postNotificationName("HidePopUp", mySendParams, this);
 
 			if (sender)
 			{
-				Show(sender);
+				GetUpgrador()->Show(this,sender);
 			}
 		}
 		return false;
@@ -71,38 +92,48 @@ DEFINE_METHOD(UIPopUp, ShowPopUp)
 	return false;
 }
 
-void UIPopUp::Update(const Timer &timer,void* addParam)
+// update ( hide popup if it was open for too long ) 
+DEFINE_UPGRADOR_UPDATE(PopUpUpgrador)
 {
 	kdouble t = timer.GetTime();
-	if (myOpenPopup)
+	if (GetUpgrador()->myOpenPopup)
 	{
-		myTimeOpen = t;
-		myOpenPopup = false;
+		GetUpgrador()->myTimeOpen = t;
+		GetUpgrador()->myOpenPopup = false;
 	}
-	if (t - myTimeOpen >= myTimeStayOpen)
+	if (t - GetUpgrador()->myTimeOpen >= getValue<int>("StayOpen"))
 	{
-		Hide();
-		myTimeOpen = -1.0;
+		GetUpgrador()->Hide(this);
+		GetUpgrador()->myTimeOpen = -1.0;
 	}
 }
-void UIPopUp::Show(CoreModifiable * aActivator)
+
+// internal show method
+void PopUpUpgrador::Show(UIItem* localthis, CoreModifiable * aActivator)
 {
-	myIsHidden = false;
+	localthis->setValue("IsHidden",false);
 	myOpenPopup = true;
 	if (aActivator)
 	{
 		myActivator = aActivator;
 		aActivator->GetRef();
-		myActivator->setArrayValue("Color", &myActiveColor[0], 3);
+
+		v3f activeColor;
+		localthis->getValue("ActiveColor", activeColor);
+		myActivator->setValue("Color", activeColor);
 	}
 }
 
-void UIPopUp::Hide()
+
+// internal hide method
+void PopUpUpgrador::Hide(UIItem* localthis)
 {
-	myIsHidden = true;
+	localthis->setValue("IsHidden", true);
 	if (myActivator)
 	{
-		myActivator->setArrayValue("Color", &myUsedColor[0], 3);
+		v3f usedColor;
+		localthis->getValue("UsedColor", usedColor);
+		myActivator->setValue("Color", usedColor);
 		myActivator->Destroy();
 		myActivator = nullptr;
 	}

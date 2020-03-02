@@ -6,6 +6,7 @@ class Timer;
 
 #include "CoreModifiable.h"
 #include "CoreModifiableAttribute.h"
+#include "MiniInstanceFactory.h"
 
 // ****************************************
 // * ModuleDescription class

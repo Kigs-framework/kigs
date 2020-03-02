@@ -336,20 +336,23 @@ private:
 };
 
 #pragma pack(4)
+
+class UpgradorBase;
+
 struct ModifiableMethodStruct
 {
 
-	ModifiableMethodStruct() : m_Name(""), m_Method(nullptr), m_Function(nullptr)
+	ModifiableMethodStruct() : m_Name(""), m_Method(nullptr), m_Function(nullptr), m_Upgrador(nullptr)
 	{
 
 	}
 
-	ModifiableMethodStruct(const RefCountedClass::ModifiableMethod& m, const std::string& n) : m_Name(n), m_Method(m), m_Function(nullptr)
+	ModifiableMethodStruct(const RefCountedClass::ModifiableMethod& m, const std::string& n, UpgradorBase* up=nullptr) : m_Name(n), m_Method(m), m_Upgrador(up), m_Function(nullptr)
 	{
 		
 	}
 
-	ModifiableMethodStruct(const ModifiableMethodStruct& other) : m_Name(""), m_Method(other.m_Method), m_Function(nullptr)
+	ModifiableMethodStruct(const ModifiableMethodStruct& other) : m_Name(""), m_Method(other.m_Method), m_Function(nullptr), m_Upgrador(nullptr)
 	{
 		if (other.m_Function)
 		{
@@ -360,6 +363,7 @@ struct ModifiableMethodStruct
 		else
 		{
 			m_Name = other.m_Name;
+			m_Upgrador = other.m_Upgrador;
 		}
 		
 	}
@@ -397,6 +401,7 @@ struct ModifiableMethodStruct
 		struct {
 			kstl::string						m_Name;
 			RefCountedClass::ModifiableMethod	m_Method;
+			UpgradorBase*						m_Upgrador;
 		};
 		std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>	m_UnionFunction;
 	};

@@ -6,6 +6,7 @@
 #include "usString.h"
 #include "TecLibs/Tec3D.h"
 #include "SmartPointer.h"
+#include "Upgrador.h"
 
 #include <mutex>
 #include <memory>
@@ -152,6 +153,18 @@ struct LazyContent
 	kigs::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> ConnectedToMe;
 	kigs::unordered_map <KigsID, ModifiableMethodStruct> Methods;
 	std::vector<WeakRef*> WeakRefs;
+	// Upgrador management
+	UpgradorBase* myUpgrador = nullptr;
+
+	~LazyContent()
+	{
+		// linked list so delete only the first one
+		if (myUpgrador)
+		{
+			delete myUpgrador;
+			myUpgrador = nullptr;
+		}
+	}
 };
 
 typedef SmartPointer<CoreModifiable> CMSP;
@@ -564,6 +577,9 @@ public:
 	bool HasMethod(const KigsID& methodNameID) const;
 	// Add a new private method
 	void InsertMethod(KigsID labelID, RefCountedClass::ModifiableMethod method, const std::string& methodName = "" CONNECT_PARAM_DEFAULT);
+	// Add a new private method
+	void InsertUpgradeMethod(KigsID labelID, RefCountedClass::ModifiableMethod method, UpgradorBase* up);
+
 	// Add a new lambda
 	template<typename F>
 	void InsertFunction(KigsID labelID, F&& func);
@@ -822,8 +838,19 @@ public:
 	void debugPrintfTree(int maxindent) { debugPrintfTree(0, maxindent); }
 	void debugPrintfTree(int indent, int maxindent);
 
+	// upgrador management
+	void Upgrade(const std::string& toAdd);
+	void Downgrade(const std::string& toRemove);
 
 protected:
+	// protected upgrador management
+	void Upgrade(UpgradorBase* toAdd)
+	{
+		LazyContent* c = GetLazyContent();
+		toAdd->myNextUpgrador = c->myUpgrador;
+		c->myUpgrador = toAdd;
+		toAdd->UpgradeInstance(this);
+	}
 
 	void Connect(KigsID signal, CoreModifiable* other, KigsID slot CONNECT_PARAM_DEFAULT);
 	void Disconnect(KigsID signal, CoreModifiable* other, KigsID slot);
@@ -950,6 +977,10 @@ protected:
 	// separated import attributes / import sons, so be sure to import attribute first
 	template<typename StringType>
 	static void ImportAttributes(XMLNodeTemplate<StringType>* currentNode, CoreModifiable* currentModifiable, ImportState& importState, std::vector<XMLNodeBase *>& sons);
+
+	template<typename StringType>
+	static void ImportUpgradors(XMLNodeTemplate<StringType>* currentNode, CoreModifiable* currentModifiable, ImportState& importState);
+
 	template<typename StringType>
 	static void ImportSons(const std::vector<XMLNodeBase *>& sons, CoreModifiable* currentModifiable, ImportState& importState);
 
@@ -984,6 +1015,15 @@ protected:
 	//! create and add dynamic attribute except arrays
 	CoreModifiableAttribute*	GenericCreateDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID);
 
+	UpgradorBase* GetUpgrador()
+	{
+		if (mLazyContent)
+		{
+			return mLazyContent->myUpgrador;
+		}
+		return nullptr;
+	}
+
 #ifdef USE_LINK_TYPE
 	/*! add a new link type to the list, second parameter is used to prevent calling it
 	 outside constructor
@@ -1016,6 +1056,8 @@ public:
 	u32 myEditorFlag = 0;
 	LazyContent* GetLazyContentNoCreate() const { return mLazyContent; }
 #endif
+
+
 
 private:
 	friend class CoreModifiableAttribute;
@@ -1092,35 +1134,6 @@ DECLARE_METHOD(XMLCharacterHandler);
 
 #define XMLDelegateMethods		JSonObjectStart,JSonObjectEnd,JSonArrayStart,JSonArrayEnd,JSonParamList
 
-
-
-/*
-class MethodConstructor
-{
-public:
-	MethodConstructor(CoreModifiable* obj, KigsID id, RefCountedClass::ModifiableMethod method)
-	{
-		obj->InsertMethod(id, method);
-	}
-};*/
-
-/*
-class MethodsConstructor
-{
-public:
-	struct MethodCtorParams
-	{
-		MethodCtorParams(CoreModifiable* obj, KigsID id, RefCountedClass::ModifiableMethod method)
-		{
-			obj->InsertMethod(id, method);
-		}
-	};
-
-	MethodsConstructor(std::initializer_list<MethodCtorParams> params)
-	{
-
-	}
-};*/
 
 class PackCoreModifiableAttributes
 {

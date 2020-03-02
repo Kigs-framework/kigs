@@ -6,4 +6,3 @@
 #include "CoreSequenceLauncher.cpp"
 #include "ModuleCoreAnimation.cpp"
 
-#include "Sources/MiniInstanceFactory.cpp"

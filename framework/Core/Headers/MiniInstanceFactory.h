@@ -26,7 +26,7 @@
 #include "Core.h"
 #include "CoreModifiable.h"
 
-#define MiniFactoryRegister(factory,a,b)	{factory->RegisterNewClass(a,(b*)0);}
+#define MiniFactoryRegister(factory,a,b)	{factory->RegisterNewClass<b>(a);}
 
 class	MiniInstanceFactory : public CoreModifiable
 {
@@ -61,7 +61,7 @@ public:
 	};
 
 	template<typename T>
-	void	RegisterNewClass(const kstl::string& name,T* /*dummyParam*/)
+	void	RegisterNewClass(const kstl::string& name)
 	{
 		kstl::map<kstl::string,	FactoryCreateStruct*>::iterator alreadyfound=myFactoryMap.find(name);
 		if(alreadyfound != myFactoryMap.end())
