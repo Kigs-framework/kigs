@@ -1585,6 +1585,8 @@ bool CoreModifiable::removeItem(const CMSP& item)
 	STRINGS_NAME_TYPE emptyLink="";
 #endif
 
+	auto item_ptr = item.get();
+
 	bool found=false, res=false;
 	do
 	{
@@ -1593,7 +1595,7 @@ bool CoreModifiable::removeItem(const CMSP& item)
 		std::vector<ModifiableItemStruct>::iterator end=_items.end();
 		for(; it!=end ; ++it)
 		{
-			if(item == (*it).myItem)
+			if(item_ptr == (*it).myItem.get())
 			{
 #ifdef USE_LINK_TYPE
 				if((*it).myLinkType == -1) // no link name for this item
@@ -1622,11 +1624,9 @@ bool CoreModifiable::removeItem(const CMSP& item)
 		if(found)
 		{
 			res=true;
-			item->removeUser(this);
-			EmitSignal(Signals::RemoveItem, this, item.get());
+			item_ptr->removeUser(this);
+			EmitSignal(Signals::RemoveItem, this, item_ptr);
 			_items.erase(it);
-			
-			
 		}
 	} while(found);
 	
