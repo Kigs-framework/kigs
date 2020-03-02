@@ -1,13 +1,13 @@
 #pragma once
 
-#include "UI/UIPanel.h"
+#include "UI/UIDrawableItem.h"
 #include "AttributePacking.h"
 #include "TouchInputEventManager.h"
 
-class UIScrollable : public UIPanel
+class UIScrollable : public UIDrawableItem
 {
 public:
-	DECLARE_CLASS_INFO(UIScrollable, UIPanel, 2DLayers);
+	DECLARE_CLASS_INFO(UIScrollable, UIDrawableItem, 2DLayers);
 	DECLARE_INLINE_CONSTRUCTOR(UIScrollable) {}
 	
 	bool addItem(const CMSP& item, ItemPosition pos) override;

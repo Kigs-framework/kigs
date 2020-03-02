@@ -1521,6 +1521,25 @@ void    CoreModifiable::ProtectedDestroy()
 {
 	EmitSignal(Signals::Destroy, this);
 
+	if (mLazyContent)
+	{
+		// first downgrade if needed
+		UpgradorBase* found = mLazyContent->myUpgrador;
+		while(found)
+		{
+			UpgradorBase* cachedUpgrador = nullptr;
+			cachedUpgrador = mLazyContent->myUpgrador;
+			mLazyContent->myUpgrador = found;
+			found->DowngradeInstance(this);
+			mLazyContent->myUpgrador = cachedUpgrador;
+			found = found->myNextUpgrador;
+		}
+
+		// delete the first one, to delete all the list
+		delete mLazyContent->myUpgrador;
+		mLazyContent->myUpgrador = nullptr;
+	}
+
 	//! remove all items
 	EmptyItemList();
 	
@@ -1564,13 +1583,7 @@ void    CoreModifiable::ProtectedDestroy()
 			}
 		}
 
-		// delete Upgradors
-		if (mLazyContent->myUpgrador)
-		{
-			// linked list, each delete call next delete
-			delete mLazyContent->myUpgrador;
-			mLazyContent->myUpgrador = nullptr;
-		}
+		
 	}
 }
 
