@@ -11,7 +11,7 @@
 IMPLEMENT_CLASS_INFO(UIScrollView)
 
 UIScrollView::UIScrollView(const kstl::string& name, CLASS_NAME_TREE_ARG) :
-	UIPanel(name, PASS_CLASS_NAME_TREE_ARG)
+	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	xScroll = 0;
 	yScroll = 0;
@@ -112,7 +112,7 @@ bool UIScrollView::scrollTo(kfloat deltaPos)
 }
 void UIScrollView::SetUpNodeIfNeeded()
 {
-	UIPanel::SetUpNodeIfNeeded();
+	UIDrawableItem::SetUpNodeIfNeeded();
 
 	UpdateContentSize();
 }
@@ -133,7 +133,7 @@ bool UIScrollView::Draw(TravState* state)
 	float ratioW = screenW / fsize.x;
 
 	renderer->SetScissorValue((positionX)*ratioW, (int)(screenH - (positionY + myRealSize.y)*ratioH), myRealSize.x*ratioW, myRealSize.y*ratioH);
-	return UIPanel::Draw(state);
+	return UIDrawableItem::Draw(state);
 }
 
 void UIScrollView::UpdateContentSize()

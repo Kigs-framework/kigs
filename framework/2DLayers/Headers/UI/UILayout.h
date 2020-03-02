@@ -1,16 +1,16 @@
 #ifndef _UILayout_H_
 #define _UILayout_H_
 
-#include "UIPanel.h"
+#include "UIDrawableItem.h"
 
 #include "AttributePacking.h"
 
 // Adjust the position of all children according to a layout algorithm
 
-class UILayout : public UIPanel
+class UILayout : public UIDrawableItem
 {
 public:
-	DECLARE_ABSTRACT_CLASS_INFO(UILayout, UIPanel, 2DLayers);
+	DECLARE_ABSTRACT_CLASS_INFO(UILayout, UIDrawableItem, 2DLayers);
 
 	/**
 	* \brief	constructor
