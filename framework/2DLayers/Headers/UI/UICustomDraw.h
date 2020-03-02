@@ -17,7 +17,6 @@ public:
 	DECLARE_CLASS_INFO(UICustomDraw,UIItem,2DLayers);
 	DECLARE_INLINE_CONSTRUCTOR(UICustomDraw) {}
 
-	void								GetColor(kfloat &R,kfloat &G,kfloat &B, kfloat &A) { R=myColor[0]; G=myColor[1]; B=myColor[2]; A=GetOpacity(); }
 	inline UICustomDrawDelegate*		GetDelegate(){return myDelegate;}
 	inline void							SetDelegate(UICustomDrawDelegate* a_value){myDelegate = a_value;}
 

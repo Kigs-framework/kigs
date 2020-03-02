@@ -1,12 +1,12 @@
 #ifndef _UIROUNDHUD_H_
 #define _UIROUNDHUD_H_
 
-#include "UIPanel.h"
+#include "UIDrawableItem.h"
 
-class UIRoundHUD : public UIPanel
+class UIRoundHUD : public UIDrawableItem
 {
 public:
-	DECLARE_CLASS_INFO(UIRoundHUD, UIPanel, 2DLayers);
+	DECLARE_CLASS_INFO(UIRoundHUD, UIDrawableItem, 2DLayers);
 	DECLARE_CONSTRUCTOR(UIRoundHUD);
 
 	SIGNALS(TouchUp, SlotChanged);

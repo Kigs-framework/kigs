@@ -35,7 +35,7 @@
 #include "UI/UIImageHighlight.h"
 #include "UI/UIItem.h"
 #include "UI/UILayout.h"
-#include "UI/UIPanel.h"
+//#include "UI/UIPanel.h"
 #include "UI/UIPopUp.h"
 #include "UI/UIRatioKeeper.h"
 #include "UI/UIRenderingScreen.h"
@@ -71,6 +71,8 @@ Module2DLayers::~Module2DLayers()
 void Module2DLayers::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
 	BaseInit(core, "2DLayers", params);
+
+	REGISTER_UPGRADOR(PopUpUpgrador);
 	
 	DECLARE_FULL_CLASS_INFO(core, AlphaMask, AlphaMask, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, MouseVelocityComputer, MouseVelocityComputer, 2DLayers);
@@ -101,8 +103,12 @@ void Module2DLayers::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	DECLARE_FULL_CLASS_INFO(core, UIImageHighlight, UIImageHighlight, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIItem, UIItem, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UILayout, UILayout, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, UIPanel, UIPanel, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, UIPopUp, UIPopUp, 2DLayers);
+	//DECLARE_FULL_CLASS_INFO(core, UIPanel, UIPanel, 2DLayers);
+	// a UIPanel is just a UIDrawableItem item
+	DECLARE_CLASS_ALIAS(core, UIPanel, UIDrawableItem);
+	//DECLARE_FULL_CLASS_INFO(core, UIPopUp, UIPopUp, 2DLayers);
+	// a UIPopUp is a UIItem with PopUpUpgrador upgrade
+	DECLARE_CLASS_ALIAS(core, UIPopUp, UIItem, PopUpUpgrador);
 	DECLARE_FULL_CLASS_INFO(core, UIRatioKeeper, UIRatioKeeper, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIRenderingScreen, UIRenderingScreen, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIRoundHUD, UIRoundHUD, 2DLayers);

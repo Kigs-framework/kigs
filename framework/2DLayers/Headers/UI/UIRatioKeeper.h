@@ -2,7 +2,7 @@
 #define _UIRATIOKEEPER_H_
 
 #include "UIItem.h"
-#include "UIPanel.h"
+#include "UIDrawableItem.h"
 #include "AttributePacking.h"
 
 
@@ -11,10 +11,10 @@ class RenderingScreen;
 // create a zone in screen where design size ratio is kept
 // add this to root uiitem
 
-class UIRatioKeeper : public UIPanel
+class UIRatioKeeper : public UIDrawableItem
 {
 public:
-	DECLARE_CLASS_INFO(UIRatioKeeper, UIPanel, 2DLayers);
+	DECLARE_CLASS_INFO(UIRatioKeeper, UIDrawableItem, 2DLayers);
 	DECLARE_CONSTRUCTOR(UIRatioKeeper);
 
 	void ForceRecomputeRatio()
