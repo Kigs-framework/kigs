@@ -325,11 +325,6 @@ void KigsCore::Close(bool closeMemoryManager)
 
 		delete [] myCoreInstance->myCoreMainModuleList;
 
-		if(myCoreInstance->myPostDestructionList)
-		{
-			delete myCoreInstance->myPostDestructionList;
-			myCoreInstance->myPostDestructionList=0;
-		}
 
 		if(myCoreInstance->myDecoratorMap)
 		{
@@ -896,32 +891,19 @@ bool	KigsCore::ParseXml(char* buffer,CoreModifiable*	delegateObject,unsigned lon
 	return XMLReaderFile::ReadFile(buffer,delegateObject,buffsize,encoding);
 }
 
-//! manage post destruction (lazy list)
-
+//! manage post destruction
 void KigsCore::ManagePostDestruction()
 {
-	if(myPostDestructionList)
-	{
-		kstl::vector<CoreModifiable*>::iterator it=myPostDestructionList->begin();
-		kstl::vector<CoreModifiable*>::iterator itend=myPostDestructionList->end();
-		while(it!=itend)
-		{
-			(*it)->Destroy();
-			++it;
-		}
-		delete myPostDestructionList;
-		myPostDestructionList=0;
-	}
+	std::lock_guard<std::mutex> lk{ myPostDestructionListMutex };
+	for(auto c : myPostDestructionList)
+		c->Destroy();
+	myPostDestructionList.clear();
 }
 	
 void KigsCore::AddToPostDestroyList(CoreModifiable* c)
 {
-	if(!myPostDestructionList)
-	{
-		myPostDestructionList=new kstl::vector<CoreModifiable*>();
-	}
-
-	myPostDestructionList->push_back(c);
+	std::lock_guard<std::mutex> lk{ myPostDestructionListMutex };
+	myPostDestructionList.push_back(c);
 }
 
 MEMORYMANAGEMENT_START

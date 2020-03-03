@@ -41,6 +41,14 @@ inline concurrency::task<SmartPointer<FileHandle>> MakeHandleFromStorageFile(win
 	co_return result;
 }
 
+inline SmartPointer<FileHandle> MakeHandleFromStorageFileNoCopy(winrt::Windows::Storage::StorageFile file)
+{
+	SmartPointer<FileHandle> result;
+	result = FilePathManager::CreateFileHandle(to_utf8(file.Path().data()));
+	return result;
+}
+
+
 inline auto resume_on_kigs_thread()
 {
 	return winrt::resume_foreground(App::GetApp()->GetWindow().Dispatcher());

@@ -18,7 +18,7 @@ IMPLEMENT_CLASS_INFO(Node3DDelayed)
 #include "imgui.h"
 #endif
 
-using Job = std::pair<CoreModifiable*, std::function<void()>>;
+using Job = std::pair<SP<CoreModifiable>, std::function<void()>>;
 static std::atomic_bool sNode3DThreadStarted = { false };
 
 static moodycamel::BlockingConcurrentQueue<Job> sHighPriorityWorkQueue;
@@ -64,7 +64,6 @@ IMPLEMENT_CONSTRUCTOR(Node3DDelayed)
 					std::this_thread::sleep_for(std::chrono::milliseconds(33));
 				}
 			}
-
 		});
 		th.detach();
 	}
@@ -81,6 +80,7 @@ void Node3DDelayed::InitModifiable()
 	KigsCore::GetCoreApplication()->AddAutoUpdate(this);
 	mBBoxMin.changeNotificationLevel(Owner);
 	mBBoxMax.changeNotificationLevel(Owner);
+	flagAsPostDestroy();
 }
 
 void Node3DDelayed::NotifyUpdate(const unsigned int labelid)
@@ -147,86 +147,12 @@ void Node3DDelayed::GetNodeBoundingBox(Point3D &pmin, Point3D &pmax) const
 	pmax = mBBoxMax;
 }
 
-/*
-void Node3DDelayed::ChangeLoadedState(LoadedState state, bool no_async)
-{
-	auto old_state = mLoadedState.exchange(state);
-	if (old_state == state)
-		return;
-
-	if (old_state == LoadedState::Displayed)
-	{
-		if (mContentAdded)
-		{
-			removeItem(mContent.get());
-			mContentAdded = false;
-		}
-	}
-	
-	if (state == LoadedState::Loaded)
-	{
-		mHideTime = std::chrono::steady_clock::now();
-		return;
-	}
-
-	if (state == LoadedState::Unloaded)
-	{
-		if (mContentAdded)
-		{
-			removeItem(mContent.get());
-			mContentAdded = false;
-		}
-		mContentReady = false;
-		mContent.Reset();
-		return;
-	}
-
-
-	auto job = Job{ this, [this, state]()
-	{
-		if (mLoadedState != state) return;
-		if (state == LoadedState::Loaded || state == LoadedState::Displayed)
-		{
-			if (!mContent)
-				mContent = OwningRawPtrToSmartPtr(Import(mFileName));
-
-			mContentReady = true;
-		}
-		else
-		{
-			mContentReady = false;
-		}
-	} };
-
-	if (!no_async)
-	{
-		if(mHighPrio)
-			sHighPriorityWorkQueue.enqueue(std::move(job));
-		else
-			sLowPriorityWorkQueue.enqueue(std::move(job));
-	}
-	else
-		job.second();
-	
-	if(state == LoadedState::Displayed)
-	{
-		mDrawCounter = 0;
-		if(mContentReady)
-		{
-			addItem(mContent.get());
-			mContentAdded = true;
-			return;
-		}
-	}
-}
-*/
-
 void Node3DDelayed::LoadContent(bool no_async)
 {
 	LoadState exp = LoadState::NotLoaded;
 	if (mLoadState.compare_exchange_strong(exp, LoadState::InQueue))
 	{
-		auto job = Job{ this, [this]()
+		auto job = Job{ NonOwningRawPtrToSmartPtr(this), [this]()
 		{
 			LoadState exp = LoadState::InQueue;
 			if (mLoadState.compare_exchange_strong(exp, LoadState::Loading))
