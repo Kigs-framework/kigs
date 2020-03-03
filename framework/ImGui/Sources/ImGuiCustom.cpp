@@ -27,4 +27,10 @@ namespace ImGui
 		if (size.y == 0) size.y = tex_size.y;
 		ImGui::Image((ImTextureID)tex, size, v2f(uv0)*mult, v2f(uv1)*mult, tint_col, border_col);
 	}
+
+	void CenterWidget(float widget_width)
+	{
+		auto centered_x = (ImGui::GetWindowWidth() - widget_width) / 2;
+		ImGui::Dummy(v2f(centered_x, 0)); ImGui::SameLine();
+	}
 }
