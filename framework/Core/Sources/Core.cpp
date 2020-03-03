@@ -17,6 +17,7 @@
 #include "CoreItemOperator.h"
 
 #include "AttributeModifier.h"
+#include "MiniInstanceFactory.h"
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
 #include "Platform/Core/PlatformCore.h"
@@ -258,6 +259,7 @@ MEMORYMANAGEMENT_END
 	DECLARE_FULL_CLASS_INFO(myCoreInstance, DictionaryFromJson, DictionaryFromJson, KigsCore)
 	DECLARE_FULL_CLASS_INFO(myCoreInstance, DictionaryFromJsonUTF16, DictionaryFromJsonUTF16, KigsCore)
 	DECLARE_FULL_CLASS_INFO(myCoreInstance, LocalizationManager, LocalizationManager, KigsCore);
+	DECLARE_FULL_CLASS_INFO(myCoreInstance, MiniInstanceFactory, MiniInstanceFactory, KigsCore)
 
 	kstl::vector<SpecificOperator> specificList;
 	SpecificOperator toAdd;
@@ -266,6 +268,11 @@ MEMORYMANAGEMENT_END
 	specificList.push_back(toAdd);
 
 	CoreItemOperator<kfloat>::ConstructContextMap(myCoreInstance->myCoreItemOperatorCreateMethodMap, &specificList);
+
+
+	 CMSP createUpgradorFactory=GetInstanceOf("UpgradorFactory", "MiniInstanceFactory");
+	 createUpgradorFactory->GetRef();
+	 myCoreInstance->myUpgradorFactory = (MiniInstanceFactory*)createUpgradorFactory.get();
 
 /*	AddToAutoRegister({}, "Core");
 	AddToAutoRegister({}, "StandAlone");*/
@@ -290,6 +297,9 @@ void KigsCore::Close(bool closeMemoryManager)
 
 	if(myCoreInstance)
 	{
+		myCoreInstance->myUpgradorFactory->Destroy();
+		myCoreInstance->myUpgradorFactory = nullptr;
+
 		myCoreInstance->CleanSingletonMap();
 		delete myCoreInstance->mySingletonMap;
 		myCoreInstance->mySingletonMap = 0;

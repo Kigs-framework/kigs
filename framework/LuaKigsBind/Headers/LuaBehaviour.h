@@ -77,7 +77,7 @@ protected:
 	WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback);
 
 	DECLARE_METHOD(ReloadScript);
-
+	COREMODIFIABLE_METHODS(ReloadScript);
 };    
 
 #endif //_LUABEHAVIOUR_H_

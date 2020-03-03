@@ -13,7 +13,7 @@ InstanceFactory::InstanceFactory(KigsCore* core)
 }
 
 //! create an instance of the given class type with the given instance name    
-bool  InstanceFactory::GetModuleIDFromClassName(KigsID className, KigsID& ModuleName)
+bool  InstanceFactory::GetModuleIDFromClassName(const KigsID& className, KigsID& ModuleName)
 {
 	KigsCore::Instance()->GetSemaphore();
 
@@ -36,14 +36,22 @@ bool  InstanceFactory::GetModuleIDFromClassName(KigsID className, KigsID& Module
 }    
 
 //! create an instance of the given class type with the given instance name    
-CoreModifiable*    InstanceFactory::GetInstance(const kstl::string& instancename, KigsID className, kstl::vector<CoreModifiableAttribute*>* args)
+CoreModifiable*    InstanceFactory::GetInstance(const kstl::string& instancename,const KigsID& className, kstl::vector<CoreModifiableAttribute*>* args)
 {
+	KigsID	realClassName(className);
+	// check alias
+	auto aliasFound = myAliasList.find(className);
+	if (aliasFound != myAliasList.end())
+	{
+		realClassName = (*aliasFound).second[0];
+	}
+
 	//! for each module try to find the class type
 	KigsCore::Instance()->GetSemaphore();
 	createMethod method=0;
 	for(auto& it : myModuleList)
 	{
-		method = it.second.GetCreateMethod(className);
+		method = it.second.GetCreateMethod(realClassName);
 		//! if class type is found then return a new instance
 		if(method)
 		{
@@ -54,7 +62,17 @@ CoreModifiable*    InstanceFactory::GetInstance(const kstl::string& instancename
 	if (method)
 	{
 		CoreModifiable* L_tmp = (method)(instancename, args);
-		if (L_tmp && myEventClassList.find(className) != myEventClassList.end())
+		
+		// add upgrador if needed
+		if (aliasFound != myAliasList.end())
+		{
+			for (int i = 1; i < (*aliasFound).second.size(); i++)
+			{
+				L_tmp->Upgrade((*aliasFound).second[i]);
+			}
+		}
+
+		if (L_tmp && myEventClassList.find(realClassName) != myEventClassList.end())
 			KigsCore::GetNotificationCenter()->postNotificationName("Create_CoreModifiable", 0, L_tmp);
 
 		// add callback on objects
@@ -70,7 +88,7 @@ CoreModifiable*    InstanceFactory::GetInstance(const kstl::string& instancename
 }    
 
 //! utility method : add a class (in fact a pointer to the create method) to to class map for this module
-void    InstanceFactory::ModuleAssociation::RegisterClass(createMethod method, KigsID className)
+void    InstanceFactory::ModuleAssociation::RegisterClass(createMethod method,const KigsID& className)
 {
 	myClassMap[className] = method;
 }
@@ -113,7 +131,7 @@ void InstanceFactory::registerCallbackList(CoreModifiable* created)
 	}
 }
 
-createMethod  InstanceFactory::ModuleAssociation::GetCreateMethod(KigsID classname) const
+createMethod  InstanceFactory::ModuleAssociation::GetCreateMethod(const KigsID& classname) const
 {
 	auto it = myClassMap.find(classname);
 	if (it != myClassMap.end())
@@ -130,7 +148,7 @@ createMethod  InstanceFactory::ModuleAssociation::GetCreateMethod(KigsID classna
 }    
 
 //! register a new class to instance factory
-void    InstanceFactory::RegisterClass(createMethod method, KigsID className, const kstl::string& moduleName)
+void    InstanceFactory::RegisterClass(createMethod method,const KigsID& className, const kstl::string& moduleName)
 {
 	myModuleList[moduleName].RegisterClass(method, className);
 }  

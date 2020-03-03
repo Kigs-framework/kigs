@@ -357,8 +357,12 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 
 	if (current && !reused_unique_instance)
 	{
+		// import upgradors first
+		ImportUpgradors(currentNode, current.get(), importState);
 		std::vector<XMLNodeBase*>	sons;
 		sons.clear();
+
+
 		ImportAttributes(currentNode, current.get(), importState, sons);
 
 		// manage shared instances
@@ -475,6 +479,24 @@ CMSP CoreModifiable::InitReference(XMLNodeTemplate< StringType >* currentNode, s
 }
 
 template<typename StringType>
+void 	CoreModifiable::ImportUpgradors(XMLNodeTemplate<StringType>* node, CoreModifiable* currentModifiable, ImportState& importState)
+{
+	for (s32 i = 0; i < node->getChildCount(); i++)
+	{
+		XMLNodeTemplate<StringType>* sonXML = node->getChildElement(i);
+		if (sonXML->getType() == XML_NODE_ELEMENT)
+		{
+			if (sonXML->getName() == "Upgrd")
+			{
+				XMLAttributeTemplate<StringType>* attr = sonXML->getAttribute("N", "Name");
+				std::string name(attr->getString());
+				currentModifiable->Upgrade(name);
+			}
+		}
+	}
+}
+
+template<typename StringType>
 void 	CoreModifiable::ImportAttributes(XMLNodeTemplate<StringType>* node, CoreModifiable* currentModifiable, ImportState& importState, std::vector<XMLNodeBase*>& sons)
 {
 	for (s32 i = 0; i < node->getChildCount(); i++)
@@ -568,6 +590,10 @@ void 	CoreModifiable::ImportAttributes(XMLNodeTemplate<StringType>* node, CoreMo
 
 					theInputModule->SimpleCall("registerTouchEvent", currentModifiable, MethodNameAttribute->getString(), EventNameAttribute->getString(), flag);
 				}
+			}
+			else if (sonXML->getName() == "Upgrd")
+			{
+				// already done
 			}
 			else
 			{

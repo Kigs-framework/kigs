@@ -16,7 +16,7 @@ public:
 	 */
 	UIText(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	void					GetColor(kfloat &R, kfloat &G, kfloat &B, kfloat &A) { R = myColor[0]; G = myColor[1]; B = myColor[2]; A = GetOpacity(); }
+
 	void					GetStrokeColor(kfloat &R, kfloat &G, kfloat &B, kfloat &A) { R = myStrokeColor[0]; G = myStrokeColor[1]; B = myStrokeColor[2]; A = myStrokeColor[3]; }
 
 	inline void				SetAlignment(unsigned int a) { myTextAlign = a; }
@@ -45,7 +45,7 @@ protected:
 	virtual void	ChangeText(const usString& newText);
 	
 	DECLARE_METHOD(ReloadTexture);
-	
+	COREMODIFIABLE_METHODS(ReloadTexture);
 	unsigned short*			CutText(const unsigned short* text, bool& flag);
 
 	maUSString				myText;

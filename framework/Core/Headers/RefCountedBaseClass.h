@@ -468,6 +468,7 @@ REGISTER_CLASS_INFO(currentClass<templatetype>, returnClassName, group)*/
 	currentClass::GetClassNameTree(TypeBranch);\
 	kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>> MethodTable;\
 	currentClass::GetMethodTable(MethodTable);\
+	currentClass::GetNotWrappedMethodTable(MethodTable);\
 	KigsCore::RegisterType(TypeBranch, MethodTable);\
 }
 
@@ -475,7 +476,9 @@ REGISTER_CLASS_INFO(currentClass<templatetype>, returnClassName, group)*/
 RegisterClassToInstanceFactory(core,#moduleManagerName, #returnclassname,&currentClass::CreateInstance); \
 DECLARE_CLASS_INFO_WITHOUT_FACTORY(currentClass,#returnclassname)
 
-
+#define ADD_ALIAS(name) ,#name
+#define DECLARE_CLASS_ALIAS(core,alias,baseclass,...) \
+{core->GetInstanceFactory()->addAlias(#alias,{#baseclass FOR_EACH(ADD_ALIAS,__VA_ARGS__)});}
 
 #define DECLARE_CONSTRUCTOR(currentClass) currentClass(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 #define DECLARE_INLINE_CONSTRUCTOR(currentClass) currentClass(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG) : currentClass::ParentClassType(name, PASS_CLASS_NAME_TREE_ARG)

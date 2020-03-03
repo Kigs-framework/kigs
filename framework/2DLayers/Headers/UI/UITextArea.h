@@ -43,7 +43,7 @@ public:
 	virtual void	ReloadTexture();
 
 	DECLARE_METHOD(UpdateKeyBoard);
-
+	COREMODIFIABLE_METHODS(UpdateKeyBoard);
 protected:
 	virtual		~UITextArea();
 

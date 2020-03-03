@@ -12,6 +12,8 @@ public:
 
 protected:
 
+	// There's no need to list again GiveInfos with COREMODIFIABLE_METHODS 
+	// as it was listed in parent class SimpleClass2
 	DECLARE_VIRTUAL_METHOD(GiveInfos);
 
 
@@ -22,5 +24,6 @@ protected:
 
 	// Multiply method can be called with SimpleCall
 	WRAP_METHODS(Multiply);
+
 };
 

@@ -52,24 +52,27 @@ class RefCountedClass;
 #define DEFINE_METHOD(currentclass,name)  bool currentclass::name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams)
 
 
-#define DECLARE_METHOD(name)	bool	name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams);\
-MethodConstructor name##Constructor = { this, #name, static_cast<RefCountedClass::ModifiableMethod>(&CurrentClassType::name)};
-#define DECLARE_VIRTUAL_METHOD(name)	virtual bool	name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams);\
-MethodConstructor name##Constructor = { this, #name, static_cast<RefCountedClass::ModifiableMethod>(&CurrentClassType::name)};
-#define DECLARE_PURE_VIRTUAL_METHOD(name)	virtual bool	name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams)=0;\
-MethodConstructor name##Constructor = { this, #name, static_cast<RefCountedClass::ModifiableMethod>(&CurrentClassType::name)};
-#define CONSTRUCT_METHOD(currentclass, name)
+#define DECLARE_METHOD(name)						bool	name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams);
+#define DECLARE_VIRTUAL_METHOD(name)		virtual bool	name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams);
+#define DECLARE_PURE_VIRTUAL_METHOD(name)	virtual bool	name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams)=0;
+#define DECLARE_OVERRIDE_METHOD(name)		virtual bool	name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams) override;
 
-#define WRAP_METHOD(name) inline bool	name##Wrap(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams){\
-	kigs_impl::UnpackAndCall(&CurrentClassType::name, this, sender, params); return false; }\
-MethodConstructor name##WrapConstructor = { this, #name, static_cast<RefCountedClass::ModifiableMethod>(&CurrentClassType::name##Wrap)};
+
+#define NOT_WRAPPED_METHOD_PUSH_BACK(name) table.push_back({ #name, static_cast<RefCountedClass::ModifiableMethod>(&CurrentClassType::name) });
+
+#define COREMODIFIABLE_METHODS(...) \
+public:\
+static void GetNotWrappedMethodTable(kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& table)\
+{\
+	ParentClassType::GetNotWrappedMethodTable(table);\
+	FOR_EACH(NOT_WRAPPED_METHOD_PUSH_BACK, __VA_ARGS__)\
+}
+
 
 #define WRAP_METHOD_NO_CTOR(name) inline bool	name##Wrap(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams){\
 	kigs_impl::UnpackAndCall(&CurrentClassType::name, this, sender, params); return false; }
 
 
-#define WRAP_METHODS_CTOR_PARAMS(name) MethodsConstructor::MethodCtorParams(this, #name, static_cast<RefCountedClass::ModifiableMethod>(&CurrentClassType::name##Wrap)), 
-//#define WRAP_METHODS(...) FOR_EACH(WRAP_METHOD_NO_CTOR, __VA_ARGS__) MethodsConstructor CONCAT_TOKENS(MultiConstructor_, __COUNTER__) = { FOR_EACH(WRAP_METHODS_CTOR_PARAMS, __VA_ARGS__) };
 #define METHOD_PUSH_BACK(name) table.push_back({ #name, static_cast<RefCountedClass::ModifiableMethod>(&CurrentClassType::name##Wrap) });
 
 // Need #include "AttributePacking.h"
@@ -80,12 +83,6 @@ static void GetMethodTable(kstl::vector<std::pair<KigsID, RefCountedClass::Modif
 	ParentClassType::GetMethodTable(table);\
 	FOR_EACH(METHOD_PUSH_BACK, __VA_ARGS__)\
 }
-
-
-#define DECLARE_OVERRIDE_METHOD(name) virtual bool	name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams) override;\
-MethodConstructor name##Constructor = { this, #name, static_cast<RefCountedClass::ModifiableMethod>(&CurrentClassType::name)};
-
-
 
 
 #define DEFINE_DYNAMIC_METHOD(currentclass,name)  class DynamicMethod##name : public currentclass \
@@ -184,6 +181,7 @@ public:
 	static void GetClassNameTree(CoreClassNameTree& classNameTree) { RefCountedBaseClass::GetClassNameTree(classNameTree); classNameTree.addClassName(RefCountedClass::myClassID, RefCountedClass::myRuntimeType); }
 
 	static void GetMethodTable(kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& method_table){}
+	static void GetNotWrappedMethodTable(kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& method_table) {}
 
 	//! unique ID for an instance
 	typedef intptr_t InstanceUniqueID;
@@ -338,20 +336,23 @@ private:
 };
 
 #pragma pack(4)
+
+class UpgradorBase;
+
 struct ModifiableMethodStruct
 {
 
-	ModifiableMethodStruct() : m_Name(""), m_Method(nullptr), m_Function(nullptr)
+	ModifiableMethodStruct() : m_Name(""), m_Method(nullptr), m_Function(nullptr), m_Upgrador(nullptr)
 	{
 
 	}
 
-	ModifiableMethodStruct(const RefCountedClass::ModifiableMethod& m, const std::string& n) : m_Name(n), m_Method(m), m_Function(nullptr)
+	ModifiableMethodStruct(const RefCountedClass::ModifiableMethod& m, const std::string& n, UpgradorBase* up=nullptr) : m_Name(n), m_Method(m), m_Upgrador(up), m_Function(nullptr)
 	{
 		
 	}
 
-	ModifiableMethodStruct(const ModifiableMethodStruct& other) : m_Name(""), m_Method(other.m_Method), m_Function(nullptr)
+	ModifiableMethodStruct(const ModifiableMethodStruct& other) : m_Name(""), m_Method(other.m_Method), m_Function(nullptr), m_Upgrador(nullptr)
 	{
 		if (other.m_Function)
 		{
@@ -362,6 +363,7 @@ struct ModifiableMethodStruct
 		else
 		{
 			m_Name = other.m_Name;
+			m_Upgrador = other.m_Upgrador;
 		}
 		
 	}
@@ -399,6 +401,7 @@ struct ModifiableMethodStruct
 		struct {
 			kstl::string						m_Name;
 			RefCountedClass::ModifiableMethod	m_Method;
+			UpgradorBase*						m_Upgrador;
 		};
 		std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>	m_UnionFunction;
 	};

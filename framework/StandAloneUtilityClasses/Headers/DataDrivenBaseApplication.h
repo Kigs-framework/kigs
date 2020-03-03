@@ -92,8 +92,6 @@ public:
 	//Called when you want to change the state
 	void	RequestStateChange(State_t NewState);
 
-	WRAP_METHOD(RequestStateChange);
-
 	void RequestBackToPreviousState();
 
 	inline State_t			GetState() { return m_StateStack.back(); }
@@ -139,13 +137,16 @@ protected:
 	DECLARE_VIRTUAL_METHOD(StackSequence);
 	DECLARE_VIRTUAL_METHOD(BackSequence);
 
+	COREMODIFIABLE_METHODS(ChangeSequence, StackSequence, BackSequence);
+
+
 	void WrapChangeSequence(CoreModifiable*, usString);
 	void WrapStackSequence(CoreModifiable*, usString);
 
 	void SetSequence(CoreModifiable*, const std::string&);
 	void PushSequence(CoreModifiable*, const std::string&);
 
-	WRAP_METHODS(WrapChangeSequence, WrapStackSequence, SetSequence, PushSequence);
+	WRAP_METHODS(WrapChangeSequence, WrapStackSequence, SetSequence, PushSequence, RequestStateChange);
 
 	maString			myStartingSequence = BASE_ATTRIBUTE(StartingSequence, "");
 
@@ -198,7 +199,7 @@ protected:
 
 
 	DECLARE_VIRTUAL_METHOD(Exit);
-
+	COREMODIFIABLE_METHODS(Exit);
 	// base data driven app modules and classes
 	CoreModifiable*		myGUI;
 	CoreModifiable*		myRenderer;

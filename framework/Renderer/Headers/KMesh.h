@@ -1713,6 +1713,8 @@ namespace KigsFramework
 
 		DECLARE_METHOD(GetTexCoordPointer);
 
+		COREMODIFIABLE_METHODS(GetVertexPointer, GetColorPointer, GetNormalPointer, GetTexCoordPointer);
+
 		/**
 		* \brief	update the mesh if one of its componants has changed
 		* \fn 		virtual void	UpdateMesh(){;}

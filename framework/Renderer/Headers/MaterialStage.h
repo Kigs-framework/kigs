@@ -27,6 +27,8 @@ public:
 protected:
 	DECLARE_METHOD(ResetContext);
 
+	COREMODIFIABLE_METHODS(ResetContext);
+
 	maInt			myTexEnv = BASE_ATTRIBUTE(TexEnv, 0);
 	maUInt			myTextureChannel = BASE_ATTRIBUTE(TextureChannel, 0);
 }; 

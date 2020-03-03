@@ -38,6 +38,7 @@ public:
 
 protected:
 	DECLARE_METHOD(Snapshot);
+	COREMODIFIABLE_METHODS(Snapshot);
 
 	void DelayedInit();
 	void ReleaseResources();

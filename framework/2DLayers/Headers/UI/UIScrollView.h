@@ -2,7 +2,7 @@
 #define _FEUILLETONGROUP_H_
 
 #include "UI/UIControlBoxForScrollViewUI.h"
-#include "UIPanel.h"
+#include "UIDrawableItem.h"
 #include "RenderingScreen.h"
 #include "RendererIncludes.h"
 #include "RendererDefines.h"
@@ -11,11 +11,11 @@
 #include "ModuleInput.h"
 
 
-class UIScrollView : public UIPanel
+class UIScrollView : public UIDrawableItem
 {
 
 public:
-	DECLARE_CLASS_INFO(UIScrollView, UIPanel, Renderer);
+	DECLARE_CLASS_INFO(UIScrollView, UIDrawableItem, Renderer);
 
 	UIScrollView(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	~UIScrollView();

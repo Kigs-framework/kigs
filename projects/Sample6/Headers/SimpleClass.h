@@ -21,6 +21,6 @@ protected:
 
 	// fixed prototype CoreModifiable method
 	DECLARE_METHOD(doSomething);
-
+	COREMODIFIABLE_METHODS(doSomething);
 };
 

@@ -1,49 +1,45 @@
 #pragma once
 #include "UI/UIItem.h"
 
+#include "Upgrador.h"
+
+
 // ****************************************
-// * UIPopUp class
+// * UIPopUp Upgrador
 // * --------------------------------------
 /**
 * \file	UIPopUp.h
 * \class	UIPopUp
 * \ingroup 2DLayers
-* \brief	This is the class for a pop-up
-* \author	König Jolan
-* \version ukn
-* \date	04/07/16
+* \brief	This is the upgrador class for a pop-up
 *
 * A pop up appear when there is a notification "ShowPopUp" with numSignalPopUp as parameter and disapear when there is a notification "HidePopUp",
-* or when the time in TimeStayOpen is over. 
+* or when the time in TimeStayOpen is over.
 *
 */
 // ****************************************
 
-class UIPopUp : public UIItem
+class PopUpUpgrador : public Upgrador<UIItem>
 {
 public:
-	DECLARE_CLASS_INFO(UIPopUp, UIItem, 2DLayers);
-	DECLARE_CONSTRUCTOR(UIPopUp);
 
-	DECLARE_VIRTUAL_METHOD(HidePopUp);
-	DECLARE_VIRTUAL_METHOD(ShowPopUp);
+	// create and init Upgrador if needed and add dynamic attributes
+	virtual void	Init(CoreModifiable* toUpgrade) override;
 
-protected:
-	virtual ~UIPopUp();
-	void Update(const Timer&  timer, void* addParam) override;
+	// destroy UpgradorData and remove dynamic attributes 
+	virtual void	Destroy(CoreModifiable* toDowngrade) override;
 
-	void Show(CoreModifiable * aActivator);
-	void Hide();
+	START_UPGRADOR(PopUpUpgrador);
+	UPGRADOR_METHODS(HidePopUp, ShowPopUp);
 
-	maInt myNumSignalPopUp = BASE_ATTRIBUTE(NumSignal, 0);
-	maVect3DF myActiveColor = BASE_ATTRIBUTE(ActiveColor, 0.2f, 1.0f, 0.2f);
-	maVect3DF myUsedColor = BASE_ATTRIBUTE(UsedColor, 0.4f, 0.4f, 0.4f);
-	maBool myCloseAll = BASE_ATTRIBUTE(CloseAll, true);
-	maInt myTimeStayOpen = BASE_ATTRIBUTE(StayOpen, 0);
+protected:	
 
+	void Show(UIItem* localthis,CoreModifiable* aActivator);
+	void Hide(UIItem* localthis);
+
+	// upgrador member variable
 	kdouble myTimeOpen = 0;
 	bool myOpenPopup = false;
-
-	CoreModifiable * myActivator = nullptr;
+	CoreModifiable* myActivator = nullptr;
 };
 
