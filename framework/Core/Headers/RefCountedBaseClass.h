@@ -477,7 +477,11 @@ RegisterClassToInstanceFactory(core,#moduleManagerName, #returnclassname,&curren
 DECLARE_CLASS_INFO_WITHOUT_FACTORY(currentClass,#returnclassname)
 
 #define ADD_ALIAS(name) ,#name
-#define DECLARE_CLASS_ALIAS(core,alias,baseclass,...) \
+
+#define DECLARE_CLASS_ALIAS(core,alias,baseclass) \
+{core->GetInstanceFactory()->addAlias(#alias,{#baseclass});}
+
+#define DECLARE_CLASS_ALIAS_AND_UPGRADE(core,alias,baseclass,...) \
 {core->GetInstanceFactory()->addAlias(#alias,{#baseclass FOR_EACH(ADD_ALIAS,__VA_ARGS__)});}
 
 #define DECLARE_CONSTRUCTOR(currentClass) currentClass(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);

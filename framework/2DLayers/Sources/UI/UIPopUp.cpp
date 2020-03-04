@@ -12,8 +12,10 @@ void	PopUpUpgrador::Init(CoreModifiable* toUpgrade)
 	toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::INT, "NumSignal", 0);
 	toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "CloseAll", true);
 	toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::INT, "StayOpen", 0);
-	toUpgrade->AddDynamicVectorAttribute("ActiveColor",(float*) &Point3D( 0.2f, 1.0f, 0.2f ),3);
-	toUpgrade->AddDynamicVectorAttribute("UsedColor", (float*)&Point3D(0.4f, 0.4f, 0.4f), 3);
+	Point3D p(0.2f, 1.0f, 0.2f);
+	toUpgrade->AddDynamicVectorAttribute("ActiveColor",(float*) &p.x,3);
+	p.Set(0.4f, 0.4f, 0.4f);
+	toUpgrade->AddDynamicVectorAttribute("UsedColor", (float*)&p.x, 3);
 
 }
 

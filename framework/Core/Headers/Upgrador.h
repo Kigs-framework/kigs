@@ -6,7 +6,7 @@
 class CoreModifiable;
 class Timer;
 
-#define DEFINE_UPGRADOR_METHOD(upgrador,name) DEFINE_METHOD(upgrador##::UpgradorMethods,name)
+#define DEFINE_UPGRADOR_METHOD(upgrador,name) DEFINE_METHOD(upgrador::UpgradorMethods,name)
 
 #define ADD_UPGRADOR_METHOD(methodname,callingname) toUpgrade->InsertMethod(#callingname,static_cast<RefCountedClass::ModifiableMethod>(&UpgradorMethods::methodname));
 
@@ -14,7 +14,7 @@ class Timer;
 #define UPGRADOR_METHOD_PUSH_BACK(name) table.push_back({ #name, static_cast<RefCountedClass::ModifiableMethod>(&UpgradorMethods::name) });
 
 // Need #include "AttributePacking.h"
-#define UPGRADOR_METHODS(...) class UpgradorMethods : public baseclass \
+#define UPGRADOR_METHODS(...) class UpgradorMethods : public currentBaseClass \
 { \
  public:\
 	UpgradorType* GetUpgrador(){return (UpgradorType*)CoreModifiable::GetUpgrador();}\
@@ -36,7 +36,7 @@ virtual void GetMethodTable(kstl::vector<std::pair<KigsID, RefCountedClass::Modi
 	const KigsID& getID() const override {return m_ID; };\
 	typedef name UpgradorType; 
 
-#define DEFINE_UPGRADOR_UPDATE(upgrador) void upgrador##::UpgradorMethods::UpgradorUpdate(const Timer& timer, void* addParam) 
+#define DEFINE_UPGRADOR_UPDATE(upgrador) void upgrador::UpgradorMethods::UpgradorUpdate(const Timer& timer, void* addParam) 
 
 
 class UpgradorBase
@@ -72,7 +72,7 @@ class Upgrador : public UpgradorBase
 {
 protected:
 
-	typedef baseclass baseclass;
+	typedef baseclass currentBaseClass;
 
 public:
 

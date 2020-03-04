@@ -115,7 +115,16 @@ public:
 
 	void	addAlias(const std::string& alias, const std::vector<std::string>& list)
 	{
-		myAliasList[alias] = list;
+		std::vector<std::string> validateList;
+		for (const auto& a : list)
+		{
+			if(a != "")
+			{
+				validateList.push_back(a);
+			}
+		}
+		if(validateList.size())
+			myAliasList[alias] = validateList;
 	}
 
 protected:
