@@ -20,10 +20,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
     <TargetName>com.assoria.Sample5</TargetName>
+    <AndroidAPILevel>android-19</AndroidAPILevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
     <TargetName>com.assoria.Sample5</TargetName>
+    <AndroidAPILevel>android-19</AndroidAPILevel>
   </PropertyGroup>
   <Import Project="$(AndroidTargetsPath)\Android.props" />
   <ImportGroup Label="ExtensionSettings" />
@@ -33,22 +35,24 @@
     <AntPackage>
       <AndroidAppLibName>$(RootNamespace)</AndroidAppLibName>
       <ApplicationName>$(TargetName)</ApplicationName>
-      <AdditionalOptions>-Dkigsmain.dir=$(ProjectDir)../../../Build/$(PlatformName)/$(ConfigurationName)/ -S</AdditionalOptions>
+      <AdditionalOptions>-Dkigsmain.dir=$(ProjectDir)../../../../Build/$(PlatformName)/$(ConfigurationName)/ -S</AdditionalOptions>
     </AntPackage>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <AntPackage>
       <AndroidAppLibName>$(RootNamespace)</AndroidAppLibName>
       <ApplicationName>$(TargetName)</ApplicationName>
-      <AdditionalOptions>-Dkigsmain.dir=$(ProjectDir)../../../Build/$(PlatformName)/$(ConfigurationName)/ -S</AdditionalOptions>
+      <AdditionalOptions>-Dkigsmain.dir=$(ProjectDir)../../../../Build/$(PlatformName)/$(ConfigurationName)/ -S</AdditionalOptions>
     </AntPackage>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Content Include="assets\AppInit.xml" />
     <Content Include="assets\Calibri.ttf" />
+    <Content Include="assets\KigsHD.png" />
     <Content Include="assets\LaunchScreen.xml" />
     <Content Include="assets\Logo.png" />
     <Content Include="assets\Screen_Main.xml" />
+    <Content Include="assets\testCoreItemExport.xml" />
     <Content Include="res\drawable-hdpi\ic_launcher.png" />
     <Content Include="res\drawable-mdpi\ic_launcher.png" />
     <Content Include="res\drawable-xhdpi\ic_launcher.png" />
@@ -77,7 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\framework\PlatformsModules\Android\Platform\Main\kigsmain\assoria.kigsmain.androidproj" />
-    <ProjectReference Include="..\..\..\Build\solutionAndroidCMake\kigsProject\Sample5\Sample5.vcxproj" />
+    <ProjectReference Include="..\..\..\..\Build\solutionAndroidVSCMake\kigs\projects\Sample5\Sample5.vcxproj" />
   </ItemGroup>
   <Import Project="$(AndroidTargetsPath)\Android.targets" />
   <ImportGroup Label="ExtensionTargets" />

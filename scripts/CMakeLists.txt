@@ -394,7 +394,7 @@ elseif(${KIGS_PLATFORM} STREQUAL "WUP")
 elseif(${KIGS_PLATFORM} STREQUAL "Android")
 	target_sources(BaseExecutable 
 		INTERFACE 
-			"${KIGS_PRIVATE_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/main.cpp")
+			"${KIGS_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/main.cpp")
 elseif(${KIGS_PLATFORM} STREQUAL "Javascript")
 	target_sources(BaseExecutable 
 		INTERFACE 

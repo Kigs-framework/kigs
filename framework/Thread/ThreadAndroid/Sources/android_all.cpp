@@ -1,0 +1,5 @@
+#include "ModuleThreadAndroid.cpp"
+#include "SemaphoreAndroid.cpp"
+#include "ThreadEventAndroid.cpp"
+#include "ThreadLocalStorageManagerAndroid.cpp"
+#include "ThreadRunMethodAndroid.cpp"

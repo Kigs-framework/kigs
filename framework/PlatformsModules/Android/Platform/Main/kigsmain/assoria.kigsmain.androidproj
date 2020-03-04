@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <RootNamespace>assoria.kigsmain</RootNamespace>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <ProjectVersion>1.0</ProjectVersion>
+    <ProjectGuid>{dbacc490-66a1-48e0-bb4b-a1ed24c60b26}</ProjectGuid>
+    <_PackagingProjectWithoutNativeComponent>true</_PackagingProjectWithoutNativeComponent>
+    <LaunchActivity Condition="'$(LaunchActivity)' == ''">com.assoria.kigsmain</LaunchActivity>
+    <JavaSourceRoots>src</JavaSourceRoots>
+  </PropertyGroup>
+  <Import Project="$(AndroidTargetsPath)\Android.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <TargetName>$(RootNamespace)</TargetName>
+    <ConfigurationType>Library</ConfigurationType>
+    <AndroidAPILevel>android-19</AndroidAPILevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <TargetName>$(RootNamespace)</TargetName>
+    <ConfigurationType>Library</ConfigurationType>
+    <AndroidAPILevel>android-19</AndroidAPILevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <TargetName>$(RootNamespace)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <TargetName>$(RootNamespace)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <TargetName>$(RootNamespace)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <TargetName>$(RootNamespace)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <TargetName>$(RootNamespace)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <TargetName>$(RootNamespace)</TargetName>
+  </PropertyGroup>
+  <Import Project="$(AndroidTargetsPath)\Android.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <OutDir>$(ProjectDir)..\..\..\..\..\..\..\Build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\..\..\..\..\Build\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <OutDir>$(ProjectDir)..\..\..\..\..\..\..\Build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\..\..\..\..\Build\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <AntPackage>
+      <AndroidAppLibName />
+      <AdditionalOptions>-S</AdditionalOptions>
+    </AntPackage>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <AntPackage>
+      <AndroidAppLibName />
+      <AdditionalOptions>-S</AdditionalOptions>
+    </AntPackage>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <AntPackage>
+      <AndroidAppLibName />
+    </AntPackage>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <AntPackage>
+      <AndroidAppLibName />
+    </AntPackage>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <AntPackage>
+      <AndroidAppLibName />
+    </AntPackage>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <AntPackage>
+      <AndroidAppLibName />
+    </AntPackage>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <AntPackage>
+      <AndroidAppLibName />
+    </AntPackage>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <AntPackage>
+      <AndroidAppLibName />
+    </AntPackage>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <AntBuildXml Include="build.xml">
+      <SubType>Designer</SubType>
+    </AntBuildXml>
+    <AndroidManifest Include="AndroidManifest.xml" />
+    <AntProjectPropertiesFile Include="project.properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <JavaCompile Include="src\com\assoria\cameramanager\CameraManager.java" />
+    <JavaCompile Include="src\com\assoria\filemanager\FileManager.java" />
+    <JavaCompile Include="src\com\assoria\filemanager\FILE_DESCRIPTOR.java" />
+    <JavaCompile Include="src\com\assoria\httprequest\AsyncHTTPRequest.java" />
+    <JavaCompile Include="src\com\assoria\httprequest\SyncHTTPRequest.java" />
+    <JavaCompile Include="src\com\assoria\imageLoader\imageLoader.java" />
+    <JavaCompile Include="src\com\assoria\input\KigsAccelerometer.java" />
+    <JavaCompile Include="src\com\assoria\input\KigsCompass.java" />
+    <JavaCompile Include="src\com\assoria\input\KigsGeolocation.java" />
+    <JavaCompile Include="src\com\assoria\input\KigsGyroscope.java" />
+    <JavaCompile Include="src\com\assoria\input\KigsKeyboard.java" />
+    <JavaCompile Include="src\com\assoria\input\KigsTouchEvent.java" />
+    <JavaCompile Include="src\com\assoria\input\KigsTouchEventList.java" />
+    <JavaCompile Include="src\com\assoria\input\TouchPoint.java" />
+    <JavaCompile Include="src\com\assoria\kigsmain\KigsGLSurfaceView.java" />
+    <JavaCompile Include="src\com\assoria\kigsmain\kigsmainActivity.java" />
+    <JavaCompile Include="src\com\assoria\kigsmain\KigsMainManager.java" />
+    <JavaCompile Include="src\com\assoria\kigsmain\KigsRenderer.java" />
+    <JavaCompile Include="src\com\assoria\math\EulerAngles.java" />
+    <JavaCompile Include="src\com\assoria\math\Matrix.java" />
+    <JavaCompile Include="src\com\assoria\math\Matrixf4x4.java" />
+    <JavaCompile Include="src\com\assoria\math\Quaternion.java" />
+    <JavaCompile Include="src\com\assoria\math\Vector3f.java" />
+    <JavaCompile Include="src\com\assoria\math\Vector4f.java" />
+    <JavaCompile Include="src\com\assoria\social\KigsFlurry.java" />
+    <JavaCompile Include="src\com\assoria\soundmanager\AudioBuffer.java" />
+    <JavaCompile Include="src\com\assoria\soundmanager\SoundResourceStruct.java" />
+    <JavaCompile Include="src\com\assoria\soundmanager\SoundStreamStruct.java" />
+    <JavaCompile Include="src\com\assoria\sqlite\KigsDB.java" />
+    <JavaCompile Include="src\com\assoria\sqlite\KigsSQLiteHelper.java" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="libs\FlurryAnalytics-5.3.0.jar" />
+    <Content Include="res\drawable-hdpi\icon.png" />
+    <Content Include="res\drawable-ldpi\icon.png" />
+    <Content Include="res\drawable-mdpi\icon.png" />
+    <Content Include="res\layout\main.xml" />
+    <Content Include="res\values\integer.xml" />
+    <Content Include="res\values\strings.xml" />
+  </ItemGroup>
+  <Import Project="$(AndroidTargetsPath)\Android.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>
