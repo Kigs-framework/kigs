@@ -371,7 +371,6 @@ void DataDrivenSequenceManager::InitModifiable()
 	KigsCore::GetNotificationCenter()->addObserver(this, "ChangeSequence", "ChangeSequence");
 	KigsCore::GetNotificationCenter()->addObserver(this, "StackSequence", "StackSequence");
 	KigsCore::GetNotificationCenter()->addObserver(this, "BackSequence", "BackSequence");
-	KigsCore::GetNotificationCenter()->addObserver(this, "BackSequence", "CancelExitConfirmationPopup");
 
 	mySceneGraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
 
@@ -412,7 +411,6 @@ IMPLEMENT_CONSTRUCTOR(DataDrivenBaseApplication)
 , my2DLayers(0)
 , myLuaModule(0)
 , myRenderingScreen(0)
-, myConfirmExitPopup(0)
 , myPreviousShortcutEnabled(true)
 , m_SequenceManager(nullptr)
 , m_GlobalConfig(nullptr)
@@ -604,16 +602,6 @@ void DataDrivenBaseApplication::ProtectedInit()
 
 	// check if exit confirmation popup is there
 	instances.clear();
-	AppInit->GetSonInstancesByName("UIItem", "ConfirmExitPopup", instances);
-
-	if (instances.size() == 1)
-	{
-		CMSP toadd(*instances.begin(), GetRefTag{});
-		myConfirmExitPopup = toadd;
-		myConfirmExitPopup->setValue("IsHidden", true);
-		// remove this instance from AppInit
-		AppInit->removeItem(myConfirmExitPopup);
-	}
 
 	AppInit->Init();
 	myGUI->addItem(AppInit);
@@ -627,8 +615,6 @@ void DataDrivenBaseApplication::ProtectedInit()
 
 	CreateSequenceManager();
 
-
-	KigsCore::GetNotificationCenter()->addObserver(this, "Exit", "OKExitConfirmationPopup");
 
 	// set the first state
 	m_SequenceManager->RequestStateChange(tmpFilename);
@@ -745,8 +731,6 @@ void DataDrivenBaseApplication::ProtectedClose()
 	
 	m_SequenceManager->UnInit();
 
-	myConfirmExitPopup = nullptr;
-
 	removeAggregateWith((CMSP&)m_SequenceManager);
 	m_SequenceManager = nullptr;
 
@@ -772,11 +756,6 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 		if (myCurrentSequence)
 		{
 			
-			if (isApp)
-			{
-				isApp->removeConfirmationPopup(myCurrentSequence.get());
-			}
-			
 			ProtectedCloseSequence(myCurrentSequence->getName());
 			if (myCurrentSequence->isSubType("DataDrivenSequence"))
 			{
@@ -801,20 +780,6 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 
 		m_StateStack.clear();
 	}
-	if (isApp)
-	{
-		// don't change screen during exit popup
-		if (isApp->myConfirmExitPopup)
-		{
-			bool isHidden = true;
-			isApp->myConfirmExitPopup->getValue("IsHidden", isHidden);
-			if (!isHidden)
-			{
-				// return and wait for popup to be cancelled or confirmed
-				return;
-			}
-		}
-	}
 
 	if (m_StateStack.size())
 	{
@@ -831,13 +796,6 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 
 	if (NewState != State_None)
 	{
-		if (myCurrentSequence)
-		{
-			if (isApp)
-			{
-				isApp->removeConfirmationPopup(myCurrentSequence.get());
-			}
-		}
 		CMSP L_tmp(nullptr);
 
 		L_tmp = CoreModifiable::Import(NewState);
@@ -890,129 +848,6 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 
 			//((Abstract2DLayer*)myCurrentSequence)->SetMouseInfo(theMouseInfo);
 		}
-		if (isApp)
-		{
-			isApp->addConfirmationPopup(myCurrentSequence.get());
-		}
-	}
-}
-
-void DataDrivenBaseApplication::removeConfirmationPopup(CoreModifiable* sequence)
-{
-
-	if (!myConfirmExitPopup)
-	{
-		return;
-	}
-	if (sequence->isSubType("BaseUI2DLayer"))
-	{
-		// get root UIItem
-
-		const kstl::vector<ModifiableItemStruct>& uilayersons = sequence->getItems();
-		kstl::vector<ModifiableItemStruct>::const_iterator uilayersonsbegin = uilayersons.begin();
-		kstl::vector<ModifiableItemStruct>::const_iterator uilayersonsend = uilayersons.end();
-
-		while (uilayersonsbegin != uilayersonsend)
-		{
-			if ((*uilayersonsbegin).myItem->isSubType("UIItem"))
-			{
-				(*uilayersonsbegin).myItem->removeItem(myConfirmExitPopup);
-				break;
-			}
-			uilayersonsbegin++;
-		}
-	}
-	else
-	{
-		// search for BaseUI
-		kstl::set<CoreModifiable*>	instances;
-		sequence->GetSonInstancesByType("BaseUI2DLayer", instances);
-
-		if (instances.size() > 0)
-		{
-			kstl::set<CoreModifiable*>::iterator	it = instances.begin();
-			kstl::set<CoreModifiable*>::iterator	itend = instances.end();
-
-			for (; it != itend; ++it)
-			{
-				// get root UIItem
-				// TODO : change root item management in BaseUI2DLayer (use classic additem / removeitem...)
-				const kstl::vector<ModifiableItemStruct>& uilayersons = (*it)->getItems();
-				kstl::vector<ModifiableItemStruct>::const_iterator uilayersonsbegin = uilayersons.begin();
-				kstl::vector<ModifiableItemStruct>::const_iterator uilayersonsend = uilayersons.end();
-
-				while (uilayersonsbegin != uilayersonsend)
-				{
-					if ((*uilayersonsbegin).myItem->isSubType("UIItem"))
-					{
-						(*uilayersonsbegin).myItem->removeItem(myConfirmExitPopup);
-						break;
-					}
-					uilayersonsbegin++;
-				}
-			}
-		}
-	}
-}
-
-void DataDrivenBaseApplication::addConfirmationPopup(CoreModifiable* sequence)
-{
-
-	if (!myConfirmExitPopup)
-	{
-		return;
-	}
-	if (sequence->isSubType("BaseUI2DLayer"))
-	{
-		// get root UIItem
-
-		const kstl::vector<ModifiableItemStruct>& uilayersons = sequence->getItems();
-		kstl::vector<ModifiableItemStruct>::const_iterator uilayersonsbegin = uilayersons.begin();
-		kstl::vector<ModifiableItemStruct>::const_iterator uilayersonsend = uilayersons.end();
-
-		while (uilayersonsbegin != uilayersonsend)
-		{
-			if ((*uilayersonsbegin).myItem->isSubType("UIItem"))
-			{
-				(*uilayersonsbegin).myItem->addItem(myConfirmExitPopup);
-				myConfirmExitPopup->Init();
-
-				break;
-			}
-			uilayersonsbegin++;
-		}
-	}
-	else
-	{
-		// search for BaseUI
-		kstl::set<CoreModifiable*>	instances;
-		sequence->GetSonInstancesByType("BaseUI2DLayer", instances);
-
-		if (instances.size() > 0)
-		{
-			kstl::set<CoreModifiable*>::iterator	it = instances.begin();
-			kstl::set<CoreModifiable*>::iterator	itend = instances.end();
-
-			for (; it != itend; ++it)
-			{
-				// get root UIItem
-				// TODO : change root item management in BaseUI2DLayer (use classic additem / removeitem...)
-				const kstl::vector<ModifiableItemStruct>& uilayersons = (*it)->getItems();
-				kstl::vector<ModifiableItemStruct>::const_iterator uilayersonsbegin = uilayersons.begin();
-				kstl::vector<ModifiableItemStruct>::const_iterator uilayersonsend = uilayersons.end();
-
-				while (uilayersonsbegin != uilayersonsend)
-				{
-					if ((*uilayersonsbegin).myItem->isSubType("UIItem"))
-					{
-						(*uilayersonsbegin).myItem->addItem(myConfirmExitPopup);
-						myConfirmExitPopup->Init();
-						break;
-					}
-					uilayersonsbegin++;
-				}
-			}
-		}
 	}
 }
 
@@ -1046,17 +881,7 @@ void DataDrivenSequenceManager::RequestBackToPreviousState()
 	{
 		if (isApp)
 		{
-			if (isApp->myConfirmExitPopup) // show or hide exit confirmation
-			{
-				bool isHidden = true;
-				isApp->myConfirmExitPopup->getValue("IsHidden", isHidden);
-				isHidden = !isHidden;
-				isApp->myConfirmExitPopup->setValue("IsHidden", isHidden);
-			}
-			else
-			{
-				isApp->myNeedExit = true;
-			}
+			isApp->myNeedExit = true;
 		}
 		return;
 	}
