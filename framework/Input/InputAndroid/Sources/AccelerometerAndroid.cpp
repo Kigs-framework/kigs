@@ -21,7 +21,7 @@ AccelerometerAndroid::AccelerometerAndroid(const kstl::string& name, CLASS_NAME_
 
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	jclass pMaClasse = g_env->FindClass("com/assoria/input/KigsAccelerometer");
+	jclass pMaClasse = g_env->FindClass("com/kigs/input/KigsAccelerometer");
 	myKigsAccelerometer = (jclass)g_env->NewGlobalRef(pMaClasse);
 
 	// check if supported

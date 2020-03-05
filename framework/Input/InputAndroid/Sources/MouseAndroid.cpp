@@ -11,10 +11,10 @@ IMPLEMENT_CONSTRUCTOR(MouseAndroid)
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	//printf("retreive KigsGLSurfaceView \n");
-	jclass  pMaClasse =g_env->FindClass("com/assoria/kigsmain/KigsGLSurfaceView");
+	jclass  pMaClasse =g_env->FindClass("com/kigs/kigsmain/KigsGLSurfaceView");
 	
 	//printf("retreive getTouchList method \n");
-	jmethodID getTouchClass=g_env->GetStaticMethodID(pMaClasse, "getTouchList", "(I)Lcom/assoria/input/KigsTouchEventList;");
+	jmethodID getTouchClass=g_env->GetStaticMethodID(pMaClasse, "getTouchList", "(I)Lcom/kigs/input/KigsTouchEventList;");
 	
 	//printf("retreive KigsTouchEventList object \n");
 	jobject pobjet = g_env->CallStaticObjectMethod(pMaClasse,getTouchClass,0);
@@ -22,14 +22,14 @@ IMPLEMENT_CONSTRUCTOR(MouseAndroid)
 	//printf("create global ref \n");
 	myTouchList=g_env->NewGlobalRef(pobjet);
 	
-	pMaClasse =g_env->FindClass("com/assoria/input/KigsTouchEventList");
+	pMaClasse =g_env->FindClass("com/kigs/input/KigsTouchEventList");
 
 	//printf("retreive  KigsTouchEventList methods\n");
 	getEventCount=g_env->GetMethodID(pMaClasse, "getEventCount", "()I");
-	getEvent=g_env->GetMethodID(pMaClasse, "getEvent", "(I)Lcom/assoria/input/KigsTouchEvent;");
+	getEvent=g_env->GetMethodID(pMaClasse, "getEvent", "(I)Lcom/kigs/input/KigsTouchEvent;");
 	clearEventList=g_env->GetMethodID(pMaClasse, "clearEventList", "()V");
 
-	pMaClasse =g_env->FindClass("com/assoria/input/KigsTouchEvent");
+	pMaClasse =g_env->FindClass("com/kigs/input/KigsTouchEvent");
 	Event_getX = g_env->GetMethodID(pMaClasse, "getX", "()F");
 	Event_getY = g_env->GetMethodID(pMaClasse, "getY", "()F");
 	Event_getAction = g_env->GetMethodID(pMaClasse, "getAction", "()I");
@@ -162,9 +162,9 @@ DEFINE_METHOD(MouseAndroid, ReinitCB)
 	g_env->DeleteGlobalRef(myTouchList);
 	
 	//printf("retreive KigsGLSurfaceView \n");
-	jclass  pMaClasse =g_env->FindClass("com/assoria/kigsmain/KigsGLSurfaceView");
+	jclass  pMaClasse =g_env->FindClass("com/kigs/kigsmain/KigsGLSurfaceView");
 	//printf("retreive getTouchList method \n");
-	jmethodID getTouchClass=g_env->GetStaticMethodID(pMaClasse, "getTouchList", "(I)Lcom/assoria/input/KigsTouchEventList;");
+	jmethodID getTouchClass=g_env->GetStaticMethodID(pMaClasse, "getTouchList", "(I)Lcom/kigs/input/KigsTouchEventList;");
 	//printf("retreive KigsTouchEventList object \n");
 	jobject pobjet = g_env->CallStaticObjectMethod(pMaClasse,getTouchClass,0);	
 	//printf("create global ref \n");

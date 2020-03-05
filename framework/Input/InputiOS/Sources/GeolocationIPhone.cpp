@@ -3,7 +3,6 @@
  *  IPhoneInputIPhone
  *
  *  Created by Damien on 11/03/15.
- *  Copyright 2011 __ASSORIA__. All rights reserved.
  *
  */
 

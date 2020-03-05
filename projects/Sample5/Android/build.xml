@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="assoria.Sample5" default="help">
+<project name="kigs.Sample5" default="help">
 
     <!-- The local.properties file is created and updated by the 'android' tool.
          It contains the path to the SDK. It should *NOT* be checked into
@@ -95,13 +95,13 @@
           <include name="*.jar"/>
         </fileset>
         
-        <!-- Custom part for assoria.kigsmain.jar 
+        <!-- Custom part for kigs.kigsmain.jar 
          Need to set kigsmain.dir in the packaging project: in ant additional options: -Dkigsmain.dir=$(ProjectDir)../../../Build/$(PlatformName)/$(ConfigurationName)/
         -->
         <fileset dir="${kigsmain.dir}">
           <include name="*.jar"/>
         </fileset>
-        <!-- End of custom part for assoria.kigsmain.jar -->
+        <!-- End of custom part for kigs.kigsmain.jar -->
 
       </path>
     </target>

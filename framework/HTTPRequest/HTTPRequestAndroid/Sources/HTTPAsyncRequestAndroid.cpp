@@ -29,8 +29,8 @@ void HTTPAsyncRequestAndroid::InitModifiable()
 	
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	myCls = KigsJavaIDManager::findClass("com/assoria/httprequest/AsyncHTTPRequest");	
-	query_method = g_env->GetStaticMethodID(myCls, "Query", "(Ljava/lang/String;ZI)Lcom/assoria/httprequest/AsyncHTTPRequest;");
+	myCls = KigsJavaIDManager::findClass("com/kigs/httprequest/AsyncHTTPRequest");	
+	query_method = g_env->GetStaticMethodID(myCls, "Query", "(Ljava/lang/String;ZI)Lcom/kigs/httprequest/AsyncHTTPRequest;");
 	getsize_method = g_env->GetMethodID(myCls, "GetSize",  "()I");	
 	getcontent_enc_method = g_env->GetMethodID(myCls, "GetContentEncoding", "()Ljava/lang/String;");
 	getcontent_dec_method = g_env->GetMethodID(myCls, "GetCharsetEncoding", "()Ljava/lang/String;");
@@ -132,10 +132,10 @@ void HTTPAsyncRequestAndroid::protectedProcess()
 #define KIGS_JNIEXPORT	__attribute__((visibility("default")))
 
 extern "C" {
-	KIGS_JNIEXPORT void JNICALL Java_com_assoria_httprequest_AsyncHTTPRequest_RequestEnded(JNIEnv * env, jobject obj, jint handle, jboolean result);
+	KIGS_JNIEXPORT void JNICALL Java_com_kigs_httprequest_AsyncHTTPRequest_RequestEnded(JNIEnv * env, jobject obj, jint handle, jboolean result);
 }
 
-KIGS_JNIEXPORT void JNICALL Java_com_assoria_httprequest_AsyncHTTPRequest_RequestEnded(JNIEnv * env, jobject obj, jint handle, jboolean result)
+KIGS_JNIEXPORT void JNICALL Java_com_kigs_httprequest_AsyncHTTPRequest_RequestEnded(JNIEnv * env, jobject obj, jint handle, jboolean result)
 {
 	HTTPAsyncRequestAndroid * ptr = HTTPAsyncRequestAndroid::requestMap[handle];
 	

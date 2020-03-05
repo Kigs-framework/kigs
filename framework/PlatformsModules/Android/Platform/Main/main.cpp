@@ -28,16 +28,16 @@ extern "C" {
 	KIGS_JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved);
 	// life cycle
 
-	KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Init(JNIEnv * env, jobject obj);
-	KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Update(JNIEnv * env, jobject obj);
-	KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Close(JNIEnv * env, jobject obj);
+	KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Init(JNIEnv * env, jobject obj);
+	KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Update(JNIEnv * env, jobject obj);
+	KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Close(JNIEnv * env, jobject obj);
 	
-	KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Pause(JNIEnv * env, jobject obj);
-	KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Resume(JNIEnv * env, jobject obj,jboolean reloadTexture);
+	KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Pause(JNIEnv * env, jobject obj);
+	KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Resume(JNIEnv * env, jobject obj,jboolean reloadTexture);
 	
-	KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_GLResize(JNIEnv * env, jobject obj,jint w,jint h);
+	KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_GLResize(JNIEnv * env, jobject obj,jint w,jint h);
 	
-	KIGS_JNIEXPORT jboolean JNICALL Java_com_assoria_kigsmain_KigsMainManager_NeedExit(JNIEnv * env, jobject obj);
+	KIGS_JNIEXPORT jboolean JNICALL Java_com_kigs_kigsmain_KigsMainManager_NeedExit(JNIEnv * env, jobject obj);
 	
 };
 
@@ -114,7 +114,7 @@ KIGS_JNIEXPORT void JNI_OnUnload(JavaVM* vm, void* reserved)
 }
 
 
-KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Init(JNIEnv * env, jobject obj)
+KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Init(JNIEnv * env, jobject obj)
 {
 	if(myApp)
 	{
@@ -145,7 +145,7 @@ KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Init(JNIEn
 }
  
  
-KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Update(JNIEnv * env, jobject obj)
+KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Update(JNIEnv * env, jobject obj)
 {
 	if(!myApp)
 	{
@@ -157,7 +157,7 @@ KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Update(JNI
 
 }
 
-KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Close(JNIEnv * env, jobject obj)
+KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Close(JNIEnv * env, jobject obj)
 {
 	
 	if(myApp)
@@ -173,7 +173,7 @@ KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Close(JNIE
 
 }
 
-KIGS_JNIEXPORT jboolean JNICALL Java_com_assoria_kigsmain_KigsMainManager_NeedExit(JNIEnv * env, jobject obj)
+KIGS_JNIEXPORT jboolean JNICALL Java_com_kigs_kigsmain_KigsMainManager_NeedExit(JNIEnv * env, jobject obj)
 {
 	if(myApp)
 	{
@@ -182,7 +182,7 @@ KIGS_JNIEXPORT jboolean JNICALL Java_com_assoria_kigsmain_KigsMainManager_NeedEx
 	return false;
 }
 
-KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Pause(JNIEnv * env, jobject obj)
+KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Pause(JNIEnv * env, jobject obj)
 {
 	
 	if(myApp)
@@ -193,7 +193,7 @@ KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Pause(JNIE
 	
 }
 
-KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Resume(JNIEnv * env, jobject obj,jboolean reloadTexture)
+KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Resume(JNIEnv * env, jobject obj,jboolean reloadTexture)
 {
 	if(myApp)
 	{
@@ -204,7 +204,7 @@ KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_Resume(JNI
 }
 
 	
-KIGS_JNIEXPORT void JNICALL Java_com_assoria_kigsmain_KigsMainManager_GLResize(JNIEnv * env, jobject obj,jint w,jint h)
+KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_GLResize(JNIEnv * env, jobject obj,jint w,jint h)
 {
 	// init graphics
 	/*glShadeModel(GL_SMOOTH);

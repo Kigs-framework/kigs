@@ -9,7 +9,7 @@ IMPLEMENT_CONSTRUCTOR(MultiTouchAndroid)
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	jclass  pMaClasse =g_env->FindClass("com/assoria/kigsmain/KigsGLSurfaceView");
+	jclass  pMaClasse =g_env->FindClass("com/kigs/kigsmain/KigsGLSurfaceView");
 
 	jmethodID getMaxTouch = g_env->GetStaticMethodID(pMaClasse, "getMaxTouch", "()I");
 	myMaxTouch = g_env->CallStaticIntMethod(pMaClasse, getMaxTouch);
@@ -18,18 +18,18 @@ IMPLEMENT_CONSTRUCTOR(MultiTouchAndroid)
 	for (int i = 0; i < myMaxTouch; i++)
 	{
 
-		jmethodID getTouchClass = g_env->GetStaticMethodID(pMaClasse, "getTouchList", "(I)Lcom/assoria/input/KigsTouchEventList;");
+		jmethodID getTouchClass = g_env->GetStaticMethodID(pMaClasse, "getTouchList", "(I)Lcom/kigs/input/KigsTouchEventList;");
 		jobject pobjet = g_env->CallStaticObjectMethod(pMaClasse, getTouchClass, i);
 		myTouchList[i] = g_env->NewGlobalRef(pobjet);
 	}
 	
-	pMaClasse =g_env->FindClass("com/assoria/input/KigsTouchEventList");
+	pMaClasse =g_env->FindClass("com/kigs/input/KigsTouchEventList");
 
 	getEventCount=g_env->GetMethodID(pMaClasse, "getEventCount", "()I");
-	getEvent=g_env->GetMethodID(pMaClasse, "getEvent", "(I)Lcom/assoria/input/KigsTouchEvent;");
+	getEvent=g_env->GetMethodID(pMaClasse, "getEvent", "(I)Lcom/kigs/input/KigsTouchEvent;");
 	clearEventList=g_env->GetMethodID(pMaClasse, "clearEventList", "()V");
 
-	pMaClasse =g_env->FindClass("com/assoria/input/KigsTouchEvent");
+	pMaClasse =g_env->FindClass("com/kigs/input/KigsTouchEvent");
 	Event_getX = g_env->GetMethodID(pMaClasse, "getX", "()F");
 	Event_getY = g_env->GetMethodID(pMaClasse, "getY", "()F");
 	Event_getAction = g_env->GetMethodID(pMaClasse, "getAction", "()I");
@@ -130,14 +130,14 @@ DEFINE_METHOD(MultiTouchAndroid, ReinitCB)
 	for (int i=0;i<myMaxTouch;i++) 
 		g_env->DeleteGlobalRef(myTouchList[i]);
 	
-	jclass  pMaClasse = g_env->FindClass("com/assoria/kigsmain/KigsGLSurfaceView");	
+	jclass  pMaClasse = g_env->FindClass("com/kigs/kigsmain/KigsGLSurfaceView");	
 	jmethodID getMaxTouch = g_env->GetStaticMethodID(pMaClasse, "getMaxTouch", "()I");
 	myMaxTouch = g_env->CallStaticIntMethod(pMaClasse, getMaxTouch);
 	myTouchList.resize(myMaxTouch);
 
 	for (int i = 0; i < myMaxTouch; i++)
 	{
-		jmethodID getTouchClass = g_env->GetStaticMethodID(pMaClasse, "getTouchList", "(I)Lcom/assoria/input/KigsTouchEventList;");
+		jmethodID getTouchClass = g_env->GetStaticMethodID(pMaClasse, "getTouchList", "(I)Lcom/kigs/input/KigsTouchEventList;");
 		jobject pobjet = g_env->CallStaticObjectMethod(pMaClasse, getTouchClass, i);
 		myTouchList[i] = g_env->NewGlobalRef(pobjet);
 	}

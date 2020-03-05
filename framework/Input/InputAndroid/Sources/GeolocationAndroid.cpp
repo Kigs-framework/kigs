@@ -23,7 +23,7 @@ GeolocationAndroid::GeolocationAndroid(const kstl::string& name,CLASS_NAME_TREE_
 
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	jclass pMaClasse =g_env->FindClass("com/assoria/input/KigsGeolocation");
+	jclass pMaClasse =g_env->FindClass("com/kigs/input/KigsGeolocation");
 	myKigsGeolocation = (jclass)g_env->NewGlobalRef(pMaClasse);
 
 	getLatitude=g_env->GetStaticMethodID(myKigsGeolocation, "getLatitude", "()D");

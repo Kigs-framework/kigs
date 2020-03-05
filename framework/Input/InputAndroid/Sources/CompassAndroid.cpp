@@ -24,7 +24,7 @@ CompassAndroid::CompassAndroid(const kstl::string& name, CLASS_NAME_TREE_ARG)
 
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	jclass pMaClasse = g_env->FindClass("com/assoria/input/KigsCompass");
+	jclass pMaClasse = g_env->FindClass("com/kigs/input/KigsCompass");
 	myKigsCompass = (jclass)g_env->NewGlobalRef(pMaClasse);
 
 	// check if supported

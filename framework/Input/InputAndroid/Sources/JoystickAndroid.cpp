@@ -8,7 +8,7 @@ JoystickAndroid::JoystickAndroid(const kstl::string& name,CLASS_NAME_TREE_ARG) :
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	
-	jclass  pMaClasse =g_env->FindClass("com/assoria/kigsmain/kigsmainActivity");
+	jclass  pMaClasse =g_env->FindClass("com/kigs/kigsmain/kigsmainActivity");
 	
 	myActivityClass=(jclass)g_env->NewGlobalRef(pMaClasse);
 	
