@@ -8,7 +8,4 @@ if(UNITY_BUILD)
 	GRAB_UNITY_BUILD_SOURCES(CoreAnimation "")
 else()
 	GRAB_BASE_SOURCES(CoreAnimation "")
-	target_sources(CoreAnimation 
-		PRIVATE 
-			"../StandAloneUtilityClasses/Sources/MiniInstanceFactory.cpp")
 endif()

@@ -342,7 +342,7 @@ class UpgradorBase;
 struct ModifiableMethodStruct
 {
 
-	ModifiableMethodStruct() : m_Name(""), m_Method(nullptr), m_Function(nullptr), m_Upgrador(nullptr)
+	ModifiableMethodStruct() : m_Name(""), m_Method(nullptr), m_Upgrador(nullptr), m_Function(nullptr)
 	{
 
 	}
@@ -352,7 +352,7 @@ struct ModifiableMethodStruct
 		
 	}
 
-	ModifiableMethodStruct(const ModifiableMethodStruct& other) : m_Name(""), m_Method(other.m_Method), m_Function(nullptr), m_Upgrador(nullptr)
+	ModifiableMethodStruct(const ModifiableMethodStruct& other) : m_Name(""), m_Method(other.m_Method), m_Upgrador(nullptr), m_Function(nullptr)
 	{
 		if (other.m_Function)
 		{

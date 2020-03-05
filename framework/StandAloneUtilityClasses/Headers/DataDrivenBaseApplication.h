@@ -171,7 +171,6 @@ public:
 	DECLARE_ABSTRACT_CLASS_INFO(DataDrivenBaseApplication, CoreBaseApplication, Core);
 	DECLARE_CONSTRUCTOR(DataDrivenBaseApplication);
 
-	inline CMSP	GetExitConfirmationPopup() { return myConfirmExitPopup; }
 	inline SP<DataDrivenSequenceManager>&	GetSequenceManager() { return m_SequenceManager; }
 
 	friend class DataDrivenSequenceManager;
@@ -182,8 +181,6 @@ protected:
 
 	void	setInTransition(DataDrivenTransition* transition, bool active);
 
-	void removeConfirmationPopup(CoreModifiable* sequence);
-	void addConfirmationPopup(CoreModifiable* sequence);
 
 	virtual void ProtectedInitSequence(const kstl::string& sequence) {};
 	virtual void ProtectedCloseSequence(const kstl::string& sequence) {};
@@ -212,7 +209,6 @@ protected:
 #ifdef KIGS_TOOLS
 	bool mCanUpdateNextFrame = true;
 #endif
-	CMSP		myConfirmExitPopup;
 
 
 	bool				myPreviousShortcutEnabled;
