@@ -27,13 +27,13 @@ void HTTPRequestModuleAndroid::Init(KigsCore* core, const kstl::vector<CoreModif
 	
 	// manage jni method ID
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	KigsJavaIDManager::RegisterClass(g_env, "com/assoria/httprequest/AsyncHTTPRequest");	
+	KigsJavaIDManager::RegisterClass(g_env, "com/kigs/httprequest/AsyncHTTPRequest");	
 	
-	//KigsJavaIDManager::GetStaticMethod(g_env, "com/assoria/httprequest/AsyncHTTPRequest", "Query", "(Ljava/lang/String;)V");	
-	//KigsJavaIDManager::GetStaticMethod(g_env, "com/assoria/httprequest/AsyncHTTPRequest", "GetSize",  "()Ljava/lang/String;");
-	//KigsJavaIDManager::GetStaticMethod(g_env, "com/assoria/httprequest/AsyncHTTPRequest", "GetContentEncoding", "()Ljava/lang/String;");	
-	//KigsJavaIDManager::GetStaticMethod(g_env, "com/assoria/httprequest/AsyncHTTPRequest", "GetCharsetEncoding", "()Ljava/lang/String;");	
-	//KigsJavaIDManager::GetStaticMethod(g_env, "com/assoria/httprequest/AsyncHTTPRequest", "GetResult", "()Ljava/lang/String;");	
+	//KigsJavaIDManager::GetStaticMethod(g_env, "com/kigs/httprequest/AsyncHTTPRequest", "Query", "(Ljava/lang/String;)V");	
+	//KigsJavaIDManager::GetStaticMethod(g_env, "com/kigs/httprequest/AsyncHTTPRequest", "GetSize",  "()Ljava/lang/String;");
+	//KigsJavaIDManager::GetStaticMethod(g_env, "com/kigs/httprequest/AsyncHTTPRequest", "GetContentEncoding", "()Ljava/lang/String;");	
+	//KigsJavaIDManager::GetStaticMethod(g_env, "com/kigs/httprequest/AsyncHTTPRequest", "GetCharsetEncoding", "()Ljava/lang/String;");	
+	//KigsJavaIDManager::GetStaticMethod(g_env, "com/kigs/httprequest/AsyncHTTPRequest", "GetResult", "()Ljava/lang/String;");	
 }
 
 //! module close

@@ -17,11 +17,11 @@ cd %myDir%\..\..\Build\solutionAndroidVSCMake
 
 REM call VcxprojWinToAndroid.exe utility on generated .vcxproj and .sln
 for /f "delims=" %%a in ('dir /b /s *.vcxproj') do (
-    "./../../kigs/tools/win32_executable/VcxprojWinToAndroid.exe" -android -api=android-24 "%%a"
+    "./../../kigs/tools/win32_executable/VcxprojWinToAndroid.exe" -android -api=android-23 "%%a"
 )
 
 for /f "delims=" %%a in ('dir /b /s *.sln') do (
-    "./../../kigs/tools/win32_executable/VcxprojWinToAndroid.exe" -android -api=android-24 "%%a"
+    "./../../kigs/tools/win32_executable/VcxprojWinToAndroid.exe" -android -api=android-23 "%%a"
 )
 
 PAUSE

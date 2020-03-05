@@ -11,7 +11,7 @@ KeyboardAndroid*	CurrentKeyboard = 0;
 
 extern "C" {
 
-	KIGS_JNIEXPORT void JNICALL Java_com_assoria_input_KeyboardAndroid_PushKeyEvent(JNIEnv * env, jobject obj, jobject buff)
+	KIGS_JNIEXPORT void JNICALL Java_com_kigs_input_KeyboardAndroid_PushKeyEvent(JNIEnv * env, jobject obj, jobject buff)
 	{
 
 		jbyte* bbuf_in = (jbyte*)env->GetDirectBufferAddress(buff);
@@ -28,7 +28,7 @@ IMPLEMENT_CLASS_INFO(KeyboardAndroid)
 IMPLEMENT_CONSTRUCTOR(KeyboardAndroid)
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	myJKeyboard = KigsJavaIDManager::RegisterClass(g_env, "com/assoria/input/KigsKeyboard");
+	myJKeyboard = KigsJavaIDManager::RegisterClass(g_env, "com/kigs/input/KigsKeyboard");
 
 	JGetActions = g_env->GetStaticMethodID(myJKeyboard, "GetKeyActions", "()[B");
 	JClear = g_env->GetStaticMethodID(myJKeyboard, "Clear", "()V");
@@ -131,7 +131,7 @@ void	KeyboardAndroid::DoInputDeviceDescription()
 void KeyboardAndroid::Show()
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	jclass lMaClasse = g_env->FindClass("com/assoria/input/KigsKeyboard");
+	jclass lMaClasse = g_env->FindClass("com/kigs/input/KigsKeyboard");
 
 	jmethodID ShowMethod = g_env->GetStaticMethodID(lMaClasse, "ShowKeyboard", "(Z)V");
 	g_env->CallStaticVoidMethod(lMaClasse, ShowMethod, true);
@@ -142,7 +142,7 @@ void KeyboardAndroid::Show()
 void KeyboardAndroid::Hide()
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	jclass lMaClasse = g_env->FindClass("com/assoria/input/KigsKeyboard");
+	jclass lMaClasse = g_env->FindClass("com/kigs/input/KigsKeyboard");
 
 	jmethodID ShowMethod = g_env->GetStaticMethodID(lMaClasse, "ShowKeyboard", "(Z)V");
 	g_env->CallStaticVoidMethod(lMaClasse, ShowMethod, false);

@@ -100,7 +100,7 @@ bool KigsJavaIDManager::init(JavaVM* vm)
 
 										
 		
-	jclass pMaClasse = pEnv->FindClass("com/assoria/kigsmain/KigsRenderer");
+	jclass pMaClasse = pEnv->FindClass("com/kigs/kigsmain/KigsRenderer");
 	Renderer_class = (jclass)pEnv->NewGlobalRef(pMaClasse);
 	if(Renderer_class == 0)
 	{
@@ -110,22 +110,22 @@ bool KigsJavaIDManager::init(JavaVM* vm)
 	GetResolutionX = pEnv->GetStaticMethodID(Renderer_class, "GetResolutionX", "()I");
 	GetResolutionY = pEnv->GetStaticMethodID(Renderer_class, "GetResolutionY", "()I");	
 
-	pMaClasse = pEnv->FindClass("com/assoria/filemanager/FileManager");
+	pMaClasse = pEnv->FindClass("com/kigs/filemanager/FileManager");
 	FileManager_class = (jclass)pEnv->NewGlobalRef(pMaClasse);
 	if(FileManager_class == 0)
 	{
 		KIGS_ERROR("FileManager not found",2);
 	}
 		
-	OpenFile=pEnv->GetStaticMethodID(FileManager_class, "openFile", "(Ljava/lang/String;IZZ)Lcom/assoria/filemanager/FILE_DESCRIPTOR;");
-	ReadFile=pEnv->GetStaticMethodID(FileManager_class, "readFile", "(Lcom/assoria/filemanager/FILE_DESCRIPTOR;Ljava/nio/ByteBuffer;I)I");
-	WriteFile=pEnv->GetStaticMethodID(FileManager_class, "writeFile", "(Lcom/assoria/filemanager/FILE_DESCRIPTOR;Ljava/nio/ByteBuffer;I)I");
-	CloseFile=pEnv->GetStaticMethodID(FileManager_class,  "closeFile", "(Lcom/assoria/filemanager/FILE_DESCRIPTOR;)V");
-	SeekFile=pEnv->GetStaticMethodID(FileManager_class,  "FileSeek", "(Lcom/assoria/filemanager/FILE_DESCRIPTOR;II)I");
-	TellFile=pEnv->GetStaticMethodID(FileManager_class, "FileTell", "(Lcom/assoria/filemanager/FILE_DESCRIPTOR;)I");
+	OpenFile=pEnv->GetStaticMethodID(FileManager_class, "openFile", "(Ljava/lang/String;IZZ)Lcom/kigs/filemanager/FILE_DESCRIPTOR;");
+	ReadFile=pEnv->GetStaticMethodID(FileManager_class, "readFile", "(Lcom/kigs/filemanager/FILE_DESCRIPTOR;Ljava/nio/ByteBuffer;I)I");
+	WriteFile=pEnv->GetStaticMethodID(FileManager_class, "writeFile", "(Lcom/kigs/filemanager/FILE_DESCRIPTOR;Ljava/nio/ByteBuffer;I)I");
+	CloseFile=pEnv->GetStaticMethodID(FileManager_class,  "closeFile", "(Lcom/kigs/filemanager/FILE_DESCRIPTOR;)V");
+	SeekFile=pEnv->GetStaticMethodID(FileManager_class,  "FileSeek", "(Lcom/kigs/filemanager/FILE_DESCRIPTOR;II)I");
+	TellFile=pEnv->GetStaticMethodID(FileManager_class, "FileTell", "(Lcom/kigs/filemanager/FILE_DESCRIPTOR;)I");
 	CheckFile=pEnv->GetStaticMethodID(FileManager_class, "CheckFile", "(Ljava/lang/String;I)Ljava/lang/String;");
 	
-	pMaClasse = pEnv->FindClass("com/assoria/kigsmain/kigsmainActivity");
+	pMaClasse = pEnv->FindClass("com/kigs/kigsmain/kigsmainActivity");
 	Main_class = (jclass)pEnv->NewGlobalRef(pMaClasse);
 	if(Main_class == 0)
 	{
@@ -153,7 +153,7 @@ bool KigsJavaIDManager::init(JavaVM* vm)
 	jmethodID met = pEnv->GetStaticMethodID(Main_class, "osVersionCode", "()I");
 	OsVersion = pEnv->CallStaticIntMethod(Main_class, met);
 
-	pMaClasse = pEnv->FindClass("com/assoria/imageLoader/imageLoader");
+	pMaClasse = pEnv->FindClass("com/kigs/imageLoader/imageLoader");
 	imageLoader_class = (jclass)pEnv->NewGlobalRef(pMaClasse);
 	
 	OpenBitmap=pEnv->GetStaticMethodID(imageLoader_class, "open", "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
@@ -171,7 +171,7 @@ bool KigsJavaIDManager::init(JavaVM* vm)
 	pEnv->CallStaticVoidMethod( vm_class, dump_mid );*/
 #endif
 
-	GetFileSizeID = RegisterMethod(pEnv, "com/assoria/filemanager/FILE_DESCRIPTOR", "getSize", "()I"); // register in map
+	GetFileSizeID = RegisterMethod(pEnv, "com/kigs/filemanager/FILE_DESCRIPTOR", "getSize", "()I"); // register in map
 	
 
 	return true;
@@ -367,7 +367,7 @@ bool  Android_fopen ( FileHandle* handle, const char * mode )
 		
 		jobject globalFD = (jobject)g_env->NewGlobalRef(fdHandle);
 		/*
-		jclass javaClassFILE_DESCRIPTOR = g_env->FindClass("com/assoria/filemanager/FILE_DESCRIPTOR");
+		jclass javaClassFILE_DESCRIPTOR = g_env->FindClass("com/kigs/filemanager/FILE_DESCRIPTOR");
 		jmethodID getMethodGetSize = g_env->GetMethodID(javaClassFILE_DESCRIPTOR, "getSize", "()I");*/
 
 		jmethodID getMethodGetSize=KigsJavaIDManager::GetMethod(g_env, KigsJavaIDManager::GetFileSizeID);

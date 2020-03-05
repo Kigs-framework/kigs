@@ -4,7 +4,7 @@
   <mp:PhoneIdentity PhoneProductId="B0F826B3-1FEB-48A6-B44B-B53AF84461CB" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Sample7</DisplayName>
-    <PublisherDisplayName>Assoria</PublisherDisplayName>
+    <PublisherDisplayName>Kigs framework</PublisherDisplayName>
     <Logo>Assets\Generated\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
