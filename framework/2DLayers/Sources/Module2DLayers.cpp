@@ -108,7 +108,7 @@ void Module2DLayers::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	DECLARE_CLASS_ALIAS(core, UIPanel, UIDrawableItem);
 	//DECLARE_FULL_CLASS_INFO(core, UIPopUp, UIPopUp, 2DLayers);
 	// a UIPopUp is a UIItem with PopUpUpgrador upgrade
-	DECLARE_CLASS_ALIAS(core, UIPopUp, UIItem, PopUpUpgrador);
+	DECLARE_CLASS_ALIAS_AND_UPGRADE(core, UIPopUp, UIItem, PopUpUpgrador);
 	DECLARE_FULL_CLASS_INFO(core, UIRatioKeeper, UIRatioKeeper, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIRenderingScreen, UIRenderingScreen, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIRoundHUD, UIRoundHUD, 2DLayers);

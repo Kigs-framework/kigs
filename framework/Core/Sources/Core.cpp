@@ -274,8 +274,6 @@ MEMORYMANAGEMENT_END
 	 createUpgradorFactory->GetRef();
 	 myCoreInstance->myUpgradorFactory = (MiniInstanceFactory*)createUpgradorFactory.get();
 
-/*	AddToAutoRegister({}, "Core");
-	AddToAutoRegister({}, "StandAlone");*/
 }
 
 
