@@ -1171,7 +1171,7 @@ void    AObject::SetLoopFor(ABaseStream* stream,void* param)
 };
 
 
-bool	AObject::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	AObject::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType(AObjectResource::myClassID))
 	{
@@ -1189,7 +1189,7 @@ bool	AObject::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return Drawable::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-bool	AObject::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool	AObject::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType(AObjectResource::myClassID))
 	{
