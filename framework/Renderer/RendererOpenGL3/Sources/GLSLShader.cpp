@@ -533,6 +533,8 @@ void	API3DShader::Deactive(TravState* state)
 void	API3DShader::PrepareExport(ExportSettings* settings)
 {
 	ParentClassType::PrepareExport(settings);
+	if (!myCurrentShader)
+		return;
 	if (!(myCurrentShader)->myUniforms)
 		return;
 	auto itr = (*(myCurrentShader)->myUniforms).begin();
@@ -558,6 +560,7 @@ void	API3DShader::PrepareExport(ExportSettings* settings)
 
 void	API3DShader::EndExport(ExportSettings* settings)
 {
+	if (myCurrentShader)
 	if ((myCurrentShader)->myUniforms)
 	{
 
