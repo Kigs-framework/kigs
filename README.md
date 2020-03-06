@@ -1,13 +1,20 @@
 ![Kigs framework](https://github.com/assoria/kigs/wiki/data/logo.png)
 
-Kigs framework is a C++ modular multipurpose cross platform framework.
+Kigs framework is a C++ modular multi-purpose cross-platform framework.
 Assoria used it as a basis for [many projects](https://kigs-framework.org/Projects).
 
 The main goal was to be able to develop different types of applications (games, simulators, viewers...) quickly,
-in a totally independent manner (without any "black box"). 
+in a totally independent manner. 
 
-We decided to first open source the framework for Windows ( x86 , x64 , for openGL and D3D, WUP D3D ), and HTML5 (Emscripten) platforms (Online compiled samples are [here](https://kigs-framework.org/Samples)). 
-Other platforms ( iOS, Android, Linux... ) are still private but could also be opened in the future.
+Kigs framework can be seen as "game engine", but more general purpose and more open and scalable. 
+
+Released platforms are : 
+* Windows ( x86 , x64 , for openGL and D3D, WUP D3D ) using Microsoft Visual Studio.
+* HTML5 (Emscripten) (Online compiled samples are [here](https://kigs-framework.org/Samples)).
+* Android using Microsoft Visual Studio. (help welcome to set up Android Studio build).
+* iOS in "as is" state : The platform has not been maintained for more than a year (help welcome to set up XCode build).
+* help welcome to improve existing platforms or add new ones ( Linux, MacOS )
+
 
 The main IDE to build current platforms is Visual Studio C++ 2019.
 
