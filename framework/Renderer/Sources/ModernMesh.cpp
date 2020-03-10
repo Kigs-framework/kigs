@@ -1118,7 +1118,6 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 	// create new vertex buffer with good size
 	auto rawbuf = new unsigned char[myVertexCount*myVertexSize];
 	myVertexBufferArray.SetBuffer((void*)rawbuf, myVertexCount*myVertexSize);
-	delete[] rawbuf;
 	memset(myVertexBufferArray.buffer(), 0, myVertexCount*myVertexSize);
 
 	unsigned char* readVertex = oldVertexArray;

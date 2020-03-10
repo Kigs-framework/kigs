@@ -76,8 +76,8 @@ public:
 	void Update(const Timer& timer, void* addParam) override;
 	
 	// catch resource manager add & remove
-	bool	addItem(CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
-	bool	removeItem(CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
+	bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 	
 	//! overloaded to be notified when added to or removed from an animated object
 	void		addUser(CoreModifiable* user) override;

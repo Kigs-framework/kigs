@@ -29,7 +29,7 @@ ABaseChannel::ABaseChannel(const kstl::string& name, CLASS_NAME_TREE_ARG)
 }
 
 
-bool	ABaseChannel::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+bool	ABaseChannel::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	//! if item is a stream, then add it to the streams list 
 	if(item->isSubType(ABaseStream::myClassID))
@@ -41,7 +41,7 @@ bool	ABaseChannel::addItem(CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return CoreModifiable::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-bool	ABaseChannel::removeItem(CMSP& item DECLARE_LINK_NAME)
+bool	ABaseChannel::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	//! if item is a stream, then try to remove it from streams list
 	if(item->isSubType(ABaseStream::myClassID))
