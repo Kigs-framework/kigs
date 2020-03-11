@@ -289,7 +289,7 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 	
 	if(channel != nullptr)
 	{
-		channel->addItem((CMSP&)stream);
+		channel->addItem(stream);
 		tmp_links->AddStream(stream.get(),0);
 		stream->InitFromResource(info,0);
 		one_stream_is_ok=true;
@@ -320,7 +320,7 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 		
 		if(channel != nullptr)
 		{
-			channel->addItem((CMSP&)stream);
+			channel->addItem(stream);
 			tmp_links->AddStream(stream.get(),streamindex);
 			++streamindex;
 			stream->InitFromResource(info,i);
@@ -405,7 +405,6 @@ void    AObject::RemoveAnimation(AnimationResourceInfo* info)
 	if(sys->GetLinksCount() == 0)
 	{
 		RemoveSystem(sys);
-		sys->Destroy();  
 	}
 };
 
@@ -944,7 +943,7 @@ void    AObject::AddSystem(ABaseSystem* system)
 	
 	system->SetAObject(this);
 	m_pSystemSet.insert(system);
-	
+	system->GetRef();
 };
 
 // ******************************
@@ -957,6 +956,7 @@ void    AObject::AddSystem(ABaseSystem* system)
 void    AObject::RemoveSystem(ABaseSystem* system)
 {
 	m_pSystemSet.erase(system);
+	system->Destroy();
 };
 
 // ******************************

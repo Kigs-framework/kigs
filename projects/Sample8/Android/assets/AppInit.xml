@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Inst N="AppWindow" Type="Window">
+    <Attr N="PositionX" V="-1"/>
+	<Attr N="PositionY" V="-1"/>
+	<Attr N="SizeX" V="1280"/>
+	<Attr N="SizeY" V="800"/>
+	<Attr N="FullScreen" V="false"/>
+	<Attr N="Mouse Cursor" V="true"/>
+	<Attr Type="string" N="BundleFileName" V="files.bundle" Dyn="true"/>
+	
+	<Inst N="theRenderingScreen" Type="RenderingScreen">
+		<Attr N="SizeX" V="0">
+			<Modifier Type="CoreItemOperatorModifier" V="#..->SizeX#"/>
+		</Attr>
+		<Attr N="SizeY" V="0">
+			<Modifier Type="CoreItemOperatorModifier" V="#..->SizeY#"/>
+		</Attr>
+		<Attr N="DesignSizeX" V="1280"/>
+		<Attr N="DesignSizeY" V="800"/>
+		<Attr N="BitsPerZ" V="32"/>
+		<Attr N="Brightness" V="0"/>
+		<Attr N="BackDropColor" V="{0.0,0.0,0.0}"/>
+		<Attr N="VSync" V="true"/>
+	</Inst>
+
+</Inst>
