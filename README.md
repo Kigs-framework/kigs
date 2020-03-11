@@ -6,7 +6,7 @@ Assoria used it as a basis for [many projects](https://kigs-framework.org/Projec
 The main goal was to be able to develop different types of applications (games, simulators, viewers...) quickly,
 in a totally independent manner. 
 
-Kigs framework can be seen as "game engine", but more general purpose and more open and scalable. 
+Kigs framework can be seen as a "game engine", but more general purpose and more open and scalable. 
 
 Released platforms are : 
 * Windows ( x86 , x64 , for openGL and D3D, WUP D3D ) using Microsoft Visual Studio.
