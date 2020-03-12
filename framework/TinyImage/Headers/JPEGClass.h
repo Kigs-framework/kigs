@@ -42,5 +42,6 @@ protected:
 
 };
 
+std::vector<u8> RGB24ToJpeg(unsigned char* image_buffer, int image_width, int image_height, int quality);
 
 #endif //_JPEGCLASS_H_

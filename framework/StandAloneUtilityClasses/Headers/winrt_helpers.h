@@ -53,4 +53,3 @@ inline auto resume_on_kigs_thread()
 {
 	return winrt::resume_foreground(App::GetApp()->GetWindow().Dispatcher());
 }
-
