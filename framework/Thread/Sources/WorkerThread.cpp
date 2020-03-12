@@ -33,6 +33,10 @@ void WorkerThread::InitModifiable()
 			myThreadEvent = KigsCore::GetInstanceOf("WorkerThreadEvent","ThreadEvent");
 			myThreadEvent->setValue(LABEL_TO_ID(AutoReset), true);
 			myThreadEvent->setSemaphore(mySemaphore);
+
+			// set Callee and Method, else Thread::InitModifiable will not call Start
+			myCallee = this;
+			myMethod = "WorkerThread";
 			Thread::InitModifiable();
 		}
 	}
@@ -40,23 +44,26 @@ void WorkerThread::InitModifiable()
 
 
 //! the thread run method, wait for a task and sleep when task is done
-int WorkerThread::protectedRun()
+void WorkerThread::Start()
 {
-	rmt_SetCurrentThreadName(getName().c_str());
-	do
-	{
-		if (!myIsAutoFeed)
-			pause();
-
-		myIsAutoFeed = false;
-		if (myCurrentTask)
+	myCurrentThread = std::thread([this]()
 		{
-			myCurrentTask->myMethodInstance->CallMethod(myCurrentTask->myMethodID, myEmptyParams, myCurrentTask->myPrivateParams);
-			processDone();
-		}
-	} while (myNeedExit == false);
+			myCurrentState = State::RUNNING;
+			do
+			{
+				if (!myIsAutoFeed)
+					pause();
 
-	return 0;
+				myIsAutoFeed = false;
+				if (myCurrentTask)
+				{
+					myCurrentTask->myMethodInstance->CallMethod(myCurrentTask->myMethodID, myEmptyParams, myCurrentTask->myPrivateParams);
+					processDone();
+				}
+			} while (myNeedExit == false);
+			Done();
+		});
+
 }
 
 void	WorkerThread::pause()
@@ -71,13 +78,12 @@ void	WorkerThread::resume()
 
 void	WorkerThread::processDone()
 {
-	CMSP toAdd(this, GetRefTag{});
-	mySemaphore->addItem(toAdd);
+	mySemaphore->GetMutex().lock();
 	cleanTask();
 	myThreadEventEnd->signal();
 	myThreadEventEnd = 0;
 	myIsAutoFeed=myParentPoolManager->ManageQueue(this);
-	mySemaphore->removeItem(toAdd);
+	mySemaphore->GetMutex().unlock();
 }
 
 // to be called in a locked block

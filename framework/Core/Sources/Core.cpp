@@ -559,8 +559,7 @@ void	KigsCore::GetSemaphore()
 {
 	if (mySemaphore)
 	{
-		//			printf("get Sema\n");
-		mySemaphore->addItem(mySemaphore);
+		mySemaphore->GetMutex().lock();
 	}
 }
 
@@ -569,8 +568,7 @@ void KigsCore::ReleaseSemaphore()
 {
 	if (mySemaphore)
 	{
-		mySemaphore->removeItem(mySemaphore);
-		//			printf("release Sema\n");
+		mySemaphore->GetMutex().unlock();
 	}
 }
 
@@ -847,32 +845,12 @@ MEMORYMANAGEMENT_START
 MEMORYMANAGEMENT_END
 	if(myCoreInstance->mySemaphore)
 	{
+		// get a ref on myCoreInstance->mySemaphore
+		CMSP tmp = myCoreInstance->mySemaphore;
+		// so now, we can set myCoreInstance->mySemaphore to nullptr without locking semaphore
 		myCoreInstance->mySemaphore=nullptr;
-	
 	}
 }
-
-// define MemoryManager lock/unlock here
-// because methods use KigsCore methods, and linker don't want MemoryManager to use core methods
-/*
-void	MemoryManager::Lock() const
-{
-	if(mySemaphore)
-	{
-		CoreModifiable*	semaphore=(CoreModifiable*)mySemaphore;
-		semaphore->addItem(semaphore);
-	}
-}
-
-void	MemoryManager::UnLock() const
-{
-	if(mySemaphore)
-	{
-		CoreModifiable*	semaphore=(CoreModifiable*)mySemaphore;
-		semaphore->removeItem(semaphore);
-	}
-}
-*/
 
 GlobalProfilerManager* KigsCore::GetProfileManager()
 {

@@ -4,7 +4,6 @@
 
 #include <CoreModifiable.h>
 #include "Thread.h"
-#include "ThreadLocalStorageManager.h"
 #include "Timer.h"
 #include "TimeProfiler.h"
 #include "CoreBaseApplication.h"
@@ -59,6 +58,8 @@ struct TimeEventCircularBuffer
 };
 
 
+
+
 class ThreadProfiler : public CoreModifiable
 {
 public:
@@ -72,7 +73,7 @@ public:
 	void AddTimeEvent(TimeEventType type, const char* name, const char* function_name)
 	{
 		if (!myAllowNewEvents) return;
-		CoreModifiable* thread = myTlsManager->GetCurrentThread();
+		CoreModifiable* thread = myCurrentThread;
 		int index = myCircularBufferIndexes[thread];
 		myCircularBufferIndexes[thread] = (myCircularBufferIndexes[thread] + 1) % THREAD_PROFILER_BUFFER_SIZE;
 		myCircularBufferMap[thread].buffer[index].Set(type, name, function_name, myGobalTimer->GetTime());
@@ -109,13 +110,16 @@ public:
 
 	//Remotery* rmt;
 
+	static thread_local Thread* myCurrentThread;
+
 private:
 	
 	kstl::map<CoreModifiable*, TimeEventCircularBuffer> myCircularBufferMap;
 	kstl::map<CoreModifiable*, unsigned int> myCircularBufferIndexes;
 	SP<Timer> myGobalTimer;
 
-	ThreadLocalStorageManager* myTlsManager;
+	
+
 	bool myAllowNewEvents;
 	CMSP mySemaphore;
 };

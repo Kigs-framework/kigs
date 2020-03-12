@@ -155,7 +155,7 @@ class CoreModifiableAttribute;
 
 struct MethodCallingStruct
 {
-	unsigned int    myMethodID;
+	KigsID			myMethodID;
 	void*			myPrivateParams;
 	CoreModifiable* myMethodInstance;
 };
