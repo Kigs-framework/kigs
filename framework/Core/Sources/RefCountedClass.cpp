@@ -406,6 +406,7 @@ void RefCountedClass::ProtectedDestructor()
 
 std::lock_guard<std::recursive_mutex>* RefCountedClass::lockForDestroy()
 {
+	KigsCore::Instance()->GetSemaphore();
 	std::lock_guard<std::recursive_mutex>* lk = nullptr;
 	if (myTypeNode)
 	{

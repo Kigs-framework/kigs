@@ -42,26 +42,26 @@ void SoundManagerAndroid::Init(Core* core, const kstl::vector<CoreModifiableAttr
 	
 	JNIEnv* g_env = KigsJavaIDManager::getEnv();
 	
-	jclass pMaClasse = g_env->FindClass("com/assoria/soundmanager/AudioBuffer");
+	jclass pMaClasse = g_env->FindClass("com/kigs/soundmanager/AudioBuffer");
 	myJavaAudioBufferManager = (jclass)g_env->NewGlobalRef(pMaClasse);
 	
 	
 	
-	Load=g_env->GetStaticMethodID(myJavaAudioBufferManager, "Load", "(Ljava/lang/String;Z)Lcom/assoria/soundmanager/SoundResourceStruct;");
+	Load=g_env->GetStaticMethodID(myJavaAudioBufferManager, "Load", "(Ljava/lang/String;Z)Lcom/kigs/soundmanager/SoundResourceStruct;");
 	
-	Play=g_env->GetStaticMethodID(myJavaAudioBufferManager, "Play", "(Lcom/assoria/soundmanager/SoundResourceStruct;ZFFF)Lcom/assoria/soundmanager/SoundStreamStruct;");
+	Play=g_env->GetStaticMethodID(myJavaAudioBufferManager, "Play", "(Lcom/kigs/soundmanager/SoundResourceStruct;ZFFF)Lcom/kigs/soundmanager/SoundStreamStruct;");
 	
-	Pause=g_env->GetStaticMethodID(myJavaAudioBufferManager, "Pause", "(Lcom/assoria/soundmanager/SoundStreamStruct;Z)Z");
+	Pause=g_env->GetStaticMethodID(myJavaAudioBufferManager, "Pause", "(Lcom/kigs/soundmanager/SoundStreamStruct;Z)Z");
 	
-	Stop=g_env->GetStaticMethodID(myJavaAudioBufferManager, "Stop", "(Lcom/assoria/soundmanager/SoundStreamStruct;)Z");
+	Stop=g_env->GetStaticMethodID(myJavaAudioBufferManager, "Stop", "(Lcom/kigs/soundmanager/SoundStreamStruct;)Z");
 	
-	SetVolume=g_env->GetStaticMethodID(myJavaAudioBufferManager, "SetVolume", "(Lcom/assoria/soundmanager/SoundStreamStruct;FF)Z");
+	SetVolume=g_env->GetStaticMethodID(myJavaAudioBufferManager, "SetVolume", "(Lcom/kigs/soundmanager/SoundStreamStruct;FF)Z");
 	
-	SetPitch=g_env->GetStaticMethodID(myJavaAudioBufferManager, "SetPitch", "(Lcom/assoria/soundmanager/SoundStreamStruct;F)Z");
+	SetPitch=g_env->GetStaticMethodID(myJavaAudioBufferManager, "SetPitch", "(Lcom/kigs/soundmanager/SoundStreamStruct;F)Z");
 	
-	Unload=g_env->GetStaticMethodID(myJavaAudioBufferManager, "Unload", "(Lcom/assoria/soundmanager/SoundResourceStruct;)Z");
+	Unload=g_env->GetStaticMethodID(myJavaAudioBufferManager, "Unload", "(Lcom/kigs/soundmanager/SoundResourceStruct;)Z");
 	
-	isPlaying=g_env->GetStaticMethodID(myJavaAudioBufferManager, "isPlaying", "(Lcom/assoria/soundmanager/SoundStreamStruct;)Z");
+	isPlaying=g_env->GetStaticMethodID(myJavaAudioBufferManager, "isPlaying", "(Lcom/kigs/soundmanager/SoundStreamStruct;)Z");
 	
 	InitModifiable();
 }

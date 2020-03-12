@@ -17,6 +17,7 @@
 			<Attr N="Priority" V="50"/>
 			<Attr N="Dock" V="{0.500000,0.50000}"/>
 			<Attr N="Anchor" V="{0.500000,0.50000}"/>
+      <Attr N="KeepRatio" V="false"/>
 		</Inst>
 	</Inst>
 	<Inst N="FadeIn_Launcher" T="CoreSequenceLauncher">

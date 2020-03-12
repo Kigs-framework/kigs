@@ -35,11 +35,11 @@
 		<Attr N="Anchor" V="{0.500000,0.500000}"/>
 		<Attr N="SizeY" V="240"/>
 		<Attr N="SizeX" V="500"/>
-		<Attr N="Priority" V="50"/>
+		<Attr N="Priority" V="500"/>
 		<Attr N="Dock" V="{0.500000,0.500000}"/>
 		<Attr N="Color" V="{1.000000,1.000000,1.000000,1.000000}"/>
 		
-		<Inst N="TextBulle" Type="UIMultilineText">            
+		<Inst N="TextBulle" Type="UIText">            
 			<Attr N="Color" V="{0.0,0.0,0.0,1.0}"/>
 			<Attr N="Anchor" V="{0.500000,0.500000}"/>
 			<Attr N="Text" V="Quitter l'appli ?"/>
@@ -49,6 +49,7 @@
 			<Attr N="Opacity" V="1.000000"/>
 			<Attr N="Dock" V="{0.500000,0.300000}"/>
 			<Attr N="MaxSize" V="240"/>
+      <Attr N="Priority" V="501"/>
 		</Inst>
 		
 		<Inst N="YesButton" Type="UIButtonText">
@@ -62,6 +63,7 @@
 		  <Attr N="FontSize" V="50"/>
 		  <Attr N="FontName" V="Calibri.ttf"/>
 		  <Attr N="Dock" V="{0.300000,0.70000}"/>
+      <Attr N="Priority" V="501"/>
 		</Inst>
 		
 		<Inst N="NoButton" Type="UIButtonText">
@@ -75,6 +77,7 @@
 		  <Attr N="FontSize" V="50"/>
 		  <Attr N="FontName" V="Calibri.ttf"/>
 		  <Attr N="Dock" V="{0.700000,0.70000}"/>
+      <Attr N="Priority" V="501"/>
 		</Inst>
 	  </Inst>
 	</Inst>

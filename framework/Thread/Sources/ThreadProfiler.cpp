@@ -2,12 +2,14 @@
 #include <ThreadProfiler.h>
 #include <FilePathManager.h>
 
+thread_local Thread* ThreadProfiler::myCurrentThread=nullptr;
+
+
 IMPLEMENT_CLASS_INFO(ThreadProfiler)
 
 ThreadProfiler::ThreadProfiler(const kstl::string& name, CLASS_NAME_TREE_ARG): CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	//rmt_CreateGlobalInstance(&rmt);
-	myTlsManager = (ThreadLocalStorageManager*)KigsCore::GetSingleton("ThreadLocalStorageManager").get();
 	mySemaphore = KigsCore::GetInstanceOf("threadprofilersepmaphore", "Semaphore");
 	myGobalTimer = KigsCore::GetInstanceOf("ThreadProfilerTimer", "Timer");
 #ifdef DO_THREAD_PROFILING
@@ -33,21 +35,19 @@ void ThreadProfiler::ClearProfiler()
 void ThreadProfiler::RemoveThread(Thread* thread)
 {
 #ifdef DO_THREAD_PROFILING
-	CMSP toAdd(this, GetRefTag{});
-	mySemaphore->addItem(toAdd);
+	mySemaphore->GetMutex().lock();
 	myCircularBufferMap.erase(thread);
-	mySemaphore->removeItem(toAdd);
+	mySemaphore->GetMutex().unlock();
 #endif 
 }
 
 void ThreadProfiler::RegisterThread(Thread* thread)
 {
 #ifdef DO_THREAD_PROFILING
-	CMSP toAdd(this, GetRefTag{});
-	mySemaphore->addItem(toAdd);
+	mySemaphore->GetMutex().lock();
 	//myCircularBufferMap[thread];
 	myCircularBufferIndexes[thread] = 0;
-	mySemaphore->removeItem(toAdd);
+	mySemaphore->GetMutex().unlock();
 #endif
 }
 

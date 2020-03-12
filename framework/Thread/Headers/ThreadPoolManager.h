@@ -41,10 +41,13 @@ public:
 	TaskGroupHandle*	createTaskGroup(MethodCallingStruct*[], int size);
 	SmartPointer<ThreadEvent>		LaunchTaskGroup(TaskGroupHandle* tgh);
 
-	// when a WorkerThread has finished is task, launch a queued task if available 
-	bool	ManageQueue(WorkerThread* endedThread);
+	unsigned int	getRunningTaskCount();
 
 protected:
+
+	friend class WorkerThread;
+	// when a WorkerThread has finished is task, launch a queued task if available 
+	bool	ManageQueue(WorkerThread* endedThread);
 
 	class TaskGroup : public TaskGroupHandle
 	{

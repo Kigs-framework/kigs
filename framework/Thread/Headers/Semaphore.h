@@ -16,14 +16,20 @@ class Semaphore : public CoreModifiable
 {
 public:
 
-    DECLARE_ABSTRACT_CLASS_INFO(Semaphore,CoreModifiable,Thread)
+    DECLARE_CLASS_INFO(Semaphore,CoreModifiable,Thread)
 
 	//! constructor
     Semaphore(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
+	auto& GetPrivateMutex() {return myPrivateMutex;}
+
 protected:
+
 	//! destructor
     virtual ~Semaphore();
+
+	// CoreModifiable mutex is recursive... Here we want a non recursive semaphore
+	std::mutex	myPrivateMutex;
 };
 
 #endif //_SEMAPHORE_H_

@@ -19,7 +19,6 @@ void	ThreadPoolManager::InitModifiable()
 		// create a pool with n thread manage working / paused threads
 		if (myThreadCount > 0)
 		{
-
 			mySemaphore = KigsCore::GetInstanceOf("ThreadPoolManagerSemaphore", "Semaphore");
 
 			int i;
@@ -44,7 +43,13 @@ ThreadPoolManager::~ThreadPoolManager()
 	unsigned int i;
 	for (i = 0; i < myThreadList.size(); i++)
 	{
-		myThreadList[i]->KillThread();
+		myThreadList[i]->askExit();
+		// wait for task to end
+		while (myThreadList[i]->GetState() == Thread::State::RUNNING)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		}
+
 		myThreadList[i]=nullptr;
 	}
 	myThreadList.clear();
@@ -57,8 +62,7 @@ SmartPointer<ThreadEvent>	ThreadPoolManager::setTask(MethodCallingStruct* task)
 {
 
 	// lock 
-	CMSP toAdd(this, GetRefTag{});
-	mySemaphore->addItem(toAdd);
+	mySemaphore->GetMutex().lock();
 	
 	// getAvailableEvent always returns a valid available event 
 	SmartPointer<ThreadEvent> result = getTaskEndEvent();
@@ -70,7 +74,7 @@ SmartPointer<ThreadEvent>	ThreadPoolManager::setTask(MethodCallingStruct* task)
 		addTaskToQueue(task,result);
 
 	// unlock
-	mySemaphore->removeItem(toAdd);
+	mySemaphore->GetMutex().unlock();
 	return result;
 }
 
@@ -82,6 +86,20 @@ void ThreadPoolManager::addTaskToQueue(MethodCallingStruct* task,SmartPointer<Th
 
 	myQueuedtasks.push_back(toAdd);
 
+}
+
+unsigned int	ThreadPoolManager::getRunningTaskCount()
+{
+	unsigned int i;
+	unsigned int count= myThreadList.size();
+	for (i = 0; i < myThreadList.size(); i++)
+	{
+		if (myThreadList[i]->isAvailable())
+		{
+			count--;
+		}
+	}
+	return count;
 }
 
 // to be called in locked block
@@ -132,13 +150,11 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 {
 	TaskGroup* taskgroup = (TaskGroup*)tgh;
 	// lock 
-	CMSP toAdd(this, GetRefTag{});
-	mySemaphore->addItem(toAdd);
+	std::lock_guard<std::recursive_mutex> lk(mySemaphore->GetMutex());
 	int taskgroupsize = taskgroup->taskList.size();
 	if (taskgroupsize == 0)
 	{
 		// unlock
-		mySemaphore->removeItem(toAdd);
 		delete taskgroup;
 		return 0;
 	}
@@ -155,9 +171,6 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 		else
 			addTaskToQueue(taskgroup->taskList[i], result);
 	}
-	
-	// unlock
-	mySemaphore->removeItem(toAdd);
 	
 	delete taskgroup;
 	return result;

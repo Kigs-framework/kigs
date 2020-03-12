@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Inst N="instance1" T="SimpleClass">
-	<Attr T="int" N="UpgradorInt" V="56" Dyn="yes"/>
-	<Attr N="StringValue" V="string value"/>
-	<Upgrd N="OtherUpgradeSimple"/>
-	<Upgrd N="UpgradeSimple"/>
-</Inst>

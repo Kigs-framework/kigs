@@ -18,17 +18,25 @@ class ThreadEvent : public CoreModifiable
 {
 public:
 
-	DECLARE_ABSTRACT_CLASS_INFO(ThreadEvent, CoreModifiable, Thread)
+	DECLARE_CLASS_INFO(ThreadEvent, CoreModifiable, Thread)
 
 	//! constructor
 	ThreadEvent(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	virtual void	wait();
-	virtual void	signal();
+	void	wait();
+	void	signal();
 
 	void	setSemaphore(Semaphore* semaphore)
 	{
-		mySemaphore = semaphore;
+		if (semaphore)
+		{
+			if (myOwnCriticalSection)
+			{
+				delete myCriticalSection;
+			}
+			myCriticalSection = &(semaphore->GetPrivateMutex());
+			myOwnCriticalSection = false;
+		}
 	}
 
 protected:
@@ -36,20 +44,16 @@ protected:
 	friend class WorkerThread;
 	friend class ThreadPoolManager;
 
-	virtual void platformWait() = 0;
-	virtual void platformSignal() = 0;
-
-
 	//! destructor
 	virtual ~ThreadEvent();
-
-	void	setAvailable(bool available);
-
-	Semaphore*	mySemaphore;
 
 	maInt			myEventCounter;
 	int				myCurrentCount;
 	maBool			myAutoReset;
+
+	std::mutex*					myCriticalSection=nullptr;
+	bool						myOwnCriticalSection=true;
+	std::condition_variable		myConditionVariable;
 };
 
 #endif //_THREADEVENT_H_

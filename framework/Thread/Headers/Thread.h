@@ -3,6 +3,10 @@
 
 #include "CoreModifiableAttribute.h"
 #include "CoreModifiable.h"
+#include "maReference.h"
+#include "maString.h"
+#include "AttributePacking.h"
+#include <thread>
 
 // ****************************************
 // * Thread class
@@ -13,18 +17,16 @@
 */
 // ****************************************
 
-class ThreadRunMethod;
-
 class Thread : public CoreModifiable
 {
 public:
 
-    DECLARE_ABSTRACT_CLASS_INFO(Thread,CoreModifiable,Thread)
+    DECLARE_CLASS_INFO(Thread,CoreModifiable,Thread)
 
 	//! constructor
     Thread(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
-	enum State
+	enum class State
 	{
 		UNINITIALISED=0,
 		RUNNING,
@@ -34,39 +36,59 @@ public:
 	//! return current state (uninitialised, normal or paused)
 	State	GetState(){return myCurrentState;}
 	
-	//!function for kill thread
-	void KillThread ();
-	void waitDeath(unsigned long P_Time_Out);
-	void sleepThread();
-	void wakeUpThread();
+	template<typename... T>
+	void	Start(T&&... params);
+
+	virtual void	Start();
+
 	kfloat	GetProgress(){return 	myProgress;}
-    inline void SetOpenFlag(bool a_value){bOpen = a_value;}
     inline State GetCurrentState() const {return myCurrentState;}
-	
-	void	setAffinityMask(int mask);
     
+	void	setMethod(CoreModifiable* localthis, const std::string& method)
+	{
+		if (myFunctionWasInserted)
+		{
+			myCallee->RemoveMethod(myMethod.const_ref());
+			myFunctionWasInserted = false;
+		}
+
+		myCallee = localthis;
+		myMethod = method;
+	}
+	template<typename F>
+	void	setMethod(CoreModifiable* localthis, const std::string& method, F&& func)
+	{
+		if (myFunctionWasInserted)
+		{
+			myCallee->RemoveMethod(myMethod.const_ref());
+			myFunctionWasInserted = false;
+		}
+
+		myCallee = localthis;
+		myMethod = method;
+
+		myCallee->InsertFunction(method, func);
+		myFunctionWasInserted = true;
+	}
+
 protected:
 
-	//! overloaded InitModifiable method. Init thread
-	void InitModifiable() override;
+	// Init start thread if Method && Callee parameters are set
+	virtual void InitModifiable() override;
 
-	//! static run method, call the protectedRun method
-	static ThreadReturnType	Run(void* param);
-
-	//! the thread run method
-	virtual int	protectedRun() =0 ;
-    virtual void protectedClose(){};
+	// reset all states
+	void	Done();
 
 	//! destructor
     virtual ~Thread();
-
-	//! real thread 
-	friend class			ThreadRunMethod;
+ 
 	State					myCurrentState;
-	SP<ThreadRunMethod>		myThreadRunMethod;
 	kfloat					myProgress;
-	maBool					bOpen;
+	std::thread				myCurrentThread;
 
+	maString				myMethod= INIT_ATTRIBUTE(Method, "");
+	maReference				myCallee= INIT_ATTRIBUTE(Callee,"");
+	bool					myFunctionWasInserted = false;
 };
 
 #endif //_THREAD_H_
