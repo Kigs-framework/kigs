@@ -1,118 +1,117 @@
 #include "PrecompiledHeaders.h"
 #include "Thread.h"
-#include "ThreadRunMethod.h"
 #include "Core.h"
-#include <ThreadLocalStorageManager.h>
 #include <ThreadProfiler.h>
 
 IMPLEMENT_CLASS_INFO(Thread)
 
 Thread::Thread(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
-, myThreadRunMethod(nullptr)
-, bOpen(*this,false,LABEL_AND_ID(bOpen), true)
 {
-	
-  myCurrentState=UNINITIALISED;
+  myCurrentState= State::UNINITIALISED;
 }     
 
 Thread::~Thread()
 {
+#ifdef DO_THREAD_PROFILING
 	SP<ThreadProfiler> threadProfiler = KigsCore::GetSingleton("ThreadProfiler");
 	if (threadProfiler)
 		threadProfiler->RemoveThread(this);
-
-	KillThread();
+#endif
+	myCurrentThread.detach();
 }    
 
-void Thread::KillThread ( )
+
+template<typename... T>
+void	Thread::Start(T&&... params)
 {
-	if(myThreadRunMethod)
+	if ((myCurrentState == State::RUNNING) || (((CoreModifiable*)myCallee) == nullptr) || (myMethod.const_ref()==""))
 	{
-		if ( myCurrentState == RUNNING )
-		{
-			myThreadRunMethod->EndThread ( ); 
-			myCurrentState = FINISHED;
-		}
-		CMSP toDel(this, GetRefTag{});
-		myThreadRunMethod->removeItem(toDel);
-		myThreadRunMethod=nullptr;
-		myProgress=-1;
+		return;
 	}
+	myProgress = 0;
+	GetRef();
+	PackCoreModifiableAttributes	attr(nullptr);
+	int expander[]
+	{
+		(attr << std::forward<T>(params), 0)...
+	};
+	(void)expander;
+	auto& attr_list = (kstl::vector<CoreModifiableAttribute*>&)attr;
+
+	myCurrentThread = std::thread([this,&attr_list]()
+		{
+			myCurrentState = State::RUNNING;
+#ifdef DO_THREAD_PROFILING
+			ThreadProfiler::myCurrentThread = this;
+			SP<ThreadProfiler> threadProfiler = KigsCore::GetSingleton("ThreadProfiler");
+			if (threadProfiler)
+				threadProfiler->RegisterThread(this);
+#endif
+
+			((CoreModifiable*)myCallee)->CallMethod(myMethod.const_ref(), attr_list);
+
+			Done();
+		}
+	);
+
 }
 
-ThreadReturnType	Thread::Run(void* param)
+void	Thread::Start()
 {
-	SP<Thread> localThis((Thread*)param, StealRefTag{});
-	SP<ThreadLocalStorageManager> tls_manager = KigsCore::GetSingleton("ThreadLocalStorageManager");
-	if (tls_manager)
-		tls_manager->RegisterThread(localThis.get());
-
-	SP<ThreadProfiler> threadProfiler = KigsCore::GetSingleton("ThreadProfiler");
-	if (threadProfiler)
-		threadProfiler->RegisterThread(localThis.get());
-
-	localThis->myProgress=0;
-	// run thread
-	int result = localThis->protectedRun();
-	localThis->myProgress=1;
-
-    localThis->SetOpenFlag(false);
-    localThis->myCurrentState=FINISHED;
-    
-	// thread is finished
-	if(localThis->myThreadRunMethod)
+	if ((myCurrentState == State::RUNNING) || (((CoreModifiable*)myCallee) == nullptr) || (myMethod.const_ref() == ""))
 	{
-		localThis->myThreadRunMethod->removeItem((CMSP&)localThis);
-		localThis->myThreadRunMethod=0;
+		return;
 	}
-    
-    localThis->protectedClose();
-#ifdef SYSTEM_THREAD_RETURN_A_VALUE
-	return (ThreadReturnType)result;
+
+	myProgress = 0;
+	GetRef();
+	myCurrentThread = std::thread([this]()
+		{
+			myCurrentState = State::RUNNING;
+#ifdef DO_THREAD_PROFILING
+			ThreadProfiler::myCurrentThread = this;
+			SP<ThreadProfiler> threadProfiler = KigsCore::GetSingleton("ThreadProfiler");
+			if (threadProfiler)
+				threadProfiler->RegisterThread(this);
 #endif
+			
+			kstl::vector<CoreModifiableAttribute*> attr_list;
+			((CoreModifiable*)myCallee)->CallMethod(myMethod.const_ref(), attr_list);
+
+			Done();
+		}
+	);
+
 }
 
 void Thread::InitModifiable()
 {
-	CoreModifiable::InitModifiable();
-	
-	// create a os dependant thread 
-	myThreadRunMethod=KigsCore::GetInstanceOf(this->getName() + "ThreadRunMethod","ThreadRunMethod");		
-	
-	if(!myThreadRunMethod->isSubType(ThreadRunMethod::myClassID))
+	if (!IsInit())
 	{
-		myThreadRunMethod=nullptr;
-		UninitModifiable();
-	}
-
-	if(myThreadRunMethod)
-	{
-		CMSP toAdd(this, GetRefTag{});
-		myThreadRunMethod->addItem(toAdd);
- 		myThreadRunMethod->Init();
-		myCurrentState=RUNNING;
+		if ((((CoreModifiable*)myCallee) == nullptr) || (myMethod.const_ref() == ""))
+		{
+			return;
+		}
+		else
+		{
+			ParentClassType::InitModifiable();
+			Start();
+		}
 	}
 }
 
-void	Thread::setAffinityMask(int mask)
+// reset all states
+void	Thread::Done()
 {
-	if (myThreadRunMethod)
+	if (myFunctionWasInserted)
 	{
-		myThreadRunMethod->setAffinityMask(mask);
+		myCallee->RemoveMethod(myMethod.const_ref());
+		myFunctionWasInserted = false;
 	}
-}
 
-void Thread::sleepThread()
-{
-	myThreadRunMethod->sleepThread();
-}
-
-void Thread::wakeUpThread()
-{
-	myThreadRunMethod->wakeUpThread();
-}
-
-void Thread::waitDeath(unsigned long P_Time_Out)
-{
-	myThreadRunMethod->waitDeath(P_Time_Out);
+	myProgress = 1;
+	myCurrentState = State::FINISHED;
+	UnInit();
+	flagAsPostDestroy();
+	Destroy();
 }

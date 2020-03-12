@@ -39,6 +39,7 @@ public:
 	void	askExit()
 	{
 		myNeedExit = true;
+		resume();
 	}
 
 	bool	isAvailable();
@@ -65,7 +66,7 @@ protected:
 
 
 	//! the thread run method
-	int	protectedRun() override;
+	void	Start() override;
 
 	//! destructor
 	virtual ~WorkerThread();
@@ -74,7 +75,7 @@ protected:
 
 	kstl::vector<CoreModifiableAttribute*>	myEmptyParams;
 
-	bool	myNeedExit;
+	bool								myNeedExit;
 
 	Semaphore*							mySemaphore;
 	SP<ThreadEvent>						myThreadEvent;

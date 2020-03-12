@@ -5,9 +5,7 @@
 #include "WorkerThread.h"
 #include "ThreadPoolManager.h"
 #include "ThreadProfiler.h"
-#ifdef _KIGS_ONLY_STATIC_LIB_
-#include "Platform/Thread/Threads.h"
-#endif
+
 
 IMPLEMENT_CLASS_INFO(ModuleThread)
 
@@ -23,16 +21,14 @@ ModuleThread::~ModuleThread()
 void ModuleThread::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"Thread",params);
-	#ifdef _KIGS_ONLY_STATIC_LIB_
-	RegisterDynamic(PlatformThreadModuleInit(core,params));
-	#endif
 
+	DECLARE_FULL_CLASS_INFO(core, Semaphore, Semaphore, Thread)
 	DECLARE_FULL_CLASS_INFO(core, WorkerThread, WorkerThread, Thread)
 	DECLARE_FULL_CLASS_INFO(core, ThreadPoolManager, ThreadPoolManager, Thread)
 	DECLARE_FULL_CLASS_INFO(core, ThreadProfiler, ThreadProfiler, Thread)
-
+	DECLARE_FULL_CLASS_INFO(core, Thread, Thread, Thread)
+	DECLARE_FULL_CLASS_INFO(core, ThreadEvent, ThreadEvent, Thread)
 #ifdef DO_THREAD_PROFILING
-	KigsCore::GetSingleton("ThreadLocalStorageManager")->Init();
 	KigsCore::SetThreadProfiler(KigsCore::GetSingleton("ThreadProfiler").get());
 	KigsCore::GetThreadProfiler()->Init();
 #endif
@@ -44,7 +40,6 @@ void ModuleThread::Close()
 {
 #ifdef DO_THREAD_PROFILING
 	KigsCore::ReleaseSingleton("ThreadProfiler");
-	KigsCore::ReleaseSingleton("ThreadLocalStorageManager");
 #endif
 	KigsCore::CloseMultiThread();
 	BaseClose();

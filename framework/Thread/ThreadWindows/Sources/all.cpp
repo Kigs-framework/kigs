@@ -1,5 +1,0 @@
-#include "ModuleThreadWin32.cpp"
-#include "SemaphoreWin32.cpp"
-#include "ThreadEventWin32.cpp"
-#include "ThreadLocalStorageManagerWin32.cpp"
-#include "ThreadRunMethodWin32.cpp"
