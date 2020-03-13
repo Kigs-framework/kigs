@@ -55,7 +55,7 @@ protected:
 	virtual bool	protectedUpdate(kdouble time)
 	{
 		CoreAction::protectedUpdate(time);
-		SetCoreItemOperatorContext(&myContext);
+		CoreItemEvaluationContext::SetContext(&myContext);
 		myContext.myTime = time;
 		dataType result;
 		if (myTarget->getValue(myParamID, result))
@@ -78,7 +78,7 @@ protected:
 			}
 			myTarget->setValue(myParamID, result);
 		}
-		ReleaseCoreItemOperatorContext();
+		CoreItemEvaluationContext::ReleaseContext();
 		return false;
 	}
 
@@ -94,14 +94,14 @@ template<>
 inline bool	CoreActionFunction<kfloat,1>::protectedUpdate(kdouble time)
 {
 	CoreAction::protectedUpdate(time);
-	SetCoreItemOperatorContext(&myContext);
+	CoreItemEvaluationContext::SetContext(&myContext);
 	myContext.myTime = time;
 	if (myFunctions[0])
 	{
 		kfloat result = (kfloat)myFunctions[0];
 		myTarget->setValue(myParamID, result);
 	}
-	ReleaseCoreItemOperatorContext();
+	CoreItemEvaluationContext::ReleaseContext();
 	return false;
 }
 
@@ -121,9 +121,9 @@ public:
 
 	virtual inline operator operandType() const
 	{
-		if (myCurrentCoreItemEvaluationContext)
+		if (CoreItemEvaluationContext::GetContext())
 		{
-			CoreItemAnimationContext& currentContext = *((CoreItemAnimationContext*)myCurrentCoreItemEvaluationContext);
+			CoreItemAnimationContext& currentContext = *((CoreItemAnimationContext*)CoreItemEvaluationContext::GetContext());
 
 			return (operandType)(currentContext.myTime-currentContext.myActionStartTime);
 		}

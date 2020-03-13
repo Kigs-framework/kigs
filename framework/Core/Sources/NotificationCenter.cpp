@@ -41,7 +41,7 @@ void NotificationCenter::addObserver(CoreModifiable* observer, const kstl::strin
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 	if(selector.substr(0, 4) == "eval")
 	{
-		SetCoreItemOperatorContext(&myContext);
+		CoreItemEvaluationContext::SetContext(&myContext);
 
 		// check if eval float or string
 		if (selector.substr(4, 3) == "Str")
@@ -58,7 +58,7 @@ void NotificationCenter::addObserver(CoreModifiable* observer, const kstl::strin
 			CoreItemSP toAdd = CoreItemOperator<kfloat>::Construct(toeval, observer, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			newobstruct.myCurrentItem = toAdd;
 		}
-		ReleaseCoreItemOperatorContext();
+		CoreItemEvaluationContext::ReleaseContext();
 	}
 
 	protectedAddObserver(observer, newobstruct, selector, notificationName);
@@ -520,7 +520,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,kstl:
 					{
 						if (!currentobsStruct.myCurrentItem.isNil())
 						{
-							SetCoreItemOperatorContext(&myContext);
+							CoreItemEvaluationContext::SetContext(&myContext);
 							myContext.myVariableList[LABEL_TO_ID(sender).toUInt()] = sender;
 							// Warning faked cast
 							myContext.myVariableList[LABEL_TO_ID(data).toUInt()] = (RefCountedBaseClass*)data;
@@ -565,7 +565,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,kstl:
 								++paramscurrent;
 							}
 							
-							ReleaseCoreItemOperatorContext();
+							CoreItemEvaluationContext::ReleaseContext();
 							
 							// pop params
 							paramscurrent = params.begin();

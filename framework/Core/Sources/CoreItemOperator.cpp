@@ -14,17 +14,18 @@ struct RemoveDelimiter
 };
 
 
-CoreItemEvaluationContext*	myCurrentCoreItemEvaluationContext = 0;
+CoreItemEvaluationContext* CoreItemEvaluationContext::myCurrentContext = 0;
+std::mutex	CoreItemEvaluationContext::myMutex;
 
-void	SetCoreItemOperatorContext(CoreItemEvaluationContext* set)
+void	CoreItemEvaluationContext::SetContext(CoreItemEvaluationContext* set)
 {
-	KigsCore::Instance()->GetSemaphore();
-	myCurrentCoreItemEvaluationContext = set;
+	myMutex.lock();
+	myCurrentContext = set;
 }
-void	ReleaseCoreItemOperatorContext()
+void	CoreItemEvaluationContext::ReleaseContext()
 {
-	myCurrentCoreItemEvaluationContext = 0;
-	KigsCore::Instance()->ReleaseSemaphore();
+	myCurrentContext = 0;
+	myMutex.unlock();
 }
 
 template<typename operandType>
@@ -575,10 +576,10 @@ CoreItemOperator<operandType>* CoreItemOperator<operandType>::getOperator(const 
 template<typename operandType>
 RefCountedBaseClass* CoreItemOperator<operandType>::getVariable(const kstl::string& keyword)
 {
-	if (myCurrentCoreItemEvaluationContext)
+	if (CoreItemEvaluationContext::GetContext())
 	{
-		kigs::unordered_map<unsigned int, RefCountedBaseClass*>::iterator	itfound = myCurrentCoreItemEvaluationContext->myVariableList.find(CharToID::GetID(keyword));
-		if (itfound != myCurrentCoreItemEvaluationContext->myVariableList.end())
+		kigs::unordered_map<unsigned int, RefCountedBaseClass*>::iterator	itfound = CoreItemEvaluationContext::GetContext()->myVariableList.find(CharToID::GetID(keyword));
+		if (itfound != CoreItemEvaluationContext::GetContext()->myVariableList.end())
 		{
 			return (*itfound).second;
 		}
