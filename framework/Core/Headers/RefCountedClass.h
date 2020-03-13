@@ -291,7 +291,7 @@ public:
 
 protected:
 	
-	virtual std::lock_guard<std::recursive_mutex>* lockForDestroy() override;
+	//virtual std::unique_lock<std::recursive_mutex> lockForDestroy() override;
 
 	/**
 	* \fn 		~RefCountedClass();
