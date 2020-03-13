@@ -2,46 +2,36 @@
 
 #include "Core.h"
 #include "GenericRefCountedBaseClass.h"
-//! increment refcounter
-void    GenericRefCountedBaseClass::GetRef()
+
+
+void GenericRefCountedBaseClass::GetRef()
 {
-	// thread safe
-	KigsCore::Instance()->GetSemaphore();
-	myRefCounter++;
-	KigsCore::Instance()->ReleaseSemaphore();
+	myRefCounter.fetch_add(1, std::memory_order_relaxed);
 }
 
-
-std::lock_guard<std::recursive_mutex>* GenericRefCountedBaseClass::lockForDestroy()
+bool GenericRefCountedBaseClass::TryGetRef()
 {
-	KigsCore::Instance()->GetSemaphore();
-
-	return nullptr;
-}
-void GenericRefCountedBaseClass::unlockForDestroy(std::lock_guard<std::recursive_mutex>* lk)
-{
-	KigsCore::Instance()->ReleaseSemaphore();
-	if (lk)
+	int before = myRefCounter.fetch_add(1);
+	if (before == 0)
 	{
-		delete lk;
+		myRefCounter.fetch_sub(1, std::memory_order_relaxed);
+		return false;
 	}
+	return true;
 }
-
 
 void     GenericRefCountedBaseClass::Destroy()
 {
-	std::lock_guard<std::recursive_mutex>* lk=lockForDestroy();
-	myRefCounter--;
-	if (myRefCounter == 0)
+	int before = myRefCounter.fetch_sub(1, std::memory_order_relaxed);
+	if (before == 1)
 	{
 		if (checkDestroy())
 		{
-			myRefCounter++;
+			myRefCounter.fetch_add(1, std::memory_order_relaxed);
 		}
 		else
 		{
 			delete this;
 		}
 	}
-	unlockForDestroy(lk);
 }

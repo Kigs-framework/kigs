@@ -62,14 +62,18 @@ void	CoreTreeNode::RemoveInstance(RefCountedClass* toRemove)
 	}
 }
 
-void CoreTreeNode::getInstances(kstl::set<CoreModifiable*>& instances, bool recursive, bool only_one,bool getref) const
+void CoreTreeNode::getInstances(kstl::set<CoreModifiable*>& instances, bool recursive, bool only_one, bool getref) const
 {
 	std::lock_guard<std::recursive_mutex> lk{ myMutex };
 	for (auto i : myInstances)
 	{
-		if(getref) i->GetRef();
-		instances.insert(static_cast<CoreModifiable*>(i));
-		if (only_one) return;
+		bool ok = true;
+		if(getref) ok = i->TryGetRef();
+		if (ok)
+		{
+			instances.insert(static_cast<CoreModifiable*>(i));
+			if (only_one) return;
+		}
 	}
 	if (recursive)
 	{
@@ -78,7 +82,7 @@ void CoreTreeNode::getInstances(kstl::set<CoreModifiable*>& instances, bool recu
 			if (it.second)
 			{
 				it.second->getInstances(instances, true, only_one,getref);
-				if (only_one&&instances.size())
+				if (only_one && instances.size())
 					break;
 			}
 
@@ -95,8 +99,9 @@ void CoreTreeNode::getRootInstances(kstl::set<CoreModifiable*>& instances, bool 
 		CoreModifiable* testFather = ((CoreModifiable*)i);
 		if (testFather->GetParentCount() == 0)
 		{
-			if(getref) (i)->GetRef();
-			instances.insert((CoreModifiable*)i);
+			bool ok = true;
+			if(getref) ok = (i)->TryGetRef();
+			if(ok) instances.insert((CoreModifiable*)i);
 		}
 	}
 	if (recursive)
@@ -404,17 +409,17 @@ void RefCountedClass::ProtectedDestructor()
 	KigsCore::Instance()->ReleaseSemaphore();
 }
 
-std::lock_guard<std::recursive_mutex>* RefCountedClass::lockForDestroy()
+/*
+std::unique_lock<std::recursive_mutex> RefCountedClass::lockForDestroy()
 {
 	KigsCore::Instance()->GetSemaphore();
-	std::lock_guard<std::recursive_mutex>* lk = nullptr;
 	if (myTypeNode)
 	{
-		lk = new std::lock_guard<std::recursive_mutex>(myTypeNode->myMutex); // lock corresponding CoreTreeNode mutex to avoid instance search founding an instance already in destroy process
+		return std::unique_lock<std::recursive_mutex>{myTypeNode->myMutex}; // lock corresponding CoreTreeNode mutex to avoid instance search founding an instance already in destroy process
 	}
-	return lk;
+	return {};
 }
-
+*/
 //
 void CoreTreeNode::getTreeNodes(bool OnlyAppendNodesWithInstances, kstl::list<const CoreTreeNode *> &nodes) const
 {
