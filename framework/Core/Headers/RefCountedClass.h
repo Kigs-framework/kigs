@@ -2,8 +2,8 @@
 #define _REFCOUNTEDCLASS_H
 
 #include "RefCountedBaseClass.h"
-#include "kstlvector.h"
-#include "kstlunordered_map.h"
+#include <vector>
+#include <unordered_map>
 #include <mutex>
 #include <atomic>
 #include "robin_hood.h"
@@ -19,7 +19,7 @@ class RefCountedClass;
 #define DECLARE_CLASS_NAME_TREE_ARG CLASS_NAME_TREE_ARG=0
 #define PASS_CLASS_NAME_TREE_ARG EnrichClassNameTree(classNameTree, myClassID, myRuntimeType)
 #else
-#define CLASS_NAME_TREE_ARG kstl::vector<CoreModifiableAttribute*>* args
+#define CLASS_NAME_TREE_ARG std::vector<CoreModifiableAttribute*>* args
 #define DECLARE_CLASS_NAME_TREE_ARG CLASS_NAME_TREE_ARG=0
 #define PASS_CLASS_NAME_TREE_ARG args
 #endif
@@ -49,27 +49,27 @@ class RefCountedClass;
 
 // utils defines to declare maMethod
 
-#define DEFINE_METHOD(currentclass,name)  bool currentclass::name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams)
+#define DEFINE_METHOD(currentclass,name)  bool currentclass::name(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& params,void* privateParams)
 
 
-#define DECLARE_METHOD(name)						bool	name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams);
-#define DECLARE_VIRTUAL_METHOD(name)		virtual bool	name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams);
-#define DECLARE_PURE_VIRTUAL_METHOD(name)	virtual bool	name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams)=0;
-#define DECLARE_OVERRIDE_METHOD(name)		virtual bool	name(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams) override;
+#define DECLARE_METHOD(name)						bool	name(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& params,void* privateParams);
+#define DECLARE_VIRTUAL_METHOD(name)		virtual bool	name(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& params,void* privateParams);
+#define DECLARE_PURE_VIRTUAL_METHOD(name)	virtual bool	name(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& params,void* privateParams)=0;
+#define DECLARE_OVERRIDE_METHOD(name)		virtual bool	name(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& params,void* privateParams) override;
 
 
 #define NOT_WRAPPED_METHOD_PUSH_BACK(name) table.push_back({ #name, static_cast<RefCountedClass::ModifiableMethod>(&CurrentClassType::name) });
 
 #define COREMODIFIABLE_METHODS(...) \
 public:\
-static void GetNotWrappedMethodTable(kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& table)\
+static void GetNotWrappedMethodTable(std::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& table)\
 {\
 	ParentClassType::GetNotWrappedMethodTable(table);\
 	FOR_EACH(NOT_WRAPPED_METHOD_PUSH_BACK, __VA_ARGS__)\
 }
 
 
-#define WRAP_METHOD_NO_CTOR(name) inline bool	name##Wrap(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams){\
+#define WRAP_METHOD_NO_CTOR(name) inline bool	name##Wrap(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& params,void* privateParams){\
 	kigs_impl::UnpackAndCall(&CurrentClassType::name, this, sender, params); return false; }
 
 
@@ -78,7 +78,7 @@ static void GetNotWrappedMethodTable(kstl::vector<std::pair<KigsID, RefCountedCl
 // Need #include "AttributePacking.h"
 #define WRAP_METHODS(...) FOR_EACH(WRAP_METHOD_NO_CTOR, __VA_ARGS__)\
 public:\
-static void GetMethodTable(kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& table)\
+static void GetMethodTable(std::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& table)\
 {\
 	ParentClassType::GetMethodTable(table);\
 	FOR_EACH(METHOD_PUSH_BACK, __VA_ARGS__)\
@@ -134,10 +134,10 @@ public:
 	}
 
 	// return classname vector
-	const kstl::vector<TwoNames>& classNames() const { return myClassNames; }
+	const std::vector<TwoNames>& classNames() const { return myClassNames; }
 
 protected:
-	kstl::vector<TwoNames> myClassNames;
+	std::vector<TwoNames> myClassNames;
 };
 
 
@@ -166,10 +166,10 @@ class RefCountedClass : public RefCountedBaseClass
 public:
 	static const KigsID myClassID; 
 	static KigsID myRuntimeType; 
-	typedef bool (RefCountedClass::*ModifiableMethod)(CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>&, void* privateParams); 
+	typedef bool (RefCountedClass::*ModifiableMethod)(CoreModifiable* sender, std::vector<CoreModifiableAttribute*>&, void* privateParams); 
 	typedef RefCountedClass CurrentClassType; 
 	typedef RefCountedBaseClass ParentClassType; 
-	virtual bool Call(RefCountedClass::ModifiableMethod method, CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>& attr, void* privateParams)
+	virtual bool Call(RefCountedClass::ModifiableMethod method, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& attr, void* privateParams)
 	{
 		RefCountedClass::ModifiableMethod currentmethod = static_cast<RefCountedClass::ModifiableMethod>(method); 
 		return (this->*(currentmethod))(sender, attr, privateParams); 
@@ -180,8 +180,8 @@ public:
 	virtual bool isSubType(const KigsID& cid) const override { if (RefCountedClass::myClassID == cid)return true;  return RefCountedBaseClass::isSubType(cid); } 
 	static void GetClassNameTree(CoreClassNameTree& classNameTree) { RefCountedBaseClass::GetClassNameTree(classNameTree); classNameTree.addClassName(RefCountedClass::myClassID, RefCountedClass::myRuntimeType); }
 
-	static void GetMethodTable(kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& method_table){}
-	static void GetNotWrappedMethodTable(kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& method_table) {}
+	static void GetMethodTable(std::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& method_table){}
+	static void GetNotWrappedMethodTable(std::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& method_table) {}
 
 	//! unique ID for an instance
 	typedef intptr_t InstanceUniqueID;
@@ -209,80 +209,85 @@ public:
 		return this;
 	};
 	*/
-	
+	/*
+	static std::vector<CMSP> FindInstances(const KigsID& id, bool exact_type_only = false);
+	static std::vector<CMSP> FindInstancesByName(const KigsID& id, const std::string& name, bool exact_type_only = false);
+	static CMSP FindFirstInstance(const KigsID& id, const std::string& name, bool exact_type_only = false);
+	static CMSP FindFirstInstanceByName(const KigsID& id, const std::string& name, bool exact_type_only = false);
+	*/
 	/**
-	* \fn 		static void GetInstances(const kstl::string &cid,kstl::set<CoreModifiable*>& instances,bool exactTypeOnly=false);
+	* \fn 		static void GetInstances(const std::string &cid,std::set<CoreModifiable*>& instances,bool exactTypeOnly=false);
 	* \brief	retreive all instances of the given type (exactTypeOnly define if the type should be exact or not)
 	* \param	cid : class Id
 	* \param	instances : list of instances (out param)
 	* \param	exactTypeOnly : if TRUE, only the exact type would be taken
 	*/
-	static void GetInstances(const KigsID& cid, kstl::set<CoreModifiable*>& instances, bool exactTypeOnly = false, bool only_one = false, bool getref = false);
+	static void GetInstances(const KigsID& cid, std::set<CoreModifiable*>& instances, bool exactTypeOnly = false, bool only_one = false, bool getref = false);
 	static CoreModifiable* GetFirstInstance(const KigsID& cid, bool exactTypeOnly=false, bool getref = false);
 	
 	/**
-	* \fn 		static void GetInstanceByRuntimeID(const kstl::string& runtimeID,kstl::set<CoreModifiable*>& instances);
+	* \fn 		static void GetInstanceByRuntimeID(const std::string& runtimeID,std::set<CoreModifiable*>& instances);
 	* \brief	retreive the instance by runtime ID
 	* \param	runtimeID : runtime ID ("name:type:pointer:uid")
 	* \param	instances : list of instances (out param)
 	*/
-	static void GetInstanceByRuntimeID(const kstl::string &runtimeID, kstl::set<CoreModifiable*>& instances, bool getref = false);
+	static void GetInstanceByRuntimeID(const std::string &runtimeID, std::set<CoreModifiable*>& instances, bool getref = false);
 
 	/**
-	* \fn 		static void GetRootInstances(const kstl::string &cid,kstl::set<CoreModifiable*>& instances,bool exactTypeOnly=false);
+	* \fn 		static void GetRootInstances(const std::string &cid,std::set<CoreModifiable*>& instances,bool exactTypeOnly=false);
 	* \brief	retreive all instances of the given type (exactTypeOnly define if the type should be exact or not) with no parents (root instances)
 	* \param	cid : class Id
 	* \param	instances : list of instances (out param)
 	* \param	exactTypeOnly : if TRUE, only the exact type would be taken
 	*/
-	static void GetRootInstances(const KigsID& cid, kstl::set<CoreModifiable*>& instances, bool exactTypeOnly = false, bool getref = false);
+	static void GetRootInstances(const KigsID& cid, std::set<CoreModifiable*>& instances, bool exactTypeOnly = false, bool getref = false);
 
 	/**
-	* \fn 		static void GetInstancesByName(const kstl::string &cid,const kstl::string &name,kstl::set<RefCountedClass*>& instances,bool exactTypeOnly=false);
+	* \fn 		static void GetInstancesByName(const std::string &cid,const std::string &name,std::set<RefCountedClass*>& instances,bool exactTypeOnly=false);
 	* \brief	retreive all instances of the given type for the given name (exactTypeOnly define if the type should be exact or not)
 	* \param	cid : class Id
 	* \param	name : class name
 	* \param	instances : list of instances (out param)
 	* \param	exactTypeOnly : if TRUE, only the exact type would be taken
 	*/
-	static void GetInstancesByName(const KigsID& cid, const kstl::string &name, kstl::set<CoreModifiable*>& instances, bool exactTypeOnly = false, bool only_one = false,bool getref=false);
-	static CoreModifiable* GetFirstInstanceByName(const KigsID& cid, const kstl::string &name, bool exactTypeOnly = false, bool getref = false);
+	static void GetInstancesByName(const KigsID& cid, const std::string &name, std::set<CoreModifiable*>& instances, bool exactTypeOnly = false, bool only_one = false,bool getref=false);
+	static CoreModifiable* GetFirstInstanceByName(const KigsID& cid, const std::string &name, bool exactTypeOnly = false, bool getref = false);
 
 
 	// \brief  debug : print the class inheritance tree
 	// void printClassNameTree(std::ostream& os) const;
 
 	/**
-	* \fn 		const kstl::vector<CoreClassNameTree::TwoNames>& getClassNameTree() const;
+	* \fn 		const std::vector<CoreClassNameTree::TwoNames>& getClassNameTree() const;
 	* \brief	retreive the inheritance string list for this class
 	* \return	the list of inherited classes
 	*/
-	const kstl::vector<CoreClassNameTree::TwoNames>& getClassNameTree() const;
+	const std::vector<CoreClassNameTree::TwoNames>& getClassNameTree() const;
 
 	/**
-	  * \fn		static kstl::string DefaultName();
+	  * \fn		static std::string DefaultName();
 	  * \brief	create a default name for a new instance
 	  * \return	the default name
 	  */
-	static kstl::string DefaultName();
+	static std::string DefaultName();
 
 	/**
-	  * \fn		 kstl::string getName() const {return myName;}
+	  * \fn		 std::string getName() const {return myName;}
 	  * \brief	 return name of the instance
 	  * \return	 the name of the instance
 	  */
-	const kstl::string& getName() const { return myName; }
+	const std::string& getName() const { return myName; }
 	const KigsID& getNameID() const { return myNameID; }
 
 	/**
-	 * \fn		 void setName(const kstl::string &name) {myName=name;}
+	 * \fn		 void setName(const std::string &name) {myName=name;}
 	 * \brief	 set new instance name
 	 */
-	void setName(const kstl::string &name);
+	void setName(const std::string &name);
 
 	inline unsigned int getUID() { return myUID; }
 
-	virtual kstl::vector<KigsID> GetSignalList() { return {}; }
+	virtual std::vector<KigsID> GetSignalList() { return {}; }
 
 	// Don't call this manually!
 	void RegisterToCore();
@@ -306,7 +311,7 @@ protected:
 
 	/*! \brief  protected constructor
 	*/
-	RefCountedClass(const kstl::string& name = DefaultName(), DECLARE_CLASS_NAME_TREE_ARG);
+	RefCountedClass(const std::string& name = DefaultName(), DECLARE_CLASS_NAME_TREE_ARG);
 
 
 	/*! \brief  used by constructor to add this class to the inheritance tree
@@ -331,7 +336,7 @@ private:
 	static unsigned int myDefaultNameCounter;
 
 	//! name of this instance
-	kstl::string	myName;
+	std::string	myName;
 	KigsID			myNameID;
 };
 
@@ -358,7 +363,7 @@ struct ModifiableMethodStruct
 		{
 			m_Name.~basic_string();
 			// placement new at reserved UnionFunction
-			m_Function = new (&m_UnionFunction) std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>(*other.m_Function);
+			m_Function = new (&m_UnionFunction) std::function<bool(std::vector<CoreModifiableAttribute*>&)>(*other.m_Function);
 		}
 		else
 		{
@@ -368,7 +373,7 @@ struct ModifiableMethodStruct
 		
 	}
 
-	void	setFunction(const std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>& func)
+	void	setFunction(const std::function<bool(std::vector<CoreModifiableAttribute*>&)>& func)
 	{
 		if (m_Function)
 		{
@@ -380,7 +385,7 @@ struct ModifiableMethodStruct
 			m_Name.~basic_string();
 		}
 		// placement new at reserved UnionFunction
-		m_Function = new (&m_UnionFunction) std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>(func);
+		m_Function = new (&m_UnionFunction) std::function<bool(std::vector<CoreModifiableAttribute*>&)>(func);
 
 	}
 	
@@ -399,13 +404,13 @@ struct ModifiableMethodStruct
 	// as std::function is "big", and if lambda is used, m_Name and m_Method are unused, try to pack everything in a union
 	union {
 		struct {
-			kstl::string						m_Name;
+			std::string						m_Name;
 			RefCountedClass::ModifiableMethod	m_Method;
 			UpgradorBase*						m_Upgrador;
 		};
-		std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>	m_UnionFunction;
+		std::function<bool(std::vector<CoreModifiableAttribute*>&)>	m_UnionFunction;
 	};
-	std::function<bool(kstl::vector<CoreModifiableAttribute*>&)>* m_Function;
+	std::function<bool(std::vector<CoreModifiableAttribute*>&)>* m_Function;
 	
 	CONNECT_FIELD
 };
@@ -458,28 +463,28 @@ public:
 	void	AddInstance(RefCountedClass* toAdd);
 
 	/**
-	* \fn 		void getTreeNodes(bool OnlyAppendNodesWithInstances, kstl::list<const CoreTreeNode *> &nodes) const;
+	* \fn 		void getTreeNodes(bool OnlyAppendNodesWithInstances, std::list<const CoreTreeNode *> &nodes) const;
 	* \brief	Append the tree nodes to a list
 	* \param	OnlyAppendNodesWithInstances : if TRUE only append node with instance
 	* \param	nodes : list of nodes (out param)
 	*/
-	void getTreeNodes(bool OnlyAppendNodesWithInstances, kstl::list<const CoreTreeNode*>& nodes) const;
+	void getTreeNodes(bool OnlyAppendNodesWithInstances, std::list<const CoreTreeNode*>& nodes) const;
 
 	/**
-	* \fn 		void getInstances(kstl::set<RefCountedClass*>& instances,bool recursive) const
+	* \fn 		void getInstances(std::set<RefCountedClass*>& instances,bool recursive) const
 	* \brief	return the list of instances for this class and son classes if recursive is true
 	* \param	instances : class to look for (out param)
 	* \param	recursive : if TRUE look for the class in all sons
 	*/
-	void getInstances(kstl::set<CoreModifiable*>& instances, bool recursive, bool only_one=false,bool getref=false) const;
+	void getInstances(std::set<CoreModifiable*>& instances, bool recursive, bool only_one=false,bool getref=false) const;
 
 	/**
-	* \fn 		void getRootInstances(kstl::set<RefCountedClass*>& instances,bool recursive) const
+	* \fn 		void getRootInstances(std::set<RefCountedClass*>& instances,bool recursive) const
 	* \brief	return the list of instances for this class and son classes if recursive is true
 	* \param	instances : class to look for (out param)
 	* \param	recursive : if TRUE look for the class in all sons
 	*/
-	void getRootInstances(kstl::set<CoreModifiable*>& instances, bool recursive,bool get_ref=false) const;
+	void getRootInstances(std::set<CoreModifiable*>& instances, bool recursive,bool get_ref=false) const;
 
 	size_t GetInstanceCount() const
 	{
@@ -500,13 +505,16 @@ public:
 	}
 
 	/**
-	* \fn 		void getInstancesByName(kstl::set<CoreModifiable*>& instances,bool recursive,const kstl::string& name) const;
+	* \fn 		void getInstancesByName(std::set<CoreModifiable*>& instances,bool recursive,const std::string& name) const;
 	* \brief	return the list of instances which match the comparator, for this class and sons classes if recursive is true wich match the comparator
 	* \param	instances : class to look for (out param)
 	* \param	recursive : if TRUE look for the class in all sons
 	* \param	comparator : used comparator
 	*/
-	void getInstancesByName(kstl::set<CoreModifiable*>& instances, bool recursive, const kstl::string& name, bool only_one=false,bool getref=false);
+	void getInstancesByName(std::set<CoreModifiable*>& instances, bool recursive, const std::string& name, bool only_one=false,bool getref=false);
+
+	//void getInstances(std::vector<CMSP>& result, bool recursive, bool only_one = false) const;
+	//void getInstancesByName(std::vector<CMSP>& result, bool recursive, const std::string& name, bool only_one = false);
 
 	RefCountedClass::ModifiableMethod GetMethod(KigsID id) const;
 
@@ -516,8 +524,8 @@ public:
 	kigs::unordered_map <KigsID, ModifiableMethodStruct> myMethods;
 
 	//! keep track of instance list for this class type
-	//kstl::set<RefCountedClass*, RefCountedClassNameSorter> myInstances;
-	kstl::vector< RefCountedClass* >	myInstances;
+	//std::set<RefCountedClass*, RefCountedClassNameSorter> myInstances;
+	std::vector< RefCountedClass* >	myInstances;
 	bool							    myInstanceVectorNeedSort=false;
 
 	void	sortInstanceVector();

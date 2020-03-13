@@ -234,9 +234,9 @@ void CoreModifiable::debugPrintfTree(s32 indent, s32 maxindent)
 		kigsprintf("|\t");
 	
 #ifdef KEEP_NAME_AS_STRING
-	kigsprintf("%s : %s(%p) %d refs %s items:%d\n", getExactType().c_str(), getName().c_str(), this, myRefCounter, IsInit() ? "" : "Not init!!", (s32)getItems().size());
+	kigsprintf("%s : %s(%p) %d refs %s items:%d\n", getExactType().c_str(), getName().c_str(), this, (int)myRefCounter, IsInit() ? "" : "Not init!!", (s32)getItems().size());
 #else
-	kigsprintf("%d : %s(%p) %d refs %s items:%d\n", (u32)getExactType().toUInt(), getName().c_str(), this, myRefCounter, IsInit()?"": "Not init!!", (s32)getItems().size());
+	kigsprintf("%d : %s(%p) %d refs %s items:%d\n", (u32)getExactType().toUInt(), getName().c_str(), this, (int)myRefCounter, IsInit()?"": "Not init!!", (s32)getItems().size());
 #endif
 	
 	if(indent+1>maxindent)

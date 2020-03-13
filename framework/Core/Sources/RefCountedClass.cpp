@@ -9,7 +9,7 @@ std::atomic<unsigned int> RefCountedClass::myUIDCounter{ 0 };
 unsigned int RefCountedClass::myDefaultNameCounter = 0;
 
 //! create a default name when no name is given
-kstl::string RefCountedClass::DefaultName()
+std::string RefCountedClass::DefaultName()
 {
 	char name[64];
 	snprintf(name, 64, "nobody%d", ++myDefaultNameCounter);
@@ -38,19 +38,19 @@ RefCountedClass::ModifiableMethod CoreTreeNode::GetMethod(KigsID id) const
 	return nullptr;
 }
 
-void	CoreTreeNode::AddInstance(RefCountedClass* toAdd)
+void CoreTreeNode::AddInstance(RefCountedClass* toAdd)
 {
 	std::lock_guard<std::recursive_mutex> lk{ myMutex };
 	myInstances.push_back(toAdd);
 	myInstanceVectorNeedSort = true;
 }
 
-void	CoreTreeNode::RemoveInstance(RefCountedClass* toRemove)
+void CoreTreeNode::RemoveInstance(RefCountedClass* toRemove)
 {
 	std::lock_guard<std::recursive_mutex> lk{ myMutex };
 
-	kstl::vector< RefCountedClass* >::iterator	i;
-	kstl::vector< RefCountedClass* >::iterator	e= myInstances.end();
+	std::vector< RefCountedClass* >::iterator	i;
+	std::vector< RefCountedClass* >::iterator	e= myInstances.end();
 
 	for ( i =myInstances.begin();i!=e;++i)
 	{
@@ -62,7 +62,7 @@ void	CoreTreeNode::RemoveInstance(RefCountedClass* toRemove)
 	}
 }
 
-void CoreTreeNode::getInstances(kstl::set<CoreModifiable*>& instances, bool recursive, bool only_one, bool getref) const
+void CoreTreeNode::getInstances(std::set<CoreModifiable*>& instances, bool recursive, bool only_one, bool getref) const
 {
 	std::lock_guard<std::recursive_mutex> lk{ myMutex };
 	for (auto i : myInstances)
@@ -90,8 +90,7 @@ void CoreTreeNode::getInstances(kstl::set<CoreModifiable*>& instances, bool recu
 	}
 }
 
-
-void CoreTreeNode::getRootInstances(kstl::set<CoreModifiable*>& instances, bool recursive, bool getref) const
+void CoreTreeNode::getRootInstances(std::set<CoreModifiable*>& instances, bool recursive, bool getref) const
 {
 	std::lock_guard<std::recursive_mutex> lk{ myMutex };
 	for (auto i : myInstances)
@@ -116,62 +115,38 @@ void CoreTreeNode::getRootInstances(kstl::set<CoreModifiable*>& instances, bool 
 
 IMPLEMENT_CLASS_INFO(RefCountedClass)
 
-//! utility method for inheritance maganement
-/*
-CoreClassNameTree* RefCountedClass::EnrichClassNameTree(CoreClassNameTree* classNameTree, KigsID classID, KigsID runtimetype)
-{
-	KigsCore::Instance()->GetSemaphore();
-	if (classID == 0u)
-	{
-		KigsCore::Instance()->ReleaseSemaphore();
-		return classNameTree;
-	}
-	if (!classNameTree)
-	{
-		CoreClassNameTree* newone = new CoreClassNameTree(classID, runtimetype);
-		KigsCore::Instance()->ReleaseSemaphore();
-		return newone;
-	}
-	classNameTree->addClassName(classID, runtimetype);
-
-	KigsCore::Instance()->ReleaseSemaphore();
-
-	return classNameTree;
-}
-*/
-
 //! static method : return the set of all instances of the given type
-void RefCountedClass::GetInstances(const KigsID& cid, kstl::set<CoreModifiable*>& instances, bool exactTypeOnly, bool only_one, bool getref)
+void RefCountedClass::GetInstances(const KigsID& cid, std::set<CoreModifiable*>& instances, bool exactTypeOnly, bool only_one, bool getref)
 {
 	instances.clear();
-	CoreTreeNode* node = KigsCore::GetTypeNode(cid);// GetTypeNode(KigsCore::GetRootNode(), cid);
+	CoreTreeNode* node = KigsCore::GetTypeNode(cid);
 	if (node) node->getInstances(instances, !exactTypeOnly, only_one,getref);
 }
 
 CoreModifiable* RefCountedClass::GetFirstInstance(const KigsID& cid, bool exactTypeOnly, bool getref)
 {
-	kstl::set<CoreModifiable*> insts;
+	std::set<CoreModifiable*> insts;
 	GetInstances(cid, insts, exactTypeOnly, true, getref);
 	if (insts.size()) return *insts.begin();
 	return nullptr;
 }
 
 //! static method : return the set of all root instances of the given type 
-void RefCountedClass::GetRootInstances(const KigsID& cid, kstl::set<CoreModifiable*>& instances, bool exactTypeOnly, bool getref)
+void RefCountedClass::GetRootInstances(const KigsID& cid, std::set<CoreModifiable*>& instances, bool exactTypeOnly, bool getref)
 {
 	instances.clear();
-	CoreTreeNode* node = KigsCore::GetTypeNode(cid);// GetTypeNode(KigsCore::GetRootNode(), cid);
+	CoreTreeNode* node = KigsCore::GetTypeNode(cid);
 	if (node) node->getRootInstances(instances, !exactTypeOnly, getref);
 }
 
 // runtime ID is "name:type:pointer:uid"
-void RefCountedClass::GetInstanceByRuntimeID(const kstl::string &runtimeID, kstl::set<CoreModifiable*>& instances, bool getref)
+void RefCountedClass::GetInstanceByRuntimeID(const std::string &runtimeID, std::set<CoreModifiable*>& instances, bool getref)
 {
 	instances.clear();
 
-	kstl::string cid = "";
-	kstl::string name = "";
-	kstl::string searchstring = runtimeID;
+	std::string cid = "";
+	std::string name = "";
+	std::string searchstring = runtimeID;
 
 	uptr pointer;
 	unsigned int  uid;
@@ -181,7 +156,7 @@ void RefCountedClass::GetInstanceByRuntimeID(const kstl::string &runtimeID, kstl
 	for (i = 0; i < 2; i++)
 	{
 		size_t result = runtimeID.find(':', lastpos);
-		if (result == kstl::string::npos)
+		if (result == std::string::npos)
 		{
 			return;
 		}
@@ -207,13 +182,13 @@ void RefCountedClass::GetInstanceByRuntimeID(const kstl::string &runtimeID, kstl
 	searchstring = runtimeID.substr(lastpos, runtimeID.size() - lastpos);
 	sscanf(searchstring.c_str(), "%lu:%u", &pointer, &uid);
 
-	kstl::set<CoreModifiable*> searchinstances;
+	std::set<CoreModifiable*> searchinstances;
 	// retreive name and type
 	GetInstancesByName(cid, name, searchinstances,false,false,getref);
 
 	// in searched instances search the one we want
 
-	kstl::set<CoreModifiable*>::const_iterator itinst;
+	std::set<CoreModifiable*>::const_iterator itinst;
 	for (itinst = searchinstances.begin(); itinst != searchinstances.end(); ++itinst)
 	{
 		if ((*itinst)->getUID() == uid)
@@ -242,12 +217,12 @@ void RefCountedClass::GetInstanceByRuntimeID(const kstl::string &runtimeID, kstl
 }
 
 //! utility method for inheritance maganement
-const kstl::vector<CoreClassNameTree::TwoNames>& RefCountedClass::getClassNameTree() const
+const std::vector<CoreClassNameTree::TwoNames>& RefCountedClass::getClassNameTree() const
 {
 	assert(false); // Not supported
 	// Use GetClassNameTree instead;
 	// return myTreeNode->myClassNameTree->classNames();
-	return (*(const kstl::vector<CoreClassNameTree::TwoNames>*)nullptr);
+	return (*(const std::vector<CoreClassNameTree::TwoNames>*)nullptr);
 }
 
 void	CoreTreeNode::sortInstanceVector()
@@ -265,19 +240,18 @@ void	CoreTreeNode::sortInstanceVector()
 	myInstanceVectorNeedSort = false;
 }
 
-void CoreTreeNode::getInstancesByName(kstl::set<CoreModifiable*>& instances, bool recursive, const kstl::string& name, bool only_one, bool getref)
+void CoreTreeNode::getInstancesByName(std::set<CoreModifiable*>& instances, bool recursive, const std::string& name, bool only_one, bool getref)
 {
 	std::lock_guard<std::recursive_mutex> lk{ myMutex };
 	if (myInstances.size())
 	{
-
 		KigsID searchedOne = name;
 		if (myInstanceVectorNeedSort)
 		{
 			sortInstanceVector();
 		}
-		kstl::vector<RefCountedClass*>::const_iterator i = myInstances.begin();
-		kstl::vector<RefCountedClass*>::const_iterator e = myInstances.end();
+		std::vector<RefCountedClass*>::const_iterator i = myInstances.begin();
+		std::vector<RefCountedClass*>::const_iterator e = myInstances.end();
 
 		size_t	currentSize = myInstances.size();
 
@@ -285,7 +259,7 @@ void CoreTreeNode::getInstancesByName(kstl::set<CoreModifiable*>& instances, boo
 		while (currentSize > 8)
 		{
 			currentSize = currentSize / 2;
-			kstl::vector<RefCountedClass*>::const_iterator mid = i;
+			std::vector<RefCountedClass*>::const_iterator mid = i;
 			std::advance(mid, currentSize);
 			if (searchedOne.toUInt() == (*mid)->getNameID().toUInt())
 			{
@@ -307,9 +281,13 @@ void CoreTreeNode::getInstancesByName(kstl::set<CoreModifiable*>& instances, boo
 			{
 				if ((*i)->getName() == name)
 				{
-					if (getref) (*i)->GetRef();
-					instances.insert((CoreModifiable*)*i);
-					if (only_one) return;
+					bool ok = true;
+					if (getref) ok = (*i)->TryGetRef();
+					if (ok)
+					{
+						instances.insert((CoreModifiable*)*i);
+						if (only_one) return;
+					}
 				}
 			}
 		}
@@ -332,23 +310,23 @@ void CoreTreeNode::getInstancesByName(kstl::set<CoreModifiable*>& instances, boo
 
 
 //! static method : return the set of all instances of the given type matching the correct name (use NameComparator)
-void RefCountedClass::GetInstancesByName(const KigsID& cid, const kstl::string &name, kstl::set<CoreModifiable*>& instances, bool exactTypeOnly, bool only_one, bool getref)
+void RefCountedClass::GetInstancesByName(const KigsID& cid, const std::string &name, std::set<CoreModifiable*>& instances, bool exactTypeOnly, bool only_one, bool getref)
 {
 	instances.clear();
 	CoreTreeNode* node = KigsCore::GetTypeNode(cid); 
 	if (node) node->getInstancesByName(instances, !exactTypeOnly, name, only_one, getref);
 }
 
-CoreModifiable* RefCountedClass::GetFirstInstanceByName(const KigsID& cid, const kstl::string &name, bool exactTypeOnly, bool getref)
+CoreModifiable* RefCountedClass::GetFirstInstanceByName(const KigsID& cid, const std::string &name, bool exactTypeOnly, bool getref)
 {
-	kstl::set<CoreModifiable*> insts;
+	std::set<CoreModifiable*> insts;
 	GetInstancesByName(cid, name, insts, exactTypeOnly, true, getref);
 	if (insts.size()) return *insts.begin();
 	return nullptr;
 }
 
 //! constructor manage inheritance tree
-RefCountedClass::RefCountedClass(const kstl::string& name, CLASS_NAME_TREE_ARG)
+RefCountedClass::RefCountedClass(const std::string& name, CLASS_NAME_TREE_ARG)
 	: RefCountedBaseClass()
 	, myName(name)
 {
@@ -381,20 +359,16 @@ void RefCountedClass::RegisterToCore()
 	myTypeNode = type_node;
 }
 
-void RefCountedClass::setName(const kstl::string &name)
+void RefCountedClass::setName(const std::string &name)
 {
-	myTypeNode->RemoveInstance(this);
+	if(myTypeNode) myTypeNode->RemoveInstance(this);
 	myName = name;
 	myNameID = myName;
-	myTypeNode->AddInstance(this);
+	if(myTypeNode) myTypeNode->AddInstance(this);
 }
-
-//! destructor
 
 void RefCountedClass::ProtectedDestructor()
 {
-	KigsCore::Instance()->GetSemaphore();
-
 	if (myTypeNode)
 	{
 		myTypeNode->RemoveInstance(this);
@@ -405,26 +379,12 @@ void RefCountedClass::ProtectedDestructor()
 	sprintf(pBuffer, "XXX Destroying %s(%s)\n", myName.c_str(), RefCountedBaseClass::myClassName);
 	Log(pBuffer);
 #endif
-
-	KigsCore::Instance()->ReleaseSemaphore();
 }
 
-/*
-std::unique_lock<std::recursive_mutex> RefCountedClass::lockForDestroy()
-{
-	KigsCore::Instance()->GetSemaphore();
-	if (myTypeNode)
-	{
-		return std::unique_lock<std::recursive_mutex>{myTypeNode->myMutex}; // lock corresponding CoreTreeNode mutex to avoid instance search founding an instance already in destroy process
-	}
-	return {};
-}
-*/
-//
-void CoreTreeNode::getTreeNodes(bool OnlyAppendNodesWithInstances, kstl::list<const CoreTreeNode *> &nodes) const
+void CoreTreeNode::getTreeNodes(bool OnlyAppendNodesWithInstances, std::list<const CoreTreeNode *> &nodes) const
 {
 	if (!OnlyAppendNodesWithInstances || myInstances.size())
-		nodes.push_back((const CoreTreeNode *)this);
+		nodes.push_back(this);
 
 	for (auto j : myChildren)
 	{
@@ -432,3 +392,130 @@ void CoreTreeNode::getTreeNodes(bool OnlyAppendNodesWithInstances, kstl::list<co
 	}
 
 }
+
+/*
+void CoreTreeNode::getInstances(std::vector<CMSP>& result, bool recursive, bool only_one = false) const
+{
+	std::lock_guard<std::recursive_mutex> lk{ myMutex };
+	for (auto i : myInstances)
+	{
+		if (i->TryGetRef())
+		{
+			result.push_back(OwningRawPtrToSmartPtr(static_cast<CoreModifiable*>(i)));
+			if (only_one) return;
+		}
+	}
+	if (recursive)
+	{
+		for (auto it : myChildren)
+		{
+			if (it.second)
+			{
+				it.second->getInstances(result, true, only_one);
+				if (only_one && result.size())
+					break;
+			}
+		}
+	}
+}
+
+void CoreTreeNode::getInstancesByName(std::vector<CMSP>& result, bool recursive, const std::string& name, bool only_one = false)
+{
+	std::lock_guard<std::recursive_mutex> lk{ myMutex };
+	if (myInstances.size())
+	{
+		KigsID searchedOne = name;
+		if (myInstanceVectorNeedSort)
+		{
+			sortInstanceVector();
+		}
+		std::vector<RefCountedClass*>::const_iterator i = myInstances.begin();
+		std::vector<RefCountedClass*>::const_iterator e = myInstances.end();
+
+		size_t	currentSize = myInstances.size();
+
+		// little dichotomie to reduce the test set
+		while (currentSize > 8)
+		{
+			currentSize = currentSize / 2;
+			std::vector<RefCountedClass*>::const_iterator mid = i;
+			std::advance(mid, currentSize);
+			if (searchedOne.toUInt() == (*mid)->getNameID().toUInt())
+			{
+				break;
+			}
+			else if ((*mid)->getNameID().toUInt() < searchedOne.toUInt())
+			{
+				i = mid;
+			}
+			else
+			{
+				e = mid;
+			}
+		}
+
+		for (; i != e; ++i)
+		{
+			if ((*i)->getNameID().toUInt() == searchedOne.toUInt())
+			{
+				if ((*i)->getName() == name)
+				{
+					bool ok = true;
+					if((*i)->TryGetRef())
+					{
+						result.push_back(OwningRawPtrToSmartPtr(static_cast<CoreModifiable*>(*i)));
+						if (only_one) return;
+					}
+				}
+			}
+		}
+	}
+	if (recursive)
+	{
+		for (auto j = myChildren.begin();
+			j != myChildren.end();
+			++j)
+		{
+			if ((*j).second)
+			{
+				(*j).second->getInstancesByName(result, true, name, only_one);
+				if (only_one && result.size())
+					break;
+			}
+		}
+	}
+}
+
+std::vector<CMSP> RefCountedClass::FindInstances(const KigsID& id, bool exact_type_only)
+{
+	std::vector<CMSP> result;
+	CoreTreeNode* node = KigsCore::GetTypeNode(id);
+	if (node) node->getInstances(result, !exact_type_only);
+	return result;
+}
+
+std::vector<CMSP> RefCountedClass::FindInstancesByName(const KigsID& id, const std::string& name, bool exact_type_only)
+{
+	std::vector<CMSP> result;
+	CoreTreeNode* node = KigsCore::GetTypeNode(id);
+	if (node) node->getInstancesByName(result, !exact_type_only, name);
+	return result;
+}
+
+CMSP RefCountedClass::FindFirstInstance(const KigsID& id, const std::string& name, bool exact_type_only)
+{
+	std::vector<CMSP> result;
+	CoreTreeNode* node = KigsCore::GetTypeNode(id);
+	if (node) node->getInstances(result, !exact_type_only, true);
+	if (result.size()) return result.front();
+	return nullptr;
+}
+
+CMSP RefCountedClass::FindFirstInstanceByName(const KigsID& id, const std::string& name, bool exact_type_only)
+{
+	std::vector<CMSP> result;
+	CoreTreeNode* node = KigsCore::GetTypeNode(id);
+	if (node) node->getInstancesByName(result, !exact_type_only, name, true);
+	if (result.size()) return result.front();
+	return nullptr;
+}*/

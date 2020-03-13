@@ -11,8 +11,8 @@
 
 #ifdef KIGS_TOOLS
 //#include <typeinfo>
-#define TRACEREF_RETAIN  kigsprintf("+++ REF ON %p (%s) (%03d>%03d) \n",this, getExactTypeID()._id_name.c_str(), myRefCounter-1, myRefCounter);
-#define TRACEREF_RELEASE kigsprintf("--- REF ON %p (%s) (%03d>%03d) \n",this, getExactTypeID()._id_name.c_str(),myRefCounter, myRefCounter-1);
+#define TRACEREF_RETAIN  kigsprintf("+++ REF ON %p (%s) (%03d>%03d) \n",this, getExactTypeID()._id_name.c_str(), (int)myRefCounter-1, (int)myRefCounter);
+#define TRACEREF_RELEASE kigsprintf("--- REF ON %p (%s) (%03d>%03d) \n",this, getExactTypeID()._id_name.c_str(), (int)myRefCounter, (int)myRefCounter-1);
 #define TRACEREF_DELETE  kigsprintf("### REF ON %p (%s)\n",this, getExactTypeID()._id_name.c_str());
 #else
 #define TRACEREF_RETAIN
