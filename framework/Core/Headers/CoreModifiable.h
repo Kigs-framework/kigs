@@ -12,6 +12,7 @@
 #include <memory>
 #include <type_traits>
 #include <set>
+#include <list>
 
 #ifdef KEEP_XML_DOCUMENT
 #include "XML.h"
@@ -54,6 +55,7 @@ class CoreTreeNode;
 #include "XMLNode.h"
 class Timer;
 class CoreItem;
+class KigsCore;
 
 // utility class to pack variable argument list in std::vector<CoreModifiableAttribute*>
 

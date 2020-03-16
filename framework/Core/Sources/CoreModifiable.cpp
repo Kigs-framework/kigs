@@ -314,7 +314,7 @@ void CoreModifiable::InitModifiable()
 		return;
 	}
 	
-#ifdef _DEBUG
+#ifdef KIGS_TOOLS
 	if (getAttribute("TRACE"))
 		myTraceRef = true;
 	
@@ -1556,8 +1556,10 @@ bool CoreModifiable::checkDestroy()
 		KigsCore::Instance()->AddToPostDestroyList(this);
 		return true;
 	}
+#ifdef KIGS_TOOLS
 	if (myTraceRef)
 		TRACEREF_DELETE
+#endif
 	ProtectedDestroy();
 	return GenericRefCountedBaseClass::checkDestroy();
 }
@@ -3142,20 +3144,26 @@ void CoreModifiable::RemoveWeakRef(WeakRef* ref)
 void CoreModifiable::GetRef()
 {
 	GenericRefCountedBaseClass::GetRef();
+#ifdef KIGS_TOOLS
 	if (myTraceRef)
 		TRACEREF_RETAIN;
+#endif
 }
 bool CoreModifiable::TryGetRef()
 {
 	bool ok = GenericRefCountedBaseClass::TryGetRef();
+#ifdef KIGS_TOOLS
 	if (ok && myTraceRef)
 		TRACEREF_RETAIN;
+#endif
 	return ok;
 }
 void CoreModifiable::Destroy()
 {
+#ifdef KIGS_TOOLS
 	if (myTraceRef)
 		TRACEREF_RELEASE;
+#endif
 	GenericRefCountedBaseClass::Destroy();
 }
 #endif
