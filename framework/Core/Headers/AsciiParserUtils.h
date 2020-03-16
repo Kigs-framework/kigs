@@ -2,7 +2,7 @@
 #define _ASCIIPARSERUTILS_H_
 
 #include "Core.h"
-#include "RefCountedBaseClass.h"
+#include "GenericRefCountedBaseClass.h"
 #include "CoreRawBuffer.h"
 #include "SmartPointer.h"
 

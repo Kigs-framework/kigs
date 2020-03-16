@@ -855,16 +855,15 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 		CMSP request = (KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest"));
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection.Pointer()));
+		request->setValue(LABEL_TO_ID(Connection), L_Connection.Pointer());
 		request->Init();
 
-		CheckUniqueObject	received;
+		void* received=nullptr;
 
 		request->getValue(LABEL_TO_ID(ReceivedBuffer), received);
-
-		if ((RefCountedClass*)received)
+		if (received)
 		{
-			kstl::string receivedID = ((CoreRawBuffer*)(RefCountedClass*)received)->buffer();
+			kstl::string receivedID = ((CoreRawBuffer*)received)->buffer();
 			if (receivedID != "")
 			{
 				// store receivedID as a dynamic attribute on L_Connection
@@ -906,16 +905,16 @@ long int FilePathManager::HTTPfread(void * ptr, long size, long count, FileHandl
 		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection));
+		request->setValue(LABEL_TO_ID(Connection), L_Connection);
 		request->Init();
 
-		CheckUniqueObject	received;
+		void* received=nullptr;
 
 		request->getValue(LABEL_TO_ID(ReceivedBuffer), received);
 
-		if ((RefCountedClass*)received)
+		if (received)
 		{
-			CoreRawBuffer* receivedbuffer = ((CoreRawBuffer*)(RefCountedClass*)received);
+			CoreRawBuffer* receivedbuffer = ((CoreRawBuffer*)received);
 			receivedLen = receivedbuffer->length();
 
 			memcpy(ptr, receivedbuffer->buffer(), receivedLen);
@@ -951,16 +950,16 @@ long int FilePathManager::HTTPftell(FileHandle* handle)
 		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection));
+		request->setValue(LABEL_TO_ID(Connection), L_Connection);
 		request->Init();
 
-		CheckUniqueObject	received;
+		void* received=nullptr;
 
 		request->getValue(LABEL_TO_ID(ReceivedBuffer), received);
 
-		if ((RefCountedClass*)received)
+		if (received)
 		{
-			kstl::string receivedLenAscii = ((CoreRawBuffer*)(RefCountedClass*)received)->buffer();
+			kstl::string receivedLenAscii = ((CoreRawBuffer*)received)->buffer();
 			if (receivedLenAscii != "")
 			{
 				sscanf(receivedLenAscii.c_str(), "%li", &receivedLen);
@@ -993,16 +992,16 @@ int FilePathManager::HTTPfseek(FileHandle* handle, long int offset, int origin)
 		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection));
+		request->setValue(LABEL_TO_ID(Connection), L_Connection);
 		request->Init();
 
-		CheckUniqueObject	received;
+		void* received=nullptr;
 
 		request->getValue(LABEL_TO_ID(ReceivedBuffer), received);
 
-		if ((RefCountedClass*)received)
+		if (received)
 		{
-			kstl::string receivedLenAscii = ((CoreRawBuffer*)(RefCountedClass*)received)->buffer();
+			kstl::string receivedLenAscii = ((CoreRawBuffer*)received)->buffer();
 			if (receivedLenAscii != "")
 			{
 				sscanf(receivedLenAscii.c_str(), "%li", &receivedLen);
@@ -1028,14 +1027,14 @@ int FilePathManager::HTTPfflush(FileHandle* handle)
 		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection));
+		request->setValue(LABEL_TO_ID(Connection), L_Connection);
 		request->Init();
 
-		CheckUniqueObject	received;
+		void* received=nullptr;
 
 		request->getValue(LABEL_TO_ID(ReceivedBuffer), received);
 
-		if ((RefCountedClass*)received)
+		if (received)
 		{
 
 		}
@@ -1059,14 +1058,14 @@ int FilePathManager::HTTPfclose(FileHandle* handle)
 		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), CheckUniqueObject(L_Connection));
+		request->setValue(LABEL_TO_ID(Connection), L_Connection);
 		request->Init();
 
-		CheckUniqueObject	received;
+		void* received=nullptr;
 
 		request->getValue(LABEL_TO_ID(ReceivedBuffer), received);
 
-		if ((RefCountedClass*)received)
+		if (received)
 		{
 
 		}

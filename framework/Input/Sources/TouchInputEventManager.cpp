@@ -795,10 +795,10 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		if ((*itScene).first->isSubType("Abstract2DLayer"))
 		{
 			// get associated rendering screen
-			CheckUniqueObject	getScreen;
+			CoreModifiable*	getScreen=nullptr;
 			(*itScene).first->getValue("RenderingScreen", getScreen);
 
-			CoreModifiable* renderingScreen = (CoreModifiable*)(RefCountedClass*)getScreen;
+			CoreModifiable* renderingScreen = (CoreModifiable*)getScreen;
 
 			// check that rendering screen is in active touch support list
 			touchSupportTreeNode * foundts=myCurrentTouchSupportRoot->searchNode(renderingScreen);
@@ -830,10 +830,10 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 					if (foundcamera)
 					{
 						// get associated rendering screen
-						CheckUniqueObject	getScreen;
+						CoreModifiable*	getScreen=nullptr;
 						foreachinstance->getValue("RenderingScreen", getScreen);
 
-						CoreModifiable* renderingScreen = (CoreModifiable*)(RefCountedClass*)getScreen;
+						CoreModifiable* renderingScreen = (CoreModifiable*)getScreen;
 
 						// check that rendering screen is in active touch support list
 						touchSupportTreeNode * foundts = myCurrentTouchSupportRoot->searchNode(renderingScreen);

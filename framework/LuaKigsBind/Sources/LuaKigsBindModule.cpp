@@ -501,7 +501,7 @@ void LuaKigsBindModule::AddLuaMethod(CoreModifiable* obj, const kstl::string& fu
 void LuaKigsBindModule::ConnectToLua(CoreModifiable* e, const kstl::string& signal, CoreModifiable* r, const kstl::string& code)
 {
 	AddLuaMethod(r, code, code);
-	r->InsertMethod(code, static_cast<RefCountedClass::ModifiableMethod>(&DynamicMethodLuaGlobalCallback::LuaGlobalCallback), code);
+	r->InsertMethod(code, static_cast<CoreModifiable::ModifiableMethod>(&DynamicMethodLuaGlobalCallback::LuaGlobalCallback), code);
 	KigsCore::Connect(e, signal, r, code);
 }
 
@@ -594,7 +594,7 @@ DEFINE_METHOD(LuaKigsBindModule, RegisterLuaMethod)
 
 		if (!isGlobal)
 		{
-			coreModifiableTarget->InsertMethod(privateName->const_ref(), static_cast<RefCountedClass::ModifiableMethod>(&DynamicMethodLuaGlobalCallback::LuaGlobalCallback), privateName->const_ref() CONNECT_PASS_PARAM);
+			coreModifiableTarget->InsertMethod(privateName->const_ref(), static_cast<CoreModifiable::ModifiableMethod>(&DynamicMethodLuaGlobalCallback::LuaGlobalCallback), privateName->const_ref() CONNECT_PASS_PARAM);
 			// if code is empty, suppose it was previously defined, don't create new code
 			if (privateCode->const_ref() != "")
 			{

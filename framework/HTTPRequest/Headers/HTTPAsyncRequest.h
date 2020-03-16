@@ -4,6 +4,7 @@
 #include "AsyncRequest.h"
 #include "CoreModifiableAttribute.h"
 #include "maReference.h"
+#include "maBuffer.h"
 #include "AttributePacking.h"
 
 #include <atomic>
@@ -71,14 +72,12 @@ protected:
 	// Old mode - use OnResponse signal instead
 	maString												myNotificationName = BASE_ATTRIBUTE(Notification, "");
 	maReference												myCallbackObject = BASE_ATTRIBUTE(CallbackReceiver, "");
-	maReference												myReceivedBufferRef = BASE_ATTRIBUTE(ReceivedBuffer, "");
+	maBuffer												myReceivedBuffer = BASE_ATTRIBUTE(ReceivedBuffer, "");
 	//
 
 	ContentEncoding											myContentEncoding = ANSI;
 	ContentEncoding											myFoundCharset = ANSI;
 	kstl::string											myContentType;
-
-	CoreRawBuffer*											myReceivedBuffer = nullptr;
 
 	// post
 	char*													myPostBuffer = nullptr;

@@ -251,7 +251,6 @@ public:
 	DECLARE_SET(const kstl::string&);
 	DECLARE_SET(const unsigned short*);
 	DECLARE_SET(const usString&);
-	DECLARE_SET(const CheckUniqueObject&);
 	DECLARE_SET(CoreItem*);
 	DECLARE_SET(CoreModifiable*);
 	DECLARE_SET(void*);
@@ -264,7 +263,6 @@ public:
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET);
 	DECLARE_GET(kstl::string&);
 	DECLARE_GET(usString&);
-	DECLARE_GET(CheckUniqueObject&);
 	DECLARE_GET(CoreItem*&);
 	DECLARE_GET(CoreModifiable*&);
 	DECLARE_GET(void*&);

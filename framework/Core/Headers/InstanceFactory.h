@@ -2,7 +2,7 @@
 #define _INSTANCEFACTORY_H_
 
 #include "CoreModifiable.h"
-#include "kstlunordered_map.h"
+#include <unordered_map>
 
 class KigsCore;
 class RegisterClassToInstanceFactory;
@@ -34,25 +34,25 @@ public:
 
 
 	/**
-	 * \fn 		CoreModifiable*    GetInstance(const kstl::string& instancename,const STRINGS_NAME_TYPE& classname);
+	 * \fn 		CoreModifiable*    GetInstance(const std::string& instancename,const STRINGS_NAME_TYPE& classname);
 	 * \brief	create an instance with the given name of the given class type
 	 * \param	instancename : name of the new instance
 	 * \param	classname : class of the new instance
 	 * \return	the instance of 'classname' named 'instancename', or a DoNothingObject if failed
 	 */
-	CoreModifiable*    GetInstance(const kstl::string& instancename,const KigsID& classname, kstl::vector<CoreModifiableAttribute*>* args = nullptr);
+	CoreModifiable*    GetInstance(const std::string& instancename,const KigsID& classname, std::vector<CoreModifiableAttribute*>* args = nullptr);
 
 	/**
-	 * \fn 		void  RegisterClass(createMethod method,const STRINGS_NAME_TYPE& className,const kstl::string& moduleName);
+	 * \fn 		void  RegisterClass(createMethod method,const STRINGS_NAME_TYPE& className,const std::string& moduleName);
 	 * \brief	register a new class in the instance factory
 	 * \param	method : create method of the class
 	 * \param	className : class to register
 	 * \param	moduleName : name of the module which contain the class
 	 */
-	void  RegisterClass(createMethod method,const KigsID& className, const kstl::string& moduleName);
+	void  RegisterClass(createMethod method,const KigsID& className, const std::string& moduleName);
 
 	/**
-	 * \fn 		bool  GetModuleNameFromClassName(const STRINGS_NAME_TYPE& className, kstl::string &ModuleName);
+	 * \fn 		bool  GetModuleNameFromClassName(const STRINGS_NAME_TYPE& className, std::string &ModuleName);
 	 * \brief	Get a module name from a class name
 	 * \param	className : class to register
 	 * \param	ModuleName : name of the module which contain the class (out param)
@@ -137,7 +137,7 @@ protected:
 	//! map of registered modules
 	kigs::unordered_map<KigsID, ModuleAssociation> myModuleList;
 
-	kstl::set<KigsID> myEventClassList;
+	std::set<KigsID> myEventClassList;
 
 	struct CallbackStruct
 	{
@@ -146,7 +146,7 @@ protected:
 		KigsID						slot; // slot being called when signal is send
 	};
 
-	kigs::unordered_map<KigsID, kstl::vector<CallbackStruct>>	myModifiableCallbackMap;
+	kigs::unordered_map<KigsID, std::vector<CallbackStruct>>	myModifiableCallbackMap;
 	kigs::unordered_map<KigsID, std::vector<std::string> >	myAliasList;
 };
 

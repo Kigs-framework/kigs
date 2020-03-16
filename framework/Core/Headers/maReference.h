@@ -18,7 +18,7 @@ struct maReferenceObject
 {
 	maReferenceObject() = default;
 
-	maReferenceObject(RefCountedClass* lobj)
+	maReferenceObject(CoreModifiable* lobj)
 	{
 		obj = lobj;
 	}
@@ -27,7 +27,7 @@ struct maReferenceObject
 		search_string = nametype;
 	}
 
-	RefCountedClass* obj;
+	CoreModifiable* obj;
 	kstl::string	search_string;
 };
 
@@ -51,7 +51,7 @@ public:
 	{
 		if (_value.obj)
 		{
-			UnreferenceModifiable((CoreModifiable*)_value.obj);
+			UnreferenceModifiable(_value.obj);
 		}
 	}
 
@@ -70,43 +70,43 @@ public:
 			if (_value.obj != toCopyValue.obj)
 			{
 				if (_value.obj)
-					UnreferenceModifiable((CoreModifiable*)_value.obj);
+					UnreferenceModifiable(_value.obj);
 
 				_value = toCopyValue;
 
 				if (_value.obj)
-					ReferenceModifiable((CoreModifiable*)_value.obj);
+					ReferenceModifiable(_value.obj);
 			}
 		}
 		else
 		{
 			if (_value.obj)
-				UnreferenceModifiable((CoreModifiable*)_value.obj);
+				UnreferenceModifiable(_value.obj);
 
 			_value = toCopyValue;
 		}
 	}
 
 	//! cast to RefCountedClass* operator
-	operator RefCountedClass*() { return SearchRef(); }
+	operator CoreModifiable*() { return SearchRef(); }
 	//! cast to CoreModifiable* operator
 	//operator CoreModifiable*() { return (CoreModifiable*)SearchRef(); }
 
 	template<typename T>
-	operator T*(){ return static_cast<T*>((CoreModifiable*)SearchRef()); }
+	operator T*(){ return static_cast<T*>(SearchRef()); }
 
 	CoreModifiable*	operator->()
 	{
-		return (CoreModifiable*)SearchRef();
+		return SearchRef();
 	}
 
 	//! cast to RefCountedClass& operator
-	operator RefCountedClass&() { return (*SearchRef()); }
+	operator CoreModifiable&() { return (*SearchRef()); }
 
 	//! return a reference on internal value
-	RefCountedClass& ref() { return (*SearchRef()); }
+	CoreModifiable& ref() { return (*SearchRef()); }
 	//! return a const reference on internal value
-	const RefCountedClass& const_ref() { return (*SearchRef()); }
+	const CoreModifiable& const_ref() { return (*SearchRef()); }
 
 
 	/// getValue overloads
@@ -139,11 +139,6 @@ public:
 		// TODO ?
 		return false;
 	}
-	virtual bool getValue(CheckUniqueObject&  value) const override
-	{
-		value = (RefCountedClass*)((maReferenceHeritage*)this)->SearchRef();
-		return true;
-	}
 	virtual bool getValue(CoreModifiable*&  value) const override
 	{
 		value = (CoreModifiable*)((maReferenceHeritage*)this)->SearchRef();
@@ -175,28 +170,24 @@ public:
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
-	virtual bool setValue(const CheckUniqueObject&  value) override
+	virtual bool setValue(CoreModifiable* value) override
 	{
 		if (this->isReadOnly())
 			return false;
 
-		if (_value.obj != (RefCountedClass*)value)
+		if (_value.obj != value)
 		{
 			if (_value.obj)
-				UnreferenceModifiable((CoreModifiable*)_value.obj);
+				UnreferenceModifiable(_value.obj);
 
-			_value.obj = (RefCountedClass*)value;
+			_value.obj = value;
 
 			if (_value.obj)
-				ReferenceModifiable((CoreModifiable*)_value.obj);
+				ReferenceModifiable(_value.obj);
 		}
 
 		DO_NOTIFICATION(notificationLevel);
 		return true;
-	}
-	virtual bool setValue(CoreModifiable* obj) override
-	{
-		return setValue(CheckUniqueObject(obj));
 	}
 
 	/// operators
@@ -206,41 +197,11 @@ public:
 		DO_NOTIFICATION(notificationLevel);
 		return *this;
 	}
-	auto& operator=(RefCountedClass* value)
+	auto& operator=(CoreModifiable* value)
 	{
 		setValue(value);
 		return *this;
 	}
-
-	/// Extras
-#if 0
-	kstl::string	getRefName()
-	{
-		kstl::string returnval = "";
-		if (_value.obj)
-		{
-			returnval = _value.obj->getName();
-		}
-		else
-		{
-			returnval = _value.name;
-		}
-		return returnval;
-	}
-	kstl::string	getRefType()
-	{
-		kstl::string returnval = "";
-		if (_value.obj)
-		{
-			returnval = _value.obj->GetRuntimeType();
-		}
-		else
-		{
-			returnval = _value.type;
-		}
-		return returnval;
-	}
-#endif
 
 protected:
 
@@ -277,73 +238,68 @@ protected:
 	}
 	void	ReferenceModifiable(CoreModifiable* current)
 	{
-		// first check if really a CoreModifiable
-		if (current->isSubType(CoreModifiable::myClassID))
+		auto& coremodigiablemap = KigsCore::Instance()->getReferenceMap();
+		auto found = coremodigiablemap.find(current);
+
+		// ok, the CoreModifiable is already there, add a vector entry
+		if (found != coremodigiablemap.end())
 		{
-			auto& coremodigiablemap = KigsCore::Instance()->getReferenceMap();
-			auto found = coremodigiablemap.find(current);
+			kstl::vector<CoreModifiableAttribute*>& referencevector = (*found).second;
+			referencevector.push_back(this);
+		}
+		else
+		{
+			// create a new map entry
+			kstl::vector<CoreModifiableAttribute*> toAdd;
+			toAdd.push_back(this);
+			coremodigiablemap[current] = toAdd;
 
-			// ok, the CoreModifiable is already there, add a vector entry
-			if (found != coremodigiablemap.end())
-			{
-				kstl::vector<CoreModifiableAttribute*>& referencevector = (*found).second;
-				referencevector.push_back(this);
-			}
-			else
-			{
-				// create a new map entry
-				kstl::vector<CoreModifiableAttribute*> toAdd;
-				toAdd.push_back(this);
-				coremodigiablemap[current] = toAdd;
-
-				current->flagAsReferenceRegistered();
-			}
+			current->flagAsReferenceRegistered();
 		}
 	}
 
 	void	Search()
 	{
-		kstl::set<CoreModifiable*> instancelist;
-		CoreModifiable* obj = nullptr;
+		CMSP obj = nullptr;
 		if (!_value.search_string.empty())
 		{
-			obj = CoreModifiable::SearchInstance(_value.search_string, _owner);
+			obj = CoreModifiable::SearchInstanceSP(_value.search_string, _owner);
 		}
 		else
 		{
 			if (_value.obj)
 			{
-				UnreferenceModifiable((CoreModifiable*)_value.obj);
+				UnreferenceModifiable(_value.obj);
 				_value.obj = nullptr;
 			}
 			return;
 		}
 		if (obj)
 		{
-			if (_value.obj != obj)
+			if (_value.obj != obj.get())
 			{
 				if (_value.obj)
-					UnreferenceModifiable((CoreModifiable*)_value.obj);
+					UnreferenceModifiable(_value.obj);
 
-				_value.obj = obj;
-				ReferenceModifiable((CoreModifiable*)_value.obj);
+				_value.obj = obj.get();
+				ReferenceModifiable(_value.obj);
 			}
 		}
 		else
 		{
 			if (_value.obj)
-				UnreferenceModifiable((CoreModifiable*)_value.obj);
+				UnreferenceModifiable(_value.obj);
 			_value.obj = nullptr;
 		}
 	}
 	void InitAndSearch(const kstl::string& nametype)
 	{
-		RefCountedClass* old_obj = _value.obj;
+		CoreModifiable* old_obj = _value.obj;
 		_value = maReferenceObject{ nametype };
 		_value.obj = old_obj;
 		Search();
 	}
-	RefCountedClass*	SearchRef()
+	CoreModifiable*	SearchRef()
 	{
 		if (_value.obj)
 		{

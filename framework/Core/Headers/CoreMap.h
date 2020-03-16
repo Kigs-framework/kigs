@@ -240,12 +240,9 @@ public:
 	CoreMapBase& operator= (const CoreMapBase& x)
 	{
 		myMap.clear();
-		typename kstl::map<map_key, RefCountedBaseClass*>::iterator itstart;
-		typename kstl::map<map_key, RefCountedBaseClass*>::iterator itend = x.end();
-
-		for(itstart=x.begin();itstart!=itend;itstart++)
+		for(auto& el : x)
 		{
-			push_back(*itstart);
+			push_back(el);
 		}
 		return *this;
 	}
@@ -257,11 +254,6 @@ public:
 
 protected:
 	CoreMapMap myMap;
-	virtual void    ProtectedDestroy()  override
-	{
-		clear();
-		CoreItem::ProtectedDestroy();
-	}
 };
 
 

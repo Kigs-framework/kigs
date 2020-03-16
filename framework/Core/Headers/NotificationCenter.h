@@ -21,14 +21,14 @@ public:
 	NotificationCenter();
 	~NotificationCenter();
 
-	void addObserver(CoreModifiable* observer,const kstl::string& selector,const kstl::string& notificationName,CoreModifiable* sender=0);
+	void addObserver(CoreModifiable* observer,const std::string& selector,const std::string& notificationName,CoreModifiable* sender=0);
 
-	void removeObserver(CoreModifiable* observer,const kstl::string& notificationName="",CoreModifiable* sender=0,bool fromDestructor=false);
+	void removeObserver(CoreModifiable* observer,const std::string& notificationName="",CoreModifiable* sender=0,bool fromDestructor=false);
 
-	void postNotificationName(const KigsID& notificationName, kstl::vector<CoreModifiableAttribute*>& params, CoreModifiable* sender = 0, void* data = 0);
+	void postNotificationName(const KigsID& notificationName, std::vector<CoreModifiableAttribute*>& params, CoreModifiable* sender = 0, void* data = 0);
 	void postNotificationName(const KigsID& notificationName, CoreModifiable* sender = 0, void* data = 0)
 	{
-		kstl::vector<CoreModifiableAttribute*> params;
+		std::vector<CoreModifiableAttribute*> params;
 		postNotificationName(notificationName, params, sender, data);
 	}
 
@@ -49,38 +49,38 @@ protected:
 
 	struct ObserverStructVector
 	{
-		CheckUniqueObject		     myObserver;
-		kstl::vector<ObserverStruct> myVector;
+		CoreModifiable* myObserver;
+		std::vector<ObserverStruct> myVector;
 	};
 
 	struct NotifVectorStruct
 	{
-		kstl::vector<kstl::string>		myVector;
+		std::vector<std::string>		myVector;
 	};
 
 	// map associating observer to notifications...
-	kstl::map<CheckUniqueObject, NotifVectorStruct> myObserverMap;
+	std::unordered_map<CoreModifiable*, NotifVectorStruct> myObserverMap;
 
 	// map associating notification name to observers map
-	kstl::map<unsigned int,kstl::vector<ObserverStructVector> > myNotificationMap;
+	std::unordered_map<unsigned int,std::vector<ObserverStructVector> > myNotificationMap;
 
-	void protectedAddObserver(CoreModifiable* observer, const ObserverStruct& newobstruct, const kstl::string& selector, const kstl::string&  notificationName);
+	void protectedAddObserver(CoreModifiable* observer, const ObserverStruct& newobstruct, const std::string& selector, const std::string&  notificationName);
 
-	void protectedRemoveObserver(CheckUniqueObject& observer,const kstl::string& notificationName,CoreModifiable* sender,bool wasDestroyed);
-	void protectedRemoveObserver(CheckUniqueObject& observer, bool wasDestroyed);
-	void protectedSetRemoveState(CheckUniqueObject& observer,const kstl::string& notificationName,CoreModifiable* sender);
-	void protectedSetRemoveState(CheckUniqueObject& observer);
+	void protectedRemoveObserver(CoreModifiable* observer,const std::string& notificationName,CoreModifiable* sender,bool wasDestroyed);
+	void protectedRemoveObserver(CoreModifiable* observer, bool wasDestroyed);
+	void protectedSetRemoveState(CoreModifiable* observer,const std::string& notificationName,CoreModifiable* sender);
+	void protectedSetRemoveState(CoreModifiable* observer);
 
 	void manageRemoveObserverList();
 
 	struct removeObserverStruct
 	{
-		kstl::string	notificationName;
+		std::string	notificationName;
 		CoreModifiable* sender;
 		bool			myWasDestroyed;
 	};
 
-	kstl::map<CheckUniqueObject,kstl::vector<removeObserverStruct> > myRemoveObserverMap;
+	std::unordered_map<CoreModifiable* ,std::vector<removeObserverStruct> > myRemoveObserverMap;
 
 	CoreItemEvaluationContext	myContext;
 

@@ -2163,7 +2163,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	{
 		for (auto&& pair : item->GetTypeNode()->myMethods)
 		{
-			ImGui::Text("%s - %s", pair.first._id_name.c_str(), pair.second.m_Name.c_str());
+			ImGui::Text("%s - %s", pair.first._id_name.c_str(), pair.second.mName.c_str());
 		}
 
 		if (item->GetTypeNode()->myMethods.size())
@@ -2176,7 +2176,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			{
 				ImGui::PushID(pair.first.toUInt());
 
-				ImGui::Text("%s - %s", pair.first._id_name.c_str(), pair.second.m_Name.c_str());
+				ImGui::Text("%s - %s", pair.first._id_name.c_str(), pair.second.mName.c_str());
 
 				auto it = lua_methods.find(pair.first.toUInt());
 				if (it != lua_methods.end())

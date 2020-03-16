@@ -27,7 +27,7 @@ NotificationCenter::~NotificationCenter()
 	myNotificationMap.clear();
 }
 
-void NotificationCenter::addObserver(CoreModifiable* observer, const kstl::string& selector, const kstl::string&  notificationName, CoreModifiable* sender)
+void NotificationCenter::addObserver(CoreModifiable* observer, const std::string& selector, const std::string&  notificationName, CoreModifiable* sender)
 {
 	// first map : observers
 	ObserverStruct newobstruct;
@@ -46,14 +46,14 @@ void NotificationCenter::addObserver(CoreModifiable* observer, const kstl::strin
 		// check if eval float or string
 		if (selector.substr(4, 3) == "Str")
 		{
-			kstl::string toeval = selector.substr(7, selector.length() - 7);
-			CoreItemSP toAdd = CoreItemOperator<kstl::string>::Construct(toeval, observer, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			std::string toeval = selector.substr(7, selector.length() - 7);
+			CoreItemSP toAdd = CoreItemOperator<std::string>::Construct(toeval, observer, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			newobstruct.myCurrentItem = toAdd;
 			newobstruct.myIsStringItem = true;
 		}
 		else
 		{
-			kstl::string toeval = selector.substr(4, selector.length() - 4);
+			std::string toeval = selector.substr(4, selector.length() - 4);
 
 			CoreItemSP toAdd = CoreItemOperator<kfloat>::Construct(toeval, observer, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			newobstruct.myCurrentItem = toAdd;
@@ -64,7 +64,7 @@ void NotificationCenter::addObserver(CoreModifiable* observer, const kstl::strin
 	protectedAddObserver(observer, newobstruct, selector, notificationName);
 }
 
-void NotificationCenter::protectedAddObserver(CoreModifiable* observer, const ObserverStruct& newobstruct, const kstl::string& selector, const kstl::string&  notificationName)
+void NotificationCenter::protectedAddObserver(CoreModifiable* observer, const ObserverStruct& newobstruct, const std::string& selector, const std::string&  notificationName)
 {
 
 	unsigned int notificationID=CharToID::GetID(notificationName);
@@ -101,8 +101,8 @@ void NotificationCenter::protectedAddObserver(CoreModifiable* observer, const Ob
 
 	if(myNotificationMap.find(notificationID) != myNotificationMap.end())
 	{
-		kstl::vector<ObserverStructVector >& currentmap=myNotificationMap[notificationID];
-		kstl::vector<ObserverStructVector >::iterator	itobs;
+		std::vector<ObserverStructVector >& currentmap=myNotificationMap[notificationID];
+		std::vector<ObserverStructVector >::iterator	itobs;
 
 		bool	found=false;
 		for(itobs = currentmap.begin();itobs != currentmap.end();itobs++)
@@ -160,7 +160,7 @@ void NotificationCenter::protectedAddObserver(CoreModifiable* observer, const Ob
 		newvectortoadd.myObserver=observer;
 		newvectortoadd.myVector.push_back(newobstruct);
 
-		kstl::vector<ObserverStructVector > newmaptoadd;
+		std::vector<ObserverStructVector > newmaptoadd;
 
 		newmaptoadd.push_back(newvectortoadd);
 		
@@ -168,15 +168,15 @@ void NotificationCenter::protectedAddObserver(CoreModifiable* observer, const Ob
 	}
 }
 
-void NotificationCenter::removeObserver(CoreModifiable* observer,const kstl::string& notificationName,CoreModifiable* sender, bool fromDestructor)
+void NotificationCenter::removeObserver(CoreModifiable* observer,const std::string& notificationName,CoreModifiable* sender, bool fromDestructor)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	CheckUniqueObject L_tmp = observer;
+	CoreModifiable* L_tmp = observer;
 	protectedSetRemoveState(L_tmp,notificationName,sender);
 
 	if(myRemoveObserverMap.find(observer)!=myRemoveObserverMap.end())
 	{
-		kstl::vector<removeObserverStruct>&	currentvector=myRemoveObserverMap[observer];
+		std::vector<removeObserverStruct>&	currentvector=myRemoveObserverMap[observer];
 		removeObserverStruct	toAdd;
 		toAdd.notificationName=notificationName;
 		toAdd.sender=sender;
@@ -185,7 +185,7 @@ void NotificationCenter::removeObserver(CoreModifiable* observer,const kstl::str
 	}
 	else
 	{
-		kstl::vector<removeObserverStruct>	currentvector;
+		std::vector<removeObserverStruct>	currentvector;
 		
 		removeObserverStruct	toAdd;
 		toAdd.notificationName=notificationName;
@@ -200,12 +200,11 @@ void NotificationCenter::removeObserver(CoreModifiable* observer,const kstl::str
 void NotificationCenter::manageRemoveObserverList()
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	kstl::map<CheckUniqueObject,kstl::vector<removeObserverStruct> >::const_iterator it;
-	for(it=myRemoveObserverMap.begin();it!=myRemoveObserverMap.end();++it)
+	for(auto it = myRemoveObserverMap.begin(); it != myRemoveObserverMap.end(); ++it)
 	{
-		CheckUniqueObject obs=(*it).first;
-		const kstl::vector<removeObserverStruct>&	currentvector=(*it).second;
-		kstl::vector<removeObserverStruct>::const_iterator	itv;
+		CoreModifiable* obs=(*it).first;
+		const std::vector<removeObserverStruct>&	currentvector=(*it).second;
+		std::vector<removeObserverStruct>::const_iterator	itv;
 
 		bool wasDestroyed = false;
 		// check if was destroyed
@@ -224,7 +223,7 @@ void NotificationCenter::manageRemoveObserverList()
 
 }
 
-void NotificationCenter::protectedSetRemoveState(CheckUniqueObject& observer,const kstl::string&  notificationName,CoreModifiable* sender)
+void NotificationCenter::protectedSetRemoveState(CoreModifiable* observer,const std::string&  notificationName,CoreModifiable* sender)
 {
 	if((sender==0)&&(notificationName==""))
 	{
@@ -234,26 +233,24 @@ void NotificationCenter::protectedSetRemoveState(CheckUniqueObject& observer,con
 	unsigned int notificationID=CharToID::GetID(notificationName);
 				
 	//bool canErase=false;
-	kstl::map<CheckUniqueObject,NotifVectorStruct >::iterator	it=myObserverMap.find(observer);
-	if(it!=myObserverMap.end())
+	auto it = myObserverMap.find(observer);
+	if(it != myObserverMap.end())
 	{
 		NotifVectorStruct&	currentvector=myObserverMap[observer];
-		kstl::vector<kstl::string>::iterator	itvector;
-
-		for(itvector=currentvector.myVector.begin();itvector!=currentvector.myVector.end();itvector++)
+		for(auto itvector=currentvector.myVector.begin(); itvector != currentvector.myVector.end(); itvector++)
 		{
 			if(notificationName == (*itvector))
 			{
 				if(myNotificationMap.find(notificationID) != myNotificationMap.end())
 				{
-					kstl::vector<ObserverStructVector>&		currentprotocolmap=myNotificationMap[notificationID];
-					kstl::vector<ObserverStructVector>::iterator  vectorToRemoveit;
+					std::vector<ObserverStructVector>&		currentprotocolmap=myNotificationMap[notificationID];
+					std::vector<ObserverStructVector>::iterator  vectorToRemoveit;
 
 					for(vectorToRemoveit=currentprotocolmap.begin();vectorToRemoveit!=currentprotocolmap.end();vectorToRemoveit++)
 					{
 						if((*vectorToRemoveit).myObserver == observer)
 						{	
-							kstl::vector<ObserverStruct>::iterator removestructit;
+							std::vector<ObserverStruct>::iterator removestructit;
 							for(removestructit = (*vectorToRemoveit).myVector.begin();removestructit != (*vectorToRemoveit).myVector.end();removestructit++)
 							{
 								if( ((*removestructit).mySender == sender) || (sender == 0))
@@ -275,11 +272,11 @@ void NotificationCenter::protectedSetRemoveState(CheckUniqueObject& observer,con
 	}
 }
 
-void NotificationCenter::protectedSetRemoveState(CheckUniqueObject& observer)
+void NotificationCenter::protectedSetRemoveState(CoreModifiable* observer)
 {
 	// search all notifications for this observer
-	kstl::map<CheckUniqueObject,NotifVectorStruct >::iterator	it=myObserverMap.find(observer);
-	if(it!=myObserverMap.end())
+	auto it = myObserverMap.find(observer);
+	if(it != myObserverMap.end())
 	{
 		NotifVectorStruct&	currentvector=myObserverMap[observer];
 
@@ -288,19 +285,19 @@ void NotificationCenter::protectedSetRemoveState(CheckUniqueObject& observer)
 		unsigned int i;
 		for(i=0;i<currentvector.myVector.size();i++)
 		{
-			kstl::string notifname=currentvector.myVector[i];
+			std::string notifname=currentvector.myVector[i];
 			unsigned int notificationID=CharToID::GetID(notifname);
 
 			if(myNotificationMap.find(notificationID) != myNotificationMap.end())
 			{
-				kstl::vector<ObserverStructVector>&		currentprotocolmap=myNotificationMap[notificationID];
-				kstl::vector<ObserverStructVector>::iterator  vectorToRemoveit;
+				std::vector<ObserverStructVector>&		currentprotocolmap=myNotificationMap[notificationID];
+				std::vector<ObserverStructVector>::iterator  vectorToRemoveit;
 
 				for(vectorToRemoveit=currentprotocolmap.begin();vectorToRemoveit!=currentprotocolmap.end();vectorToRemoveit++)
 				{
 					if((*vectorToRemoveit).myObserver == observer)
 					{	
-						kstl::vector<ObserverStruct>::iterator	itFlag;
+						std::vector<ObserverStruct>::iterator	itFlag;
 						for(itFlag=(*vectorToRemoveit).myVector.begin();itFlag!=(*vectorToRemoveit).myVector.end();itFlag++)
 						{
 							(*itFlag).myIsRemoved=true;
@@ -314,13 +311,13 @@ void NotificationCenter::protectedSetRemoveState(CheckUniqueObject& observer)
 	}
 }
 
-void NotificationCenter::protectedRemoveObserver(CheckUniqueObject& observer, bool wasDestroyed)
+void NotificationCenter::protectedRemoveObserver(CoreModifiable* observer, bool wasDestroyed)
 {
 	// search all notifications for this observer
 
-	kstl::map<CheckUniqueObject,NotifVectorStruct >::iterator	it=myObserverMap.find(observer);
+	auto it = myObserverMap.find(observer);
 	bool canErase=true;
-	if(it!=myObserverMap.end())
+	if(it != myObserverMap.end())
 	{
 		NotifVectorStruct&	currentvector=myObserverMap[observer];
 		// search each notification name and remove observer form the list
@@ -328,23 +325,23 @@ void NotificationCenter::protectedRemoveObserver(CheckUniqueObject& observer, bo
 		unsigned int i;
 		for(i=0;i<currentvector.myVector.size();i++)
 		{
-			kstl::string notifname=currentvector.myVector[i];
+			std::string notifname=currentvector.myVector[i];
 
 			unsigned int notificationID=CharToID::GetID(notifname);
 
-			kstl::map<unsigned int,kstl::vector<ObserverStructVector> >::iterator	itfound=myNotificationMap.find(notificationID);
+			auto itfound = myNotificationMap.find(notificationID);
 			if(itfound != myNotificationMap.end())
 			{
-				kstl::vector<ObserverStructVector>&		currentprotocolmap=myNotificationMap[notificationID];
-				kstl::vector<ObserverStructVector>::iterator  vectorToRemoveit;
+				std::vector<ObserverStructVector>&		currentprotocolmap=myNotificationMap[notificationID];
+				std::vector<ObserverStructVector>::iterator  vectorToRemoveit;
 
 				for(vectorToRemoveit=currentprotocolmap.begin();vectorToRemoveit!=currentprotocolmap.end();vectorToRemoveit++)
 				{
 					if((*vectorToRemoveit).myObserver == observer)
 					{	
-						kstl::vector<ObserverStruct>::iterator removestructit;
+						std::vector<ObserverStruct>::iterator removestructit;
 
-						kstl::vector<ObserverStruct>	reconstructList;
+						std::vector<ObserverStruct>	reconstructList;
 						reconstructList.clear();
 						
 						for(removestructit = (*vectorToRemoveit).myVector.begin();removestructit != (*vectorToRemoveit).myVector.end();removestructit++)
@@ -399,7 +396,7 @@ void NotificationCenter::protectedRemoveObserver(CheckUniqueObject& observer, bo
 
 }
 
-void NotificationCenter::protectedRemoveObserver(CheckUniqueObject& observer,const kstl::string& notificationName,CoreModifiable* sender, bool wasDestroyed)
+void NotificationCenter::protectedRemoveObserver(CoreModifiable* observer,const std::string& notificationName,CoreModifiable* sender, bool wasDestroyed)
 {
 	if((sender==0)&&(notificationName==""))
 	{
@@ -409,28 +406,27 @@ void NotificationCenter::protectedRemoveObserver(CheckUniqueObject& observer,con
 	unsigned int notificationID=CharToID::GetID(notificationName);
 
 	bool canErase=false;
-	kstl::map<CheckUniqueObject,NotifVectorStruct >::iterator	it=myObserverMap.find(observer);
-	if(it!=myObserverMap.end())
+	auto it = myObserverMap.find(observer);
+	if(it != myObserverMap.end())
 	{
 		NotifVectorStruct&	currentvector=myObserverMap[observer];
-		kstl::vector<kstl::string>::iterator	itvector;
+		std::vector<std::string>::iterator	itvector;
 
 		for(itvector=currentvector.myVector.begin();itvector!=currentvector.myVector.end();itvector++)
 		{
 			if(notificationName == (*itvector))
 			{
-				kstl::map<unsigned int,kstl::vector<ObserverStructVector> >::iterator	itfound=myNotificationMap.find(notificationID);
-
+				auto itfound = myNotificationMap.find(notificationID);
 				if(itfound != myNotificationMap.end())
 				{
-					kstl::vector<ObserverStructVector>&		currentprotocolmap=myNotificationMap[notificationID];
-					kstl::vector<ObserverStructVector>::iterator  vectorToRemoveit;
+					std::vector<ObserverStructVector>&		currentprotocolmap=myNotificationMap[notificationID];
+					std::vector<ObserverStructVector>::iterator  vectorToRemoveit;
 
 					for(vectorToRemoveit=currentprotocolmap.begin();vectorToRemoveit!=currentprotocolmap.end();vectorToRemoveit++)
 					{
 						if((*vectorToRemoveit).myObserver == observer)
 						{	
-							kstl::vector<ObserverStruct>::iterator removestructit;
+							std::vector<ObserverStruct>::iterator removestructit;
 							for(removestructit = (*vectorToRemoveit).myVector.begin();removestructit != (*vectorToRemoveit).myVector.end();removestructit++)
 							{
 								if((*removestructit).myIsRemoved)
@@ -474,7 +470,7 @@ void NotificationCenter::protectedRemoveObserver(CheckUniqueObject& observer,con
 	}
 }
 
-void NotificationCenter::postNotificationName(const KigsID& notificationID,kstl::vector<CoreModifiableAttribute*>& params,CoreModifiable* sender,void* data)
+void NotificationCenter::postNotificationName(const KigsID& notificationID,std::vector<CoreModifiableAttribute*>& params,CoreModifiable* sender,void* data)
 {
 	std::unique_lock<std::recursive_mutex> lk{ mMutex };
 	if(myPostLevel == 0)
@@ -499,8 +495,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,kstl:
 		while(!endj)
 		{
 			NotificationCenter::ObserverStructVector& currentObsStructV=myNotificationMap[notificationID.toUInt()][j];
-
-			CoreModifiable* currentobserver=(CoreModifiable*)(RefCountedBaseClass*)currentObsStructV.myObserver;
+			CoreModifiable* currentobserver = currentObsStructV.myObserver;
 
 			if (notificationIDAttr == 0)
 			{
@@ -523,12 +518,12 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,kstl:
 							SetCoreItemOperatorContext(&myContext);
 							myContext.myVariableList[LABEL_TO_ID(sender).toUInt()] = sender;
 							// Warning faked cast
-							myContext.myVariableList[LABEL_TO_ID(data).toUInt()] = (RefCountedBaseClass*)data;
+							myContext.myVariableList[LABEL_TO_ID(data).toUInt()] = (GenericRefCountedBaseClass*) data;
 
 
 							// push params
-							kstl::vector<CoreModifiableAttribute*>::iterator	paramscurrent=params.begin();
-							kstl::vector<CoreModifiableAttribute*>::iterator	paramsend = params.end();
+							std::vector<CoreModifiableAttribute*>::iterator	paramscurrent=params.begin();
+							std::vector<CoreModifiableAttribute*>::iterator	paramsend = params.end();
 
 							while (paramscurrent != paramsend)
 							{
@@ -555,7 +550,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,kstl:
 									case CoreModifiable::ATTRIBUTE_TYPE::STRING:
 									case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 									{
-										myContext.myVariableList[(*paramscurrent)->getLabelID().toUInt()] = new CoreModifiableAttributeOperator<kstl::string>((*paramscurrent));
+										myContext.myVariableList[(*paramscurrent)->getLabelID().toUInt()] = new CoreModifiableAttributeOperator<std::string>((*paramscurrent));
 									}
 									break;
 									default:
@@ -611,8 +606,8 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,kstl:
 		// remove notificationIDAttr from params
 		if (notificationIDAttr != 0)
 		{
-			kstl::vector<CoreModifiableAttribute*>::iterator	paramscurrent = params.begin();
-			kstl::vector<CoreModifiableAttribute*>::iterator	paramsend = params.end();
+			std::vector<CoreModifiableAttribute*>::iterator	paramscurrent = params.begin();
+			std::vector<CoreModifiableAttribute*>::iterator	paramsend = params.end();
 
 			while (paramscurrent != paramsend)
 			{

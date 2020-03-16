@@ -2,6 +2,7 @@
 
 #include "CoreModifiable.h"
 
+#include "CoreTreeNode.h"
 
 #include "NotificationCenter.h"
 #include "CoreBaseApplication.h"
@@ -22,6 +23,8 @@
 #include "AttributePacking.h"
 #include "AttributeModifier.h"
 
+#include "Upgrador.h"
+
 #include <algorithm>
 
 #include <stdio.h>
@@ -34,10 +37,20 @@
 
 #include "CorePackage.h"
 
+#ifdef KIGS_TOOLS
+#define TRACEREF_RETAIN  kigsprintf("+++ REF ON %p (%s) (%03d>%03d) \n",this, getExactTypeID()._id_name.c_str(), (int)myRefCounter-1, (int)myRefCounter);
+#define TRACEREF_RELEASE kigsprintf("--- REF ON %p (%s) (%03d>%03d) \n",this, getExactTypeID()._id_name.c_str(), (int)myRefCounter, (int)myRefCounter-1);
+#define TRACEREF_DELETE  kigsprintf("### REF ON %p (%s)\n",this, getExactTypeID()._id_name.c_str());
+#else
+#define TRACEREF_RETAIN
+#define TRACEREF_RELEASE
+#define TRACEREF_DELETE
+#endif
+
+std::atomic<unsigned int> CoreModifiable::myUIDCounter{ 0 };
 
 //! auto implement static members
 IMPLEMENT_CLASS_INFO(CoreModifiable);
-
 
 CoreModifiable::~CoreModifiable()
 {
@@ -79,6 +92,27 @@ CoreModifiable::~CoreModifiable()
 #ifdef KEEP_XML_DOCUMENT
 	DeleteXMLFiles();
 #endif
+}
+
+void CoreModifiable::RegisterToCore()
+{
+	KigsID cid = GetRuntimeType();
+	if (cid == "")
+	{
+		cid = getExactType();
+	}
+	CoreTreeNode* type_node = KigsCore::GetTypeNode(cid);
+	KIGS_ASSERT(type_node != nullptr);
+	type_node->AddInstance(this);
+	myTypeNode = type_node;
+}
+
+void CoreModifiable::setName(const std::string& name)
+{
+	if (myTypeNode) myTypeNode->RemoveInstance(this);
+	myName = name;
+	myNameID = myName;
+	if (myTypeNode) myTypeNode->AddInstance(this);
 }
 
 CoreModifiable*	CoreModifiable::getAggregateByType(KigsID id)
@@ -162,7 +196,6 @@ CoreModifiable*	CoreModifiable::getAggregateRoot() const
 	return (CoreModifiable*)returnedVal;
 }
 
-
 bool CoreModifiable::HasMethod(const KigsID& methodNameID) const
 {
 	const CoreModifiable* lthis;
@@ -173,11 +206,14 @@ bool CoreModifiable::HasMethod(const KigsID& methodNameID) const
 	return false;
 }
 
-
-void CoreModifiable::InsertMethod(KigsID labelID, RefCountedClass::ModifiableMethod method, const std::string& methodName CONNECT_PARAM)
+void CoreModifiable::InsertMethod(KigsID labelID, CoreModifiable::ModifiableMethod method, const std::string& methodName CONNECT_PARAM)
 {
-	ModifiableMethodStruct toAdd(method, methodName);
-
+	ModifiableMethodStruct toAdd(methodName, 
+		[method](CoreModifiable* localthis, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params, void* privateParams) -> bool 
+		{ 
+			return (localthis->*method)(sender, params, privateParams);
+		});
+	toAdd.mIsMethod = true;
 #ifdef KIGS_TOOLS
 	toAdd.xmlattr = xmlattr;
 #endif
@@ -185,12 +221,16 @@ void CoreModifiable::InsertMethod(KigsID labelID, RefCountedClass::ModifiableMet
 	GetLazyContent()->Methods.insert({ labelID, toAdd });
 }
 
-void CoreModifiable::InsertUpgradeMethod(KigsID labelID, RefCountedClass::ModifiableMethod method, UpgradorBase* up)
+void CoreModifiable::InsertUpgradeMethod(KigsID labelID, CoreModifiable::ModifiableMethod method, UpgradorBase* up)
 {
-	ModifiableMethodStruct toAdd(method, "",up);
+	ModifiableMethodStruct toAdd("",
+		[method](CoreModifiable* localthis, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params, void* privateParams) -> bool
+		{
+			return (localthis->*method)(sender, params, privateParams);
+		}, up);
+	toAdd.mIsMethod = true;
 	GetLazyContent()->Methods.insert({ labelID, toAdd });
 }
-
 
 void CoreModifiable::RemoveMethod(KigsID labelID)
 {
@@ -220,6 +260,14 @@ void CoreModifiable::debugPrintfClassList(const std::string& className, s32 maxi
 		(*it)->debugPrintfTree(maxindent);
 	
 	kigsprintf("%i items\n", (s32)instances.size());
+}
+
+void CoreModifiable::Upgrade(UpgradorBase* toAdd)
+{
+	LazyContent* c = GetLazyContent();
+	toAdd->myNextUpgrador = c->myUpgrador;
+	c->myUpgrador = toAdd;
+	toAdd->UpgradeInstance(this);
 }
 
 void CoreModifiable::debugPrintfFullTree(s32 maxindent)
@@ -257,9 +305,8 @@ void CoreModifiable::Init()
 	EmitSignal(Signals::PostInit, this);
 }
 
-
 //! default modifiable init : set all initparams to readonly and set initflag to true
-void	CoreModifiable::InitModifiable()
+void CoreModifiable::InitModifiable()
 {
 	//! already done ? then return
 	if(_isInit)
@@ -293,7 +340,7 @@ void	CoreModifiable::InitModifiable()
 }
 
 //! called when InitModifiable has failled : reset read/write flag on all init params
-void	CoreModifiable::UninitModifiable()
+void CoreModifiable::UninitModifiable()
 {
 	//! not init ? return
 	if(!_isInit)
@@ -317,7 +364,7 @@ void	CoreModifiable::UninitModifiable()
 	_ModifiableFlag&=0xFFFFFFFF^(u32)InitFlag;
 }
 
-void	CoreModifiable::RecursiveInit(bool a_childInFirst)
+void CoreModifiable::RecursiveInit(bool a_childInFirst)
 {
 	if (a_childInFirst)
 	{
@@ -359,7 +406,6 @@ void	CoreModifiable::RecursiveInit(bool a_childInFirst)
 	}
 	
 }
-
 
 const ModifiableMethodStruct* CoreModifiable::findMethod(const KigsID& id, const CoreModifiable*& localthis) const
 {
@@ -497,7 +543,7 @@ bool CoreModifiable::removeAggregateWith(CMSP& item)
 	return false;
 }
 
-void	CoreModifiable::UpdateAggregates(const Timer&  timer, void* addParam)
+void CoreModifiable::UpdateAggregates(const Timer&  timer, void* addParam)
 {
 	std::vector<ModifiableItemStruct>::const_iterator	itc = _items.begin();
 	std::vector<ModifiableItemStruct>::const_iterator	ite = _items.end();
@@ -586,17 +632,19 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 	}
 	CoreModifiable* localthis=(CoreModifiable*)getlocalthis;
 	bool result = false;
-	if (methodFound->m_Function)
+
+
+	if (!methodFound->mIsMethod)
 	{
-		result = (*methodFound->m_Function)(params);
+		result = methodFound->mFunction(this, sender, params, privateParams);
 	}
 	else
 	{
-		if (methodFound->m_Name != "")
+		if (methodFound->mName != "")
 		{
-			maString methodName{ "methodName" , methodFound->m_Name };
+			maString methodName{ "methodName" , methodFound->mName };
 			params.insert(params.begin(), &methodName);
-			result= localthis->Call(methodFound->m_Method, sender, params, privateParams);
+			result = methodFound->mFunction(localthis, sender, params, privateParams);
 			params.erase(params.begin());
 		}
 		else
@@ -604,14 +652,12 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 			// cache upgrador
 			UpgradorBase* cachedUpgrador = nullptr;
 			
-			if (methodFound->m_Upgrador)
+			if (methodFound->mUpgrador)
 			{
 				cachedUpgrador = localthis->mLazyContent->myUpgrador;
-				localthis->mLazyContent->myUpgrador = methodFound->m_Upgrador;
+				localthis->mLazyContent->myUpgrador = methodFound->mUpgrador;
 			}
-
-			result = localthis->Call(methodFound->m_Method, sender, params, privateParams);
-
+			result = methodFound->mFunction(localthis, sender, params, privateParams);
 			// reset cached 
 			if (cachedUpgrador)
 			{
@@ -720,7 +766,6 @@ std::string	CoreModifiable::GetRuntimeID() const
 	return result;
 }
 
-
 CoreModifiable::operator std::vector<CoreModifiableAttribute*> ()
 {
 	std::vector<CoreModifiableAttribute*> _attributeList;
@@ -766,8 +811,8 @@ EXPAND_MACRO_FOR_STRING_TYPES(const, &, IMPLEMENT_SET_VALUE);
 IMPLEMENT_SET_VALUE(const char*);
 IMPLEMENT_SET_VALUE(const u16*);
 
-IMPLEMENT_GET_VALUE(CoreModifiable*&); 
-IMPLEMENT_SET_VALUE(CoreModifiable*);
+//IMPLEMENT_GET_VALUE(CoreModifiable*&); 
+//IMPLEMENT_SET_VALUE(CoreModifiable*);
 
 EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, &, IMPLEMENT_GET_VALUE);
 EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SET_VALUE);
@@ -1405,7 +1450,7 @@ CoreModifiableAttribute*	CoreModifiable::GenericCreateDynamicAttribute(CoreModif
 }
 
 
-void	CoreModifiable::RemoveDynamicAttribute(KigsID id)
+void CoreModifiable::RemoveDynamicAttribute(KigsID id)
 {
 	auto it=_attributes.find(id);
 	if(it != _attributes.end() && it->second->isDynamic())
@@ -1472,14 +1517,14 @@ bool CoreModifiable::addItem(const CMSP& item, ItemPosition pos)
 }
 
 //! add the given parent to list
-void		CoreModifiable::addUser(CoreModifiable* user)
+void CoreModifiable::addUser(CoreModifiable* user)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	_users.push_back(user);
 }
 
 //! remove user (parent)
-void		CoreModifiable::removeUser(CoreModifiable* user)
+void CoreModifiable::removeUser(CoreModifiable* user)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	bool found=false;
@@ -1503,22 +1548,28 @@ void		CoreModifiable::removeUser(CoreModifiable* user)
 	} while(found);
 }
 
-bool    CoreModifiable::checkDestroy()
+bool CoreModifiable::checkDestroy()
 {
-	
 	if (isFlagAsPostDestroy())
 	{
 		unflagAsPostDestroy(); // remove flag
 		KigsCore::Instance()->AddToPostDestroyList(this);
 		return true;
 	}
-
-	return RefCountedClass::checkDestroy();
+	if (myTraceRef)
+		TRACEREF_DELETE
+	ProtectedDestroy();
+	return GenericRefCountedBaseClass::checkDestroy();
 }
 
 //! Destroy method decrement refcounter and delete instance if no more used
-void    CoreModifiable::ProtectedDestroy()
+void CoreModifiable::ProtectedDestroy()
 {
+	if (myTypeNode)
+	{
+		myTypeNode->RemoveInstance(this);
+	}
+
 	EmitSignal(Signals::Destroy, this);
 
 	if (mLazyContent)
@@ -1588,7 +1639,7 @@ void    CoreModifiable::ProtectedDestroy()
 }
 
 //!	utility method : init CoreModifiable parameters from given parameter list
-void	CoreModifiable::InitParametersFromList(const std::vector<CoreModifiableAttribute*>* params)
+void CoreModifiable::InitParametersFromList(const std::vector<CoreModifiableAttribute*>* params)
 {
 	if(params)	// check if params is not null
 	{
@@ -1702,6 +1753,7 @@ void CoreModifiable::Upgrade(const std::string& toAdd)
 	if(newone)
 		Upgrade(newone);
 }
+
 void CoreModifiable::Downgrade(const std::string& toRemove)
 {
 	if (!mLazyContent)
@@ -2237,9 +2289,8 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 
 				if (unique_id.size())
 				{
-					CheckUniqueObject buffer_cuo;
-					current->getValue(buffer_cuo);
-					auto buffer = (CoreRawBuffer*)(RefCountedClass*)buffer_cuo;
+					CoreRawBuffer* buffer = nullptr;
+					current->getValue((void*&)buffer);
 					if (buffer->size() >= settings->export_buffer_attribute_as_external_file_size_threshold)
 					{
 						CMSP& compressManager = KigsCore::GetSingleton("KXMLManager");
@@ -2610,7 +2661,6 @@ std::string CoreModifiable::GetFirstNameInPath(const std::string &path, std::str
 
 void CoreModifiable::getRootParentsWithPath(std::string &remainingpath, std::vector<CoreModifiable*>& parents, bool getRef)
 {
-
 	std::string::size_type pos = remainingpath.find('/');
 	std::string searchName = remainingpath;
 	if (pos != std::string::npos)
@@ -2668,7 +2718,7 @@ CoreModifiable* CoreModifiable::SearchInstance(const std::string &infos, CoreMod
 {
 	if (searchStart) // relative search ?
 	{
-		CoreModifiable* found=searchStart->GetInstanceByPath(infos,getRef);
+		CoreModifiable* found=searchStart->GetInstanceByPath(infos, getRef);
 		if (found) // if not found, search global path
 		{
 			return found;
@@ -2680,8 +2730,23 @@ CoreModifiable* CoreModifiable::SearchInstance(const std::string &infos, CoreMod
 
 }
 
-//! return the instance corresponding to the given path in sons tree
+CMSP CoreModifiable::SearchInstanceSP(const std::string& infos, CoreModifiable* searchStart)
+{
+	if (searchStart) // relative search ?
+	{
+		CMSP found{ searchStart->GetInstanceByPath(infos, true), StealRefTag{} };
+		if (found) // if not found, search global path
+		{
+			return found;
+		}
+	}
 
+	// global search
+	return CMSP{ GetInstanceByGlobalPath(infos, true), StealRefTag{} };
+}
+
+
+//! return the instance corresponding to the given path in sons tree
 CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path, bool getRef)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread during search
@@ -3073,6 +3138,27 @@ void CoreModifiable::RemoveWeakRef(WeakRef* ref)
 	lz->WeakRefs.pop_back();
 }
 
+#ifdef KIGS_TOOLS
+void CoreModifiable::GetRef()
+{
+	GenericRefCountedBaseClass::GetRef();
+	if (myTraceRef)
+		TRACEREF_RETAIN;
+}
+bool CoreModifiable::TryGetRef()
+{
+	bool ok = GenericRefCountedBaseClass::TryGetRef();
+	if (ok && myTraceRef)
+		TRACEREF_RETAIN;
+	return ok;
+}
+void CoreModifiable::Destroy()
+{
+	if (myTraceRef)
+		TRACEREF_RELEASE;
+	GenericRefCountedBaseClass::Destroy();
+}
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -3247,4 +3333,175 @@ SmartPointer<CoreModifiable> WeakRef::Lock() const
 	if (!IsValid()) return {};
 	if (to) to->GetRef();
 	return OwningRawPtrToSmartPtr(to);
+}
+
+LazyContent::~LazyContent()
+{
+	// linked list so delete only the first one
+	if (myUpgrador)
+	{
+		delete myUpgrador;
+		myUpgrador = nullptr;
+	}
+}
+
+void RegisterClassToInstanceFactory(KigsCore* core, const std::string& moduleName, KigsID classID, createMethod method)
+{
+	core->GetInstanceFactory()->RegisterClass(method, classID, moduleName);
+}
+
+void CoreModifiable::GetClassNameTree(CoreClassNameTree& classNameTree) 
+{ 
+	classNameTree.addClassName(CoreModifiable::myClassID, CoreModifiable::myRuntimeType);
+}
+
+//! static method : return the set of all instances of the given type
+void CoreModifiable::GetInstances(const KigsID& cid, std::set<CoreModifiable*>& instances, bool exactTypeOnly, bool only_one, bool getref)
+{
+	instances.clear();
+	CoreTreeNode* node = KigsCore::GetTypeNode(cid);
+	if (node) node->getInstances(instances, !exactTypeOnly, only_one, getref);
+}
+
+CoreModifiable* CoreModifiable::GetFirstInstance(const KigsID& cid, bool exactTypeOnly, bool getref)
+{
+	std::set<CoreModifiable*> insts;
+	GetInstances(cid, insts, exactTypeOnly, true, getref);
+	if (insts.size()) return *insts.begin();
+	return nullptr;
+}
+
+//! static method : return the set of all root instances of the given type 
+void CoreModifiable::GetRootInstances(const KigsID& cid, std::set<CoreModifiable*>& instances, bool exactTypeOnly, bool getref)
+{
+	instances.clear();
+	CoreTreeNode* node = KigsCore::GetTypeNode(cid);
+	if (node) node->getRootInstances(instances, !exactTypeOnly, getref);
+}
+
+// runtime ID is "name:type:pointer:uid"
+void CoreModifiable::GetInstanceByRuntimeID(const std::string& runtimeID, std::set<CoreModifiable*>& instances, bool getref)
+{
+	instances.clear();
+
+	std::string cid = "";
+	std::string name = "";
+	std::string searchstring = runtimeID;
+
+	uptr pointer;
+	unsigned int  uid;
+
+	size_t lastpos = 0;
+	int i;
+	for (i = 0; i < 2; i++)
+	{
+		size_t result = runtimeID.find(':', lastpos);
+		if (result == std::string::npos)
+		{
+			return;
+		}
+		searchstring = runtimeID.substr(lastpos, result - lastpos);
+		switch (i)
+		{
+		case 0:
+			name = runtimeID.substr(0, result);
+			//sscanf(searchstring.c_str(),"%s",name);
+			break;
+		case 1:
+			if (searchstring == "")
+			{
+				searchstring = "CoreModifiable";
+			}
+
+			cid = searchstring;
+			//	sscanf(searchstring.c_str(),"%s",cid);
+			break;
+		}
+		lastpos = result + 1;
+	}
+	searchstring = runtimeID.substr(lastpos, runtimeID.size() - lastpos);
+	sscanf(searchstring.c_str(), "%lu:%u", &pointer, &uid);
+
+	std::set<CoreModifiable*> searchinstances;
+	// retreive name and type
+	GetInstancesByName(cid, name, searchinstances, false, false, getref);
+
+	// in searched instances search the one we want
+
+	std::set<CoreModifiable*>::const_iterator itinst;
+	for (itinst = searchinstances.begin(); itinst != searchinstances.end(); ++itinst)
+	{
+		if ((*itinst)->getUID() == uid)
+		{
+			uptr localpointer = (uptr)(*itinst);
+			if (localpointer == pointer)
+			{
+				instances.insert((CoreModifiable*)*itinst);
+				break;
+			}
+			else if (getref)
+			{
+				(*itinst)->Destroy(); // release previously set ref
+			}
+		}
+	}
+
+	if (getref)
+	{
+		++itinst;
+		for (; itinst != searchinstances.end(); ++itinst)
+		{
+			(*itinst)->Destroy(); // release previously set ref
+		}
+	}
+}
+
+//! static method : return the set of all instances of the given type matching the correct name (use NameComparator)
+void CoreModifiable::GetInstancesByName(const KigsID& cid, const std::string& name, std::set<CoreModifiable*>& instances, bool exactTypeOnly, bool only_one, bool getref)
+{
+	instances.clear();
+	CoreTreeNode* node = KigsCore::GetTypeNode(cid);
+	if (node) node->getInstancesByName(instances, !exactTypeOnly, name, only_one, getref);
+}
+
+CoreModifiable* CoreModifiable::GetFirstInstanceByName(const KigsID& cid, const std::string& name, bool exactTypeOnly, bool getref)
+{
+	std::set<CoreModifiable*> insts;
+	GetInstancesByName(cid, name, insts, exactTypeOnly, true, getref);
+	if (insts.size()) return *insts.begin();
+	return nullptr;
+}
+
+std::vector<CMSP> CoreModifiable::FindInstances(const KigsID& id, bool exact_type_only)
+{
+	std::vector<CMSP> result;
+	CoreTreeNode* node = KigsCore::GetTypeNode(id);
+	if (node) node->getInstances(result, !exact_type_only);
+	return result;
+}
+
+std::vector<CMSP> CoreModifiable::FindInstancesByName(const KigsID& id, const std::string& name, bool exact_type_only)
+{
+	std::vector<CMSP> result;
+	CoreTreeNode* node = KigsCore::GetTypeNode(id);
+	if (node) node->getInstancesByName(result, !exact_type_only, name);
+	return result;
+}
+
+CMSP CoreModifiable::FindFirstInstance(const KigsID& id, const std::string& name, bool exact_type_only)
+{
+	std::vector<CMSP> result;
+	CoreTreeNode* node = KigsCore::GetTypeNode(id);
+	if (node) node->getInstances(result, !exact_type_only, true);
+	if (result.size()) return result.front();
+	return nullptr;
+}
+
+CMSP CoreModifiable::FindFirstInstanceByName(const KigsID& id, const std::string& name, bool exact_type_only)
+{
+	std::vector<CMSP> result;
+	CoreTreeNode* node = KigsCore::GetTypeNode(id);
+	if (node) node->getInstancesByName(result, !exact_type_only, name, true);
+	if (result.size()) return result.front();
+	return nullptr;
 }

@@ -33,23 +33,23 @@ void HTTPAsyncRequest::SetPostBufferValue(const char* a_buffer, unsigned int buf
 
 bool HTTPAsyncRequest::GetAnswer(usString& answer)
 {
-	if (myReceivedBuffer)
+	if (myReceivedBuffer.ref())
 	{
 
 		switch (myContentEncoding)
 		{
 		case ANSI:
-			answer = (usString)(const char*)myReceivedBuffer->buffer();
+			answer = (usString)(const char*)myReceivedBuffer.const_ref()->buffer();
 			if (myFoundCharset != ANSI)
 			{
 				answer.replaceEscapeUnicode();
 			}
 			break;
 		case UTF8:
-			answer = (UTF8Char*)myReceivedBuffer->buffer();
+			answer = (UTF8Char*)myReceivedBuffer.const_ref()->buffer();
 			break;
 		case UTF16:
-			answer = (unsigned short*)myReceivedBuffer->buffer();
+			answer = (unsigned short*)myReceivedBuffer.const_ref()->buffer();
 			break;
 		}
 
@@ -64,23 +64,23 @@ bool HTTPAsyncRequest::GetAnswer(usString& answer)
 
 bool HTTPAsyncRequest::GetAnswer(kstl::string& answer)
 {
-	if (myReceivedBuffer)
+	if (myReceivedBuffer.ref())
 	{
 		usString L_returnedValue;
 		switch (myContentEncoding)
 		{
 		case ANSI:
-			L_returnedValue = (usString)(const char*)myReceivedBuffer->buffer();
+			L_returnedValue = (usString)(const char*)myReceivedBuffer.const_ref()->buffer();
 			if (myFoundCharset != ANSI)
 			{
 				L_returnedValue.replaceEscapeUnicode();
 			}
 			break;
 		case UTF8:
-			L_returnedValue = (UTF8Char*)myReceivedBuffer->buffer();
+			L_returnedValue = (UTF8Char*)myReceivedBuffer.const_ref()->buffer();
 			break;
 		case UTF16:
-			L_returnedValue = (unsigned short*)myReceivedBuffer->buffer();
+			L_returnedValue = (unsigned short*)myReceivedBuffer.const_ref()->buffer();
 			break;
 		}
 
@@ -96,10 +96,10 @@ bool HTTPAsyncRequest::GetAnswer(void** buffer, int& buflen)
 {
 	*buffer = 0;
 	buflen = 0;
-	if (myReceivedBuffer)
+	if (myReceivedBuffer.ref())
 	{
-		*buffer = myReceivedBuffer->buffer();
-		buflen = myReceivedBuffer->length();
+		*buffer = myReceivedBuffer.const_ref()->buffer();
+		buflen = myReceivedBuffer.const_ref()->length();
 
 		return true;
 	}
@@ -108,10 +108,10 @@ bool HTTPAsyncRequest::GetAnswer(void** buffer, int& buflen)
 
 bool HTTPAsyncRequest::GetAnswer(CoreRawBuffer*& buffer)
 {
-	buffer = myReceivedBuffer;
-	if (myReceivedBuffer)
+	buffer = myReceivedBuffer.const_ref().get();
+	if (buffer)
 	{
-		myReceivedBuffer->GetRef();
+		buffer->GetRef();
 		return true;
 	}
 	return false;
@@ -129,7 +129,7 @@ void HTTPAsyncRequest::protectedProcess()
 		}
 		else // not a call but a notification
 		{
-			KigsCore::GetNotificationCenter()->postNotificationName(myNotificationName.const_ref(), this, myReceivedBuffer->buffer());
+			KigsCore::GetNotificationCenter()->postNotificationName(myNotificationName.const_ref(), this, myReceivedBuffer.const_ref()->buffer());
 		}
 	}
 	else
@@ -140,10 +140,5 @@ void HTTPAsyncRequest::protectedProcess()
 
 void HTTPAsyncRequest::ClearReceivedBuffer()
 {
-	if (myReceivedBuffer)
-	{
-		myReceivedBufferRef = "";
-		myReceivedBuffer->Destroy();
-		myReceivedBuffer = 0;
-	}
+	myReceivedBuffer.ref() = nullptr;
 }

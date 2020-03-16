@@ -57,7 +57,7 @@ void Holo3DSequenceManager::UninitModifiable()
 
 	for (auto scene : instances)
 	{
-		CheckUniqueObject uo;
+		CoreModifiable* uo=nullptr;
 		scene->getValue("RenderingScreen", uo);
 
 		if (uo == myRenderingScreen.get())

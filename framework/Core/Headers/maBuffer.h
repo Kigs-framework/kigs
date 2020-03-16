@@ -97,12 +97,13 @@ public:
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
-	virtual bool setValue(const CheckUniqueObject& value) override
+
+	virtual bool setValue(void* value) override
 	{
 		if (this->isReadOnly())
 			return false;
 
-		_value = NonOwningRawPtrToSmartPtr((typename CurrentAttributeType::ValueType*)((RefCountedClass*)value));
+		_value = NonOwningRawPtrToSmartPtr((typename CurrentAttributeType::ValueType*)((CoreRawBuffer*)value));
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
@@ -120,12 +121,8 @@ public:
 		value = "";
 		return true;
 	}
-	virtual bool getValue(CheckUniqueObject& value) const override
-	{
-		value = (RefCountedClass*)_value.get();
-		return true;
-	}
-	virtual bool getValue(void*& value) const override { value = (RefCountedClass*)_value.get(); return true; }
+	
+	virtual bool getValue(void*& value) const override { value = (CoreRawBuffer*)_value.get(); return true; }
 
 	auto& operator=(const kstl::string &value)
 	{

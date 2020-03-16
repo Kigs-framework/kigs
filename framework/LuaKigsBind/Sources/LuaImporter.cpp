@@ -512,7 +512,7 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 				{
 					value.pushToStack();
 					_luamodule->AddLuaMethodFromStack(current, attr_name);
-					current->InsertMethod(attr_name, static_cast<RefCountedClass::ModifiableMethod>(&DynamicMethodLuaGlobalCallback::LuaGlobalCallback), attr_name);
+					current->InsertMethod(attr_name, static_cast<CoreModifiable::ModifiableMethod>(&DynamicMethodLuaGlobalCallback::LuaGlobalCallback), attr_name);
 				}
 				break;
 				case LuaTypeID::USERDATA:

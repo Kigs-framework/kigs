@@ -115,10 +115,9 @@ void	ABoneSystem::SearchParentNode3D()
 			animation->addShader(myParentNode3D, shader.get());
 			
 			// retreive matrix buffer
-			CheckUniqueObject retreiveMatrix;
-			uniformMatrixArray->getValue(LABEL_TO_ID(MatrixArray), retreiveMatrix);
-			
-			myBoneMatrixArray =(Matrix4x4*)((AlignedCoreRawBuffer<16,char>*)(RefCountedClass*)retreiveMatrix)->buffer();
+			void* buffer = nullptr;
+			uniformMatrixArray->getValue(LABEL_TO_ID(MatrixArray), buffer);
+			myBoneMatrixArray =(Matrix4x4*)((AlignedCoreRawBuffer<16,char>*)buffer)->buffer();
 		}
 	}
 }

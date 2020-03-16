@@ -17,7 +17,7 @@ struct CoreItemOperatorStruct
 
 struct CoreItemEvaluationContext
 {
-	kigs::unordered_map<unsigned int, RefCountedBaseClass*>	myVariableList;
+	kigs::unordered_map<unsigned int, GenericRefCountedBaseClass*>	myVariableList;
 };
 
 extern	CoreItemEvaluationContext*	myCurrentCoreItemEvaluationContext;
@@ -121,7 +121,7 @@ protected:
 	static kstl::vector<CoreItemOperatorStruct>	FindFirstLevelSeparator(AsciiParserUtils& formulae, ConstructContext& context);
 	static kstl::vector<kstl::string>	FindFirstLevelParams(AsciiParserUtils& formulae, ConstructContext& context);
 	static CoreItemOperator<operandType>* getOperator(const kstl::string& keyword, ConstructContext& context);
-	static RefCountedBaseClass* getVariable(const kstl::string& keyword);
+	static GenericRefCountedBaseClass* getVariable(const kstl::string& keyword);
 };
 
 

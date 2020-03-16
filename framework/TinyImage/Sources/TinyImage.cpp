@@ -18,7 +18,7 @@ TinyImageLoaderContext* TinyImage::mLoaderContext=&TinyImageLoaderContext::GetDe
 
 kstl::vector<TinyImageLoaderContext>*	TinyImage::myContextStack=0;
 
-TinyImage::TinyImage(): RefCountedBaseClass()
+TinyImage::TinyImage(): GenericRefCountedBaseClass()
 ,myInitIsOK(false)
 ,myWidth(0)
 ,myHeight(0)
@@ -124,7 +124,7 @@ void	TinyImage::ExportImage(const char* filename,void* data,int width,int height
 }
 
 // create images from data, to export them
-TinyImage::TinyImage(void* data, int sx,int sy,TinyImage::ImageFormat internalfmt, int linesize) : RefCountedBaseClass()
+TinyImage::TinyImage(void* data, int sx,int sy,TinyImage::ImageFormat internalfmt, int linesize) : GenericRefCountedBaseClass()
 , myUsedWidth(-1)
 , myUsedHeight(-1)
 {
