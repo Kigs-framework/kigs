@@ -4,6 +4,8 @@
 #include "CoreModifiable.h"
 #include "CoreModifiableAttribute.h"
 
+#include <map>
+
 
 // ****************************************
 // * DisplayDeviceCaps class

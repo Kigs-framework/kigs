@@ -8,6 +8,8 @@
 
 class CoreItem;
 class CoreItemIterator;
+class CoreModifiable;
+class CoreModifiableAttribute;
 
 class CoreItemSP : public SmartPointer<CoreItem>
 {
