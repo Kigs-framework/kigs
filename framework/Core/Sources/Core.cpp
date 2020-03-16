@@ -454,12 +454,7 @@ CoreTreeNode* KigsCore::AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, c
 			parent->myChildren[cid] = nextNode;
 			for (auto& pair : method_table)
 			{
-				ModifiableMethodStruct toAdd("",
-					[method = pair.second](CoreModifiable* localthis, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params, void* privateParams) -> bool
-					{
-						return (localthis->*method)(sender, params, privateParams);
-					});
-				toAdd.mIsMethod = true;
+				ModifiableMethodStruct toAdd("", pair.second);
 				nextNode->myMethods.insert({ pair.first, toAdd });
 			}
 			KigsCore::Instance()->myTypeNodeMap[cid] = nextNode;

@@ -94,6 +94,15 @@ CoreModifiable::~CoreModifiable()
 #endif
 }
 
+LazyContent* CoreModifiable::GetLazyContent() const
+{
+	if (mLazyContent) return mLazyContent;
+	std::lock_guard<std::recursive_mutex> lk{ GetMutex() };
+	if (mLazyContent) return mLazyContent;
+	mLazyContent = new LazyContent;
+	return mLazyContent;
+}
+
 void CoreModifiable::RegisterToCore()
 {
 	KigsID cid = GetRuntimeType();
@@ -196,6 +205,11 @@ CoreModifiable*	CoreModifiable::getAggregateRoot() const
 	return (CoreModifiable*)returnedVal;
 }
 
+const kigs::unordered_map<KigsID, ModifiableMethodStruct>* CoreModifiable::GetMethods() 
+{ 
+	if (!mLazyContent) return nullptr; return &GetLazyContent()->Methods; 
+}
+
 bool CoreModifiable::HasMethod(const KigsID& methodNameID) const
 {
 	const CoreModifiable* lthis;
@@ -208,27 +222,16 @@ bool CoreModifiable::HasMethod(const KigsID& methodNameID) const
 
 void CoreModifiable::InsertMethod(KigsID labelID, CoreModifiable::ModifiableMethod method, const std::string& methodName CONNECT_PARAM)
 {
-	ModifiableMethodStruct toAdd(methodName, 
-		[method](CoreModifiable* localthis, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params, void* privateParams) -> bool 
-		{ 
-			return (localthis->*method)(sender, params, privateParams);
-		});
-	toAdd.mIsMethod = true;
+	ModifiableMethodStruct toAdd(methodName, method);
 #ifdef KIGS_TOOLS
 	toAdd.xmlattr = xmlattr;
 #endif
-	
 	GetLazyContent()->Methods.insert({ labelID, toAdd });
 }
 
 void CoreModifiable::InsertUpgradeMethod(KigsID labelID, CoreModifiable::ModifiableMethod method, UpgradorBase* up)
 {
-	ModifiableMethodStruct toAdd("",
-		[method](CoreModifiable* localthis, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params, void* privateParams) -> bool
-		{
-			return (localthis->*method)(sender, params, privateParams);
-		}, up);
-	toAdd.mIsMethod = true;
+	ModifiableMethodStruct toAdd("", method, up);
 	GetLazyContent()->Methods.insert({ labelID, toAdd });
 }
 
@@ -268,6 +271,15 @@ void CoreModifiable::Upgrade(UpgradorBase* toAdd)
 	toAdd->myNextUpgrador = c->myUpgrador;
 	c->myUpgrador = toAdd;
 	toAdd->UpgradeInstance(this);
+}
+
+UpgradorBase* CoreModifiable::GetUpgrador()
+{
+	if (mLazyContent)
+	{
+		return mLazyContent->myUpgrador;
+	}
+	return nullptr;
 }
 
 void CoreModifiable::debugPrintfFullTree(s32 maxindent)
@@ -634,17 +646,18 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 	bool result = false;
 
 
-	if (!methodFound->mIsMethod)
+	if (!methodFound->IsMethod())
 	{
-		result = methodFound->mFunction(this, sender, params, privateParams);
+		result = methodFound->GetFunction()(this, sender, params, privateParams);
 	}
 	else
 	{
-		if (methodFound->mName != "")
+		auto& method = methodFound->GetMethod();
+		if (method.mName != "")
 		{
-			maString methodName{ "methodName" , methodFound->mName };
+			maString methodName{ "methodName" , method.mName };
 			params.insert(params.begin(), &methodName);
-			result = methodFound->mFunction(localthis, sender, params, privateParams);
+			result = (localthis->*method.mMethod)(sender, params, privateParams);
 			params.erase(params.begin());
 		}
 		else
@@ -652,12 +665,12 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 			// cache upgrador
 			UpgradorBase* cachedUpgrador = nullptr;
 			
-			if (methodFound->mUpgrador)
+			if (method.mUpgrador)
 			{
 				cachedUpgrador = localthis->mLazyContent->myUpgrador;
-				localthis->mLazyContent->myUpgrador = methodFound->mUpgrador;
+				localthis->mLazyContent->myUpgrador = method.mUpgrador;
 			}
-			result = methodFound->mFunction(localthis, sender, params, privateParams);
+			result = (localthis->*method.mMethod)(sender, params, privateParams);
 			// reset cached 
 			if (cachedUpgrador)
 			{

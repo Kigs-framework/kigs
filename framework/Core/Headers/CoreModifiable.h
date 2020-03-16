@@ -12,6 +12,7 @@
 #include <memory>
 #include <type_traits>
 #include <set>
+#include <variant>
 #include <list>
 
 #ifdef KEEP_XML_DOCUMENT
@@ -152,42 +153,9 @@ namespace std
 	};
 }
 
-
-#pragma pack(4)
+struct LazyContent;
+struct ModifiableMethodStruct;
 class UpgradorBase;
-
-struct ModifiableMethodStruct
-{
-	using func_type = std::function<bool(CoreModifiable*, CoreModifiable*, std::vector<CoreModifiableAttribute*>&, void*) > ;
-	ModifiableMethodStruct()
-	{
-	}
-
-	ModifiableMethodStruct(const std::string& name, const func_type& func, UpgradorBase* up = nullptr) : mName{name}, mUpgrador{ up }, mFunction{func}
-	{
-	}
-
-	std::string mName;
-	UpgradorBase* mUpgrador = nullptr;
-	func_type mFunction;
-	bool mIsMethod = false;
-	CONNECT_FIELD
-};
-
-#pragma pack()
-
-
-struct LazyContent
-{
-	kigs::unordered_map<KigsID, std::vector<std::pair<KigsID, CoreModifiable*>>> ConnectedTo;
-	kigs::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> ConnectedToMe;
-	kigs::unordered_map <KigsID, ModifiableMethodStruct> Methods;
-	std::vector<WeakRef*> WeakRefs;
-	// Upgrador management
-	UpgradorBase* myUpgrador = nullptr;
-
-	~LazyContent();
-};
 
 typedef SmartPointer<CoreModifiable> CMSP;
 
@@ -710,7 +678,7 @@ public:
 
 	/// Method management
 	// Return the map of private methods of this CoreModifiable
-	const kigs::unordered_map <KigsID, ModifiableMethodStruct>* GetMethods() { if (!mLazyContent) return nullptr; return &GetLazyContent()->Methods; }
+	const kigs::unordered_map <KigsID, ModifiableMethodStruct>* GetMethods();
 	// Search in private methods, type methods and aggregate methods
 	bool HasMethod(const KigsID& methodNameID) const;
 	// Add a new private method
@@ -1152,14 +1120,8 @@ protected:
 	//! create and add dynamic attribute except arrays
 	CoreModifiableAttribute*	GenericCreateDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID);
 
-	UpgradorBase* GetUpgrador()
-	{
-		if (mLazyContent)
-		{
-			return mLazyContent->myUpgrador;
-		}
-		return nullptr;
-	}
+	UpgradorBase* GetUpgrador();
+
 
 #ifdef USE_LINK_TYPE
 	/*! add a new link type to the list, second parameter is used to prevent calling it
@@ -1221,14 +1183,7 @@ private:
 	mutable std::recursive_mutex mObjectMutex;
 	mutable LazyContent* mLazyContent = nullptr;
 
-	LazyContent* GetLazyContent() const
-	{
-		if (mLazyContent) return mLazyContent;
-		std::lock_guard<std::recursive_mutex> lk{ GetMutex() };
-		if (mLazyContent) return mLazyContent;
-		mLazyContent = new LazyContent;
-		return mLazyContent;
-	}
+	LazyContent* GetLazyContent() const;
 
 	// Flags
 	int _ModifiableFlag =  AllowChanges;
@@ -1304,8 +1259,65 @@ protected:
 };
 
 
+#pragma pack(4)
+struct ModifiableMethodStruct
+{
+	using func_type = std::function<bool(CoreModifiable*, CoreModifiable*, std::vector<CoreModifiableAttribute*>&, void*) >;
+	struct Method
+	{
+		CoreModifiable::ModifiableMethod mMethod;
+		std::string mName;
+		UpgradorBase* mUpgrador = nullptr;
+	};
+
+	ModifiableMethodStruct()
+	{
+	}
+
+	ModifiableMethodStruct(const func_type& func)
+	{
+		mVariant = func;
+	}
+
+	ModifiableMethodStruct(const std::string& name, CoreModifiable::ModifiableMethod method, UpgradorBase* up = nullptr)
+	{
+		mVariant = Method{ method, name, up };
+	}
+
+	std::variant<func_type, Method> mVariant;
+
+	const func_type& GetFunction() const
+	{
+		return std::get<0>(mVariant);
+	}
+
+	const Method& GetMethod() const
+	{
+		return std::get<1>(mVariant);
+	}
+
+	bool IsMethod() const
+	{
+		return mVariant.index() == 1;
+	}
+
+	CONNECT_FIELD
+};
+
+#pragma pack()
 
 
+struct LazyContent
+{
+	kigs::unordered_map<KigsID, std::vector<std::pair<KigsID, CoreModifiable*>>> ConnectedTo;
+	kigs::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> ConnectedToMe;
+	kigs::unordered_map <KigsID, ModifiableMethodStruct> Methods;
+	std::vector<WeakRef*> WeakRefs;
+	// Upgrador management
+	UpgradorBase* myUpgrador = nullptr;
+
+	~LazyContent();
+};
 
 
 
