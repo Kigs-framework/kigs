@@ -2163,7 +2163,8 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	{
 		for (auto&& pair : item->GetTypeNode()->myMethods)
 		{
-			ImGui::Text("%s - %s", pair.first._id_name.c_str(), pair.second.mName.c_str());
+			if (pair.second.IsMethod())
+				ImGui::Text("%s - %s", pair.first._id_name.c_str(), pair.second.GetMethod().mName.c_str());
 		}
 
 		if (item->GetTypeNode()->myMethods.size())
@@ -2175,8 +2176,8 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			for (auto&& pair : lz->Methods)
 			{
 				ImGui::PushID(pair.first.toUInt());
-
-				ImGui::Text("%s - %s", pair.first._id_name.c_str(), pair.second.mName.c_str());
+				if(pair.second.IsMethod())
+					ImGui::Text("%s - %s", pair.first._id_name.c_str(), pair.second.GetMethod().mName.c_str());
 
 				auto it = lua_methods.find(pair.first.toUInt());
 				if (it != lua_methods.end())
