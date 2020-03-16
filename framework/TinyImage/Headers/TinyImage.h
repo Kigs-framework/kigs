@@ -9,7 +9,7 @@ class FileHandle;
 
 typedef void (*ReadColorFunc)(unsigned char* src, unsigned char* dst);
 
-class TinyImage : public RefCountedBaseClass
+class TinyImage : public GenericRefCountedBaseClass
 {
 public:	
 		
@@ -351,8 +351,6 @@ public:
 		KIGS_ASSERT(0);
 	}
 protected:	
-
-	void ProtectedDestroy() override {};
 	// use static CreateImage, no direct access
 	TinyImage();
 

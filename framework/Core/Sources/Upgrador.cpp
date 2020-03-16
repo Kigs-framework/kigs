@@ -3,18 +3,17 @@
 
 void UpgradorBase::UpgradeInstance(CoreModifiable* toUpgrade)
 {
-	kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>> MethodTable;
+	std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>> MethodTable;
 	GetMethodTable(MethodTable);
 	for (auto& t : MethodTable)
 	{
-		toUpgrade->InsertUpgradeMethod(t.first, t.second,this);
+		toUpgrade->InsertUpgradeMethod(t.first, t.second, this);
 	}
-
 	Init(toUpgrade);
 }
 void UpgradorBase::DowngradeInstance(CoreModifiable* toDowngrade)
 {
-	kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>> MethodTable;
+	std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>> MethodTable;
 	GetMethodTable(MethodTable);
 	for (auto& t : MethodTable)
 	{

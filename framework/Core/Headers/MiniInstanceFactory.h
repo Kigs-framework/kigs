@@ -26,6 +26,8 @@
 #include "Core.h"
 #include "CoreModifiable.h"
 
+#include <unordered_map>
+
 #define MiniFactoryRegister(factory,a,b)	{factory->RegisterNewClass<b>(a);}
 
 class	MiniInstanceFactory : public CoreModifiable
@@ -63,7 +65,7 @@ public:
 	template<typename T>
 	void	RegisterNewClass(const kstl::string& name)
 	{
-		kstl::map<kstl::string,	FactoryCreateStruct*>::iterator alreadyfound=myFactoryMap.find(name);
+		auto alreadyfound=myFactoryMap.find(name);
 		if(alreadyfound != myFactoryMap.end())
 		{
 			KIGS_WARNING("Class already registered in MiniFactory\n",1);
@@ -75,7 +77,7 @@ public:
 
 	void*	CreateClassInstance(const kstl::string& name)
 	{
-		kstl::map<kstl::string,	FactoryCreateStruct*>::iterator alreadyfound=myFactoryMap.find(name);
+		auto alreadyfound=myFactoryMap.find(name);
 		if(alreadyfound == myFactoryMap.end())
 		{
 			KIGS_ERROR("Can not find class in MiniFactory\n",1);
@@ -88,7 +90,7 @@ public:
 protected:
 
 	virtual ~MiniInstanceFactory();
-	kstl::map<kstl::string,	FactoryCreateStruct*>	myFactoryMap;
+	std::unordered_map<kstl::string, FactoryCreateStruct*>	myFactoryMap;
 
 };
 

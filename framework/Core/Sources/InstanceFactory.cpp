@@ -36,7 +36,7 @@ bool  InstanceFactory::GetModuleIDFromClassName(const KigsID& className, KigsID&
 }    
 
 //! create an instance of the given class type with the given instance name    
-CoreModifiable*    InstanceFactory::GetInstance(const kstl::string& instancename,const KigsID& className, kstl::vector<CoreModifiableAttribute*>* args)
+CoreModifiable*    InstanceFactory::GetInstance(const std::string& instancename,const KigsID& className, std::vector<CoreModifiableAttribute*>* args)
 {
 	KigsID	realClassName(className);
 	// check alias
@@ -148,7 +148,7 @@ createMethod  InstanceFactory::ModuleAssociation::GetCreateMethod(const KigsID& 
 }    
 
 //! register a new class to instance factory
-void    InstanceFactory::RegisterClass(createMethod method,const KigsID& className, const kstl::string& moduleName)
+void    InstanceFactory::RegisterClass(createMethod method,const KigsID& className, const std::string& moduleName)
 {
 	myModuleList[moduleName].RegisterClass(method, className);
 }  

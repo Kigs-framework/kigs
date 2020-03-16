@@ -4,7 +4,6 @@
 #include "HDrawable.h"
 #include "TecLibs/3D/3DObject/BBox.h"
 #include "BufferedFile.h"
-#include "RefCountedClass.h"
 #include "maBuffer.h"
 
 #include <atomic>

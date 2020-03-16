@@ -1,7 +1,7 @@
 #ifndef _CORERAWBUFFER_H
 #define _CORERAWBUFFER_H
 
-#include "RefCountedBaseClass.h"
+#include "GenericRefCountedBaseClass.h"
 #include "Core.h"
 
 // utility method to manage a circular buffer
@@ -110,7 +110,7 @@ public:
 	}
 };
 
-class CoreRawBuffer : public RefCountedClass
+class CoreRawBuffer : public GenericRefCountedBaseClass
 {
 public:
 	CoreRawBuffer() = default;

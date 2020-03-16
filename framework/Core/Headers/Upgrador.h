@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RefCountedClass.h"
+#include "CoreModifiable.h"
 
 
 class CoreModifiable;
@@ -8,10 +8,10 @@ class Timer;
 
 #define DEFINE_UPGRADOR_METHOD(upgrador,name) DEFINE_METHOD(upgrador::UpgradorMethods,name)
 
-#define ADD_UPGRADOR_METHOD(methodname,callingname) toUpgrade->InsertMethod(#callingname,static_cast<RefCountedClass::ModifiableMethod>(&UpgradorMethods::methodname));
+#define ADD_UPGRADOR_METHOD(methodname,callingname) toUpgrade->InsertMethod(#callingname,static_cast<CoreModifiable::ModifiableMethod>(&UpgradorMethods::methodname));
 
 
-#define UPGRADOR_METHOD_PUSH_BACK(name) table.push_back({ #name, static_cast<RefCountedClass::ModifiableMethod>(&UpgradorMethods::name) });
+#define UPGRADOR_METHOD_PUSH_BACK(name) table.push_back({ #name, static_cast<CoreModifiable::ModifiableMethod>(&UpgradorMethods::name) });
 
 // Need #include "AttributePacking.h"
 #define UPGRADOR_METHODS(...) class UpgradorMethods : public currentBaseClass \
@@ -26,7 +26,7 @@ void	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam
 {\
 	((UpgradorMethods*)toUpdate)->UpgradorUpdate(timer, addParam);\
 }\
-virtual void GetMethodTable(kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& table) override\
+virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
 {\
 	FOR_EACH(UPGRADOR_METHOD_PUSH_BACK, __VA_ARGS__)\
 }
@@ -43,7 +43,7 @@ class UpgradorBase
 {
 protected:
 	friend class CoreModifiable;
-	virtual void GetMethodTable(kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& table) = 0;
+	virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) = 0;
 	void UpgradeInstance(CoreModifiable* toUpgrade);
 	void DowngradeInstance(CoreModifiable* toDowngrade);
 	UpgradorBase* myNextUpgrador = nullptr;

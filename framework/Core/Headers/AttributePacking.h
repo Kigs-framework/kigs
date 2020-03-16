@@ -53,7 +53,6 @@ DEFINE_MAKE_ATTR_FUNC(const usString&, maUSString)
 DEFINE_MAKE_ATTR_FUNC(usString&&, maUSString)
 
 DEFINE_MAKE_ATTR_FUNC(CoreModifiable*, maReference);
-DEFINE_MAKE_ATTR_FUNC(RefCountedClass*, maReference);
 
 template<typename T, REQUIRES(!std::is_fundamental<std::decay_t<T>>::value)>
 CoreModifiableAttribute* MakeAttributeSpec(T&& value, CoreModifiable* owner, const kstl::string& name = "maRawPtrStruct")
@@ -169,7 +168,7 @@ CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const k
 template<typename T>
 CoreModifiableAttribute* MakeAttribute(const SmartPointer<T>& value, CoreModifiable* owner, const kstl::string& name = "ParamSP")
 {
-	RefCountedClass* ptr = static_cast<RefCountedClass*>(value.get());
+	CoreModifiable* ptr = static_cast<CoreModifiable*>(value.get());
 	return MakeAttributeSpec(ptr, owner, name);
 }
 
@@ -593,29 +592,27 @@ inline void CoreModifiable::InsertFunction(KigsID labelID, F&& func)
 #ifdef KIGS_TOOLS
 	toAdd.xmlattr = nullptr;
 #endif
-	toAdd.setFunction([f = std::move(func)](kstl::vector<CoreModifiableAttribute*>& params) mutable
+	toAdd.mFunction = [f = std::move(func)](CoreModifiable* localthis, CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>& params, void* privateParams) mutable
 	{
 		kigs_impl::UnpackAndCall(f, params);
 		return false;
-	});
-
+	};
 }
 
 template<typename F>
 inline void CoreModifiable::InsertFunctionNoUnpack(KigsID labelID, F&& func)
 {
 	auto& methods = GetLazyContent()->Methods;
-
-	ModifiableMethodStruct& toAdd= methods[labelID];
+	ModifiableMethodStruct& toAdd = methods[labelID];
 
 #ifdef KIGS_TOOLS
 	toAdd.xmlattr = nullptr;
 #endif
-	toAdd.setFunction([f = std::move(func)](kstl::vector<CoreModifiableAttribute*>& params) mutable
+	toAdd.mFunction = [f = std::move(func)](CoreModifiable* localthis, CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>& params, void* privateParams) mutable
 	{
 		f(params);
 		return false;
-	});
+	};
 }
 
 template<typename Ret, typename ... Args>

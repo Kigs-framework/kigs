@@ -7,6 +7,8 @@
 
 #include "TecLibs/Math/IntersectionAlgorithms.h"
 
+#include <map>
+
 class ModuleInput;
 struct GazeTouch;
 class Camera;
@@ -354,7 +356,7 @@ protected:
 		int			state;
 	};
 
-	kstl::map<TouchEventID, CurrentInfos> m_CurrentInfosMap;
+	std::map<TouchEventID, CurrentInfos> m_CurrentInfosMap;
 };
 
 
@@ -389,7 +391,7 @@ protected:
 		mCurrentTouches.clear();
 	}
 
-	kstl::set<TouchEventID> mCurrentTouches;
+	std::set<TouchEventID> mCurrentTouches;
 };
 
 
@@ -430,7 +432,7 @@ protected:
 	};
 	struct CurrentInfos
 	{
-		kstl::vector<TimedTouch>	touchList;
+		std::vector<TimedTouch>	touchList;
 		bool	isValid;
 	};
 
@@ -439,7 +441,7 @@ protected:
 		m_CurrentInfosMap.clear();
 	}
 
-	kstl::map<TouchEventID, CurrentInfos>		m_CurrentInfosMap;
+	std::map<TouchEventID, CurrentInfos>		m_CurrentInfosMap;
 
 	double										m_SwipeMinDuration;
 	double										m_SwipeMaxDuration;
@@ -496,7 +498,7 @@ protected:
 		Vector3D	maindir;
 		Vector3D	currentSpeed;
 	};
-	kstl::map<TouchEventID, CurrentInfos>		m_CurrentInfosMap;
+	std::map<TouchEventID, CurrentInfos>		m_CurrentInfosMap;
 	Vector3D									m_ScrollForceMainDir;
 };
 
@@ -531,7 +533,7 @@ protected:
 	}
 
 	kigs::unordered_map<TouchEventID, CurrentTouch> mCurrentTouches;
-	kstl::vector<CurrentPinch> mCurrentPinches;
+	std::vector<CurrentPinch> mCurrentPinches;
 	
 	float  mPinchMaxStartDistSquared = 9999999;
 };
@@ -657,7 +659,7 @@ protected:
 
 		struct EventMapEntry
 		{
-			kstl::vector<TouchEventState*>	myTouchEventStateList;
+			std::vector<TouchEventState*>	myTouchEventStateList;
 			CoreModifiable*					myRootScene3D;
 		};
 
@@ -668,7 +670,7 @@ protected:
 	bool	unregisterObjectOnCurrentState(StackedEventStateStruct& state, CoreModifiable* registeredObject);
 
 
-	kstl::vector<StackedEventStateStruct>	myStackedEventState;
+	std::vector<StackedEventStateStruct>	myStackedEventState;
 	CoreModifiable*										myEventCaptureObject = nullptr;
 
 	ModuleInput*	theInputModule;
@@ -699,7 +701,7 @@ protected:
 
 		CoreModifiable*	currentNode;
 		CoreModifiable*	parentNode;
-		kstl::vector<touchSupportTreeNode>	sons;
+		std::vector<touchSupportTreeNode>	sons;
 	};
 
 
@@ -715,7 +717,7 @@ protected:
 	public:
 		CoreModifiable*	element;
 		CoreModifiable* touchSupport;
-		kstl::vector<SortedElementTreeNode> sons;
+		std::vector<SortedElementTreeNode> sons;
 	};
 
 	struct Scene3DAndCamera
@@ -759,19 +761,19 @@ protected:
 	};
 
 
-	void RecursiveFlattenTreeForTouchID(kstl::vector<SortedElementNode>& flat_tree, touchSupportTreeNode* CurrentTouchSupport, 
-		kigs::unordered_map<CoreModifiable*, kstl::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >& perRenderingScreenSortedMap,
-		kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiable*> >& perScene3DMap,
+	void RecursiveFlattenTreeForTouchID(std::vector<SortedElementNode>& flat_tree, touchSupportTreeNode* CurrentTouchSupport, 
+		kigs::unordered_map<CoreModifiable*, std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >& perRenderingScreenSortedMap,
+		kigs::unordered_map<CoreModifiable*, std::vector<CoreModifiable*> >& perScene3DMap,
 		kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchEventID touch_id);
 
-	void	LinearCallEventUpdate(kstl::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchEventID touch_id);
+	void	LinearCallEventUpdate(std::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchEventID touch_id);
 
 	// touch support tree list (more than one root for multiple windows)
-	kstl::vector<touchSupportTreeNode>					myTouchSupportTreeRootList;
+	std::vector<touchSupportTreeNode>					myTouchSupportTreeRootList;
 	touchSupportTreeNode*								myCurrentTouchSupportRoot;
-	kstl::map<CoreModifiable*, touchSupportTreeNode*>	myTouchSupportMap;
+	std::map<CoreModifiable*, touchSupportTreeNode*>	myTouchSupportMap;
 	bool												myInUpdate = false;
-	kstl::set<CoreModifiable*>							myDestroyedThisFrame;
+	std::set<CoreModifiable*>							myDestroyedThisFrame;
 
 	
 
@@ -779,7 +781,7 @@ protected:
 
 	bool	removeTemporaryUnmappedTouchSupport(CoreModifiable* ts);
 
-	kstl::vector<touchSupportTreeNode>					myTemporaryUnmappedTouchSupport;
+	std::vector<touchSupportTreeNode>					myTemporaryUnmappedTouchSupport;
 
 	// common squared dist to trigger scroll / click...
 	int													myTriggerSquaredDist;

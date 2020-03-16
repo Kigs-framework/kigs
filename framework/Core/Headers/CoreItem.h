@@ -1,7 +1,7 @@
 #ifndef _COREITEM_H
 #define _COREITEM_H
 
-#include "RefCountedBaseClass.h"
+#include "GenericRefCountedBaseClass.h"
 #include "SmartPointer.h"
 #include "usString.h"
 #include "TecLibs/Tec3D.h"
@@ -242,7 +242,7 @@ protected:
 * \date	ukn
 */
 // ****************************************
-class CoreItem : public RefCountedBaseClass
+class CoreItem : public GenericRefCountedBaseClass
 {
 public:
 	enum COREITEM_TYPE
@@ -359,8 +359,6 @@ public:
 
 	COREITEM_TYPE	GetType() const {return m_eType;}
 
-	bool isSubType(const KigsID& cid) const override {if(KigsID("CoreItem") == cid)return true;  return RefCountedBaseClass::isSubType(cid);}
-
 	// operator [] needs to be overloaded on vectors and maps
 	virtual CoreItemSP operator[](int i) const;
 
@@ -398,7 +396,6 @@ protected:
 	
 	}
 
-	void ProtectedDestroy() override {}
 
 	COREITEM_TYPE	m_eType;
 };

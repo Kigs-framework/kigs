@@ -140,7 +140,7 @@ void Timer::SetState(State newstate)
 	myCurrentState = newstate;
 }
 
-double Timer::GetDt(const CheckUniqueObject& caller)
+double Timer::GetDt(CoreModifiable* caller)
 {
 	if (myCurrentState == PAUSED)
 	{
@@ -161,9 +161,9 @@ double Timer::GetDt(const CheckUniqueObject& caller)
 	}
 }
 
-void Timer::ResetDt(const CheckUniqueObject& caller)
+void Timer::ResetDt(CoreModifiable* caller)
 {
-	std::map<CheckUniqueObject, double >::const_iterator It = myTimerMap.find(caller);
+	auto It = myTimerMap.find(caller);
 	if (It != myTimerMap.end())
 	{
 		myTimerMap.erase(It);

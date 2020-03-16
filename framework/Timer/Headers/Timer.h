@@ -48,8 +48,8 @@ public:
 	void GetDate(kstl::string& a_value, DateFormat a_format) const;
 	void GetDate(unsigned int& a_year, unsigned int& a_month, unsigned int& a_day, unsigned int& a_hour, unsigned int& a_min, unsigned int& a_sec) const;
 	
-	double GetDt(const CheckUniqueObject& caller); 
-	void ResetDt(const CheckUniqueObject& caller);
+	double GetDt(CoreModifiable* caller);
+	void ResetDt(CoreModifiable* caller);
 	
 	void Sleep(unsigned int ms);
 
@@ -63,7 +63,7 @@ protected:
 	void StartPause();
 	void EndPause();
 
- 	std::map<CheckUniqueObject, double> myTimerMap;
+ 	std::map<CoreModifiable*, double> myTimerMap;
 
 	maComputedNumeric<double>	mTime;
 };

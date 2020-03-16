@@ -17,35 +17,32 @@
 * \date	ukn
 */
 // ****************************************
+
+#ifdef KIGS_TOOLS
+#define TRACEREF_VIRTUAL virtual
+#else
+#define TRACEREF_VIRTUAL 
+#endif
+
 class GenericRefCountedBaseClass
 {
-protected:
-	// if true is returned then don't do final delete
-	virtual bool checkDestroy()
-	{
-		return false;
-	}
-
 public:
-
-	GenericRefCountedBaseClass()
-	{
-	}
-
-	void Destroy();
-
-#if defined (_DEBUG) && ( defined(WIN32) || defined(WUP))
-	virtual // GetRef is virtual only for debug purpose
-#endif
-	void GetRef();
-
-	bool TryGetRef();
+	GenericRefCountedBaseClass() {}
+	
+	TRACEREF_VIRTUAL void GetRef();
+	TRACEREF_VIRTUAL bool TryGetRef();
+	TRACEREF_VIRTUAL void Destroy();
 
 	inline int getRefCount() { return myRefCounter; }
 
 protected:
 	std::atomic_int	myRefCounter{1};
 
+	// if true is returned then don't do final delete
+	virtual bool checkDestroy()
+	{
+		return false;
+	}
 	virtual ~GenericRefCountedBaseClass() {};
 };
 

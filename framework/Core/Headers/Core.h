@@ -16,6 +16,7 @@
 
 #include "CoreModifiable.h"
 #include "InstanceFactory.h"
+#include "CoreTreeNode.h"
 
 class MiniInstanceFactory;
 class CoreModifiableAttribute;
@@ -95,9 +96,6 @@ extern kstl::vector<kstl::string>	SplitStringByCharacter(const kstl::string& a_m
 class KigsCore
 {
 public:
-
-
-
 	/**
 	 * \fn			static void Init(bool	useAutoRelease=true);
 	 * \brief		init the core unique instance and members 
@@ -251,7 +249,7 @@ public:
 	static	CoreTreeNode*	GetRootNode();
 	static	CoreTreeNode*	GetTypeNode(const KigsID& id);
 
-	static CoreTreeNode*	RegisterType(const CoreClassNameTree& type_hierarchy, const kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& table);
+	static CoreTreeNode*	RegisterType(const CoreClassNameTree& type_hierarchy, const kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table);
 	
 
 
@@ -462,7 +460,7 @@ protected:
 	void ProtectedDumpMessageBuffer();
 #endif
 
-	static CoreTreeNode* AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, const kstl::vector<CoreClassNameTree::TwoNames>& branch, const kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& method_table, size_t current_index);
+	static CoreTreeNode* AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, const kstl::vector<CoreClassNameTree::TwoNames>& branch, const kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& method_table, size_t current_index);
 
 
 	/**

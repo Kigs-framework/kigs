@@ -4,6 +4,8 @@
 #include "CoreModifiable.h"
 #include "SmartPointer.h"
 
+#include <map>
+
 class CorePackage;
 class PureVirtualFileAccessDelegate;
 
@@ -34,10 +36,10 @@ class PureVirtualFileAccessDelegate;
 */
 // ****************************************
 
-class FileHandle : public RefCountedBaseClass
+class FileHandle : public GenericRefCountedBaseClass
 {
 public:
-	FileHandle(): RefCountedBaseClass()
+	FileHandle() : GenericRefCountedBaseClass()
 		, myFile(0)
 		, myDeviceID(0)
 		, myUseVirtualFileAccess(false)
@@ -131,12 +133,7 @@ public:
 
 	unsigned int	myStatus; // status flag
 	int				mySize;
-
-protected:
-	// ProtectedDestroy must ve overload, but nothing to do here
-	void	ProtectedDestroy() override {}
 };
-
 
 
 class CoreRawBuffer;

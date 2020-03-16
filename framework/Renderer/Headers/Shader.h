@@ -4,6 +4,8 @@
 #include "Drawable.h"
 #include "maReference.h"
 
+#include <map>
+
 #define UNIFORM_NAME_TYPE unsigned int
 
 class ShaderInfo
@@ -56,7 +58,7 @@ class API3DUniformBase;
 
 struct UniformList
 {
-	UniformList(kstl::string aName)
+	UniformList(std::string aName)
 	{
 		Current = nullptr;
 		myUniformName = aName;
@@ -84,9 +86,9 @@ struct UniformList
 #endif
 
 	API3DUniformBase* Current;
-	kstl::vector<API3DUniformBase*> List;
+	std::vector<API3DUniformBase*> List;
 
-	kstl::string myUniformName;
+	std::string myUniformName;
 };
 
 
@@ -139,7 +141,7 @@ public:
 	ShaderInfo *	myShaderProgram;
 
 	Locations*		myLocations = nullptr;
-	kstl::map<UNIFORM_NAME_TYPE, UniformList*>*	myUniforms = nullptr;
+	std::map<UNIFORM_NAME_TYPE, UniformList*>*	myUniforms = nullptr;
 
 };
 
@@ -150,7 +152,7 @@ public:
 
 	DECLARE_ABSTRACT_CLASS_INFO(ShaderBase,Drawable,Renderer)
 
-	ShaderBase(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	ShaderBase(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	void	NotifyUpdate(const unsigned int labelid) override;
 
@@ -236,6 +238,6 @@ protected:
 	maReference		myAttachedCamera;
 	maBool			myUseGenericLight;
 
-	kstl::map<unsigned int, BuildShaderStruct*> mShaderSourceMap;
+	std::map<unsigned int, BuildShaderStruct*> mShaderSourceMap;
 };
 #endif //_SHADER_H

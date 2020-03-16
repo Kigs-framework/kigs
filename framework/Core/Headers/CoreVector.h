@@ -246,14 +246,10 @@ public:
 	CoreVectorBase& operator= (const CoreVectorBase& x)
 	{
 		myVector.clear();
-		kstl::vector<RefCountedBaseClass*>::const_iterator itstart;
-		kstl::vector<RefCountedBaseClass*>::const_iterator itend=x.end();
-
-		for(itstart=x.begin();itstart!=itend;itstart++)
+		for(auto& el : x)
 		{
-			myVector.push_back(*itstart);
+			myVector.push_back(el);
 		}
-
 		return *this;
 	}
 
@@ -342,11 +338,6 @@ public:
 
 protected:
 	kstl::vector<CoreItemSP>	myVector;
-	virtual void    ProtectedDestroy()  override
-	{
-		clear();
-		CoreItem::ProtectedDestroy();
-	}
 };
 
 class CoreNamedVector : public CoreVectorBase<CoreNamedItem>

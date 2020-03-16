@@ -573,11 +573,11 @@ CoreItemOperator<operandType>* CoreItemOperator<operandType>::getOperator(const 
 }
 
 template<typename operandType>
-RefCountedBaseClass* CoreItemOperator<operandType>::getVariable(const kstl::string& keyword)
+GenericRefCountedBaseClass* CoreItemOperator<operandType>::getVariable(const kstl::string& keyword)
 {
 	if (myCurrentCoreItemEvaluationContext)
 	{
-		kigs::unordered_map<unsigned int, RefCountedBaseClass*>::iterator	itfound = myCurrentCoreItemEvaluationContext->myVariableList.find(CharToID::GetID(keyword));
+		auto itfound = myCurrentCoreItemEvaluationContext->myVariableList.find(CharToID::GetID(keyword));
 		if (itfound != myCurrentCoreItemEvaluationContext->myVariableList.end())
 		{
 			return (*itfound).second;

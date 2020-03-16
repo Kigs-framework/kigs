@@ -1,21 +1,23 @@
 #ifndef _COREMODIFIABLE_H
 #define _COREMODIFIABLE_H
 
-#include "RefCountedClass.h"
+#include "GenericRefCountedBaseClass.h"
+#include "CoreModifiableMacros.h"
 #include "robin_hood.h"
 #include "usString.h"
 #include "TecLibs/Tec3D.h"
 #include "SmartPointer.h"
-#include "Upgrador.h"
 
 #include <mutex>
 #include <memory>
 #include <type_traits>
+#include <set>
 
 #ifdef KEEP_XML_DOCUMENT
 #include "XML.h"
 #include "XMLNode.h"
 #endif
+
 
 #define NOQUALIFIER
 
@@ -40,12 +42,14 @@ FUNC(CVQUALIFIER std::string REFQUALIFIER)\
 FUNC(CVQUALIFIER usString REFQUALIFIER)
 
 #define EXPAND_MACRO_FOR_EXTRA_TYPES(CVQUALIFIER, REFQUALIFIER, FUNC)\
-FUNC(CVQUALIFIER CheckUniqueObject REFQUALIFIER)\
 FUNC(CVQUALIFIER CoreItem* REFQUALIFIER)\
+FUNC(CVQUALIFIER CoreModifiable* REFQUALIFIER)\
 FUNC(CVQUALIFIER void* REFQUALIFIER)
 
 class CoreModifiableAttribute;
 class AttachedModifierBase;
+class CoreTreeNode;
+
 #include "XML.h"
 #include "XMLNode.h"
 class Timer;
@@ -147,6 +151,29 @@ namespace std
 }
 
 
+#pragma pack(4)
+class UpgradorBase;
+struct ModifiableMethodStruct
+{
+	using func_type = std::function<bool(CoreModifiable*, CoreModifiable*, std::vector<CoreModifiableAttribute*>&, void*) > ;
+	ModifiableMethodStruct()
+	{
+	}
+
+	ModifiableMethodStruct(const std::string& name, const func_type& func, UpgradorBase* up = nullptr) : mName{name}, mFunction{func}, mUpgrador{up}
+	{
+	}
+
+	std::string mName;
+	UpgradorBase* mUpgrador = nullptr;
+	func_type mFunction;
+	bool mIsMethod = false;
+	CONNECT_FIELD
+};
+
+#pragma pack()
+
+
 struct LazyContent
 {
 	kigs::unordered_map<KigsID, std::vector<std::pair<KigsID, CoreModifiable*>>> ConnectedTo;
@@ -156,15 +183,7 @@ struct LazyContent
 	// Upgrador management
 	UpgradorBase* myUpgrador = nullptr;
 
-	~LazyContent()
-	{
-		// linked list so delete only the first one
-		if (myUpgrador)
-		{
-			delete myUpgrador;
-			myUpgrador = nullptr;
-		}
-	}
+	~LazyContent();
 };
 
 typedef SmartPointer<CoreModifiable> CMSP;
@@ -209,6 +228,42 @@ private:
 typedef	const int	CoreMessageType;
 
 
+class CoreClassNameTree
+{
+public:
+	struct	TwoNames
+	{
+		KigsID myClassName;
+		KigsID myRuntimeName;
+	};
+
+	// constructors
+	CoreClassNameTree(KigsID className, KigsID runtimeName) : myClassNames{} { addClassName(className, runtimeName); }
+	CoreClassNameTree() : myClassNames() {}
+
+	CoreClassNameTree(const CoreClassNameTree& tree) = delete;
+	CoreClassNameTree& operator=(const CoreClassNameTree& tree) = delete;
+
+	// push class name
+	void addClassName(KigsID className, KigsID runtimeName)
+	{
+		for (const auto& names : myClassNames)
+		{
+			if (names.myClassName == className)
+				return;
+		}
+		myClassNames.push_back({ className, runtimeName });
+	}
+
+	// return classname vector
+	const std::vector<TwoNames>& classNames() const { return myClassNames; }
+
+protected:
+	std::vector<TwoNames> myClassNames;
+};
+
+
+
 // generic flag
 #define InitFlag							(1U)
 #define PostDestroyFlag						(2U)
@@ -250,6 +305,24 @@ virtual std::vector<KigsID> GetSignalList() override\
     return signals;\
 }
 
+#define SIGNALS_BASE(...)\
+enum class Signals : u32\
+{\
+	FOR_EACH(SIGNAL_ENUM_CONTENT, __VA_ARGS__)\
+};\
+template<typename... T>\
+inline bool EmitSignal(Signals signal,  T&&... params){\
+switch(signal){\
+FOR_EACH(SIGNAL_CASE, __VA_ARGS__)\
+default: break;} return false;\
+}\
+virtual std::vector<KigsID> GetSignalList()\
+{\
+    std::vector<KigsID> signals;\
+    FOR_EACH(SIGNAL_PUSH_BACK, __VA_ARGS__)\
+    return signals;\
+}
+
 
 
 
@@ -266,17 +339,80 @@ virtual std::vector<KigsID> GetSignalList() override\
  * \date	ukn
  */
  // ****************************************
-class CoreModifiable : public RefCountedClass
+class CoreModifiable : public GenericRefCountedBaseClass
 {
-	DECLARE_ABSTRACT_CLASS_INFO(CoreModifiable, RefCountedClass, KigsCore);
+public:
+	//DECLARE_ABSTRACT_CLASS_INFO(CoreModifiable, RefCountedClass, KigsCore);
+	static const KigsID myClassID;
+	static KigsID myRuntimeType;
+	typedef bool (CoreModifiable::* ModifiableMethod)(CoreModifiable* sender, std::vector<CoreModifiableAttribute*>&, void* privateParams);
+	typedef CoreModifiable CurrentClassType;
+	typedef GenericRefCountedBaseClass ParentClassType;
+	virtual bool Call(CoreModifiable::ModifiableMethod method, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& attr, void* privateParams)
+	{
+		CoreModifiable::ModifiableMethod currentmethod = static_cast<CoreModifiable::ModifiableMethod>(method);
+		return (this->*(currentmethod))(sender, attr, privateParams);
+	}
+	static CoreModifiable* Get()
+	{
+		return GetFirstInstance("CoreModifiable", false);
+	}
+	static CoreModifiable* Get(const std::string& name)
+	{
+		return GetFirstInstanceByName("CoreModifiable", name, false);
+	}
+
+	DECLARE_GetRuntimeTypeBase(CoreModifiable);
+	DECLARE_getExactTypeBase(CoreModifiable);
+	virtual KigsID getExactTypeID() const { return CoreModifiable::myClassID; }
+	virtual bool isSubType(const KigsID& cid) const { return CoreModifiable::myClassID == cid; }
+	static void GetClassNameTree(CoreClassNameTree& classNameTree);
+
+	static void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& method_table) {}
+	static void GetNotWrappedMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& method_table) {}
+
+
+	static std::vector<CMSP> FindInstances(const KigsID& id, bool exact_type_only = false);
+	static std::vector<CMSP> FindInstancesByName(const KigsID& id, const std::string& name, bool exact_type_only = false);
+	static CMSP FindFirstInstance(const KigsID& id, const std::string& name, bool exact_type_only = false);
+	static CMSP FindFirstInstanceByName(const KigsID& id, const std::string& name, bool exact_type_only = false);
+
+	static void GetInstances(const KigsID& cid, std::set<CoreModifiable*>& instances, bool exactTypeOnly = false, bool only_one = false, bool getref = false);
+	static CoreModifiable* GetFirstInstance(const KigsID& cid, bool exactTypeOnly = false, bool getref = false);
+	static void GetInstanceByRuntimeID(const std::string& runtimeID, std::set<CoreModifiable*>& instances, bool getref = false);
+	static void GetRootInstances(const KigsID& cid, std::set<CoreModifiable*>& instances, bool exactTypeOnly = false, bool getref = false);
+	static void GetInstancesByName(const KigsID& cid, const std::string& name, std::set<CoreModifiable*>& instances, bool exactTypeOnly = false, bool only_one = false, bool getref = false);
+	static CoreModifiable* GetFirstInstanceByName(const KigsID& cid, const std::string& name, bool exactTypeOnly = false, bool getref = false);
+
+
+	const std::string& getName() const { return myName; }
+	void setName(const std::string& name);
+	const KigsID& getNameID() const { return myNameID; }
+	inline unsigned int getUID() { return myUID; }
+	CoreTreeNode* GetTypeNode() const { return myTypeNode; }
+
+#ifdef KIGS_TOOLS
+	void GetRef() override;
+	bool TryGetRef() override;
+	void Destroy() override;
+#endif
+	// Don't call this manually!
+	void RegisterToCore();
 
 protected:
-	explicit CoreModifiable(std::string name = DefaultName(), DECLARE_CLASS_NAME_TREE_ARG) : RefCountedClass(name, PASS_CLASS_NAME_TREE_ARG) {}
+	explicit CoreModifiable(std::string name, DECLARE_CLASS_NAME_TREE_ARG) : GenericRefCountedBaseClass() 
+	{
+		myUID = myUIDCounter.fetch_add(1);
+		if (name.empty())
+			name = "nobody" + std::to_string(myUID);
+		myName = name;
+		myNameID = name;
+	}
 	virtual ~CoreModifiable();
 
 	struct ImportState;
 public:	
-	SIGNALS(PreInit, 
+	SIGNALS_BASE(PreInit,
 		PostInit,
 		Uninit,
 		Destroy,
@@ -484,13 +620,12 @@ public:
 	EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET_VALUE);
 	DECLARE_SET_VALUE(const char*);
 	DECLARE_SET_VALUE(const u16*);
-	DECLARE_SET_VALUE(CoreModifiable*);
 
 	#define DECLARE_GET_VALUE(type) bool getValue(const KigsID attributeLabel, type value) const;
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
 	EXPAND_MACRO_FOR_STRING_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
 	EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
-	DECLARE_GET_VALUE(CoreModifiable*&);
+	
 
 	#define DECLARE_SETARRAY_VALUE2(valuetype) bool setArrayValue(KigsID attributeLabel, valuetype value1, valuetype value2);
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAY_VALUE2);
@@ -576,9 +711,9 @@ public:
 	// Search in private methods, type methods and aggregate methods
 	bool HasMethod(const KigsID& methodNameID) const;
 	// Add a new private method
-	void InsertMethod(KigsID labelID, RefCountedClass::ModifiableMethod method, const std::string& methodName = "" CONNECT_PARAM_DEFAULT);
+	void InsertMethod(KigsID labelID, CoreModifiable::ModifiableMethod method, const std::string& methodName = "" CONNECT_PARAM_DEFAULT);
 	// Add a new private method
-	void InsertUpgradeMethod(KigsID labelID, RefCountedClass::ModifiableMethod method, UpgradorBase* up);
+	void InsertUpgradeMethod(KigsID labelID, CoreModifiable::ModifiableMethod method, UpgradorBase* up);
 
 	// Add a new lambda
 	template<typename F>
@@ -734,7 +869,7 @@ public:
 	virtual	void UninitModifiable();
 	
 	// Called before the object is deleted. 
-	void ProtectedDestroy() override;
+	virtual void ProtectedDestroy();
 	
 	// Update method. Call to ParentClassType::Update is not necessary when overriding
 	virtual void Update(const Timer&  timer, void* addParam) {}
@@ -793,10 +928,12 @@ public:
 	static CoreModifiable* Find(const std::list<CoreModifiable*> &List, const std::string &Name);
 	static CoreModifiable* FindByType(const std::list<CoreModifiable*> &List, const std::string& type);
 	
-	static  CoreModifiable* GetInstanceByGlobalPath(const std::string &path, bool getRef = false);
+	static CoreModifiable* GetInstanceByGlobalPath(const std::string &path, bool getRef = false);
+	static CMSP FindInstanceByGlobalPath(const std::string& path);
 
 	// Search instance with infos (either type:name or a path)
-	static CoreModifiable* SearchInstance(const std::string &infos, CoreModifiable* searchStart = 0, bool getRef = false);
+	static CoreModifiable* SearchInstance(const std::string &infos, CoreModifiable* searchStart = nullptr, bool getRef = false);
+	static CMSP SearchInstanceSP(const std::string& infos, CoreModifiable* searchStart = nullptr);
 
 	void getRootParentsWithPath(std::string &remainingpath, std::vector<CoreModifiable*>& parents, bool getRef = false);
 
@@ -842,15 +979,12 @@ public:
 	void Upgrade(const std::string& toAdd);
 	void Downgrade(const std::string& toRemove);
 
+#ifdef KIGS_TOOLS
+	bool myTraceRef = false;
+#endif
 protected:
 	// protected upgrador management
-	void Upgrade(UpgradorBase* toAdd)
-	{
-		LazyContent* c = GetLazyContent();
-		toAdd->myNextUpgrador = c->myUpgrador;
-		c->myUpgrador = toAdd;
-		toAdd->UpgradeInstance(this);
-	}
+	void Upgrade(UpgradorBase* toAdd);
 
 	void Connect(KigsID signal, CoreModifiable* other, KigsID slot CONNECT_PARAM_DEFAULT);
 	void Disconnect(KigsID signal, CoreModifiable* other, KigsID slot);
@@ -1067,6 +1201,12 @@ private:
 
 	static void	ReleaseLoadedItems(std::vector<CMSP> &loadedItems);
 
+	unsigned int myUID;
+	static std::atomic<unsigned int> myUIDCounter;
+	CoreTreeNode* myTypeNode = nullptr;
+	std::string	myName;
+	KigsID myNameID;
+
 	// attribute map
 	kigs::unordered_map<KigsID, CoreModifiableAttribute*> _attributes;
 	// sons vector
@@ -1161,6 +1301,12 @@ protected:
 };
 
 
+
+
+
+
+
+
 // Mainly used for numeric types
 template<CoreModifiable::ATTRIBUTE_TYPE type>
 struct EnumToType {};
@@ -1242,6 +1388,8 @@ TypeOut* KigsDynamicCast(TypeIn* obj)
 	return nullptr;
 }
 
+typedef CoreModifiable* (*createMethod)(const std::string& instancename, std::vector<CoreModifiableAttribute*>* args);
+void RegisterClassToInstanceFactory(KigsCore* core, const std::string& moduleName, KigsID classID, createMethod method);
 
 
 #undef DECLARE_SET_VALUE
@@ -1255,5 +1403,12 @@ TypeOut* KigsDynamicCast(TypeIn* obj)
 
 // Backward compatibility
 #define  _isInit	isInitFlagSet()
+
+struct MethodCallingStruct
+{
+	KigsID myMethodID;
+	void* myPrivateParams =  nullptr;
+	CoreModifiable* myMethodInstance = nullptr;
+};
 
 #endif

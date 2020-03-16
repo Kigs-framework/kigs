@@ -412,8 +412,7 @@ CoreTreeNode* KigsCore::GetTypeNode(const KigsID& id)
 	return it->second;
 }
 
-
-CoreTreeNode* KigsCore::AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, const kstl::vector<CoreClassNameTree::TwoNames>& branch, const kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& method_table, size_t current_index)
+CoreTreeNode* KigsCore::AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, const kstl::vector<CoreClassNameTree::TwoNames>& branch, const kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& method_table, size_t current_index)
 {
 	if (!parent)
 	{
@@ -455,7 +454,13 @@ CoreTreeNode* KigsCore::AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, c
 			parent->myChildren[cid] = nextNode;
 			for (auto& pair : method_table)
 			{
-				nextNode->myMethods.insert({ pair.first, ModifiableMethodStruct{ pair.second, "" } });
+				ModifiableMethodStruct toAdd("",
+					[method = pair.second](CoreModifiable* localthis, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params, void* privateParams) -> bool
+					{
+						return (localthis->*method)(sender, params, privateParams);
+					});
+				toAdd.mIsMethod = true;
+				nextNode->myMethods.insert({ pair.first, toAdd });
 			}
 			KigsCore::Instance()->myTypeNodeMap[cid] = nextNode;
 		}
@@ -463,9 +468,9 @@ CoreTreeNode* KigsCore::AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, c
 	return AddToTreeNode(cid, nextNode, branch, method_table, current_index+1);
 }
 
-CoreTreeNode* KigsCore::RegisterType(const CoreClassNameTree& type_hierarchy, const kstl::vector<std::pair<KigsID, RefCountedClass::ModifiableMethod>>& table)
+CoreTreeNode* KigsCore::RegisterType(const CoreClassNameTree& type_hierarchy, const kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table)
 {
-	return AddToTreeNode("", KigsCore::GetRootNode(), type_hierarchy.classNames(), table, 2);
+	return AddToTreeNode("", KigsCore::GetRootNode(), type_hierarchy.classNames(), table, 0);
 }
 
 

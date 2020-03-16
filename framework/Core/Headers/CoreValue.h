@@ -146,10 +146,6 @@ public:
 	}
 
 protected:
-	virtual void    ProtectedDestroy() override
-	{
-		CoreItem::ProtectedDestroy();
-	}
 	T  m_Value;
 };
 

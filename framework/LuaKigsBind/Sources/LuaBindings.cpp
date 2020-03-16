@@ -99,10 +99,9 @@ void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 	{
 		if (type == CoreModifiable::ATTRIBUTE_TYPE::REFERENCE)
 		{
-			CheckUniqueObject	ModifiableRef;
+			CoreModifiable*	ModifiableRef=nullptr;
 			attrib->getValue(ModifiableRef);
-			auto result = (CoreModifiable*)(RefCountedClass*)ModifiableRef;
-			L.push(result);
+			L.push(ModifiableRef);
 		}
 		else if (type == CoreModifiable::ATTRIBUTE_TYPE::BOOL)
 		{
@@ -754,7 +753,7 @@ LuaRef GetModifiableLuaData(lua_State* lua, CoreModifiable* obj)
 		L.pushValueAt(-1); // push table
 		ref = L.ref(); // pops new table
 		obj->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::INT, "LUA_REF", ref);
-		obj->InsertMethod("LuaReleaseCallbacks", static_cast<RefCountedClass::ModifiableMethod>(&DynamicMethodLuaReleaseCallbacks::LuaReleaseCallbacks));
+		obj->InsertMethod("LuaReleaseCallbacks", static_cast<CoreModifiable::ModifiableMethod>(&DynamicMethodLuaReleaseCallbacks::LuaReleaseCallbacks));
 		KigsCore::Connect(obj, "Destroy", obj, "LuaReleaseCallbacks");
 	}
 	auto result = L.toValue<LuaRef>(-1);

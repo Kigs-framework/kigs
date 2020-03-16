@@ -12,8 +12,7 @@ MiniInstanceFactory::MiniInstanceFactory(const kstl::string& name,CLASS_NAME_TRE
 MiniInstanceFactory::~MiniInstanceFactory()
 {
 	// destroy myFactoryMap
-	kstl::map<kstl::string,	FactoryCreateStruct*>::iterator	itmap;
-	for(itmap = myFactoryMap.begin();itmap != myFactoryMap.end();itmap++)
+	for(auto itmap = myFactoryMap.begin();itmap != myFactoryMap.end();itmap++)
 	{
 		delete (*itmap).second;
 	}
