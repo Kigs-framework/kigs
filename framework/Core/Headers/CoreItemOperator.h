@@ -15,14 +15,26 @@ struct CoreItemOperatorStruct
 	int		myPriority;
 };
 
-struct CoreItemEvaluationContext
+class CoreItemEvaluationContext
 {
+public:
 	kigs::unordered_map<unsigned int, GenericRefCountedBaseClass*>	myVariableList;
+
+	// static method to set or release context
+	static void	SetContext(CoreItemEvaluationContext* set);
+	static void	ReleaseContext();
+	static CoreItemEvaluationContext* GetContext()
+	{
+		return myCurrentContext;
+	}
+protected:
+	// lock/unlock 
+	static std::mutex	myMutex;
+	// current context
+	static CoreItemEvaluationContext* myCurrentContext;
 };
 
-extern	CoreItemEvaluationContext*	myCurrentCoreItemEvaluationContext;
-extern void	SetCoreItemOperatorContext(CoreItemEvaluationContext* set);
-extern void	ReleaseCoreItemOperatorContext();
+
 
 typedef     CoreVector* (*CoreItemOperatorCreateMethod)();
 
@@ -38,7 +50,7 @@ class ConstructContext
 public:
 	kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myMap;
 	CoreModifiable* myTarget;
-	kstl::vector<SpecificOperator>* mySpecificList;
+	kstl::vector<SpecificOperator>* mySpecificList;	
 };
 
 template<typename operandType>

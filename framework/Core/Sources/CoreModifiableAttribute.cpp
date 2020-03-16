@@ -333,7 +333,7 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 {
 	AttachedModifierBase::Init(caller, isGetter, addParam);
 
-	SetCoreItemOperatorContext(&myContext);
+	CoreItemEvaluationContext::SetContext(&myContext);
 
 	CoreModifiable::ATTRIBUTE_TYPE type = caller->getType();
 
@@ -388,45 +388,45 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 		break;
 	}
 
-	ReleaseCoreItemOperatorContext();
+	CoreItemEvaluationContext::ReleaseContext();
 }
 
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, kfloat& value)
 {
-	SetCoreItemOperatorContext(&myContext);
+	CoreItemEvaluationContext::SetContext(&myContext);
 	*((CoreValue<kfloat>*)myContext.myVariableList[LABEL_TO_ID(input).toUInt()]) = value;
 	value = *myCurrentItem.get();
-	ReleaseCoreItemOperatorContext();
+	CoreItemEvaluationContext::ReleaseContext();
 };
 
 // strings
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, kstl::string& value)
 {
-	SetCoreItemOperatorContext(&myContext);
+	CoreItemEvaluationContext::SetContext(&myContext);
 	*((CoreValue<kstl::string>*)myContext.myVariableList[LABEL_TO_ID(input).toUInt()]) = value;
 	myCurrentItem->getValue(value);
-	ReleaseCoreItemOperatorContext();
+	CoreItemEvaluationContext::ReleaseContext();
 }
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, usString& value)
 {
-	SetCoreItemOperatorContext(&myContext);
+	CoreItemEvaluationContext::SetContext(&myContext);
 	*((CoreValue<usString>*)myContext.myVariableList[LABEL_TO_ID(input).toUInt()]) = value;
 	myCurrentItem->getValue(value);
-	ReleaseCoreItemOperatorContext();
+	CoreItemEvaluationContext::ReleaseContext();
 }
 
 // 2D or 3D points
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, Point2D& value)
 {
-	SetCoreItemOperatorContext(&myContext);
+	CoreItemEvaluationContext::SetContext(&myContext);
 	*((CoreValue<Point2D>*)myContext.myVariableList[LABEL_TO_ID(input).toUInt()]) = value;
 	myCurrentItem->getValue(value);
-	ReleaseCoreItemOperatorContext();
+	CoreItemEvaluationContext::ReleaseContext();
 }
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, Point3D& value)
 {
-	SetCoreItemOperatorContext(&myContext);
+	CoreItemEvaluationContext::SetContext(&myContext);
 	*((CoreValue<Point3D>*)myContext.myVariableList[LABEL_TO_ID(input).toUInt()]) = value;
 	myCurrentItem->getValue(value);
-	ReleaseCoreItemOperatorContext();
+	CoreItemEvaluationContext::ReleaseContext();
 }
