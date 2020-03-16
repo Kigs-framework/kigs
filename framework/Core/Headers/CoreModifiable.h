@@ -155,6 +155,7 @@ namespace std
 
 #pragma pack(4)
 class UpgradorBase;
+
 struct ModifiableMethodStruct
 {
 	using func_type = std::function<bool(CoreModifiable*, CoreModifiable*, std::vector<CoreModifiableAttribute*>&, void*) > ;
@@ -162,7 +163,7 @@ struct ModifiableMethodStruct
 	{
 	}
 
-	ModifiableMethodStruct(const std::string& name, const func_type& func, UpgradorBase* up = nullptr) : mName{name}, mFunction{func}, mUpgrador{up}
+	ModifiableMethodStruct(const std::string& name, const func_type& func, UpgradorBase* up = nullptr) : mName{name}, mUpgrador{ up }, mFunction{func}
 	{
 	}
 
