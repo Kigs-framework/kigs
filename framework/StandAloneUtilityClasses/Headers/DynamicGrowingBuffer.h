@@ -156,6 +156,18 @@ public:
 		(*this)[index] = toadd;
 	}
 
+	bufferType& push_back()
+	{
+		unsigned int index = (unsigned int)(m_currentSize + 1);
+		return (*this)[index];
+	}
+
+	bufferType& back()
+	{
+		unsigned int index = (unsigned int)(m_currentSize);
+		return (*this)[index];
+	}
+
 	unsigned int size()
 	{
 		return (unsigned int)m_currentSize + 1;
