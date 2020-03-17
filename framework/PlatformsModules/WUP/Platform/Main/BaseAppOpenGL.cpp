@@ -293,7 +293,7 @@ void App::Run()
 	myApp->CloseApp();
 
 	//! delete
-	delete myApp;
+	myApp->Destroy();
 	KigsCore::SetCoreApplication(nullptr);
 
 #ifdef _DEBUG

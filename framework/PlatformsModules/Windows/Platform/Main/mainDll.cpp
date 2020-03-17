@@ -106,7 +106,7 @@ extern "C" void __declspec(dllexport) CloseKigs()
 	myApp->CloseApp();
 
 	//! delete
-	delete myApp;
+	myApp->Destroy();
 
 	//! last thing to do
 	KigsCore::Close();

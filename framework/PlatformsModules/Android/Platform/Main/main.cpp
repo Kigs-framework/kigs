@@ -166,7 +166,7 @@ KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Close(JNIEnv 
 		myApp->CloseApp();
 
 		//! delete
-		delete myApp;
+		myApp->Destroy();
 		
 		myApp=0;
 	}
