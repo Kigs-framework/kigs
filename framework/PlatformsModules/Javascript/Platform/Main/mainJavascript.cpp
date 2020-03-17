@@ -24,7 +24,7 @@ void	MainLoop()
 		myApp->CloseApp();
 
 		//! delete
-		delete myApp;
+		myApp->Destroy();
 
 		//! last thing to do
 		KigsCore::Close();		

@@ -737,13 +737,15 @@ void DataDrivenBaseApplication::ProtectedClose()
 	KigsCore::ReleaseSingleton("FilePathManager");
 	KigsCore::ReleaseSingleton("LocalizationManager");
 
+	// close lua first as it can have dependencies to other modules
+	CoreDestroyModule(LuaKigsBindModule);
 	CoreDestroyModule(ModuleGUI);
 	CoreDestroyModule(ModuleSceneGraph);
 	CoreDestroyModule(Module2DLayers);
 	CoreDestroyModule(ModuleInput);
 	CoreDestroyModule(ModuleRenderer);
 	CoreDestroyModule(ModuleCoreAnimation);
-	CoreDestroyModule(LuaKigsBindModule);
+	
 }
 
 void DataDrivenSequenceManager::SetState(State_t NewState)

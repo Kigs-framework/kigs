@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	// use this to add a breakpoint on a given alloc number 
-	//_CrtSetBreakAlloc(27280);
+	//_CrtSetBreakAlloc(21923);
 #endif
 	setlocale(LC_NUMERIC,"C");
 
@@ -87,8 +87,7 @@ int main(int argc, char *argv[])
 	myApp->CloseApp();
 
 	//! delete
-	delete myApp;
-
+	myApp->Destroy();
 
 	//! last thing to do
 	KigsCore::Close();
@@ -139,9 +138,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	myApp->CloseApp();
 
 	//! delete
-	delete myApp;
-
-
+	myApp->Destroy();
 
 	//! last thing to do
 	KigsCore::Close();

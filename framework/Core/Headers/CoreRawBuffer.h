@@ -121,6 +121,11 @@ public:
 	{
 	};
 
+	virtual ~CoreRawBuffer()
+	{
+		ProtectedDestroy();
+	}
+
 	void SetBuffer(void* buffer, unsigned int length, bool manageMemory = true)
 	{
 		InternalSetBuffer(buffer, length, manageMemory);

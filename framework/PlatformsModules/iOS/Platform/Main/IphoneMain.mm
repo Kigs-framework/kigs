@@ -206,7 +206,7 @@ bool update = false;
     else
     {
         myApp->CloseApp();
-        delete myApp;
+        myApp->Destroy();
         Core::Close();
         mybUpdating = false;
         exit(0);
