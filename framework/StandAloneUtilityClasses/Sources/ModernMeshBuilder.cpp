@@ -232,7 +232,7 @@ void	ModernMeshBuilder::OptimiseForCache()
 
 	std::vector<SortTriangle>	sortedTriangleList;
 
-	for (i = 0; i < vt/(sizeof(unsigned int)*3); i++)
+	for (i = 0; i < vt; i++)
 	{
 		// increment use count for each vertice used by current triangle
 		vl[triangleArray[i].indices[0]].useCount++;
