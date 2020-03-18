@@ -94,7 +94,7 @@ void MultiMesh::RecomputeBoundingBox()
 			CoreModifiable* node;
 		};
 		kstl::vector<MeshNode> meshes;
-		kstl::set<CoreModifiable*> nodes;
+		kstl::vector<CMSP> nodes;
 		GetSonInstancesByType("Node3D", nodes, true);
 
 
@@ -105,7 +105,7 @@ void MultiMesh::RecomputeBoundingBox()
 			{
 				if (item.myItem->isSubType("ModernMesh"))
 				{
-					meshes.push_back(MeshNode{ item.myItem.Pointer(), cm });
+					meshes.push_back(MeshNode{ item.myItem.Pointer(), cm.get() });
 				}
 				else if(!item.myItem->isSubType("RendererMatrix") && already_inserted.find(item.myItem.get()) == already_inserted.end())
 				{
@@ -141,7 +141,7 @@ void MultiMesh::RecomputeBoundingBox()
 					full_mesh_item->myTexCoordsScale = item->myTexCoordsScale;
 					full_mesh_item->myCullMode = item->myCullMode;
 
-					auto mat = CMSP(item->GetFirstSonByType("Material"), StealRefTag{});
+					auto mat = item->GetFirstSonByType("Material");
 					if (mat)
 						full_mesh_item->addItem(mat);
 				}

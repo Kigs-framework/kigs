@@ -60,14 +60,15 @@ void RenderingScreen::Update(const Timer&  timer, void* addParam)
 // recompute myDesignCoefX,myDesignCoefY;
 void RenderingScreen::InitModifiable()
 {
-	kstl::set<CoreModifiable*>	instances;
+	kstl::vector<CMSP>	instances;
 
     kstl::string parentW=myParentWindowName.const_ref();
 
 	if(parentW != "")
 	{
-		CoreModifiable::GetInstancesByName("Window",parentW,instances);
-		MyParentWindow=(Window*)(*instances.begin());
+		instances=CoreModifiable::GetInstancesByName("Window",parentW);
+		if(instances.size())
+			MyParentWindow=(Window*)(instances[0].get());
 	}
 
 	// I want to be notified on brightness change

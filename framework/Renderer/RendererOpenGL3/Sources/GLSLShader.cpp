@@ -386,16 +386,16 @@ void	API3DShader::DelayedInit(TravState* state)
 		Active(state);
 
 		// add child unifor as default uniform
-		kstl::set<CoreModifiable*> instances;
+		kstl::vector<CMSP> instances;
 		CoreModifiable::GetSonInstancesByType("API3DUniformBase", instances);
 
 		if (instances.size())
 		{
-			kstl::set<CoreModifiable*>::iterator itr = instances.begin();
-			kstl::set<CoreModifiable*>::iterator end = instances.end();
+			kstl::vector<CMSP>::iterator itr = instances.begin();
+			kstl::vector<CMSP>::iterator end = instances.end();
 			for (; itr != end; ++itr)
 			{
-				PushUniform(static_cast<API3DUniformBase*>(*itr));
+				PushUniform(static_cast<API3DUniformBase*>((*itr).get()));
 			}
 		}
 		Deactive(state);

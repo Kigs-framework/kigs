@@ -63,68 +63,68 @@ void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 #endif
 	// search for mouse, joystick and keyboard
 
-	kstl::set<CoreModifiable*>	instances;
-	kstl::set<CoreModifiable*>::iterator	it;
-	GetInstances("MouseDevice", instances);
+	kstl::vector<CMSP>	instances;
+	kstl::vector<CMSP>::iterator	it;
+	instances = GetInstances("MouseDevice");
 
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myMouse = (MouseDevice*)*it;
+		myMouse = (MouseDevice*)(*it).get();
 	}
 
-	GetInstances("GazeDevice", instances);
+	instances = GetInstances("GazeDevice");
 
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myGaze= (GazeDevice*)*it;
+		myGaze= (GazeDevice*)(*it).get();
 	}
 
-	GetInstances("MultiTouchDevice", instances);
+	instances = GetInstances("MultiTouchDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myMultiTouch = (MultiTouchDevice*)*it;
+		myMultiTouch = (MultiTouchDevice*)(*it).get();
 	}
 
 
-	GetInstances("AccelerometerDevice", instances);
+	instances = GetInstances("AccelerometerDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myAccelerometer = (AccelerometerDevice*)*it;
+		myAccelerometer = (AccelerometerDevice*)(*it).get();
 	}
 
-	GetInstances("GyroscopeDevice", instances);
+	instances = GetInstances("GyroscopeDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myGyroscope = (GyroscopeDevice*)*it;
+		myGyroscope = (GyroscopeDevice*)(*it).get();
 	}
 
-	GetInstances("GeolocationDevice", instances);
+	instances = GetInstances("GeolocationDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myGeolocation = (GeolocationDevice*)*it;
+		myGeolocation = (GeolocationDevice*)(*it).get();
 	}
 
-	GetInstances("CompassDevice", instances);
+	instances = GetInstances("CompassDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myCompass = (CompassDevice*)*it;
+		myCompass = (CompassDevice*)(*it).get();
 	}
 	
-	GetInstances("KeyboardDevice", instances);
+	instances = GetInstances("KeyboardDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myKeyboard = (KeyboardDevice*)*it;
+		myKeyboard = (KeyboardDevice*)(*it).get();
 	}
 
-	GetInstances("JoystickDevice", instances);
+	instances = GetInstances("JoystickDevice");
 
 	if (instances.size())
 	{
@@ -136,7 +136,7 @@ void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 	int index = 0;
 	for (it = instances.begin(); it != instances.end(); it++)
 	{
-		myJoysticks[index++] = (JoystickDevice*)*it;
+		myJoysticks[index++] = (JoystickDevice*)(*it).get();
 	}
 
 
@@ -149,13 +149,12 @@ void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 void ModuleInput::Close()
 {
 #if USE_VIRTUAL_SENSORS
-	kstl::set<CoreModifiable*> L_instances;
-	CoreModifiable::GetInstancesByName("GyroscopeDevice", "virtual_gyroscope", L_instances);
+	kstl::vector<CMSP> L_instances=	CoreModifiable::GetInstancesByName("GyroscopeDevice", "virtual_gyroscope");
 	auto itr = L_instances.begin();
 	auto end = L_instances.end();
 	for (; itr != end; ++itr)
 		(*itr)->Destroy();
-	CoreModifiable::GetInstancesByName("AccelerometerDevice", "virtual_accelerometer", L_instances);
+	L_instances = CoreModifiable::GetInstancesByName("AccelerometerDevice", "virtual_accelerometer");
 	itr = L_instances.begin();
 	end = L_instances.end();
 	for(;itr!=end;++itr)

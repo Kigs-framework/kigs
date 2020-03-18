@@ -1077,7 +1077,7 @@ void CoreModifiableAttributeOperator<T>::GetAttribute() const
 			{
 				if (myTarget)
 				{
-					Owner = myTarget->GetInstanceByPath(modifiablename);
+					Owner = myTarget->GetInstanceByPath(modifiablename).get();
 				}
 				else
 				{
@@ -1086,7 +1086,7 @@ void CoreModifiableAttributeOperator<T>::GetAttribute() const
 					{
 						modifiablename = modifiablename.substr(1, modifiablename.length() - 1);
 					}
-					Owner = CoreModifiable::GetInstanceByGlobalPath(modifiablename);
+					Owner = CoreModifiable::GetInstanceByGlobalPath(modifiablename).get();
 				}
 			}
 			if (Owner)

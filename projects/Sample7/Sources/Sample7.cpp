@@ -74,7 +74,7 @@ void	Sample7::HelloFromLua()
 	if ((counter % 500) == 0)
 	{
 		// call Lua method on Interface
-		CoreModifiable* instance = GetFirstInstanceByName("UIItem", "Interface");
+		CMSP instance = GetFirstInstanceByName("UIItem", "Interface");
 		if (instance)
 		{
 			instance->SimpleCall("reset",GetApplicationTimer()->GetTime());
