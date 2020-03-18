@@ -61,11 +61,10 @@ void ModuleRenderer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 
 	//DECLARE_FULL_CLASS_INFO(core, RendererProfileDrawingObject, ProfileDrawingObject, Renderer)
 
-	kstl::set<CoreModifiable*>	instances;
-	CoreModifiable::GetInstances("ModuleSpecificRenderer", instances);
+	kstl::vector<CMSP>	instances=CoreModifiable::GetInstances("ModuleSpecificRenderer");
 
 	if (instances.size())
-		mySpecificRenderer = (ModuleSpecificRenderer*)*(instances.begin());
+		mySpecificRenderer = (ModuleSpecificRenderer*)(instances[0].get());
 
 	theGlobalRenderer = mySpecificRenderer;
 }

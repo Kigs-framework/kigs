@@ -58,12 +58,11 @@ void	AutoOrientedNode3D::DoOrientation()
 
 	if(searchtarget)
 	{
-		kstl::set<CoreModifiable*>	instances;
-		GetInstancesByName("Node3D",myTargetName.const_ref(),instances);
+		kstl::vector<CMSP>	instances=	GetInstancesByName("Node3D",myTargetName.const_ref());
 
 		if(instances.size())
 		{
-			myCurrentTarget=(Node3D*)(*instances.begin());
+			myCurrentTarget=(Node3D*)(*instances.begin()).get();
 		}
 		else
 		{

@@ -77,10 +77,10 @@ protected:
 		// if delayed target
 		if (myTargetPath != "")
 		{
-			CoreModifiable* findTarget = myTarget->GetInstanceByPath(myTargetPath);
+			CMSP findTarget = myTarget->GetInstanceByPath(myTargetPath);
 			if (findTarget)
 			{
-				myTarget = findTarget;
+				myTarget = findTarget.get();
 				myTargetPath = "";
 			}
 		}

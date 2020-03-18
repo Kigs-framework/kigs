@@ -296,6 +296,53 @@ virtual std::vector<KigsID> GetSignalList()\
 
 
 
+#pragma pack(4)
+struct ModifiableMethodStruct
+{
+	using func_type = std::function<bool(CoreModifiable*, CoreModifiable*, std::vector<CoreModifiableAttribute*>&, void*) >;
+	struct Method
+	{
+		GenericRefCountedBaseClass::ModifiableMethod mMethod;
+		std::string mName;
+		UpgradorBase* mUpgrador = nullptr;
+	};
+
+	ModifiableMethodStruct()
+	{
+	}
+
+	ModifiableMethodStruct(const func_type& func)
+	{
+		mVariant = func;
+	}
+
+	ModifiableMethodStruct(const std::string& name, GenericRefCountedBaseClass::ModifiableMethod method, UpgradorBase* up = nullptr)
+	{
+		mVariant = Method{ method, name, up };
+	}
+
+	std::variant<func_type, Method> mVariant;
+
+	const func_type& GetFunction() const
+	{
+		return std::get<0>(mVariant);
+	}
+
+	const Method& GetMethod() const
+	{
+		return std::get<1>(mVariant);
+	}
+
+	bool IsMethod() const
+	{
+		return mVariant.index() == 1;
+	}
+
+	CONNECT_FIELD
+};
+
+#pragma pack()
+
 
 // ****************************************
 // * CoreModifiable class
@@ -316,7 +363,7 @@ public:
 	//DECLARE_ABSTRACT_CLASS_INFO(CoreModifiable, RefCountedClass, KigsCore);
 	static const KigsID myClassID;
 	static KigsID myRuntimeType;
-	typedef bool (CoreModifiable::* ModifiableMethod)(CoreModifiable* sender, std::vector<CoreModifiableAttribute*>&, void* privateParams);
+	
 	typedef CoreModifiable CurrentClassType;
 	typedef GenericRefCountedBaseClass ParentClassType;
 	virtual bool Call(CoreModifiable::ModifiableMethod method, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& attr, void* privateParams)
@@ -324,11 +371,11 @@ public:
 		CoreModifiable::ModifiableMethod currentmethod = static_cast<CoreModifiable::ModifiableMethod>(method);
 		return (this->*(currentmethod))(sender, attr, privateParams);
 	}
-	static CoreModifiable* Get()
+	static CMSP Get()
 	{
 		return GetFirstInstance("CoreModifiable", false);
 	}
-	static CoreModifiable* Get(const std::string& name)
+	static CMSP Get(const std::string& name)
 	{
 		return GetFirstInstanceByName("CoreModifiable", name, false);
 	}
@@ -343,18 +390,11 @@ public:
 	static void GetNotWrappedMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& method_table) {}
 
 
-	static std::vector<CMSP> FindInstances(const KigsID& id, bool exact_type_only = false);
-	static std::vector<CMSP> FindInstancesByName(const KigsID& id, const std::string& name, bool exact_type_only = false);
-	static CMSP FindFirstInstance(const KigsID& id, const std::string& name, bool exact_type_only = false);
-	static CMSP FindFirstInstanceByName(const KigsID& id, const std::string& name, bool exact_type_only = false);
-
-	static void GetInstances(const KigsID& cid, std::set<CoreModifiable*>& instances, bool exactTypeOnly = false, bool only_one = false, bool getref = false);
-	static CoreModifiable* GetFirstInstance(const KigsID& cid, bool exactTypeOnly = false, bool getref = false);
-	static void GetInstanceByRuntimeID(const std::string& runtimeID, std::set<CoreModifiable*>& instances, bool getref = false);
-	static void GetRootInstances(const KigsID& cid, std::set<CoreModifiable*>& instances, bool exactTypeOnly = false, bool getref = false);
-	static void GetInstancesByName(const KigsID& cid, const std::string& name, std::set<CoreModifiable*>& instances, bool exactTypeOnly = false, bool only_one = false, bool getref = false);
-	static CoreModifiable* GetFirstInstanceByName(const KigsID& cid, const std::string& name, bool exactTypeOnly = false, bool getref = false);
-
+	static std::vector<CMSP> GetInstances(const KigsID& id, bool exact_type_only = false);
+	static std::vector<CMSP> GetInstancesByName(const KigsID& id, const std::string& name, bool exact_type_only = false);
+	static CMSP GetFirstInstance(const KigsID& id, bool exact_type_only = false);
+	static CMSP GetFirstInstanceByName(const KigsID& id, const std::string& name, bool exact_type_only = false);
+	static std::vector<CMSP> GetRootInstances(const KigsID& cid, bool exactTypeOnly = false);
 
 	const std::string& getName() const { return myName; }
 	void setName(const std::string& name);
@@ -488,10 +528,10 @@ public:
 	bool isUsed() const { return !_users.empty(); }
 
 	// Search in sons for by id and name
-	void GetSonInstancesByName(KigsID cid, const std::string &name, std::set<CoreModifiable*>& instances, bool recursive = false, bool getRef = false);
+	void GetSonInstancesByName(KigsID cid, const std::string &name, std::vector<CMSP>& instances,bool recursive = false);
 
 	// Search in sons for by id and name, return the first one
-	CoreModifiable* GetFirstSonByName(KigsID cid, const std::string &name, bool recursive = false);
+	CMSP GetFirstSonByName(KigsID cid, const std::string &name, bool recursive = false);
 
 	template<typename T>
 	T* GetSon(const std::string& name, bool recursive = false)
@@ -506,10 +546,10 @@ public:
 	}
 
 	// Search in sons for by id
-	void GetSonInstancesByType(KigsID cid, std::set<CoreModifiable*>& instances, bool recursive = false);
+	void GetSonInstancesByType(KigsID cid, std::vector<CMSP>& instances, bool recursive = false);
 
 	// Search in sons for by id, return the first one
-	CoreModifiable* GetFirstSonByType(KigsID cid, bool recursive = false);
+	CMSP GetFirstSonByType(KigsID cid, bool recursive = false);
 
 	template<typename T>
 	T* GetSon(bool recursive = false)
@@ -518,7 +558,7 @@ public:
 	}
 
 	// Search in sons for by path
-	CoreModifiable* GetInstanceByPath(const std::string &path, bool getRef = false);
+	CMSP	GetInstanceByPath(const std::string& path);
 
 	// Update attributes with another modifiable attributes
 	void UpdateAttributes(const CoreModifiable& tocopy);
@@ -899,29 +939,15 @@ public:
 	static CoreModifiable* Find(const std::list<CoreModifiable*> &List, const std::string &Name);
 	static CoreModifiable* FindByType(const std::list<CoreModifiable*> &List, const std::string& type);
 	
-	static CoreModifiable* GetInstanceByGlobalPath(const std::string &path, bool getRef = false);
-	static CMSP FindInstanceByGlobalPath(const std::string& path);
+	static CMSP GetInstanceByGlobalPath(const std::string& path);
 
 	// Search instance with infos (either type:name or a path)
-	static CoreModifiable* SearchInstance(const std::string &infos, CoreModifiable* searchStart = nullptr, bool getRef = false);
-	static CMSP SearchInstanceSP(const std::string& infos, CoreModifiable* searchStart = nullptr);
+	static CMSP SearchInstance(const std::string& infos, CoreModifiable* searchStart = nullptr);
 
-	void getRootParentsWithPath(std::string &remainingpath, std::vector<CoreModifiable*>& parents, bool getRef = false);
+	std::vector<CMSP> getRootParentsWithPath(std::string &remainingpath);
 
 	// Get the first name in a path (IWantThis/The/Remaining/Path). Return "/" if the path starts a the root
 	static  std::string GetFirstNameInPath(const std::string &path, std::string & remainingpath);
-
-	/**
-	* \fn			inline returnType		getTypedValueMethod(u32 ID, returnType*) const
-	*/
-	/*
-	template<typename returnType>
-	inline returnType		getTypedValueMethod(u32 ID, returnType*) const
-	{
-	returnType tmp;
-	getValue(ID, tmp);
-	return tmp;
-	}*/
 
 	/// Editor
 
@@ -972,7 +998,7 @@ protected:
 	
 	CoreModifiable* recursiveGetRootParentByType(const KigsID& ParentClassID, int currentlevel,int &foundLevel) const;
 
-	void recursiveGetRootParentsWithPath(const std::string& searchType, const std::string& searchName, std::vector<CoreModifiable*>& parents, bool getRef = false);
+	void recursiveGetRootParentsWithPath(const std::string& searchType, const std::string& searchName, std::vector<CMSP>& parents);
 
 	void flagAsAggregateParent()
 	{
@@ -1259,52 +1285,6 @@ protected:
 };
 
 
-#pragma pack(4)
-struct ModifiableMethodStruct
-{
-	using func_type = std::function<bool(CoreModifiable*, CoreModifiable*, std::vector<CoreModifiableAttribute*>&, void*) >;
-	struct Method
-	{
-		CoreModifiable::ModifiableMethod mMethod;
-		std::string mName;
-		UpgradorBase* mUpgrador = nullptr;
-	};
-
-	ModifiableMethodStruct()
-	{
-	}
-
-	ModifiableMethodStruct(const func_type& func)
-	{
-		mVariant = func;
-	}
-
-	ModifiableMethodStruct(const std::string& name, CoreModifiable::ModifiableMethod method, UpgradorBase* up = nullptr)
-	{
-		mVariant = Method{ method, name, up };
-	}
-
-	std::variant<func_type, Method> mVariant;
-
-	const func_type& GetFunction() const
-	{
-		return std::get<0>(mVariant);
-	}
-
-	const Method& GetMethod() const
-	{
-		return std::get<1>(mVariant);
-	}
-
-	bool IsMethod() const
-	{
-		return mVariant.index() == 1;
-	}
-
-	CONNECT_FIELD
-};
-
-#pragma pack()
 
 
 struct LazyContent

@@ -261,13 +261,12 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 		bool		found=false;
 		if(sharedMaterial)
 		{
-			kstl::set<CoreModifiable*>	instances;
-			kstl::set<CoreModifiable*>::iterator	it;
-			CoreModifiable::GetInstances("Material",instances);
+			kstl::vector<CMSP>	instances = CoreModifiable::GetInstances("Material");
+			kstl::vector<CMSP>::iterator	it;
 
 			for(it=instances.begin();it!=instances.end();++it)
 			{
-				current = CMSP((Material*)(*it), StealRefTag{});
+				current = (*it);
 				if(current.get() != newMaterial.get())
 					if(current->Equal(*newMaterial.get()))
 					{
@@ -283,11 +282,11 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 		}
 		if(found)
 		{
-			newgroup->addItem((CMSP&)current);
+			newgroup->addItem(current);
 		}
 		else
 		{
-			newgroup->addItem((CMSP&)newMaterial);
+			newgroup->addItem(newMaterial);
 		}
 		
 

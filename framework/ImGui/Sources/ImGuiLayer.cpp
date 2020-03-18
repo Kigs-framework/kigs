@@ -305,8 +305,7 @@ void ImGuiLayer::InitModifiable()
 			auto imgui_shader = GetFirstInstanceByName("API3DUIShader", "imguishader");
 			if (imgui_shader)
 			{
-				CMSP toAdd(imgui_shader, StealRefTag{});
-				addItem(toAdd);
+				addItem(imgui_shader);
 			}
 			else
 			{

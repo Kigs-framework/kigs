@@ -230,14 +230,12 @@ void ModuleSceneGraph::Init(KigsCore* core, const kstl::vector<CoreModifiableAtt
 
 	// search for the renderer module
 
-	kstl::set<CoreModifiable*>	instances;
-
-	CoreModifiable::GetInstances("ModuleSpecificRenderer", instances);
+	kstl::vector<CMSP>	instances=	CoreModifiable::GetInstances("ModuleSpecificRenderer");
 
 	myTravState = KigsCore::GetInstanceOf("SceneTravState", "TravState");
 
 	if (instances.size())
-		myRenderer = (ModuleSpecificRenderer*)*(instances.begin());
+		myRenderer = (ModuleSpecificRenderer*)(instances[0]).get();
 
 	myTravState->SetRenderer(myRenderer);
 	myTravState->SetHolographicMode(false);

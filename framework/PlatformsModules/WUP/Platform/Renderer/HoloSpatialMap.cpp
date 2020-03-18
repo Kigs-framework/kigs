@@ -889,7 +889,7 @@ void HoloSpatialMap::SetShowMeshes(bool show)
 	{
 		mShowMeshes = show;
 
-		std::set<CoreModifiable*> meshes;
+		std::vector<CMSP> meshes;
 		mAttachNode->GetSonInstancesByType("ModernMesh", meshes, true);
 		for (auto m : meshes)
 		{
@@ -945,7 +945,7 @@ void HoloSpatialMap::TransformAllNodes(const mat3x4& mat)
 		gMapRecording.frame_of_ref_changes.push_back({ std::chrono::steady_clock::now().time_since_epoch().count(), mat });
 	}
 #endif
-	std::set<CoreModifiable*> nodes;
+	std::vector<CMSP> nodes;
 	mAttachNode->GetSonInstancesByType("Node3D", nodes);
 	for (auto n : nodes)
 	{

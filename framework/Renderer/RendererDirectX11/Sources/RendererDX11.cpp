@@ -1819,8 +1819,7 @@ void RendererDX11::startFrame(TravState* state)
 	if (myDXInstance.mHolographicSpace)
 	{
 		myDXInstance.mCurrentFrame = myDXInstance.mHolographicSpace.CreateNextFrame();
-		std::set<CoreModifiable*> cameras;
-		GetInstances("Camera", cameras);
+		std::vector<CMSP> cameras = GetInstances("Camera");
 		for (auto cam : cameras)
 		{
 			auto dxcam = cam->as<Camera>();

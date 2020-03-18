@@ -3,6 +3,10 @@
 
 
 #include <atomic>
+#include <vector>
+
+class CoreModifiable;
+class CoreModifiableAttribute;
 
 // ****************************************
 // * GenericRefCountedBaseClass class
@@ -24,9 +28,13 @@
 #define TRACEREF_VIRTUAL 
 #endif
 
+
+
 class GenericRefCountedBaseClass
 {
 public:
+
+	typedef bool (GenericRefCountedBaseClass::* ModifiableMethod)(CoreModifiable* sender, std::vector<CoreModifiableAttribute*>&, void* privateParams);
 	GenericRefCountedBaseClass() {}
 	
 	TRACEREF_VIRTUAL void GetRef();

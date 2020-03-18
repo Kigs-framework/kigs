@@ -431,15 +431,14 @@ void	FSM::initStateFromDescription(CoreItemSP statedescription)
 		else if (key == "reference") // reference in current FSM
 		{
 			kstl::string instancename(*iterstate);
-			kstl::set<CoreModifiable*> instances;
+			kstl::vector<CMSP> instances;
 			GetSonInstancesByName("FSM_State", instancename, instances);
 			if (instances.size() == 1)
 			{
-				SP<FSM_State> newstate((FSM_State*)*(instances.begin()), GetRefTag{});
-				removeItem((CMSP&)newstate);
+				removeItem(instances[0]);
 
 				// then add it as a state
-				addStateInstance(newstate.get());
+				addStateInstance((FSM_State*)instances[0].get());
 
 			}
 		}
