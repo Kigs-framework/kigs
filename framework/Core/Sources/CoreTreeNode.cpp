@@ -56,7 +56,7 @@ size_t CoreTreeNode::GetInstanceCount() const
 	return result;
 }
 
-void CoreTreeNode::getInstances(std::set<CoreModifiable*>& instances, bool recursive, bool only_one, bool getref) const
+/*void CoreTreeNode::getInstances(std::set<CMSP>& instances, bool recursive, bool only_one) const
 {
 	std::lock_guard<std::recursive_mutex> lk{ myMutex };
 	for (auto i : myInstances)
@@ -151,8 +151,10 @@ void CoreTreeNode::getInstancesByName(std::set<CoreModifiable*>& instances, bool
 		}
 	}
 }
+*/
 
-void CoreTreeNode::getRootInstances(std::set<CoreModifiable*>& instances, bool recursive, bool getref) const
+
+void CoreTreeNode::getRootInstances(std::vector<CMSP>& result, bool recursive) const
 {
 	std::lock_guard<std::recursive_mutex> lk{ myMutex };
 	for (auto i : myInstances)
@@ -160,9 +162,10 @@ void CoreTreeNode::getRootInstances(std::set<CoreModifiable*>& instances, bool r
 		CoreModifiable* testFather = ((CoreModifiable*)i);
 		if (testFather->GetParentCount() == 0)
 		{
-			bool ok = true;
-			if (getref) ok = (i)->TryGetRef();
-			if (ok) instances.insert((CoreModifiable*)i);
+			if (i->TryGetRef())
+			{
+				result.push_back(OwningRawPtrToSmartPtr(static_cast<CoreModifiable*>(i)));
+			}
 		}
 	}
 	if (recursive)
@@ -170,7 +173,7 @@ void CoreTreeNode::getRootInstances(std::set<CoreModifiable*>& instances, bool r
 		for (auto j : myChildren)
 		{
 			if (j.second)
-				j.second->getRootInstances(instances, true, getref);
+				j.second->getRootInstances(result, true);
 		}
 	}
 }

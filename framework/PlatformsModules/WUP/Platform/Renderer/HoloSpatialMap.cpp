@@ -760,7 +760,7 @@ void HoloSpatialMap::Update(const Timer& timer, void* addParam)
 				if (it.second.node)
 				{
 					auto mesh = it.second.node->GetFirstSonByType("ModernMesh");
-					mesh->setValue("Show", mShowMeshes);
+					if(mesh) mesh->setValue("Show", mShowMeshes);
 					//kigsprintf("adding spatial mesh %u\n", mesh->getUID());
 					attach->addItem(it.second.node);
 				}
@@ -783,7 +783,7 @@ void HoloSpatialMap::Update(const Timer& timer, void* addParam)
 			{
 				attach->removeItem(it.second.old_node);
 				auto mesh = it.second.node->GetFirstSonByType("ModernMesh");
-				mesh->setValue("Show", mShowMeshes);
+				if (mesh) mesh->setValue("Show", mShowMeshes);
 				attach->addItem(it.second.node);
 				//it.second.old_node->GetRef(); ///TEST
 				//kigsprintf("deleting2 spatial mesh %u\n", it.second.old_node->GetFirstSonByType("ModernMesh")->getUID());
@@ -889,7 +889,7 @@ void HoloSpatialMap::SetShowMeshes(bool show)
 	{
 		mShowMeshes = show;
 
-		std::set<CoreModifiable*> meshes;
+		std::vector<CMSP> meshes;
 		mAttachNode->GetSonInstancesByType("ModernMesh", meshes, true);
 		for (auto m : meshes)
 		{
@@ -945,7 +945,7 @@ void HoloSpatialMap::TransformAllNodes(const mat3x4& mat)
 		gMapRecording.frame_of_ref_changes.push_back({ std::chrono::steady_clock::now().time_since_epoch().count(), mat });
 	}
 #endif
-	std::set<CoreModifiable*> nodes;
+	std::vector<CMSP> nodes;
 	mAttachNode->GetSonInstancesByType("Node3D", nodes);
 	for (auto n : nodes)
 	{

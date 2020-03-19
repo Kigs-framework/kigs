@@ -74,13 +74,13 @@ CMSP CoreModifiable::Import(std::shared_ptr<XMLTemplate<StringType> > xmlfile, c
 				if ((toconnect.sender != "this") && (toconnect.sender != "self")) // connection is son of a coremodifiable, one of the instance can be set at this or self
 				{
 					// else search instance in hierachy
-					pia = SearchInstance(toconnect.sender, toconnect.currentNode);
+					pia = SearchInstance(toconnect.sender, toconnect.currentNode).get();
 				}
 
 				if ((toconnect.receiver != "this") && (toconnect.receiver != "self")) // connection is son of a coremodifiable, one of the instance can be set at this or self
 				{
 					// else search instance in hierachy
-					pib = SearchInstance(toconnect.receiver, toconnect.currentNode);
+					pib = SearchInstance(toconnect.receiver, toconnect.currentNode).get();
 				}
 
 				if (pia && pib)
@@ -189,7 +189,7 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 			{
 				if (is_unique)
 				{
-					current = CMSP(GetFirstInstanceByName(typeAttribute->getString(), name, false, true), StealRefTag{});
+					current = GetFirstInstanceByName(typeAttribute->getString(), name, false);
 					reused_unique_instance = current;
 					//if (current) current->GetRef(); // already set by GetFirstInstanceByName
 				}
@@ -315,7 +315,7 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 		XMLAttributeTemplate< StringType >* pathAttribute = currentNode->getAttribute("P", "Path");
 		if (pathAttribute)
 		{
-			current = CMSP(SearchInstance((std::string)pathAttribute->getString(), currentModifiable, true), StealRefTag{});
+			current = SearchInstance((std::string)pathAttribute->getString(), currentModifiable);
 			if (current)
 			{
 				//current->GetRef(); ref already get by searchinstance
@@ -335,7 +335,7 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 		if (PathAttribute)
 		{
 
-			current = CMSP(SearchInstance((std::string)PathAttribute->getString(), currentModifiable,true), StealRefTag{});
+			current = SearchInstance((std::string)PathAttribute->getString(), currentModifiable);
 			if (current)
 			{
 				if (rename)
@@ -459,17 +459,15 @@ CMSP CoreModifiable::InitReference(XMLNodeTemplate< StringType >* currentNode, s
 		if (!WasFoundInLoaded)
 		{
 			//... then into ALL the objects
-			std::set<CoreModifiable*> instancelist;
+			std::vector<CMSP> instancelist=		GetInstances(type);
 
-			GetInstances(type, instancelist);
-
-			std::set<CoreModifiable*>::iterator it;
+			std::vector<CMSP>::const_iterator it;
 
 			for (it = instancelist.begin(); it != instancelist.end(); ++it)
 			{
 				if ((*it)->getName() == name)
 				{
-					current = CMSP((CoreModifiable*)(*it), GetRefTag{});
+					current = (*it);
 					break;
 				}
 			}
@@ -630,7 +628,7 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 
 	if (pathAttribute)
 	{
-		currentModifiable = SearchInstance((std::string)pathAttribute->getString(), currentModifiable);
+		currentModifiable = SearchInstance((std::string)pathAttribute->getString(), currentModifiable).get();
 		if (!currentModifiable)
 		{
 #ifndef KEEP_XML_DOCUMENT

@@ -697,7 +697,7 @@ void CoreModifiableContextMenu(CoreModifiable* item, CoreModifiable* parent=null
 	}
 }
 
-void RecursiveHierarchyTree(CoreModifiable* parent, const std::set<CoreModifiable*>& instances, bool use_filter = false)
+void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& instances, bool use_filter = false)
 {
 	auto& state = gKigsTools->HierarchyWindow;
 	s32 max_size = 0;
@@ -756,11 +756,11 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::set<CoreModifiabl
 			if (item == (CoreModifiable*)state.SelectedItem)
 				flags |= ImGuiTreeNodeFlags_Selected;
 
-			if (gKigsTools->HierarchyWindow.ForceExpandAll || std::any_of(gKigsTools->HierarchyWindow.ToExpand.begin(), gKigsTools->HierarchyWindow.ToExpand.end(), [item](auto i) { return i == item; }))
+			if (gKigsTools->HierarchyWindow.ForceExpandAll || std::any_of(gKigsTools->HierarchyWindow.ToExpand.begin(), gKigsTools->HierarchyWindow.ToExpand.end(), [item](auto i) { return i == item.get(); }))
 				ImGui::SetNextTreeNodeOpen(true);
 			
-			bool was_open = ImGui::TreeNodeBehaviorIsOpen(ImGui::GetID((void*)item), flags);
-			bool opened = ImGui::TreeNodeAdv((void*)item, tmpStr, flags);
+			bool was_open = ImGui::TreeNodeBehaviorIsOpen(ImGui::GetID((void*)item.get()), flags);
+			bool opened = ImGui::TreeNodeAdv((void*)item.get(), tmpStr, flags);
 
 			ImGui::PopStyleColor();
 
@@ -768,14 +768,14 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::set<CoreModifiabl
 			{
 				if (ImGui::IsKeyPressed(CM_KEY_C, false) && ImGui::GetIO().KeyCtrl)
 				{
-					gKigsTools->mClipboardItem = item;
+					gKigsTools->mClipboardItem = item.get();
 				}
 				if (ImGui::IsKeyPressed(CM_KEY_V, false) && ImGui::GetIO().KeyCtrl)
 				{
 
 				}
 			}
-			DragSourceItem(item, parent);
+			DragSourceItem(item.get(), parent);
 
 			
 			if (ImGui::BeginDragDropTarget())
@@ -788,7 +788,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::set<CoreModifiabl
 					{
 						item->addItem(new_item);
 						state.SelectedItem = new_item.get();
-						state.ToExpand.push_back(item);
+						state.ToExpand.push_back(item.get());
 					}
 				}
 				ImGui::EndDragDropTarget();
@@ -803,7 +803,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::set<CoreModifiabl
 					DragItemPayload data = *(DragItemPayload*)peek_payload->Data;
 
 					bool ok = true;
-					auto parent = item;
+					auto parent = item.get();
 					while (parent && ok)
 					{
 						if (parent == data.item) ok = false;
@@ -841,9 +841,9 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::set<CoreModifiabl
 
 			if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0) && was_open == opened)
 			{
-				state.SelectedItem = item;
+				state.SelectedItem = item.get();
 			}
-			CoreModifiableContextMenu(item, parent);
+			CoreModifiableContextMenu(item.get(), parent);
 			if (!item->IsInit())
 			{
 				ImGui::SameLine();
@@ -857,7 +857,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::set<CoreModifiabl
 				ImGui::SameLine();
 				ImColor color{ 0,127,0 };
 					
-				auto it = gKigsTools->XMLChanged.find(item);
+				auto it = gKigsTools->XMLChanged.find(item.get());
 				if (it != gKigsTools->XMLChanged.end())
 				{
 					for (auto& f : item->mXMLFiles)
@@ -878,13 +878,13 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::set<CoreModifiabl
 			if (opened)
 			{
 				
-				std::set<CoreModifiable*> toPass;
+				std::vector<CMSP> toPass;
 				for (auto c : item->getItems())
 				{
-					toPass.insert(c.myItem.get());
+					toPass.push_back(c.myItem);
 				}
 
-				RecursiveHierarchyTree(item, toPass);
+				RecursiveHierarchyTree(item.get(), toPass);
 				ImGui::TreePop();
 			}
 		}
@@ -950,7 +950,7 @@ void DrawHierarchy()
 		{
 
 
-			std::set<CoreModifiable*> instances;
+			std::vector<CMSP> instances;
 
 			if (state.Scope.size() > 1)
 			{
@@ -960,42 +960,42 @@ void DrawHierarchy()
 				ImGui::CollapsingHeader(tmpstr, ImGuiTreeNodeFlags_Leaf);
 				CoreModifiableContextMenu(current_scope);
 
-				std::set<CoreModifiable*> toPass;
+				std::vector<CMSP> toPass;
 				for (auto c : current_scope->getItems())
 				{
-					toPass.insert(c.myItem.get());
+					toPass.push_back(c.myItem);
 				}
 
 				RecursiveHierarchyTree(current_scope, toPass, true);
 			}
 			else if (!state.Filter.IsActive())
 			{
-				CoreModifiable::GetRootInstances("CoreModifiable", instances);
+				instances = CoreModifiable::GetRootInstances("CoreModifiable");
 
-				std::set<CoreModifiable*> regular;
-				std::set<CoreModifiable*> modules;
-				std::set<CoreModifiable*> singletons;
-				std::set<CoreModifiable*> textures;
-				std::set<CoreModifiable*> apps;
-				std::set<CoreModifiable*> inputs;
-				std::set<CoreModifiable*> timers;
+				std::vector<CMSP> regular;
+				std::vector<CMSP> modules;
+				std::vector<CMSP> singletons;
+				std::vector<CMSP> textures;
+				std::vector<CMSP> apps;
+				std::vector<CMSP> inputs;
+				std::vector<CMSP> timers;
 
-				apps.insert(KigsCore::GetCoreApplication());
+				apps.push_back(CMSP(KigsCore::GetCoreApplication(), GetRefTag{}));
 
-				for (auto cm : instances)
+				for (auto& cm : instances)
 				{
 					if (cm->isSubType("ModuleBase"))
-						modules.insert(cm);
+						modules.push_back(cm);
 					else if (cm->isSubType("Texture"))
-						textures.insert(cm);
+						textures.push_back(cm);
 					else if (cm->isSubType("Timer"))
-						timers.insert(cm);
+						timers.push_back(cm);
 					else if (cm->isSubType("InputDevice"))
-						inputs.insert(cm);
+						inputs.push_back(cm);
 					else if (cm->getName().substr(0, 10) == "Singleton_")
-						singletons.insert(cm);
+						singletons.push_back(cm);
 					else
-						regular.insert(cm);
+						regular.push_back(cm);
 				}
 
 				ImGui::TreePush((void*)0);
@@ -1073,7 +1073,7 @@ void DrawHierarchy()
 			}
 			else
 			{
-				CoreModifiable::GetInstances("CoreModifiable", instances);
+				instances = CoreModifiable::GetInstances("CoreModifiable");
 				RecursiveHierarchyTree(nullptr, instances, true);
 			}
 
@@ -1144,30 +1144,32 @@ void DrawCreateInstance()
 
 void ResetContext()
 {
-	kstl::set<CoreModifiable*>	instances;
-	CoreModifiable::GetInstances("RenderingScreen", instances);
-	(*instances.begin())->CallMethod("ResetContext", NULL);
+	kstl::vector<CMSP>	instances = 	CoreModifiable::GetInstances("RenderingScreen");
+	if (instances.size())
+	{
+		instances[0]->CallMethod("ResetContext", NULL);
+	}
 
-	kstl::set<CoreModifiable*>::iterator itInstances;
+	kstl::vector<CMSP>::iterator itInstances;
 
 	// then reinit layers
 	instances.clear();
-	CoreModifiable::GetInstances("Base2DLayer", instances);
+	instances = CoreModifiable::GetInstances("Base2DLayer");
 
 	for (itInstances = instances.begin(); itInstances != instances.end(); itInstances++)
 	{
-		CoreModifiable* current = (CoreModifiable*)(*itInstances);
+		CMSP& current = (*itInstances);
 		current->setValue("Reinit", true);
 	}
 	instances.clear();
 
 	// then reinit sprites
 	instances.clear();
-	CoreModifiable::GetInstances("BaseSprite", instances);
+	instances = CoreModifiable::GetInstances("BaseSprite");
 
 	for (itInstances = instances.begin(); itInstances != instances.end(); itInstances++)
 	{
-		CoreModifiable* current = (CoreModifiable*)(*itInstances);
+		CMSP& current = (*itInstances);
 		current->setValue("Reinit", true);
 	}
 }
@@ -1439,12 +1441,11 @@ void CustomAttributeEditor(CoreModifiable* item)
 
 		if (ImGui::Button("Fit To View"))
 		{
-			std::set<CoreModifiable*> insts;
-			CoreModifiable::GetInstances("Camera", insts);
+			std::vector<CMSP> insts = CoreModifiable::GetInstances("Camera");
 			auto itfind = std::find_if(insts.begin(), insts.end(), [](auto cm) { return cm->template getValue<bool>("CameraIsEnabled"); });
 			if (itfind != insts.end())
 			{
-				auto active_cam = (Camera*)*itfind;
+				auto active_cam = (Camera*)(*itfind).get();
 				auto n = item->as<Node3D>();
 				auto bbox = n->GetGlobalBoundingBox();
 				auto view = active_cam->GetViewVector();
@@ -1484,8 +1485,7 @@ void CustomAttributeEditor(CoreModifiable* item)
 			
 		if (ImGui::CollapsingHeader("Hits"))
 		{
-			std::set<CoreModifiable*> nodes;
-			CoreModifiable::GetInstances("Node3D", nodes);
+			std::vector<CMSP> nodes = CoreModifiable::GetInstances("Node3D");
 
 			auto origin_global = cam->GetPosition();
 			Vector3D direction_global = cam->GetViewVector();
@@ -2758,8 +2758,7 @@ void DrawEditor()
 				break;
 			case CM_KEY_F10:
 			{
-				std::set<CoreModifiable*> shaders;
-				CoreModifiable::GetInstances("API3DShader", shaders);
+				std::vector<CMSP> shaders = CoreModifiable::GetInstances("API3DShader");
 				for (auto shader : shaders)
 				{
 					shader->SimpleCall("Reload");
@@ -2951,13 +2950,12 @@ bool UpdateKigsTools()
 
 	if (gKigsTools->Paused && was_paused != gKigsTools->Paused)
 	{
-		std::set<CoreModifiable*> timers;
-		CoreModifiable::GetInstances("Timer", timers);
+		std::vector<CMSP> timers = CoreModifiable::GetInstances("Timer");
 		for (auto cm : timers)
 		{
-			auto t = (Timer*)cm;
+			SP<Timer> t = cm;
 			t->GetRef();
-			gKigsTools->TimerStates[t] = t->GetState();
+			gKigsTools->TimerStates[t.get()] = t->GetState();
 			t->SetState(Timer::PAUSED);
 		}
 	}

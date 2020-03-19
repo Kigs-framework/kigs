@@ -51,7 +51,7 @@ Holo3DSequenceManager::~Holo3DSequenceManager()
 void Holo3DSequenceManager::UninitModifiable()
 {
 	// destroy sequence
-	kstl::set<CoreModifiable*>	instances;
+	std::vector<CMSP>	instances;
 	CoreModifiable* mySceneGraph = KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
 	mySceneGraph->GetSonInstancesByType("Abstract2DLayer", instances);
 
@@ -62,8 +62,7 @@ void Holo3DSequenceManager::UninitModifiable()
 
 		if (uo == myRenderingScreen.get())
 		{
-			CMSP toDel(scene, GetRefTag{});
-			mySceneGraph->removeItem(toDel);
+			mySceneGraph->removeItem(scene);
 		}
 	}
 
@@ -246,13 +245,13 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 
 		IsShow = SetIsShow;
 
-		kstl::set<CoreModifiable*> layers;
+		std::vector<CMSP> layers;
 		if(myCurrentSequence)
 			myCurrentSequence->GetSonInstancesByType("BaseUI2DLayer", layers);
 
 		for (auto l : layers)
 		{
-			auto layer = (BaseUI2DLayer*)l;
+			auto layer = (BaseUI2DLayer*)l.get();
 			layer->GetRootItem()->setValue("IsHidden", !IsShow);
 		}
 		

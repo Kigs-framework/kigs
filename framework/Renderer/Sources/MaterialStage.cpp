@@ -40,7 +40,7 @@ bool MaterialStage::PostDraw(TravState* state)
 
 DEFINE_METHOD(MaterialStage, ResetContext)
 {
-	std::set<CoreModifiable*> inst;
+	std::vector<CMSP> inst;
 	GetSonInstancesByType("Texture", inst);
 	for (auto it : inst)
 	{

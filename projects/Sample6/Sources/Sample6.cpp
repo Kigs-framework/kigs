@@ -128,8 +128,8 @@ void	Sample6::ProtectedUpdate()
 	EmitSignal("doSomething");
 
 	// disconnect this so SendSignal1 will not be catched anymore
-	CoreModifiable* simplecass=GetInstanceByPath("simpleclass");
-	KigsCore::Disconnect(simplecass, "SendSignal1", this, "MethodWithParams");
+	CMSP simplecass=GetInstanceByPath("simpleclass");
+	KigsCore::Disconnect(simplecass.get(), "SendSignal1", this, "MethodWithParams");
 
 	static int loopcount = 0;
 	if (++loopcount > 5)

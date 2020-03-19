@@ -56,18 +56,18 @@ void BaseUI2DLayer::DeleteChild(CMSP& aChild)
 	// remove aChild and all it's children from mouseoverlist
 
 	// first get the list of all UIItem children of aChild
-	kstl::set<CoreModifiable*> instances;
+	kstl::vector<CMSP> instances;
 	aChild->GetSonInstancesByType("UIItem", instances);
-	instances.insert(aChild.get());
+	instances.push_back(aChild);
 
-	kstl::set<CoreModifiable*>::const_iterator	itInstances = instances.begin();
-	kstl::set<CoreModifiable*>::const_iterator	itInstancesEnd = instances.end();
+	kstl::vector<CMSP>::const_iterator	itInstances = instances.begin();
+	kstl::vector<CMSP>::const_iterator	itInstancesEnd = instances.end();
 	while (itInstances != itInstancesEnd)
 	{
 		std::vector<UIItem*>::iterator L_It = myMouseOverList.begin();
 		while (L_It != myMouseOverList.end())
 		{
-			if ((*L_It) == (*itInstances))
+			if ((*L_It) == (*itInstances).get())
 			{
 				myMouseOverList.erase(L_It);
 				break;
@@ -156,7 +156,7 @@ void BaseUI2DLayer::InitModifiable()
 		myMouseOverList.clear();
 		myMouseOverChanged = false;
 
-		kstl::set<CoreModifiable*>	instances;
+		kstl::vector<CMSP>	instances;
 		GetSonInstancesByType("UIItem", instances);
 		KIGS_ASSERT(instances.size() < 2); // only one UIItem child
 		if (instances.empty())
@@ -168,19 +168,19 @@ void BaseUI2DLayer::InitModifiable()
 			GetRenderingScreen()->GetDesignSize(X, Y);
 			myRootItem->setValue("SizeX", X);
 			myRootItem->setValue("SizeY", Y);
-			addItem((CMSP&)myRootItem);
+			addItem(myRootItem);
 			myRootItem->Init();
 		}
 		else
 		{
-			myRootItem = CMSP(*instances.begin(), GetRefTag{});
+			myRootItem = instances[0];
 		}
 		instances.clear();
 
-		GetInstances("ModuleInput", instances);
+		instances = GetInstances("ModuleInput");
 	//	KIGS_ASSERT(instances.size() == 1);
 		if(instances.size()==1)
-			myInput = (ModuleInput*)(*instances.begin());
+			myInput = (ModuleInput*)(instances[0].get());
 
 		ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer*)((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 		if (renderer->getDefaultUiShader())

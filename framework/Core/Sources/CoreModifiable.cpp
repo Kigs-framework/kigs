@@ -248,11 +248,10 @@ void CoreModifiable::RemoveMethod(KigsID labelID)
 
 void CoreModifiable::debugPrintfClassList(const std::string& className, s32 maxindent, bool onlyOrphan)
 {
-	std::set<CoreModifiable*>	instances;
-	CoreModifiable::GetInstances(className,instances);
+	std::vector<CMSP> instances=CoreModifiable::GetInstances(className);
 	
-	std::set<CoreModifiable*>::iterator it=instances.begin();
-	std::set<CoreModifiable*>::iterator end=instances.end();
+	std::vector<CMSP>::const_iterator it=instances.begin();
+	std::vector<CMSP>::const_iterator end=instances.end();
 	for(; it!=end; ++it)
 		if(onlyOrphan)
 	{
@@ -2588,7 +2587,7 @@ CoreModifiable* CoreModifiable::FindByType(const std::list<CoreModifiable*> &Lis
 
 //! static method : return the instance corresponding to the given path, and given search start
 
-CoreModifiable* CoreModifiable::GetInstanceByGlobalPath(const std::string &path, bool getRef)
+CMSP CoreModifiable::GetInstanceByGlobalPath(const std::string &path)
 {
 	std::string RemainingPath;
 	std::string sonName = GetFirstNameInPath(path, RemainingPath);
@@ -2605,38 +2604,21 @@ CoreModifiable* CoreModifiable::GetInstanceByGlobalPath(const std::string &path,
 	}
 
 	// search using each root instances
-	std::set<CoreModifiable*> instances;
-	GetInstancesByName(searchType, sonName, instances, false, false, getRef);
+	std::vector<CMSP> instances =	GetInstancesByName(searchType, sonName);
 
-	std::set<CoreModifiable*>::iterator	itset;
+	std::vector<CMSP>::iterator	itset;
 	for (itset = instances.begin(); itset != instances.end(); itset++)
 	{
-		CoreModifiable*	current = (CoreModifiable*)(*itset);
+		CMSP&	current = (*itset);
 		
-		CoreModifiable*	test = current->GetInstanceByPath(RemainingPath, getRef);
+		CMSP	test = current->GetInstanceByPath(RemainingPath);
 		if (test)
 		{
-			if (getRef)
-			{
-				// release all refs 
-				for (const auto it : instances)
-				{
-					it->Destroy();
-				}
-			}
 			return test;
 		}
 		
 	}
-	if (getRef)
-	{
-		// release all refs 
-		for (const auto it : instances)
-		{
-			it->Destroy();
-		}
-	}
-	return 0;
+	return nullptr;
 }
 
 std::string CoreModifiable::GetFirstNameInPath(const std::string &path, std::string & remainingpath)
@@ -2674,7 +2656,7 @@ std::string CoreModifiable::GetFirstNameInPath(const std::string &path, std::str
 }
 
 
-void CoreModifiable::getRootParentsWithPath(std::string &remainingpath, std::vector<CoreModifiable*>& parents, bool getRef)
+std::vector<CMSP> CoreModifiable::getRootParentsWithPath(std::string &remainingpath)
 {
 	std::string::size_type pos = remainingpath.find('/');
 	std::string searchName = remainingpath;
@@ -2697,12 +2679,12 @@ void CoreModifiable::getRootParentsWithPath(std::string &remainingpath, std::vec
 		searchName = searchName.substr(pos + 1, searchName.length() - pos - 1);
 	}
 
-	recursiveGetRootParentsWithPath(searchType, searchName, parents, getRef);
-
-
+	std::vector<CMSP> parents;
+	recursiveGetRootParentsWithPath(searchType, searchName, parents);
+	return parents;
 }
 
-void CoreModifiable::recursiveGetRootParentsWithPath(const std::string& searchType, const std::string& searchName, std::vector<CoreModifiable*>& parents, bool getRef)
+void CoreModifiable::recursiveGetRootParentsWithPath(const std::string& searchType, const std::string& searchName, std::vector<CMSP>& parents)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // Don't want to be modified by another thread here
 	// check this
@@ -2710,11 +2692,7 @@ void CoreModifiable::recursiveGetRootParentsWithPath(const std::string& searchTy
 	{
 		if (isSubType(searchType))
 		{
-			if (getRef)
-			{
-				this->GetRef();
-			}
-			parents.push_back(this);
+			parents.push_back(CMSP(this, GetRefTag{}));
 		}
 	}
 
@@ -2723,33 +2701,16 @@ void CoreModifiable::recursiveGetRootParentsWithPath(const std::string& searchTy
 
 	for (auto p : parentlist)
 	{
-		p->recursiveGetRootParentsWithPath(searchType, searchName, parents, getRef);
+		p->recursiveGetRootParentsWithPath(searchType, searchName, parents);
 	}
 }
 
 
-
-CoreModifiable* CoreModifiable::SearchInstance(const std::string &infos, CoreModifiable* searchStart, bool getRef)
+CMSP CoreModifiable::SearchInstance(const std::string& infos, CoreModifiable* searchStart)
 {
 	if (searchStart) // relative search ?
 	{
-		CoreModifiable* found=searchStart->GetInstanceByPath(infos, getRef);
-		if (found) // if not found, search global path
-		{
-			return found;
-		}
-	}
-	
-	// global search
-	return GetInstanceByGlobalPath(infos,getRef);
-
-}
-
-CMSP CoreModifiable::SearchInstanceSP(const std::string& infos, CoreModifiable* searchStart)
-{
-	if (searchStart) // relative search ?
-	{
-		CMSP found{ searchStart->GetInstanceByPath(infos, true), StealRefTag{} };
+		CMSP found= searchStart->GetInstanceByPath(infos);
 		if (found) // if not found, search global path
 		{
 			return found;
@@ -2757,12 +2718,12 @@ CMSP CoreModifiable::SearchInstanceSP(const std::string& infos, CoreModifiable* 
 	}
 
 	// global search
-	return CMSP{ GetInstanceByGlobalPath(infos, true), StealRefTag{} };
+	return GetInstanceByGlobalPath(infos);
 }
 
 
 //! return the instance corresponding to the given path in sons tree
-CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path, bool getRef)
+CMSP CoreModifiable::GetInstanceByPath(const std::string &path)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread during search
 	std::string RemainingPath;
@@ -2770,11 +2731,7 @@ CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path, bool 
 
 	if (sonName == "")
 	{
-		if (getRef)
-		{
-			GetRef();
-		}
-		return this;
+		return CMSP(this, GetRefTag{});
 	}
 
 
@@ -2786,40 +2743,23 @@ CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path, bool 
 		std::string searchType = path.substr(1, pos-1); // remove @
 		std::string searchName = path.substr(pos + 1, path.length() - pos - 1); // remove :
 
-		return CoreModifiable::GetFirstInstanceByName(searchType, searchName,getRef);
+		return CoreModifiable::GetFirstInstanceByName(searchType, searchName);
 	}
 
 	if(sonName == "/") // path start with / => start from root parents
 	{
 		// search root of this with given name
 		std::string RemainingPathForGlobal = RemainingPath;
-		std::vector<CoreModifiable*> parents;
-		getRootParentsWithPath(RemainingPath, parents, getRef);
+		std::vector<CMSP> parents=	getRootParentsWithPath(RemainingPath);
 		for (auto p : parents)
 		{
-			CoreModifiable* oneFound=p->GetInstanceByPath(RemainingPath, getRef);
+			CMSP oneFound=p->GetInstanceByPath(RemainingPath);
 			if (oneFound)
 			{
-				// release parents refs
-				if (getRef)
-				{
-					for (auto pa : parents)
-					{
-						pa->Destroy();
-					}
-				}
 				return oneFound;
 			}
 		}
-		// release parents refs
-		if (getRef)
-		{
-			for (auto pa : parents)
-			{
-				pa->Destroy();
-			}
-		}
-		return GetInstanceByGlobalPath(RemainingPathForGlobal, getRef);
+		return GetInstanceByGlobalPath(RemainingPathForGlobal);
 		
 	}
 
@@ -2839,31 +2779,15 @@ CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path, bool 
 		std::string nextpath = RemainingPath;
 		std::string targetName = GetFirstNameInPath(nextpath, RemainingPath);
 
-		std::set<CoreModifiable*> instances;
-		GetSonInstancesByName(searchType, targetName, instances, true, getRef);
+		std::vector<CMSP> instances;
+		GetSonInstancesByName(searchType, targetName, instances, true);
 
 		for (auto cm : instances)
 		{
-			auto result = cm->GetInstanceByPath(RemainingPath, getRef);
+			auto result = cm->GetInstanceByPath(RemainingPath);
 			if (result)
 			{
-				// release instances refs
-				if (getRef)
-				{
-					for (auto rel : instances)
-					{
-						rel->Destroy();
-					}
-				}
 				return result;
-			}
-		}
-		// release instances refs
-		if (getRef)
-		{
-			for (auto rel : instances)
-			{
-				rel->Destroy();
 			}
 		}
 		return nullptr;
@@ -2877,8 +2801,8 @@ CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path, bool 
 		{
 			if ((*itfathers)->isSubType(searchType))
 			{
-				CoreModifiable* foundinpath = (*itfathers)->GetInstanceByPath(RemainingPath, getRef);
-				if (foundinpath != 0)
+				auto foundinpath = (*itfathers)->GetInstanceByPath(RemainingPath);
+				if (foundinpath)
 				{
 					return foundinpath;
 				}
@@ -2896,7 +2820,7 @@ CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path, bool 
 		{
 			if ((*itsons).myItem->isSubType(searchType))
 			{
-				auto result = (*itsons).myItem->GetInstanceByPath(RemainingPath, getRef);
+				auto result = (*itsons).myItem->GetInstanceByPath(RemainingPath);
 				if (!is_wildcard || result) return result;
 			}
 		}
@@ -2906,7 +2830,7 @@ CoreModifiable* CoreModifiable::GetInstanceByPath(const std::string &path, bool 
 	return nullptr;
 }
 
-void CoreModifiable::GetSonInstancesByName(KigsID cid, const std::string &name,std::set<CoreModifiable*>& instances,bool recursive, bool getRef)
+void CoreModifiable::GetSonInstancesByName(KigsID cid, const std::string &name, std::vector<CMSP>& instances,bool recursive)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	std::vector<ModifiableItemStruct>::iterator itsons;
@@ -2916,26 +2840,23 @@ void CoreModifiable::GetSonInstancesByName(KigsID cid, const std::string &name,s
 		{
 			if((*itsons).myItem->isSubType(cid))
 			{
-				instances.insert((CoreModifiable*)(*itsons).myItem.Pointer());
-				if (getRef)
-				{
-					(*itsons).myItem->GetRef();
-				}
+				instances.push_back((*itsons).myItem);
 			}
 		}
 		if(recursive)
 		{
-			(*itsons).myItem->GetSonInstancesByName(cid,name,instances,recursive, getRef);
+			(*itsons).myItem->GetSonInstancesByName(cid,name,instances,recursive);
 		}
 	}
 }
 
-CoreModifiable* CoreModifiable::GetFirstSonByName(KigsID cid, const std::string &name, bool recursive)
+CMSP CoreModifiable::GetFirstSonByName(KigsID cid, const std::string &name, bool recursive)
 {
+	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	for (auto& son : getItems())
 	{
 		if (son.myItem->isSubType(cid) && name == son.myItem->getName())
-			return (CoreModifiable*)son.myItem.get();
+			return son.myItem;
 	}
 	if (recursive)
 	{
@@ -2948,14 +2869,15 @@ CoreModifiable* CoreModifiable::GetFirstSonByName(KigsID cid, const std::string 
 	return nullptr;
 }
 
-void CoreModifiable::GetSonInstancesByType(KigsID cid,std::set<CoreModifiable*>& instances,bool recursive)
+void CoreModifiable::GetSonInstancesByType(KigsID cid, std::vector<CMSP>& instances,bool recursive)
 {
+	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	std::vector<ModifiableItemStruct>::iterator itsons;
 	for(itsons=_items.begin();itsons!=_items.end();itsons++)
 	{
 		if((*itsons).myItem->isSubType(cid))
 		{
-			instances.insert((CoreModifiable*)(*itsons).myItem.get());
+			instances.push_back((*itsons).myItem);
 		}
 		
 		if(recursive)
@@ -2965,12 +2887,13 @@ void CoreModifiable::GetSonInstancesByType(KigsID cid,std::set<CoreModifiable*>&
 	}
 }
 
-CoreModifiable* CoreModifiable::GetFirstSonByType(KigsID cid, bool recursive)
+CMSP CoreModifiable::GetFirstSonByType(KigsID cid, bool recursive)
 {
+	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	for (auto& son : getItems())
 	{
 		if (son.myItem->isSubType(cid))
-			return (CoreModifiable*)son.myItem.get();
+			return son.myItem;
 	}
 	if (recursive)
 	{
@@ -3376,124 +3299,18 @@ void CoreModifiable::GetClassNameTree(CoreClassNameTree& classNameTree)
 	classNameTree.addClassName(CoreModifiable::myClassID, CoreModifiable::myRuntimeType);
 }
 
-//! static method : return the set of all instances of the given type
-void CoreModifiable::GetInstances(const KigsID& cid, std::set<CoreModifiable*>& instances, bool exactTypeOnly, bool only_one, bool getref)
-{
-	instances.clear();
-	CoreTreeNode* node = KigsCore::GetTypeNode(cid);
-	if (node) node->getInstances(instances, !exactTypeOnly, only_one, getref);
-}
-
-CoreModifiable* CoreModifiable::GetFirstInstance(const KigsID& cid, bool exactTypeOnly, bool getref)
-{
-	std::set<CoreModifiable*> insts;
-	GetInstances(cid, insts, exactTypeOnly, true, getref);
-	if (insts.size()) return *insts.begin();
-	return nullptr;
-}
-
 //! static method : return the set of all root instances of the given type 
-void CoreModifiable::GetRootInstances(const KigsID& cid, std::set<CoreModifiable*>& instances, bool exactTypeOnly, bool getref)
+std::vector<CMSP> CoreModifiable::GetRootInstances(const KigsID& cid, bool exactTypeOnly)
 {
-	instances.clear();
+	std::vector<CMSP> instances;
 	CoreTreeNode* node = KigsCore::GetTypeNode(cid);
-	if (node) node->getRootInstances(instances, !exactTypeOnly, getref);
+	if (node) node->getRootInstances(instances, !exactTypeOnly);
+
+	return instances;
 }
 
-// runtime ID is "name:type:pointer:uid"
-void CoreModifiable::GetInstanceByRuntimeID(const std::string& runtimeID, std::set<CoreModifiable*>& instances, bool getref)
-{
-	instances.clear();
 
-	std::string cid = "";
-	std::string name = "";
-	std::string searchstring = runtimeID;
-
-	uptr pointer;
-	unsigned int  uid;
-
-	size_t lastpos = 0;
-	int i;
-	for (i = 0; i < 2; i++)
-	{
-		size_t result = runtimeID.find(':', lastpos);
-		if (result == std::string::npos)
-		{
-			return;
-		}
-		searchstring = runtimeID.substr(lastpos, result - lastpos);
-		switch (i)
-		{
-		case 0:
-			name = runtimeID.substr(0, result);
-			//sscanf(searchstring.c_str(),"%s",name);
-			break;
-		case 1:
-			if (searchstring == "")
-			{
-				searchstring = "CoreModifiable";
-			}
-
-			cid = searchstring;
-			//	sscanf(searchstring.c_str(),"%s",cid);
-			break;
-		}
-		lastpos = result + 1;
-	}
-	searchstring = runtimeID.substr(lastpos, runtimeID.size() - lastpos);
-	sscanf(searchstring.c_str(), "%lu:%u", &pointer, &uid);
-
-	std::set<CoreModifiable*> searchinstances;
-	// retreive name and type
-	GetInstancesByName(cid, name, searchinstances, false, false, getref);
-
-	// in searched instances search the one we want
-
-	std::set<CoreModifiable*>::const_iterator itinst;
-	for (itinst = searchinstances.begin(); itinst != searchinstances.end(); ++itinst)
-	{
-		if ((*itinst)->getUID() == uid)
-		{
-			uptr localpointer = (uptr)(*itinst);
-			if (localpointer == pointer)
-			{
-				instances.insert((CoreModifiable*)*itinst);
-				break;
-			}
-			else if (getref)
-			{
-				(*itinst)->Destroy(); // release previously set ref
-			}
-		}
-	}
-
-	if (getref)
-	{
-		++itinst;
-		for (; itinst != searchinstances.end(); ++itinst)
-		{
-			(*itinst)->Destroy(); // release previously set ref
-		}
-	}
-}
-
-//! static method : return the set of all instances of the given type matching the correct name (use NameComparator)
-void CoreModifiable::GetInstancesByName(const KigsID& cid, const std::string& name, std::set<CoreModifiable*>& instances, bool exactTypeOnly, bool only_one, bool getref)
-{
-	instances.clear();
-	CoreTreeNode* node = KigsCore::GetTypeNode(cid);
-	if (node) node->getInstancesByName(instances, !exactTypeOnly, name, only_one, getref);
-}
-
-CoreModifiable* CoreModifiable::GetFirstInstanceByName(const KigsID& cid, const std::string& name, bool exactTypeOnly, bool getref)
-{
-	std::set<CoreModifiable*> insts;
-	GetInstancesByName(cid, name, insts, exactTypeOnly, true, getref);
-	if (insts.size()) return *insts.begin();
-	return nullptr;
-}
-
-std::vector<CMSP> CoreModifiable::FindInstances(const KigsID& id, bool exact_type_only)
+std::vector<CMSP> CoreModifiable::GetInstances(const KigsID& id, bool exact_type_only)
 {
 	std::vector<CMSP> result;
 	CoreTreeNode* node = KigsCore::GetTypeNode(id);
@@ -3501,7 +3318,7 @@ std::vector<CMSP> CoreModifiable::FindInstances(const KigsID& id, bool exact_typ
 	return result;
 }
 
-std::vector<CMSP> CoreModifiable::FindInstancesByName(const KigsID& id, const std::string& name, bool exact_type_only)
+std::vector<CMSP> CoreModifiable::GetInstancesByName(const KigsID& id, const std::string& name, bool exact_type_only)
 {
 	std::vector<CMSP> result;
 	CoreTreeNode* node = KigsCore::GetTypeNode(id);
@@ -3509,7 +3326,7 @@ std::vector<CMSP> CoreModifiable::FindInstancesByName(const KigsID& id, const st
 	return result;
 }
 
-CMSP CoreModifiable::FindFirstInstance(const KigsID& id, const std::string& name, bool exact_type_only)
+CMSP CoreModifiable::GetFirstInstance(const KigsID& id,  bool exact_type_only)
 {
 	std::vector<CMSP> result;
 	CoreTreeNode* node = KigsCore::GetTypeNode(id);
@@ -3518,7 +3335,7 @@ CMSP CoreModifiable::FindFirstInstance(const KigsID& id, const std::string& name
 	return nullptr;
 }
 
-CMSP CoreModifiable::FindFirstInstanceByName(const KigsID& id, const std::string& name, bool exact_type_only)
+CMSP CoreModifiable::GetFirstInstanceByName(const KigsID& id, const std::string& name, bool exact_type_only)
 {
 	std::vector<CMSP> result;
 	CoreTreeNode* node = KigsCore::GetTypeNode(id);

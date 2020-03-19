@@ -46,8 +46,7 @@ void	Sample1::ProtectedInit()
 	localtimer->Init();
 
 	// search all instances of Timer
-	std::set<CoreModifiable*> alltimers;
-	GetInstances("Timer", alltimers);
+	std::vector<CMSP> alltimers=	GetInstances("Timer");
 
 	for (auto i : alltimers)
 	{
@@ -82,7 +81,7 @@ void	Sample1::ProtectedInit()
 void	Sample1::ProtectedUpdate()
 {
 	// search first instance of SimpleSampleClass
-	CoreModifiable* simpleclass = GetFirstInstance("SimpleSampleClass");
+	CMSP simpleclass = GetFirstInstance("SimpleSampleClass");
 
 
 	// call SimpleSampleClass AddValue method directly on CoreModifiable
@@ -125,7 +124,7 @@ void	Sample1::ProtectedUpdate()
 void	Sample1::ProtectedClose()
 {
 	// destroy simpleclass (and recursively  all its sons) 
-	CoreModifiable* simpleclass = GetFirstInstance("SimpleSampleClass");
+	CMSP simpleclass = GetFirstInstance("SimpleSampleClass");
 	// here we need to destroy simpleclass only because we get a ref on it in ProtectedInit
 	// to keep it alive even if it was not add to another instance (with addItem)
 	simpleclass->Destroy();

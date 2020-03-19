@@ -88,7 +88,7 @@ void DataDrivenSequence::InitModifiable()
 	CMSP& currentSequence = currentManager->GetCurrentSequence();
 
 	// first search for a transition
-	kstl::set<CoreModifiable*>	instances;
+	kstl::vector<CMSP>	instances;
 	GetSonInstancesByType("DataDrivenTransition", instances);
 
 	if (instances.size() == 0) // if no transition, destroy previous scene else everything is managed by transition
@@ -122,13 +122,12 @@ void DataDrivenSequence::InitModifiable()
 
 	ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
 
-	kstl::set<CoreModifiable*>::iterator	it = instances.begin();
-	kstl::set<CoreModifiable*>::iterator	itend = instances.end();
+	kstl::vector<CMSP>::iterator	it = instances.begin();
+	kstl::vector<CMSP>::iterator	itend = instances.end();
 
 	for (; it != itend; ++it)
 	{
-		CMSP toAdd(*it, GetRefTag{});
-		scenegraph->addItem(toAdd);
+		scenegraph->addItem(*it);
 	}
 }
 
@@ -221,21 +220,21 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 		myIsFirstUpdate = false;
 
 
-		kstl::set<CoreModifiable*>	instances;
+		kstl::vector<CMSP>	instances;
 		//CoreModifiable* currentSequence = currentApp->GetCurrentSequence();
 		if (myPreviousSequence)
 		{
 			if (myPreviousSequence->isSubType("Scene3D"))
 			{
-				instances.insert(myPreviousSequence.get());
+				instances.push_back(myPreviousSequence);
 			}
 			else
 			{
 				myPreviousSequence->GetSonInstancesByType("Scene3D", instances, true);
 			}
 			// block all layers 
-			kstl::set<CoreModifiable*>::iterator	it = instances.begin();
-			kstl::set<CoreModifiable*>::iterator	itend = instances.end();
+			kstl::vector<CMSP>::iterator	it = instances.begin();
+			kstl::vector<CMSP>::iterator	itend = instances.end();
 
 			for (; it != itend; ++it)
 			{
@@ -258,8 +257,8 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 		// search father sequence for layers
 		GetParents()[0]->GetSonInstancesByType("Scene3D", instances);
 
-		kstl::set<CoreModifiable*>::iterator	it = instances.begin();
-		kstl::set<CoreModifiable*>::iterator	itend = instances.end();
+		kstl::vector<CMSP>::iterator	it = instances.begin();
+		kstl::vector<CMSP>::iterator	itend = instances.end();
 
 		for (; it != itend; ++it)
 		{
@@ -314,11 +313,11 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 				myPreviousSequence->UnInit();
 				myPreviousSequence = 0;
 			}
-			kstl::set<CoreModifiable*>	instances;
+			kstl::vector<CMSP>	instances;
 			GetParents()[0]->GetSonInstancesByType("Abstract2DLayer", instances);
 
-			kstl::set<CoreModifiable*>::iterator	it = instances.begin();
-			kstl::set<CoreModifiable*>::iterator	itend = instances.end();
+			kstl::vector<CMSP>::iterator	it = instances.begin();
+			kstl::vector<CMSP>::iterator	itend = instances.end();
 
 			for (; it != itend; ++it)
 			{
@@ -585,11 +584,11 @@ void DataDrivenBaseApplication::ProtectedInit()
 	AppInit->setValue("SizeY", L_ScreenSizeY);
 
 	// retrieve rendering screen
-	kstl::set<CoreModifiable*>	instances;
+	kstl::vector<CMSP>	instances;
 	AppInit->GetSonInstancesByType("RenderingScreen", instances);
 	if (instances.size() == 1)
 	{
-		myRenderingScreen = (*instances.begin());
+		myRenderingScreen = instances[0].get();
 
 		myRenderingScreen->setValue("SizeX", L_ScreenSizeX);
 		myRenderingScreen->setValue("SizeY", L_ScreenSizeY);
