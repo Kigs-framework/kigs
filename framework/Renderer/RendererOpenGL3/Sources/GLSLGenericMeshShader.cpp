@@ -514,16 +514,16 @@ void	API3DGenericMeshShader::ChooseShader(TravState* state, unsigned int attribF
 
 		Active(state);
 		// add child uniform as default uniform
-		std::set<CoreModifiable*> instances;
+		std::vector<CMSP> instances;
 		CoreModifiable::GetSonInstancesByType("API3DUniformBase", instances);
 
 		if (instances.size())
 		{
-			std::set<CoreModifiable*>::iterator itr = instances.begin();
-			std::set<CoreModifiable*>::iterator end = instances.end();
+			std::vector<CMSP>::iterator itr = instances.begin();
+			std::vector<CMSP>::iterator end = instances.end();
 			for (; itr != end; ++itr)
 			{
-				PushUniform(static_cast<API3DUniformBase*>(*itr));
+				PushUniform(static_cast<API3DUniformBase*>((*itr).get()));
 			}
 		}
 		Deactive(0);

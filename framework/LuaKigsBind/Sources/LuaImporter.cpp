@@ -51,13 +51,13 @@ void LuaImporter::FinalizeImport(LuaIntf::LuaState L, ImportStruct& import)
 		if ((toconnect.sender != "this") && (toconnect.sender != "self")) // connection is son of a coremodifiable, one of the instance can be set at this or self
 		{
 			// else search instance in hierachy
-			pia = SearchInstance(toconnect.sender, toconnect.currentNode);
+			pia = SearchInstance(toconnect.sender, toconnect.currentNode).get();
 		}
 
 		if ((toconnect.receiver != "this") && (toconnect.receiver != "self")) // connection is son of a coremodifiable, one of the instance can be set at this or self
 		{
 			// else search instance in hierachy
-			pib = SearchInstance(toconnect.receiver, toconnect.currentNode);
+			pib = SearchInstance(toconnect.receiver, toconnect.currentNode).get();
 		}
 
 		if (pia && pib)
@@ -205,12 +205,11 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 		}
 		else
 		{
-			std::set<CoreModifiable*> instances;
-			GetInstancesByName(ref_type, name, instances);
+			std::vector<CMSP> instances=GetInstancesByName(ref_type, name);
 
 			if (instances.size())
 			{
-				current = CMSP(*instances.begin(), GetRefTag{});
+				current = instances[0];
 				import.loaded.push_back(current.get());
 				import.rootObj.push_back(current.get());
 			}
@@ -265,7 +264,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 	}
 	else if (infos.has("path"))
 	{
-		current = CMSP(SearchInstance(infos["name"].value<std::string>(), parent), GetRefTag{});
+		current = SearchInstance(infos["name"].value<std::string>(), parent);
 		if (current)
 		{
 			needinit = false;

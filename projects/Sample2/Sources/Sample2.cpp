@@ -67,13 +67,13 @@ void	Sample2::ProtectedInit()
 void	Sample2::ProtectedUpdate()
 {
 	// retrieve instances in the instances tree using "path" 
-	CoreModifiable* simpleclass2 = GetInstanceByPath("SimpleSampleClass:simpleclass1/simpleclass2");
-	CoreModifiable* simpleclass1 = simpleclass2->GetInstanceByPath("/Sample2/SimpleSampleClass:simpleclass1");
-	CoreModifiable* simpleclass3 = simpleclass2->GetInstanceByPath("../simpleclass3");
+	CMSP simpleclass2 = GetInstanceByPath("SimpleSampleClass:simpleclass1/simpleclass2");
+	CMSP simpleclass1 = simpleclass2->GetInstanceByPath("/Sample2/SimpleSampleClass:simpleclass1");
+	CMSP simpleclass3 = simpleclass2->GetInstanceByPath("../simpleclass3");
 	simpleclass3 = GetInstanceByPath("*/simpleclass3");
 
 	// retreive all instances named "simpleclass1" in sons list
-	std::set<CoreModifiable*> instances;
+	std::vector<CMSP> instances;
 	GetSonInstancesByName("CoreModifiable", "simpleclass1",instances);
 	printf("GetSonInstancesByName result :\n");
 	for (auto i : instances)
@@ -106,7 +106,7 @@ void	Sample2::ProtectedUpdate()
 	}
 
 	// retreive all instances named "simpleclass1" at global scope
-	GetInstancesByName("CoreModifiable", "simpleclass1", instances);
+	instances = GetInstancesByName("CoreModifiable", "simpleclass1");
 	printf("GetInstancesByName result :\n");
 	for (auto i : instances)
 	{
@@ -115,7 +115,7 @@ void	Sample2::ProtectedUpdate()
 	instances.clear();
 	// retreive all instances of type SimpleSampleClassBase at global scope
 	// WARNING : Here the type is the instance factory type
-	GetInstances("SimpleSampleClass", instances);
+	instances = GetInstances("SimpleSampleClass");
 	printf("GetInstances result :\n");
 	for (auto i : instances)
 	{

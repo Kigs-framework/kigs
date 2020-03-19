@@ -14,10 +14,9 @@ IMPLEMENT_CLASS_INFO(ModuleImGui)
 ImGuiLayer* ModuleImGui::CreateDebugLayer(kfloat bg_opacity)
 {
 	SP<ImGuiLayer> DEBUG_ImGuiDebugLayer;
-	kstl::set<CoreModifiable*> insts;
-	CoreModifiable::GetInstancesByName("ImGuiLayer", "imgui_debug_layer", insts);
+	kstl::vector<CMSP> insts = 	CoreModifiable::GetInstancesByName("ImGuiLayer", "imgui_debug_layer");
 	if (insts.size())
-		DEBUG_ImGuiDebugLayer = CMSP((ImGuiLayer*)*insts.begin(), GetRefTag{});
+		DEBUG_ImGuiDebugLayer = insts[0];
 	else
 	{
 		DEBUG_ImGuiDebugLayer = KigsCore::GetInstanceOf("imgui_debug_layer", "ImGuiLayer");

@@ -35,19 +35,18 @@ void	PlatformBaseApplication::Resume()
 
 		//RendererOpenGLES::ReinitModuleRenderer();
 
-		kstl::set<CoreModifiable*>	instances;
-		CoreModifiable::GetInstances("RenderingScreen", instances);
+		kstl::vector<CMSP>	instances = CoreModifiable::GetInstances("RenderingScreen");
 		(*instances.begin())->CallMethod(LABEL_TO_ID(ResetContext), NULL);
 
-		kstl::set<CoreModifiable*>::iterator itInstances;
+		kstl::vector<CMSP>::iterator itInstances;
 
 		// then reinit layers
 		instances.clear();
-		CoreModifiable::GetInstances("Base2DLayer", instances);
+		instances = CoreModifiable::GetInstances("Base2DLayer");
 
 		for (itInstances = instances.begin(); itInstances != instances.end(); itInstances++)
 		{
-			CoreModifiable* current = (CoreModifiable*)(*itInstances);
+			CMSP& current = (*itInstances);
 			current->setValue("Reinit", true);
 		}
 		instances.clear();
@@ -62,11 +61,11 @@ void	PlatformBaseApplication::Resume()
 
 		// then reinit sprites
 		instances.clear();
-		CoreModifiable::GetInstances("BaseSprite", instances);
+		instances = CoreModifiable::GetInstances("BaseSprite");
 
 		for (itInstances = instances.begin(); itInstances != instances.end(); itInstances++)
 		{
-			CoreModifiable* current = (CoreModifiable*)(*itInstances);
+			CMSP& current = (*itInstances);
 			current->setValue("Reinit", true);
 		}
 	}

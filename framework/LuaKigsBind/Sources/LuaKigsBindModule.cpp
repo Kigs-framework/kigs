@@ -446,11 +446,10 @@ void LuaKigsBindModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAt
 void LuaKigsBindModule::Close()
 {
     BaseClose();
-	kstl::set<CoreModifiable*> instances;
-	CoreModifiable::GetInstances("LuaBehaviour", instances);
-	kstl::set<CoreModifiable*>::iterator it = instances.begin();
+	kstl::vector<CMSP> instances =	CoreModifiable::GetInstances("LuaBehaviour");
+	kstl::vector<CMSP>::iterator it = instances.begin();
 	while (it != instances.end()) {
-		LuaBehaviour* behaviour = (LuaBehaviour*)*it;
+		LuaBehaviour* behaviour = (LuaBehaviour*)(*it).get();
 		behaviour->UninitModifiable();
 		it++;
 	}

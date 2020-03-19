@@ -33,10 +33,9 @@ void UIScrollView::InitModifiable()
 		myVision->setValue("SizeX", mySizeX);
 		myVision->setValue("SizeY", mySizeY);
 
-		kstl::set<CoreModifiable*>	instances;
-		GetInstances("ModuleInput", instances);
+		kstl::vector<CMSP>	instances=	GetInstances("ModuleInput");
 		KIGS_ASSERT(instances.size() == 1);
-		myInput = (ModuleInput*)(*instances.begin());
+		myInput = (ModuleInput*)(instances[0].get());
 
 		return;
 	}

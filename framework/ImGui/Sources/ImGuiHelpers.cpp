@@ -20,16 +20,14 @@ namespace ImGui
 	
 	bool CameraCombo(const char* label, int* current_item, CoreModifiable** camera_result)
 	{
-		kstl::set<CoreModifiable*> insts;
-		CoreModifiable::GetInstances("Camera", insts);
-		
+		kstl::vector<CMSP> insts=CoreModifiable::GetInstances("Camera");
 		
 		if(ImGui::Combo(label, current_item, getter, (void*)&insts, (int)insts.size(), 10))
 		{
 			int i = 0;
-			for(auto cm : insts)
+			for(auto& cm : insts)
 			{
-				auto cam = (Camera*)cm;
+				auto cam = (Camera*)cm.get();
 				if(*current_item == -1)
 				{
 					bool b = false;

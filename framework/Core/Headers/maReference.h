@@ -263,7 +263,7 @@ protected:
 		CMSP obj = nullptr;
 		if (!_value.search_string.empty())
 		{
-			obj = CoreModifiable::SearchInstanceSP(_value.search_string, _owner);
+			obj = CoreModifiable::SearchInstance(_value.search_string, _owner);
 		}
 		else
 		{

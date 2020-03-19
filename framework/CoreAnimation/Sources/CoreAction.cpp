@@ -19,10 +19,10 @@ CoreModifiable*	CoreAction::checkSubTarget(kstl::string& paramstring)
 		found -= 1;
 		kstl::string CoreModifiablePath = paramstring.substr(0, found);
 		paramstring = paramstring.substr(found + 2, paramstring.length() - found - 2);
-		CoreModifiable* findTarget = myTarget->GetInstanceByPath(CoreModifiablePath);
-		if (findTarget != 0)
+		CMSP findTarget = myTarget->GetInstanceByPath(CoreModifiablePath);
+		if (findTarget)
 		{
-			return findTarget;
+			return findTarget.get();
 		}
 
 		myTargetPath = CoreModifiablePath;

@@ -573,19 +573,19 @@ int CoreModifiableAddHook(CoreModifiable* obj, lua_State* lua)
 	}
 	else if(L.isFunction(3))
 	{
-		kstl::set<CoreModifiable*> insts;
+		kstl::vector<CMSP> insts;
 		obj->GetSonInstancesByType("LuaNotificationHook", insts, false);
 		
-		auto hook_obj = std::find_if(insts.begin() ,insts.end(), [notif](CoreModifiable* o){ return o->getName() == notif;});
+		auto hook_obj = std::find_if(insts.begin() ,insts.end(), [notif](CMSP& o){ return o->getName() == notif;});
 		SP<LuaNotificationHook> hook = nullptr;
 		if(hook_obj != insts.end())
 		{
-			hook = SP<LuaNotificationHook>((LuaNotificationHook*)*hook_obj, StealRefTag{});
+			hook = (*hook_obj);
 		}
 		else
 		{
 			hook = KigsCore::GetInstanceOf(notif, "LuaNotificationHook");
-			obj->addItem((CMSP&)hook);
+			obj->addItem(hook);
 		}
 		
 		hook->L = L;
@@ -657,47 +657,35 @@ int CoreModifiableAddDynamicAttribute(CoreModifiable* obj, lua_State* lua)
 
 
 
-kstl::vector<CoreModifiable*> CoreModifiableByName(const char* name)
+kstl::vector<CMSP> CoreModifiableByName(const char* name)
 {
-	kstl::set<CoreModifiable*> insts;
-	CoreModifiable::GetInstancesByName("CoreModifiable", name, insts);
-	kstl::vector<CoreModifiable*> result;result.reserve(insts.size());
-	for(auto cm : insts) result.push_back(cm);
-	return result;
+	return	CoreModifiable::GetInstancesByName("CoreModifiable", name);
 }
 
-kstl::vector<CoreModifiable*> CoreModifiableByType(const char* type)
+kstl::vector<CMSP> CoreModifiableByType(const char* type)
 {
-	kstl::set<CoreModifiable*> insts;
-	CoreModifiable::GetInstances((std::string)type, insts);
-	kstl::vector<CoreModifiable*> result; result.reserve(insts.size());
-	for(auto cm : insts) result.push_back(cm);
-	return result;
+	return CoreModifiable::GetInstances((std::string)type);
 }
 
-CoreModifiable* CoreModifiableGet(const char* name)
+CMSP CoreModifiableGet(const char* name)
 {
 	return CoreModifiable::GetFirstInstanceByName("CoreModifiable", name);
 }
 
 
-kstl::vector<CoreModifiable*> CoreModifiableGetSonByType(CoreModifiable* obj, const char* type, bool rec)
+kstl::vector<CMSP> CoreModifiableGetSonByType(CoreModifiable* obj, const char* type, bool rec)
 {
-	kstl::set<CoreModifiable*> insts;
+	kstl::vector<CMSP> insts;
 	obj->GetSonInstancesByType((std::string)type, insts, rec);
-	kstl::vector<CoreModifiable*> result; result.reserve(insts.size());
-	for(auto cm : insts) result.push_back(cm);
-	return result;
+	return insts;
 }
 
 
-kstl::vector<CoreModifiable*> CoreModifiableGetSonByName(CoreModifiable* obj, const char* name, bool rec)
+kstl::vector<CMSP> CoreModifiableGetSonByName(CoreModifiable* obj, const char* name, bool rec)
 {
-	kstl::set<CoreModifiable*> insts;
+	kstl::vector<CMSP> insts;
 	obj->GetSonInstancesByName("CoreModifiable", name, insts, rec);
-	kstl::vector<CoreModifiable*> result; result.reserve(insts.size());
-	for(auto cm : insts) result.push_back(cm);
-	return result;
+	return insts;
 }
 
 
