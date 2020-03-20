@@ -225,16 +225,15 @@ void	ModernMeshBuilder::OptimiseForCache()
 		vl[i].newIndex = -1;
 	}
 
-	unsigned int vt = myTriangles.size(); // vt is indexes count ( 3 * triangle count )
-	unsigned int triangleCount = vt / 3;
+	unsigned int vt = myTriangles.size(); 
 
 	ModernMesh::Triangle<unsigned int>*	triangleArray = reinterpret_cast< ModernMesh::Triangle<unsigned int>*>(myTriangles.getArray());
 
-	unsigned int*	sortedTriangleIndex = new unsigned int[triangleCount];
+	unsigned int*	sortedTriangleIndex = new unsigned int[vt];
 
 	std::vector<SortTriangle>	sortedTriangleList;
 
-	for (i = 0; i < triangleCount; i++)
+	for (i = 0; i < vt; i++)
 	{
 		// increment use count for each vertice used by current triangle
 		vl[triangleArray[i].indices[0]].useCount++;
@@ -254,7 +253,7 @@ void	ModernMeshBuilder::OptimiseForCache()
 	// create an array of sorted triangle indexes
 	std::sort(sortedTriangleList.begin(), sortedTriangleList.end());
 	auto itSortTriangle = sortedTriangleList.begin();
-	for (i = 0; i < triangleCount; i++)
+	for (i = 0; i < vt; i++)
 	{
 		sortedTriangleIndex[i] = (*itSortTriangle).Index;
 		++itSortTriangle;
@@ -267,7 +266,7 @@ void	ModernMeshBuilder::OptimiseForCache()
 
 	std::vector<OptimiseTriangle>	optimisedTriangleList;
 
-	int remainingTriangleCount = (int)triangleCount;
+	int remainingTriangleCount = (int)vt;
 	int currentChunkStart = 0;
 	// optimise triangle chunk one by one (as brute force is used)
 	while (remainingTriangleCount)
