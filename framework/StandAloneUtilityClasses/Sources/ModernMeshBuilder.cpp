@@ -36,6 +36,7 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 	myVertexBuilder.clear();
 	myVertexDesc.clear();
 	myVertexMergeBarriers.clear();
+	myIndicesMergeBarriers.clear();
 
 	// parse descrition to get vertex size
 	myCurrentVertexSize = 0;
