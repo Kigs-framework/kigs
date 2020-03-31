@@ -440,22 +440,34 @@ protected:
 // operator [] needs to be overloaded on vectors and maps
 inline CoreItemSP CoreItemSP::operator[](int i) const
 {
-	return myPointer->operator[](i);
+	if(myPointer)
+		return myPointer->operator[](i);
+
+	return nullptr;
 }
 
 inline CoreItemSP CoreItemSP::operator[](const char* key) const
 {
-	return myPointer->operator[](key);
+	if (myPointer)
+		return myPointer->operator[](key);
+
+	return nullptr;
 }
 
 inline CoreItemSP CoreItemSP::operator[](const kstl::string& key) const
 {
-	return myPointer->operator[](key);
+	if (myPointer)
+		return myPointer->operator[](key);
+
+	return nullptr;
 }
 
 inline CoreItemSP CoreItemSP::operator[](const usString& key) const
 {
-	return myPointer->operator[](key);
+	if (myPointer)
+		return myPointer->operator[](key);
+
+	return nullptr;
 }
 
 inline CoreItemSP::operator bool() const

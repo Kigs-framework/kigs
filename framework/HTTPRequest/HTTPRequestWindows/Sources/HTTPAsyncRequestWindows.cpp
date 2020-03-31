@@ -147,8 +147,11 @@ int HTTPAsyncRequestWindows::WriteResponse()
 				memcpy(writebuff, (*it).mBuffer, (*it).mSize);
 				writebuff += (*it).mSize;
 			}
-			myReceivedBuffer = new CoreRawBuffer(ReceivedRawBuffer, ReceivedRawBufferSize);
-			myReceivedBufferRef = myReceivedBuffer;
+
+			CoreRawBuffer*	tmp= new CoreRawBuffer(ReceivedRawBuffer, ReceivedRawBufferSize);
+			myReceivedBuffer = tmp;
+			tmp->Destroy();
+
 		}
 		for (it = myBufferVector.begin(); it != myBufferVector.end(); it++)
 		{
