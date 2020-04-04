@@ -263,6 +263,11 @@ public:
 	virtual void set(const kstl::string& key, const CoreItemSP& toinsert) {};
 	virtual void set(const usString& key, const CoreItemSP& toinsert) {};
 
+	virtual void erase(int key) {};
+	virtual void erase(const kstl::string& key) {};
+	virtual void erase(const usString& key) {};
+
+
 	typedef size_t size_type;
 
 	virtual operator bool() const;
