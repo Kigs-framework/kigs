@@ -253,7 +253,7 @@ public:
 		return strlen(mString);
 	}
 
-	usString	substr(int pos, int len)
+	usString	substr(int pos, int len) const
 	{
 		usString result;
 		int origlen = strlen(mString);

@@ -157,7 +157,42 @@ struct LazyContent;
 struct ModifiableMethodStruct;
 class UpgradorBase;
 
-typedef SmartPointer<CoreModifiable> CMSP;
+// specialized smart pointer with a few more features
+class CMSP : public SmartPointer<CoreModifiable>
+{
+public:
+	using SmartPointer<CoreModifiable>::SmartPointer;
+	inline CMSP operator [](const std::string& son) const;
+
+	template<size_t _Size>
+	inline CMSP operator [](const char(&son)[_Size]) const;
+
+	// CoreModifiable Attributes management
+	class AttributeHolder
+	{
+
+	protected:
+		CoreModifiableAttribute* mAttr=nullptr;
+	public: 
+
+		AttributeHolder() : mAttr(nullptr) {};
+		AttributeHolder(CoreModifiableAttribute* attr) : mAttr(attr) {};
+		AttributeHolder(const AttributeHolder& other) : mAttr(other.mAttr) {};
+
+		template<typename T>
+		inline operator T() const;
+
+		template<typename T>
+		inline const AttributeHolder& operator =(T toset) const;
+
+		template<typename T>
+		inline const bool operator ==(T totest) const;
+	};
+
+
+	inline AttributeHolder operator()(const std::string& son) const;
+	
+};
 
 class ModifiableItemStruct
 {
@@ -1284,8 +1319,35 @@ protected:
 	CoreModifiable*							m_owner;
 };
 
+// CMSP methods
+
+inline CMSP CMSP::operator [](const std::string& son) const
+{
+	if (myPointer)
+		return myPointer->GetFirstSonByName("CoreModifiable", son);
+	return nullptr;
+}
+
+template<size_t _Size>
+inline CMSP CMSP::operator [](const char(&son)[_Size]) const
+{
+	if (myPointer)
+		return myPointer->GetFirstSonByName("CoreModifiable", son);
+	return nullptr;
+}
 
 
+inline CMSP::AttributeHolder CMSP::operator()(const std::string& attr) const
+{
+	
+	if (myPointer)
+	{
+		CoreModifiableAttribute* attrib = myPointer->getAttribute(attr);
+		return AttributeHolder(attrib);
+	}
+
+	return AttributeHolder(nullptr);
+}
 
 struct LazyContent
 {

@@ -120,7 +120,7 @@ CoreModifiableAttribute* JSonFileParserBase<usString, US16ParserUtils>::getNewSt
 }
 
 template <>
-void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(kstl::string strObjName, kstl::string objparamValue)
+void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(const kstl::string& strObjName,const kstl::string& objparamValue)
 {
 	CoreModifiableAttribute* Value;
 	kstl::string	strvalue = objparamValue;
@@ -169,7 +169,7 @@ void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(ks
 }
 
 template <>
-void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(usString strObjName, usString objparamValue)
+void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const usString& strObjName, const usString& objparamValue)
 {
 	CoreModifiableAttribute* Value;
 	usString	strvalue = objparamValue;
@@ -404,10 +404,12 @@ CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromStr
 	myDictionaryFromJson = CreateDictionnaryFromJSONInstance();
 	myDelegateObject = myDictionaryFromJson;
 
-	char * copybuffer = new char[GetStringByteSize(jsonString)];
-	memcpy(copybuffer, GetStringByteBuffer(jsonString), GetStringByteSize(jsonString));
+	unsigned int byteSize = GetStringByteSize(jsonString);
 
-	CoreRawBuffer*	Buff = new CoreRawBuffer((void*)copybuffer, GetStringByteSize(jsonString));
+	char * copybuffer = new char[byteSize];
+	memcpy(copybuffer, GetStringByteBuffer(jsonString), byteSize);
+
+	CoreRawBuffer*	Buff = new CoreRawBuffer((void*)copybuffer, byteSize);
 
 	InitParserFromString(Buff);
 
@@ -758,7 +760,10 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 		{
 			kstl::string L_Key = (*(maString*)params[i]).const_ref();
 			idx = i+1;
-			if(params[idx]->getType() == ATTRIBUTE_TYPE::STRING)
+
+			auto paramType = params[idx]->getType();
+
+			if ((paramType == ATTRIBUTE_TYPE::STRING) || (paramType == ATTRIBUTE_TYPE::USSTRING))
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kstl::string>((*(maString*)params[idx])), StealRefTag{});
 
@@ -768,7 +773,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 
 			}
-			else if(params[idx]->getType() == ATTRIBUTE_TYPE::FLOAT)
+			else if(paramType == ATTRIBUTE_TYPE::FLOAT)
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])), StealRefTag{});
 				
@@ -778,7 +783,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 				
 			}
-			else if(params[idx]->getType() == ATTRIBUTE_TYPE::INT)
+			else if(paramType == ATTRIBUTE_TYPE::INT)
 			{
 				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])), StealRefTag{});
 				
@@ -788,7 +793,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 			
 			}
-			else if(params[idx]->getType() == ATTRIBUTE_TYPE::BOOL)
+			else if(paramType == ATTRIBUTE_TYPE::BOOL)
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
 
@@ -798,7 +803,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 
 			}
-			else if(params[idx]->getType() == ATTRIBUTE_TYPE::UINT)
+			else if(paramType == ATTRIBUTE_TYPE::UINT)
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])), StealRefTag{});
 
@@ -808,7 +813,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
 				
 			}
-			else if(params[idx]->getType() == ATTRIBUTE_TYPE::DOUBLE)
+			else if(paramType == ATTRIBUTE_TYPE::DOUBLE)
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])), StealRefTag{});
 
@@ -848,11 +853,11 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonObjectStart)
 {
 	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreMap<usString>(), StealRefTag{});
 
-	if (m_pCurrentObject)
+	if (!m_pCurrentObject.isNil())
 	{
 		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<usString>*)m_pCurrentObject.get())->set(*((maUSString*)params[0]), toAdd);
+			((CoreMap<usString>*)m_pCurrentObject.get())->set(((maUSString*)params[0])->const_ref(), toAdd);
 		}
 		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
@@ -891,17 +896,15 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonArrayStart)
 {
 	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreVector(), StealRefTag{});
 
-	if (m_pCurrentObject)
+	if (!m_pCurrentObject.isNil())
 	{
 		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<usString>*)m_pCurrentObject.get())->set(*((maUSString*)params[0]), toAdd);
-			toAdd->Destroy();
+			((CoreMap<usString>*)m_pCurrentObject.get())->set(((maUSString*)params[0])->const_ref(), toAdd);
 		}
 		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
 			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
-			toAdd->Destroy();
 		}
 	}
 	else // first object => add it twice
@@ -918,7 +921,6 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonArrayStart)
 
 DEFINE_METHOD(DictionaryFromJsonUTF16, JSonArrayEnd)
 {
-
 	if (m_vObjectStack.size() > 0)
 	{
 		m_vObjectStack.pop_back();
@@ -939,7 +941,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 	if (!params.empty())
 	{
 		bool L_IsVector = false;
-		if (m_pCurrentObject)
+		if (!m_pCurrentObject.isNil())
 		{
 			L_IsVector = (m_pCurrentObject->GetType() == CoreItem::COREVECTOR);
 		}
@@ -947,47 +949,76 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 		int idx = 0;
 		for (unsigned int i = 0; i < params.size(); i += 2)
 		{
-			usString L_Key = (const usString&)(*(maUSString*)params[i]);
+			usString L_Key = ((maUSString*)params[i])->const_ref();
 			idx = i + 1;
 
-			CoreItemSP L_Value(nullptr);
+			auto paramType = params[idx]->getType();
 
-			switch (params[idx]->getType())
+			if ((paramType == ATTRIBUTE_TYPE::STRING) || (paramType == ATTRIBUTE_TYPE::USSTRING))
 			{
-			case ATTRIBUTE_TYPE::STRING:
-				L_Value = CoreItemSP((CoreItem*)new CoreValue<kstl::string>((*(maString*)params[idx]).const_ref()), StealRefTag{});
-				break;
-			case ATTRIBUTE_TYPE::USSTRING:
-				L_Value = CoreItemSP((CoreItem*)new CoreValue<usString>((*(maUSString*)params[idx])), StealRefTag{});
-				break;
-			case ATTRIBUTE_TYPE::FLOAT:
-				L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])), StealRefTag{});
-				break;
-			case ATTRIBUTE_TYPE::INT:
-				L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])), StealRefTag{});
-				break;
-			case ATTRIBUTE_TYPE::BOOL:
-				L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
-				break;
-			case ATTRIBUTE_TYPE::UINT:
-				L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])), StealRefTag{});
-				break;
-			case ATTRIBUTE_TYPE::DOUBLE:
-				L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])), StealRefTag{});
-				break;
-			}
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<usString>(((maUSString*)params[idx])->const_ref()), StealRefTag{});
 
-			if (!L_Value.isNil())
-			{
 				if (L_IsVector)
 					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
 				else
 					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
+
+			}
+			else if (paramType == ATTRIBUTE_TYPE::FLOAT)
+			{
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])), StealRefTag{});
+
+				if (L_IsVector)
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+				else
+					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
+
+			}
+			else if (paramType == ATTRIBUTE_TYPE::INT)
+			{
+				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])), StealRefTag{});
+
+				if (L_IsVector)
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+				else
+					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
+
+			}
+			else if (paramType == ATTRIBUTE_TYPE::BOOL)
+			{
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
+
+				if (L_IsVector)
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+				else
+					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
+
+			}
+			else if (paramType == ATTRIBUTE_TYPE::UINT)
+			{
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])), StealRefTag{});
+
+				if (L_IsVector)
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+				else
+					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
+
+			}
+			else if (paramType == ATTRIBUTE_TYPE::DOUBLE)
+			{
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])), StealRefTag{});
+
+				if (L_IsVector)
+					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+				else
+					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
+
 			}
 		}
 	}
 
 	return false;
+
 }
 
 // force method creation
