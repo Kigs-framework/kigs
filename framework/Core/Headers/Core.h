@@ -438,6 +438,18 @@ public:
 	// management is done automatically
 	static void	addAsyncRequest(AsyncRequest*);
 
+	bool	hasAsyncRequestPending()
+	{
+		if (myAsyncRequestList)
+		{
+			if (myAsyncRequestList->size())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 protected:
 
 	// nullptr wrapper

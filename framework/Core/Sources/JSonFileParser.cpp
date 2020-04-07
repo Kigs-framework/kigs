@@ -408,7 +408,8 @@ CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromStr
 
 	char * copybuffer = new char[byteSize];
 	memcpy(copybuffer, GetStringByteBuffer(jsonString), byteSize);
-
+	// zero ended
+	copybuffer[byteSize - 1] = copybuffer[byteSize - 2] = 0;
 	CoreRawBuffer*	Buff = new CoreRawBuffer((void*)copybuffer, byteSize);
 
 	InitParserFromString(Buff);
