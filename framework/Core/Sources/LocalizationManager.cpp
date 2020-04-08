@@ -126,7 +126,7 @@ bool	LocalizationManager::ParseStringsFile(const char* pszFile)
 		fullfilenamehandle = pathManager->FindFullName(pszFile);
 	}
 	u64 size;
-	CoreRawBuffer* pBuffer=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),size);
+	CoreRawBuffer* pBuffer=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),size,2);
 
 	if(!pBuffer)
 	{

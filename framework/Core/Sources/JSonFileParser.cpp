@@ -90,7 +90,7 @@ void JSonFileParserBase<stringType,parserType>::InitParser(const kstl::string& f
 	SmartPointer<::FileHandle> fullfilenamehandle=pathManager->FindFullName(filename);
 
 	u64 size;
-	CoreRawBuffer* Buff=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),size);
+	CoreRawBuffer* Buff=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),size, GetStringCharSize());
 
 	if(Buff)
 	{
@@ -220,7 +220,8 @@ bool JSonFileParserBase<stringType, parserType>::Export(CoreMap<stringType>* a_v
 	SmartPointer<::FileHandle> L_File = Platform_fopen(a_fileName.c_str(), "wb");
 	if(L_File->myFile)
 	{
-		Platform_fwrite(GetStringByteBuffer(L_Buffer), GetStringCharSize(), GetStringByteSize(L_Buffer)-GetStringCharSize(), L_File.get());
+		// export buffer 
+		Platform_fwrite(GetStringByteBuffer(L_Buffer), 1, GetStringByteSize(L_Buffer)-GetStringCharSize(), L_File.get());
 		Platform_fclose(L_File.get());
 		return true;
 	}
