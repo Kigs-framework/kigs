@@ -55,7 +55,7 @@ int ASEMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
 
 	// first load txt file
 	u64 filelen;
-	m_data = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFileAsCharString(FileName.c_str(),filelen));
+	m_data = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFileAsCharString(FileName.c_str(),filelen,1));
 	if (m_data)
 	{
 

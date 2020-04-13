@@ -1,5 +1,6 @@
 #include "PrecompiledHeaders.h"
 #include "HTTPRequestModule.h"
+#include "ResourceDownloader.h"
 
 ModuleBase* PlatformHTTPRequestModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 
@@ -21,6 +22,8 @@ HTTPRequestModule::~HTTPRequestModule()
 void HTTPRequestModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"HTTPRequestModule",params);
+	DECLARE_FULL_CLASS_INFO(core, ResourceDownloader, ResourceDownloader, HTTPRequestModule);
+
 	RegisterDynamic(PlatformHTTPRequestModuleInit(core,params)); 	    
 }
 

@@ -86,6 +86,7 @@ public:
 	}
 	virtual bool setValue(kdouble value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_value = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; }
 	virtual bool setValue(const char* value) override { kstl::string localstr(value); return setValue(localstr); }
+	virtual bool setValue(const usString& value) override { kstl::string localstr(value); return setValue(localstr); }
 	virtual bool setValue(const kstl::string& value) override
 	{
 		if (this->isReadOnly()) { return false; }
@@ -277,6 +278,7 @@ public:
 	}
 	virtual bool setValue(kdouble value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_owner->SimpleCall(m_Setter,tmpValue);  DO_NOTIFICATION(notificationLevel);  return true; }
 	virtual bool setValue(const char* value) override { kstl::string localstr(value); return setValue(localstr); }
+	virtual bool setValue(const usString& value) override { kstl::string localstr(value); return setValue(localstr); }
 	virtual bool setValue(const kstl::string& value) override
 	{
 		if (this->isReadOnly()) { return false; }

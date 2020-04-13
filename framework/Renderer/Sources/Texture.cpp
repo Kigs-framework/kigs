@@ -56,7 +56,9 @@ void	Texture::InitModifiable()
 		{
 			if (!myIsText && !Load()) // text can be load
 			{
+#ifdef _DEBUG		
 				printf("%s not loaded !!!\n", myFileName.c_str());
+#endif
 				UninitModifiable();
 			}
 

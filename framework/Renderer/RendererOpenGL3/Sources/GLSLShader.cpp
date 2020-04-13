@@ -179,7 +179,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 			fullfilename = file->myFullFileName;
 		}
 		u64 length;
-		rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length);
+		rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length,1);
 		if (rawbuffer)
 		{
 			SrcTxt = (const char*)rawbuffer->buffer();
@@ -216,7 +216,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 			fullfilename = file->myFullFileName;
 		}
 		u64 length;
-		rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length);
+		rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length,1);
 		if (rawbuffer)
 		{
 			SrcTxt = (const char*)rawbuffer->buffer();

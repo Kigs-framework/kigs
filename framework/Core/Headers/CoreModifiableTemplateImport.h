@@ -843,7 +843,7 @@ void	CoreModifiable::InitLuaScript(XMLNodeTemplate< StringType>* currentNode, Co
 			code.erase(code.begin());
 
 			u64 size;
-			CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFileAsCharString(code.c_str(), size);
+			CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFileAsCharString(code.c_str(), size,1);
 			if (rawbuffer)
 			{
 				code = rawbuffer->buffer();

@@ -421,7 +421,7 @@ bool	XMLReaderFile::ProtectedReadFile(char* Buff,CoreModifiable*	delegateObject,
 bool	XMLReaderFile::ProtectedReadFile(FileHandle* file,CoreModifiable*	delegateObject )
 {
 	u64 size;
-	CoreRawBuffer* rawbuffer=ModuleFileManager::LoadFileAsCharString(file,size);
+	CoreRawBuffer* rawbuffer=ModuleFileManager::LoadFileAsCharString(file,size,1);
 
 	if(rawbuffer)
 	{
@@ -503,7 +503,7 @@ XMLStringRef* XMLReaderFile::ProtectedReadFile(CoreRawBuffer* buffer, char* enco
 XMLStringRef *XMLReaderFile::ProtectedReadFile( FileHandle * file )
 {
 	u64 size;
-	CoreRawBuffer* rawbuffer=ModuleFileManager::LoadFileAsCharString(file,size);
+	CoreRawBuffer* rawbuffer=ModuleFileManager::LoadFileAsCharString(file,size,1);
 
 	if(rawbuffer)
 	{

@@ -142,6 +142,19 @@ protected:
 		KIGS_ERROR("set called on CoreMapBase", 2);
 	}
 
+	virtual void erase(int key) override
+	{
+		KIGS_ERROR("erase called on CoreMapBase", 2);
+	}
+	virtual void erase(const kstl::string& key) override
+	{
+		KIGS_ERROR("erase called on CoreMapBase", 2);
+	}
+	virtual void erase(const usString& key) override
+	{
+		KIGS_ERROR("erase called on CoreMapBase", 2);
+	}
+
 	
 public:
 
@@ -280,6 +293,13 @@ public:
 	virtual inline void set(const kstl::string& key, const CoreItemSP& toinsert) override;
 
 	virtual inline void set(const usString& key, const CoreItemSP& toinsert) override;
+
+	virtual inline void erase(int key) override;
+
+	virtual inline void erase(const kstl::string& key) override;
+
+	virtual inline void erase(const usString& key) override;
+
 
 protected:
 
@@ -515,6 +535,100 @@ inline void CoreNamedMap<int>::set(const usString& key, const CoreItemSP& toinse
 	myMap[goodType] = toinsert;
 }
 
+// specialised erase
+template<>
+inline void CoreNamedMap<kstl::string>::erase(int key)
+{
+	kstl::string goodType;
+
+	char intstr[64];
+	sprintf(intstr, "%d", key);
+	goodType = intstr;
+
+	auto it=myMap.find(goodType);
+	if(it!= myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreNamedMap<usString>::erase(int key)
+{
+	usString goodType;
+
+	char intstr[64];
+	sprintf(intstr, "%d", key);
+	goodType = usString(intstr);
+
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreNamedMap<int>::erase(int key)
+{
+	int goodType = key;
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreNamedMap<kstl::string>::erase(const kstl::string& key)
+{
+	kstl::string goodType = key;
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreNamedMap<usString>::erase(const kstl::string& key)
+{
+	usString goodType = key;
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreNamedMap<int>::erase(const kstl::string& key)
+{
+	int goodType = 0;
+	sscanf(key.c_str(), "%d", &goodType);
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreNamedMap<kstl::string>::erase(const usString& key)
+{
+	kstl::string goodType = key.ToString();
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreNamedMap<usString>::erase(const usString& key)
+{
+	usString goodType = key;
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreNamedMap<int>::erase(const usString& key)
+{
+	kstl::string strkey = key.ToString();
+	int goodType = 0;
+	sscanf(strkey.c_str(), "%d", &goodType);
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
 
 
 template<class map_key>
@@ -540,6 +654,11 @@ public:
 
 	virtual inline void set(const usString& key, const CoreItemSP& toinsert) override;
 	
+	virtual inline void erase(int key) override;
+
+	virtual inline void erase(const kstl::string& key) override;
+
+	virtual inline void erase(const usString& key) override;
 };
 
 // specialized kstl::string
@@ -829,6 +948,100 @@ inline void CoreMap<int>::set(const usString& key, const CoreItemSP& toinsert)
 	myMap[goodType] = toinsert;
 }
 
+// specialised erase
+template<>
+inline void CoreMap<kstl::string>::erase(int key)
+{
+	kstl::string goodType;
+
+	char intstr[64];
+	sprintf(intstr, "%d", key);
+	goodType = intstr;
+
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreMap<usString>::erase(int key)
+{
+	usString goodType;
+
+	char intstr[64];
+	sprintf(intstr, "%d", key);
+	goodType = usString(intstr);
+
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreMap<int>::erase(int key)
+{
+	int goodType = key;
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreMap<kstl::string>::erase(const kstl::string& key)
+{
+	kstl::string goodType = key;
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreMap<usString>::erase(const kstl::string& key)
+{
+	usString goodType = key;
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreMap<int>::erase(const kstl::string& key)
+{
+	int goodType = 0;
+	sscanf(key.c_str(), "%d", &goodType);
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreMap<kstl::string>::erase(const usString& key)
+{
+	kstl::string goodType = key.ToString();
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreMap<usString>::erase(const usString& key)
+{
+	usString goodType = key;
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
+
+template<>
+inline void CoreMap<int>::erase(const usString& key)
+{
+	kstl::string strkey = key.ToString();
+	int goodType = 0;
+	sscanf(strkey.c_str(), "%d", &goodType);
+	auto it = myMap.find(goodType);
+	if (it != myMap.end())
+		myMap.erase(it);
+}
 
 
 #endif // _COREMAP_H
