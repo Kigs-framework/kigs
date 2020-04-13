@@ -136,6 +136,36 @@ public:
 		}
 	}
 
+	virtual void erase(int key) override
+	{
+		auto it = myVector.begin();
+		it += key;
+		if(it!= myVector.end())
+			myVector.erase(it);
+	}
+	virtual void erase(const kstl::string& key) override
+	{
+		if (key.size())
+		{
+			// TODO : check if key contains number ?
+		}
+		else
+		{
+			pop_back();
+		}
+	}
+	virtual void erase(const usString& key) override
+	{
+		if (key.length())
+		{
+			// TODO : check if key contains number ?
+		}
+		else
+		{
+			pop_back();
+		}
+	}
+
 
 	virtual ~CoreVectorBase()
 	{

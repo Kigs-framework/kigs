@@ -147,8 +147,11 @@ int HTTPAsyncRequestWindows::WriteResponse()
 				memcpy(writebuff, (*it).mBuffer, (*it).mSize);
 				writebuff += (*it).mSize;
 			}
-			myReceivedBuffer = new CoreRawBuffer(ReceivedRawBuffer, ReceivedRawBufferSize);
-			myReceivedBufferRef = myReceivedBuffer;
+
+			CoreRawBuffer*	tmp= new CoreRawBuffer(ReceivedRawBuffer, ReceivedRawBufferSize);
+			myReceivedBuffer = tmp;
+			tmp->Destroy();
+
 		}
 		for (it = myBufferVector.begin(); it != myBufferVector.end(); it++)
 		{
@@ -392,7 +395,7 @@ Error Code for the operation.
 		if (Error == ERROR_IO_PENDING)
 		{
 #ifdef _DEBUG
-			fprintf(stderr, "Waiting for HttpEndRequest to complete \n");
+			//fprintf(stderr, "Waiting for HttpEndRequest to complete \n");
 #endif
 		}
 		else
@@ -624,7 +627,7 @@ DWORD HTTPAsyncRequestWindows::RecvHeader(
 #ifdef _DEBUG
 		if (Error == ERROR_IO_PENDING)
 		{
-			fprintf(stderr, "Waiting for InternetReadFile to complete\n");
+			//fprintf(stderr, "Waiting for InternetReadFile to complete\n");
 		}
 		else
 		{
@@ -693,7 +696,7 @@ Error Code for the operation.
 #ifdef _DEBUG
 		if (Error == ERROR_IO_PENDING)
 		{
-			fprintf(stderr, "Waiting for InternetReadFile to complete\n");
+			//fprintf(stderr, "Waiting for InternetReadFile to complete\n");
 		}
 		else
 		{

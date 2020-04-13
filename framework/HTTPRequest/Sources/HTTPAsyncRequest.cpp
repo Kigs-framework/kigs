@@ -140,5 +140,5 @@ void HTTPAsyncRequest::protectedProcess()
 
 void HTTPAsyncRequest::ClearReceivedBuffer()
 {
-	myReceivedBuffer.ref() = nullptr;
+	//myReceivedBuffer = nullptr;
 }

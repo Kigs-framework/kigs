@@ -208,32 +208,45 @@ bool	AsciiParserUtilsTemplate<charType>::GetQuotationWord(AsciiParserUtilsTempla
 	while (!found)
 	{
 		// remove previous white space
-		while ((*p<(charType)' ') && p<myTextEnd)
+		while ((*p<=(charType)' ') && p<myTextEnd)
 		{
 			prevP = p;
 			p++;
 		}
 		// search first quotation mark (word Start)
-
-		while (((*p != (charType)'"') || (*prevP == (charType)'\\')) && p<myTextEnd)
+		// first quote can not be escaped 
+		while ((*p != (charType)'"') && (p<myTextEnd))
 		{
 			prevP = p;
 			p++;
 		}
 
 		charType *pWordStart = p;
-
+		bool EscapeChar = false;
 		if (p < myTextEnd)
 		{
 			// next character
 			prevP = p;
 			p++;
 		}
+		if (*prevP == (charType)'\\')
+		{
+			EscapeChar = !EscapeChar;
+		}
+
 		// search word end
-		while (((*p != (charType)'"') || (*prevP == (charType)'\\')) && p<myTextEnd)
+		while (((*p != (charType)'"') || (EscapeChar)) && p<myTextEnd)
 		{
 			prevP = p;
 			p++;
+			if (*prevP == (charType)'\\')
+			{
+				EscapeChar = !EscapeChar;
+			}
+			else
+			{
+				EscapeChar = false;
+			}
 		}
 		// second quotation mark is included in word
 		if (p < myTextEnd)
@@ -855,10 +868,20 @@ bool	AsciiParserUtilsTemplate<charType>::GetBlockExcludeString(AsciiParserUtilsT
 	charType  prevp = 0;
 	while (!found)
 	{
-		// search block start / end
-		while (*p != blkStart && *p != blkEnd && p < myTextEnd)
+		bool EscapeChar = false;
+		// search block start / end (not in quote)
+		while (((*p != blkStart && *p != blkEnd) || inQuote) && p < myTextEnd)
 		{
-			if ((*p == '"') && (prevp !='\\'))
+			// jmp escape char in quote
+			if ((inQuote) && (prevp == '\\'))
+			{
+				EscapeChar = !EscapeChar;
+			}
+			else
+			{
+				EscapeChar = false;
+			}
+			if ((*p == '"') && (EscapeChar == false))
 			{
 				inQuote = !inQuote;
 			}
@@ -866,51 +889,46 @@ bool	AsciiParserUtilsTemplate<charType>::GetBlockExcludeString(AsciiParserUtilsT
 			p++;
 		}
 
-		
+		// blkStart found
 		if (*p == blkStart)
 		{
 			prevp = *p;
 			p++;
-			if (!inQuote)
+
+			// first one ?
+			if (pBlockStart == 0)
 			{
-				if (pBlockStart == 0)
-				{
-					pBlockStart = p;
-					openingfound = 1;
-				}
-				else
-				{
-					openingfound++;
-				}
+				pBlockStart = p;
+				openingfound = 1;
+			}
+			else // only increment opening
+			{
+				openingfound++;
 			}
 		}
 
+		// blkEnd found
 		if (*p == blkEnd)
 		{
 			prevp = *p;
 			p++;
-			if (!inQuote)
+			if (pBlockStart)
 			{
-				if (pBlockStart)
+				openingfound--;
+				// this is the one corresponding to pBlockStart, search can stop here
+				if (openingfound == 0)
 				{
-					openingfound--;
+					pBlockEnd = p;
+					pBlockEnd -= 1;
+					int lsize = ((int)((unsigned char*)pBlockEnd - (unsigned char*)pBlockStart)) / sizeof(charType);
+					if (lsize >= 0)
+					{
+						result.Set(pBlockStart, lsize);
+						found = true;
+					}
 				}
 			}
 		}
-
-		if (openingfound == 0)
-		{
-			pBlockEnd = p;
-			pBlockEnd -= 1;
-			int lsize = ((int)((unsigned char*)pBlockEnd - (unsigned char*)pBlockStart)) / sizeof(charType);
-			if (lsize >= 0)
-			{
-				result.Set(pBlockStart, lsize);
-				found = true;
-			}
-		}
-
-		myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
 
 		if (p >= myTextEnd)
 		{
@@ -918,6 +936,9 @@ bool	AsciiParserUtilsTemplate<charType>::GetBlockExcludeString(AsciiParserUtilsT
 			break;
 		}
 	}
+
+	myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+
 	return found;
 }
 

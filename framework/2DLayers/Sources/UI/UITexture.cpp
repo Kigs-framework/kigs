@@ -35,6 +35,14 @@ void UITexture::PreDraw(TravState* state)
 			mySizeX = 0.0f;
 			mySizeY = 0.0f;
 		}
+
+		Point2D prevRealSize = myRealSize;
+
 		ComputeRealSize();
+
+		if (myRealSize != prevRealSize)
+		{
+			myNeedUpdatePosition = true;
+		}
 	}
 }

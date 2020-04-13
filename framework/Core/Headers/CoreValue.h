@@ -47,6 +47,19 @@ public:
 		KIGS_ERROR("set called on CoreValue", 1);
 	}
 
+	virtual void erase(int key) override
+	{
+		KIGS_ERROR("erase called on CoreValue", 1);
+	}
+	virtual void erase(const kstl::string& key) override
+	{
+		KIGS_ERROR("erase called on CoreValue", 1);
+	}
+	virtual void erase(const usString& key) override
+	{
+		KIGS_ERROR("erase called on CoreValue", 1);
+	}
+
 	virtual inline operator bool() const override
 	{
 		return false;

@@ -263,6 +263,11 @@ public:
 	virtual void set(const kstl::string& key, const CoreItemSP& toinsert) {};
 	virtual void set(const usString& key, const CoreItemSP& toinsert) {};
 
+	virtual void erase(int key) {};
+	virtual void erase(const kstl::string& key) {};
+	virtual void erase(const usString& key) {};
+
+
 	typedef size_t size_type;
 
 	virtual operator bool() const;
@@ -440,22 +445,34 @@ protected:
 // operator [] needs to be overloaded on vectors and maps
 inline CoreItemSP CoreItemSP::operator[](int i) const
 {
-	return myPointer->operator[](i);
+	if(myPointer)
+		return myPointer->operator[](i);
+
+	return nullptr;
 }
 
 inline CoreItemSP CoreItemSP::operator[](const char* key) const
 {
-	return myPointer->operator[](key);
+	if (myPointer)
+		return myPointer->operator[](key);
+
+	return nullptr;
 }
 
 inline CoreItemSP CoreItemSP::operator[](const kstl::string& key) const
 {
-	return myPointer->operator[](key);
+	if (myPointer)
+		return myPointer->operator[](key);
+
+	return nullptr;
 }
 
 inline CoreItemSP CoreItemSP::operator[](const usString& key) const
 {
-	return myPointer->operator[](key);
+	if (myPointer)
+		return myPointer->operator[](key);
+
+	return nullptr;
 }
 
 inline CoreItemSP::operator bool() const

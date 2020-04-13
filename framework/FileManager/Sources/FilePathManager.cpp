@@ -406,6 +406,14 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 	if (result->myExtension != "")
 		fileext.append(result->myExtension, 1, result->myExtension.length() - 1);
 
+	// if given filename already has a path, first search with only the path
+	if (result->myFileName != result->myFullFileName)
+	{
+		Platform_CheckState(result.get());
+		if (result->myStatus & FileHandle::Exist)
+			return result;
+	}
+
 	kstl::vector<kstl::string> localpath;
 	if (myPath.find(fileext) != myPath.end())
 	{
@@ -754,7 +762,7 @@ void	FilePathManager::InitBundleList(const kstl::string& filename)
 	if (lFile->myStatus&FileHandle::Exist)
 	{
 		u64 filelen;
-		CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFileAsCharString(lFile.get(), filelen);
+		CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFileAsCharString(lFile.get(), filelen,1);
 
 		if (rawbuffer)
 		{

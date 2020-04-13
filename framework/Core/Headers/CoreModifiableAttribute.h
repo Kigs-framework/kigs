@@ -517,5 +517,39 @@ template<typename T> bool CoreConvertValue2String(kstl::string& stringValue,T va
 #include "maArray.h"
 
 
+// AttributeHolder methods
+
+template<typename T>
+inline CMSP::AttributeHolder::operator T() const {
+	T	tmp();
+	if (mAttr)
+	{
+		mAttr->getValue(tmp);
+	}
+	return tmp;
+}
+
+template<typename T>
+inline const CMSP::AttributeHolder& CMSP::AttributeHolder::operator =(T toset) const {
+	if (mAttr)
+	{
+		mAttr->setValue(toset);
+	}
+	return *this;
+}
+
+template<typename T>
+inline const bool CMSP::AttributeHolder::operator ==(T totest) const {
+	if (mAttr)
+	{
+		T	tmp();
+		if (mAttr->getValue(tmp))
+		{
+			return tmp == totest;
+		}
+	}
+	return false;
+}
+
 
 #endif //_COREMODIFIABLEATTRIBUTE_H

@@ -84,7 +84,7 @@ protected:
 	bool ParseBlock(parserType& Block);
 	bool ParseArray(parserType& Array);
 	void NotifyDelegateWithParamList();
-	void AddValueToParamList(stringType strObjName, stringType objparamValue);
+	void AddValueToParamList(const stringType& strObjName,const stringType& objparamValue);
 
 	CoreModifiableAttribute* getNewStringAttribute(const stringType& attributeName,const stringType& strObjName);
 

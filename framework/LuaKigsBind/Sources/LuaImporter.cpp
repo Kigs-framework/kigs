@@ -232,7 +232,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 		else if (infos.has("lua"))
 		{
 			u64 length;
-			CoreRawBuffer* buffer = ModuleFileManager::LoadFileAsCharString(infos["lua"].value().toValue<std::string>().c_str(), length);
+			CoreRawBuffer* buffer = ModuleFileManager::LoadFileAsCharString(infos["lua"].value().toValue<std::string>().c_str(), length,1);
 			if (buffer)
 			{
 				LuaKigsBindModule* _luamodule = (LuaKigsBindModule*)KigsCore::GetModule("LuaKigsBindModule");
