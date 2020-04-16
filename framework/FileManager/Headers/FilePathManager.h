@@ -263,6 +263,8 @@ public:
 		return alias;
 	}
 
+	static std::string MakeValidFileName(const std::string& filename);
+
 protected:
 
 	//! destructor
