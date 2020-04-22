@@ -4,6 +4,7 @@
 #include "kstlstring.h"
 #include "kTypes.h"
 #include "PreallocatedClassNew.h"
+#include <assert.h> 
 
 class XMLAttributeBase
 {};

@@ -81,8 +81,12 @@ std::string API3DGenericMeshShader::GetDefaultLightingFunctions()
 		vec3 reflectDir = reflect(-lightDir, normalN);
 		float spec = pow(max(dot(viewDir, reflectDir),0.0), shininess) * diffsign; 
 		float distance = length(light.position - FragPos); 
-		float theta = max(dot(normalize(light.direction), -lightDir)-light.cutOff,0.0) / (1.0-light.cutOff); 
-		float spotEffect = pow(theta, light.spotExponent); 
+		float spot_factor =  dot(normalize(light.direction), -lightDir);
+		float spotEffect = 0.0;
+		if(spot_factor >= light.cutOff)
+		{
+			spotEffect = pow(spot_factor, light.spotExponent);
+		}
 		float attenuation = spotEffect / (light.attenuation.x + light.attenuation.y * distance + light.attenuation.z * (distance * distance) + 1.0); 
 		vec3 diffuse = light.diffuse * diffuseColor.xyz * diff; 
 		vec3 specular = light.specular * specularColor.xyz* spec; 

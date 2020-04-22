@@ -841,8 +841,7 @@ ModuleSpecificRenderer::LightCount RendererOpenGL::SetLightsInfo(std::set<CoreMo
 	for (; itr != end; ++itr)
 	{
 		API3DLight* myLight = static_cast<API3DLight*>(*itr);
-		if (myLight->getIsDeffered())
-			continue;
+
 		if (!myLight->getIsOn())
 			continue;
 
