@@ -6,7 +6,7 @@
 #include "RendererDX11.h"
 #include "FilePathManager.h"
 #include "UIVerticesInfo.h"
-
+#include "HLSLShader.h"
 #include "TimeProfiler.h"
 
 #include "DX11Texture.h"
@@ -18,13 +18,12 @@
 
 #include <d2d1_2.h>
 #include <d3d11_4.h>
+#include <wrl/client.h>
 
 #ifdef WUP
 #include "Platform/Main/BaseApp.h"
 
 #include <Windows.Graphics.DirectX.Direct3D11.Interop.h>
-
-#include <wrl/client.h>
 
 #include <winrt/Windows.Graphics.Holographic.h>
 #include <winrt/Windows.Graphics.DirectX.Direct3D11.h>
@@ -407,7 +406,9 @@ bool DX11RenderingScreen::CreateResources()
 			swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
 
 			dxinstance->m_swapChain = nullptr;
-
+			m_renderTargetBuffer = nullptr;
+			m_depthStencilView = nullptr;
+#ifdef WUP
 			// First, retrieve the underlying DXGI Device from the D3D Device.
 			winrt::com_ptr<IDXGIDevice1> dxgiDevice = dxinstance->m_device.as<IDXGIDevice1>();
 			
@@ -419,7 +420,7 @@ bool DX11RenderingScreen::CreateResources()
 			winrt::com_ptr<IDXGIFactory2> dxgiFactory;
 			DX::ThrowIfFailed(dxgiAdapter->GetParent(__uuidof(dxgiFactory), dxgiFactory.put_void()));
 
-#ifdef WUP
+
 			auto windowPtr = static_cast<::IUnknown*>(winrt::get_abi(dxinstance->mWindow));
 			DX::ThrowIfFailed(dxgiFactory->CreateSwapChainForCoreWindow(
 				dxinstance->m_device.get(),
@@ -428,7 +429,22 @@ bool DX11RenderingScreen::CreateResources()
 				nullptr,
 				dxinstance->m_swapChain.put()
 			));
+			DX::ThrowIfFailed(dxinstance->m_swapChain->GetBuffer(0, __uuidof(m_renderTargetBuffer), m_renderTargetBuffer.put_void()));
+
 #else
+
+			// First, retrieve the underlying DXGI Device from the D3D Device.
+			Microsoft::WRL::ComPtr<IDXGIDevice1> dxgiDevice;
+			DX::ThrowIfFailed(dxinstance->m_device->QueryInterface(__uuidof(IDXGIDevice1), (void**)dxgiDevice.ReleaseAndGetAddressOf()));
+
+			// Identify the physical adapter (GPU or card) this device is running on.
+			Microsoft::WRL::ComPtr<IDXGIAdapter> dxgiAdapter;
+			DX::ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.ReleaseAndGetAddressOf()));
+
+			// And obtain the factory object that created it.
+			Microsoft::WRL::ComPtr<IDXGIFactory2> dxgiFactory;
+			DX::ThrowIfFailed(dxgiAdapter->GetParent(__uuidof(dxgiFactory), (void**)dxgiFactory.ReleaseAndGetAddressOf()));
+
 			DX::ThrowIfFailed(dxgiFactory->CreateSwapChainForHwnd(
 				dxinstance->m_device.Get(),
 				myhWnd,
@@ -437,10 +453,11 @@ bool DX11RenderingScreen::CreateResources()
 				nullptr,
 				dxinstance->m_swapChain.GetAddressOf()
 			));
+
+			DX::ThrowIfFailed(dxinstance->m_swapChain->GetBuffer(0, __uuidof(m_renderTargetBuffer), (void**)m_renderTargetBuffer.ReleaseAndGetAddressOf()));
+
 #endif		
-			m_renderTargetBuffer = nullptr;
-			DX::ThrowIfFailed(dxinstance->m_swapChain->GetBuffer(0, __uuidof(m_renderTargetBuffer), m_renderTargetBuffer.put_void()));
-			m_depthStencilView = nullptr;
+		
 		}
 	}
 	else
@@ -459,7 +476,11 @@ bool DX11RenderingScreen::CreateResources()
 		colorBufferDesc.MiscFlags = 0;
 		
 		m_renderTargetBuffer = nullptr;
+#ifdef WUP
 		DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&colorBufferDesc, NULL, m_renderTargetBuffer.put()));
+#else
+		DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&colorBufferDesc, NULL, m_renderTargetBuffer.ReleaseAndGetAddressOf()));
+#endif
 	
 		SP<TextureFileManager> texfileManager = KigsCore::GetSingleton("TextureFileManager");
 		myFBOTexture = texfileManager->CreateTexture(getName());
@@ -467,14 +488,21 @@ bool DX11RenderingScreen::CreateResources()
 		myFBOTexture->setValue("Height", wanted_y);
 		myFBOTexture->InitForFBO();
 		myFBOTexture->SetRepeatUV(false, false);
+#ifdef WUP
 		myFBOTexture->as<DX11Texture>()->SetD3DTexture(m_renderTargetBuffer.get());
-
+#else
+		myFBOTexture->as<DX11Texture>()->SetD3DTexture(m_renderTargetBuffer.Get());
+#endif
 		m_depthStencilView = nullptr;
 	}
 
 	m_renderTargetView = nullptr;
+#ifdef WUP
 	DX::ThrowIfFailed(dxinstance->m_device->CreateRenderTargetView(m_renderTargetBuffer.get(), NULL, m_renderTargetView.put()));
-	
+#else
+	DX::ThrowIfFailed(dxinstance->m_device->CreateRenderTargetView(m_renderTargetBuffer.Get(), NULL, m_renderTargetView.ReleaseAndGetAddressOf()));
+#endif
+
 	if (m_depthStencilView) return true;
 
 	CD3D11_TEXTURE2D_DESC depthBufferDesc = {};
@@ -512,8 +540,11 @@ bool DX11RenderingScreen::CreateResources()
 
 	// Create the texture for the depth buffer using the filled out description.
 	m_depthStencilBuffer = nullptr;
+#ifdef WUP
 	DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&depthBufferDesc, NULL, m_depthStencilBuffer.put()));
-
+#else
+	DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&depthBufferDesc, NULL, m_depthStencilBuffer.ReleaseAndGetAddressOf()));
+#endif
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	depthStencilViewDesc.Format = depth_stencil_view_format;
 	depthStencilViewDesc.ViewDimension = is_stereo ? D3D11_DSV_DIMENSION_TEXTURE2DARRAY : D3D11_DSV_DIMENSION_TEXTURE2D;
@@ -522,8 +553,11 @@ bool DX11RenderingScreen::CreateResources()
 
 	// Create the depth stencil view.
 	m_depthStencilView = nullptr;
+#ifdef WUP
 	DX::ThrowIfFailed(dxinstance->m_device->CreateDepthStencilView(m_depthStencilBuffer.get(), &depthStencilViewDesc, m_depthStencilView.put()));
-
+#else
+	DX::ThrowIfFailed(dxinstance->m_device->CreateDepthStencilView(m_depthStencilBuffer.Get(), &depthStencilViewDesc, m_depthStencilView.ReleaseAndGetAddressOf()));
+#endif
 	return true;
 }
 
@@ -540,8 +574,13 @@ void DX11RenderingScreen::setCurrentContext()
 
 	dxinstance->m_currentRenderTarget = m_renderTargetView;
 	dxinstance->m_currentDepthStencilTarget = m_depthStencilView;
+#ifdef WUP
 	ID3D11RenderTargetView* render_targets[] = { m_renderTargetView.get() };
 	dxinstance->m_deviceContext->OMSetRenderTargets(1, render_targets, m_depthStencilView.get());
+#else
+	ID3D11RenderTargetView* render_targets[] = { m_renderTargetView.Get() };
+	dxinstance->m_deviceContext->OMSetRenderTargets(1, render_targets, m_depthStencilView.Get());
+#endif
 	dxinstance->m_isFBORenderTarget = myUseFBO;
 }
 
