@@ -388,7 +388,7 @@ void NotificationCenter::protectedRemoveObserver(CoreModifiable* observer, bool 
 			myObserverMap.erase(it);
 			if (!wasDestroyed)
 			{
-				((CoreModifiable*)(RefCountedClass*)observer)->unflagAsNotificationCenterRegistered();
+				observer->unflagAsNotificationCenterRegistered();
 			}
 		}
 	
@@ -460,7 +460,7 @@ void NotificationCenter::protectedRemoveObserver(CoreModifiable* observer,const 
 						myObserverMap.erase(it);
 						if (!wasDestroyed)
 						{
-							((CoreModifiable*)(RefCountedClass*)observer)->unflagAsNotificationCenterRegistered();
+							observer->unflagAsNotificationCenterRegistered();
 						}
 					}
 				}

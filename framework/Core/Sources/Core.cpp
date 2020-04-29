@@ -416,7 +416,7 @@ CoreTreeNode* KigsCore::AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, c
 {
 	if (!parent)
 	{
-		KIGS_ERROR("RefCountedClass::addList : ERROR !node", 1);
+		KIGS_ERROR("KigsCore::AddToTreeNode : ERROR !node", 1);
 		return 0;
 	}
 
