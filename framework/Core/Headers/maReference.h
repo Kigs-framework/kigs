@@ -87,7 +87,6 @@ public:
 		}
 	}
 
-	//! cast to RefCountedClass* operator
 	operator CoreModifiable*() { return SearchRef(); }
 	//! cast to CoreModifiable* operator
 	//operator CoreModifiable*() { return (CoreModifiable*)SearchRef(); }
@@ -100,7 +99,6 @@ public:
 		return SearchRef();
 	}
 
-	//! cast to RefCountedClass& operator
 	operator CoreModifiable&() { return (*SearchRef()); }
 
 	//! return a reference on internal value
