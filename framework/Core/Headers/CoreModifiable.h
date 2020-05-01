@@ -161,6 +161,11 @@ class UpgradorBase;
 class CMSP : public SmartPointer<CoreModifiable>
 {
 public:
+
+	// Move constructor, steal other ref
+	CMSP(SmartPointer<CoreModifiable>&& other) : SmartPointer<CoreModifiable>(other)
+	{}
+
 	using SmartPointer<CoreModifiable>::SmartPointer;
 	inline CMSP operator [](const std::string& son) const;
 

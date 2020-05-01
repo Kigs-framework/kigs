@@ -521,7 +521,7 @@ template<typename T> bool CoreConvertValue2String(kstl::string& stringValue,T va
 
 template<typename T>
 inline CMSP::AttributeHolder::operator T() const {
-	T	tmp();
+	T	tmp{};
 	if (mAttr)
 	{
 		mAttr->getValue(tmp);
@@ -542,7 +542,7 @@ template<typename T>
 inline const bool CMSP::AttributeHolder::operator ==(T totest) const {
 	if (mAttr)
 	{
-		T	tmp();
+		T	tmp{};
 		if (mAttr->getValue(tmp))
 		{
 			return tmp == totest;
