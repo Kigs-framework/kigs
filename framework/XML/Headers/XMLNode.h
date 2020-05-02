@@ -26,7 +26,7 @@ enum XMLNodeType
 };
 
 
-class XMLNodeBase
+class XMLNodeBase 
 {
 public:
 
@@ -154,7 +154,7 @@ public:
 	}
 
 	//! return node name
-	const StringType& getName( )
+	const StringType& getName( ) const
 	{
 		return m_name;
 	}
@@ -173,11 +173,11 @@ public:
 	{
 		return (int)m_childs.size();
 	}
-	
+
 	//! return child node by index
     inline XMLNodeTemplate *getChildElement( unsigned int index = 0 );
 	//! return child node by name
-	inline XMLNodeTemplate *getChildElement( const StringType &name );
+	inline XMLNodeTemplate *getChildElement( const std::string &name );
     
 	//! create a new child with given name and return the corresponding node
     inline XMLNodeTemplate *addChildElement( const StringType&childName);
@@ -518,7 +518,7 @@ XMLNodeTemplate<StringType>* XMLNodeTemplate<StringType>::getChildElement(unsign
 }
 
 template<typename StringType>
-XMLNodeTemplate<StringType>* XMLNodeTemplate<StringType>::getChildElement(const StringType& name)
+XMLNodeTemplate<StringType>* XMLNodeTemplate<StringType>::getChildElement(const std::string& name)
 {
 	unsigned int i;
 
