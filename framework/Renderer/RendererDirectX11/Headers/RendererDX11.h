@@ -122,6 +122,7 @@ class VertexBufferManager : public VertexBufferManagerBase
 {
 public:
 	VertexBufferManager();
+	virtual ~VertexBufferManager();
 
 	void GenBuffer(int count, unsigned int * id) override;
 	void DelBuffer(int count, unsigned int * id) override;

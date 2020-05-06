@@ -244,6 +244,7 @@ void ModuleSceneGraph::Init(KigsCore* core, const kstl::vector<CoreModifiableAtt
 
 void ModuleSceneGraph::Close()
 {
+	DoDefferedAction();
 	BaseClose();
 }
 
