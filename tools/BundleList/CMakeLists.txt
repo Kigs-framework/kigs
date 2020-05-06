@@ -1,0 +1,25 @@
+if(${KIGS_PLATFORM} STREQUAL "Windows")
+	project(BundleList)
+	add_executable(BundleList "")
+	set(BundleList_GUID_CMAKE "36D12AC5-F3EB-4482-A190-79C3232B9C93" CACHE INTERNAL "BundleList GUID")
+
+	set(CMAKE_SHARED_LINKER_FLAGS_STATICDEBUG "${CMAKE_SHARED_LINKER_FLAGS_STATICDEBUG} /SUBSYSTEM:CONSOLE /SAFESEH:NO /DEBUG:FULL")
+	set(CMAKE_SHARED_LINKER_FLAGS_STATICRELEASE "${CMAKE_SHARED_LINKER_FLAGS_STATICRELEASE} /SUBSYSTEM:CONSOLE /SAFESEH:NO")
+	set(CMAKE_SHARED_LINKER_FLAGS_STATICRELEASETOOLS "${CMAKE_SHARED_LINKER_FLAGS_STATICRELEASETOOLS} /SUBSYSTEM:CONSOLE /DEBUG:FULL /SAFESEH:NO")
+
+
+	target_link_libraries(BundleList PRIVATE BaseApplication Thread)
+	target_include_directories(BundleList PRIVATE "Headers")
+
+	file(GLOB_RECURSE all_sources "Sources/*.cpp")
+	file(GLOB_RECURSE all_headers "Headers/*.h")
+
+	target_sources(BundleList 
+	PRIVATE 
+		${all_sources}
+		${all_headers}
+		)
+
+	set_property(TARGET BundleList PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+endif()
+
