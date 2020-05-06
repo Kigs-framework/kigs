@@ -131,8 +131,9 @@ bool  Scene3D::removeLight(CoreModifiable* light)
 	{
 		(*found)->Destroy();
 		myLights.erase(found);
-		return true;
 		myLightsHaveChanged = true;
+		return true;
+
 	}
 	return false;
 }

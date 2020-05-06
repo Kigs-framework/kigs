@@ -27,6 +27,7 @@ FileHandle::~FileHandle()
 	}
 }
 
+
 SmartPointer<FileHandle> FileHandle::MakeCopy()
 {
 	auto result = OwningRawPtrToSmartPtr(new FileHandle());
@@ -60,6 +61,36 @@ FilePathManager::FilePathManager(const kstl::string& name, CLASS_NAME_TREE_ARG) 
 FilePathManager::~FilePathManager()
 {
 	Clear();
+}
+std::string FilePathManager::MakeValidFileName(const std::string& filename)
+{
+	std::string result;
+	for (int i = 0; i < filename.length(); i++)
+	{
+		unsigned char current = filename[i];
+		if (current < 32)
+		{
+			current = '_';
+		}
+		else if((current>32) && (current < 45))
+		{
+			current = '_';
+		}
+		else if ((current > 57) && (current < 65))
+		{
+			current = '_';
+		}
+		else if ((current > 90) && (current < 97))
+		{
+			current = '_';
+		}
+		else if ((current > 122))
+		{
+			current = '_';
+		}
+		result += current;
+	}
+	return result;
 }
 
 /*! add a new path for the given extension

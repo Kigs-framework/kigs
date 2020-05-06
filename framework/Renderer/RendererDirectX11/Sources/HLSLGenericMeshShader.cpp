@@ -87,8 +87,12 @@ cbuffer LightBuffer : register(b1)
 		float3 reflectDir = reflect(-lightDir, normalN);
 		float spec = pow(max(dot(viewDir, reflectDir),0.0), shininess) * diffsign; 
 		float distance = length(light.position - FragPos); 
-		float theta = max(dot(normalize(light.directionAndCutOff.xyz), -lightDir)-light.cutOff,0.0) / (1.0-light.directionAndCutOff.w); 
-		float spotEffect = pow(theta, light.attenuationAndSpotExponent.w); 
+		float spot_factor =  dot(normalize(light.directionAndCutOff.xyz), -lightDir);
+		float spotEffect = 0.0;
+		if(spot_factor >= light.directionAndCutOff.w)
+		{
+			spotEffect = pow(spot_factor, light.attenuationAndSpotExponent.w);
+		}
 		float attenuation = spotEffect / (light.attenuationAndSpotExponent.x + light.attenuationAndSpotExponent.y * distance + light.attenuationAndSpotExponent.z * (distance * distance) + 1.0); 
 		float3 diffuse = light.diffuse * diffuseColor.xyz * diff; 
 		float3 specular = light.specular * specularColor.xyz* spec; 
