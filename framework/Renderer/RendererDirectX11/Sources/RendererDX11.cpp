@@ -30,6 +30,7 @@
 #include "Platform/Renderer/PlatformRendererDX11.inl.h"
 #include "Crc32.h"
 #include "RendererDefines.h"
+#include "TextureFileManager.h"
 
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -64,7 +65,7 @@ ModuleSpecificRenderer::LightCount RendererDX11::SetLightsInfo(kstl::set<CoreMod
 	for (auto it : *lights)
 	{
 		API3DLight* light = static_cast<API3DLight*>(it);
-		if (light->getIsDeffered() || !light->getIsOn())
+		if (!light->getIsOn())
 			continue;
 
 		switch (light->GetTypeOfLight())
@@ -371,12 +372,11 @@ bool RendererDX11::CreateDevice()
 
 	dxinstance->m_device = nullptr;
 	dxinstance->m_deviceContext = nullptr;
-
+#ifdef WUP
 	winrt::com_ptr<ID3D11Device> device;
 	winrt::com_ptr<ID3D11DeviceContext> context;
 	DX::ThrowIfFailed(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, device_creation_flags, featureLevels, _countof(featureLevels), D3D11_SDK_VERSION, device.put(), nullptr, context.put()));
 
-#ifdef WUP
 	auto space = App::GetApp()->GetHolographicSpace();
 	if (space)
 	{
@@ -389,10 +389,18 @@ bool RendererDX11::CreateDevice()
 		auto d3dinteropdevice = object.as<IDirect3DDevice>();
 		space.SetDirect3D11Device(d3dinteropdevice);
 	}
-#endif
-
 	dxinstance->m_device = device.as<ID3D11Device1>();
 	dxinstance->m_deviceContext = context.as<ID3D11DeviceContext1>();
+
+#else
+	Microsoft::WRL::ComPtr<ID3D11Device> device;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
+	DX::ThrowIfFailed(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, device_creation_flags, featureLevels, _countof(featureLevels), D3D11_SDK_VERSION, device.ReleaseAndGetAddressOf(), nullptr, context.ReleaseAndGetAddressOf()));
+	DX::ThrowIfFailed(device.As<ID3D11Device1>(&dxinstance->m_device));
+		DX::ThrowIfFailed(context.As<ID3D11DeviceContext1>(&dxinstance->m_deviceContext));
+
+#endif
+
 
 #ifdef WUP
 	D3D11_FEATURE_DATA_D3D11_OPTIONS3 options;
@@ -555,12 +563,20 @@ void DX11RenderingState::ClearView(RendererClearMode clearMode)
 	DXInstance * dxinstance = renderer->getDXInstance();
 	if (clearMode & RENDERER_CLEAR_COLOR)
 	{
+#ifdef WUP
 		dxinstance->m_deviceContext->ClearRenderTargetView(dxinstance->m_currentRenderTarget.get(), myGlobalClearValueFlag);
+#else
+		dxinstance->m_deviceContext->ClearRenderTargetView(dxinstance->m_currentRenderTarget.Get(), myGlobalClearValueFlag);
+#endif
 	}
 	if ((clearMode & RENDERER_CLEAR_DEPTH) || (clearMode & RENDERER_CLEAR_STENCIL))
 	{
 		u32 flag = (clearMode & RENDERER_CLEAR_DEPTH ? D3D11_CLEAR_DEPTH : 0) | (clearMode & RENDERER_CLEAR_STENCIL ? D3D11_CLEAR_STENCIL : 0);
+#ifdef WUP
 		dxinstance->m_deviceContext->ClearDepthStencilView(dxinstance->m_currentDepthStencilTarget.get(), flag, 1.0f, 0);
+#else
+		dxinstance->m_deviceContext->ClearDepthStencilView(dxinstance->m_currentDepthStencilTarget.Get(), flag, 1.0f, 0);
+#endif
 	}
 }
 

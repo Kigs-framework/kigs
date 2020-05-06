@@ -79,7 +79,7 @@ bool Node3D::addItem(const CMSP& item,ItemPosition pos DECLARE_LINK_NAME)
 			ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
 			scenegraph->AddDefferedItem(item.get(), DefferedAction::ADD_CAMERA);
 		}
-		else if (item->isSubType("API3DLight"))
+		else if (item->isSubType("Light"))
 		{
 			ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
 			scenegraph->AddDefferedItem(item.get(), DefferedAction::ADD_LIGHT);

@@ -5,8 +5,13 @@
 // rendering screen is too much platform specific
 //#include "Platform/Renderer/DX11RenderingScreen.h"
 
+#include <d3d11_1.h>
+#include <dxgi1_2.h>
+
 #ifdef WUP
 #include <winrt/Windows.Graphics.Holographic.h>
+#else
+#include <wrl/client.h>
 #endif
 
 class DX11RenderingScreen : public RenderingScreen
@@ -34,8 +39,9 @@ public:
 
 	bool IsMainRenderingScreen() { return !myUseFBO && !myIsOffScreen; }
 
+#ifdef WUP
 	void SetRenderingParameters(winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters params) { mRenderingParameters = params; }
-
+#endif
 protected:
 	DECLARE_METHOD(Snapshot);
 	COREMODIFIABLE_METHODS(Snapshot);
@@ -54,12 +60,20 @@ protected:
 	HGLRC myhRC = NULL;
 	HWND  myhWnd = NULL;
 
+#ifdef WUP
 	winrt::com_ptr<ID3D11Texture2D>			m_renderTargetBuffer;
 	winrt::com_ptr<ID3D11RenderTargetView>	m_renderTargetView;
 	winrt::com_ptr<ID3D11Texture2D>			m_depthStencilBuffer;
 	winrt::com_ptr<ID3D11DepthStencilView>	m_depthStencilView;
-	
+#else
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>			m_renderTargetBuffer;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	m_renderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>			m_depthStencilBuffer;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_depthStencilView;
+#endif
 	unsigned int mCurrentFrameNumber = -1;
+#ifdef WUP
 	winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters mRenderingParameters = nullptr;
+#endif
 };
 

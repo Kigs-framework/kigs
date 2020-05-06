@@ -11,7 +11,7 @@ set(KIGS_FRAMEWORK "${KIGS_ROOT}/kigs/framework/")
 set(KIGS_PRIVATE_FRAMEWORK "${KIGS_ROOT}/private/framework/")
 set(KIGS_EXTERN_LIBS "${KIGS_ROOT}/kigs/libs/")
 set(KIGS_PRIVATE_EXTERN_LIBS "${KIGS_ROOT}/kigs/libs/")
-
+set(KIGS_SIDEPROJECTS "${KIGS_ROOT}/sideProjects/")
 
 if("${CMAKE_GENERATOR}" MATCHES "(Win64|x64)" OR "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "x64")
 	set(KIGS_PLATFORM_X64 TRUE)
@@ -432,4 +432,9 @@ endif()
 IF(EXISTS ${KIGS_ROOT}/private)
 	message(STATUS "CMake enter private")
 	add_subdirectory(${KIGS_ROOT}/private private)
+endif()
+
+IF(EXISTS ${KIGS_SIDEPROJECTS})
+	message(STATUS "CMake enter sideProjects/")
+	add_subdirectory(${KIGS_SIDEPROJECTS} sideProjects)
 endif()

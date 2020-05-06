@@ -151,7 +151,13 @@ bool DX11Texture::PreDraw(TravState* travstate)
 
 	if (Texture::PreDraw(travstate))
 	{
+#ifdef WUP
+		// winrt uses get and WRL uses Get
 		auto pd3dContext = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance()->m_deviceContext.get(); // Don't forget to initialize this
+#else
+		// winrt uses get and WRL uses Get
+		auto pd3dContext = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance()->m_deviceContext.Get(); // Don't forget to initialize this
+#endif
 		// Set shader texture resource in the pixel shader.
 		pd3dContext->PSSetShaderResources(RendererDX11::theGlobalRenderer->as<RendererDX11>()->GetActiveTextureChannel(), 1, &pShaderRes);
 		RendererDX11::theGlobalRenderer->as<RendererDX11>()->SetSampler(myRepeatU, myRepeatV, myForceNearest);
@@ -498,8 +504,11 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 			}
 		}
 	}
+#ifdef WUP
 	auto pd3dDevice = renderer->getDXInstance()->m_device.get(); // Don't forget to initialize this
-
+#else
+	auto pd3dDevice = renderer->getDXInstance()->m_device.Get(); // Don't forget to initialize this
+#endif
 	HRESULT res = pd3dDevice->CreateTexture2D(&desc, subresources.data(), &pTexture);
 	if (FAILED(res))
 	{

@@ -58,16 +58,26 @@ struct MaterialStruct
 
 struct DXInstance
 {
+#ifdef WUP
 	winrt::com_ptr<ID3D11Device1> m_device;
 	winrt::com_ptr<ID3D11DeviceContext1> m_deviceContext;
 	winrt::com_ptr<IDXGISwapChain1> m_swapChain;
 	
 	winrt::com_ptr<ID3D11DepthStencilState> m_depthStencilState;
 	winrt::com_ptr<ID3D11RasterizerState> m_rasterState;
-
-	bool m_isFBORenderTarget = false;
 	winrt::com_ptr<ID3D11RenderTargetView> m_currentRenderTarget;
 	winrt::com_ptr<ID3D11DepthStencilView> m_currentDepthStencilTarget;
+#else
+	Microsoft::WRL::ComPtr<ID3D11Device1> m_device;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext1> m_deviceContext;
+	Microsoft::WRL::ComPtr<IDXGISwapChain1> m_swapChain;
+
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterState;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_currentRenderTarget;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_currentDepthStencilTarget;
+#endif
+	bool m_isFBORenderTarget = false;
 
 	ID3D11Buffer* m_matrixBuffer = nullptr;
 	ID3D11Buffer* m_lightBuffer = nullptr;

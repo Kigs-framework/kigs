@@ -1,7 +1,7 @@
-![Kigs framework](https://github.com/assoria/kigs/wiki/data/logo.png)
+![Kigs framework](https://github.com/Kigs-framework/kigs/wiki/data/logo.png)
 
 Kigs framework is a C++ modular multi-purpose cross-platform framework.
-Assoria used it as a basis for [many projects](https://kigs-framework.org/Projects).
+It was used as a basis for [many professionnal projects](https://kigs-framework.org/Projects).
 
 The main goal was to be able to develop different types of applications (games, simulators, viewers...) quickly,
 in a totally independent manner. 
@@ -18,5 +18,5 @@ Released platforms are :
 
 The main IDE to build current platforms is Visual Studio C++ 2019.
 
-Check the [Wiki](https://github.com/assoria/kigs/wiki) to learn more about the Kigs framework...
+Check the [Wiki](https://github.com/Kigs-framework/kigs/wiki) to learn more about the Kigs framework...
 
