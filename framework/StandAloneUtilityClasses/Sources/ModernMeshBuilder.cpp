@@ -36,6 +36,7 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 	myVertexBuilder.clear();
 	myVertexDesc.clear();
 	myVertexMergeBarriers.clear();
+	myIndicesMergeBarriers.clear();
 
 	// parse descrition to get vertex size
 	myCurrentVertexSize = 0;
@@ -224,7 +225,7 @@ void	ModernMeshBuilder::OptimiseForCache()
 		vl[i].newIndex = -1;
 	}
 
-	unsigned int vt = myTriangles.size();
+	unsigned int vt = myTriangles.size(); 
 
 	ModernMesh::Triangle<unsigned int>*	triangleArray = reinterpret_cast< ModernMesh::Triangle<unsigned int>*>(myTriangles.getArray());
 

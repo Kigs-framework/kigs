@@ -21,7 +21,6 @@
 class MiniInstanceFactory;
 class CoreModifiableAttribute;
 class InstanceFactory;
-class RefCountedClass;
 class ModuleBase;
 class CoreTreeNode;
 class GlobalProfilerManager;

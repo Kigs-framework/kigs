@@ -382,11 +382,24 @@ struct KigsID
 
 
 #ifdef KEEP_NAME_AS_STRING
-	template<size_t _Size> KigsID(const char(&aid)[_Size]) : _id_name(aid), _id(CharToID::GetID(aid)) {};
-	KigsID(const kstl::string& aid) : _id_name(aid), _id(CharToID::GetID(aid)) {};
-	KigsID(const kstl::string_view& aid) : _id_name(aid), _id(CharToID::GetID(aid)) {};
+	template<size_t _Size> KigsID(const char(&aid)[_Size]) : _id_name(aid), _id(CharToID::GetID(aid)) {
+		if (_id == 2586670016)
+			printf("");
 
-	KigsID(unsigned int aid) : _id_name("*unknown*"), _id(aid) {};
+	};
+	KigsID(const kstl::string& aid) : _id_name(aid), _id(CharToID::GetID(aid)) {
+		if (_id == 2586670016)
+			printf("");
+	};
+	KigsID(const kstl::string_view& aid) : _id_name(aid), _id(CharToID::GetID(aid)) {
+		if (_id == 2586670016)
+			printf("");
+	};
+
+	KigsID(unsigned int aid) : _id_name("*unknown*"), _id(aid) {
+		if (_id == 2586670016)
+			printf("");
+	};
 
 	KigsID& operator=(const kstl::string& aid) { _id_name = aid; _id = CharToID::GetID(aid); return *this; };
 	template<size_t _Size> KigsID& operator=(const char(&aid)[_Size]) { _id_name = aid; _id = CharToID::GetID(aid); return *this; };

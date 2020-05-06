@@ -760,7 +760,7 @@ void HoloSpatialMap::Update(const Timer& timer, void* addParam)
 				if (it.second.node)
 				{
 					auto mesh = it.second.node->GetFirstSonByType("ModernMesh");
-					mesh->setValue("Show", mShowMeshes);
+					if(mesh) mesh->setValue("Show", mShowMeshes);
 					//kigsprintf("adding spatial mesh %u\n", mesh->getUID());
 					attach->addItem(it.second.node);
 				}
@@ -783,7 +783,7 @@ void HoloSpatialMap::Update(const Timer& timer, void* addParam)
 			{
 				attach->removeItem(it.second.old_node);
 				auto mesh = it.second.node->GetFirstSonByType("ModernMesh");
-				mesh->setValue("Show", mShowMeshes);
+				if (mesh) mesh->setValue("Show", mShowMeshes);
 				attach->addItem(it.second.node);
 				//it.second.old_node->GetRef(); ///TEST
 				//kigsprintf("deleting2 spatial mesh %u\n", it.second.old_node->GetFirstSonByType("ModernMesh")->getUID());
