@@ -535,12 +535,14 @@ void	ModuleSpecificRenderer::popShader(ShaderBase* shad, TravState* state)
 			isShaderOK = true;
 		}
 
-		myShaderStack.pop_back();
+		
 
+		// pop will be done after deactivation
+		// so shaderback is myShaderStack[myShaderStack.size()-2] if exists
 		ShaderBase* shaderBack = 0;
-		if (myShaderStack.size())
+		if (myShaderStack.size()>1)
 		{
-			shaderBack = myShaderStack.back();
+			shaderBack = myShaderStack[myShaderStack.size()-2];
 		}
 		//printf("POP  Shader %p %s(%d)\n", shad, shad->getName().c_str(), shad->Get_ShaderProgram());
 
@@ -563,6 +565,8 @@ void	ModuleSpecificRenderer::popShader(ShaderBase* shad, TravState* state)
 			if(shaderBack)
 				myCurrentShaderProgram = shaderBack->GetCurrentShaderProgram();
 
+			myShaderStack.pop_back();
+
 			if (myCurrentShader)
 			{
 				myDirtyShaderMatrix = 1;
@@ -575,6 +579,10 @@ void	ModuleSpecificRenderer::popShader(ShaderBase* shad, TravState* state)
 			{
 				myCurrentShaderProgram = 0;
 			}
+		}
+		else
+		{
+			myShaderStack.pop_back();
 		}
 
 		if (isShaderOK)
