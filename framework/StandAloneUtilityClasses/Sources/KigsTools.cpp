@@ -783,7 +783,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 				if (auto pl = ImGui::AcceptDragDropPayload("DND_KIGS_KIGSID"))
 				{
 					KigsID type_id = (std::string)(const char*)pl->Data;
-					auto new_item = OwningRawPtrToSmartPtr(KigsCore::Instance()->GetInstanceFactory()->GetInstance("unnamed", type_id));
+					CMSP new_item = OwningRawPtrToSmartPtr(KigsCore::Instance()->GetInstanceFactory()->GetInstance("unnamed", type_id));
 					if (new_item)
 					{
 						item->addItem(new_item);
