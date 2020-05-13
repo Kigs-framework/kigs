@@ -175,13 +175,28 @@ void    OpenGLPlatformRenderingScreen::InitModifiable()
 
 	if (MyParentWindow && !myIsOffScreen)
 	{
+		std::string name = MyParentWindow->getName();
+		if (firstScreen == this)
+		{
+			name ="canvas";
+		}
 		EmscriptenWebGLContextAttributes attrs;
 		emscripten_webgl_init_context_attributes(&attrs);
 		attrs.depth = 1;
 		attrs.stencil = 1;
 		attrs.antialias = 0;
 
-		EM_context = emscripten_webgl_create_context(MyParentWindow->getName().c_str(), &attrs);
+		EM_context = emscripten_webgl_create_context(name.c_str(), &attrs);
+		if(EM_context<0)
+		{
+			printf("GL Context creation failed on canvas %s, create default context\n",name.c_str());
+			emscripten_webgl_init_context_attributes(&attrs);
+			EM_context = emscripten_webgl_create_context(name.c_str(), &attrs);
+			if(EM_context<0)
+			{
+				printf("GL Context creation failed on canvas %s with code %d\n",name.c_str(),EM_context);
+			}
+		}
 	}
 	else
 	{

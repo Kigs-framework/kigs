@@ -53,3 +53,11 @@ if( ("${KIGS_PLATFORM}" STREQUAL "Windows") OR ("${KIGS_PLATFORM}" STREQUAL "WUP
 	add_subdirectory("${WinDir}/glew")
 
 endif()
+
+if( ("${KIGS_PLATFORM}" STREQUAL "Windows") OR ("${KIGS_PLATFORM}" STREQUAL "WUP") )
+	if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/win32/fbxsdk/lib")
+	message(STATUS "add fbxsdk")
+	add_subdirectory("win32/fbxsdk")
+	set(FBXSDK_AVAILABLE ON CACHE BOOL "fbx sdk is available")
+	endif()
+endif()

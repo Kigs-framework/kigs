@@ -1411,6 +1411,27 @@ void VertexBufferManager::ClearCurrentLayout()
 	}
 }
 
+VertexBufferManager::~VertexBufferManager()
+{
+	for (auto b : mBufferList)
+	{
+		if (b.mDesc != nullptr)
+		{
+			if (b.mI3DBuffer != nullptr)
+			{
+				b.mI3DBuffer->Release();
+				b.mI3DBuffer = nullptr;
+			}
+
+			free(b.mDesc);
+			b.mDesc = nullptr;
+			b.mBufferStride = 0;
+			b.mLayoutDesc.clear();
+		}
+	}
+	mBufferList.clear();
+}
+
 void RendererDX11::DrawUIQuad(TravState * state, const UIVerticesInfo * qi)
 {
 	unsigned int bufferName = getUIVBO();

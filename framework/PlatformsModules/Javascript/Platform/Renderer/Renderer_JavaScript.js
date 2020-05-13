@@ -378,7 +378,7 @@ var LibraryJsRenderer  = {
           if (raw === null) 
 			Module.printErr('Trying to reuse preloaded image, but freePreloadedMediaOnUse is set!');
 			
-          Runtime.warnOnce('Cannot find preloaded image ' + filename);
+          Module.printErr('Cannot find preloaded image ' + filename);
           return -1;
         }
         if (Module['freePreloadedMediaOnUse']) 
@@ -439,7 +439,7 @@ var LibraryJsRenderer  = {
           if (raw === null) 
 			Module.printErr('Trying to reuse preloaded image, but freePreloadedMediaOnUse is set!');
 			
-          Runtime.warnOnce('Cannot find preloaded image ' + filename);
+          Module.printErr('Cannot find preloaded image ' + filename);
           return -1;
         }
         if (Module['freePreloadedMediaOnUse']) 
