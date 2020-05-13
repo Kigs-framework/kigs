@@ -96,6 +96,7 @@ void	API3DLight::InitModifiable()
 	myConstAttenuation.changeNotificationLevel(Owner);
 	myLinAttenuation.changeNotificationLevel(Owner);
 	myQuadAttenuation.changeNotificationLevel(Owner);
+	myIsOn.changeNotificationLevel(Owner);
 }
 
 
@@ -140,7 +141,11 @@ void API3DLight::NotifyUpdate(const unsigned int  labelid)
 		if (myAttenuationUniform)
 			myAttenuationUniform->setArrayValue("Value", myConstAttenuation, myLinAttenuation, myQuadAttenuation);
 	}
-	
+	else if (labelid == myIsOn.getLabelID())
+	{
+		ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
+		scenegraph->SignalLightChange(this);
+	}
 }
 
 bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D & camPos)

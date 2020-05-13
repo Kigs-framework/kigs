@@ -38,6 +38,16 @@ void ModuleSceneGraph::NotifyDefferedItemDeath(CoreModifiable* item)
 	RemoveFromParentScene(item);
 }
 
+void ModuleSceneGraph::SignalLightChange(CoreModifiable* l)
+{
+	Scene3D* parent = nullptr;
+
+	if (FindParentScene(l, &parent))
+	{
+		parent->lightHasChanged();
+	}
+}
+
 bool ModuleSceneGraph::FindParentScene(CoreModifiable* item, Scene3D** parent, bool checkSceneNode)
 {
 	if (checkSceneNode)

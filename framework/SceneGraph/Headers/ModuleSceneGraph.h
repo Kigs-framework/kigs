@@ -160,6 +160,7 @@ public:
 
 	void AddDefferedItem(void* item, DefferedAction::ENUM action);
 	void NotifyDefferedItemDeath(CoreModifiable* item);
+	void SignalLightChange(CoreModifiable* l);
 
 	// Useless legacy stuff
 	void AddPostManip(SceneNode* node, unsigned int type) {}

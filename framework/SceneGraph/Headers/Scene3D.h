@@ -150,6 +150,11 @@ public:
 	int getPointLightCount() { return myPointLightCount; }
 	int getDirLightCount() { return myDirLightCount; }
 
+	void lightHasChanged()
+	{
+		myLightsHaveChanged = true;
+	}
+
 protected:
 
 
