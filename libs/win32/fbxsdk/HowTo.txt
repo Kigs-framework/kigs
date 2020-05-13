@@ -1,0 +1,3 @@
+Download and install FBX SDK
+copy include and lib folders here.
+if needed rename folder in CMakeList.txt

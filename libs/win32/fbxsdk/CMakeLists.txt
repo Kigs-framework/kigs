@@ -1,0 +1,27 @@
+add_library(fbxsdk_lib STATIC IMPORTED)
+
+if(KIGS_PLATFORM_X64)
+	set_property(TARGET fbxsdk_lib PROPERTY IMPORTED_LOCATION_STATICDEBUG "${CMAKE_CURRENT_SOURCE_DIR}/lib/vs2017/x64/debug/libfbxsdk-md.lib")
+	set_property(TARGET fbxsdk_lib PROPERTY IMPORTED_LOCATION_STATICRELEASE "${CMAKE_CURRENT_SOURCE_DIR}/lib/vs2017/x64/release/libfbxsdk-md.lib" )
+	set_property(TARGET fbxsdk_lib PROPERTY IMPORTED_LOCATION_STATICRELEASETOOLS "${CMAKE_CURRENT_SOURCE_DIR}/lib/vs2017/x64/release/libfbxsdk-md.lib")
+else()
+	set_property(TARGET fbxsdk_lib PROPERTY IMPORTED_LOCATION_STATICDEBUG "${CMAKE_CURRENT_SOURCE_DIR}/lib/vs2017/x86/debug/libfbxsdk-md.lib")
+	set_property(TARGET fbxsdk_lib PROPERTY IMPORTED_LOCATION_STATICRELEASE "${CMAKE_CURRENT_SOURCE_DIR}/lib/vs2017/x86/release/libfbxsdk-md.lib")
+	set_property(TARGET fbxsdk_lib PROPERTY IMPORTED_LOCATION_STATICRELEASETOOLS "${CMAKE_CURRENT_SOURCE_DIR}/lib/vs2017/x86/release/libfbxsdk-md.lib")
+endif()
+
+add_library(fbxxml_lib STATIC IMPORTED)
+
+if(KIGS_PLATFORM_X64)
+	set_property(TARGET fbxxml_lib PROPERTY IMPORTED_LOCATION_STATICDEBUG "${CMAKE_CURRENT_SOURCE_DIR}/lib/vs2017/x64/debug/libxml2-md.lib")
+	set_property(TARGET fbxxml_lib PROPERTY IMPORTED_LOCATION_STATICRELEASE "${CMAKE_CURRENT_SOURCE_DIR}/lib/vs2017/x64/release/libxml2-md.lib" )
+	set_property(TARGET fbxxml_lib PROPERTY IMPORTED_LOCATION_STATICRELEASETOOLS "${CMAKE_CURRENT_SOURCE_DIR}/lib/vs2017/x64/release/libxml2-md.lib")
+else()
+	set_property(TARGET fbxxml_lib PROPERTY IMPORTED_LOCATION_STATICDEBUG "${CMAKE_CURRENT_SOURCE_DIR}/lib/vs2017/x86/debug/libxml2-md.lib")
+	set_property(TARGET fbxxml_lib PROPERTY IMPORTED_LOCATION_STATICRELEASE "${CMAKE_CURRENT_SOURCE_DIR}/lib/vs2017/x86/release/libxml2-md.lib")
+	set_property(TARGET fbxxml_lib PROPERTY IMPORTED_LOCATION_STATICRELEASETOOLS "${CMAKE_CURRENT_SOURCE_DIR}/lib/vs2017/x86/release/libxml2-md.lib")
+endif()
+
+add_library(fbxsdk INTERFACE)
+target_link_libraries(fbxsdk INTERFACE fbxsdk_lib fbxxml_lib)
+target_include_directories(fbxsdk INTERFACE "include")
