@@ -2508,6 +2508,12 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 				XMLAttribute *AggregateAttribute = new XMLAttribute("Aggregate", "true");
 				sonNode->addAttribute(AggregateAttribute);
 			}
+			if ((*i).myItem->isFlagAsAutoUpdateRegistered())
+			{
+				// add autoupdate attribute 
+				XMLAttribute* AutoUpdateAttribute = new XMLAttribute("AutoUpdate", "true");
+				sonNode->addAttribute(AutoUpdateAttribute);
+			}
 			
 			current->Export(savedList, sonNode, recursive, settings);
 			
