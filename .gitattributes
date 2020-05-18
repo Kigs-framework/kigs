@@ -1,0 +1,3 @@
+# all .h in framework are considered cpp
+./framework/*.h linguist-language=c++
+./libs/* linguist-vendored

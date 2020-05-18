@@ -57,6 +57,7 @@ class CoreTreeNode;
 class Timer;
 class CoreItem;
 class KigsCore;
+class CoreItemSP;
 
 // utility class to pack variable argument list in std::vector<CoreModifiableAttribute*>
 
@@ -621,8 +622,6 @@ public:
 	template<typename... T>
 	bool SimpleCall(KigsID methodName, T&&... params);
 
-
-
 	// Emit a signal
 	bool EmitSignal(const KigsID& signalID);
 	// Emit a signal with a set of arguement. Need to include AttributePacking.h
@@ -1020,6 +1019,11 @@ public:
 	bool myTraceRef = false;
 #endif
 protected:
+
+	// used in import
+	bool SimpleCallWithCoreItemParams(KigsID methodNameID, const CoreItemSP& params);
+
+
 	// protected upgrador management
 	void Upgrade(UpgradorBase* toAdd);
 
@@ -1131,8 +1135,18 @@ protected:
 			XMLNodeBase* xmlattr;
 		};
 
-		std::vector<CMSP> loadedItems;
-		std::vector<ToConnect> toConnect;
+		struct ToCall
+		{
+			CoreModifiable* currentNode;
+			std::string methodName;
+			std::string paramList;
+		};
+
+		std::vector<CMSP>		loadedItems;
+		// manage items to connect after load is completed
+		std::vector<ToConnect>	toConnect;
+		// manage methods to call after load is completed
+		std::vector<ToCall>		toCall;
 
 		bool UTF8Enc;
 		bool noInit = false;
@@ -1141,6 +1155,8 @@ protected:
 		bool is_include_unique = false;
 		XMLBase* current_xml_file = nullptr;
 	};
+
+	static void ManageToCall(ImportState::ToCall& c);
 
 	template<typename StringType>
 	static CMSP Import(XMLNodeTemplate<StringType> * currentNode, CoreModifiable* currentModifiable, ImportState& importState);

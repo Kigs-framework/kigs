@@ -102,10 +102,10 @@ void	ABoneSystem::SearchParentNode3D()
 			m_pInstantLocalToGlobalData.set(currentMatrix);
 			
 			GenericAnimationModule* animation = (GenericAnimationModule*)KigsCore::GetModule("GenericAnimationModule");
-			CMSP shader = KigsCore::GetInstanceOf(getName()+"SkinShader", "GLSLSkinShader");
+			CMSP shader = KigsCore::GetInstanceOf(getName()+"SkinShader", "API3DSkinShader");
 			shader->GetRef();
 			// add matrices to shader
-			CMSP uniformMatrixArray = KigsCore::GetInstanceOf(getName() + "SkinShaderMatrix", "GLSLUniformMatrixArray");
+			CMSP uniformMatrixArray = KigsCore::GetInstanceOf(getName() + "SkinShaderMatrix", "API3DUniformMatrixArray");
 			
 			uniformMatrixArray->setValue(LABEL_TO_ID(ArraySize), 66);
 			uniformMatrixArray->setValue(LABEL_TO_ID(Name), "bone_matrix");

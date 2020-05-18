@@ -5,6 +5,7 @@
 #include "AMDefines.h"
 
 #include "CoreModifiableAttribute.h"
+#include "ABaseChannel.h"
 
 class LocalToGlobalBaseType
 {
@@ -16,7 +17,6 @@ class LocalToGlobalBaseType
 };
 
 class AObject;
-class ABaseChannel;
 class ABaseStream;
 class AObjectSkeletonResource;
 

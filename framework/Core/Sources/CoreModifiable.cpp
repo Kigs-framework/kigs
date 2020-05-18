@@ -681,6 +681,56 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 	return result;
 }
 
+// used in import
+bool CoreModifiable::SimpleCallWithCoreItemParams(KigsID methodNameID, const CoreItemSP& params)
+{
+	PackCoreModifiableAttributes	attr(this);
+
+	for (const auto& p : params)
+	{
+		if (p->GetType() & CoreItem::COREITEM_TYPE::COREVALUE)
+		{
+			attr.AddAttribute(p->createAttribute(nullptr));
+		}
+		else if (p->GetType() & CoreItem::COREITEM_TYPE::COREVECTOR)
+		{
+			switch (p->size())
+			{
+			case 2:
+				attr << (Point2D)p;
+				break;
+			case 3:
+				attr << (Point3D)p;
+				break;
+			case 4:
+				attr << (Vector4D)p;
+				break;
+			default:
+				KIGS_WARNING("bad params for calls from xml", 2);
+			}
+		}
+		else
+		{
+			KIGS_WARNING("bad params for calls from xml", 2);
+		}
+	}
+
+	return CallMethod(methodNameID, ((std::vector<CoreModifiableAttribute*>&)(attr)));
+}
+
+
+void CoreModifiable::ManageToCall(CoreModifiable::ImportState::ToCall& c)
+{
+	JSonFileParser L_JsonParser;
+	std::string plist = "[" + c.paramList + "]";
+	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionaryFromString(plist);
+
+	if (!L_Dictionary.isNil())
+	{
+		c.currentNode->SimpleCallWithCoreItemParams(c.methodName, L_Dictionary);
+	}
+}
+
 bool CoreModifiable::SimpleCall(KigsID methodNameID)
 {
 	PackCoreModifiableAttributes	attr(this);
@@ -3225,6 +3275,8 @@ PackCoreModifiableAttributes::~PackCoreModifiableAttributes()
 	for (auto attr : m_attributeList)
 		delete attr;
 }
+
+
 
 WeakRef& WeakRef::operator=(const WeakRef& copy_that)
 {
