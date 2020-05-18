@@ -66,6 +66,7 @@ CMSP CoreModifiable::Import(std::shared_ptr<XMLTemplate<StringType> > xmlfile, c
 
 		if (!state)
 		{
+			// connect everything
 			for (auto& toconnect : importState.toConnect)
 			{
 				CoreModifiable* pia = toconnect.currentNode;
@@ -100,6 +101,14 @@ CMSP CoreModifiable::Import(std::shared_ptr<XMLTemplate<StringType> > xmlfile, c
 				{
 					STACK_STRING(str, 1024, "Cannot connect %s to %s", toconnect.sender.c_str(), toconnect.receiver.c_str());
 					KIGS_WARNING(str, 3);
+				}
+			}
+			// call methods
+			if (importState.toCall.size())
+			{
+				for (auto& tocall : importState.toCall)
+				{
+					ManageToCall(tocall);
 				}
 			}
 			ReleaseLoadedItems(importState.loadedItems);
@@ -312,6 +321,7 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 	}
 	else if (currentNode->nameOneOf("Ref", "Reference"))
 	{
+		XMLAttributeTemplate< StringType >* DontAdd = currentNode->getAttribute("DontAddAsSon");
 		XMLAttributeTemplate< StringType >* pathAttribute = currentNode->getAttribute("P", "Path");
 		if (pathAttribute)
 		{
@@ -321,6 +331,11 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 				//current->GetRef(); ref already get by searchinstance
 				needInit = false;
 				importState.loadedItems.push_back(current);
+
+				if (DontAdd) // just here to be changed during loading, not to be added
+				{
+					do_not_add_as_son = true;
+				}
 #ifdef KEEP_XML_DOCUMENT
 				current->mXMLNodes[importState.current_xml_file] = currentNode;
 #endif
@@ -566,6 +581,32 @@ void 	CoreModifiable::ImportAttributes(XMLNodeTemplate<StringType>* node, CoreMo
 					std::string ib = InstBAttribute ? (std::string) InstBAttribute->getString() : "this";
 
 					importState.toConnect.push_back(ImportState::ToConnect{ currentModifiable, ia, signal, ib, slot, SetValueAttribute ? (std::string)SetValueAttribute->getString() : "", sonXML });
+				}
+			}
+			else if (sonXML->getName()=="Call")
+			{
+				XMLAttributeTemplate<StringType>* ParamList = sonXML->getAttribute("P","Params");
+				XMLAttributeTemplate<StringType>* MethodName = sonXML->getAttribute("N", "Name");
+				if (MethodName)
+				{
+					std::string plist = "";
+					if (ParamList) // if param attribute found
+					{
+						plist = (std::string)ParamList->getString();
+					}
+					else // check if text son node exists
+					{
+						if (sonXML->getChildCount() == 1)
+						{
+							XMLNodeTemplate<StringType>* textSon = sonXML->getChildElement(0);
+							if ((textSon->getType() == XML_NODE_TEXT_NO_CHECK) || (textSon->getType() == XML_NODE_TEXT))
+							{
+								plist = (std::string)textSon->getString();
+							}
+						}
+					}
+					
+					importState.toCall.push_back(ImportState::ToCall{ currentModifiable, (std::string)MethodName->getString() ,plist });
 				}
 			}
 			else if (sonXML->nameOneOf("RegisterTouchEvent", "REvent"))

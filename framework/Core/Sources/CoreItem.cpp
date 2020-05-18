@@ -202,12 +202,12 @@ CoreItemSP	CoreItemSP::getCoreValue(const usString& s)
 	return CoreItemSP(new CoreValue<usString>(s), StealRefTag{});
 }
 
-CoreItemIterator CoreItemSP::begin()
+CoreItemIterator CoreItemSP::begin() const
 {
 	return myPointer->begin();
 }
 
-CoreItemIterator CoreItemSP::end()
+CoreItemIterator CoreItemSP::end() const
 {
 	return myPointer->end();
 }

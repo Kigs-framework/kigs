@@ -89,8 +89,8 @@ public:
 	}
 
 
-	CoreItemIterator begin();
-	CoreItemIterator end();
+	CoreItemIterator begin() const;
+	CoreItemIterator end() const;
 
 };
 
