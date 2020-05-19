@@ -308,7 +308,7 @@ public:
 	// ******************************
 	
 	SP<ABaseChannel>*   m_pChannelTab;
-	IntU32       m_ChannelsCount;
+	IntU32				m_ChannelsCount;
 	
 	// ******************************
 	// * SortChannels

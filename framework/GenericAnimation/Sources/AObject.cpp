@@ -38,7 +38,6 @@ IMPLEMENT_CLASS_INFO(AObject)
 IMPLEMENT_CONSTRUCTOR(AObject)
 , m_pObject(nullptr)
 {
-	m_ObjectResourceMap.clear();
 	m_pSystemSet.clear();
 }
 
@@ -76,7 +75,7 @@ void		AObject::addUser(CoreModifiable* user)
 	{
 		KIGS_WARNING("AObject : addUser already done", 1);
 	}
-	Drawable::addUser(user);
+	CoreModifiable::addUser(user);
 }
 void		AObject::removeUser(CoreModifiable* user)
 {
@@ -88,7 +87,7 @@ void		AObject::removeUser(CoreModifiable* user)
 	{
 		KIGS_WARNING("AObject : removeUser with bad user", 1);
 	}
-	Drawable::removeUser(user);
+	CoreModifiable::removeUser(user);
 }
 
 
@@ -113,7 +112,7 @@ void    AObject::Animate(ATimeValue t)
 		while(fade_count--)
 		{
 			ALinearInterp*  fade=*it;
-			AnimationResourceInfo* info1=fade->GetData();
+			const KigsID& info1=fade->GetData();
 			
 			bool    finished;
 			Float coef=fade->GetFade(t,finished);
@@ -155,7 +154,7 @@ void			AObject::InitModifiable()
 		return;
 	}
 	
-	Drawable::InitModifiable();
+	CoreModifiable::InitModifiable();
 	
 	if (_isInit)
 	{
@@ -170,7 +169,7 @@ void			AObject::InitModifiable()
 // * - 
 // ******************************
 
-void    AObject::AddAnimation(AnimationResourceInfo* info)
+void    AObject::AddAnimation(const std::string& fname)
 {
 	
 	// +---------
@@ -178,16 +177,19 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 	// | streams, systems ...
 	// +---------
 	
-	if(m_ALinksTable.find(info) != m_ALinksTable.end())
+	if(m_ALinksTable.find(fname) != m_ALinksTable.end())
 	{
 		// this animation is already in the table
 		return;
 	}
-	
-	
+
+	AnimationResourceInfo* info = gGenericAnimationModule->LoadAnimation(fname);
+	if (!info)
+		return;
+
 	ALinks* tmp_links=new ALinks(info,info->GetStreamCount());
 	
-	m_ALinksTable[info]=tmp_links;
+	m_ALinksTable[fname]=tmp_links;
 	
 	kstl::string ClassName;
 	kstl::string StreamClassName;
@@ -196,7 +198,7 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 	
 	if(StreamClassName == "")
 	{
-		auto it = m_ALinksTable.find(info);
+		auto it = m_ALinksTable.find(fname);
 		m_ALinksTable.erase(it);
 		delete tmp_links;
 		return; 
@@ -250,11 +252,12 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 			if(system->UseOwnHierarchy() == true)
 			{
 				// search AObjectSkeletonResource in sons
-				auto itfound = m_ObjectResourceMap.find("AObjectSkeletonResource");
+				std::vector<CMSP>	instances;
+				GetSonInstancesByType("AObjectSkeletonResource", instances);
 				
-				if (itfound != m_ObjectResourceMap.end())
+				if (instances.size())
 				{
-					system->SetHierarchy((AObjectSkeletonResource*)(*itfound).second);
+					system->SetHierarchy((AObjectSkeletonResource*)instances[0].Pointer());
 				}
 			}
 			else
@@ -267,7 +270,7 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 		{
 			
 			
-			auto it = m_ALinksTable.find(info);
+			auto it = m_ALinksTable.find(fname);
 			m_ALinksTable.erase(it);
 			delete tmp_links;
 			
@@ -342,7 +345,7 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 	}
 	else
 	{
-		auto it = m_ALinksTable.find(info);
+		auto it = m_ALinksTable.find(fname);
 		m_ALinksTable.erase(it);
 		delete(tmp_links);
 		if(system->GetValidStream() == nullptr)
@@ -359,7 +362,7 @@ void    AObject::AddAnimation(AnimationResourceInfo* info)
 // * - and if needed destroy the corresponding system
 // ******************************
 
-void    AObject::RemoveAnimation(AnimationResourceInfo* info)
+void    AObject::RemoveAnimation(const KigsID& info)
 {
 	// +---------
 	// | first look for the slot in the list 
@@ -433,7 +436,7 @@ void    AObject::RemoveAnimation(AnimationResourceInfo* info)
 // * 
 // ******************************
 
-void    AObject::SetLocalToGlobalMode(unsigned int system_type, int mode)
+void    AObject::SetLocalToGlobalMode(const KigsID& system_type, int mode)
 {
 	kstl::set<ABaseSystem*>::iterator itbegin = m_pSystemSet.begin();
 	kstl::set<ABaseSystem*>::iterator itend = m_pSystemSet.end();
@@ -594,9 +597,13 @@ AnimationResourceInfo*     AObject::GetAnimationByIndex(IntU32 index)
 // * - 
 // ******************************
 
-void    AObject::StartAnimation(AnimationResourceInfo* info,ATimeValue  t,IntU32* g_id,IntU32 g_count)
+void    AObject::StartAnimation(const KigsID& info,ATimeValue  t,IntU32* g_id,IntU32 g_count)
 {
-	DoForEachStream(info,g_id,g_count,&t,&AObject::StartAnimationFor);
+	const auto& found = m_ALinksTable.find(info);
+	if (found != m_ALinksTable.end())
+	{
+		DoForEachStream((*found).second, g_id, g_count, &t, &AObject::StartAnimationFor);
+	}
 };
 
 
@@ -607,9 +614,13 @@ void    AObject::StartAnimation(AnimationResourceInfo* info,ATimeValue  t,IntU32
 // * 
 // ******************************
 
-void    AObject::SetAnimationPos(AnimationResourceInfo* info,Float  percent,IntU32* g_id,IntU32 g_count)
+void    AObject::SetAnimationPos(const KigsID& info,Float  percent,IntU32* g_id,IntU32 g_count)
 {
-	DoForEachStream(info,g_id,g_count,&percent,&AObject::SetAnimationPosFor);
+	const auto& found = m_ALinksTable.find(info);
+	if (found != m_ALinksTable.end())
+	{
+		DoForEachStream((*found).second, g_id, g_count, &percent, &AObject::SetAnimationPosFor);
+	}
 };
 
 /*!******************************
@@ -625,12 +636,16 @@ struct repeatAnimationParamStruct
 	int			repeatCount;
 };
 
-void    AObject::StartRepeatAnimation(AnimationResourceInfo* info,ATimeValue  t,IntU32 n,IntU32* g_id,IntU32 g_count)
+void    AObject::StartRepeatAnimation(const KigsID& info,ATimeValue  t,IntU32 n,IntU32* g_id,IntU32 g_count)
 {
-	repeatAnimationParamStruct params;
-	params.repeatCount = n;
-	params.t = t;
-	DoForEachStream(info,g_id,g_count,&params,&AObject::StartRepeatAnimationFor);
+	const auto& found = m_ALinksTable.find(info);
+	if (found != m_ALinksTable.end())
+	{
+		repeatAnimationParamStruct params;
+		params.repeatCount = n;
+		params.t = t;
+		DoForEachStream((*found).second, g_id, g_count, &params, &AObject::StartRepeatAnimationFor);
+	}
 };
 
 // ******************************
@@ -640,9 +655,13 @@ void    AObject::StartRepeatAnimation(AnimationResourceInfo* info,ATimeValue  t,
 // * - 
 // ******************************
 
-void    AObject::StopAnimation(AnimationResourceInfo* info,IntU32* g_id,IntU32 g_count)
+void    AObject::StopAnimation(const KigsID& info,IntU32* g_id,IntU32 g_count)
 {
-	DoForEachStream(info,g_id,g_count,nullptr,&AObject::StopAnimationFor);
+	const auto& found = m_ALinksTable.find(info);
+	if (found != m_ALinksTable.end())
+	{
+		DoForEachStream((*found).second, g_id, g_count, nullptr, &AObject::StopAnimationFor);
+	}
 };
 
 // ******************************
@@ -658,7 +677,7 @@ void    AObject::StopAllAnimations(IntU32* g_id,IntU32 g_count)
 	for(auto it=m_ALinksTable.begin();it!=m_ALinksTable.end();++it)
 	{
 		ALinks* tmp_links=(ALinks*)(*it).second;
-		DoForEachStream(tmp_links->GetAnimResourceInfo(), g_id,g_count,nullptr,&AObject::StopAnimationFor);
+		DoForEachStream(tmp_links, g_id,g_count,nullptr,&AObject::StopAnimationFor);
 	}
 };
 
@@ -669,9 +688,13 @@ void    AObject::StopAllAnimations(IntU32* g_id,IntU32 g_count)
 // * - 
 // ******************************
 
-void    AObject::ResumeAnimation(AnimationResourceInfo* info,ATimeValue  t,IntU32* g_id,IntU32 g_count)
+void    AObject::ResumeAnimation(const KigsID& info,ATimeValue  t,IntU32* g_id,IntU32 g_count)
 {
-	DoForEachStream(info,g_id,g_count,&t,&AObject::ResumeAnimationFor);
+	const auto& found = m_ALinksTable.find(info);
+	if (found != m_ALinksTable.end())
+	{
+		DoForEachStream((*found).second, g_id, g_count, &t, &AObject::ResumeAnimationFor);
+	}
 };
 
 // ******************************
@@ -681,9 +704,13 @@ void    AObject::ResumeAnimation(AnimationResourceInfo* info,ATimeValue  t,IntU3
 // * - 
 // ******************************
 
-void    AObject::SetAnimationWeight(AnimationResourceInfo* info,Float weight,IntU32* g_id,IntU32 g_count)
+void    AObject::SetAnimationWeight(const KigsID& info,Float weight,IntU32* g_id,IntU32 g_count)
 {
-	DoForEachStream(info,g_id,g_count,&weight,&AObject::SetAnimationWeightFor);
+	const auto& found = m_ALinksTable.find(info);
+	if (found != m_ALinksTable.end())
+	{
+		DoForEachStream((*found).second, g_id, g_count, &weight, &AObject::SetAnimationWeightFor);
+	}
 };
 
 // ******************************
@@ -693,9 +720,13 @@ void    AObject::SetAnimationWeight(AnimationResourceInfo* info,Float weight,Int
 // * - 
 // ******************************
 
-void    AObject::SetAnimationSpeed(AnimationResourceInfo* info,Float speed,IntU32* g_id,IntU32 g_count)
+void    AObject::SetAnimationSpeed(const KigsID& info,Float speed,IntU32* g_id,IntU32 g_count)
 {
-	DoForEachStream(info,g_id,g_count,&speed,&AObject::SetAnimationSpeedFor);
+	const auto& found = m_ALinksTable.find(info);
+	if (found != m_ALinksTable.end())
+	{
+		DoForEachStream((*found).second, g_id, g_count, &speed, &AObject::SetAnimationSpeedFor);
+	}
 };
 
 
@@ -706,9 +737,13 @@ void    AObject::SetAnimationSpeed(AnimationResourceInfo* info,Float speed,IntU3
 // * - 
 // ******************************
 
-void    AObject::MulAnimationWeight(AnimationResourceInfo* info,Float weight,IntU32* g_id,IntU32 g_count)
+void    AObject::MulAnimationWeight(const KigsID& info,Float weight,IntU32* g_id,IntU32 g_count)
 {
-	DoForEachStream(info,g_id,g_count,&weight,&AObject::MulAnimationWeightFor);
+	const auto& found = m_ALinksTable.find(info);
+	if (found != m_ALinksTable.end())
+	{
+		DoForEachStream((*found).second, g_id, g_count, &weight, &AObject::MulAnimationWeightFor);
+	}
 };
 
 // ******************************
@@ -718,9 +753,13 @@ void    AObject::MulAnimationWeight(AnimationResourceInfo* info,Float weight,Int
 // * - 
 // ******************************
 
-void    AObject::MulAnimationSpeed(AnimationResourceInfo* info,Float speed,IntU32* g_id,IntU32 g_count)
+void    AObject::MulAnimationSpeed(const KigsID& info,Float speed,IntU32* g_id,IntU32 g_count)
 {
-	DoForEachStream(info,g_id,g_count,&speed,&AObject::MulAnimationSpeedFor);
+	const auto& found = m_ALinksTable.find(info);
+	if (found != m_ALinksTable.end())
+	{
+		DoForEachStream((*found).second, g_id, g_count, &speed, &AObject::MulAnimationSpeedFor);
+	}
 };
 
 // ******************************
@@ -730,7 +769,7 @@ void    AObject::MulAnimationSpeed(AnimationResourceInfo* info,Float speed,IntU3
 // * - 
 // ******************************
 
-void    AObject::FadeAnimationTo(AnimationResourceInfo* info1,AnimationResourceInfo* info2,ATimeValue  fade_length,ATimeValue  t)
+void    AObject::FadeAnimationTo(const KigsID& info1, const KigsID& info2,ATimeValue  fade_length,ATimeValue  t)
 {
 	
 	if(m_ALinksTable.find(info1) == m_ALinksTable.end())
@@ -788,7 +827,7 @@ void    AObject::FadeAnimationTo(AnimationResourceInfo* info1,AnimationResourceI
 // *  as animation2 reach is local time synchro2
 // ******************************
 
-void    AObject::SynchroniseAnimations(AnimationResourceInfo* info1,AnimationResourceInfo* info2,ATimeValue  synchro1,ATimeValue  synchro2)
+void    AObject::SynchroniseAnimations(const KigsID& info1, const KigsID& info2,ATimeValue  synchro1,ATimeValue  synchro2)
 {
 	// +---------
 	// | first look for the slot in the list 
@@ -843,7 +882,7 @@ void    AObject::SynchroniseAnimations(AnimationResourceInfo* info1,AnimationRes
 // * - 
 // ******************************
 
-bool    AObject::HasAnimationLoop(AnimationResourceInfo* info1)
+bool    AObject::HasAnimationLoop(const KigsID& info1)
 {
 	
 	if(m_ALinksTable.find(info1) == m_ALinksTable.end())
@@ -875,7 +914,7 @@ bool    AObject::HasAnimationLoop(AnimationResourceInfo* info1)
 // * - 
 // ******************************
 
-bool    AObject::AnimationIsSet(AnimationResourceInfo* info1)
+bool    AObject::AnimationIsSet(const KigsID& info1)
 {
 	if(m_ALinksTable.find(info1) == m_ALinksTable.end())
 	{
@@ -893,9 +932,13 @@ bool    AObject::AnimationIsSet(AnimationResourceInfo* info1)
 // * - 
 // ******************************
 
-void    AObject::SetLoop(AnimationResourceInfo* info,bool loop,IntU32* g_id,IntU32 g_count)
+void    AObject::SetLoop(const KigsID& info,bool loop,IntU32* g_id,IntU32 g_count)
 {
-	DoForEachStream(info,g_id,g_count,&loop,&AObject::SetLoopFor);
+	const auto& found = m_ALinksTable.find(info);
+	if (found != m_ALinksTable.end())
+	{
+		DoForEachStream((*found).second, g_id, g_count, &loop, &AObject::SetLoopFor);
+	}
 };
 
 // ******************************
@@ -905,7 +948,7 @@ void    AObject::SetLoop(AnimationResourceInfo* info,bool loop,IntU32* g_id,IntU
 // * - 
 // ******************************
 
-bool    AObject::HasAnimationReachEnd(AnimationResourceInfo* info1)
+bool    AObject::HasAnimationReachEnd(const KigsID& info1)
 {
 	
 	if(m_ALinksTable.find(info1) == m_ALinksTable.end())
@@ -966,20 +1009,10 @@ void    AObject::RemoveSystem(ABaseSystem* system)
 // * - 
 // ******************************
 
-void    AObject::DoForEachStream(AnimationResourceInfo* info,IntU32* g_id,IntU32 g_count,void* params,void (AObject::*callfunc)(ABaseStream* stream,void* param))
+void    AObject::DoForEachStream(ALinks* info,IntU32* g_id,IntU32 g_count,void* params,void (AObject::*callfunc)(ABaseStream* stream,void* param))
 {
-	// +---------
-	// | first look for the slot in the list 
-	// +---------
-	
-	if(m_ALinksTable.find(info) == m_ALinksTable.end())
-	{
-		return;
-	}
-	
-	ALinks* tmp_links=(ALinks*)m_ALinksTable[info];
-	
-	if(tmp_links == nullptr)
+
+	if(info == nullptr)
 	{
 		// this animation is not in the table
 		return;
@@ -993,10 +1026,10 @@ void    AObject::DoForEachStream(AnimationResourceInfo* info,IntU32* g_id,IntU32
 		if(g_count == 0)
 		{
 			// construct g_id list from the given g_id
-			ABaseChannel* channel=tmp_links->GetSystem()->GetChannelByUID(g_id[0]);
+			ABaseChannel* channel= info->GetSystem()->GetChannelByUID(g_id[0]);
 			if(channel != nullptr)
 			{
-				id_list=tmp_links->GetSystem()->GetSonGroupIDList(channel,id_count);
+				id_list= info->GetSystem()->GetSonGroupIDList(channel,id_count);
 			}
 		}
 		else
@@ -1006,11 +1039,11 @@ void    AObject::DoForEachStream(AnimationResourceInfo* info,IntU32* g_id,IntU32
 		
 		IntU32    i;
 		
-		for(i=0;i<tmp_links->GetStreamCount();++i)
+		for(i=0;i< info->GetStreamCount();++i)
 		{
-			if(IsInGroupIDList((tmp_links->GetStreamArray())[i]->GetChannel()->GetGroupID(),id_list,id_count))
+			if(IsInGroupIDList((info->GetStreamArray())[i]->GetChannel()->GetGroupID(),id_list,id_count))
 			{
-				(this->*callfunc)((tmp_links->GetStreamArray())[i],params);
+				(this->*callfunc)((info->GetStreamArray())[i],params);
 			}
 		}
 		if(g_count == 0)
@@ -1023,9 +1056,9 @@ void    AObject::DoForEachStream(AnimationResourceInfo* info,IntU32* g_id,IntU32
 	{
 		IntU32    i;
 		
-		for(i=0;i<tmp_links->GetStreamCount();++i)
+		for(i=0;i< info->GetStreamCount();++i)
 		{
-			(this->*callfunc)((tmp_links->GetStreamArray())[i],params);
+			(this->*callfunc)((info->GetStreamArray())[i],params);
 		}
 	}
 };
@@ -1175,52 +1208,27 @@ bool	AObject::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType(AObjectResource::myClassID))
 	{
-		// search if this resource type is already there
-		auto itfound = m_ObjectResourceMap.find(item->getExactType());
-		
-		if (itfound != m_ObjectResourceMap.end())
+		// only one skeleton per AObject
+		std::vector<CMSP>	instances;
+		GetSonInstancesByType("AObjectSkeletonResource", instances);
+		if(instances.size())
 		{
-			CMSP toDel((*itfound).second, GetRefTag{});
-			removeItem(toDel);
-		}
-		
-		m_ObjectResourceMap[item->getExactType()] = (AObjectResource*)item.get();
-	}
-	return Drawable::addItem(item, pos PASS_LINK_NAME(linkName));
-}
-
-bool	AObject::removeItem(const CMSP& item DECLARE_LINK_NAME)
-{
-	if(item->isSubType(AObjectResource::myClassID))
-	{
-		auto	itfound= m_ObjectResourceMap.find(item->getExactType());
-		
-		if (itfound != m_ObjectResourceMap.end())
-		{
-			m_ObjectResourceMap.erase(itfound);
+			removeItem(instances[0]);
 		}
 	}
-	return Drawable::removeItem(item PASS_LINK_NAME(linkName));
+	return CoreModifiable::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
 
-void AObject::DoPreDraw(TravState * state)
+
+void AObject::Update(const Timer& timer, void* addParam)
 {
-	//! update 
-	//Animate(((kfloat)state->GetTime()));
 	kstl::set<ABaseSystem*>::iterator itbegin = m_pSystemSet.begin();
 	kstl::set<ABaseSystem*>::iterator itend = m_pSystemSet.end();
-	while(itbegin != itend)
+	while (itbegin != itend)
 	{
 		(*itbegin)->SetupDraw();
 		++itbegin;
 	}
-	
-	//! then call Base DoPreDraw
-	Drawable::DoPreDraw(state);
-}
-
-void AObject::Update(const Timer& timer, void* addParam)
-{
 	Animate(timer.GetTime());
 }

@@ -25,6 +25,9 @@
 
 class AObject;
 class AAnimatedValue;
+class GenericAnimationModule;
+
+extern GenericAnimationModule* gGenericAnimationModule;
 
 class GenericAnimationModule : public ModuleBase
 {
@@ -71,7 +74,7 @@ public:
 		while (itc != ite)
 		{
 			CMSP toAdd((*itc).second, GetRefTag{});
-			(*itc).first->addItem(toAdd);
+			(*itc).first->addItem(toAdd,CoreModifiable::First);
 			itc++;
 		}
 		postAddShaderList.clear();
