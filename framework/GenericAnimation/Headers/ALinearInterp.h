@@ -36,7 +36,7 @@ public:
         a duration, and the data to interpolate
     */
     // *******************
-    ALinearInterp(Float start,Float end,ATimeValue start_t,ATimeValue l_t, AnimationResourceInfo* data) :
+    ALinearInterp(Float start,Float end,ATimeValue start_t,ATimeValue l_t, const KigsID& data) :
 		  m_StartingValue(start)
 		, m_EndingMinusStartingValue(end - start)
 		, m_TimeCoef(KFLOAT_CONST(1.0f) / (Float)l_t)
@@ -96,7 +96,7 @@ public:
     */ 
     // *******************
 
-	AnimationResourceInfo*   GetData()
+	const KigsID&   GetData() const
     {
         return m_Data;
     };
@@ -108,7 +108,7 @@ protected:
     Float						m_EndingMinusStartingValue;
     Float						m_TimeCoef;
     ATimeValue					m_StartingTime;
-	AnimationResourceInfo*      m_Data;
+	KigsID                      m_Data;
 };
 
 

@@ -14,7 +14,7 @@
 #ifndef __AOBJECT_H__
 #define __AOBJECT_H__
 
-#include "Drawable.h"
+#include "CoreModifiable.h"
 #include "AMDefines.h"
 #include "ALinks.h"
 // +---------
@@ -45,9 +45,9 @@ struct sortSystems {
 */
 // +---------
 
-class   AObject : public Drawable
+class   AObject : public CoreModifiable
 {
-	DECLARE_CLASS_INFO(AObject, Drawable, Animation);
+	DECLARE_CLASS_INFO(AObject, CoreModifiable, Animation);
 	DECLARE_CONSTRUCTOR(AObject);
 	WRAP_METHODS(	AddAnimation,
 					RemoveAnimation,
@@ -77,25 +77,12 @@ public:
 	
 	// catch resource manager add & remove
 	bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
-	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 	
 	//! overloaded to be notified when added to or removed from an animated object
 	void		addUser(CoreModifiable* user) override;
 	void		removeUser(CoreModifiable* user) override;
 	
 	
-	void	DoPreDraw(TravState*) override;
-	bool	
-		BBoxUpdate(kdouble /* time */) override
-	{
-		return false;
-	}
-	
-	
-	unsigned int	GetSelfDrawingNeeds() override
-	{
-		return ((unsigned int)Need_Predraw);
-	}
     // ******************************
     // * GetObject
     // *-----------------------------
@@ -126,7 +113,7 @@ public:
     */ 
     // ******************************/
 	
-    void    AddAnimation(AnimationResourceInfo* info);
+    void    AddAnimation(const std::string& info);
 	
 	
     // ******************************
@@ -136,7 +123,7 @@ public:
     */ 
     // ******************************
 	
-    void    RemoveAnimation(AnimationResourceInfo* info);
+    void    RemoveAnimation(const KigsID& info);
 	
 	
     // ******************************
@@ -146,7 +133,7 @@ public:
     */ 
     // ******************************
 	
-    void    StartAnimation(AnimationResourceInfo* info,ATimeValue  t,IntU32* g_id=NULL,IntU32 g_count=0);
+    void    StartAnimation(const KigsID& info,ATimeValue  t,IntU32* g_id=NULL,IntU32 g_count=0);
 	
 	
     // ******************************
@@ -156,7 +143,7 @@ public:
     */ 
     // ******************************
 	
-    void    SetAnimationPos(AnimationResourceInfo* info,Float  percent,IntU32* g_id=NULL,IntU32 g_count=0);
+    void    SetAnimationPos(const KigsID& info,Float  percent,IntU32* g_id=NULL,IntU32 g_count=0);
 	
 	
     // ******************************
@@ -166,7 +153,7 @@ public:
     */ 
     // ******************************
 	
-    void    StartRepeatAnimation(AnimationResourceInfo* info,ATimeValue  t,IntU32 n,IntU32* g_id=NULL,IntU32 g_count=0);
+    void    StartRepeatAnimation(const KigsID& info,ATimeValue  t,IntU32 n,IntU32* g_id=NULL,IntU32 g_count=0);
 	
 	
     // ******************************
@@ -176,7 +163,7 @@ public:
     */ 
     // ******************************
 	
-    void    StopAnimation(AnimationResourceInfo* info,IntU32* g_id=NULL,IntU32 g_count=0);
+    void    StopAnimation(const KigsID& info,IntU32* g_id=NULL,IntU32 g_count=0);
 	
 	
 	// ******************************
@@ -198,7 +185,7 @@ public:
     */ 
     // ******************************
 	
-    void    ResumeAnimation(AnimationResourceInfo* info,ATimeValue  t,IntU32* g_id=NULL,IntU32 g_count=0);
+    void    ResumeAnimation(const KigsID& info,ATimeValue  t,IntU32* g_id=NULL,IntU32 g_count=0);
 	
 	
     // ******************************
@@ -208,7 +195,7 @@ public:
     */ 
     // ******************************
 	
-    void    SetAnimationWeight(AnimationResourceInfo* info,Float weight,IntU32* g_id=NULL,IntU32 g_count=0);
+    void    SetAnimationWeight(const KigsID& info,Float weight,IntU32* g_id=NULL,IntU32 g_count=0);
 	
 	
     // ******************************
@@ -218,7 +205,7 @@ public:
     */ 
     // ******************************
 	
-    void    SetAnimationSpeed(AnimationResourceInfo* info,Float speed,IntU32* g_id=NULL,IntU32 g_count=0);
+    void    SetAnimationSpeed(const KigsID& info,Float speed,IntU32* g_id=NULL,IntU32 g_count=0);
 	
 	
     // ******************************
@@ -228,7 +215,7 @@ public:
     */ 
     // ******************************
 	
-    void    MulAnimationWeight(AnimationResourceInfo* info,Float weight,IntU32* g_id=NULL,IntU32 g_count=0);
+    void    MulAnimationWeight(const KigsID& info,Float weight,IntU32* g_id=NULL,IntU32 g_count=0);
 	
 	
     // ******************************
@@ -238,7 +225,7 @@ public:
     */ 
     // ******************************
 	
-    void    MulAnimationSpeed(AnimationResourceInfo* info,Float speed,IntU32* g_id=NULL,IntU32 g_count=0);
+    void    MulAnimationSpeed(const KigsID& info,Float speed,IntU32* g_id=NULL,IntU32 g_count=0);
 	
     // ******************************
 	
@@ -248,7 +235,7 @@ public:
     */
     // ******************************
 	
-    void    SetLoop(AnimationResourceInfo* info,bool loop,IntU32* g_id=NULL,IntU32 g_count=0);
+    void    SetLoop(const KigsID& info,bool loop,IntU32* g_id=NULL,IntU32 g_count=0);
 	
 	
     // ******************************
@@ -258,7 +245,7 @@ public:
     */ 
     // ******************************
 	
-    void    FadeAnimationTo(AnimationResourceInfo* info1,AnimationResourceInfo* info2,ATimeValue  fade_length,ATimeValue  t);
+    void    FadeAnimationTo(const KigsID& info1, const KigsID& info2,ATimeValue  fade_length,ATimeValue  t);
 	
 	
     // ******************************
@@ -270,7 +257,7 @@ public:
     */  
     // ******************************
 	
-    void    SynchroniseAnimations(AnimationResourceInfo* info1,AnimationResourceInfo* info2,ATimeValue  synchro1,ATimeValue  synchro2);
+    void    SynchroniseAnimations(const KigsID& info1, const KigsID& info2,ATimeValue  synchro1,ATimeValue  synchro2);
 	
 	
 	
@@ -281,7 +268,7 @@ public:
     */ 
     // ******************************
 	
-    bool    HasAnimationLoop(AnimationResourceInfo* info1);
+    bool    HasAnimationLoop(const KigsID& info1);
 	
 	
     // ******************************
@@ -291,7 +278,7 @@ public:
     */ 
     // ******************************
 	
-    bool    AnimationIsSet(AnimationResourceInfo* info1);
+    bool    AnimationIsSet(const KigsID& info1);
 	
 	
     // ******************************
@@ -302,7 +289,7 @@ public:
     */ 
     // ******************************/
 	
-    bool    HasAnimationReachEnd(AnimationResourceInfo* info1);
+    bool    HasAnimationReachEnd(const KigsID& info1);
 	
 	
     // ******************************
@@ -344,7 +331,7 @@ public:
     */ 
     // ******************************/
 	
-    void    SetLocalToGlobalMode(unsigned int system_type, int mode);
+    void    SetLocalToGlobalMode(const KigsID& system_type, int mode);
 	
 	
     // ----------------------------------------------------------------------------
@@ -416,7 +403,7 @@ public:
 		while(m_ALinksTable.size())
 		{
 			auto it1 = m_ALinksTable.begin();
-			RemoveAnimation(it1->second->GetAnimResourceInfo());
+			RemoveAnimation(it1->first);
         }
     };
 	
@@ -434,13 +421,11 @@ public:
     // | protected members
     // +---------
 	
-	
+ protected:
 	CoreModifiable*										m_pObject;
-	kstl::unordered_map<void*,ALinks*>							m_ALinksTable;
+	kstl::unordered_map<KigsID,ALinks*>					m_ALinksTable;
 	kstl::vector<ALinearInterp*>						m_FadeList;
     kstl::set<ABaseSystem*, sortSystems>				m_pSystemSet;
-	kstl::unordered_map<KigsID, AObjectResource*>		m_ObjectResourceMap;
-	//int													m_animCount;
 	
     // ******************************
     // * System management
@@ -487,8 +472,8 @@ public:
     /*! call the given methods for all streams given in the g_id list
     */ 
     // ******************************
-    
-    void    DoForEachStream(AnimationResourceInfo* info,IntU32* g_id,IntU32 g_count,void* params,void (AObject::*func)(ABaseStream* stream,void* param));
+
+    void    DoForEachStream(ALinks* info,IntU32* g_id,IntU32 g_count,void* params,void (AObject::*func)(ABaseStream* stream,void* param));
 	
     void    StartAnimationFor(ABaseStream* stream,void* param);
 	

@@ -333,9 +333,6 @@ public:
 		IterateFATTree(myRootFATEntry, "", f);
 	}
 
-// create packages only in KIGS_TOOLS mode
-#ifdef KIGS_TOOLS
-
 	static CorePackage *	CreateNewEmptyPackage()
 	{
 		CorePackage* package = new CorePackage();
@@ -352,7 +349,6 @@ public:
 
 	void	ImportPackage(CorePackage* to_import);
 
-#endif
 
 private:
 	SmartPointer<FileHandle>	myMainFile;
@@ -380,8 +376,6 @@ private:
 	// return true if everything is OK, else return false
 	bool	initFAT();
 
-
-#ifdef KIGS_TOOLS
 
 #ifdef WIN32
 	void	RecursiveAddFolder(const std::string& foldername, const std::string& FolderNameInPackage, int cropFilePath);
@@ -450,7 +444,6 @@ private:
 	};
 
 	PackageCreationStruct*	myPackageBuilderStruct = nullptr;
-#endif
 	
 };
 

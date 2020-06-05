@@ -12,6 +12,8 @@
 #include "Bones/APRSControlStream.h"
 #include "Bones/AObjectSkeletonResource.h"
 
+GenericAnimationModule* gGenericAnimationModule = nullptr;
+
 IMPLEMENT_CLASS_INFO(GenericAnimationModule)
 
 //! constructor
@@ -21,12 +23,15 @@ GenericAnimationModule::GenericAnimationModule(const kstl::string& name,CLASS_NA
 	myResourceInfoMap.clear();
 
 	postAddShaderList.clear();
+
+	gGenericAnimationModule = this;
 }
 
 
 //! destructor
 GenericAnimationModule::~GenericAnimationModule()
 {
+	gGenericAnimationModule = nullptr;
 }    
 
 //! module init, register FilePathManager

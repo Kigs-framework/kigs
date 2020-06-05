@@ -138,7 +138,7 @@ protected:
     */
     // ******************************
 
-    AnimationResourceInfo* GetAnimResourceInfo()
+    AnimationResourceInfo* GetAnimResourceInfo() const
     {
         return m_pAnimResourceInfo;
     };

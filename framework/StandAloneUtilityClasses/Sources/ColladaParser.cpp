@@ -2286,11 +2286,12 @@ CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
 	auto& joints = controller->joints_table;
 	XMLNodeStringRef* skeleton_root = nullptr;
 	for (int i = 0; i < controller_node->getChildCount(); i++)
-	{
-		if (controller_node->getChildElement(i) == nullptr) continue;
-		
+	{	
 		XMLNodeStringRef* child = controller_node->getChildElement(i);
 		
+		if (child == nullptr)
+			continue;
+
 		// Parse material
 		if (child->getName() == "bind_material")
 		{
@@ -2322,6 +2323,8 @@ CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
 		}
 	}
 	
+	SP<AObjectSkeletonResource> skeleton_resource(nullptr);
+
 	// Remaining joints not found
 	if(remainings_sids.size())
 	{
@@ -2335,7 +2338,7 @@ CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
 	else
 	{
 		// TODO(antoine) what happens if the joints are separated by nodes that are not in the joint list?
-		SP<AObjectSkeletonResource> skeleton_resource = KigsCore::GetInstanceOf("skeleton_resource", "AObjectSkeletonResource");
+		skeleton_resource = KigsCore::GetInstanceOf("skeleton_resource", "AObjectSkeletonResource");
 		
 		// Init skeleton resource
 		skeleton_resource->initSkeleton(joints.size(), sizeof(PRSKey));
@@ -2396,7 +2399,7 @@ CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
 		
 		//TODO(antoine) Save skeleton binary data in xml in base64
 		// Export skeleton resource (.SKL)
-		skeleton_resource->setValue(LABEL_TO_ID(SkeletonFileName), shortFileName + "_" + make_string(((XMLNodeStringRef*)controller_node->getParent())->getAttribute("id")->getString()) + ".skl");
+		skeleton_resource->setValue("SkeletonFileName", shortFileName + "_" + make_string(((XMLNodeStringRef*)controller_node->getParent())->getAttribute("id")->getString()) + ".skl");
 		skeleton_resource->Export();
 		
 	}
@@ -2415,12 +2418,22 @@ CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
 		XMLNodeStringRef* mesh_node = SearchNode(geometry_lib, "geometry", "id", source);
 		toAdd = ParseMesh(mesh_node->getChildElement("mesh"), source, controller);
 	}
+
+	// add animated object with skeleton directly on the mesh
+	if (toAdd && skeleton_resource)
+	{
+		CMSP aobject=KigsCore::GetInstanceOf(source + "AObject", "AObject");
+		KigsCore::GetCoreApplication()->AddAutoUpdate(aobject.get());
+		aobject->addItem(skeleton_resource);
+		toAdd->addItem(aobject);
+	}
+
 	return toAdd;
 }
 
 static std::pair<unsigned int, unsigned int> GetAnimationSizeAndCount(AnimationData* anim)
 {
-	std::pair<unsigned int, unsigned int> size_and_count{0,0};
+ 	std::pair<unsigned int, unsigned int> size_and_count{0,0};
 	
 	for(auto& channel : anim->channels)
 	{

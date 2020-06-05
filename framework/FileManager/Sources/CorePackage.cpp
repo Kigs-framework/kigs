@@ -2,12 +2,12 @@
 #include "CorePackage.h"
 #include "FilePathManager.h"
 
-#ifdef KIGS_TOOLS
+
 #ifdef WIN32
 #include <windows.h>
 #include <algorithm>
 #endif
-#endif
+
 
 void	CorePackage::ParseFATBuffer(unsigned char*& fatBuffer, FATEntryNode* current)
 {
@@ -171,7 +171,6 @@ bool	CorePackage::initFAT()
 	return true;
 }
 
-#ifdef KIGS_TOOLS
 
 void	CorePackage::AddFile(const kstl::string& filename, const kstl::string& filePathInPackage)
 {
@@ -573,8 +572,6 @@ CorePackage::PackageCreationStruct::FileTreeNode	CorePackage::PackageCreationStr
 
 	return root;
 }
-
-#endif
 
 bool		CorePackageFileAccess::Platform_fopen(FileHandle* handle, const char * mode)
 {

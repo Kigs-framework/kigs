@@ -1562,7 +1562,8 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 						renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_TANGENT_ID, current.elemCount, KIGS_BYTE, false, myVertexSize, (void*)current.startpos, locs);
 						break;
 					case ModuleRenderer::BONE_WEIGHT_ARRAY_MASK:
-						renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_BONE_WEIGHT_ID, current.elemCount, KIGS_UNSIGNED_BYTE, false, myVertexSize, (void*)current.startpos, locs);
+						// normalize needs to be set to true for weight to be in [0.0,1.0] GPU side 
+						renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_BONE_WEIGHT_ID, current.elemCount, KIGS_UNSIGNED_BYTE, true, myVertexSize, (void*)current.startpos, locs);
 						break;
 					case ModuleRenderer::BONE_INDEX_ARRAY_MASK:
 						renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_BONE_INDEX_ID, current.elemCount, KIGS_UNSIGNED_BYTE, false, myVertexSize, (void*)current.startpos, locs);
