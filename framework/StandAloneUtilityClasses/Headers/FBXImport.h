@@ -62,7 +62,22 @@ protected:
 	FbxDouble3 ParseMaterialProperty(const FbxSurfaceMaterial * pMaterial, const char * pPropertyName, const char * pFactorPropertyName, kstl::string & pTextureName);
 	void ImportTexture(Material* material, kstl::string textureName, int texture_channel=0);
 
+	struct vertex_weights
+	{
+		unsigned char index[4];
+		unsigned char weight[4];
+	};
 
+	struct SkinController
+	{
+		std::vector<Matrix3x4>		joints_inv_bind_matrix;
+		//Per vertex weights
+		std::vector<vertex_weights> weights;
+		std::vector<FbxNode*>		boneList;
+	};
+	SkinController	ParseSkinInfos(FbxSkin* node, FbxMesh* pMesh);
+
+	void	ParseAnimations(SkinController& skin);
 	//Exporter
 	void ExportResult();
 
@@ -104,6 +119,9 @@ protected:
 
 	kstl::map<kstl::string, MaterialStruct>	m_materialList;
 	SP<Node3D>			RootNode;
+
+	FbxScene*		m_Scene;
+	FbxImporter*	m_Importer;
 
 	//statistique
 	int nbrUniqueMesh;
