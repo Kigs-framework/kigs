@@ -22,6 +22,7 @@
 
 #include "AttributePacking.h"
 #include "AttributeModifier.h"
+#include "JSonFileParser.h"
 
 #include "Upgrador.h"
 
