@@ -163,6 +163,7 @@ void OpenGLRenderingState::ProtectedInitHardwareState()
 	glDepthMask(GL_TRUE);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_SCISSOR_TEST);
+	glBlendColor(0, 0, 0, 1.0f);
 
 	//glClearColor(myGlobalRedClearValueFlag, myGlobalGreenClearValueFlag, myGlobalBlueClearValueFlag, myGlobalAlphaClearValueFlag);
 }
@@ -238,7 +239,7 @@ void OpenGLRenderingState::FlushState(RenderingState* currentState, bool force)
 		otherOne->myGlobalBlendValue2Flag = myGlobalBlendValue2Flag;
 		int blendvalue1 = (int)myGlobalBlendValue1Flag;
 		int blendvalue2 = (int)myGlobalBlendValue2Flag;
-		GLenum sfactor;
+		GLenum sfactor,dfactor;
 		//GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 
 		//GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, and GL_SRC_ALPHA_SATURATE
 		if (blendvalue1 == 0) {
@@ -290,49 +291,50 @@ void OpenGLRenderingState::FlushState(RenderingState* currentState, bool force)
 		}
 
 		if (blendvalue2 == 0) {
-			glBlendFunc(sfactor, GL_ZERO); CHECK_GLERROR;
+			dfactor = GL_ZERO;
 		}
 		else if (blendvalue2 == 1) {
-			glBlendFunc(sfactor, GL_ONE); CHECK_GLERROR;
+			dfactor = GL_ONE;
 		}
 		else if (blendvalue2 == 2) {
-			glBlendFunc(sfactor, GL_SRC_COLOR); CHECK_GLERROR;
+			dfactor = GL_SRC_COLOR;
 		}
 		else if (blendvalue2 == 3) {
-			glBlendFunc(sfactor, GL_ONE_MINUS_SRC_COLOR); CHECK_GLERROR;
+			dfactor = GL_ONE_MINUS_SRC_COLOR;
 		}
 		else if (blendvalue2 == 4) {
-			glBlendFunc(sfactor, GL_DST_COLOR); CHECK_GLERROR;
+			dfactor = GL_DST_COLOR;
 		}
 		else if (blendvalue2 == 5) {
-			glBlendFunc(sfactor, GL_ONE_MINUS_DST_COLOR); CHECK_GLERROR;
+			dfactor = GL_ONE_MINUS_DST_COLOR;
 		}
 		else if (blendvalue2 == 6) {
-			glBlendFunc(sfactor, GL_SRC_ALPHA); CHECK_GLERROR;
+			dfactor = GL_SRC_ALPHA;
 		}
 		else if (blendvalue2 == 7) {
-			glBlendFunc(sfactor, GL_ONE_MINUS_SRC_ALPHA); CHECK_GLERROR;
+			dfactor = GL_ONE_MINUS_SRC_ALPHA;
 		}
 		else if (blendvalue2 == 8) {
-			glBlendFunc(sfactor, GL_DST_ALPHA); CHECK_GLERROR;
+			dfactor = GL_DST_ALPHA;
 		}
 		else if (blendvalue2 == 9) {
-			glBlendFunc(sfactor, GL_ONE_MINUS_DST_ALPHA); CHECK_GLERROR;
+			dfactor = GL_ONE_MINUS_DST_ALPHA;
 		}
 #ifdef WIN32
 		else if (blendvalue2 == 10) {
-			glBlendFunc(sfactor, GL_CONSTANT_COLOR); CHECK_GLERROR;
+			dfactor = GL_CONSTANT_COLOR;
 		}
 		else if (blendvalue2 == 11) {
-			glBlendFunc(sfactor, GL_ONE_MINUS_CONSTANT_COLOR); CHECK_GLERROR;
+			dfactor = GL_ONE_MINUS_CONSTANT_COLOR;
 		}
 		else if (blendvalue2 == 12) {
-			glBlendFunc(sfactor, GL_CONSTANT_ALPHA); CHECK_GLERROR;
+			dfactor = GL_CONSTANT_ALPHA;
 		}
 		else {
-			glBlendFunc(sfactor, GL_ONE_MINUS_CONSTANT_ALPHA); CHECK_GLERROR;
+			dfactor = GL_ONE_MINUS_CONSTANT_ALPHA;
 		}
 #endif
+		glBlendFuncSeparate(sfactor, dfactor, GL_ONE, GL_ONE); CHECK_GLERROR;
 	}
 
 	if (force || myGlobalDepthMaskFlag != otherOne->myGlobalDepthMaskFlag) {

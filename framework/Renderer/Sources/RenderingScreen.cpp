@@ -46,12 +46,13 @@ IMPLEMENT_CONSTRUCTOR(RenderingScreen)
 void RenderingScreen::Update(const Timer&  timer, void* addParam)
 {
 	ModuleSpecificRenderer* renderer = ((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->SetClearColorValue(myBackDropColor[0], myBackDropColor[1], myBackDropColor[2], 0.0);
+	renderer->SetClearColorValue(myBackDropColor[0], myBackDropColor[1], myBackDropColor[2], 1.0);
 	renderer->FlushState();
 	// if wasn't activated, no camera or layer was drawn, clear the screen
 	if (!myWasActivated)
 	{
-		renderer->ClearView(RENDERER_CLEAR_COLOR);
+		if(!myDontClear)
+			renderer->ClearView(RENDERER_CLEAR_COLOR);
 	}
 	myWasActivated = false;
 }
