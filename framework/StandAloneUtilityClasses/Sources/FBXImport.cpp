@@ -6,6 +6,8 @@
 #include "Camera.h"
 #include "OpenGLMaterial.h"
 #include "TextureFileManager.h"
+#include "Bones/AObjectSkeletonResource.h"
+#include "Bones/APRSKeyStream.h"
 
 #include <queue>
 #include <fstream>
@@ -37,26 +39,26 @@ void	FBXImport::InitModifiable()
 		FbxIOSettings *ios = FbxIOSettings::Create(lSdkManager, IOSROOT);
 		lSdkManager->SetIOSettings(ios);
 
-		FbxImporter* lImporter = FbxImporter::Create(lSdkManager, "");
+		m_Importer = FbxImporter::Create(lSdkManager, "");
 
-		if (!lImporter->Initialize(m_FileName.c_str(), -1, lSdkManager->GetIOSettings())) {
+		if (!m_Importer->Initialize(m_FileName.c_str(), -1, lSdkManager->GetIOSettings())) {
 			printf("Call to FbxImporter::Initialize() failed.\n");
-			printf("Error returned: %s\n\n", lImporter->GetStatus().GetErrorString());
+			printf("Error returned: %s\n\n", m_Importer->GetStatus().GetErrorString());
 			exit(0);
 		}
 
 		printf("Start Import \n");
-		FbxScene* lScene = FbxScene::Create(lSdkManager, "myScene");
-		myScene = KigsCore::GetInstanceOf(lScene->GetName(), "Scene3D");
+		m_Scene = FbxScene::Create(lSdkManager, "myScene");
+		myScene = KigsCore::GetInstanceOf(m_Scene->GetName(), "Scene3D");
 		myScene->Init();
-		lImporter->Import(lScene);
+		m_Importer->Import(m_Scene);
 		printf("End Import\n");
 
-		lImporter->Destroy();
+		
 		printf("Start Triangulation \n");
 		FbxGeometryConverter clsConverter(lSdkManager);
-		clsConverter.Triangulate(lScene, true);
-		if (lScene == nullptr)
+		clsConverter.Triangulate(m_Scene, true);
+		if (m_Scene == nullptr)
 		{
 			printf("Error in the triangulation\n");
 			exit(0);
@@ -64,15 +66,16 @@ void	FBXImport::InitModifiable()
 
 		printf("End Triangulation \n");
 
-		clsConverter.SplitMeshesPerMaterial(lScene, true);
+		clsConverter.SplitMeshesPerMaterial(m_Scene, true);
 
-		FbxNode* lRootNode = lScene->GetRootNode();
+		FbxNode* lRootNode = m_Scene->GetRootNode();
 
 		RootNode = ParseNode(lRootNode);
 		RootNode->Init();
 		myScene->addItem((CMSP&)RootNode);
 		RootNode->NeedLocalToGlobalMatrixUpdate();
 
+		m_Importer->Destroy();
 		printf("nbr triangle: %d\n", nbrTriangle);
 		printf("nbr vertex: %d\n", nbrVertex);
 		printf("nbr uniqueMesh: %d\n", nbrUniqueMesh);
@@ -313,6 +316,180 @@ CMSP	FBXImport::ParseAttribute(FbxNodeAttribute* attribute, FbxNode* fatherNode,
 	}
 }
 
+FBXImport::SkinController	FBXImport::ParseSkinInfos(FbxSkin* pSkin,FbxMesh* pMesh)
+{
+	SkinController result;
+	int totalPointCount=pMesh->GetControlPointsCount();
+
+	struct tmpW
+	{
+		float totalW = 0.0f;
+		// bone index and weight vector
+		std::vector<std::pair<int,float> >	w;
+	};
+
+	std::vector<tmpW>	allW;
+	allW.resize(totalPointCount);
+
+	// bone count
+	int ncBones = pSkin->GetClusterCount();
+
+	SP<AObjectSkeletonResource> skeleton_resource(nullptr);
+
+	skeleton_resource = KigsCore::GetInstanceOf("skeleton_resource", "AObjectSkeletonResource");
+	// Init skeleton resource
+	skeleton_resource->initSkeleton(ncBones, sizeof(PRSKey));
+
+	// construct boneslist
+	for (int boneIndex = 0; boneIndex < ncBones; ++boneIndex)
+	{
+		// cluster
+		FbxCluster* cluster = pSkin->GetCluster(boneIndex);
+		// bone ref
+		FbxNode* pBone = cluster->GetLink();
+		result.boneList.push_back(pBone);
+	}
+	// construct skeleton and weights
+	for (int boneIndex = 0; boneIndex < ncBones; ++boneIndex)
+	{
+		FbxCluster* cluster = pSkin->GetCluster(boneIndex);
+		std::string boneName = result.boneList[boneIndex]->GetName();
+		unsigned int uid = CharToID::GetID(boneName);
+
+		// Get the bind pose
+		FbxAMatrix bindPoseMatrix, transformMatrix;
+		cluster->GetTransformMatrix(transformMatrix);
+		cluster->GetTransformLinkMatrix(bindPoseMatrix);
+
+		int* pVertexIndices = cluster->GetControlPointIndices();
+		double* pVertexWeights = cluster->GetControlPointWeights();
+
+		// Iterate through all the vertices, which are affected by the bone
+		int ncVertexIndices = cluster->GetControlPointIndicesCount();
+
+		for (int iBoneVertexIndex = 0; iBoneVertexIndex < ncVertexIndices; iBoneVertexIndex++)
+		{
+			// vertex
+			int niVertex = pVertexIndices[iBoneVertexIndex];
+			// weight
+			float fWeight = (float)pVertexWeights[iBoneVertexIndex];
+
+			allW[niVertex].totalW += fWeight;
+			allW[niVertex].w.push_back({ boneIndex ,fWeight });
+		}
+	
+		// search parent bone
+		FbxNode* pBone = result.boneList[boneIndex]->GetParent();
+		int parent_id = 0;
+		for (int pindex=0;pindex< result.boneList.size(); pindex++)
+		{
+			if (pBone == result.boneList[pindex])
+			{
+				parent_id = pindex+1;
+			}
+		}
+
+		Matrix3x4 joints_inv_bind_matrix, transform;
+		joints_inv_bind_matrix.SetIdentity();
+		transform.SetIdentity();
+
+
+		for (auto i = 0; i < 4; i++)
+		{
+			for (auto j = 0; j < 3; j++)
+			{
+				joints_inv_bind_matrix.e[i][j] = bindPoseMatrix[i][j];
+				transform.e[i][j] = transformMatrix[i][j];
+
+			}
+		}
+
+		skeleton_resource->addBone(boneIndex, uid, boneIndex+1, parent_id, joints_inv_bind_matrix);
+
+		reinterpret_cast<PRSKey*>(skeleton_resource->getStandData(boneIndex))->set(transform);
+		reinterpret_cast<PRSKey*>(skeleton_resource->getStandData(boneIndex))->m_RotationKey.Normalize();
+
+	}
+
+	// Export skeleton resource (.SKL)
+	skeleton_resource->setValue("SkeletonFileName", "TestSkeleton.skl");
+	skeleton_resource->Export();
+
+	// copy in return struct after limiting to 4 w per vertices
+
+	result.weights.resize(allW.size());
+	int k = 0;
+	for (auto& w : allW)
+	{
+		for(int wresize=w.w.size();wresize < 4;wresize++)
+		{
+			w.w.push_back({ w.w[0].first , 0.0f });
+		}
+
+		if (w.w.size() > 4)
+		{
+			std::sort(w.w.begin(), w.w.end(),
+				[](const std::pair<int, float>& a, const std::pair<int, float>& b) { return a.second > b.second; });
+			w.w.resize(4);
+			w.totalW = 0.0f;
+			for (auto& p : w.w)
+				w.totalW += p.second;
+		}
+
+		for (int j = 0; j < 4; ++j)
+		{
+			result.weights[k].index[j] = w.w[j].first;
+			result.weights[k].weight[j] = (unsigned char)(0.5f + 255.0f * (w.w[j].second / w.totalW));
+		}
+		k++;
+	}
+
+	return result;
+}
+
+void	FBXImport::ParseAnimations(FBXImport::SkinController& skin)
+{
+	int numStacks = m_Scene->GetSrcObjectCount<FbxAnimStack>();
+
+	for (int i = 0; i < numStacks; ++i)
+	{
+		FbxAnimStack* lAnimStack = m_Scene->GetSrcObject<FbxAnimStack>(i);
+		int numLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
+
+		for (int j = 0; j < numLayers; ++j)
+		{
+			FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(j);
+
+			FbxString layerName = "Animation Stack Name: ";
+			layerName += lAnimLayer->GetName();
+			std::string sLayerName = layerName.Buffer();
+
+
+			for(auto n: skin.boneList)
+			{
+				FbxAnimCurve* lAnimCurve = n->LclTranslation.GetCurve(lAnimLayer, FBXSDK_CURVENODE_COMPONENT_X);
+
+				if (lAnimCurve != NULL)
+				{
+					// TODO
+					FbxTakeInfo* lTakeInfo = m_Importer->GetTakeInfo(0);
+					FbxTime start = lTakeInfo->mLocalTimeSpan.GetStart();
+					FbxTime end = lTakeInfo->mLocalTimeSpan.GetStop();
+					
+					int kc=lAnimCurve->KeyGetCount();
+					for (i = 0; i < kc; i++)
+					{
+						auto key=lAnimCurve->KeyGet(i);
+						FbxTime ktime=key.GetTime();
+
+					}
+				}
+			}
+		}
+
+	}
+}
+
 CMSP	FBXImport::ParseMesh(FbxMesh* pMesh, FbxNode* myNode, int &numMesh)
 {
 	char value[33];
@@ -329,6 +506,7 @@ CMSP	FBXImport::ParseMesh(FbxMesh* pMesh, FbxNode* myNode, int &numMesh)
 		sortedMeshes.insert(std::pair<Material*, ModernMesh*>(myMat, static_cast<ModernMesh*>(meshParsed.find(pMesh)->second)));
 		return nullptr;
 	}
+
 	SP<ModernMesh> newmesh = KigsCore::GetInstanceOf(name.c_str(), "ModernMesh");
 	meshParsed[pMesh] = newmesh.get();
 	newmesh->StartMeshBuilder();
@@ -367,6 +545,25 @@ CMSP	FBXImport::ParseMesh(FbxMesh* pMesh, FbxNode* myNode, int &numMesh)
 	description->set("", vertices);
 
 	structSize += 3 * sizeof(float);
+
+
+	// check for skin
+	FBXImport::SkinController skinstruct;
+	int dcount = pMesh->GetDeformerCount();
+	if (dcount)
+	{
+		for (int i = 0; i < dcount; ++i)
+		{
+			FbxSkin* pSkin = (FbxSkin*)pMesh->GetDeformer(i, FbxDeformer::eSkin);
+			if (pSkin)
+			{
+				skinstruct = ParseSkinInfos(pSkin, pMesh);
+				ParseAnimations(skinstruct);
+			}
+		}
+	}
+
+	
 
 	nbrVertex +=pMesh->GetControlPointsCount();
 	bool hasNormal = pMesh->GetElementNormalCount() > 0;

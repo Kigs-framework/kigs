@@ -190,25 +190,25 @@ void ImGuiLayer::InitModifiable()
 		
 		ImGuiContext* old_state = SetActiveImGuiLayer();
 		ImGuiIO& io = ImGui::GetIO();
-		io.KeyMap[ImGuiKey_Tab] = CM_KEY_TAB;                     // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
-		io.KeyMap[ImGuiKey_LeftArrow] = CM_KEY_LEFT;
-		io.KeyMap[ImGuiKey_RightArrow] = CM_KEY_RIGHT;
-		io.KeyMap[ImGuiKey_UpArrow] = CM_KEY_UP;
-		io.KeyMap[ImGuiKey_DownArrow] = CM_KEY_DOWN;
-		io.KeyMap[ImGuiKey_PageUp] = CM_KEY_PRIOR;
-		io.KeyMap[ImGuiKey_PageDown] = CM_KEY_NEXT;
-		io.KeyMap[ImGuiKey_Home] = CM_KEY_HOME;
-		io.KeyMap[ImGuiKey_End] = CM_KEY_END;
-		io.KeyMap[ImGuiKey_Delete] = CM_KEY_DELETE;
-		io.KeyMap[ImGuiKey_Backspace] = CM_KEY_BACK;
-		io.KeyMap[ImGuiKey_Enter] = CM_KEY_RETURN;
-		io.KeyMap[ImGuiKey_Escape] = CM_KEY_ESCAPE;
-		io.KeyMap[ImGuiKey_A] = CM_KEY_A;
-		io.KeyMap[ImGuiKey_C] = CM_KEY_C;
-		io.KeyMap[ImGuiKey_V] = CM_KEY_V;
-		io.KeyMap[ImGuiKey_X] = CM_KEY_X;
-		io.KeyMap[ImGuiKey_Y] = CM_KEY_Y;
-		io.KeyMap[ImGuiKey_Z] = CM_KEY_Z;
+		io.KeyMap[ImGuiKey_Tab] = VK_TAB;                     // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
+		io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
+		io.KeyMap[ImGuiKey_RightArrow] = VK_RIGHT;
+		io.KeyMap[ImGuiKey_UpArrow] = VK_UP;
+		io.KeyMap[ImGuiKey_DownArrow] = VK_DOWN;
+		io.KeyMap[ImGuiKey_PageUp] = VK_PRIOR;
+		io.KeyMap[ImGuiKey_PageDown] = VK_NEXT;
+		io.KeyMap[ImGuiKey_Home] = VK_HOME;
+		io.KeyMap[ImGuiKey_End] = VK_END;
+		io.KeyMap[ImGuiKey_Delete] = VK_DELETE;
+		io.KeyMap[ImGuiKey_Backspace] = VK_BACK;
+		io.KeyMap[ImGuiKey_Enter] = VK_RETURN;
+		io.KeyMap[ImGuiKey_Escape] = VK_ESCAPE;
+		io.KeyMap[ImGuiKey_A] = VK_A;
+		io.KeyMap[ImGuiKey_C] = VK_C;
+		io.KeyMap[ImGuiKey_V] = VK_V;
+		io.KeyMap[ImGuiKey_X] = VK_X;
+		io.KeyMap[ImGuiKey_Y] = VK_Y;
+		io.KeyMap[ImGuiKey_Z] = VK_Z;
 
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigDockingWithShift = false;
@@ -506,6 +506,7 @@ void ImGuiLayer::NewFrame(Timer* timer)
 			io.MouseWheel += mouse->getWheelRollDelta()/120.0f;
 
 		KeyboardDevice* kb = mInput->GetKeyboard();
+
 		auto test = KeyboardDevice::Get();
 		if (kb)
 		{
@@ -545,11 +546,11 @@ void ImGuiLayer::NewFrame(Timer* timer)
 					state_changed[key.KeyCode] = true;
 
 					io.KeysDown[key.KeyCode] = true;
-					if (key.KeyCode == CM_KEY_LCONTROL || key.KeyCode == CM_KEY_RCONTROL)
+					if ((key.KeyCode == VK_CONTROL) || (key.KeyCode == VK_LCONTROL) || (key.KeyCode == VK_RCONTROL))
 						io.KeyCtrl = true;
-					if (key.KeyCode == CM_KEY_LSHIFT || key.KeyCode == CM_KEY_RSHIFT)
+					if ((key.KeyCode == VK_SHIFT) || (key.KeyCode == VK_LSHIFT) || (key.KeyCode == VK_RSHIFT))
 						io.KeyShift = true;
-					if (key.KeyCode == CM_KEY_LMENU || key.KeyCode == CM_KEY_RMENU)
+					if ((key.KeyCode == VK_MENU) || (key.KeyCode == VK_LMENU) || (key.KeyCode == VK_RMENU))
 						io.KeyAlt = true;
 				}
 				else if (key.Action == key.ACTION_UP)
@@ -557,21 +558,21 @@ void ImGuiLayer::NewFrame(Timer* timer)
 					state_changed[key.KeyCode] = true;
 
 					io.KeysDown[key.KeyCode] = false;
-					if (key.KeyCode == CM_KEY_LCONTROL || key.KeyCode == CM_KEY_RCONTROL)
+					if ((key.KeyCode == VK_CONTROL) || (key.KeyCode == VK_LCONTROL) || (key.KeyCode == VK_RCONTROL))
 						io.KeyCtrl = false;
-					if (key.KeyCode == CM_KEY_LSHIFT || key.KeyCode == CM_KEY_RSHIFT)
+					if ((key.KeyCode == VK_SHIFT) || (key.KeyCode == VK_LSHIFT) || (key.KeyCode == VK_RSHIFT))
 						io.KeyShift = false;
-					if (key.KeyCode == CM_KEY_LMENU || key.KeyCode == CM_KEY_RMENU)
+					if ((key.KeyCode == VK_MENU) || (key.KeyCode == VK_LMENU) || (key.KeyCode == VK_RMENU))
 						io.KeyAlt = false;
 
 #ifndef WUP
-					if (io.WantTextInput && mInput->getTouchManager()->isRegisteredOnCurrentState(this))
+					if (key.Unicode > 0)
 					{
-						if (key.KeyCode > 0)
+						if (io.WantTextInput && mInput->getTouchManager()->isRegisteredOnCurrentState(this))
 						{
-							unsigned short c = kb->ScanToChar(key.KeyCode);
-							if (c > 0)// && c < 0x10000)
-								io.AddInputCharacter(c);
+
+							io.AddInputCharacter(key.Unicode);
+
 						}
 					}
 #endif

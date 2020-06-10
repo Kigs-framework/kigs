@@ -10,11 +10,17 @@
 
 IMPLEMENT_CLASS_INFO(KeyboardJavascript)
 
-
+// start keyboard listening
 extern "C" void		AddListenerToKeyBoard();
+// get virtual key code
 extern "C" int		Get_Key(int index);
+// get event type ( down / up )
 extern "C" int		Get_KeyBoardEvent(int index);
+// get unicode
+extern "C" int		Get_KeyUnicode(int index);
+// get event count
 extern "C" int		Get_KeyBoardEventCount();
+// clear event list
 extern "C" void		ClearKeyBoardList();
 
 KeyboardJavascript::KeyboardJavascript(const kstl::string& name,CLASS_NAME_TREE_ARG) :
@@ -47,36 +53,61 @@ void	KeyboardJavascript::UpdateDevice()
 	for(int i =0; i < eventCount; i++)
 	{
 		currentKey = Get_Key(i);
-		int PreviousValue = myDeviceItems[currentKey]->getState()->GetTypedValue(int);
-		int EventType = Get_KeyBoardEvent(i);
-	
 		
-		KeyEvent ke;
-		ke.KeyCode = currentKey;
-		ke.Unicode = currentKey; // TODO
-		ke.flag = (iswprint(ke.Unicode)) ? 1 : 0;
-		
-		if(EventType == 1) //Key Down
+		if(currentKey>0)		
 		{
-			if(myDeviceItems[currentKey]->getState()->GetTypedValue(int) == 0)
+			KeyEvent ke;	
+			ke.KeyCode = currentKey;
+			unsigned int EventType = Get_KeyBoardEvent(i);
+			ke.Unicode = Get_KeyUnicode(i);
+		
+			switch (ke.KeyCode)
 			{
-				m_KeyDownList.push_back(ke);
+			case VK_NUMPAD0: ke.Unicode = u'0'; break;
+			case VK_NUMPAD1: ke.Unicode = u'1'; break;
+			case VK_NUMPAD2: ke.Unicode = u'2'; break;
+			case VK_NUMPAD3: ke.Unicode = u'3'; break;
+			case VK_NUMPAD4: ke.Unicode = u'4'; break;
+			case VK_NUMPAD5: ke.Unicode = u'5'; break;
+			case VK_NUMPAD6: ke.Unicode = u'6'; break;
+			case VK_NUMPAD7: ke.Unicode = u'7'; break;
+			case VK_NUMPAD8: ke.Unicode = u'8'; break;
+			case VK_NUMPAD9: ke.Unicode = u'9'; break;
+			case VK_DIVIDE: ke.Unicode = u'/'; break;
+			case VK_MULTIPLY: ke.Unicode = u'*';  break;
+			case VK_DECIMAL: ke.Unicode = u'.';  break;
+			case VK_SUBTRACT: ke.Unicode = u'-';  break;
+			case VK_ADD: ke.Unicode = u'+';  break;
+			
+			default:
+			break;
 			}
-			myDeviceItems[currentKey]->getState()->SetValue(1);
-		}
-		else if(EventType == 0) //Key up
-		{
+				
+			ke.flag = (iswprint(ke.Unicode)) ? 1 : 0;
 			
-			if(myDeviceItems[currentKey]->getState()->GetTypedValue(int) == 1)
-				m_KeyUpList.push_back(ke);
+			if(EventType == 1) //Key Down
+			{
+				if(myDeviceItems[currentKey]->getState()->GetTypedValue(int) == 0)
+				{
+					ke.Action = KeyEvent::ACTION_DOWN;
+					m_KeyDownList.push_back(ke);
+				}
+				myDeviceItems[currentKey]->getState()->SetValue(1);
+			}
+			else if(EventType == 0) //Key up
+			{
+				if(myDeviceItems[currentKey]->getState()->GetTypedValue(int) == 1)
+				{
+					ke.Action = KeyEvent::ACTION_UP;
+					m_KeyUpList.push_back(ke);
+				}
+				myDeviceItems[currentKey]->getState()->SetValue(0);
+			}
 			
-			myDeviceItems[currentKey]->getState()->SetValue(0);
+			touchVector.push_back(ke);
 		}
-		
-		touchVector.push_back(ke);
 	}
-	
-	//Clear la liste
+	//Clear the list
 	ClearKeyBoardList();
 	if(!touchVector.empty())
 	{

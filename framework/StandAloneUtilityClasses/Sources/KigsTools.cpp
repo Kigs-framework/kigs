@@ -766,11 +766,11 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 
 			if (ImGui::IsItemFocused())
 			{
-				if (ImGui::IsKeyPressed(CM_KEY_C, false) && ImGui::GetIO().KeyCtrl)
+				if (ImGui::IsKeyPressed(VK_C, false) && ImGui::GetIO().KeyCtrl)
 				{
 					gKigsTools->mClipboardItem = item.get();
 				}
-				if (ImGui::IsKeyPressed(CM_KEY_V, false) && ImGui::GetIO().KeyCtrl)
+				if (ImGui::IsKeyPressed(VK_V, false) && ImGui::GetIO().KeyCtrl)
 				{
 
 				}
@@ -2736,36 +2736,51 @@ void DrawEditor()
 		{
 			switch (ev.KeyCode)
 			{
-			case CM_KEY_F1:
-				if (!gKigsTools->Paused)
-					gKigsTools->ShowWindow.MenuBar = !gKigsTools->ShowWindow.MenuBar;
-				break;
-			case CM_KEY_F4:
-				gKigsTools->Paused = !gKigsTools->Paused;
-				if (gKigsTools->Paused) gKigsTools->ShowWindow.MenuBar = true;
-				break;
-			case CM_KEY_F8:
-				if (!gKigsTools->ShowWindow.MenuBar)
-					gKigsTools->ShowWindow.Hierarchy = gKigsTools->ShowWindow.MenuBar = true;
-				else
-					gKigsTools->ShowWindow.Hierarchy = !gKigsTools->ShowWindow.Hierarchy;
-				break;
-			case CM_KEY_F9:
-				if (!gKigsTools->ShowWindow.MenuBar)
-					gKigsTools->ShowWindow.Attributes = gKigsTools->ShowWindow.MenuBar = true;
-				else
-					gKigsTools->ShowWindow.Attributes = !gKigsTools->ShowWindow.Attributes;
-				break;
-			case CM_KEY_F10:
-			{
-				std::vector<CMSP> shaders = CoreModifiable::GetInstances("API3DShader");
-				for (auto shader : shaders)
+			case VK_F1:
+				if (ImGui::GetIO().KeyCtrl)
 				{
-					shader->SimpleCall("Reload");
+					if (!gKigsTools->Paused)
+						gKigsTools->ShowWindow.MenuBar = !gKigsTools->ShowWindow.MenuBar;
+				}
+				break;
+			case VK_F4:
+				if (ImGui::GetIO().KeyCtrl)
+				{
+					gKigsTools->Paused = !gKigsTools->Paused;
+					if (gKigsTools->Paused) gKigsTools->ShowWindow.MenuBar = true;
+				}
+				break;
+			case VK_F8:
+				if (ImGui::GetIO().KeyCtrl)
+				{
+					if (!gKigsTools->ShowWindow.MenuBar)
+						gKigsTools->ShowWindow.Hierarchy = gKigsTools->ShowWindow.MenuBar = true;
+					else
+						gKigsTools->ShowWindow.Hierarchy = !gKigsTools->ShowWindow.Hierarchy;
+				}
+				break;
+			case VK_F9:
+				if (ImGui::GetIO().KeyCtrl)
+				{
+					if (!gKigsTools->ShowWindow.MenuBar)
+						gKigsTools->ShowWindow.Attributes = gKigsTools->ShowWindow.MenuBar = true;
+					else
+						gKigsTools->ShowWindow.Attributes = !gKigsTools->ShowWindow.Attributes;
+					break;
+				}
+			case VK_F10:
+			{
+				if (ImGui::GetIO().KeyCtrl)
+				{
+					std::vector<CMSP> shaders = CoreModifiable::GetInstances("API3DShader");
+					for (auto shader : shaders)
+					{
+						shader->SimpleCall("Reload");
+					}
 				}
 				break;
 			}
-			case CM_KEY_S:
+			case VK_S:
 			{
 				if (ImGui::GetIO().KeyCtrl)
 				{
@@ -2786,13 +2801,13 @@ void DrawEditor()
 				break;
 			}
 
-			case CM_KEY_R:
+			case VK_R:
 			{
 				if (ImGui::GetIO().KeyCtrl)
 					ReloadCurrentSequence();
 				break;
 			}
-			case CM_KEY_F6:
+			case VK_F6:
 			{
 				//ResetContext();
 				break;
@@ -2877,7 +2892,7 @@ void DrawEditor()
 			{
 				auto enter = ImGui::InputText(it->label.c_str(), it->value, ImGuiInputTextFlags_EnterReturnsTrue);
 				
-				if (ImGui::Button("Cancel") || (ImGui::IsKeyReleased(CM_KEY_ESCAPE) && ImGui::IsWindowFocused()))
+				if (ImGui::Button("Cancel") || (ImGui::IsKeyReleased(VK_ESCAPE) && ImGui::IsWindowFocused()))
 				{
 					ImGui::CloseCurrentPopup();
 				}

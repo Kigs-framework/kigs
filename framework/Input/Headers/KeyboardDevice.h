@@ -19,7 +19,8 @@ public:
 	WRAP_METHODS(GetKey, Show, Hide, ScanToChar);
 
 	virtual const DeviceItemBaseState&	getKeyState(int key_id) = 0;
-	virtual u16 ScanToChar(u32 scanCode) { return u'0'; }
+
+	virtual u16 ScanToChar(u32 scanCode, u32* vkCode) { return u'0'; };
 
 	int GetKey(int key_id);
 
