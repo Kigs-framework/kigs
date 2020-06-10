@@ -32,7 +32,7 @@ public:
 
 	void	DoInputDeviceDescription();
 
-	u16 ScanToChar(u32 scanCode) override;
+	u16 ScanToChar(u32 scanCode, u32* vkCode) override;
 	byte* getKeys() {return myKeys.state;}
     
 protected:
@@ -43,9 +43,11 @@ protected:
 		byte state[256];
 	} keyboard_t;
 	
-	keyboard_t myKeys;
+	keyboard_t				myKeys;
 
-	LPDIRECTINPUTDEVICE8 myDirectInputKeyboard;  
+	LPDIRECTINPUTDEVICE8	myDirectInputKeyboard;  
+
+	HKL						myLayout;
   
 };    
 

@@ -55,14 +55,14 @@ void UITextInput::UpdateKeyboard(kstl::vector<KeyEvent>& keys)
 			int cursor_pos = mSelectedCharacter - 1;
 			if (cursor_pos < -1) cursor_pos = -1;
 			if (cursor_pos > (int)newString.length()) cursor_pos = newString.length() - 1;
-			if (key.KeyCode == CM_KEY_DELETE) // Suppr
+			if (key.KeyCode == VK_DELETE) // Suppr
 			{
 				if (!newString.empty())
 				{
 					newString.removeRange(cursor_pos+1, 1);
 				}
 			}
-			else if (key.KeyCode == CM_KEY_BACK)//Return
+			else if (key.KeyCode == VK_BACK)//Return
 			{
 				if (!newString.empty() && cursor_pos>=0)
 				{
@@ -70,11 +70,11 @@ void UITextInput::UpdateKeyboard(kstl::vector<KeyEvent>& keys)
 					mSelectedCharacter = cursor_pos;
 				}
 			}
-			else if (key.KeyCode == CM_KEY_LEFT)//Left
+			else if (key.KeyCode == VK_LEFT)//Left
 			{
 				mSelectedCharacter = std::max(mSelectedCharacter - 1, 0);
 			}
-			else if (key.KeyCode == CM_KEY_RIGHT)//Right
+			else if (key.KeyCode == VK_RIGHT)//Right
 			{
 				mSelectedCharacter = std::min(mSelectedCharacter + 1, mLastMaxIndex);
 			}

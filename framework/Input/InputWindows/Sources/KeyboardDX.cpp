@@ -11,7 +11,7 @@ IMPLEMENT_CLASS_INFO(KeyboardDX)
 KeyboardDX::KeyboardDX(const kstl::string& name,CLASS_NAME_TREE_ARG) : KeyboardDevice(name,PASS_CLASS_NAME_TREE_ARG)
 , myDirectInputKeyboard(0)
 {
-	
+	myLayout = GetKeyboardLayout(0);
 }
 
 KeyboardDX::~KeyboardDX()
@@ -24,6 +24,8 @@ KeyboardDX::~KeyboardDX()
 
 void	KeyboardDX::UpdateDevice()
 {
+	
+
 	m_KeyUpList.clear();
 	m_KeyDownList.clear();
 
@@ -55,8 +57,7 @@ void	KeyboardDX::UpdateDevice()
 			if( myKeys.state[currentKey] != PreviousValue)
 			{
 				KeyEvent ke;
-				ke.KeyCode = currentKey;
-				ke.Unicode = ScanToChar(currentKey);
+				ke.Unicode = ScanToChar(currentKey, &ke.KeyCode);
 				ke.flag = (iswprint(ke.Unicode))?1:0;
 
 				if(PreviousValue > 0)
@@ -80,40 +81,51 @@ void	KeyboardDX::UpdateDevice()
 	}
 }
 
-u16 KeyboardDX::ScanToChar(u32 scanCode)
+
+u16 KeyboardDX::ScanToChar(u32 scanCode, u32* vkCode)
 {
-	static HKL layout = GetKeyboardLayout(0);
-	static unsigned char keyboardState[256];
-	GetKeyboardState(keyboardState);
-
-	//translate keyboard press scan code identifier to a char
-	unsigned int vk = MapVirtualKeyEx(scanCode, 3, layout);
-	unsigned short asciiValue=0;
-	int nb = ToAsciiEx(vk, scanCode, keyboardState, &asciiValue, 0, layout);
-
-	if (asciiValue == 0)
+	u32 tmpVk;
+	if (vkCode == nullptr)
 	{
-		switch (scanCode)
-		{
-		case CM_KEY_NUMPAD0: asciiValue = u'0'; break;
-		case CM_KEY_NUMPAD1: asciiValue = u'1'; break;
-		case CM_KEY_NUMPAD2: asciiValue = u'2'; break;
-		case CM_KEY_NUMPAD3: asciiValue = u'3'; break;
-		case CM_KEY_NUMPAD4: asciiValue = u'4'; break;
-		case CM_KEY_NUMPAD5: asciiValue = u'5'; break;
-		case CM_KEY_NUMPAD6: asciiValue = u'6'; break;
-		case CM_KEY_NUMPAD7: asciiValue = u'7'; break;
-		case CM_KEY_NUMPAD8: asciiValue = u'8'; break;
-		case CM_KEY_NUMPAD9: asciiValue = u'9'; break;
-		case CM_KEY_DIVIDE: asciiValue = u'/'; break;
-		case CM_KEY_MULTIPLY: asciiValue = u'*'; break;
-		case CM_KEY_NUMPADCOMMA: asciiValue = u'.'; break;
-		case CM_KEY_DECIMAL: asciiValue = u'.'; break;
-		case CM_KEY_MINUS: asciiValue = u'-'; break;
-		case CM_KEY_ADD: asciiValue = u'+'; break;
-		default:break;
-		}
+		vkCode = &tmpVk;
 	}
+
+	//translate keyboard press scan code identifier to a virtual key
+	unsigned short asciiValue = 0;
+	*vkCode = 0;
+	switch (scanCode)
+	{
+	case CM_KEY_NUMPAD0: asciiValue = u'0'; *vkCode = VK_NUMPAD0; break;
+	case CM_KEY_NUMPAD1: asciiValue = u'1'; *vkCode = VK_NUMPAD1; break;
+	case CM_KEY_NUMPAD2: asciiValue = u'2'; *vkCode = VK_NUMPAD2; break;
+	case CM_KEY_NUMPAD3: asciiValue = u'3'; *vkCode = VK_NUMPAD3; break;
+	case CM_KEY_NUMPAD4: asciiValue = u'4'; *vkCode = VK_NUMPAD4; break;
+	case CM_KEY_NUMPAD5: asciiValue = u'5'; *vkCode = VK_NUMPAD5; break;
+	case CM_KEY_NUMPAD6: asciiValue = u'6'; *vkCode = VK_NUMPAD6; break;
+	case CM_KEY_NUMPAD7: asciiValue = u'7'; *vkCode = VK_NUMPAD7; break;
+	case CM_KEY_NUMPAD8: asciiValue = u'8'; *vkCode = VK_NUMPAD8; break;
+	case CM_KEY_NUMPAD9: asciiValue = u'9'; *vkCode = VK_NUMPAD9; break;
+	case CM_KEY_DIVIDE: asciiValue = u'/'; *vkCode = VK_DIVIDE; break;
+	case CM_KEY_MULTIPLY: asciiValue = u'*'; *vkCode = VK_MULTIPLY; break;
+	case CM_KEY_DECIMAL: asciiValue = u'.'; *vkCode = VK_DECIMAL; break;
+	case CM_KEY_SUBTRACT: asciiValue = u'-'; *vkCode = VK_SUBTRACT; break;
+	case CM_KEY_ADD: asciiValue = u'+'; *vkCode = VK_ADD; break;
+	case CM_KEY_UP:  *vkCode = VK_UP; break;
+	case CM_KEY_DOWN: *vkCode = VK_DOWN; break;
+	case CM_KEY_LEFT:  *vkCode = VK_LEFT; break;
+	case CM_KEY_RIGHT:  *vkCode = VK_RIGHT; break;
+
+
+
+	default:break;
+	}
+
+	if((*vkCode) == 0)
+	{
+		*vkCode = MapVirtualKeyEx(scanCode, MAPVK_VSC_TO_VK_EX, myLayout);
+		int nb = ToAsciiEx(*vkCode, scanCode, myKeys.state, &asciiValue, 0, myLayout);
+	}
+
 	return asciiValue;
 }
 

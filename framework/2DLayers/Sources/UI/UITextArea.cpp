@@ -146,7 +146,7 @@ void UITextArea::LoseFocus()
 	theKeyboard->Hide();
 }
 
-void UITextArea::UpdateText(kstl::vector<int> _keycodeList)
+/*void UITextArea::UpdateText(kstl::vector<int> _keycodeList)
 {
 	//Get KeyBoard
 	ModuleInput* theInputModule = (ModuleInput*)CoreGetModule(ModuleInput);
@@ -166,19 +166,19 @@ void UITextArea::UpdateText(kstl::vector<int> _keycodeList)
 	for (unsigned int i = 0; i < _keycodeList.size(); i++)
 	{
 		//Touch pressed
-		if (_keycodeList[i] == 14)//Return
+		if (_keycodeList[i] == VK_RETURN)//Return
 		{
 			if (!newString.empty())
 				newString = newString.substr(0, newString.length() - 1);
 		}
 		else if (_keycodeList[i] > 0)
 		{
-			newString += theKeyboard->ScanToChar(_keycodeList[i]);
+			newString += theKeyboard->ScanToChar(_keycodeList[i],nullptr);
 		}
 	}
 	ChangeText(newString);
 }
-
+*/
 
 void	UITextArea::ChangeText(const unsigned short* _newText)
 {
@@ -348,13 +348,13 @@ DEFINE_METHOD(UITextArea, UpdateKeyBoard)
 		//Touch pressed
 		switch (temp.KeyCode)
 		{
-		case CM_KEY_BACK://Return
+		case VK_BACK://Return
 			if (!newString.empty())
 			{
 				newString = newString.substr(0, newString.length() - 1);
 			}
 			break;
-		case CM_KEY_RETURN://Return
+		case VK_RETURN://Return
 			LoseFocus();
 			terminated = true;
 			break;
