@@ -1053,6 +1053,18 @@ inline Point3D Matrix3x4::GetTranslation() const
 	return Point3D(e[3][0], e[3][1], e[3][2]);
 }
 
+inline void	Matrix3x4::GetPRS(Point3D& pos, Point3D& rot, float& scale) const
+{
+	Matrix3x4 tmp(*this);
+	pos = tmp.GetTranslation();
+	scale = sqrtf(tmp.e[0][0] * tmp.e[0][0] + tmp.e[1][0] * tmp.e[1][0] + tmp.e[2][0] * tmp.e[2][0]);
+	float oneOnScale = 1.0f / scale;
+	tmp.PreScale(oneOnScale, oneOnScale, oneOnScale);
+	Quaternion q(tmp);
+	Vector3D eul;
+	q.GetEulerAngles(eul);
+	rot.Set(eul.z, eul.y, eul.x);
+}
 
 /*
 inline Point3D *Matrix3x4::X() { return (Point3D*)e[0]; }
