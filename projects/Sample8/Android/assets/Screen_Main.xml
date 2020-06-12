@@ -25,7 +25,7 @@
 	</Inst>
 	
 	<!-- load an external 3D scene (converted with MeshConvert tool) -->
-	<Inst N="Scene" P="default.xml">
+	<Inst N="Scene" P="Default.xml">
 		<!-- set Scene priority to be > UI2DLayer priority so IHM is drawn after 3D ( in front of ) -->
 		<Attr N="Priority" V="30"/>
 		<!-- retrieve Node3D named "Light" to make some changes on it -->
