@@ -53,7 +53,7 @@
 		<Ref P="Node3D:Camera" DontAddAsSon="true">
 			<!-- Ask this Node3D to be "CoordinateSystem" controled --> 
 			<Upgrd N="CoordinateSystemUp"/>
-			<!-- add two lua methods (for buttons) --> 
+			<!-- add two lua methods (slots for buttons) --> 
 			<Lua N="MoveUp">
 				return function(self)
 					local m=v3f(0,0,0.2)
