@@ -24,25 +24,23 @@ void	RendererOpenGL::DrawArrays(TravState* state, unsigned int mode, int first, 
 	myVertexBufferManager->FlushBindBuffer();
 	FlushState();
 	FlushMatrix(state);
-	
+	myVertexBufferManager->FlushUnusedVertexAttrib();
 	glDrawArrays(mode, first, count);
 	
-	myVertexBufferManager->Clear();
+	myVertexBufferManager->MarkVertexAttrib();
 }
 
-void	RendererOpenGL::DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, bool clear_manager)
+void	RendererOpenGL::DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices)
 {
 	myVertexBufferManager->FlushBindBuffer();
 	FlushState();
 	FlushMatrix(state);
-
+	myVertexBufferManager->FlushUnusedVertexAttrib();
 	glDrawElements(mode, count, type, indices);
-	
-	if (clear_manager)
-		myVertexBufferManager->Clear();
+	myVertexBufferManager->MarkVertexAttrib();
 }
 
-void RendererOpenGL::DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount, bool clear_manager)
+void RendererOpenGL::DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount)
 {
 	KIGS_ASSERT(false);
 	/*

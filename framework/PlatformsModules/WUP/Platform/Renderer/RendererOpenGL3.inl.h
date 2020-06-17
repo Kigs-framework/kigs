@@ -50,7 +50,7 @@ void	RendererOpenGL::DrawArrays(TravState* state, unsigned int mode, int first, 
 		auto locs = myCurrentShader->GetLocation();
 		SetVertexAttrib(mHoloMatrix->mRenderTargetArrayIndices, KIGS_VERTEX_ATTRIB_RENDER_TARGET_ARRAY_INDEX_ID, 1, KIGS_FLOAT, false, 0, (void*)0, myCurrentShader->GetLocation());
 		CHECK_GLERROR;
-
+		myVertexBufferManager->FlushUnusedVertexAttrib();
 		// Enable instancing.
 		glVertexAttribDivisorANGLE(locs->attribRenderTargetArrayIndex, 1);
 		glDrawArraysInstancedANGLE(mode, first, count, 2);
@@ -63,15 +63,15 @@ void	RendererOpenGL::DrawArrays(TravState* state, unsigned int mode, int first, 
 		FlushState();
 		FlushMatrix(state);
 		CHECK_GLERROR;
-
+		myVertexBufferManager->FlushUnusedVertexAttrib();
 		glDrawArrays(mode, first, count);
 		CHECK_GLERROR;
 	}
 
-	myVertexBufferManager->Clear();
+	myVertexBufferManager->MarkVertexAttrib();
 }
 
-void	RendererOpenGL::DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, bool clear_manager)
+void	RendererOpenGL::DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices)
 {
 	if (state->GetHolographicMode())
 	{
@@ -86,6 +86,7 @@ void	RendererOpenGL::DrawElements(TravState* state, unsigned int mode, int count
 		SetVertexAttrib(mHoloMatrix->mRenderTargetArrayIndices, KIGS_VERTEX_ATTRIB_RENDER_TARGET_ARRAY_INDEX_ID, 1, KIGS_FLOAT, false, 0, (void*)0, myCurrentShader->GetLocation());
 		CHECK_GLERROR;
 
+		myVertexBufferManager->FlushUnusedVertexAttrib();
 		// Enable instancing.
 		glVertexAttribDivisorANGLE(locs->attribRenderTargetArrayIndex, 1);
 		CHECK_GLERROR;
@@ -100,15 +101,14 @@ void	RendererOpenGL::DrawElements(TravState* state, unsigned int mode, int count
 		FlushState();
 		FlushMatrix(state);
 		CHECK_GLERROR;
-
+		myVertexBufferManager->FlushUnusedVertexAttrib();
 		glDrawElements(mode, count, type, indices);
 		CHECK_GLERROR;
 	}
-	if(clear_manager)
-		myVertexBufferManager->Clear();
+	myVertexBufferManager->MarkVertexAttrib();
 }
 
-void	RendererOpenGL::DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount, bool clear_manager)
+void	RendererOpenGL::DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount)
 {
 
 	if (state->GetHolographicMode())
@@ -135,7 +135,7 @@ void	RendererOpenGL::DrawElementsInstanced(TravState* state, unsigned int mode, 
 		auto locs = myCurrentShader->GetLocation();
 		SetVertexAttrib(mHoloMatrix->mRenderTargetArrayIndices, KIGS_VERTEX_ATTRIB_RENDER_TARGET_ARRAY_INDEX_ID, 1, KIGS_FLOAT, false, 0, (void*)0, myCurrentShader->GetLocation());
 		CHECK_GLERROR;
-
+		myVertexBufferManager->FlushUnusedVertexAttrib();		
 		// Enable instancing.
 		glVertexAttribDivisorANGLE(locs->attribRenderTargetArrayIndex, 1);
 		CHECK_GLERROR;
@@ -150,10 +150,9 @@ void	RendererOpenGL::DrawElementsInstanced(TravState* state, unsigned int mode, 
 		FlushState();
 		FlushMatrix(state);
 		CHECK_GLERROR;
-
+		myVertexBufferManager->FlushUnusedVertexAttrib();
 		glDrawElementsInstancedANGLE(mode, count, type, indices, primcount);
 		CHECK_GLERROR;
 	}
-	if (clear_manager)
-		myVertexBufferManager->Clear();
+	myVertexBufferManager->MarkVertexAttrib();
 }

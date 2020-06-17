@@ -21,32 +21,38 @@ void	RendererOpenGL::DrawArrays(TravState* state, unsigned int mode, int first, 
 	FlushState();
 	FlushMatrix(state);
 
+	myVertexBufferManager->FlushUnusedVertexAttrib();
+
 	glDrawArrays(mode, first, count);
 
-	myVertexBufferManager->Clear();
+	myVertexBufferManager->MarkVertexAttrib();
 }
 
-void	RendererOpenGL::DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, bool clear_manager)
+void	RendererOpenGL::DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices)
 {
 	CHECK_GLERROR;
 
 	myVertexBufferManager->FlushBindBuffer();
 	FlushState();
 	FlushMatrix(state);
+
+	myVertexBufferManager->FlushUnusedVertexAttrib();
 
 	glDrawElements(mode, count, type, indices);
-	if(clear_manager)
-		myVertexBufferManager->Clear();
+	
+	myVertexBufferManager->MarkVertexAttrib();
 }
 
-void RendererOpenGL::DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount, bool clear_manager)
+void RendererOpenGL::DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount)
 {
 	CHECK_GLERROR;
 	myVertexBufferManager->FlushBindBuffer();
 	FlushState();
 	FlushMatrix(state);
 
+	myVertexBufferManager->FlushUnusedVertexAttrib();
+
 	glDrawElementsInstanced(mode, count, type, indices, primcount);
-	if (clear_manager)
-		myVertexBufferManager->Clear(true);
+	
+	myVertexBufferManager->MarkVertexAttrib();
 }

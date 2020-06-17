@@ -38,8 +38,6 @@
 
 #include "algorithm"
 
-
-
 // ## Static object initialization
 ModuleSpecificRenderer *	RendererOpenGL::theGlobalRenderer = NULL;
 FreeType_TextDrawer*		RendererOpenGL::myDrawer = NULL;
@@ -634,9 +632,10 @@ void RendererOpenGL::Close()
 #endif
 #endif
 
-	if(myVBO[0]!=-1)
+	if (myVBO[0] != -1)
+	{
 		glDeleteBuffers(PREALLOCATED_VBO_COUNT, myVBO); CHECK_GLERROR;
-
+	}
 	PlatformClose();
 	ModuleSpecificRenderer::Close();
 	BaseClose();
@@ -1284,9 +1283,21 @@ void VertexBufferManager::GenBuffer(int count, unsigned int * id)
 	glGenBuffers(count, id); CHECK_GLERROR;
 }
 
-void VertexBufferManager::DelBuffer(int count, unsigned int * id)
+void VertexBufferManager::DelBuffer(int count, unsigned int* id)
 {
-	// TODO NONO should invalidate vertex attrib using these buffers
+	for (int i = 0; i < count; i++)
+	{
+		for (auto& VA : mEnableVertexAttrib)
+		{
+			if ((VA.second.mBufferName == id[i]))
+			{
+				glDisableVertexAttribArray(VA.first);
+				VA.second.mUsed = -1;
+				VA.second.mBufferName = -1;
+			}
+		}
+	}
+	
 	glDeleteBuffers(count, id); CHECK_GLERROR;
 }
 
@@ -1341,8 +1352,23 @@ void VertexBufferManager::FlushBindBuffer(int target, bool force)
 			mCurrentElemBound = mAskedElemBound;
 		}
 
+	
+
 	mAskedArrayBound = -1;
 	mAskedElemBound = -1;
+}
+
+void VertexBufferManager::FlushUnusedVertexAttrib()
+{ 
+	// disable unused attribs
+	for (auto& VA : mEnableVertexAttrib)
+	{
+		if (VA.second.mUsed == 0)
+		{
+			glDisableVertexAttribArray(VA.first);
+			VA.second.mUsed = -1;
+		}
+	}
 }
 
 void VertexBufferManager::UnbindBuffer(unsigned int bufferName, int target)
@@ -1355,16 +1381,27 @@ void VertexBufferManager::UnbindBuffer(unsigned int bufferName, int target)
 		if (mCurrentElemBound == bufferName)
 			mCurrentElemBound = -1;
 }
+// called at the end of drawElements or DrawArray to mark already used vertex array
+void VertexBufferManager::MarkVertexAttrib()
+{ 
+	for (auto& VA : mEnableVertexAttrib)
+	{
+		if(VA.second.mUsed>0)
+			VA.second.mUsed = 0;
+	}
 
+	mAskedArrayBound = 0;
+	mAskedElemBound = 0;
+}
 
 void VertexBufferManager::Clear(bool push)
 {
 	if (push)
 	{
-		kstl::vector<unsigned int>::iterator itr = mEnableVertexAttrib.begin();
-		kstl::vector<unsigned int>::iterator end = mEnableVertexAttrib.end();
-		for (; itr != end; ++itr)
-			glDisableVertexAttribArray(*itr); CHECK_GLERROR;
+		for (auto& VA : mEnableVertexAttrib)
+		{
+			glDisableVertexAttribArray(VA.first); CHECK_GLERROR;
+		}
 	}
 
 	mAskedArrayBound = 0;
@@ -1394,7 +1431,8 @@ void VertexBufferManager::SetVertexAttrib(unsigned int bufferName, unsigned int 
 	glVertexAttribPointer(locs->attribs[attribID], size, type, normalized, stride, offset); CHECK_GLERROR;
 
 
-	mEnableVertexAttrib.push_back(locs->attribs[attribID]);
+	mEnableVertexAttrib[locs->attribs[attribID]].mBufferName= bufferName;
+	mEnableVertexAttrib[locs->attribs[attribID]].mUsed = 1;
 }
 
 void VertexBufferManager::BufferData(unsigned int bufferName, unsigned int bufferType, int size, void* data, unsigned int usage)
