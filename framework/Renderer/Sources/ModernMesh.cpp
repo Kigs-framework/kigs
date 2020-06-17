@@ -1612,7 +1612,7 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 					{
 						if (!current_draw)
 						{
-							renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, count - last_count, myIndexType, (void*)(sizeofindex * last_count), false);
+							renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, count - last_count, myIndexType, (void*)(sizeofindex * last_count));
 						}
 						else
 						{

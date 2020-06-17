@@ -222,7 +222,6 @@ void ModuleSceneGraph::Init(KigsCore* core, const kstl::vector<CoreModifiableAtt
 
 	//AddToAutoRegister({}, "SceneGraph");
 	DECLARE_FULL_CLASS_INFO(core, AutoOrientedNode3D, AutoOrientedNode3D, SceneGraph);
-	DECLARE_FULL_CLASS_INFO(core, CoordinateSystem, CoordinateSystem, SceneGraph);
 	DECLARE_FULL_CLASS_INFO(core, CullingObject, CullingObject, SceneGraph);
 	DECLARE_FULL_CLASS_INFO(core, Node3D, Node3D, SceneGraph);
 	DECLARE_FULL_CLASS_INFO(core, Node3DDelayed, Node3DDelayed, SceneGraph);
@@ -230,11 +229,9 @@ void ModuleSceneGraph::Init(KigsCore* core, const kstl::vector<CoreModifiableAtt
 	DECLARE_FULL_CLASS_INFO(core, OctreeSubNode, OctreeSubNode, SceneGraph);
 	DECLARE_FULL_CLASS_INFO(core, Scene3D, Scene3D, SceneGraph);
 	DECLARE_FULL_CLASS_INFO(core, TravState, TravState, SceneGraph);
-	DECLARE_FULL_CLASS_INFO(core, TouchInputEventManager, TouchInputEventManager, Input);
-	DECLARE_FULL_CLASS_INFO(core, TouchInputEventManager, TouchInputEventManager, Input);
-	DECLARE_FULL_CLASS_INFO(core, TouchInputEventManager, TouchInputEventManager, Input);
-	DECLARE_FULL_CLASS_INFO(core, TouchInputEventManager, TouchInputEventManager, Input);
-
+	REGISTER_UPGRADOR(CoordinateSystemUp);
+	DECLARE_CLASS_ALIAS_AND_UPGRADE(core, CoordinateSystem, Node3D, CoordinateSystemUp);
+	REGISTER_UPGRADOR(PivotUp);
 
 	DECLARE_FULL_DECORATOR_INFO(KigsCore::Instance(), Node3DLodDecorator);
 

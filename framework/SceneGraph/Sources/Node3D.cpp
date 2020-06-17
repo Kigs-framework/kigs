@@ -171,6 +171,26 @@ void Node3D::ChangeMatrix(const Matrix3x4& newmatrix)
 	}
 }
 
+//! move local node position ( pos = move + pos )
+void	Node3D::localMove(const v3f& move)
+{
+	v3f pos = myTransform.GetTranslation();
+	pos += move;
+	myTransform.SetTranslation(pos);
+	SetFlag(LocalToGlobalMatrixIsDirty | GlobalToLocalMatrixIsDirty | BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
+
+	PropagateDirtyFlagsToSons(this);
+	PropagateDirtyFlagsToParents(this);
+}
+
+//! move global node position ( gpos = gmove + gpos )
+void	Node3D::globalMove(const v3f& move)
+{
+	Vector3D lmove=move;
+	myGlobalToLocal.TransformVector(&lmove);
+	localMove(lmove);
+}
+
 void Node3D::PropagateDirtyFlagsToSons(SceneNode* source)
 {
 	for (auto& item : getItems())

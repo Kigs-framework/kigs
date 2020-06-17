@@ -161,6 +161,8 @@ struct Matrix3x4
 	inline void PostMultiply(const Matrix3x4& m);
 	
 	inline Point3D GetTranslation() const;
+
+	inline void	GetPRS(Point3D& pos,Point3D& rot,float& scale) const;
 	
 	/*
 	inline Point3D *X();

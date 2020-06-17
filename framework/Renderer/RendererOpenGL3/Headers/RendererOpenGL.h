@@ -62,6 +62,12 @@ public:
 
 	void DoDelayedAction() override;
 
+	// called at the end of drawElements or DrawArray to mark already used vertex array
+	virtual void MarkVertexAttrib() override;
+
+	// called in drawElements or DrawArray to disable unused attributes
+	virtual void FlushUnusedVertexAttrib()  override;
+
 private:
 	void internalBindBuffer(unsigned int bufferName, unsigned int bufftype);
 
@@ -69,8 +75,15 @@ private:
 	unsigned int mCurrentBoundBuffer[2];
 	unsigned int mAskedBoundBuffer[2];
 
-	std::vector<u32> mEnableVertexAttrib;
-	std::vector<u32> mToDeleteBuffer;
+	struct VAStruct
+	{
+		u32	mBufferName = 0;
+		s32	mUsed = -1;
+	};
+
+	// store enabled vertex attrib with currentBuffer name
+	std::unordered_map<u32,VAStruct>	mEnableVertexAttrib;
+	std::vector<u32>					mToDeleteBuffer;
 };
 
 
@@ -115,8 +128,8 @@ public:
 	void ProtectedFlushMatrix(TravState* state) override;
 
 	void DrawArrays(TravState* state, unsigned int mode, int first, int count) override;
-	void DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices = 0, bool clear_manager=true) override;
-	void DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount, bool clear_manager = true) override;
+	void DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices = 0) override;
+	void DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount) override;
 
 	void BindArrayBuffer(unsigned int id);
 	void BindElementBuffer(unsigned int id);

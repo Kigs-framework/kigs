@@ -729,6 +729,13 @@ public:
 
 	virtual void DoDelayedAction()=0;
 
+	// called at the end of drawElements or DrawArray to mark already used vertex array
+	virtual void MarkVertexAttrib() { ; }
+	// called in drawElements or DrawArray to disable unused attributes
+	virtual void FlushUnusedVertexAttrib() { ; }
+
+
+
 	virtual size_t GetAllocatedBufferCount() { return 0; }
 
 };
@@ -1129,8 +1136,8 @@ public:
 
 
 	virtual void	DrawArrays(TravState* state, unsigned int mode, int first, int count)=0;
-	virtual void	DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices = 0, bool unused = false)=0;
-	virtual void	DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount, bool clear_manager = true) = 0;
+	virtual void	DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices = 0)=0;
+	virtual void	DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount) = 0;
 
 
 	virtual bool    BeginOcclusionQuery(TravState* state, u64& query_id, RendererQueryType type, int frames_to_keep = 1) { KIGS_ASSERT(!"Occlusion queries not supported"); return false; }

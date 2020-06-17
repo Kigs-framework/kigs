@@ -134,6 +134,11 @@ public:
 		return myDrawPriority;
 	}
 
+	//! move local node position ( pos = move + pos )
+	void	localMove(const v3f& move);
+	//! move global node position ( gpos = gmove + gpos )
+	void	globalMove(const v3f& move);
+
 protected:
 
 	void removeUser(CoreModifiable* user) override;
