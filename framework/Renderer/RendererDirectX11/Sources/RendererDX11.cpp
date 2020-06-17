@@ -1464,7 +1464,7 @@ void RendererDX11::DrawUITriangles(TravState * state, const UIVerticesInfo * qi)
 	DrawArrays(state, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, 0, qi->vertexCount);
 }
 
-void RendererDX11::DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount, bool clear_manager)
+void RendererDX11::DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount)
 {
 	myVertexBufferManager->FlushBindBuffer();
 	GetActiveShader()->as<API3DShader>()->setLayout();
@@ -1629,7 +1629,7 @@ void RendererDX11::DrawArrays(TravState* state, unsigned int mode, int first, in
 	}
 }
 
-void RendererDX11::DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, bool unused)
+void RendererDX11::DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices)
 {
 	myVertexBufferManager->FlushBindBuffer();
 	GetActiveShader()->as<API3DShader>()->setLayout();
