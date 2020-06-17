@@ -27,6 +27,6 @@
 		<Attr N="BackDropColor" V="{0.0,0.0,0.0}"/>
 		<Attr N="VSync" V="true"/>
 	</Inst>
-	<!-- virtual screen size if 1280*800 -->
+	<!-- initialize localizations -->
 	<Attr T="string" N="LocalizationInitFile" V="InitLoc.json" Dyn="true"/>
 </Inst>
