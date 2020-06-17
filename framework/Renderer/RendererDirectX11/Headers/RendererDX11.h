@@ -293,8 +293,8 @@ public:
 	void ProtectedFlushMatrix(TravState* state) override;
 
 	void DrawArrays(TravState* state, unsigned int mode, int first, int count) override;
-	void DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices = 0, bool unused = false) override;
-	void DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount, bool clear_manager = true) override;
+	void DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices = 0) override;
+	void DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount) override;
 
 
 	//void BindArrayBuffer(unsigned int id);
