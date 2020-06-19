@@ -1,3 +1,6 @@
 **/Android/ARM/
 /libs/win32/fbxsdk/include/
 /libs/win32/fbxsdk/lib/
+/libs/cross_platform/tiff/html/
+/libs/cross_platform/tiff/man/
+/libs/cross_platform/tiff/test/
