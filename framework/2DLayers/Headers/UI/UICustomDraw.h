@@ -22,8 +22,8 @@ public:
 
 protected:
 	bool								isAlpha(float X, float Y) override;
-	bool								TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
-	bool								TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
+	//bool								TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
+	//bool								TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
 
 	void								ProtectedDraw(TravState* state) override;
 

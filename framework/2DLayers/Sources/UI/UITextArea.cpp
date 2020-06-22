@@ -219,59 +219,6 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 	}
 }
 
-bool UITextArea::TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)
-{
-	if (buttonEvent&UIInputEvent::LEFT)
-	{
-		bool down = buttonState&UIInputEvent::LEFT;
-		if (!this->GetParents().empty())
-		{
-			CoreModifiable* parent = this->GetParents()[0];
-			if (parent->isSubType("UIItem"))
-			{
-				//Ask permission at parent
-				if (!((UIItem*)parent)->PermissionToClicRequiredFromParent(down, this))
-				{
-					return false;
-				}
-			}
-		}
-
-		if (!myIsDown && down) // Button Pressed
-		{
-			myIsDown = down;
-			if (!myFocus)
-			{
-				KigsCore::GetNotificationCenter()->postNotificationName("GetFocus", this);
-				this->GetFocus();
-			}
-		}
-		else if (myIsDown && !down && !myStayPressed) // Button Released
-		{
-			myIsDown = false;
-			if (myFocus)
-			{
-				KigsCore::GetNotificationCenter()->postNotificationName("ReleaseFocus", this);
-				this->LoseFocus();
-			}
-		}
-
-		//Traitement
-		if (!this->GetParents().empty())
-		{
-			CoreModifiable* parent = this->GetParents()[0];
-			if (parent->isSubType("UIItem"))
-			{
-				//Ask permission at parent
-				((UIItem*)parent)->TreatClick(down, this);
-
-			}
-		}
-	}
-	return true;
-}
-
-
 void UITextArea::ProtectedDraw(TravState* state)
 {
 	UIDrawableItem::ProtectedDraw(state);

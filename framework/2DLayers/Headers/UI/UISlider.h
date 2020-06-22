@@ -22,7 +22,6 @@ public:
 	bool			isPressed() const { return myIsDown; }
 	void			ForcedChangeState(bool isdown) { myIsDown = isdown; }
 	void			ForcedRatio(unsigned int value);
-	void			ForcedRatio(int X, int Y);
 	void			ResetSlider();
 	int				Get_CurrentRatio() const { return myCurrentRatio; }
 	void			Set_CurrentRatio(int ratio) { myCurrentRatio = ratio; }
@@ -35,8 +34,8 @@ protected:
 	void InitModifiable()override;
 	void NotifyUpdate(const unsigned int /* labelid */)override;
 
-	bool TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
-	bool TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
+	//bool TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
+	//bool TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
 	bool isAlpha(float X, float Y)override;
 
 	bool				myIsDown;

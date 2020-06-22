@@ -157,7 +157,8 @@ void UIScrollView::UpdateContentSize()
 		itS++;
 	}
 }
-void UIScrollView::SendClickUpToChildren(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)
+
+/*void UIScrollView::SendClickUpToChildren(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)
 {
 	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mySons.begin();
 	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mySons.end();
@@ -174,7 +175,7 @@ void UIScrollView::SendClickUpToChildren(int buttonState, int buttonEvent, int X
 		}
 		itS++;
 	}
-}
+}*/
 
 void UIScrollView::SendFalseClickUpToChildren()
 {
@@ -208,7 +209,8 @@ void UIScrollView::SendClickDownToChildren(int buttonState, int buttonEvent, int
 		itS++;
 	}
 }
-void UIScrollView::SendMouseMoveToChildren(bool over,float MouseDeltaX, float MouseDeltaY)
+
+/*void UIScrollView::SendMouseMoveToChildren(bool over,float MouseDeltaX, float MouseDeltaY)
 {
 	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mySons.begin();
 	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mySons.end();
@@ -235,5 +237,5 @@ void UIScrollView::SendMouseMoveToChildren(bool over,float MouseDeltaX, float Mo
 
 }
 
-
+*/
 

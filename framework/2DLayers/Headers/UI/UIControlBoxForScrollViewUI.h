@@ -20,9 +20,9 @@ public:
 
 	bool scrollTo(kfloat deltaPos);
 
-	bool TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
-	bool TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
-	void TriggerMouseSwipe(int idxButton, kfloat Vx, kfloat Vy) override;
+	//bool TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
+	//bool TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
+	//void TriggerMouseSwipe(int idxButton, kfloat Vx, kfloat Vy) override;
 	void CompensatePosition(kfloat deltaPos, int axis) { myPosition[axis] -= deltaPos; }
 
 protected:

@@ -169,7 +169,7 @@ void	UIText::ChangeText(const usString& _newText)
 	SetUpNodeIfNeeded();
 }
 
-bool UIText::TriggerMouseMove(bool over, float _MouseDeltaX, float _MouseDeltaY)
+/*bool UIText::TriggerMouseMove(bool over, float _MouseDeltaX, float _MouseDeltaY)
 {
 	if (!this->GetParents().empty())
 	{
@@ -180,22 +180,14 @@ bool UIText::TriggerMouseMove(bool over, float _MouseDeltaX, float _MouseDeltaY)
 		}
 	}
 	return false;
-}
+}*/
 
+/*
 bool UIText::TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)
 {
-	/* should be done by the myMouseOverList if false returned
-	if (!this->GetParents().empty())
-	{
-		CoreModifiable* parent = this->GetParents()[0];
-		if (parent->isSubType("UIItem"))
-		{
-			return ((UIItem*)parent)->TriggerMouseClick(idxButton, down, X, Y, catchClick);
-		}
-	}
-	*/
+	
 	return false;
-}
+}*/
 
 unsigned short*		UIText::CutText(const unsigned short* _text, bool& _flag)
 {
