@@ -1,4 +1,6 @@
-void	BaseUI2DLayer::Platform_GetMousePosition(kfloat & X, kfloat & Y, kfloat & sX, kfloat & sY, kfloat & dRx, kfloat & dRy)
+
+
+/*void	BaseUI2DLayer::Platform_GetMousePosition(kfloat & X, kfloat & Y, kfloat & sX, kfloat & sY, kfloat & dRx, kfloat & dRy)
 {
 	myInput->GetMouse()->getPos(X, Y);
 	myInput->GetMouse()->getMouvement(dRx, dRy);
@@ -11,20 +13,20 @@ void	BaseUI2DLayer::Platform_GetMousePosition(kfloat & X, kfloat & Y, kfloat & s
 		{
 			mtDevice->getTouchPos(1, mtX, mtY);
 			GetRenderingScreen()->GetMousePosInScreen((int)mtX, (int)mtY, sX, sY);
-			mMultiTouchPinch->set(1, sX, sY);
+			//mMultiTouchPinch->set(1, sX, sY);
 		}
 		else
 		{
-			mMultiTouchPinch->release(1);
+			//mMultiTouchPinch->release(1);
 		}
 	}
 
 	GetRenderingScreen()->GetMouseMoveInScreen(dRx, dRy, dRx, dRy);
 	GetRenderingScreen()->GetMousePosInScreen((int)X, (int)Y, sX, sY);
-}
+}*/
 
 
-int	BaseUI2DLayer::Platform_GetInputFlag()
+/*int	BaseUI2DLayer::Platform_GetInputFlag()
 {
 	int flag = UIInputEvent::NONE;
 	flag |= (myInput->GetMouse()->getButtonState(MouseDevice::LEFT) != 0) ? UIInputEvent::LEFT:0;
@@ -33,4 +35,4 @@ int	BaseUI2DLayer::Platform_GetInputFlag()
 	flag |= (myInput->GetMouse()->getButtonState(MouseDevice::LEFT) != 0) ? UIInputEvent::PINCH : 0; // pinch binbed on left
 
 	return flag;
-}
+}*/

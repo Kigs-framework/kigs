@@ -19,7 +19,6 @@ public:
 
 	bool addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
 	bool removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
-	void TreatMove(int X, int Y, int oldValue, int desiredValue, UIItem* sender)override;
 
 	inline int				GetRemainingValue() const { return myRemainingValue; }
 	void					SetRemainingValue(int number) { myRemainingValue = number; };
