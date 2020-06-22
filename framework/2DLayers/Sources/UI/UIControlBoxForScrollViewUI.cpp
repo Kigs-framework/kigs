@@ -12,7 +12,7 @@ bool UIControlBoxForScrollViewUI::scrollTo(kfloat deltaPos)
 	return ((UIScrollView*)myParent)->scrollTo(deltaPos);
 }
 
-bool UIControlBoxForScrollViewUI::TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY)
+/*bool UIControlBoxForScrollViewUI::TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY)
 {
 	if (mMoving)
 	{
@@ -34,10 +34,10 @@ bool UIControlBoxForScrollViewUI::TriggerMouseMove(bool over, float MouseDeltaX,
 	((UIScrollView*)myParent)->SendMouseMoveToChildren(over,MouseDeltaX, MouseDeltaY);
 	return false;
 }
+*/
 
 
-
-bool UIControlBoxForScrollViewUI::TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)
+/*bool UIControlBoxForScrollViewUI::TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)
 {
 	if (buttonEvent&UIInputEvent::LEFT)
 	{
@@ -67,7 +67,7 @@ bool UIControlBoxForScrollViewUI::TriggerMouseClick(int buttonState, int buttonE
 		return false;
 	}
 	return  true;
-}
+}*/
 
 void UIControlBoxForScrollViewUI::Update(const Timer& a_Timer, void* addParam)
 {
@@ -111,7 +111,7 @@ void UIControlBoxForScrollViewUI::Update(const Timer& a_Timer, void* addParam)
 	}
 }
 
-void UIControlBoxForScrollViewUI::TriggerMouseSwipe(int idxButton, kfloat Vx, kfloat Vy)
+/*void UIControlBoxForScrollViewUI::TriggerMouseSwipe(int idxButton, kfloat Vx, kfloat Vy)
 {
 	if (fabsf(Vy) >= fabsf(Vx))
 	{
@@ -134,4 +134,4 @@ void UIControlBoxForScrollViewUI::TriggerMouseSwipe(int idxButton, kfloat Vx, kf
 		mAnimation = ANIMATIONSTATE_STOPPED;
 	}
 }
-
+*/

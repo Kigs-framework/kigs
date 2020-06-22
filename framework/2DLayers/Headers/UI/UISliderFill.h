@@ -35,8 +35,6 @@ protected:
 	void		InitModifiable()override;
 	void		NotifyUpdate(const unsigned int /* labelid */)override;
 	bool		isAlpha(float X, float Y)override;
-	bool		TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)override;
-	void		TreatMove(int X, int Y, int oldValue, int desiredValue, UIItem* sender)override;
 
 	void		RecomputeElementsPosition(float dockX, float dockY, float AnchorX, float AnchorY, int posx, int posy, unsigned int sizeX, unsigned int sizeY, int& Xresult, int& Yresult);
 	
