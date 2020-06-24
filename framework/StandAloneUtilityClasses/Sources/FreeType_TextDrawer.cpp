@@ -432,8 +432,6 @@ std::vector<FreeType_TextDrawer::LineStruct> FreeType_TextDrawer::splitString(co
 				canSplit = true;
 			}
 
-
-
 			topb = check_metrics->height - check_metrics->horiBearingY;
 
 			endBearing = check_metrics->width - check_metrics->horiAdvance + check_metrics->horiBearingX;
@@ -477,14 +475,6 @@ std::vector<FreeType_TextDrawer::LineStruct> FreeType_TextDrawer::splitString(co
 
 		if (doSplit) // do the split
 		{
-			// prevent doSplit on 0 char
-			/*if (currentLine.startIndex == currentLine.endIndex)
-			{
-				foundw = 0; 
-				returned.clear();
-				return returned;
-			}*/
-
 			if (lastSplit.charPos > 0)
 			{
 				currentLine.endIndex = lastSplit.charPos;
@@ -492,11 +482,11 @@ std::vector<FreeType_TextDrawer::LineStruct> FreeType_TextDrawer::splitString(co
 			else
 			{
 				if (currentLine.startIndex == currentLine.endIndex)
-			{
-				foundw = 0; 
-				returned.clear();
-				return returned;
-			}
+				{
+					foundw = 0; 
+					returned.clear();
+					return returned;
+				}
 				currentLine.endIndex = 0;
 			}
 			currentLine.len = lastSplit.lineWidth >> 6;
@@ -507,15 +497,13 @@ std::vector<FreeType_TextDrawer::LineStruct> FreeType_TextDrawer::splitString(co
 			//printf("split at '%s' pushline : '%s'\n", debug.c_str(), debug.substr(0, currentLine.endIndex - currentLine.startIndex+1).c_str());
 			//debug = "";
 			
-			if (currentLine.startIndex <= currentLine.endIndex) // catch CR after LF
-				returned.push_back(currentLine);
-			else // empty line
+			if (currentLine.startIndex >= currentLine.endIndex) //empty line
 			{
 				currentLine.startIndex = currentLine.endIndex;
 				currentLine.len = 0;
-				returned.push_back(currentLine);
-			}
 				
+			}
+			returned.push_back(currentLine);
 			currentLine.hasLineFeed = false;
 			currentLine.startIndex = lastSplit.nextLinePos;
 			n = currentLine.startIndex;
@@ -539,60 +527,42 @@ std::vector<FreeType_TextDrawer::LineStruct> FreeType_TextDrawer::splitString(co
 	addHeight=(addHeight+63);
 	addHeight=addHeight>>6;
 
-	if(maxWidth == 0)
+	
+	// add current line
+	if (lineWidth)
 	{
 		currentLine.endIndex = tl - 1;
 		currentLine.len = lineWidth >> 6;
-		
-		if ((a_maxLineNumber > 0) && (returned.size() >= a_maxLineNumber))
-			return returned;
-		
-		//foundw = ((currentLine.len + 63 + BORDER_PIXEL_MARGIN_64 * 2) >> 6);
-		returned.push_back(currentLine);
+	}	
 
-		std::vector<LineStruct>::iterator	itLine = returned.begin();
 
-		while (itLine != returned.end())
-		{
-			LineStruct& current = (*itLine);
-			
-			if (current.len > foundw)
-			{
-				foundw = current.len;
-			}
-			++itLine;
-		}
-		foundw += BORDER_PIXEL_MARGIN * 2;
-	}
-	else
+	if (!((a_maxLineNumber > 0) && (returned.size() >= a_maxLineNumber)))
 	{
-		// add current line
-		if (lineWidth)
-		{
-			currentLine.endIndex = tl - 1;
-			currentLine.len = lineWidth >> 6;
-			returned.push_back(currentLine);
-		}
-
-		if ((currentLine.len+ BORDER_PIXEL_MARGIN * 2 )> foundw)
-			foundw = currentLine.len + BORDER_PIXEL_MARGIN * 2;
-		
-		if ((a_maxLineNumber > 0) && (returned.size() >= a_maxLineNumber))
-			return returned;
+		returned.push_back(currentLine);
 	}
 
-		// multiline ?
-		foundh =((computedH+63) >> 6);
-		baseline = (computedH+63) >> 6;
-		foundh += (addHeight);
-		foundh*=returned.size();
+	// compute final foundw
 
-		foundh += m_Interline*(returned.size()-1);
+	for (auto& l : returned)
+	{
+		if (l.len > foundw)
+		{
+			foundw = l.len;
+		}
+	}
+
+	foundw += BORDER_PIXEL_MARGIN * 2;
+
+	// multiline ?
+	foundh =((computedH+63) >> 6);
+	baseline = (computedH+63) >> 6;
+	foundh += (addHeight);
+	foundh*=returned.size();
+
+	foundh += m_Interline*(returned.size()-1);
 
 
-		foundh+=BORDER_PIXEL_MARGIN*2;
-
-		
+	foundh+=BORDER_PIXEL_MARGIN*2;
 
 	return returned;
 }
