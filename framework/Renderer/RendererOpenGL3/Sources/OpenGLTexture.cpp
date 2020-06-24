@@ -10,9 +10,9 @@
 #include "RendererDefines.h"
 
 #include "TinyImage.h"
-#ifndef JAVASCRIPT
+//#ifndef JAVASCRIPT
 #include "FreeType_TextDrawer.h"
-#endif
+//#endif
 #include "RendererOpenGL.h"
 #include "ModuleFileManager.h"
 #include "FilePathManager.h"
@@ -26,10 +26,10 @@
 #include "ModuleSceneGraph.h"
 
 
-#ifdef JAVASCRIPT
+/*#ifdef JAVASCRIPT
 extern "C" void		JSDrawMultilineTextUTF16(const unsigned short* TextToWrite, int maxLineNumber, int maxWidth, u32 FontSize, const char* FontName, u32 a_Alignment, u32 jumpedLines, int R, int G, int B, int A, int& width, int& height);
 extern "C" void		JSInitImageData(void* pixels, int width, int height);
-#endif
+#endif*/
 
 #define FREETYPE_SIZE_COEFF	0.65f
 
@@ -803,17 +803,17 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 
 }
 
-bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 fontSize, const char* fontName, u32 a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, bool _bold, bool _stroke, float st_R, float st_G, float st_B, float st_A, int a_drawingLimit)
+bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 fontSize, const char* fontName, u32 a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, int a_drawingLimit)
 {
-	return CreateFromText(text, 0, 0, fontSize, fontName, a_Alignment, R, G, B, A, format, _bold, _stroke, st_R, st_G, st_B, st_A, a_drawingLimit);
+	return CreateFromText(text, 0, 0, fontSize, fontName, a_Alignment, R, G, B, A, format,  a_drawingLimit);
 }
 
-bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumber, u32 maxSize, u32 fontSize, const char* fontName, u32 a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, bool _bold, bool _stroke, float st_R, float st_G, float st_B, float st_A, int a_drawingLimit)
+bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumber, u32 maxSize, u32 fontSize, const char* fontName, u32 a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, int a_drawingLimit)
 {
 	myIsText = true;
 	bool bRet = false;
 	unsigned char * pImageData = 0;
-#ifndef JAVASCRIPT
+//#ifndef JAVASCRIPT
 
 	// freetype size ratio
 	fontSize = (int)(((float)fontSize)*FREETYPE_SIZE_COEFF);
@@ -863,7 +863,7 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumbe
 		if (!pImageData)
 			break;
 
-#else 
+/*#else 
 	do
 	{
 		int L_Width = 0;
@@ -875,7 +875,7 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumbe
 
 		JSInitImageData(pImageData, L_Width, L_Height);
 
-#endif
+#endif*/
 
 		SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(pImageData, L_Width, L_Height, TinyImage::RGBA_32_8888));
 

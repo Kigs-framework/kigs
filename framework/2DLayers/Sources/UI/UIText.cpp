@@ -14,15 +14,12 @@ UIText::UIText(const kstl::string& name, CLASS_NAME_TREE_ARG)
 	, myFontSize(*this, false, "FontSize", 12)
 	, myDirection(*this, false, "Direction", 0)
 	, myLength(*this, false, "Length", 0)
-	, myBold(*this, false, "Bold", false)
-	, myStroke(*this, false, "Stroke", false)
-	, myStrokeColor(*this, false, "StrokeColor", 0.0f, 0.0f, 0.0f, 255.0f)
 	, myTextAlign(*this, false, "TextAlignment", 1)
 	, myMaxWidth(*this, false, "MaxWidth", 128)
 	, myMaxLines(*this, false, "MaxLines", 0)
 {
 	// text don't have color array
-	unsetUserFlag(UserFlagUseColorArray);
+	//unsetUserFlag(UserFlagUseColorArray);
 
 	KigsCore::GetNotificationCenter()->addObserver(this, "ReloadTexture", "ResetContext");
 }
@@ -31,8 +28,8 @@ void UIText::NotifyUpdate(const unsigned int labelid)
 {
 	if ((labelid == myText.getLabelID())||
 		(labelid == myFontSize.getLabelID()) ||
-		(labelid == myBold.getLabelID()) ||
-		(labelid == myColor.getLabelID()) ||
+		//(labelid == myBold.getLabelID()) ||
+		//(labelid == myColor.getLabelID()) ||
 		(labelid == myFont.getLabelID()) ||
 		//(labelid == myOpacity.getLabelID()) ||
 		(labelid == myMaxWidth.getLabelID()) ||
@@ -49,10 +46,10 @@ void UIText::InitModifiable()
 	UITexturedItem::InitModifiable();
 	if (IsInit())
 	{
-		myColor.changeNotificationLevel(Owner);
+		//myColor.changeNotificationLevel(Owner);
 		myText.changeNotificationLevel(Owner);
 		myFontSize.changeNotificationLevel(Owner);
-		myBold.changeNotificationLevel(Owner);
+		//myBold.changeNotificationLevel(Owner);
 		myFont.changeNotificationLevel(Owner);
 		myLength.changeNotificationLevel(Owner);
 		myOpacity.changeNotificationLevel(Owner);
@@ -110,15 +107,6 @@ void	UIText::ChangeText(const kstl::string& _newText)
 
 void	UIText::ChangeText(const usString& _newText)
 {
-	//Set Text Color
-	unsigned char R = (unsigned char)(myColor[0] * 255.0f);
-	unsigned char G = (unsigned char)(myColor[1] * 255.0f);
-	unsigned char B = (unsigned char)(myColor[2] * 255.0f);
-	unsigned char A = (unsigned char)(GetOpacity() * 255.0f);
-
-	kfloat stR, stG, stB, st_A;
-	GetStrokeColor(stR, stG, stB, st_A);
-
 	auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 	float LanguageScale = 1.0f;
 	theLocalizationManager->getValue("LanguageScale", LanguageScale);
@@ -136,7 +124,7 @@ void	UIText::ChangeText(const usString& _newText)
 			localized = CutText(localized, modified);
 
 		if (localized)
-			myTexture->CreateFromText(localized, myMaxLines, myMaxWidth, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold, myStroke, stR, stG, stB, st_A);
+			myTexture->CreateFromText(localized, myMaxLines, myMaxWidth, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, 255,255, 255, 255, TinyImage::RGBA_32_8888);
 
 		if (modified)
 			free(localized);
@@ -150,7 +138,7 @@ void	UIText::ChangeText(const usString& _newText)
 		else
 			L_returneValue = const_cast<unsigned short*>(_newText.us_str());
 
-		myTexture->CreateFromText(L_returneValue, myMaxLines, myMaxWidth, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, R, G, B, A, TinyImage::RGBA_32_8888, myBold, myStroke, stR, stG, stB, st_A);
+		myTexture->CreateFromText(L_returneValue, myMaxLines, myMaxWidth, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, 255, 255, 255,255, TinyImage::RGBA_32_8888);
 
 		if (modified)
 			free(L_returneValue);

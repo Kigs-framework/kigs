@@ -19,7 +19,7 @@ public:
 	 */
 	UITextArea(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	void			GetColor(kfloat &R, kfloat &G, kfloat &B, kfloat &A) { R = myTextColor[0]; G = myTextColor[1]; B = myTextColor[2]; A = myTextColor[3]; }
+	//void			GetColor(kfloat &R, kfloat &G, kfloat &B, kfloat &A) { R = myTextColor[0]; G = myTextColor[1]; B = myTextColor[2]; A = myTextColor[3]; }
 	usString		GetText() const { return myText.us_str(); }
 	kstl::string	GetFontName() const { return myFont; }
 	kstl::string	GetReleaseAction() const { return myReleaseAction; }
@@ -60,7 +60,7 @@ protected:
 		ChangeText(toChange.us_str());
 	}
 
-	maVect4DF				myTextColor;
+	//maVect4DF				myTextColor;
 	maUSString				myText;
 	maString				myFont;
 	maString				myReleaseAction;
@@ -72,7 +72,7 @@ protected:
 	bool					myStayPressed;
 	maBool					myHasDefaultText;
 	bool					myIsDefaultText;
-	maBool					myBold;
+
 	maUInt					myTextAlign;
 
 	SmartPointer<Texture>	myTexture;

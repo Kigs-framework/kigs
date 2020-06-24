@@ -15,9 +15,7 @@
 #include "OpenGLRenderingMatrix.h"
 #include "OpenGLHolo3DPanel.h"
 #include "OpenGLMaterial.h"
-#ifndef JAVASCRIPT
 #include "FreeType_TextDrawer.h"
-#endif
 
 #include "GLSLDeferred.h"
 #include "GLSLGenericMeshShader.h"
@@ -589,15 +587,12 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 #endif*/
 	
 
-
-#ifndef JAVASCRIPT
 	// create the freetype drawer
 	if (!myDrawer)
 	{
 		myDrawer = new FreeType_TextDrawer();
 		myDrawer->startBuildFonts();
 	}
-#endif
 
 	myVertexBufferManager = std::make_unique<VertexBufferManager>();
 
@@ -616,13 +611,11 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 
 void RendererOpenGL::Close()
 {
-#ifndef JAVASCRIPT
 	if (myDrawer)
 	{
 		delete myDrawer;
 		myDrawer = NULL;
 	}
-#endif
 
 	myDefaultUIShader = nullptr;
 
@@ -1289,7 +1282,7 @@ void VertexBufferManager::DelBuffer(int count, unsigned int* id)
 	{
 		for (auto& VA : mEnableVertexAttrib)
 		{
-			if ((VA.second.mBufferName == id[i]))
+			if (VA.second.mBufferName == id[i])
 			{
 				glDisableVertexAttribArray(VA.first);
 				VA.second.mUsed = -1;

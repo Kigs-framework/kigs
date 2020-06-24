@@ -571,14 +571,14 @@ std::vector<FreeType_TextDrawer::LineStruct> FreeType_TextDrawer::splitString(co
 		{
 			currentLine.endIndex = tl - 1;
 			currentLine.len = lineWidth >> 6;
-			if ((a_maxLineNumber > 0) && (returned.size() >= a_maxLineNumber))
-				return returned;
-
 			returned.push_back(currentLine);
 		}
 
-		foundw = maxWidth + 2*BORDER_PIXEL_MARGIN_64;
-		foundw >>= 6;
+		if ((currentLine.len+ BORDER_PIXEL_MARGIN * 2 )> foundw)
+			foundw = currentLine.len + BORDER_PIXEL_MARGIN * 2;
+		
+		if ((a_maxLineNumber > 0) && (returned.size() >= a_maxLineNumber))
+			return returned;
 	}
 
 		// multiline ?

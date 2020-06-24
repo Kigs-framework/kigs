@@ -103,17 +103,17 @@ public:
 	* \brief	create a texture from a text
 	* \fn		virtual bool	CreateFromText(...)=0;
 	*/
-	bool	CreateFromText(const char* text, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1, float R = 0, float G = 0, float B = 0, float A = 1, TinyImage::ImageFormat format = TinyImage::RGBA_32_8888, bool _bold = false, bool _stroke = false, float st_R = 0, float st_G = 0, float st_B = 0, float st_A = 1, int a_drawingLimit = -1)
+	bool	CreateFromText(const char* text, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1, float R = 0, float G = 0, float B = 0, float A = 1, TinyImage::ImageFormat format = TinyImage::RGBA_32_8888,  int a_drawingLimit = -1)
 	{
 		usString tmpText(text);
-		return CreateFromText(tmpText.us_str(), fontSize, fontName, a_Alignment, R, G, B, A, format, _bold, _stroke, st_R, st_G, st_B, st_A, a_drawingLimit);
+		return CreateFromText(tmpText.us_str(), fontSize, fontName, a_Alignment, R, G, B, A, format,  a_drawingLimit);
 	}
 
 	/**
 	* \brief	create a texture from a text in utf16
 	* \fn		virtual bool	CreateFromBuffer(...)=0;
 	*/
-	virtual bool	CreateFromText(const unsigned short* text, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1, float R = 0, float G = 0, float B = 0, float A = 1, TinyImage::ImageFormat format = TinyImage::RGBA_32_8888, bool _bold = false, bool _stroke = false, float st_R = 0, float st_G = 0, float st_B = 0, float st_A = 1, int a_drawingLimit = -1)
+	virtual bool	CreateFromText(const unsigned short* text, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1, float R = 0, float G = 0, float B = 0, float A = 1, TinyImage::ImageFormat format = TinyImage::RGBA_32_8888, int a_drawingLimit = -1)
 	{
 		assert(0);
 		return false;
@@ -124,17 +124,17 @@ public:
 	* \fn		virtual bool	CreateFromText(...)=0;
 	*/
 
-	bool	CreateFromText(const char* text, unsigned int _maxLineNumber = 0, unsigned int maxSize = 128, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1,  float R = 0, float G = 0, float B = 0, float A = 1, TinyImage::ImageFormat format = TinyImage::RGBA_32_8888, bool _bold = false, bool _stroke = false, float st_R = 0, float st_G = 0, float st_B = 0, float st_A = 1, int a_drawingLimit = -1)
+	bool	CreateFromText(const char* text, unsigned int _maxLineNumber = 0, unsigned int maxSize = 128, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1,  float R = 0, float G = 0, float B = 0, float A = 1, TinyImage::ImageFormat format = TinyImage::RGBA_32_8888,  int a_drawingLimit = -1)
 	{
 		usString tmpText(text);
-		return  CreateFromText(tmpText.us_str(), _maxLineNumber, maxSize, fontSize, fontName, a_Alignment, R, G, B, A, format, _bold, _stroke, st_R, st_G, st_B, st_A, a_drawingLimit);
+		return  CreateFromText(tmpText.us_str(), _maxLineNumber, maxSize, fontSize, fontName, a_Alignment, R, G, B, A, format,  a_drawingLimit);
 	}
 	
 	/**
 	* \brief	create a texture from a multiline text in utf16
 	* \fn		virtual bool	CreateFromBuffer(...)=0;
 	*/
-	virtual bool	CreateFromText(const unsigned short* text, unsigned int _maxLineNumber = 0, unsigned int maxSize = 128, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1, float R = 0, float G = 0, float B = 0, float A = 1, TinyImage::ImageFormat format = TinyImage::RGBA_32_8888, bool _bold = false, bool _stroke = false, float st_R = 0, float st_G = 0, float st_B = 0, float st_A = 1, int a_drawingLimit = -1)
+	virtual bool	CreateFromText(const unsigned short* text, unsigned int _maxLineNumber = 0, unsigned int maxSize = 128, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1, float R = 0, float G = 0, float B = 0, float A = 1, TinyImage::ImageFormat format = TinyImage::RGBA_32_8888, int a_drawingLimit = -1)
 	{
 		assert(0);
 		return false;
