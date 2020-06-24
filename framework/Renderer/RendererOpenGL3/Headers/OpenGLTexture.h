@@ -31,8 +31,8 @@ protected:
 	bool	CreateFromImage(const SmartPointer<TinyImage>& image, bool directInit=false) override;
 //	bool	CreateFromBuffer(unsigned char* buffer, unsigned int width, unsigned int height, TinyImage::ImageFormat format, unsigned char* palettebuffer = 0, unsigned int palattedatasize = 0) override;
 	bool	UpdateBufferZone(unsigned char* bitmapbuffer, const BBox2DI& zone, const Point2DI& bitmapSize) override;
-	bool	CreateFromText(const unsigned short* text, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1, float R = 0, float G = 0, float B = 0, float A = 1, TinyImage::ImageFormat format = TinyImage::RGBA_32_8888, bool _bold = false, bool _stroke = false, float st_R = 0, float st_G = 0, float st_B = 0, float st_A = 1, int a_drawingLimit = -1) override;
-	bool	CreateFromText(const unsigned short* text, unsigned int _maxLineNumber = 0, unsigned int maxSize = 128, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1, float R = 0, float G = 0, float B = 0, float A = 1, TinyImage::ImageFormat format = TinyImage::RGBA_32_8888, bool _bold = false, bool _stroke = false, float st_R = 0, float st_G = 0, float st_B = 0, float st_A = 1, int a_drawingLimit = -1) override;
+	bool	CreateFromText(const unsigned short* text, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1, float R = 0, float G = 0, float B = 0, float A = 1, TinyImage::ImageFormat format = TinyImage::RGBA_32_8888, int a_drawingLimit = -1) override;
+	bool	CreateFromText(const unsigned short* text, unsigned int _maxLineNumber = 0, unsigned int maxSize = 128, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1, float R = 0, float G = 0, float B = 0, float A = 1, TinyImage::ImageFormat format = TinyImage::RGBA_32_8888, int a_drawingLimit = -1) override;
 
 	bool	CubeMapGeneration();
 	bool	ManagePow2Buffer(unsigned int w, unsigned int h, unsigned int aPixSize);

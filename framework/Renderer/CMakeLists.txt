@@ -1,9 +1,6 @@
 add_library(Renderer STATIC "")
 
-target_link_libraries(Renderer PUBLIC SceneGraph Input GUI TinyImage)
-if(NOT(${KIGS_PLATFORM} STREQUAL "Javascript"))
-		target_link_libraries(Renderer PRIVATE freetype)
-endif()
+target_link_libraries(Renderer PUBLIC SceneGraph Input GUI TinyImage freetype)
 
 if(USE_D3D)
 	set(PLATFORM_MODULE "RendererDirectX11")
@@ -41,12 +38,6 @@ else()
 			"../StandAloneUtilityClasses/Sources/ModernMeshBuilder.cpp"
 			"../StandAloneUtilityClasses/Sources/simplexnoise.cpp"
 			"../StandAloneUtilityClasses/Sources/BinMeshLoaderBase.cpp"
-			"../StandAloneUtilityClasses/Sources/GLSLDebugDraw.cpp")
-
-	if(NOT ${KIGS_PLATFORM} STREQUAL "Javascript")
-		target_sources(Renderer 
-			PRIVATE 
-				"../StandAloneUtilityClasses/Sources/FreeType_TextDrawer.cpp"
-				)
-	endif()
+			"../StandAloneUtilityClasses/Sources/GLSLDebugDraw.cpp"
+			"../StandAloneUtilityClasses/Sources/FreeType_TextDrawer.cpp" )
 endif()

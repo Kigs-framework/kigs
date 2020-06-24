@@ -17,11 +17,9 @@ public:
 	UIText(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 
-	void					GetStrokeColor(kfloat &R, kfloat &G, kfloat &B, kfloat &A) { R = myStrokeColor[0]; G = myStrokeColor[1]; B = myStrokeColor[2]; A = myStrokeColor[3]; }
-
 	inline void				SetAlignment(unsigned int a) { myTextAlign = a; }
 	inline void				SetColor(kfloat R, kfloat G, kfloat B, kfloat A) { myColor[0] = R; myColor[1] = G; myColor[2] = B; myOpacity = A; }
-	inline void				SetStrokeColor(kfloat R, kfloat G, kfloat B, kfloat A) { myStrokeColor[0] = R; myStrokeColor[1] = G; myStrokeColor[2] = B; myOpacity = A; myStroke = true; }
+
 	using					UITexturedItem::SetColor;
 	kstl::string			GetText() { return myText.ToString(); }
 	kstl::string			GetFontName() const { return myFont; }
@@ -53,9 +51,6 @@ protected:
 	maUInt					myFontSize;
 	maUInt					myDirection;
 	maUInt					myLength;
-	maBool					myBold;
-	maBool					myStroke;
-	maVect4DF				myStrokeColor;
 	maUInt					myTextAlign;
 	maUInt					myMaxWidth;
 	maUInt					myMaxLines;
