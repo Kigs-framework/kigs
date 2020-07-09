@@ -433,17 +433,17 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 		}
 	}
 
-	kstl::string	fileext = "";
-	if (result->myExtension != "")
-		fileext.append(result->myExtension, 1, result->myExtension.length() - 1);
-
-	// if given filename already has a path, first search with only the path
+	// if given filename already has a path, search with only the path
 	if (result->myFileName != result->myFullFileName)
 	{
 		Platform_CheckState(result.get());
-		if (result->myStatus & FileHandle::Exist)
+		if ((result->myStatus & FileHandle::Exist) || myStrictPath)
 			return result;
 	}
+
+	kstl::string	fileext = "";
+	if (result->myExtension != "")
+		fileext.append(result->myExtension, 1, result->myExtension.length() - 1);
 
 	kstl::vector<kstl::string> localpath;
 	if (myPath.find(fileext) != myPath.end())
