@@ -73,7 +73,7 @@ void API3DLight::PrepareLightInfo(LightStruct& light_data, Camera* cam)
 	{
 		PointLight light;
 		light.position.xyz = outP;
-		light.ambiant.xyz = (v3f)myAmbientColor;
+		light.ambient.xyz = (v3f)myAmbientColor;
 		light.diffuse.xyz = (v3f)myDiffuseColor;
 		light.specular.xyz = (v3f)mySpecularColor;
 		light.attenuation.xyz = v3f(myConstAttenuation, myLinAttenuation, myQuadAttenuation);
@@ -84,7 +84,7 @@ void API3DLight::PrepareLightInfo(LightStruct& light_data, Camera* cam)
 	{
 		DirLight light;
 		light.position.xyz = outP.Normalized();
-		light.ambiant.xyz = (v3f)myAmbientColor;
+		light.ambient.xyz = (v3f)myAmbientColor;
 		light.diffuse.xyz = (v3f)myDiffuseColor;
 		light.specular.xyz = (v3f)mySpecularColor;
 		light_data.dirlights.push_back(light);
@@ -94,7 +94,7 @@ void API3DLight::PrepareLightInfo(LightStruct& light_data, Camera* cam)
 	{
 		SpotLight light;
 		light.position.xyz = outP;
-		light.ambiant.xyz = (v3f)myAmbientColor;
+		light.ambient.xyz = (v3f)myAmbientColor;
 		light.diffuse.xyz = (v3f)myDiffuseColor;
 		light.specular.xyz = (v3f)mySpecularColor;
 		light.attenuationAndSpotExponent = v4f(myConstAttenuation, myLinAttenuation, myQuadAttenuation, mySpotAttenuation);

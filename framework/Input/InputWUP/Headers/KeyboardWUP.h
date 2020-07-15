@@ -24,7 +24,7 @@ public:
 	
 	void	DoInputDeviceDescription();
 	
-	unsigned short ScanToChar(u32 scanCode) override;
+	unsigned short ScanToChar(u32 scanCode, u32* vkCode) override;
     
 	protected:
     virtual ~KeyboardWUP();

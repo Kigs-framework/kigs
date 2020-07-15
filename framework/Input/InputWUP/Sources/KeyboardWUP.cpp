@@ -59,7 +59,7 @@ void	KeyboardWUP::UpdateDevice()
 			KeyEvent ke;
 			ke.Action = p.first;
 			ke.KeyCode = (int)p.second.VirtualKey();
-			ke.Unicode = ScanToChar(p.second.KeyStatus().ScanCode);
+			ke.Unicode = ScanToChar(p.second.KeyStatus().ScanCode, &ke.KeyCode);
 			ke.flag = (iswprint(ke.Unicode)) ? 1 : 0;
 			touchVector.push_back(ke);
 				
@@ -93,7 +93,7 @@ void	KeyboardWUP::UpdateDevice()
 	}
 }
 
-unsigned short	KeyboardWUP::ScanToChar(u32 scanCode)
+unsigned short	KeyboardWUP::ScanToChar(u32 scanCode, u32* vkCode)
 {
 	return (unsigned short)(scanCode);
 }

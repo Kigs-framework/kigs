@@ -266,14 +266,14 @@ struct PointLight
 	v4f attenuation;
 	v4f specular;
 	v4f diffuse;
-	v4f ambiant;
+	v4f ambient;
 };
 struct DirLight
 {
 	v4f position;
 	v4f diffuse;
 	v4f specular;
-	v4f ambiant;
+	v4f ambient;
 };
 struct SpotLight
 {
@@ -282,7 +282,7 @@ struct SpotLight
 	v4f attenuationAndSpotExponent;
 	v4f diffuse;
 	v4f specular;
-	v4f ambiant;
+	v4f ambient;
 };
 
 struct LightStruct
@@ -300,7 +300,7 @@ namespace std
 		size_t operator()(const PointLight& pl)
 		{
 			size_t hash = 0;
-			hash_combine(hash, pl.position, pl.attenuation, pl.specular, pl.diffuse, pl.ambiant);
+			hash_combine(hash, pl.position, pl.attenuation, pl.specular, pl.diffuse, pl.ambient);
 			return hash;
 		}
 	};
@@ -311,7 +311,7 @@ namespace std
 		size_t operator()(const DirLight& dl)
 		{
 			size_t hash = 0;
-			hash_combine(hash, dl.position, dl.specular, dl.diffuse, dl.ambiant);
+			hash_combine(hash, dl.position, dl.specular, dl.diffuse, dl.ambient);
 			return hash;
 		}
 	};
@@ -322,7 +322,7 @@ namespace std
 		size_t operator()(const SpotLight& sl)
 		{
 			size_t hash = 0;
-			hash_combine(hash, sl.position, sl.directionAndCutOff, sl.attenuationAndSpotExponent, sl.diffuse, sl.specular, sl.ambiant);
+			hash_combine(hash, sl.position, sl.directionAndCutOff, sl.attenuationAndSpotExponent, sl.diffuse, sl.specular, sl.ambient);
 			return hash;
 		}
 	};
