@@ -984,6 +984,7 @@ void DrawHierarchy()
 
 				for (auto& cm : instances)
 				{
+
 					if (cm->isSubType("ModuleBase"))
 						modules.push_back(cm);
 					else if (cm->isSubType("Texture"))

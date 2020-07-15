@@ -91,6 +91,8 @@ public:
 
 protected:
 
+	void InitModifiable() override;
+
 	/**
 	 * \brief	destructor
 	 * \fn 		~Light();

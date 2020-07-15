@@ -20,9 +20,21 @@ Light::Light(const kstl::string& name,CLASS_NAME_TREE_ARG) : Node3D(name,PASS_CL
 ,myIsOn(*this,false,LABEL_AND_ID(IsOn),true)
 ,myLightType(*this, true, LABEL_AND_ID(LightType), "POINT", "DIRECTIONAL", "SPOT") 	//0 for point, 1 for directional, 2 for spot
 {
-
-
+	
 }    
+
+void Light::InitModifiable()
+{
+	ParentClassType::InitModifiable();
+	if (getAttribute("Offset"))
+	{
+		v3f offset = getValue<v3f>("Offset");
+		auto m = GetLocal();
+		m.Pos = offset;
+		ChangeMatrix(m);
+		RemoveDynamicAttribute("Offset");
+	}
+}
 
 
 Light::~Light()

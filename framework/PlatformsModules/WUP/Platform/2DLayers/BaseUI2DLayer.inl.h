@@ -1,3 +1,4 @@
+#if 0
 void	BaseUI2DLayer::Platform_GetMousePosition(kfloat & X, kfloat & Y, kfloat & sX, kfloat & sY, kfloat & dRx, kfloat & dRy)
 {
 	// use gaze as mouse position
@@ -33,3 +34,4 @@ int	BaseUI2DLayer::Platform_GetInputFlag()
 
 	return flag;
 }
+#endif

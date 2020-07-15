@@ -546,12 +546,17 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 	return true;
 	}
 
-bool DX11Texture::CreateFromText(const unsigned short* text, u32 fontSize, const char* fontName, u32 a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, bool _bold, bool _stroke, float st_R, float st_G, float st_B, float st_A, int a_drawingLimit)
+
+
+
+	
+
+bool DX11Texture::CreateFromText(const unsigned short* text, unsigned int fontSize, const char* fontName, unsigned int a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, int a_drawingLimit) 
 {
-	return CreateFromText(text, 0, 0, fontSize, fontName, a_Alignment, R, G, B, A, format, _bold, _stroke, st_R, st_G, st_B, st_A, a_drawingLimit);
+	return CreateFromText(text, 0, 0, fontSize, fontName, a_Alignment, R, G, B, A, format, a_drawingLimit);
 }
 
-bool DX11Texture::CreateFromText(const unsigned short* text, u32 _maxLineNumber, u32 maxSize, u32 fontSize, const char* fontName, u32 a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, bool _bold, bool _stroke, float st_R, float st_G, float st_B, float st_A, int a_drawingLimit)
+bool DX11Texture::CreateFromText(const unsigned short* text, unsigned int _maxLineNumber, unsigned int maxSize, unsigned int fontSize, const char* fontName, unsigned int a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, int a_drawingLimit)
 {
 	myIsText = true;
 	bool bRet = false;
