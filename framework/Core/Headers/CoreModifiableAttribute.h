@@ -22,7 +22,7 @@ class CoreItem;
 * So placement new constructor must have some parameters as copy.
 * The notification occurs only when parameter is changed with a setValue (or array equivalent) methods
 *
-* \ingroup KigsCore
+* \ingroup Core
 */
 // ****************************************
 enum	AttributeNotificationLevel
@@ -119,7 +119,7 @@ auto& operator=(const CurrentAttributeType& value)\
 
 
 /*! \defgroup CoreModifiableAttibute CoreModifiableAttibute
-*	\ingroup KigsCore
+*	\ingroup Core
 *  \brief group of coreModifiableAttribute
 *
 * A CoreModifiableAttribute defines a type as an object.<br>
@@ -158,7 +158,7 @@ auto& operator=(const CurrentAttributeType& value)\
 /**
 * \file	CoreModifiableAttribute.h
 * \class	CoreModifiableAttribute
-* \ingroup KigsCore
+* \ingroup Core
 * \brief	 base class for CoreModifiableAttributeData . This class is just composed of virtual methods
 * \author	ukn
 * \version ukn

@@ -13,7 +13,7 @@ class Timer;
 // * --------------------------------------
 /**
  * \class	ModuleDescription
- * \ingroup KigsCore
+ * \ingroup Core
  * \brief	read a module description in a XML file
  * \author	ukn
  * \version ukn
