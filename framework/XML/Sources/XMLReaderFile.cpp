@@ -355,11 +355,11 @@ bool XMLReaderFile::ReadFile( const kstl::string &file ,CoreModifiable*	delegate
 	return result;
 }
 
-XML *XMLReaderFile::ReadString( const char * Buff )
+XMLBase* XMLReaderFile::ReadString( const char * Buff )
 {
 #if 1
 	XMLReaderFile reader;
-	return reader.ProtectedReadFile((char*)Buff, (u64)strlen(Buff));
+	return reader.ProtectedReadFileString((char*)Buff, (u64)strlen(Buff));
 #else
 	MinimalXML p;
 	MyUserData userdata;
@@ -393,7 +393,16 @@ XML *XMLReaderFile::ReadString( const char * Buff )
 #endif
 }
 
-bool	XMLReaderFile::ProtectedReadFile(char* Buff,CoreModifiable*	delegateObject,u64 size,char* encoding )
+XMLBase* XMLReaderFile::ProtectedReadFile(CoreRawBuffer* buffer, char* encoding)
+{
+#ifdef KIGS_TOOLS
+	return ProtectedReadFileString(buffer, encoding);
+#else
+	return ProtectedReadFileStringRef(buffer, encoding);
+#endif
+}
+
+bool	XMLReaderFile::ProtectedReadFile(char* Buff, CoreModifiable* delegateObject,u64 size,char* encoding )
 {	
 	MinimalXML p;
 
@@ -411,7 +420,6 @@ bool	XMLReaderFile::ProtectedReadFile(char* Buff,CoreModifiable*	delegateObject,
 
 	if (!p.Parse((unsigned char*)Buff, size) )
 	{
-
 		return false;
 	}
 	
@@ -427,7 +435,7 @@ bool	XMLReaderFile::ProtectedReadFile(FileHandle* file,CoreModifiable*	delegateO
 	{
 		char* Buff=(char*)rawbuffer->buffer();
 		bool result=false;
-		result=ProtectedReadFile(Buff,delegateObject,size);
+		result = ProtectedReadFile(Buff, delegateObject,size);
 		rawbuffer->Destroy();
 		return result;
 	}
@@ -435,7 +443,12 @@ bool	XMLReaderFile::ProtectedReadFile(FileHandle* file,CoreModifiable*	delegateO
 	return false;
 }
 
-XML*	XMLReaderFile::ProtectedReadFile(char* Buff,u64 size,char* encoding)
+XMLBase* XMLReaderFile::ProtectedReadFileString(CoreRawBuffer* buffer, char* encoding)
+{
+	return ProtectedReadFileString(buffer->buffer(), buffer->size(), encoding);
+}
+
+XMLBase* XMLReaderFile::ProtectedReadFileString(char* data, size_t size, char* encoding)
 {
 	MinimalXML p;
 
@@ -451,7 +464,7 @@ XML*	XMLReaderFile::ProtectedReadFile(char* Buff,u64 size,char* encoding)
 	p.setCharacterDataHandler(CharacterHandler);
 	p.setUserData(&userdata);
 	
-	if (!p.Parse((unsigned char*)Buff, size))
+	if (!p.Parse((unsigned char*)data, size))
 	{
 		delete myXML;
 		return 0;
@@ -466,7 +479,7 @@ XML*	XMLReaderFile::ProtectedReadFile(char* Buff,u64 size,char* encoding)
 }
 
 
-XMLStringRef* XMLReaderFile::ProtectedReadFile(CoreRawBuffer* buffer, char* encoding)
+XMLBase* XMLReaderFile::ProtectedReadFileStringRef(CoreRawBuffer* buffer, char* encoding)
 {
 	MinimalXML p;
 
@@ -500,15 +513,15 @@ XMLStringRef* XMLReaderFile::ProtectedReadFile(CoreRawBuffer* buffer, char* enco
 }
 
 
-XMLStringRef *XMLReaderFile::ProtectedReadFile( FileHandle * file )
+XMLBase* XMLReaderFile::ProtectedReadFile( FileHandle * file )
 {
 	u64 size;
 	CoreRawBuffer* rawbuffer=ModuleFileManager::LoadFileAsCharString(file,size,1);
 
 	if(rawbuffer)
 	{
-		XMLStringRef* result=0;
-		result=ProtectedReadFile(rawbuffer);
+		XMLBase* result=0;
+		result = ProtectedReadFile(rawbuffer);
 		rawbuffer->Destroy();
 		return result;	
 	}
