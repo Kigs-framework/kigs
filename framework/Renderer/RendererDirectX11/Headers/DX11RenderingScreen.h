@@ -5,9 +5,10 @@
 // rendering screen is too much platform specific
 //#include "Platform/Renderer/DX11RenderingScreen.h"
 
-#ifdef WUP
+//#ifdef WUP
 #include <winrt/Windows.Graphics.Holographic.h>
-#endif
+//#endif
+
 
 class DX11RenderingScreen : public RenderingScreen
 {
@@ -61,5 +62,6 @@ protected:
 	
 	unsigned int mCurrentFrameNumber = -1;
 	winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters mRenderingParameters = nullptr;
+
 };
 

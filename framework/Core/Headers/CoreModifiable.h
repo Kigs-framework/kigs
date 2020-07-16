@@ -956,7 +956,7 @@ public:
 	void UnRegisterDecorator(const std::string& name);
 #endif
 #ifdef KEEP_XML_DOCUMENT
-	XMLNodeBase* GetXMLNodeForFile(XML* for_file) 
+	XMLNodeBase* GetXMLNodeForFile(XMLBase* for_file) 
 	{ 
 		auto it = mXMLNodes.find(for_file);
 		if (it != mXMLNodes.end()) 

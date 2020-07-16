@@ -1561,7 +1561,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 
 	CoreModifiable* xml_file_item = gKigsTools->ActiveXMLItem; // FindRootXMLFile(item);
 	XML* xml_file = xml_file_item ? (XML*)gKigsTools->ActiveXMLFile.get() : nullptr;
-	XMLNode* xml_node = xml_file_item ? (XMLNode * )item->GetXMLNodeForFile(xml_file) : nullptr;
+	XMLNode* xml_node = xml_file_item ? (XMLNode*)item->GetXMLNodeForFile(xml_file) : nullptr;
 
 	std::string name = item->getName();
 	if (xml_node && xml_node->getName() != "Rel")
