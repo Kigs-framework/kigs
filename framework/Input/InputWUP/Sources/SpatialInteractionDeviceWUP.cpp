@@ -1,4 +1,4 @@
-#include "GazeWUP.h"
+#include "SpatialInteractionDeviceWUP.h"
 #include "CoreBaseApplication.h"
 #include "Core.h"
 #include "DeviceItem.h"
@@ -9,22 +9,25 @@
 
 #include "Platform/Main/BaseApp.h"
 
+#include <winrt/Windows.Perception.People.h>
+
 using namespace winrt::Windows::UI::Input::Spatial;
+using namespace winrt::Windows::Perception::People;
 
-IMPLEMENT_CLASS_INFO(GazeDeviceWUP);
+IMPLEMENT_CLASS_INFO(SpatialInteractionDeviceWUP);
 
-IMPLEMENT_CONSTRUCTOR(GazeDeviceWUP)
+IMPLEMENT_CONSTRUCTOR(SpatialInteractionDeviceWUP)
 {
 	mSpatialInteractionManager = SpatialInteractionManager::GetForCurrentView();
 	StartListening();
 }
 
-GazeDeviceWUP::~GazeDeviceWUP()
+SpatialInteractionDeviceWUP::~SpatialInteractionDeviceWUP()
 {  
 
 }    
 
-void GazeDeviceWUP::StartListening()
+void SpatialInteractionDeviceWUP::StartListening()
 {
 	if (!mIsListening)
 	{
@@ -89,7 +92,7 @@ void GazeDeviceWUP::StartListening()
 	}
 }
 
-void GazeDeviceWUP::StopListening()
+void SpatialInteractionDeviceWUP::StopListening()
 {
 	if (mIsListening)
 	{
@@ -103,35 +106,35 @@ void GazeDeviceWUP::StopListening()
 	}
 }
 
-bool	GazeDeviceWUP::Aquire()
+bool	SpatialInteractionDeviceWUP::Aquire()
 {
-	if (GazeDevice::Aquire())
+	if (SpatialInteractionDevice::Aquire())
 	{
 		return true;
 	}
 	return false;
 }
 
-bool	GazeDeviceWUP::Release()
+bool	SpatialInteractionDeviceWUP::Release()
 {
-	if (GazeDevice::Release())
+	if (SpatialInteractionDevice::Release())
 	{
 		return true;
 	}
 	return false;
 }
 
-void	GazeDeviceWUP::UpdateDevice()
+void	SpatialInteractionDeviceWUP::UpdateDevice()
 {
 	// remove old touch
 	{
-		auto itr = myTouchList.begin();
-		auto end = myTouchList.end();
+		auto itr = myInteractions.begin();
+		auto end = myInteractions.end();
 		while (itr != end) 
 		{
 			if (itr->second.removed)
 			{
-				itr = myTouchList.erase(itr);
+				itr = myInteractions.erase(itr);
 			}
 			else 
 			{
@@ -149,7 +152,7 @@ void	GazeDeviceWUP::UpdateDevice()
 	}
 
 	std::vector<u32> toRemove;
-	GazeTouch* s = nullptr;
+	Interaction* s = nullptr;
 	if (mUpdateList.size())
 	{
 		double time = KigsCore::GetCoreApplication()->GetApplicationTimer()->GetTime();
@@ -167,14 +170,14 @@ void	GazeDeviceWUP::UpdateDevice()
 				continue;
 			}
 
-			auto found = myTouchList.find(id);
-			if (found != myTouchList.end()) // update
+			auto found = myInteractions.find(id);
+			if (found != myInteractions.end()) // update
 			{
 				s = &found->second;
 			}
 			else //create new one
 			{
-				s = &myTouchList[id];
+				s = &myInteractions[id];
 				s->Time = time;
 			}
 
@@ -191,10 +194,14 @@ void	GazeDeviceWUP::UpdateDevice()
 			{
 				myThumbstickList[id] = v2f{ (float)source.args.State().ControllerProperties().ThumbstickX(), (float)source.args.State().ControllerProperties().ThumbstickY() };
 			}
+			
+			s->wrist.reset();
+			s->handedness = (Handedness)(int)source.args.State().Source().Handedness();
 
 			if (itr.second.state != SourceState::Lost)
 			{
-				SpatialInteractionSourceLocation sourceLoc = source.args.State().Properties().TryGetLocation(App::GetApp()->GetStationaryReferenceFrame().CoordinateSystem());
+				auto coordinate_system = App::GetApp()->GetStationaryReferenceFrame().CoordinateSystem();
+				SpatialInteractionSourceLocation sourceLoc = source.args.State().Properties().TryGetLocation(coordinate_system);
 				if (sourceLoc)
 				{
 					if (sourceLoc.SourcePointerPose())
@@ -219,6 +226,22 @@ void	GazeDeviceWUP::UpdateDevice()
 						s->hasPosition = true;
 					}
 				}
+
+				auto hand_pose = source.args.State().TryGetHandPose();
+				
+				if (hand_pose)
+				{
+					JointPose joint;
+					if (hand_pose.TryGetJoint(coordinate_system, HandJointKind::Wrist, joint))
+					{
+						Interaction::Joint j;
+						j.position = { joint.Position.x, joint.Position.y, joint.Position.z };
+						j.orientation = quat(-joint.Orientation.z, joint.Orientation.w, joint.Orientation.x, joint.Orientation.y);
+						//j.orientation = quat(joint.Orientation.x, joint.Orientation.y, joint.Orientation.z, joint.Orientation.w);
+						s->wrist = j;
+					}
+				}
+
 			}
 
 			s->state = itr.second.state;
@@ -237,14 +260,14 @@ void	GazeDeviceWUP::UpdateDevice()
 	}
 }
 
-void	GazeDeviceWUP::DoInputDeviceDescription()
+void	SpatialInteractionDeviceWUP::DoInputDeviceDescription()
 {
 }
 
-bool GazeDeviceWUP::GetTouchPosition(u32 ID, v3f& pos)const
+bool SpatialInteractionDeviceWUP::GetInteractionPosition(u32 ID, v3f& pos)const
 {
-	auto found = myTouchList.find(ID);
-	if (found == myTouchList.end())
+	auto found = myInteractions.find(ID);
+	if (found == myInteractions.end())
 		return false;
 
 	pos.x = found->second.Position.x;
@@ -253,18 +276,19 @@ bool GazeDeviceWUP::GetTouchPosition(u32 ID, v3f& pos)const
 	return true;
 }
 
-const GazeTouch* GazeDeviceWUP::GetTouchEvent(u32 ID) const
+const Interaction* SpatialInteractionDeviceWUP::GetInteraction(u32 ID) const
 {
-	auto found = myTouchList.find(ID);
-	if (found != myTouchList.end())
+	auto found = myInteractions.find(ID);
+	if (found != myInteractions.end())
 		return &(found->second);
 
 	return nullptr;
 }
-bool GazeDeviceWUP::GetTouchState(u32 ID, SourceState& state) const
+
+bool SpatialInteractionDeviceWUP::GetInteractionState(u32 ID, SourceState& state) const
 {
-	auto found = myTouchList.find(ID);
-	if (found == myTouchList.end())
+	auto found = myInteractions.find(ID);
+	if (found == myInteractions.end())
 		return false;
 
 	state = found->second.state;

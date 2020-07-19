@@ -10,7 +10,7 @@
 #include <map>
 
 class ModuleInput;
-struct GazeTouch;
+struct Interaction;
 class Camera;
 
 enum class TouchEventID : u32
@@ -175,8 +175,9 @@ protected:
 		bool has_position;
 
 		Hit* object_hit = nullptr;
-		const GazeTouch* gaze_touch = nullptr;
+		const Interaction* interaction = nullptr;
 		CoreModifiable* starting_touch_support = nullptr;
+		bool need_starting_touch_support_transform = true;
 	};
 	friend bool	operator<(const TouchInfos& first, const TouchInfos& other);
 	friend bool	operator<(const TouchInfos& first, unsigned int other);
@@ -229,7 +230,7 @@ struct InputEvent
 	v3f direction;
 
 	Hit hit;
-	const GazeTouch* gaze_touch = nullptr;
+	const Interaction* interaction = nullptr;
 
 	// Bitfield of InputEventType
 	u32* swallow_mask;
@@ -621,7 +622,7 @@ protected:
 	
 	virtual ~TouchInputEventManager();
 
-	maReference mGazeCamera = BASE_ATTRIBUTE(GazeCamera, "");
+	maBool mUseGazeAsTouchDevice = BASE_ATTRIBUTE(UseGazeAsTouchDevice, false);
 
 	kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos> mLastFrameTouches;
 

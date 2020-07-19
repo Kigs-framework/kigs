@@ -2,7 +2,7 @@
 #include "CoreBaseApplication.h"
 #include "ModuleInput.h"
 #include "MultiTouchDevice.h"
-#include "GazeDevice.h"
+#include "SpatialInteractionDevice.h"
 #include "AttributePacking.h"
 #include "Timer.h"
 #include "Camera.h"
@@ -579,7 +579,9 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		return;
 	}
 
-	auto camera = mGazeCamera->as<Camera>();
+	auto spatial_interaction_device = theInputModule->GetSpatialInteraction();
+	auto camera = spatial_interaction_device ? (Camera*)spatial_interaction_device->getValue<CoreModifiable*>("GazeCamera") : nullptr;
+
 	u16 any_touch_state = 0;
 	if (force_click) any_touch_state = 1;
 	v3f any_pos;
@@ -588,7 +590,6 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos>	Touches;
 	
 	MultiTouchDevice* mtDevice = theInputModule->GetMultiTouch();
-
 	if (theInputModule->GetMouse() && !mtDevice)
 	{
 		TouchEventState::TouchInfos mouseTouch;
@@ -610,7 +611,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		theInputModule->GetMouse()->getPos(mouseTouch.posInfos.pos.x, mouseTouch.posInfos.pos.y);
 		any_pos = mouseTouch.posInfos.pos;
 		
-		if(!camera)
+		if(!spatial_interaction_device)
 			Touches[mouseTouch.ID] = mouseTouch;
 	}
 
@@ -636,40 +637,39 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 			}
 		}
 	}
-	const GazeTouch* gt = nullptr;
-
-
-	if (theInputModule->GetGaze())
+	const Interaction* interaction = nullptr;
+	if (spatial_interaction_device)
 	{
-		auto& allTouches = theInputModule->GetGaze()->GetAllTouches();
-	//	auto gaze_camera = theInputModule->GetGaze()->getValue<CoreModifiable*>("GazeCamera");
-
-
+		auto& interactions = spatial_interaction_device->GetInteractions();
+		
 		s32 id = (s32)TouchEventID::MotionController_0;
-		for (auto& itr : allTouches)
+		for (auto& itr : interactions)
 		{
 			//dd::line(itr.second.Position, itr.second.Position + itr.second.Forward, itr.second.pressed ? v3f{ 0,1,0 } : v3f{ 1,1,1 }, 0.02f);
 			//dd::arrow(itr.second.Position, itr.second.Position + itr.second.Up*0.05f, v3f{ 0,0,1 }, 0.02f);
 
-			TouchEventState::TouchInfos gazeTouch;
-			gazeTouch.has_position = false;
-			gazeTouch.posInfos.flag = 0;
-			gazeTouch.posInfos.dir = itr.second.Forward;
-			gazeTouch.posInfos.origin = itr.second.Position;
-			gazeTouch.ID = (TouchEventID)id;
-			gazeTouch.touch_state = (force_click || itr.second.pressed) ? 1 : 0;
-			any_touch_state = any_touch_state | gazeTouch.touch_state;
-			gazeTouch.gaze_touch = &itr.second;
-			gazeTouch.posInfos.pos = itr.second.Position;
-			gazeTouch.starting_touch_support = camera;
-			gazeTouch.posInfos.setHas3DInfos(true);
+			dd::line(itr.second.Position, itr.second.Position + itr.second.Forward, itr.second.pressed ? v3f{ 1, 1, 1 } : v3f{ 0, 1, 0 });
+
+			TouchEventState::TouchInfos interaction_infos;
+			interaction_infos.has_position = false;
+			interaction_infos.posInfos.flag = 0;
+			interaction_infos.posInfos.dir = itr.second.Forward;
+			interaction_infos.posInfos.origin = itr.second.Position;
+			interaction_infos.ID = (TouchEventID)id;
+			interaction_infos.touch_state = (force_click || itr.second.pressed) ? 1 : 0;
+			any_touch_state = any_touch_state | interaction_infos.touch_state;
+			interaction_infos.interaction = &itr.second;
+			interaction_infos.posInfos.pos = itr.second.Position;
+			interaction_infos.starting_touch_support = camera;
+			interaction_infos.need_starting_touch_support_transform = false;
+			interaction_infos.posInfos.setHas3DInfos(true);
 #ifdef WUP
-			if(gIsVR) Touches[gazeTouch.ID] = gazeTouch;
+			if(gIsVR||true) Touches[interaction_infos.ID] = interaction_infos;
 			else
 #endif
 			{
-				if(itr.second.pressed || !gt)
-					gt = &itr.second;
+				if(itr.second.pressed || !interaction)
+					interaction = &itr.second;
 			}
 			++id;
 		}
@@ -679,7 +679,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		
 	}
 	
-	if(camera)
+	if(camera && mUseGazeAsTouchDevice)
 	{
 		TouchEventState::TouchInfos gazeTouch;
 		gazeTouch.has_position = false;
@@ -688,10 +688,10 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		gazeTouch.posInfos.origin = camera->GetGlobalPosition();
 		gazeTouch.ID = TouchEventID::Gaze;
 		gazeTouch.touch_state = any_touch_state;
-		gazeTouch.gaze_touch = gt;
-		if (gt)
+		gazeTouch.interaction = interaction;
+		if (interaction)
 		{
-			gazeTouch.posInfos.pos = gt->Position;
+			gazeTouch.posInfos.pos = interaction->Position;
 			gazeTouch.starting_touch_support = camera;
 			gazeTouch.posInfos.setHas3DInfos(true);
 		}
@@ -1036,7 +1036,8 @@ void	TouchInputEventManager::transformTouchesInTouchSupportHierarchy(touchSuppor
 		}
 		else if(current->currentNode == cTouchinfosOut.starting_touch_support)
 		{
-			cTouchinfosOut.posInfos = itTouches->second.posInfos;
+			if(!itTouches->second.need_starting_touch_support_transform)
+				cTouchinfosOut.posInfos = itTouches->second.posInfos;
 			cTouchinfosOut.starting_touch_support = nullptr;
 		}
 
@@ -1113,7 +1114,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 	ev.swallow_mask = &swallowMask;
 	ev.touch_id = touch.ID;
 	ev.has_position = touch.has_position;
-	ev.gaze_touch = touch.gaze_touch;
+	ev.interaction = touch.interaction;
 	ev.hit = *touch.object_hit;
 	ev.item = target;
 
@@ -1296,7 +1297,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 	ev.type = m_type;
 	ev.swallow_mask = &swallowMask;
 	ev.touch_id = touch.ID;
-	ev.gaze_touch = touch.gaze_touch;
+	ev.interaction = touch.interaction;
 	ev.hit = *touch.object_hit;
 	ev.item = target;
 
@@ -1433,7 +1434,7 @@ void TouchEventStateDirectAccess::Update(TouchInputEventManager* manager, const 
 	ev.touch_state = touch.touch_state;
 	ev.in_touch_support = touch.in_touch_support;
 	ev.has_position = touch.has_position;
-	ev.gaze_touch = touch.gaze_touch;
+	ev.interaction = touch.interaction;
 	ev.item = target;
 
 	if(!touch.touch_ended)
@@ -1470,7 +1471,7 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 	ev.swallow_mask = &swallowMask;
 	ev.has_position = touch.has_position;
 	ev.touch_id = touch.ID;
-	ev.gaze_touch = touch.gaze_touch;
+	ev.interaction = touch.interaction;
 	ev.item = target;
 
 	bool is_down = false;
@@ -1608,7 +1609,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 	ev.type = m_type;
 	ev.swallow_mask = &swallowMask;
 	ev.touch_id = touch.ID;
-	ev.gaze_touch = touch.gaze_touch;
+	ev.interaction = touch.interaction;
 	ev.hit = *touch.object_hit;
 	ev.item = target;
 	ev.has_position = touch.has_position;
@@ -1625,7 +1626,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 		auto y = ProjectOnLineScalar(position, ev.origin, ev.origin + up);
 		return v3f(x, -y, 0) * 8192*2;
 	};
-	auto position = touch.gaze_touch ? project_on_view(touch.gaze_touch->Position) : ev.position;
+	auto position = touch.interaction ? project_on_view(touch.interaction->Position) : ev.position;
 
 	bool is_down = false;
 	if (!swallow)
@@ -1780,7 +1781,7 @@ void TouchEventStatePinch::Update(TouchInputEventManager* manager, const Timer& 
 	PinchEvent ev;
 	ev.swallow_mask = &swallowMask;
 	ev.type = m_type;
-	ev.gaze_touch = touch.gaze_touch;
+	ev.interaction = touch.interaction;
 	ev.item = target;
 
 	bool new_touch = false;
@@ -1909,7 +1910,7 @@ void TouchEventStateInputSwallow::Update(TouchInputEventManager* manager, const 
 	ev.swallow_mask = &swallowMask;
 	ev.position = touch.posInfos.pos;
 	ev.touch_id = touch.ID;
-	ev.gaze_touch = touch.gaze_touch;
+	ev.interaction = touch.interaction;
 	ev.item = target;
 
 	target->SimpleCall<bool>(m_methodNameID, ev);

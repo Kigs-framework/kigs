@@ -7,7 +7,7 @@
 #include "TouchInputEventManager.h"
 
 class MouseDevice;
-class GazeDevice;
+class SpatialInteractionDevice;
 class JoystickDevice;
 class KeyboardDevice;
 class AccelerometerDevice;
@@ -200,7 +200,7 @@ public:
 	 */
 	MouseDevice*		GetMouse(){return myMouse;}
 
-	GazeDevice*		GetGaze() { return myGaze; }
+	SpatialInteractionDevice*		GetSpatialInteraction() { return mySpatialInteraction; }
 
 	//! return multiTouch if any	
 	/**
@@ -227,10 +227,10 @@ public:
 
 	/**
 	 * \brief		return joystick count	
-	 * \fn			unsigned int	getJoystickCount()
-	 * \return		oystick count
+	 * \fn			unsigned int	GetJoystickCount()
+	 * \return		Joystick count
 	 */	
-	unsigned int	getJoystickCount(){return myJoystickCount;}
+	unsigned int	GetJoystickCount(){return myJoysticks.size();}
 	
 	AccelerometerDevice* GetAccelerometer(){return myAccelerometer;}   
 	GeolocationDevice* GetGeolocation(){ return myGeolocation; }
@@ -318,36 +318,18 @@ public:
 	}
 
 protected:
-	/**
-	 * \brief	destructor
-	 * \fn 		~ModuleInput();
-	 */
-	virtual ~ModuleInput();	
-
-	//! mouse
-	MouseDevice*				myMouse;
-	//! gaze device
-	GazeDevice*					myGaze = nullptr;
-	//! multi touch
-	MultiTouchDevice*			myMultiTouch;
-	//! joystick array
-	JoystickDevice**			myJoysticks;
-	//! keyboard
-	KeyboardDevice*				myKeyboard;
-
-	AccelerometerDevice *		myAccelerometer;
-
-	GeolocationDevice *			myGeolocation;
-
-	GyroscopeDevice * 			myGyroscope;
-
-	CompassDevice * 			myCompass;
+	MouseDevice*					myMouse = nullptr;
+	SpatialInteractionDevice*		mySpatialInteraction = nullptr;
+	MultiTouchDevice*				myMultiTouch = nullptr;
+	KeyboardDevice*					myKeyboard = nullptr;
+	AccelerometerDevice*			myAccelerometer = nullptr;
+	GeolocationDevice*				myGeolocation = nullptr;
+	GyroscopeDevice* 				myGyroscope = nullptr;
+	CompassDevice* 					myCompass = nullptr;
+	std::vector<JoystickDevice*>	myJoysticks;
 
 	//! list of WindowClick
-	kstl::list<WindowClick*>	activeWindow;
-
-	//! joystick count
-	unsigned int				myJoystickCount;
+	std::list<WindowClick*>		activeWindow;
 
 	SP<TouchInputEventManager>	myTouchManager;
 };

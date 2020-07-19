@@ -1,0 +1,73 @@
+#pragma once
+
+#include "InputDevice.h"
+
+#include "AttributePacking.h"
+
+#include <optional>
+
+struct Hit;
+
+
+enum class SourceState : u32
+{
+	Pressed = 0,
+	Released,
+	Lost,
+	Updated,
+	Detected
+};
+
+enum class Handedness
+{
+	Unspecified,
+	Left,
+	Right
+};
+
+struct Interaction
+{
+	double Time;
+	v3f Position;
+	
+	v3f Forward;
+	v3f Up;
+
+	unsigned int ID;
+	SourceState state;
+	bool removed = false;
+	bool pressed = false;
+	bool hasPosition = false;
+
+	Handedness handedness = Handedness::Unspecified;
+
+	struct Joint
+	{
+		v3f position;
+		quat orientation;
+	};
+	
+	std::optional<Joint> wrist;
+
+
+};
+
+class SpatialInteractionDevice : public InputDevice
+{
+public:
+	DECLARE_ABSTRACT_CLASS_INFO(SpatialInteractionDevice, InputDevice, Input)
+	DECLARE_INLINE_CONSTRUCTOR(SpatialInteractionDevice){}
+
+	virtual bool GetInteractionPosition(u32 ID, v3f& pos) const = 0;
+	virtual bool GetInteractionState(u32 ID, SourceState & state) const = 0;
+	virtual const Interaction* GetInteraction(u32 ID) const = 0;
+	
+	const kigs::unordered_map<int, Interaction>& GetInteractions() const { return myInteractions; }
+	const kigs::unordered_map<int, v2f>& GetAllThumbstick() const { return myThumbstickList; }
+
+protected:
+	kigs::unordered_map<int, Interaction> myInteractions;
+	kigs::unordered_map<int, v2f> myThumbstickList;
+
+	maReference mGazeCamera = BASE_ATTRIBUTE(GazeCamera, "Camera:camera");
+};

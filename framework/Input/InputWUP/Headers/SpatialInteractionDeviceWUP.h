@@ -1,33 +1,34 @@
 #pragma once
 
-#include "GazeDevice.h"
+#include "SpatialInteractionDevice.h"
 #include "ModuleInputWUP.h"
 
 #include <mutex>
 
 #include <winrt/Windows.UI.Input.Spatial.h>
 
-class GazeDeviceWUP : public GazeDevice
+class SpatialInteractionDeviceWUP : public SpatialInteractionDevice
 {
 public:
-	DECLARE_CLASS_INFO(GazeDeviceWUP, GazeDevice, Input);
-	DECLARE_CONSTRUCTOR(GazeDeviceWUP);
+	DECLARE_CLASS_INFO(SpatialInteractionDeviceWUP, SpatialInteractionDevice, Input);
+	DECLARE_CONSTRUCTOR(SpatialInteractionDeviceWUP);
 
 	virtual bool	Aquire();
 	virtual bool	Release();
 
 	void	UpdateDevice();
 
-	virtual bool GetTouchPosition(u32 ID, v3f& pos) const override;
-	virtual bool GetTouchState(u32 ID, SourceState& state) const override;
-	virtual const GazeTouch* GetTouchEvent(u32 ID) const override;
+	bool GetInteractionPosition(u32 ID, v3f& pos) const override;
+	bool GetInteractionState(u32 ID, SourceState& state) const override;
+	const Interaction* GetInteraction(u32 ID) const override;
+
 	void	DoInputDeviceDescription();
 
 	void StartListening();
 	void StopListening();
 
 protected:
-	virtual ~GazeDeviceWUP();
+	virtual ~SpatialInteractionDeviceWUP();
 	
 	winrt::Windows::UI::Input::Spatial::SpatialInteractionManager mSpatialInteractionManager = nullptr;
 	bool mIsListening = false;

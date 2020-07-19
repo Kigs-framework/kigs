@@ -331,10 +331,10 @@ bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 	{
 		if (ev.touch_state == DirectTouchEvent::TouchState::TouchDown)
 		{
-			if (ev.gaze_touch)
+			if (ev.interaction)
 			{
 				mStartTouchPos = mCurrentPos;
-				mStartGazePos = ev.gaze_touch->Position;
+				mStartGazePos = ev.interaction->Position;
 				mStartGazeUp = v3f(0,-1,0);
 				mStartGazeRight = ev.direction ^ v3f(0, 1, 0);
 			}
@@ -357,9 +357,9 @@ bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 	//	ImGui::Text(V2F_FMT(2) "\n", V2F_EXP(mCurrentPos));
 	}
 
-	if (mIsDown && ev.gaze_touch)
+	if (mIsDown && ev.interaction)
 	{
-		auto diff = ev.gaze_touch->Position - mStartGazePos;
+		auto diff = ev.interaction->Position - mStartGazePos;
 		v2f extra = { Dot(diff, mStartGazeRight), Dot(diff, mStartGazeUp) };
 
 		mCurrentPos = mStartTouchPos + extra*2048.0f;
