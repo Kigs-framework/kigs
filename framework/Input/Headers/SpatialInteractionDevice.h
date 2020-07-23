@@ -35,6 +35,7 @@ struct Interaction
 
 	unsigned int ID;
 	SourceState state;
+	bool allowed = true;
 	bool removed = false;
 	bool pressed = false;
 	bool hasPosition = false;
@@ -48,8 +49,8 @@ struct Interaction
 	};
 	
 	std::optional<Joint> wrist;
-
-
+	std::optional<Joint> index_tip;
+	std::optional<Joint> middle_tip;
 };
 
 class SpatialInteractionDevice : public InputDevice
@@ -62,7 +63,7 @@ public:
 	virtual bool GetInteractionState(u32 ID, SourceState & state) const = 0;
 	virtual const Interaction* GetInteraction(u32 ID) const = 0;
 	
-	const kigs::unordered_map<int, Interaction>& GetInteractions() const { return myInteractions; }
+	kigs::unordered_map<int, Interaction>& GetInteractions() { return myInteractions; }
 	const kigs::unordered_map<int, v2f>& GetAllThumbstick() const { return myThumbstickList; }
 
 protected:

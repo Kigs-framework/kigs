@@ -637,41 +637,60 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 			}
 		}
 	}
-	const Interaction* interaction = nullptr;
+	const Interaction* main_interaction = nullptr;
 	if (spatial_interaction_device)
 	{
 		auto& interactions = spatial_interaction_device->GetInteractions();
 		
-		s32 id = (s32)TouchEventID::MotionController_0;
 		for (auto& itr : interactions)
 		{
 			//dd::line(itr.second.Position, itr.second.Position + itr.second.Forward, itr.second.pressed ? v3f{ 0,1,0 } : v3f{ 1,1,1 }, 0.02f);
 			//dd::arrow(itr.second.Position, itr.second.Position + itr.second.Up*0.05f, v3f{ 0,0,1 }, 0.02f);
 
-			dd::line(itr.second.Position, itr.second.Position + itr.second.Forward, itr.second.pressed ? v3f{ 1, 1, 1 } : v3f{ 0, 1, 0 });
-
-			TouchEventState::TouchInfos interaction_infos;
-			interaction_infos.has_position = false;
-			interaction_infos.posInfos.flag = 0;
-			interaction_infos.posInfos.dir = itr.second.Forward;
-			interaction_infos.posInfos.origin = itr.second.Position;
-			interaction_infos.ID = (TouchEventID)id;
-			interaction_infos.touch_state = (force_click || itr.second.pressed) ? 1 : 0;
-			any_touch_state = any_touch_state | interaction_infos.touch_state;
-			interaction_infos.interaction = &itr.second;
-			interaction_infos.posInfos.pos = itr.second.Position;
-			interaction_infos.starting_touch_support = camera;
-			interaction_infos.need_starting_touch_support_transform = false;
-			interaction_infos.posInfos.setHas3DInfos(true);
-#ifdef WUP
-			if(gIsVR||true) Touches[interaction_infos.ID] = interaction_infos;
-			else
-#endif
+			auto& interaction = itr.second;
+			if(interaction.allowed)
 			{
-				if(itr.second.pressed || !interaction)
-					interaction = &itr.second;
+				TouchEventState::TouchInfos interaction_infos;
+
+				if (interaction.index_tip.has_value())
+				{
+					interaction_infos.posInfos.pos = interaction.index_tip->position;
+					interaction_infos.posInfos.dir = (interaction.index_tip->position - camera->GetGlobalPosition()).Normalized();
+					interaction_infos.posInfos.origin = interaction_infos.posInfos.pos;
+					//interaction_infos.touch_state = force_click ? 1 : 0;
+					//dd::line(interaction.index_tip->position, interaction.index_tip->position + interaction_infos.posInfos.dir, interaction.pressed ? v3f{ 1, 1, 1 } : v3f{ 0, 1, 0 });
+				}
+				else
+				{
+					interaction_infos.posInfos.pos = interaction.Position;
+					interaction_infos.posInfos.dir = interaction.Forward;
+					interaction_infos.posInfos.origin = interaction.Position;
+					//interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
+					dd::line(interaction.Position, interaction.Position + interaction.Forward, interaction.pressed ? v3f{ 1, 1, 1 } : v3f{ 0, 1, 0 });
+				}
+
+
+				interaction_infos.has_position = false;
+				interaction_infos.posInfos.flag = 0;
+				interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchEventID::SpatialInteractionLeft : TouchEventID::SpatialInteractionRight;
+				
+				interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
+				any_touch_state = any_touch_state | interaction_infos.touch_state;
+				interaction_infos.interaction = &interaction;
+
+				interaction_infos.starting_touch_support = camera;
+				interaction_infos.need_starting_touch_support_transform = false;
+				interaction_infos.posInfos.setHas3DInfos(true);
+	#ifdef WUP
+				if (gIsVR || true) Touches[interaction_infos.ID] = interaction_infos;
+				else
+	#endif
+				{
+					if (interaction.pressed || !main_interaction)
+						main_interaction = &interaction;
+				}
+
 			}
-			++id;
 		}
 #ifdef WUP
 		//if (!gIsVR)
@@ -688,10 +707,10 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		gazeTouch.posInfos.origin = camera->GetGlobalPosition();
 		gazeTouch.ID = TouchEventID::Gaze;
 		gazeTouch.touch_state = any_touch_state;
-		gazeTouch.interaction = interaction;
-		if (interaction)
+		gazeTouch.interaction = main_interaction;
+		if (main_interaction)
 		{
-			gazeTouch.posInfos.pos = interaction->Position;
+			gazeTouch.posInfos.pos = main_interaction->Position;
 			gazeTouch.starting_touch_support = camera;
 			gazeTouch.posInfos.setHas3DInfos(true);
 		}
@@ -1118,10 +1137,17 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 	ev.hit = *touch.object_hit;
 	ev.item = target;
 
+	auto touch_state = touch.touch_state;
+	if((touch.ID == TouchEventID::SpatialInteractionLeft || touch.ID == TouchEventID::SpatialInteractionRight)
+		&& m_SpatialInteractionAutoClickDistance > 0.0f && Norm(ev.hit.HitPosition - touch.posInfos.origin) < m_SpatialInteractionAutoClickDistance)
+	{
+		touch_state = 1;
+	}
+
 	bool is_down = false;
 	if (!swallow)
 	{
-		if (touch.touch_state != 0) // a touch is there
+		if (touch_state != 0) // a touch is there
 		{
 			is_down = true;
 			// check if it was there before
@@ -1132,7 +1158,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 				toStart.startPos = touch.posInfos.pos;
 				toStart.currentPos = touch.posInfos.pos;
 				toStart.clickCount = 0;
-				toStart.buttonState = touch.touch_state;
+				toStart.buttonState = touch_state;
 				toStart.startTime = timer.GetTime();
 				toStart.ID = touch.ID;
 				toStart.origin = touch.posInfos.origin;
@@ -1159,7 +1185,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 				startc.currentPos = touch.posInfos.pos;
 				if (startc.isValid)
 				{
-					if (startc.buttonState != touch.touch_state) // not the same button ?
+					if (startc.buttonState != touch_state) // not the same button ?
 					{
 						startc.isValid = false;
 					}
@@ -1301,12 +1327,20 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 	ev.hit = *touch.object_hit;
 	ev.item = target;
 
+
+	auto touch_state = touch.touch_state;
+	if ((touch.ID == TouchEventID::SpatialInteractionLeft || touch.ID == TouchEventID::SpatialInteractionRight)
+		&& m_SpatialInteractionAutoTouchDownDistance > 0.0f && Norm(ev.hit.HitPosition - touch.posInfos.origin) < m_SpatialInteractionAutoTouchDownDistance)
+	{
+		touch_state = 1;
+	}
+
 	// type 0 for hover
 	ev.has_position = touch.has_position;
 	ev.origin = touch.posInfos.origin;
 	ev.direction = touch.posInfos.dir;
 	ev.position = touch.posInfos.pos;
-	ev.button_state = touch.touch_state;
+	ev.button_state = touch_state;
 	ev.state = StatePossible;
 	ev.touch_state = DirectTouchEvent::TouchHover;
 	
@@ -1334,7 +1368,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 
 	CurrentInfos&	current = m_CurrentInfosMap[touch.ID];
 	
-	if (touch.touch_state != 0) // a touch is there
+	if (touch_state != 0) // a touch is there
 	{
 		if ((current.state & 6) == 0) // check if state has changed
 		{

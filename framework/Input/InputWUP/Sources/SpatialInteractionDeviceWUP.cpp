@@ -232,13 +232,26 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 				if (hand_pose)
 				{
 					JointPose joint;
-					if (hand_pose.TryGetJoint(coordinate_system, HandJointKind::Wrist, joint))
+					if (hand_pose.TryGetJoint(coordinate_system, HandJointKind::Palm, joint))
 					{
 						Interaction::Joint j;
 						j.position = { joint.Position.x, joint.Position.y, joint.Position.z };
 						j.orientation = quat(-joint.Orientation.z, joint.Orientation.w, joint.Orientation.x, joint.Orientation.y);
-						//j.orientation = quat(joint.Orientation.x, joint.Orientation.y, joint.Orientation.z, joint.Orientation.w);
 						s->wrist = j;
+					}
+					if (hand_pose.TryGetJoint(coordinate_system, HandJointKind::IndexTip, joint))
+					{
+						Interaction::Joint j;
+						j.position = { joint.Position.x, joint.Position.y, joint.Position.z };
+						j.orientation = quat(-joint.Orientation.z, joint.Orientation.w, joint.Orientation.x, joint.Orientation.y);
+						s->index_tip = j;
+					}
+					if (hand_pose.TryGetJoint(coordinate_system, HandJointKind::MiddleTip, joint))
+					{
+						Interaction::Joint j;
+						j.position = { joint.Position.x, joint.Position.y, joint.Position.z };
+						j.orientation = quat(-joint.Orientation.z, joint.Orientation.w, joint.Orientation.x, joint.Orientation.y);
+						s->middle_tip = j;
 					}
 				}
 

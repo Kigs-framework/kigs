@@ -17,8 +17,8 @@ enum class TouchEventID : u32
 {
 	Mouse,
 	Gaze,
-	MotionController_0,
-	MotionController_1,
+	SpatialInteractionLeft,
+	SpatialInteractionRight,
 	MultiTouch_0,
 
 	Invalid = UINT32_MAX
@@ -281,6 +281,11 @@ public:
 		m_MaxClickCount = c;
 	}
 
+	void setAutoClickDistance(float distance)
+	{
+		m_SpatialInteractionAutoClickDistance = distance;
+	}
+
 protected:
 
 	virtual void Reset() override
@@ -305,10 +310,11 @@ protected:
 	kigs::unordered_map<TouchEventID, PotentialClick> m_CurrentClickStart;
 	kigs::unordered_map<TouchEventID, PotentialClick> m_CurrentClickEnd;
 
-	int											m_MinClickCount;
-	int											m_MaxClickCount;
-	kfloat										m_ClickMinDuration;
-	kfloat										m_ClickMaxDuration;
+	int											m_MinClickCount = 1;
+	int											m_MaxClickCount = 1;
+	kfloat										m_ClickMinDuration = 0.0f;
+	kfloat										m_ClickMaxDuration = 0.6f;
+	float										m_SpatialInteractionAutoClickDistance = 0.05f;
 };
 
 struct DirectTouchEvent : InputEvent
@@ -340,7 +346,10 @@ public:
 	TouchEventStateDirectTouch(KigsID methodnameID, InputEventManagementFlag flag, /*CoreModifiable* touchsupport,*/ InputEventType type) : TouchEventState(methodnameID, flag, /*touchsupport, */type)
 	{};
 	void Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
-
+	void setAutoTouchDownDistance(float distance)
+	{
+		m_SpatialInteractionAutoTouchDownDistance = distance;
+	}
 protected:
 
 	virtual void Reset() override
@@ -358,6 +367,7 @@ protected:
 	};
 
 	std::map<TouchEventID, CurrentInfos> m_CurrentInfosMap;
+	float								 m_SpatialInteractionAutoTouchDownDistance = 0.05f;
 };
 
 
