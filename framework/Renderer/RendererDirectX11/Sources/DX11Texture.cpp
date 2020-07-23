@@ -259,7 +259,7 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 
 		int line_size = image->GetPixelLineSize();
 
-		if (line_size != myWidth * myPixelSize)
+		if (line_size != myPow2Width * myPixelSize)
 			myCanReuseBuffer = false;
 
 		if (myPow2Buffer && !myCanReuseBuffer && !CanUseDynamicTexture(image->GetFormat()))
