@@ -14,6 +14,7 @@
 #include <wrl/client.h>
 #endif
 
+
 class DX11RenderingScreen : public RenderingScreen
 {
 public:

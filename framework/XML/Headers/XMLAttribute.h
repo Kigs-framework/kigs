@@ -6,6 +6,8 @@
 #include "PreallocatedClassNew.h"
 #include <assert.h> 
 
+#include <assert.h>
+
 class XMLAttributeBase
 {};
 

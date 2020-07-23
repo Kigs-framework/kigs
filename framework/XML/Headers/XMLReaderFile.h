@@ -32,7 +32,7 @@ public:
 	static bool ReadFile(char* Buff,CoreModifiable*	delegateObject,u64 buffsize ,char* encoding=0);
 
 	//! read a "memory" xml file (in a string)
-	static XML* ReadString( const char * TheString );
+	static XMLBase* ReadString( const char * TheString );
 
 	//! utility method 
 	static void  StartDescriptionElement(void *data, const char *el, const char **attr);
@@ -78,10 +78,12 @@ protected:
 	static bool CheckNotEmpty(const char *s, int len);
 
 	//! internal method
-	XMLStringRef*	ProtectedReadFile(FileHandle* file );
+	XMLBase* ProtectedReadFile(FileHandle* file );
+	XMLBase* ProtectedReadFile(CoreRawBuffer* buffer, char* encoding = 0);
 
-	XML*	ProtectedReadFile(char* buffer,u64 size,char* encoding=0);
-	XMLStringRef*	ProtectedReadFile(CoreRawBuffer* buffer, char* encoding = 0);
+	XMLBase* ProtectedReadFileString(CoreRawBuffer* buffer, char* encoding = 0);
+	XMLBase* ProtectedReadFileString(char* data, size_t size, char* encoding = 0);
+	XMLBase* ProtectedReadFileStringRef(CoreRawBuffer* buffer, char* encoding = 0);
 
 	bool	ProtectedReadFile(FileHandle* file,CoreModifiable*	delegateObject );
 
