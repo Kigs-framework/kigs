@@ -174,7 +174,7 @@ void ImGuiLayer::UpdateKeyboard(kstl::vector<KeyEvent>& keys)
 void ImGuiLayer::RegisterTouch()
 {
 	//mInput->getTouchManager()->registerEvent(this, "ManageTouch", InputEventType::DirectAccess, InputEventManagementFlag::EmptyFlag, this);
-	mInput->getTouchManager()->registerEvent(this, "ManageTouch", InputEventType::DirectTouch, InputEventManagementFlag::EmptyFlag, this);
+	static_cast<TouchEventStateDirectTouch*>(mInput->getTouchManager()->registerEvent(this, "ManageTouch", InputEventType::DirectTouch, InputEventManagementFlag::EmptyFlag, this))->setAutoTouchDownDistance(0.05f);
 }
 
 void ImGuiLayer::InitModifiable()

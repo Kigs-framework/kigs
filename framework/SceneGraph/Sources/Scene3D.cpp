@@ -331,6 +331,8 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 	for (auto&& hit : hits)
 	{
 		auto n = hit.HitActor;
+		if (hit.HitDistance > param.max_distance || hit.HitDistance < param.min_distance) 
+			continue;
 		while (n)
 		{
 			auto found = std::find(param.toSort.begin(), param.toSort.end(), n);
@@ -363,6 +365,10 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 			params.inout_distance = sorter[i].dist;
 			params.inout_hit = sorter[i].hit;
 			param.toSort[i]->SimpleCall("GetDistanceForInputSort", params);
+
+			if (params.inout_distance > param.max_distance || params.inout_distance < param.min_distance)
+				continue;
+
 			sorter[i].dist = params.inout_distance;
 			sorter[i].hit = params.inout_hit;
 		}

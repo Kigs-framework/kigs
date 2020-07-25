@@ -48,7 +48,7 @@ struct Interaction
 		quat orientation;
 	};
 	
-	std::optional<Joint> wrist;
+	std::optional<Joint> palm;
 	std::optional<Joint> index_tip;
 	std::optional<Joint> middle_tip;
 };

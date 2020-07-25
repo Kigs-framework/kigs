@@ -11,6 +11,8 @@
 
 #include <winrt/Windows.Perception.People.h>
 
+#include "GLSLDebugDraw.h"
+
 using namespace winrt::Windows::UI::Input::Spatial;
 using namespace winrt::Windows::Perception::People;
 
@@ -195,7 +197,7 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 				myThumbstickList[id] = v2f{ (float)source.args.State().ControllerProperties().ThumbstickX(), (float)source.args.State().ControllerProperties().ThumbstickY() };
 			}
 			
-			s->wrist.reset();
+			//s->wrist.reset();
 			s->handedness = (Handedness)(int)source.args.State().Source().Handedness();
 
 			if (itr.second.state != SourceState::Lost)
@@ -237,7 +239,8 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 						Interaction::Joint j;
 						j.position = { joint.Position.x, joint.Position.y, joint.Position.z };
 						j.orientation = quat(-joint.Orientation.z, joint.Orientation.w, joint.Orientation.x, joint.Orientation.y);
-						s->wrist = j;
+						s->palm = j;
+						//dd::sphere(j.position, { 1,1,1 }, 0.01f);
 					}
 					if (hand_pose.TryGetJoint(coordinate_system, HandJointKind::IndexTip, joint))
 					{
@@ -245,6 +248,7 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 						j.position = { joint.Position.x, joint.Position.y, joint.Position.z };
 						j.orientation = quat(-joint.Orientation.z, joint.Orientation.w, joint.Orientation.x, joint.Orientation.y);
 						s->index_tip = j;
+						//dd::sphere(j.position, { 1,1,1 }, 0.01f);
 					}
 					if (hand_pose.TryGetJoint(coordinate_system, HandJointKind::MiddleTip, joint))
 					{
@@ -252,6 +256,7 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 						j.position = { joint.Position.x, joint.Position.y, joint.Position.z };
 						j.orientation = quat(-joint.Orientation.z, joint.Orientation.w, joint.Orientation.x, joint.Orientation.y);
 						s->middle_tip = j;
+						//dd::sphere(j.position, { 1,1,1 }, 0.01f);
 					}
 				}
 

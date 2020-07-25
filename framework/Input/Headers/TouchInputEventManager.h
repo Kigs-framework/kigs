@@ -49,6 +49,8 @@ struct SortItemsFrontToBackParam
 	v3f position;
 	v3f origin;
 	v3f direction;
+	double min_distance = -DBL_MAX;
+	double max_distance = DBL_MAX;
 	TouchEventID touchID;
 };
 
@@ -119,6 +121,8 @@ struct touchPosInfos
 	v3f				pos;							// 3D position (z is 0 for 2d mouse or touch)
 	unsigned int	flag;
 	Hit				hit = {};
+	double			min_distance = -DBL_MAX;
+	double			max_distance = DBL_MAX;
 
 	inline bool	has3DInfos()
 	{
@@ -305,6 +309,7 @@ protected:
 		TouchEventID ID;
 		v3f          origin;
 		v3f          direction;
+		float		 last_dist;
 	};
 
 	kigs::unordered_map<TouchEventID, PotentialClick> m_CurrentClickStart;
@@ -314,7 +319,7 @@ protected:
 	int											m_MaxClickCount = 1;
 	kfloat										m_ClickMinDuration = 0.0f;
 	kfloat										m_ClickMaxDuration = 0.6f;
-	float										m_SpatialInteractionAutoClickDistance = 0.05f;
+	float										m_SpatialInteractionAutoClickDistance = 0.00f;
 };
 
 struct DirectTouchEvent : InputEvent
@@ -364,10 +369,11 @@ protected:
 		// 2 => activation down
 		// 4 => not hover down
 		int			state;
+		float last_dist;
 	};
 
 	std::map<TouchEventID, CurrentInfos> m_CurrentInfosMap;
-	float								 m_SpatialInteractionAutoTouchDownDistance = 0.05f;
+	float								 m_SpatialInteractionAutoTouchDownDistance = 0.00f;
 };
 
 
@@ -602,6 +608,16 @@ public:
 		myTriggerSquaredDist = dist*dist;
 	}
 
+	inline float getSpatialInteractionOffset()
+	{
+		return mySpatialInteractionOffset;
+	}
+
+	void setSpatialInteractionOffset(float offset)
+	{
+		mySpatialInteractionOffset = offset;
+	}
+
 	void ManageCaptureObject(InputEvent& ev, CoreModifiable* target);
 	bool AllowEventOn(CoreModifiable* target) { return !myEventCaptureObject || target == myEventCaptureObject; }
 	
@@ -796,6 +812,7 @@ protected:
 
 	// common squared dist to trigger scroll / click...
 	int													myTriggerSquaredDist;
+	float												mySpatialInteractionOffset = 0.1f;
 
 	// manage touch active / not active
 	bool	myIsActive;
