@@ -4,7 +4,7 @@
 #include "BSphere.h"
 #include "Plane.h"
 
-int gCollisionDrawLevel=1;
+int gCollisionDrawLevel=0;
 #ifdef KIGS_TOOLS
 #include<GLSLDebugDraw.h>
 extern const Matrix3x4 * currentNodeMatrix;
