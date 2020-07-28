@@ -40,11 +40,14 @@ struct Interaction
 	bool pressed = false;
 	bool hasPosition = false;
 
+	int near_interaction_active_count = 0;
+	float near_interaction_distance = FLT_MAX;
 	Handedness handedness = Handedness::Unspecified;
 
 	struct Joint
 	{
 		v3f position;
+		// Transform Z-unit vector for tip direction (joint to joint), Y-unit for up direction (from joint to back of the hand), X-unit vector for side direction
 		quat orientation;
 	};
 	

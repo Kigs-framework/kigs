@@ -19,6 +19,8 @@ enum class TouchEventID : u32
 	Gaze,
 	SpatialInteractionLeft,
 	SpatialInteractionRight,
+	SpatialInteractionRayLeft,
+	SpatialInteractionRayRight,
 	MultiTouch_0,
 
 	Invalid = UINT32_MAX
@@ -179,7 +181,7 @@ protected:
 		bool has_position;
 
 		Hit* object_hit = nullptr;
-		const Interaction* interaction = nullptr;
+		Interaction* interaction = nullptr;
 		CoreModifiable* starting_touch_support = nullptr;
 		bool need_starting_touch_support_transform = true;
 	};

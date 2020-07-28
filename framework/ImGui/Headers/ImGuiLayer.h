@@ -17,6 +17,7 @@ class ImGuiLayer : public Abstract2DLayer
 public:
 	DECLARE_CLASS_INFO(ImGuiLayer, Abstract2DLayer, ImGui);
 	DECLARE_CONSTRUCTOR(ImGuiLayer);
+	SIGNALS(OnClickDown, OnClickUp);
 	WRAP_METHODS(UpdateKeyboard, ManageTouch, PanelValidHit);
 	
 	virtual ~ImGuiLayer();

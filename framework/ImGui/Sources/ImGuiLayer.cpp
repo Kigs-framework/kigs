@@ -343,11 +343,13 @@ bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 			io.MouseDown[1] = (ev.button_state & 2);
 			io.MouseDown[2] = (ev.button_state & 4);
 			mIsDown = true;
+			EmitSignal(Signals::OnClickDown, this);
 		}
 		else if (ev.touch_state == DirectTouchEvent::TouchState::TouchUp)
 		{
 			io.MouseDown[0] = io.MouseDown[1] = io.MouseDown[2] = 0;
 			mIsDown = false;
+			EmitSignal(Signals::OnClickUp, this);
 		}
 	}
 
