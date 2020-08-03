@@ -10,6 +10,7 @@
 #include "GLSLShader.cpp"
 #include "GLSLSkinShader.cpp"
 #include "GLSLUIShader.cpp"
+#include "GLSLUINode3DShader.cpp"
 #include "GLSLCutShader.cpp"
 #include "GLSLUniform.cpp"
 #include "OpenGLCamera.cpp"
