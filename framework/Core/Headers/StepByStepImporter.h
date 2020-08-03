@@ -13,7 +13,7 @@ class Timer;
 /**
  * \file	StepByStepImporter.h
  * \class	StepByStepImporter
- * \ingroup KigsCore
+ * \ingroup Core
  * \brief	import an xml and create the corresponding CoreModifiable tree step by step
  * \author	ukn
  * \version ukn

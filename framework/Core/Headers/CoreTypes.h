@@ -313,7 +313,7 @@ inline std::set<std::string>& GetKigsIDCollisionStrings()
 /**
  * \file	CoreType.h
  * \class	CharToID
- * \ingroup KigsCore
+ * \ingroup Core
  * \brief	CharToID utility class, convert a string to an int ID  
  * \author	ukn
  * \version ukn

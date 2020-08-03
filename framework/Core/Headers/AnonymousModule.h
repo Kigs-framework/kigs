@@ -9,11 +9,8 @@
 /**
  * \file	AnonymousModule.h
  * \class	AnonymousModule
- * \ingroup KigsCore
+ * \ingroup Core
  * \brief	Base class for anonymous module
- * \author	ukn
- * \version ukn
- * \date	ukn
  *
  * this class is used to load modules from dll without having a base module in a static lib 
  * an anonymous module generally register very specific classes (sfx, 3D objects, ...) which are seen from

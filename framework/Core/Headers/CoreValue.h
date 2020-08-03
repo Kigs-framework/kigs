@@ -10,7 +10,7 @@
 // * --------------------------------------
 /**
 * \class	CoreValue
-* \ingroup  KigsCore
+* \ingroup  Core
 * \brief	
 * \author	ukn
 * \version ukn
