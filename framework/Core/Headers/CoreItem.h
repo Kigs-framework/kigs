@@ -237,7 +237,7 @@ protected:
 // * --------------------------------------
 /**
 * \class	CoreItem
-* \ingroup KigsCore
+* \ingroup Core
 * \brief	Super class for CoreItem to retreivre CoreItem Values
 * \author	ukn
 * \version ukn

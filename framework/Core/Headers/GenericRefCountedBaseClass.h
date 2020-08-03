@@ -14,7 +14,7 @@ class CoreModifiableAttribute;
 /**
 * \file	GenericRefCountedBaseClass.h
 * \class	GenericRefCountedBaseClass
-* \ingroup KigsCore
+* \ingroup Core
 * \brief	Base class for refcounting classes, no other dependencies
 * \author	ukn
 * \version ukn

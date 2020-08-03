@@ -3,6 +3,7 @@
 
 #include "CoreModifiable.h"
 #include "SmartPointer.h"
+#include "maBool.h"
 
 #include <map>
 
@@ -298,6 +299,8 @@ protected:
 	// KigsID key is KigsID(alias), second string is original 
 	kigs::unordered_map<KigsID, std::string>	myExtensionAlias;
 
+	// if a path is given, FindFullName search only with the current path 
+	maBool	myStrictPath = BASE_ATTRIBUTE(StrictPath, false);
 };
 
 extern SmartPointer<FileHandle> Platform_fopen(const char* name, const char * mode);

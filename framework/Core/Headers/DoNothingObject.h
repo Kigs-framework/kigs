@@ -11,7 +11,7 @@
 /**
  * \file	DoNothingObject.h
  * \class	DoNothingObject
- * \ingroup KigsCore
+ * \ingroup Core
  * \brief	Object which do nothing
  * \author	ukn
  * \version ukn
