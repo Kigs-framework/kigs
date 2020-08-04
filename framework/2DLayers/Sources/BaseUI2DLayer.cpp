@@ -159,7 +159,7 @@ void BaseUI2DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 }
 
 
-static void AccumulateToDraw(TravState* state, kstl::vector<NodeToDraw>& todraw, CoreModifiable* current, int depth=0, u32 clip_count = 0)
+void BaseUI2DLayer::AccumulateToDraw(TravState* state, kstl::vector<NodeToDraw>& todraw, CoreModifiable* current, int depth, u32 clip_count)
 {
 	bool clipper;
 	if (current->getValue("ClipSons", clipper))

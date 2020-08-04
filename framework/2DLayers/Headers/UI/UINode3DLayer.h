@@ -2,6 +2,7 @@
 #define _UINode3DLayer_H_
 
 #include "Node3D.h"
+#include "UI/UIItem.h"
 
 // ****************************************
 // * UINode3DLayer class

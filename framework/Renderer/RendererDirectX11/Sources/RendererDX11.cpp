@@ -19,6 +19,7 @@
 #include "HLSLCutShader.h"
 #include "HLSLGenericMeshShader.h"
 #include "HLSLUniform.h"
+#include "HLSLUINode3DShader.h"
 
 #include "ModernMesh.h"
 
@@ -317,6 +318,7 @@ void RendererDX11::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribu
 	DECLARE_FULL_CLASS_INFO(core, API3DShader, API3DShader, Renderer);
 	DECLARE_FULL_CLASS_INFO(core, API3DUIShader, API3DUIShader, Renderer);
 	DECLARE_FULL_CLASS_INFO(core, API3DCutShader, API3DCutShader, Renderer);
+	DECLARE_FULL_CLASS_INFO(core, API3DUINode3DShader, API3DUINode3DShader, Renderer)
 	DECLARE_FULL_CLASS_INFO(core, API3DGenericMeshShader, API3DGenericMeshShader, Renderer);
 
 	DECLARE_FULL_CLASS_INFO(core, API3DUniformInt, API3DUniformInt, Renderer);
