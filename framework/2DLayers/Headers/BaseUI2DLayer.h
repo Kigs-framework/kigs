@@ -56,6 +56,8 @@ public:
 
 	SP<UIItem>& GetRootItem() { return myRootItem; }
 
+	static void AccumulateToDraw(TravState* state, kstl::vector<NodeToDraw>& todraw, CoreModifiable* current, int depth = 0, u32 clip_count = 0);
+
 protected:
 	
 	void InitModifiable() override;

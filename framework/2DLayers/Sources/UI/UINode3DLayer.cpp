@@ -1,5 +1,7 @@
 #include "UI/UINode3DLayer.h"
-
+#include "CoreBaseApplication.h"
+#include "BaseUI2DLayer.h"
+#include "ModuleRenderer.h"
 
 IMPLEMENT_CLASS_INFO(UINode3DLayer);
 
@@ -210,7 +212,7 @@ void UINode3DLayer::TravDraw(TravState* state)
 		if (myRootItem->Draw(state))
 		{
 			myRootItem->SetUpNodeIfNeeded();
-			AccumulateToDraw(state, todraw, myRootItem.get());
+			BaseUI2DLayer::AccumulateToDraw(state, todraw, myRootItem.get());
 		}
 
 		std::sort(todraw.begin(), todraw.end(), NodeToDraw::Sorter{});
