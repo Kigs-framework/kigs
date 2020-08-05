@@ -57,12 +57,11 @@ public:
 	SP<UIItem>& GetRootItem() { return myRootItem; }
 
 	static void AccumulateToDraw(TravState* state, kstl::vector<NodeToDraw>& todraw, CoreModifiable* current, int depth = 0, u32 clip_count = 0);
+	static void UpdateChildrens(const Timer& a_timer, UIItem* current, void* addParam);
 
 protected:
 	
 	void InitModifiable() override;
-
-	void UpdateChildrens(const Timer& a_timer, UIItem* current, void* addParam);
 
 	void SortItemsFrontToBack(SortItemsFrontToBackParam& param) override;
 

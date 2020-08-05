@@ -16,6 +16,7 @@ IMPLEMENT_CONSTRUCTOR(UINode3DLayer)
 
 }
 
+// behavior inspired by BaseUI2DLayer
 void UINode3DLayer::InitModifiable()
 {
 	Node3D::InitModifiable();
@@ -24,6 +25,7 @@ void UINode3DLayer::InitModifiable()
 		kstl::vector<CMSP>	instances;
 		GetSonInstancesByType("UIItem", instances);
 		KIGS_ASSERT(instances.size() < 2); // only one UIItem child
+		// Should we just uninit and wait for a root item before real init ?
 		if (instances.empty())
 		{
 			// add the root UIItem
@@ -40,24 +42,29 @@ void UINode3DLayer::InitModifiable()
 		}
 		instances.clear();
 
+		// specific shader for UINode3DLayer
 		CMSP shader=KigsCore::GetInstanceOf(getName()+"UIShader","API3DUINode3DShader");
-
 		if (shader)
 		{
 			addItem(shader);
 		}
 
-		// set 3D object scale
+		// set 3D object size and design size in a single uniform
 		my3DAndDesignSizeUniform = KigsCore::GetInstanceOf(getName() + "3DSizeUniform", "API3DUniformFloat4");
 		my3DAndDesignSizeUniform->setValue("Name", "SceneScaleAndDesignSize");
 		my3DAndDesignSizeUniform->setArrayValue("Value", my3DSize[0] / myDesignSize[0] , my3DSize[1] / myDesignSize[1], myDesignSize[0], myDesignSize[1]);
 		my3DAndDesignSizeUniform->Init();
 
+		// and add the uniform directly to the shader
 		shader->addItem(my3DAndDesignSizeUniform);
 
+		// notify me when 3D size or design size change
+		// ( recompute BBox and update uniform)
 		my3DSize.changeNotificationLevel(Owner);
 		myDesignSize.changeNotificationLevel(Owner);
 
+		// add myself to auto update
+		// unlike BaseUI2DLayer, the scenegraph will not call Update on me
 		CoreBaseApplication* L_currentApp = KigsCore::GetCoreApplication();
 		if (L_currentApp)
 		{
@@ -70,6 +77,7 @@ void UINode3DLayer::InitModifiable()
 	}
 }
 
+// update BBox and Uniform when parameters are touched
 void UINode3DLayer::NotifyUpdate(const unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
@@ -82,6 +90,7 @@ void UINode3DLayer::NotifyUpdate(const unsigned int labelid)
 	}
 }
 
+// Update childrens
 void UINode3DLayer::Update(const Timer& a_Timer, void* addParam)
 {
 	if (!IsInit())
@@ -98,24 +107,11 @@ void UINode3DLayer::Update(const Timer& a_Timer, void* addParam)
 		return;
 	}
 
-	UpdateChildrens(a_Timer, myRootItem.get(), addParam);
+	BaseUI2DLayer::UpdateChildrens(a_Timer, myRootItem.get(), addParam);
 
 }
 
-void UINode3DLayer::UpdateChildrens(const Timer& a_timer, UIItem* current, void* addParam)
-{
-	current->CallUpdate(a_timer, addParam);
-
-	// recursif Call
-	const kstl::set<Node2D*, Node2D::PriorityCompare>& sons = current->GetSons();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::const_reverse_iterator it = sons.rbegin();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::const_reverse_iterator end = sons.rend();
-	for (; it != end; ++it)
-	{
-		UpdateChildrens(a_timer, (UIItem*)(*it), addParam);
-	}
-}
-
+// not sure how to connect this with TouchManager
 void UINode3DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 {
 	kstl::vector<NodeToDraw> nodes; nodes.reserve(param.toSort.size());
@@ -149,6 +145,7 @@ void UINode3DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 	}
 }
 
+// BBox is computed using 2D quad size
 void UINode3DLayer::RecomputeBoundingBox()
 {
 	// classic Node3D BBox init
@@ -166,7 +163,8 @@ void UINode3DLayer::RecomputeBoundingBox()
 
 
 
-//! Do drawing here if any
+// Do drawing here if any
+// behavior inspired by BaseUI2DLayer
 void UINode3DLayer::TravDraw(TravState* state)
 {
 	if (!IsInit())
