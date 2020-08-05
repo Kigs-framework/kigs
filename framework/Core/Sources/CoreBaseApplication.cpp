@@ -260,6 +260,8 @@ void	CoreBaseApplication::CloseApp()
 	CoreModifiable::debugPrintfFullTree();
 #endif
 	PlatformBaseApplication::Close();
+
+	KigsCore::SetCoreApplication(nullptr);
 }
 
 void	CoreBaseApplication::Sleep()
