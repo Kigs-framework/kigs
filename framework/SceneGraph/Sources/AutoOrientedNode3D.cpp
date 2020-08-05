@@ -2,211 +2,172 @@
 
 #include "AutoOrientedNode3D.h"
 #include "TecLibs/Tec3D.h"
+#include "CoreBaseApplication.h"
 
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(AutoOrientedNode3D, AutoOrientedNode3D, SceneGraph);
-IMPLEMENT_CLASS_INFO(AutoOrientedNode3D)
-
-IMPLEMENT_CONSTRUCTOR(AutoOrientedNode3D)
-,myTargetName(*this,false,"TargetName","")
-,myPosX(*this,false,"PositionX",0.0f)
-,myPosY(*this,false,"PositionY",0.0f)
-,myPosZ(*this,false,"PositionZ",0.0f)
-,myOrientedAxis(*this,true,"OrientedAxis","X","Y","Z")
-,myPseudoConstantAxis(*this,true,"PseudoConstantAxis","X","Y","Z")
-,myPseudoConstantAxisDir(*this,true,"PseudoConstantAxisDir",0.0f,0.0f,1.0f)
+// connect to events and create attributes
+void	AutoOrientedNode3DUp::Init(CoreModifiable* toUpgrade)
 {
-   	myCurrentTarget=0; 
-	myPseudoConstantAxis.setValue("X");
-	myLastTargetPos.Set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-}     
- 
+	// Connect notify update
+	KigsCore::Connect(toUpgrade, "NotifyUpdate", toUpgrade, "AutoOrientedNotifyUpdate");
 
-void AutoOrientedNode3D::setPosition(kfloat posX,kfloat posY,kfloat posZ)
-{
-	myPosX = posX;
-	myPosY = posY;
-	myPosZ = posZ;
-	auto matrix = GetLocal();
-	matrix.SetTranslation({ posX, posY, posZ });
-	ChangeMatrix(matrix);
+	mTarget = toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::REFERENCE, "Target", "");
+	mTarget->changeNotificationLevel(Owner);
+	mCurrentTarget = nullptr;
+	v3f axis(0.0f, 0.0f, 1.0f);
+	myOrientedAxis = toUpgrade->AddDynamicVectorAttribute("OrientedAxis", (float*)&axis.x, 3);
+	axis.Set(0.0f, 1.0f, 0.0f);
+	myPseudoConstantAxis = toUpgrade->AddDynamicVectorAttribute("PseudoConstantAxis", (float*)&axis.x, 3);
+	myPseudoConstantAxisDir = toUpgrade->AddDynamicVectorAttribute("PseudoConstantAxisDir", (float*)&axis.x, 3);
+
+	// check if already in auto update mode
+	if (toUpgrade->isFlagAsAutoUpdateRegistered())
+		mWasdAutoUpdate = true;
+	else
+		KigsCore::GetCoreApplication()->AddAutoUpdate(toUpgrade);
 }
 
-void AutoOrientedNode3D::getPosition(kfloat& posX,kfloat& posY,kfloat& posZ) const
+//  remove dynamic attributes and disconnect events
+void	AutoOrientedNode3DUp::Destroy(CoreModifiable* toDowngrade)
 {
-	posX = myPosX;
-	posY = myPosY;
-	posZ = myPosZ;
+	KigsCore::Disconnect(toDowngrade, "NotifyUpdate", toDowngrade, "CoordinateSystemNotifyUpdate");
+	toDowngrade->RemoveDynamicAttribute("Target");
+	toDowngrade->RemoveDynamicAttribute("OrientedAxis");
+	toDowngrade->RemoveDynamicAttribute("PseudoConstantAxis");
+	toDowngrade->RemoveDynamicAttribute("PseudoConstantAxisDir");
+	mCurrentTarget = nullptr;
+	if (!mWasdAutoUpdate)
+		KigsCore::GetCoreApplication()->RemoveAutoUpdate(toDowngrade);
 }
 
-void	AutoOrientedNode3D::DoOrientation()
+DEFINE_UPGRADOR_METHOD(AutoOrientedNode3DUp, AutoOrientedNotifyUpdate)
 {
-	bool searchtarget=false;
-
-	if(myCurrentTarget)
+	if (!params.empty())
 	{
-		if(myCurrentTarget->getName() != myTargetName.const_ref())
+		u32 labelID;
+		params[1]->getValue(labelID);
+
+		if (GetUpgrador()->mTarget->getLabelID() == labelID)
 		{
-			// search target
-			searchtarget=true;
+			GetUpgrador()->mCurrentTarget =(Node3D*) (CoreModifiable*)(*(maReference*)(GetUpgrador()->mTarget));
 		}
+
 	}
-	else 
-	{
-		searchtarget=true;
-	}
-
-	if(searchtarget)
-	{
-		kstl::vector<CMSP>	instances=	GetInstancesByName("Node3D",myTargetName.const_ref());
-
-		if(instances.size())
-		{
-			myCurrentTarget=(Node3D*)(*instances.begin()).get();
-		}
-		else
-		{
-			myCurrentTarget=0;
-		}
-	}
-
-	if(myCurrentTarget)
-	{
-		// check if this node is up to date
-		Node3D::SetUpNode();
-
-		// make sure the target is up to date
-		myCurrentTarget->SetupNodeIfNeeded();
-
-		// retreive target position in my space
-
-		Point3D targetpos(*(Point3D*)myCurrentTarget->GetLocalToGlobal().e[3]);
-
-		
-
-		GetGlobalToLocal().TransformPoints(&targetpos,1);
-
-		auto matrix = GetLocal();
-
-		kfloat dist=Dist(targetpos,myLastTargetPos);
-		
-		Vector3D	previouspos=*(Vector3D*)matrix.e[3];
-
-		if(dist>0.001)
-		{
-			myLastTargetPos=targetpos;
-
-			// global view direction
-			targetpos=(*(Point3D*)myCurrentTarget->GetLocalToGlobal().e[3]);
-			targetpos-=(*(Point3D*)GetLocalToGlobal().e[3]);
-
-			// need to orient
-
-			Vector3D	alignment(targetpos);
-			Vector3D	constant(*((Vector3D*)myPseudoConstantAxisDir.getVector()));
-
-			alignment.Normalize();
-
-			Vector3D thirdv;
-
-			thirdv.CrossProduct(constant,alignment);
-			dist=Norm(thirdv);
-
-			thirdv*=1.0f/(kfloat)dist;
-
-			Vector3D newconstant(alignment^thirdv);
-
-			switch((int)myOrientedAxis)
-			{
-			case 0: // X
-				(*(Vector3D*)matrix.e[0])=alignment;
-
-
-				if(dist>0.0001) // if alignement equal the constant vector, then keep the old one
-				{
-					switch((int)myPseudoConstantAxis)
-					{
-					case 0: // very bad !
-					case 2:
-						(*(Vector3D*)matrix.e[2])=newconstant;
-						(*(Vector3D*)matrix.e[1])=thirdv;
-						break;
-					case 1:
-						(*(Vector3D*)matrix.e[1])=newconstant;
-						(*(Vector3D*)matrix.e[2])=-thirdv;
-						break;
-					}
-				}
-				
-				break;
-			case 1: // Y
-				(*(Vector3D*)matrix.e[1])=alignment;
-				dist=Dist(alignment,constant);
-				if(dist>0.0001) // if alignement equal the constant vector, then keep the old one
-				{
-					switch((int)myPseudoConstantAxis)
-					{
-					case 1: // very bad !
-					case 2:
-						(*(Vector3D*)matrix.e[2])=newconstant;
-						(*(Vector3D*)matrix.e[0])=-thirdv;
-						break;
-					case 0:
-						(*(Vector3D*)matrix.e[0])=newconstant;
-						(*(Vector3D*)matrix.e[2])=thirdv;
-						break;
-					}
-				}
-				break;
-			case 2: // Z
-				(*(Vector3D*)matrix.e[2])=alignment;
-				dist=Dist(alignment,constant);
-				if(dist>0.0001) // if alignement equal the constant vector, then keep the old one
-				{
-					switch((int)myPseudoConstantAxis)
-					{
-					case 2: // very bad !
-					case 0:
-						(*(Vector3D*)matrix.e[0])=newconstant;
-						(*(Vector3D*)matrix.e[1])=-thirdv;
-						break;
-					case 1:
-						(*(Vector3D*)matrix.e[1])=newconstant;
-						(*(Vector3D*)matrix.e[0])=thirdv;
-						break;
-					}
-				}
-				break;
-			}
-
-			const kstl::vector<CoreModifiable*>& parents=GetParents();
-			kstl::vector<CoreModifiable*>::const_iterator it;
-
-			for(it=parents.begin();it!=parents.end();++it)
-			{
-			  if((*it)->isSubType(Node3D::myClassID))
-			  {
-				Node3D* father=(Node3D*)(*it);
-			  
-				father->SetupNodeIfNeeded();
-				// multiply by father global to local
-				matrix *= father->GetGlobalToLocal();
-				// a node3D should only have one node3D father...
-				break;
-			  }
-			}
-			
-			// reset translation
-			matrix.SetTranslation(previouspos);
-			ChangeMatrix(matrix);
-		}
-		
-	}
-
+	return false;
 }
 
-void     AutoOrientedNode3D::TravCull(TravState* state)
+bool isValidAxis(const v3f& v)
 {
-	DoOrientation();
-	ParentClassType::TravCull(state);
-}    
+	float na;
+	na = NormSquare(v);
+	if ((na < 0.98f) || (na > 1.02f))
+	{
+		return false;
+	}
+	na = fabsf(v.x + v.y + v.z);
+	if ((na < 0.99f) || (na > 1.01f))
+	{
+		return false;
+	}
+	return true;
+}
+
+// do orientation
+DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
+{
+	// No target, no orientation
+	if (!GetUpgrador()->mCurrentTarget)
+	{
+		return;
+	}
+
+	// check that target axis & up axis are OK ( orthogonal, normalized and X, Y or Z axis colinear )
+	v3f axis1,axis2,axis3;
+	GetUpgrador()->myOrientedAxis->getValue(axis1);
+	if(!isValidAxis(axis1))
+	{
+		KIGS_WARNING("AutoOrientedNode bad OrientedAxis", 1);
+		return;
+	}
+	
+	GetUpgrador()->myPseudoConstantAxis->getValue(axis2);
+	if (!isValidAxis(axis2))
+	{
+		KIGS_WARNING("AutoOrientedNode bad PseudoConstantAxis", 1);
+		return;
+	}
+
+	BBox	tstAxis(axis1);
+	tstAxis.Update(axis2);
+	
+	float bboxdiagsqr = NormSquare(tstAxis.Size());
+	if ((bboxdiagsqr < 1.98f) || (bboxdiagsqr > 2.02f))
+	{
+		KIGS_WARNING("AutoOrientedNode bad axis", 1);
+		return;
+	}
+
+	// compute third vector (axis3) from axis1 and axis2
+	axis3.CrossProduct(axis1, axis2);
+
+	// Axis are OK, let's orient the node
+	Node3D::SetupNodeIfNeeded();
+
+	// make sure the target is up to date
+	GetUpgrador()->mCurrentTarget->SetupNodeIfNeeded();
+
+	// target pos in global coordinates
+	Point3D targetpos(*(Point3D*)GetUpgrador()->mCurrentTarget->GetLocalToGlobal().e[3]);
+
+	Vector3D	targetAxis1, targetAxis2, targetAxis3;
+	// target vector in global coordinates
+	targetAxis1 =targetpos;
+	targetAxis1 -= *(Point3D*)GetLocalToGlobal().e[3];
+	// now in father local coordinates
+	getFather()->GetGlobalToLocal().TransformVector(&targetAxis1);
+	targetAxis1.Normalize();
+
+	// get global targetAxis2
+	GetUpgrador()->myPseudoConstantAxisDir->getValue(targetAxis2);
+	// and transform it to father local coordinates
+	getFather()->GetGlobalToLocal().TransformVector(&targetAxis2);
+	targetAxis2.Normalize();
+
+	// if constant axis and target vector are too near, use mLastValidUpAxis
+	Vector3D tstCross;
+	tstCross.CrossProduct(targetAxis1, targetAxis2);
+	if (NormSquare(tstCross) < 0.1f)
+	{
+		targetAxis2 = GetUpgrador()->mLastValidUpAxis;
+		getFather()->GetGlobalToLocal().TransformVector(&targetAxis2);
+		targetAxis2.Normalize();
+	}
+
+	// construct thirdVector (cross product of previous ones)
+	targetAxis3.CrossProduct(targetAxis1, targetAxis2);
+	targetAxis3.Normalize();
+	// then compute constantAxis again to orthonormalize matrix
+	targetAxis2.CrossProduct(targetAxis3, targetAxis1);
+
+	Matrix3x3	tm1;
+	tm1.Axis[0] = targetAxis1;
+	tm1.Axis[1] = targetAxis2;
+	tm1.Axis[2] = targetAxis3;
+
+	Matrix3x3	tm2;
+	tm2.Axis[0] = axis1;
+	tm2.Axis[1] = axis2;
+	tm2.Axis[2] = axis3;
+
+	tm2 = Transpose(tm2);
+
+	Matrix3x3 result(tm1 * tm2);
+	
+	Matrix3x4	targetm(result);
+	targetm.SetTranslation(myTransform.GetTranslation());
+
+	ChangeMatrix(targetm);
+
+	// update mLastValidUpAxis 
+	// TODO
+}
