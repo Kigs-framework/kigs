@@ -243,7 +243,7 @@ void App::Run()
 
 	//! delete
 	myApp->Destroy();
-	KigsCore::SetCoreApplication(nullptr);
+	
 
 #ifdef _DEBUG
 	CoreModifiable::debugPrintfFullTree();
