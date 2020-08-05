@@ -48,14 +48,15 @@ void UINode3DLayer::InitModifiable()
 		}
 
 		// set 3D object scale
-		my3DSizeUniform = KigsCore::GetInstanceOf(getName() + "3DSizeUniform", "API3DUniformFloat2");
-		my3DSizeUniform->setValue("Name", "SceneScale");
- 		my3DSizeUniform->setArrayValue("Value", my3DSize[0] / myRootItem->getValue<float>("SizeX") , my3DSize[1] / myRootItem->getValue<float>("SizeY"));
-		my3DSizeUniform->Init();
+		my3DAndDesignSizeUniform = KigsCore::GetInstanceOf(getName() + "3DSizeUniform", "API3DUniformFloat4");
+		my3DAndDesignSizeUniform->setValue("Name", "SceneScaleAndDesignSize");
+		my3DAndDesignSizeUniform->setArrayValue("Value", my3DSize[0] / myDesignSize[0] , my3DSize[1] / myDesignSize[1], myDesignSize[0], myDesignSize[1]);
+		my3DAndDesignSizeUniform->Init();
 
-		shader->addItem(my3DSizeUniform);
+		shader->addItem(my3DAndDesignSizeUniform);
 
 		my3DSize.changeNotificationLevel(Owner);
+		myDesignSize.changeNotificationLevel(Owner);
 
 		CoreBaseApplication* L_currentApp = KigsCore::GetCoreApplication();
 		if (L_currentApp)
@@ -72,9 +73,12 @@ void UINode3DLayer::InitModifiable()
 void UINode3DLayer::NotifyUpdate(const unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
-	if (labelid == my3DSize.getLabelID())
+	if ((labelid == my3DSize.getLabelID()) || (labelid == myDesignSize.getLabelID()))
 	{
-		my3DSizeUniform->setArrayValue("Value", my3DSize[0] / myRootItem->getValue<float>("SizeX"), my3DSize[1] / myRootItem->getValue<float>("SizeY"));
+		SetFlag(BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
+		my3DAndDesignSizeUniform->setArrayValue("Value", my3DSize[0] / myDesignSize[0], my3DSize[1] / myDesignSize[1], myDesignSize[0], myDesignSize[1]);
+		PropagateDirtyFlagsToSons(this);
+		PropagateDirtyFlagsToParents(this);
 	}
 }
 
@@ -150,11 +154,12 @@ void UINode3DLayer::RecomputeBoundingBox()
 	// classic Node3D BBox init
 	ParentClassType::RecomputeBoundingBox();
 
-	// then check with son UIItems
-	// TODO
+	// approximate BBox with quad size
+	float maxSize = std::max(my3DSize[0], my3DSize[1])*0.5f;
+
 	BBox	uiBBox;
-	uiBBox.m_Min.Set((-0.5f), (-0.5f), (-0.5f));
-	uiBBox.m_Max.Set(( 0.5f), ( 0.5f), ( 0.5f));
+	uiBBox.m_Min.Set(-maxSize, -maxSize, -maxSize);
+	uiBBox.m_Max.Set(maxSize, maxSize, maxSize);
 
 	myLocalBBox.Update(uiBBox);
 }
@@ -169,10 +174,6 @@ void UINode3DLayer::TravDraw(TravState* state)
 		//kigsprintf("%p %s %s %s\n",this, getName().c_str(), (myShowNode == true) ? "true" : "false", (IsInit()) ? "true" : "false");
 		return;
 	}
-
-	// not used here ?
-	//state->HolographicUseStackMatrix = true;
-
 
 	// call predraw (activate the shader)!
 	PreDrawDrawable(state);
@@ -318,11 +319,7 @@ void UINode3DLayer::TravDraw(TravState* state)
 
 	}
 
-	// not used here ?
-	//state->HolographicUseStackMatrix = false;
-
 	renderer->PopState();
-
 
 	// call postdraw (deactivate the shader)
 	PostDrawDrawable(state);
