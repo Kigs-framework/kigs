@@ -73,9 +73,10 @@ cbuffer MatrixBuffer : register(b0)
 	//row_major float4x4 proj_matrix;
 #endif
 };
-cbuffer SceneScale
+cbuffer SceneScaleAndDesignSize
 {
 	float2 scaleFactor;
+	float2 designSize;
 };
 
 struct VS_INPUT
@@ -110,7 +111,7 @@ VS_OUTPUT main(VS_INPUT input)
 {
 	VS_OUTPUT output;
 
-    float4 InputPosition = {input.Position.x*scaleFactor.x,input.Position.y*scaleFactor.y,0.0,1.0};
+    float4 InputPosition = {(input.Position.x-designSize.x*0.5)*scaleFactor.x,(input.Position.y-designSize.y*0.5)*scaleFactor.y,0.0,1.0};
 #ifdef HOLOGRAPHIC
 	int idx = input.instId % 2;
 	float4x4 finalproj = mul(model_matrix, stereo_viewproj[idx]);

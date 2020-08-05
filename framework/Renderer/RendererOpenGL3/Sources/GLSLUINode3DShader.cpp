@@ -55,7 +55,7 @@ void main()
 kstl::string API3DUINode3DShader::GetVertexShader()
 {
 	return  R"====(
-	uniform vec2 SceneScale;
+uniform vec4 SceneScaleAndDesignSize;
 uniform mat4 model_matrix;
 attribute vec2 attrib_vertex;
 #ifdef HOLOGRAPHIC
@@ -83,7 +83,7 @@ void main()
 	vColor = attrib_color / 255.0;
 #endif
 
-    vec2 pos2d = attrib_vertex*SceneScale;
+    vec2 pos2d = vec2((attrib_vertex.x-SceneScaleAndDesignSize.z*0.5)*SceneScaleAndDesignSize.x,(attrib_vertex.y-SceneScaleAndDesignSize.w*0.5)*SceneScaleAndDesignSize.y);
 
 #ifdef HOLOGRAPHIC
 	int arrayIndex = int(aRenderTargetArrayIndex);

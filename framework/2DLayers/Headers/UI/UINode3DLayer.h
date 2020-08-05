@@ -43,8 +43,9 @@ protected:
 	maBool	myIsInteractive = BASE_ATTRIBUTE(IsInteractive, true);
 
 	maVect2DF	my3DSize = BASE_ATTRIBUTE(3DSize, 0.8f,0.6f);
+	maVect2DF	myDesignSize = BASE_ATTRIBUTE(DesignSize, 800.0f, 600.0f);
 
-	CMSP		my3DSizeUniform;
+	CMSP		my3DAndDesignSizeUniform;
 };
 
 #endif //_UINode3DLayer_H_
