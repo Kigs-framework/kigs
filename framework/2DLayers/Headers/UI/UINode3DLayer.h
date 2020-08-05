@@ -34,8 +34,6 @@ protected:
 
 	void InitModifiable() override;
 
-	void UpdateChildrens(const Timer& a_timer, UIItem* current, void* addParam);
-
 	void SortItemsFrontToBack(SortItemsFrontToBackParam& param);
 
 	SP<UIItem> myRootItem;
