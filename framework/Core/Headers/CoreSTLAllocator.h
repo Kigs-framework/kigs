@@ -121,16 +121,6 @@ namespace kstl
 	{	typedef _Ty value_type;
 	};
 
-
-	// ****************************************
-	// * CoreSTLAllocator class
-	// * --------------------------------------
-	/*!
-		Allocator used for STL in kigs framework
-	   \ingroup KigsCore
-	*/
-	// ****************************************
-
 	template<class TYPE>
 	class CoreSTLAllocator : public CoreSTLAllocator_Base<TYPE>
 	{

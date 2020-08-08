@@ -10,7 +10,7 @@
 /**
 * \file	AsyncRequest.h
 * \class	AsyncRequest
-* \ingroup KigsCore
+* \ingroup Core
 * \brief	base class manage asynchronous request
 * \author	ukn
 * \version ukn

@@ -221,7 +221,8 @@ void ModuleSceneGraph::Init(KigsCore* core, const kstl::vector<CoreModifiableAtt
 	core->RegisterMainModuleList(this, SceneGraphModuleCoreIndex);
 
 	//AddToAutoRegister({}, "SceneGraph");
-	DECLARE_FULL_CLASS_INFO(core, AutoOrientedNode3D, AutoOrientedNode3D, SceneGraph);
+	REGISTER_UPGRADOR(AutoOrientedNode3DUp);
+	DECLARE_CLASS_ALIAS_AND_UPGRADE(core, AutoOrientedNode3D, Node3D, AutoOrientedNode3DUp);
 	DECLARE_FULL_CLASS_INFO(core, CullingObject, CullingObject, SceneGraph);
 	DECLARE_FULL_CLASS_INFO(core, Node3D, Node3D, SceneGraph);
 	DECLARE_FULL_CLASS_INFO(core, Node3DDelayed, Node3DDelayed, SceneGraph);

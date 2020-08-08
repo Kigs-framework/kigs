@@ -9,7 +9,7 @@
 /**
  * \file	CoreDecorator.h
  * \class	CoreDecorator
- * \ingroup KigsCore
+ * \ingroup Core
  * \brief	 base class for decorator class 
  * \author	ukn
  * \version ukn

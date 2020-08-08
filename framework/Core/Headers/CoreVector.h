@@ -10,7 +10,7 @@
 // * --------------------------------------
 /**
 * \class	CoreVector
-* \ingroup KigsCore
+* \ingroup Core
 * \brief	a vector of RefCountedBaseClass, maintain ref count of instances in vector
 * \author	ukn
 * \version ukn

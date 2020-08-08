@@ -14,7 +14,7 @@ class ModuleAssociation;
 /**
  * \file	InstanceFactory.h
  * \class	InstanceFactory
- * \ingroup KigsCore
+ * \ingroup Core
  * \ingroup Manager
  * \brief	register and instanciate classes
  * \author	ukn
@@ -75,7 +75,7 @@ public:
 	// * --------------------------------------
 	/**
 	 * \class	ModuleAssociation
-	 * \ingroup KigsCore
+	 * \ingroup Core
 	 * \ingroup Manager
 	 * \brief	utility class to store "createInstance" method for each class of a module
 	 * \author	ukn

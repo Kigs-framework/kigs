@@ -1,59 +1,38 @@
+#include "UI/UINode3DLayer.h"
+#include "CoreBaseApplication.h"
 #include "BaseUI2DLayer.h"
-
-
-#include "Timer.h"
-
-#include "ModuleInput.h"
-#include "MouseDevice.h"
-#include "LayerMouseInfo.h"
-#include "MultiTouchDevice.h"
-#include "MultiTouchPinch.h"
-#include "MouseVelocityComputer.h"
-
-#include "NotificationCenter.h"
-#include "RenderingScreen.h"
 #include "ModuleRenderer.h"
-#include "Module2DLayers.h"
 
-#include "UI/UIItem.h"
-
-#include "TouchInputEventManager.h"
-
-#include <algorithm>
-
-IMPLEMENT_CLASS_INFO(BaseUI2DLayer);
-
-#include "Platform/2DLayers/BaseUI2DLayer.inl.h"
+IMPLEMENT_CLASS_INFO(UINode3DLayer);
 
 ///////////////////////////////////////////
 //
-//			BaseUI2DLayer
+//			UINode3DLayer
 //
 ///////////////////////////////////////////
-IMPLEMENT_CONSTRUCTOR(BaseUI2DLayer)
-, myInput(0)
+IMPLEMENT_CONSTRUCTOR(UINode3DLayer)
 , myRootItem(0)
 {
 
 }
 
-void BaseUI2DLayer::InitModifiable()
+// behavior inspired by BaseUI2DLayer
+void UINode3DLayer::InitModifiable()
 {
-	Abstract2DLayer::InitModifiable();
+	Node3D::InitModifiable();
 	if (IsInit())
 	{
 		kstl::vector<CMSP>	instances;
 		GetSonInstancesByType("UIItem", instances);
 		KIGS_ASSERT(instances.size() < 2); // only one UIItem child
+		// Should we just uninit and wait for a root item before real init ?
 		if (instances.empty())
 		{
 			// add the root UIItem
 			myRootItem = KigsCore::GetInstanceOf(getName(), "UIItem");
-			// set the root size to the screen size
-			kfloat X, Y;
-			GetRenderingScreen()->GetDesignSize(X, Y);
-			myRootItem->setValue("SizeX", X);
-			myRootItem->setValue("SizeY", Y);
+
+			myRootItem->setValue("SizeX", 1.0f);
+			myRootItem->setValue("SizeY", 1.0f);
 			addItem(myRootItem);
 			myRootItem->Init();
 		}
@@ -63,15 +42,33 @@ void BaseUI2DLayer::InitModifiable()
 		}
 		instances.clear();
 
-		instances = GetInstances("ModuleInput");
-	//	KIGS_ASSERT(instances.size() == 1);
-		if(instances.size()==1)
-			myInput = (ModuleInput*)(instances[0].get());
-
-		ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer*)((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-		if (renderer->getDefaultUiShader())
+		// specific shader for UINode3DLayer
+		CMSP shader=KigsCore::GetInstanceOf(getName()+"UIShader","API3DUINode3DShader");
+		if (shader)
 		{
-			addItem(renderer->getDefaultUiShader());
+			addItem(shader);
+		}
+
+		// set 3D object size and design size in a single uniform
+		my3DAndDesignSizeUniform = KigsCore::GetInstanceOf(getName() + "3DSizeUniform", "API3DUniformFloat4");
+		my3DAndDesignSizeUniform->setValue("Name", "SceneScaleAndDesignSize");
+		my3DAndDesignSizeUniform->setArrayValue("Value", my3DSize[0] / myDesignSize[0] , my3DSize[1] / myDesignSize[1], myDesignSize[0], myDesignSize[1]);
+		my3DAndDesignSizeUniform->Init();
+
+		// and add the uniform directly to the shader
+		shader->addItem(my3DAndDesignSizeUniform);
+
+		// notify me when 3D size or design size change
+		// ( recompute BBox and update uniform)
+		my3DSize.changeNotificationLevel(Owner);
+		myDesignSize.changeNotificationLevel(Owner);
+
+		// add myself to auto update
+		// unlike BaseUI2DLayer, the scenegraph will not call Update on me
+		CoreBaseApplication* L_currentApp = KigsCore::GetCoreApplication();
+		if (L_currentApp)
+		{
+			L_currentApp->AddAutoUpdate(this);
 		}
 	}
 	else
@@ -80,7 +77,21 @@ void BaseUI2DLayer::InitModifiable()
 	}
 }
 
-void BaseUI2DLayer::Update(const Timer& a_Timer, void* addParam)
+// update BBox and Uniform when parameters are touched
+void UINode3DLayer::NotifyUpdate(const unsigned int labelid)
+{
+	ParentClassType::NotifyUpdate(labelid);
+	if ((labelid == my3DSize.getLabelID()) || (labelid == myDesignSize.getLabelID()))
+	{
+		SetFlag(BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
+		my3DAndDesignSizeUniform->setArrayValue("Value", my3DSize[0] / myDesignSize[0], my3DSize[1] / myDesignSize[1], myDesignSize[0], myDesignSize[1]);
+		PropagateDirtyFlagsToSons(this);
+		PropagateDirtyFlagsToParents(this);
+	}
+}
+
+// Update childrens
+void UINode3DLayer::Update(const Timer& a_Timer, void* addParam)
 {
 	if (!IsInit())
 	{
@@ -96,36 +107,12 @@ void BaseUI2DLayer::Update(const Timer& a_Timer, void* addParam)
 		return;
 	}
 
-	UpdateChildrens(a_Timer, myRootItem.get(), addParam);
+	BaseUI2DLayer::UpdateChildrens(a_Timer, myRootItem.get(), addParam);
 
 }
 
-void BaseUI2DLayer::UpdateChildrens(const Timer& a_timer, UIItem* current, void* addParam)
-{
-	current->CallUpdate(a_timer, addParam);
-
-	// recursif Call
-	const kstl::set<Node2D*, Node2D::PriorityCompare>& sons = current->GetSons();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::const_reverse_iterator it = sons.rbegin();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::const_reverse_iterator end = sons.rend();
-	for (; it != end; ++it)
-	{
-		UpdateChildrens(a_timer, (UIItem*)(*it), addParam);
-	}
-}
-
-
-///////////////////////////////////////////
-
-bool NodeToDraw::Sorter::operator()(NodeToDraw& a, NodeToDraw& b) const
-{
-	auto orderA = std::make_tuple(a.prio, a.depth, a.parent, a.node);
-	auto orderB = std::make_tuple(b.prio, b.depth, b.parent, b.node);
-	return orderA < orderB;
-}
-
-
-void BaseUI2DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
+// not sure how to connect this with TouchManager
+void UINode3DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 {
 	kstl::vector<NodeToDraw> nodes; nodes.reserve(param.toSort.size());
 
@@ -147,7 +134,7 @@ void BaseUI2DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 		{
 			nodes.push_back(NodeToDraw{ 0, 0, cm, 0, 0, cm });
 		}
-		
+
 	}
 	std::sort(nodes.begin(), nodes.end(), NodeToDraw::Sorter{});
 
@@ -158,57 +145,33 @@ void BaseUI2DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 	}
 }
 
-
-void BaseUI2DLayer::AccumulateToDraw(TravState* state, kstl::vector<NodeToDraw>& todraw, CoreModifiable* current, int depth, u32 clip_count)
+// BBox is computed using 2D quad size
+void UINode3DLayer::RecomputeBoundingBox()
 {
-	bool clipper;
-	if (current->getValue("ClipSons", clipper))
-	{
-		if (clipper)
-			++clip_count;
-	}
-	
-	for (auto& item_struct : current->getItems())
-	{
-		bool continue_down = true;
-		auto item = item_struct.myItem;
+	// classic Node3D BBox init
+	ParentClassType::RecomputeBoundingBox();
 
-		if (item->isSubType(Node2D::myClassID))
-		{
-			auto node = static_cast<Node2D*>(item.get());
-			if (node->Draw(state))
-			{
-				node->SetUpNodeIfNeeded();
-				todraw.push_back(NodeToDraw{ node, node->GetFinalPriority(), current, depth, clip_count });
-			}
-			else
-			{
-				continue_down = false;
-			}
-		}
-		
-		if(continue_down)
-			AccumulateToDraw(state, todraw, item.get(), depth+1, clip_count);
-	}
+	// approximate BBox with quad size
+	float maxSize = std::max(my3DSize[0], my3DSize[1])*0.5f;
+
+	BBox	uiBBox;
+	uiBBox.m_Min.Set(-maxSize, -maxSize, -maxSize);
+	uiBBox.m_Max.Set(maxSize, maxSize, maxSize);
+
+	myLocalBBox.Update(uiBBox);
 }
 
-//! Do drawing here if any
-void BaseUI2DLayer::TravDraw(TravState* state)
+
+
+// Do drawing here if any
+// behavior inspired by BaseUI2DLayer
+void UINode3DLayer::TravDraw(TravState* state)
 {
-	if ((!IsInit()))
+	if (!IsInit())
 	{
 		//kigsprintf("%p %s %s %s\n",this, getName().c_str(), (myShowNode == true) ? "true" : "false", (IsInit()) ? "true" : "false");
 		return;
 	}
-
-	// first thing to do (activate rendering screen)
-	if (!StartDrawing(state))
-		return;
-
-	auto holo_before = state->GetHolographicMode();
-	state->SetHolographicMode(GetRenderingScreen()->IsHolographic());
-	state->HolographicUseStackMatrix = true;
-
 
 	// call predraw (activate the shader)!
 	PreDrawDrawable(state);
@@ -222,7 +185,7 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 	renderer->GetActiveShader()->ChooseShader(state, lShaderMask);
 	renderer->ActiveTextureChannel(0);
 
-	
+
 	renderer->PushState();
 	renderer->SetCullMode(RENDERER_CULL_NONE);
 	renderer->SetLightMode(RENDERER_LIGHT_OFF);
@@ -239,39 +202,6 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 	renderer->SetBlendFuncMode(RENDERER_BLEND_SRC_ALPHA, RENDERER_BLEND_ONE_MINUS_SRC_ALPHA);
 	renderer->SetDepthTestMode(false);
 
-	// get rendering screen size
-	kfloat rendersx, rendersy;
-	GetRenderingScreen()->GetSize(rendersx, rendersy);
-	kfloat drendersx, drendersy;
-	GetRenderingScreen()->GetDesignSize(drendersx, drendersy);
-
-	// do drawing here
-	if (Module2DLayers::getRotate180())
-	{
-		renderer->Ortho(MATRIX_MODE_PROJECTION,(float)drendersx, 0.0f, 0.0f, (float)drendersy, -1.0f, 1.0f);
-	}
-	else
-	{
-		renderer->Ortho(MATRIX_MODE_PROJECTION,0.0f, (float)drendersx, (float)drendersy, 0.0f, -1.0f, 1.0f);
-	}
-
-	renderer->Viewport(0, 0, (int)rendersx, (int)rendersy);
-	renderer->SetScissorTestMode(RENDERER_SCISSOR_TEST_ON);
-	renderer->SetScissorValue(0, 0, (int)rendersx, (int)rendersy);
-	
-
-	renderer->LoadIdentity(MATRIX_MODE_MODEL);
-	renderer->LoadIdentity(MATRIX_MODE_VIEW);
-	//renderer->FlushMatrix();
-	//renderer->FlushState();
-
-
-	if (myClearColorBuffer)
-	{
-		renderer->SetClearColorValue(myClearColor[0], myClearColor[1], myClearColor[2], myClearColor[3]);
-		renderer->ClearView(RENDERER_CLEAR_COLOR);
-	}
-
 	if (IsRenderable())
 	{
 
@@ -281,7 +211,7 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 		if (myRootItem->Draw(state))
 		{
 			myRootItem->SetUpNodeIfNeeded();
-			AccumulateToDraw(state, todraw, myRootItem.get());
+			BaseUI2DLayer::AccumulateToDraw(state, todraw, myRootItem.get());
 		}
 
 		std::sort(todraw.begin(), todraw.end(), NodeToDraw::Sorter{});
@@ -307,6 +237,7 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 		ShaderBase* current_custom_shader = nullptr;
 		for (auto item : todraw)
 		{
+
 			if (item.clip_count > 0)
 			{
 				current_stencil_stack.clear();
@@ -322,7 +253,7 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 					father = father->getFather();
 				}
 
-					
+
 
 				if (compare_stencil_stacks())
 				{
@@ -385,18 +316,11 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 
 
 	}
-	state->HolographicUseStackMatrix = false;
-	state->SetHolographicMode(holo_before);
+
 	renderer->PopState();
-	
 
 	// call postdraw (deactivate the shader)
 	PostDrawDrawable(state);
-
-	// last thing to do
-	EndDrawing(state);
-
-	//renderer->PopUIShader();
 
 }
 

@@ -55,6 +55,7 @@
 #include "UI/UITexture.h"
 #include "UI/UITexturedItem.h"
 #include "UI/UIVideo.h"
+#include "UI/UINode3DLayer.h"
 
 
 IMPLEMENT_CLASS_INFO(Module2DLayers)
@@ -127,6 +128,9 @@ void Module2DLayers::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	DECLARE_FULL_CLASS_INFO(core, UITexture, UITexture, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UITexturedItem, UITexturedItem, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIVideo, UIVideo, 2DLayers);
+
+	DECLARE_FULL_CLASS_INFO(core, UINode3DLayer, UINode3DLayer, 2DLayers);
+
 
 
 	core->RegisterMainModuleList(this, Layer2DModuleCoreIndex);

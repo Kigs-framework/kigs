@@ -391,7 +391,7 @@ struct ModifiableMethodStruct
 /**
  * \file	CoreModifiable.h
  * \class	CoreModifiable
- * \ingroup KigsCore
+ * \ingroup Core
  * \brief	 base class for objects with a list of modifiable attributes and a list of sons (items)
  * \author	ukn
  * \version ukn

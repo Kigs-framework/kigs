@@ -10,7 +10,7 @@
 // * --------------------------------------
 /**
 * \class	CoreMap
-* \ingroup KigsCore
+* \ingroup Core
 * \brief	a map of RefCountedBaseClass, maintain ref count of instances in map
 * \author	ukn
 * \version ukn

@@ -1,8 +1,16 @@
 
-// Doxygen group defines
+/**
+ @mainpage
 
- /*! \defgroup KigsCore KigsCore module
-  *  KigsCore Classes
+Kigs framework is a C++ modular multi-purpose cross-platform basement framework for Rapid Application Development.
+
+The main goal is to be able to develop different types of applications (games, simulators, viewers...) quickly, in a totally independent manner.
+
+GitHub project : https://github.com/Kigs-framework/kigs
+ */
+
+ /*! \defgroup Core Core module
+  *  Base classes and mechanisms used by all other classes
   */
 
 #ifndef _CORE_H_
@@ -73,37 +81,34 @@ public:
 #define REGISTER_UPGRADOR(name) \
 	{KigsCore::Instance()->GetUpgradorFactory()->RegisterNewClass<name>(#name);}
 
+
+extern kstl::vector<kstl::string>	SplitStringByCharacter(const kstl::string& a_mstring, char a_value);
+
+
 // ****************************************
 // * KigsCore class
 // * --------------------------------------
 /**
- * \file	KigsCore.h
+ * \file	Core.h
  * \class	KigsCore
- * \ingroup KigsCore
- * \brief	Base class for Kigs engine
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \ingroup Core	
  *
- * this class is used to manage all others. All memory management must be done using KigsCore, so
- * even dll have the same memory space
+ * Singleton class used to manage all others.
  */
 // ****************************************
-
-extern kstl::vector<kstl::string>	SplitStringByCharacter(const kstl::string& a_mstring, char a_value);
 	
 class KigsCore
 {
 public:
 	/**
-	 * \fn			static void Init(bool	useAutoRelease=true);
-	 * \brief		init the core unique instance and members 
+	 * \fn			static void Init();
+	 * Init KigsCore singleton and all its members 
 	 */
 	static void Init();
 
 	/**
 	 * \fn			static void ModuleInit(KigsCore* core,ModuleBase* module); 
-	 * \brief		called by modules to be registered in KigsCore
+	 * Called by modules to be registered in KigsCore
 	 * \param		core : link to the core, NOT NULL
 	 * \param		module : module to register, CAN BE NULL
 	 */
@@ -111,36 +116,46 @@ public:
 
 	/**
 	 * \fn			static void Close(bool closeMemoryManager=true);
-	 * \brief		close KigsCore 
-	 * \param		closeMemoryManager : TRUE if the memory manager is closed too
+	 * Close KigsCore 
+	 * \param		closeMemoryManager : set to true if the memory manager needs to be closed too ( in case Kigs framework is build with MemoryManager )
 	 */
 	static void Close(bool closeMemoryManager=true);
 
 	/**
 	 * \fn			static KigsCore* Instance();
-	 * \brief		Get the KigsCore instance (Design Pattern Singleton)
+	 * Get the KigsCore instance (Design Pattern Singleton)
 	 * \return		the unique instance of the KigsCore
 	 */
 	static KigsCore* Instance();
 
-	//! Pointer to instance of CoreBaseApplication
 	friend class CoreBaseApplication;
-	CoreBaseApplication* myCoreBaseApplication;
-	static void SetCoreApplication(CoreBaseApplication* _instance);
+
+	/**
+	* \fn		 static CoreBaseApplication* GetCoreApplication();
+	* Get the GetCoreApplication instance (Design Pattern Singleton)
+	* \return		the unique instance of the CoreBaseApplication or null if no application is defined
+	*/
 	static CoreBaseApplication* GetCoreApplication();
 	
-	NotificationCenter* myNotificationCenter;
-	static void SetNotificationCenter(NotificationCenter* _instance);
+	/**
+	* \fn		static NotificationCenter* GetNotificationCenter();	
+	* Get the NotificationCenter instance (Design Pattern Singleton)
+	* \return	the unique instance of the NotificationCenter 
+	*/
 	static NotificationCenter* GetNotificationCenter();			
-
-public:
 
 	/**
 	 * \fn			InstanceFactory*    GetInstanceFactory();
-	 * \brief		Get the instance factory instance (Design Pattern Singleton)
+	 * Get the instance factory instance (Design Pattern Singleton)
 	 * \return		the unique instance factory
 	 */
 	InstanceFactory* GetInstanceFactory();
+
+	/**
+	 * \fn			MiniInstanceFactory* GetUpgradorFactory() const
+	 * Get the MiniInstanceFactory used by Upgrador mechanism
+	 * \return		the MiniInstanceFactory
+	 */
 	MiniInstanceFactory* GetUpgradorFactory() const
 	{
 		return myUpgradorFactory;
@@ -450,6 +465,23 @@ public:
 	}
 
 protected:
+
+	/**
+	 * \fn		static void SetCoreApplication(CoreBaseApplication* _instance);
+	 * Set current CoreBaseApplication
+	 * \param	_instance CoreBaseApplication instance
+	 */
+	static void SetCoreApplication(CoreBaseApplication* _instance);
+
+	/**
+	* \fn		 static void SetNotificationCenter(NotificationCenter* _instance);
+	* Set the NotificationCenter member
+	* \param	_instance NotificationCenter instance
+	*/
+	static void SetNotificationCenter(NotificationCenter* _instance);
+
+	CoreBaseApplication* myCoreBaseApplication;
+	NotificationCenter* myNotificationCenter;
 
 	// nullptr wrapper
 	CMSP	myNullPtr = nullptr;
