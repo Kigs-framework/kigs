@@ -667,26 +667,43 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 
 				if (interaction.index_tip.has_value())
 				{
-					interaction_infos.posInfos.dir = (interaction.index_tip->position - camera->GetGlobalPosition()).Normalized();
-					interaction_infos.posInfos.pos = interaction.index_tip->position;
-					interaction_infos.posInfos.origin = interaction_infos.posInfos.pos - interaction_infos.posInfos.dir * getSpatialInteractionOffset();
-					interaction_infos.posInfos.min_distance = 0.0;
-					interaction_infos.posInfos.max_distance = (myEventCaptureObject) ? DBL_MAX : 0.3;
-					interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchEventID::SpatialInteractionLeft : TouchEventID::SpatialInteractionRight;
-					Touches[interaction_infos.ID] = interaction_infos;
+					auto orientation = (interaction.index_tip->orientation * v3f(0, -1, 1)).Normalized();
+					if (Dot(orientation, camera->GetGlobalViewVector()) > 0)
+					{
+						interaction_infos.posInfos.dir = (interaction.index_tip->position - camera->GetGlobalPosition()).Normalized();
+						interaction_infos.posInfos.pos = interaction.index_tip->position;
+						interaction_infos.posInfos.origin = interaction_infos.posInfos.pos - interaction_infos.posInfos.dir * getSpatialInteractionOffset();
+						interaction_infos.posInfos.min_distance = 0.0;
+						interaction_infos.posInfos.max_distance = (myEventCaptureObject) ? DBL_MAX : 0.3;
+						interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchEventID::SpatialInteractionLeft : TouchEventID::SpatialInteractionRight;
+						Touches[interaction_infos.ID] = interaction_infos;
+					}
 				}
 				if(interaction.near_interaction_active_count == 0 || !interaction.index_tip.has_value())
 				{
-					interaction_infos.posInfos.pos = interaction.Position;
-					interaction_infos.posInfos.dir = interaction.Forward;
-					interaction_infos.posInfos.origin = interaction.Position;
-					interaction_infos.posInfos.min_distance = -DBL_MAX;
-					interaction_infos.posInfos.max_distance = DBL_MAX;
-					interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchEventID::SpatialInteractionRayLeft : TouchEventID::SpatialInteractionRayRight;
-					interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
-					any_touch_state = any_touch_state | interaction_infos.touch_state;
-					dd::line(interaction.Position, interaction.Position + interaction.Forward, interaction.pressed ? v3f{ 1, 1, 1 } : v3f{ 0, 1, 0 });
-					Touches[interaction_infos.ID] = interaction_infos;
+					auto orientation = (interaction.palm->orientation * v3f(0, -1, 1)).Normalized();
+					if (Dot(orientation, camera->GetGlobalViewVector()) > 0)
+					{
+						if (interaction.palm.has_value())
+						{
+							interaction_infos.posInfos.pos = interaction.palm->position;
+							interaction_infos.posInfos.dir = ((interaction.palm->position - camera->GetGlobalPosition()).Normalized() + interaction.palm->orientation * v3f(interaction.handedness == Handedness::Left ? -0.15f : 0.15f, 0, 0.33f)).Normalized();
+							interaction_infos.posInfos.origin = interaction.palm->position;
+						}
+						else
+						{
+							interaction_infos.posInfos.pos = interaction.Position;
+							interaction_infos.posInfos.dir = interaction.Forward;
+							interaction_infos.posInfos.origin = interaction.Position;
+						}
+						interaction_infos.posInfos.min_distance = -DBL_MAX;
+						interaction_infos.posInfos.max_distance = DBL_MAX;
+						interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchEventID::SpatialInteractionRayLeft : TouchEventID::SpatialInteractionRayRight;
+						interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
+						any_touch_state = any_touch_state | interaction_infos.touch_state;
+						dd::line(interaction_infos.posInfos.pos, interaction_infos.posInfos.pos + interaction_infos.posInfos.dir, interaction.pressed ? v3f{ 1, 1, 1 } : v3f{ 0, 1, 0 });
+						Touches[interaction_infos.ID] = interaction_infos;
+					}
 				}
 			}
 		}
@@ -1161,7 +1178,8 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 				toStart.ID = touch.ID;
 				toStart.origin = touch.posInfos.origin;
 				toStart.direction = touch.posInfos.dir;
-				toStart.last_dist = dist;
+				toStart.start_dist = dist;
+				toStart.min_dist = dist;
 
 				// call target to check if click start is "accepted"
 
@@ -1185,6 +1203,15 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 				if (startc.isValid)
 				{
 					double duration = timer.GetTime() - startc.startTime;
+					startc.min_dist = std::min(dist, startc.min_dist);
+
+					if (is_spatial_interaction)
+					{
+						if (dist - startc.start_dist > 0.01f && startc.start_dist - startc.min_dist < 0.03f)
+						{
+							startc.isValid = false;
+						}
+					}
 					if (startc.buttonState != touch_state) // not the same button ?
 					{
 						startc.isValid = false;
@@ -1242,9 +1269,6 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 				if ((duration >= m_ClickMinDuration) && (duration <= m_ClickMaxDuration))
 				{
 					// call target to check if click end is "accepted"
-
-					
-
 					ev.origin = endc.origin;
 					ev.direction = endc.direction;
 					ev.button_state_mask = (ClickEvent::Button)endc.buttonState;
@@ -1385,7 +1409,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 		CurrentInfos toAdd;
 		toAdd.currentPos = touch.posInfos.pos;
 		toAdd.state = isHover ? 1 : 0;
-		toAdd.last_dist = dist;
+		toAdd.start_dist = dist;
 
 		m_CurrentInfosMap[touch.ID] = toAdd;
 

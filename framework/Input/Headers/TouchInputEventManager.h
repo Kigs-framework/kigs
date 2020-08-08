@@ -63,9 +63,13 @@ struct GetDistanceForInputSortParam
 	v3f direction;
 	v3f position;
 	std::vector<Hit>* hits = nullptr;
+	double min_distance;
+	double max_distance;
 
-	float inout_distance;
+	double inout_distance;
 	Hit* inout_hit = nullptr;
+	// Each element is sorted within its layer by inout_distance. Layers go from front (-INT_MAX) to back (INT_MAX)
+	bool inout_sorting_layer = INT_MAX;
 };
 
 
@@ -311,7 +315,8 @@ protected:
 		TouchEventID ID;
 		v3f          origin;
 		v3f          direction;
-		float		 last_dist;
+		float		 start_dist;
+		float		 min_dist;
 	};
 
 	kigs::unordered_map<TouchEventID, PotentialClick> m_CurrentClickStart;
@@ -371,7 +376,8 @@ protected:
 		// 2 => activation down
 		// 4 => not hover down
 		int			state;
-		float last_dist;
+		float start_dist;
+		float min_dist;
 	};
 
 	std::map<TouchEventID, CurrentInfos> m_CurrentInfosMap;

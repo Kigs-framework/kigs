@@ -461,11 +461,8 @@ void Holo3DSequenceManager::NotifyUpdate(const unsigned int labelid)
 
 void Holo3DSequenceManager::GetDistanceForInputSort(GetDistanceForInputSortParam& params)
 {
-	// TODO 2 modes: always on front, and regular collider distance
-	params.inout_distance = -FLT_MAX;
-
-	
-	params.inout_distance = FLT_MAX;
+	params.inout_sorting_layer = myInputSortingLayer;
+	params.inout_distance = DBL_MAX;
 	if (!IsShow || !myCollidablePanel)
 		return;
 
@@ -480,14 +477,14 @@ void Holo3DSequenceManager::GetDistanceForInputSort(GetDistanceForInputSortParam
 	inverseMatrix.TransformPoint(&local_pos);
 	inverseMatrix.TransformVector(&local_dir);
 
-	f64 dist = FLT_MAX;
+	f64 dist = DBL_MAX;
 	if (Intersection::IntersectRayPlane(local_pos, local_dir, planePos, planeNorm, dist, myCollidablePanel.get()))
 	{
 		auto& l2g = mySpacialNode->GetLocalToGlobal();
 		Vector3D dist_vector = Vector3D(dist, 0, 0);
 		l2g.TransformVector(&dist_vector);
 		auto real_dist = Norm(dist_vector);
-		params.inout_distance = (f32)real_dist;
+		params.inout_distance = (f64)real_dist;
 	}
 
 }

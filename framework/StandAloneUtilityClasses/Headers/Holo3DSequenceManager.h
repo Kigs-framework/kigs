@@ -76,6 +76,8 @@ protected:
 
 	maUInt myCollideMask = BASE_ATTRIBUTE(CollideMask, 1);
 
+	maInt myInputSortingLayer = BASE_ATTRIBUTE(InputSortingLayer, INT_MAX);
+
 	maBool myUseFixedPosition = BASE_ATTRIBUTE(UseFixedPosition, true);
 	maBool myUseFixedUp = BASE_ATTRIBUTE(UseFixedUp, true);
 	maBool myUseFixedNormal = BASE_ATTRIBUTE(UseFixedNormal, true);
