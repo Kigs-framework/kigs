@@ -3,6 +3,9 @@
 #include "BaseUI2DLayer.h"
 #include "ModuleRenderer.h"
 
+#include "TouchInputEventManager.h"
+
+
 IMPLEMENT_CLASS_INFO(UINode3DLayer);
 
 ///////////////////////////////////////////
@@ -63,6 +66,19 @@ void UINode3DLayer::InitModifiable()
 		my3DSize.changeNotificationLevel(Owner);
 		myDesignSize.changeNotificationLevel(Owner);
 
+		auto input = KigsCore::GetModule<ModuleInput>();
+		input->getTouchManager()->addTouchSupport(this, myCamera);
+
+		std::vector<CMSP> colliders;
+		GetSonInstancesByType("CollisionBaseNode", colliders);
+		if (colliders.empty())
+		{
+			myCollider = KigsCore::GetInstanceOf(getName()+"_panel", "Panel");
+			myCollider->setValue("Size", (v2f)my3DSize);
+			myCollider->Init();
+			addItem(myCollider);
+		}
+
 		// add myself to auto update
 		// unlike BaseUI2DLayer, the scenegraph will not call Update on me
 		CoreBaseApplication* L_currentApp = KigsCore::GetCoreApplication();
@@ -85,6 +101,7 @@ void UINode3DLayer::NotifyUpdate(const unsigned int labelid)
 	{
 		SetFlag(BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
 		my3DAndDesignSizeUniform->setArrayValue("Value", my3DSize[0] / myDesignSize[0], my3DSize[1] / myDesignSize[1], myDesignSize[0], myDesignSize[1]);
+		if(myCollider) myCollider->setValue("Size", (v2f)my3DSize);
 		PropagateDirtyFlagsToSons(this);
 		PropagateDirtyFlagsToParents(this);
 	}
@@ -144,6 +161,65 @@ void UINode3DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 		param.sorted[i] = std::make_tuple(nodes[nodes.size() - 1 - i].root, Hit{});
 	}
 }
+
+
+bool UINode3DLayer::GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout)
+{
+	if (!(IsRenderable() && IsCollidable()))
+	{
+		pout.pos.x = -1;
+		pout.pos.y = -1;
+		return false;
+	}
+	double dist = DBL_MAX;
+	
+	Point3D		planePos = v3f(0,0,0);
+	Vector3D	planeNorm = v3f(0,0,1);
+
+	Vector3D pos = posin.origin;
+	Vector3D dir = posin.dir;
+
+	//! transform Ray in local mesh coordinate system if needed				
+	const Matrix3x4& inverseMatrix = GetGlobalToLocal();
+	inverseMatrix.TransformPoint(&pos);
+	inverseMatrix.TransformVector(&dir);
+
+	if (Intersection::IntersectRayPlane(pos, dir, planePos, planeNorm, dist))
+	{
+		auto hit_pos = pos + ((float)dist * dir);
+
+		Vector3D up(0,1,0);
+		Vector3D left = up ^ Vector3D(0,0,1);
+
+		pout.pos.xy = v2f((Dot(left, hit_pos) / my3DSize[0]) + 0.5f, (Dot(up, hit_pos) / my3DSize[1]) + 0.5f);
+		
+		pout.pos.x *= myDesignSize[0];
+		pout.pos.y *= myDesignSize[1];
+
+
+		bool is_in = true;
+
+		if (pout.pos.x > 1.0f ||
+			pout.pos.y > 1.0f ||
+			pout.pos.x < 0.0f ||
+			pout.pos.y < 0.0f)
+			is_in = false;
+
+
+		auto& l2g = GetLocalToGlobal();
+		pout.hit.HitPosition = pos + dir * dist;
+		pout.hit.HitNormal = planeNorm;
+		l2g.TransformPoint(&pout.hit.HitPosition);
+		l2g.TransformVector(&pout.hit.HitNormal);
+		pout.hit.HitNode = this;
+		pout.hit.HitActor = myCollider.get();
+		//pout.hit.HitCollisionObject = (CollisionBaseObject*)myCollider.get();
+
+		return is_in;
+	}
+	return false;
+}
+
 
 // BBox is computed using 2D quad size
 void UINode3DLayer::RecomputeBoundingBox()

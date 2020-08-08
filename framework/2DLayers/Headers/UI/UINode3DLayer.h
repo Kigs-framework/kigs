@@ -4,6 +4,8 @@
 #include "Node3D.h"
 #include "UI/UIItem.h"
 
+#include "AttributePacking.h"
+
 // ****************************************
 // * UINode3DLayer class
 // * --------------------------------------
@@ -18,6 +20,7 @@ class UINode3DLayer : public Node3D
 public:
 	DECLARE_CLASS_INFO(UINode3DLayer, Node3D, 2DLayers);
 	DECLARE_CONSTRUCTOR(UINode3DLayer);
+	WRAP_METHODS(SortItemsFrontToBack, GetDataInTouchSupport);
 
 	void Update(const Timer& a_timer, void* addParam) override;
 
@@ -35,6 +38,7 @@ protected:
 	void InitModifiable() override;
 
 	void SortItemsFrontToBack(SortItemsFrontToBackParam& param);
+	bool GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout);
 
 	SP<UIItem> myRootItem;
 	// if not interactive, don't do update (but still draw)
@@ -43,7 +47,11 @@ protected:
 	maVect2DF	my3DSize = BASE_ATTRIBUTE(3DSize, 0.8f,0.6f);
 	maVect2DF	myDesignSize = BASE_ATTRIBUTE(DesignSize, 800.0f, 600.0f);
 
+	// Camera used for touch inputs
+	maReference myCamera = BASE_ATTRIBUTE(Camera, "Camera:camera");
+
 	CMSP		my3DAndDesignSizeUniform;
+	CMSP		myCollider;
 };
 
 #endif //_UINode3DLayer_H_
