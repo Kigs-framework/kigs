@@ -66,7 +66,9 @@ TouchEventState*	TouchInputEventManager::registerEvent(CoreModifiable* registere
 	if (myStackedEventState.back().myEventMap.find(registeredObject) == myStackedEventState.back().myEventMap.end()) // need to create an entry
 	{
 		StackedEventStateStruct::EventMapEntry& currentEntry = myStackedEventState.back().myEventMap[registeredObject];
-		currentEntry.myRootScene3D = root_scene ? root_scene : registeredObject->getRootParentByType("Scene3D");
+	
+		// We do the search for the root scene in the update if not found, no need to duplicate the code here
+		currentEntry.myRootScene3D = root_scene;
 		currentEntry.myTouchEventStateList.clear();
 	}
 
@@ -767,10 +769,11 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 
 	while (itO != itE)
 	{
-		
-		if ((*itO).second.myRootScene3D == 0) // if not set, search again
+		if ((*itO).second.myRootScene3D == nullptr) // if not set, search again
 		{
-			(*itO).second.myRootScene3D = (*itO).first->getRootParentByType("Scene3D");
+			(*itO).second.myRootScene3D = (*itO).first->getRootParentByType("UINode3DLayer");
+			if((*itO).second.myRootScene3D == nullptr)
+				(*itO).second.myRootScene3D = (*itO).first->getRootParentByType("Scene3D");
 		}
 		CoreModifiable* foundParentScene3D = (*itO).second.myRootScene3D;
 		if (foundParentScene3D)
@@ -791,6 +794,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	while (itScene != itSceneE)
 	{
 		// layer or 3D scene ?
+		
 
 		if ((*itScene).first->isSubType("Abstract2DLayer"))
 		{
@@ -814,17 +818,27 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 				currentVector.insert(toPush);
 			}
 		}
+		else if ((*itScene).first->isSubType("UINode3DLayer"))
+		{
+
+			// UINode3DLayer is a "virtual" rendering screen of sorts
+			kstl::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare >& currentVector = perRenderingScreenSortedMap[(*itScene).first];
+
+			Scene3DAndCamera	toPush;
+			toPush.scene3D = (*itScene).first;
+			toPush.camera = 0;
+
+			currentVector.insert(toPush);
+		}
 		else // it's a scene 3D, so search each camera 
 		{
 			kstl::vector<CoreModifiable*> cameras;
 			(*itScene).first->SimpleCall("GetCameraVector", cameras);
-			
 
 			if (cameras.size())
 			{
 				for (auto foreachinstance : cameras)
 				{
-
 					touchSupportTreeNode * foundcamera = myCurrentTouchSupportRoot->searchNode(foreachinstance);
 
 					if (foundcamera)
@@ -842,7 +856,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 						{
 							kstl::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare >& currentVector = perRenderingScreenSortedMap[renderingScreen];
 
-							Scene3DAndCamera	toPush;
+							Scene3DAndCamera toPush;
 							toPush.scene3D = (*itScene).first;
 							toPush.camera = foundcamera;
 
@@ -852,6 +866,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 				}
 			}
 		}
+		
 		++itScene;
 	}
 
@@ -878,6 +893,7 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 	kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiable*> >& perScene3DMap,
 	kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchEventID touch_id)
 {
+
 	if (perRenderingScreenSortedMap.find(CurrentTouchSupport->currentNode) != perRenderingScreenSortedMap.end())
 	{
 		for (auto attachedScene3D : perRenderingScreenSortedMap[CurrentTouchSupport->currentNode])
@@ -887,7 +903,6 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 			{
 				cameraOrRenderingScreen = attachedScene3D.camera;
 			}
-			
 
 			SortItemsFrontToBackParam param;
 			param.toSort = perScene3DMap[attachedScene3D.scene3D];
