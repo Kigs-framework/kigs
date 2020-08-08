@@ -15,8 +15,6 @@ public:
 	*/
 	DECLARE_CONSTRUCTOR(CollisionBaseNode);
 
-	CoreModifiable* GetLinkedItem() override;
-
 	bool BBoxUpdate(kdouble time) override { return true; }
 	void	GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override { pmin = myBoundingBox.m_Min; pmax = myBoundingBox.m_Max; }
 
@@ -28,7 +26,6 @@ protected:
 	BBox        myBoundingBox;
 
 	maBool		myHit;
-	maReference refToLinkedItem;
 };
 
 #endif //_COLLISIONBASENODE_H_

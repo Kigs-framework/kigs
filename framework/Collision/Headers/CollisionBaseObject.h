@@ -35,9 +35,6 @@ public:
 	virtual bool CallLocalRayIntersection(Hit &hit, const Point3D& start, const Vector3D& dir)  const  =0;
 	virtual bool CallLocalRayIntersection(std::vector<Hit> &hit, const Point3D& start, const Vector3D& dir)  const =0;
 
-	virtual CoreModifiable* GetLinkedItem() { return LinkedItem; }
-	void SetLinkedItem(CoreModifiable * item) { LinkedItem = item; }
-	
 #ifdef KIGS_TOOLS
 	// debug color used for this node
 	Point3D debugColor;
@@ -58,9 +55,5 @@ public:
 	{
 		return nullptr;
 	}
-
-
-protected:
-	CoreModifiable* LinkedItem = nullptr;
 };
 #endif //_COLLISIONBASEOBJECT_H_

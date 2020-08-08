@@ -4,6 +4,7 @@
 #include "HLSLLight.cpp"
 
 #include "HLSLShader.cpp"
+#include "HLSLUINode3DShader.cpp"
 #include "HLSLUIShader.cpp"
 #include "HLSLCutShader.cpp"
 #include "HLSLUniform.cpp"
