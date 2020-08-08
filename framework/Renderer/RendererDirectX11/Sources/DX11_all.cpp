@@ -6,6 +6,7 @@
 #include "HLSLShader.cpp"
 #include "HLSLUIShader.cpp"
 #include "HLSLCutShader.cpp"
+#include "HLSLUINode3DShader.cpp"
 #include "HLSLUniform.cpp"
 #include "DX11Camera.cpp"
 #include "DX11CameraOrtho.cpp"
