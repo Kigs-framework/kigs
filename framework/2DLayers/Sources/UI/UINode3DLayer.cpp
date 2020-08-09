@@ -55,7 +55,7 @@ void UINode3DLayer::InitModifiable()
 		// set 3D object size and design size in a single uniform
 		my3DAndDesignSizeUniform = KigsCore::GetInstanceOf(getName() + "3DSizeUniform", "API3DUniformFloat4");
 		my3DAndDesignSizeUniform->setValue("Name", "SceneScaleAndDesignSize");
-		my3DAndDesignSizeUniform->setArrayValue("Value", my3DSize[0] / myDesignSize[0] , my3DSize[1] / myDesignSize[1], myDesignSize[0], myDesignSize[1]);
+		my3DAndDesignSizeUniform->setArrayValue("Value", mySize[0] / myDesignSize[0] , mySize[1] / myDesignSize[1], myDesignSize[0], myDesignSize[1]);
 		my3DAndDesignSizeUniform->Init();
 
 		// and add the uniform directly to the shader
@@ -63,7 +63,7 @@ void UINode3DLayer::InitModifiable()
 
 		// notify me when 3D size or design size change
 		// ( recompute BBox and update uniform)
-		my3DSize.changeNotificationLevel(Owner);
+		mySize.changeNotificationLevel(Owner);
 		myDesignSize.changeNotificationLevel(Owner);
 
 		auto input = KigsCore::GetModule<ModuleInput>();
@@ -74,7 +74,7 @@ void UINode3DLayer::InitModifiable()
 		if (colliders.empty())
 		{
 			myCollider = KigsCore::GetInstanceOf(getName()+"_panel", "Panel");
-			myCollider->setValue("Size", (v2f)my3DSize);
+			myCollider->setValue("Size", (v2f)mySize);
 			myCollider->Init();
 			addItem(myCollider);
 		}
@@ -97,11 +97,11 @@ void UINode3DLayer::InitModifiable()
 void UINode3DLayer::NotifyUpdate(const unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
-	if ((labelid == my3DSize.getLabelID()) || (labelid == myDesignSize.getLabelID()))
+	if ((labelid == mySize.getLabelID()) || (labelid == myDesignSize.getLabelID()))
 	{
 		SetFlag(BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
-		my3DAndDesignSizeUniform->setArrayValue("Value", my3DSize[0] / myDesignSize[0], my3DSize[1] / myDesignSize[1], myDesignSize[0], myDesignSize[1]);
-		if(myCollider) myCollider->setValue("Size", (v2f)my3DSize);
+		my3DAndDesignSizeUniform->setArrayValue("Value", mySize[0] / myDesignSize[0], mySize[1] / myDesignSize[1], myDesignSize[0], myDesignSize[1]);
+		if(myCollider) myCollider->setValue("Size", (v2f)mySize);
 		PropagateDirtyFlagsToSons(this);
 		PropagateDirtyFlagsToParents(this);
 	}
@@ -132,7 +132,7 @@ void UINode3DLayer::Update(const Timer& a_Timer, void* addParam)
 void UINode3DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 {
 	kstl::vector<NodeToDraw> nodes; nodes.reserve(param.toSort.size());
-
+	int aze = 0;
 	for (auto cm : param.toSort)
 	{
 		Node2D* node = aggregate_cast<Node2D>(cm);
@@ -191,7 +191,7 @@ bool UINode3DLayer::GetDataInTouchSupport(const touchPosInfos& posin, touchPosIn
 		Vector3D up(0,1,0);
 		Vector3D left = up ^ Vector3D(0,0,1);
 
-		pout.pos.xy = v2f((Dot(left, hit_pos) / my3DSize[0]) + 0.5f, (Dot(up, hit_pos) / my3DSize[1]) + 0.5f);
+		pout.pos.xy = v2f((Dot(left, hit_pos) / mySize[0]) + 0.5f, (Dot(up, hit_pos) / mySize[1]) + 0.5f);
 		
 		pout.pos.x *= myDesignSize[0];
 		pout.pos.y *= myDesignSize[1];
@@ -228,7 +228,7 @@ void UINode3DLayer::RecomputeBoundingBox()
 	ParentClassType::RecomputeBoundingBox();
 
 	// approximate BBox with quad size
-	float maxSize = std::max(my3DSize[0], my3DSize[1])*0.5f;
+	float maxSize = std::max(mySize[0], mySize[1])*0.5f;
 
 	BBox	uiBBox;
 	uiBBox.m_Min.Set(-maxSize, -maxSize, -maxSize);

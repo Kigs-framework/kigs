@@ -44,7 +44,7 @@ protected:
 	// if not interactive, don't do update (but still draw)
 	maBool	myIsInteractive = BASE_ATTRIBUTE(IsInteractive, true);
 
-	maVect2DF	my3DSize = BASE_ATTRIBUTE(3DSize, 0.8f,0.6f);
+	maVect2DF	mySize = BASE_ATTRIBUTE(Size, 0.8f,0.6f);
 	maVect2DF	myDesignSize = BASE_ATTRIBUTE(DesignSize, 800.0f, 600.0f);
 
 	// Camera used for touch inputs
