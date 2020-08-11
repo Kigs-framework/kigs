@@ -67,7 +67,7 @@ protected:
 
 	bool mHasFrame = false;
 
-	maBool mRemote = BASE_ATTRIBUTE(Remote, true);
+	maBool mRemote = BASE_ATTRIBUTE(Remote, false);
 	maString mRemoteBindAddress = BASE_ATTRIBUTE(RemoteBindAddress, "0.0.0.0");
 	maInt mRemotePort = BASE_ATTRIBUTE(RemotePort, 7002);
 
