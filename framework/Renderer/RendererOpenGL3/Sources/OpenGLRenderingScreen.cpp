@@ -334,7 +334,7 @@ void	OpenGLRenderingScreen::DelayedInit()
 		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &default_frame_buffer); CHECK_GLERROR;
 
 		glGenFramebuffers(1, &fbo_frame_buffer_id); CHECK_GLERROR;
-		int zbits = (int)myBitsPerZ;
+		int zbits = (int)mBitsPerZ;
 
 		bool use_depth_buffer = zbits != 0;
 
@@ -394,7 +394,7 @@ void	OpenGLRenderingScreen::DelayedInit()
 
 		}
 
-		int stencilbits = myBitsForStencil;
+		int stencilbits = mBitsForStencil;
 		if (stencilbits != 0)
 		{
 #ifdef GL_ES2

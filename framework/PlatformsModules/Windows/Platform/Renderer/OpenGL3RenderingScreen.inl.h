@@ -128,11 +128,11 @@ bool OpenGLPlatformRenderingScreen::SetupPixelFormat(HDC hdc)
 
 	ppfd->iPixelType = PFD_TYPE_RGBA;
 
-	ppfd->cColorBits = myBitsPerPixel;
-	ppfd->cDepthBits = myBitsPerZ;
+	ppfd->cColorBits = mBitsPerPixel;
+	ppfd->cDepthBits = mBitsPerZ;
 
 	ppfd->cAccumBits = 0;
-	ppfd->cStencilBits = myBitsForStencil;
+	ppfd->cStencilBits = mBitsForStencil;
 
 	pixelformat = ChoosePixelFormat(hdc, ppfd);
 

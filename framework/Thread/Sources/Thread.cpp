@@ -17,7 +17,8 @@ Thread::~Thread()
 	if (threadProfiler)
 		threadProfiler->RemoveThread(this);
 #endif
-	myCurrentThread.detach();
+	if(myCurrentThread.joinable())
+		myCurrentThread.detach();
 }    
 
 
