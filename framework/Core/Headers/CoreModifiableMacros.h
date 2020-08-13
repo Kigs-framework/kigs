@@ -116,6 +116,7 @@ DECLARE_getExactType(currentClass);\
 KigsID getExactTypeID() const override {return currentClass::myClassID;} \
 bool isSubType(const KigsID& cid) const override {if(currentClass::myClassID==cid)return true;  return parentClass::isSubType(cid);} \
 static void GetClassNameTree(CoreClassNameTree& classNameTree) {parentClass::GetClassNameTree(classNameTree); classNameTree.addClassName(currentClass::myClassID, currentClass::myRuntimeType);}\
+virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) override {parentClass::ConstructClassNameTree(classNameTree); classNameTree.addClassName(currentClass::myClassID, currentClass::myRuntimeType);}\
 static currentClass* Get()\
 {\
 	return GetFirstInstance(#currentClass, false)->as<currentClass>();\

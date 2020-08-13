@@ -63,7 +63,7 @@ public:
 	*/
 	Abstract2DLayer(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	RenderingScreen*	GetRenderingScreen() { return (RenderingScreen*)(CoreModifiable*)myRenderingScreen; }
+	RenderingScreen*	GetRenderingScreen() { return (RenderingScreen*)(CoreModifiable*)mRenderingScreen; }
 
 	void	getSize(int& sx, int& sy)
 	{
@@ -83,8 +83,8 @@ protected:
 	void	EndDrawing(TravState* state);
 
 	//! pointer to the renderingSreen
-	maReference myRenderingScreen;
-	maReference myManager;
+	maReference mRenderingScreen;
+	maReference mManager;
 
 	//! size on X axis
 	maInt    mySizeX;
