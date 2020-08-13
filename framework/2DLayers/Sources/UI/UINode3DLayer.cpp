@@ -2,6 +2,7 @@
 #include "CoreBaseApplication.h"
 #include "BaseUI2DLayer.h"
 #include "ModuleRenderer.h"
+#include "ModuleInput.h"
 
 #include "TouchInputEventManager.h"
 
