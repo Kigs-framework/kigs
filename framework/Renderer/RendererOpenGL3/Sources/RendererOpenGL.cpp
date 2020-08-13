@@ -1384,9 +1384,9 @@ void VertexBufferManager::MarkVertexAttrib()
 		if(VA.second.mUsed>0)
 			VA.second.mUsed = 0;
 	}
-
-	mAskedArrayBound = 0;
-	mAskedElemBound = 0;
+	
+	// mAskedArrayBound = 0;
+	// mAskedElemBound = 0;
 }
 
 void VertexBufferManager::Clear(bool push)

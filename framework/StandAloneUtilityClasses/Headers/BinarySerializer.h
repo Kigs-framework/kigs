@@ -9,6 +9,7 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <memory>
 
 template<class T, class T2>
 using has_member_serialize = decltype(std::declval<T&>().Serialize(std::declval<T2&>()));
