@@ -423,6 +423,9 @@ public:
 
 	DECLARE_GetRuntimeTypeBase(CoreModifiable);
 	DECLARE_getExactTypeBase(CoreModifiable);
+
+	virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) { classNameTree.addClassName("CoreModifiable", "CoreModifiable"); }
+	
 	virtual KigsID getExactTypeID() const { return CoreModifiable::myClassID; }
 	virtual bool isSubType(const KigsID& cid) const { return CoreModifiable::myClassID == cid; }
 	static void GetClassNameTree(CoreClassNameTree& classNameTree);

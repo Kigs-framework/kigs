@@ -10,9 +10,9 @@
 
 IMPLEMENT_CLASS_INFO(RenderingScreen)
 IMPLEMENT_CONSTRUCTOR(RenderingScreen)
-	, myBitsPerPixel(*this, true, "BitsPerPixel", 32)
-	, myBitsPerZ(*this, true, "BitsPerZ", 16)
-	, myBitsForStencil(*this, true, "BitsForStencil", 0)
+	, mBitsPerPixel(*this, true, "BitsPerPixel", 32)
+	, mBitsPerZ(*this, true, "BitsPerZ", 16)
+	, mBitsForStencil(*this, true, "BitsForStencil", 0)
 	, mySizeX(*this, false, "SizeX", 256)
 	, mySizeY(*this, false, "SizeY", 256)
 	, myDesignSizeX(*this, false, "DesignSizeX", 256)
