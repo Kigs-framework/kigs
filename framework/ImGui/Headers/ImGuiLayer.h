@@ -90,6 +90,8 @@ protected:
 
 	ImFontAtlas mFontAtlas;
 
+	TouchSourceID mPosSource = TouchSourceID::Invalid;
+	TouchSourceID mClickSource = TouchSourceID::Invalid;
 	v2f mCurrentPos = {0.0f,0.0f};
 
 	v2f mStartTouchPos;

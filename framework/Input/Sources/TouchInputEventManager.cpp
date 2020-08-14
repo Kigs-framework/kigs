@@ -16,10 +16,7 @@
 extern bool gIsVR;
 #endif
 
-static bool IsNearInteraction(TouchEventID id)
-{
-	return id == TouchEventID::SpatialInteractionLeft || id == TouchEventID::SpatialInteractionRight;
-}
+
 
 
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(TouchInputEventManager, TouchInputEventManager, Input);
@@ -595,13 +592,13 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	v3f any_pos;
 
 	// TODO ask module input for current touch device(s) (multitouch, mouse, hololens gesture...)
-	kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos>	Touches;
+	kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>	Touches;
 	
 	MultiTouchDevice* mtDevice = theInputModule->GetMultiTouch();
 	if (theInputModule->GetMouse() && !mtDevice)
 	{
 		TouchEventState::TouchInfos mouseTouch;
-		mouseTouch.ID = TouchEventID::Mouse;
+		mouseTouch.ID = TouchSourceID::Mouse;
 		mouseTouch.posInfos.flag = 0;
 		mouseTouch.posInfos.dir = { 0, 0, 0 };
 		mouseTouch.posInfos.origin = { 0, 0, 0 };
@@ -631,7 +628,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 			if (mtDevice->getTouchState(i))
 			{
 				TouchEventState::TouchInfos mouseTouch;
-				mouseTouch.ID = (TouchEventID)((u32)TouchEventID::MultiTouch_0 + i);
+				mouseTouch.ID = (TouchSourceID)((u32)TouchSourceID::MultiTouch_0 + i);
 				mouseTouch.has_position = true;
 				mouseTouch.posInfos.flag = 0;
 				mouseTouch.posInfos.dir = { 0, 0, 0 };
@@ -672,12 +669,14 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 					auto orientation = (interaction.index_tip->orientation * v3f(0, -1, 1)).Normalized();
 					if (Dot(orientation, camera->GetGlobalViewVector()) > 0)
 					{
+						interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchSourceID::SpatialInteractionLeft : TouchSourceID::SpatialInteractionRight;
 						interaction_infos.posInfos.dir = (interaction.index_tip->position - camera->GetGlobalPosition()).Normalized();
 						interaction_infos.posInfos.pos = interaction.index_tip->position;
 						interaction_infos.posInfos.origin = interaction_infos.posInfos.pos - interaction_infos.posInfos.dir * getSpatialInteractionOffset();
+						interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
 						interaction_infos.posInfos.min_distance = 0.0;
-						interaction_infos.posInfos.max_distance = (myEventCaptureObject) ? DBL_MAX : 0.3;
-						interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchEventID::SpatialInteractionLeft : TouchEventID::SpatialInteractionRight;
+						interaction_infos.posInfos.max_distance = (myEventCaptureObject && myEventCapturedEventID == interaction_infos.ID) ? DBL_MAX : 0.3;
+						
 						Touches[interaction_infos.ID] = interaction_infos;
 					}
 				}
@@ -700,7 +699,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 						}
 						interaction_infos.posInfos.min_distance = -DBL_MAX;
 						interaction_infos.posInfos.max_distance = DBL_MAX;
-						interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchEventID::SpatialInteractionRayLeft : TouchEventID::SpatialInteractionRayRight;
+						interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchSourceID::SpatialInteractionRayLeft : TouchSourceID::SpatialInteractionRayRight;
 						interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
 						any_touch_state = any_touch_state | interaction_infos.touch_state;
 						dd::line(interaction_infos.posInfos.pos, interaction_infos.posInfos.pos + interaction_infos.posInfos.dir, interaction.pressed ? v3f{ 1, 1, 1 } : v3f{ 0, 1, 0 });
@@ -718,7 +717,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		gazeTouch.posInfos.flag = 0;
 		gazeTouch.posInfos.dir = camera->GetGlobalViewVector();
 		gazeTouch.posInfos.origin = camera->GetGlobalPosition();
-		gazeTouch.ID = TouchEventID::Gaze;
+		gazeTouch.ID = TouchSourceID::Gaze;
 		gazeTouch.touch_state = any_touch_state;
 		gazeTouch.interaction = main_interaction;
 		if (main_interaction)
@@ -785,7 +784,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	//kigsprintf("touch before transform : %f %f \n", (*Touches.begin()).posInfos.pos.x, (*Touches.begin()).posInfos.pos.y);
 
 	// now do transformation hierarchy for myCurrentTouchSupportRoot
-	kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos>>	transformedInfosMap;
+	kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>>	transformedInfosMap;
 	transformTouchesInTouchSupportHierarchy(myCurrentTouchSupportRoot, transformedInfosMap, Touches);
 
 
@@ -901,7 +900,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	}
 
 	// Build the ordered element list for each touch
-	kigs::unordered_map<TouchEventID, kstl::vector<SortedElementNode>> flat_trees;
+	kigs::unordered_map<TouchSourceID, kstl::vector<SortedElementNode>> flat_trees;
 	for (auto& t : Touches)
 	{
 		RecursiveFlattenTreeForTouchID(flat_trees[t.first], myCurrentTouchSupportRoot, perRenderingScreenSortedMap, perScene3DMap, transformedInfosMap, t.first);
@@ -921,7 +920,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedElementNode>& flat_tree, touchSupportTreeNode* CurrentTouchSupport,
 	kigs::unordered_map<CoreModifiable*, kstl::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >& perRenderingScreenSortedMap,
 	kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiable*> >& perScene3DMap,
-	kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchEventID touch_id)
+	kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchSourceID touch_id)
 {
 
 	if (perRenderingScreenSortedMap.find(CurrentTouchSupport->currentNode) != perRenderingScreenSortedMap.end())
@@ -1023,7 +1022,7 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 	}
 }
 
-void	TouchInputEventManager::LinearCallEventUpdate(kstl::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchEventID touch_id)
+void	TouchInputEventManager::LinearCallEventUpdate(kstl::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchSourceID touch_id)
 {
 	StackedEventStateStruct& state = myStackedEventState.back();
 	u32 swallowMask = 0;
@@ -1063,7 +1062,7 @@ void	TouchInputEventManager::LinearCallEventUpdate(kstl::vector<SortedElementNod
 	}
 }
 
-void	TouchInputEventManager::transformTouchesInTouchSupportHierarchy(touchSupportTreeNode* current, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos>>& resultmap, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos>& Touches)
+void	TouchInputEventManager::transformTouchesInTouchSupportHierarchy(touchSupportTreeNode* current, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>>& resultmap, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>& Touches)
 {
 	auto itTouches = Touches.begin();
 	auto itTouchesE = Touches.end();
@@ -1116,7 +1115,11 @@ TouchInputEventManager::~TouchInputEventManager()
 
 void TouchInputEventManager::ManageCaptureObject(InputEvent& ev, CoreModifiable* target)
 {
-	if (ev.capture_inputs) myEventCaptureObject = target;
+	if (ev.capture_inputs) 
+	{
+		myEventCaptureObject = target;
+		myEventCapturedEventID = ev.touch_id;
+	}
 	else if (myEventCaptureObject == target) myEventCaptureObject = nullptr;
 }
 
@@ -1169,9 +1172,12 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 
 	float dist = Norm(ev.hit.HitPosition - touch.posInfos.origin);
 	bool is_spatial_interaction = IsNearInteraction(touch.ID) && touch.interaction->near_interaction_active_count > 0;
-	if (is_spatial_interaction && m_SpatialInteractionAutoClickDistance > 0.0f && std::abs(dist - manager->getSpatialInteractionOffset()) < m_SpatialInteractionAutoClickDistance)
+	if (is_spatial_interaction && m_SpatialInteractionAutoClickDistance > 0.0f) 
 	{
-		touch_state = 1;
+		if (std::abs(dist - manager->getSpatialInteractionOffset()) < m_SpatialInteractionAutoClickDistance)
+			touch_state = 1;
+		else
+			touch_state = 0;
 	}
 
 	bool is_down = false;
@@ -1396,12 +1402,14 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 
 	auto dist = Norm(ev.hit.HitPosition - touch.posInfos.origin);
 	auto touch_state = touch.touch_state;
-	bool is_near_interaction = IsNearInteraction(touch.ID) && ev.hit.HitNode;
-	if (is_near_interaction)
+	bool is_near_interaction = IsNearInteraction(touch.ID);
+	if (is_near_interaction && m_SpatialInteractionAutoTouchDownDistance > 0.0f)
 	{
 		touch.interaction->near_interaction_distance = dist - manager->getSpatialInteractionOffset();
-		if(m_SpatialInteractionAutoTouchDownDistance > 0.0f && std::abs(dist - manager->getSpatialInteractionOffset()) < m_SpatialInteractionAutoTouchDownDistance)
+		if (std::abs(dist - manager->getSpatialInteractionOffset()) < m_SpatialInteractionAutoTouchDownDistance)
 			touch_state = 1;
+		else
+			touch_state = 0;
 	}
 
 	// type 0 for hover
@@ -1414,7 +1422,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 	ev.touch_state = DirectTouchEvent::TouchHover;
 	
 	// We need to send StateEnded when the event is swallowed by someone above us
-	bool isHover = !swallow && !touch.touch_ended &&  target->SimpleCall<bool>(m_methodNameID, ev);
+	bool isHover = !swallow && !touch.touch_ended && target->SimpleCall<bool>(m_methodNameID, ev);
 
 	auto foundPrevious = m_CurrentInfosMap.find(touch.ID);
 
@@ -1941,7 +1949,7 @@ void TouchEventStatePinch::Update(TouchInputEventManager* manager, const Timer& 
 	}
 	else if(new_touch)
 	{
-		kstl::vector<std::pair<TouchEventID, float>> possibles_pinches;
+		kstl::vector<std::pair<TouchSourceID, float>> possibles_pinches;
 		for (auto& t : mCurrentTouches)
 		{
 			if (t.second.in_use_by_pinch || t.first == touch.ID) continue;

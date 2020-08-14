@@ -314,11 +314,21 @@ void ImGuiLayer::InitModifiable()
 
 bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 {
+	if (mClickSource != TouchSourceID::Invalid && ev.touch_id != mClickSource)
+		return false;
+
+	if (ev.position.x < 0 || ev.position.y < 0) return false;
+
 	auto old = SetActiveImGuiLayer();
 	auto& io = ImGui::GetIO();
-	
+
 	//FIXME(android resize issue)
-	mCurrentPos = ev.position.xy;// *(v2f)io.DisplayFramebufferScale;
+	if (mPosSource == TouchSourceID::Invalid) 
+	{
+		mCurrentPos = ev.position.xy;
+		if (IsNearInteraction(ev.touch_id))
+			mPosSource = ev.touch_id;
+	}
 	if(ev.state == GestureRecognizerState::StateBegan)
 	{
 		if (ev.touch_state == DirectTouchEvent::TouchState::TouchDown)
@@ -330,7 +340,7 @@ bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 				mStartGazeUp = v3f(0,-1,0);
 				mStartGazeRight = ev.direction ^ v3f(0, 1, 0);
 			}
-
+			mClickSource = ev.touch_id;
 			io.MouseDown[0] = (ev.button_state & 1);
 			io.MouseDown[1] = (ev.button_state & 2);
 			io.MouseDown[2] = (ev.button_state & 4);
@@ -339,12 +349,12 @@ bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 		}
 		else if (ev.touch_state == DirectTouchEvent::TouchState::TouchUp)
 		{
+			mClickSource = TouchSourceID::Invalid;
 			io.MouseDown[0] = io.MouseDown[1] = io.MouseDown[2] = 0;
 			mIsDown = false;
 			EmitSignal(Signals::OnClickUp, this);
 		}
 	}
-
 	
 	if (ev.state == GestureRecognizerState::StatePossible)
 	{
@@ -430,6 +440,8 @@ void ImGuiLayer::NewFrame(Timer* timer)
 	if (dt <= 0.0f) dt = 0.0166667f;
 	io.DeltaTime = dt;
 	mLastTime = current_time;
+
+	mPosSource = TouchSourceID::Invalid;
 
 	if (!mInputsEnabled)
 	{

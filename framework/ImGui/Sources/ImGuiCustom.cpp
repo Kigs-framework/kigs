@@ -33,4 +33,10 @@ namespace ImGui
 		auto centered_x = (ImGui::GetWindowWidth() - widget_width) / 2;
 		ImGui::Dummy(v2f(centered_x, 0)); ImGui::SameLine();
 	}
+
+	void CenterText(const std::string& txt) 
+	{
+		CenterWidget(ImGui::CalcTextSize(txt.c_str()).x);
+		ImGui::Text(txt.c_str());
+	}
 }

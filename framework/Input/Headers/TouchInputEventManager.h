@@ -13,7 +13,7 @@ class ModuleInput;
 struct Interaction;
 class Camera;
 
-enum class TouchEventID : u32
+enum class TouchSourceID : u32
 {
 	Mouse,
 	Gaze,
@@ -22,16 +22,20 @@ enum class TouchEventID : u32
 	SpatialInteractionRayLeft,
 	SpatialInteractionRayRight,
 	MultiTouch_0,
-
 	Invalid = UINT32_MAX
 };
+
+inline bool IsNearInteraction(TouchSourceID id)
+{
+	return id == TouchSourceID::SpatialInteractionLeft || id == TouchSourceID::SpatialInteractionRight;
+}
 
 namespace std
 {
 	template<>
-	struct hash< TouchEventID >
+	struct hash< TouchSourceID >
 	{
-		typedef TouchEventID argument_type;
+		typedef TouchSourceID argument_type;
 		typedef std::underlying_type< argument_type >::type underlying_type;
 		//typedef std::hash< underlying_type >::result_type result_type;
 		auto operator()(const argument_type& arg) const
@@ -53,7 +57,7 @@ struct SortItemsFrontToBackParam
 	v3f direction;
 	double min_distance = -DBL_MAX;
 	double max_distance = DBL_MAX;
-	TouchEventID touchID;
+	TouchSourceID touchID;
 };
 
 struct GetDistanceForInputSortParam
@@ -69,7 +73,7 @@ struct GetDistanceForInputSortParam
 	double inout_distance;
 	Hit* inout_hit = nullptr;
 	// Each element is sorted within its layer by inout_distance. Layers go from front (-INT_MAX) to back (INT_MAX)
-	bool inout_sorting_layer = INT_MAX;
+	int inout_sorting_layer = INT_MAX;
 };
 
 
@@ -178,7 +182,7 @@ protected:
 		// transformed pos in TouchSupport object
 		touchPosInfos	posInfos;
 
-		TouchEventID	ID;
+		TouchSourceID	ID;
 		unsigned short	touch_state;
 		unsigned short	in_touch_support;
 		bool touch_ended = false;
@@ -245,7 +249,7 @@ struct InputEvent
 	// Bitfield of InputEventType
 	u32* swallow_mask;
 	bool capture_inputs = false;
-	TouchEventID touch_id;
+	TouchSourceID touch_id;
 	bool has_position = false;
 	CoreModifiable* item = nullptr;
 };
@@ -312,15 +316,15 @@ protected:
 		int			 clickCount;
 		int			 buttonState;
 		bool		 isValid;
-		TouchEventID ID;
+		TouchSourceID ID;
 		v3f          origin;
 		v3f          direction;
 		float		 start_dist;
 		float		 min_dist;
 	};
 
-	kigs::unordered_map<TouchEventID, PotentialClick> m_CurrentClickStart;
-	kigs::unordered_map<TouchEventID, PotentialClick> m_CurrentClickEnd;
+	kigs::unordered_map<TouchSourceID, PotentialClick> m_CurrentClickStart;
+	kigs::unordered_map<TouchSourceID, PotentialClick> m_CurrentClickEnd;
 
 	int											m_MinClickCount = 1;
 	int											m_MaxClickCount = 1;
@@ -380,7 +384,7 @@ protected:
 		float min_dist;
 	};
 
-	std::map<TouchEventID, CurrentInfos> m_CurrentInfosMap;
+	std::map<TouchSourceID, CurrentInfos> m_CurrentInfosMap;
 	float								 m_SpatialInteractionAutoTouchDownDistance = 0.00f;
 };
 
@@ -416,7 +420,7 @@ protected:
 		mCurrentTouches.clear();
 	}
 
-	std::set<TouchEventID> mCurrentTouches;
+	std::set<TouchSourceID> mCurrentTouches;
 };
 
 
@@ -466,7 +470,7 @@ protected:
 		m_CurrentInfosMap.clear();
 	}
 
-	std::map<TouchEventID, CurrentInfos>		m_CurrentInfosMap;
+	std::map<TouchSourceID, CurrentInfos>		m_CurrentInfosMap;
 
 	double										m_SwipeMinDuration;
 	double										m_SwipeMaxDuration;
@@ -523,7 +527,7 @@ protected:
 		Vector3D	maindir;
 		Vector3D	currentSpeed;
 	};
-	std::map<TouchEventID, CurrentInfos>		m_CurrentInfosMap;
+	std::map<TouchSourceID, CurrentInfos>		m_CurrentInfosMap;
 	Vector3D									m_ScrollForceMainDir;
 };
 
@@ -545,8 +549,8 @@ protected:
 
 	struct CurrentPinch
 	{
-		TouchEventID p1_ID;
-		TouchEventID p2_ID;
+		TouchSourceID p1_ID;
+		TouchSourceID p2_ID;
 		v3f p1_start_pos;
 		v3f p2_start_pos;
 	};
@@ -557,7 +561,7 @@ protected:
 		mCurrentPinches.clear();
 	}
 
-	kigs::unordered_map<TouchEventID, CurrentTouch> mCurrentTouches;
+	kigs::unordered_map<TouchSourceID, CurrentTouch> mCurrentTouches;
 	std::vector<CurrentPinch> mCurrentPinches;
 	
 	float  mPinchMaxStartDistSquared = 9999999;
@@ -567,7 +571,7 @@ struct PinchEvent : InputEvent
 {
 	v3f p1, p2;
 	v3f p1_start, p2_start;
-	TouchEventID touch_id_2;
+	TouchSourceID touch_id_2;
 };
 
 
@@ -658,7 +662,7 @@ protected:
 
 	maBool mUseGazeAsTouchDevice = BASE_ATTRIBUTE(UseGazeAsTouchDevice, false);
 
-	kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos> mLastFrameTouches;
+	kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> mLastFrameTouches;
 
 	std::recursive_mutex mMutex;
 	std::unique_lock<std::recursive_mutex> mLock;
@@ -707,6 +711,7 @@ protected:
 
 	std::vector<StackedEventStateStruct>	myStackedEventState;
 	CoreModifiable*										myEventCaptureObject = nullptr;
+	TouchSourceID										myEventCapturedEventID;
 
 	ModuleInput*	theInputModule;
 
@@ -799,9 +804,9 @@ protected:
 	void RecursiveFlattenTreeForTouchID(std::vector<SortedElementNode>& flat_tree, touchSupportTreeNode* CurrentTouchSupport, 
 		kigs::unordered_map<CoreModifiable*, std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >& perRenderingScreenSortedMap,
 		kigs::unordered_map<CoreModifiable*, std::vector<CoreModifiable*> >& perScene3DMap,
-		kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchEventID touch_id);
+		kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchSourceID touch_id);
 
-	void	LinearCallEventUpdate(std::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchEventID touch_id);
+	void	LinearCallEventUpdate(std::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchSourceID touch_id);
 
 	// touch support tree list (more than one root for multiple windows)
 	std::vector<touchSupportTreeNode>					myTouchSupportTreeRootList;
@@ -827,5 +832,30 @@ protected:
 
 	bool mForceClick = false;
 
-	void	transformTouchesInTouchSupportHierarchy(touchSupportTreeNode* current, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos> >& resultmap, kigs::unordered_map<TouchEventID, TouchEventState::TouchInfos>& Touches);
+	void	transformTouchesInTouchSupportHierarchy(touchSupportTreeNode* current, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& resultmap, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>& Touches);
+};
+
+// Helper struct to track a state across multiple touch sources. 
+// For example if multiple sources can hover a button at the same time :
+// Do Push/Pop when receiving TouchState::TouchHover StateBegan/StateEnded events, and use IsActive() to check if the button need to be drawn as hovered or not
+struct TouchEventTracker 
+{
+	bool IsActive() const
+	{ 
+		return mCounters.size() && std::any_of(mCounters.begin(), mCounters.end(), [](auto& pair) { return pair.second > 0; });
+	}
+
+	void Push(TouchSourceID id) 
+	{
+		++mCounters[id];
+	}
+
+	void Pop(TouchSourceID id) 
+	{
+		assert(mCounters[id] > 0);
+		--mCounters[id];
+	}
+
+private:
+	std::unordered_map<TouchSourceID, u8> mCounters;
 };

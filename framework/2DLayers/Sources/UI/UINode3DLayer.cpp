@@ -14,7 +14,7 @@ IMPLEMENT_CLASS_INFO(UINode3DLayer);
 //
 ///////////////////////////////////////////
 IMPLEMENT_CONSTRUCTOR(UINode3DLayer)
-, myRootItem(0)
+, mRootItem(0)
 {
 
 }
@@ -32,54 +32,43 @@ void UINode3DLayer::InitModifiable()
 		if (instances.empty())
 		{
 			// add the root UIItem
-			myRootItem = KigsCore::GetInstanceOf(getName(), "UIItem");
+			mRootItem = KigsCore::GetInstanceOf(getName(), "UIItem");
 
-			myRootItem->setValue("SizeX", 1.0f);
-			myRootItem->setValue("SizeY", 1.0f);
-			addItem(myRootItem);
-			myRootItem->Init();
+			mRootItem->setValue("SizeX", 1.0f);
+			mRootItem->setValue("SizeY", 1.0f);
+			addItem(mRootItem);
+			mRootItem->Init();
 		}
 		else
 		{
-			myRootItem = instances[0];
+			mRootItem = instances[0];
 		}
 		instances.clear();
 
-		// specific shader for UINode3DLayer
-		CMSP shader=KigsCore::GetInstanceOf(getName()+"UIShader","API3DUINode3DShader");
-		if (shader)
+		ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer*)((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+		if (renderer->getDefaultUiShader())
 		{
-			addItem(shader);
+			addItem(renderer->getDefaultUiShader());
 		}
 
-		// set 3D object size and design size in a single uniform
-		my3DAndDesignSizeUniform = KigsCore::GetInstanceOf(getName() + "3DSizeUniform", "API3DUniformFloat4");
-		my3DAndDesignSizeUniform->setValue("Name", "SceneScaleAndDesignSize");
-		my3DAndDesignSizeUniform->setArrayValue("Value", mySize[0] / myDesignSize[0] , mySize[1] / myDesignSize[1], myDesignSize[0], myDesignSize[1]);
-		my3DAndDesignSizeUniform->Init();
-
-		// and add the uniform directly to the shader
-		shader->addItem(my3DAndDesignSizeUniform);
-
-		// notify me when 3D size or design size change
-		// ( recompute BBox and update uniform)
-		mySize.changeNotificationLevel(Owner);
-		myDesignSize.changeNotificationLevel(Owner);
+		// ( recompute BBox and update collider size)
+		mSize.changeNotificationLevel(Owner);
+		mDesignSize.changeNotificationLevel(Owner);
 
 		auto input = KigsCore::GetModule<ModuleInput>();
-		input->getTouchManager()->addTouchSupport(this, myCamera);
+		input->getTouchManager()->addTouchSupport(this, mCamera);
 
 		std::vector<CMSP> colliders;
 		GetSonInstancesByType("CollisionBaseNode", colliders);
 		if (colliders.empty())
 		{
-			myCollider = KigsCore::GetInstanceOf(getName()+"_panel", "Panel");
-			myCollider->setValue("Size", (v2f)mySize);
-			myCollider->Init();
-			addItem(myCollider);
+			mCollider = KigsCore::GetInstanceOf(getName()+"_panel", "Panel");
+			mCollider->setValue("Size", (v2f)mSize);
+			mCollider->Init();
+			addItem(mCollider);
 		}
 
-		// add myself to auto update
+		// add mself to auto update
 		// unlike BaseUI2DLayer, the scenegraph will not call Update on me
 		CoreBaseApplication* L_currentApp = KigsCore::GetCoreApplication();
 		if (L_currentApp)
@@ -97,11 +86,10 @@ void UINode3DLayer::InitModifiable()
 void UINode3DLayer::NotifyUpdate(const unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
-	if ((labelid == mySize.getLabelID()) || (labelid == myDesignSize.getLabelID()))
+	if ((labelid == mSize.getLabelID()) || (labelid == mDesignSize.getLabelID()))
 	{
 		SetFlag(BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
-		my3DAndDesignSizeUniform->setArrayValue("Value", mySize[0] / myDesignSize[0], mySize[1] / myDesignSize[1], myDesignSize[0], myDesignSize[1]);
-		if(myCollider) myCollider->setValue("Size", (v2f)mySize);
+		if(mCollider) mCollider->setValue("Size", (v2f)mSize);
 		PropagateDirtyFlagsToSons(this);
 		PropagateDirtyFlagsToParents(this);
 	}
@@ -119,12 +107,12 @@ void UINode3DLayer::Update(const Timer& a_Timer, void* addParam)
 		return;
 	}
 	// if not interactive, don't do update (but still draw)
-	if (!myIsInteractive)
+	if (!mIsInteractive)
 	{
 		return;
 	}
 
-	BaseUI2DLayer::UpdateChildrens(a_Timer, myRootItem.get(), addParam);
+	BaseUI2DLayer::UpdateChildrens(a_Timer, mRootItem.get(), addParam);
 
 }
 
@@ -191,10 +179,10 @@ bool UINode3DLayer::GetDataInTouchSupport(const touchPosInfos& posin, touchPosIn
 		Vector3D up(0,1,0);
 		Vector3D left = up ^ Vector3D(0,0,1);
 
-		pout.pos.xy = v2f((Dot(left, hit_pos) / mySize[0]) + 0.5f, (Dot(up, hit_pos) / mySize[1]) + 0.5f);
+		pout.pos.xy = v2f((Dot(left, hit_pos) / mSize[0]) + 0.5f, (Dot(up, hit_pos) / mSize[1]) + 0.5f);
 		
-		pout.pos.x *= myDesignSize[0];
-		pout.pos.y *= myDesignSize[1];
+		pout.pos.x *= mDesignSize[0];
+		pout.pos.y *= mDesignSize[1];
 
 
 		bool is_in = true;
@@ -212,14 +200,18 @@ bool UINode3DLayer::GetDataInTouchSupport(const touchPosInfos& posin, touchPosIn
 		l2g.TransformPoint(&pout.hit.HitPosition);
 		l2g.TransformVector(&pout.hit.HitNormal);
 		pout.hit.HitNode = this;
-		pout.hit.HitActor = myCollider.get();
-		//pout.hit.HitCollisionObject = (CollisionBaseObject*)myCollider.get();
+		pout.hit.HitActor = mCollider.get();
+		//pout.hit.HitCollisionObject = (CollisionBaseObject*)mCollider.get();
 
 		return is_in;
 	}
 	return false;
 }
 
+void UINode3DLayer::GetDistanceForInputSort(GetDistanceForInputSortParam& params)
+{
+	params.inout_sorting_layer = mInputSortingLayer;
+}
 
 // BBox is computed using 2D quad size
 void UINode3DLayer::RecomputeBoundingBox()
@@ -228,7 +220,7 @@ void UINode3DLayer::RecomputeBoundingBox()
 	ParentClassType::RecomputeBoundingBox();
 
 	// approximate BBox with quad size
-	float maxSize = std::max(mySize[0], mySize[1])*0.5f;
+	float maxSize = std::max(mSize[0], mSize[1])*0.5f;
 
 	BBox	uiBBox;
 	uiBBox.m_Min.Set(-maxSize, -maxSize, -maxSize);
@@ -245,9 +237,12 @@ void UINode3DLayer::TravDraw(TravState* state)
 {
 	if (!IsInit())
 	{
-		//kigsprintf("%p %s %s %s\n",this, getName().c_str(), (myShowNode == true) ? "true" : "false", (IsInit()) ? "true" : "false");
+		//kigsprintf("%p %s %s %s\n",this, getName().c_str(), (mShowNode == true) ? "true" : "false", (IsInit()) ? "true" : "false");
 		return;
 	}
+
+	if (state->mCurrentPass && !IsUsedInRenderPass(state->mCurrentPass->pass_mask))
+		return;
 
 	// call predraw (activate the shader)!
 	PreDrawDrawable(state);
@@ -255,7 +250,7 @@ void UINode3DLayer::TravDraw(TravState* state)
 	ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer*)state->GetRenderer();
 
 	int lShaderMask = ModuleRenderer::VERTEX_ARRAY_MASK | ModuleRenderer::TEXCOORD_ARRAY_MASK | ModuleRenderer::NO_LIGHT_MASK;
-	//if (myColors)lShaderMask |= ModuleRenderer::COLOR_ARRAY_MASK;
+	//if (mColors)lShaderMask |= ModuleRenderer::COLOR_ARRAY_MASK;
 
 	// create shader if none
 	renderer->GetActiveShader()->ChooseShader(state, lShaderMask);
@@ -278,16 +273,24 @@ void UINode3DLayer::TravDraw(TravState* state)
 	renderer->SetBlendFuncMode(RENDERER_BLEND_SRC_ALPHA, RENDERER_BLEND_ONE_MINUS_SRC_ALPHA);
 	renderer->SetDepthTestMode(false);
 
+	mat4 m; m.SetIdentity();
+	m.e[0][0] = mSize[0] / mDesignSize[0];
+	m.e[1][1] = mSize[1] / mDesignSize[1];
+	m.e[2][2] = 0.0f;
+	m.e[3][0] = -mDesignSize[0] * 0.5f * m.e[0][0];
+	m.e[3][1] = -mDesignSize[1] * 0.5f * m.e[1][1];
+	renderer->PushAndMultMatrix(MATRIX_MODE_MODEL, &m.e[0][0]);
+
 	if (IsRenderable())
 	{
 
 		kstl::vector<NodeToDraw> todraw;
-		todraw.push_back(NodeToDraw{ myRootItem.get(), 0 });
+		todraw.push_back(NodeToDraw{ mRootItem.get(), 0 });
 
-		if (myRootItem->Draw(state))
+		if (mRootItem->Draw(state))
 		{
-			myRootItem->SetUpNodeIfNeeded();
-			BaseUI2DLayer::AccumulateToDraw(state, todraw, myRootItem.get());
+			mRootItem->SetUpNodeIfNeeded();
+			BaseUI2DLayer::AccumulateToDraw(state, todraw, mRootItem.get());
 		}
 
 		std::sort(todraw.begin(), todraw.end(), NodeToDraw::Sorter{});
@@ -393,6 +396,7 @@ void UINode3DLayer::TravDraw(TravState* state)
 
 	}
 
+	renderer->PopMatrix(MATRIX_MODE_MODEL);
 	renderer->PopState();
 
 	// call postdraw (deactivate the shader)

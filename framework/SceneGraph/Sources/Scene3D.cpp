@@ -325,7 +325,7 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 		CoreModifiable* cm = nullptr;
 		double dist = DBL_MAX;
 		Hit* hit = nullptr;
-		int sorting_layer = INT_MAX;
+		int sorting_layer = 0;
 	};
 
 	kstl::vector<Sorter> sorter(param.toSort.size(), Sorter{nullptr, DBL_MAX, nullptr, false });
