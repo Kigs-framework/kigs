@@ -130,12 +130,13 @@ void DrawVertice::InitModifiable()
 	Drawable::InitModifiable();
 	if (IsInit())
 	{
-		SetDataFromPreset();
 		if (myTextureFileName.const_ref().size())
 		{
 			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 			mypTexture = textureManager->GetTexture(myTextureFileName);
 		}
+		// set data after texture so that can get correct uv ratio
+		SetDataFromPreset();
 	}
 }
 
@@ -150,6 +151,7 @@ void DrawVertice::NotifyUpdate(const u32 labelid)
 		{
 			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 			mypTexture = textureManager->GetTexture(myTextureFileName);
+			SetDataFromPreset();
 		}
 	}
 	else if (labelid == myPreset.getID()
@@ -213,11 +215,19 @@ void DrawVertice::SetDataFromPreset()
 
 		if (is_textured)
 		{
-			reinterpret_cast<textured_vertex*>(buffer + 0 * buffer_stride)->uv = v2f(0, 1);
-			reinterpret_cast<textured_vertex*>(buffer + 1 * buffer_stride)->uv = v2f(1, 1);
-			reinterpret_cast<textured_vertex*>(buffer + 2 * buffer_stride)->uv = v2f(1, 0);
-			reinterpret_cast<textured_vertex*>(buffer + 3 * buffer_stride)->uv = v2f(0, 1);
-			reinterpret_cast<textured_vertex*>(buffer + 4 * buffer_stride)->uv = v2f(1, 0);
+			float rx, ry;
+			rx = ry = 1.0f;
+
+			// if texture is valid, get ratio
+			if (mypTexture)
+			{
+				mypTexture->GetRatio(rx, ry);
+			}
+			reinterpret_cast<textured_vertex*>(buffer + 0 * buffer_stride)->uv = v2f(0, ry);
+			reinterpret_cast<textured_vertex*>(buffer + 1 * buffer_stride)->uv = v2f(rx, ry);
+			reinterpret_cast<textured_vertex*>(buffer + 2 * buffer_stride)->uv = v2f(rx, 0);
+			reinterpret_cast<textured_vertex*>(buffer + 3 * buffer_stride)->uv = v2f(0, ry);
+			reinterpret_cast<textured_vertex*>(buffer + 4 * buffer_stride)->uv = v2f(rx, 0);
 			reinterpret_cast<textured_vertex*>(buffer + 5 * buffer_stride)->uv = v2f(0, 0);
 
 			for (int i = 0; i < 6; ++i)

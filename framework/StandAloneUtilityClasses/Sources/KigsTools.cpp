@@ -1,6 +1,7 @@
 #define KIGS_TOOLS_IMPL
 #include "KigsTools.h"
 
+
 bool gKigsToolsAvailable = false;
 
 #ifdef KIGS_TOOLS
@@ -546,7 +547,7 @@ void DrawMenuBar()
 	ImGui::PopStyleVar(3);
 
 	ImGuiID dockspace_id = ImGui::GetID("Dockspace");
-	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruDockspace, 0);
+	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode, 0);
 
 	ImGui::End();
 }
@@ -906,8 +907,8 @@ void DrawHierarchy()
 {
 	if (!gKigsTools->ShowWindow.Hierarchy || !gKigsTools->ShowWindow.MenuBar) return;
 		
-	ImGui::SetNextWindowSize(ImVec2{ 400,700 }, ImGuiSetCond_FirstUseEver);
-	ImGui::SetNextWindowPos(ImVec2{ 50, 50 }, ImGuiSetCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2{ 400,700 }, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos(ImVec2{ 50, 50 }, ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Hierarchy", &gKigsTools->ShowWindow.Hierarchy))
 	{
 		//ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 5.0f);
@@ -1562,7 +1563,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 
 	CoreModifiable* xml_file_item = gKigsTools->ActiveXMLItem; // FindRootXMLFile(item);
 	XML* xml_file = xml_file_item ? (XML*)gKigsTools->ActiveXMLFile.get() : nullptr;
-	XMLNode* xml_node = xml_file_item ? (XMLNode * )item->GetXMLNodeForFile(xml_file) : nullptr;
+	XMLNode* xml_node = xml_file_item ? (XMLNode*)item->GetXMLNodeForFile(xml_file) : nullptr;
 
 	std::string name = item->getName();
 	if (xml_node && xml_node->getName() != "Rel")
@@ -1653,7 +1654,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	kigs::unordered_map<unsigned int, lua_method_ref> lua_methods;
 
 	/// Attributes
-	ImGui::SetNextTreeNodeOpen(gKigsTools->CurrentSettings.AttributesOpen, ImGuiSetCond_Once);
+	ImGui::SetNextTreeNodeOpen(gKigsTools->CurrentSettings.AttributesOpen, ImGuiCond_Once);
 	if ((gKigsTools->CurrentSettings.AttributesOpen = ImGui::CollapsingHeader("Attributes")))
 	{
 		ImGui::Checkbox("Hide attributes not in the XML file", &gKigsTools->CurrentSettings.HideNotInXML);
@@ -2159,7 +2160,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	}
 
 	/// Methods
-	ImGui::SetNextTreeNodeOpen(gKigsTools->CurrentSettings.MethodsOpen, ImGuiSetCond_Once);
+	ImGui::SetNextTreeNodeOpen(gKigsTools->CurrentSettings.MethodsOpen, ImGuiCond_Once);
 	if ((gKigsTools->CurrentSettings.MethodsOpen = ImGui::CollapsingHeader("Methods")))
 	{
 		for (auto&& pair : item->GetTypeNode()->myMethods)
@@ -2196,7 +2197,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	}
 
 	/// Connections
-	ImGui::SetNextTreeNodeOpen(gKigsTools->CurrentSettings.ConnectionsOpen, ImGuiSetCond_Once);
+	ImGui::SetNextTreeNodeOpen(gKigsTools->CurrentSettings.ConnectionsOpen, ImGuiCond_Once);
 	if ((gKigsTools->CurrentSettings.ConnectionsOpen = ImGui::CollapsingHeader("Connections")))
 	{
 		auto lz = item->GetLazyContentNoCreate();
@@ -2582,8 +2583,8 @@ void DrawAttributes()
 {
 	if (!gKigsTools->ShowWindow.Attributes || !gKigsTools->ShowWindow.MenuBar) return;
 
-	ImGui::SetNextWindowSize(ImVec2{400,700}, ImGuiSetCond_FirstUseEver);
-	ImGui::SetNextWindowPos(ImVec2{800, 50}, ImGuiSetCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2{400,700}, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos(ImVec2{800, 50}, ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Attributes", &gKigsTools->ShowWindow.Attributes))
 	{
 		CoreModifiable* item = gKigsTools->HierarchyWindow.SelectedItem;
@@ -2601,7 +2602,7 @@ void DrawCustomWidgets()
 	{
 		if (w.second.second)
 		{
-			ImGui::SetNextWindowSize(v2f(0, 0), ImGuiSetCond_FirstUseEver);
+			ImGui::SetNextWindowSize(v2f(0, 0), ImGuiCond_FirstUseEver);
 			if (ImGui::Begin(w.first.c_str(), &w.second.second))
 			{
 				w.second.first();
@@ -2956,7 +2957,8 @@ bool UpdateKigsTools()
 	if (gKigsTools->ImGuiLayer)
 	{
 		auto old = gKigsTools->ImGuiLayer->SetActiveImGuiLayer();
-		DrawEditor();
+		if(gKigsTools->ImGuiLayer->mHasFrame)
+			DrawEditor();
 		ImGui::SetCurrentContext(old);
 	}
 

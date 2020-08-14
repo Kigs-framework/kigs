@@ -12,10 +12,6 @@
 #include "NotificationCenter.h"
 #include "ModuleRenderer.h"
 
-#if IMGUI_WEBBY_REMOTE 
-#include "imgui_remote.h"
-#endif
-
 #include "IconsFontAwesome.h"
 #include "fontawesome.h"
 
@@ -105,7 +101,7 @@ void ImGuiLayer::SetStyleMSFT()
 
 	style->Colors[ImGuiCol_Text] = text;
 	style->Colors[ImGuiCol_WindowBg] = background;
-	style->Colors[ImGuiCol_ChildWindowBg] = background;
+	style->Colors[ImGuiCol_ChildBg] = background;
 	style->Colors[ImGuiCol_PopupBg] = white;
 
 	style->Colors[ImGuiCol_Border] = border;
@@ -174,7 +170,7 @@ void ImGuiLayer::UpdateKeyboard(kstl::vector<KeyEvent>& keys)
 void ImGuiLayer::RegisterTouch()
 {
 	//mInput->getTouchManager()->registerEvent(this, "ManageTouch", InputEventType::DirectAccess, InputEventManagementFlag::EmptyFlag, this);
-	mInput->getTouchManager()->registerEvent(this, "ManageTouch", InputEventType::DirectTouch, InputEventManagementFlag::EmptyFlag, this);
+	static_cast<TouchEventStateDirectTouch*>(mInput->getTouchManager()->registerEvent(this, "ManageTouch", InputEventType::DirectTouch, InputEventManagementFlag::EmptyFlag, this))->setAutoTouchDownDistance(0.05f);
 }
 
 void ImGuiLayer::InitModifiable()
@@ -184,10 +180,6 @@ void ImGuiLayer::InitModifiable()
 	{
 		KigsCore::GetNotificationCenter()->addObserver(this, "ResetContext", "ResetContext");
 
-
-		if(mRemote)
-			ImGui::RemoteInit(mRemoteBindAddress.c_str(), (int)mRemotePort);
-		
 		ImGuiContext* old_state = SetActiveImGuiLayer();
 		ImGuiIO& io = ImGui::GetIO();
 		io.KeyMap[ImGuiKey_Tab] = VK_TAB;                     // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
@@ -283,7 +275,7 @@ void ImGuiLayer::InitModifiable()
 
 		SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(mPixelData, mPixelDataWidth, mPixelDataHeight, TinyImage::RGBA_32_8888));
 		mFontTexture->CreateFromImage(img);
-
+		
 		// Store our identifier
 		io.Fonts->TexID = (void*)(intptr_t)mFontTexture.get();
 
@@ -314,7 +306,7 @@ void ImGuiLayer::InitModifiable()
 			}
 		}
 
-
+		
 		NewFrame(mApp->GetApplicationTimer().get());
 		ImGui::SetCurrentContext(old_state);
 	}
@@ -322,44 +314,56 @@ void ImGuiLayer::InitModifiable()
 
 bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 {
+	if (mClickSource != TouchSourceID::Invalid && ev.touch_id != mClickSource)
+		return false;
+
+	if (ev.position.x < 0 || ev.position.y < 0) return false;
+
 	auto old = SetActiveImGuiLayer();
 	auto& io = ImGui::GetIO();
-	
+
 	//FIXME(android resize issue)
-	mCurrentPos = ev.position.xy;// *(v2f)io.DisplayFramebufferScale;
+	if (mPosSource == TouchSourceID::Invalid) 
+	{
+		mCurrentPos = ev.position.xy;
+		if (IsNearInteraction(ev.touch_id))
+			mPosSource = ev.touch_id;
+	}
 	if(ev.state == GestureRecognizerState::StateBegan)
 	{
 		if (ev.touch_state == DirectTouchEvent::TouchState::TouchDown)
 		{
-			if (ev.gaze_touch)
+			if (ev.interaction)
 			{
 				mStartTouchPos = mCurrentPos;
-				mStartGazePos = ev.gaze_touch->Position;
+				mStartGazePos = ev.interaction->Position;
 				mStartGazeUp = v3f(0,-1,0);
 				mStartGazeRight = ev.direction ^ v3f(0, 1, 0);
 			}
-
+			mClickSource = ev.touch_id;
 			io.MouseDown[0] = (ev.button_state & 1);
 			io.MouseDown[1] = (ev.button_state & 2);
 			io.MouseDown[2] = (ev.button_state & 4);
 			mIsDown = true;
+			EmitSignal(Signals::OnClickDown, this);
 		}
 		else if (ev.touch_state == DirectTouchEvent::TouchState::TouchUp)
 		{
+			mClickSource = TouchSourceID::Invalid;
 			io.MouseDown[0] = io.MouseDown[1] = io.MouseDown[2] = 0;
 			mIsDown = false;
+			EmitSignal(Signals::OnClickUp, this);
 		}
 	}
-
 	
 	if (ev.state == GestureRecognizerState::StatePossible)
 	{
 	//	ImGui::Text(V2F_FMT(2) "\n", V2F_EXP(mCurrentPos));
 	}
 
-	if (mIsDown && ev.gaze_touch)
+	if (mIsDown && ev.interaction)
 	{
-		auto diff = ev.gaze_touch->Position - mStartGazePos;
+		auto diff = ev.interaction->Position - mStartGazePos;
 		v2f extra = { Dot(diff, mStartGazeRight), Dot(diff, mStartGazeUp) };
 
 		mCurrentPos = mStartTouchPos + extra*2048.0f;
@@ -437,48 +441,8 @@ void ImGuiLayer::NewFrame(Timer* timer)
 	io.DeltaTime = dt;
 	mLastTime = current_time;
 
-	bool do_regular_input = true;
+	mPosSource = TouchSourceID::Invalid;
 
-	if (gImGuiRemoteAvailable && mInputsEnabled)
-	{
-		if (mRemote)
-		{
-			ImGui::RemoteUpdate();
-			ImGui::RemoteInput input;
-			if (ImGui::RemoteGetInput(input))
-			{
-				ImGuiIO& io = ImGui::GetIO();
-				for (int i = 0; i < 256; i++)
-					io.KeysDown[i] = input.KeysDown[i];
-				io.KeyCtrl = input.KeyCtrl;
-				io.KeyShift = input.KeyShift;
-				io.MousePos = input.MousePos;
-				io.MouseDown[0] = (input.MouseButtons & 1);
-				io.MouseDown[1] = (input.MouseButtons & 2) != 0;
-				io.MouseWheel += input.MouseWheelDelta;
-				// Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
-				io.KeyMap[ImGuiKey_Tab] = ImGuiKey_Tab;
-				io.KeyMap[ImGuiKey_LeftArrow] = ImGuiKey_LeftArrow;
-				io.KeyMap[ImGuiKey_RightArrow] = ImGuiKey_RightArrow;
-				io.KeyMap[ImGuiKey_UpArrow] = ImGuiKey_UpArrow;
-				io.KeyMap[ImGuiKey_DownArrow] = ImGuiKey_DownArrow;
-				io.KeyMap[ImGuiKey_Home] = ImGuiKey_Home;
-				io.KeyMap[ImGuiKey_End] = ImGuiKey_End;
-				io.KeyMap[ImGuiKey_Delete] = ImGuiKey_Delete;
-				io.KeyMap[ImGuiKey_Backspace] = ImGuiKey_Backspace;
-				io.KeyMap[ImGuiKey_Enter] = 13;
-				io.KeyMap[ImGuiKey_Escape] = 27;
-				io.KeyMap[ImGuiKey_A] = 'a';
-				io.KeyMap[ImGuiKey_C] = 'c';
-				io.KeyMap[ImGuiKey_V] = 'v';
-				io.KeyMap[ImGuiKey_X] = 'x';
-				io.KeyMap[ImGuiKey_Y] = 'y';
-				io.KeyMap[ImGuiKey_Z] = 'z';
-				do_regular_input = false;
-			}
-		}
-	}
-	
 	if (!mInputsEnabled)
 	{
 		io.MousePos = ImVec2(-1, -1);
@@ -488,7 +452,7 @@ void ImGuiLayer::NewFrame(Timer* timer)
 		for (auto& k : io.KeysDown)
 			k = false;
 	}
-	if (do_regular_input && mInputsEnabled)
+	else
 	{
 		// Setup inputs
 		// (we already got mouse wheel, keyboard keys & characters from glfw callbacks polled in glfwPollEvents())
@@ -585,10 +549,11 @@ void ImGuiLayer::NewFrame(Timer* timer)
 			}
 		}
 	}
-
-
+	
 	mWantMouse = ImGui::GetIO().WantCaptureMouse;
 	ImGui::NewFrame();
+	mHasFrame = true;
+	
 	ImGui::SetCurrentContext(old_state);
 }
 
@@ -598,12 +563,6 @@ Texture* ImGuiLayer::GetTexture(const std::string& name)
 	auto tex = tfm->GetTexture(name);
 	mUsedTexturesThisFrame.push_back(tex);
 	return tex.get();
-}
-
-// Provided by ImGui.lib
-namespace ImGui
-{
-	bool RemoteDraw(ImDrawList** const cmd_lists, int cmd_lists_count);
 }
 
 #define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
@@ -624,26 +583,25 @@ void ImGuiLayer::TravDraw(TravState* state)
 	mUsedTexturesLastFrame = std::move(mUsedTexturesThisFrame);
 	mUsedTexturesThisFrame = {};
 
+	if (!mHasFrame)
+	{
+		ImGui::SetCurrentContext(old_state);
+		return;
+	}
+	
+	mHasFrame = false;
+	ImDrawData* draw_data = nullptr;
 	ImGui::Render();
-	ImDrawData* draw_data = ImGui::GetDrawData();
+	draw_data = ImGui::GetDrawData();
+	
 	if (!draw_data)
 	{
 		ImGui::SetCurrentContext(old_state);
 		return;
 	}
 
-	if (gImGuiRemoteAvailable)
-	{
-		if (mRemote && ImGui::RemoteDraw(draw_data->CmdLists, draw_data->CmdListsCount))
-		{
-			NewFrame(mApp->GetApplicationTimer().get());
-			ImGui::SetCurrentContext(old_state);
-			return;
-		}
-	}
-
 	ImGuiIO& io = ImGui::GetIO();
-
+	
 	ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer*)state->GetRenderer();
 
 	if (!StartDrawing(state))

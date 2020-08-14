@@ -17,6 +17,7 @@ class ImGuiLayer : public Abstract2DLayer
 public:
 	DECLARE_CLASS_INFO(ImGuiLayer, Abstract2DLayer, ImGui);
 	DECLARE_CONSTRUCTOR(ImGuiLayer);
+	SIGNALS(OnClickDown, OnClickUp);
 	WRAP_METHODS(UpdateKeyboard, ManageTouch, PanelValidHit);
 	
 	virtual ~ImGuiLayer();
@@ -66,7 +67,7 @@ protected:
 
 	bool mHasFrame = false;
 
-	maBool mRemote = BASE_ATTRIBUTE(Remote, true);
+	maBool mRemote = BASE_ATTRIBUTE(Remote, false);
 	maString mRemoteBindAddress = BASE_ATTRIBUTE(RemoteBindAddress, "0.0.0.0");
 	maInt mRemotePort = BASE_ATTRIBUTE(RemotePort, 7002);
 
@@ -89,6 +90,8 @@ protected:
 
 	ImFontAtlas mFontAtlas;
 
+	TouchSourceID mPosSource = TouchSourceID::Invalid;
+	TouchSourceID mClickSource = TouchSourceID::Invalid;
 	v2f mCurrentPos = {0.0f,0.0f};
 
 	v2f mStartTouchPos;

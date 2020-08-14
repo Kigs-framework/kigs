@@ -13,8 +13,18 @@ IMPLEMENT_CONSTRUCTOR(BoxCollider)
 void BoxCollider::InitModifiable()
 {
 	ParentClassType::InitModifiable();
-	myBoundingBox.Update(-(v3f)mSize / 2);
-	myBoundingBox.Update((v3f)mSize / 2);
+	myBoundingBox.Update(v3f(mOffset) - (v3f)mSize / 2);
+	myBoundingBox.Update(v3f(mOffset) + (v3f)mSize / 2);
+
+	mOffset.changeNotificationLevel(Owner);
+	mSize.changeNotificationLevel(Owner);
+}
+
+void BoxCollider::NotifyUpdate(const u32 labelid)
+{
+	myBoundingBox = BBox::PreInit{};
+	myBoundingBox.Update(v3f(mOffset) - (v3f)mSize / 2);
+	myBoundingBox.Update(v3f(mOffset) + (v3f)mSize / 2);
 }
 
 namespace

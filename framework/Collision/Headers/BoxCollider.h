@@ -11,8 +11,11 @@ public:
 	bool TestHit(Hit& hit, v3f local_origin, v3f local_direction) override;
 
 protected:
-	void	InitModifiable() override;
+	void InitModifiable() override;
+	void NotifyUpdate(const u32 labelid) override;
+
 	maVect3DF mSize = BASE_ATTRIBUTE(Size, 1, 1, 1);
+	maVect3DF mOffset = BASE_ATTRIBUTE(Offset, 0, 0, 0);
 
 	virtual bool CallLocalRayIntersection(Hit &hit, const Point3D& start, const Vector3D& dir)  const override
 	{

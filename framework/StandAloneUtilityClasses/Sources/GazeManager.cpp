@@ -1,7 +1,7 @@
 #include "GazeManager.h"
 #include "Camera.h"
 #include "ModuleInput.h"
-#include "GazeDevice.h"
+#include "SpatialInteractionDevice.h"
 
 IMPLEMENT_CLASS_INFO(GazeManager);
 
@@ -11,10 +11,10 @@ void GazeManager::GetGazeRay(Point3D& start, Vector3D& dir, Vector3D& up)
 	Camera * lGazeCam = (Camera*)(CoreModifiable*)myGazeCamera;
 	if (mUseMotionControllerAsGaze)
 	{
-		auto& touches = ModuleInput::Get()->GetGaze()->GetAllTouches();
-		if (touches.size())
+		auto& interactions = ModuleInput::Get()->GetSpatialInteraction()->GetInteractions();
+		if (interactions.size())
 		{
-			auto t = touches.begin()->second;
+			auto t = interactions.begin()->second;
 			start = t.Position;
 			dir = t.Forward;
 			up = t.Up;

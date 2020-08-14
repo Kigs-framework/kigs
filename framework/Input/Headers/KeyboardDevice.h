@@ -41,6 +41,15 @@ public:
 	inline kstl::vector<KeyEvent>&		Get_KeyUpList() { return m_KeyUpList; }
 	inline kstl::vector<KeyEvent>&		Get_KeyDownList() { return m_KeyDownList; }
 
+	inline bool IsKeyPressed(int key_id)
+	{
+		for (auto& ev : m_KeyUpList)
+		{
+			if (ev.KeyCode == key_id) return true;
+		}
+		return false;
+	}
+
 	virtual void Show() {};
 	virtual void Hide() {};
 

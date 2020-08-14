@@ -1,5 +1,5 @@
 add_library(dearimgui INTERFACE)
-target_include_directories(dearimgui INTERFACE "ExternCrossPlatformLibraries/ImGui/")
+target_include_directories(dearimgui INTERFACE "")
 
 add_library(dearimgui_sources INTERFACE)
 target_sources(dearimgui_sources 

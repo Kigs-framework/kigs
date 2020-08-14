@@ -322,15 +322,18 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 	
 	struct Sorter
 	{
-		CoreModifiable* cm;
-		float dist;
-		Hit* hit;
+		CoreModifiable* cm = nullptr;
+		double dist = DBL_MAX;
+		Hit* hit = nullptr;
+		int sorting_layer = 0;
 	};
 
-	kstl::vector<Sorter> sorter(param.toSort.size(), Sorter{nullptr, FLT_MAX, nullptr });
+	kstl::vector<Sorter> sorter(param.toSort.size(), Sorter{nullptr, DBL_MAX, nullptr, false });
 	for (auto&& hit : hits)
 	{
 		auto n = hit.HitActor;
+		if (hit.HitDistance > param.max_distance || hit.HitDistance < param.min_distance) 
+			continue;
 		while (n)
 		{
 			auto found = std::find(param.toSort.begin(), param.toSort.end(), n);
@@ -362,9 +365,17 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 			params.hits = &hits;
 			params.inout_distance = sorter[i].dist;
 			params.inout_hit = sorter[i].hit;
+			params.min_distance = param.min_distance;
+			params.max_distance = param.max_distance;
+
 			param.toSort[i]->SimpleCall("GetDistanceForInputSort", params);
+
+			if (params.inout_distance > param.max_distance || params.inout_distance < param.min_distance)
+				continue;
+
 			sorter[i].dist = params.inout_distance;
 			sorter[i].hit = params.inout_hit;
+			sorter[i].sorting_layer = params.inout_sorting_layer;
 		}
 		else
 		{
@@ -403,7 +414,7 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 		}
 	}
 
-	std::sort(sorter.begin(), sorter.end(), [](auto&& a, auto&& b) { return a.dist < b.dist; });
+	std::sort(sorter.begin(), sorter.end(), [](const Sorter& a, const Sorter& b) { return std::make_pair(a.sorting_layer, a.dist) <  std::make_pair(b.sorting_layer, b.dist); });
 
 	param.sorted.resize(param.toSort.size());
 	for (u32 i = 0; i < sorter.size(); ++i)
