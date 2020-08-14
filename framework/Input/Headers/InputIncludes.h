@@ -8,7 +8,7 @@
 #include "AccelerometerDevice.h"
 #include "GeolocationDevice.h"
 #include "GyroscopeDevice.h"
-#include "GazeDevice.h"
+#include "SpatialInteractionDevice.h"
 
 
 #endif //_INPUTINCLUDES_H_

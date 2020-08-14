@@ -8,7 +8,7 @@
 
 
 #include "MouseWUP.h"
-#include "GazeWUP.h"
+#include "SpatialInteractionDeviceWUP.h"
 #include "KeyboardWUP.h"
 
 #include <winrt/Windows.Devices.h>
@@ -38,7 +38,7 @@ void ModuleInputWUP::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	{
 		DECLARE_FULL_CLASS_INFO(core, MouseWUP, MouseDevice, ModuleInput);
 		DECLARE_FULL_CLASS_INFO(core, KeyboardWUP, KeyboardDevice, ModuleInput);
-		DECLARE_FULL_CLASS_INFO(core, GazeDeviceWUP, GazeDevice, ModuleInput);
+		DECLARE_FULL_CLASS_INFO(core, SpatialInteractionDeviceWUP, SpatialInteractionDevice, ModuleInput);
 
 		BaseInit(core, "InputWUP", params);
 		
@@ -48,7 +48,7 @@ void ModuleInputWUP::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 		{
 			if (KigsCore::GetCoreApplication()->IsHolographic())
 			{
-				SP<GazeDeviceWUP> localGaze = core->GetInstanceOf("gaze", "GazeDevice");
+				SP<SpatialInteractionDeviceWUP> localGaze = core->GetInstanceOf("spatialinteraction", "SpatialInteractionDevice");
 				localGaze->DoInputDeviceDescription();
 				addItem((CMSP&)localGaze);
 			}

@@ -122,7 +122,7 @@ bool KeywordRecognizer::InitializeSpeechRecognizer()
 void KeywordRecognizer::Update(const Timer& timer, void* addParam)
 {
 	ParentClassType::Update(timer, addParam);
-
+	
 	winrt::hstring cmd;
 	{
 		std::lock_guard<std::mutex> lk{ mLastCommandMutex };

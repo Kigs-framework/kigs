@@ -138,7 +138,7 @@ bool UIScrollable::ManageScrollEvent(ScrollEvent& scroll_event)
 	if (scroll_event.state == StateChanged)
 	{
 		//v2f currentOffset = maindir.xy*offset;
-		v2f currentOffset = scroll_event.delta.xy / (scroll_event.gaze_touch ? 8.0f : 1.0f);
+		v2f currentOffset = scroll_event.delta.xy / (scroll_event.interaction ? 8.0f : 1.0f);
 
 		if (!mVerticalScroll)
 			currentOffset.y = 0;

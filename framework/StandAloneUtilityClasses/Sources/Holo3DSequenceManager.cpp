@@ -106,13 +106,23 @@ bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, to
 	bool is_in = Intersection::IntersectRayPlane(pos, dir, planePos, planeNorm, dist);
 	if (is_in)
 	{
+		auto& l2g = mySpacialNode->GetLocalToGlobal();
+		Vector3D dist_vector = Vector3D(dist, 0, 0);
+		l2g.TransformVector(&dist_vector);
+		auto real_dist = Norm(dist_vector);
+		if (real_dist > pout.max_distance || real_dist < pout.min_distance)
+		{
+			pout.pos.x = -1;
+			pout.pos.y = -1;
+			return false;
+		}
+
 		pout.pos.xy = myCollidablePanel->ConvertHit(pos + ((float)dist*dir));
 		pout.pos.x = 1 - pout.pos.x;
 		pout.pos.y = 1 - pout.pos.y;
 		is_in = myCollidablePanel->ValidHit(pos + dir * dist);
 		if (is_in)
 		{
-			auto& l2g = mySpacialNode->GetLocalToGlobal();
 			pout.hit.HitPosition = pos + dir * dist;
 			pout.hit.HitNormal = -planeNorm;
 			l2g.TransformPoint(&pout.hit.HitPosition);
@@ -451,6 +461,30 @@ void Holo3DSequenceManager::NotifyUpdate(const unsigned int labelid)
 
 void Holo3DSequenceManager::GetDistanceForInputSort(GetDistanceForInputSortParam& params)
 {
-	// TODO 2 modes: always on front, and regular collider distance
-	params.inout_distance = -FLT_MAX;
+	params.inout_sorting_layer = myInputSortingLayer;
+	params.inout_distance = DBL_MAX;
+	if (!IsShow || !myCollidablePanel)
+		return;
+
+	v3f local_pos = params.origin;
+	Vector3D local_dir = params.direction;
+
+	Point3D		planePos;
+	Vector3D	planeNorm;
+	myCollidablePanel->GetPlane(planePos, planeNorm);
+
+	auto& inverseMatrix = mySpacialNode->GetGlobalToLocal();
+	inverseMatrix.TransformPoint(&local_pos);
+	inverseMatrix.TransformVector(&local_dir);
+
+	f64 dist = DBL_MAX;
+	if (Intersection::IntersectRayPlane(local_pos, local_dir, planePos, planeNorm, dist, myCollidablePanel.get()))
+	{
+		auto& l2g = mySpacialNode->GetLocalToGlobal();
+		Vector3D dist_vector = Vector3D(dist, 0, 0);
+		l2g.TransformVector(&dist_vector);
+		auto real_dist = Norm(dist_vector);
+		params.inout_distance = (f64)real_dist;
+	}
+
 }

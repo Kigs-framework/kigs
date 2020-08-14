@@ -252,9 +252,14 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 		myPixelSize = pixSize;
 		myWidth = image->GetWidth();
 		myHeight = image->GetHeight();
+
+		// compute ratio before delayed load and after delayed load
+		// so that texture ratio can be used just after initialization
+		ComputeRatio();
+
 		int line_size = image->GetPixelLineSize();
 
-		if (line_size != myWidth * myPixelSize)
+		if (line_size != myPow2Width * myPixelSize)
 			myCanReuseBuffer = false;
 
 		if (myPow2Buffer && !myCanReuseBuffer && !CanUseDynamicTexture(image->GetFormat()))
@@ -540,6 +545,8 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 	if (converteddata)
 		delete[] converteddata;
 
+	// compute ratio before delayed load and after delayed load
+	// so that texture ratio can be used just after initialization
 	ComputeRatio();
 
 	myCanReuseBuffer = true;

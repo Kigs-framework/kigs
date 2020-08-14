@@ -20,23 +20,8 @@
 
 IMPLEMENT_CLASS_INFO(ModuleInput)
 
-ModuleInput::ModuleInput(const kstl::string& name, CLASS_NAME_TREE_ARG) : ModuleBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myMouse(0)
-, myMultiTouch(0)
-, myJoysticks(0)
-, myKeyboard(0)
-, myAccelerometer(0)
-, myGeolocation(0)
-, myGyroscope(0)
-, myCompass(0)
-, myJoystickCount(0)
-, myTouchManager(0)
+IMPLEMENT_CONSTRUCTOR(ModuleInput)
 {
-}
-
-ModuleInput::~ModuleInput()
-{
-	delete[] myJoysticks;
 }
 
 
@@ -73,12 +58,11 @@ void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 		myMouse = (MouseDevice*)(*it).get();
 	}
 
-	instances = GetInstances("GazeDevice");
-
+	instances = GetInstances("SpatialInteractionDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myGaze= (GazeDevice*)(*it).get();
+		mySpatialInteraction = (SpatialInteractionDevice*)(*it).get();
 	}
 
 	instances = GetInstances("MultiTouchDevice");
@@ -87,7 +71,6 @@ void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 	{
 		myMultiTouch = (MultiTouchDevice*)(*it).get();
 	}
-
 
 	instances = GetInstances("AccelerometerDevice");
 	it = instances.begin();
@@ -128,17 +111,14 @@ void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 
 	if (instances.size())
 	{
-		myJoysticks = new JoystickDevice*[instances.size()];
+		myJoysticks.resize(instances.size());
 	}
-
-	myJoystickCount = instances.size();
 
 	int index = 0;
 	for (it = instances.begin(); it != instances.end(); it++)
 	{
 		myJoysticks[index++] = (JoystickDevice*)(*it).get();
 	}
-
 
 	// create TouchInputEventManager
 

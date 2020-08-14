@@ -25,7 +25,6 @@
 #include "UIVerticesInfo.h"
 #include "GLSLUIShader.h"
 #include "GLSLCutShader.h"
-#include "GLSLUINode3DShader.h"
 #include "TextureFileManager.h"
 #include "GLSLDebugDraw.h"
 // include after all other kigs include (for iOS)
@@ -582,7 +581,6 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	DECLARE_FULL_CLASS_INFO(core, API3DSkinShader, API3DSkinShader, Renderer)
 	DECLARE_FULL_CLASS_INFO(core, API3DUIShader, API3DUIShader, Renderer)
 	DECLARE_FULL_CLASS_INFO(core, API3DCutShader, API3DCutShader, Renderer)
-	DECLARE_FULL_CLASS_INFO(core, API3DUINode3DShader, API3DUINode3DShader, Renderer)
 	/*
 #ifdef WIN32
 	DECLARE_FULL_CLASS_INFO(core, API3DDeferred, API3DDeferred, Renderer)
@@ -1384,9 +1382,9 @@ void VertexBufferManager::MarkVertexAttrib()
 		if(VA.second.mUsed>0)
 			VA.second.mUsed = 0;
 	}
-
-	mAskedArrayBound = 0;
-	mAskedElemBound = 0;
+	
+	// mAskedArrayBound = 0;
+	// mAskedElemBound = 0;
 }
 
 void VertexBufferManager::Clear(bool push)

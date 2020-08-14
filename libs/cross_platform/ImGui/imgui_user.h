@@ -1,7 +1,7 @@
 #pragma once
 
-#include "kstlstring.h"
-#include "kstlvector.h"
+#include <string>
+#include <vector>
 
 namespace ImGui
 {

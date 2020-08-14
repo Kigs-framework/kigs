@@ -156,7 +156,12 @@ void App::SetWindow(CoreWindow const& window)
 		OnHolographicDisplayIsAvailableChanged(a, b);
 	});
 
-	mHolographicSpace = HolographicSpace::CreateForCoreWindow(mWindow);
+
+	auto family = AnalyticsInfo::VersionInfo().DeviceFamily();
+	
+	if(family != L"Windows.Desktop")
+		mHolographicSpace = HolographicSpace::CreateForCoreWindow(mWindow);
+
 	OnHolographicDisplayIsAvailableChanged(nullptr, nullptr); 
 	if (mHolographicSpace)
 	{

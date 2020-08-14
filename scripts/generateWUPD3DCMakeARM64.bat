@@ -13,6 +13,6 @@ IF NOT EXIST %myDir%\..\..\Build\solutionWUPD3DCMakeARM64 MKDIR %myDir%\..\..\Bu
 
 cd %myDir%\..\..\Build\solutionWUPD3DCMakeARM64
 
-%cmakeCmd% %myDir% -G"%targetName%" -A ARM64 -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10.0.18362.0 -DUNITY_BUILD=TRUE -DUSE_D3D=TRUE
+%cmakeCmd% %myDir% -G"%targetName%" -A ARM64 -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10.0.19041.0 -DUNITY_BUILD=TRUE -DUSE_D3D=TRUE
 
 PAUSE

@@ -25,11 +25,12 @@ void	CoordinateSystemUp::Init(CoreModifiable* toUpgrade)
 	mRot->changeNotificationLevel(Owner);
 
 	// check if already in auto update mode
+	/*
 	if (toUpgrade->isFlagAsAutoUpdateRegistered())
 		mWasdAutoUpdate = true;
 	else
 		KigsCore::GetCoreApplication()->AddAutoUpdate(toUpgrade);
-
+	*/
 	
 }
 
@@ -41,8 +42,10 @@ void	CoordinateSystemUp::Destroy(CoreModifiable* toDowngrade)
 	toDowngrade->RemoveDynamicAttribute("Position");
 	toDowngrade->RemoveDynamicAttribute("Rotation");
 
+	/*
 	if (!mWasdAutoUpdate)
 		KigsCore::GetCoreApplication()->RemoveAutoUpdate(toDowngrade);
+	*/
 }
 
 DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, CoordinateSystemNotifyUpdate)
@@ -52,18 +55,21 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, CoordinateSystemNotifyUpdate)
 		u32 labelID;
 		params[1]->getValue(labelID);
 		
-		if(GetUpgrador()->mScale->getLabelID() == labelID)
+		if (GetUpgrador()->mScale->getLabelID() == labelID
+			|| GetUpgrador()->mRot->getLabelID() == labelID
+			|| GetUpgrador()->mPos->getLabelID() == labelID)
 		{
-			GetUpgrador()->mWasChanged = true;
+			Point3D	rot; GetUpgrador()->mRot->getValue(rot);
+			Point3D pos; GetUpgrador()->mPos->getValue(pos);
+			float scale; GetUpgrador()->mScale->getValue(scale);
+
+			Matrix3x4 matrix;
+			matrix.SetRotationXYZ(rot.x, rot.y, rot.z);
+			matrix.PreScale(scale, scale, scale);
+			matrix.SetTranslation(pos);
+			ChangeMatrix(matrix);
 		}
-		if (GetUpgrador()->mRot->getLabelID() == labelID)
-		{
-			GetUpgrador()->mWasChanged = true;
-		}
-		if (GetUpgrador()->mPos->getLabelID() == labelID)
-		{
-			GetUpgrador()->mWasChanged = true;
-		}
+
 	}
 	return false;
 }
@@ -133,6 +139,8 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, globalMoveNode)
 
 DEFINE_UPGRADOR_UPDATE(CoordinateSystemUp)
 {
+	return;
+
 	if (GetUpgrador()->mWasChanged)
 	{
 		Point3D	rot;
@@ -152,6 +160,7 @@ DEFINE_UPGRADOR_UPDATE(CoordinateSystemUp)
 		GetUpgrador()->mWasChanged = false;
 	}
 }
+
 
 void CoordinateSystemUp::toEuler(float x,float y,float z,float angle,float& heading,float& attitude,float& bank) 
 {

@@ -6,6 +6,7 @@
 
 #include <map>
 #include <chrono>
+#include <functional>
 
 using Clock = std::chrono::high_resolution_clock;
 using TimePoint = Clock::time_point;
@@ -82,4 +83,33 @@ public:
 		last_time = t;
 		return dt;
 	}
+};
+
+struct DelayedExecutor
+{
+	template<typename F>
+	void ExecuteIn(F&& func, Duration d)
+	{
+		mFunc = FWD(func);
+		mExecuteTime = TimePoint::clock::now() + d;
+	}
+	void Cancel()
+	{
+		mFunc = {};
+	}
+	bool IsActive() const { return (bool)mFunc; }
+	void Update()
+	{
+		if (mFunc)
+		{
+			if (TimePoint::clock::now() >= mExecuteTime)
+			{
+				mFunc();
+				mFunc = {};
+			}
+		}
+	}
+private:
+	std::function<void()> mFunc;
+	TimePoint mExecuteTime;
 };
