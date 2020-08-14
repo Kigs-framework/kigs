@@ -179,6 +179,11 @@ public:
 
 	bool IsHolographic() { return myIsStereo; }
 
+	/**
+	* \brief	convert touch pos in local "touch support" coordinates
+	* \fn 		bool GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout);
+	* Convert posin : "global touch coordinates" to pout : local "touch support" coordinates
+	*/
 	bool GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout);
 
 	bool IsValidTouchSupport(Vector3D posin);
@@ -197,11 +202,11 @@ protected:
 	bool myIsInit;
 
 	//! size of a pixel in bit
-	maInt myBitsPerPixel;
+	maInt mBitsPerPixel;
 	//! size of the Z value in bit
-	maInt myBitsPerZ;
+	maInt mBitsPerZ;
 
-	maInt myBitsForStencil;
+	maInt mBitsForStencil;
 
 	//!  size of the screen on x axis
 	maUInt mySizeX;

@@ -18,6 +18,7 @@ PassiveColoredMask::PassiveColoredMask(const kstl::string& name,CLASS_NAME_TREE_
 	myIsMouseOver = false;
 	myPixelArray = nullptr;
 	myPixelMaskArray = nullptr;
+	myOriginalPixelArray = nullptr;
 }
 
 PassiveColoredMask::~PassiveColoredMask()

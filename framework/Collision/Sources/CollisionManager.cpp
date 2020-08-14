@@ -36,7 +36,8 @@ IMPLEMENT_CONSTRUCTOR(CollisionManager)
 CollisionManager::~CollisionManager()
 {
 	mContinueWork = false;
-	mWorkThread.join();
+	if(mWorkThread.joinable())
+		mWorkThread.join();
 	KigsCore::Instance()->GetInstanceFactory()->removeModifiableCallback("AddItem", this, "OnAddItemCallback");
 }
 

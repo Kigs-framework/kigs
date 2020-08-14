@@ -522,7 +522,7 @@ bool DX11RenderingScreen::CreateResources()
 		depth_stencil_view_format = DXGI_FORMAT_D16_UNORM;
 	}
 
-	if (myBitsForStencil > 0)
+	if (mBitsForStencil > 0)
 	{
 		depth_stencil_format = DXGI_FORMAT_R24G8_TYPELESS;
 		depth_stencil_view_format = DXGI_FORMAT_D24_UNORM_S8_UINT;

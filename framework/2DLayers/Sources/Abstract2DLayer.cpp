@@ -24,8 +24,8 @@ IMPLEMENT_CLASS_INFO(Abstract2DLayer);
 ///////////////////////////////////////////
 Abstract2DLayer::Abstract2DLayer(const kstl::string& name, CLASS_NAME_TREE_ARG)
 	: Scene3D(name, PASS_CLASS_NAME_TREE_ARG)
-	, myRenderingScreen(*this, true, LABEL_AND_ID(RenderingScreen))
-	, myManager(*this, true, LABEL_AND_ID(SequenceManager), "DataDrivenSequenceManager:AppSequenceManager") // default is app
+	, mRenderingScreen(*this, true, LABEL_AND_ID(RenderingScreen))
+	, mManager(*this, true, LABEL_AND_ID(SequenceManager), "DataDrivenSequenceManager:AppSequenceManager") // default is app
 	, mySizeX(*this, false, LABEL_AND_ID(SizeX), -1)
 	, mySizeY(*this, false, LABEL_AND_ID(SizeY), -1)
 	, myIsInteractive(*this, false, LABEL_AND_ID(IsInteractive), true)
@@ -38,7 +38,7 @@ void Abstract2DLayer::InitModifiable()
 	if (IsInit())
 	{
 		// uninit CoreModifiable if the RenderingScreen ref is not valid
-		if (((CoreModifiable*)myRenderingScreen) == 0)
+		if (((CoreModifiable*)mRenderingScreen) == 0)
 		{
 			UninitModifiable();
 			return;

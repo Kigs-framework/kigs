@@ -618,7 +618,7 @@ void ImGuiLayer::TravDraw(TravState* state)
 
 	auto holo_before = state->GetHolographicMode();
 
-	state->SetHolographicMode(myRenderingScreen->as<RenderingScreen>()->IsHolographic());
+	state->SetHolographicMode(mRenderingScreen->as<RenderingScreen>()->IsHolographic());
 	state->HolographicUseStackMatrix = true;
 
 	//state->SetCurrentDrawablePass(0);
