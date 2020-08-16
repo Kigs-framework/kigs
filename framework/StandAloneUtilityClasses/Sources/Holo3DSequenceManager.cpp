@@ -311,14 +311,14 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 
 		if (ForceInFront)
 		{
-			pos = camPos + (myDistance*followCam->GetGlobalViewVector());
+			pos = camPos + (myDistance * (followCam->GetGlobalViewVector() + myTargetOffset[0]*followCam->GetGlobalRightVector() + myTargetOffset[1] * followCam->GetGlobalUpVector()));
 			myCurrentVelocity = 0.0f;
 			ForceInFront = false;
 			NeedRecomputePosition = true;
 		}
 		else if (!myUseFixedPosition)
 		{
-			Vector3D targetPos = camPos + (myDistance*followCam->GetGlobalViewVector());
+			Vector3D targetPos = camPos + (myDistance * (followCam->GetGlobalViewVector() + myTargetOffset[0] * followCam->GetGlobalRightVector() + myTargetOffset[1] * followCam->GetGlobalUpVector()));
 			DRAWSPHERE(nodePos, Vector3D(0, 255, 255), 0.01);
 
 			Vector3D dir = (targetPos - nodePos);

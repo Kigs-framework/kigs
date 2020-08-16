@@ -71,6 +71,9 @@ protected:
 	maBool myKeepDistance = BASE_ATTRIBUTE(KeepDistance, true);
 	maFloat myDistance = BASE_ATTRIBUTE(Distance, 1);
 
+	// Offset is calculated as follow : (myTargetOffset.x*CameraRight + myTargetOffset.y*CameraUp)*myDistance
+	maVect2DF myTargetOffset = BASE_ATTRIBUTE(TargetOffset, 0, 0);
+
 	maFloat myDeltaDist = BASE_ATTRIBUTE(DeltaDist, 1);
 	maFloat myMaxVelocity = BASE_ATTRIBUTE(MaxVelocity, 1);
 
