@@ -5,6 +5,17 @@
 #include "maUSString.h"
 #include "Texture.h"
 
+// ****************************************
+// * UISlider class
+// * --------------------------------------
+/**
+* \file	UISlider.h
+* \class	UISlider
+* \ingroup 2DLayers
+* \brief	Manage a slider.
+*/
+// ****************************************
+
 class UISlider : public UIDrawableItem
 {
 public:
@@ -19,14 +30,14 @@ public:
 
 	Texture*		GetTexture();
 	void			ChangeTexture(kstl::string texturename, kstl::string overtexturename = "", kstl::string downtexturename = "");
-	bool			isPressed() const { return myIsDown; }
-	void			ForcedChangeState(bool isdown) { myIsDown = isdown; }
+	bool			isPressed() const { return mIsDown; }
+	void			ForcedChangeState(bool isdown) { mIsDown = isdown; }
 	void			ForcedRatio(unsigned int value);
 	void			ResetSlider();
-	int				Get_CurrentRatio() const { return myCurrentRatio; }
-	void			Set_CurrentRatio(int ratio) { myCurrentRatio = ratio; }
-	int				Get_InitialRatio() const { return myInitialRatio; }
-	int				Get_Multiplier() { return 100 / myInitialRatio; }
+	int				Get_CurrentRatio() const { return mCurrentRatio; }
+	void			Set_CurrentRatio(int ratio) { mCurrentRatio = ratio; }
+	int				Get_InitialRatio() const { return mInitialRatio; }
+	int				Get_Multiplier() { return 100 / mInitialRatio; }
 	void			ReloadTexture();
 
 protected:
@@ -38,27 +49,27 @@ protected:
 	//bool TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
 	bool isAlpha(float X, float Y)override;
 
-	bool				myIsDown;
-	bool				myIsMouseOver;
+	bool				mIsDown;
+	bool				mIsMouseOver;
 
-	SmartPointer<Texture>	myUpTexture;
-	SmartPointer<Texture>	myDownTexture;
-	SmartPointer<Texture>	myOverTexture;
+	SmartPointer<Texture>	mUpTexturePointer;
+	SmartPointer<Texture>	mDownTexturePointer;
+	SmartPointer<Texture>	mOverTexturePointer;
 
-	maString			myUpTextureName;
-	maString			myDownTextureName;
-	maString			myOverTextureName;
-	maString			myClickUpAction;
-	maUSString			myParameter;
-	maString			myMoveAction;
-	maInt				myInitialRatio;
+	maString			mUpTexture;
+	maString			mDownTexture;
+	maString			mOverTexture;
+	maString			mClickUpAction;
+	maUSString			mParameter;
+	maString			mMoveAction;
+	maInt				mInitialRatio;
 
 	//! Direction of Slider "Vertical" or "Horizontal")
-	maEnum<2>			myDirection;
-	int					myInitialPosX;
-	int					myInitialPosY;
-	int					mySlideLength;
-	int					myCurrentRatio;
+	maEnum<2>			mDirection;
+	int					mInitialPosX;
+	int					mInitialPosY;
+	int					mSlideLength;
+	int					mCurrentRatio;
 };
 
 #endif

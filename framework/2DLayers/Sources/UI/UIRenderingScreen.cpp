@@ -29,22 +29,22 @@ void	UIRenderingScreen::InitModifiable()
 
 	if (IsInit())
 	{
-		CoreModifiable* rs = (CoreModifiable*)myRenderingScreen;
+		CoreModifiable* rs = (CoreModifiable*)mRenderingScreen;
 		if (rs)
 		{
 			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
-			myTexture = rs->as<RenderingScreen>()->GetFBOTexture();
-			myTexture->setValue("TransparencyType",2);
-			myTexture->setValue("ForceNearest", (bool)myForceNearest);
-			myForceNearest.changeNotificationLevel(Owner);
+			mTexturePointer = rs->as<RenderingScreen>()->GetFBOTexture();
+			mTexturePointer->setValue("TransparencyType",2);
+			mTexturePointer->setValue("ForceNearest", (bool)mForceNearest);
+			mForceNearest.changeNotificationLevel(Owner);
 
 			kfloat sx, sy;
 
-			myTexture->GetSize(sx, sy);
+			mTexturePointer->GetSize(sx, sy);
 
 			kfloat ratioX, ratioY;
-			myTexture->GetRatio(ratioX, ratioY);
+			mTexturePointer->GetRatio(ratioX, ratioY);
 
 			kfloat dx = 0.5f / sx;
 			kfloat dy = 0.5f / sy;
@@ -60,15 +60,15 @@ void	UIRenderingScreen::InitModifiable()
 
 			mVI.Flag |= UIVerticesInfo_Texture;
 
-			//myTexture->Init();
+			//mTexturePointer->Init();
 
 			// declare as a touch support potential target 
 			// search parent rendering screen
 		
-			mybIsTouchable.changeNotificationLevel(Owner);
+			mIsTouchable.changeNotificationLevel(Owner);
 
 			// Inputs
-			if (mybIsTouchable)
+			if (mIsTouchable)
 			{
 				CoreModifiable* layerRenderingScreen;
 				parent2DLayer->getValue("RenderingScreen", layerRenderingScreen);
@@ -77,7 +77,7 @@ void	UIRenderingScreen::InitModifiable()
 				theInputModule->getTouchManager()->addTouchSupport(this, layerRenderingScreen);
 
 				// add offscreen rendering screen as touch support with this as parent
-				theInputModule->getTouchManager()->addTouchSupport(myRenderingScreen, this);
+				theInputModule->getTouchManager()->addTouchSupport(mRenderingScreen, this);
 			}
 		}
 	}
@@ -86,10 +86,10 @@ void	UIRenderingScreen::InitModifiable()
 void UIRenderingScreen::NotifyUpdate(unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
-	if (labelid == mybIsTouchable.getID())
+	if (labelid == mIsTouchable.getID())
 	{
 		ModuleInput* theInputModule = KigsCore::GetModule<ModuleInput>();
-		if (!mybIsTouchable)
+		if (!mIsTouchable)
 		{
 			theInputModule->getTouchManager()->removeTouchSupport(this);
 		}
@@ -103,13 +103,13 @@ void UIRenderingScreen::NotifyUpdate(unsigned int labelid)
 				parent2DLayer->getValue("RenderingScreen", layerRenderingScreen);
 				theInputModule->getTouchManager()->addTouchSupport(this, layerRenderingScreen);
 				// add offscreen rendering screen as touch support with this as parent
-				theInputModule->getTouchManager()->addTouchSupport(myRenderingScreen, this);
+				theInputModule->getTouchManager()->addTouchSupport(mRenderingScreen, this);
 			}
 		}
 	}
-	else if (labelid == myForceNearest.getID())
+	else if (labelid == mForceNearest.getID())
 	{
-		myTexture->setValue("ForceNearest", (bool)myForceNearest);
+		mTexturePointer->setValue("ForceNearest", (bool)mForceNearest);
 	}
 }
 

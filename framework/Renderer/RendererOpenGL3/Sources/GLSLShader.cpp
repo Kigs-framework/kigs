@@ -176,7 +176,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		if (pathManager)
 		{
 			SmartPointer<FileHandle> file = pathManager->FindFullName(filename);
-			fullfilename = file->myFullFileName;
+			fullfilename = file->mFullFileName;
 		}
 		u64 length;
 		rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length,1);
@@ -213,7 +213,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		if (pathManager)
 		{
 			SmartPointer<FileHandle> file = pathManager->FindFullName(filename);
-			fullfilename = file->myFullFileName;
+			fullfilename = file->mFullFileName;
 		}
 		u64 length;
 		rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length,1);
@@ -421,9 +421,9 @@ void	API3DShader::DoPreDraw(TravState* state)
 
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
-			if ((*it).myItem->isUserFlagSet(UserFlagDrawable))
+			if ((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
+				SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
 				drawable->CheckPreDraw(state);
 			}
 		}
@@ -441,9 +441,9 @@ void	API3DShader::DoPostDraw(TravState* state)
 
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
-			if ((*it).myItem->isUserFlagSet(UserFlagDrawable))
+			if ((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
+				SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
 				drawable->CheckPostDraw(state);
 			}
 		}

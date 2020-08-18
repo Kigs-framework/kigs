@@ -65,7 +65,7 @@ bool	Material::Equal(const CoreModifiable& other)
 		return false;
 	for (size_t i = 0; i < getItems().size(); i++)
 	{
-		if (!(getItems()[i]).myItem->Equal(*((other.getItems()[i]).myItem.get())))
+		if (!(getItems()[i]).mItem->Equal(*((other.getItems()[i]).mItem.get())))
 			return false;
 	}
 	return true;

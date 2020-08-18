@@ -751,7 +751,7 @@ bool			ModernMeshBuilder::areEqual(void* v1, void* v2)
 	return (memcmp(v1, v2, myCurrentVertexSize) == 0);
 }
 
-// convert from full float format in entry to compressed output
+// convert from full float format in mEntry to compressed output
 void* ModernMeshBuilder::convert(void* v)
 {
 	unsigned char* result = myOneVertexData;

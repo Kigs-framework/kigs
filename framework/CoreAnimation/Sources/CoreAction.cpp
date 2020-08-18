@@ -19,15 +19,15 @@ CoreModifiable*	CoreAction::checkSubTarget(kstl::string& paramstring)
 		found -= 1;
 		kstl::string CoreModifiablePath = paramstring.substr(0, found);
 		paramstring = paramstring.substr(found + 2, paramstring.length() - found - 2);
-		CMSP findTarget = myTarget->GetInstanceByPath(CoreModifiablePath);
+		CMSP findTarget = mTarget->GetInstanceByPath(CoreModifiablePath);
 		if (findTarget)
 		{
 			return findTarget.get();
 		}
 
-		myTargetPath = CoreModifiablePath;
+		mTargetPath = CoreModifiablePath;
 	}
-	return myTarget;
+	return mTarget;
 }
 
 
@@ -35,7 +35,7 @@ CoreModifiable*	CoreAction::checkSubTarget(kstl::string& paramstring)
 bool	CoreAction::update(kdouble time)
 {
 	bool	finished=false;
-	if(myStartTime<0.0)
+	if(mStartTime<0.0)
 	{
 		KIGS_ERROR("Action update called before start\n",1);
 		return true;
@@ -44,11 +44,11 @@ bool	CoreAction::update(kdouble time)
 	if(!isDone())
 	{
 		// if out of duration, clamp time to the end
-		if(myDuration>=0.0)
+		if(mDuration>=0.0)
 		{
-			if((time - myStartTime)>=myDuration)
+			if((time - mStartTime)>=mDuration)
 			{
-				time=myStartTime+myDuration;
+				time=mStartTime+mDuration;
 				finished=true;
 			}
 		}
@@ -58,9 +58,9 @@ bool	CoreAction::update(kdouble time)
 		if(finished)
 		{
 			// if finished and duration was not set, set duration according to current time
-			if(myDuration<0.0)
+			if(mDuration<0.0)
 			{
-				myDuration=time-myStartTime;
+				mDuration=time-mStartTime;
 			}
 			setIsDone();
 		}
@@ -74,7 +74,7 @@ bool	CoreAction::update(kdouble time)
 
 void CoreActionWait::init(CoreSequence* sequence,CoreVector* params)
 {
-	myTarget=sequence->getTarget();
+	mTarget=sequence->getTarget();
 #ifdef _DEBUG // test parameters count
 	// kdouble duration,kfloat vStart,kfloat vEnd,unsigned int paramID => 4 params
 	if(!(params->size() == 1))
@@ -84,6 +84,6 @@ void CoreActionWait::init(CoreSequence* sequence,CoreVector* params)
 #endif
 	float readfloat;
 	(*params)[0]->getValue(readfloat);
-	myDuration=readfloat;
+	mDuration=readfloat;
 }
 

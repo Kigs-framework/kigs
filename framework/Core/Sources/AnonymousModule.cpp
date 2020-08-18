@@ -16,7 +16,7 @@ IMPLEMENT_CLASS_INFO(AnonymousModule)
 //! constructor just call ModuleBase constructor
 AnonymousModule::AnonymousModule(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
-	myDynamicModule=0;
+	mDynamicModule=0;
 }
 
 //! destructor do nothing
@@ -27,7 +27,7 @@ AnonymousModule::~AnonymousModule()
 //! init : load associated dll and call the ModuleInit method
 void AnonymousModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
-	myCore=core;
+	mCore=core;
 	KigsCore::ModuleInit(core,this);
 
 	auto& pathManager = KigsCore::Singleton<FilePathManager>();
@@ -40,7 +40,7 @@ void AnonymousModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttr
 		fullfilenamehandle = pathManager->FindFullName(getName());
 		if (fullfilenamehandle)
 		{
-			fullfilename = fullfilenamehandle->myFullFileName;
+			fullfilename = fullfilenamehandle->mFullFileName;
 		}
 		else
 		{
@@ -54,9 +54,9 @@ void AnonymousModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttr
 
 	if(handle)
 	{
-		myDllInitFunc ImpFuncDLL;
+		mDllInitFunc ImpFuncDLL;
 
-		ImpFuncDLL =(myDllInitFunc) GetProcAddress(handle, "ModuleInit");
+		ImpFuncDLL =(mDllInitFunc) GetProcAddress(handle, "ModuleInit");
 
 		if (ImpFuncDLL)
 		{
@@ -64,11 +64,11 @@ void AnonymousModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttr
 			toAdd.myHandle=(void*)handle;
 			toAdd.myInstance=ImpFuncDLL(core,params); 
 
-			myDynamicModuleList.push_back(toAdd);
+			mDynamicModuleList.push_back(toAdd);
 			
-			if(myDynamicModule == 0)
+			if(mDynamicModule == 0)
 			{
-				myDynamicModule=toAdd.myInstance;
+				mDynamicModule=toAdd.myInstance;
 			}
 		}
 		else
@@ -89,7 +89,7 @@ void AnonymousModule::Close()
 #ifdef WIN32
 	// free library before calling base class
 	kstl::vector<DynamicModuleHandleAndPointer>::iterator it;
-	for (it = myDynamicModuleList.begin(); it != myDynamicModuleList.end(); ++it)
+	for (it = mDynamicModuleList.begin(); it != mDynamicModuleList.end(); ++it)
 	{
 		FreeLibrary((HINSTANCE)(*it).myHandle);
 	}

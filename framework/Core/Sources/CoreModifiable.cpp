@@ -39,8 +39,8 @@
 #include "CorePackage.h"
 
 #ifdef KIGS_TOOLS
-#define TRACEREF_RETAIN  kigsprintf("+++ REF ON %p (%s) (%03d>%03d) \n",this, getExactTypeID()._id_name.c_str(), (int)myRefCounter-1, (int)myRefCounter);
-#define TRACEREF_RELEASE kigsprintf("--- REF ON %p (%s) (%03d>%03d) \n",this, getExactTypeID()._id_name.c_str(), (int)myRefCounter, (int)myRefCounter-1);
+#define TRACEREF_RETAIN  kigsprintf("+++ REF ON %p (%s) (%03d>%03d) \n",this, getExactTypeID()._id_name.c_str(), (int)mRefCounter-1, (int)mRefCounter);
+#define TRACEREF_RELEASE kigsprintf("--- REF ON %p (%s) (%03d>%03d) \n",this, getExactTypeID()._id_name.c_str(), (int)mRefCounter, (int)mRefCounter-1);
 #define TRACEREF_DELETE  kigsprintf("### REF ON %p (%s)\n",this, getExactTypeID()._id_name.c_str());
 #else
 #define TRACEREF_RETAIN
@@ -48,7 +48,7 @@
 #define TRACEREF_DELETE
 #endif
 
-std::atomic<unsigned int> CoreModifiable::myUIDCounter{ 0 };
+std::atomic<unsigned int> CoreModifiable::mUIDCounter{ 0 };
 
 //! auto implement static members
 IMPLEMENT_CLASS_INFO(CoreModifiable);
@@ -73,21 +73,15 @@ CoreModifiable::~CoreModifiable()
 	// delete dynamics
 	DeleteDynamicAttributes();
 
-	_items.clear();
+	mItems.clear();
 	//_itemsLinkType.clear();
 
 	if (mLazyContent)
 		delete mLazyContent;
 	
-	_attributes.clear();
-	_users.clear();
-#ifdef USE_LINK_TYPE
-	if (myLinkType)
-	{
-		myLinkType->clear();
-		delete myLinkType;
-	}
-#endif
+	mAttributes.clear();
+	mUsers.clear();
+
 
 
 #ifdef KEEP_XML_DOCUMENT
@@ -114,15 +108,15 @@ void CoreModifiable::RegisterToCore()
 	CoreTreeNode* type_node = KigsCore::GetTypeNode(cid);
 	KIGS_ASSERT(type_node != nullptr);
 	type_node->AddInstance(this);
-	myTypeNode = type_node;
+	mTypeNode = type_node;
 }
 
 void CoreModifiable::setName(const std::string& name)
 {
-	if (myTypeNode) myTypeNode->RemoveInstance(this);
-	myName = name;
-	myNameID = myName;
-	if (myTypeNode) myTypeNode->AddInstance(this);
+	if (mTypeNode) mTypeNode->RemoveInstance(this);
+	mName = name;
+	mNameID = mName;
+	if (mTypeNode) mTypeNode->AddInstance(this);
 }
 
 CoreModifiable*	CoreModifiable::getAggregateByType(KigsID id)
@@ -133,18 +127,18 @@ CoreModifiable*	CoreModifiable::getAggregateByType(KigsID id)
 	}
 	if (isFlagAsAggregateParent())
 	{	
-		std::vector<ModifiableItemStruct>::const_iterator	itc = _items.begin();
-		std::vector<ModifiableItemStruct>::const_iterator	ite = _items.end();
+		std::vector<ModifiableItemStruct>::const_iterator	itc = mItems.begin();
+		std::vector<ModifiableItemStruct>::const_iterator	ite = mItems.end();
 
 		while (itc != ite)
 		{
 			if ((*itc).isAggregate()) // if aggregate is same type as asked
 			{
-				if ((*itc).myItem->isSubType(id))
+				if ((*itc).mItem->isSubType(id))
 				{
-					return (CoreModifiable*)(*itc).myItem.get();
+					return (CoreModifiable*)(*itc).mItem.get();
 				}
-				CoreModifiable* found = (*itc).myItem->getAggregateByType(id);
+				CoreModifiable* found = (*itc).mItem->getAggregateByType(id);
 				if (found)
 				{
 					return found;
@@ -167,8 +161,8 @@ CoreModifiable*	CoreModifiable::getAggregateRoot() const
 		if (returnedVal->isFlagAsAggregateSon()) // if not flag as aggregate son, don't go to parent
 		{
 
-			std::vector<CoreModifiable*>::const_iterator itpc = returnedVal->_users.begin();
-			std::vector<CoreModifiable*>::const_iterator itpe = returnedVal->_users.end();
+			std::vector<CoreModifiable*>::const_iterator itpc = returnedVal->mUsers.begin();
+			std::vector<CoreModifiable*>::const_iterator itpe = returnedVal->mUsers.end();
 
 			while (itpc != itpe)
 			{
@@ -177,14 +171,14 @@ CoreModifiable*	CoreModifiable::getAggregateRoot() const
 					CoreModifiable* currentAggregate = (*itpc);
 
 					// just check that returnedVal is the searched aggregate
-					std::vector<ModifiableItemStruct>::const_iterator	itc = currentAggregate->_items.begin();
-					std::vector<ModifiableItemStruct>::const_iterator	ite = currentAggregate->_items.end();
+					std::vector<ModifiableItemStruct>::const_iterator	itc = currentAggregate->mItems.begin();
+					std::vector<ModifiableItemStruct>::const_iterator	ite = currentAggregate->mItems.end();
 
 					while (itc != ite)
 					{
 						if ((*itc).isAggregate()) // if aggregate is same type as asked
 						{
-							if ((*itc).myItem == returnedVal)
+							if ((*itc).mItem == returnedVal)
 							{
 								found = currentAggregate;
 								returnedVal = currentAggregate;
@@ -208,7 +202,7 @@ CoreModifiable*	CoreModifiable::getAggregateRoot() const
 
 const kigs::unordered_map<KigsID, ModifiableMethodStruct>* CoreModifiable::GetMethods() 
 { 
-	if (!mLazyContent) return nullptr; return &GetLazyContent()->Methods; 
+	if (!mLazyContent) return nullptr; return &GetLazyContent()->mMethods; 
 }
 
 bool CoreModifiable::HasMethod(const KigsID& methodNameID) const
@@ -227,19 +221,19 @@ void CoreModifiable::InsertMethod(KigsID labelID, CoreModifiable::ModifiableMeth
 #ifdef KIGS_TOOLS
 	toAdd.xmlattr = xmlattr;
 #endif
-	GetLazyContent()->Methods.insert({ labelID, toAdd });
+	GetLazyContent()->mMethods.insert({ labelID, toAdd });
 }
 
 void CoreModifiable::InsertUpgradeMethod(KigsID labelID, CoreModifiable::ModifiableMethod method, UpgradorBase* up)
 {
 	ModifiableMethodStruct toAdd("", method, up);
-	GetLazyContent()->Methods.insert({ labelID, toAdd });
+	GetLazyContent()->mMethods.insert({ labelID, toAdd });
 }
 
 void CoreModifiable::RemoveMethod(KigsID labelID)
 {
 	if (!mLazyContent) return;
-	auto& methods = GetLazyContent()->Methods;
+	auto& methods = GetLazyContent()->mMethods;
 	auto foundmethod = methods.find(labelID);
 	if (foundmethod != methods.end())
 	{
@@ -268,8 +262,8 @@ void CoreModifiable::debugPrintfClassList(const std::string& className, s32 maxi
 void CoreModifiable::Upgrade(UpgradorBase* toAdd)
 {
 	LazyContent* c = GetLazyContent();
-	toAdd->myNextUpgrador = c->myUpgrador;
-	c->myUpgrador = toAdd;
+	toAdd->myNextUpgrador = c->mUpgradors;
+	c->mUpgradors = toAdd;
 	toAdd->UpgradeInstance(this);
 }
 
@@ -277,7 +271,7 @@ UpgradorBase* CoreModifiable::GetUpgrador()
 {
 	if (mLazyContent)
 	{
-		return mLazyContent->myUpgrador;
+		return mLazyContent->mUpgradors;
 	}
 	return nullptr;
 }
@@ -294,19 +288,19 @@ void CoreModifiable::debugPrintfTree(s32 indent, s32 maxindent)
 		kigsprintf("|\t");
 	
 #ifdef KEEP_NAME_AS_STRING
-	kigsprintf("%s : %s(%p) %d refs %s items:%d\n", getExactType().c_str(), getName().c_str(), this, (int)myRefCounter, IsInit() ? "" : "Not init!!", (s32)getItems().size());
+	kigsprintf("%s : %s(%p) %d refs %s items:%d\n", getExactType().c_str(), getName().c_str(), this, (int)mRefCounter, IsInit() ? "" : "Not init!!", (s32)getItems().size());
 #else
-	kigsprintf("%d : %s(%p) %d refs %s items:%d\n", (u32)getExactType().toUInt(), getName().c_str(), this, (int)myRefCounter, IsInit()?"": "Not init!!", (s32)getItems().size());
+	kigsprintf("%d : %s(%p) %d refs %s items:%d\n", (u32)getExactType().toUInt(), getName().c_str(), this, (int)mRefCounter, IsInit()?"": "Not init!!", (s32)getItems().size());
 #endif
 	
 	if(indent+1>maxindent)
 		return;
 	
-	std::vector<ModifiableItemStruct>::iterator it=_items.begin();
-	std::vector<ModifiableItemStruct>::iterator end=_items.end();
+	std::vector<ModifiableItemStruct>::iterator it=mItems.begin();
+	std::vector<ModifiableItemStruct>::iterator end=mItems.end();
 	for(; it!=end; ++it)
 	{
-		((*it).myItem)->debugPrintfTree(indent+1, maxindent);
+		((*it).mItem)->debugPrintfTree(indent+1, maxindent);
 	}
 }
 
@@ -328,17 +322,17 @@ void CoreModifiable::InitModifiable()
 	
 #ifdef KIGS_TOOLS
 	if (getAttribute("TRACE"))
-		myTraceRef = true;
+		mTraceRef = true;
 	
 #endif
 	
 	
 	//	std::map<std::string,CoreModifiableAttribute*>::iterator it;
-	auto it = _attributes.begin();
+	auto it = mAttributes.begin();
 	if(!getAttribute("NoRecursiveUpdateFromParent"))
-		_ModifiableFlag |= (u32)RecursiveUpdateFlag;
+		mModifiableFlag |= (u32)RecursiveUpdateFlag;
 	
-	for(;it!=_attributes.end();++it)
+	for(;it!=mAttributes.end();++it)
 	{
 		CoreModifiableAttribute* attribute=(*it).second;
 		
@@ -348,7 +342,7 @@ void CoreModifiable::InitModifiable()
 		}
 	}
 	
-	_ModifiableFlag|=(u32)InitFlag;
+	mModifiableFlag|=(u32)InitFlag;
 }
 
 //! called when InitModifiable has failled : reset read/write flag on all init params
@@ -362,8 +356,8 @@ void CoreModifiable::UninitModifiable()
 	
 	EmitSignal(Signals::Uninit, this);
 	
-	auto it = _attributes.begin();
-	for(;it!=_attributes.end();++it)
+	auto it = mAttributes.begin();
+	for(;it!=mAttributes.end();++it)
 	{
 		CoreModifiableAttribute* attribute=(*it).second;
 		
@@ -373,7 +367,7 @@ void CoreModifiable::UninitModifiable()
 		}
 	}
 	
-	_ModifiableFlag&=0xFFFFFFFF^(u32)InitFlag;
+	mModifiableFlag&=0xFFFFFFFF^(u32)InitFlag;
 }
 
 void CoreModifiable::RecursiveInit(bool a_childInFirst)
@@ -389,7 +383,7 @@ void CoreModifiable::RecursiveInit(bool a_childInFirst)
 			
 			while (L_ItStart != L_ItEnd)
 			{
-				(*L_ItStart).myItem->RecursiveInit(a_childInFirst);
+				(*L_ItStart).mItem->RecursiveInit(a_childInFirst);
 				L_ItStart++;
 			}
 		}
@@ -411,7 +405,7 @@ void CoreModifiable::RecursiveInit(bool a_childInFirst)
 			
 			while (L_ItStart != L_ItEnd)
 			{
-				(*L_ItStart).myItem->RecursiveInit(a_childInFirst);
+				(*L_ItStart).mItem->RecursiveInit(a_childInFirst);
 				L_ItStart++;
 			}
 		}
@@ -425,7 +419,7 @@ const ModifiableMethodStruct* CoreModifiable::findMethod(const KigsID& id, const
 	// first check on this
 	if (mLazyContent)
 	{
-		auto& methods = GetLazyContent()->Methods;
+		auto& methods = GetLazyContent()->mMethods;
 		auto it = methods.find(id);
 		if (it != methods.end())
 		{
@@ -434,10 +428,10 @@ const ModifiableMethodStruct* CoreModifiable::findMethod(const KigsID& id, const
 		}
 	}
 
-	if (myTypeNode)
+	if (mTypeNode)
 	{
-		auto it = myTypeNode->myMethods.find(id);
-		if (it != myTypeNode->myMethods.end())
+		auto it = mTypeNode->mMethods.find(id);
+		if (it != mTypeNode->mMethods.end())
 		{
 			localthis = this;
 			return &it->second;
@@ -456,7 +450,7 @@ const ModifiableMethodStruct* CoreModifiable::recursivefindMethod(const KigsID& 
 {
 	if (mLazyContent)
 	{
-		auto& methods = GetLazyContent()->Methods;
+		auto& methods = GetLazyContent()->mMethods;
 		auto it = methods.find(id);
 		if (it != methods.end())
 		{
@@ -465,10 +459,10 @@ const ModifiableMethodStruct* CoreModifiable::recursivefindMethod(const KigsID& 
 		}
 	}
 
-	if (myTypeNode)
+	if (mTypeNode)
 	{
-		auto it = myTypeNode->myMethods.find(id);
-		if (it != myTypeNode->myMethods.end())
+		auto it = mTypeNode->mMethods.find(id);
+		if (it != mTypeNode->mMethods.end())
 		{
 			localthis = this;
 			return &it->second;
@@ -477,14 +471,14 @@ const ModifiableMethodStruct* CoreModifiable::recursivefindMethod(const KigsID& 
 
 	if (isFlagAsAggregateParent()) // search if other aggregates
 	{
-		std::vector<ModifiableItemStruct>::const_iterator	itc = _items.begin();
-		std::vector<ModifiableItemStruct>::const_iterator	ite = _items.end();
+		std::vector<ModifiableItemStruct>::const_iterator	itc = mItems.begin();
+		std::vector<ModifiableItemStruct>::const_iterator	ite = mItems.end();
 
 		while (itc != ite)
 		{
 			if ((*itc).isAggregate())
 			{
-				auto found = (*itc).myItem->recursivefindMethod(id, localthis);
+				auto found = (*itc).mItem->recursivefindMethod(id, localthis);
 				if (found != 0)
 				{
 					return found;
@@ -502,13 +496,13 @@ bool CoreModifiable::aggregateWith(CMSP& item, ItemPosition pos)
 	{
 		if (pos == First)
 		{
-			_items[0].setAggregate();
-			_items[0].myItem->flagAsAggregateSon();
+			mItems[0].setAggregate();
+			mItems[0].mItem->flagAsAggregateSon();
 		}
 		else
 		{
-			_items[_items.size() - 1].setAggregate();
-			_items[_items.size() - 1].myItem->flagAsAggregateSon();
+			mItems[mItems.size() - 1].setAggregate();
+			mItems[mItems.size() - 1].mItem->flagAsAggregateSon();
 		}
 
 		flagAsAggregateParent();
@@ -534,8 +528,8 @@ bool CoreModifiable::removeAggregateWith(CMSP& item)
 		}
 		if (isFlagAsAggregateParent()) // search if other aggregates
 		{
-			std::vector<ModifiableItemStruct>::const_iterator	itc = _items.begin();
-			std::vector<ModifiableItemStruct>::const_iterator	ite = _items.end();
+			std::vector<ModifiableItemStruct>::const_iterator	itc = mItems.begin();
+			std::vector<ModifiableItemStruct>::const_iterator	ite = mItems.end();
 
 			while (itc != ite)
 			{
@@ -557,14 +551,14 @@ bool CoreModifiable::removeAggregateWith(CMSP& item)
 
 void CoreModifiable::UpdateAggregates(const Timer&  timer, void* addParam)
 {
-	std::vector<ModifiableItemStruct>::const_iterator	itc = _items.begin();
-	std::vector<ModifiableItemStruct>::const_iterator	ite = _items.end();
+	std::vector<ModifiableItemStruct>::const_iterator	itc = mItems.begin();
+	std::vector<ModifiableItemStruct>::const_iterator	ite = mItems.end();
 
 	while (itc != ite)
 	{
 		if ((*itc).isAggregate())
 		{
-			(*itc).myItem->CallUpdate(timer, addParam);
+			(*itc).mItem->CallUpdate(timer, addParam);
 		}
 		++itc;
 	}
@@ -574,8 +568,8 @@ CoreModifiableAttribute* CoreModifiable::findAttribute(const KigsID& id) const
 {
 	const CoreModifiable* search = this;
 	// first check on this
-	auto i = _attributes.find(id);
-	if (i != _attributes.end())
+	auto i = mAttributes.find(id);
+	if (i != mAttributes.end())
 	{
 		return (*i).second;
 	}
@@ -589,20 +583,20 @@ CoreModifiableAttribute* CoreModifiable::findAttribute(const KigsID& id) const
 
 CoreModifiableAttribute* CoreModifiable::recursivefindAttribute(const KigsID& id) const
 {
-	auto i = _attributes.find(id);
-	if (i == _attributes.end())
+	auto i = mAttributes.find(id);
+	if (i == mAttributes.end())
 	{
 
 		if (isFlagAsAggregateParent()) // search if other aggregates
 		{
-			std::vector<ModifiableItemStruct>::const_iterator	itc = _items.begin();
-			std::vector<ModifiableItemStruct>::const_iterator	ite = _items.end();
+			std::vector<ModifiableItemStruct>::const_iterator	itc = mItems.begin();
+			std::vector<ModifiableItemStruct>::const_iterator	ite = mItems.end();
 
 			while (itc != ite)
 			{
 				if ((*itc).isAggregate())
 				{
-					CoreModifiableAttribute* found = (*itc).myItem->recursivefindAttribute(id);
+					CoreModifiableAttribute* found = (*itc).mItem->recursivefindAttribute(id);
 					if (found)
 					{
 						return found;
@@ -667,14 +661,14 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 			
 			if (method.mUpgrador)
 			{
-				cachedUpgrador = localthis->mLazyContent->myUpgrador;
-				localthis->mLazyContent->myUpgrador = method.mUpgrador;
+				cachedUpgrador = localthis->mLazyContent->mUpgradors;
+				localthis->mLazyContent->mUpgradors = method.mUpgrador;
 			}
 			result = (localthis->*method.mMethod)(sender, params, privateParams);
 			// reset cached 
 			if (cachedUpgrador)
 			{
-				localthis->mLazyContent->myUpgrador = cachedUpgrador;
+				localthis->mLazyContent->mUpgradors = cachedUpgrador;
 			}
 		}
 		
@@ -750,7 +744,7 @@ bool CoreModifiable::EmitSignal(const KigsID& signalID, std::vector<CoreModifiab
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	if (!isFlagAllowChanges()) return false;
 	if (!mLazyContent) return false;
-	auto& connected_to = GetLazyContent()->ConnectedTo;
+	auto& connected_to = GetLazyContent()->mConnectedTo;
 	auto it = connected_to.find(signalID);
 	if(it != connected_to.end())
 	{
@@ -780,14 +774,14 @@ void CoreModifiable::Connect(KigsID signal, CoreModifiable* other, KigsID slot C
 	if (!isFlagAllowChanges() || !other->isFlagAllowChanges())
 		return;
 	
-	auto& vec = GetLazyContent()->ConnectedTo[signal];
+	auto& vec = GetLazyContent()->mConnectedTo[signal];
 	for(auto p : vec)
 	{
 		if(p.first == slot && p.second == other)
 		return;
 	}
 	vec.push_back({slot, other});
-	other->GetLazyContent()->ConnectedToMe[this].insert(std::make_pair(signal, slot));
+	other->GetLazyContent()->mConnectedToMe[this].insert(std::make_pair(signal, slot));
 }
 
 void CoreModifiable::Disconnect(KigsID signal, CoreModifiable* other, KigsID slot)
@@ -800,13 +794,13 @@ void CoreModifiable::Disconnect(KigsID signal, CoreModifiable* other, KigsID slo
 
 	if (!mLazyContent || !other->mLazyContent) return;
 
-	auto& vec = GetLazyContent()->ConnectedTo[signal];
+	auto& vec = GetLazyContent()->mConnectedTo[signal];
 	for(auto it = vec.begin(); it != vec.end(); ++it)
 	{
 		if(it->first == slot && it->second == other)
 		{
 			vec.erase(it);
-			other->GetLazyContent()->ConnectedToMe[this].erase(std::make_pair(signal, slot));
+			other->GetLazyContent()->mConnectedToMe[this].erase(std::make_pair(signal, slot));
 			return;
 		}	
 	}
@@ -820,9 +814,9 @@ std::string	CoreModifiable::GetRuntimeID() const
 	char buffer[512];
 	
 #ifdef KEEP_NAME_AS_STRING
-	snprintf(buffer, 512, "%s:%s:%p:%u",getName().c_str(), GetRuntimeType().c_str(), this, myUID);
+	snprintf(buffer, 512, "%s:%s:%p:%u",getName().c_str(), GetRuntimeType().c_str(), this, mUID);
 #else
-	snprintf(buffer, 512, "%s:%u:%p:%u", getName().c_str(), GetRuntimeType()._id, this, myUID);
+	snprintf(buffer, 512, "%s:%u:%p:%u", getName().c_str(), GetRuntimeType()._id, this, mUID);
 #endif
 	
 	result=buffer;
@@ -832,7 +826,7 @@ std::string	CoreModifiable::GetRuntimeID() const
 CoreModifiable::operator std::vector<CoreModifiableAttribute*> ()
 {
 	std::vector<CoreModifiableAttribute*> _attributeList;
-	for(auto it = _attributes.begin();it!=_attributes.end();++it)
+	for(auto it = mAttributes.begin();it!=mAttributes.end();++it)
 	{
 		_attributeList.push_back((*it).second);
 	}
@@ -986,10 +980,10 @@ EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SETARRAY_VALUE4)
 
 void CoreModifiable::UpdateAttributes(const CoreModifiable& tocopy)
 {
-	for (auto it = tocopy._attributes.begin(); it != tocopy._attributes.end(); ++it)
+	for (auto it = tocopy.mAttributes.begin(); it != tocopy.mAttributes.end(); ++it)
 	{
-		auto foundattr = _attributes.find(it->first);
-		if (foundattr != _attributes.end())
+		auto foundattr = mAttributes.find(it->first);
+		if (foundattr != mAttributes.end())
 		{
 			*foundattr->second = *it->second;
 		}
@@ -1045,14 +1039,14 @@ void CoreModifiable::unregisterFromReferenceMap()
 void	CoreModifiable::DeleteDynamicAttributes()
 {
 	std::vector<CoreModifiableAttribute*> todelete;
-	for (auto it : _attributes) 
+	for (auto it : mAttributes) 
 	{
 		if (it.second->isDynamic())
 		{
 			todelete.push_back(it.second);	
 		}
 	}
-	// CoreModifiableAttribute destructor erases itself from _attributes
+	// CoreModifiableAttribute destructor erases itself from mAttributes
 	for (auto attr : todelete)
 		delete attr;
 }
@@ -1069,19 +1063,11 @@ void CoreModifiable::DeleteXMLFiles()
 //! remove all items (sons)
 void		CoreModifiable::EmptyItemList()
 {
-	while(!_items.empty())
+	while(!mItems.empty())
 	{
-		ModifiableItemStruct& item=(*_items.begin());
-#ifdef USE_LINK_TYPE
-		s32 itemLink=item.myLinkType;
-		if(itemLink != -1)
+		ModifiableItemStruct& item=(*mItems.begin());
 		{
-			removeItem(item.myItem,(*myLinkType)[(u32)itemLink]);
-		}
-		else
-#endif
-		{
-			removeItem(item.myItem);
+			removeItem(item.mItem);
 		}
 	}
 }
@@ -1515,8 +1501,8 @@ CoreModifiableAttribute*	CoreModifiable::GenericCreateDynamicAttribute(CoreModif
 
 void CoreModifiable::RemoveDynamicAttribute(KigsID id)
 {
-	auto it=_attributes.find(id);
-	if(it != _attributes.end() && it->second->isDynamic())
+	auto it=mAttributes.find(id);
+	if(it != mAttributes.end() && it->second->isDynamic())
 	{
 		delete ((*it).second);
 	}
@@ -1528,49 +1514,20 @@ bool CoreModifiable::addItem(const CMSP& item, ItemPosition pos)
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	if(!item.isNil())
 	{
-#ifdef USE_LINK_TYPE
-		s32 linkType=-1;
-		
-		if((linkName!="")&&myLinkType)
-		{
-			// search link index
-			u32 i;
-			for(i=0;i<myLinkType->size();i++)
-			{
-				if((*myLinkType)[i]==linkName)
-				{
-					linkType=i;
-					break;
-				}
-			}
-		}
-		
-		if(pos==First)
-		{
-			_items.insert(_items.begin(),ModifiableItemStruct(item,linkType));
-		}
-		else if (pos == Last)
-		{
-			_items.push_back(ModifiableItemStruct(item,linkType));
-		}
-		else
-		{
-			_items.insert(_items.begin() + pos, ModifiableItemStruct(item, linkType));
-		}
-#else
+
 		if (pos == First)
 		{
-			_items.insert(_items.begin(), ModifiableItemStruct(item));
+			mItems.insert(mItems.begin(), ModifiableItemStruct(item));
 		}
 		else if (pos == Last)
 		{
-			_items.push_back(ModifiableItemStruct(item));
+			mItems.push_back(ModifiableItemStruct(item));
 		}
 		else // try to insert at given pos
 		{
-			_items.insert(_items.begin()+pos, ModifiableItemStruct(item));
+			mItems.insert(mItems.begin()+pos, ModifiableItemStruct(item));
 		}
-#endif
+
 		
 		item->addUser(this);
 		EmitSignal(Signals::AddItem, this, item);
@@ -1583,7 +1540,7 @@ bool CoreModifiable::addItem(const CMSP& item, ItemPosition pos)
 void CoreModifiable::addUser(CoreModifiable* user)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
-	_users.push_back(user);
+	mUsers.push_back(user);
 }
 
 //! remove user (parent)
@@ -1594,8 +1551,8 @@ void CoreModifiable::removeUser(CoreModifiable* user)
 	do
 	{
 		found=false;
-		std::vector<CoreModifiable*>::iterator i=_users.begin();
-		std::vector<CoreModifiable*>::iterator e=_users.end();
+		std::vector<CoreModifiable*>::iterator i=mUsers.begin();
+		std::vector<CoreModifiable*>::iterator e=mUsers.end();
 		for(; i!=e ; ++i)
 		{
 			if(user==(*i))
@@ -1606,7 +1563,7 @@ void CoreModifiable::removeUser(CoreModifiable* user)
 		}
 		if(found)
 		{
-			_users.erase(i);
+			mUsers.erase(i);
 		}
 	} while(found);
 }
@@ -1620,7 +1577,7 @@ bool CoreModifiable::checkDestroy()
 		return true;
 	}
 #ifdef KIGS_TOOLS
-	if (myTraceRef)
+	if (mTraceRef)
 		TRACEREF_DELETE
 #endif
 	ProtectedDestroy();
@@ -1630,9 +1587,9 @@ bool CoreModifiable::checkDestroy()
 //! Destroy method decrement refcounter and delete instance if no more used
 void CoreModifiable::ProtectedDestroy()
 {
-	if (myTypeNode)
+	if (mTypeNode)
 	{
-		myTypeNode->RemoveInstance(this);
+		mTypeNode->RemoveInstance(this);
 	}
 
 	EmitSignal(Signals::Destroy, this);
@@ -1640,20 +1597,20 @@ void CoreModifiable::ProtectedDestroy()
 	if (mLazyContent)
 	{
 		// first downgrade if needed
-		UpgradorBase* found = mLazyContent->myUpgrador;
+		UpgradorBase* found = mLazyContent->mUpgradors;
 		while(found)
 		{
 			UpgradorBase* cachedUpgrador = nullptr;
-			cachedUpgrador = mLazyContent->myUpgrador;
-			mLazyContent->myUpgrador = found;
+			cachedUpgrador = mLazyContent->mUpgradors;
+			mLazyContent->mUpgradors = found;
 			found->DowngradeInstance(this);
-			mLazyContent->myUpgrador = cachedUpgrador;
+			mLazyContent->mUpgradors = cachedUpgrador;
 			found = found->myNextUpgrador;
 		}
 
 		// delete the first one, to delete all the list
-		delete mLazyContent->myUpgrador;
-		mLazyContent->myUpgrador = nullptr;
+		delete mLazyContent->mUpgradors;
+		mLazyContent->mUpgradors = nullptr;
 	}
 
 	//! remove all items
@@ -1666,27 +1623,27 @@ void CoreModifiable::ProtectedDestroy()
 	DeleteDynamicAttributes();
 	if (mLazyContent)
 	{
-		for (auto ref : GetLazyContent()->WeakRefs)
+		for (auto ref : GetLazyContent()->mWeakRefs)
 		{
 			ref->ItemIsBeingDeleted();
 		}
 
 		// Notify connected items
-		for (auto& signal : GetLazyContent()->ConnectedTo)
+		for (auto& signal : GetLazyContent()->mConnectedTo)
 		{
 			for (auto& p : signal.second)
 			{
 				std::lock_guard<std::recursive_mutex> lock_other{ p.second->GetMutex() };
-				p.second->GetLazyContent()->ConnectedToMe[this].erase(std::make_pair(signal.first, p.first));
+				p.second->GetLazyContent()->mConnectedToMe[this].erase(std::make_pair(signal.first, p.first));
 			}
 		}
 
-		for (auto& to : GetLazyContent()->ConnectedToMe)
+		for (auto& to : GetLazyContent()->mConnectedToMe)
 		{
 			for (auto id : to.second)
 			{
 				std::lock_guard<std::recursive_mutex> lock_other{ to.first->GetMutex() };
-				auto& vec = to.first->GetLazyContent()->ConnectedTo[id.first];
+				auto& vec = to.first->GetLazyContent()->mConnectedTo[id.first];
 				for (auto it = vec.begin(); it != vec.end();)
 				{
 					if (it->second == this && it->first == id.second)
@@ -1735,18 +1692,18 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 	// Upgrador updage
 	if (mLazyContent)
 	{
-		UpgradorBase* found = mLazyContent->myUpgrador;
+		UpgradorBase* found = mLazyContent->mUpgradors;
 		while (found)
 		{
 			// set current at first place in the list so cache first one
-			UpgradorBase* cached = mLazyContent->myUpgrador;
-			mLazyContent->myUpgrador = found;
+			UpgradorBase* cached = mLazyContent->mUpgradors;
+			mLazyContent->mUpgradors = found;
 
 			found->UpgradorUpdate(this,timer,addParam);
 			found = found->myNextUpgrador;
 
 			// reset cached
-			mLazyContent->myUpgrador = cached;
+			mLazyContent->mUpgradors = cached;
 		}
 	}
 }
@@ -1755,9 +1712,6 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 bool CoreModifiable::removeItem(const CMSP& item)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
-#ifdef USE_LINK_TYPE
-	STRINGS_NAME_TYPE emptyLink="";
-#endif
 
 	auto item_ptr = item.get();
 
@@ -1765,33 +1719,14 @@ bool CoreModifiable::removeItem(const CMSP& item)
 	do
 	{
 		found=false;
-		std::vector<ModifiableItemStruct>::iterator it=_items.begin();
-		std::vector<ModifiableItemStruct>::iterator end=_items.end();
+		std::vector<ModifiableItemStruct>::iterator it=mItems.begin();
+		std::vector<ModifiableItemStruct>::iterator end=mItems.end();
 		for(; it!=end ; ++it)
 		{
-			if(item_ptr == (*it).myItem.get())
+			if(item_ptr == (*it).mItem.get())
 			{
-#ifdef USE_LINK_TYPE
-				if((*it).myLinkType == -1) // no link name for this item
-				{
-					if(linkName == emptyLink )
-					{
-						found=true;
-						break;
-					}
-				}
-				else	// item with link name
-				{
-					if( linkName == (*myLinkType)[(u32)(*it).myLinkType] )
-					{
-						found=true;
-						break;
-					}
-				}
-#else
 				found = true;
 				break;
-#endif
 			}
 			//itl++;
 		}
@@ -1800,7 +1735,7 @@ bool CoreModifiable::removeItem(const CMSP& item)
 			res=true;
 			item_ptr->removeUser(this);
 			EmitSignal(Signals::RemoveItem, this, item_ptr);
-			_items.erase(it);
+			mItems.erase(it);
 		}
 	} while(found);
 	
@@ -1825,7 +1760,7 @@ void CoreModifiable::Downgrade(const std::string& toRemove)
 		return;
 
 	UpgradorBase* previous = nullptr;
-	UpgradorBase* found = mLazyContent->myUpgrador;
+	UpgradorBase* found = mLazyContent->mUpgradors;
 
 	while (found)
 	{
@@ -1837,7 +1772,7 @@ void CoreModifiable::Downgrade(const std::string& toRemove)
 			}
 			else
 			{
-				mLazyContent->myUpgrador = found->myNextUpgrador;
+				mLazyContent->mUpgradors = found->myNextUpgrador;
 			}
 			found->DowngradeInstance(this);
 			break;
@@ -1849,7 +1784,7 @@ void CoreModifiable::Downgrade(const std::string& toRemove)
 
 CoreModifiable* CoreModifiable::getFirstParent(KigsID ParentClassID) const
 {
-	for(const auto i : _users)
+	for(const auto i : mUsers)
 	{
 		if(i->isSubType(ParentClassID))
 		{
@@ -1859,18 +1794,6 @@ CoreModifiable* CoreModifiable::getFirstParent(KigsID ParentClassID) const
 	return nullptr;
 }
 
-#ifdef USE_LINK_TYPE
-
-STRINGS_NAME_TYPE CoreModifiable::getItemLinkTypeName(s32 itemIndex) const
-{
-	s32 index=getItemLinkTypeIndex(itemIndex);
-	if (index<0)
-		return "";
-	return (*myLinkType)[(u32)index];
-}
-
-#endif
-
 CoreModifiableAttribute* CoreModifiable::getAttribute(KigsID attributeID) const
 {
 	return findAttribute(attributeID);
@@ -1878,8 +1801,8 @@ CoreModifiableAttribute* CoreModifiable::getAttribute(KigsID attributeID) const
 
 bool CoreModifiable::setReadOnly(KigsID id,bool val)
 {
-	auto it =_attributes.find(id);
-	if(it ==_attributes.end()) return false;
+	auto it =mAttributes.find(id);
+	if(it ==mAttributes.end()) return false;
 	CoreModifiableAttribute* attribute=(*it).second;
 	if(attribute)
 	{
@@ -1898,21 +1821,21 @@ bool	CoreModifiable::Equal(const CoreModifiable& other)
 	}
 	
 	// must have same sons count
-	if(_items.size() != other._items.size())
+	if(mItems.size() != other.mItems.size())
 	{
 		return false;
 	}
 	
 	// must have same attribute count
-	if(_attributes.size() != other._attributes.size())
+	if(mAttributes.size() != other.mAttributes.size())
 	{
 		return false;
 	}
 	
 	// parameters check
-	auto	itparams=_attributes.begin();
-	auto	endparams=_attributes.end();
-	auto	otheritparams = other._attributes.begin();
+	auto	itparams=mAttributes.begin();
+	auto	endparams=mAttributes.end();
+	auto	otheritparams = other.mAttributes.begin();
 
 	std::string	param1str;
 	std::string	param2str;
@@ -1929,13 +1852,13 @@ bool	CoreModifiable::Equal(const CoreModifiable& other)
 	}
 	
 	// check sons
-	std::vector<ModifiableItemStruct>::const_iterator itsons1=_items.begin();
-	std::vector<ModifiableItemStruct>::const_iterator endsons1=_items.end();
+	std::vector<ModifiableItemStruct>::const_iterator itsons1=mItems.begin();
+	std::vector<ModifiableItemStruct>::const_iterator endsons1=mItems.end();
 	std::vector<ModifiableItemStruct>::const_iterator itsons2;
-	itsons2=other._items.begin();
+	itsons2=other.mItems.begin();
 	for(;itsons1!=endsons1;++itsons1)
 	{
-		if(!(*itsons1).myItem->Equal(*(*itsons2).myItem.get()))
+		if(!(*itsons1).mItem->Equal(*(*itsons2).mItem.get()))
 		{
 			return false;
 		}
@@ -2044,9 +1967,6 @@ XMLNode* CoreModifiable::ExportToXMLNode(CoreModifiable* toexport, XML* owner_xm
 	//! call recursive, non static method
 	toexport->Export(savedList, modifiableNode, recursive
 		, settings ? settings : &default_settings
-#ifdef USE_LINK_TYPE
-		, -1
-#endif
 	);
 
 #ifdef KEEP_XML_DOCUMENT
@@ -2077,9 +1997,6 @@ std::string	CoreModifiable::ExportToXMLString(CoreModifiable* toexport, bool rec
 	//! call recursive, non static method
 	toexport->Export(savedList, modifiableNode, recursive
 		, settings ? settings : &default_settings
-#ifdef USE_LINK_TYPE
-		, -1
-#endif
 	);
 
 	xmlfile->setRoot(modifiableNode);
@@ -2121,9 +2038,6 @@ void CoreModifiable::Export(std::string &XMLString,const std::list<CoreModifiabl
 		XMLNode* modifiableNode=new XMLNode();
 		(*it)->Export(savedList, modifiableNode, recursive
 			, settings ? settings : &default_settings
-#ifdef USE_LINK_TYPE
-			,-1
- #endif
 			);
 		RootNode->addChild(modifiableNode);
 
@@ -2142,36 +2056,36 @@ void CoreModifiable::Export(std::string &XMLString,const std::list<CoreModifiabl
 #ifdef KEEP_NAME_AS_STRING
 void CoreModifiable::RegisterDecorator(const std::string& name)
 {
-	if(!_Decorators)
+	if(!mDecorators)
 	{
-		_Decorators=new std::vector<std::string>();
+		mDecorators=new std::vector<std::string>();
 	}
-	_Decorators->push_back(name);
+	mDecorators->push_back(name);
 }
 void CoreModifiable::UnRegisterDecorator(const std::string& name)
 {
-	if(!_Decorators)
+	if(!mDecorators)
 	{
 		return;
 	}
-	std::vector<std::string>::iterator itDecorStart=_Decorators->begin();
-	std::vector<std::string>::iterator itDecorEnd=_Decorators->end();
+	std::vector<std::string>::iterator itDecorStart=mDecorators->begin();
+	std::vector<std::string>::iterator itDecorEnd=mDecorators->end();
 	
 	while(itDecorStart != itDecorEnd)
 	{
 		if((*itDecorStart) == name)
 		{
-			_Decorators->erase(itDecorStart);
+			mDecorators->erase(itDecorStart);
 			break;
 		}
 		
 		itDecorStart++;
 	}
 	
-	if(_Decorators->size() == 0)
+	if(mDecorators->size() == 0)
 	{
-		delete _Decorators;
-		_Decorators=0;
+		delete mDecorators;
+		mDecorators=0;
 	}
 }
 #endif
@@ -2270,7 +2184,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 	defaultCopy = KigsCore::GetInstanceOf("defaultAttributeClone", GetRuntimeType());
 	defaultAttributeMap = &defaultCopy->getAttributes();
 	
-	for (auto i = _attributes.begin(); i != _attributes.end(); ++i)
+	for (auto i = mAttributes.begin(); i != mAttributes.end(); ++i)
 	{
 		CoreModifiableAttribute* current = (*i).second;
 		auto type = current->getType();
@@ -2453,10 +2367,10 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 	}
 	
 	// export decorators
-	if (_Decorators)
+	if (mDecorators)
 	{
-		std::vector<std::string>::iterator itDecorStart = _Decorators->begin();
-		std::vector<std::string>::iterator itDecorEnd = _Decorators->end();
+		std::vector<std::string>::iterator itDecorStart = mDecorators->begin();
+		std::vector<std::string>::iterator itDecorEnd = mDecorators->end();
 		
 		while (itDecorStart != itDecorEnd)
 		{
@@ -2493,11 +2407,11 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 	//! if recursive mode, save all sons
 	if (recursive)
 	{
-		std::vector<ModifiableItemStruct>::iterator i = _items.begin();
-		std::vector<ModifiableItemStruct>::iterator e = _items.end();
+		std::vector<ModifiableItemStruct>::iterator i = mItems.begin();
+		std::vector<ModifiableItemStruct>::iterator e = mItems.end();
 		for (; i != e; ++i)
 		{
-			CoreModifiable* current = (*i).myItem.Pointer();
+			CoreModifiable* current = (*i).mItem.Pointer();
 			
 			if (current->getAttribute("NoExport")) continue;
 
@@ -2509,7 +2423,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 				XMLAttribute *AggregateAttribute = new XMLAttribute("Aggregate", "true");
 				sonNode->addAttribute(AggregateAttribute);
 			}
-			if ((*i).myItem->isFlagAsAutoUpdateRegistered())
+			if ((*i).mItem->isFlagAsAutoUpdateRegistered())
 			{
 				// add autoupdate attribute 
 				XMLAttribute* AutoUpdateAttribute = new XMLAttribute("AutoUpdate", "true");
@@ -2854,7 +2768,7 @@ CMSP CoreModifiable::GetInstanceByPath(const std::string &path)
 	if(sonName=="..")
 	{
 		std::vector<CoreModifiable*>::iterator itfathers;
-		for(itfathers=_users.begin();itfathers!=_users.end();itfathers++)
+		for(itfathers=mUsers.begin();itfathers!=mUsers.end();itfathers++)
 		{
 			if ((*itfathers)->isSubType(searchType))
 			{
@@ -2871,13 +2785,13 @@ CMSP CoreModifiable::GetInstanceByPath(const std::string &path)
 	// search son with son name
 	std::vector<ModifiableItemStruct>::iterator itsons;
 	bool is_wildcard = sonName == "*";
-	for(itsons=_items.begin();itsons!=_items.end();itsons++)
+	for(itsons=mItems.begin();itsons!=mItems.end();itsons++)
 	{
-		if(is_wildcard || (*itsons).myItem->getName() == sonName)
+		if(is_wildcard || (*itsons).mItem->getName() == sonName)
 		{
-			if ((*itsons).myItem->isSubType(searchType))
+			if ((*itsons).mItem->isSubType(searchType))
 			{
-				auto result = (*itsons).myItem->GetInstanceByPath(RemainingPath);
+				auto result = (*itsons).mItem->GetInstanceByPath(RemainingPath);
 				if (!is_wildcard || result) return result;
 			}
 		}
@@ -2891,18 +2805,18 @@ void CoreModifiable::GetSonInstancesByName(KigsID cid, const std::string &name, 
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	std::vector<ModifiableItemStruct>::iterator itsons;
-	for(itsons=_items.begin();itsons!=_items.end();itsons++)
+	for(itsons=mItems.begin();itsons!=mItems.end();itsons++)
 	{
-		if((*itsons).myItem->getName() == name)
+		if((*itsons).mItem->getName() == name)
 		{
-			if((*itsons).myItem->isSubType(cid))
+			if((*itsons).mItem->isSubType(cid))
 			{
-				instances.push_back((*itsons).myItem);
+				instances.push_back((*itsons).mItem);
 			}
 		}
 		if(recursive)
 		{
-			(*itsons).myItem->GetSonInstancesByName(cid,name,instances,recursive);
+			(*itsons).mItem->GetSonInstancesByName(cid,name,instances,recursive);
 		}
 	}
 }
@@ -2912,14 +2826,14 @@ CMSP CoreModifiable::GetFirstSonByName(KigsID cid, const std::string &name, bool
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	for (auto& son : getItems())
 	{
-		if (son.myItem->isSubType(cid) && name == son.myItem->getName())
-			return son.myItem;
+		if (son.mItem->isSubType(cid) && name == son.mItem->getName())
+			return son.mItem;
 	}
 	if (recursive)
 	{
 		for (auto& son : getItems())
 		{
-			auto found = son.myItem->GetFirstSonByName(cid, name, true);
+			auto found = son.mItem->GetFirstSonByName(cid, name, true);
 			if (found) return found;
 		}
 	}
@@ -2930,16 +2844,16 @@ void CoreModifiable::GetSonInstancesByType(KigsID cid, std::vector<CMSP>& instan
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	std::vector<ModifiableItemStruct>::iterator itsons;
-	for(itsons=_items.begin();itsons!=_items.end();itsons++)
+	for(itsons=mItems.begin();itsons!=mItems.end();itsons++)
 	{
-		if((*itsons).myItem->isSubType(cid))
+		if((*itsons).mItem->isSubType(cid))
 		{
-			instances.push_back((*itsons).myItem);
+			instances.push_back((*itsons).mItem);
 		}
 		
 		if(recursive)
 		{
-			(*itsons).myItem->GetSonInstancesByType(cid,instances,recursive);
+			(*itsons).mItem->GetSonInstancesByType(cid,instances,recursive);
 		}
 	}
 }
@@ -2949,14 +2863,14 @@ CMSP CoreModifiable::GetFirstSonByType(KigsID cid, bool recursive)
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	for (auto& son : getItems())
 	{
-		if (son.myItem->isSubType(cid))
-			return son.myItem;
+		if (son.mItem->isSubType(cid))
+			return son.mItem;
 	}
 	if (recursive)
 	{
 		for (auto& son : getItems())
 		{
-			auto found = son.myItem->GetFirstSonByType(cid, true);
+			auto found = son.mItem->GetFirstSonByType(cid, true);
 			if (found) return found;
 		}
 	}
@@ -3064,7 +2978,7 @@ CoreModifiableAttribute* CoreModifiable::getParameter(const std::vector<CoreModi
 
 void CoreModifiable::RecursiveUpdate(const Timer&  timer, CoreModifiable* a_parent)
 { 
-	if (_ModifiableFlag&((u32)RecursiveUpdateFlag))
+	if (mModifiableFlag&((u32)RecursiveUpdateFlag))
 	{
 		CallUpdate(timer,0);
 		
@@ -3076,7 +2990,7 @@ void CoreModifiable::RecursiveUpdate(const Timer&  timer, CoreModifiable* a_pare
 			
 			while (L_it != L_ite)
 			{
-				(*L_it).myItem->RecursiveUpdate(timer, this);
+				(*L_it).mItem->RecursiveUpdate(timer, this);
 				L_it++;
 			}
 		}
@@ -3121,16 +3035,16 @@ CoreModifiable* CoreModifiable::recursiveGetRootParentByType(const KigsID& Paren
 
 void CoreModifiable::AddWeakRef(WeakRef* ref)
 {
-	GetLazyContent()->WeakRefs.push_back(ref);
+	GetLazyContent()->mWeakRefs.push_back(ref);
 }
 
 void CoreModifiable::RemoveWeakRef(WeakRef* ref)
 {
 	auto lz = GetLazyContent();
-	auto itfind = std::find(lz->WeakRefs.begin(), lz->WeakRefs.end(), ref);
-	if (*itfind != lz->WeakRefs.back())
-		*itfind = lz->WeakRefs.back();
-	lz->WeakRefs.pop_back();
+	auto itfind = std::find(lz->mWeakRefs.begin(), lz->mWeakRefs.end(), ref);
+	if (*itfind != lz->mWeakRefs.back())
+		*itfind = lz->mWeakRefs.back();
+	lz->mWeakRefs.pop_back();
 }
 
 #ifdef KIGS_TOOLS
@@ -3138,7 +3052,7 @@ void CoreModifiable::GetRef()
 {
 	GenericRefCountedBaseClass::GetRef();
 #ifdef KIGS_TOOLS
-	if (myTraceRef)
+	if (mTraceRef)
 		TRACEREF_RETAIN;
 #endif
 }
@@ -3146,7 +3060,7 @@ bool CoreModifiable::TryGetRef()
 {
 	bool ok = GenericRefCountedBaseClass::TryGetRef();
 #ifdef KIGS_TOOLS
-	if (ok && myTraceRef)
+	if (ok && mTraceRef)
 		TRACEREF_RETAIN;
 #endif
 	return ok;
@@ -3154,7 +3068,7 @@ bool CoreModifiable::TryGetRef()
 void CoreModifiable::Destroy()
 {
 #ifdef KIGS_TOOLS
-	if (myTraceRef)
+	if (mTraceRef)
 		TRACEREF_RELEASE;
 #endif
 	GenericRefCountedBaseClass::Destroy();
@@ -3279,7 +3193,7 @@ IMPLEMENT_CONVERT_S2V_ANS_V2S(u64, "%llu")
 
 PackCoreModifiableAttributes::~PackCoreModifiableAttributes()
 {
-	for (auto attr : m_attributeList)
+	for (auto attr : mAttributeList)
 		delete attr;
 }
 
@@ -3341,10 +3255,10 @@ SmartPointer<CoreModifiable> WeakRef::Lock() const
 LazyContent::~LazyContent()
 {
 	// linked list so delete only the first one
-	if (myUpgrador)
+	if (mUpgradors)
 	{
-		delete myUpgrador;
-		myUpgrador = nullptr;
+		delete mUpgradors;
+		mUpgradors = nullptr;
 	}
 }
 
@@ -3355,7 +3269,7 @@ void RegisterClassToInstanceFactory(KigsCore* core, const std::string& moduleNam
 
 void CoreModifiable::GetClassNameTree(CoreClassNameTree& classNameTree) 
 { 
-	classNameTree.addClassName(CoreModifiable::myClassID, CoreModifiable::myRuntimeType);
+	classNameTree.addClassName(CoreModifiable::mClassID, CoreModifiable::mRuntimeType);
 }
 
 //! static method : return the set of all root instances of the given type 

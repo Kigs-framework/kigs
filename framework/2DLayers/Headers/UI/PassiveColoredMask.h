@@ -5,6 +5,17 @@
 #include "SmartPointer.h"
 #include "Texture.h"
 
+// ****************************************
+// * PassiveColoredMask class
+// * --------------------------------------
+/**
+* \file	PassiveColoredMask.h
+* \class	PassiveColoredMask
+* \ingroup 2DLayers
+* \brief	Obsolete ?
+*
+*/
+// ****************************************
 class PassiveColoredMask : public UIItem
 {
 public:
@@ -18,7 +29,7 @@ public:
 	void					PixelCopyFromMask(int TopLeftCornerX, int TopLeftCornerY, int SizeX, int SizeY);
 	Texture*				GetTexture();
 	virtual void			ReloadTexture();
-	inline void				GetSize(unsigned int &X,unsigned int &Y) { X=myWidth; Y=myHeight; }
+	inline void				GetSize(unsigned int &X,unsigned int &Y) { X=mWidth; Y=mHeight; }
 protected:
 	/**
 	 * \brief	destructor
@@ -30,26 +41,26 @@ protected:
 	 */
 	void			InitModifiable() override;
 
-	bool					myIsDown;
-	bool					myIsMouseOver;
+	bool					mIsDown;
+	bool					mIsMouseOver;
 
 
 	//! Alpha threshold
-	maFloat					myThreshold;
+	maFloat					mThreshold;
 
 	//! Texture Name
-	maString				myTextureName;
-	maString				myMaskName;
-	maUInt					myRay;
-	SmartPointer<Texture>	myTexture;
+	maString				mTextureName;
+	maString				mMaskName;
+	maUInt					mRay;
+	SmartPointer<Texture>	mTexture;
 
-	int						myWidth;
-	int						myHeight;
-	int						myPow2Width;
-	int						myPow2Height;
-	unsigned int*			myPixelArray;
-	unsigned int*			myOriginalPixelArray;
-	unsigned int*			myPixelMaskArray;
+	int						mWidth;
+	int						mHeight;
+	int						mPow2Width;
+	int						mPow2Height;
+	unsigned int*			mPixelArray;
+	unsigned int*			mOriginalPixelArray;
+	unsigned int*			mPixelMaskArray;
 
 	struct PLATFORM_COLOR
 	{

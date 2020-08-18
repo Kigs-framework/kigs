@@ -73,16 +73,16 @@ SP<ModernMesh> ModernMesh::CreateClonedMesh(const std::string& name, bool reuse_
 	for (auto& it : getItems())
 	{
 		SP<ModernMeshItemGroup> mesh_group = KigsCore::GetInstanceOf("group0", "ModernMeshItemGroup");
-		mesh_group->SetupClonedMesh(it.myItem->as<ModernMeshItemGroup>());
+		mesh_group->SetupClonedMesh(it.mItem->as<ModernMeshItemGroup>());
 		mesh->addItem((CMSP&)mesh_group);
 
 		if (reuse_materials)
 		{
-			for (auto& mat : it.myItem->getItems())
+			for (auto& mat : it.mItem->getItems())
 			{
-				if (mat.myItem->isSubType("Material"))
+				if (mat.mItem->isSubType("Material"))
 				{
-					mesh_group->addItem((CMSP&)mat.myItem);
+					mesh_group->addItem((CMSP&)mat.mItem);
 				}
 			}
 		}
@@ -132,7 +132,7 @@ void ModernMesh::InitModifiable()
 				Import(filename, true);
 				for (auto& it : getItems())
 				{
-					it.myItem->RecursiveInit(true);
+					it.mItem->RecursiveInit(true);
 				}
 			}
 			else*/
@@ -141,7 +141,7 @@ void ModernMesh::InitModifiable()
 				SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(myFileName.const_ref());
 				if (fullfilenamehandle)
 				{
-					fullfilename = fullfilenamehandle->myFullFileName;
+					fullfilename = fullfilenamehandle->mFullFileName;
 					BinMeshLoader loader;
 					if (loader.ImportFile(this, fullfilename) != 0)
 					{
@@ -193,9 +193,9 @@ void ModernMesh::InitBoundingBox()
 		std::vector<ModifiableItemStruct>::const_iterator	it;
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
-			if ((*it).myItem->isSubType(ModernMeshItemGroup::myClassID))
+			if ((*it).mItem->isSubType(ModernMeshItemGroup::mClassID))
 			{
-				SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).myItem;
+				SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).mItem;
 				if (current->myVertexCount)
 				{
 					unsigned char* vertexStart = (unsigned char*)current->myVertexBufferArray.buffer();
@@ -690,9 +690,9 @@ void ModernMesh::ComputeTangents(bool useTextureCoords)
 	std::vector<ModifiableItemStruct>::const_iterator	it;
 	for (it = getItems().begin(); it != getItems().end(); ++it)
 	{
-		if ((*it).myItem->isSubType(ModernMeshItemGroup::myClassID))
+		if ((*it).mItem->isSubType(ModernMeshItemGroup::mClassID))
 		{
-			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).myItem;
+			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).mItem;
 			current->ComputeTangents(useTextureCoords);
 		}
 	}
@@ -704,9 +704,9 @@ void ModernMesh::ComputeNormals()
 	std::vector<ModifiableItemStruct>::const_iterator	it;
 	for (it = getItems().begin(); it != getItems().end(); ++it)
 	{
-		if ((*it).myItem->isSubType(ModernMeshItemGroup::myClassID))
+		if ((*it).mItem->isSubType(ModernMeshItemGroup::mClassID))
 		{
-			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).myItem;
+			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).mItem;
 			current->ComputeNormals();
 		}
 	}
@@ -719,9 +719,9 @@ void ModernMesh::ApplyScaleFactor(kfloat scaleFactor)
 	std::vector<ModifiableItemStruct>::const_iterator	it;
 	for (it = getItems().begin(); it != getItems().end(); ++it)
 	{
-		if ((*it).myItem->isSubType(ModernMeshItemGroup::myClassID))
+		if ((*it).mItem->isSubType(ModernMeshItemGroup::mClassID))
 		{
-			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).myItem;
+			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).mItem;
 			current->ApplyScaleFactor(scaleFactor);
 		}
 	}
@@ -733,9 +733,9 @@ void ModernMesh::FlipAxis(int axisX, int axisY, int axisZ)
 	std::vector<ModifiableItemStruct>::const_iterator	it;
 	for (it = getItems().begin(); it != getItems().end(); ++it)
 	{
-		if ((*it).myItem->isSubType(ModernMeshItemGroup::myClassID))
+		if ((*it).mItem->isSubType(ModernMeshItemGroup::mClassID))
 		{
-			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).myItem;
+			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).mItem;
 			current->FlipAxis(axisX,axisY,axisZ);
 		}
 	}
@@ -747,9 +747,9 @@ void ModernMesh::GetItemGroup(std::vector<ModernMeshItemGroup*>& list)
 	std::vector<ModifiableItemStruct>::const_iterator	it;
 	for (it = getItems().begin(); it != getItems().end(); ++it)
 	{
-		if ((*it).myItem->isSubType(ModernMeshItemGroup::myClassID))
+		if ((*it).mItem->isSubType(ModernMeshItemGroup::mClassID))
 		{
-			list.push_back((ModernMeshItemGroup*)((*it).myItem.get()));
+			list.push_back((ModernMeshItemGroup*)((*it).mItem.get()));
 		}
 	}
 }
@@ -883,10 +883,10 @@ void ModernMesh::SetCanFree()
 {
 	for (auto it : getItems())
 	{
-		if (it.myItem->isSubType("ModernMeshItemGroup"))
+		if (it.mItem->isSubType("ModernMeshItemGroup"))
 		{
 			int exp = 0;
-			it.myItem->as<ModernMeshItemGroup>()->mCanFreeBuffers.compare_exchange_strong(exp, 1);
+			it.mItem->as<ModernMeshItemGroup>()->mCanFreeBuffers.compare_exchange_strong(exp, 1);
 		}
 	}
 }

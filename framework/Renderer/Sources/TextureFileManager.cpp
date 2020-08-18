@@ -139,7 +139,7 @@ void TextureFileManager::ResetAllTexture()
 	kstl::map<kstl::string, CoreModifiable*>::iterator	it = myTextureMap.begin();
 	for (; it != myTextureMap.end(); ++it)
 	{
-		if ((*it).second->isSubType(Texture::myClassID))
+		if ((*it).second->isSubType(Texture::mClassID))
 		{
 			((Texture*)(*it).second)->SetFlag(Texture::isDirtyContext);
 			(*it).second->ReInit();

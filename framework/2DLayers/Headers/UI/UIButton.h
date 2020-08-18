@@ -6,6 +6,18 @@
 #include "AttributePacking.h"
 #include "TouchInputEventManager.h"
 
+// ****************************************
+// * UIButton class
+// * --------------------------------------
+/**
+* \file	UIButton.h
+* \class	UIButton
+* \ingroup 2DLayers
+* \brief	Simple Button class.
+*
+*/
+// ****************************************
+
 class UIButton : public UITexturedItem
 {
 public:
@@ -20,9 +32,9 @@ public:
 	bool								ManageDirectTouchEvent(DirectTouchEvent& direct_touch);
 	
 	[[deprecated("just don't")]]
-	void								ForcedChangeState(bool isdown) { myIsDown = isdown; ChangeState(); }
+	void								ForcedChangeState(bool isdown) { mIsDown = isdown; ChangeState(); }
 	[[deprecated("connect to signals instead")]]
-	bool								isPressed() const { return myIsDown; }
+	bool								isPressed() const { return mIsDown; }
 protected:
 	void								InitModifiable() override;
 	void								NotifyUpdate(const unsigned int /* labelid */) override;
@@ -31,25 +43,25 @@ protected:
 
 	void								AutoSize();
 
-	maString							myClickDownAction;
-	maString							myClickUpAction;
-	maString							myMouseOverAction;
-	maString							myMouseOutAction;
-	maString							myUnSelectAction;
-	maUSString							myParameter;
-	maBool								myStayPressed;
-	maBool								mybKeepClickOutside;
-	maBool								myDefaultPressed;
-	maBool								myAutoResize;
+	maString							mClickDownAction;
+	maString							mClickUpAction;
+	maString							mMouseOverAction;
+	maString							mMouseOutAction;
+	maString							mUnSelectAction;
+	maUSString							mParameter;
+	maBool								mStayPressed;
+	maBool								mKeepClickOutside;
+	maBool								mDefaultPressed;
+	maBool								mAutoResize;
 
 	maBool								mUseHoverColor = BASE_ATTRIBUTE(UseHoverColor, false);
 	maVect4DF							mHoverColor = BASE_ATTRIBUTE(HoverColor, 0.8f, 0.8f, 0.8f, 1.0f);
 	maVect4DF							mIdleColor = BASE_ATTRIBUTE(IdleColor, 1, 1, 1, 1);
 	maVect4DF							mClickedColor = BASE_ATTRIBUTE(ClickedColor, 0.5f, 0.5f, 0.5f, 1.0f);
 
-	bool								mybInside;
-	bool								myIsDown;
-	bool								myIsMouseOver;
+	bool								mInside;
+	bool								mIsDown;
+	bool								mIsMouseOver;
 };
 
 #endif

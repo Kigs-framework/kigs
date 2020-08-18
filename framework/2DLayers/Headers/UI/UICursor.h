@@ -6,6 +6,17 @@
 #include "AttributePacking.h"
 #include "TouchInputEventManager.h"
 
+// ****************************************
+// * UICursor class
+// * --------------------------------------
+/**
+* \file	UICursor.h
+* \class	UICursor
+* \ingroup 2DLayers
+* \brief	???
+*
+*/
+// ****************************************
 
 class UICursor : public UIItem
 {
@@ -17,7 +28,7 @@ public:
 	WRAP_METHODS(ManageDirectTouchEvent);
 
 private :
-	maReference myUIOwner=BASE_ATTRIBUTE(UIOwner,"");
+	maReference mUIOwner=BASE_ATTRIBUTE(UIOwner,"");
 };
 
 

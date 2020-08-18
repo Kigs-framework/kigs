@@ -4,6 +4,18 @@
 #include "UIButton.h"
 #include "maUSString.h"
 
+// ****************************************
+// * UIButtonImage class
+// * --------------------------------------
+/**
+* \file	UIButtonImage.h
+* \class	UIButtonImage
+* \ingroup 2DLayers
+* \brief	Button with three textures ( Up, Down , Over )
+*
+*/
+// ****************************************
+
 class UIButtonImage : public UIButton
 {
 public:
@@ -27,13 +39,13 @@ protected:
 
 	void	ReloadTexture();
 
-	SmartPointer<Texture>				myUpTexture;
-	SmartPointer<Texture>				myDownTexture;
-	SmartPointer<Texture>				myOverTexture;
+	SmartPointer<Texture>				mUpTexturePointer;
+	SmartPointer<Texture>				mDownTexturePointer;
+	SmartPointer<Texture>				mOverTexturePointer;
 
-	maString	myUpTextureName;
-	maString	myDownTextureName;
-	maString	myOverTextureName;
+	maString	mUpTexture;
+	maString	mDownTexture;
+	maString	mOverTexture;
 };
 
 #endif //_UIBUTTONIMAGE_H_

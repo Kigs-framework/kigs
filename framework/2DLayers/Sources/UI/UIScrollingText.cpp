@@ -10,31 +10,31 @@ IMPLEMENT_CLASS_INFO(UIScrollingText)
 
 UIScrollingText::UIScrollingText(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
 UIText(name, PASS_CLASS_NAME_TREE_ARG)
-,myCaracterPerSeconde(*this,false,LABEL_AND_ID(CaracterPerSeconde),KFLOAT_ZERO)
-,myScrollIndex(1)
-,mydElapsedTime(0)
+,mCaracterPerSeconde(*this,false,LABEL_AND_ID(CaracterPerSeconde),KFLOAT_ZERO)
+,mScrollIndex(1)
+,mElapsedTime(0)
 {
-	myLength = myScrollIndex;
+	mLength = mScrollIndex;
 }
 
 
 void UIScrollingText::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == myText.getLabelID())
+	if (labelid == mText.getLabelID())
 	{
-		myScrollIndex = 1;
+		mScrollIndex = 1;
 	}
 	UIText::NotifyUpdate(labelid);
 }
 
 void	UIScrollingText::Update(const Timer& a_timer, void* addParam)
 {
-	mydElapsedTime += ((Timer&)a_timer).GetDt(this);
-	if(mydElapsedTime >= myCaracterPerSeconde)
+	mElapsedTime += ((Timer&)a_timer).GetDt(this);
+	if(mElapsedTime >= mCaracterPerSeconde)
 	{
-		mydElapsedTime = 0;
-		myScrollIndex++;
-		myLength = myScrollIndex;
-		ChangeText(myText.const_ref());
+		mElapsedTime = 0;
+		mScrollIndex++;
+		mLength = mScrollIndex;
+		ChangeText(mText.const_ref());
 	}
 }

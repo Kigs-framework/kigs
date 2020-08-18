@@ -286,7 +286,7 @@ namespace kigs_impl
 	auto UnpackGetValue(ptr_to_ref<T>& value, CoreModifiableAttribute* attr) -> enable_if_t<is_base_of<CoreModifiable, T>::value>
 	{
 		CoreModifiable* cm = nullptr;
-		if (attr->getValue(cm) && cm && cm->isSubType(T::myClassID))
+		if (attr->getValue(cm) && cm && cm->isSubType(T::mClassID))
 			value = (T*)cm;
 	}
 
@@ -547,8 +547,8 @@ inline bool CoreModifiable::EmitSignal(const KigsID& SignalID, T&&... params)
 
 	if (!mLazyContent) return false;
 
-	auto it = GetLazyContent()->ConnectedTo.find(SignalID);
-	if(it != GetLazyContent()->ConnectedTo.end())
+	auto it = GetLazyContent()->mConnectedTo.find(SignalID);
+	if(it != GetLazyContent()->mConnectedTo.end())
 	{
 		std::vector<std::pair<KigsID, CoreModifiable*>> copy = it->second;
 		lk.unlock();
@@ -578,7 +578,7 @@ inline bool CoreModifiable::EmitSignal(const KigsID& SignalID, T&&... params)
 template<typename T>
 PackCoreModifiableAttributes& PackCoreModifiableAttributes::operator<<(T&& V)
 {
-	m_attributeList.push_back(MakeAttribute(std::forward<T>(V), m_owner));
+	mAttributeList.push_back(MakeAttribute(std::forward<T>(V), mOwner));
 	return *this;
 }
 
@@ -586,7 +586,7 @@ PackCoreModifiableAttributes& PackCoreModifiableAttributes::operator<<(T&& V)
 template<typename F>
 inline void CoreModifiable::InsertFunction(KigsID labelID, F&& func)
 {
-	auto& methods = GetLazyContent()->Methods;
+	auto& methods = GetLazyContent()->mMethods;
 	ModifiableMethodStruct toAdd{ [f = std::move(func)] (CoreModifiable* localthis, CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>& params, void* privateParams) mutable
 	{
 		kigs_impl::UnpackAndCall(f, params);
@@ -601,7 +601,7 @@ inline void CoreModifiable::InsertFunction(KigsID labelID, F&& func)
 template<typename F>
 inline void CoreModifiable::InsertFunctionNoUnpack(KigsID labelID, F&& func)
 {
-	auto& methods = GetLazyContent()->Methods;
+	auto& methods = GetLazyContent()->mMethods;
 	ModifiableMethodStruct toAdd{ [f = std::move(func)] (CoreModifiable* localthis, CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>& params, void* privateParams) mutable
 	{
 		f(params);

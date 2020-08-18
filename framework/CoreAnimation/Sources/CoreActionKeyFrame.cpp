@@ -7,15 +7,15 @@ bool	CoreActionKeyFrameBase::protectedUpdate(kdouble time)
 	bool done=false;
 	while(!done)
 	{
-		if(time<(myTimeArray[myLastKeyIndex+1]+myStartTime))
+		if(time<(mTimeArray[mLastKeyIndex+1]+mStartTime))
 		{
 			done=true;
 		}
 		else
 		{
-			++myLastKeyIndex;
-			protectedSetValue(myLastKeyIndex);
-			if((myLastKeyIndex+1)>=(int)myKeyFrameCount)
+			++mLastKeyIndex;
+			protectedSetValue(mLastKeyIndex);
+			if((mLastKeyIndex+1)>=(int)mKeyFrameCount)
 			{
 				return true;
 			}

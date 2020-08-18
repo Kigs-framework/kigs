@@ -35,11 +35,9 @@ struct NodeToDraw
 * \file	Base2DLayer.h
 * \class	BaseUI2DLayer
 * \ingroup 2DLayers
-* \brief	base class for 2DLayerUI (2D Renderering)
+* \brief	UI rendering support
 *
-* BaseUI2DLayer inherits Abstract2DLayer, it should be added to a scenegraph
-*
-* <dl class="dependency"><dt><b>Dependency:</b></dt><dd>Module2DLayer</dd></dl>
+* BaseUI2DLayer inherits Abstract2DLayer. It have to be added to SceneGraph and is sorted by Priority with other 2DLayers and Scene3D.
 *
 */
 // ****************************************
@@ -54,7 +52,7 @@ public:
 	//! Do drawing here if any
 	void TravDraw(TravState* state) override;
 
-	SP<UIItem>& GetRootItem() { return myRootItem; }
+	SP<UIItem>& GetRootItem() { return mRootItem; }
 
 	static void AccumulateToDraw(TravState* state, kstl::vector<NodeToDraw>& todraw, CoreModifiable* current, int depth = 0, u32 clip_count = 0);
 	static void UpdateChildrens(const Timer& a_timer, UIItem* current, void* addParam);
@@ -65,9 +63,9 @@ protected:
 
 	void SortItemsFrontToBack(SortItemsFrontToBackParam& param) override;
 
-	ModuleInput* myInput;
+	ModuleInput* mInput;
 	// TODO : change root item management in BaseUI2DLayer (use classic additem / removeitem...)
-	SP<UIItem> myRootItem;
+	SP<UIItem> mRootItem;
 
 
 };

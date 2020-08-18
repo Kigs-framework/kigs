@@ -9,45 +9,45 @@ IMPLEMENT_CLASS_INFO(PassiveColoredMask)
 //! constructor, init all parameters
 PassiveColoredMask::PassiveColoredMask(const kstl::string& name,CLASS_NAME_TREE_ARG)
 :UIItem(name,PASS_CLASS_NAME_TREE_ARG)
-,myThreshold(*this,true,LABEL_AND_ID(Threshold),0)
-,myTextureName(*this,false,LABEL_AND_ID(TextureName),"")
-,myMaskName(*this,false,LABEL_AND_ID(MaskName),"")
-,myRay(*this,true,LABEL_AND_ID(Ray),0)
+,mThreshold(*this,true,LABEL_AND_ID(Threshold),0)
+,mTextureName(*this,false,LABEL_AND_ID(TextureName),"")
+,mMaskName(*this,false,LABEL_AND_ID(MaskName),"")
+,mRay(*this,true,LABEL_AND_ID(Ray),0)
 {
-	myIsDown = false;
-	myIsMouseOver = false;
-	myPixelArray = nullptr;
-	myPixelMaskArray = nullptr;
-	myOriginalPixelArray = nullptr;
+	mIsDown = false;
+	mIsMouseOver = false;
+	mPixelArray = nullptr;
+	mPixelMaskArray = nullptr;
+	mOriginalPixelArray = nullptr;
 }
 
 PassiveColoredMask::~PassiveColoredMask()
 {
-	if(myTexture)
-		myTexture = nullptr;
+	if(mTexture)
+		mTexture = nullptr;
 
-	if(myPixelArray)
+	if(mPixelArray)
 	{
-		free(myPixelArray);
-		myPixelArray = nullptr;
+		free(mPixelArray);
+		mPixelArray = nullptr;
 	}
-	if(myPixelMaskArray)
+	if(mPixelMaskArray)
 	{
-		free(myPixelMaskArray);
-		myPixelMaskArray = nullptr;
+		free(mPixelMaskArray);
+		mPixelMaskArray = nullptr;
 	}
-	if(myOriginalPixelArray)
+	if(mOriginalPixelArray)
 	{
-		free(myOriginalPixelArray);
-		myOriginalPixelArray = nullptr;
+		free(mOriginalPixelArray);
+		mOriginalPixelArray = nullptr;
 	}
 }
 
 void	PassiveColoredMask::ReloadTexture()
 {
-	if(myTexture)
+	if(mTexture)
 	{
-		myTexture->ReInit();
+		mTexture->ReInit();
 	}
 }
 
@@ -56,27 +56,27 @@ void	PassiveColoredMask::InitModifiable()
 	UIItem::InitModifiable();
 	if(IsInit())
 	{
-		myIsDown      = false;
-		myIsMouseOver = false;
+		mIsDown      = false;
+		mIsMouseOver = false;
 
 		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-		myTexture = textureManager->GetTexture(myTextureName);
+		mTexture = textureManager->GetTexture(mTextureName);
 
-		if(myTexture)
+		if(mTexture)
 		{
-			myTexture->getValue("Width",myWidth);
-			myTexture->getValue("Height",myHeight);
+			mTexture->getValue("Width",mWidth);
+			mTexture->getValue("Height",mHeight);
 
-			myTexture->getValue("Pow2Width",myPow2Width);
-			myTexture->getValue("Pow2Height",myPow2Height);
+			mTexture->getValue("Pow2Width",mPow2Width);
+			mTexture->getValue("Pow2Height",mPow2Height);
 
             int width, height, pow2width, pow2height;
             width = height = pow2width = pow2height = 0;
             
 			SmartPointer<Texture>	MaskTexture;
-			if(myMaskName.const_ref() != "")
+			if(mMaskName.const_ref() != "")
 			{
-				MaskTexture = textureManager->GetTexture(myMaskName);
+				MaskTexture = textureManager->GetTexture(mMaskName);
 				MaskTexture->getValue("Width",width);
 				MaskTexture->getValue("Height",height);
 
@@ -85,32 +85,32 @@ void	PassiveColoredMask::InitModifiable()
 
 			}
 
-			if(myWidth > 0 && myHeight > 0)
+			if(mWidth > 0 && mHeight > 0)
 			{
 				//Allow temp buffer to get pixel data
-				myPixelArray  = nullptr;
-				myPixelArray  = (unsigned int*) malloc((myPow2Width*myPow2Height)*sizeof(unsigned int));
-				myOriginalPixelArray = (unsigned int*) malloc((myPow2Width*myPow2Height)*sizeof(unsigned int));
+				mPixelArray  = nullptr;
+				mPixelArray  = (unsigned int*) malloc((mPow2Width*mPow2Height)*sizeof(unsigned int));
+				mOriginalPixelArray = (unsigned int*) malloc((mPow2Width*mPow2Height)*sizeof(unsigned int));
 				
 
-				myTexture->GetPixels(myPixelArray);
-				memcpy(myOriginalPixelArray,myPixelArray,(myPow2Width*myPow2Height)*sizeof(unsigned int));
+				mTexture->GetPixels(mPixelArray);
+				memcpy(mOriginalPixelArray,mPixelArray,(mPow2Width*mPow2Height)*sizeof(unsigned int));
 				if(MaskTexture)
 				{
-					myPixelMaskArray = (unsigned int*) malloc((pow2width*pow2height)*sizeof(unsigned int));
-					MaskTexture->GetPixels(myPixelMaskArray);
+					mPixelMaskArray = (unsigned int*) malloc((pow2width*pow2height)*sizeof(unsigned int));
+					MaskTexture->GetPixels(mPixelMaskArray);
 
 				}
 
 				// auto size button
-				if( (((unsigned int)mySizeX)==0) && (((unsigned int)mySizeY)==0) )
+				if( (((unsigned int)mSizeX)==0) && (((unsigned int)mSizeY)==0) )
 				{
-					if(myTexture)
+					if(mTexture)
 					{
 						float width,height;
-						myTexture->GetSize(width,height);
-						mySizeX=width;
-						mySizeY=height;
+						mTexture->GetSize(width,height);
+						mSizeX=width;
+						mSizeY=height;
 					}
 				}
 			}
@@ -135,18 +135,18 @@ void	PassiveColoredMask::InitModifiable()
 
 Texture* PassiveColoredMask::GetTexture()
 {
-	if(myTexture)
+	if(mTexture)
 	{
-		return myTexture.get();
+		return mTexture.get();
 	}
 	return nullptr;
 }
 
 void PassiveColoredMask::ApplyColorFrom(float X, float Y, int R, int G, int B, bool IsRGBA, unsigned int aExtendedRay)
 {
-	if(myPixelMaskArray != nullptr)
+	if(mPixelMaskArray != nullptr)
 	{
-		unsigned int extendedRay = aExtendedRay + myRay;
+		unsigned int extendedRay = aExtendedRay + mRay;
 		float Sx = X - extendedRay;
 		float Sy = Y - extendedRay;
 
@@ -155,9 +155,9 @@ void PassiveColoredMask::ApplyColorFrom(float X, float Y, int R, int G, int B, b
 		if(Sy < 0.0f)
 			Sy = 0.0f;
 
-		PLATFORM_COLOR *TheMaskCenterColor = (PLATFORM_COLOR*)myPixelMaskArray+((int)X+(int)Y*myPow2Width);
+		PLATFORM_COLOR *TheMaskCenterColor = (PLATFORM_COLOR*)mPixelMaskArray+((int)X+(int)Y*mPow2Width);
 
-		unsigned int*	readPixel=myPixelArray+((int)Sx+(int)Sy*myPow2Width);
+		unsigned int*	readPixel=mPixelArray+((int)Sx+(int)Sy*mPow2Width);
 
 		int SqrtRay = extendedRay*extendedRay;
 
@@ -168,7 +168,7 @@ void PassiveColoredMask::ApplyColorFrom(float X, float Y, int R, int G, int B, b
 
 		float RemoteMitigation = (SqrtRay*60)*0.01f;
 		float rest = SqrtRay - RemoteMitigation;
-		int Size = myPow2Width*myPow2Height;
+		int Size = mPow2Width*mPow2Height;
 
 		for(int Line = 0; Line < doubleRay; Line ++)
 		{
@@ -178,11 +178,11 @@ void PassiveColoredMask::ApplyColorFrom(float X, float Y, int R, int G, int B, b
 				if(dist <= SqrtRay)
 				{
 					//inside ray
-					tabPos = (int) (((Sx + (col)) + (Sy+ Line)*myPow2Width));
+					tabPos = (int) (((Sx + (col)) + (Sy+ Line)*mPow2Width));
 					if(tabPos > 0 && tabPos < Size)
 					{
-						PLATFORM_COLOR *TheOriginalColor = (PLATFORM_COLOR*)myPixelArray+tabPos;
-						PLATFORM_COLOR *TheMaskColor = (PLATFORM_COLOR*)myPixelMaskArray+tabPos;
+						PLATFORM_COLOR *TheOriginalColor = (PLATFORM_COLOR*)mPixelArray+tabPos;
+						PLATFORM_COLOR *TheMaskColor = (PLATFORM_COLOR*)mPixelMaskArray+tabPos;
 						if(IsRGBA)
 						{
 							if(TheOriginalColor->A)
@@ -238,16 +238,16 @@ void PassiveColoredMask::ApplyColorFrom(float X, float Y, int R, int G, int B, b
 					}
 				}
 			}
-			readPixel = myPixelArray+((int)Sx+((int)Sy+ (Line+1) )*myPow2Width);
+			readPixel = mPixelArray+((int)Sx+((int)Sy+ (Line+1) )*mPow2Width);
 		}
 
-		myTexture->SetPixels(myPixelArray,myPow2Width,myPow2Height);
+		mTexture->SetPixels(mPixelArray,mPow2Width,mPow2Height);
 	}
 }
 
 void PassiveColoredMask::ApplyColorFrom(float TopLeftCornerX, float TopLeftCornerY, int SizeX, int SizeY, int R, int G, int B, bool IsRGBA)
 {
-	if(myPixelMaskArray != nullptr)
+	if(mPixelMaskArray != nullptr)
 	{
 		if(TopLeftCornerX < 0.0f)
 			TopLeftCornerX = 0.0f;
@@ -260,10 +260,10 @@ void PassiveColoredMask::ApplyColorFrom(float TopLeftCornerX, float TopLeftCorne
 		{
 			for(Y = 0; Y < SizeY; Y++)
 			{
-				L_TabPos = (int) ((TopLeftCornerX+X)+(TopLeftCornerY+Y)*myPow2Width);
+				L_TabPos = (int) ((TopLeftCornerX+X)+(TopLeftCornerY+Y)*mPow2Width);
 				
 
-				PLATFORM_COLOR *TheOriginalColor = (PLATFORM_COLOR*)myPixelArray+L_TabPos;
+				PLATFORM_COLOR *TheOriginalColor = (PLATFORM_COLOR*)mPixelArray+L_TabPos;
 				if(IsRGBA)
 				{
 					if(TheOriginalColor->A)
@@ -286,14 +286,14 @@ void PassiveColoredMask::ApplyColorFrom(float TopLeftCornerX, float TopLeftCorne
 				}
 			}
 		}
-		myTexture->SetPixels(myPixelArray,myPow2Width,myPow2Height);	
+		mTexture->SetPixels(mPixelArray,mPow2Width,mPow2Height);	
 	}
 }
 
 
 void	PassiveColoredMask::RestoreOriginalColorAt(float TopLeftCornerX, float TopLeftCornerY, int SizeX, int SizeY, bool IsRGBA)
 {
-	if(myPixelMaskArray != nullptr)
+	if(mPixelMaskArray != nullptr)
 	{
 		if(TopLeftCornerX < 0.0f)
 			TopLeftCornerX = 0.0f;
@@ -306,23 +306,23 @@ void	PassiveColoredMask::RestoreOriginalColorAt(float TopLeftCornerX, float TopL
 		{
 			for(Y = 0; Y < SizeY; Y++)
 			{
-				L_TabPos = (int) ((TopLeftCornerX+X)+(TopLeftCornerY+Y)*myPow2Width);
+				L_TabPos = (int) ((TopLeftCornerX+X)+(TopLeftCornerY+Y)*mPow2Width);
 				
 
-				PLATFORM_COLOR *TheOriginalColor = (PLATFORM_COLOR*)myOriginalPixelArray+L_TabPos;
-				PLATFORM_COLOR *TheTextureColor = (PLATFORM_COLOR*)myPixelArray+L_TabPos;
-				PLATFORM_COLOR *TheMaskColor = (PLATFORM_COLOR*)myPixelMaskArray+L_TabPos;
+				PLATFORM_COLOR *TheOriginalColor = (PLATFORM_COLOR*)mOriginalPixelArray+L_TabPos;
+				PLATFORM_COLOR *TheTextureColor = (PLATFORM_COLOR*)mPixelArray+L_TabPos;
+				PLATFORM_COLOR *TheMaskColor = (PLATFORM_COLOR*)mPixelMaskArray+L_TabPos;
 				*TheMaskColor = *TheOriginalColor;
 				*TheTextureColor = *TheOriginalColor;
 			}
 		}
-		myTexture->SetPixels(myPixelArray,myPow2Width,myPow2Height);	
+		mTexture->SetPixels(mPixelArray,mPow2Width,mPow2Height);	
 	}
 }
 
 void	PassiveColoredMask::PixelCopyFromMask(int TopLeftCornerX, int TopLeftCornerY, int SizeX, int SizeY)
 {
-	if(myPixelMaskArray != nullptr)
+	if(mPixelMaskArray != nullptr)
 	{
 		if(TopLeftCornerX < 0)
 			TopLeftCornerX = 0;
@@ -335,12 +335,12 @@ void	PassiveColoredMask::PixelCopyFromMask(int TopLeftCornerX, int TopLeftCorner
 		{
 			for(Y = 0; Y < SizeY; Y++)
 			{
-				L_TabPos = (int) ((TopLeftCornerX+X)+(TopLeftCornerY+Y)*myPow2Width);
-				PLATFORM_COLOR *TheTextureColor = (PLATFORM_COLOR*)myPixelArray+L_TabPos;
-				PLATFORM_COLOR *TheMaskColor = (PLATFORM_COLOR*)myPixelMaskArray+L_TabPos;
+				L_TabPos = (int) ((TopLeftCornerX+X)+(TopLeftCornerY+Y)*mPow2Width);
+				PLATFORM_COLOR *TheTextureColor = (PLATFORM_COLOR*)mPixelArray+L_TabPos;
+				PLATFORM_COLOR *TheMaskColor = (PLATFORM_COLOR*)mPixelMaskArray+L_TabPos;
 				*TheTextureColor = *TheMaskColor;
 			}
 		}
-		myTexture->SetPixels(myPixelArray,myPow2Width,myPow2Height);	
+		mTexture->SetPixels(mPixelArray,mPow2Width,mPow2Height);	
 	}
 }

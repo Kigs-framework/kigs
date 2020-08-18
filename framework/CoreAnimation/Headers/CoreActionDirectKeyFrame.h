@@ -5,19 +5,29 @@
 #include "CoreValue.h"
 #include "CoreActionKeyFrame.h"
 
-
+// ****************************************
+// * CoreActionRawKeyFrame class
+// * --------------------------------------
+/**
+* \file	CoreActionDirectKeyFrame.h
+* \class	CoreActionRawKeyFrame
+* \ingroup CoreAnimation
+* \brief	Base class for CoreActionDirectKeyFrame
+*
+*/
+// ****************************************
 template<typename dataType>
 class CoreActionRawKeyFrame : public CoreActionKeyFrameBase
 {
 public:
 	
-	CoreActionRawKeyFrame() : CoreActionKeyFrameBase(), myPParamID(0)
+	CoreActionRawKeyFrame() : CoreActionKeyFrameBase(), mPParamID(0)
 	{}
 
 	virtual ~CoreActionRawKeyFrame()
 	{
-		if(myKeyFrameArray)
-			delete[] myKeyFrameArray;
+		if(mKeyFrameArray)
+			delete[] mKeyFrameArray;
 	}
 
 	virtual void init(CoreSequence* sequence,CoreVector* params){}; // empty, raw action can not be directly init with json
@@ -26,20 +36,32 @@ protected:
 
 	virtual void	protectedSetValue(int index)
 	{
-		if (myPParamID == 0)
+		if (mPParamID == 0)
 		{
-			CoreModifiableAttribute* attr = myTarget->getAttribute(myParamID);
-			myPParamID = (dataType*)attr->getRawValue();
+			CoreModifiableAttribute* attr = mTarget->getAttribute(mParamID);
+			mPParamID = (dataType*)attr->getRawValue();
 		}
-		if (myPParamID)
+		if (mPParamID)
 		{
-			*myPParamID = myKeyFrameArray[index];
+			*mPParamID = mKeyFrameArray[index];
 		}
 	}
 
-	dataType*			myPParamID;
-	dataType*			myKeyFrameArray;
+	dataType*			mPParamID;
+	dataType*			mKeyFrameArray;
 };
+
+// ****************************************
+// * CoreActionDirectKeyFrame class
+// * --------------------------------------
+/**
+* \file	CoreActionDirectKeyFrame.h
+* \class	CoreActionDirectKeyFrame
+* \ingroup CoreAnimation
+* \brief	Direct access to animated value ( without setvalue )
+*
+*/
+// ****************************************
 
 template<typename dataType>
 class CoreActionDirectKeyFrame : public CoreActionRawKeyFrame<dataType>
@@ -51,13 +73,13 @@ public:
 
 	virtual void init(CoreSequence* sequence,CoreVector* params) override
 	{
-		this->myTarget = sequence->getTarget();
+		this->mTarget = sequence->getTarget();
 
 		kstl::string readstring;
 		(*params)[0]->getValue(readstring);
-		this->myTarget = this->checkSubTarget(readstring);
+		this->mTarget = this->checkSubTarget(readstring);
 
-		this->myParamID = CharToID::GetID(readstring);
+		this->mParamID = CharToID::GetID(readstring);
 
 		// stock in list before creating the final array
 		kstl::vector<dataType>	L_values;
@@ -80,16 +102,16 @@ public:
 			return;
 		}
 
-		this->myKeyFrameCount = (unsigned int)L_values.size();
-		this->myDuration = L_times[L_times.size() - 1];
+		this->mKeyFrameCount = (unsigned int)L_values.size();
+		this->mDuration = L_times[L_times.size() - 1];
 
-		this->myKeyFrameArray = new dataType[L_values.size()];
-		this->myTimeArray = new kdouble[L_values.size()];
+		this->mKeyFrameArray = new dataType[L_values.size()];
+		this->mTimeArray = new kdouble[L_values.size()];
 
 		for (i = 0; i < L_values.size(); i++)
 		{
-			this->myKeyFrameArray[i] = L_values[i];
-			this->myTimeArray[i] = L_times[i];
+			this->mKeyFrameArray[i] = L_values[i];
+			this->mTimeArray[i] = L_times[i];
 		}
 	}
 

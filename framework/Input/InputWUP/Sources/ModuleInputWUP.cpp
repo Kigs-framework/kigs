@@ -100,9 +100,9 @@ void ModuleInputWUP::Update(const Timer& timer, void* addParam)
 	
 	for (it=getItems().begin();it!=getItems().end();++it)
 	{
-		if((*it).myItem->isSubType(InputDevice::myClassID))
+		if((*it).mItem->isSubType(InputDevice::mClassID))
 		{
-			InputDevice* device=(InputDevice*)(*it).myItem.get();
+			InputDevice* device=(InputDevice*)(*it).mItem.get();
 			
 			if(!device->IsAquired())
 				device->Aquire();
@@ -116,7 +116,7 @@ void ModuleInputWUP::Update(const Timer& timer, void* addParam)
 
 bool	ModuleInputWUP::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	if(item->isSubType(InputDevice::myClassID))
+	if(item->isSubType(InputDevice::mClassID))
 	{
 		return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 	}

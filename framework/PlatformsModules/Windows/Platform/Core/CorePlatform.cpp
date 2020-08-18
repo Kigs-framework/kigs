@@ -18,7 +18,7 @@
 // check if file exist and if it's a file or directory
 void Win32CheckState(FileHandle * hndl)
 {
-	std::wstring wfilename = to_wchar(hndl->myFullFileName);
+	std::wstring wfilename = to_wchar(hndl->mFullFileName);
 	int attr = GetFileAttributesW(wfilename.c_str());
 	if (attr == -1)
 	{
@@ -26,22 +26,22 @@ void Win32CheckState(FileHandle * hndl)
 		hndl->resetStatus();
 		return;
 	}
-	hndl->myStatus |= FileHandle::Exist;
+	hndl->mStatus |= FileHandle::Exist;
 	if ((attr&FILE_ATTRIBUTE_DIRECTORY) != 0)
-		hndl->myStatus |= FileHandle::IsDIr;
+		hndl->mStatus |= FileHandle::IsDIr;
 
 }
 
 bool Win32CreateFolderTree(FileHandle* hndl)
 {
-	if ((hndl->myStatus&FileHandle::Exist) == 0)
+	if ((hndl->mStatus&FileHandle::Exist) == 0)
 	{
-		SmartPointer<FileHandle> parent = FilePathManager::CreateFileHandle(FilePathManager::GetParentDirectory(hndl->myFullFileName));
-		if (parent->myFullFileName != "")
+		SmartPointer<FileHandle> parent = FilePathManager::CreateFileHandle(FilePathManager::GetParentDirectory(hndl->mFullFileName));
+		if (parent->mFullFileName != "")
 		{
 			Win32CheckState(parent.get());
 			Win32CreateFolderTree(parent.get());
-			std::wstring wfilename = to_wchar(parent->myFullFileName);
+			std::wstring wfilename = to_wchar(parent->mFullFileName);
 			return CreateDirectoryW(wfilename.c_str(), NULL);
 		}
 	}
@@ -110,8 +110,8 @@ SmartPointer<FileHandle>	Win32FindFullName(const kstl::string&	filename)
 
 	SmartPointer<FileHandle> result = FilePathManager::CreateFileHandle((const char*)(&(filename.c_str()[3])));
 
-	result->myDeviceID = id;
-	result->myFullFileName = fullFileName;
+	result->mDeviceID = id;
+	result->mFullFileName = fullFileName;
 	Win32CheckState(result.get());
 	return result;
 }
@@ -120,7 +120,7 @@ bool Win32fopen(FileHandle* handle, const char * mode)
 {
 	unsigned int flagmode = FileHandle::OpeningFlags(mode);
 
-	if (handle->myStatus&FileHandle::Open) // already opened ? return true
+	if (handle->mStatus&FileHandle::Open) // already opened ? return true
 	{
 		// check if open mode is the same
 		if (flagmode == handle->getOpeningFlags())
@@ -129,7 +129,7 @@ bool Win32fopen(FileHandle* handle, const char * mode)
 		}
 		else
 		{
-			fclose(handle->myFile);
+			fclose(handle->mFile);
 		}
 	}
 
@@ -139,19 +139,19 @@ bool Win32fopen(FileHandle* handle, const char * mode)
 		Win32CreateFolderTree(handle);
 	}
 
-	std::wstring wfilename = to_wchar(handle->myFullFileName);
+	std::wstring wfilename = to_wchar(handle->mFullFileName);
 	wchar_t wmode[64] = {};
 	for (int i=0; i<strlen(mode); ++i)
 	{
 		wmode[i] = mode[i];
 	}
 
-	handle->myFile = _wfopen(wfilename.c_str(), wmode);
+	handle->mFile = _wfopen(wfilename.c_str(), wmode);
 
-	if (handle->myFile)
+	if (handle->mFile)
 	{
-		handle->myStatus |= FileHandle::Open;
-		handle->myStatus |= FileHandle::Exist;
+		handle->mStatus |= FileHandle::Open;
+		handle->mStatus |= FileHandle::Exist;
 		handle->setOpeningFlags(flagmode);
 		return true;
 	}
@@ -161,30 +161,30 @@ bool Win32fopen(FileHandle* handle, const char * mode)
 
 long int Win32fread(void * ptr, long size, long count, FileHandle* handle)
 {
-	return fread(ptr, size, count, handle->myFile);
+	return fread(ptr, size, count, handle->mFile);
 }
 
 long int Win32fwrite(const void * ptr, long size, long count, FileHandle* handle)
 {
-	return fwrite(ptr, size, count, handle->myFile);
+	return fwrite(ptr, size, count, handle->mFile);
 }
 
 long int Win32ftell(FileHandle* handle)
 {
-	return ftell(handle->myFile);
+	return ftell(handle->mFile);
 }
 
 int Win32fseek(FileHandle* handle, long int offset, int origin)
 {
-	return fseek(handle->myFile, offset, origin);
+	return fseek(handle->mFile, offset, origin);
 }
 int Win32fflush(FileHandle* handle)
 {
-	return fflush(handle->myFile);
+	return fflush(handle->mFile);
 }
 int Win32fclose(FileHandle* handle)
 {
-	int result = fclose(handle->myFile);
+	int result = fclose(handle->mFile);
 	handle->resetStatus(); // reset 
 	return result;
 }

@@ -9,14 +9,14 @@ IMPLEMENT_CLASS_INFO(UIText)
 
 UIText::UIText(const kstl::string& name, CLASS_NAME_TREE_ARG) 
 	: UITexturedItem(name, PASS_CLASS_NAME_TREE_ARG)
-	, myText(*this, false, "Text", (kstl::string)"")
-	, myFont(*this, false, "Font", "arial.ttf")
-	, myFontSize(*this, false, "FontSize", 12)
-	, myDirection(*this, false, "Direction", 0)
-	, myLength(*this, false, "Length", 0)
-	, myTextAlign(*this, false, "TextAlignment", 1)
-	, myMaxWidth(*this, false, "MaxWidth", 128)
-	, myMaxLines(*this, false, "MaxLines", 0)
+	, mText(*this, false, "Text", (kstl::string)"")
+	, mFont(*this, false, "Font", "arial.ttf")
+	, mFontSize(*this, false, "FontSize", 12)
+	, mDirection(*this, false, "Direction", 0)
+	, mLength(*this, false, "Length", 0)
+	, mTextAlignment(*this, false, "TextAlignment", 1)
+	, mMaxWidth(*this, false, "MaxWidth", 128)
+	, mMaxLines(*this, false, "MaxLines", 0)
 {
 	// text don't have color array
 	//unsetUserFlag(UserFlagUseColorArray);
@@ -26,17 +26,17 @@ UIText::UIText(const kstl::string& name, CLASS_NAME_TREE_ARG)
 
 void UIText::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == myText.getLabelID())||
-		(labelid == myFontSize.getLabelID()) ||
+	if ((labelid == mText.getLabelID())||
+		(labelid == mFontSize.getLabelID()) ||
 		//(labelid == myBold.getLabelID()) ||
 		//(labelid == myColor.getLabelID()) ||
-		(labelid == myFont.getLabelID()) ||
+		(labelid == mFont.getLabelID()) ||
 		//(labelid == myOpacity.getLabelID()) ||
-		(labelid == myMaxWidth.getLabelID()) ||
-		(labelid == myTextAlign.getLabelID()) ||
-		(labelid == myLength.getLabelID()))
+		(labelid == mMaxWidth.getLabelID()) ||
+		(labelid == mTextAlignment.getLabelID()) ||
+		(labelid == mLength.getLabelID()))
 	{
-		ChangeText(myText.const_ref());
+		ChangeText(mText.const_ref());
 	}
 	UITexturedItem::NotifyUpdate(labelid);
 }
@@ -47,14 +47,14 @@ void UIText::InitModifiable()
 	if (IsInit())
 	{
 		//myColor.changeNotificationLevel(Owner);
-		myText.changeNotificationLevel(Owner);
-		myFontSize.changeNotificationLevel(Owner);
+		mText.changeNotificationLevel(Owner);
+		mFontSize.changeNotificationLevel(Owner);
 		//myBold.changeNotificationLevel(Owner);
-		myFont.changeNotificationLevel(Owner);
-		myLength.changeNotificationLevel(Owner);
-		myOpacity.changeNotificationLevel(Owner);
-		myMaxWidth.changeNotificationLevel(Owner);
-		myTextAlign.changeNotificationLevel(Owner);
+		mFont.changeNotificationLevel(Owner);
+		mLength.changeNotificationLevel(Owner);
+		mOpacity.changeNotificationLevel(Owner);
+		mMaxWidth.changeNotificationLevel(Owner);
+		mTextAlignment.changeNotificationLevel(Owner);
 
 		char	nameBuffer[256];
 		std::string name = getName();
@@ -65,34 +65,34 @@ void UIText::InitModifiable()
 
 		sprintf(nameBuffer, "%s_%u_TEX", name.c_str(), getUID());
 
-		myTexture = KigsCore::GetInstanceOf(nameBuffer, "Texture");
-		myTexture->Init();
-		myTexture->SetRepeatUV(false, false);
-		ChangeText(myText.const_ref());
+		mTexturePointer = KigsCore::GetInstanceOf(nameBuffer, "Texture");
+		mTexturePointer->Init();
+		mTexturePointer->SetRepeatUV(false, false);
+		ChangeText(mText.const_ref());
 	}
 }
 
 bool UIText::isAlpha(float X, float Y)
 {
 	//Try to get my mask
-	if (!myAlphaMask)
+	if (!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
 
 		for (unsigned int i = 0; i < sons.size(); i++)
 		{
-			if (sons[i].myItem->isSubType("AlphaMask"))
+			if (sons[i].mItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = sons[i].myItem;
+				mAlphaMask = sons[i].mItem;
 				break;
 			}
 		}
 	}
 
-	if (myAlphaMask)
+	if (mAlphaMask)
 	{
 		//Check on my mask the specified location
-		return !myAlphaMask->CheckTo(X, Y);
+		return !mAlphaMask->CheckTo(X, Y);
 	}
 
 	return false;
@@ -120,11 +120,11 @@ void	UIText::ChangeText(const usString& _newText)
 		PLATFORM_WCHAR* localized = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key);
 
 		bool modified = false;
-		if (localized && myLength > 0)
+		if (localized && mLength > 0)
 			localized = CutText(localized, modified);
 
 		if (localized)
-			myTexture->CreateFromText(localized, myMaxLines, myMaxWidth, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, 255,255, 255, 255, TinyImage::RGBA_32_8888);
+			mTexturePointer->CreateFromText(localized, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255,255, 255, 255, TinyImage::RGBA_32_8888);
 
 		if (modified)
 			free(localized);
@@ -133,26 +133,26 @@ void	UIText::ChangeText(const usString& _newText)
 	{
 		bool modified = false;
 		unsigned short* L_returneValue = NULL;
-		if (myLength > 0)
+		if (mLength > 0)
 			L_returneValue = CutText(_newText.us_str(), modified);
 		else
 			L_returneValue = const_cast<unsigned short*>(_newText.us_str());
 
-		myTexture->CreateFromText(L_returneValue, myMaxLines, myMaxWidth, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, 255, 255, 255,255, TinyImage::RGBA_32_8888);
+		mTexturePointer->CreateFromText(L_returneValue, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255,255, TinyImage::RGBA_32_8888);
 
 		if (modified)
 			free(L_returneValue);
 	}
 
 	int width, height;
-	myTexture->getValue(LABEL_TO_ID(Width), width);
-	myTexture->getValue(LABEL_TO_ID(Height), height);
+	mTexturePointer->getValue(LABEL_TO_ID(Width), width);
+	mTexturePointer->getValue(LABEL_TO_ID(Height), height);
 
-	if (mySizeX != width || mySizeY != height)
+	if (mSizeX != width || mSizeY != height)
 	{
-		mySizeX = width;
-		mySizeY = height;
-		myNeedUpdatePosition = true;
+		mSizeX = width;
+		mSizeY = height;
+		mNeedUpdatePosition = true;
 	}
 	SetUpNodeIfNeeded();
 }
@@ -189,11 +189,11 @@ unsigned short*		UIText::CutText(const unsigned short* _text, bool& _flag)
 		++len;
 	}
 
-	if (len > myLength)
+	if (len > mLength)
 	{
-		unsigned short* newtext = (unsigned short*)malloc((myLength + 1)*sizeof(unsigned short));
-		memset(newtext, 0, (myLength + 1)*sizeof(unsigned short));
-		memcpy(newtext, _text, myLength*sizeof(unsigned short));
+		unsigned short* newtext = (unsigned short*)malloc((mLength + 1)*sizeof(unsigned short));
+		memset(newtext, 0, (mLength + 1)*sizeof(unsigned short));
+		memcpy(newtext, _text, mLength*sizeof(unsigned short));
 		_flag = true;
 		return newtext;
 	}
@@ -204,11 +204,11 @@ unsigned short*		UIText::CutText(const unsigned short* _text, bool& _flag)
 
 DEFINE_METHOD(UIText, ReloadTexture)
 {
-	if (!myTexture.isNil())
+	if (!mTexturePointer.isNil())
 	{
-		myTexture->SetFlag(Texture::isDirtyContext);
-		myTexture->ReInit();
-		ChangeText(myText.us_str());
+		mTexturePointer->SetFlag(Texture::isDirtyContext);
+		mTexturePointer->ReInit();
+		ChangeText(mText.us_str());
 	}
 
 	return false;

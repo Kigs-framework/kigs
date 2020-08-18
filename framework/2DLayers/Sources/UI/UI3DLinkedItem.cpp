@@ -8,10 +8,10 @@ IMPLEMENT_CLASS_INFO(UI3DLinkedItem)
 
 UI3DLinkedItem::UI3DLinkedItem(const kstl::string& name, CLASS_NAME_TREE_ARG)
 	: UIItem(name, PASS_CLASS_NAME_TREE_ARG)
-	, my3DPosition(*this, false, LABEL_AND_ID(3DPosition), 0.0f, 0.0f, 0.0f)
-	, myCamera(*this, false, LABEL_AND_ID(Camera), "")
-	, myNode(*this, false, LABEL_AND_ID(Node), "")
-	, myUseUpOrientation(*this, false, LABEL_AND_ID(UseUpOrientation), false)
+	, m3DPosition(*this, false, LABEL_AND_ID(3DPosition), 0.0f, 0.0f, 0.0f)
+	, mCamera(*this, false, LABEL_AND_ID(Camera), "")
+	, mNode(*this, false, LABEL_AND_ID(Node), "")
+	, mUseUpOrientation(*this, false, LABEL_AND_ID(UseUpOrientation), false)
 {
 	
 }
@@ -21,21 +21,21 @@ void	UI3DLinkedItem::InitModifiable()
 	UIItem::InitModifiable();
 	if (_isInit)
 	{
-		myNode.changeNotificationLevel(Owner);
-		myCamera.changeNotificationLevel(Owner);
+		mNode.changeNotificationLevel(Owner);
+		mCamera.changeNotificationLevel(Owner);
 	}
 }
 
 void UI3DLinkedItem::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == myNode.getLabelID() || labelid == myCamera.getLabelID())
+	if (labelid == mNode.getLabelID() || labelid == mCamera.getLabelID())
 	{
-		if((CoreModifiable*)myCamera==NULL|| (CoreModifiable*)myNode ==NULL)
+		if((CoreModifiable*)mCamera==NULL|| (CoreModifiable*)mNode ==NULL)
 		{
-			myIsHidden = false;
-			myDock[0] = 0.5f;
-			myDock[1] = 0.5f;
-			myNeedUpdatePosition = true;
+			mIsHidden = false;
+			mDock[0] = 0.5f;
+			mDock[1] = 0.5f;
+			mNeedUpdatePosition = true;
 			PropagateNeedUpdateToFather();
 		}
 	}
@@ -45,13 +45,13 @@ void UI3DLinkedItem::NotifyUpdate(const unsigned int labelid)
 
 void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 {
-	Camera*	currentCamera = (Camera*)myCamera;
+	Camera*	currentCamera = (Camera*)mCamera;
 	if (currentCamera)
 	{
-		Point3D currentPos(my3DPosition[0], my3DPosition[1], my3DPosition[2]);
+		Point3D currentPos(m3DPosition[0], m3DPosition[1], m3DPosition[2]);
 
 		// if a node3D is attached, then 3DPosition is a local position in node space
-		Node3D*	currentnode = (Node3D*)(CoreModifiable*)myNode;
+		Node3D*	currentnode = (Node3D*)(CoreModifiable*)mNode;
 		if (currentnode)
 		{
 			//myIsHidden = !currentnode->IsVisible();
@@ -75,12 +75,12 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 			kfloat objectinfront = Dot(camObjectVect, cameraView);
 			if (objectinfront < 0)
 			{
-				myIsHidden = true;
+				mIsHidden = true;
 			}
 			else
 			{
 
-				if (myUseUpOrientation)
+				if (mUseUpOrientation)
 				{
 					// get camera up
 					Point3D	cameraUp;
@@ -90,11 +90,11 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 					{
 						resultUp -= result;
 						resultUp.Normalize();
-						myAngle = (fPI / 2.0f) - atan2f(resultUp.y, resultUp.x);
+						mRotationAngle = (fPI / 2.0f) - atan2f(resultUp.y, resultUp.x);
 					}
 				}
 
-				myIsHidden = false;
+				mIsHidden = false;
 				// TODO : at the moment, we suppose the UI3DLinkedItem is son of an UI covering the whole screen
 				RenderingScreen* renderingScreen = currentCamera->getRenderingScreen();
 				if (renderingScreen)
@@ -105,15 +105,15 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 					result.y /= size.y;
 				}
 
-				myDock[0] = result.x;
-				myDock[1] = result.y;
-				myNeedUpdatePosition = true;
+				mDock[0] = result.x;
+				mDock[1] = result.y;
+				mNeedUpdatePosition = true;
 				PropagateNeedUpdateToFather();
 			}
 		}
 		else
 		{
-			myIsHidden = true;
+			mIsHidden = true;
 		}
 	}
 }

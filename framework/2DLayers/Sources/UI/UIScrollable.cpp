@@ -22,7 +22,7 @@ bool UIScrollable::addItem(const CMSP& item, ItemPosition pos)
 {
 	if (mAdjustOnAddItem && item->isSubType("Node2D"))
 	{
-		if (mySons.find((Node2D*)item.get()) == mySons.end())
+		if (mSons.find((Node2D*)item.get()) == mSons.end())
 		{
 			v2f prev;
 			item->getArrayValue("Position", &prev.x, 2);
@@ -37,7 +37,7 @@ bool UIScrollable::removeItem(const CMSP& item)
 {
 	if (mAdjustOnRemoveItem && item->isSubType("Node2D"))
 	{
-		if (mySons.find((Node2D*)item.get()) != mySons.end())
+		if (mSons.find((Node2D*)item.get()) != mSons.end())
 		{
 			v2f prev;
 			item->getArrayValue("Position", &prev.x, 2);
@@ -106,7 +106,7 @@ void UIScrollable::SetScroll(v2f to)
 	delta += extra;
 	mCurrentScroll = to + extra;
 
-	for (auto son : mySons)
+	for (auto son : mSons)
 	{
 		v2f prev;
 		son->getArrayValue("Position", &prev.x, 2);

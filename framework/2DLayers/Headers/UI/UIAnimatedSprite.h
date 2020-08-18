@@ -4,6 +4,18 @@
 
 class Timer;
 
+// ****************************************
+// * UIAnimatedSprite class
+// * --------------------------------------
+/**
+* \file	UIAnimatedSprite.h
+* \class	UIAnimatedSprite
+* \ingroup 2DLayers
+* \brief	Display an animated texture
+*
+*/
+// ****************************************
+
 class UIAnimatedSprite : public UIDrawableItem
 {
 public:
@@ -13,11 +25,11 @@ public:
 	SpriteSheetTexture* GetSpriteSheetTexture() override;
 
 
-	std::string	Get_CurrentAnimation() const { return myCurrentAnimation.const_ref(); }
-	unsigned int Get_CurrentFrame() const {return m_CurrentFrame;}
+	std::string	Get_CurrentAnimation() const { return mCurrentAnimation.const_ref(); }
+	unsigned int Get_CurrentFrame() const {return mCurrentFrame;}
 
-	void Set_CurrentFrame(unsigned int currentf) { m_CurrentFrame = currentf; }
-	void Set_FrameNumber(unsigned int value) { m_FrameNumber = value; }
+	void Set_CurrentFrame(unsigned int currentf) { mCurrentFrame = currentf; }
+	void Set_FrameNumber(unsigned int value) { mFrameNumber = value; }
 
 protected:
 	void InitModifiable() override;
@@ -39,13 +51,13 @@ protected:
 
 	SmartPointer<SpriteSheetTexture> myTexture;
 
-	maString			myFileName = BASE_ATTRIBUTE(FileName, "");
-	maString			myCurrentAnimation = BASE_ATTRIBUTE(CurrentAnimation, "");;
-	maUInt				m_FramePerSecond = BASE_ATTRIBUTE(FramePerSecond, 0);;
-	maBool				m_AnimationLoop = BASE_ATTRIBUTE(Loop, true);
-	unsigned int		m_CurrentFrame = 0;
-	double				m_dElpasedTime = 0.0;
-	unsigned int		m_FrameNumber = 0;
+	maString			mFileName = BASE_ATTRIBUTE(FileName, "");
+	maString			mCurrentAnimation = BASE_ATTRIBUTE(CurrentAnimation, "");;
+	maUInt				mFramePerSecond = BASE_ATTRIBUTE(FramePerSecond, 0);;
+	maBool				mLoop = BASE_ATTRIBUTE(Loop, true);
+	unsigned int		mCurrentFrame = 0;
+	double				mElpasedTime = 0.0;
+	unsigned int		mFrameNumber = 0;
 
-	v2f mCurrentSourceSize;
+	v2f					mCurrentSourceSize;
 };

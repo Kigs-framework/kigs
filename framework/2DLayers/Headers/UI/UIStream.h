@@ -4,6 +4,17 @@
 #include "maReference.h"
 #include "SmartPointer.h"
 
+// ****************************************
+// * UIStream class
+// * --------------------------------------
+/**
+* \file	UIStream.h
+* \class	UIStream
+* \ingroup 2DLayers
+* \brief	Display a video.
+*/
+// ****************************************
+
 class UIStream : public UITexturedItem
 {
 public:
@@ -16,26 +27,24 @@ public:
 	virtual bool addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
 	virtual bool removeItem(const CMSP& item  DECLARE_DEFAULT_LINK_NAME) override;
 
-	//unsigned char* CurrentBuffer() { return _temp.data(); }
-
 protected:
 
 	virtual ~UIStream() {}
 	virtual void NotifyUpdate(const unsigned int labelid) override;
 
-	SmartPointer<CoreModifiable> _framebufferstream;
+	SmartPointer<CoreModifiable> mFrameBufferStream;
 
-	maString _video_file;
-	maReference _framebuffer_ref;
-	maBool _autoplay;
-	maBool _loop;
-	maBool _auto_size;
-	maString _notification_start;
-	maString _notification_end;
+	maString mVideoFile;
+	maReference mFrameBuffer;
+	maBool mAutoplay;
+	maBool mLoop;
+	maBool mAutoSize;
+	maString mNotificationStart;
+	maString mNotificationEnd;
 
 	maFloat mVolume = BASE_ATTRIBUTE(Volume, 1.0f);
 
-	bool myIsPlaying;
+	bool mIsPlaying;
 
 	DECLARE_METHOD(StartVideo);
 	COREMODIFIABLE_METHODS(StartVideo);

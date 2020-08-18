@@ -24,7 +24,7 @@ LocalizationManager::~LocalizationManager()
 {
 	EraseMap();
 
-	m_wbuffer[0]=0;
+	mWbuffer[0]=0;
 }
 
 void LocalizationManager::setLocalizationFilePath(const char* path,bool a_erasePreviousLoc)
@@ -33,10 +33,10 @@ void LocalizationManager::setLocalizationFilePath(const char* path,bool a_eraseP
 	{
 		EraseMap();
 	}
-	myLocalizationFilePath=path;
-	if(myLocalizationFilePath != "")
+	mLocalizationFilePath=path;
+	if(mLocalizationFilePath != "")
 	{
-		ParseStringsFile(myLocalizationFilePath.c_str());
+		ParseStringsFile(mLocalizationFilePath.c_str());
 	}
 }
 
@@ -101,8 +101,8 @@ void LocalizationManager::addLocalizationFromBuffer(char* Buffer, unsigned int b
 
 const PLATFORM_WCHAR*	LocalizationManager::getLocalizedString(const kstl::string& key) const
 {
-	kstl::map<const kstl::string,PLATFORM_WCHAR* >::const_iterator itfound=m_LocalizedString.find(key);
-	if(itfound != m_LocalizedString.end())
+	kstl::map<const kstl::string,PLATFORM_WCHAR* >::const_iterator itfound=mLocalizedString.find(key);
+	if(itfound != mLocalizedString.end())
 	{
 		return (*itfound).second;
 	}
@@ -153,13 +153,13 @@ void LocalizationManager::ParseBuffer(char* _pBuffer, unsigned long size)
 		if(localized)
 		{
 			// check if not already allocated
-			kstl::map<const kstl::string,PLATFORM_WCHAR* >::const_iterator itfound=m_LocalizedString.find(key);
-			if(itfound != m_LocalizedString.end())
+			kstl::map<const kstl::string,PLATFORM_WCHAR* >::const_iterator itfound=mLocalizedString.find(key);
+			if(itfound != mLocalizedString.end())
 			{
 				delete[] (*itfound).second;
 			}
 
-			m_LocalizedString[key]=localized;
+			mLocalizedString[key]=localized;
 		}
 		else
 		{
@@ -206,7 +206,7 @@ PLATFORM_WCHAR*	LocalizationManager::GetNextLocalizedString(char* pBuffer,unsign
 	{
 		if((*startchar) == (PLATFORM_WCHAR)'"')
 		{
-			keyStartFound=ExtractQuoted(startchar,&m_wbuffer[0],currentpos,filelen,false);
+			keyStartFound=ExtractQuoted(startchar,&mWbuffer[0],currentpos,filelen,false);
 		}
 		else if((*startchar) == (PLATFORM_WCHAR)'/')
 		{
@@ -225,9 +225,9 @@ PLATFORM_WCHAR*	LocalizationManager::GetNextLocalizedString(char* pBuffer,unsign
 		}
 	}
 
-	// compute m_wbuffer len
+	// compute mWbuffer len
 	int i=0;
-	while(m_wbuffer[i] != 0)
+	while(mWbuffer[i] != 0)
 	{
 		i++;
 	}
@@ -236,9 +236,9 @@ PLATFORM_WCHAR*	LocalizationManager::GetNextLocalizedString(char* pBuffer,unsign
 
 	// copy buffer
 	i=0;
-	while(m_wbuffer[i] != 0)
+	while(mWbuffer[i] != 0)
 	{
-		tempBuffer[i]=m_wbuffer[i];
+		tempBuffer[i]=mWbuffer[i];
 		i++;
 	}
 	tempBuffer[i]=0;
@@ -418,8 +418,8 @@ void	LocalizationManager::GotoCommentEnd(PLATFORM_WCHAR*& startchar,unsigned lon
 
 void	LocalizationManager::EraseMap()
 {
-	kstl::map<const kstl::string,PLATFORM_WCHAR* >::const_iterator it=m_LocalizedString.begin();
-	while(it!=m_LocalizedString.end())
+	kstl::map<const kstl::string,PLATFORM_WCHAR* >::const_iterator it=mLocalizedString.begin();
+	while(it!=mLocalizedString.end())
 	{
 		PLATFORM_WCHAR* currentString=(*it).second;
 		if(currentString)
@@ -428,7 +428,7 @@ void	LocalizationManager::EraseMap()
 		}
 		++it;
 	}
-	m_LocalizedString.clear();
+	mLocalizedString.clear();
 }
 
 #include "Platform/LocalizationManager/LocalizationManager.inl.h"

@@ -17,37 +17,37 @@
 IMPLEMENT_CLASS_INFO(UIButton)
 
 IMPLEMENT_CONSTRUCTOR(UIButton)
-	, myClickDownAction(*this, false, "ClickDownAction", "")
-	, myClickUpAction(*this, false, "ClickUpAction", "")
-	, myMouseOverAction(*this, false, "MouseOverAction", "")
-	, myMouseOutAction(*this, false, "MouseOutAction", "")
-	, myUnSelectAction(*this, false, "UnSelectAction", "")
-	, myParameter(*this, false, "Parameter", (kstl::string)"")
-	, myStayPressed(*this, false, "StayPressed", false)
-	, mybKeepClickOutside(*this, false, "KeepClickOutside", false)
-	, myDefaultPressed(*this, false, "DefaultPressed", false)
-	, myAutoResize(*this, false, "AutoResize", true)
-	, mybInside(false)
-	, myIsDown(false)
-	, myIsMouseOver(false)
+	, mClickDownAction(*this, false, "ClickDownAction", "")
+	, mClickUpAction(*this, false, "ClickUpAction", "")
+	, mMouseOverAction(*this, false, "MouseOverAction", "")
+	, mMouseOutAction(*this, false, "MouseOutAction", "")
+	, mUnSelectAction(*this, false, "UnSelectAction", "")
+	, mParameter(*this, false, "Parameter", (kstl::string)"")
+	, mStayPressed(*this, false, "StayPressed", false)
+	, mKeepClickOutside(*this, false, "KeepClickOutside", false)
+	, mDefaultPressed(*this, false, "DefaultPressed", false)
+	, mAutoResize(*this, false, "AutoResize", true)
+	, mInside(false)
+	, mIsDown(false)
+	, mIsMouseOver(false)
 {
 }
 
 void UIButton::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == myIsEnabled.getLabelID())
+	if (labelid == mIsEnabled.getLabelID())
 	{
 		// if disabled "reset" button state
-		if (myIsEnabled == false)
+		if (mIsEnabled == false)
 		{
-			myIsDown = false;
-			myIsMouseOver = false;
+			mIsDown = false;
+			mIsMouseOver = false;
 		}
 	}
-	else if (labelid == mySizeX.getLabelID() || labelid == mySizeY.getLabelID())
+	else if (labelid == mSizeX.getLabelID() || labelid == mSizeY.getLabelID())
 	{
-		if (myParent && myParent->isSubType("UIGroupButton"))
-			((UIGroupButton*)myParent)->reComputeSize();
+		if (mParent && mParent->isSubType("UIGroupButton"))
+			((UIGroupButton*)mParent)->reComputeSize();
 	}
 
 	UITexturedItem::NotifyUpdate(labelid);
@@ -59,17 +59,17 @@ void UIButton::InitModifiable()
 	UITexturedItem::InitModifiable();
 	if (IsInit())
 	{
-		myIsDown = false;
-		myIsMouseOver = false;
+		mIsDown = false;
+		mIsMouseOver = false;
 
 		//if (mUseHoverColor) setValue("Color", (v3f)mIdleColor), setValue("Opacity", mIdleColor[3]);
 
-		if (myDefaultPressed && myStayPressed)
-			myIsDown = true;
+		if (mDefaultPressed && mStayPressed)
+			mIsDown = true;
 
-		myIsEnabled.changeNotificationLevel(Owner);
-		mySizeX.changeNotificationLevel(Owner);
-		mySizeY.changeNotificationLevel(Owner);
+		mIsEnabled.changeNotificationLevel(Owner);
+		mSizeX.changeNotificationLevel(Owner);
+		mSizeY.changeNotificationLevel(Owner);
 
 		ModuleInput* theInputModule = (ModuleInput*)KigsCore::GetModule("ModuleInput");
 		// retreive click for activation
@@ -86,19 +86,19 @@ void UIButton::InitModifiable()
 void UIButton::AutoSize()
 {
 	// auto size button
-	if (!myTexture.isNil())
+	if (!mTexturePointer.isNil())
 	{
 		float width, height;
-		myTexture->GetSize(width, height);
+		mTexturePointer->GetSize(width, height);
 
-		if (mySizeX == 0 && mySizeModeX == 0)
-			mySizeX = width;
+		if (mSizeX == 0 && mSizeModeX == 0)
+			mSizeX = width;
 
-		if (mySizeY == 0 && mySizeModeY == 0)
-			mySizeY = height;
+		if (mSizeY == 0 && mSizeModeY == 0)
+			mSizeY = height;
 
-		if (myParent && myParent->isSubType("UIGroupButton"))
-			((UIGroupButton*)myParent)->reComputeSize();
+		if (mParent && mParent->isSubType("UIGroupButton"))
+			((UIGroupButton*)mParent)->reComputeSize();
 	}
 }
 
@@ -112,23 +112,23 @@ static void SendButtonNotifications(const kstl::string& actions, CoreModifiable*
 bool UIButton::isAlpha(float X, float Y)
 {
 	//Try to get my mask
-	if (!myAlphaMask)
+	if (!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
 		for (unsigned int i = 0; i < sons.size(); i++)
 		{
-			if (sons[i].myItem->isSubType("AlphaMask"))
+			if (sons[i].mItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = sons[i].myItem;
+				mAlphaMask = sons[i].mItem;
 				break;
 			}
 		}
 	}
 
-	if (myAlphaMask)
+	if (mAlphaMask)
 	{
 		//Check on my mask the specified location
-		return !myAlphaMask->CheckTo(X, Y);
+		return !mAlphaMask->CheckTo(X, Y);
 	}
 
 	return false;
@@ -160,11 +160,11 @@ bool UIButton::ManageClickTouchEvent(ClickEvent& click_event)
 	}
 	else if (click_event.state == StateRecognized)
 	{
-		if (!EmitSignal(Signals::ClickUp, this, (usString)myParameter.const_ref())) // if no one connected send classic message
+		if (!EmitSignal(Signals::ClickUp, this, (usString)mParameter.const_ref())) // if no one connected send classic message
 		{
 			kstl::vector<CoreModifiableAttribute*> mySendParams;
-			mySendParams.push_back(&myParameter);
-			SendButtonNotifications(myClickUpAction, this, mySendParams);
+			mySendParams.push_back(&mParameter);
+			SendButtonNotifications(mClickUpAction, this, mySendParams);
 		}
 		*click_event.swallow_mask |= (1 << InputEventType::Click);
 	}
@@ -192,33 +192,33 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 	
 	if (direct_touch.state == StateBegan)
 	{
-		myIsMouseOver = false;
-		myIsDown = false;
+		mIsMouseOver = false;
+		mIsDown = false;
 		switch (direct_touch.touch_state)
 		{
 		case DirectTouchEvent::TouchHover:
 			if (mUseHoverColor) setValue("Color", (v3f)mHoverColor), setValue("Opacity", mHoverColor[3]);
-			if(!EmitSignal(Signals::MouseOver, this, (usString)myParameter.const_ref())) // if no one connected send classic message
+			if(!EmitSignal(Signals::MouseOver, this, (usString)mParameter.const_ref())) // if no one connected send classic message
 			{
 				kstl::vector<CoreModifiableAttribute*> mySendParams;
-				mySendParams.push_back(&myParameter);
-				SendButtonNotifications(myMouseOverAction, this, mySendParams);
+				mySendParams.push_back(&mParameter);
+				SendButtonNotifications(mMouseOverAction, this, mySendParams);
 			}
-			myIsMouseOver = true;
+			mIsMouseOver = true;
 			break;
 		case DirectTouchEvent::TouchDown:
 			if (mUseHoverColor)setValue("Color", (v3f)mClickedColor), setValue("Opacity", mClickedColor[3]);
-			if(!EmitSignal(Signals::ClickDown, this, (usString)myParameter.const_ref())) // if no one connected send classic message
+			if(!EmitSignal(Signals::ClickDown, this, (usString)mParameter.const_ref())) // if no one connected send classic message
 			{
 				kstl::vector<CoreModifiableAttribute*> mySendParams;
-				mySendParams.push_back(&myParameter);
-				SendButtonNotifications(myClickDownAction, this, mySendParams);
+				mySendParams.push_back(&mParameter);
+				SendButtonNotifications(mClickDownAction, this, mySendParams);
 			}
-			myIsDown = true;
+			mIsDown = true;
 			break;
 		case DirectTouchEvent::TouchUp:
-			if (mUseHoverColor) setValue("Color", myIsMouseOver ? (v3f)mHoverColor : (v3f)mIdleColor), setValue("Opacity", myIsMouseOver ? mHoverColor[3] : mIdleColor[3]);
-			EmitSignal(Signals::TouchUp, this, (usString)myParameter.const_ref());
+			if (mUseHoverColor) setValue("Color", mIsMouseOver ? (v3f)mHoverColor : (v3f)mIdleColor), setValue("Opacity", mIsMouseOver ? mHoverColor[3] : mIdleColor[3]);
+			EmitSignal(Signals::TouchUp, this, (usString)mParameter.const_ref());
 			break;
 		}
 	}
@@ -237,24 +237,24 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 		}
 		else
 		{
-			myIsMouseOver = false;
+			mIsMouseOver = false;
 			// should not happend
 		}
 	//	printf("direct touch changed");
 	}
 	else if (direct_touch.state == StateEnded)
 	{
-		myIsDown= false;	
-		myIsMouseOver = false;
+		mIsDown= false;	
+		mIsMouseOver = false;
 		if (direct_touch.touch_state == DirectTouchEvent::TouchHover)
 		{
 			// hover ended
 			if (mUseHoverColor) setValue("Color", (v3f)mIdleColor), setValue("Opacity", mIdleColor[3]);
-			if(!EmitSignal(Signals::MouseOut, this, (usString)myParameter.const_ref())) // if no one connected send classic message
+			if(!EmitSignal(Signals::MouseOut, this, (usString)mParameter.const_ref())) // if no one connected send classic message
 			{
 				kstl::vector<CoreModifiableAttribute*> mySendParams;
-				mySendParams.push_back(&myParameter);
-				SendButtonNotifications(myMouseOutAction, this, mySendParams);
+				mySendParams.push_back(&mParameter);
+				SendButtonNotifications(mMouseOutAction, this, mySendParams);
 			}
 		}
 		else

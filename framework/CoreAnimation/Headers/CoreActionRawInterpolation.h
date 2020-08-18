@@ -23,12 +23,12 @@ protected:
 		CoreAction::protectedUpdate(time);
 		if (myPParamID==0)
 		{
-			CoreModifiableAttribute* attr = myTarget->getAttribute(myParamID);
+			CoreModifiableAttribute* attr = mTarget->getAttribute(mParamID);
 			myPParamID = (dataType*)attr->getRawValue();
 		}
 		if (myPParamID)
 		{
-			dataType result = myStart + (myEnd - myStart)*(kfloat)((time - myStartTime) / myDuration);
+			dataType result = myStart + (myEnd - myStart)*(kfloat)((time - mStartTime) / mDuration);
 			*myPParamID = result;
 		}
 		return false;
@@ -69,13 +69,13 @@ protected:
 
 		if (myPParamID == 0)
 		{
-			CoreModifiableAttribute* attr = myTarget->getAttribute(myParamID);
+			CoreModifiableAttribute* attr = mTarget->getAttribute(mParamID);
 			myPParamID = (dataType*)attr->getRawValue();
 		}
 		if (myPParamID)
 		{
 
-			kfloat t = (kfloat)((time - myStartTime) / myDuration);
+			kfloat t = (kfloat)((time - mStartTime) / mDuration);
 
 			kfloat a[4];
 			coefs(a[0], a[1], a[2], a[3], t);
@@ -108,13 +108,13 @@ protected:
 		CoreAction::protectedUpdate(time);
 		if (myPParamID == 0)
 		{
-			CoreModifiableAttribute* attr = myTarget->getAttribute(myParamID);
+			CoreModifiableAttribute* attr = mTarget->getAttribute(mParamID);
 			myPParamID = (dataType*)attr->getRawValue();
 		}
 		if (myPParamID)
 		{
 			// wait the end of the action
-			if ((time + TimeEpsilon) >= (myStartTime + myDuration))
+			if ((time + TimeEpsilon) >= (mStartTime + mDuration))
 			{
 				setIsDone();
 				*myPParamID = mySet;

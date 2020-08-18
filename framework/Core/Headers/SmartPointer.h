@@ -17,31 +17,31 @@ public:
 	using ValueType = smartPointOn;
 	using IsSP = std::true_type;
 	
-	SmartPointer() : myPointer(nullptr) {};
+	SmartPointer() : mPointer(nullptr) {};
 	SmartPointer(std::nullptr_t) : SmartPointer() {};
 
 	// DOES NOT GET REF!
-	// SmartPointer(smartPointOn* point) : myPointer(point) {};
+	// SmartPointer(smartPointOn* point) : mPointer(point) {};
 	
-	SmartPointer(smartPointOn* point, StealRefTag stealref) : myPointer(point) {};
-	SmartPointer(smartPointOn* point, GetRefTag getref) : myPointer(point) { if(myPointer) myPointer->GetRef(); };
+	SmartPointer(smartPointOn* point, StealRefTag stealref) : mPointer(point) {};
+	SmartPointer(smartPointOn* point, GetRefTag getref) : mPointer(point) { if(mPointer) mPointer->GetRef(); };
 
 	~SmartPointer()
 	{
-		if (myPointer)
+		if (mPointer)
 		{
-			myPointer->Destroy();
-			myPointer = nullptr;
+			mPointer->Destroy();
+			mPointer = nullptr;
 		}
 	}
 
 	template<typename smartPointOnOther>
-	SmartPointer(const SmartPointer<smartPointOnOther>& smcopy) : myPointer(nullptr)
+	SmartPointer(const SmartPointer<smartPointOnOther>& smcopy) : mPointer(nullptr)
 	{
 		*this = smcopy;
 	}
 
-	SmartPointer(const SmartPointer& other) : myPointer(nullptr)
+	SmartPointer(const SmartPointer& other) : mPointer(nullptr)
 	{
 		*this = other;
 	}
@@ -49,33 +49,33 @@ public:
 	// Move constructor, steal other ref
 	SmartPointer(SmartPointer&& other) noexcept
 	{
-		myPointer = other.myPointer;
-		other.myPointer = nullptr;
+		mPointer = other.mPointer;
+		other.mPointer = nullptr;
 	}
 
 
 	smartPointOn*	operator->() const {
-		return myPointer;
+		return mPointer;
 	}
 
 	bool	isNil() const
 	{
-		return myPointer == nullptr;
+		return mPointer == nullptr;
 	}
 
 	/*
 	SmartPointer& operator=(smartPointOn* copy)
 	{
-		if (myPointer != copy)
+		if (mPointer != copy)
 		{
-			if (myPointer)
+			if (mPointer)
 			{
-				myPointer->Destroy();
+				mPointer->Destroy();
 			}
-			myPointer = copy;
-			if (myPointer)
+			mPointer = copy;
+			if (mPointer)
 			{
-				myPointer->GetRef();
+				mPointer->GetRef();
 			}
 		}
 		return *this;
@@ -91,26 +91,26 @@ public:
 	// Steal other's ref
 	SmartPointer& operator=(SmartPointer&& smmove)
 	{
-		if (myPointer) myPointer->Destroy();
-		myPointer = smmove.myPointer;
-		smmove.myPointer = nullptr;
+		if (mPointer) mPointer->Destroy();
+		mPointer = smmove.mPointer;
+		smmove.mPointer = nullptr;
 		return *this;
 	}
 
 
 	SmartPointer& operator=(const SmartPointer& smcopy)
 	{
-		if (myPointer != smcopy.get())
+		if (mPointer != smcopy.get())
 		{
-			if (myPointer)
+			if (mPointer)
 			{
-				myPointer->Destroy();
+				mPointer->Destroy();
 			}
 			//TODO(antoine) FIX const_cast
-			myPointer = (smartPointOn*)smcopy.get();
-			if (myPointer)
+			mPointer = (smartPointOn*)smcopy.get();
+			if (mPointer)
 			{
-				myPointer->GetRef();
+				mPointer->GetRef();
 			}
 		}
 		return *this;
@@ -120,66 +120,66 @@ public:
 	SmartPointer& operator=(const SmartPointer<smartPointOnOther>& smcopy)
 	{
 		smartPointOn* copy = (smartPointOn*)smcopy.get();
-		if (myPointer != copy)
+		if (mPointer != copy)
 		{
-			if (myPointer)
+			if (mPointer)
 			{
-				myPointer->Destroy();
+				mPointer->Destroy();
 			}
-			myPointer = copy;
-			if (myPointer)
+			mPointer = copy;
+			if (mPointer)
 			{
-				myPointer->GetRef();
+				mPointer->GetRef();
 			}
 		}
 		return *this;
 	}
 
-	//operator smartPointOn*() const { return myPointer; }
-	operator bool() const { return myPointer != nullptr; }
+	//operator smartPointOn*() const { return mPointer; }
+	operator bool() const { return mPointer != nullptr; }
 
 	bool	operator == (const smartPointOn* other) const
 	{
-		return myPointer == other;
+		return mPointer == other;
 	}
 
 	bool	operator != (const smartPointOn* other) const
 	{
-		return myPointer != other;
+		return mPointer != other;
 	}
 
 	template<typename smartPointOnOther>
 	bool	operator == (const SmartPointer<smartPointOnOther>& other) const
 	{
-		return myPointer == other.get();
+		return mPointer == other.get();
 	}
 
 	template<typename smartPointOnOther>
 	bool	operator != (const SmartPointer<smartPointOnOther>& other) const
 	{
-		return myPointer != other.get();
+		return mPointer != other.get();
 	}
 
 	void Reset()
 	{
-		if (myPointer) myPointer->Destroy();
-		myPointer = nullptr;
+		if (mPointer) mPointer->Destroy();
+		mPointer = nullptr;
 	}
 	
-	smartPointOn* Pointer() const { return myPointer; }
-	smartPointOn* get() const { return myPointer; }
+	smartPointOn* Pointer() const { return mPointer; }
+	smartPointOn* get() const { return mPointer; }
 
 	template<typename othertype>
 	operator SmartPointer<othertype>() {
 
-		SmartPointer<othertype> result((othertype*)myPointer, GetRefTag{}); // create a new ref here
+		SmartPointer<othertype> result((othertype*)mPointer, GetRefTag{}); // create a new ref here
 		return result;
 	}
 
 
 protected:
 
-	smartPointOn*	myPointer;
+	smartPointOn*	mPointer;
 
 };
 

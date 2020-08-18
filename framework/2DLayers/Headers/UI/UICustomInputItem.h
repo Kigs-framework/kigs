@@ -3,6 +3,18 @@
 #include "UI/UIItem.h"
 #include "AttributePacking.h"
 
+// ****************************************
+// * UICustomInputItem class
+// * --------------------------------------
+/**
+* \file	UICustomInputItem.h
+* \class	UICustomInputItem
+* \ingroup 2DLayers
+* \brief	???
+*
+*/
+// ****************************************
+
 class UICustomInputItem : public UIItem
 {
 public:

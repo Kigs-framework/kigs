@@ -22,7 +22,7 @@ bool	JPEGClass::Load(FileHandle* fileName)
 	}
 
 	int  width, height;
-	JSLoadTextureInCanvas(fileName->myFullFileName.c_str(), width,height);
+	JSLoadTextureInCanvas(fileName->mFullFileName.c_str(), width,height);
 	if ((width > 0) && (height > 0))
 	{
 		myWidth = width;

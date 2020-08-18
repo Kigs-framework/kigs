@@ -361,10 +361,10 @@ void AABBTreeNode::RescursiveSearchMesh(Node3D *root, kstl::vector<ModernMesh*>	
 {
 	for (auto item : root->getItems())
 	{
-		if (item.myItem->isSubType("ModernMesh"))
-			list.push_back(item.myItem->as<ModernMesh>());
-		else if(item.myItem->isSubType("Node3D"))
-			RescursiveSearchMesh(item.myItem->as<Node3D>(), list);
+		if (item.mItem->isSubType("ModernMesh"))
+			list.push_back(item.mItem->as<ModernMesh>());
+		else if(item.mItem->isSubType("Node3D"))
+			RescursiveSearchMesh(item.mItem->as<Node3D>(), list);
 	}
 };
 

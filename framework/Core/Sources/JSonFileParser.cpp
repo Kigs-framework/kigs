@@ -8,7 +8,7 @@
 
 template <typename stringType, typename parserType>
 JSonFileParserBase<stringType,parserType>::JSonFileParserBase(const kstl::string& filename, CoreModifiable*	delegateObject) :
-	myDelegateObject(delegateObject, GetRefTag{})
+	mDelegateObject(delegateObject, GetRefTag{})
 {
 	InitParser(filename);
 }
@@ -22,11 +22,11 @@ template <typename stringType, typename parserType>
 void JSonFileParserBase<stringType,parserType>::InitParserFromString(CoreRawBuffer* Buff)
 {
 	// init often used IDs
-	myJSonObjectStartID=CharToID::GetID("JSonObjectStart");
-	myJSonObjectEndID=CharToID::GetID("JSonObjectEnd");
-	myJSonArrayStartID=CharToID::GetID("JSonArrayStart");
-	myJSonArrayEndID=CharToID::GetID("JSonArrayEnd");
-	myJSonParamListID=CharToID::GetID("JSonParamList");
+	mJSonObjectStartID=CharToID::GetID("JSonObjectStart");
+	mJSonObjectEndID=CharToID::GetID("JSonObjectEnd");
+	mJSonArrayStartID=CharToID::GetID("JSonArrayStart");
+	mJSonArrayEndID=CharToID::GetID("JSonArrayEnd");
+	mJSonParamListID=CharToID::GetID("JSonParamList");
 
 	parserType	asciiParser(Buff);
 	parserType	mainBlock(Buff);
@@ -38,16 +38,16 @@ void JSonFileParserBase<stringType,parserType>::InitParserFromString(CoreRawBuff
 	{
 		if (asciiParser.GetBlockExcludeString(mainBlock, '{', '}'))
 		{
-			myParamList.clear();
+			mParamList.clear();
 
-			myDelegateObject->CallMethod(myJSonObjectStartID, myParamList);
+			mDelegateObject->CallMethod(mJSonObjectStartID, mParamList);
 
 			if (!ParseBlock(mainBlock))
 			{
 				KIGS_ERROR("JSon Parser : malformed json block ", 1);
 			}
 
-			myDelegateObject->CallMethod(myJSonArrayEndID, myParamList);
+			mDelegateObject->CallMethod(mJSonArrayEndID, mParamList);
 		}
 		else
 		{
@@ -60,15 +60,15 @@ void JSonFileParserBase<stringType,parserType>::InitParserFromString(CoreRawBuff
 		{
 			if (mainBlock.length())
 			{
-				myParamList.clear();
-				myDelegateObject->CallMethod(myJSonArrayStartID, myParamList);
+				mParamList.clear();
+				mDelegateObject->CallMethod(mJSonArrayStartID, mParamList);
 
 				if (!ParseArray(mainBlock))
 				{
 					KIGS_ERROR("JSon Parser : malformed json block ", 1);
 				}
 
-				myDelegateObject->CallMethod(myJSonArrayEndID, myParamList);
+				mDelegateObject->CallMethod(mJSonArrayEndID, mParamList);
 			}
 		}
 		else
@@ -109,14 +109,14 @@ void JSonFileParserBase<stringType,parserType>::InitParser(const kstl::string& f
 template <>
 CoreModifiableAttribute* JSonFileParserBase<kstl::string, AsciiParserUtils>::getNewStringAttribute(const kstl::string& attrName,const kstl::string& strObjName)
 {
-	return new maString(*myDelegateObject.get(), false, attrName, strObjName);
+	return new maString(*mDelegateObject.get(), false, attrName, strObjName);
 }
 
 template <>
 CoreModifiableAttribute* JSonFileParserBase<usString, US16ParserUtils>::getNewStringAttribute(const usString& attrName,const usString& strObjName)
 {
 	kstl::string name = attrName.ToString();
-	return new maUSString(*myDelegateObject.get(), false, name, strObjName);
+	return new maUSString(*mDelegateObject.get(), false, name, strObjName);
 }
 
 template <>
@@ -125,7 +125,7 @@ void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(co
 	CoreModifiableAttribute* Value;
 	kstl::string	strvalue = objparamValue;
 
-	myParamList.push_back(new maString(*myDelegateObject.get(), false, strObjName, strObjName));
+	mParamList.push_back(new maString(*mDelegateObject.get(), false, strObjName, strObjName));
 
 	// check if string, numeric or boolean
 	if (strvalue[0] == '"')
@@ -133,12 +133,12 @@ void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(co
 		// string
 		// remove quotes
 		kstl::string paramValue = objparamValue.substr(1, objparamValue.length() - 2);
-		Value = new maString(*myDelegateObject.get(), false, strObjName, paramValue);
+		Value = new maString(*mDelegateObject.get(), false, strObjName, paramValue);
 	}
 	else if ((strvalue == "true") || (strvalue == "false"))
 	{
 		// boolean
-		Value = new maBool(*myDelegateObject.get(), false, strObjName, false);
+		Value = new maBool(*mDelegateObject.get(), false, strObjName, false);
 		Value->setValue(strvalue);
 	}
 	else
@@ -146,7 +146,7 @@ void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(co
 		if (strvalue.find('.') != std::string::npos)
 		{
 			// float
-			Value = new maFloat(*myDelegateObject.get(), false, strObjName, KFLOAT_ZERO);
+			Value = new maFloat(*mDelegateObject.get(), false, strObjName, KFLOAT_ZERO);
 		}
 		else
 		{
@@ -154,18 +154,18 @@ void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(co
 			// check negative
 			if (strvalue.find('-') != std::string::npos)
 			{
-				Value = new maInt(*myDelegateObject.get(), false, strObjName, 0);
+				Value = new maInt(*mDelegateObject.get(), false, strObjName, 0);
 			}
 			else
 			{
-				Value = new maUInt(*myDelegateObject.get(), false, strObjName, 0);
+				Value = new maUInt(*mDelegateObject.get(), false, strObjName, 0);
 			}
 		}
 
 		Value->setValue(strvalue);
 	}
 
-	myParamList.push_back(Value);
+	mParamList.push_back(Value);
 }
 
 template <>
@@ -176,19 +176,19 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const u
 
 	kstl::string name = strObjName.ToString();
 
-	myParamList.push_back(new maUSString(*myDelegateObject.get(), false, name, strObjName));
+	mParamList.push_back(new maUSString(*mDelegateObject.get(), false, name, strObjName));
 	// check if string, numeric or boolean
 	if (strvalue[0] == '"')
 	{
 		// string
 		// remove quotes
 		usString paramValue = objparamValue.substr(1, objparamValue.length() - 2);
-		Value = new maUSString(*myDelegateObject.get(), false, name, paramValue);
+		Value = new maUSString(*mDelegateObject.get(), false, name, paramValue);
 	}
 	else if ((strvalue == "true") || (strvalue == "false"))
 	{
 		// boolean
-		Value = new maBool(*myDelegateObject.get(), false, name, false);
+		Value = new maBool(*mDelegateObject.get(), false, name, false);
 		Value->setValue(strvalue);
 	}
 	else
@@ -196,17 +196,17 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const u
 		if (strvalue.find('.') != std::string::npos)
 		{
 			// float
-			Value = new maFloat(*myDelegateObject.get(), false, name, KFLOAT_ZERO);
+			Value = new maFloat(*mDelegateObject.get(), false, name, KFLOAT_ZERO);
 		}
 		else
 		{
 			// int
-			Value = new maInt(*myDelegateObject.get(), false, name, 0);
+			Value = new maInt(*mDelegateObject.get(), false, name, 0);
 		}
 		Value->setValue(strvalue);
 	}
 
-	myParamList.push_back(Value);
+	mParamList.push_back(Value);
 }
 
 
@@ -218,7 +218,7 @@ bool JSonFileParserBase<stringType, parserType>::Export(CoreMap<stringType>* a_v
 	RecursiveParseElement(*a_value,L_Buffer);
 
 	SmartPointer<::FileHandle> L_File = Platform_fopen(a_fileName.c_str(), "wb");
-	if(L_File->myFile)
+	if(L_File->mFile)
 	{
 		// export buffer 
 		Platform_fwrite(GetStringByteBuffer(L_Buffer), 1, GetStringByteSize(L_Buffer)-GetStringCharSize(), L_File.get());
@@ -321,14 +321,14 @@ template <typename stringType, typename parserType>
 CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(const kstl::string& filename)
 {
 	//Create instance of DictionaryFromJson
-	myDictionaryFromJson = CreateDictionnaryFromJSONInstance();
-	myDelegateObject = myDictionaryFromJson;
+	mDictionaryFromJson = CreateDictionnaryFromJSONInstance();
+	mDelegateObject = mDictionaryFromJson;
 
 	InitParser(filename);
 
 	CoreItemSP L_TempDictionary = getDictionnary();
 
-	myDictionaryFromJson = nullptr;
+	mDictionaryFromJson = nullptr;
 
 	return L_TempDictionary;
 }
@@ -344,7 +344,7 @@ CMSP			JSonFileParserBase<kstl::string, AsciiParserUtils>::CreateDictionnaryFrom
 template <>
 CoreItemSP	JSonFileParserBase< kstl::string, AsciiParserUtils>::getDictionnary()
 {
-	return ((DictionaryFromJson*)myDictionaryFromJson.get())->Get_Dictionary();
+	return ((DictionaryFromJson*)mDictionaryFromJson.get())->Get_Dictionary();
 }
 
 
@@ -376,7 +376,7 @@ CMSP			JSonFileParserBase< usString, US16ParserUtils>::CreateDictionnaryFromJSON
 template <>
 CoreItemSP	JSonFileParserBase< usString, US16ParserUtils>::getDictionnary()
 {
-	return ((DictionaryFromJsonUTF16*)myDictionaryFromJson.get())->Get_Dictionary();
+	return ((DictionaryFromJsonUTF16*)mDictionaryFromJson.get())->Get_Dictionary();
 }
 
 
@@ -402,8 +402,8 @@ template <typename stringType, typename parserType>
 CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromString(const stringType& jsonString)
 {
 	//Create instance of DictionaryFromJson
-	myDictionaryFromJson = CreateDictionnaryFromJSONInstance();
-	myDelegateObject = myDictionaryFromJson;
+	mDictionaryFromJson = CreateDictionnaryFromJSONInstance();
+	mDelegateObject = mDictionaryFromJson;
 
 	unsigned int byteSize = GetStringByteSize(jsonString);
 
@@ -422,7 +422,7 @@ CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromStr
 
 	CoreItemSP L_TempDictionary = getDictionnary();
 
-	myDictionaryFromJson = nullptr;
+	mDictionaryFromJson = nullptr;
 	
 	return L_TempDictionary;
 
@@ -431,7 +431,7 @@ CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromStr
 template <typename stringType, typename parserType>
 bool JSonFileParserBase<stringType, parserType>::ParseBlock(parserType& Block)
 {
-	// retreive obj name first (quoted word followed by ':')
+	// retreive mObj name first (quoted word followed by ':')
 	parserType objName(Block);
 	while(Block.GetWord(objName,':',true))
 	{
@@ -446,7 +446,7 @@ bool JSonFileParserBase<stringType, parserType>::ParseBlock(parserType& Block)
 			// check value type
 			if(objValue[0] == '[')
 			{
-				if(myParamList.size())
+				if(mParamList.size())
 				{
 					NotifyDelegateWithParamList();
 				}
@@ -458,14 +458,14 @@ bool JSonFileParserBase<stringType, parserType>::ParseBlock(parserType& Block)
 					CoreModifiableAttribute* arrayname= getNewStringAttribute(stringType("ArrayName"),strObjName);
 					params.push_back(arrayname);
 
-					myDelegateObject->CallMethod(myJSonArrayStartID,params);
+					mDelegateObject->CallMethod(mJSonArrayStartID,params);
 
 					if(!ParseArray(newarray))
 					{
 						return false;
 					}
 
-					myDelegateObject->CallMethod(myJSonArrayEndID,params);
+					mDelegateObject->CallMethod(mJSonArrayEndID,params);
 					
 					delete arrayname;
 
@@ -479,7 +479,7 @@ bool JSonFileParserBase<stringType, parserType>::ParseBlock(parserType& Block)
 			else if(objValue[0] == '{')
 			{
 				// object
-				if(myParamList.size())
+				if(mParamList.size())
 				{
 					NotifyDelegateWithParamList();
 				}
@@ -490,14 +490,14 @@ bool JSonFileParserBase<stringType, parserType>::ParseBlock(parserType& Block)
 					CoreModifiableAttribute* neobjname = getNewStringAttribute(stringType("ObjectName"), strObjName);
 					params.push_back(neobjname);
 
-					myDelegateObject->CallMethod(myJSonObjectStartID,params);
+					mDelegateObject->CallMethod(mJSonObjectStartID,params);
 
 					if(!ParseBlock(newblock))
 					{
 						return false;
 					}
 
-					myDelegateObject->CallMethod(myJSonObjectEndID,params);
+					mDelegateObject->CallMethod(mJSonObjectEndID,params);
 					
 					delete neobjname;
 					
@@ -530,7 +530,7 @@ bool JSonFileParserBase<stringType, parserType>::ParseBlock(parserType& Block)
 		}
 	}
 
-	if(myParamList.size())
+	if(mParamList.size())
 	{
 		NotifyDelegateWithParamList();
 	}
@@ -546,7 +546,7 @@ bool JSonFileParserBase<stringType,parserType>::ParseArray(parserType& Array)
 	{
 		if(*Array == '[')
 		{
-			if(myParamList.size())
+			if(mParamList.size())
 			{
 				NotifyDelegateWithParamList();
 			}
@@ -555,13 +555,13 @@ bool JSonFileParserBase<stringType,parserType>::ParseArray(parserType& Array)
 			if (Array.GetBlockExcludeString(newarray, '[', ']'))
 			{
 				kstl::vector<CoreModifiableAttribute*>	params;
-				myDelegateObject->CallMethod(myJSonArrayStartID,params);
+				mDelegateObject->CallMethod(mJSonArrayStartID,params);
 
 				if(!ParseArray(newarray))
 				{
 					return false;
 				}
-				myDelegateObject->CallMethod(myJSonArrayEndID,params);
+				mDelegateObject->CallMethod(mJSonArrayEndID,params);
 
 				Array.GoAfterNextSeparator(',');
 			}
@@ -572,7 +572,7 @@ bool JSonFileParserBase<stringType,parserType>::ParseArray(parserType& Array)
 		}
 		else if(*Array == '{')
 		{
-			if(myParamList.size())
+			if(mParamList.size())
 			{
 				NotifyDelegateWithParamList();
 			}
@@ -581,13 +581,13 @@ bool JSonFileParserBase<stringType,parserType>::ParseArray(parserType& Array)
 			if (Array.GetBlockExcludeString(newblock, '{', '}'))
 			{
 				kstl::vector<CoreModifiableAttribute*>	params;
-				myDelegateObject->CallMethod(myJSonObjectStartID,params);
+				mDelegateObject->CallMethod(mJSonObjectStartID,params);
 
 				if(!ParseBlock(newblock))
 				{
 					return false;
 				}
-				myDelegateObject->CallMethod(myJSonObjectEndID,params);
+				mDelegateObject->CallMethod(mJSonObjectEndID,params);
 				Array.GoAfterNextSeparator(',');
 			}
 			else
@@ -616,7 +616,7 @@ bool JSonFileParserBase<stringType,parserType>::ParseArray(parserType& Array)
 		}
 	}
 	
-	if(myParamList.size())
+	if(mParamList.size())
 	{
 		NotifyDelegateWithParamList();
 	}
@@ -627,15 +627,15 @@ bool JSonFileParserBase<stringType,parserType>::ParseArray(parserType& Array)
 template <typename stringType, typename parserType>
 void	JSonFileParserBase<stringType,parserType>::NotifyDelegateWithParamList()
 {
-	myDelegateObject->CallMethod(myJSonParamListID,myParamList);
+	mDelegateObject->CallMethod(mJSonParamListID,mParamList);
 
 	kstl::vector<CoreModifiableAttribute*>::iterator	todelete;
-	for(todelete=myParamList.begin();todelete!=myParamList.end();++todelete)
+	for(todelete=mParamList.begin();todelete!=mParamList.end();++todelete)
 	{
 		delete (*todelete);
 	}
 
-	myParamList.clear();
+	mParamList.clear();
 }
 
 																					/*DictionaryFromJson class*/
@@ -646,7 +646,7 @@ IMPLEMENT_CLASS_INFO(DictionaryFromJson);
 
 DictionaryFromJson::DictionaryFromJson(const kstl::string& name,CLASS_NAME_TREE_ARG):
 CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-,m_pCurrentObject(nullptr)
+,mCurrentObject(nullptr)
 {
 	
 }
@@ -656,7 +656,7 @@ CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 
 DictionaryFromJson::~DictionaryFromJson()
 {
-	m_vObjectStack.clear();
+	mObjectStack.clear();
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -666,35 +666,35 @@ DEFINE_METHOD(DictionaryFromJson,JSonObjectStart)
 {
 	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreMap<kstl::string>(), StealRefTag{});
 
-	if (!m_pCurrentObject.isNil())
+	if (!mCurrentObject.isNil())
 	{
-		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
+		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
+			((CoreMap<kstl::string>*)mCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
 		}
-		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
+		else if (mCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
-			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
+			((CoreVector*)mCurrentObject.get())->push_back(toAdd);
 		}
 	}
 	else // first object => add it twice
 	{
-		m_pCurrentObject = toAdd;
-		m_vObjectStack.push_back(m_pCurrentObject);
+		mCurrentObject = toAdd;
+		mObjectStack.push_back(mCurrentObject);
 	}
 
-	m_pCurrentObject=toAdd;
-	m_vObjectStack.push_back(m_pCurrentObject);
+	mCurrentObject=toAdd;
+	mObjectStack.push_back(mCurrentObject);
 	
 	return false;
 }
 
 DEFINE_METHOD(DictionaryFromJson,JSonObjectEnd)
 {
-	if(m_vObjectStack.size()>0)
+	if(mObjectStack.size()>0)
 	{
-		m_vObjectStack.pop_back();
-		m_pCurrentObject = m_vObjectStack[m_vObjectStack.size()-1];
+		mObjectStack.pop_back();
+		mCurrentObject = mObjectStack[mObjectStack.size()-1];
 	}
 	else
 	{
@@ -709,25 +709,25 @@ DEFINE_METHOD(DictionaryFromJson,JSonArrayStart)
 {
 	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreVector(), StealRefTag{});
 
-	if (!m_pCurrentObject.isNil())
+	if (!mCurrentObject.isNil())
 	{
-		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
+		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
+			((CoreMap<kstl::string>*)mCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
 		}
-		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
+		else if (mCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
-			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
+			((CoreVector*)mCurrentObject.get())->push_back(toAdd);
 		}
 	}
 	else // first object => add it twice
 	{
-		m_pCurrentObject = toAdd;
-		m_vObjectStack.push_back(m_pCurrentObject);
+		mCurrentObject = toAdd;
+		mObjectStack.push_back(mCurrentObject);
 	}
 
-	m_pCurrentObject=toAdd;
-	m_vObjectStack.push_back(m_pCurrentObject);
+	mCurrentObject=toAdd;
+	mObjectStack.push_back(mCurrentObject);
 
 	return false;
 }
@@ -735,10 +735,10 @@ DEFINE_METHOD(DictionaryFromJson,JSonArrayStart)
 DEFINE_METHOD(DictionaryFromJson,JSonArrayEnd)
 {
 	
-	if(m_vObjectStack.size() > 0)
+	if(mObjectStack.size() > 0)
 	{
-		m_vObjectStack.pop_back();
-		m_pCurrentObject = m_vObjectStack[m_vObjectStack.size()-1];
+		mObjectStack.pop_back();
+		mCurrentObject = mObjectStack[mObjectStack.size()-1];
 	}
 	else
 	{
@@ -755,9 +755,9 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 	if(!params.empty())
 	{
 		bool L_IsVector = false;
-		if(!m_pCurrentObject.isNil())
+		if(!mCurrentObject.isNil())
 		{
-			L_IsVector = (m_pCurrentObject->GetType() == CoreItem::COREVECTOR);
+			L_IsVector = (mCurrentObject->GetType() == CoreItem::COREVECTOR);
 		}
 
 		int idx = 0;
@@ -773,9 +773,9 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kstl::string>((*(maString*)params[idx])), StealRefTag{});
 
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 
 			}
 			else if(paramType == ATTRIBUTE_TYPE::FLOAT)
@@ -783,9 +783,9 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])), StealRefTag{});
 				
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 				
 			}
 			else if(paramType == ATTRIBUTE_TYPE::INT)
@@ -793,9 +793,9 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])), StealRefTag{});
 				
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 			
 			}
 			else if(paramType == ATTRIBUTE_TYPE::BOOL)
@@ -803,9 +803,9 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
 
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 
 			}
 			else if(paramType == ATTRIBUTE_TYPE::UINT)
@@ -813,9 +813,9 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])), StealRefTag{});
 
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 				
 			}
 			else if(paramType == ATTRIBUTE_TYPE::DOUBLE)
@@ -823,9 +823,9 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])), StealRefTag{});
 
 				if(L_IsVector)
-					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)m_pCurrentObject.get())->set(L_Key,L_Value);
+					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 				
 			}
 		}
@@ -838,7 +838,7 @@ IMPLEMENT_CLASS_INFO(DictionaryFromJsonUTF16);
 
 DictionaryFromJsonUTF16::DictionaryFromJsonUTF16(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, m_pCurrentObject(nullptr)
+, mCurrentObject(nullptr)
 {
 	
 }
@@ -848,7 +848,7 @@ CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 
 DictionaryFromJsonUTF16::~DictionaryFromJsonUTF16()
 {
-	m_vObjectStack.clear();
+	mObjectStack.clear();
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -858,35 +858,35 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonObjectStart)
 {
 	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreMap<usString>(), StealRefTag{});
 
-	if (!m_pCurrentObject.isNil())
+	if (!mCurrentObject.isNil())
 	{
-		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
+		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<usString>*)m_pCurrentObject.get())->set(((maUSString*)params[0])->const_ref(), toAdd);
+			((CoreMap<usString>*)mCurrentObject.get())->set(((maUSString*)params[0])->const_ref(), toAdd);
 		}
-		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
+		else if (mCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
-			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
+			((CoreVector*)mCurrentObject.get())->push_back(toAdd);
 		}
 	}
 	else // first object => add it twice
 	{
-		m_pCurrentObject = toAdd;
-		m_vObjectStack.push_back(m_pCurrentObject);
+		mCurrentObject = toAdd;
+		mObjectStack.push_back(mCurrentObject);
 	}
 
-	m_pCurrentObject = toAdd;
-	m_vObjectStack.push_back(m_pCurrentObject);
+	mCurrentObject = toAdd;
+	mObjectStack.push_back(mCurrentObject);
 
 	return false;
 }
 
 DEFINE_METHOD(DictionaryFromJsonUTF16, JSonObjectEnd)
 {
-	if (m_vObjectStack.size()>0)
+	if (mObjectStack.size()>0)
 	{
-		m_vObjectStack.pop_back();
-		m_pCurrentObject = m_vObjectStack[m_vObjectStack.size() - 1];
+		mObjectStack.pop_back();
+		mCurrentObject = mObjectStack[mObjectStack.size() - 1];
 	}
 	else
 	{
@@ -901,35 +901,35 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonArrayStart)
 {
 	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreVector(), StealRefTag{});
 
-	if (!m_pCurrentObject.isNil())
+	if (!mCurrentObject.isNil())
 	{
-		if (m_pCurrentObject->GetType() == CoreItem::COREMAP)
+		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<usString>*)m_pCurrentObject.get())->set(((maUSString*)params[0])->const_ref(), toAdd);
+			((CoreMap<usString>*)mCurrentObject.get())->set(((maUSString*)params[0])->const_ref(), toAdd);
 		}
-		else if (m_pCurrentObject->GetType() == CoreItem::COREVECTOR)
+		else if (mCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
-			((CoreVector*)m_pCurrentObject.get())->push_back(toAdd);
+			((CoreVector*)mCurrentObject.get())->push_back(toAdd);
 		}
 	}
 	else // first object => add it twice
 	{
-		m_pCurrentObject = toAdd;
-		m_vObjectStack.push_back(m_pCurrentObject);
+		mCurrentObject = toAdd;
+		mObjectStack.push_back(mCurrentObject);
 	}
 
-	m_pCurrentObject = toAdd;
-	m_vObjectStack.push_back(m_pCurrentObject);
+	mCurrentObject = toAdd;
+	mObjectStack.push_back(mCurrentObject);
 
 	return false;
 }
 
 DEFINE_METHOD(DictionaryFromJsonUTF16, JSonArrayEnd)
 {
-	if (m_vObjectStack.size() > 0)
+	if (mObjectStack.size() > 0)
 	{
-		m_vObjectStack.pop_back();
-		m_pCurrentObject = m_vObjectStack[m_vObjectStack.size() - 1];
+		mObjectStack.pop_back();
+		mCurrentObject = mObjectStack[mObjectStack.size() - 1];
 	}
 	else
 	{
@@ -946,9 +946,9 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 	if (!params.empty())
 	{
 		bool L_IsVector = false;
-		if (!m_pCurrentObject.isNil())
+		if (!mCurrentObject.isNil())
 		{
-			L_IsVector = (m_pCurrentObject->GetType() == CoreItem::COREVECTOR);
+			L_IsVector = (mCurrentObject->GetType() == CoreItem::COREVECTOR);
 		}
 
 		int idx = 0;
@@ -964,9 +964,9 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<usString>(((maUSString*)params[idx])->const_ref()), StealRefTag{});
 
 				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
+					((CoreMap<usString>*)mCurrentObject.get())->set(L_Key, L_Value);
 
 			}
 			else if (paramType == ATTRIBUTE_TYPE::FLOAT)
@@ -974,9 +974,9 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])), StealRefTag{});
 
 				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
+					((CoreMap<usString>*)mCurrentObject.get())->set(L_Key, L_Value);
 
 			}
 			else if (paramType == ATTRIBUTE_TYPE::INT)
@@ -984,9 +984,9 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])), StealRefTag{});
 
 				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
+					((CoreMap<usString>*)mCurrentObject.get())->set(L_Key, L_Value);
 
 			}
 			else if (paramType == ATTRIBUTE_TYPE::BOOL)
@@ -994,9 +994,9 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
 
 				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
+					((CoreMap<usString>*)mCurrentObject.get())->set(L_Key, L_Value);
 
 			}
 			else if (paramType == ATTRIBUTE_TYPE::UINT)
@@ -1004,9 +1004,9 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])), StealRefTag{});
 
 				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
+					((CoreMap<usString>*)mCurrentObject.get())->set(L_Key, L_Value);
 
 			}
 			else if (paramType == ATTRIBUTE_TYPE::DOUBLE)
@@ -1014,9 +1014,9 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])), StealRefTag{});
 
 				if (L_IsVector)
-					((CoreVector*)m_pCurrentObject.get())->push_back(L_Value);
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<usString>*)m_pCurrentObject.get())->set(L_Key, L_Value);
+					((CoreMap<usString>*)mCurrentObject.get())->set(L_Key, L_Value);
 
 			}
 		}

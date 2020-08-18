@@ -75,7 +75,7 @@ DEFINE_UPGRADOR_METHOD(PopUpUpgrador, ShowPopUp)
 		
 		if (atoi(tmp.c_str()) == getValue<int>("NumSignal"))
 		{
-			if (!myIsHidden)
+			if (!mIsHidden)
 			{
 				GetUpgrador()->Hide(this);
 				return false;
@@ -98,15 +98,15 @@ DEFINE_UPGRADOR_METHOD(PopUpUpgrador, ShowPopUp)
 DEFINE_UPGRADOR_UPDATE(PopUpUpgrador)
 {
 	kdouble t = timer.GetTime();
-	if (GetUpgrador()->myOpenPopup)
+	if (GetUpgrador()->mOpenPopup)
 	{
-		GetUpgrador()->myTimeOpen = t;
-		GetUpgrador()->myOpenPopup = false;
+		GetUpgrador()->mTimeOpen = t;
+		GetUpgrador()->mOpenPopup = false;
 	}
-	if (t - GetUpgrador()->myTimeOpen >= getValue<int>("StayOpen"))
+	if (t - GetUpgrador()->mTimeOpen >= getValue<int>("StayOpen"))
 	{
 		GetUpgrador()->Hide(this);
-		GetUpgrador()->myTimeOpen = -1.0;
+		GetUpgrador()->mTimeOpen = -1.0;
 	}
 }
 
@@ -114,15 +114,15 @@ DEFINE_UPGRADOR_UPDATE(PopUpUpgrador)
 void PopUpUpgrador::Show(UIItem* localthis, CoreModifiable * aActivator)
 {
 	localthis->setValue("IsHidden",false);
-	myOpenPopup = true;
+	mOpenPopup = true;
 	if (aActivator)
 	{
-		myActivator = aActivator;
+		mActivator = aActivator;
 		aActivator->GetRef();
 
 		v3f activeColor;
 		localthis->getValue("ActiveColor", activeColor);
-		myActivator->setValue("Color", activeColor);
+		mActivator->setValue("Color", activeColor);
 	}
 }
 
@@ -131,13 +131,13 @@ void PopUpUpgrador::Show(UIItem* localthis, CoreModifiable * aActivator)
 void PopUpUpgrador::Hide(UIItem* localthis)
 {
 	localthis->setValue("IsHidden", true);
-	if (myActivator)
+	if (mActivator)
 	{
 		v3f usedColor;
 		localthis->getValue("UsedColor", usedColor);
-		myActivator->setValue("Color", usedColor);
-		myActivator->Destroy();
-		myActivator = nullptr;
+		mActivator->setValue("Color", usedColor);
+		mActivator->Destroy();
+		mActivator = nullptr;
 	}
 }
 

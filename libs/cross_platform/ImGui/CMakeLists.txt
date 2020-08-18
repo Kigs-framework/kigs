@@ -8,6 +8,4 @@ target_sources(dearimgui_sources
 		"${CMAKE_CURRENT_SOURCE_DIR}/imgui_widgets.cpp"
 		"${CMAKE_CURRENT_SOURCE_DIR}/imgui_draw.cpp"
 		"${CMAKE_CURRENT_SOURCE_DIR}/imgui_demo.cpp"
-		"${CMAKE_CURRENT_SOURCE_DIR}/lz4/lz4.c"
-		"${CMAKE_CURRENT_SOURCE_DIR}/lz4/xxhash.c"
 		)

@@ -16,7 +16,7 @@ class CoreItem;
 // * --------------------------------------
 /*!
 * \enum	AttributeNotificationLevel
-* CoreModifiableAttribute can now notify their owner that they have changed
+* CoreModifiableAttribute can notify their owner that they have changed
 * Do do this, some dynamic type change is done with a placement new, changing the virtual
 * table of the objects. But placement new can in some cases reinit members (ie :for strings).
 * So placement new constructor must have some parameters as copy.
@@ -43,13 +43,13 @@ void changeInheritance() override\
 {\
 	KigsID old_id = _id; \
 	_id.~KigsID(); \
-	CurrentAttributeType old_value = _value; \
-	_value.~CurrentAttributeType(); \
+	CurrentAttributeType old_value = mValue; \
+	mValue.~CurrentAttributeType(); \
 	AttachedModifierBase* modifier = _attachedModifier; \
 	u32 old_flags = _Flags; \
 	u32 inheritlevel = (_Flags >> INHERIT_LEVEL_SHIFT) & INHERIT_LEVEL_MOD; \
 	doPlacementNew(inheritlevel); \
-	_value = old_value; \
+	mValue = old_value; \
 	_Flags = old_flags; \
 	_attachedModifier = modifier; \
 }\
@@ -67,7 +67,7 @@ static_assert(sizeof(classname<2>) == sizeof(classname<3>), "Size mismatch betwe
 
 #define DECLARE_ATTRIBUTE_USINGS(underlying_type)\
 protected:\
-	using CoreModifiableAttributeData<underlying_type>::_value;\
+	using CoreModifiableAttributeData<underlying_type>::mValue;\
 public:\
 	using CoreModifiableAttributeData<underlying_type>::isReadOnly;
 
@@ -105,11 +105,11 @@ void doPlacementNew(u32 level) override\
 public:\
 virtual operator CurrentAttributeType() const\
 {\
-	return _value;\
+	return mValue;\
 };\
 auto& operator=(const CurrentAttributeType& value)\
 {\
-	_value = value;\
+	mValue = value;\
 	return *this;\
 }
 
@@ -127,28 +127,8 @@ auto& operator=(const CurrentAttributeType& value)\
 * This allow to export and import a CoreModifiable with its attributes.<br>
 * Each CoreModifiableAttribute can be used and modified by anyone using generic function as getValue() and setValue().<br>
 * it IS possible to add and remove a dynamic attribute to a CoreModifiable.<br>
-* a CoreModifiableAttribute is accessed by an unique id. see the class documentation for the list of available CoreModifiableAttribute.<br>
+* a CoreModifiableAttribute is accessed by an unique id. See the class documentation for the list of available CoreModifiableAttribute.<br>
 *
-* <dl class="exemple"><dt><b>Exemple:</b></dt><dd>
-* <span class="comment"> using setValue() on a CoreModifiable :</span><br>
-* <span class="code">
-* CoreModifiable* SkinObject=(CoreModifiable*)(KigsCore::GetInstanceOf(<i>instance_name</i>,"SkinningResource"));<br>
-* SkinObject->setValue(LABEL_TO_ID(SkeletonFileName),<i>file_name.skel</i>);<span class="comment"> // get the CoreModifiableAttribute ID from its name</span><br>
-* SkinObject->setValue(LABEL_TO_ID(SkinFileName),<i>file_name.skin</i>);<br>
-* SkinObject->Init();<br>
-* </span>
-* <span class="comment"> initialization in constructor :</span><br>
-* <span class="code">
-* SkinningResource::SkinningResource(),<br>
-* mySkeletonFileName(*this,true,LABEL_AND_ID(SkeletonFileName),""),<br>
-* mySkinFileName(*this,true,LABEL_AND_ID(SkinFileName),""),<br>
-* {}<br>
-* <span class="comment"> // first param  : link to the owner</span><br>
-* <span class="comment"> // second param : TRUE if the param is needed for the init</span><br>
-* <span class="comment"> // third param  : Id of the CoreModifiableAttribute</span><br>
-* <span class="comment"> // fourth param : default value</span><br>
-* </span>
-* </dd></dl>
 */
 
 
@@ -159,10 +139,7 @@ auto& operator=(const CurrentAttributeType& value)\
 * \file	CoreModifiableAttribute.h
 * \class	CoreModifiableAttribute
 * \ingroup Core
-* \brief	 base class for CoreModifiableAttributeData . This class is just composed of virtual methods
-* \author	ukn
-* \version ukn
-* \date	ukn
+* \brief	 Base class for all CoreModifiableAttribute . This class is just composed of virtual methods
 */
 // ****************************************
 class CoreModifiableAttribute
@@ -174,15 +151,15 @@ protected:
 
 
 	CoreModifiableAttribute(CoreModifiable* owner, bool isInitParam, KigsID ID) :
-		_owner(owner)
-		, _attachedModifier(nullptr)
-		, _Flags(0)
-		, _id(ID)
+		mOwner(owner)
+		, mAttachedModifier(nullptr)
+		, mFlags(0)
+		, mID(ID)
 	{
 		setIsInitParam(isInitParam);
 
-		if(_owner)
-			_owner->_attributes[ID] = this;
+		if(mOwner)
+			mOwner->mAttributes[ID] = this;
 	}
 
 
@@ -218,11 +195,11 @@ public:
 
 	virtual kstl::vector<kstl::string> getEnumElements() const { return {}; }
 	
-	KigsID getID() const { return _id; };
+	KigsID getID() const { return mID; };
 
 	// For Backward compatibility:
-	KigsID getLabel() const { return _id;};
-	KigsID getLabelID() const { return _id; };
+	KigsID getLabel() const { return mID;};
+	KigsID getLabelID() const { return mID; };
 	
 	
 	enum ModifiableAttributeFlags
@@ -237,7 +214,7 @@ public:
 	
 
 
-	AttachedModifierBase*	getFirstAttachedModifier() { return _attachedModifier; }
+	AttachedModifierBase*	getFirstAttachedModifier() { return mAttachedModifier; }
 	void	attachModifier(AttachedModifierBase* toAttach);
 	void	detachModifier(AttachedModifierBase* toDetach);
 	
@@ -292,45 +269,45 @@ public:
 #undef DECLARE_SETARRAYELEMENTVALUE
 #undef DECLARE_GETARRAYELEMENTVALUE
 
-	CoreModifiable& getOwner() const {return *_owner;}
+	CoreModifiable& getOwner() const {return *mOwner;}
 	
 
 	//! Read only attributes cannot be modified with setValue
-	virtual bool isReadOnly()  { return (bool)((((u32)isReadOnlyFlag) & this->_Flags) != 0); }
+	virtual bool isReadOnly()  { return (bool)((((u32)isReadOnlyFlag) & this->mFlags) != 0); }
 	//! \brief  return true if attribute is an init attribute (necessary for the CoreModifiable Init to be done)
-	virtual bool isInitParam()  { return (bool)((((u32)isInitFlag) & this->_Flags) != 0); }
-	virtual bool isDynamic()  { return (bool)((((u32)isDynamicFlag) & this->_Flags) != 0); }
+	virtual bool isInitParam()  { return (bool)((((u32)isInitFlag) & this->mFlags) != 0); }
+	virtual bool isDynamic()  { return (bool)((((u32)isDynamicFlag) & this->mFlags) != 0); }
 	virtual void setReadOnly(bool val) 
 	{
 		if (val)
 		{
-			this->_Flags |= (u32)isReadOnlyFlag;
+			this->mFlags |= (u32)isReadOnlyFlag;
 		}
 		else
 		{
-			this->_Flags &= ~(u32)isReadOnlyFlag;
+			this->mFlags &= ~(u32)isReadOnlyFlag;
 		}
 	}
 	virtual void setDynamic(bool dyn) 
 	{
 		if (dyn)
 		{
-			this->_Flags |= (u32)isDynamicFlag;
+			this->mFlags |= (u32)isDynamicFlag;
 		}
 		else
 		{
-			this->_Flags &= ~(u32)isDynamicFlag;
+			this->mFlags &= ~(u32)isDynamicFlag;
 		}
 	}
 	virtual void setIsInitParam(bool init)
 	{
 		if (init)
 		{
-			this->_Flags |= (u32)isInitFlag;
+			this->mFlags |= (u32)isInitFlag;
 		}
 		else
 		{
-			this->_Flags &= ~(u32)isInitFlag;
+			this->mFlags &= ~(u32)isInitFlag;
 		}
 	}
 
@@ -351,10 +328,10 @@ public:
 
 protected:
 
-	CoreModifiable*   _owner;
-	AttachedModifierBase*	_attachedModifier;
-	u32 _Flags;
-	KigsID _id;
+	CoreModifiable*   mOwner;
+	AttachedModifierBase*	mAttachedModifier;
+	u32 mFlags;
+	KigsID mID;
 	
 };
 
@@ -363,8 +340,9 @@ protected:
 // * --------------------------------------
 /**
 * \class	CoreModifiableAttributeData
+* \file		CoreModifiableAttribute.h
 * \ingroup CoreModifiableAttibute
-* \brief	base class for CoreModifiable attributes
+* \brief	Base template class for CoreModifiable attributes managing data
 */
 // ****************************************
 
@@ -373,15 +351,15 @@ class CoreModifiableAttributeData : public CoreModifiableAttribute
 {
 
 public:
-	CoreModifiableAttributeData(CoreModifiable& owner, bool isInitParam, KigsID ID, const T& value) : CoreModifiableAttribute(&owner, isInitParam, ID), _value(value)
+	CoreModifiableAttributeData(CoreModifiable& owner, bool isInitParam, KigsID ID, const T& value) : CoreModifiableAttribute(&owner, isInitParam, ID), mValue(value)
 	{
 		
 	}
-	CoreModifiableAttributeData(CoreModifiable& owner, bool isInitParam, KigsID ID) : CoreModifiableAttribute(&owner, isInitParam, ID), _value{}
+	CoreModifiableAttributeData(CoreModifiable& owner, bool isInitParam, KigsID ID) : CoreModifiableAttribute(&owner, isInitParam, ID), mValue{}
 	{
 		
 	}
-	CoreModifiableAttributeData(KigsID ID, const T& value) : CoreModifiableAttribute(nullptr, false, ID), _value{value}
+	CoreModifiableAttributeData(KigsID ID, const T& value) : CoreModifiableAttribute(nullptr, false, ID), mValue{value}
 	{
 	}
 
@@ -394,10 +372,10 @@ public:
 		changeInheritance();
 	}
 
-	T& ref() { return _value; }
-	const T& const_ref() const { return _value; }
+	T& ref() { return mValue; }
+	const T& const_ref() const { return mValue; }
 
-	virtual void* getRawValue() final { return static_cast<void*>(&_value); }
+	virtual void* getRawValue() final { return static_cast<void*>(&mValue); }
 	
 	friend class CoreModifiable;
 	
@@ -413,22 +391,22 @@ public:
 protected:
 
 	//! Underlying value
-	T _value;
+	T mValue;
 
 	virtual void changeInheritance() final
 	{
-		KigsID old_id = _id;
-		_id.~KigsID();
-		T old_value = _value;
-		_value.~T();
-		AttachedModifierBase* modifier = _attachedModifier;
-		u32 old_flags = _Flags;
-		u32 inheritlevel = (_Flags >> INHERIT_LEVEL_SHIFT) & INHERIT_LEVEL_MOD;
+		KigsID old_id = mID;
+		mID.~KigsID();
+		T old_value = mValue;
+		mValue.~T();
+		AttachedModifierBase* modifier = mAttachedModifier;
+		u32 old_flags = mFlags;
+		u32 inheritlevel = (mFlags >> INHERIT_LEVEL_SHIFT) & INHERIT_LEVEL_MOD;
 		doPlacementNew(inheritlevel);
-		_id = old_id;
-		_value = old_value;
-		_Flags = old_flags;
-		_attachedModifier = modifier;
+		mID = old_id;
+		mValue = old_value;
+		mFlags = old_flags;
+		mAttachedModifier = modifier;
 	}
 	
 
@@ -459,18 +437,27 @@ protected:
 
 	virtual void CopyData(const CoreModifiableAttributeData<T>& other)
 	{
-		_value = other._value;
+		mValue = other.mValue;
 	}
 };
 
 
-#define CALL_GETMODIFIER(level,value) if(level&2){this->_attachedModifier->CallModifier((CoreModifiableAttribute *)this,value,true);}
-#define CALL_SETMODIFIER(level,value) if(level&2){this->_attachedModifier->CallModifier((CoreModifiableAttribute *)this,value,false);}
+#define CALL_GETMODIFIER(level,value) if(level&2){this->mAttachedModifier->CallModifier((CoreModifiableAttribute *)this,value,true);}
+#define CALL_SETMODIFIER(level,value) if(level&2){this->mAttachedModifier->CallModifier((CoreModifiableAttribute *)this,value,false);}
 
-#define DO_NOTIFICATION(level)	if(level&1){this->_owner->NotifyUpdate(CoreModifiableAttribute::getLabel().toUInt());}
+#define DO_NOTIFICATION(level)	if(level&1){this->mOwner->NotifyUpdate(CoreModifiableAttribute::getLabel().toUInt());}
 
 
-
+// ****************************************
+// * maRawPtrHeritage class
+// * --------------------------------------
+/**
+* \class	maRawPtrHeritage
+* \file		CoreModifiableAttribute.h
+* \ingroup CoreModifiableAttibute
+* \brief	Base class for attributes managing a single ptr ( void* )
+*/
+// ****************************************
 
 template<int notificationLevel>
 class maRawPtrHeritage : public CoreModifiableAttributeData<void*>
@@ -480,21 +467,21 @@ public:
 	
 	bool getValue(CoreModifiable*& value) const override
 	{
-		value = static_cast<CoreModifiable*>(_value);
+		value = static_cast<CoreModifiable*>(mValue);
 		return true;
 	}
-	bool getValue(void*& value) const override { value = _value; return true; }
+	bool getValue(void*& value) const override { value = mValue; return true; }
 	bool setValue(void* value) override 
 	{ 
 		if (isReadOnly()) return false;
-		_value = value; 
+		mValue = value; 
 		DO_NOTIFICATION(notificationLevel);
 		return true; 
 	}
 	bool setValue(CoreModifiable* value) override
 	{
 		if (isReadOnly()) return false;
-		_value = static_cast<void*>(value);
+		mValue = static_cast<void*>(value);
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}

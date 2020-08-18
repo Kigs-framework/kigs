@@ -165,8 +165,8 @@ public:
 	virtual ~CoreItemOperatorModifier()
 	{
 
-		auto itcurrent = myContext.myVariableList.begin();
-		auto itend = myContext.myVariableList.end();
+		auto itcurrent = myContext.mVariableList.begin();
+		auto itend = myContext.mVariableList.end();
 		while (itcurrent != itend)
 		{
 			if ((*itcurrent).second)

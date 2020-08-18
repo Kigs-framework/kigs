@@ -57,7 +57,7 @@ void WorkerThread::Start()
 				myIsAutoFeed = false;
 				if (myCurrentTask)
 				{
-					myCurrentTask->myMethodInstance->CallMethod(myCurrentTask->myMethodID, myEmptyParams, myCurrentTask->myPrivateParams);
+					myCurrentTask->mMethodInstance->CallMethod(myCurrentTask->mMethodID, myEmptyParams, myCurrentTask->mPrivateParams);
 					processDone();
 				}
 			} while (myNeedExit == false);

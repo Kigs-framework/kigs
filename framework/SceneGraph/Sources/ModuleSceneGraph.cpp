@@ -85,7 +85,7 @@ bool ModuleSceneGraph::FindParentScene(CoreModifiable* item, Scene3D** parent, b
 	CoreModifiable* lParent = item;
 	while (lParent)
 	{
-		if (lParent->isSubType(Scene3D::myClassID))
+		if (lParent->isSubType(Scene3D::mClassID))
 			break;
 
 		auto& parents = lParent->GetParents();

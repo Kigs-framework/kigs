@@ -280,7 +280,7 @@ void  Octree::ReorganiseOctree()
 	// add all concerned object to the octree
 	for (auto mis : getItems())
 	{
-		CMSP& item = mis.myItem;
+		CMSP& item = mis.mItem;
 
 		if (item->isUserFlagSet(UserFlagNode3D))
 		{

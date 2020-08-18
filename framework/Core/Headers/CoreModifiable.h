@@ -211,30 +211,30 @@ protected:
 	};
 
 public:
-	ModifiableItemStruct(const CMSP& item) : myItem(item), myItemFlag(0) {}
+	ModifiableItemStruct(const CMSP& item) : mItem(item), mItemFlag(0) {}
 
-	operator CMSP() { return myItem; }
-	CoreModifiable* operator->() const { return (CoreModifiable*)myItem.get(); }
-	CoreModifiable& operator*() const { return *((CoreModifiable*)myItem.get()); }
+	operator CMSP() { return mItem; }
+	CoreModifiable* operator->() const { return (CoreModifiable*)mItem.get(); }
+	CoreModifiable& operator*() const { return *((CoreModifiable*)mItem.get()); }
 
-	CMSP myItem;
+	CMSP mItem;
 
 	inline bool	isAggregate() const
 	{
-		return myItemFlag&(u32)AgreggateFlag;
+		return mItemFlag&(u32)AgreggateFlag;
 	}
 	inline void	setAggregate()
 	{
-		myItemFlag |= (u32)AgreggateFlag;
+		mItemFlag |= (u32)AgreggateFlag;
 	}
 	inline void	unsetAggregate()
 	{
-		myItemFlag &= 0xFFFFFFFF ^ (u32)AgreggateFlag;
+		mItemFlag &= 0xFFFFFFFF ^ (u32)AgreggateFlag;
 	}
 
 private:
 	// flag used to store item or link type (item, aggregate...)
-	u32	myItemFlag;
+	u32	mItemFlag;
 };
 
 typedef	const int	CoreMessageType;
@@ -245,13 +245,13 @@ class CoreClassNameTree
 public:
 	struct	TwoNames
 	{
-		KigsID myClassName;
-		KigsID myRuntimeName;
+		KigsID mClassName;
+		KigsID mRuntimeName;
 	};
 
 	// constructors
-	CoreClassNameTree(KigsID className, KigsID runtimeName) : myClassNames{} { addClassName(className, runtimeName); }
-	CoreClassNameTree() : myClassNames() {}
+	CoreClassNameTree(KigsID className, KigsID runtimeName) : mClassNames{} { addClassName(className, runtimeName); }
+	CoreClassNameTree() : mClassNames() {}
 
 	CoreClassNameTree(const CoreClassNameTree& tree) = delete;
 	CoreClassNameTree& operator=(const CoreClassNameTree& tree) = delete;
@@ -259,19 +259,19 @@ public:
 	// push class name
 	void addClassName(KigsID className, KigsID runtimeName)
 	{
-		for (const auto& names : myClassNames)
+		for (const auto& names : mClassNames)
 		{
-			if (names.myClassName == className)
+			if (names.mClassName == className)
 				return;
 		}
-		myClassNames.push_back({ className, runtimeName });
+		mClassNames.push_back({ className, runtimeName });
 	}
 
 	// return classname vector
-	const std::vector<TwoNames>& classNames() const { return myClassNames; }
+	const std::vector<TwoNames>& classNames() const { return mClassNames; }
 
 protected:
-	std::vector<TwoNames> myClassNames;
+	std::vector<TwoNames> mClassNames;
 };
 
 
@@ -392,18 +392,17 @@ struct ModifiableMethodStruct
  * \file	CoreModifiable.h
  * \class	CoreModifiable
  * \ingroup Core
- * \brief	 base class for objects with a list of modifiable attributes and a list of sons (items)
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \brief	Base class for Kigs framework objects.
+ * CoreModifiable class manage a list of attributes supporting reflexion and serialization. 
+ * CoreModifiable also support reference counting, auto update, instance factory... 
  */
  // ****************************************
 class CoreModifiable : public GenericRefCountedBaseClass
 {
 public:
 	//DECLARE_ABSTRACT_CLASS_INFO(CoreModifiable, RefCountedClass, KigsCore);
-	static const KigsID myClassID;
-	static KigsID myRuntimeType;
+	static const KigsID mClassID;
+	static KigsID mRuntimeType;
 	
 	typedef CoreModifiable CurrentClassType;
 	typedef GenericRefCountedBaseClass ParentClassType;
@@ -426,8 +425,8 @@ public:
 
 	virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) { classNameTree.addClassName("CoreModifiable", "CoreModifiable"); }
 	
-	virtual KigsID getExactTypeID() const { return CoreModifiable::myClassID; }
-	virtual bool isSubType(const KigsID& cid) const { return CoreModifiable::myClassID == cid; }
+	virtual KigsID getExactTypeID() const { return CoreModifiable::mClassID; }
+	virtual bool isSubType(const KigsID& cid) const { return CoreModifiable::mClassID == cid; }
 	static void GetClassNameTree(CoreClassNameTree& classNameTree);
 
 	static void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& method_table) {}
@@ -440,11 +439,11 @@ public:
 	static CMSP GetFirstInstanceByName(const KigsID& id, const std::string& name, bool exact_type_only = false);
 	static std::vector<CMSP> GetRootInstances(const KigsID& cid, bool exactTypeOnly = false);
 
-	const std::string& getName() const { return myName; }
+	const std::string& getName() const { return mName; }
 	void setName(const std::string& name);
-	const KigsID& getNameID() const { return myNameID; }
-	inline unsigned int getUID() { return myUID; }
-	CoreTreeNode* GetTypeNode() const { return myTypeNode; }
+	const KigsID& getNameID() const { return mNameID; }
+	inline unsigned int getUID() { return mUID; }
+	CoreTreeNode* GetTypeNode() const { return mTypeNode; }
 
 #ifdef KIGS_TOOLS
 	void GetRef() override;
@@ -457,11 +456,11 @@ public:
 protected:
 	explicit CoreModifiable(std::string name, DECLARE_CLASS_NAME_TREE_ARG) : GenericRefCountedBaseClass() 
 	{
-		myUID = myUIDCounter.fetch_add(1);
+		mUID = mUIDCounter.fetch_add(1);
 		if (name.empty())
-			name = "nobody" + std::to_string(myUID);
-		myName = name;
-		myNameID = name;
+			name = "nobody" + std::to_string(mUID);
+		mName = name;
+		mNameID = name;
 	}
 	virtual ~CoreModifiable();
 
@@ -514,7 +513,7 @@ public:
 	template<typename T>
 	T* as() const
 	{
-		//KIGS_ASSERT(isSubType(T::myClassID));
+		//KIGS_ASSERT(isSubType(T::mClassID));
 		static_assert(std::is_base_of<CoreModifiable, T>::value, "using as but type is not a coremodifiable");
 		return (T*)static_cast<const T*>(this);
 	}
@@ -545,19 +544,19 @@ public:
 	void EmptyItemList();
 
 	// Get the item list
-	const std::vector<ModifiableItemStruct>& getItems() const { return _items; }
+	const std::vector<ModifiableItemStruct>& getItems() const { return mItems; }
 
 	// Get the attribute list
-	const kigs::unordered_map<KigsID, CoreModifiableAttribute*>& getAttributes() const { return _attributes; }
+	const kigs::unordered_map<KigsID, CoreModifiableAttribute*>& getAttributes() const { return mAttributes; }
 	
 	// Number of attributes
-	size_t getAttributeCount() const { return _attributes.size(); }
+	size_t getAttributeCount() const { return mAttributes.size(); }
 	
 	// Get parents/users
-	const std::vector<CoreModifiable*>& GetParents() const { return _users; }
+	const std::vector<CoreModifiable*>& GetParents() const { return mUsers; }
 	
 	// Get parents/users count
-	size_t GetParentCount() const { return _users.size(); }
+	size_t GetParentCount() const { return mUsers.size(); }
 
 	// Get the first parent matching the ID
 	CoreModifiable* getFirstParent(KigsID ParentClassID) const;
@@ -569,7 +568,7 @@ public:
 	}
 
 	// Return true if the modifiable has a least one parent/user
-	bool isUsed() const { return !_users.empty(); }
+	bool isUsed() const { return !mUsers.empty(); }
 
 	// Search in sons for by id and name
 	void GetSonInstancesByName(KigsID cid, const std::string &name, std::vector<CMSP>& instances,bool recursive = false);
@@ -580,13 +579,13 @@ public:
 	template<typename T>
 	T* GetSon(const std::string& name, bool recursive = false)
 	{
-		return GetFirstSonByName(T::myClassID, name, recursive)->template as<T>();
+		return GetFirstSonByName(T::mClassID, name, recursive)->template as<T>();
 	}
 
 	template<typename T>
 	T* GetSon(const char* name, bool recursive = false)
 	{
-		return GetFirstSonByName(T::myClassID, name, recursive)->template as<T>();
+		return GetFirstSonByName(T::mClassID, name, recursive)->template as<T>();
 	}
 
 	// Search in sons for by id
@@ -598,7 +597,7 @@ public:
 	template<typename T>
 	T* GetSon(bool recursive = false)
 	{
-		return GetFirstSonByType(T::myClassID, recursive)->template as<T>();
+		return GetFirstSonByType(T::mClassID, recursive)->template as<T>();
 	}
 
 	// Search in sons for by path
@@ -731,7 +730,7 @@ public:
 	{
 		setValue(id, value);
 		for (auto& it : getItems()) 
-			it.myItem->setValueRecursively(id, value);
+			it.mItem->setValueRecursively(id, value);
 	}
 
 	template<typename T, typename Pred>
@@ -740,7 +739,7 @@ public:
 		if(predicate(this))
 			setValue(id, value);
 		for (auto& it : getItems())
-			it.myItem->setValueRecursively(id, value, std::forward<decltype(predicate)>(predicate));
+			it.mItem->setValueRecursively(id, value, std::forward<decltype(predicate)>(predicate));
 	}
 
 	/// Dynamic attribute management
@@ -797,7 +796,7 @@ public:
 	static T* aggregate_cast(CoreModifiable* tocast)
 	{
 		CoreModifiable*	startPoint = tocast->getAggregateRoot();
-		CoreModifiable* found = startPoint->getAggregateByType(T::myClassID);
+		CoreModifiable* found = startPoint->getAggregateByType(T::mClassID);
 		if (found)
 		{
 			return (T*)found;
@@ -808,77 +807,77 @@ public:
 	/// Flags
 	inline void flagAsNotificationCenterRegistered()
 	{
-		_ModifiableFlag |= (u32)NotificationCenterRegistered;
+		mModifiableFlag |= (u32)NotificationCenterRegistered;
 	}
 	inline void unflagAsNotificationCenterRegistered()
 	{
-		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)NotificationCenterRegistered;
+		mModifiableFlag &= 0xFFFFFFFF ^ (u32)NotificationCenterRegistered;
 	}
 	inline bool isFlagAsNotificationCenterRegistered()
 	{
-		return (_ModifiableFlag&(u32)NotificationCenterRegistered) != 0;
+		return (mModifiableFlag&(u32)NotificationCenterRegistered) != 0;
 	}
 	inline void flagAsReferenceRegistered()
 	{
-		_ModifiableFlag |= (u32)ReferenceRegistered;
+		mModifiableFlag |= (u32)ReferenceRegistered;
 	}
 	inline void unflagAsReferenceRegistered()
 	{
-		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)ReferenceRegistered;
+		mModifiableFlag &= 0xFFFFFFFF ^ (u32)ReferenceRegistered;
 	}
 	inline bool isFlagAsReferenceRegistered()
 	{
-		return (_ModifiableFlag&(u32)ReferenceRegistered) != 0;
+		return (mModifiableFlag&(u32)ReferenceRegistered) != 0;
 	}
 	inline void flagAsAutoUpdateRegistered()
 	{
-		_ModifiableFlag |= (u32)AutoUpdateRegistered;
+		mModifiableFlag |= (u32)AutoUpdateRegistered;
 	}
 	inline void unflagAsAutoUpdateRegistered()
 	{
-		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)AutoUpdateRegistered;
+		mModifiableFlag &= 0xFFFFFFFF ^ (u32)AutoUpdateRegistered;
 	}
 	inline bool isFlagAsAutoUpdateRegistered()
 	{
-		return (_ModifiableFlag&(u32)AutoUpdateRegistered) != 0;
+		return (mModifiableFlag&(u32)AutoUpdateRegistered) != 0;
 	}
 	inline void flagAsPostDestroy()
 	{
-		_ModifiableFlag |= (u32)PostDestroyFlag;
+		mModifiableFlag |= (u32)PostDestroyFlag;
 	}
 	inline void unflagAsPostDestroy()
 	{
-		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)PostDestroyFlag;
+		mModifiableFlag &= 0xFFFFFFFF ^ (u32)PostDestroyFlag;
 	}
 	inline bool isFlagAsPostDestroy()
 	{
-		return (_ModifiableFlag & (u32)PostDestroyFlag) != 0;
+		return (mModifiableFlag & (u32)PostDestroyFlag) != 0;
 	}
 	inline void setUserFlag(u32 flag)
 	{
-		_ModifiableFlag |= ((u32)flag) << UserFlagsShift;
+		mModifiableFlag |= ((u32)flag) << UserFlagsShift;
 	}
 	inline void unsetUserFlag(u32 flag)
 	{
-		_ModifiableFlag &= 0xFFFFFFFF ^ (((u32)flag) << UserFlagsShift);
+		mModifiableFlag &= 0xFFFFFFFF ^ (((u32)flag) << UserFlagsShift);
 	}
 	inline bool isUserFlagSet(u32 flag)
 	{
-		return ((_ModifiableFlag&(((u32)flag) << UserFlagsShift)) != 0);
+		return ((mModifiableFlag&(((u32)flag) << UserFlagsShift)) != 0);
 	}
-	inline bool isInitFlagSet() { return ((_ModifiableFlag&((u32)InitFlag)) != 0); }
+	inline bool isInitFlagSet() { return ((mModifiableFlag&((u32)InitFlag)) != 0); }
 
 	inline void flagAllowChanges()
 	{
-		_ModifiableFlag |= (u32)AllowChanges;
+		mModifiableFlag |= (u32)AllowChanges;
 	}
 	inline void unflagAllowChanges()
 	{
-		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)AllowChanges;
+		mModifiableFlag &= 0xFFFFFFFF ^ (u32)AllowChanges;
 	}
 	inline bool isFlagAllowChanges()
 	{
-		return (_ModifiableFlag&(u32)AllowChanges) != 0;
+		return (mModifiableFlag&(u32)AllowChanges) != 0;
 	}
 
 	// for some type of classes when we want don't want duplicated instances (textures, shaders...)
@@ -888,23 +887,6 @@ public:
 		return CMSP(this, GetRefTag{});
 	}
 
-	/// Link management
-#ifdef USE_LINK_TYPE
-	// List of declared link types
-	const std::vector<KigsID>* getDeclaredLinkTypes() const { return myLinkType; }
-
-	// Get the link type for an item by index
-	int	getItemLinkTypeIndex(int itemIndex) const
-	{
-		if ((int)_items.size() > itemIndex)
-		{
-			return _items[(u32)itemIndex].myLinkType;
-		}
-		return -1;
-	}
-	// Get the link type name for an item by index
-	KigsID getItemLinkTypeName(int itemIndex) const;
-#endif
 
 
 	/// Utility
@@ -1019,7 +1001,7 @@ public:
 	void Downgrade(const std::string& toRemove);
 
 #ifdef KIGS_TOOLS
-	bool myTraceRef = false;
+	bool mTraceRef = false;
 #endif
 protected:
 
@@ -1049,37 +1031,37 @@ protected:
 
 	void flagAsAggregateParent()
 	{
-		_ModifiableFlag |= (u32)AggregateParentRegistered;
+		mModifiableFlag |= (u32)AggregateParentRegistered;
 	}
 	void unflagAsAggregateParent()
 	{
-		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)AggregateParentRegistered;
+		mModifiableFlag &= 0xFFFFFFFF ^ (u32)AggregateParentRegistered;
 	}
 	bool isFlagAsAggregateParent() const
 	{
-		return (_ModifiableFlag&(u32)AggregateParentRegistered) != 0;
+		return (mModifiableFlag&(u32)AggregateParentRegistered) != 0;
 	}
 	void flagAsAggregateSon()
 	{
-		_ModifiableFlag |= (u32)AggregateSonRegistered;
+		mModifiableFlag |= (u32)AggregateSonRegistered;
 	}
 	void unflagAsAggregateSon()
 	{
-		_ModifiableFlag &= 0xFFFFFFFF ^ (u32)AggregateSonRegistered;
+		mModifiableFlag &= 0xFFFFFFFF ^ (u32)AggregateSonRegistered;
 	}
 	bool isFlagAsAggregateSon() const
 	{
-		return (_ModifiableFlag&(u32)AggregateSonRegistered) != 0;
+		return (mModifiableFlag&(u32)AggregateSonRegistered) != 0;
 	}
 	bool isBelongingToAggregate() const
 	{
-		return ((_ModifiableFlag&((u32)AggregateSonRegistered | (u32)AggregateParentRegistered)) != 0);
+		return ((mModifiableFlag&((u32)AggregateSonRegistered | (u32)AggregateParentRegistered)) != 0);
 	}
 	bool checkIfAggregateSon() const
 	{
 
-		std::vector<CoreModifiable*>::const_iterator itpc = _users.begin();
-		std::vector<CoreModifiable*>::const_iterator itpe = _users.end();
+		std::vector<CoreModifiable*>::const_iterator itpc = mUsers.begin();
+		std::vector<CoreModifiable*>::const_iterator itpe = mUsers.end();
 
 		while (itpc != itpe)
 		{
@@ -1088,14 +1070,14 @@ protected:
 				CoreModifiable* currentAggregate = (*itpc);
 
 				// just check that returnedVal is the searched aggregate
-				std::vector<ModifiableItemStruct>::const_iterator	itc = currentAggregate->_items.begin();
-				std::vector<ModifiableItemStruct>::const_iterator	ite = currentAggregate->_items.end();
+				std::vector<ModifiableItemStruct>::const_iterator	itc = currentAggregate->mItems.begin();
+				std::vector<ModifiableItemStruct>::const_iterator	ite = currentAggregate->mItems.end();
 
 				while (itc != ite)
 				{
 					if ((*itc).isAggregate()) // if aggregate 
 					{
-						if ((*itc).myItem == this) // and aggregate son is this
+						if ((*itc).mItem == this) // and aggregate son is this
 						{
 							return true;
 						}
@@ -1118,9 +1100,6 @@ protected:
 	/// Export
 	void	Export(std::vector<CoreModifiable*>& savedList, XMLNode * currentNode, bool recursive
 		, ExportSettings* settings
-#ifdef USE_LINK_TYPE
-		, int LinkIDToParent
-#endif
 		);
 
 	/// Import
@@ -1207,37 +1186,11 @@ protected:
 
 	UpgradorBase* GetUpgrador();
 
-
-#ifdef USE_LINK_TYPE
-	/*! add a new link type to the list, second parameter is used to prevent calling it
-	 outside constructor
-	*/
-	void	AddLinkType(KigsID newtype, CLASS_NAME_TREE_ARG)
-	{
-		if (myLinkType == 0)
-		{
-			myLinkType = new std::vector<KigsID>();
-		}
-		// check that this type is not already in the list
-		std::vector<KigsID>::iterator it;
-		for (it = myLinkType->begin(); it != myLinkType->end(); ++it)
-		{
-			if ((*it) == newtype)
-			{
-				return;
-			}
-		}
-		myLinkType->push_back(newtype);
-		// avoid warnig 
-		(void)classNameTree;
-	}
-#endif
-
 #ifdef KEEP_XML_DOCUMENT
 public:
 	kigs::unordered_map<XMLBase*, XMLNodeBase*> mXMLNodes;
 	std::vector<std::shared_ptr<XMLBase>> mXMLFiles;
-	u32 myEditorFlag = 0;
+	u32 mEditorFlag = 0;
 	LazyContent* GetLazyContentNoCreate() const { return mLazyContent; }
 #endif
 
@@ -1251,18 +1204,18 @@ private:
 
 	static void	ReleaseLoadedItems(std::vector<CMSP> &loadedItems);
 
-	unsigned int myUID;
-	static std::atomic<unsigned int> myUIDCounter;
-	CoreTreeNode* myTypeNode = nullptr;
-	std::string	myName;
-	KigsID myNameID;
+	unsigned int mUID;
+	static std::atomic<unsigned int> mUIDCounter;
+	CoreTreeNode* mTypeNode = nullptr;
+	std::string	mName;
+	KigsID mNameID;
 
 	// attribute map
-	kigs::unordered_map<KigsID, CoreModifiableAttribute*> _attributes;
+	kigs::unordered_map<KigsID, CoreModifiableAttribute*> mAttributes;
 	// sons vector
-	std::vector<ModifiableItemStruct>				_items;
+	std::vector<ModifiableItemStruct>				mItems;
 	// parent vector
-	std::vector<CoreModifiable*>					_users;
+	std::vector<CoreModifiable*>					mUsers;
 
 	
 	mutable std::recursive_mutex mObjectMutex;
@@ -1271,16 +1224,11 @@ private:
 	LazyContent* GetLazyContent() const;
 
 	// Flags
-	int _ModifiableFlag =  AllowChanges;
+	int mModifiableFlag =  AllowChanges;
 
 #ifdef KEEP_NAME_AS_STRING
 	// keep track of Decorators only on win32 to be able to export them
-	std::vector<std::string>*	_Decorators = nullptr;
-#endif
-
-#ifdef USE_LINK_TYPE
-	// accepted linkTypes
-	std::vector<KigsID>*					myLinkType = nullptr;
+	std::vector<std::string>*	mDecorators = nullptr;
 #endif
 
 
@@ -1303,12 +1251,6 @@ attribute_type*	CoreModifiable::AddDynamicAttribute(KigsID ID, const value_type&
 	return toadd;
 }
 
-
-#ifdef USE_LINK_TYPE
-//! Macro used to declare new link types : Can only be called in class constructor
-#define  DECLARE_LINK_TYPE(newtype) AddLinkType(newtype,classNameTree);
-#endif
-
 //! Utility Macro to define methods for XML Parser Delegate
 #define Declare_XMLDelegate 	DECLARE_METHOD(XMLElementStartDescription); \
 DECLARE_METHOD(XMLElementEndDescription); \
@@ -1321,42 +1263,42 @@ DECLARE_METHOD(XMLCharacterHandler);
 class PackCoreModifiableAttributes
 {
 public:
-	PackCoreModifiableAttributes(CoreModifiable* owner) :m_owner(owner)
+	PackCoreModifiableAttributes(CoreModifiable* owner) :mOwner(owner)
 	{
-		m_attributeList.clear();
+		mAttributeList.clear();
 	}
 
 	template<typename T>
 	PackCoreModifiableAttributes& operator<<(T&& V);
 
-	void AddAttribute(CoreModifiableAttribute* attr) { m_attributeList.push_back(attr); }
+	void AddAttribute(CoreModifiableAttribute* attr) { mAttributeList.push_back(attr); }
 
 	operator std::vector<CoreModifiableAttribute*>&()
 	{
-		return m_attributeList;
+		return mAttributeList;
 	}
 
 	~PackCoreModifiableAttributes();
 
 protected:
-	std::vector<CoreModifiableAttribute*>	m_attributeList;
-	CoreModifiable*							m_owner;
+	std::vector<CoreModifiableAttribute*>	mAttributeList;
+	CoreModifiable*							mOwner;
 };
 
 // CMSP methods
 
 inline CMSP CMSP::operator [](const std::string& son) const
 {
-	if (myPointer)
-		return myPointer->GetFirstSonByName("CoreModifiable", son);
+	if (mPointer)
+		return mPointer->GetFirstSonByName("CoreModifiable", son);
 	return nullptr;
 }
 
 template<size_t _Size>
 inline CMSP CMSP::operator [](const char(&son)[_Size]) const
 {
-	if (myPointer)
-		return myPointer->GetFirstSonByName("CoreModifiable", son);
+	if (mPointer)
+		return mPointer->GetFirstSonByName("CoreModifiable", son);
 	return nullptr;
 }
 
@@ -1364,9 +1306,9 @@ inline CMSP CMSP::operator [](const char(&son)[_Size]) const
 inline CMSP::AttributeHolder CMSP::operator()(const std::string& attr) const
 {
 	
-	if (myPointer)
+	if (mPointer)
 	{
-		CoreModifiableAttribute* attrib = myPointer->getAttribute(attr);
+		CoreModifiableAttribute* attrib = mPointer->getAttribute(attr);
 		return AttributeHolder(attrib);
 	}
 
@@ -1375,12 +1317,12 @@ inline CMSP::AttributeHolder CMSP::operator()(const std::string& attr) const
 
 struct LazyContent
 {
-	kigs::unordered_map<KigsID, std::vector<std::pair<KigsID, CoreModifiable*>>> ConnectedTo;
-	kigs::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> ConnectedToMe;
-	kigs::unordered_map <KigsID, ModifiableMethodStruct> Methods;
-	std::vector<WeakRef*> WeakRefs;
+	kigs::unordered_map<KigsID, std::vector<std::pair<KigsID, CoreModifiable*>>> mConnectedTo;
+	kigs::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> mConnectedToMe;
+	kigs::unordered_map <KigsID, ModifiableMethodStruct> mMethods;
+	std::vector<WeakRef*> mWeakRefs;
 	// Upgrador management
-	UpgradorBase* myUpgrador = nullptr;
+	UpgradorBase* mUpgradors = nullptr;
 
 	~LazyContent();
 };
@@ -1464,7 +1406,7 @@ struct TypeToEnum<usString> : std::integral_constant<CoreModifiable::ATTRIBUTE_T
 template<typename TypeOut, typename TypeIn>
 TypeOut* KigsDynamicCast(TypeIn* obj)
 {
-	if (obj->isSubType(TypeOut::myClassID))
+	if (obj->isSubType(TypeOut::mClassID))
 		return static_cast<TypeOut*>(obj);
 	return nullptr;
 }
@@ -1487,9 +1429,9 @@ void RegisterClassToInstanceFactory(KigsCore* core, const std::string& moduleNam
 
 struct MethodCallingStruct
 {
-	KigsID myMethodID;
-	void* myPrivateParams =  nullptr;
-	CoreModifiable* myMethodInstance = nullptr;
+	KigsID mMethodID;
+	void* mPrivateParams =  nullptr;
+	CoreModifiable* mMethodInstance = nullptr;
 };
 
 #endif

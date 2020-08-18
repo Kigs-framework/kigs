@@ -63,30 +63,30 @@ void UIDrawableItem::SetVertexArray(UIVerticesInfo * aQI)
 		pts += 6;
 	};
 
-	if (myRealSize.x < slice_size.x * 2)
-		slice_size.x = myRealSize.x / 2;
-	if (myRealSize.y < slice_size.y * 2)
-		slice_size.y = myRealSize.y / 2;
+	if (mRealSize.x < slice_size.x * 2)
+		slice_size.x = mRealSize.x / 2;
+	if (mRealSize.y < slice_size.y * 2)
+		slice_size.y = mRealSize.y / 2;
 
 	auto current_pos = positions;
 	// Top Left
 	make_quad(current_pos, v2f(0, 0), slice_size);
 	// Top Right
-	make_quad(current_pos, v2f(myRealSize.x - slice_size.x, 0), slice_size);
+	make_quad(current_pos, v2f(mRealSize.x - slice_size.x, 0), slice_size);
 	// Bottom Left
-	make_quad(current_pos, v2f(0, myRealSize.y - slice_size.y), slice_size);
+	make_quad(current_pos, v2f(0, mRealSize.y - slice_size.y), slice_size);
 	// Bottom Right
-	make_quad(current_pos, v2f(myRealSize.x - slice_size.x, myRealSize.y - slice_size.y), slice_size);
+	make_quad(current_pos, v2f(mRealSize.x - slice_size.x, mRealSize.y - slice_size.y), slice_size);
 	// Center
-	make_quad(current_pos, v2f(slice_size.x, slice_size.y), myRealSize - slice_size*2);
+	make_quad(current_pos, v2f(slice_size.x, slice_size.y), mRealSize - slice_size*2);
 	// Top
-	make_quad(current_pos, v2f(slice_size.x, 0), v2f((myRealSize - slice_size * 2).x, slice_size.y));
+	make_quad(current_pos, v2f(slice_size.x, 0), v2f((mRealSize - slice_size * 2).x, slice_size.y));
 	// Bottom
-	make_quad(current_pos, v2f(slice_size.x, myRealSize.y - slice_size.y), v2f((myRealSize - slice_size * 2).x, slice_size.y));
+	make_quad(current_pos, v2f(slice_size.x, mRealSize.y - slice_size.y), v2f((mRealSize - slice_size * 2).x, slice_size.y));
 	// Left
-	make_quad(current_pos, v2f(0, slice_size.y), v2f(slice_size.x, (myRealSize - slice_size * 2).y));
+	make_quad(current_pos, v2f(0, slice_size.y), v2f(slice_size.x, (mRealSize - slice_size * 2).y));
 	// Right
-	make_quad(current_pos, v2f(myRealSize.x - slice_size.x, slice_size.y), v2f(slice_size.x, (myRealSize - slice_size * 2).y));
+	make_quad(current_pos, v2f(mRealSize.x - slice_size.x, slice_size.y), v2f(slice_size.x, (mRealSize - slice_size * 2).y));
 
 	TransformPoints(positions, 6 * 9);
 	for (int i = 0; i < 6 * 9; ++i)
@@ -95,9 +95,9 @@ void UIDrawableItem::SetVertexArray(UIVerticesInfo * aQI)
 
 void UIDrawableItem::SetColor(UIVerticesInfo * aQI)
 {
-	unsigned char r = (unsigned char)(myColor.getArrayBuffer()[0] * 255.0f);
-	unsigned char g = (unsigned char)(myColor.getArrayBuffer()[1] * 255.0f);
-	unsigned char b = (unsigned char)(myColor.getArrayBuffer()[2] * 255.0f);
+	unsigned char r = (unsigned char)(mColor.getArrayBuffer()[0] * 255.0f);
+	unsigned char g = (unsigned char)(mColor.getArrayBuffer()[1] * 255.0f);
+	unsigned char b = (unsigned char)(mColor.getArrayBuffer()[2] * 255.0f);
 	unsigned char a = (unsigned char)(GetOpacity() *255.0f);
 
 	VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
@@ -113,7 +113,7 @@ void UIDrawableItem::SetColor(UIVerticesInfo * aQI)
 
 void UIDrawableItem::SetWhiteColor(UIVerticesInfo * aQI)
 {
-	unsigned char a = (unsigned char)((myOpacity >= 0.0f) ? myOpacity*255.0f : myParent->GetOpacity()*255.f);
+	unsigned char a = (unsigned char)((mOpacity >= 0.0f) ? mOpacity*255.0f : mParent->GetOpacity()*255.f);
 
 	VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
 

@@ -5,18 +5,7 @@
 #include "CoreItem.h"
 #include "usString.h"
 
-// ****************************************
-// * CoreValue class
-// * --------------------------------------
-/**
-* \class	CoreValue
-* \ingroup  Core
-* \brief	
-* \author	ukn
-* \version ukn
-* \date	ukn
-*/
-// ****************************************
+
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4996 )
@@ -24,13 +13,24 @@
 #endif
 class CoreVector;
 
+// ****************************************
+// * CoreValueBase class
+// * --------------------------------------
+/**
+* \class	CoreValueBase
+* \file		CoreValue.h
+* \ingroup  Core
+* \brief	Base class for CoreValue 
+*/
+// ****************************************
+
 template<class T,class BaseClass>
 class CoreValueBase : public BaseClass
 {
 protected:
-	explicit CoreValueBase():BaseClass(CoreItem::COREVALUE),m_Value(0){}
+	explicit CoreValueBase():BaseClass(CoreItem::COREVALUE),mValue(0){}
 
-	CoreValueBase(CoreItem::COREITEM_TYPE _type, const T& _value) : BaseClass(_type), m_Value(_value){}
+	CoreValueBase(CoreItem::COREITEM_TYPE _type, const T& _value) : BaseClass(_type), mValue(_value){}
 	CoreValueBase(CoreItem::COREITEM_TYPE _type) : BaseClass(_type){}
 public:
 	
@@ -113,25 +113,10 @@ public:
 		return result;
 	}
 
-/*	virtual bool getValue(bool& _value) const {return false;}
-
-	virtual bool getValue(kfloat& _value) const {return false;}
-
-	virtual bool getValue(int& _value) const { return false; }
-
-	virtual bool getValue(unsigned int& _value) const { return false; }
-
-	virtual bool getValue(kstl::string& _value) const {return false;}
-
-	virtual bool getValue(usString& _value) const { return false; }
-
-	virtual bool getValue(Point2D& _value) const { return false; }
-
-	virtual bool getValue(Point3D& _value) const { return false; }*/
 
 	virtual bool operator==(const CoreItem& other) const override
 	{
-		return (m_Value == other.operator T());
+		return (mValue == other.operator T());
 	}
 
 	virtual kstl::string toString() const override { return "";}
@@ -140,167 +125,167 @@ public:
 
 	T& getByRef()
 	{
-		return m_Value;
+		return mValue;
 	}
 
 	T* getByPointer()
 	{
-		return &m_Value;
+		return &mValue;
 	}
 
 	operator T* ()
 	{
-		return &m_Value;
+		return &mValue;
 	}
 
 	virtual void*	getContainerStruct() override
 	{
-		return &m_Value;
+		return &mValue;
 	}
 
 protected:
-	T  m_Value;
+	T  mValue;
 };
 
 
 template<>
 inline CoreValueBase<bool,CoreItem>::operator bool() const
 {
-	return m_Value;
+	return mValue;
 }
 
 template<>
 inline CoreValueBase<bool,CoreNamedItem>::operator bool() const
 {
-	return m_Value;
+	return mValue;
 }
 
 template<>
 inline CoreValueBase<bool,CoreItem>::operator int() const
 {
-	return m_Value?1:0;
+	return mValue?1:0;
 }
 
 template<>
 inline CoreValueBase<bool, CoreItem>::operator unsigned int() const
 {
-	return m_Value ? 1 : 0;
+	return mValue ? 1 : 0;
 }
 
 template<>
 inline CoreValueBase<bool,CoreNamedItem>::operator  int() const
 {
-	return m_Value ? 1 : 0;
+	return mValue ? 1 : 0;
 }
 
 template<>
 inline CoreValueBase<bool, CoreNamedItem>::operator unsigned int() const
 {
-	return m_Value ? 1 : 0;
+	return mValue ? 1 : 0;
 }
 
 template<>
 inline CoreValueBase<bool,CoreItem>::operator  kfloat() const
 {
-	return m_Value ? 1.0f : 0.0f;
+	return mValue ? 1.0f : 0.0f;
 }
 
 template<>
 inline CoreValueBase<bool, CoreItem>::operator double() const
 {
-	return m_Value ? 1.0 : 0.0;
+	return mValue ? 1.0 : 0.0;
 }
 
 template<>
 inline CoreValueBase<bool,CoreNamedItem>::operator  kfloat() const
 {
-	return m_Value ? 1.0f : 0.0f;
+	return mValue ? 1.0f : 0.0f;
 }
 
 template<>
 inline CoreValueBase<bool, CoreNamedItem>::operator double() const
 {
-	return m_Value ? 1.0 : 0.0;
+	return mValue ? 1.0 : 0.0;
 }
 
 template<>
 inline CoreValueBase<bool,CoreItem>::operator  kstl::string() const
 {
-	return m_Value ? "true" : "false";
+	return mValue ? "true" : "false";
 }
 
 template<>
 inline CoreValueBase<bool,CoreNamedItem>::operator  kstl::string() const
 {
-	return m_Value ? "true" : "false";
+	return mValue ? "true" : "false";
 }
 
 
 template<>
 inline CoreValueBase<bool, CoreItem>::operator  usString() const
 {
-	return m_Value ? usString("true") : usString("false");
+	return mValue ? usString("true") : usString("false");
 }
 
 template<>
 inline CoreValueBase<bool, CoreNamedItem>::operator  usString() const
 {
-	return m_Value ? usString("true") : usString("false");
+	return mValue ? usString("true") : usString("false");
 }
 
 template<>
 inline CoreValueBase<kfloat,CoreItem>::operator  kfloat() const
 {
-	return m_Value;
+	return mValue;
 }
 
 template<>
 inline CoreValueBase<kfloat,CoreNamedItem>::operator  kfloat() const
 {
-	return m_Value;
+	return mValue;
 }
 
 template<>
 inline CoreValueBase<kfloat, CoreItem>::operator double() const
 {
-	return (double)m_Value;
+	return (double)mValue;
 }
 
 template<>
 inline CoreValueBase<kfloat, CoreNamedItem>::operator double() const
 {
-	return (double)m_Value;
+	return (double)mValue;
 }
 
 template<>
 inline CoreValueBase<kfloat,CoreItem>::operator  int() const
 {
-	return (int)m_Value;
+	return (int)mValue;
 }
 
 template<>
 inline CoreValueBase<kfloat,CoreNamedItem>::operator  int() const
 {
-	return (int)m_Value;
+	return (int)mValue;
 }
 
 template<>
 inline CoreValueBase<kfloat, CoreItem>::operator unsigned int() const
 {
-	return (unsigned int)m_Value;
+	return (unsigned int)mValue;
 }
 
 template<>
 inline CoreValueBase<kfloat, CoreNamedItem>::operator unsigned int() const
 {
-	return (unsigned int)m_Value;
+	return (unsigned int)mValue;
 }
 
 template<>
 inline CoreValueBase<kfloat,CoreItem>::operator  kstl::string() const
 {
 	char L_Buffer[64] = {0};
-	snprintf(L_Buffer, 64, "%f",(kfloat)m_Value);
+	snprintf(L_Buffer, 64, "%f",(kfloat)mValue);
 	return L_Buffer;
 }
 
@@ -308,7 +293,7 @@ template<>
 inline CoreValueBase<kfloat,CoreNamedItem>::operator  kstl::string() const
 {
 	char L_Buffer[64] = {0};
-	snprintf(L_Buffer, 64, "%f",(kfloat)m_Value);
+	snprintf(L_Buffer, 64, "%f",(kfloat)mValue);
 	return L_Buffer;
 }
 
@@ -316,7 +301,7 @@ template<>
 inline CoreValueBase<kfloat, CoreItem>::operator  usString() const
 {
 	char L_Buffer[64] = { 0 };
-	snprintf(L_Buffer, 64, "%f", (kfloat)m_Value);
+	snprintf(L_Buffer, 64, "%f", (kfloat)mValue);
 	return usString(L_Buffer);
 }
 
@@ -324,7 +309,7 @@ template<>
 inline CoreValueBase<kfloat, CoreNamedItem>::operator  usString() const
 {
 	char L_Buffer[64] = { 0 };
-	snprintf(L_Buffer, 64, "%f", (kfloat)m_Value);
+	snprintf(L_Buffer, 64, "%f", (kfloat)mValue);
 	return usString(L_Buffer);
 }
 
@@ -332,8 +317,8 @@ template<>
 inline CoreValueBase<kfloat, CoreNamedItem>::operator  Point2D() const 
 {
 	Point2D _value;
-	_value.x = (kfloat)m_Value;
-	_value.y = (kfloat)m_Value;
+	_value.x = (kfloat)mValue;
+	_value.y = (kfloat)mValue;
 	return _value;
 }
 
@@ -341,9 +326,9 @@ template<>
 inline CoreValueBase<kfloat, CoreNamedItem>::operator Point3D()  const
 {
 	Point3D _value;
-	_value.x = (kfloat)m_Value;
-	_value.y = (kfloat)m_Value;
-	_value.z = (kfloat)m_Value;
+	_value.x = (kfloat)mValue;
+	_value.y = (kfloat)mValue;
+	_value.z = (kfloat)mValue;
 	return _value;
 }
 
@@ -351,10 +336,10 @@ template<>
 inline CoreValueBase<kfloat, CoreNamedItem>::operator Vector4D()  const
 {
 	Vector4D _value;
-	_value.x = (kfloat)m_Value;
-	_value.y = (kfloat)m_Value;
-	_value.z = (kfloat)m_Value;
-	_value.w = (kfloat)m_Value;
+	_value.x = (kfloat)mValue;
+	_value.y = (kfloat)mValue;
+	_value.z = (kfloat)mValue;
+	_value.w = (kfloat)mValue;
 	return _value;
 }
 
@@ -363,8 +348,8 @@ template<>
 inline CoreValueBase<kfloat, CoreItem>::operator  Point2D() const
 {
 	Point2D _value;
-	_value.x = (kfloat)m_Value;
-	_value.y = (kfloat)m_Value;
+	_value.x = (kfloat)mValue;
+	_value.y = (kfloat)mValue;
 	return _value;
 }
 
@@ -372,9 +357,9 @@ template<>
 inline CoreValueBase<kfloat, CoreItem>::operator Point3D()  const
 {
 	Point3D _value;
-	_value.x = (kfloat)m_Value;
-	_value.y = (kfloat)m_Value;
-	_value.z = (kfloat)m_Value;
+	_value.x = (kfloat)mValue;
+	_value.y = (kfloat)mValue;
+	_value.z = (kfloat)mValue;
 	return _value;
 }
 
@@ -382,10 +367,10 @@ template<>
 inline CoreValueBase<kfloat, CoreItem>::operator Vector4D()  const
 {
 	Vector4D _value;
-	_value.x = (kfloat)m_Value;
-	_value.y = (kfloat)m_Value;
-	_value.z = (kfloat)m_Value;
-	_value.w = (kfloat)m_Value;
+	_value.x = (kfloat)mValue;
+	_value.y = (kfloat)mValue;
+	_value.z = (kfloat)mValue;
+	_value.w = (kfloat)mValue;
 	return _value;
 }
 
@@ -395,8 +380,8 @@ template<>
 inline CoreValueBase<Point2D, CoreNamedItem>::operator  Point2D() const
 {
 	Point2D _value;
-	_value.x = m_Value.x;
-	_value.y = m_Value.y;
+	_value.x = mValue.x;
+	_value.y = mValue.y;
 	return _value;
 }
 
@@ -404,8 +389,8 @@ template<>
 inline CoreValueBase<Point2D, CoreNamedItem>::operator Point3D()  const
 {
 	Point3D _value;
-	_value.x = m_Value.x;
-	_value.y = m_Value.y;
+	_value.x = mValue.x;
+	_value.y = mValue.y;
 	_value.z = 0.0f;
 	return _value;
 }
@@ -414,8 +399,8 @@ template<>
 inline CoreValueBase<Point2D, CoreNamedItem>::operator Vector4D()  const
 {
 	Vector4D _value;
-	_value.x = m_Value.x;
-	_value.y = m_Value.y;
+	_value.x = mValue.x;
+	_value.y = mValue.y;
 	_value.z = 0.0f;
 	_value.w = 0.0f;
 	return _value;
@@ -425,8 +410,8 @@ template<>
 inline CoreValueBase<Point2D, CoreItem>::operator  Point2D() const
 {
 	Point2D _value;
-	_value.x = m_Value.x;
-	_value.y = m_Value.y;
+	_value.x = mValue.x;
+	_value.y = mValue.y;
 	return _value;
 }
 
@@ -434,8 +419,8 @@ template<>
 inline CoreValueBase<Point2D, CoreItem>::operator Point3D()  const
 {
 	Point3D _value;
-	_value.x = m_Value.x;
-	_value.y = m_Value.y;
+	_value.x = mValue.x;
+	_value.y = mValue.y;
 	_value.z = 0.0f;
 	return _value;
 }
@@ -444,8 +429,8 @@ template<>
 inline CoreValueBase<Point2D, CoreItem>::operator Vector4D()  const
 {
 	Vector4D _value;
-	_value.x = m_Value.x;
-	_value.y = m_Value.y;
+	_value.x = mValue.x;
+	_value.y = mValue.y;
 	_value.z = 0.0f;
 	_value.w = 0.0f;
 	return _value;
@@ -456,8 +441,8 @@ template<>
 inline CoreValueBase<Point3D, CoreNamedItem>::operator  Point2D() const
 {
 	Point2D _value;
-	_value.x = m_Value.x;
-	_value.y = m_Value.y;
+	_value.x = mValue.x;
+	_value.y = mValue.y;
 	return _value;
 }
 
@@ -465,9 +450,9 @@ template<>
 inline CoreValueBase<Point3D, CoreNamedItem>::operator Point3D()  const
 {
 	Point3D _value;
-	_value.x = m_Value.x;
-	_value.y = m_Value.y;
-	_value.z = m_Value.z;
+	_value.x = mValue.x;
+	_value.y = mValue.y;
+	_value.z = mValue.z;
 	return _value;
 }
 
@@ -475,8 +460,8 @@ template<>
 inline CoreValueBase<Point3D, CoreItem>::operator  Point2D() const
 {
 	Point2D _value;
-	_value.x = m_Value.x;
-	_value.y = m_Value.y;
+	_value.x = mValue.x;
+	_value.y = mValue.y;
 	return _value;
 }
 
@@ -484,9 +469,9 @@ template<>
 inline CoreValueBase<Point3D, CoreItem>::operator Point3D()  const
 {
 	Point3D _value;
-	_value.x = m_Value.x;
-	_value.y = m_Value.y;
-	_value.z = m_Value.z;
+	_value.x = mValue.x;
+	_value.y = mValue.y;
+	_value.z = mValue.z;
 	return _value;
 }
 
@@ -495,59 +480,59 @@ inline CoreValueBase<Point3D, CoreItem>::operator Point3D()  const
 template<>
 inline CoreValueBase<int,CoreItem>::operator  int() const
 {
-	return m_Value;
+	return mValue;
 }
 
 template<>
 inline CoreValueBase<int,CoreNamedItem>::operator  int() const
 {
-	return m_Value;
+	return mValue;
 }
 
 template<>
 inline CoreValueBase<int, CoreItem>::operator unsigned int() const
 {
-	return (unsigned int)m_Value;
+	return (unsigned int)mValue;
 }
 
 template<>
 inline CoreValueBase<int, CoreNamedItem>::operator unsigned int() const
 {
-	return  (unsigned int)m_Value;
+	return  (unsigned int)mValue;
 }
 template<>
 inline CoreValueBase<int,CoreItem>::operator  kfloat() const
 {
-	return  (kfloat)m_Value;
+	return  (kfloat)mValue;
 }
 template<>
 inline CoreValueBase<int,CoreNamedItem>::operator  kfloat() const
 {
-	return  (kfloat)m_Value;
+	return  (kfloat)mValue;
 }
 
 template<>
 inline CoreValueBase<int,CoreItem>::operator bool()  const
 {
-	return (m_Value != 0);
+	return (mValue != 0);
 }
 template<>
 inline CoreValueBase<int,CoreNamedItem>::operator bool()  const
 {
-	return (m_Value != 0);
+	return (mValue != 0);
 }
 template<>
 inline CoreValueBase<int,CoreItem>::operator  kstl::string() const
 {
 	char L_Buffer[64] = {0};
-	snprintf(L_Buffer, 64, "%i",(int)m_Value);
+	snprintf(L_Buffer, 64, "%i",(int)mValue);
 	return L_Buffer;
 }
 template<>
 inline CoreValueBase<int,CoreNamedItem>::operator  kstl::string() const
 {
 	char L_Buffer[64] = {0};
-	snprintf(L_Buffer, 64, "%i",(int)m_Value);
+	snprintf(L_Buffer, 64, "%i",(int)mValue);
 	return L_Buffer;
 }
 
@@ -555,14 +540,14 @@ template<>
 inline CoreValueBase<int, CoreItem>::operator  usString() const
 {
 	char L_Buffer[64] = { 0 };
-	snprintf(L_Buffer, 64, "%i", (int)m_Value);
+	snprintf(L_Buffer, 64, "%i", (int)mValue);
 	return usString(L_Buffer);
 }
 template<>
 inline CoreValueBase<int, CoreNamedItem>::operator  usString() const
 {
 	char L_Buffer[64] = { 0 };
-	snprintf(L_Buffer, 64, "%i", (int)m_Value);
+	snprintf(L_Buffer, 64, "%i", (int)mValue);
 	return usString(L_Buffer);
 }
 
@@ -570,59 +555,59 @@ inline CoreValueBase<int, CoreNamedItem>::operator  usString() const
 template<>
 inline CoreValueBase<unsigned int, CoreItem>::operator int() const
 {
-	return m_Value;
+	return mValue;
 }
 
 template<>
 inline CoreValueBase<unsigned int, CoreNamedItem>::operator int() const
 {
-	return m_Value;
+	return mValue;
 }
 
 template<>
 inline CoreValueBase<unsigned int, CoreItem>::operator unsigned int() const
 {
-	return (unsigned int)m_Value;
+	return (unsigned int)mValue;
 }
 
 template<>
 inline CoreValueBase<unsigned int, CoreNamedItem>::operator unsigned int() const
 {
-	return  (unsigned int)m_Value;
+	return  (unsigned int)mValue;
 }
 template<>
 inline CoreValueBase<unsigned int, CoreItem>::operator kfloat() const
 {
-	return  (kfloat)m_Value;
+	return  (kfloat)mValue;
 }
 template<>
 inline CoreValueBase<unsigned int, CoreNamedItem>::operator kfloat() const
 {
-	return  (kfloat)m_Value;
+	return  (kfloat)mValue;
 }
 
 template<>
 inline CoreValueBase<unsigned int, CoreItem>::operator bool()  const
 {
-	return (m_Value != 0);
+	return (mValue != 0);
 }
 template<>
 inline CoreValueBase<unsigned int, CoreNamedItem>::operator bool()  const
 {
-	return (m_Value != 0);
+	return (mValue != 0);
 }
 template<>
 inline CoreValueBase<unsigned int, CoreItem>::operator kstl::string() const
 {
 	char L_Buffer[64] = { 0 };
-	snprintf(L_Buffer, 64, "%u", (unsigned int)m_Value);
+	snprintf(L_Buffer, 64, "%u", (unsigned int)mValue);
 	return L_Buffer;
 }
 template<>
 inline CoreValueBase<unsigned int, CoreNamedItem>::operator kstl::string() const
 {
 	char L_Buffer[64] = { 0 };
-	snprintf(L_Buffer, 64, "%u", (unsigned int)m_Value);
+	snprintf(L_Buffer, 64, "%u", (unsigned int)mValue);
 	return L_Buffer;
 }
 
@@ -630,14 +615,14 @@ template<>
 inline CoreValueBase<unsigned int, CoreItem>::operator usString() const
 {
 	char L_Buffer[64] = { 0 };
-	snprintf(L_Buffer, 64, "%u", (unsigned int)m_Value);
+	snprintf(L_Buffer, 64, "%u", (unsigned int)mValue);
 	return usString(L_Buffer);
 }
 template<>
 inline CoreValueBase<unsigned int, CoreNamedItem>::operator usString() const
 {
 	char L_Buffer[64] = { 0 };
-	snprintf(L_Buffer, 64, "%u", (unsigned int)m_Value);
+	snprintf(L_Buffer, 64, "%u", (unsigned int)mValue);
 	return usString(L_Buffer);
 }
 
@@ -646,26 +631,26 @@ inline CoreValueBase<unsigned int, CoreNamedItem>::operator usString() const
 template<>
 inline CoreValueBase<kstl::string,CoreItem>::operator  kstl::string() const
 {
-	return m_Value;
+	return mValue;
 }
 template<>
 inline CoreValueBase<kstl::string,CoreNamedItem>::operator  kstl::string() const
 {
-	return m_Value;
+	return mValue;
 }
 
 template<>
 inline CoreValueBase<kstl::string, CoreItem>::operator  usString() const
 {
 	usString tmpval;
-	tmpval=m_Value;
+	tmpval=mValue;
 	return tmpval;
 }
 template<>
 inline CoreValueBase<kstl::string, CoreNamedItem>::operator  usString() const
 {
 	usString tmpval;
-	tmpval = m_Value;
+	tmpval = mValue;
 	return tmpval;
 }
 
@@ -674,23 +659,23 @@ inline CoreValueBase<kstl::string, CoreNamedItem>::operator  usString() const
 template<>
 inline CoreValueBase<usString, CoreItem>::operator  kstl::string() const
 {
-	return m_Value.ToString();
+	return mValue.ToString();
 }
 template<>
 inline CoreValueBase<usString, CoreNamedItem>::operator  kstl::string() const
 {
-	return m_Value.ToString();
+	return mValue.ToString();
 }
 
 template<>
 inline CoreValueBase<usString, CoreItem>::operator  usString() const
 {
-	return m_Value;
+	return mValue;
 }
 template<>
 inline CoreValueBase<usString, CoreNamedItem>::operator  usString() const
 {
-	return m_Value;
+	return mValue;
 }
 
 template<>
@@ -698,7 +683,7 @@ inline bool CoreValueBase<usString, CoreNamedItem>::operator==(const CoreItem& o
 {
 	usString otherval;
 	other.getValue(otherval);
-	return (m_Value == otherval);
+	return (mValue == otherval);
 }
 
 template<>
@@ -706,65 +691,65 @@ inline bool CoreValueBase<usString, CoreItem>::operator==(const CoreItem& other)
 {
 	usString otherval;
 	other.getValue(otherval);
-	return (m_Value == otherval);
+	return (mValue == otherval);
 }
 
 template<>
 inline kstl::string CoreValueBase<kstl::string,CoreItem>::toString() const
 {
-	return m_Value;
+	return mValue;
 }
 template<>
 inline kstl::string CoreValueBase<kstl::string,CoreNamedItem>::toString() const
 {
-	return m_Value;
+	return mValue;
 }
 
 template<>
 inline kstl::string CoreValueBase<usString, CoreItem>::toString() const
 {
-	return m_Value.ToString();
+	return mValue.ToString();
 }
 template<>
 inline kstl::string CoreValueBase<usString, CoreNamedItem>::toString() const
 {
-	return m_Value.ToString();
+	return mValue.ToString();
 }
 
 template<>
 inline CoreValueBase<kstl::string,CoreItem>::operator  int() const
 {
-	return atoi(m_Value.c_str());
+	return atoi(mValue.c_str());
 }
 
 template<>
 inline CoreValueBase<kstl::string,CoreNamedItem>::operator  int() const
 {
-	return atoi(m_Value.c_str());
+	return atoi(mValue.c_str());
 }
 
 template<>
 inline CoreValueBase<kstl::string, CoreItem>::operator  kfloat() const
 {
-	return  (kfloat)atof(m_Value.c_str());
+	return  (kfloat)atof(mValue.c_str());
 }
 
 template<>
 inline CoreValueBase<kstl::string, CoreNamedItem>::operator  kfloat() const
 {
-	return (kfloat)atof(m_Value.c_str());
+	return (kfloat)atof(mValue.c_str());
 }
 
 template<>
 inline CoreValueBase<kstl::string, CoreItem>::operator unsigned int() const
 {
-	return (unsigned int)atoi(m_Value.c_str());
+	return (unsigned int)atoi(mValue.c_str());
 }
 
 template<>
 inline CoreValueBase<kstl::string, CoreNamedItem>::operator unsigned int() const
 {
-	return  (unsigned int)atoi(m_Value.c_str());
+	return  (unsigned int)atoi(mValue.c_str());
 }
 
 template<>
@@ -783,37 +768,37 @@ inline bool CoreValueBase<kstl::string,CoreNamedItem>::isString() const
 template<>
 inline CoreValueBase<usString, CoreItem>::operator  int() const
 {
-	return atoi(m_Value.ToString().c_str());
+	return atoi(mValue.ToString().c_str());
 }
 
 template<>
 inline CoreValueBase<usString, CoreNamedItem>::operator  int() const
 {
-	return atoi(m_Value.ToString().c_str());
+	return atoi(mValue.ToString().c_str());
 }
 
 template<>
 inline CoreValueBase<usString, CoreItem>::operator  kfloat() const
 {
-	return (kfloat)atof(m_Value.ToString().c_str());
+	return (kfloat)atof(mValue.ToString().c_str());
 }
 
 template<>
 inline CoreValueBase<usString, CoreNamedItem>::operator  kfloat() const
 {
-	return (kfloat)atof(m_Value.ToString().c_str());
+	return (kfloat)atof(mValue.ToString().c_str());
 }
 
 template<>
 inline CoreValueBase<usString, CoreItem>::operator unsigned int() const
 {
-	return (unsigned int)atoi(m_Value.ToString().c_str());
+	return (unsigned int)atoi(mValue.ToString().c_str());
 }
 
 template<>
 inline CoreValueBase<usString, CoreNamedItem>::operator unsigned int() const
 {
-	return (unsigned int)atoi(m_Value.ToString().c_str());
+	return (unsigned int)atoi(mValue.ToString().c_str());
 }
 
 template<>
@@ -828,6 +813,17 @@ inline bool CoreValueBase<usString, CoreNamedItem>::isString() const
 	return true;
 }
 
+// ****************************************
+// * CoreNamedValue class
+// * --------------------------------------
+/**
+* \class	CoreNamedValue
+* \file		CoreValue.h
+* \ingroup  Core
+* \brief	CoreNamedItem managing a single value
+*/
+// ****************************************
+
 template<typename T>
 class CoreNamedValue : public CoreValueBase<T,CoreNamedItem>
 {
@@ -835,38 +831,38 @@ public:
 	
 	CoreNamedValue(const T& _value, const kstl::string& _name) : CoreValueBase<T, CoreNamedItem>(CoreItem::CORENAMEDVALUE, _value)
 	{
-		CoreNamedItem::m_Name = _name;
+		CoreNamedItem::mName = _name;
 	}
 
 	CoreNamedValue(const kstl::string& _name) : CoreValueBase<T, CoreNamedItem>(CoreItem::CORENAMEDVALUE)
 	{
-		CoreNamedItem::m_Name = _name;
+		CoreNamedItem::mName = _name;
 	}
 
 	/*template<typename valType>
-	CoreNamedValue& operator= (const valType& _value)
+	CoreNamedValue& operator= (const valType& mValue)
 	{
-		this->m_Value = _value;
+		this->mValue = mValue;
 		return *this;
 	}*/
 	virtual CoreItem& operator=(const bool& other)
 	{
-		this->m_Value = (T)other;
+		this->mValue = (T)other;
 		return *this;
 	}
 	virtual CoreItem& operator=(const kfloat& other)
 	{
-		this->m_Value = (T)other;
+		this->mValue = (T)other;
 		return *this;
 	}
 	virtual CoreItem& operator=(const int& other)
 	{
-		this->m_Value = (T)other;
+		this->mValue = (T)other;
 		return *this;
 	}
 	virtual CoreItem& operator=(const unsigned int& other)
 	{
-		this->m_Value = (T)other;
+		this->mValue = (T)other;
 		return *this;
 	}
 	virtual CoreItem& operator=(const kstl::string& other)
@@ -896,7 +892,7 @@ inline CoreItem& CoreNamedValue<kstl::string>::operator= (const kfloat& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%f", (kfloat)_value);
-	this->m_Value = L_Buffer;
+	this->mValue = L_Buffer;
 	return *this;
 }
 
@@ -905,7 +901,7 @@ inline CoreItem& CoreNamedValue<usString>::operator= (const kfloat& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%f", (kfloat)_value);
-	this->m_Value = usString(L_Buffer);
+	this->mValue = usString(L_Buffer);
 	return *this;
 }
 template<>
@@ -913,7 +909,7 @@ inline CoreItem& CoreNamedValue<kstl::string>::operator= (const int& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
-	this->m_Value = L_Buffer;
+	this->mValue = L_Buffer;
 	return *this;
 }
 
@@ -922,7 +918,7 @@ inline CoreItem& CoreNamedValue<usString>::operator= (const int& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
-	this->m_Value = usString(L_Buffer);
+	this->mValue = usString(L_Buffer);
 	return *this;
 }
 
@@ -931,7 +927,7 @@ inline CoreItem& CoreNamedValue<kstl::string>::operator= (const unsigned int& _v
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
-	this->m_Value = L_Buffer;
+	this->mValue = L_Buffer;
 	return *this;
 }
 
@@ -940,7 +936,7 @@ inline CoreItem& CoreNamedValue<usString>::operator= (const unsigned int& _value
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
-	this->m_Value = usString(L_Buffer);
+	this->mValue = usString(L_Buffer);
 	return *this;
 }
 
@@ -948,9 +944,9 @@ template<>
 inline CoreItem& CoreNamedValue<kstl::string>::operator= (const bool& _value)
 {
 	if (_value)
-		this->m_Value = "true";
+		this->mValue = "true";
 	else
-		this->m_Value = "false";
+		this->mValue = "false";
 	return *this;
 }
 
@@ -958,12 +954,23 @@ template<>
 inline CoreItem& CoreNamedValue<usString>::operator= (const bool& _value)
 {
 	if (_value)
-		this->m_Value = usString("true");
+		this->mValue = usString("true");
 	else
-		this->m_Value = usString("false");
+		this->mValue = usString("false");
 	return *this;
 }
 
+
+// ****************************************
+// * CoreValue class
+// * --------------------------------------
+/**
+* \class	CoreValue
+* \file		CoreValue.h
+* \ingroup  Core
+* \brief	CoreItem managing a single value
+*/
+// ****************************************
 
 template<typename T>
 class CoreValue : public CoreValueBase<T,CoreItem>
@@ -983,29 +990,29 @@ public:
 	virtual CoreModifiableAttribute* createAttribute(CoreModifiable*);
 
 	/*template<typename valType>
-	CoreValue& operator= (const valType& _value)
+	CoreValue& operator= (const valType& mValue)
 	{
-		this->m_Value = _value;
+		this->mValue = mValue;
 		return *this;
 	}*/
 	virtual CoreItem& operator=(const bool& other)
 	{
-		this->m_Value = (T)other;
+		this->mValue = (T)other;
 		return *this;
 	}
 	virtual CoreItem& operator=(const kfloat& other)
 	{
-		this->m_Value = (T)other;
+		this->mValue = (T)other;
 		return *this;
 	}
 	virtual CoreItem& operator=(const int& other)
 	{
-		this->m_Value = (T)other;
+		this->mValue = (T)other;
 		return *this;
 	}
 	virtual CoreItem& operator=(const unsigned int& other)
 	{
-		this->m_Value = (T)other;
+		this->mValue = (T)other;
 		return *this;
 	}
 	virtual CoreItem& operator=(const kstl::string& other)
@@ -1038,14 +1045,14 @@ inline CoreItem& CoreValue<kstl::string>::operator= (const kfloat& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%f", (kfloat)_value);
-	this->m_Value = L_Buffer;
+	this->mValue = L_Buffer;
 	return *this;
 }
 
 template<>
 inline CoreItem& CoreValue<kstl::string>::operator= (const kstl::string& _value)
 {
-	this->m_Value = _value;
+	this->mValue = _value;
 	return *this;
 }
 
@@ -1055,7 +1062,7 @@ inline CoreItem& CoreValue<usString>::operator= (const kfloat& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%f", (kfloat)_value);
-	this->m_Value = usString(L_Buffer);
+	this->mValue = usString(L_Buffer);
 	return *this;
 }
 
@@ -1064,7 +1071,7 @@ inline CoreItem& CoreValue<kstl::string>::operator= (const int& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
-	this->m_Value = L_Buffer;
+	this->mValue = L_Buffer;
 	return *this;
 }
 
@@ -1073,7 +1080,7 @@ inline CoreItem& CoreValue<usString>::operator= (const int& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
-	this->m_Value = usString(L_Buffer);
+	this->mValue = usString(L_Buffer);
 	return *this;
 }
 
@@ -1082,7 +1089,7 @@ inline CoreItem& CoreValue<kstl::string>::operator= (const unsigned int& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
-	this->m_Value = L_Buffer;
+	this->mValue = L_Buffer;
 	return *this;
 }
 
@@ -1091,7 +1098,7 @@ inline CoreItem& CoreValue<usString>::operator= (const unsigned int& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
-	this->m_Value = usString(L_Buffer);
+	this->mValue = usString(L_Buffer);
 	return *this;
 }
 
@@ -1099,9 +1106,9 @@ template<>
 inline CoreItem& CoreValue<kstl::string>::operator= (const bool& _value)
 {
 	if(_value)
-		this->m_Value = "true";
+		this->mValue = "true";
 	else 
-		this->m_Value = "false";
+		this->mValue = "false";
 	return *this;
 }
 
@@ -1109,9 +1116,9 @@ template<>
 inline CoreItem& CoreValue<usString>::operator= (const bool& _value)
 {
 	if (_value)
-		this->m_Value = usString("true");
+		this->mValue = usString("true");
 	else
-		this->m_Value = usString("false");
+		this->mValue = usString("false");
 	return *this;
 	return *this;
 }
@@ -1124,7 +1131,7 @@ inline CoreItem& CoreValue<Point3D>::operator= (const bool& _value)
 template<>
 inline CoreItem& CoreValue<Point3D>::operator= (const float& _value)
 {
-	this->m_Value.x = this->m_Value.y = this->m_Value.z = _value;
+	this->mValue.x = this->mValue.y = this->mValue.z = _value;
 	return *this;
 }
 template<>
@@ -1141,15 +1148,15 @@ inline CoreItem& CoreValue<Point3D>::operator= (const unsigned int& _value)
 template<>
 inline CoreItem& CoreValue<Point3D>::operator=(const Point2D& other)
 {
-	this->m_Value.x = other.x;
-	this->m_Value.y = other.y;
+	this->mValue.x = other.x;
+	this->mValue.y = other.y;
 
 	return *this;
 }
 template<>
 inline CoreItem& CoreValue<Point3D>::operator=(const Point3D& other)
 {
-	this->m_Value = other;
+	this->mValue = other;
 	return *this;
 }
 
@@ -1161,7 +1168,7 @@ inline CoreItem& CoreValue<Point2D>::operator= (const bool& _value)
 template<>
 inline CoreItem& CoreValue<Point2D>::operator= (const float& _value)
 {
-	this->m_Value.x = this->m_Value.y = _value;
+	this->mValue.x = this->mValue.y = _value;
 	return *this;
 }
 template<>
@@ -1178,14 +1185,14 @@ inline CoreItem& CoreValue<Point2D>::operator= (const unsigned int& _value)
 template<>
 inline CoreItem& CoreValue<Point2D>::operator=(const Point2D& other)
 {
-	this->m_Value = other;
+	this->mValue = other;
 	return *this;
 }
 template<>
 inline CoreItem& CoreValue<Point2D>::operator=(const Point3D& other)
 {
-	this->m_Value.x = other.x;
-	this->m_Value.y = other.y;
+	this->mValue.x = other.x;
+	this->mValue.y = other.y;
 	return *this;
 }
 #endif // _COREVALUE_H

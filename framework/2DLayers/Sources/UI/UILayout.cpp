@@ -7,7 +7,7 @@ IMPLEMENT_CLASS_INFO(UILayout)
 
 UILayout::UILayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG)
-	, myNeedRecompute(true)
+	, mNeedRecompute(true)
 {
 
 }
@@ -36,19 +36,19 @@ void UILayout::NotifyUpdate(const unsigned int labelid)
 
 void UILayout::Update(const Timer& timer, void*)
 {
-	if (myNeedRecompute)
+	if (mNeedRecompute)
 	{
 		RecomputeLayout();
-		myNeedRecompute = false;
+		mNeedRecompute = false;
 	}
 }
 
 void UILayout::ProtectedDraw(TravState* state)
 {
-	if (myNeedRecompute)
+	if (mNeedRecompute)
 	{
 		RecomputeLayout();
-		myNeedRecompute = false;
+		mNeedRecompute = false;
 	}
 	ParentClassType::ProtectedDraw(state);
 }

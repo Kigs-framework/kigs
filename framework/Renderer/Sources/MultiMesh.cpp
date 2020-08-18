@@ -103,14 +103,14 @@ void MultiMesh::RecomputeBoundingBox()
 		{
 			for (auto item : cm->getItems())
 			{
-				if (item.myItem->isSubType("ModernMesh"))
+				if (item.mItem->isSubType("ModernMesh"))
 				{
-					meshes.push_back(MeshNode{ item.myItem.Pointer(), cm.get() });
+					meshes.push_back(MeshNode{ item.mItem.Pointer(), cm.get() });
 				}
-				else if(!item.myItem->isSubType("RendererMatrix") && already_inserted.find(item.myItem.get()) == already_inserted.end())
+				else if(!item.mItem->isSubType("RendererMatrix") && already_inserted.find(item.mItem.get()) == already_inserted.end())
 				{
-					_full_mesh_node->addItem(item.myItem); 
-					already_inserted.insert(item.myItem.get());
+					_full_mesh_node->addItem(item.mItem); 
+					already_inserted.insert(item.mItem.get());
 				}
 			}
 		}

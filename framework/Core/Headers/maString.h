@@ -23,33 +23,33 @@ public:
 
 	//! return a const char* pointer on internal value
 	//! Doesn't call modifiers!
-	const char* c_str() const { return _value.c_str(); }
+	const char* c_str() const { return mValue.c_str(); }
 
 
 	// getValue overloads
 	virtual bool getValue(kstl::string& value) const override
 	{
-		kstl::string tmpValue = this->_value;
+		kstl::string tmpValue = this->mValue;
 		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		value = tmpValue;
 		return true;
 	}
 	virtual bool getValue(usString&  value) const override
 	{
-		kstl::string tmpValue = this->_value;
+		kstl::string tmpValue = this->mValue;
 		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		value = tmpValue;
 		return true;
 	}
 	virtual bool getValue(void*& value) const override
 	{
-		value = (void*)&_value;
+		value = (void*)&mValue;
 		return true;
 	}
 
 	virtual bool getValue(float& value) const override
 	{
-		value = (float)atof(_value.c_str());
+		value = (float)atof(mValue.c_str());
 		return true;
 	}
 
@@ -63,7 +63,7 @@ public:
 
 		kstl::string tmpValue = value;
 		CALL_SETMODIFIER(notificationLevel, tmpValue);
-		this->_value = tmpValue;
+		this->mValue = tmpValue;
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
@@ -74,7 +74,7 @@ public:
 
 		kstl::string tmpValue = value;
 		CALL_SETMODIFIER(notificationLevel, tmpValue);
-		this->_value = tmpValue;
+		this->mValue = tmpValue;
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}

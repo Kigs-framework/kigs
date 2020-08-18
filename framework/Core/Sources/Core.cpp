@@ -263,8 +263,8 @@ MEMORYMANAGEMENT_END
 
 	kstl::vector<SpecificOperator> specificList;
 	SpecificOperator toAdd;
-	toAdd.myKeyWord = "CoreItemOperatorModifier";
-	toAdd.myCreateMethod = &CoreItemOperatorModifier::create;
+	toAdd.mKeyWord = "CoreItemOperatorModifier";
+	toAdd.mCreateMethod = &CoreItemOperatorModifier::create;
 	specificList.push_back(toAdd);
 
 	CoreItemOperator<kfloat>::ConstructContextMap(myCoreInstance->myCoreItemOperatorCreateMethodMap, &specificList);
@@ -429,19 +429,19 @@ CoreTreeNode* KigsCore::AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, c
 	auto& iClassNames = branch[current_index];
 
 	// get current class ID
-	KigsID cid = iClassNames.myClassName;
-	if (iClassNames.myRuntimeName != KigsID(""))
+	KigsID cid = iClassNames.mClassName;
+	if (iClassNames.mRuntimeName != KigsID(""))
 	{
-		cid = iClassNames.myRuntimeName;
+		cid = iClassNames.mRuntimeName;
 	}
 
 	
 	CoreTreeNode* nextNode = 0;
-	if (parent->myChildren.find(cid) != parent->myChildren.end())
+	if (parent->mChildren.find(cid) != parent->mChildren.end())
 	{
-		if (parent->myChildren[cid] != 0)
+		if (parent->mChildren[cid] != 0)
 		{
-			nextNode = parent->myChildren[cid];
+			nextNode = parent->mChildren[cid];
 		}
 	}
 	if (nextNode == 0)
@@ -451,11 +451,11 @@ CoreTreeNode* KigsCore::AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, c
 		else
 		{
 			nextNode = new CoreTreeNode(parent, cid);
-			parent->myChildren[cid] = nextNode;
+			parent->mChildren[cid] = nextNode;
 			for (auto& pair : method_table)
 			{
 				ModifiableMethodStruct toAdd("", pair.second);
-				nextNode->myMethods.insert({ pair.first, toAdd });
+				nextNode->mMethods.insert({ pair.first, toAdd });
 			}
 			KigsCore::Instance()->myTypeNodeMap[cid] = nextNode;
 		}

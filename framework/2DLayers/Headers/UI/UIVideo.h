@@ -6,6 +6,20 @@
 
 class Texture;
 
+// ****************************************
+// * UIVideo class
+// * --------------------------------------
+/**
+* \file	UIVideo.h
+* \class	UIVideo
+* \ingroup 2DLayers
+* \brief	Display a video.
+*
+* Obsolete ? Same as UIStream ?
+*
+*/
+// ****************************************
+
 class UIVideo : public UIItem
 {
 public:
@@ -20,19 +34,19 @@ public:
 
 	Texture*		GetTexture();
 	Texture*		Get_BufferTexture();
-	inline bool		Get_Loop() const {return myBLoop;}
-	inline bool		Get_HideAtTheEnd() const {return myBHideAtTheEnd;}
-	kstl::string	Get_VideoName() const {return (kstl::string)myVideoName;}
-	kstl::string	Get_VideoOrder() const {return ((const kstl::string&)m_VideoOrder);}
-	inline bool		VideoHasAlpha() const {return mybHasAlpha;}
-	inline bool		Get_IsMuted() const {return mybIsMuted;}
-	inline float	Get_Volume() const {return myVolume;}
+	inline bool		Get_Loop() const {return mLoop;}
+	inline bool		Get_HideAtTheEnd() const {return mHideAtTheEnd;}
+	kstl::string	Get_VideoName() const {return (kstl::string)mVideoName;}
+	kstl::string	Get_VideoOrder() const {return ((const kstl::string&)mOrder);}
+	inline bool		VideoHasAlpha() const {return mHasAlpha;}
+	inline bool		Get_IsMuted() const {return mIsMuted;}
+	inline float	Get_Volume() const {return mVolume;}
 
-	inline bool		Get_Finished() const {return myBFinished;}
+	inline bool		Get_Finished() const {return mFinished;}
 
-	inline void		Play(){m_VideoOrder.setValue("Play");}
-	inline void		Pause(){m_VideoOrder.setValue("Pause");}
-	inline void		Stop(){m_VideoOrder.setValue("Stop");}
+	inline void		Play(){mOrder.setValue("Play");}
+	inline void		Pause(){mOrder.setValue("Pause");}
+	inline void		Stop(){mOrder.setValue("Stop");}
 
 	 void	ReloadTexture();
 
@@ -42,18 +56,18 @@ protected:
 	void NotifyUpdate(const unsigned int /* labelid */)override;
 	bool isAlpha(float X, float Y)override;
 
-	maBool			myBLoop;
-	maBool			myBHideAtTheEnd;
-	maBool			mybHasAlpha;
-	maBool			mybIsMuted;
+	maBool			mLoop;
+	maBool			mHideAtTheEnd;
+	maBool			mHasAlpha;
+	maBool			mIsMuted;
 
-	maFloat			myVolume;
+	maFloat			mVolume;
 
-	SmartPointer<Texture>	myTexture;
-	SmartPointer<Texture>	myBufferTexture;
-	maString		myVideoName;
-	bool			myBFinished;
-	maEnum<3>		m_VideoOrder;
+	SmartPointer<Texture>	mTexturePointer;
+	SmartPointer<Texture>	mBufferTexturePointer;
+	maString		mVideoName;
+	bool			mFinished;
+	maEnum<3>		mOrder;
 };
 
 #endif //_UIVIDEO_H_

@@ -11,11 +11,9 @@
 * \file	AsyncRequest.h
 * \class	AsyncRequest
 * \ingroup Core
-* \brief	base class manage asynchronous request
-* \author	ukn
-* \version ukn
-* \date	ukn
+* \brief	Manage asynchronous request. 
 *
+* Base class for HTTP request.
 */
 // ****************************************
 class AsyncRequest : public CoreModifiable
@@ -43,39 +41,39 @@ public:
 
 	bool	isDone()
 	{
-		return myProcessingFlag & 1;
+		return mProcessingFlag & 1;
 	}
 
 	void	setDone()
 	{
-		myProcessingFlag |= 1;
+		mProcessingFlag |= 1;
 	}
 
 	void Process();
 
 	bool isProcessed()
 	{
-		return ((myProcessingFlag & 3) == 3); // done and processed
+		return ((mProcessingFlag & 3) == 3); // done and processed
 	}
 
 	bool isTimedOut()
 	{
-		return ((myProcessingFlag & 4)!=0);
+		return ((mProcessingFlag & 4)!=0);
 	}
 
 	void setTimedOut()
 	{
-		myProcessingFlag |= 5; // timed out and done flag
+		mProcessingFlag |= 5; // timed out and done flag
 	}
 
 	bool isCancelled()
 	{
-		return ((myProcessingFlag & 8)!=0);
+		return ((mProcessingFlag & 8)!=0);
 	}
 
 	void setCancelled()
 	{
-		myProcessingFlag |= 9;
+		mProcessingFlag |= 9;
 	}
 
 protected:
@@ -84,10 +82,10 @@ protected:
 
 	void setProcessed()
 	{
-		myProcessingFlag |= 2;
+		mProcessingFlag |= 2;
 	}
 
-	volatile unsigned int myProcessingFlag;
+	volatile unsigned int mProcessingFlag;
 };
 
 #endif //_ASYNCREQUEST_H_

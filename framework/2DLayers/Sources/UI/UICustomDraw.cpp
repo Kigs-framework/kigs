@@ -7,8 +7,8 @@ IMPLEMENT_CLASS_INFO(UICustomDraw)
 
 bool UICustomDraw::isAlpha(float X, float Y)
 {
-	if (myDelegate)
-		return myDelegate->IsAlphafunc(X, Y);
+	if (mDelegate)
+		return mDelegate->IsAlphafunc(X, Y);
 
 	return false;
 }
@@ -16,6 +16,6 @@ bool UICustomDraw::isAlpha(float X, float Y)
 
 void UICustomDraw::ProtectedDraw(TravState* state)
 {
-	if (myDelegate)
-		myDelegate->Drawfunc(state, this);
+	if (mDelegate)
+		mDelegate->Drawfunc(state, this);
 }

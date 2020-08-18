@@ -5,6 +5,17 @@
 
 class Texture;
 
+// ****************************************
+// * UISliderFill class
+// * --------------------------------------
+/**
+* \file	UISliderFill.h
+* \class	UISliderFill
+* \ingroup 2DLayers
+* \brief	TODO. Manage a slider.
+*/
+// ****************************************
+
 class UISliderFill : public UIDrawableItem
 {
 public:
@@ -17,15 +28,15 @@ public:
 	 */
 	UISliderFill(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	inline SP<Texture>	GetVoidTexture() { return myVoidTexture; }
-	inline SP<Texture>  GetStartTexture() { if (myStartPositionX > -1 && myStartPositionY > -1) return myStartTexture; else return nullptr; }
-	inline SP<Texture>  GetMiddleTexture() { if (myMiddlePositionX > -1 && myMiddlePositionY > -1) return myMiddleTexture; else return nullptr; }
-	inline SP<Texture>  GetEndTexture() { if (myEndPositionX > -1 && myEndPositionY > -1) return myEndTexture; else return nullptr; }
+	inline SP<Texture>	GetVoidTexture() { return mVoidTexturePointer; }
+	inline SP<Texture>  GetStartTexture() { if (mStartPositionX > -1 && mStartPositionY > -1) return mStartTexturePointer; else return nullptr; }
+	inline SP<Texture>  GetMiddleTexture() { if (mMiddlePositionX > -1 && mMiddlePositionY > -1) return mMiddleTexturePointer; else return nullptr; }
+	inline SP<Texture>  GetEndTexture() { if (mEndPositionX > -1 && mEndPositionY > -1) return mEndTexturePointer; else return nullptr; }
 
-	inline void			Get_StartPosition(int& X, int& Y) { X = myStartPositionX; Y = myStartPositionY; }
-	inline void			Get_MiddlePosition(int& X, int& Y) { X = myMiddlePositionX; Y = myMiddlePositionY; }
-	inline void			Get_MiddleSize(int& X, int& Y) { X = myMiddleSizeX; Y = myMiddleSizeY; }
-	inline void			Get_EndPosition(int& X, int& Y) { X = myEndPositionX; Y = myEndPositionY; }
+	inline void			Get_StartPosition(int& X, int& Y) { X = mStartPositionX; Y = mStartPositionY; }
+	inline void			Get_MiddlePosition(int& X, int& Y) { X = mMiddlePositionX; Y = mMiddlePositionY; }
+	inline void			Get_MiddleSize(int& X, int& Y) { X = mMiddleSizeX; Y = mMiddleSizeY; }
+	inline void			Get_EndPosition(int& X, int& Y) { X = mEndPositionX; Y = mEndPositionY; }
 	void				ComputeInitialElementsPosition();
 
 	void				ChangeTexture(kstl::string voidtexturename, kstl::string texturename = "", kstl::string overtexturename = "", kstl::string downtexturename = "");
@@ -38,26 +49,26 @@ protected:
 
 	void		RecomputeElementsPosition(float dockX, float dockY, float AnchorX, float AnchorY, int posx, int posy, unsigned int sizeX, unsigned int sizeY, int& Xresult, int& Yresult);
 	
-	maString			myVoidTextureName;
-	maString			myStartTextureName;
-	maString			myMiddleTextureName;
-	maString			myEndTextureName;
+	maString			mVoidTexture;
+	maString			mStartTexture;
+	maString			mMiddleTexture;
+	maString			mEndTexture;
 
 	//! Direction of Slider "Vertical" or "Horizontal")
-	maEnum<2>			myDirection;
+	maEnum<2>			mDirection;
 
-	SP<Texture>			myStartTexture;
-	SP<Texture>			myMiddleTexture;
-	SP<Texture>			myEndTexture;
-	SP<Texture>			myVoidTexture;
+	SP<Texture>			mStartTexturePointer;
+	SP<Texture>			mMiddleTexturePointer;
+	SP<Texture>			mEndTexturePointer;
+	SP<Texture>			mVoidTexturePointer;
 
-	int					myStartPositionX;
-	int					myStartPositionY;
-	int					myMiddlePositionX;
-	int					myMiddlePositionY;
-	int					myMiddleSizeX;
-	int					myMiddleSizeY;
-	int					myEndPositionX;
-	int					myEndPositionY;
+	int					mStartPositionX;
+	int					mStartPositionY;
+	int					mMiddlePositionX;
+	int					mMiddlePositionY;
+	int					mMiddleSizeX;
+	int					mMiddleSizeY;
+	int					mEndPositionX;
+	int					mEndPositionY;
 };
 #endif //_UISLIDERFILL_H_

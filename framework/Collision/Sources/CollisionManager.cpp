@@ -274,13 +274,13 @@ void CollisionManager::RecursiveCheck(CoreModifiable* item, u32 branchMask, bool
 
 		for (auto& cm : item->getItems())
 		{
-			if (cm.myItem->getValue("CollideMask", mask))
+			if (cm.mItem->getValue("CollideMask", mask))
 				branchMask = mask;
 
 			if (branchMask > 0)
-				CreateCollisionObject((CoreModifiable*)cm.myItem.get(), branchMask);
+				CreateCollisionObject((CoreModifiable*)cm.mItem.get(), branchMask);
 
-			RecursiveCheck((CoreModifiable*)cm.myItem.get(), branchMask,true);
+			RecursiveCheck((CoreModifiable*)cm.mItem.get(), branchMask,true);
 			branchMask = before;
 		}
 	}
@@ -298,9 +298,9 @@ bool CollisionManager::CheckType(CoreModifiable* item)
 {
 	if (item->isUserFlagSet(UserFlagDrawable))
 	{
-		if ((item->isSubType(ModernMesh::myClassID)) ||
-			(item->isSubType(DrawVertice::myClassID)) ||
-			(item->isSubType(CollisionBaseNode::myClassID)))
+		if ((item->isSubType(ModernMesh::mClassID)) ||
+			(item->isSubType(DrawVertice::mClassID)) ||
+			(item->isSubType(CollisionBaseNode::mClassID)))
 			return true;
 	}
 	return false;
@@ -585,15 +585,15 @@ this method is recursive
 
 void CollisionManager::RescursiveSearchMesh(CoreModifiable *currentitem, std::vector<CoreModifiable*>& list)
 {
-	if ((currentitem->isSubType(Mesh::myClassID)) ||
-		(currentitem->isSubType(ModernMeshItemGroup::myClassID)) ||
-		(currentitem->isSubType(DrawVertice::myClassID)) ||
-		(currentitem->isSubType(Plane::myClassID)) ||
-		(currentitem->isSubType(BSphere::myClassID)))
+	if ((currentitem->isSubType(Mesh::mClassID)) ||
+		(currentitem->isSubType(ModernMeshItemGroup::mClassID)) ||
+		(currentitem->isSubType(DrawVertice::mClassID)) ||
+		(currentitem->isSubType(Plane::mClassID)) ||
+		(currentitem->isSubType(BSphere::mClassID)))
 	{
 		list.push_back(currentitem);
 	}
-	else if (currentitem->isUserFlagSet(UserFlagNode3D) || currentitem->isSubType(ModernMesh::myClassID))
+	else if (currentitem->isUserFlagSet(UserFlagNode3D) || currentitem->isSubType(ModernMesh::mClassID))
 	{
 		bool needCollision = true;
 
@@ -606,7 +606,7 @@ void CollisionManager::RescursiveSearchMesh(CoreModifiable *currentitem, std::ve
 			std::vector<ModifiableItemStruct>::const_iterator it;
 			for (it = currentitem->getItems().begin(); it != currentitem->getItems().end(); ++it)
 			{
-				RescursiveSearchMesh((*it).myItem, list);
+				RescursiveSearchMesh((*it).mItem, list);
 			}
 		}
 	}
@@ -646,7 +646,7 @@ bool CollisionManager::RecursiveSearchRayIntersection(CoreModifiable* lastCollid
 			}
 
 			for (auto & son : item->getItems())
-				retVal |= RecursiveSearchRayIntersection(lastCollideNode, lastNode,(CoreModifiable*) son.myItem.get(), start, dir, hit, (hasCat) ? mask : lastNodeCategory, a_itemCategory, ignore_is_collidable);
+				retVal |= RecursiveSearchRayIntersection(lastCollideNode, lastNode,(CoreModifiable*) son.mItem.get(), start, dir, hit, (hasCat) ? mask : lastNodeCategory, a_itemCategory, ignore_is_collidable);
 		}
 		return retVal;
 	}
@@ -735,7 +735,7 @@ bool CollisionManager::RecursiveSearchRayIntersection(CoreModifiable* lastCollid
 				setHit(hit);
 			}
 		}
-		else if (item->isSubType(BSphere::myClassID))
+		else if (item->isSubType(BSphere::mClassID))
 		{
 			BSphere * sphere = static_cast<BSphere*>(item);
 			kfloat L_Radius = sphere->GetRadius();
@@ -746,7 +746,7 @@ bool CollisionManager::RecursiveSearchRayIntersection(CoreModifiable* lastCollid
 				setHit(hit);
 			}
 		}
-		else if (item->isSubType(BCylinder::myClassID))
+		else if (item->isSubType(BCylinder::mClassID))
 		{
 			BCylinder * sphere = static_cast<BCylinder*>(item);
 			kfloat L_Radius = sphere->GetRadius();
@@ -757,7 +757,7 @@ bool CollisionManager::RecursiveSearchRayIntersection(CoreModifiable* lastCollid
 				setHit(hit);
 			}
 		}
-		else if (item->isSubType(Plane::myClassID))
+		else if (item->isSubType(Plane::mClassID))
 		{
 			Plane * plane = (Plane*)item;
 
@@ -814,7 +814,7 @@ void CollisionManager::RecursiveSearchAllRayIntersection(CoreModifiable* lastCol
 
 			for (auto & son : item->getItems())
 			{
-				RecursiveSearchAllRayIntersection(lastCollideNode, lastNode, (CoreModifiable*)son.myItem.get(), start, dir, hits, (hasCat) ? mask : lastNodeCategory, a_itemCategory, ignore_is_collidable);
+				RecursiveSearchAllRayIntersection(lastCollideNode, lastNode, (CoreModifiable*)son.mItem.get(), start, dir, hits, (hasCat) ? mask : lastNodeCategory, a_itemCategory, ignore_is_collidable);
 			}
 			return;
 		}
@@ -992,7 +992,7 @@ void CollisionManager::RecursiveSearchPlaneIntersection(Node3D* lastNode, CoreMo
 
 			for (auto & son : item->getItems())
 			{
-				RecursiveSearchPlaneIntersection(lastNode, (CoreModifiable*)son.myItem.get(), o, n, Zone,result, (hasCat) ? mask : lastNodeCategory, a_itemCategory);
+				RecursiveSearchPlaneIntersection(lastNode, (CoreModifiable*)son.mItem.get(), o, n, Zone,result, (hasCat) ? mask : lastNodeCategory, a_itemCategory);
 			}
 			return;
 		}
@@ -1361,7 +1361,7 @@ CoreModifiable*	CollisionManager::RecursiveSearchSphereIntersection(OctreeSubNod
 	for (it = currentNode->GetObjectList().begin(); it != currentNode->GetObjectList().end(); ++it)
 	{
 		//! for each object in this OctreeSubNode
-		if ((*it)->isSubType(Node3D::myClassID))
+		if ((*it)->isSubType(Node3D::mClassID))
 		{
 			Hit hit;
 			hit.HitDistance = 1000;
@@ -1377,7 +1377,7 @@ CoreModifiable*	CollisionManager::RecursiveSearchSphereIntersection(OctreeSubNod
 				}
 			}
 		}
-		else if ((*it)->isSubType(Mesh::myClassID))
+		else if ((*it)->isSubType(Mesh::mClassID))
 		{
 			std::map<CoreModifiable*, MeshCollisionInfo>::iterator L_ItMap = mCollisionObjectMap.find((Mesh*)(*it));
 			if (L_ItMap != mCollisionObjectMap.end())
@@ -1468,9 +1468,9 @@ bool CollisionManager::RecursiveSearchSphereIntersection(Hit &hit, CoreModifiabl
 		std::vector<ModifiableItemStruct>::const_iterator it;
 		for (it = currentitem->getItems().begin(); it != currentitem->getItems().end(); ++it)
 		{
-			CoreModifiable* item = (*it).myItem;
+			CoreModifiable* item = (*it).mItem;
 			//! then for each son 
-			if (item->isSubType(Mesh::myClassID))
+			if (item->isSubType(Mesh::mClassID))
 			{
 				//! if son is a Mesh, call GetLocalSphereIntersection
 				const Matrix3x4& LToGMatrix = ((Node3D*)currentitem)->GetLocalToGlobal();

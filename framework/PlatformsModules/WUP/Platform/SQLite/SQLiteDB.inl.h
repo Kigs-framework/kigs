@@ -10,7 +10,7 @@ bool SQLiteDB::ExistDatabase(const char * dbName)
 	kstl::string filePath = FilePathManager::DevicePath(dbName, FilePathManager::DB_STORAGE);
 	
 	SmartPointer<FileHandle> fullfilenamehandle = Platform_fopen(filePath.c_str(), "rb");
-	if (fullfilenamehandle->myFile)
+	if (fullfilenamehandle->mFile)
 	{
 		Platform_fclose(fullfilenamehandle.get());
 		return true;

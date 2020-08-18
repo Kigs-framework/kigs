@@ -17,14 +17,14 @@ void MultiTouchPinch::set(int index, float x, float y)
 {
 	if (index >= 0 && index <= 1)
 	{		
-		if (b[index] == false)
+		if (mB[index] == false)
 		{
 			mOx[index] = x;
 			mOy[index] = y;
 			mX[index] = x;
 			mY[index] = y;
 			mNeedUpdate = true;
-			b[index] = true;
+			mB[index] = true;
 		}
 		else
 		{
@@ -42,7 +42,7 @@ void MultiTouchPinch::set(int index, float x, float y)
 
 bool MultiTouchPinch::update()
 {
-	if (mNeedUpdate && b[0] && b[1])
+	if (mNeedUpdate && mB[0] && mB[1])
 	{
 		float COX = (mOx[0] + mOx[1]) / 2.f;
 		float CNX = (mX[0] + mX[1]) / 2.f;
@@ -76,7 +76,7 @@ void MultiTouchPinch::release(int index)
 {
 	if (index >= 0 && index <= 1)
 	{
-		b[index] = false;
+		mB[index] = false;
 	}
 }
 

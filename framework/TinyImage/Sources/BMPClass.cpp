@@ -78,7 +78,7 @@ void	BMPClass::Export(const char* filename)
 
 
 	SmartPointer<FileHandle> L_File = Platform_fopen(filename, "wb");
-	if (L_File->myFile)
+	if (L_File->mFile)
 	{
 		Platform_fwrite("BM", 2, 1, L_File.get());
 		Platform_fwrite(&towrite, sizeof(bmpHeader), 1, L_File.get());

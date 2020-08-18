@@ -7,14 +7,17 @@
 #include <mutex>
 
 // ****************************************
-// * NotificationCenter class should be used as a singleton
+// * NotificationCenter class
 // * --------------------------------------
-/*!  \class NotificationCenter
-\ingroup NotificationCenter
-*/
-// ****************************************
-
-
+/**
+ * \file	NotificationCenter.h
+ * \class	NotificationCenter
+ * \ingroup Core
+ * \brief	Manage messages between CoreModifiable
+ * 
+ * This class should be used as a singleton.
+ */
+ // ****************************************
 class NotificationCenter
 {
 public:
@@ -35,34 +38,34 @@ public:
 	void Update();
 
 protected:
-	int myPostLevel;
+	int mPostLevel;
 
 	struct ObserverStruct
 	{
 
-		bool            myIsRemoved;
-		bool			myIsStringItem;
-		CoreItemSP		myCurrentItem = CoreItemSP(nullptr);
-		unsigned int    mySelectorID;
-		CoreModifiable* mySender;
+		bool            mIsRemoved;
+		bool			mIsStringItem;
+		CoreItemSP		mCurrentItem = CoreItemSP(nullptr);
+		unsigned int    mSelectorID;
+		CoreModifiable* mSender;
 	};
 
 	struct ObserverStructVector
 	{
-		CoreModifiable* myObserver;
-		std::vector<ObserverStruct> myVector;
+		CoreModifiable* mObserver;
+		std::vector<ObserverStruct> mVector;
 	};
 
 	struct NotifVectorStruct
 	{
-		std::vector<std::string>		myVector;
+		std::vector<std::string>		mVector;
 	};
 
 	// map associating observer to notifications...
-	std::unordered_map<CoreModifiable*, NotifVectorStruct> myObserverMap;
+	std::unordered_map<CoreModifiable*, NotifVectorStruct> mObserverMap;
 
 	// map associating notification name to observers map
-	std::unordered_map<unsigned int,std::vector<ObserverStructVector> > myNotificationMap;
+	std::unordered_map<unsigned int,std::vector<ObserverStructVector> > mNotificationMap;
 
 	void protectedAddObserver(CoreModifiable* observer, const ObserverStruct& newobstruct, const std::string& selector, const std::string&  notificationName);
 
@@ -75,14 +78,14 @@ protected:
 
 	struct removeObserverStruct
 	{
-		std::string	notificationName;
-		CoreModifiable* sender;
-		bool			myWasDestroyed;
+		std::string		mNotificationName;
+		CoreModifiable* mSender;
+		bool			mWasDestroyed;
 	};
 
-	std::unordered_map<CoreModifiable* ,std::vector<removeObserverStruct> > myRemoveObserverMap;
+	std::unordered_map<CoreModifiable* ,std::vector<removeObserverStruct> > mRemoveObserverMap;
 
-	CoreItemEvaluationContext	myContext;
+	CoreItemEvaluationContext	mContext;
 
 	std::recursive_mutex mMutex;
 };

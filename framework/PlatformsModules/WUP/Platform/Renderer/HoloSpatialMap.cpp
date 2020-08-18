@@ -825,7 +825,7 @@ void HoloSpatialMap::InitModifiable()
 
 			while (debugmap->getItems().size())
 			{
-				auto item = debugmap->getItems().front().myItem;
+				auto item = debugmap->getItems().front().mItem;
 				item->GetRef();
 				debugmap->removeItem(item);
 

@@ -96,7 +96,7 @@ void DataDrivenSequence::InitModifiable()
 		if (currentSequence)
 		{
 			currentManager->ProtectedCloseSequence(currentSequence->getName());
-			if (currentSequence->isSubType(DataDrivenSequence::myClassID))
+			if (currentSequence->isSubType(DataDrivenSequence::mClassID))
 			{
 				kstl::map<unsigned int, kstl::string> savedParamsList;
 				((SP<DataDrivenSequence>&)currentSequence)->saveParams(savedParamsList);
@@ -140,7 +140,7 @@ void DataDrivenSequence::UninitModifiable()
 
 	for (; it != itend; ++it)
 	{
-		(*it).myItem->UnInit();
+		(*it).mItem->UnInit();
 	}
 	CoreModifiable::UninitModifiable();
 }
@@ -301,7 +301,7 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 			if (myPreviousSequence)
 			{
 				currentManager->ProtectedCloseSequence(myPreviousSequence->getName());
-				if (myPreviousSequence->isSubType(DataDrivenSequence::myClassID))
+				if (myPreviousSequence->isSubType(DataDrivenSequence::mClassID))
 				{
 					kstl::map<unsigned int, kstl::string> savedParamsList;
 					((SP<DataDrivenSequence>&)myPreviousSequence)->saveParams(savedParamsList);
@@ -655,7 +655,7 @@ void DataDrivenBaseApplication::ProtectedUpdate()
 	can_update = mCanUpdateNextFrame;
 #endif
 	
-	GlobalAppDT = myApplicationTimer->GetDt(this);
+	GlobalAppDT = mApplicationTimer->GetDt(this);
 
 	bool inputUpdate = true;
 	if (myInTransition.size())
@@ -666,7 +666,7 @@ void DataDrivenBaseApplication::ProtectedUpdate()
 
 	rmt_BeginCPUSample(myInputModule, 0);
 	if (HasFocus())
-		myInputModule->CallUpdate(*myApplicationTimer.get(), 0);
+		myInputModule->CallUpdate(*mApplicationTimer.get(), 0);
 	rmt_EndCPUSample();
 
 	if (can_update)
@@ -674,16 +674,16 @@ void DataDrivenBaseApplication::ProtectedUpdate()
 		DoAutoUpdate();
 
 		rmt_BeginCPUSample(AnimationModule, 0);
-		KigsCore::Instance()->GetMainModuleInList(CoreAnimationModuleCoreIndex)->CallUpdate(*myApplicationTimer.get(), 0);
+		KigsCore::Instance()->GetMainModuleInList(CoreAnimationModuleCoreIndex)->CallUpdate(*mApplicationTimer.get(), 0);
 		rmt_EndCPUSample();
 
 		rmt_BeginCPUSample(myLuaModule, 0);
-		myLuaModule->CallUpdate(*myApplicationTimer.get(), 0);
+		myLuaModule->CallUpdate(*mApplicationTimer.get(), 0);
 		rmt_EndCPUSample();
 	}
 	else
 	{
-		myAutoUpdateDone = true;
+		mAutoUpdateDone = true;
 	}
 
 	bool render = false;
@@ -692,20 +692,20 @@ void DataDrivenBaseApplication::ProtectedUpdate()
 		rmt_BeginCPUSample(myRenderer, 0);
 		render = m_SequenceManager->AllowRender();
 		if (render)
-			myRenderer->CallUpdate(*myApplicationTimer.get(), 0);
+			myRenderer->CallUpdate(*mApplicationTimer.get(), 0);
 		rmt_EndCPUSample();
 	}
 
 	rmt_BeginCPUSample(mySceneGraph, 0);
-	mySceneGraph->CallUpdate(*myApplicationTimer.get(), 0);
+	mySceneGraph->CallUpdate(*mApplicationTimer.get(), 0);
 	rmt_EndCPUSample();
 
 	rmt_BeginCPUSample(my2DLayers, 0);
-	my2DLayers->CallUpdate(*myApplicationTimer.get(), 0);
+	my2DLayers->CallUpdate(*mApplicationTimer.get(), 0);
 	rmt_EndCPUSample();
 
 	rmt_BeginCPUSample(myGUI, 0);
-	myGUI->CallUpdate(*myApplicationTimer.get(), &render);
+	myGUI->CallUpdate(*mApplicationTimer.get(), &render);
 	rmt_EndCPUSample();
 
 	if (can_update)
@@ -882,7 +882,7 @@ void DataDrivenSequenceManager::RequestBackToPreviousState()
 	{
 		if (isApp)
 		{
-			isApp->myNeedExit = true;
+			isApp->mNeedExit = true;
 		}
 		return;
 	}
@@ -909,11 +909,11 @@ bool DataDrivenSequenceManager::IsParent(CoreModifiable* toCheck,CoreModifiable*
 // recursive check if a parent of s is a sequence and return it
 CoreModifiable*	DataDrivenSequenceManager::getParentSequence(CoreModifiable* s)
 {
-	if (s->isSubType(BaseUI2DLayer::myClassID))
+	if (s->isSubType(BaseUI2DLayer::mClassID))
 	{
 		return s;
 	}
-	if (s->isSubType(DataDrivenSequence::myClassID))
+	if (s->isSubType(DataDrivenSequence::mClassID))
 	{
 		return s;
 	}
@@ -1026,7 +1026,7 @@ DEFINE_METHOD(DataDrivenSequenceManager, BackSequence)
 
 DEFINE_METHOD(DataDrivenBaseApplication, Exit)
 {
-	myNeedExit = true;
+	mNeedExit = true;
 	return false;
 }
 

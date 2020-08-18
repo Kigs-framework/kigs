@@ -45,7 +45,7 @@ bool KigsBitmap::PreDraw(TravState* state)
 
 					while (parentsBegin != parentsEnd)
 					{
-						if ((*parentsBegin)->isSubType(Texture::myClassID))
+						if ((*parentsBegin)->isSubType(Texture::mClassID))
 						{
 							Texture*	parentToUpdate = (Texture*)(*parentsBegin);
 

@@ -16,9 +16,6 @@ class CoreModifiableAttribute;
 * \class	GenericRefCountedBaseClass
 * \ingroup Core
 * \brief	Base class for refcounting classes, no other dependencies
-* \author	ukn
-* \version ukn
-* \date	ukn
 */
 // ****************************************
 
@@ -41,10 +38,10 @@ public:
 	TRACEREF_VIRTUAL bool TryGetRef();
 	TRACEREF_VIRTUAL void Destroy();
 
-	inline int getRefCount() { return myRefCounter; }
+	inline int getRefCount() { return mRefCounter; }
 
 protected:
-	std::atomic_int	myRefCounter{1};
+	std::atomic_int	mRefCounter{1};
 
 	// if true is returned then don't do final delete
 	virtual bool checkDestroy()

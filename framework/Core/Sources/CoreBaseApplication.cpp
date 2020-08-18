@@ -13,16 +13,16 @@ IMPLEMENT_CLASS_INFO(CoreBaseApplication)
 // 
 CoreBaseApplication::CoreBaseApplication(const kstl::string& name, CLASS_NAME_TREE_ARG) :  PlatformBaseApplication(), CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	myHasFocus         = true;
-	myNeedExit         = false;
-	myInitBaseModules  = false;
-	myAlreadyInUpdate  = false;
-	myApplicationTimer = 0;
-	myUpdateSleepTime  = 0;
-	myBackKeyState     = 0;
+	mHasFocus         = true;
+	mNeedExit         = false;
+	mInitBaseModules  = false;
+	mAlreadyInUpdate  = false;
+	mApplicationTimer = 0;
+	mUpdateSleepTime  = 0;
+	mBackKeyState     = 0;
 	KigsCore::SetCoreApplication(this);
-	myAutoUpdateList.clear();
-	myEditor		   = NULL;
+	mAutoUpdateList.clear();
+	mEditor		   = NULL;
 
 	
 }
@@ -37,7 +37,7 @@ void CoreBaseApplication::AddAutoUpdate(CoreModifiable*	toUpdate)
 	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
 	// check if not already there
 	kstl::vector<CoreModifiable*>::const_iterator itAutoUpdate;
-	for(itAutoUpdate = myAutoUpdateList.begin();itAutoUpdate != myAutoUpdateList.end();++itAutoUpdate)
+	for(itAutoUpdate = mAutoUpdateList.begin();itAutoUpdate != mAutoUpdateList.end();++itAutoUpdate)
 	{
 		if((*itAutoUpdate) == toUpdate)
 		{
@@ -46,7 +46,7 @@ void CoreBaseApplication::AddAutoUpdate(CoreModifiable*	toUpdate)
 		}
 	}
 	toUpdate->flagAsAutoUpdateRegistered();
-	myAutoUpdateList.push_back(toUpdate);
+	mAutoUpdateList.push_back(toUpdate);
 
 }
 
@@ -55,13 +55,13 @@ void CoreBaseApplication::RemoveAutoUpdate(CoreModifiable*	toUpdate)
 	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
 	// search in list
 	kstl::vector<CoreModifiable*>::iterator itAutoUpdate;
-	if(!myAutoUpdateList.empty())
+	if(!mAutoUpdateList.empty())
 	{
-		for(itAutoUpdate = myAutoUpdateList.begin();itAutoUpdate != myAutoUpdateList.end();++itAutoUpdate)
+		for(itAutoUpdate = mAutoUpdateList.begin();itAutoUpdate != mAutoUpdateList.end();++itAutoUpdate)
 		{
 			if((*itAutoUpdate) == toUpdate)
 			{
-				myAutoUpdateList.erase(itAutoUpdate);
+				mAutoUpdateList.erase(itAutoUpdate);
 				toUpdate->unflagAsAutoUpdateRegistered();
 				// no duplicate here, so can exit directly
 				return;
@@ -73,13 +73,13 @@ void CoreBaseApplication::RemoveAutoUpdate(CoreModifiable*	toUpdate)
 
 void	CoreBaseApplication::PushArg(const kstl::string& arg)
 {
-	myArgs.push_back(arg);
+	mArgs.push_back(arg);
 }
 
 const kstl::string*	CoreBaseApplication::HasArg(const kstl::string& arg, bool startWith) const
 {
-	kstl::vector<kstl::string>::const_iterator	itstart = myArgs.begin();
-	kstl::vector<kstl::string>::const_iterator	itend = myArgs.end();
+	kstl::vector<kstl::string>::const_iterator	itstart = mArgs.begin();
+	kstl::vector<kstl::string>::const_iterator	itend = mArgs.end();
 
 	while (itstart != itend)
 	{
@@ -108,11 +108,11 @@ void	CoreBaseApplication::InitApp(const char* baseDataPath, bool	InitBaseModule)
 {
 	PlatformBaseApplication::Init();
 	CoreModifiable::Init();
-	myInitBaseModules = InitBaseModule;
+	mInitBaseModules = InitBaseModule;
 
-	myBackKeyState = 0;
+	mBackKeyState = 0;
 
-	if (myInitBaseModules)
+	if (mInitBaseModules)
 	{
 		CoreCreateModule(ModuleFileManager, 0);
 
@@ -127,8 +127,8 @@ void	CoreBaseApplication::InitApp(const char* baseDataPath, bool	InitBaseModule)
 		
 		CoreCreateModule(ModuleTimer, 0);
 
-		myApplicationTimer = KigsCore::GetInstanceOf("ApplicationTimer", "Timer");
-		myApplicationTimer->Init();
+		mApplicationTimer = KigsCore::GetInstanceOf("ApplicationTimer", "Timer");
+		mApplicationTimer->Init();
 	}
 
 	ProtectedPreInit();
@@ -150,22 +150,22 @@ void	CoreBaseApplication::InitApp(const char* baseDataPath, bool	InitBaseModule)
 #else
 			path += "\\Debug\\";
 #endif
-			myEditor = new AnonymousModule(path + "\\libIMEditor32.dll", 0);
+			mEditor = new AnonymousModule(path + "\\libIMEditor32.dll", 0);
 		}
 		else
 		{
-			myEditor = new AnonymousModule("libIMEditor32.dll", 0);
+			mEditor = new AnonymousModule("libIMEditor32.dll", 0);
 		}
 
 		
 		kstl::vector<CoreModifiableAttribute*> params;	
-		maBool* embedded = new maBool(*myEditor, true, LABEL_AND_ID(EmbeddedEditor), HasArg("UseEmbeddedEditor"));
-		//maBool* autoStart = new maBool(*myEditor, true, LABEL_AND_ID(AutoStart), HasArg("EditorAutoStart"));
+		maBool* embedded = new maBool(*mEditor, true, LABEL_AND_ID(EmbeddedEditor), HasArg("UseEmbeddedEditor"));
+		//maBool* autoStart = new maBool(*mEditor, true, LABEL_AND_ID(AutoStart), HasArg("EditorAutoStart"));
 
 		params.push_back(embedded);
 		//params.push_back(autoStart);
-		myEditor->Init(KigsCore::Instance(), &params);
-		AddAutoUpdate(myEditor);
+		mEditor->Init(KigsCore::Instance(), &params);
+		AddAutoUpdate(mEditor);
 	}
 #endif
 #endif
@@ -174,67 +174,67 @@ void CoreBaseApplication::DoAutoUpdate()
 {
 	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
 	unsigned int i = 0;
-	while (i<myAutoUpdateList.size())
+	while (i<mAutoUpdateList.size())
 	{
-		myAutoUpdateList[i]->CallUpdate((const Timer&)*myApplicationTimer.get(), 0);
+		mAutoUpdateList[i]->CallUpdate((const Timer&)*mApplicationTimer.get(), 0);
 		i++;
 	}
-	myAutoUpdateDone = true;
+	mAutoUpdateDone = true;
 }
 
 void	CoreBaseApplication::UpdateApp()
 {
-	// avoid double update entry call
-	if(!myAlreadyInUpdate)
+	// avoid double update mEntry call
+	if(!mAlreadyInUpdate)
 	{
-		myAlreadyInUpdate=true;
+		mAlreadyInUpdate=true;
 
 		DECLAREPROFILE(GLOBAL);
 		STARTPROFILE(GLOBAL);
-		if(myInitBaseModules)
+		if(mInitBaseModules)
 		{
-			CoreGetModule(ModuleTimer)->CallUpdate((const Timer&)myApplicationTimer,0);
+			CoreGetModule(ModuleTimer)->CallUpdate((const Timer&)mApplicationTimer,0);
 		}
 
 		// update 'auto update' instances
 		// dont't use an iterator as some modifiable update should add new instance to the list (ie :Controller can add NotificationCenter)
 		
-		myAutoUpdateDone = false;
+		mAutoUpdateDone = false;
 		
 		// key state is set to 2 is set only during one update
 		if (PlatformBaseApplication::CheckBackKeyPressed())
 		{
-			myBackKeyState = 1;
+			mBackKeyState = 1;
 		}
-		else if (myBackKeyState == 1)
+		else if (mBackKeyState == 1)
 		{
-			myBackKeyState = 2;
+			mBackKeyState = 2;
 		}
 
 		// before real app update, manage async requests
 		KigsCore::ManageAsyncRequests();
 		PlatformBaseApplication::Update();
-		CallUpdate((const Timer&)*(myApplicationTimer.get()),0);
+		CallUpdate((const Timer&)*(mApplicationTimer.get()),0);
 		ProtectedUpdate();
-		if (!myAutoUpdateDone)
+		if (!mAutoUpdateDone)
 			DoAutoUpdate();
 
-		if (myBackKeyState == 2)
+		if (mBackKeyState == 2)
 		{
-			myBackKeyState = 0;
+			mBackKeyState = 0;
 		}
 
 		KIGS_DUMP_MESSAGES;
 
 		// if needed, call sleep in timer
-		if(myUpdateSleepTime)
+		if(mUpdateSleepTime)
 		{
-			myApplicationTimer->Sleep(myUpdateSleepTime);
+			mApplicationTimer->Sleep(mUpdateSleepTime);
 		}
 	
 		KigsCore::Instance()->ManagePostDestruction();
 		ENDPROFILE(GLOBAL)
-		myAlreadyInUpdate=false;
+		mAlreadyInUpdate=false;
 	}
 }
 
@@ -243,18 +243,18 @@ void	CoreBaseApplication::CloseApp()
 	CLOSEPROFILER;
 	
 	ProtectedClose();
-	if(myInitBaseModules)
+	if(mInitBaseModules)
 	{
 		// destroy timer
-		myApplicationTimer = nullptr;
+		mApplicationTimer = nullptr;
 
 		CoreDestroyModule(ModuleTimer);
 		CoreDestroyModule(ModuleFileManager);
 	}
 
-	if (myEditor) {
-		myEditor->Close();
-		myEditor->Destroy();
+	if (mEditor) {
+		mEditor->Close();
+		mEditor->Destroy();
 	}
 #ifdef PRINT_REFTRACING
 	CoreModifiable::debugPrintfFullTree();

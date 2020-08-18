@@ -7,14 +7,14 @@ IMPLEMENT_CLASS_INFO(UIGroupButton)
 
 UIGroupButton::UIGroupButton(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	UIItem(name, PASS_CLASS_NAME_TREE_ARG)
-	, myKeepOnePressed(*this, false, "KeepOnePressed", true)
-	, myOnlyOnePressed(*this, false, "OnlyOnePressed", true)
-	, myNoSelectedAction(*this, false, "NoSelectedAction", "")
-	, myParameter(*this, false, "Parameter", (kstl::string)"")
+	, mKeepOnePressed(*this, false, "KeepOnePressed", true)
+	, mOnlyOnePressed(*this, false, "OnlyOnePressed", true)
+	, mNoSelectedAction(*this, false, "NoSelectedAction", "")
+	, mParameter(*this, false, "Parameter", (kstl::string)"")
 {
-	mySizeX = 0;
-	mySizeY = 0;
-	myButtonNumber = 0;
+	mSizeX = 0;
+	mSizeY = 0;
+	mButtonNumber = 0;
 }
 
 //-------------------------------------------------------------------------
@@ -22,8 +22,8 @@ UIGroupButton::UIGroupButton(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 
 UIGroupButton::~UIGroupButton()
 {
-	myButtonNumber = 0;
-	myButtonList.clear();
+	mButtonNumber = 0;
+	mButtonList.clear();
 }
 
 //-------------------------------------------------------------------------
@@ -42,18 +42,18 @@ void	UIGroupButton::computeSize(int _buttonNumber, CoreModifiable* a_item)
 	float tmpY = (float)(sizeY + _Position[1]);
 	if (_buttonNumber == 1)
 	{
-		mySizeX = tmpX;
-		mySizeY = tmpY;
+		mSizeX = tmpX;
+		mSizeY = tmpY;
 	}
 	else
 	{
 		//Check X axis
-		if (tmpX > mySizeX)
-			mySizeX += (tmpX - mySizeX);
+		if (tmpX > mSizeX)
+			mSizeX += (tmpX - mSizeX);
 
 		//Check Y axis
-		if (tmpY > mySizeY)
-			mySizeY += (tmpY - mySizeY);
+		if (tmpY > mSizeY)
+			mSizeY += (tmpY - mSizeY);
 	}
 }
 
@@ -62,8 +62,8 @@ void	UIGroupButton::computeSize(int _buttonNumber, CoreModifiable* a_item)
 
 void	UIGroupButton::reComputeSize()
 {
-	kstl::vector<UIButton*>::iterator ItStart = myButtonList.begin();
-	kstl::vector<UIButton*>::iterator ItEnd = myButtonList.end();
+	kstl::vector<UIButton*>::iterator ItStart = mButtonList.begin();
+	kstl::vector<UIButton*>::iterator ItEnd = mButtonList.end();
 
 	int buttoncount = 0;
 	while (ItStart != ItEnd)
@@ -83,11 +83,11 @@ bool	UIGroupButton::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME
 {
 	if (item->isSubType("UIButton"))
 	{
-		myButtonList.push_back((UIButton*)item.get());
-		myButtonNumber++;
+		mButtonList.push_back((UIButton*)item.get());
+		mButtonNumber++;
 
 		bool value = UIItem::addItem(item, pos PASS_LINK_NAME(linkName));
-		computeSize(myButtonNumber, item.get());
+		computeSize(mButtonNumber, item.get());
 
 		return value;
 	}
@@ -111,8 +111,8 @@ bool	UIGroupButton::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType("UIButton"))
 	{
-		kstl::vector<UIButton*>::iterator ItStart = myButtonList.begin();
-		kstl::vector<UIButton*>::iterator ItEnd = myButtonList.end();
+		kstl::vector<UIButton*>::iterator ItStart = mButtonList.begin();
+		kstl::vector<UIButton*>::iterator ItEnd = mButtonList.end();
 		kstl::vector<UIButton*>::iterator ItSaved;
 
 		int buttoncount = 0;
@@ -133,8 +133,8 @@ bool	UIGroupButton::removeItem(const CMSP& item DECLARE_LINK_NAME)
 			ItStart++;
 		}
 
-		myButtonList.erase(ItSaved);
-		myButtonNumber--;
+		mButtonList.erase(ItSaved);
+		mButtonNumber--;
 
 
 		return UIItem::removeItem(item PASS_LINK_NAME(linkName));

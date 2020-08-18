@@ -38,8 +38,8 @@ protected:
 	void Hide(UIItem* localthis);
 
 	// upgrador member variable
-	kdouble myTimeOpen = 0;
-	bool myOpenPopup = false;
-	CoreModifiable* myActivator = nullptr;
+	kdouble mTimeOpen = 0;
+	bool mOpenPopup = false;
+	CoreModifiable* mActivator = nullptr;
 };
 

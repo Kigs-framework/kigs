@@ -8,7 +8,7 @@ class	StringRef
 {
 public:
 
-	StringRef() : myStringStart(0), myStringEnd(0)
+	StringRef() : myStringStart(0), myStringEnd(0), myBackupVal(0)
 	{
 
 	}

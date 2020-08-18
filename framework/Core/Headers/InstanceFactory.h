@@ -17,9 +17,6 @@ class ModuleAssociation;
  * \ingroup Core
  * \ingroup Manager
  * \brief	register and instanciate classes
- * \author	ukn
- * \version ukn
- * \date	ukn
  */
  // ****************************************
 class InstanceFactory
@@ -67,8 +64,8 @@ public:
 	*/
 	inline void  SubcribeToEventForClassName(const KigsID& className)
 	{
-		if (myEventClassList.find(className) == myEventClassList.end())
-			myEventClassList.insert(className);
+		if (mEventClassList.find(className) == mEventClassList.end())
+			mEventClassList.insert(className);
 	}
 	// ****************************************
 	// * ModuleAssociation class
@@ -77,10 +74,7 @@ public:
 	 * \class	ModuleAssociation
 	 * \ingroup Core
 	 * \ingroup Manager
-	 * \brief	utility class to store "createInstance" method for each class of a module
-	 * \author	ukn
-	 * \version ukn
-	 * \date	ukn
+	 * \brief	Utility class to store "createInstance" method for each class of a module.
 	 */
 	 // ****************************************
 	class ModuleAssociation
@@ -103,11 +97,11 @@ public:
 		createMethod      GetCreateMethod(const KigsID& classname) const;
 
 		//!  registered class list for this module
-		kigs::unordered_map<KigsID, createMethod> myClassMap;
+		kigs::unordered_map<KigsID, createMethod> mClassMap;
 	};
 
 	//! get the registered module list
-	const kigs::unordered_map<KigsID, ModuleAssociation>& GetModuleList() { return myModuleList; }
+	const kigs::unordered_map<KigsID, ModuleAssociation>& GetModuleList() { return mModuleList; }
 
 	// auto add a callback to all created object
 	void	addModifiableCallback(const KigsID& signal, CoreModifiable* target, const KigsID& slot,KigsID filter="CoreModifiable");
@@ -124,7 +118,7 @@ public:
 			}
 		}
 		if(validateList.size())
-			myAliasList[alias] = validateList;
+			mAliasList[alias] = validateList;
 	}
 
 protected:
@@ -132,12 +126,12 @@ protected:
 	void registerCallbackList(CoreModifiable* created);
 
 	//! pointer on core module singleton
-	KigsCore*     myCore;
+	KigsCore*     mCore;
 
 	//! map of registered modules
-	kigs::unordered_map<KigsID, ModuleAssociation> myModuleList;
+	kigs::unordered_map<KigsID, ModuleAssociation> mModuleList;
 
-	std::set<KigsID> myEventClassList;
+	std::set<KigsID> mEventClassList;
 
 	struct CallbackStruct
 	{
@@ -146,8 +140,8 @@ protected:
 		KigsID						slot; // slot being called when signal is send
 	};
 
-	kigs::unordered_map<KigsID, std::vector<CallbackStruct>>	myModifiableCallbackMap;
-	kigs::unordered_map<KigsID, std::vector<std::string> >	myAliasList;
+	kigs::unordered_map<KigsID, std::vector<CallbackStruct>>	mModifiableCallbackMap;
+	kigs::unordered_map<KigsID, std::vector<std::string> >	mAliasList;
 };
 
 #endif //_INSTANCEFACTORY_H_

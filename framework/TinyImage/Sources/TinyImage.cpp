@@ -246,7 +246,7 @@ TinyImage*	TinyImage::CreateImage(FileHandle* aFile)
 {
 	TinyImage* img= NULL;
 	
-	kstl::string upExtension = ToUpperCase(aFile->myExtension);
+	kstl::string upExtension = ToUpperCase(aFile->mExtension);
 
 	if(upExtension == ".BMP")		img= new BMPClass(aFile);
 	else if (upExtension == ".TGA")	img= new TGAClass(aFile);

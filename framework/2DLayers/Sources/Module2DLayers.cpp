@@ -61,7 +61,7 @@
 IMPLEMENT_CLASS_INFO(Module2DLayers)
 
 
-bool	Module2DLayers::myRotate180 = false;
+bool	Module2DLayers::mRotate180 = false;
 
 Module2DLayers::Module2DLayers(const kstl::string& name, CLASS_NAME_TREE_ARG) : ModuleBase(name, PASS_CLASS_NAME_TREE_ARG)
 {}
@@ -159,9 +159,9 @@ kstl::set<CoreModifiable*>	Module2DLayers::GetLayerList()
 
 	for (; it != itend; ++it)
 	{
-		if ((*it).myItem->isSubType("Abstract2DLayer"))
+		if ((*it).mItem->isSubType("Abstract2DLayer"))
 		{
-			layerlist.insert((CoreModifiable*)(*it).myItem.get());
+			layerlist.insert((CoreModifiable*)(*it).mItem.get());
 		}
 	}
 

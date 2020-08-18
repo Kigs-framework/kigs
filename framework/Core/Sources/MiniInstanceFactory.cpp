@@ -5,17 +5,17 @@ IMPLEMENT_CLASS_INFO(MiniInstanceFactory)
 
 MiniInstanceFactory::MiniInstanceFactory(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
 {
-	myFactoryMap.clear();
+	mFactoryMap.clear();
 }
 
 
 MiniInstanceFactory::~MiniInstanceFactory()
 {
-	// destroy myFactoryMap
-	for(auto itmap = myFactoryMap.begin();itmap != myFactoryMap.end();itmap++)
+	// destroy mFactoryMap
+	for(auto itmap = mFactoryMap.begin();itmap != mFactoryMap.end();itmap++)
 	{
 		delete (*itmap).second;
 	}
 
-	myFactoryMap.clear();
+	mFactoryMap.clear();
 }

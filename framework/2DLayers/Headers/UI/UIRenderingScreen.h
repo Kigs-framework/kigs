@@ -3,8 +3,18 @@
 
 #include "UITexturedItem.h"
 #include "AttributePacking.h"
-//#include "ModuleInput.h"
 #include "TouchInputEventManager.h"
+
+// ****************************************
+// * UIRenderingScreen class
+// * --------------------------------------
+/**
+* \file	UIRenderingScreen.h
+* \class	UIRenderingScreen
+* \ingroup 2DLayers
+* \brief	A Textured UI where the texture display a Rendering Screen 
+*/
+// ****************************************
 
 class UIRenderingScreen : public UITexturedItem
 {
@@ -20,8 +30,8 @@ protected:
 	void								NotifyUpdate(unsigned int labelid) override;
 	void								SetTexUV(UIVerticesInfo * aQI) override;
 
-	maReference							myRenderingScreen = BASE_ATTRIBUTE(RenderingScreen);
-	maBool								myForceNearest = BASE_ATTRIBUTE(ForceNearest, false);
+	maReference							mRenderingScreen = BASE_ATTRIBUTE(RenderingScreen);
+	maBool								mForceNearest = BASE_ATTRIBUTE(ForceNearest, false);
 	
 };
  

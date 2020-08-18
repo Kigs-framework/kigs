@@ -150,9 +150,9 @@ void ModuleInputAndroid::Update(const Timer& /* timer */, void* /*addParam*/)
 
 	for (it = getItems().begin(); it != getItems().end(); ++it)
 	{
-		if ((*it).myItem->isSubType(InputDevice::myClassID))
+		if ((*it).mItem->isSubType(InputDevice::mClassID))
 		{
-			InputDevice* device = (InputDevice*)(*it).myItem.get();
+			InputDevice* device = (InputDevice*)(*it).mItem.get();
 
 			if (!device->IsAquired())
 				device->Aquire();
@@ -168,12 +168,12 @@ void ModuleInputAndroid::Update(const Timer& /* timer */, void* /*addParam*/)
 bool	ModuleInputAndroid::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 
-	if (item->isSubType(JoystickDevice::myClassID))
+	if (item->isSubType(JoystickDevice::mClassID))
 	{
 		myJoystickCount++;
 		return CoreModifiable::addItem(item);
 	}
-	else if (item->isSubType(InputDevice::myClassID))
+	else if (item->isSubType(InputDevice::mClassID))
 	{
 		return CoreModifiable::addItem(item);
 	}

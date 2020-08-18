@@ -44,12 +44,12 @@ void TimeProfiler::Start()
 /*
 	if (!this)
 		return;
-	if( myStartTime != KDOUBLE_CONST(-1.0))
+	if( mStartTime != KDOUBLE_CONST(-1.0))
 	{
 		printf("Timer %s already started\n",getName().c_str());
 		return;
 	}
-	myStartTime=KigsCore::GetProfileManager()->myGlobalTimer->GetTime();
+	mStartTime=KigsCore::GetProfileManager()->myGlobalTimer->GetTime();
 	*/
 }
 
@@ -58,14 +58,14 @@ void TimeProfiler::Stop()
 /*
 	if (!this)
 		return;
-	if(myStartTime == KDOUBLE_CONST(-1.0))
+	if(mStartTime == KDOUBLE_CONST(-1.0))
 	{
 		printf("Timer %s already stopped\n",getName().c_str());
 		return;
 	}
 
 	myLastDT=myComputedTime;
-	myComputedTime=KigsCore::GetProfileManager()->myGlobalTimer->GetTime()-myStartTime;
+	myComputedTime=KigsCore::GetProfileManager()->myGlobalTimer->GetTime()-mStartTime;
 	if(myComputedTime<myMinDT)
 	{
 		myMinDT=myComputedTime;
@@ -75,7 +75,7 @@ void TimeProfiler::Stop()
 		myMaxDT=myComputedTime;
 	}
 	myComputedTime+=myLastDT;
-	myStartTime=KDOUBLE_CONST(-1.0);
+	mStartTime=KDOUBLE_CONST(-1.0);
 	myWasUpdate=true;
 	*/
 }

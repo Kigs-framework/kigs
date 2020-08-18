@@ -837,7 +837,7 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumbe
 			{
 				fullfilenamehandle = pathManager->FindFullName(fontName);
 			}
-			if ((fullfilenamehandle->myStatus&FileHandle::Exist) == 0)
+			if ((fullfilenamehandle->mStatus&FileHandle::Exist) == 0)
 				return false;
 
 			u64 size;

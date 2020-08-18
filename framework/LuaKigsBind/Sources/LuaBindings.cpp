@@ -29,7 +29,7 @@ class maLuaRefHeritage : public CoreModifiableAttributeData<LuaRef>
 	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maLuaRefHeritage, maLuaRefHeritage, LuaRef, CoreModifiable::ATTRIBUTE_TYPE::LUAREF);
 	auto& operator=(const CurrentAttributeType& value)
 	{
-		_value = value; 
+		mValue = value; 
 		return *this; 
 	}
 public:
@@ -695,7 +695,7 @@ kstl::vector<CoreModifiable*> CoreModifiableChildList(CoreModifiable* obj)
 	kstl::vector<CoreModifiable*> result; result.reserve(obj->getItems().size());
 	for(auto mis : obj->getItems())
 	{
-		result.push_back(mis.myItem.Pointer());
+		result.push_back(mis.mItem.Pointer());
 	}
 	return result;
 }

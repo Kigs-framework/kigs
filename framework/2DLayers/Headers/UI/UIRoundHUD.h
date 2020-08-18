@@ -3,6 +3,17 @@
 
 #include "UIDrawableItem.h"
 
+// ****************************************
+// * UIRoundHUD class
+// * --------------------------------------
+/**
+* \file	UIRoundHUD.h
+* \class	UIRoundHUD
+* \ingroup 2DLayers
+* \brief	Display a circular menu.
+*/
+// ****************************************
+
 class UIRoundHUD : public UIDrawableItem
 {
 public:
@@ -31,27 +42,27 @@ protected:
 	WRAP_METHODS(ManageDirectTouchEvent);
 	
 
-	maReference myLabel = BASE_ATTRIBUTE(Label);
+	maReference mLabel = BASE_ATTRIBUTE(Label);
 
-	maFloat myRadius = BASE_ATTRIBUTE(Radius, 0.0f);
-	maFloat myRadiusOffset = BASE_ATTRIBUTE(RadiusOffset, 0.0f);
-	maFloat myActivationRadiusSqr = BASE_ATTRIBUTE(ActivationRadiusSqr, 100.0f);
-	maFloat myAngleStart = BASE_ATTRIBUTE(AngleStart, 0.0f);
-	maFloat myAngleWide = BASE_ATTRIBUTE(AngleWide, 360.0f);
-	maInt mySlotCount = BASE_ATTRIBUTE(SlotCount, -1); // -1 for dynamic
+	maFloat mRadius = BASE_ATTRIBUTE(Radius, 0.0f);
+	maFloat mRadiusOffset = BASE_ATTRIBUTE(RadiusOffset, 0.0f);
+	maFloat mActivationRadiusSqr = BASE_ATTRIBUTE(ActivationRadiusSqr, 100.0f);
+	maFloat mAngleStart = BASE_ATTRIBUTE(AngleStart, 0.0f);
+	maFloat mAngleWide = BASE_ATTRIBUTE(AngleWide, 360.0f);
+	maInt mSlotCount = BASE_ATTRIBUTE(SlotCount, -1); // -1 for dynamic
 
-	maBool myIsClockwise = BASE_ATTRIBUTE(IsClockwise, true);
+	maBool mIsClockwise = BASE_ATTRIBUTE(IsClockwise, true);
 
-	kstl::vector<CoreModifiable*> myItemList;
+	kstl::vector<CoreModifiable*> mItemList;
 	
-	int myRealSlotCount = 0;
-	std::vector<v2f> mySlot;
-	v2f myMidPoint = v2f(0.0f, 0.0f);
-	bool myNeedUpdateSlots=true;
-	bool isDown = false;
+	int mRealSlotCount = 0;
+	std::vector<v2f> mSlot;
+	v2f mMidPoint = v2f(0.0f, 0.0f);
+	bool mNeedUpdateSlots=true;
+	bool mIsDown = false;
 
-	int mySelectedSlot = -1;
-	float voidZone = 0.0f;
+	int mSelectedSlot = -1;
+	float mVoidZone = 0.0f;
 };
 
 #endif

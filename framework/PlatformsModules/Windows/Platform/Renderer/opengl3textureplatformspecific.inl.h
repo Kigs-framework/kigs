@@ -39,7 +39,7 @@ bool	OpenGLTexture::CubeMapGeneration()
 		SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(filename);
 		if (fullfilenamehandle)
 		{
-			fullfilename = fullfilenamehandle->myFullFileName;
+			fullfilename = fullfilenamehandle->mFullFileName;
 		}
 		else
 		{
@@ -68,7 +68,7 @@ bool	OpenGLTexture::CubeMapGeneration()
 
 			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(filename);
 			
-			fullfilename = fullfilenamehandle->myFullFileName;
+			fullfilename = fullfilenamehandle->mFullFileName;
 
 
 			Img[index] = TinyImage::CreateImage(fullfilename.c_str());

@@ -10,6 +10,20 @@
 
 class Texture;
 
+// ****************************************
+// * UITextInput class
+// * --------------------------------------
+/**
+* \file	UITextInput.h
+* \class	UITextInput
+* \ingroup 2DLayers
+* \brief	Text input UI item.
+* 
+*  Use UIDynamicText where UITextArea uses UIDrawableItem directly
+* 
+*/
+// ****************************************
+
 class UITextInput : public UIDynamicText
 {
 public:
@@ -18,9 +32,9 @@ public:
 
 	SIGNALS(TextChanged);
 
-	kstl::string			GetReleaseAction() const {return myReleaseAction.c_str();}
+	kstl::string			GetReleaseAction() const {return mReleaseAction.c_str();}
 	
-	bool			HasFocus() override {return myFocus;}
+	bool			HasFocus() override {return mFocus;}
 	void			LoseFocus() override;
 	void			GetFocus() override;
 
@@ -37,12 +51,12 @@ protected:
 	bool ManageClickTouchEvent(ClickEvent& click_event) final;
 	void UpdateKeyboard(kstl::vector<KeyEvent>& keys);
 
-	bool					myIsCueBanner = false;
+	bool					mIsCueBanner = false;
 
-	maUSString				myCueBanner = BASE_ATTRIBUTE(CueBanner, usString(""));
-	maString				myReleaseAction = BASE_ATTRIBUTE(ReleaseAction, "");
+	maUSString				mCueBanner = BASE_ATTRIBUTE(CueBanner, usString(""));
+	maString				mReleaseAction = BASE_ATTRIBUTE(ReleaseAction, "");
 
-	kstl::vector<int>		myKeycodeList;
+	kstl::vector<int>		mKeycodeList;
 };
 
 #endif //_UITEXTINPUT_H_

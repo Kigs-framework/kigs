@@ -201,39 +201,39 @@ public:
 
 	u32 getNbElements() const { return this->getNbArrayElements(); }
 
-	T* getVector() { return _value.data(); }
-	const T* getConstVector() const { return _value.data(); }
+	T* getVector() { return mValue.data(); }
+	const T* getConstVector() const { return mValue.data(); }
 
 
-	const T& at(size_t line, size_t column) const { return _value[line*nbColumns + column]; }
-	T& at(size_t line, size_t column) { return _value[line*nbColumns + column]; }
+	const T& at(size_t line, size_t column) const { return mValue[line*nbColumns + column]; }
+	T& at(size_t line, size_t column) { return mValue[line*nbColumns + column]; }
 
 	virtual u32 getNbArrayElements() const override { return nbLines*nbColumns; }
 	virtual u32 getNbArrayColumns() const override { return nbColumns; }
 	virtual u32 getNbArrayLines() const override { return nbLines; }
 
 	//@Refactor identical
-	T* getArrayBuffer() { return  _value.data(); }
-	T* getArray() { return _value.data(); }
+	T* getArrayBuffer() { return  mValue.data(); }
+	T* getArray() { return mValue.data(); }
 
 	//@Refactor identical
-	const T* getConstArrayBuffer() const { return  _value.data(); }
-	const T* getConstArray() const { return _value.data(); }
+	const T* getConstArrayBuffer() const { return  mValue.data(); }
+	const T* getConstArray() const { return mValue.data(); }
 
 	T&  getElement(u32 line, u32 column) { return at(line, column); }
 	const T&  getConstElement(u32 line, u32 column) const { return at(line, column); }
 
 	//@Issue this is wrong, is return the line not column like the method name implies
 	/*
-	const T* getConstColumn(u32 line) const { return _value[line]; }
-	T* getColumn(u32 line) { return _value[line]; }
+	const T* getConstColumn(u32 line) const { return mValue[line]; }
+	T* getColumn(u32 line) { return mValue[line]; }
 	*/
 
 	virtual CoreModifiable::ATTRIBUTE_TYPE getArrayElementType() const override { return attributeElementType; }
 
 	void broadcastValue(const T &v)
 	{
-		for (auto& el : _value)
+		for (auto& el : mValue)
 		{
 			el = v;
 		}
@@ -241,7 +241,7 @@ public:
 
 	virtual s32	size() const override { return nbLines*nbColumns; };
 
-	virtual bool getValue(void*& value) const override { value = (void*)_value.data(); return true; }
+	virtual bool getValue(void*& value) const override { value = (void*)mValue.data(); return true; }
 
 	virtual bool getValue(bool& value) const override { value = (s32)at(0, 0) != 0; return true; }
 	virtual bool getValue(s8& value) const override { value = (s8)at(0, 0); return true; }
@@ -552,25 +552,25 @@ public:
 
 	u32 getNbElements() const { return getNbArrayElements(); }
 
-	VectorType getVector() { return _value.data(); }
-	const VectorType getConstVector() const { return _value.data(); }
+	VectorType getVector() { return mValue.data(); }
+	const VectorType getConstVector() const { return mValue.data(); }
 
 	T& operator[](u32 index) { return getElement(0, index); }
 	const T& operator[](u32 index) const { return getConstElement(0, index); }
 
 	//@Issue no notifications
 	//assignments
-	VectorType operator=(const VectorType& value) { setVectorValue(value); return _value.data(); }
-	VectorType operator=(const Point2D& value) { setValue(value); return _value.data(); }
-	VectorType operator=(const Point3D& value) { setValue(value); return _value.data(); }
-	VectorType operator=(const Vector4D& value) { setValue(value); return _value.data(); }
+	VectorType operator=(const VectorType& value) { setVectorValue(value); return mValue.data(); }
+	VectorType operator=(const Point2D& value) { setValue(value); return mValue.data(); }
+	VectorType operator=(const Point3D& value) { setValue(value); return mValue.data(); }
+	VectorType operator=(const Vector4D& value) { setValue(value); return mValue.data(); }
 	VectorType operator+=(const VectorType& value)
 	{
 		if (nbElements>0) at(0,0) += value[0];
 		if (nbElements>1) at(0,1) += value[1];
 		if (nbElements>2) at(0,2) += value[2];
 		if (nbElements>3) at(0,3) += value[3];
-		return _value.data();
+		return mValue.data();
 	}
 	VectorType& operator-=(const VectorType& value)
 	{
@@ -578,21 +578,21 @@ public:
 		if (nbElements>1) at(0,1) -= value[1];
 		if (nbElements>2) at(0,2) -= value[2];
 		if (nbElements>3) at(0,3) -= value[3];
-		return _value.data();
+		return mValue.data();
 	}
 	VectorType& operator+=(const Point3D& value)
 	{
 		if (nbElements>0) at(0,0) += value[0];
 		if (nbElements>1) at(0,1) += value[1];
 		if (nbElements>2) at(0,2) += value[2];
-		return _value.data();
+		return mValue.data();
 	}
 	VectorType& operator-=(const Point3D& value)
 	{
 		if (nbElements>0) at(0,0) -= value[0];
 		if (nbElements>1) at(0,1) -= value[1];
 		if (nbElements>2) at(0,2) -= value[2];
-		return _value.data();
+		return mValue.data();
 	}
 
 	virtual bool setVectorValue(const VectorType& value)

@@ -12,13 +12,13 @@
 #include "CoreSequenceLauncher.h"
 
 
-kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	ModuleCoreAnimation::myCoreItemOperatorCreateMethodMap;
+kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	ModuleCoreAnimation::mCoreItemOperatorCreateMethodMap;
 
 IMPLEMENT_CLASS_INFO(ModuleCoreAnimation)
 
 ModuleCoreAnimation::ModuleCoreAnimation(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
-	mySequences.clear();
+	mSequences.clear();
 }
 
 ModuleCoreAnimation::~ModuleCoreAnimation()
@@ -31,86 +31,86 @@ void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiable
 	core->RegisterMainModuleList(this,CoreAnimationModuleCoreIndex);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreSequenceLauncher, CoreSequenceLauncher, CoreAnimation)
 	// register actions
-	myPrivateMiniFactory=KigsCore::GetInstanceOf("myPrivateMiniFactory","MiniInstanceFactory");
+	mPrivateMiniFactory=KigsCore::GetInstanceOf("myPrivateMiniFactory","MiniInstanceFactory");
 
 	// action using "slow" setValue
-	MiniFactoryRegister(myPrivateMiniFactory,"Linear1D",CoreActionLinear<kfloat>);
-	MiniFactoryRegister(myPrivateMiniFactory,"Linear2D",CoreActionLinear<Point2D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"Linear3D",CoreActionLinear<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"Linear4D",CoreActionLinear<Vector4D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"Hermite1D",CoreActionHermite<kfloat>);
-	MiniFactoryRegister(myPrivateMiniFactory,"Hermite2D",CoreActionHermite<Point2D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"Hermite3D",CoreActionHermite<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"Hermite4D",CoreActionHermite<Vector4D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"SetValueString", CoreActionSetValue<kstl::string>);
-	MiniFactoryRegister(myPrivateMiniFactory,"SetValue1D",CoreActionSetValue<kfloat>);
-	MiniFactoryRegister(myPrivateMiniFactory,"SetValue2D",CoreActionSetValue<Point2D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"SetValue3D",CoreActionSetValue<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"SetValue4D",CoreActionSetValue<Vector4D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Linear1D",CoreActionLinear<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Linear2D",CoreActionLinear<Point2D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Linear3D",CoreActionLinear<Point3D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Linear4D",CoreActionLinear<Vector4D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Hermite1D",CoreActionHermite<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Hermite2D",CoreActionHermite<Point2D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Hermite3D",CoreActionHermite<Point3D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Hermite4D",CoreActionHermite<Vector4D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"SetValueString", CoreActionSetValue<kstl::string>);
+	MiniFactoryRegister(mPrivateMiniFactory,"SetValue1D",CoreActionSetValue<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"SetValue2D",CoreActionSetValue<Point2D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"SetValue3D",CoreActionSetValue<Point3D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"SetValue4D",CoreActionSetValue<Vector4D>);
 
 	// Keyframe
-	MiniFactoryRegister(myPrivateMiniFactory,"KeyFrame1D",CoreActionKeyFrame<kfloat>);
-	MiniFactoryRegister(myPrivateMiniFactory,"KeyFrame2D",CoreActionKeyFrame<Point2D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"KeyFrame3D",CoreActionKeyFrame<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"KeyFrame4D",CoreActionKeyFrame<Vector4D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame1D",CoreActionKeyFrame<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame2D",CoreActionKeyFrame<Point2D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame3D",CoreActionKeyFrame<Point3D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame4D",CoreActionKeyFrame<Vector4D>);
 
 	// action using "direct" value access
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectLinear1D",CoreActionDirectLinear<kfloat>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectLinear2D",CoreActionDirectLinear<Point2D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectLinear3D",CoreActionDirectLinear<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectLinear4D",CoreActionDirectLinear<Vector4D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectHermite1D",CoreActionDirectHermite<kfloat>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectHermite2D",CoreActionDirectHermite<Point2D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectHermite3D",CoreActionDirectHermite<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectHermite4D",CoreActionDirectHermite<Vector4D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValueFloat1D",CoreActionDirectSetValue<kfloat>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValueInt1D",CoreActionDirectSetValue<int>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValueBool1D",CoreActionDirectSetValue<bool>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValue2D",CoreActionDirectSetValue<Point2D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValue3D",CoreActionDirectSetValue<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectSetValue4D",CoreActionDirectSetValue<Vector4D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear1D",CoreActionDirectLinear<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear2D",CoreActionDirectLinear<Point2D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear3D",CoreActionDirectLinear<Point3D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear4D",CoreActionDirectLinear<Vector4D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite1D",CoreActionDirectHermite<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite2D",CoreActionDirectHermite<Point2D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite3D",CoreActionDirectHermite<Point3D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite4D",CoreActionDirectHermite<Vector4D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValueFloat1D",CoreActionDirectSetValue<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValueInt1D",CoreActionDirectSetValue<int>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValueBool1D",CoreActionDirectSetValue<bool>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValue2D",CoreActionDirectSetValue<Point2D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValue3D",CoreActionDirectSetValue<Point3D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValue4D",CoreActionDirectSetValue<Vector4D>);
 
 	// direct key frame
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectKeyFrameFloat1D",CoreActionDirectKeyFrame<kfloat>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectKeyFrameInt1D",CoreActionDirectKeyFrame<int>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectKeyFrameBool1D",CoreActionDirectKeyFrame<bool>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectKeyFrame2D",CoreActionDirectKeyFrame<Point2D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectKeyFrame3D",CoreActionDirectKeyFrame<Point3D>);
-	MiniFactoryRegister(myPrivateMiniFactory,"DirectKeyFrame4D",CoreActionDirectKeyFrame<Vector4D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrameFloat1D",CoreActionDirectKeyFrame<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrameInt1D",CoreActionDirectKeyFrame<int>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrameBool1D",CoreActionDirectKeyFrame<bool>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrame2D",CoreActionDirectKeyFrame<Point2D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrame3D",CoreActionDirectKeyFrame<Point3D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrame4D",CoreActionDirectKeyFrame<Vector4D>);
 
-	MiniFactoryRegister(myPrivateMiniFactory,"RemoveFromParent",CoreActionRemoveFromParent);
-	MiniFactoryRegister(myPrivateMiniFactory,"Notification",CoreActionSendMessage);
-	MiniFactoryRegister(myPrivateMiniFactory,"Signal",CoreActionEmitSignal);
-	MiniFactoryRegister(myPrivateMiniFactory,"Combo",CoreActionCombo);
-	MiniFactoryRegister(myPrivateMiniFactory,"Serie",CoreActionSerie);
-	MiniFactoryRegister(myPrivateMiniFactory,"Wait",CoreActionWait);
-	MiniFactoryRegister(myPrivateMiniFactory,"ForLoop",CoreActionForLoop);
-	MiniFactoryRegister(myPrivateMiniFactory,"DoWhile",CoreActionDoWhile);
+	MiniFactoryRegister(mPrivateMiniFactory,"RemoveFromParent",CoreActionRemoveFromParent);
+	MiniFactoryRegister(mPrivateMiniFactory,"Notification",CoreActionSendMessage);
+	MiniFactoryRegister(mPrivateMiniFactory,"Signal",CoreActionEmitSignal);
+	MiniFactoryRegister(mPrivateMiniFactory,"Combo",CoreActionCombo);
+	MiniFactoryRegister(mPrivateMiniFactory,"Serie",CoreActionSerie);
+	MiniFactoryRegister(mPrivateMiniFactory,"Wait",CoreActionWait);
+	MiniFactoryRegister(mPrivateMiniFactory,"ForLoop",CoreActionForLoop);
+	MiniFactoryRegister(mPrivateMiniFactory,"DoWhile",CoreActionDoWhile);
 
 	// function
 
-	MiniFactoryRegister(myPrivateMiniFactory, "Function1D", CoreActionFunction1D);
-	MiniFactoryRegister(myPrivateMiniFactory, "Function2D", CoreActionFunction2D);
-	MiniFactoryRegister(myPrivateMiniFactory, "Function3D", CoreActionFunction3D);
-	MiniFactoryRegister(myPrivateMiniFactory, "Function4D", CoreActionFunction4D);
+	MiniFactoryRegister(mPrivateMiniFactory, "Function1D", CoreActionFunction1D);
+	MiniFactoryRegister(mPrivateMiniFactory, "Function2D", CoreActionFunction2D);
+	MiniFactoryRegister(mPrivateMiniFactory, "Function3D", CoreActionFunction3D);
+	MiniFactoryRegister(mPrivateMiniFactory, "Function4D", CoreActionFunction4D);
 
 	kstl::vector<SpecificOperator> specificList;
 	SpecificOperator toAdd;
-	toAdd.myKeyWord = "actionTime";
-	toAdd.myCreateMethod = &ActionTimeOperator<kfloat>::create;
+	toAdd.mKeyWord = "actionTime";
+	toAdd.mCreateMethod = &ActionTimeOperator<kfloat>::create;
 	specificList.push_back(toAdd);
-	/*toAdd.myKeyWord = "sequenceTime";
-	toAdd.myCreateMethod = &SequenceTimeOperator<kfloat>::create;
+	/*toAdd.mKeyWord = "sequenceTime";
+	toAdd.mCreateMethod = &SequenceTimeOperator<kfloat>::create;
 	specificList.push_back(toAdd);
 	*/
-	CoreItemOperator<kfloat>::ConstructContextMap(myCoreItemOperatorCreateMethodMap,&specificList);
+	CoreItemOperator<kfloat>::ConstructContextMap(mCoreItemOperatorCreateMethodMap,&specificList);
 
 	
 }
 
 kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	ModuleCoreAnimation::GetCoreItemOperatorConstructMap()
 {
-	return myCoreItemOperatorCreateMethodMap;
+	return mCoreItemOperatorCreateMethodMap;
 }
 
 
@@ -131,10 +131,10 @@ void	ModuleCoreAnimation::addSequence(CoreSequence* sequence)
 	// retain
 	sequence->GetRef();
 
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator foundid=mySequences.find(seqID);
+	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator foundid=mSequences.find(seqID);
 	
 	// id already exists, search in vector
-	if(foundid != mySequences.end())
+	if(foundid != mSequences.end())
 	{
 		// check for double add
 		kstl::vector<CoreSequence*>& sequenceVector=(*foundid).second;
@@ -156,7 +156,7 @@ void	ModuleCoreAnimation::addSequence(CoreSequence* sequence)
 	{
 		kstl::vector<CoreSequence*> toAdd;
 		toAdd.push_back(sequence);
-		mySequences[seqID]=toAdd;
+		mSequences[seqID]=toAdd;
 	}
 	
 }
@@ -165,8 +165,8 @@ void	ModuleCoreAnimation::removeAllSequencesOnTarget(CoreModifiable* target)
 {
 	kstl::vector<CoreSequence*>	deadSequences;
 
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMap=mySequences.begin();
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMapEnd=mySequences.end();
+	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMap=mSequences.begin();
+	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMapEnd=mSequences.end();
 	
 	while(itMap != itMapEnd)
 	{
@@ -200,9 +200,9 @@ void	ModuleCoreAnimation::removeSequence(CoreSequence* sequence)
 {
 	unsigned int seqID=sequence->getID().toUInt();
 
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator foundid=mySequences.find(seqID);
+	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator foundid=mSequences.find(seqID);
 	
-	if(foundid != mySequences.end())
+	if(foundid != mSequences.end())
 	{
 		// search sequence in vector
 		kstl::vector<CoreSequence*>& sequenceVector=(*foundid).second;
@@ -216,9 +216,9 @@ void	ModuleCoreAnimation::removeSequence(CoreSequence* sequence)
 				(*itSeq)->Destroy();
 				
 				sequenceVector.erase(itSeq);
-				if(sequenceVector.size() == 0) // remove also map entry
+				if(sequenceVector.size() == 0) // remove also map mEntry
 				{
-					mySequences.erase(foundid);
+					mSequences.erase(foundid);
 				}
 				
 				return; 
@@ -252,8 +252,8 @@ void ModuleCoreAnimation::updateSequences(const Timer& timer)
 {
 	kstl::vector<CoreSequence*>	deadSequences;
 
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMap=mySequences.begin();
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMapEnd=mySequences.end();
+	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMap=mSequences.begin();
+	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMapEnd=mSequences.end();
 	
 	while(itMap != itMapEnd)
 	{
@@ -288,8 +288,8 @@ DEFINE_METHOD(ModuleCoreAnimation, OnDestroyCallBack)
 {
 	kstl::vector<CoreSequence*>	deadSequences;
 
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMap=mySequences.begin();
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMapEnd=mySequences.end();
+	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMap=mSequences.begin();
+	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMapEnd=mSequences.end();
 	
 	while(itMap != itMapEnd)
 	{
@@ -380,7 +380,7 @@ CoreItemSP		ModuleCoreAnimation::createAction(CoreSequence* sequence, CoreItemSP
 	kstl::string	key;
 	firstactiondesc.getKey(key);
 
-	CoreAction* newaction = (CoreAction*)myPrivateMiniFactory->CreateClassInstance(key);
+	CoreAction* newaction = (CoreAction*)mPrivateMiniFactory->CreateClassInstance(key);
 	if(newaction)
 	{
 		newaction->init(sequence,(CoreVector*)(*firstactiondesc).get());
