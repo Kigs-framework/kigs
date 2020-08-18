@@ -4,6 +4,20 @@
 #include "UITexturedItem.h"
 #include "Texture.h"
 
+// ****************************************
+// * UITexture class
+// * --------------------------------------
+/**
+* \file	UITexture.h
+* \class	UITexture
+* \ingroup 2DLayers
+* \brief	Draw a texture.
+*
+* Obsolete ? Same as UIImage ?
+*
+*/
+// ****************************************
+
 class UITexture : public UITexturedItem
 {
 public:

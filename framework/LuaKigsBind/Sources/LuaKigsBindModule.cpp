@@ -173,7 +173,7 @@ bool LuaKigsBindModule::ExecuteLuaFile(const char* filename, const char* prepend
 	auto& pathManager = KigsCore::Singleton<FilePathManager>();
 	SmartPointer<FileHandle> lFile = pathManager->FindFullName(filename);
 
-	if ((lFile->myStatus&FileHandle::Exist)==0)
+	if ((lFile->mStatus&FileHandle::Exist)==0)
 		return false;
 
 	u64 length;

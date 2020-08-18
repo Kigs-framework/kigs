@@ -2544,8 +2544,8 @@ static rmtError TCPSocket_Receive(TCPSocket* tcp_socket, void* data, rmtU32 leng
             //
             // Timeout can happen when:
             //
-            //    1) data is delayed by sender
-            //    2) sender fails to send a complete set of packets
+            //    1) data is delayed by mSender
+            //    2) mSender fails to send a complete set of packets
             //
             // As not all of these scenarios are errors, we need to pass this information back to the caller.
             //

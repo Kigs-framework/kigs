@@ -185,7 +185,7 @@ bool XMLWriterFile::WriteFile(const kstl::string& name,XML& xml)
 		
 		SmartPointer<FileHandle> file = Platform_fopen(name.c_str(), "wb");
 		
-		if (file->myFile)
+		if (file->mFile)
         {
 			if (fileext == "kxml")
 			{

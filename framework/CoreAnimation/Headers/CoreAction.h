@@ -10,6 +10,18 @@ class CoreVector;
 
 #define	TimeEpsilon	(0.005)
 
+// ****************************************
+// * CoreAction class
+// * --------------------------------------
+/**
+* \file	CoreAction.h
+* \class	CoreAction
+* \ingroup CoreAnimation
+* \brief	Special CoreItem type used to animate attributes
+*
+*/
+// ****************************************
+
 class CoreAction : public CoreItem
 {
 public:
@@ -26,34 +38,34 @@ public:
 
 	void	setIsDone()
 	{
-		m_eType=(COREITEM_TYPE)(11);
+		mType=(COREITEM_TYPE)(11);
 	}
 
 	bool	isDone()
 	{
-		return (((unsigned int)m_eType)==11);
+		return (((unsigned int)mType)==11);
 	}
 
 	kdouble getEndTime()
 	{
-		return myStartTime+myDuration;
+		return mStartTime+mDuration;
 	}
 
 	// action is started by sequence
 	virtual void	setStartTime(kdouble t)
 	{
-		myStartTime=t;
+		mStartTime=t;
 	}
 
 	// undone
 	virtual void reset()
 	{
-		m_eType=(COREITEM_TYPE)(10);
+		mType=(COREITEM_TYPE)(10);
 	}
 
 	inline kdouble	getDuration()
 	{
-		return myDuration;
+		return mDuration;
 	}
 
 	virtual void*	getContainerStruct()
@@ -64,9 +76,9 @@ public:
 protected:
 
 	// default constructor called by sons only
-	CoreAction() : CoreItem((COREITEM_TYPE)10), myTarget(0), myStartTime(-1.0f), myDuration(-1.0f), myActionFlags(0),myParamID(0)
+	CoreAction() : CoreItem((COREITEM_TYPE)10), mTarget(0), mStartTime(-1.0f), mDuration(-1.0f), mActionFlags(0),mParamID(0)
 	{
-		myTargetPath = "";
+		mTargetPath = "";
 	}
 
 	// if paramstring contains -> then extract param name part and return real target (son on current target)
@@ -75,13 +87,13 @@ protected:
 	inline void CheckDelayTarget()
 	{
 		// if delayed target
-		if (myTargetPath != "")
+		if (mTargetPath != "")
 		{
-			CMSP findTarget = myTarget->GetInstanceByPath(myTargetPath);
+			CMSP findTarget = mTarget->GetInstanceByPath(mTargetPath);
 			if (findTarget)
 			{
-				myTarget = findTarget.get();
-				myTargetPath = "";
+				mTarget = findTarget.get();
+				mTargetPath = "";
 			}
 		}
 	}
@@ -93,17 +105,28 @@ protected:
 		return false; // no used
 	}
 
-	CoreModifiable*		myTarget;
-	kdouble				myStartTime;
-	kdouble				myDuration;
+	CoreModifiable*		mTarget;
+	kdouble				mStartTime;
+	kdouble				mDuration;
 
-	unsigned int		myActionFlags;
-	kstl::string		myTargetPath;
-	unsigned int		myParamID;
+	unsigned int		mActionFlags;
+	kstl::string		mTargetPath;
+	unsigned int		mParamID;
 };
 
 
-// do nothing
+// ****************************************
+// * CoreActionWait class
+// * --------------------------------------
+/**
+* \file	CoreAction.h
+* \class	CoreActionWait
+* \ingroup CoreAnimation
+* \brief	Do nothing CoreAction 
+*
+* Usefull to delay another animation start. 
+*/
+// ****************************************
 class CoreActionWait : public CoreAction
 {
 public:

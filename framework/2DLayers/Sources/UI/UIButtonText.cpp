@@ -9,16 +9,16 @@
 IMPLEMENT_CLASS_INFO(UIButtonText)
 
 IMPLEMENT_CONSTRUCTOR(UIButtonText)
-	, myUpText(*this, false, "UpText", "")
-	, myDownText(*this, false, "DownText", "")
-	, myOverText(*this, false, "OverText", "")
-	, myUpColor(*this, false, "UpColor", 0, 0, 0, 0)
-	, myOverColor(*this, false, "OverColor", 0, 0, 0, 0)
-	, myDownColor(*this, false, "DownColor", 0, 0, 0, 0)
-	, myFont(*this, false, "Font", "arial.ttf")
-	, myFontSize(*this, false, "FontSize", 12)
-	, myLength(*this, false, "Length", 0)
-	, myTextAlign(*this, false, "TextAlignment", 1)
+	, mUpText(*this, false, "UpText", "")
+	, mDownText(*this, false, "DownText", "")
+	, mOverText(*this, false, "OverText", "")
+	, mUpColor(*this, false, "UpColor", 0, 0, 0, 0)
+	, mOverColor(*this, false, "OverColor", 0, 0, 0, 0)
+	, mDownColor(*this, false, "DownColor", 0, 0, 0, 0)
+	, mFont(*this, false, "Font", "arial.ttf")
+	, mFontSize(*this, false, "FontSize", 12)
+	, mLength(*this, false, "Length", 0)
+	, mTextAlignment(*this, false, "TextAlignment", 1)
 {
 	KigsCore::GetNotificationCenter()->addObserver(this, "ReloadTexture", "ResetContext");
 }
@@ -28,23 +28,23 @@ void UIButtonText::InitModifiable()
 	UIButton::InitModifiable();
 	if (_isInit)
 	{
-		if (myUpText.const_ref() != "")
-			ChangeTextTexture(myUpText.const_ref(), 0);
-		if (myOverText.const_ref() != "")
-			ChangeTextTexture(myOverText.const_ref(), 1);
-		if (myDownText.const_ref() != "")
-			ChangeTextTexture(myDownText.const_ref(), 2);
+		if (mUpText.const_ref() != "")
+			ChangeTextTexture(mUpText.const_ref(), 0);
+		if (mOverText.const_ref() != "")
+			ChangeTextTexture(mOverText.const_ref(), 1);
+		if (mDownText.const_ref() != "")
+			ChangeTextTexture(mDownText.const_ref(), 2);
 
 		AutoSize();
 
 		ChangeState();
 
 
-		myUpText.changeNotificationLevel(Owner);
-		myDownText.changeNotificationLevel(Owner);
-		myOverText.changeNotificationLevel(Owner);
-		myFont.changeNotificationLevel(Owner);
-		myFontSize.changeNotificationLevel(Owner);
+		mUpText.changeNotificationLevel(Owner);
+		mDownText.changeNotificationLevel(Owner);
+		mOverText.changeNotificationLevel(Owner);
+		mFont.changeNotificationLevel(Owner);
+		mFontSize.changeNotificationLevel(Owner);
 	}
 }
 
@@ -52,63 +52,63 @@ void UIButtonText::NotifyUpdate(const unsigned int labelid)
 {
 	UIButton::NotifyUpdate(labelid);
 
-	if (labelid == myUpText.getLabelID())
-		ChangeTextTexture(myUpText.c_str(), 0);
-	if (labelid == myDownText.getLabelID())
-		ChangeTextTexture(myDownText.c_str(), 2);
-	if (labelid == myOverText.getLabelID())
-		ChangeTextTexture(myOverText.c_str(), 1);
+	if (labelid == mUpText.getLabelID())
+		ChangeTextTexture(mUpText.c_str(), 0);
+	if (labelid == mDownText.getLabelID())
+		ChangeTextTexture(mDownText.c_str(), 2);
+	if (labelid == mOverText.getLabelID())
+		ChangeTextTexture(mOverText.c_str(), 1);
 
-	if (labelid == myFont.getLabelID() ||
-		labelid == myFontSize.getLabelID())
+	if (labelid == mFont.getLabelID() ||
+		labelid == mFontSize.getLabelID())
 	{
-		if (myUpText.const_ref() != "")
-			ChangeTextTexture(myUpText.const_ref(), 0);
-		if (myOverText.const_ref() != "")
-			ChangeTextTexture(myOverText.const_ref(), 1);
-		if (myDownText.const_ref() != "")
-			ChangeTextTexture(myDownText.const_ref(), 2);
+		if (mUpText.const_ref() != "")
+			ChangeTextTexture(mUpText.const_ref(), 0);
+		if (mOverText.const_ref() != "")
+			ChangeTextTexture(mOverText.const_ref(), 1);
+		if (mDownText.const_ref() != "")
+			ChangeTextTexture(mDownText.const_ref(), 2);
 	}
 }
 void UIButtonText::ChangeTextureColor(Vector4D& UpColor, Vector4D& OverColor, Vector4D& DownColor)
 {
-	myUpColor[0] = UpColor.x;
-	myUpColor[1] = UpColor.y;
-	myUpColor[2] = UpColor.z;
-	myUpColor[3] = UpColor.w;
+	mUpColor[0] = UpColor.x;
+	mUpColor[1] = UpColor.y;
+	mUpColor[2] = UpColor.z;
+	mUpColor[3] = UpColor.w;
 
-	myOverColor[0] = OverColor.x;
-	myOverColor[1] = OverColor.y;
-	myOverColor[2] = OverColor.z;
-	myOverColor[3] = OverColor.w;
+	mOverColor[0] = OverColor.x;
+	mOverColor[1] = OverColor.y;
+	mOverColor[2] = OverColor.z;
+	mOverColor[3] = OverColor.w;
 
-	myDownColor[0] = DownColor.x;
-	myDownColor[1] = DownColor.y;
-	myDownColor[2] = DownColor.z;
-	myDownColor[3] = DownColor.w;
+	mDownColor[0] = DownColor.x;
+	mDownColor[1] = DownColor.y;
+	mDownColor[2] = DownColor.z;
+	mDownColor[3] = DownColor.w;
 
 	ChangeState();
 }
 
 void UIButtonText::GetUpColor(float& R, float& G, float& B)
 {
-	R = myUpColor[0];
-	G = myUpColor[1];
-	B = myUpColor[2];
+	R = mUpColor[0];
+	G = mUpColor[1];
+	B = mUpColor[2];
 }
 
 void UIButtonText::GetOverColor(float& R, float& G, float& B)
 {
-	R = myOverColor[0];
-	G = myOverColor[1];
-	B = myOverColor[2];
+	R = mOverColor[0];
+	G = mOverColor[1];
+	B = mOverColor[2];
 }
 
 void UIButtonText::GetDownColor(float& R, float& G, float& B)
 {
-	R = myDownColor[0];
-	G = myDownColor[1];
-	B = myDownColor[2];
+	R = mDownColor[0];
+	G = mDownColor[1];
+	B = mDownColor[2];
 }
 
 void	UIButtonText::ChangeTextTexture(const unsigned short* _text, unsigned int _texture)
@@ -136,36 +136,36 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 		{
 		case 0:
 			//up texture
-			if (!myUpTexture)
+			if (!mUpTexturePointer)
 			{
-				myUpTexture = KigsCore::GetInstanceOf(getName() + "_UPTEX", "Texture");
-				myUpTexture->Init();
+				mUpTexturePointer = KigsCore::GetInstanceOf(getName() + "_UPTEX", "Texture");
+				mUpTexturePointer->Init();
 			}
 
-			L_Texture = myUpTexture.get();
-			myUpText = _text;
+			L_Texture = mUpTexturePointer.get();
+			mUpText = _text;
 			break;
 		case 1:
 			//over texture
-			if (!myOverTexture)
+			if (!mOverTexturePointer)
 			{
-				myOverTexture = KigsCore::GetInstanceOf(getName() + "_OVERTEX", "Texture");
-				myOverTexture->Init();
+				mOverTexturePointer = KigsCore::GetInstanceOf(getName() + "_OVERTEX", "Texture");
+				mOverTexturePointer->Init();
 			}
 
-			L_Texture = myOverTexture.get();
-			myOverText = _text;
+			L_Texture = mOverTexturePointer.get();
+			mOverText = _text;
 			break;
 		case 2:
 			//down texture
-			if (!myDownTexture)
+			if (!mDownTexturePointer)
 			{
-				myDownTexture = KigsCore::GetInstanceOf(getName() + "_DOWNTEX", "Texture");
-				myDownTexture->Init();
+				mDownTexturePointer = KigsCore::GetInstanceOf(getName() + "_DOWNTEX", "Texture");
+				mDownTexturePointer->Init();
 			}
 
-			L_Texture = myDownTexture.get();
-			myDownText = _text;
+			L_Texture = mDownTexturePointer.get();
+			mDownText = _text;
 			break;
 		}
 		auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
@@ -179,31 +179,31 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 			PLATFORM_WCHAR* localized = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key.c_str());
 
 			bool modified = false;
-			if (myLength > 0)
+			if (mLength > 0)
 				localized = CutText(localized, modified);
 
 			if (localized)
-				L_Texture->CreateFromText(localized, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), myFont.c_str(), myTextAlign, 255.0f, 255.0f, 255.0f);
+				L_Texture->CreateFromText(localized, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), mFont.c_str(), mTextAlignment, 255.0f, 255.0f, 255.0f);
 			if (modified)
 				free(localized);
 		}
 		else
 		{
 			bool modified = false;
-			if (myLength > 0)
+			if (mLength > 0)
 				_text = CutText(_text.c_str(), modified);
 
-			L_Texture->CreateFromText(_text.c_str(), (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), myFont.const_ref().c_str(), myTextAlign, 255.0f, 255.0f, 255.0f);
+			L_Texture->CreateFromText(_text.c_str(), (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), mFont.const_ref().c_str(), mTextAlignment, 255.0f, 255.0f, 255.0f);
 		}
 
 		float width, height;
 		L_Texture->GetSize(width, height);
 
-		if (mySizeX != width || mySizeY != height)
+		if (mSizeX != width || mSizeY != height)
 		{
-			mySizeX = width;
-			mySizeY = height;
-			myNeedUpdatePosition = true;
+			mSizeX = width;
+			mSizeY = height;
+			mNeedUpdatePosition = true;
 		}
 	}
 	else
@@ -211,13 +211,13 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 		switch (_texture)
 		{
 		case 0:
-			myUpTexture = NULL;
+			mUpTexturePointer = NULL;
 			break;
 		case 1:
-			myOverTexture = NULL;
+			mOverTexturePointer = NULL;
 			break;
 		case 2:
-			myDownTexture = NULL;
+			mDownTexturePointer = NULL;
 			break;
 		default:
 			break;
@@ -237,15 +237,15 @@ void UIButtonText::ChangeTexture(kstl::string & _UpText, kstl::string & _overTex
 		ChangeTextTexture(_downText, 2);
 
 	//auto Size
-	if (myUpTexture && myAutoResize)
+	if (mUpTexturePointer && mAutoResize)
 	{
 		float width, height;
-		myUpTexture->GetSize(width, height);
-		if (width != mySizeX || height != mySizeY)
+		mUpTexturePointer->GetSize(width, height);
+		if (width != mSizeX || height != mSizeY)
 		{
-			mySizeX = width;
-			mySizeY = height;
-			myNeedUpdatePosition = true;
+			mSizeX = width;
+			mSizeY = height;
+			mNeedUpdatePosition = true;
 		}
 	}
 }
@@ -262,11 +262,11 @@ unsigned short*		UIButtonText::CutText(unsigned short* _text, bool& _flag)
 		++len;
 	}
 
-	if (len > myLength)
+	if (len > mLength)
 	{
-		unsigned short* newtext = (unsigned short*)malloc((myLength + 1)*sizeof(unsigned short));
-		memset(newtext, 0, (myLength + 1)*sizeof(unsigned short));
-		memcpy(newtext, _text, myLength*sizeof(unsigned short));
+		unsigned short* newtext = (unsigned short*)malloc((mLength + 1)*sizeof(unsigned short));
+		memset(newtext, 0, (mLength + 1)*sizeof(unsigned short));
+		memcpy(newtext, _text, mLength*sizeof(unsigned short));
 		_flag = true;
 		return newtext;
 	}
@@ -276,11 +276,11 @@ unsigned short*		UIButtonText::CutText(unsigned short* _text, bool& _flag)
 
 char*	UIButtonText::CutText(const char* _text, bool& _flag)
 {
-	if (strlen(_text) > myLength)
+	if (strlen(_text) > mLength)
 	{
-		char* newtext = (char*)malloc((myLength + 1)*sizeof(char));
-		memset(newtext, 0, (myLength + 1)*sizeof(char));
-		memcpy(newtext, _text, myLength*sizeof(char));
+		char* newtext = (char*)malloc((mLength + 1)*sizeof(char));
+		memset(newtext, 0, (mLength + 1)*sizeof(char));
+		memcpy(newtext, _text, mLength*sizeof(char));
 		_flag = true;
 		return newtext;
 	}
@@ -290,23 +290,23 @@ char*	UIButtonText::CutText(const char* _text, bool& _flag)
 
 DEFINE_METHOD(UIButtonText, ReloadTexture)
 {
-	if (myUpTexture)
+	if (mUpTexturePointer)
 	{
-		myTexture->SetFlag(Texture::isDirtyContext);
-		myTexture->ReInit();
-		ChangeTextTexture(myUpText.c_str(), 0);
+		mTexturePointer->SetFlag(Texture::isDirtyContext);
+		mTexturePointer->ReInit();
+		ChangeTextTexture(mUpText.c_str(), 0);
 	}
-	if (myOverTexture)
+	if (mOverTexturePointer)
 	{
-		myOverTexture->SetFlag(Texture::isDirtyContext);
-		myOverTexture->ReInit();
-		ChangeTextTexture(myOverText.c_str(), 1);
+		mOverTexturePointer->SetFlag(Texture::isDirtyContext);
+		mOverTexturePointer->ReInit();
+		ChangeTextTexture(mOverText.c_str(), 1);
 	}
-	if (myDownTexture)
+	if (mDownTexturePointer)
 	{
-		myDownTexture->SetFlag(Texture::isDirtyContext);
-		myDownTexture->ReInit();
-		ChangeTextTexture(myDownText.c_str(), 2);
+		mDownTexturePointer->SetFlag(Texture::isDirtyContext);
+		mDownTexturePointer->ReInit();
+		ChangeTextTexture(mDownText.c_str(), 2);
 	}
 
 	return false;
@@ -314,48 +314,48 @@ DEFINE_METHOD(UIButtonText, ReloadTexture)
 
 void UIButtonText::ChangeState()
 {
-	if (myIsEnabled) // down and mouse over only when enabled
+	if (mIsEnabled) // down and mouse over only when enabled
 	{
-		if (myIsDown)
+		if (mIsDown)
 		{
-			if (myDownTexture)
-				myTexture = myDownTexture;
-			if (myDownColor[3] != 0.0f)
+			if (mDownTexturePointer)
+				mTexturePointer = mDownTexturePointer;
+			if (mDownColor[3] != 0.0f)
 			{
-				myColor[0] = myDownColor[0];
-				myColor[1] = myDownColor[1];
-				myColor[2] = myDownColor[2];
-				myOpacity = myDownColor[3];
+				mColor[0] = mDownColor[0];
+				mColor[1] = mDownColor[1];
+				mColor[2] = mDownColor[2];
+				mOpacity = mDownColor[3];
 			}
 			return;
 		}
 
-		if (myIsMouseOver)
+		if (mIsMouseOver)
 		{
-			if (myOverTexture)
-				myTexture = myOverTexture;
-			if (myOverColor[3] != 0.0f)
+			if (mOverTexturePointer)
+				mTexturePointer = mOverTexturePointer;
+			if (mOverColor[3] != 0.0f)
 			{
-				myColor[0] = myOverColor[0];
-				myColor[1] = myOverColor[1];
-				myColor[2] = myOverColor[2];
-				myOpacity = myOverColor[3];
+				mColor[0] = mOverColor[0];
+				mColor[1] = mOverColor[1];
+				mColor[2] = mOverColor[2];
+				mOpacity = mOverColor[3];
 			}
 			else
 			{
-				myColor[0] = myUpColor[0];
-				myColor[1] = myUpColor[1];
-				myColor[2] = myUpColor[2];
-				myOpacity = myUpColor[3];
+				mColor[0] = mUpColor[0];
+				mColor[1] = mUpColor[1];
+				mColor[2] = mUpColor[2];
+				mOpacity = mUpColor[3];
 			}
 			return;
 		}
 	}
 
 	// set default color and texture
-	myTexture = myUpTexture;
-	myColor[0] = myUpColor[0];
-	myColor[1] = myUpColor[1];
-	myColor[2] = myUpColor[2];
-	myOpacity = myUpColor[3];
+	mTexturePointer = mUpTexturePointer;
+	mColor[0] = mUpColor[0];
+	mColor[1] = mUpColor[1];
+	mColor[2] = mUpColor[2];
+	mOpacity = mUpColor[3];
 }

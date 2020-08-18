@@ -10,6 +10,16 @@
 #include "RenderingScreen.h"
 #include "ModuleInput.h"
 
+// ****************************************
+// * UIScrollView class
+// * --------------------------------------
+/**
+* \file	UIScrollView.h
+* \class	UIScrollView
+* \ingroup 2DLayers
+* \brief	?? Obsolete ??
+*/
+// ****************************************
 
 class UIScrollView : public UIDrawableItem
 {
@@ -37,10 +47,10 @@ protected:
 
 private:
 
-	kfloat	xScroll, yScroll;
-	int maxY, maxX;
-	SP<UIControlBoxForScrollViewUI> myVision;
-	ModuleInput* myInput;
+	kfloat	mXScroll, mYScroll;
+	int mMaxY, mMaxX;
+	SP<UIControlBoxForScrollViewUI> mVision;
+	ModuleInput* mInput;
 
 };
 

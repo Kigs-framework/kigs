@@ -7,6 +7,19 @@
 class SpriteSheetTexture;
 struct FRAMES;
 
+// ****************************************
+// * UISprite class
+// * --------------------------------------
+/**
+* \file	UISprite.h
+* \class	UISprite
+* \ingroup 2DLayers
+* \brief	Manage sprite. Obsolete ?
+*
+* Obsolete ??
+*/
+// ****************************************
+
 class UISprite : public UITexturedItem
 {
 public:
@@ -33,10 +46,10 @@ protected:
 
 	bool hasSprite;
 
-	maString				myTextureName;
-	maString				mySpriteName;
+	maString				mTexture;
+	maString				mSprite;
 
-	SmartPointer<SpriteSheetTexture>	mySpriteSheet;
+	SmartPointer<SpriteSheetTexture>	mSpriteSheet;
 };
 
 #endif //_UIIMAGE_H_

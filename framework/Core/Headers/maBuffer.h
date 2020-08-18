@@ -29,9 +29,9 @@ class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<Aligned
 
 	void InitData()
 	{
-		if (_value.isNil())
+		if (mValue.isNil())
 		{
-			_value = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<alignement, allocatedType>());
+			mValue = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<alignement, allocatedType>());
 		}
 	}
 
@@ -54,7 +54,7 @@ class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<Aligned
 					CMSP& uncompressManager = KigsCore::GetSingleton("KXMLManager");
 					if (uncompressManager)
 					{
-						uncompressManager->SimpleCall("UncompressData", loaded.get(), _value.get());
+						uncompressManager->SimpleCall("UncompressData", loaded.get(), mValue.get());
 					}
 					else
 					{
@@ -62,7 +62,7 @@ class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<Aligned
 					}
 				}
 				else
-					_value->SetBuffer(std::move(*loaded.get()));
+					mValue->SetBuffer(std::move(*loaded.get()));
 			}
 
 		}
@@ -70,7 +70,7 @@ class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<Aligned
 		{
 			unsigned int readSize;
 			unsigned char* rawbuf = AsciiParserUtils::StringToBuffer(value, readSize);
-			_value->SetBuffer(rawbuf, readSize);
+			mValue->SetBuffer(rawbuf, readSize);
 		}
 	}
 
@@ -103,7 +103,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 
-		_value = NonOwningRawPtrToSmartPtr((typename CurrentAttributeType::ValueType*)((CoreRawBuffer*)value));
+		mValue = NonOwningRawPtrToSmartPtr((typename CurrentAttributeType::ValueType*)((CoreRawBuffer*)value));
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
@@ -113,16 +113,16 @@ public:
 	virtual bool getValue(kstl::string& value) const override
 	{
 
-		if (!_value.isNil())
+		if (!mValue.isNil())
 		{
-			value = AsciiParserUtils::BufferToString((unsigned char*)_value->buffer(), _value->length());
+			value = AsciiParserUtils::BufferToString((unsigned char*)mValue->buffer(), mValue->length());
 			return true;
 		}
 		value = "";
 		return true;
 	}
 	
-	virtual bool getValue(void*& value) const override { value = (CoreRawBuffer*)_value.get(); return true; }
+	virtual bool getValue(void*& value) const override { value = (CoreRawBuffer*)mValue.get(); return true; }
 
 	auto& operator=(const kstl::string &value)
 	{
@@ -132,30 +132,38 @@ public:
 	auto& operator=(CoreRawBuffer* value)
 	{
 		InitData();
-		_value->SetBuffer(*value);
+		mValue->SetBuffer(*value);
 		return *this;
 	}
 
 	char * buffer() const
 	{
-		return _value.isNil() ? nullptr :  _value->buffer();
+		return mValue.isNil() ? nullptr :  mValue->buffer();
 	}
 	unsigned int	length() const
 	{
-		return _value.isNil() ? 0u :_value->length();
+		return mValue.isNil() ? 0u :mValue->length();
 	}
 	void	SetBuffer(void* buffer, unsigned int length, bool manageMemory = true)
 	{
 		InitData();
-		_value->SetBuffer(buffer, length, manageMemory);
+		mValue->SetBuffer(buffer, length, manageMemory);
 	}
-	operator const CoreRawBuffer*() const { return _value.get(); }
+	operator const CoreRawBuffer*() const { return mValue.get(); }
 
 
 };
 
 
-
+// ****************************************
+// * maBuffer class
+// * --------------------------------------
+/**
+* \class	maBuffer
+* \ingroup	CoreModifiableAttibute
+* \brief	CoreModifiable managing a CoreRawBuffer
+*/
+// ****************************************
 
 using maBuffer = maBufferHeritage<16, char, 0>;
 

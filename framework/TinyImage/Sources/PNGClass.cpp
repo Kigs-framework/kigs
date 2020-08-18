@@ -207,7 +207,7 @@ void	PNGClass::Export(const char* filename)
 	png_bytep row = NULL;
 	
 	SmartPointer<FileHandle> L_File = Platform_fopen(filename, "wb");
-	fp = L_File->myFile;
+	fp = L_File->mFile;
 	int mode, lineSize;
 	// Initialize write structure
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);

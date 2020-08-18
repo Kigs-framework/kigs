@@ -10,13 +10,13 @@ class maAnyHeritage : public CoreModifiableAttributeData<std::any>
 public:
 	virtual operator CurrentAttributeType() const
 	{
-		return _value; 
+		return mValue; 
 	}
 
 	template<typename T>
 	auto& operator=(const T& value)
 	{
-		_value = value;
+		mValue = value;
 		return *this;
 	}
 
@@ -25,7 +25,7 @@ public:
 	{
 		try
 		{
-			return std::any_cast<T>(_value);
+			return std::any_cast<T>(mValue);
 		}
 		catch (const std::bad_any_cast& e)
 		{

@@ -12,9 +12,9 @@ IMPLEMENT_CONSTRUCTOR(UICursor)
 
 bool UICursor::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 {
-	UIItem *owner = (UIItem*)(CoreModifiable*)myUIOwner;
+	UIItem *owner = (UIItem*)(CoreModifiable*)mUIOwner;
 	bool allow = (owner != nullptr) ? owner->ContainsPoint(direct_touch.position.x, direct_touch.position.y) : false;
-	myIsHidden = !allow;
+	mIsHidden = !allow;
 
 	if (direct_touch.state == StatePossible) // check for hover
 	{

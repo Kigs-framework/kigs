@@ -30,7 +30,7 @@ public:
 	void SetUniformLocation(int uniform, const char* location);
 
 	int GetTypeOfLight();
-	//inline int		GetPriority() const { return (int)((unsigned int)myPriority); }
+	//inline int		GetPriority() const { return (int)((unsigned int)mPriority); }
 	void NotifyUpdate(const unsigned int  labelid) override;
 
 protected:

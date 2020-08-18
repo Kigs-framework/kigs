@@ -186,9 +186,9 @@ void ModuleInputDX::Update(const Timer& timer, void* addParam)
 	// read info on aquired devices
 	for(auto item : getItems())
     {
-		if(item.myItem->isSubType(InputDevice::myClassID))
+		if(item.mItem->isSubType(InputDevice::mClassID))
 		{
-			InputDevice* device=item.myItem->as<InputDevice>();
+			InputDevice* device=item.mItem->as<InputDevice>();
 			
 			if(!device->IsAquired())
 				device->Aquire();
@@ -202,12 +202,12 @@ void ModuleInputDX::Update(const Timer& timer, void* addParam)
 
 bool ModuleInputDX::addItem(const CMSP& item, ItemPosition pos)
 {
-	if(item->isSubType(JoystickDevice::myClassID))
+	if(item->isSubType(JoystickDevice::mClassID))
 	{
 		myJoystickCount++;
 		return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 	}
-	else if(item->isSubType(InputDevice::myClassID))
+	else if(item->isSubType(InputDevice::mClassID))
 	{
 		return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 	}

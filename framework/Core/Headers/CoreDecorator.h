@@ -11,9 +11,9 @@
  * \class	CoreDecorator
  * \ingroup Core
  * \brief	 base class for decorator class 
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * 
+ * Only used for Node3D Culling at the moment.
+ * 
  */
 // ****************************************
 
@@ -28,29 +28,29 @@ public:
 	typedef typename mfVector::iterator mfVectorIt;
 
 	DecoratedFuncBase(DecoratedType* localthis,MF mf)
-		: m_LocalThis(localthis)
-		, m_CurrentCallPos(0)
+		: mLocalThis(localthis)
+		, mCurrentCallPos(0)
 	{
-		m_stack.clear();
+		mStack.clear();
 		push_back(mf);
 	}
 
 	returnType operator ()()
 	{
 	
-		m_CurrentCallPos=m_stack.size()-1;
-		if(m_CurrentCallPos>=0)
+		mCurrentCallPos=mStack.size()-1;
+		if(mCurrentCallPos>=0)
 		{
-			(m_LocalThis->*m_stack[m_CurrentCallPos])();
+			(mLocalThis->*mStack[mCurrentCallPos])();
 		}
 	}
 	
 	returnType	father()
 	{
-		m_CurrentCallPos--;
-		if(m_CurrentCallPos>=0)
+		mCurrentCallPos--;
+		if(mCurrentCallPos>=0)
 		{
-			(m_LocalThis->*m_stack[m_CurrentCallPos])();
+			(mLocalThis->*mStack[mCurrentCallPos])();
 		}
 	}
 
@@ -60,15 +60,15 @@ public:
 	
 	void	push_back(MF to_add)
 	{
-		m_stack.push_back(to_add);
+		mStack.push_back(to_add);
 	}
 
 	void	replace(MF to_replace, MF to_add)
 	{
-		if (m_stack.size())
+		if (mStack.size())
 		{
-			mfVectorIt itbegin = m_stack.begin();
-			mfVectorIt itend = m_stack.end();
+			mfVectorIt itbegin = mStack.begin();
+			mfVectorIt itend = mStack.end();
 			while (itbegin != itend)
 			{
 				if ((*itbegin) == to_replace)
@@ -83,13 +83,13 @@ public:
 
 	void	remove(MF to_remove)
 	{
-		mfVectorIt itbegin=m_stack.begin();
-		mfVectorIt itend=m_stack.end();
+		mfVectorIt itbegin=mStack.begin();
+		mfVectorIt itend=mStack.end();
 		while(itbegin != itend)
 		{
 			if((*itbegin) == to_remove)
 			{
-				m_stack.erase(itbegin);
+				mStack.erase(itbegin);
 				break;
 			}
 			++itbegin;
@@ -98,11 +98,12 @@ public:
 
 protected:
 	
-	int									m_CurrentCallPos;
-	mfVector							m_stack;
-	DecoratedType*						m_LocalThis;
+	int									mCurrentCallPos;
+	mfVector							mStack;
+	DecoratedType*						mLocalThis;
 };
 
+//! weird, do not use base class ??
 template<typename DecoratedType,typename returnType,typename P1>
 class	DecoratedFuncBase1Param
 {
@@ -113,29 +114,29 @@ public:
 	typedef typename mfVector::iterator mfVectorIt;
 
 	DecoratedFuncBase1Param(DecoratedType* localthis,MF mf)
-		: m_LocalThis(localthis)
-		, m_CurrentCallPos(0)
+		: mLocalThis(localthis)
+		, mCurrentCallPos(0)
 	{
-		m_stack.clear();
+		mStack.clear();
 		push_back(mf);
 	}
 
 	returnType operator ()(P1 param)
 	{
 	
-		m_CurrentCallPos=m_stack.size()-1;
-		if(m_CurrentCallPos>=0)
+		mCurrentCallPos=mStack.size()-1;
+		if(mCurrentCallPos>=0)
 		{
-			(m_LocalThis->*m_stack[m_CurrentCallPos])(param);
+			(mLocalThis->*mStack[mCurrentCallPos])(param);
 		}
 	}
 	
 	returnType	father(P1 param)
 	{
-		m_CurrentCallPos--;
-		if(m_CurrentCallPos>=0)
+		mCurrentCallPos--;
+		if(mCurrentCallPos>=0)
 		{
-			(m_LocalThis->*m_stack[m_CurrentCallPos])(param);
+			(mLocalThis->*mStack[mCurrentCallPos])(param);
 		}
 	}
 
@@ -145,16 +146,16 @@ public:
 	
 	void	push_back(MF to_add)
 	{
-		m_stack.push_back(to_add);
+		mStack.push_back(to_add);
 	}
 
 
 	void	replace(MF to_replace, MF to_add)
 	{
-		if (m_stack.size())
+		if (mStack.size())
 		{
-			mfVectorIt itbegin = m_stack.begin();
-			mfVectorIt itend = m_stack.end();
+			mfVectorIt itbegin = mStack.begin();
+			mfVectorIt itend = mStack.end();
 			while (itbegin != itend)
 			{
 				if ((*itbegin) == to_replace)
@@ -169,13 +170,13 @@ public:
 
 	void	remove(MF to_remove)
 	{
-		mfVectorIt itbegin=m_stack.begin();
-		mfVectorIt itend=m_stack.end();
+		mfVectorIt itbegin=mStack.begin();
+		mfVectorIt itend=mStack.end();
 		while(itbegin != itend)
 		{
 			if((*itbegin) == to_remove)
 			{
-				m_stack.erase(itbegin);
+				mStack.erase(itbegin);
 				break;
 			}
 			++itbegin;
@@ -184,11 +185,12 @@ public:
 
 protected:
 	
-	int									m_CurrentCallPos;
-	mfVector							m_stack;
-	DecoratedType*						m_LocalThis;
+	int									mCurrentCallPos;
+	mfVector							mStack;
+	DecoratedType*						mLocalThis;
 };
 
+//! weird, do not use base class ??
 template<typename DecoratedType,typename returnType,typename P1,typename P2>
 class	DecoratedFuncBase2Param
 {
@@ -199,20 +201,20 @@ public:
 	typedef typename mfVector::iterator mfVectorIt;
 
 	DecoratedFuncBase2Param(DecoratedType* localthis,MF mf): 
-		  m_CurrentCallPos(0)
-		, m_LocalThis(localthis)
+		  mCurrentCallPos(0)
+		, mLocalThis(localthis)
 	{
-		m_stack.clear();
+		mStack.clear();
 		push_back(mf);
 	}
 
 	returnType operator ()(P1 param1,P2 param2)
 	{
 	
-		m_CurrentCallPos=(int)m_stack.size()-1;
-		if(m_CurrentCallPos>=0)
+		mCurrentCallPos=(int)mStack.size()-1;
+		if(mCurrentCallPos>=0)
 		{
-			return (m_LocalThis->*m_stack[m_CurrentCallPos])(param1,param2);
+			return (mLocalThis->*mStack[mCurrentCallPos])(param1,param2);
 		}
         
         return 0;
@@ -220,10 +222,10 @@ public:
 	
 	returnType	father(P1 param1,P2 param2)
 	{
-		m_CurrentCallPos--;
-		if(m_CurrentCallPos>=0)
+		mCurrentCallPos--;
+		if(mCurrentCallPos>=0)
 		{
-			return (m_LocalThis->*m_stack[m_CurrentCallPos])(param1,param2);
+			return (mLocalThis->*mStack[mCurrentCallPos])(param1,param2);
 		}
         
         return 0;
@@ -235,16 +237,16 @@ public:
 	
 	void	push_back(MF to_add)
 	{
-		m_stack.push_back(to_add);
+		mStack.push_back(to_add);
 	}
 
 
 	void	replace(MF to_replace, MF to_add)
 	{
-		if (m_stack.size())
+		if (mStack.size())
 		{
-			mfVectorIt itbegin = m_stack.begin();
-			mfVectorIt itend = m_stack.end();
+			mfVectorIt itbegin = mStack.begin();
+			mfVectorIt itend = mStack.end();
 			while (itbegin != itend)
 			{
 				if ((*itbegin) == to_replace)
@@ -259,13 +261,13 @@ public:
 
 	void	remove(MF to_remove)
 	{
-		mfVectorIt itbegin=m_stack.begin();
-		mfVectorIt itend=m_stack.end();
+		mfVectorIt itbegin=mStack.begin();
+		mfVectorIt itend=mStack.end();
 		while(itbegin != itend)
 		{
 			if((*itbegin) == to_remove)
 			{
-				m_stack.erase(itbegin);
+				mStack.erase(itbegin);
 				break;
 			}
 			++itbegin;
@@ -274,11 +276,12 @@ public:
 
 protected:
 	
-	int									m_CurrentCallPos;
-	mfVector							m_stack;
-	DecoratedType*						m_LocalThis;
+	int									mCurrentCallPos;
+	mfVector							mStack;
+	DecoratedType*						mLocalThis;
 };
 
+//! weird, do not use base class ??
 template<typename DecoratedType,typename returnType,typename P1,typename P2,typename P3>
 class	DecoratedFuncBase3Param
 {
@@ -289,29 +292,29 @@ public:
 	typedef typename mfVector::iterator mfVectorIt;
 
 	DecoratedFuncBase3Param(DecoratedType* localthis,MF mf)
-		: m_LocalThis(localthis)
-		, m_CurrentCallPos(0)
+		: mLocalThis(localthis)
+		, mCurrentCallPos(0)
 	{
-		m_stack.clear();
+		mStack.clear();
 		push_back(mf);
 	}
 
 	returnType operator ()(P1 param1,P2 param2,P3 param3)
 	{
 	
-		m_CurrentCallPos=m_stack.size()-1;
-		if(m_CurrentCallPos>=0)
+		mCurrentCallPos=mStack.size()-1;
+		if(mCurrentCallPos>=0)
 		{
-			(m_LocalThis->*m_stack[m_CurrentCallPos])(param1,param2,param3);
+			(mLocalThis->*mStack[mCurrentCallPos])(param1,param2,param3);
 		}
 	}
 	
 	returnType	father(P1 param1,P2 param2,P3 param3)
 	{
-		m_CurrentCallPos--;
-		if(m_CurrentCallPos>=0)
+		mCurrentCallPos--;
+		if(mCurrentCallPos>=0)
 		{
-			(m_LocalThis->*m_stack[m_CurrentCallPos])(param1,param2,param3);
+			(mLocalThis->*mStack[mCurrentCallPos])(param1,param2,param3);
 		}
 	}
 
@@ -321,15 +324,15 @@ public:
 	
 	void	push_back(MF to_add)
 	{
-		m_stack.push_back(to_add);
+		mStack.push_back(to_add);
 	}
 
 	void	replace(MF to_replace, MF to_add)
 	{
-		if (m_stack.size())
+		if (mStack.size())
 		{
-			mfVectorIt itbegin = m_stack.begin();
-			mfVectorIt itend = m_stack.end();
+			mfVectorIt itbegin = mStack.begin();
+			mfVectorIt itend = mStack.end();
 			while (itbegin != itend)
 			{
 				if ((*itbegin) == to_replace)
@@ -344,13 +347,13 @@ public:
 
 	void	remove(MF to_remove)
 	{
-		mfVectorIt itbegin=m_stack.begin();
-		mfVectorIt itend=m_stack.end();
+		mfVectorIt itbegin=mStack.begin();
+		mfVectorIt itend=mStack.end();
 		while(itbegin != itend)
 		{
 			if((*itbegin) == to_remove)
 			{
-				m_stack.erase(itbegin);
+				mStack.erase(itbegin);
 				break;
 			}
 			++itbegin;
@@ -359,9 +362,9 @@ public:
 
 protected:
 	
-	int									m_CurrentCallPos;
-	mfVector							m_stack;
-	DecoratedType*						m_LocalThis;
+	int									mCurrentCallPos;
+	mfVector							mStack;
+	DecoratedType*						mLocalThis;
 };
 
 

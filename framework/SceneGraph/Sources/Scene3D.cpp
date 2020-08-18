@@ -75,7 +75,7 @@ void Scene3D::NotifyUpdate(const unsigned int  labelid)
 		kstl::vector<CoreModifiable*>::const_iterator itparentsend = GetParents().end();
 		for (; itparents != itparentsend; ++itparents)
 		{
-			if ((*itparents)->isSubType(ModuleSceneGraph::myClassID))
+			if ((*itparents)->isSubType(ModuleSceneGraph::mClassID))
 			{
 				ModuleSceneGraph* tonotify = (ModuleSceneGraph*)(*itparents);
 				tonotify->setValue("SceneListNeedsSort", true);

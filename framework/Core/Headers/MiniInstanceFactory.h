@@ -65,20 +65,20 @@ public:
 	template<typename T>
 	void	RegisterNewClass(const kstl::string& name)
 	{
-		auto alreadyfound=myFactoryMap.find(name);
-		if(alreadyfound != myFactoryMap.end())
+		auto alreadyfound=mFactoryMap.find(name);
+		if(alreadyfound != mFactoryMap.end())
 		{
 			KIGS_WARNING("Class already registered in MiniFactory\n",1);
 		}
 
-		myFactoryMap[name]=new RegisterClass<T>();
+		mFactoryMap[name]=new RegisterClass<T>();
 
 	}
 
 	void*	CreateClassInstance(const kstl::string& name)
 	{
-		auto alreadyfound=myFactoryMap.find(name);
-		if(alreadyfound == myFactoryMap.end())
+		auto alreadyfound=mFactoryMap.find(name);
+		if(alreadyfound == mFactoryMap.end())
 		{
 			KIGS_ERROR("Can not find class in MiniFactory\n",1);
 			return 0;
@@ -90,7 +90,7 @@ public:
 protected:
 
 	virtual ~MiniInstanceFactory();
-	std::unordered_map<kstl::string, FactoryCreateStruct*>	myFactoryMap;
+	std::unordered_map<kstl::string, FactoryCreateStruct*>	mFactoryMap;
 
 };
 

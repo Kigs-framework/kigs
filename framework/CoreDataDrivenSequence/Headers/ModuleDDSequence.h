@@ -4,6 +4,22 @@
 #include "ModuleBase.h"
 #include "CoreMap.h"
 
+/*! \defgroup DataDrivenApplication
+ *
+*/
+
+// ****************************************
+// * ModuleDDSequence class
+// * --------------------------------------
+/**
+ * \file	ModuleDDSequence.h
+ * \class	ModuleDDSequence
+ * \ingroup DataDrivenApplication
+ * \ingroup Module
+ * \brief	Manage Data Driven Sequences for Data Driven Application.
+ */
+ // ****************************************
+
 
 class ModuleDDSequence : public ModuleBase
 {

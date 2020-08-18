@@ -15,9 +15,6 @@ class Timer;
  * \class	ModuleDescription
  * \ingroup Core
  * \brief	read a module description in a XML file
- * \author	ukn
- * \version ukn
- * \date	ukn
  */
 // ****************************************
 class ModuleDescription
@@ -42,15 +39,15 @@ public:
 
 protected:
 	//! list of dll
-    kstl::vector<kstl::string>  myDllList;
+    kstl::vector<kstl::string>  mDllList;
 	//! TRUE if the module has been initialized
-    bool                        myIsInitialised = false;
+    bool                        mIsInitialised = false;
 	//! TRUE if the file is good?
-    static bool                 myIsGoodFile;
+    static bool                 mIsGoodFile;
 	//! name of the module
-    kstl::string                myModuleName;
+    kstl::string                mModuleName;
 	//! current reading depth
-    static int                  myCurrentReadDepth;
+    static int                  mCurrentReadDepth;
 };
 
 class ModuleBase;
@@ -77,7 +74,16 @@ struct DynamicModuleHandleAndPointer
 	ModuleBase*		myInstance = nullptr;
 };
 
-
+// ****************************************
+// * ModuleBase class
+// * --------------------------------------
+/**
+ * \class	ModuleBase
+ * \file	ModuleBase.h
+ * \ingroup Core
+ * \brief	Base class for Module
+ */
+ // ****************************************
 class ModuleBase : public CoreModifiable
 {
 public:
@@ -87,13 +93,13 @@ public:
 
 	// some typedef to point on dll methods
 	//! dll methods init
-	typedef ModuleBase*		(*myDllInitFunc)(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params );
+	typedef ModuleBase*		(*mDllInitFunc)(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params );
 	//! dll methods close
-	typedef void			(*myDllCloseFunc)(KigsCore* core );
+	typedef void			(*mDllCloseFunc)(KigsCore* core );
 	//! dll methods update
-    typedef void			(*myDllUpdateFunc)(const Timer* timer);
+    typedef void			(*mDllUpdateFunc)(const Timer* timer);
 	//! dll methods get function
-	typedef void			(*myDLLGetModuleFunc)(ModuleBase** instance);
+	typedef void			(*mDLLGetModuleFunc)(ModuleBase** instance);
 
 	/**
 	 * \brief		pure virtual initialize module 
@@ -119,10 +125,10 @@ public:
 
 	/**
 	 * \brief		return pointer on core used by this
-	 * \fn			Core*	getCore(){return myCore;}
+	 * \fn			Core*	getCore(){return mCore;}
 	 * \return		the Core instance
 	 */
-	KigsCore*	getCore(){return myCore;}
+	KigsCore*	getCore(){return mCore;}
 
 protected:
 	/**
@@ -159,10 +165,10 @@ protected:
 	
 
 	//! pointer to the Core instance
-    KigsCore* myCore = nullptr;
+    KigsCore* mCore = nullptr;
 
 	//! list of dll handles
-    kstl::vector<DynamicModuleHandleAndPointer>    myDynamicModuleList;
+    kstl::vector<DynamicModuleHandleAndPointer>    mDynamicModuleList;
 };
 
 #endif //_MODULEBASE_H_

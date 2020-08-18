@@ -4,6 +4,17 @@
 #include "UITexturedItem.h"
 #include "TextureFileManager.h"
 
+// ****************************************
+// * UIImage class
+// * --------------------------------------
+/**
+* \file	UIImage.h
+* \class	UIImage
+* \ingroup 2DLayers
+* \brief	Just display an image ( texture ) with different modes.
+*/
+// ****************************************
+
 class UIImage : public UITexturedItem
 {
 public:
@@ -34,16 +45,16 @@ protected:
 	bool isAlpha(float X, float Y) override;
 	void ComputeRealSize()override;
 
-	kstl::string			myCurrentTextureName;
+	kstl::string			mCurrentTextureName;
 
-	Point2D					myAutoresizeValue;
+	Point2D					mAutoresizeValue;
 
 
-	maBool					myKeepRatio = BASE_ATTRIBUTE(KeepRatio, true);
-	maEnum<5>				myDisplayMode = BASE_ATTRIBUTE(DisplayMode, "Auto", "Resize", "Scale", "Shrink", "Repeat");
+	maBool					mKeepRatio = BASE_ATTRIBUTE(KeepRatio, true);
+	maEnum<5>				mDisplayMode = BASE_ATTRIBUTE(DisplayMode, "Auto", "Resize", "Scale", "Shrink", "Repeat");
 	//maBool					myAutoresizeTexture;
-	maString				myTextureName;
-	SmartPointer<SpriteSheetTexture>	mySpriteSheetTexture;
+	maString				mTexture;
+	SmartPointer<SpriteSheetTexture>	mSpriteSheetTexture;
 };
 
 #endif //_UIIMAGE_H_

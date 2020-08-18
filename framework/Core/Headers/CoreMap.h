@@ -34,7 +34,7 @@ public:
 
 	virtual CoreItemIteratorBase*	clone()
 	{
-		CoreMapIterator*	result = new CoreMapIterator(myAttachedCoreItem, myPos);
+		CoreMapIterator*	result = new CoreMapIterator(mAttachedCoreItem, mPos);
 		result->myMapIterator = myMapIterator;
 		return result;
 	}
@@ -238,7 +238,7 @@ public:
 	CoreItemIterator erase(CoreItemIterator first, CoreItemIterator last)
 	{
 		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(this, 0);
-		iter->myMapIterator = myMap.erase(((CoreMapIterator<map_key>*)first.myPointer)->myMapIterator, ((CoreMapIterator<map_key>*)last.myPointer)->myMapIterator);
+		iter->myMapIterator = myMap.erase(((CoreMapIterator<map_key>*)first.mPointer)->myMapIterator, ((CoreMapIterator<map_key>*)last.mPointer)->myMapIterator);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
@@ -276,7 +276,7 @@ class CoreNamedMap : public CoreMapBase<map_key,CoreNamedItem>
 public:
 	CoreNamedMap(const kstl::string& _name) : CoreMapBase<map_key,CoreNamedItem>(CoreItem::CORENAMEDMAP)
 	{
-		CoreNamedItem::m_Name=_name;
+		CoreNamedItem::mName=_name;
 	}
 	inline CoreItemSP operator[](const char* key) const
 	{
@@ -667,7 +667,7 @@ template<>
 inline CoreItemSP CoreMapIterator<kstl::string>::operator*() const
 {
 
-	kstl::map<kstl::string, CoreItemSP>&	mapstruct = *(kstl::map<kstl::string, CoreItemSP>*)myAttachedCoreItem->getContainerStruct();
+	kstl::map<kstl::string, CoreItemSP>&	mapstruct = *(kstl::map<kstl::string, CoreItemSP>*)mAttachedCoreItem->getContainerStruct();
 
 	if (myMapIterator != mapstruct.end())
 	{
@@ -744,7 +744,7 @@ inline CoreItemSP CoreMap<kstl::string>::operator[](int i)  const
 template<>
 inline CoreItemSP CoreMapIterator<usString>::operator*() const
 {
-	if (myMapIterator != ((CoreMap<usString>*)myAttachedCoreItem.get())->myMap.end())
+	if (myMapIterator != ((CoreMap<usString>*)mAttachedCoreItem.get())->myMap.end())
 	{
 		return ((*myMapIterator).second);
 	}

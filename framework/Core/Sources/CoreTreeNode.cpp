@@ -4,7 +4,7 @@
 //! destructor
 CoreTreeNode::~CoreTreeNode()
 {
-	for (auto i : myChildren)
+	for (auto i : mChildren)
 	{
 		CoreTreeNode* sonNode = i.second;
 		if (sonNode)
@@ -16,23 +16,23 @@ CoreTreeNode::~CoreTreeNode()
 
 void CoreTreeNode::AddInstance(CoreModifiable* toAdd)
 {
-	std::lock_guard<std::recursive_mutex> lk{ myMutex };
-	myInstances.push_back(toAdd);
-	myInstanceVectorNeedSort = true;
+	std::lock_guard<std::recursive_mutex> lk{ mMutex };
+	mInstances.push_back(toAdd);
+	mInstanceVectorNeedSort = true;
 }
 
 void CoreTreeNode::RemoveInstance(CoreModifiable* toRemove)
 {
-	std::lock_guard<std::recursive_mutex> lk{ myMutex };
+	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 
 	std::vector< CoreModifiable* >::iterator	i;
-	std::vector< CoreModifiable* >::iterator	e = myInstances.end();
+	std::vector< CoreModifiable* >::iterator	e = mInstances.end();
 
-	for (i = myInstances.begin(); i != e; ++i)
+	for (i = mInstances.begin(); i != e; ++i)
 	{
 		if ((*i) == toRemove)
 		{
-			myInstances.erase(i);
+			mInstances.erase(i);
 			break;
 		}
 	}
@@ -40,11 +40,11 @@ void CoreTreeNode::RemoveInstance(CoreModifiable* toRemove)
 
 size_t CoreTreeNode::GetInstanceCount() const
 {
-	size_t result = myInstances.size();
-	if (myChildren.size())
+	size_t result = mInstances.size();
+	if (mChildren.size())
 	{
-		auto itchild = myChildren.begin();
-		while (itchild != myChildren.end())
+		auto itchild = mChildren.begin();
+		while (itchild != mChildren.end())
 		{
 			if ((*itchild).second)
 			{
@@ -58,8 +58,8 @@ size_t CoreTreeNode::GetInstanceCount() const
 
 /*void CoreTreeNode::getInstances(std::set<CMSP>& instances, bool recursive, bool only_one) const
 {
-	std::lock_guard<std::recursive_mutex> lk{ myMutex };
-	for (auto i : myInstances)
+	std::lock_guard<std::recursive_mutex> lk{ mMutex };
+	for (auto i : mInstances)
 	{
 		bool ok = true;
 		if (getref) ok = i->TryGetRef();
@@ -71,7 +71,7 @@ size_t CoreTreeNode::GetInstanceCount() const
 	}
 	if (recursive)
 	{
-		for (auto it : myChildren)
+		for (auto it : mChildren)
 		{
 			if (it.second)
 			{
@@ -86,18 +86,18 @@ size_t CoreTreeNode::GetInstanceCount() const
 
 void CoreTreeNode::getInstancesByName(std::set<CoreModifiable*>& instances, bool recursive, const std::string& name, bool only_one, bool getref)
 {
-	std::lock_guard<std::recursive_mutex> lk{ myMutex };
-	if (myInstances.size())
+	std::lock_guard<std::recursive_mutex> lk{ mMutex };
+	if (mInstances.size())
 	{
 		KigsID searchedOne = name;
-		if (myInstanceVectorNeedSort)
+		if (mInstanceVectorNeedSort)
 		{
 			sortInstanceVector();
 		}
-		std::vector<CoreModifiable*>::const_iterator i = myInstances.begin();
-		std::vector<CoreModifiable*>::const_iterator e = myInstances.end();
+		std::vector<CoreModifiable*>::const_iterator i = mInstances.begin();
+		std::vector<CoreModifiable*>::const_iterator e = mInstances.end();
 
-		size_t	currentSize = myInstances.size();
+		size_t	currentSize = mInstances.size();
 
 		// little dichotomie to reduce the test set
 		while (currentSize > 8)
@@ -138,8 +138,8 @@ void CoreTreeNode::getInstancesByName(std::set<CoreModifiable*>& instances, bool
 	}
 	if (recursive)
 	{
-		for (auto j = myChildren.begin();
-			j != myChildren.end();
+		for (auto j = mChildren.begin();
+			j != mChildren.end();
 			++j)
 		{
 			if ((*j).second)
@@ -156,8 +156,8 @@ void CoreTreeNode::getInstancesByName(std::set<CoreModifiable*>& instances, bool
 
 void CoreTreeNode::getRootInstances(std::vector<CMSP>& result, bool recursive) const
 {
-	std::lock_guard<std::recursive_mutex> lk{ myMutex };
-	for (auto i : myInstances)
+	std::lock_guard<std::recursive_mutex> lk{ mMutex };
+	for (auto i : mInstances)
 	{
 		CoreModifiable* testFather = ((CoreModifiable*)i);
 		if (testFather->GetParentCount() == 0)
@@ -170,7 +170,7 @@ void CoreTreeNode::getRootInstances(std::vector<CMSP>& result, bool recursive) c
 	}
 	if (recursive)
 	{
-		for (auto j : myChildren)
+		for (auto j : mChildren)
 		{
 			if (j.second)
 				j.second->getRootInstances(result, true);
@@ -180,8 +180,8 @@ void CoreTreeNode::getRootInstances(std::vector<CMSP>& result, bool recursive) c
 
 void CoreTreeNode::getInstances(std::vector<CMSP>& result, bool recursive, bool only_one) const
 {
-	std::lock_guard<std::recursive_mutex> lk{ myMutex };
-	for (auto i : myInstances)
+	std::lock_guard<std::recursive_mutex> lk{ mMutex };
+	for (auto i : mInstances)
 	{
 		if (i->TryGetRef())
 		{
@@ -191,7 +191,7 @@ void CoreTreeNode::getInstances(std::vector<CMSP>& result, bool recursive, bool 
 	}
 	if (recursive)
 	{
-		for (auto it : myChildren)
+		for (auto it : mChildren)
 		{
 			if (it.second)
 			{
@@ -205,18 +205,18 @@ void CoreTreeNode::getInstances(std::vector<CMSP>& result, bool recursive, bool 
 
 void CoreTreeNode::getInstancesByName(std::vector<CMSP>& result, bool recursive, const std::string& name, bool only_one)
 {
-	std::lock_guard<std::recursive_mutex> lk{ myMutex };
-	if (myInstances.size())
+	std::lock_guard<std::recursive_mutex> lk{ mMutex };
+	if (mInstances.size())
 	{
 		KigsID searchedOne = name;
-		if (myInstanceVectorNeedSort)
+		if (mInstanceVectorNeedSort)
 		{
 			sortInstanceVector();
 		}
-		std::vector<CoreModifiable*>::const_iterator i = myInstances.begin();
-		std::vector<CoreModifiable*>::const_iterator e = myInstances.end();
+		std::vector<CoreModifiable*>::const_iterator i = mInstances.begin();
+		std::vector<CoreModifiable*>::const_iterator e = mInstances.end();
 
-		size_t	currentSize = myInstances.size();
+		size_t	currentSize = mInstances.size();
 
 		// little dichotomie to reduce the test set
 		while (currentSize > 8)
@@ -256,8 +256,8 @@ void CoreTreeNode::getInstancesByName(std::vector<CMSP>& result, bool recursive,
 	}
 	if (recursive)
 	{
-		for (auto j = myChildren.begin();
-			j != myChildren.end();
+		for (auto j = mChildren.begin();
+			j != mChildren.end();
 			++j)
 		{
 			if ((*j).second)
@@ -272,7 +272,7 @@ void CoreTreeNode::getInstancesByName(std::vector<CMSP>& result, bool recursive,
 
 void CoreTreeNode::sortInstanceVector()
 {
-	std::sort(myInstances.begin(), myInstances.end(), [](const CoreModifiable* a1, const CoreModifiable* a2)
+	std::sort(mInstances.begin(), mInstances.end(), [](const CoreModifiable* a1, const CoreModifiable* a2)
 		{
 			if (a1->getNameID().toUInt() == a2->getNameID().toUInt())
 			{
@@ -282,6 +282,6 @@ void CoreTreeNode::sortInstanceVector()
 			return a1->getNameID().toUInt() < a2->getNameID().toUInt();
 		}
 	);
-	myInstanceVectorNeedSort = false;
+	mInstanceVectorNeedSort = false;
 }
 

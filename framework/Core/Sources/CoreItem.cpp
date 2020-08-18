@@ -8,7 +8,7 @@
 
 CoreItemSP CoreItemIterator::operator*() const
 {
-	return myPointer->operator*();
+	return mPointer->operator*();
 }
 
 CoreItemIterator& CoreItemIterator::operator=(const CoreItemIterator & other)
@@ -19,57 +19,57 @@ CoreItemIterator& CoreItemIterator::operator=(const CoreItemIterator & other)
 
 CoreItemIterator& CoreItemIterator::operator+(const int decal)
 {
-	myPointer->operator+(decal);
+	mPointer->operator+(decal);
 	return *this;
 }
 
 CoreItemIterator& CoreItemIterator::operator++()
 {
-	myPointer->operator++();
+	mPointer->operator++();
 	return *this;
 }
 
 CoreItemIterator CoreItemIterator::operator++(int)
 {
-	CoreItemIterator	tmp(myPointer->clone());
-	myPointer->operator++();
+	CoreItemIterator	tmp(mPointer->clone());
+	mPointer->operator++();
 	return tmp;
 }
 
 bool CoreItemIterator::operator==(const CoreItemIterator & other) const
 {
-	return (*myPointer) == *(other.myPointer);
+	return (*mPointer) == *(other.mPointer);
 }
 
 bool CoreItemIterator::operator!=(const CoreItemIterator & other) const
 {
-	return (*myPointer) != *(other.myPointer);
+	return (*mPointer) != *(other.mPointer);
 }
 
 bool CoreItemIterator::getKey(kstl::string& returnedkey)
 {
-	return myPointer->getKey(returnedkey);
+	return mPointer->getKey(returnedkey);
 }
 
 bool CoreItemIterator::getKey(usString& returnedkey)
 {
-	return myPointer->getKey(returnedkey);
+	return mPointer->getKey(returnedkey);
 }
 
 
 CoreItemSP CoreItemIteratorBase::operator*() const
 {
-	if (myPos == 0)
+	if (mPos == 0)
 	{
-		return myAttachedCoreItem;
+		return mAttachedCoreItem;
 	}
 	return CoreItemSP(nullptr);
 }
 
 CoreItemIteratorBase& CoreItemIteratorBase::operator=(const CoreItemIteratorBase & other)
 {
-	myAttachedCoreItem = other.myAttachedCoreItem;
-	myPos = other.myPos;
+	mAttachedCoreItem = other.mAttachedCoreItem;
+	mPos = other.mPos;
 	return *this;
 }
 
@@ -97,7 +97,7 @@ CoreItemSP CoreItem::operator[](const usString& key) const
 
 CoreItemSP CoreNamedItem::operator[](const kstl::string& key) const
 {
-	if (key == m_Name)
+	if (key == mName)
 	{
 		return CoreItemSP((CoreItem*)this, StealRefTag{}); // hack
 	}
@@ -106,7 +106,7 @@ CoreItemSP CoreNamedItem::operator[](const kstl::string& key) const
 
 CoreItemSP CoreNamedItem::operator[](const usString& key) const
 {
-	if (key.ToString() == m_Name)
+	if (key.ToString() == mName)
 	{
 		return   CoreItemSP((CoreItem*)this, StealRefTag{}); // hack
 	}
@@ -204,31 +204,31 @@ CoreItemSP	CoreItemSP::getCoreValue(const usString& s)
 
 CoreItemIterator CoreItemSP::begin() const
 {
-	return myPointer->begin();
+	return mPointer->begin();
 }
 
 CoreItemIterator CoreItemSP::end() const
 {
-	return myPointer->end();
+	return mPointer->end();
 }
 
 
 CoreItemSP::CoreItemSP(const bool& value) 
 {
-	myPointer = new CoreValue<bool>(value);
+	mPointer = new CoreValue<bool>(value);
 }
 
 CoreItemSP::CoreItemSP(const kfloat& value)
 {
-	myPointer = new CoreValue<kfloat>(value);
+	mPointer = new CoreValue<kfloat>(value);
 }
 CoreItemSP::CoreItemSP(const int& value)
 {
-	myPointer = new CoreValue<int>(value);
+	mPointer = new CoreValue<int>(value);
 }
 CoreItemSP::CoreItemSP(const unsigned int& value)
 {
-	myPointer = new CoreValue<unsigned int>(value);
+	mPointer = new CoreValue<unsigned int>(value);
 }
 CoreItemSP::CoreItemSP(const kstl::string& value, CoreModifiable* owner)
 {
@@ -241,7 +241,7 @@ CoreItemSP::CoreItemSP(const kstl::string& value, CoreModifiable* owner)
 	}
 	else
 	{
-		myPointer = new CoreValue<kstl::string>(value);
+		mPointer = new CoreValue<kstl::string>(value);
 	}
 }
 CoreItemSP::CoreItemSP(const usString& value, CoreModifiable* owner)
@@ -255,31 +255,31 @@ CoreItemSP::CoreItemSP(const usString& value, CoreModifiable* owner)
 	}
 	else
 	{
-		myPointer = new CoreValue<usString>(value);
+		mPointer = new CoreValue<usString>(value);
 	}
 }
 CoreItemSP::CoreItemSP(const Point2D& value)
 {
-	myPointer = new CoreVector();
+	mPointer = new CoreVector();
 
-	(*myPointer).set("", CoreItemSP(value.x));
-	(*myPointer).set("", CoreItemSP(value.y));
+	(*mPointer).set("", CoreItemSP(value.x));
+	(*mPointer).set("", CoreItemSP(value.y));
 }
 CoreItemSP::CoreItemSP(const Point3D& value)
 {
-	myPointer = new CoreVector();
-	(*myPointer).set("", CoreItemSP(value.x));
-	(*myPointer).set("", CoreItemSP(value.y));
-	(*myPointer).set("", CoreItemSP(value.z));
+	mPointer = new CoreVector();
+	(*mPointer).set("", CoreItemSP(value.x));
+	(*mPointer).set("", CoreItemSP(value.y));
+	(*mPointer).set("", CoreItemSP(value.z));
 }
 
 CoreItemSP::CoreItemSP(const Vector4D& value)
 {
-	myPointer = new CoreVector();
-	(*myPointer).set("", CoreItemSP(value.x));
-	(*myPointer).set("", CoreItemSP(value.y));
-	(*myPointer).set("", CoreItemSP(value.z));
-	(*myPointer).set("", CoreItemSP(value.w));
+	mPointer = new CoreVector();
+	(*mPointer).set("", CoreItemSP(value.x));
+	(*mPointer).set("", CoreItemSP(value.y));
+	(*mPointer).set("", CoreItemSP(value.z));
+	(*mPointer).set("", CoreItemSP(value.w));
 }
 
 // empty assignement with value

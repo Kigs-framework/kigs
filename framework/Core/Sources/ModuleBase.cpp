@@ -15,8 +15,8 @@ void PlatformCloseDLL(void* handle){}
 
 
 //! ModuleDescription static members
-int ModuleDescription::myCurrentReadDepth=0;
-bool ModuleDescription::myIsGoodFile;
+int ModuleDescription::mCurrentReadDepth=0;
+bool ModuleDescription::mIsGoodFile;
 
 //! implement static members for ModuleBase
 IMPLEMENT_CLASS_INFO(ModuleBase);
@@ -24,7 +24,7 @@ IMPLEMENT_CLASS_INFO(ModuleBase);
 //! utility method: return the list of all dll found in the XML file
 kstl::vector<kstl::string>&    ModuleDescription::GetDllList()
 {
-	return myDllList;
+	return mDllList;
 }
 
 //! init a module description by reading dll list in given XML file
@@ -32,8 +32,8 @@ bool ModuleDescription::Init(const kstl::string& fileName)
 {
 	//! load description file
 	XML*	xml=(XML*)XML::ReadFile(fileName,0);
-	myIsInitialised=false;
-	myIsGoodFile=true;
+	mIsInitialised=false;
+	mIsGoodFile=true;
 
 	if(xml)
 	{
@@ -42,13 +42,13 @@ bool ModuleDescription::Init(const kstl::string& fileName)
 		//! check file validity
 		if(root->getType() != XML_NODE_ELEMENT)
 		{
-			myIsGoodFile=false;
+			mIsGoodFile=false;
 		}
 		else
 		{
 			if(root->getName() != "ModuleDescription")
 			{
-				myIsGoodFile=false;
+				mIsGoodFile=false;
 			}
 			else
 			{
@@ -56,16 +56,16 @@ bool ModuleDescription::Init(const kstl::string& fileName)
 				XMLAttribute* attribute=root->getAttribute("name");
 				if(attribute)
 				{
-					myModuleName=attribute->getString();
+					mModuleName=attribute->getString();
 				}
 				else
 				{
-					myIsGoodFile=false;
+					mIsGoodFile=false;
 				}
 			}
 		}
 
-		if(myIsGoodFile)
+		if(mIsGoodFile)
 		{
 			//! get all dll names
 			for ( int i = 0; i < root->getChildCount( ); ++i )
@@ -83,24 +83,24 @@ bool ModuleDescription::Init(const kstl::string& fileName)
 #else
 						kstl::string str = textnode->getString()+".dlk";
 #endif
-						myDllList.push_back(str);
+						mDllList.push_back(str);
 					}
 				}
 			}
-			myIsInitialised=true;
+			mIsInitialised=true;
 		}
 
 		delete xml;
 	}
 
-	return myIsInitialised;
+	return mIsInitialised;
 }
 
 //! init for a module : find the XML description file, and try to load and init all associated dll
 void    ModuleBase::BaseInit(KigsCore* core,const kstl::string& moduleName, const kstl::vector<CoreModifiableAttribute*>* params)
 {
 	KIGS_MESSAGE("Init Base Module : "+moduleName);
-	myCore = core;
+	mCore = core;
 	KigsCore::ModuleInit(core,this);
 	RegisterToCore();
 
@@ -124,7 +124,7 @@ void    ModuleBase::BaseInit(KigsCore* core,const kstl::string& moduleName, cons
 			auto toAdd = PlatformLoadDLL(*it);
 			if (toAdd.myInstance)
 			{
-				myDynamicModuleList.push_back(toAdd);
+				mDynamicModuleList.push_back(toAdd);
 			}
 		}
 	}
@@ -143,7 +143,7 @@ void    ModuleBase::RegisterDynamic(ModuleBase* dynamic)
 	DynamicModuleHandleAndPointer toAdd;
 	toAdd.myHandle=0;
 	toAdd.myInstance=dynamic;
-	myDynamicModuleList.push_back(toAdd);
+	mDynamicModuleList.push_back(toAdd);
 }
 #endif
 
@@ -153,19 +153,19 @@ void    ModuleBase::BaseClose()
 	EmptyItemList();
 	kstl::vector<DynamicModuleHandleAndPointer>::iterator it;
 
-	for(it=myDynamicModuleList.begin();it!=myDynamicModuleList.end();++it)
+	for(it=mDynamicModuleList.begin();it!=mDynamicModuleList.end();++it)
 	{
 		it->myInstance->Close();
 		it->myInstance->Destroy();
 		PlatformCloseDLL(it->myHandle);
 	}
-	myDynamicModuleList.clear();
+	mDynamicModuleList.clear();
 }
 
 //! call all dll "ModuleUpdate" method
 void    ModuleBase::BaseUpdate(const Timer& timer, void* addParam)
 {
-	for(auto m : myDynamicModuleList)
+	for(auto m : mDynamicModuleList)
 	{
 		m.myInstance->CallUpdate(timer,addParam);
 	}

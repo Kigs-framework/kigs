@@ -406,14 +406,14 @@ struct KigsID
 	KigsID(const char(&aid)[_Size]) : _id(CharToID::GetID<_Size>(aid)) {};
 	KigsID(const kstl::string& aid) : _id(CharToID::GetID(aid)) {};
 	KigsID(const kstl::string_view& aid) : _id(CharToID::GetID(aid)) {};
-	//KigsID(const char*& aid) : _id(CharToID::GetID(aid)) {};
+	//KigsID(const char*& aid) : mID(CharToID::GetID(aid)) {};
 	KigsID(unsigned int aid) : _id(aid) {};
 
 	template<size_t _Size>
 	KigsID& operator=(const char(&aid)[_Size]) { _id = CharToID::GetID<_Size>(aid); return *this; };
 	KigsID& operator=(const kstl::string& aid) { _id = CharToID::GetID(aid); return *this; };
 	KigsID& operator=(const kstl::string_view& aid) { _id = CharToID::GetID(aid); return *this; };
-	//KigsID& operator=(const char*& aid) { _id = CharToID::GetID(aid); return *this; };
+	//KigsID& operator=(const char*& aid) { mID = CharToID::GetID(aid); return *this; };
 	KigsID& operator=(unsigned int aid) { _id = aid; return *this; };
 
 #endif
@@ -422,7 +422,7 @@ struct KigsID
 	unsigned int _id;
 };
 
-//inline bool operator==(const KigsID& a, const KigsID& b) { return a._id == b._id; }
+//inline bool operator==(const KigsID& a, const KigsID& b) { return a.mID == b.mID; }
 inline bool operator==(const KigsID& a, unsigned int id) { return a._id == id; }
 inline bool operator==(unsigned int id, const KigsID& a) { return a._id == id; }
 
@@ -449,7 +449,7 @@ namespace std
 		typedef std::size_t result_type;
 		result_type operator()(argument_type const& s) const
 		{
-			//return std::hash<decltype(s._id)>{}(s._id);
+			//return std::hash<decltype(s.mID)>{}(s.mID);
 			return s._id;
 		}
 	};

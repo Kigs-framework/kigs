@@ -5,11 +5,17 @@
 
 class CoreSequence;
 // ****************************************
-// * CoreSequenceLauncher class
+// * BaseDDSequence class
 // * --------------------------------------
-/*!  \class CoreSequenceLauncher*/
-
-// ****************************************
+/**
+ * \file	BaseDDSequence.h
+ * \class	BaseDDSequence
+ * \ingroup DataDrivenApplication
+ * \brief	A data driven sequence.
+ * 
+ * ?? Obsolete ?? just a DataDrivenSequence ? 
+ */
+ // ****************************************
 
 class BaseDDSequence : public DataDrivenSequence
 {
@@ -23,7 +29,7 @@ protected:
 	//! destructor
 	virtual ~BaseDDSequence();
 
-	maString myTransitionData;
+	maString mTransitionData;
 };
 
 #endif //_BASEDDSEQUENCE_H_

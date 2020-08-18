@@ -602,7 +602,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					else if('>'==charVal)
 					{
 						//const char** attribs=myElementStart.getAttribArray();
-						//(*myStartElementHandler)(myUserData,(const char*)myElementStart.myName.myStringStart,attribs);
+						//(*myStartElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart,attribs);
 						startElement();
 						myElementStart.clear(this);
 						state=NO_STATE;
@@ -622,7 +622,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 			case ELEMENT_START_END:
 				{
 					//const char** attribs=myElementStart.getAttribArray();
-					//(*myStartElementHandler)(myUserData,(const char*)myElementStart.myName.myStringStart,attribs);
+					//(*myStartElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart,attribs);
 					startElement();
 					myElementStart.clear(this);
 					state=NO_STATE;
@@ -632,9 +632,9 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				{
 					startElement();
 					//const char** attribs=myElementStart.getAttribArray();
-					//(*myStartElementHandler)(myUserData,(const char*)myElementStart.myName.myStringStart,attribs);
+					//(*myStartElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart,attribs);
 					endElement();
-					//(*myEndElementHandler)(myUserData,(const char*)myElementStart.myName.myStringStart);
+					//(*myEndElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart);
 					//myElementStart.clear(this);
 					state=NO_STATE;
 				}
@@ -648,7 +648,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					else if('>'==charVal)
 					{
 						endElement();
-						//(*myEndElementHandler)(myUserData,(const char*)myElementStart.myName.myStringStart);
+						//(*myEndElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart);
 						//myElementStart.clear(this);
 						state=NO_STATE;
 					}
@@ -663,7 +663,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 			case ELEMENT_CLOSING_END:
 				{
 					endElement();
-					//(*myEndElementHandler)(myUserData,(const char*)myElementStart.myName.myStringStart);
+					//(*myEndElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart);
 					//myElementStart.clear(this);
 					state=NO_STATE;
 				}

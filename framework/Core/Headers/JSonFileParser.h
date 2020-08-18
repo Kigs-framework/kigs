@@ -18,7 +18,16 @@ class CoreItem;
 
 #define JSonDelegateMethods		JSonObjectStart,JSonObjectEnd,JSonArrayStart,JSonArrayEnd,JSonParamList
 
-// TODO : can probably be a template class 
+// ****************************************
+// * DictionaryFromJson class
+// * --------------------------------------
+/**
+ * \file	JSonFileParser.h
+ * \class	DictionaryFromJson
+ * \ingroup Core
+ * \brief	Construct CoreItem tree from a JSon buffer
+ */
+ // ****************************************
 class DictionaryFromJson : public CoreModifiable
 {
 public:
@@ -27,19 +36,30 @@ public:
 	//! builds an object dictionary by calling the callback of JSonFileParser
 	DictionaryFromJson(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
-	CoreItemSP Get_Dictionary() const { if (m_vObjectStack.size()) return m_vObjectStack[0]; return CoreItemSP(nullptr); }
+	CoreItemSP Get_Dictionary() const { if (mObjectStack.size()) return mObjectStack[0]; return CoreItemSP(nullptr); }
 
 protected:
 	virtual ~DictionaryFromJson();
 
-	kstl::vector<CoreItemSP>					m_vObjectStack;
-	CoreItemSP								m_pCurrentObject;
+	kstl::vector<CoreItemSP>					mObjectStack;
+	CoreItemSP								mCurrentObject;
 
 	Declare_JSonDelegate;
 
 	COREMODIFIABLE_METHODS(JSonDelegateMethods);
 };
 
+
+// ****************************************
+// * DictionaryFromJsonUTF16 class
+// * --------------------------------------
+/**
+ * \file	JSonFileParser.h
+ * \class	DictionaryFromJsonUTF16
+ * \ingroup Core
+ * \brief	Construct CoreItem tree from a JSon buffer in UTF16
+ */
+ // ****************************************
 class DictionaryFromJsonUTF16 : public CoreModifiable
 {
 public:
@@ -48,13 +68,13 @@ public:
 	//! builds an object dictionary by calling the callback of JSonFileParser
 	DictionaryFromJsonUTF16(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	CoreItemSP Get_Dictionary() const { if (m_vObjectStack.size()) return m_vObjectStack[0]; return CoreItemSP(nullptr); }
+	CoreItemSP Get_Dictionary() const { if (mObjectStack.size()) return mObjectStack[0]; return CoreItemSP(nullptr); }
 
 protected:
 	virtual ~DictionaryFromJsonUTF16();
 
-	kstl::vector<CoreItemSP>					m_vObjectStack;
-	CoreItemSP								m_pCurrentObject;
+	kstl::vector<CoreItemSP>					mObjectStack;
+	CoreItemSP								mCurrentObject;
 
 	Declare_JSonDelegate;
 
@@ -62,7 +82,16 @@ protected:
 };
 
 
-
+// ****************************************
+// * JSonFileParserBase class
+// * --------------------------------------
+/**
+ * \file	JSonFileParser.h
+ * \class	JSonFileParserBase
+ * \ingroup Core
+ * \brief	Base class for JSon parser
+ */
+ // ****************************************
 
 template <typename stringType, typename parserType>
 class	JSonFileParserBase
@@ -99,16 +128,16 @@ protected:
 
 	CoreItemSP	getDictionnary();
 
-	unsigned int				myJSonObjectStartID=0;
-	unsigned int				myJSonObjectEndID=0;
-	unsigned int				myJSonArrayStartID=0;
-	unsigned int				myJSonArrayEndID=0;
-	unsigned int				myJSonParamListID=0;
-	CMSP						myDelegateObject=nullptr;
-	CMSP						myDictionaryFromJson=nullptr;
+	unsigned int				mJSonObjectStartID=0;
+	unsigned int				mJSonObjectEndID=0;
+	unsigned int				mJSonArrayStartID=0;
+	unsigned int				mJSonArrayEndID=0;
+	unsigned int				mJSonParamListID=0;
+	CMSP						mDelegateObject=nullptr;
+	CMSP						mDictionaryFromJson=nullptr;
 
 	
-	kstl::vector<CoreModifiableAttribute*>	myParamList;
+	kstl::vector<CoreModifiableAttribute*>	mParamList;
 
 };
 

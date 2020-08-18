@@ -1238,10 +1238,10 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 	while(It != MeshsonsList.end())
 	{
 		//check if this children is a MeshItemGroup
-		if ( ((*It).myItem)->isSubType(MeshItemGroup::myClassID) )
+		if ( ((*It).mItem)->isSubType(MeshItemGroup::mClassID) )
 		{
 			nombredeGroupe++;
-			MeshItemGroup* newgroup = ((MeshItemGroup*)(*It).myItem.get());
+			MeshItemGroup* newgroup = ((MeshItemGroup*)(*It).mItem.get());
 
 			GroupList.push_back(newgroup);
 		}
@@ -1295,22 +1295,22 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 		while(It_ItemGroup != ItemGroupSonsList.end())
 		{
 			//check if this children is a Material
-			if ( ((*It_ItemGroup).myItem)->isSubType(Material::myClassID) )
+			if ( ((*It_ItemGroup).mItem)->isSubType(Material::mClassID) )
 			{
 				int value = 0;
-				((*It_ItemGroup).myItem)->getValue("BlendFuncSource",value);
+				((*It_ItemGroup).mItem)->getValue("BlendFuncSource",value);
 				currentmat.myBlendFuncSource = (BlendFuncSource)value;
-				((*It_ItemGroup).myItem)->getValue("BlendFuncDest",value);
+				((*It_ItemGroup).mItem)->getValue("BlendFuncDest",value);
 				currentmat.myBlendFuncDest = (BlendFuncDest)value;
 				bool bvalue = false;
-				((*It_ItemGroup).myItem)->getValue("BlendEnabled",bvalue);
+				((*It_ItemGroup).mItem)->getValue("BlendEnabled",bvalue);
 				currentmat.myBlendEnabled = bvalue;
-				((*It_ItemGroup).myItem)->getValue("MaterialColorEnabled",bvalue);
+				((*It_ItemGroup).mItem)->getValue("MaterialColorEnabled",bvalue);
 				currentmat.myMaterialColorEnabled = bvalue;
 
 				//ambiant Color
 				float ambiantColor[4];
-				((*It_ItemGroup).myItem)->getArrayValue("AmbientColor", ambiantColor, 4);
+				((*It_ItemGroup).mItem)->getArrayValue("AmbientColor", ambiantColor, 4);
 				currentmat.ambient[0] = ambiantColor[0];
 				currentmat.ambient[1] = ambiantColor[1];
 				currentmat.ambient[2] = ambiantColor[2];
@@ -1318,7 +1318,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 
 				//Specular
 				float specularColor[4];
-				((*It_ItemGroup).myItem)->getArrayValue("SpecularColor", specularColor, 4);
+				((*It_ItemGroup).mItem)->getArrayValue("SpecularColor", specularColor, 4);
 				currentmat.specular[0] = specularColor[0];
 				currentmat.specular[1] = specularColor[1];
 				currentmat.specular[2] = specularColor[2];
@@ -1326,7 +1326,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 
 				//EmissionColor
 				float emissionColor[4];
-				((*It_ItemGroup).myItem)->getArrayValue("EmissionColor", emissionColor, 4);
+				((*It_ItemGroup).mItem)->getArrayValue("EmissionColor", emissionColor, 4);
 				currentmat.emissive[0] = emissionColor[0];
 				currentmat.emissive[1] = emissionColor[1];
 				currentmat.emissive[2] = emissionColor[2];
@@ -1334,20 +1334,20 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 
 				//DiffuseColor
 				float diffuseColor[4];
-				((*It_ItemGroup).myItem)->getArrayValue("DiffuseColor", diffuseColor, 4);
+				((*It_ItemGroup).mItem)->getArrayValue("DiffuseColor", diffuseColor, 4);
 				currentmat.diffuse[0] = diffuseColor[0];
 				currentmat.diffuse[1] = diffuseColor[1];
 				currentmat.diffuse[2] = diffuseColor[2];
 				currentmat.diffuse[3] = 0;
 				currentmat.alpha = diffuseColor[3];
 
-				((*It_ItemGroup).myItem)->getValue("Shininess",currentmat.shininess);
-				((*It_ItemGroup).myItem)->getValue("Transparency",currentmat.alpha);
+				((*It_ItemGroup).mItem)->getValue("Shininess",currentmat.shininess);
+				((*It_ItemGroup).mItem)->getValue("Transparency",currentmat.alpha);
 
 				currentmat.triangleCount = newgroup->myTriangleCount;
 
 				//parcour les enfant du material
-				kstl::vector<ModifiableItemStruct> MaterialSonsList = ((*It_ItemGroup).myItem)->getItems();
+				kstl::vector<ModifiableItemStruct> MaterialSonsList = ((*It_ItemGroup).mItem)->getItems();
 				kstl::vector<ModifiableItemStruct>::iterator It_Material = MaterialSonsList.begin();
 				unsigned int number = 0;
 
@@ -1356,13 +1356,13 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 				{
 #ifndef NO_MULTISTAGE_RENDERING
 					//check if this children is a Material
-					if ( ((*It_Material).myItem)->isSubType(MaterialStage::myClassID) )
+					if ( ((*It_Material).mItem)->isSubType(MaterialStage::mClassID) )
 					{
 						number++;
 					}
 #else //NO_MULTISTAGE_RENDERING
 					//check if this children is a Material
-					if ( ((*It_Material).myItem)->isSubType(Texture::myClassID) )
+					if ( ((*It_Material).myItem)->isSubType(Texture::mClassID) )
 					{
 						number++;
 					}
@@ -1381,10 +1381,10 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 
 #ifndef NO_MULTISTAGE_RENDERING
 					//check if this children is a Material
-					if ( ((*It_Material).myItem)->isSubType(MaterialStage::myClassID) )
+					if ( ((*It_Material).mItem)->isSubType(MaterialStage::mClassID) )
 					{
 						keep=true;
-						SP<MaterialStage>& MatStage = (SP<MaterialStage> & )(*It_Material).myItem;
+						SP<MaterialStage>& MatStage = (SP<MaterialStage> & )(*It_Material).mItem;
 
 						int valuematstage=0;
 						MatStage->getValue("StageIndex",valuematstage);
@@ -1406,9 +1406,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 							while(It_MatStage != MatStageSonsList.end())
 							{
 								//check if this children is a Texture
-								if ( ((*It_MatStage).myItem)->isSubType(Texture::myClassID) )
+								if ( ((*It_MatStage).mItem)->isSubType(Texture::mClassID) )
 								{
-									SP<Texture>& temptex =(SP<Texture> &) (*It_MatStage).myItem;
+									SP<Texture>& temptex =(SP<Texture> &) (*It_MatStage).mItem;
 									temptex->getValue("FileName",stagedesc->myTexture);
 								}
 								It_MatStage++;
@@ -1417,7 +1417,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					}
 #else //NO_MULTISTAGE_RENDERING
 					//check if this children is a Material
-					if ( ((CoreModifiable*)(*It_Material).myItem)->isSubType(Texture::myClassID) )
+					if ( ((CoreModifiable*)(*It_Material).myItem)->isSubType(Texture::mClassID) )
 					{
 						keep=true;
 						((Texture*)(*It_Material).myItem)->getValue("FileName",stagedesc->myTexture);

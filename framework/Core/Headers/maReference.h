@@ -4,15 +4,7 @@
 #include "CoreModifiableAttribute.h"
 #include "AttributeModifier.h"
 
-// ****************************************
-// * maReferenceBase class
-// * --------------------------------------
-/**
-* \class	maReferenceBase
-* \ingroup CoreModifiableAttibute
-* \brief	CoreModifiableAttributeData for reference on CoreModifiable
-*/
-// ****************************************
+
 
 struct maReferenceObject
 {
@@ -20,16 +12,26 @@ struct maReferenceObject
 
 	maReferenceObject(CoreModifiable* lobj)
 	{
-		obj = lobj;
+		mObj = lobj;
 	}
-	maReferenceObject(const kstl::string& nametype) : obj(nullptr)
+	maReferenceObject(const kstl::string& nametype) : mObj(nullptr)
 	{
-		search_string = nametype;
+		mSearchString = nametype;
 	}
 
-	CoreModifiable* obj;
-	kstl::string	search_string;
+	CoreModifiable* mObj;
+	kstl::string	mSearchString;
 };
+
+// ****************************************
+// * maReferenceHeritage class
+// * --------------------------------------
+/**
+* \class	maReferenceHeritage
+* \ingroup CoreModifiableAttibute
+* \brief	CoreModifiableAttributeData for reference on CoreModifiable
+*/
+// ****************************************
 
 template<int notificationLevel>
 class maReferenceHeritage : public CoreModifiableAttributeData<maReferenceObject>
@@ -41,7 +43,7 @@ public:
 
 	maReferenceHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, kstl::string value) : CoreModifiableAttributeData<maReferenceObject>(owner, isInitAttribute, ID)
 	{
-		_value = maReferenceObject{ value };
+		mValue = maReferenceObject{ value };
 		Search();
 	}
 
@@ -49,9 +51,9 @@ public:
 
 	virtual ~maReferenceHeritage()
 	{
-		if (_value.obj)
+		if (mValue.mObj)
 		{
-			UnreferenceModifiable(_value.obj);
+			UnreferenceModifiable(mValue.mObj);
 		}
 	}
 
@@ -59,31 +61,31 @@ public:
 	// Sets the internal pointer to null, forcing to search again next time we query the reference
 	void	ResetFoundModifiable()
 	{
-		_value.obj = nullptr;
+		mValue.mObj = nullptr;
 	}
 	virtual void CopyData(const CoreModifiableAttributeData<maReferenceObject>& toCopy) override
 	{
 		const auto& toCopyValue = toCopy.const_ref();
-		if (toCopyValue.obj)
+		if (toCopyValue.mObj)
 		{
 			// check if value has changed
-			if (_value.obj != toCopyValue.obj)
+			if (mValue.mObj != toCopyValue.mObj)
 			{
-				if (_value.obj)
-					UnreferenceModifiable(_value.obj);
+				if (mValue.mObj)
+					UnreferenceModifiable(mValue.mObj);
 
-				_value = toCopyValue;
+				mValue = toCopyValue;
 
-				if (_value.obj)
-					ReferenceModifiable(_value.obj);
+				if (mValue.mObj)
+					ReferenceModifiable(mValue.mObj);
 			}
 		}
 		else
 		{
-			if (_value.obj)
-				UnreferenceModifiable(_value.obj);
+			if (mValue.mObj)
+				UnreferenceModifiable(mValue.mObj);
 
-			_value = toCopyValue;
+			mValue = toCopyValue;
 		}
 	}
 
@@ -112,21 +114,21 @@ public:
 	{
 
 		((maReferenceHeritage*)this)->SearchRef();
-		if (_value.obj)
+		if (mValue.mObj)
 		{
 #ifdef KEEP_NAME_AS_STRING
-			value = _value.obj->GetRuntimeType();
+			value = mValue.mObj->GetRuntimeType();
 #else
-			value = std::to_string(_value.obj->GetRuntimeType().toUInt());
+			value = std::to_string(mValue.mObj->GetRuntimeType().toUInt());
 #endif
 
 			value += ":";
-			value += _value.obj->getName();
+			value += mValue.mObj->getName();
 			return true;
 		}
 		else
 		{
-			value = _value.search_string;
+			value = mValue.mSearchString;
 			return true;
 		}
 
@@ -173,15 +175,15 @@ public:
 		if (this->isReadOnly())
 			return false;
 
-		if (_value.obj != value)
+		if (mValue.mObj != value)
 		{
-			if (_value.obj)
-				UnreferenceModifiable(_value.obj);
+			if (mValue.mObj)
+				UnreferenceModifiable(mValue.mObj);
 
-			_value.obj = value;
+			mValue.mObj = value;
 
-			if (_value.obj)
-				ReferenceModifiable(_value.obj);
+			if (mValue.mObj)
+				ReferenceModifiable(mValue.mObj);
 		}
 
 		DO_NOTIFICATION(notificationLevel);
@@ -239,7 +241,7 @@ protected:
 		auto& coremodigiablemap = KigsCore::Instance()->getReferenceMap();
 		auto found = coremodigiablemap.find(current);
 
-		// ok, the CoreModifiable is already there, add a vector entry
+		// ok, the CoreModifiable is already there, add a vector mEntry
 		if (found != coremodigiablemap.end())
 		{
 			kstl::vector<CoreModifiableAttribute*>& referencevector = (*found).second;
@@ -247,7 +249,7 @@ protected:
 		}
 		else
 		{
-			// create a new map entry
+			// create a new map mEntry
 			kstl::vector<CoreModifiableAttribute*> toAdd;
 			toAdd.push_back(this);
 			coremodigiablemap[current] = toAdd;
@@ -259,56 +261,65 @@ protected:
 	void	Search()
 	{
 		CMSP obj = nullptr;
-		if (!_value.search_string.empty())
+		if (!mValue.mSearchString.empty())
 		{
-			obj = CoreModifiable::SearchInstance(_value.search_string, _owner);
+			obj = CoreModifiable::SearchInstance(mValue.mSearchString, mOwner);
 		}
 		else
 		{
-			if (_value.obj)
+			if (mValue.mObj)
 			{
-				UnreferenceModifiable(_value.obj);
-				_value.obj = nullptr;
+				UnreferenceModifiable(mValue.mObj);
+				mValue.mObj = nullptr;
 			}
 			return;
 		}
 		if (obj)
 		{
-			if (_value.obj != obj.get())
+			if (mValue.mObj != obj.get())
 			{
-				if (_value.obj)
-					UnreferenceModifiable(_value.obj);
+				if (mValue.mObj)
+					UnreferenceModifiable(mValue.mObj);
 
-				_value.obj = obj.get();
-				ReferenceModifiable(_value.obj);
+				mValue.mObj = obj.get();
+				ReferenceModifiable(mValue.mObj);
 			}
 		}
 		else
 		{
-			if (_value.obj)
-				UnreferenceModifiable(_value.obj);
-			_value.obj = nullptr;
+			if (mValue.mObj)
+				UnreferenceModifiable(mValue.mObj);
+			mValue.mObj = nullptr;
 		}
 	}
 	void InitAndSearch(const kstl::string& nametype)
 	{
-		CoreModifiable* old_obj = _value.obj;
-		_value = maReferenceObject{ nametype };
-		_value.obj = old_obj;
+		CoreModifiable* old_obj = mValue.mObj;
+		mValue = maReferenceObject{ nametype };
+		mValue.mObj = old_obj;
 		Search();
 	}
 	CoreModifiable*	SearchRef()
 	{
-		if (_value.obj)
+		if (mValue.mObj)
 		{
-			return _value.obj;
+			return mValue.mObj;
 		}
 		Search();
-		return _value.obj;
+		return mValue.mObj;
 	}
 
 };
 
+// ****************************************
+// * maReference class
+// * --------------------------------------
+/**
+* \class	maReference
+* \ingroup CoreModifiableAttibute
+* \brief	CoreModifiableAttribute managing a reference
+*/
+// ****************************************
 
 using maReference = maReferenceHeritage<0>;
 

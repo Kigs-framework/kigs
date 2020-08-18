@@ -68,7 +68,7 @@ class LuaChildIterator : public LuaIntf::CppFunctor
 		
 		LuaIntf::LuaState L = lua;
 		if(_i < _obj->getItems().size())
-			L.push(_obj->getItems()[_i++].myItem);
+			L.push(_obj->getItems()[_i++].mItem);
 		else
 			return 0;
 		return 1;

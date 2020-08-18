@@ -157,8 +157,8 @@ void  WindowWin32::Update(const Timer&  timer, void* addParam)
 	auto end = getItems().end();
 	for (;itr!=end;++itr)
 	{
-		if ((*itr).myItem->isSubType("RenderingScreen"))
-			(*itr).myItem->CallUpdate(timer, nullptr);
+		if ((*itr).mItem->isSubType("RenderingScreen"))
+			(*itr).mItem->CallUpdate(timer, nullptr);
 	}
 }
 

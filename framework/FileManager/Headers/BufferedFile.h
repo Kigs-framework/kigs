@@ -11,11 +11,8 @@
 /**
  * \file	BufferedFile.h
  * \class	BufferedFile
- * \ingroup Renderer
+ * \ingroup FileManager
  * \brief	buffered file class
- * \author	ukn
- * \version ukn
- * \date	ukn
  */
 // ****************************************
 class BufferedFile
@@ -42,19 +39,19 @@ public:
 		*/
 	static BufferedFile *Open(FileHandle * pFilehdl)
 	{
-		if (!pFilehdl->myFile)
+		if (!pFilehdl->mFile)
 			return NULL;
 		
 		Platform_fopen(pFilehdl, "rb");
 
 		BufferedFile *pRes = new BufferedFile;
 		Platform_fseek(pFilehdl, 0, SEEK_END);
-		pRes->myFileSize = Platform_ftell(pFilehdl);
+		pRes->mFileSize = Platform_ftell(pFilehdl);
 		Platform_fseek(pFilehdl, 0, SEEK_SET);
 
-		pRes->myFileContent = new char[pRes->myFileSize];
-		Platform_fread(pRes->myFileContent, 1, pRes->myFileSize, pFilehdl);
-		pRes->myFileCurrentOffset = 0;
+		pRes->mFileContent = new char[pRes->mFileSize];
+		Platform_fread(pRes->mFileContent, 1, pRes->mFileSize, pFilehdl);
+		pRes->mFileCurrentOffset = 0;
 		Platform_fclose(pFilehdl);
 		return pRes;
 	}
@@ -67,16 +64,16 @@ public:
 	static BufferedFile *Open(const char *pFilename)
 	{
 		SmartPointer<FileHandle> pFile = Platform_fopen(pFilename, "rb");
-		if (!pFile->myFile)
+		if (!pFile->mFile)
 			return NULL;
 		BufferedFile *pRes = new BufferedFile;
 		Platform_fseek(pFile.get(), 0, SEEK_END);
-		pRes->myFileSize = Platform_ftell(pFile.get());
+		pRes->mFileSize = Platform_ftell(pFile.get());
 		Platform_fseek(pFile.get(), 0, SEEK_SET);
 		
-		pRes->myFileContent = new char[pRes->myFileSize];
-		Platform_fread(pRes->myFileContent, 1, pRes->myFileSize, pFile.get());
-		pRes->myFileCurrentOffset = 0;
+		pRes->mFileContent = new char[pRes->mFileSize];
+		Platform_fread(pRes->mFileContent, 1, pRes->mFileSize, pFile.get());
+		pRes->mFileCurrentOffset = 0;
 		Platform_fclose(pFile.get());
 		return pRes;
 	}
@@ -85,7 +82,7 @@ public:
 	 * \brief	destructor
 	 * \fn 		~BufferedFile()
 	 */
-	~BufferedFile() {delete[] myFileContent;}
+	~BufferedFile() {delete[] mFileContent;}
 
 	/**
 	 * \brief	read from the bufferedFile
@@ -101,10 +98,10 @@ public:
 		unsigned int ReadCount=0;
 		while (ReadCount<ItemCount)
 		{
-			if ((myFileCurrentOffset+ItemSize)>myFileSize)
+			if ((mFileCurrentOffset+ItemSize)>mFileSize)
 				break;
 			for (unsigned int i=0; i<ItemSize; i++)
-				*pcDest++ = myFileContent[myFileCurrentOffset++];
+				*pcDest++ = mFileContent[mFileCurrentOffset++];
 			ReadCount++;
 		}
 		return ReadCount;
@@ -115,11 +112,11 @@ public:
 
 private:
 	//! size of the file
-	unsigned int myFileSize;
+	unsigned int mFileSize;
 	//! data in the file
-	char *myFileContent;
+	char *mFileContent;
 	//! read position
-	unsigned int myFileCurrentOffset;
+	unsigned int mFileCurrentOffset;
 };
 
 //! redefinition of fread

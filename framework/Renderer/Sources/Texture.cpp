@@ -23,7 +23,7 @@ Texture::Texture(const kstl::string& name, CLASS_NAME_TREE_ARG) : Drawable(name,
 ,myPixelSize(0)
 ,myIsText(false)
 {
-	//myTraceRef = true;
+	//mTraceRef = true;
 }
 
 Texture::~Texture()

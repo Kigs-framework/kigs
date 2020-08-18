@@ -10,30 +10,14 @@
 class CorePackage;
 class PureVirtualFileAccessDelegate;
 
+
 // ****************************************
-// * FilePathManager class
+// * FileHandle class
 // * --------------------------------------
-/*!  \class FilePathManager
-	 this class is used to search for file in a defined Path.
-	 
-	 Enrich the path like this :
-
-	 auto&	pathManager=KigsCore::Singleton<FilePathManager>();
-	 pathManager->AddToPath("../Data/textures","tga"); // relative to execution directory
-	 pathManager->AddToPath("../Data","*"); // search all extension in Data
-
-	 Search for a file like this :
-
-	 auto&	pathManager=KigsCore::Singleton<FilePathManager>();
-
-	 std::string fullfilename;
-	 // search for file "fileName" and return its full path in fullfilename
-	 if(pathManager->FindFullName(fileName,fullfilename))
-	 {
-		PLATFORM_FILE* animfile=Platform_fopen(fullfilename.c_str(),"rb");
-		// ...
-	 }	
-	 \ingroup FileManager
+/**  \class FileHandle
+*    \file	FilePathManager.h
+*	 \brief Platform agnostic FileHandle
+*	 \ingroup FileManager
 */
 // ****************************************
 
@@ -41,11 +25,11 @@ class FileHandle : public GenericRefCountedBaseClass
 {
 public:
 	FileHandle() : GenericRefCountedBaseClass()
-		, myFile(0)
-		, myDeviceID(0)
-		, myUseVirtualFileAccess(false)
-		, myStatus(0)
-		, mySize(-1)
+		, mFile(0)
+		, mDeviceID(0)
+		, mUseVirtualFileAccess(false)
+		, mStatus(0)
+		, mSize(-1)
 	{};
 
 	SmartPointer<FileHandle> MakeCopy();
@@ -53,15 +37,15 @@ public:
 	virtual ~FileHandle();
 
 	union {
-		PLATFORM_FILE*					myFile;						// system platform specific file handle 
-		PureVirtualFileAccessDelegate*	myVirtualFileAccess;		// delegate class to access specific file (Packages, system specific files...)
+		PLATFORM_FILE*					mFile;						// system platform specific file handle 
+		PureVirtualFileAccessDelegate*	mVirtualFileAccess;		// delegate class to access specific file (Packages, system specific files...)
 	};
-	std::string	myFileName;					// short file name 
-	std::string	myFullFileName;				// full path with file name
-	std::string	myExtension;				// file extension
+	std::string	mFileName;					// short file name 
+	std::string	mFullFileName;				// full path with file name
+	std::string	mExtension;				// file extension
 
-	unsigned int	myDeviceID;
-	bool			myUseVirtualFileAccess;		// this handle use a virtual file access
+	unsigned int	mDeviceID;
+	bool			mUseVirtualFileAccess;		// this handle use a virtual file access
 
 	// convert string opening flag (ie : "rb" "wb"...) in unsigned int flag  
 	static inline unsigned int OpeningFlags(const char* mode)
@@ -102,20 +86,20 @@ public:
 	// retreive current opening flags
 	inline unsigned int getOpeningFlags()
 	{
-		return myStatus&(Read|Write|Binary|Append);
+		return mStatus&(Read|Write|Binary|Append);
 	}
 
 	// set current opening flags
 	inline void setOpeningFlags(unsigned int flags)
 	{
-		myStatus &= 0xFFFFFFFF^(Read | Write | Binary | Append);
-		myStatus |= flags&(Read | Write | Binary | Append);
+		mStatus &= 0xFFFFFFFF^(Read | Write | Binary | Append);
+		mStatus |= flags&(Read | Write | Binary | Append);
 	}
 
 	// reset flags 
 	inline void resetStatus()
 	{
-		myStatus &= InfoSet;
+		mStatus &= InfoSet;
 	}
 
 	enum FileHandleStatusFlag
@@ -132,12 +116,24 @@ public:
 		InfoSet				=   1<<8,
 	};
 
-	unsigned int	myStatus; // status flag
-	int				mySize;
+	unsigned int	mStatus; // status flag
+	int				mSize;
 };
 
 
 class CoreRawBuffer;
+
+
+// ****************************************
+// * FilePathManager class
+// * --------------------------------------
+/**  \class FilePathManager
+*    \file	FilePathManager.h
+*	 \brief this class is used to search for file in a defined Path.
+*	 \ingroup FileManager
+*/
+// ****************************************
+
 class FilePathManager : public CoreModifiable
 {
 public:
@@ -178,10 +174,10 @@ public:
 	void	InitBundleList(const std::string& filename);
 
 	//! init bundle root
-	void	InitBundleRoot(const std::string& root) { myBundleRoot = root; }
+	void	InitBundleRoot(const std::string& root) { mBundleRoot = root; }
 
-	const kigs::unordered_map<std::string, std::vector<std::string>>& GetBundleList() { return myBundleList; }
-	const std::string& GetBundleRoot() { return myBundleRoot; }
+	const kigs::unordered_map<std::string, std::vector<std::string>>& GetBundleList() { return mBundleList; }
+	const std::string& GetBundleRoot() { return mBundleRoot; }
 
 	//! init from config json file
 	void	InitWithConfigFile(const std::string& filename);
@@ -238,26 +234,26 @@ public:
 
 	CorePackage* GetLoadedPackage(const std::string& filename);
 
-	void RemoveFromBundleList(const std::string& name) { myBundleList.erase(name); }
+	void RemoveFromBundleList(const std::string& name) { mBundleList.erase(name); }
 
 	// extensions alias management 
 	// keep '.' in both alias and extension
 	void	AddAlias(const KigsID& alias, const std::string& extension)
 	{
-		myExtensionAlias[alias] = extension;
+		mExtensionAlias[alias] = extension;
 	}
 	void	RemoveAlias(const KigsID& alias)
 	{
-		auto found=myExtensionAlias.find(alias);
-		if (found != myExtensionAlias.end())
+		auto found=mExtensionAlias.find(alias);
+		if (found != mExtensionAlias.end())
 		{
-			myExtensionAlias.erase(found);
+			mExtensionAlias.erase(found);
 		}
 	}
 	std::string	ResolveAlias(const std::string& alias)
 	{
-		auto found = myExtensionAlias.find(alias);
-		if (found != myExtensionAlias.end())
+		auto found = mExtensionAlias.find(alias);
+		if (found != mExtensionAlias.end())
 		{
 			return (*found).second;
 		}
@@ -275,15 +271,15 @@ protected:
 	static std::string GetDevicePathString(DeviceID);
 
 	//! For each extension, a path list. 
-	kigs::unordered_map<std::string, std::vector<std::string> >		myPath;
+	kigs::unordered_map<std::string, std::vector<std::string> >		mPath;
 
 	// extern & distant path management (TODO / TO TEST)
-	std::string	myExternPath[4];
-	std::string	myDistantPath[4];
+	std::string	mExternPath[4];
+	std::string	mDistantPath[4];
 
 	// can use bundle or not (only asset path)
-	kigs::unordered_map<std::string, std::vector<std::string>> myBundleList;
-	std::string											myBundleRoot;
+	kigs::unordered_map<std::string, std::vector<std::string>> mBundleList;
+	std::string											mBundleRoot;
 
 	// retreive extension and short file name 
 	static void	SetFileInfos(FileHandle* handle);
@@ -292,15 +288,15 @@ protected:
 	friend class CorePackage;
 	void	insertPackage(unsigned int packageID);
 	void	unloadPackage(unsigned int packageID);
-	unsigned int				 myPackageID;
-	std::map<int, CorePackage*> myPackageList;
+	unsigned int				 mPackageID;
+	std::map<int, CorePackage*> mPackageList;
 
 	// extension aliases
 	// KigsID key is KigsID(alias), second string is original 
-	kigs::unordered_map<KigsID, std::string>	myExtensionAlias;
+	kigs::unordered_map<KigsID, std::string>	mExtensionAlias;
 
 	// if a path is given, FindFullName search only with the current path 
-	maBool	myStrictPath = BASE_ATTRIBUTE(StrictPath, false);
+	maBool	mStrictPath = BASE_ATTRIBUTE(StrictPath, false);
 };
 
 extern SmartPointer<FileHandle> Platform_fopen(const char* name, const char * mode);

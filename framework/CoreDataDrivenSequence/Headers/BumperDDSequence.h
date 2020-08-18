@@ -4,6 +4,19 @@
 #include "BaseDDSequence.h"
 #include "maUSString.h"
 
+// ****************************************
+// * BumperDDSequence class
+// * --------------------------------------
+/**
+ * \file	BumperDDSequence.h
+ * \class	BumperDDSequence
+ * \ingroup DataDrivenApplication
+ * \brief	Splash screen
+ *
+ * ?? Obsolete ??
+ */
+ // ****************************************
+
 class BumperDDSequence : public BaseDDSequence
 {
 public:
@@ -18,8 +31,8 @@ protected:
 
 	void Update(const Timer&  timer, void* /*addParam*/) override;
 
-	maUSString myNextSequence;
-	maFloat myDuration;
+	maUSString mNextSequence;
+	maFloat mDuration;
 
 	kdouble mStartTime;
 };

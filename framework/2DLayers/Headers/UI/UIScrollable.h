@@ -4,6 +4,17 @@
 #include "AttributePacking.h"
 #include "TouchInputEventManager.h"
 
+// ****************************************
+// * UIScrollable class
+// * --------------------------------------
+/**
+* \file	UIScrollable.h
+* \class	UIScrollable
+* \ingroup 2DLayers
+* \brief	Base class for scrollable UI.
+*/
+// ****************************************
+
 class UIScrollable : public UIDrawableItem
 {
 public:

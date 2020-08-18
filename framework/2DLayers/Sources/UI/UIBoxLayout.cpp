@@ -7,24 +7,24 @@ IMPLEMENT_CLASS_INFO(UIBoxLayout)
 
 IMPLEMENT_CONSTRUCTOR(UIBoxLayout)
 {
-	myPadding.changeNotificationLevel(Owner);
-	mySortByPriority.changeNotificationLevel(Owner);
-	myVertical.changeNotificationLevel(Owner);
-	myAlignment.changeNotificationLevel(Owner);
-	myResizeLayoutX.changeNotificationLevel(Owner);
-	myResizeLayoutY.changeNotificationLevel(Owner);
+	mPadding.changeNotificationLevel(Owner);
+	mSortByPriority.changeNotificationLevel(Owner);
+	mVertical.changeNotificationLevel(Owner);
+	mAlignment.changeNotificationLevel(Owner);
+	mResizeLayoutX.changeNotificationLevel(Owner);
+	mResizeLayoutY.changeNotificationLevel(Owner);
 }
 
 void UIBoxLayout::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mySortByPriority.getLabelID()) ||
-		(labelid == myVertical.getLabelID()) ||
-		(labelid == myAlignment.getLabelID()) ||
-		(labelid == myPadding.getLabelID()) ||
-		(labelid == myResizeLayoutX.getLabelID()) ||
-		(labelid == myResizeLayoutY.getLabelID()))
+	if ((labelid == mSortByPriority.getLabelID()) ||
+		(labelid == mVertical.getLabelID()) ||
+		(labelid == mAlignment.getLabelID()) ||
+		(labelid == mPadding.getLabelID()) ||
+		(labelid == mResizeLayoutX.getLabelID()) ||
+		(labelid == mResizeLayoutY.getLabelID()))
 	{
-		myNeedRecompute = true;
+		mNeedRecompute = true;
 	}
 	UILayout::NotifyUpdate(labelid);
 }
@@ -37,16 +37,16 @@ void UIBoxLayout::RecomputeLayout()
 
 		kstl::vector<CoreModifiable*> items;
 
-		if (!mySortByPriority)
+		if (!mSortByPriority)
 		{
 			// Get sons ordered by insertion
 			const kstl::vector<ModifiableItemStruct> sons = getItems();
 			kstl::vector<ModifiableItemStruct>::const_iterator itsons;
 			for (itsons = sons.begin(); itsons != sons.end(); itsons++)
 			{
-				if ((*itsons).myItem->isSubType(Node2D::myClassID))
+				if ((*itsons).mItem->isSubType(Node2D::mClassID))
 				{
-					auto& node = (SP<Node2D>&)(itsons->myItem);
+					auto& node = (SP<Node2D>&)(itsons->mItem);
 					bool is_enabled = false;
 					node->getValue("IsHidden", is_enabled);
 					if (!is_enabled)
@@ -78,13 +78,13 @@ void UIBoxLayout::RecomputeLayout()
 
 		unsigned int accumulator = 0;
 
-		int padding_x = myPadding[0];
-		int padding_y = myPadding[1];
+		int padding_x = mPadding[0];
+		int padding_y = mPadding[1];
 
 		float sx, sy, cx, cy;
 
-		sx = myRealSize.x;
-		sy = myRealSize.y;
+		sx = mRealSize.x;
+		sy = mRealSize.y;
 
 		cx = sx / 2;
 		cy = sy / 2;
@@ -98,15 +98,15 @@ void UIBoxLayout::RecomputeLayout()
 			v2f size = node->GetSize();
 
 			int px, py;
-			if (myVertical)
+			if (mVertical)
 			{
 				biggest = std::max(biggest, size.x);
 				py = accumulator;
 				px = 0;
 
-				if (myAlignment == 1)
+				if (mAlignment == 1)
 					px = (s32)(cx - size.x *0.5f);
-				else if (myAlignment == 2)
+				else if (mAlignment == 2)
 					px = (s32)(sx - size.x);
 			}
 			else
@@ -114,14 +114,14 @@ void UIBoxLayout::RecomputeLayout()
 				biggest = std::max(biggest, size.y);
 				px = accumulator;
 				py = 0;
-				if (myAlignment == 1)
+				if (mAlignment == 1)
 					py = (s32)(cy - size.y *0.5f);
-				else if (myAlignment == 2)
+				else if (mAlignment == 2)
 					py = (s32)(sy - size.y);
 			}
 			node->setArrayValue("Position", px, py);
 
-			if (myVertical)
+			if (mVertical)
 				accumulator += (u32)(size.y + padding_y);
 			else
 				accumulator += (u32)(size.x + padding_x);
@@ -129,35 +129,35 @@ void UIBoxLayout::RecomputeLayout()
 		}
 
 
-		if (myVertical)
+		if (mVertical)
 		{
-			if (myResizeLayoutX && mySizeModeX == 0)
+			if (mResizeLayoutX && mSizeModeX == 0)
 				//if (mySizeX == 0)
 			{
-				myRealSize.x = biggest;
-				if (mySizeX != biggest)
+				mRealSize.x = biggest;
+				if (mSizeX != biggest)
 					setValue("SizeX", biggest);
 			}
 
-			if (myResizeLayoutY && mySizeModeY == 0)
+			if (mResizeLayoutY && mSizeModeY == 0)
 			{
-				myRealSize.y = (float)accumulator;
-				if (mySizeY != (float)accumulator)
+				mRealSize.y = (float)accumulator;
+				if (mSizeY != (float)accumulator)
 					setValue("SizeY", (float)accumulator);
 			}
 		}
 		else
 		{
-			if (myResizeLayoutY && mySizeModeY == 0)
+			if (mResizeLayoutY && mSizeModeY == 0)
 			{
-				myRealSize.y = biggest;
-				if (mySizeY != biggest)
+				mRealSize.y = biggest;
+				if (mSizeY != biggest)
 					setValue("SizeY", biggest);
 			}
-			if (myResizeLayoutX && mySizeModeX == 0)
+			if (mResizeLayoutX && mSizeModeX == 0)
 			{
-				myRealSize.x = (float)accumulator;
-				if (mySizeX != (float)accumulator)
+				mRealSize.x = (float)accumulator;
+				if (mSizeX != (float)accumulator)
 					setValue("SizeX", (float)accumulator);
 			}
 		}

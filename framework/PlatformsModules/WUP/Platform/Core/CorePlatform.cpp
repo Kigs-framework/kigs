@@ -87,34 +87,34 @@ HRESULT GetTempFolderPath()
 void Win32CheckState(::FileHandle * hndl)
 {
 	WIN32_FILE_ATTRIBUTE_DATA InfoFile;
-	BOOL ret = ::GetFileAttributesExA(hndl->myFullFileName.c_str(), GetFileExInfoStandard, &InfoFile);
+	BOOL ret = ::GetFileAttributesExA(hndl->mFullFileName.c_str(), GetFileExInfoStandard, &InfoFile);
 	if (!ret)
 		return;
 
-	//int attr = GetFileAttributesA(hndl->myFullFileName.c_str());
+	//int attr = GetFileAttributesA(hndl->mFullFileName.c_str());
 	if (InfoFile.dwFileAttributes == -1)
 	{
 		// file doesn't exist
 		hndl->resetStatus();
 		return;
 	}
-	hndl->myStatus |= ::FileHandle::Exist;
+	hndl->mStatus |= ::FileHandle::Exist;
 	if ((InfoFile.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) != 0)
-		hndl->myStatus |= ::FileHandle::IsDIr;
+		hndl->mStatus |= ::FileHandle::IsDIr;
 }
 
 bool Win32CreateFolderTree(::FileHandle* hndl)
 {
 	//TODO
-/*	if ((hndl->myStatus&::FileHandle::Exist) == 0)
+/*	if ((hndl->mStatus&::FileHandle::Exist) == 0)
 	{
-		SmartPointer<::FileHandle> parent = FilePathManager::Create::FileHandle(FilePathManager::GetParentDirectory(hndl->myFullFileName));
-		if (parent->myFullFileName != "")
+		SmartPointer<::FileHandle> parent = FilePathManager::Create::FileHandle(FilePathManager::GetParentDirectory(hndl->mFullFileName));
+		if (parent->mFullFileName != "")
 		{
 			Win32CheckState(parent);
 
 			Win32CreateFolderTree(parent);
-			return CreateDirectoryA(parent->myFullFileName.c_str(), NULL);
+			return CreateDirectoryA(parent->mFullFileName.c_str(), NULL);
 		}
 	}*/
 
@@ -156,7 +156,7 @@ SmartPointer<::FileHandle>	Win32OpenFilePicker()
 	usString test = (u16*)p->Data();
 
 	SmartPointer<::FileHandle> hdl = FilePathManager::CreateFileHandle(test.ToString());
-	hdl->myFullFileName = test.ToString();
+	hdl->mFullFileName = test.ToString();
 	return hdl;*/
 }
 
@@ -226,10 +226,10 @@ SmartPointer<::FileHandle>	Win32FindFullName(const kstl::string&	filename)
 
 	SmartPointer<::FileHandle> result = FilePathManager::CreateFileHandle((const char*)(&(filename.c_str()[3])));
 
-	result->myDeviceID = id;
-	result->myFullFileName = fullFileName;
-	result->myVirtualFileAccess = new StorageFileFileAccess(nullptr);
-	result->myUseVirtualFileAccess = true;
+	result->mDeviceID = id;
+	result->mFullFileName = fullFileName;
+	result->mVirtualFileAccess = new StorageFileFileAccess(nullptr);
+	result->mUseVirtualFileAccess = true;
 
 	Win32CheckState(result.get());
 	return result;
@@ -239,7 +239,7 @@ bool Win32fopen(::FileHandle* handle, const char * mode)
 {
 	unsigned int flagmode = ::FileHandle::OpeningFlags(mode);
 
-	if (handle->myStatus&::FileHandle::Open) // already opened ? return true
+	if (handle->mStatus&::FileHandle::Open) // already opened ? return true
 	{
 		// check if open mode is the same
 		if (flagmode == handle->getOpeningFlags())
@@ -248,7 +248,7 @@ bool Win32fopen(::FileHandle* handle, const char * mode)
 		}
 		else
 		{
-			fclose(handle->myFile);
+			fclose(handle->mFile);
 		}
 	}
 
@@ -258,12 +258,12 @@ bool Win32fopen(::FileHandle* handle, const char * mode)
 		Win32CreateFolderTree(handle);
 	}
 	
-	auto err = _wfopen_s(&handle->myFile, to_wchar(handle->myFullFileName).c_str(), to_wchar(mode).c_str());
+	auto err = _wfopen_s(&handle->mFile, to_wchar(handle->mFullFileName).c_str(), to_wchar(mode).c_str());
 	
-	if (handle->myFile)
+	if (handle->mFile)
 	{
-		handle->myStatus |= ::FileHandle::Open;
-		handle->myStatus |= ::FileHandle::Exist;
+		handle->mStatus |= ::FileHandle::Open;
+		handle->mStatus |= ::FileHandle::Exist;
 		handle->setOpeningFlags(flagmode);
 		return true;
 	}
@@ -273,30 +273,30 @@ bool Win32fopen(::FileHandle* handle, const char * mode)
 
 long int Win32fread(void * ptr, long size, long count, ::FileHandle* handle)
 {
-	return fread(ptr, size, count, handle->myFile);
+	return fread(ptr, size, count, handle->mFile);
 }
 
 long int Win32fwrite(const void * ptr, long size, long count, ::FileHandle* handle)
 {
-	return fwrite(ptr, size, count, handle->myFile);
+	return fwrite(ptr, size, count, handle->mFile);
 }
 
 long int Win32ftell(::FileHandle* handle)
 {
-	return ftell(handle->myFile);
+	return ftell(handle->mFile);
 }
 
 int Win32fseek(::FileHandle* handle, long int offset, int origin)
 {
-	return fseek(handle->myFile, offset, origin);
+	return fseek(handle->mFile, offset, origin);
 }
 int Win32fflush(::FileHandle* handle)
 {
-	return fflush(handle->myFile);
+	return fflush(handle->mFile);
 }
 int Win32fclose(::FileHandle* handle)
 {
-	int result = fclose(handle->myFile);
+	int result = fclose(handle->mFile);
 	handle->resetStatus(); // reset 
 	return result;
 }
@@ -307,10 +307,10 @@ SmartPointer<::FileHandle> Platform_fopen(winrt::Windows::Storage::StorageFile f
 	usString str = (u16*)file.Name().data();
 
 	fullfilenamehandle = FilePathManager::CreateFileHandle(str.ToString());
-	fullfilenamehandle->myFullFileName = str.ToString();
+	fullfilenamehandle->mFullFileName = str.ToString();
 
-	fullfilenamehandle->myUseVirtualFileAccess = true;
-	fullfilenamehandle->myVirtualFileAccess = new StorageFileFileAccess(file);
+	fullfilenamehandle->mUseVirtualFileAccess = true;
+	fullfilenamehandle->mVirtualFileAccess = new StorageFileFileAccess(file);
 
 	Platform_fopen(fullfilenamehandle.get(), mode);
 
@@ -395,43 +395,43 @@ bool		StorageFileFileAccess::Platform_fopen(::FileHandle* handle, const char * m
 	unsigned int flags = ::FileHandle::OpeningFlags(mode);
 
 
-	if (handle->myDeviceID != FilePathManager::APPLICATION_STORAGE && flags&::FileHandle::Write)
+	if (handle->mDeviceID != FilePathManager::APPLICATION_STORAGE && flags&::FileHandle::Write)
 		return false;
 
-	if (!myFile)
+	if (!mFile)
 	{
 		auto local_folder = winrt::Windows::Storage::ApplicationData::Current().LocalFolder();
 
-		auto name = handle->myFileName;
+		auto name = handle->mFileName;
 		auto name_platform = to_wchar(name);
 
 		auto get_item = local_folder.TryGetItemAsync(name_platform);
 		if (!WaitForAsyncOperation(get_item)) return false;
 
 		auto item = get_item.GetResults();
-		myFile = item.as<winrt::Windows::Storage::StorageFile>(); 
+		mFile = item.as<winrt::Windows::Storage::StorageFile>(); 
 
-		if (!myFile && flags&::FileHandle::Read)
+		if (!mFile && flags&::FileHandle::Read)
 			return false;
 
-		if (!myFile)
+		if (!mFile)
 		{
 			auto get_file = local_folder.CreateFileAsync(name_platform, mode[0] == 'a' ? winrt::Windows::Storage::CreationCollisionOption::OpenIfExists : winrt::Windows::Storage::CreationCollisionOption::ReplaceExisting);
 			if (!WaitForAsyncOperation(get_file)) return false;
-			myFile = get_file.GetResults();
+			mFile = get_file.GetResults();
 		}
 	}
 	
 
-	auto properties = myFile.GetBasicPropertiesAsync();
+	auto properties = mFile.GetBasicPropertiesAsync();
 
 	if (!WaitForAsyncOperation(properties)) return false;
 
-	//auto readAccess = myFile->OpenReadAsync();
-	auto openasync = myFile.OpenAsync(flags&::FileHandle::Write ? winrt::Windows::Storage::FileAccessMode::ReadWrite : winrt::Windows::Storage::FileAccessMode::Read);
+	//auto readAccess = mFile->OpenReadAsync();
+	auto openasync = mFile.OpenAsync(flags&::FileHandle::Write ? winrt::Windows::Storage::FileAccessMode::ReadWrite : winrt::Windows::Storage::FileAccessMode::Read);
 	if (!WaitForAsyncOperation(openasync)) return false;
-	myFileSize = properties.GetResults().Size();
-	myAccessStream = openasync.GetResults();
+	mFileSize = properties.GetResults().Size();
+	mAccessStream = openasync.GetResults();
 	handle->setOpeningFlags(flags);
 
 	return true;
@@ -439,41 +439,41 @@ bool		StorageFileFileAccess::Platform_fopen(::FileHandle* handle, const char * m
 
 void		StorageFileFileAccess::setMainThreadID()
 {
-	myMainThreadID= std::this_thread::get_id();
+	mMainThreadID= std::this_thread::get_id();
 }
 
-std::thread::id		StorageFileFileAccess::myMainThreadID;
+std::thread::id		StorageFileFileAccess::mMainThreadID;
 
 
 long int	StorageFileFileAccess::Platform_fread(void * ptr, long size, long count, ::FileHandle* handle)
 {
-	if (myAccessStream)
+	if (mAccessStream)
 	{
 		long int readSize = size * count;
 		
-		if (myDataReader == nullptr)
+		if (mDataReader == nullptr)
 		{
-			myDataReader = winrt::Windows::Storage::Streams::DataReader(myAccessStream);
-			myDataReader.InputStreamOptions(winrt::Windows::Storage::Streams::InputStreamOptions::ReadAhead);
+			mDataReader = winrt::Windows::Storage::Streams::DataReader(mAccessStream);
+			mDataReader.InputStreamOptions(winrt::Windows::Storage::Streams::InputStreamOptions::ReadAhead);
 		}
 
-		if (std::this_thread::get_id() == myMainThreadID)
+		if (std::this_thread::get_id() == mMainThreadID)
 		{
-			WaitForAsyncOperation(myDataReader.LoadAsync(readSize));
+			WaitForAsyncOperation(mDataReader.LoadAsync(readSize));
 		}
 		else
 		{
-			create_task([&]() { myDataReader.LoadAsync(readSize).get(); }).get();
+			create_task([&]() { mDataReader.LoadAsync(readSize).get(); }).get();
 		}
 
-		if (myDataReader.UnconsumedBufferLength() < (readSize))
+		if (mDataReader.UnconsumedBufferLength() < (readSize))
 		{
-			readSize = myDataReader.UnconsumedBufferLength();
+			readSize = mDataReader.UnconsumedBufferLength();
 		}
 
 		if (readSize)
 		{
-			myDataReader.ReadBytes(winrt::array_view<uint8_t>((uint8_t*)ptr, (uint8_t*)ptr + readSize));
+			mDataReader.ReadBytes(winrt::array_view<uint8_t>((uint8_t*)ptr, (uint8_t*)ptr + readSize));
 		}
 
 		return readSize / size;
@@ -482,7 +482,7 @@ long int	StorageFileFileAccess::Platform_fread(void * ptr, long size, long count
 		
 		/*Windows::Storage::Streams::Buffer^ buffer = ref new Windows::Storage::Streams::Buffer(size*count);
 		
-		auto resultRead=  myAccessStream->ReadAsync(buffer, size*count, InputStreamOptions::None);
+		auto resultRead=  mAccessStream->ReadAsync(buffer, size*count, InputStreamOptions::None);
 
 		if (!WaitForAsyncOperation(resultRead)) return false;
 
@@ -501,14 +501,14 @@ long int	StorageFileFileAccess::Platform_fread(void * ptr, long size, long count
 
 long int	StorageFileFileAccess::Platform_fwrite(const void * ptr, long size, long count, ::FileHandle* handle)
 {
-	if (myAccessStream)
+	if (mAccessStream)
 	{
 		if (mLastWrite)
 			WaitForAsyncOperation(mLastWrite);
 
 		winrt::Windows::Storage::Streams::DataWriter writer{ };
 		writer.WriteBytes(winrt::array_view<const uint8_t>{(const uint8_t*)ptr, (const uint8_t*)ptr + (u32)(size*count)});
-		mLastWrite = myAccessStream.WriteAsync(writer.DetachBuffer());
+		mLastWrite = mAccessStream.WriteAsync(writer.DetachBuffer());
 		//if (!WaitForAsyncOperation(flush)) return -1;
 		return size * count;
 	}
@@ -517,18 +517,18 @@ long int	StorageFileFileAccess::Platform_fwrite(const void * ptr, long size, lon
 
 long int	StorageFileFileAccess::Platform_ftell(::FileHandle* handle)
 {
-	if (myAccessStream)
+	if (mAccessStream)
 	{
-		return myAccessStream.Position();
+		return mAccessStream.Position();
 	}
 	return -1L;
 }
 
 int			StorageFileFileAccess::Platform_fseek(::FileHandle* handle, long int offset, int origin)
 {
-	if (myAccessStream)
+	if (mAccessStream)
 	{
-		long int newpos = myAccessStream.Position();
+		long int newpos = mAccessStream.Position();
 		switch (origin)
 		{
 		case SEEK_SET:
@@ -538,7 +538,7 @@ int			StorageFileFileAccess::Platform_fseek(::FileHandle* handle, long int offse
 			newpos += offset;
 			break;
 		case SEEK_END:
-			newpos = myFileSize - offset;
+			newpos = mFileSize - offset;
 			break;
 		}
 
@@ -546,12 +546,12 @@ int			StorageFileFileAccess::Platform_fseek(::FileHandle* handle, long int offse
 		{
 			newpos = 0;
 		}
-		if (newpos > myFileSize)
+		if (newpos > mFileSize)
 		{
-			newpos = myFileSize;
+			newpos = mFileSize;
 		}
 
-		myAccessStream.Seek(newpos);
+		mAccessStream.Seek(newpos);
 
 		return 0;
 	}
@@ -560,9 +560,9 @@ int			StorageFileFileAccess::Platform_fseek(::FileHandle* handle, long int offse
 
 int			StorageFileFileAccess::Platform_fflush(::FileHandle* handle)
 {
-	if (myAccessStream)
+	if (mAccessStream)
 	{
-		auto result= myAccessStream.FlushAsync();
+		auto result= mAccessStream.FlushAsync();
 		if (!WaitForAsyncOperation(result)) return -1;
 
 		return 0;
@@ -572,18 +572,18 @@ int			StorageFileFileAccess::Platform_fflush(::FileHandle* handle)
 
 int			StorageFileFileAccess::Platform_fclose(::FileHandle* handle)
 {
-	if (myAccessStream)
+	if (mAccessStream)
 	{
 		if (mLastWrite)
 			WaitForAsyncOperation(mLastWrite);
 		
 		mLastWrite = nullptr;
-		myAccessStream = nullptr;
+		mAccessStream = nullptr;
 
-		myFileSize = 0;
+		mFileSize = 0;
 
-		myDataReader = nullptr;
-		//myFile = nullptr;
+		mDataReader = nullptr;
+		//mFile = nullptr;
 		handle->resetStatus();
 	}
 	return 0;
@@ -591,7 +591,7 @@ int			StorageFileFileAccess::Platform_fclose(::FileHandle* handle)
 
 PureVirtualFileAccessDelegate* StorageFileFileAccess::MakeCopy()
 {
-	auto result = new StorageFileFileAccess(myFile);
+	auto result = new StorageFileFileAccess(mFile);
 	return result;
 }
 

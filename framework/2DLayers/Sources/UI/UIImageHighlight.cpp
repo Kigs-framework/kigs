@@ -8,21 +8,21 @@ void UIImageHighlight::ChangeTexture()
 	ParentClassType::ChangeTexture();
 
 	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-	if (myTextureName.const_ref() != "")
+	if (mTexture.const_ref() != "")
 	{
-		myPLTexture = textureManager->GetTexture(myTextureName);
+		mPLTexturePointer = textureManager->GetTexture(mTexture);
 	}
 
-	if (myHLTextureName.const_ref() != "")
+	if (myHLTexture.const_ref() != "")
 	{
-		myHLTexture = textureManager->GetTexture(myHLTextureName);
+		mHLTexturePointer = textureManager->GetTexture(myHLTexture);
 	}
 }
 
 void UIImageHighlight::Highlight(bool b)
 {
 	if (b)
-		myTexture = myPLTexture;
+		mTexturePointer = mPLTexturePointer;
 	else
-		myTexture = myHLTexture;
+		mTexturePointer = mHLTexturePointer;
 }

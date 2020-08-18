@@ -3,6 +3,17 @@
 
 #include "UIScrollingText.h"
 
+// ****************************************
+// * UIScrollingMultilineText class
+// * --------------------------------------
+/**
+* \file	UIScrollingMultilineText.h
+* \class	UIScrollingMultilineText
+* \ingroup 2DLayers
+* \brief	?? Obsolete ??
+*/
+// ****************************************
+
 class UIScrollingMultilineText : public UIScrollingText
 {
 public:

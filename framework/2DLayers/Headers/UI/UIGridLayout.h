@@ -3,7 +3,16 @@
 
 #include "UILayout.h"
 
-// Adjust the position of all children according to a grid layout algorithm
+// ****************************************
+// * UIGridLayout class
+// * --------------------------------------
+/**
+* \file	UIGridLayout.h
+* \class	UIGridLayout
+* \ingroup 2DLayers
+* \brief	Adjust the position of all children according to a grid layout algorithm.
+*/
+// ****************************************
 
 class UIGridLayout : public UILayout
 {
@@ -21,15 +30,14 @@ protected:
 	void			NotifyUpdate(const unsigned int labelid)override;
 	void			RecomputeLayout()override;
 	
-	//maUInt					myRows;
-	maUInt					myColumns;
-	maUInt					myRowHeight;
-	maUInt					myColumnWidth;
-	maBool					myHeaderRow;
-	maVect2DI				myPadding;
-	maBool					mySortByPriority;
-	maBool					myResizeElements;
-	maBool					myResizeMe;
+	maUInt					mColumns;
+	maUInt					mRowHeight;
+	maUInt					mColumnWidth;
+	maBool					mHeaderRow;
+	maVect2DI				mPadding;
+	maBool					mSortByPriority;
+	maBool					mResizeElements;
+	maBool					mAutoResize;
 };
 
 #endif //_UIGridLayout_H_

@@ -7,6 +7,17 @@
 class Texture;
 class UIVerticesInfo;
 
+// ****************************************
+// * UITextArea class
+// * --------------------------------------
+/**
+* \file	UITextArea.h
+* \class	UITextArea
+* \ingroup 2DLayers
+* \brief	Text input UI item.
+*/
+// ****************************************
+
 class UITextArea : public UIDrawableItem
 {
 public:
@@ -20,15 +31,15 @@ public:
 	UITextArea(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	//void			GetColor(kfloat &R, kfloat &G, kfloat &B, kfloat &A) { R = myTextColor[0]; G = myTextColor[1]; B = myTextColor[2]; A = myTextColor[3]; }
-	usString		GetText() const { return myText.us_str(); }
-	kstl::string	GetFontName() const { return myFont; }
-	kstl::string	GetReleaseAction() const { return myReleaseAction; }
-	int				GetFontSize() const { return myFontSize; }
-	int				GetLength() const { return myLength; }
-	void			SetText(const unsigned short* value) { this->ChangeText(value); myIsDefaultText = false; }
-	bool			GetIsDefaultText() const { return myIsDefaultText; }
-	unsigned int	GetCol() const { return myCol; }
-	unsigned int	GetRow() const { return myRow; }
+	usString		GetText() const { return mText.us_str(); }
+	kstl::string	GetFontName() const { return mFont; }
+	kstl::string	GetReleaseAction() const { return mReleaseAction; }
+	int				GetFontSize() const { return mFontSize; }
+	int				GetLength() const { return mLength; }
+	void			SetText(const unsigned short* value) { this->ChangeText(value); mIsDefaultText = false; }
+	bool			GetIsDefaultText() const { return mIsDefaultText; }
+	unsigned int	GetCol() const { return mCol; }
+	unsigned int	GetRow() const { return mRow; }
 
 
 	void			CreateFirstText();
@@ -36,7 +47,7 @@ public:
 	//void			UpdateText(kstl::vector<int> keycodeList);
 
 	//bool			TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)override;
-	bool			HasFocus()override { return myFocus; }
+	bool			HasFocus()override { return mFocus; }
 	void			LoseFocus()override;
 	void			GetFocus()override;
 
@@ -60,22 +71,21 @@ protected:
 		ChangeText(toChange.us_str());
 	}
 
-	//maVect4DF				myTextColor;
-	maUSString				myText;
-	maString				myFont;
-	maString				myReleaseAction;
-	maUInt					myFontSize;
-	maUInt					myLength;
-	maUInt					myRow;
-	maUInt					myCol;
-	bool					myIsDown;
-	bool					myStayPressed;
-	maBool					myHasDefaultText;
-	bool					myIsDefaultText;
+	maUSString				mText;
+	maString				mFont;
+	maString				mReleaseAction;
+	maUInt					mFontSize;
+	maUInt					mLength;
+	maUInt					mRow;
+	maUInt					mCol;
+	bool					mIsDown;
+	bool					mStayPressed;
+	maBool					mHasDefaultText;
+	bool					mIsDefaultText;
 
-	maUInt					myTextAlign;
+	maUInt					mTextAlignment;
 
-	SmartPointer<Texture>	myTexture;
+	SmartPointer<Texture>	mTexturePointer;
 	UIVerticesInfo	*		mTextureQI; // draw BG quad
 };
 #endif //_UITEXTAREA_H_

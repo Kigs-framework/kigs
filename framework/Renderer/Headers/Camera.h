@@ -221,8 +221,8 @@ public:
 		
 	/**
 		* \brief	initialize the culling on an object
-		* \fn 		virtual void  InitCullingObject(CullingObject* obj);
-		* \param	obj : object to cull
+		* \fn 		virtual void  InitCullingObject(CullingObject* mObj);
+		* \param	mObj : object to cull
 		*/ 
 	virtual void  InitCullingObject(CullingObject* obj);
 

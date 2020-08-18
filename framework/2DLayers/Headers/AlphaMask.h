@@ -5,7 +5,18 @@
 #include "CoreModifiable.h"
 #include <stdlib.h>
 
-
+// ****************************************
+// * AlphaMask class
+// * --------------------------------------
+/**
+* \file	AlphaMask.h
+* \class	AlphaMask
+* \ingroup 2DLayers
+* \brief	Picture mask for touch management.
+*
+* Obsolete ?
+*/
+// ****************************************
 class AlphaMask : public CoreModifiable
 {
 public:

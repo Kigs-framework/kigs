@@ -9,11 +9,11 @@ bool BufferedFile::searchNextWord(const kstl::string& toSearch)
 	size_t	searchLen=toSearch.length();
 	int		foundlen=0;
 
-	char*	read=&myFileContent[myFileCurrentOffset];
+	char*	read=&mFileContent[mFileCurrentOffset];
 
 	while((!found) && (!eofFound))
 	{
-		if(myFileCurrentOffset<myFileSize)
+		if(mFileCurrentOffset<mFileSize)
 		{
 			if(*read == toSearch[foundlen])
 			{
@@ -27,7 +27,7 @@ bool BufferedFile::searchNextWord(const kstl::string& toSearch)
 			{
 				foundlen=0;
 			}
-			myFileCurrentOffset++;
+			mFileCurrentOffset++;
 			read++;
 		}
 		else
@@ -45,11 +45,11 @@ bool	BufferedFile::getNextFloat(kfloat& flt)
 	bool	found=false;
 	bool	eofFound=false;
 
-	char*	read=&myFileContent[myFileCurrentOffset];
+	char*	read=&mFileContent[mFileCurrentOffset];
 
 	while((!found) && (!eofFound))
 	{
-		if(myFileCurrentOffset<myFileSize)
+		if(mFileCurrentOffset<mFileSize)
 		{
 			if(*read != ' ')
 			{
@@ -57,7 +57,7 @@ bool	BufferedFile::getNextFloat(kfloat& flt)
 			}
 			else
 			{
-				myFileCurrentOffset++;
+				mFileCurrentOffset++;
 				read++;
 			}
 		}
@@ -69,7 +69,7 @@ bool	BufferedFile::getNextFloat(kfloat& flt)
 	if(found)
 	{
 		float readFloat=0.0f;
-		if(sscanf(&myFileContent[myFileCurrentOffset],"%f",&readFloat) == 1)
+		if(sscanf(&mFileContent[mFileCurrentOffset],"%f",&readFloat) == 1)
 		{
 			flt=readFloat;
 
@@ -77,7 +77,7 @@ bool	BufferedFile::getNextFloat(kfloat& flt)
 			found=false;
 			while((!found) && (!eofFound))
 			{
-				if(myFileCurrentOffset<myFileSize)
+				if(mFileCurrentOffset<mFileSize)
 				{
 					if(*read == ' ')
 					{
@@ -85,7 +85,7 @@ bool	BufferedFile::getNextFloat(kfloat& flt)
 					}
 					else
 					{
-						myFileCurrentOffset++;
+						mFileCurrentOffset++;
 						read++;
 					}
 				}

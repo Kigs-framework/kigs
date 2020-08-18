@@ -112,7 +112,7 @@ void LuaImporter::InitModifiable()
 
 	if (IsInit())
 	{
-		CoreModifiable* parent = getFirstParent(CoreModifiable::myClassID);
+		CoreModifiable* parent = getFirstParent(CoreModifiable::mClassID);
 
 		if (!parent)
 		{
@@ -177,10 +177,10 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 		if (parent)
 		{
 			auto& items = parent->getItems();
-			auto it = std::find_if(items.begin(), items.end(), [current](ModifiableItemStruct str) { return str.myItem == current; });
+			auto it = std::find_if(items.begin(), items.end(), [current](ModifiableItemStruct str) { return str.mItem == current; });
 			if (it != items.end())
 			{
-				current = it->myItem;
+				current = it->mItem;
 				needinit = false;
 			}
 		}
@@ -297,7 +297,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 		if (parent && need_add)
 		{
 			auto& items = parent->getItems();
-			if (std::find_if(items.begin(), items.end(), [current](ModifiableItemStruct str) { return str.myItem == current; }) == items.end())
+			if (std::find_if(items.begin(), items.end(), [current](ModifiableItemStruct str) { return str.mItem == current; }) == items.end())
 			{
 				if (is_aggregate)
 					parent->aggregateWith(current);

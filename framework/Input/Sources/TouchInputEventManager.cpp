@@ -66,7 +66,7 @@ TouchEventState*	TouchInputEventManager::registerEvent(CoreModifiable* registere
 		// TODO search if touchsupport is found in tree
 	}*/
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	if (myStackedEventState.back().myEventMap.find(registeredObject) == myStackedEventState.back().myEventMap.end()) // need to create an entry
+	if (myStackedEventState.back().myEventMap.find(registeredObject) == myStackedEventState.back().myEventMap.end()) // need to create an mEntry
 	{
 		StackedEventStateStruct::EventMapEntry& currentEntry = myStackedEventState.back().myEventMap[registeredObject];
 	

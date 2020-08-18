@@ -40,9 +40,9 @@ void ModuleGUI::Update(const Timer& timer, void* addParam)
 
 	for (it=getItems().begin();it!=getItems().end();++it)
 	{
-		if((*it).myItem->isSubType(Window::myClassID))
+		if((*it).mItem->isSubType(Window::mClassID))
 		{
-			SP<Window>& window=(SP<Window>&)(*it).myItem;
+			SP<Window>& window=(SP<Window>&)(*it).mItem;
 			window->CallUpdate(timer, addParam);
 		}
 	}            

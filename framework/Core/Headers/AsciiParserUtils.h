@@ -7,18 +7,29 @@
 #include "SmartPointer.h"
 
 
+// ****************************************
+// * ValidCharArray class
+// * --------------------------------------
+/**
+* \file	AsciiParserUtils.h
+* \class	ValidCharArray
+* \ingroup Core
+* \brief	Utility class used by AsciiParserUtils.
+*/
+// ****************************************
+
 template<typename charType>
 class ValidCharArray
 {
 protected:
-	unsigned char*	myArray;
-	int				myMinIndex;
-	int				myMaxIndex;
+	unsigned char*	mArray;
+	int				mMinIndex;
+	int				mMaxIndex;
 
 	void	growArray(int c1, int c2)
 	{
-		int newmin = myMinIndex;
-		int newmax = myMaxIndex;
+		int newmin = mMinIndex;
+		int newmax = mMaxIndex;
 		int ic1 = ((int)c1);
 		if (ic1 < newmin)
 		{
@@ -41,35 +52,35 @@ protected:
 		unsigned char*	newArray = new unsigned char[newmax - newmin + 1];
 		memset(newArray, 0, newmax - newmin + 1 * sizeof(unsigned char));
 		// copy old values
-		if (myArray)
+		if (mArray)
 		{
-			memcpy(newArray + myMinIndex - newmin, myArray, myMaxIndex - myMinIndex + 1);
+			memcpy(newArray + mMinIndex - newmin, mArray, mMaxIndex - mMinIndex + 1);
 			// delete old array
-			delete[] myArray;
+			delete[] mArray;
 		}
 		// replace 
-		myArray = newArray;
-		myMinIndex = newmin;
-		myMaxIndex = newmax;
+		mArray = newArray;
+		mMinIndex = newmin;
+		mMaxIndex = newmax;
 	}
 
 public:
-	ValidCharArray() : myArray(0)
-		, myMinIndex(0x0FFFFFFF)
-		, myMaxIndex(-1)
+	ValidCharArray() : mArray(0)
+		, mMinIndex(0x0FFFFFFF)
+		, mMaxIndex(-1)
 	{
 
 	}
 	~ValidCharArray()
 	{
-		if (myArray)
-			delete[] myArray;
+		if (mArray)
+			delete[] mArray;
 	}
 
 	void	addValidCharacter(charType	c)
 	{
 		int ic = ((int)c);
-		if ((ic >= myMinIndex) && (ic <= myMaxIndex))
+		if ((ic >= mMinIndex) && (ic <= mMaxIndex))
 		{
 			// array is already ok
 		}
@@ -77,14 +88,14 @@ public:
 		{
 			growArray(ic, ic);
 		}
-		myArray[ic - myMinIndex] = 1;
+		mArray[ic - mMinIndex] = 1;
 	}
 	// c1 must be <= c2
 	void	addValidCharacterRange(charType	c1, charType c2)
 	{
 		int ic1 = ((int)c1);
 		int ic2 = ((int)c2);
-		if ((ic1 >= myMinIndex) && (ic2 <= myMaxIndex))
+		if ((ic1 >= mMinIndex) && (ic2 <= mMaxIndex))
 		{
 			// array is already ok
 		}
@@ -94,42 +105,53 @@ public:
 		}
 		for (int i = ic1; i <= ic2; i++)
 		{
-			myArray[i - myMinIndex] = 1;
+			mArray[i - mMinIndex] = 1;
 		}
 	}
 
 	bool	isValid(charType c) const
 	{
 		int ic = ((int)c);
-		if ((ic >= myMinIndex) && (ic <= myMaxIndex))
+		if ((ic >= mMinIndex) && (ic <= mMaxIndex))
 		{
-			return (myArray[ic - myMinIndex] != 0);
+			return (mArray[ic - mMinIndex] != 0);
 		}
 		return false;
 	}
 };
+
+// ****************************************
+// * AsciiParserUtils class
+// * --------------------------------------
 /**
-		utility method to parse char stream
-		check IniFileParser.cpp for a sample code
+* \file	AsciiParserUtils.h
+* \class	AsciiParserUtilsTemplate
+* \ingroup Core
+* \brief	Utility class to parse ascii buffer.
+*
+* Utility method to parse char stream. 
+* Check IniFileParser.cpp for a sample code.
+* 
 */
+// ****************************************
 
 template<typename charType>
 class	AsciiParserUtilsTemplate 
 {
 protected:
 	// empty constructor do nothing
-	AsciiParserUtilsTemplate() : myBufferedEnd(0)
+	AsciiParserUtilsTemplate() : mBufferedEnd(0)
 	{
-		myTextLen=0;
-		myCurrentReadPos = 0;
-		myTextEnd = 0;
+		mTextLen=0;
+		mCurrentReadPos = 0;
+		mTextEnd = 0;
 	}
 
 public:
 
-	AsciiParserUtilsTemplate(const AsciiParserUtilsTemplate<charType>& other) :  myText(other.myText), myTextEnd(other.myTextEnd), myTextLen(other.myTextLen), myCurrentReadPos(other.myCurrentReadPos), myBufferedEnd(0)
+	AsciiParserUtilsTemplate(const AsciiParserUtilsTemplate<charType>& other) :  mText(other.mText), mTextEnd(other.mTextEnd), mTextLen(other.mTextLen), mCurrentReadPos(other.mCurrentReadPos), mBufferedEnd(0)
 	{
-		myRawBuffer=other.myRawBuffer;
+		mRawBuffer=other.mRawBuffer;
 	}
 
 	AsciiParserUtilsTemplate(charType* buffer, int len);
@@ -138,16 +160,16 @@ public:
 
 	~AsciiParserUtilsTemplate()
 	{
-		if(myBufferedEnd)
+		if(mBufferedEnd)
 		{
-			*myTextEnd=myBufferedEnd;
-			myBufferedEnd=0;
+			*mTextEnd=mBufferedEnd;
+			mBufferedEnd=0;
 		}
 	}
 
 	inline void	Reset()
 	{
-		myCurrentReadPos=0;
+		mCurrentReadPos=0;
 	}
 
 	bool	GetLine(AsciiParserUtilsTemplate<charType>& result, bool	removeLeadTrailWhitespace = false);
@@ -175,12 +197,12 @@ public:
 
 	unsigned int		GetPosition()
 	{
-		return myCurrentReadPos;
+		return mCurrentReadPos;
 	}
 
 	void		SetPosition(unsigned int pos)
 	{
-		myCurrentReadPos=pos;
+		mCurrentReadPos=pos;
 	}
 
 	// retreive a block defined by a starting and ending character. If "embedded" blocks are found, don't stop to first end character but
@@ -205,7 +227,7 @@ public:
 	const unsigned short* us_str() const;
 
 	charType operator*() const{
-		charType* p = (charType*)myText + myCurrentReadPos;
+		charType* p = (charType*)mText + mCurrentReadPos;
 		return *p;
 	}
 
@@ -213,15 +235,15 @@ public:
 
 	inline const charType& operator[](unsigned int i)const
 	{ 
-		if(i<myTextLen)
-			return myText[i];
+		if(i<mTextLen)
+			return mText[i];
 
-		return myZeroChar;
+		return mZeroChar;
 	}
 
 	inline unsigned int	length()
 	{
-		return myTextLen;
+		return mTextLen;
 	}
 
 	// convert raw unsigned char buffer memory to string (each byte is converted to two letters from "a" to "p")
@@ -236,13 +258,13 @@ protected:
 
 	void	Set(charType* txt, int txtl = -1);
 
-	SmartPointer<CoreRawBuffer>	myRawBuffer;
-	charType*				myText = nullptr;
-	charType*				myTextEnd = nullptr;
-	unsigned int			myTextLen = 0;
-	unsigned int			myCurrentReadPos = 0;
-	static const charType	myZeroChar;
-	charType				myBufferedEnd = 0;
+	SmartPointer<CoreRawBuffer>	mRawBuffer;
+	charType*				mText = nullptr;
+	charType*				mTextEnd = nullptr;
+	unsigned int			mTextLen = 0;
+	unsigned int			mCurrentReadPos = 0;
+	static const charType	mZeroChar;
+	charType				mBufferedEnd = 0;
 };
 
 typedef AsciiParserUtilsTemplate<char> AsciiParserUtils;

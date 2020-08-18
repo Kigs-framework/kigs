@@ -10,22 +10,22 @@ IMPLEMENT_CLASS_INFO(UISliderFill)
 
 UISliderFill::UISliderFill(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
 UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-myVoidTextureName(*this,false,LABEL_AND_ID(VoidTexture),""),
-myStartTextureName(*this,false,LABEL_AND_ID(StartTexture),""),
-myMiddleTextureName(*this,false,LABEL_AND_ID(MiddleTexture),""),
-myEndTextureName(*this,false,LABEL_AND_ID(EndTexture),""),
-myDirection(*this,true,LABEL_AND_ID(Direction),"Vertical","Horizontal"),
-myStartTexture(0),
-myMiddleTexture(0),
-myEndTexture(0),
-myVoidTexture(0)
+mVoidTexture(*this,false,LABEL_AND_ID(VoidTexture),""),
+mStartTexture(*this,false,LABEL_AND_ID(StartTexture),""),
+mMiddleTexture(*this,false,LABEL_AND_ID(MiddleTexture),""),
+mEndTexture(*this,false,LABEL_AND_ID(EndTexture),""),
+mDirection(*this,true,LABEL_AND_ID(Direction),"Vertical","Horizontal"),
+mStartTexturePointer(0),
+mMiddleTexturePointer(0),
+mEndTexturePointer(0),
+mVoidTexturePointer(0)
 {
-	myStartPositionX = 0;
-	myStartPositionY = 0;
-	myMiddlePositionX = 0;
-	myMiddlePositionY = 0;
-	myEndPositionX = 0;
-	myEndPositionY = 0;
+	mStartPositionX = 0;
+	mStartPositionY = 0;
+	mMiddlePositionX = 0;
+	mMiddlePositionY = 0;
+	mEndPositionX = 0;
+	mEndPositionY = 0;
 
 	
 }
@@ -34,9 +34,9 @@ myVoidTexture(0)
 
 void UISliderFill::NotifyUpdate(const unsigned int labelid )
 {
-	if(labelid==myIsEnabled.getLabelID()) 
+	if(labelid==mIsEnabled.getLabelID()) 
 	{
-		if(myIsEnabled == false)
+		if(mIsEnabled == false)
 		{
 			//Do something
 		}
@@ -52,36 +52,36 @@ void UISliderFill::InitModifiable()
 	{
 		// load texture
 		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-		myVoidTexture = textureManager->GetTexture(myVoidTextureName);
+		mVoidTexturePointer = textureManager->GetTexture(mVoidTexture);
 
 		// auto size button
-		if( (((unsigned int)mySizeX)==0) && (((unsigned int)mySizeY)==0) )
+		if( (((unsigned int)mSizeX)==0) && (((unsigned int)mSizeY)==0) )
 		{
-			if(myVoidTexture)
+			if(mVoidTexturePointer)
 			{
 				unsigned int width,height;
 
-				myVoidTexture->GetSize(width,height);
-				mySizeX=width;
-				mySizeY=height;
+				mVoidTexturePointer->GetSize(width,height);
+				mSizeX=width;
+				mSizeY=height;
 			}
 		}
 
 		
-		if(myStartTextureName.const_ref() !="")
+		if(mStartTexture.const_ref() !="")
 		{
-			myStartTexture = textureManager->GetTexture(myStartTextureName.const_ref());
+			mStartTexturePointer = textureManager->GetTexture(mStartTexture.const_ref());
 		}
 
 		
-		if(myMiddleTextureName.const_ref() !="")
+		if(mMiddleTexture.const_ref() !="")
 		{
-			myMiddleTexture = textureManager->GetTexture(myMiddleTextureName.const_ref());
+			mMiddleTexturePointer = textureManager->GetTexture(mMiddleTexture.const_ref());
 		}
 
-		if(myEndTextureName.const_ref() !="")
+		if(mEndTexture.const_ref() !="")
 		{
-			myEndTexture = textureManager->GetTexture(myEndTextureName.const_ref());
+			mEndTexturePointer = textureManager->GetTexture(mEndTexture.const_ref());
 		}
 
 		//Init childs
@@ -99,49 +99,49 @@ void UISliderFill::InitModifiable()
 				it++;
 			}
 		}
-		myIsEnabled.changeNotificationLevel(Owner);
+		mIsEnabled.changeNotificationLevel(Owner);
 	}
 }
 
 void UISliderFill::ChangeTexture(kstl::string _voidtexturename,kstl::string _starttexturename, kstl::string _middletexturename, kstl::string _endtexturename)
 {
-	if(myIsEnabled) // down and mouse over only when enabled
+	if(mIsEnabled) // down and mouse over only when enabled
 	{
 		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
-		myVoidTextureName = _voidtexturename;
-		myVoidTexture = textureManager->GetTexture(myVoidTextureName);
+		mVoidTexture = _voidtexturename;
+		mVoidTexturePointer = textureManager->GetTexture(mVoidTexture);
 
 		if(_starttexturename != "")
 		{
-			myStartTextureName = _starttexturename;
-			myStartTexture = textureManager->GetTexture(myStartTextureName);
+			mStartTexture = _starttexturename;
+			mStartTexturePointer = textureManager->GetTexture(mStartTexture);
 		}
 
 		if(_middletexturename != "")
 		{
-			myMiddleTextureName = _middletexturename;
-			myMiddleTexture = textureManager->GetTexture(myMiddleTextureName);
+			mMiddleTexture = _middletexturename;
+			mMiddleTexturePointer = textureManager->GetTexture(mMiddleTexture);
 		}
 
 		if(_endtexturename != "")
 		{
-			myEndTextureName = _endtexturename;
-			myEndTexture = textureManager->GetTexture(myEndTextureName);
+			mEndTexture = _endtexturename;
+			mEndTexturePointer = textureManager->GetTexture(mEndTexture);
 		}
 
 		//auto Size
-		if(myVoidTexture)
+		if(mVoidTexturePointer)
 		{
 			unsigned int width,height;
 
-			myVoidTexture->GetSize(width,height);
+			mVoidTexturePointer->GetSize(width,height);
 
-			if(mySizeX != width || mySizeY != height)
+			if(mSizeX != width || mSizeY != height)
 			{
-				mySizeX = width;
-				mySizeY = height;
-				myNeedUpdatePosition = true;
+				mSizeX = width;
+				mSizeY = height;
+				mNeedUpdatePosition = true;
 			}
 		}
 
@@ -152,24 +152,24 @@ void UISliderFill::ChangeTexture(kstl::string _voidtexturename,kstl::string _sta
 bool UISliderFill::isAlpha(float X, float Y)
 {
 	//Try to get my mask
-	if(!myAlphaMask)
+	if(!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
 
 		for(unsigned int i=0; i < sons.size(); i++)
 		{
-			if(sons[i].myItem->isSubType("AlphaMask"))
+			if(sons[i].mItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = sons[i].myItem;
+				mAlphaMask = sons[i].mItem;
 				break;
 			}
 		}
 	}
 
-	if(myAlphaMask)
+	if(mAlphaMask)
 	{
 		//Check on my mask the specified location
-		return !myAlphaMask->CheckTo(X,Y);
+		return !mAlphaMask->CheckTo(X,Y);
 	}
 
 	return false;
@@ -192,31 +192,31 @@ void UISliderFill::ComputeInitialElementsPosition()
 		}
 	}
 
-	if(myStartTexture)
+	if(mStartTexturePointer)
 	{
 		if(ratio>0)
 		{
 			unsigned int width,height;
-			myStartTexture->GetSize(width,height);
-			if(((const kstl::string&)myDirection) == "Vertical")
-				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, 0, 0, width, height, myStartPositionX, myStartPositionY);
+			mStartTexturePointer->GetSize(width,height);
+			if(((const kstl::string&)mDirection) == "Vertical")
+				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, 0, 0, width, height, mStartPositionX, mStartPositionY);
 			else
-				RecomputeElementsPosition(0.0f,0.0f,0.0f, 1.0f, 0, 0, width, height, myStartPositionX, myStartPositionY);
+				RecomputeElementsPosition(0.0f,0.0f,0.0f, 1.0f, 0, 0, width, height, mStartPositionX, mStartPositionY);
 		}
 		else
 		{
-			myStartPositionX = -1;
-			myStartPositionY = -1;
+			mStartPositionX = -1;
+			mStartPositionY = -1;
 		}
 	}
-	if(myMiddleTexture)
+	if(mMiddleTexturePointer)
 	{
 		if(ratio>0)
 		{
 			unsigned int width,height;
-			myMiddleTexture->GetSize(width,height);
+			mMiddleTexturePointer->GetSize(width,height);
 			unsigned int px,py;
-			myStartTexture->GetSize(px,py);
+			mStartTexturePointer->GetSize(px,py);
 			
 			int currentx,currenty;
 			int newpos[2] ={0};
@@ -224,26 +224,26 @@ void UISliderFill::ComputeInitialElementsPosition()
 			child->getValue(LABEL_TO_ID(SizeX),currentx);
 			child->getValue(LABEL_TO_ID(SizeY),currenty);
 
-			if(((const kstl::string&)myDirection) == "Vertical")
+			if(((const kstl::string&)mDirection) == "Vertical")
 			{
-				myMiddleSizeX =  newpos[0] - px + (currentx/2);
-				myMiddleSizeY = py;
-				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, px, 0, width, height, myMiddlePositionX, myMiddlePositionY);
+				mMiddleSizeX =  newpos[0] - px + (currentx/2);
+				mMiddleSizeY = py;
+				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, px, 0, width, height, mMiddlePositionX, mMiddlePositionY);
 			}
 			else
 			{
-				myMiddleSizeY =  newpos[1] + py - (currenty);
-				myMiddleSizeX = px;
-				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, 0, myRealSize.y - py, myMiddleSizeX, myMiddleSizeY, myMiddlePositionX, myMiddlePositionY);
+				mMiddleSizeY =  newpos[1] + py - (currenty);
+				mMiddleSizeX = px;
+				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, 0, mRealSize.y - py, mMiddleSizeX, mMiddleSizeY, mMiddlePositionX, mMiddlePositionY);
 			}
 		}
 		else
 		{
-			myMiddlePositionX = -1;
-			myMiddlePositionY = -1;
+			mMiddlePositionX = -1;
+			mMiddlePositionY = -1;
 		}
 	}
-	if(myEndTexture)
+	if(mEndTexturePointer)
 	{
 		if(ratio>0)
 		{
@@ -253,16 +253,16 @@ void UISliderFill::ComputeInitialElementsPosition()
 			child->getArrayValue(LABEL_TO_ID(Position),newpos,2);
 
 			unsigned int width,height;
-			myEndTexture->GetSize(width,height);
-			if(((const kstl::string&)myDirection) == "Vertical")
-				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, newpos[0]+(size.x/2), 0, width, height, myEndPositionX, myEndPositionY);
+			mEndTexturePointer->GetSize(width,height);
+			if(((const kstl::string&)mDirection) == "Vertical")
+				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, newpos[0]+(size.x/2), 0, width, height, mEndPositionX, mEndPositionY);
 			else
-				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, newpos[0], newpos[1] + myRealSize.y -size.y, width, height, myEndPositionX, myEndPositionY);
+				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, newpos[0], newpos[1] + mRealSize.y -size.y, width, height, mEndPositionX, mEndPositionY);
 		}
 		else
 		{
-			myEndPositionX = -1;
-			myEndPositionY = -1;
+			mEndPositionX = -1;
+			mEndPositionY = -1;
 		}
 	
 	}

@@ -5,18 +5,40 @@
 #include "CoreValue.h"
 
 
+
+// ****************************************
+// * CoreActionRemoveFromParent class
+// * --------------------------------------
+/**
+* \class	CoreActionRemoveFromParent
+* \file		CoreActionUtility.h
+* \ingroup CoreAnimation
+* \brief	Remove the object owning this sequence from its parent of the given type.
+*/
+// ****************************************
+
 class CoreActionRemoveFromParent : public CoreAction
 {
 public:
 	CoreActionRemoveFromParent() : CoreAction()
-	{myParentTypeID = 0xFFFFFFFF;}
+	{mParentTypeID = 0xFFFFFFFF;}
 	virtual void init(CoreSequence* sequence,CoreVector* params);
 protected:
 
 	virtual bool	protectedUpdate(kdouble time);
-	unsigned int	myParentTypeID;
+	unsigned int	mParentTypeID;
 };
 
+// ****************************************
+// * CoreActionSendMessage class
+// * --------------------------------------
+/**
+* \class	CoreActionSendMessage
+* \file		CoreActionUtility.h
+* \ingroup CoreAnimation
+* \brief	Post a message ( notification )
+*/
+// ****************************************
 
 class CoreActionSendMessage : public CoreAction
 {
@@ -27,10 +49,20 @@ public:
 protected:
 
 	virtual bool	protectedUpdate(kdouble time);
-	kstl::string	myMessage;
-	usString		myParam;
+	kstl::string	mMessage;
+	usString		mParam;
 };
 
+// ****************************************
+// * CoreActionEmitSignal class
+// * --------------------------------------
+/**
+* \class	CoreActionEmitSignal
+* \file		CoreActionUtility.h
+* \ingroup CoreAnimation
+* \brief	Emit a signal.
+*/
+// ****************************************
 class CoreActionEmitSignal : public CoreAction
 {
 public:
@@ -42,11 +74,20 @@ public:
 protected:
 
 	virtual bool	protectedUpdate(kdouble time);
-	kstl::string	mySignal;
-	usString		myParam;
+	kstl::string	mSignal;
+	usString		mParam;
 };
 
-// several actions launched together
+// ****************************************
+// * CoreActionCombo class
+// * --------------------------------------
+/**
+* \class	CoreActionCombo
+* \file		CoreActionUtility.h
+* \ingroup CoreAnimation
+* \brief	Play all children animation together.
+*/
+// ****************************************
 
 class CoreActionCombo : public CoreAction
 {
@@ -64,14 +105,24 @@ public:
 protected:
 
 	virtual bool	protectedUpdate(kdouble time);
-	kstl::vector<CoreAction*>	myList;
+	kstl::vector<CoreAction*>	mList;
 };
 
-// one action to rule them all
+// ****************************************
+// * CoreActionSerie class
+// * --------------------------------------
+/**
+* \class	CoreActionSerie
+* \file		CoreActionUtility.h
+* \ingroup CoreAnimation
+* \brief	Play each children animation one after the other.
+*/
+// ****************************************
+
 class CoreActionSerie : public CoreAction
 {
 public:
-	CoreActionSerie() : CoreAction() , myCurrentActionIndex(0)
+	CoreActionSerie() : CoreAction() , mCurrentActionIndex(0)
 	{;}
 
 	virtual ~CoreActionSerie();
@@ -83,17 +134,24 @@ public:
 protected:
 
 	virtual bool				protectedUpdate(kdouble time);
-	kstl::vector<CoreAction*>	myList;
-	unsigned int				myCurrentActionIndex;
+	kstl::vector<CoreAction*>	mList;
+	unsigned int				mCurrentActionIndex;
 };
 
-// Loops
-
-// do it again !
+// ****************************************
+// * CoreActionForLoop class
+// * --------------------------------------
+/**
+* \class	CoreActionForLoop
+* \file		CoreActionUtility.h
+* \ingroup CoreAnimation
+* \brief	Manage a "for" loop.
+*/
+// ****************************************
 class CoreActionForLoop : public CoreAction
 {
 public:
-	CoreActionForLoop() : CoreAction() , myLoopCount(0),myCurrentLoopIndex(0),myActionToLoop(0)
+	CoreActionForLoop() : CoreAction() , mLoopCount(0),mCurrentLoopIndex(0),mActionToLoop(0)
 	{;}
 
 	virtual ~CoreActionForLoop();
@@ -105,16 +163,25 @@ public:
 protected:
 
 	virtual bool				protectedUpdate(kdouble time);
-	int							myLoopCount;
-	int							myCurrentLoopIndex;
-	CoreAction*					myActionToLoop;
+	int							mLoopCount;
+	int							mCurrentLoopIndex;
+	CoreAction*					mActionToLoop;
 };
 
-// do while
+// ****************************************
+// * CoreActionDoWhile class
+// * --------------------------------------
+/**
+* \class	CoreActionDoWhile
+* \file		CoreActionUtility.h
+* \ingroup CoreAnimation
+* \brief	Manage a "do while" loop.
+*/
+// ****************************************
 class CoreActionDoWhile : public CoreAction
 {
 public:
-	CoreActionDoWhile() : CoreAction() , myActionToLoop(0),myIsZeroDuration(false)
+	CoreActionDoWhile() : CoreAction() , mActionToLoop(0),mIsZeroDuration(false)
 	{;}
 
 	virtual ~CoreActionDoWhile();
@@ -126,8 +193,8 @@ public:
 protected:
 
 	virtual bool				protectedUpdate(kdouble time);
-	CoreAction*					myActionToLoop;
-	bool						myIsZeroDuration;
+	CoreAction*					mActionToLoop;
+	bool						mIsZeroDuration;
 };
 
 

@@ -18,16 +18,12 @@ class Abstract2DLayer;
 /**
 * \file	Node2D.h
 * \class	Node2D
-* \ingroup SceneGraph
-* \brief	 A Node2D is the base class for all objects to be added to a 2DLayer
-* \author	ukn
-* \version ukn
-* \date	ukn
+* \ingroup  2DLayers
+* \brief	A Node2D is the base class for all objects to be added to a 2DLayer.
 *
-* A matrix is associated with each node to give the transformation applied to the node when drawing
+* A matrix is associated with each node to give the transformation applied to the node when drawing.
 */
 // ****************************************
-
 
 class Node2D : public CoreModifiable
 {
@@ -46,9 +42,9 @@ public:
 		//! overload operator () for comparison
 		bool operator()(const Node2D * a1, const Node2D * a2) const
 		{
-			if (a1->myPriority == a2->myPriority)
+			if (a1->mPriority == a2->mPriority)
 				return (a1) < (a2);
-			return a1->myPriority > a2->myPriority;
+			return a1->mPriority > a2->mPriority;
 		}
 	};
 	friend struct PriorityCompare;
@@ -85,56 +81,40 @@ public:
 	// real drawing
 	virtual void ProtectedDraw(TravState* state) { ; }
 
-	/**
-	* \brief	retreive father (Node2D can only have one father, they can not be shared)
-	* \fn 		virtual Node2D* getFather();
-	*/
-
-	//int GetPriority() const { return myPriority; }
-
 	int GetFinalPriority() const;
 
-	v2f GetSize() const { return myRealSize; }
-	v2f GetPreScale() const { return v2f{ myPreScaleX, myPreScaleY }; }
-	v2f GetPostScale() const { return v2f{ myPostScaleX, myPostScaleY }; }
+	v2f GetSize() const { return mRealSize; }
+	v2f GetPreScale() const { return v2f{ mPreScaleX, mPreScaleY }; }
+	v2f GetPostScale() const { return v2f{ mPostScaleX, mPostScaleY }; }
 	v2f GetSizeScaled() const { return GetSize() * GetPreScale() * GetPostScale(); }
 	virtual float GetOpacity() { return 1.0f; }
-
-	//inline void								GetSize(unsigned int &X, unsigned int &Y) { X = mySizeX; Y = mySizeY; }
-	//inline void								SetSize(unsigned int X, unsigned int Y) { mySizeX = X; mySizeY = Y; }
-	//inline void								SetDock(kfloat x, kfloat y) { myDock[0] = x; myDock[1] = y; myNeedUpdatePosition = true; PropagateNeedUpdateToFather(); }
-	//inline void								GetPrescale(float &X, float &Y) { X = myPreScaleX; Y = myPreScaleY; }
-	//inline void								GetPostscale(float &X, float &Y) { X = myPostScaleX; Y = myPostScaleY; }
 
 	Node2D*								getFather() const;
 	Abstract2DLayer*					getLayerFather() const;
 
-
-	//inline void								 GetScaledSize(unsigned int &X, unsigned int &Y) { X = (unsigned int)((kfloat)mySizeX*(kfloat)myPreScaleX); Y = (unsigned int)((kfloat)mySizeY*(kfloat)myPreScaleY); }
-
 	bool										addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
 	bool										removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
-	inline const kstl::set<Node2D*, Node2D::PriorityCompare>&	GetSons() { return mySons; }
+	inline const kstl::set<Node2D*, Node2D::PriorityCompare>&	GetSons() { return mSons; }
 
 	// transform local points to global
 	inline void	TransformPoints(Point2D* totransform, int count) const
 	{
-		myGlobalTransformMatrix.TransformPoints(totransform, count);
+		mGlobalTransformMatrix.TransformPoints(totransform, count);
 	}
 
-	v2f GetPosition() const { return myPosition; }
+	v2f GetPosition() const { return mPosition; }
 	void GetPosition(kfloat &X, kfloat &Y) const
 	{
-		X = (kfloat)myPosition[0];
-		Y = (kfloat)myPosition[1];
+		X = (kfloat)mPosition[0];
+		Y = (kfloat)mPosition[1];
 	}
 
 	void	GetGlobalPosition(kfloat &X, kfloat &Y);
 
 	inline const Matrix3x3& GetGlobalTransform() const
 	{
-		return myGlobalTransformMatrix;
+		return mGlobalTransformMatrix;
 	}
 
 	void GetTransformedPoints(Point2D * pt);
@@ -145,7 +125,7 @@ public:
 	Abstract2DLayer*									getRootLayerFather() const;
 	Node2D*												getRootFather();
 
-	u32													GetNodeFlags() const { return myFlags; }
+	u32													GetNodeFlags() const { return mFlags; }
 
 	enum Flags
 	{
@@ -156,7 +136,7 @@ public:
 		Node2D_PropagatedFlags = Node2D_Clipped | Node2D_Hidden,
 	};
 
-	bool IsHiddenFlag() const { return (myFlags & Node2D_Hidden) != 0; }
+	bool IsHiddenFlag() const { return (mFlags & Node2D_Hidden) != 0; }
 	bool IsInClip(v2f pos) const;
 
 protected:
@@ -170,41 +150,39 @@ protected:
 
 	void PropagateNodeFlags();
 
-
-	u32 myFlags = 0;
-
-
 	void												PropagateNeedUpdateToFather();
 
 	void												ComputeMatrices();
 	virtual void										ComputeRealSize();
 	void												ResortSons();
 
-	Node2D*												myParent;
-	kstl::set<Node2D*, Node2D::PriorityCompare>			mySons;
+	u32													mFlags = 0;
 
-	v2f													myRealSize{ 0,0 };
+	Node2D*												mParent;
+	kstl::set<Node2D*, Node2D::PriorityCompare>			mSons;
 
-	Matrix3x3											myLocalTransformMatrix;
-	Matrix3x3											myGlobalTransformMatrix;
+	v2f													mRealSize{ 0,0 };
 
-	maInt												myPriority;
-	maFloat												mySizeX;
-	maFloat												mySizeY;
-	maVect2DF											myDock;
-	maVect2DF											myAnchor;
-	maVect2DF											myPosition;
-	maFloat												myAngle;
-	maFloat												myPreScaleX;
-	maFloat												myPreScaleY;
-	maFloat												myPostScaleX;
-	maFloat												myPostScaleY;
-	maEnum<3>											mySizeModeX;
-	maEnum<3>											mySizeModeY;
-	maBoolHeritage<1>									myClipSons;
-	bool												myNeedUpdatePosition;
-	bool												mySonPriorityChanged;
-	maReference											myCustomShader = BASE_ATTRIBUTE(CustomShader, "");
+	Matrix3x3											mLocalTransformMatrix;
+	Matrix3x3											mGlobalTransformMatrix;
+
+	maInt												mPriority;
+	maFloat												mSizeX;
+	maFloat												mSizeY;
+	maVect2DF											mDock;
+	maVect2DF											mAnchor;
+	maVect2DF											mPosition;
+	maFloat												mRotationAngle;
+	maFloat												mPreScaleX;
+	maFloat												mPreScaleY;
+	maFloat												mPostScaleX;
+	maFloat												mPostScaleY;
+	maEnum<3>											mSizeModeX;
+	maEnum<3>											mSizeModeY;
+	maBoolHeritage<1>									mClipSons;
+	bool												mNeedUpdatePosition;
+	bool												mSonPriorityChanged;
+	maReference											mCustomShader = BASE_ATTRIBUTE(CustomShader, "");
 
 	WRAP_METHODS(GetSize);
 };

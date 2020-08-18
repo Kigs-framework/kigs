@@ -14,18 +14,18 @@ struct RemoveDelimiter
 };
 
 
-CoreItemEvaluationContext* CoreItemEvaluationContext::myCurrentContext = 0;
-std::mutex	CoreItemEvaluationContext::myMutex;
+CoreItemEvaluationContext* CoreItemEvaluationContext::mCurrentContext = 0;
+std::mutex	CoreItemEvaluationContext::mMutex;
 
 void	CoreItemEvaluationContext::SetContext(CoreItemEvaluationContext* set)
 {
-	myMutex.lock();
-	myCurrentContext = set;
+	mMutex.lock();
+	mCurrentContext = set;
 }
 void	CoreItemEvaluationContext::ReleaseContext()
 {
-	myCurrentContext = 0;
-	myMutex.unlock();
+	mCurrentContext = 0;
+	mMutex.unlock();
 }
 
 template<typename operandType>
@@ -36,10 +36,10 @@ CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae
 	AsciiParserUtils	parser((char*)cleanFormulae.c_str(), cleanFormulae.length());
 
 	ConstructContext	context;
-	context.myTarget = target;
-	context.mySpecificList = specificList;
+	context.mTarget = target;
+	context.mSpecificList = specificList;
 
-	ConstructContextMap(context.myMap, specificList);
+	ConstructContextMap(context.mMap, specificList);
 
 	CoreItemSP	result = Parse(parser, context);
 
@@ -55,9 +55,9 @@ CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae
 	AsciiParserUtils	parser((char*)cleanFormulae.c_str(), cleanFormulae.length());
 
 	ConstructContext	context;
-	context.myTarget = target;
-	context.myMap = myMap;
-	context.mySpecificList = nullptr;
+	context.mTarget = target;
+	context.mMap = myMap;
+	context.mSpecificList = nullptr;
 
 	CoreItemSP	result = Parse(parser, context);
 
@@ -85,7 +85,7 @@ void	CoreItemOperator<operandType>::ConstructContextMap(kigs::unordered_map<kstl
 		typename kstl::vector<SpecificOperator>::const_iterator itend = specificList->end();
 		while (itstart != itend)
 		{
-			myMap[(*itstart).myKeyWord] = (*itstart).myCreateMethod;
+			myMap[(*itstart).mKeyWord] = (*itstart).mCreateMethod;
 			++itstart;
 		}
 	}
@@ -166,7 +166,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 					AsciiParserUtils leading(formulae);
 					formulae.GetString(leading, '(');
 					// create a method
-					CoreModifiableAttributeOperator<operandType>* opeattribute = new CoreModifiableAttributeOperator<operandType>((const kstl::string&)leading, context.myTarget);
+					CoreModifiableAttributeOperator<operandType>* opeattribute = new CoreModifiableAttributeOperator<operandType>((const kstl::string&)leading, context.mTarget);
 					if (paramblock.length())
 					{
 						CoreItemSP	op1;
@@ -266,7 +266,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 			{
 				if (block.length() == (formulae.length() - 2))
 				{
-					CoreModifiableAttributeOperator<operandType>* opeattribute = new CoreModifiableAttributeOperator<operandType>((const kstl::string&)block, context.myTarget);
+					CoreModifiableAttributeOperator<operandType>* opeattribute = new CoreModifiableAttributeOperator<operandType>((const kstl::string&)block, context.mTarget);
 					return CoreItemSP((CoreItem*)opeattribute, StealRefTag{});
 				}
 			}
@@ -290,7 +290,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		for (i = 0; i < (int)FirstLevelOperatorList.size(); i++)
 		{
 			AsciiParserUtils	operand(remaining);
-			remaining.SetPosition(FirstLevelOperatorList[i].myPos - 1 - starting);
+			remaining.SetPosition(FirstLevelOperatorList[i].mPos - 1 - starting);
 
 			if (remaining.GetLeadingPart(operand))
 			{
@@ -298,8 +298,8 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 				if(!instruction.isNil())
 					newOperator->push_back(instruction);
 			}
-			starting += remaining.GetPosition() + FirstLevelOperatorList[i].mySize;
-			remaining.SetPosition(remaining.GetPosition() + FirstLevelOperatorList[i].mySize);
+			starting += remaining.GetPosition() + FirstLevelOperatorList[i].mSize;
+			remaining.SetPosition(remaining.GetPosition() + FirstLevelOperatorList[i].mSize);
 			remaining.GetTrailingPart(operand);
 
 			remaining = operand;
@@ -457,9 +457,9 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 
 			while (itcurrent != itend)
 			{
-				if ((*itcurrent).myPriority>foundpriority)
+				if ((*itcurrent).mPriority>foundpriority)
 				{
-					foundpriority = (*itcurrent).myPriority;
+					foundpriority = (*itcurrent).mPriority;
 					itfound = itcurrent;
 					ifound = i;
 				}
@@ -469,7 +469,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 
 			CoreItemOperatorStruct& current = (*itfound);
 
-			switch (current.myOp)
+			switch (current.mOp)
 			{
 			case '*':
 			{
@@ -539,17 +539,17 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 
 			}
 
-			newOperator->push_back(current.myOp1);
-			newOperator->push_back(current.myOp2);
+			newOperator->push_back(current.mOp1);
+			newOperator->push_back(current.mOp2);
 
 			// replace newOperator in previous and next 
 			if (ifound > 0)
 			{
-				FirstLevelOperatorList[ifound - 1].myOp2 = CoreItemSP(newOperator, StealRefTag{});
+				FirstLevelOperatorList[ifound - 1].mOp2 = CoreItemSP(newOperator, StealRefTag{});
 			}
 			if (ifound < ((int)FirstLevelOperatorList.size() - 1))
 			{
-				FirstLevelOperatorList[ifound + 1].myOp1 = CoreItemSP(newOperator, StealRefTag{});
+				FirstLevelOperatorList[ifound + 1].mOp1 = CoreItemSP(newOperator, StealRefTag{});
 			}
 
 			FirstLevelOperatorList.erase(itfound);
@@ -565,8 +565,8 @@ template<typename operandType>
 CoreItemOperator<operandType>* CoreItemOperator<operandType>::getOperator(const kstl::string& keyword, ConstructContext& context)
 {
 
-	typename kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>::const_iterator itfound = context.myMap.find(keyword);
-	while (itfound != context.myMap.end())
+	typename kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>::const_iterator itfound = context.mMap.find(keyword);
+	while (itfound != context.mMap.end())
 	{
 		return  (CoreItemOperator<operandType>*)((*itfound).second());
 	}
@@ -578,8 +578,8 @@ GenericRefCountedBaseClass* CoreItemOperator<operandType>::getVariable(const kst
 {
 	if (CoreItemEvaluationContext::GetContext())
 	{
-		auto itfound = CoreItemEvaluationContext::GetContext()->myVariableList.find(CharToID::GetID(keyword));
-		if (itfound != CoreItemEvaluationContext::GetContext()->myVariableList.end())
+		auto itfound = CoreItemEvaluationContext::GetContext()->mVariableList.find(CharToID::GetID(keyword));
+		if (itfound != CoreItemEvaluationContext::GetContext()->mVariableList.end())
 		{
 			return (*itfound).second;
 		}
@@ -632,12 +632,12 @@ bool	CoreItemOperator<operandType>::CheckAffectation(char prevChar, int priority
 	if (prevChar == '=')
 	{
 		CoreItemOperatorStruct toAdd;
-		toAdd.myOp = 'a';
-		toAdd.myPos = block.GetPosition() - 1;
-		toAdd.myOp1 = CoreItemSP(nullptr);
-		toAdd.myOp2 = CoreItemSP(nullptr);
-		toAdd.myPriority = priority;
-		toAdd.mySize = 1;
+		toAdd.mOp = 'a';
+		toAdd.mPos = block.GetPosition() - 1;
+		toAdd.mOp1 = CoreItemSP(nullptr);
+		toAdd.mOp2 = CoreItemSP(nullptr);
+		toAdd.mPriority = priority;
+		toAdd.mSize = 1;
 		OperatorList.push_back(toAdd);
 		return true;
 	}
@@ -669,12 +669,12 @@ kstl::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLev
 			if ((BlockLevel == 0) && prevIsValid)
 			{
 				CoreItemOperatorStruct toAdd;
-				toAdd.myOp = currentChar;
-				toAdd.myPos = block.GetPosition();
-				toAdd.myOp1 = CoreItemSP(nullptr);
-				toAdd.myOp2 = CoreItemSP(nullptr);
-				toAdd.myPriority = priority;
-				toAdd.mySize = 1;
+				toAdd.mOp = currentChar;
+				toAdd.mPos = block.GetPosition();
+				toAdd.mOp1 = CoreItemSP(nullptr);
+				toAdd.mOp2 = CoreItemSP(nullptr);
+				toAdd.mPriority = priority;
+				toAdd.mSize = 1;
 				OperatorList.push_back(toAdd);
 				isValid = false;
 			}
@@ -831,12 +831,12 @@ kstl::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLev
 				if (!unaryNeg)
 				{
 					CoreItemOperatorStruct toAdd;
-					toAdd.myOp = currentChar;
-					toAdd.myPos = block.GetPosition();
-					toAdd.myOp1 = CoreItemSP(nullptr);
-					toAdd.myOp2 = CoreItemSP(nullptr);
-					toAdd.myPriority = priority;
-					toAdd.mySize = 1;
+					toAdd.mOp = currentChar;
+					toAdd.mPos = block.GetPosition();
+					toAdd.mOp1 = CoreItemSP(nullptr);
+					toAdd.mOp2 = CoreItemSP(nullptr);
+					toAdd.mPriority = priority;
+					toAdd.mSize = 1;
 					OperatorList.push_back(toAdd);
 					isValid = false;
 				}
@@ -912,39 +912,39 @@ kstl::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLev
 				if (prevChar == '=')
 				{
 					CoreItemOperatorStruct toAdd;
-					toAdd.myOp = currentChar;
-					toAdd.myPos = block.GetPosition()-1;
-					toAdd.myOp1 = CoreItemSP(nullptr);
-					toAdd.myOp2 = CoreItemSP(nullptr);
-					toAdd.myPriority = priority;
-					toAdd.mySize = 2;
+					toAdd.mOp = currentChar;
+					toAdd.mPos = block.GetPosition()-1;
+					toAdd.mOp1 = CoreItemSP(nullptr);
+					toAdd.mOp2 = CoreItemSP(nullptr);
+					toAdd.mPriority = priority;
+					toAdd.mSize = 2;
 					OperatorList.push_back(toAdd);
 					isValid = false;
 				}
 				else if (prevChar == '!')
 				{
 					CoreItemOperatorStruct toAdd;
-					toAdd.myOp = 'd';
-					toAdd.myPos = block.GetPosition()-1;
-					toAdd.myOp1 = CoreItemSP(nullptr);
-					toAdd.myOp2 = CoreItemSP(nullptr);
-					toAdd.myPriority = priority;
-					toAdd.mySize = 2;
+					toAdd.mOp = 'd';
+					toAdd.mPos = block.GetPosition()-1;
+					toAdd.mOp1 = CoreItemSP(nullptr);
+					toAdd.mOp2 = CoreItemSP(nullptr);
+					toAdd.mPriority = priority;
+					toAdd.mSize = 2;
 					OperatorList.push_back(toAdd);
 					isValid = false;
 				}
 				else if (prevChar == '<') 
 				{
 					// change previous
-					OperatorList[OperatorList.size() - 1].myOp = 'i';
-					OperatorList[OperatorList.size() - 1].mySize = 2;
+					OperatorList[OperatorList.size() - 1].mOp = 'i';
+					OperatorList[OperatorList.size() - 1].mSize = 2;
 					isValid = false;
 				}
 				else if (prevChar == '>')
 				{
 					// change previous
-					OperatorList[OperatorList.size() - 1].myOp = 's';
-					OperatorList[OperatorList.size() - 1].mySize = 2;
+					OperatorList[OperatorList.size() - 1].mOp = 's';
+					OperatorList[OperatorList.size() - 1].mSize = 2;
 					isValid = false;
 				}
 			}
@@ -956,12 +956,12 @@ kstl::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLev
 			if ((BlockLevel == 0) && prevIsValid)
 			{
 				CoreItemOperatorStruct toAdd;
-				toAdd.myOp = currentChar;
-				toAdd.myPos = block.GetPosition();
-				toAdd.myOp1 = CoreItemSP(nullptr);
-				toAdd.myOp2 = CoreItemSP(nullptr);
-				toAdd.myPriority = priority;
-				toAdd.mySize = 1;
+				toAdd.mOp = currentChar;
+				toAdd.mPos = block.GetPosition();
+				toAdd.mOp1 = CoreItemSP(nullptr);
+				toAdd.mOp2 = CoreItemSP(nullptr);
+				toAdd.mPriority = priority;
+				toAdd.mSize = 1;
 				OperatorList.push_back(toAdd);
 				isValid = false;
 			}
@@ -974,12 +974,12 @@ kstl::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLev
 				if (prevChar == '&')
 				{
 					CoreItemOperatorStruct toAdd;
-					toAdd.myOp = currentChar;
-					toAdd.myPos = block.GetPosition()-1;
-					toAdd.myOp1 = CoreItemSP(nullptr);
-					toAdd.myOp2 = CoreItemSP(nullptr);
-					toAdd.myPriority = priority;
-					toAdd.mySize = 2;
+					toAdd.mOp = currentChar;
+					toAdd.mPos = block.GetPosition()-1;
+					toAdd.mOp1 = CoreItemSP(nullptr);
+					toAdd.mOp2 = CoreItemSP(nullptr);
+					toAdd.mPriority = priority;
+					toAdd.mSize = 2;
 					OperatorList.push_back(toAdd);
 					isValid = false;
 				}
@@ -993,12 +993,12 @@ kstl::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLev
 				if (prevChar == '|')
 				{
 					CoreItemOperatorStruct toAdd;
-					toAdd.myOp = currentChar;
-					toAdd.myPos = block.GetPosition() - 1;
-					toAdd.myOp1 = CoreItemSP(nullptr);
-					toAdd.myOp2 = CoreItemSP(nullptr);
-					toAdd.myPriority = priority;
-					toAdd.mySize = 2;
+					toAdd.mOp = currentChar;
+					toAdd.mPos = block.GetPosition() - 1;
+					toAdd.mOp1 = CoreItemSP(nullptr);
+					toAdd.mOp2 = CoreItemSP(nullptr);
+					toAdd.mPriority = priority;
+					toAdd.mSize = 2;
 					OperatorList.push_back(toAdd);
 					isValid = false;
 				}
@@ -1027,26 +1027,26 @@ kstl::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLev
 		for (i = 0; i < (int)OperatorList.size(); i++)
 		{
 			AsciiParserUtils	operand(remaining);
-			remaining.SetPosition(OperatorList[i].myPos - 1-starting);
+			remaining.SetPosition(OperatorList[i].mPos - 1-starting);
 			
 			if (remaining.GetLeadingPart(operand))
 			{
-				OperatorList[i].myOp1 = Parse(operand, context);
+				OperatorList[i].mOp1 = Parse(operand, context);
 			}
-			starting += remaining.GetPosition() + OperatorList[i].mySize;
-			remaining.SetPosition(remaining.GetPosition() + OperatorList[i].mySize);
+			starting += remaining.GetPosition() + OperatorList[i].mSize;
+			remaining.SetPosition(remaining.GetPosition() + OperatorList[i].mSize);
 			remaining.GetTrailingPart(operand);
 
 			remaining = operand;
 		}
 
 		// last one
-		OperatorList[OperatorList.size() - 1].myOp2 = Parse(remaining,context);
+		OperatorList[OperatorList.size() - 1].mOp2 = Parse(remaining,context);
 	
 		// set op2
 		for (i = 0; i < ((int)OperatorList.size())-1; i++)
 		{
-			OperatorList[i].myOp2 = OperatorList[i+1].myOp1;
+			OperatorList[i].mOp2 = OperatorList[i+1].mOp1;
 		}
 	}
 
@@ -1174,8 +1174,8 @@ CoreModifiableAttributeOperator<kfloat>::operator kfloat() const
 	{
 		// push attributes
 		kstl::vector<CoreModifiableAttribute*>	myAttributes;
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::myVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::myVector.end();
+		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 		
 		while (itOperand != itOperandEnd)
@@ -1195,7 +1195,7 @@ CoreModifiableAttributeOperator<kfloat>::operator kfloat() const
 		// check if method adds an attribute
 		int attrCount = myAttributes.size();
 
-		// check if current context has sender or data
+		// check if current context has mSender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
 		void* datavariable = (void*)getVariable("data");
 		myTarget->CallMethod(myMethodID, myAttributes, datavariable, sendervariable);
@@ -1249,8 +1249,8 @@ CoreModifiableAttributeOperator<kstl::string>::operator kstl::string() const
 	{
 		// push attributes
 		kstl::vector<CoreModifiableAttribute*>	myAttributes;
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::myVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::myVector.end();
+		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 
 		while (itOperand != itOperandEnd)
@@ -1270,7 +1270,7 @@ CoreModifiableAttributeOperator<kstl::string>::operator kstl::string() const
 		// check if method adds an attribute
 		int attrCount = myAttributes.size();
 
-		// check if current context has sender or data
+		// check if current context has mSender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
 		void* datavariable = (void*)getVariable("data");
 		myTarget->CallMethod(myMethodID, myAttributes, datavariable, sendervariable);
@@ -1326,8 +1326,8 @@ CoreModifiableAttributeOperator<Point2D>::operator Point2D() const
 	{
 		// push attributes
 		kstl::vector<CoreModifiableAttribute*>	myAttributes;
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::myVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::myVector.end();
+		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 
 		while (itOperand != itOperandEnd)
@@ -1349,7 +1349,7 @@ CoreModifiableAttributeOperator<Point2D>::operator Point2D() const
 		// check if method adds an attribute
 		int attrCount = myAttributes.size();
 
-		// check if current context has sender or data
+		// check if current context has mSender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
 		void* datavariable = (void*)getVariable("data");
 		myTarget->CallMethod(myMethodID, myAttributes, datavariable, sendervariable);
@@ -1406,8 +1406,8 @@ CoreModifiableAttributeOperator<Point3D>::operator Point3D() const
 	{
 		// push attributes
 		kstl::vector<CoreModifiableAttribute*>	myAttributes;
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::myVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::myVector.end();
+		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 
 		while (itOperand != itOperandEnd)
@@ -1427,7 +1427,7 @@ CoreModifiableAttributeOperator<Point3D>::operator Point3D() const
 		// check if method adds an attribute
 		int attrCount = myAttributes.size();
 
-		// check if current context has sender or data
+		// check if current context has mSender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
 		void* datavariable = (void*)getVariable("data");
 		myTarget->CallMethod(myMethodID, myAttributes, datavariable, sendervariable);
@@ -1483,8 +1483,8 @@ CoreModifiableAttributeOperator<Vector4D>::operator Vector4D() const
 	{
 		// push attributes
 		kstl::vector<CoreModifiableAttribute*>	myAttributes;
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::myVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::myVector.end();
+		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 
 		while (itOperand != itOperandEnd)
@@ -1504,7 +1504,7 @@ CoreModifiableAttributeOperator<Vector4D>::operator Vector4D() const
 		// check if method adds an attribute
 		int attrCount = myAttributes.size();
 
-		// check if current context has sender or data
+		// check if current context has mSender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
 		void* datavariable = (void*)getVariable("data");
 		myTarget->CallMethod(myMethodID, myAttributes, datavariable, sendervariable);

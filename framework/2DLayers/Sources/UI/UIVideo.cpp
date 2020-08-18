@@ -8,35 +8,35 @@ IMPLEMENT_CLASS_INFO(UIVideo)
 
 UIVideo::UIVideo(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
 UIItem(name, PASS_CLASS_NAME_TREE_ARG)
-,myBLoop(*this,false,"Loop",false)
-,myBHideAtTheEnd(*this,false,"HideAtTheEnd",false)
-,mybHasAlpha(*this,false,"HasAlpha",false)
-, mybIsMuted(*this, false, "IsMuted", false)
-, myVolume(*this, false, "Volume", 1.0f)
-, myVideoName(*this, false, "Video", "")
-, myBFinished(false)
-,m_VideoOrder(*this,false,"Order","Play","Pause","Stop")
+,mLoop(*this,false,"Loop",false)
+,mHideAtTheEnd(*this,false,"HideAtTheEnd",false)
+,mHasAlpha(*this,false,"HasAlpha",false)
+, mIsMuted(*this, false, "IsMuted", false)
+, mVolume(*this, false, "Volume", 1.0f)
+, mVideoName(*this, false, "Video", "")
+, mFinished(false)
+,mOrder(*this,false,"Order","Play","Pause","Stop")
 
 
 {
-	myIsEnabled.changeNotificationLevel(Owner);
-	m_VideoOrder.changeNotificationLevel(Owner);
+	mIsEnabled.changeNotificationLevel(Owner);
+	mOrder.changeNotificationLevel(Owner);
 
-	myVolume.changeNotificationLevel(Owner);
-	mybIsMuted.changeNotificationLevel(Owner);
-	myOpacity = 1.0f;
+	mVolume.changeNotificationLevel(Owner);
+	mIsMuted.changeNotificationLevel(Owner);
+	mOpacity = 1.0f;
 }
 
 UIVideo::~UIVideo()
 {
-	if(myTexture)
-		myTexture = nullptr;
+	if(mTexturePointer)
+		mTexturePointer = nullptr;
 
-	if(myBufferTexture)
-		myBufferTexture = nullptr;
+	if(mBufferTexturePointer)
+		mBufferTexturePointer = nullptr;
 
-	if(myAlphaMask)
-		myAlphaMask = nullptr;
+	if(mAlphaMask)
+		mAlphaMask = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -44,15 +44,15 @@ UIVideo::~UIVideo()
 
 void	UIVideo::ReloadTexture()
 {
-	if(myTexture)
-		myTexture->ReInit();
-	if(myBufferTexture)
-		myBufferTexture->ReInit();
+	if(mTexturePointer)
+		mTexturePointer->ReInit();
+	if(mBufferTexturePointer)
+		mBufferTexturePointer->ReInit();
 }
 
 void UIVideo::NotifyUpdate(const unsigned int labelid )
 {
-	if(labelid==myIsEnabled.getLabelID()) 
+	if(labelid==mIsEnabled.getLabelID()) 
 	{
 		if(!GetSons().empty())
 		{
@@ -61,27 +61,27 @@ void UIVideo::NotifyUpdate(const unsigned int labelid )
 			kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = sons.end();
 			while(it!=end)
 			{
-				(*it)->setValue("IsEnabled",myIsEnabled);
+				(*it)->setValue("IsEnabled",mIsEnabled);
 				it++;
 			}
 		}
 	}
-	else if (labelid==m_VideoOrder.getLabelID())
+	else if (labelid==mOrder.getLabelID())
 	{
-		if((const kstl::string&)m_VideoOrder == "Play")
+		if((const kstl::string&)mOrder == "Play")
 		{
-			myBFinished = false;
-			myIsHidden = false;
+			mFinished = false;
+			mIsHidden = false;
 		}
-		else if((const kstl::string&)m_VideoOrder == "Pause")
+		else if((const kstl::string&)mOrder == "Pause")
 		{
-			myBFinished = true;
-			myIsHidden = false;
+			mFinished = true;
+			mIsHidden = false;
 		}
-		else if((const kstl::string&)m_VideoOrder == "Stop")
+		else if((const kstl::string&)mOrder == "Stop")
 		{
-			myBFinished = true;
-			myIsHidden = true;
+			mFinished = true;
+			mIsHidden = true;
 		}
 	}
 
@@ -93,45 +93,45 @@ void UIVideo::InitModifiable()
 	UIItem::InitModifiable();
 	if(IsInit())
 	{
-		if((const kstl::string&)m_VideoOrder == "Play")
+		if((const kstl::string&)mOrder == "Play")
 		{
-			myBFinished = false;
-			myIsHidden = false;
+			mFinished = false;
+			mIsHidden = false;
 		}
-		else if((const kstl::string&)m_VideoOrder == "Pause")
+		else if((const kstl::string&)mOrder == "Pause")
 		{
-			myBFinished = true;
-			myIsHidden = false;
+			mFinished = true;
+			mIsHidden = false;
 		}
-		else if((const kstl::string&)m_VideoOrder == "Stop")
+		else if((const kstl::string&)mOrder == "Stop")
 		{
-			myBFinished = true;
-			myIsHidden = true;
+			mFinished = true;
+			mIsHidden = true;
 		}
 
 		// Display texture
-		if(myTexture)
-			myTexture=nullptr;
+		if(mTexturePointer)
+			mTexturePointer=nullptr;
 
-		myTexture = KigsCore::GetInstanceOf(myVideoName, "Texture");
-		myTexture->setValue("Width",mySizeX);
-		myTexture->setValue("Height",mySizeY);
-		myTexture->Init();
+		mTexturePointer = KigsCore::GetInstanceOf(mVideoName, "Texture");
+		mTexturePointer->setValue("Width",mSizeX);
+		mTexturePointer->setValue("Height",mSizeY);
+		mTexturePointer->Init();
 
 		//Buffer Texture
-		if(myBufferTexture)
-			myBufferTexture=0;
+		if(mBufferTexturePointer)
+			mBufferTexturePointer=0;
 
-		kstl::string LBufferName = myVideoName;
+		kstl::string LBufferName = mVideoName;
 		LBufferName = LBufferName + "Buffer";
-		myBufferTexture = KigsCore::GetInstanceOf(LBufferName, "Texture");
-		myBufferTexture->setValue("Width",mySizeX);
-		myBufferTexture->setValue("Height",mySizeY*2);
-		myBufferTexture->Init();
+		mBufferTexturePointer = KigsCore::GetInstanceOf(LBufferName, "Texture");
+		mBufferTexturePointer->setValue("Width",mSizeX);
+		mBufferTexturePointer->setValue("Height",mSizeY*2);
+		mBufferTexturePointer->Init();
 
 		// auto size
 #ifdef _DEBUG
-		if( (((unsigned int)mySizeX)==0) && (((unsigned int)mySizeY)==0) )
+		if( (((unsigned int)mSizeX)==0) && (((unsigned int)mSizeY)==0) )
 		{
 			printf("You must specify a size for init a video element\n");
 		}
@@ -141,16 +141,16 @@ void UIVideo::InitModifiable()
 
 Texture* UIVideo::GetTexture()
 {
-	if(myTexture)
-		return myTexture.get();
+	if(mTexturePointer)
+		return mTexturePointer.get();
 	
 	return nullptr;
 }
 
 Texture*	UIVideo::Get_BufferTexture()
 {
-	if(myBufferTexture)
-		return myBufferTexture.get();
+	if(mBufferTexturePointer)
+		return mBufferTexturePointer.get();
 
 	return nullptr;
 }
@@ -158,24 +158,24 @@ Texture*	UIVideo::Get_BufferTexture()
 bool UIVideo::isAlpha(float X, float Y)
 {
 	//Try to get my mask
-	if(!myAlphaMask)
+	if(!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
 
 		for(unsigned int i=0; i < sons.size(); i++)
 		{
-			if(sons[i].myItem->isSubType("AlphaMask"))
+			if(sons[i].mItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = sons[i].myItem;
+				mAlphaMask = sons[i].mItem;
 				break;
 			}
 		}
 	}
 
-	if(myAlphaMask)
+	if(mAlphaMask)
 	{
 		//Check on my mask the specified location
-		return !myAlphaMask->CheckTo(X,Y);
+		return !mAlphaMask->CheckTo(X,Y);
 	}
 
 	return false;

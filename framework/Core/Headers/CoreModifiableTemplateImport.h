@@ -180,7 +180,7 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 				//std::vector<s32>::const_iterator	itsonlink=linklist.begin();
 				for (itson = instances.begin(); itson != instances.end(); ++itson)
 				{
-					CMSP son = (*itson).myItem;
+					CMSP son = (*itson).mItem;
 					if (son->getName() == name)
 					{
 						if (son->isSubType(typeAttribute->getString()))
@@ -409,7 +409,7 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 		std::vector<ModifiableItemStruct>::const_iterator itson;
 		for (itson = instances.begin(); itson != instances.end(); ++itson)
 		{
-			CMSP son = (*itson).myItem;
+			CMSP son = (*itson).mItem;
 			if (son == current)
 			{
 				sonNeedAdd = false;
@@ -693,9 +693,9 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 	CoreModifiableAttribute* attr = 0;
 	bool attrfound = false;
 
-	auto AttrByID = currentModifiable->_attributes.find(id);
+	auto AttrByID = currentModifiable->mAttributes.find(id);
 
-	if (AttrByID != currentModifiable->_attributes.end())
+	if (AttrByID != currentModifiable->mAttributes.end())
 	{
 		attr = (*AttrByID).second;
 		if (attr)

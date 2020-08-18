@@ -106,7 +106,7 @@ bool Node3D::addItem(const CMSP& item,ItemPosition pos DECLARE_LINK_NAME)
 bool Node3D::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	//! if item is a SceneNode, then scenegraph will need update after node removing
-	if(item->isSubType(SceneNode::myClassID))
+	if(item->isSubType(SceneNode::mClassID))
 	{
 		if (item->isSubType("Camera"))
 		{
@@ -195,9 +195,9 @@ void Node3D::PropagateDirtyFlagsToSons(SceneNode* source)
 {
 	for (auto& item : getItems())
 	{
-		if (item.myItem->isUserFlagSet(UserFlagNode3D))
+		if (item.mItem->isUserFlagSet(UserFlagNode3D))
 		{
-			auto& node = (SP<Node3D>&)(item.myItem);
+			auto& node = (SP<Node3D>&)(item.mItem);
 			node->SetFlag(LocalToGlobalMatrixIsDirty| GlobalBoundingBoxIsDirty | GlobalToLocalMatrixIsDirty);
 			node->PropagateDirtyFlagsToSons(source);
 		}
@@ -285,9 +285,9 @@ void Node3D::PreDrawDrawable(TravState* state)
 	{
 		for (auto& it : getItems())
 		{
-			if (it.myItem->isUserFlagSet(UserFlagDrawable))
+			if (it.mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto& d = (SP<Drawable>&)it.myItem;
+				auto& d = (SP<Drawable>&)it.mItem;
 				if (!state->mCurrentPass || d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 					d->CheckPreDraw(state);
 			}
@@ -298,9 +298,9 @@ void Node3D::PreDrawDrawable(TravState* state)
 	{
 		for (auto& it : getItems())
 		{
-			if (it.myItem->isUserFlagSet(UserFlagDrawable))
+			if (it.mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto& d = (SP<Drawable>&)it.myItem;
+				auto& d = (SP<Drawable>&)it.mItem;
 				if(d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 				{
 					d->CheckPreDraw(state);
@@ -323,9 +323,9 @@ void Node3D::DrawDrawable(TravState* state)
 	{
 		for (auto& it : getItems())
 		{
-			if (it.myItem->isUserFlagSet(UserFlagDrawable))
+			if (it.mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto& d = (SP<Drawable>&)it.myItem;
+				auto& d = (SP<Drawable>&)it.mItem;
 				if (d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 					d->CheckDraw(state);
 			}
@@ -337,9 +337,9 @@ void Node3D::DrawDrawable(TravState* state)
 	{
 		for(auto& it : getItems())
 		{
-			if(it.myItem->isUserFlagSet(UserFlagDrawable))
+			if(it.mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto& d = (SP<Drawable>&)it.myItem;
+				auto& d = (SP<Drawable>&)it.mItem;
 				if (d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 				{
 					if (d->IsRenderable() && d->IsSortable())
@@ -363,9 +363,9 @@ void Node3D::PostDrawDrawable(TravState* state)
 	{
 		for (auto& it : getItems())
 		{
-			if (it.myItem->isUserFlagSet(UserFlagDrawable))
+			if (it.mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto& d = (SP<Drawable>&)it.myItem;
+				auto& d = (SP<Drawable>&)it.mItem;
 				if (!state->mCurrentPass || d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 					d->CheckPostDraw(state);
 			}
@@ -376,9 +376,9 @@ void Node3D::PostDrawDrawable(TravState* state)
 	{
 		for (auto& it : getItems())
 		{
-			if (it.myItem->isUserFlagSet(UserFlagDrawable))
+			if (it.mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto& d = (SP<Drawable>&)it.myItem;
+				auto& d = (SP<Drawable>&)it.mItem;
 				if (d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 				{
 					d->CheckPostDraw(state);
@@ -467,7 +467,7 @@ void Node3D::TravDraw(TravState* state)
 							i=state->myPath->GotoWay(state->mCurrentPass->sorter->GetCurrentWay());
 							it+=i;
 						}
-						if((*it).myItem->isUserFlagSet(UserFlagNode3D))
+						if((*it).mItem->isUserFlagSet(UserFlagNode3D))
 						{
 							if(state->mCurrentPass->sorter)
 							{
@@ -475,7 +475,7 @@ void Node3D::TravDraw(TravState* state)
 							}
 
 							//! recurse to sons
-							((SP<Node3D>&)(*it).myItem)->TravDraw(state);
+							((SP<Node3D>&)(*it).mItem)->TravDraw(state);
 
 	
 							if(state->mCurrentPass->sorter)
@@ -601,7 +601,7 @@ void Node3D::TravCull(TravState* state)
 	ModuleSceneGraph*	scenegraph=state->GetSceneGraph();
 
 	//! TravCull method is called on all sons wich are visible as some processings can be done 
-	//! inside overloaded TravCull Methods
+	//! inside overloaded TravCull mMethods
 	myFirstVisibleNodeIndex=scenegraph->GetCurrentVisibleNodeIndex();
 	myVisibleNodeCount=0;
 
@@ -630,9 +630,9 @@ void Node3D::TravCull(TravState* state)
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
 			// if node3D, then full process
-			if ((*it).myItem->isUserFlagSet(UserFlagNode3D))
+			if ((*it).mItem->isUserFlagSet(UserFlagNode3D))
 			{
-				SP<Node3D>& node = (SP<Node3D>&)(*it).myItem;
+				SP<Node3D>& node = (SP<Node3D>&)(*it).mItem;
 				if (node->Cull(state, myCullingMask))
 				{
 					nodeDistPair toAdd;
@@ -672,9 +672,9 @@ void Node3D::TravCull(TravState* state)
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
 			// if node3D, then full process
-			if ((*it).myItem->isUserFlagSet(UserFlagNode3D))
+			if ((*it).mItem->isUserFlagSet(UserFlagNode3D))
 			{
-				SP<Node3D>& node = (SP<Node3D>&)(*it).myItem;
+				SP<Node3D>& node = (SP<Node3D>&)(*it).mItem;
 				if (node->Cull(state, myCullingMask))
 				{
 					nodeDistPair toAdd;
@@ -714,9 +714,9 @@ void Node3D::TravCull(TravState* state)
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
 			// if node3D, then full process
-			if ((*it).myItem->isUserFlagSet(UserFlagNode3D))
+			if ((*it).mItem->isUserFlagSet(UserFlagNode3D))
 			{
-				SP<Node3D>& node = (SP<Node3D>&)(*it).myItem;
+				SP<Node3D>& node = (SP<Node3D>&)(*it).mItem;
 				if (node->Cull(state, myCullingMask))
 				{
 					scenegraph->AddVisibleNode(node.get());
@@ -753,7 +753,7 @@ void Node3D::removeUser(CoreModifiable* user)
 
 void Node3D::addUser(CoreModifiable* user)
 {
-	if (user->isSubType(Node3D::myClassID))
+	if (user->isSubType(Node3D::mClassID))
 	{
 		myFatherNode = (Node3D*)user;
 	}
@@ -853,9 +853,9 @@ void Node3D::RecomputeBoundingBox()
 	kstl::vector<ModifiableItemStruct>::const_iterator it;
 	for (it = getItems().begin(); it != getItems().end(); ++it)
 	{
-		if ((*it).myItem->isSubType(Drawable::myClassID))
+		if ((*it).mItem->isSubType(Drawable::mClassID))
 		{
-			SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
+			SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
 			//hasDrawable = true;
 			//! if object has a valid BBox update return true
 			if (drawable->BBoxUpdate(0))
@@ -882,9 +882,9 @@ void Node3D::RecomputeBoundingBox()
 	//! then recurse to sons 
 	for (it = getItems().begin(); it != getItems().end(); ++it)
 	{
-		if ((*it).myItem->isUserFlagSet(UserFlagNode3D))
+		if ((*it).mItem->isUserFlagSet(UserFlagNode3D))
 		{
-			SP<Node3D>& node = (SP<Node3D>&)(*it).myItem;
+			SP<Node3D>& node = (SP<Node3D>&)(*it).mItem;
 
 			if (node->mIgnoreBBox) continue;
 			
@@ -1041,9 +1041,9 @@ int	Node3D::ComputeNodePriority()
 	
 		for (auto& item : getItems())
 		{
-			if (item.myItem->isUserFlagSet(UserFlagNode3D))
+			if (item.mItem->isUserFlagSet(UserFlagNode3D))
 			{
-				auto& node = (SP<Node3D>&)item.myItem;
+				auto& node = (SP<Node3D>&)item.mItem;
 				int currentP = node->ComputeNodePriority();
 				if (currentP > maxPriority)
 				{

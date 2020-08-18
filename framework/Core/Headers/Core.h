@@ -201,7 +201,7 @@ public:
 	template<typename T>
 	static T* GetModule()
 	{
-		return static_cast<T*>(GetModule(T::myClassID));
+		return static_cast<T*>(GetModule(T::mClassID));
 	}
 
 	/**
@@ -236,7 +236,7 @@ public:
 	template<typename askedType>
 	static SP<askedType>& Singleton()
 	{
-		return (SP<askedType>&)GetSingleton(askedType::myClassID);
+		return (SP<askedType>&)GetSingleton(askedType::mClassID);
 	}
 	/**
 	 * \brief		destroy the unique instance of the given class

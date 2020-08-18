@@ -6,12 +6,12 @@
 
 
 CoreSequence::CoreSequence(CoreModifiable* target, KigsID nameID, Timer* reftimer) :
-	myTarget(target)
-	, myID(nameID)
-	, myStartTime(-1.0)
-	, myPauseTime(-1.0)
-	, myRefTimer(reftimer)
-	, myCurrentActionIndex(0)
+	mTarget(target)
+	, mID(nameID)
+	, mStartTime(-1.0)
+	, mPauseTime(-1.0)
+	, mRefTimer(reftimer)
+	, mCurrentActionIndex(0)
 {
 	ModuleCoreAnimation* coreanim = (ModuleCoreAnimation*)KigsCore::Instance()->GetMainModuleInList(CoreAnimationModuleCoreIndex);
 	KigsCore::Connect(target, "Destroy", coreanim, "OnDestroyCallBack");
@@ -20,11 +20,11 @@ CoreSequence::CoreSequence(CoreModifiable* target, KigsID nameID, Timer* reftime
 // return true if finished
 bool	CoreSequence::update(const Timer& timer)
 {
-	if (myStartTime < -2.0) // start at first update mode
+	if (mStartTime < -2.0) // start at first update mode
 	{
-		if (myRefTimer)
+		if (mRefTimer)
 		{
-			protectedStart(myRefTimer->GetTime());
+			protectedStart(mRefTimer->GetTime());
 		}
 		else
 		{
@@ -32,23 +32,23 @@ bool	CoreSequence::update(const Timer& timer)
 		}
 	}
 
-	if (myStartTime < 0.0) // not started
+	if (mStartTime < 0.0) // not started
 	{
 		return false;
 	}
 
-	if (myRefTimer)
+	if (mRefTimer)
 	{
-		protectedUpdate(myRefTimer->GetTime());
+		protectedUpdate(mRefTimer->GetTime());
 	}
 	else
 	{
 		protectedUpdate(timer.GetTime());
 	}
 
-	if (myCurrentActionIndex == 0xFFFFFFFF)
+	if (mCurrentActionIndex == 0xFFFFFFFF)
 	{
-		myTarget->EmitSignal("SequenceFinished", myTarget, this);
+		mTarget->EmitSignal("SequenceFinished", mTarget, this);
 		return true;
 	}
 	return false;
@@ -57,8 +57,8 @@ bool	CoreSequence::update(const Timer& timer)
 void	CoreSequence::stop()
 {
 	// reset all actions
-	kstl::vector<CoreItemSP>::iterator itAction = myVector.begin();
-	kstl::vector<CoreItemSP>::iterator itActionEnd = myVector.end();
+	kstl::vector<CoreItemSP>::iterator itAction = mVector.begin();
+	kstl::vector<CoreItemSP>::iterator itActionEnd = mVector.end();
 
 	while (itAction != itActionEnd)
 	{
@@ -68,10 +68,10 @@ void	CoreSequence::stop()
 	}
 
 	// go back to first action
-	myCurrentActionIndex = 0;
+	mCurrentActionIndex = 0;
 
-	//reset myStartTime && myPauseTime
-	myPauseTime = myStartTime = -1.0;
+	//reset mStartTime && mPauseTime
+	mPauseTime = mStartTime = -1.0;
 }
 
 
@@ -79,21 +79,21 @@ CoreSequence::~CoreSequence()
 {
 	ModuleCoreAnimation* coreanim = (ModuleCoreAnimation*)KigsCore::Instance()->GetMainModuleInList(CoreAnimationModuleCoreIndex);
 
-	if (myTarget)
+	if (mTarget)
 	{
-		KigsCore::Disconnect(myTarget, "Destroy", coreanim, "OnDestroyCallBack");
+		KigsCore::Disconnect(mTarget, "Destroy", coreanim, "OnDestroyCallBack");
 	}
 }
 
 void	CoreSequence::protectedStart(kdouble time)
 {
-	if (myStartTime < 0.0) // check if not already started
+	if (mStartTime < 0.0) // check if not already started
 	{
-		if (myVector.size())
+		if (mVector.size())
 		{
-			CoreAction* current = (CoreAction*)myVector[myCurrentActionIndex].get();
+			CoreAction* current = (CoreAction*)mVector[mCurrentActionIndex].get();
 			current->setStartTime(time);
-			myStartTime = time;
+			mStartTime = time;
 		}
 	}
 }
@@ -106,23 +106,23 @@ void	CoreSequence::protectedPause(kdouble time)
 void	CoreSequence::protectedUpdate(kdouble time)
 {
 	bool done = false;
-	if (myCurrentActionIndex == 0xFFFFFFFF) return;
+	if (mCurrentActionIndex == 0xFFFFFFFF) return;
 
-	CoreAction* current = (CoreAction*)myVector[myCurrentActionIndex].get();
+	CoreAction* current = (CoreAction*)mVector[mCurrentActionIndex].get();
 	while (!done)
 	{
 		if (current->update(time)) // action is finished, start next one
 		{
-			++myCurrentActionIndex;
-			if (myCurrentActionIndex < myVector.size())
+			++mCurrentActionIndex;
+			if (mCurrentActionIndex < mVector.size())
 			{
 				kdouble previousend = current->getEndTime();
-				current = (CoreAction*)myVector[myCurrentActionIndex].get();
+				current = (CoreAction*)mVector[mCurrentActionIndex].get();
 				current->setStartTime(previousend);
 			}
 			else
 			{
-				myCurrentActionIndex = 0xFFFFFFFF;
+				mCurrentActionIndex = 0xFFFFFFFF;
 				done = true;
 			}
 		}

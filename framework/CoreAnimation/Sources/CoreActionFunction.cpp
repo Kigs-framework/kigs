@@ -5,7 +5,7 @@
 template<>
 inline void CoreActionFunction<kfloat, 1>::init(CoreSequence* sequence, CoreVector* params)
 {
-	myTarget = sequence->getTarget();
+	mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
 	if ((params->size()<3))
 	{
@@ -14,27 +14,27 @@ inline void CoreActionFunction<kfloat, 1>::init(CoreSequence* sequence, CoreVect
 #endif
 	float readfloat;
 	(*params)[0]->getValue(readfloat);
-	myDuration = readfloat;
+	mDuration = readfloat;
 
 	kstl::string readstring;
 	(*params)[1]->getValue(readstring);
 
 	// eval
-	CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, myTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
+	CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, mTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
 	if (!eval.isNil())
 	{
-		myFunctions[0] = eval;		
+		mFunctions[0] = eval;		
 	}
 
 	(*params)[2]->getValue(readstring);
-	myTarget = checkSubTarget(readstring);
-	myParamID = CharToID::GetID(readstring);
+	mTarget = checkSubTarget(readstring);
+	mParamID = CharToID::GetID(readstring);
 }
 
 template<typename dataType, int dimension>
 inline void CoreActionFunction<dataType, dimension>::init(CoreSequence* sequence, CoreVector* params)
 {
-	myTarget = sequence->getTarget();
+	mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
 	if ((params->size()<3))
 	{
@@ -44,7 +44,7 @@ inline void CoreActionFunction<dataType, dimension>::init(CoreSequence* sequence
 
 	float readfloat;
 	(*params)[0]->getValue(readfloat);
-	myDuration = readfloat;
+	mDuration = readfloat;
 
 	kstl::string readstring;
 
@@ -56,29 +56,29 @@ inline void CoreActionFunction<dataType, dimension>::init(CoreSequence* sequence
 		{
 			readstring = (const kstl::string&)((*params)[1][i]);
 			// eval
-			CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, myTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
+			CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, mTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
 			if (!eval.isNil())
 			{
-				myFunctions[i] = eval;
+				mFunctions[i] = eval;
 			}
 		}
 	}
 	else if ((*params)[1]->size() == 1)
 	{
-		myHasUniqueMultidimensionnalFunc = true;
+		mHasUniqueMultidimensionnalFunc = true;
 		
 		(*params)[1]->getValue(readstring);
 		// eval
-		CoreItemSP eval = CoreItemOperator<dataType>::Construct(readstring, myTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
+		CoreItemSP eval = CoreItemOperator<dataType>::Construct(readstring, mTarget, ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
 		if (!eval.isNil())
 		{
-			myFunctions[0] = eval;
+			mFunctions[0] = eval;
 		}
 	}
 
 	(*params)[2]->getValue(readstring);
-	myTarget = checkSubTarget(readstring);
-	myParamID = CharToID::GetID(readstring);
+	mTarget = checkSubTarget(readstring);
+	mParamID = CharToID::GetID(readstring);
 
 }
 

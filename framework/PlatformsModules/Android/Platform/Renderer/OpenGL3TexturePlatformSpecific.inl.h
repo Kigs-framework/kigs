@@ -66,7 +66,7 @@ bool	OpenGLTexture::CubeMapGeneration()
 		SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(filename);
 		if (fullfilenamehandle)
 		{
-			fullfilename = fullfilenamehandle->myFullFileName;
+			fullfilename = fullfilenamehandle->mFullFileName;
 		}
 		else
 		{

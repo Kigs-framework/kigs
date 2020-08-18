@@ -14,11 +14,9 @@ class Timer;
  * \file	StepByStepImporter.h
  * \class	StepByStepImporter
  * \ingroup Core
- * \brief	import an xml and create the corresponding CoreModifiable tree step by step
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \brief	Import an xml and create the corresponding CoreModifiable tree step by step
  *
+ * ?? Obsolete ??
  */
 // ****************************************
 class StepByStepImporter : public CoreModifiable
@@ -48,7 +46,7 @@ public:
 
 	CMSP	GetImported()
 	{
-		return myImportedRoot;
+		return mImportedRoot;
 	}
 
 protected:
@@ -68,14 +66,14 @@ protected:
 	void	InitModifiable() override;
 
 
-	maString							myFileName;
-	maFloat								myDeltaTimePerStep;
+	maString							mFileName;
+	maFloat								mDeltaTimePerStep;
 
-	XML *								myXmlfile;
-	kstl::vector<CMSP>					myLoadedItems;
-	XMLNode*							myXMLRootNode;
+	XML *								mXmlfile;
+	kstl::vector<CMSP>					mLoadedItems;
+	XMLNode*							mXMLRootNode;
 
-	CMSP								myImportedRoot;
+	CMSP								mImportedRoot;
 
 	class	ImportTree
 	{
@@ -83,24 +81,24 @@ protected:
 		ImportTree(XMLNode*,CMSP);
 		virtual ~ImportTree();
 
-		XMLNode*						myFatherNode;
-		CMSP							myCurrentCoreModifiable;
-		CMSP							myCurrent;
-		int								myLinkID;
-		kstl::vector	<ImportTree*>	mySonsImport;
-		bool							myNeedInit;
-		ImportTree*						myFatherImportTreeNode;	
-		ImportTree*						myBrotherImportTreeNode;	
-		bool							myIsDone;
+		XMLNode*						mFatherNode;
+		CMSP							mCurrentCoreModifiable;
+		CMSP							mCurrent;
+		int								mLinkID;
+		kstl::vector	<ImportTree*>	mSonsImport;
+		bool							mNeedInit;
+		ImportTree*						mFatherImportTreeNode;	
+		ImportTree*						mBrotherImportTreeNode;	
+		bool							mIsDone;
 	};
 
-	ImportTree*							myImportTreeRoot;
-	ImportTree*							myCurrentImportedTreeNode;
+	ImportTree*							mImportTreeRoot;
+	ImportTree*							mCurrentImportedTreeNode;
 
 	ImportTree*		StepImport(ImportTree*);
 
-	SP<Timer>								myTimer;
-	bool								myLoadingIsDone;
+	SP<Timer>								mTimer;
+	bool								mLoadingIsDone;
 };
 
 #endif //_STEPBYSTEPIMPORTER_H_

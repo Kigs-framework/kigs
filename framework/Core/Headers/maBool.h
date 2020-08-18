@@ -23,7 +23,7 @@ public:
 #define IMPLEMENT_GET_VALUE_BOOL(type)\
 	virtual bool getValue(type value) const override \
 	{\
-		bool tmpValue = _value;\
+		bool tmpValue = mValue;\
 		CALL_GETMODIFIER(notificationLevel, tmpValue);\
 		value = (type)tmpValue;\
 		return true;\
@@ -32,7 +32,7 @@ public:
 
 	virtual bool getValue(kstl::string& value) const override
 	{
-		bool tmpValue = _value;
+		bool tmpValue = mValue;
 		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		value = tmpValue ? "true" : "false";
 		return true;
@@ -46,7 +46,7 @@ public:
 		if (isReadOnly()) { return false; }\
 		bool tmpValue = (value != (type)0);\
 		CALL_SETMODIFIER(notificationLevel, tmpValue); \
-		_value = tmpValue; \
+		mValue = tmpValue; \
 		DO_NOTIFICATION(notificationLevel);\
 		return true;\
 	}
@@ -59,7 +59,7 @@ public:
 		if (this->isReadOnly()) { return false; }
 		bool tmpValue = (value == "true" || value == "TRUE");
 		CALL_SETMODIFIER(notificationLevel, tmpValue);
-		_value = tmpValue;
+		mValue = tmpValue;
 		DO_NOTIFICATION(notificationLevel);  
 		return true;
 	}

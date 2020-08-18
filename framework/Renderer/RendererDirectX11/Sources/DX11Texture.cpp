@@ -591,7 +591,7 @@ bool DX11Texture::CreateFromText(const unsigned short* text, unsigned int _maxLi
 			{
 				fullfilenamehandle = L_PathManager->FindFullName(fontName);
 			}
-			if ((fullfilenamehandle->myStatus&FileHandle::Exist) == 0)
+			if ((fullfilenamehandle->mStatus&FileHandle::Exist) == 0)
 				return false;
 
 			u64 size;

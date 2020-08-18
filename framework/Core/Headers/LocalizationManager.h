@@ -15,6 +15,17 @@ enum GAMELANGUAGE
 	CROATE,
 };
 
+// ****************************************
+// * LocalizationManager class
+// * --------------------------------------
+/**
+ * \class	LocalizationManager
+ * \file	LocalizationManager.h
+ * \ingroup Core
+ * \brief	Manage languages and localization files
+ */
+ // ****************************************
+
 
 class LocalizationManager : public CoreModifiable
 {
@@ -30,13 +41,13 @@ public:
 	void			addLocalizationFromFileAtPath(const char* path);
 	void			addLocalizationFromBuffer(char* _buffer, unsigned int bufferSize);
 	static kstl::string		getCurrentUserLanguage();
-	inline kstl::string		getLocalizationFilePath(){ return myLocalizationFilePath; }
+	inline kstl::string		getLocalizationFilePath(){ return mLocalizationFilePath; }
 
 	void			InitWithConfigFile(const kstl::string& filename);
 
 	kstl::map<const kstl::string, PLATFORM_WCHAR* > getDebugFullMap()
 	{
-		return m_LocalizedString;
+		return mLocalizedString;
 	}
 
 protected:
@@ -51,10 +62,10 @@ protected:
 	void				GotoNextLine(PLATFORM_WCHAR*& startchar,unsigned long& currentpos,unsigned long filelen);
 	void				GotoCommentEnd(PLATFORM_WCHAR*& startchar,unsigned long& currentpos,unsigned long filelen);
 	void				ParseBuffer(char* _pBuffer, unsigned long size);
-	kstl::string										myLocalizationFilePath;
+	kstl::string										mLocalizationFilePath;
 
-	kstl::map<const kstl::string,PLATFORM_WCHAR* >		m_LocalizedString;
-	unsigned short										m_wbuffer[4096];
+	kstl::map<const kstl::string,PLATFORM_WCHAR* >		mLocalizedString;
+	unsigned short										mWbuffer[4096];
 
 	maFloat mLanguageScale = BASE_ATTRIBUTE(LanguageScale, 1.0f);
 };

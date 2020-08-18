@@ -28,7 +28,7 @@ InputDevice::~InputDevice()
 
 bool InputDevice::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	if(item->isSubType(Window::myClassID))
+	if(item->isSubType(Window::mClassID))
 	{
 		if (myInputWindow)
 		{
@@ -43,7 +43,7 @@ bool InputDevice::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 
 bool InputDevice::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
-	if(item->isSubType(Window::myClassID))
+	if(item->isSubType(Window::mClassID))
 	{
 		if (myInputWindow==(Window*)item.get())
 			myInputWindow=NULL;		

@@ -14,20 +14,20 @@ void	CorePackage::ParseFATBuffer(unsigned char*& fatBuffer, FATEntryNode* curren
 	// read current value
 	*(FATEntry*)current = *(FATEntry*)fatBuffer;
 
-	unsigned int NodeNameL = (current->myFileNameSize + 1 + 7) & 0xFFFFFFF8;
+	unsigned int NodeNameL = (current->mFileNameSize + 1 + 7) & 0xFFFFFFF8;
 
 	// retreive name
-	current->myName = (const char*)fatBuffer + sizeof(FATEntry);
-	current->myFastCheckName = current->myName;
+	current->mName = (const char*)fatBuffer + sizeof(FATEntry);
+	current->mFastCheckName = current->mName;
 
 	fatBuffer += sizeof(FATEntry) + NodeNameL;
 
 	// then read sons
-	for (unsigned int i = 0; i < current->mySonCount; i++)
+	for (unsigned int i = 0; i < current->mSonCount; i++)
 	{
 		FATEntryNode* currentson = new FATEntryNode();
 		ParseFATBuffer(fatBuffer, currentson);
-		current->mySons.push_back(currentson);
+		current->mSons.push_back(currentson);
 	}
 
 
@@ -36,14 +36,14 @@ void	CorePackage::ParseFATBuffer(unsigned char*& fatBuffer, FATEntryNode* curren
 void CorePackage::RenameFile(const std::string& from, const std::string& to)
 {
 	auto fat_entry = (FATEntryNode*)find(from, true);
-	fat_entry->myName = to;
-	fat_entry->myFastCheckName = to;
+	fat_entry->mName = to;
+	fat_entry->mFastCheckName = to;
 }
 
 CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
 {
 
-	FATEntryNode* currentEntry = myRootFATEntry;
+	FATEntryNode* currentEntry = mRootFATEntry;
 
 	size_t rfolderPos = path.rfind('/');
 	kstl::string_view fullfolderName(path.c_str(), rfolderPos);
@@ -53,13 +53,13 @@ CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
 
 	auto& thread_read = GetCurrentThreadRead();
 
-	if (thread_read.myCachedFATEntry)
+	if (thread_read.mCachedFATEntry)
 	{
-		if (fullfolderName == thread_read.myCachedFolder)
+		if (fullfolderName == thread_read.mCachedFolder)
 		{
 			currentFolderPos = rfolderPos+1;
 			isOK = true;
-			currentEntry = thread_read.myCachedFATEntry;
+			currentEntry = thread_read.mCachedFATEntry;
 		}
 	}
 	
@@ -73,10 +73,10 @@ CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
 			isOK = false;
 			kstl::string_view folderName(path.c_str()+currentFolderPos, folderPos - currentFolderPos);
 			const KigsID testName = folderName;
-			for (auto sonEntry : currentEntry->mySons)
+			for (auto sonEntry : currentEntry->mSons)
 			{
-				if (testName == sonEntry->myFastCheckName)
-					if (sonEntry->myName == folderName)
+				if (testName == sonEntry->mFastCheckName)
+					if (sonEntry->mName == folderName)
 					{
 						isOK = true;
 						currentEntry = sonEntry;
@@ -93,8 +93,8 @@ CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
 		}
 		if (rfolderPos != kstl::string::npos)
 		{
-			thread_read.myCachedFATEntry = currentEntry;
-			thread_read.myCachedFolder = fullfolderName;
+			thread_read.mCachedFATEntry = currentEntry;
+			thread_read.mCachedFolder = fullfolderName;
 		}
 	}
 
@@ -103,13 +103,13 @@ CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
 		isOK = false;
 		kstl::string_view fileName(path.c_str()+currentFolderPos, path.length() - currentFolderPos);
 		const KigsID testName = fileName;
-		for (auto sonEntry : currentEntry->mySons)
+		for (auto sonEntry : currentEntry->mSons)
 		{
 			// if search for a file, only test files (no sons)
-			if (!isFile || (isFile && sonEntry->mySons.size() == 0))
+			if (!isFile || (isFile && sonEntry->mSons.size() == 0))
 			{
-				if(testName == sonEntry->myFastCheckName)
-					if (sonEntry->myName == fileName)
+				if(testName == sonEntry->mFastCheckName)
+					if (sonEntry->mName == fileName)
 					{
 						isOK = true;
 						currentEntry = sonEntry;
@@ -130,43 +130,43 @@ CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
 
 bool	CorePackage::initFAT()
 {
-	Platform_fseek(myMainFile.get(), 0, SEEK_END);
-	myFileSize = Platform_ftell(myMainFile.get());
-	Platform_fseek(myMainFile.get(), 0, SEEK_SET);
+	Platform_fseek(mMainFile.get(), 0, SEEK_END);
+	mFileSize = Platform_ftell(mMainFile.get());
+	Platform_fseek(mMainFile.get(), 0, SEEK_SET);
 
 	// read header kpkg
 
 	KPKGHeader	head;
 
-	Platform_fread(&head, 1, sizeof(KPKGHeader), myMainFile.get());
+	Platform_fread(&head, 1, sizeof(KPKGHeader), mMainFile.get());
 
 
-	if (head.myTotalSize != myFileSize)
+	if (head.mTotalSize != mFileSize)
 	{
 		return false;
 	}
 
-	if (head.myHeadID != 'kpkg') // little / big endian problem here ?
+	if (head.mHeadID != 'kpkg') // little / big endian problem here ?
 	{
 		return false;
 	}
 
-	unsigned char* fatBuffer = (unsigned char*)malloc(head.myFATSize);
+	unsigned char* fatBuffer = (unsigned char*)malloc(head.mFATSize);
 
-	Platform_fread(fatBuffer, 1, head.myFATSize, myMainFile.get());
+	Platform_fread(fatBuffer, 1, head.mFATSize, mMainFile.get());
 
 	// create root
 
-	myRootFATEntry = new FATEntryNode;
+	mRootFATEntry = new FATEntryNode;
 
 	// make a copy because ParseFATBuffer move pointer while reading file
 	unsigned char* filledfatBuffer = fatBuffer;
 
-	ParseFATBuffer(filledfatBuffer, myRootFATEntry);
+	ParseFATBuffer(filledfatBuffer, mRootFATEntry);
 
 	free(fatBuffer);
 
-	myDataStartOffset = sizeof(KPKGHeader) + head.myFATSize;
+	mDataStartOffset = sizeof(KPKGHeader) + head.mFATSize;
 
 	return true;
 }
@@ -174,33 +174,33 @@ bool	CorePackage::initFAT()
 
 void	CorePackage::AddFile(const kstl::string& filename, const kstl::string& filePathInPackage)
 {
-	if (!myPackageBuilderStruct)
+	if (!mPackageBuilderStruct)
 	{
 		KIGS_ERROR("can't add new file to an existing package",1);
 		return;
 	}
-	myPackageBuilderStruct->AddFile(filename, filePathInPackage);
+	mPackageBuilderStruct->AddFile(filename, filePathInPackage);
 }
 
 void	CorePackage::RemoveFile(const kstl::string& filename)
 {
-	if (!myPackageBuilderStruct)
+	if (!mPackageBuilderStruct)
 	{
 		KIGS_ERROR("can't remove file to an existing package", 1);
 		return;
 	}
-	myPackageBuilderStruct->RemoveFile(filename);
+	mPackageBuilderStruct->RemoveFile(filename);
 }
 
 void CorePackage::IterateFATTree(FATEntryNode* node, std::string current_path, const std::function<void(FATEntryNode*, const std::string&)>& func)
 {
-	if(node->mySons.empty()) 
+	if(node->mSons.empty()) 
 		func(node, current_path);
-	else if(node->myName.size())
+	else if(node->mName.size())
 	{
-		current_path += node->myName + "/";
+		current_path += node->mName + "/";
 	}
-	for (auto n : node->mySons)
+	for (auto n : node->mSons)
 	{
 		IterateFATTree(n, current_path, func);
 	}
@@ -208,9 +208,9 @@ void CorePackage::IterateFATTree(FATEntryNode* node, std::string current_path, c
 
 void	CorePackage::ImportPackage(CorePackage* to_import)
 {
-	IterateFATTree(to_import->myRootFATEntry, "", [this](FATEntryNode* node, const std::string& path)
+	IterateFATTree(to_import->mRootFATEntry, "", [this](FATEntryNode* node, const std::string& path)
 	{
-		AddFile(path + node->myName, path + node->myName);
+		AddFile(path + node->mName, path + node->mName);
 	});
 }
 
@@ -280,7 +280,7 @@ void	CorePackage::RecursiveAddFolder(const kstl::string& foldername, const kstl:
 void	CorePackage::AddFolder(const kstl::string& foldername, const kstl::string& FolderNameInPackage)
 {
 
-	if (!myPackageBuilderStruct)
+	if (!mPackageBuilderStruct)
 	{
 		KIGS_ERROR("can't add new folder to an existing package", 1);
 		return;
@@ -299,34 +299,34 @@ void	CorePackage::AddFolder(const kstl::string& foldername, const kstl::string& 
 void	CorePackage::Export(const kstl::string& filename)
 {
 
-	if (!myPackageBuilderStruct)
+	if (!mPackageBuilderStruct)
 	{
 		KIGS_ERROR("Package was already exported", 1);
 		return;
 	}
 	
 
-	PackageCreationStruct::FileTreeNode filetree=myPackageBuilderStruct->getFileTree();
+	PackageCreationStruct::FileTreeNode filetree=mPackageBuilderStruct->getFileTree();
 
 	// compute FAT size
-	unsigned int fatSize = myPackageBuilderStruct->computeFATSize(filetree);
+	unsigned int fatSize = mPackageBuilderStruct->computeFATSize(filetree);
 
 	unsigned char* FATBlock = (unsigned char*)malloc(fatSize + sizeof(KPKGHeader));
 
 	KPKGHeader*	header = (KPKGHeader*)FATBlock;
 
-	header->myHeadID = 'kpkg';
-	header->myFATSize = fatSize;
-	header->myTotalSize = 0; // to set later
+	header->mHeadID = 'kpkg';
+	header->mFATSize = fatSize;
+	header->mTotalSize = 0; // to set later
 
 	FATEntry*	firstEntry = (FATEntry*)(header+1);
 
 	u64 offset=0;
-	myPackageBuilderStruct->fpm = (FilePathManager*)KigsCore::GetSingleton("FilePathManager").get();
-	myPackageBuilderStruct->FillFATExportedStruct(filetree, firstEntry, offset);
+	mPackageBuilderStruct->mFPM = (FilePathManager*)KigsCore::GetSingleton("FilePathManager").get();
+	mPackageBuilderStruct->FillFATExportedStruct(filetree, firstEntry, offset);
 
 	// now total size can be set
-	header->myTotalSize = fatSize + sizeof(KPKGHeader) + offset;
+	header->mTotalSize = fatSize + sizeof(KPKGHeader) + offset;
 
 	// write header + FAT
 
@@ -338,14 +338,14 @@ void	CorePackage::Export(const kstl::string& filename)
 
 	// create temp buffer
 	unsigned char* tmpbuffer =(unsigned char*) malloc(1024 * 1024);
-	myPackageBuilderStruct->ExportFiles(filetree, L_File,tmpbuffer,1024*1024);
+	mPackageBuilderStruct->ExportFiles(filetree, L_File,tmpbuffer,1024*1024);
 
 	free(tmpbuffer);
 
 	Platform_fclose(L_File.get());
 	// exit build mode
-	delete myPackageBuilderStruct;
-	myPackageBuilderStruct = 0;
+	delete mPackageBuilderStruct;
+	mPackageBuilderStruct = 0;
 
 }
 
@@ -409,10 +409,10 @@ kstl::vector<kstl::string> RetreivePath(kstl::string filename, kstl::string& sho
 
 void CorePackage::PackageCreationStruct::ExportFiles(const FileTreeNode& node, SmartPointer<FileHandle>& L_File, unsigned char* tmpBuffer, unsigned int bufferLen)
 {
-	if (node.fileNames) // this is a file (not a folder)
+	if (node.mFileNames) // this is a file (not a folder)
 	{
-		auto L_ReadFile = fpm->FindFullName(node.fileNames->PhysicalName.c_str());
-		if (L_ReadFile->myStatus&FileHandle::Exist && Platform_fopen(L_ReadFile.get(), "rb"))
+		auto L_ReadFile = mFPM->FindFullName(node.mFileNames->mPhysicalName.c_str());
+		if (L_ReadFile->mStatus&FileHandle::Exist && Platform_fopen(L_ReadFile.get(), "rb"))
 		{
 			Platform_fseek(L_ReadFile.get(), 0, SEEK_END);
 			u64 filesize = Platform_ftell(L_ReadFile.get());
@@ -444,13 +444,13 @@ void CorePackage::PackageCreationStruct::ExportFiles(const FileTreeNode& node, S
 		}
 		else
 		{
-			STACK_STRING(err, 2048, "Couldn't open file (errno: %d, statusflag: %d): %s", errno, L_ReadFile->myStatus, node.fileNames->PhysicalName.c_str());
+			STACK_STRING(err, 2048, "Couldn't open file (errno: %d, statusflag: %d): %s", errno, L_ReadFile->mStatus, node.mFileNames->mPhysicalName.c_str());
 			KIGS_ERROR(err, 3);
 		}
 	}
 
 
-	for (auto nodeson : node.sons)
+	for (auto nodeson : node.mSons)
 	{
 		ExportFiles(nodeson, L_File,tmpBuffer,bufferLen);
 	}
@@ -459,26 +459,26 @@ void CorePackage::PackageCreationStruct::ExportFiles(const FileTreeNode& node, S
 
 void	CorePackage::PackageCreationStruct::FillFATExportedStruct(const FileTreeNode& node, FATEntry*& CurrentEntry,u64& currentOffset)
 {
-	CurrentEntry->myFileNameSize = node.name.length();
+	CurrentEntry->mFileNameSize = node.mName.length();
 	// add 1 for 0 ended string, then align to 8 bytes
-	unsigned int NodeNameL = (node.name.length() + 1 + 7) & 0xFFFFFFF8;
-	unsigned int NodeNameP = NodeNameL - node.name.length();
+	unsigned int NodeNameL = (node.mName.length() + 1 + 7) & 0xFFFFFFF8;
+	unsigned int NodeNameP = NodeNameL - node.mName.length();
 
-	CurrentEntry->myFileOffset = 0;
-	CurrentEntry->myFileSize = 0;
-	CurrentEntry->mySonCount = node.sons.size();
+	CurrentEntry->mFileOffset = 0;
+	CurrentEntry->mFileSize = 0;
+	CurrentEntry->mSonCount = node.mSons.size();
 
-	if (node.fileNames) // this is a file (not a folder)
+	if (node.mFileNames) // this is a file (not a folder)
 	{
-		SmartPointer<FileHandle> L_File = fpm->FindFullName(node.fileNames->PhysicalName);
-		if (L_File->myStatus&FileHandle::Exist && Platform_fopen(L_File.get(), "rb"))
+		SmartPointer<FileHandle> L_File = mFPM->FindFullName(node.mFileNames->mPhysicalName);
+		if (L_File->mStatus&FileHandle::Exist && Platform_fopen(L_File.get(), "rb"))
 		{
 			Platform_fseek(L_File.get(), 0, SEEK_END);
 			u64 filesize= Platform_ftell(L_File.get());
 			Platform_fseek(L_File.get(), 0, SEEK_SET);
 			Platform_fclose(L_File.get());
-			CurrentEntry->myFileSize = filesize;
-			CurrentEntry->myFileOffset = currentOffset;
+			CurrentEntry->mFileSize = filesize;
+			CurrentEntry->mFileOffset = currentOffset;
 
 			// round file size on 4 bytes
 
@@ -494,14 +494,14 @@ void	CorePackage::PackageCreationStruct::FillFATExportedStruct(const FileTreeNod
 	currentCharEntry += sizeof(FATEntry);
 
 	// copy name
-	memcpy(currentCharEntry, node.name.c_str(), node.name.length());
-	memset(currentCharEntry+ node.name.length(), 0, NodeNameP);
+	memcpy(currentCharEntry, node.mName.c_str(), node.mName.length());
+	memset(currentCharEntry+ node.mName.length(), 0, NodeNameP);
 
 	currentCharEntry += NodeNameL;
 
 	CurrentEntry = (FATEntry*)currentCharEntry;
 
-	for (auto nodeson : node.sons)
+	for (auto nodeson : node.mSons)
 	{
 		FillFATExportedStruct(nodeson, CurrentEntry, currentOffset);
 	}
@@ -513,10 +513,10 @@ unsigned int CorePackage::PackageCreationStruct::computeFATSize(const FileTreeNo
 	unsigned int result = 0;
 
 	// add 1 for 0 ended string, then align to 8 bytes
-	result += (node.name.length()+1+7)&0xFFFFFFF8;
+	result += (node.mName.length()+1+7)&0xFFFFFFF8;
 	result += sizeof(FATEntry);
 
-	for (auto nodeson : node.sons)
+	for (auto nodeson : node.mSons)
 	{
 		result += computeFATSize(nodeson);
 	}
@@ -527,13 +527,13 @@ unsigned int CorePackage::PackageCreationStruct::computeFATSize(const FileTreeNo
 CorePackage::PackageCreationStruct::FileTreeNode	CorePackage::PackageCreationStruct::getFileTree()
 {
 	FileTreeNode	root;
-	root.fileNames = 0;
-	root.name = ""; 
+	root.mFileNames = 0;
+	root.mName = ""; 
 
 	kstl::vector<fileNames>::iterator	it;
-	for (it = myFileList.begin(); it != myFileList.end(); ++it)
+	for (it = mFileList.begin(); it != mFileList.end(); ++it)
 	{
-		kstl::string	fileInPackage = (*it).PackageName;
+		kstl::string	fileInPackage = (*it).mPackageName;
 		kstl::string    shortfilename = "";
 		kstl::vector<kstl::string> path=RetreivePath(fileInPackage, shortfilename);
 
@@ -543,9 +543,9 @@ CorePackage::PackageCreationStruct::FileTreeNode	CorePackage::PackageCreationStr
 		{
 			bool foundFolder = false;
 			// check if folder is already a son of currentFileTreeNode
-			for (auto& SonFolder : currentFileTreeNode->sons)
+			for (auto& SonFolder : currentFileTreeNode->mSons)
 			{
-				if ((SonFolder.fileNames == 0) && (SonFolder.name == itFolder))
+				if ((SonFolder.mFileNames == 0) && (SonFolder.mName == itFolder))
 				{
 					currentFileTreeNode = &SonFolder;
 					foundFolder = true;
@@ -556,17 +556,17 @@ CorePackage::PackageCreationStruct::FileTreeNode	CorePackage::PackageCreationStr
 			if (!foundFolder)
 			{
 				FileTreeNode	toAdd;
-				toAdd.fileNames = 0;
-				toAdd.name = itFolder;
-				currentFileTreeNode->sons.push_back(toAdd);
-				currentFileTreeNode = &currentFileTreeNode->sons.back();
+				toAdd.mFileNames = 0;
+				toAdd.mName = itFolder;
+				currentFileTreeNode->mSons.push_back(toAdd);
+				currentFileTreeNode = &currentFileTreeNode->mSons.back();
 			}
 		}
 
 		FileTreeNode	toAdd;
-		toAdd.fileNames = &(*it);
-		toAdd.name = shortfilename;
-		currentFileTreeNode->sons.push_back(toAdd);
+		toAdd.mFileNames = &(*it);
+		toAdd.mName = shortfilename;
+		currentFileTreeNode->mSons.push_back(toAdd);
 
 	}
 
@@ -583,18 +583,18 @@ bool		CorePackageFileAccess::Platform_fopen(FileHandle* handle, const char * mod
 
 	handle->setOpeningFlags(flags);
 
-	myCurrentReadPos = 0;
+	mCurrentReadPos = 0;
 
-	myFileEntry = myPackage->find(handle->myFullFileName,true);
+	mFileEntry = mPackage->find(handle->mFullFileName,true);
 
-	auto& th = myPackage->GetCurrentThreadRead();
-	if (!th.myFile)
+	auto& th = mPackage->GetCurrentThreadRead();
+	if (!th.mFile)
 	{
-		th.myFile = myPackage->myMainFile->MakeCopy();
-		::Platform_fopen(th.myFile.get(), "rb");
+		th.mFile = mPackage->mMainFile->MakeCopy();
+		::Platform_fopen(th.mFile.get(), "rb");
 	}
 
-	if(myFileEntry)
+	if(mFileEntry)
 		return true;
 
 	return false;
@@ -602,20 +602,20 @@ bool		CorePackageFileAccess::Platform_fopen(FileHandle* handle, const char * mod
 
 long int	CorePackageFileAccess::Platform_fread(void * ptr, long size, long count, FileHandle* handle)
 {
-	if (myFileEntry)
+	if (mFileEntry)
 	{
-		long available = myFileEntry->myFileSize - myCurrentReadPos;
+		long available = mFileEntry->mFileSize - mCurrentReadPos;
 		long wanted = size*count;
 		if (wanted > available)
 		{
 			wanted = available;
 		}
 
-		auto& th = myPackage->GetCurrentThreadRead();
+		auto& th = mPackage->GetCurrentThreadRead();
 
-		::Platform_fseek(th.myFile.get(), myCurrentReadPos + myPackage->myDataStartOffset + myFileEntry->myFileOffset, SEEK_SET);
-		long read  =::Platform_fread(ptr, size, wanted/size, th.myFile.get());
-		myCurrentReadPos += read * size;
+		::Platform_fseek(th.mFile.get(), mCurrentReadPos + mPackage->mDataStartOffset + mFileEntry->mFileOffset, SEEK_SET);
+		long read  =::Platform_fread(ptr, size, wanted/size, th.mFile.get());
+		mCurrentReadPos += read * size;
 		return read;
 	}
 
@@ -631,9 +631,9 @@ long int	CorePackageFileAccess::Platform_fwrite(const void * ptr, long size, lon
 long int	CorePackageFileAccess::Platform_ftell(FileHandle* handle)
 {
 
-	if (myFileEntry)
+	if (mFileEntry)
 	{
-		return myCurrentReadPos;
+		return mCurrentReadPos;
 	}
 
 	return -1L;
@@ -642,9 +642,9 @@ long int	CorePackageFileAccess::Platform_ftell(FileHandle* handle)
 int			CorePackageFileAccess::Platform_fseek(FileHandle* handle, long int offset, int origin)
 {
 
-	if (myFileEntry)
+	if (mFileEntry)
 	{
-		long int newpos = myCurrentReadPos;
+		long int newpos = mCurrentReadPos;
 		switch (origin)
 		{
 		case SEEK_SET:
@@ -654,7 +654,7 @@ int			CorePackageFileAccess::Platform_fseek(FileHandle* handle, long int offset,
 			newpos += offset;
 			break;
 		case SEEK_END:
-			newpos = myFileEntry->myFileSize - offset;
+			newpos = mFileEntry->mFileSize - offset;
 			break;
 		}
 
@@ -663,12 +663,12 @@ int			CorePackageFileAccess::Platform_fseek(FileHandle* handle, long int offset,
 		{
 			newpos = 0;
 		}
-		if (newpos > myFileEntry->myFileSize)
+		if (newpos > mFileEntry->mFileSize)
 		{
-			newpos = myFileEntry->myFileSize;
+			newpos = mFileEntry->mFileSize;
 		}
 
-		myCurrentReadPos = newpos;
+		mCurrentReadPos = newpos;
 
 		return 0;
 	}
@@ -679,17 +679,17 @@ int			CorePackageFileAccess::Platform_fseek(FileHandle* handle, long int offset,
 
 int			CorePackageFileAccess::Platform_fflush(FileHandle* handle)
 {
-	if (myFileEntry)
+	if (mFileEntry)
 	{
-		auto& th = myPackage->GetCurrentThreadRead();
-		return ::Platform_fflush(th.myFile.get());
+		auto& th = mPackage->GetCurrentThreadRead();
+		return ::Platform_fflush(th.mFile.get());
 	}
 	return -1;
 }
 
 int			CorePackageFileAccess::Platform_fclose(FileHandle* handle)
 {
-	if (myFileEntry)
+	if (mFileEntry)
 	{
 		handle->resetStatus();
 	}
@@ -699,8 +699,8 @@ int			CorePackageFileAccess::Platform_fclose(FileHandle* handle)
 PureVirtualFileAccessDelegate* CorePackageFileAccess::MakeCopy()
 {
 	auto result = new CorePackageFileAccess();
-	result->myPackage = myPackage;
-	result->myFileEntry = myFileEntry;
-	result->myCurrentReadPos = 0;
+	result->mPackage = mPackage;
+	result->mFileEntry = mFileEntry;
+	result->mCurrentReadPos = 0;
 	return result;
 }

@@ -8,15 +8,15 @@ IMPLEMENT_CLASS_INFO(UISlidersGroup)
 
 UISlidersGroup::UISlidersGroup(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
 UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-myComunalValue(*this,false,LABEL_AND_ID(ComunalValue),0)
+mComunalValue(*this,false,LABEL_AND_ID(ComunalValue),0)
 {
-	mySliderNumber=0;
+	mSliderNumber=0;
 }
 
 UISlidersGroup::~UISlidersGroup()
 {
-	mySliderNumber = 0;
-	mySliderList.clear();
+	mSliderNumber = 0;
+	mSliderList.clear();
 }
 
 
@@ -31,7 +31,7 @@ bool	UISlidersGroup::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 
 		while(ITStart!=ITEnd)
 		{
-			if( (*ITStart).myItem->isSubType("UISlider"))
+			if( (*ITStart).mItem->isSubType("UISlider"))
 			{
 				break;
 			}
@@ -41,8 +41,8 @@ bool	UISlidersGroup::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 			return false;
 
 		
-		mySliderList.push_back((UISlider*)(*ITStart).myItem.get());
-		mySliderNumber++;
+		mSliderList.push_back((UISlider*)(*ITStart).mItem.get());
+		mSliderNumber++;
 
 		bool value = UIItem::addItem(item,pos PASS_LINK_NAME(linkName));
 		//Recompute group button size
@@ -53,25 +53,25 @@ bool	UISlidersGroup::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 		item->getArrayValue(LABEL_TO_ID(Position),_Position,2);
 		
 		
-		if(mySliderNumber==1)
+		if(mSliderNumber==1)
 		{
-			mySizeX = sizeX;
-			mySizeY = sizeY;
+			mSizeX = sizeX;
+			mSizeY = sizeY;
 		}
 		else
 		{
 			//Check X axis
 			if ((sizeX + _Position[0])>0)
-			if(((unsigned int)(sizeX + _Position[0])) > mySizeX)
+			if(((unsigned int)(sizeX + _Position[0])) > mSizeX)
 			{
-				mySizeX += ((sizeX + _Position[0]) - mySizeX);
+				mSizeX += ((sizeX + _Position[0]) - mSizeX);
 			}
 			
 			//Check Y axis
 			if ((sizeY + _Position[1])>0)
-			if (((unsigned int)(sizeY + _Position[1])) > mySizeY)
+			if (((unsigned int)(sizeY + _Position[1])) > mSizeY)
 			{
-				mySizeY += ((sizeY + _Position[1]) - mySizeY);
+				mSizeY += ((sizeY + _Position[1]) - mSizeY);
 			}
 		}
 
@@ -101,7 +101,7 @@ bool	UISlidersGroup::removeItem(const CMSP& item DECLARE_LINK_NAME)
 
 		while(ITStart!=ITEnd)
 		{
-			if( (*ITStart).myItem->isSubType("UISlider"))
+			if( (*ITStart).mItem->isSubType("UISlider"))
 			{
 				break;
 			}
@@ -110,9 +110,9 @@ bool	UISlidersGroup::removeItem(const CMSP& item DECLARE_LINK_NAME)
 		if(ITStart == ITEnd)
 			return false;
 
-		UISlider* temp = (UISlider*)(*ITStart).myItem.get();
-		kstl::vector<UISlider*>::iterator ItStart =		mySliderList.begin();
-		kstl::vector<UISlider*>::iterator ItEnd =		mySliderList.end();
+		UISlider* temp = (UISlider*)(*ITStart).mItem.get();
+		kstl::vector<UISlider*>::iterator ItStart =		mSliderList.begin();
+		kstl::vector<UISlider*>::iterator ItEnd =		mSliderList.end();
 		kstl::vector<UISlider*>::iterator ItSaved;
 
 		int	Slidercount = 0;
@@ -138,31 +138,31 @@ bool	UISlidersGroup::removeItem(const CMSP& item DECLARE_LINK_NAME)
 
 				if(Slidercount==1)
 				{
-					mySizeX = sizeX;
-					mySizeY = sizeY;
+					mSizeX = sizeX;
+					mSizeY = sizeY;
 				}
 				else
 				{
 					//Check X axis
 					if ((sizeX + _Position[0])>0)
-					if (((unsigned int)(sizeX + _Position[0])) > mySizeX)
+					if (((unsigned int)(sizeX + _Position[0])) > mSizeX)
 					{
-						mySizeX += ((sizeX + _Position[0]) - mySizeX);
+						mSizeX += ((sizeX + _Position[0]) - mSizeX);
 					}
 			
 					//Check Y axis
 					if ((sizeY + _Position[1])>0)
-					if (((unsigned int)(sizeY + _Position[1])) > mySizeY)
+					if (((unsigned int)(sizeY + _Position[1])) > mSizeY)
 					{
-						mySizeY += ((sizeY + _Position[1]) - mySizeY);
+						mSizeY += ((sizeY + _Position[1]) - mSizeY);
 					}
 				}
 			}
 			ItStart++;
 		}
 
-		mySliderList.erase(ItSaved);
-		mySliderNumber--;
+		mSliderList.erase(ItSaved);
+		mSliderNumber--;
 
 
 		return UIDrawableItem::removeItem(item PASS_LINK_NAME(linkName));
@@ -181,16 +181,16 @@ void	UISlidersGroup::InitModifiable()
 	UIDrawableItem::InitModifiable();
 	if(_isInit)
 	{
-		myRemainingValue = myComunalValue;
+		mRemainingValue = mComunalValue;
 	}
 }
 
 void	UISlidersGroup::Reset()
 {
-	myRemainingValue = myComunalValue;
+	mRemainingValue = mComunalValue;
 
-	kstl::vector<UISlider*>::iterator ItStart =		mySliderList.begin();
-	kstl::vector<UISlider*>::iterator ItEnd =		mySliderList.end();
+	kstl::vector<UISlider*>::iterator ItStart =		mSliderList.begin();
+	kstl::vector<UISlider*>::iterator ItEnd =		mSliderList.end();
 
 	while(ItStart != ItEnd)
 	{

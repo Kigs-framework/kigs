@@ -48,20 +48,20 @@ public:
 	{
 		//@TODO variadic template constructor?
 		// Copy and move idiom
-		if (nbElements>0) _value.value_list[0] = std::move(val0);
-		if (nbElements>1) _value.value_list[1] = std::move(val1);
-		if (nbElements>2) _value.value_list[2] = std::move(val2);
-		if (nbElements>3) _value.value_list[3] = std::move(val3);
-		if (nbElements>4) _value.value_list[4] = std::move(val4);
-		if (nbElements>5) _value.value_list[5] = std::move(val5);
-		if (nbElements>6) _value.value_list[6] = std::move(val6);
-		if (nbElements>7) _value.value_list[7] = std::move(val7);
-		if (nbElements>8) _value.value_list[8] = std::move(val8);
-		if (nbElements>9) _value.value_list[9] = std::move(val9);
-		_value.current_value = 0;
+		if (nbElements>0) mValue.value_list[0] = std::move(val0);
+		if (nbElements>1) mValue.value_list[1] = std::move(val1);
+		if (nbElements>2) mValue.value_list[2] = std::move(val2);
+		if (nbElements>3) mValue.value_list[3] = std::move(val3);
+		if (nbElements>4) mValue.value_list[4] = std::move(val4);
+		if (nbElements>5) mValue.value_list[5] = std::move(val5);
+		if (nbElements>6) mValue.value_list[6] = std::move(val6);
+		if (nbElements>7) mValue.value_list[7] = std::move(val7);
+		if (nbElements>8) mValue.value_list[8] = std::move(val8);
+		if (nbElements>9) mValue.value_list[9] = std::move(val9);
+		mValue.current_value = 0;
 	}
 
-	kstl::vector<kstl::string> getEnumElements() const override { return {_value.value_list.data(), _value.value_list.data() + nbElements }; }
+	kstl::vector<kstl::string> getEnumElements() const override { return {mValue.value_list.data(), mValue.value_list.data() + nbElements }; }
 
 	virtual bool CopyAttribute(const CoreModifiableAttribute& attribute) override
 	{
@@ -71,7 +71,7 @@ public:
 		{
 			if (val >= 0 && val < nbElements)
 			{
-				_value.current_value = val;
+				mValue.current_value = val;
 				return true;
 			}
 		}
@@ -79,8 +79,8 @@ public:
 	}
 
 
-	kstl::string& operator[](unsigned int index) { KIGS_ASSERT(index < nbElements); return _value.value_list[index]; }
-	const kstl::string& operator[](unsigned int index) const { KIGS_ASSERT(index < nbElements); return _value.value_list[index]; }
+	kstl::string& operator[](unsigned int index) { KIGS_ASSERT(index < nbElements); return mValue.value_list[index]; }
+	const kstl::string& operator[](unsigned int index) const { KIGS_ASSERT(index < nbElements); return mValue.value_list[index]; }
 
 
 
@@ -88,17 +88,17 @@ public:
 	operator const kstl::string&() const
 	{
 		int val; getValue(val);
-		return _value.value_list[val];
+		return mValue.value_list[val];
 	}
 
 
 #define IMPLEMENT_SET_VALUE_ENUM(type)\
-	virtual bool setValue(type value) override { if (this->isReadOnly()) { return false; }  unsigned int tmpValue = (unsigned int)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (tmpValue < nbElements) { _value.current_value = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; } return false; }
+	virtual bool setValue(type value) override { if (this->isReadOnly()) { return false; }  unsigned int tmpValue = (unsigned int)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (tmpValue < nbElements) { mValue.current_value = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; } return false; }
 
 	EXPAND_MACRO_FOR_NUMERIC_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SET_VALUE_ENUM);
 
 #define IMPLEMENT_GET_VALUE_ENUM(type)\
-	virtual bool getValue(type value) const override {  unsigned int tmpValue=_value.current_value; CALL_GETMODIFIER(notificationLevel, tmpValue); if(tmpValue<nbElements){ value = (type)tmpValue; return true;} return false;  }
+	virtual bool getValue(type value) const override {  unsigned int tmpValue=mValue.current_value; CALL_GETMODIFIER(notificationLevel, tmpValue); if(tmpValue<nbElements){ value = (type)tmpValue; return true;} return false;  }
 
 	EXPAND_MACRO_FOR_NUMERIC_TYPES(NOQUALIFIER, &, IMPLEMENT_GET_VALUE_ENUM);
 
@@ -112,12 +112,12 @@ public:
 		unsigned int i;
 		for (i = 0; i<nbElements; i++)
 		{
-			if (_value.value_list[i] == value)
+			if (mValue.value_list[i] == value)
 			{
 				CALL_SETMODIFIER(notificationLevel, i);
 				if (i < nbElements)
 				{
-					_value.current_value = i;
+					mValue.current_value = i;
 					DO_NOTIFICATION(notificationLevel);
 					return true;
 				}
@@ -129,11 +129,11 @@ public:
 	
 	virtual bool getValue(kstl::string& value) const override
 	{
-		unsigned int tmpValue = _value.current_value;
+		unsigned int tmpValue = mValue.current_value;
 		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		if (tmpValue < nbElements)
 		{
-			value = _value.value_list[tmpValue];
+			value = mValue.value_list[tmpValue];
 		}
 		return false;
 	}

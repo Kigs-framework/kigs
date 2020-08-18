@@ -9,6 +9,20 @@
 
 #include "AttributePacking.h"
 
+// ****************************************
+// * CoreSequenceLauncher class
+// * --------------------------------------
+/**
+* \class	CoreSequenceLauncher
+* \file		CoreSequenceLauncher.h
+* \ingroup CoreAnimation
+* \brief	CoreModifiable owning a sequence.
+* 
+* The sequence is played on the parent of this CoreModifiable.
+*
+*/
+// ****************************************
+
 class CoreSequenceLauncher : public CoreModifiable
 {
 public:
@@ -23,12 +37,12 @@ protected:
 	void	addSequencesToParents();
 
 	//! parameter for fullscreen window
-	maBool			myStartOnFirstUpdate = BASE_ATTRIBUTE(StartOnFirstUpdate, false);
-	maCoreItem		mySequence = BASE_ATTRIBUTE(Sequence);
-	maString		myStartMessage = BASE_ATTRIBUTE(StartMessage, "");
-	maBool			myOnce = BASE_ATTRIBUTE(Once, false);
+	maBool			mStartOnFirstUpdate = BASE_ATTRIBUTE(StartOnFirstUpdate, false);
+	maCoreItem		mSequence = BASE_ATTRIBUTE(Sequence);
+	maString		mStartMessage = BASE_ATTRIBUTE(StartMessage, "");
+	maBool			mOnce = BASE_ATTRIBUTE(Once, false);
 
-	kigs::unordered_map<CoreModifiable*, SmartPointer<CoreSequence>>	mySequenceMap;
+	kigs::unordered_map<CoreModifiable*, SmartPointer<CoreSequence>>	mSequenceMap;
 
 	void Start();
 	void Stop();

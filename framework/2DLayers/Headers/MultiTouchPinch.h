@@ -1,6 +1,19 @@
 #ifndef _MULTITOUCHPINCH_H_
 #define _MULTITOUCHPINCH_H_
 
+// ****************************************
+// * MultiTouchPinch class
+// * --------------------------------------
+/**
+* \file	MultiTouchPinch.h
+* \class	MultiTouchPinch
+* \ingroup 2DLayers
+* \brief	Manage pinch with two touches.
+*
+*  Obsolete ?
+*/
+// ****************************************
+
 class MultiTouchPinch
 {
 public:
@@ -18,7 +31,7 @@ private:
 
 public:
 	float mDx, mDy, mDZ;
-	bool b[2];
+	bool mB[2];
 	bool mNeedUpdate;
 };
 

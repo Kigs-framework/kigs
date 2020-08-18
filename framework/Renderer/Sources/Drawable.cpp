@@ -32,9 +32,9 @@ void Drawable::UpdateDrawingNeeds()
 
 		for (it=getItems().begin();it!=getItems().end();++it)
 		{
-			if((*it).myItem->isUserFlagSet(UserFlagDrawable))
+			if((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable=(SP<Drawable> & )(*it).myItem;
+				SP<Drawable>& drawable=(SP<Drawable> & )(*it).mItem;
 				drawable->UpdateDrawingNeeds();
 				myDrawingNeeds|=drawable->GetDrawingNeeds();
 			}
@@ -66,9 +66,9 @@ void Drawable::DoPreDraw(TravState* state)
 
 		for (it=getItems().begin();it!=getItems().end();++it)
 		{
-			if((*it).myItem->isUserFlagSet(UserFlagDrawable))
+			if((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable=(SP<Drawable>&)(*it).myItem;
+				SP<Drawable>& drawable=(SP<Drawable>&)(*it).mItem;
 				drawable->CheckPreDraw(state);
 			}
 		}        
@@ -87,9 +87,9 @@ void Drawable::DoDraw(TravState* state)
 
 		for (it=getItems().begin();it!=getItems().end();++it)
 		{
-			if((*it).myItem->isUserFlagSet(UserFlagDrawable))
+			if((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
+				SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
 				drawable->CheckDraw(state);
 			}
 		}      
@@ -108,9 +108,9 @@ void Drawable::DoPostDraw(TravState* state)
 
 		for (it=getItems().begin();it!=getItems().end();++it)
 		{
-			if((*it).myItem->isUserFlagSet(UserFlagDrawable))
+			if((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
+				SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
 				drawable->CheckPostDraw(state);
 			}
 		}       
@@ -146,7 +146,7 @@ bool Drawable::Draw(TravState* state)
 #ifdef DRAW_DEBUG
 		if (BBoxUpdate(0))
 		{
-			Node3D* parent = (Node3D*)getFirstParent(Node3D::myClassID);
+			Node3D* parent = (Node3D*)getFirstParent(Node3D::mClassID);
 			if (parent)
 			{
 				Point3D min, max;
@@ -216,7 +216,7 @@ void Drawable::FatherNode3DNeedBoundingBoxUpdate()
 
 	for(it=parents.begin();it!=parents.end();++it)
 	{
-		if((*it)->isSubType(Node3D::myClassID))
+		if((*it)->isSubType(Node3D::mClassID))
 		{
 			Node3D* father=(Node3D*)(*it);
       

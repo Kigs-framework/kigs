@@ -663,9 +663,9 @@ void ImGuiLayer::TravDraw(TravState* state)
 
 	renderer->FlushState(true);
 
-	if (myClearColorBuffer)
+	if (mClearColorBuffer)
 	{
-		renderer->SetClearColorValue(myClearColor[0], myClearColor[1], myClearColor[2], myClearColor[3]);
+		renderer->SetClearColorValue(mClearColor[0], mClearColor[1], mClearColor[2], mClearColor[3]);
 		renderer->ClearView(RENDERER_CLEAR_COLOR);
 	}
 

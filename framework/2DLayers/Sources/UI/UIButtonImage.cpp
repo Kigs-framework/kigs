@@ -9,17 +9,17 @@ IMPLEMENT_CLASS_INFO(UIButtonImage)
 
 UIButtonImage::UIButtonImage(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
 UIButton(name, PASS_CLASS_NAME_TREE_ARG)
-,myUpTextureName(*this,false,LABEL_AND_ID(UpTexture),"")
-,myDownTextureName(*this,false,LABEL_AND_ID(DownTexture),"")
-,myOverTextureName(*this,false,LABEL_AND_ID(OverTexture),"")
+,mUpTexture(*this,false,LABEL_AND_ID(UpTexture),"")
+,mDownTexture(*this,false,LABEL_AND_ID(DownTexture),"")
+,mOverTexture(*this,false,LABEL_AND_ID(OverTexture),"")
 {
 }
 
 UIButtonImage::~UIButtonImage()
 {
-	myUpTexture = NULL;
-	myOverTexture = NULL;
-	myDownTexture = NULL;
+	mUpTexturePointer = NULL;
+	mOverTexturePointer = NULL;
+	mDownTexturePointer = NULL;
 }
 
 void UIButtonImage::InitModifiable()
@@ -30,44 +30,44 @@ void UIButtonImage::InitModifiable()
 		// load texture
 		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
-		myUpTexture=0;
-		myOverTexture = 0;
-		myDownTexture = 0;
+		mUpTexturePointer =0;
+		mOverTexturePointer = 0;
+		mDownTexturePointer = 0;
 		
-		if(myUpTextureName.const_ref() !="")
+		if(mUpTexture.const_ref() !="")
 		{
-			myUpTexture = textureManager->GetTexture(myUpTextureName.const_ref());
+			mUpTexturePointer = textureManager->GetTexture(mUpTexture.const_ref());
 		}
 
-		if (myOverTextureName.const_ref() != "")
+		if (mOverTexture.const_ref() != "")
 		{
-			myOverTexture = textureManager->GetTexture(myOverTextureName.const_ref());
+			mOverTexturePointer = textureManager->GetTexture(mOverTexture.const_ref());
 		}
 
-		if (myDownTextureName.const_ref() != "")
+		if (mDownTexture.const_ref() != "")
 		{
-			myDownTexture = textureManager->GetTexture(myDownTextureName.const_ref());
+			mDownTexturePointer = textureManager->GetTexture(mDownTexture.const_ref());
 		}
 
-		myTexture = myUpTexture;
+		mTexturePointer = mUpTexturePointer;
 
 		AutoSize();
 
 
-		myUpTextureName.changeNotificationLevel(Owner);
-		myDownTextureName.changeNotificationLevel(Owner);
-		myOverTextureName.changeNotificationLevel(Owner);
+		mUpTexture.changeNotificationLevel(Owner);
+		mDownTexture.changeNotificationLevel(Owner);
+		mOverTexture.changeNotificationLevel(Owner);
 	}
 
 }
 
 void UIButtonImage::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == myUpTextureName.getLabelID() ||
-		labelid == myDownTextureName.getLabelID() ||
-		labelid == myOverTextureName.getLabelID())
+	if (labelid == mUpTexture.getLabelID() ||
+		labelid == mDownTexture.getLabelID() ||
+		labelid == mOverTexture.getLabelID())
 	{
-		ChangeTexture(myUpTextureName.const_ref(), myOverTextureName.const_ref(), myDownTextureName.const_ref());
+		ChangeTexture(mUpTexture.const_ref(), mOverTexture.const_ref(), mDownTexture.const_ref());
 	}
 	else
 		UITexturedItem::NotifyUpdate(labelid);
@@ -76,55 +76,55 @@ void UIButtonImage::NotifyUpdate(const unsigned int labelid)
 void UIButtonImage::ChangeTexture(kstl::string _texturename, kstl::string _overtexturename, kstl::string _downtexturename)
 {
 	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-	if (myUpTexture)
-		myUpTexture = 0;
+	if (mUpTexturePointer)
+		mUpTexturePointer = 0;
 
 	if(_texturename != "")
 	{
-		myUpTextureName = _texturename;
-		myUpTexture = textureManager->GetTexture(myUpTextureName);
+		mUpTexture = _texturename;
+		mUpTexturePointer = textureManager->GetTexture(mUpTexture);
 	}
 
-	if(myOverTexture && _overtexturename != "")
-		myOverTexture=0;
+	if(mOverTexturePointer && _overtexturename != "")
+		mOverTexturePointer =0;
 
 	if(_overtexturename != "")
 	{
-		myOverTextureName = _overtexturename;
-		myOverTexture = textureManager->GetTexture(myOverTextureName);
+		mOverTexture = _overtexturename;
+		mOverTexturePointer = textureManager->GetTexture(mOverTexture);
 	}
 
-	if(myDownTexture && _downtexturename != "")
-		myDownTexture=0;
+	if(mDownTexturePointer && _downtexturename != "")
+		mDownTexturePointer =0;
 
 	if(_downtexturename != "")
 	{
-		myDownTextureName = _downtexturename;
-		myDownTexture = textureManager->GetTexture(myDownTextureName);
+		mDownTexture = _downtexturename;
+		mDownTexturePointer = textureManager->GetTexture(mDownTexture);
 	}
 
-	if(myAlphaMask)
+	if(mAlphaMask)
 	{
-		this->removeItem((CMSP&)myAlphaMask);
+		this->removeItem((CMSP&)mAlphaMask);
 
 		//Make new Mask
-		myAlphaMask = KigsCore::GetInstanceOf(getName(), "AlphaMask");
-		myAlphaMask->setValue(LABEL_TO_ID(Threshold),0.1);
-		myAlphaMask->setValue(LABEL_TO_ID(TextureName),myUpTextureName.c_str());
-		this->addItem((CMSP&)myAlphaMask);
-		myAlphaMask->Init();
+		mAlphaMask = KigsCore::GetInstanceOf(getName(), "AlphaMask");
+		mAlphaMask->setValue(LABEL_TO_ID(Threshold),0.1);
+		mAlphaMask->setValue(LABEL_TO_ID(TextureName),mUpTexture.c_str());
+		this->addItem((CMSP&)mAlphaMask);
+		mAlphaMask->Init();
 	}
 	//auto Size
-	if (myUpTexture && myAutoResize)
+	if (mUpTexturePointer && mAutoResize)
 	{
 		float width,height;
 
-		myUpTexture->GetSize(width,height);
-		if(width != mySizeX || height != mySizeY)
+		mUpTexturePointer->GetSize(width,height);
+		if(width != mSizeX || height != mSizeY)
 		{
-			mySizeX=width;
-			mySizeY=height;
-			myNeedUpdatePosition=true;
+			mSizeX=width;
+			mSizeY=height;
+			mNeedUpdatePosition=true;
 		}
 	}
 
@@ -137,37 +137,37 @@ void UIButtonImage::ChangeTexture(kstl::string _texturename, kstl::string _overt
 
 void	UIButtonImage::ReloadTexture()
 {
-	if (myUpTexture)
+	if (mUpTexturePointer)
 	{
-		myUpTexture->ReInit();
-		myTexture = myUpTexture;
+		mUpTexturePointer->ReInit();
+		mTexturePointer = mUpTexturePointer;
 	}
 
-	if (myOverTexture)
+	if (mOverTexturePointer)
 	{
-		myOverTexture->ReInit();
+		mOverTexturePointer->ReInit();
 	}
 
-	if (myDownTexture)
+	if (mDownTexturePointer)
 	{
-		myDownTexture->ReInit();
+		mDownTexturePointer->ReInit();
 	}
 }
 
 void UIButtonImage::ChangeState()
 {
-	if (myIsEnabled) // down and mouse over only when enabled
+	if (mIsEnabled) // down and mouse over only when enabled
 	{
-		if (myIsDown && myDownTexture)
+		if (mIsDown && mDownTexturePointer)
 		{
-			myTexture = myDownTexture;
+			mTexturePointer = mDownTexturePointer;
 			return;
 		}
-		else if (myIsMouseOver && myOverTexture)
+		else if (mIsMouseOver && mOverTexturePointer)
 		{
-			myTexture = myOverTexture;
+			mTexturePointer = mOverTexturePointer;
 			return;
 		}
 	}
-	myTexture = myUpTexture;
+	mTexturePointer = mUpTexturePointer;
 }

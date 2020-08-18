@@ -26,52 +26,52 @@ public:
 	// Shouldn't they return *this instead ?
 	T operator+=(T value)
 	{
-		_value += value;
+		mValue += value;
 		return operator T();
 	}
 	T operator-=(T value)
 	{
-		_value -= value;
+		mValue -= value;
 		return operator T();
 	}
 	T operator*=(T value)
 	{
-		_value *= value;
+		mValue *= value;
 		return operator T();
 	}
 	T operator/=(T value)
 	{
-		_value /= value;
+		mValue /= value;
 		return operator T();
 	}
 	T operator|=(T value)
 	{
-		_value |= value;
+		mValue |= value;
 		return operator T();
 	}
 	T operator^=(T value)
 	{
-		_value ^= value;
+		mValue ^= value;
 		return operator T();
 	}
 	T operator&=(T value)
 	{
-		_value &= value;
+		mValue &= value;
 		return operator T();
 	}
 
 
 	//@REFACTOR: use expand macro
 	
-	virtual bool setValue(bool value) override { if (this->isReadOnly()) { return false; } T tmpValue = value ? std::numeric_limits<T>::max() : 0; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_value = tmpValue; DO_NOTIFICATION(notificationLevel); return true; }
-	virtual bool setValue(s8 value) override { if (this->isReadOnly()) { return false; }  T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_value = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(s16 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_value = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(s32 value) override { if (this->isReadOnly()) { return false; }     T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_value = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(s64 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_value = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(u8 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_value = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(u16 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_value = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(u32 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_value = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(u64 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_value = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(bool value) override { if (this->isReadOnly()) { return false; } T tmpValue = value ? std::numeric_limits<T>::max() : 0; CALL_SETMODIFIER(notificationLevel, tmpValue); this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel); return true; }
+	virtual bool setValue(s8 value) override { if (this->isReadOnly()) { return false; }  T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(s16 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(s32 value) override { if (this->isReadOnly()) { return false; }     T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(s64 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(u8 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(u16 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(u32 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(u64 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
 	virtual bool setValue(kfloat value) override 
 	{ 
 		if (this->isReadOnly()) 
@@ -80,46 +80,46 @@ public:
 		} 
 		T tmpValue = (T)value; 
 		CALL_SETMODIFIER(notificationLevel, tmpValue); 
-		this->_value = tmpValue; 
+		this->mValue = tmpValue; 
 		DO_NOTIFICATION(notificationLevel);  
 		return true; 
 	}
-	virtual bool setValue(kdouble value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_value = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(kdouble value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->mValue = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; }
 	virtual bool setValue(const char* value) override { kstl::string localstr(value); return setValue(localstr); }
 	virtual bool setValue(const usString& value) override { kstl::string localstr(value); return setValue(localstr); }
 	virtual bool setValue(const kstl::string& value) override
 	{
 		if (this->isReadOnly()) { return false; }
 
-		if (CoreConvertString2Value<T>(value, this->_value))
+		if (CoreConvertString2Value<T>(value, this->mValue))
 		{
-			T tmpValue = this->_value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_value = tmpValue;
+			T tmpValue = this->mValue; CALL_SETMODIFIER(notificationLevel, tmpValue); this->mValue = tmpValue;
 			DO_NOTIFICATION(notificationLevel); return true;
 		}
 		return false;
 	}
 
-	virtual bool getValue(bool& value) const override { T tmpValue = this->_value; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (tmpValue != (T)0); return true; }
-	virtual bool getValue(s8& value) const override { T tmpValue = this->_value; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s8)tmpValue; return true; }
-	virtual bool getValue(s16& value) const override { T tmpValue = this->_value; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s16)tmpValue; return true; }
-	virtual bool getValue(s32& value) const override { T tmpValue = this->_value; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s32)tmpValue; return true; }
-	virtual bool getValue(s64& value) const override { T tmpValue = this->_value; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s64)tmpValue; return true; }
-	virtual bool getValue(u8& value) const override { T tmpValue = this->_value; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u8)tmpValue; return true; }
-	virtual bool getValue(u16& value) const override { T tmpValue = this->_value; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u16)tmpValue; return true; }
-	virtual bool getValue(u32& value) const override { T tmpValue = this->_value; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u32)tmpValue; return true; }
-	virtual bool getValue(u64& value) const override { T tmpValue = this->_value; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u64)tmpValue; return true; }
-	virtual bool getValue(kfloat& value) const override { T tmpValue = this->_value; CALL_GETMODIFIER(notificationLevel, tmpValue);  value = (kfloat)tmpValue; return true; }
-	virtual bool getValue(kdouble& value) const override { T tmpValue = this->_value; CALL_GETMODIFIER(notificationLevel, tmpValue);  value = (kdouble)tmpValue; return true; }
+	virtual bool getValue(bool& value) const override { T tmpValue = this->mValue; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (tmpValue != (T)0); return true; }
+	virtual bool getValue(s8& value) const override { T tmpValue = this->mValue; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s8)tmpValue; return true; }
+	virtual bool getValue(s16& value) const override { T tmpValue = this->mValue; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s16)tmpValue; return true; }
+	virtual bool getValue(s32& value) const override { T tmpValue = this->mValue; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s32)tmpValue; return true; }
+	virtual bool getValue(s64& value) const override { T tmpValue = this->mValue; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s64)tmpValue; return true; }
+	virtual bool getValue(u8& value) const override { T tmpValue = this->mValue; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u8)tmpValue; return true; }
+	virtual bool getValue(u16& value) const override { T tmpValue = this->mValue; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u16)tmpValue; return true; }
+	virtual bool getValue(u32& value) const override { T tmpValue = this->mValue; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u32)tmpValue; return true; }
+	virtual bool getValue(u64& value) const override { T tmpValue = this->mValue; CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u64)tmpValue; return true; }
+	virtual bool getValue(kfloat& value) const override { T tmpValue = this->mValue; CALL_GETMODIFIER(notificationLevel, tmpValue);  value = (kfloat)tmpValue; return true; }
+	virtual bool getValue(kdouble& value) const override { T tmpValue = this->mValue; CALL_GETMODIFIER(notificationLevel, tmpValue);  value = (kdouble)tmpValue; return true; }
 	virtual bool getValue(kstl::string& value) const override
 	{
-		T tmpValue = this->_value;
+		T tmpValue = this->mValue;
 		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		return CoreConvertValue2String<T>(value, tmpValue);
 	}
 	virtual bool getValue(usString& value) const override
 	{
 		kstl::string tmp;
-		T tmpValue = this->_value;
+		T tmpValue = this->mValue;
 		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		if (CoreConvertValue2String<T>(tmp, tmpValue))
 		{
@@ -179,7 +179,7 @@ public:
 
 	explicit maComputedNumericHeritage(InheritanceSwitch tag) : CoreModifiableAttribute(tag) {}
 
-	maComputedNumericHeritage(CoreModifiable& owner, bool isInitParam, KigsID ID, KigsID g, KigsID s) : CoreModifiableAttribute(&owner, isInitParam, ID), m_Getter(g), m_Setter(s)
+	maComputedNumericHeritage(CoreModifiable& owner, bool isInitParam, KigsID ID, KigsID g, KigsID s) : CoreModifiableAttribute(&owner, isInitParam, ID), mGetter(g), mSetter(s)
 	{
 
 	}
@@ -196,8 +196,8 @@ public:
 	}
 protected:
 
-	KigsID	m_Getter;
-	KigsID	m_Setter;
+	KigsID	mGetter;
+	KigsID	mSetter;
 
 	void doPlacementNew(u32 level) override
 	{
@@ -212,35 +212,35 @@ protected:
 	  }
 	virtual void changeInheritance() final
 	{
-		KigsID old_id = _id;
-		_id.~KigsID();
-		KigsID old_getter = m_Getter;
-		m_Getter.~KigsID();
-		KigsID old_setter = m_Setter;
-		m_Setter.~KigsID();
-		AttachedModifierBase* modifier = _attachedModifier;
-		u32 old_flags = _Flags;
-		u32 inheritlevel = (_Flags >> INHERIT_LEVEL_SHIFT)& INHERIT_LEVEL_MOD;
+		KigsID old_id = mID;
+		mID.~KigsID();
+		KigsID old_getter = mGetter;
+		mGetter.~KigsID();
+		KigsID old_setter = mSetter;
+		mSetter.~KigsID();
+		AttachedModifierBase* modifier = mAttachedModifier;
+		u32 old_flags = mFlags;
+		u32 inheritlevel = (mFlags >> INHERIT_LEVEL_SHIFT)& INHERIT_LEVEL_MOD;
 		doPlacementNew(inheritlevel);
-		_id = old_id;
-		m_Getter = old_getter;
-		m_Setter = old_setter;
+		mID = old_id;
+		mGetter = old_getter;
+		mSetter = old_setter;
 
-		_Flags = old_flags;
-		_attachedModifier = modifier;
+		mFlags = old_flags;
+		mAttachedModifier = modifier;
 	}
 
 public:
 	virtual operator CurrentAttributeType() const
 	{
-		CurrentAttributeType tmpValue = _owner->template SimpleCall<T>(m_Getter);
+		CurrentAttributeType tmpValue = mOwner->template SimpleCall<T>(mGetter);
 		
 		CALL_GETMODIFIER(notificationLevel, tmpValue); 
 		return tmpValue;
 	};
 	auto& operator=(const CurrentAttributeType& value)
 	{
-		if (m_Setter != "") _owner->SimpleCall(m_Setter,value);
+		if (mSetter != "") mOwner->SimpleCall(mSetter,value);
 		return *this;
 	}
 
@@ -255,15 +255,15 @@ public:
 	}
 
 
-	virtual bool setValue(bool value) override { if (this->isReadOnly()) { return false; } T tmpValue = value ? std::numeric_limits<T>::max() : 0; CALL_SETMODIFIER(notificationLevel, tmpValue); if (m_Setter != "") this->_owner->SimpleCall(m_Setter,tmpValue); DO_NOTIFICATION(notificationLevel); return true; }
-	virtual bool setValue(s8 value) override { if (this->isReadOnly()) { return false; }  T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (m_Setter != "") this->_owner->SimpleCall(m_Setter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(s16 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (m_Setter != "") this->_owner->SimpleCall(m_Setter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(s32 value) override { if (this->isReadOnly()) { return false; }     T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (m_Setter != "") this->_owner->SimpleCall(m_Setter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(s64 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (m_Setter != "")  this->_owner->SimpleCall(m_Setter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(u8 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (m_Setter != "") this->_owner->SimpleCall(m_Setter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(u16 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (m_Setter != "") this->_owner->SimpleCall(m_Setter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(u32 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (m_Setter != "") this->_owner->SimpleCall(m_Setter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-	virtual bool setValue(u64 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (m_Setter != "") this->_owner->SimpleCall(m_Setter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(bool value) override { if (this->isReadOnly()) { return false; } T tmpValue = value ? std::numeric_limits<T>::max() : 0; CALL_SETMODIFIER(notificationLevel, tmpValue); if (mSetter != "") this->mOwner->SimpleCall(mSetter,tmpValue); DO_NOTIFICATION(notificationLevel); return true; }
+	virtual bool setValue(s8 value) override { if (this->isReadOnly()) { return false; }  T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (mSetter != "") this->mOwner->SimpleCall(mSetter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(s16 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (mSetter != "") this->mOwner->SimpleCall(mSetter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(s32 value) override { if (this->isReadOnly()) { return false; }     T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (mSetter != "") this->mOwner->SimpleCall(mSetter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(s64 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (mSetter != "")  this->mOwner->SimpleCall(mSetter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(u8 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (mSetter != "") this->mOwner->SimpleCall(mSetter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(u16 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (mSetter != "") this->mOwner->SimpleCall(mSetter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(u32 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (mSetter != "") this->mOwner->SimpleCall(mSetter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(u64 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (mSetter != "") this->mOwner->SimpleCall(mSetter,tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
 	virtual bool setValue(kfloat value) override
 	{
 		if (this->isReadOnly())
@@ -272,11 +272,11 @@ public:
 		}
 		T tmpValue = (T)value;
 		CALL_SETMODIFIER(notificationLevel, tmpValue);
-		if (m_Setter != "") this->_owner->SimpleCall(m_Setter,tmpValue);
+		if (mSetter != "") this->mOwner->SimpleCall(mSetter,tmpValue);
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
-	virtual bool setValue(kdouble value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->_owner->SimpleCall(m_Setter,tmpValue);  DO_NOTIFICATION(notificationLevel);  return true; }
+	virtual bool setValue(kdouble value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value; CALL_SETMODIFIER(notificationLevel, tmpValue); this->mOwner->SimpleCall(mSetter,tmpValue);  DO_NOTIFICATION(notificationLevel);  return true; }
 	virtual bool setValue(const char* value) override { kstl::string localstr(value); return setValue(localstr); }
 	virtual bool setValue(const usString& value) override { kstl::string localstr(value); return setValue(localstr); }
 	virtual bool setValue(const kstl::string& value) override
@@ -286,33 +286,33 @@ public:
 		T tmpValue;
 		if (CoreConvertString2Value<T>(value, tmpValue))
 		{
-			CALL_SETMODIFIER(notificationLevel, tmpValue); if(m_Setter != "") this->_owner->SimpleCall(m_Setter,tmpValue);
+			CALL_SETMODIFIER(notificationLevel, tmpValue); if(mSetter != "") this->mOwner->SimpleCall(mSetter,tmpValue);
 			DO_NOTIFICATION(notificationLevel); return true;
 		}
 		return false;
 	}
 
-	virtual bool getValue(bool& value) const override { T tmpValue = this->_owner->template SimpleCall<T>(m_Getter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (tmpValue != (T)0); return true; }
-	virtual bool getValue(s8& value) const override { T tmpValue = this->_owner->template SimpleCall<T>(m_Getter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s8)tmpValue; return true; }
-	virtual bool getValue(s16& value) const override { T tmpValue = this->_owner->template SimpleCall<T>(m_Getter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s16)tmpValue; return true; }
-	virtual bool getValue(s32& value) const override { T tmpValue = this->_owner->template SimpleCall<T>(m_Getter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s32)tmpValue; return true; }
-	virtual bool getValue(s64& value) const override { T tmpValue = this->_owner->template SimpleCall<T>(m_Getter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s64)tmpValue; return true; }
-	virtual bool getValue(u8& value) const override { T tmpValue = this->_owner->template SimpleCall<T>(m_Getter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u8)tmpValue; return true; }
-	virtual bool getValue(u16& value) const override { T tmpValue = this->_owner->template SimpleCall<T>(m_Getter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u16)tmpValue; return true; }
-	virtual bool getValue(u32& value) const override { T tmpValue = this->_owner->template SimpleCall<T>(m_Getter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u32)tmpValue; return true; }
-	virtual bool getValue(u64& value) const override { T tmpValue = this->_owner->template SimpleCall<T>(m_Getter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u64)tmpValue; return true; }
-	virtual bool getValue(kfloat& value) const override { T tmpValue = this->_owner->template SimpleCall<T>(m_Getter); CALL_GETMODIFIER(notificationLevel, tmpValue);  value = (kfloat)tmpValue; return true; }
-	virtual bool getValue(kdouble& value) const override { T tmpValue = this->_owner->template SimpleCall<T>(m_Getter); CALL_GETMODIFIER(notificationLevel, tmpValue);  value = (kdouble)tmpValue; return true; }
+	virtual bool getValue(bool& value) const override { T tmpValue = this->mOwner->template SimpleCall<T>(mGetter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (tmpValue != (T)0); return true; }
+	virtual bool getValue(s8& value) const override { T tmpValue = this->mOwner->template SimpleCall<T>(mGetter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s8)tmpValue; return true; }
+	virtual bool getValue(s16& value) const override { T tmpValue = this->mOwner->template SimpleCall<T>(mGetter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s16)tmpValue; return true; }
+	virtual bool getValue(s32& value) const override { T tmpValue = this->mOwner->template SimpleCall<T>(mGetter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s32)tmpValue; return true; }
+	virtual bool getValue(s64& value) const override { T tmpValue = this->mOwner->template SimpleCall<T>(mGetter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s64)tmpValue; return true; }
+	virtual bool getValue(u8& value) const override { T tmpValue = this->mOwner->template SimpleCall<T>(mGetter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u8)tmpValue; return true; }
+	virtual bool getValue(u16& value) const override { T tmpValue = this->mOwner->template SimpleCall<T>(mGetter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u16)tmpValue; return true; }
+	virtual bool getValue(u32& value) const override { T tmpValue = this->mOwner->template SimpleCall<T>(mGetter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u32)tmpValue; return true; }
+	virtual bool getValue(u64& value) const override { T tmpValue = this->mOwner->template SimpleCall<T>(mGetter); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u64)tmpValue; return true; }
+	virtual bool getValue(kfloat& value) const override { T tmpValue = this->mOwner->template SimpleCall<T>(mGetter); CALL_GETMODIFIER(notificationLevel, tmpValue);  value = (kfloat)tmpValue; return true; }
+	virtual bool getValue(kdouble& value) const override { T tmpValue = this->mOwner->template SimpleCall<T>(mGetter); CALL_GETMODIFIER(notificationLevel, tmpValue);  value = (kdouble)tmpValue; return true; }
 	virtual bool getValue(kstl::string& value) const override
 	{
-		T tmpValue = this->_owner->template SimpleCall<T>(m_Getter);
+		T tmpValue = this->mOwner->template SimpleCall<T>(mGetter);
 		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		return CoreConvertValue2String<T>(value, tmpValue);
 	}
 	virtual bool getValue(usString& value) const override
 	{
 		kstl::string tmp;
-		T tmpValue = this->_owner->template SimpleCall<T>(m_Getter);
+		T tmpValue = this->mOwner->template SimpleCall<T>(mGetter);
 		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		if (CoreConvertValue2String<T>(tmp, tmpValue))
 		{

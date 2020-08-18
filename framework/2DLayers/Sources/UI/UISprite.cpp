@@ -9,11 +9,11 @@ IMPLEMENT_CLASS_INFO(UISprite)
 
 UISprite::UISprite(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 UITexturedItem(name, PASS_CLASS_NAME_TREE_ARG)
-, myTextureName(*this, false, LABEL_AND_ID(Texture), "")
-, mySpriteName(*this, false, LABEL_AND_ID(Sprite), "")
+, mTexture(*this, false, LABEL_AND_ID(Texture), "")
+, mSprite(*this, false, LABEL_AND_ID(Sprite), "")
 {
 
-	mySpriteSheet = 0;
+	mSpriteSheet = 0;
 	hasSprite = false;
 }
 
@@ -26,7 +26,7 @@ UISprite::~UISprite()
 
 void UISprite::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == myIsEnabled.getLabelID())
+	if (labelid == mIsEnabled.getLabelID())
 	{
 		if (!GetSons().empty())
 		{
@@ -35,16 +35,16 @@ void UISprite::NotifyUpdate(const unsigned int labelid)
 			kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = sons.end();
 			while (it != end)
 			{
-				(*it)->setValue(LABEL_TO_ID(IsEnabled), myIsEnabled);
+				(*it)->setValue(LABEL_TO_ID(IsEnabled), mIsEnabled);
 				it++;
 			}
 		}
 	}
-	else if (labelid == myTextureName.getLabelID() && _isInit)
+	else if (labelid == mTexture.getLabelID() && _isInit)
 	{
 		ChangeTexture();
 	}
-	else if (labelid == mySpriteName.getLabelID() && _isInit)
+	else if (labelid == mSprite.getLabelID() && _isInit)
 	{
 		ChangeTexture();
 	}
@@ -59,9 +59,9 @@ void UISprite::InitModifiable()
 	if (_isInit)
 	{
 		ChangeTexture();
-		myIsEnabled.changeNotificationLevel(Owner);
-		myTextureName.changeNotificationLevel(Owner);
-		mySpriteName.changeNotificationLevel(Owner);
+		mIsEnabled.changeNotificationLevel(Owner);
+		mTexture.changeNotificationLevel(Owner);
+		mSprite.changeNotificationLevel(Owner);
 	}
 }
 
@@ -69,22 +69,22 @@ void UISprite::ChangeTexture()
 {
 	hasSprite = false;
 
-	const kstl::string& lTexName = myTextureName.const_ref();
+	const kstl::string& lTexName = mTexture.const_ref();
 	if (lTexName == "")
 		return;
 
 	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
 	
-	mySpriteSheet =  textureManager->GetSpriteSheetTexture(lTexName);
+	mSpriteSheet =  textureManager->GetSpriteSheetTexture(lTexName);
 
-	SetTexture(mySpriteSheet->Get_Texture());
-	if (!myTexture)
+	SetTexture(mSpriteSheet->Get_Texture());
+	if (!mTexturePointer)
 		return;
 
-	myTexture->Init();
+	mTexturePointer->Init();
 
-	const SpriteSheetFrame * f = mySpriteSheet->Get_Frame(mySpriteName);
+	const SpriteSheetFrame * f = mSpriteSheet->Get_Frame(mSprite);
 	if (f == nullptr)
 		return;
 
@@ -92,8 +92,8 @@ void UISprite::ChangeTexture()
 
 
 	Point2D s, r;
-	myTexture->GetSize(s.x, s.y);
-	myTexture->GetRatio(r.x, r.y);
+	mTexturePointer->GetSize(s.x, s.y);
+	mTexturePointer->GetRatio(r.x, r.y);
 	s /= r;
 
 	myUVMin.Set((kfloat)f->FramePos_X+0.5f, (kfloat)f->FramePos_Y+0.5f);
@@ -104,33 +104,33 @@ void UISprite::ChangeTexture()
 	//myUVMax = myUVMin + myUVMax;
 
 	// auto size
-	if ((((unsigned int)mySizeX) == 0) && (((unsigned int)mySizeY) == 0))
+	if ((((unsigned int)mSizeX) == 0) && (((unsigned int)mSizeY) == 0))
 	{
-		mySizeX = f->FrameSize_X;
-		mySizeY = f->FrameSize_Y;
+		mSizeX = f->FrameSize_X;
+		mSizeY = f->FrameSize_Y;
 	}
 }
 
 bool UISprite::isAlpha(float X, float Y)
 {
 	//Try to get my mask
-	if (!myAlphaMask)
+	if (!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
 
 		for (unsigned int i = 0; i < sons.size(); i++)
 		{
-			if (sons[i].myItem->isSubType("AlphaMask"))
+			if (sons[i].mItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = sons[i].myItem;
+				mAlphaMask = sons[i].mItem;
 				break;
 			}
 		}
 	}
 
-	if (myAlphaMask)
+	if (mAlphaMask)
 	{
-		return !myAlphaMask->CheckTo(X, Y);
+		return !mAlphaMask->CheckTo(X, Y);
 	}
 
 	return false;
@@ -141,8 +141,8 @@ void UISprite::SetTexUV(UIVerticesInfo * aQI)
 	if (hasSprite)
 	{
 		kfloat ratioX, ratioY, sx, sy;
-		myTexture->GetSize(sx, sy);
-		myTexture->GetRatio(ratioX, ratioY);
+		mTexturePointer->GetSize(sx, sy);
+		mTexturePointer->GetRatio(ratioX, ratioY);
 
 		kfloat dx = 0.5f / sx;
 		kfloat dy = 0.5f / sy;

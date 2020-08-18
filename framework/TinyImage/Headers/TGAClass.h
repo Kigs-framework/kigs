@@ -39,9 +39,9 @@ public:
 		u8  colourmaptype;   // type of colour map 0=none, 1=has palette
 		u8  imagetype;       // image format, see image formats enumeration below
 		
-		s16 colourmapstart;  // first colour map entry in palette
+		s16 colourmapstart;  // first colour map mEntry in palette
 		s16 colourmaplength; // number of colours in palette
-	 	u8  colourmapbits;   // number of bits per palette entry (16, 24, 32)
+	 	u8  colourmapbits;   // number of bits per palette mEntry (16, 24, 32)
 	 	
 		s16 xstart;          // image x origin
 		s16 ystart;          // image y origin

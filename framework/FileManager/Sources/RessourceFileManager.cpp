@@ -20,9 +20,9 @@ RessourceFileManager::~RessourceFileManager()
 CMSP RessourceFileManager::GetRessource(const kstl::string &ClassName, const kstl::string& fileName)
 {
 	// already loaded ?
-	if(myRessourceMap.find(fileName) != myRessourceMap.end())
+	if(mRessourceMap.find(fileName) != mRessourceMap.end())
 	{
-		return myRessourceMap[fileName];
+		return mRessourceMap[fileName];
 	}
 
 	// create a new one
@@ -42,11 +42,11 @@ bool	RessourceFileManager::addItem(const CMSP& item, ItemPosition pos DECLARE_LI
 	{
 		if(filename!="")
 		{
-			if(myRessourceMap.find(filename)!=myRessourceMap.end())
+			if(mRessourceMap.find(filename)!=mRessourceMap.end())
 			{
 				removeItem(item PASS_LINK_NAME( linkName ));
 			}
-			myRessourceMap[filename]=item;
+			mRessourceMap[filename]=item;
 		}
 	}
 	return CoreModifiable::addItem(item, pos PASS_LINK_NAME(linkName));
@@ -60,10 +60,10 @@ bool	RessourceFileManager::removeItem(const CMSP& item DECLARE_LINK_NAME)
 	{
 		if(filename!="")
 		{
-			if(myRessourceMap.find(filename)!=myRessourceMap.end())
+			if(mRessourceMap.find(filename)!=mRessourceMap.end())
 			{
-				kstl::map<kstl::string, CMSP>::iterator	it=myRessourceMap.find(filename);
-				myRessourceMap.erase(it);				
+				kstl::map<kstl::string, CMSP>::iterator	it=mRessourceMap.find(filename);
+				mRessourceMap.erase(it);				
 			}
 		}
 	}
@@ -79,9 +79,9 @@ void	RessourceFileManager::UnloadRessource(const CMSP& pRessource)
 
 void	RessourceFileManager::UnloadRessource(kstl::string ressourcename)
 {
-	if(myRessourceMap.find(ressourcename)!=myRessourceMap.end())
+	if(mRessourceMap.find(ressourcename)!=mRessourceMap.end())
 	{
-		kstl::map<kstl::string, CMSP>::iterator	it=myRessourceMap.find(ressourcename);
+		kstl::map<kstl::string, CMSP>::iterator	it=mRessourceMap.find(ressourcename);
 		removeItem((*it).second);
 	}
 }

@@ -25,6 +25,7 @@ public:
 // * --------------------------------------
 /**
 * \class	maCoreItemHeritage
+* \file		maCoreItem.h
 * \ingroup	CoreModifiableAttibute
 * \brief	CoreModifiableAttributeData of core item with different notification level
 */
@@ -41,30 +42,30 @@ public:
 	{
 		if (value != "")
 		{
-			_value.InitWithJSON(value, &owner);
+			mValue.InitWithJSON(value, &owner);
 		}
 	}
 	
 	// getValue overloads
 
-	virtual bool getValue(bool&  value) const override { if (!_value.item.isNil()) { value = (bool)(*_value.item.get()); return true; }  return false; }
-	virtual bool getValue(int&  value) const override { if (!_value.item.isNil()) { value = (int)(*_value.item.get()); return true; } return false; }
-	virtual bool getValue(unsigned int&  value) const override { if (!_value.item.isNil()) { value = (unsigned int)(*_value.item.get()); return true; }  return false; }
-	virtual bool getValue(kfloat&  value) const override { if (!_value.item.isNil()) { value = (kfloat)(*_value.item.get()); return true; }  return false; }
+	virtual bool getValue(bool&  value) const override { if (!mValue.item.isNil()) { value = (bool)(*mValue.item.get()); return true; }  return false; }
+	virtual bool getValue(int&  value) const override { if (!mValue.item.isNil()) { value = (int)(*mValue.item.get()); return true; } return false; }
+	virtual bool getValue(unsigned int&  value) const override { if (!mValue.item.isNil()) { value = (unsigned int)(*mValue.item.get()); return true; }  return false; }
+	virtual bool getValue(kfloat&  value) const override { if (!mValue.item.isNil()) { value = (kfloat)(*mValue.item.get()); return true; }  return false; }
 	virtual bool getValue(kstl::string& value) const override
 	{
-		if (!_value.item.isNil())
+		if (!mValue.item.isNil())
 		{
-			return _value.ExportToString(value);
+			return mValue.ExportToString(value);
 		}
 		return false;
 	}
 	virtual bool getValue(CoreItem*&  value) const override
 	{
-		value = (CoreItem*)_value.item.get();
+		value = (CoreItem*)mValue.item.get();
 		return true;
 	}
-	virtual bool getValue(void*& value) const override { value = (void*)_value.item.get(); return true; }
+	virtual bool getValue(void*& value) const override { value = (void*)mValue.item.get(); return true; }
 
 	///
 
@@ -74,7 +75,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 
-		_value.InitWithJSON(value, this->_owner);
+		mValue.InitWithJSON(value, this->mOwner);
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
@@ -83,7 +84,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 
-		_value.InitWithJSON(value, this->_owner);
+		mValue.InitWithJSON(value, this->mOwner);
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
@@ -92,27 +93,38 @@ public:
 		if (this->isReadOnly())
 			return false;
 		
-		if (_value.item != value)
+		if (mValue.item != value)
 		{
-			_value.item = CoreItemSP(value, GetRefTag{});
-			_value.ref_file = "";
+			mValue.item = CoreItemSP(value, GetRefTag{});
+			mValue.ref_file = "";
 			DO_NOTIFICATION(notificationLevel);
 		}
 		return true;
 	}
 
 	//! cast to CoreModifiable* operator
-	operator CoreItem*() { return _value.item.get(); }
+	operator CoreItem*() { return mValue.item.get(); }
 	//! cast to CoreModifiable& operator
-	operator CoreItem&() { return (*_value.item.get()); }
+	operator CoreItem&() { return (*mValue.item.get()); }
 	//! return a reference on internal value
-	CoreItem& ref() { return (*_value.item.get()); }
+	CoreItem& ref() { return (*mValue.item.get()); }
 	//! return a const reference on internal value
-	const CoreItem& const_ref() { return (*_value.item.get()); }
-	const kstl::string&	getRefFile() { return _value.ref_file; }
+	const CoreItem& const_ref() { return (*mValue.item.get()); }
+	const kstl::string&	getRefFile() { return mValue.ref_file; }
 
 
 };
+
+// ****************************************
+// * maCoreItem class
+// * --------------------------------------
+/**
+* \class	maCoreItem
+* \file		maCoreItem.h
+* \ingroup	CoreModifiableAttibute
+* \brief	CoreModifiable attribute managing a CoreItem
+*/
+// ****************************************
 
 using maCoreItem = maCoreItemHeritage<0>;
 

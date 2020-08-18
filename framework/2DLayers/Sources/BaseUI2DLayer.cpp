@@ -31,8 +31,8 @@ IMPLEMENT_CLASS_INFO(BaseUI2DLayer);
 //
 ///////////////////////////////////////////
 IMPLEMENT_CONSTRUCTOR(BaseUI2DLayer)
-, myInput(0)
-, myRootItem(0)
+, mInput(0)
+, mRootItem(0)
 {
 
 }
@@ -48,25 +48,25 @@ void BaseUI2DLayer::InitModifiable()
 		if (instances.empty())
 		{
 			// add the root UIItem
-			myRootItem = KigsCore::GetInstanceOf(getName(), "UIItem");
+			mRootItem = KigsCore::GetInstanceOf(getName(), "UIItem");
 			// set the root size to the screen size
 			kfloat X, Y;
 			GetRenderingScreen()->GetDesignSize(X, Y);
-			myRootItem->setValue("SizeX", X);
-			myRootItem->setValue("SizeY", Y);
-			addItem(myRootItem);
-			myRootItem->Init();
+			mRootItem->setValue("SizeX", X);
+			mRootItem->setValue("SizeY", Y);
+			addItem(mRootItem);
+			mRootItem->Init();
 		}
 		else
 		{
-			myRootItem = instances[0];
+			mRootItem = instances[0];
 		}
 		instances.clear();
 
 		instances = GetInstances("ModuleInput");
 	//	KIGS_ASSERT(instances.size() == 1);
 		if(instances.size()==1)
-			myInput = (ModuleInput*)(instances[0].get());
+			mInput = (ModuleInput*)(instances[0].get());
 
 		ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer*)((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 		if (renderer->getDefaultUiShader())
@@ -91,12 +91,12 @@ void BaseUI2DLayer::Update(const Timer& a_Timer, void* addParam)
 		return;
 	}
 	// if not interactive, don't do update (but still draw)
-	if (!myIsInteractive)
+	if (!mIsInteractive)
 	{
 		return;
 	}
 
-	UpdateChildrens(a_Timer, myRootItem.get(), addParam);
+	UpdateChildrens(a_Timer, mRootItem.get(), addParam);
 
 }
 
@@ -171,9 +171,9 @@ void BaseUI2DLayer::AccumulateToDraw(TravState* state, kstl::vector<NodeToDraw>&
 	for (auto& item_struct : current->getItems())
 	{
 		bool continue_down = true;
-		auto item = item_struct.myItem;
+		auto item = item_struct.mItem;
 
-		if (item->isSubType(Node2D::myClassID))
+		if (item->isSubType(Node2D::mClassID))
 		{
 			auto node = static_cast<Node2D*>(item.get());
 			if (node->Draw(state))
@@ -266,9 +266,9 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 	//renderer->FlushState();
 
 
-	if (myClearColorBuffer)
+	if (mClearColorBuffer)
 	{
-		renderer->SetClearColorValue(myClearColor[0], myClearColor[1], myClearColor[2], myClearColor[3]);
+		renderer->SetClearColorValue(mClearColor[0], mClearColor[1], mClearColor[2], mClearColor[3]);
 		renderer->ClearView(RENDERER_CLEAR_COLOR);
 	}
 
@@ -276,12 +276,12 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 	{
 
 		kstl::vector<NodeToDraw> todraw;
-		todraw.push_back(NodeToDraw{ myRootItem.get(), 0 });
+		todraw.push_back(NodeToDraw{ mRootItem.get(), 0 });
 
-		if (myRootItem->Draw(state))
+		if (mRootItem->Draw(state))
 		{
-			myRootItem->SetUpNodeIfNeeded();
-			AccumulateToDraw(state, todraw, myRootItem.get());
+			mRootItem->SetUpNodeIfNeeded();
+			AccumulateToDraw(state, todraw, mRootItem.get());
 		}
 
 		std::sort(todraw.begin(), todraw.end(), NodeToDraw::Sorter{});

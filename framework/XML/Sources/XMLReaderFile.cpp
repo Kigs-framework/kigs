@@ -290,12 +290,12 @@ XMLBase* XMLReaderFile::ReadFile(const kstl::string& file,const char* force_as_f
 	if (!pathManager.isNil())
 		lFileHandle = pathManager->FindFullName(file);
 
-	if (!lFileHandle || (lFileHandle->myStatus&FileHandle::Exist)==0)
+	if (!lFileHandle || (lFileHandle->mStatus&FileHandle::Exist)==0)
 		return NULL;
 
 	XMLBase*	xml=0;
 
-	std::string realExtension = pathManager->ResolveAlias(lFileHandle->myExtension);
+	std::string realExtension = pathManager->ResolveAlias(lFileHandle->mExtension);
 
 	if (realExtension == ".kxml" || forceFormat == "kxml") // compressed
 	{

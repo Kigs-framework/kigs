@@ -97,7 +97,7 @@ bool	ETCClass::Load(FileHandle* fileName)
 
 		mPixelDataSize = L_DataLen;
 
-		kstl::string upExtension = ToUpperCase(fileName->myExtension);
+		kstl::string upExtension = ToUpperCase(fileName->mExtension);
 		mPixels = new u8[mPixelDataSize];
 
 		if (upExtension == ".ETX")// use zstd

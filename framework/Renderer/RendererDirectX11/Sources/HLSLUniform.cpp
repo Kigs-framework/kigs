@@ -380,7 +380,7 @@ bool	API3DUniformTexture::Deactivate(UniformList* ul)
 
 bool API3DUniformTexture::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	if (item->isSubType(Texture::myClassID)) // if texture, don't call father addItem
+	if (item->isSubType(Texture::mClassID)) // if texture, don't call father addItem
 	{
 		if (item == myAttachedTexture)
 		{
@@ -399,7 +399,7 @@ bool API3DUniformTexture::addItem(const CMSP& item, ItemPosition pos DECLARE_LIN
 
 bool API3DUniformTexture::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
-	if (item->isSubType(Texture::myClassID)) // if texture, don't call father removeItem
+	if (item->isSubType(Texture::mClassID)) // if texture, don't call father removeItem
 	{
 
 		if (item == myAttachedTexture)

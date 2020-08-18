@@ -94,10 +94,10 @@ public:
 	int GetSize();
 	
 	/**
-	 * \brief	compute what to do to go to the next entry
+	 * \brief	compute what to do to go to the next mEntry
 	 * \fn 		PathNeed ComputeNeeds(kstl::vector<int>& currentway);
 	 * \param	currentway : the current way
-	 * \return	what to do to go to the next entry from the current position in path
+	 * \return	what to do to go to the next mEntry from the current position in path
 	 */
 	PathNeed ComputeNeeds(kstl::vector<int>& currentway);
 

@@ -5,6 +5,19 @@
 
 class UISlider;
 
+// ****************************************
+// * UISlidersGroup class
+// * --------------------------------------
+/**
+* \file	UISlidersGroup.h
+* \class	UISlidersGroup
+* \ingroup 2DLayers
+* \brief	TODO. Manage a slider.
+* 
+* Obsolete ??
+*/
+// ****************************************
+
 class UISlidersGroup : public UIDrawableItem
 {
 public:
@@ -20,22 +33,22 @@ public:
 	bool addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
 	bool removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
 
-	inline int				GetRemainingValue() const { return myRemainingValue; }
-	void					SetRemainingValue(int number) { myRemainingValue = number; };
-	inline int				Get_InitialGroupValue()const { return (int)myComunalValue; }
+	inline int				GetRemainingValue() const { return mRemainingValue; }
+	void					SetRemainingValue(int number) { mRemainingValue = number; };
+	inline int				Get_InitialGroupValue()const { return (int)mComunalValue; }
 	void					Reset();
 
-	kstl::vector<UISlider*> GetmySliderList() { return mySliderList; }
+	kstl::vector<UISlider*> GetmySliderList() { return mSliderList; }
 
 protected:
 	virtual ~UISlidersGroup();
 	void InitModifiable()override;
 
 
-	kstl::vector<UISlider*>		mySliderList;
-	maInt						myComunalValue; //value divided between the sliders
-	unsigned int				mySliderNumber;
-	int							myRemainingValue;
+	kstl::vector<UISlider*>		mSliderList;
+	maInt						mComunalValue; //value divided between the sliders
+	unsigned int				mSliderNumber;
+	int							mRemainingValue;
 };
 
 #endif //_UISLIDERSGROUP_H_

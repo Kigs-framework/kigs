@@ -6,16 +6,28 @@
 #include "ModuleRenderer.h"
 #include "RenderingScreen.h"
 
+// ****************************************
+// * UIControlBoxForScrollViewUI class
+// * --------------------------------------
+/**
+* \file	UIControlBoxForScrollViewUI.h
+* \class	UIControlBoxForScrollViewUI
+* \ingroup 2DLayers
+* \brief	???
+*
+*/
+// ****************************************
+
 class UIControlBoxForScrollViewUI : public UIItem
 {
 public:
 	DECLARE_CLASS_INFO(UIControlBoxForScrollViewUI, UIItem, Renderer);
 	DECLARE_INLINE_CONSTRUCTOR(UIControlBoxForScrollViewUI)
 	, mMoving(false)
-	, hasMoved(false)
-	, timeSinceClick(0)
+	, mHasMoved(false)
+	, mTimeSinceClick(0)
 	{
-		myPriority = -1;
+		mPriority = -1;
 	}
 
 	bool scrollTo(kfloat deltaPos);
@@ -23,7 +35,7 @@ public:
 	//bool TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
 	//bool TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
 	//void TriggerMouseSwipe(int idxButton, kfloat Vx, kfloat Vy) override;
-	void CompensatePosition(kfloat deltaPos, int axis) { myPosition[axis] -= deltaPos; }
+	void CompensatePosition(kfloat deltaPos, int axis) { mPosition[axis] -= deltaPos; }
 
 protected:
 
@@ -41,12 +53,12 @@ protected:
 	};
 
 	bool	mMoving;
-	bool	hasMoved;
-	double	timeSinceClick;
-	kfloat	myInitialVelocity;
+	bool	mHasMoved;
+	double	mTimeSinceClick;
+	kfloat	mInitialVelocity;
 	eAnimationState	mAnimation;
 	kdouble	mStartTime;
 	kdouble	mEndTime;
-	kfloat	myConstantAcceleration;
+	kfloat	mConstantAcceleration;
 
 };
