@@ -8,18 +8,21 @@
 #define _MODULEGUI_H_
 
 #include "ModuleBase.h"
-//#include "kstlvector.h"
+
+ModuleBase* PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 
 // ****************************************
 // * ModuleGUI class
 // * --------------------------------------
-/*!  \class ModuleGUI
-base class for GUI module
-\ingroup GUIModule
+/**
+* \file	ModuleGUI.h
+* \class	ModuleGUI
+* \ingroup GUIModule
+* \ingroup Module
+* \brief Generic Module for GUI classes ( Windows management )
+*
 */
 // ****************************************
-
-ModuleBase* PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 
 class ModuleGUI : public ModuleBase
 {

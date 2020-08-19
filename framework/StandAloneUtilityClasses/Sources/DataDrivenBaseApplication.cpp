@@ -541,7 +541,7 @@ void DataDrivenBaseApplication::ProtectedInit()
 		while (it != (*L_capacitylist).end())
 		{
 			const DisplayDeviceCaps::DisplayDeviceCapacity& current = (*it);
-			if (current.myIsCurrent)
+			if (current.mIsCurrent)
 			{
 				if (!L_isWindowed)
 				{
@@ -549,26 +549,26 @@ void DataDrivenBaseApplication::ProtectedInit()
 					L_ScreenPosX = 0;
 					L_ScreenPosY = 0;
 
-					L_ScreenSizeX = current.myWidth;
-					L_ScreenSizeY = current.myHeight;
+					L_ScreenSizeX = current.mWidth;
+					L_ScreenSizeY = current.mHeight;
 				}
 				else
 				{
 					// if -1 center window
 					if (L_ScreenPosX == -1)
-						L_ScreenPosX = (current.myWidth - L_ScreenSizeX) >> 1;
+						L_ScreenPosX = (current.mWidth - L_ScreenSizeX) >> 1;
 
 					// if -1 center window
 					if (L_ScreenPosY == -1)
-						L_ScreenPosY = (current.myHeight - L_ScreenSizeY) >> 1;
+						L_ScreenPosY = (current.mHeight - L_ScreenSizeY) >> 1;
 
 					// if negative (and not -1) set position relative to right border 
 					if(L_ScreenPosX < 0)
-						L_ScreenPosX = current.myWidth - L_ScreenSizeX + L_ScreenPosX;
+						L_ScreenPosX = current.mWidth - L_ScreenSizeX + L_ScreenPosX;
 
 					// if negative (and not -1) set position relative to bottom border 
 					if (L_ScreenPosY < 0)
-						L_ScreenPosY = current.myHeight - L_ScreenSizeY + L_ScreenPosY;
+						L_ScreenPosY = current.mHeight - L_ScreenSizeY + L_ScreenPosY;
 				}
 				break;
 			}
