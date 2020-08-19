@@ -10,16 +10,17 @@ class CoreModifiable;
 class AABBTree;
 class SpacialMeshBVH;
 
+
 // ****************************************
 // * CollisionBaseObject class
 // * --------------------------------------
-/*!  \class CollisionBaseObject
-	 Base object for collision object (sphere, box, mesh...)
-	 \ingroup Collision
+/**
+* \file	CollisionBaseObject.h
+* \class	CollisionBaseObject
+* \ingroup Collision
+* \brief  Base class for collision object (sphere, box, mesh...)
 */
 // ****************************************
-
-
 
 class CollisionBaseObject
 {
@@ -37,14 +38,14 @@ public:
 
 #ifdef KIGS_TOOLS
 	// debug color used for this node
-	Point3D debugColor;
+	Point3D mDebugColor;
 
-	// draw debug info using GLSLDrawDebug
+	// draw debug mInfo using GLSLDrawDebug
 	virtual void DrawDebug(const Point3D& pos, const Matrix3x4* mat, Timer *timer) = 0;
 #endif
 
-	bool IsCoreModifiable = false;
-	bool IsActive = true;
+	bool mIsCoreModifiable = false;
+	bool mIsActive = true;
 
 	// false static cast for two main collision type
 	virtual AABBTree* getAABBTree()

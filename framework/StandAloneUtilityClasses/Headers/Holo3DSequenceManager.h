@@ -110,7 +110,7 @@ public:
 	{
 		if (!ParentClassType::ValidHit(pos)) return false;
 		if (!mContentForHitTest) return false;
-		return mContentForHitTest->SimpleCall<bool>("PanelValidHit", v2f(myHitPos));
+		return mContentForHitTest->SimpleCall<bool>("PanelValidHit", v2f(mHitPos));
 	}
 
 protected:

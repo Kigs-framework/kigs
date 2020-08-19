@@ -5,14 +5,14 @@ IMPLEMENT_CLASS_INFO(CollisionBaseNode)
 
 IMPLEMENT_CONSTRUCTOR(CollisionBaseNode)
 , CollisionBaseObject()
-, myHit(*this, false, "HasHit", false)
+, mHit(*this, false, "HasHit", false)
 {
-	IsCoreModifiable = true;
+	mIsCoreModifiable = true;
 };
 
 void CollisionBaseNode::InitModifiable()
 {
 	Drawable::InitModifiable();
-	myBoundingBox.SetEmpty();
+	mBoundingBox.SetEmpty();
 }
 

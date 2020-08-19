@@ -7,16 +7,16 @@
 #include "KMesh.h"
 
 
-
 // ****************************************
 // * Distance class
 // * --------------------------------------
-/*!  \class Distance
-     encapsulate useful distance calculation methods
-	 \ingroup Collision
+/**
+* \file	Distance.h
+* \class	Distance
+* \ingroup Collision
+* \brief  Encapsulate useful distance calculation methods
 */
 // ****************************************
-
 class Distance
 {
 public:

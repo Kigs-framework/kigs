@@ -6,6 +6,17 @@
 #include<maReference.h>
 #include<TecLibs/3D/3DObject/BBox.h>
 
+// ****************************************
+// * CollisionBaseNode class
+// * --------------------------------------
+/**
+* \file	CollisionBaseNode.h
+* \class	CollisionBaseNode
+* \ingroup Collision
+* \brief  Base class for collidable objects.
+*/
+// ****************************************
+
 class CollisionBaseNode : public Drawable, public CollisionBaseObject
 {
 public:
@@ -16,16 +27,16 @@ public:
 	DECLARE_CONSTRUCTOR(CollisionBaseNode);
 
 	bool BBoxUpdate(kdouble time) override { return true; }
-	void	GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override { pmin = myBoundingBox.m_Min; pmax = myBoundingBox.m_Max; }
+	void	GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override { pmin = mBoundingBox.m_Min; pmax = mBoundingBox.m_Max; }
 
 protected:
 	void	InitModifiable() override;
 
 
 	//! link to the bounding box
-	BBox        myBoundingBox;
+	BBox        mBoundingBox;
 
-	maBool		myHit;
+	maBool		mHit;
 };
 
 #endif //_COLLISIONBASENODE_H_

@@ -13,8 +13,8 @@ IMPLEMENT_CONSTRUCTOR(BoxCollider)
 void BoxCollider::InitModifiable()
 {
 	ParentClassType::InitModifiable();
-	myBoundingBox.Update(v3f(mOffset) - (v3f)mSize / 2);
-	myBoundingBox.Update(v3f(mOffset) + (v3f)mSize / 2);
+	mBoundingBox.Update(v3f(mOffset) - (v3f)mSize / 2);
+	mBoundingBox.Update(v3f(mOffset) + (v3f)mSize / 2);
 
 	mOffset.changeNotificationLevel(Owner);
 	mSize.changeNotificationLevel(Owner);
@@ -22,9 +22,9 @@ void BoxCollider::InitModifiable()
 
 void BoxCollider::NotifyUpdate(const u32 labelid)
 {
-	myBoundingBox = BBox::PreInit{};
-	myBoundingBox.Update(v3f(mOffset) - (v3f)mSize / 2);
-	myBoundingBox.Update(v3f(mOffset) + (v3f)mSize / 2);
+	mBoundingBox = BBox::PreInit{};
+	mBoundingBox.Update(v3f(mOffset) - (v3f)mSize / 2);
+	mBoundingBox.Update(v3f(mOffset) + (v3f)mSize / 2);
 }
 
 namespace
@@ -62,9 +62,9 @@ namespace
 
 bool BoxCollider::TestHit(Hit& hit, v3f local_origin, v3f local_direction)
 {
-	if (Intersection::IntersectionRayBBox(local_origin, local_direction, myBoundingBox.m_Min, myBoundingBox.m_Max, hit.HitPosition, hit.HitDistance))
+	if (Intersection::IntersectionRayBBox(local_origin, local_direction, mBoundingBox.m_Min, mBoundingBox.m_Max, hit.HitPosition, hit.HitDistance))
 	{
-		hit.HitNormal = normalAt(myBoundingBox, hit.HitPosition);
+		hit.HitNormal = normalAt(mBoundingBox, hit.HitPosition);
 		return true;
 	}
 	return false;
@@ -74,7 +74,7 @@ bool BoxCollider::TestHit(Hit& hit, v3f local_origin, v3f local_direction)
 #include <GLSLDebugDraw.h>
 void BoxCollider::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
 {
-	dd::local_bbox(*mat, myBoundingBox, debugColor);
+	dd::local_bbox(*mat, mBoundingBox, mDebugColor);
 }
 #endif
 

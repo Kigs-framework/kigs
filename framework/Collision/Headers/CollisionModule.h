@@ -11,11 +11,15 @@
 // ****************************************
 // * CollisionModule class
 // * --------------------------------------
-/*!  \class CollisionModule
-     this class is the module manager class. It registers the CollisionManager class
-	 \ingroup Collision
+/**
+* \file	CollisionModule.h
+* \class	CollisionModule
+* \ingroup Collision
+* \ingroup Module
+* \brief Generic Module collision / intersection management
 */
 // ****************************************
+
 
 class CollisionModule : public ModuleBase
 {

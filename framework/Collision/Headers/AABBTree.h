@@ -10,17 +10,19 @@
 #include "DynamicGrowingBuffer.h"
 
 class ModernMesh;
+class AABBTree;
+
 
 // ****************************************
 // * AABBTreeNode class
 // * --------------------------------------
-/*!  \class AABBTreeNode
-     a node in a Axis Aligned Bounding box tree, used to optimise intersection calculation 
-	 \ingroup Collision
+/**
+* \file	AABBTree.h
+* \class	AABBTreeNode
+* \ingroup Collision
+* \brief Node structure in a Axis Aligned Bounding box tree, used to optimise intersection calculation.
 */
 // ****************************************
-
-class AABBTree;
 
 class AABBTreeNode 
 {
@@ -28,13 +30,13 @@ public:
 
 
 
-	auto GetSon1() const { return Son1; }
-	auto GetSon2() const { return Son2; }
+	auto GetSon1() const { return mSon1; }
+	auto GetSon2() const { return mSon2; }
 
-	const BBox& GetBBox() const { return m_BBox; }
+	const BBox& GetBBox() const { return mBBox; }
 
-	auto GetTriangleCount() const { return TriangleCount; }
-	auto GetTriangleArray() const { return TriangleArray2; }
+	auto GetTriangleCount() const { return mTriangleCount; }
+	auto GetTriangleArray() const { return mTriangleArray2; }
 
 	template<typename PacketStream>
 	bool SerializeNode(PacketStream& stream, AABBTree* root_node);
@@ -61,8 +63,8 @@ protected:
 	public:
 		/*! \brief BBox of this triangle
 		*/
-		BBox m_BBox;
-		Point3D m_Mid;
+		BBox mBBox;
+		Point3D mMid;
 
 		virtual BuildTriangle_base* Next() = 0;
 		virtual void SetIndex(void *iArray, int first) = 0;
@@ -73,9 +75,9 @@ protected:
 
 		static int CompareX(const void *A, const void *B)
 		{
-			if (static_cast<const BuildTriangle_base*>(A)->m_Mid.x < static_cast<const BuildTriangle_base*>(B)->m_Mid.x)
+			if (static_cast<const BuildTriangle_base*>(A)->mMid.x < static_cast<const BuildTriangle_base*>(B)->mMid.x)
 				return -1;
-			else	if (static_cast<const BuildTriangle_base*>(A)->m_Mid.x > static_cast<const BuildTriangle_base*>(B)->m_Mid.x)
+			else	if (static_cast<const BuildTriangle_base*>(A)->mMid.x > static_cast<const BuildTriangle_base*>(B)->mMid.x)
 				return 1;
 
 			return 0;
@@ -83,9 +85,9 @@ protected:
 
 		static int CompareY(const void *A, const void *B)
 		{
-			if (static_cast<const BuildTriangle_base*>(A)->m_Mid.y < static_cast<const BuildTriangle_base*>(B)->m_Mid.y)
+			if (static_cast<const BuildTriangle_base*>(A)->mMid.y < static_cast<const BuildTriangle_base*>(B)->mMid.y)
 				return -1;
-			else	if (static_cast<const BuildTriangle_base*>(A)->m_Mid.y > static_cast<const BuildTriangle_base*>(B)->m_Mid.y)
+			else	if (static_cast<const BuildTriangle_base*>(A)->mMid.y > static_cast<const BuildTriangle_base*>(B)->mMid.y)
 				return 1;
 
 			return 0;
@@ -93,9 +95,9 @@ protected:
 
 		static int CompareZ(const void *A, const void *B)
 		{
-			if (static_cast<const BuildTriangle_base*>(A)->m_Mid.z < static_cast<const BuildTriangle_base*>(B)->m_Mid.z)
+			if (static_cast<const BuildTriangle_base*>(A)->mMid.z < static_cast<const BuildTriangle_base*>(B)->mMid.z)
 				return -1;
-			else	if (static_cast<const BuildTriangle_base*>(A)->m_Mid.z > static_cast<const BuildTriangle_base*>(B)->m_Mid.z)
+			else	if (static_cast<const BuildTriangle_base*>(A)->mMid.z > static_cast<const BuildTriangle_base*>(B)->mMid.z)
 				return 1;
 
 			return 0;
@@ -110,8 +112,8 @@ protected:
 		/*! \brief pointer to triangle index in the indexBuffer
 		*/
 		
-		t* index;
-		u32 triangle_index=0;
+		t* mIndex;
+		u32 mTriangleIndex=0;
 
 		virtual BuildTriangle_base* Next() { return (this)+1; }
 
@@ -119,25 +121,25 @@ protected:
 
 		virtual void SetIndex(void *iArray, int first)
 		{
-			index = &reinterpret_cast<t*>(iArray)[first];
-			triangle_index = first/3;
+			mIndex = &reinterpret_cast<t*>(iArray)[first];
+			mTriangleIndex = first/3;
 		}
 
 		virtual void GetIndex(unsigned int &a, unsigned int &b, unsigned int &c)
 		{
-			a = index[0];
-			b = index[1];
-			c = index[2];
+			a = mIndex[0];
+			b = mIndex[1];
+			c = mIndex[2];
 		}
 
 		/*! \brief construct BBOX and middle point of this triangle
 		*/
 		virtual void ComputeMidAndBBox(Point3D *vArray)
 		{
-			m_Mid = (vArray[index[0]] + vArray[index[1]] + vArray[index[2]]) / 3.0f;
-			m_BBox.Init(vArray[index[0]]);
-			m_BBox.Update(vArray[index[1]]);
-			m_BBox.Update(vArray[index[2]]);
+			mMid = (vArray[mIndex[0]] + vArray[mIndex[1]] + vArray[mIndex[2]]) / 3.0f;
+			mBBox.Init(vArray[mIndex[0]]);
+			mBBox.Update(vArray[mIndex[1]]);
+			mBBox.Update(vArray[mIndex[2]]);
 		}
 	};
 
@@ -151,24 +153,24 @@ protected:
 	
 	/*! \brief triangle count in this BBox
 	*/
-	int TriangleCount = 0;
+	int mTriangleCount = 0;
 
 public:
 	/*! \brief sons. AABBTree is a binary tree 
 	*/
-	AABBTreeNode *Son1 = nullptr;
+	AABBTreeNode *mSon1 = nullptr;
 
-	// if node is a leaf, then TriangleCount is > 0 and TriangleArray2 is defined, Son1 & Son2 are null
-	// else TriangleCount = 0 and Son1 & Son2 are defined
+	// if node is a leaf, then TriangleCount is > 0 and mTriangleArray2 is defined, Son1 & mSon2 are null
+	// else TriangleCount = 0 and Son1 & mSon2 are defined
 	union
 	{
-		AABBTreeNode	* Son2 = nullptr;
-		NormalTriangle * TriangleArray2;
+		AABBTreeNode	* mSon2 = nullptr;
+		NormalTriangle * mTriangleArray2;
 	};
 
 	/*! \brief BBox for this node 
 	*/
-	BBox m_BBox;
+	BBox mBBox;
 
 public:	
 	/*! \brief constructor 
@@ -184,13 +186,23 @@ public:
 
 #ifdef KIGS_TOOLS
 	// used for BBox drawing
-	bool m_Hit = false;
+	bool mHit = false;
 #endif
 	friend class AABBTreeNode;
 	friend class Collision;
 };
 
-// root abbtreenode contains buffers for all sons
+// ****************************************
+// * AABBTree class
+// * --------------------------------------
+/**
+* \file	AABBTree.h
+* \class	AABBTree
+* \ingroup Collision
+* \brief Root ABBTreeNode + all buffers to manage collisions.
+*/
+// ****************************************
+
 class AABBTree : public CollisionBaseObject, public AABBTreeNode
 {
 protected:
@@ -206,21 +218,21 @@ protected:
 
 	std::string mFileName;
 
-	Point3D *		myVertexList = nullptr;
-	unsigned int	myVertexCount = 0;
+	Point3D *		mVertexList = nullptr;
+	unsigned int	mVertexCount = 0;
 
-	DynamicGrowingBuffer<AABBTreeNode>*	myDynamicGrowingBuffer = nullptr;
+	DynamicGrowingBuffer<AABBTreeNode>*	mDynamicGrowingBuffer = nullptr;
 
 	AABBTreeNode * getFreeAABBTreeNode()
 	{
-		AABBTreeNode * result = myDynamicGrowingBuffer->at(mCurrentFreeAABBTreeNode);
+		AABBTreeNode * result = mDynamicGrowingBuffer->at(mCurrentFreeAABBTreeNode);
 		++mCurrentFreeAABBTreeNode;
 		return result;
 	}
 
 	// temporary construction buffer
-	kstl::vector<unsigned int>*	myIndexlist1 = nullptr;
-	kstl::vector<unsigned int>*	myIndexlist2 = nullptr;
+	kstl::vector<unsigned int>*	mIndexlist1 = nullptr;
+	kstl::vector<unsigned int>*	mIndexlist2 = nullptr;
 
 	virtual bool CallLocalRayIntersection(Hit &hit, const Point3D& start, const Vector3D& dir)  const override;
 	virtual bool CallLocalRayIntersection(std::vector<Hit> &hit, const Point3D& start, const Vector3D& dir)  const override;
@@ -234,7 +246,7 @@ public:
 	static AABBTree* BuildFromMesh(ModernMesh* mesh);
 
 #ifdef KIGS_TOOLS
-	// draw debug info using GLSLDrawDebug
+	// draw debug mInfo using GLSLDrawDebug
 	virtual void DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer);
 #endif
 	friend class AABBTreeNode;
@@ -250,17 +262,17 @@ public:
 	AABBTree(int trCount);
 	virtual ~AABBTree();
 
-	const Point3D* GetVertexList() const { return myVertexList; }
+	const Point3D* GetVertexList() const { return mVertexList; }
 
-	unsigned int GetVertexCount() const { return myVertexCount; }
+	unsigned int GetVertexCount() const { return mVertexCount; }
 
 	kstl::vector<unsigned int>&	GetIndexlist1()
 	{
-		return *myIndexlist1;
+		return *mIndexlist1;
 	}
 	kstl::vector<unsigned int>&	GetIndexlist2()
 	{
-		return *myIndexlist2;
+		return *mIndexlist2;
 	}
 };
 
@@ -270,35 +282,35 @@ public:
 template<typename PacketStream>
 bool AABBTreeNode::SerializeNode(PacketStream& stream, AABBTree* root_node)
 {
-	CHECK_SERIALIZE(serialize_object(stream, m_BBox.m_Min));
-	CHECK_SERIALIZE(serialize_object(stream, m_BBox.m_Max));
-	CHECK_SERIALIZE(serialize_object(stream, TriangleCount));
+	CHECK_SERIALIZE(serialize_object(stream, mBBox.m_Min));
+	CHECK_SERIALIZE(serialize_object(stream, mBBox.m_Max));
+	CHECK_SERIALIZE(serialize_object(stream, mTriangleCount));
 	//printf("%d", TriangleCount);
-	bool has_sons = Son1;
+	bool has_sons = mSon1;
 	CHECK_SERIALIZE(serialize_object(stream, has_sons));
 
 	if (!PacketStream::IsWriting)
 	{
 		if (has_sons)
 		{
-			Son1 = root_node->getFreeAABBTreeNode();
-			Son2 = root_node->getFreeAABBTreeNode();
+			mSon1 = root_node->getFreeAABBTreeNode();
+			mSon2 = root_node->getFreeAABBTreeNode();
 		}
 		else
 		{
-			TriangleArray2 = root_node->getFreeNormalTriangleBuffer(TriangleCount);
+			mTriangleArray2 = root_node->getFreeNormalTriangleBuffer(mTriangleCount);
 		}
 	}
 
 	//printf("%d", Son1 ? 0 : 1);
 	if (has_sons)
 	{
-		CHECK_SERIALIZE(Son1->SerializeNode(stream, root_node));
-		CHECK_SERIALIZE(Son2->SerializeNode(stream, root_node));
+		CHECK_SERIALIZE(mSon1->SerializeNode(stream, root_node));
+		CHECK_SERIALIZE(mSon2->SerializeNode(stream, root_node));
 	}
 	else
 	{
-		//printf("-%d|", int(TriangleArray2 - root_node->mNormalTriangleArray));
+		//printf("-%d|", int(mTriangleArray2 - root_node->mNormalTriangleArray));
 	}
 	return true;
 }
@@ -306,14 +318,14 @@ bool AABBTreeNode::SerializeNode(PacketStream& stream, AABBTree* root_node)
 template<typename PacketStream>
 bool AABBTree::Serialize(PacketStream& stream)
 {
-	CHECK_SERIALIZE(serialize_object(stream, myVertexCount));
+	CHECK_SERIALIZE(serialize_object(stream, mVertexCount));
 	if (!PacketStream::IsWriting)
 	{
-		myVertexList = new v3f[myVertexCount];
+		mVertexList = new v3f[mVertexCount];
 	}
-	for (int i = 0; i < myVertexCount; ++i)
+	for (int i = 0; i < mVertexCount; ++i)
 	{
-		CHECK_SERIALIZE(serialize_object(stream, myVertexList[i]));
+		CHECK_SERIALIZE(serialize_object(stream, mVertexList[i]));
 	}
 
 	CHECK_SERIALIZE(serialize_object(stream, mCurrentFreeTriangleIndex));
@@ -325,7 +337,7 @@ bool AABBTree::Serialize(PacketStream& stream)
 	if (!PacketStream::IsWriting)
 	{
 		mNormalTriangleArray = new NormalTriangle[mCurrentFreeTriangleIndex];
-		myDynamicGrowingBuffer = new DynamicGrowingBuffer<AABBTreeNode>(aabbtreenodecount);
+		mDynamicGrowingBuffer = new DynamicGrowingBuffer<AABBTreeNode>(aabbtreenodecount);
 		mCurrentFreeTriangleIndex = 0;
 		mCurrentFreeAABBTreeNode = 0;
 	}
