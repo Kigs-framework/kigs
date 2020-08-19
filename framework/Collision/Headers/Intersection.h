@@ -10,6 +10,16 @@
 class Plane;
 struct Hit;
 
+// ****************************************
+// * Intersection namespace
+// * --------------------------------------
+/**
+* \file	Intersection.h
+* \ingroup Collision
+* \brief  Encapsulate useful Intersection calculation methods
+*/
+// ****************************************
+
 namespace Intersection
 {
 	bool IntersectRayPlane(const Point3D &rOrigin, const Vector3D &rVector,

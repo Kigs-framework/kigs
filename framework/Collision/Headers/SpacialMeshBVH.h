@@ -10,6 +10,17 @@
 
 class ModernMesh;
 
+// ****************************************
+// * SpacialMeshBVHNode class
+// * --------------------------------------
+/**
+* \file	SpacialMeshBVH.h
+* \class	SpacialMeshBVHNode
+* \ingroup Collision
+* \brief  Bounding volume hierarchy node structure.
+*/
+// ****************************************
+
 class SpacialMeshBVHNode
 {
 public:
@@ -32,38 +43,38 @@ public:
 
 		return !(has_neg && has_pos);
 	}
-	SpacialMeshBVHNode() : m_3DBox(BBox::PreInit())
+	SpacialMeshBVHNode() : mBBox3D(BBox::PreInit())
 	{
 		
 	}
 
 	unsigned int	getStableTriangleListSize() const
 	{
-		return m_StableTriangles.size();
+		return mStableTriangles.size();
 	}
 
 	v3f	getStableTriangleCenter(int index) const
 	{
-		unsigned int t=m_StableTriangles[index];
+		unsigned int t=mStableTriangles[index];
 
-		v2f tcenter = m_2D_Triangles[3*t] + m_2D_Triangles[3*t + 1] + m_2D_Triangles[3*t + 2];
+		v2f tcenter = mTriangles2D[3*t] + mTriangles2D[3*t + 1] + mTriangles2D[3*t + 2];
 		tcenter *= 1.0f / 3.0f;
 
-		v3f center = m_o + m_u * tcenter.x + m_v * tcenter.y;
+		v3f center = mO + mU * tcenter.x + mV * tcenter.y;
 		return center;
 	}
 
 	const v3f& getNormal() const
 	{
-		return m_Normal;
+		return mNormal;
 	}
 
 	const BBox& getBBox() const
 	{
-		return m_3DBox;
+		return mBBox3D;
 	}
 
-	float getSurface() const { return m_surface; }
+	float getSurface() const { return mSurface; }
 
 protected:
 
@@ -71,58 +82,68 @@ protected:
 
 	void add2DVertice(const v3f& pt)
 	{
-		m_3DBox.Update(pt);
+		mBBox3D.Update(pt);
 		// project pt on u and v
 		v3f	toProject(pt);
-		toProject -= m_o;
+		toProject -= mO;
 
 		v2f projected;
-		projected.x = Dot(toProject, m_u);
-		projected.y = Dot(toProject, m_v);
-		m_2D_Triangles.push_back(projected);
+		projected.x = Dot(toProject, mU);
+		projected.y = Dot(toProject, mV);
+		mTriangles2D.push_back(projected);
 	}
 
 	v3f	getProjected(const v3f& pt)
 	{
 		v3f	toProject(pt);
-		toProject -= m_o;
+		toProject -= mO;
 
-		float p = Dot(toProject, m_Normal);
+		float p = Dot(toProject, mNormal);
 		
-		v3f result = pt - m_Normal * p;
+		v3f result = pt - mNormal * p;
 		return result;
 	}
 
 	void	computeBBox()
 	{
-		if (m_2D_Triangles.size()>1)
+		if (mTriangles2D.size()>1)
 		{
-			m_BBox.Init(m_2D_Triangles[0]);
-			m_BBox.Update(&m_2D_Triangles[1], m_2D_Triangles.size() - 1);
+			mBBox.Init(mTriangles2D[0]);
+			mBBox.Update(&mTriangles2D[1], mTriangles2D.size() - 1);
 		}
 	}
 
-	v3f		m_Normal;	// normal + d = plane equation
+	v3f		mNormal;	// normal + d = plane equation
 
 	// 2D planar coordinate system
-	v3f		m_o;	// origin 
-	v3f		m_u;	// u
-	v3f		m_v;	// v
+	v3f		mO;	// origin 
+	v3f		mU;	// u
+	v3f		mV;	// v
 
-	std::vector<v2f>			m_2D_Triangles; // triangles
-	std::vector<unsigned int>	m_StableTriangles;
-	BBox2D				m_BBox;
-	BBox				m_3DBox;
-	float m_surface = 0.0f;
+	std::vector<v2f>			mTriangles2D; // triangles
+	std::vector<unsigned int>	mStableTriangles;
+	BBox2D				mBBox;
+	BBox				mBBox3D;
+	float mSurface = 0.0f;
 
 	bool	intersect(Hit& hit, const v3f& start, const v3f& dir) const;
 
 public:
 #ifdef KIGS_TOOLS
-	mutable bool m_Hit = false;
+	mutable bool mHit = false;
 #endif
 };
 
+// ****************************************
+// * SpacialMeshBVH class
+// * --------------------------------------
+/**
+* \file	SpacialMeshBVH.h
+* \class	SpacialMeshBVH
+* \ingroup Collision
+* \brief  Bounding volume hierarchy structure.
+*/
+// ****************************************
 
 class SpacialMeshBVH : public CollisionBaseObject
 {
@@ -138,38 +159,38 @@ protected :
 
 	int	CreateVirtualIndicesList(std::vector<int>& virtualIndices,const std::vector<v3f>& vertices);
 
-	Matrix3x4						m_LtoGMatrix; // check for horizontal / vertical planar surface
+	Matrix3x4						mLtoGMatrix; // check for horizontal / vertical planar surface
 
-	std::vector<SpacialMeshBVHNode>	m_NodeList;
+	std::vector<SpacialMeshBVHNode>	mNodeList;
 
 	virtual bool CallLocalRayIntersection(Hit &hit, const Point3D& start, const Vector3D& dir)  const override;
 	virtual bool CallLocalRayIntersection(std::vector<Hit> &hit, const Point3D& start, const Vector3D& dir)  const override;
 
 	struct PlanarGroup // struct used to build groups
 	{
-		std::vector<unsigned int>	triangles;
-		std::vector<std::pair<int, int> > borderEdges;
-		Vector3D		normal;
+		std::vector<unsigned int>	mTriangles;
+		std::vector<std::pair<int, int> > mBorderEdges;
+		Vector3D		mNormal;
 #ifdef USE_LEAST_SQUARES
 		Vector3D		u;
 		Vector3D		v;
 #endif
-		Vector3D		origin;
-		float			surface;
-		bool			is_H_Or_V;
-		std::set<std::pair<float, int>>	sortStableTriangles;
-		std::vector<unsigned int>	invalid_triangles;
-		int				validcount;
+		Vector3D		mOrigin;
+		float			mSurface;
+		bool			mIsHOrV;
+		std::set<std::pair<float, int>>	mSortStableTriangles;
+		std::vector<unsigned int>	mInvalidTriangles;
+		int				mValidcount;
 	};
 
 	struct SegmentCheck // struct used to build connected segment lists
 	{
 		// minIndice is the index in the list
-		int maxIndice;
-		int triangleIndice;
-		int segmentFlag;
-		SegmentCheck*	nextSegment;
-		SegmentCheck*	Twin;
+		int mMaxIndice;
+		int mTriangleIndice;
+		int mSegmentFlag;
+		SegmentCheck*	mNextSegment;
+		SegmentCheck*	mTwin;
 	};
 
 	struct ConnectedTriangle // struct used to build planar groups
@@ -226,14 +247,14 @@ protected :
 
 	void	MergeTwoPlanarGroups(std::vector<TriangleGrp>& triangleFlag, std::vector<SegmentCheck>& PreallocatedSegments,PlanarGroup& grp1, const PlanarGroup& grp2, int grpID1, int grpID2);
 
-	BBox				m_3DBox;
+	BBox				mBBox3D;
 
 public:
 
 	static SpacialMeshBVH* BuildFromMesh(ModernMesh* mesh,const Matrix3x4& LtoGMatrix,bool onlyHorizontalAndVertical);
 	virtual ~SpacialMeshBVH();
 #ifdef KIGS_TOOLS
-	// draw debug info using GLSLDrawDebug
+	// draw debug mInfo using GLSLDrawDebug
 	virtual void DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer);
 #endif
 
@@ -244,7 +265,7 @@ public:
 
 	const std::vector<SpacialMeshBVHNode>& getNodes() const
 	{
-		return m_NodeList;
+		return mNodeList;
 	}
 };
 

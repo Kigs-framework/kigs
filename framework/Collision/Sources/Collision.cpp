@@ -11,7 +11,7 @@ extern const Matrix3x4 * currentNodeMatrix;
 #endif
 
 #ifdef COUNTCOLLISION
-unsigned int	Collision::CollisionTestCount;
+unsigned int	Collision::mCollisionTestCount;
 #endif
 /*!
 	check if a collision occurs between two moving spheres
@@ -161,7 +161,7 @@ bool Collision::CollideSphereTriangle(const Point3D &SphereOrigin,
 	Point3D &IntersectionPoint)
 {
 #ifdef COUNTCOLLISION
-	CollisionTestCount++;
+	mCollisionTestCount++;
 #endif
 	kfloat t0, t1;
 	kfloat a;
@@ -421,10 +421,10 @@ bool Collision::CollideSphereAABBTreeNode(const Point3D &SphereOrigin,
 	Point3D  tempPoint;
 
 	//! first test current node bounding box against moving sphere bounding box
-	if (Intersection::IntersectionAABBAABB(pAABB.m_BBox.m_Min, pAABB.m_BBox.m_Max, MovingSphereBBox.m_Min, MovingSphereBBox.m_Max))
+	if (Intersection::IntersectionAABBAABB(pAABB.mBBox.m_Min, pAABB.mBBox.m_Max, MovingSphereBBox.m_Min, MovingSphereBBox.m_Max))
 	{
 		//! if the bounding box are intersecting
-		if (pAABB.Son1 == NULL && pAABB.Son2 == NULL)
+		if (pAABB.mSon1 == NULL && pAABB.mSon2 == NULL)
 		{
 			//! if this node is a leaf then check each triangles and return 
 			bool found = false;
@@ -450,7 +450,7 @@ bool Collision::CollideSphereAABBTreeNode(const Point3D &SphereOrigin,
 		}
 
 		//! if this node is not a leaf then recurse to sons
-		if (CollideSphereAABBTreeNode(SphereOrigin, SphereVelocity, SphereRadius, *(pAABB.Son1), pMesh, MovingSphereBBox, TempDist, TempNormal, tempPoint))
+		if (CollideSphereAABBTreeNode(SphereOrigin, SphereVelocity, SphereRadius, *(pAABB.mSon1), pMesh, MovingSphereBBox, TempDist, TempNormal, tempPoint))
 		{
 			if (TempDist < IntersectionDistance)
 			{
@@ -458,7 +458,7 @@ bool Collision::CollideSphereAABBTreeNode(const Point3D &SphereOrigin,
 				IntersectionNormal = TempNormal;
 				IntersectionPoint = tempPoint;
 			}
-			if (CollideSphereAABBTreeNode(SphereOrigin, SphereVelocity, SphereRadius, *(pAABB.Son2), pMesh, MovingSphereBBox, TempDist, TempNormal, tempPoint))
+			if (CollideSphereAABBTreeNode(SphereOrigin, SphereVelocity, SphereRadius, *(pAABB.mSon2), pMesh, MovingSphereBBox, TempDist, TempNormal, tempPoint))
 			{
 				if (TempDist < IntersectionDistance)
 				{
@@ -471,7 +471,7 @@ bool Collision::CollideSphereAABBTreeNode(const Point3D &SphereOrigin,
 		}
 		else
 		{
-			return CollideSphereAABBTreeNode(SphereOrigin, SphereVelocity, SphereRadius, *(pAABB.Son2), pMesh, MovingSphereBBox, IntersectionDistance, IntersectionNormal, IntersectionPoint);
+			return CollideSphereAABBTreeNode(SphereOrigin, SphereVelocity, SphereRadius, *(pAABB.mSon2), pMesh, MovingSphereBBox, IntersectionDistance, IntersectionNormal, IntersectionPoint);
 		}
 	}
 

@@ -10,16 +10,21 @@
 #include "AABBTree.h"
 
 //#define COUNTCOLLISION
+
+class BSphere;
+class Plane;
+
+
 // ****************************************
 // * Collision class
 // * --------------------------------------
-/*!  \class Collision
-     encapsulate useful collision calculation methods
-	 \ingroup Collision
+/**
+* \file	Collision.h
+* \class	Collision
+* \ingroup Collision
+* \brief  Encapsulate useful collision calculation methods.
 */
 // ****************************************
-class BSphere;
-class Plane;
 class Collision
 {
 public:
@@ -98,7 +103,7 @@ public:
 		Vector3D &IntersectionNormal);
 
 #ifdef COUNTCOLLISION
-static unsigned int	CollisionTestCount;
+static unsigned int	mCollisionTestCount;
 #endif
 
 protected:
@@ -126,13 +131,18 @@ protected:
 
 };
 
+
 // ****************************************
 // * IPlane class
 // * --------------------------------------
-/*!  \class IPlane
-	 \ingroup Collision
+/**
+* \file	Collision.h
+* \class	IPlane
+* \ingroup Collision
+* \brief  Plane structure for collision calculations.
 */
 // ****************************************
+
 class IPlane
 {
 public:
@@ -145,16 +155,16 @@ public:
 	void SetFromTriangle(const Point3D &A, const Point3D &B, const Point3D &C)
 	{
 		Vector3D v1,v2;
-		Origin = A;
+		mOrigin = A;
 		v1 = B-A;
 		v2 = C-A;
-		Normal.CrossProduct(v1, v2);
-		Normal.Normalize();
+		mNormal.CrossProduct(v1, v2);
+		mNormal.Normalize();
 	}
 	eSideOfPlane Side(const Point3D &P)
 	{
-		 Vector3D dir = Origin - P;
-		 kfloat d = Dot(dir, Normal);
+		 Vector3D dir = mOrigin - P;
+		 kfloat d = Dot(dir, mNormal);
  
 		 if (d<KFLOAT_CONST(-0.001f))
 		  return FRONT;	
@@ -164,8 +174,8 @@ public:
 
 		return ON;
 	}
-	Point3D Origin;
-	Vector3D Normal;
+	Point3D mOrigin;
+	Vector3D mNormal;
 };
 
 #endif // _COLLISION_H_

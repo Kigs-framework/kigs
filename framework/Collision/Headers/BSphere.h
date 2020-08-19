@@ -6,9 +6,11 @@
 // ****************************************
 // * BSphere class
 // * --------------------------------------
-/*!  \class BSphere
-	 sphere used for collision calculation
-	 \ingroup Collision
+/**
+* \file	BSphere.h
+* \class	BSphere
+* \ingroup Collision
+* \brief Sphere structure used for collision calculation.
 */
 // ****************************************
 
@@ -21,7 +23,7 @@ public:
 	*/
 	DECLARE_CONSTRUCTOR(BSphere)
 
-	float GetRadius() const { return myRadius.const_ref(); }
+	float GetRadius() const { return mRadius.const_ref(); }
 
 	bool TestHit(Hit& hit, v3f local_origin, v3f local_direction) override;
 
@@ -41,10 +43,10 @@ protected:
 	
 	/*! \brief the sphere radius
 	*/
-	maFloat myRadius;
+	maFloat mRadius;
 
 #ifdef KIGS_TOOLS
-	// draw debug info using GLSLDrawDebug
+	// draw debug mInfo using GLSLDrawDebug
 	virtual void DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer);
 #endif
 };

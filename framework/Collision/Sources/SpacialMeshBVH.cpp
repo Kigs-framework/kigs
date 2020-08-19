@@ -2,7 +2,7 @@
 #include "ModernMesh.h"
 #include "GLSLDebugDraw.h"
 
-SpacialMeshBVH::SpacialMeshBVH(const Matrix3x4& LtoGMatrix) : CollisionBaseObject(), m_LtoGMatrix(LtoGMatrix), m_3DBox(BBox::PreInit())
+SpacialMeshBVH::SpacialMeshBVH(const Matrix3x4& LtoGMatrix) : CollisionBaseObject(), mLtoGMatrix(LtoGMatrix), mBBox3D(BBox::PreInit())
 {
 }
 
@@ -187,20 +187,20 @@ void SpacialMeshBVH::BuildHalfEdgeList(	const std::vector<unsigned int>& indices
 
 			if (sI1 < sI2)
 			{
-				s.maxIndice = sI2;
-				s.triangleIndice = ti;
-				s.nextSegment = linkedSegmentList[sI1];
-				s.segmentFlag = 0;
-				s.Twin = 0;
+				s.mMaxIndice = sI2;
+				s.mTriangleIndice = ti;
+				s.mNextSegment = linkedSegmentList[sI1];
+				s.mSegmentFlag = 0;
+				s.mTwin = 0;
 				linkedSegmentList[sI1] = &s;
 			}
 			else
 			{
-				s.maxIndice = sI1;
-				s.triangleIndice = ti;
-				s.nextSegment = linkedSegmentList[sI2];
-				s.segmentFlag = 1;
-				s.Twin = 0;
+				s.mMaxIndice = sI1;
+				s.mTriangleIndice = ti;
+				s.mNextSegment = linkedSegmentList[sI2];
+				s.mSegmentFlag = 1;
+				s.mTwin = 0;
 				linkedSegmentList[sI2] = &s;
 			}
 		}
@@ -214,19 +214,19 @@ void SpacialMeshBVH::BuildHalfEdgeList(	const std::vector<unsigned int>& indices
 		SegmentCheck* current = linkedSegmentList[i];
 		while (current)
 		{
-			if (current->Twin == 0) // twin not found ?
+			if (current->mTwin == 0) // twin not found ?
 			{
-				SegmentCheck* other = current->nextSegment;
+				SegmentCheck* other = current->mNextSegment;
 				while (other)
 				{
-					if (other->maxIndice == current->maxIndice)
+					if (other->mMaxIndice == current->mMaxIndice)
 					{
-						if (((current->segmentFlag & 1) ^ (other->segmentFlag & 1)) == 1) // good match
+						if (((current->mSegmentFlag & 1) ^ (other->mSegmentFlag & 1)) == 1) // good match
 						{
-							if ((current->Twin == 0) && (other->Twin == 0)) // check if we don't already found a twin in this pass
+							if ((current->mTwin == 0) && (other->mTwin == 0)) // check if we don't already found a twin in this pass
 							{
-								current->Twin = other;
-								other->Twin = current;
+								current->mTwin = other;
+								other->mTwin = current;
 							}
 							else // several twins ?
 							{
@@ -249,11 +249,11 @@ void SpacialMeshBVH::BuildHalfEdgeList(	const std::vector<unsigned int>& indices
 							// nothing to do here
 						}
 					}
-					other = other->nextSegment;
+					other = other->mNextSegment;
 				}
 			}
 
-			current = current->nextSegment;
+			current = current->mNextSegment;
 		}
 	}
 
@@ -290,9 +290,9 @@ void	SpacialMeshBVH::IterativeTriangleConnection(const std::vector<unsigned int>
 				SegmentCheck& s = PreallocatedSegments[i + j];
 				float D;
 
-				if (s.Twin) // this edge is linked to another triangle
+				if (s.mTwin) // this edge is linked to another triangle
 				{
-					ConnectedTriangle& nT = PreallocatedTriangles[s.Twin->triangleIndice];
+					ConnectedTriangle& nT = PreallocatedTriangles[s.mTwin->mTriangleIndice];
 					D = Dot(currentT.wN, nT.wN);
 					if (D < 0.0f)
 					{
@@ -336,9 +336,9 @@ void	SpacialMeshBVH::IterativeTriangleConnection(const std::vector<unsigned int>
 			{
 				SegmentCheck& s = PreallocatedSegments[i + j];
 
-				if (s.Twin) // this edge is linked to another triangle
+				if (s.mTwin) // this edge is linked to another triangle
 				{
-					ConnectedTriangle& nT = PreallocatedTriangles[s.Twin->triangleIndice];
+					ConnectedTriangle& nT = PreallocatedTriangles[s.mTwin->mTriangleIndice];
 
 					currentT.tmpN += (currentT.w[j] * currentT.w[j] * nT.s)*nT.wN;
 				}
@@ -390,11 +390,11 @@ void	SpacialMeshBVH::FloodFillTriangleGroups(	int triangleCount,
 			{
 				SegmentCheck& s = PreallocatedSegments[i + j];
 
-				if (s.Twin) // this edge is linked to another triangle
+				if (s.mTwin) // this edge is linked to another triangle
 				{
 					if (currentT.w[j] > threshold)
 					{
-						ConnectedTriangle& nT = PreallocatedTriangles[s.Twin->triangleIndice];
+						ConnectedTriangle& nT = PreallocatedTriangles[s.mTwin->mTriangleIndice];
 						float nSH = nT.s*nT.h;
 						if (nSH > currentSH)
 						{
@@ -441,25 +441,25 @@ void	SpacialMeshBVH::FloodFillTriangleGroups(	int triangleCount,
 				{
 					SegmentCheck& s = PreallocatedSegments[ti * 3 + j];
 
-					if (triangleFlag[s.Twin->triangleIndice].grpID == 0) // no group set ?
+					if (triangleFlag[s.mTwin->mTriangleIndice].grpID == 0) // no group set ?
 					{
-						triangleFlag[s.Twin->triangleIndice].grpID = triangleFlag[ti].grpID;
-						triangleFlag[s.Twin->triangleIndice].rootTriangleIndex = triangleFlag[ti].rootTriangleIndex;
+						triangleFlag[s.mTwin->mTriangleIndice].grpID = triangleFlag[ti].grpID;
+						triangleFlag[s.mTwin->mTriangleIndice].rootTriangleIndex = triangleFlag[ti].rootTriangleIndex;
 
-						NextPassTriangleTmp[NextPassTriangleIndex] = s.Twin->triangleIndice;
+						NextPassTriangleTmp[NextPassTriangleIndex] = s.mTwin->mTriangleIndice;
 						NextPassTriangleIndex++;
 
 						needAnotherPass = true;
 					}
-					else if (triangleFlag[s.Twin->triangleIndice].grpID > 0) // already have a group
+					else if (triangleFlag[s.mTwin->mTriangleIndice].grpID > 0) // already have a group
 					{
-						int grp1 = triangleFlag[s.Twin->triangleIndice].grpID;
+						int grp1 = triangleFlag[s.mTwin->mTriangleIndice].grpID;
 						int grp2 = triangleFlag[ti].grpID;
 						if (grp1 != grp2)
 						{
 							// test if groups can merge
 
-							int root1 = triangleFlag[s.Twin->triangleIndice].rootTriangleIndex;
+							int root1 = triangleFlag[s.mTwin->mTriangleIndice].rootTriangleIndex;
 							int root2 = triangleFlag[ti].rootTriangleIndex;
 
 							float dot = Dot(PreallocatedTriangles[root1].wN, PreallocatedTriangles[root2].wN);
@@ -581,9 +581,9 @@ void	SpacialMeshBVH::CreatePlanarGroups(	const std::vector<unsigned int>& indice
 			{
 				SegmentCheck& s = PreallocatedSegments[ti * 3 + j];
 
-				if (s.Twin)
+				if (s.mTwin)
 				{
-					int otherGrpID = triangleFlag[s.Twin->triangleIndice].grpID;
+					int otherGrpID = triangleFlag[s.mTwin->mTriangleIndice].grpID;
 					if ((otherGrpID != t.grpID) && (otherGrpID>0))
 						if (MergeGroupIndex[otherGrpID].first > 2)
 						{
@@ -608,22 +608,22 @@ void	SpacialMeshBVH::CreatePlanarGroups(	const std::vector<unsigned int>& indice
 
 			PlanarGroup& pg= planarGroupList[bestGrpID];
 
-			if (pg.triangles.size())
+			if (pg.mTriangles.size())
 			{
-				pg.triangles.push_back(ti);
+				pg.mTriangles.push_back(ti);
 			}
 			else
 			{
-				pg.triangles.reserve(MergeGroupIndex[bestGrpID].first);
-				pg.triangles.push_back(ti);
+				pg.mTriangles.reserve(MergeGroupIndex[bestGrpID].first);
+				pg.mTriangles.push_back(ti);
 
-				pg.surface = 0.0f;
-				pg.normal.Set(0,0,0);
-				pg.origin.Set(0, 0, 0);
+				pg.mSurface = 0.0f;
+				pg.mNormal.Set(0,0,0);
+				pg.mOrigin.Set(0, 0, 0);
 				
-				pg.is_H_Or_V = false;
+				pg.mIsHOrV = false;
 
-				pg.validcount = 0;
+				pg.mValidcount = 0;
 
 			}
 
@@ -633,12 +633,12 @@ void	SpacialMeshBVH::CreatePlanarGroups(	const std::vector<unsigned int>& indice
 				std::pair<float, int> toInsert;
 				toInsert.first = 1.0f - Dot(PreallocatedTriangles[ti].wN, PreallocatedTriangles[ti].N);
 				toInsert.second = ti;
-				pg.sortStableTriangles.insert(toInsert);
-				pg.validcount++;
+				pg.mSortStableTriangles.insert(toInsert);
+				pg.mValidcount++;
 			}
 			else
 			{
-				pg.invalid_triangles.push_back(ti);
+				pg.mInvalidTriangles.push_back(ti);
 			}
 		}
 
@@ -649,32 +649,32 @@ void	SpacialMeshBVH::CreatePlanarGroups(	const std::vector<unsigned int>& indice
 	int countHV = 0;
 	for (auto& g : planarGroupList)
 	{
-		if (g.triangles.size() == 0)
+		if (g.mTriangles.size() == 0)
 		{
 			continue;
 		}
 		// take 60% of "best case" triangles
 		int i = 0;
-		for (auto& p : g.sortStableTriangles)
+		for (auto& p : g.mSortStableTriangles)
 		{
 			ti = p.second;
-			g.normal += PreallocatedTriangles[ti].N*PreallocatedTriangles[ti].s;
-			g.surface += PreallocatedTriangles[ti].s;
+			g.mNormal += PreallocatedTriangles[ti].N*PreallocatedTriangles[ti].s;
+			g.mSurface += PreallocatedTriangles[ti].s;
 			Point3D	tc(vertices[indices[ti * 3]]);
 			tc += vertices[indices[ti * 3 + 1]];
 			tc += vertices[indices[ti * 3 + 2]];
 			tc *= PreallocatedTriangles[ti].s;
 
-			g.origin += tc;
-			if ((i * 100) > (g.validcount * 60))
+			g.mOrigin += tc;
+			if ((i * 100) > (g.mValidcount * 60))
 			{
 				break;
 			}
 			++i;
 		}
 
-		g.origin *= 1.0f / (3.0f*g.surface);
-		g.normal.Normalize();
+		g.mOrigin *= 1.0f / (3.0f*g.mSurface);
+		g.mNormal.Normalize();
 #ifdef USE_LEAST_SQUARES
 		if (fabsf(g.normal.z) > 0.75)
 		{
@@ -693,14 +693,14 @@ void	SpacialMeshBVH::CreatePlanarGroups(	const std::vector<unsigned int>& indice
 #endif
 		if (onlyHorizontalAndVertical) // check if normal is horizontal or vertical
 		{
-			Vector3D gnormal(g.normal);
+			Vector3D gnormal(g.mNormal);
 
-			m_LtoGMatrix.TransformVector(&gnormal);
+			mLtoGMatrix.TransformVector(&gnormal);
 
 			float ay = fabsf(gnormal.y);
 			if ((ay > 0.95f) || (ay < 0.05))
 			{
-				g.is_H_Or_V = true;
+				g.mIsHOrV = true;
 				countHV++;
 			}
 		}
@@ -755,37 +755,37 @@ void	SpacialMeshBVH::CreatePlanarGroups(	const std::vector<unsigned int>& indice
 
 void	SpacialMeshBVH::MergeTwoPlanarGroups(std::vector<TriangleGrp>& triangleFlag, std::vector<SegmentCheck>& PreallocatedSegments, PlanarGroup& grp1, const PlanarGroup& grp2,int grpID1,int grpID2)
 {
-	grp1.normal *= grp1.surface;
-	grp1.normal += grp2.normal * grp2.surface;
-	grp1.normal.Normalize();
-	grp1.origin *= grp1.surface;
-	grp1.origin += grp2.origin * grp2.surface;
-	grp1.surface += grp2.surface;
-	grp1.origin /= grp1.surface;
+	grp1.mNormal *= grp1.mSurface;
+	grp1.mNormal += grp2.mNormal * grp2.mSurface;
+	grp1.mNormal.Normalize();
+	grp1.mOrigin *= grp1.mSurface;
+	grp1.mOrigin += grp2.mOrigin * grp2.mSurface;
+	grp1.mSurface += grp2.mSurface;
+	grp1.mOrigin /= grp1.mSurface;
 
 	// remove common edges
 	std::vector<std::pair<int, int>> newBorders;
-	for (auto& edge : grp1.borderEdges)
+	for (auto& edge : grp1.mBorderEdges)
 	{
 		SegmentCheck& s = PreallocatedSegments[edge.first * 3 + edge.second];
-		if (triangleFlag[s.Twin->triangleIndice].grpID != grpID2)
+		if (triangleFlag[s.mTwin->mTriangleIndice].grpID != grpID2)
 		{
 			newBorders.push_back(edge);
 		}
 	}
-	for (auto& edge : grp2.borderEdges)
+	for (auto& edge : grp2.mBorderEdges)
 	{
 		SegmentCheck& s = PreallocatedSegments[edge.first * 3 + edge.second];
-		if (triangleFlag[s.Twin->triangleIndice].grpID != grpID1)
+		if (triangleFlag[s.mTwin->mTriangleIndice].grpID != grpID1)
 		{
 			newBorders.push_back(edge);
 		}
 	}
 
-	grp1.borderEdges = std::move(newBorders);
-	grp1.triangles.insert(grp1.triangles.end(), grp2.triangles.begin(), grp2.triangles.end());
+	grp1.mBorderEdges = std::move(newBorders);
+	grp1.mTriangles.insert(grp1.mTriangles.end(), grp2.mTriangles.begin(), grp2.mTriangles.end());
 
-	for (int ti : grp2.triangles)
+	for (int ti : grp2.mTriangles)
 	{
 		triangleFlag[ti].grpID = grpID1;
 	}
@@ -878,35 +878,35 @@ void SpacialMeshBVH::BuildFromTriangleList(Point3D* vertexList, int vertexCount,
 	for (int i1=0;i1< planarGroupList.size();i1++)
 	{
 		auto& g1 = planarGroupList[i1];
-		if (g1.triangles.size() == 0)
+		if (g1.mTriangles.size() == 0)
 		{
 			continue;
 		}
 		for (int i2 = i1 + 1; i2 < planarGroupList.size(); i2++)
 		{
 			auto& g2 = planarGroupList[i2];
-			if (g2.triangles.size() == 0)
+			if (g2.mTriangles.size() == 0)
 			{
 				continue;
 			}
 
-			if (Dot(g1.normal, g2.normal) > 0.97)
+			if (Dot(g1.mNormal, g2.mNormal) > 0.97)
 			{
 
 				// check if the two planes "merge well"
-				v3f mido = (g2.origin + g1.origin)*0.5f;
-				v3f medN = g1.normal + g2.normal;
+				v3f mido = (g2.mOrigin + g1.mOrigin)*0.5f;
+				v3f medN = g1.mNormal + g2.mNormal;
 				medN.Normalize();
 
-				v3f oo=g1.origin-mido;
+				v3f oo=g1.mOrigin-mido;
 				float proj = Dot(oo, medN);
-				v3f projG1 = g1.origin - proj * medN;
+				v3f projG1 = g1.mOrigin - proj * medN;
 				float dist = Dist(projG1, mido);
 
 				if ( fabsf(proj) < (0.05*dist)) // 5% error
 				{
 					MergeTwoPlanarGroups(triangleFlag, PreallocatedSegments, g1, g2, i1, i2);
-					g2.triangles.clear();
+					g2.mTriangles.clear();
 				}
 			}
 
@@ -919,33 +919,33 @@ void SpacialMeshBVH::BuildFromTriangleList(Point3D* vertexList, int vertexCount,
 
 	for (auto& g : planarGroupList)
 	{
-		if (g.triangles.size() == 0)
+		if (g.mTriangles.size() == 0)
 		{
 			continue;
 		}
-		int currentGrp = triangleFlag[g.triangles[0]].grpID;
-		for (int ti : g.triangles)
+		int currentGrp = triangleFlag[g.mTriangles[0]].grpID;
+		for (int ti : g.mTriangles)
 		{
 			for (int j = 0; j < 3; j++)
 			{
 				SegmentCheck& s = PreallocatedSegments[ti * 3 + j];
-				if (s.Twin)
+				if (s.mTwin)
 				{
-					int othergrp = triangleFlag[s.Twin->triangleIndice].grpID;
+					int othergrp = triangleFlag[s.mTwin->mTriangleIndice].grpID;
 					if (othergrp > currentGrp)
 					{
-						g.borderEdges.push_back({ ti,j });
+						g.mBorderEdges.push_back({ ti,j });
 						mergedGroups[currentGrp].insert(othergrp);
 					}
 					else if (othergrp < currentGrp)
 					{
-						g.borderEdges.push_back({ ti,j });
+						g.mBorderEdges.push_back({ ti,j });
 						mergedGroups[othergrp].insert(currentGrp);
 					}
 				}
 				else
 				{
-					g.borderEdges.push_back({ti,j});
+					g.mBorderEdges.push_back({ti,j});
 				}
 			}
 		}
@@ -958,41 +958,41 @@ void SpacialMeshBVH::BuildFromTriangleList(Point3D* vertexList, int vertexCount,
 	// now create each node from triangle group
 	for (auto& g : planarGroupList)
 	{
-		if (g.triangles.size() == 0)
+		if (g.mTriangles.size() == 0)
 		{
 			continue;
 		}
 		// only big enough surface 
-		if (g.surface > surfaceThreshold)
+		if (g.mSurface > surfaceThreshold)
 		{
-			if ((g.is_H_Or_V & onlyHorizontalAndVertical) || (!onlyHorizontalAndVertical))
+			if ((g.mIsHOrV & onlyHorizontalAndVertical) || (!onlyHorizontalAndVertical))
 			{
-				m_NodeList.push_back(SpacialMeshBVHNode());
-				SpacialMeshBVHNode& newOne = m_NodeList.back();
-				newOne.m_Normal = g.normal;
-				newOne.m_o= g.origin;
-				newOne.m_surface = g.surface;
+				mNodeList.push_back(SpacialMeshBVHNode());
+				SpacialMeshBVHNode& newOne = mNodeList.back();
+				newOne.mNormal = g.mNormal;
+				newOne.mO= g.mOrigin;
+				newOne.mSurface = g.mSurface;
 
 				// set uv depending on normal
-				if (fabsf(newOne.m_Normal.z) > 0.75)
+				if (fabsf(newOne.mNormal.z) > 0.75)
 				{
-					newOne.m_u.Set(1.0f, 0.0f, 0.0f);
-					newOne.m_v.CrossProduct(newOne.m_Normal, newOne.m_u);
-					newOne.m_v.Normalize();
-					newOne.m_u.CrossProduct(newOne.m_v, newOne.m_Normal);
+					newOne.mU.Set(1.0f, 0.0f, 0.0f);
+					newOne.mV.CrossProduct(newOne.mNormal, newOne.mU);
+					newOne.mV.Normalize();
+					newOne.mU.CrossProduct(newOne.mV, newOne.mNormal);
 				}
 				else
 				{
-					newOne.m_u.Set(0.0f, 0.0f, 1.0f);
-					newOne.m_v.CrossProduct(newOne.m_Normal, newOne.m_u);
-					newOne.m_v.Normalize();
-					newOne.m_u.CrossProduct(newOne.m_v, newOne.m_Normal);
+					newOne.mU.Set(0.0f, 0.0f, 1.0f);
+					newOne.mV.CrossProduct(newOne.mNormal, newOne.mU);
+					newOne.mV.Normalize();
+					newOne.mU.CrossProduct(newOne.mV, newOne.mNormal);
 				}
 
 				// get triangle list and find outline
 				
 
-				for (auto tri : g.sortStableTriangles)
+				for (auto tri : g.mSortStableTriangles)
 				{
 					auto ti = tri.second;
 					newOne.add2DVertice(vertices[indices[3 * ti + 0]]);
@@ -1000,18 +1000,18 @@ void SpacialMeshBVH::BuildFromTriangleList(Point3D* vertexList, int vertexCount,
 					newOne.add2DVertice(vertices[indices[3 * ti + 2]]);
 				}
 
-				for (auto ti : g.invalid_triangles)
+				for (auto ti : g.mInvalidTriangles)
 				{
 					newOne.add2DVertice(vertices[indices[3 * ti + 0]]);
 					newOne.add2DVertice(vertices[indices[3 * ti + 1]]);
 					newOne.add2DVertice(vertices[indices[3 * ti + 2]]);
 				}
 
-				int max_nb_triangles = std::min(((int)g.sortStableTriangles.size() / 32) + 1, 4);
+				int max_nb_triangles = std::min(((int)g.mSortStableTriangles.size() / 32) + 1, 4);
 				for (int i = 0; i < max_nb_triangles; ++i)
 				{
-					if (i >= g.sortStableTriangles.size()) break;
-					newOne.m_StableTriangles.push_back(i);
+					if (i >= g.mSortStableTriangles.size()) break;
+					newOne.mStableTriangles.push_back(i);
 				}
 				
 				/*
@@ -1043,7 +1043,7 @@ void SpacialMeshBVH::BuildFromTriangleList(Point3D* vertexList, int vertexCount,
 				*/
 
 				newOne.computeBBox();
-				m_3DBox.Update(newOne.m_3DBox);
+				mBBox3D.Update(newOne.mBBox3D);
 			}
 		}
 	}
@@ -1051,32 +1051,32 @@ void SpacialMeshBVH::BuildFromTriangleList(Point3D* vertexList, int vertexCount,
 
 bool	SpacialMeshBVHNode::intersect(Hit& hit, const v3f& start, const v3f& dir) const
 {
-	float dot = Dot(dir, m_Normal);
+	float dot = Dot(dir, mNormal);
 
 	if (dot < -0.001) 
 	{
-		Point3D P(m_o - start);
+		Point3D P(mO - start);
 
-		float s = Dot(P, m_Normal) / dot;
+		float s = Dot(P, mNormal) / dot;
 		if (s >= 0.0f)
 		{
 			hit.HitDistance=s;
-			hit.HitNormal = m_Normal;
+			hit.HitNormal = mNormal;
 			hit.HitPosition = start + dir * s;
 
 			v3f	toProject(hit.HitPosition);
-			toProject -= m_o;
+			toProject -= mO;
 
 			// project 
 			v2f projected;
-			projected.x = Dot(toProject, m_u);
-			projected.y = Dot(toProject, m_v);
+			projected.x = Dot(toProject, mU);
+			projected.y = Dot(toProject, mV);
 
-			if (m_BBox.IsIn(projected))
+			if (mBBox.IsIn(projected))
 			{
-				for (int i = 0; i < m_2D_Triangles.size(); i += 3)
+				for (int i = 0; i < mTriangles2D.size(); i += 3)
 				{
-					if (PointInTriangle(projected, m_2D_Triangles[i], m_2D_Triangles[i + 1], m_2D_Triangles[i + 2]))
+					if (PointInTriangle(projected, mTriangles2D[i], mTriangles2D[i + 1], mTriangles2D[i + 2]))
 					{
 						return true;
 					}
@@ -1092,7 +1092,7 @@ bool SpacialMeshBVH::CallLocalRayIntersection(Hit &hit, const Point3D& start, co
 	// just test bbox for each group
 	bool result = false;
 	const SpacialMeshBVHNode* hit_node = nullptr;
-	for (const auto& n : m_NodeList)
+	for (const auto& n : mNodeList)
 	{
 		Hit tmphit;
 		double distance = DBL_MAX;
@@ -1110,7 +1110,7 @@ bool SpacialMeshBVH::CallLocalRayIntersection(Hit &hit, const Point3D& start, co
 	}
 
 #ifdef KIGS_TOOLS
-	if (hit_node) hit_node->m_Hit = true;
+	if (hit_node) hit_node->mHit = true;
 #endif
 	return result;
 }
@@ -1118,14 +1118,14 @@ bool SpacialMeshBVH::CallLocalRayIntersection(Hit &hit, const Point3D& start, co
 bool SpacialMeshBVH::CallLocalRayIntersection(std::vector<Hit> &hits, const Point3D& start, const Vector3D& dir)  const
 {
 
-	for (const auto& n : m_NodeList)
+	for (const auto& n : mNodeList)
 	{
 		Hit tmphit;
 
 		if (n.intersect(tmphit, start, dir))
 		{
 #ifdef KIGS_TOOLS
-			n.m_Hit = true;
+			n.mHit = true;
 #endif
 			hits.push_back(tmphit);
 		}
@@ -1143,21 +1143,21 @@ void SpacialMeshBVH::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer 
 	RGB[0].Set((rand() % 1000) / 1000.0f, (rand() % 1000) / 1000.0f, (rand() % 1000) / 1000.0f);
 	RGB[1].Set(1.0f - RGB[0].x, 1.0f - RGB[0].y, 1.0f - RGB[0].z);
 
-	for(auto& newOne : m_NodeList)
+	for(auto& newOne : mNodeList)
 	// debug draw 
 	{
-		if (!newOne.m_Hit) continue;
-		newOne.m_Hit = false;
+		if (!newOne.mHit) continue;
+		newOne.mHit = false;
 
 		std::vector<v3f>	Triangles3D;
-		Triangles3D.resize(newOne.m_2D_Triangles.size());
+		Triangles3D.resize(newOne.mTriangles2D.size());
 
-		for (int i = 0; i < newOne.m_2D_Triangles.size(); i++)
+		for (int i = 0; i < newOne.mTriangles2D.size(); i++)
 		{
-			Triangles3D[i] = newOne.m_o + newOne.m_u * newOne.m_2D_Triangles[i].x + newOne.m_v * newOne.m_2D_Triangles[i].y;
+			Triangles3D[i] = newOne.mO + newOne.mU * newOne.mTriangles2D[i].x + newOne.mV * newOne.mTriangles2D[i].y;
 		}
 
-		m_LtoGMatrix.TransformPoints(&Triangles3D[0], Triangles3D.size());
+		mLtoGMatrix.TransformPoints(&Triangles3D[0], Triangles3D.size());
 		for (int i = 0; i < Triangles3D.size(); i+=3)
 		{
 			dd::line(Triangles3D[i], Triangles3D[i+1], RGB[0]);
@@ -1167,10 +1167,10 @@ void SpacialMeshBVH::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer 
 
 		// draw normal 
 		{
-			Vector3D bary(newOne.m_o);
-			Vector3D normal(newOne.m_Normal);
-			m_LtoGMatrix.TransformPoints(&bary, 1);
-			m_LtoGMatrix.TransformVector(&normal);
+			Vector3D bary(newOne.mO);
+			Vector3D normal(newOne.mNormal);
+			mLtoGMatrix.TransformPoints(&bary, 1);
+			mLtoGMatrix.TransformVector(&normal);
 			dd::arrow(bary, bary + normal * 0.1f, RGB[0], 0.02f);
 		}
 	}

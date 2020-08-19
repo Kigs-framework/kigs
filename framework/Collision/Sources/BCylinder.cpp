@@ -4,9 +4,9 @@
 IMPLEMENT_CLASS_INFO(BCylinder)
 
 IMPLEMENT_CONSTRUCTOR(BCylinder)
-, myRadius(*this, false, LABEL_AND_ID(Radius), KFLOAT_CONST(0.0))
-,myHeight(*this, false, LABEL_AND_ID(Height), KFLOAT_CONST(0.0))
-, myAxle(*this, false, LABEL_AND_ID(Axle), "X", "Y", "Z")
+, mRadius(*this, false, LABEL_AND_ID(Radius), KFLOAT_CONST(0.0))
+,mHeight(*this, false, LABEL_AND_ID(Height), KFLOAT_CONST(0.0))
+, mAxle(*this, false, LABEL_AND_ID(Axle), "X", "Y", "Z")
 {
 }
 
@@ -16,24 +16,24 @@ void BCylinder::InitModifiable()
 
 	Point3D axle;
 	GetAxle(axle);
-	axle *= myHeight*0.5f;
+	axle *= mHeight*0.5f;
 	Point3D min = -axle;
-	if (min.x == 0)min.x = -myRadius;
-	if (min.y == 0)min.y = -myRadius;
-	if (min.z == 0)min.z = -myRadius;
+	if (min.x == 0)min.x = -mRadius;
+	if (min.y == 0)min.y = -mRadius;
+	if (min.z == 0)min.z = -mRadius;
 
 	Point3D max = axle;
-	if (max.x == 0)max.x = myRadius;
-	if (max.y == 0)max.y = myRadius;
-	if (max.z == 0)max.z = myRadius;
+	if (max.x == 0)max.x = mRadius;
+	if (max.y == 0)max.y = mRadius;
+	if (max.z == 0)max.z = mRadius;
 
-	myBoundingBox.Update(min);
-	myBoundingBox.Update(max);
+	mBoundingBox.Update(min);
+	mBoundingBox.Update(max);
 }
 
 void BCylinder::GetAxle(Point3D &Axle) 
 {
-	switch ((unsigned int)myAxle)
+	switch ((unsigned int)mAxle)
 	{
 	case 0: //X
 		Axle.Set(1, 0, 0);
@@ -56,7 +56,7 @@ void BCylinder::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *time
 	Point3D p[2];
 	p[0].Set(0, 0, 0);
 
-	switch ((unsigned int)myAxle)
+	switch ((unsigned int)mAxle)
 	{
 	case 0: //X
 		p[1].Set(1, 0, 0);
@@ -75,8 +75,8 @@ void BCylinder::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *time
 
 	p[1].Normalize();
 
-	dd::circle(p[0] + (p[1] * (myHeight*0.5f)), p[1], debugColor, myRadius, 100);
-	dd::circle(p[0] - (p[1] * (myHeight*0.5f)), p[1], debugColor, myRadius, 100);
+	dd::circle(p[0] + (p[1] * (mHeight*0.5f)), p[1], mDebugColor, mRadius, 100);
+	dd::circle(p[0] - (p[1] * (mHeight*0.5f)), p[1], mDebugColor, mRadius, 100);
 }
 
 void BCylinder::Update(const Timer&  timer, void* addParam)
@@ -84,7 +84,7 @@ void BCylinder::Update(const Timer&  timer, void* addParam)
 	CollisionBaseNode::Update(timer, addParam);
 
 	// draw bbox
-	dd::aabb(myBoundingBox.m_Min, myBoundingBox.m_Max, Point3D(.5, 1, 0));
+	dd::aabb(mBoundingBox.m_Min, mBoundingBox.m_Max, Point3D(.5, 1, 0));
 }
 #endif
 

@@ -276,7 +276,7 @@ bool IntersectionRayAABBTree(const Point3D* vertex_list, const Point3D &RayOrigi
 						found = true;
 
 #ifdef KIGS_TOOLS
-						const_cast<AABBTreeNode&>(pAABB).m_Hit = true;
+						const_cast<AABBTreeNode&>(pAABB).mHit = true;
 #endif
 					}
 				}
@@ -293,7 +293,7 @@ bool IntersectionRayAABBTree(const Point3D* vertex_list, const Point3D &RayOrigi
 		if (TempDist < outDistance)
 		{
 #ifdef KIGS_TOOLS
-			const_cast<AABBTreeNode&>(pAABB).m_Hit = true;
+			const_cast<AABBTreeNode&>(pAABB).mHit = true;
 #endif
 			outDistance = TempDist;
 			return true;
@@ -341,7 +341,7 @@ bool IntersectionRayAABBTree(const Point3D* vertex_list, const Point3D &RayOrigi
 
 
 #ifdef KIGS_TOOLS
-					const_cast<AABBTreeNode&>(pAABB).m_Hit = true;
+					const_cast<AABBTreeNode&>(pAABB).mHit = true;
 #endif					
 				}
 			}
@@ -355,7 +355,7 @@ bool IntersectionRayAABBTree(const Point3D* vertex_list, const Point3D &RayOrigi
 		IntersectionRayAABBTree(vertex_list,RayOrigin, RayDirection, *(pAABB.GetSon2()), hits);
 
 #ifdef KIGS_TOOLS
-		const_cast<AABBTreeNode&>(pAABB).m_Hit = true;
+		const_cast<AABBTreeNode&>(pAABB).mHit = true;
 #endif
 		return true;
 	}
@@ -387,11 +387,11 @@ void IntersectionXAxisAABBTree(kstl::vector<Point2D>& coordinates, Point3D &RayO
 {
 
 	// check bbox first
-	if ((RayOrigin.y >= pAABB.m_BBox.m_Min.y) && (RayOrigin.z >= pAABB.m_BBox.m_Min.z) &&
-		(RayOrigin.y <= pAABB.m_BBox.m_Max.y) && (RayOrigin.z <= pAABB.m_BBox.m_Max.z))
+	if ((RayOrigin.y >= pAABB.mBBox.m_Min.y) && (RayOrigin.z >= pAABB.mBBox.m_Min.z) &&
+		(RayOrigin.y <= pAABB.mBBox.m_Max.y) && (RayOrigin.z <= pAABB.mBBox.m_Max.z))
 	{
 		// c'est une feuille
-		if (pAABB.Son1 == NULL && pAABB.Son2 == NULL)
+		if (pAABB.Son1 == NULL && pAABB.mSon2 == NULL)
 		{
 			int i;
 
@@ -414,7 +414,7 @@ void IntersectionXAxisAABBTree(kstl::vector<Point2D>& coordinates, Point3D &RayO
 		}
 
 		IntersectionXAxisAABBTree(coordinates, RayOrigin, *(pAABB.Son1), VertexArray);
-		IntersectionXAxisAABBTree(coordinates, RayOrigin, *(pAABB.Son2), VertexArray);
+		IntersectionXAxisAABBTree(coordinates, RayOrigin, *(pAABB.mSon2), VertexArray);
 	}
 
 	return;
@@ -461,11 +461,11 @@ bool IntersectionXAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point
 /*void IntersectionYAxisAABBTree(kstl::vector<Point2D>& coordinates, Point3D &RayOrigin, AABBTreeNode &pAABB, Point3D* VertexArray)
 {
 	// check bbox first
-	if ((RayOrigin.x >= pAABB.m_BBox.m_Min.x) && (RayOrigin.z >= pAABB.m_BBox.m_Min.z) &&
-		(RayOrigin.x <= pAABB.m_BBox.m_Max.x) && (RayOrigin.z <= pAABB.m_BBox.m_Max.z))
+	if ((RayOrigin.x >= pAABB.mBBox.m_Min.x) && (RayOrigin.z >= pAABB.mBBox.m_Min.z) &&
+		(RayOrigin.x <= pAABB.mBBox.m_Max.x) && (RayOrigin.z <= pAABB.mBBox.m_Max.z))
 	{
 		// c'est une feuille
-		if (pAABB.Son1 == NULL && pAABB.Son2 == NULL)
+		if (pAABB.Son1 == NULL && pAABB.mSon2 == NULL)
 		{
 			int i;
 
@@ -488,7 +488,7 @@ bool IntersectionXAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point
 		}
 
 		IntersectionYAxisAABBTree(coordinates, RayOrigin, *(pAABB.Son1), VertexArray);
-		IntersectionYAxisAABBTree(coordinates, RayOrigin, *(pAABB.Son2), VertexArray);
+		IntersectionYAxisAABBTree(coordinates, RayOrigin, *(pAABB.mSon2), VertexArray);
 	}
 
 	return;
@@ -536,11 +536,11 @@ bool IntersectionYAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point
 /*void IntersectionZAxisAABBTree(kstl::vector<Point2D>& coordinates, Point3D &RayOrigin, AABBTreeNode &pAABB, Point3D* VertexArray)
 {
 	// check bbox first
-	if ((RayOrigin.x >= pAABB.m_BBox.m_Min.x) && (RayOrigin.y >= pAABB.m_BBox.m_Min.y) &&
-		(RayOrigin.x <= pAABB.m_BBox.m_Max.x) && (RayOrigin.y <= pAABB.m_BBox.m_Max.y))
+	if ((RayOrigin.x >= pAABB.mBBox.m_Min.x) && (RayOrigin.y >= pAABB.mBBox.m_Min.y) &&
+		(RayOrigin.x <= pAABB.mBBox.m_Max.x) && (RayOrigin.y <= pAABB.mBBox.m_Max.y))
 	{
 		// c'est une feuille
-		if (pAABB.Son1 == NULL && pAABB.Son2 == NULL)
+		if (pAABB.Son1 == NULL && pAABB.mSon2 == NULL)
 		{
 			int i;
 
@@ -566,9 +566,9 @@ bool IntersectionYAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point
 		{
 			IntersectionZAxisAABBTree(coordinates, RayOrigin, *(pAABB.Son1), VertexArray);
 		}
-		if (pAABB.Son2)
+		if (pAABB.mSon2)
 		{
-			IntersectionZAxisAABBTree(coordinates, RayOrigin, *(pAABB.Son2), VertexArray);
+			IntersectionZAxisAABBTree(coordinates, RayOrigin, *(pAABB.mSon2), VertexArray);
 		}
 	}
 

@@ -2,6 +2,17 @@
 
 #include "CollisionBaseNode.h"
 
+// ****************************************
+// * BoxCollider class
+// * --------------------------------------
+/**
+* \file	BoxCollider.h
+* \class	BoxCollider
+* \ingroup Collision
+* \brief Box collision object.
+*/
+// ****************************************
+
 class BoxCollider : public CollisionBaseNode
 {
 public:
@@ -29,7 +40,7 @@ protected:
 	}
 
 #ifdef KIGS_TOOLS
-	// draw debug info using GLSLDrawDebug
+	// draw debug mInfo using GLSLDrawDebug
 	virtual void DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer);
 #endif
 };

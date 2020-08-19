@@ -7,10 +7,10 @@ IMPLEMENT_CLASS_INFO(Panel)
 
 
 IMPLEMENT_CONSTRUCTOR(Plane)
-, myPosition(*this, false, LABEL_AND_ID(Position), 0, 0, 0)
-, myNormal(*this, false, LABEL_AND_ID(Normal), 0, 0, 1)
+, mPosition(*this, false, LABEL_AND_ID(Position), 0, 0, 0)
+, mNormal(*this, false, LABEL_AND_ID(Normal), 0, 0, 1)
 {
-	myIsDynamic = false;
+	mIsDynamic = false;
 }
 
 Plane::~Plane()
@@ -20,15 +20,15 @@ Plane::~Plane()
 void Plane::InitModifiable()
 {
 	CollisionBaseNode::InitModifiable();
-	myBoundingBox.Update(Point3D(-1000, -1000, -1000));
-	myBoundingBox.Update(Point3D(1000, 1000, 1000));
+	mBoundingBox.Update(Point3D(-1000, -1000, -1000));
+	mBoundingBox.Update(Point3D(1000, 1000, 1000));
 }
 
 bool Plane::TestHit(Hit& hit, v3f local_origin, v3f local_direction)
 {
-	if (Intersection::IntersectRayPlane(local_origin, local_direction, (v3f)myPosition, (v3f)myNormal, hit.HitDistance))
+	if (Intersection::IntersectRayPlane(local_origin, local_direction, (v3f)mPosition, (v3f)mNormal, hit.HitDistance))
 	{
-		hit.HitNormal = -(v3f)myNormal;
+		hit.HitNormal = -(v3f)mNormal;
 		return true;
 	}
 	return false;
@@ -40,17 +40,17 @@ bool Plane::TestHit(Hit& hit, v3f local_origin, v3f local_direction)
 #include <Timer.h>
 void Plane::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
 {
-	Vector3D n(myNormal[0], myNormal[1], myNormal[2]);
+	Vector3D n(mNormal[0], mNormal[1], mNormal[2]);
 	double d = timer->GetTime();
 	while (d > 1) d -= 1;
 
 	// draw center
 	Point3D localPos(0, 0, 0);
 	mat->TransformPoint(&localPos);
-	dd::plane(localPos, n, debugColor, Vector3D(abs(n.x), abs(n.y), abs(n.z)) * 255, 10, 1);
+	dd::plane(localPos, n, mDebugColor, Vector3D(abs(n.x), abs(n.y), abs(n.z)) * 255, 10, 1);
 
 	// draw hit
-	dd::circle(pos, n, debugColor, 2 * d, 50);
+	dd::circle(pos, n, mDebugColor, 2 * d, 50);
 }
 
 void Panel::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
@@ -60,32 +60,32 @@ void Panel::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
 	double d = timer->GetTime();
 	while (d > 1) d -= 1;
 
-	Vector3D n(myNormal[0], myNormal[1], myNormal[2]);
-	Vector3D up(myUp[0], myUp[1], myUp[2]);
-	Vector3D left = up^Vector3D(myNormal[0], myNormal[1], myNormal[2]);
+	Vector3D n(mNormal[0], mNormal[1], mNormal[2]);
+	Vector3D up(mUp[0], mUp[1], mUp[2]);
+	Vector3D left = up^Vector3D(mNormal[0], mNormal[1], mNormal[2]);
 
 	up.Normalize();
 	left.Normalize();
 
-	left *= mySize[0] / 2;
-	up *= mySize[1] / 2;
+	left *= mSize[0] / 2;
+	up *= mSize[1] / 2;
 
-	p[0] = myPosition;
-	p[1] = myPosition - left - up;
-	p[2] = myPosition - left + up;
-	p[3] = myPosition + left + up;
-	p[4] = myPosition + left - up;
+	p[0] = mPosition;
+	p[1] = mPosition - left - up;
+	p[2] = mPosition - left + up;
+	p[3] = mPosition + left + up;
+	p[4] = mPosition + left - up;
 	mat->TransformPoints(p, 5);
 
 
 	// draw quad
-	dd::line(p[1], p[2], debugColor);
-	dd::line(p[2], p[3], debugColor);
-	dd::line(p[3], p[4], debugColor);
-	dd::line(p[4], p[1], debugColor);
+	dd::line(p[1], p[2], mDebugColor);
+	dd::line(p[2], p[3], mDebugColor);
+	dd::line(p[3], p[4], mDebugColor);
+	dd::line(p[4], p[1], mDebugColor);
 
-	dd::line(p[1], p[3], debugColor);
-	dd::line(p[2], p[4], debugColor);
+	dd::line(p[1], p[3], mDebugColor);
+	dd::line(p[2], p[4], mDebugColor);
 
 	// draw up
 	up.Normalize();
@@ -97,14 +97,14 @@ void Panel::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
 	dd::line(p[0], p[0] + n*0.1f, Vector3D(abs(n.x), abs(n.y), abs(n.z)) * 255);
 
 	// draw hit
-	dd::circle(pos, n, debugColor, 2 * d, 50);
+	dd::circle(pos, n, mDebugColor, 2 * d, 50);
 }
 #endif
 
 IMPLEMENT_CONSTRUCTOR(Panel)
-, mySize(*this, false, LABEL_AND_ID(Size), 0, 0)
-, myHitPos(*this, false, LABEL_AND_ID(HitPos), -1, -1)
-, myUp(*this, false, LABEL_AND_ID(Up), 0, 1, 0)
+, mSize(*this, false, LABEL_AND_ID(Size), 0, 0)
+, mHitPos(*this, false, LABEL_AND_ID(HitPos), -1, -1)
+, mUp(*this, false, LABEL_AND_ID(Up), 0, 1, 0)
 {
 }
 
@@ -112,50 +112,50 @@ void Panel::InitModifiable()
 {
 	CollisionBaseNode::InitModifiable();
 
-	Vector3D left = (Vector3D)(myUp) ^ (Vector3D)(myNormal);
+	Vector3D left = (Vector3D)(mUp) ^ (Vector3D)(mNormal);
 
 	Point3D p[2];
-	p[0].Set(-mySize[0] * 0.5f, -mySize[1] * 0.5f, 0);
-	p[1].Set(mySize[0] * 0.5f, mySize[1] * 0.5f, 0);
+	p[0].Set(-mSize[0] * 0.5f, -mSize[1] * 0.5f, 0);
+	p[1].Set(mSize[0] * 0.5f, mSize[1] * 0.5f, 0);
 
 	Matrix3x3 mat;
-	mat.Set(left, (Vector3D)myUp, (Vector3D)myNormal);
+	mat.Set(left, (Vector3D)mUp, (Vector3D)mNormal);
 	mat.TransformPoints(p, 2);
 
-	myBoundingBox.Update(p[0]);
-	myBoundingBox.Update(p[1]);
+	mBoundingBox.Update(p[0]);
+	mBoundingBox.Update(p[1]);
 
 }
 
 
 Point2D Panel::ConvertHit(const Vector3D& hitPos)
 {
-	Vector3D up(myUp[0], myUp[1], myUp[2]);
-	Vector3D left = up^Vector3D(myNormal[0], myNormal[1], myNormal[2]);
+	Vector3D up(mUp[0], mUp[1], mUp[2]);
+	Vector3D left = up^Vector3D(mNormal[0], mNormal[1], mNormal[2]);
 
-	return Point2D((Dot(left, hitPos) / mySize[0]) + 0.5f, (Dot(up, hitPos) / mySize[1]) + 0.5f);
+	return Point2D((Dot(left, hitPos) / mSize[0]) + 0.5f, (Dot(up, hitPos) / mSize[1]) + 0.5f);
 }
 
 bool Panel::GetHit(float &X, float& Y)
 {
-	X = myHitPos[0];
-	Y = myHitPos[1];
+	X = mHitPos[0];
+	Y = mHitPos[1];
 
-	return myHit;
+	return mHit;
 }
 
 bool Panel::ValidHit(const Point3D& pos)
 {
-	Vector3D up(myUp[0], myUp[1], myUp[2]);
-	Vector3D left = up^Vector3D(myNormal[0], myNormal[1], myNormal[2]);
+	Vector3D up(mUp[0], mUp[1], mUp[2]);
+	Vector3D left = up^Vector3D(mNormal[0], mNormal[1], mNormal[2]);
 
-	myHitPos[0] = ((Dot(left, pos - myPosition) / mySize[0]) + 0.5f);
-	myHitPos[1] = ((Dot(up, pos - myPosition) / mySize[1]) + 0.5f);
+	mHitPos[0] = ((Dot(left, pos - mPosition) / mSize[0]) + 0.5f);
+	mHitPos[1] = ((Dot(up, pos - mPosition) / mSize[1]) + 0.5f);
 
-	if (myHitPos[0] > 1.0f ||
-		myHitPos[1] > 1.0f ||
-		myHitPos[0] < 0.0f ||
-		myHitPos[1] < 0.0f)
+	if (mHitPos[0] > 1.0f ||
+		mHitPos[1] > 1.0f ||
+		mHitPos[0] < 0.0f ||
+		mHitPos[1] < 0.0f)
 		return false;
 
 	return true;

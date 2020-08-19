@@ -12,9 +12,9 @@
 AABBTreeNode::AABBTreeNode() 
 {
 	//! call base class constructor (CollisionBaseObject) and init members
-	Son1 = NULL;
-	Son2 = NULL;
-	TriangleCount = 0;
+	mSon1 = NULL;
+	mSon2 = NULL;
+	mTriangleCount = 0;
 	
 }
 
@@ -24,7 +24,7 @@ AABBTreeNode::~AABBTreeNode()
 	/*if (Son1)
 	{
 		delete Son1;
-		delete Son2;
+		delete mSon2;
 	}*/
 }
 
@@ -32,52 +32,52 @@ AABBTreeNode::~AABBTreeNode()
 #include <GLSLDebugDraw.h>
 void AABBTree::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
 {
-	if (!m_Hit)
+	if (!mHit)
 		return;
 
-	m_Hit = false;
+	mHit = false;
 
 	Point3D p[8];
-	p[0].Set(m_BBox.m_Max.x, m_BBox.m_Min.y, m_BBox.m_Min.z);
-	p[1].Set(m_BBox.m_Max.x, m_BBox.m_Max.y, m_BBox.m_Min.z);
-	p[2].Set(m_BBox.m_Min.x, m_BBox.m_Max.y, m_BBox.m_Min.z);
-	p[3].Set(m_BBox.m_Min.x, m_BBox.m_Min.y, m_BBox.m_Min.z);
+	p[0].Set(mBBox.m_Max.x, mBBox.m_Min.y, mBBox.m_Min.z);
+	p[1].Set(mBBox.m_Max.x, mBBox.m_Max.y, mBBox.m_Min.z);
+	p[2].Set(mBBox.m_Min.x, mBBox.m_Max.y, mBBox.m_Min.z);
+	p[3].Set(mBBox.m_Min.x, mBBox.m_Min.y, mBBox.m_Min.z);
 
-	p[4].Set(m_BBox.m_Max.x, m_BBox.m_Min.y, m_BBox.m_Max.z);
-	p[5].Set(m_BBox.m_Max.x, m_BBox.m_Max.y, m_BBox.m_Max.z);
-	p[6].Set(m_BBox.m_Min.x, m_BBox.m_Max.y, m_BBox.m_Max.z);
-	p[7].Set(m_BBox.m_Min.x, m_BBox.m_Min.y, m_BBox.m_Max.z);
+	p[4].Set(mBBox.m_Max.x, mBBox.m_Min.y, mBBox.m_Max.z);
+	p[5].Set(mBBox.m_Max.x, mBBox.m_Max.y, mBBox.m_Max.z);
+	p[6].Set(mBBox.m_Min.x, mBBox.m_Max.y, mBBox.m_Max.z);
+	p[7].Set(mBBox.m_Min.x, mBBox.m_Min.y, mBBox.m_Max.z);
 
 
 
 	mat->TransformPoints(p, 8);
-	if (TriangleCount)
+	if (mTriangleCount)
 		dd::box(p, Point3D(255, 0, 0));
 	else
-		dd::box(p, debugColor);
+		dd::box(p, mDebugColor);
 
 
 	/*if (Son1)
 	{
 		Son1->DrawDebug(pos, mat, timer);
-		Son2->DrawDebug(pos, mat, timer);
+		mSon2->DrawDebug(pos, mat, timer);
 	}*/
 }
 #endif
 
 void AABBTree::BuildFromTriangleList(Point3D* vertexList, int vertexCount, void* indexList, int triangleCount, int leafSize, bool force_u32)
 {
-	myVertexList = vertexList;
-	myVertexCount = vertexCount;
-	TriangleCount = triangleCount;
+	mVertexList = vertexList;
+	mVertexCount = vertexCount;
+	mTriangleCount = triangleCount;
 
 	kstl::vector<unsigned int>	indexlist1;
 	kstl::vector<unsigned int>	indexlist2;
 	indexlist1.reserve(triangleCount);
 	indexlist2.reserve(triangleCount);
 
-	myIndexlist1=&indexlist1;
-	myIndexlist2=&indexlist2;
+	mIndexlist1=&indexlist1;
+	mIndexlist2=&indexlist2;
 
 	//Point3D median(0,0,0);
 	//! then construct temporary triangle array
@@ -94,14 +94,14 @@ void AABBTree::BuildFromTriangleList(Point3D* vertexList, int vertexCount, void*
 
 		static_assert(sizeof(NormalTriangle) == 3 * sizeof(unsigned int));
 
-		m_BBox.Init(TrArray[0].m_BBox);
+		mBBox.Init(TrArray[0].mBBox);
 		for (int i = 1; i < triangleCount; i++)
-			m_BBox.Update(TrArray[i].m_BBox);
+			mBBox.Update(TrArray[i].mBBox);
 
 		//median /= triangleCount;
 		//kigsprintf("create AABBTree (%p) whith %d triangles\n",this, triangleCount);
 
-		Build2<unsigned short>(this,TrArray, tmpTrArray, TriangleCount, myVertexList, leafSize,-1, m_BBox);
+		Build2<unsigned short>(this,TrArray, tmpTrArray, mTriangleCount, mVertexList, leafSize,-1, mBBox);
 
 		delete[] tmpTrArray;
 
@@ -117,11 +117,11 @@ void AABBTree::BuildFromTriangleList(Point3D* vertexList, int vertexCount, void*
 			TrArray[i].ComputeMidAndBBox(vertexList);
 		}
 
-		m_BBox.Init(TrArray[0].m_BBox);
+		mBBox.Init(TrArray[0].mBBox);
 		for (int i = 1; i < triangleCount; i++)
-			m_BBox.Update(TrArray[i].m_BBox);
+			mBBox.Update(TrArray[i].mBBox);
 
-		Build2<unsigned int>(this, TrArray, tmpTrArray, TriangleCount, myVertexList, leafSize, -1, m_BBox);
+		Build2<unsigned int>(this, TrArray, tmpTrArray, mTriangleCount, mVertexList, leafSize, -1, mBBox);
 		delete[] tmpTrArray;
 		delete[] TrArray;
 	}
@@ -161,34 +161,34 @@ void AABBTreeNode::Build2(AABBTree* root, AABBTreeNode::BuildTriangle<t> * TrArr
 	const Point3D* vertex_list = root->GetVertexList();
 
 	//! first compute triangle array BoundingBox
-	/*m_BBox.Init(TrArray[0].m_BBox);
+	/*mBBox.Init(TrArray[0].mBBox);
 	for (i = 1; i < TrCount; i++)
-		m_BBox.Update(TrArray[i].m_BBox);*/
+		mBBox.Update(TrArray[i].mBBox);*/
 
-	m_BBox = currentbbox;
+	mBBox = currentbbox;
 
 	//! Compute bounding box diagonal
-	BoxLen = m_BBox.m_Max - m_BBox.m_Min;
+	BoxLen = mBBox.m_Max - mBBox.m_Min;
 
 	//! if Triangle count is small then this is a leaf
 	if (TrCount < leafSize)
 	{
-		TriangleArray2 = ((AABBTree*)root)->getFreeNormalTriangleBuffer(TrCount);
+		mTriangleArray2 = ((AABBTree*)root)->getFreeNormalTriangleBuffer(TrCount);
 		for (i = 0; i < TrCount; i++)
 		{
 			u32 a, b, c;
 			TrArray[i].GetIndex(a, b, c);
-			TriangleArray2[i].SetA(a);
-			TriangleArray2[i].SetB(b);
-			TriangleArray2[i].SetC(c);
-			TriangleArray2[i].SetTriangleIndex(TrArray[i].triangle_index);
-			const Point3D * P1 = &vertex_list[TriangleArray2[i].A()];
-			const Point3D * P2 = &vertex_list[TriangleArray2[i].B()];
-			const Point3D * P3 = &vertex_list[TriangleArray2[i].C()];
-			/*TriangleArray2[i].m_normal.CrossProduct(Vector3D(*P1, *P2, asVector{}), Vector3D(*P1, *P3, asVector{}));
-			TriangleArray2[i].m_normal.Normalize();*/
+			mTriangleArray2[i].SetA(a);
+			mTriangleArray2[i].SetB(b);
+			mTriangleArray2[i].SetC(c);
+			mTriangleArray2[i].SetTriangleIndex(TrArray[i].mTriangleIndex);
+			const Point3D * P1 = &vertex_list[mTriangleArray2[i].A()];
+			const Point3D * P2 = &vertex_list[mTriangleArray2[i].B()];
+			const Point3D * P3 = &vertex_list[mTriangleArray2[i].C()];
+			/*mTriangleArray2[i].m_normal.CrossProduct(Vector3D(*P1, *P2, asVector{}), Vector3D(*P1, *P3, asVector{}));
+			mTriangleArray2[i].m_normal.Normalize();*/
 		}
-		TriangleCount = TrCount;
+		mTriangleCount = TrCount;
 		return;
 	}
 
@@ -242,11 +242,11 @@ void AABBTreeNode::Build2(AABBTree* root, AABBTreeNode::BuildTriangle<t> * TrArr
 	Once each triangle has been affected to the first or last bbox, the bbox is updated
 	*/
 	BBox	bbox1;
-	bbox1.Init(TrArray[0].m_BBox);
+	bbox1.Init(TrArray[0].mBBox);
 	BoxLen = bbox1.m_Max - bbox1.m_Min;
 	kfloat size1 = NormSquare(BoxLen);
 	BBox	bbox2;
-	bbox2.Init(TrArray[TrCount - 1].m_BBox);
+	bbox2.Init(TrArray[TrCount - 1].mBBox);
 	BoxLen = bbox2.m_Max - bbox2.m_Min;
 	kfloat size2 = NormSquare(BoxLen);
 
@@ -269,13 +269,13 @@ void AABBTreeNode::Build2(AABBTree* root, AABBTreeNode::BuildTriangle<t> * TrArr
 
 
 		BBox compare1(bbox1);
-		compare1.Update(TrArray[tindex].m_BBox);
+		compare1.Update(TrArray[tindex].mBBox);
 		BoxLen = compare1.m_Max - compare1.m_Min;
 		kfloat newSize1 = NormSquare(BoxLen);
 		kfloat ds1 = (newSize1 - size1);
 
 		BBox compare2(bbox2);
-		compare2.Update(TrArray[tindex].m_BBox);
+		compare2.Update(TrArray[tindex].mBBox);
 		BoxLen = compare2.m_Max - compare2.m_Min;
 		kfloat newSize2 = NormSquare(BoxLen);
 		kfloat ds2 = (newSize2 - size2);
@@ -316,20 +316,20 @@ void AABBTreeNode::Build2(AABBTree* root, AABBTreeNode::BuildTriangle<t> * TrArr
 	if ((indexlist1.size() <= threshold) || (indexlist2.size() <= threshold))
 	{
 		int halfTrCount = TrCount / 2;
-		Son1 = root->getFreeAABBTreeNode();
+		mSon1 = root->getFreeAABBTreeNode();
 
 		// compute bbox1 & bbox2
-		bbox1.Init(TrArray[0].m_BBox);
+		bbox1.Init(TrArray[0].mBBox);
 		for (i = 1; i < halfTrCount; i++)
-			bbox1.Update(TrArray[i].m_BBox);
-		bbox2.Init(TrArray[halfTrCount].m_BBox);
+			bbox1.Update(TrArray[i].mBBox);
+		bbox2.Init(TrArray[halfTrCount].mBBox);
 		for (i = halfTrCount+1; i < TrCount; i++)
-			bbox2.Update(TrArray[i].m_BBox);
+			bbox2.Update(TrArray[i].mBBox);
 		
-		Son1->Build2(root,TrArray, TmpTrArray,halfTrCount, VertexArray,leafSize, mode,bbox1);
-		Son2 = root->getFreeAABBTreeNode();
+		mSon1->Build2(root,TrArray, TmpTrArray,halfTrCount, VertexArray,leafSize, mode,bbox1);
+		mSon2 = root->getFreeAABBTreeNode();
 		
-		Son2->Build2(root,&TrArray[halfTrCount], TmpTrArray, TrCount - halfTrCount, VertexArray, leafSize, mode,bbox2);
+		mSon2->Build2(root,&TrArray[halfTrCount], TmpTrArray, TrCount - halfTrCount, VertexArray, leafSize, mode,bbox2);
 	}
 	else
 	{
@@ -347,12 +347,12 @@ void AABBTreeNode::Build2(AABBTree* root, AABBTreeNode::BuildTriangle<t> * TrArr
 
 		int fisrtarraysize = indexlist1.size();
 
-		Son1 = root->getFreeAABBTreeNode();
+		mSon1 = root->getFreeAABBTreeNode();
 		
-		Son1->Build2(root,TrArray, TmpTrArray, fisrtarraysize + 1, VertexArray, leafSize,mode,bbox1);
-		Son2 = root->getFreeAABBTreeNode();
+		mSon1->Build2(root,TrArray, TmpTrArray, fisrtarraysize + 1, VertexArray, leafSize,mode,bbox1);
+		mSon2 = root->getFreeAABBTreeNode();
 		
-		Son2->Build2(root,&TrArray[fisrtarraysize + 1], TmpTrArray, TrCount - (fisrtarraysize + 1), VertexArray, leafSize,mode,bbox2);
+		mSon2->Build2(root,&TrArray[fisrtarraysize + 1], TmpTrArray, TrCount - (fisrtarraysize + 1), VertexArray, leafSize,mode,bbox2);
 
 	}
 }
@@ -376,11 +376,11 @@ AABBTree::AABBTree(int trCount) : AABBTreeNode() , CollisionBaseObject()
 
 	if (trCount > 16)
 	{
-		myDynamicGrowingBuffer = new DynamicGrowingBuffer<AABBTreeNode>(trCount / 8, trCount / 16);
+		mDynamicGrowingBuffer = new DynamicGrowingBuffer<AABBTreeNode>(trCount / 8, trCount / 16);
 	}
 	else
 	{
-		myDynamicGrowingBuffer = new DynamicGrowingBuffer<AABBTreeNode>(trCount);
+		mDynamicGrowingBuffer = new DynamicGrowingBuffer<AABBTreeNode>(trCount);
 	}
 }
 
@@ -399,9 +399,9 @@ AABBTree::~AABBTree()
 	delete[] mNormalTriangleArray;
 
 	// destroy vertexlist if root
-	delete[] myVertexList;
+	delete[] mVertexList;
 	
-	delete myDynamicGrowingBuffer;
+	delete mDynamicGrowingBuffer;
 
 }
 

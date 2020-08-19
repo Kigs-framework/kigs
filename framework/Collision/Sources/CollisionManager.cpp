@@ -68,21 +68,21 @@ void CollisionManager::InitModifiable()
 				Work w;
 				while (mHighPrioWork.try_dequeue(w))
 				{
-					if (w.item->getRefCount() != 1)
+					if (w.mItem->getRefCount() != 1)
 					{
-						auto result = w.func();
+						auto result = w.mFunc();
 						if (result)
 						{
-							if (result->IsCoreModifiable)
+							if (result->mIsCoreModifiable)
 							{
 								std::shared_ptr<CollisionBaseObject> ptr;
-								std::atomic_store(&w.info->myOwnedCollisionObject, ptr);
-								w.info->myNodeCollisionObject.exchange(result);
+								std::atomic_store(&w.mInfo->mOwnedCollisionObject, ptr);
+								w.mInfo->mNodeCollisionObject.exchange(result);
 							}
 							else
 							{
-								w.info->myNodeCollisionObject = nullptr;
-								std::atomic_exchange(&w.info->myOwnedCollisionObject, std::shared_ptr<CollisionBaseObject>(result));
+								w.mInfo->mNodeCollisionObject = nullptr;
+								std::atomic_exchange(&w.mInfo->mOwnedCollisionObject, std::shared_ptr<CollisionBaseObject>(result));
 							}
 						}
 					}
@@ -90,21 +90,21 @@ void CollisionManager::InitModifiable()
 
 				if (mWork.try_dequeue(w))
 				{
-					if (w.item->getRefCount() != 1)
+					if (w.mItem->getRefCount() != 1)
 					{
-						auto result = w.func();
+						auto result = w.mFunc();
 						if (result)
 						{
-							if (result->IsCoreModifiable)
+							if (result->mIsCoreModifiable)
 							{
 								std::shared_ptr<CollisionBaseObject> ptr;
-								std::atomic_store(&w.info->myOwnedCollisionObject, ptr);
-								w.info->myNodeCollisionObject.exchange(result);
+								std::atomic_store(&w.mInfo->mOwnedCollisionObject, ptr);
+								w.mInfo->mNodeCollisionObject.exchange(result);
 							}
 							else
 							{
-								w.info->myNodeCollisionObject = nullptr;
-								std::atomic_exchange(&w.info->myOwnedCollisionObject, std::shared_ptr<CollisionBaseObject>(result));
+								w.mInfo->mNodeCollisionObject = nullptr;
+								std::atomic_exchange(&w.mInfo->mOwnedCollisionObject, std::shared_ptr<CollisionBaseObject>(result));
 							}
 						}
 					}
@@ -146,7 +146,7 @@ void CollisionManager::OnDeleteCallBack(CoreModifiable* localthis)
 
 void CollisionManager::OnAddItemCallback(CoreModifiable* localthis, CoreModifiable* item)
 {
-	// Only interested in Node3D father with Node3D or Drawable item 
+	// Only interested in Node3D father with Node3D or Drawable mItem 
 	if (localthis->isUserFlagSet(UserFlagNode3D))
 	{
 		if (item->isUserFlagSet(UserFlagNode3D) || item->isUserFlagSet(UserFlagDrawable))
@@ -188,21 +188,21 @@ void CollisionManager::ProcessPendingItems()
 		std::lock_guard<std::mutex> lock(mToAddMutex);
 		for (auto&[item, collider] : mToAdd)
 		{
-			//kigsprintf("adding uid %u to collision map\n", item->getUID());
+			//kigsprintf("adding mUID %u to collision map\n", mItem->getUID());
 			auto& info = mCollisionObjectMap[item->getUID()];
 			KigsCore::Connect(item.get(), "Destroy", this, "OnDeleteCallBack");
 			if (!info) info = std::make_shared<MeshCollisionInfo>();
-			info->item = item.get();
-			info->uid = item->getUID();
-			info->need_rebuild = false;
-			if (collider->IsCoreModifiable)
+			info->mItem = item.get();
+			info->mUID = item->getUID();
+			info->mNeedRebuild = false;
+			if (collider->mIsCoreModifiable)
 			{
-				info->myNodeCollisionObject = collider;
+				info->mNodeCollisionObject = collider;
 			}
 			else
 			{
 				std::shared_ptr<CollisionBaseObject> ptr(collider);
-				std::atomic_store(&info->myOwnedCollisionObject, ptr);
+				std::atomic_store(&info->mOwnedCollisionObject, ptr);
 			}
 		}
 		mToAdd.clear();
@@ -214,12 +214,12 @@ void CollisionManager::ProcessPendingItems()
 		std::lock_guard<std::mutex> lock(mToDeleteMutex);
 		for (auto cm : mToDelete)
 		{
-			auto it = mCollisionObjectMap.find(cm.uid);
+			auto it = mCollisionObjectMap.find(cm.mUID);
 			if (it != mCollisionObjectMap.end())
 			{
-				if (it->second->uid == cm.uid)
+				if (it->second->mUID == cm.mUID)
 				{
-					//kigsprintf("erasing uid %u from collision map\n", cm.second);
+					//kigsprintf("erasing mUID %u from collision map\n", cm.second);
 					mCollisionObjectMap.erase(it);
 				}
 			}
@@ -318,9 +318,9 @@ void CollisionManager::CreateCollisionObject(CoreModifiable* item, unsigned int 
 	if (!CheckType(item))
 		return;
 
-	//! for each item in the list search if this item is already managed by the collision manager
+	//! for each mItem in the list search if this mItem is already managed by the collision manager
 	auto found = mCollisionObjectMap.find(item->getUID());
-	if (found == mCollisionObjectMap.end() || found->second->need_rebuild)
+	if (found == mCollisionObjectMap.end() || found->second->mNeedRebuild)
 	{
 		CollisionBaseObject* col = nullptr;
 		SmartPointer<CoreModifiable> ref{ item, GetRefTag{} };
@@ -328,7 +328,7 @@ void CollisionManager::CreateCollisionObject(CoreModifiable* item, unsigned int 
 
 		if (item->isSubType("ModernMesh"))
 		{
-			/*auto tree = item->getAttribute("AABBTree");
+			/*auto tree = mItem->getAttribute("AABBTree");
 			if (tree)
 			{
 				std::string path;
@@ -436,9 +436,9 @@ void CollisionManager::CreateCollisionObject(CoreModifiable* item, unsigned int 
 				newinfo = mCollisionObjectMap[item->getUID()] = std::make_shared<MeshCollisionInfo>();
 			}
 
-			newinfo->uid = item->getUID();
-			newinfo->myCollisionMask = ColMask;
-			newinfo->item = item;
+			newinfo->mUID = item->getUID();
+			newinfo->mCollisionMask = ColMask;
+			newinfo->mItem = item;
 			/*if (newinfo->myCollisionObject && col)
 			{
 				delete newinfo->myCollisionObject;
@@ -446,17 +446,17 @@ void CollisionManager::CreateCollisionObject(CoreModifiable* item, unsigned int 
 			}*/
 			if (col)
 			{
-				if (col->IsCoreModifiable)
+				if (col->mIsCoreModifiable)
 				{
-					newinfo->myNodeCollisionObject = col;
+					newinfo->mNodeCollisionObject = col;
 				}
 				else
 				{
 					auto ref = std::shared_ptr<CollisionBaseObject>{ col };
-					std::atomic_store(&newinfo->myOwnedCollisionObject, ref);
+					std::atomic_store(&newinfo->mOwnedCollisionObject, ref);
 				}
 			}
-			newinfo->need_rebuild = false;
+			newinfo->mNeedRebuild = false;
 
 			//register on delete event
 			KigsCore::Connect(item, "Destroy", this, "OnDeleteCallBack");
@@ -468,19 +468,19 @@ void CollisionManager::CreateCollisionObject(CoreModifiable* item, unsigned int 
 
 				if (false)
 				{
-					auto result = w.func();
+					auto result = w.mFunc();
 					if (result)
 					{
-						if (result->IsCoreModifiable)
+						if (result->mIsCoreModifiable)
 						{
 							std::shared_ptr<CollisionBaseObject> ptr;
-							std::atomic_store(&w.info->myOwnedCollisionObject, ptr);
-							w.info->myNodeCollisionObject.exchange(result);
+							std::atomic_store(&w.mInfo->mOwnedCollisionObject, ptr);
+							w.mInfo->mNodeCollisionObject.exchange(result);
 						}
 						else
 						{
-							w.info->myNodeCollisionObject = nullptr;
-							std::atomic_exchange(&w.info->myOwnedCollisionObject, std::shared_ptr<CollisionBaseObject>(result));
+							w.mInfo->mNodeCollisionObject = nullptr;
+							std::atomic_exchange(&w.mInfo->mOwnedCollisionObject, std::shared_ptr<CollisionBaseObject>(result));
 						}
 					}
 				}
@@ -576,7 +576,7 @@ void CollisionManager::GetPlaneIntersection(const Point3D& o, const Vector3D& n,
 void CollisionManager::setCollisionCategories(CoreModifiable* a_Item, unsigned int a_Category)
 {
 	if (mCollisionObjectMap.find(a_Item->getUID()) != mCollisionObjectMap.end())
-		mCollisionObjectMap[a_Item->getUID()]->myCollisionMask = a_Category;
+		mCollisionObjectMap[a_Item->getUID()]->mCollisionMask = a_Category;
 }
 
 /*!
@@ -672,12 +672,12 @@ bool CollisionManager::RecursiveSearchRayIntersection(CoreModifiable* lastCollid
 
 	// retreive the associate CollisionObject
 	auto L_ItMap = mCollisionObjectMap.find(item->getUID());
-	if (L_ItMap != mCollisionObjectMap.end()/* && L_ItMap->first.IsValid() && L_ItMap->second->uid == item->getUID()*/)
+	if (L_ItMap != mCollisionObjectMap.end()/* && L_ItMap->first.IsValid() && L_ItMap->second->mUID == mItem->getUID()*/)
 	{
-		auto ref = std::atomic_load(&L_ItMap->second->myOwnedCollisionObject);
-		auto collision_object = ref ? ref.get() : L_ItMap->second->myNodeCollisionObject.load();
+		auto ref = std::atomic_load(&L_ItMap->second->mOwnedCollisionObject);
+		auto collision_object = ref ? ref.get() : L_ItMap->second->mNodeCollisionObject.load();
 
-		if (!collision_object || !collision_object->IsActive)
+		if (!collision_object || !collision_object->mIsActive)
 			return false;
 
 		Vector3D ldir(dir);
@@ -712,7 +712,7 @@ bool CollisionManager::RecursiveSearchRayIntersection(CoreModifiable* lastCollid
 			hit.HitFlagNode = lastCollideNode;
 		};
 
-		//! for each son of the current item, if the son is a Mesh 
+		//! for each son of the current mItem, if the son is a Mesh 
 		if (item->isSubType("ModernMesh")
 			|| item->isSubType("DrawVertice"))
 		{
@@ -722,7 +722,7 @@ bool CollisionManager::RecursiveSearchRayIntersection(CoreModifiable* lastCollid
 				//! if intersection found, go back to global coordinates and test if this intersection is the best one (nearest)
 				/*lastNode->GetLocalToGlobal().TransformVector(&hit.HitNormal);
 				hit.HitNormal.Normalize();
-				hit.HitActor = item;
+				hit.HitActor = mItem;
 				hit.HitCollisionObject = colObj.myCollisionObject;
 				hit.HitNode = lastNode;*/
 				setHit(hit);
@@ -798,7 +798,7 @@ void CollisionManager::RecursiveSearchAllRayIntersection(CoreModifiable* lastCol
 	//! on Node3D, mark as last seen node au recurse to sons
 	// check collision on BBox
 	if (item->isUserFlagSet(UserFlagNode3D))
-		//if (item->isSubType("Node3D"))
+		//if (mItem->isSubType("Node3D"))
 	{
 		lastNode = (Node3D*)item;
 		if (!ignore_is_collidable && !lastNode->IsCollidable())
@@ -840,12 +840,12 @@ void CollisionManager::RecursiveSearchAllRayIntersection(CoreModifiable* lastCol
 
 	// retreive the associate CollisionObject
 	auto L_ItMap = mCollisionObjectMap.find(item->getUID());
-	if (L_ItMap != mCollisionObjectMap.end()/* && L_ItMap->first.IsValid() && L_ItMap->second->uid == item->getUID()*/)
+	if (L_ItMap != mCollisionObjectMap.end()/* && L_ItMap->first.IsValid() && L_ItMap->second->mUID == mItem->getUID()*/)
 	{
-		auto ref = std::atomic_load(&L_ItMap->second->myOwnedCollisionObject);
-		auto collision_object = ref ? ref.get() : L_ItMap->second->myNodeCollisionObject.load();
+		auto ref = std::atomic_load(&L_ItMap->second->mOwnedCollisionObject);
+		auto collision_object = ref ? ref.get() : L_ItMap->second->mNodeCollisionObject.load();
 
-		if (!collision_object || !collision_object->IsActive)
+		if (!collision_object || !collision_object->mIsActive)
 			return;
 
 		Vector3D ldir(dir);
@@ -880,7 +880,7 @@ void CollisionManager::RecursiveSearchAllRayIntersection(CoreModifiable* lastCol
 			hit.HitFlag = mask;
 		};
 		
-		//! for each son of the current item, if the son is a Mesh 
+		//! for each son of the current mItem, if the son is a Mesh 
 		if (item->isSubType("ModernMesh")
 			|| item->isSubType("DrawVertice"))
 		{
@@ -956,7 +956,7 @@ void CollisionManager::RecursiveSearchAllRayIntersection(CoreModifiable* lastCol
 	}
 	else
 	{
-		//kigsprintf("CollisionObject not found for %s\n", item->getName().c_str());
+		//kigsprintf("CollisionObject not found for %s\n", mItem->getName().c_str());
 	}
 }
 
@@ -970,7 +970,7 @@ void CollisionManager::RecursiveSearchPlaneIntersection(Node3D* lastNode, CoreMo
 	//! on Node3D, mark as last seen node au recurse to sons
 	// check collision on BBox
 	if (item->isUserFlagSet(UserFlagNode3D))
-		//if (item->isSubType("Node3D"))
+		//if (mItem->isSubType("Node3D"))
 	{
 		lastNode = (Node3D*)item;
 		if (!lastNode->IsCollidable())
@@ -1019,12 +1019,12 @@ void CollisionManager::RecursiveSearchPlaneIntersection(Node3D* lastNode, CoreMo
 
 	// retreive the associate CollisionObject
 	auto L_ItMap = mCollisionObjectMap.find(item->getUID());
-	if (L_ItMap != mCollisionObjectMap.end()/* && L_ItMap->first.IsValid() && L_ItMap->second->uid == item->getUID()*/)
+	if (L_ItMap != mCollisionObjectMap.end()/* && L_ItMap->first.IsValid() && L_ItMap->second->mUID == mItem->getUID()*/)
 	{
-		auto ref = std::atomic_load(&L_ItMap->second->myOwnedCollisionObject);
-		auto collision_object = ref ? ref.get() : L_ItMap->second->myNodeCollisionObject.load();
+		auto ref = std::atomic_load(&L_ItMap->second->mOwnedCollisionObject);
+		auto collision_object = ref ? ref.get() : L_ItMap->second->mNodeCollisionObject.load();
 
-		if (!collision_object || !collision_object->IsActive)
+		if (!collision_object || !collision_object->mIsActive)
 			return;
 
 		Vector3D lnorm(n);
@@ -1059,7 +1059,7 @@ void CollisionManager::RecursiveSearchPlaneIntersection(Node3D* lastNode, CoreMo
 		MeshCollisionInfo& colObj = *L_ItMap->second;
 
 
-		//! for each son of the current item, if the son is a Mesh 
+		//! for each son of the current mItem, if the son is a Mesh 
 		if (item->isSubType("ModernMesh")
 			|| item->isSubType("DrawVertice"))
 		{
@@ -1121,7 +1121,7 @@ void CollisionManager::RecursiveSearchPlaneIntersection(Node3D* lastNode, CoreMo
 	}
 	else
 	{
-		//kigsprintf("CollisionObject not found for %s\n", item->getName().c_str());
+		//kigsprintf("CollisionObject not found for %s\n", mItem->getName().c_str());
 	}
 }
 
@@ -1577,18 +1577,18 @@ static void compare_tree(AABBTreeNode* a, AABBTreeNode* b)
 		int zae = 0;
 	}
 
-	if (a->Son1)
+	if (a->mSon1)
 	{
-		if (!b->Son1)
+		if (!b->mSon1)
 		{
 			int aze = 0;
 		}
-		compare_tree(a->Son1, b->Son1);
-		compare_tree(a->Son2, b->Son2);
+		compare_tree(a->mSon1, b->mSon1);
+		compare_tree(a->mSon2, b->mSon2);
 	}
 	else
 	{
-		if (memcmp(a->TriangleArray2, b->TriangleArray2, a->GetTriangleCount() * 3 * 4) != 0)
+		if (memcmp(a->mTriangleArray2, b->mTriangleArray2, a->GetTriangleCount() * 3 * 4) != 0)
 		{
 			int aze = 0;
 		}
@@ -1601,7 +1601,7 @@ bool CollisionManager::SerializeAABBTree(CoreRawBuffer* buffer, const CMSP& node
 	if (it == mCollisionObjectMap.end()) return false;
 
 	//printf("PACK\n");
-	std::shared_ptr<CollisionBaseObject> aabbtree_ref = std::atomic_load(&it->second->myOwnedCollisionObject);
+	std::shared_ptr<CollisionBaseObject> aabbtree_ref = std::atomic_load(&it->second->mOwnedCollisionObject);
 	auto aabbtree = (AABBTree*)aabbtree_ref.get();
 	if (!aabbtree) return false;
 
