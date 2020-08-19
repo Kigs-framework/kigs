@@ -7,19 +7,19 @@ IMPLEMENT_CLASS_INFO(Window)
 
 //! constructor, init all parameters
 Window::Window(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG),
-myFullScreen(*this,true,LABEL_AND_ID(FullScreen)),
-m_bShowMouse(*this, true, LABEL_AND_ID(Mouse Cursor), false), 
-myIsMainWindow(*this, true, LABEL_AND_ID(IsMainWindow), true),
-myDisplayIndex(*this, true, LABEL_AND_ID(DisplayIndex), 0xFFFFFFFF),
-myDirtySize(*this, false, LABEL_AND_ID(DirtySize), false),
-myPosX(*this,true,LABEL_AND_ID(PositionX),-1), // -1 => centered on screen
-myPosY(*this,true,LABEL_AND_ID(PositionY),-1), // -1 => centered on screen
-mySizeX(*this,true,LABEL_AND_ID(SizeX)),
-mySizeY(*this,true,LABEL_AND_ID(SizeY)),
-myClickCallback(NULL), myDoubleClickCallback(NULL), myKeyDownCallback(NULL),myKeyUpCallback(NULL), myDestroyCallback(NULL)
+mFullScreen(*this,true,LABEL_AND_ID(FullScreen)),
+mShowMouseCursor(*this, true, LABEL_AND_ID(ShowMouseCursor), false), 
+mIsMainWindow(*this, true, LABEL_AND_ID(IsMainWindow), true),
+mDisplayIndex(*this, true, LABEL_AND_ID(DisplayIndex), 0xFFFFFFFF),
+mDirtySize(*this, false, LABEL_AND_ID(DirtySize), false),
+mPositionX(*this,true,LABEL_AND_ID(PositionX),-1), // -1 => centered on screen
+mPositionY(*this,true,LABEL_AND_ID(PositionY),-1), // -1 => centered on screen
+mSizeX(*this,true,LABEL_AND_ID(SizeX)),
+mSizeY(*this,true,LABEL_AND_ID(SizeY)),
+mClickCallback(NULL), mDoubleClickCallback(NULL), mKeyDownCallback(NULL),mKeyUpCallback(NULL), mDestroyCallback(NULL)
 {
-   myScreen = 0;
-   myHandle = 0;
+   mScreen = 0;
+   mHandle = 0;
 }     
 
 Window::~Window()
@@ -33,7 +33,7 @@ void	Window::InitModifiable()
 	CoreModifiable::InitModifiable();
 	if(_isInit)
 	{
-		if((mySizeX != 0)&&(mySizeY != 0))
+		if((mSizeX != 0)&&(mSizeY != 0))
 		{
 			ProtectedInit();	
 		}
@@ -49,7 +49,7 @@ bool	Window::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType("RenderingScreen"))
 	{
-		myScreen=(RenderingScreen*)item.get();
+		mScreen=(RenderingScreen*)item.get();
 	}
 
 	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
@@ -61,7 +61,7 @@ bool Window::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType("RenderingScreen"))
 	{
-		myScreen=nullptr;
+		mScreen=nullptr;
 	}
 
 	return CoreModifiable::removeItem(item PASS_LINK_NAME(linkName));

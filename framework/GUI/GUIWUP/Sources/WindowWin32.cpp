@@ -14,8 +14,8 @@ IMPLEMENT_CLASS_INFO(WindowWin32)
 //! constructor
 WindowWin32::WindowWin32(const kstl::string& name, CLASS_NAME_TREE_ARG) : Window(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	myScreenSaverActive = false;
-	myDirtySize = false; 
+	mScreenSaverActive = false;
+	mDirtySize = false; 
 
 	if (App::GetApp()->GetStationaryReferenceFrame()) // hololens
 	{
@@ -40,27 +40,27 @@ WindowWin32::~WindowWin32()
 void WindowWin32::ProtectedInit()
 {
 	auto view = ApplicationView::GetForCurrentView();
-	auto size = winrt::Windows::Foundation::Size(mySizeX, mySizeY);
+	auto size = winrt::Windows::Foundation::Size(mSizeX, mSizeY);
 	view.PreferredLaunchWindowingMode(ApplicationViewWindowingMode::PreferredLaunchViewSize);
 	view.PreferredLaunchViewSize(size);
 	view.SetPreferredMinSize(size);
 
 	CoreWindow::GetForCurrentThread().Activate();
 
-	mSizeXToSet = mySizeX;
-	mSizeYToSet = mySizeY;
+	mSizeXToSet = mSizeX;
+	mSizeYToSet = mSizeY;
 	mRetryResize = false;// !view.TryResizeView(size);
 	
 	auto rect = App::GetApp()->GetWindow().Bounds();
-	myPosX = (int)rect.X;
-	myPosY = (int)rect.Y;
+	mPositionX = (int)rect.X;
+	mPositionY = (int)rect.Y;
 	//mySizeX = (int)rect.Width;
 	//mySizeY = (int)rect.Height;
 	
-	if (myScreen && !myScreen->IsInit())
+	if (mScreen && !mScreen->IsInit())
 	{
-		myScreen->setValue("ParentWindowName", getName());
-		myScreen->Init();
+		mScreen->setValue("ParentWindowName", getName());
+		mScreen->Init();
 	}
 }
 
@@ -72,13 +72,13 @@ void	WindowWin32::GetMousePosInWindow(int posx, int posy, kfloat& wposx, kfloat&
 	}
 	else
 	{*/
-	posx -= (int)myPosX;
+	posx -= (int)mPositionX;
 	//if(posx >= (int)mySizeX)
 	//	posx = ((int)mySizeX)-1;
 	//if(posx < 0)
 	//	posx = 0;
 
-	posy -= (int)myPosY;
+	posy -= (int)mPositionY;
 	//if(posy>=(int)mySizeY)
 	//	posy = ((int)mySizeY)-1;
 	//if(posy < 0)
@@ -91,21 +91,21 @@ void	WindowWin32::GetMousePosInWindow(int posx, int posy, kfloat& wposx, kfloat&
 
 void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, kfloat& wposy)
 {
-	posx -= (int)myPosX;
+	posx -= (int)mPositionX;
 	//if(posx >= (int)mySizeX)
 	//	posx = ((int)mySizeX)-1;
 	//if(posx < 0)
 	//	posx = 0;
 
-	posy -= (int)myPosY;
+	posy -= (int)mPositionY;
 	//if(posy>=(int)mySizeY)
 	//	posy = ((int)mySizeY)-1;
 	//if(posy < 0)
 	//	posy = 0;
 
-	if (myScreen)
+	if (mScreen)
 	{
-		myScreen->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
+		mScreen->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
 	}
 	else
 	{
@@ -131,23 +131,23 @@ void  WindowWin32::Update(const Timer&  timer, void* addParam)
 	if (mHasEvent)
 	{
 		mRetryResize = false;
-		mySizeX = (int)mSizeXToSet;
-		mySizeY = (int)mSizeYToSet;
+		mSizeX = (int)mSizeXToSet;
+		mSizeY = (int)mSizeYToSet;
 		mHasEvent = false;
 		//printf("size : %d %d\n", (int)mySizeX, (int)mySizeY);
 
-		if (myScreen)
-			myScreen->Resize((kfloat)mySizeX, (kfloat)mySizeY);
+		if (mScreen)
+			mScreen->Resize((kfloat)mSizeX, (kfloat)mSizeY);
 	}
 
 	// update position and size
 	auto rect = App::GetApp()->GetWindow().Bounds();
-	if (myPosX != (int)rect.X ||
-		myPosY != (int)rect.Y
+	if (mPositionX != (int)rect.X ||
+		mPositionY != (int)rect.Y
 		)
 	{
-		myPosX = (int)rect.X;
-		myPosY = (int)rect.Y;
+		mPositionX = (int)rect.X;
+		mPositionY = (int)rect.Y;
 		//printf("pos : %d %d\n", (int)myPosX, (int)myPosY);
 	}
 

@@ -6,26 +6,17 @@
 #include "Timer.h"
 class   RenderingScreen;
 
+
 // ****************************************
 // * Window class
 // * --------------------------------------
-/*!  \class Window
-     base class for GUI window (rendering window)
-
-	 exposed parameters :
-
-	 "FullScreen" (boolean) : if true, init a fullscreen window
-	 "PositionX" (int) : position of the upper left corner on screen 
-	 "PositionY" (int) : position of the upper left corner on screen 
-     "SizeX" (int) : rendering zone width in pixel
-     "SizeY" (int) : rendering zone height in pixel
-     "IsMainWindow" (boolean) : for keyboard / mouse input, is this window the main window
-	 "Mouse Cursor" (boolean) : obsolete 
-
-     \ingroup GUIModule
+/**
+* \file	Window.h
+* \class	Window
+* \ingroup GUIModule
+* \brief	Base class for Window (rendering window).
 */
 // ****************************************
-
 class Window : public CoreModifiable
 {
 public:
@@ -57,18 +48,18 @@ public:
 	virtual void SetWindowPosition(v2i pos, v2i size, bool force_topmost = false) {}
 
 	//! return the rendering screen associated with this window
-	RenderingScreen*	GetRenderingScreen(){return myScreen;}
+	RenderingScreen*	GetRenderingScreen(){return mScreen;}
 
 	//!Set the callback which is called when the user types the given character
-	void SetKeyDownCallback(KeyDownCallbackFn Callback) {myKeyDownCallback = Callback;}
+	void SetKeyDownCallback(KeyDownCallbackFn Callback) {mKeyDownCallback = Callback;}
 	//!Set the callback which is called when the user types the given character (key up)
-	void SetKeyUpCallback(KeyDownCallbackFn Callback) {myKeyUpCallback = Callback;}
+	void SetKeyUpCallback(KeyDownCallbackFn Callback) {mKeyUpCallback = Callback;}
 	//!Set the callback which is called when the window is destroyed
-	void SetDestroyCallback(DestroyCallbackFn Callback) {myDestroyCallback = Callback;}
+	void SetDestroyCallback(DestroyCallbackFn Callback) {mDestroyCallback = Callback;}
 	//!Set the callback when clicking in the window (X,Y) range in pixels (from left to right, bottom to up)
-	void SetClickCallback(ClickMessageCallbackFn Callback) {myClickCallback = Callback;}
+	void SetClickCallback(ClickMessageCallbackFn Callback) {mClickCallback = Callback;}
 	//!Set the callback when double clicking in the window (X,Y) range in pixels (from left to right, bottom to up)
-	void SetDoubleClickCallback(ClickMessageCallbackFn Callback) {myDoubleClickCallback = Callback;}
+	void SetDoubleClickCallback(ClickMessageCallbackFn Callback) {mDoubleClickCallback = Callback;}
 
 	//! add item. Manage rendering screen
 	bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
@@ -76,10 +67,10 @@ public:
 	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 	//! return the window handle
-	void*	GetHandle(){return myHandle;}
+	void*	GetHandle(){return mHandle;}
 
-	Point2DI	GetPos() { return { myPosX, myPosY }; }
-	Point2DI    GetSize() { return { mySizeX, mySizeY }; }
+	Point2DI	GetPos() { return { mPositionX, mPositionY }; }
+	Point2DI    GetSize() { return { mSizeX, mSizeY }; }
 
 	virtual void	GetMousePosInWindow(int posx,int posy,kfloat& wposx,kfloat& wposy)=0;
 	virtual void	GetMousePosInDesignWindow(int posx,int posy,kfloat& wposx,kfloat& wposy)=0;
@@ -99,31 +90,31 @@ protected:
 	void	InitModifiable() override;
 
 	//! parameter for fullscreen window
-	maBool	myFullScreen;
+	maBool	mFullScreen;
 	//! flag to show/hide the mouse
-	maBool	m_bShowMouse;
+	maBool	mShowMouseCursor;
 
 	//! flag to decide if the window is the main window. If you close the main window, the application should be terminated
-	maBool myIsMainWindow;
-	maUInt myDisplayIndex;
+	maBool mIsMainWindow;
+	maUInt mDisplayIndex;
 
-	maBool myDirtySize;
+	maBool mDirtySize;
 
 	//! window size and position on screen (size is also used if fullscreen)
-    maInt     myPosX,myPosY,mySizeX,mySizeY;
+    maInt     mPositionX,mPositionY,mSizeX,mSizeY;
 
 	//!	platform independant handle
-    void*   myHandle; 
+    void*   mHandle; 
 
 	//! windows rendering screen
-	RenderingScreen*	myScreen;
+	RenderingScreen*	mScreen;
 
 	//! mouse callbacks
-	ClickMessageCallbackFn myClickCallback, myDoubleClickCallback;
+	ClickMessageCallbackFn mClickCallback, mDoubleClickCallback;
 	//! key callback
-	KeyDownCallbackFn myKeyDownCallback,myKeyUpCallback;
+	KeyDownCallbackFn mKeyDownCallback,mKeyUpCallback;
 	//! destroy callback
-	DestroyCallbackFn myDestroyCallback;
+	DestroyCallbackFn mDestroyCallback;
 };    
 
 #endif
