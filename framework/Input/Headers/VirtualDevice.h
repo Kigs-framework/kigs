@@ -3,19 +3,17 @@
 
 #include "InputDevice.h"
  
+
 // ****************************************
 // * VirtualDevice class
 // * --------------------------------------
 /**
- * \file	VirtualDevice.h
  * \class	VirtualDevice
+ * \file	VirtualDevice.h
  * \ingroup Input
- * \brief	manage a virtual device (can map keyboard, pad or mouse DeviceItem)
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \brief	Base class for virtual device ( a device mapping another device ).
  */
-// ****************************************
+ // ****************************************
 class VirtualDevice : public InputDevice
 {
 public:

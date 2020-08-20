@@ -130,13 +130,13 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 {
 	// remove old touch
 	{
-		auto itr = myInteractions.begin();
-		auto end = myInteractions.end();
+		auto itr = mInteractions.begin();
+		auto end = mInteractions.end();
 		while (itr != end) 
 		{
 			if (itr->second.removed)
 			{
-				itr = myInteractions.erase(itr);
+				itr = mInteractions.erase(itr);
 			}
 			else 
 			{
@@ -172,14 +172,14 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 				continue;
 			}
 
-			auto found = myInteractions.find(id);
-			if (found != myInteractions.end()) // update
+			auto found = mInteractions.find(id);
+			if (found != mInteractions.end()) // update
 			{
 				s = &found->second;
 			}
 			else //create new one
 			{
-				s = &myInteractions[id];
+				s = &mInteractions[id];
 				s->Time = time;
 			}
 
@@ -194,7 +194,7 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 
 			if (source.args.State().Source().Controller() && source.args.State().Source().Controller().HasThumbstick())
 			{
-				myThumbstickList[id] = v2f{ (float)source.args.State().ControllerProperties().ThumbstickX(), (float)source.args.State().ControllerProperties().ThumbstickY() };
+				mThumbstickList[id] = v2f{ (float)source.args.State().ControllerProperties().ThumbstickX(), (float)source.args.State().ControllerProperties().ThumbstickY() };
 			}
 			
 			//s->wrist.reset();
@@ -284,8 +284,8 @@ void	SpatialInteractionDeviceWUP::DoInputDeviceDescription()
 
 bool SpatialInteractionDeviceWUP::GetInteractionPosition(u32 ID, v3f& pos)const
 {
-	auto found = myInteractions.find(ID);
-	if (found == myInteractions.end())
+	auto found = mInteractions.find(ID);
+	if (found == mInteractions.end())
 		return false;
 
 	pos.x = found->second.Position.x;
@@ -296,8 +296,8 @@ bool SpatialInteractionDeviceWUP::GetInteractionPosition(u32 ID, v3f& pos)const
 
 const Interaction* SpatialInteractionDeviceWUP::GetInteraction(u32 ID) const
 {
-	auto found = myInteractions.find(ID);
-	if (found != myInteractions.end())
+	auto found = mInteractions.find(ID);
+	if (found != mInteractions.end())
 		return &(found->second);
 
 	return nullptr;
@@ -305,8 +305,8 @@ const Interaction* SpatialInteractionDeviceWUP::GetInteraction(u32 ID) const
 
 bool SpatialInteractionDeviceWUP::GetInteractionState(u32 ID, SourceState& state) const
 {
-	auto found = myInteractions.find(ID);
-	if (found == myInteractions.end())
+	auto found = mInteractions.find(ID);
+	if (found == mInteractions.end())
 		return false;
 
 	state = found->second.state;

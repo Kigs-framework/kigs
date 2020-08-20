@@ -22,9 +22,9 @@ IMPLEMENT_CLASS_INFO(ModuleInputWUP)
 
 ModuleInputWUP::ModuleInputWUP(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
-	myJoystickCount=0;
+	mJoystickCount=0;
 	
-	myIsInitOK=true;
+	mIsInitOK=true;
 	
 }
 
@@ -34,7 +34,7 @@ ModuleInputWUP::~ModuleInputWUP()
 
 void ModuleInputWUP::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
-	if (myIsInitOK)
+	if (mIsInitOK)
 	{
 		DECLARE_FULL_CLASS_INFO(core, MouseWUP, MouseDevice, ModuleInput);
 		DECLARE_FULL_CLASS_INFO(core, KeyboardWUP, KeyboardDevice, ModuleInput);

@@ -11,7 +11,17 @@
 
 #include "Texture.h"
 
-
+// ****************************************
+// * ImGuiLayer class
+// * --------------------------------------
+/**
+* \file	ImGuiLayer.h
+* \class	ImGuiLayer
+* \ingroup ImGUIModule
+* \brief Specialized 2D layer for ImGui display
+*
+*/
+// ****************************************
 class ImGuiLayer : public Abstract2DLayer
 {
 public:
@@ -31,7 +41,7 @@ public:
 	ImGuiContext* SetActiveImGuiLayer()
 	{
 		ImGuiContext* state = ImGui::GetCurrentContext();
-		ImGui::SetCurrentContext(myImGuiState);
+		ImGui::SetCurrentContext(mImGuiState);
 		return state;
 	}
 	void NewFrame(Timer* timer);
@@ -60,7 +70,7 @@ protected:
 
 	void SortItemsFrontToBack(SortItemsFrontToBackParam& param) override;
 
-	ImGuiContext* myImGuiState = nullptr;
+	ImGuiContext* mImGuiState = nullptr;
 	CoreBaseApplication* mApp = nullptr;
 	ModuleInput* mInput = nullptr;
 	kdouble mLastTime = -1.0;
@@ -116,12 +126,12 @@ protected:
 class ImGuiLayerScoped
 {
 public:
-	ImGuiLayerScoped(ImGuiLayer* layer) : old{ layer->SetActiveImGuiLayer() } {}
+	ImGuiLayerScoped(ImGuiLayer* layer) : mOld{ layer->SetActiveImGuiLayer() } {}
 	~ImGuiLayerScoped()
 	{
-		ImGui::SetCurrentContext(old);
+		ImGui::SetCurrentContext(mOld);
 	}
-	ImGuiContext* old = nullptr;
+	ImGuiContext* mOld = nullptr;
 };
 
 #endif

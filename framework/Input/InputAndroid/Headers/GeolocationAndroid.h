@@ -5,6 +5,19 @@
 #include "ModuleInputAndroid.h"
 
 #include <jni.h>
+
+// ****************************************
+// * GeolocationAndroid class
+// * --------------------------------------
+/**
+* \file	GeolocationAndroid.h
+* \class	GeolocationAndroid
+* \ingroup Input
+* \brief Android GPS management.
+*
+*/
+// ****************************************
+
 class	GeolocationAndroid : public GeolocationDevice
 {
 public:
@@ -29,13 +42,13 @@ protected:
 	void	Stop() override;
 
 	 
-	jmethodID 	getLatitude;
-	jmethodID 	getLongitude;
-	jmethodID 	getAltitude;
-	jmethodID 	getAccuracy;
-	jmethodID	isActive;
-	jmethodID	setActive;
-	jclass		myKigsGeolocation;
+	jmethodID 	mGetLatitude;
+	jmethodID 	mGetLongitude;
+	jmethodID 	mGetAltitude;
+	jmethodID 	mGetAccuracy;
+	jmethodID	mGetActive;
+	jmethodID	mSetActive;
+	jclass		mKigsGeolocation;
 	
 };    
 

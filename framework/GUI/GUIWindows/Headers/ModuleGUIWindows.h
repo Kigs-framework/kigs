@@ -1,10 +1,3 @@
-// Doxygen group defines
-
-/*! \defgroup GUIWindowsModule  GUI Windows module 
-*  \ingroup GUIModule
-*  GUI Module Classes for windows
-*/
-
 
 #ifndef _MODULEGUIWINDOWS_H_
 #define _MODULEGUIWINDOWS_H_
@@ -23,9 +16,12 @@ extern ModuleBase* PlatformGUIModuleInit(KigsCore* core, const kstl::vector<Core
 // ****************************************
 // * ModuleGUIWindows class
 // * --------------------------------------
-/*!  \class ModuleGUIWindows
-GUI module using WIN32 API
-\ingroup GUIWindowsModule
+/**
+* \file	ModuleGUIWindows.h
+* \class	DisplayDeviceCaps
+* \ingroup GUIModule
+* \ingroup Module
+* \brief	Specific Win32 GUI module.
 */
 // ****************************************
 

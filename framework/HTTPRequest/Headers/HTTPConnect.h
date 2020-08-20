@@ -8,11 +8,14 @@
 // ****************************************
 // * HTTPConnect class
 // * --------------------------------------
-/*!  \class HTTPConnect
-     manage an async html request
+/**
+* \file	HTTPConnect.h
+* \class	HTTPConnect
+* \ingroup HTTPRequest
+* \brief Connect to an http serveur.
+*
 */
 // ****************************************
-
 
 class HTTPConnect : public CoreModifiable
 {
@@ -38,19 +41,19 @@ public:
 
 	kstl::string	getHostName()
 	{
-		return (const kstl::string&)myHostName;
+		return (const kstl::string&)mHostName;
 	}
 
 	kstl::string getHostNameWithProtocol();
 
-	bool IsSync() { return myIsSynchronous; }
+	bool IsSync() { return mIsSynchronous; }
 
 protected:
-	maString	myHostName = BASE_ATTRIBUTE(HostName, "");
-	maInt		myPort = BASE_ATTRIBUTE(Port, 80);
-	maBool		myIsSynchronous = BASE_ATTRIBUTE(IsSynchronous, false);
-	maEnum<2>	myConnectionType = BASE_ATTRIBUTE(Type, "HTTP", "HTTPS");
-	bool		myIsOpen = false;
+	maString	mHostName = BASE_ATTRIBUTE(HostName, "");
+	maInt		mPort = BASE_ATTRIBUTE(Port, 80);
+	maBool		mIsSynchronous = BASE_ATTRIBUTE(IsSynchronous, false);
+	maEnum<2>	mType = BASE_ATTRIBUTE(Type, "HTTP", "HTTPS");
+	bool		mIsOpen = false;
 
 };
 

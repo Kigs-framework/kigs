@@ -5,6 +5,19 @@
 #include "ModuleInputAndroid.h"
 
 #include <jni.h>
+
+// ****************************************
+// * AccelerometerAndroid class
+// * --------------------------------------
+/**
+* \file	AccelerometerAndroid.h
+* \class	AccelerometerAndroid
+* \ingroup Input
+* \brief Android Accelerometer management
+*
+*/
+// ****************************************
+
 class	AccelerometerAndroid : public AccelerometerDevice
 {
 public:
@@ -33,19 +46,19 @@ public:
 protected:
 	virtual ~AccelerometerAndroid();  
 
-	bool isAvailable;
-	bool isWCAvailable;
-	bool isRunning;
+	bool mIsAvailable;
+	bool mIsWCAvailable;
+	bool mIsRunning;
 
 	void	Start() override;
 	void	Stop() override;
 
 
-	jmethodID 	StopMethod;
-	jmethodID 	StartMethod;
-	jmethodID 	getValue;
+	jmethodID 	mStopMethod;
+	jmethodID 	mStartMethod;
+	jmethodID 	mGetValue;
 
-	jclass		myKigsAccelerometer;
+	jclass		mKigsAccelerometer;
 	
 };    
 

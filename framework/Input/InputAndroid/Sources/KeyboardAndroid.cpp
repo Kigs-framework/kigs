@@ -28,10 +28,10 @@ IMPLEMENT_CLASS_INFO(KeyboardAndroid)
 IMPLEMENT_CONSTRUCTOR(KeyboardAndroid)
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	myJKeyboard = KigsJavaIDManager::RegisterClass(g_env, "com/kigs/input/KigsKeyboard");
+	mJKeyboard = KigsJavaIDManager::RegisterClass(g_env, "com/kigs/input/KigsKeyboard");
 
-	JGetActions = g_env->GetStaticMethodID(myJKeyboard, "GetKeyActions", "()[B");
-	JClear = g_env->GetStaticMethodID(myJKeyboard, "Clear", "()V");
+	mJGetActions = g_env->GetStaticMethodID(mJKeyboard, "GetKeyActions", "()[B");
+	mJClear = g_env->GetStaticMethodID(mJKeyboard, "Clear", "()V");
 
 	CurrentKeyboard = this;
 }
@@ -49,14 +49,14 @@ void	KeyboardAndroid::PushEvent(void* data, int count)
 
 void	KeyboardAndroid::UpdateDevice()
 {
-	m_KeyUpList.clear();
-	m_KeyDownList.clear();
+	mKeyUpList.clear();
+	mKeyDownList.clear();
 	kstl::vector<KeyEvent>	touchVector;
 
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	// get up event 
-	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(myJKeyboard, JGetActions);
+	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(mJKeyboard, mJGetActions);
 	//jsize len = g_env->GetArrayLength(arr);
 	jbyte *body = g_env->GetByteArrayElements(arr, 0);
 	/*for (int i = 0; i<len; i++)
@@ -79,16 +79,16 @@ void	KeyboardAndroid::UpdateDevice()
 			{
 			case KeyEvent::ACTION_UP:
 			{
-				m_KeyUpList.push_back(EventList[i]);
+				mKeyUpList.push_back(EventList[i]);
 				break;
 			}
 			case KeyEvent::ACTION_DOWN:
 			{
-				m_KeyDownList.push_back(EventList[i]);
+				mKeyDownList.push_back(EventList[i]);
 				break;
 			}
 			}
-			myDeviceItems[EventList[i].KeyCode]->getState()->SetValue(EventList[i].Action);
+			mDeviceItems[EventList[i].KeyCode]->getState()->SetValue(EventList[i].Action);
 			touchVector.push_back(EventList[i]);
 		}
 
@@ -101,25 +101,25 @@ void	KeyboardAndroid::UpdateDevice()
 		EmitSignal(Signals::KeyboardEvent, touchVector);
 	}
 
-	g_env->CallStaticVoidMethod(myJKeyboard, JClear);
+	g_env->CallStaticVoidMethod(mJKeyboard, mJClear);
 }
 
 void	KeyboardAndroid::DoInputDeviceDescription()
 {
-	myDeviceItemsCount = 256;
+	mDeviceItemsCount = 256;
 
-	DeviceItem**	devicearray = new DeviceItem*[myDeviceItemsCount];
+	DeviceItem**	devicearray = new DeviceItem*[mDeviceItemsCount];
 
 	unsigned int currentDevice = 0;
 
 	unsigned int index;
-	for (index = 0; index < myDeviceItemsCount; index++)
+	for (index = 0; index < mDeviceItemsCount; index++)
 	{
 		devicearray[currentDevice++] = new DeviceItem(DeviceItemState<int>(0));
 	}
 
-	InitItems(myDeviceItemsCount, devicearray);
-	for (index = 0; index < myDeviceItemsCount; index++)
+	InitItems(mDeviceItemsCount, devicearray);
+	for (index = 0; index < mDeviceItemsCount; index++)
 	{
 		delete devicearray[index];
 	}

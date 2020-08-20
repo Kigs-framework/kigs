@@ -5,10 +5,10 @@ IMPLEMENT_CLASS_INFO(VirtualAccelerometer);
 
 IMPLEMENT_CONSTRUCTOR(VirtualGyroscope)
 {
-	myQuaternion[0] = 0;
-	myQuaternion[1] = 0;
-	myQuaternion[2] = 0;
-	myQuaternion[3] = 1;
+	mRotationQuaternion[0] = 0;
+	mRotationQuaternion[1] = 0;
+	mRotationQuaternion[2] = 0;
+	mRotationQuaternion[3] = 1;
 }
 
 

@@ -15,20 +15,17 @@ extern ModuleBase* PlatformInputModuleInit(KigsCore* core, const kstl::vector<Co
 #define MODULEINITFUNC			ModuleInit
 #endif
 
-/*! \defgroup InputJavascript InputJavascript module
- *  manage keyboards, pad, mouse... with Javascript
-	\ingroup Input
-*/
-
-
 // ****************************************
 // * ModuleInputJavascript class
 // * --------------------------------------
-/*!  \class ModuleInputJavascript
-     this class is the module manager class
-	 \ingroup InputJavascript
-*/
-// ****************************************
+/**
+ * \class	ModuleInputJavascript
+ * \file	ModuleInputJavascript.h
+ * \ingroup Input
+ * \ingroup Module
+ * \brief	Javascript specific input module.
+ */
+ // ****************************************
 
 class ModuleInputJavascript : public ModuleBase
 {
@@ -42,17 +39,17 @@ public:
     void Close() override;
 	void Update(const Timer& timer, void* addParam) override;
 
-	bool	isInit(){return myIsInitOK;}
+	bool	isInit(){return mIsInitOK;}
 
-	unsigned int	getJoystickCount(){return myJoystickCount;}
+	unsigned int	getJoystickCount(){return mJoystickCount;}
 
 	bool addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
 
 protected:
     virtual ~ModuleInputJavascript();
 
-	bool					myIsInitOK;
-	unsigned int			myJoystickCount;
+	bool					mIsInitOK;
+	unsigned int			mJoystickCount;
 
 }; 
 

@@ -5,6 +5,19 @@
 #include "ModuleInputAndroid.h"
 
 #include <jni.h>
+
+// ****************************************
+// * CompassAndroid class
+// * --------------------------------------
+/**
+* \file	CompassAndroid.h
+* \class	CompassAndroid
+* \ingroup Input
+* \brief Android compass management.
+*
+*/
+// ****************************************
+
 class	CompassAndroid : public CompassDevice
 {
 public:
@@ -33,17 +46,17 @@ public:
 protected:
 	virtual ~CompassAndroid();  
 
-	bool isAvailable;
-	bool isRunning;
+	bool mIsAvailable;
+	bool mIsRunning;
 
 
 	void	Start() override;
 	void	Stop() override;
 
-	jmethodID 	StopMethod;
-	jmethodID 	StartMethod;
-	jmethodID 	getValue;
-	jclass		myKigsCompass;
+	jmethodID 	mStopMethod;
+	jmethodID 	mStartMethod;
+	jmethodID 	mGetValue;
+	jclass		mKigsCompass;
 	
 };    
 

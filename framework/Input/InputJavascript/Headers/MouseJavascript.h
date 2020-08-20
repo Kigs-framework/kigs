@@ -4,14 +4,17 @@
 #include "MouseDevice.h"
 #include "ModuleInputJavascript.h"
 
+
 // ****************************************
 // * MouseJavascript class
 // * --------------------------------------
-/*!  \class MouseJavascript
-     mouse management
-  \ingroup InputJavascript
-*/
-// ****************************************
+/**
+ * \class	MouseJavascript
+ * \file	MouseJavascript.h
+ * \ingroup Input
+ * \brief	Javascript mouse management.
+ */
+ // ****************************************
 
 class	MouseJavascript : public MouseDevice
 {
@@ -27,8 +30,8 @@ class	MouseJavascript : public MouseDevice
 
 	void	DoInputDeviceDescription() override;
 	
-	void	IncWheelCount(){myWheelCount++;}
-	void	IncButtonCount(){myButtonsCount++;}
+	void	IncWheelCount(){mWheelCount++;}
+	void	IncButtonCount(){mButtonsCount++;}
     
 	protected:
 	virtual ~MouseJavascript();   

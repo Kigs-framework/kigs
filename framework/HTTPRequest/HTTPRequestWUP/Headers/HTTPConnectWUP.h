@@ -1,7 +1,17 @@
 #pragma once
 
 #include "HTTPConnect.h"
-
+// ****************************************
+// * HTTPConnectWUP class
+// * --------------------------------------
+/**
+* \file	HTTPConnectWUP.h
+* \class	HTTPConnectWUP
+* \ingroup HTTPRequest
+* \brief UWP specific HTTP Connect class.
+*
+*/
+// ****************************************
 class HTTPConnectWUP : public HTTPConnect
 {
 public:

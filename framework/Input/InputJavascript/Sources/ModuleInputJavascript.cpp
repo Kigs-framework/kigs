@@ -16,8 +16,8 @@ IMPLEMENT_CLASS_INFO(ModuleInputJavascript)
 
 ModuleInputJavascript::ModuleInputJavascript(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
-	myJoystickCount=0;
-	myIsInitOK=true;
+	mJoystickCount=0;
+	mIsInitOK=true;
 	
 }
 
@@ -29,7 +29,7 @@ ModuleInputJavascript::~ModuleInputJavascript()
 
 void ModuleInputJavascript::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
-	if(myIsInitOK)
+	if(mIsInitOK)
 	{
 		BaseInit(core,"InputJavascript",params);
 		DECLARE_FULL_CLASS_INFO(core,MouseJavascript,Mouse,Input)
@@ -89,7 +89,7 @@ bool	ModuleInputJavascript::addItem(const CMSP& item, ItemPosition pos DECLARE_L
 	
 	if(item->isSubType(JoystickDevice::mClassID))
 	{
-		myJoystickCount++;
+		mJoystickCount++;
 		return CoreModifiable::addItem(item);
 	}
 	else if(item->isSubType(InputDevice::mClassID))

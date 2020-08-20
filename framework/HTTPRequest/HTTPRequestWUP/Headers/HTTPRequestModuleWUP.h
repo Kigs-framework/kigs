@@ -9,6 +9,19 @@ class HTTPRequestModuleWUP;
 extern HTTPRequestModuleWUP* gInstanceModuleHTTPRequestWUP;
 extern ModuleBase* PlatformHTTPRequestModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 
+// ****************************************
+// * HTTPRequestModuleWUP class
+// * --------------------------------------
+/**
+* \file	HTTPRequestModuleWUP.h
+* \class	HTTPRequestModuleWUP
+* \ingroup HTTPRequest
+* \ingroup Module
+* \brief UWP specific HTTP Request module
+*
+*/
+// ****************************************
+
 class HTTPRequestModuleWUP : public ModuleBase
 {
 public:

@@ -9,13 +9,24 @@
 
 #include <mutex>
 
+// ****************************************
+// * KeyboardWUP class
+// * --------------------------------------
+/**
+ * \class	KeyboardWUP
+ * \file	KeyboardWUP.h
+ * \ingroup Input
+ * \brief	UWP Keyboard management.
+ */
+ // ****************************************
+
 class	KeyboardWUP : public KeyboardDevice
 {
 public:
 	DECLARE_CLASS_INFO(KeyboardWUP, KeyboardDevice, Input);
 	KeyboardWUP(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
-	const DeviceItemBaseState&	getKeyState(int key_id)override {return *myDeviceItems[key_id]->getState();}
+	const DeviceItemBaseState&	getKeyState(int key_id)override {return *mDeviceItems[key_id]->getState();}
     
 	void	UpdateDevice()override;
 

@@ -27,7 +27,7 @@ KeyboardJavascript::KeyboardJavascript(const kstl::string& name,CLASS_NAME_TREE_
 KeyboardDevice(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	AddListenerToKeyBoard();
-	RecordingString_Enable=true;
+	mRecordingStringEnable=true;
 }
 
 KeyboardJavascript::~KeyboardJavascript()
@@ -36,15 +36,15 @@ KeyboardJavascript::~KeyboardJavascript()
 
 void	KeyboardJavascript::Set_RecordingString(bool _value)
 {
-	RecordingString_Enable = _value; 
+	mRecordingStringEnable = _value; 
 	if(_value)
-		MyString = "";
+		mString = "";
 }
 
 void	KeyboardJavascript::UpdateDevice()
 {
-	m_KeyUpList.clear();
-	m_KeyDownList.clear();
+	mKeyUpList.clear();
+	mKeyDownList.clear();
 	
 	int eventCount = Get_KeyBoardEventCount();
 	
@@ -87,21 +87,21 @@ void	KeyboardJavascript::UpdateDevice()
 			
 			if(EventType == 1) //Key Down
 			{
-				if(myDeviceItems[currentKey]->getState()->GetTypedValue(int) == 0)
+				if(mDeviceItems[currentKey]->getState()->GetTypedValue(int) == 0)
 				{
 					ke.Action = KeyEvent::ACTION_DOWN;
-					m_KeyDownList.push_back(ke);
+					mKeyDownList.push_back(ke);
 				}
-				myDeviceItems[currentKey]->getState()->SetValue(1);
+				mDeviceItems[currentKey]->getState()->SetValue(1);
 			}
 			else if(EventType == 0) //Key up
 			{
-				if(myDeviceItems[currentKey]->getState()->GetTypedValue(int) == 1)
+				if(mDeviceItems[currentKey]->getState()->GetTypedValue(int) == 1)
 				{
 					ke.Action = KeyEvent::ACTION_UP;
-					m_KeyUpList.push_back(ke);
+					mKeyUpList.push_back(ke);
 				}
-				myDeviceItems[currentKey]->getState()->SetValue(0);
+				mDeviceItems[currentKey]->getState()->SetValue(0);
 			}
 			
 			touchVector.push_back(ke);
@@ -118,20 +118,20 @@ void	KeyboardJavascript::UpdateDevice()
 
 void	KeyboardJavascript::DoInputDeviceDescription()
 {
-	myDeviceItemsCount=256;
+	mDeviceItemsCount=256;
 	
-	DeviceItem**	devicearray=new DeviceItem*[myDeviceItemsCount];
+	DeviceItem**	devicearray=new DeviceItem*[mDeviceItemsCount];
 	
 	unsigned int currentDevice=0;
 	
 	unsigned int index;
-	for(index=0;index<myDeviceItemsCount;index++)
+	for(index=0;index<mDeviceItemsCount;index++)
 	{
 		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<int>(0));
 	}
 	
-	InitItems(myDeviceItemsCount,devicearray);
-	for(index=0;index<myDeviceItemsCount;index++)
+	InitItems(mDeviceItemsCount,devicearray);
+	for(index=0;index<mDeviceItemsCount;index++)
 	{
 		delete devicearray[index];
 	}

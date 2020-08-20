@@ -15,7 +15,16 @@ class Camera;
 struct touchPosInfos;
 
 struct GetDistanceForInputSortParam;
-
+// ****************************************
+// * Holo3DSequenceManager class
+// * --------------------------------------
+/**
+ * \class	Holo3DSequenceManager
+ * \file	Holo3DSequenceManager.h
+ * \ingroup StandAlone
+ * \brief	Sequence manager for Hololens.
+ */
+ // ****************************************
 class Holo3DSequenceManager : public DataDrivenSequenceManager
 {
 public:
@@ -31,13 +40,13 @@ public:
 	bool	GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout);
 	void	ShowPanel(bool show, bool atFront=true);
 
-	void ChangePosition(Point3D pos) { myPosition = pos; myCurrentPos = pos; }
+	void ChangePosition(Point3D pos) { mPosition = pos; mCurrentPos = pos; }
 	
-	SP<Node3D>& GetSpatialNode() { return mySpacialNode; }
+	SP<Node3D>& GetSpatialNode() { return mSpacialNode; }
 
 	SP<Panel> GetCollidablePanel()
 	{
-		return myCollidablePanel;
+		return mCollidablePanel;
 	}
 
 protected:
@@ -52,54 +61,64 @@ protected:
 	void NotifyUpdate(const unsigned int labelid) override;
 
 	// Node3D placed in the scene3D for collision managment
-	SP<Node3D> mySpacialNode = nullptr;
-	CMSP myRenderingScreen = nullptr;
-	SP<Panel> myCollidablePanel = nullptr;
-	SP<Holo3DPanel> myDrawer = nullptr;
+	SP<Node3D> mSpacialNode = nullptr;
+	CMSP mRenderingScreen = nullptr;
+	SP<Panel> mCollidablePanel = nullptr;
+	SP<Holo3DPanel> mDrawer = nullptr;
 
 	maReference mParentNode = BASE_ATTRIBUTE(ParentNode);
 	maReference mFollowCamera = BASE_ATTRIBUTE(FollowCamera, "");
 
-	maString  myRenderingScreenName = BASE_ATTRIBUTE(RenderingScreenName, "");
+	maString  mRenderingScreenName = BASE_ATTRIBUTE(RenderingScreenName, "");
 
-	maVect3DF myPosition;
-	maVect3DF myNormal;
-	maVect3DF myUp;
-	maVect2DF mySize;
-	maVect2DF myDesignSize;
+	maVect3DF mPosition;
+	maVect3DF mNormal;
+	maVect3DF mUp;
+	maVect2DF mSize;
+	maVect2DF mDesignSize;
 
-	maBool myKeepDistance = BASE_ATTRIBUTE(KeepDistance, true);
-	maFloat myDistance = BASE_ATTRIBUTE(Distance, 1);
+	maBool mKeepDistance = BASE_ATTRIBUTE(KeepDistance, true);
+	maFloat mDistance = BASE_ATTRIBUTE(Distance, 1);
 
-	maFloat myDeltaDist = BASE_ATTRIBUTE(DeltaDist, 1);
-	maFloat myMaxVelocity = BASE_ATTRIBUTE(MaxVelocity, 1);
+	maFloat mDeltaDist = BASE_ATTRIBUTE(DeltaDist, 1);
+	maFloat mMaxVelocity = BASE_ATTRIBUTE(MaxVelocity, 1);
 
-	maUInt myCollideMask = BASE_ATTRIBUTE(CollideMask, 1);
+	maUInt mCollideMask = BASE_ATTRIBUTE(CollideMask, 1);
 
-	maInt myInputSortingLayer = BASE_ATTRIBUTE(InputSortingLayer, 0);
+	maInt mInputSortingLayer = BASE_ATTRIBUTE(InputSortingLayer, 0);
 
-	maBool myUseFixedPosition = BASE_ATTRIBUTE(UseFixedPosition, true);
-	maBool myUseFixedUp = BASE_ATTRIBUTE(UseFixedUp, true);
-	maBool myUseFixedNormal = BASE_ATTRIBUTE(UseFixedNormal, true);
+	maBool mUseFixedPosition = BASE_ATTRIBUTE(UseFixedPosition, true);
+	maBool mUseFixedUp = BASE_ATTRIBUTE(UseFixedUp, true);
+	maBool mUseFixedNormal = BASE_ATTRIBUTE(UseFixedNormal, true);
 
 	maBool mManualPosition = BASE_ATTRIBUTE(ManualPosition, false);
 
-	bool NeedRecomputePosition = false;
-	bool IsFixed;
-	bool IsFirstDraw;
-	bool IsShow = false;
+	bool mNeedRecomputePosition = false;
+	bool mIsFixed;
+	bool mIsFirstDraw;
+	bool mIsShow = false;
 
-	bool SetIsShow = false;
+	bool mSetIsShow = false;
 
-	bool ForceInFront = false;
-	float myCurrentVelocity = 0.0f;
+	bool mForceInFront = false;
+	float mCurrentVelocity = 0.0f;
 
-	Vector3D myCurrentView;
-	Vector3D myCurrentPos;
-	Vector3D myCurrentUp;
+	Vector3D mCurrentView;
+	Vector3D mCurrentPos;
+	Vector3D mCurrentUp;
 };
 
 
+// ****************************************
+// * InterfacePanel class
+// * --------------------------------------
+/**
+ * \class	InterfacePanel
+ * \file	Holo3DSequenceManager.h
+ * \ingroup StandAlone
+ * \brief	
+ */
+ // ****************************************
 class InterfacePanel : public Panel
 {
 public:

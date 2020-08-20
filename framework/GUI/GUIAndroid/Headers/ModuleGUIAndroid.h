@@ -1,10 +1,3 @@
-// Doxygen group defines
-
- /*! \defgroup GUIAndroidModule  GUI IPhone module 
-  *  \ingroup GUIModule
-  *  GUI Module Classes for IPhone
-  */
-
 
 #ifndef _MODULEGUIANDROID_H_
 #define _MODULEGUIANDROID_H_
@@ -15,15 +8,19 @@ class ModuleGUIAndroid;
 
 ModuleBase* PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 
+
 // ****************************************
 // * ModuleGUIAndroid class
 // * --------------------------------------
-/*!  \class ModuleGUIAndroid
-     GUI module using Android API
-     \ingroup GUIAndroidModule
+/**
+* \file	ModuleGUIAndroid.h
+* \class	ModuleGUIAndroid
+* \ingroup GUIModule
+* \ingroup Module
+* \brief Specific module for GUI classes ( Windows management )
+*
 */
 // ****************************************
-
 class ModuleGUIAndroid : public ModuleBase
 {
 public:

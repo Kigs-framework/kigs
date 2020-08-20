@@ -5,6 +5,18 @@
 #include "ModuleInputAndroid.h"
 
 #include <jni.h>
+
+// ****************************************
+// * GyroscopeAndroid class
+// * --------------------------------------
+/**
+* \file	GyroscopeAndroid.h
+* \class	GyroscopeAndroid
+* \ingroup Input
+* \brief Android Gyroscope management.
+*
+*/
+// ****************************************
 class	GyroscopeAndroid : public GyroscopeDevice
 {
 public:
@@ -24,25 +36,18 @@ public:
 protected:
 	virtual ~GyroscopeAndroid();  
 
-	bool	isAvailable;
-	bool	isRunning;
+	bool	mIsAvailable;
+	bool	mIsRunning;
 
 	void	Start() override;
 	void	Stop() override;
 
-	 
-	/*jmethodID 	getVelX;
-	jmethodID 	getVelY;
-	jmethodID 	getVelZ;
 
-	jmethodID	getMatrixElem;
-	jmethodID	getQuatElem;*/
-
-	jmethodID 	StopMethod;
-	jmethodID 	StartMethod;
-	jmethodID 	getVelocity;
-	jmethodID 	getQuat;
-	jclass		myKigsGyroscope;
+	jmethodID 	mStopMethod;
+	jmethodID 	mStartMethod;
+	jmethodID 	mGetVelocity;
+	jmethodID 	mGetQuat;
+	jclass		mKigsGyroscope;
 	
 };    
 

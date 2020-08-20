@@ -9,16 +9,16 @@ IMPLEMENT_CLASS_INFO(KeyboardDX)
 
 
 KeyboardDX::KeyboardDX(const kstl::string& name,CLASS_NAME_TREE_ARG) : KeyboardDevice(name,PASS_CLASS_NAME_TREE_ARG)
-, myDirectInputKeyboard(0)
+, mDirectInputKeyboard(0)
 {
-	myLayout = GetKeyboardLayout(0);
+	mLayout = GetKeyboardLayout(0);
 }
 
 KeyboardDX::~KeyboardDX()
 {  
-	if(myDirectInputKeyboard)
+	if(mDirectInputKeyboard)
 	{
-		myDirectInputKeyboard->Release();
+		mDirectInputKeyboard->Release();
 	}
 }    
 
@@ -26,13 +26,13 @@ void	KeyboardDX::UpdateDevice()
 {
 	
 
-	m_KeyUpList.clear();
-	m_KeyDownList.clear();
+	mKeyUpList.clear();
+	mKeyDownList.clear();
 
 	HRESULT	err;
 
 	bool IsOk = true;
-	if ((err = myDirectInputKeyboard->GetDeviceState( ((sizeof(unsigned char)) << 8), (void*)myKeys.state)) != DI_OK)
+	if ((err = mDirectInputKeyboard->GetDeviceState( ((sizeof(unsigned char)) << 8), (void*)mKeys.state)) != DI_OK)
 	{
 		if ((err & DIERR_INPUTLOST) && (err & DIERR_NOTACQUIRED))
 		{
@@ -40,7 +40,7 @@ void	KeyboardDX::UpdateDevice()
 			Release();
 			Aquire();
 		}
-		if ((err = myDirectInputKeyboard->GetDeviceState( ((sizeof(unsigned char)) << 8), (void*)myKeys.state)) != DI_OK)
+		if ((err = mDirectInputKeyboard->GetDeviceState( ((sizeof(unsigned char)) << 8), (void*)mKeys.state)) != DI_OK)
 		{
 			IsOk = false;
 		}
@@ -51,10 +51,10 @@ void	KeyboardDX::UpdateDevice()
 	if (IsOk)
 	{
 		kstl::vector<KeyEvent>	touchVector;
-		for(currentKey=0;currentKey<myDeviceItemsCount;currentKey++)
+		for(currentKey=0;currentKey<mDeviceItemsCount;currentKey++)
 		{
-			int PreviousValue = myDeviceItems[currentKey]->getState()->GetTypedValue(int);
-			if( myKeys.state[currentKey] != PreviousValue)
+			int PreviousValue = mDeviceItems[currentKey]->getState()->GetTypedValue(int);
+			if( mKeys.state[currentKey] != PreviousValue)
 			{
 				KeyEvent ke;
 				ke.Unicode = ScanToChar(currentKey, &ke.KeyCode);
@@ -63,16 +63,16 @@ void	KeyboardDX::UpdateDevice()
 				if(PreviousValue > 0)
 				{
 					ke.Action = KeyEvent::ACTION_UP;
-					m_KeyUpList.push_back(ke);
+					mKeyUpList.push_back(ke);
 				}
 				else
 				{
 					ke.Action = KeyEvent::ACTION_DOWN;
-					m_KeyDownList.push_back(ke);
+					mKeyDownList.push_back(ke);
 				}
 				touchVector.push_back(ke);
 			}
-			myDeviceItems[currentKey]->getState()->SetValue(myKeys.state[currentKey]);
+			mDeviceItems[currentKey]->getState()->SetValue(mKeys.state[currentKey]);
 		}
 		if(!touchVector.empty())
 		{
@@ -122,8 +122,8 @@ u16 KeyboardDX::ScanToChar(u32 scanCode, u32* vkCode)
 
 	if((*vkCode) == 0)
 	{
-		*vkCode = MapVirtualKeyEx(scanCode, MAPVK_VSC_TO_VK_EX, myLayout);
-		int nb = ToAsciiEx(*vkCode, scanCode, myKeys.state, &asciiValue, 0, myLayout);
+		*vkCode = MapVirtualKeyEx(scanCode, MAPVK_VSC_TO_VK_EX, mLayout);
+		int nb = ToAsciiEx(*vkCode, scanCode, mKeys.state, &asciiValue, 0, mLayout);
 	}
 
 	return asciiValue;
@@ -133,8 +133,8 @@ bool	KeyboardDX::Aquire()
 {
 	if (KeyboardDevice::Aquire())
 	{
-		HRESULT h = myDirectInputKeyboard->SetCooperativeLevel((myInputWindow ? (HWND)myInputWindow->GetHandle() : NULL), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-		myDirectInputKeyboard->Acquire();
+		HRESULT h = mDirectInputKeyboard->SetCooperativeLevel((mInputWindow ? (HWND)mInputWindow->GetHandle() : NULL), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+		mDirectInputKeyboard->Acquire();
 		return true;
 	}
 	return false;
@@ -144,7 +144,7 @@ bool	KeyboardDX::Release()
 {
 	if (KeyboardDevice::Release())
 	{
-		myDirectInputKeyboard->Unacquire();
+		mDirectInputKeyboard->Unacquire();
 		return true;
 	}
 	return false;
@@ -153,20 +153,20 @@ bool	KeyboardDX::Release()
 
 void	KeyboardDX::DoInputDeviceDescription()
 {
-	myDeviceItemsCount=256;
+	mDeviceItemsCount=256;
 
-	DeviceItem**	devicearray=new DeviceItem*[myDeviceItemsCount];
+	DeviceItem**	devicearray=new DeviceItem*[mDeviceItemsCount];
 
 	unsigned int currentDevice=0;
 
 	unsigned int index;
-	for(index=0;index<myDeviceItemsCount;index++)
+	for(index=0;index<mDeviceItemsCount;index++)
 	{
 		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<int>(0));
 	}
 
-	InitItems(myDeviceItemsCount,devicearray);
-	for(index=0;index<myDeviceItemsCount;index++)
+	InitItems(mDeviceItemsCount,devicearray);
+	for(index=0;index<mDeviceItemsCount;index++)
 	{
 		delete devicearray[index];
 	}
@@ -176,5 +176,5 @@ void	KeyboardDX::DoInputDeviceDescription()
 	//myDirectInputKeyboard->SetCooperativeLevel(myHwnd, DISCL_FOREGROUND |DISCL_NONEXCLUSIVE);
 
 	// set format to our key states
-	myDirectInputKeyboard->SetDataFormat(&c_dfDIKeyboard);
+	mDirectInputKeyboard->SetDataFormat(&c_dfDIKeyboard);
 }

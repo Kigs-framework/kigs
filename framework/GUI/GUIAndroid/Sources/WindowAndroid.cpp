@@ -13,10 +13,10 @@ IMPLEMENT_CLASS_INFO(WindowAndroid)
 //! constructor
 WindowAndroid::WindowAndroid(const kstl::string& name,CLASS_NAME_TREE_ARG) : Window(name,PASS_CLASS_NAME_TREE_ARG)
 {
-   myScreen=0;
+   mScreen=0;
    // on android only one fullscreen window
-   myPosX = 0;
-   myPosY = 0;
+   mPositionX = 0;
+   mPositionY = 0;
    
 }
 
@@ -24,8 +24,8 @@ WindowAndroid::WindowAndroid(const kstl::string& name,CLASS_NAME_TREE_ARG) : Win
 WindowAndroid::~WindowAndroid()
 {  
 	//! destroy rendering screen
-	if(myScreen)
-		myScreen->Destroy();
+	if(mScreen)
+		mScreen->Destroy();
 
 }    
 
@@ -38,10 +38,10 @@ void WindowAndroid::ProtectedInit()
 //! show window
 void  WindowAndroid::Show()
 {
-	if(myScreen && !myScreen->IsInit())
+	if(mScreen && !mScreen->IsInit())
 	{
-		myScreen->setValue("ParentWindowName",getName());
-		myScreen->Init();
+		mScreen->setValue("ParentWindowName",getName());
+		mScreen->Init();
 	}
 }    
 
@@ -49,34 +49,34 @@ void  WindowAndroid::Show()
 void  WindowAndroid::Update(const Timer&  timer, void* addParam)
 {
 	//! call screen update
-	if(myScreen)
-		myScreen->CallUpdate(timer,addParam);
+	if(mScreen)
+		mScreen->CallUpdate(timer,addParam);
 }    
 
 
 void	WindowAndroid::GetMousePosInWindow(int posx,int posy,kfloat& wposx,kfloat& wposy)
 {
-	posx -= (int)myPosX;
-	posy -= (int)myPosY;
+	posx -= (int)mPositionX;
+	posy -= (int)mPositionY;
 	wposx = (kfloat)posx;
 	wposy = (kfloat)posy;
 	return;
 
-	posx -= (int)myPosX;
-	if(posx >= (int)mySizeX)
-		posx = ((int)mySizeX)-1;
+	posx -= (int)mPositionX;
+	if(posx >= (int)mSizeX)
+		posx = ((int)mSizeX)-1;
 	if(posx < 0)
 		posx = 0;
 
-	posy -= (int)myPosY;
-	if(posy>=(int)mySizeY)
-		posy = ((int)mySizeY)-1;
+	posy -= (int)mPositionY;
+	if(posy>=(int)mSizeY)
+		posy = ((int)mSizeY)-1;
 	if(posy < 0)
 		posy = 0;
 
-	if(myScreen)
+	if(mScreen)
 	{
-		myScreen->GetMousePosInScreen(posx,posy,wposx,wposy);
+		mScreen->GetMousePosInScreen(posx,posy,wposx,wposy);
 	}
 	else
 	{
@@ -87,21 +87,21 @@ void	WindowAndroid::GetMousePosInWindow(int posx,int posy,kfloat& wposx,kfloat& 
 
 void	WindowAndroid::GetMousePosInDesignWindow(int posx,int posy,kfloat& wposx,kfloat& wposy)
 {
-	posx -= (int)myPosX;
-	if(posx >= (int)mySizeX)
-		posx = ((int)mySizeX)-1;
+	posx -= (int)mPositionX;
+	if(posx >= (int)mSizeX)
+		posx = ((int)mSizeX)-1;
 	if(posx < 0)
 		posx = 0;
 
-	posy -= (int)myPosY;
-	if(posy>=(int)mySizeY)
-		posy = ((int)mySizeY)-1;
+	posy -= (int)mPositionY;
+	if(posy>=(int)mSizeY)
+		posy = ((int)mSizeY)-1;
 	if(posy < 0)
 		posy = 0;
 
-	if(myScreen)
+	if(mScreen)
 	{
-		myScreen->GetMousePosInDesignScreen(posx,posy,wposx,wposy);
+		mScreen->GetMousePosInDesignScreen(posx,posy,wposx,wposy);
 	}
 	else
 	{

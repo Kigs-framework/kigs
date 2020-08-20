@@ -1,10 +1,3 @@
-// Doxygen group defines
-
- /*! \defgroup GUIModuleJavascript  GUI IPhone module 
-  *  \ingroup GUIModule
-  *  GUI Module Classes for Javascript (HTML5 canvas)
-  */
-
 
 #ifndef _MODULEGUIJAVASCRIPT_H_
 #define _MODULEGUIJAVASCRIPT_H_
@@ -25,9 +18,13 @@ extern ModuleBase* PlatformGUIModuleInit(KigsCore* core, const kstl::vector<Core
 // ****************************************
 // * ModuleGUIJavascript class
 // * --------------------------------------
-/*!  \class ModuleGUIJavascript
-     GUI module using Javascript
-     \ingroup GUIModuleJavascript
+/**
+* \file	ModuleGUIJavascript.h
+* \class	ModuleGUIJavascript
+* \ingroup GUIModule
+* \ingroup Module
+* \brief Specific Emscripten GUI module
+*
 */
 // ****************************************
 

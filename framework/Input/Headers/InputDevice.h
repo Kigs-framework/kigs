@@ -11,15 +11,12 @@ class Window;
 // * InputDevice class
 // * --------------------------------------
 /**
- * \file	InputDevice.h
  * \class	InputDevice
+ * \file	InputDevice.h
  * \ingroup Input
- * \brief	base class for all input devices
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \brief	Base class for all input devices.
  */
-// ****************************************
+ // ****************************************
 class InputDevice : public CoreModifiable
 {
 public:
@@ -47,8 +44,8 @@ public:
 	 */
 	virtual bool	Aquire()
 	{
-		myAquireCount++;
-		return (myAquireCount==1);
+		mAquireCount++;
+		return (mAquireCount==1);
 	}
 
 	/**
@@ -58,10 +55,10 @@ public:
 	 */
 	virtual bool	Release()
 	{
-		if(myAquireCount>0)
+		if(mAquireCount>0)
 		{
-			myAquireCount--;
-			return (myAquireCount == 0);
+			mAquireCount--;
+			return (mAquireCount == 0);
 		}
 		return false;
 	}
@@ -71,7 +68,7 @@ public:
 	 * \fn 		bool	IsAquired()
 	 * \return	aquire value
 	 */
-	bool	IsAquired(){return (myAquireCount>0);}
+	bool	IsAquired(){return (mAquireCount>0);}
 
 	/**
 	 * \brief	update the device
@@ -119,7 +116,7 @@ public:
 	 * \fn 		unsigned int GetItemsCount()
 	 * \return	the number of item
 	 */
-	unsigned int GetItemsCount(){return myDeviceItemsCount;}
+	unsigned int GetItemsCount(){return mDeviceItemsCount;}
 protected:
 	/**
 	 * \brief	destructor
@@ -128,13 +125,13 @@ protected:
 	virtual ~InputDevice();
 
 	//! list of devices
-	DeviceItem**		myDeviceItems;
+	DeviceItem**		mDeviceItems;
 	//! number of devices
-	unsigned int		myDeviceItemsCount;
+	unsigned int		mDeviceItemsCount;
 	//! >0 if acquire (started) 
-	unsigned int		myAquireCount;
+	unsigned int		mAquireCount;
 	//! link to the input windows
-	Window*				myInputWindow;
+	Window*				mInputWindow;
 };
 
 #endif //_INPUTDEVICE_H_

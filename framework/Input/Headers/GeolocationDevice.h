@@ -2,7 +2,16 @@
 #define _GEOLOCATIONDEVICE_H_
 
 #include "InputDevice.h"
-
+// ****************************************
+// * GeolocationDevice class
+// * --------------------------------------
+/**
+ * \class	GeolocationDevice
+ * \file	GeolocationDevice.h
+ * \ingroup Input
+ * \brief	GPS management.
+ */
+ // ****************************************
 class GeolocationDevice : public InputDevice
 {
 public:
@@ -50,8 +59,8 @@ protected:
 	maDouble	mLongitude;
 	maDouble	mAltitude;
 	maFloat		mAccuracy;
-	maInt		myRate;
-	maFloat		myMinDistance;
+	maInt		mRate;
+	maFloat		mMinDistance;
 };
 
 

@@ -5,14 +5,21 @@
 #include "Core.h"
 
 
+/*! \defgroup HTTPRequest HTTPRequest module
+*/
+
 // ****************************************
 // * HTTPRequestModule class
 // * --------------------------------------
-/*!  \class HTTPRequestModule
-    base class for generic SQLite access. 
+/**
+* \file	HTTPRequestModule.h
+* \class	HTTPRequestModule
+* \ingroup HTTPRequest
+* \ingroup Module
+* \brief Generic Module for HTTP Request classes
+*
 */
 // ****************************************
-
 class HTTPRequestModule : public ModuleBase
 {
 public:

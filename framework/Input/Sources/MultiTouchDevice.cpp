@@ -7,9 +7,9 @@ IMPLEMENT_CLASS_INFO(MultiTouchDevice)
 
 int		MultiTouchDevice::getTouchState(int touchIndex)
 {
-	if (touchIndex >= 0 && touchIndex < myMaxTouch)
+	if (touchIndex >= 0 && touchIndex < mMaxTouch)
 	{
-		return myDeviceItems[touchIndex*3+2]->getState()->GetTypedValue(int);
+		return mDeviceItems[touchIndex*3+2]->getState()->GetTypedValue(int);
 	}
 	else
 	{
@@ -19,10 +19,10 @@ int		MultiTouchDevice::getTouchState(int touchIndex)
 
 void	MultiTouchDevice::getTouchPos(int touchIndex, kfloat &posX, kfloat &posY)
 {
-	if (touchIndex >= 0 && touchIndex < myMaxTouch)
+	if (touchIndex >= 0 && touchIndex < mMaxTouch)
 	{
-		posX = myDeviceItems[touchIndex * 3 + 0]->getState()->GetTypedValue(float);
-		posY = myDeviceItems[touchIndex * 3 + 1]->getState()->GetTypedValue(float);
+		posX = mDeviceItems[touchIndex * 3 + 0]->getState()->GetTypedValue(float);
+		posY = mDeviceItems[touchIndex * 3 + 1]->getState()->GetTypedValue(float);
 	}
 	else
 	{

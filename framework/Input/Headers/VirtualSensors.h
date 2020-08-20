@@ -2,6 +2,17 @@
 #include "GyroscopeDevice.h"
 #include "AccelerometerDevice.h"
 
+// ****************************************
+// * VirtualGyroscope class
+// * --------------------------------------
+/**
+ * \class	VirtualGyroscope
+ * \file	VirtualSensors.h
+ * \ingroup Input
+ * \brief	Emulate a gyroscope.
+ */
+ // ****************************************
+
 class VirtualGyroscope : public GyroscopeDevice
 {
 public:
@@ -16,10 +27,10 @@ public:
 	void setQuaternion(Quaternion q)
 	{
 		q.Normalize();
-		myQuaternion[0] = q.V.x;
-		myQuaternion[1] = q.V.y;
-		myQuaternion[2] = q.V.z;
-		myQuaternion[3] = q.w;
+		mRotationQuaternion[0] = q.V.x;
+		mRotationQuaternion[1] = q.V.y;
+		mRotationQuaternion[2] = q.V.z;
+		mRotationQuaternion[3] = q.w;
 	}
 
 protected:
@@ -27,6 +38,16 @@ protected:
 	void Stop() override {}
 };
 
+// ****************************************
+// * VirtualAccelerometer class
+// * --------------------------------------
+/**
+ * \class	VirtualAccelerometer
+ * \file	VirtualSensors.h
+ * \ingroup Input
+ * \brief	Emulate an accelerometer.
+ */
+ // ****************************************
 
 class VirtualAccelerometer : public AccelerometerDevice
 {
@@ -41,9 +62,9 @@ public:
 
 	void setAcceleration(Vector3D a)
 	{
-		myAccX = a.x;
-		myAccY = a.y;
-		myAccZ = a.z;
+		mAccX = a.x;
+		mAccY = a.y;
+		mAccZ = a.z;
 	}
 protected:
 	void Start() override {}

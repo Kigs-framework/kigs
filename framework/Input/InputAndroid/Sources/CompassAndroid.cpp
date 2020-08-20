@@ -1,11 +1,3 @@
-/*
- *  CompassAndroid.cpp
- *  AndroidInputAndroid
- *
- *  Created by steph on 4/4/11.
- *  Copyright 2011 __MyCompanyName__. All rights reserved.
- *
- */
 
 #include "CompassAndroid.h"
 #include "Core.h"
@@ -16,27 +8,27 @@ IMPLEMENT_CLASS_INFO(CompassAndroid)
 
 CompassAndroid::CompassAndroid(const kstl::string& name, CLASS_NAME_TREE_ARG)
 	: CompassDevice(name, PASS_CLASS_NAME_TREE_ARG)
-	, isRunning(false)
+	, mIsRunning(false)
 {
-	myCompX = 0.0f;
-	myCompY = 0.0f;
-	myCompZ = 0.0f;
+	mCompX = 0.0f;
+	mCompY = 0.0f;
+	mCompZ = 0.0f;
 
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	jclass pMaClasse = g_env->FindClass("com/kigs/input/KigsCompass");
-	myKigsCompass = (jclass)g_env->NewGlobalRef(pMaClasse);
+	mKigsCompass = (jclass)g_env->NewGlobalRef(pMaClasse);
 
 	// check if supported
-	jmethodID method = g_env->GetStaticMethodID(myKigsCompass, "isSupported", "()Z");
-	isAvailable = g_env->CallStaticBooleanMethod(myKigsCompass, method);
+	jmethodID method = g_env->GetStaticMethodID(mKigsCompass, "isSupported", "()Z");
+	mIsAvailable = g_env->CallStaticBooleanMethod(mKigsCompass, method);
 
-	if (isAvailable)
+	if (mIsAvailable)
 	{
-		StopMethod = g_env->GetStaticMethodID(myKigsCompass, "stopListening", "(Z)V");
-		StartMethod = g_env->GetStaticMethodID(myKigsCompass, "startListening", "(I)V");
+		mStopMethod = g_env->GetStaticMethodID(mKigsCompass, "stopListening", "(Z)V");
+		mStartMethod = g_env->GetStaticMethodID(mKigsCompass, "startListening", "(I)V");
 
-		getValue = g_env->GetStaticMethodID(myKigsCompass, "getValue", "()[B");
+		mGetValue = g_env->GetStaticMethodID(mKigsCompass, "getValue", "()[B");
 	}
 }
 
@@ -44,8 +36,8 @@ CompassAndroid::~CompassAndroid()
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	g_env->DeleteGlobalRef(myKigsCompass);
-	myKigsCompass = 0;
+	g_env->DeleteGlobalRef(mKigsCompass);
+	mKigsCompass = 0;
 }
 
 bool	CompassAndroid::Aquire()
@@ -71,45 +63,45 @@ bool	CompassAndroid::Release()
 
 void	CompassAndroid::Start()
 {
-	if (isAvailable)
+	if (mIsAvailable)
 	{
 		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-		g_env->CallStaticVoidMethod(myKigsCompass, StartMethod, (int)myRate);
-		isRunning = true;
+		g_env->CallStaticVoidMethod(mKigsCompass, mStartMethod, (int)mRate);
+		mIsRunning = true;
 	}
 }
 
 void	CompassAndroid::Stop()
 {
-	if (isAvailable)
+	if (mIsAvailable)
 	{
 		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-		g_env->CallStaticVoidMethod(myKigsCompass, StopMethod, false);
-		isRunning = false;
+		g_env->CallStaticVoidMethod(mKigsCompass, mStopMethod, false);
+		mIsRunning = false;
 	}
 }
 
 
 void	CompassAndroid::UpdateDevice()
 {
-	if (!isAvailable)
+	if (!mIsAvailable)
 		return;
-	if (!isRunning)
+	if (!mIsRunning)
 		return;
 
 
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 
-	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(myKigsCompass, getValue);
+	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(mKigsCompass, mGetValue);
 	jbyte *body = g_env->GetByteArrayElements(arr, 0);
 	float* val = (float*)body;
 	float x = val[0];
 	float y = val[1];
 	float z = val[2];
-	myCompX = x;
-	myCompY = y;
-	myCompZ = z;
+	mCompX = x;
+	mCompY = y;
+	mCompZ = z;
 
 	g_env->ReleaseByteArrayElements(arr, body, 0);
 
@@ -118,7 +110,7 @@ void	CompassAndroid::UpdateDevice()
 void	CompassAndroid::DoInputDeviceDescription()
 {
 	CompassDevice::InitModifiable(); 
-	if (!isAvailable)
+	if (!mIsAvailable)
 	{
 		UninitModifiable();
 	}

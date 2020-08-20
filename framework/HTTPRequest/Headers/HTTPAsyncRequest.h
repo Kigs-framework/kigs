@@ -9,16 +9,20 @@
 
 #include <atomic>
 
+class HTTPConnect;
+class CoreRawBuffer;
+
 // ****************************************
 // * HTTPAsyncRequest class
 // * --------------------------------------
-/*!  \class HTTPAsyncRequest
-     manage an async html request
+/**
+* \file	HTTPAsyncRequest.h
+* \class	HTTPAsyncRequest
+* \ingroup HTTPRequest
+* \brief Manage Async HTTP Request
+*
 */
 // ****************************************
-
-class HTTPConnect;
-class CoreRawBuffer;
 class HTTPAsyncRequest : public AsyncRequest
 {	
 public:
@@ -64,33 +68,33 @@ protected:
     virtual ~HTTPAsyncRequest();
 
 	maReference												myConnection = BASE_ATTRIBUTE(Connection, "");
-	maEnum<4>												myRequestType = BASE_ATTRIBUTE(Type, "GET", "POST", "PUT", "DELETE");
-	maUInt													myFlags = BASE_ATTRIBUTE(FLAGS, 0);
-	maString												myRequestURL = BASE_ATTRIBUTE(URL, "");
-	maUInt													myVersion = BASE_ATTRIBUTE(Version, 0);
+	maEnum<4>												mType = BASE_ATTRIBUTE(Type, "GET", "POST", "PUT", "DELETE");
+	maUInt													mFLAGS = BASE_ATTRIBUTE(FLAGS, 0);
+	maString												mURL = BASE_ATTRIBUTE(URL, "");
+	maUInt													mVersion = BASE_ATTRIBUTE(Version, 0);
 
 	// Old mode - use OnResponse signal instead
-	maString												myNotificationName = BASE_ATTRIBUTE(Notification, "");
-	maReference												myCallbackObject = BASE_ATTRIBUTE(CallbackReceiver, "");
-	maBuffer												myReceivedBuffer = BASE_ATTRIBUTE(ReceivedBuffer, "");
+	maString												mNotification = BASE_ATTRIBUTE(Notification, "");
+	maReference												mCallbackReceiver = BASE_ATTRIBUTE(CallbackReceiver, "");
+	maBuffer												mReceivedBuffer = BASE_ATTRIBUTE(ReceivedBuffer, "");
 	//
 
-	ContentEncoding											myContentEncoding = ANSI;
-	ContentEncoding											myFoundCharset = ANSI;
-	kstl::string											myContentType;
+	ContentEncoding											mContentEncoding = ANSI;
+	ContentEncoding											mFoundCharset = ANSI;
+	kstl::string											mContentType;
 
 	// post
-	char*													myPostBuffer = nullptr;
-	u32														myPostBufferLength = 0u;
+	char*													mPostBuffer = nullptr;
+	u32														mPostBufferLength = 0u;
 
 	std::vector<std::string>								mHeaders;
 
 	void	ClearReceivedBuffer();
 
 	// size of "cache" buffer when receiving file part
-	maInt						myReceiveBufferSize = BASE_ATTRIBUTE(ReceiveBufferSize, 4096);
+	maInt						mReceiveBufferSize = BASE_ATTRIBUTE(ReceiveBufferSize, 4096);
 
-	maBool						myReceiveFullAnswer = BASE_ATTRIBUTE(ReceiveFullAnswer, true);
+	maBool						mReceiveFullAnswer = BASE_ATTRIBUTE(ReceiveFullAnswer, true);
 };
 
 #endif //_HTTPASYNCREQUEST_H_

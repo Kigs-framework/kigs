@@ -11,42 +11,42 @@ IMPLEMENT_CLASS_INFO(DisplayDeviceCapsJavascript)
 DisplayDeviceCapsJavascript::DisplayDeviceCapsJavascript(const kstl::string& name,CLASS_NAME_TREE_ARG) : DisplayDeviceCaps(name,PASS_CLASS_NAME_TREE_ARG)
 {
 
-	myDisplayDeviceList.clear();
+	mDisplayDeviceList.clear();
 
 	DisplayDevice toAdd;
 
 	// only one screen
-	toAdd.myName="SCREEN";
-	toAdd.myMain=true;
+	toAdd.mName="SCREEN";
+	toAdd.mMain=true;
 	
 	DisplayDeviceCapacity modeToAdd;
 	
 	Point2DI screenSize (GetHTMLBodySizeX(), GetHTMLBodySizeY());
 
-	modeToAdd.myWidth= screenSize.x;
-	modeToAdd.myHeight= screenSize.y;
-	modeToAdd.myBitPerPixel=16;
-	modeToAdd.myIsCurrent=true;
+	modeToAdd.mWidth= screenSize.x;
+	modeToAdd.mHeight= screenSize.y;
+	modeToAdd.mBitPerPixel=16;
+	modeToAdd.mIsCurrent=true;
 
-	toAdd.myCapacityList.push_back(modeToAdd);
-	myDisplayDeviceList[toAdd.myName]=toAdd;
+	toAdd.mCapacityList.push_back(modeToAdd);
+	mDisplayDeviceList[toAdd.mName]=toAdd;
 
 	// add device PARENT 
 	DisplayDevice Parent;
-	Parent.myName = "PARENT";
-	Parent.myMain = false;
+	Parent.mName = "PARENT";
+	Parent.mMain = false;
 
 	Point2DI parentSize(GetHTMLParentSizeX(), GetHTMLParentSizeY());
 
 	printf("Parent Size : %d %d\n", parentSize.x, parentSize.y);
 
-	modeToAdd.myWidth = parentSize.x;
-	modeToAdd.myHeight = parentSize.y;
-	modeToAdd.myBitPerPixel = 16;
-	modeToAdd.myIsCurrent = true;
+	modeToAdd.mWidth = parentSize.x;
+	modeToAdd.mHeight = parentSize.y;
+	modeToAdd.mBitPerPixel = 16;
+	modeToAdd.mIsCurrent = true;
 
-	Parent.myCapacityList.push_back(modeToAdd);
-	myDisplayDeviceList[Parent.myName] = Parent;
+	Parent.mCapacityList.push_back(modeToAdd);
+	mDisplayDeviceList[Parent.mName] = Parent;
 
 }
 

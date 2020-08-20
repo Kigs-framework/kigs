@@ -42,8 +42,8 @@ bool	MouseJavascript::Aquire()
 {
 	if (MouseDevice::Aquire())
 	{
-		myPosX = 0;
-		myPosY = 0;
+		mPosX = 0;
+		mPosY = 0;
 		return true;
 	}
 	return false;
@@ -59,10 +59,10 @@ void	MouseJavascript::UpdateDevice()
 	//Get event count
 	int value = Get_MouseEventCount();
 	
-	myDeviceItems[0]->getState()->SetValue(0);
-	myDeviceItems[1]->getState()->SetValue(0);
+	mDeviceItems[0]->getState()->SetValue(0);
+	mDeviceItems[1]->getState()->SetValue(0);
 	
-	myPreviousDZ = myDZ;
+	mPreviousDZ = mDZ;
 	
 	for(int i = 0; i < value; i++)
 	{
@@ -78,34 +78,34 @@ void	MouseJavascript::UpdateDevice()
 		if(i == value-1)
 		{
 			// posX and posY
-			myDeviceItems[currentDevice++]->getState()->SetValue(PosX-(int)(kfloat)myPosX);
-			myDeviceItems[currentDevice++]->getState()->SetValue(PosY-(int)(kfloat)myPosY);
+			mDeviceItems[currentDevice++]->getState()->SetValue(PosX-(int)(kfloat)mPosX);
+			mDeviceItems[currentDevice++]->getState()->SetValue(PosY-(int)(kfloat)mPosY);
 		}
 		
 		if(ButtonType == 1) // left
 		{
 			if(EventType == 1) // Pressed
-			myDeviceItems[2]->getState()->SetValue(0x80);
+			mDeviceItems[2]->getState()->SetValue(0x80);
 			else
-				myDeviceItems[2]->getState()->SetValue(0x00);
+				mDeviceItems[2]->getState()->SetValue(0x00);
 		}
 		
 		else if(ButtonType == 3) // right
 		{
 			if(EventType == 1) // Pressed
-			myDeviceItems[3]->getState()->SetValue(0x80);
+			mDeviceItems[3]->getState()->SetValue(0x80);
 			else
-				myDeviceItems[3]->getState()->SetValue(0x00);
+				mDeviceItems[3]->getState()->SetValue(0x00);
 		}
 		
 		else if(ButtonType == 2) // wheel
 		{
 			if(EventType == 1) // Pressed
-			myDeviceItems[4]->getState()->SetValue(0x80);
+			mDeviceItems[4]->getState()->SetValue(0x80);
 			else if(EventType == 2)
-				myDeviceItems[4]->getState()->SetValue(0x00);
+				mDeviceItems[4]->getState()->SetValue(0x00);
 			else// wheel roll
-			myDZ += PosX;
+			mDZ += PosX;
 		}
 	}
 	
@@ -118,10 +118,10 @@ void	MouseJavascript::UpdateDevice()
 void	MouseJavascript::DoInputDeviceDescription()
 {
 	
-	myButtonsCount=3;
-	myDeviceItemsCount=5; // 2 for posx and posy
+	mButtonsCount=3;
+	mDeviceItemsCount=5; // 2 for posx and posy
 	
-	DeviceItem**	devicearray=new DeviceItem*[myDeviceItemsCount];
+	DeviceItem**	devicearray=new DeviceItem*[mDeviceItemsCount];
 	
 	int currentDevice=0;
 	
@@ -129,14 +129,14 @@ void	MouseJavascript::DoInputDeviceDescription()
 	devicearray[currentDevice++]=new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0)));
 	
 	int currentButton;
-	for(currentButton=0;currentButton<myButtonsCount;currentButton++)
+	for(currentButton=0;currentButton<mButtonsCount;currentButton++)
 	{
 		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<int>(0));
 	}
 	
-	InitItems(myDeviceItemsCount,devicearray);
+	InitItems(mDeviceItemsCount,devicearray);
 	
-	for(currentDevice=0;currentDevice<myDeviceItemsCount;currentDevice++)
+	for(currentDevice=0;currentDevice<mDeviceItemsCount;currentDevice++)
 	{
 		delete devicearray[currentDevice];
 	}

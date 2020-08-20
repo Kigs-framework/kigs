@@ -3,6 +3,18 @@
 
 #include "InputDevice.h"
 
+// ****************************************
+// * AccelerometerDevice class
+// * --------------------------------------
+/**
+* \file	AccelerometerDevice.h
+* \class	AccelerometerDevice
+* \ingroup Input
+* \brief Base class for accelerometer
+*
+*/
+// ****************************************
+
 class AccelerometerDevice : public InputDevice
 {
 public:
@@ -26,7 +38,7 @@ public:
 	 * \param	posX : position on x axis (in/out param)
 	 * \param	posY : position on y axis (in/out param)
 	 */
-	void			getPos(kfloat& posX,kfloat& posY,kfloat& posZ){posX=myAccX; posY=myAccY; posZ=myAccZ;}
+	void			getPos(kfloat& posX,kfloat& posY,kfloat& posZ){posX=mAccX; posY=mAccY; posZ=mAccZ;}
 	
 	
 	/**
@@ -46,26 +58,26 @@ protected:
 	virtual void	Stop() = 0;
 
 	// world coordinate acceleration
-	maFloat	myAccX;
-	maFloat	myAccY;
-	maFloat	myAccZ;
+	maFloat	mAccX;
+	maFloat	mAccY;
+	maFloat	mAccZ;
 
 	// device coordinate acceleration
-	maFloat	myRawAccX;
-	maFloat	myRawAccY;
-	maFloat	myRawAccZ;
+	maFloat	mRawAccX;
+	maFloat	mRawAccY;
+	maFloat	mRawAccZ;
 	
 	// world coordinate integrated velocity
-	maFloat	myVelX;
-	maFloat	myVelY;
-	maFloat	myVelZ;
+	maFloat	mVelX;
+	maFloat	mVelY;
+	maFloat	mVelZ;
 
 	// world coordinate integrated position
-	maFloat	myPosX;
-	maFloat	myPosY;
-	maFloat	myPosZ;
+	maFloat	mPosX;
+	maFloat	mPosY;
+	maFloat	mPosZ;
 
-	maInt	myRate;
+	maInt	mRate;
 
 };
 

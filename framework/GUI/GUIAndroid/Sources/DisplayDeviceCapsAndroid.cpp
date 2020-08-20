@@ -9,25 +9,25 @@ IMPLEMENT_CLASS_INFO(DisplayDeviceCapsAndroid)
 DisplayDeviceCapsAndroid::DisplayDeviceCapsAndroid(const kstl::string& name,CLASS_NAME_TREE_ARG) : DisplayDeviceCaps(name,PASS_CLASS_NAME_TREE_ARG)
 {
 
-	myDisplayDeviceList.clear();
+	mDisplayDeviceList.clear();
 
 	DisplayDevice toAdd;
 
 	// only one screen
-	toAdd.myName="SCREEN";
-	toAdd.myMain=true;
+	toAdd.mName="SCREEN";
+	toAdd.mMain=true;
 	
 	DisplayDeviceCapacity modeToAdd;
 	
 	JNIEnv* pEnv=KigsJavaIDManager::getEnv(pthread_self());
 
-	modeToAdd.myWidth=(int)pEnv->CallStaticIntMethod(KigsJavaIDManager::Renderer_class,  KigsJavaIDManager::GetResolutionX);
-	modeToAdd.myHeight=(int)pEnv->CallStaticIntMethod(KigsJavaIDManager::Renderer_class,  KigsJavaIDManager::GetResolutionY);
-	modeToAdd.myBitPerPixel=16;
-	modeToAdd.myIsCurrent=true;	
+	modeToAdd.mWidth=(int)pEnv->CallStaticIntMethod(KigsJavaIDManager::Renderer_class,  KigsJavaIDManager::GetResolutionX);
+	modeToAdd.mHeight=(int)pEnv->CallStaticIntMethod(KigsJavaIDManager::Renderer_class,  KigsJavaIDManager::GetResolutionY);
+	modeToAdd.mBitPerPixel=16;
+	modeToAdd.mIsCurrent=true;	
 
-	toAdd.myCapacityList.push_back(modeToAdd);
-	myDisplayDeviceList[toAdd.myName]=toAdd;
+	toAdd.mCapacityList.push_back(modeToAdd);
+	mDisplayDeviceList[toAdd.mName]=toAdd;
 
 }
 

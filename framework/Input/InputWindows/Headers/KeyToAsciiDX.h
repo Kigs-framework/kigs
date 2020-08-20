@@ -6,12 +6,14 @@
 // ****************************************
 // * KeyToAsciiDX class
 // * --------------------------------------
-/*!  \class KeyToAsciiDX
-     DirectX keyboard management
-	 \ingroup InputDX
+/**
+* \file	KeyToAsciiDX.h
+* \class	KeyToAsciiDX
+* \ingroup Input
+* \brief Specific DirectX KeyToAscii utility class
+*
 */
 // ****************************************
-
 class KeyToAsciiDX : public KeyToAscii
 {
 public:
