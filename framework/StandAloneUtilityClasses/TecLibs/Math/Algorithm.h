@@ -17,6 +17,14 @@ point_type ProjectOnLine(point_type p, point_type a, point_type b)
 	return a + (b-a) * ProjectOnLineScalar(p, a, b);
 }
 
+// Keep main vector the same, return orthogonalized side_vector
+inline v3f Orthogonalize(v3f main_vector, v3f side_vector)
+{
+	auto other_side_vector = (main_vector ^ side_vector).Normalized();
+	side_vector = (other_side_vector ^ main_vector).Normalized();
+	return side_vector;
+}
+
 
 template<typename T>
 inline T clamp(T v, T a, T b)

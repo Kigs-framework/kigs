@@ -190,17 +190,8 @@ void Holo3DSequenceManager::InitModifiable()
 	mySpacialNode->addItem((CMSP&)myDrawer);
 	myDrawer->setValue("Size", size);
 	myDrawer->setValue("DepthTest", "Disabled");
-	myDrawer->setValue("RenderPassMask", 4);
+	myDrawer->setValue("RenderPassMask", 64);
 	myDrawer->Init();
-
-
-	/*
-	auto customizer = KigsCore::CreateInstance("depth_test_disable", "RenderingCustomizer");
-	customizer->setValue("TransarencyFlag", true);
-	customizer->Init();
-	customizer->setValue("OverrideDepthTest", 0);
-	myDrawer->addItem(customizer.get());
-	*/
 
 	myPosition.changeNotificationLevel(Owner);
 	myNormal.changeNotificationLevel(Owner);

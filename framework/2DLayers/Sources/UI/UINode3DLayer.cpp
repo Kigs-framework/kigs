@@ -63,10 +63,15 @@ void UINode3DLayer::InitModifiable()
 		GetSonInstancesByType("CollisionBaseNode", colliders);
 		if (colliders.empty())
 		{
-			mCollider = KigsCore::GetInstanceOf(getName()+"_panel", "Panel");
+			mCollider = KigsCore::GetInstanceOf(getName() + "_panel", "Panel");
 			mCollider->setValue("Size", (v2f)mSize);
 			mCollider->Init();
 			addItem(mCollider);
+		}
+		else if (colliders.front()->isSubType("Panel")) 
+		{
+			mCollider = colliders.front();
+			mCollider->setValue("Size", (v2f)mSize);
 		}
 
 		// add mself to auto update

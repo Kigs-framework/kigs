@@ -702,7 +702,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 						interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchSourceID::SpatialInteractionRayLeft : TouchSourceID::SpatialInteractionRayRight;
 						interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
 						any_touch_state = any_touch_state | interaction_infos.touch_state;
-						dd::line(interaction_infos.posInfos.pos, interaction_infos.posInfos.pos + interaction_infos.posInfos.dir, interaction.pressed ? v3f{ 1, 1, 1 } : v3f{ 0, 1, 0 });
+						//dd::line(interaction_infos.posInfos.pos, interaction_infos.posInfos.pos + interaction_infos.posInfos.dir*0.2f, v3f{ 1, 1, 1 });
 						Touches[interaction_infos.ID] = interaction_infos;
 					}
 				}
@@ -1204,13 +1204,12 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 
 				// call target to check if click start is "accepted"
 
+				ev.state = StatePossible;
 				ev.origin = touch.posInfos.origin;
 				ev.direction = touch.posInfos.dir;
 				ev.button_state_mask = (ClickEvent::Button)toStart.buttonState;
 				ev.click_count = 0;
-				ev.state = StatePossible;
 				ev.position = toStart.startPos;
-				
 
 				toStart.isValid = target->SimpleCall<bool>(m_methodNameID, ev);
 
@@ -1251,21 +1250,21 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 					}*/
 					if(startc.isValid)
 					{
+						ev.state = StateChanged;
 						ev.origin = touch.posInfos.origin;
 						ev.direction = touch.posInfos.dir;
 						ev.button_state_mask = (ClickEvent::Button)startc.buttonState;
 						ev.click_count = 0;
-						ev.state = StateChanged;
 						ev.position = startc.currentPos;
 						startc.isValid = target->SimpleCall<bool>(m_methodNameID, ev);
 					}
 					else
 					{
+						ev.state = StateFailed;
 						ev.origin = touch.posInfos.origin;
 						ev.direction = touch.posInfos.dir;
 						ev.button_state_mask = (ClickEvent::Button)startc.buttonState;
 						ev.click_count = 0;
-						ev.state = StateFailed;
 						ev.position = startc.currentPos;
 						target->SimpleCall<bool>(m_methodNameID, ev);
 					}
@@ -1339,17 +1338,12 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 		if (click.clickCount == m_MaxClickCount)
 		{
 			// click recognized
-
-			ClickEvent ev;
+			ev.state = StateRecognized;
 			ev.origin = click.origin;
 			ev.direction = click.direction;
 			ev.button_state_mask = (ClickEvent::Button)click.buttonState;
 			ev.click_count = click.clickCount;
-			ev.state = StateRecognized;
-			ev.type = m_type;
 			ev.position = click.currentPos;
-			ev.swallow_mask = &swallowMask;
-			ev.item = target;
 
 			target->SimpleCall<bool>(m_methodNameID, ev);
 
@@ -1363,16 +1357,12 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 			{
 				if (click.clickCount >= m_MinClickCount)
 				{
-					ClickEvent ev;
+					ev.state = StateRecognized;
 					ev.origin = click.origin;
 					ev.direction = click.direction;
 					ev.button_state_mask = (ClickEvent::Button)click.buttonState;
 					ev.click_count = click.clickCount;
-					ev.state = StateRecognized;
-					ev.type = m_type;
 					ev.position = click.currentPos;
-					ev.swallow_mask = &swallowMask;
-					ev.item = target;
 
 					target->SimpleCall<bool>(m_methodNameID, ev);
 				}
