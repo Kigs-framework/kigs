@@ -4,28 +4,21 @@
 #include "CoreModifiable.h"
 #include "Timer.h"
 
-/**
- * \def MAX_PROFILER_COUNT
- * \ingroup Timer
- * \brief number max of profiler
- */
+
 #define MAX_PROFILER_COUNT	32
 
 // ****************************************
 // * TimeProfiler class
 // * --------------------------------------
 /**
- * \file	TimeProfiler.h
  * \class	TimeProfiler
- * \ingroup Timer
- * \brief	timer profiling
- * \author	ukn
- * \version ukn
- * \date	ukn
- *
- * Module Dependency :<br><ul><li>ModuleTimer</li></ul>
+ * \file	TimeProfiler.h
+ * \ingroup TimerModule
+ * \brief	Utility class to mesure time spent in parts of the code.
+ * 
+ *  ?? Obsolete ??
  */
-// ****************************************
+ // ****************************************
 class TimeProfiler : public CoreModifiable
 {
 public:
@@ -75,26 +68,26 @@ public:
 	 */
 	kdouble GetTime()
 	{
-		return myComputedTime;
+		return mComputedTime;
 	}
 	kdouble GetPreviousTime()
 	{
-		return myLastDT;
+		return mLastDT;
 	}
 
 	kdouble GetMinDT()
 	{
-		return myMinDT;
+		return mMinDT;
 	}
 	kdouble GetMaxDT()
 	{
-		return myMaxDT;
+		return mMaxDT;
 	}
 
 	void ResetMinMaxDT()
 	{
-		myMinDT = 10000.0f;
-		myMaxDT = -1.0f;
+		mMinDT = 10000.0f;
+		mMaxDT = -1.0f;
 	}
 
 	/**
@@ -104,7 +97,7 @@ public:
 	 */
 	bool	WasUpdate()
 	{
-		return myWasUpdate;
+		return mWasUpdate;
 	}
 
 	/**
@@ -113,8 +106,8 @@ public:
 	 */
 	void	ClearUpdate()
 	{
-		myWasUpdate=false;
-		myComputedTime=KDOUBLE_CONST(0.0);
+		mWasUpdate=false;
+		mComputedTime=KDOUBLE_CONST(0.0);
 	}
 
 protected:
@@ -131,17 +124,17 @@ protected:
 	void	Stop();
 
 	//! start time of the profiler
-	kdouble myStartTime;
+	kdouble mStartTime;
 	//! computed time of the profiler
-	kdouble	myComputedTime;
+	kdouble	mComputedTime;
 	//! last deltaTime computed
-	kdouble	myLastDT;
+	kdouble	mLastDT;
 	//! max deltaTime seen
-	kdouble	myMaxDT;
+	kdouble	mMaxDT;
 	//! min deltaTime seen
-	kdouble	myMinDT;
+	kdouble	mMinDT;
 	//! TRUE if the profile was updated
-	bool	myWasUpdate=false;
+	bool	mWasUpdate=false;
 
 	/**
 	 * \brief	destructor
@@ -155,13 +148,13 @@ protected:
 // * --------------------------------------
 /**
  * \class	GlobalProfilerManager
- * \ingroup Manager
- * \brief	used by the Core to store and access to the list of profilers
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \file	TimeProfiler.h
+ * \ingroup ModuleTimer
+ * \brief	Utility class to manage all TimeProfiler instances.
+ * 
+ *  ?? Obsolete ??
  */
-// ****************************************
+ // ****************************************
 class GlobalProfilerManager 
 {
 public:
@@ -171,16 +164,16 @@ public:
 	 */
 	GlobalProfilerManager()
 	{
-		myGlobalTimer=0;
-		myProfileCount=0;
+		mGlobalTimer=0;
+		mProfileCount=0;
 		int i;
 		for(i=0;i<MAX_PROFILER_COUNT;i++)
 		{
-			myProfilers[i]=0;
+			mProfilers[i]=0;
 		}
-		myProfileDrawingObject=0;
-		myIsInit=false;
-		myMethodID=CharToID::GetID("DrawProfiles");
+		mProfileDrawingObject=0;
+		mIsInit=false;
+		mMethodID=CharToID::GetID("DrawProfiles");
 	}
 	
 	/**
@@ -204,20 +197,20 @@ public:
 	void			CloseAll();
 
 	//! link to the timer
-	SP<Timer>			myGlobalTimer;
+	SP<Timer>			mGlobalTimer;
 	//! number of profiler
-	int				myProfileCount;
+	int				mProfileCount;
 	//! list of profiler
-	SP<TimeProfiler>	myProfilers[MAX_PROFILER_COUNT];
+	SP<TimeProfiler>	mProfilers[MAX_PROFILER_COUNT];
 	//! link to the drawing object
-	CMSP				myProfileDrawingObject;
+	CMSP				mProfileDrawingObject;
 	//! TRUE if the instance is initialized
-	bool			myIsInit;
+	bool			mIsInit;
 
 	//! empty list of params, used to call graphic object method 
-	kstl::vector<CoreModifiableAttribute*>		myEmptyParams;
+	kstl::vector<CoreModifiableAttribute*>		mEmptyParams;
 	//! draw method ID
-	unsigned int	myMethodID;
+	unsigned int	mMethodID;
 };
 
 

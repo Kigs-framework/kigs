@@ -6,17 +6,19 @@
 #include "ThreadEvent.h"
 #include "SmartPointer.h"
 
-// ****************************************
-// * WorkerThread class
-// * --------------------------------------
-/*!  \class WorkerThread
-		class waiting for tasks to do
-\ingroup Thread
-*/
-// ****************************************
 
 class ThreadPoolManager;
 
+// ****************************************
+// * WorkerThread class
+// * --------------------------------------
+/**
+ * \file	WorkerThread.h
+ * \class	WorkerThread
+ * \ingroup Thread
+ * \brief	Thread managed by a pool manager, waiting for tasks
+ */
+ // ****************************************
 class WorkerThread : public Thread
 {
 public:
@@ -28,17 +30,17 @@ public:
 
 	void	setSemaphore(Semaphore* semaphore)
 	{
-		mySemaphore = semaphore;
+		mSemaphore = semaphore;
 	}
 
 	void	setThreadPoolManager(ThreadPoolManager* poolmanager)
 	{
-		myParentPoolManager = poolmanager;
+		mParentPoolManager = poolmanager;
 	}
 
 	void	askExit()
 	{
-		myNeedExit = true;
+		mNeedExit = true;
 		resume();
 	}
 
@@ -51,9 +53,9 @@ protected:
 
 	void cleanTask()
 	{
-		if (myCurrentTask)
-			delete myCurrentTask;
-		myCurrentTask = 0;
+		if (mCurrentTask)
+			delete mCurrentTask;
+		mCurrentTask = 0;
 		
 	}
 
@@ -71,20 +73,20 @@ protected:
 	//! destructor
 	virtual ~WorkerThread();
 
-	MethodCallingStruct*	myCurrentTask;
+	MethodCallingStruct*	mCurrentTask;
 
-	kstl::vector<CoreModifiableAttribute*>	myEmptyParams;
+	kstl::vector<CoreModifiableAttribute*>	mEmptyParams;
 
-	bool								myNeedExit;
+	bool								mNeedExit;
 
-	Semaphore*							mySemaphore;
-	SP<ThreadEvent>						myThreadEvent;
-	SmartPointer<ThreadEvent>			myThreadEventEnd;
+	Semaphore*							mSemaphore;
+	SP<ThreadEvent>						mThreadEvent;
+	SmartPointer<ThreadEvent>			mThreadEventEnd;
 
-	ThreadPoolManager*			myParentPoolManager;
+	ThreadPoolManager*			mParentPoolManager;
 
 	// true if the task has set another task (with ThreadPoolManager::ManageQueue) when done
-	bool						myIsAutoFeed;
+	bool						mIsAutoFeed;
 };
 
 #endif //_WORKERTHREAD_H_

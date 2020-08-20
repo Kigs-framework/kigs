@@ -59,6 +59,16 @@ struct TimeEventCircularBuffer
 
 
 
+// ****************************************
+// * ThreadProfiler class
+// * --------------------------------------
+/**
+ * \file	ThreadProfiler.h
+ * \class	ThreadProfiler
+ * \ingroup Thread
+ * \brief	Helper class to profile threads.
+ */
+ // ****************************************
 
 class ThreadProfiler : public CoreModifiable
 {
@@ -72,26 +82,26 @@ public:
 
 	void AddTimeEvent(TimeEventType type, const char* name, const char* function_name)
 	{
-		if (!myAllowNewEvents) return;
-		CoreModifiable* thread = myCurrentThread;
-		int index = myCircularBufferIndexes[thread];
-		myCircularBufferIndexes[thread] = (myCircularBufferIndexes[thread] + 1) % THREAD_PROFILER_BUFFER_SIZE;
-		myCircularBufferMap[thread].buffer[index].Set(type, name, function_name, myGobalTimer->GetTime());
+		if (!mAllowNewEvents) return;
+		CoreModifiable* thread = mCurrentThread;
+		int index = mCircularBufferIndexes[thread];
+		mCircularBufferIndexes[thread] = (mCircularBufferIndexes[thread] + 1) % THREAD_PROFILER_BUFFER_SIZE;
+		mCircularBufferMap[thread].buffer[index].Set(type, name, function_name, mGlobalTimer->GetTime());
 	}
 
 	void Stop()
 	{
-		myAllowNewEvents = false;
+		mAllowNewEvents = false;
 	}
 
 	void Start()
 	{
-		myAllowNewEvents = true;
+		mAllowNewEvents = true;
 	}
 
 	bool IsRunning()
 	{
-		return myAllowNewEvents;
+		return mAllowNewEvents;
 	}
 
 	void ClearProfiler();
@@ -100,28 +110,28 @@ public:
 
 	void RegisterThread(Thread* thread);
 
-	kstl::map<CoreModifiable*, TimeEventCircularBuffer>& GetThreadTimeEventMap(){ return myCircularBufferMap; }
-	kstl::map<CoreModifiable*, unsigned int>& GetThreadIndexesMap(){ return myCircularBufferIndexes; }
-	unsigned int GetThreadCircularBufferIndex(CoreModifiable* thread){ return (myCircularBufferIndexes[thread] + THREAD_PROFILER_BUFFER_SIZE - 1) % THREAD_PROFILER_BUFFER_SIZE; }
+	kstl::map<CoreModifiable*, TimeEventCircularBuffer>& GetThreadTimeEventMap(){ return mCircularBufferMap; }
+	kstl::map<CoreModifiable*, unsigned int>& GetThreadIndexesMap(){ return mCircularBufferIndexes; }
+	unsigned int GetThreadCircularBufferIndex(CoreModifiable* thread){ return (mCircularBufferIndexes[thread] + THREAD_PROFILER_BUFFER_SIZE - 1) % THREAD_PROFILER_BUFFER_SIZE; }
 
-	SP<Timer>& GetThreadProfilerTimer(){ return myGobalTimer; }
+	SP<Timer>& GetThreadProfilerTimer(){ return mGlobalTimer; }
 
 	void ExportProfile(const kstl::string path);
 
 	//Remotery* rmt;
 
-	static thread_local Thread* myCurrentThread;
+	static thread_local Thread* mCurrentThread;
 
 private:
 	
-	kstl::map<CoreModifiable*, TimeEventCircularBuffer> myCircularBufferMap;
-	kstl::map<CoreModifiable*, unsigned int> myCircularBufferIndexes;
-	SP<Timer> myGobalTimer;
+	kstl::map<CoreModifiable*, TimeEventCircularBuffer> mCircularBufferMap;
+	kstl::map<CoreModifiable*, unsigned int> mCircularBufferIndexes;
+	SP<Timer> mGlobalTimer;
 
 	
 
-	bool myAllowNewEvents;
-	CMSP mySemaphore;
+	bool mAllowNewEvents;
+	CMSP mSemaphore;
 };
 
 

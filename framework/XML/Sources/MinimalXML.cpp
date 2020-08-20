@@ -6,7 +6,7 @@
 // 2 => strict alpha num
 // 4 => autorised characters
 
-unsigned char	MinimalXML::isAlphaNum[256]={
+unsigned char	MinimalXML::mIsAlphaNum[256]={
 
 	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	1,	1,	1,	0,	0,
 	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,
@@ -155,15 +155,15 @@ void MinimalXML::Empty_EndCdataSectionHandler(void *userData,const char *s,int l
 }
 
 MinimalXML::MinimalXML() :
-	myUserData(0)
-	, myPrologDone(false)
-	, myStartElementHandler(&MinimalXML::Empty_StartElementHandler)
-	, myEndElementHandler(&MinimalXML::Empty_EndElementHandler)
-	, myStartCdataSectionHandler(&MinimalXML::Empty_StartCdataSectionHandler)
-	, myEndCdataSectionHandler(&MinimalXML::Empty_EndCdataSectionHandler)
-	, myDeclHandler(&MinimalXML::Empty_DeclHandler)
-	, myCharacterDataHandler(&MinimalXML::Empty_CharacterDataHandler)
-	, myDefaultHandler(&MinimalXML::Empty_DefaultHandler)
+	mUserData(0)
+	, mPrologDone(false)
+	, mStartElementHandler(&MinimalXML::Empty_StartElementHandler)
+	, mEndElementHandler(&MinimalXML::Empty_EndElementHandler)
+	, mStartCdataSectionHandler(&MinimalXML::Empty_StartCdataSectionHandler)
+	, mEndCdataSectionHandler(&MinimalXML::Empty_EndCdataSectionHandler)
+	, mDeclHandler(&MinimalXML::Empty_DeclHandler)
+	, mCharacterDataHandler(&MinimalXML::Empty_CharacterDataHandler)
+	, mDefaultHandler(&MinimalXML::Empty_DefaultHandler)
 {
 	InitPreallocated();
 }
@@ -193,21 +193,21 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 			{
 				case ELEMENT_NAME:
 				{
-					if(isAlphaNum[charVal]&1) // space => element name is finished
+					if(mIsAlphaNum[charVal]&1) // space => element name is finished
 					{
 						substate=NO_SUBSTATE;
-						myElementStart.myName.set(currentChar);
+						mElementStart.mName.set(currentChar);
 					}
 					else if(charVal=='>')
 					{
 						substate=NO_SUBSTATE;
-						myElementStart.myName.set(currentChar);
+						mElementStart.mName.set(currentChar);
 						state=ELEMENT_START_END;
 					}
 					else if(charVal=='/')
 					{
 						substate=NO_SUBSTATE;
-						myElementStart.myName.set(currentChar);
+						mElementStart.mName.set(currentChar);
 						state=ELEMENT_START_SELF_CLOSED;
 					}
 
@@ -215,15 +215,15 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				}
 				case ELEMENT_CLOSE_NAME:
 				{
-					if(isAlphaNum[charVal]&1) // space => element close name is finished
+					if(mIsAlphaNum[charVal]&1) // space => element close name is finished
 					{
 						substate=NO_SUBSTATE;
-						myElementStart.myName.set(currentChar);
+						mElementStart.mName.set(currentChar);
 					}
 					else if(charVal=='>')
 					{
 						substate=NO_SUBSTATE;
-						myElementStart.myName.set(currentChar);
+						mElementStart.mName.set(currentChar);
 						state=ELEMENT_CLOSING_END;
 					}
 					
@@ -231,17 +231,17 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				}
 				case ATTRIBUTE_NAME:
 				{
-					if(isAlphaNum[charVal]&1) // space => attribute name is finished
+					if(mIsAlphaNum[charVal]&1) // space => attribute name is finished
 					{
 						substate=ATTRIBUTE_SEARCH_EQUAL;	// search EQUAL
-						currentAttribute->myName.set(currentChar);
+						currentAttribute->mName.set(currentChar);
 					}
 					else if(charVal=='=')
 					{
 						substate=ATTRIBUTE_EQUAL;
-						currentAttribute->myName.set(currentChar);
+						currentAttribute->mName.set(currentChar);
 					}
-					else if(isAlphaNum[charVal]&4) // valid string
+					else if(mIsAlphaNum[charVal]&4) // valid string
 					{
 						// continue
 						
@@ -255,7 +255,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				}
 				case ATTRIBUTE_EQUAL:
 				{
-					if(isAlphaNum[charVal]&1) // space do nothing
+					if(mIsAlphaNum[charVal]&1) // space do nothing
 					{
 						
 					}
@@ -267,7 +267,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				break;
 				case ATTRIBUTE_SEARCH_EQUAL:
 				{
-					if(isAlphaNum[charVal]&1) // space do nothing
+					if(mIsAlphaNum[charVal]&1) // space do nothing
 					{
 						
 					}
@@ -287,19 +287,19 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					if(charVal=='"') // value end
 					{
 						// check empty attributes
-						if(currentAttribute->myValue.myStringStart == 0)
+						if(currentAttribute->mValue.myStringStart == 0)
 						{
-							currentAttribute->myValue.myStringStart=currentChar;
+							currentAttribute->mValue.myStringStart=currentChar;
 						}
 						substate=NO_SUBSTATE;
-						currentAttribute->myValue.set(currentChar);
+						currentAttribute->mValue.set(currentChar);
 					}
-					else if(isAlphaNum[charVal]&4)
+					else if(mIsAlphaNum[charVal]&4)
 					{
 						// check if first character
-						if(currentAttribute->myValue.myStringStart == 0)
+						if(currentAttribute->mValue.myStringStart == 0)
 						{
-							currentAttribute->myValue.myStringStart=currentChar;
+							currentAttribute->mValue.myStringStart=currentChar;
 						}
 					}
 				}
@@ -319,23 +319,23 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				{
 					state=OPENING;
 					// if some characters are here, call handler
-					if(myOutOfElementCharacters.myStringStart!=0)
+					if(mOutOfElementCharacters.myStringStart!=0)
 					{
-						(*myCharacterDataHandler)(myUserData,(const char*)myOutOfElementCharacters.myStringStart,(int)(currentChar-myOutOfElementCharacters.myStringStart));
-						myOutOfElementCharacters.clear();
+						(*mCharacterDataHandler)(mUserData,(const char*)mOutOfElementCharacters.myStringStart,(int)(currentChar-mOutOfElementCharacters.myStringStart));
+						mOutOfElementCharacters.clear();
 
 					}
 
 				}
-				else if(isAlphaNum[charVal]&1) // space continue
+				else if(mIsAlphaNum[charVal]&1) // space continue
 				{
 					
 				}
-				else if(isAlphaNum[charVal]&4)
+				else if(mIsAlphaNum[charVal]&4)
 				{
-					if(myOutOfElementCharacters.myStringStart==0)
+					if(mOutOfElementCharacters.myStringStart==0)
 					{
-						myOutOfElementCharacters.myStringStart=currentChar;
+						mOutOfElementCharacters.myStringStart=currentChar;
 					}
 				}
 				break;
@@ -347,22 +347,22 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					break;
 				case '!':
 					state=COMMENT_OR_DATA_OR_DOCTYPE;
-					mySequenceDetect.init(currentChar);
+					mSequenceDetect.init(currentChar);
 					break;
 				case '/':
 					state=CLOSING_ELEMENT;
 					break;
 				default:
 					// check alpha numeric
-					if(isAlphaNum[charVal]&1)
+					if(mIsAlphaNum[charVal]&1)
 					{
 						// Space continue	
 					}
-					else if(isAlphaNum[charVal]&4)
+					else if(mIsAlphaNum[charVal]&4)
 					{
 						state=IN_ELEMENT;
 						substate=ELEMENT_NAME;
-						myElementStart.myName.myStringStart=currentChar;
+						mElementStart.mName.myStringStart=currentChar;
 					}
 					else
 					{
@@ -375,18 +375,18 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 			case EXECUTE_OR_PROLOG:
 				if(charVal == 'x') // start by x
 				{
-					if(myPrologDone)
+					if(mPrologDone)
 					{
 						state=IN_EXECUTE;
 					}
 					else
 					{
 						state=IN_PROLOG;
-						mySequenceDetect.init(currentChar);
-						myProlog.myCurrentAttribute=0;
+						mSequenceDetect.init(currentChar);
+						mProlog.mCurrentAttribute=0;
 					}
 				}
-				else if(isAlphaNum[charVal]&1)
+				else if(mIsAlphaNum[charVal]&1)
 				{
 					// space continue
 				}
@@ -396,60 +396,60 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				}
 				break;
 			case IN_PROLOG:
-				if(('m' == charVal)&&('x' == mySequenceDetect.val(-1)))
+				if(('m' == charVal)&&('x' == mSequenceDetect.val(-1)))
 				{
-					mySequenceDetect.add(currentChar);
+					mSequenceDetect.add(currentChar);
 				}
-				else if(('l' == charVal)&&('m' == mySequenceDetect.val(-1)))
+				else if(('l' == charVal)&&('m' == mSequenceDetect.val(-1)))
 				{
-					mySequenceDetect.add(currentChar);
+					mSequenceDetect.add(currentChar);
 				}
-				else if((isAlphaNum[charVal]&1)&&('l' == mySequenceDetect.val(-1) ))
+				else if((mIsAlphaNum[charVal]&1)&&('l' == mSequenceDetect.val(-1) ))
 				{
 					// continue
 				}
-				else if((charVal=='?')&&('l' == mySequenceDetect.val(-1)))
+				else if((charVal=='?')&&('l' == mSequenceDetect.val(-1)))
 				{	
-					mySequenceDetect.add(currentChar);
+					mSequenceDetect.add(currentChar);
 				}
-				else if((charVal=='>')&&('?' == mySequenceDetect.val(-1) ))
+				else if((charVal=='>')&&('?' == mSequenceDetect.val(-1) ))
 				{
 					// call Prolog end
 					const char* version=0;
 					const char* encoding=0;
 					int			standalone=0;
 
-					if(myProlog.myAttributes[0].myName.myStringStart)
+					if(mProlog.mAttributes[0].mName.myStringStart)
 					{
-						version=(const char*)myProlog.myAttributes[0].myValue.myStringStart;
+						version=(const char*)mProlog.mAttributes[0].mValue.myStringStart;
 					}
 
-					if(myProlog.myAttributes[1].myName.myStringStart)
+					if(mProlog.mAttributes[1].mName.myStringStart)
 					{
-						encoding=(const char*)myProlog.myAttributes[1].myValue.myStringStart;
+						encoding=(const char*)mProlog.mAttributes[1].mValue.myStringStart;
 					}
 
-					if(myProlog.myAttributes[2].myName.myStringStart)
+					if(mProlog.mAttributes[2].mName.myStringStart)
 					{
-						if(strcmp((const char*)myProlog.myAttributes[2].myValue.myStringStart,"yes") == 0)
+						if(strcmp((const char*)mProlog.mAttributes[2].mValue.myStringStart,"yes") == 0)
 						{
 							standalone=1;
 						}
 					}
 
-					(*myDeclHandler)(myUserData,version,encoding,standalone);
-					myPrologDone=true;
-					myProlog.clear();
+					(*mDeclHandler)(mUserData,version,encoding,standalone);
+					mPrologDone=true;
+					mProlog.clear();
 					state=NO_STATE;
 				}
-				else if(isAlphaNum[charVal]&4)
+				else if(mIsAlphaNum[charVal]&4)
 				{
 					// found attribute
-					if(myProlog.myCurrentAttribute<=2)
+					if(mProlog.mCurrentAttribute<=2)
 					{
 						substate=ATTRIBUTE_NAME;
-						currentAttribute=&myProlog.myAttributes[myProlog.myCurrentAttribute++];
-						currentAttribute->myName.myStringStart=currentChar;
+						currentAttribute=&mProlog.mAttributes[mProlog.mCurrentAttribute++];
+						currentAttribute->mName.myStringStart=currentChar;
 					}
 					else
 					{
@@ -461,52 +461,52 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 			case COMMENT_OR_DATA_OR_DOCTYPE:
 				{
 					// only detect comment for now
-					if(('-'==charVal)&&('!' == mySequenceDetect.val(-1)))
+					if(('-'==charVal)&&('!' == mSequenceDetect.val(-1)))
 					{
-						mySequenceDetect.add(currentChar);
+						mSequenceDetect.add(currentChar);
 					}
-					else if(('-' == charVal)&&('-' == mySequenceDetect.val(-1)))
+					else if(('-' == charVal)&&('-' == mSequenceDetect.val(-1)))
 					{
 						state=IN_COMMENT;
-						mySequenceDetect.reset();
+						mSequenceDetect.reset();
 					}
 					// detect CDATA
-					else if(('[' == charVal)&&('!' == mySequenceDetect.val(-1)))
+					else if(('[' == charVal)&&('!' == mSequenceDetect.val(-1)))
 					{
-						mySequenceDetect.add(currentChar);
+						mSequenceDetect.add(currentChar);
 					}
-					else if(('C' == charVal)&&('[' == mySequenceDetect.val(-1)))
+					else if(('C' == charVal)&&('[' == mSequenceDetect.val(-1)))
 					{
-						mySequenceDetect.add(currentChar);
+						mSequenceDetect.add(currentChar);
 					}
-					else if(('D' == charVal)&&('C' == mySequenceDetect.val(-1)))
+					else if(('D' == charVal)&&('C' == mSequenceDetect.val(-1)))
 					{
-						mySequenceDetect.add(currentChar);
+						mSequenceDetect.add(currentChar);
 					}
-					else if(('A' == charVal)&&('D' == mySequenceDetect.val(-1)))
+					else if(('A' == charVal)&&('D' == mSequenceDetect.val(-1)))
 					{
-						mySequenceDetect.add(currentChar);
+						mSequenceDetect.add(currentChar);
 					}
-					else if(('T' == charVal)&&('A' == mySequenceDetect.val(-1)))
+					else if(('T' == charVal)&&('A' == mSequenceDetect.val(-1)))
 					{
-						mySequenceDetect.add(currentChar);
+						mSequenceDetect.add(currentChar);
 					}
-					else if(('A' == charVal)&&('T' == mySequenceDetect.val(-1)))
+					else if(('A' == charVal)&&('T' == mSequenceDetect.val(-1)))
 					{
-						mySequenceDetect.add(currentChar);
+						mSequenceDetect.add(currentChar);
 					}
-					else if(('[' == charVal)&&('A' == mySequenceDetect.val(-1)))
+					else if(('[' == charVal)&&('A' == mSequenceDetect.val(-1)))
 					{
 						state=IN_DATA;
-						mySequenceDetect.reset();
-						(*myStartCdataSectionHandler)(myUserData);
+						mSequenceDetect.reset();
+						(*mStartCdataSectionHandler)(mUserData);
 					}
 					// DOCTYPE
-					else if(('D' == charVal)&&('!' == mySequenceDetect.val(-1)))
+					else if(('D' == charVal)&&('!' == mSequenceDetect.val(-1)))
 					{
 						// TODO
 						state=IN_DOCTYPE;
-						mySequenceDetect.reset();
+						mSequenceDetect.reset();
 					}
 				}
 				break;
@@ -514,65 +514,65 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 			case IN_COMMENT:
 				{
 					// wait for comment end
-					if(('-'==charVal) && (mySequenceDetect.size()==0))
+					if(('-'==charVal) && (mSequenceDetect.size()==0))
 					{
-						mySequenceDetect.init(currentChar);
+						mSequenceDetect.init(currentChar);
 					}
-					else if(('-' == charVal)&&('-' == mySequenceDetect.val(-1)))
+					else if(('-' == charVal)&&('-' == mSequenceDetect.val(-1)))
 					{
-						mySequenceDetect.add(currentChar);
+						mSequenceDetect.add(currentChar);
 					}
 					else if('>' == charVal)
 					{
-						if(mySequenceDetect.size()==2)
+						if(mSequenceDetect.size()==2)
 						{
-							if('-' == mySequenceDetect.val(-1))
+							if('-' == mSequenceDetect.val(-1))
 							{
 								// comment end
 								state=NO_STATE;
-								mySequenceDetect.reset();
+								mSequenceDetect.reset();
 							}
 						}
 					}
-					else if(mySequenceDetect.size())
+					else if(mSequenceDetect.size())
 					{
-						mySequenceDetect.reset();
+						mSequenceDetect.reset();
 					}
 				}
 				break;
 			case IN_DATA:
 				{
-					if(myOutOfElementCharacters.myStringStart==0)
+					if(mOutOfElementCharacters.myStringStart==0)
 					{
-						myOutOfElementCharacters.myStringStart=currentChar;
+						mOutOfElementCharacters.myStringStart=currentChar;
 					}
 					// wait for data end
-					if((']'==charVal) && (mySequenceDetect.size()==0))
+					if((']'==charVal) && (mSequenceDetect.size()==0))
 					{
-						mySequenceDetect.init(currentChar);
+						mSequenceDetect.init(currentChar);
 					}
-					else if((']' == charVal)&&(']' == mySequenceDetect.val(-1)))
+					else if((']' == charVal)&&(']' == mSequenceDetect.val(-1)))
 					{
-						mySequenceDetect.add(currentChar);
+						mSequenceDetect.add(currentChar);
 					}
-					else if(('>' == charVal)&& (mySequenceDetect.size()>0) && (']' == mySequenceDetect.val(-1)))
+					else if(('>' == charVal)&& (mSequenceDetect.size()>0) && (']' == mSequenceDetect.val(-1)))
 					{
 						// data end
-						if(myOutOfElementCharacters.myStringStart!=0)
+						if(mOutOfElementCharacters.myStringStart!=0)
 						{
-							(*myEndCdataSectionHandler)(myUserData,(const char*)myOutOfElementCharacters.myStringStart,(int)(currentChar-myOutOfElementCharacters.myStringStart-2));
-							myOutOfElementCharacters.clear();
+							(*mEndCdataSectionHandler)(mUserData,(const char*)mOutOfElementCharacters.myStringStart,(int)(currentChar-mOutOfElementCharacters.myStringStart-2));
+							mOutOfElementCharacters.clear();
 						}
 						else
 						{
-							(*myEndCdataSectionHandler)(myUserData,0,0);
+							(*mEndCdataSectionHandler)(mUserData,0,0);
 						}
-						mySequenceDetect.reset();
+						mSequenceDetect.reset();
 						state=NO_STATE;
 					}
-					else if(mySequenceDetect.size())
+					else if(mSequenceDetect.size())
 					{
-						mySequenceDetect.reset();
+						mSequenceDetect.reset();
 					}
 				}
 				break;
@@ -590,7 +590,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				{
 					if('/'==charVal)
 					{
-						if(myElementStart.myName.myStringStart)
+						if(mElementStart.mName.myStringStart)
 						{
 							state=ELEMENT_START_SELF_CLOSED;
 						}
@@ -604,18 +604,18 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 						//const char** attribs=myElementStart.getAttribArray();
 						//(*myStartElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart,attribs);
 						startElement();
-						myElementStart.clear(this);
+						mElementStart.clear(this);
 						state=NO_STATE;
 					}
-					else if(isAlphaNum[charVal]&1) // space, continue
+					else if(mIsAlphaNum[charVal]&1) // space, continue
 					{
 					}
-					else if(isAlphaNum[charVal]&4)
+					else if(mIsAlphaNum[charVal]&4)
 					{
 						// start element attribute
 						substate=ATTRIBUTE_NAME;
-						currentAttribute=myElementStart.getAttrib(this);
-						currentAttribute->myName.myStringStart=currentChar;
+						currentAttribute=mElementStart.getAttrib(this);
+						currentAttribute->mName.myStringStart=currentChar;
 					}
 				}
 				break;
@@ -624,7 +624,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					//const char** attribs=myElementStart.getAttribArray();
 					//(*myStartElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart,attribs);
 					startElement();
-					myElementStart.clear(this);
+					mElementStart.clear(this);
 					state=NO_STATE;
 				}
 				break;
@@ -641,7 +641,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				break;
 			case CLOSING_ELEMENT:
 				{
-					if(isAlphaNum[charVal]&1) // space, continue
+					if(mIsAlphaNum[charVal]&1) // space, continue
 					{
 
 					}
@@ -652,9 +652,9 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 						//myElementStart.clear(this);
 						state=NO_STATE;
 					}
-					else if(isAlphaNum[charVal]&4)
+					else if(mIsAlphaNum[charVal]&4)
 					{
-						myElementStart.myName.myStringStart=currentChar;
+						mElementStart.mName.myStringStart=currentChar;
 						substate=ELEMENT_CLOSE_NAME;
 					}
 
@@ -684,29 +684,29 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 
 void	MinimalXML::startElement()
 {
-	if (myUseStringRef)
+	if (mUseStringRef)
 	{
-		StringRef** attribs = myElementStart.getStringRefAttribArray();
-		(*myStartElementHandlerStringRef)(myUserData,&myElementStart.myName, attribs);
+		StringRef** attribs = mElementStart.getStringRefAttribArray();
+		(*mStartElementHandlerStringRef)(mUserData,&mElementStart.mName, attribs);
 
 	}
 	else
 	{
-		const char** attribs = myElementStart.getAttribArray();
-		(*myStartElementHandler)(myUserData, (const char*)myElementStart.myName.myStringStart, attribs);
+		const char** attribs = mElementStart.getAttribArray();
+		(*mStartElementHandler)(mUserData, (const char*)mElementStart.mName.myStringStart, attribs);
 	}
 }
 void	MinimalXML::endElement()
 {
-	if (myUseStringRef)
+	if (mUseStringRef)
 	{
-		(*myEndElementHandlerStringRef)(myUserData, &myElementStart.myName);
-		myElementStart.clear(this);
+		(*mEndElementHandlerStringRef)(mUserData, &mElementStart.mName);
+		mElementStart.clear(this);
 	}
 	else
 	{
-		(*myEndElementHandler)(myUserData, (const char*)myElementStart.myName.myStringStart);
-		myElementStart.clear(this);
+		(*mEndElementHandler)(mUserData, (const char*)mElementStart.mName.myStringStart);
+		mElementStart.clear(this);
 	}
 }
 
@@ -717,57 +717,57 @@ void	MinimalXML::reset()
 	if(myOutDebug)
 		fclose(myOutDebug);
 #endif
-	myProlog.clear();
-	myElementStart.clear(this);
+	mProlog.clear();
+	mElementStart.clear(this);
 }
 
 
 void	MinimalXML::Prolog_Parser::clear()
 {
-	myAttributes[0].clear();
-	myAttributes[1].clear();
-	myAttributes[2].clear();
+	mAttributes[0].clear();
+	mAttributes[1].clear();
+	mAttributes[2].clear();
 }
 
 void	MinimalXML::ElementStart_Parser::clear(MinimalXML* parentinstance)
 {
-	myName.clear();
+	mName.clear();
 	// clear attribute
-	while(myFirstAttrib)
+	while(mFirstAttrib)
 	{
-		Attribut_Parser_LinkedNode* current=myFirstAttrib;
-		current->myAttribute.clear();
-		myFirstAttrib=current->myNext;
+		Attribut_Parser_LinkedNode* current=mFirstAttrib;
+		current->mAttribute.clear();
+		mFirstAttrib=current->mNext;
 		parentinstance->releaseLinkedNode(current);
 	}
-	myAttribCount=0;
-	myCurrentAttrib=0;
-	if(myAttribArray)
+	mAttribCount=0;
+	mCurrentAttrib=0;
+	if(mAttribArray)
 	{
-		delete[] myAttribArray;
-		myAttribArray=0;
+		delete[] mAttribArray;
+		mAttribArray=0;
 	}
-	if (myStringRefAttribArray)
+	if (mStringRefAttribArray)
 	{
-		delete[] myStringRefAttribArray;
-		myStringRefAttribArray = 0;
+		delete[] mStringRefAttribArray;
+		mStringRefAttribArray = 0;
 	}
 }
 
 MinimalXML::Attribut_Parser*	MinimalXML::ElementStart_Parser::getAttrib(MinimalXML* parentinstance)
 {
 	Attribut_Parser_LinkedNode* result=parentinstance->getFreeLinkedNode();
-	if(myCurrentAttrib)
+	if(mCurrentAttrib)
 	{
-		myCurrentAttrib->myNext=result;
+		mCurrentAttrib->mNext=result;
 	}
 	else
 	{
-		myFirstAttrib=result;
+		mFirstAttrib=result;
 	}
-	myCurrentAttrib=result;
-	myAttribCount++;
-	return &(myCurrentAttrib->myAttribute);
+	mCurrentAttrib=result;
+	mAttribCount++;
+	return &(mCurrentAttrib->mAttribute);
 }
 
 const char**		MinimalXML::ElementStart_Parser::getAttribArray()
@@ -775,25 +775,25 @@ const char**		MinimalXML::ElementStart_Parser::getAttribArray()
 	// return a pointer even if attribCount is 0
 	const char**	result=0;
 	
-	if(myAttribCount<=8)
+	if(mAttribCount<=8)
 	{
-		result=myPreallocLittleArray;
+		result=mPreallocLittleArray;
 	}
 	else
 	{
-		result=new const char*[myAttribCount*2+1];
-		myAttribArray=result;
+		result=new const char*[mAttribCount*2+1];
+		mAttribArray=result;
 	}
 	unsigned int i;
-	Attribut_Parser_LinkedNode* current=myFirstAttrib;
-	for(i=0;i<(myAttribCount*2);i+=2)
+	Attribut_Parser_LinkedNode* current=mFirstAttrib;
+	for(i=0;i<(mAttribCount*2);i+=2)
 	{
-		result[i]=(const char*)current->myAttribute.myName.myStringStart;
-		result[i+1]=(const char*)current->myAttribute.myValue.myStringStart;
-		current=current->myNext;
+		result[i]=(const char*)current->mAttribute.mName.myStringStart;
+		result[i+1]=(const char*)current->mAttribute.mValue.myStringStart;
+		current=current->mNext;
 	}
 
-	result[myAttribCount*2]=0;
+	result[mAttribCount*2]=0;
 	
 	return result;
 
@@ -805,25 +805,25 @@ StringRef** MinimalXML::ElementStart_Parser::getStringRefAttribArray()
 	// return a pointer even if attribCount is 0
 	StringRef** result = 0;
 
-	if (myAttribCount <= 8)
+	if (mAttribCount <= 8)
 	{
-		result = myPreallocStringRefLittleArray;
+		result = mPreallocStringRefLittleArray;
 	}
 	else
 	{
-		result = new StringRef * [myAttribCount * 2 + 1];
-		myStringRefAttribArray = result;
+		result = new StringRef * [mAttribCount * 2 + 1];
+		mStringRefAttribArray = result;
 	}
 	unsigned int i;
-	Attribut_Parser_LinkedNode* current = myFirstAttrib;
-	for (i = 0; i < (myAttribCount * 2); i += 2)
+	Attribut_Parser_LinkedNode* current = mFirstAttrib;
+	for (i = 0; i < (mAttribCount * 2); i += 2)
 	{
-		result[i] = &current->myAttribute.myName;
-		result[i + 1] = &current->myAttribute.myValue;
-		current = current->myNext;
+		result[i] = &current->mAttribute.mName;
+		result[i + 1] = &current->mAttribute.mValue;
+		current = current->mNext;
 	}
 
-	result[myAttribCount * 2] = 0;
+	result[mAttribCount * 2] = 0;
 
 	return result;
 

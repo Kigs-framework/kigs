@@ -85,41 +85,41 @@ IMPLEMENT_CLASS_INFO(Timer)
 
 void Timer::InitModifiable()
 {
-	myT0 = Clock::now();
-	myPauseTime = myT0;
-	myCurrentState = NORMAL;
+	mT0 = Clock::now();
+	mPauseTime = mT0;
+	mCurrentState = NORMAL;
 }
 
 double Timer::GetTime() const
 {
-	if (myCurrentState == PAUSED)
+	if (mCurrentState == PAUSED)
 	{
-		return myPauseTime.time_since_epoch().count() / 1'000'000'000.0;
+		return mPauseTime.time_since_epoch().count() / 1'000'000'000.0;
 	}
 	auto t1 = Clock::now();
-	auto t = t1 - myT0;
+	auto t = t1 - mT0;
 	return t.count() / 1'000'000'000.0;
 }
 
 void Timer::SetTime(double t)
 {
 	auto t1 = Clock::now();
-	auto dt = t1 - myT0;
+	auto dt = t1 - mT0;
 	
 	long long diff_t = t-dt.count();
 	
-	myT0 += std::chrono::nanoseconds(diff_t);
+	mT0 += std::chrono::nanoseconds(diff_t);
 
 }
 
 void Timer::StartPause()
 {
-	myPauseTime = Clock::now();
+	mPauseTime = Clock::now();
 }
 
 void Timer::EndPause()
 {
-	myT0 += Clock::now() - myPauseTime;
+	mT0 += Clock::now() - mPauseTime;
 }
 
 void Timer::Sleep(unsigned int ms)
@@ -129,43 +129,43 @@ void Timer::Sleep(unsigned int ms)
 
 void Timer::SetState(State newstate)
 {
-	if (myCurrentState == NORMAL && newstate == PAUSED)
+	if (mCurrentState == NORMAL && newstate == PAUSED)
 	{
 		StartPause();
 	}
-	else if (myCurrentState == PAUSED && newstate == NORMAL)
+	else if (mCurrentState == PAUSED && newstate == NORMAL)
 	{
 		EndPause();
 	}
-	myCurrentState = newstate;
+	mCurrentState = newstate;
 }
 
 double Timer::GetDt(CoreModifiable* caller)
 {
-	if (myCurrentState == PAUSED)
+	if (mCurrentState == PAUSED)
 	{
 		return (0.0);
 	}
 	double current = GetTime();
 
-	if (myTimerMap.find(caller) != myTimerMap.end())
+	if (mTimerMap.find(caller) != mTimerMap.end())
 	{
-		double dt = current - myTimerMap[caller];
-		myTimerMap[caller] = current;
+		double dt = current - mTimerMap[caller];
+		mTimerMap[caller] = current;
 		return dt;
 	}
 	else
 	{
-		myTimerMap[caller] = current;
+		mTimerMap[caller] = current;
 		return (0.0);
 	}
 }
 
 void Timer::ResetDt(CoreModifiable* caller)
 {
-	auto It = myTimerMap.find(caller);
-	if (It != myTimerMap.end())
+	auto It = mTimerMap.find(caller);
+	if (It != mTimerMap.end())
 	{
-		myTimerMap.erase(It);
+		mTimerMap.erase(It);
 	}
 }

@@ -2,8 +2,20 @@
 #define _MODULETIMER_H_
 
 #include "ModuleBase.h"
+/*! \defgroup TimerModule manage time
+*/
 
-
+// ****************************************
+// * ModuleTimer class
+// * --------------------------------------
+/**
+ * \file	ModuleTimer.h
+ * \class	ModuleTimer
+ * \ingroup TimerModule
+ * \ingroup Module
+ * \brief	Generic module for time management.
+ */
+ // ****************************************
 class ModuleTimer : public ModuleBase
 {
 public:
@@ -28,7 +40,7 @@ protected:
     virtual ~ModuleTimer();    
 
 	// maintain a map of timeticker for fast access
-	kstl::map<CoreModifiable*,CoreModifiable*>	myTickerList;
+	kstl::map<CoreModifiable*,CoreModifiable*>	mTickerList;
 }; 
 
 #endif //_MODULETIMER_H_

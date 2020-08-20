@@ -1,7 +1,16 @@
 #pragma once
 
 #include "Timer.h"
-
+// ****************************************
+// * ControlledTimer class
+// * --------------------------------------
+/**
+ * \class	ControlledTimer
+ * \file	ControlledTimer.h
+ * \ingroup TimerModule
+ * \brief	A "fake" timer where time is given by the user.
+ */
+ // ****************************************
 class ControlledTimer : public Timer
 {
 public:
@@ -9,20 +18,20 @@ public:
 
 	DECLARE_INLINE_CONSTRUCTOR(ControlledTimer)
 	{
-		myCurrentTime = 0;
+		mCurrentTime = 0;
 	}
 	
 	double	GetTime() const override
 	{
-		return myCurrentTime;
+		return mCurrentTime;
 	}
 
 	void SetTime(double t) override
 	{
-		myCurrentTime = t;
+		mCurrentTime = t;
 	}
 
 protected:
-	double myCurrentTime;
+	double mCurrentTime;
 };
 

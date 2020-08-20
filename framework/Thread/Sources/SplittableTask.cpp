@@ -5,12 +5,12 @@
 IMPLEMENT_CLASS_INFO(SplittableTask)
 
 SplittableTask::SplittableTask(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, myThreadPoolManager(*this, true, LABEL_AND_ID(ThreadPoolManager))
-, myIsSplittable(*this, true, LABEL_AND_ID(isSplittable),false)
-, mySplitCount(*this, true, LABEL_AND_ID(SplitCount), 0)
-, myWaitFinish(*this, false, LABEL_AND_ID(WaitFinish), true)
+, mThreadPoolManager(*this, true, LABEL_AND_ID(ThreadPoolManager))
+, mIsSplittable(*this, true, LABEL_AND_ID(IsSplittable),false)
+, mSplitCount(*this, true, LABEL_AND_ID(SplitCount), 0)
+, mWaitFinish(*this, false, LABEL_AND_ID(WaitFinish), true)
 {
-	mySplitDataStructList.clear();
+	mSplitDataStructList.clear();
 }
 
 SplittableTask::~SplittableTask()
@@ -22,42 +22,42 @@ void	SplittableTask::clear()
 {
 	unsigned int i;
 	
-	for (i = 0; i < mySplitDataStructList.size(); i++)
+	for (i = 0; i < mSplitDataStructList.size(); i++)
 	{
-		delete mySplitDataStructList[i];
+		delete mSplitDataStructList[i];
 	}
-	mySplitDataStructList.clear();
+	mSplitDataStructList.clear();
 
 }
 
 
 void	SplittableTask::Update(const Timer& timer, void* addParam)
 {
-	if ((myIsSplittable) && (mySplitCount>1) && ((CoreModifiable*)myThreadPoolManager))
+	if ((mIsSplittable) && (mSplitCount>1) && ((CoreModifiable*)mThreadPoolManager))
 	{
 		unsigned int i;
 
-		ThreadPoolManager::TaskGroupHandle* grouphandle=((ThreadPoolManager*)((CoreModifiable*)myThreadPoolManager))->createTaskGroup();
+		ThreadPoolManager::TaskGroupHandle* grouphandle=((ThreadPoolManager*)((CoreModifiable*)mThreadPoolManager))->createTaskGroup();
 
-		for (i = 0; i < mySplitCount; i++)
+		for (i = 0; i < mSplitCount; i++)
 		{
-			if (mySplitDataStructList.size() <= i)
+			if (mSplitDataStructList.size() <= i)
 			{
-				mySplitDataStructList.push_back(createSplitDataStruct(i, timer));
+				mSplitDataStructList.push_back(createSplitDataStruct(i, timer));
 			}
-			mySplitDataStructList[i] = updateSplitDataStruct(mySplitDataStructList[i],i, timer);
+			mSplitDataStructList[i] = updateSplitDataStruct(mSplitDataStructList[i],i, timer);
 
 			MethodCallingStruct* toadd = new MethodCallingStruct();
 			toadd->mMethodID = KigsID("SplittedUpdate")._id;
 			toadd->mMethodInstance = this;
-			toadd->mPrivateParams = mySplitDataStructList[i];
+			toadd->mPrivateParams = mSplitDataStructList[i];
 
 			grouphandle->addTask(toadd);
 		}
 
-		SmartPointer<ThreadEvent> testendwait = ((ThreadPoolManager*)((CoreModifiable*)myThreadPoolManager))->LaunchTaskGroup(grouphandle);
+		SmartPointer<ThreadEvent> testendwait = ((ThreadPoolManager*)((CoreModifiable*)mThreadPoolManager))->LaunchTaskGroup(grouphandle);
 		
-		if (myWaitFinish && !testendwait.isNil())
+		if (mWaitFinish && !testendwait.isNil())
 			testendwait->wait();
 	}
 }

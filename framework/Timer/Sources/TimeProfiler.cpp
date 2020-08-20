@@ -3,32 +3,19 @@
 #include "Timer.h"
 #include "Core.h"
 
-//FILE*	myDump=0;
 
-// ****************************************
-// * TimeProfiler class
-// * --------------------------------------
-/**
- * \file	TimeProfiler.cpp
- * \ingroup Module
- * \brief	managing timer profiling (source)
- * \author	ukn
- * \version ukn
- * \date	ukn
- */
-// ****************************************
 IMPLEMENT_CLASS_INFO(TimeProfiler)
 
 TimeProfiler::TimeProfiler(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
 {  
-	if(!KigsCore::GetProfileManager()->myIsInit)
+	if(!KigsCore::GetProfileManager()->mIsInit)
 	{
 		KigsCore::GetProfileManager()->InitAll();
 	}
-	myStartTime=KDOUBLE_CONST(-1.0);
-	myLastDT=myMaxDT=KDOUBLE_CONST(-1.0);
-	myMinDT=KDOUBLE_CONST(10000.0);
-	myComputedTime=KDOUBLE_CONST(0.0);
+	mStartTime=KDOUBLE_CONST(-1.0);
+	mLastDT=mMaxDT=KDOUBLE_CONST(-1.0);
+	mMinDT=KDOUBLE_CONST(10000.0);
+	mComputedTime=KDOUBLE_CONST(0.0);
 }     
 
 
@@ -86,9 +73,9 @@ int TimeProfiler::NewProfiler(const kstl::string& name)
 	int i;
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		if(KigsCore::GetProfileManager()->myProfilers[i])
+		if(KigsCore::GetProfileManager()->mProfilers[i])
 		{		
-			if(KigsCore::GetProfileManager()->myProfilers[i]->getName() == name)
+			if(KigsCore::GetProfileManager()->mProfilers[i]->getName() == name)
 			{
 				return i;
 			}
@@ -97,9 +84,9 @@ int TimeProfiler::NewProfiler(const kstl::string& name)
 
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		if(KigsCore::GetProfileManager()->myProfilers[i]==nullptr)
+		if(KigsCore::GetProfileManager()->mProfilers[i]==nullptr)
 		{
-			KigsCore::GetProfileManager()->myProfilers[i]=KigsCore::GetInstanceOf(name,"TimeProfiler");
+			KigsCore::GetProfileManager()->mProfilers[i]=KigsCore::GetInstanceOf(name,"TimeProfiler");
 			return i;
 		}
 	}
@@ -111,7 +98,7 @@ volatile void TimeProfiler::StartProfiler(int handler)
 {
 	if(handler != -1)
 	{
-		KigsCore::GetProfileManager()->myProfilers[handler]->Start();	
+		KigsCore::GetProfileManager()->mProfilers[handler]->Start();	
 	}
 }
 
@@ -119,7 +106,7 @@ volatile void TimeProfiler::StopProfiler(int handler)
 {
 	if(handler != -1)
 	{
-		KigsCore::GetProfileManager()->myProfilers[handler]->Stop();	
+		KigsCore::GetProfileManager()->mProfilers[handler]->Stop();	
 	}
 
 }
@@ -132,12 +119,12 @@ void TimeProfiler::CloseAll()
 
 void TimeProfiler::ShowProfilers()
 {
-	KigsCore::GetProfileManager()->myProfileCount++;
+	KigsCore::GetProfileManager()->mProfileCount++;
 
 	// if a graphic object exist, then call it and return
-	if(KigsCore::GetProfileManager()->myProfileDrawingObject)
+	if(KigsCore::GetProfileManager()->mProfileDrawingObject)
 	{
-		KigsCore::GetProfileManager()->myProfileDrawingObject->CallMethod(KigsCore::GetProfileManager()->myMethodID,KigsCore::GetProfileManager()->myEmptyParams);
+		KigsCore::GetProfileManager()->mProfileDrawingObject->CallMethod(KigsCore::GetProfileManager()->mMethodID,KigsCore::GetProfileManager()->mEmptyParams);
 		return;
 	}
 
@@ -156,10 +143,10 @@ void TimeProfiler::ShowProfilers()
 	int i;
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		SP<TimeProfiler>&	current=KigsCore::GetProfileManager()->myProfilers[i];
+		SP<TimeProfiler>&	current=KigsCore::GetProfileManager()->mProfilers[i];
 		if(current)
 		{
-			if(current->myWasUpdate)
+			if(current->mWasUpdate)
 			{
 				if(	current->getName() != "GLOBAL")
 				{
@@ -187,17 +174,17 @@ void TimeProfiler::ShowProfilers()
 
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		SP<TimeProfiler>&	current=KigsCore::GetProfileManager()->myProfilers[i];
+		SP<TimeProfiler>&	current=KigsCore::GetProfileManager()->mProfilers[i];
 		if(current)
 		{
-			if(current->myWasUpdate)
+			if(current->mWasUpdate)
 			{
 				if(	current->getName() != "GLOBAL")
 				{
 					printf("%s : %lf seconds , %lf percent \n",current->getName().c_str(),CastToDouble(current->GetTime()),CastToDouble(current->GetTime()*KDOUBLE_CONST(100.0)/(kdouble)sum));
 				}
-				current->myWasUpdate=false;
-				current->myComputedTime=KDOUBLE_CONST(0.0);
+				current->mWasUpdate=false;
+				current->mComputedTime=KDOUBLE_CONST(0.0);
 			}
 		}
 	}
@@ -281,18 +268,18 @@ void TimeProfiler::DumpProfilers()
 void	GlobalProfilerManager::InitAll()
 {
 	// init common timer for all profilers
-	myGlobalTimer=KigsCore::GetInstanceOf("GlobalTimer","Timer");
-	myGlobalTimer->Init();
+	mGlobalTimer=KigsCore::GetInstanceOf("GlobalTimer","Timer");
+	mGlobalTimer->Init();
 	// check is a graphic object can be created
-	myProfileDrawingObject=KigsCore::GetInstanceOf("myProfileDrawingObject","ProfileDrawingObject");
+	mProfileDrawingObject=KigsCore::GetInstanceOf("myProfileDrawingObject","ProfileDrawingObject");
 	
 	// if returned object is not a "real" ProfileDrawingObject, then just destroy it
-	if(!myProfileDrawingObject->HasMethod(myMethodID))
+	if(!mProfileDrawingObject->HasMethod(mMethodID))
 	{
-		myProfileDrawingObject=nullptr;
+		mProfileDrawingObject=nullptr;
 	}
 
-	myIsInit=true;
+	mIsInit=true;
 }
 
 void	GlobalProfilerManager::CloseAll()
@@ -300,10 +287,10 @@ void	GlobalProfilerManager::CloseAll()
 	int i;
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		myProfilers[i]=nullptr;
+		mProfilers[i]=nullptr;
 	}
 	
-	myGlobalTimer = nullptr;
-	myProfileDrawingObject= nullptr;
+	mGlobalTimer = nullptr;
+	mProfileDrawingObject= nullptr;
 	
 }

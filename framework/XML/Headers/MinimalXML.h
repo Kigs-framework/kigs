@@ -92,6 +92,17 @@ typedef void (*MinimalXML_StartElementHandlerStringRef) (void* userData,
 typedef void (*MinimalXML_EndElementHandlerStringRef) (void* userData,
 	StringRef* name);
 
+
+// ****************************************
+// * MinimalXML class
+// * --------------------------------------
+/**
+ * \file	MinimalXML.h
+ * \class	MinimalXML
+ * \ingroup ModuleXML
+ * \brief	Fast minimal XML parser.
+ */
+ // ****************************************
 class	MinimalXML
 {
 public:
@@ -102,7 +113,7 @@ public:
 
 	void	setUserData(void* data)
 	{
-		myUserData=data;
+		mUserData=data;
 	}
 #ifdef _DEBUG
 	static FILE*	myOutDebug;
@@ -111,35 +122,35 @@ public:
 
 	void	setElementHandler(MinimalXML_StartElementHandler starthandler, MinimalXML_EndElementHandler endhandler)
 	{
-		myStartElementHandler=starthandler;
-		myEndElementHandler=endhandler;
+		mStartElementHandler=starthandler;
+		mEndElementHandler=endhandler;
 	}
 
 	void	setElementHandlerStringRef(MinimalXML_StartElementHandlerStringRef starthandler, MinimalXML_EndElementHandlerStringRef endhandler)
 	{
-		myStartElementHandlerStringRef = starthandler;
-		myEndElementHandlerStringRef = endhandler;
-		myUseStringRef = true;
+		mStartElementHandlerStringRef = starthandler;
+		mEndElementHandlerStringRef = endhandler;
+		mUseStringRef = true;
 	}
 
 	void	setCDataHandler(MinimalXML_StartCdataSectionHandler starthandler, MinimalXML_EndCdataSectionHandler endhandler)
 	{
-		myStartCdataSectionHandler=starthandler;
-		myEndCdataSectionHandler=endhandler;
+		mStartCdataSectionHandler=starthandler;
+		mEndCdataSectionHandler=endhandler;
 	}
 	void	setXmlDeclHandler(MinimalXML_DeclHandler handler)
 	{
-		myDeclHandler=handler;
+		mDeclHandler=handler;
 	}
 
 	void	setCharacterDataHandler(MinimalXML_CharacterDataHandler handler)
 	{
-		myCharacterDataHandler=handler;
+		mCharacterDataHandler=handler;
 	}
 
 	void	setDefaultHandler(MinimalXML_DefaultHandler handler)
 	{
-		myDefaultHandler=handler;
+		mDefaultHandler=handler;
 	}
 
 	bool	Parse(u8* buffer, u64 len);
@@ -150,7 +161,7 @@ protected:
 	void	startElement();
 	void	endElement();
 
-	bool	myUseStringRef=false;
+	bool	mUseStringRef=false;
 
 	enum	XMLState
 	{
@@ -206,23 +217,23 @@ protected:
 	static void Empty_StartCdataSectionHandler(void *userData);
 	static void Empty_EndCdataSectionHandler(void *userData,const char *s, int len);
 
-	static unsigned char	isAlphaNum[256];
+	static unsigned char	mIsAlphaNum[256];
 
 	void	reset();
 
-	void*	myUserData;
+	void*	mUserData;
 
-	bool	myPrologDone;
+	bool	mPrologDone;
 
-	MinimalXML_StartElementHandler				myStartElementHandler;
-	MinimalXML_EndElementHandler				myEndElementHandler;
-	MinimalXML_StartCdataSectionHandler			myStartCdataSectionHandler;
-	MinimalXML_EndCdataSectionHandler			myEndCdataSectionHandler;
-	MinimalXML_DeclHandler						myDeclHandler;
-	MinimalXML_CharacterDataHandler				myCharacterDataHandler;
-	MinimalXML_DefaultHandler					myDefaultHandler;
-	MinimalXML_StartElementHandlerStringRef		myStartElementHandlerStringRef;
-	MinimalXML_EndElementHandlerStringRef		myEndElementHandlerStringRef;
+	MinimalXML_StartElementHandler				mStartElementHandler;
+	MinimalXML_EndElementHandler				mEndElementHandler;
+	MinimalXML_StartCdataSectionHandler			mStartCdataSectionHandler;
+	MinimalXML_EndCdataSectionHandler			mEndCdataSectionHandler;
+	MinimalXML_DeclHandler						mDeclHandler;
+	MinimalXML_CharacterDataHandler				mCharacterDataHandler;
+	MinimalXML_DefaultHandler					mDefaultHandler;
+	MinimalXML_StartElementHandlerStringRef		mStartElementHandlerStringRef;
+	MinimalXML_EndElementHandlerStringRef		mEndElementHandlerStringRef;
 
 	class	Attribut_Parser
 	{
@@ -233,27 +244,27 @@ protected:
 
 		void clear()
 		{
-			myName.clear();
-			myValue.clear();
+			mName.clear();
+			mValue.clear();
 		}
 
 
-		StringRef	myName;
-		StringRef	myValue;
+		StringRef	mName;
+		StringRef	mValue;
 	};
 
 	class	Attribut_Parser_LinkedNode
 	{
 	public:
 		Attribut_Parser_LinkedNode() 
-			:myNext(0)
+			:mNext(0)
 		{
 
 		}
 
 	public:
-		Attribut_Parser				myAttribute;
-		Attribut_Parser_LinkedNode*	myNext;
+		Attribut_Parser				mAttribute;
+		Attribut_Parser_LinkedNode*	mNext;
 	};
 
 	class	SequenceDetect
@@ -262,45 +273,45 @@ protected:
 
 		void	init(unsigned	char* first)
 		{
-			myCurrentIndex=0;
+			mCurrentIndex=0;
 			add(first);
 		}
 
 		void	add(unsigned	char* next)
 		{
-			mySequence[myCurrentIndex]=next;
-			++myCurrentIndex;
+			mSequence[mCurrentIndex]=next;
+			++mCurrentIndex;
 		}
 
 		const unsigned char&	val(int relativeIndex)
 		{
-			return *mySequence[myCurrentIndex+relativeIndex];
+			return *mSequence[mCurrentIndex+relativeIndex];
 		}
 
 		void	reset()
 		{
-			myCurrentIndex=0;
+			mCurrentIndex=0;
 		}
 
 		unsigned int size()
 		{
-			return myCurrentIndex;
+			return mCurrentIndex;
 		}
 
-		unsigned	char*	mySequence[16];
-		unsigned	int		myCurrentIndex;
+		unsigned	char*	mSequence[16];
+		unsigned	int		mCurrentIndex;
 	};
 
 	class	Prolog_Parser
 	{
 	public:
-		Prolog_Parser() :myCurrentAttribute(0)
+		Prolog_Parser() :mCurrentAttribute(0)
 		{
 		
 		}
 		void	clear();
-		Attribut_Parser		myAttributes[3]; // version, encoding, standalone
-		int					myCurrentAttribute;
+		Attribut_Parser		mAttributes[3]; // version, encoding, standalone
+		int					mCurrentAttribute;
 	};
 
 	class	ElementStart_Parser
@@ -308,52 +319,52 @@ protected:
 	public:
 
 		ElementStart_Parser() 
-			:myFirstAttrib(0)
-			,myCurrentAttrib(0)
-			,myAttribCount(0)
-			,myAttribArray(0)
-			,myStringRefAttribArray(0)
+			:mFirstAttrib(0)
+			,mCurrentAttrib(0)
+			,mAttribCount(0)
+			,mAttribArray(0)
+			,mStringRefAttribArray(0)
 		{
 
 		}
 
 		void				clear(MinimalXML* parentinstance);
-		StringRef			myName;
+		StringRef			mName;
 		Attribut_Parser*	getAttrib(MinimalXML* parentinstance);
 		const char**		getAttribArray();
 		StringRef**			getStringRefAttribArray();
 
-		Attribut_Parser_LinkedNode*	myFirstAttrib;
-		Attribut_Parser_LinkedNode*	myCurrentAttrib;
-		unsigned int				myAttribCount;
+		Attribut_Parser_LinkedNode*	mFirstAttrib;
+		Attribut_Parser_LinkedNode*	mCurrentAttrib;
+		unsigned int				mAttribCount;
 	
 	protected:
-		const char**		myAttribArray;
-		StringRef**			myStringRefAttribArray;
-		const char*			myPreallocLittleArray[17];
-		StringRef*			myPreallocStringRefLittleArray[17];
+		const char**		mAttribArray;
+		StringRef**			mStringRefAttribArray;
+		const char*			mPreallocLittleArray[17];
+		StringRef*			mPreallocStringRefLittleArray[17];
 	
 	};
 
-	Prolog_Parser					myProlog;
-	SequenceDetect					mySequenceDetect;
-	ElementStart_Parser				myElementStart;
-	StringRef						myOutOfElementCharacters;
+	Prolog_Parser					mProlog;
+	SequenceDetect					mSequenceDetect;
+	ElementStart_Parser				mElementStart;
+	StringRef						mOutOfElementCharacters;
 
 // manage prealloc linked nodes
 
 	void	InitPreallocated()
 	{
-		myPreallocatedStart=(uptr)(&myPreallocatedLinkedNodes[0]);
-		myPreallocatedEnd=(uptr)(&myPreallocatedLinkedNodes[31]);
-		myPreallocatedLinkedNodesFlag=0;
+		mPreallocatedStart=(uptr)(&mPreallocatedLinkedNodes[0]);
+		mPreallocatedEnd=(uptr)(&mPreallocatedLinkedNodes[31]);
+		mPreallocatedLinkedNodesFlag=0;
 	}
 
 	friend class ElementStart_Parser;
 
 	Attribut_Parser_LinkedNode*		getFreeLinkedNode()
 	{
-		if(myPreallocatedLinkedNodesFlag == 0xFFFFFFFF)
+		if(mPreallocatedLinkedNodesFlag == 0xFFFFFFFF)
 		{
 			return new Attribut_Parser_LinkedNode();
 		}
@@ -361,11 +372,11 @@ protected:
 		unsigned int index=0;
 		while(index<32)
 		{
-			if(!(myPreallocatedLinkedNodesFlag & (1<<index)))
+			if(!(mPreallocatedLinkedNodesFlag & (1<<index)))
 			{
-				myPreallocatedLinkedNodes[index].myNext=0;
-				myPreallocatedLinkedNodesFlag|=(1<<index);
-				return &myPreallocatedLinkedNodes[index];
+				mPreallocatedLinkedNodes[index].mNext=0;
+				mPreallocatedLinkedNodesFlag|=(1<<index);
+				return &mPreallocatedLinkedNodes[index];
 			}
 			index++;
 		}
@@ -378,22 +389,22 @@ protected:
 	{
 		// check if preallocated
 		uptr nodeAddr=(uptr)node;
-		if((nodeAddr<myPreallocatedStart) || (nodeAddr>myPreallocatedEnd))
+		if((nodeAddr<mPreallocatedStart) || (nodeAddr>mPreallocatedEnd))
 		{
 			delete node;
 			return;
 		}
 		
-		uptr index=nodeAddr-myPreallocatedStart;
+		uptr index=nodeAddr-mPreallocatedStart;
 		index/=sizeof(Attribut_Parser_LinkedNode);
-		myPreallocatedLinkedNodes[index].myAttribute.clear();
-		myPreallocatedLinkedNodesFlag^=(1<<index);
+		mPreallocatedLinkedNodes[index].mAttribute.clear();
+		mPreallocatedLinkedNodesFlag^=(1<<index);
 	}
 
-	unsigned int					myPreallocatedLinkedNodesFlag;
-	Attribut_Parser_LinkedNode		myPreallocatedLinkedNodes[32];
-	uptr							myPreallocatedStart;
-	uptr							myPreallocatedEnd;
+	unsigned int					mPreallocatedLinkedNodesFlag;
+	Attribut_Parser_LinkedNode		mPreallocatedLinkedNodes[32];
+	uptr							mPreallocatedStart;
+	uptr							mPreallocatedEnd;
 
 };
 
