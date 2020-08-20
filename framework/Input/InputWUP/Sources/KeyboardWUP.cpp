@@ -46,8 +46,8 @@ KeyboardWUP::~KeyboardWUP()
 
 void	KeyboardWUP::UpdateDevice()
 {
-	m_KeyUpList.clear();
-	m_KeyDownList.clear();
+	mKeyUpList.clear();
+	mKeyDownList.clear();
 	
 	kstl::vector<KeyEvent>	touchVector;
 	
@@ -63,7 +63,7 @@ void	KeyboardWUP::UpdateDevice()
 			ke.flag = (iswprint(ke.Unicode)) ? 1 : 0;
 			touchVector.push_back(ke);
 				
-			int currentState = myDeviceItems[ke.KeyCode]->getState()->GetTypedValue(int);
+			int currentState = mDeviceItems[ke.KeyCode]->getState()->GetTypedValue(int);
 				
 			// down action
 			if (ke.Action == KeyEvent::ACTION_DOWN)
@@ -71,8 +71,8 @@ void	KeyboardWUP::UpdateDevice()
 				if (currentState == 1)
 					continue;
 			
-				myDeviceItems[ke.KeyCode]->getState()->SetValue(1);
-				m_KeyDownList.push_back(ke);
+				mDeviceItems[ke.KeyCode]->getState()->SetValue(1);
+				mKeyDownList.push_back(ke);
 			}
 			// up action
 			else if (ke.Action == KeyEvent::ACTION_UP)
@@ -80,8 +80,8 @@ void	KeyboardWUP::UpdateDevice()
 				if (currentState == 0)
 					continue;
 			
-				myDeviceItems[ke.KeyCode]->getState()->SetValue(0);
-				m_KeyUpList.push_back(ke);
+				mDeviceItems[ke.KeyCode]->getState()->SetValue(0);
+				mKeyUpList.push_back(ke);
 			}
 		}
 		mEvents.clear();
@@ -119,20 +119,20 @@ bool	KeyboardWUP::Release()
 
 void	KeyboardWUP::DoInputDeviceDescription()
 {
-	myDeviceItemsCount=256;
+	mDeviceItemsCount=256;
 	
-	DeviceItem**	devicearray=new DeviceItem*[myDeviceItemsCount];
+	DeviceItem**	devicearray=new DeviceItem*[mDeviceItemsCount];
 	
 	unsigned int currentDevice=0;
 	
 	unsigned int index;
-	for(index=0;index<myDeviceItemsCount;index++)
+	for(index=0;index<mDeviceItemsCount;index++)
 	{
 		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<int>(0));
 	}
 	
-	InitItems(myDeviceItemsCount,devicearray);
-	for(index=0;index<myDeviceItemsCount;index++)
+	InitItems(mDeviceItemsCount,devicearray);
+	for(index=0;index<mDeviceItemsCount;index++)
 	{
 		delete devicearray[index];
 	}

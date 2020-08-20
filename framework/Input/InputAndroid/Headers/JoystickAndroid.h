@@ -3,17 +3,19 @@
 
 #include "JoystickDevice.h"
 #include "ModuleInputAndroid.h"
+#include <jni.h>
 
 // ****************************************
 // * JoystickAndroid class
 // * --------------------------------------
-/*!  \class JoystickAndroid
-     Android joystick management
-	 \ingroup InputAndroid
+/**
+* \file	JoystickAndroid.h
+* \class	JoystickAndroid
+* \ingroup Input
+* \brief Android Joystick management.
+*
 */
 // ****************************************
-
-#include <jni.h>
 
 class	JoystickAndroid : public JoystickDevice
 {
@@ -27,17 +29,17 @@ public:
 
 	void	DoInputDeviceDescription() override;
 
-	void	IncButtonCount(){myButtonsCount++;}
-	void	IncAxisCount(){myAxisCount++;}
-	void	IncPOVCount(){myPovCount++;}
+	void	IncButtonCount(){mButtonsCount++;}
+	void	IncAxisCount(){mAxisCount++;}
+	void	IncPOVCount(){mPovCount++;}
 
 
 protected:
   virtual ~JoystickAndroid();
   
-   jclass		myActivityClass;
-   jmethodID 	getBackKey;
-   jmethodID 	getMenuKey;
+   jclass		mActivityClass;
+   jmethodID 	mGetBackKey;
+   jmethodID 	mGetMenuKey;
  
 };    
 

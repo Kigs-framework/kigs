@@ -121,7 +121,7 @@ void LuaImporter::InitModifiable()
 		}
 
 		LuaKigsBindModule* _luamodule = (LuaKigsBindModule*)KigsCore::GetModule("LuaKigsBindModule");
-		if (_luamodule->ExecuteLuaFile(_script.c_str()))
+		if (_luamodule->ExecuteLuaFile(Script.c_str()))
 		{
 			LuaState L = _luamodule->getLuaState();
 
@@ -142,7 +142,7 @@ void LuaImporter::InitModifiable()
 		}
 		else
 		{
-			TestPrintf("cannot load %s\n", _script.c_str());
+			TestPrintf("cannot load %s\n", Script.c_str());
 		}
 	}
 }

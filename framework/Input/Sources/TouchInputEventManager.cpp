@@ -24,21 +24,21 @@ IMPLEMENT_CLASS_INFO(TouchInputEventManager)
 
 
 IMPLEMENT_CONSTRUCTOR(TouchInputEventManager)
-, theInputModule(0)
-, myCurrentTouchSupportRoot(0)
-, myTriggerSquaredDist(100)
-, myIsActive(true)
+, mTheInputModule(0)
+, mCurrentTouchSupportRoot(0)
+, mTriggerSquaredDist(100)
+, mIsActive(true)
 {
 	StackedEventStateStruct	firstOne;
-	myStackedEventState.push_back(firstOne);
-	theInputModule = reinterpret_cast<ModuleInput*>(CoreGetModule(ModuleInput));
+	mStackedEventState.push_back(firstOne);
+	mTheInputModule = reinterpret_cast<ModuleInput*>(CoreGetModule(ModuleInput));
 }
 
 
 bool TouchInputEventManager::isRegisteredOnCurrentState(CoreModifiable* obj)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	return myStackedEventState.back().myEventMap.find(obj) != myStackedEventState.back().myEventMap.end();
+	return mStackedEventState.back().mEventMap.find(obj) != mStackedEventState.back().mEventMap.end();
 }
 
 // registered object wants to be called when event "type" occurs (start, end, update, cancel...)  
@@ -66,17 +66,17 @@ TouchEventState*	TouchInputEventManager::registerEvent(CoreModifiable* registere
 		// TODO search if touchsupport is found in tree
 	}*/
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	if (myStackedEventState.back().myEventMap.find(registeredObject) == myStackedEventState.back().myEventMap.end()) // need to create an mEntry
+	if (mStackedEventState.back().mEventMap.find(registeredObject) == mStackedEventState.back().mEventMap.end()) // need to create an mEntry
 	{
-		StackedEventStateStruct::EventMapEntry& currentEntry = myStackedEventState.back().myEventMap[registeredObject];
+		StackedEventStateStruct::EventMapEntry& currentEntry = mStackedEventState.back().mEventMap[registeredObject];
 	
 		// We do the search for the root scene in the update if not found, no need to duplicate the code here
-		currentEntry.myRootScene3D = root_scene;
-		currentEntry.myTouchEventStateList.clear();
+		currentEntry.mRootScene3D = root_scene;
+		currentEntry.mTouchEventStateList.clear();
 	}
 
-	StackedEventStateStruct::EventMapEntry& currentEntry= myStackedEventState.back().myEventMap[registeredObject];
-	kstl::vector<TouchEventState*>& eventlist = currentEntry.myTouchEventStateList;
+	StackedEventStateStruct::EventMapEntry& currentEntry= mStackedEventState.back().mEventMap[registeredObject];
+	kstl::vector<TouchEventState*>& eventlist = currentEntry.mTouchEventStateList;
 
 	// search if not already there
 	auto itlist = eventlist.begin();
@@ -85,7 +85,7 @@ TouchEventState*	TouchInputEventManager::registerEvent(CoreModifiable* registere
 	{
 		// you can not register several time for the same type
 		// even with different flags or method name
-		if ((*itlist)->m_type == type)
+		if ((*itlist)->mType == type)
 		{
 			KIGS_WARNING("trying to register the same input event several time", 1);
 			return 0;
@@ -131,7 +131,7 @@ TouchEventState*	TouchInputEventManager::registerEvent(CoreModifiable* registere
 	{
 		eventlist.push_back(toAdd);
 		KigsCore::Connect(registeredObject, "Destroy", this, "OnDestroyCallback");
-		++(myStackedEventState.back().myRegisteredCount[type]);
+		++(mStackedEventState.back().mRegisteredCount[type]);
 	}
 
 	return toAdd;
@@ -157,7 +157,7 @@ void	TouchInputEventManager::addTouchSupport(CoreModifiable* ts, CoreModifiable*
 
 	// search if already there
 
-	for (auto& root : myTouchSupportTreeRootList)
+	for (auto& root : mTouchSupportTreeRootList)
 	{
 		touchSupportTreeNode* found = root.searchNode(ts);
 		if (found)
@@ -170,15 +170,15 @@ void	TouchInputEventManager::addTouchSupport(CoreModifiable* ts, CoreModifiable*
 	{
 		bool foundOne = false;
 		
-		for (auto& root : myTouchSupportTreeRootList)
+		for (auto& root : mTouchSupportTreeRootList)
 		{
 			touchSupportTreeNode* found = root.searchNode(parent);
 			if (found)
 			{
 				touchSupportTreeNode toAdd;
-				toAdd.currentNode = ts;
-				toAdd.parentNode = parent;
-				found->sons.push_back(toAdd);
+				toAdd.mCurrentNode = ts;
+				toAdd.mParentNode = parent;
+				found->mSons.push_back(toAdd);
 				foundOne = true;
 				break;
 			}
@@ -186,15 +186,15 @@ void	TouchInputEventManager::addTouchSupport(CoreModifiable* ts, CoreModifiable*
 		}
 		if (!foundOne)
 		{
-			for (auto& unmapped : myTemporaryUnmappedTouchSupport)
+			for (auto& unmapped : mTemporaryUnmappedTouchSupport)
 			{
 				touchSupportTreeNode* found = unmapped.searchNode(parent);
 				if (found)
 				{
 					touchSupportTreeNode toAdd;
-					toAdd.currentNode = ts;
-					toAdd.parentNode = parent;
-					found->sons.push_back(toAdd);
+					toAdd.mCurrentNode = ts;
+					toAdd.mParentNode = parent;
+					found->mSons.push_back(toAdd);
 					foundOne = true;
 					break;
 				}
@@ -204,9 +204,9 @@ void	TouchInputEventManager::addTouchSupport(CoreModifiable* ts, CoreModifiable*
 			{
 				// parent not found => add it to temporary list
 				touchSupportTreeNode	toAdd;
-				toAdd.currentNode = ts;
-				toAdd.parentNode = parent;
-				myTemporaryUnmappedTouchSupport.push_back(toAdd);
+				toAdd.mCurrentNode = ts;
+				toAdd.mParentNode = parent;
+				mTemporaryUnmappedTouchSupport.push_back(toAdd);
 				//dumpTouchSupportTrees();
 				return;
 			}
@@ -215,8 +215,8 @@ void	TouchInputEventManager::addTouchSupport(CoreModifiable* ts, CoreModifiable*
 	else
 	{
 		touchSupportTreeNode	toAdd;
-		toAdd.currentNode = ts;
-		myTouchSupportTreeRootList.push_back(toAdd);
+		toAdd.mCurrentNode = ts;
+		mTouchSupportTreeRootList.push_back(toAdd);
 	}
 
 	manageTemporaryUnmappedTouchSupport(ts, parent);
@@ -225,7 +225,7 @@ void	TouchInputEventManager::addTouchSupport(CoreModifiable* ts, CoreModifiable*
 
 void	TouchInputEventManager::manageTemporaryUnmappedTouchSupport(CoreModifiable* ts, CoreModifiable* parent)
 {
-	if (myTemporaryUnmappedTouchSupport.size()==0)
+	if (mTemporaryUnmappedTouchSupport.size()==0)
 	{
 		return;
 	}
@@ -236,34 +236,34 @@ void	TouchInputEventManager::manageTemporaryUnmappedTouchSupport(CoreModifiable*
 
 	// search if ts is parent of one elem in myTemporaryUnmappedTouchSupport
 
-	auto ittmpfound = myTemporaryUnmappedTouchSupport.begin();
-	auto ittmpfoundE = myTemporaryUnmappedTouchSupport.end();
+	auto ittmpfound = mTemporaryUnmappedTouchSupport.begin();
+	auto ittmpfoundE = mTemporaryUnmappedTouchSupport.end();
 
 	while (ittmpfound != ittmpfoundE)
 	{
-		if ((*ittmpfound).parentNode == ts)
+		if ((*ittmpfound).mParentNode == ts)
 		{
 
 			// search current node and add ittmpfound
 
-			auto itfound = myTouchSupportTreeRootList.begin();
-			auto itE = myTouchSupportTreeRootList.end();
+			auto itfound = mTouchSupportTreeRootList.begin();
+			auto itE = mTouchSupportTreeRootList.end();
 			while (itfound != itE)
 			{
 				touchSupportTreeNode* found = (*itfound).searchNode(ts);
 				if (found)
 				{
-					found->sons.push_back((*ittmpfound));
+					found->mSons.push_back((*ittmpfound));
 					// prepare the recursion
-					recurse_ts = (*ittmpfound).currentNode;
-					recurse_parent = (*ittmpfound).parentNode;
+					recurse_ts = (*ittmpfound).mCurrentNode;
+					recurse_parent = (*ittmpfound).mParentNode;
 					doItAgain = true;
 					break;
 				}
 				++itfound;
 			}
 
-			myTemporaryUnmappedTouchSupport.erase(ittmpfound);
+			mTemporaryUnmappedTouchSupport.erase(ittmpfound);
 			
 			break;
 		}
@@ -285,26 +285,26 @@ void	TouchInputEventManager::manageTemporaryUnmappedTouchSupport(CoreModifiable*
 bool	TouchInputEventManager::removeTemporaryUnmappedTouchSupport(CoreModifiable* ts)
 {
 
-	auto itfound = myTemporaryUnmappedTouchSupport.begin();
-	auto itE = myTemporaryUnmappedTouchSupport.end();
+	auto itfound = mTemporaryUnmappedTouchSupport.begin();
+	auto itE = mTemporaryUnmappedTouchSupport.end();
 	while (itfound != itE)
 	{
 		touchSupportTreeNode* found = (*itfound).searchNode(ts);
 		if (found)
 		{
-			if (found->parentNode)
+			if (found->mParentNode)
 			{
-				touchSupportTreeNode* pfound = (*itfound).searchNode(found->parentNode);
+				touchSupportTreeNode* pfound = (*itfound).searchNode(found->mParentNode);
 				if (pfound)
 				{
 					// search iterator
-					auto toErase = pfound->sons.begin();
-					auto toEraseE = pfound->sons.end();
+					auto toErase = pfound->mSons.begin();
+					auto toEraseE = pfound->mSons.end();
 					while (toErase != toEraseE)
 					{
-						if ((*toErase).currentNode == ts)
+						if ((*toErase).mCurrentNode == ts)
 						{
-							pfound->sons.erase(toErase);
+							pfound->mSons.erase(toErase);
 							break;
 						}
 						++toErase;
@@ -312,13 +312,13 @@ bool	TouchInputEventManager::removeTemporaryUnmappedTouchSupport(CoreModifiable*
 				}
 				else
 				{
-					myTemporaryUnmappedTouchSupport.erase(itfound);
+					mTemporaryUnmappedTouchSupport.erase(itfound);
 				}
 
 			}
 			else // remove root 
 			{
-				myTemporaryUnmappedTouchSupport.erase(itfound);
+				mTemporaryUnmappedTouchSupport.erase(itfound);
 			}
 			return true;
 		}
@@ -340,21 +340,21 @@ void TouchInputEventManager::dumpTouchSupportTrees()
 	{
 		for (int i = 0; i < depth; ++i)
 			printf("\t");
-		printf("| - %s\n", current_node->currentNode->getName().c_str());
+		printf("| - %s\n", current_node->mCurrentNode->getName().c_str());
 
-		for (auto& son : current_node->sons)
+		for (auto& son : current_node->mSons)
 		{
 			func(&son, depth + 1);
 		}
 	};
 
-	for (auto& root : myTouchSupportTreeRootList)
+	for (auto& root : mTouchSupportTreeRootList)
 	{
 		func(&root, 0);
 	}
 
 	printf("Unmmapped Touch Supports : \n");
-	for (auto& unmapped : myTemporaryUnmappedTouchSupport)
+	for (auto& unmapped : mTemporaryUnmappedTouchSupport)
 	{
 		func(&unmapped, 0);
 	}
@@ -371,32 +371,32 @@ void	TouchInputEventManager::removeTouchSupport(CoreModifiable* ts)
 		return;
 	}
 
-	auto itfound = myTouchSupportTreeRootList.begin();
-	auto itE = myTouchSupportTreeRootList.end();
+	auto itfound = mTouchSupportTreeRootList.begin();
+	auto itE = mTouchSupportTreeRootList.end();
 	while (itfound != itE)
 	{
 		touchSupportTreeNode* found = (*itfound).searchNode(ts);
 		if (found)
 		{
-			for (auto& son : found->sons)
+			for (auto& son : found->mSons)
 			{
-				for (auto& grandson : son.sons)
+				for (auto& grandson : son.mSons)
 				{
-					myTemporaryUnmappedTouchSupport.push_back(grandson);
+					mTemporaryUnmappedTouchSupport.push_back(grandson);
 				}
 			}
-			if (found->parentNode)
+			if (found->mParentNode)
 			{
-				touchSupportTreeNode* pfound = (*itfound).searchNode(found->parentNode);
+				touchSupportTreeNode* pfound = (*itfound).searchNode(found->mParentNode);
 
 				// search iterator
-				auto toErase = pfound->sons.begin();
-				auto toEraseE = pfound->sons.end();
+				auto toErase = pfound->mSons.begin();
+				auto toEraseE = pfound->mSons.end();
 				while (toErase != toEraseE)
 				{
-					if ((*toErase).currentNode == ts)
+					if ((*toErase).mCurrentNode == ts)
 					{
-						pfound->sons.erase(toErase);
+						pfound->mSons.erase(toErase);
 						break;
 					}
 					++toErase;
@@ -405,7 +405,7 @@ void	TouchInputEventManager::removeTouchSupport(CoreModifiable* ts)
 			}
 			else // remove root 
 			{
-				myTouchSupportTreeRootList.erase(itfound);
+				mTouchSupportTreeRootList.erase(itfound);
 			}
 
 			KigsCore::Disconnect(ts, "Destroy", this, "OnDestroyTouchSupportCallback");
@@ -421,7 +421,7 @@ void TouchInputEventManager::pushNewState()
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 	StackedEventStateStruct	newOne;
-	myStackedEventState.push_back(newOne);
+	mStackedEventState.push_back(newOne);
 }
 
 // go back to previous activated state
@@ -429,15 +429,15 @@ void TouchInputEventManager::popState()
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 	// unregister everything in current state
-	StackedEventStateStruct& state = myStackedEventState.back();
+	StackedEventStateStruct& state = mStackedEventState.back();
 
-	while (state.myEventMap.size())
+	while (state.mEventMap.size())
 	{
-		auto it = state.myEventMap.begin();
+		auto it = state.mEventMap.begin();
 		unregisterObjectOnCurrentState(state, (*it).first);
 	}
 
-	myStackedEventState.pop_back();
+	mStackedEventState.pop_back();
 }
 
 
@@ -445,11 +445,11 @@ void TouchInputEventManager::ResetCurrentStates()
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 	// unregister everything in current state
-	StackedEventStateStruct& state = myStackedEventState.back();
+	StackedEventStateStruct& state = mStackedEventState.back();
 
-	for (auto& eventsInMap : state.myEventMap)
+	for (auto& eventsInMap : state.mEventMap)
 	{
-		for (auto& toreset : eventsInMap.second.myTouchEventStateList)
+		for (auto& toreset : eventsInMap.second.mTouchEventStateList)
 		{
 			toreset->Reset();
 		}
@@ -461,8 +461,8 @@ void TouchInputEventManager::ResetCurrentStates()
 void TouchInputEventManager::unregisterEvent(CoreModifiable* registeredObject, InputEventType type)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	auto itc = myStackedEventState.rbegin();
-	auto ite = myStackedEventState.rend();
+	auto itc = mStackedEventState.rbegin();
+	auto ite = mStackedEventState.rend();
 
 	bool found = false;
 
@@ -489,8 +489,8 @@ void TouchInputEventManager::unregisterEvent(CoreModifiable* registeredObject, I
 void TouchInputEventManager::unregisterObject(CoreModifiable* registeredObject)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	auto itc = myStackedEventState.rbegin();
-	auto ite = myStackedEventState.rend();
+	auto itc = mStackedEventState.rbegin();
+	auto ite = mStackedEventState.rend();
 	while (itc != ite)
 	{
 		StackedEventStateStruct& state = (*itc);
@@ -502,16 +502,16 @@ void TouchInputEventManager::unregisterObject(CoreModifiable* registeredObject)
 bool TouchInputEventManager::unregisterEventOnCurrentState(StackedEventStateStruct& state, CoreModifiable* registeredObject, InputEventType type)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	if (state.myRegisteredCount[type] > 0)
+	if (state.mRegisteredCount[type] > 0)
 	{
-		auto itfound = state.myEventMap.find(registeredObject);
+		auto itfound = state.mEventMap.find(registeredObject);
 
-		if (itfound == state.myEventMap.end())
+		if (itfound == state.mEventMap.end())
 		{
 			return false;
 		}
 
-		kstl::vector<TouchEventState*>& eventlist = (*itfound).second.myTouchEventStateList;
+		kstl::vector<TouchEventState*>& eventlist = (*itfound).second.mTouchEventStateList;
 
 		bool found = false;
 		// search event type in event list
@@ -519,16 +519,16 @@ bool TouchInputEventManager::unregisterEventOnCurrentState(StackedEventStateStru
 		auto itend = eventlist.end();
 		while (itlist != itend)
 		{
-			if ((*itlist)->m_type == type)
+			if ((*itlist)->mType == type)
 			{
-				state.myRegisteredCount[type]--;
+				state.mRegisteredCount[type]--;
 				found = true;
 				delete (*itlist);
 				eventlist.erase(itlist);
 
 				if (eventlist.size() == 0)
 				{
-					state.myEventMap.erase(itfound);
+					state.mEventMap.erase(itfound);
 				}
 				break;
 			}
@@ -548,25 +548,25 @@ bool TouchInputEventManager::unregisterEventOnCurrentState(StackedEventStateStru
 bool TouchInputEventManager::unregisterObjectOnCurrentState(StackedEventStateStruct& state, CoreModifiable* registeredObject)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	auto itfound = state.myEventMap.find(registeredObject);
+	auto itfound = state.mEventMap.find(registeredObject);
 
-	if (itfound == state.myEventMap.end())
+	if (itfound == state.mEventMap.end())
 	{
 		return false;
 	}
 
-	kstl::vector<TouchEventState*>& eventlist = (*itfound).second.myTouchEventStateList;
+	kstl::vector<TouchEventState*>& eventlist = (*itfound).second.mTouchEventStateList;
 
 	// disconnect each event
 	auto itlist = eventlist.begin();
 	auto itend = eventlist.end();
 	while (itlist != itend)
 	{
-		state.myRegisteredCount[(*itlist)->m_type]--;
+		state.mRegisteredCount[(*itlist)->mType]--;
 		delete (*itlist);
 		++itlist;
 	}
-	state.myEventMap.erase(itfound);
+	state.mEventMap.erase(itfound);
 
 	return true;
 }
@@ -579,12 +579,12 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	mForceClick = false;
 
 	// if manager is inactive, just stop update here
-	if (!myIsActive)
+	if (!mIsActive)
 	{
 		return;
 	}
 
-	auto spatial_interaction_device = theInputModule->GetSpatialInteraction();
+	auto spatial_interaction_device = mTheInputModule->GetSpatialInteraction();
 	auto camera = spatial_interaction_device ? (Camera*)spatial_interaction_device->getValue<CoreModifiable*>("GazeCamera") : nullptr;
 
 	u16 any_touch_state = 0;
@@ -594,8 +594,8 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	// TODO ask module input for current touch device(s) (multitouch, mouse, hololens gesture...)
 	kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>	Touches;
 	
-	MultiTouchDevice* mtDevice = theInputModule->GetMultiTouch();
-	if (theInputModule->GetMouse() && !mtDevice)
+	MultiTouchDevice* mtDevice = mTheInputModule->GetMultiTouch();
+	if (mTheInputModule->GetMouse() && !mtDevice)
 	{
 		TouchEventState::TouchInfos mouseTouch;
 		mouseTouch.ID = TouchSourceID::Mouse;
@@ -607,13 +607,13 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 
 		mouseTouch.in_touch_support = 0;
 		
-		mouseTouch.touch_state = (force_click || theInputModule->GetMouse()->getButtonState(MouseDevice::LEFT) != 0) ? 1 : 0;
-		mouseTouch.touch_state |= (theInputModule->GetMouse()->getButtonState(MouseDevice::RIGHT) != 0) ? 2 : 0;
-		mouseTouch.touch_state |= (theInputModule->GetMouse()->getButtonState(MouseDevice::MIDDLE) != 0) ? 4 : 0;
+		mouseTouch.touch_state = (force_click || mTheInputModule->GetMouse()->getButtonState(MouseDevice::LEFT) != 0) ? 1 : 0;
+		mouseTouch.touch_state |= (mTheInputModule->GetMouse()->getButtonState(MouseDevice::RIGHT) != 0) ? 2 : 0;
+		mouseTouch.touch_state |= (mTheInputModule->GetMouse()->getButtonState(MouseDevice::MIDDLE) != 0) ? 4 : 0;
 
 		any_touch_state = any_touch_state | mouseTouch.touch_state;
 
-		theInputModule->GetMouse()->getPos(mouseTouch.posInfos.pos.x, mouseTouch.posInfos.pos.y);
+		mTheInputModule->GetMouse()->getPos(mouseTouch.posInfos.pos.x, mouseTouch.posInfos.pos.y);
 		any_pos = mouseTouch.posInfos.pos;
 		
 		if(!spatial_interaction_device)
@@ -675,7 +675,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 						interaction_infos.posInfos.origin = interaction_infos.posInfos.pos - interaction_infos.posInfos.dir * getSpatialInteractionOffset();
 						interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
 						interaction_infos.posInfos.min_distance = 0.0;
-						interaction_infos.posInfos.max_distance = (myEventCaptureObject && myEventCapturedEventID == interaction_infos.ID) ? DBL_MAX : 0.3;
+						interaction_infos.posInfos.max_distance = (mEventCaptureObject && mEventCapturedEventID == interaction_infos.ID) ? DBL_MAX : 0.3;
 						
 						Touches[interaction_infos.ID] = interaction_infos;
 					}
@@ -750,33 +750,33 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	mLock = std::unique_lock<std::recursive_mutex>{ mMutex };
 	
 
-	if( (Touches.size() > 0) && (myTouchSupportTreeRootList.size()>1)) // there's a touch and more than one touchsupport root 
+	if( (Touches.size() > 0) && (mTouchSupportTreeRootList.size()>1)) // there's a touch and more than one touchsupport root 
 		// => check if current touchsupport has changed
 	{
 		// find touch support root for current touch position (only one possible at this time ? (don't manage overlapping windows)
 
 		//touchSupportTreeNode* 	CurrentTouchSupportRoot = 0;
 
-		auto itTS = myTouchSupportTreeRootList.begin();
-		auto itTSe = myTouchSupportTreeRootList.end();
+		auto itTS = mTouchSupportTreeRootList.begin();
+		auto itTSe = mTouchSupportTreeRootList.end();
 
 		while (itTS != itTSe)
 		{
-			if ((*itTS).currentNode->SimpleCall<bool>("IsValidTouchSupport", Touches.begin()->second.posInfos.pos))
+			if ((*itTS).mCurrentNode->SimpleCall<bool>("IsValidTouchSupport", Touches.begin()->second.posInfos.pos))
 			{
-				myCurrentTouchSupportRoot = &(*itTS);
+				mCurrentTouchSupportRoot = &(*itTS);
 			}
 			++itTS;
 		}
 	}
-	else if(myTouchSupportTreeRootList.size() == 1)
+	else if(mTouchSupportTreeRootList.size() == 1)
 	{
-		myCurrentTouchSupportRoot = &myTouchSupportTreeRootList[0];
+		mCurrentTouchSupportRoot = &mTouchSupportTreeRootList[0];
 	}
 	
 
 	// no touch support ? return now
-	if (myCurrentTouchSupportRoot == 0)
+	if (mCurrentTouchSupportRoot == 0)
 	{
 		return;
 	}
@@ -785,26 +785,26 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 
 	// now do transformation hierarchy for myCurrentTouchSupportRoot
 	kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>>	transformedInfosMap;
-	transformTouchesInTouchSupportHierarchy(myCurrentTouchSupportRoot, transformedInfosMap, Touches);
+	transformTouchesInTouchSupportHierarchy(mCurrentTouchSupportRoot, transformedInfosMap, Touches);
 
 
 	// first step : manage a list of item per Scene3D parent
 	kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiable*> > perScene3DMap;
 
-	StackedEventStateStruct& state = myStackedEventState.back();
+	StackedEventStateStruct& state = mStackedEventState.back();
 
-	auto	itO = state.myEventMap.begin();
-	auto	itE = state.myEventMap.end();
+	auto	itO = state.mEventMap.begin();
+	auto	itE = state.mEventMap.end();
 
 	while (itO != itE)
 	{
-		if ((*itO).second.myRootScene3D == nullptr) // if not set, search again
+		if ((*itO).second.mRootScene3D == nullptr) // if not set, search again
 		{
-			(*itO).second.myRootScene3D = (*itO).first->getRootParentByType("UINode3DLayer");
-			if((*itO).second.myRootScene3D == nullptr)
-				(*itO).second.myRootScene3D = (*itO).first->getRootParentByType("Scene3D");
+			(*itO).second.mRootScene3D = (*itO).first->getRootParentByType("UINode3DLayer");
+			if((*itO).second.mRootScene3D == nullptr)
+				(*itO).second.mRootScene3D = (*itO).first->getRootParentByType("Scene3D");
 		}
-		CoreModifiable* foundParentScene3D = (*itO).second.myRootScene3D;
+		CoreModifiable* foundParentScene3D = (*itO).second.mRootScene3D;
 		if (foundParentScene3D)
 		{
 			perScene3DMap[foundParentScene3D].push_back((*itO).first);
@@ -834,7 +834,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 			CoreModifiable* renderingScreen = (CoreModifiable*)getScreen;
 
 			// check that rendering screen is in active touch support list
-			touchSupportTreeNode * foundts=myCurrentTouchSupportRoot->searchNode(renderingScreen);
+			touchSupportTreeNode * foundts=mCurrentTouchSupportRoot->searchNode(renderingScreen);
 
 			if (foundts)
 			{
@@ -868,7 +868,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 			{
 				for (auto foreachinstance : cameras)
 				{
-					touchSupportTreeNode * foundcamera = myCurrentTouchSupportRoot->searchNode(foreachinstance);
+					touchSupportTreeNode * foundcamera = mCurrentTouchSupportRoot->searchNode(foreachinstance);
 
 					if (foundcamera)
 					{
@@ -879,7 +879,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 						CoreModifiable* renderingScreen = (CoreModifiable*)getScreen;
 
 						// check that rendering screen is in active touch support list
-						touchSupportTreeNode * foundts = myCurrentTouchSupportRoot->searchNode(renderingScreen);
+						touchSupportTreeNode * foundts = mCurrentTouchSupportRoot->searchNode(renderingScreen);
 
 						if (foundts)
 						{
@@ -903,17 +903,17 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	kigs::unordered_map<TouchSourceID, kstl::vector<SortedElementNode>> flat_trees;
 	for (auto& t : Touches)
 	{
-		RecursiveFlattenTreeForTouchID(flat_trees[t.first], myCurrentTouchSupportRoot, perRenderingScreenSortedMap, perScene3DMap, transformedInfosMap, t.first);
+		RecursiveFlattenTreeForTouchID(flat_trees[t.first], mCurrentTouchSupportRoot, perRenderingScreenSortedMap, perScene3DMap, transformedInfosMap, t.first);
 	}
-	myInUpdate = true;
+	mInUpdate = true;
 
 	// Update events for each touch
 	for (auto& pair : flat_trees)
 	{
 		LinearCallEventUpdate(pair.second, timer, transformedInfosMap, pair.first);
 	}
-	myInUpdate = false;
-	myDestroyedThisFrame.clear();
+	mInUpdate = false;
+	mDestroyedThisFrame.clear();
 }
 
 
@@ -923,9 +923,9 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 	kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchSourceID touch_id)
 {
 
-	if (perRenderingScreenSortedMap.find(CurrentTouchSupport->currentNode) != perRenderingScreenSortedMap.end())
+	if (perRenderingScreenSortedMap.find(CurrentTouchSupport->mCurrentNode) != perRenderingScreenSortedMap.end())
 	{
-		for (auto attachedScene3D : perRenderingScreenSortedMap[CurrentTouchSupport->currentNode])
+		for (auto attachedScene3D : perRenderingScreenSortedMap[CurrentTouchSupport->mCurrentNode])
 		{
 			touchSupportTreeNode * cameraOrRenderingScreen = CurrentTouchSupport;
 			if (attachedScene3D.camera)
@@ -942,25 +942,25 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 				bool					currentNodeCatchEvent;
 			};
 			kigs::unordered_map<CoreModifiable*, SonStruct>	sonTouchSupport;
-			for (auto& SonSupportTouch : cameraOrRenderingScreen->sons)
+			for (auto& SonSupportTouch : cameraOrRenderingScreen->mSons)
 			{
 				SonStruct toInsert{ &SonSupportTouch, false};
 				// this son is part of current scene, so add it to the item vector, and ask the scene to sort it
 
 				// check if SonSupportTouch.currentNode is already in the list
-				if (std::find(param.toSort.begin(), param.toSort.end(), SonSupportTouch.currentNode) != param.toSort.end())
+				if (std::find(param.toSort.begin(), param.toSort.end(), SonSupportTouch.mCurrentNode) != param.toSort.end())
 					toInsert.currentNodeCatchEvent = true;
 				else
-					param.toSort.push_back(SonSupportTouch.currentNode);
+					param.toSort.push_back(SonSupportTouch.mCurrentNode);
 
-				sonTouchSupport[SonSupportTouch.currentNode] = toInsert;
+				sonTouchSupport[SonSupportTouch.mCurrentNode] = toInsert;
 			}
 
-			auto& touches = transformedInfosMap[cameraOrRenderingScreen->currentNode];
+			auto& touches = transformedInfosMap[cameraOrRenderingScreen->mCurrentNode];
 			
 			auto it = touches.find(touch_id);
 
-			param.camera = attachedScene3D.camera ? cameraOrRenderingScreen->currentNode : nullptr;
+			param.camera = attachedScene3D.camera ? cameraOrRenderingScreen->mCurrentNode : nullptr;
 
 			param.position = it->second.posInfos.pos;
 			param.origin = it->second.posInfos.origin;
@@ -991,7 +991,7 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 					{
 						sonItemToAdd.element = item;
 						sonItemToAdd.hit = hit;
-						sonItemToAdd.touchSupport = cameraOrRenderingScreen->currentNode;
+						sonItemToAdd.touchSupport = cameraOrRenderingScreen->mCurrentNode;
 						flat_tree.push_back(sonItemToAdd);
 					}
 				}
@@ -999,7 +999,7 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 				{
 					sonItemToAdd.element = item;
 					sonItemToAdd.hit = hit;
-					sonItemToAdd.touchSupport = cameraOrRenderingScreen->currentNode;
+					sonItemToAdd.touchSupport = cameraOrRenderingScreen->mCurrentNode;
 					flat_tree.push_back(sonItemToAdd);
 				}
 			}
@@ -1007,11 +1007,11 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 	}
 	else
 	{
-		if (CurrentTouchSupport->sons.size())
+		if (CurrentTouchSupport->mSons.size())
 		{
-			if (CurrentTouchSupport->sons.size() == 1)
+			if (CurrentTouchSupport->mSons.size() == 1)
 			{
-				RecursiveFlattenTreeForTouchID(flat_tree, &CurrentTouchSupport->sons[0], perRenderingScreenSortedMap, perScene3DMap, transformedInfosMap, touch_id);
+				RecursiveFlattenTreeForTouchID(flat_tree, &CurrentTouchSupport->mSons[0], perRenderingScreenSortedMap, perScene3DMap, transformedInfosMap, touch_id);
 			}
 			else
 			{
@@ -1024,19 +1024,19 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 
 void	TouchInputEventManager::LinearCallEventUpdate(kstl::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchSourceID touch_id)
 {
-	StackedEventStateStruct& state = myStackedEventState.back();
+	StackedEventStateStruct& state = mStackedEventState.back();
 	u32 swallowMask = 0;
 	
 	for (auto& element : flat_tree)
 	{
-		if (myDestroyedThisFrame.find(element.element) == myDestroyedThisFrame.end() && myDestroyedThisFrame.find(element.touchSupport) == myDestroyedThisFrame.end())
+		if (mDestroyedThisFrame.find(element.element) == mDestroyedThisFrame.end() && mDestroyedThisFrame.find(element.touchSupport) == mDestroyedThisFrame.end())
 		{
 			element.element->GetRef(); // In case a modifiable decide to commit suicide during one of its callbacks
 
-			StackedEventStateStruct::EventMapEntry& currentEntry = state.myEventMap[element.element];
+			StackedEventStateStruct::EventMapEntry& currentEntry = state.mEventMap[element.element];
 
-			auto	itEvent = currentEntry.myTouchEventStateList.begin();
-			auto	itEventE = currentEntry.myTouchEventStateList.end();
+			auto	itEvent = currentEntry.mTouchEventStateList.begin();
+			auto	itEventE = currentEntry.mTouchEventStateList.end();
 
 			unsigned int swallowMaskResult = swallowMask;
 			while (itEvent != itEventE)
@@ -1073,14 +1073,14 @@ void	TouchInputEventManager::transformTouchesInTouchSupportHierarchy(touchSuppor
 		TouchEventState::TouchInfos& cTouchinfosIn = itTouches->second;
 		TouchEventState::TouchInfos cTouchinfosOut = itTouches->second;
 
-		bool isIn=current->currentNode->SimpleCall<bool>("GetDataInTouchSupport", cTouchinfosIn.posInfos, cTouchinfosOut.posInfos);
+		bool isIn=current->mCurrentNode->SimpleCall<bool>("GetDataInTouchSupport", cTouchinfosIn.posInfos, cTouchinfosOut.posInfos);
 		cTouchinfosOut.in_touch_support = isIn ? 1 : 0;
 
-		if (cTouchinfosOut.starting_touch_support && current->currentNode != cTouchinfosOut.starting_touch_support)
+		if (cTouchinfosOut.starting_touch_support && current->mCurrentNode != cTouchinfosOut.starting_touch_support)
 		{
 			cTouchinfosOut.posInfos = itTouches->second.posInfos; // Don't transform until we find starting touch support
 		}
-		else if(current->currentNode == cTouchinfosOut.starting_touch_support)
+		else if(current->mCurrentNode == cTouchinfosOut.starting_touch_support)
 		{
 			if(!itTouches->second.need_starting_touch_support_transform)
 				cTouchinfosOut.posInfos = itTouches->second.posInfos;
@@ -1090,23 +1090,23 @@ void	TouchInputEventManager::transformTouchesInTouchSupportHierarchy(touchSuppor
 		//if(isIn)
 		//	printf("transformed coords in %s = %f %f %f - %f %f %f\n", current->currentNode->getName().c_str(), cTouchinfos.posInfos.pos.x, cTouchinfos.posInfos.pos.y, cTouchinfos.posInfos.pos.z, cTouchinfos.tmove.x, cTouchinfos.tmove.y, cTouchinfos.tmove.z);
 
-		resultmap[current->currentNode][itTouches->first] = cTouchinfosOut;
+		resultmap[current->mCurrentNode][itTouches->first] = cTouchinfosOut;
 
 		++itTouches;
 	}
 
 	// now recurse to sons 
 
-	for (u32 i = 0; i < current->sons.size(); i++)
+	for (u32 i = 0; i < current->mSons.size(); i++)
 	{
-		transformTouchesInTouchSupportHierarchy(&current->sons[i], resultmap, resultmap[current->currentNode]);
+		transformTouchesInTouchSupportHierarchy(&current->mSons[i], resultmap, resultmap[current->mCurrentNode]);
 	}
 
 }
 
 TouchInputEventManager::~TouchInputEventManager()
 {
-	while (myStackedEventState.size())
+	while (mStackedEventState.size())
 	{
 		popState();
 	}
@@ -1117,23 +1117,23 @@ void TouchInputEventManager::ManageCaptureObject(InputEvent& ev, CoreModifiable*
 {
 	if (ev.capture_inputs) 
 	{
-		myEventCaptureObject = target;
-		myEventCapturedEventID = ev.touch_id;
+		mEventCaptureObject = target;
+		mEventCapturedEventID = ev.touch_id;
 	}
-	else if (myEventCaptureObject == target) myEventCaptureObject = nullptr;
+	else if (mEventCaptureObject == target) mEventCaptureObject = nullptr;
 }
 
 DEFINE_METHOD(TouchInputEventManager, OnDestroyCallback)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 
-	if (myInUpdate)
-		myDestroyedThisFrame.insert(sender);
+	if (mInUpdate)
+		mDestroyedThisFrame.insert(sender);
 
 	unregisterObject(sender);
 
-	if (myEventCaptureObject == sender)
-		myEventCaptureObject = nullptr;
+	if (mEventCaptureObject == sender)
+		mEventCaptureObject = nullptr;
 	return false;
 }
 
@@ -1141,8 +1141,8 @@ DEFINE_METHOD(TouchInputEventManager, OnDestroyTouchSupportCallback)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 
-	if (myInUpdate)
-		myDestroyedThisFrame.insert(sender);
+	if (mInUpdate)
+		mDestroyedThisFrame.insert(sender);
 
 	removeTouchSupport(sender);
 	return false;
@@ -1156,11 +1156,11 @@ bool	operator<(const TouchEventState::TouchInfos& first, const TouchEventState::
 // event updates
 void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& timer,CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
-	bool swallow = (swallowMask & (1 << m_type)) != 0 && (m_flag & IgnoreSwallow) == 0;
+	bool swallow = (swallowMask & (1 << mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
 	swallow = swallow || !manager->AllowEventOn(target);
 	
 	ClickEvent ev;
-	ev.type = m_type;
+	ev.type = mType;
 	ev.swallow_mask = &swallowMask;
 	ev.touch_id = touch.ID;
 	ev.has_position = touch.has_position;
@@ -1172,9 +1172,9 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 
 	float dist = Norm(ev.hit.HitPosition - touch.posInfos.origin);
 	bool is_spatial_interaction = IsNearInteraction(touch.ID) && touch.interaction->near_interaction_active_count > 0;
-	if (is_spatial_interaction && m_SpatialInteractionAutoClickDistance > 0.0f) 
+	if (is_spatial_interaction && mSpatialInteractionAutoClickDistance > 0.0f) 
 	{
-		if (std::abs(dist - manager->getSpatialInteractionOffset()) < m_SpatialInteractionAutoClickDistance)
+		if (std::abs(dist - manager->getSpatialInteractionOffset()) < mSpatialInteractionAutoClickDistance)
 			touch_state = 1;
 		else
 			touch_state = 0;
@@ -1187,8 +1187,8 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 		{
 			is_down = true;
 			// check if it was there before
-			auto foundClick = m_CurrentClickStart.find(touch.ID);
-			if (foundClick == m_CurrentClickStart.end())
+			auto foundClick = mCurrentClickStart.find(touch.ID);
+			if (foundClick == mCurrentClickStart.end())
 			{
 				PotentialClick	toStart;
 				toStart.startPos = touch.posInfos.pos;
@@ -1212,9 +1212,9 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 				ev.position = toStart.startPos;
 				
 
-				toStart.isValid = target->SimpleCall<bool>(m_methodNameID, ev);
+				toStart.isValid = target->SimpleCall<bool>(mMethodNameID, ev);
 
-				m_CurrentClickStart[touch.ID] = toStart;
+				mCurrentClickStart[touch.ID] = toStart;
 			}
 			else
 			{
@@ -1241,7 +1241,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 					{
 						startc.isValid = false;
 					}
-					else if (duration > m_ClickMaxDuration)
+					else if (duration > mClickMaxDuration)
 					{
 						startc.isValid = false;
 					}
@@ -1257,7 +1257,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 						ev.click_count = 0;
 						ev.state = StateChanged;
 						ev.position = startc.currentPos;
-						startc.isValid = target->SimpleCall<bool>(m_methodNameID, ev);
+						startc.isValid = target->SimpleCall<bool>(mMethodNameID, ev);
 					}
 					else
 					{
@@ -1267,7 +1267,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 						ev.click_count = 0;
 						ev.state = StateFailed;
 						ev.position = startc.currentPos;
-						target->SimpleCall<bool>(m_methodNameID, ev);
+						target->SimpleCall<bool>(mMethodNameID, ev);
 					}
 				}
 			}
@@ -1279,15 +1279,15 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 	// check if a previous started click was ended
 	if (!is_down)
 	{
-		auto itfind = m_CurrentClickStart.find(touch.ID);
-		if (itfind != m_CurrentClickStart.end())
+		auto itfind = mCurrentClickStart.find(touch.ID);
+		if (itfind != mCurrentClickStart.end())
 		{
 			PotentialClick& endc = itfind->second;
 			if (endc.isValid && !swallow)
 			{
 				// check if click time is ok
 				double duration = timer.GetTime() - endc.startTime;
-				if ((duration >= m_ClickMinDuration) && (duration <= m_ClickMaxDuration))
+				if ((duration >= mClickMinDuration) && (duration <= mClickMaxDuration))
 				{
 					// call target to check if click end is "accepted"
 					ev.origin = endc.origin;
@@ -1299,15 +1299,15 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 					ev.position = endc.currentPos;
 					
 
-					if (target->SimpleCall<bool>(m_methodNameID, ev))
+					if (target->SimpleCall<bool>(mMethodNameID, ev))
 					{
 						endc.clickCount = 1;
 
 						bool click_end_found = false;
 
 						// look in m_CurrentClickEnd to see if an already existint click at almost same position is there
-						auto itendclick = m_CurrentClickEnd.find(touch.ID);
-						if (itendclick != m_CurrentClickEnd.end())
+						auto itendclick = mCurrentClickEnd.find(touch.ID);
+						if (itendclick != mCurrentClickEnd.end())
 						{
 							if (DistSquare(itendclick->second.startPos, endc.startPos) < manager->getTriggerSquaredDist())
 							{
@@ -1322,21 +1322,21 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 						// a corresponding previous click was nos found, add a new one
 						if (!click_end_found)
 						{
-							m_CurrentClickEnd[touch.ID] = endc;
+							mCurrentClickEnd[touch.ID] = endc;
 						}
 					}
 				}
 			}
-			m_CurrentClickStart.erase(itfind);
+			mCurrentClickStart.erase(itfind);
 		}
 	}
 	
-	auto itendclick = m_CurrentClickEnd.find(touch.ID);
-	if (itendclick != m_CurrentClickEnd.end())
+	auto itendclick = mCurrentClickEnd.find(touch.ID);
+	if (itendclick != mCurrentClickEnd.end())
 	{
 		bool toKeep = true;
 		auto& click = itendclick->second;
-		if (click.clickCount == m_MaxClickCount)
+		if (click.clickCount == mMaxClickCount)
 		{
 			// click recognized
 
@@ -1346,12 +1346,12 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 			ev.button_state_mask = (ClickEvent::Button)click.buttonState;
 			ev.click_count = click.clickCount;
 			ev.state = StateRecognized;
-			ev.type = m_type;
+			ev.type = mType;
 			ev.position = click.currentPos;
 			ev.swallow_mask = &swallowMask;
 			ev.item = target;
 
-			target->SimpleCall<bool>(m_methodNameID, ev);
+			target->SimpleCall<bool>(mMethodNameID, ev);
 
 
 			toKeep = false;
@@ -1359,9 +1359,9 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 		else
 		{
 			double duration = timer.GetTime() - click.startTime;
-			if (duration > m_ClickMaxDuration)
+			if (duration > mClickMaxDuration)
 			{
-				if (click.clickCount >= m_MinClickCount)
+				if (click.clickCount >= mMinClickCount)
 				{
 					ClickEvent ev;
 					ev.origin = click.origin;
@@ -1369,12 +1369,12 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 					ev.button_state_mask = (ClickEvent::Button)click.buttonState;
 					ev.click_count = click.clickCount;
 					ev.state = StateRecognized;
-					ev.type = m_type;
+					ev.type = mType;
 					ev.position = click.currentPos;
 					ev.swallow_mask = &swallowMask;
 					ev.item = target;
 
-					target->SimpleCall<bool>(m_methodNameID, ev);
+					target->SimpleCall<bool>(mMethodNameID, ev);
 				}
 				toKeep = false;
 			}
@@ -1382,18 +1382,18 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 
 		if (!toKeep)
 		{
-			m_CurrentClickEnd.erase(itendclick);
+			mCurrentClickEnd.erase(itendclick);
 		}
 	}
 }
 
 void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
-	bool swallow = (swallowMask & (1 << m_type)) != 0 && (m_flag & IgnoreSwallow) == 0;
+	bool swallow = (swallowMask & (1 << mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
 	swallow = swallow || !manager->AllowEventOn(target);
 	
 	DirectTouchEvent ev;
-	ev.type = m_type;
+	ev.type = mType;
 	ev.swallow_mask = &swallowMask;
 	ev.touch_id = touch.ID;
 	ev.interaction = touch.interaction;
@@ -1403,10 +1403,10 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 	auto dist = Norm(ev.hit.HitPosition - touch.posInfos.origin);
 	auto touch_state = touch.touch_state;
 	bool is_near_interaction = IsNearInteraction(touch.ID);
-	if (is_near_interaction && m_SpatialInteractionAutoTouchDownDistance > 0.0f)
+	if (is_near_interaction && mSpatialInteractionAutoTouchDownDistance > 0.0f)
 	{
 		touch.interaction->near_interaction_distance = dist - manager->getSpatialInteractionOffset();
-		if (std::abs(dist - manager->getSpatialInteractionOffset()) < m_SpatialInteractionAutoTouchDownDistance)
+		if (std::abs(dist - manager->getSpatialInteractionOffset()) < mSpatialInteractionAutoTouchDownDistance)
 			touch_state = 1;
 		else
 			touch_state = 0;
@@ -1422,31 +1422,31 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 	ev.touch_state = DirectTouchEvent::TouchHover;
 	
 	// We need to send StateEnded when the event is swallowed by someone above us
-	bool isHover = !swallow && !touch.touch_ended && target->SimpleCall<bool>(m_methodNameID, ev);
+	bool isHover = !swallow && !touch.touch_ended && target->SimpleCall<bool>(mMethodNameID, ev);
 
-	auto foundPrevious = m_CurrentInfosMap.find(touch.ID);
+	auto foundPrevious = mCurrentInfosMap.find(touch.ID);
 
 	// add this touch info if first time
-	if (foundPrevious == m_CurrentInfosMap.end())
+	if (foundPrevious == mCurrentInfosMap.end())
 	{
 		CurrentInfos toAdd;
 		toAdd.currentPos = touch.posInfos.pos;
 		toAdd.state = isHover ? 1 : 0;
 		toAdd.start_dist = dist;
 
-		m_CurrentInfosMap[touch.ID] = toAdd;
+		mCurrentInfosMap[touch.ID] = toAdd;
 
 		if (isHover)
 		{
 			ev.state = StateBegan;
 			ev.touch_state = DirectTouchEvent::TouchHover;
-			target->SimpleCall<bool>(m_methodNameID, ev);
+			target->SimpleCall<bool>(mMethodNameID, ev);
 			manager->ManageCaptureObject(ev, target);
 			if (is_near_interaction) ++touch.interaction->near_interaction_active_count;
 		}
 	}
 
-	CurrentInfos&	current = m_CurrentInfosMap[touch.ID];
+	CurrentInfos&	current = mCurrentInfosMap[touch.ID];
 
 	
 	if (touch_state != 0) // a touch is there
@@ -1458,7 +1458,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			{
 				ev.state = StateBegan;
 				ev.touch_state = DirectTouchEvent::TouchDown;
-				target->SimpleCall<bool>(m_methodNameID, ev);
+				target->SimpleCall<bool>(mMethodNameID, ev);
 				manager->ManageCaptureObject(ev, target);
 				current.state |= 2;
 			}
@@ -1474,7 +1474,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			{
 				ev.state = StateChanged;
 				ev.touch_state = DirectTouchEvent::TouchDown;
-				target->SimpleCall<bool>(m_methodNameID, ev);
+				target->SimpleCall<bool>(mMethodNameID, ev);
 				manager->ManageCaptureObject(ev, target);
 			}
 		}
@@ -1486,7 +1486,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			// send touch up 
 			ev.state = StateBegan; // always send touch up event if we sent a touch down before
 			ev.touch_state = DirectTouchEvent::TouchUp;
-			target->SimpleCall<bool>(m_methodNameID, ev);
+			target->SimpleCall<bool>(mMethodNameID, ev);
 			manager->ManageCaptureObject(ev, target);
 		}
 		current.state = current.state & 1;
@@ -1500,14 +1500,14 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			// send hover update
 			ev.state = StateChanged;
 			ev.touch_state = DirectTouchEvent::TouchHover;
-			target->SimpleCall<bool>(m_methodNameID, ev);
+			target->SimpleCall<bool>(mMethodNameID, ev);
 			manager->ManageCaptureObject(ev, target);
 		}
 		else
 		{
 			ev.state = StateBegan;
 			ev.touch_state = DirectTouchEvent::TouchHover;
-			target->SimpleCall<bool>(m_methodNameID, ev);
+			target->SimpleCall<bool>(mMethodNameID, ev);
 			current.state |= 1;
 			manager->ManageCaptureObject(ev, target);
 			if (is_near_interaction) ++touch.interaction->near_interaction_active_count;
@@ -1520,7 +1520,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			// send hover end
 			ev.state = StateEnded;
 			ev.touch_state = DirectTouchEvent::TouchHover;
-			target->SimpleCall<bool>(m_methodNameID, ev);
+			target->SimpleCall<bool>(mMethodNameID, ev);
 			current.state -= 1;
 			manager->ManageCaptureObject(ev, target);
 			if (is_near_interaction) --touch.interaction->near_interaction_active_count;
@@ -1529,21 +1529,21 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 	
 	if (touch.touch_ended)
 	{
-		auto it = m_CurrentInfosMap.find(touch.ID);
-		if(it != m_CurrentInfosMap.end())
-			m_CurrentInfosMap.erase(it);
+		auto it = mCurrentInfosMap.find(touch.ID);
+		if(it != mCurrentInfosMap.end())
+			mCurrentInfosMap.erase(it);
 	}
 }
 
 void TouchEventStateDirectAccess::Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
-	bool swallow = (swallowMask & (1 << m_type)) != 0 && (m_flag & IgnoreSwallow) == 0;
+	bool swallow = (swallowMask & (1 << mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
 	swallow = swallow || !manager->AllowEventOn(target);
 
 	DirectAccessEvent ev;
 	ev.is_swallowed = swallow;
 	ev.touch_id = touch.ID;
-	ev.type = m_type;
+	ev.type = mType;
 	ev.swallow_mask = &swallowMask;
 	ev.origin = touch.posInfos.origin;
 	ev.direction = touch.posInfos.dir;
@@ -1566,13 +1566,13 @@ void TouchEventStateDirectAccess::Update(TouchInputEventManager* manager, const 
 			ev.state = StateBegan;
 			mCurrentTouches.insert(touch.ID);
 		}
-		target->SimpleCall<bool>(m_methodNameID, ev);
+		target->SimpleCall<bool>(mMethodNameID, ev);
 		manager->ManageCaptureObject(ev, target);
 	}
 	else
 	{
 		ev.state = StateEnded;
-		target->SimpleCall<bool>(m_methodNameID, ev);
+		target->SimpleCall<bool>(mMethodNameID, ev);
 		manager->ManageCaptureObject(ev, target);
 		mCurrentTouches.erase(touch.ID);
 	}
@@ -1580,11 +1580,11 @@ void TouchEventStateDirectAccess::Update(TouchInputEventManager* manager, const 
 
 void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
-	bool swallow = (swallowMask & (1 << m_type)) != 0 && (m_flag & IgnoreSwallow) == 0;
+	bool swallow = (swallowMask & (1 << mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
 	swallow = swallow || !manager->AllowEventOn(target);
 
 	SwipeEvent ev;
-	ev.type = m_type;
+	ev.type = mType;
 	ev.swallow_mask = &swallowMask;
 	ev.has_position = touch.has_position;
 	ev.touch_id = touch.ID;
@@ -1599,8 +1599,8 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 		{
 			is_down = true;
 			// check if it was there before
-			auto foundTouch = m_CurrentInfosMap.find(touch.ID);
-			if (foundTouch == m_CurrentInfosMap.end()) // new touch
+			auto foundTouch = mCurrentInfosMap.find(touch.ID);
+			if (foundTouch == mCurrentInfosMap.end()) // new touch
 			{
 				CurrentInfos	toStart;
 				TimedTouch	addStart;
@@ -1612,9 +1612,9 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 				// call target to check if swipe could start here 
 				ev.direction = { 0,0,0 };
 				ev.state = StatePossible;
-				toStart.isValid = target->SimpleCall<bool>(m_methodNameID, ev);
+				toStart.isValid = target->SimpleCall<bool>(mMethodNameID, ev);
 
-				m_CurrentInfosMap[touch.ID] = toStart;
+				mCurrentInfosMap[touch.ID] = toStart;
 			}
 			else // existing touch
 			{
@@ -1632,7 +1632,7 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 					else
 					{
 						// check duration
-						if ((addt.time - cswipe.touchList[0].time) > m_SwipeMaxDuration)
+						if ((addt.time - cswipe.touchList[0].time) > mSwipeMaxDuration)
 						{
 							cswipe.isValid = false;
 						}
@@ -1648,7 +1648,7 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 								Vector3D swipemaindir(cswipe.touchList[0].pos, addt.pos,asVector());
 								ev.direction = swipemaindir;
 								ev.state = StateBegan;
-								cswipe.isValid = target->SimpleCall<bool>(m_methodNameID, ev);
+								cswipe.isValid = target->SimpleCall<bool>(mMethodNameID, ev);
 							}
 
 							cswipe.touchList.push_back(addt);
@@ -1664,8 +1664,8 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 	// check if a previous started click was ended
 	if (!is_down)
 	{
-		auto it = m_CurrentInfosMap.find(touch.ID);
-		if (it != m_CurrentInfosMap.end())
+		auto it = mCurrentInfosMap.find(touch.ID);
+		if (it != mCurrentInfosMap.end())
 		{
 			CurrentInfos& cswipe = it->second;
 
@@ -1674,7 +1674,7 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 				// check if swipe if is ok 
 
 				double duration = timer.GetTime() - cswipe.touchList[0].time;
-				if ((duration > m_SwipeMinDuration) && (duration < m_SwipeMaxDuration))
+				if ((duration > mSwipeMinDuration) && (duration < mSwipeMaxDuration))
 				{
 					// call target to check if swipe end is "accepted"
 					Vector3D swipemaindir(cswipe.touchList[0].pos, cswipe.touchList.back().pos, asVector());
@@ -1682,7 +1682,7 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 					ev.position = cswipe.touchList.back().pos;					
 					ev.direction = swipemaindir;
 					ev.state = StateChanged;
-					if (target->SimpleCall<bool>(m_methodNameID, ev))
+					if (target->SimpleCall<bool>(mMethodNameID, ev))
 					{
 						// check swipe "trajectory"
 						Vector3D nswipeDir(swipemaindir);
@@ -1703,14 +1703,14 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 						{
 							ev.direction = swipemaindir;
 							ev.state = StateRecognized;
-							target->SimpleCall<bool>(m_methodNameID, ev);
+							target->SimpleCall<bool>(mMethodNameID, ev);
 						}
 					}
 				}
 			}
 
 
-			m_CurrentInfosMap.erase(it);
+			mCurrentInfosMap.erase(it);
 		}
 		
 	}
@@ -1719,11 +1719,11 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 
 void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
-	bool swallow = (swallowMask & (1<<m_type)) != 0 && (m_flag & IgnoreSwallow) == 0;
+	bool swallow = (swallowMask & (1<<mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
 	swallow = swallow || !manager->AllowEventOn(target);
 
 	ScrollEvent ev;
-	ev.type = m_type;
+	ev.type = mType;
 	ev.swallow_mask = &swallowMask;
 	ev.touch_id = touch.ID;
 	ev.interaction = touch.interaction;
@@ -1752,8 +1752,8 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 		{
 			is_down = true;
 			// check if it was there before
-			auto foundTouch = m_CurrentInfosMap.find(touch.ID);
-			if (foundTouch == m_CurrentInfosMap.end()) // new touch
+			auto foundTouch = mCurrentInfosMap.find(touch.ID);
+			if (foundTouch == mCurrentInfosMap.end()) // new touch
 			{
 				CurrentInfos	toStart;
 				toStart.startpos = position;
@@ -1771,9 +1771,9 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 				ev.offset = 0.0f;
 				ev.speed = { 0,0,0 };
 
-				toStart.isValid = target->SimpleCall<bool>(m_methodNameID, ev);
+				toStart.isValid = target->SimpleCall<bool>(mMethodNameID, ev);
 
-				m_CurrentInfosMap[touch.ID] = toStart;
+				mCurrentInfosMap[touch.ID] = toStart;
 			}
 			else // existing touch
 			{
@@ -1793,16 +1793,16 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 								cscroll.maindir.Normalize();
 
 								// if m_ScrollForceMainDir is set, check if it's OK
-								if (NormSquare(m_ScrollForceMainDir) > 0.01f)
+								if (NormSquare(mScrollForceMainDir) > 0.01f)
 								{
-									kfloat dot = Dot(m_ScrollForceMainDir, cscroll.maindir);
+									kfloat dot = Dot(mScrollForceMainDir, cscroll.maindir);
 									if (fabsf(dot) < 0.6)
 									{
 										cscroll.isValid = false;
 									}
 									else
 									{
-										cscroll.maindir = m_ScrollForceMainDir;
+										cscroll.maindir = mScrollForceMainDir;
 									}
 								}
 
@@ -1820,7 +1820,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 									ev.offset = 0.0f;
 									ev.speed = cscroll.currentSpeed;
 
-									cscroll.isValid = target->SimpleCall<bool>(m_methodNameID, ev);
+									cscroll.isValid = target->SimpleCall<bool>(mMethodNameID, ev);
 									manager->ManageCaptureObject(ev, target);
 								}
 							}
@@ -1851,7 +1851,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 						ev.delta = cscroll.currentpos - cscroll.startpos;
 
 						// send direction, start position, current speed vector, offset
-						target->SimpleCall<bool>(m_methodNameID, ev);
+						target->SimpleCall<bool>(mMethodNameID, ev);
 						manager->ManageCaptureObject(ev, target);
 
 					}
@@ -1864,8 +1864,8 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 	
 	if (!is_down)
 	{
-		auto it = m_CurrentInfosMap.find(touch.ID);
-		if (it != m_CurrentInfosMap.end())
+		auto it = mCurrentInfosMap.find(touch.ID);
+		if (it != mCurrentInfosMap.end())
 		{
 			CurrentInfos& cscroll = it->second;
 
@@ -1882,22 +1882,22 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 				ev.offset = offset;
 				ev.delta = cscroll.currentpos - cscroll.startpos;
 
-				target->SimpleCall<bool>(m_methodNameID, ev);
+				target->SimpleCall<bool>(mMethodNameID, ev);
 				manager->ManageCaptureObject(ev, target);
 			}
-			m_CurrentInfosMap.erase(it);
+			mCurrentInfosMap.erase(it);
 		}
 	}
 }
 
 void TouchEventStatePinch::Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
-	bool swallow = (swallowMask & (1 << m_type)) != 0 && (m_flag & IgnoreSwallow) == 0;
+	bool swallow = (swallowMask & (1 << mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
 	swallow = swallow || !manager->AllowEventOn(target);
 
 	PinchEvent ev;
 	ev.swallow_mask = &swallowMask;
-	ev.type = m_type;
+	ev.type = mType;
 	ev.interaction = touch.interaction;
 	ev.item = target;
 
@@ -1939,7 +1939,7 @@ void TouchEventStatePinch::Update(TouchInputEventManager* manager, const Timer& 
 			ev.p2 = mCurrentTouches[itpinch->p2_ID].position;
 				
 			ev.state = StateEnded;
-			target->SimpleCall<bool>(m_methodNameID, ev);
+			target->SimpleCall<bool>(mMethodNameID, ev);
 
 			mCurrentTouches[itpinch->p1_ID].in_use_by_pinch = false;
 			mCurrentTouches[itpinch->p2_ID].in_use_by_pinch = false;
@@ -1974,10 +1974,10 @@ void TouchEventStatePinch::Update(TouchInputEventManager* manager, const Timer& 
 			ev.touch_id = std::get<0>(mm.first);
 			ev.touch_id_2 = std::get<0>(mm.second);
 
-			if (target->SimpleCall<bool>(m_methodNameID, ev))
+			if (target->SimpleCall<bool>(mMethodNameID, ev))
 			{
 				ev.state = StateBegan;
-				target->SimpleCall<bool>(m_methodNameID, ev);
+				target->SimpleCall<bool>(mMethodNameID, ev);
 
 				CurrentPinch pinch;
 				pinch.p1_ID = std::get<0>(mm.first);
@@ -2005,7 +2005,7 @@ void TouchEventStatePinch::Update(TouchInputEventManager* manager, const Timer& 
 			ev.p1 = mCurrentTouches[itpinch->p1_ID].position;
 			ev.p2 = mCurrentTouches[itpinch->p2_ID].position;
 			ev.state = StateChanged;
-			target->SimpleCall<bool>(m_methodNameID, ev);
+			target->SimpleCall<bool>(mMethodNameID, ev);
 		}
 	}
 
@@ -2017,11 +2017,11 @@ void TouchEventStatePinch::Update(TouchInputEventManager* manager, const Timer& 
 
 void TouchEventStateInputSwallow::Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
-	bool swallow = (swallowMask & (1 << m_type)) != 0 && (m_flag & IgnoreSwallow) == 0;
+	bool swallow = (swallowMask & (1 << mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
 	if (swallow) return;
 
 	InputEvent ev;
-	ev.type = m_type;
+	ev.type = mType;
 	ev.has_position = touch.has_position;
 	ev.state = StatePossible;
 	ev.swallow_mask = &swallowMask;
@@ -2030,6 +2030,6 @@ void TouchEventStateInputSwallow::Update(TouchInputEventManager* manager, const 
 	ev.interaction = touch.interaction;
 	ev.item = target;
 
-	target->SimpleCall<bool>(m_methodNameID, ev);
+	target->SimpleCall<bool>(mMethodNameID, ev);
 	
 }

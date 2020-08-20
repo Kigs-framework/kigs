@@ -9,6 +9,17 @@
 struct lua_State;
 class LuaKigsBindModule;
 
+// ****************************************
+// * LuaImporter class
+// * --------------------------------------
+/**
+ * \class	LuaImporter
+ * \file	LuaImporter.h
+ * \ingroup LuaBind
+ * \brief	Kigs importer using Lua rather than XML
+ */
+ // ****************************************
+
 class LuaImporter : public CoreModifiable
 {
 protected:
@@ -48,6 +59,6 @@ protected:
 	static void ParseAttributes(CoreModifiable* current, LuaIntf::LuaRef table);
 	static void FinalizeImport(LuaIntf::LuaState L, ImportStruct& import);
 
-	maString _script = BASE_ATTRIBUTE(Script, "");
+	maString Script = BASE_ATTRIBUTE(Script, "");
 };
 

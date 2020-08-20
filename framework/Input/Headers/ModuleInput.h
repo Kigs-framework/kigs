@@ -27,13 +27,12 @@ ModuleBase* PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModif
 // * WindowClick class
 // * --------------------------------------
 /**
- * \class	WindowClick
- * \ingroup Input
- * \brief	this class manage mouse click for a window
- * \author	ukn
- * \version ukn
- * \date	ukn
- */
+* \file	ModuleInput.h
+* \class	WindowClick
+* \ingroup Input
+* \brief Manage mouse click for a given window.
+*
+*/
 // ****************************************
 class WindowClick
 {
@@ -45,20 +44,20 @@ public:
 	 */
 	WindowClick(CoreModifiable*	w)
 	{
-		pWindow = w;
-		buttonCount = 3;
+		mWindow = w;
+		mButtonCount = 3;
 	
-		myPosX = new kfloat[buttonCount];
-		myPosY = new kfloat[buttonCount];
-		tmpPosX = new kfloat[buttonCount];
-		tmpPosY = new kfloat[buttonCount];
+		mPosX = new kfloat[mButtonCount];
+		mPosY = new kfloat[mButtonCount];
+		mTmpPosX = new kfloat[mButtonCount];
+		mTmpPosY = new kfloat[mButtonCount];
 		
-		for(int i=0; i<buttonCount; i++)
+		for(int i=0; i<mButtonCount; i++)
 		{
-			myPosX[i] = -1;
-			myPosY[i] = -1;
-			tmpPosX[i] = -1;
-			tmpPosY[i] = -1;
+			mPosX[i] = -1;
+			mPosY[i] = -1;
+			mTmpPosX[i] = -1;
+			mTmpPosY[i] = -1;
 		}
 	}
 
@@ -68,10 +67,10 @@ public:
 	 */
 	~WindowClick()
 	{
-		delete [] myPosX;
-		delete [] myPosY;
-		delete [] tmpPosX;
-		delete [] tmpPosY;
+		delete [] mPosX;
+		delete [] mPosY;
+		delete [] mTmpPosX;
+		delete [] mTmpPosY;
 	};
 
 	/**
@@ -82,12 +81,12 @@ public:
 	 */
 	void update()
 	{
-		for(int i=0; i<buttonCount; i++)
+		for(int i=0; i<mButtonCount; i++)
 		{
-			myPosX[i] = tmpPosX[i];
-			myPosY[i] = tmpPosY[i];
-			tmpPosX[i] = -1;
-			tmpPosY[i] = -1;
+			mPosX[i] = mTmpPosX[i];
+			mPosY[i] = mTmpPosY[i];
+			mTmpPosX[i] = -1;
+			mTmpPosY[i] = -1;
 		}
 	}
 
@@ -100,8 +99,8 @@ public:
 	 */
 	void setPos(int buttonId, kfloat X, kfloat Y)
 	{
-		tmpPosX[buttonId] = X;
-		tmpPosY[buttonId] = Y;
+		mTmpPosX[buttonId] = X;
+		mTmpPosY[buttonId] = Y;
 	}
 
 	/**
@@ -113,8 +112,8 @@ public:
 	 */
 	void getPos(int buttonId, kfloat &X, kfloat &Y)
 	{
-		X = myPosX[buttonId];
-		Y = myPosY[buttonId];
+		X = mPosX[buttonId];
+		Y = mPosY[buttonId];
 	}
 	
 	/**
@@ -125,23 +124,23 @@ public:
 	 */
 	bool isMyWindow(CoreModifiable*	w)
 	{
-		return w==pWindow;
+		return w==mWindow;
 	}
 
 private: 
 	//! array of X position for all button
-	kfloat				*myPosX;
+	kfloat				*mPosX;
 	//! array of Y position for all button
-	kfloat				*myPosY;
+	kfloat				*mPosY;
 	//! array of X position for all button
-	kfloat				*tmpPosX;
+	kfloat				*mTmpPosX;
 	//! array of Y position for all button
-	kfloat				*tmpPosY;
+	kfloat				*mTmpPosY;
 
 	//! number of mouse button (default 3)
-	int					buttonCount;
+	int					mButtonCount;
 	//! link to the window
-	CoreModifiable*		pWindow;
+	CoreModifiable*		mWindow;
 };
 
 // ****************************************
@@ -152,10 +151,7 @@ private:
  * \class	ModuleInput
  * \ingroup Input
  * \ingroup Module
- * \brief	this class is the module manager class
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \brief	Generic module for input management.
  */
 // ****************************************
 class ModuleInput : public ModuleBase
@@ -198,9 +194,9 @@ public:
 	 * \fn			MouseDevice*		GetMouse()
 	 * \param		timer : timer global
 	 */
-	MouseDevice*		GetMouse(){return myMouse;}
+	MouseDevice*		GetMouse(){return mMouse;}
 
-	SpatialInteractionDevice*		GetSpatialInteraction() { return mySpatialInteraction; }
+	SpatialInteractionDevice*		GetSpatialInteraction() { return mSpatialInteraction; }
 
 	//! return multiTouch if any	
 	/**
@@ -208,7 +204,7 @@ public:
 	* \fn			MultiTouchDevice*		GetMultiTouch()
 	* \param		timer : timer global
 	*/
-	MultiTouchDevice*		GetMultiTouch(){ return myMultiTouch; }
+	MultiTouchDevice*		GetMultiTouch(){ return mMultiTouch; }
 
 	/**
 	 * \brief		return joystick by index
@@ -223,19 +219,19 @@ public:
 	 * \fn			KeyboardDevice*		GetKeyboard()
 	 * \return		the keyboard
 	 */
-	KeyboardDevice*		GetKeyboard(){return myKeyboard;}
+	KeyboardDevice*		GetKeyboard(){return mKeyboard;}
 
 	/**
 	 * \brief		return joystick count	
 	 * \fn			unsigned int	GetJoystickCount()
 	 * \return		Joystick count
 	 */	
-	unsigned int	GetJoystickCount(){return myJoysticks.size();}
+	unsigned int	GetJoystickCount(){return mJoysticks.size();}
 	
-	AccelerometerDevice* GetAccelerometer(){return myAccelerometer;}   
-	GeolocationDevice* GetGeolocation(){ return myGeolocation; }
-	GyroscopeDevice* GetGyroscope(){ return myGyroscope; }
-	CompassDevice* GetCompass() { return myCompass; }
+	AccelerometerDevice* GetAccelerometer(){return mAccelerometer;}   
+	GeolocationDevice* GetGeolocation(){ return mGeolocation; }
+	GyroscopeDevice* GetGyroscope(){ return mGyroscope; }
+	CompassDevice* GetCompass() { return mCompass; }
 	
    /**
 	 * \fn 		bool addItem(const CMSP&  item,ItemPosition pos DECLARE_DEFAULT_LINK_NAME );
@@ -278,13 +274,13 @@ public:
 	 * \brief	add a WindowClick to the list
 	 * \param	w : watched window
 	 */
-	void addWindowClick(WindowClick *w) { activeWindow.push_back(w); }
+	void addWindowClick(WindowClick *w) { mActiveWindows.push_back(w); }
    /**
 	 * \fn 		void removeWindowClick(WindowClick *w)
 	 * \brief	remove a WindowClick to the list
 	 * \param	w : watched window
 	 */
-	void removeWindowClick(WindowClick *w) { activeWindow.remove(w); }
+	void removeWindowClick(WindowClick *w) { mActiveWindows.remove(w); }
 
    /**
 	 * \fn 		WindowClick* getWindowClick(CoreModifiable* w)
@@ -294,11 +290,11 @@ public:
 	 */
 	WindowClick* getWindowClick(CoreModifiable* w)
 	{
-		if(activeWindow.empty())
+		if(mActiveWindows.empty())
 			return 0;
 
 		kstl::list<WindowClick*>::iterator it;
-		for(it=activeWindow.begin(); it!=activeWindow.end(); ++it)
+		for(it=mActiveWindows.begin(); it!=mActiveWindows.end(); ++it)
 		{
 			WindowClick* theWC=(WindowClick*)*it;
 			if(theWC->isMyWindow(w))
@@ -314,24 +310,24 @@ public:
 
 	SP<TouchInputEventManager>&	getTouchManager()
 	{
-		return myTouchManager;
+		return mTouchManager;
 	}
 
 protected:
-	MouseDevice*					myMouse = nullptr;
-	SpatialInteractionDevice*		mySpatialInteraction = nullptr;
-	MultiTouchDevice*				myMultiTouch = nullptr;
-	KeyboardDevice*					myKeyboard = nullptr;
-	AccelerometerDevice*			myAccelerometer = nullptr;
-	GeolocationDevice*				myGeolocation = nullptr;
-	GyroscopeDevice* 				myGyroscope = nullptr;
-	CompassDevice* 					myCompass = nullptr;
-	std::vector<JoystickDevice*>	myJoysticks;
+	MouseDevice*					mMouse = nullptr;
+	SpatialInteractionDevice*		mSpatialInteraction = nullptr;
+	MultiTouchDevice*				mMultiTouch = nullptr;
+	KeyboardDevice*					mKeyboard = nullptr;
+	AccelerometerDevice*			mAccelerometer = nullptr;
+	GeolocationDevice*				mGeolocation = nullptr;
+	GyroscopeDevice* 				mGyroscope = nullptr;
+	CompassDevice* 					mCompass = nullptr;
+	std::vector<JoystickDevice*>	mJoysticks;
 
 	//! list of WindowClick
-	std::list<WindowClick*>		activeWindow;
+	std::list<WindowClick*>		mActiveWindows;
 
-	SP<TouchInputEventManager>	myTouchManager;
+	SP<TouchInputEventManager>	mTouchManager;
 };
 
 #endif //_MODULEINPUT_H_

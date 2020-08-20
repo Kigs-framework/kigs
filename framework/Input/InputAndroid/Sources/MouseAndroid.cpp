@@ -20,24 +20,24 @@ IMPLEMENT_CONSTRUCTOR(MouseAndroid)
 	jobject pobjet = g_env->CallStaticObjectMethod(pMaClasse,getTouchClass,0);
 	
 	//printf("create global ref \n");
-	myTouchList=g_env->NewGlobalRef(pobjet);
+	mTouchList=g_env->NewGlobalRef(pobjet);
 	
 	pMaClasse =g_env->FindClass("com/kigs/input/KigsTouchEventList");
 
 	//printf("retreive  KigsTouchEventList methods\n");
-	getEventCount=g_env->GetMethodID(pMaClasse, "getEventCount", "()I");
-	getEvent=g_env->GetMethodID(pMaClasse, "getEvent", "(I)Lcom/kigs/input/KigsTouchEvent;");
-	clearEventList=g_env->GetMethodID(pMaClasse, "clearEventList", "()V");
+	mGetEventCount=g_env->GetMethodID(pMaClasse, "getEventCount", "()I");
+	mGetEvent=g_env->GetMethodID(pMaClasse, "getEvent", "(I)Lcom/kigs/input/KigsTouchEvent;");
+	mClearEventList=g_env->GetMethodID(pMaClasse, "clearEventList", "()V");
 
 	pMaClasse =g_env->FindClass("com/kigs/input/KigsTouchEvent");
-	Event_getX = g_env->GetMethodID(pMaClasse, "getX", "()F");
-	Event_getY = g_env->GetMethodID(pMaClasse, "getY", "()F");
-	Event_getAction = g_env->GetMethodID(pMaClasse, "getAction", "()I");
+	mEventGetX = g_env->GetMethodID(pMaClasse, "getX", "()F");
+	mEventGetY = g_env->GetMethodID(pMaClasse, "getY", "()F");
+	mEventGetAction = g_env->GetMethodID(pMaClasse, "getAction", "()I");
 	
 	//printf("ok, that's it\n");
-	myPosX = 0;
-	myPosY = 0;	
-   	m_FrameCountSinceLastValidTouched = 1000; //Any big value
+	mPosX = 0;
+	mPosY = 0;	
+   	mFrameCountSinceLastValidTouched = 1000; //Any big value
 	
 	KigsCore::GetNotificationCenter()->addObserver(this, "ReinitCB", "ResetContext");
 }
@@ -45,16 +45,16 @@ IMPLEMENT_CONSTRUCTOR(MouseAndroid)
 MouseAndroid::~MouseAndroid()
 {  
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	g_env->DeleteGlobalRef(myTouchList);
+	g_env->DeleteGlobalRef(mTouchList);
 }    
 
 bool	MouseAndroid::Aquire()
 {
 	if (MouseDevice::Aquire())
 	{
-		myPosX = 0;
-		myPosY = 0;
-		m_FrameCountSinceLastValidTouched = 1000; //Any big value
+		mPosX = 0;
+		mPosY = 0;
+		mFrameCountSinceLastValidTouched = 1000; //Any big value
 		return true;
 	}
 	return false;
@@ -67,19 +67,19 @@ bool	MouseAndroid::Release()
 
 void	MouseAndroid::UpdateDevice()
 {
-	if (mMultiTouch)
+	if (mMultiTouchPointer)
 	{
-		auto state = mMultiTouch->getTouchState(0);
+		auto state = mMultiTouchPointer->getTouchState(0);
 		float x, y;
-		mMultiTouch->getTouchPos(0, x, y);
-		myDeviceItems[0]->getState()->SetValue((float)((int)x - (int)(kfloat)myPosX));
-		myDeviceItems[1]->getState()->SetValue((float)((int)y - (int)(kfloat)myPosY));
-		myDeviceItems[2]->getState()->SetValue(state);
+		mMultiTouchPointer->getTouchPos(0, x, y);
+		mDeviceItems[0]->getState()->SetValue((float)((int)x - (int)(kfloat)mPosX));
+		mDeviceItems[1]->getState()->SetValue((float)((int)y - (int)(kfloat)mPosY));
+		mDeviceItems[2]->getState()->SetValue(state);
 	}
 	else
 	{
 		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-		int event_Count=g_env->CallIntMethod(myTouchList,getEventCount);
+		int event_Count=g_env->CallIntMethod(mTouchList,mGetEventCount);
 		int currentDevice=0;
 	
 		if(event_Count)
@@ -89,33 +89,33 @@ void	MouseAndroid::UpdateDevice()
 			// manage event
 			for(i=0;i<event_Count;i++)
 			{
-				jobject event=g_env->CallObjectMethod(myTouchList,getEvent,i);
+				jobject event=g_env->CallObjectMethod(mTouchList,mGetEvent,i);
 			
-				int action=(int)g_env->CallIntMethod(event,Event_getAction);
-				float x=(float)g_env->CallFloatMethod(event,Event_getX);
-				float y=(float)g_env->CallFloatMethod(event,Event_getY);
+				int action=(int)g_env->CallIntMethod(event,mEventGetAction);
+				float x=(float)g_env->CallFloatMethod(event,mEventGetX);
+				float y=(float)g_env->CallFloatMethod(event,mEventGetY);
 				currentDevice=0;
 			
 				if(action == 1) // released
 				{
-					myDeviceItems[currentDevice++]->getState()->SetValue((float)((int)x-(int)(kfloat)myPosX));
-					myDeviceItems[currentDevice++]->getState()->SetValue((float)((int)y - (int)(kfloat)myPosY));
-					myDeviceItems[currentDevice++]->getState()->SetValue((int)0x00);
+					mDeviceItems[currentDevice++]->getState()->SetValue((float)((int)x-(int)(kfloat)mPosX));
+					mDeviceItems[currentDevice++]->getState()->SetValue((float)((int)y - (int)(kfloat)mPosY));
+					mDeviceItems[currentDevice++]->getState()->SetValue((int)0x00);
 				}
 				else
 				{	
-					myDeviceItems[currentDevice++]->getState()->SetValue((float)(int)x - (int)(kfloat)myPosX);
-					myDeviceItems[currentDevice++]->getState()->SetValue((float)(int)y - (int)(kfloat)myPosY);
-					myDeviceItems[currentDevice++]->getState()->SetValue((int)0x80);
+					mDeviceItems[currentDevice++]->getState()->SetValue((float)(int)x - (int)(kfloat)mPosX);
+					mDeviceItems[currentDevice++]->getState()->SetValue((float)(int)y - (int)(kfloat)mPosY);
+					mDeviceItems[currentDevice++]->getState()->SetValue((int)0x80);
 				}
 			}
 			
-			g_env->CallVoidMethod(myTouchList,clearEventList);
+			g_env->CallVoidMethod(mTouchList,mClearEventList);
 		}
 		else // no event = no move
 		{
-			myDeviceItems[currentDevice++]->getState()->SetValue((float)0);
-			myDeviceItems[currentDevice++]->getState()->SetValue((float)0);
+			mDeviceItems[currentDevice++]->getState()->SetValue((float)0);
+			mDeviceItems[currentDevice++]->getState()->SetValue((float)0);
 		}
 	}
 	// call father update
@@ -124,12 +124,12 @@ void	MouseAndroid::UpdateDevice()
 
 void	MouseAndroid::DoInputDeviceDescription()
 {
-	mMultiTouch = (MultiTouchDevice*)mMultiTouchRef;
+	mMultiTouchPointer = (MultiTouchDevice*)mMultiTouch;
 
-	myButtonsCount=1;
-	myDeviceItemsCount=3; // 2 for posx and posy
+	mButtonsCount=1;
+	mDeviceItemsCount=3; // 2 for posx and posy
 
-	DeviceItem**	devicearray=new DeviceItem*[myDeviceItemsCount];
+	DeviceItem**	devicearray=new DeviceItem*[mDeviceItemsCount];
 	
 	int currentDevice=0;
 
@@ -137,14 +137,14 @@ void	MouseAndroid::DoInputDeviceDescription()
 	devicearray[currentDevice++]=new DeviceItem(DeviceItemState<kfloat>(0.0f));
 
 	int currentButton;
-	for(currentButton=0;currentButton<myButtonsCount;currentButton++)
+	for(currentButton=0;currentButton<mButtonsCount;currentButton++)
 	{
 		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<int>(0));
 	}
 
-	InitItems(myDeviceItemsCount,devicearray);
+	InitItems(mDeviceItemsCount,devicearray);
 
-	for(currentDevice=0;currentDevice<myDeviceItemsCount;currentDevice++)
+	for(currentDevice=0;currentDevice<mDeviceItemsCount;currentDevice++)
 	{
 		delete devicearray[currentDevice];
 	}
@@ -156,10 +156,10 @@ void	MouseAndroid::DoInputDeviceDescription()
 DEFINE_METHOD(MouseAndroid, ReinitCB)
 {
 	printf("reinit MouseAndroid\n");
-	if (mMultiTouch) return false;
+	if (mMultiTouchPointer) return false;
 	
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	g_env->DeleteGlobalRef(myTouchList);
+	g_env->DeleteGlobalRef(mTouchList);
 	
 	//printf("retreive KigsGLSurfaceView \n");
 	jclass  pMaClasse =g_env->FindClass("com/kigs/kigsmain/KigsGLSurfaceView");
@@ -168,6 +168,6 @@ DEFINE_METHOD(MouseAndroid, ReinitCB)
 	//printf("retreive KigsTouchEventList object \n");
 	jobject pobjet = g_env->CallStaticObjectMethod(pMaClasse,getTouchClass,0);	
 	//printf("create global ref \n");
-	myTouchList=g_env->NewGlobalRef(pobjet);
+	mTouchList=g_env->NewGlobalRef(pobjet);
 	return false;
 }

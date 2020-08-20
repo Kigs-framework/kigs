@@ -4,6 +4,18 @@
 #include "CoreModifiableAttribute.h"
 #include "HTTPConnect.h"
 
+// ****************************************
+// * ResourceDownloader class
+// * --------------------------------------
+/**
+* \file	ResourceDownloader.h
+* \class	ResourceDownloader
+* \ingroup HTTPRequest
+* \brief Download file from given URL.
+*
+*/
+// ****************************************
+
 class ResourceDownloader : public CoreModifiable
 {
 public:
@@ -21,11 +33,9 @@ protected:
 	COREMODIFIABLE_METHODS(DownloadDone);
 
 
-	maString	myURL = BASE_ATTRIBUTE(URL, "");
+	maString	mURL = BASE_ATTRIBUTE(URL, "");
 
 	SP<HTTPConnect>			mConnect = nullptr;
 	SP<HTTPAsyncRequest>	mAnswer = nullptr;
-
-
 
 };

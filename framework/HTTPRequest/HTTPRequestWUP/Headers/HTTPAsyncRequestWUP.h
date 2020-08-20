@@ -6,7 +6,17 @@
 
 class HTTPAsyncRequestWUP;
 
-
+// ****************************************
+// * HTTPAsyncRequestWUP class
+// * --------------------------------------
+/**
+* \file	HTTPAsyncRequestWUP.h
+* \class	HTTPAsyncRequestWUP
+* \ingroup HTTPRequest
+* \brief UWP specific HTTP Request.
+*
+*/
+// ****************************************
 class HTTPAsyncRequestWUP : public HTTPAsyncRequest
 {
 public:

@@ -3,16 +3,18 @@
 
 #include "Window.h"
 
+
 // ****************************************
 // * WindowAndroid class
 // * --------------------------------------
-/*!  \class WindowAndroid
-     a Android window , used for rendering, inherit Window base class from GUI module
-     \ingroup GUIAndroidModule
+/**
+* \file	WindowAndroid.h
+* \class	WindowAndroid
+* \ingroup GUIModule
+* \brief Specific Window class for Android platform.
+*
 */
 // ****************************************
-
-
 class WindowAndroid : public Window
 {
 public:

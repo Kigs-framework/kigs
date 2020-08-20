@@ -7,7 +7,7 @@ IMPLEMENT_CLASS_INFO(HTTPConnect)
 
 void HTTPConnect::InitModifiable()
 {
-	if (myHostName.const_ref() != "")
+	if (mHostName.const_ref() != "")
 	{
 		CoreModifiable::InitModifiable();
 	}
@@ -15,7 +15,7 @@ void HTTPConnect::InitModifiable()
 
 SmartPointer<HTTPAsyncRequest> HTTPConnect::retreiveGetAsyncRequest(const char* a_URLRequest, const char* a_NotificationName, CoreModifiable* a_CallbackObject)
 {
-	if (myIsSynchronous || (!a_NotificationName && !a_CallbackObject))
+	if (mIsSynchronous || (!a_NotificationName && !a_CallbackObject))
 		return nullptr;
 
 	SP<HTTPAsyncRequest> request = KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest");
@@ -44,7 +44,7 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreiveDeleteAsyncRequest(const cha
 
 SmartPointer<HTTPAsyncRequest> HTTPConnect::retreivePostAsyncRequest(const char* a_URLRequest, const char* buffer, const unsigned int& a_requestSize, const char* a_NotificationName, CoreModifiable* a_CallbackObject)
 {
-	if (myIsSynchronous || (!a_NotificationName && !a_CallbackObject))
+	if (mIsSynchronous || (!a_NotificationName && !a_CallbackObject))
 		return nullptr;
 
 	SP<HTTPAsyncRequest> request = KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest");
@@ -75,7 +75,7 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreivePutAsyncRequest(const char* 
 
 SmartPointer<HTTPAsyncRequest> HTTPConnect::retreiveGetRequest(const char* a_URLRequest)
 {
-	if (!myIsSynchronous)
+	if (!mIsSynchronous)
 		return nullptr;
 
 	SP<HTTPAsyncRequest> request = KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest");
@@ -89,7 +89,7 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreiveGetRequest(const char* a_URL
 
 SmartPointer<HTTPAsyncRequest> HTTPConnect::retreivePostRequest(const char* a_URLRequest, const char* buffer, const unsigned int& a_requestSize)
 {
-	if (!myIsSynchronous)
+	if (!mIsSynchronous)
 		return 0;
 
 	SP<HTTPAsyncRequest> request = KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest");
@@ -105,7 +105,7 @@ kstl::string HTTPConnect::getHostNameWithProtocol()
 {
 	kstl::string hostName;
 
-	if (myConnectionType == 0)
+	if (mType == 0)
 	{
 		hostName = "http://";
 	}
@@ -114,7 +114,7 @@ kstl::string HTTPConnect::getHostNameWithProtocol()
 		hostName = "https://";
 	}
 
-	hostName += (const kstl::string&)myHostName;
+	hostName += (const kstl::string&)mHostName;
 
 	return hostName;
 }

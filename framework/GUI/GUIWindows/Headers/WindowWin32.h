@@ -4,19 +4,21 @@
 #include "Window.h"
 #include <d3d9.h>
 
-// ****************************************
-// * WindowWin32 class
-// * --------------------------------------
-/*!  \class WindowWin32
-     a win32 window, used for rendering, inherit Window base class from GUI module
-     \ingroup GUIWindowsModule
-*/
-// ****************************************
+
 
 #define PSEUDO_FULLSCREEN
 
 typedef LRESULT (*msgProcCallBack)( HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM lParam );
-
+// ****************************************
+// * WindowWin32 class
+// * --------------------------------------
+/**
+* \file	WindowWin32.h
+* \class	WindowWin32
+* \ingroup GUIModule
+* \brief	Specific Win32 Window.
+*/
+// ****************************************
 class WindowWin32 : public Window
 {
 public:
@@ -47,7 +49,7 @@ public:
 
 	virtual void ChangeWindowText(const char * txt)
 	{
-		SetWindowTextA((HWND)myHandle, txt);
+		SetWindowTextA((HWND)mHandle, txt);
 	}
 
 	void	SetCurrentCursor(LPCTSTR cursorName);
@@ -68,21 +70,21 @@ protected:
 	static LRESULT WINAPI MsgProc( HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM lParam );
 
 	//! win32 handle
-    WNDCLASSEX     myWC;
+    WNDCLASSEX     mWC;
 
 	//!Parent window at creation
-	HWND myParent;
+	HWND mParent;
 
 
 	//! stored msg
-    MSG            myMsg;
+    MSG            mMsg;
 
 	//! manage screensaver desactivation
-	bool		   myScreenSaverActive;
+	bool		   mScreenSaverActive;
 	
-	HCURSOR		   myCursor;
+	HCURSOR		   mCursor;
 
-	static std::map<msgProcCallBack,msgProcCallBack>*	myCallBackMap;
+	static std::map<msgProcCallBack,msgProcCallBack>*	mCallBackMap;
 };    
 
 #endif //_WINDOWWIN32_H_

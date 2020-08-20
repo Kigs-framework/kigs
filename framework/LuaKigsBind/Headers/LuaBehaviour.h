@@ -10,15 +10,20 @@
 
 class LuaKigsBindModule;
 
+
+struct lua_State;
+
+
 // ****************************************
 // * LuaBehaviour class
 // * --------------------------------------
-/*!  \class LuaBehaviour
-     execute some lua script
-*/
-// ****************************************
-struct lua_State;
-
+/**
+ * \class	LuaBehaviour
+ * \file	LuaBehaviour.h
+ * \ingroup LuaBind
+ * \brief	Add LUA methods to a CoreModifiable instance.
+ */
+ // ****************************************
 class LuaBehaviour : public CoreModifiable
 {
 	
@@ -48,28 +53,28 @@ protected:
 	void	InitModifiable() override;
 	void	UninitModifiable() override;
 	
-	LuaKigsBindModule*		myLuaModule;
+	LuaKigsBindModule*		mLuaModule;
 	
 	// Lua script or reference on script file
-	maString				myScript;
+	maString				mScript;
 
 	// enable / disable lua scripting
-	maBool					myEnabled;
+	maBool					mEnabled;
 
 	// if interval is set, do update only if interval elapsed
-	maFloat					myInterval;
+	maFloat					mInterval;
 	// last update time ( for interval evaluation)
-	kdouble					myLastTime;
+	kdouble					mLastTime;
 	
 	// check if lua needs init
-	bool				    myLuaNeedInit;
+	bool				    mLuaNeedInit;
 
 	// check if we need to call lua update method
-	bool				    myHasUpdate;
+	bool				    mHasUpdate;
 
-	CoreModifiable*			myTarget;
-	LuaIntf::LuaState       L;
-	LuaIntf::LuaRef         Self;
+	CoreModifiable*			mTarget;
+	LuaIntf::LuaState       mL;
+	LuaIntf::LuaRef         mSelf;
 	
 	void OnAddItemCallback(CoreModifiable* localthis, CoreModifiable* item);
 	void OnRemoveItemCallback(CoreModifiable* localthis, CoreModifiable* item);

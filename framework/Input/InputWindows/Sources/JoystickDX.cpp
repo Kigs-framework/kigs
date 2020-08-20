@@ -42,9 +42,9 @@ BOOL CALLBACK EnumJoystickObjectsCallback( const DIDEVICEOBJECTINSTANCEA* instan
 
 
 JoystickDX::JoystickDX(const kstl::string& name,CLASS_NAME_TREE_ARG) : JoystickDevice(name,PASS_CLASS_NAME_TREE_ARG)
-, myDirectInputJoystick(0)
-, myAxisIndex(-1)
-, myRotationIndex(-1)
+, mDirectInputJoystick(0)
+, mAxisIndex(-1)
+, mRotationIndex(-1)
 {
 
 }
@@ -52,9 +52,9 @@ JoystickDX::JoystickDX(const kstl::string& name,CLASS_NAME_TREE_ARG) : JoystickD
 JoystickDX::~JoystickDX()
 {  
 
-	if(myDirectInputJoystick)
+	if(mDirectInputJoystick)
 	{
-		myDirectInputJoystick->Release();
+		mDirectInputJoystick->Release();
 	}
 
 }    
@@ -63,8 +63,8 @@ bool	JoystickDX::Aquire()
 {
 	if (JoystickDevice::Aquire())
 	{
-		myDirectInputJoystick->SetCooperativeLevel((myInputWindow ? (HWND)myInputWindow->GetHandle() : NULL), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-		myDirectInputJoystick->Acquire();
+		mDirectInputJoystick->SetCooperativeLevel((mInputWindow ? (HWND)mInputWindow->GetHandle() : NULL), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+		mDirectInputJoystick->Acquire();
 		return true;
 	}
 	return false;
@@ -74,7 +74,7 @@ bool	JoystickDX::Release()
 {
 	if (JoystickDevice::Release())
 	{
-		myDirectInputJoystick->Unacquire();
+		mDirectInputJoystick->Unacquire();
 		return true;
 	}
 	return false;
@@ -85,13 +85,13 @@ void	JoystickDX::UpdateDevice()
 	HRESULT     hr;
     DIJOYSTATE2 dijs2;      // DirectInput joystick state structure
 
-    if( NULL == myDirectInputJoystick ) 
+    if( NULL == mDirectInputJoystick ) 
         return;
 
     // Get the input's device state, and put the state in dims
     ZeroMemory( &dijs2, sizeof(dijs2) );
 	
-    hr = myDirectInputJoystick->GetDeviceState( sizeof(DIJOYSTATE2), &dijs2 );
+    hr = mDirectInputJoystick->GetDeviceState( sizeof(DIJOYSTATE2), &dijs2 );
     if( FAILED(hr) ) 
     {
         return; 
@@ -100,75 +100,75 @@ void	JoystickDX::UpdateDevice()
 	unsigned int currentDevice=0;
 
 	unsigned int currentButton;
-	for(currentButton=0;currentButton<myButtonsCount;currentButton++)
+	for(currentButton=0;currentButton<mButtonsCount;currentButton++)
 	{
-		myDeviceItems[currentDevice++]->getState()->SetValue(dijs2.rgbButtons[currentButton]& 0x80);
+		mDeviceItems[currentDevice++]->getState()->SetValue(dijs2.rgbButtons[currentButton]& 0x80);
 	}
 
 	// axis
-	if(myAxisIndex!=-1)
+	if(mAxisIndex!=-1)
 	{
 		Point3D p((kfloat)(dijs2.lX-32768)/32768.0f,(kfloat)(dijs2.lY-32768)/32768.0f,(kfloat)(dijs2.lZ-32768)/32768.0f);
-		myDeviceItems[myAxisIndex]->getState()->SetValue(p);
+		mDeviceItems[mAxisIndex]->getState()->SetValue(p);
 	}
-	if(myRotationIndex!=-1)
+	if(mRotationIndex!=-1)
 	{
 		Point3D p((kfloat)(dijs2.lRx-32768)/32768.0f,(kfloat)(dijs2.lRy-32768)/32768.0f,(kfloat)(dijs2.lRz-32768)/32768.0f);
-		myDeviceItems[myRotationIndex]->getState()->SetValue(p);
+		mDeviceItems[mRotationIndex]->getState()->SetValue(p);
 	}
-	currentDevice+=myAxisCount;
+	currentDevice+=mAxisCount;
 		
-	for(currentButton=0;currentButton<myPovCount;currentButton++)
+	for(currentButton=0;currentButton<mPovCount;currentButton++)
 	{
-		myDeviceItems[currentDevice++]->getState()->SetValue((int)dijs2.rgdwPOV[currentButton]);
+		mDeviceItems[currentDevice++]->getState()->SetValue((int)dijs2.rgdwPOV[currentButton]);
 	}
 }
 
 void	JoystickDX::DoInputDeviceDescription()
 {
-	myDirectInputJoystick->EnumObjects(EnumJoystickObjectsCallback,this,DIDFT_ALL);
+	mDirectInputJoystick->EnumObjects(EnumJoystickObjectsCallback,this,DIDFT_ALL);
 
-	if(myAxisIndex!=-1)     myAxisCount++;
-	if(myRotationIndex!=-1) myAxisCount++;
+	if(mAxisIndex!=-1)     mAxisCount++;
+	if(mRotationIndex!=-1) mAxisCount++;
 
-	myDeviceItemsCount=myButtonsCount+myPovCount+myAxisCount;
+	mDeviceItemsCount=mButtonsCount+mPovCount+mAxisCount;
 
-	DeviceItem**	devicearray=new DeviceItem*[myDeviceItemsCount];
+	DeviceItem**	devicearray=new DeviceItem*[mDeviceItemsCount];
 	
 	unsigned int currentDevice=0;
 
 	unsigned int currentButton;
-	for(currentButton=0;currentButton<myButtonsCount;currentButton++)
+	for(currentButton=0;currentButton<mButtonsCount;currentButton++)
 	{
 		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<int>(0));
 	}
 
-	if(myAxisIndex)
+	if(mAxisIndex)
 	{
-		myAxisIndex=currentDevice++;
-		devicearray[myAxisIndex]=new DeviceItem(DeviceItemState<Point3D>(Point3D()));
+		mAxisIndex=currentDevice++;
+		devicearray[mAxisIndex]=new DeviceItem(DeviceItemState<Point3D>(Point3D()));
 	}
-	if(myRotationIndex)
+	if(mRotationIndex)
 	{
-		myRotationIndex=currentDevice++;
-		devicearray[myRotationIndex]=new DeviceItem(DeviceItemState<Point3D>(Point3D()));
+		mRotationIndex=currentDevice++;
+		devicearray[mRotationIndex]=new DeviceItem(DeviceItemState<Point3D>(Point3D()));
 	}
 
 	unsigned int currentPOV;
-	for(currentPOV=0;currentPOV<myPovCount;currentPOV++)
+	for(currentPOV=0;currentPOV<mPovCount;currentPOV++)
 	{
 		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<int>(0));
 	}
 
-	InitItems(myDeviceItemsCount,devicearray);
+	InitItems(mDeviceItemsCount,devicearray);
 
-	for(currentButton=0;currentButton<myDeviceItemsCount;currentButton++)
+	for(currentButton=0;currentButton<mDeviceItemsCount;currentButton++)
 	{
 		delete devicearray[currentButton];
 	}
 
 	delete[] devicearray;
 
-	myDirectInputJoystick->SetDataFormat(&c_dfDIJoystick2);
+	mDirectInputJoystick->SetDataFormat(&c_dfDIJoystick2);
 
 }

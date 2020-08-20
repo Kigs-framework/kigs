@@ -2,7 +2,16 @@
 #define _MULTITOUCHDEVICE_H_
 
 #include "InputDevice.h"
-
+// ****************************************
+// * MultiTouchDevice class
+// * --------------------------------------
+/**
+ * \class	MultiTouchDevice
+ * \file	MultiTouchDevice.h
+ * \ingroup Input
+ * \brief	Base class to manage generic multiple touch device.
+ */
+ // ****************************************
 class MultiTouchDevice : public InputDevice
 {
 public:	
@@ -13,13 +22,13 @@ public:
 	void			getTouchPos(int touchIndex, kfloat &posX, kfloat &posY);
 	int getMaxTouch()
 	{
-		return myMaxTouch;
+		return mMaxTouch;
 	}
 
 	void UpdateDevice() override {};
 
 protected:
-	int		myMaxTouch = 0;
+	int		mMaxTouch = 0;
 };
 
 #endif //_MULTITOUCHDEVICE_H_

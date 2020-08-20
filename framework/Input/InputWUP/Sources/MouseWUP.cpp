@@ -72,32 +72,32 @@ void	MouseWUP::UpdateDevice()
 
 	//auto bounds = App::GetApp()->GetWindow().Bounds();
 	
-	myDeviceItems[currentDevice++]->getState()->SetValue(x);
-	myDeviceItems[currentDevice++]->getState()->SetValue(y);
+	mDeviceItems[currentDevice++]->getState()->SetValue(x);
+	mDeviceItems[currentDevice++]->getState()->SetValue(y);
 	
-	myDX = x - myPosX;
-	myDY = y - myPosY;
-	myPosX = x;
-	myPosY = y;
+	mDX = x - mPosX;
+	mDY = y - mPosY;
+	mPosX = x;
+	mPosY = y;
 	
 	//printf("%0.3f %0.3f (%0.3f %0.3f)\n", (float)myPosX, (float)myPosY, myDX, myDY);
 	
 	// wheel
-	if (myWheelCount)
+	if (mWheelCount)
 	{
-		myDeviceItems[currentDevice++]->getState()->SetValue(WheelDelta);
-		if (myDZ != myPreviousDZ)
-			myPreviousDZ = myDZ;
-		myDZ += WheelDelta;
+		mDeviceItems[currentDevice++]->getState()->SetValue(WheelDelta);
+		if (mDZ != mPreviousDZ)
+			mPreviousDZ = mDZ;
+		mDZ += WheelDelta;
 		WheelDelta = 0;
 	}
 	
 	// left right middle
-	if (myButtonsCount > 2)
+	if (mButtonsCount > 2)
 	{
-		myDeviceItems[currentDevice++]->getState()->SetValue(LeftPressed);
-		myDeviceItems[currentDevice++]->getState()->SetValue(RightPressed);
-		myDeviceItems[currentDevice++]->getState()->SetValue(MiddlePressed);
+		mDeviceItems[currentDevice++]->getState()->SetValue(LeftPressed);
+		mDeviceItems[currentDevice++]->getState()->SetValue(RightPressed);
+		mDeviceItems[currentDevice++]->getState()->SetValue(MiddlePressed);
 	}
 }
 
@@ -107,30 +107,30 @@ void	MouseWUP::DoInputDeviceDescription()
 
 	winrt::Windows::Devices::Input::MouseCapabilities mc;
 
-	myButtonsCount = mc.NumberOfButtons();
-	myWheelCount = mc.VerticalWheelPresent() ? 1 : 0;// left right middle
+	mButtonsCount = mc.NumberOfButtons();
+	mWheelCount = mc.VerticalWheelPresent() ? 1 : 0;// left right middle
 	
-	myDeviceItemsCount = myButtonsCount + myWheelCount + 2; // +2 for posx and posy
+	mDeviceItemsCount = mButtonsCount + mWheelCount + 2; // +2 for posx and posy
 	
-	DeviceItem**	devicearray = new DeviceItem*[myDeviceItemsCount];
+	DeviceItem**	devicearray = new DeviceItem*[mDeviceItemsCount];
 	
 	unsigned int currentDevice = 0;
 	
 	devicearray[currentDevice++] = new DeviceItem(DeviceItemState<kfloat>(0.0f));
 	devicearray[currentDevice++] = new DeviceItem(DeviceItemState<kfloat>(0.0f));
 	
-	if (myWheelCount)
+	if (mWheelCount)
 		devicearray[currentDevice++] = new DeviceItem(DeviceItemState<kfloat>(0.0f));
 	
 	int currentButton;
-	for (currentButton = 0; currentButton < myButtonsCount; currentButton++)
+	for (currentButton = 0; currentButton < mButtonsCount; currentButton++)
 	{
 		devicearray[currentDevice++] = new DeviceItem(DeviceItemState<int>(0));
 	}
 	
-	InitItems(myDeviceItemsCount, devicearray);
+	InitItems(mDeviceItemsCount, devicearray);
 	
-	for (currentDevice = 0; currentDevice < myDeviceItemsCount; currentDevice++)
+	for (currentDevice = 0; currentDevice < mDeviceItemsCount; currentDevice++)
 		delete devicearray[currentDevice];
 	
 	delete[] devicearray;

@@ -7,9 +7,12 @@
 // ****************************************
 // * MouseDX class
 // * --------------------------------------
-/*!  \class MouseDX
-     DirectX mouse management
-	 \ingroup InputDX
+/**
+* \file	MouseDX.h
+* \class	MouseDX
+* \ingroup Input
+* \brief Specific DirectX Mouse device.
+*
 */
 // ****************************************
 
@@ -26,17 +29,17 @@ public:
 
 	void	UpdateDevice();
 
-	LPDIRECTINPUTDEVICE8& getDirectInputMouse(){return myDirectInputMouse;}
+	LPDIRECTINPUTDEVICE8& getDirectInputMouse(){return mDirectInputMouse;}
 
 	void	DoInputDeviceDescription();
 
-	void	IncWheelCount(){myWheelCount++;}
-	void	IncButtonCount(){myButtonsCount++;}
+	void	IncWheelCount(){mWheelCount++;}
+	void	IncButtonCount(){mButtonsCount++;}
     
 protected:
    virtual ~MouseDX();
 
-	LPDIRECTINPUTDEVICE8 myDirectInputMouse;  
+	LPDIRECTINPUTDEVICE8 mDirectInputMouse;  
 };    
 
 #endif //_MOUSEDX_H_

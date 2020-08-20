@@ -9,15 +9,12 @@ class KeyboardDevice;
 // * KeyToAscii class
 // * --------------------------------------
 /**
- * \file	KeyToAscii.h
  * \class	KeyToAscii
+ * \file	KeyToAscii.h
  * \ingroup Input
- * \brief	abstract base class for key to ascii classes
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \brief	Abstract base class to manage Keyboard to Ascii conversion. 
  */
-// ****************************************
+ // ****************************************
 class KeyToAscii : public CoreModifiable
 {
 public:

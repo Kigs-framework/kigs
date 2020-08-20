@@ -1,11 +1,4 @@
-/*
- *  AccelerometerAndroid.cpp
- *  AndroidInputAndroid
- *
- *  Created by steph on 4/4/11.
- *  Copyright 2011 __MyCompanyName__. All rights reserved.
- *
- */
+
 
 #include "AccelerometerAndroid.h"
 #include "Core.h"
@@ -16,27 +9,27 @@ IMPLEMENT_CLASS_INFO(AccelerometerAndroid)
 
 AccelerometerAndroid::AccelerometerAndroid(const kstl::string& name, CLASS_NAME_TREE_ARG)
 	: AccelerometerDevice(name, PASS_CLASS_NAME_TREE_ARG)
-	, isRunning(false)
+	, mIsRunning(false)
 {
 
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	jclass pMaClasse = g_env->FindClass("com/kigs/input/KigsAccelerometer");
-	myKigsAccelerometer = (jclass)g_env->NewGlobalRef(pMaClasse);
+	mKigsAccelerometer = (jclass)g_env->NewGlobalRef(pMaClasse);
 
 	// check if supported
-	jmethodID method = g_env->GetStaticMethodID(myKigsAccelerometer, "isSupported", "()Z");
-	isAvailable = g_env->CallStaticBooleanMethod(myKigsAccelerometer, method);
+	jmethodID method = g_env->GetStaticMethodID(mKigsAccelerometer, "isSupported", "()Z");
+	mIsAvailable = g_env->CallStaticBooleanMethod(mKigsAccelerometer, method);
 
-	jmethodID methodwc = g_env->GetStaticMethodID(myKigsAccelerometer, "isWorldCoordinatesSupported", "()Z");
-	isWCAvailable = g_env->CallStaticBooleanMethod(myKigsAccelerometer, methodwc);
+	jmethodID methodwc = g_env->GetStaticMethodID(mKigsAccelerometer, "isWorldCoordinatesSupported", "()Z");
+	mIsWCAvailable = g_env->CallStaticBooleanMethod(mKigsAccelerometer, methodwc);
 
-	if (isAvailable)
+	if (mIsAvailable)
 	{
-		StopMethod = g_env->GetStaticMethodID(myKigsAccelerometer, "stopListening", "(Z)V");
-		StartMethod = g_env->GetStaticMethodID(myKigsAccelerometer, "startListening", "(I)V");
+		mStopMethod = g_env->GetStaticMethodID(mKigsAccelerometer, "stopListening", "(Z)V");
+		mStartMethod = g_env->GetStaticMethodID(mKigsAccelerometer, "startListening", "(I)V");
 
-		getValue = g_env->GetStaticMethodID(myKigsAccelerometer, "getValue", "()[B");
+		mGetValue = g_env->GetStaticMethodID(mKigsAccelerometer, "getValue", "()[B");
 	}
 }
 
@@ -44,8 +37,8 @@ AccelerometerAndroid::~AccelerometerAndroid()
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	g_env->DeleteGlobalRef(myKigsAccelerometer);
-	myKigsAccelerometer = 0;
+	g_env->DeleteGlobalRef(mKigsAccelerometer);
+	mKigsAccelerometer = 0;
 }
 
 bool	AccelerometerAndroid::Aquire()
@@ -71,53 +64,53 @@ bool	AccelerometerAndroid::Release()
 
 void	AccelerometerAndroid::Start()
 {
-	if (isAvailable)
+	if (mIsAvailable)
 	{
 		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-		g_env->CallStaticVoidMethod(myKigsAccelerometer, StartMethod, (int)myRate);
-		isRunning = true;
+		g_env->CallStaticVoidMethod(mKigsAccelerometer, mStartMethod, (int)mRate);
+		mIsRunning = true;
 	}
 }
 
 void	AccelerometerAndroid::Stop()
 {
-	if (isAvailable)
+	if (mIsAvailable)
 	{
 		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-		g_env->CallStaticVoidMethod(myKigsAccelerometer, StopMethod, false);
-		isRunning = false;
+		g_env->CallStaticVoidMethod(mKigsAccelerometer, mStopMethod, false);
+		mIsRunning = false;
 	}
 }
 
 
 void	AccelerometerAndroid::UpdateDevice()
 {
-	if (!isAvailable)
+	if (!mIsAvailable)
 		return;
-	if (!isRunning)
+	if (!mIsRunning)
 		return;
 
 
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(myKigsAccelerometer, getValue);
+	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(mKigsAccelerometer, mGetValue);
 	jbyte *body = g_env->GetByteArrayElements(arr, 0);
 	float* val = (float*)body;
-	myRawAccX = val[0];
-	myRawAccY = val[1];
-	myRawAccZ = val[2];
+	mRawAccX = val[0];
+	mRawAccY = val[1];
+	mRawAccZ = val[2];
 
-	myAccX = val[3];
-	myAccY = val[4];
-	myAccZ = val[5];
+	mAccX = val[3];
+	mAccY = val[4];
+	mAccZ = val[5];
 
-	myVelX = val[6];
-	myVelY = val[7];
-	myVelZ = val[8];
+	mVelX = val[6];
+	mVelY = val[7];
+	mVelZ = val[8];
 
-	myPosX = val[9];
-	myPosY = val[10];
-	myPosZ = val[11];
+	mPosX = val[9];
+	mPosY = val[10];
+	mPosZ = val[11];
 
 	g_env->ReleaseByteArrayElements(arr, body, 0);
 
@@ -126,7 +119,7 @@ void	AccelerometerAndroid::UpdateDevice()
 void	AccelerometerAndroid::DoInputDeviceDescription()
 {
 	AccelerometerDevice::InitModifiable();
-	if (!isAvailable)
+	if (!mIsAvailable)
 	{
 		UninitModifiable();
 	}

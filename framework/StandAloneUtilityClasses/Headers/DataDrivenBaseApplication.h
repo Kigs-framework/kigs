@@ -22,7 +22,16 @@ enum SkipTransitionFlag
 struct LayerMouseInfo;
 class DataDrivenSequenceManager;
 
-// data driven utils classes (sequences and transitions)
+// ****************************************
+// * DataDrivenSequence class
+// * --------------------------------------
+/**
+ * \class	DataDrivenSequence
+ * \file	DataDrivenBaseApplication.h
+ * \ingroup Core
+ * \brief	Data driven application sequence management.
+ */
+ // ****************************************
 class DataDrivenSequence : public CoreModifiable
 {
 public:
@@ -43,12 +52,23 @@ protected:
 	virtual void	saveParams(kstl::map<unsigned int, kstl::string>& params);
 	virtual void	restoreParams(const kstl::map<unsigned int, kstl::string>& params);
 
-	maBool			myKeepParamsOnStateChange;
-	maReference		myManager;
+	maBool			mKeepParamsOnStateChange;
+	maReference		mSequenceManager;
 
 
 	virtual ~DataDrivenSequence();
 };
+
+// ****************************************
+// * DataDrivenTransition class
+// * --------------------------------------
+/**
+ * \class	DataDrivenTransition
+ * \file	DataDrivenBaseApplication.h
+ * \ingroup Core
+ * \brief	Data driven application transition between sequences.
+ */
+ // ****************************************
 
 class DataDrivenTransition : public CoreModifiable
 {
@@ -70,18 +90,27 @@ protected:
 
 	void Update(const Timer&  timer, void* addParam) override;
 
-	CMSP	myPreviousSequence = nullptr;
-	maCoreItem		myAnimPrev;
-	maCoreItem		myAnimNext;
+	CMSP	mPreviousSequence = nullptr;
+	maCoreItem		mPreviousAnim;
+	maCoreItem		mNextAnim;
 
-	bool			myIsFirstUpdate;
+	bool			mIsFirstUpdate;
 
-	kstl::vector<CMSP>	myPrevLauncherList;
-	kstl::vector<CMSP>	myNextLauncherList;
-	maReference						myManager;
+	kstl::vector<CMSP>	mPrevLauncherList;
+	kstl::vector<CMSP>	mNextLauncherList;
+	maReference						mSequenceManager;
 };
 
-// external sequence manager
+// ****************************************
+// * DataDrivenSequenceManager class
+// * --------------------------------------
+/**
+ * \class	DataDrivenSequenceManager
+ * \file	DataDrivenBaseApplication.h
+ * \ingroup Core
+ * \brief	Data driven application sequence / transition management.
+ */
+ // ****************************************
 
 class DataDrivenSequenceManager : public CoreModifiable
 {
@@ -94,8 +123,8 @@ public:
 
 	void RequestBackToPreviousState();
 
-	inline State_t			GetState() { return m_StateStack.back(); }
-	inline CMSP&	GetCurrentSequence() { return myCurrentSequence; }
+	inline State_t			GetState() { return mStateStack.back(); }
+	inline CMSP&	GetCurrentSequence() { return mCurrentSequence; }
 	
 	friend class DataDrivenTransition;
 	friend class DataDrivenSequence;
@@ -106,13 +135,13 @@ public:
 
 	SkipTransitionFlag SkipTransitions = SkipTransition_NoSkip;
 
-	bool IsInTransition() { return myInTransition; }
+	bool IsInTransition() { return mInTransition; }
 
 protected:
 	static bool	IsParent(CoreModifiable* toCheck, CoreModifiable* p);
 	static CoreModifiable*	getParentSequence(CoreModifiable* s);
 
-	CoreModifiable*		mySceneGraph;
+	CoreModifiable*		mSceneGraph;
 
 	void InitModifiable() override;
 	void Update(const Timer&, void*) override;
@@ -121,7 +150,7 @@ protected:
 	void ProtectedInitSequence(const kstl::string& sequence);
 	void ProtectedCloseSequence(const kstl::string& sequence);
 	
-	void setInTransition(bool intransition) { myInTransition = intransition; }
+	void setInTransition(bool intransition) { mInTransition = intransition; }
 	void CheckEndTransition();
 
 	// to be overloaded if needed
@@ -129,9 +158,9 @@ protected:
 
 
 	// sequence info & methods
-	State_t			m_RequestedState;
+	State_t			mRequestedState;
 
-	kstl::vector<State_t>		m_StateStack;
+	kstl::vector<State_t>		mStateStack;
 
 	DECLARE_VIRTUAL_METHOD(ChangeSequence);
 	DECLARE_VIRTUAL_METHOD(StackSequence);
@@ -148,30 +177,39 @@ protected:
 
 	WRAP_METHODS(WrapChangeSequence, WrapStackSequence, SetSequence, PushSequence, RequestStateChange);
 
-	maString			myStartingSequence = BASE_ATTRIBUTE(StartingSequence, "");
+	maString			mStartingSequence = BASE_ATTRIBUTE(StartingSequence, "");
 
 
 
-	CMSP		myCurrentSequence = nullptr;
-	bool				myInTransition;
+	CMSP		mCurrentSequence = nullptr;
+	bool				mInTransition;
 	
 	//LayerMouseInfo * theMouseInfo = nullptr;
 
-	kstl::map<kstl::string, kstl::map<unsigned int, kstl::string> >	mySequenceParametersMap;
+	kstl::map<kstl::string, kstl::map<unsigned int, kstl::string> >	mSequenceParametersMap;
 
 };
 
 extern double GlobalAppDT;
 
-//! base class for data driven applications
-// inherit CoreBaseApplication
+
+// ****************************************
+// * DataDrivenBaseApplication class
+// * --------------------------------------
+/**
+ * \class	DataDrivenBaseApplication
+ * \file	DataDrivenBaseApplication.h
+ * \ingroup Core
+ * \brief	Data driven application base class.
+ */
+ // ****************************************
 class DataDrivenBaseApplication : public	CoreBaseApplication
 {
 public:
 	DECLARE_ABSTRACT_CLASS_INFO(DataDrivenBaseApplication, CoreBaseApplication, Core);
 	DECLARE_CONSTRUCTOR(DataDrivenBaseApplication);
 
-	inline SP<DataDrivenSequenceManager>&	GetSequenceManager() { return m_SequenceManager; }
+	inline SP<DataDrivenSequenceManager>&	GetSequenceManager() { return mSequenceManager; }
 
 	friend class DataDrivenSequenceManager;
 	friend class DataDrivenTransition;
@@ -198,27 +236,27 @@ protected:
 	DECLARE_VIRTUAL_METHOD(Exit);
 	COREMODIFIABLE_METHODS(Exit);
 	// base data driven app modules and classes
-	CoreModifiable*		myGUI;
-	CoreModifiable*		myRenderer;
-	CoreModifiable*		mySceneGraph;
-	CoreModifiable*		myInputModule;
-	CoreModifiable*		my2DLayers;
-	CoreModifiable*		myLuaModule;
-	CoreModifiable*		myRenderingScreen;
+	CoreModifiable*		mGUI;
+	CoreModifiable*		mRenderer;
+	CoreModifiable*		mSceneGraph;
+	CoreModifiable*		mInputModule;
+	CoreModifiable*		m2DLayers;
+	CoreModifiable*		mLuaModule;
+	CoreModifiable*		mRenderingScreen;
 
 #ifdef KIGS_TOOLS
 	bool mCanUpdateNextFrame = true;
 #endif
 
 
-	bool				myPreviousShortcutEnabled;
+	bool				mPreviousShortcutEnabled;
 
 	// anonymous class used to store global parameters 
-	CMSP					m_GlobalConfig;
+	CMSP					mGlobalConfig;
 
-	SP<DataDrivenSequenceManager>	m_SequenceManager;
+	SP<DataDrivenSequenceManager>	mSequenceManager;
 
 	// manage transition state for all sequence manager
-	kigs::unordered_map<DataDrivenTransition*, DataDrivenTransition*>						myInTransition;
+	kigs::unordered_map<DataDrivenTransition*, DataDrivenTransition*>						mInTransition;
 };
 #endif //_DATADRIVENBASEAPPLICATION_H_

@@ -7,6 +7,18 @@
 
 #include <winrt/Windows.UI.Input.Spatial.h>
 
+
+// ****************************************
+// * SpatialInteractionDeviceWUP class
+// * --------------------------------------
+/**
+ * \class	SpatialInteractionDeviceWUP
+ * \file	SpatialInteractionDeviceWUP.h
+ * \ingroup Input
+ * \brief	UWP Spacial interaction management ( Hololens ).
+ */
+ // ****************************************
+
 class SpatialInteractionDeviceWUP : public SpatialInteractionDevice
 {
 public:

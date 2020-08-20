@@ -21,16 +21,16 @@ extern "C" int	GetHTMLBodySizeY();
 extern "C" void CreateCanvas(const char* window, int isfirst);
 extern "C" void SetAbsolutePos(const char* window,int abs);
 
-WindowJavascript*	WindowJavascript::myFirstWindow=0;
+WindowJavascript*	WindowJavascript::mFirstWindow=0;
 
 //! constructor
 WindowJavascript::WindowJavascript(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
 Window(name,PASS_CLASS_NAME_TREE_ARG)
 {
-   myScreen=0;
-   if (myFirstWindow == 0)
+   mScreen=0;
+   if (mFirstWindow == 0)
    {
-	   myFirstWindow = this;
+	   mFirstWindow = this;
    }
 }
 
@@ -38,8 +38,8 @@ Window(name,PASS_CLASS_NAME_TREE_ARG)
 WindowJavascript::~WindowJavascript()
 {  
 	//! destroy rendering screen
-	if(myScreen)
-		myScreen->Destroy();
+	if(mScreen)
+		mScreen->Destroy();
 
 }    
 
@@ -47,7 +47,7 @@ WindowJavascript::~WindowJavascript()
 void WindowJavascript::ProtectedInit()
 {
 	
-	if (myFirstWindow == this)
+	if (mFirstWindow == this)
 	{
 		CreateCanvas(getName().c_str(), 1);
 	}
@@ -56,24 +56,24 @@ void WindowJavascript::ProtectedInit()
 		CreateCanvas(getName().c_str(), 0);
 	}
 
-	SetAbsolutePos(getName().c_str(), myAbsolutePos?1:0);
+	SetAbsolutePos(getName().c_str(), mAbsolutePos?1:0);
 
-	printf("window pos : %d %d \n", myPosX.const_ref(), myPosY.const_ref());
+	printf("window pos : %d %d \n", mPositionX.const_ref(), mPositionY.const_ref());
 
-	if (myFullScreen)
+	if (mFullScreen)
 	{
 		Point2DI screenSize(GetHTMLBodySizeX(), GetHTMLBodySizeY());
 		SetCanvasSize(getName().c_str(),screenSize.x, screenSize.y);
-		mySizeX = screenSize.x;
-		mySizeY = screenSize.y;
+		mSizeX = screenSize.x;
+		mSizeY = screenSize.y;
 		SetCanvasPos(getName().c_str(),0, 0);
-		myPosX = 0;
-		myPosY = 0;
+		mPositionX = 0;
+		mPositionY = 0;
 	}
 	else
 	{
-		SetCanvasSize(getName().c_str(),mySizeX, mySizeY);
-		SetCanvasPos(getName().c_str(),myPosX, myPosY);
+		SetCanvasSize(getName().c_str(),mSizeX, mSizeY);
+		SetCanvasPos(getName().c_str(),mPositionX, mPositionY);
 	}
 
 	Show();
@@ -82,10 +82,10 @@ void WindowJavascript::ProtectedInit()
 //! show window
 void  WindowJavascript::Show()
 {
-	if(myScreen && !myScreen->IsInit())
+	if(mScreen && !mScreen->IsInit())
 	{
-		myScreen->setValue(LABEL_TO_ID(ParentWindowName),getName());
-		myScreen->Init();
+		mScreen->setValue(LABEL_TO_ID(ParentWindowName),getName());
+		mScreen->Init();
 	}
 
 }    
@@ -94,25 +94,25 @@ void  WindowJavascript::Show()
 void  WindowJavascript::Update(const Timer&  timer, void* addParam)
 {
 	//! call screen update
-	if(myScreen)
+	if(mScreen)
 	{
 		// check if size has changed
-		if (myFullScreen)
+		if (mFullScreen)
 		{
 			Point2DI screenSize(GetHTMLBodySizeX(), GetHTMLBodySizeY());
 
-			if ((screenSize.x != mySizeX) || (screenSize.y != mySizeY))
+			if ((screenSize.x != mSizeX) || (screenSize.y != mSizeY))
 			{
-				mySizeX = screenSize.x;
-				mySizeY = screenSize.y;
+				mSizeX = screenSize.x;
+				mSizeY = screenSize.y;
 				SetCanvasSize(getName().c_str(),screenSize.x, screenSize.y);
-				myScreen->Resize((int)mySizeX, (int)mySizeY);
+				mScreen->Resize((int)mSizeX, (int)mSizeY);
 			}
 		}
 
-		myPosX = GetCanvasPositionX(getName().c_str());
-		myPosY = GetCanvasPositionY(getName().c_str());
-		myScreen->CallUpdate(timer, addParam);
+		mPositionX = GetCanvasPositionX(getName().c_str());
+		mPositionY = GetCanvasPositionY(getName().c_str());
+		mScreen->CallUpdate(timer, addParam);
 	}
 
    Window::Update(timer, addParam);
@@ -121,21 +121,21 @@ void  WindowJavascript::Update(const Timer&  timer, void* addParam)
 
 void	WindowJavascript::GetMousePosInWindow(int posx,int posy,kfloat& wposx,kfloat& wposy)
 {
-	posx -= (int)myPosX;
-	if(posx >= (int)mySizeX)
-		posx = ((int)mySizeX)-1;
+	posx -= (int)mPositionX;
+	if(posx >= (int)mSizeX)
+		posx = ((int)mSizeX)-1;
 	if(posx < 0)
 		posx = 0;
 
-	posy -= (int)myPosY;
-	if(posy>=(int)mySizeY)
-		posy = ((int)mySizeY)-1;
+	posy -= (int)mPositionY;
+	if(posy>=(int)mSizeY)
+		posy = ((int)mSizeY)-1;
 	if(posy < 0)
 		posy = 0;
 
-	/*if(myScreen)
+	/*if(mScreen)
 	{
-		myScreen->GetMousePosInScreen(posx,posy,wposx,wposy);
+		mScreen->GetMousePosInScreen(posx,posy,wposx,wposy);
 	}
 	else
 	{*/
@@ -147,21 +147,21 @@ void	WindowJavascript::GetMousePosInWindow(int posx,int posy,kfloat& wposx,kfloa
 
 void	WindowJavascript::GetMousePosInDesignWindow(int posx,int posy,kfloat& wposx,kfloat& wposy)
 {
-	posx -= (int)myPosX;
-	/*if(posx >= (int)mySizeX)
-		posx = ((int)mySizeX)-1;
+	posx -= (int)mPositionX;
+	/*if(posx >= (int)mSizeX)
+		posx = ((int)mSizeX)-1;
 	if(posx < 0)
 		posx = 0;*/
 
-	posy -= (int)myPosY;
-	/*if(posy>=(int)mySizeY)
-		posy = ((int)mySizeY)-1;
+	posy -= (int)mPositionY;
+	/*if(posy>=(int)mSizeY)
+		posy = ((int)mSizeY)-1;
 	if(posy < 0)
 		posy = 0;*/
 
-	if(myScreen)
+	if(mScreen)
 	{
-		myScreen->GetMousePosInDesignScreen(posx,posy,wposx,wposy);
+		mScreen->GetMousePosInDesignScreen(posx,posy,wposx,wposy);
 	}
 	else
 	{

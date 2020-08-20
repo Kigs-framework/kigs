@@ -9,6 +9,17 @@
 
 class DeviceItemBaseState;
 
+// ****************************************
+// * KeyboardDevice class
+// * --------------------------------------
+/**
+ * \class	KeyboardDevice
+ * \file	KeyboardDevice.h
+ * \ingroup Input
+ * \brief	Base class to manage generic Keyboard.
+ */
+ // ****************************************
+
 class KeyboardDevice : public InputDevice
 {
 public:
@@ -38,12 +49,12 @@ public:
 		return mTyped;
 	}
 
-	inline kstl::vector<KeyEvent>&		Get_KeyUpList() { return m_KeyUpList; }
-	inline kstl::vector<KeyEvent>&		Get_KeyDownList() { return m_KeyDownList; }
+	inline kstl::vector<KeyEvent>&		Get_KeyUpList() { return mKeyUpList; }
+	inline kstl::vector<KeyEvent>&		Get_KeyDownList() { return mKeyDownList; }
 
 	inline bool IsKeyPressed(int key_id)
 	{
-		for (auto& ev : m_KeyUpList)
+		for (auto& ev : mKeyUpList)
 		{
 			if (ev.KeyCode == key_id) return true;
 		}
@@ -54,8 +65,8 @@ public:
 	virtual void Hide() {};
 
 protected:
-	kstl::vector<KeyEvent> m_KeyUpList;
-	kstl::vector<KeyEvent> m_KeyDownList;
+	kstl::vector<KeyEvent> mKeyUpList;
+	kstl::vector<KeyEvent> mKeyDownList;
 
 	mutable std::mutex mMutex;
 	std::u16string mTyped;

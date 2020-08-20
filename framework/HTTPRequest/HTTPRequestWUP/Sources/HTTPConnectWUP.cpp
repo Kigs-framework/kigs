@@ -18,18 +18,18 @@ HTTPConnectWUP::~HTTPConnectWUP()
 
 bool HTTPConnectWUP::Open()
 {
-	if (myIsOpen)
+	if (mIsOpen)
 	{
 		Close();
 	}
-	myIsOpen = true;
+	mIsOpen = true;
 	//@TODO
 	return true;
 }
 void HTTPConnectWUP::Close()
 {
 	//@TODO
-	myIsOpen = false;
+	mIsOpen = false;
 
 }
 

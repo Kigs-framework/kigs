@@ -3,17 +3,16 @@
 
 #include "DisplayDeviceCaps.h"
 
-
 // ****************************************
 // * DisplayDeviceCapsWin32 class
 // * --------------------------------------
-/*!  \class DisplayDeviceCapsWin32
-     a win32 DisplayDeviceCaps, used to get display device list and capacities
-     \ingroup GUIWindowsModule
+/**
+* \file	DisplayDeviceCapsWin32.h
+* \class	DisplayDeviceCapsWin32
+* \ingroup GUIModule
+* \brief	Specific Win32 DisplayDeviceCaps, used to get display device list and capacities.
 */
 // ****************************************
-
-
 class DisplayDeviceCapsWin32 : public DisplayDeviceCaps
 {
 public:

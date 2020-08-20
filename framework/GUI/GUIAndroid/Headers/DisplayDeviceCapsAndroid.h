@@ -3,17 +3,17 @@
 
 #include "DisplayDeviceCaps.h"
 
-
 // ****************************************
 // * DisplayDeviceCapsAndroid class
 // * --------------------------------------
-/*!  \class DisplayDeviceCapsAndroid
-     an android DisplayDeviceCaps, used to get display device list and capacities
-     \ingroup GUIWindowsModule
+/**
+* \file	DisplayDeviceCapsAndroid.h
+* \class	DisplayDeviceCapsAndroid
+* \ingroup GUIModule
+* \brief Specific DisplayDeviceCaps for Android platform.
+*
 */
 // ****************************************
-
-
 class DisplayDeviceCapsAndroid : public DisplayDeviceCaps
 {
 public:

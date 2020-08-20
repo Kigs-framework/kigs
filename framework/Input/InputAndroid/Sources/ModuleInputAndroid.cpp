@@ -19,13 +19,13 @@ ModuleInputAndroid* gInstanceModuleInputAndroid = 0;
 IMPLEMENT_CLASS_INFO(ModuleInputAndroid)
 IMPLEMENT_CONSTRUCTOR(ModuleInputAndroid)
 {
-	myJoystickCount = 0;
-	myIsInitOK = true;
+	mJoystickCount = 0;
+	mIsInitOK = true;
 }
 
 void ModuleInputAndroid::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
-	if (myIsInitOK)
+	if (mIsInitOK)
 	{
 		BaseInit(core, "InputAndroid", params);
 		DECLARE_FULL_CLASS_INFO(core, JoystickAndroid, Joystick, Input)
@@ -170,7 +170,7 @@ bool	ModuleInputAndroid::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK
 
 	if (item->isSubType(JoystickDevice::mClassID))
 	{
-		myJoystickCount++;
+		mJoystickCount++;
 		return CoreModifiable::addItem(item);
 	}
 	else if (item->isSubType(InputDevice::mClassID))
