@@ -12,6 +12,18 @@ using Clock = std::chrono::high_resolution_clock;
 using TimePoint = Clock::time_point;
 using Duration = Clock::duration;
 
+// ****************************************
+// * TimeProfiler class
+// * --------------------------------------
+/**
+ * \class	Timer
+ * \file	Timer.h
+ * \ingroup TimerModule
+ * \brief	Mesure time.
+ *
+ */
+ // ****************************************
+
 class Timer : public CoreModifiable
 {
 public:
@@ -43,7 +55,7 @@ public:
 	virtual double GetTime() const;
 	virtual void SetTime(double t);
 
-	State	GetState(){return myCurrentState;}
+	State	GetState(){return mCurrentState;}
 	virtual void SetState(State newstate);
 
 	void GetDate(kstl::string& a_value, DateFormat a_format) const;
@@ -57,14 +69,14 @@ public:
 protected:
 	void InitModifiable() override;
 	
-	State myCurrentState = UNINITIALISED;
-	TimePoint myT0;
-	TimePoint myPauseTime;
+	State mCurrentState = UNINITIALISED;
+	TimePoint mT0;
+	TimePoint mPauseTime;
 	
 	void StartPause();
 	void EndPause();
 
- 	std::map<CoreModifiable*, double> myTimerMap;
+ 	std::map<CoreModifiable*, double> mTimerMap;
 
 	maComputedNumeric<double>	mTime;
 };

@@ -4,19 +4,19 @@
 IMPLEMENT_CLASS_INFO(ThreadEvent)
 
 ThreadEvent::ThreadEvent(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, myEventCounter(*this, false, LABEL_AND_ID(EventCounter), 1)
-, myCurrentCount(0)
-, myAutoReset(*this, false, LABEL_AND_ID(AutoReset), false)
+, mEventCounter(*this, false, LABEL_AND_ID(EventCounter), 1)
+, mCurrentCount(0)
+, mAutoReset(*this, false, LABEL_AND_ID(AutoReset), false)
 {
-	myCriticalSection = new std::mutex();
+	mCriticalSection = new std::mutex();
 }
 
 ThreadEvent::~ThreadEvent()
 {
-	if (myOwnCriticalSection)
+	if (mOwnCriticalSection)
 	{
-		delete myCriticalSection;
-		myCriticalSection = nullptr;
+		delete mCriticalSection;
+		mCriticalSection = nullptr;
 	}
 }
 
@@ -24,13 +24,13 @@ ThreadEvent::~ThreadEvent()
 
 void	ThreadEvent::wait()
 {
-	std::unique_lock<std::mutex> lk(*myCriticalSection);
-	myConditionVariable.wait(lk, [this]
+	std::unique_lock<std::mutex> lk(*mCriticalSection);
+	mConditionVariable.wait(lk, [this]
 		{
-			while (myCurrentCount < myEventCounter)
+			while (mCurrentCount < mEventCounter)
 				return false;
-			if (myAutoReset)
-				myCurrentCount = 0;
+			if (mAutoReset)
+				mCurrentCount = 0;
 			return true;
 		});
 
@@ -38,8 +38,8 @@ void	ThreadEvent::wait()
 void	ThreadEvent::signal()
 {
 	{
-		std::lock_guard<std::mutex> lk(*myCriticalSection);
-		myCurrentCount++;
+		std::lock_guard<std::mutex> lk(*mCriticalSection);
+		mCurrentCount++;
 	}
-	myConditionVariable.notify_all();
+	mConditionVariable.notify_all();
 }

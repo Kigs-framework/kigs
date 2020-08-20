@@ -5,10 +5,10 @@ IMPLEMENT_CLASS_INFO(ThreadPoolManager)
 
 ThreadPoolManager::ThreadPoolManager(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 , myThreadCount(*this, true, LABEL_AND_ID(ThreadCount),4)
-, mySemaphore(nullptr)
+, mSemaphore(nullptr)
 {
-	myThreadList.clear();
-	myQueuedtasks.clear();
+	mThreadList.clear();
+	mQueuedtasks.clear();
 	
 }
 
@@ -19,7 +19,7 @@ void	ThreadPoolManager::InitModifiable()
 		// create a pool with n thread manage working / paused threads
 		if (myThreadCount > 0)
 		{
-			mySemaphore = KigsCore::GetInstanceOf("ThreadPoolManagerSemaphore", "Semaphore");
+			mSemaphore = KigsCore::GetInstanceOf("ThreadPoolManagerSemaphore", "Semaphore");
 
 			int i;
 			for (i = 0; i < (int)myThreadCount; i++)
@@ -27,11 +27,11 @@ void	ThreadPoolManager::InitModifiable()
 				char str[128];
 				snprintf(str, 128, "workerThread_%d", i+1);
 				SP<WorkerThread>	newworker = KigsCore::GetInstanceOf(str, "WorkerThread");
-				newworker->setSemaphore(mySemaphore.get());
+				newworker->setSemaphore(mSemaphore.get());
 				newworker->setThreadPoolManager(this);
 				newworker->Init();
 				//newworker->setAffinityMask(1 << i);
-				myThreadList.push_back(newworker);
+				mThreadList.push_back(newworker);
 			}
 			CoreModifiable::InitModifiable();
 		}
@@ -41,20 +41,20 @@ void	ThreadPoolManager::InitModifiable()
 ThreadPoolManager::~ThreadPoolManager()
 {
 	unsigned int i;
-	for (i = 0; i < myThreadList.size(); i++)
+	for (i = 0; i < mThreadList.size(); i++)
 	{
-		myThreadList[i]->askExit();
+		mThreadList[i]->askExit();
 		// wait for task to end
-		while (myThreadList[i]->GetState() == Thread::State::RUNNING)
+		while (mThreadList[i]->GetState() == Thread::State::RUNNING)
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 
-		myThreadList[i]=nullptr;
+		mThreadList[i]=nullptr;
 	}
-	myThreadList.clear();
+	mThreadList.clear();
 
-	mySemaphore = nullptr;
+	mSemaphore = nullptr;
 }
 
 // return event 
@@ -62,7 +62,7 @@ SmartPointer<ThreadEvent>	ThreadPoolManager::setTask(MethodCallingStruct* task)
 {
 
 	// lock 
-	mySemaphore->GetMutex().lock();
+	mSemaphore->GetMutex().lock();
 	
 	// getAvailableEvent always returns a valid available event 
 	SmartPointer<ThreadEvent> result = getTaskEndEvent();
@@ -74,27 +74,27 @@ SmartPointer<ThreadEvent>	ThreadPoolManager::setTask(MethodCallingStruct* task)
 		addTaskToQueue(task,result);
 
 	// unlock
-	mySemaphore->GetMutex().unlock();
+	mSemaphore->GetMutex().unlock();
 	return result;
 }
 
 void ThreadPoolManager::addTaskToQueue(MethodCallingStruct* task,SmartPointer<ThreadEvent>& endevent)
 {
 	MethodEventPair	toAdd;
-	toAdd.myMethodCallingStruct = task;
-	toAdd.myThreadEvent = endevent;
+	toAdd.mMethodCallingStruct = task;
+	toAdd.mThreadEvent = endevent;
 
-	myQueuedtasks.push_back(toAdd);
+	mQueuedtasks.push_back(toAdd);
 
 }
 
 unsigned int	ThreadPoolManager::getRunningTaskCount()
 {
 	unsigned int i;
-	unsigned int count= myThreadList.size();
-	for (i = 0; i < myThreadList.size(); i++)
+	unsigned int count= mThreadList.size();
+	for (i = 0; i < mThreadList.size(); i++)
 	{
-		if (myThreadList[i]->isAvailable())
+		if (mThreadList[i]->isAvailable())
 		{
 			count--;
 		}
@@ -106,11 +106,11 @@ unsigned int	ThreadPoolManager::getRunningTaskCount()
 SP<WorkerThread>	ThreadPoolManager::getAvailableThread()
 {
 	unsigned int i;
-	for (i = 0; i < myThreadList.size(); i++)
+	for (i = 0; i < mThreadList.size(); i++)
 	{
-		if (myThreadList[i]->isAvailable())
+		if (mThreadList[i]->isAvailable())
 		{
-			return myThreadList[i];
+			return mThreadList[i];
 		}
 	}
 	
@@ -123,7 +123,7 @@ SmartPointer<ThreadEvent>	ThreadPoolManager::getTaskEndEvent()
 	
 	// if no event available, create a new one
 	SmartPointer<ThreadEvent> newevent = KigsCore::GetInstanceOf("WorkerThreadEvent", "ThreadEvent");
-	newevent->setSemaphore(mySemaphore.get());
+	newevent->setSemaphore(mSemaphore.get());
 	newevent->Init();
 
 	return newevent;
@@ -150,8 +150,8 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 {
 	TaskGroup* taskgroup = (TaskGroup*)tgh;
 	// lock 
-	std::lock_guard<std::recursive_mutex> lk(mySemaphore->GetMutex());
-	int taskgroupsize = taskgroup->taskList.size();
+	std::lock_guard<std::recursive_mutex> lk(mSemaphore->GetMutex());
+	int taskgroupsize = taskgroup->mTaskList.size();
 	if (taskgroupsize == 0)
 	{
 		// unlock
@@ -167,9 +167,9 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 	{
 		SP<WorkerThread>	wavailable = getAvailableThread();
 		if (wavailable)
-			wavailable->setTask(taskgroup->taskList[i], result);
+			wavailable->setTask(taskgroup->mTaskList[i], result);
 		else
-			addTaskToQueue(taskgroup->taskList[i], result);
+			addTaskToQueue(taskgroup->mTaskList[i], result);
 	}
 	
 	delete taskgroup;
@@ -182,10 +182,10 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 bool	ThreadPoolManager::ManageQueue(WorkerThread* endedThread)
 {
 	bool result = false;
-	if (myQueuedtasks.size())
+	if (mQueuedtasks.size())
 	{
-		endedThread->setTask(myQueuedtasks[0].myMethodCallingStruct, myQueuedtasks[0].myThreadEvent);
-		myQueuedtasks.erase(myQueuedtasks.begin());
+		endedThread->setTask(mQueuedtasks[0].mMethodCallingStruct, mQueuedtasks[0].mThreadEvent);
+		mQueuedtasks.erase(mQueuedtasks.begin());
 		result = true;
 	}
 

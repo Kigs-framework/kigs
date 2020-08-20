@@ -6,21 +6,21 @@
 IMPLEMENT_CLASS_INFO(WorkerThread)
 
 WorkerThread::WorkerThread(const kstl::string& name, CLASS_NAME_TREE_ARG) : Thread(name, PASS_CLASS_NAME_TREE_ARG)
-, myCurrentTask(0)
-, myNeedExit(false)
-, mySemaphore(0)
-, myThreadEvent(0)
-, myThreadEventEnd(0)
-, myParentPoolManager(0)
-, myIsAutoFeed(false)
+, mCurrentTask(0)
+, mNeedExit(false)
+, mSemaphore(0)
+, mThreadEvent(0)
+, mThreadEventEnd(0)
+, mParentPoolManager(0)
+, mIsAutoFeed(false)
 {
-	myEmptyParams.clear();
+	mEmptyParams.clear();
 }
 
 WorkerThread::~WorkerThread()
 {
 	cleanTask();
-	myThreadEvent = nullptr;
+	mThreadEvent = nullptr;
 }
 
 //! overloaded InitModifiable method. Init thread
@@ -28,15 +28,15 @@ void WorkerThread::InitModifiable()
 {
 	if (!IsInit())
 	{
-		if (mySemaphore)
+		if (mSemaphore)
 		{
-			myThreadEvent = KigsCore::GetInstanceOf("WorkerThreadEvent","ThreadEvent");
-			myThreadEvent->setValue(LABEL_TO_ID(AutoReset), true);
-			myThreadEvent->setSemaphore(mySemaphore);
+			mThreadEvent = KigsCore::GetInstanceOf("WorkerThreadEvent","ThreadEvent");
+			mThreadEvent->setValue(LABEL_TO_ID(AutoReset), true);
+			mThreadEvent->setSemaphore(mSemaphore);
 
 			// set Callee and Method, else Thread::InitModifiable will not call Start
-			myCallee = this;
-			myMethod = "WorkerThread";
+			mCallee = this;
+			mMethod = "WorkerThread";
 			Thread::InitModifiable();
 		}
 	}
@@ -46,21 +46,21 @@ void WorkerThread::InitModifiable()
 //! the thread run method, wait for a task and sleep when task is done
 void WorkerThread::Start()
 {
-	myCurrentThread = std::thread([this]()
+	mCurrentThread = std::thread([this]()
 		{
-			myCurrentState = State::RUNNING;
+			mCurrentState = State::RUNNING;
 			do
 			{
-				if (!myIsAutoFeed)
+				if (!mIsAutoFeed)
 					pause();
 
-				myIsAutoFeed = false;
-				if (myCurrentTask)
+				mIsAutoFeed = false;
+				if (mCurrentTask)
 				{
-					myCurrentTask->mMethodInstance->CallMethod(myCurrentTask->mMethodID, myEmptyParams, myCurrentTask->mPrivateParams);
+					mCurrentTask->mMethodInstance->CallMethod(mCurrentTask->mMethodID, mEmptyParams, mCurrentTask->mPrivateParams);
 					processDone();
 				}
-			} while (myNeedExit == false);
+			} while (mNeedExit == false);
 			Done();
 		});
 
@@ -68,38 +68,38 @@ void WorkerThread::Start()
 
 void	WorkerThread::pause()
 {
-	myThreadEvent->wait();
+	mThreadEvent->wait();
 }
 
 void	WorkerThread::resume()
 {
-	myThreadEvent->signal();
+	mThreadEvent->signal();
 }
 
 void	WorkerThread::processDone()
 {
-	mySemaphore->GetMutex().lock();
+	mSemaphore->GetMutex().lock();
 	cleanTask();
-	myThreadEventEnd->signal();
-	myThreadEventEnd = 0;
-	myIsAutoFeed=myParentPoolManager->ManageQueue(this);
-	mySemaphore->GetMutex().unlock();
+	mThreadEventEnd->signal();
+	mThreadEventEnd = 0;
+	mIsAutoFeed=mParentPoolManager->ManageQueue(this);
+	mSemaphore->GetMutex().unlock();
 }
 
 // to be called in a locked block
 bool	WorkerThread::isAvailable()
 {
-	return (myCurrentTask == 0);
+	return (mCurrentTask == 0);
 }
 
 // to be called in a locked block
 bool	WorkerThread::setTask(MethodCallingStruct* task,SmartPointer<ThreadEvent>& finishedevent)
 {
 	bool result = false;
-	if (myCurrentTask == 0)
+	if (mCurrentTask == 0)
 	{
-		myThreadEventEnd = finishedevent;
-		myCurrentTask = task;
+		mThreadEventEnd = finishedevent;
+		mCurrentTask = task;
 		resume();
 		result = true;
 	}

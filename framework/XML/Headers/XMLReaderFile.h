@@ -9,15 +9,16 @@
 class FileHandle;
 class StringRef;
 
-
 // ****************************************
 // * XMLReaderFile class
 // * --------------------------------------
-/*!  \class XMLReaderFile
-      read a XML file 
-	  \ingroup XML
-*/
-// ****************************************
+/**
+ * \file	XMLReaderFile.h
+ * \class	XMLReaderFile
+ * \ingroup ModuleXML
+ * \brief	Read an XML file into an XML structure.
+ */
+ // ****************************************
 class XMLReaderFile 
 {
 public:
@@ -99,28 +100,30 @@ protected:
 	// ****************************************
 	// * MyUserData class
 	// * --------------------------------------
-	/*!  \class MyUserData
-		  utility class used by XMLReaderFile
-		  \ingroup XML
-	*/
-	// ****************************************
+	/**
+	 * \file	XMLReaderFile.h
+	 * \class	MyUserData
+	 * \ingroup ModuleXML
+	 * \brief	
+	 */
+	 // ****************************************
 	class MyUserData
 	{
 	public:
-		kstl::vector<XMLNodeBase*>	myNodeHierarchy;
-		XMLReaderFile*				myReader;
-		CoreModifiable*				myDelegate;
+		kstl::vector<XMLNodeBase*>	mNodeHierarchy;
+		XMLReaderFile*				mReader;
+		CoreModifiable*				mDelegate;
 	};
 
 	//!  associated XML instance
-	XMLBase*					myXML;
+	XMLBase*					mXML;
 
-	unsigned int				myXMLElementStartDescriptionID;
-	unsigned int				myXMLElementEndDescriptionID;
-	unsigned int				myXMLDeclHandlerID;
-	unsigned int				myXMLCharacterHandlerID;
-	unsigned int				myXMLStartCDataID;
-	unsigned int				myXMLEndCDataID;
+	unsigned int				mXMLElementStartDescriptionID;
+	unsigned int				mXMLElementEndDescriptionID;
+	unsigned int				mXMLDeclHandlerID;
+	unsigned int				mXMLCharacterHandlerID;
+	unsigned int				mXMLStartCDataID;
+	unsigned int				mXMLEndCDataID;
 
 };
 
@@ -129,7 +132,7 @@ void  XMLReaderFile::StartDescriptionElementStringRef(void* data, StringRef* el,
 {
 	MyUserData* localuserdata = (MyUserData*)data;
 
-	kstl::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->myNodeHierarchy;
+	kstl::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->mNodeHierarchy;
 
 	XMLNodeTemplate<StringType>* xmlNode = new XMLNodeTemplate<StringType>(XML_NODE_ELEMENT, (const char*)el->myStringStart, (unsigned int)(el->myStringEnd - el->myStringStart));
 	
@@ -173,7 +176,7 @@ void  XMLReaderFile::EndCDataStringRef(void* userdata, const char* s, int len)
 
 	MyUserData* localuserdata = (MyUserData*)userdata;
 
-	kstl::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->myNodeHierarchy;
+	kstl::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->mNodeHierarchy;
 
 	if (nodeHierarchy.size())
 	{
@@ -204,7 +207,7 @@ void  XMLReaderFile::CharacterHandlerStringRef(void* userdata, const char* s, in
 
 	MyUserData* localuserdata = (MyUserData*)userdata;
 
-	kstl::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->myNodeHierarchy;
+	kstl::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->mNodeHierarchy;
 
 	if (nodeHierarchy.size())
 	{

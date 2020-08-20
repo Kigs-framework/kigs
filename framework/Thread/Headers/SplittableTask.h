@@ -7,21 +7,32 @@
 #include "maReference.h"
 
 // ****************************************
-// * SplittableTask class
+// * SplitDataStructBase class
 // * --------------------------------------
-/*!  \class SplittableTask
-		base class for task that can be split into several subtask and called in seperated thread	
-\ingroup Thread
-*/
-// ****************************************
-
-// base class used to pass data to splittable task
+/**
+ * \file	SplittableTask.h
+ * \class	SplitDataStructBase
+ * \ingroup Thread
+ * \brief	Structure used to pass data to splittable task.
+ */
+ // ****************************************
 class SplitDataStructBase
 {
 public:
-	const Timer*	currentTimer;
+	const Timer*	mCurrentTimer;
 };
 
+
+// ****************************************
+// * SplittableTask class
+// * --------------------------------------
+/**
+ * \file	SplittableTask.h
+ * \class	SplittableTask
+ * \ingroup Thread
+ * \brief	Abstract class to manage splittable tasks.
+ */
+ // ****************************************
 class SplittableTask : public CoreModifiable
 {
 public:
@@ -57,13 +68,13 @@ protected:
 	DECLARE_METHOD(SplittedUpdate);
 	COREMODIFIABLE_METHODS(SplittedUpdate);
 
-	maReference		myThreadPoolManager;
+	maReference		mThreadPoolManager;
 
-	maBool			myIsSplittable;
-	maUInt			mySplitCount;
-	maBool			myWaitFinish;
+	maBool			mIsSplittable;
+	maUInt			mSplitCount;
+	maBool			mWaitFinish;
 
-	kstl::vector<SplitDataStructBase*>	mySplitDataStructList;
+	kstl::vector<SplitDataStructBase*>	mSplitDataStructList;
 };
 
 #endif //_SPLITTABLETASK_H_

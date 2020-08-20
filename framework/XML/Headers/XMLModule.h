@@ -3,20 +3,21 @@
 
 #include "ModuleBase.h"
 
-/*! \defgroup XML XML module
+/*! \defgroup ModuleXML XML module
  *  xml read/write 
 */
 
 // ****************************************
 // * XMLModule class
 // * --------------------------------------
-/*!  \class XMLModule
-      manage xml read/write using fast non compatible MinimalXML SAX parser
-	  But the XML module is a bit special as it is used by core and by other base modules.
-	  XML module does not define any CoreModifiable type class
-	  \ingroup XML
-*/
-// ****************************************
+/**
+ * \file	XMLModule.h
+ * \class	XMLModule
+ * \ingroup ModuleXML
+ * \ingroup Module
+ * \brief	Generic module for XML management.
+ */
+ // ****************************************
 
 class XMLModule : public ModuleBase
 {

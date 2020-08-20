@@ -7,15 +7,17 @@
 #include "Semaphore.h"
 #include "SmartPointer.h"
 
+
 // ****************************************
 // * ThreadPoolManager class
 // * --------------------------------------
-/*!  \class ThreadPoolManager
-			create and manage a pool of WorkerThreads
-\ingroup Thread
-*/
-// ****************************************
-
+/**
+ * \file	ThreadPoolManager.h
+ * \class	ThreadPoolManager
+ * \ingroup Thread
+ * \brief	Manage a pool of WorkerThreads.
+ */
+ // ****************************************
 class ThreadPoolManager : public CoreModifiable
 {
 public:
@@ -54,14 +56,14 @@ protected:
 	public:
 		TaskGroup()
 		{
-			taskList.clear();
+			mTaskList.clear();
 		}
 
 		virtual void	addTask(MethodCallingStruct* task)
 		{
-			taskList.push_back(task);
+			mTaskList.push_back(task);
 		}
-		kstl::vector<MethodCallingStruct*> taskList;
+		kstl::vector<MethodCallingStruct*> mTaskList;
 		virtual ~TaskGroup() {};
 	};
 
@@ -69,23 +71,23 @@ protected:
 	virtual ~ThreadPoolManager();
 
 	maInt	myThreadCount;
-	kstl::vector<SP<WorkerThread>>				myThreadList;
+	kstl::vector<SP<WorkerThread>>				mThreadList;
 
 
 	SP<WorkerThread>	getAvailableThread();
 	SmartPointer<ThreadEvent>	getTaskEndEvent();
 
-	SP<Semaphore>	mySemaphore;
+	SP<Semaphore>	mSemaphore;
 
 	// queue
 	void	addTaskToQueue(MethodCallingStruct* task, SmartPointer<ThreadEvent>& endevent);
 
 	struct MethodEventPair
 	{
-		MethodCallingStruct*			myMethodCallingStruct;
-		SmartPointer<ThreadEvent>		myThreadEvent;
+		MethodCallingStruct*			mMethodCallingStruct;
+		SmartPointer<ThreadEvent>		mThreadEvent;
 	};
-	kstl::vector<MethodEventPair>		myQueuedtasks;
+	kstl::vector<MethodEventPair>		mQueuedtasks;
 
 };
 

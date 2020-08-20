@@ -11,16 +11,17 @@ class CoreRawBuffer;
 
 template<typename T> class XMLNodeTemplate;
 
-// ****************************************
-// * XMLTemplate class
-// * --------------------------------------
-/*!  \class XMLTemplate
-      interface class to manage xml read/write
-	  XMLTemplate instance manage general informations and a root xml node
-	  \ingroup XMLTemplate
-*/
-// ****************************************
 
+// ****************************************
+// * XMLBase class
+// * --------------------------------------
+/**
+ * \file	XML.h
+ * \class	XMLBase
+ * \ingroup ModuleXML
+ * \brief	Base class for XML template structure.
+ */
+ // ****************************************
 class XMLBase
 {
 public:
@@ -31,9 +32,9 @@ public:
 
 	XMLBase()
 	{
-		m_version = "1.0";
-		m_encoding = "";
-		m_standalone = "";
+		mVersion = "1.0";
+		mEncoding = "";
+		mStandalone = "";
 	}
 
 	XMLBase(CoreRawBuffer* buffer);
@@ -42,44 +43,44 @@ public:
 
 	//! set the encoding type (string)
 	void setEncoding(std::string encoding){
-		m_encoding = encoding;
+		mEncoding = encoding;
 	}
 
 	//! set the version (string)
 	void setVersion(std::string version) {
-		m_version = version;
+		mVersion = version;
 	}
 
 	//! set standalone (string)
 	void setStandalone(std::string standalone) {
-		m_standalone = standalone;
+		mStandalone = standalone;
 	}
 
-	void setPath(const std::string& path) { m_path = path; };
+	void setPath(const std::string& path) { mPath = path; };
 
 	//! return version (string)
 	std::string getVersion()	{
-		return m_version;
+		return mVersion;
 	}
 	//! return encoding (string)
 	std::string getEncoding()	{
-		return m_encoding;
+		return mEncoding;
 	}
 	//! return standalone (string)
 	std::string getStandalone()	{
-		return m_standalone;
+		return mStandalone;
 	}
 
-	std::string getPath() { return m_path; }
+	std::string getPath() { return mPath; }
 
 	//! set the root node
 	void setRoot(XMLNodeBase* root)	{
-		m_root = root;
+		mRoot = root;
 	}
 
 	//! return root node
 	XMLNodeBase* getRoot() {
-		return m_root;
+		return mRoot;
 	}
 
 	virtual bool	useStringRef() = 0;
@@ -96,20 +97,32 @@ public:
 
 protected:
 	//! encoding 
-	std::string m_encoding;
+	std::string mEncoding;
 	//! version 
-	std::string m_version;
+	std::string mVersion;
 	//! standalone
-	std::string m_standalone;
+	std::string mStandalone;
 
 	//! original path wheh loadded if available
-	std::string m_path;
+	std::string mPath;
 
 	//! root node
-	XMLNodeBase* m_root=nullptr;
-	CoreRawBuffer* m_ReadedRawBuffer = nullptr;
+	XMLNodeBase* mRoot=nullptr;
+	CoreRawBuffer* mReadedRawBuffer = nullptr;
 };
 
+
+
+// ****************************************
+// * XMLTemplate class
+// * --------------------------------------
+/**
+ * \file	XML.h
+ * \class	XMLTemplate
+ * \ingroup ModuleXML
+ * \brief	Manage XML structure using string or string_view.
+ */
+ // ****************************************
 template<typename StringType>
 class XMLTemplate :public XMLBase
 {

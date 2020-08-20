@@ -7,14 +7,18 @@
  *  base thread management
 */
 
+
 // ****************************************
 // * ModuleThread class
 // * --------------------------------------
-/*!  \class ModuleThread
-	 \ingroup Thread
-*/
-// ****************************************
-
+/**
+ * \file	ModuleThread.h
+ * \class	ModuleThread
+ * \ingroup Thread
+ * \ingroup Module
+ * \brief	Generic module for thread management.
+ */
+ // ****************************************
 class ModuleThread : public ModuleBase
 {
 public:
