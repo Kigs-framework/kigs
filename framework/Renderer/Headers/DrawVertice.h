@@ -80,7 +80,7 @@ public:
 	// aArray = nullptr for interleaved array with vertex
 	void SetColorArray(void* aArray, int Count, int Size = 4/*default Size is 4 char*/, int decal = 0, int format = KIGS_UNSIGNED_BYTE);
 
-	void SetTexture(SmartPointer<Texture> tex) { mypTexture = tex; }
+	void SetTexture(SmartPointer<Texture> tex) { mypTexture = tex; SetDataFromPreset(); }
 	SmartPointer<Texture> GetTexture() { return mypTexture; }
 
 protected:

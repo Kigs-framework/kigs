@@ -735,7 +735,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 			}
 			else
 			{
-				auto xml_node = (XMLNodeStringRef*)item->GetXMLNodeForFile((XML*)gKigsTools->ActiveXMLFile.get());
+				auto xml_node = (XMLNode*)item->GetXMLNodeForFile((XML*)gKigsTools->ActiveXMLFile.get());
 				if (xml_node)
 				{
 					if (xml_node->nameOneOf("Rel", "RelativePath"))

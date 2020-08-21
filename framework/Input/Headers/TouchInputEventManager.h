@@ -1,5 +1,6 @@
 #pragma once
 #include "Core.h"
+#include "SpatialInteractionDevice.h"
 #include "CoreModifiable.h"
 #include "TecLibs/Tec3D.h"
 
@@ -8,6 +9,7 @@
 #include "TecLibs/Math/IntersectionAlgorithms.h"
 
 #include <map>
+#include <unordered_set>
 
 class ModuleInput;
 struct Interaction;
@@ -594,6 +596,8 @@ public:
 	void	unregisterEvent(CoreModifiable* registeredObject, InputEventType type);
 	void	unregisterObject(CoreModifiable* registeredObject);
 
+	
+
 	bool isRegisteredOnCurrentState(CoreModifiable* obj);
 
 	void Update(const Timer& timer, void* addParam) override;
@@ -647,6 +651,12 @@ public:
 		return myIsActive;
 	}
 
+	const kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>& GetFrameTouches() { return mLastFrameTouches; }
+
+	std::unordered_set<CoreModifiable*>& GetNearInteractionActiveItems(Handedness handedness) 
+	{ 
+		return handedness == Handedness::Left ? mNearInteractionActiveItemsLeft : mNearInteractionActiveItemsRight;
+	}
 	
 protected:
 
@@ -663,6 +673,9 @@ protected:
 	maBool mUseGazeAsTouchDevice = BASE_ATTRIBUTE(UseGazeAsTouchDevice, false);
 
 	kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> mLastFrameTouches;
+
+	std::unordered_set<CoreModifiable*> mNearInteractionActiveItemsLeft;
+	std::unordered_set<CoreModifiable*> mNearInteractionActiveItemsRight;
 
 	std::recursive_mutex mMutex;
 	std::unique_lock<std::recursive_mutex> mLock;

@@ -5,6 +5,7 @@
 #include "AttributePacking.h"
 
 #include <optional>
+#include <unordered_set>
 
 struct Hit;
 
@@ -40,7 +41,6 @@ struct Interaction
 	bool pressed = false;
 	bool hasPosition = false;
 
-	int near_interaction_active_count = 0;
 	float near_interaction_distance = FLT_MAX;
 	Handedness handedness = Handedness::Unspecified;
 

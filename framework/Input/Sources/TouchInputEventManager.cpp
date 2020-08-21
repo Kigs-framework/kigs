@@ -454,8 +454,8 @@ void TouchInputEventManager::ResetCurrentStates()
 			toreset->Reset();
 		}
 	}
-
-
+	mNearInteractionActiveItemsLeft.clear();
+	mNearInteractionActiveItemsRight.clear();
 }
 
 void TouchInputEventManager::unregisterEvent(CoreModifiable* registeredObject, InputEventType type)
@@ -474,6 +474,11 @@ void TouchInputEventManager::unregisterEvent(CoreModifiable* registeredObject, I
 		// if unregister was done stop
 		if (found)
 		{
+			if (type == DirectTouch) 
+			{
+				mNearInteractionActiveItemsLeft.erase(registeredObject);
+				mNearInteractionActiveItemsRight.erase(registeredObject);
+			}
 			break;
 		}
 
@@ -497,6 +502,9 @@ void TouchInputEventManager::unregisterObject(CoreModifiable* registeredObject)
 		unregisterObjectOnCurrentState(state, registeredObject);
 		++itc;
 	}
+
+	mNearInteractionActiveItemsLeft.erase(registeredObject);
+	mNearInteractionActiveItemsRight.erase(registeredObject);
 }
 
 bool TouchInputEventManager::unregisterEventOnCurrentState(StackedEventStateStruct& state, CoreModifiable* registeredObject, InputEventType type)
@@ -680,7 +688,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 						Touches[interaction_infos.ID] = interaction_infos;
 					}
 				}
-				if(interaction.near_interaction_active_count == 0 || !interaction.index_tip.has_value())
+				if(GetNearInteractionActiveItems(interaction.handedness).size() == 0 || !interaction.index_tip.has_value())
 				{
 					auto orientation = (interaction.palm->orientation * v3f(0, -1, 1)).Normalized();
 					if (Dot(orientation, camera->GetGlobalViewVector()) > 0)
@@ -1171,7 +1179,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 	auto touch_state = touch.touch_state;
 
 	float dist = Norm(ev.hit.HitPosition - touch.posInfos.origin);
-	bool is_spatial_interaction = IsNearInteraction(touch.ID) && touch.interaction->near_interaction_active_count > 0;
+	bool is_spatial_interaction = IsNearInteraction(touch.ID) && manager->GetNearInteractionActiveItems(touch.interaction->handedness).size() > 0;
 	if (is_spatial_interaction && m_SpatialInteractionAutoClickDistance > 0.0f) 
 	{
 		if (std::abs(dist - manager->getSpatialInteractionOffset()) < m_SpatialInteractionAutoClickDistance)
@@ -1416,6 +1424,8 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 
 	auto foundPrevious = m_CurrentInfosMap.find(touch.ID);
 
+	auto& near_active_items = manager->GetNearInteractionActiveItems(touch.interaction ? touch.interaction->handedness : Handedness::Left);
+
 	// add this touch info if first time
 	if (foundPrevious == m_CurrentInfosMap.end())
 	{
@@ -1432,7 +1442,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			ev.touch_state = DirectTouchEvent::TouchHover;
 			target->SimpleCall<bool>(m_methodNameID, ev);
 			manager->ManageCaptureObject(ev, target);
-			if (is_near_interaction) ++touch.interaction->near_interaction_active_count;
+			if (is_near_interaction) near_active_items.insert(target);
 		}
 	}
 
@@ -1500,7 +1510,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			target->SimpleCall<bool>(m_methodNameID, ev);
 			current.state |= 1;
 			manager->ManageCaptureObject(ev, target);
-			if (is_near_interaction) ++touch.interaction->near_interaction_active_count;
+			if (is_near_interaction) near_active_items.insert(target);
 		}
 	}
 	else // not hover
@@ -1513,7 +1523,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			target->SimpleCall<bool>(m_methodNameID, ev);
 			current.state -= 1;
 			manager->ManageCaptureObject(ev, target);
-			if (is_near_interaction) --touch.interaction->near_interaction_active_count;
+			if (is_near_interaction) near_active_items.erase(target);
 		}
 	}
 	
