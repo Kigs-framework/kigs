@@ -48,7 +48,6 @@ public:
 	inline void											Set_Position(kfloat a_x, kfloat a_y) { mPosition[0] = a_x; mPosition[1] = a_y; mNeedUpdatePosition = true; }
 	inline void											Set_Position(Point2D a_pos) { Set_Position(a_pos.x, a_pos.y); }
 	inline void											IsTouchable(bool a_value) { mIsTouchable = a_value; }
-	//inline void											Set_IsHidden(bool a_value) { myIsHidden = a_value; }
 	inline void											Set_Opacity(float a_value) { mOpacity = a_value; }
 	inline void											Set_PreScale(kfloat a_valueX, kfloat a_valueY) { mPreScaleX = a_valueX; mPreScaleY = a_valueY; mNeedUpdatePosition = true; }
 	inline void											Set_PostScale(kfloat a_valueX, kfloat a_valueY) { mPostScaleX = a_valueX; mPostScaleY = a_valueY; mNeedUpdatePosition = true; }

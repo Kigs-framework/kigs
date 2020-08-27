@@ -16,7 +16,6 @@ IMPLEMENT_CLASS_INFO(UITextArea)
 
 UITextArea::UITextArea(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-	//myTextColor(*this, false, "TextColor", KFLOAT_ZERO, KFLOAT_ZERO, KFLOAT_ZERO, 255.0f),
 	mText(*this, false, "Text", (kstl::string)"DefaultText"),
 	mFont(*this, false, "Font", ""),
 	mReleaseAction(*this, false, "ReleaseAction", ""),
@@ -83,7 +82,7 @@ void UITextArea::CreateFirstText()
 
 bool UITextArea::isAlpha(float X, float Y)
 {
-	//Try to get my mask
+	//Try to get mask
 	if (!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
@@ -100,7 +99,7 @@ bool UITextArea::isAlpha(float X, float Y)
 
 	if (mAlphaMask)
 	{
-		//Check on my mask the specified location
+		//Check on mask the specified location
 		return !mAlphaMask->CheckTo(X, Y);
 	}
 

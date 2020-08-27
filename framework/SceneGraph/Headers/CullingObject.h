@@ -6,9 +6,6 @@
 
 class Node3D;
 
-/*! \defgroup InternalCulling Culling Internal
- * \ingroup SceneGraph
-*/
 
 // ****************************************
 // * CullingObject class
@@ -17,12 +14,9 @@ class Node3D;
  * \file	CullingObject.h
  * \class	CullingObject
  * \ingroup SceneGraph
- * \brief	A culling object is a list of planes (each defined by a point and a normal vector) used to determine if an object is inside or outside the culling object.
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \brief	Base class for culling objects.
  */
-// ****************************************
+ // ****************************************
 class CullingObject : public CoreModifiable
 {
 public:
@@ -59,25 +53,22 @@ public:
 	// * CullPlane class
 	// * --------------------------------------
 	/**
-	 * \file	CullPlane.h
+	 * \file	CullingObject.h
 	 * \class	CullPlane
-	 * \ingroup InternalCulling
+	 * \ingroup SceneGraph
 	 * \brief structure to store a plane definition : a Origin Point3D and a Normal Vector3D	
-	 * \author	ukn
-	 * \version ukn
-	 * \date	ukn
 	 */
 	// ****************************************
 	class CullPlane
 	{
 	public:
 		//! normal
-		Vector3D  myNormal;
+		Vector3D  mNormal;
 		//! position
-		Point3D   myOrigin;
+		Point3D   mOrigin;
 
 		//! fourth term of plane equation
-		float	myD;
+		float	mD;
 	};
 
 	/**
@@ -85,7 +76,7 @@ public:
 	 * \fn 		int GetPlaneCount()
 	 * \return	name : the current plane count in this object
 	 */
-	int GetPlaneCount(){return (int)myCullPlaneList.size();}
+	int GetPlaneCount(){return (int)mCullPlaneList.size();}
 
 	/**
 	 * \brief	initialise plane with index i in the list with given origin and normal
@@ -117,7 +108,7 @@ public:
 	 * \fn 		const kstl::vector<CullPlane*>& GetCullPlaneList()
 	 * \return	the plane list 
 	 */
-	std::vector<CullPlane>& GetCullPlaneList(){return myCullPlaneList;}
+	std::vector<CullPlane>& GetCullPlaneList(){return mCullPlaneList;}
 
 	// return intersection point of p1,p2,p3
 	static Point3D	getIntersection(const CullPlane& p1, const CullPlane& p2, const CullPlane& p3);
@@ -125,7 +116,7 @@ public:
 protected:
 	
 	//! the vector used to store the list of plane
-	kstl::vector<CullPlane>   myCullPlaneList;
+	kstl::vector<CullPlane>   mCullPlaneList;
 };
 
 #endif //_CULLINGOBJECT_H_

@@ -6,7 +6,17 @@
 //#include "ModuleSceneGraph.h"
 
 struct ID3D11Buffer;
-
+// ****************************************
+// * DX11Material class
+// * --------------------------------------
+/**
+ * \file	DX11Material.h
+ * \class	DX11Material
+ * \ingroup Renderer
+ * \brief	DX11 implementation of Material.
+ *
+ */
+ // ****************************************
 class DX11Material : public Material
 {
 public:
@@ -21,8 +31,6 @@ protected:
 	
 	void NotifyUpdate(unsigned int labelid) override;
 
-	//ID3D11Buffer* m_materialBuffer= nullptr;
-	//u32 m_material_buffer_crc = 0;
 };
 
 #endif //_DX11MATERIAL_H

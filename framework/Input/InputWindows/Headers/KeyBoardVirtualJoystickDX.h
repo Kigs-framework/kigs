@@ -22,15 +22,15 @@ class	KeyBoardVirtualJoystickDX : public JoystickDevice
 	
 	void	DoInputDeviceDescription();
 	
-	void	IncButtonCount(){myButtonsCount++;}
-	void	IncAxisCount(){myAxisCount++;}
-	void	IncPOVCount(){myPovCount++;}
+	void	IncButtonCount(){mButtonsCount++;}
+	void	IncAxisCount(){mAxisCount++;}
+	void	IncPOVCount(){mPovCount++;}
 	
 	
 	protected:
 	virtual ~KeyBoardVirtualJoystickDX();
 	
-	KeyboardDevice*	myKeyboard;  
+	KeyboardDevice*	mKeyboard;  
 	
 };    
 

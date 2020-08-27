@@ -37,13 +37,13 @@
 #include "algorithm"
 
 // ## Static object initialization
-ModuleSpecificRenderer *	RendererOpenGL::theGlobalRenderer = NULL;
-FreeType_TextDrawer*		RendererOpenGL::myDrawer = NULL;
 
-/*API3DShader*					RendererOpenGL::myCurrentShader = NULL;
-unsigned int				RendererOpenGL::myCurrentShaderProgram=0;
-kstl::vector<API3DShader*>	RendererOpenGL::myShaderStack;
-unsigned int				RendererOpenGL::myDirtyShaderMatrix = 0;*/
+FreeType_TextDrawer*		RendererOpenGL::mDrawer = NULL;
+
+/*API3DShader*					RendererOpenGL::mCurrentShader = NULL;
+unsigned int				RendererOpenGL::mCurrentShaderProgram=0;
+kstl::vector<API3DShader*>	RendererOpenGL::mShaderStack;
+unsigned int				RendererOpenGL::mDirtyShaderMatrix = 0;*/
 
 
 #define mCurrentArrayBound mCurrentBoundBuffer[0]
@@ -60,15 +60,15 @@ IMPLEMENT_CLASS_INFO(RendererOpenGL)
 
 RendererOpenGL::RendererOpenGL(const kstl::string& name, CLASS_NAME_TREE_ARG) : ModuleSpecificRenderer(name, PASS_CLASS_NAME_TREE_ARG)
 
-, myCurrentOGLMatrixMode(-1)
+, mCurrentOGLMatrixMode(-1)
 
 {
-	myShaderStack.clear();
-	myShaderStack.reserve(16);
-	myCurrentShader = NULL;
-	myCurrentShaderProgram = 0;
+	mShaderStack.clear();
+	mShaderStack.reserve(16);
+	mCurrentShader = NULL;
+	mCurrentShaderProgram = 0;
 
-	myVBO[0] = -1; // for init check
+	mVBO[0] = -1; // for init check
 }
 
 void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
@@ -76,20 +76,20 @@ void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 	if (HasShader()) // load uniform
 	{
 		auto locations = GetActiveShader()->GetLocation();
-		if ((myDirtyMatrix & 1) || myDirtyShaderMatrix)
+		if ((mDirtyMatrix & 1) || mDirtyShaderMatrix)
 		{
 			
 			if (locations->modelMatrix != -1)
 			{
-				glUniformMatrix4fv(locations->modelMatrix, 1, false, &(myMatrixStack[0].back().e[0][0])); CHECK_GLERROR;
+				glUniformMatrix4fv(locations->modelMatrix, 1, false, &(mMatrixStack[0].back().e[0][0])); CHECK_GLERROR;
 			}
 		}
 
 		auto cam = state->GetCurrentCamera();
-		if (myDirtyShaderMatrix && locations->fogScale != -1 && cam)
+		if (mDirtyShaderMatrix && locations->fogScale != -1 && cam)
 		{
-			//auto D = myMatrixStack[1].back()[14];
-			//auto C = myMatrixStack[1].back()[10];
+			//auto D = mMatrixStack[1].back()[14];
+			//auto C = mMatrixStack[1].back()[10];
 			auto nearPlane = 0.1f; // D / (C - 1.0f);
 			auto farPlane = 100.0f; // D / (C + 1.0f);
 			cam->getValue("NearPlane", nearPlane);
@@ -115,7 +115,7 @@ void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 				if (uniLoc0 == -1 || uniLoc1 == -1)
 					return;
 
-				auto viewproj = myMatrixStack[MATRIX_MODE_PROJECTION].back()*myMatrixStack[MATRIX_MODE_VIEW].back();
+				auto viewproj = mMatrixStack[MATRIX_MODE_PROJECTION].back()*mMatrixStack[MATRIX_MODE_VIEW].back();
 				glUniformMatrix4fv(uniLoc0, 1, false, &(viewproj.e[0][0])); CHECK_GLERROR;
 				glUniformMatrix4fv(uniLoc1, 1, false, &(viewproj.e[0][0])); CHECK_GLERROR;
 			}
@@ -131,24 +131,24 @@ void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 		else
 #endif
 		{
-			if ((myDirtyMatrix & 2) || myDirtyShaderMatrix)
+			if ((mDirtyMatrix & 2) || mDirtyShaderMatrix)
 			{
 				if (locations->projMatrix != -1)
 				{
-					glUniformMatrix4fv(locations->projMatrix, 1, false, &(myMatrixStack[1].back().e[0][0])); CHECK_GLERROR;
+					glUniformMatrix4fv(locations->projMatrix, 1, false, &(mMatrixStack[1].back().e[0][0])); CHECK_GLERROR;
 				}
 			}
 
-			if ((myDirtyMatrix & 4) || myDirtyShaderMatrix)
+			if ((mDirtyMatrix & 4) || mDirtyShaderMatrix)
 			{
 				if (locations->viewMatrix != -1)
 				{
-					glUniformMatrix4fv(locations->viewMatrix, 1, false, &(myMatrixStack[2].back().e[0][0])); CHECK_GLERROR;
+					glUniformMatrix4fv(locations->viewMatrix, 1, false, &(mMatrixStack[2].back().e[0][0])); CHECK_GLERROR;
 				}
 			}
 		}
 
-		myDirtyShaderMatrix = 0;
+		mDirtyShaderMatrix = 0;
 	}
 }
 
@@ -161,7 +161,7 @@ void OpenGLRenderingState::ProtectedInitHardwareState()
 	glDisable(GL_SCISSOR_TEST);
 	glBlendColor(0, 0, 0, 1.0f);
 
-	//glClearColor(myGlobalRedClearValueFlag, myGlobalGreenClearValueFlag, myGlobalBlueClearValueFlag, myGlobalAlphaClearValueFlag);
+	//glClearColor(mGlobalRedClearValueFlag, mGlobalGreenClearValueFlag, mGlobalBlueClearValueFlag, mGlobalAlphaClearValueFlag);
 }
 
 
@@ -191,10 +191,10 @@ static int ConvertStencilOp(RendererStencilOp op)
 void OpenGLRenderingState::FlushState(RenderingState* currentState, bool force)
 {
 	OpenGLRenderingState* otherOne = static_cast<OpenGLRenderingState*>(currentState);
-	if (force || myGlobalCullFlag != otherOne->myGlobalCullFlag)
+	if (force || mGlobalCullFlag != otherOne->mGlobalCullFlag)
 	{
-		otherOne->myGlobalCullFlag = myGlobalCullFlag;
-		int cullmode = myGlobalCullFlag;
+		otherOne->mGlobalCullFlag = mGlobalCullFlag;
+		int cullmode = mGlobalCullFlag;
 
 		if (cullmode == 0)
 		{
@@ -218,9 +218,9 @@ void OpenGLRenderingState::FlushState(RenderingState* currentState, bool force)
 		}
 	}
 
-	if (force || myGlobalBlendFlag != otherOne->myGlobalBlendFlag) {
-		otherOne->myGlobalBlendFlag = myGlobalBlendFlag;
-		bool blendmode = (bool)myGlobalBlendFlag;
+	if (force || mGlobalBlendFlag != otherOne->mGlobalBlendFlag) {
+		otherOne->mGlobalBlendFlag = mGlobalBlendFlag;
+		bool blendmode = (bool)mGlobalBlendFlag;
 
 		if (!blendmode) {
 			glDisable(GL_BLEND); CHECK_GLERROR;
@@ -230,11 +230,11 @@ void OpenGLRenderingState::FlushState(RenderingState* currentState, bool force)
 		}
 	}
 
-	if (force || myGlobalBlendValue1Flag != otherOne->myGlobalBlendValue1Flag || myGlobalBlendValue2Flag != otherOne->myGlobalBlendValue2Flag) {
-		otherOne->myGlobalBlendValue1Flag = myGlobalBlendValue1Flag;
-		otherOne->myGlobalBlendValue2Flag = myGlobalBlendValue2Flag;
-		int blendvalue1 = (int)myGlobalBlendValue1Flag;
-		int blendvalue2 = (int)myGlobalBlendValue2Flag;
+	if (force || mGlobalBlendValue1Flag != otherOne->mGlobalBlendValue1Flag || mGlobalBlendValue2Flag != otherOne->mGlobalBlendValue2Flag) {
+		otherOne->mGlobalBlendValue1Flag = mGlobalBlendValue1Flag;
+		otherOne->mGlobalBlendValue2Flag = mGlobalBlendValue2Flag;
+		int blendvalue1 = (int)mGlobalBlendValue1Flag;
+		int blendvalue2 = (int)mGlobalBlendValue2Flag;
 		GLenum sfactor,dfactor;
 		//GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 
 		//GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, and GL_SRC_ALPHA_SATURATE
@@ -333,9 +333,9 @@ void OpenGLRenderingState::FlushState(RenderingState* currentState, bool force)
 		glBlendFuncSeparate(sfactor, dfactor, GL_ONE, GL_ONE); CHECK_GLERROR;
 	}
 
-	if (force || myGlobalDepthMaskFlag != otherOne->myGlobalDepthMaskFlag) {
-		otherOne->myGlobalDepthMaskFlag = myGlobalDepthMaskFlag;
-		bool depthmaskmode = (bool)myGlobalDepthMaskFlag;
+	if (force || mGlobalDepthMaskFlag != otherOne->mGlobalDepthMaskFlag) {
+		otherOne->mGlobalDepthMaskFlag = mGlobalDepthMaskFlag;
+		bool depthmaskmode = (bool)mGlobalDepthMaskFlag;
 
 		if (!depthmaskmode) {
 			glDepthMask(GL_FALSE); CHECK_GLERROR;
@@ -345,9 +345,9 @@ void OpenGLRenderingState::FlushState(RenderingState* currentState, bool force)
 		}
 	}
 
-	if (force || myGlobalDepthTestFlag != otherOne->myGlobalDepthTestFlag) {
-		otherOne->myGlobalDepthTestFlag = myGlobalDepthTestFlag;
-		bool depthTestmode = (bool)myGlobalDepthTestFlag;
+	if (force || mGlobalDepthTestFlag != otherOne->mGlobalDepthTestFlag) {
+		otherOne->mGlobalDepthTestFlag = mGlobalDepthTestFlag;
+		bool depthTestmode = (bool)mGlobalDepthTestFlag;
 
 		if (!depthTestmode) {
 			glDisable(GL_DEPTH_TEST); CHECK_GLERROR;
@@ -357,17 +357,17 @@ void OpenGLRenderingState::FlushState(RenderingState* currentState, bool force)
 		}
 	}
 
-	if (force || myGlobalDepthValueFlag != otherOne->myGlobalDepthValueFlag) {
-		otherOne->myGlobalDepthValueFlag = myGlobalDepthValueFlag;
+	if (force || mGlobalDepthValueFlag != otherOne->mGlobalDepthValueFlag) {
+		otherOne->mGlobalDepthValueFlag = mGlobalDepthValueFlag;
 #if defined (WIN32) && !defined(WUP)
-		float depthvalue = (float)myGlobalDepthValueFlag;
+		float depthvalue = (float)mGlobalDepthValueFlag;
 		glClearDepth(depthvalue); CHECK_GLERROR;
 #endif
 	}
 
-	if (force || myGlobalScissorTestFlag != otherOne->myGlobalScissorTestFlag) {
-		otherOne->myGlobalScissorTestFlag = myGlobalScissorTestFlag;
-		bool scissorTestmode = (bool)myGlobalScissorTestFlag;
+	if (force || mGlobalScissorTestFlag != otherOne->mGlobalScissorTestFlag) {
+		otherOne->mGlobalScissorTestFlag = mGlobalScissorTestFlag;
+		bool scissorTestmode = (bool)mGlobalScissorTestFlag;
 
 		if (!scissorTestmode) {
 			glDisable(GL_SCISSOR_TEST); CHECK_GLERROR;
@@ -377,30 +377,30 @@ void OpenGLRenderingState::FlushState(RenderingState* currentState, bool force)
 		}
 	}
 
-	if (force || myGlobalScissorXFlag != otherOne->myGlobalScissorXFlag
-		|| myGlobalScissorYFlag != otherOne->myGlobalScissorYFlag
-		|| myGlobalScissorWidthFlag != otherOne->myGlobalScissorWidthFlag
-		|| myGlobalScissorHeightFlag != otherOne->myGlobalScissorHeightFlag)
+	if (force || mGlobalScissorXFlag != otherOne->mGlobalScissorXFlag
+		|| mGlobalScissorYFlag != otherOne->mGlobalScissorYFlag
+		|| mGlobalScissorWidthFlag != otherOne->mGlobalScissorWidthFlag
+		|| mGlobalScissorHeightFlag != otherOne->mGlobalScissorHeightFlag)
 	{
-		otherOne->myGlobalScissorXFlag = myGlobalScissorXFlag;
-		otherOne->myGlobalScissorYFlag = myGlobalScissorYFlag;
-		otherOne->myGlobalScissorWidthFlag = myGlobalScissorWidthFlag;
-		otherOne->myGlobalScissorHeightFlag = myGlobalScissorHeightFlag;
+		otherOne->mGlobalScissorXFlag = mGlobalScissorXFlag;
+		otherOne->mGlobalScissorYFlag = mGlobalScissorYFlag;
+		otherOne->mGlobalScissorWidthFlag = mGlobalScissorWidthFlag;
+		otherOne->mGlobalScissorHeightFlag = mGlobalScissorHeightFlag;
 
-		int x = myGlobalScissorXFlag;
-		int y = myGlobalScissorYFlag;
-		int width = myGlobalScissorWidthFlag;
-		int height = myGlobalScissorHeightFlag;
+		int x = mGlobalScissorXFlag;
+		int y = mGlobalScissorYFlag;
+		int width = mGlobalScissorWidthFlag;
+		int height = mGlobalScissorHeightFlag;
 
 		glScissor(x, y, width, height); CHECK_GLERROR;
 	}
 
-	if (force || myGlobalColorMaterialFaceFlag != otherOne->myGlobalColorMaterialFaceFlag || myGlobalColorMaterialParamFlag != otherOne->myGlobalColorMaterialParamFlag) {
+	if (force || mGlobalColorMaterialFaceFlag != otherOne->mGlobalColorMaterialFaceFlag || mGlobalColorMaterialParamFlag != otherOne->mGlobalColorMaterialParamFlag) {
 
-		int face = myGlobalColorMaterialFaceFlag;
-		int param = myGlobalColorMaterialParamFlag;
-		otherOne->myGlobalColorMaterialFaceFlag = face;
-		otherOne->myGlobalColorMaterialParamFlag = param;
+		int face = mGlobalColorMaterialFaceFlag;
+		int param = mGlobalColorMaterialParamFlag;
+		otherOne->mGlobalColorMaterialFaceFlag = face;
+		otherOne->mGlobalColorMaterialParamFlag = param;
 	}
 
 	
@@ -408,81 +408,81 @@ void OpenGLRenderingState::FlushState(RenderingState* currentState, bool force)
 	for (int i = 0; i < 2; ++i)
 	{
 		auto face = i == 0 ? GL_FRONT : GL_BACK;
-		if (force || myGlobalStencilMode[i] != otherOne->myGlobalStencilMode[i] || myGlobalStencilFuncMask[i] != otherOne->myGlobalStencilFuncMask[i] || myGlobalStencilFuncRef[i] != otherOne->myGlobalStencilFuncRef[i])
+		if (force || mGlobalStencilMode[i] != otherOne->mGlobalStencilMode[i] || mGlobalStencilFuncMask[i] != otherOne->mGlobalStencilFuncMask[i] || mGlobalStencilFuncRef[i] != otherOne->mGlobalStencilFuncRef[i])
 		{
-			otherOne->myGlobalStencilMode[i] = myGlobalStencilMode[i];
-			otherOne->myGlobalStencilFuncMask[i] = myGlobalStencilFuncMask[i];
-			otherOne->myGlobalStencilFuncRef[i] = myGlobalStencilFuncRef[i];
+			otherOne->mGlobalStencilMode[i] = mGlobalStencilMode[i];
+			otherOne->mGlobalStencilFuncMask[i] = mGlobalStencilFuncMask[i];
+			otherOne->mGlobalStencilFuncRef[i] = mGlobalStencilFuncRef[i];
 
 			int mode = GL_ALWAYS;
 
-			if (myGlobalStencilMode[i] == RENDERER_STENCIL_NEVER)
+			if (mGlobalStencilMode[i] == RENDERER_STENCIL_NEVER)
 				mode = GL_NEVER;
-			else if (myGlobalStencilMode[i] == RENDERER_STENCIL_LESS)
+			else if (mGlobalStencilMode[i] == RENDERER_STENCIL_LESS)
 				mode = GL_LESS;
-			else if (myGlobalStencilMode[i] == RENDERER_STENCIL_EQUAL)
+			else if (mGlobalStencilMode[i] == RENDERER_STENCIL_EQUAL)
 				mode = GL_EQUAL;
-			else if (myGlobalStencilMode[i] == RENDERER_STENCIL_LEQUAL)
+			else if (mGlobalStencilMode[i] == RENDERER_STENCIL_LEQUAL)
 				mode = GL_LEQUAL;
-			else if (myGlobalStencilMode[i] == RENDERER_STENCIL_GREATER)
+			else if (mGlobalStencilMode[i] == RENDERER_STENCIL_GREATER)
 				mode = GL_GREATER;
-			else if (myGlobalStencilMode[i] == RENDERER_STENCIL_NOTEQUAL)
+			else if (mGlobalStencilMode[i] == RENDERER_STENCIL_NOTEQUAL)
 				mode = GL_NOTEQUAL;
-			else if (myGlobalStencilMode[i] == RENDERER_STENCIL_GEQUAL)
+			else if (mGlobalStencilMode[i] == RENDERER_STENCIL_GEQUAL)
 				mode = GL_GEQUAL;
-			else if (myGlobalStencilMode[i] == RENDERER_STENCIL_ALWAYS)
+			else if (mGlobalStencilMode[i] == RENDERER_STENCIL_ALWAYS)
 				mode = GL_ALWAYS;
 
-			glStencilFuncSeparate(face, mode, myGlobalStencilFuncRef[i], myGlobalStencilFuncMask[i]);
+			glStencilFuncSeparate(face, mode, mGlobalStencilFuncRef[i], mGlobalStencilFuncMask[i]);
 		}
 
-		if (force || myGlobalStencilMask[i] != otherOne->myGlobalStencilMask[i])
+		if (force || mGlobalStencilMask[i] != otherOne->mGlobalStencilMask[i])
 		{
-			otherOne->myGlobalStencilMask[i] = myGlobalStencilMask[i];
-			glStencilMaskSeparate(face, myGlobalStencilMask[i]);
+			otherOne->mGlobalStencilMask[i] = mGlobalStencilMask[i];
+			glStencilMaskSeparate(face, mGlobalStencilMask[i]);
 		}
 		
-		if (force || myGlobalStencilOpDPFail[i] != otherOne->myGlobalStencilOpDPFail[i]
-			|| myGlobalStencilOpSFail[i] != otherOne->myGlobalStencilOpSFail[i]
-			|| myGlobalStencilOpPass[i] != otherOne->myGlobalStencilOpPass[i])
+		if (force || mGlobalStencilOpDPFail[i] != otherOne->mGlobalStencilOpDPFail[i]
+			|| mGlobalStencilOpSFail[i] != otherOne->mGlobalStencilOpSFail[i]
+			|| mGlobalStencilOpPass[i] != otherOne->mGlobalStencilOpPass[i])
 		{
-			otherOne->myGlobalStencilOpDPFail[i] = myGlobalStencilOpDPFail[i];
-			otherOne->myGlobalStencilOpSFail[i] = myGlobalStencilOpSFail[i];
-			otherOne->myGlobalStencilOpPass[i] = myGlobalStencilOpPass[i];
+			otherOne->mGlobalStencilOpDPFail[i] = mGlobalStencilOpDPFail[i];
+			otherOne->mGlobalStencilOpSFail[i] = mGlobalStencilOpSFail[i];
+			otherOne->mGlobalStencilOpPass[i] = mGlobalStencilOpPass[i];
 
-			glStencilOpSeparate(face, ConvertStencilOp(myGlobalStencilOpSFail[i]), ConvertStencilOp(myGlobalStencilOpDPFail[i]), ConvertStencilOp(myGlobalStencilOpPass[i]));
+			glStencilOpSeparate(face, ConvertStencilOp(mGlobalStencilOpSFail[i]), ConvertStencilOp(mGlobalStencilOpDPFail[i]), ConvertStencilOp(mGlobalStencilOpPass[i]));
 		}
 	}
 	
 
 
 
-	if (force || myGlobalColorMask[0] != otherOne->myGlobalColorMask[0]
-		|| myGlobalColorMask[1] != otherOne->myGlobalColorMask[1]
-		|| myGlobalColorMask[2] != otherOne->myGlobalColorMask[2]
-		|| myGlobalColorMask[3] != otherOne->myGlobalColorMask[3])
+	if (force || mGlobalColorMask[0] != otherOne->mGlobalColorMask[0]
+		|| mGlobalColorMask[1] != otherOne->mGlobalColorMask[1]
+		|| mGlobalColorMask[2] != otherOne->mGlobalColorMask[2]
+		|| mGlobalColorMask[3] != otherOne->mGlobalColorMask[3])
 	{
-		otherOne->myGlobalColorMask[0] = myGlobalColorMask[0];
-		otherOne->myGlobalColorMask[1] = myGlobalColorMask[1];
-		otherOne->myGlobalColorMask[2] = myGlobalColorMask[2];
-		otherOne->myGlobalColorMask[3] = myGlobalColorMask[3];
+		otherOne->mGlobalColorMask[0] = mGlobalColorMask[0];
+		otherOne->mGlobalColorMask[1] = mGlobalColorMask[1];
+		otherOne->mGlobalColorMask[2] = mGlobalColorMask[2];
+		otherOne->mGlobalColorMask[3] = mGlobalColorMask[3];
 
-		glColorMask(myGlobalColorMask[0], myGlobalColorMask[1], myGlobalColorMask[2], myGlobalColorMask[3]);
+		glColorMask(mGlobalColorMask[0], mGlobalColorMask[1], mGlobalColorMask[2], mGlobalColorMask[3]);
 	}
 
-	if (force || myGlobalStencilEnabled != otherOne->myGlobalStencilEnabled)
+	if (force || mGlobalStencilEnabled != otherOne->mGlobalStencilEnabled)
 	{
-		otherOne->myGlobalStencilEnabled = myGlobalStencilEnabled;
-		if (myGlobalStencilEnabled)
+		otherOne->mGlobalStencilEnabled = mGlobalStencilEnabled;
+		if (mGlobalStencilEnabled)
 			glEnable(GL_STENCIL_TEST);
 		else
 			glDisable(GL_STENCIL_TEST);
 	}
 #if !defined(WUP) && !defined(_M_ARM) && !defined(GL_ES2)
-	if (force || myPolygonMode != otherOne->myPolygonMode)
+	if (force || mPolygonMode != otherOne->mPolygonMode)
 	{
-		otherOne->myPolygonMode = myPolygonMode;
-		switch (myPolygonMode)
+		otherOne->mPolygonMode = mPolygonMode;
+		switch (mPolygonMode)
 		{
 		case RENDERER_POINT:
 			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
@@ -507,7 +507,7 @@ void OpenGLRenderingState::ClearView(RendererClearMode clearMode)
 	if (clearMode & RENDERER_CLEAR_COLOR)
 	{
 		glMode |= GL_COLOR_BUFFER_BIT;
-		glClearColor(myGlobalRedClearValueFlag, myGlobalGreenClearValueFlag, myGlobalBlueClearValueFlag, myGlobalAlphaClearValueFlag); CHECK_GLERROR;
+		glClearColor(mGlobalRedClearValueFlag, mGlobalGreenClearValueFlag, mGlobalBlueClearValueFlag, mGlobalAlphaClearValueFlag); CHECK_GLERROR;
 	}
 		
 	if (clearMode & RENDERER_CLEAR_DEPTH)
@@ -588,36 +588,36 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	
 
 	// create the freetype drawer
-	if (!myDrawer)
+	if (!mDrawer)
 	{
-		myDrawer = new FreeType_TextDrawer();
-		myDrawer->startBuildFonts();
+		mDrawer = new FreeType_TextDrawer();
+		mDrawer->startBuildFonts();
 	}
 
-	myVertexBufferManager = std::make_unique<VertexBufferManager>();
+	mVertexBufferManager = std::make_unique<VertexBufferManager>();
 
-	if (!theGlobalRenderer)
-		theGlobalRenderer = this;
+	if (!ModuleRenderer::mTheGlobalRenderer)
+		ModuleRenderer::mTheGlobalRenderer = this;
 
 
 	MAX_TEXTURE_UNIT = -1;
 
 	ModuleSpecificRenderer::Init(core, params);
 
-	myDefaultUIShader = KigsCore::GetInstanceOf("UIShader", "API3DUIShader");
+	mDefaultUIShader = KigsCore::GetInstanceOf("UIShader", "API3DUIShader");
 
 	PlatformInit(core, params);
 }
 
 void RendererOpenGL::Close()
 {
-	if (myDrawer)
+	if (mDrawer)
 	{
-		delete myDrawer;
-		myDrawer = NULL;
+		delete mDrawer;
+		mDrawer = NULL;
 	}
 
-	myDefaultUIShader = nullptr;
+	mDefaultUIShader = nullptr;
 
 #ifdef WIN32
 #ifndef WUP
@@ -625,14 +625,14 @@ void RendererOpenGL::Close()
 #endif
 #endif
 
-	if (myVBO[0] != -1)
+	if (mVBO[0] != -1)
 	{
-		glDeleteBuffers(PREALLOCATED_VBO_COUNT, myVBO); CHECK_GLERROR;
+		glDeleteBuffers(PREALLOCATED_VBO_COUNT, mVBO); CHECK_GLERROR;
 	}
 	PlatformClose();
 	ModuleSpecificRenderer::Close();
 	BaseClose();
-	theGlobalRenderer = nullptr;
+	ModuleRenderer::mTheGlobalRenderer = nullptr;
 }
 
 void RendererOpenGL::Update(const Timer& timer, void* addParam)
@@ -654,22 +654,22 @@ ModuleBase*	PlatformRendererModuleInit(KigsCore* core, const kstl::vector<CoreMo
 /*
 bool	RendererOpenGL::HasShader()
 {
-	return myCurrentShader != nullptr;
+	return mCurrentShader != nullptr;
 }
 
 API3DShader*		RendererOpenGL::GetActiveShader()
 {
-	return myCurrentShader;
+	return mCurrentShader;
 }
 
 void	RendererOpenGL::pushShader(API3DShader* shad, TravState* state)
 {
 	bool needActive = false;
-	if (myShaderStack.size())
+	if (mShaderStack.size())
 	{
-		if( (myCurrentShader != shad) || (myCurrentShaderProgram != shad->Get_ShaderProgram())) // need activation only if different shader
+		if( (mCurrentShader != shad) || (mCurrentShaderProgram != shad->Get_ShaderProgram())) // need activation only if different shader
 		{
-			myCurrentShader->Deactive(state);
+			mCurrentShader->Deactive(state);
 			needActive = true;
 		}
 	}
@@ -681,22 +681,22 @@ void	RendererOpenGL::pushShader(API3DShader* shad, TravState* state)
 	Material*	StateMaterial = 0;
 	if (needActive)
 	{
-		if (state&&state->myCurrentMaterial)
+		if (state&&state->mCurrentMaterial)
 		{
-			Material*	toPostDraw = state->myCurrentMaterial;
-			state->myCurrentMaterial = 0;
+			Material*	toPostDraw = state->mCurrentMaterial;
+			state->mCurrentMaterial = 0;
 			toPostDraw->CheckPostDraw(state);
 
 		}
 	}
 
-	myCurrentShader = shad;
-	myShaderStack.push_back(shad); // must be pushed before activation
+	mCurrentShader = shad;
+	mShaderStack.push_back(shad); // must be pushed before activation
 	//printf("PUSH Shader %p %s(%d)\n", shad, shad->getName().c_str(), shad->Get_ShaderProgram());
 
 	if (needActive)
 	{
-		myDirtyShaderMatrix = 1;
+		mDirtyShaderMatrix = 1;
 		shad->Active(state, true);
 	}
 
@@ -708,42 +708,42 @@ void	RendererOpenGL::popShader(API3DShader* shad, TravState* state)
 {
 	// just make sure shad is the shader on top of the stack
 	bool isShaderOK = false;
-	if (myShaderStack.size())
+	if (mShaderStack.size())
 	{
-		if (myCurrentShader == shad)
+		if (mCurrentShader == shad)
 		{
 			isShaderOK = true;
 		}
 
-		myShaderStack.pop_back();
+		mShaderStack.pop_back();
 
 		API3DShader* shaderBack = 0;
-		if (myShaderStack.size())
+		if (mShaderStack.size())
 		{
-			shaderBack = myShaderStack.back();
+			shaderBack = mShaderStack.back();
 		}
 		//printf("POP  Shader %p %s(%d)\n", shad, shad->getName().c_str(), shad->Get_ShaderProgram());
 
 
 		Material*	StateMaterial = 0;
-		if ((shaderBack != shad) || (myCurrentShaderProgram != shaderBack->Get_ShaderProgram()))
+		if ((shaderBack != shad) || (mCurrentShaderProgram != shaderBack->Get_ShaderProgram()))
 		{
-			if (state&&state->myCurrentMaterial)
+			if (state&&state->mCurrentMaterial)
 			{
-				Material*	toPostDraw = state->myCurrentMaterial;
-				state->myCurrentMaterial = 0;
+				Material*	toPostDraw = state->mCurrentMaterial;
+				state->mCurrentMaterial = 0;
 				toPostDraw->CheckPostDraw(state);
 
 			}
 
 			shad->Deactive(state);
 
-			myCurrentShader = shaderBack;
+			mCurrentShader = shaderBack;
 
-			if (myCurrentShader)
+			if (mCurrentShader)
 			{
-				myDirtyShaderMatrix = 1;
-				myCurrentShader->Active(state, true);
+				mDirtyShaderMatrix = 1;
+				mCurrentShader->Active(state, true);
 				
 				if (StateMaterial)
 					StateMaterial->CheckPreDraw(state);
@@ -769,22 +769,22 @@ void	 RendererOpenGL::setCurrentShaderProgram(ShaderInfo* p)
 	gRendererStats.ShaderSwitch++;
 #endif
 	ModuleSpecificRenderer::setCurrentShaderProgram(p);
-	glUseProgram(myCurrentShaderProgram->mID); CHECK_GLERROR;
+	glUseProgram(mCurrentShaderProgram->mID); CHECK_GLERROR;
 }
 
 void RendererOpenGL::FlushState(bool force)
 {
 	if (force)
 	{
-		myCurrentTextureUnit = 0;
+		mCurrentTextureUnit = 0;
 
 		TextureUnitInfo tui;
-		tui.BindedTextureID = -1;
-		tui.BindedTextureType = -1;
+		tui.mBindedTextureID = -1;
+		tui.mBindedTextureType = -1;
 
 		for (int i = 0; i < MAX_TEXTURE_UNIT; i++)
 		{
-			memcpy(&myTextureUnit[i], &tui, sizeof(TextureUnitInfo));
+			memcpy(&mTextureUnit[i], &tui, sizeof(TextureUnitInfo));
 		}
 	}
 	ModuleSpecificRenderer::FlushState(force);
@@ -799,22 +799,22 @@ void RendererOpenGL::CreateTexture(int count, unsigned int * id)
 void RendererOpenGL::DeleteTexture(int count, unsigned int * id)
 {
 	// unbind texture before delete it.
-	/*TextureUnitInfo * tui = myTextureUnit;
+	/*TextureUnitInfo * tui = mTextureUnit;
 	for (int i = 0; i < count; i++)
 	{
 		for (int j = 0; j < MAX_TEXTURE_UNIT; j++)
 		{
-			if (tui[j].BindedTextureID == id[i])
-				tui[j].BindedTextureID = -1;
+			if (tui[j].mBindedTextureID == id[i])
+				tui[j].mBindedTextureID = -1;
 		}
 	}*/
 
 	for (int i = 0; i < count; i++)
 	{
-		for (auto &tui : myTextureUnit)
+		for (auto &tui : mTextureUnit)
 		{
-			if (tui.BindedTextureID == id[i])
-				tui.BindedTextureID = -1;
+			if (tui.mBindedTextureID == id[i])
+				tui.mBindedTextureID = -1;
 		}
 	}
 
@@ -834,29 +834,29 @@ ModuleSpecificRenderer::LightCount RendererOpenGL::SetLightsInfo(std::set<CoreMo
 	auto end = lights->end();
 	for (; itr != end; ++itr)
 	{
-		API3DLight* myLight = static_cast<API3DLight*>(*itr);
+		API3DLight* currentLight = static_cast<API3DLight*>(*itr);
 
-		if (!myLight->getIsOn())
+		if (!currentLight->getIsOn())
 			continue;
 
 
-		switch (myLight->GetTypeOfLight())
+		switch (currentLight->GetTypeOfLight())
 		{
 		case DIRECTIONAL_LIGHT:
 			/*sprintf(printbuffer, "%d", newNumberOfDirectLights);
 			number = printbuffer;
-			myLight->SetUniformLocation(SPECULAR_COLOR, ("dirLights[" + number + "].specular").c_str());
-			myLight->SetUniformLocation(DIFFUSE_COLOR, ("dirLights[" + number + "].diffuse").c_str());
-			myLight->SetUniformLocation(AMBIANT_COLOR, ("dirLights[" + number + "].ambiant").c_str());
-			myLight->SetUniformLocation(POSITION_LIGHT, ("dirLights[" + number + "].position").c_str());*/
+			currentLight->SetUniformLocation(SPECULAR_COLOR, ("dirLights[" + number + "].specular").c_str());
+			currentLight->SetUniformLocation(DIFFUSE_COLOR, ("dirLights[" + number + "].diffuse").c_str());
+			currentLight->SetUniformLocation(AMBIANT_COLOR, ("dirLights[" + number + "].ambiant").c_str());
+			currentLight->SetUniformLocation(POSITION_LIGHT, ("dirLights[" + number + "].position").c_str());*/
 			sprintf(buf, "dirLights[%d].specular", newNumberOfDirectLights);
-			myLight->SetUniformLocation(SPECULAR_COLOR, buf);
+			currentLight->SetUniformLocation(SPECULAR_COLOR, buf);
 			sprintf(buf, "dirLights[%d].diffuse", newNumberOfDirectLights);
-			myLight->SetUniformLocation(DIFFUSE_COLOR, buf);
+			currentLight->SetUniformLocation(DIFFUSE_COLOR, buf);
 			sprintf(buf, "dirLights[%d].ambiant", newNumberOfDirectLights);
-			myLight->SetUniformLocation(AMBIANT_COLOR, buf);
+			currentLight->SetUniformLocation(AMBIANT_COLOR, buf);
 			sprintf(buf, "dirLights[%d].position", newNumberOfDirectLights);
-			myLight->SetUniformLocation(POSITION_LIGHT, buf);
+			currentLight->SetUniformLocation(POSITION_LIGHT, buf);
 			newNumberOfDirectLights++;
 
 
@@ -864,21 +864,21 @@ ModuleSpecificRenderer::LightCount RendererOpenGL::SetLightsInfo(std::set<CoreMo
 		case POINT_LIGHT:
 			/*sprintf(printbuffer, "%d", newNumberOfPointLights);
 			number = printbuffer;
-			myLight->SetUniformLocation(POSITION_LIGHT, ("pointLights[" + number + "].position").c_str());
-			myLight->SetUniformLocation(SPECULAR_COLOR, ("pointLights[" + number + "].specular").c_str());
-			myLight->SetUniformLocation(DIFFUSE_COLOR, ("pointLights[" + number + "].diffuse").c_str());
-			myLight->SetUniformLocation(AMBIANT_COLOR, ("pointLights[" + number + "].ambiant").c_str());
-			myLight->SetUniformLocation(ATTENUATION, ("pointLights[" + number + "].attenuation").c_str());*/
+			currentLight->SetUniformLocation(POSITION_LIGHT, ("pointLights[" + number + "].position").c_str());
+			currentLight->SetUniformLocation(SPECULAR_COLOR, ("pointLights[" + number + "].specular").c_str());
+			currentLight->SetUniformLocation(DIFFUSE_COLOR, ("pointLights[" + number + "].diffuse").c_str());
+			currentLight->SetUniformLocation(AMBIANT_COLOR, ("pointLights[" + number + "].ambiant").c_str());
+			currentLight->SetUniformLocation(ATTENUATION, ("pointLights[" + number + "].attenuation").c_str());*/
 			sprintf(buf, "pointLights[%d].position", newNumberOfPointLights);
-			myLight->SetUniformLocation(POSITION_LIGHT, buf);
+			currentLight->SetUniformLocation(POSITION_LIGHT, buf);
 			sprintf(buf, "pointLights[%d].specular", newNumberOfPointLights);
-			myLight->SetUniformLocation(SPECULAR_COLOR, buf);
+			currentLight->SetUniformLocation(SPECULAR_COLOR, buf);
 			sprintf(buf, "pointLights[%d].diffuse", newNumberOfPointLights);
-			myLight->SetUniformLocation(DIFFUSE_COLOR, buf);
+			currentLight->SetUniformLocation(DIFFUSE_COLOR, buf);
 			sprintf(buf, "pointLights[%d].ambiant", newNumberOfPointLights);
-			myLight->SetUniformLocation(AMBIANT_COLOR, buf);
+			currentLight->SetUniformLocation(AMBIANT_COLOR, buf);
 			sprintf(buf, "pointLights[%d].attenuation", newNumberOfPointLights);
-			myLight->SetUniformLocation(ATTENUATION, buf);
+			currentLight->SetUniformLocation(ATTENUATION, buf);
 			newNumberOfPointLights++;
 			break;
 
@@ -886,30 +886,30 @@ ModuleSpecificRenderer::LightCount RendererOpenGL::SetLightsInfo(std::set<CoreMo
 		case SPOT_LIGHT:
 			/*sprintf(printbuffer, "%d", newNumberOfSpotLights);
 			number = printbuffer;
-			myLight->SetUniformLocation(POSITION_LIGHT, ("spotLights[" + number + "].position").c_str());
-			myLight->SetUniformLocation(SPECULAR_COLOR, ("spotLights[" + number + "].specular").c_str());
-			myLight->SetUniformLocation(DIFFUSE_COLOR, ("spotLights[" + number + "].diffuse").c_str());
-			myLight->SetUniformLocation(AMBIANT_COLOR, ("spotLights[" + number + "].ambiant").c_str());
-			myLight->SetUniformLocation(ATTENUATION, ("spotLights[" + number + "].attenuation").c_str());
-			myLight->SetUniformLocation(SPOT_CUT_OFF, ("spotLights[" + number + "].cutOff").c_str());
-			myLight->SetUniformLocation(SPOT_EXPONENT, ("spotLights[" + number + "].spotExponent").c_str());
-			myLight->SetUniformLocation(SPOT_DIRECTION, ("spotLights[" + number + "].direction").c_str());*/
+			currentLight->SetUniformLocation(POSITION_LIGHT, ("spotLights[" + number + "].position").c_str());
+			currentLight->SetUniformLocation(SPECULAR_COLOR, ("spotLights[" + number + "].specular").c_str());
+			currentLight->SetUniformLocation(DIFFUSE_COLOR, ("spotLights[" + number + "].diffuse").c_str());
+			currentLight->SetUniformLocation(AMBIANT_COLOR, ("spotLights[" + number + "].ambiant").c_str());
+			currentLight->SetUniformLocation(ATTENUATION, ("spotLights[" + number + "].attenuation").c_str());
+			currentLight->SetUniformLocation(SPOT_CUT_OFF, ("spotLights[" + number + "].cutOff").c_str());
+			currentLight->SetUniformLocation(SPOT_EXPONENT, ("spotLights[" + number + "].spotExponent").c_str());
+			currentLight->SetUniformLocation(SPOT_DIRECTION, ("spotLights[" + number + "].direction").c_str());*/
 			sprintf(buf, "spotLights[%d].position", newNumberOfSpotLights);
-			myLight->SetUniformLocation(POSITION_LIGHT, buf);
+			currentLight->SetUniformLocation(POSITION_LIGHT, buf);
 			sprintf(buf, "spotLights[%d].specular", newNumberOfSpotLights);
-			myLight->SetUniformLocation(SPECULAR_COLOR, buf);
+			currentLight->SetUniformLocation(SPECULAR_COLOR, buf);
 			sprintf(buf, "spotLights[%d].diffuse", newNumberOfSpotLights);
-			myLight->SetUniformLocation(DIFFUSE_COLOR, buf);
+			currentLight->SetUniformLocation(DIFFUSE_COLOR, buf);
 			sprintf(buf, "spotLights[%d].ambiant", newNumberOfSpotLights);
-			myLight->SetUniformLocation(AMBIANT_COLOR, buf);
+			currentLight->SetUniformLocation(AMBIANT_COLOR, buf);
 			sprintf(buf, "spotLights[%d].attenuation", newNumberOfSpotLights);
-			myLight->SetUniformLocation(ATTENUATION, buf);
+			currentLight->SetUniformLocation(ATTENUATION, buf);
 			sprintf(buf, "spotLights[%d].cutOff", newNumberOfSpotLights);
-			myLight->SetUniformLocation(SPOT_CUT_OFF, buf);
+			currentLight->SetUniformLocation(SPOT_CUT_OFF, buf);
 			sprintf(buf, "spotLights[%d].spotExponent", newNumberOfSpotLights);
-			myLight->SetUniformLocation(SPOT_EXPONENT, buf);
+			currentLight->SetUniformLocation(SPOT_EXPONENT, buf);
 			sprintf(buf, "spotLights[%d].direction", newNumberOfSpotLights);
-			myLight->SetUniformLocation(SPOT_DIRECTION, buf);
+			currentLight->SetUniformLocation(SPOT_DIRECTION, buf);
 			newNumberOfSpotLights++;
 			break;
 		}
@@ -917,16 +917,16 @@ ModuleSpecificRenderer::LightCount RendererOpenGL::SetLightsInfo(std::set<CoreMo
 
 
 	LightCount count;
-	count.dir = newNumberOfDirectLights;
-	count.spot = newNumberOfSpotLights;
-	count.point = newNumberOfPointLights;
+	count.mDir = newNumberOfDirectLights;
+	count.mSpot = newNumberOfSpotLights;
+	count.mPoint = newNumberOfPointLights;
 	return count;
 }
 
 
 void RendererOpenGL::SendLightsInfo(TravState* travstate)
 {
-	if (travstate->myLights == nullptr)
+	if (travstate->mLights == nullptr)
 		return;
 
 	Camera*	cam = travstate->GetCurrentCamera();
@@ -939,27 +939,27 @@ void RendererOpenGL::SendLightsInfo(TravState* travstate)
 		lMatCam.TransformPoint(&outCam, &lCamPos);
 	}
 
-	auto itr = travstate->myLights->begin();
-	auto end = travstate->myLights->end();
+	auto itr = travstate->mLights->begin();
+	auto end = travstate->mLights->end();
 	for (; itr != end; ++itr)
 	{
-		API3DLight* myLight = static_cast<API3DLight*>(*itr);
-		myLight->PreRendering(this, cam, lCamPos);
-		myLight->DrawLight(travstate);
+		API3DLight* currentLight = static_cast<API3DLight*>(*itr);
+		currentLight->PreRendering(this, cam, lCamPos);
+		currentLight->DrawLight(travstate);
 	}
 }
 
 void RendererOpenGL::ClearLightsInfo(TravState* travstate)
 {
-	if (travstate->myLights == nullptr)
+	if (travstate->mLights == nullptr)
 		return;
 
-	auto itr = travstate->myLights->begin();
-	auto end = travstate->myLights->end();
+	auto itr = travstate->mLights->begin();
+	auto end = travstate->mLights->end();
 	for (; itr != end; ++itr)
 	{
-		API3DLight* myLight = static_cast<API3DLight*>(*itr);
-		myLight->PostDrawLight(travstate);
+		API3DLight* currentLight = static_cast<API3DLight*>(*itr);
+		currentLight->PostDrawLight(travstate);
 	}
 }
 
@@ -969,16 +969,16 @@ void RendererOpenGL::InitTextureInfo()
 	{
 		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &MAX_TEXTURE_UNIT); CHECK_GLERROR;
 		if (MAX_TEXTURE_UNIT == -1) MAX_TEXTURE_UNIT = 8;
-		myTextureUnit.resize(MAX_TEXTURE_UNIT);
+		mTextureUnit.resize(MAX_TEXTURE_UNIT);
 
 		/*TextureUnitInfo tui;
-		tui.BindedTextureID = -1;
-		tui.BindedTextureType = -1;
-		memset(myTextureUnit, 0x00, sizeof(TextureUnitInfo)*MAX_TEXTURE_UNIT);*/
+		tui.mBindedTextureID = -1;
+		tui.mBindedTextureType = -1;
+		memset(mTextureUnit, 0x00, sizeof(TextureUnitInfo)*MAX_TEXTURE_UNIT);*/
 
 		/*for (int i = 0; i < MAX_TEXTURE_UNIT; i++)
 		{
-			memcpy(&myTextureUnit[i], &tui, sizeof(TextureUnitInfo));
+			memcpy(&mTextureUnit[i], &tui, sizeof(TextureUnitInfo));
 		}*/
 	}
 }
@@ -993,10 +993,10 @@ void RendererOpenGL::DisableTexture()
 
 void RendererOpenGL::ActiveTextureChannel(unsigned int channel)
 {
-	if (myCurrentTextureUnit != channel)
+	if (mCurrentTextureUnit != channel)
 	{
 		glActiveTexture(GL_TEXTURE0 + channel); CHECK_GLERROR;
-		myCurrentTextureUnit = channel;
+		mCurrentTextureUnit = channel;
 
 		if (GetActiveShader())
 		{
@@ -1025,10 +1025,10 @@ void RendererOpenGL::CheckError(const char* filename, int line)
 void RendererOpenGL::BindTexture(RendererTextureType type, unsigned int ID)
 {
 	InitTextureInfo();
-	KIGS_ASSERT(((int)myCurrentTextureUnit) < MAX_TEXTURE_UNIT);
+	KIGS_ASSERT(((int)mCurrentTextureUnit) < MAX_TEXTURE_UNIT);
 
 	// retreive the texture unit info
-	TextureUnitInfo * tu = &myTextureUnit[myCurrentTextureUnit];
+	TextureUnitInfo * tu = &mTextureUnit[mCurrentTextureUnit];
 
 	// check the type
 	int glType;
@@ -1052,22 +1052,22 @@ void RendererOpenGL::BindTexture(RendererTextureType type, unsigned int ID)
 		break;
 	}
 
-	if (tu->BindedTextureID == ID && tu->BindedTextureType == glType)
+	if (tu->mBindedTextureID == ID && tu->mBindedTextureType == glType)
 		return;
 
-	if (tu->BindedTextureID != ID)
+	if (tu->mBindedTextureID != ID)
 	{
 		glBindTexture(glType, ID); CHECK_GLERROR;
 
 
-		tu->BindedTextureID = ID;
-		tu->BindedTextureType = glType;
+		tu->mBindedTextureID = ID;
+		tu->mBindedTextureType = glType;
 	}
 }
 
 void RendererOpenGL::UnbindTexture(RendererTextureType type, unsigned int ID)
 {
-	TextureUnitInfo * tu = &myTextureUnit[myCurrentTextureUnit];
+	TextureUnitInfo * tu = &mTextureUnit[mCurrentTextureUnit];
 
 	// check the type
 	int glType;
@@ -1091,11 +1091,11 @@ void RendererOpenGL::UnbindTexture(RendererTextureType type, unsigned int ID)
 		return;
 	}
 
-	glActiveTexture(GL_TEXTURE0 + myCurrentTextureUnit); CHECK_GLERROR;
+	glActiveTexture(GL_TEXTURE0 + mCurrentTextureUnit); CHECK_GLERROR;
 
 	glBindTexture(glType, 0);
-	tu->BindedTextureID = 0;
-	tu->BindedTextureType = glType;
+	tu->mBindedTextureID = 0;
+	tu->mBindedTextureType = glType;
 }
 
 void	RendererOpenGL::TextureParameteri(RendererTextureType type, RendererTexParameter1 name, RendererTexParameter2 param) {
@@ -1144,8 +1144,8 @@ void RendererOpenGL::BindElementBuffer(unsigned int id)
 
 void RendererOpenGL::SetVertexAttribDivisor(TravState* state, unsigned int bufferName, int attribute_location, int divisor)
 {
-	myVertexBufferManager->SetArrayBuffer(bufferName);
-	myVertexBufferManager->FlushBindBuffer(KIGS_BUFFER_TARGET_ARRAY);
+	mVertexBufferManager->SetArrayBuffer(bufferName);
+	mVertexBufferManager->FlushBindBuffer(KIGS_BUFFER_TARGET_ARRAY);
 #if defined(WIN32) || defined(WUP)
 #ifdef WUP
 	glVertexAttribDivisorANGLE(attribute_location, divisor * (state->GetHolographicMode() ? 2 : 1));
@@ -1169,7 +1169,7 @@ void RendererOpenGL::DrawPendingInstances(TravState* state)
 	static int t = -1;
 	if (gKigsToolsAvailable)
 	{
-		if (!state->myPath)
+		if (!state->mPath)
 			ImGui::SliderInt("o", &o, -1, state->mInstancing.size() - 1);
 		else
 			ImGui::SliderInt("t", &t, -1, state->mInstancing.size() - 1);
@@ -1198,8 +1198,8 @@ void RendererOpenGL::DrawPendingInstances(TravState* state)
 		auto& instance = *instance_ptr;
 		++k;
 #ifdef DEBUG_DRAW_INSTANCES
-		if (!state->myPath && o != -1 && o != k - 1) continue;
-		if (state->myPath && t != -1 && t != k - 1) continue;
+		if (!state->mPath && o != -1 && o != k - 1) continue;
+		if (state->mPath && t != -1 && t != k - 1) continue;
 #endif
 		auto mesh = instance.first;
 		state->mInstanceCount = instance.second.transforms.size();
@@ -1223,7 +1223,7 @@ void RendererOpenGL::DrawPendingInstances(TravState* state)
 		size_t vec4size = sizeof(v4f);
 		
 		SetArrayBuffer(state->mInstanceBufferIndex);
-		myVertexBufferManager->FlushBindBuffer();
+		mVertexBufferManager->FlushBindBuffer();
 
 		glEnableVertexAttribArray(locs->attribInstanceMatrix[0]);
 		glVertexAttribPointer(locs->attribInstanceMatrix[0], 4, GL_FLOAT, false, 3 * vec4size, (void*)0);

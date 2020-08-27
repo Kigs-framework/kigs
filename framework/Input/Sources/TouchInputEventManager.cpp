@@ -44,27 +44,7 @@ bool TouchInputEventManager::isRegisteredOnCurrentState(CoreModifiable* obj)
 // registered object wants to be called when event "type" occurs (start, end, update, cancel...)  
 TouchEventState*	TouchInputEventManager::registerEvent(CoreModifiable* registeredObject,KigsID methodNameID, InputEventType type, InputEventManagementFlag flag, CoreModifiable* root_scene)
 {
-	/*if (myTouchSupportTreeRootList.size())
-	{
-		if (myTouchSupportTreeRootList[0].currentNode == 0)
-		{
-			KIGS_ERROR("Trying to add input event without touch support", 1);
-			return 0;
-		}
-	}
-	else
-	{
-		KIGS_ERROR("Trying to add input event without touch support", 1);
-		return 0;
-	}
-	if (touchSupportObject == 0)
-	{
-		touchSupportObject = myTouchSupportTreeRootList[0].currentNode;
-	}
-	else
-	{
-		// TODO search if touchsupport is found in tree
-	}*/
+	
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 	if (mStackedEventState.back().mEventMap.find(registeredObject) == mStackedEventState.back().mEventMap.end()) // need to create an mEntry
 	{
@@ -234,7 +214,7 @@ void	TouchInputEventManager::manageTemporaryUnmappedTouchSupport(CoreModifiable*
 	CoreModifiable* recurse_ts = 0;
 	CoreModifiable* recurse_parent = 0;
 
-	// search if ts is parent of one elem in myTemporaryUnmappedTouchSupport
+	// search if ts is parent of one elem in mTemporaryUnmappedTouchSupport
 
 	auto ittmpfound = mTemporaryUnmappedTouchSupport.begin();
 	auto ittmpfoundE = mTemporaryUnmappedTouchSupport.end();

@@ -15,12 +15,9 @@ class ModuleSpecificRenderer;
  * \file	DirectRenderingMethods.h
  * \class	DirectRenderingMethods
  * \ingroup Renderer
- * \brief	direct rendering methods
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \brief	Base class to draw specific objects directly (in the current rendering context)
  */
-// ****************************************
+ // ****************************************
 class DirectRenderingMethods : public CoreModifiable
 {
 public:

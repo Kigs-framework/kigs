@@ -9,16 +9,13 @@ mPosX(*this,false,LABEL_AND_ID(PosX),KFLOAT_CONST(0.0f)),
 mPosY(*this,false,LABEL_AND_ID(PosY),KFLOAT_CONST(0.0f))
 {
 	mWheelCount=mButtonsCount=0;
-//	myPosX=myPosY=KFLOAT_CONST(0.0f);
 	setReadOnly("PosX");
 	setReadOnly("PosY");
 	mDX = 0.0f;
 	mDY = 0.0f;
 	mDZ = 0.0f;
 	mPreviousDZ = 0.0f;
-/*	setReadOnly("DX");
-	setReadOnly("DY");
-*/
+
 }
 void MouseDevice::setButtonState(MOUSE_BUTTONS button, int val)
 {

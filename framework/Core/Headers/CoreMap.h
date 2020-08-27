@@ -29,13 +29,13 @@ public:
 
 	CoreMapIterator(const CoreItemIteratorBase & other) : CoreItemIteratorBase(other)
 	{
-		myMapIterator = ((const CoreMapIterator*)&other)->myMapIterator;
+		mMapIterator = ((const CoreMapIterator*)&other)->mMapIterator;
 	}
 
 	virtual CoreItemIteratorBase*	clone()
 	{
 		CoreMapIterator*	result = new CoreMapIterator(mAttachedCoreItem, mPos);
-		result->myMapIterator = myMapIterator;
+		result->mMapIterator = mMapIterator;
 		return result;
 	}
 
@@ -45,14 +45,14 @@ public:
 	{
 		CoreItemIteratorBase::operator=(other);
 
-		myMapIterator = ((CoreMapIterator*)&other)->myMapIterator;
+		mMapIterator = ((CoreMapIterator*)&other)->mMapIterator;
 
 		return *this;
 	}
 
 	virtual CoreItemIteratorBase& operator++()
 	{
-		myMapIterator++;
+		mMapIterator++;
 		return *this;
 	}
 
@@ -71,7 +71,7 @@ public:
 
 	virtual bool operator==(const CoreItemIteratorBase & other) const
 	{
-		if (myMapIterator == ((CoreMapIterator*)&other)->myMapIterator)
+		if (mMapIterator == ((CoreMapIterator*)&other)->mMapIterator)
 		{
 			return true;
 		}
@@ -80,7 +80,7 @@ public:
 
 	virtual bool operator!=(const CoreItemIteratorBase & other) const
 	{
-		if (myMapIterator != ((CoreMapIterator*)&other)->myMapIterator)
+		if (mMapIterator != ((CoreMapIterator*)&other)->mMapIterator)
 		{
 			return true;
 		}
@@ -98,7 +98,7 @@ public:
 
 	typedef kstl::map<map_key, CoreItemSP>	CoreMapMap;
 
-	typename CoreMapMap::iterator	myMapIterator;
+	typename CoreMapMap::iterator	mMapIterator;
 };
 
 
@@ -116,14 +116,14 @@ protected:
 	explicit CoreMapBase():
 	baseClass(CoreItem::COREMAP)
 	{
-		myMap.clear();
+		mMap.clear();
 	}
 
 	// protected, only son classes can access it
 	CoreMapBase(CoreItem::COREITEM_TYPE _type):
 	baseClass(_type)
 	{
-		myMap.clear();
+		mMap.clear();
 	}
 
 
@@ -160,8 +160,8 @@ public:
 
 	CoreItemSP GetItem(map_key aKey)
 	{
-		typename kstl::map<map_key, CoreItemSP>::iterator it = myMap.find(aKey);
-		if (it != myMap.end())
+		typename kstl::map<map_key, CoreItemSP>::iterator it = mMap.find(aKey);
+		if (it != mMap.end())
 		{
 			return it->second;
 		}
@@ -177,7 +177,7 @@ public:
 	CoreItemIterator	 begin() override
 	{
 		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(CoreItemSP(this, GetRefTag{}), 0);
-		iter->myMapIterator = myMap.begin();
+		iter->mMapIterator = mMap.begin();
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
@@ -186,7 +186,7 @@ public:
 	CoreItemIterator end() override
 	{
 		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(CoreItemSP(this, GetRefTag{}), 0);
-		iter->myMapIterator = myMap.end();
+		iter->mMapIterator = mMap.end();
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
@@ -194,35 +194,35 @@ public:
 	CoreItemIterator find(const map_key& k)
 	{
 		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(CoreItemSP(this, GetRefTag{}), 0);
-		iter->myMapIterator = myMap.find(k);
+		iter->mMapIterator = mMap.find(k);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 
 	CoreItem::size_type size() const  override
 	{
-		return myMap.size();
+		return mMap.size();
 	}
 
 	CoreItem::size_type max_size() const
 	{
-		return myMap.max_size();
+		return mMap.max_size();
 	}
 
 	void resize(CoreItem::size_type n)
 	{
-		myMap.resize(n,0);
+		mMap.resize(n,0);
 	}
 
 	virtual bool empty() const  override
 	{
-		return myMap.empty();
+		return mMap.empty();
 	}
 
 
 	const CoreItemSP at (const map_key& n) const
 	{
-		return myMap.at(n);
+		return mMap.at(n);
 	}
 
 
@@ -230,7 +230,7 @@ public:
 	{
 		CoreMapIterator<map_key>& pos = *(CoreMapIterator<map_key>*)position.Pointer();
 		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(this, 0);
-		iter->myMapIterator = myMap.erase(pos.myMapIterator);
+		iter->mMapIterator = mMap.erase(pos.mMapIterator);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
@@ -238,21 +238,21 @@ public:
 	CoreItemIterator erase(CoreItemIterator first, CoreItemIterator last)
 	{
 		CoreMapIterator<map_key>* iter = new CoreMapIterator<map_key>(this, 0);
-		iter->myMapIterator = myMap.erase(((CoreMapIterator<map_key>*)first.mPointer)->myMapIterator, ((CoreMapIterator<map_key>*)last.mPointer)->myMapIterator);
+		iter->mMapIterator = mMap.erase(((CoreMapIterator<map_key>*)first.mPointer)->mMapIterator, ((CoreMapIterator<map_key>*)last.mPointer)->mMapIterator);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 
 	void clear()
 	{
-		myMap.clear();
+		mMap.clear();
 	}
 
 
 
 	CoreMapBase& operator= (const CoreMapBase& x)
 	{
-		myMap.clear();
+		mMap.clear();
 		for(auto& el : x)
 		{
 			push_back(el);
@@ -262,11 +262,11 @@ public:
 	
 	virtual void*	getContainerStruct()  override
 	{
-		return &myMap;
+		return &mMap;
 	}
 
 protected:
-	CoreMapMap myMap;
+	CoreMapMap mMap;
 };
 
 
@@ -312,8 +312,8 @@ protected:
 template<>
 inline CoreItemSP CoreNamedMap<kstl::string>::operator[](const kstl::string& key) const
 {
-	kstl::map<kstl::string, CoreItemSP>::const_iterator it = myMap.find(key);
-	if (it != myMap.end())
+	kstl::map<kstl::string, CoreItemSP>::const_iterator it = mMap.find(key);
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -324,8 +324,8 @@ inline CoreItemSP CoreNamedMap<kstl::string>::operator[](const kstl::string& key
 template<>
 inline CoreItemSP CoreNamedMap<kstl::string>::operator[](const usString& key) const
 {
-	kstl::map<kstl::string, CoreItemSP>::const_iterator it = myMap.find(key.ToString());
-	if (it != myMap.end())
+	kstl::map<kstl::string, CoreItemSP>::const_iterator it = mMap.find(key.ToString());
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -336,18 +336,18 @@ inline CoreItemSP CoreNamedMap<kstl::string>::operator[](const usString& key) co
 template<>
 inline CoreItemSP CoreNamedMap<kstl::string>::operator[](int i) const
 {
-	kstl::map<kstl::string, CoreItemSP>::const_iterator it = myMap.begin();
+	kstl::map<kstl::string, CoreItemSP>::const_iterator it = mMap.begin();
 	int current_index = 0;
 	while (current_index < i)
 	{
 		++it;
 		++current_index;
-		if (it == myMap.end())
+		if (it == mMap.end())
 		{
 			break;
 		}
 	}
-	if (it != myMap.end())
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -362,8 +362,8 @@ template<>
 inline CoreItemSP CoreNamedMap<usString>::operator[](const kstl::string& key) const
 {
 	usString usKey(key);
-	kstl::map<usString, CoreItemSP>::const_iterator it = myMap.find(usKey);
-	if (it != myMap.end())
+	kstl::map<usString, CoreItemSP>::const_iterator it = mMap.find(usKey);
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -374,8 +374,8 @@ inline CoreItemSP CoreNamedMap<usString>::operator[](const kstl::string& key) co
 template<>
 inline CoreItemSP CoreNamedMap<usString>::operator[](const usString& key) const
 {
-	kstl::map<usString, CoreItemSP>::const_iterator it = myMap.find(key);
-	if (it != myMap.end())
+	kstl::map<usString, CoreItemSP>::const_iterator it = mMap.find(key);
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -386,18 +386,18 @@ inline CoreItemSP CoreNamedMap<usString>::operator[](const usString& key) const
 template<>
 inline CoreItemSP CoreNamedMap<usString>::operator[](int i) const
 {
-	kstl::map<usString, CoreItemSP>::const_iterator it = myMap.begin();
+	kstl::map<usString, CoreItemSP>::const_iterator it = mMap.begin();
 	int current_index = 0;
 	while (current_index < i)
 	{
 		++it;
 		++current_index;
-		if (it == myMap.end())
+		if (it == mMap.end())
 		{
 			break;
 		}
 	}
-	if (it != myMap.end())
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -410,9 +410,9 @@ inline CoreItemSP CoreNamedMap<usString>::operator[](int i) const
 template<>
 inline CoreItemSP CoreNamedMap<int>::operator[](const kstl::string& key) const
 {
-	kstl::map<int, CoreItemSP>::const_iterator it = myMap.begin();
+	kstl::map<int, CoreItemSP>::const_iterator it = mMap.begin();
 	
-	while (it != myMap.end())
+	while (it != mMap.end())
 	{
 		if (((*it).second)->GetType()&(unsigned int)CORENAMEDITEMMASK)
 		{
@@ -429,9 +429,9 @@ inline CoreItemSP CoreNamedMap<int>::operator[](const kstl::string& key) const
 template<>
 inline CoreItemSP CoreNamedMap<int>::operator[](const usString& key) const
 {
-	kstl::map<int, CoreItemSP>::const_iterator it = myMap.begin();
+	kstl::map<int, CoreItemSP>::const_iterator it = mMap.begin();
 
-	while (it != myMap.end())
+	while (it != mMap.end())
 	{
 		if (((*it).second)->GetType()&(unsigned int)CORENAMEDITEMMASK)
 		{
@@ -449,8 +449,8 @@ template<>
 inline CoreItemSP CoreNamedMap<int>::operator[](int i) const
 {
 
-	kstl::map<int, CoreItemSP>::const_iterator it = myMap.find(i);
-	if (it != myMap.end())
+	kstl::map<int, CoreItemSP>::const_iterator it = mMap.find(i);
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -468,7 +468,7 @@ inline void CoreNamedMap<kstl::string>::set(int key, const CoreItemSP& toinsert)
 	sprintf(intstr, "%d", key);
 	goodType = intstr;
 
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
@@ -480,28 +480,28 @@ inline void CoreNamedMap<usString>::set(int key, const CoreItemSP& toinsert)
 	sprintf(intstr, "%d", key);
 	goodType = usString(intstr);
 
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
 inline void CoreNamedMap<int>::set(int key, const CoreItemSP& toinsert)
 {
 	int goodType = key;
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
 inline void CoreNamedMap<kstl::string>::set(const kstl::string& key, const CoreItemSP& toinsert)
 {
 	kstl::string goodType=key;
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
 inline void CoreNamedMap<usString>::set(const kstl::string& key, const CoreItemSP& toinsert)
 {
 	usString goodType=key;
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
@@ -509,21 +509,21 @@ inline void CoreNamedMap<int>::set(const kstl::string& key, const CoreItemSP& to
 {
 	int goodType = 0;
 	sscanf(key.c_str(), "%d", &goodType);
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
 inline void CoreNamedMap<kstl::string>::set(const usString& key, const CoreItemSP& toinsert)
 {
 	kstl::string goodType = key.ToString();
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
 inline void CoreNamedMap<usString>::set(const usString& key, const CoreItemSP& toinsert)
 {
 	usString goodType = key;
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
@@ -532,7 +532,7 @@ inline void CoreNamedMap<int>::set(const usString& key, const CoreItemSP& toinse
 	kstl::string strkey = key.ToString();
 	int goodType = 0;
 	sscanf(strkey.c_str(), "%d", &goodType);
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 // specialised erase
@@ -545,9 +545,9 @@ inline void CoreNamedMap<kstl::string>::erase(int key)
 	sprintf(intstr, "%d", key);
 	goodType = intstr;
 
-	auto it=myMap.find(goodType);
-	if(it!= myMap.end())
-		myMap.erase(it);
+	auto it=mMap.find(goodType);
+	if(it!= mMap.end())
+		mMap.erase(it);
 }
 
 template<>
@@ -559,36 +559,36 @@ inline void CoreNamedMap<usString>::erase(int key)
 	sprintf(intstr, "%d", key);
 	goodType = usString(intstr);
 
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
 inline void CoreNamedMap<int>::erase(int key)
 {
 	int goodType = key;
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
 inline void CoreNamedMap<kstl::string>::erase(const kstl::string& key)
 {
 	kstl::string goodType = key;
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
 inline void CoreNamedMap<usString>::erase(const kstl::string& key)
 {
 	usString goodType = key;
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
@@ -596,27 +596,27 @@ inline void CoreNamedMap<int>::erase(const kstl::string& key)
 {
 	int goodType = 0;
 	sscanf(key.c_str(), "%d", &goodType);
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
 inline void CoreNamedMap<kstl::string>::erase(const usString& key)
 {
 	kstl::string goodType = key.ToString();
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
 inline void CoreNamedMap<usString>::erase(const usString& key)
 {
 	usString goodType = key;
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
@@ -625,9 +625,9 @@ inline void CoreNamedMap<int>::erase(const usString& key)
 	kstl::string strkey = key.ToString();
 	int goodType = 0;
 	sscanf(strkey.c_str(), "%d", &goodType);
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 
@@ -669,9 +669,9 @@ inline CoreItemSP CoreMapIterator<kstl::string>::operator*() const
 
 	kstl::map<kstl::string, CoreItemSP>&	mapstruct = *(kstl::map<kstl::string, CoreItemSP>*)mAttachedCoreItem->getContainerStruct();
 
-	if (myMapIterator != mapstruct.end())
+	if (mMapIterator != mapstruct.end())
 	{
-		return (*myMapIterator).second;
+		return (*mMapIterator).second;
 	}
 
 	return CoreItemSP(nullptr);
@@ -680,14 +680,14 @@ inline CoreItemSP CoreMapIterator<kstl::string>::operator*() const
 template<>
 inline bool	 CoreMapIterator<kstl::string>::getKey(kstl::string& returnedkey)
 {
-	returnedkey = (*myMapIterator).first;
+	returnedkey = (*mMapIterator).first;
 	return true;
 }
 
 template<>
 inline bool	 CoreMapIterator<kstl::string>::getKey(usString& returnedkey)
 {
-	returnedkey = (*myMapIterator).first;
+	returnedkey = (*mMapIterator).first;
 	return true;
 }
 
@@ -695,8 +695,8 @@ inline bool	 CoreMapIterator<kstl::string>::getKey(usString& returnedkey)
 template<>
 inline CoreItemSP CoreMap<kstl::string>::operator[](const kstl::string& key)  const
 {
-	kstl::map<kstl::string, CoreItemSP>::const_iterator it = myMap.find(key);
-	if (it != myMap.end())
+	kstl::map<kstl::string, CoreItemSP>::const_iterator it = mMap.find(key);
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -707,8 +707,8 @@ inline CoreItemSP CoreMap<kstl::string>::operator[](const kstl::string& key)  co
 template<>
 inline CoreItemSP CoreMap<kstl::string>::operator[](const usString& key)  const
 {
-	kstl::map<kstl::string, CoreItemSP>::const_iterator  it = myMap.find(key.ToString());
-	if (it != myMap.end())
+	kstl::map<kstl::string, CoreItemSP>::const_iterator  it = mMap.find(key.ToString());
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -719,18 +719,18 @@ inline CoreItemSP CoreMap<kstl::string>::operator[](const usString& key)  const
 template<>
 inline CoreItemSP CoreMap<kstl::string>::operator[](int i)  const
 {
-	kstl::map<kstl::string, CoreItemSP>::const_iterator  it = myMap.begin();
+	kstl::map<kstl::string, CoreItemSP>::const_iterator  it = mMap.begin();
 	int current_index = 0;
 	while (current_index < i)
 	{
 		++it;
 		++current_index;
-		if (it == myMap.end())
+		if (it == mMap.end())
 		{
 			break;
 		}
 	}
-	if (it != myMap.end())
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -744,9 +744,9 @@ inline CoreItemSP CoreMap<kstl::string>::operator[](int i)  const
 template<>
 inline CoreItemSP CoreMapIterator<usString>::operator*() const
 {
-	if (myMapIterator != ((CoreMap<usString>*)mAttachedCoreItem.get())->myMap.end())
+	if (mMapIterator != ((CoreMap<usString>*)mAttachedCoreItem.get())->mMap.end())
 	{
-		return ((*myMapIterator).second);
+		return ((*mMapIterator).second);
 	}
 
 	return CoreItemSP(nullptr);
@@ -755,14 +755,14 @@ inline CoreItemSP CoreMapIterator<usString>::operator*() const
 template<>
 inline bool	 CoreMapIterator<usString>::getKey(kstl::string& returnedkey)
 {
-	returnedkey = (*myMapIterator).first.ToString();
+	returnedkey = (*mMapIterator).first.ToString();
 	return true;
 }
 
 template<>
 inline bool	 CoreMapIterator<usString>::getKey(usString& returnedkey)
 {
-	returnedkey = (*myMapIterator).first;
+	returnedkey = (*mMapIterator).first;
 	return true;
 }
 
@@ -772,8 +772,8 @@ template<>
 inline CoreItemSP CoreMap<usString>::operator[](const kstl::string& key)  const
 {
 	usString usKey(key);
-	kstl::map<usString, CoreItemSP>::const_iterator it = myMap.find(usKey);
-	if (it != myMap.end())
+	kstl::map<usString, CoreItemSP>::const_iterator it = mMap.find(usKey);
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -784,8 +784,8 @@ inline CoreItemSP CoreMap<usString>::operator[](const kstl::string& key)  const
 template<>
 inline CoreItemSP CoreMap<usString>::operator[](const usString& key)  const
 {
-	kstl::map<usString, CoreItemSP>::const_iterator it = myMap.find(key);
-	if (it != myMap.end())
+	kstl::map<usString, CoreItemSP>::const_iterator it = mMap.find(key);
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -796,18 +796,18 @@ inline CoreItemSP CoreMap<usString>::operator[](const usString& key)  const
 template<>
 inline CoreItemSP CoreMap<usString>::operator[](int i)  const
 {
-	kstl::map<usString, CoreItemSP>::const_iterator it = myMap.begin();
+	kstl::map<usString, CoreItemSP>::const_iterator it = mMap.begin();
 	int current_index = 0;
 	while (current_index < i)
 	{
 		++it;
 		++current_index;
-		if (it == myMap.end())
+		if (it == mMap.end())
 		{
 			break;
 		}
 	}
-	if (it != myMap.end())
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -822,9 +822,9 @@ inline CoreItemSP CoreMap<usString>::operator[](int i)  const
 template<>
 inline CoreItemSP CoreMap<int>::operator[](const kstl::string& key)  const
 {
-	kstl::map<int, CoreItemSP>::const_iterator it = myMap.begin();
+	kstl::map<int, CoreItemSP>::const_iterator it = mMap.begin();
 
-	while (it != myMap.end())
+	while (it != mMap.end())
 	{
 		if (((*it).second)->GetType()&(unsigned int)CORENAMEDITEMMASK)
 		{
@@ -841,9 +841,9 @@ inline CoreItemSP CoreMap<int>::operator[](const kstl::string& key)  const
 template<>
 inline CoreItemSP CoreMap<int>::operator[](const usString& key)  const
 {
-	kstl::map<int, CoreItemSP>::const_iterator it = myMap.begin();
+	kstl::map<int, CoreItemSP>::const_iterator it = mMap.begin();
 
-	while (it != myMap.end())
+	while (it != mMap.end())
 	{
 		if (((*it).second)->GetType()&(unsigned int)CORENAMEDITEMMASK)
 		{
@@ -861,8 +861,8 @@ template<>
 inline CoreItemSP CoreMap<int>::operator[](int i)  const
 {
 
-	kstl::map<int, CoreItemSP>::const_iterator it = myMap.find(i);
-	if (it != myMap.end())
+	kstl::map<int, CoreItemSP>::const_iterator it = mMap.find(i);
+	if (it != mMap.end())
 	{
 		return (*it).second;
 	}
@@ -881,7 +881,7 @@ inline void CoreMap<kstl::string>::set(int key, const CoreItemSP& toinsert)
 	sprintf(intstr, "%d", key);
 	goodType = intstr;
 
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
@@ -893,28 +893,28 @@ inline void CoreMap<usString>::set(int key, const CoreItemSP& toinsert)
 	sprintf(intstr, "%d", key);
 	goodType = usString(intstr);
 
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
 inline void CoreMap<int>::set(int key, const CoreItemSP& toinsert)
 {
 	int goodType = key;
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
 inline void CoreMap<kstl::string>::set(const kstl::string& key, const CoreItemSP& toinsert)
 {
 	kstl::string goodType = key;
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
 inline void CoreMap<usString>::set(const kstl::string& key, const CoreItemSP& toinsert)
 {
 	usString goodType = key;
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
@@ -922,21 +922,21 @@ inline void CoreMap<int>::set(const kstl::string& key, const CoreItemSP& toinser
 {
 	int goodType = 0;
 	sscanf(key.c_str(), "%d", &goodType);
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
 inline void CoreMap<kstl::string>::set(const usString& key, const CoreItemSP& toinsert)
 {
 	kstl::string goodType = key.ToString();
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
 inline void CoreMap<usString>::set(const usString& key, const CoreItemSP& toinsert)
 {
 	usString goodType = key;
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 template<>
@@ -945,7 +945,7 @@ inline void CoreMap<int>::set(const usString& key, const CoreItemSP& toinsert)
 	kstl::string strkey = key.ToString();
 	int goodType = 0;
 	sscanf(strkey.c_str(), "%d", &goodType);
-	myMap[goodType] = toinsert;
+	mMap[goodType] = toinsert;
 }
 
 // specialised erase
@@ -958,9 +958,9 @@ inline void CoreMap<kstl::string>::erase(int key)
 	sprintf(intstr, "%d", key);
 	goodType = intstr;
 
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
@@ -972,36 +972,36 @@ inline void CoreMap<usString>::erase(int key)
 	sprintf(intstr, "%d", key);
 	goodType = usString(intstr);
 
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
 inline void CoreMap<int>::erase(int key)
 {
 	int goodType = key;
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
 inline void CoreMap<kstl::string>::erase(const kstl::string& key)
 {
 	kstl::string goodType = key;
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
 inline void CoreMap<usString>::erase(const kstl::string& key)
 {
 	usString goodType = key;
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
@@ -1009,27 +1009,27 @@ inline void CoreMap<int>::erase(const kstl::string& key)
 {
 	int goodType = 0;
 	sscanf(key.c_str(), "%d", &goodType);
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
 inline void CoreMap<kstl::string>::erase(const usString& key)
 {
 	kstl::string goodType = key.ToString();
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
 inline void CoreMap<usString>::erase(const usString& key)
 {
 	usString goodType = key;
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 template<>
@@ -1038,9 +1038,9 @@ inline void CoreMap<int>::erase(const usString& key)
 	kstl::string strkey = key.ToString();
 	int goodType = 0;
 	sscanf(strkey.c_str(), "%d", &goodType);
-	auto it = myMap.find(goodType);
-	if (it != myMap.end())
-		myMap.erase(it);
+	auto it = mMap.find(goodType);
+	if (it != mMap.end())
+		mMap.erase(it);
 }
 
 

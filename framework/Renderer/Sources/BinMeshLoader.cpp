@@ -32,20 +32,20 @@ int BinMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
 
 	pMesh->setValue(LABEL_TO_ID(FileName),FileName);
 
-	myFile=BufferedFile::Open(FileName.c_str());
-	if(myFile)
+	mFile=BufferedFile::Open(FileName.c_str());
+	if(mFile)
 	{
 		pMesh->EmptyItemList();
 		Error = ReadFile(pMesh);
 
 		if (Error)
 		{
-			delete(myFile);
+			delete(mFile);
 			KIGS_ERROR("Error reading mesh file",1);
 			return 10+Error;
 		}
 
-		delete(myFile);
+		delete(mFile);
 		return 0;
 	}
 
@@ -63,20 +63,20 @@ int BinMeshLoader::ImportFile(ModernMesh *pMesh, const kstl::string &FileName)
 		return 1;
 	}
 
-	myFile=BufferedFile::Open(FileName.c_str());
-	if(myFile)
+	mFile=BufferedFile::Open(FileName.c_str());
+	if(mFile)
 	{
 		pMesh->EmptyItemList();
 		Error = ReadFile(pMesh);
 
 		if (Error)
 		{
-			delete(myFile);
+			delete(mFile);
 			KIGS_ERROR("Error reading mesh file",1);
 			return 10+Error;
 		}
 
-		delete(myFile);
+		delete(mFile);
 		return 0;
 	}
 
@@ -89,7 +89,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 {
 	Header	header;
 
-	BinFileStruct::ReadStruct(&header,myFile);
+	BinFileStruct::ReadStruct(&header,mFile);
 
 	unsigned int fileVersion=header.GetFileVersion();
 	int nbGroup=(int)header.GetGroupCount();
@@ -98,48 +98,48 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 	for(i=0;i<nbGroup;i++)
 	{
 		GroupDesc grpdesc;
-		BinFileStruct::ReadStruct(&grpdesc,myFile);
+		BinFileStruct::ReadStruct(&grpdesc,mFile);
 
 		// convert old enum to new ones
 		if(fileVersion<1)
 		{
-			switch(grpdesc.triangleType)
+			switch(grpdesc.mTriangleType)
 			{
 			case 1:
-				grpdesc.triangleType=eF_Triangle;
+				grpdesc.mTriangleType=eF_Triangle;
 				break;
 			case 2:
-				grpdesc.triangleType=eS_Triangle;
+				grpdesc.mTriangleType=eS_Triangle;
 				break;
 			case 3:
-				grpdesc.triangleType=eFC_Triangle;
+				grpdesc.mTriangleType=eFC_Triangle;
 				break;
 			case 4:
-				grpdesc.triangleType=eSC_Triangle;
+				grpdesc.mTriangleType=eSC_Triangle;
 				break;
 			case 5:
-				grpdesc.triangleType=eFG_Triangle;
+				grpdesc.mTriangleType=eFG_Triangle;
 				break;
 			case 6:
-				grpdesc.triangleType=eSG_Triangle;
+				grpdesc.mTriangleType=eSG_Triangle;
 				break;
 			case 7:
-				grpdesc.triangleType=eTF_Triangle;
+				grpdesc.mTriangleType=eTF_Triangle;
 				break;
 			case 8:
-				grpdesc.triangleType=eTS_Triangle;
+				grpdesc.mTriangleType=eTS_Triangle;
 				break;
 			case 9:
-				grpdesc.triangleType=eTFC_Triangle;
+				grpdesc.mTriangleType=eTFC_Triangle;
 				break;
 			case 10:
-				grpdesc.triangleType=eTSC_Triangle;
+				grpdesc.mTriangleType=eTSC_Triangle;
 				break;
 			case 11:
-				grpdesc.triangleType=eTFG_Triangle;
+				grpdesc.mTriangleType=eTFG_Triangle;
 				break;
 			case 12:
-				grpdesc.triangleType=eTSG_Triangle;
+				grpdesc.mTriangleType=eTSG_Triangle;
 				break;
 			}
 		}
@@ -147,7 +147,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 		// load material
 		MaterialDesc currentmat;
 
-		BinFileStruct::ReadStruct(&currentmat,myFile);
+		BinFileStruct::ReadStruct(&currentmat,mFile);
 
 		char	index[16];
 		sprintf(index,"%d",i);
@@ -157,19 +157,19 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 
 		SP<MeshItemGroup> newgroup=KigsCore::GetInstanceOf(objname,"MeshItemGroup");
 		newgroup->Init();
-		newgroup->myTriangleType=(TriangleType)grpdesc.triangleType;
+		newgroup->mTriangleType=(TriangleType)grpdesc.mTriangleType;
 
 		objname=pMesh->getName();
 		objname+="Material";
 		objname+=index;
 
 		SP<Material> newMaterial=KigsCore::GetInstanceOf(objname,"Material");
-		newMaterial->setValue(LABEL_TO_ID(BlendFuncSource),currentmat.myBlendFuncSource);
-		newMaterial->setValue(LABEL_TO_ID(BlendFuncDest),currentmat.myBlendFuncDest);
-		newMaterial->setValue(LABEL_TO_ID(BlendEnabled),currentmat.myBlendEnabled);
+		newMaterial->setValue(LABEL_TO_ID(BlendFuncSource),currentmat.mBlendFuncSource);
+		newMaterial->setValue(LABEL_TO_ID(BlendFuncDest),currentmat.mBlendFuncDest);
+		newMaterial->setValue(LABEL_TO_ID(BlendEnabled),currentmat.mBlendEnabled);
 
-		newMaterial->setValue(LABEL_TO_ID(MaterialColorEnabled),currentmat.myMaterialColorEnabled);
-		if(currentmat.myBlendEnabled)
+		newMaterial->setValue(LABEL_TO_ID(MaterialColorEnabled),currentmat.mMaterialColorEnabled);
+		if(currentmat.mBlendEnabled)
 		{
 			newMaterial->setValue("TransarencyFlag", true);
 			pMesh->setValue("TransarencyFlag", true);
@@ -192,20 +192,20 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 			pMesh->setValue("TransarencyFlag", true);
 		}
 
-		newgroup->myTriangleCount=(int)currentmat.triangleCount;
+		newgroup->mTriangleCount=(int)currentmat.triangleCount;
 
 		currentmat.stages = new StageDesc[currentmat.stageCount];
 		for(j=0;j<currentmat.stageCount;j++)
 		{
 			StageDesc& stagedesc= currentmat.stages[j];
 
-			fread(&(stagedesc.structSize),sizeof(stagedesc.structSize),1,myFile);
-			fread(&(stagedesc.DescStructSize),sizeof(stagedesc.DescStructSize),1,myFile);
+			fread(&(stagedesc.structSize),sizeof(stagedesc.structSize),1,mFile);
+			fread(&(stagedesc.DescStructSize),sizeof(stagedesc.DescStructSize),1,mFile);
 
-			stagedesc.myTexture=ReadString(myFile);
+			stagedesc.mTexture=ReadString(mFile);
 
-			fread(&(stagedesc.myStageIndex),sizeof(int),1,myFile);
-			fread(&(stagedesc.myTexEnv),sizeof(TexEnvType),1,myFile);
+			fread(&(stagedesc.mStageIndex),sizeof(int),1,mFile);
+			fread(&(stagedesc.mTexEnv),sizeof(TexEnvType),1,mFile);
 
 #ifndef NO_MULTISTAGE_RENDERING
 #ifndef DO_MULTISTAGE_RENDERING
@@ -218,13 +218,13 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 
 			SP<MaterialStage> MatStage = (KigsCore::GetInstanceOf(objname,"MaterialStage"));
 
-			MatStage->setValue(LABEL_TO_ID(StageIndex),stagedesc.myStageIndex);
-			MatStage->setValue(LABEL_TO_ID(TexEnv),stagedesc.myTexEnv);
+			MatStage->setValue(LABEL_TO_ID(StageIndex),stagedesc.mStageIndex);
+			MatStage->setValue(LABEL_TO_ID(TexEnv),stagedesc.mTexEnv);
 
-			if(stagedesc.myTexture != "empty")
+			if(stagedesc.mTexture != "empty")
 			{
 				auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
-				SP<Texture> Tex = texfileManager->GetTexture(stagedesc.myTexture, false);
+				SP<Texture> Tex = texfileManager->GetTexture(stagedesc.mTexture, false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 				Tex->Init();
 
@@ -238,10 +238,10 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 		
 #else //NO_MULTISTAGE_RENDERING
 			// if no material stages, add texture to material directly
-			if(stagedesc.myTexture != "empty")
+			if(stagedesc.mTexture != "empty")
 			{
 				TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-				Texture* Tex=fileManager->GetTexture(stagedesc.myTexture,false);
+				Texture* Tex=fileManager->GetTexture(stagedesc.mTexture,false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 				Tex->Init();
 
@@ -292,153 +292,153 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 
 		delete[] currentmat.stages;
 
-		switch(grpdesc.triangleType)
+		switch(grpdesc.mTriangleType)
 		{
 		case	eF_Triangle:
 			{
-				Mesh::F_Triangle* tmptriangles=new Mesh::F_Triangle[newgroup->myTriangleCount];
+				Mesh::F_Triangle* tmptriangles=new Mesh::F_Triangle[newgroup->mTriangleCount];
 
-				for(j=0;j<newgroup->myTriangleCount;j++)
+				for(j=0;j<newgroup->mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup->myTriangleSize = sizeof(Mesh::F_Triangle);
+				newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup->mTriangleSize = sizeof(Mesh::F_Triangle);
 				break;
 			}
 		case	eS_Triangle:
 			{
-				Mesh::S_Triangle* tmptriangles=new Mesh::S_Triangle[newgroup->myTriangleCount];
+				Mesh::S_Triangle* tmptriangles=new Mesh::S_Triangle[newgroup->mTriangleCount];
 
-				for(j=0;j<newgroup->myTriangleCount;j++)
+				for(j=0;j<newgroup->mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup->myTriangleSize = sizeof(Mesh::S_Triangle);
+				newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup->mTriangleSize = sizeof(Mesh::S_Triangle);
 				break;
 			}
 		case	eFC_Triangle:
 			{
 
-				Mesh::FC_Triangle* tmptriangles=new Mesh::FC_Triangle[newgroup->myTriangleCount];
+				Mesh::FC_Triangle* tmptriangles=new Mesh::FC_Triangle[newgroup->mTriangleCount];
 
-				for(j=0;j<newgroup->myTriangleCount;j++)
+				for(j=0;j<newgroup->mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup->myTriangleSize = sizeof(Mesh::FC_Triangle);
+				newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup->mTriangleSize = sizeof(Mesh::FC_Triangle);
 				break;
 			}
 		case	eSC_Triangle:
 			{
 
-				Mesh::SC_Triangle* tmptriangles=new Mesh::SC_Triangle[newgroup->myTriangleCount];
+				Mesh::SC_Triangle* tmptriangles=new Mesh::SC_Triangle[newgroup->mTriangleCount];
 
-				for(j=0;j<newgroup->myTriangleCount;j++)
+				for(j=0;j<newgroup->mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup->myTriangleSize = sizeof(Mesh::SC_Triangle);
+				newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup->mTriangleSize = sizeof(Mesh::SC_Triangle);
 				break;
 			}
 		case	eFG_Triangle:
 			{
-				Mesh::FG_Triangle* tmptriangles=new Mesh::FG_Triangle[newgroup->myTriangleCount];
+				Mesh::FG_Triangle* tmptriangles=new Mesh::FG_Triangle[newgroup->mTriangleCount];
 
-				for(j=0;j<newgroup->myTriangleCount;j++)
+				for(j=0;j<newgroup->mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup->myTriangleSize = sizeof(Mesh::FG_Triangle);
+				newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup->mTriangleSize = sizeof(Mesh::FG_Triangle);
 				break;
 			}
 		case	eSG_Triangle:
 			{
-				Mesh::SG_Triangle* tmptriangles=new Mesh::SG_Triangle[newgroup->myTriangleCount];
+				Mesh::SG_Triangle* tmptriangles=new Mesh::SG_Triangle[newgroup->mTriangleCount];
 
-				for(j=0;j<newgroup->myTriangleCount;j++)
+				for(j=0;j<newgroup->mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup->myTriangleSize = sizeof(Mesh::SG_Triangle);
+				newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup->mTriangleSize = sizeof(Mesh::SG_Triangle);
 				break;
 			}
 		case	eTF_Triangle:
 			{
-				Mesh::TF_Triangle<1>* tmptriangles=new Mesh::TF_Triangle<1>[newgroup->myTriangleCount];
+				Mesh::TF_Triangle<1>* tmptriangles=new Mesh::TF_Triangle<1>[newgroup->mTriangleCount];
 
-				for(j=0;j<newgroup->myTriangleCount;j++)
+				for(j=0;j<newgroup->mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup->myTriangleSize = sizeof(Mesh::TF_Triangle<1>);
+				newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup->mTriangleSize = sizeof(Mesh::TF_Triangle<1>);
 				break;
 			}
 		case	eTS_Triangle:
 			{
-				Mesh::TS_Triangle<1>* tmptriangles=new Mesh::TS_Triangle<1>[newgroup->myTriangleCount];
+				Mesh::TS_Triangle<1>* tmptriangles=new Mesh::TS_Triangle<1>[newgroup->mTriangleCount];
 
-				for(j=0;j<newgroup->myTriangleCount;j++)
+				for(j=0;j<newgroup->mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup->myTriangleSize = sizeof(Mesh::TS_Triangle<1>);
+				newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup->mTriangleSize = sizeof(Mesh::TS_Triangle<1>);
 				break;
 			}
 		case	eTFC_Triangle:
 			{
-				Mesh::TFC_Triangle<1>* tmptriangles=new Mesh::TFC_Triangle<1>[newgroup->myTriangleCount];
+				Mesh::TFC_Triangle<1>* tmptriangles=new Mesh::TFC_Triangle<1>[newgroup->mTriangleCount];
 
-				for(j=0;j<newgroup->myTriangleCount;j++)
+				for(j=0;j<newgroup->mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup->myTriangleSize = sizeof(Mesh::TFC_Triangle<1>);
+				newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup->mTriangleSize = sizeof(Mesh::TFC_Triangle<1>);
 				break;
 			}
 		case	eTSC_Triangle:
 			{
-				Mesh::TSC_Triangle<1>* tmptriangles=new Mesh::TSC_Triangle<1>[newgroup->myTriangleCount];
+				Mesh::TSC_Triangle<1>* tmptriangles=new Mesh::TSC_Triangle<1>[newgroup->mTriangleCount];
 
-				for(j=0;j<newgroup->myTriangleCount;j++)
+				for(j=0;j<newgroup->mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup->myTriangleSize = sizeof(Mesh::TSC_Triangle<1>);
+				newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup->mTriangleSize = sizeof(Mesh::TSC_Triangle<1>);
 
 				break;
 			}
 		case	eTFG_Triangle:
 			{
-				Mesh::TFG_Triangle<1>* tmptriangles=new Mesh::TFG_Triangle<1>[newgroup->myTriangleCount];
+				Mesh::TFG_Triangle<1>* tmptriangles=new Mesh::TFG_Triangle<1>[newgroup->mTriangleCount];
 
-				for(j=0;j<newgroup->myTriangleCount;j++)
+				for(j=0;j<newgroup->mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup->myTriangleSize = sizeof(Mesh::TFG_Triangle<1>);
+				newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup->mTriangleSize = sizeof(Mesh::TFG_Triangle<1>);
 				break;
 			}
 		case	eTSG_Triangle:
 			{
-				Mesh::TSG_Triangle<1>* tmptriangles=new Mesh::TSG_Triangle<1>[newgroup->myTriangleCount];
+				Mesh::TSG_Triangle<1>* tmptriangles=new Mesh::TSG_Triangle<1>[newgroup->mTriangleCount];
 
-				for(j=0;j<newgroup->myTriangleCount;j++)
+				for(j=0;j<newgroup->mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup->myTriangleSize = sizeof(Mesh::TSG_Triangle<1>);
+				newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup->mTriangleSize = sizeof(Mesh::TSG_Triangle<1>);
 
 				break;
 			}
@@ -448,38 +448,38 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 	}
 
 	OtherDataStruct datasize;
-	BinFileStruct::ReadStruct(&datasize,myFile);
+	BinFileStruct::ReadStruct(&datasize,mFile);
 
-	fread(&(pMesh->VertexCount),sizeof(unsigned int),1,myFile);
-	if(pMesh->VertexCount)
+	fread(&(pMesh->mVertexCount),sizeof(unsigned int),1,mFile);
+	if(pMesh->mVertexCount)
 	{
-		pMesh->VertexArray=new Point3D[pMesh->VertexCount];
+		pMesh->mVertexArray=new Point3D[pMesh->mVertexCount];
 
-		ReadFloatArray((kfloat*)pMesh->VertexArray,pMesh->VertexCount*3,myFile);
+		ReadFloatArray((kfloat*)pMesh->mVertexArray,pMesh->mVertexCount*3,mFile);
 	}
 
-	fread(&(pMesh->NormalCount),sizeof(unsigned int),1,myFile);
-	if(pMesh->NormalCount)
+	fread(&(pMesh->mNormalCount),sizeof(unsigned int),1,mFile);
+	if(pMesh->mNormalCount)
 	{
-		pMesh->NormalArray=new Vector3D[pMesh->NormalCount];
+		pMesh->mNormalArray=new Vector3D[pMesh->mNormalCount];
 
-		ReadFloatArray((kfloat*)pMesh->NormalArray,pMesh->NormalCount*3,myFile);
+		ReadFloatArray((kfloat*)pMesh->mNormalArray,pMesh->mNormalCount*3,mFile);
 	}
 
-	fread(&(pMesh->TexCoordCount),sizeof(unsigned int),1,myFile);
-	if(pMesh->TexCoordCount)
+	fread(&(pMesh->mTexCoordCount),sizeof(unsigned int),1,mFile);
+	if(pMesh->mTexCoordCount)
 	{
-		pMesh->TexArray=new Mesh::TexCoord[pMesh->TexCoordCount];
+		pMesh->mTexArray=new Mesh::TexCoord[pMesh->mTexCoordCount];
 
-		ReadFloatArray((kfloat*)pMesh->TexArray,pMesh->TexCoordCount*2,myFile);
+		ReadFloatArray((kfloat*)pMesh->mTexArray,pMesh->mTexCoordCount*2,mFile);
 	}
 
-	fread(&(pMesh->ColorCount),sizeof(unsigned int),1,myFile);
-	if(pMesh->ColorCount)
+	fread(&(pMesh->mColorCount),sizeof(unsigned int),1,mFile);
+	if(pMesh->mColorCount)
 	{
-		pMesh->ColorArray=new Vector4D[pMesh->ColorCount];
+		pMesh->mColorArray=new Vector4D[pMesh->mColorCount];
 
-		ReadFloatArray((kfloat*)pMesh->ColorArray,pMesh->ColorCount*4,myFile);
+		ReadFloatArray((kfloat*)pMesh->mColorArray,pMesh->mColorCount*4,mFile);
 	}
 
 	return 0;
@@ -491,7 +491,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 	pMesh->StartMeshBuilder();
 
-	BinFileStruct::ReadStruct(&header,myFile);
+	BinFileStruct::ReadStruct(&header,mFile);
 
 	unsigned int fileVersion=header.GetFileVersion();
 	int nbGroup=(int)header.GetGroupCount();
@@ -502,48 +502,48 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	for(i=0;i<nbGroup;i++)
 	{
 		GroupDesc grpdesc;
-		BinFileStruct::ReadStruct(&grpdesc,myFile);
+		BinFileStruct::ReadStruct(&grpdesc,mFile);
 
 		// convert old enum to new ones
 		if(fileVersion<1)
 		{
-			switch(grpdesc.triangleType)
+			switch(grpdesc.mTriangleType)
 			{
 			case 1:
-				grpdesc.triangleType=eF_Triangle;
+				grpdesc.mTriangleType=eF_Triangle;
 				break;
 			case 2:
-				grpdesc.triangleType=eS_Triangle;
+				grpdesc.mTriangleType=eS_Triangle;
 				break;
 			case 3:
-				grpdesc.triangleType=eFC_Triangle;
+				grpdesc.mTriangleType=eFC_Triangle;
 				break;
 			case 4:
-				grpdesc.triangleType=eSC_Triangle;
+				grpdesc.mTriangleType=eSC_Triangle;
 				break;
 			case 5:
-				grpdesc.triangleType=eFG_Triangle;
+				grpdesc.mTriangleType=eFG_Triangle;
 				break;
 			case 6:
-				grpdesc.triangleType=eSG_Triangle;
+				grpdesc.mTriangleType=eSG_Triangle;
 				break;
 			case 7:
-				grpdesc.triangleType=eTF_Triangle;
+				grpdesc.mTriangleType=eTF_Triangle;
 				break;
 			case 8:
-				grpdesc.triangleType=eTS_Triangle;
+				grpdesc.mTriangleType=eTS_Triangle;
 				break;
 			case 9:
-				grpdesc.triangleType=eTFC_Triangle;
+				grpdesc.mTriangleType=eTFC_Triangle;
 				break;
 			case 10:
-				grpdesc.triangleType=eTSC_Triangle;
+				grpdesc.mTriangleType=eTSC_Triangle;
 				break;
 			case 11:
-				grpdesc.triangleType=eTFG_Triangle;
+				grpdesc.mTriangleType=eTFG_Triangle;
 				break;
 			case 12:
-				grpdesc.triangleType=eTSG_Triangle;
+				grpdesc.mTriangleType=eTSG_Triangle;
 				break;
 			}
 		}
@@ -551,7 +551,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		// load material
 		MaterialDesc currentmat;
 
-		BinFileStruct::ReadStruct(&currentmat,myFile);
+		BinFileStruct::ReadStruct(&currentmat,mFile);
 
 		char	index[16];
 		sprintf(index,"%d",i);
@@ -563,19 +563,19 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 /*		MeshItemGroup* newgroup=(MeshItemGroup*)(KigsCore::GetInstanceOf(objname,"MeshItemGroup"));
 
-		newgroup->myTriangleType=(TriangleType)grpdesc.triangleType;*/
+		newgroup->mTriangleType=(TriangleType)grpdesc.mTriangleType;*/
 
 		objname=pMesh->getName();
 		objname+="Material";
 		objname+=index;
 
 		SP<Material> newMaterial=KigsCore::GetInstanceOf(objname,"Material");
-		newMaterial->setValue(LABEL_TO_ID(BlendFuncSource),currentmat.myBlendFuncSource);
-		newMaterial->setValue(LABEL_TO_ID(BlendFuncDest),currentmat.myBlendFuncDest);
-		newMaterial->setValue(LABEL_TO_ID(BlendEnabled),currentmat.myBlendEnabled);
+		newMaterial->setValue(LABEL_TO_ID(BlendFuncSource),currentmat.mBlendFuncSource);
+		newMaterial->setValue(LABEL_TO_ID(BlendFuncDest),currentmat.mBlendFuncDest);
+		newMaterial->setValue(LABEL_TO_ID(BlendEnabled),currentmat.mBlendEnabled);
 
-		newMaterial->setValue(LABEL_TO_ID(MaterialColorEnabled),currentmat.myMaterialColorEnabled);
-		if(currentmat.myBlendEnabled)
+		newMaterial->setValue(LABEL_TO_ID(MaterialColorEnabled),currentmat.mMaterialColorEnabled);
+		if(currentmat.mBlendEnabled)
 		{
 			newMaterial->setValue("TransarencyFlag", true);
 			pMesh->setValue("TransarencyFlag", true);
@@ -598,21 +598,21 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 			pMesh->setValue("TransarencyFlag", true);
 		}
 
-		newgroup.myTriangleCount=(int)currentmat.triangleCount;
-		//newgroup->myTriangleCount=(int)currentmat.triangleCount;
+		newgroup.mTriangleCount=(int)currentmat.triangleCount;
+		//newgroup->mTriangleCount=(int)currentmat.triangleCount;
 
 		currentmat.stages = new StageDesc[currentmat.stageCount];
 		for(j=0;j<currentmat.stageCount;j++)
 		{
 			StageDesc& stagedesc= currentmat.stages[j];
 
-			fread(&(stagedesc.structSize),sizeof(stagedesc.structSize),1,myFile);
-			fread(&(stagedesc.DescStructSize),sizeof(stagedesc.DescStructSize),1,myFile);
+			fread(&(stagedesc.structSize),sizeof(stagedesc.structSize),1,mFile);
+			fread(&(stagedesc.DescStructSize),sizeof(stagedesc.DescStructSize),1,mFile);
 
-			stagedesc.myTexture=ReadString(myFile);
+			stagedesc.mTexture=ReadString(mFile);
 
-			fread(&(stagedesc.myStageIndex),sizeof(int),1,myFile);
-			fread(&(stagedesc.myTexEnv),sizeof(TexEnvType),1,myFile);
+			fread(&(stagedesc.mStageIndex),sizeof(int),1,mFile);
+			fread(&(stagedesc.mTexEnv),sizeof(TexEnvType),1,mFile);
 
 #ifndef NO_MULTISTAGE_RENDERING
 
@@ -623,13 +623,13 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 			SP<MaterialStage> MatStage = KigsCore::GetInstanceOf(objname,"MaterialStage");
 
-			MatStage->setValue(LABEL_TO_ID(StageIndex),stagedesc.myStageIndex);
-			MatStage->setValue(LABEL_TO_ID(TexEnv),stagedesc.myTexEnv);
+			MatStage->setValue(LABEL_TO_ID(StageIndex),stagedesc.mStageIndex);
+			MatStage->setValue(LABEL_TO_ID(TexEnv),stagedesc.mTexEnv);
 
-			if(stagedesc.myTexture != "empty")
+			if(stagedesc.mTexture != "empty")
 			{
 				auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
-				SP<Texture> Tex = texfileManager->GetTexture(stagedesc.myTexture, false);
+				SP<Texture> Tex = texfileManager->GetTexture(stagedesc.mTexture, false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 				Tex->Init();
 
@@ -643,10 +643,10 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	
 #else //NO_MULTISTAGE_RENDERING
 			// if no material stages, add texture to material directly
-			if(stagedesc.myTexture != "empty")
+			if(stagedesc.mTexture != "empty")
 			{
 				TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
-				Texture* Tex=fileManager->GetTexture(stagedesc.myTexture,false);
+				Texture* Tex=fileManager->GetTexture(stagedesc.mTexture,false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 				Tex->Init();
 
@@ -661,162 +661,162 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		newMaterial->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL,"IsShared");
 		newMaterial->setValue(LABEL_TO_ID(IsShared),false);
 
-		newgroup.myMaterial=newMaterial;
+		newgroup.mMaterial=newMaterial;
 		//newgroup->addItem(newMaterial);
 
 		//newMaterial->Destroy();
 
 		delete[] currentmat.stages;
 
-		newgroup.myTriangleType=(unsigned int)grpdesc.triangleType;
+		newgroup.mTriangleType=(unsigned int)grpdesc.mTriangleType;
 
-		switch(grpdesc.triangleType)
+		switch(grpdesc.mTriangleType)
 		{
 		case	eF_Triangle:
 			{
-				Mesh::F_Triangle* tmptriangles=new Mesh::F_Triangle[newgroup.myTriangleCount];
+				Mesh::F_Triangle* tmptriangles=new Mesh::F_Triangle[newgroup.mTriangleCount];
 
-				for(j=0;j<newgroup.myTriangleCount;j++)
+				for(j=0;j<newgroup.mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup.myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup.myTriangleSize = sizeof(Mesh::F_Triangle);
+				newgroup.mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup.mTriangleSize = sizeof(Mesh::F_Triangle);
 				break;
 			}
 		case	eS_Triangle:
 			{
-				Mesh::S_Triangle* tmptriangles=new Mesh::S_Triangle[newgroup.myTriangleCount];
+				Mesh::S_Triangle* tmptriangles=new Mesh::S_Triangle[newgroup.mTriangleCount];
 
-				for(j=0;j<newgroup.myTriangleCount;j++)
+				for(j=0;j<newgroup.mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup.myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup.myTriangleSize = sizeof(Mesh::S_Triangle);
+				newgroup.mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup.mTriangleSize = sizeof(Mesh::S_Triangle);
 				break;
 			}
 		case	eFC_Triangle:
 			{
 
-				Mesh::FC_Triangle* tmptriangles=new Mesh::FC_Triangle[newgroup.myTriangleCount];
+				Mesh::FC_Triangle* tmptriangles=new Mesh::FC_Triangle[newgroup.mTriangleCount];
 
-				for(j=0;j<newgroup.myTriangleCount;j++)
+				for(j=0;j<newgroup.mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup.myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup.myTriangleSize = sizeof(Mesh::FC_Triangle);
+				newgroup.mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup.mTriangleSize = sizeof(Mesh::FC_Triangle);
 				break;
 			}
 		case	eSC_Triangle:
 			{
 
-				Mesh::SC_Triangle* tmptriangles=new Mesh::SC_Triangle[newgroup.myTriangleCount];
+				Mesh::SC_Triangle* tmptriangles=new Mesh::SC_Triangle[newgroup.mTriangleCount];
 
-				for(j=0;j<newgroup.myTriangleCount;j++)
+				for(j=0;j<newgroup.mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup.myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup.myTriangleSize = sizeof(Mesh::SC_Triangle);
+				newgroup.mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup.mTriangleSize = sizeof(Mesh::SC_Triangle);
 				break;
 			}
 		case	eFG_Triangle:
 			{
-				Mesh::FG_Triangle* tmptriangles=new Mesh::FG_Triangle[newgroup.myTriangleCount];
+				Mesh::FG_Triangle* tmptriangles=new Mesh::FG_Triangle[newgroup.mTriangleCount];
 
-				for(j=0;j<newgroup.myTriangleCount;j++)
+				for(j=0;j<newgroup.mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup.myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup.myTriangleSize = sizeof(Mesh::FG_Triangle);
+				newgroup.mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup.mTriangleSize = sizeof(Mesh::FG_Triangle);
 				break;
 			}
 		case	eSG_Triangle:
 			{
-				Mesh::SG_Triangle* tmptriangles=new Mesh::SG_Triangle[newgroup.myTriangleCount];
+				Mesh::SG_Triangle* tmptriangles=new Mesh::SG_Triangle[newgroup.mTriangleCount];
 
-				for(j=0;j<newgroup.myTriangleCount;j++)
+				for(j=0;j<newgroup.mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup.myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup.myTriangleSize = sizeof(Mesh::SG_Triangle);
+				newgroup.mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup.mTriangleSize = sizeof(Mesh::SG_Triangle);
 				break;
 			}
 		case	eTF_Triangle:
 			{
-				Mesh::TF_Triangle<1>* tmptriangles=new Mesh::TF_Triangle<1>[newgroup.myTriangleCount];
+				Mesh::TF_Triangle<1>* tmptriangles=new Mesh::TF_Triangle<1>[newgroup.mTriangleCount];
 
-				for(j=0;j<newgroup.myTriangleCount;j++)
+				for(j=0;j<newgroup.mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup.myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup.myTriangleSize = sizeof(Mesh::TF_Triangle<1>);
+				newgroup.mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup.mTriangleSize = sizeof(Mesh::TF_Triangle<1>);
 				break;
 			}
 		case	eTS_Triangle:
 			{
-				Mesh::TS_Triangle<1>* tmptriangles=new Mesh::TS_Triangle<1>[newgroup.myTriangleCount];
+				Mesh::TS_Triangle<1>* tmptriangles=new Mesh::TS_Triangle<1>[newgroup.mTriangleCount];
 
-				for(j=0;j<newgroup.myTriangleCount;j++)
+				for(j=0;j<newgroup.mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup.myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup.myTriangleSize = sizeof(Mesh::TS_Triangle<1>);
+				newgroup.mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup.mTriangleSize = sizeof(Mesh::TS_Triangle<1>);
 				break;
 			}
 		case	eTFC_Triangle:
 			{
-				Mesh::TFC_Triangle<1>* tmptriangles=new Mesh::TFC_Triangle<1>[newgroup.myTriangleCount];
+				Mesh::TFC_Triangle<1>* tmptriangles=new Mesh::TFC_Triangle<1>[newgroup.mTriangleCount];
 
-				for(j=0;j<newgroup.myTriangleCount;j++)
+				for(j=0;j<newgroup.mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup.myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup.myTriangleSize = sizeof(Mesh::TFC_Triangle<1>);
+				newgroup.mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup.mTriangleSize = sizeof(Mesh::TFC_Triangle<1>);
 				break;
 			}
 		case	eTSC_Triangle:
 			{
-				Mesh::TSC_Triangle<1>* tmptriangles=new Mesh::TSC_Triangle<1>[newgroup.myTriangleCount];
+				Mesh::TSC_Triangle<1>* tmptriangles=new Mesh::TSC_Triangle<1>[newgroup.mTriangleCount];
 
-				for(j=0;j<newgroup.myTriangleCount;j++)
+				for(j=0;j<newgroup.mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup.myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup.myTriangleSize = sizeof(Mesh::TSC_Triangle<1>);
+				newgroup.mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup.mTriangleSize = sizeof(Mesh::TSC_Triangle<1>);
 
 				break;
 			}
 		case	eTFG_Triangle:
 			{
-				Mesh::TFG_Triangle<1>* tmptriangles=new Mesh::TFG_Triangle<1>[newgroup.myTriangleCount];
+				Mesh::TFG_Triangle<1>* tmptriangles=new Mesh::TFG_Triangle<1>[newgroup.mTriangleCount];
 
-				for(j=0;j<newgroup.myTriangleCount;j++)
+				for(j=0;j<newgroup.mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup.myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup.myTriangleSize = sizeof(Mesh::TFG_Triangle<1>);
+				newgroup.mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup.mTriangleSize = sizeof(Mesh::TFG_Triangle<1>);
 				break;
 			}
 		case	eTSG_Triangle:
 			{
-				Mesh::TSG_Triangle<1>* tmptriangles=new Mesh::TSG_Triangle<1>[newgroup.myTriangleCount];
+				Mesh::TSG_Triangle<1>* tmptriangles=new Mesh::TSG_Triangle<1>[newgroup.mTriangleCount];
 
-				for(j=0;j<newgroup.myTriangleCount;j++)
+				for(j=0;j<newgroup.mTriangleCount;j++)
 				{
-					tmptriangles[j].Load(myFile);
+					tmptriangles[j].Load(mFile);
 				}
-				newgroup.myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-				newgroup.myTriangleSize = sizeof(Mesh::TSG_Triangle<1>);
+				newgroup.mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+				newgroup.mTriangleSize = sizeof(Mesh::TSG_Triangle<1>);
 
 				break;
 			}
@@ -830,47 +830,47 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	}
 
 	OtherDataStruct datasize;
-	BinFileStruct::ReadStruct(&datasize,myFile);
+	BinFileStruct::ReadStruct(&datasize,mFile);
 
 	unsigned int	VertexCount=0;
 	Point3D*		VertexArray=0;
 
-	fread(&(VertexCount),sizeof(unsigned int),1,myFile);
+	fread(&(VertexCount),sizeof(unsigned int),1,mFile);
 	if(VertexCount)
 	{
 		VertexArray=new Point3D[VertexCount];
 
-		ReadFloatArray((kfloat*)VertexArray,VertexCount*3,myFile);
+		ReadFloatArray((kfloat*)VertexArray,VertexCount*3,mFile);
 	}
 
 	unsigned int	NormalCount=0;
 	Vector3D*		NormalArray=0;
 
-	fread(&(NormalCount),sizeof(unsigned int),1,myFile);
+	fread(&(NormalCount),sizeof(unsigned int),1,mFile);
 	if(NormalCount)
 	{
 		NormalArray=new Vector3D[NormalCount];
-		ReadFloatArray((kfloat*)NormalArray,NormalCount*3,myFile);
+		ReadFloatArray((kfloat*)NormalArray,NormalCount*3,mFile);
 	}
 
 	unsigned int		TexCoordCount=0;
 	Mesh::TexCoord*		TexArray=0;
 
-	fread(&(TexCoordCount),sizeof(unsigned int),1,myFile);
+	fread(&(TexCoordCount),sizeof(unsigned int),1,mFile);
 	if(TexCoordCount)
 	{
 		TexArray=new Mesh::TexCoord[TexCoordCount];
-		ReadFloatArray((kfloat*)TexArray,TexCoordCount*2,myFile);
+		ReadFloatArray((kfloat*)TexArray,TexCoordCount*2,mFile);
 	}
 
 	unsigned int		ColorCount=0;
 	Vector4D*			ColorArray=0;
 
-	fread(&(ColorCount),sizeof(unsigned int),1,myFile);
+	fread(&(ColorCount),sizeof(unsigned int),1,mFile);
 	if(ColorCount)
 	{
 		ColorArray=new Vector4D[ColorCount];
-		ReadFloatArray((kfloat*)ColorArray,ColorCount*4,myFile);
+		ReadFloatArray((kfloat*)ColorArray,ColorCount*4,mFile);
 	}
 
 	// manage grps
@@ -888,7 +888,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		structSize+=3*sizeof(float);
 
 		// vertices have a color
-		if(currentgrp.myTriangleType & 6)
+		if(currentgrp.mTriangleType & 6)
 		{
 			CoreItemSP	colors	= CoreItemSP(new CoreNamedVector("colors"), StealRefTag{});
 			description->set("",colors);
@@ -902,7 +902,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 			structSize+=3*sizeof(float);
 		}
 
-		if(currentgrp.myTriangleType & 8)
+		if(currentgrp.mTriangleType & 8)
 		{
 			CoreItemSP	texCoords	= CoreItemSP(new CoreNamedVector("texCoords"), StealRefTag{});
 			description->set("",texCoords);
@@ -918,9 +918,9 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		
 		unsigned int tri_index;
 
-		unsigned char*	readTriangle=(unsigned char*)currentgrp.myFirstTriangle;
+		unsigned char*	readTriangle=(unsigned char*)currentgrp.mFirstTriangle;
 
-		for(tri_index=0;tri_index<(unsigned int)currentgrp.myTriangleCount;tri_index++)
+		for(tri_index=0;tri_index<(unsigned int)currentgrp.mTriangleCount;tri_index++)
 		{
 			int decal=0;
 			int copysize=3*sizeof(float);
@@ -931,7 +931,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 			memcpy(v[1],&VertexArray[currenttri->b],copysize);
 			memcpy(v[2],&VertexArray[currenttri->c],copysize);
 
-			switch(currentgrp.myTriangleType)
+			switch(currentgrp.mTriangleType)
 			{
 				case	eF_Triangle:
 				{
@@ -1172,7 +1172,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 			pMesh->AddTriangle(v[0],v[1],v[2]);
 
-			readTriangle+=currentgrp.myTriangleSize;
+			readTriangle+=currentgrp.mTriangleSize;
 		}
 
 		delete[] v[0];
@@ -1181,7 +1181,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 
 		SP<ModernMeshItemGroup> created=pMesh->EndMeshGroup();
-		created->addItem((CMSP&)currentgrp.myMaterial);
+		created->addItem((CMSP&)currentgrp.mMaterial);
 	}
 
 
@@ -1191,8 +1191,8 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	{
 		grpStruct& currentgrp=(*itgrp);
 
-		currentgrp.myMaterial=nullptr;
-		delete[] ((Mesh::Triangle*)currentgrp.myFirstTriangle);
+		currentgrp.mMaterial=nullptr;
+		delete[] ((Mesh::Triangle*)currentgrp.mFirstTriangle);
 	}
 
 	grpList.clear();
@@ -1256,7 +1256,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 	Header	header;
 	header.DescStructSize = 0;
 	header.structSize = 12;
-	header.nbGroup = nombredeGroupe | (1<<24);
+	header.mGroupCount = nombredeGroupe | (1<<24);
 	unsigned int fileVersion = header.GetFileVersion();
 
 	kstl::string _fullFileName = _directoryName +"\\"+ _FileName;
@@ -1286,7 +1286,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 		StagedescList.clear();
 		MeshItemGroup* newgroup = (*meshitemGroup_It);
 
-		grpdesc.triangleType = newgroup->myTriangleType;
+		grpdesc.mTriangleType = newgroup->mTriangleType;
 
 		kstl::vector<ModifiableItemStruct> ItemGroupSonsList = newgroup->getItems();
 		kstl::vector<ModifiableItemStruct>::iterator It_ItemGroup = ItemGroupSonsList.begin();
@@ -1299,14 +1299,14 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 			{
 				int value = 0;
 				((*It_ItemGroup).mItem)->getValue("BlendFuncSource",value);
-				currentmat.myBlendFuncSource = (BlendFuncSource)value;
+				currentmat.mBlendFuncSource = (BlendFuncSource)value;
 				((*It_ItemGroup).mItem)->getValue("BlendFuncDest",value);
-				currentmat.myBlendFuncDest = (BlendFuncDest)value;
+				currentmat.mBlendFuncDest = (BlendFuncDest)value;
 				bool bvalue = false;
 				((*It_ItemGroup).mItem)->getValue("BlendEnabled",bvalue);
-				currentmat.myBlendEnabled = bvalue;
+				currentmat.mBlendEnabled = bvalue;
 				((*It_ItemGroup).mItem)->getValue("MaterialColorEnabled",bvalue);
-				currentmat.myMaterialColorEnabled = bvalue;
+				currentmat.mMaterialColorEnabled = bvalue;
 
 				//ambiant Color
 				float ambiantColor[4];
@@ -1344,7 +1344,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 				((*It_ItemGroup).mItem)->getValue("Shininess",currentmat.shininess);
 				((*It_ItemGroup).mItem)->getValue("Transparency",currentmat.alpha);
 
-				currentmat.triangleCount = newgroup->myTriangleCount;
+				currentmat.triangleCount = newgroup->mTriangleCount;
 
 				//parcour les enfant du material
 				kstl::vector<ModifiableItemStruct> MaterialSonsList = ((*It_ItemGroup).mItem)->getItems();
@@ -1388,15 +1388,15 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 
 						int valuematstage=0;
 						MatStage->getValue("StageIndex",valuematstage);
-						stagedesc->myStageIndex = valuematstage;
+						stagedesc->mStageIndex = valuematstage;
 						MatStage->getValue("TexEnv",valuematstage);
-						stagedesc->myTexEnv = (TexEnvType)valuematstage;
+						stagedesc->mTexEnv = (TexEnvType)valuematstage;
 
 						//parcour les enfant
 						const kstl::vector<ModifiableItemStruct>& MatStageSonsList = MatStage->getItems();
 						if ( MatStageSonsList.empty() )
 						{
-							stagedesc->myTexture = "empty";
+							stagedesc->mTexture = "empty";
 						}
 						else
 						{
@@ -1409,7 +1409,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 								if ( ((*It_MatStage).mItem)->isSubType(Texture::mClassID) )
 								{
 									SP<Texture>& temptex =(SP<Texture> &) (*It_MatStage).mItem;
-									temptex->getValue("FileName",stagedesc->myTexture);
+									temptex->getValue("FileName",stagedesc->mTexture);
 								}
 								It_MatStage++;
 							}
@@ -1420,10 +1420,10 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					if ( ((CoreModifiable*)(*It_Material).myItem)->isSubType(Texture::mClassID) )
 					{
 						keep=true;
-						((Texture*)(*It_Material).myItem)->getValue("FileName",stagedesc->myTexture);
-						if ( stagedesc->myTexture.size() == 0 )
+						((Texture*)(*It_Material).myItem)->getValue("FileName",stagedesc->mTexture);
+						if ( stagedesc->mTexture.size() == 0 )
 						{
-							stagedesc->myTexture = "empty";
+							stagedesc->mTexture = "empty";
 						}
 					}
 #endif // NO_MULTISTAGE_RENDERING
@@ -1436,13 +1436,13 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					It_Material++;
 
 				}
-				switch(grpdesc.triangleType)
+				switch(grpdesc.mTriangleType)
 				{
 				case	eF_Triangle:
 					{
-						Mesh::F_Triangle* tmptriangles  = (Mesh::F_Triangle *)newgroup->myFirstTriangle;
+						Mesh::F_Triangle* tmptriangles  = (Mesh::F_Triangle *)newgroup->mFirstTriangle;
 
-						for(int j=0;j<newgroup->myTriangleCount;j++)
+						for(int j=0;j<newgroup->mTriangleCount;j++)
 						{
 							triangleInfo TriangleStruct;
 							TriangleStruct.tabTriangle[0] = tmptriangles[j].a;
@@ -1458,9 +1458,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					}
 				case	eS_Triangle:
 					{
-						Mesh::S_Triangle* tmptriangles  = (Mesh::S_Triangle *)newgroup->myFirstTriangle;
+						Mesh::S_Triangle* tmptriangles  = (Mesh::S_Triangle *)newgroup->mFirstTriangle;
 
-						for(int j=0;j<newgroup->myTriangleCount;j++)
+						for(int j=0;j<newgroup->mTriangleCount;j++)
 						{
 							triangleInfo TriangleStruct;
 							TriangleStruct.tabTriangle[0] = tmptriangles[j].a;
@@ -1478,9 +1478,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					}
 				case	eFC_Triangle:
 					{
-						Mesh::FC_Triangle* tmptriangles  = (Mesh::FC_Triangle *)newgroup->myFirstTriangle;
+						Mesh::FC_Triangle* tmptriangles  = (Mesh::FC_Triangle *)newgroup->mFirstTriangle;
 
-						for(int j=0;j<newgroup->myTriangleCount;j++)
+						for(int j=0;j<newgroup->mTriangleCount;j++)
 						{
 							triangleInfo TriangleStruct;
 							TriangleStruct.tabTriangle[0] = tmptriangles[j].a;
@@ -1498,9 +1498,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					}
 				case	eSC_Triangle:
 					{
-						Mesh::SC_Triangle* tmptriangles  = (Mesh::SC_Triangle *)newgroup->myFirstTriangle;
+						Mesh::SC_Triangle* tmptriangles  = (Mesh::SC_Triangle *)newgroup->mFirstTriangle;
 
-						for(int j=0;j<newgroup->myTriangleCount;j++)
+						for(int j=0;j<newgroup->mTriangleCount;j++)
 						{
 							triangleInfo TriangleStruct;
 							TriangleStruct.tabTriangle[0] = tmptriangles[j].a;
@@ -1520,9 +1520,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					}
 				case	eFG_Triangle:
 					{
-						Mesh::FG_Triangle* tmptriangles  = (Mesh::FG_Triangle *)newgroup->myFirstTriangle;
+						Mesh::FG_Triangle* tmptriangles  = (Mesh::FG_Triangle *)newgroup->mFirstTriangle;
 
-						for(int j=0;j<newgroup->myTriangleCount;j++)
+						for(int j=0;j<newgroup->mTriangleCount;j++)
 						{
 							triangleInfo TriangleStruct;
 							TriangleStruct.tabTriangle[0] = tmptriangles[j].a;
@@ -1542,9 +1542,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					}
 				case	eSG_Triangle:
 					{
-						Mesh::SG_Triangle* tmptriangles  = (Mesh::SG_Triangle *)newgroup->myFirstTriangle;
+						Mesh::SG_Triangle* tmptriangles  = (Mesh::SG_Triangle *)newgroup->mFirstTriangle;
 
-						for(int j=0;j<newgroup->myTriangleCount;j++)
+						for(int j=0;j<newgroup->mTriangleCount;j++)
 						{
 							triangleInfo TriangleStruct;
 							TriangleStruct.tabTriangle[0] = tmptriangles[j].a;
@@ -1566,9 +1566,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					}
 				case	eTF_Triangle:
 					{
-						Mesh::TF_Triangle<1>* tmptriangles  = (Mesh::TF_Triangle<1> *)newgroup->myFirstTriangle;
+						Mesh::TF_Triangle<1>* tmptriangles  = (Mesh::TF_Triangle<1> *)newgroup->mFirstTriangle;
 
-						for(int j=0;j<newgroup->myTriangleCount;j++)
+						for(int j=0;j<newgroup->mTriangleCount;j++)
 						{
 							triangleInfo TriangleStruct;
 							TriangleStruct.tabTriangle[0] = tmptriangles[j].a;
@@ -1588,9 +1588,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					}
 				case	eTS_Triangle:
 					{
-						Mesh::TS_Triangle<1>* tmptriangles  = (Mesh::TS_Triangle<1> *)newgroup->myFirstTriangle;
+						Mesh::TS_Triangle<1>* tmptriangles  = (Mesh::TS_Triangle<1> *)newgroup->mFirstTriangle;
 
-						for(int j=0;j<newgroup->myTriangleCount;j++)
+						for(int j=0;j<newgroup->mTriangleCount;j++)
 						{
 							triangleInfo TriangleStruct;
 							TriangleStruct.tabTriangle[0] = tmptriangles[j].a;
@@ -1612,9 +1612,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					}
 				case	eTFC_Triangle:
 					{
-						Mesh::TFC_Triangle<1>* tmptriangles  = (Mesh::TFC_Triangle<1> *)newgroup->myFirstTriangle;
+						Mesh::TFC_Triangle<1>* tmptriangles  = (Mesh::TFC_Triangle<1> *)newgroup->mFirstTriangle;
 
-						for(int j=0;j<newgroup->myTriangleCount;j++)
+						for(int j=0;j<newgroup->mTriangleCount;j++)
 						{
 							triangleInfo TriangleStruct;
 							TriangleStruct.tabTriangle[0] = tmptriangles[j].a;
@@ -1636,9 +1636,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 				case	eTSC_Triangle:
 					{
 
-						Mesh::TSC_Triangle<1>* tmptriangles  = (Mesh::TSC_Triangle<1> *)newgroup->myFirstTriangle;
+						Mesh::TSC_Triangle<1>* tmptriangles  = (Mesh::TSC_Triangle<1> *)newgroup->mFirstTriangle;
 
-						for(int j=0;j<newgroup->myTriangleCount;j++)
+						for(int j=0;j<newgroup->mTriangleCount;j++)
 						{
 							triangleInfo TriangleStruct;
 							TriangleStruct.tabTriangle[0] = tmptriangles[j].a;
@@ -1661,9 +1661,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					}
 				case	eTFG_Triangle:
 					{
-						Mesh::TFG_Triangle<1>* tmptriangles  = (Mesh::TFG_Triangle<1> *)newgroup->myFirstTriangle;
+						Mesh::TFG_Triangle<1>* tmptriangles  = (Mesh::TFG_Triangle<1> *)newgroup->mFirstTriangle;
 
-						for(int j=0;j<newgroup->myTriangleCount;j++)
+						for(int j=0;j<newgroup->mTriangleCount;j++)
 						{
 							triangleInfo TriangleStruct;
 							TriangleStruct.tabTriangle[0] = tmptriangles[j].a;
@@ -1686,9 +1686,9 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					}
 				case	eTSG_Triangle:
 					{
-						Mesh::TSG_Triangle<1>* tmptriangles  = (Mesh::TSG_Triangle<1> *)newgroup->myFirstTriangle;
+						Mesh::TSG_Triangle<1>* tmptriangles  = (Mesh::TSG_Triangle<1> *)newgroup->mFirstTriangle;
 
-						for(int j=0;j<newgroup->myTriangleCount;j++)
+						for(int j=0;j<newgroup->mTriangleCount;j++)
 						{
 							triangleInfo TriangleStruct;
 							TriangleStruct.tabTriangle[0] = tmptriangles[j].a;
@@ -1724,8 +1724,8 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 
 		currentmat.structSize = 100;
 		currentmat.DescStructSize = 0;
-		currentmat.myUseless_One = 18;
-		currentmat.myUseless_Two=0;
+		currentmat.mUseless_One = 18;
+		currentmat.mUseless_Two=0;
 		//Ecrit le material
 		BinFileStruct::WriteStruct(&currentmat,pFile);
 
@@ -1739,10 +1739,10 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 			fwrite(&(stagedesc->structSize),sizeof(stagedesc->structSize),1,pFile);
 			fwrite(&(stagedesc->DescStructSize),sizeof(stagedesc->DescStructSize),1,pFile);
 
-			fwrite(stagedesc->myTexture.c_str(),sizeof(char) * stagedesc->myTexture.size() + 1 ,1,pFile);
+			fwrite(stagedesc->mTexture.c_str(),sizeof(char) * stagedesc->mTexture.size() + 1 ,1,pFile);
 
-			fwrite(&(stagedesc->myStageIndex),sizeof(int),1,pFile);
-			fwrite(&(stagedesc->myTexEnv),sizeof(TexEnvType),1,pFile);
+			fwrite(&(stagedesc->mStageIndex),sizeof(int),1,pFile);
+			fwrite(&(stagedesc->mTexEnv),sizeof(TexEnvType),1,pFile);
 
 			//Incrémentation de l'itérateur
 			++Stagedesc_It;
@@ -1801,12 +1801,12 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 	int sizeTexArray = 0;
 	int sizeColorArray = 0;
 
-	unsigned int VertexCount = pMesh->VertexCount;
-	if (pMesh->VertexArray)
+	unsigned int VertexCount = pMesh->mVertexCount;
+	if (pMesh->mVertexArray)
 	{
 		fwrite(&VertexCount,sizeof(unsigned int),1,pFile);
-		vertexArray = (float*)pMesh->VertexArray;
-		sizeVertexArray = (int)sizeof(float)*(int)pMesh->VertexCount*3;
+		vertexArray = (float*)pMesh->mVertexArray;
+		sizeVertexArray = (int)sizeof(float)*(int)pMesh->mVertexCount*3;
 		fwrite(vertexArray, sizeVertexArray, 1, pFile);
 	}
 	else
@@ -1814,11 +1814,11 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 		fwrite(&VertexCount, sizeVertexArray, 1, pFile);
 	}
 
-	unsigned int Normalcount = pMesh->NormalCount;
-	if(pMesh->NormalCount)
+	unsigned int Normalcount = pMesh->mNormalCount;
+	if(pMesh->mNormalCount)
 	{
 		fwrite(&Normalcount, sizeof(unsigned int), 1, pFile);
-		normalArray = (float*)pMesh->NormalArray;
+		normalArray = (float*)pMesh->mNormalArray;
 		sizeNormalArray = (int)sizeof(float)*(int)Normalcount*3;
 		fwrite(normalArray, sizeNormalArray, 1, pFile);
 	}
@@ -1827,24 +1827,24 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 		fwrite(&Normalcount, sizeof(unsigned int), 1, pFile);
 	}
 
-	unsigned int TexCoordCount = pMesh->TexCoordCount;
-	if(pMesh->TexCoordCount)
+	unsigned int TexCoordCount = pMesh->mTexCoordCount;
+	if(pMesh->mTexCoordCount)
 	{
 		fwrite(&TexCoordCount,sizeof(unsigned int),1,pFile);
-		texArray = (float*)pMesh->TexArray;
-		sizeTexArray = (int)sizeof(float)*(int)pMesh->TexCoordCount*2;
+		texArray = (float*)pMesh->mTexArray;
+		sizeTexArray = (int)sizeof(float)*(int)pMesh->mTexCoordCount*2;
 		fwrite(texArray, sizeTexArray, 1, pFile);
 	}
 	else
 	{
 		fwrite(&TexCoordCount, sizeof(unsigned int), 1, pFile);
 	}
-	unsigned int colorCount = pMesh->ColorCount;
-	if(pMesh->ColorCount)
+	unsigned int colorCount = pMesh->mColorCount;
+	if(pMesh->mColorCount)
 	{
 		fwrite(&colorCount,sizeof(unsigned int),1,pFile);
-		colorArray = (float*)pMesh->ColorArray;
-		sizeColorArray =  (int)sizeof(float)*(int)pMesh->ColorCount*4;
+		colorArray = (float*)pMesh->mColorArray;
+		sizeColorArray =  (int)sizeof(float)*(int)pMesh->mColorCount*4;
 		fwrite(colorArray, sizeColorArray, 1, pFile);
 	}
 	else

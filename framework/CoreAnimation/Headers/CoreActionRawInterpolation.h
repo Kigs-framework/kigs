@@ -11,7 +11,7 @@ class CoreActionRawLinear : public CoreAction
 {
 public:
 	
-	CoreActionRawLinear() : CoreAction(), myPParamID(0)
+	CoreActionRawLinear() : CoreAction(), mPParamID(0)
 	{}
 
 	virtual void init(CoreSequence* sequence,CoreVector* params){}; // empty, raw action can not be directly init with json
@@ -21,21 +21,21 @@ protected:
 	virtual bool	protectedUpdate(kdouble time)
 	{
 		CoreAction::protectedUpdate(time);
-		if (myPParamID==0)
+		if (mPParamID==0)
 		{
 			CoreModifiableAttribute* attr = mTarget->getAttribute(mParamID);
-			myPParamID = (dataType*)attr->getRawValue();
+			mPParamID = (dataType*)attr->getRawValue();
 		}
-		if (myPParamID)
+		if (mPParamID)
 		{
-			dataType result = myStart + (myEnd - myStart)*(kfloat)((time - mStartTime) / mDuration);
-			*myPParamID = result;
+			dataType result = mStart + (mEnd - mStart)*(kfloat)((time - mStartTime) / mDuration);
+			*mPParamID = result;
 		}
 		return false;
 	}
 
-	dataType			myStart,myEnd;
-	dataType*			myPParamID;
+	dataType			mStart,mEnd;
+	dataType*			mPParamID;
 };
 
 // hermite interpolation
@@ -46,7 +46,7 @@ class CoreActionRawHermite : public CoreAction
 {
 public:
 	
-	CoreActionRawHermite() : CoreAction(), myPParamID(0)
+	CoreActionRawHermite() : CoreAction(), mPParamID(0)
 	{}
 
 	virtual void init(CoreSequence* sequence,CoreVector* params){};// empty, raw action can not be directly init with json
@@ -67,12 +67,12 @@ protected:
 	{
 		CoreAction::protectedUpdate(time);
 
-		if (myPParamID == 0)
+		if (mPParamID == 0)
 		{
 			CoreModifiableAttribute* attr = mTarget->getAttribute(mParamID);
-			myPParamID = (dataType*)attr->getRawValue();
+			mPParamID = (dataType*)attr->getRawValue();
 		}
-		if (myPParamID)
+		if (mPParamID)
 		{
 
 			kfloat t = (kfloat)((time - mStartTime) / mDuration);
@@ -82,13 +82,13 @@ protected:
 
 			dataType result = p[0] * a[0] + p[1] * a[1] + p[2] * a[2] + p[3] * a[3];
 
-			*myPParamID = result;
+			*mPParamID = result;
 		}
 		return false;
 	}
 
 	dataType			p[4];
-	dataType*			myPParamID;
+	dataType*			mPParamID;
 };
 
 template<typename dataType>
@@ -96,7 +96,7 @@ class CoreActionRawSetValue : public CoreAction
 {
 public:
 	
-	CoreActionRawSetValue() : CoreAction(), myPParamID(0)
+	CoreActionRawSetValue() : CoreAction(), mPParamID(0)
 	{}
 
 	virtual void init(CoreSequence* sequence,CoreVector* params){};// empty, raw action can not be directly init with json
@@ -106,26 +106,26 @@ protected:
 	virtual bool	protectedUpdate(kdouble time)
 	{
 		CoreAction::protectedUpdate(time);
-		if (myPParamID == 0)
+		if (mPParamID == 0)
 		{
 			CoreModifiableAttribute* attr = mTarget->getAttribute(mParamID);
-			myPParamID = (dataType*)attr->getRawValue();
+			mPParamID = (dataType*)attr->getRawValue();
 		}
-		if (myPParamID)
+		if (mPParamID)
 		{
 			// wait the end of the action
 			if ((time + TimeEpsilon) >= (mStartTime + mDuration))
 			{
 				setIsDone();
-				*myPParamID = mySet;
+				*mPParamID = mSet;
 				return true;
 			}
 		}
 		return false;
 	}
 
-	dataType			mySet;
-	dataType*			myPParamID;
+	dataType			mSet;
+	dataType*			mPParamID;
 };
 
 

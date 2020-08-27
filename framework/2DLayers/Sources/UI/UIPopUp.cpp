@@ -80,9 +80,9 @@ DEFINE_UPGRADOR_METHOD(PopUpUpgrador, ShowPopUp)
 				GetUpgrador()->Hide(this);
 				return false;
 			}
-			kstl::vector<CoreModifiableAttribute*> mySendParams;
-			mySendParams.push_back(getAttribute("CloseAll"));
-			KigsCore::GetNotificationCenter()->postNotificationName("HidePopUp", mySendParams, this);
+			kstl::vector<CoreModifiableAttribute*> sendParams;
+			sendParams.push_back(getAttribute("CloseAll"));
+			KigsCore::GetNotificationCenter()->postNotificationName("HidePopUp", sendParams, this);
 
 			if (sender)
 			{

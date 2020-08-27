@@ -22,7 +22,19 @@ struct SpriteSheetFrame
 	bool Rotated;
 	bool Trimmed;
 };
-
+// ****************************************
+// * SpriteSheetTexture class
+// * --------------------------------------
+/**
+* \file	SpriteSheetTexture.h
+* \class	SpriteSheetTexture
+* \ingroup Renderer
+* \brief Manage a texture with animation data ( sprites coords...) .
+*
+* A better approach would be to use an upgrador on a generic texture ?
+*
+*/
+// ****************************************
 class SpriteSheetTexture : public CoreModifiable
 {
 public:

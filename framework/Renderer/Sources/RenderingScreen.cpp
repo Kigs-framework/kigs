@@ -13,90 +13,89 @@ IMPLEMENT_CONSTRUCTOR(RenderingScreen)
 	, mBitsPerPixel(*this, true, "BitsPerPixel", 32)
 	, mBitsPerZ(*this, true, "BitsPerZ", 16)
 	, mBitsForStencil(*this, true, "BitsForStencil", 0)
-	, mySizeX(*this, false, "SizeX", 256)
-	, mySizeY(*this, false, "SizeY", 256)
-	, myDesignSizeX(*this, false, "DesignSizeX", 256)
-	, myDesignSizeY(*this, false, "DesignSizeY", 256)
-	, myIsOffScreen(*this, true, "IsOffScreen", false)
-	, myScreenOnTop(*this, false, "ScreenOnTop", false)
-	, myParentWindowName(*this, true, "ParentWindowName", "")
-	, myWaitVSync(*this, true, "VSync", false)
-	, myBrightness(*this, false, "Brightness", 0)
-	, myBackDropColor(*this, false, "BackDropColor", 0.0, 0.0, 0.0)
-	, myRotation(*this, false, "Rotation", 0.0f)
-	, myDontClear(*this, false, "DontClear", false)
-	, myNeedDoubleBuffer(*this, false, "NeedDoubleBuffer", true)
-	, myWasActivated(false)
-	, myUseFBO(*this, true, "UseFBO", false)
-	, myFBOSizeX(*this, true, "FBOSizeX", 640)
-	, myFBOSizeY(*this, true, "FBOSizeY", 480)
-	, myFBOTexture(0)
+	, mSizeX(*this, false, "SizeX", 256)
+	, mSizeY(*this, false, "SizeY", 256)
+	, mDesignSizeX(*this, false, "DesignSizeX", 256)
+	, mDesignSizeY(*this, false, "DesignSizeY", 256)
+	, mIsOffScreen(*this, true, "IsOffScreen", false)
+	, mParentWindowName(*this, true, "ParentWindowName", "")
+	, mVSync(*this, true, "VSync", false)
+	, mBrightness(*this, false, "Brightness", 0)
+	, mBackDropColor(*this, false, "BackDropColor", 0.0, 0.0, 0.0)
+	, mRotation(*this, false, "Rotation", 0.0f)
+	, mDontClear(*this, false, "DontClear", false)
+	, mNeedDoubleBuffer(*this, false, "NeedDoubleBuffer", true)
+	, mWasActivated(false)
+	, mUseFBO(*this, true, "UseFBO", false)
+	, mFBOSizeX(*this, true, "FBOSizeX", 640)
+	, mFBOSizeY(*this, true, "FBOSizeY", 480)
+	, mFBOTexture(0)
 {
 	// retreive renderer
 	ModuleSpecificRenderer* renderer =  ((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	renderer->RegisterRenderingScreen(this);
 
-	myOldBrightness = myBrightness;
+	mOldBrightness = mBrightness;
 
-	myIsInit=false;
+	mIsInit=false;
 
-	MyParentWindow=0;
+	mParentWindow=0;
 }
 
 void RenderingScreen::Update(const Timer&  timer, void* addParam)
 {
 	ModuleSpecificRenderer* renderer = ((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->SetClearColorValue(myBackDropColor[0], myBackDropColor[1], myBackDropColor[2], 1.0);
+	renderer->SetClearColorValue(mBackDropColor[0], mBackDropColor[1], mBackDropColor[2], 1.0);
 	renderer->FlushState();
 	// if wasn't activated, no camera or layer was drawn, clear the screen
-	if (!myWasActivated)
+	if (!mWasActivated)
 	{
-		if(!myDontClear)
+		if(!mDontClear)
 			renderer->ClearView(RENDERER_CLEAR_COLOR);
 	}
-	myWasActivated = false;
+	mWasActivated = false;
 }
 
 
-// recompute myDesignCoefX,myDesignCoefY;
+// recompute mDesignCoefX,mDesignCoefY;
 void RenderingScreen::InitModifiable()
 {
 	kstl::vector<CMSP>	instances;
 
-    kstl::string parentW=myParentWindowName.const_ref();
+    kstl::string parentW=mParentWindowName.const_ref();
 
 	if(parentW != "")
 	{
 		instances=CoreModifiable::GetInstancesByName("Window",parentW);
 		if(instances.size())
-			MyParentWindow=(Window*)(instances[0].get());
+			mParentWindow=(Window*)(instances[0].get());
 	}
 
 	// I want to be notified on brightness change
-	myBrightness.changeNotificationLevel(Owner);
+	mBrightness.changeNotificationLevel(Owner);
 
-	if (myDesignSizeX == 0 && myDesignSizeY == 0)
+	if (mDesignSizeX == 0 && mDesignSizeY == 0)
 	{
-		myDesignSizeX = mySizeX;
-		myDesignSizeY = mySizeY;
+		mDesignSizeX = mSizeX;
+		mDesignSizeY = mSizeY;
 	}
 	else
 	{
-		if (myDesignSizeX == 0)
+		if (mDesignSizeX == 0)
 		{
-			myDesignSizeX = myDesignSizeY * mySizeX / mySizeY;
+			mDesignSizeX = mDesignSizeY * mSizeX / mSizeY;
 		}
-		else if (myDesignSizeY == 0)
+		else if (mDesignSizeY == 0)
 		{
-			myDesignSizeY = myDesignSizeX * mySizeY / mySizeX;
+			mDesignSizeY = mDesignSizeX * mSizeY / mSizeX;
 		}
 	}
 
-	// recompute myDesignCoefX,myDesignCoefY;
-	mySizeX.changeNotificationLevel(Owner);
-	mySizeY.changeNotificationLevel(Owner);
-	myDesignSizeX.changeNotificationLevel(Owner);
-	myDesignSizeY.changeNotificationLevel(Owner);
+	// recompute mDesignCoefX,mDesignCoefY;
+	mSizeX.changeNotificationLevel(Owner);
+	mSizeY.changeNotificationLevel(Owner);
+	mDesignSizeX.changeNotificationLevel(Owner);
+	mDesignSizeY.changeNotificationLevel(Owner);
 
 	RecomputeDesignCoef();
 	CoreModifiable::InitModifiable();
@@ -104,10 +103,10 @@ void RenderingScreen::InitModifiable()
 
 void RenderingScreen::NotifyUpdate(const unsigned int  labelid )
 {
-	if(	(labelid==mySizeX.getLabelID()) ||
-		(labelid==mySizeY.getLabelID()) ||
-		(labelid==myDesignSizeX.getLabelID()) ||
-		(labelid==myDesignSizeY.getLabelID()) )
+	if(	(labelid==mSizeX.getLabelID()) ||
+		(labelid==mSizeY.getLabelID()) ||
+		(labelid==mDesignSizeX.getLabelID()) ||
+		(labelid==mDesignSizeY.getLabelID()) )
 	{
 		RecomputeDesignCoef();
 	}
@@ -117,51 +116,51 @@ void RenderingScreen::NotifyUpdate(const unsigned int  labelid )
 
 void RenderingScreen::RecomputeDesignCoef()
 {
-	myDesignCoefX=((kfloat)(int)myDesignSizeX)/((kfloat)(int)mySizeX);
-	myDesignCoefY=((kfloat)(int)myDesignSizeY)/((kfloat)(int)mySizeY);
+	mDesignCoefX=((kfloat)(int)mDesignSizeX)/((kfloat)(int)mSizeX);
+	mDesignCoefY=((kfloat)(int)mDesignSizeY)/((kfloat)(int)mSizeY);
 }
 
 v2f RenderingScreen::GlobalMousePositionToDesignPosition(v2i pos)
 {
 	v2f result{ -1, -1 };
-	if (MyParentWindow != 0)
+	if (mParentWindow != 0)
 	{
-		MyParentWindow->GetMousePosInWindow(pos.x, pos.y, result.x, result.y);
-		auto size = MyParentWindow->GetSize();
-		result.x = myDesignSizeX * result.x / size.x;
-		result.y = myDesignSizeY * result.y / size.y;
+		mParentWindow->GetMousePosInWindow(pos.x, pos.y, result.x, result.y);
+		auto size = mParentWindow->GetSize();
+		result.x = mDesignSizeX * result.x / size.x;
+		result.y = mDesignSizeY * result.y / size.y;
 	}
 	return result;
 }
 
 void RenderingScreen::GetMousePosInScreen(int posx,int posy,kfloat& sposx,kfloat& sposy)
 {
-	if(MyParentWindow !=0)
-		MyParentWindow->GetMousePosInDesignWindow(posx,posy,sposx,sposy);
+	if(mParentWindow !=0)
+		mParentWindow->GetMousePosInDesignWindow(posx,posy,sposx,sposy);
 }
 
 void RenderingScreen::GetMouseRatioInScreen(int posx,int posy,kfloat& sposx,kfloat& sposy)
 {
-	if(MyParentWindow !=0)
+	if(mParentWindow !=0)
 	{
-		MyParentWindow->GetMousePosInDesignWindow(posx, posy, sposx, sposy);
+		mParentWindow->GetMousePosInDesignWindow(posx, posy, sposx, sposy);
 		/*int L_WinSizeX, L_WinSizeY = 0;
-		MyParentWindow->getValue(LABEL_TO_ID(SizeX),L_WinSizeX);
-		MyParentWindow->getValue(LABEL_TO_ID(SizeY),L_WinSizeY);*/
-		sposx -= ((int)myDesignSizeX)*0.5f;
-		sposy -= ((int)myDesignSizeY)*0.5f;
-		sposx /= (float)myDesignSizeX;
-		sposy /= (float)myDesignSizeY;
+		mParentWindow->getValue(LABEL_TO_ID(SizeX),L_WinSizeX);
+		mParentWindow->getValue(LABEL_TO_ID(SizeY),L_WinSizeY);*/
+		sposx -= ((int)mDesignSizeX)*0.5f;
+		sposy -= ((int)mDesignSizeY)*0.5f;
+		sposx /= (float)mDesignSizeX;
+		sposy /= (float)mDesignSizeY;
 	}
 }
 
 void RenderingScreen::GetMouseRatio(int posx,int posy,kfloat& sposx,kfloat& sposy)
 {
-	if(MyParentWindow !=0)
+	if(mParentWindow !=0)
 	{
 		int L_WinSizeX, L_WinSizeY = 0;
-		MyParentWindow->getValue(LABEL_TO_ID(SizeX),L_WinSizeX);
-		MyParentWindow->getValue(LABEL_TO_ID(SizeY),L_WinSizeY);
+		mParentWindow->getValue(LABEL_TO_ID(SizeX),L_WinSizeX);
+		mParentWindow->getValue(LABEL_TO_ID(SizeY),L_WinSizeY);
 		sposx = posx-(int)L_WinSizeX*0.5f;
 		sposy = posy-(int)L_WinSizeY*0.5f;
 		sposx /= L_WinSizeX;
@@ -171,13 +170,13 @@ void RenderingScreen::GetMouseRatio(int posx,int posy,kfloat& sposx,kfloat& spos
 
 bool RenderingScreen::MouseIsInScreen(int posx,int posy)
 {
-	if(MyParentWindow !=0)
+	if(mParentWindow !=0)
 	{
 		int L_WinSizeX, L_WinSizeY, L_PosX, L_PosY;
-		MyParentWindow->getValue(LABEL_TO_ID(PositionX),L_PosX);
-		MyParentWindow->getValue(LABEL_TO_ID(PositionY),L_PosY);
-		MyParentWindow->getValue(LABEL_TO_ID(SizeX),L_WinSizeX);
-		MyParentWindow->getValue(LABEL_TO_ID(SizeY),L_WinSizeY);
+		mParentWindow->getValue(LABEL_TO_ID(PositionX),L_PosX);
+		mParentWindow->getValue(LABEL_TO_ID(PositionY),L_PosY);
+		mParentWindow->getValue(LABEL_TO_ID(SizeX),L_WinSizeX);
+		mParentWindow->getValue(LABEL_TO_ID(SizeY),L_WinSizeY);
 
 		if( (posx < L_PosX) || (posx > (L_PosX+L_WinSizeX)) ||
 			(posy < L_PosY) || (posy > (L_PosY+L_WinSizeY)) )
@@ -188,22 +187,22 @@ bool RenderingScreen::MouseIsInScreen(int posx,int posy)
 
 void RenderingScreen::GetMousePosInDesignScreen(int posx,int posy,kfloat& sposx,kfloat& sposy)
 {
-	sposx=((kfloat)posx)*myDesignCoefX;
-	sposy=((kfloat)posy)*myDesignCoefY;
+	sposx=((kfloat)posx)*mDesignCoefX;
+	sposy=((kfloat)posy)*mDesignCoefY;
 }
 
 void RenderingScreen::GetMouseMoveInScreen(kfloat posx,kfloat posy,kfloat& sposx,kfloat& sposy)
 {
-	sposx=posx*myDesignCoefX;
-	sposy=posy*myDesignCoefY;
+	sposx=posx*mDesignCoefX;
+	sposy=posy*mDesignCoefY;
 }
 
 bool RenderingScreen::SetActive(TravState* state)
 {
-	if (mySizeX == -1 || mySizeY == -1)
+	if (mSizeX == -1 || mSizeY == -1)
 		return false;
 
-	myWasActivated = true;
+	mWasActivated = true;
 
 	if (state)
 	{
@@ -216,7 +215,7 @@ DEFINE_METHOD(RenderingScreen, ResetContext)
 {
 	ReInit();
 
-	ModuleSpecificRenderer* renderer = ModuleRenderer::theGlobalRenderer; //((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	ModuleSpecificRenderer* renderer = ModuleRenderer::mTheGlobalRenderer; //((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	renderer->FlushState(true);
 
 	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
@@ -230,10 +229,10 @@ bool RenderingScreen::GetDataInTouchSupport(const touchPosInfos& posin, touchPos
 {
 	pout.pos.z = 0;
 
-	if (myIsOffScreen)
+	if (mIsOffScreen)
 	{
-		kfloat cx = (kfloat)(unsigned int)myDesignSizeX;
-		kfloat cy = (kfloat)(unsigned int)myDesignSizeY;
+		kfloat cx = (kfloat)(unsigned int)mDesignSizeX;
+		kfloat cy = (kfloat)(unsigned int)mDesignSizeY;
 
 		pout.pos.x = posin.pos.x*cx;
 		pout.pos.y = posin.pos.y*cy;
@@ -245,9 +244,9 @@ bool RenderingScreen::GetDataInTouchSupport(const touchPosInfos& posin, touchPos
 		pout.pos.z = 0;
 	}
 
-	if ((pout.pos.x >= 0.0f) && (pout.pos.x < (kfloat)(unsigned int)myDesignSizeX))
+	if ((pout.pos.x >= 0.0f) && (pout.pos.x < (kfloat)(unsigned int)mDesignSizeX))
 	{
-		if ((pout.pos.y >= 0.0f) && (pout.pos.y < (kfloat)(unsigned int)myDesignSizeY))
+		if ((pout.pos.y >= 0.0f) && (pout.pos.y < (kfloat)(unsigned int)mDesignSizeY))
 		{
 			return true;
 		}
@@ -257,7 +256,7 @@ bool RenderingScreen::GetDataInTouchSupport(const touchPosInfos& posin, touchPos
 
 bool RenderingScreen::IsValidTouchSupport(Vector3D posin)
 {
-	if (myIsOffScreen) // offscreen can not be a root touch support
+	if (mIsOffScreen) // offscreen can not be a root touch support
 	{
 		return false;
 	}
@@ -265,7 +264,7 @@ bool RenderingScreen::IsValidTouchSupport(Vector3D posin)
 	GetMousePosInScreen((s32)posin.x, (s32)posin.y, pout.x, pout.y);
 
 	// return true if pos is inside screen
-	if ((pout.x >= 0) && (pout.x < myDesignSizeX) && (pout.y >= 0) && (pout.y < myDesignSizeY))
+	if ((pout.x >= 0) && (pout.x < mDesignSizeX) && (pout.y >= 0) && (pout.y < mDesignSizeY))
 	{
 		return true;
 	}
@@ -274,11 +273,11 @@ bool RenderingScreen::IsValidTouchSupport(Vector3D posin)
 
 void RenderingScreen::ManageFade(TravState* state)
 {
-	if (myBrightness != 0)
+	if (mBrightness != 0)
 	{
 		setCurrentContext();
 
-		ModuleSpecificRenderer* renderer = static_cast<ModuleSpecificRenderer*>(ModuleRenderer::theGlobalRenderer);
+		ModuleSpecificRenderer* renderer = static_cast<ModuleSpecificRenderer*>(ModuleRenderer::mTheGlobalRenderer);
 
 		renderer->pushShader((ShaderBase*)renderer->getDefaultUiShader().get(), state);
 
@@ -292,7 +291,7 @@ void RenderingScreen::ManageFade(TravState* state)
 		renderer->SetLightMode(RENDERER_LIGHT_OFF);
 		renderer->SetDepthTestMode(false);
 		renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_OFF);
-		renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)myDesignSizeX, 0.0f, (float)myDesignSizeY, -1.0f, 1.0f);
+		renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)mDesignSizeX, 0.0f, (float)mDesignSizeY, -1.0f, 1.0f);
 		renderer->LoadIdentity(MATRIX_MODE_MODEL);
 		renderer->LoadIdentity(MATRIX_MODE_VIEW);
 
@@ -307,14 +306,14 @@ void RenderingScreen::ManageFade(TravState* state)
 
 		// triangle strip order
 		buf[0].setVertex(0.0f, 0.0f);
-		buf[1].setVertex((float)myDesignSizeX, 0.0);
-		buf[3].setVertex((float)myDesignSizeX, (float)myDesignSizeY);
-		buf[2].setVertex(0.0, (float)myDesignSizeY);
+		buf[1].setVertex((float)mDesignSizeX, 0.0);
+		buf[3].setVertex((float)mDesignSizeX, (float)mDesignSizeY);
+		buf[2].setVertex(0.0, (float)mDesignSizeY);
 
 		//Draw Quad that fits the screen
-		if (myBrightness > 0)
+		if (mBrightness > 0)
 		{
-			unsigned char alpha = (unsigned char)((((float)myBrightness) / 16.0f) * 255.0f);
+			unsigned char alpha = (unsigned char)((((float)mBrightness) / 16.0f) * 255.0f);
 			buf[0].setColor(255, 255, 255, alpha);
 			buf[1].setColor(255, 255, 255, alpha);
 			buf[2].setColor(255, 255, 255, alpha);
@@ -322,7 +321,7 @@ void RenderingScreen::ManageFade(TravState* state)
 		}
 		else
 		{
-			unsigned char alpha = (unsigned char)((((float)-myBrightness) / 16.0f) * 255.0f);
+			unsigned char alpha = (unsigned char)((((float)-mBrightness) / 16.0f) * 255.0f);
 			buf[0].setColor(0, 0, 0, alpha);
 			buf[1].setColor(0, 0, 0, alpha);
 			buf[2].setColor(0, 0, 0, alpha);

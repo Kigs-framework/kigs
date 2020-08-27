@@ -30,25 +30,12 @@ public:
 // * Scene3D class
 // * --------------------------------------
 /**
-* \file	Scene3D.h
-* \class	Scene3D
-* \ingroup SceneGraph
-* \brief	the root node in a scenegraph
-* \author	ukn
-* \version ukn
-* \date	ukn
-*
-* Exported parameters :<br>
-* <ul>
-* <li>
-*		kfloat <strong>AmbientLight</strong> : ambient light color
-* </li>
-* <li>
-*		kfloat <strong>Priority</strong> : priority
-* </li>
-* </ul>
-*/
-// ****************************************
+ * \file	Scene3D.h
+ * \class	Scene3D
+ * \ingroup SceneGraph
+ * \brief   Root Node3D for a scene.
+ */
+ // ****************************************
 class Scene3D : public Node3D
 {
 public:
@@ -56,9 +43,9 @@ public:
 	DECLARE_CONSTRUCTOR(Scene3D);
 	WRAP_METHODS(GetCameraVector, SortItemsFrontToBack);
 
-	int getPriority() {return myPriority;}
+	int getPriority() {return mPriority;}
 
-	const kstl::set<CoreModifiable*>& getLights() const { return myLights; }
+	const kstl::set<CoreModifiable*>& getLights() const { return mLights; }
 
 	/**
 	* \brief	draw the scene3D
@@ -78,11 +65,11 @@ public:
 	//! overload operator < for comparison
 	inline bool operator<(Scene3D const &A) const
 	{
-		if ((int)myPriority == (int)A.myPriority)
+		if ((int)mPriority == (int)A.mPriority)
 		{
 			return ((uptr)this<(uptr)&A);
 		}
-		return ((int)myPriority <  (int)A.myPriority);
+		return ((int)mPriority <  (int)A.mPriority);
 	}
 
 	/**
@@ -137,7 +124,7 @@ public:
 	void GetCameraVector(kstl::vector<CoreModifiable*>& cameras)
 	{
 		cameras.clear();
-		for (auto caminstance : myCameras)
+		for (auto caminstance : mCameras)
 		{
 			cameras.push_back((CoreModifiable*)caminstance);
 		}
@@ -146,13 +133,13 @@ public:
 
 	virtual void SortItemsFrontToBack(SortItemsFrontToBackParam& param);
 
-	int getSpotLightCount() { return mySpotLightCount; }
-	int getPointLightCount() { return myPointLightCount; }
-	int getDirLightCount() { return myDirLightCount; }
+	int getSpotLightCount() { return mSpotLightCount; }
+	int getPointLightCount() { return mPointLightCount; }
+	int getDirLightCount() { return mDirLightCount; }
 
 	void lightHasChanged()
 	{
-		myLightsHaveChanged = true;
+		mLightsHaveChanged = true;
 	}
 
 protected:
@@ -166,18 +153,18 @@ protected:
 	void	UninitModifiable() override;
 
 	//! link to the cameras
-	kstl::set<Camera*, sortCamera>	myCameras;
+	kstl::set<Camera*, sortCamera>	mCameras;
 	//! link to the lights
-	kstl::set<CoreModifiable*>	    myLights;
-	bool							myLightsHaveChanged;
+	kstl::set<CoreModifiable*>	    mLights;
+	bool							mLightsHaveChanged;
 
-	int mySpotLightCount = 0;
-	int myPointLightCount = 0;
-	int myDirLightCount = 0;
+	int mSpotLightCount = 0;
+	int mPointLightCount = 0;
+	int mDirLightCount = 0;
 
 	//! priority
-	maInt			 		        myPriority;
-	maBool							mySort3DNodesFrontToBack;
+	maInt			 		        mPriority;
+	maBool							mSort3DNodesFrontToBack;
 
 	virtual ~Scene3D();
 };

@@ -4,7 +4,7 @@
 kstl::string API3DUIShader::GetFragmentShader()
 {
 
-	std::string result = bgr ? "#define CLIENT_STATE_BGR_TEXTURE\n" : "";
+	std::string result = mBGR ? "#define CLIENT_STATE_BGR_TEXTURE\n" : "";
 	result += R"====(
 #ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0
 uniform sampler2D colorMap;
@@ -97,7 +97,7 @@ IMPLEMENT_CLASS_INFO(API3DUIShader)
 
 API3DUIShader::API3DUIShader(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DGenericMeshShader(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	myUseGenericLight = false;
+	museGenericLight = false;
 }
 
 API3DUIShader::~API3DUIShader()

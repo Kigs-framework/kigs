@@ -11,7 +11,7 @@ struct OpenGLTexturePlatformImpl
 // generate file names from base name
 bool	OpenGLTexture::CubeMapGeneration()
 {
-	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	renderer->FlushState();
 	bool result=true;
 	auto& pathManager = KigsCore::Singleton<FilePathManager>();
@@ -20,10 +20,10 @@ bool	OpenGLTexture::CubeMapGeneration()
 	asciiCount[0]=0;
 
 	// get extension
-	kstl::string	extension=myFileName;
+	kstl::string	extension=mFileName;
 	extension=extension.substr(extension.rfind("."));
 	// remove extension
-	kstl::string basefilename=myFileName;
+	kstl::string basefilename=mFileName;
 	basefilename=basefilename.substr(0,basefilename.length()-extension.length());
 
 	// check if all 6 textures are ok
@@ -72,8 +72,8 @@ bool	OpenGLTexture::CubeMapGeneration()
 
 
 			Img[index] = TinyImage::CreateImage(fullfilename.c_str());
-			myWidth = Img[index]->GetWidth();
-			myHeight = Img[index]->GetHeight();
+			mWidth = Img[index]->GetWidth();
+			mHeight = Img[index]->GetHeight();
 
 			/*BITMAPINFO Info;
 			ilGenImages(1,&(Img[index]));
@@ -81,94 +81,94 @@ bool	OpenGLTexture::CubeMapGeneration()
 			ilLoadImage((char* const)fullfilename.c_str());
 			ilutGetBmpInfo(&Info);
 
-			myWidth = (int)Info.bmiHeader.biWidth;
-			myHeight = (int)Info.bmiHeader.biHeight;*/
+			mWidth = (int)Info.bmiHeader.biWidth;
+			mHeight = (int)Info.bmiHeader.biHeight;*/
 
 			// resize to powerof 2
-			if(myWidth>=1024)
+			if(mWidth>=1024)
 			{
-				myWidth=1024;
+				mWidth=1024;
 			}
-			else if(myWidth>=512)
+			else if(mWidth>=512)
 			{
-				myWidth=512;
+				mWidth=512;
 			}
-			else if(myWidth>=256)
+			else if(mWidth>=256)
 			{
-				myWidth=256;
+				mWidth=256;
 			}
-			else if(myWidth>=128)
+			else if(mWidth>=128)
 			{
-				myWidth=128;
+				mWidth=128;
 			}
-			else if(myWidth>=64)
+			else if(mWidth>=64)
 			{
-				myWidth=64;
+				mWidth=64;
 			}
-			else if(myWidth>=32)
+			else if(mWidth>=32)
 			{
-				myWidth=32;
+				mWidth=32;
 			}
-			else if(myWidth>=16)
+			else if(mWidth>=16)
 			{
-				myWidth=16;
-			}
-			else
-			{
-				myWidth=8;
-			}
-
-			if(myHeight>=1024)
-			{
-				myHeight=1024;
-			}
-			else if(myHeight>=512)
-			{
-				myHeight=512;
-			}
-			else if(myHeight>=256)
-			{
-				myHeight=256;
-			}
-			else if(myHeight>=128)
-			{
-				myHeight=128;
-			}
-			else if(myHeight>=64)
-			{
-				myHeight=64;
-			}
-			else if(myHeight>=32)
-			{
-				myHeight=32;
-			}
-			else if(myHeight>=16)
-			{
-				myHeight=16;
+				mWidth=16;
 			}
 			else
 			{
-				myHeight=8;
+				mWidth=8;
 			}
 
-			if(myWidth<minwidth)
+			if(mHeight>=1024)
 			{
-				minwidth=myWidth;
+				mHeight=1024;
 			}
-			if(myHeight<minheight)
+			else if(mHeight>=512)
 			{
-				minheight=myHeight;
+				mHeight=512;
+			}
+			else if(mHeight>=256)
+			{
+				mHeight=256;
+			}
+			else if(mHeight>=128)
+			{
+				mHeight=128;
+			}
+			else if(mHeight>=64)
+			{
+				mHeight=64;
+			}
+			else if(mHeight>=32)
+			{
+				mHeight=32;
+			}
+			else if(mHeight>=16)
+			{
+				mHeight=16;
+			}
+			else
+			{
+				mHeight=8;
+			}
+
+			if(mWidth<minwidth)
+			{
+				minwidth=mWidth;
+			}
+			if(mHeight<minheight)
+			{
+				minheight=mHeight;
 			}
 		}
-		myWidth = minwidth;
-		myHeight = minheight;
+		mWidth = minwidth;
+		mHeight = minheight;
 		Format = GL_RGB;
-		myTransparencyType = 0;
+		mTransparencyType = 0;
 
 		// only one texture index
-		//glGenTextures(1,&myTextureGLIndex);
-		//glBindTexture (GL_TEXTURE_CUBE_MAP, myTextureGLIndex);
-		renderer->BindTexture (RENDERER_TEXTURE_CUBE_MAP, myTextureGLIndex);
+		//glGenTextures(1,&mTextureGLIndex);
+		//glBindTexture (GL_TEXTURE_CUBE_MAP, mTextureGLIndex);
+		renderer->BindTexture (RENDERER_TEXTURE_CUBE_MAP, mTextureGLIndex);
 		glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
 		//glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		renderer->TextureParameteri(RENDERER_TEXTURE_CUBE_MAP, RENDERER_TEXTURE_WRAP_S, RENDERER_REPEAT);
@@ -176,7 +176,7 @@ bool	OpenGLTexture::CubeMapGeneration()
 		renderer->TextureParameteri(RENDERER_TEXTURE_CUBE_MAP, RENDERER_TEXTURE_WRAP_T, RENDERER_REPEAT);
 		//glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		renderer->TextureParameteri(RENDERER_TEXTURE_CUBE_MAP, RENDERER_TEXTURE_MAG_FILTER, RENDERER_LINEAR);
-		if(myHasMipmap)
+		if(mHasMipmap)
 		{
 			//glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			renderer->TextureParameteri(RENDERER_TEXTURE_CUBE_MAP, RENDERER_TEXTURE_MIN_FILTER, RENDERER_LINEAR_MIPMAP_LINEAR);
@@ -193,11 +193,11 @@ bool	OpenGLTexture::CubeMapGeneration()
 			/*BITMAPINFO Info;
 			ilBindImage(Img[index]);
 			ilutGetBmpInfo(&Info);
-			iluScale(myWidth,myHeight,(int)Info.bmiHeader.biPlanes);
+			iluScale(mWidth,mHeight,(int)Info.bmiHeader.biPlanes);
 			ilConvertImage(IL_RGB,IL_UNSIGNED_BYTE);*/
 			unsigned char *T = Img[index]->GetPixelData(); //ilGetData();
 
-			if(myHasMipmap)
+			if(mHasMipmap)
 			{
 				glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 			}
@@ -206,7 +206,7 @@ bool	OpenGLTexture::CubeMapGeneration()
 				glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 			}
 
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, Format, myWidth, myHeight, 0, Format, GL_UNSIGNED_BYTE, T);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, Format, mWidth, mHeight, 0, Format, GL_UNSIGNED_BYTE, T);
 			delete Img[index];
 		}
 
@@ -219,8 +219,8 @@ bool	OpenGLTexture::CubeMapGeneration()
 
 bool	OpenGLTexture::UpdateBufferZone(unsigned char* bitmapbuffer, const BBox2DI& zone, const Point2DI& bitmapSize)
 {
-	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->BindTexture(RENDERER_TEXTURE_2D, myTextureGLIndex);
+	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	renderer->BindTexture(RENDERER_TEXTURE_2D, mTextureGLIndex);
 	renderer->FlushState();
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, bitmapSize.x);
@@ -248,20 +248,20 @@ bool			OpenGLTexture::UseDynamicTexture(unsigned char* buffer, unsigned int widt
 
 void	OpenGLTexture::GetPixels(unsigned int* _array)
 {
-	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	renderer->FlushState();
-	//glBindTexture(GL_TEXTURE_2D,myTextureGLIndex);
+	//glBindTexture(GL_TEXTURE_2D,mTextureGLIndex);
 	renderer->ActiveTextureChannel(0);
-	renderer->BindTexture(RENDERER_TEXTURE_2D, myTextureGLIndex);
+	renderer->BindTexture(RENDERER_TEXTURE_2D, mTextureGLIndex);
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV, _array);
 }
 
 void	OpenGLTexture::SetPixels(unsigned int* _array, int Width, int Height)
 {
-	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	renderer->FlushState();
 	renderer->ActiveTextureChannel(0);
-	//glBindTexture(GL_TEXTURE_2D,myTextureGLIndex);
-	renderer->BindTexture(RENDERER_TEXTURE_2D, myTextureGLIndex);
+	//glBindTexture(GL_TEXTURE_2D,mTextureGLIndex);
+	renderer->BindTexture(RENDERER_TEXTURE_2D, mTextureGLIndex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, _array);
 }

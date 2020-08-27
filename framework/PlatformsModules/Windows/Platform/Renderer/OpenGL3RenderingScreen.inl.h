@@ -21,18 +21,18 @@ IMPLEMENT_CLASS_INFO(OpenGLPlatformRenderingScreen)
 
 OpenGLPlatformRenderingScreen::OpenGLPlatformRenderingScreen(const kstl::string& name, CLASS_NAME_TREE_ARG) : RenderingScreen(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	myhDC = 0;
-	myhRC = 0;
-	myhWnd = 0;
+	mHDC = 0;
+	mHRC = 0;
+	mHWnd = 0;
 }
 
 OpenGLPlatformRenderingScreen::~OpenGLPlatformRenderingScreen()
 {
-	if (myhRC != 0)
-		wglDeleteContext(myhRC);
+	if (mHRC != 0)
+		wglDeleteContext(mHRC);
 
-	if (myhDC != 0)
-		ReleaseDC(myhWnd, myhDC);
+	if (mHDC != 0)
+		ReleaseDC(mHWnd, mHDC);
 }
 
 void    OpenGLPlatformRenderingScreen::InitModifiable()
@@ -42,23 +42,23 @@ void    OpenGLPlatformRenderingScreen::InitModifiable()
 
 	RenderingScreen::InitModifiable();
 
-	ModuleSpecificRenderer* renderer = RendererOpenGL::theGlobalRenderer; // ((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	ModuleSpecificRenderer* renderer = ModuleRenderer::mTheGlobalRenderer; // ((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	OpenGLRenderingScreen* firstScreen = (OpenGLRenderingScreen*)renderer->getFirstRenderingScreen();
 
 
 	RECT rect;
-	if (!myhWnd)
+	if (!mHWnd)
 	{
-		if (MyParentWindow && MyParentWindow->IsInit())
-			myhWnd = (HWND)MyParentWindow->GetHandle();
+		if (mParentWindow && mParentWindow->IsInit())
+			mHWnd = (HWND)mParentWindow->GetHandle();
 		/*else
-			myhWnd = firstScreen->myhWnd;*/
+			mHWnd = firstScreen->mHWnd;*/
 	}
 
-	if (myhWnd)
+	if (mHWnd)
 	{
-		myhDC = ::GetDC(myhWnd);
-		if (!SetupPixelFormat(myhDC))
+		mHDC = ::GetDC(mHWnd);
+		if (!SetupPixelFormat(mHDC))
 			PostQuitMessage(0);
 
 		// create a new context, as pixel format can be different
@@ -70,22 +70,22 @@ void    OpenGLPlatformRenderingScreen::InitModifiable()
 		if (firstScreen == this)
 		{
 
-			HGLRC temporaryContext = wglCreateContext(myhDC);
-			wglMakeCurrent(myhDC, temporaryContext);
+			HGLRC temporaryContext = wglCreateContext(mHDC);
+			wglMakeCurrent(mHDC, temporaryContext);
 
 			GLenum err = glewInit();
-			myhRC = wglCreateContextAttribsARB(myhDC, 0, attriblist); CHECK_GLERROR;
+			mHRC = wglCreateContextAttribsARB(mHDC, 0, attriblist); CHECK_GLERROR;
 
-			wglMakeCurrent(myhDC, 0);
+			wglMakeCurrent(mHDC, 0);
 			wglDeleteContext(temporaryContext);
 		}
 		else
 		{
-			myhRC = wglCreateContextAttribsARB(myhDC, firstScreen->myhRC, attriblist); CHECK_GLERROR;
+			mHRC = wglCreateContextAttribsARB(mHDC, firstScreen->mHRC, attriblist); CHECK_GLERROR;
 		}
-		wglMakeCurrent(myhDC, myhRC);
+		wglMakeCurrent(mHDC, mHRC);
 
-		GetClientRect(myhWnd, &rect);
+		GetClientRect(mHWnd, &rect);
 #ifdef FRAPS_CAPTURE_MODE
 		InitializeGL(rect.right, rect.bottom - 96);
 #else
@@ -94,9 +94,9 @@ void    OpenGLPlatformRenderingScreen::InitModifiable()
 	}
 	else
 	{
-		myhRC = firstScreen->myhRC;
-		myhDC = firstScreen->myhDC;
-		wglMakeCurrent(myhDC, myhRC);
+		mHRC = firstScreen->mHRC;
+		mHDC = firstScreen->mHDC;
+		wglMakeCurrent(mHDC, mHRC);
 	}
 
 	typedef bool (APIENTRY *PFNWGLSWAPINTERVALFARPROC)(int);
@@ -104,7 +104,7 @@ void    OpenGLPlatformRenderingScreen::InitModifiable()
 	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress("wglSwapIntervalEXT");
 
 	if (wglSwapIntervalEXT)
-		wglSwapIntervalEXT((bool)myWaitVSync);
+		wglSwapIntervalEXT((bool)mVSync);
 
 }
 
@@ -119,7 +119,7 @@ bool OpenGLPlatformRenderingScreen::SetupPixelFormat(HDC hdc)
 	ppfd->nSize = sizeof(PIXELFORMATDESCRIPTOR);
 	ppfd->nVersion = 1;
 	ppfd->dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_SWAP_EXCHANGE | PFD_GENERIC_ACCELERATED;
-	if (myNeedDoubleBuffer)
+	if (mNeedDoubleBuffer)
 	{
 		ppfd->dwFlags |= PFD_DOUBLEBUFFER;
 	}
@@ -152,8 +152,8 @@ bool OpenGLPlatformRenderingScreen::SetupPixelFormat(HDC hdc)
 void     OpenGLPlatformRenderingScreen::setCurrentContext()
 {
 	HDC current_dc = wglGetCurrentDC();
-	if (current_dc != myhDC)
-		wglMakeCurrent(myhDC, myhRC);
+	if (current_dc != mHDC)
+		wglMakeCurrent(mHDC, mHRC);
 
 }
 
@@ -161,21 +161,21 @@ void OpenGLPlatformRenderingScreen::Update(const Timer&  timer, void* addParam)
 {
 	RenderingScreen::Update(timer, addParam);
 	// move it in endframe ?
-	SwapBuffers(myhDC);
+	SwapBuffers(mHDC);
 }
 
 void	OpenGLPlatformRenderingScreen::UninitModifiable()
 {
-	if (myhRC != 0)
-		wglDeleteContext(myhRC);
+	if (mHRC != 0)
+		wglDeleteContext(mHRC);
 
-	if (myhDC != 0)
-		ReleaseDC(myhWnd, myhDC);
+	if (mHDC != 0)
+		ReleaseDC(mHWnd, mHDC);
 }
 
 
 void	OpenGLPlatformRenderingScreen::SetWindowByHandle(void *PtrToHandle)
 {
-	myhWnd = (HWND)PtrToHandle;
+	mHWnd = (HWND)PtrToHandle;
 }
 

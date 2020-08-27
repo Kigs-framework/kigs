@@ -3,7 +3,7 @@
 #include "Core.h"
 #include "BinMeshLoaderBase.h"
 
-BinMeshLoaderBase::BinMeshLoaderBase() : myFile(0)
+BinMeshLoaderBase::BinMeshLoaderBase() : mFile(0)
 {
 }
 
@@ -17,7 +17,7 @@ kstl::string	BinMeshLoaderBase::ReadString(BufferedFile*)
 	kstl::string result="";
 
 	char	tmpbuf;
-	while(fread(&tmpbuf,sizeof(char),1,myFile) == 1)
+	while(fread(&tmpbuf,sizeof(char),1,mFile) == 1)
 	{
 		if(tmpbuf != 0)
 		{

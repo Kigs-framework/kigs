@@ -48,31 +48,31 @@ void LocalizationManager::InitWithConfigFile(const kstl::string& filename)
 	if (!L_Dictionary.isNil())
 	{
 		// init map
-		kstl::map<kstl::string, kstl::string>	myLangageMap;
+		kstl::map<kstl::string, kstl::string>	langageMap;
 
 		CoreItemSP pathList = L_Dictionary;
 		int nbpath = pathList->size();
 		int i;
 		for (i = 0; i < nbpath; i += 2)
 		{
-			myLangageMap[(kstl::string)(CoreItem&)pathList[i]] = (kstl::string)(CoreItem&)pathList[i + 1];;
+			langageMap[(kstl::string)(CoreItem&)pathList[i]] = (kstl::string)(CoreItem&)pathList[i + 1];;
 		}
 
 		kstl::string	L_Lang = LocalizationManager::getCurrentUserLanguage();
-		kstl::map<kstl::string, kstl::string>::const_iterator	langFound = myLangageMap.find(L_Lang);
-		if (langFound != myLangageMap.end())
+		kstl::map<kstl::string, kstl::string>::const_iterator	langFound = langageMap.find(L_Lang);
+		if (langFound != langageMap.end())
 		{
 			setLocalizationFilePath((*langFound).second.c_str());
 			return;
 		}
 		
 		// is there a default ?
-		langFound = myLangageMap.find("default");
-		if (langFound != myLangageMap.end())
+		langFound = langageMap.find("default");
+		if (langFound != langageMap.end())
 		{
 			// so set default
-			langFound = myLangageMap.find((*langFound).second);
-			if (langFound != myLangageMap.end())
+			langFound = langageMap.find((*langFound).second);
+			if (langFound != langageMap.end())
 			{
 				setLocalizationFilePath((*langFound).second.c_str());
 				return;

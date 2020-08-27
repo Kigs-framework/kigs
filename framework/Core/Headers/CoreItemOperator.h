@@ -137,8 +137,8 @@ public:
 	}
 
 	static CoreItemSP	Construct(const kstl::string& formulae, CoreModifiable* target, kstl::vector<SpecificOperator>* specificList=0);
-	static CoreItemSP	Construct(const kstl::string& formulae, CoreModifiable* target, const kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap);
-	static void	ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	myMap, kstl::vector<SpecificOperator>* specificList = 0);
+	static CoreItemSP	Construct(const kstl::string& formulae, CoreModifiable* target, const kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	lmap);
+	static void	ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	lmap, kstl::vector<SpecificOperator>* specificList = 0);
 	static CoreItemSP	Parse(AsciiParserUtils& formulae, ConstructContext& context);
 
 protected:
@@ -875,7 +875,7 @@ class DynamicVariableOperator : public CoreItemOperator<operandType>
 {
 public:
 
-	DynamicVariableOperator(const kstl::string& varname) : myVarName(varname)
+	DynamicVariableOperator(const kstl::string& varname) : mVarName(varname)
 	{
 
 	}
@@ -885,7 +885,7 @@ public:
 protected:
 
 	
-	kstl::string	myVarName;
+	kstl::string	mVarName;
 
 };
 
@@ -896,12 +896,12 @@ class CoreModifiableAttributeOperator : public CoreItemOperator<operandType>
 {
 public:
 
-	CoreModifiableAttributeOperator(const kstl::string& path, CoreModifiable* target) : myAttributePath(path), myTarget(target), myAttribute(0), myArrayAttributeIndex(-1), myIsMethod(0){};
+	CoreModifiableAttributeOperator(const kstl::string& path, CoreModifiable* target) : mAttributePath(path), mTarget(target), mAttribute(0), mArrayAttributeIndex(-1), mIsMethod(0){};
 
 	// construct from an existing attribute
-	CoreModifiableAttributeOperator(CoreModifiableAttribute* attr) : myTarget(0), myAttribute(attr), myArrayAttributeIndex(-1), myIsMethod(0) 
+	CoreModifiableAttributeOperator(CoreModifiableAttribute* attr) : mTarget(0), mAttribute(attr), mArrayAttributeIndex(-1), mIsMethod(0) 
 	{
-		myAttributePath = "";
+		mAttributePath = "";
 	};
 
 	virtual operator operandType() const override;
@@ -917,17 +917,17 @@ protected:
 
 	void GetAttribute() const;
 
-	kstl::string				myAttributePath;
-	CoreModifiable*				myTarget;
+	kstl::string				mAttributePath;
+	CoreModifiable*				mTarget;
 
 	union
 	{
-		CoreModifiableAttribute*	myAttribute;
-		unsigned int				myMethodID;
+		CoreModifiableAttribute*	mAttribute;
+		unsigned int				mMethodID;
 	}; 
 
-	short						myArrayAttributeIndex;
-	short						myIsMethod;
+	short						mArrayAttributeIndex;
+	short						mIsMethod;
 };
 
 template<>

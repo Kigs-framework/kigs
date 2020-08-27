@@ -10,14 +10,9 @@
 /**
 * \file	TextureFileManager.h
 * \class	TextureFileManager
-* \ingroup Manager
 * \ingroup Renderer
-* \brief	this class is used to load / unload textures
-* \author	ukn
-* \version ukn
-* \date	ukn
+* \brief Manage texture to avoid redundant instances.
 *
-* Module Dependency :<br><ul><li>ModuleRenderer</li></ul>
 */
 // ****************************************
 class TextureFileManager : public CoreModifiable
@@ -90,7 +85,7 @@ public:
 	CMSP CreateSpriteSheetTexture(const kstl::string& textureName);
 
 
-	KIGS_TOOLS_ONLY(auto& GetTextureMap() const { return myTextureMap; })
+	KIGS_TOOLS_ONLY(auto& GetTextureMap() const { return mTextureMap; })
 
 
 protected:
@@ -101,7 +96,7 @@ protected:
 	virtual ~TextureFileManager();
 
 	//! For each extension, a path list.
-	kstl::map<kstl::string, CoreModifiable*> myTextureMap;
+	kstl::map<kstl::string, CoreModifiable*> mTextureMap;
 };
 
 #endif //_TEXTUREFILEMANAGER_H_

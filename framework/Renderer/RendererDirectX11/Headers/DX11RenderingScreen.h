@@ -2,8 +2,6 @@
 
 #include "RenderingScreen.h"
 
-// rendering screen is too much platform specific
-//#include "Platform/Renderer/DX11RenderingScreen.h"
 
 #include <d3d11_1.h>
 #include <dxgi1_2.h>
@@ -14,7 +12,17 @@
 #include <wrl/client.h>
 #endif
 
-
+// ****************************************
+// * DX11RenderingScreen class
+// * --------------------------------------
+/**
+ * \file	DX11RenderingScreen.h
+ * \class	DX11RenderingScreen
+ * \ingroup Renderer
+ * \brief	DX11 implementation of RenderingScreen.
+ *
+ */
+ // ****************************************
 class DX11RenderingScreen : public RenderingScreen
 {
 public:
@@ -38,7 +46,7 @@ public:
 
 	bool CreateResources();
 
-	bool IsMainRenderingScreen() { return !myUseFBO && !myIsOffScreen; }
+	bool IsMainRenderingScreen() { return !mUseFBO && !mIsOffScreen; }
 
 #ifdef WUP
 	void SetRenderingParameters(winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters params) { mRenderingParameters = params; }
@@ -57,20 +65,20 @@ protected:
 	
 	void setCurrentContext() override;
 
-	HDC   myhDC = NULL;
-	HGLRC myhRC = NULL;
-	HWND  myhWnd = NULL;
+	HDC   mhDC = NULL;
+	HGLRC mHRC = NULL;
+	HWND  mHWnd = NULL;
 
 #ifdef WUP
-	winrt::com_ptr<ID3D11Texture2D>			m_renderTargetBuffer;
-	winrt::com_ptr<ID3D11RenderTargetView>	m_renderTargetView;
-	winrt::com_ptr<ID3D11Texture2D>			m_depthStencilBuffer;
-	winrt::com_ptr<ID3D11DepthStencilView>	m_depthStencilView;
+	winrt::com_ptr<ID3D11Texture2D>			mRenderTargetBuffer;
+	winrt::com_ptr<ID3D11RenderTargetView>	mRenderTargetView;
+	winrt::com_ptr<ID3D11Texture2D>			mDepthStencilBuffer;
+	winrt::com_ptr<ID3D11DepthStencilView>	mDepthStencilView;
 #else
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>			m_renderTargetBuffer;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	m_renderTargetView;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>			m_depthStencilBuffer;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_depthStencilView;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>			mRenderTargetBuffer;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	mRenderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>			mDepthStencilBuffer;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	mDepthStencilView;
 #endif
 	unsigned int mCurrentFrameNumber = -1;
 #ifdef WUP

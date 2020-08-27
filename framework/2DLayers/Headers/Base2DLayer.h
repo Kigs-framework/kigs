@@ -23,7 +23,18 @@ class MouseVelocityComputer;
 class MultiTouchPinch;
 class TravState;
 
-
+// ****************************************
+// * Base2DLayer class
+// * --------------------------------------
+/**
+* \file	Base2DLayer.h
+* \class	Base2DLayer
+* \ingroup 2DLayers
+* \brief	Obsolete 2D Layer.
+*
+* Now use UI2DLayer insteed.
+*/
+// ****************************************
 class Base2DLayer : public Abstract2DLayer
 {
 public:
@@ -88,7 +99,7 @@ public:
 	 * \fn 		BaseTilesBank*	GetTileBank()
 	 * \return	the tile bank
 	 */
-	BaseTilesBank*	GetTileBank() { return myTilesBank; }
+	BaseTilesBank*	GetTileBank() { return mTilesBank; }
 
 	/**
 	 * \brief	get the virtual screen
@@ -105,7 +116,7 @@ public:
 	 * \fn 		BaseTileBuffer* GetTileBuffer()
 	 * \return	the tile buffer
 	 */
-	BaseTileBuffer* GetTileBuffer() { return myTileBuffer; }
+	BaseTileBuffer* GetTileBuffer() { return mTileBuffer; }
 
 	// *******************************************************
 	// Tiles layer method
@@ -135,8 +146,8 @@ public:
 
 	void setScreenPos(int scrX, int scrY);
 
-	void GetPositionOnScreen(kfloat X, kfloat Y, kfloat &myPosX, kfloat &myPosY);
-	void GetPositionOnLayer(kfloat X, kfloat Y, kfloat &myPosX, kfloat &myPosY);
+	void GetPositionOnScreen(kfloat X, kfloat Y, kfloat &PosX, kfloat &PosY);
+	void GetPositionOnLayer(kfloat X, kfloat Y, kfloat &PosX, kfloat &PosY);
 
 	// *******************************************************
 	// Direct draw method for bitmap layer only
@@ -145,7 +156,7 @@ public:
 
 	virtual void AddDirectDraw(DirectDrawStruct* toAdd)	
 	{
-		m_DirectDrawList.push_back(toAdd);
+		mDirectDrawList.push_back(toAdd);
 	}
 
 	virtual void RemoveDirectDraw(DirectDrawStruct* toRemove);
@@ -168,59 +179,59 @@ protected:
 	void	InitModifiable() override;
 
 	//! type of the layer ("Character","Bitmap" or "Sprite")
-	maEnum<3>			myType;
-	maBool				myUsePalette;
+	maEnum<3>			mType;
+	maBool				mUsePalette;
 	//! type of the layer color mode ("16","256","256x16","DC")
-	maEnum<4>			myColorMode;
+	maEnum<4>			mColorMode;
 	//! name of the linked virtualScreen
-	maString			myVirtualScreenName;
+	maString			mVirtualScreenName;
 	//! repeat mode
-	maBool				myRepeatX;
-	maBool				myRepeatY;
+	maBool				mRepeatX;
+	maBool				mRepeatY;
 
 	//! linked sprite manager if any
-	SpriteManager*		mySpriteManager;
+	SpriteManager*		mSpriteManager;
 	
 	//! pointer to the texture (from a bitmap)
-	Texture*			myBitmapTexture;
+	Texture*			mBitmapTexture;
 
 	//! file name (texture file)
-	maString			myFileName;
+	maString			mFileName;
 
 	//! pointer to the tile bank
-	BaseTilesBank*		myTilesBank;
+	BaseTilesBank*		mTilesBank;
 
 	//! pointer to the virtual screen
-	VirtualTileScreen*	myVirtualScreen;
+	VirtualTileScreen*	mVirtualScreen;
 
 	//! tile buffer
-	BaseTileBuffer*		myTileBuffer;
+	BaseTileBuffer*		mTileBuffer;
 
 	//! Scroll on X axis of the screen
-	int					myScrollX;
+	int					mScrollX;
 	//! Scroll on Y axis of the screen
-	int					myScrollY;
+	int					mScrollY;
 
 	// position on X axis of the screen on the layer
-	int					myLayerOffsetX;
+	int					mLayerOffsetX;
 	// position on Y axis of the screen on the layer
-	int					myLayerOffsetY;
+	int					mLayerOffsetY;
 
 	// position on X axis of the screen on the layer
-	int					myScreenOffsetX;
+	int					mScreenOffsetX;
 	// position on Y axis of the screen on the layer
-	int					myScreenOffsetY;
+	int					mScreenOffsetY;
 
-	maInt				myScreenPosX;
-	maInt				myScreenPosY;
-	int					myOldScreenPosX;
-	int					myOldScreenPosY;
+	maInt				mScreenPosX;
+	maInt				mScreenPosY;
+	int					mOldScreenPosX;
+	int					mOldScreenPosY;
 
-	bool				bShouldSetOffset;
-	bool				bShouldUploadData;
+	bool				mShouldSetOffset;
+	bool				mShouldUploadData;
 
-	bool mySecondTouch;
+	bool mSecondTouch;
 	
-	kstl::vector<DirectDrawStruct*> m_DirectDrawList;
+	kstl::vector<DirectDrawStruct*> mDirectDrawList;
 };
 #endif //BASE2DLAYER_H_

@@ -21,7 +21,7 @@ public:
 
 	void*	GetContextHandle()
 	{
-		return &myhDC;
+		return &mHDC;
 	}
 
 protected:
@@ -40,10 +40,10 @@ protected:
    
 	bool SetupPixelFormat(HDC hdc);
 
-	HDC   myhDC; 
-	HGLRC myhRC; 
+	HDC   mHDC; 
+	HGLRC mHRC; 
 
-	HWND  myhWnd;
+	HWND  mHWnd;
 
 	// WGL_ARB_extensions_string
 	static PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB;

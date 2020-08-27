@@ -53,41 +53,41 @@ int main(int argc, char *argv[])
 
 	// no need to register app to factory
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));
-	CoreBaseApplication*	myApp = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
+	CoreBaseApplication*	lApp = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
 
 	int i;
 	for(i=0;i<argc;i++)
 	{
-		myApp->PushArg(argv[i]);
+		lApp->PushArg(argv[i]);
 	}
 
 
 #ifdef INIT_DEFAULT_MODULES
 #ifdef BASE_DATA_PATH
 		//! then init
-		myApp->InitApp(BASE_DATA_PATH,true);
+		lApp->InitApp(BASE_DATA_PATH,true);
 #else
 		//! then init
-		myApp->InitApp(0,true);
+		lApp->InitApp(0,true);
 #endif //BASE_DATA_PATH
 
 #else
 		//! then init
-		myApp->InitApp(0,false);
+		lApp->InitApp(0,false);
 
 #endif //INIT_DEFAULT_MODULES
 
 	//! update
-	while(!myApp->NeedExit() && !quit)
+	while(!lApp->NeedExit() && !quit)
 	{
-		myApp->UpdateApp();
+		lApp->UpdateApp();
 	}
 
 	//! close
-	myApp->CloseApp();
+	lApp->CloseApp();
 
 	//! delete
-	myApp->Destroy();
+	lApp->Destroy();
 
 	//! last thing to do
 	KigsCore::Close();
@@ -111,34 +111,34 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	// no need to register app to factory
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));
-	CoreBaseApplication*	myApp = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
+	CoreBaseApplication*	lApp = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
 	   
 #ifdef INIT_DEFAULT_MODULES
 #ifdef BASE_DATA_PATH
 	//! then init
-	myApp->InitApp(BASE_DATA_PATH, true);
+	lApp->InitApp(BASE_DATA_PATH, true);
 #else
 	//! then init
-	myApp->InitApp(0, true);
+	lApp->InitApp(0, true);
 #endif //BASE_DATA_PATH
 
 #else
 	//! then init
-	myApp->InitApp(0, false);
+	lApp->InitApp(0, false);
 
 #endif //INIT_DEFAULT_MODULES
 
 	//! update
-	while (!myApp->NeedExit() && !quit)
+	while (!lApp->NeedExit() && !quit)
 	{
-		myApp->UpdateApp();
+		lApp->UpdateApp();
 	}
 
 	//! close
-	myApp->CloseApp();
+	lApp->CloseApp();
 
 	//! delete
-	myApp->Destroy();
+	lApp->Destroy();
 
 	//! last thing to do
 	KigsCore::Close();

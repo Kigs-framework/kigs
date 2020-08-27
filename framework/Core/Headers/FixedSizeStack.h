@@ -5,50 +5,50 @@ template<typename objectType, size_t MaxSize>
 class FixedSizeStack
 {
 public:
-	FixedSizeStack() : myCurrentSize(0)
+	FixedSizeStack() : mCurrentSize(0)
 	{
 	}
 
 	void	push_back(const objectType& topush)
 	{
-		assert(myCurrentSize < MaxSize);
-		myPreallocatedStack[myCurrentSize] = topush;
-		++myCurrentSize;
+		assert(mCurrentSize < MaxSize);
+		mPreallocatedStack[mCurrentSize] = topush;
+		++mCurrentSize;
 	}
 
 	void	push_back()
 	{
-		assert(myCurrentSize < MaxSize);
-		++myCurrentSize;
+		assert(mCurrentSize < MaxSize);
+		++mCurrentSize;
 	}
 
 	int	size() const
 	{
-		return myCurrentSize;
+		return mCurrentSize;
 	}
 
 	void pop_back()
 	{
-		assert(myCurrentSize > 0);
-		myCurrentSize--;
+		assert(mCurrentSize > 0);
+		mCurrentSize--;
 	}
 
 	objectType&	back()
 	{
-		assert(myCurrentSize > 0);
-		return myPreallocatedStack[myCurrentSize - 1];
+		assert(mCurrentSize > 0);
+		return mPreallocatedStack[mCurrentSize - 1];
 	}
 
 	objectType&	operator[](size_t index)
 	{
-		assert(index < myCurrentSize);
-		return myPreallocatedStack[index];
+		assert(index < mCurrentSize);
+		return mPreallocatedStack[index];
 	}
 
 protected:
 
-	objectType		myPreallocatedStack[MaxSize];
-	size_t			myCurrentSize;
+	objectType		mPreallocatedStack[MaxSize];
+	size_t			mCurrentSize;
 };
 
 #endif //_FIXEDSIZESTACK_H

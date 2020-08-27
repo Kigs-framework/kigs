@@ -11,20 +11,20 @@ IMPLEMENT_CLASS_INFO(MultiMesh);
 
 IMPLEMENT_CONSTRUCTOR(MultiMesh)
 {
-	_full_mesh_node = KigsCore::GetInstanceOf("full_mesh_node", "Node3D");
-	_full_mesh_node->Init();
-	ParentClassType::addItem((CMSP&)_full_mesh_node);
+	mFullMeshNode = KigsCore::GetInstanceOf("full_mesh_node", "Node3D");
+	mFullMeshNode->Init();
+	ParentClassType::addItem((CMSP&)mFullMeshNode);
 }
 
 void MultiMesh::PrepareExport(ExportSettings* settings)
 {
 	ParentClassType::PrepareExport(settings);
-	ParentClassType::removeItem((CMSP&)_full_mesh_node);
+	ParentClassType::removeItem((CMSP&)mFullMeshNode);
 }
 
 void MultiMesh::EndExport(ExportSettings* settings)
 {
-	ParentClassType::addItem((CMSP&)_full_mesh_node);
+	ParentClassType::addItem((CMSP&)mFullMeshNode);
 	ParentClassType::EndExport(settings);
 }
 
@@ -33,19 +33,19 @@ void MultiMesh::TravDraw(TravState* state)
 	ParentClassType::TravDraw(state);
 	if (IsAllSonsVisible() || state->IsAllVisible())
 	{
-		for (auto n : _subnodes)
+		for (auto n : mSubNodes)
 		{
 			n->setValue("Show", false);
 		}
-		_full_mesh_node->setValue("Show", true);
+		mFullMeshNode->setValue("Show", true);
 	}
 	else
 	{
-		for (auto n : _subnodes)
+		for (auto n : mSubNodes)
 		{
 			n->setValue("Show", true);
 		}
-		_full_mesh_node->setValue("Show", false);
+		mFullMeshNode->setValue("Show", false);
 	}
 }
 
@@ -53,14 +53,14 @@ bool	MultiMesh::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType("Node3D"))
 	{
-		if (std::find(_subnodes.begin(), _subnodes.end(), (Node3D*)item.get()) != _subnodes.end())
+		if (std::find(mSubNodes.begin(), mSubNodes.end(), (Node3D*)item.get()) != mSubNodes.end())
 			return false;
 
-		if (item == _full_mesh_node.get())
+		if (item == mFullMeshNode.get())
 			return false;
 		
-		_subnodes.push_back((Node3D*)item.get());
-		_need_full_mesh_recompute = true;
+		mSubNodes.push_back((Node3D*)item.get());
+		mNeedFullMeshRecompute = true;
 		NeedBoundingBoxUpdate();
 	}
 	return ParentClassType::addItem(item, pos PASS_LINK_NAME(linkName));
@@ -70,11 +70,11 @@ bool MultiMesh::removeItem(const CMSP& item)
 {
 	if (item->isSubType("Node3D"))
 	{
-		auto it = std::find(_subnodes.begin(), _subnodes.end(), (Node3D*)item.get());
-		if(it != _subnodes.end())
+		auto it = std::find(mSubNodes.begin(), mSubNodes.end(), (Node3D*)item.get());
+		if(it != mSubNodes.end())
 		{
-			_subnodes.erase(it);
-			_need_full_mesh_recompute = true;
+			mSubNodes.erase(it);
+			mNeedFullMeshRecompute = true;
 			NeedBoundingBoxUpdate();
 		}
 	}
@@ -83,10 +83,10 @@ bool MultiMesh::removeItem(const CMSP& item)
 
 void MultiMesh::RecomputeBoundingBox()
 {
-	if (_need_full_mesh_recompute)
+	if (mNeedFullMeshRecompute)
 	{
-		_need_full_mesh_recompute = false;
-		_full_mesh_node->EmptyItemList();
+		mNeedFullMeshRecompute = false;
+		mFullMeshNode->EmptyItemList();
 
 		struct MeshNode
 		{
@@ -109,7 +109,7 @@ void MultiMesh::RecomputeBoundingBox()
 				}
 				else if(!item.mItem->isSubType("RendererMatrix") && already_inserted.find(item.mItem.get()) == already_inserted.end())
 				{
-					_full_mesh_node->addItem(item.mItem); 
+					mFullMeshNode->addItem(item.mItem); 
 					already_inserted.insert(item.mItem.get());
 				}
 			}
@@ -129,17 +129,17 @@ void MultiMesh::RecomputeBoundingBox()
 
 			for (auto item : group)
 			{
-				if (full_mesh_item->myVertexSize != 0 && item->myVertexSize != full_mesh_item->myVertexSize)
+				if (full_mesh_item->mVertexSize != 0 && item->mVertexSize != full_mesh_item->mVertexSize)
 				{
 					KIGS_ERROR("Cannot create a multimesh with different vertex sizes", 3);
 				}
 				else
 				{
-					full_mesh_item->myVertexSize = item->myVertexSize;
-					full_mesh_item->myVertexArrayMask = item->myVertexArrayMask;
-					full_mesh_item->myVertexDesc = item->myVertexDesc;
-					full_mesh_item->myTexCoordsScale = item->myTexCoordsScale;
-					full_mesh_item->myCullMode = item->myCullMode;
+					full_mesh_item->mVertexSize = item->mVertexSize;
+					full_mesh_item->mVertexArrayMask = item->mVertexArrayMask;
+					full_mesh_item->mVertexDesc = item->mVertexDesc;
+					full_mesh_item->mTexCoordsScale = item->mTexCoordsScale;
+					full_mesh_item->mCullMode = item->mCullMode;
 
 					auto mat = item->GetFirstSonByType("Material");
 					if (mat)
@@ -156,8 +156,8 @@ void MultiMesh::RecomputeBoundingBox()
 			}
 		}
 
-		full_mesh_item->myTriangleCount = total_index_count / 3;
-		full_mesh_item->myVertexCount = total_vertex_count;
+		full_mesh_item->mTriangleCount = total_index_count / 3;
+		full_mesh_item->mVertexCount = total_vertex_count;
 
 		char* vertex_buffer = new char[total_vertex_buffer_size];
 		int total_index_buffer_size = total_vertex_count < 65536 ? total_index_count * sizeof(u16) : total_index_count * sizeof(u32);
@@ -199,7 +199,7 @@ void MultiMesh::RecomputeBoundingBox()
 					int offset_pos = 0;
 					int offset_normals = -1;
 					int offset_tangents = -1;
-					for (auto d : item->myVertexDesc)
+					for (auto d : item->mVertexDesc)
 					{
 						if (d.type == ModernMesh::VertexElem::Type::Position3D)
 						{
@@ -215,7 +215,7 @@ void MultiMesh::RecomputeBoundingBox()
 						}
 					}
 
-					const auto vsize = item->myVertexSize;
+					const auto vsize = item->mVertexSize;
 					for (int i = 0; i < item->getVertexCount(); ++i)
 					{
 						auto vertex = vertex_buffer_write + i*vsize + offset_pos;
@@ -284,13 +284,13 @@ void MultiMesh::RecomputeBoundingBox()
 			}
 		}
 
-		full_mesh_item->myVertexBufferArray.SetBuffer(vertex_buffer, total_vertex_buffer_size);
-		full_mesh_item->myTriangleBuffer.SetBuffer(index_buffer, total_index_buffer_size);
+		full_mesh_item->mVertexBufferArray.SetBuffer(vertex_buffer, total_vertex_buffer_size);
+		full_mesh_item->mTriangleBuffer.SetBuffer(index_buffer, total_index_buffer_size);
 
 		full_mesh_item->Init();
 		full_mesh->addItem((CMSP&)full_mesh_item);
 		full_mesh->Init();
-		_full_mesh_node->addItem(full_mesh);
+		mFullMeshNode->addItem(full_mesh);
 	}
 	ParentClassType::RecomputeBoundingBox();
 }

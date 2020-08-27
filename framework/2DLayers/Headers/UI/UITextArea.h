@@ -30,7 +30,6 @@ public:
 	 */
 	UITextArea(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	//void			GetColor(kfloat &R, kfloat &G, kfloat &B, kfloat &A) { R = myTextColor[0]; G = myTextColor[1]; B = myTextColor[2]; A = myTextColor[3]; }
 	usString		GetText() const { return mText.us_str(); }
 	kstl::string	GetFontName() const { return mFont; }
 	kstl::string	GetReleaseAction() const { return mReleaseAction; }

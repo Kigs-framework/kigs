@@ -14,17 +14,17 @@ IMPLEMENT_CLASS_INFO(API3DLight)
 API3DLight::API3DLight(const kstl::string& name, CLASS_NAME_TREE_ARG)
 	: Light(name, PASS_CLASS_NAME_TREE_ARG)
 
-	, myPositionUniform(NULL)
-	, myCamPosUniform(NULL)
+	, mPositionUniform(NULL)
+	, mCamPosUniform(NULL)
 
-	, myDiffuseUniform(NULL)
-	, mySpecularUniform(NULL)
-	, myAmbiantUniform(NULL)
+	, mDiffuseUniform(NULL)
+	, mSpecularUniform(NULL)
+	, mAmbiantUniform(NULL)
 
-	, myAttenuationUniform(NULL)
-	, mySpotDirUniform(NULL)
-	, mySpotCutoffUniform(NULL)
-	, mySpotExponentUniform(NULL)
+	, mAttenuationUniform(NULL)
+	, mSpotDirUniform(NULL)
+	, mSpotCutoffUniform(NULL)
+	, mSpotExponentUniform(NULL)
 {
 
 }
@@ -34,75 +34,75 @@ void	API3DLight::InitModifiable()
 	
 	int lLightType = GetTypeOfLight();
 
-	myPositionUniform = KigsCore::GetInstanceOf(getName() + "PositionUniform", "API3DUniformFloat3");
-	myPositionUniform->setValue(LABEL_TO_ID(Name), "lightPos");
-	myPositionUniform->Init();
+	mPositionUniform = KigsCore::GetInstanceOf(getName() + "PositionUniform", "API3DUniformFloat3");
+	mPositionUniform->setValue(LABEL_TO_ID(Name), "lightPos");
+	mPositionUniform->Init();
 
-	myCamPosUniform = KigsCore::GetInstanceOf(getName() + "CamPosUniform", "API3DUniformFloat3");
-	myCamPosUniform->setValue(LABEL_TO_ID(Name), "camPos");
-	myCamPosUniform->Init();
+	mCamPosUniform = KigsCore::GetInstanceOf(getName() + "CamPosUniform", "API3DUniformFloat3");
+	mCamPosUniform->setValue(LABEL_TO_ID(Name), "camPos");
+	mCamPosUniform->Init();
 
-	myDiffuseUniform = KigsCore::GetInstanceOf(getName() + "DiffuseUniform", "API3DUniformFloat3");
-	myDiffuseUniform->setValue(LABEL_TO_ID(Name), "light_diffuse");
-	myDiffuseUniform->setArrayValue(LABEL_TO_ID(Value), myDiffuseColor[0], myDiffuseColor[1], myDiffuseColor[2]);
-	myDiffuseUniform->Init();
+	mDiffuseUniform = KigsCore::GetInstanceOf(getName() + "DiffuseUniform", "API3DUniformFloat3");
+	mDiffuseUniform->setValue(LABEL_TO_ID(Name), "light_diffuse");
+	mDiffuseUniform->setArrayValue(LABEL_TO_ID(Value), mDiffuseColor[0], mDiffuseColor[1], mDiffuseColor[2]);
+	mDiffuseUniform->Init();
 
-	mySpecularUniform = KigsCore::GetInstanceOf(getName() + "SpecularUniform", "API3DUniformFloat3");
-	mySpecularUniform->setValue(LABEL_TO_ID(Name), "light_specular");
-	mySpecularUniform->setArrayValue(LABEL_TO_ID(Value), mySpecularColor[0], mySpecularColor[1], mySpecularColor[2]);
-	mySpecularUniform->Init();
+	mSpecularUniform = KigsCore::GetInstanceOf(getName() + "SpecularUniform", "API3DUniformFloat3");
+	mSpecularUniform->setValue(LABEL_TO_ID(Name), "light_specular");
+	mSpecularUniform->setArrayValue(LABEL_TO_ID(Value), mSpecularColor[0], mSpecularColor[1], mSpecularColor[2]);
+	mSpecularUniform->Init();
 
-	myAmbiantUniform = KigsCore::GetInstanceOf(getName() + "AmbiantUniform", "API3DUniformFloat3");
-	myAmbiantUniform->setValue(LABEL_TO_ID(Name), "light_ambiant");
-	myAmbiantUniform->setArrayValue(LABEL_TO_ID(Value), myAmbientColor[0], myAmbientColor[1], myAmbientColor[2]);
-	myAmbiantUniform->Init();
+	mAmbiantUniform = KigsCore::GetInstanceOf(getName() + "AmbiantUniform", "API3DUniformFloat3");
+	mAmbiantUniform->setValue(LABEL_TO_ID(Name), "light_ambiant");
+	mAmbiantUniform->setArrayValue(LABEL_TO_ID(Value), mAmbientColor[0], mAmbientColor[1], mAmbientColor[2]);
+	mAmbiantUniform->Init();
 
 	// create shader uniform
 	if (lLightType == SPOT_LIGHT)
 	{
-		mySpotDirUniform = KigsCore::GetInstanceOf(getName() + "SpotDirUniform", "API3DUniformFloat3");
-		mySpotDirUniform->setValue(LABEL_TO_ID(Name), "spotDir");
-		mySpotDirUniform->setArrayValue(LABEL_TO_ID(Value), 0.0f, 0.0f, 0.0f);
-		mySpotDirUniform->setValue(LABEL_TO_ID(Normalize), true);
-		mySpotDirUniform->Init();
+		mSpotDirUniform = KigsCore::GetInstanceOf(getName() + "SpotDirUniform", "API3DUniformFloat3");
+		mSpotDirUniform->setValue(LABEL_TO_ID(Name), "spotDir");
+		mSpotDirUniform->setArrayValue(LABEL_TO_ID(Value), 0.0f, 0.0f, 0.0f);
+		mSpotDirUniform->setValue(LABEL_TO_ID(Normalize), true);
+		mSpotDirUniform->Init();
 
-		mySpotCutoffUniform = KigsCore::GetInstanceOf(getName() + "SpotCutoffUniform", "API3DUniformFloat");
-		mySpotCutoffUniform->setValue(LABEL_TO_ID(Name), "spotCutoff");
-		mySpotCutoffUniform->setValue(LABEL_TO_ID(Value), cosf(mySpotCutOff.const_ref())); // send directly the cos, so don't have to do it at each fragment
-		mySpotCutoffUniform->Init();
+		mSpotCutoffUniform = KigsCore::GetInstanceOf(getName() + "SpotCutoffUniform", "API3DUniformFloat");
+		mSpotCutoffUniform->setValue(LABEL_TO_ID(Name), "spotCutoff");
+		mSpotCutoffUniform->setValue(LABEL_TO_ID(Value), cosf(mSpotCutOff.const_ref())); // send directly the cos, so don't have to do it at each fragment
+		mSpotCutoffUniform->Init();
 
 
-		mySpotExponentUniform = KigsCore::GetInstanceOf(getName() + "SpotExponentUniform", "API3DUniformFloat");
-		mySpotExponentUniform->setValue(LABEL_TO_ID(Name), "spotExponent");
-		mySpotExponentUniform->setValue(LABEL_TO_ID(Value), mySpotAttenuation);
-		mySpotExponentUniform->Init();
+		mSpotExponentUniform = KigsCore::GetInstanceOf(getName() + "SpotExponentUniform", "API3DUniformFloat");
+		mSpotExponentUniform->setValue(LABEL_TO_ID(Name), "spotExponent");
+		mSpotExponentUniform->setValue(LABEL_TO_ID(Value), mSpotAttenuation);
+		mSpotExponentUniform->Init();
 	}
 
 	if (lLightType != DIRECTIONAL_LIGHT)
 	{
-		myAttenuationUniform = KigsCore::GetInstanceOf(getName() + "AttenuationUniform", "API3DUniformFloat3");
-		myAttenuationUniform->setValue(LABEL_TO_ID(Name), "attenuation");
-		myAttenuationUniform->setArrayValue(LABEL_TO_ID(Value), myConstAttenuation, myLinAttenuation, myQuadAttenuation);
-		myAttenuationUniform->Init();
+		mAttenuationUniform = KigsCore::GetInstanceOf(getName() + "AttenuationUniform", "API3DUniformFloat3");
+		mAttenuationUniform->setValue(LABEL_TO_ID(Name), "attenuation");
+		mAttenuationUniform->setArrayValue(LABEL_TO_ID(Value), mConstAttenuation, mLinAttenuation, mQuadAttenuation);
+		mAttenuationUniform->Init();
 	}
 
 	ParentClassType::InitModifiable();
 
-	mySpecularColor.changeNotificationLevel(Owner);
-	myDiffuseColor.changeNotificationLevel(Owner);
-	myAmbientColor.changeNotificationLevel(Owner);
-	mySpotAttenuation.changeNotificationLevel(Owner);
-	mySpotCutOff.changeNotificationLevel(Owner);
-	myConstAttenuation.changeNotificationLevel(Owner);
-	myLinAttenuation.changeNotificationLevel(Owner);
-	myQuadAttenuation.changeNotificationLevel(Owner);
-	myIsOn.changeNotificationLevel(Owner);
+	mSpecularColor.changeNotificationLevel(Owner);
+	mDiffuseColor.changeNotificationLevel(Owner);
+	mAmbientColor.changeNotificationLevel(Owner);
+	mSpotAttenuation.changeNotificationLevel(Owner);
+	mSpotCutOff.changeNotificationLevel(Owner);
+	mConstAttenuation.changeNotificationLevel(Owner);
+	mLinAttenuation.changeNotificationLevel(Owner);
+	mQuadAttenuation.changeNotificationLevel(Owner);
+	mIsOn.changeNotificationLevel(Owner);
 }
 
 
 API3DLight::~API3DLight()
 {
-	myPositionUniform = myCamPosUniform = mySpotCutoffUniform = mySpotExponentUniform = myDiffuseUniform = mySpecularUniform = myAmbiantUniform = myAttenuationUniform = mySpotDirUniform = nullptr;
+	mPositionUniform = mCamPosUniform = mSpotCutoffUniform = mSpotExponentUniform = mDiffuseUniform = mSpecularUniform = mAmbiantUniform = mAttenuationUniform = mSpotDirUniform = nullptr;
 
 	// notify scenegraph that I am dead
 	ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
@@ -111,37 +111,37 @@ API3DLight::~API3DLight()
 
 void API3DLight::NotifyUpdate(const unsigned int  labelid)
 {
-	if (labelid == mySpecularColor.getLabelID())
+	if (labelid == mSpecularColor.getLabelID())
 	{
-		if (mySpecularUniform)
-			mySpecularUniform->setArrayValue("Value", mySpecularColor[0], mySpecularColor[1], mySpecularColor[2]);
+		if (mSpecularUniform)
+			mSpecularUniform->setArrayValue("Value", mSpecularColor[0], mSpecularColor[1], mSpecularColor[2]);
 	}
-	else if (labelid == myAmbientColor.getLabelID())
+	else if (labelid == mAmbientColor.getLabelID())
 	{
-		if (myAmbiantUniform)
-			myAmbiantUniform->setArrayValue("Value", myAmbientColor[0], myAmbientColor[1], myAmbientColor[2]);
+		if (mAmbiantUniform)
+			mAmbiantUniform->setArrayValue("Value", mAmbientColor[0], mAmbientColor[1], mAmbientColor[2]);
 	}
-	else if (labelid == myDiffuseColor.getLabelID())
+	else if (labelid == mDiffuseColor.getLabelID())
 	{
-		if (myDiffuseUniform)
-			myDiffuseUniform->setArrayValue("Value", myDiffuseColor[0], myDiffuseColor[1], myDiffuseColor[2]);
+		if (mDiffuseUniform)
+			mDiffuseUniform->setArrayValue("Value", mDiffuseColor[0], mDiffuseColor[1], mDiffuseColor[2]);
 	}
-	else if (labelid == mySpotCutOff.getLabelID())
+	else if (labelid == mSpotCutOff.getLabelID())
 	{
-		if (mySpotCutoffUniform)
-			mySpotCutoffUniform->setValue("Value", cosf(mySpotCutOff.const_ref())); // send directly the cos, so don't have to do it at each fragment
+		if (mSpotCutoffUniform)
+			mSpotCutoffUniform->setValue("Value", cosf(mSpotCutOff.const_ref())); // send directly the cos, so don't have to do it at each fragment
 	}
-	else if (labelid == mySpotAttenuation.getLabelID())
+	else if (labelid == mSpotAttenuation.getLabelID())
 	{
-		if (mySpotExponentUniform)
-			mySpotExponentUniform->setValue("Value", mySpotAttenuation);
+		if (mSpotExponentUniform)
+			mSpotExponentUniform->setValue("Value", mSpotAttenuation);
 	}
-	else if (labelid == myConstAttenuation.getLabelID() || labelid == myLinAttenuation.getLabelID() || labelid == myQuadAttenuation.getLabelID())
+	else if (labelid == mConstAttenuation.getLabelID() || labelid == mLinAttenuation.getLabelID() || labelid == mQuadAttenuation.getLabelID())
 	{
-		if (myAttenuationUniform)
-			myAttenuationUniform->setArrayValue("Value", myConstAttenuation, myLinAttenuation, myQuadAttenuation);
+		if (mAttenuationUniform)
+			mAttenuationUniform->setArrayValue("Value", mConstAttenuation, mLinAttenuation, mQuadAttenuation);
 	}
-	else if (labelid == myIsOn.getLabelID())
+	else if (labelid == mIsOn.getLabelID())
 	{
 		ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
 		scenegraph->SignalLightChange(this);
@@ -150,23 +150,23 @@ void API3DLight::NotifyUpdate(const unsigned int  labelid)
 
 bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D & camPos)
 {
-	if (!myIsOn)
+	if (!mIsOn)
 		return false;
 
 
-	if (!myCamPosUniform)
+	if (!mCamPosUniform)
 	{
 		return false;
 	}
 
 	// init blend mode
 	/*renderer->SetBlendMode(RENDERER_BLEND_ON);
-	renderer->SetBlendFuncMode( (RendererBlendFuncMode)(int)myBlendTarget, (RendererBlendFuncMode)(int)myBlendSource);*/
+	renderer->SetBlendFuncMode( (RendererBlendFuncMode)(int)mBlendTarget, (RendererBlendFuncMode)(int)mBlendSource);*/
 	//renderer->SetDepthTestMode(true);
 	renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_ON);
 
 	
-	static_cast<API3DUniformFloat3*>(myCamPosUniform.get())->SetValue(&camPos.x);
+	static_cast<API3DUniformFloat3*>(mCamPosUniform.get())->SetValue(&camPos.x);
 
 	Point3D outP;
 	Vector3D outV;
@@ -181,14 +181,14 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D &
 	{
 		outP.Normalize();
 	}
-	static_cast<API3DUniformFloat3*>(myPositionUniform.get())->SetValue(&outP.x);
+	static_cast<API3DUniformFloat3*>(mPositionUniform.get())->SetValue(&outP.x);
 
-	if (mySpotDirUniform)
+	if (mSpotDirUniform)
 	{
 		// spot direction is minus z axis
 		Vector3D dir(0.0f, 0.0f, -1.0f);
 		lMat.TransformVector((Vector3D*)&dir.x, &outV);
-		static_cast<API3DUniformFloat3*>(mySpotDirUniform.get())->SetValue(&outV.x);
+		static_cast<API3DUniformFloat3*>(mSpotDirUniform.get())->SetValue(&outV.x);
 	}
 
 	return true;
@@ -201,7 +201,7 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D &
 
 bool	API3DLight::Draw(TravState* state)
 {
-	if (!myIsOn)
+	if (!mIsOn)
 		return true;
 
 
@@ -228,7 +228,7 @@ bool	API3DLight::Draw(TravState* state)
 
 		Vector3D dir(0.0f,0.0f,-1.0f);
 		lMat.TransformVector(&dir, &outDir);
-		//dd::cone(outP, outDir*10, Vector3D(1, 0, 0),((1-mySpotCutOff)/PI)*100, 0);
+		//dd::cone(outP, outDir*10, Vector3D(1, 0, 0),((1-mSpotCutOff)/PI)*100, 0);
 		dd::sphere(outP, Vector3D(1, 0, 0), 0.05);
 		dd::line(outP, outP + outDir, Vector3D(1, 0, 0));
 	}
@@ -245,112 +245,112 @@ void API3DLight::SetUniformLocation(int uniform, const char* location)
 {
 	if (uniform == DIFFUSE_COLOR)
 	{
-		if (myDiffuseUniform)
+		if (mDiffuseUniform)
 		{
-			myDiffuseUniform->setValue("Name", location);
+			mDiffuseUniform->setValue("Name", location);
 		}
 	}
 	else if (uniform == SPECULAR_COLOR)
 	{
-		if (mySpecularUniform)
+		if (mSpecularUniform)
 		{
-			mySpecularUniform->setValue("Name", location);
+			mSpecularUniform->setValue("Name", location);
 		}
 	}
 	else if (uniform == AMBIANT_COLOR)
 	{
-		if (myAmbiantUniform)
+		if (mAmbiantUniform)
 		{
-			myAmbiantUniform->setValue("Name", location);
+			mAmbiantUniform->setValue("Name", location);
 		}
 	}
 	else if (uniform == POSITION_LIGHT)
 	{
-		if (myPositionUniform)
+		if (mPositionUniform)
 		{
-			myPositionUniform->setValue("Name", location);
+			mPositionUniform->setValue("Name", location);
 		}
 	}
 	else if (uniform == ATTENUATION)
 	{
-		if (myAttenuationUniform)
+		if (mAttenuationUniform)
 		{
-			myAttenuationUniform->setValue("Name", location);
+			mAttenuationUniform->setValue("Name", location);
 		}
 	}
 	else if (uniform == SPOT_CUT_OFF)
 	{
-		if (mySpotCutoffUniform)
+		if (mSpotCutoffUniform)
 		{
-			mySpotCutoffUniform->setValue("Name", location);
+			mSpotCutoffUniform->setValue("Name", location);
 		}
 	}
 	else if (uniform == SPOT_EXPONENT)
 	{
-		if (mySpotExponentUniform)
+		if (mSpotExponentUniform)
 		{
-			mySpotExponentUniform->setValue("Name", location);
+			mSpotExponentUniform->setValue("Name", location);
 		}
 	}
 	else if (uniform == SPOT_DIRECTION)
 	{
-		if (mySpotDirUniform)
+		if (mSpotDirUniform)
 		{
-			mySpotDirUniform->setValue("Name", location);
+			mSpotDirUniform->setValue("Name", location);
 		}
 	}
 }
 
 void API3DLight::DrawLight(TravState* travstate)
 {
-	if (!myIsOn)
+	if (!mIsOn)
 		return;
-	if (myPositionUniform)
-		((SP<API3DUniformBase>&)myPositionUniform)->DoPreDraw(travstate);
-	if (myCamPosUniform)
-		((SP < API3DUniformBase>&)myCamPosUniform)->DoPreDraw(travstate);
-	if (myDiffuseUniform)
-		((SP < API3DUniformBase>&)myDiffuseUniform)->DoPreDraw(travstate);
-	if (mySpecularUniform)
-		((SP < API3DUniformBase>&)mySpecularUniform)->DoPreDraw(travstate);
-	if (myAmbiantUniform)
-		((SP < API3DUniformBase>&)myAmbiantUniform)->DoPreDraw(travstate);
-	if (mySpotDirUniform)
-		((SP < API3DUniformBase>&)mySpotDirUniform)->DoPreDraw(travstate);
-	if (myAttenuationUniform)
-		((SP < API3DUniformBase>&)myAttenuationUniform)->DoPreDraw(travstate);
-	if (mySpotCutoffUniform)
-		((SP < API3DUniformBase>&)mySpotCutoffUniform)->DoPreDraw(travstate);
-	if (mySpotExponentUniform)
-		((SP < API3DUniformBase>&)mySpotExponentUniform)->DoPreDraw(travstate);
+	if (mPositionUniform)
+		((SP<API3DUniformBase>&)mPositionUniform)->DoPreDraw(travstate);
+	if (mCamPosUniform)
+		((SP < API3DUniformBase>&)mCamPosUniform)->DoPreDraw(travstate);
+	if (mDiffuseUniform)
+		((SP < API3DUniformBase>&)mDiffuseUniform)->DoPreDraw(travstate);
+	if (mSpecularUniform)
+		((SP < API3DUniformBase>&)mSpecularUniform)->DoPreDraw(travstate);
+	if (mAmbiantUniform)
+		((SP < API3DUniformBase>&)mAmbiantUniform)->DoPreDraw(travstate);
+	if (mSpotDirUniform)
+		((SP < API3DUniformBase>&)mSpotDirUniform)->DoPreDraw(travstate);
+	if (mAttenuationUniform)
+		((SP < API3DUniformBase>&)mAttenuationUniform)->DoPreDraw(travstate);
+	if (mSpotCutoffUniform)
+		((SP < API3DUniformBase>&)mSpotCutoffUniform)->DoPreDraw(travstate);
+	if (mSpotExponentUniform)
+		((SP < API3DUniformBase>&)mSpotExponentUniform)->DoPreDraw(travstate);
 }
 
 void API3DLight::PostDrawLight(TravState* travstate)
 {
-	if (!myIsOn)
+	if (!mIsOn)
 		return;
-	if (myPositionUniform)
-		((SP < API3DUniformBase>&)myPositionUniform)->DoPostDraw(travstate);
-	if (myCamPosUniform)
-		((SP < API3DUniformBase>&)myCamPosUniform)->DoPostDraw(travstate);
-	if (myDiffuseUniform)
-		((SP < API3DUniformBase>&)myDiffuseUniform)->DoPostDraw(travstate);
-	if (mySpecularUniform)
-		((SP < API3DUniformBase>&)mySpecularUniform)->DoPostDraw(travstate);
-	if (myAmbiantUniform)
-		((SP < API3DUniformBase>&)myAmbiantUniform)->DoPostDraw(travstate);
-	if (myAttenuationUniform)
-		((SP < API3DUniformBase>&)myAttenuationUniform)->DoPostDraw(travstate);
-	if (mySpotDirUniform)
-		((SP < API3DUniformBase>&)mySpotDirUniform)->DoPostDraw(travstate);
-	if (mySpotCutoffUniform)
-		((SP < API3DUniformBase>&)mySpotCutoffUniform)->DoPostDraw(travstate);
-	if (mySpotExponentUniform)
-		((SP < API3DUniformBase>&)mySpotExponentUniform)->DoPostDraw(travstate);
+	if (mPositionUniform)
+		((SP < API3DUniformBase>&)mPositionUniform)->DoPostDraw(travstate);
+	if (mCamPosUniform)
+		((SP < API3DUniformBase>&)mCamPosUniform)->DoPostDraw(travstate);
+	if (mDiffuseUniform)
+		((SP < API3DUniformBase>&)mDiffuseUniform)->DoPostDraw(travstate);
+	if (mSpecularUniform)
+		((SP < API3DUniformBase>&)mSpecularUniform)->DoPostDraw(travstate);
+	if (mAmbiantUniform)
+		((SP < API3DUniformBase>&)mAmbiantUniform)->DoPostDraw(travstate);
+	if (mAttenuationUniform)
+		((SP < API3DUniformBase>&)mAttenuationUniform)->DoPostDraw(travstate);
+	if (mSpotDirUniform)
+		((SP < API3DUniformBase>&)mSpotDirUniform)->DoPostDraw(travstate);
+	if (mSpotCutoffUniform)
+		((SP < API3DUniformBase>&)mSpotCutoffUniform)->DoPostDraw(travstate);
+	if (mSpotExponentUniform)
+		((SP < API3DUniformBase>&)mSpotExponentUniform)->DoPostDraw(travstate);
 }
 
 int API3DLight::GetTypeOfLight()
 {
-	return myLightType;
+	return mLightType;
 }
 

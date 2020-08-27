@@ -15,62 +15,17 @@ namespace KigsFramework
 {
 
 #endif
-	
-/*! 
- * \defgroup Maretial Internal material
- * \ingroup Renderer
- * Internal material classes
-*/
 
 // ****************************************
 // * Material class
 // * --------------------------------------
 /**
- * \file	Material.h
- * \class	Material
- * \ingroup Renderer
- * \brief	material class
- * \author	ukn
- * \version ukn
- * \date	ukn
- *
- * Exported parameters :<br>
- * <ul>
- * <li>
- *		int <strong>Facing</strong> :
- * </li>
- * <li>
- *		int <strong>BlendFuncSource</strong> : blend function source type
- * </li>
- * <li>
- *		int <strong>BlendFuncDest</strong> : blend function destination type
- * </li>
- * <li>
- *		bool <strong>BlendEnabled</strong> : TRUE to enable blending
- * </li>
- * <li>
- *		bool <strong>MaterialColorEnabled</strong> : TRUE to enable material color
- * </li>
- * <li>
- *		kfloat <strong>AmbientColor[4]</strong> : ambient color
- * </li>
- * <li>
- *		kfloat <strong>DiffuseColor[4]</strong> : diffuse color
- * </li>
- * <li>
- *		kfloat <strong>SpecularColor[4]</strong> : specular color
- * </li>
- * <li>
- *		kfloat <strong>EmissionColor[4]</strong> : emissive color
- * </li>
- * <li>
- *		kfloat <strong>Shininess</strong> : shininess
- * </li>
- * <li>
- *		kfloat <strong>Transparency</strong> : transparency
- * </li>
- * </ul>
- */
+* \file	Material.h
+* \class	Material
+* \ingroup Renderer
+* \brief	Base class, generic material object.
+*
+*/
 // ****************************************
 class Material : public Drawable 
 {
@@ -94,7 +49,7 @@ public:
 	 */
 	bool	PreDraw(TravState* travstate) override
 	{
-		if (travstate->myCurrentMaterial == this)
+		if (travstate->mCurrentMaterial == this)
 			return false;
 		
 		return Drawable::PreDraw(travstate);
@@ -124,10 +79,10 @@ public:
 	 */
 	void	SetAmbientColor(kfloat r,kfloat g,kfloat b,kfloat a=KFLOAT_CONST(1.0f))
 	{
-		myAmbientColor[0]=r;
-		myAmbientColor[1]=g;
-		myAmbientColor[2]=b;
-		myAmbientColor[3]=a;
+		mAmbientColor[0]=r;
+		mAmbientColor[1]=g;
+		mAmbientColor[2]=b;
+		mAmbientColor[3]=a;
 	}
 
 	/**
@@ -139,9 +94,9 @@ public:
 	 */
 	void	GetAmbientColor(kfloat& r,kfloat& g,kfloat& b)
 	{
-		r=myAmbientColor[0];
-		g=myAmbientColor[1];
-		b=myAmbientColor[2];
+		r=mAmbientColor[0];
+		g=mAmbientColor[1];
+		b=mAmbientColor[2];
 	}
 
 	/**
@@ -156,12 +111,12 @@ public:
 	{
 		if(a != KFLOAT_CONST(-1.0))
 		{
-			myTransparency=a;
+			mTransparency=a;
 		}
-		myDiffuseColor[0]=r;
-		myDiffuseColor[1]=g;
-		myDiffuseColor[2]=b;
-		myDiffuseColor[3]=myTransparency;
+		mDiffuseColor[0]=r;
+		mDiffuseColor[1]=g;
+		mDiffuseColor[2]=b;
+		mDiffuseColor[3]=mTransparency;
 	}
 
 	/**
@@ -173,9 +128,9 @@ public:
 	 */
 	void	GetDiffuseColor(kfloat& r,kfloat& g,kfloat& b)
 	{
-		r=myDiffuseColor[0];
-		g=myDiffuseColor[1];
-		b=myDiffuseColor[2];
+		r=mDiffuseColor[0];
+		g=mDiffuseColor[1];
+		b=mDiffuseColor[2];
 	}
 
 	/**
@@ -188,10 +143,10 @@ public:
 	 */
   void	SetSpecularColor(kfloat r,kfloat g,kfloat b,kfloat a=KFLOAT_CONST(1.0f))
 	{
-		mySpecularColor[0]=r;
-		mySpecularColor[1]=g;
-		mySpecularColor[2]=b;
-		mySpecularColor[3]=a;
+		mSpecularColor[0]=r;
+		mSpecularColor[1]=g;
+		mSpecularColor[2]=b;
+		mSpecularColor[3]=a;
 	}
 
 	/**
@@ -203,9 +158,9 @@ public:
 	 */
 	void	GetSpecularColor(kfloat& r,kfloat& g,kfloat& b)
 	{
-		r=mySpecularColor[0];
-		g=mySpecularColor[1];
-		b=mySpecularColor[2];
+		r=mSpecularColor[0];
+		g=mSpecularColor[1];
+		b=mSpecularColor[2];
 	}
 
 	/**
@@ -218,10 +173,10 @@ public:
 	 */
   void	SetEmissionColor(kfloat r,kfloat g,kfloat b,kfloat a=KFLOAT_CONST(1.0f))
 	{
-		myEmissionColor[0]=r;
-		myEmissionColor[1]=g;
-		myEmissionColor[2]=b;
-		myEmissionColor[3]=a;
+		mEmissionColor[0]=r;
+		mEmissionColor[1]=g;
+		mEmissionColor[2]=b;
+		mEmissionColor[3]=a;
 	}
 
 	/**
@@ -233,9 +188,9 @@ public:
 	 */
 	void	GetEmissionColor(kfloat& r,kfloat& g,kfloat& b)
 	{
-		r=myEmissionColor[0];
-		g=myEmissionColor[1];
-		b=myEmissionColor[2];
+		r=mEmissionColor[0];
+		g=mEmissionColor[1];
+		b=mEmissionColor[2];
 	}
 
 	/**
@@ -245,7 +200,7 @@ public:
 	*/
 	void GetShininess(kfloat& s)
 	{
-		s = myShininess;
+		s = mShininess;
 	}
 
 	/**
@@ -297,27 +252,27 @@ protected:
     virtual ~Material();  
 
 	//! 1 front, 2 back, 3 both
-	maInt			myFacing;
+	maInt			mFacing;
 	//! blend function source
-	maInt			myBlendFuncSource;
+	maInt			mBlendFuncSource;
 	//! blend function destination
-	maInt			myBlendFuncDest;
+	maInt			mBlendFuncDest;
 	//! TRUE if the blend is enabled
-	maBool			myBlendEnabled;
+	maBool			mBlendEnabled;
 	//! TRUE if the material color is enabled
-	maBool			myMaterialColorEnabled;
+	maBool			mMaterialColorEnabled;
 	//! ambient color
-	maVect4DF		myAmbientColor;
+	maVect4DF		mAmbientColor;
 	//! diffuse color
-	maVect4DF		myDiffuseColor;
+	maVect4DF		mDiffuseColor;
 	//! specular color
-	maVect4DF		mySpecularColor;
+	maVect4DF		mSpecularColor;
 	//! emission color
-	maVect4DF		myEmissionColor;
+	maVect4DF		mEmissionColor;
 	//! shininess
-	maFloat			myShininess;
+	maFloat			mShininess;
 	//! transparency
-	maFloat			myTransparency;
+	maFloat			mTransparency;
 
 }; 
 

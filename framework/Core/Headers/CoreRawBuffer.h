@@ -114,10 +114,10 @@ class CoreRawBuffer : public GenericRefCountedBaseClass
 {
 public:
 	CoreRawBuffer() = default;
-	CoreRawBuffer(void* buffer, unsigned int length, bool manageMemory=true) : myBuffer(buffer)
-		, myBufferLen(length)
-		, myBufferCapacity(length)
-		, myManagedMemory(manageMemory)
+	CoreRawBuffer(void* buffer, unsigned int length, bool manageMemory=true) : mBuffer(buffer)
+		, mBufferLen(length)
+		, mBufferCapacity(length)
+		, mManagedMemory(manageMemory)
 	{
 	};
 
@@ -153,28 +153,28 @@ public:
 
 	char * data() const
 	{
-		return ((char*)myBuffer + myOffset);
+		return ((char*)mBuffer + mOffset);
 	}
 
 	void clear()
 	{
-		if (!myManagedMemory) return;
-		myBufferCapacity = 0;
+		if (!mManagedMemory) return;
+		mBufferCapacity = 0;
 	}
 
 	void resize(size_t size)
 	{
-		if (!myManagedMemory) return;
+		if (!mManagedMemory) return;
 
-		if (size <= myBufferCapacity)
+		if (size <= mBufferCapacity)
 		{
-			myBufferLen = (u32)size;
+			mBufferLen = (u32)size;
 			return;
 		}
 
-		auto buffer = myBuffer;
-		auto old_size = myBufferLen;
-		myBuffer = nullptr;
+		auto buffer = mBuffer;
+		auto old_size = mBufferLen;
+		mBuffer = nullptr;
 		SetBuffer(nullptr, (unsigned int)size);
 		if (buffer) memcpy(data(), buffer, old_size);
 		delete[](char*)buffer;
@@ -182,85 +182,85 @@ public:
 
 	u32 size() const
 	{
-		return myBufferLen;
+		return mBufferLen;
 	}
 
 	virtual char* CopyBuffer() const
 	{
-		char* ret = new char[myBufferLen];
-		memcpy(ret, data(), myBufferLen);
+		char* ret = new char[mBufferLen];
+		memcpy(ret, data(), mBufferLen);
 		return ret;
 	}
 
 	u32	length() const
 	{
-		return myBufferLen;
+		return mBufferLen;
 	}
 	u32	capacity() const
 	{
-		return myBufferCapacity;
+		return mBufferCapacity;
 	}
 
 protected:
 
-	void*			myBuffer = nullptr;
-	uintptr_t		myOffset = 0;
-	u32				myBufferLen = 0;
-	u32				myBufferCapacity = 0;
-	bool			myManagedMemory = true;
+	void*			mBuffer = nullptr;
+	uintptr_t		mOffset = 0;
+	u32				mBufferLen = 0;
+	u32				mBufferCapacity = 0;
+	bool			mManagedMemory = true;
 
 
 	virtual void InternalSetBuffer(void* buffer, unsigned int length, bool manageMemory = true)
 	{
 		ProtectedDestroy();
 		if (!buffer)
-			myBuffer = new char[length];
+			mBuffer = new char[length];
 		else
-			myBuffer = buffer;
-		myOffset = 0;
-		myBufferLen = length;
-		myBufferCapacity = length;
-		myManagedMemory = !buffer || manageMemory;
+			mBuffer = buffer;
+		mOffset = 0;
+		mBufferLen = length;
+		mBufferCapacity = length;
+		mManagedMemory = !buffer || manageMemory;
 	}
 
 	virtual void InternalSetBuffer(const CoreRawBuffer& other)
 	{
 		if (this == &other) return;
 		ProtectedDestroy();
-		myBuffer = other.CopyBuffer();
-		myOffset = 0;
-		myBufferCapacity = myBufferLen = other.size();
-		myManagedMemory = true;
+		mBuffer = other.CopyBuffer();
+		mOffset = 0;
+		mBufferCapacity = mBufferLen = other.size();
+		mManagedMemory = true;
 	}
 
 	virtual void InternalSetBuffer(CoreRawBuffer&& other)
 	{
 		if (this == &other) return;
 		ProtectedDestroy();
-		myBuffer = other.myBuffer;
-		myBufferLen = other.myBufferLen;
-		myBufferCapacity = other.myBufferCapacity;
-		myOffset = other.myOffset;
-		myManagedMemory = other.myManagedMemory;
-		other.myBuffer = nullptr;
-		other.myBufferLen = 0;
-		other.myManagedMemory = true;
-		other.myOffset = 0;
-		other.myBufferCapacity = 0;
+		mBuffer = other.mBuffer;
+		mBufferLen = other.mBufferLen;
+		mBufferCapacity = other.mBufferCapacity;
+		mOffset = other.mOffset;
+		mManagedMemory = other.mManagedMemory;
+		other.mBuffer = nullptr;
+		other.mBufferLen = 0;
+		other.mManagedMemory = true;
+		other.mOffset = 0;
+		other.mBufferCapacity = 0;
 	}
 
 	// manage buffer destruction when no more refcount
 	virtual void ProtectedDestroy()
 	{
-		if (myBuffer)
+		if (mBuffer)
 		{
 			// only if this manage the buffer
-			if(myManagedMemory)
-				delete[](char*)myBuffer;
-			myBuffer = 0;
+			if(mManagedMemory)
+				delete[](char*)mBuffer;
+			mBuffer = 0;
 		}
-		myBufferLen = 0;
-		myBufferCapacity = 0;
+		mBufferLen = 0;
+		mBufferCapacity = 0;
 	}
 };
 
@@ -295,27 +295,27 @@ public:
 
 	operator allocatedType*() const
 	{
-		return (allocatedType*)((u8*)myBuffer + myOffset);
+		return (allocatedType*)((u8*)mBuffer + mOffset);
 	}
 
 protected:
 	void InternalSetBufferAligned(void* buffer, u32 size)
 	{
-		myBufferCapacity = myBufferLen = size;
-		myBuffer = new char[size + alignement];
-		uintptr_t address = (uintptr_t)((uintptr_t)myBuffer + (alignement - 1))& (~(alignement - 1));
-		myOffset = address - (uintptr_t)myBuffer;
+		mBufferCapacity = mBufferLen = size;
+		mBuffer = new char[size + alignement];
+		uintptr_t address = (uintptr_t)((uintptr_t)mBuffer + (alignement - 1))& (~(alignement - 1));
+		mOffset = address - (uintptr_t)mBuffer;
 		if(buffer)
 			memcpy(data(), buffer, size);
-		myManagedMemory = true;
+		mManagedMemory = true;
 	}
 
 	virtual void InternalSetBuffer(void* buffer, unsigned int length, bool manageMemory = true) override
 	{
 		ProtectedDestroy();
-		myManagedMemory = manageMemory;
-		myBufferLen = length;
-		myBufferCapacity = length;
+		mManagedMemory = manageMemory;
+		mBufferLen = length;
+		mBufferCapacity = length;
 
 		if (!manageMemory) // just keep reference
 		{
@@ -323,8 +323,8 @@ protected:
 			{
 				KIGS_WARNING("setting unaligned data to AlignedCoreRawBuffer", 1);
 			}
-			myBuffer = buffer;
-			myOffset = 0;
+			mBuffer = buffer;
+			mOffset = 0;
 		}
 		else
 		{

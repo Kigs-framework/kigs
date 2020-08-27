@@ -9,16 +9,16 @@
 
 HLSLShaderInfo::~HLSLShaderInfo()
 {
-	if (internalShaderStruct)
-		internalShaderStruct->Release();
-	internalShaderStruct = nullptr;
+	if (mInternalShaderStruct)
+		mInternalShaderStruct->Release();
+	mInternalShaderStruct = nullptr;
 
-	if (blob) ((ID3DBlob*)blob)->Release();
+	if (mBlob) ((ID3DBlob*)mBlob)->Release();
 }
 
 HLSLProgramInfo::~HLSLProgramInfo()
 {
-	for (auto m : m_layouts)
+	for (auto m : mLayouts)
 		m.second->Release();
 }
 
@@ -37,30 +37,30 @@ API3DShader::~API3DShader()
 
 void API3DShader::setLayout()
 {
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 	ID3D11InputLayout* input_layout = nullptr;
-	auto vbm = (VertexBufferManager*)RendererDX11::theGlobalRenderer->GetVertexBufferManager();
+	auto vbm = (VertexBufferManager*)ModuleRenderer::mTheGlobalRenderer->GetVertexBufferManager();
 	auto hash = vbm->GetCurrentLayoutHash();
 	
 	if (hash == 0) return; // Keep the same input layout as previous
 
-	if (GetCurrentShaderProgram<HLSLProgramInfo>()->m_layouts.find(hash) == GetCurrentShaderProgram<HLSLProgramInfo>()->m_layouts.end())
+	if (GetCurrentShaderProgram<HLSLProgramInfo>()->mLayouts.find(hash) == GetCurrentShaderProgram<HLSLProgramInfo>()->mLayouts.end())
 	{
 		int descSize;
 		D3D11_INPUT_ELEMENT_DESC* layout = vbm->CreateLayoutDesc(descSize);
 		if (layout)
 		{
-			DX::ThrowIfFailed(device->m_device->CreateInputLayout(layout, descSize,
-																	((ID3DBlob*)GetCurrentVertexShaderInfo<HLSLShaderInfo>()->blob)->GetBufferPointer(),
-																	((ID3DBlob*)GetCurrentVertexShaderInfo<HLSLShaderInfo>()->blob)->GetBufferSize(),
-																	&(GetCurrentShaderProgram<HLSLProgramInfo>()->m_layouts[hash])));
-			input_layout = GetCurrentShaderProgram<HLSLProgramInfo>()->m_layouts[hash];
+			DX::ThrowIfFailed(device->mDevice->CreateInputLayout(layout, descSize,
+																	((ID3DBlob*)GetCurrentVertexShaderInfo<HLSLShaderInfo>()->mBlob)->GetBufferPointer(),
+																	((ID3DBlob*)GetCurrentVertexShaderInfo<HLSLShaderInfo>()->mBlob)->GetBufferSize(),
+																	&(GetCurrentShaderProgram<HLSLProgramInfo>()->mLayouts[hash])));
+			input_layout = GetCurrentShaderProgram<HLSLProgramInfo>()->mLayouts[hash];
 			free(layout);
 		}
 	}
 	else
 	{
-		input_layout = GetCurrentShaderProgram<HLSLProgramInfo>()->m_layouts[hash];
+		input_layout = GetCurrentShaderProgram<HLSLProgramInfo>()->mLayouts[hash];
 	}
 	vbm->ClearCurrentLayout();
 	
@@ -70,7 +70,7 @@ void API3DShader::setLayout()
 	}
 	//GetCurrentShaderProgram<HLSLProgramInfo>()->mID = 0;
 	// Set the vertex input layout.
-	device->m_deviceContext->IASetInputLayout(input_layout);
+	device->mDeviceContext->IASetInputLayout(input_layout);
 }
 
 ShaderInfo* API3DShader::CreateProgram()
@@ -132,32 +132,32 @@ void API3DShader::DoPostDraw(TravState* state)
 /*
 void API3DShader::ActiveSampler()
 {
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
-	device->m_deviceContext->PSSetSamplers(0,1,&m_sampleState);
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	device->mDeviceContext->PSSetSamplers(0,1,&m_sampleState);
 }
 
 void API3DShader::DeactiveSampler()
 {
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
-	device->m_deviceContext->PSSetSamplers(0, 1, nullptr);
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	device->mDeviceContext->PSSetSamplers(0, 1, nullptr);
 }
 */
 
 void API3DShader::Active(TravState* state, bool resetUniform)
 {
-	if (myCurrentShader)
+	if (mCurrentShader)
 	{
-		auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+		auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 #ifdef KIGS_TOOLS
 		++gRendererStats.ShaderSwitch;
 #endif
-		device->m_deviceContext->VSSetShader((ID3D11VertexShader*)GetCurrentVertexShaderInfo<HLSLShaderInfo>()->internalShaderStruct, nullptr, 0);
-		device->m_deviceContext->PSSetShader((ID3D11PixelShader*)(GetCurrentFragmentShaderInfo<HLSLShaderInfo>()->internalShaderStruct), nullptr, 0);
+		device->mDeviceContext->VSSetShader((ID3D11VertexShader*)GetCurrentVertexShaderInfo<HLSLShaderInfo>()->mInternalShaderStruct, nullptr, 0);
+		device->mDeviceContext->PSSetShader((ID3D11PixelShader*)(GetCurrentFragmentShaderInfo<HLSLShaderInfo>()->mInternalShaderStruct), nullptr, 0);
 
 		//ActiveSampler();
-		if (myUseGenericLight && state)
+		if (museGenericLight && state)
 		{
-			RendererDX11::theGlobalRenderer->as<RendererDX11>()->SendLightsInfo(state);
+			ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->SendLightsInfo(state);
 		}
 
 	}
@@ -166,14 +166,14 @@ void API3DShader::Active(TravState* state, bool resetUniform)
 void API3DShader::Deactive(TravState* state)
 {
 
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
-	device->m_deviceContext->VSSetShader(nullptr, nullptr, 0);
-	device->m_deviceContext->PSSetShader(nullptr, nullptr, 0);
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	device->mDeviceContext->VSSetShader(nullptr, nullptr, 0);
+	device->mDeviceContext->PSSetShader(nullptr, nullptr, 0);
 
 	//DeactiveSampler();
 
 	// Set the vertex input layout.
-	device->m_deviceContext->IASetInputLayout(nullptr);
+	device->mDeviceContext->IASetInputLayout(nullptr);
 }
 
 BuildShaderStruct*	API3DShader::Rebuild()
@@ -197,7 +197,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	};
 
 	std::string str;
-	myVertexShaderText.getValue(str);
+	mVertexShaderText.getValue(str);
 
 	std::string name = getName();
 	name.append("vertex");
@@ -219,7 +219,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		return nullptr;
 	}
 
-	myFragmentShaderText.getValue(str);
+	mFragmentShaderText.getValue(str);
 
 	name = getName();
 	name.append("frag");
@@ -241,35 +241,35 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	}
 		
 	// create shader object from bitcode
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 
 	BuildShaderStruct* toReturn = new BuildShaderStruct();
 	
-	toReturn->myVertexShader = new HLSLShaderInfo();
-	toReturn->myFragmentShader = new HLSLShaderInfo();
+	toReturn->mVertexShader = new HLSLShaderInfo();
+	toReturn->mFragmentShader = new HLSLShaderInfo();
 
-	static_cast<HLSLShaderInfo*>(toReturn->myVertexShader)->blob = vertexShaderBuffer;
-	static_cast<HLSLShaderInfo*>(toReturn->myFragmentShader)->blob = pixelShaderBuffer;
+	static_cast<HLSLShaderInfo*>(toReturn->mVertexShader)->mBlob = vertexShaderBuffer;
+	static_cast<HLSLShaderInfo*>(toReturn->mFragmentShader)->mBlob = pixelShaderBuffer;
 
 	ID3D11VertexShader* m_pVertexShader;
-	DX::ThrowIfFailed(device->m_device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &m_pVertexShader));
-	((HLSLShaderInfo*)toReturn->myVertexShader)->internalShaderStruct = m_pVertexShader;
-	D3DReflect(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**) & ((HLSLShaderInfo*)toReturn->myVertexShader)->reflector);
+	DX::ThrowIfFailed(device->mDevice->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &m_pVertexShader));
+	((HLSLShaderInfo*)toReturn->mVertexShader)->mInternalShaderStruct = m_pVertexShader;
+	D3DReflect(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**) & ((HLSLShaderInfo*)toReturn->mVertexShader)->mReflector);
 	
 
 	ID3D11PixelShader* m_pPixelShader;
-	DX::ThrowIfFailed(device->m_device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), nullptr, &m_pPixelShader));
-	((HLSLShaderInfo*)toReturn->myFragmentShader)->internalShaderStruct = m_pPixelShader;
-	D3DReflect(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**) & ((HLSLShaderInfo*)toReturn->myFragmentShader)->reflector);
+	DX::ThrowIfFailed(device->mDevice->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), nullptr, &m_pPixelShader));
+	((HLSLShaderInfo*)toReturn->mFragmentShader)->mInternalShaderStruct = m_pPixelShader;
+	D3DReflect(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**) & ((HLSLShaderInfo*)toReturn->mFragmentShader)->mReflector);
 
-	toReturn->myShaderProgram=CreateProgram();
+	toReturn->mShaderProgram=CreateProgram();
 
-	//toReturn->myShaderProgram->mID = 1; // say it's ok for m_layout init
+	//toReturn->mShaderProgram->mID = 1; // say it's ok for m_layout init
 
 	
-	if (!toReturn->myUniforms)
+	if (!toReturn->mUniforms)
 	{
-		toReturn->myUniforms = new kstl::map<UNIFORM_NAME_TYPE, UniformList*>();
+		toReturn->mUniforms = new kstl::map<UNIFORM_NAME_TYPE, UniformList*>();
 	}
 
 	return toReturn;
@@ -277,10 +277,10 @@ BuildShaderStruct*	API3DShader::Rebuild()
 /*
 ID3D11SamplerState* API3DShader::CreateSampler(D3D11_SAMPLER_DESC* desc)
 {
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 	// Create the texture sampler state.
 	ID3D11SamplerState* sampler;
-	HRESULT result = device->m_device->CreateSamplerState(desc, &sampler);
+	HRESULT result = device->mDevice->CreateSamplerState(desc, &sampler);
 	if (FAILED(result))
 	{
 		return nullptr;
@@ -298,28 +298,28 @@ void API3DShader::PushUniform(CoreModifiable* uni)
 
 	auto uniform = static_cast<API3DUniformBase*>(uni);
 
-	auto itfind = myCurrentShader->myUniforms->find(uniform->Get_ID());
+	auto itfind = mCurrentShader->mUniforms->find(uniform->Get_ID());
 	UniformList* ul = nullptr;
-	if (itfind == myCurrentShader->myUniforms->end())
+	if (itfind == mCurrentShader->mUniforms->end())
 	{
 		auto uni_name = uniform->Get_Name();
 		ul = new UniformList(uni_name);
-		(*myCurrentShader->myUniforms)[uniform->Get_ID()] = ul;
+		(*mCurrentShader->mUniforms)[uniform->Get_ID()] = ul;
 
-		auto vs = GetCurrentVertexShaderInfo<HLSLShaderInfo>()->reflector;
-		auto ps = GetCurrentFragmentShaderInfo<HLSLShaderInfo>()->reflector;
+		auto vs = GetCurrentVertexShaderInfo<HLSLShaderInfo>()->mReflector;
+		auto ps = GetCurrentFragmentShaderInfo<HLSLShaderInfo>()->mReflector;
 
 		D3D11_SHADER_INPUT_BIND_DESC sib_desc;
 		HRESULT result;
 		result = vs->GetResourceBindingDescByName(uni_name.c_str(), &sib_desc);
 		if (!FAILED(result))
 		{
-			ul->Location = sib_desc.BindPoint;
+			ul->mLocation = sib_desc.BindPoint;
 		}
 		result = ps->GetResourceBindingDescByName(uni_name.c_str(), &sib_desc);
 		if (!FAILED(result))
 		{
-			ul->LocationFragment = sib_desc.BindPoint;
+			ul->mLocationFragment = sib_desc.BindPoint;
 		}
 	}
 
@@ -328,7 +328,7 @@ void API3DShader::PushUniform(CoreModifiable* uni)
 		ul = itfind->second;
 	}
 
-	if (ul->Location == 0xffffffff && ul->LocationFragment == 0xffffffff)
+	if (ul->mLocation == 0xffffffff && ul->mLocationFragment == 0xffffffff)
 	{
 		kigsprintf("Failed to bind uniform: %s\n", uniform->Get_Name().c_str());
 		return;
@@ -346,9 +346,9 @@ void API3DShader::PopUniform(CoreModifiable* uni)
 	}
 
 	auto uniform = static_cast<API3DUniformBase*>(uni);
-	auto itfind = myCurrentShader->myUniforms->find(uniform->Get_ID());
-	if (itfind == myCurrentShader->myUniforms->end()) return;
-	if (itfind->second->Location == 0xffffffff) return;
+	auto itfind = mCurrentShader->mUniforms->find(uniform->Get_ID());
+	if (itfind == mCurrentShader->mUniforms->end()) return;
+	if (itfind->second->mLocation == 0xffffffff) return;
 
 	itfind->second->Pop();
 

@@ -4,14 +4,20 @@
 #include "Core.h"
 
 #include "TinyImage.h"
-
-/**
-* \class PNGClass
-* \brief holds PNG loading methods 
-*/
-
 class CoreRawBuffer;
 
+
+// ****************************************
+// * PNGClass class
+// * --------------------------------------
+/**
+* \file	PNGClass.h
+* \class	PNGClass
+* \ingroup TinyImageModule
+* \brief TinyImage specialized for PNG management.
+*
+*/
+// ****************************************
 class PNGClass : public TinyImage
 {
 friend class TinyImage;

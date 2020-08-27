@@ -4,8 +4,18 @@
 #include "ModernMesh.h"
 #include "DynamicGrowingBuffer.h"
 
-// mesh builder
-// used when mesh is imported from a not optimized format
+
+// ****************************************
+// * ModernMeshBuilder class
+// * --------------------------------------
+/**
+* \file	ModernMeshBuilder.h
+* \class	ModernMeshBuilder
+* \ingroup Renderer
+* \brief Utility class to create a ModernMesh instance from triangle lists. 
+*
+*/
+// ****************************************
 class	ModernMeshBuilder
 {
 public:
@@ -78,35 +88,35 @@ protected:
 
 
 
-	kstl::vector<int>											myVertexMergeBarriers;
-	kstl::vector<int>											myIndicesMergeBarriers;
-	kstl::vector<BBox>											mySectionsBBox;
-	kigs::unordered_map<unsigned int, kstl::vector<BuildVertexStruct> >	myVertexBuilder;
-	AbstractDynamicGrowingBuffer								myTriangles; 
-	AbstractDynamicGrowingBuffer								myVertexArray;
-	unsigned int												myCurrentVertexSize;
-	unsigned int												myCurrentVertexInSize;
-	unsigned int												myCurrentVertexBuilderSize;
-	unsigned int												myVertexArrayMask;
-	kstl::vector<ModernMesh::VertexElem>						myVertexDesc;
-	bool														myGroupBuilding = false;
+	kstl::vector<int>											mVertexMergeBarriers;
+	kstl::vector<int>											mIndicesMergeBarriers;
+	kstl::vector<BBox>											mSectionsBBox;
+	kigs::unordered_map<unsigned int, kstl::vector<BuildVertexStruct> >	mVertexBuilder;
+	AbstractDynamicGrowingBuffer								mTriangles; 
+	AbstractDynamicGrowingBuffer								mVertexArray;
+	unsigned int												mCurrentVertexSize;
+	unsigned int												mCurrentVertexInSize;
+	unsigned int												mCurrentVertexBuilderSize;
+	unsigned int												mVertexArrayMask;
+	kstl::vector<ModernMesh::VertexElem>						mVertexDesc;
+	bool														mGroupBuilding = false;
 
-	unsigned int												myGroupCount;
+	unsigned int												mGroupCount;
 
-	unsigned int												myTriangleChunkSize;
+	unsigned int												mTriangleChunkSize;
 
-	kfloat														myTexCoordsScale;
+	kfloat														mTexCoordsScale;
 
-	unsigned char*												myOneVertexData = nullptr;
-	bool														myGenerateNormals = false;
-	bool														myGenerateTangents = false;
-	float														mySmoothNormalsThreshold = 1;
-	bool														myNoMerge = false;
+	unsigned char*												mOneVertexData = nullptr;
+	bool														mGenerateNormals = false;
+	bool														mGenerateTangents = false;
+	float														mSmoothNormalsThreshold = 1;
+	bool														mNoMerge = false;
 
-	bool myBBoxInit = false;
-	BBox	myCurrentBBox;
-	bool	mySectionInit = true;
-	BBox	myCurrentSectionBBox;
+	bool	mBBoxInit = false;
+	BBox	mCurrentBBox;
+	bool	mSectionInit = true;
+	BBox	mCurrentSectionBBox;
 };
 		
 #endif //_MODERNMESHBUILDER_H_

@@ -57,7 +57,7 @@ void UIAnimatedSprite::InitModifiable()
 void UIAnimatedSprite::ComputeRealSize()
 {
 	ParentClassType::ComputeRealSize();
-	if (myTexture)
+	if (mTexture)
 	{
 		if (mSizeX == 0 && mSizeModeX == DEFAULT)
 			mRealSize.x = mCurrentSourceSize.x;
@@ -70,18 +70,18 @@ void UIAnimatedSprite::ChangeSpriteSheet(std::string const& filename)
 {
 	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 	mFileName = filename;
-	myTexture = textureManager->GetSpriteSheetTexture(filename);
+	mTexture = textureManager->GetSpriteSheetTexture(filename);
 	ChangeAnimation(mCurrentAnimation.c_str());
 }
 
 SpriteSheetTexture* UIAnimatedSprite::GetSpriteSheetTexture()
 {
-	return myTexture.get();
+	return mTexture.get();
 }
 
 bool UIAnimatedSprite::isAlpha(float X, float Y)
 {
-	//Try to get my mask
+	//Try to get mask
 	if (!mAlphaMask)
 	{
 		std::vector<ModifiableItemStruct> sons = getItems();
@@ -98,7 +98,7 @@ bool UIAnimatedSprite::isAlpha(float X, float Y)
 
 	if (mAlphaMask)
 	{
-		//Check on my mask the specified location
+		//Check on mask the specified location
 		return !mAlphaMask->CheckTo(X, Y);
 	}
 
@@ -107,16 +107,16 @@ bool UIAnimatedSprite::isAlpha(float X, float Y)
 
 void UIAnimatedSprite::ChangeAnimation(const std::string& _newAnimation)
 {
-	if (myTexture)
+	if (mTexture)
 	{
-		mFrameNumber = myTexture->Get_FrameNumber(_newAnimation);
+		mFrameNumber = mTexture->Get_FrameNumber(_newAnimation);
 		mCurrentAnimation = _newAnimation;
 		mCurrentFrame = 0;
 		mElpasedTime = 0;
 
 		int L_SourceSizeX = 0;
 		int L_SourceSizeY = 0;
-		myTexture->Get_SourceSize(mCurrentAnimation.const_ref(), L_SourceSizeX, L_SourceSizeY);
+		mTexture->Get_SourceSize(mCurrentAnimation.const_ref(), L_SourceSizeX, L_SourceSizeY);
 		mCurrentSourceSize = v2f(L_SourceSizeX, L_SourceSizeY);
 	}
 }
@@ -156,7 +156,7 @@ void UIAnimatedSprite::SetVertexArray(UIVerticesInfo * aQI)
 	aQI->Resize(4);
 	VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
 
-	const SpriteSheetFrame * f = myTexture ? myTexture->Get_AnimFrame(mCurrentAnimation, mCurrentFrame) : nullptr;
+	const SpriteSheetFrame * f = mTexture ? mTexture->Get_AnimFrame(mCurrentAnimation, mCurrentFrame) : nullptr;
 	if (!f || !f->Trimmed)
 	{
 		ParentClassType::SetVertexArray(aQI);
@@ -182,22 +182,22 @@ void UIAnimatedSprite::SetVertexArray(UIVerticesInfo * aQI)
 
 void UIAnimatedSprite::SetTexUV(UIVerticesInfo * aQI)
 {
-	if (myTexture && myTexture->Get_Texture())
+	if (mTexture && mTexture->Get_Texture())
 	{
 		v2f s, r;
-		myTexture->Get_Texture()->GetSize(s.x, s.y);
-		myTexture->Get_Texture()->GetRatio(r.x, r.y);
+		mTexture->Get_Texture()->GetSize(s.x, s.y);
+		mTexture->Get_Texture()->GetRatio(r.x, r.y);
 		s /= r;
 
 		float dx = 0.5f / s.x;
 		float dy = 0.5f / s.y;
 
-		const SpriteSheetFrame * f = myTexture->Get_AnimFrame(mCurrentAnimation, mCurrentFrame);
+		const SpriteSheetFrame * f = mTexture->Get_AnimFrame(mCurrentAnimation, mCurrentFrame);
 		if (f == nullptr)
 			return;
 
 		bool is_bgr = false;
-		if (myTexture->getValue("IsBGR", is_bgr) && is_bgr)
+		if (mTexture->getValue("IsBGR", is_bgr) && is_bgr)
 		{
 			aQI->Flag |= UIVerticesInfo_BGRTexture;
 		}
@@ -233,20 +233,20 @@ void UIAnimatedSprite::SetTexUV(UIVerticesInfo * aQI)
 
 void UIAnimatedSprite::PreDraw(TravState* state)
 {
-	if (myTexture  &&myTexture->Get_Texture())
-		myTexture->Get_Texture()->DoPreDraw(state);
+	if (mTexture  &&mTexture->Get_Texture())
+		mTexture->Get_Texture()->DoPreDraw(state);
 }
 
 void UIAnimatedSprite::PostDraw(TravState* state)
 {
-	if (myTexture &&myTexture->Get_Texture())
-		myTexture->Get_Texture()->DoPostDraw(state);
+	if (mTexture &&mTexture->Get_Texture())
+		mTexture->Get_Texture()->DoPostDraw(state);
 }
 
 int UIAnimatedSprite::GetTransparencyType()
 {
-	if (myTexture &&myTexture->Get_Texture() && GetOpacity() == 1.0f)
-		return myTexture->Get_Texture()->GetTransparency();
+	if (mTexture &&mTexture->Get_Texture() && GetOpacity() == 1.0f)
+		return mTexture->Get_Texture()->GetTransparency();
 	else // overall transparency
 		return 2;
 }

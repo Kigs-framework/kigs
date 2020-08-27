@@ -49,7 +49,7 @@ protected:
 	void ChangeAnimation(const std::string& newAnimation);
 	void ChangeSpriteSheet(const std::string& filename);
 
-	SmartPointer<SpriteSheetTexture> myTexture;
+	SmartPointer<SpriteSheetTexture> mTexture;
 
 	maString			mFileName = BASE_ATTRIBUTE(FileName, "");
 	maString			mCurrentAnimation = BASE_ATTRIBUTE(CurrentAnimation, "");;

@@ -619,7 +619,7 @@ void ImGuiLayer::TravDraw(TravState* state)
 	auto holo_before = state->GetHolographicMode();
 
 	state->SetHolographicMode(mRenderingScreen->as<RenderingScreen>()->IsHolographic());
-	state->HolographicUseStackMatrix = true;
+	state->mHolographicUseStackMatrix = true;
 
 	//state->SetCurrentDrawablePass(0);
 	state->SetAllVisible(false);
@@ -740,7 +740,7 @@ void ImGuiLayer::TravDraw(TravState* state)
 	renderer->SetElementBuffer(-1);
 	renderer->DisableTexture();
 
-	state->HolographicUseStackMatrix = false;
+	state->mHolographicUseStackMatrix = false;
 	state->SetHolographicMode(holo_before);
 	renderer->PopState();
 

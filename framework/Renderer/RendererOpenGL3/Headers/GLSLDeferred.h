@@ -50,7 +50,7 @@ protected:
 	void PostDrawTreatment(TravState* state);
 
 
-	int						mySize[2];
+	int						mSize[2];
 	short					myCoords[8];
 	unsigned int			myDepthTexture;
 	unsigned int			myFboTexture[5];

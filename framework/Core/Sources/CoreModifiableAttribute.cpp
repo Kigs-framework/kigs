@@ -333,7 +333,7 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 {
 	AttachedModifierBase::Init(caller, isGetter, addParam);
 
-	CoreItemEvaluationContext::SetContext(&myContext);
+	CoreItemEvaluationContext::SetContext(&mContext);
 
 	CoreModifiable::ATTRIBUTE_TYPE type = caller->getType();
 
@@ -351,15 +351,15 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 	case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
 	case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 	{
-		myContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kfloat>(0.0f);
-		myCurrentItem = CoreItemOperator<kfloat>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+		mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kfloat>(0.0f);
+		mCurrentItem = CoreItemOperator<kfloat>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 	}
 	break;
 	case CoreModifiable::ATTRIBUTE_TYPE::STRING:
 	case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 	{
-		myContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kstl::string>("");
-		myCurrentItem = CoreItemOperator<kstl::string>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+		mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kstl::string>("");
+		mCurrentItem = CoreItemOperator<kstl::string>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 	}
 	break;
 	case CoreModifiable::ATTRIBUTE_TYPE::ARRAY:
@@ -368,18 +368,18 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 		unsigned int asize = caller->getNbArrayElements();
 		if (asize == 2)
 		{
-			myContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Point2D>();
-			myCurrentItem = CoreItemOperator<Point2D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Point2D>();
+			mCurrentItem = CoreItemOperator<Point2D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 		}
 		else if (asize == 3)
 		{
-			myContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Point3D>();
-			myCurrentItem = CoreItemOperator<Point3D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Point3D>();
+			mCurrentItem = CoreItemOperator<Point3D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 		}
 		else if (asize == 4)
 		{
-			myContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Vector4D>();
-			myCurrentItem = CoreItemOperator<Vector4D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Vector4D>();
+			mCurrentItem = CoreItemOperator<Vector4D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 
 		}
 	}
@@ -393,40 +393,40 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, kfloat& value)
 {
-	CoreItemEvaluationContext::SetContext(&myContext);
-	*((CoreValue<kfloat>*)myContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
-	value = *myCurrentItem.get();
+	CoreItemEvaluationContext::SetContext(&mContext);
+	*((CoreValue<kfloat>*)mContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
+	value = *mCurrentItem.get();
 	CoreItemEvaluationContext::ReleaseContext();
 };
 
 // strings
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, kstl::string& value)
 {
-	CoreItemEvaluationContext::SetContext(&myContext);
-	*((CoreValue<kstl::string>*)myContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
-	myCurrentItem->getValue(value);
+	CoreItemEvaluationContext::SetContext(&mContext);
+	*((CoreValue<kstl::string>*)mContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
+	mCurrentItem->getValue(value);
 	CoreItemEvaluationContext::ReleaseContext();
 }
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, usString& value)
 {
-	CoreItemEvaluationContext::SetContext(&myContext);
-	*((CoreValue<usString>*)myContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
-	myCurrentItem->getValue(value);
+	CoreItemEvaluationContext::SetContext(&mContext);
+	*((CoreValue<usString>*)mContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
+	mCurrentItem->getValue(value);
 	CoreItemEvaluationContext::ReleaseContext();
 }
 
 // 2D or 3D points
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, Point2D& value)
 {
-	CoreItemEvaluationContext::SetContext(&myContext);
-	*((CoreValue<Point2D>*)myContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
-	myCurrentItem->getValue(value);
+	CoreItemEvaluationContext::SetContext(&mContext);
+	*((CoreValue<Point2D>*)mContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
+	mCurrentItem->getValue(value);
 	CoreItemEvaluationContext::ReleaseContext();
 }
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, Point3D& value)
 {
-	CoreItemEvaluationContext::SetContext(&myContext);
-	*((CoreValue<Point3D>*)myContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
-	myCurrentItem->getValue(value);
+	CoreItemEvaluationContext::SetContext(&mContext);
+	*((CoreValue<Point3D>*)mContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
+	mCurrentItem->getValue(value);
 	CoreItemEvaluationContext::ReleaseContext();
 }

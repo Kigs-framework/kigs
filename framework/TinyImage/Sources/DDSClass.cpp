@@ -5,10 +5,10 @@
 #include "Core.h"
 
 DDSClass::DDSClass(FileHandle* fileName) :TinyImage()
-, myMipmapCount(0)
+, mMipmapCount(0)
 {
 	mIsVFlipped = false;
-	myInitIsOK = Load(fileName);
+	mInitIsOK = Load(fileName);
 	
 }
 
@@ -28,7 +28,7 @@ bool	DDSClass::Load(FileHandle* fileName)
 	u64 filelength;
 
 	// free previous image if any
-	if (myInitIsOK)
+	if (mInitIsOK)
 	{
 		if (mPixels)
 		{
@@ -53,16 +53,16 @@ bool	DDSClass::Load(FileHandle* fileName)
 		unsigned char* imgdata = (unsigned char*)imageheader;
 		imgdata += sizeof(DDS_HEADER);
 
-		myWidth = imageheader->dwWidth;
-		myHeight = imageheader->dwHeight;
-		myMipmapCount = imageheader->dwMipMapCount;
+		mWidth = imageheader->dwWidth;
+		mHeight = imageheader->dwHeight;
+		mMipmapCount = imageheader->dwMipMapCount;
 
-		mPixelLineSize = myWidth;
+		mPixelLineSize = mWidth;
 
 		if (imageheader->ddspf.dwFourCC == FCC_DXT1)
 		{
 			mFormat = BC1;
-			mPixelLineSize = myWidth / 2;
+			mPixelLineSize = mWidth / 2;
 		}
 		else if ((imageheader->ddspf.dwFourCC == FCC_DXT2) || (imageheader->ddspf.dwFourCC == FCC_DXT3))
 		{
@@ -73,10 +73,10 @@ bool	DDSClass::Load(FileHandle* fileName)
 			mFormat = BC3;
 		}
 
-		mPixelDataSize = mPixelLineSize*myHeight;
+		mPixelDataSize = mPixelLineSize*mHeight;
 
 		// if mimmap count, then put all mipmap in buffer
-		if (myMipmapCount)
+		if (mMipmapCount)
 		{
 			mPixels = new u8[dataSize];
 			memcpy(mPixels, imgdata, dataSize);

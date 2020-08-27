@@ -131,7 +131,7 @@ IMPLEMENT_CLASS_INFO(API3DUIShader)
 
 API3DUIShader::API3DUIShader(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DGenericMeshShader(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	myUseGenericLight = false;
+	museGenericLight = false;
 }
 
 API3DUIShader::~API3DUIShader()

@@ -13,9 +13,9 @@ void UIImageHighlight::ChangeTexture()
 		mPLTexturePointer = textureManager->GetTexture(mTexture);
 	}
 
-	if (myHLTexture.const_ref() != "")
+	if (mHLTexture.const_ref() != "")
 	{
-		mHLTexturePointer = textureManager->GetTexture(myHLTexture);
+		mHLTexturePointer = textureManager->GetTexture(mHLTexture);
 	}
 }
 

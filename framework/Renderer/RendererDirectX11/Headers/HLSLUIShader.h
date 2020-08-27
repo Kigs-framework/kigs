@@ -4,6 +4,17 @@
 #include "HLSLGenericMeshShader.h"
 #include "ModuleRenderer.h"
 
+// ****************************************
+// * API3DUIShader class
+// * --------------------------------------
+/**
+ * \file	HLSLUIShader.h
+ * \class	API3DUIShader
+ * \ingroup Renderer
+ * \brief	DX11 UI Shader.
+ */
+ // ****************************************
+
 class API3DUIShader : public API3DGenericMeshShader
 {
 public:
@@ -20,16 +31,16 @@ protected:
 	std::string GetFragmentShader() override;
 
 
-	bool bgr = false;
+	bool mBGR = false;
 	virtual unsigned int CustomizeShaderFlag(TravState* state, unsigned int attrib_flag, unsigned int current_shader_flag)
 	{
 		if (current_shader_flag & ModuleRenderer::SHADER_FLAGS_USER1)
 		{
-			bgr = true;
+			mBGR = true;
 		}
 		else
 		{
-			bgr = false;
+			mBGR = false;
 		}
 
 		return current_shader_flag;

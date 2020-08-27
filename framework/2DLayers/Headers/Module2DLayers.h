@@ -76,9 +76,6 @@ protected:
 	*/
 	virtual ~Module2DLayers();
 
-	//! list of layers
-//	kstl::set<CoreModifiable*> myLayerList;
-
 	static bool	mRotate180;
 };
 #endif //_MODULE2DLAYERS_H_

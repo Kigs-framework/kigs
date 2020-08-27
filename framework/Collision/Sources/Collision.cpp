@@ -432,9 +432,9 @@ bool Collision::CollideSphereAABBTreeNode(const Point3D &SphereOrigin,
 			{
 				TempNormal = pAABB.TriangleArray[i].m_normal;
 				if (CollideSphereTriangle(SphereOrigin, SphereVelocity, SphereRadius,
-					pMesh->VertexArray[pAABB.TriangleArray[i].m_Original->a],
-					pMesh->VertexArray[pAABB.TriangleArray[i].m_Original->b],
-					pMesh->VertexArray[pAABB.TriangleArray[i].m_Original->c],
+					pMesh->mVertexArray[pAABB.TriangleArray[i].m_Original->a],
+					pMesh->mVertexArray[pAABB.TriangleArray[i].m_Original->b],
+					pMesh->mVertexArray[pAABB.TriangleArray[i].m_Original->c],
 					TempDist, TempNormal, tempPoint))
 				{
 					if (TempDist < IntersectionDistance)

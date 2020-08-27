@@ -12,8 +12,8 @@
 IMPLEMENT_CLASS_INFO(ModuleSceneGraph);
 
 IMPLEMENT_CONSTRUCTOR(ModuleSceneGraph)
-, myTravState(nullptr)
-, mySceneListNeedsSort(*this, false, "SceneListNeedsSort", false)
+, mTravState(nullptr)
+, mSceneListNeedsSort(*this, false, "SceneListNeedsSort", false)
 {
 }
 
@@ -25,15 +25,15 @@ ModuleSceneGraph::~ModuleSceneGraph()
 void ModuleSceneGraph::AddDefferedItem(void* item, DefferedAction::ENUM action)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	sDefferedAction[item] = action;
+	mDefferedAction[item] = action;
 }
 
 void ModuleSceneGraph::NotifyDefferedItemDeath(CoreModifiable* item)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	auto found = sDefferedAction.find(item);
-	if (found != sDefferedAction.end())
-		sDefferedAction.erase(found);
+	auto found = mDefferedAction.find(item);
+	if (found != mDefferedAction.end())
+		mDefferedAction.erase(found);
 
 	RemoveFromParentScene(item);
 }
@@ -53,8 +53,8 @@ bool ModuleSceneGraph::FindParentScene(CoreModifiable* item, Scene3D** parent, b
 	if (checkSceneNode)
 	{
 		// check if we can find a scene with this camera
-		auto itScene = myScenes.begin();
-		auto itSceneend = myScenes.end();
+		auto itScene = mScenes.begin();
+		auto itSceneend = mScenes.end();
 
 		if (item->isSubType("Camera"))
 		{
@@ -107,12 +107,12 @@ bool ModuleSceneGraph::FindParentScene(CoreModifiable* item, Scene3D** parent, b
 
 bool ModuleSceneGraph::RemoveFromParentScene(CoreModifiable* item)
 {
-	if (myScenes.empty())
+	if (mScenes.empty())
 		return false;
 
 	// check if we can find a scene with this camera
-	auto itScene = myScenes.begin();
-	auto itSceneend = myScenes.end();
+	auto itScene = mScenes.begin();
+	auto itSceneend = mScenes.end();
 
 	if (item->isSubType("Camera"))
 	{
@@ -145,15 +145,15 @@ void ModuleSceneGraph::DoDefferedAction()
 	
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 
-	if (sDefferedAction.empty())
+	if (mDefferedAction.empty())
 		return;
 
 	Scene3D* parent = nullptr;
 
 	kstl::vector<void*> toErase;
 
-	auto itr = sDefferedAction.begin();
-	auto end = sDefferedAction.end();
+	auto itr = mDefferedAction.begin();
+	auto end = mDefferedAction.end();
 	for (; itr != end; ++itr)
 	{
 		switch (itr->second)
@@ -189,13 +189,13 @@ void ModuleSceneGraph::DoDefferedAction()
 		case DefferedAction::DESTROY_TEXTURE:
 		{
 			unsigned int textureID = (unsigned int)(itr->first);
-			myRenderer->DeleteTexture(1, &textureID);
+			mRenderer->DeleteTexture(1, &textureID);
 			break;
 		}
 		case DefferedAction::DESTROY_BUFFER:
 		{	
 			unsigned int buffer = (unsigned int)(itr->first);
-			myRenderer->DeleteBuffer(1, &buffer);
+			mRenderer->DeleteBuffer(1, &buffer);
 			break;
 		}
 		default:
@@ -207,7 +207,7 @@ void ModuleSceneGraph::DoDefferedAction()
 
 	for (auto it : toErase)
 	{
-		sDefferedAction.erase(sDefferedAction.find(it));
+		mDefferedAction.erase(mDefferedAction.find(it));
 	}
 }
 
@@ -240,14 +240,14 @@ void ModuleSceneGraph::Init(KigsCore* core, const kstl::vector<CoreModifiableAtt
 
 	kstl::vector<CMSP>	instances=	CoreModifiable::GetInstances("ModuleSpecificRenderer");
 
-	myTravState = KigsCore::GetInstanceOf("SceneTravState", "TravState");
+	mTravState = KigsCore::GetInstanceOf("SceneTravState", "TravState");
 
 	if (instances.size())
-		myRenderer = (ModuleSpecificRenderer*)(instances[0]).get();
+		mRenderer = (ModuleSpecificRenderer*)(instances[0]).get();
 
-	myTravState->SetRenderer(myRenderer);
-	myTravState->SetHolographicMode(false);
-	myTravState->SetSceneGraph(this);
+	mTravState->SetRenderer(mRenderer);
+	mTravState->SetHolographicMode(false);
+	mTravState->SetSceneGraph(this);
 }
 
 void ModuleSceneGraph::Close()
@@ -261,31 +261,31 @@ void ModuleSceneGraph::Update(const Timer& timer, void* addParam)
 {
 	BaseUpdate(timer,addParam);
 
-	if (mySceneListNeedsSort)
+	if (mSceneListNeedsSort)
 	{
 		SortSceneList();
 	}
 
 	DoDefferedAction();
 
-	myTravState->BeginNewFrame();
-	myTravState->GetRenderer()->startFrame(myTravState.get());
+	mTravState->BeginNewFrame();
+	mTravState->GetRenderer()->startFrame(mTravState.get());
 
 	// sort node by renderer
 	
-	for(auto scene : myScenes)
+	for(auto scene : mScenes)
 	{
 		if (scene)
 		{
 			scene->CallUpdate(timer,addParam);
 			//debugPrintfTree(20);
-			myTravState->SetScene(scene);
-			myTravState->SetTime(timer.GetTime());
-			scene->TravCull(myTravState.get());
-			scene->TravDraw(myTravState.get());
+			mTravState->SetScene(scene);
+			mTravState->SetTime(timer.GetTime());
+			scene->TravCull(mTravState.get());
+			scene->TravDraw(mTravState.get());
 		}
 	}
-	myTravState->GetRenderer()->endFrame(myTravState.get());
+	mTravState->GetRenderer()->endFrame(mTravState.get());
 }
 
 
@@ -295,7 +295,7 @@ bool	ModuleSceneGraph::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_N
 
 	if (item->isSubType("Scene3D"))
 	{
-		myScenes.insert((Scene3D*)item.get());
+		mScenes.insert((Scene3D*)item.get());
 		return ParentClassType::addItem(item,pos PASS_LINK_NAME(linkName));
 	}
 
@@ -306,11 +306,11 @@ bool ModuleSceneGraph::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType("Scene3D"))
 	{
-		for (auto it = myScenes.begin(); it != myScenes.end(); ++it)
+		for (auto it = mScenes.begin(); it != mScenes.end(); ++it)
 		{
 			if ((*it) == ((Scene3D*)item.get()))
 			{
-				myScenes.erase(it);
+				mScenes.erase(it);
 				break;
 			}
 		}
@@ -320,25 +320,25 @@ bool ModuleSceneGraph::removeItem(const CMSP& item DECLARE_LINK_NAME)
 
 void	ModuleSceneGraph::SortSceneList()
 {
-	mySceneListNeedsSort = false;
+	mSceneListNeedsSort = false;
 
 	// copy scenes in a tmp vector
 	kstl::vector<Scene3D*>	tmpList;
 	kstl::set<Scene3D*, Scene3DPriorityCompare>::iterator it;
 
-	for (it = myScenes.begin(); it != myScenes.end(); ++it)
+	for (it = mScenes.begin(); it != mScenes.end(); ++it)
 	{
 		tmpList.push_back(*it);
 	}
 
 	// clear sorted set
-	myScenes.clear();
+	mScenes.clear();
 
 	// then add scenes to set again
 	kstl::vector<Scene3D*>::iterator	itvector;
 	for (itvector = tmpList.begin(); itvector != tmpList.end(); ++itvector)
 	{
-		myScenes.insert(*itvector);
+		mScenes.insert(*itvector);
 	}
 }
 

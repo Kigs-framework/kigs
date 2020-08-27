@@ -6,7 +6,7 @@ bool	PNGClass::Load(const char* fileName)
 	bool result=false;
 
 	// free previous image if any
-	if(myInitIsOK)
+	if(mInitIsOK)
 	{
 		if(mPixels)
 		{

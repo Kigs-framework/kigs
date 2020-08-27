@@ -11,16 +11,10 @@
 /**
  * \file	DrawableSwitch.h
  * \class	DrawableSwitch
- * \ingroup Drawable
- * \ingroup RendererDrawable
- * \brief	
- * \author	ukn
- * \version ukn
- * \date	ukn
- *
- * Module Dependency :<br><ul><li>ModuleRenderer</li></ul>
+ * \ingroup Renderer
+ * \brief	Draw only one selected son.
  */
-// ****************************************
+ // ****************************************
 class DrawableSwitch : public Drawable
 {
 public:
@@ -56,12 +50,12 @@ public:
 	 */
 	bool	BBoxUpdate(kdouble time) override 
 	{
-		if(myNeedBBoxUpdate)
+		if(mNeedBBoxUpdate)
 		{
 			ComputeLocalBBox(time);
-			myNeedBBoxUpdate=false;
+			mNeedBBoxUpdate=false;
 		}
-		return myChildrenHaveBbox;
+		return mChildrenHaveBbox;
 	}
 
 	/**
@@ -88,7 +82,7 @@ public:
 	 * \param	pmin : point min of the bounding box (in/out param)
 	 * \param	pmax : point max of the bounding box (in/out param)
 	 */
-	void	GetNodeBoundingBox(Point3D& pmin,Point3D& pmax) const override {pmin=myBoundingBox.m_Min; pmax=myBoundingBox.m_Max;}
+	void	GetNodeBoundingBox(Point3D& pmin,Point3D& pmax) const override {pmin=mBoundingBox.m_Min; pmax=mBoundingBox.m_Max;}
 
 	unsigned int	GetSelfDrawingNeeds() override
 	{
@@ -104,14 +98,14 @@ protected:
 	void	ComputeLocalBBox(kdouble time);
 		
 	//! link to my bounding box
-	BBox		myBoundingBox;
+	BBox		mBoundingBox;
 	//! TRUE if a child has a bounding box
-	bool		myChildrenHaveBbox; 
+	bool		mChildrenHaveBbox; 
 	//! TRUE if a bounding box update is needed
-	bool		myNeedBBoxUpdate;
+	bool		mNeedBBoxUpdate;
 
 	//! link to the current drawable
-	Drawable*	myCurrentDrawable;
+	Drawable*	mCurrentDrawable;
 };
 
 #endif // _DRAWABLE_SWITCH_H_

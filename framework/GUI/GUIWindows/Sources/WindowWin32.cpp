@@ -497,42 +497,23 @@ void WindowWin32::ProtectedInit()
 
 void	WindowWin32::GetMousePosInWindow(int posx, int posy, kfloat& wposx, kfloat& wposy)
 {
-	/*if(myScreen)
-	{
-	GetMousePosInDesignWindow(posx,posy,wposx,wposy);
-	}
-	else
-	{*/
+	
 	posx -= (int)mPositionX;
-	//if(posx >= (int)mySizeX)
-	//	posx = ((int)mySizeX)-1;
-	//if(posx < 0)
-	//	posx = 0;
-
+	
 	posy -= (int)mPositionY;
-	//if(posy>=(int)mySizeY)
-	//	posy = ((int)mySizeY)-1;
-	//if(posy < 0)
-	//	posy = 0;
+	
 
 	wposx = (kfloat)posx;
 	wposy = (kfloat)posy;
-	//}
+
 }
 
 void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, kfloat& wposy)
 {
 	posx -= (int)mPositionX;
-	//if(posx >= (int)mySizeX)
-	//	posx = ((int)mySizeX)-1;
-	//if(posx < 0)
-	//	posx = 0;
-
+	
 	posy -= (int)mPositionY;
-	//if(posy>=(int)mySizeY)
-	//	posy = ((int)mySizeY)-1;
-	//if(posy < 0)
-	//	posy = 0;
+
 
 	if (mScreen)
 	{
@@ -545,66 +526,6 @@ void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, k
 	}
 }
 
-/*void	WindowWin32::MoveWindow(HWND hWnd)
-{
-	//! as I don't know the window to move
-	kstl::set<CoreModifiable*>	instances;
-	kstl::set<CoreModifiable*>::iterator	it;
-	CoreModifiable::GetInstances("Window", instances);
-
-	WindowWin32* localthis = 0;
-
-	for (it = instances.begin(); it != instances.end(); ++it)
-	{
-		localthis = (WindowWin32*)*it;
-		//! if found window has the same handle, then this is the good one to resize
-		if (localthis->myHandle == hWnd)
-		{
-			break;
-		}
-	}
-
-	if (localthis)
-	{
-		RECT rect;
-		GetWindowRect(hWnd, &rect);
-		//printf("%s : %d %d :: %d %d\n", getName().c_str(), rect.top, rect.bottom, rect.left, rect.right);
-
-		localthis->mySizeX = rect.right - rect.left;
-		localthis->mySizeY = rect.bottom - rect.top;
-		localthis->mPositionX = rect.left;
-		localthis->mPositionY = rect.top;
-	}
-}*/
-
-/*void	WindowWin32::Resize(HWND hWnd,int width,int height)
-{
-//! as I don't know the window to resize, search it
-kstl::set<CoreModifiable*>	instances;
-kstl::set<CoreModifiable*>::iterator	it;
-WindowWin32::GetInstances("Window",instances);
-
-WindowWin32* localthis=0;
-
-for(it=instances.begin();it!=instances.end();++it)
-{
-localthis=(	WindowWin32* ) *it;
-//! if found window has the same handle, then this is the good one to resize
-if(localthis->myHandle == hWnd)
-{
-break;
-}
-}
-
-if(localthis)
-{
-//! reset my parameters ans also ask screen to resize
-localthis->mySizeX=width;
-localthis->mySizeY=height;
-if(localthis->myScreen)
-localthis->myScreen->Resize((kfloat)width,(kfloat)height);
-}
-}*/
 
 //! show window
 void  WindowWin32::Show()

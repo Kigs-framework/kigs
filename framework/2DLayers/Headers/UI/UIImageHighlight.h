@@ -31,7 +31,7 @@ protected:
 	SmartPointer<Texture>				mPLTexturePointer;
 	SmartPointer<Texture>				mHLTexturePointer;
 
-	maString	myHLTexture = BASE_ATTRIBUTE(HLTexture);
+	maString	mHLTexture = BASE_ATTRIBUTE(HLTexture);
 };
 
 #endif //_UIImageHighlight_H_

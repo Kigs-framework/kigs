@@ -59,36 +59,36 @@ struct MaterialStruct
 struct DXInstance
 {
 #ifdef WUP
-	winrt::com_ptr<ID3D11Device1> m_device;
-	winrt::com_ptr<ID3D11DeviceContext1> m_deviceContext;
-	winrt::com_ptr<IDXGISwapChain1> m_swapChain;
+	winrt::com_ptr<ID3D11Device1> mDevice;
+	winrt::com_ptr<ID3D11DeviceContext1> mDeviceContext;
+	winrt::com_ptr<IDXGISwapChain1> mSwapChain;
 	
-	winrt::com_ptr<ID3D11DepthStencilState> m_depthStencilState;
-	winrt::com_ptr<ID3D11RasterizerState> m_rasterState;
-	winrt::com_ptr<ID3D11RenderTargetView> m_currentRenderTarget;
-	winrt::com_ptr<ID3D11DepthStencilView> m_currentDepthStencilTarget;
+	winrt::com_ptr<ID3D11DepthStencilState> mDepthStencilState;
+	winrt::com_ptr<ID3D11RasterizerState> mRasterState;
+	winrt::com_ptr<ID3D11RenderTargetView> mCurrentRenderTarget;
+	winrt::com_ptr<ID3D11DepthStencilView> mCurrentDepthStencilTarget;
 #else
-	Microsoft::WRL::ComPtr<ID3D11Device1> m_device;
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext1> m_deviceContext;
-	Microsoft::WRL::ComPtr<IDXGISwapChain1> m_swapChain;
+	Microsoft::WRL::ComPtr<ID3D11Device1> mDevice;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext1> mDeviceContext;
+	Microsoft::WRL::ComPtr<IDXGISwapChain1> mSwapChain;
 
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
-	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterState;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_currentRenderTarget;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_currentDepthStencilTarget;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> mDepthStencilState;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> mRasterState;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> mCurrentRenderTarget;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> mCurrentDepthStencilTarget;
 #endif
-	bool m_isFBORenderTarget = false;
+	bool mIsFBORenderTarget = false;
 
-	ID3D11Buffer* m_matrixBuffer = nullptr;
-	ID3D11Buffer* m_lightBuffer = nullptr;
-	size_t m_currentLightBufferSize = 0;
-	size_t m_currentLightBufferHash = 0;
+	ID3D11Buffer* mMatrixBuffer = nullptr;
+	ID3D11Buffer* mLightBuffer = nullptr;
+	size_t mCurrentLightBufferSize = 0;
+	size_t mCurrentLightBufferHash = 0;
 	
-	ID3D11Buffer* m_fogBuffer = nullptr;
+	ID3D11Buffer* mFogBuffer = nullptr;
 
-	ID3D11Buffer* m_materialBuffer = nullptr;
+	ID3D11Buffer* mMaterialBuffer = nullptr;
 	//size_t m_material_buffer_hash = 0;
-	MaterialStruct m_current_material = {};
+	MaterialStruct mCurrentMaterial = {};
 
 #ifdef WUP
 	winrt::Windows::Graphics::Holographic::HolographicFrame mCurrentFrame{ nullptr };
@@ -117,6 +117,17 @@ enum DX11_TEXTURE_SLOTS
 	DX11_COLOR_MAP_SLOT = 0,
 	DX11_NORMAL_MAP_SLOT = 1,
 };
+
+// ****************************************
+// * VertexBufferManager class
+// * --------------------------------------
+/**
+ * \file	RendererDX11.h
+ * \class	VertexBufferManager
+ * \ingroup Renderer
+ * \brief	Manage vertex buffer for DX11 API.
+ */
+ // ****************************************
 
 class VertexBufferManager : public VertexBufferManagerBase
 {
@@ -259,6 +270,18 @@ struct OcclusionQuery
 	bool result_ok = false;
 };
 
+
+// ****************************************
+// * RendererDX11 class
+// * --------------------------------------
+/**
+ * \file	RendererDX11.h
+ * \class	RendererDX11
+ * \ingroup Renderer
+ * \ingroup Module
+ * \brief	DX11 implementation of ModuleSpecificRenderer.
+ */
+ // ****************************************
 class RendererDX11 : public ModuleSpecificRenderer
 {
 public:
@@ -285,7 +308,6 @@ public:
 
 	virtual void InitLayerDraw(Scene3D * scene) { /* nothing here */ }
 
-	static ModuleSpecificRenderer *	theGlobalRenderer;
 	static FreeType_TextDrawer *	myDrawer;
 
 	void DrawPendingInstances(TravState * state) override;
@@ -314,25 +336,25 @@ public:
 
 
 	void SetUniform1i(unsigned int loc, s32 value) {}
-	void ActiveTextureChannel(unsigned int channel) override { myCurrentTextureChannel = channel; }
+	void ActiveTextureChannel(unsigned int channel) override { mCurrentTextureChannel = channel; }
 
-	u32 GetActiveTextureChannel() const { return myCurrentTextureChannel; }
+	u32 GetActiveTextureChannel() const { return mCurrentTextureChannel; }
 
 	ModuleSpecificRenderer::LightCount SetLightsInfo(kstl::set<CoreModifiable*>*lights) override;
 	void SendLightsInfo(TravState* travstate) override;
 	void ClearLightsInfo(TravState* travstate) override;
 
-	DXInstance* getDXInstance() { return &myDXInstance; }
+	DXInstance* getDXInstance() { return &mDXInstance; }
 	
-	std::unordered_map<size_t, ID3D11BlendState*>& BlendStateList() { return myBlendStateList; }
-	std::unordered_map<size_t, ID3D11DepthStencilState*>& DepthStateList() { return myDepthStateList; }
-	std::unordered_map<size_t, ID3D11RasterizerState*>& RasterizerStateList() { return myRasterizerStateList; }
-	std::unordered_map<size_t, ID3D11SamplerState*>& SamplerStateList() { return mySamplerStateList; }
+	std::unordered_map<size_t, ID3D11BlendState*>& BlendStateList() { return mBlendStateList; }
+	std::unordered_map<size_t, ID3D11DepthStencilState*>& DepthStateList() { return mDepthStateList; }
+	std::unordered_map<size_t, ID3D11RasterizerState*>& RasterizerStateList() { return mRasterizerStateList; }
+	std::unordered_map<size_t, ID3D11SamplerState*>& SamplerStateList() { return mSamplerStateList; }
 
 	void SetSampler(bool repeatU, bool repeatV, bool forceNearest);
 
-	v2u GetCurrentViewportSize() const { return myCurrentViewportSize; }
-	void SetCurrentViewportSize(v2u s) { myCurrentViewportSize = s; }
+	v2u GetCurrentViewportSize() const { return mCurrentViewportSize; }
+	void SetCurrentViewportSize(v2u s) { mCurrentViewportSize = s; }
 
 
 	bool    BeginOcclusionQuery(TravState* state, u64& query_id, RendererQueryType type, int frames_to_keep = 1) override;
@@ -353,23 +375,23 @@ protected:
 		return newstate;
 	}
 
-	DXInstance myDXInstance;
+	DXInstance mDXInstance;
 
 
-	bool					myIsLayoutInitialized = false;
-	unsigned int			myCurrentMatrixMode = 0xffffffff;
-	static unsigned int		myDirtyShaderMatrix;	// set when shader has changed, so we have to push again matrix
+	bool					mIsLayoutInitialized = false;
+	unsigned int			mCurrentMatrixMode = 0xffffffff;
+	static unsigned int		mDirtyShaderMatrix;	// set when shader has changed, so we have to push again matrix
 
-	unsigned int myCurrentTextureChannel = 0;
+	unsigned int mCurrentTextureChannel = 0;
 
-	std::unordered_map<size_t, ID3D11BlendState*> myBlendStateList;
-	std::unordered_map<size_t, ID3D11DepthStencilState*> myDepthStateList;
-	std::unordered_map<size_t, ID3D11RasterizerState*> myRasterizerStateList;
-	std::unordered_map<size_t, ID3D11SamplerState*> mySamplerStateList;
+	std::unordered_map<size_t, ID3D11BlendState*> mBlendStateList;
+	std::unordered_map<size_t, ID3D11DepthStencilState*> mDepthStateList;
+	std::unordered_map<size_t, ID3D11RasterizerState*> mRasterizerStateList;
+	std::unordered_map<size_t, ID3D11SamplerState*> mSamplerStateList;
 
 	std::vector<OcclusionQuery> mOcclusionQueries[RENDERER_QUERY_TYPE_COUNT];
 	size_t mFreeQueryCount[RENDERER_QUERY_TYPE_COUNT] = {};
 	u64 mOcclusionQueriesForFrame = 0;
 
-	v2u myCurrentViewportSize;
+	v2u mCurrentViewportSize;
 };

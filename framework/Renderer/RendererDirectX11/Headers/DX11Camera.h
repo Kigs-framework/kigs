@@ -3,6 +3,19 @@
 
 #include "Camera.h"
 #include "Timer.h"
+
+// ****************************************
+// * DX11Camera class
+// * --------------------------------------
+/**
+ * \file	DX11Camera.h
+ * \class	DX11Camera
+ * \ingroup Renderer
+ * \brief	DX11 implementation of Camera.
+ *
+ */
+ // ****************************************
+
 class DX11Camera : public Camera
 {
 public:
@@ -24,7 +37,7 @@ protected:
 	virtual ~DX11Camera();
 
 #if defined(WUP) && defined(GL_ES2)
-	bool myNeedNearFarUpdate = true;
+	bool mNeedNearFarUpdate = true;
 	void NotifyUpdate(unsigned int labelid) override;
 #endif
 

@@ -18,7 +18,7 @@ IMPLEMENT_CLASS_INFO(DX11Material)
 
 DX11Material::~DX11Material()
 {
-//	if (m_materialBuffer) m_materialBuffer->Release();
+//	if (mMaterialBuffer) mMaterialBuffer->Release();
 }
 
 void DX11Material::NotifyUpdate(unsigned int labelid)
@@ -33,19 +33,19 @@ bool	DX11Material::PreDraw(TravState* travstate)
 		RendererDX11* renderer = (RendererDX11*)travstate->GetRenderer();
 		
 		renderer->SetColorMaterial(RENDERER_FRONT_AND_BACK, RENDERER_AMBIENT_AND_DIFFUSE);			
-		renderer->SetColorMaterialMode(myMaterialColorEnabled);
+		renderer->SetColorMaterialMode(mMaterialColorEnabled);
 		
 		auto dxinstance = renderer->getDXInstance();
 		
 		MaterialStruct data;
-		data.MaterialAmbiantColor = myAmbientColor;
-		data.MaterialDiffuseColor = myDiffuseColor;
-		data.MaterialSpecularColor = mySpecularColor;
-		data.MaterialShininess = myShininess;
+		data.MaterialAmbiantColor = mAmbientColor;
+		data.MaterialDiffuseColor = mDiffuseColor;
+		data.MaterialSpecularColor = mSpecularColor;
+		data.MaterialShininess = mShininess;
 		//size_t hash = 0;
 		//hash_combine(hash, V4F_EXP(data.MaterialAmbiantColor), V4F_EXP(data.MaterialDiffuseColor), V4F_EXP(data.MaterialSpecularColor), data.MaterialShininess);
 
-		if (!dxinstance->m_materialBuffer)
+		if (!dxinstance->mMaterialBuffer)
 		{
 			D3D11_BUFFER_DESC materialBufferDesc;
 			materialBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -56,33 +56,33 @@ bool	DX11Material::PreDraw(TravState* travstate)
 			materialBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			materialBufferDesc.MiscFlags = 0;
 			materialBufferDesc.StructureByteStride = 0;
-			HRESULT result = dxinstance->m_device->CreateBuffer(&materialBufferDesc, NULL, &dxinstance->m_materialBuffer);
+			HRESULT result = dxinstance->mDevice->CreateBuffer(&materialBufferDesc, NULL, &dxinstance->mMaterialBuffer);
 		}
 
-		if (!(dxinstance->m_current_material == data))
+		if (!(dxinstance->mCurrentMaterial == data))
 		{
-			dxinstance->m_current_material = data;
+			dxinstance->mCurrentMaterial = data;
 			HRESULT result;
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
-			result = dxinstance->m_deviceContext->Map(dxinstance->m_materialBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			result = dxinstance->mDeviceContext->Map(dxinstance->mMaterialBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 			*(MaterialStruct*)mappedResource.pData = data;
-			dxinstance->m_deviceContext->Unmap(dxinstance->m_materialBuffer, 0);
+			dxinstance->mDeviceContext->Unmap(dxinstance->mMaterialBuffer, 0);
 		}
-		dxinstance->m_deviceContext->PSSetConstantBuffers(DX11_MATERIAL_SLOT, 1, &dxinstance->m_materialBuffer);
+		dxinstance->mDeviceContext->PSSetConstantBuffers(DX11_MATERIAL_SLOT, 1, &dxinstance->mMaterialBuffer);
 
-		/*if (myDiffuseColor[3] != 1.0 || m_IsTransparent)
+		/*if (mDiffuseColor[3] != 1.0 || m_IsTransparent)
 		{
 			renderer->SetDepthMaskMode(false);
 		}*/
 
-		if (myBlendEnabled || (myDiffuseColor[3] < 1.0f)) // || m_IsTransparent)
+		if (mBlendEnabled || (mDiffuseColor[3] < 1.0f)) // || m_IsTransparent)
 		{
 			RendererBlendFuncMode sourceType;
 			RendererBlendFuncMode destType;
 
-			if (myBlendEnabled)
+			if (mBlendEnabled)
 			{
-				switch ((int)myBlendFuncSource)
+				switch ((int)mBlendFuncSource)
 				{
 				case	S_ZERO:
 				{
@@ -133,7 +133,7 @@ bool	DX11Material::PreDraw(TravState* travstate)
 				//	KIGS_ERROR("Blend Enabled but no source func defined", 3);
 				}
 
-				switch ((int)myBlendFuncDest)
+				switch ((int)mBlendFuncDest)
 				{
 				case	D_ZERO:
 				{

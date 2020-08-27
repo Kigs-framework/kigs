@@ -25,10 +25,10 @@ public:
 
 		dataType	readPoint;
 		(*params)[1]->getValue(readPoint);
-		this->myStart = readPoint;
+		this->mStart = readPoint;
 
 		(*params)[2]->getValue(readPoint);
-		this->myEnd = readPoint;
+		this->mEnd = readPoint;
 
 		kstl::string readstring;
 		(*params)[3]->getValue(readstring);
@@ -113,7 +113,7 @@ public:
 
 		dataType	readPoint;
 		(*params)[1]->getValue(readPoint);
-		this->mySet = readPoint;
+		this->mSet = readPoint;
 
 		kstl::string readstring;
 		(*params)[2]->getValue(readstring);

@@ -7,6 +7,20 @@
 #include "TecLibs/Tec3D.h"
 #include "maString.h"
 
+// ****************************************
+// * RendererProfileDrawingObject class
+// * --------------------------------------
+/**
+* \file	RendererProfileDrawingObject.h
+* \class	RendererProfileDrawingObject
+* \ingroup Renderer
+* \brief Draw profilers
+*
+* ?? Obsolete ??
+*
+*/
+// ****************************************
+
 class RendererProfileDrawingObject : public CoreModifiable
 {
 public:
@@ -18,39 +32,39 @@ protected:
 	DECLARE_METHOD(DrawProfiles);
 	COREMODIFIABLE_METHODS(DrawProfiles);
 
-	Vector3D	myColors[MAX_PROFILER_COUNT];
+	Vector3D	mColors[MAX_PROFILER_COUNT];
 
-	bool			myFirstDraw;
-	unsigned int 	myProfilerCount;
+	bool			mFirstDraw;
+	unsigned int 	mProfilerCount;
 
-	maString myFps;
+	maString mFps;
 
 	void			setGlobalFrameCount(int c)
 	{
-		myMaxGlobalFrameCount[myCurrentGlobalFrameCountIndex] = c;
-		++myCurrentGlobalFrameCountIndex;
-		if (myCurrentGlobalFrameCountIndex > 15)
+		mMaxGlobalFrameCount[mCurrentGlobalFrameCountIndex] = c;
+		++mCurrentGlobalFrameCountIndex;
+		if (mCurrentGlobalFrameCountIndex > 15)
 		{
-			myCurrentGlobalFrameCountIndex = 0;
+			mCurrentGlobalFrameCountIndex = 0;
 		}
 	}
 
 	int getMaxFrameCount()
 	{
 		int i;
-		int result = myMaxGlobalFrameCount[0];
+		int result = mMaxGlobalFrameCount[0];
 		for (i = 1; i < 16; i++)
 		{
-			if (myMaxGlobalFrameCount[i] > result)
+			if (mMaxGlobalFrameCount[i] > result)
 			{
-				result = myMaxGlobalFrameCount[i];
+				result = mMaxGlobalFrameCount[i];
 			}
 		}
 		return result;
 	}
 
-	int				myMaxGlobalFrameCount[16];
-	int				myCurrentGlobalFrameCountIndex;
+	int				mMaxGlobalFrameCount[16];
+	int				mCurrentGlobalFrameCountIndex;
 };
 
 #endif //_RENDERERPROFILEDRAWINGOBJECT_H_

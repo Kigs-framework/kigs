@@ -67,12 +67,7 @@ bool UIRoundHUD::removeItem(const CMSP& item)
 	return ParentClassType::removeItem(item);
 }
 
-/*
-maFloat myAngleStart = BASE_ATTRIBUTE(AngleStart, 0.0f);
-maFloat myAngleWide = BASE_ATTRIBUTE(AngleWide, 360.0f);
-maInt mySlotCount = BASE_ATTRIBUTE(SlotCount, -1); // -1 for dynamic
-maBool myIsClockWise = BASE_ATTRIBUTE(IsClockwise, true);
-*/
+
 void UIRoundHUD::NotifyUpdate(const unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
@@ -131,9 +126,9 @@ void UIRoundHUD::UpdateSlots()
 #if DEBUG_DRAW==1
 	mVI = UIVerticesInfo(&vi, CircleDiv * 3);
 #elif DEBUG_DRAW==2
-	mVI = UIVerticesInfo(&vi, (mySelectedSlot >= 0)?CircleDiv * 3 * 2: CircleDiv * 3);
+	mVI = UIVerticesInfo(&vi, (mSelectedSlot >= 0)?CircleDiv * 3 * 2: CircleDiv * 3);
 #elif DEBUG_DRAW==3
-	mVI = UIVerticesInfo(&vi, CircleDiv * 3 * (myRealSlotCount + 1));
+	mVI = UIVerticesInfo(&vi, CircleDiv * 3 * (mRealSlotCount + 1));
 #endif
 	mVI.Flag |= UIVerticesInfo_Vertex;
 	mVI.Flag |= UIVerticesInfo_Color;
@@ -155,12 +150,12 @@ void UIRoundHUD::UpdateSlots()
 	}
 
 #if DEBUG_DRAW==2
-	if (mySelectedSlot >= 0)
+	if (mSelectedSlot >= 0)
 	{
-		generateCircle(points, myRadius*0.1f, CircleDiv);
+		generateCircle(points, mRadius*0.1f, CircleDiv);
 
 		auto data = reinterpret_cast<VInfo2D::Data*>(mVI.Buffer());
-		v2f center = myMidPoint + mySlot[mySelectedSlot];
+		v2f center = mMidPoint + mSlot[mSelectedSlot];
 		for (int i = 0; i < CircleDiv; ++i)
 		{
 			data[idx++].setValue(center.x, center.y, 0, 0, 0, color.w, 0, 0);
@@ -169,11 +164,11 @@ void UIRoundHUD::UpdateSlots()
 		}
 	}
 #elif DEBUG_DRAW==3
-	for (int slot = 0; slot < myRealSlotCount; slot++)
+	for (int slot = 0; slot < mRealSlotCount; slot++)
 	{
-		generateCircle(points, myRadius*0.1f, CircleDiv);
+		generateCircle(points, mRadius*0.1f, CircleDiv);
 
-		v2f center = myMidPoint + mySlot[slot];
+		v2f center = mMidPoint + mSlot[slot];
 		auto data = reinterpret_cast<VInfo2D::Data*>(mVI.Buffer());
 		for (int i = 0; i < CircleDiv; ++i)
 		{
@@ -256,9 +251,6 @@ bool UIRoundHUD::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 			{
 				v2f center = mMidPoint + mSlot[i];
 				float tmpDist = NormSquare(center - direct_touch.position.xy);
-
-				/*if (tmpDist > myRadius*myRadius)
-					continue;*/
 
 				if (tmpDist < nearest)
 				{

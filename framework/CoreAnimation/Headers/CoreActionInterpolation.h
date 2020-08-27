@@ -30,10 +30,10 @@ public:
 
 		dataType	readPoint;
 		(*params)[1]->getValue(readPoint);
-		myStart = readPoint;
+		mStart = readPoint;
 
 		(*params)[2]->getValue(readPoint);
-		myEnd = readPoint;
+		mEnd = readPoint;
 
 		kstl::string readstring;
 		(*params)[3]->getValue(readstring);
@@ -81,7 +81,7 @@ protected:
 	virtual bool	protectedUpdate(kdouble time)
 	{
 		CoreAction::protectedUpdate(time);
-		dataType result = (dataType)(myStart + (myEnd - myStart) * ((float)((time - mStartTime) / mDuration)));
+		dataType result = (dataType)(mStart + (mEnd - mStart) * ((float)((time - mStartTime) / mDuration)));
 		mTarget->setValue(mParamID, result);
 		return false;
 	}
@@ -93,14 +93,14 @@ protected:
 		if (mTarget->getValue(mParamID, currentval))
 		{
 			if (IsStartRelative())
-				myStart += currentval;
+				mStart += currentval;
 
 			if (IsEndRelative())
-				myEnd += currentval;
+				mEnd += currentval;
 		}
 	}
 
-	dataType			myStart,myEnd;
+	dataType			mStart,mEnd;
 
 	enum InterpolationFlags
 	{
@@ -292,7 +292,7 @@ public:
 
 		dataType	readVal;
 		(*params)[1]->getValue(readVal);
-		mySet = readVal;
+		mSet = readVal;
 
 		kstl::string readstring;
 		(*params)[2]->getValue(readstring);
@@ -310,13 +310,13 @@ protected:
 		if ((time + TimeEpsilon) >= (mStartTime + mDuration))
 		{
 			setIsDone();
-			mTarget->setValue(mParamID, mySet);
+			mTarget->setValue(mParamID, mSet);
 			return true;
 		}
 		return false;
 	}
 
-	dataType			mySet;
+	dataType			mSet;
 
 };
 

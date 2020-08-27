@@ -12,25 +12,25 @@
 
 ASEMeshLoader::ASEMeshLoader()
 {
-	myTextureList.clear();
-	 myMaterialList.clear();
-	MaterialCount = 0;
-	m_data=0;
-	m_FileParser=0;
+	mTextureList.clear();
+	 mMaterialList.clear();
+	mMaterialCount = 0;
+	mData=0;
+	mFileParser=0;
 }
 
 ASEMeshLoader::~ASEMeshLoader()
 {
-	myTextureList.clear();
-	myMaterialList.clear();
+	mTextureList.clear();
+	mMaterialList.clear();
 
-	if(m_FileParser)
+	if(mFileParser)
 	{
-		delete m_FileParser;
-		m_FileParser=0;
+		delete mFileParser;
+		mFileParser=0;
 	}
 
-	m_data=0;
+	mData=0;
 
 }
 
@@ -40,26 +40,26 @@ int ASEMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
 
 	if(!pMesh || !FileName.length()) return 1;
 
-	pMesh->myFileName=FileName;
+	pMesh->mFileName=FileName;
 
-	if(m_FileParser)
+	if(mFileParser)
 	{
-		delete m_FileParser;
-		m_FileParser=0;
+		delete mFileParser;
+		mFileParser=0;
 	}
 
-	if(m_data)
+	if(mData)
 	{
-		m_data=0;
+		mData=0;
 	}
 
 	// first load txt file
 	u64 filelen;
-	m_data = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFileAsCharString(FileName.c_str(),filelen,1));
-	if (m_data)
+	mData = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFileAsCharString(FileName.c_str(),filelen,1));
+	if (mData)
 	{
 
-		m_FileParser=new AsciiParserUtils(m_data.get());
+		mFileParser=new AsciiParserUtils(mData.get());
 
 		Error = ReadFile(pMesh);
 		if (Error)
@@ -87,258 +87,258 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 	bool		HasTexture;
 	bool		HasNormal;
 
-	m_FileParser->Reset();
+	mFileParser->Reset();
 
 	int matRef=0;
 	// get ref Material for the Node
 
-	if(m_FileParser->MoveToString("*MATERIAL_REF"))
+	if(mFileParser->MoveToString("*MATERIAL_REF"))
 	{
-		m_FileParser->ReadInt(matRef);
+		mFileParser->ReadInt(matRef);
 	}
-	m_FileParser->Reset();
+	mFileParser->Reset();
 
 	// Get Materials
-	m_FileParser->MoveToString("*MATERIAL_COUNT");
-	m_FileParser->ReadInt(MaterialCount);
+	mFileParser->MoveToString("*MATERIAL_COUNT");
+	mFileParser->ReadInt(mMaterialCount);
 
 	char TextureName[512];
-	for(i = 0; i < (unsigned int)MaterialCount; i++)
+	for(i = 0; i < (unsigned int)mMaterialCount; i++)
 	{
-		m_FileParser->MoveToString("*MATERIAL");
-		m_FileParser->MoveToString("*MATERIAL_NAME");
+		mFileParser->MoveToString("*MATERIAL");
+		mFileParser->MoveToString("*MATERIAL_NAME");
 	    int subMatCount=0;
 
-		unsigned CurrentPosition = m_FileParser->GetPosition();
-		if(m_FileParser->MoveToString("*NUMSUBMTLS"))
+		unsigned CurrentPosition = mFileParser->GetPosition();
+		if(mFileParser->MoveToString("*NUMSUBMTLS"))
 		{
-			unsigned submtlpos=m_FileParser->GetPosition();
+			unsigned submtlpos=mFileParser->GetPosition();
 
-			m_FileParser->ReadInt(subMatCount);
+			mFileParser->ReadInt(subMatCount);
 
-			m_FileParser->SetPosition(CurrentPosition);
+			mFileParser->SetPosition(CurrentPosition);
 
-			if(m_FileParser->MoveToString("*MATERIAL"))
+			if(mFileParser->MoveToString("*MATERIAL"))
 			{
-				if(m_FileParser->GetPosition()<submtlpos)
+				if(mFileParser->GetPosition()<submtlpos)
 				{
 					subMatCount=0;
 				}
 			}
 		}
 
-		m_FileParser->SetPosition(CurrentPosition);
+		mFileParser->SetPosition(CurrentPosition);
 
-		m_FileParser->ReadString(TextureName);
+		mFileParser->ReadString(TextureName);
 		TextureName[strlen(TextureName)-1]=0;
 
-		myMaterialList.push_back(&TextureName[1]);
+		mMaterialList.push_back(&TextureName[1]);
 
 		materialStruct  tmpStruct;
 
-		if(m_FileParser->MoveToString("*MATERIAL_AMBIENT"))
+		if(mFileParser->MoveToString("*MATERIAL_AMBIENT"))
 		{
-			m_FileParser->ReadFloat(tmpStruct.ambient[0]);
-			m_FileParser->ReadFloat(tmpStruct.ambient[1]);
-			m_FileParser->ReadFloat(tmpStruct.ambient[2]);
+			mFileParser->ReadFloat(tmpStruct.ambient[0]);
+			mFileParser->ReadFloat(tmpStruct.ambient[1]);
+			mFileParser->ReadFloat(tmpStruct.ambient[2]);
 		}
 
-		if(m_FileParser->MoveToString("*MATERIAL_DIFFUSE"))
+		if(mFileParser->MoveToString("*MATERIAL_DIFFUSE"))
 		{
-			m_FileParser->ReadFloat(tmpStruct.diffuse[0]);
-			m_FileParser->ReadFloat(tmpStruct.diffuse[1]);
-			m_FileParser->ReadFloat(tmpStruct.diffuse[2]);
+			mFileParser->ReadFloat(tmpStruct.diffuse[0]);
+			mFileParser->ReadFloat(tmpStruct.diffuse[1]);
+			mFileParser->ReadFloat(tmpStruct.diffuse[2]);
 		}
 
-		if(m_FileParser->MoveToString("*MATERIAL_SPECULAR"))
+		if(mFileParser->MoveToString("*MATERIAL_SPECULAR"))
 		{
-			m_FileParser->ReadFloat(tmpStruct.specular[0]);
-			m_FileParser->ReadFloat(tmpStruct.specular[1]);
-			m_FileParser->ReadFloat(tmpStruct.specular[2]);
+			mFileParser->ReadFloat(tmpStruct.specular[0]);
+			mFileParser->ReadFloat(tmpStruct.specular[1]);
+			mFileParser->ReadFloat(tmpStruct.specular[2]);
 		}
 
-		if(m_FileParser->MoveToString("*MATERIAL_SHINE"))
+		if(mFileParser->MoveToString("*MATERIAL_SHINE"))
 		{
-			m_FileParser->ReadFloat(tmpStruct.shininess);
+			mFileParser->ReadFloat(tmpStruct.shininess);
 		}
 
 		kstl::string cutGuillemet1("");
-		CurrentPosition = m_FileParser->GetPosition();
-		if(m_FileParser->MoveToString("*MAP_DIFFUSE"))
+		CurrentPosition = mFileParser->GetPosition();
+		if(mFileParser->MoveToString("*MAP_DIFFUSE"))
 		{
-			if(m_FileParser->MoveToString("*BITMAP"))
+			if(mFileParser->MoveToString("*BITMAP"))
 			{
-				m_FileParser->ReadString(TextureName);
+				mFileParser->ReadString(TextureName);
 
 				TextureName[strlen(TextureName)-1]=0;
 
 				cutGuillemet1=&TextureName[1];
 			}
 		}
-		m_FileParser->SetPosition(CurrentPosition);
+		mFileParser->SetPosition(CurrentPosition);
 
 		if(subMatCount)
 		{
-			m_FileParser->MoveToString("*NUMSUBMTLS");
+			mFileParser->MoveToString("*NUMSUBMTLS");
 			for(int j=0;j<subMatCount;j++)
 			{
 				materialStruct  tmpsubStruct;
 
-				if(m_FileParser->MoveToString("*MATERIAL_AMBIENT"))
+				if(mFileParser->MoveToString("*MATERIAL_AMBIENT"))
 				{
-					m_FileParser->ReadFloat(tmpsubStruct.ambient[0]);
-					m_FileParser->ReadFloat(tmpsubStruct.ambient[1]);
-					m_FileParser->ReadFloat(tmpsubStruct.ambient[2]);
+					mFileParser->ReadFloat(tmpsubStruct.ambient[0]);
+					mFileParser->ReadFloat(tmpsubStruct.ambient[1]);
+					mFileParser->ReadFloat(tmpsubStruct.ambient[2]);
 				}
 
-				if(m_FileParser->MoveToString("*MATERIAL_DIFFUSE"))
+				if(mFileParser->MoveToString("*MATERIAL_DIFFUSE"))
 				{
-					m_FileParser->ReadFloat(tmpsubStruct.diffuse[0]);
-					m_FileParser->ReadFloat(tmpsubStruct.diffuse[1]);
-					m_FileParser->ReadFloat(tmpsubStruct.diffuse[2]);
+					mFileParser->ReadFloat(tmpsubStruct.diffuse[0]);
+					mFileParser->ReadFloat(tmpsubStruct.diffuse[1]);
+					mFileParser->ReadFloat(tmpsubStruct.diffuse[2]);
 				}
 
-				if(m_FileParser->MoveToString("*MATERIAL_SPECULAR"))
+				if(mFileParser->MoveToString("*MATERIAL_SPECULAR"))
 				{
-					m_FileParser->ReadFloat(tmpsubStruct.specular[0]);
-					m_FileParser->ReadFloat(tmpsubStruct.specular[1]);
-					m_FileParser->ReadFloat(tmpsubStruct.specular[2]);
+					mFileParser->ReadFloat(tmpsubStruct.specular[0]);
+					mFileParser->ReadFloat(tmpsubStruct.specular[1]);
+					mFileParser->ReadFloat(tmpsubStruct.specular[2]);
 				}
 
-				if(m_FileParser->MoveToString("*MATERIAL_SHINE"))
+				if(mFileParser->MoveToString("*MATERIAL_SHINE"))
 				{
-					m_FileParser->ReadFloat(tmpsubStruct.shininess);
+					mFileParser->ReadFloat(tmpsubStruct.shininess);
 				}
 				tmpStruct.subMat.push_back(tmpsubStruct);
 			}
 		}
 
-		myMaterialStructList.push_back(tmpStruct);
+		mMaterialStructList.push_back(tmpStruct);
 
-		myTextureList.push_back(cutGuillemet1);
+		mTextureList.push_back(cutGuillemet1);
 	}
-	m_FileParser->Reset();
+	mFileParser->Reset();
 	//Get Mesh
 
-	m_FileParser->MoveToString("*GEOMOBJECT");
-	m_FileParser->MoveToString("*MESH");
-	m_FileParser->MoveToString("*MESH_NUMVERTEX");	// jump to the vertices count
-	m_FileParser->ReadInt(fake);
-	pMesh->VertexCount = fake;
-	pMesh->VertexArray = new Point3D[pMesh->VertexCount];
-	m_FileParser->MoveToString("*MESH_NUMFACES");
-	m_FileParser->ReadInt(TriangleCount);
+	mFileParser->MoveToString("*GEOMOBJECT");
+	mFileParser->MoveToString("*MESH");
+	mFileParser->MoveToString("*MESH_NUMVERTEX");	// jump to the vertices count
+	mFileParser->ReadInt(fake);
+	pMesh->mVertexCount = fake;
+	pMesh->mVertexArray = new Point3D[pMesh->mVertexCount];
+	mFileParser->MoveToString("*MESH_NUMFACES");
+	mFileParser->ReadInt(TriangleCount);
 	TempTriangle = new Mesh::TS_Triangle<1>[TriangleCount];
-	MatIdArray = new int[TriangleCount];
-	m_FileParser->MoveToString("*MESH_VERTEX_LIST");
+	mMatIdArray = new int[TriangleCount];
+	mFileParser->MoveToString("*MESH_VERTEX_LIST");
 
-	for (i=0;i<pMesh->VertexCount;i++)
+	for (i=0;i<pMesh->mVertexCount;i++)
 	{
-		m_FileParser->MoveToString("*MESH_VERTEX");
-		m_FileParser->ReadInt(fake);
-		m_FileParser->ReadFloat(pMesh->VertexArray[i].x);
-		m_FileParser->ReadFloat(pMesh->VertexArray[i].y);
-		m_FileParser->ReadFloat(pMesh->VertexArray[i].z);
+		mFileParser->MoveToString("*MESH_VERTEX");
+		mFileParser->ReadInt(fake);
+		mFileParser->ReadFloat(pMesh->mVertexArray[i].x);
+		mFileParser->ReadFloat(pMesh->mVertexArray[i].y);
+		mFileParser->ReadFloat(pMesh->mVertexArray[i].z);
 	}
 
-	m_FileParser->MoveToString("*MESH_FACE_LIST");
+	mFileParser->MoveToString("*MESH_FACE_LIST");
 	for (i=0;i<(unsigned int)TriangleCount;i++)
 	{
-		m_FileParser->MoveToString("*MESH_FACE");
-		m_FileParser->MoveToString("A:");
-		m_FileParser->ReadInt(fake);
+		mFileParser->MoveToString("*MESH_FACE");
+		mFileParser->MoveToString("A:");
+		mFileParser->ReadInt(fake);
 		TempTriangle[i].a = fake;
-		m_FileParser->MoveToString("B:");
-		m_FileParser->ReadInt(fake);
+		mFileParser->MoveToString("B:");
+		mFileParser->ReadInt(fake);
 		TempTriangle[i].b = fake;
-		m_FileParser->MoveToString("C:");
-		m_FileParser->ReadInt(fake);
+		mFileParser->MoveToString("C:");
+		mFileParser->ReadInt(fake);
 		TempTriangle[i].c = fake;
-		m_FileParser->MoveToString("*MESH_MTLID");
-		m_FileParser->ReadInt(MatIdArray[i]);
+		mFileParser->MoveToString("*MESH_MTLID");
+		mFileParser->ReadInt(mMatIdArray[i]);
 	}
 
-	FilePos = m_FileParser->GetPosition();
-	if (m_FileParser->MoveToString("*MESH_NUMTVERTEX"))
+	FilePos = mFileParser->GetPosition();
+	if (mFileParser->MoveToString("*MESH_NUMTVERTEX"))
 	{
 		HasTexture = true;
-		m_FileParser->ReadInt(fake);
-		pMesh->TexCoordCount = fake;
-		pMesh->TexArray = new Mesh::TexCoord[pMesh->TexCoordCount];
+		mFileParser->ReadInt(fake);
+		pMesh->mTexCoordCount = fake;
+		pMesh->mTexArray = new Mesh::TexCoord[pMesh->mTexCoordCount];
 
-		m_FileParser->MoveToString("*MESH_TVERTLIST");
-		for (i=0;i<pMesh->TexCoordCount;i++)
+		mFileParser->MoveToString("*MESH_TVERTLIST");
+		for (i=0;i<pMesh->mTexCoordCount;i++)
 		{
-			m_FileParser->MoveToString("*MESH_TVERT");
-			m_FileParser->ReadInt(fake);
-			m_FileParser->ReadFloat(pMesh->TexArray[i].u);
-			m_FileParser->ReadFloat(pMesh->TexArray[i].v);
+			mFileParser->MoveToString("*MESH_TVERT");
+			mFileParser->ReadInt(fake);
+			mFileParser->ReadFloat(pMesh->mTexArray[i].u);
+			mFileParser->ReadFloat(pMesh->mTexArray[i].v);
 		}
 
-		m_FileParser->MoveToString("*MESH_NUMTVFACES");
-		m_FileParser->MoveToString("*MESH_TFACELIST");
+		mFileParser->MoveToString("*MESH_NUMTVFACES");
+		mFileParser->MoveToString("*MESH_TFACELIST");
 		for (i=0;i<(unsigned int)TriangleCount;i++)
 		{
-			m_FileParser->MoveToString("*MESH_TFACE");
-			m_FileParser->ReadInt(fake);
-			m_FileParser->ReadInt(fake);
+			mFileParser->MoveToString("*MESH_TFACE");
+			mFileParser->ReadInt(fake);
+			mFileParser->ReadInt(fake);
 			TempTriangle[i].Ta[0] = fake;
-			m_FileParser->ReadInt(fake);
+			mFileParser->ReadInt(fake);
 			TempTriangle[i].Tb[0] = fake;
-			m_FileParser->ReadInt(fake);
+			mFileParser->ReadInt(fake);
 			TempTriangle[i].Tc[0] = fake;
 		}
 
 	}
 	else
 	{
-		m_FileParser->SetPosition(FilePos);
+		mFileParser->SetPosition(FilePos);
 		HasTexture = false;
 	}
 
-	if (m_FileParser->MoveToString("*MESH_NORMALS"))
+	if (mFileParser->MoveToString("*MESH_NORMALS"))
 	{
-		unsigned CurrentPosition = m_FileParser->GetPosition();
+		unsigned CurrentPosition = mFileParser->GetPosition();
 		HasNormal = true;
 
 		// Retrieve the Normal Count as the max index
-		pMesh->NormalCount = 0;
+		pMesh->mNormalCount = 0;
 		for (i=0;i<(unsigned int)TriangleCount;i++)
 		{
-			m_FileParser->MoveToString("*MESH_VERTEXNORMAL");
-			m_FileParser->ReadInt(fake);
-			if ((unsigned int)fake>pMesh->NormalCount) pMesh->NormalCount = fake;
-			m_FileParser->MoveToString("*MESH_VERTEXNORMAL");
-			m_FileParser->ReadInt(fake);
-			if ((unsigned int)fake>pMesh->NormalCount) pMesh->NormalCount = fake;
-			m_FileParser->MoveToString("*MESH_VERTEXNORMAL");
-			m_FileParser->ReadInt(fake);
-			if ((unsigned int)fake>pMesh->NormalCount) pMesh->NormalCount = fake;
+			mFileParser->MoveToString("*MESH_VERTEXNORMAL");
+			mFileParser->ReadInt(fake);
+			if ((unsigned int)fake>pMesh->mNormalCount) pMesh->mNormalCount = fake;
+			mFileParser->MoveToString("*MESH_VERTEXNORMAL");
+			mFileParser->ReadInt(fake);
+			if ((unsigned int)fake>pMesh->mNormalCount) pMesh->mNormalCount = fake;
+			mFileParser->MoveToString("*MESH_VERTEXNORMAL");
+			mFileParser->ReadInt(fake);
+			if ((unsigned int)fake>pMesh->mNormalCount) pMesh->mNormalCount = fake;
 		}
 
-		pMesh->NormalCount++;
-		pMesh->NormalArray = new Vector3D[pMesh->NormalCount];
-		m_FileParser->SetPosition(CurrentPosition);
+		pMesh->mNormalCount++;
+		pMesh->mNormalArray = new Vector3D[pMesh->mNormalCount];
+		mFileParser->SetPosition(CurrentPosition);
 		for (i=0;i<(unsigned int)TriangleCount;i++)
 		{
-			m_FileParser->MoveToString("*MESH_VERTEXNORMAL");
-			m_FileParser->ReadInt(fake);
+			mFileParser->MoveToString("*MESH_VERTEXNORMAL");
+			mFileParser->ReadInt(fake);
 			TempTriangle[i].Na = fake;
-			m_FileParser->ReadFloat(pMesh->NormalArray[fake].x);
-			m_FileParser->ReadFloat(pMesh->NormalArray[fake].y);
-			m_FileParser->ReadFloat(pMesh->NormalArray[fake].z);
-			m_FileParser->MoveToString("*MESH_VERTEXNORMAL");
-			m_FileParser->ReadInt(fake);
+			mFileParser->ReadFloat(pMesh->mNormalArray[fake].x);
+			mFileParser->ReadFloat(pMesh->mNormalArray[fake].y);
+			mFileParser->ReadFloat(pMesh->mNormalArray[fake].z);
+			mFileParser->MoveToString("*MESH_VERTEXNORMAL");
+			mFileParser->ReadInt(fake);
 			TempTriangle[i].Nb = fake;
-			m_FileParser->ReadFloat(pMesh->NormalArray[fake].x);
-			m_FileParser->ReadFloat(pMesh->NormalArray[fake].y);
-			m_FileParser->ReadFloat(pMesh->NormalArray[fake].z);
-			m_FileParser->MoveToString("*MESH_VERTEXNORMAL");
-			m_FileParser->ReadInt(fake);
+			mFileParser->ReadFloat(pMesh->mNormalArray[fake].x);
+			mFileParser->ReadFloat(pMesh->mNormalArray[fake].y);
+			mFileParser->ReadFloat(pMesh->mNormalArray[fake].z);
+			mFileParser->MoveToString("*MESH_VERTEXNORMAL");
+			mFileParser->ReadInt(fake);
 			TempTriangle[i].Nc = fake;
-			m_FileParser->ReadFloat(pMesh->NormalArray[fake].x);
-			m_FileParser->ReadFloat(pMesh->NormalArray[fake].y);
-			m_FileParser->ReadFloat(pMesh->NormalArray[fake].z);
+			mFileParser->ReadFloat(pMesh->mNormalArray[fake].x);
+			mFileParser->ReadFloat(pMesh->mNormalArray[fake].y);
+			mFileParser->ReadFloat(pMesh->mNormalArray[fake].z);
 		}
 	}
 	else
@@ -350,14 +350,14 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 	// Rearrange Triangles in TexGroup Order
 	unsigned *TriangleCountByGroup;
 
-	TriangleCountByGroup = new unsigned[MaterialCount];
-	for (i=0;i<(unsigned int)MaterialCount;i++)
+	TriangleCountByGroup = new unsigned[mMaterialCount];
+	for (i=0;i<(unsigned int)mMaterialCount;i++)
 	{
 		TriangleCountByGroup[i] = 0;
 	}
 	for (i=0;i<(unsigned int)TriangleCount;i++)
 	{
-		TriangleCountByGroup[MatIdArray[i]]++;
+		TriangleCountByGroup[mMatIdArray[i]]++;
 	}
 
 	int mode = 0;
@@ -380,28 +380,28 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 	Mesh::TS_Triangle<1> *mTS_Triangle=0;
 	int j;
 
-	bool*	IsFirst=new bool[MaterialCount];
-	int*	currentindex=new int[MaterialCount];
+	bool*	IsFirst=new bool[mMaterialCount];
+	int*	currentindex=new int[mMaterialCount];
 
-	for (i=0;i<(unsigned int)MaterialCount;i++)
+	for (i=0;i<(unsigned int)mMaterialCount;i++)
 	{
 		if (TriangleCountByGroup[i])
 		{
 			int realindex=i;
 
-			if(myMaterialStructList[matRef].subMat.size())
+			if(mMaterialStructList[matRef].subMat.size())
 			{
 				realindex=matRef;
 			}
 
-			MatStage = KigsCore::GetInstanceOf(myTextureList[realindex]+"MatStage","MaterialStage");
+			MatStage = KigsCore::GetInstanceOf(mTextureList[realindex]+"MatStage","MaterialStage");
 
 
-			if(myTextureList[realindex]!="")
+			if(mTextureList[realindex]!="")
 			{
 
 				auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
-				Tex = texfileManager->GetTexture(myTextureList[realindex], false);
+				Tex = texfileManager->GetTexture(mTextureList[realindex], false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 
 				Tex->Init();
@@ -411,31 +411,31 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 
 			MatStage->Init();
 
-			if(myMaterialList[realindex] != "")
+			if(mMaterialList[realindex] != "")
 			{
-				Mat =	KigsCore::GetInstanceOf(myMaterialList[realindex],"Material");
+				Mat =	KigsCore::GetInstanceOf(mMaterialList[realindex],"Material");
 			}
 			else
 			{
-				Mat =	KigsCore::GetInstanceOf(myTextureList[realindex]+"Mat","Material");
+				Mat =	KigsCore::GetInstanceOf(mTextureList[realindex]+"Mat","Material");
 			}
 
-			if(myMaterialStructList[matRef].subMat.size())
+			if(mMaterialStructList[matRef].subMat.size())
 			{
 				unsigned int submatIndex=i;
-				if(submatIndex>myMaterialStructList[matRef].subMat.size())
+				if(submatIndex>mMaterialStructList[matRef].subMat.size())
 				{
-					submatIndex=myMaterialStructList[matRef].subMat.size();
+					submatIndex=mMaterialStructList[matRef].subMat.size();
 				}
 
 				BaseMaterialStruct* currentMat;
 				if(submatIndex==0)
 				{
-					currentMat=&myMaterialStructList[matRef];
+					currentMat=&mMaterialStructList[matRef];
 				}
 				else
 				{
-					currentMat=&myMaterialStructList[matRef].subMat[submatIndex-1];
+					currentMat=&mMaterialStructList[matRef].subMat[submatIndex-1];
 				}
 
 				Mat->SetAmbientColor(currentMat->ambient[0],currentMat->ambient[1],currentMat->ambient[2]);
@@ -447,10 +447,10 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 			else
 			{
 
-				Mat->SetAmbientColor(myMaterialStructList[realindex].ambient[0],myMaterialStructList[realindex].ambient[1],myMaterialStructList[realindex].ambient[2]);
-				Mat->SetDiffuseColor(myMaterialStructList[realindex].diffuse[0],myMaterialStructList[realindex].diffuse[1],myMaterialStructList[realindex].diffuse[2]);
-				Mat->SetSpecularColor(myMaterialStructList[realindex].specular[0],myMaterialStructList[realindex].specular[1],myMaterialStructList[realindex].specular[2]);
-				Mat->setValue(LABEL_TO_ID(Shininess),myMaterialStructList[realindex].shininess*KFLOAT_CONST(128.0));
+				Mat->SetAmbientColor(mMaterialStructList[realindex].ambient[0],mMaterialStructList[realindex].ambient[1],mMaterialStructList[realindex].ambient[2]);
+				Mat->SetDiffuseColor(mMaterialStructList[realindex].diffuse[0],mMaterialStructList[realindex].diffuse[1],mMaterialStructList[realindex].diffuse[2]);
+				Mat->SetSpecularColor(mMaterialStructList[realindex].specular[0],mMaterialStructList[realindex].specular[1],mMaterialStructList[realindex].specular[2]);
+				Mat->setValue(LABEL_TO_ID(Shininess),mMaterialStructList[realindex].shininess*KFLOAT_CONST(128.0));
 			}
 
 
@@ -465,7 +465,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 
 			for (j=0;j<TriangleCount;j++)
 			{
-				if(MatIdArray[j] == i)
+				if(mMatIdArray[j] == i)
 				{
 					switch(mode)
 					{
@@ -474,56 +474,56 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 						if (IsFirst[i])
 						{
 							mTriangle = new Mesh::Triangle[TriangleCountByGroup[i]];
-							newgroup->myFirstTriangle = mTriangle;
+							newgroup->mFirstTriangle = mTriangle;
 							newgroup->addItem((CMSP&)Mat);
-							newgroup->myTriangleCount = 0;
-							newgroup->myTriangleSize = sizeof(Mesh::Triangle);
-							newgroup->myTriangleType = eF_Triangle;
+							newgroup->mTriangleCount = 0;
+							newgroup->mTriangleSize = sizeof(Mesh::Triangle);
+							newgroup->mTriangleType = eF_Triangle;
 							IsFirst[i] = false;
 						}
-						newgroup->myTriangleCount++;
+						newgroup->mTriangleCount++;
 						mTriangle[currentindex[i]++].CopyFrom(TempTriangle[j]);
 						break;
 					case 1 : // S_Triangle
 						if (IsFirst[i])
 						{
 							mS_Triangle = new Mesh::S_Triangle[TriangleCountByGroup[i]];
-							newgroup->myFirstTriangle = mS_Triangle;
+							newgroup->mFirstTriangle = mS_Triangle;
 							newgroup->addItem((CMSP&)Mat);
-							newgroup->myTriangleCount = 0;
-							newgroup->myTriangleSize = sizeof(Mesh::S_Triangle);
-							newgroup->myTriangleType = eS_Triangle;
+							newgroup->mTriangleCount = 0;
+							newgroup->mTriangleSize = sizeof(Mesh::S_Triangle);
+							newgroup->mTriangleType = eS_Triangle;
 							IsFirst[i] = false;
 						}
-						newgroup->myTriangleCount++;
+						newgroup->mTriangleCount++;
 						mS_Triangle[currentindex[i]++].CopyFrom(TempTriangle[j]);
 						break;
 					case 2 : // T_Triangle
 						if (IsFirst[i])
 						{
 							mT_Triangle = new Mesh::T_Triangle<1>[TriangleCountByGroup[i]];
-							newgroup->myFirstTriangle = mT_Triangle;
+							newgroup->mFirstTriangle = mT_Triangle;
 							newgroup->addItem((CMSP&)Mat);
-							newgroup->myTriangleCount = 0;
-							newgroup->myTriangleSize = sizeof(Mesh::T_Triangle<1>);
-							newgroup->myTriangleType = eTF_Triangle;
+							newgroup->mTriangleCount = 0;
+							newgroup->mTriangleSize = sizeof(Mesh::T_Triangle<1>);
+							newgroup->mTriangleType = eTF_Triangle;
 							IsFirst[i] = false;
 						}
-						newgroup->myTriangleCount++;
+						newgroup->mTriangleCount++;
 						mT_Triangle[currentindex[i]++].CopyFrom(TempTriangle[j]);
 						break;
 					case 3 : // TS_Triangle
 						if (IsFirst[i])
 						{
 							mTS_Triangle = new Mesh::TS_Triangle<1>[TriangleCountByGroup[i]];
-							newgroup->myFirstTriangle = mTS_Triangle;
+							newgroup->mFirstTriangle = mTS_Triangle;
 							newgroup->addItem((CMSP&)Mat);
-							newgroup->myTriangleCount = 0;
-							newgroup->myTriangleSize = sizeof(Mesh::TS_Triangle<1>);
-							newgroup->myTriangleType = eTS_Triangle;
+							newgroup->mTriangleCount = 0;
+							newgroup->mTriangleSize = sizeof(Mesh::TS_Triangle<1>);
+							newgroup->mTriangleType = eTS_Triangle;
 							IsFirst[i] = false;
 						}
-						newgroup->myTriangleCount++;
+						newgroup->mTriangleCount++;
 						mTS_Triangle[currentindex[i]++].CopyFrom(TempTriangle[j]);
 						break;
 					} // switch mode

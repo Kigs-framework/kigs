@@ -6,12 +6,12 @@
 
 JPEGClass::JPEGClass(FileHandle* fileName) :TinyImage()
 {
-	myInitIsOK = Load(fileName);
+	mInitIsOK = Load(fileName);
 }
 
 JPEGClass::JPEGClass(CoreRawBuffer* rawbuffer) : TinyImage()
 {
-	myInitIsOK = Load(rawbuffer);
+	mInitIsOK = Load(rawbuffer);
 }
 
 JPEGClass::~JPEGClass()
@@ -144,8 +144,8 @@ bool JPEGClass::Load(CoreRawBuffer* rawbuffer)
 		* In this example, we need to make an output work buffer of the right size.
 		*/
 
-		myWidth = cinfo.output_width;
-		myHeight = cinfo.output_height;
+		mWidth = cinfo.output_width;
+		mHeight = cinfo.output_height;
 		mPaletteDataSize = 0;
 		mPixelLineSize = cinfo.output_width * cinfo.output_components;
 		mPixelDataSize = mPixelLineSize * cinfo.output_height;
@@ -180,7 +180,7 @@ bool JPEGClass::Load(FileHandle* fileName)
 	bool result = false;
 
 	// free previous image if any
-	if (myInitIsOK)
+	if (mInitIsOK)
 	{
 		if (mPixels)
 		{

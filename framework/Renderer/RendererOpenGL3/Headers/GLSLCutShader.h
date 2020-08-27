@@ -3,6 +3,17 @@
 
 #include "GLSLGenericMeshShader.h"
 
+
+// ****************************************
+// * API3DCutShader class
+// * --------------------------------------
+/**
+ * \file	GLSLCutShader.h
+ * \class	API3DCutShader
+ * \ingroup Renderer
+ * \brief	Specialized GLSL Shader for Cut planes.
+ */
+ // ****************************************
 class API3DCutShader : public API3DGenericMeshShader
 {
 public:
@@ -14,7 +25,7 @@ protected:
 	kstl::string GetFragmentShader() override;
 	void NotifyUpdate(unsigned int labelid) override;
 	
-	maInt PlaneCount = BASE_ATTRIBUTE(PlaneCount, 1);
+	maInt mPlaneCount = BASE_ATTRIBUTE(PlaneCount, 1);
 };
 
 

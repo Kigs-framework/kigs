@@ -7,7 +7,6 @@ IMPLEMENT_CLASS_INFO(UIGridLayout)
 
 UIGridLayout::UIGridLayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	UILayout(name, PASS_CLASS_NAME_TREE_ARG)
-	//, myRows(*this, false, LABEL_AND_ID(Rows), 0)
 	, mColumns(*this, false, LABEL_AND_ID(Columns), 0)
 	, mRowHeight(*this, false, LABEL_AND_ID(RowHeight), 0)
 	, mColumnWidth(*this, false, LABEL_AND_ID(ColumnWidth), 0)
@@ -17,7 +16,6 @@ UIGridLayout::UIGridLayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	, mResizeElements(*this, false, LABEL_AND_ID(ResizeElements), false)
 	, mAutoResize(*this, false, LABEL_AND_ID(AutoResize), true)
 {
-	//myRows.changeNotificationLevel(Owner);
 	mColumns.changeNotificationLevel(Owner);
 	mPadding.changeNotificationLevel(Owner);
 	mHeaderRow.changeNotificationLevel(Owner);
@@ -30,8 +28,7 @@ UIGridLayout::UIGridLayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 
 void UIGridLayout::NotifyUpdate(const unsigned int labelid)
 {
-	if (/*(labelid == myRows.getLabelID()) ||*/
-		(labelid == mColumns.getLabelID()) ||
+	if ((labelid == mColumns.getLabelID()) ||
 		(labelid == mHeaderRow.getLabelID()) ||
 		(labelid == mRowHeight.getLabelID()) ||
 		(labelid == mColumnWidth.getLabelID()) ||

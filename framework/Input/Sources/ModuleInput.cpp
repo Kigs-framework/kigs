@@ -168,30 +168,30 @@ void ModuleInput::WindowClickEvent(CoreModifiable *w, int buttonId, kfloat X, kf
 {
 	ModuleInput* theModuleInput = (ModuleInput*)KigsCore::Instance()->GetModule("ModuleInput");
 
-	WindowClick *myClick = theModuleInput->getWindowClick(w);
-	if (myClick)
-		myClick->setPos(buttonId, X, Y);
+	WindowClick * lClick = theModuleInput->getWindowClick(w);
+	if (lClick)
+		lClick->setPos(buttonId, X, Y);
 	else
 	{
-		myClick = new WindowClick(w);
-		myClick->setPos(buttonId, X, Y);
-		theModuleInput->addWindowClick(myClick);
+		lClick = new WindowClick(w);
+		lClick->setPos(buttonId, X, Y);
+		theModuleInput->addWindowClick(lClick);
 	}
 }
 
 void ModuleInput::WindowDestroyEvent(CoreModifiable *w)
 {
 	ModuleInput* theModuleInput = (ModuleInput*)KigsCore::Instance()->GetModule("ModuleInput");
-	WindowClick *myClick = theModuleInput->getWindowClick(w);
-	if (myClick)
-		theModuleInput->removeWindowClick(myClick);
+	WindowClick * lClick = theModuleInput->getWindowClick(w);
+	if (lClick)
+		theModuleInput->removeWindowClick(lClick);
 }
 
 bool ModuleInput::getActiveWindowPos(CoreModifiable *w, MouseDevice::MOUSE_BUTTONS buttonId, kfloat &X, kfloat &Y)
 {
-	WindowClick *myClick = getWindowClick(w);
-	if (myClick)
-		myClick->getPos(buttonId, X, Y);
+	WindowClick *lClick = getWindowClick(w);
+	if (lClick)
+		lClick->getPos(buttonId, X, Y);
 	else
 		return false;
 
@@ -202,9 +202,9 @@ bool ModuleInput::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType("Window"))
 	{
-		Window* myWindow = ((Window*)item.get());
-		myWindow->SetClickCallback(ModuleInput::WindowClickEvent);
-		myWindow->SetDestroyCallback(ModuleInput::WindowDestroyEvent);
+		Window* lwindow = ((Window*)item.get());
+		lwindow->SetClickCallback(ModuleInput::WindowClickEvent);
+		lwindow->SetDestroyCallback(ModuleInput::WindowDestroyEvent);
 	}
 
 	return ModuleBase::addItem(item, pos PASS_LINK_NAME(linkName));

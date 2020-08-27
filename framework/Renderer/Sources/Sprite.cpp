@@ -8,18 +8,18 @@
 IMPLEMENT_CLASS_INFO(Sprite)
 
 Sprite::Sprite(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
-m_TextureFileName(*this,true,LABEL_AND_ID(TextureFileName),""),
-m_Displacement(*this,true,LABEL_AND_ID(Displacement),KIGS_SPRITE_DEFAULT_DISPLACEMENT),
-m_PosX(*this,false,LABEL_AND_ID(PosX),KFLOAT_CONST(-0.5f)),
-m_PosY(*this,false,LABEL_AND_ID(PosY),KFLOAT_CONST(-0.5f)),
-m_SizeX(*this,false,LABEL_AND_ID(SizeX),KFLOAT_CONST(1.0f)),
-m_SizeY(*this,false,LABEL_AND_ID(SizeY),KFLOAT_CONST(1.0f)),
-m_Texu1(*this,false,LABEL_AND_ID(Texu1),KFLOAT_CONST(0.0f)),
-m_Texu2(*this,false,LABEL_AND_ID(Texu2),KFLOAT_CONST(1.0f)),
-m_Texv1(*this,false,LABEL_AND_ID(Texv1),KFLOAT_CONST(0.0f)),
-m_Texv2(*this,false,LABEL_AND_ID(Texv2),KFLOAT_CONST(1.0f)),
-m_Color(*this,false,LABEL_AND_ID(Color),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f))
-, myTexture(nullptr)
+mTextureFileName(*this,true,LABEL_AND_ID(TextureFileName),""),
+mDisplacement(*this,true,LABEL_AND_ID(Displacement),KIGS_SPRITE_DEFAULT_DISPLACEMENT),
+mPosX(*this,false,LABEL_AND_ID(PosX),KFLOAT_CONST(-0.5f)),
+mPosY(*this,false,LABEL_AND_ID(PosY),KFLOAT_CONST(-0.5f)),
+mSizeX(*this,false,LABEL_AND_ID(SizeX),KFLOAT_CONST(1.0f)),
+mSizeY(*this,false,LABEL_AND_ID(SizeY),KFLOAT_CONST(1.0f)),
+mTexu1(*this,false,LABEL_AND_ID(Texu1),KFLOAT_CONST(0.0f)),
+mTexu2(*this,false,LABEL_AND_ID(Texu2),KFLOAT_CONST(1.0f)),
+mTexv1(*this,false,LABEL_AND_ID(Texv1),KFLOAT_CONST(0.0f)),
+mTexv2(*this,false,LABEL_AND_ID(Texv2),KFLOAT_CONST(1.0f)),
+mColor(*this,false,LABEL_AND_ID(Color),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f))
+, mTexture(nullptr)
 {
 
 }
@@ -27,9 +27,9 @@ m_Color(*this,false,LABEL_AND_ID(Color),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f),KFLO
 void Sprite::InitModifiable()
 {
 
-	myTexture = nullptr;
+	mTexture = nullptr;
 
-	changeTexture(m_TextureFileName);
+	changeTexture(mTextureFileName);
 	Drawable::InitModifiable();
 }
 
@@ -42,14 +42,14 @@ void Sprite::changeTexture(kstl::string FileName)
 {
 	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
 
-	m_TextureFileName = FileName;
-	myTexture = textureManager->GetTexture(m_TextureFileName);
+	mTextureFileName = FileName;
+	mTexture = textureManager->GetTexture(mTextureFileName);
 	
-	if (myTexture)
+	if (mTexture)
 	{
-		myTexture->SetRepeatUV(false, false); //because of bilinear filtering on the borders...
-		if (!myTexture->IsInit()) 
-			myTexture->Init();
+		mTexture->SetRepeatUV(false, false); //because of bilinear filtering on the borders...
+		if (!mTexture->IsInit()) 
+			mTexture->Init();
 	}
 }
 

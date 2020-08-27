@@ -67,7 +67,7 @@ protected:
 	//! destructor
     virtual ~HTTPAsyncRequest();
 
-	maReference												myConnection = BASE_ATTRIBUTE(Connection, "");
+	maReference												mConnection = BASE_ATTRIBUTE(Connection, "");
 	maEnum<4>												mType = BASE_ATTRIBUTE(Type, "GET", "POST", "PUT", "DELETE");
 	maUInt													mFLAGS = BASE_ATTRIBUTE(FLAGS, 0);
 	maString												mURL = BASE_ATTRIBUTE(URL, "");

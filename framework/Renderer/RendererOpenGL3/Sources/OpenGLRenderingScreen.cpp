@@ -41,14 +41,14 @@ void OpenGLRenderingScreen::FetchPixels(int x, int y, int width, int height, voi
 void OpenGLRenderingScreen::FetchDepth(int x, int y, int width, int height, float *pDepthPixels)
 {
 	glFlush();
-	y = mySizeY - 1 - y;
+	y = mSizeY - 1 - y;
 	glReadPixels(x, y, width, height, GL_DEPTH_COMPONENT, GL_FLOAT, pDepthPixels);
 }
 
 void OpenGLRenderingScreen::FetchDepth(int x, int y, int width, int height, unsigned int *pDepthPixels)
 {
 	glFlush();
-	y = mySizeY - 1 - y;
+	y = mSizeY - 1 - y;
 	glReadPixels(x, y, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, pDepthPixels);
 }
 
@@ -57,8 +57,8 @@ void	OpenGLRenderingScreen::Resize(kfloat sizeX, kfloat sizeY)
 	// before screen is init, only update sizeX and sizeY
 	if (!IsInit())
 	{
-		mySizeX = (unsigned int)sizeX;
-		mySizeY = (unsigned int)sizeY;
+		mSizeX = (unsigned int)sizeX;
+		mSizeY = (unsigned int)sizeY;
 	}
 	else
 	{
@@ -74,10 +74,10 @@ void	OpenGLRenderingScreen::Resize(kfloat sizeX, kfloat sizeY)
 
 void OpenGLRenderingScreen::InitializeGL(GLsizei width, GLsizei height)
 {
-	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(RendererOpenGL::theGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 
-	mySizeX = (unsigned int)width;
-	mySizeY = (unsigned int)height;
+	mSizeX = (unsigned int)width;
+	mSizeY = (unsigned int)height;
 	kfloat    aspect;
 	
 	renderer->SetClearColorValue(0.8f, 0.8f, 1.0f, 0.0f);
@@ -104,12 +104,12 @@ bool    OpenGLRenderingScreen::SetActive(TravState* state)
 
 	OpenGLPlatformRenderingScreen::SetActive(state);
 
-	if (myUseFBO)
+	if (mUseFBO)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo_frame_buffer_id); CHECK_GLERROR;
+		glBindFramebuffer(GL_FRAMEBUFFER, mFBOFrameBufferID); CHECK_GLERROR;
 	}
 
-	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(RendererOpenGL::theGlobalRenderer);
+	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);
 
 	renderer->SetCullMode((RendererCullMode)(int)RENDERER_CULL_NONE);
 	return true;
@@ -117,14 +117,14 @@ bool    OpenGLRenderingScreen::SetActive(TravState* state)
 
 void    OpenGLRenderingScreen::Release(TravState* state)
 {
-	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer);
+	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);
 
 	renderer->GetVertexBufferManager()->DoDelayedAction();
 
-	if (myUseFBO)
+	if (mUseFBO)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, default_frame_buffer); CHECK_GLERROR;
-		if (!myIsOffScreen && state)
+		glBindFramebuffer(GL_FRAMEBUFFER, mDefaultFrameBuffer); CHECK_GLERROR;
+		if (!mIsOffScreen && state)
 		{
 
 			renderer->pushShader((API3DShader*)renderer->getDefaultUiShader().get(), state);
@@ -140,21 +140,21 @@ void    OpenGLRenderingScreen::Release(TravState* state)
 			renderer->SetLightMode(RENDERER_LIGHT_OFF);
 			renderer->SetDepthTestMode(false);
 			renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_OFF);
-			renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)mySizeX, 0.0f, (float)mySizeY, -1.0f, 1.0f);
+			renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)mSizeX, 0.0f, (float)mSizeY, -1.0f, 1.0f);
 			renderer->LoadIdentity(MATRIX_MODE_MODEL);
 			renderer->LoadIdentity(MATRIX_MODE_VIEW);
-			renderer->BindTexture(RENDERER_TEXTURE_2D, fbo_texture_id);
-			renderer->SetScissorValue(0, 0, mySizeX, mySizeY);
-			renderer->Viewport(0, 0, mySizeX, mySizeY);
+			renderer->BindTexture(RENDERER_TEXTURE_2D, mFBOTextureID);
+			renderer->SetScissorValue(0, 0, mSizeX, mSizeY);
+			renderer->Viewport(0, 0, mSizeX, mSizeY);
 
 			VInfo2D vi;
 			UIVerticesInfo mVI = UIVerticesInfo(&vi);
 			VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(mVI.Buffer());
 
 			buf[0].setVertex(0.0f, 0.0f);
-			buf[1].setVertex(0.0, (float)mySizeY);
-			buf[2].setVertex((float)mySizeX, 0.0);
-			buf[3].setVertex((float)mySizeX, (float)mySizeY);
+			buf[1].setVertex(0.0, (float)mSizeY);
+			buf[2].setVertex((float)mSizeX, 0.0);
+			buf[3].setVertex((float)mSizeX, (float)mSizeY);
 
 			//Draw Quad that fits the screen
 
@@ -179,8 +179,8 @@ void OpenGLRenderingScreen::ScreenShot(char * filename)
 {
 	// TODO : use TinyImage and fetchpixel
 
-	int windowWidth = mySizeX;
-	int windowHeight = mySizeY;
+	int windowWidth = mSizeX;
+	int windowHeight = mSizeY;
 /*
 
 	char*  bmpBuffer = (char*)new char[windowWidth*windowHeight * 3];
@@ -283,7 +283,7 @@ void	OpenGLRenderingScreen::UninitModifiable()
 	// reset shaders
 	//API3DShader::ResetContext();
 
-	ModuleSpecificRenderer* renderer = RendererOpenGL::theGlobalRenderer;
+	ModuleSpecificRenderer* renderer = ModuleRenderer::mTheGlobalRenderer;
 	renderer->UninitHardwareState();
 }
 
@@ -309,12 +309,12 @@ void    OpenGLRenderingScreen::InitModifiable()
 
 void	OpenGLRenderingScreen::DelayedInit()
 {
-	ModuleSpecificRenderer* renderer = RendererOpenGL::theGlobalRenderer; // ((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	ModuleSpecificRenderer* renderer = ModuleRenderer::mTheGlobalRenderer; // ((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	OpenGLRenderingScreen* firstScreen = (OpenGLRenderingScreen*)renderer->getFirstRenderingScreen();
 
 	if (firstScreen != this)
 	{
-		if (firstScreen->myIsInit == false)
+		if (firstScreen->mIsInit == false)
 		{
 			firstScreen->DelayedInit();
 		}
@@ -322,47 +322,47 @@ void	OpenGLRenderingScreen::DelayedInit()
 
 	OpenGLPlatformRenderingScreen::InitModifiable();
 #ifdef WUP
-	if (myIsStereo && !gIsHolographic) myIsStereo = false;
+	if (mIsStereo && !gIsHolographic) mIsStereo = false;
 #endif
-	myIsInit = true;
+	mIsInit = true;
 
 	if (firstScreen == this)
 		renderer->InitHardwareState();
 
-	if (myUseFBO)
+	if (mUseFBO)
 	{
-		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &default_frame_buffer); CHECK_GLERROR;
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &mDefaultFrameBuffer); CHECK_GLERROR;
 
-		glGenFramebuffers(1, &fbo_frame_buffer_id); CHECK_GLERROR;
+		glGenFramebuffers(1, &mFBOFrameBufferID); CHECK_GLERROR;
 		int zbits = (int)mBitsPerZ;
 
 		bool use_depth_buffer = zbits != 0;
 
 		if (use_depth_buffer)
 		{
-			glGenRenderbuffers(1, &fbo_depth_buffer_id);
+			glGenRenderbuffers(1, &mFBODepthBufferID);
 		}
 
 
 		// create texture with fbo
 		auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
-		myFBOTexture = texfileManager->CreateTexture(getName());
-		myFBOTexture->setValue("Width", myFBOSizeX);
-		myFBOTexture->setValue("Height", myFBOSizeY);
-		myFBOTexture->InitForFBO();
-		myFBOTexture->SetRepeatUV(false, false);
+		mFBOTexture = texfileManager->CreateTexture(getName());
+		mFBOTexture->setValue("Width", mFBOSizeX);
+		mFBOTexture->setValue("Height", mFBOSizeY);
+		mFBOTexture->InitForFBO();
+		mFBOTexture->SetRepeatUV(false, false);
 
-		fbo_texture_id = ((OpenGLTexture*)myFBOTexture.get())->GetGLID();
+		mFBOTextureID = ((OpenGLTexture*)mFBOTexture.get())->GetGLID();
 
 		renderer->ActiveTextureChannel(0);
 
-		renderer->BindTexture(RENDERER_TEXTURE_2D, fbo_texture_id);
+		renderer->BindTexture(RENDERER_TEXTURE_2D, mFBOTextureID);
 		
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, myFBOSizeX, myFBOSizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mFBOSizeX, mFBOSizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 		if (use_depth_buffer)
 		{
@@ -373,22 +373,22 @@ void	OpenGLRenderingScreen::DelayedInit()
 			}
 #endif
 
-			glBindRenderbuffer(GL_RENDERBUFFER, fbo_depth_buffer_id);
+			glBindRenderbuffer(GL_RENDERBUFFER, mFBODepthBufferID);
 
 #ifndef GL_ES2
 			if (zbits == 32)
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, myFBOSizeX, myFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, mFBOSizeX, mFBOSizeY);
 			else if (zbits == 24)
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, myFBOSizeX, myFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mFBOSizeX, mFBOSizeY);
 			else if (zbits == 16)
 #endif
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, myFBOSizeX, myFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, mFBOSizeX, mFBOSizeY);
 
 #ifndef GL_ES2
 			else
 			{
 				KIGS_WARNING("Unsupported depth buffer bit size, using 32 bits instead", 3);
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, myFBOSizeX, myFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, mFBOSizeX, mFBOSizeY);
 			}
 #endif
 
@@ -401,29 +401,29 @@ void	OpenGLRenderingScreen::DelayedInit()
 			if (stencilbits != 8)
 				KIGS_WARNING("OpenGL ES 2.0 only supports 8 bits for the stencil buffer", 3);
 #endif
-			//glGenRenderbuffers(1, &fbo_stencil_buffer_id);
-			fbo_stencil_buffer_id = fbo_depth_buffer_id;
-			glBindRenderbuffer(GL_RENDERBUFFER, fbo_stencil_buffer_id);
+			//glGenRenderbuffers(1, &mFBOStencilBufferID);
+			mFBOStencilBufferID = mFBODepthBufferID;
+			glBindRenderbuffer(GL_RENDERBUFFER, mFBOStencilBufferID);
 			if (stencilbits == 8)
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, myFBOSizeX, myFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, mFBOSizeX, mFBOSizeY);
 #ifndef GL_ES2
 			else if (stencilbits == 16)
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX16, myFBOSizeX, myFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX16, mFBOSizeX, mFBOSizeY);
 #endif
 			else
 			{
 				KIGS_WARNING("Unsupported stencil buffer bit size, using 8 bits instead", 3);
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, myFBOSizeX, myFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, mFBOSizeX, mFBOSizeY);
 			}
-			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, fbo_stencil_buffer_id);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFBOStencilBufferID);
 
 		}
 
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo_frame_buffer_id); CHECK_GLERROR;
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbo_texture_id, 0); CHECK_GLERROR;
+		glBindFramebuffer(GL_FRAMEBUFFER, mFBOFrameBufferID); CHECK_GLERROR;
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mFBOTextureID, 0); CHECK_GLERROR;
 
 		if(use_depth_buffer)
-			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo_depth_buffer_id);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mFBODepthBufferID);
 
 
 

@@ -254,8 +254,8 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 		if (isGlobal)
 		{
 			// move to local 
-			myGlobalToLocal.TransformPoint(&ppos);
-			myGlobalToLocal.TransformVector(&paxis);
+			mGlobalToLocal.TransformPoint(&ppos);
+			mGlobalToLocal.TransformVector(&paxis);
 		}
 
 		Quaternion q;

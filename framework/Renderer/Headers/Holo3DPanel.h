@@ -7,6 +7,21 @@
 
 class Texture;
 
+// ****************************************
+// * Holo3DPanel class
+// * --------------------------------------
+/**
+ * \file	Holo3DPanel.h
+ * \class	Holo3DPanel
+ * \ingroup Renderer
+ * \brief	Draw a textured quad or circular panel.
+ *
+ * Used by Hololens menus.
+ * Do we need this specific class ?
+ * 
+ */
+ // ****************************************
+
 class Holo3DPanel : public Drawable
 {
 public:
@@ -17,7 +32,7 @@ public:
 	bool addItem(const CMSP& item, ItemPosition pos = Last) override;
 	bool removeItem(const CMSP& item) override;
 
-	void SetTextureID(unsigned int id) { myTextureID = id; }
+	void SetTextureID(unsigned int id) { mTextureID = id; }
 	void SetTexture(Texture* t);
 
 	bool Draw(TravState* travstate) override;
@@ -26,25 +41,25 @@ protected:
 	
 	void InitModifiable() override;
 
-	SmartPointer<Texture> myTexture;
-	unsigned int myTextureID=-1;
+	SmartPointer<Texture> mTexture;
+	unsigned int mTextureID=-1;
 
-	UIVerticesInfo myVI;
+	UIVerticesInfo mVI;
 
 
-	maVect2DF myOffset = BASE_ATTRIBUTE(Offset, 0, 0);
+	maVect2DF mOffset = BASE_ATTRIBUTE(Offset, 0, 0);
 	/*	
 		Size:
 			For a plane, SizeX, SizeY
 			For a circle Radius, NumberOfPoints
 	*/
-	maVect2DF mySize = BASE_ATTRIBUTE(Size, 0, 0);
+	maVect2DF mSize = BASE_ATTRIBUTE(Size, 0, 0);
 
-	maVect2DF myUVStart = BASE_ATTRIBUTE(UVStart, 0, 0);
-	maVect2DF myUVEnd = BASE_ATTRIBUTE(UVEnd, 1, 1);
+	maVect2DF mUVStart = BASE_ATTRIBUTE(UVStart, 0, 0);
+	maVect2DF mUVEnd = BASE_ATTRIBUTE(UVEnd, 1, 1);
 
-	maVect3DF myUp = BASE_ATTRIBUTE(Up, 0, 1, 0);
-	maVect3DF myNormal= BASE_ATTRIBUTE(Normal, 0, 0, 1);
+	maVect3DF mUp = BASE_ATTRIBUTE(Up, 0, 1, 0);
+	maVect3DF mNormal= BASE_ATTRIBUTE(Normal, 0, 0, 1);
 
 	maBool mTwoSided = BASE_ATTRIBUTE(TwoSided, false);
 	maEnum<3> mDepthTest = BASE_ATTRIBUTE(DepthTest, "NoChange", "Enabled", "Disabled");

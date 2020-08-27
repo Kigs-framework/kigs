@@ -38,7 +38,7 @@ public:
 	inline int				Get_InitialGroupValue()const { return (int)mComunalValue; }
 	void					Reset();
 
-	kstl::vector<UISlider*> GetmySliderList() { return mSliderList; }
+	kstl::vector<UISlider*> GetSliderList() { return mSliderList; }
 
 protected:
 	virtual ~UISlidersGroup();

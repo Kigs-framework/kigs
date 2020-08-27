@@ -38,7 +38,7 @@ bool	PlatformBaseApplication::CheckBackKeyPressed()
 #ifdef KIGS_INPUT_AVAILABLE
 	// TODO check if esc key is pressed here ?
 
-	if (myKeyboard == 0)
+	if (mKeyboard == 0)
 	{
 		static int countTest = 0;
 		if (countTest == 0)
@@ -46,7 +46,7 @@ bool	PlatformBaseApplication::CheckBackKeyPressed()
 			ModuleInput* theInputModule = static_cast<ModuleInput*>(CoreGetModule(ModuleInput));
 			if (theInputModule)
 			{
-				myKeyboard = theInputModule->GetKeyboard();
+				mKeyboard = theInputModule->GetKeyboard();
 			}
 			else
 			{
@@ -56,9 +56,9 @@ bool	PlatformBaseApplication::CheckBackKeyPressed()
 		countTest--;
 	}
 
-	if (myKeyboard)
+	if (mKeyboard)
 	{
-		if (myKeyboard->getKeyState(CM_KEY_ESCAPE).GetTypedValue(int))
+		if (mKeyboard->getKeyState(CM_KEY_ESCAPE).GetTypedValue(int))
 		{
 			return true;
 		}

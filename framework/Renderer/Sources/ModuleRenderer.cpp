@@ -26,12 +26,12 @@
 RendererStats gRendererStats;
 #endif
 
-ModuleSpecificRenderer * ModuleRenderer::theGlobalRenderer = nullptr;
+ModuleSpecificRenderer * ModuleRenderer::mTheGlobalRenderer = nullptr;
 
 IMPLEMENT_CLASS_INFO(ModuleRenderer);
 
 IMPLEMENT_CONSTRUCTOR(ModuleRenderer)
-, mySpecificRenderer(nullptr)
+, mSpecificRenderer(nullptr)
 {
 }
 
@@ -64,9 +64,9 @@ void ModuleRenderer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	kstl::vector<CMSP>	instances=CoreModifiable::GetInstances("ModuleSpecificRenderer");
 
 	if (instances.size())
-		mySpecificRenderer = (ModuleSpecificRenderer*)(instances[0].get());
+		mSpecificRenderer = (ModuleSpecificRenderer*)(instances[0].get());
 
-	theGlobalRenderer = mySpecificRenderer;
+	mTheGlobalRenderer = mSpecificRenderer;
 }
 
 void ModuleRenderer::Close()
@@ -85,41 +85,41 @@ void ModuleRenderer::Update(const Timer& timer, void* addParam)
 
 IMPLEMENT_CLASS_INFO(ModuleSpecificRenderer)
 IMPLEMENT_CONSTRUCTOR(ModuleSpecificRenderer)
-, myCurrentState(0)
-, myStateStackTop(0)
-, myDirtyMatrix(0)
-, myCurrentTextureUnit(0)
-, myFirstRenderingScreen(0)
-, myDefaultUIShader(nullptr)
-, myCurrentVBO(-1)
-, myUICurrentVBO(-1)
+, mCurrentState(0)
+, mStateStackTop(0)
+, mDirtyMatrix(0)
+, mCurrentTextureUnit(0)
+, mFirstRenderingScreen(0)
+, mDefaultUIShader(nullptr)
+, mCurrentVBO(-1)
+, mUICurrentVBO(-1)
 {
-	myActivatedScreenList.clear();
+	mActivatedScreenList.clear();
 }
 
 // init should be called at the end of specific Init
 void ModuleSpecificRenderer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
-	myWantedState.reserve(4);
+	mWantedState.reserve(4);
 
-	myCurrentState = createNewState();			// default state creation
-	myStateStackTop = createNewState();			// default state creation
-	myWantedState.push_back(myStateStackTop);	// init stack
+	mCurrentState = createNewState();			// default state creation
+	mStateStackTop = createNewState();			// default state creation
+	mWantedState.push_back(mStateStackTop);	// init stack
 
 	// init matrix stack
-	myMatrixStack[0].push_back();
-	myMatrixStack[0][0].SetIdentity();
-	myMatrixStack[1].push_back();
-	myMatrixStack[1][0].SetIdentity();
-	myMatrixStack[2].push_back();
-	myMatrixStack[2][0].SetIdentity();
+	mMatrixStack[0].push_back();
+	mMatrixStack[0][0].SetIdentity();
+	mMatrixStack[1].push_back();
+	mMatrixStack[1][0].SetIdentity();
+	mMatrixStack[2].push_back();
+	mMatrixStack[2][0].SetIdentity();
 }
 
 void	ModuleSpecificRenderer::endFrame(TravState* state)
 {
 	// frame is finished, do all the rendering screen fade and clear management
-	auto it = myActivatedScreenList.begin();
-	auto itE = myActivatedScreenList.end();
+	auto it = mActivatedScreenList.begin();
+	auto itE = mActivatedScreenList.end();
 
 	while (it != itE)
 	{
@@ -132,29 +132,29 @@ void	ModuleSpecificRenderer::endFrame(TravState* state)
 
 void ModuleSpecificRenderer::Close()
 {
-	if (myCurrentState)
+	if (mCurrentState)
 	{
-		delete myCurrentState;
+		delete mCurrentState;
 	}
-	kstl::vector<RenderingState*>::iterator delit = myWantedState.begin();
-	kstl::vector<RenderingState*>::iterator delitend = myWantedState.end();
+	kstl::vector<RenderingState*>::iterator delit = mWantedState.begin();
+	kstl::vector<RenderingState*>::iterator delitend = mWantedState.end();
 	while (delit != delitend)
 	{
 		delete (*delit);
 		++delit;
 	}
 
-	myVertexBufferManager = nullptr;
+	mVertexBufferManager = nullptr;
 }
 
 
 void	ModuleSpecificRenderer::initVBOs()
 {
-	if (myCurrentVBO == -1)
+	if (mCurrentVBO == -1)
 	{
-		CreateBuffer(PREALLOCATED_VBO_COUNT, myVBO);
-		myCurrentVBO = 0;
-		myUICurrentVBO = 0;
+		CreateBuffer(PREALLOCATED_VBO_COUNT, mVBO);
+		mCurrentVBO = 0;
+		mUICurrentVBO = 0;
 		VInfo2D vi;
 		UIVerticesInfo muiv(&vi);
 		// init ui quad vbo
@@ -169,7 +169,7 @@ void	ModuleSpecificRenderer::initVBOs()
 // # Buffer Section
 void ModuleSpecificRenderer::CreateBuffer(int count, unsigned int * id)
 {
-	myVertexBufferManager->GenBuffer(count, id);
+	mVertexBufferManager->GenBuffer(count, id);
 }
 
 void ModuleSpecificRenderer::DeleteBuffer(int count, unsigned int * id)
@@ -179,7 +179,7 @@ void ModuleSpecificRenderer::DeleteBuffer(int count, unsigned int * id)
 		UnsetArrayBuffer(id[i]);
 		UnsetElementBuffer(id[i]);
 	}
-	myVertexBufferManager->DelBufferLater(count, id);
+	mVertexBufferManager->DelBufferLater(count, id);
 }
 
 void ModuleSpecificRenderer::Update(const Timer& timer, void* addParam)
@@ -188,69 +188,69 @@ void ModuleSpecificRenderer::Update(const Timer& timer, void* addParam)
 
 void	ModuleSpecificRenderer::FlushState(bool force)
 {
-	myStateStackTop->FlushState(myCurrentState, force);
+	mStateStackTop->FlushState(mCurrentState, force);
 }
 
 void	ModuleSpecificRenderer::ClearView(RendererClearMode clearMode)
 {
-	myStateStackTop->ClearView(clearMode);
+	mStateStackTop->ClearView(clearMode);
 }
 
 void	ModuleSpecificRenderer::Viewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height)
 {
-	myStateStackTop->Viewport(x, y, width, height);
+	mStateStackTop->Viewport(x, y, width, height);
 }
 
 void	ModuleSpecificRenderer::FlushLightModelfv()
 {
-	myStateStackTop->FlushLightModelfv(myCurrentState);
+	mStateStackTop->FlushLightModelfv(mCurrentState);
 }
 
 void	ModuleSpecificRenderer::FlushLightModeli()
 {
-	myStateStackTop->FlushLightModeli(myCurrentState);
+	mStateStackTop->FlushLightModeli(mCurrentState);
 }
 
 void	ModuleSpecificRenderer::PushState()
 {
 
-	RenderingState* toadd = createNewState(myStateStackTop);			// default state creation
-	myWantedState.push_back(toadd);
-	myStateStackTop = toadd;
+	RenderingState* toadd = createNewState(mStateStackTop);			// default state creation
+	mWantedState.push_back(toadd);
+	mStateStackTop = toadd;
 }
 
 void	ModuleSpecificRenderer::PopState()
 {
 
 	//delete myWantedState[myWantedState.size()-1];
-	delete *myWantedState.rbegin();
-	myWantedState.pop_back();
-	myStateStackTop = *myWantedState.rbegin();
+	delete *mWantedState.rbegin();
+	mWantedState.pop_back();
+	mStateStackTop = *mWantedState.rbegin();
 }
 
 // Matrix management
 
 void	ModuleSpecificRenderer::LoadIdentity(int mode)
 {
-	myDirtyMatrix |= (1 << mode);
-	myMatrixStack[mode].back().SetIdentity();
+	mDirtyMatrix |= (1 << mode);
+	mMatrixStack[mode].back().SetIdentity();
 }
 
 void	ModuleSpecificRenderer::LoadMatrix(int mode, const kfloat *newMat)
 {
-	myDirtyMatrix |= (1 << mode);
-	Matrix4x4 *mat = &myMatrixStack[mode].back();
+	mDirtyMatrix |= (1 << mode);
+	Matrix4x4 *mat = &mMatrixStack[mode].back();
 	mat->Set(newMat);
 }
 
 void	ModuleSpecificRenderer::Translate(int mode, kfloat tx, kfloat ty, kfloat tz)
 {
-	Matrix4x4&	result = myMatrixStack[mode].back();
+	Matrix4x4&	result = mMatrixStack[mode].back();
 	result[12] += (result[0] * tx + result[4] * ty + result[8] * tz);
 	result[13] += (result[1] * tx + result[5] * ty + result[9] * tz);
 	result[14] += (result[2] * tx + result[6] * ty + result[10] * tz);
 	result[15] += (result[3] * tx + result[7] * ty + result[11] * tz);
-	myDirtyMatrix |= (1 << mode);
+	mDirtyMatrix |= (1 << mode);
 }
 
 void	ModuleSpecificRenderer::Rotate(int mode, kfloat angle, kfloat x, kfloat y, kfloat z)
@@ -307,7 +307,7 @@ void	ModuleSpecificRenderer::Rotate(int mode, kfloat angle, kfloat x, kfloat y, 
 
 void	ModuleSpecificRenderer::Scale(int mode, kfloat sx, kfloat sy, kfloat sz)
 {
-	Matrix4x4&	result = myMatrixStack[mode].back();
+	Matrix4x4&	result = mMatrixStack[mode].back();
 	result[0] *= sx;
 	result[1] *= sx;
 	result[2] *= sx;
@@ -322,7 +322,7 @@ void	ModuleSpecificRenderer::Scale(int mode, kfloat sx, kfloat sy, kfloat sz)
 	result[9] *= sz;
 	result[10] *= sz;
 	result[11] *= sz;
-	myDirtyMatrix |= (1 << mode);
+	mDirtyMatrix |= (1 << mode);
 }
 
 void	ModuleSpecificRenderer::Frustum(int mode, kfloat left, kfloat right, kfloat bottom, kfloat top, kfloat nearZ, kfloat farZ)
@@ -482,11 +482,11 @@ void ModuleSpecificRenderer::LookAt(int mode, kfloat eyex, kfloat eyey, kfloat e
 void	ModuleSpecificRenderer::pushShader(ShaderBase* shad, TravState* state)
 {
 	bool needActive = false;
-	if (myShaderStack.size())
+	if (mShaderStack.size())
 	{
-		if ((myCurrentShader != shad) || (myCurrentShaderProgram != shad->GetCurrentShaderProgram())) // need activation only if different shader
+		if ((mCurrentShader != shad) || (mCurrentShaderProgram != shad->GetCurrentShaderProgram())) // need activation only if different shader
 		{
-			myCurrentShader->Deactive(state);
+			mCurrentShader->Deactive(state);
 			needActive = true;
 		}
 	}
@@ -498,24 +498,24 @@ void	ModuleSpecificRenderer::pushShader(ShaderBase* shad, TravState* state)
 	Material*	StateMaterial = 0;
 	if (needActive)
 	{
-		if (state&&state->myCurrentMaterial)
+		if (state&&state->mCurrentMaterial)
 		{
-			Material*	toPostDraw = state->myCurrentMaterial;
-			state->myCurrentMaterial = 0;
+			Material*	toPostDraw = state->mCurrentMaterial;
+			state->mCurrentMaterial = 0;
 			toPostDraw->CheckPostDraw(state);
 
 		}
 	}
 
-	myCurrentShaderProgram = shad->GetCurrentShaderProgram();
+	mCurrentShaderProgram = shad->GetCurrentShaderProgram();
 
-	myCurrentShader = shad;
-	myShaderStack.push_back(shad); // must be pushed before activation
+	mCurrentShader = shad;
+	mShaderStack.push_back(shad); // must be pushed before activation
 	//printf("PUSH Shader %p %s(%d)\n", shad, shad->getName().c_str(), shad->Get_ShaderProgram());
 
 	if (needActive)
 	{
-		myDirtyShaderMatrix = 1;
+		mDirtyShaderMatrix = 1;
 	
 		shad->Active(state, true);
 	}
@@ -528,9 +528,9 @@ void	ModuleSpecificRenderer::popShader(ShaderBase* shad, TravState* state)
 {
 	// just make sure shad is the shader on top of the stack
 	bool isShaderOK = false;
-	if (myShaderStack.size())
+	if (mShaderStack.size())
 	{
-		if (myCurrentShader == shad)
+		if (mCurrentShader == shad)
 		{
 			isShaderOK = true;
 		}
@@ -540,49 +540,49 @@ void	ModuleSpecificRenderer::popShader(ShaderBase* shad, TravState* state)
 		// pop will be done after deactivation
 		// so shaderback is myShaderStack[myShaderStack.size()-2] if exists
 		ShaderBase* shaderBack = 0;
-		if (myShaderStack.size()>1)
+		if (mShaderStack.size()>1)
 		{
-			shaderBack = myShaderStack[myShaderStack.size()-2];
+			shaderBack = mShaderStack[mShaderStack.size()-2];
 		}
 		//printf("POP  Shader %p %s(%d)\n", shad, shad->getName().c_str(), shad->Get_ShaderProgram());
 
 
 		Material*	StateMaterial = 0;
-		if ((shaderBack != shad) || (myCurrentShaderProgram != shaderBack->GetCurrentShaderProgram()))
+		if ((shaderBack != shad) || (mCurrentShaderProgram != shaderBack->GetCurrentShaderProgram()))
 		{
-			if (state&&state->myCurrentMaterial)
+			if (state&&state->mCurrentMaterial)
 			{
-				Material*	toPostDraw = state->myCurrentMaterial;
-				state->myCurrentMaterial = 0;
+				Material*	toPostDraw = state->mCurrentMaterial;
+				state->mCurrentMaterial = 0;
 				toPostDraw->CheckPostDraw(state);
 
 			}
 
 			shad->Deactive(state);
 
-			myCurrentShader = shaderBack;
+			mCurrentShader = shaderBack;
 
 			if(shaderBack)
-				myCurrentShaderProgram = shaderBack->GetCurrentShaderProgram();
+				mCurrentShaderProgram = shaderBack->GetCurrentShaderProgram();
 
-			myShaderStack.pop_back();
+			mShaderStack.pop_back();
 
-			if (myCurrentShader)
+			if (mCurrentShader)
 			{
-				myDirtyShaderMatrix = 1;
-				myCurrentShader->Active(state, true);
+				mDirtyShaderMatrix = 1;
+				mCurrentShader->Active(state, true);
 
 				if (StateMaterial)
 					StateMaterial->CheckPreDraw(state);
 			}
 			else
 			{
-				myCurrentShaderProgram = 0;
+				mCurrentShaderProgram = 0;
 			}
 		}
 		else
 		{
-			myShaderStack.pop_back();
+			mShaderStack.pop_back();
 		}
 
 		if (isShaderOK)
@@ -595,12 +595,12 @@ void	ModuleSpecificRenderer::popShader(ShaderBase* shad, TravState* state)
 
 bool	ModuleSpecificRenderer::HasShader()
 {
-	return !myShaderStack.empty();
+	return !mShaderStack.empty();
 }
 
 ShaderBase* ModuleSpecificRenderer::GetActiveShader()
 {
-	if (myShaderStack.empty())
+	if (mShaderStack.empty())
 		return nullptr;
-	return myShaderStack.back();
+	return mShaderStack.back();
 }

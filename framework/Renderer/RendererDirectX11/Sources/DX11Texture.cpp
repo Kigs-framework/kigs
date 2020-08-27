@@ -63,9 +63,9 @@ IMPLEMENT_CLASS_INFO(DX11Texture)
 
 DX11Texture::DX11Texture(const std::string& name, CLASS_NAME_TREE_ARG)
 	: Texture(name, PASS_CLASS_NAME_TREE_ARG)
-	, myCanReuseBuffer(false)
-	, myPow2BufferSize(0)
-	, myPow2Buffer(NULL)
+	, mCanReuseBuffer(false)
+	, mPow2BufferSize(0)
+	, mPow2Buffer(NULL)
 
 {
 }
@@ -73,16 +73,16 @@ DX11Texture::DX11Texture(const std::string& name, CLASS_NAME_TREE_ARG)
 DX11Texture::~DX11Texture()
 {
 	// release d3d object
-	if (pTexture)
-		pTexture->Release();
-	if (pShaderRes)
-		pShaderRes->Release();
+	if (mTexturePointer)
+		mTexturePointer->Release();
+	if (mShaderRes)
+		mShaderRes->Release();
 
-	pTexture = nullptr;
-	pShaderRes = nullptr;
+	mTexturePointer = nullptr;
+	mShaderRes = nullptr;
 
-	if (myPow2Buffer)
-		delete[] myPow2Buffer;
+	if (mPow2Buffer)
+		delete[] mPow2Buffer;
 }
 
 void DX11Texture::InitModifiable()
@@ -90,7 +90,7 @@ void DX11Texture::InitModifiable()
 	if (_isInit)
 		return;
 
-	myCanReuseBuffer = false;
+	mCanReuseBuffer = false;
 
 	Texture::InitModifiable();
 }
@@ -153,14 +153,14 @@ bool DX11Texture::PreDraw(TravState* travstate)
 	{
 #ifdef WUP
 		// winrt uses get and WRL uses Get
-		auto pd3dContext = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance()->m_deviceContext.get(); // Don't forget to initialize this
+		auto pd3dContext = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance()->mDeviceContext.get(); // Don't forget to initialize this
 #else
 		// winrt uses get and WRL uses Get
-		auto pd3dContext = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance()->m_deviceContext.Get(); // Don't forget to initialize this
+		auto pd3dContext = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance()->mDeviceContext.Get(); // Don't forget to initialize this
 #endif
 		// Set shader texture resource in the pixel shader.
-		pd3dContext->PSSetShaderResources(RendererDX11::theGlobalRenderer->as<RendererDX11>()->GetActiveTextureChannel(), 1, &pShaderRes);
-		RendererDX11::theGlobalRenderer->as<RendererDX11>()->SetSampler(myRepeatU, myRepeatV, myForceNearest);
+		pd3dContext->PSSetShaderResources(ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->GetActiveTextureChannel(), 1, &mShaderRes);
+		ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->SetSampler(mRepeat_U, mRepeat_V, mForceNearest);
 
 		return true;
 	}
@@ -178,41 +178,41 @@ bool DX11Texture::PostDraw(TravState* travstate)
 
 bool DX11Texture::ManagePow2Buffer(u32 aWidth, u32 aHeight, u32 aPixSize)
 {
-	if (aWidth <= myWidth && aHeight <= myHeight && aPixSize <= myPixelSize)
+	if (aWidth <= mWidth && aHeight <= mHeight && aPixSize <= mPixelSize)
 		return false;
 
 	// get pow2 size
-	while (myPow2Width < aWidth)
+	while (mPow2Width < aWidth)
 	{
-		myPow2Width = myPow2Width << 1;
-		myCanReuseBuffer = false;
+		mPow2Width = mPow2Width << 1;
+		mCanReuseBuffer = false;
 	}
-	while (myPow2Height < aHeight)
+	while (mPow2Height < aHeight)
 	{
-		myPow2Height = myPow2Height << 1;
-		myCanReuseBuffer = false;
+		mPow2Height = mPow2Height << 1;
+		mCanReuseBuffer = false;
 	}
 
 	// if buffer already in pow2, do not use pow2 buffer
-	if (aWidth == myPow2Width && aHeight == myPow2Height)
+	if (aWidth == mPow2Width && aHeight == mPow2Height)
 	{
-		myCanReuseBuffer = false;
-		if (myPow2Buffer)
-			delete[] myPow2Buffer;
-		myPow2Buffer = nullptr;
+		mCanReuseBuffer = false;
+		if (mPow2Buffer)
+			delete[] mPow2Buffer;
+		mPow2Buffer = nullptr;
 		return false;
 	}
 
 	//create pow2buffer
-	if (!myCanReuseBuffer)
+	if (!mCanReuseBuffer)
 	{
 		// delete older if exist
-		if (myPow2Buffer)
-			delete[] myPow2Buffer;
+		if (mPow2Buffer)
+			delete[] mPow2Buffer;
 
-		myPow2BufferSize = myPow2Width * myPow2Height*aPixSize;
-		myPow2Buffer = new unsigned char[myPow2BufferSize];
-		memset(myPow2Buffer, 0, myPow2BufferSize);
+		mPow2BufferSize = mPow2Width * mPow2Height*aPixSize;
+		mPow2Buffer = new unsigned char[mPow2BufferSize];
+		memset(mPow2Buffer, 0, mPow2BufferSize);
 		return true;
 	}
 
@@ -228,13 +228,13 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 
 	TinyImage::ImageFormat format = image->GetFormat();
 
-	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 	bool needRealloc = false;
 
 
 	if (!directInit)
 	{
-		myTextureType = TEXTURE_2D;
+		mTextureType = TEXTURE_2D;
 
 		u32 pixSize = TinyImage::GetPixelValueSize(image->GetFormat());
 
@@ -245,13 +245,13 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 		}
 		else // compressed texture
 		{
-			myPow2Width = image->GetWidth();
-			myPow2Height = image->GetHeight();
+			mPow2Width = image->GetWidth();
+			mPow2Height = image->GetHeight();
 		}
 
-		myPixelSize = pixSize;
-		myWidth = image->GetWidth();
-		myHeight = image->GetHeight();
+		mPixelSize = pixSize;
+		mWidth = image->GetWidth();
+		mHeight = image->GetHeight();
 
 		// compute ratio before delayed load and after delayed load
 		// so that texture ratio can be used just after initialization
@@ -259,24 +259,24 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 
 		int line_size = image->GetPixelLineSize();
 
-		if (line_size != myPow2Width * myPixelSize)
-			myCanReuseBuffer = false;
+		if (line_size != mPow2Width * mPixelSize)
+			mCanReuseBuffer = false;
 
-		if (myPow2Buffer && !myCanReuseBuffer && !CanUseDynamicTexture(image->GetFormat()))
+		if (mPow2Buffer && !mCanReuseBuffer && !CanUseDynamicTexture(image->GetFormat()))
 		{
-			unsigned char* pos = (unsigned char*)myPow2Buffer;
+			unsigned char* pos = (unsigned char*)mPow2Buffer;
 			unsigned char* posRead = (unsigned char*)image->GetPixelData();
 
 
-			int lLineW = line_size;//myWidth*myPixelSize;
-			for (u32 j = 0; j < myHeight; j++)
+			int lLineW = line_size;//mWidth*mPixelSize;
+			for (u32 j = 0; j < mHeight; j++)
 			{
 				memcpy(pos, posRead, lLineW);
-				pos += myPow2Width * myPixelSize;
-				posRead += line_size; // myWidth*myPixelSize;
+				pos += mPow2Width * mPixelSize;
+				posRead += line_size; // mWidth*mPixelSize;
 			}
 
-			data = myPow2Buffer;
+			data = mPow2Buffer;
 		}
 		else
 			data = image->GetPixelData();
@@ -319,19 +319,19 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 			}
 		}
 
-		if (myPow2Buffer && !myCanReuseBuffer && !CanUseDynamicTexture(image->GetFormat()))
+		if (mPow2Buffer && !mCanReuseBuffer && !CanUseDynamicTexture(image->GetFormat()))
 		{
-			data = myPow2Buffer;
+			data = mPow2Buffer;
 		}
 		else
 			data = image->GetPixelData();
 	}
 
 	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = myPow2Width;
-	desc.Height = myPow2Height;
+	desc.Width = mPow2Width;
+	desc.Height = mPow2Height;
 	desc.ArraySize = 1;
-	desc.MipLevels = 1;// myHasMipmap ? 0 : 1;
+	desc.MipLevels = 1;// mHasMipmap ? 0 : 1;
 	desc.SampleDesc.Quality = 0;
 	desc.SampleDesc.Count = 1;
 	desc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -346,7 +346,7 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 	subresources.resize(1);
 
 	subresources[0].pSysMem = (void*)data;
-	subresources[0].SysMemPitch = myPow2Width * myPixelSize;
+	subresources[0].SysMemPitch = mPow2Width * mPixelSize;
 	subresources[0].SysMemSlicePitch = 0; // Not needed since this is a 2d texture
 
 	bool has_mipmaps = false;
@@ -359,11 +359,11 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 		// no AI88 texture for DirectX11
 		// Convert to 32 bit rgba
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		myTransparencyType = 2;
-		myPixelSize = 4;
-		converteddata = new unsigned char[myPow2Width * myPow2Height * 4];
+		mTransparencyType = 2;
+		mPixelSize = 4;
+		converteddata = new unsigned char[mPow2Width * mPow2Height * 4];
 		subresources[0].pSysMem = (void*)converteddata;
-		subresources[0].SysMemPitch = myPow2Width * 4;
+		subresources[0].SysMemPitch = mPow2Width * 4;
 		subresources[0].SysMemSlicePitch = 0; // Not needed since this is a 2d texture
 
 		// pointer on file pixel data 
@@ -372,7 +372,7 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 		// pointer on image pixel data
 		u8* imagedata = data;
 
-		unsigned int totalSize = myPow2Width * myPow2Height;
+		unsigned int totalSize = mPow2Width * mPow2Height;
 		for (u32 i = 0; i < totalSize; i++, imagedata += 2, pixels += 4)
 		{
 			pixels[0] = pixels[1] = pixels[2] = imagedata[0];
@@ -389,38 +389,38 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 	case TinyImage::RGBA_16_5551:
 	case TinyImage::RGBA_32_8888:
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		myTransparencyType = 2;
+		mTransparencyType = 2;
 		break;
 	case TinyImage::BC1:
 		is_bc = true;
 		desc.Format = DXGI_FORMAT_BC1_UNORM;
-		has_mipmaps = (myHasMipmap && image->getMipMapCount() > 0);
-		myTransparencyType = 0;
+		has_mipmaps = (mHasMipmap && image->getMipMapCount() > 0);
+		mTransparencyType = 0;
 		bpe = 8;
 		break;
 	case TinyImage::BC2:
 		is_bc = true;
 		desc.Format = DXGI_FORMAT_BC2_UNORM;
-		has_mipmaps = (myHasMipmap && image->getMipMapCount() > 0);
-		myTransparencyType = 2;
+		has_mipmaps = (mHasMipmap && image->getMipMapCount() > 0);
+		mTransparencyType = 2;
 		bpe = 16;
 		break;
 	case TinyImage::BC3:
 		is_bc = true;
 		desc.Format = DXGI_FORMAT_BC3_UNORM;
-		has_mipmaps = (myHasMipmap && image->getMipMapCount() > 0);
-		myTransparencyType = 2;
+		has_mipmaps = (mHasMipmap && image->getMipMapCount() > 0);
+		mTransparencyType = 2;
 		bpe = 16;
 		break;
 	case TinyImage::RGB_24_888:
 	{
 		// no 24 bit texture for DirectX11
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		myTransparencyType = 0;
-		myPixelSize = 4;
-		converteddata = new unsigned char[myPow2Width * myPow2Height * 4];
+		mTransparencyType = 0;
+		mPixelSize = 4;
+		converteddata = new unsigned char[mPow2Width * mPow2Height * 4];
 		subresources[0].pSysMem = (void*)converteddata;
-		subresources[0].SysMemPitch = myPow2Width * 4;
+		subresources[0].SysMemPitch = mPow2Width * 4;
 		subresources[0].SysMemSlicePitch = 0; // Not needed since this is a 2d texture
 		ReadColorFunc currentReadFunc = TGAClass::GetReadFunction(TinyImage::RGBA_32_8888, 3, false);
 
@@ -430,7 +430,7 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 		// pointer on image pixel data
 		u8* imagedata = data;
 
-		unsigned int totalSize = myPow2Width * myPow2Height;
+		unsigned int totalSize = mPow2Width * mPow2Height;
 		for (u32 i = 0; i < totalSize; i++, imagedata += 3, pixels += 4)
 		{
 			currentReadFunc(imagedata, pixels);
@@ -474,15 +474,15 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 	{
 		if (!has_mipmaps)
 		{
-			auto [rowBytes, numRows, numBytes] = get_surface_info(myWidth, myHeight, bpe);
+			auto [rowBytes, numRows, numBytes] = get_surface_info(mWidth, mHeight, bpe);
 			subresources[0].SysMemPitch = rowBytes;
 		}
 		else
 		{
 			desc.MipLevels = image->getMipMapCount();
 
-			int mipsizex = myWidth;
-			int mipsizey = myHeight;
+			int mipsizex = mWidth;
+			int mipsizey = mHeight;
 
 			unsigned char* mipdatastart = image->GetPixelData();
 			subresources.resize(image->getMipMapCount());
@@ -510,11 +510,11 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 		}
 	}
 #ifdef WUP
-	auto pd3dDevice = renderer->getDXInstance()->m_device.get(); // Don't forget to initialize this
+	auto pd3dDevice = renderer->getDXInstance()->mDevice.get(); // Don't forget to initialize this
 #else
-	auto pd3dDevice = renderer->getDXInstance()->m_device.Get(); // Don't forget to initialize this
+	auto pd3dDevice = renderer->getDXInstance()->mDevice.Get(); // Don't forget to initialize this
 #endif
-	HRESULT res = pd3dDevice->CreateTexture2D(&desc, subresources.data(), &pTexture);
+	HRESULT res = pd3dDevice->CreateTexture2D(&desc, subresources.data(), &mTexturePointer);
 	if (FAILED(res))
 	{
 		if (converteddata)
@@ -523,11 +523,11 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 	}
 
 	/*D3D11_MAPPED_SUBRESOURCE mappedResource;
-	auto *pd3dContext = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance()->m_deviceContext; // Don't forget to initialize this
-	res = pd3dContext->Map(pTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	auto *pd3dContext = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance()->mDeviceContext; // Don't forget to initialize this
+	res = pd3dContext->Map(mTexturePointer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
-	memcpy(mappedResource.pData, data, myPow2Width*myPow2Height * 4);
-	pd3dContext->Unmap(pTexture, 0);*/
+	memcpy(mappedResource.pData, data, mPow2Width*mPow2Height * 4);
+	pd3dContext->Unmap(mTexturePointer, 0);*/
 
 	// create shader resources
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -535,11 +535,11 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = desc.MipLevels;
 	srvDesc.Format = desc.Format;
-	HRESULT hr = pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, &pShaderRes);
+	HRESULT hr = pd3dDevice->CreateShaderResourceView(mTexturePointer, &srvDesc, &mShaderRes);
 
 	/*if (srvDesc.Texture2D.MipLevels > 1)
 	{
-		renderer->getDXInstance()->m_deviceContext->GenerateMips(pShaderRes);
+		renderer->getDXInstance()->mDeviceContext->GenerateMips(mShaderRes);
 	}*/
 
 	if (converteddata)
@@ -549,7 +549,7 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 	// so that texture ratio can be used just after initialization
 	ComputeRatio();
 
-	myCanReuseBuffer = true;
+	mCanReuseBuffer = true;
 	return true;
 	}
 
@@ -565,7 +565,7 @@ bool DX11Texture::CreateFromText(const unsigned short* text, unsigned int fontSi
 
 bool DX11Texture::CreateFromText(const unsigned short* text, unsigned int _maxLineNumber, unsigned int maxSize, unsigned int fontSize, const char* fontName, unsigned int a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, int a_drawingLimit)
 {
-	myIsText = true;
+	mIsText = true;
 	bool bRet = false;
 	unsigned char * pImageData = 0;
 
@@ -633,7 +633,7 @@ bool DX11Texture::CreateFromText(const unsigned short* text, unsigned int _maxLi
 
 bool DX11Texture::Load()
 {
-	if ((int)myTextureType == TEXTURE_CUBE_MAP)
+	if ((int)mTextureType == TEXTURE_CUBE_MAP)
 	{
 		return CubeMapGeneration();
 	}
@@ -641,7 +641,7 @@ bool DX11Texture::Load()
 	{
 		SP<FilePathManager>	pathManager = KigsCore::GetSingleton("FilePathManager");
 
-		std::string fileName = myFileName.const_ref();
+		std::string fileName = mFileName.const_ref();
 		auto extdot = fileName.rfind('.');
 		if (extdot != std::string::npos)
 		{
@@ -686,7 +686,7 @@ bool DX11Texture::Load()
 					}
 
 					// check if force pow 2
-					if (myForcePow2)
+					if (mForcePow2)
 					{
 						// compute power of two textures
 						int pow2sizeW = 1;
@@ -727,15 +727,15 @@ bool DX11Texture::Load()
 
 void DX11Texture::SetD3DTexture(ID3D11Texture2D* texture)
 {
-	if (pTexture) pTexture->Release();
-	if (pShaderRes) pShaderRes->Release();
-	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+	if (mTexturePointer) mTexturePointer->Release();
+	if (mShaderRes) mShaderRes->Release();
+	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 
-	pTexture = texture;
+	mTexturePointer = texture;
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = 1;
 	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	DX::ThrowIfFailed(renderer->getDXInstance()->m_device->CreateShaderResourceView(pTexture, &srvDesc, &pShaderRes));
+	DX::ThrowIfFailed(renderer->getDXInstance()->mDevice->CreateShaderResourceView(mTexturePointer, &srvDesc, &mShaderRes));
 }

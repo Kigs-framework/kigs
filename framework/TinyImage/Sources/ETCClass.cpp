@@ -11,7 +11,7 @@
 ETCClass::ETCClass(FileHandle* fileName) :TinyImage()
 {
 	mIsVFlipped = false;
-	myInitIsOK = Load(fileName);
+	mInitIsOK = Load(fileName);
 
 }
 
@@ -25,7 +25,7 @@ bool	ETCClass::Load(FileHandle* fileName)
 	u64 filelength;
 
 	// free previous image if any
-	if (myInitIsOK)
+	if (mInitIsOK)
 	{
 		if (mPixels)
 		{
@@ -52,15 +52,15 @@ bool	ETCClass::Load(FileHandle* fileName)
 		unsigned char* imgdata = (unsigned char*)rawbuffer->buffer();
 		imgdata += sizeof(ETC_Header);
 
-		myWidth = imageheader->sizex & 0xFFFF;
-		myHeight = imageheader->sizey & 0xFFFF;
+		mWidth = imageheader->sizex & 0xFFFF;
+		mHeight = imageheader->sizey & 0xFFFF;
 
-		mPixelLineSize = myWidth;
+		mPixelLineSize = mWidth;
 
 		if ((imageheader->sizex & 0xFFFF0000) || (imageheader->sizey & 0xFFFF0000))
 		{
-			myUsedWidth = ((imageheader->sizex >> 16) & 0xFFFF);
-			myUsedHeight = ((imageheader->sizey >> 16) & 0xFFFF);
+			mUsedWidth = ((imageheader->sizex >> 16) & 0xFFFF);
+			mUsedHeight = ((imageheader->sizey >> 16) & 0xFFFF);
 		}
 
 		mFormat = ETC1;
