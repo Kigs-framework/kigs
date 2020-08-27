@@ -8,6 +8,20 @@
 class API3DDeferred;
 class TravState;
 
+
+// ****************************************
+// * API3DDeferredFilter class
+// * --------------------------------------
+/**
+ * \file	GLSLDeferredFilter.h
+ * \class	API3DDeferredFilter
+ * \ingroup Renderer
+ * \brief	GLSL deferred shader implementation.
+ *
+ * ?? Obsolete ??
+ */
+ // ****************************************
+
 class API3DDeferredFilter : public CoreModifiable
 {
 public:
@@ -25,9 +39,9 @@ public:
 		//! overload operator () for comparison
 		bool operator()(const API3DDeferredFilter * a1, const API3DDeferredFilter * a2) const
 		{
-			if (a1->myPriority == a2->myPriority)
+			if (a1->mPriority == a2->mPriority)
 				return (a1)<(a2);
-			return a1->myPriority<a2->myPriority;
+			return a1->mPriority<a2->mPriority;
 		}
 	};
 
@@ -45,10 +59,10 @@ protected:
 	virtual unsigned int PostLightTreatment(TravState*, API3DDeferred*) { return -1; }
 	virtual unsigned int PostDrawTreatment(TravState*, API3DDeferred*) { return -1; }
 
-	maUInt myPriority;
-	maUInt myDrawPass;
+	maUInt mPriority;
+	maUInt mDrawPass;
 
-	maReference myTarget; 
+	maReference mTarget; 
 };
 
 #endif //_GLSLDeferred2_H

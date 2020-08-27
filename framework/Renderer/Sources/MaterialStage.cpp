@@ -21,7 +21,7 @@ bool MaterialStage::PreDraw(TravState* state)
 {
 	if (Drawable::PreDraw(state))
 	{
-		state->GetRenderer()->ActiveTextureChannel(myTextureChannel);
+		state->GetRenderer()->ActiveTextureChannel(mChannel);
 		return true;
 	}
 	return false;
@@ -32,7 +32,7 @@ bool MaterialStage::PostDraw(TravState* state)
 {
 	if (Drawable::PostDraw(state))
 	{
-		state->GetRenderer()->ActiveTextureChannel(myTextureChannel); 
+		state->GetRenderer()->ActiveTextureChannel(mChannel); 
 		return true;
 	}
 	return false;

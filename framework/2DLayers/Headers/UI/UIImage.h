@@ -52,7 +52,6 @@ protected:
 
 	maBool					mKeepRatio = BASE_ATTRIBUTE(KeepRatio, true);
 	maEnum<5>				mDisplayMode = BASE_ATTRIBUTE(DisplayMode, "Auto", "Resize", "Scale", "Shrink", "Repeat");
-	//maBool					myAutoresizeTexture;
 	maString				mTexture;
 	SmartPointer<SpriteSheetTexture>	mSpriteSheetTexture;
 };

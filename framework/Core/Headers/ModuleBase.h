@@ -70,8 +70,8 @@ extern "C"  DLLIMPORT ModuleBase*	 ModuleInit(KigsCore* core, const kstl::vector
 
 struct DynamicModuleHandleAndPointer
 {
-	void*			myHandle = nullptr;
-	ModuleBase*		myInstance = nullptr;
+	void*			mHandle = nullptr;
+	ModuleBase*		mInstance = nullptr;
 };
 
 // ****************************************

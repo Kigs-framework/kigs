@@ -2,7 +2,16 @@
 #define _OPENGLCAMERAORTHO_H
 
 #include "Camera.h"
-
+// ****************************************
+// * OpenGLCameraOrtho class
+// * --------------------------------------
+/**
+ * \file	OpenGLCameraOrtho.h
+ * \class	OpenGLCameraOrtho
+ * \ingroup Renderer
+ * \brief	OpenGL implementation of Orthographic Camera.
+ */
+ // ****************************************
 class OpenGLCameraOrtho : public Camera
 {
 public:
@@ -20,7 +29,7 @@ protected:
     bool ProtectedSetActive(TravState* state)override;
    	void ProtectedRelease(TravState* state) override; 
 
-	maFloat m_Size = BASE_ATTRIBUTE(Size,100);
+	maFloat mSize = BASE_ATTRIBUTE(Size,100);
 };    
 
 #endif

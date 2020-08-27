@@ -8,22 +8,14 @@
 // * RendererMatrix class
 // * --------------------------------------
 /**
- * \file	RendererMatrix.h
- * \class	RendererMatrix
- * \ingroup Drawable
- * \ingroup RendererDrawable
- * \brief	base for a matrix renderer
- * \author	ukn
- * \version ukn
- * \date	ukn
- *
- * Exported parameters :<br>
- * <ul>
- * <li>
- *		string <strong>Matrix</strong> : used matrix
- * </li>
- * </ul>
- */
+* \file	RendererMatrix.h
+* \class	RendererMatrix
+* \ingroup Renderer
+* \brief Rendering matrix
+* 
+* ?? Obsolete ??
+*
+*/
 // ****************************************
 class RendererMatrix : public Drawable 
 {
@@ -116,7 +108,7 @@ public:
 
 	const kfloat*	GetMatrixValues()
 	{
-		return myMatrix.getConstArrayBuffer();
+		return mMatrix.getConstArrayBuffer();
 	}
 	
 protected:
@@ -127,7 +119,7 @@ protected:
     virtual ~RendererMatrix();  
 
 	//! used matrix
-	maVect16DF	myMatrix;
+	maVect16DF	mMatrix;
 }; 
 
 #endif //_RENDERERMATRIX_H_

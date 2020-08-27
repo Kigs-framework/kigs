@@ -6,6 +6,16 @@
 // rendering screen is really to specific to share accross platform
 #include "Platform/Renderer/OpenGLRenderingScreen.h"
 
+// ****************************************
+// * OpenGLRenderingScreen class
+// * --------------------------------------
+/**
+ * \file	OpenGLRenderingScreen.h
+ * \class	OpenGLRenderingScreen
+ * \ingroup Renderer
+ * \brief	OpenGL implementation of RendereingScreen.
+ */
+ // ****************************************
 class OpenGLRenderingScreen : public OpenGLPlatformRenderingScreen
 {
 public:
@@ -39,12 +49,12 @@ protected:
 
 	void InitializeGL(GLsizei width, GLsizei height) override;
 
-	unsigned int	fbo_frame_buffer_id;
-	unsigned int	fbo_depth_buffer_id;
-	unsigned int	fbo_stencil_buffer_id;
-	unsigned int	fbo_texture_id;
+	unsigned int	mFBOFrameBufferID;
+	unsigned int	mFBODepthBufferID;
+	unsigned int	mFBOStencilBufferID;
+	unsigned int	mFBOTextureID;
 
-	int	default_frame_buffer;
+	int	mDefaultFrameBuffer;
 };
 
 

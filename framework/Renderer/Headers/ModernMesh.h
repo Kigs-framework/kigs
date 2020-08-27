@@ -14,6 +14,17 @@ class ModernMeshItemGroup;
 class AbstractDynamicGrowingBuffer;
 class ModernMeshBuilder;
 
+// ****************************************
+// * ModernMesh class
+// * --------------------------------------
+/**
+* \file	ModernMesh.h
+* \class	ModernMesh
+* \ingroup Renderer
+* \brief	Optimized mesh class.
+*
+*/
+// ****************************************
 class ModernMesh : public HDrawable
 {
 public:
@@ -28,8 +39,8 @@ public:
 
 	void GetNodeBoundingBox(v3f& pmin, v3f& pmax) const override
 	{
-		pmin = myBoundingBox.m_Min;
-		pmax = myBoundingBox.m_Max;
+		pmin = mBoundingBox.m_Min;
+		pmax = mBoundingBox.m_Max;
 	}
 	
 	void ComputeTangents(bool useTextureCoords);
@@ -116,28 +127,38 @@ protected:
 
 	virtual void  InitBoundingBox();
 
-	ModernMeshBuilder* myCurrentMeshBuilder = nullptr;
-	BBox myBoundingBox = BBox{ v3f(0.0f, 0.0f, 0.0f), v3f(-1.0f, -1.0f, -1.0f) };
-	bool myWasBuild = false;
+	ModernMeshBuilder* mCurrentMeshBuilder = nullptr;
+	BBox mBoundingBox = BBox{ v3f(0.0f, 0.0f, 0.0f), v3f(-1.0f, -1.0f, -1.0f) };
+	bool mWasBuild = false;
 
 	//! name of the file to read in load method
-	maString myFileName = BASE_ATTRIBUTE(FileName, "");
+	maString mFileName = BASE_ATTRIBUTE(FileName, "");
 
 #ifdef _DEBUG
-	maBool myShowVertex = BASE_ATTRIBUTE(ShowVertex, false);
-	maBool myOptimize = BASE_ATTRIBUTE(Optimize, true);
+	maBool mShowVertex = BASE_ATTRIBUTE(ShowVertex, false);
+	maBool mOptimize = BASE_ATTRIBUTE(Optimize, true);
 #else
-	maBool myOptimize = BASE_ATTRIBUTE(Optimize, true);
+	maBool mOptimize = BASE_ATTRIBUTE(Optimize, true);
 #endif
 
-	maBool myWireMode = BASE_ATTRIBUTE(WireMode, false);
+	maBool mWireMode = BASE_ATTRIBUTE(WireMode, false);
 #ifdef KIGS_TOOLS
-	maBool myDrawNormals = BASE_ATTRIBUTE(DrawNormals, false);
-	maBool myDrawUVs = BASE_ATTRIBUTE(DrawUVs, false);
+	maBool mDrawNormals = BASE_ATTRIBUTE(DrawNormals, false);
+	maBool mDrawUVs = BASE_ATTRIBUTE(DrawUVs, false);
 #endif
 
 };
-
+// ****************************************
+// * ModernMeshItemGroup class
+// * --------------------------------------
+/**
+* \file	ModernMesh.h
+* \class	ModernMeshItemGroup
+* \ingroup Renderer
+* \brief	Group of triangles with the same characteristics.
+*
+*/
+// ****************************************
 
 class ModernMeshItemGroup : public Drawable
 {
@@ -174,29 +195,29 @@ public:
 		return ((u32)Need_Postdraw) | ((u32)Need_Predraw) | ((u32)Need_Draw);
 	}
 
-	s32 getTriangleCount() { return myTriangleCount; }
-	s32 getVertexCount() { return myVertexCount; }
-	s32 getVertexSize() { return myVertexSize; }
+	s32 getTriangleCount() { return mTriangleCount; }
+	s32 getVertexCount() { return mVertexCount; }
+	s32 getVertexSize() { return mVertexSize; }
 
 
 	bool	BBoxUpdate(kdouble /* time*/)  override { return true; }
 
 	std::atomic_int mCanFreeBuffers = { 0 };
 	//! List of Triangles
-	maBuffer myTriangleBuffer = BASE_ATTRIBUTE(TriangleBuffer, "");
-	maBuffer myVertexBufferArray = BASE_ATTRIBUTE(VertexBufferArray, "");
+	maBuffer mTriangleBuffer = BASE_ATTRIBUTE(TriangleBuffer, "");
+	maBuffer mVertexBufferArray = BASE_ATTRIBUTE(VertexBufferArray, "");
 	//! Triangle Count
-	s32	myTriangleCount = 0;
-	s32	myVertexCount = 0;
-	s32	myVertexSize = 0;
+	s32	mTriangleCount = 0;
+	s32	mVertexCount = 0;
+	s32	mVertexSize = 0;
 
-	bool myOwnedBuffer = true;
-	u32 myVertexBuffer = 0xFFFFFFFF;
-	u32 myIndexBuffer = 0xFFFFFFFF;
-	u32 myIndexType;
+	bool mOwnedBuffer = true;
+	u32 mVertexBuffer = 0xFFFFFFFF;
+	u32 mIndexBuffer = 0xFFFFFFFF;
+	u32 mIndexType;
 
-	maInt						myCullMode = BASE_ATTRIBUTE(CullMode, 1);
-	maFloat						myTexCoordsScale = BASE_ATTRIBUTE(TexCoordsScale, 0.01f);;
+	maInt						mCullMode = BASE_ATTRIBUTE(CullMode, 1);
+	maFloat						mTexCoordsScale = BASE_ATTRIBUTE(TexCoordsScale, 0.01f);;
 	maBool						mInstanced = BASE_ATTRIBUTE(Instanced, false);
 	maBool						mNoLight = BASE_ATTRIBUTE(NoLight, false);
 
@@ -206,25 +227,25 @@ public:
 	u64 mLastOcclusionResult = 1;
 	int mLastFrameOcclusionTested = 0;
 
-	u32							myVertexArrayMask = 0;	// give available data (should be set in material ?)
-	std::vector<ModernMesh::VertexElem>	myVertexDesc;
+	u32							mVertexArrayMask = 0;	// give available data (should be set in material ?)
+	std::vector<ModernMesh::VertexElem>	mVertexDesc;
 	void ComputeTangents(bool useTextureCoords);
 	void ComputeNormals();
 	void ApplyScaleFactor(kfloat scaleFactor);
 	void FlipAxis(s32 axisX, s32 axisY, s32 axisZ);
 
-	void * GetVertexBuffer(s32 &size) { size = myVertexBufferArray.length(); return myVertexBufferArray.buffer(); }
-	void * GetIndexBuffer(s32 &size) { size = myTriangleBuffer.length(); return myTriangleBuffer.buffer(); }
+	void * GetVertexBuffer(s32 &size) { size = mVertexBufferArray.length(); return mVertexBufferArray.buffer(); }
+	void * GetIndexBuffer(s32 &size) { size = mTriangleBuffer.length(); return mTriangleBuffer.buffer(); }
 
 
 
 protected:
-	std::vector<ModernMesh::VertexElem> * GetVertexDesc() { return &myVertexDesc; }
+	std::vector<ModernMesh::VertexElem> * GetVertexDesc() { return &mVertexDesc; }
 
 	const ModernMesh::VertexElem* GetVertexDesc(const std::string& descname)
 	{
-		auto itr = myVertexDesc.begin();
-		for (; itr != myVertexDesc.end(); ++itr)
+		auto itr = mVertexDesc.begin();
+		for (; itr != mVertexDesc.end(); ++itr)
 		{
 			if (itr->name == descname)
 				return &(*itr);

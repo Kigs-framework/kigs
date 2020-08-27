@@ -12,7 +12,16 @@ enum SceneNodeShow
 	SceneNode_Render  = 1<<0,
 	SceneNode_Collide = 1<<1
 };
-
+// ****************************************
+// * SceneNode class
+// * --------------------------------------
+/**
+ * \file	SceneNode.h
+ * \class	SceneNode
+ * \ingroup SceneGraph
+ * \brief   Abstract base class for objects in the scene ( Node3D, Drawables...) .
+ */
+ // ****************************************
 class SceneNode : public CoreModifiable 
 {
 public:
@@ -24,20 +33,20 @@ public:
 
 	bool IsInScene() const;
 
-	inline bool HasFlag(unsigned int flag) const { return ((flag&myFlags) == flag); }
-	inline void SetFlag(unsigned int flag) { myFlags |= flag; }
-	inline void UnsetFlag(unsigned int flag) { myFlags &= ~flag; }
+	inline bool HasFlag(unsigned int flag) const { return ((flag&mFlags) == flag); }
+	inline void SetFlag(unsigned int flag) { mFlags |= flag; }
+	inline void UnsetFlag(unsigned int flag) { mFlags &= ~flag; }
 
-	inline void SetIsRenderable(bool b) { if (b) myShowNode |= SceneNode_Render; else myShowNode &= ~SceneNode_Render; }
+	inline void SetIsRenderable(bool b) { if (b) mShow |= SceneNode_Render; else mShow &= ~SceneNode_Render; }
 	inline bool IsRenderable() {
-		return (u32)myShowNode & SceneNode_Render;
+		return (u32)mShow & SceneNode_Render;
 	}
 
 
-	inline void SetIsCollidable(bool b) { if (b) myShowNode |= SceneNode_Collide; else myShowNode &= ~SceneNode_Collide; }
+	inline void SetIsCollidable(bool b) { if (b) mShow |= SceneNode_Collide; else mShow &= ~SceneNode_Collide; }
 	inline bool IsCollidable()
 	{
-		return (u32)myShowNode & SceneNode_Collide;
+		return (u32)mShow & SceneNode_Collide;
 	}
 
 	bool IsVisibleInScene();
@@ -67,7 +76,7 @@ public:
 
 protected:
 
-	unsigned int	myFlags;
+	unsigned int	mFlags;
 	
 
 	inline bool	IsAllSonsVisible() { return HasFlag(AllSonsVisible); }
@@ -75,7 +84,7 @@ protected:
 	inline void	UnsetAllSonsVisible() { UnsetFlag(AllSonsVisible); }
 
 private:
-	maUInt myShowNode = BASE_ATTRIBUTE(Show, UINT_MAX);
+	maUInt mShow = BASE_ATTRIBUTE(Show, UINT_MAX);
 };
 
 #endif //_SCENENODE_H_

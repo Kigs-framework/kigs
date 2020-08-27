@@ -20,40 +20,9 @@ struct TextureDelayedInitData
 /**
 * \file	Texture.h
 * \class	Texture
-* \ingroup Drawable
-* \ingroup RendererDrawable
-* \brief	Texture object
-* \author	ukn
-* \version ukn
-* \date	ukn
+* \ingroup Renderer
+* \brief manage a texture.
 *
-* Exported parameters :<br>
-* <ul>
-* <li>
-*		kfloat <strong>Width</strong> : width of the texture
-* </li>
-* <li>
-*		kfloat <strong>Height</strong> : height of the texture
-* </li>
-* <li>
-*		int <strong>TransparencyType</strong> : 0 = no transparency, 1 = billboard (binary transparency), 2 = need blend, -1 = to test on file loading
-* </li>
-* <li>
-*		bool <strong>HasMipmap</strong> :  TRUE if the texture has mipmap
-* </li>
-* <li>
-*		string <strong>FileName</strong> : file name of the used texture
-* </li>
-* <li>
-*		int <strong>TextureType</strong> : type of the used texture
-* </li>
-* <li>
-*		bool <strong>Repeat_U</strong> : TRUE if I repeat the texture on the u axis
-* </li>
-* <li>
-*		bool <strong>Repeat_V</strong> : TRUE if I repeat the texture on the v axis
-* </li>
-* </ul>
 */
 // ****************************************
 class Texture : public Drawable
@@ -81,7 +50,7 @@ public:
 	* \param	RU : TRUE if repeat on u axis
 	* \param	RV : TRUE if repeat on v axis
 	*/
-	void SetRepeatUV (bool RU, bool RV) {myRepeatU = RU; myRepeatV=RV;}
+	void SetRepeatUV (bool RU, bool RV) {mRepeat_U = RU; mRepeat_V=RV;}
 
 	/**
 	* \brief	create a texture from an image
@@ -166,16 +135,16 @@ public:
 		return ((unsigned int)Need_Predraw)|((unsigned int)Need_Postdraw);
 	}
 
-	inline void GetSize(unsigned int& width, unsigned int& height) { width = myWidth; height = myHeight; }
-	inline void GetSize(float& width, float& height) { width = (float)myWidth; height = (float)myHeight; }
-	inline v2f GetSize() { return { (float)myWidth, (float)myHeight }; }
-	inline void GetPow2Size(unsigned int& width, unsigned int& height) {width=myPow2Width; height=myPow2Height;}
-	inline void GetRatio(kfloat& rX, kfloat& rY) {rX=myRatioX; rY=myRatioY;}
-	inline int GetTransparency() {return myTransparencyType;}
+	inline void GetSize(unsigned int& width, unsigned int& height) { width = mWidth; height = mHeight; }
+	inline void GetSize(float& width, float& height) { width = (float)mWidth; height = (float)mHeight; }
+	inline v2f GetSize() { return { (float)mWidth, (float)mHeight }; }
+	inline void GetPow2Size(unsigned int& width, unsigned int& height) {width=mPow2Width; height=mPow2Height;}
+	inline void GetRatio(kfloat& rX, kfloat& rY) {rX=mRatioX; rY=mRatioY;}
+	inline int GetTransparency() {return mTransparencyType;}
 
 	bool isText()
 	{
-		return myIsText;
+		return mIsText;
 	}
 
 	virtual void	InitForFBO();
@@ -194,42 +163,42 @@ protected:
 
 	inline void ComputeRatio()
 	{
-		myRatioX = (kfloat)((kfloat)myWidth / (kfloat)myPow2Width);
-		myRatioY = (kfloat)((kfloat)myHeight / (kfloat)myPow2Height);
+		mRatioX = (kfloat)((kfloat)mWidth / (kfloat)mPow2Width);
+		mRatioY = (kfloat)((kfloat)mHeight / (kfloat)mPow2Height);
 	}
 
-	kfloat myRatioX;
-	kfloat myRatioY;
+	kfloat mRatioX;
+	kfloat mRatioY;
 
 	
 	//! height of the texture
-	maUInt		myWidth;
+	maUInt		mWidth;
 	//! width of the texture
-	maUInt		myHeight;
+	maUInt		mHeight;
 	//! 0 = no transparency, 1 = billboard (binary transparency), 2 = need blend, -1 = to test on file loading
-	maInt		myTransparencyType;
+	maInt		mTransparencyType;
 	//! TRUE if the texture has mipmap
-	maBool		myHasMipmap;
-	maBool		myForceNearest;
+	maBool		mHasMipmap;
+	maBool		mForceNearest;
 	//! file name of the used texture
-	maString	myFileName;
+	maString	mFileName;
 	//! type of the used texture
-	maInt		myTextureType;
+	maInt		mTextureType;
 	//! TRUE if I repeat the texture on the u axis
-	maBool		myRepeatU;
+	maBool		mRepeat_U;
 	//! TRUE if I repeat the texture on the v axis
-	maBool		myRepeatV;
+	maBool		mRepeat_V;
 	//! TRUE if we want the texture be directly accessed from memory (platform dependant)
-	maBool		myIsDynamic;
+	maBool		mIsDynamic;
 	//! TRUE if we want the texture to be resized to a power of two at loading (done on the specific part !)
-	maBool		myForcePow2;
+	maBool		mForcePow2;
 
-	unsigned int myPow2Width;
-	unsigned int myPow2Height;
-	unsigned int myPixelSize;
+	unsigned int mPow2Width;
+	unsigned int mPow2Height;
+	unsigned int mPixelSize;
 
 
-	bool			myIsText;
+	bool			mIsText;
 
 	/**
 	* \brief	destructor

@@ -2,7 +2,16 @@
 #define _GLSLGENERICMESHSHADER_H
 
 #include "GLSLShader.h"
-
+// ****************************************
+// * API3DGenericMeshShader class
+// * --------------------------------------
+/**
+ * \file	GLSLGenericMeshShader.h
+ * \class	API3DGenericMeshShader
+ * \ingroup Renderer
+ * \brief	OpenGL generic mesh shader.
+ */
+ // ****************************************
 class API3DGenericMeshShader : public API3DShader
 {
 public:
@@ -40,9 +49,9 @@ protected:
 	
 	struct shaderInfo
 	{
-		ShaderInfo *	myVertexShader;
-		ShaderInfo *	myFragmentShader;
-		ShaderInfo* 	myShaderProgram;
+		ShaderInfo *	mVertexShader;
+		ShaderInfo *	mFragmentShader;
+		ShaderInfo* 	mShaderProgram;
 		
 	};
 

@@ -79,8 +79,8 @@ void DX11RenderingScreen::Resize(kfloat sizeX, kfloat sizeY)
 	// before screen is init, only update sizeX and sizeY
 	if (!IsInit())
 	{
-		mySizeX = (unsigned int)sizeX;
-		mySizeY = (unsigned int)sizeY;
+		mSizeX = (unsigned int)sizeX;
+		mSizeY = (unsigned int)sizeY;
 	}
 	else
 	{
@@ -105,8 +105,8 @@ bool DX11RenderingScreen::SetActive(TravState* state)
 	auto frame_number = state->GetFrameNumber();
 	if (frame_number != mCurrentFrameNumber)
 	{
-		bool is_main_screen = !myIsOffScreen && !myUseFBO;
-		RendererDX11* renderer = reinterpret_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+		bool is_main_screen = !mIsOffScreen && !mUseFBO;
+		RendererDX11* renderer = reinterpret_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 		DXInstance* dxinstance = renderer->getDXInstance();
 		auto space = dxinstance->mHolographicSpace;
 
@@ -122,22 +122,22 @@ bool DX11RenderingScreen::SetActive(TravState* state)
 
 	ParentClassType::SetActive(state);
 	
-	RendererDX11* renderer = static_cast<RendererDX11*>(RendererDX11::theGlobalRenderer);
+	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 	renderer->SetCullMode(RENDERER_CULL_NONE);
 	return true;
 }
 
 void DX11RenderingScreen::Release(TravState* state)
 {
-	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 	renderer->GetVertexBufferManager()->DoDelayedAction();
 
-	if (myUseFBO)
+	if (mUseFBO)
 	{
 		DX11RenderingScreen* firstScreen = (DX11RenderingScreen*)renderer->getFirstRenderingScreen();
 		firstScreen->SetActive(state);
 
-		if (!myIsOffScreen && state)
+		if (!mIsOffScreen && state)
 		{
 			renderer->pushShader((API3DShader*)renderer->getDefaultUiShader().get(), state);
 
@@ -150,23 +150,23 @@ void DX11RenderingScreen::Release(TravState* state)
 			renderer->SetLightMode(RENDERER_LIGHT_OFF);
 			renderer->SetDepthTestMode(false);
 			renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_OFF);
-			renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)mySizeX, 0.0f, (float)mySizeY, -1.0f, 1.0f);
+			renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)mSizeX, 0.0f, (float)mSizeY, -1.0f, 1.0f);
 			renderer->LoadIdentity(MATRIX_MODE_MODEL);
 			renderer->LoadIdentity(MATRIX_MODE_VIEW);
 			renderer->ActiveTextureChannel(DX11_COLOR_MAP_SLOT);
-			myFBOTexture->DoPreDraw(state);
+			mFBOTexture->DoPreDraw(state);
 			//renderer->BindTexture(RENDERER_TEXTURE_2D, fbo_texture_id);
-			renderer->SetScissorValue(0, 0, mySizeX, mySizeY);
-			renderer->Viewport(0, 0, mySizeX, mySizeY);
+			renderer->SetScissorValue(0, 0, mSizeX, mSizeY);
+			renderer->Viewport(0, 0, mSizeX, mSizeY);
 
 			VInfo2D vi;
 			UIVerticesInfo mVI = UIVerticesInfo(&vi);
 			VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(mVI.Buffer());
 
 			buf[0].setVertex(0.0f, 0.0f);
-			buf[1].setVertex(0.0, (float)mySizeY);
-			buf[2].setVertex((float)mySizeX, 0.0);
-			buf[3].setVertex((float)mySizeX, (float)mySizeY);
+			buf[1].setVertex(0.0, (float)mSizeY);
+			buf[2].setVertex((float)mSizeX, 0.0);
+			buf[3].setVertex((float)mSizeX, (float)mSizeY);
 
 			//Draw Quad that fits the screen
 
@@ -208,33 +208,33 @@ void DX11RenderingScreen::Update(const Timer&  timer, void* addParam)
 	setCurrentContext();
 
 	ParentClassType::Update(timer, addParam);
-	RendererDX11* renderer = RendererDX11::theGlobalRenderer->as<RendererDX11>();
+	RendererDX11* renderer = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>();
 #ifdef WUP
 	if (mRenderingParameters)
 	{
-		mRenderingParameters.CommitDirect3D11DepthBuffer(CreateDepthTextureInteropObject(m_depthStencilBuffer));
+		mRenderingParameters.CommitDirect3D11DepthBuffer(CreateDepthTextureInteropObject(mDepthStencilBuffer));
 	}
 #endif
-	if (!myIsOffScreen && !myUseFBO)
+	if (!mIsOffScreen && !mUseFBO)
 	{
-		if (!myIsStereo)
+		if (!mIsStereo)
 		{
 			// Present the back buffer to the screen since rendering is complete.
-			if (myWaitVSync)
+			if (mVSync)
 			{
 				// Lock to screen refresh rate.
-				renderer->getDXInstance()->m_swapChain->Present(1, 0);
+				renderer->getDXInstance()->mSwapChain->Present(1, 0);
 			}
 			else
 			{
 				// Present as fast as possible.
-				renderer->getDXInstance()->m_swapChain->Present(0, 0);
+				renderer->getDXInstance()->mSwapChain->Present(0, 0);
 			}
 		}
 		else
 		{
 #ifdef WUP
-			auto result = renderer->getDXInstance()->mCurrentFrame.PresentUsingCurrentPrediction(myWaitVSync ? HolographicFramePresentWaitBehavior::WaitForFrameToFinish : HolographicFramePresentWaitBehavior::DoNotWaitForFrameToFinish);
+			auto result = renderer->getDXInstance()->mCurrentFrame.PresentUsingCurrentPrediction(mVSync ? HolographicFramePresentWaitBehavior::WaitForFrameToFinish : HolographicFramePresentWaitBehavior::DoNotWaitForFrameToFinish);
 			if (result == HolographicFramePresentResult::DeviceRemoved)
 			{
 				kigsprintf("Device removed !\n");
@@ -249,7 +249,7 @@ void DX11RenderingScreen::UninitModifiable()
 	ParentClassType::UninitModifiable();
 	if (IsMainRenderingScreen())
 	{
-		ModuleSpecificRenderer* renderer = RendererDX11::theGlobalRenderer;
+		ModuleSpecificRenderer* renderer = ModuleRenderer::mTheGlobalRenderer;
 		renderer->UninitHardwareState();
 	}
 
@@ -275,12 +275,12 @@ void DX11RenderingScreen::InitModifiable()
 
 void DX11RenderingScreen::DelayedInit()
 {
-	ModuleSpecificRenderer* renderer = RendererDX11::theGlobalRenderer; // ((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	ModuleSpecificRenderer* renderer = ModuleRenderer::mTheGlobalRenderer; // ((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	DX11RenderingScreen* firstScreen = (DX11RenderingScreen*)renderer->getFirstRenderingScreen();
 
 	if (firstScreen != this)
 	{
-		if (firstScreen->myIsInit == false)
+		if (firstScreen->mIsInit == false)
 		{
 			firstScreen->DelayedInit();
 		}
@@ -288,19 +288,19 @@ void DX11RenderingScreen::DelayedInit()
 
 	ParentClassType::InitModifiable();
 
-	myIsInit = true;
+	mIsInit = true;
 
 	RemoveDynamicAttribute("DelayedInit");
 
 	if (firstScreen == this)
 	{
 		bool isFullScreen = false;
-		if (!myhWnd)
+		if (!mHWnd)
 		{
-			if (MyParentWindow && MyParentWindow->IsInit())
+			if (mParentWindow && mParentWindow->IsInit())
 			{
-				myhWnd = (HWND)MyParentWindow->GetHandle();
-				MyParentWindow->getValue("FullScreen", isFullScreen);
+				mHWnd = (HWND)mParentWindow->GetHandle();
+				mParentWindow->getValue("FullScreen", isFullScreen);
 			}
 		}
 	}
@@ -316,18 +316,18 @@ void DX11RenderingScreen::DelayedInit()
 
 bool DX11RenderingScreen::CreateResources()
 {
-	KIGS_ASSERT(!(!myUseFBO && myIsOffScreen)); // offscreen must be fbo
+	KIGS_ASSERT(!(!mUseFBO && mIsOffScreen)); // offscreen must be fbo
 
-	bool is_main_screen = !myIsOffScreen && !myUseFBO;
+	bool is_main_screen = !mIsOffScreen && !mUseFBO;
 
-	RendererDX11* renderer = reinterpret_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+	RendererDX11* renderer = reinterpret_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 	DXInstance* dxinstance = renderer->getDXInstance();
 #ifdef WUP
-	if (myIsStereo && !gIsHolographic) myIsStereo = false;
+	if (mIsStereo && !gIsHolographic) mIsStereo = false;
 #else
-	if (myIsStereo) myIsStereo = false;
+	if (mIsStereo) mIsStereo = false;
 #endif
-	bool is_stereo = myIsStereo;
+	bool is_stereo = mIsStereo;
 
 #ifdef WUP
 	if (is_stereo && !mRenderingParameters)
@@ -336,13 +336,13 @@ bool DX11RenderingScreen::CreateResources()
 	}
 #endif
 
-	int wanted_x = mySizeX;
-	int wanted_y = mySizeY;
+	int wanted_x = mSizeX;
+	int wanted_y = mSizeY;
 	
-	if (myUseFBO)
+	if (mUseFBO)
 	{
-		wanted_x = myFBOSizeX;
-		wanted_y = myFBOSizeY;
+		wanted_x = mFBOSizeX;
+		wanted_y = mFBOSizeY;
 	}
 
 	if (wanted_x <= 0) wanted_x = 1280;
@@ -357,24 +357,24 @@ bool DX11RenderingScreen::CreateResources()
 			wanted_x = surface.Description().Width;
 			wanted_y = surface.Description().Height;
 
-			if (mySizeX != wanted_x || mySizeY != wanted_y)
+			if (mSizeX != wanted_x || mSizeY != wanted_y)
 			{
-				m_depthStencilView = nullptr;
+				mDepthStencilView = nullptr;
 			}
 
-			mySizeX = wanted_x;
-			mySizeY = wanted_y;
+			mSizeX = wanted_x;
+			mSizeY = wanted_y;
 			/*myDesignSizeX = wanted_x;
 			myDesignSizeY = wanted_y;*/
 			RecomputeDesignCoef();
 			winrt::com_ptr<ID3D11Texture2D> cameraBackBuffer;
 			DX::ThrowIfFailed(surface.as<::Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>()->GetInterface(__uuidof(cameraBackBuffer), cameraBackBuffer.put_void()));
 
-			if (cameraBackBuffer.get() != m_renderTargetBuffer.get())
+			if (cameraBackBuffer.get() != mRenderTargetBuffer.get())
 			{
-				m_renderTargetBuffer = cameraBackBuffer;
+				mRenderTargetBuffer = cameraBackBuffer;
 			}
-			else if(m_depthStencilView)
+			else if(mDepthStencilView)
 			{
 				// No need to recreate depth stencil
 				return true;
@@ -405,12 +405,12 @@ bool DX11RenderingScreen::CreateResources()
 #endif
 			swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
 
-			dxinstance->m_swapChain = nullptr;
-			m_renderTargetBuffer = nullptr;
-			m_depthStencilView = nullptr;
+			dxinstance->mSwapChain = nullptr;
+			mRenderTargetBuffer = nullptr;
+			mDepthStencilView = nullptr;
 #ifdef WUP
 			// First, retrieve the underlying DXGI Device from the D3D Device.
-			winrt::com_ptr<IDXGIDevice1> dxgiDevice = dxinstance->m_device.as<IDXGIDevice1>();
+			winrt::com_ptr<IDXGIDevice1> dxgiDevice = dxinstance->mDevice.as<IDXGIDevice1>();
 			
 			// Identify the physical adapter (GPU or card) this device is running on.
 			winrt::com_ptr<IDXGIAdapter> dxgiAdapter;
@@ -423,19 +423,19 @@ bool DX11RenderingScreen::CreateResources()
 
 			auto windowPtr = static_cast<::IUnknown*>(winrt::get_abi(dxinstance->mWindow));
 			DX::ThrowIfFailed(dxgiFactory->CreateSwapChainForCoreWindow(
-				dxinstance->m_device.get(),
+				dxinstance->mDevice.get(),
 				windowPtr,
 				&swapChainDesc,
 				nullptr,
-				dxinstance->m_swapChain.put()
+				dxinstance->mSwapChain.put()
 			));
-			DX::ThrowIfFailed(dxinstance->m_swapChain->GetBuffer(0, __uuidof(m_renderTargetBuffer), m_renderTargetBuffer.put_void()));
+			DX::ThrowIfFailed(dxinstance->mSwapChain->GetBuffer(0, __uuidof(mRenderTargetBuffer), mRenderTargetBuffer.put_void()));
 
 #else
 
 			// First, retrieve the underlying DXGI Device from the D3D Device.
 			Microsoft::WRL::ComPtr<IDXGIDevice1> dxgiDevice;
-			DX::ThrowIfFailed(dxinstance->m_device->QueryInterface(__uuidof(IDXGIDevice1), (void**)dxgiDevice.ReleaseAndGetAddressOf()));
+			DX::ThrowIfFailed(dxinstance->mDevice->QueryInterface(__uuidof(IDXGIDevice1), (void**)dxgiDevice.ReleaseAndGetAddressOf()));
 
 			// Identify the physical adapter (GPU or card) this device is running on.
 			Microsoft::WRL::ComPtr<IDXGIAdapter> dxgiAdapter;
@@ -446,15 +446,15 @@ bool DX11RenderingScreen::CreateResources()
 			DX::ThrowIfFailed(dxgiAdapter->GetParent(__uuidof(dxgiFactory), (void**)dxgiFactory.ReleaseAndGetAddressOf()));
 
 			DX::ThrowIfFailed(dxgiFactory->CreateSwapChainForHwnd(
-				dxinstance->m_device.Get(),
-				myhWnd,
+				dxinstance->mDevice.Get(),
+				mHWnd,
 				&swapChainDesc,
 				nullptr,
 				nullptr,
-				dxinstance->m_swapChain.GetAddressOf()
+				dxinstance->mSwapChain.GetAddressOf()
 			));
 
-			DX::ThrowIfFailed(dxinstance->m_swapChain->GetBuffer(0, __uuidof(m_renderTargetBuffer), (void**)m_renderTargetBuffer.ReleaseAndGetAddressOf()));
+			DX::ThrowIfFailed(dxinstance->mSwapChain->GetBuffer(0, __uuidof(mRenderTargetBuffer), (void**)mRenderTargetBuffer.ReleaseAndGetAddressOf()));
 
 #endif		
 		
@@ -475,35 +475,35 @@ bool DX11RenderingScreen::CreateResources()
 		colorBufferDesc.CPUAccessFlags = 0;
 		colorBufferDesc.MiscFlags = 0;
 		
-		m_renderTargetBuffer = nullptr;
+		mRenderTargetBuffer = nullptr;
 #ifdef WUP
-		DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&colorBufferDesc, NULL, m_renderTargetBuffer.put()));
+		DX::ThrowIfFailed(dxinstance->mDevice->CreateTexture2D(&colorBufferDesc, NULL, mRenderTargetBuffer.put()));
 #else
-		DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&colorBufferDesc, NULL, m_renderTargetBuffer.ReleaseAndGetAddressOf()));
+		DX::ThrowIfFailed(dxinstance->mDevice->CreateTexture2D(&colorBufferDesc, NULL, mRenderTargetBuffer.ReleaseAndGetAddressOf()));
 #endif
 	
 		SP<TextureFileManager> texfileManager = KigsCore::GetSingleton("TextureFileManager");
-		myFBOTexture = texfileManager->CreateTexture(getName());
-		myFBOTexture->setValue("Width", wanted_x);
-		myFBOTexture->setValue("Height", wanted_y);
-		myFBOTexture->InitForFBO();
-		myFBOTexture->SetRepeatUV(false, false);
+		mFBOTexture = texfileManager->CreateTexture(getName());
+		mFBOTexture->setValue("Width", wanted_x);
+		mFBOTexture->setValue("Height", wanted_y);
+		mFBOTexture->InitForFBO();
+		mFBOTexture->SetRepeatUV(false, false);
 #ifdef WUP
-		myFBOTexture->as<DX11Texture>()->SetD3DTexture(m_renderTargetBuffer.get());
+		mFBOTexture->as<DX11Texture>()->SetD3DTexture(mRenderTargetBuffer.get());
 #else
-		myFBOTexture->as<DX11Texture>()->SetD3DTexture(m_renderTargetBuffer.Get());
+		mFBOTexture->as<DX11Texture>()->SetD3DTexture(mRenderTargetBuffer.Get());
 #endif
-		m_depthStencilView = nullptr;
+		mDepthStencilView = nullptr;
 	}
 
-	m_renderTargetView = nullptr;
+	mRenderTargetView = nullptr;
 #ifdef WUP
-	DX::ThrowIfFailed(dxinstance->m_device->CreateRenderTargetView(m_renderTargetBuffer.get(), NULL, m_renderTargetView.put()));
+	DX::ThrowIfFailed(dxinstance->mDevice->CreateRenderTargetView(mRenderTargetBuffer.get(), NULL, mRenderTargetView.put()));
 #else
-	DX::ThrowIfFailed(dxinstance->m_device->CreateRenderTargetView(m_renderTargetBuffer.Get(), NULL, m_renderTargetView.ReleaseAndGetAddressOf()));
+	DX::ThrowIfFailed(dxinstance->mDevice->CreateRenderTargetView(mRenderTargetBuffer.Get(), NULL, mRenderTargetView.ReleaseAndGetAddressOf()));
 #endif
 
-	if (m_depthStencilView) return true;
+	if (mDepthStencilView) return true;
 
 	CD3D11_TEXTURE2D_DESC depthBufferDesc = {};
 
@@ -539,11 +539,11 @@ bool DX11RenderingScreen::CreateResources()
 	depthBufferDesc.MiscFlags = 0;
 
 	// Create the texture for the depth buffer using the filled out description.
-	m_depthStencilBuffer = nullptr;
+	mDepthStencilBuffer = nullptr;
 #ifdef WUP
-	DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&depthBufferDesc, NULL, m_depthStencilBuffer.put()));
+	DX::ThrowIfFailed(dxinstance->mDevice->CreateTexture2D(&depthBufferDesc, NULL, mDepthStencilBuffer.put()));
 #else
-	DX::ThrowIfFailed(dxinstance->m_device->CreateTexture2D(&depthBufferDesc, NULL, m_depthStencilBuffer.ReleaseAndGetAddressOf()));
+	DX::ThrowIfFailed(dxinstance->mDevice->CreateTexture2D(&depthBufferDesc, NULL, mDepthStencilBuffer.ReleaseAndGetAddressOf()));
 #endif
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	depthStencilViewDesc.Format = depth_stencil_view_format;
@@ -552,42 +552,42 @@ bool DX11RenderingScreen::CreateResources()
 	depthStencilViewDesc.Texture2DArray.ArraySize = is_stereo ? 2 : 1;
 
 	// Create the depth stencil view.
-	m_depthStencilView = nullptr;
+	mDepthStencilView = nullptr;
 #ifdef WUP
-	DX::ThrowIfFailed(dxinstance->m_device->CreateDepthStencilView(m_depthStencilBuffer.get(), &depthStencilViewDesc, m_depthStencilView.put()));
+	DX::ThrowIfFailed(dxinstance->mDevice->CreateDepthStencilView(mDepthStencilBuffer.get(), &depthStencilViewDesc, mDepthStencilView.put()));
 #else
-	DX::ThrowIfFailed(dxinstance->m_device->CreateDepthStencilView(m_depthStencilBuffer.Get(), &depthStencilViewDesc, m_depthStencilView.ReleaseAndGetAddressOf()));
+	DX::ThrowIfFailed(dxinstance->mDevice->CreateDepthStencilView(mDepthStencilBuffer.Get(), &depthStencilViewDesc, mDepthStencilView.ReleaseAndGetAddressOf()));
 #endif
 	return true;
 }
 
 void DX11RenderingScreen::setCurrentContext()
 {
-	RendererDX11* renderer = reinterpret_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+	RendererDX11* renderer = reinterpret_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 	DXInstance* dxinstance = renderer->getDXInstance();
 
-	if (myUseFBO)
+	if (mUseFBO)
 	{
 		ID3D11ShaderResourceView* shader_res = nullptr;
-		dxinstance->m_deviceContext->PSSetShaderResources(0, 1, &shader_res);
+		dxinstance->mDeviceContext->PSSetShaderResources(0, 1, &shader_res);
 	}
 
-	dxinstance->m_currentRenderTarget = m_renderTargetView;
-	dxinstance->m_currentDepthStencilTarget = m_depthStencilView;
+	dxinstance->mCurrentRenderTarget = mRenderTargetView;
+	dxinstance->mCurrentDepthStencilTarget = mDepthStencilView;
 #ifdef WUP
-	ID3D11RenderTargetView* render_targets[] = { m_renderTargetView.get() };
-	dxinstance->m_deviceContext->OMSetRenderTargets(1, render_targets, m_depthStencilView.get());
+	ID3D11RenderTargetView* render_targets[] = { mRenderTargetView.get() };
+	dxinstance->mDeviceContext->OMSetRenderTargets(1, render_targets, mDepthStencilView.get());
 #else
-	ID3D11RenderTargetView* render_targets[] = { m_renderTargetView.Get() };
-	dxinstance->m_deviceContext->OMSetRenderTargets(1, render_targets, m_depthStencilView.Get());
+	ID3D11RenderTargetView* render_targets[] = { mRenderTargetView.Get() };
+	dxinstance->mDeviceContext->OMSetRenderTargets(1, render_targets, mDepthStencilView.Get());
 #endif
-	dxinstance->m_isFBORenderTarget = myUseFBO;
+	dxinstance->mIsFBORenderTarget = mUseFBO;
 }
 
 void DX11RenderingScreen::ReleaseResources()
 {
-	m_renderTargetBuffer = nullptr;
-	m_renderTargetView = nullptr;
-	m_depthStencilBuffer = nullptr;
-	m_depthStencilView = nullptr;
+	mRenderTargetBuffer = nullptr;
+	mRenderTargetView = nullptr;
+	mDepthStencilBuffer = nullptr;
+	mDepthStencilView = nullptr;
 }

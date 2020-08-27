@@ -6,6 +6,16 @@
 class TravState;
 class Camera;
 
+// ****************************************
+// * DrawableSorter_Camera class
+// * --------------------------------------
+/**
+ * \file	DrawableSorter_Camera.h
+ * \class	DrawableSorter_Camera
+ * \ingroup SceneGraph
+ * \brief	Sort drawables back to front.
+ */
+ // ****************************************
 class DrawableSorter_Camera : public DrawableSorter
 {
 public:
@@ -13,6 +23,6 @@ public:
 	void CompleteInformationFor(DrawableSorterItem* pItem,TravState* state);
 
 protected:
-	v3f myCameraPosition;
+	v3f mCameraPosition;
 };
 

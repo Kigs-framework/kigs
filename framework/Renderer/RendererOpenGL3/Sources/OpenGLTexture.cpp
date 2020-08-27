@@ -68,13 +68,13 @@ IMPLEMENT_CLASS_INFO(OpenGLTexture)
 
 OpenGLTexture::OpenGLTexture(const kstl::string& name, CLASS_NAME_TREE_ARG)
 	: Texture(name, PASS_CLASS_NAME_TREE_ARG)
-	, myTextureGLIndex((u32)-1)
-	, myCanReuseBuffer(false)
-	, myPow2BufferSize(0)
-	, myPow2Buffer(NULL)
-	, privatePointer(NULL)
+	, mTextureGLIndex((u32)-1)
+	, mCanReuseBuffer(false)
+	, mPow2BufferSize(0)
+	, mPow2Buffer(NULL)
+	, mPrivatePointer(NULL)
 #ifdef SUPPORT_ETC_TEXTURE
-	, myIDETCAlphaTexture(0)
+	, mIDETCAlphaTexture(0)
 #endif
 {
 }
@@ -82,29 +82,29 @@ OpenGLTexture::OpenGLTexture(const kstl::string& name, CLASS_NAME_TREE_ARG)
 OpenGLTexture::~OpenGLTexture()
 {
 
-	if (myTextureGLIndex != (u32)-1)
+	if (mTextureGLIndex != (u32)-1)
 	{
 		ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-		scenegraph->AddDefferedItem((void*)myTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
-		//kigsprintf("del texture %d - %s\n", myTextureGLIndex, getName().c_str());
+		scenegraph->AddDefferedItem((void*)mTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
+		//kigsprintf("del texture %d - %s\n", mTextureGLIndex, getName().c_str());
 	}
-	//ModuleRenderer::theGlobalRenderer->DeleteTexture(1, &myTextureGLIndex);
+	//ModuleRenderer::mTheGlobalRenderer->DeleteTexture(1, &mTextureGLIndex);
 #ifdef SUPPORT_ETC_TEXTURE
-	if (myIDETCAlphaTexture)
+	if (mIDETCAlphaTexture)
 	{
 		ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-		scenegraph->AddDefferedItem((void*)myIDETCAlphaTexture, DefferedAction::DESTROY_TEXTURE);
-		//	ModuleRenderer::theGlobalRenderer->DeleteTexture(1, &myIDETCAlphaTexture);
+		scenegraph->AddDefferedItem((void*)mIDETCAlphaTexture, DefferedAction::DESTROY_TEXTURE);
+		//	ModuleRenderer::mTheGlobalRenderer->DeleteTexture(1, &mIDETCAlphaTexture);
 	}
 #endif
 
 
 
-	if (privatePointer)
-		delete privatePointer;
+	if (mPrivatePointer)
+		delete mPrivatePointer;
 
-	if (myPow2Buffer)
-		delete[] myPow2Buffer;
+	if (mPow2Buffer)
+		delete[] mPow2Buffer;
 }
 
 void	OpenGLTexture::InitModifiable()
@@ -112,7 +112,7 @@ void	OpenGLTexture::InitModifiable()
 	if (_isInit)
 		return;
 
-	myCanReuseBuffer = false;
+	mCanReuseBuffer = false;
 
 	Texture::InitModifiable();
 }
@@ -140,13 +140,13 @@ void	OpenGLTexture::UninitModifiable()
 	if (!_isInit)
 		return;
 	// get TextureIndex
-	if (!HasFlag(isDirtyContext) && myTextureGLIndex != (u32)-1)
+	if (!HasFlag(isDirtyContext) && mTextureGLIndex != (u32)-1)
 	{
 		ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-		scenegraph->AddDefferedItem((void*)myTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
-		//ModuleRenderer::theGlobalRenderer->DeleteTexture(1, &myTextureGLIndex);
+		scenegraph->AddDefferedItem((void*)mTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
+		//ModuleRenderer::mTheGlobalRenderer->DeleteTexture(1, &mTextureGLIndex);
 	}
-	myTextureGLIndex = (u32)-1;
+	mTextureGLIndex = (u32)-1;
 
 
 	CoreModifiableAttribute* delayed = getAttribute("DelayedInit");
@@ -168,7 +168,7 @@ void	OpenGLTexture::UninitModifiable()
 
 void	OpenGLTexture::InitForFBO()
 {
-	ModuleRenderer::theGlobalRenderer->CreateTexture(1, &myTextureGLIndex);
+	ModuleRenderer::mTheGlobalRenderer->CreateTexture(1, &mTextureGLIndex);
 	Texture::InitForFBO();
 }
 
@@ -189,7 +189,7 @@ bool	OpenGLTexture::PreDraw(TravState* travstate)
 
 	}
 
-	if (myTextureGLIndex == (u32)-1)
+	if (mTextureGLIndex == (u32)-1)
 	{
 		return false;
 	}
@@ -198,7 +198,7 @@ bool	OpenGLTexture::PreDraw(TravState* travstate)
 	if (Texture::PreDraw(travstate))
 	{
 		RendererTextureType type;
-		switch ((int)myTextureType)
+		switch ((int)mTextureType)
 		{
 		case 	TEXTURE_1D:
 		{
@@ -224,25 +224,25 @@ bool	OpenGLTexture::PreDraw(TravState* travstate)
 
 
 		
-		RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer);
+		RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);
 		
 #ifdef SUPPORT_ETC_TEXTURE
 		// check for separate alpha texture
-		if (myIDETCAlphaTexture)
+		if (mIDETCAlphaTexture)
 		{
 			renderer->ActiveTextureChannel(1);
 			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, myIDETCAlphaTexture);
+			glBindTexture(GL_TEXTURE_2D, mIDETCAlphaTexture);
 			renderer->ActiveTextureChannel(0);
 		}
 #endif
 
-		renderer->BindTexture(type, myTextureGLIndex);
+		renderer->BindTexture(type, mTextureGLIndex);
 		renderer->EnableTexture();
 
-		renderer->TextureParameteri(type, RENDERER_TEXTURE_WRAP_S, (myRepeatU) ? RENDERER_REPEAT : RENDERER_CLAMP_TO_EDGE);
-		renderer->TextureParameteri(type, RENDERER_TEXTURE_WRAP_T, (myRepeatV) ? RENDERER_REPEAT : RENDERER_CLAMP_TO_EDGE);
-		renderer->TextureParameteri(type, RENDERER_TEXTURE_MIN_FILTER, myForceNearest ? RENDERER_NEAREST : ((myHasMipmap) ? RENDERER_LINEAR_MIPMAP_LINEAR : RENDERER_LINEAR));
+		renderer->TextureParameteri(type, RENDERER_TEXTURE_WRAP_S, (mRepeat_U) ? RENDERER_REPEAT : RENDERER_CLAMP_TO_EDGE);
+		renderer->TextureParameteri(type, RENDERER_TEXTURE_WRAP_T, (mRepeat_V) ? RENDERER_REPEAT : RENDERER_CLAMP_TO_EDGE);
+		renderer->TextureParameteri(type, RENDERER_TEXTURE_MIN_FILTER, mForceNearest ? RENDERER_NEAREST : ((mHasMipmap) ? RENDERER_LINEAR_MIPMAP_LINEAR : RENDERER_LINEAR));
 		
 		return true;
 	}
@@ -251,7 +251,7 @@ bool	OpenGLTexture::PreDraw(TravState* travstate)
 
 bool	OpenGLTexture::PostDraw(TravState* travstate)
 {
-	if (myTextureGLIndex == -1)
+	if (mTextureGLIndex == -1)
 	{
 		return false;
 	}
@@ -259,7 +259,7 @@ bool	OpenGLTexture::PostDraw(TravState* travstate)
 	if (Texture::PostDraw(travstate))
 	{
 #ifdef SUPPORT_ETC_TEXTURE
-		if (myIDETCAlphaTexture)
+		if (mIDETCAlphaTexture)
 		{
 			renderer->ActiveTextureChannel(1);
 			glDisable(GL_TEXTURE_2D);
@@ -269,7 +269,7 @@ bool	OpenGLTexture::PostDraw(TravState* travstate)
 #endif
 
 		RendererTextureType type;
-		switch ((int)myTextureType)
+		switch ((int)mTextureType)
 		{
 		case 	TEXTURE_1D:
 		{
@@ -292,7 +292,7 @@ bool	OpenGLTexture::PostDraw(TravState* travstate)
 			break;
 		}
 		}
-		renderer->UnbindTexture(type, myTextureGLIndex);
+		renderer->UnbindTexture(type, mTextureGLIndex);
 		renderer->DisableTexture();
 
 		return true;
@@ -302,52 +302,52 @@ bool	OpenGLTexture::PostDraw(TravState* travstate)
 
 bool OpenGLTexture::ManagePow2Buffer(u32 aWidth, u32 aHeight, u32 aPixSize)
 {
-	int currentSize = myPow2Width * myPow2Height * myPixelSize;
+	int currentSize = mPow2Width * mPow2Height * mPixelSize;
 	int newSize = aWidth * aHeight * aPixSize;
 	
 	bool reinit = (newSize * 4) < currentSize;
 
-	if ((aWidth <= myWidth) && (aHeight <= myHeight) && (aPixSize <= myPixelSize) && (!reinit) )
+	if ((aWidth <= mWidth) && (aHeight <= mHeight) && (aPixSize <= mPixelSize) && (!reinit) )
 		return false;
 
 	if (reinit)
 	{
-		myPow2Width = 1;
-		myPow2Height = 1;
+		mPow2Width = 1;
+		mPow2Height = 1;
 	}
 
 	// get pow2 size
-	while (myPow2Width < aWidth)
+	while (mPow2Width < aWidth)
 	{
-		myPow2Width = myPow2Width << 1;
-		myCanReuseBuffer = false;
+		mPow2Width = mPow2Width << 1;
+		mCanReuseBuffer = false;
 	}
-	while (myPow2Height < aHeight)
+	while (mPow2Height < aHeight)
 	{
-		myPow2Height = myPow2Height << 1;
-		myCanReuseBuffer = false;
+		mPow2Height = mPow2Height << 1;
+		mCanReuseBuffer = false;
 	}
 
 	// if buffer already in pow2, do not use pow2 buffer
-	if (aWidth == myPow2Width && aHeight == myPow2Height)
+	if (aWidth == mPow2Width && aHeight == mPow2Height)
 	{
-		myCanReuseBuffer = false;
-		if (myPow2Buffer)
-			delete[] myPow2Buffer;
-		myPow2Buffer = nullptr;
+		mCanReuseBuffer = false;
+		if (mPow2Buffer)
+			delete[] mPow2Buffer;
+		mPow2Buffer = nullptr;
 		return false;
 	}
 
 	//create pow2buffer
-	if (!myCanReuseBuffer)
+	if (!mCanReuseBuffer)
 	{
 		// delete older if exist
-		if (myPow2Buffer)
-			delete[] myPow2Buffer;
+		if (mPow2Buffer)
+			delete[] mPow2Buffer;
 
-		myPow2BufferSize = myPow2Width*myPow2Height*aPixSize;
-		myPow2Buffer = new unsigned char[myPow2BufferSize];
-		memset(myPow2Buffer, 0, myPow2BufferSize);
+		mPow2BufferSize = mPow2Width*mPow2Height*aPixSize;
+		mPow2Buffer = new unsigned char[mPow2BufferSize];
+		memset(mPow2Buffer, 0, mPow2BufferSize);
 		return true;
 	}
 
@@ -363,13 +363,13 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 
 	TinyImage::ImageFormat format = image->GetFormat();
 
-	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer);
+	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);
 	bool needRealloc = false;
 	
 
 	if (!directInit)
 	{
-		myTextureType = TEXTURE_2D;
+		mTextureType = TEXTURE_2D;
 
 		u32 pixSize = TinyImage::GetPixelValueSize(image->GetFormat());
 
@@ -380,33 +380,33 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 		}
 		else // compressed texture
 		{
-			myPow2Width = image->GetWidth();
-			myPow2Height = image->GetHeight();
+			mPow2Width = image->GetWidth();
+			mPow2Height = image->GetHeight();
 		}
 
-		myPixelSize = pixSize;
-		myWidth = image->GetWidth();
-		myHeight = image->GetHeight();
+		mPixelSize = pixSize;
+		mWidth = image->GetWidth();
+		mHeight = image->GetHeight();
 		int line_size = image->GetPixelLineSize();
 		
-		if (line_size != myWidth * myPixelSize) 
-			myCanReuseBuffer = false;
+		if (line_size != mWidth * mPixelSize) 
+			mCanReuseBuffer = false;
 
-		if (myPow2Buffer && !myCanReuseBuffer && !CanUseDynamicTexture(image->GetFormat()))
+		if (mPow2Buffer && !mCanReuseBuffer && !CanUseDynamicTexture(image->GetFormat()))
 		{
-			unsigned char* pos = (unsigned char*)myPow2Buffer;
+			unsigned char* pos = (unsigned char*)mPow2Buffer;
 			unsigned char* posRead = (unsigned char*)image->GetPixelData();
 
 			
-			int lLineW = line_size;//myWidth*myPixelSize;
-			for (u32 j = 0; j < myHeight; j++)
+			int lLineW = line_size;//mWidth*mPixelSize;
+			for (u32 j = 0; j < mHeight; j++)
 			{
 				memcpy(pos, posRead, lLineW);
-				pos += myPow2Width*myPixelSize;
-				posRead += line_size; // myWidth*myPixelSize;
+				pos += mPow2Width*mPixelSize;
+				posRead += line_size; // mWidth*mPixelSize;
 			}
 
-			data = myPow2Buffer;
+			data = mPow2Buffer;
 		}
 		else
 			data = image->GetPixelData();
@@ -450,30 +450,30 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 			}
 		}
 
-		if (myPow2Buffer && !myCanReuseBuffer && !CanUseDynamicTexture(image->GetFormat()))
+		if (mPow2Buffer && !mCanReuseBuffer && !CanUseDynamicTexture(image->GetFormat()))
 		{
-			data = myPow2Buffer;
+			data = mPow2Buffer;
 		}
 		else
 			data = image->GetPixelData();
 	}
 
-	if (myTextureGLIndex == (u32)-1)
+	if (mTextureGLIndex == (u32)-1)
 	{
 		// get TextureIndex
-		ModuleRenderer::theGlobalRenderer->CreateTexture(1, &myTextureGLIndex);
+		ModuleRenderer::mTheGlobalRenderer->CreateTexture(1, &mTextureGLIndex);
 	}
 	renderer->ActiveTextureChannel(0);
-	renderer->BindTexture(RENDERER_TEXTURE_2D, myTextureGLIndex);
+	renderer->BindTexture(RENDERER_TEXTURE_2D, mTextureGLIndex);
 	bool success = false;
 
-	renderer->TextureParameteri(RENDERER_TEXTURE_2D, RENDERER_TEXTURE_MIN_FILTER, myForceNearest ? RENDERER_NEAREST :  RENDERER_LINEAR);
+	renderer->TextureParameteri(RENDERER_TEXTURE_2D, RENDERER_TEXTURE_MIN_FILTER, mForceNearest ? RENDERER_NEAREST :  RENDERER_LINEAR);
 
 	bool mipmap_generated = false;
 
 	if (CanUseDynamicTexture(image->GetFormat()))
 	{
-		success = UseDynamicTexture(data, myWidth, myHeight, image->GetFormat(), needRealloc);
+		success = UseDynamicTexture(data, mWidth, mHeight, image->GetFormat(), needRealloc);
 	}
 	renderer->FlushState();
 	if (!success)
@@ -482,22 +482,22 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 		{
 		case TinyImage::AI88:
 		{
-			if (myCanReuseBuffer)
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, myWidth, myHeight, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data);
+			if (mCanReuseBuffer)
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data);
 			else
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, (GLsizei)myPow2Width, (GLsizei)myPow2Height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data);
-			myTransparencyType = 2;
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, (GLsizei)mPow2Width, (GLsizei)mPow2Height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data);
+			mTransparencyType = 2;
 			break;
 		}
 		case TinyImage::ABGR_16_1555_DIRECT_COLOR:
 		{
 			// create tmp RGBA buffer and convert
 
-			unsigned char*	newdata = new unsigned char[myWidth*myHeight * 4];
+			unsigned char*	newdata = new unsigned char[mWidth*mHeight * 4];
 			u32 i;
 			unsigned char* pos = newdata;
 			unsigned short* posRead = (unsigned short*)data;
-			for (i = 0; i < myWidth*myHeight; i++)
+			for (i = 0; i < mWidth*mHeight; i++)
 			{
 				*pos++ = (((*posRead) & 0x001F)) << 3;
 				*pos++ = (((*posRead) & 0x03E0) >> 5) << 3;
@@ -513,18 +513,18 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 				posRead++;
 			}
 
-			if (myCanReuseBuffer)
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, myWidth, myHeight, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			if (mCanReuseBuffer)
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			else
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, myPow2Width, myPow2Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, newdata);
-			myTransparencyType = 1;
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mPow2Width, mPow2Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, newdata);
+			mTransparencyType = 1;
 			delete[] newdata;
 		}
 		break;
 
 		case TinyImage::PALETTE16_256_COLOR:
 		{
-			unsigned short*	newdata = new unsigned short[myWidth*myHeight];
+			unsigned short*	newdata = new unsigned short[mWidth*mHeight];
 			unsigned short* palette = (unsigned short*)image->GetPaletteData();
 			u32	colorCount = image->GetPaletteDataSize() / 2; // 1 unsigned short by color
 
@@ -536,17 +536,17 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 				palette[index] = (palette[index] << 1) | 0x1;
 
 			// replace index by associate color
-			for (u32 index = 0; index < myWidth*myHeight; index++)
+			for (u32 index = 0; index < mWidth*mHeight; index++)
 				newdata[index] = palette[data[index]];
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, myWidth, myHeight, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, newdata);
-			myTransparencyType = 1;
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, newdata);
+			mTransparencyType = 1;
 			delete[] newdata;
 
 		}
 		break;
 		case TinyImage::PALETTE16_16_COLOR:
 		{
-			unsigned short*	newdata = new unsigned short[myWidth*myHeight];
+			unsigned short*	newdata = new unsigned short[mWidth*mHeight];
 			unsigned short* palette = (unsigned short*)image->GetPaletteData();
 			u32	colorCount = image->GetPaletteDataSize() / 2; // 1 unsigned short by color
 			u32	index;
@@ -559,7 +559,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 				palette[index] = (palette[index] << 1) | 0x1;
 
 			// replace index by associate color
-			for (index = 0; index < myWidth*myHeight; index++)
+			for (index = 0; index < mWidth*mHeight; index++)
 			{
 				unsigned char p1 = data[index] & 0x0f;
 				unsigned char p2 = data[index] >> 4;
@@ -568,70 +568,70 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 				newdata[2 * index] = palette[p1];
 				newdata[2 * index + 1] = palette[p2];
 			}
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, myWidth, myHeight, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, newdata);
-			myTransparencyType = 1;
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, newdata);
+			mTransparencyType = 1;
 			delete[] newdata;
 		}
 		break;
 
 		case TinyImage::RGB_16_565:
-			if (myCanReuseBuffer)
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, myWidth, myHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, data);
+			if (mCanReuseBuffer)
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, data);
 			else
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, myPow2Width, myPow2Height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, data);
-			myTransparencyType = 0;
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mPow2Width, mPow2Height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, data);
+			mTransparencyType = 0;
 			break;
 		case TinyImage::RGBA_16_5551:
-			if (myCanReuseBuffer)
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, myWidth, myHeight, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, data);
+			if (mCanReuseBuffer)
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, data);
 			else
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, myPow2Width, myPow2Height, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, data);
-			myTransparencyType = 1;
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mPow2Width, mPow2Height, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, data);
+			mTransparencyType = 1;
 			break;
 		case TinyImage::RGBA_32_8888:
-			if (myCanReuseBuffer)
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, myWidth, myHeight, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			if (mCanReuseBuffer)
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			else
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, myPow2Width, myPow2Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mPow2Width, mPow2Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-			if (myTransparencyType == -1)
+			if (mTransparencyType == -1)
 			{
 				//! TODO
-				myTransparencyType = 2;
+				mTransparencyType = 2;
 			}
 			break;
 		case TinyImage::RGB_24_888:
-			if (myCanReuseBuffer)
+			if (mCanReuseBuffer)
 			{
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, myWidth, myHeight, GL_RGB, GL_UNSIGNED_BYTE, data);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_RGB, GL_UNSIGNED_BYTE, data);
 			}
 			else
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, myPow2Width, myPow2Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-			myTransparencyType = 0;
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mPow2Width, mPow2Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			mTransparencyType = 0;
 			break;
 		case TinyImage::GREYSCALE:
-			if (myCanReuseBuffer)
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, myWidth, myHeight, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
+			if (mCanReuseBuffer)
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
 			else
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, myPow2Width, myPow2Height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
-			myTransparencyType = 0;
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, mPow2Width, mPow2Height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
+			mTransparencyType = 0;
 			break;
 		case TinyImage::ALPHA_8:
-			if (myCanReuseBuffer)
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, myWidth, myHeight, GL_ALPHA, GL_UNSIGNED_BYTE, data);
+			if (mCanReuseBuffer)
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_ALPHA, GL_UNSIGNED_BYTE, data);
 			else
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, myPow2Width, myPow2Height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, data);
-			myTransparencyType = 2;
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, mPow2Width, mPow2Height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, data);
+			mTransparencyType = 2;
 			break;
 		
 #ifdef SUPPORT_ETC_TEXTURE
 		case TinyImage::ETC1:
 		{
 #ifndef WIN32
-			u32 L_TotalSize = (myPow2Width*myPow2Height) / 2;
-			glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, (GLsizei)myPow2Width, (GLsizei)myPow2Height, 0, L_TotalSize, data);
-			myTransparencyType = 0;
+			u32 L_TotalSize = (mPow2Width*mPow2Height) / 2;
+			glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, (GLsizei)mPow2Width, (GLsizei)mPow2Height, 0, L_TotalSize, data);
+			mTransparencyType = 0;
 #else
 			// TODO
 #endif
@@ -641,19 +641,19 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 		{
 #ifndef WIN32
 
-			u32 L_TotalSize = (myPow2Width*myPow2Height) / 2;
-			glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, (GLsizei)myPow2Width, (GLsizei)myPow2Height, 0, L_TotalSize, data);
+			u32 L_TotalSize = (mPow2Width*mPow2Height) / 2;
+			glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, (GLsizei)mPow2Width, (GLsizei)mPow2Height, 0, L_TotalSize, data);
 
 
-			if (myIDETCAlphaTexture == 0)
+			if (mIDETCAlphaTexture == 0)
 			{
 				// get TextureIndex
-				ModuleRenderer::theGlobalRenderer->CreateTexture(1, &myIDETCAlphaTexture);
+				ModuleRenderer::mTheGlobalRenderer->CreateTexture(1, &mIDETCAlphaTexture);
 			}
 
-			if (myIDETCAlphaTexture) // if alpha texture, apply same params
+			if (mIDETCAlphaTexture) // if alpha texture, apply same params
 			{
-				glBindTexture(GL_TEXTURE_2D, myIDETCAlphaTexture);
+				glBindTexture(GL_TEXTURE_2D, mIDETCAlphaTexture);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -661,8 +661,8 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 
 				unsigned char* alphastart = (unsigned char*)data;
 				alphastart += L_TotalSize;
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, (GLsizei)myPow2Width, (GLsizei)myPow2Height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, alphastart);
-				myTransparencyType = 2;
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, (GLsizei)mPow2Width, (GLsizei)mPow2Height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, alphastart);
+				mTransparencyType = 2;
 			}
 			
 #else
@@ -677,16 +677,16 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 		}
 		case TinyImage::ETC2:
 		{
-			u32 L_TotalSize = (myPow2Width*myPow2Height) / 2;
-			glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB8_ETC2, (GLsizei)myPow2Width, (GLsizei)myPow2Height, 0, L_TotalSize, data);
-			myTransparencyType = 0;
+			u32 L_TotalSize = (mPow2Width*mPow2Height) / 2;
+			glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB8_ETC2, (GLsizei)mPow2Width, (GLsizei)mPow2Height, 0, L_TotalSize, data);
+			mTransparencyType = 0;
 			break;
 		}
 		case TinyImage::ETC2A8:
 		{
-			u32 L_TotalSize = (myPow2Width*myPow2Height);
-			glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA8_ETC2_EAC, (GLsizei)myPow2Width, (GLsizei)myPow2Height, 0, L_TotalSize, data);
-			myTransparencyType = 2;
+			u32 L_TotalSize = (mPow2Width*mPow2Height);
+			glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA8_ETC2_EAC, (GLsizei)mPow2Width, (GLsizei)mPow2Height, 0, L_TotalSize, data);
+			mTransparencyType = 2;
 
 			break;
 		}
@@ -700,7 +700,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 		{
 			int openGLFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 
-			myTransparencyType = 0;
+			mTransparencyType = 0;
 
 			if (format == TinyImage::BC1)
 			{
@@ -709,32 +709,32 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 			else if (format == TinyImage::BC2)
 			{
 				openGLFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-				myTransparencyType = 2;
+				mTransparencyType = 2;
 			}
 			else if (format == TinyImage::BC3)
 			{
 				openGLFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-				myTransparencyType = 2;
+				mTransparencyType = 2;
 			}
 
 			//glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			if (((bool)myHasMipmap) && image->getMipMapCount())
+			if (((bool)mHasMipmap) && image->getMipMapCount())
 				//glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 				renderer->TextureParameteri(RENDERER_TEXTURE_2D, RENDERER_TEXTURE_MIN_FILTER, RENDERER_LINEAR_MIPMAP_LINEAR);
 			else
 			{
 				// force no mipmap
-				myHasMipmap = false;
+				mHasMipmap = false;
 
 				//glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				renderer->TextureParameteri(RENDERER_TEXTURE_2D, RENDERER_TEXTURE_MIN_FILTER, RENDERER_LINEAR);
 			}
 
-			if (((bool)myHasMipmap) && image->getMipMapCount())
+			if (((bool)mHasMipmap) && image->getMipMapCount())
 			{
 				mipmap_generated = true;
-				int mipsizex = myWidth;
-				int mipsizey = myHeight;
+				int mipsizex = mWidth;
+				int mipsizey = mHeight;
 				int mipsize = image->GetPixelDataSize();
 
 				unsigned char* mipdatastart = image->GetPixelData();
@@ -777,7 +777,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 			else
 			{
 
-				glCompressedTexImage2D(GL_TEXTURE_2D, 0, openGLFormat, (GLsizei)myWidth, (GLsizei)myHeight, 0, image->GetPixelDataSize(), image->GetPixelData());
+				glCompressedTexImage2D(GL_TEXTURE_2D, 0, openGLFormat, (GLsizei)mWidth, (GLsizei)mHeight, 0, image->GetPixelDataSize(), image->GetPixelData());
 			}
 			break;
 		}
@@ -788,7 +788,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 	}
 }
 
-	if (myHasMipmap && !mipmap_generated)
+	if (mHasMipmap && !mipmap_generated)
 	{
 		renderer->TextureParameteri(RENDERER_TEXTURE_2D, RENDERER_TEXTURE_MIN_FILTER, RENDERER_LINEAR_MIPMAP_LINEAR);
 		renderer->FlushState();
@@ -798,7 +798,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 
 	ComputeRatio();
 
-	myCanReuseBuffer = true;
+	mCanReuseBuffer = true;
 	return true;
 
 }
@@ -810,7 +810,7 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 fontSize, con
 
 bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumber, u32 maxSize, u32 fontSize, const char* fontName, u32 a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, int a_drawingLimit)
 {
-	myIsText = true;
+	mIsText = true;
 	bool bRet = false;
 	unsigned char * pImageData = 0;
 //#ifndef JAVASCRIPT
@@ -828,7 +828,7 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumbe
 			textSize++;
 
 
-		if (!RendererOpenGL::myDrawer->IsInCache(fontName))
+		if (!RendererOpenGL::mDrawer->IsInCache(fontName))
 		{
 			auto& pathManager = KigsCore::Singleton<FilePathManager>();
 			SmartPointer<FileHandle> fullfilenamehandle;
@@ -845,7 +845,7 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumbe
 			if (L_Buffer)
 			{
 				unsigned char* pBuffer = (unsigned char*)L_Buffer->CopyBuffer();
-				RendererOpenGL::myDrawer->SetFont(fontName, pBuffer, size, fontSize);
+				RendererOpenGL::mDrawer->SetFont(fontName, pBuffer, size, fontSize);
 				L_Buffer->Destroy();
 			}
 			else
@@ -853,12 +853,12 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumbe
 		}
 		else
 		{
-			RendererOpenGL::myDrawer->SetFont(fontName, 0, 0, fontSize);
+			RendererOpenGL::mDrawer->SetFont(fontName, 0, 0, fontSize);
 		}
 
 		int L_Width = 0;
 		int L_Height = 0;
-		pImageData = RendererOpenGL::myDrawer->DrawTextToImage(text, textSize, L_Width, L_Height, (TextAlignment)a_Alignment, false, _maxLineNumber, maxSize, a_drawingLimit, (unsigned char)R, (unsigned char)G, (unsigned char)B);
+		pImageData = RendererOpenGL::mDrawer->DrawTextToImage(text, textSize, L_Width, L_Height, (TextAlignment)a_Alignment, false, _maxLineNumber, maxSize, a_drawingLimit, (unsigned char)R, (unsigned char)G, (unsigned char)B);
 
 		if (!pImageData)
 			break;
@@ -894,7 +894,7 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumbe
 bool	OpenGLTexture::Load()
 {
 
-	if ((int)myTextureType == TEXTURE_CUBE_MAP)
+	if ((int)mTextureType == TEXTURE_CUBE_MAP)
 	{
 		return CubeMapGeneration();
 	}
@@ -902,7 +902,7 @@ bool	OpenGLTexture::Load()
 	{
 		auto& pathManager = KigsCore::Singleton<FilePathManager>();
 
-		kstl::string fileName = myFileName.const_ref();
+		kstl::string fileName = mFileName.const_ref();
 
 		if (fileName != "")
 		{
@@ -938,7 +938,7 @@ bool	OpenGLTexture::Load()
 					}
 
 					// check if force pow 2
-					if (myForcePow2)
+					if (mForcePow2)
 					{
 						// compute power of two textures
 						int pow2sizeW = 1;

@@ -1,6 +1,16 @@
 #pragma once
 #include "HLSLGenericMeshShader.h"
 
+// ****************************************
+// * API3DCutShader class
+// * --------------------------------------
+/**
+ * \file	HLSLCutShader.h
+ * \class	API3DCutShader
+ * \ingroup Renderer
+ * \brief	DX11 Cut Shader.
+ */
+ // ****************************************
 class API3DCutShader : public API3DGenericMeshShader
 {
 public:
@@ -13,6 +23,6 @@ protected:
 
 	void NotifyUpdate(unsigned int labelid) override;
 	
-	maInt PlaneCount = BASE_ATTRIBUTE(PlaneCount, 1);
+	maInt mPlaneCount = BASE_ATTRIBUTE(PlaneCount, 1);
 };
 

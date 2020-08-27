@@ -99,7 +99,6 @@ public:
 
 	DisplayDevice* Get_DisplayDevice(unsigned int a_index)
 	{
-		//if (a_index < myDisplayDeviceList.size())
 		{
 			unsigned int i;
 			kstl::map<kstl::string, DisplayDevice>::iterator it = mDisplayDeviceList.begin();

@@ -7,12 +7,12 @@
 
 PNGClass::PNGClass(FileHandle* fileName) :TinyImage()
 {
-	myInitIsOK = Load(fileName);
+	mInitIsOK = Load(fileName);
 }
 
 PNGClass::PNGClass(CoreRawBuffer* rawbuffer) : TinyImage()
 {
-	myInitIsOK = Load(rawbuffer);
+	mInitIsOK = Load(rawbuffer);
 }
 
 PNGClass::PNGClass(void* data, int sx, int sy, TinyImage::ImageFormat internalfmt) : TinyImage(data, sx, sy, internalfmt)
@@ -105,8 +105,8 @@ bool PNGClass::Load(CoreRawBuffer* rawbuffer)
 			int         nBitsPerComponent = 0;
 			png_get_IHDR(png_ptr, info_ptr, &nWidth, &nHeight, &nBitsPerComponent, &color_type, 0, 0, 0);
 
-			myWidth = nWidth;
-			myHeight = nHeight;
+			mWidth = nWidth;
+			mHeight = nHeight;
 			mPaletteDataSize = 0;
 			// init image info
 
@@ -173,7 +173,7 @@ bool PNGClass::Load(FileHandle* fileName)
 	bool result = false;
 
 	// free previous image if any
-	if (myInitIsOK)
+	if (mInitIsOK)
 	{
 		if (mPixels)
 		{
@@ -231,7 +231,7 @@ void	PNGClass::Export(const char* filename)
 		mode = PNG_COLOR_TYPE_GRAY;
 
 	// Write header (8 bit colour depth)
-	png_set_IHDR(png_ptr, info_ptr, myWidth, myHeight,
+	png_set_IHDR(png_ptr, info_ptr, mWidth, mHeight,
 		8, mode, PNG_INTERLACE_NONE,
 		PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 	
@@ -239,12 +239,12 @@ void	PNGClass::Export(const char* filename)
 	
 	// Write image data
 	// Allocate memory for one row (3 bytes per pixel - RGB)
-	lineSize = (mPixelDataSize / myHeight) * sizeof(png_byte);
+	lineSize = (mPixelDataSize / mHeight) * sizeof(png_byte);
 	row = (png_bytep)malloc(lineSize);
 
 	// Write image data
-	for (int y = 0; y<myHeight; y++) {
-		//for (x = 0; x<myWidth; x++) {
+	for (int y = 0; y<mHeight; y++) {
+		//for (x = 0; x<mWidth; x++) {
 			memcpy(row, &mPixels[y*lineSize], lineSize);
 		//}
 		png_write_row(png_ptr, row);

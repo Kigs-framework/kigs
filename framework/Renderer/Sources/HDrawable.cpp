@@ -52,10 +52,10 @@ void HDrawable::DoPostDraw(TravState* state)
 
 void	HDrawable::UpdateDrawingNeeds()
 {
-	if(myDrawingNeeds&((unsigned int)Not_Init))
+	if(mDrawingNeeds&((unsigned int)Not_Init))
 	{
 
-		myDrawingNeeds=GetSelfDrawingNeeds();
+		mDrawingNeeds=GetSelfDrawingNeeds();
 		
 		// then ask fathers to update
 		kstl::vector<CoreModifiable*>::const_iterator itfather;

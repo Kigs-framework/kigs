@@ -172,9 +172,6 @@ void	KeyboardDX::DoInputDeviceDescription()
 	}
 
 	delete[] devicearray;
-
-	//myDirectInputKeyboard->SetCooperativeLevel(myHwnd, DISCL_FOREGROUND |DISCL_NONEXCLUSIVE);
-
 	// set format to our key states
 	mDirectInputKeyboard->SetDataFormat(&c_dfDIKeyboard);
 }

@@ -16,7 +16,7 @@
 class CoreTreeNode
 {
 public:
-	explicit CoreTreeNode(CoreTreeNode* father, KigsID id) : mChildren(), mInstances(), mFather(father), mID(id) /*, myClassNameTree(0) */ {}
+	explicit CoreTreeNode(CoreTreeNode* father, KigsID id) : mChildren(), mInstances(), mFather(father), mID(id) {}
 	explicit CoreTreeNode(const CoreTreeNode& node) = delete;
 	CoreTreeNode& operator=(const CoreTreeNode& node) = delete;
 

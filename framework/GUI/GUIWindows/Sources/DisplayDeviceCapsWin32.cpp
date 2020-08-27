@@ -23,12 +23,6 @@ DisplayDeviceCapsWin32::DisplayDeviceCapsWin32(const kstl::string& name,CLASS_NA
 
 			toAdd.mName=displayDeviceDesc.DeviceName;
 			toAdd.mMain=false;
-			
-			// if first found, then it's the main one
-			/*if(mDisplayDeviceList.size()==0)
-			{
-				toAdd.myMain=true;
-			}*/
 
 			DEVMODE devModeDesc;
 			devModeDesc.dmSize=sizeof(DEVMODE);

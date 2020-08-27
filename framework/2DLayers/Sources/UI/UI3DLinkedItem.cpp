@@ -54,8 +54,6 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 		Node3D*	currentnode = (Node3D*)(CoreModifiable*)mNode;
 		if (currentnode)
 		{
-			//myIsHidden = !currentnode->IsVisible();
-
 			Point3D toTransform(currentPos);
 			currentnode->GetLocalToGlobal().TransformPoint(&toTransform, &currentPos);
 		}

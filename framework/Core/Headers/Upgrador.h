@@ -46,7 +46,7 @@ protected:
 	virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) = 0;
 	void UpgradeInstance(CoreModifiable* toUpgrade);
 	void DowngradeInstance(CoreModifiable* toDowngrade);
-	UpgradorBase* myNextUpgrador = nullptr;
+	UpgradorBase* mNextUpgrador = nullptr;
 	// create and init Upgrador if needed, add dynamic attributes, connect things
 	virtual void	Init(CoreModifiable* toUpgrade) { ; }
 
@@ -56,10 +56,10 @@ protected:
 public:
 	virtual ~UpgradorBase()
 	{
-		if (myNextUpgrador)
+		if (mNextUpgrador)
 		{
-			delete myNextUpgrador;
-			myNextUpgrador = nullptr;
+			delete mNextUpgrador;
+			mNextUpgrador = nullptr;
 		}
 	}
 	virtual void	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) = 0;

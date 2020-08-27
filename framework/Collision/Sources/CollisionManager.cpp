@@ -1298,7 +1298,7 @@ CoreModifiable* CollisionManager::GetSphereIntersection(const Point3D& start, co
 #ifdef REWORKING
 	//! search octree node where to start our search (a node containing our moving sphere BBox)  
 	bool found = true;
-	OctreeSubNode* search = myRootSubNode;
+	OctreeSubNode* search = mRootSubNode;
 
 	kdouble ldist = 1000.0;
 	Vector3D lnormal;
@@ -1316,7 +1316,7 @@ CoreModifiable* CollisionManager::GetSphereIntersection(const Point3D& start, co
 		else
 		{
 			//! call the recursive method : RecursiveSearchSphereIntersection 
-			CoreModifiable* L_TmpIntersect = RecursiveSearchSphereIntersection(search, start, dir, Radius, lstart, ldir, lradius, ldist, lnormal, lpoint, false, a_itemCategory);
+			CoreModifiable* L_TmpIntersect = RecursiveSearchSphereIntersection(search, start, mDir, Radius, lstart, ldir, lradius, ldist, lnormal, lpoint, false, a_itemCategory);
 			if (L_TmpIntersect)
 			{
 				if (ldist < Distance)
@@ -1332,7 +1332,7 @@ CoreModifiable* CollisionManager::GetSphereIntersection(const Point3D& start, co
 	}
 
 	//! else search in current (father) son
-	CoreModifiable* L_TmpIntersect = RecursiveSearchSphereIntersection(search, start, dir, Radius, lstart, ldir, lradius, ldist, lnormal, lpoint, true, a_itemCategory);
+	CoreModifiable* L_TmpIntersect = RecursiveSearchSphereIntersection(search, start, mDir, Radius, lstart, ldir, lradius, ldist, lnormal, lpoint, true, a_itemCategory);
 	if (L_TmpIntersect)
 	{
 		if (ldist < Distance)
@@ -1366,7 +1366,7 @@ CoreModifiable*	CollisionManager::RecursiveSearchSphereIntersection(OctreeSubNod
 			Hit hit;
 			hit.HitDistance = 1000;
 			//! call recursive search for Node3D
-			if (RecursiveSearchSphereIntersection(hit, *it, start, dir, Radius, a_itemCategory))
+			if (RecursiveSearchSphereIntersection(hit, *it, start, mDir, Radius, a_itemCategory))
 			{
 				if (hit.HitDistance < Distance)
 				{
@@ -1425,7 +1425,7 @@ CoreModifiable*	CollisionManager::RecursiveSearchSphereIntersection(OctreeSubNod
 				Vector3D lnormal;
 				Point3D lpoint;
 
-				CoreModifiable* L_TmpIntersect = RecursiveSearchSphereIntersection(currentNode->GetSubNode(i), start, dir, Radius, lstart, ldir, lRadius, ldist, lnormal, lpoint, true, a_itemCategory);
+				CoreModifiable* L_TmpIntersect = RecursiveSearchSphereIntersection(currentNode->GetSubNode(i), start, mDir, Radius, lstart, ldir, lRadius, ldist, lnormal, lpoint, true, a_itemCategory);
 				if (L_TmpIntersect)
 				{
 					if (ldist < Distance)
@@ -1460,7 +1460,7 @@ bool CollisionManager::RecursiveSearchSphereIntersection(Hit &hit, CoreModifiabl
 
 		bool localTransformHasBeenDone = false;
 
-		Vector3D ldir(dir);
+		Vector3D ldir(mDir);
 		Point3D	 lstart(start);
 		Vector3D radiusV(Radius, 0, 0);
 		kfloat lradius;
@@ -1512,7 +1512,7 @@ bool CollisionManager::RecursiveSearchSphereIntersection(Hit &hit, CoreModifiabl
 			else if (item->isUserFlagSet(UserFlagNode3D))
 			{
 				//! else if son is a Node3D, recurse
-				if (RecursiveSearchSphereIntersection(hit, item, start, dir, Radius, a_itemCategory))
+				if (RecursiveSearchSphereIntersection(hit, item, start, mDir, Radius, a_itemCategory))
 				{
 					foundone = item;
 				}

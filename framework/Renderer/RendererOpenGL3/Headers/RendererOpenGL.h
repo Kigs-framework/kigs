@@ -40,6 +40,17 @@ public:
 	void ProtectedInitHardwareState() override;
 };
 
+// ****************************************
+// * VertexBufferManager class
+// * --------------------------------------
+/**
+ * \file	RendererOpenGL.h
+ * \class	VertexBufferManager
+ * \ingroup Renderer
+ * \brief	Manage vertex buffer for OpenGL API.
+ */
+ // ****************************************
+
 
 class VertexBufferManager : public VertexBufferManagerBase
 {
@@ -86,7 +97,17 @@ private:
 	std::vector<u32>					mToDeleteBuffer;
 };
 
-
+// ****************************************
+// * RendererOpenGL class
+// * --------------------------------------
+/**
+ * \file	RendererOpenGL.h
+ * \class	RendererOpenGL
+ * \ingroup Renderer
+ * \ingroup Module
+ * \brief	OpenGL implementation of ModuleSpecificRenderer.
+ */
+ // ****************************************
 class RendererOpenGL : public ModuleSpecificRenderer
 {
 public:
@@ -117,8 +138,7 @@ public:
 	void DrawUIQuad(TravState * state, const UIVerticesInfo * qi) override;
 	void DrawUITriangles(TravState * state, const UIVerticesInfo * qi) override;
 
-	static ModuleSpecificRenderer *	theGlobalRenderer;
-	static FreeType_TextDrawer*		myDrawer;
+	static FreeType_TextDrawer*		mDrawer;
 
 
 	virtual void	setCurrentShaderProgram(ShaderInfo* p) override;
@@ -159,10 +179,10 @@ protected:
 	int MAX_TEXTURE_UNIT;
 	struct TextureUnitInfo
 	{
-		unsigned int BindedTextureID;
-		unsigned int BindedTextureType;
+		unsigned int mBindedTextureID;
+		unsigned int mBindedTextureType;
 	};
-	std::vector<TextureUnitInfo>	myTextureUnit;
+	std::vector<TextureUnitInfo>	mTextureUnit;
 
 	RenderingState*	createNewState(RenderingState* toCopy = 0)  override
 	{
@@ -174,7 +194,7 @@ protected:
 		return newstate;
 	}
 
-	unsigned int			myCurrentOGLMatrixMode;
+	unsigned int			mCurrentOGLMatrixMode;
 
 	HoloMatrix * mHoloMatrix = nullptr;
 };

@@ -16,14 +16,12 @@ namespace KigsFramework
 // * Light class
 // * --------------------------------------
 /**
- * \file	Light.h
- * \class	Light
- * \brief	base for a light object
- * \author	ukn
- * \version ukn
- * \date	ukn
- * 
- */
+* \file	Light.h
+* \class	Light
+* \ingroup Renderer
+* \brief	Base class, generic light object.
+*
+*/
 // ****************************************
 class Light : public Node3D 
 {
@@ -48,10 +46,10 @@ public:
 	 */
 	void	SetDiffuseColor(kfloat r,kfloat g,kfloat b)
 	{
-		myDiffuseColor[0]=r;
-		myDiffuseColor[1]=g;
-		myDiffuseColor[2]=b;
-		NotifyUpdate(myDiffuseColor.getLabelID()._id);
+		mDiffuseColor[0]=r;
+		mDiffuseColor[1]=g;
+		mDiffuseColor[2]=b;
+		NotifyUpdate(mDiffuseColor.getLabelID()._id);
 	}
 
 	/**
@@ -64,10 +62,10 @@ public:
 	 */
 	void	SetSpecularColor(kfloat r,kfloat g,kfloat b)
 	{
-		mySpecularColor[0]=r;
-		mySpecularColor[1]=g;
-		mySpecularColor[2]=b;
-		NotifyUpdate(mySpecularColor.getLabelID()._id);
+		mSpecularColor[0]=r;
+		mSpecularColor[1]=g;
+		mSpecularColor[2]=b;
+		NotifyUpdate(mSpecularColor.getLabelID()._id);
 	}
 
 	/**
@@ -80,14 +78,14 @@ public:
 	 */
 	void	SetAmbientColor(kfloat r,kfloat g,kfloat b)
 	{
-		myAmbientColor[0]=r;
-		myAmbientColor[1]=g;
-		myAmbientColor[2]=b;
-		NotifyUpdate(myAmbientColor.getLabelID()._id);
+		mAmbientColor[0]=r;
+		mAmbientColor[1]=g;
+		mAmbientColor[2]=b;
+		NotifyUpdate(mAmbientColor.getLabelID()._id);
 	}
 
-	inline void setIsOn(bool a_value) { myIsOn = a_value; }
-	inline bool getIsOn() const { return myIsOn; }
+	inline void setIsOn(bool a_value) { mIsOn = a_value; }
+	inline bool getIsOn() const { return mIsOn; }
 
 protected:
 
@@ -100,27 +98,27 @@ protected:
 	virtual ~Light();  
    
 	//! specular color
-	maVect3DF	mySpecularColor;
+	maVect3DF	mSpecularColor;
 	//! ambient color
-	maVect3DF	myAmbientColor;
+	maVect3DF	mAmbientColor;
 	//! diffuse color
-	maVect3DF	myDiffuseColor;
+	maVect3DF	mDiffuseColor;
 	//! spot attenuation
-	maFloat		mySpotAttenuation;
+	maFloat		mSpotAttenuation;
 	//! spot cut off
-	maFloat		mySpotCutOff;
+	maFloat		mSpotCutOff;
 	//! attenuation constante
-	maFloat		myConstAttenuation;
+	maFloat		mConstAttenuation;
 	//! attenuation linear
-	maFloat		myLinAttenuation;
+	maFloat		mLinAttenuation;
 	//! attenuation quad
-	maFloat		myQuadAttenuation;
+	maFloat		mQuadAttenuation;
   
 	//! TRUE if the light is on
-	maBool		myIsOn;
+	maBool		mIsOn;
 
 	//0 for point, 1 for directional, 2 for spot
-	maEnum<3>	myLightType;
+	maEnum<3>	mLightType;
 
 }; 
 

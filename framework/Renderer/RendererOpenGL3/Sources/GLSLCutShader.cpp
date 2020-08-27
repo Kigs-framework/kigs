@@ -3,12 +3,12 @@
 
 IMPLEMENT_CONSTRUCTOR(API3DCutShader)
 {
-	PlaneCount.changeNotificationLevel(Owner);
+	mPlaneCount.changeNotificationLevel(Owner);
 }
 
 void API3DCutShader::NotifyUpdate(unsigned int labelid)
 {
-	if (labelid == PlaneCount.getID())
+	if (labelid == mPlaneCount.getID())
 	{
 		Dealloc();
 	}
@@ -68,7 +68,7 @@ kstl::string API3DCutShader::GetFragmentShader()
 	result += API3DGenericMeshShader::GetDefaultFragmentShaderUniforms();
 	result += API3DGenericMeshShader::GetDefaultLightingFunctions();
 
-	STACK_STRING(str, 512, "#define PLANE_COUNT %d\n", (int)PlaneCount);
+	STACK_STRING(str, 512, "#define PLANE_COUNT %d\n", (int)mPlaneCount);
 	result += str;
 
 	result += R"====(

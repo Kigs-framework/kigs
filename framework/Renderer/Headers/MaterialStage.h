@@ -8,7 +8,17 @@
 #error	"missing ScenegraphDefines.h"
 #endif
 class Texture;
-
+// ****************************************
+// * MaterialStage class
+// * --------------------------------------
+/**
+* \file	MaterialStage.h
+* \class	MaterialStage
+* \ingroup Renderer
+* \brief	Base class for material stage.
+*
+*/
+// ****************************************
 class MaterialStage : public Drawable
 {
 public:
@@ -29,8 +39,8 @@ protected:
 
 	COREMODIFIABLE_METHODS(ResetContext);
 
-	maInt			myTexEnv = BASE_ATTRIBUTE(TexEnv, 0);
-	maUInt			myTextureChannel = BASE_ATTRIBUTE(TextureChannel, 0);
+	maInt			mTexEnv = BASE_ATTRIBUTE(TexEnv, 0);
+	maUInt			mChannel = BASE_ATTRIBUTE(TextureChannel, 0);
 }; 
 
 #endif

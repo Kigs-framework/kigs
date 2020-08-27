@@ -211,7 +211,7 @@ void UIImage::ChangeTexture()
 
 bool UIImage::isAlpha(float X, float Y)
 {
-	//Try to get my mask
+	//Try to get mask
 	if (!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();

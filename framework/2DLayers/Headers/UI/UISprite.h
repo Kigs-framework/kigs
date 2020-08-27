@@ -42,9 +42,9 @@ protected:
 	bool isAlpha(float X, float Y)override;
 	void SetTexUV(UIVerticesInfo * aQI)override;
 
-	Point2D myUVMin, myUVMax;
+	Point2D mUVMin, mUVMax;
 
-	bool hasSprite;
+	bool mHasSprite;
 
 	maString				mTexture;
 	maString				mSprite;

@@ -14,7 +14,7 @@ UITexturedItem(name, PASS_CLASS_NAME_TREE_ARG)
 {
 
 	mSpriteSheet = 0;
-	hasSprite = false;
+	mHasSprite = false;
 }
 
 UISprite::~UISprite()
@@ -67,7 +67,7 @@ void UISprite::InitModifiable()
 
 void UISprite::ChangeTexture()
 {
-	hasSprite = false;
+	mHasSprite = false;
 
 	const kstl::string& lTexName = mTexture.const_ref();
 	if (lTexName == "")
@@ -88,7 +88,7 @@ void UISprite::ChangeTexture()
 	if (f == nullptr)
 		return;
 
-	hasSprite = true;
+	mHasSprite = true;
 
 
 	Point2D s, r;
@@ -96,12 +96,12 @@ void UISprite::ChangeTexture()
 	mTexturePointer->GetRatio(r.x, r.y);
 	s /= r;
 
-	myUVMin.Set((kfloat)f->FramePos_X+0.5f, (kfloat)f->FramePos_Y+0.5f);
-	myUVMin /= s;
+	mUVMin.Set((kfloat)f->FramePos_X+0.5f, (kfloat)f->FramePos_Y+0.5f);
+	mUVMin /= s;
 
-	myUVMax.Set((kfloat)(f->FramePos_X+f->FrameSize_X-0.5f), (kfloat)(f->FramePos_Y+f->FrameSize_Y-0.5f));
-	myUVMax /= s;
-	//myUVMax = myUVMin + myUVMax;
+	mUVMax.Set((kfloat)(f->FramePos_X+f->FrameSize_X-0.5f), (kfloat)(f->FramePos_Y+f->FrameSize_Y-0.5f));
+	mUVMax /= s;
+	//mUVMax = mUVMin + mUVMax;
 
 	// auto size
 	if ((((unsigned int)mSizeX) == 0) && (((unsigned int)mSizeY) == 0))
@@ -113,7 +113,7 @@ void UISprite::ChangeTexture()
 
 bool UISprite::isAlpha(float X, float Y)
 {
-	//Try to get my mask
+	//Try to get mask
 	if (!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
@@ -138,7 +138,7 @@ bool UISprite::isAlpha(float X, float Y)
 
 void UISprite::SetTexUV(UIVerticesInfo * aQI)
 {
-	if (hasSprite)
+	if (mHasSprite)
 	{
 		kfloat ratioX, ratioY, sx, sy;
 		mTexturePointer->GetSize(sx, sy);
@@ -151,9 +151,9 @@ void UISprite::SetTexUV(UIVerticesInfo * aQI)
 
 		aQI->Flag |= UIVerticesInfo_Texture;
 		// triangle strip order
-		buf[0].setTexUV(myUVMin.x + dx, myUVMin.y + dy);
-		buf[1].setTexUV(myUVMin.x + dx, myUVMax.y - dy);
-		buf[3].setTexUV(myUVMax.x - dx, myUVMax.y - dy);
-		buf[2].setTexUV(myUVMax.x - dx, myUVMin.y + dy);
+		buf[0].setTexUV(mUVMin.x + dx, mUVMin.y + dy);
+		buf[1].setTexUV(mUVMin.x + dx, mUVMax.y - dy);
+		buf[3].setTexUV(mUVMax.x - dx, mUVMax.y - dy);
+		buf[2].setTexUV(mUVMax.x - dx, mUVMin.y + dy);
 	}
 }

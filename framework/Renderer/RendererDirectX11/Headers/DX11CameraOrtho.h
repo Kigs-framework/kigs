@@ -3,6 +3,18 @@
 
 #include "Camera.h"
 
+// ****************************************
+// * DX11CameraOrtho class
+// * --------------------------------------
+/**
+ * \file	DX11CameraOrtho.h
+ * \class	DX11CameraOrtho
+ * \ingroup Renderer
+ * \brief	DX11 implementation of orthographic camera.
+ *
+ */
+ // ****************************************
+
 class DX11CameraOrtho : public Camera
 {
 public:
@@ -20,7 +32,7 @@ protected:
     bool ProtectedSetActive(TravState* state)override;
    	void ProtectedRelease(TravState* state) override; 
 
-	maFloat m_Size = BASE_ATTRIBUTE(Size,100);
+	maFloat mSize = BASE_ATTRIBUTE(Size,100);
 };    
 
 #endif //_DIRECTX11CAMERAORTHO_H

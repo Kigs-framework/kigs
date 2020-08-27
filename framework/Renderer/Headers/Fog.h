@@ -17,43 +17,12 @@ namespace KigsFramework
 /**
  * \file	Fog.h
  * \class	Fog
- * \ingroup Drawable
- * \ingroup RendererDrawable
- * \brief	Base class for fog
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \ingroup Renderer
+ * \brief	Add fog to the scene.
  * 
- * <dl class="dependency"><dt><b>Dependency:</b></dt><dd>ModuleRenderer</dd></dl>
- * <dl class="exemple"><dt><b>Exemple:</b></dt><dd>
- * <span class="comment"> Load the module :</span><br>
- * <span class="code">
- * theRenderer=new ModuleRenderer(<i>instance_name</i>);<br>
- * theRenderer->Init(KigsCore::Instance(),0);<br>
- * </span>
- * <span class="comment"> Create the object :</span><br>
- * <span class="code">
- * CoreModifiable* fog=(CoreModifiable*)(KigsCore::GetInstanceOf("test","Fog"));<br>
- * </span>
- * <span class="comment"> Initialization :</span><br>
- * <span class="code">
- * kfloat fogColor[4] = {<i>R</i>, <i>G</i>, <i>B</i>, <i>A</i>};<br>
- * fog->setArrayValue("Color",fogColor, 4);<br>
- * fog->Init();
- * </span>
- * </dd></dl>
- *
- * <dl class="exported"><dt><b>Exported parameters :</b></dt><dd>
- * <table>
- * <tr><td>kfloat</td>	<td><strong>Color[4]</strong> :			</td><td>Fog color</td></tr>	
- * <tr><td>kfloat</td>	<td><strong>StartDistance</strong> :	</td><td>start fog distance</td></tr>	
- * <tr><td>kfloat</td>	<td><strong>EndDistance</strong> :		</td><td>end fog distance</td></tr>	
- * <tr><td>kfloat</td>	<td><strong>Density</strong> :			</td><td>fog density</td></tr>	
- * <tr><td>String</td>	<td><strong>Mode</strong> :				</td><td>rendering mode ("EXP","EXP2","LINEAR")</td></tr>	
- * </table>
- * </dd></dl>
+ * ?? Obsolete ??
  */
-// ****************************************
+ // ****************************************
 class Fog : public Drawable 
 {
 public:
@@ -75,15 +44,15 @@ protected:
 	virtual ~Fog(){;}
 
 	//! fog color
-	maVect4DF	myColor;
+	maVect4DF	mColor;
 	//! start distance
-	maFloat		myStartDist;
+	maFloat		mStartDistance;
 	//! end distance
-	maFloat		myEndDist;
+	maFloat		mEndDistance;
 	//! fog density
-	maFloat		myDensity;
+	maFloat		mDensity;
 	//! rendering mode
-	maEnum<3>	myMode;
+	maEnum<3>	mMode;
 };
 
 #ifdef _3DSMAX

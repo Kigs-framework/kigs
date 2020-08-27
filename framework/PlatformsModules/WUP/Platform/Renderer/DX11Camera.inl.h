@@ -23,7 +23,7 @@ void DX11Camera::PlatformProtectedSetActive(TravState* state)
 	auto rs = getRenderingScreen()->as<DX11RenderingScreen>();
 	if (!rs->IsHolographic()) return;
 
-	RendererDX11* renderer = reinterpret_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+	RendererDX11* renderer = reinterpret_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 	DXInstance* dxinstance = renderer->getDXInstance();
 	auto frame = dxinstance->mCurrentFrame;
 
@@ -36,19 +36,19 @@ void DX11Camera::PlatformProtectedSetActive(TravState* state)
 	{
 		auto camera = pose.HolographicCamera();
 		//camera.ViewportScaleFactor(1.0f);
-		camera.SetNearPlaneDistance(myNear);
-		camera.SetFarPlaneDistance(myFar);
+		camera.SetNearPlaneDistance(mNearPlane);
+		camera.SetFarPlaneDistance(mFarPlane);
 
 		auto size = camera.RenderTargetSize();
-		myViewportMinX = pose.Viewport().X / size.Width;
-		myViewportMinY = pose.Viewport().Y / size.Height;
-		myViewportSizeX = pose.Viewport().Width / size.Width;
-		myViewportSizeY = pose.Viewport().Height / size.Height;
+		mViewportMinX = pose.Viewport().X / size.Width;
+		mViewportMinY = pose.Viewport().Y / size.Height;
+		mViewportSizeX = pose.Viewport().Width / size.Width;
+		mViewportSizeY = pose.Viewport().Height / size.Height;
 
 #ifdef KIGS_HOLOLENS2
-		myVerticalFOV = 29.0f;
+		mVerticalFOV = 29.0f;
 #else
-		myVerticalFOV = 17.5f;
+		mVerticalFOV = 17.5f;
 #endif
 		auto camera_projection_transform = pose.ProjectionTransform();
 		auto view_transform_container = pose.TryGetViewTransform(coordinate_system);

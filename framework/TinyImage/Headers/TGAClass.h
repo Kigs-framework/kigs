@@ -5,10 +5,17 @@
 
 
 
+// ****************************************
+// * TGAClass class
+// * --------------------------------------
 /**
-* \class TGAClass
-* \brief holds TGA loading methods for standard and custom formats
+* \file	TGAClass.h
+* \class	TGAClass
+* \ingroup TinyImageModule
+* \brief TinyImage specialized for TGA management.
+*
 */
+// ****************************************
 class TGAClass : public TinyImage
 {
 friend class TinyImage;
@@ -65,9 +72,9 @@ public:
 	};
 	
 	/// size of the TGA header (in bytes)
-	static const u8 headerSize = 18;
+	static const u8 mHeaderSize = 18;
 	/// size of the TGA footer (in bytes)
-	static const u8 footerSize = 26;
+	static const u8 mFooterSize = 26;
 	
 	/**
 	* \enum TGAFormats

@@ -262,7 +262,7 @@ void CoreModifiable::debugPrintfClassList(const std::string& className, s32 maxi
 void CoreModifiable::Upgrade(UpgradorBase* toAdd)
 {
 	LazyContent* c = GetLazyContent();
-	toAdd->myNextUpgrador = c->mUpgradors;
+	toAdd->mNextUpgrador = c->mUpgradors;
 	c->mUpgradors = toAdd;
 	toAdd->UpgradeInstance(this);
 }
@@ -1605,7 +1605,7 @@ void CoreModifiable::ProtectedDestroy()
 			mLazyContent->mUpgradors = found;
 			found->DowngradeInstance(this);
 			mLazyContent->mUpgradors = cachedUpgrador;
-			found = found->myNextUpgrador;
+			found = found->mNextUpgrador;
 		}
 
 		// delete the first one, to delete all the list
@@ -1700,7 +1700,7 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 			mLazyContent->mUpgradors = found;
 
 			found->UpgradorUpdate(this,timer,addParam);
-			found = found->myNextUpgrador;
+			found = found->mNextUpgrador;
 
 			// reset cached
 			mLazyContent->mUpgradors = cached;
@@ -1768,17 +1768,17 @@ void CoreModifiable::Downgrade(const std::string& toRemove)
 		{
 			if (previous)
 			{
-				previous->myNextUpgrador = found->myNextUpgrador;
+				previous->mNextUpgrador = found->mNextUpgrador;
 			}
 			else
 			{
-				mLazyContent->mUpgradors = found->myNextUpgrador;
+				mLazyContent->mUpgradors = found->mNextUpgrador;
 			}
 			found->DowngradeInstance(this);
 			break;
 		}
 		previous = found;
-		found = found->myNextUpgrador;
+		found = found->mNextUpgrador;
 	}
 }
 
@@ -2398,7 +2398,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 		XMLAttribute* UpgradorAttribute = new XMLAttribute("N", upgradorfound->getID()._id_name);
 		upgradorNode->addAttribute(UpgradorAttribute);
 		currentNode->addChild(upgradorNode);
-		upgradorfound = upgradorfound->myNextUpgrador;
+		upgradorfound = upgradorfound->mNextUpgrador;
 	}
 
 	savedList.push_back(this);

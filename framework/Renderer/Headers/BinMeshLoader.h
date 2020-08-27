@@ -1,17 +1,13 @@
 #ifndef _BINMESHLOADER_H_
 #define _BINMESHLOADER_H_
 
-/*! 
- * \defgroup InternalBinMeshLoader Internal binMeshLoader
- * \ingroup Renderer
- * structure of the binMeshFile
-*/
-
 #include <stdio.h>
 #include "BufferedFile.h"
 #include "BinMeshLoaderBase.h"
 class Mesh;
 class ModernMesh;
+
+
 
 // ****************************************
 // * BinMeshLoader class
@@ -19,14 +15,10 @@ class ModernMesh;
 /**
  * \file	BinMeshLoader.h
  * \class	BinMeshLoader
- * \ingroup Loader
  * \ingroup Renderer
- * \brief	load mesh from binaries files
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \brief	Import mesh from a binary file
  */
-// ****************************************
+ // ****************************************
 class BinMeshLoader : public BinMeshLoaderBase
 {
 public:
@@ -70,15 +62,15 @@ protected:
 	class grpStruct
 	{
 	public:
-		grpStruct() : myMaterial(nullptr),myTriangleCount(0),myTriangleSize(0),myFirstTriangle(0)
+		grpStruct() : mMaterial(nullptr),mTriangleCount(0),mTriangleSize(0),mFirstTriangle(0)
 		{
 		}
 
-		SP<Material>		myMaterial;
-		int				myTriangleCount;
-		int				myTriangleSize;
-		void*			myFirstTriangle;
-		unsigned int	myTriangleType;
+		SP<Material>		mMaterial;
+		int				mTriangleCount;
+		int				mTriangleSize;
+		void*			mFirstTriangle;
+		unsigned int	mTriangleType;
 	};
 
 };

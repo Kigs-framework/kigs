@@ -4,10 +4,17 @@
 // base class
 #include "TinyImage.h"
 
+// ****************************************
+// * ETCClass class
+// * --------------------------------------
 /**
-* \class ETCClass
-* \brief specific DDS class
+* \file	ETCClass.h
+* \class	ETCClass
+* \ingroup TinyImageModule
+* \brief TinyImage specialized for ETC management.
+*
 */
+// ****************************************
 class ETCClass : public TinyImage
 {
 public:

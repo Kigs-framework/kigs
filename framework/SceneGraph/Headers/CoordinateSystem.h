@@ -4,7 +4,16 @@
 #include "Node3D.h"
 #include "Upgrador.h"
 
-// upgrade Node3D with rotation / position / scale accessors 
+// ****************************************
+// * CoordinateSystemUp class
+// * --------------------------------------
+/**
+ * \file	CoordinateSystem.h
+ * \class	CoordinateSystemUp
+ * \ingroup SceneGraph
+ * \brief	Node3D updragor to have access to node translation / rotation utilities.
+ */
+ // ****************************************
 class CoordinateSystemUp : public Upgrador<Node3D>
 {
 	// create and init Upgrador if needed and add dynamic attributes
@@ -26,9 +35,18 @@ class CoordinateSystemUp : public Upgrador<Node3D>
 	bool					mWasdAutoUpdate = false;
 }; 
 
-// upgrade Node3D with "pivot" features : 
-// - rotation axis defined with a 3D point and a 3D vector
-// - an rotation angle
+
+// ****************************************
+// * PivotUp class
+// * --------------------------------------
+/**
+ * \file	CoordinateSystem.h
+ * \class	PivotUp
+ * \ingroup SceneGraph
+ * \brief	Node3D updragor to manipulate node like an pivot ( angle+axis rotation ).
+ */
+ // ****************************************
+
 class PivotUp : public Upgrador<Node3D>
 {
 	// create and init Upgrador if needed and add dynamic attributes

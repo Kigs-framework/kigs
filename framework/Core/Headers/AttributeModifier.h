@@ -10,7 +10,7 @@ class AttachedModifierBase : public CoreVector
 {
 public:
 
-	AttachedModifierBase() : CoreVector(), _nextModifier(0), myIsGetter(true)
+	AttachedModifierBase() : CoreVector(), mNextModifier(0), mIsGetter(true)
 	{
 	}
 
@@ -18,98 +18,98 @@ public:
 	{
 
 #ifdef   KEEP_NAME_AS_STRING
-		myInitString = addParam;
+		mInitString = addParam;
 #endif
-		myIsGetter = isGetter;
+		mIsGetter = isGetter;
 	}
 
 	virtual ~AttachedModifierBase()
 	{
-		if (_nextModifier)
+		if (mNextModifier)
 		{
-			delete _nextModifier;
+			delete mNextModifier;
 		}
-		_nextModifier = 0;
+		mNextModifier = 0;
 	}
 
 	// numeric
 	void	CallModifier(CoreModifiableAttribute* caller, bool& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, s8& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, s16& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, s32& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, s64& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, u8& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, u16& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, u32& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, u64& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, kfloat& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, kdouble& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 
 	// strings
 	void	CallModifier(CoreModifiableAttribute* caller, kstl::string& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 
 	void	CallModifier(CoreModifiableAttribute* caller, usString& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 
 	// 2D or 3D points
 	void	CallModifier(CoreModifiableAttribute* caller, Point2D& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 
 	void	CallModifier(CoreModifiableAttribute* caller, Point3D& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (_nextModifier) { _nextModifier->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier) { mNextModifier->CallModifier(caller, value, isGetter); }
 	};
 
-	inline bool	isGetterModifier() { return myIsGetter; }
+	inline bool	isGetterModifier() { return mIsGetter; }
 
 	inline void setNext(AttachedModifierBase* nexttoset)
 	{
-		_nextModifier = nexttoset;
+		mNextModifier = nexttoset;
 	}
 
 	inline AttachedModifierBase* getNext()
 	{
-		return _nextModifier;
+		return mNextModifier;
 	}
 
 #ifdef   KEEP_NAME_AS_STRING
@@ -117,7 +117,7 @@ public:
 	virtual kstl::string	GetModifierType() = 0;
 	kstl::string			GetModifierInitString()
 	{
-		return myInitString;
+		return mInitString;
 	}
 #endif
 
@@ -144,12 +144,12 @@ protected:
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Point2D& value) {};
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Point3D& value) {};
 
-	AttachedModifierBase*	_nextModifier;
+	AttachedModifierBase*	mNextModifier;
 
-	bool					myIsGetter;
+	bool					mIsGetter;
 
 #ifdef   KEEP_NAME_AS_STRING
-	kstl::string			myInitString;
+	kstl::string			mInitString;
 #endif
 };
 
@@ -157,7 +157,7 @@ class CoreItemOperatorModifier : public AttachedModifierBase
 {
 public:
 	CoreItemOperatorModifier() : AttachedModifierBase()
-		, myCurrentItem(nullptr)
+		, mCurrentItem(nullptr)
 	{
 
 	}
@@ -165,8 +165,8 @@ public:
 	virtual ~CoreItemOperatorModifier()
 	{
 
-		auto itcurrent = myContext.mVariableList.begin();
-		auto itend = myContext.mVariableList.end();
+		auto itcurrent = mContext.mVariableList.begin();
+		auto itend = mContext.mVariableList.end();
 		while (itcurrent != itend)
 		{
 			if ((*itcurrent).second)
@@ -267,6 +267,6 @@ protected:
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Point2D& value);
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Point3D& value);
 
-	CoreItemSP					myCurrentItem;
-	CoreItemEvaluationContext	myContext;
+	CoreItemSP					mCurrentItem;
+	CoreItemEvaluationContext	mContext;
 };

@@ -151,7 +151,7 @@ void UISliderFill::ChangeTexture(kstl::string _voidtexturename,kstl::string _sta
 
 bool UISliderFill::isAlpha(float X, float Y)
 {
-	//Try to get my mask
+	//Try to get mask
 	if(!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
@@ -168,7 +168,7 @@ bool UISliderFill::isAlpha(float X, float Y)
 
 	if(mAlphaMask)
 	{
-		//Check on my mask the specified location
+		//Check on mask the specified location
 		return !mAlphaMask->CheckTo(X,Y);
 	}
 

@@ -7,30 +7,14 @@
 // * SimpleDrawing class
 // * --------------------------------------
 /**
- * \file	SimpleDrawing.h
- * \class	SimpleDrawing
- * \ingroup Drawable
- * \ingroup RendererDrawable
- * \brief	simple drawing
- * \author	ukn
- * \version ukn
- *
- * Exported parameters :<br>
- * <ul>
- * <li>
- *		kfloat <strong>Width</strong> : width
- * </li>
- * <li>
- *		kfloat <strong>Color[3]</strong> : color value
- * </li>
- * <li>
- *		kfloat <strong>Alpha</strong> : alpha value
- * </li>
- * <li>
- *		kfloat <strong>Mode</strong> : drawing mode
- * </li>
- * </ul>
- */
+* \file	SimpleDrawing.h
+* \class	SimpleDrawing
+* \ingroup Renderer
+* \brief draw simple objects...
+* 
+* Probably obsolete or same usage as DrawVertice / DirectRenderingMethods.
+*
+*/
 // ****************************************
 class SimpleDrawing : public Drawable
 {
@@ -69,7 +53,7 @@ public:
 
 	/**
 	 * \brief	retreive the bounding box of the bitmap (point min and point max)
-	 * \fn 		virtual void	GetBoundingBox(Point3D& pmin,Point3D& pmax) const {pmin=myBBoxMin; pmax=myBBoxMax;}
+	 * \fn 		virtual void	GetBoundingBox(Point3D& pmin,Point3D& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
 	 * \param	pmin : point min of the bounding box (in/out param)
 	 * \param	pmax : point max of the bounding box (in/out param)
 	 */
@@ -197,17 +181,17 @@ protected:
 	virtual void PrepareDrawing() = 0;
 
 	//! list of vertice
-	Point3D*	m_Vertex = nullptr;
+	Point3D*	mVertex = nullptr;
 	//! number of vertice
-	int			m_VertexCount = 0;
+	int			mVertexCount = 0;
 	//! drawing mode
-	maInt		m_DrawMode = BASE_ATTRIBUTE(Mode, 0);
+	maInt		mMode = BASE_ATTRIBUTE(Mode, 0);
 	//! width
-	maFloat		m_Width = BASE_ATTRIBUTE(Width, 1);
+	maFloat		mWidth = BASE_ATTRIBUTE(Width, 1);
 	//! alpha value
-	maFloat		m_Alpha = BASE_ATTRIBUTE(Alpha, 1);
+	maFloat		mAlpha = BASE_ATTRIBUTE(Alpha, 1);
 	//! color value
-	maVect3DF	m_Color = BASE_ATTRIBUTE(Color, 1, 1, 1);
+	maVect3DF	mColor = BASE_ATTRIBUTE(Color, 1, 1, 1);
 };
 
 #endif

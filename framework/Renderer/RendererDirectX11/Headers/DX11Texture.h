@@ -6,6 +6,18 @@
 struct ID3D11Texture2D;
 struct ID3D11ShaderResourceView;
 
+
+// ****************************************
+// * DX11Texture class
+// * --------------------------------------
+/**
+ * \file	DX11Texture.h
+ * \class	DX11Texture
+ * \ingroup Renderer
+ * \brief	DX11 implementation of Texture.
+ *
+ */
+ // ****************************************
 class DX11Texture : public Texture
 {
 public:
@@ -41,13 +53,13 @@ protected:
 	void	SetPixels(unsigned int* _array, int Width, int Height)override;
 #endif
 
-	bool myCanReuseBuffer;
+	bool mCanReuseBuffer;
 
-	unsigned int	myPow2BufferSize;
-	unsigned char*	myPow2Buffer = nullptr;
+	unsigned int	mPow2BufferSize;
+	unsigned char*	mPow2Buffer = nullptr;
 
-	ID3D11Texture2D *pTexture = nullptr;
-	ID3D11ShaderResourceView* pShaderRes = nullptr;
+	ID3D11Texture2D *mTexturePointer = nullptr;
+	ID3D11ShaderResourceView* mShaderRes = nullptr;
 };
 
 #endif //_DX11TEXTURE_H

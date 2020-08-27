@@ -1,6 +1,17 @@
 #pragma once
 #include "Node3D.h"
 
+// ****************************************
+// * MultiMesh class
+// * --------------------------------------
+/**
+* \file	MultiMesh.h
+* \class	MultiMesh
+* \ingroup Renderer
+* \brief	
+*
+*/
+// ****************************************
 class MultiMesh : public Node3D
 {
 public:
@@ -17,10 +28,10 @@ protected:
 	void PrepareExport(ExportSettings* settings) override;
 	void EndExport(ExportSettings* settings) override;
 
-	kstl::vector<Node3D*> _subnodes;
-	SmartPointer<Node3D> _full_mesh_node;
+	kstl::vector<Node3D*> mSubNodes;
+	SmartPointer<Node3D> mFullMeshNode;
 
-	bool _need_full_mesh_recompute = false;
+	bool mNeedFullMeshRecompute = false;
 
-	BBox _full_bbox;
+	BBox mFullBBox;
 };

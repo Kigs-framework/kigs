@@ -17,15 +17,15 @@ IMPLEMENT_CONSTRUCTOR(Drawable)
 {
 	AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "TransarencyFlag", false);
 	setUserFlag(UserFlagDrawable);
-	myDrawingNeeds=(unsigned int)Not_Init;
+	mDrawingNeeds=(unsigned int)Not_Init;
 }    
 
 void Drawable::UpdateDrawingNeeds()
 {
-	if(myDrawingNeeds&((unsigned int)Not_Init))
+	if(mDrawingNeeds&((unsigned int)Not_Init))
 	{
 
-		myDrawingNeeds=GetSelfDrawingNeeds();
+		mDrawingNeeds=GetSelfDrawingNeeds();
 		
 		// update my flag using son flag
 		kstl::vector<ModifiableItemStruct>::const_iterator it;
@@ -36,7 +36,7 @@ void Drawable::UpdateDrawingNeeds()
 			{
 				SP<Drawable>& drawable=(SP<Drawable> & )(*it).mItem;
 				drawable->UpdateDrawingNeeds();
-				myDrawingNeeds|=drawable->GetDrawingNeeds();
+				mDrawingNeeds|=drawable->GetDrawingNeeds();
 			}
 		}
 		// then ask fathers to update
@@ -47,7 +47,7 @@ void Drawable::UpdateDrawingNeeds()
 			if((*itfather)->isUserFlagSet(UserFlagDrawable))
 			{
 				Drawable* drawable=(Drawable*)(*itfather);
-				drawable->myDrawingNeeds=(unsigned int)Not_Init;
+				drawable->mDrawingNeeds=(unsigned int)Not_Init;
 				drawable->UpdateDrawingNeeds();
 			}
 		}
@@ -189,7 +189,7 @@ bool Drawable::PostDraw(TravState* state)
 bool Drawable::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 
-	myDrawingNeeds=(unsigned int)Not_Init;
+	mDrawingNeeds=(unsigned int)Not_Init;
 	
 	bool result=SceneNode::addItem(item,pos PASS_LINK_NAME(linkName));
 
@@ -202,7 +202,7 @@ bool Drawable::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 bool Drawable::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	bool result=SceneNode::removeItem(item PASS_LINK_NAME(linkName));
-	myDrawingNeeds=(unsigned int)Not_Init;
+	mDrawingNeeds=(unsigned int)Not_Init;
 	UpdateDrawingNeeds();
 
 	return result;

@@ -15,10 +15,10 @@ void	AutoOrientedNode3DUp::Init(CoreModifiable* toUpgrade)
 	mTarget->changeNotificationLevel(Owner);
 	mCurrentTarget = nullptr;
 	v3f axis(0.0f, 0.0f, 1.0f);
-	myOrientedAxis = toUpgrade->AddDynamicVectorAttribute("OrientedAxis", (float*)&axis.x, 3);
+	mOrientedAxis = toUpgrade->AddDynamicVectorAttribute("OrientedAxis", (float*)&axis.x, 3);
 	axis.Set(0.0f, 1.0f, 0.0f);
-	myPseudoConstantAxis = toUpgrade->AddDynamicVectorAttribute("PseudoConstantAxis", (float*)&axis.x, 3);
-	myPseudoConstantAxisDir = toUpgrade->AddDynamicVectorAttribute("PseudoConstantAxisDir", (float*)&axis.x, 3);
+	mPseudoConstantAxis = toUpgrade->AddDynamicVectorAttribute("PseudoConstantAxis", (float*)&axis.x, 3);
+	mPseudoConstantAxisDir = toUpgrade->AddDynamicVectorAttribute("PseudoConstantAxisDir", (float*)&axis.x, 3);
 
 	// check if already in auto update mode
 	if (toUpgrade->isFlagAsAutoUpdateRegistered())
@@ -83,14 +83,14 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 
 	// check that target axis & up axis are OK ( orthogonal, normalized and X, Y or Z axis colinear )
 	v3f axis1,axis2,axis3;
-	GetUpgrador()->myOrientedAxis->getValue(axis1);
+	GetUpgrador()->mOrientedAxis->getValue(axis1);
 	if(!isValidAxis(axis1))
 	{
 		KIGS_WARNING("AutoOrientedNode bad OrientedAxis", 1);
 		return;
 	}
 	
-	GetUpgrador()->myPseudoConstantAxis->getValue(axis2);
+	GetUpgrador()->mPseudoConstantAxis->getValue(axis2);
 	if (!isValidAxis(axis2))
 	{
 		KIGS_WARNING("AutoOrientedNode bad PseudoConstantAxis", 1);
@@ -128,7 +128,7 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	targetAxis1.Normalize();
 
 	// get global targetAxis2
-	GetUpgrador()->myPseudoConstantAxisDir->getValue(targetAxis2);
+	GetUpgrador()->mPseudoConstantAxisDir->getValue(targetAxis2);
 	// and transform it to father local coordinates
 	getFather()->GetGlobalToLocal().TransformVector(&targetAxis2);
 	targetAxis2.Normalize();
@@ -164,7 +164,7 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	Matrix3x3 result(tm1 * tm2);
 	
 	Matrix3x4	targetm(result);
-	targetm.SetTranslation(myTransform.GetTranslation());
+	targetm.SetTranslation(mTransform.GetTranslation());
 
 	ChangeMatrix(targetm);
 

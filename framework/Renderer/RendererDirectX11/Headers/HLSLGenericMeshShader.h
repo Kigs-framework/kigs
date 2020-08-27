@@ -3,6 +3,17 @@
 
 #include "HLSLShader.h"
 
+
+// ****************************************
+// * API3DGenericMeshShader class
+// * --------------------------------------
+/**
+ * \file	HLSLGenericMeshShader.h
+ * \class	API3DGenericMeshShader
+ * \ingroup Renderer
+ * \brief	DX11 Generic Mesh Shader.
+ */
+ // ****************************************
 class API3DGenericMeshShader : public API3DShader
 {
 public:

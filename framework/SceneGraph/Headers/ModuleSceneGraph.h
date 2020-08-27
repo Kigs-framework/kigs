@@ -7,6 +7,14 @@
 #include "kstlset.h"
 #include "Scene3D.h"
 
+
+/*! \defgroup SceneGraph 
+ *  Manage 3D scenes.
+*/
+
+
+
+
 class TravState;
 
 class		ModuleSpecificRenderer;
@@ -47,14 +55,12 @@ enum UserFlagsSceneGraph
 // * Scene3DPriorityCompare class
 // * --------------------------------------
 /**
- * \struct	Scene3DPriorityCompare
+ * \file	ModuleSceneGraph.h
+ * \class	Scene3DPriorityCompare
  * \ingroup SceneGraph
- * \brief	compare two scene
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \brief	Struct to sort scenes.
  */
-// ****************************************
+ // ****************************************
 struct Scene3DPriorityCompare
 {
 	//! overload operator () for comparison
@@ -66,11 +72,6 @@ struct Scene3DPriorityCompare
 	}
 };
 
-
-/*! \defgroup SceneGraph SceneGraph module
- *  manage object in a scene 
-*/
-
 // ****************************************
 // * ModuleSceneGraph class
 // * --------------------------------------
@@ -79,19 +80,9 @@ struct Scene3DPriorityCompare
  * \class	ModuleSceneGraph
  * \ingroup SceneGraph
  * \ingroup Module
- * \brief	The module SceneGraph manage all the "virtual" object in the scene, objects used for culling or drawind
- * \author	ukn
- * \version ukn
- * \date	ukn
- *
- * Exported parameters :<br>
- * <ul>
- * <li>
- *		bool <strong>SceneListNeedsSort</strong> :TRUE if scene list need to be sorted
- * </li>
- * </ul>
+ * \brief	Manage all Scenes ( 3D and 2D ).
  */
-// ****************************************
+ // ****************************************
 class ModuleSceneGraph : public ModuleBase
 {
 public:
@@ -104,7 +95,7 @@ public:
 	void Update(const Timer& timer, void* addParam) override;
 
 
-	ModuleSpecificRenderer*	GetRenderer(){return myRenderer;}
+	ModuleSpecificRenderer*	GetRenderer(){return mRenderer;}
 
 
 	bool addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
@@ -115,7 +106,7 @@ public:
 	 * \fn 		inline unsigned int	GetCurrentVisibleNodeIndex() const
 	 * \return	the current visible node
 	 */
-	inline unsigned int	GetCurrentVisibleNodeIndex() const { return myCurrentVisibleNodeIndex; }
+	inline unsigned int	GetCurrentVisibleNodeIndex() const { return mCurrentVisibleNodeIndex; }
 
 	/**
 	 * \brief	add a visible node
@@ -124,12 +115,12 @@ public:
 	 */
 	inline void	AddVisibleNode(Node3D* node)
 	{
-		myVisiblesNodeList[myCurrentVisibleNodeIndex]=node;
-		myCurrentVisibleNodeIndex++;
+		mVisiblesNodeList[mCurrentVisibleNodeIndex]=node;
+		mCurrentVisibleNodeIndex++;
 #ifdef	_DEBUG
-		if(myCurrentVisibleNodeIndex>MAX_VISIBLE_NODES)
+		if(mCurrentVisibleNodeIndex>MAX_VISIBLE_NODES)
 		{
-			printf("Error current index : %u put by : %s \n",myCurrentVisibleNodeIndex,node->getName().c_str());
+			printf("Error current index : %u put by : %s \n",mCurrentVisibleNodeIndex,node->getName().c_str());
 			KIGS_ASSERT(0);
 		}
 #endif
@@ -142,11 +133,11 @@ public:
 	 */
 	inline Node3D* GetVisibleNode(unsigned int index) const
 	{
-		return myVisiblesNodeList[index];
+		return mVisiblesNodeList[index];
 	}
 	inline Node3D** GetVisibleNodeArray(unsigned int index)
 	{
-		return &myVisiblesNodeList[index];
+		return &mVisiblesNodeList[index];
 	}
 
 	/**
@@ -155,7 +146,7 @@ public:
 	 */
 	inline void ResetVisibleNodeList()
 	{
-		myCurrentVisibleNodeIndex=0;
+		mCurrentVisibleNodeIndex=0;
 	}
 
 	void AddDefferedItem(void* item, DefferedAction::ENUM action);
@@ -182,23 +173,23 @@ protected:
 	void	SortSceneList();
 
 	//! current state for the culling or drawing
-	SP<TravState>	myTravState = nullptr;
+	SP<TravState>	mTravState = nullptr;
 
 	//! renderer used by the module
-	ModuleSpecificRenderer*	myRenderer;
+	ModuleSpecificRenderer*	mRenderer;
 
-	kigs::unordered_map<void*, DefferedAction::ENUM> sDefferedAction;
+	kigs::unordered_map<void*, DefferedAction::ENUM> mDefferedAction;
 
 	//! list of scene
-	kstl::set<Scene3D*,Scene3DPriorityCompare>	myScenes;
+	kstl::set<Scene3D*,Scene3DPriorityCompare>	mScenes;
 	//! visibles 3D nodes, the liste is setup during the travcull for each nodes
-	Node3D*				myVisiblesNodeList[MAX_VISIBLE_NODES];
+	Node3D*				mVisiblesNodeList[MAX_VISIBLE_NODES];
 
 	//! index of the current visible node
-	unsigned int		myCurrentVisibleNodeIndex;
+	unsigned int		mCurrentVisibleNodeIndex;
 
 	//! TRUE if scene list need to be sorted
-	maBool				mySceneListNeedsSort;
+	maBool				mSceneListNeedsSort;
 
 	std::recursive_mutex mMutex;
 }; 

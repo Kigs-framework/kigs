@@ -17,7 +17,7 @@ IMPLEMENT_CONSTRUCTOR(DebugDraw)
 , _glyph_texture(nullptr)
 {
 	dd::initialize(this);
-	myDrawingNeeds = Need_Draw;
+	mDrawingNeeds = Need_Draw;
 	KigsCore::GetNotificationCenter()->addObserver(this, "ResetContext", "ResetContext");
 }
 

@@ -8,18 +8,18 @@ IMPLEMENT_CLASS_INFO(RenderingCustomizer);
 
 void RenderingCustomizer::SaveState(TravState* state)
 {
-	if (!NeedPop)
+	if (!mNeedPop)
 	{
 		state->GetRenderer()->PushState();
-		NeedPop = true;
+		mNeedPop = true;
 	}
 }
 void RenderingCustomizer::RestoreState(TravState* state)
 {
-	if (NeedPop)
+	if (mNeedPop)
 	{
 		state->GetRenderer()->PopState();
-		NeedPop = false;
+		mNeedPop = false;
 	}
 }
 
@@ -27,16 +27,16 @@ bool RenderingCustomizer::PreDraw(TravState* state)
 {
 	if (!ParentClassType::PreDraw(state)) return false;
 
-	if (OverrideCullMode != -1)
+	if (mOverrideCullMode != -1)
 	{
-		LastCullMode = state->OverrideCullMode;
-		state->OverrideCullMode = OverrideCullMode;
+		mLastCullMode = state->mOverrideCullMode;
+		state->mOverrideCullMode = mOverrideCullMode;
 	}
 
-	if (OverrideDepthTest != -1)
+	if (mOverrideDepthTest != -1)
 	{
 		SaveState(state);
-		state->GetRenderer()->SetDepthTestMode(OverrideDepthTest);
+		state->GetRenderer()->SetDepthTestMode(mOverrideDepthTest);
 	}
 	return true;
 }
@@ -45,10 +45,10 @@ bool RenderingCustomizer::PostDraw(TravState* state)
 {
 	if (!ParentClassType::PostDraw(state)) return false;
 
-	if (LastCullMode != -1)
+	if (mLastCullMode != -1)
 	{
-		state->OverrideCullMode = LastCullMode;
-		LastCullMode = -1;
+		state->mOverrideCullMode = mLastCullMode;
+		mLastCullMode = -1;
 	}
 	RestoreState(state);
 	return true;

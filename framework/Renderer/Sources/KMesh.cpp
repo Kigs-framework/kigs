@@ -19,25 +19,25 @@ IMPLEMENT_CLASS_INFO(Mesh)
  *	Constructor
  */
 Mesh::Mesh(const kstl::string& name,CLASS_NAME_TREE_ARG) : HDrawable(name,PASS_CLASS_NAME_TREE_ARG)
-, myVertexNeedUpdate(*this,false,LABEL_AND_ID(VertexNeedUpdate),false)
-, myColorNeedUpdate(*this,false,LABEL_AND_ID(ColorNeedUpdate),false)
-, myTexCoordNeedUpdate(*this,false,LABEL_AND_ID(TexCoordNeedUpdate),false)
-, myNormalNeedUpdate(*this,false,LABEL_AND_ID(NormalNeedUpdate),false)
-, myShareMaterial(*this,false,LABEL_AND_ID(ShareMaterial),true)
+, mVertexNeedUpdate(*this,false,LABEL_AND_ID(VertexNeedUpdate),false)
+, mColorNeedUpdate(*this,false,LABEL_AND_ID(ColorNeedUpdate),false)
+, mTexCoordNeedUpdate(*this,false,LABEL_AND_ID(TexCoordNeedUpdate),false)
+, mNormalNeedUpdate(*this,false,LABEL_AND_ID(NormalNeedUpdate),false)
+, mShareMaterial(*this,false,LABEL_AND_ID(ShareMaterial),true)
 #if _DEBUG
-, myShowVertex(*this,false,LABEL_AND_ID(ShowVertex),false)
+, mShowVertex(*this,false,LABEL_AND_ID(ShowVertex),false)
 #endif
-, myWireMode(*this,false,LABEL_AND_ID(WireMode),false)
-, myFileName(*this, true, LABEL_AND_ID(FileName))
-, myDynamicInit(*this, false, LABEL_AND_ID(DynamicInit), false)
+, mWireMode(*this,false,LABEL_AND_ID(WireMode),false)
+, mFileName(*this, true, LABEL_AND_ID(FileName))
+, mDynamicInit(*this, false, LABEL_AND_ID(DynamicInit), false)
 {
-	VertexArray = 0;
-	NormalArray = 0;
-	ColorArray = 0;
-	TexArray = 0;
+	mVertexArray = 0;
+	mNormalArray = 0;
+	mColorArray = 0;
+	mTexArray = 0;
 
-  myBoundingBox.m_Min.Set(KFLOAT_CONST(0.0f),KFLOAT_CONST(0.0f),KFLOAT_CONST(0.0f));
-  myBoundingBox.m_Max.Set(KFLOAT_CONST(-1.0f),KFLOAT_CONST(-1.0f),KFLOAT_CONST(-1.0f));
+  mBoundingBox.m_Min.Set(KFLOAT_CONST(0.0f),KFLOAT_CONST(0.0f),KFLOAT_CONST(0.0f));
+  mBoundingBox.m_Max.Set(KFLOAT_CONST(-1.0f),KFLOAT_CONST(-1.0f),KFLOAT_CONST(-1.0f));
 }
 
 /*
@@ -45,19 +45,19 @@ Mesh::Mesh(const kstl::string& name,CLASS_NAME_TREE_ARG) : HDrawable(name,PASS_C
  */
 Mesh::~Mesh()
 {
-	if (VertexArray) 
-		delete[](VertexArray);
-	VertexArray = NULL;
-	if (NormalArray) 
-		delete[](NormalArray);
-	NormalArray = NULL;
+	if (mVertexArray) 
+		delete[](mVertexArray);
+	mVertexArray = NULL;
+	if (mNormalArray) 
+		delete[](mNormalArray);
+	mNormalArray = NULL;
 
-	if (TexArray) 
-		delete[](TexArray);
-	TexArray = NULL;
-	if (ColorArray) 
-		delete[](ColorArray);
-	ColorArray = NULL;
+	if (mTexArray) 
+		delete[](mTexArray);
+	mTexArray = NULL;
+	if (mColorArray) 
+		delete[](mColorArray);
+	mColorArray = NULL;
 }
 
 #ifdef WIN32
@@ -69,9 +69,9 @@ void Mesh::ExportMeshTo(kstl::string _pathDirectory, kstl::string _fileName)
 #endif
 MeshItemGroup::~MeshItemGroup()
 {
-	if(myFirstTriangle)
+	if(mFirstTriangle)
 	{
-		delete[] ((Mesh::Triangle*)myFirstTriangle);
+		delete[] ((Mesh::Triangle*)mFirstTriangle);
 	}
 }
 
@@ -80,16 +80,16 @@ void	Mesh::InitModifiable()
 	HDrawable::InitModifiable();
 	if(_isInit)
 	{
-		if (!myDynamicInit)
+		if (!mDynamicInit)
 		{
 			auto& pathManager = KigsCore::Singleton<FilePathManager>();
 
 			kstl::string fullfilename;
-			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(myFileName);
+			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(mFileName);
 			if (fullfilenamehandle)
 			{
 				fullfilename = fullfilenamehandle->mFullFileName;
-				kstl::string	extension=myFileName;
+				kstl::string	extension=mFileName;
 
 				extension=extension.substr(extension.rfind("."));
 
@@ -117,7 +117,7 @@ void	Mesh::InitModifiable()
 
 					if(loader.ImportFile(this,fullfilename)!=0)
 					{
-						KIGS_WARNING("Can not open mesh file :"+myFileName.const_ref(),2);
+						KIGS_WARNING("Can not open mesh file :"+mFileName.const_ref(),2);
 						UninitModifiable();
 					}
 					else
@@ -131,7 +131,7 @@ void	Mesh::InitModifiable()
 					STLMeshLoader	loader;
 					if(loader.ImportFile(this,fullfilename)!=0)
 					{
-						KIGS_WARNING("Can not open mesh file :"+myFileName.const_ref(),2);
+						KIGS_WARNING("Can not open mesh file :"+mFileName.const_ref(),2);
 						UninitModifiable();
 					}
 					else
@@ -143,7 +143,7 @@ void	Mesh::InitModifiable()
 			}
 			else
 			{
-				KIGS_WARNING("Can not open mesh file :"+(kstl::string&)myFileName,2); 
+				KIGS_WARNING("Can not open mesh file :"+(kstl::string&)mFileName,2); 
 				UninitModifiable();
 			}
 		}
@@ -159,9 +159,9 @@ void	Mesh::InitModifiable()
 
 void  Mesh::InitBoundingBox()
 {
-	if((_isInit)&&(VertexCount))
+	if((_isInit)&&(mVertexCount))
 	{
-		myBoundingBox.Init(VertexArray,(int)VertexCount);
+		mBoundingBox.Init(mVertexArray,(int)mVertexCount);
 	}
 }
 
@@ -227,7 +227,7 @@ void Mesh::OneNormalTriangleStruct::Load(BufferedFile* currentfile)
 
 int Mesh::getVertexCount()
 {
-	return (int)VertexCount;
+	return (int)mVertexCount;
 }
 
 int Mesh::getTriangleCount()
@@ -239,7 +239,7 @@ int Mesh::getTriangleCount()
 	{
 		if((*it).mItem->isSubType(MeshItemGroup::mClassID))
 		{
-			Count += ((SP<MeshItemGroup>&)(*it).mItem)->myTriangleCount;
+			Count += ((SP<MeshItemGroup>&)(*it).mItem)->mTriangleCount;
 		}
 	}
 	return Count;
@@ -247,38 +247,38 @@ int Mesh::getTriangleCount()
 
 bool Mesh::getVertex(unsigned int index, Point3D &Pt)
 {
-	if (index>=VertexCount) return false;
-	Pt = VertexArray[index];
+	if (index>=mVertexCount) return false;
+	Pt = mVertexArray[index];
 	return true;
 }
 
 void Mesh::SetVertex(unsigned int index, const Point3D &v)
 {
-	KIGS_ASSERT(index<VertexCount);
-	VertexArray[index] = v;
-	myVertexNeedUpdate = true;
+	KIGS_ASSERT(index<mVertexCount);
+	mVertexArray[index] = v;
+	mVertexNeedUpdate = true;
 }
 
 
 void Mesh::SetColor(unsigned int index, const Vector4D &v)
 {
-	KIGS_ASSERT(index<ColorCount);
-	ColorArray[index]=v;
-	myColorNeedUpdate=true;	
+	KIGS_ASSERT(index<mColorCount);
+	mColorArray[index]=v;
+	mColorNeedUpdate=true;	
 }
 
 void Mesh::SetNormal(unsigned int index, const Vector3D &v)
 {
-	KIGS_ASSERT(index<NormalCount);
-	NormalArray[index]=v;
-	myNormalNeedUpdate=true;
+	KIGS_ASSERT(index<mNormalCount);
+	mNormalArray[index]=v;
+	mNormalNeedUpdate=true;
 }
 
 void Mesh::SetTexCoord(unsigned int index, const TexCoord &v)
 {
-	KIGS_ASSERT(index<TexCoordCount);
-	TexArray[index]=v;
-	myTexCoordNeedUpdate=true;
+	KIGS_ASSERT(index<mTexCoordCount);
+	mTexArray[index]=v;
+	mTexCoordNeedUpdate=true;
 		
 }
 
@@ -293,13 +293,13 @@ bool Mesh::getTriangle(int index, int &a, int &b, int &c)
 	{
 		if((*it).mItem->isSubType(MeshItemGroup::mClassID))
 		{
-			if(index>=((SP<MeshItemGroup>&)(*it).mItem)->myTriangleCount)
+			if(index>=((SP<MeshItemGroup>&)(*it).mItem)->mTriangleCount)
 			{
-				index-=((SP<MeshItemGroup>&)(*it).mItem)->myTriangleCount;
+				index-=((SP<MeshItemGroup>&)(*it).mItem)->mTriangleCount;
 			}
 			else
 			{
-				Tr = (Mesh::Triangle *)(((char*)((SP<MeshItemGroup>&)(*it).mItem)->myFirstTriangle) + ((SP<MeshItemGroup>&)(*it).mItem)->myTriangleSize*index);
+				Tr = (Mesh::Triangle *)(((char*)((SP<MeshItemGroup>&)(*it).mItem)->mFirstTriangle) + ((SP<MeshItemGroup>&)(*it).mItem)->mTriangleSize*index);
 				break;
 			}
 			if(index<0)
@@ -326,14 +326,14 @@ bool Mesh::CopyVertexAndTriangle(int &VCount, int &TCount, Point3D *&VArray, int
 
 	TCount = getTriangleCount();
 
-	if (VertexCount==0 || TCount==0) 
+	if (mVertexCount==0 || TCount==0) 
 	{
 		return false;
 	}
 
-	VCount = (int)VertexCount;
+	VCount = (int)mVertexCount;
 	VArray = new Point3D[VCount];
-	memcpy(VArray,VertexArray,VCount*sizeof(Point3D));
+	memcpy(VArray,mVertexArray,VCount*sizeof(Point3D));
 
 	IndexArray = new int[TCount*3];
 
@@ -344,11 +344,11 @@ bool Mesh::CopyVertexAndTriangle(int &VCount, int &TCount, Point3D *&VArray, int
 	{
 		if((*it).mItem->isSubType(MeshItemGroup::mClassID))
 		{
-			Mesh::Triangle *Tr=(Mesh::Triangle *)(((SP<MeshItemGroup>&)(*it).mItem)->myFirstTriangle) ;
+			Mesh::Triangle *Tr=(Mesh::Triangle *)(((SP<MeshItemGroup>&)(*it).mItem)->mFirstTriangle) ;
 
-			int	sizeoftriangle=(((SP<MeshItemGroup>&)(*it).mItem)->myTriangleSize);
+			int	sizeoftriangle=(((SP<MeshItemGroup>&)(*it).mItem)->mTriangleSize);
 
-			for (j=0;j<(((SP<MeshItemGroup>&)(*it).mItem)->myTriangleCount);j++)
+			for (j=0;j<(((SP<MeshItemGroup>&)(*it).mItem)->mTriangleCount);j++)
 			{
 				Mesh::Triangle* CurrentT=(Mesh::Triangle*)((unsigned char*)Tr+sizeoftriangle*j);
 
@@ -367,13 +367,13 @@ void	Mesh::DoPreDraw(TravState* state)
 {
 	
 
-	if(myVertexNeedUpdate||myColorNeedUpdate||myTexCoordNeedUpdate||myNormalNeedUpdate)
+	if(mVertexNeedUpdate||mColorNeedUpdate||mTexCoordNeedUpdate||mNormalNeedUpdate)
 	{
 		UpdateMesh();
-		myColorNeedUpdate=false;
-		myNormalNeedUpdate=false;
-		myTexCoordNeedUpdate=false;
-		myVertexNeedUpdate=false;
+		mColorNeedUpdate=false;
+		mNormalNeedUpdate=false;
+		mTexCoordNeedUpdate=false;
+		mVertexNeedUpdate=false;
 	}
 
 	HDrawable::DoPreDraw(state);
@@ -402,9 +402,9 @@ bool	Mesh::GetVertexPointer(CoreModifiable* sender,kstl::vector<CoreModifiableAt
 	{
 		if(buffersize)
 		{
-			buffersize->setValue((int)VertexCount);
+			buffersize->setValue((int)mVertexCount);
 		}
-		result->setValue((u64)VertexArray);
+		result->setValue((u64)mVertexArray);
 		return true;
 	}
 
@@ -428,7 +428,7 @@ bool	Mesh::GetColorPointer(CoreModifiable* sender,kstl::vector<CoreModifiableAtt
 
 	if(result)
 	{
-		result->setValue((u64)ColorArray);
+		result->setValue((u64)mColorArray);
 		return true;
 	}
 
@@ -452,7 +452,7 @@ bool	Mesh::GetNormalPointer(CoreModifiable* sender,kstl::vector<CoreModifiableAt
 
 	if(result)
 	{
-		result->setValue((u64)NormalArray);
+		result->setValue((u64)mNormalArray);
 		return true;
 	}
 
@@ -476,7 +476,7 @@ bool	Mesh::GetTexCoordPointer(CoreModifiable* sender,kstl::vector<CoreModifiable
 
 	if(result)
 	{
-		result->setValue((u64)TexArray);
+		result->setValue((u64)mTexArray);
 		return true;
 	}
 
@@ -491,12 +491,12 @@ void	Mesh::RecomputeNormals()
 	Vector3D na,nb,nc;
 	unsigned int i;
 
-	if(NormalCount == 0)
+	if(mNormalCount == 0)
 	{
 		return;
 	}
 	
-	memset(NormalArray,0,NormalCount*sizeof(Vector3D));
+	memset(mNormalArray,0,mNormalCount*sizeof(Vector3D));
 	
 	kstl::vector<ModifiableItemStruct>::const_iterator it;
 
@@ -506,41 +506,41 @@ void	Mesh::RecomputeNormals()
 		{
 			SP<MeshItemGroup>& currentGroup= ((SP<MeshItemGroup>&)(*it).mItem);
 
-			if( ((unsigned int)currentGroup->myTriangleType) & 1 ) // check if smooth triangle
+			if( ((unsigned int)currentGroup->mTriangleType) & 1 ) // check if smooth triangle
 			{
-				Mesh::S_Triangle *Tr=(Mesh::S_Triangle *)currentGroup->myFirstTriangle;
+				Mesh::S_Triangle *Tr=(Mesh::S_Triangle *)currentGroup->mFirstTriangle;
 			
-				for(i=0;i<(unsigned int)currentGroup->myTriangleCount;i++)
+				for(i=0;i<(unsigned int)currentGroup->mTriangleCount;i++)
 				{
-					Tr->NormalAngle(VertexArray,na,nb,nc);
+					Tr->NormalAngle(mVertexArray,na,nb,nc);
 
-					NormalArray[Tr->Na]+=na;
-					NormalArray[Tr->Nb]+=nb;
-					NormalArray[Tr->Nc]+=nc;
+					mNormalArray[Tr->Na]+=na;
+					mNormalArray[Tr->Nb]+=nb;
+					mNormalArray[Tr->Nc]+=nc;
 
-					Tr=(Mesh::S_Triangle *)(((unsigned char*)Tr)+currentGroup->myTriangleSize);
+					Tr=(Mesh::S_Triangle *)(((unsigned char*)Tr)+currentGroup->mTriangleSize);
 				}
 			}
 			else // flat triangle
 			{
-				Mesh::F_Triangle *Tr=(Mesh::F_Triangle *)currentGroup->myFirstTriangle;
+				Mesh::F_Triangle *Tr=(Mesh::F_Triangle *)currentGroup->mFirstTriangle;
 			
-				for (i = 0; i<(unsigned int)currentGroup->myTriangleCount; i++)
+				for (i = 0; i<(unsigned int)currentGroup->mTriangleCount; i++)
 				{
-					Tr->Normal(VertexArray,na);
+					Tr->Normal(mVertexArray,na);
 
-					NormalArray[Tr->N]=-na;
+					mNormalArray[Tr->N]=-na;
 					
-					Tr=(Mesh::F_Triangle *)(((unsigned char*)Tr)+currentGroup->myTriangleSize);
+					Tr=(Mesh::F_Triangle *)(((unsigned char*)Tr)+currentGroup->mTriangleSize);
 				}
 			}
 		}
 	}
 
 	// then normalize all again
-	for(i=0;i<NormalCount;i++)
+	for(i=0;i<mNormalCount;i++)
 	{
-		NormalArray[i].Normalize();
+		mNormalArray[i].Normalize();
 	}
 
 }
@@ -551,12 +551,12 @@ void	Mesh::RecomputeNormalsFast()
 	Vector3D na;
 	int i;
 
-	if(NormalCount == 0)
+	if(mNormalCount == 0)
 	{
 		return;
 	}
 	
-	memset(NormalArray,0,NormalCount*sizeof(Vector3D));
+	memset(mNormalArray,0,mNormalCount*sizeof(Vector3D));
 	
 	kstl::vector<ModifiableItemStruct>::const_iterator it;
 
@@ -566,40 +566,40 @@ void	Mesh::RecomputeNormalsFast()
 		{
 			SP<MeshItemGroup>& currentGroup= ((SP<MeshItemGroup>&)(*it).mItem);
 
-			if( ((unsigned int)currentGroup->myTriangleType) & 1 ) // check if smooth triangle
+			if( ((unsigned int)currentGroup->mTriangleType) & 1 ) // check if smooth triangle
 			{
-				Mesh::S_Triangle *Tr=(Mesh::S_Triangle *)currentGroup->myFirstTriangle;
+				Mesh::S_Triangle *Tr=(Mesh::S_Triangle *)currentGroup->mFirstTriangle;
 			
-				for(i=0;i<currentGroup->myTriangleCount;i++)
+				for(i=0;i<currentGroup->mTriangleCount;i++)
 				{
-					Tr->Normal(VertexArray,na);
+					Tr->Normal(mVertexArray,na);
 
-					NormalArray[Tr->Na]-=na;
-					NormalArray[Tr->Nb]-=na;
-					NormalArray[Tr->Nc]-=na;
+					mNormalArray[Tr->Na]-=na;
+					mNormalArray[Tr->Nb]-=na;
+					mNormalArray[Tr->Nc]-=na;
 
-					Tr=(Mesh::S_Triangle *)(((unsigned char*)Tr)+currentGroup->myTriangleSize);
+					Tr=(Mesh::S_Triangle *)(((unsigned char*)Tr)+currentGroup->mTriangleSize);
 				}
 			}
 			else // flat triangle
 			{
-				Mesh::F_Triangle *Tr=(Mesh::F_Triangle *)currentGroup->myFirstTriangle;
+				Mesh::F_Triangle *Tr=(Mesh::F_Triangle *)currentGroup->mFirstTriangle;
 			
-				for(i=0;i<currentGroup->myTriangleCount;i++)
+				for(i=0;i<currentGroup->mTriangleCount;i++)
 				{
-					Tr->Normal(VertexArray,na);
+					Tr->Normal(mVertexArray,na);
 
-					NormalArray[Tr->N]-=na;
+					mNormalArray[Tr->N]-=na;
 					
-					Tr=(Mesh::F_Triangle *)(((unsigned char*)Tr)+currentGroup->myTriangleSize);
+					Tr=(Mesh::F_Triangle *)(((unsigned char*)Tr)+currentGroup->mTriangleSize);
 				}
 			}
 		}
 	}
 
 	// then normalize all again
-	for (i = 0; i<(int)NormalCount; i++)
+	for (i = 0; i<(int)mNormalCount; i++)
 	{
-		NormalArray[i].Normalize();
+		mNormalArray[i].Normalize();
 	}
 }

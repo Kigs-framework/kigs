@@ -21,62 +21,62 @@ void OpenGLMaterial::InitModifiable()
 
 	if (IsInit())
 	{
-		uniDiffuseColor = KigsCore::GetInstanceOf("uniformColor", "API3DUniformFloat4");
-		uniDiffuseColor->setValue("Name", "MaterialDiffuseColor");
-		uniDiffuseColor->setArrayValue("Value", myDiffuseColor[0], myDiffuseColor[1], myDiffuseColor[2], myDiffuseColor[3]);
-		uniDiffuseColor->Init();
-		addItem((CMSP&)uniDiffuseColor);
+		mUniDiffuseColor = KigsCore::GetInstanceOf("uniformColor", "API3DUniformFloat4");
+		mUniDiffuseColor->setValue("Name", "MaterialDiffuseColor");
+		mUniDiffuseColor->setArrayValue("Value", mDiffuseColor[0], mDiffuseColor[1], mDiffuseColor[2], mDiffuseColor[3]);
+		mUniDiffuseColor->Init();
+		addItem((CMSP&)mUniDiffuseColor);
 
-		uniSpecularColor = KigsCore::GetInstanceOf("uniSpecularColor", "API3DUniformFloat4");
-		uniSpecularColor->setValue("Name", "MaterialSpecularColor");
-		uniSpecularColor->setArrayValue("Value", mySpecularColor[0], mySpecularColor[1], mySpecularColor[2], mySpecularColor[3]);
-		uniSpecularColor->Init();
-		addItem((CMSP&)uniSpecularColor);
+		mUniSpecularColor = KigsCore::GetInstanceOf("uniSpecularColor", "API3DUniformFloat4");
+		mUniSpecularColor->setValue("Name", "MaterialSpecularColor");
+		mUniSpecularColor->setArrayValue("Value", mSpecularColor[0], mSpecularColor[1], mSpecularColor[2], mSpecularColor[3]);
+		mUniSpecularColor->Init();
+		addItem((CMSP&)mUniSpecularColor);
 
-		uniShininess = KigsCore::GetInstanceOf("shininessUniform", "API3DUniformFloat");
-		uniShininess->setValue("Name", "MaterialShininess");
-		uniShininess->setValue("Value", myShininess);
-		uniShininess->Init();
-		addItem((CMSP&)uniShininess);
+		mUniShininess = KigsCore::GetInstanceOf("shininessUniform", "API3DUniformFloat");
+		mUniShininess->setValue("Name", "MaterialShininess");
+		mUniShininess->setValue("Value", mShininess);
+		mUniShininess->Init();
+		addItem((CMSP&)mUniShininess);
 
-		uniAmbiantColor = KigsCore::GetInstanceOf("uniAmbiantColor", "API3DUniformFloat4");
-		uniAmbiantColor->setValue("Name", "MaterialAmbiantColor");
-		uniAmbiantColor->setArrayValue("Value", myAmbientColor[0], myAmbientColor[1], myAmbientColor[2], myAmbientColor[3]);
-		uniAmbiantColor->Init();
-		addItem((CMSP&)uniAmbiantColor);
+		mUniAmbiantColor = KigsCore::GetInstanceOf("uniAmbiantColor", "API3DUniformFloat4");
+		mUniAmbiantColor->setValue("Name", "MaterialAmbiantColor");
+		mUniAmbiantColor->setArrayValue("Value", mAmbientColor[0], mAmbientColor[1], mAmbientColor[2], mAmbientColor[3]);
+		mUniAmbiantColor->Init();
+		addItem((CMSP&)mUniAmbiantColor);
 
 #ifdef KIGS_TOOLS
-		uniDiffuseColor->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
-		uniSpecularColor->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
-		uniShininess->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
-		uniAmbiantColor->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
+		mUniDiffuseColor->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
+		mUniSpecularColor->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
+		mUniShininess->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
+		mUniAmbiantColor->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
 #endif
 
-		myDiffuseColor.changeNotificationLevel(Owner);
-		myAmbientColor.changeNotificationLevel(Owner);
-		myShininess.changeNotificationLevel(Owner);
-		mySpecularColor.changeNotificationLevel(Owner);
+		mDiffuseColor.changeNotificationLevel(Owner);
+		mAmbientColor.changeNotificationLevel(Owner);
+		mShininess.changeNotificationLevel(Owner);
+		mSpecularColor.changeNotificationLevel(Owner);
 	}
 }
 
 void OpenGLMaterial::NotifyUpdate(unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
-	if (labelid == myDiffuseColor.getID())
+	if (labelid == mDiffuseColor.getID())
 	{
-		uniDiffuseColor->setArrayValue("Value", myDiffuseColor[0], myDiffuseColor[1], myDiffuseColor[2], myDiffuseColor[3]);
+		mUniDiffuseColor->setArrayValue("Value", mDiffuseColor[0], mDiffuseColor[1], mDiffuseColor[2], mDiffuseColor[3]);
 	}
-	else if (labelid == myAmbientColor.getID())
+	else if (labelid == mAmbientColor.getID())
 	{
-		uniAmbiantColor->setArrayValue("Value", myAmbientColor[0], myAmbientColor[1], myAmbientColor[2], myAmbientColor[3]);
+		mUniAmbiantColor->setArrayValue("Value", mAmbientColor[0], mAmbientColor[1], mAmbientColor[2], mAmbientColor[3]);
 	}
-	else if (labelid == myShininess.getID())
+	else if (labelid == mShininess.getID())
 	{
-		uniShininess->setValue("Value", myShininess);
+		mUniShininess->setValue("Value", mShininess);
 	}
-	else if (labelid == mySpecularColor.getID())
+	else if (labelid == mSpecularColor.getID())
 	{
-		uniSpecularColor->setArrayValue("Value", mySpecularColor[0], mySpecularColor[1], mySpecularColor[2], mySpecularColor[3]);
+		mUniSpecularColor->setArrayValue("Value", mSpecularColor[0], mSpecularColor[1], mSpecularColor[2], mSpecularColor[3]);
 	}
 }
 
@@ -86,21 +86,21 @@ bool	OpenGLMaterial::PreDraw(TravState* travstate)
 	{
 		RendererOpenGL* renderer = (RendererOpenGL*)travstate->GetRenderer();
 		renderer->SetColorMaterial(RENDERER_FRONT_AND_BACK, RENDERER_AMBIENT_AND_DIFFUSE);			
-		renderer->SetColorMaterialMode(myMaterialColorEnabled);
+		renderer->SetColorMaterialMode(mMaterialColorEnabled);
 
-		/*if (myDiffuseColor[3] != 1.0 || m_IsTransparent)
+		/*if (mDiffuseColor[3] != 1.0 || m_IsTransparent)
 		{
 			renderer->SetDepthMaskMode(RENDERER_DEPTH_MASK_OFF);
 		}*/
 
-		if (myBlendEnabled || (myDiffuseColor[3] < 1.0f))// || m_IsTransparent)
+		if (mBlendEnabled || (mDiffuseColor[3] < 1.0f))// || m_IsTransparent)
 		{
 			RendererBlendFuncMode sourceType;
 			RendererBlendFuncMode destType;
 
-			if (myBlendEnabled)
+			if (mBlendEnabled)
 			{
-				switch ((int)myBlendFuncSource)
+				switch ((int)mBlendFuncSource)
 				{
 				case	S_ZERO:
 				{
@@ -151,7 +151,7 @@ bool	OpenGLMaterial::PreDraw(TravState* travstate)
 				//	KIGS_ERROR("Blend Enabled but no source func defined", 3);
 				}
 
-				switch ((int)myBlendFuncDest)
+				switch ((int)mBlendFuncDest)
 				{
 				case	D_ZERO:
 				{

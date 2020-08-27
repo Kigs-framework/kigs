@@ -20,7 +20,7 @@ note: respect spacing!
 
 <image>filename.png</image> insert an inline image in the text
 
-<item>UIButton:mybutton</item> insert an inline uiitem in the text. MUST BE a son of the UIDynamicText
+<item>UIButton:button</item> insert an inline uiitem in the text. MUST BE a son of the UIDynamicText
 
 <align xxx/> every image or item after this tag will be aligned according to xxx :
 	center halfchar
@@ -31,7 +31,7 @@ note: respect spacing!
 
 <link>UIItem:Test@TestMethod</link>...<link/>
 
-<marker>CoreModifiable:myCM@MyMethod</marker> calls myCM->MyMethod(this, IterationState& state)
+<marker>CoreModifiable:CM@MyMethod</marker> calls CM->MyMethod(this, IterationState& state)
 
 */
 

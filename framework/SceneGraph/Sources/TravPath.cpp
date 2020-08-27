@@ -5,8 +5,8 @@
 
 TravPath::TravPath()
 {
-	myNeedPop=0;
-	myCurrentPathIndex=0;
+	mNeedPop=0;
+	mCurrentPathIndex=0;
 }
 
         
@@ -16,29 +16,29 @@ TravPath::~TravPath() {}
 
 TravPath::PathNeed	TravPath::ComputeNeeds(kstl::vector<int>& currentway)
 {
-	if(myNeedPop)
+	if(mNeedPop)
 	{
-		myNeedPop--;
+		mNeedPop--;
 		return pop;
 	}
 
-	if(myPath.size()-myCurrentPathIndex)
+	if(mPath.size()-mCurrentPathIndex)
 	{
 
-		if(currentway.size() < myPath[myCurrentPathIndex].myWay.size())
+		if(currentway.size() < mPath[mCurrentPathIndex].mWay.size())
 		{
 			return push;
 		}
 		
-		if(currentway.size() > myPath[myCurrentPathIndex].myWay.size())
+		if(currentway.size() > mPath[mCurrentPathIndex].mWay.size())
 		{
 			return pop;
 		}
 
-		if (currentway.size() == 0 && myPath[myCurrentPathIndex].myWay.size() == 0)
+		if (currentway.size() == 0 && mPath[mCurrentPathIndex].mWay.size() == 0)
 			return stay;
 
-		if(currentway[currentway.size()-1] == myPath[myCurrentPathIndex].myWay[myPath[myCurrentPathIndex].myWay.size()-1])
+		if(currentway[currentway.size()-1] == mPath[mCurrentPathIndex].mWay[mPath[mCurrentPathIndex].mWay.size()-1])
 		{
 			return stay;
 		}
@@ -50,14 +50,14 @@ TravPath::PathNeed	TravPath::ComputeNeeds(kstl::vector<int>& currentway)
 
 bool TravPath::IsNeedSameLevel(const kstl::vector<int>& currentway)
 {
-	if(myNeedPop)
+	if(mNeedPop)
 	{
 		return false;
 	}
 
-	if(myPath.size()-myCurrentPathIndex)
+	if(mPath.size()-mCurrentPathIndex)
 	{
-		if(currentway.size() < myPath[myCurrentPathIndex].myWay.size())
+		if(currentway.size() < mPath[mCurrentPathIndex].mWay.size())
 		{
 			return true;
 		}
@@ -69,22 +69,22 @@ bool TravPath::IsNeedSameLevel(const kstl::vector<int>& currentway)
 
 void TravPath::PopWay(kstl::vector<int>& currentway)
 {
-//	myPath.erase(myPath.begin());
-	myCurrentPathIndex++;
+//	mPath.erase(mPath.begin());
+	mCurrentPathIndex++;
 
-	myNeedPop=(int)currentway.size();
+	mNeedPop=(int)currentway.size();
 
-	if(myPath.size()-myCurrentPathIndex)
+	if(mPath.size()-mCurrentPathIndex)
 	{
 		int commun=0;
 		int i;
-		for(i=0;i<(int)myPath[myCurrentPathIndex].myWay.size();i++)
+		for(i=0;i<(int)mPath[mCurrentPathIndex].mWay.size();i++)
 		{
 			if(i>=(int)currentway.size())
 			{
 				break;
 			}
-			else if(myPath[myCurrentPathIndex].myWay[(unsigned int)i] != currentway[(unsigned int)i])
+			else if(mPath[mCurrentPathIndex].mWay[(unsigned int)i] != currentway[(unsigned int)i])
 			{
 				break;
 			}
@@ -93,18 +93,18 @@ void TravPath::PopWay(kstl::vector<int>& currentway)
 				commun++;
 			}
 		}
-		myNeedPop-=commun;
+		mNeedPop-=commun;
 
 	}
 /*	
-	if(myNeedPop == 0)
+	if(mNeedPop == 0)
 	{
-		if(myPath[myCurrentPathIndex].myWay.size() > currentway.size())
+		if(mPath[mCurrentPathIndex].mWay.size() > currentway.size())
 		{
 			return 1;
 		}
 	}
 
-	return myNeedPop;*/
+	return mNeedPop;*/
 }
 

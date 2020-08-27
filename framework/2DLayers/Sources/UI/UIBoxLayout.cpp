@@ -132,7 +132,6 @@ void UIBoxLayout::RecomputeLayout()
 		if (mVertical)
 		{
 			if (mResizeLayoutX && mSizeModeX == 0)
-				//if (mySizeX == 0)
 			{
 				mRealSize.x = biggest;
 				if (mSizeX != biggest)

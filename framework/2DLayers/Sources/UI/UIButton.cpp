@@ -111,7 +111,7 @@ static void SendButtonNotifications(const kstl::string& actions, CoreModifiable*
 
 bool UIButton::isAlpha(float X, float Y)
 {
-	//Try to get my mask
+	//Try to get mask
 	if (!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
@@ -127,7 +127,7 @@ bool UIButton::isAlpha(float X, float Y)
 
 	if (mAlphaMask)
 	{
-		//Check on my mask the specified location
+		//Check on mask the specified location
 		return !mAlphaMask->CheckTo(X, Y);
 	}
 
@@ -162,9 +162,9 @@ bool UIButton::ManageClickTouchEvent(ClickEvent& click_event)
 	{
 		if (!EmitSignal(Signals::ClickUp, this, (usString)mParameter.const_ref())) // if no one connected send classic message
 		{
-			kstl::vector<CoreModifiableAttribute*> mySendParams;
-			mySendParams.push_back(&mParameter);
-			SendButtonNotifications(mClickUpAction, this, mySendParams);
+			kstl::vector<CoreModifiableAttribute*> sendParams;
+			sendParams.push_back(&mParameter);
+			SendButtonNotifications(mClickUpAction, this, sendParams);
 		}
 		*click_event.swallow_mask |= (1 << InputEventType::Click);
 	}
@@ -200,9 +200,9 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 			if (mUseHoverColor) setValue("Color", (v3f)mHoverColor), setValue("Opacity", mHoverColor[3]);
 			if(!EmitSignal(Signals::MouseOver, this, (usString)mParameter.const_ref())) // if no one connected send classic message
 			{
-				kstl::vector<CoreModifiableAttribute*> mySendParams;
-				mySendParams.push_back(&mParameter);
-				SendButtonNotifications(mMouseOverAction, this, mySendParams);
+				kstl::vector<CoreModifiableAttribute*> sendParams;
+				sendParams.push_back(&mParameter);
+				SendButtonNotifications(mMouseOverAction, this, sendParams);
 			}
 			mIsMouseOver = true;
 			break;
@@ -210,9 +210,9 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 			if (mUseHoverColor)setValue("Color", (v3f)mClickedColor), setValue("Opacity", mClickedColor[3]);
 			if(!EmitSignal(Signals::ClickDown, this, (usString)mParameter.const_ref())) // if no one connected send classic message
 			{
-				kstl::vector<CoreModifiableAttribute*> mySendParams;
-				mySendParams.push_back(&mParameter);
-				SendButtonNotifications(mClickDownAction, this, mySendParams);
+				kstl::vector<CoreModifiableAttribute*> sendParams;
+				sendParams.push_back(&mParameter);
+				SendButtonNotifications(mClickDownAction, this, sendParams);
 			}
 			mIsDown = true;
 			break;
@@ -252,9 +252,9 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 			if (mUseHoverColor) setValue("Color", (v3f)mIdleColor), setValue("Opacity", mIdleColor[3]);
 			if(!EmitSignal(Signals::MouseOut, this, (usString)mParameter.const_ref())) // if no one connected send classic message
 			{
-				kstl::vector<CoreModifiableAttribute*> mySendParams;
-				mySendParams.push_back(&mParameter);
-				SendButtonNotifications(mMouseOutAction, this, mySendParams);
+				kstl::vector<CoreModifiableAttribute*> sendParams;
+				sendParams.push_back(&mParameter);
+				SendButtonNotifications(mMouseOutAction, this, sendParams);
 			}
 		}
 		else

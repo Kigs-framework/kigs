@@ -126,8 +126,8 @@ bool UIScrollView::Draw(TravState* state)
 
 	renderer->getFirstRenderingScreen()->GetSize(screenW, screenH);
 
-	UIItem* myFirstFather = (UIItem*)getFirstParent(LABEL_TO_ID(UIItem));
-	v2f fsize = myFirstFather->GetSize();
+	UIItem* firstFather = (UIItem*)getFirstParent(LABEL_TO_ID(UIItem));
+	v2f fsize = firstFather->GetSize();
 	float ratioH = screenH / fsize.y;
 	float ratioW = screenW / fsize.x;
 

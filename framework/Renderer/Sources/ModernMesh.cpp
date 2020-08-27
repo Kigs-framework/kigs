@@ -46,7 +46,7 @@ IMPLEMENT_CONSTRUCTOR(ModernMesh)
 
 ModernMesh::~ModernMesh()
 {
-	delete myCurrentMeshBuilder;
+	delete mCurrentMeshBuilder;
 }
 
 IMPLEMENT_CONSTRUCTOR(ModernMeshItemGroup)
@@ -56,19 +56,19 @@ IMPLEMENT_CONSTRUCTOR(ModernMeshItemGroup)
 
 ModernMeshItemGroup::~ModernMeshItemGroup()
 {
-	if (myVertexBuffer != -1 && myOwnedBuffer)
+	if (mVertexBuffer != -1 && mOwnedBuffer)
 	{
 		ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-		scenegraph->AddDefferedItem((void*)myVertexBuffer, DefferedAction::DESTROY_BUFFER);
-		scenegraph->AddDefferedItem((void*)myIndexBuffer, DefferedAction::DESTROY_BUFFER);
+		scenegraph->AddDefferedItem((void*)mVertexBuffer, DefferedAction::DESTROY_BUFFER);
+		scenegraph->AddDefferedItem((void*)mIndexBuffer, DefferedAction::DESTROY_BUFFER);
 	}
 }
 
 SP<ModernMesh> ModernMesh::CreateClonedMesh(const std::string& name, bool reuse_materials)
 {
 	SP<ModernMesh> mesh = KigsCore::GetInstanceOf(name, "ModernMesh");
-	mesh->myBoundingBox = myBoundingBox;
-	mesh->myWasBuild = true;
+	mesh->mBoundingBox = mBoundingBox;
+	mesh->mWasBuild = true;
 	mesh->Init();
 	for (auto& it : getItems())
 	{
@@ -92,22 +92,22 @@ SP<ModernMesh> ModernMesh::CreateClonedMesh(const std::string& name, bool reuse_
 
 void ModernMeshItemGroup::SetupClonedMesh(ModernMeshItemGroup* cloned_from)
 {
-	myTriangleCount = cloned_from->myTriangleCount;
-	myVertexCount = cloned_from->myVertexCount;
-	myVertexSize = cloned_from->myVertexSize;
-	myCullMode = cloned_from->myCullMode;
-	myTexCoordsScale = cloned_from->myTexCoordsScale;
+	mTriangleCount = cloned_from->mTriangleCount;
+	mVertexCount = cloned_from->mVertexCount;
+	mVertexSize = cloned_from->mVertexSize;
+	mCullMode = cloned_from->mCullMode;
+	mTexCoordsScale = cloned_from->mTexCoordsScale;
 	mBoundaries = cloned_from->mBoundaries;
 	mBoundariesMask = cloned_from->mBoundariesMask;
-	myVertexArrayMask = cloned_from->myVertexArrayMask;
+	mVertexArrayMask = cloned_from->mVertexArrayMask;
 	mInstanced = cloned_from->mInstanced;
 	mNoLight = cloned_from->mNoLight;
-	myVertexDesc = cloned_from->myVertexDesc;
+	mVertexDesc = cloned_from->mVertexDesc;
 
-	myVertexBuffer = cloned_from->myVertexBuffer;
-	myIndexBuffer = cloned_from->myIndexBuffer;
-	myIndexType = cloned_from->myIndexType;
-	myOwnedBuffer = false;
+	mVertexBuffer = cloned_from->mVertexBuffer;
+	mIndexBuffer = cloned_from->mIndexBuffer;
+	mIndexType = cloned_from->mIndexType;
+	mOwnedBuffer = false;
 
 }
 
@@ -122,10 +122,10 @@ void ModernMesh::InitModifiable()
 		{
 			RemoveDynamicAttribute("IsCreatedFromExport");
 		}
-		else if ((!myWasBuild) && (myFileName.const_ref() != ""))
+		else if ((!mWasBuild) && (mFileName.const_ref() != ""))
 		{
 			auto& pathManager = KigsCore::Singleton<FilePathManager>();
-			auto filename = myFileName.const_ref();
+			auto filename = mFileName.const_ref();
 
 			/*if (filename.substr(filename.size() - 4) == ".xml" || filename.substr(filename.size() - 5) == ".kxml")
 			{
@@ -138,7 +138,7 @@ void ModernMesh::InitModifiable()
 			else*/
 			{
 				std::string fullfilename;
-				SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(myFileName.const_ref());
+				SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(mFileName.const_ref());
 				if (fullfilenamehandle)
 				{
 					fullfilename = fullfilenamehandle->mFullFileName;
@@ -150,7 +150,7 @@ void ModernMesh::InitModifiable()
 				}
 			}
 		}
-		else if (!myWasBuild)
+		else if (!mWasBuild)
 		{
 			initOk = false;
 		}
@@ -196,75 +196,75 @@ void ModernMesh::InitBoundingBox()
 			if ((*it).mItem->isSubType(ModernMeshItemGroup::mClassID))
 			{
 				SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).mItem;
-				if (current->myVertexCount)
+				if (current->mVertexCount)
 				{
-					unsigned char* vertexStart = (unsigned char*)current->myVertexBufferArray.buffer();
+					unsigned char* vertexStart = (unsigned char*)current->mVertexBufferArray.buffer();
 					
 					Point3D*	currentVertex = (Point3D*)vertexStart;
 					int i;
 
 					if (first)
 					{
-						myBoundingBox.Init(*currentVertex);
+						mBoundingBox.Init(*currentVertex);
 						first = false;
 					}
 					
-					for (i = 0; i < current->myVertexCount; i++)
+					for (i = 0; i < current->mVertexCount; i++)
 					{
 						
-						myBoundingBox.Update(*currentVertex);
+						mBoundingBox.Update(*currentVertex);
 					
-						vertexStart += current->myVertexSize;
+						vertexStart += current->mVertexSize;
 						currentVertex = (Point3D*)vertexStart;
 					}
 				}
 			}
 		}
-		//myBoundingBox.Init(VertexArray,(int)VertexCount);
+		//mBoundingBox.Init(VertexArray,(int)VertexCount);
 	}
 }
 
 void ModernMesh::StartMeshBuilder()
 {
-	if (myCurrentMeshBuilder)
+	if (mCurrentMeshBuilder)
 	{
 		KIGS_ERROR("StartMeshBuilder called but already mesh builder already existing\n", 1);
 		return;
 	}
-	myCurrentMeshBuilder = new ModernMeshBuilder();
+	mCurrentMeshBuilder = new ModernMeshBuilder();
 
 }
 
 void ModernMesh::StartMeshGroup(CoreVector* description, int hintVertexBufferSize, int hintTriangleBufferSize)
 {
-	if (myCurrentMeshBuilder)
+	if (mCurrentMeshBuilder)
 	{
-		myCurrentMeshBuilder->StartGroup(description, hintVertexBufferSize, hintTriangleBufferSize);
+		mCurrentMeshBuilder->StartGroup(description, hintVertexBufferSize, hintTriangleBufferSize);
 	}
 }
 
 void ModernMesh::AddTriangle(void* v1, void* v2, void* v3)
 {
-	if (myCurrentMeshBuilder)
+	if (mCurrentMeshBuilder)
 	{
-		myCurrentMeshBuilder->AddTriangle(v1, v2, v3);
+		mCurrentMeshBuilder->AddTriangle(v1, v2, v3);
 	}
 }
 
 void ModernMesh::PlaceMergeBarrier()
 {
-	if (myCurrentMeshBuilder)
+	if (mCurrentMeshBuilder)
 	{
-		myCurrentMeshBuilder->PlaceMergeBarrier();
+		mCurrentMeshBuilder->PlaceMergeBarrier();
 	}
 }
 
 SP<ModernMeshItemGroup>	ModernMesh::EndMeshGroup()
 {
 	SP<ModernMeshItemGroup> createdGroup(nullptr);
-	if (myCurrentMeshBuilder)
+	if (mCurrentMeshBuilder)
 	{
-		createdGroup = myCurrentMeshBuilder->EndGroup((bool)myOptimize);
+		createdGroup = mCurrentMeshBuilder->EndGroup((bool)mOptimize);
 		if (createdGroup)
 		{
 			addItem((CMSP&)createdGroup);
@@ -276,9 +276,9 @@ SP<ModernMeshItemGroup>	ModernMesh::EndMeshGroup()
 SP<ModernMeshItemGroup>	ModernMesh::EndMeshGroup(void * vertex, int vertexCount, void * index, int indexCount)
 {
 	SP<ModernMeshItemGroup> createdGroup(nullptr);
-	if (myCurrentMeshBuilder)
+	if (mCurrentMeshBuilder)
 	{
-		createdGroup = myCurrentMeshBuilder->EndGroup(vertex, vertexCount, index, indexCount);
+		createdGroup = mCurrentMeshBuilder->EndGroup(vertex, vertexCount, index, indexCount);
 		if (createdGroup)
 		{
 			addItem((CMSP&)createdGroup);
@@ -290,9 +290,9 @@ SP<ModernMeshItemGroup>	ModernMesh::EndMeshGroup(void * vertex, int vertexCount,
 SP<ModernMeshItemGroup> ModernMesh::EndMeshGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset)
 {
 	SP<ModernMeshItemGroup> createdGroup(nullptr);
-	if (myCurrentMeshBuilder)
+	if (mCurrentMeshBuilder)
 	{
-		createdGroup = myCurrentMeshBuilder->EndGroup(vertex_count, vertices, normals, colors, texCoords, face_count, faces, offset);
+		createdGroup = mCurrentMeshBuilder->EndGroup(vertex_count, vertices, normals, colors, texCoords, face_count, faces, offset);
 		if (createdGroup)
 		{
 			addItem((CMSP&)createdGroup);
@@ -303,11 +303,11 @@ SP<ModernMeshItemGroup> ModernMesh::EndMeshGroup(int vertex_count, v3f* vertices
 
 void ModernMesh::EndMeshBuilder()
 {
-	if (myCurrentMeshBuilder)
+	if (mCurrentMeshBuilder)
 	{
-		myWasBuild = true;
-		delete myCurrentMeshBuilder;
-		myCurrentMeshBuilder = 0;
+		mWasBuild = true;
+		delete mCurrentMeshBuilder;
+		mCurrentMeshBuilder = 0;
 	}
 	else
 	{
@@ -323,7 +323,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 {
 #ifdef WIN32
 	HDrawable::PrepareExport(settings);
-	if (myFileName.const_ref().empty())
+	if (mFileName.const_ref().empty())
 	{
 		AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "IsCreatedFromExport");
 		setValue("IsCreatedFromExport", true);
@@ -411,7 +411,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 // called after the object was exported (remove dynamics added before export)
 void ModernMesh::EndExport(ExportSettings* settings)
 {
-	if (myFileName.const_ref().empty())
+	if (mFileName.const_ref().empty())
 	{
 		RemoveDynamicAttribute("IsCreatedFromExport");
 	}
@@ -428,14 +428,14 @@ void ModernMeshItemGroup::ImportFromCData(const std::string& imported)
 		std::string	buff = imported.substr(4, imported.size() - 4);
 		unsigned int readSize;
 		unsigned char* rawbuf = AsciiParserUtils::StringToBuffer(buff, readSize);
-		myVertexBufferArray.SetBuffer(rawbuf, readSize);
+		mVertexBufferArray.SetBuffer(rawbuf, readSize);
 	}
 	else if (head == "tris")
 	{
 		std::string	buff = imported.substr(4, imported.size() - 4);
 		unsigned int readSize;
 		unsigned char* rawbuf = AsciiParserUtils::StringToBuffer(buff, readSize);
-		myTriangleBuffer.SetBuffer(rawbuf, readSize);
+		mTriangleBuffer.SetBuffer(rawbuf, readSize);
 	}
 }
 #ifdef KIGS_TOOLS
@@ -445,23 +445,23 @@ void ModernMeshItemGroup::PrepareExport(ExportSettings* settings)
 	settings->PushID(getFirstParent("ModernMesh")->getName());
 
 	CoreItemSP	desc(nullptr);
-	if (myVertexDesc.size())
+	if (mVertexDesc.size())
 	{
 
 		desc = CoreItemSP(new CoreMap<std::string>(), StealRefTag{});
 
-		auto s1 = myVertexBufferArray.const_ref()->size();
-		auto s2 = myVertexCount * myVertexSize;
+		auto s1 = mVertexBufferArray.const_ref()->size();
+		auto s2 = mVertexCount * mVertexSize;
 		KIGS_ASSERT(s1 == s2);
 		
 		//add general parameters
-		desc->set("TriangleCount",CoreItemSP::getCoreValue((int)myTriangleCount));
-		desc->set("VertexCount",CoreItemSP::getCoreValue((int)myVertexCount));
-		desc->set("VertexSize",CoreItemSP::getCoreValue((int)myVertexSize));
-		desc->set("VertexArrayMask",CoreItemSP::getCoreValue((int)myVertexArrayMask));
+		desc->set("TriangleCount",CoreItemSP::getCoreValue((int)mTriangleCount));
+		desc->set("VertexCount",CoreItemSP::getCoreValue((int)mVertexCount));
+		desc->set("VertexSize",CoreItemSP::getCoreValue((int)mVertexSize));
+		desc->set("VertexArrayMask",CoreItemSP::getCoreValue((int)mVertexArrayMask));
 
-		std::vector<ModernMesh::VertexElem>::iterator itstart = myVertexDesc.begin();
-		std::vector<ModernMesh::VertexElem>::iterator itend = myVertexDesc.end();
+		std::vector<ModernMesh::VertexElem>::iterator itstart = mVertexDesc.begin();
+		std::vector<ModernMesh::VertexElem>::iterator itend = mVertexDesc.end();
 
 		while (itstart != itend)
 		{
@@ -476,7 +476,7 @@ void ModernMeshItemGroup::PrepareExport(ExportSettings* settings)
 			++itstart;
 		}
 
-		desc->set("TexCoordsScale",CoreItemSP::getCoreValue((float)myTexCoordsScale));
+		desc->set("TexCoordsScale",CoreItemSP::getCoreValue((float)mTexCoordsScale));
 	}
 
 	if (!desc.isNil())
@@ -535,35 +535,35 @@ void ModernMeshItemGroup::InitModifiable()
 	if (getValue("VertexDescription", (CoreItem*&)itdesc))
 	{
 		CoreMap<std::string>*	desc = (CoreMap<std::string>*)itdesc;
-		myVertexDesc.clear();
+		mVertexDesc.clear();
 		CoreItemSP val = desc->GetItem("TriangleCount");
 		if (!val.isNil())
 		{
-			myTriangleCount = val;
+			mTriangleCount = val;
 		}
 
 		val = desc->GetItem("VertexCount");
 		if (!val.isNil())
 		{
-			myVertexCount = val;
+			mVertexCount = val;
 		}
 
 		val = desc->GetItem("VertexSize");
 		if (!val.isNil())
 		{
-			myVertexSize = val;
+			mVertexSize = val;
 		}
 
 		val = desc->GetItem("VertexArrayMask");
 		if (!val.isNil())
 		{
-			myVertexArrayMask = val;
+			mVertexArrayMask = val;
 		}
 
 		val = desc->GetItem("TexCoordsScale");
 		if (!val.isNil())
 		{
-			myTexCoordsScale = (float)val;
+			mTexCoordsScale = (float)val;
 		}
 
 		auto params = desc->GetItem("vertices");
@@ -577,7 +577,7 @@ void ModernMeshItemGroup::InitModifiable()
 			toAdd.mask = params[2];
 			toAdd.elemCount = params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::Position3D;
-			myVertexDesc.push_back(toAdd);
+			mVertexDesc.push_back(toAdd);
 		}
 
 		params = desc->GetItem("colors");
@@ -590,7 +590,7 @@ void ModernMeshItemGroup::InitModifiable()
 			toAdd.mask = params[2];
 			toAdd.elemCount = params[3];
 			toAdd.type = toAdd.elemCount == 3 ? ModernMesh::VertexElem::Type::ColorRGB : ModernMesh::VertexElem::Type::ColorRGBA;
-			myVertexDesc.push_back(toAdd);
+			mVertexDesc.push_back(toAdd);
 		}
 
 		params = desc->GetItem("texCoords");
@@ -603,7 +603,7 @@ void ModernMeshItemGroup::InitModifiable()
 			toAdd.mask = params[2];
 			toAdd.elemCount = params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::TextureCoordinate2D;
-			myVertexDesc.push_back(toAdd);
+			mVertexDesc.push_back(toAdd);
 		}
 
 		params = desc->GetItem("normals");
@@ -616,7 +616,7 @@ void ModernMeshItemGroup::InitModifiable()
 			toAdd.mask = params[2];
 			toAdd.elemCount = params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::Normal3D;
-			myVertexDesc.push_back(toAdd);
+			mVertexDesc.push_back(toAdd);
 
 		}
 
@@ -630,7 +630,7 @@ void ModernMeshItemGroup::InitModifiable()
 			toAdd.mask = params[2];
 			toAdd.elemCount = params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::Tangent3D;
-			myVertexDesc.push_back(toAdd);
+			mVertexDesc.push_back(toAdd);
 
 		}
 
@@ -644,7 +644,7 @@ void ModernMeshItemGroup::InitModifiable()
 			toAdd.mask = params[2];
 			toAdd.elemCount = params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::BoneWeights;
-			myVertexDesc.push_back(toAdd);
+			mVertexDesc.push_back(toAdd);
 
 		}
 
@@ -658,7 +658,7 @@ void ModernMeshItemGroup::InitModifiable()
 			toAdd.mask = params[2];
 			toAdd.elemCount = params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::BoneIndexes;
-			myVertexDesc.push_back(toAdd);
+			mVertexDesc.push_back(toAdd);
 
 		}
 
@@ -769,8 +769,8 @@ void ModernMesh::GetTriangles(int & VCount, float *& VArray, int & ICount, void 
 		std::vector<ModernMeshItemGroup*>::iterator end = list.end();
 		for (; itr != end; ++itr)
 		{
-			ICount += (*itr)->myTriangleCount * 3;
-			VCount += (*itr)->myVertexCount;
+			ICount += (*itr)->mTriangleCount * 3;
+			VCount += (*itr)->mVertexCount;
 
 			KIGS_ASSERT((*itr)->mCanFreeBuffers != 2);
 		}
@@ -810,13 +810,13 @@ void ModernMesh::GetTriangles(int & VCount, float *& VArray, int & ICount, void 
 #ifdef _DEBUG
 			KIGS_ASSERT((*itr)->mCanFreeBuffers != 2);
 #endif
-			vertexData = reinterpret_cast<char*>((*itr)->myVertexBufferArray.buffer());
+			vertexData = reinterpret_cast<char*>((*itr)->mVertexBufferArray.buffer());
 
-			vOffset = (*itr)->myVertexSize;
+			vOffset = (*itr)->mVertexSize;
 
 			//look for vertex desc
-			ditr = (*itr)->myVertexDesc.begin();
-			dend = (*itr)->myVertexDesc.end();
+			ditr = (*itr)->mVertexDesc.begin();
+			dend = (*itr)->mVertexDesc.end();
 			for (; ditr != dend; ++ditr)
 			{
 				if ((*ditr).mask == ModuleRenderer::VERTEX_ARRAY_MASK)
@@ -828,7 +828,7 @@ void ModernMesh::GetTriangles(int & VCount, float *& VArray, int & ICount, void 
 			}
 
 			char * Vreader = vertexData;
-			for (int i = 0; i < (*itr)->myVertexCount; i++)
+			for (int i = 0; i < (*itr)->mVertexCount; i++)
 			{
 				memcpy(Vwriter, Vreader + vStart, vSize);
 				Vwriter += 3;
@@ -840,8 +840,8 @@ void ModernMesh::GetTriangles(int & VCount, float *& VArray, int & ICount, void 
 			{
 			
 				u16 * Iwriter = (u16*)GlobalIwriter;
-				u16 * IReader = reinterpret_cast<u16*>((*itr)->myTriangleBuffer.buffer());
-				for (int i = 0; i < (*itr)->myTriangleCount * 3; i++)
+				u16 * IReader = reinterpret_cast<u16*>((*itr)->mTriangleBuffer.buffer());
+				for (int i = 0; i < (*itr)->mTriangleCount * 3; i++)
 				{
 					(*Iwriter++) = (*IReader++) + cIndex;
 				}
@@ -851,11 +851,11 @@ void ModernMesh::GetTriangles(int & VCount, float *& VArray, int & ICount, void 
 			else
 			{
 				// check each group
-				if ((*itr)->myVertexCount < 65536)
+				if ((*itr)->mVertexCount < 65536)
 				{
 					u16 * Iwriter = (u16*)GlobalIwriter;
-					u16 * IReader = reinterpret_cast<u16*>((*itr)->myTriangleBuffer.buffer());
-					for (int i = 0; i < (*itr)->myTriangleCount * 3; i++)
+					u16 * IReader = reinterpret_cast<u16*>((*itr)->mTriangleBuffer.buffer());
+					for (int i = 0; i < (*itr)->mTriangleCount * 3; i++)
 					{
 						(*Iwriter++) = (*IReader++) + cIndex;
 					}
@@ -865,8 +865,8 @@ void ModernMesh::GetTriangles(int & VCount, float *& VArray, int & ICount, void 
 				else
 				{
 					u32 * Iwriter = (u32*)GlobalIwriter;
-					u32 * IReader = reinterpret_cast<u32*>((*itr)->myTriangleBuffer.buffer());
-					for (int i = 0; i < (*itr)->myTriangleCount * 3; i++)
+					u32 * IReader = reinterpret_cast<u32*>((*itr)->mTriangleBuffer.buffer());
+					for (int i = 0; i < (*itr)->mTriangleCount * 3; i++)
 					{
 						(*Iwriter++) = (*IReader++) + cIndex;
 					}
@@ -874,7 +874,7 @@ void ModernMesh::GetTriangles(int & VCount, float *& VArray, int & ICount, void 
 					GlobalIwriter = (u8*)Iwriter;
 				}
 			}
-			cIndex += (*itr)->myVertexCount;
+			cIndex += (*itr)->mVertexCount;
 		}
 	}
 }
@@ -904,7 +904,7 @@ void ModernMesh::GetVertex(int & VCount, float *& VArray)
 		std::vector<ModernMeshItemGroup*>::iterator end = list.end();
 		for (; itr != end; ++itr)
 		{
-			VCount += (*itr)->myTriangleCount * 3;
+			VCount += (*itr)->mTriangleCount * 3;
 		}
 	}
 
@@ -929,13 +929,13 @@ void ModernMesh::GetVertex(int & VCount, float *& VArray)
 		std::vector<ModernMeshItemGroup*>::iterator end = list.end();
 		for (; itr != end; ++itr)
 		{
-			VReader = reinterpret_cast<char*>((*itr)->myVertexBufferArray.buffer());
+			VReader = reinterpret_cast<char*>((*itr)->mVertexBufferArray.buffer());
 
-			vOffset = (*itr)->myVertexSize;
+			vOffset = (*itr)->mVertexSize;
 
 			//look for vertex desc
-			ditr = (*itr)->myVertexDesc.begin();
-			dend = (*itr)->myVertexDesc.end();
+			ditr = (*itr)->mVertexDesc.begin();
+			dend = (*itr)->mVertexDesc.end();
 			for (; ditr != dend; ++ditr)
 			{
 				if ((*ditr).mask == ModuleRenderer::VERTEX_ARRAY_MASK)
@@ -948,11 +948,11 @@ void ModernMesh::GetVertex(int & VCount, float *& VArray)
 
 			// fill VArray
 			//int indexSize = 4;
-			if ((*itr)->myVertexCount < 65536)
+			if ((*itr)->mVertexCount < 65536)
 			{
 				char * vertexData;
-				u16 * IReader = reinterpret_cast<u16*>((*itr)->myTriangleBuffer.buffer());
-				for (int i = 0; i < (*itr)->myTriangleCount * 3; i++)
+				u16 * IReader = reinterpret_cast<u16*>((*itr)->mTriangleBuffer.buffer());
+				for (int i = 0; i < (*itr)->mTriangleCount * 3; i++)
 				{
 					vertexData = VReader + (vOffset*IReader[0]);
 					memcpy(Vwriter, vertexData + vStart, vSize);
@@ -964,8 +964,8 @@ void ModernMesh::GetVertex(int & VCount, float *& VArray)
 			else
 			{
 				char * vertexData;
-				u32 * IReader = reinterpret_cast<u32*>((*itr)->myTriangleBuffer.buffer());
-				for (int i = 0; i < (*itr)->myTriangleCount * 3; i++)
+				u32 * IReader = reinterpret_cast<u32*>((*itr)->mTriangleBuffer.buffer());
+				for (int i = 0; i < (*itr)->mTriangleCount * 3; i++)
 				{
 					vertexData = VReader + (vOffset*IReader[0]);
 					memcpy(Vwriter, vertexData + vStart, vSize);
@@ -1011,14 +1011,14 @@ void ModernMeshItemGroup::GetTangent(unsigned char* v1, unsigned char* v2, unsig
 void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 {
 	// already have tangents ?
-	if ((myVertexArrayMask & ModuleRenderer::TANGENT_ARRAY_MASK))
+	if ((mVertexArrayMask & ModuleRenderer::TANGENT_ARRAY_MASK))
 	{
 		return;
 	}
 
 	
 	// need normals and texture
-	if ((myVertexArrayMask & (ModuleRenderer::NORMAL_ARRAY_MASK | ModuleRenderer::TEXCOORD_ARRAY_MASK)) != (ModuleRenderer::NORMAL_ARRAY_MASK | ModuleRenderer::TEXCOORD_ARRAY_MASK))
+	if ((mVertexArrayMask & (ModuleRenderer::NORMAL_ARRAY_MASK | ModuleRenderer::TEXCOORD_ARRAY_MASK)) != (ModuleRenderer::NORMAL_ARRAY_MASK | ModuleRenderer::TEXCOORD_ARRAY_MASK))
 	{
 		return;
 	}
@@ -1028,8 +1028,8 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 	unsigned int	normalpos = 0;
 
 	// retreive texture coords pos and normal pos
-	std::vector<ModernMesh::VertexElem>::iterator	descit = myVertexDesc.begin();
-	std::vector<ModernMesh::VertexElem>::iterator	descitend = myVertexDesc.end();
+	std::vector<ModernMesh::VertexElem>::iterator	descit = mVertexDesc.begin();
+	std::vector<ModernMesh::VertexElem>::iterator	descitend = mVertexDesc.end();
 
 	while (descit != descitend)
 	{
@@ -1052,32 +1052,32 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 	ModernMesh::VertexElem	toAdd;
 	toAdd.name = "tangents";
 	toAdd.size = 3 * 4;						// packed on an integer
-	toAdd.startpos = myVertexSize;		// add it after current size
+	toAdd.startpos = mVertexSize;		// add it after current size
 	toAdd.inSize = 3 * 4;
 	toAdd.mask = ModuleRenderer::TANGENT_ARRAY_MASK;
 	toAdd.elemCount = 3;
-	myVertexDesc.push_back(toAdd);
+	mVertexDesc.push_back(toAdd);
 
-	myVertexArrayMask |= toAdd.mask;
-	myVertexSize += toAdd.size;
+	mVertexArrayMask |= toAdd.mask;
+	mVertexSize += toAdd.size;
 
 	// now compute tangents for each vertice
-	unsigned char* vertexStart = (unsigned char*)myVertexBufferArray.buffer();
-	unsigned int   vsize = myVertexSize - toAdd.inSize;
+	unsigned char* vertexStart = (unsigned char*)mVertexBufferArray.buffer();
+	unsigned int   vsize = mVertexSize - toAdd.inSize;
 
-	Vector3D*	tangentArray = new Vector3D[myVertexCount];
-	memset(tangentArray, 0, sizeof(Vector3D)*myVertexCount);
+	Vector3D*	tangentArray = new Vector3D[mVertexCount];
+	memset(tangentArray, 0, sizeof(Vector3D)*mVertexCount);
 
 	Vector3D sdir;
 	int i;
 	if (useTextureCoords)
 	{
-		if (myVertexCount < 65536)
+		if (mVertexCount < 65536)
 		{
-			ModernMesh::Triangle<unsigned short>*	triangles = (ModernMesh::Triangle<unsigned short>*)myTriangleBuffer.buffer();
+			ModernMesh::Triangle<unsigned short>*	triangles = (ModernMesh::Triangle<unsigned short>*)mTriangleBuffer.buffer();
 
 			// we have to use triangles to compute tangents, each vertice apart is not useful
-			for (i = 0; i < myTriangleCount; i++)
+			for (i = 0; i < mTriangleCount; i++)
 			{
 				unsigned char* v1 = vertexStart + vsize*triangles[i].indices[0];
 				unsigned char* v2 = vertexStart + vsize*triangles[i].indices[1];
@@ -1094,10 +1094,10 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 		}
 		else
 		{
-			ModernMesh::Triangle<unsigned int>*	triangles = (ModernMesh::Triangle<unsigned int>*)myTriangleBuffer.buffer();
+			ModernMesh::Triangle<unsigned int>*	triangles = (ModernMesh::Triangle<unsigned int>*)mTriangleBuffer.buffer();
 
 			// we have to use triangles to compute tangents, each vertice apart is not useful
-			for (i = 0; i < myTriangleCount; i++)
+			for (i = 0; i < mTriangleCount; i++)
 			{
 				unsigned char* v1 = vertexStart + vsize*triangles[i].indices[0];
 				unsigned char* v2 = vertexStart + vsize*triangles[i].indices[1];
@@ -1113,18 +1113,18 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 		}
 	}
 
-	unsigned char*	oldVertexArray = (unsigned char*)((const CoreRawBuffer*)myVertexBufferArray)->CopyBuffer();
+	unsigned char*	oldVertexArray = (unsigned char*)((const CoreRawBuffer*)mVertexBufferArray)->CopyBuffer();
 
 	// create new vertex buffer with good size
-	auto rawbuf = new unsigned char[myVertexCount*myVertexSize];
-	myVertexBufferArray.SetBuffer((void*)rawbuf, myVertexCount*myVertexSize);
-	memset(myVertexBufferArray.buffer(), 0, myVertexCount*myVertexSize);
+	auto rawbuf = new unsigned char[mVertexCount*mVertexSize];
+	mVertexBufferArray.SetBuffer((void*)rawbuf, mVertexCount*mVertexSize);
+	memset(mVertexBufferArray.buffer(), 0, mVertexCount*mVertexSize);
 
 	unsigned char* readVertex = oldVertexArray;
 
-	unsigned char* writeVertex = (unsigned char*)myVertexBufferArray.buffer();
+	unsigned char* writeVertex = (unsigned char*)mVertexBufferArray.buffer();
 	// encode tangents
-	for (i = 0; i < myVertexCount; i++)
+	for (i = 0; i < mVertexCount; i++)
 	{
 
 		memcpy(writeVertex, readVertex, vsize);
@@ -1169,7 +1169,7 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 		component[1] = (signed char)((t.y*255.0f) / 2.0f);
 		component[2] = (signed char)((t.z*255.0f) / 2.0f);
 
-		writeVertex += myVertexSize;
+		writeVertex += mVertexSize;
 		readVertex += vsize;
 	}
 
@@ -1185,7 +1185,7 @@ void ModernMeshItemGroup::ComputeNormals()
 {
 
 	// already have normals ?
-	if ((myVertexArrayMask & ModuleRenderer::NORMAL_ARRAY_MASK))
+	if ((mVertexArrayMask & ModuleRenderer::NORMAL_ARRAY_MASK))
 	{
 		return;
 	}
@@ -1193,29 +1193,29 @@ void ModernMeshItemGroup::ComputeNormals()
 	ModernMesh::VertexElem	toAdd;
 	toAdd.name = "normals";
 	toAdd.size = 4;						// packed on an integer
-	toAdd.startpos = myVertexSize;		// add it after current size
+	toAdd.startpos = mVertexSize;		// add it after current size
 	toAdd.inSize = 4;
 	toAdd.mask = ModuleRenderer::NORMAL_ARRAY_MASK;
 	toAdd.elemCount = 3;
-	myVertexDesc.push_back(toAdd);
+	mVertexDesc.push_back(toAdd);
 
 
-	myVertexArrayMask |= toAdd.mask;
-	myVertexSize += toAdd.size;
+	mVertexArrayMask |= toAdd.mask;
+	mVertexSize += toAdd.size;
 
 	// now compute normal for each vertice
-	unsigned char* vertexStart = (unsigned char*)myVertexBufferArray.buffer();
-	unsigned int   vsize = myVertexSize - toAdd.inSize;
+	unsigned char* vertexStart = (unsigned char*)mVertexBufferArray.buffer();
+	unsigned int   vsize = mVertexSize - toAdd.inSize;
 
-	Vector3D*	nArray = new Vector3D[myVertexCount];
-	memset(nArray, 0, sizeof(Vector3D)*myVertexCount);
+	Vector3D*	nArray = new Vector3D[mVertexCount];
+	memset(nArray, 0, sizeof(Vector3D)*mVertexCount);
 	Vector3D N;
 	
-	if (myVertexCount < 65536)
+	if (mVertexCount < 65536)
 	{
-		ModernMesh::Triangle<unsigned short>* triangles = (ModernMesh::Triangle<unsigned short>*)myTriangleBuffer.buffer();
+		ModernMesh::Triangle<unsigned short>* triangles = (ModernMesh::Triangle<unsigned short>*)mTriangleBuffer.buffer();
 		// we have to use triangles to compute normals, each vertice apart is not useful
-		for (int i = 0; i < myTriangleCount; i++)
+		for (int i = 0; i < mTriangleCount; i++)
 		{
 			Vector3D* v1 = (Vector3D*)(vertexStart + vsize*triangles[i].indices[0]);
 			Vector3D* v2 = (Vector3D*)(vertexStart + vsize*triangles[i].indices[1]);
@@ -1231,9 +1231,9 @@ void ModernMeshItemGroup::ComputeNormals()
 	}
 	else
 	{
-		ModernMesh::Triangle<unsigned int>*	triangles = (ModernMesh::Triangle<unsigned int>*)myTriangleBuffer.buffer();
+		ModernMesh::Triangle<unsigned int>*	triangles = (ModernMesh::Triangle<unsigned int>*)mTriangleBuffer.buffer();
 		// we have to use triangles to compute tangents, each vertice apart is not useful
-		for (int i = 0; i < myTriangleCount; i++)
+		for (int i = 0; i < mTriangleCount; i++)
 		{
 			Vector3D* v1 = (Vector3D*)(vertexStart + vsize*triangles[i].indices[0]);
 			Vector3D* v2 = (Vector3D*)(vertexStart + vsize*triangles[i].indices[1]);
@@ -1248,18 +1248,18 @@ void ModernMeshItemGroup::ComputeNormals()
 		}
 	}
 
-	unsigned char*	oldVertexArray = (unsigned char*)((const CoreRawBuffer*)myVertexBufferArray)->CopyBuffer();
+	unsigned char*	oldVertexArray = (unsigned char*)((const CoreRawBuffer*)mVertexBufferArray)->CopyBuffer();
 
 	// create new vertex buffer with good size
-	auto rawbuf = new unsigned char[myVertexCount*myVertexSize];
-	myVertexBufferArray.SetBuffer((void*)rawbuf, myVertexCount*myVertexSize);
+	auto rawbuf = new unsigned char[mVertexCount*mVertexSize];
+	mVertexBufferArray.SetBuffer((void*)rawbuf, mVertexCount*mVertexSize);
 	delete[] rawbuf;
-	memset(myVertexBufferArray.buffer(), 0, myVertexCount*myVertexSize);
+	memset(mVertexBufferArray.buffer(), 0, mVertexCount*mVertexSize);
 
 	unsigned char* read = oldVertexArray;
-	unsigned char* write = (unsigned char*)myVertexBufferArray.buffer();
+	unsigned char* write = (unsigned char*)mVertexBufferArray.buffer();
 
-	for (int i = 0; i < myVertexCount; i++)
+	for (int i = 0; i < mVertexCount; i++)
 	{
 		memcpy(write, read, vsize);
 
@@ -1273,7 +1273,7 @@ void ModernMeshItemGroup::ComputeNormals()
 		component[1] = (signed char)(nArray[i].y*127.5f);
 		component[2] = (signed char)(nArray[i].z*127.5f);
 
-		write += myVertexSize;
+		write += mVertexSize;
 		read += vsize;
 	}
 
@@ -1285,10 +1285,10 @@ void ModernMeshItemGroup::ComputeNormals()
 
 void ModernMeshItemGroup::ApplyScaleFactor(kfloat scaleFactor)
 {
-	unsigned char* vertexStart = (unsigned char*)myVertexBufferArray.buffer();
-	unsigned int   vsize = myVertexSize;
+	unsigned char* vertexStart = (unsigned char*)mVertexBufferArray.buffer();
+	unsigned int   vsize = mVertexSize;
 
-	for (int i = 0; i < myVertexCount; i++)
+	for (int i = 0; i < mVertexCount; i++)
 	{
 		Vector3D& v1 = (Vector3D&)*((Vector3D*)(vertexStart + vsize*i));
 		v1 *= scaleFactor;
@@ -1300,8 +1300,8 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 {
 	// TODO : check if we need to flip triangle index too
 	
-	unsigned char* vertexStart = (unsigned char*)myVertexBufferArray.buffer();
-	unsigned int   vsize = myVertexSize;
+	unsigned char* vertexStart = (unsigned char*)mVertexBufferArray.buffer();
+	unsigned int   vsize = mVertexSize;
 
 
 	Matrix3x3 flipped;
@@ -1312,7 +1312,7 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 	flipped.ZAxis[abs(axisZ) - 1] = (axisZ < 0) ? -1 : 1;
 
 	// flip vertex
-	for (int i = 0; i < myVertexCount; i++)
+	for (int i = 0; i < mVertexCount; i++)
 	{
 		Vector3D& v1 = (Vector3D&)*((Vector3D*)(vertexStart + vsize*i));
 		
@@ -1325,7 +1325,7 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 	if (normaldesc)
 	{
 		unsigned char* normalStart = vertexStart + normaldesc->inStartPos;
-		for (int i = 0; i < myVertexCount; i++)
+		for (int i = 0; i < mVertexCount; i++)
 		{
 			Vector3D& n1 = (Vector3D&)*((Vector3D*)(normalStart + vsize*i));
 
@@ -1339,7 +1339,7 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 	if (tangentdesc)
 	{
 		unsigned char* tangentStart = vertexStart + tangentdesc->inStartPos;
-		for (int i = 0; i < myVertexCount; i++)
+		for (int i = 0; i < mVertexCount; i++)
 		{
 			Vector3D& t1 = (Vector3D&)*((Vector3D*)(tangentStart + vsize*i));
 
@@ -1351,25 +1351,25 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 
 void ModernMeshItemGroup::DoFirstDrawInit()
 {
-	auto renderer = ModuleRenderer::theGlobalRenderer;
+	auto renderer = ModuleRenderer::mTheGlobalRenderer;
 
-	renderer->CreateBuffer(1, &myVertexBuffer);
-	renderer->CreateBuffer(1, &myIndexBuffer);
+	renderer->CreateBuffer(1, &mVertexBuffer);
+	renderer->CreateBuffer(1, &mIndexBuffer);
 
 	int size = 0;
-	if (myVertexCount < 65536)
+	if (mVertexCount < 65536)
 	{
-		size = sizeof(unsigned short) * 3 * myTriangleCount;
-		myIndexType = KIGS_UNSIGNED_SHORT;
+		size = sizeof(unsigned short) * 3 * mTriangleCount;
+		mIndexType = KIGS_UNSIGNED_SHORT;
 	}
 	else
 	{
-		size = sizeof(unsigned int) * 3 * myTriangleCount;
-		myIndexType = KIGS_UNSIGNED_INT;
+		size = sizeof(unsigned int) * 3 * mTriangleCount;
+		mIndexType = KIGS_UNSIGNED_INT;
 	}
 
-	renderer->BufferData(myVertexBuffer, KIGS_BUFFER_TARGET_ARRAY, myVertexSize*myVertexCount, myVertexBufferArray.buffer(), KIGS_BUFFER_USAGE_STATIC);
-	renderer->BufferData(myIndexBuffer, KIGS_BUFFER_TARGET_ELEMENT, size, myTriangleBuffer.buffer(), KIGS_BUFFER_USAGE_STATIC);
+	renderer->BufferData(mVertexBuffer, KIGS_BUFFER_TARGET_ARRAY, mVertexSize*mVertexCount, mVertexBufferArray.buffer(), KIGS_BUFFER_USAGE_STATIC);
+	renderer->BufferData(mIndexBuffer, KIGS_BUFFER_TARGET_ELEMENT, size, mTriangleBuffer.buffer(), KIGS_BUFFER_USAGE_STATIC);
 }
 
 bool ModernMeshItemGroup::PreDraw(TravState* travstate)
@@ -1377,19 +1377,19 @@ bool ModernMeshItemGroup::PreDraw(TravState* travstate)
 	if (ParentClassType::PreDraw(travstate))
 	{
 		// first init if needed
-		if (myVertexBuffer == -1)
+		if (mVertexBuffer == -1)
 			DoFirstDrawInit();
 
 		int exp = 1;
 		if (mCanFreeBuffers.compare_exchange_strong(exp, 2))
 		{
-			myTriangleBuffer = "";
-			myVertexBufferArray = "";
+			mTriangleBuffer = "";
+			mVertexBufferArray = "";
 		}
 
 		auto renderer = travstate->GetRenderer();
 
-		unsigned int render_mask = myVertexArrayMask & ~travstate->GetRenderDisableMask();
+		unsigned int render_mask = mVertexArrayMask & ~travstate->GetRenderDisableMask();
 		if (mNoLight) render_mask |= ModuleRenderer::ShaderFlags::NO_LIGHT_MASK;
 
 #ifdef KIGS_TOOLS
@@ -1419,7 +1419,7 @@ bool ModernMeshItemGroup::PreDraw(TravState* travstate)
 
 			inst.transforms.push_back(travstate->GetCurrentLocalToGlobalMatrix());
 			inst.shader_variant = render_mask;
-			inst.priority = travstate->CurrentNode ? travstate->CurrentNode->getDrawPriority() : 0;
+			inst.priority = travstate->mCurrentNode ? travstate->mCurrentNode->getDrawPriority() : 0;
 			return false;
 		}
 		else renderer->GetActiveShader()->ChooseShader(travstate, render_mask);
@@ -1453,15 +1453,15 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 
 		auto renderer = travstate->GetRenderer();
 
-		unsigned int render_mask = myVertexArrayMask & ~travstate->GetRenderDisableMask();
+		unsigned int render_mask = mVertexArrayMask & ~travstate->GetRenderDisableMask();
 
 		auto shader = renderer->GetActiveShader();
 		const Locations * locs = shader->GetLocation();
 
-		if (travstate->OverrideCullMode != -1)
-			renderer->SetCullMode((RendererCullMode)travstate->OverrideCullMode);
+		if (travstate->mOverrideCullMode != -1)
+			renderer->SetCullMode((RendererCullMode)travstate->mOverrideCullMode);
 		else
-			renderer->SetCullMode((RendererCullMode)(int)myCullMode);
+			renderer->SetCullMode((RendererCullMode)(int)mCullMode);
 
 #ifdef KIGS_TOOLS
 		auto parent = (ModernMesh*)GetParents().front();
@@ -1537,8 +1537,8 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 
 		if(!no_draw)
 		{
-			std::vector<ModernMesh::VertexElem>::iterator itbegin = myVertexDesc.begin();
-			std::vector<ModernMesh::VertexElem>::iterator itend = myVertexDesc.end();
+			std::vector<ModernMesh::VertexElem>::iterator itbegin = mVertexDesc.begin();
+			std::vector<ModernMesh::VertexElem>::iterator itend = mVertexDesc.end();
 			while (itbegin != itend)
 			{
 				ModernMesh::VertexElem& current = *itbegin;
@@ -1547,26 +1547,26 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 					switch (current.mask)
 					{
 					case ModuleRenderer::VERTEX_ARRAY_MASK:
-						renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_VERTEX_ID, current.elemCount, KIGS_FLOAT, false, myVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_VERTEX_ID, current.elemCount, KIGS_FLOAT, false, mVertexSize, (void*)current.startpos, locs);
 						break;
 					case ModuleRenderer::NORMAL_ARRAY_MASK:
-						renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_NORMAL_ID, current.elemCount, KIGS_BYTE, false, myVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_NORMAL_ID, current.elemCount, KIGS_BYTE, false, mVertexSize, (void*)current.startpos, locs);
 						break;
 					case ModuleRenderer::COLOR_ARRAY_MASK:
-						renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_COLOR_ID, current.elemCount, KIGS_UNSIGNED_BYTE, true, myVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_COLOR_ID, current.elemCount, KIGS_UNSIGNED_BYTE, true, mVertexSize, (void*)current.startpos, locs);
 						break;
 					case ModuleRenderer::TEXCOORD_ARRAY_MASK:
-						renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, current.elemCount, KIGS_FLOAT, false, myVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, current.elemCount, KIGS_FLOAT, false, mVertexSize, (void*)current.startpos, locs);
 						break;
 					case ModuleRenderer::TANGENT_ARRAY_MASK:
-						renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_TANGENT_ID, current.elemCount, KIGS_BYTE, false, myVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_TANGENT_ID, current.elemCount, KIGS_BYTE, false, mVertexSize, (void*)current.startpos, locs);
 						break;
 					case ModuleRenderer::BONE_WEIGHT_ARRAY_MASK:
 						// normalize needs to be set to true for weight to be in [0.0,1.0] GPU side 
-						renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_BONE_WEIGHT_ID, current.elemCount, KIGS_UNSIGNED_BYTE, true, myVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_BONE_WEIGHT_ID, current.elemCount, KIGS_UNSIGNED_BYTE, true, mVertexSize, (void*)current.startpos, locs);
 						break;
 					case ModuleRenderer::BONE_INDEX_ARRAY_MASK:
-						renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_BONE_INDEX_ID, current.elemCount, KIGS_UNSIGNED_BYTE, false, myVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_BONE_INDEX_ID, current.elemCount, KIGS_UNSIGNED_BYTE, false, mVertexSize, (void*)current.startpos, locs);
 						break;
 					}
 				}
@@ -1585,8 +1585,8 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 				renderer->SetVertexAttribDivisor(travstate, travstate->mInstanceBufferIndex, KIGS_VERTEX_ATTRIB_INSTANCE_MATRIX_ID + 2, 1);
 			}
 
-			renderer->SetArrayBuffer(myVertexBuffer, 0);
-			renderer->SetElementBuffer(myIndexBuffer);
+			renderer->SetArrayBuffer(mVertexBuffer, 0);
+			renderer->SetElementBuffer(mIndexBuffer);
 		
 
 			if (mBoundaries.size() > 64)
@@ -1601,7 +1601,7 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 				int count = 0;
 
 				int i = 0;
-				auto sizeofindex = myIndexType == KIGS_UNSIGNED_INT ? 4 : 2;
+				auto sizeofindex = mIndexType == KIGS_UNSIGNED_INT ? 4 : 2;
 				auto last_count = 0;
 				bool last_draw = false;
 				for (auto current_count : mBoundaries)
@@ -1612,7 +1612,7 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 					{
 						if (!current_draw)
 						{
-							renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, count - last_count, myIndexType, (void*)(sizeofindex * last_count));
+							renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, count - last_count, mIndexType, (void*)(sizeofindex * last_count));
 						}
 						else
 						{
@@ -1625,13 +1625,13 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 				}
 				if (last_draw)
 				{
-					renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, count - last_count, myIndexType, (void*)(sizeofindex * last_count));
+					renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, count - last_count, mIndexType, (void*)(sizeofindex * last_count));
 				}
 			}
 			else
 			{
-				if (instanced) renderer->DrawElementsInstanced(travstate, KIGS_DRAW_MODE_TRIANGLES, myTriangleCount * 3, myIndexType, nullptr, travstate->mInstanceCount);
-				else renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, myTriangleCount * 3, myIndexType);
+				if (instanced) renderer->DrawElementsInstanced(travstate, KIGS_DRAW_MODE_TRIANGLES, mTriangleCount * 3, mIndexType, nullptr, travstate->mInstanceCount);
+				else renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, mTriangleCount * 3, mIndexType);
 			}
 		}
 
@@ -1659,8 +1659,8 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 DEFINE_METHOD(ModernMeshItemGroup, ResetContext)
 {
 	// force creation of buffers
-	myVertexBuffer = -1;
-	myIndexBuffer = -1;
+	mVertexBuffer = -1;
+	mIndexBuffer = -1;
 
 	return false;
 }

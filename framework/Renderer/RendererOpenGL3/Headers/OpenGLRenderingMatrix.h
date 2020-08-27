@@ -3,6 +3,16 @@
 
 #include "RendererMatrix.h"
 
+// ****************************************
+// * OpenGLRenderingMatrix class
+// * --------------------------------------
+/**
+ * \file	OpenGLRenderingMatrix.h
+ * \class	OpenGLRenderingMatrix
+ * \ingroup Renderer
+ * \brief	OpenGL implementation of RendererMatrix.
+ */
+ // ****************************************
 class OpenGLRenderingMatrix : public RendererMatrix
 {
 public:        

@@ -15,7 +15,6 @@ UILayout::UILayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 
 bool UILayout::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	//myNeedRecompute = true;
 	bool ret = UIDrawableItem::addItem(item, pos PASS_LINK_NAME(linkName));
 	NeedRecomputeLayout();
 	return ret;
@@ -23,7 +22,6 @@ bool UILayout::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 
 bool UILayout::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
-	//myNeedRecompute = true;
 	bool ret = UIDrawableItem::removeItem(item PASS_LINK_NAME(linkName));
 	NeedRecomputeLayout();
 	return ret;

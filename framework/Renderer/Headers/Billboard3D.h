@@ -8,52 +8,19 @@
 #include "SmartPointer.h"
 #include "SpriteSheetTexture.h"
 
+
 // ****************************************
 // * Billboard3D class
 // * --------------------------------------
 /**
  * \file	Billboard3D.h
  * \class	Billboard3D
- * \ingroup RendererDrawable
- * \ingroup Drawable
- * \brief	Billoard3D object
- * \author	ukn
- * \version ukn
- * \date	ukn
- * 
- * <dl class="dependency"><dt><b>Dependency:</b></dt><dd>ModuleRenderer</dd></dl>
- * <dl class="exemple"><dt><b>Exemple:</b></dt><dd>
- * <span class="comment"> Manage texture file : </span><br>
- * <span class="code">
- * theFileManager=new ModuleFileManager(<i>instance_name</i>);<br>
- * theFileManager->Init(KigsCore::Instance(),0);<br>
- * theFileManager->AddToPath(<i>directory_path</i>,"tga"); <span class="comment"> //manage .tga file </span><br>
- * </span>
- * <span class="comment"> Load the module :</span><br>
- * <span class="code">
- * theRenderer=new ModuleRenderer(<i>instance_name</i>);<br>
- * theRenderer->Init(KigsCore::Instance(),0);<br>
- * </span>
- * <span class="comment"> Create the object :</span><br>
- * <span class="code">
- * CoreModifiable* Billboard3DObject=(CoreModifiable*)(KigsCore::GetInstanceOf(<i>instance_name</i>,"Billboard3D"));<br>
- * </span>
- * <span class="comment"> Initialization :</span><br>
- * <span class="code">
- * Billboard3DObject->setValue(LABEL_TO_ID(TextureFileName),<i>texture_file_name.tga</i>);<br>
- * Billboard3DObject->Init();<br>
- * </span>
- * </dd></dl>
+ * \ingroup Renderer
+ * \brief	Billboard ( front facing camera texture ) object.
  *
- * <dl class="exported"><dt><b>Exported parameters :</b></dt><dd>
- * <table>
- * <tr><td>string</td><td><strong>TextureFileName</strong> :</td><td>File name of the texture</td></tr>	
- * </table>
- * </dd></dl>
+ * Obsolete
  */
-
-
-// ****************************************
+ // ****************************************
 class Billboard3D : public Drawable
 {
 public:
@@ -136,7 +103,7 @@ public:
 	 * \fn 		SetFatherNode(Node3D *pNode)
 	 * \param	pNode : link to the father
 	 */
-	void SetFatherNode(Node3D *pNode) {pFatherNode=pNode;}
+	void SetFatherNode(Node3D *pNode) {mFatherNode=pNode;}
 
 	/**
 	 * \brief	getter of the size (width and height)
@@ -144,24 +111,24 @@ public:
 	 * \param	w : receive the width
 	 * \param	h : receive the height
 	 */
-	void GetSize(kfloat &w, kfloat &h) {w=m_Width;h=m_Height;}
+	void GetSize(kfloat &w, kfloat &h) {w=mWidth;h=mHeight;}
 
 	/**
 	 * \brief	getter of the position
 	 * \fn 		const Point3D& GetPosition() 
 	 * \return	the position
 	 */
-	const Point3D GetPosition() {return Point3D(m_Position[0],m_Position[1],m_Position[2]);}
+	const Point3D GetPosition() {return Point3D(mPosition[0],mPosition[1],mPosition[2]);}
 	
 	/**
 	 * \brief	getter of the father node
 	 * \fn 		Node3D *GetFatherNode()
 	 * \return	the father node
 	 */
-	Node3D *GetFatherNode() {return pFatherNode;}
+	Node3D *GetFatherNode() {return mFatherNode;}
 
-	inline void	SetCamera(Camera* a_value){myCamera = a_value;}
-	inline bool	Get_AnimationFinished() const {return m_bAnimationFinished;}
+	inline void	SetCamera(Camera* a_value){mCamera = a_value;}
+	inline bool	Get_AnimationFinished() const {return mAnimationFinished;}
 
 	void Update(const Timer& _timer, void* addParam) override;
 protected:
@@ -215,59 +182,59 @@ protected:
 	bool Draw(TravState*) override;
 
 	//! file name of the texture
-	maString m_TextureFileName;
+	maString mTextureFileName;
 	//! Pointer to a Texture... If ==NULL, Billboard should belong to a Billboard Group
-	SP<Texture> m_Tex;
+	SP<Texture> mTex;
 	//! Center of BillBoard
-	maVect3DF m_Position;
+	maVect3DF mPosition;
 	//! Size = Width,Height
-	maFloat m_Width;
+	maFloat mWidth;
 	//! Size = Width,Height
-	maFloat m_Height;
+	maFloat mHeight;
 	//!Texture coordinate 
-	kfloat m_u1;
+	kfloat mU1;
 	//!Texture coordinate 
-	kfloat m_v1;
+	kfloat mV1;
 	//!Texture coordinate 
-	kfloat m_u2;
+	kfloat mU2;
 	//!Texture coordinate 
-	kfloat m_v2;
+	kfloat mV2;
 	//! Color
-	kfloat m_Color[4];
+	kfloat mColor[4];
 	//! Used To make the billboard Facing the Camera... Updated with UpdateOrientation
-	Vector3D m_HorizontalVector;
+	Vector3D mHorizontalVector;
 	//! Used To make the billboard Facing the Camera... Updated with UpdateOrientation
-	Vector3D m_VerticalVector;
+	Vector3D mVerticalVector;
 	//! Used When Billboard Belongs to a BillboardGroup
-	kfloat m_DistanceToCamera;
+	kfloat mDistanceToCamera;
 	//! link to the father node
-	Node3D *pFatherNode;
+	Node3D *mFatherNode;
 	//! reference to Camera
-	Camera*			myCamera;
+	Camera*			mCamera;
 	//! BillBoard Anchor point
-	maVect2DF			myAnchor;
+	maVect2DF			mAnchor;
 
 	//----------------------------------SPRITE SHEET TEXTURE-----------------------------------//
 	//! Animation name
-	maString	m_CurrentAnimation;
+	maString	mCurrentAnimation;
 	//! Frame per second playing per the spritesheet texture
-	maUInt		m_FramePerSecond;
+	maUInt		mFramePerSecond;
 	//! item is enable?
-	maBool		m_IsEnabled;
+	maBool		mIsEnabled;
 	//! this item use a spritesheet texture
-	maBool		m_IsSpriteSheet;
+	maBool		mIsSpriteSheet;
 	//! ratio between scene unit and pixel unit
-	maFloat				m_ratio;
+	maFloat				mRatio;
 
 	//! Spritesheet texture
-	SP<SpriteSheetTexture>	myTexture;
-	int					m_CurrentFrame;
-	float				m_AnimationSpeed;
-	double				m_dElpasedTime;
-	unsigned int		m_FrameNumber;
-	maBool				m_bLoopAnimation;
-	maBool				m_bReverse;
-	bool				m_bAnimationFinished;
+	SP<SpriteSheetTexture>	mTexture;
+	int					mCurrentFrame;
+	float				mAnimationSpeed;
+	double				mElpasedTime;
+	unsigned int		mFrameNumber;
+	maBool				mLoopAnimation;
+	maBool				mReverse;
+	bool				mAnimationFinished;
 };
 
 #endif

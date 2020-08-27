@@ -4,7 +4,16 @@
 #include "Texture.h"
 
 struct OpenGLTexturePlatformImpl;
-
+// ****************************************
+// * OpenGLTexture class
+// * --------------------------------------
+/**
+ * \file	OpenGLTexture.h
+ * \class	OpenGLTexture
+ * \ingroup Renderer
+ * \brief	OpenGL implementation of Texture.
+ */
+ // ****************************************
 class OpenGLTexture : public Texture
 {
 public:
@@ -15,7 +24,7 @@ public:
 	bool	PreDraw(TravState*) override;
 	bool	PostDraw(TravState* travstate) override;
 
-	unsigned int	GetGLID() { return myTextureGLIndex; }
+	unsigned int	GetGLID() { return mTextureGLIndex; }
 
 	
 protected:
@@ -44,17 +53,17 @@ protected:
 	void	SetPixels(unsigned int* _array, int Width, int Height)override;
 #endif
 
-	unsigned int  myTextureGLIndex;
+	unsigned int  mTextureGLIndex;
 	
-	bool myCanReuseBuffer;
+	bool mCanReuseBuffer;
 
-	unsigned int	myPow2BufferSize;
-	unsigned char*	myPow2Buffer = nullptr;
+	unsigned int	mPow2BufferSize;
+	unsigned char*	mPow2Buffer = nullptr;
 
-	OpenGLTexturePlatformImpl * privatePointer;
+	OpenGLTexturePlatformImpl * mPrivatePointer;
 
 #ifdef SUPPORT_ETC_TEXTURE
-	unsigned int	myIDETCAlphaTexture;
+	unsigned int	mIDETCAlphaTexture;
 #endif
 };
 

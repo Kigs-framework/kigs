@@ -12,21 +12,30 @@ struct D3D11_SAMPLER_DESC;
 class HLSLShaderInfo : public ShaderInfo
 {
 public:
-	ID3D11DeviceChild * internalShaderStruct = nullptr;
-	ID3D11ShaderReflection* reflector = nullptr;
-	void* blob = nullptr;
+	ID3D11DeviceChild *			mInternalShaderStruct = nullptr;
+	ID3D11ShaderReflection*		mReflector = nullptr;
+	void*						mBlob = nullptr;
 	virtual ~HLSLShaderInfo();
 };
 
 class HLSLProgramInfo : public ShaderInfo
 {
 public:
-	std::unordered_map<size_t, ID3D11InputLayout*> m_layouts;
+	std::unordered_map<size_t, ID3D11InputLayout*> mLayouts;
 
 	virtual ~HLSLProgramInfo();
 };
 
-
+// ****************************************
+// * API3DShader class
+// * --------------------------------------
+/**
+ * \file	HLSLShader.h
+ * \class	API3DShader
+ * \ingroup Renderer
+ * \brief	DX11 Shader.
+ */
+ // ****************************************
 class API3DShader : public ShaderBase
 {
 public:

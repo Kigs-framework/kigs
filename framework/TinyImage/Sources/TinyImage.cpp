@@ -19,11 +19,11 @@ TinyImageLoaderContext* TinyImage::mLoaderContext=&TinyImageLoaderContext::GetDe
 kstl::vector<TinyImageLoaderContext>*	TinyImage::myContextStack=0;
 
 TinyImage::TinyImage(): GenericRefCountedBaseClass()
-,myInitIsOK(false)
-,myWidth(0)
-,myHeight(0)
-, myUsedWidth(-1)
-, myUsedHeight(-1)
+,mInitIsOK(false)
+,mWidth(0)
+,mHeight(0)
+, mUsedWidth(-1)
+, mUsedHeight(-1)
 ,mPalette(0)
 ,mPaletteDataSize(0)
 ,mPixels(0)
@@ -38,9 +38,9 @@ TinyImage::TinyImage(): GenericRefCountedBaseClass()
 
 TinyImage::~TinyImage()
 {
-	if(myInitIsOK)	
+	if(mInitIsOK)	
 	{
-		myInitIsOK=false;
+		mInitIsOK=false;
 	}
 	if(mPixels)
 	{
@@ -78,10 +78,10 @@ void		TinyImage::VFlip()
 	unsigned char* l1,*l2;
 	
 	int i;
-	for(i=0;i<(myHeight/2);i++)
+	for(i=0;i<(mHeight/2);i++)
 	{
 		l1=mPixels+i*mPixelLineSize;
-		l2=mPixels+(myHeight-i-1)*mPixelLineSize;
+		l2=mPixels+(mHeight-i-1)*mPixelLineSize;
 					
 					
 		// copy l1 to buffer
@@ -125,18 +125,18 @@ void	TinyImage::ExportImage(const char* filename,void* data,int width,int height
 
 // create images from data, to export them
 TinyImage::TinyImage(void* data, int sx,int sy,TinyImage::ImageFormat internalfmt, int linesize) : GenericRefCountedBaseClass()
-, myUsedWidth(-1)
-, myUsedHeight(-1)
+, mUsedWidth(-1)
+, mUsedHeight(-1)
 {
-	myInitIsOK=false;
+	mInitIsOK=false;
 	// only a few supported formats
 	switch(internalfmt)
 	{
 		case RGBA_32_8888:	
 		{
-			myInitIsOK = true;
-			myWidth = sx;
-			myHeight = sy;
+			mInitIsOK = true;
+			mWidth = sx;
+			mHeight = sy;
 			mFormat = RGBA_32_8888;
 			mPalette = 0;
 			mPaletteDataSize = 0;
@@ -150,9 +150,9 @@ TinyImage::TinyImage(void* data, int sx,int sy,TinyImage::ImageFormat internalfm
 		break;
 		case AI88:
 		{
-			myInitIsOK = true;
-			myWidth = sx;
-			myHeight = sy;
+			mInitIsOK = true;
+			mWidth = sx;
+			mHeight = sy;
 			mFormat = AI88;
 			mPalette = 0;
 			mPaletteDataSize = 0;
@@ -165,9 +165,9 @@ TinyImage::TinyImage(void* data, int sx,int sy,TinyImage::ImageFormat internalfm
 		break;
 		case RGB_24_888:	
 		{
-			myInitIsOK = true;
-			myWidth = sx;
-			myHeight = sy;
+			mInitIsOK = true;
+			mWidth = sx;
+			mHeight = sy;
 			mFormat = RGB_24_888;
 			mPalette = 0;
 			mPaletteDataSize = 0;
@@ -180,9 +180,9 @@ TinyImage::TinyImage(void* data, int sx,int sy,TinyImage::ImageFormat internalfm
 		break;
 		case ABGR_16_1555_DIRECT_COLOR:	
 		{
-			myInitIsOK = true;
-			myWidth = sx;
-			myHeight = sy;
+			mInitIsOK = true;
+			mWidth = sx;
+			mHeight = sy;
 			mFormat = ABGR_16_1555_DIRECT_COLOR;
 			mPalette = 0;
 			mPaletteDataSize = 0;
@@ -195,9 +195,9 @@ TinyImage::TinyImage(void* data, int sx,int sy,TinyImage::ImageFormat internalfm
 		break;
 		case GREYSCALE:	
 		{
-			myInitIsOK = true;
-			myWidth = sx;
-			myHeight = sy;
+			mInitIsOK = true;
+			mWidth = sx;
+			mHeight = sy;
 			mFormat = RGB_24_888;
 			mPalette = 0;
 			mPaletteDataSize = 0;
@@ -255,7 +255,7 @@ TinyImage*	TinyImage::CreateImage(FileHandle* aFile)
 	else if (upExtension == ".DDS" || upExtension == ".DDZ" || upExtension == ".DDX")	img = new DDSClass(aFile);
 	else if (upExtension == ".ETC" || upExtension == ".ETZ" || upExtension == ".ETX")	img = new ETCClass(aFile);
 
-	if(img && img->myInitIsOK) 
+	if(img && img->mInitIsOK) 
 	{
 		if(img->isVFlipped())
 		{
@@ -325,8 +325,8 @@ bool	TinyImage::FastResize(int newsx, int newsy)
 		pixSize = -pixSize;
 	}
 
-	float ratiox = ((float)myWidth) / ((float)newsx);
-	float ratioy = ((float)myHeight) / ((float)newsy);
+	float ratiox = ((float)mWidth) / ((float)newsx);
+	float ratioy = ((float)mHeight) / ((float)newsy);
 
 	unsigned char* newdata = new unsigned char[newsx*newsy*pixSize];
 
@@ -339,7 +339,7 @@ bool	TinyImage::FastResize(int newsx, int newsy)
 		int posy =(int) (((float)j)*ratioy+0.49f);
 
 		// line read start
-		unsigned char* readData = mPixels + posy*myWidth*pixSize;
+		unsigned char* readData = mPixels + posy*mWidth*pixSize;
 
 		for (i = 0; i < newsx; i++)
 		{
@@ -355,12 +355,12 @@ bool	TinyImage::FastResize(int newsx, int newsy)
 	}
 	
 
-	myWidth = newsx;
-	myHeight = newsy;
+	mWidth = newsx;
+	mHeight = newsy;
 
 	mPixelLineSize = newsx*pixSize;
 
-	mPixelDataSize = mPixelLineSize*myHeight;
+	mPixelDataSize = mPixelLineSize*mHeight;
 
 	delete[] mPixels;
 

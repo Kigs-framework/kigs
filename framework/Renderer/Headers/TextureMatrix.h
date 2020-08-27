@@ -8,16 +8,12 @@
 // * TextureMatrix class
 // * --------------------------------------
 /**
- * \file	TextureMatrix.h
- * \class	TextureMatrix
- * \ingroup Drawable
- * \ingroup RendererDrawable
- * \brief	texture matrix class
- * \author	ukn
- * \version ukn
- * \date	ukn
- * </ul>
- */
+* \file	TextureMatrix.h
+* \class	TextureMatrix
+* \ingroup Renderer
+* \brief Texture coordinate ( U V W ) transform matrix
+*
+*/
 // ****************************************
 class TextureMatrix : public Drawable 
 {
@@ -60,7 +56,7 @@ protected:
     virtual ~TextureMatrix();  
 
 	//! link to the used matrix
-	maVect16DF	myMatrix;
+	maVect16DF	mMatrix;
 }; 
 
 #endif //_TEXTUREMATRIX_H_

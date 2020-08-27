@@ -1,7 +1,17 @@
 #pragma once
 
 #include "Drawable.h"
-
+// ****************************************
+// * TangentSpaceLOD class
+// * --------------------------------------
+/**
+* \file	TangentSpaceLOD.h
+* \class	TangentSpaceLOD
+* \ingroup Renderer
+* \brief Decide to draw or not children according to tangent space.
+*
+*/
+// ****************************************
 class TangentSpaceLOD : public Drawable
 {
 public:
@@ -19,8 +29,8 @@ private:
 	virtual bool PreDraw(TravState*) override;
 	virtual bool PostDraw(TravState*) override;
 
-	unsigned int LastRenderDisableMask = 0;
-	float LastTangentSpaceLOD = -1.0f;
+	unsigned int mLastRenderDisableMask = 0;
+	float mLastTangentSpaceLOD = -1.0f;
 
-	maBool ForceNoTangents = BASE_ATTRIBUTE(ForceNoTangents, false);
+	maBool mForceNoTangents = BASE_ATTRIBUTE(ForceNoTangents, false);
 };

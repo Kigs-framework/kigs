@@ -106,7 +106,6 @@ void UIAnimatedButton::InitModifiable()
 		{
 			if (mDefaultUpAnimation.const_ref() != "")
 			{
-				//myCurrentAnimation = (const kstl::string&)myDefaultUpAnimation;
 				mFrameNumber = mUpTexturePointer->Get_FrameNumber(mDefaultUpAnimation.const_ref());
 			}
 
@@ -141,7 +140,7 @@ void UIAnimatedButton::InitModifiable()
 
 bool UIAnimatedButton::isAlpha(float X, float Y)
 {
-	//Try to get my mask
+	//Try to get mask
 	if(!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
@@ -158,7 +157,7 @@ bool UIAnimatedButton::isAlpha(float X, float Y)
 
 	if(mAlphaMask)
 	{
-		//Check on my mask the specified location
+		//Check on mask the specified location
 		return !mAlphaMask->CheckTo(X,Y);
 	}
 

@@ -363,8 +363,8 @@ IMPLEMENT_CLASS_INFO(API3DGenericMeshShader)
 
 API3DGenericMeshShader::API3DGenericMeshShader(const std::string& name, CLASS_NAME_TREE_ARG) : API3DShader(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	myisGeneric = true;
-	myUseGenericLight = true;
+	misGeneric = true;
+	museGenericLight = true;
 }
 
 void	API3DGenericMeshShader::InitModifiable()
@@ -504,13 +504,13 @@ void	API3DGenericMeshShader::ChooseShader(TravState* state, unsigned int attribF
 )====";
 
 
-		myVertexShaderText = defines + GetVertexShader();
-		myFragmentShaderText = defines + GetFragmentShader();
+		mVertexShaderText = defines + GetVertexShader();
+		mFragmentShaderText = defines + GetFragmentShader();
 
 		BuildShaderStruct* toAdd = Rebuild();
 
-		myVertexShaderText = "";
-		myFragmentShaderText = "";
+		mVertexShaderText = "";
+		mFragmentShaderText = "";
 
 		insertBuildShader(flag, toAdd);
 
@@ -533,7 +533,7 @@ void	API3DGenericMeshShader::ChooseShader(TravState* state, unsigned int attribF
 		Deactive(0);
 	}
 
-	if (choosed && (choosed->myShaderProgram == active->GetCurrentShaderProgram()))
+	if (choosed && (choosed->mShaderProgram == active->GetCurrentShaderProgram()))
 	{
 		// nothing else to do
 	}
@@ -544,7 +544,7 @@ void	API3DGenericMeshShader::ChooseShader(TravState* state, unsigned int attribF
 			renderer->popShader(active, state);
 		}
 
-		if (choosed && (choosed->myShaderProgram->mID != (unsigned int)-1))
+		if (choosed && (choosed->mShaderProgram->mID != (unsigned int)-1))
 		{
 			setCurrentBuildShader(flag);
 		}

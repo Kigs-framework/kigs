@@ -13,14 +13,14 @@ class TravState;
 /**
  * \file	HDrawable.h
  * \class	HDrawable
- * \ingroup Drawable
- * \ingroup RendererDrawable
- * \brief	A HDrawable is Drawable with a different draw policy
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \ingroup Renderer
+ * \brief	Drawable with a different hierarchy drawing policy.
+ * 
+ * Generic drawable do all children predraw, then all children draw then all children postdraw. HDrawable to for each child predraw / draw / postdraw.
+ * Used for meshes with several groups.
+ *
  */
-// ****************************************
+ // ****************************************
 class HDrawable : public Drawable 
 {
 public:

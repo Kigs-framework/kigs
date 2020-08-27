@@ -28,10 +28,7 @@ void UIText::NotifyUpdate(const unsigned int labelid)
 {
 	if ((labelid == mText.getLabelID())||
 		(labelid == mFontSize.getLabelID()) ||
-		//(labelid == myBold.getLabelID()) ||
-		//(labelid == myColor.getLabelID()) ||
 		(labelid == mFont.getLabelID()) ||
-		//(labelid == myOpacity.getLabelID()) ||
 		(labelid == mMaxWidth.getLabelID()) ||
 		(labelid == mTextAlignment.getLabelID()) ||
 		(labelid == mLength.getLabelID()))
@@ -46,10 +43,8 @@ void UIText::InitModifiable()
 	UITexturedItem::InitModifiable();
 	if (IsInit())
 	{
-		//myColor.changeNotificationLevel(Owner);
 		mText.changeNotificationLevel(Owner);
 		mFontSize.changeNotificationLevel(Owner);
-		//myBold.changeNotificationLevel(Owner);
 		mFont.changeNotificationLevel(Owner);
 		mLength.changeNotificationLevel(Owner);
 		mOpacity.changeNotificationLevel(Owner);
@@ -74,7 +69,7 @@ void UIText::InitModifiable()
 
 bool UIText::isAlpha(float X, float Y)
 {
-	//Try to get my mask
+	//Try to get mask
 	if (!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
@@ -91,7 +86,7 @@ bool UIText::isAlpha(float X, float Y)
 
 	if (mAlphaMask)
 	{
-		//Check on my mask the specified location
+		//Check on mask the specified location
 		return !mAlphaMask->CheckTo(X, Y);
 	}
 

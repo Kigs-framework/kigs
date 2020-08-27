@@ -122,7 +122,7 @@ void    ModuleBase::BaseInit(KigsCore* core,const kstl::string& moduleName, cons
 		for(it=dlllist.begin();it!=dlllist.end();++it)
 		{
 			auto toAdd = PlatformLoadDLL(*it);
-			if (toAdd.myInstance)
+			if (toAdd.mInstance)
 			{
 				mDynamicModuleList.push_back(toAdd);
 			}
@@ -141,8 +141,8 @@ void    ModuleBase::BaseInit(KigsCore* core,const kstl::string& moduleName, cons
 void    ModuleBase::RegisterDynamic(ModuleBase* dynamic)
 {
 	DynamicModuleHandleAndPointer toAdd;
-	toAdd.myHandle=0;
-	toAdd.myInstance=dynamic;
+	toAdd.mHandle=0;
+	toAdd.mInstance=dynamic;
 	mDynamicModuleList.push_back(toAdd);
 }
 #endif
@@ -155,9 +155,9 @@ void    ModuleBase::BaseClose()
 
 	for(it=mDynamicModuleList.begin();it!=mDynamicModuleList.end();++it)
 	{
-		it->myInstance->Close();
-		it->myInstance->Destroy();
-		PlatformCloseDLL(it->myHandle);
+		it->mInstance->Close();
+		it->mInstance->Destroy();
+		PlatformCloseDLL(it->mHandle);
 	}
 	mDynamicModuleList.clear();
 }
@@ -167,6 +167,6 @@ void    ModuleBase::BaseUpdate(const Timer& timer, void* addParam)
 {
 	for(auto m : mDynamicModuleList)
 	{
-		m.myInstance->CallUpdate(timer,addParam);
+		m.mInstance->CallUpdate(timer,addParam);
 	}
 }

@@ -10,7 +10,9 @@
 #include "CoreSTL.h"
 #include "TecLibs/TecHash.h"
 
-
+/*! \defgroup Renderer Renderer module
+ *  manage rendering
+ */
 
 #ifdef KIGS_TOOLS
 struct RendererStats
@@ -348,28 +350,19 @@ namespace std
 class DirectRenderingMethods;
 class RenderingScreen;
 
-/*! \defgroup Renderer Renderer module
- *  manage rendering
+
+
+// ****************************************
+// * ModuleRenderer class
+// * --------------------------------------
+/**
+ * \file	ModuleRenderer.h
+ * \class	ModuleRenderer
+ * \ingroup Renderer
+ * \ingroup Module
+ * \brief	Generic rendering module.
  */
- /*! \defgroup RendererDrawable Drawable submodule
-  *  \ingroup Renderer
-  */
-
-  // ****************************************
-  // * ModuleRenderer class
-  // * --------------------------------------
-  /**
-   * \file	ModuleRenderer.h
-   * \class	ModuleRenderer
-   * \ingroup Renderer
-   * \ingroup Module
-   * \brief	Renderer module
-   * \author	ukn
-   * \version ukn
-   * \date	ukn
-   */
-   // ****************************************
-
+ // ****************************************
 class ModuleRenderer : public ModuleBase
 {
 public:
@@ -424,16 +417,25 @@ public:
 
 	ModuleSpecificRenderer*	GetSpecificRenderer()
 	{
-		return mySpecificRenderer;
+		return mSpecificRenderer;
 	}
 
-	static ModuleSpecificRenderer * theGlobalRenderer;
+	static ModuleSpecificRenderer * mTheGlobalRenderer;
 
 protected:	
-	ModuleSpecificRenderer*		mySpecificRenderer;
+	ModuleSpecificRenderer*		mSpecificRenderer;
 };
 
-// class keeping current rendering state
+// ****************************************
+// * RenderingState class
+// * --------------------------------------
+/**
+ * \file	ModuleRenderer.h
+ * \class	RenderingState
+ * \ingroup Renderer
+ * \brief	Keep current global rendering state
+ */
+ // ****************************************
 class RenderingState
 {
 public:
@@ -441,16 +443,16 @@ public:
 
 	void InitHardwareState()
 	{
-		if (!myHardwareWasInit)
+		if (!mHardwareWasInit)
 		{
 			ProtectedInitHardwareState();
-			myHardwareWasInit = true;
+			mHardwareWasInit = true;
 		}
 	}
 
 	void UninitHardwareState()
 	{
-		myHardwareWasInit = false;
+		mHardwareWasInit = false;
 	}
 
 	virtual void FlushState(RenderingState* currentState, bool force = false) = 0;	// copy this to currentState effective change currentState
@@ -459,57 +461,57 @@ public:
 	
 	void SetCullMode(RendererCullMode mode)
 	{
-		myGlobalCullFlag = mode;
+		mGlobalCullFlag = mode;
 	}
 
 	void SetLightMode(RendererLightMode mode)
 	{
-		myGlobalLightFlag = (mode == 1);
+		mGlobalLightFlag = (mode == 1);
 	}
 
 	void SetAlphaTestMode(RendererAlphaTestMode mode)
 	{
-		myGlobalAlphaTestFlag = (mode == 1);
+		mGlobalAlphaTestFlag = (mode == 1);
 	}
 
 	void SetAlphaMode(RendererAlphaMode mode, float value)
 	{
-		myGlobalAlphaFlag = mode;
-		myGlobalAlphaValueFlag = value;
+		mGlobalAlphaFlag = mode;
+		mGlobalAlphaValueFlag = value;
 	}
 
 	void SetBlendMode(RendererBlendMode mode)
 	{
-		myGlobalBlendFlag = (mode == 1);
+		mGlobalBlendFlag = (mode == 1);
 	}
 
 	void SetBlendFuncMode(RendererBlendFuncMode mode1, RendererBlendFuncMode mode2)
 	{
-		myGlobalBlendValue1Flag = mode1;
-		myGlobalBlendValue2Flag = mode2;
+		mGlobalBlendValue1Flag = mode1;
+		mGlobalBlendValue2Flag = mode2;
 	}
 
 	void SetDepthMaskMode(RendererDepthMaskMode mode)
 	{
-		myGlobalDepthMaskFlag = (mode == 1);
+		mGlobalDepthMaskFlag = (mode == 1);
 	}
 
 	void SetDepthTestMode(bool mode)
 	{
-		myGlobalDepthTestFlag = mode;
+		mGlobalDepthTestFlag = mode;
 	}
 
 	void SetDepthValueMode(float mode)
 	{
-		myGlobalDepthValueFlag = mode;
+		mGlobalDepthValueFlag = mode;
 	}
 
 	void SetClearColorValue(float r, float g, float b, float a)
 	{
-		myGlobalRedClearValueFlag = r;
-		myGlobalGreenClearValueFlag = g;
-		myGlobalBlueClearValueFlag = b;
-		myGlobalAlphaClearValueFlag = a;
+		mGlobalRedClearValueFlag = r;
+		mGlobalGreenClearValueFlag = g;
+		mGlobalBlueClearValueFlag = b;
+		mGlobalAlphaClearValueFlag = a;
 	}
 
 	virtual void ClearView(RendererClearMode clearMode) = 0;
@@ -518,194 +520,203 @@ public:
 
 	void SetScissorTestMode(RendererScissorTestMode mode)
 	{
-		myGlobalScissorTestFlag = (mode == 1);
+		mGlobalScissorTestFlag = (mode == 1);
 	}
 
 	void SetScissorValue(int x, int y, int width, int height)
 	{
-		myGlobalScissorXFlag = x;
-		myGlobalScissorYFlag = y;
-		myGlobalScissorWidthFlag = width;
-		myGlobalScissorHeightFlag = height;
+		mGlobalScissorXFlag = x;
+		mGlobalScissorYFlag = y;
+		mGlobalScissorWidthFlag = width;
+		mGlobalScissorHeightFlag = height;
 	}
 
 	void SetLightModeli(RendererLightModeliMode name, RendererLightModeliParam param) {
 
-		myGlobalLightModeliFlag = name;
-		myGlobalLightModeliParamFlag = param;
+		mGlobalLightModeliFlag = name;
+		mGlobalLightModeliParamFlag = param;
 	}
 
 	void SetLightModelfv(RendererLightModelfvMode name, float* param) {
 
-		myGlobalLightModelfvFlag = name;
-		myGlobalLightModelfvParamFlag[0] = param[0];
-		myGlobalLightModelfvParamFlag[1] = param[1];
-		myGlobalLightModelfvParamFlag[2] = param[2];
-		myGlobalLightModelfvParamFlag[3] = param[3];
+		mGlobalLightModelfvFlag = name;
+		mGlobalLightModelfvParamFlag[0] = param[0];
+		mGlobalLightModelfvParamFlag[1] = param[1];
+		mGlobalLightModelfvParamFlag[2] = param[2];
+		mGlobalLightModelfvParamFlag[3] = param[3];
 	}
 
-	void SetColorMaterialMode(bool mode) { myGlobalColorMaterialFlag = mode; }
+	void SetColorMaterialMode(bool mode) { mGlobalColorMaterialFlag = mode; }
 
 	void SetNormalizeMode(RendererNormalizeMode mode) {
 
-		myGlobalNormalizeFlag = (mode == 1);
+		mGlobalNormalizeFlag = (mode == 1);
 	}
 
 	void SetPolygonSmoothMode(RendererPolygonSmoothMode mode) {
 
-		myGlobalPolygonSmoothFlag = (mode == 1);
+		mGlobalPolygonSmoothFlag = (mode == 1);
 
 	}
 
 	void SetFogMode(RendererFogMode mode) {
 
-		myGlobalFogFlag = (mode == 1);
+		mGlobalFogFlag = (mode == 1);
 	}
 
 	void SetLight0Mode(RendererLight0Mode mode, unsigned int index) {
-		myGlobalLight0Flag = (mode == 1);
-		myGlobalLight0IndexFlag = index;
+		mGlobalLight0Flag = (mode == 1);
+		mGlobalLight0IndexFlag = index;
 	}
 
 	void SetLineSmoothMode(RendererLineSmoothMode mode) {
 
-		myGlobalLineSmoothFlag = (mode == 1);
+		mGlobalLineSmoothFlag = (mode == 1);
 
 	}
 
 	void SetColorMaterial(RendererColorMaterialFace face, RendererColorMaterialParam param) {
 
-		myGlobalColorMaterialFaceFlag = face;
-		myGlobalColorMaterialParamFlag = param;
+		mGlobalColorMaterialFaceFlag = face;
+		mGlobalColorMaterialParamFlag = param;
 
 	}
 
 	void SetColorMask(bool r, bool g, bool b, bool a)
 	{
-		myGlobalColorMask[0] = r;
-		myGlobalColorMask[1] = g;
-		myGlobalColorMask[2] = b;
-		myGlobalColorMask[3] = a;
+		mGlobalColorMask[0] = r;
+		mGlobalColorMask[1] = g;
+		mGlobalColorMask[2] = b;
+		mGlobalColorMask[3] = a;
 	}
 
 	void SetStencilMode(RendererCullMode face, RendererStencilMode mode, int reference_value, u32 mask)
 	{
 		if (face == RendererCullMode::RENDERER_CULL_FRONT || face == RendererCullMode::RENDERER_CULL_FRONT_AND_BACK)
 		{
-			myGlobalStencilMode[0] = mode;
-			myGlobalStencilFuncRef[0] = reference_value;
-			myGlobalStencilFuncMask[0] = mask;
+			mGlobalStencilMode[0] = mode;
+			mGlobalStencilFuncRef[0] = reference_value;
+			mGlobalStencilFuncMask[0] = mask;
 		}
 		if (face == RendererCullMode::RENDERER_CULL_BACK || face == RendererCullMode::RENDERER_CULL_FRONT_AND_BACK)
 		{
-			myGlobalStencilMode[1] = mode;
-			myGlobalStencilFuncRef[1] = reference_value;
-			myGlobalStencilFuncMask[1] = mask;
+			mGlobalStencilMode[1] = mode;
+			mGlobalStencilFuncRef[1] = reference_value;
+			mGlobalStencilFuncMask[1] = mask;
 		}
 	}
 
 	void SetStencilMask(RendererCullMode face, u32 mask)
 	{
 		if (face == RendererCullMode::RENDERER_CULL_FRONT || face == RendererCullMode::RENDERER_CULL_FRONT_AND_BACK)
-			myGlobalStencilMask[0] = mask;
+			mGlobalStencilMask[0] = mask;
 		if (face == RendererCullMode::RENDERER_CULL_BACK || face == RendererCullMode::RENDERER_CULL_FRONT_AND_BACK)
-			myGlobalStencilMask[1] = mask;
+			mGlobalStencilMask[1] = mask;
 	}
 
 	void SetStencilOp(RendererCullMode face, RendererStencilOp sfail, RendererStencilOp dpfail, RendererStencilOp pass)
 	{
 		if (face == RendererCullMode::RENDERER_CULL_FRONT || face == RendererCullMode::RENDERER_CULL_FRONT_AND_BACK)
 		{
-			myGlobalStencilOpSFail[0] = sfail;
-			myGlobalStencilOpDPFail[0] = dpfail;
-			myGlobalStencilOpPass[0] = pass;
+			mGlobalStencilOpSFail[0] = sfail;
+			mGlobalStencilOpDPFail[0] = dpfail;
+			mGlobalStencilOpPass[0] = pass;
 		}
 		if (face == RendererCullMode::RENDERER_CULL_BACK || face == RendererCullMode::RENDERER_CULL_FRONT_AND_BACK)
 		{
-			myGlobalStencilOpSFail[1] = sfail;
-			myGlobalStencilOpDPFail[1] = dpfail;
-			myGlobalStencilOpPass[1] = pass;
+			mGlobalStencilOpSFail[1] = sfail;
+			mGlobalStencilOpDPFail[1] = dpfail;
+			mGlobalStencilOpPass[1] = pass;
 		}
 	}
 
 	void SetStencilTest(bool enable)
 	{
-		myGlobalStencilEnabled = enable;
+		mGlobalStencilEnabled = enable;
 	}
 
 	void SetPolygonMode(RendererPolygonMode mode)
 	{
-		myPolygonMode = mode;
+		mPolygonMode = mode;
 	}
 
 protected:
 	virtual void ProtectedInitHardwareState() = 0;
 
 	//! global cull flag 
-	int		myGlobalCullFlag = RENDERER_CULL_NONE;
-	int		myGlobalAlphaFlag = RENDERER_ALPHA_ALWAYS;
-	float	myGlobalAlphaValueFlag = 0.0f;
+	int		mGlobalCullFlag = RENDERER_CULL_NONE;
+	int		mGlobalAlphaFlag = RENDERER_ALPHA_ALWAYS;
+	float	mGlobalAlphaValueFlag = 0.0f;
 
-	int		myGlobalBlendValue1Flag = RENDERER_BLEND_ONE;
-	int		myGlobalBlendValue2Flag = RENDERER_BLEND_ZERO;
+	int		mGlobalBlendValue1Flag = RENDERER_BLEND_ONE;
+	int		mGlobalBlendValue2Flag = RENDERER_BLEND_ZERO;
 
-	float	myGlobalDepthValueFlag = 1.0f;
+	float	mGlobalDepthValueFlag = 1.0f;
 	union {
 		struct {
-			float	myGlobalRedClearValueFlag;
-			float	myGlobalGreenClearValueFlag;
-			float	myGlobalBlueClearValueFlag;
-			float	myGlobalAlphaClearValueFlag;
+			float	mGlobalRedClearValueFlag;
+			float	mGlobalGreenClearValueFlag;
+			float	mGlobalBlueClearValueFlag;
+			float	mGlobalAlphaClearValueFlag;
 		};
-		float myGlobalClearValueFlag[4] = {0,0,0,0};
+		float mGlobalClearValueFlag[4] = {0,0,0,0};
 	};
-	int		myGlobalScissorXFlag = 0;
-	int		myGlobalScissorYFlag = 0;
-	int		myGlobalScissorWidthFlag = 0;
-	int		myGlobalScissorHeightFlag = 0;
-	int		myGlobalLight0IndexFlag = 0;
-	int		myGlobalColorMaterialFaceFlag = 0;
-	int		myGlobalColorMaterialParamFlag = 0;
+	int		mGlobalScissorXFlag = 0;
+	int		mGlobalScissorYFlag = 0;
+	int		mGlobalScissorWidthFlag = 0;
+	int		mGlobalScissorHeightFlag = 0;
+	int		mGlobalLight0IndexFlag = 0;
+	int		mGlobalColorMaterialFaceFlag = 0;
+	int		mGlobalColorMaterialParamFlag = 0;
 
-	int		myGlobalLightModeliFlag = 0;
-	int		myGlobalLightModeliParamFlag = 0;
-	int		myGlobalLightModelfvFlag = 0;
-	float	myGlobalLightModelfvParamFlag[4] = {};
+	int		mGlobalLightModeliFlag = 0;
+	int		mGlobalLightModeliParamFlag = 0;
+	int		mGlobalLightModelfvFlag = 0;
+	float	mGlobalLightModelfvParamFlag[4] = {};
 
-	bool	myGlobalLightModelFlag = true;
-	bool	myGlobalColorMaterialFlag = false;
-	bool	myGlobalNormalizeFlag = false;
-	bool	myGlobalPolygonSmoothFlag = false;
-	bool	myGlobalFogFlag = false;
-	bool	myGlobalLight0Flag = false;
-	bool	myGlobalScissorTestFlag = RENDERER_SCISSOR_TEST_OFF;
-	bool	myGlobalDepthMaskFlag = RENDERER_DEPTH_MASK_ON;
-	bool	myGlobalDepthTestFlag = false;
-	bool	myGlobalBlendFlag = RENDERER_BLEND_OFF;
-	bool	myGlobalLightFlag = RENDERER_LIGHT_OFF;
-	bool	myGlobalAlphaTestFlag = RENDERER_ALPHA_TEST_OFF;
-	bool	myGlobalLineSmoothFlag = RENDERER_LINE_SMOOTH_OFF;
+	bool	mGlobalLightModelFlag = true;
+	bool	mGlobalColorMaterialFlag = false;
+	bool	mGlobalNormalizeFlag = false;
+	bool	mGlobalPolygonSmoothFlag = false;
+	bool	mGlobalFogFlag = false;
+	bool	mGlobalLight0Flag = false;
+	bool	mGlobalScissorTestFlag = RENDERER_SCISSOR_TEST_OFF;
+	bool	mGlobalDepthMaskFlag = RENDERER_DEPTH_MASK_ON;
+	bool	mGlobalDepthTestFlag = false;
+	bool	mGlobalBlendFlag = RENDERER_BLEND_OFF;
+	bool	mGlobalLightFlag = RENDERER_LIGHT_OFF;
+	bool	mGlobalAlphaTestFlag = RENDERER_ALPHA_TEST_OFF;
+	bool	mGlobalLineSmoothFlag = RENDERER_LINE_SMOOTH_OFF;
 
-	int		myPolygonMode = RENDERER_FILL;
+	int		mPolygonMode = RENDERER_FILL;
 
-	bool    myGlobalColorMask[4] = { true, true, true, true };
-	bool	myGlobalStencilEnabled = false;
-	u32		myGlobalStencilMask[2] = { 0xFFFFFFFF,0xFFFFFFFF };
-	RendererStencilMode		myGlobalStencilMode[2] = { RENDERER_STENCIL_ALWAYS,RENDERER_STENCIL_ALWAYS };
-	int		myGlobalStencilFuncRef[2] = {};
-	u32		myGlobalStencilFuncMask[2] = { 0xFFFFFFFF,0xFFFFFFFF };
-	RendererStencilOp		myGlobalStencilOpSFail[2] = { RENDERER_STENCIL_OP_KEEP,RENDERER_STENCIL_OP_KEEP };
-	RendererStencilOp		myGlobalStencilOpDPFail[2] = { RENDERER_STENCIL_OP_KEEP,RENDERER_STENCIL_OP_KEEP };
-	RendererStencilOp		myGlobalStencilOpPass[2] = { RENDERER_STENCIL_OP_KEEP,RENDERER_STENCIL_OP_KEEP };
+	bool    mGlobalColorMask[4] = { true, true, true, true };
+	bool	mGlobalStencilEnabled = false;
+	u32		mGlobalStencilMask[2] = { 0xFFFFFFFF,0xFFFFFFFF };
+	RendererStencilMode		mGlobalStencilMode[2] = { RENDERER_STENCIL_ALWAYS,RENDERER_STENCIL_ALWAYS };
+	int		mGlobalStencilFuncRef[2] = {};
+	u32		mGlobalStencilFuncMask[2] = { 0xFFFFFFFF,0xFFFFFFFF };
+	RendererStencilOp		mGlobalStencilOpSFail[2] = { RENDERER_STENCIL_OP_KEEP,RENDERER_STENCIL_OP_KEEP };
+	RendererStencilOp		mGlobalStencilOpDPFail[2] = { RENDERER_STENCIL_OP_KEEP,RENDERER_STENCIL_OP_KEEP };
+	RendererStencilOp		mGlobalStencilOpPass[2] = { RENDERER_STENCIL_OP_KEEP,RENDERER_STENCIL_OP_KEEP };
 
-	bool	myHardwareWasInit = false;
+	bool	mHardwareWasInit = false;
 };
 
 static const int MATRIX_MODE_MODEL = 0;
 static const int MATRIX_MODE_PROJECTION = 1;
 static const int MATRIX_MODE_VIEW = 2;
 
-
+// ****************************************
+// * VertexBufferManagerBase class
+// * --------------------------------------
+/**
+ * \file	ModuleRenderer.h
+ * \class	VertexBufferManagerBase
+ * \ingroup Renderer
+ * \brief	Virtual base class for Vertex buffer manager.
+ */
+ // ****************************************
 class VertexBufferManagerBase
 {
 public:
@@ -742,7 +753,17 @@ public:
 
 #define PREALLOCATED_VBO_COUNT					64
 
-// base class for specific renderers, so that they must overload some generic functionnality
+// ****************************************
+// * ModuleSpecificRenderer class
+// * --------------------------------------
+/**
+ * \file	ModuleRenderer.h
+ * \class	ModuleSpecificRenderer
+ * \ingroup Renderer
+ * \ingroup Module
+ * \brief	Abstract base class for specific renderers, so that they must overload some generic functionnality
+ */
+ // ****************************************
 class ModuleSpecificRenderer : public ModuleBase
 {
 public:
@@ -779,18 +800,18 @@ public:
 	virtual ShaderBase* GetActiveShader();
 	virtual void	setCurrentShaderProgram(ShaderInfo* p)
 	{
-		myCurrentShaderProgram = p;
+		mCurrentShaderProgram = p;
 	}
 
 	void SetDirtyMatrix()
 	{
-		myDirtyMatrix = 0xffffffff;
-		myDirtyShaderMatrix = 0xffffffff;
+		mDirtyMatrix = 0xffffffff;
+		mDirtyShaderMatrix = 0xffffffff;
 	}
 
 	CMSP&	getDefaultUiShader()
 	{
-		return myDefaultUIShader;
+		return mDefaultUIShader;
 	}
 
 	virtual void CreateTexture(int count, unsigned int * id) {}
@@ -798,7 +819,7 @@ public:
 
 	virtual void ActiveTextureChannel(unsigned int channel)
 	{
-		myCurrentTextureUnit = channel;
+		mCurrentTextureUnit = channel;
 	}
 	virtual void EnableTexture() {}
 	virtual void DisableTexture() {}
@@ -807,62 +828,62 @@ public:
 
 	void		SetCullMode(RendererCullMode mode)
 	{
-		myStateStackTop->SetCullMode(mode);
+		mStateStackTop->SetCullMode(mode);
 	}
 
 	void		SetLightMode(RendererLightMode mode)
 	{
-		myStateStackTop->SetLightMode(mode);
+		mStateStackTop->SetLightMode(mode);
 	}
 
 	void		SetAlphaTestMode(RendererAlphaTestMode mode)
 	{
-		myStateStackTop->SetAlphaTestMode(mode);
+		mStateStackTop->SetAlphaTestMode(mode);
 	}
 
 	void		SetAlphaMode(RendererAlphaMode mode, float value)
 	{
-		myStateStackTop->SetAlphaMode(mode, value);
+		mStateStackTop->SetAlphaMode(mode, value);
 	}
 
 	void		SetBlendMode(RendererBlendMode mode)
 	{
-		myStateStackTop->SetBlendMode(mode);
+		mStateStackTop->SetBlendMode(mode);
 	}
 
 	void		SetBlendFuncMode(RendererBlendFuncMode mode1, RendererBlendFuncMode mode2)
 	{
-		myStateStackTop->SetBlendFuncMode(mode1, mode2);
+		mStateStackTop->SetBlendFuncMode(mode1, mode2);
 	}
 
 	void		SetDepthMaskMode(RendererDepthMaskMode mode)
 	{
-		myStateStackTop->SetDepthMaskMode(mode);
+		mStateStackTop->SetDepthMaskMode(mode);
 	}
 
 	void		SetDepthTestMode(bool mode)
 	{
-		myStateStackTop->SetDepthTestMode(mode);
+		mStateStackTop->SetDepthTestMode(mode);
 	}
 
 	void		SetDepthValueMode(float mode)
 	{
-		myStateStackTop->SetDepthValueMode(mode);
+		mStateStackTop->SetDepthValueMode(mode);
 	}
 
 	void		SetClearColorValue(float r, float g, float b, float a)
 	{
-		myStateStackTop->SetClearColorValue(r, g, b, a);
+		mStateStackTop->SetClearColorValue(r, g, b, a);
 	}
 
 	void		SetScissorTestMode(RendererScissorTestMode mode)
 	{
-		myStateStackTop->SetScissorTestMode(mode);
+		mStateStackTop->SetScissorTestMode(mode);
 	}
 
 	void		SetScissorValue(int x, int y, int width, int height)
 	{
-		myStateStackTop->SetScissorValue(x, y, width, height);
+		mStateStackTop->SetScissorValue(x, y, width, height);
 	}
 
 	void		SetColor(float r, float g, float b, float a)
@@ -877,113 +898,113 @@ public:
 
 	void		SetLightModeli(RendererLightModeliMode name, RendererLightModeliParam param) {
 
-		myStateStackTop->SetLightModeli(name, param);
+		mStateStackTop->SetLightModeli(name, param);
 	}
 
 	void		SetLightModelfv(RendererLightModelfvMode name, float* param) {
 
-		myStateStackTop->SetLightModelfv(name, param);
+		mStateStackTop->SetLightModelfv(name, param);
 	}
 
 	void		SetColorMaterialMode(bool mode) {
 
-		myStateStackTop->SetColorMaterialMode(mode);
+		mStateStackTop->SetColorMaterialMode(mode);
 
 	}
 
 	void		SetNormalizeMode(RendererNormalizeMode mode) {
 
-		myStateStackTop->SetNormalizeMode(mode);
+		mStateStackTop->SetNormalizeMode(mode);
 
 	}
 
 	void		SetPolygonSmoothMode(RendererPolygonSmoothMode mode) {
 
-		myStateStackTop->SetPolygonSmoothMode(mode);
+		mStateStackTop->SetPolygonSmoothMode(mode);
 
 	}
 
 	void		SetFogMode(RendererFogMode mode) {
 
-		myStateStackTop->SetFogMode(mode);
+		mStateStackTop->SetFogMode(mode);
 
 	}
 
 	void		SetLight0Mode(RendererLight0Mode mode, unsigned int index) {
 
-		myStateStackTop->SetLight0Mode(mode, index);
+		mStateStackTop->SetLight0Mode(mode, index);
 	}
 
 	void		SetLineSmoothMode(RendererLineSmoothMode mode) {
 
-		myStateStackTop->SetLineSmoothMode(mode);
+		mStateStackTop->SetLineSmoothMode(mode);
 
 	}
 
 	void		SetColorMaterial(RendererColorMaterialFace face, RendererColorMaterialParam param) {
 
-		myStateStackTop->SetColorMaterial(face, param);
+		mStateStackTop->SetColorMaterial(face, param);
 
 	}
 
 	void SetColorMask(bool r, bool g, bool b, bool a)
 	{
-		myStateStackTop->SetColorMask(r,g,b,a);
+		mStateStackTop->SetColorMask(r,g,b,a);
 	}
 
 	void SetStencilMode(RendererCullMode face, RendererStencilMode mode, int reference_value, u32 mask)
 	{
-		myStateStackTop->SetStencilMode(face, mode, reference_value, mask);
+		mStateStackTop->SetStencilMode(face, mode, reference_value, mask);
 	}
 
 	void SetStencilMask(RendererCullMode face, u32 mask)
 	{
-		myStateStackTop->SetStencilMask(face, mask);
+		mStateStackTop->SetStencilMask(face, mask);
 	}
 
 	void SetStencilTest(bool enable)
 	{
-		myStateStackTop->SetStencilTest(enable);
+		mStateStackTop->SetStencilTest(enable);
 	}
 
 	void SetStencilOp(RendererCullMode face, RendererStencilOp sfail, RendererStencilOp dpfail, RendererStencilOp pass)
 	{
-		myStateStackTop->SetStencilOp(face, sfail, dpfail, pass);
+		mStateStackTop->SetStencilOp(face, sfail, dpfail, pass);
 	}
 
 	void SetPolygonMode(RendererPolygonMode mode)
 	{
-		myStateStackTop->SetPolygonMode(mode);
+		mStateStackTop->SetPolygonMode(mode);
 	}
 
 	void SetArrayBuffer(unsigned int bufferName, int slot = 0)
 	{
-		myVertexBufferManager->SetArrayBuffer(bufferName, slot);
+		mVertexBufferManager->SetArrayBuffer(bufferName, slot);
 	}
 
 	void SetElementBuffer(unsigned int bufferName)
 	{
-		myVertexBufferManager->SetElementBuffer(bufferName);
+		mVertexBufferManager->SetElementBuffer(bufferName);
 	}
 
 	void UnsetElementBuffer(unsigned int bufferName)
 	{
-		myVertexBufferManager->UnbindBuffer(bufferName, KIGS_BUFFER_TARGET_ELEMENT);
+		mVertexBufferManager->UnbindBuffer(bufferName, KIGS_BUFFER_TARGET_ELEMENT);
 	}
 
 	void UnsetArrayBuffer(unsigned int bufferName)
 	{
-		myVertexBufferManager->UnbindBuffer(bufferName, KIGS_BUFFER_TARGET_ARRAY);
+		mVertexBufferManager->UnbindBuffer(bufferName, KIGS_BUFFER_TARGET_ARRAY);
 	}
 
 	void BufferData(unsigned int bufferName, unsigned int bufftype, int size, void* data, unsigned int usage)
 	{
-		myVertexBufferManager->BufferData(bufferName, bufftype, size, data, usage);
+		mVertexBufferManager->BufferData(bufferName, bufftype, size, data, usage);
 	}
 
 	void SetVertexAttrib(unsigned int bufferName, unsigned int attribID, int size, unsigned int type, bool normalized, unsigned int stride, void * offset, const Locations *locs=nullptr)
 	{
-		myVertexBufferManager->SetVertexAttrib(bufferName, attribID, size, type, normalized, stride, offset, locs);
+		mVertexBufferManager->SetVertexAttrib(bufferName, attribID, size, type, normalized, stride, offset, locs);
 	}
 
 	virtual void SetVertexAttribDivisor(TravState* state, unsigned int bufferName, int attribute_location, int divisor) = 0;
@@ -1010,19 +1031,19 @@ public:
 
 	inline void			PushMatrix(int mode)
 	{
-		myMatrixStack[mode].push_back(myMatrixStack[mode].back());
-		myDirtyMatrix |= (1 << mode);
+		mMatrixStack[mode].push_back(mMatrixStack[mode].back());
+		mDirtyMatrix |= (1 << mode);
 	}
 	inline void			PushAndLoadMatrix(int mode,const Matrix4x4& m)
 	{
-		myMatrixStack[mode].push_back(m);
-		myDirtyMatrix |= (1 << mode);
+		mMatrixStack[mode].push_back(m);
+		mDirtyMatrix |= (1 << mode);
 	}
 
 	inline void			PopMatrix(int mode)
 	{
-		myDirtyMatrix |= (1 << mode);
-		myMatrixStack[mode].pop_back();
+		mDirtyMatrix |= (1 << mode);
+		mMatrixStack[mode].pop_back();
 	}
 
 	void			LoadIdentity(int mode);
@@ -1032,8 +1053,8 @@ public:
 	void			Scale(int mode, kfloat x, kfloat y, kfloat z);
 	void			Multiply(int mode, const kfloat *m)
 	{
-		myDirtyMatrix |= (1 << mode);
-		Matrix4x4& m1 = myMatrixStack[mode].back();
+		mDirtyMatrix |= (1 << mode);
+		Matrix4x4& m1 = mMatrixStack[mode].back();
 		Matrix4x4& m2 = *((Matrix4x4*)m);
 		//myMatrixStack[mode].back().Mult(m1, m2);
 		m1 *= m2;
@@ -1041,31 +1062,31 @@ public:
 
 	inline void			PushAndMultMatrix(int mode, const kfloat *m)
 	{
-		myDirtyMatrix |= (1 << mode);
-		Matrix4x4& m1 = myMatrixStack[mode].back();
+		mDirtyMatrix |= (1 << mode);
+		Matrix4x4& m1 = mMatrixStack[mode].back();
 		Matrix4x4& m2 = *((Matrix4x4*)m);
-		myMatrixStack[mode].push_back();
-		myMatrixStack[mode].back().Mult(m2, m1);
+		mMatrixStack[mode].push_back();
+		mMatrixStack[mode].back().Mult(m2, m1);
 	}
 
 
 	virtual void	FlushMatrix(TravState* state)
 	{
 		ProtectedFlushMatrix(state);
-		myDirtyMatrix = 0;
+		mDirtyMatrix = 0;
 	}
 
 	RenderingScreen*	getFirstRenderingScreen()
 	{
-		return myFirstRenderingScreen;
+		return mFirstRenderingScreen;
 	}
 
 	// only register first one
 	void	RegisterRenderingScreen(RenderingScreen* toregister)
 	{
-		if (myFirstRenderingScreen == 0)
+		if (mFirstRenderingScreen == 0)
 		{
-			myFirstRenderingScreen = toregister;
+			mFirstRenderingScreen = toregister;
 		}
 	}
 
@@ -1078,22 +1099,22 @@ public:
 
 	virtual void InitHardwareState()
 	{
-		myCurrentState->InitHardwareState();
+		mCurrentState->InitHardwareState();
 		initVBOs();
 	}
 
 	virtual void UninitHardwareState()
 	{
-		myCurrentVBO = -1;
-		myUICurrentVBO = -1;
-		myCurrentState->UninitHardwareState();
+		mCurrentVBO = -1;
+		mUICurrentVBO = -1;
+		mCurrentState->UninitHardwareState();
 	}
 
 	struct LightCount
 	{
-		int spot;
-		int point;
-		int dir;
+		int mSpot;
+		int mPoint;
+		int mDir;
 	};
 	virtual LightCount SetLightsInfo(kstl::set<CoreModifiable*>* lights) { return {}; }
 	virtual void SendLightsInfo(TravState* travstate) {}
@@ -1101,12 +1122,12 @@ public:
 
 	virtual void	startFrame(TravState* state)
 	{
-		myActivatedScreenList.clear();
+		mActivatedScreenList.clear();
 	}
 
 	void	addActivatedRenderingScreen(CoreModifiable* renderingscreen)
 	{
-		myActivatedScreenList.insert(renderingscreen);
+		mActivatedScreenList.insert(renderingscreen);
 	}
 
 	virtual void	endFrame(TravState* state);
@@ -1115,23 +1136,23 @@ public:
 
 	VertexBufferManagerBase*	GetVertexBufferManager()
 	{
-		return myVertexBufferManager.get();
+		return mVertexBufferManager.get();
 	}
 
 	void	initVBOs();
 	unsigned int getVBO()
 	{
-		unsigned int index = myCurrentVBO;
+		unsigned int index = mCurrentVBO;
 		// 4 vbo are used for ui quads
-		myCurrentVBO = (myCurrentVBO + 1) % (PREALLOCATED_VBO_COUNT - 4);
-		return myVBO[index];
+		mCurrentVBO = (mCurrentVBO + 1) % (PREALLOCATED_VBO_COUNT - 4);
+		return mVBO[index];
 	}
 	unsigned int getUIVBO()
 	{
-		unsigned int index = (PREALLOCATED_VBO_COUNT - 4) + myUICurrentVBO;
+		unsigned int index = (PREALLOCATED_VBO_COUNT - 4) + mUICurrentVBO;
 		// 4 vbo are used for ui quads
-		myUICurrentVBO = (myUICurrentVBO + 1) % 4;
-		return myVBO[index];
+		mUICurrentVBO = (mUICurrentVBO + 1) % 4;
+		return mVBO[index];
 	}
 
 
@@ -1149,35 +1170,35 @@ protected:
 	virtual void	ProtectedFlushMatrix(TravState* state) = 0;	// rendering specific
 
 
-	RenderingState*						myCurrentState;
-	RenderingState*						myStateStackTop;
-	kstl::vector<RenderingState*>		myWantedState;
+	RenderingState*						mCurrentState;
+	RenderingState*						mStateStackTop;
+	kstl::vector<RenderingState*>		mWantedState;
 
 	virtual RenderingState*	createNewState(RenderingState* toCopy = 0) = 0;
 
 	// matrix management
 
-	FixedSizeStack<Matrix4x4, 32>						myMatrixStack[3];
-	unsigned int										myDirtyMatrix;			// flag to check if matrix stack was modified
+	FixedSizeStack<Matrix4x4, 32>						mMatrixStack[3];
+	unsigned int										mDirtyMatrix;			// flag to check if matrix stack was modified
 
-	int													myCurrentTextureUnit=0;
-	RenderingScreen*									myFirstRenderingScreen;
+	int													mCurrentTextureUnit=0;
+	RenderingScreen*									mFirstRenderingScreen;
 
-	kstl::set<CoreModifiable*>	myActivatedScreenList;
+	kstl::set<CoreModifiable*>	mActivatedScreenList;
 
-	ShaderBase*						myCurrentShader;
-	ShaderInfo*						myCurrentShaderProgram;
-	kstl::vector<ShaderBase*>		myShaderStack;
-	unsigned int					myDirtyShaderMatrix;	// set when shader has changed, so we have to push again matrix
+	ShaderBase*						mCurrentShader;
+	ShaderInfo*						mCurrentShaderProgram;
+	kstl::vector<ShaderBase*>		mShaderStack;
+	unsigned int					mDirtyShaderMatrix;	// set when shader has changed, so we have to push again matrix
 
-	CMSP	myDefaultUIShader;
+	CMSP	mDefaultUIShader;
 
 
-	std::unique_ptr<VertexBufferManagerBase> myVertexBufferManager;
+	std::unique_ptr<VertexBufferManagerBase> mVertexBufferManager;
 
-	unsigned int		myVBO[PREALLOCATED_VBO_COUNT];
-	unsigned int		myCurrentVBO;
-	unsigned int		myUICurrentVBO;
+	unsigned int		mVBO[PREALLOCATED_VBO_COUNT];
+	unsigned int		mCurrentVBO;
+	unsigned int		mUICurrentVBO;
 
 };
 

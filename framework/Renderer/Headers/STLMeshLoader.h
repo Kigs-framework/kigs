@@ -10,15 +10,12 @@ class Mesh;
 // * STLMeshLoader class
 // * --------------------------------------
 /**
- * \file	STLMeshLoader.h
- * \class	STLMeshLoader
- * \ingroup Loader
- * \ingroup Renderer
- * \brief	load mesh from binaries files
- * \author	ukn
- * \version ukn
- * \date	ukn
- */
+* \file	STLMeshLoader.h
+* \class	STLMeshLoader
+* \ingroup Renderer
+* \brief Load an STL file and return an old 
+*
+*/
 // ****************************************
 class STLMeshLoader
 {
@@ -97,7 +94,7 @@ protected:
 	};
 
 	//! link to the readed file which contain the binMesh
-	BufferedFile*	myFile;
+	BufferedFile*	mFile;
 };
 
 #endif // _BINMESHLOADER_H_

@@ -2,7 +2,17 @@
 #define _OPENGLCAMERA_H
 
 #include "Camera.h"
-//#include "GLSLDeferredFilter.h"
+
+// ****************************************
+// * OpenGLCamera class
+// * --------------------------------------
+/**
+ * \file	OpenGLCamera.h
+ * \class	OpenGLCamera
+ * \ingroup Renderer
+ * \brief	OpenGL implementation of Camera.
+ */
+ // ****************************************
 
 
 class OpenGLCamera : public Camera
@@ -25,7 +35,7 @@ protected:
 	virtual ~OpenGLCamera();
 
 #ifdef WUP
-	bool myNeedNearFarUpdate = true;
+	bool mNeedNearFarUpdate = true;
 	void NotifyUpdate(unsigned int labelid) override;
 #endif
 };    

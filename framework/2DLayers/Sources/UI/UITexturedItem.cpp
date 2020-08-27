@@ -114,24 +114,7 @@ void UITexturedItem::NotifyUpdate(const unsigned int labelid)
 {
 	if (!mTexturePointer.isNil())
 	{
-		/*if (labelid == mySizeX.getLabelID())
-		{
-			if (mySizeX == 0)
-			{
-				unsigned int val;
-				mTexturePointer->getValue(LABEL_TO_ID(Width), val);
-				mySizeX = val;
-			}
-		}
-		else if (labelid == mySizeY.getLabelID())
-		{
-			if (mySizeY == 0)
-			{
-				unsigned int val;
-				mTexturePointer->getValue(LABEL_TO_ID(Height), val);
-				mySizeY = val;
-			}
-		}*/
+		
 	}
 
 	UIItem::NotifyUpdate(labelid);

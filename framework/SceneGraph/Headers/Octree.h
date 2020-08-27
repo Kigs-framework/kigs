@@ -5,6 +5,21 @@
 #include "CullingObject.h"
 
 class Octree;
+
+
+// ****************************************
+// * OctreeSubNode class
+// * --------------------------------------
+/**
+ * \file	Octree.h
+ * \class	OctreeSubNode
+ * \ingroup SceneGraph
+ * \brief   Node in an octree.
+ *
+ * Using a Node3D for this is probably overkilling.
+ */
+ // ****************************************
+
 class OctreeSubNode : public Node3D
 {
 protected: 
@@ -12,9 +27,9 @@ protected:
 
 	struct PrecomputedCullInfo
 	{
-		Vector3D	myNormal;
-		Point3D		myOrigin;
-		int			myPreTests[3]; // index
+		Vector3D	mNormal;
+		Point3D		mOrigin;
+		int			mPreTests[3]; // index
 	};
 
 public:
@@ -74,7 +89,7 @@ public:
 	 * \fn 		OctreeSubNode*  GetFather()
 	 * \return	the father
 	 */
-	OctreeSubNode*  GetFather(){return myFatherSubNode;}
+	OctreeSubNode*  GetFather(){return mFatherSubNode;}
 
 	/**
 	 * \brief	check if sons are empty
@@ -111,40 +126,41 @@ public:
 	 * \param	index : index of the root
 	 * \return	a sub node
 	 */
-	SP<OctreeSubNode>&				GetSubNode(int index){return mySonsSubNodes[index];}
+	SP<OctreeSubNode>&				GetSubNode(int index){return mSonsSubNodes[index];}
 
 	/**
 	 * \brief	get object list
 	 * \fn 		const kstl::vector<SceneNode*>&   GetObjectList()
 	 * \return	the object list
 	 */
-	const kstl::vector<SceneNode*>&   GetObjectList(){return myObjectList;}
+	const kstl::vector<SceneNode*>&   GetObjectList(){return mObjectList;}
 
 	/**
 	 * \brief	check if the octree has sons
 	 * \fn 		HasSons()
 	 * \return	TRUS if the octree has sons
 	 */
-	bool HasSons(){return (mySonsSubNodes!=0);}
+	bool HasSons(){return (mSonsSubNodes!=0);}
 
 	friend class Octree;
 
 protected:
 
 	//! list of sons	
-	SP<OctreeSubNode>*				mySonsSubNodes;
+	SP<OctreeSubNode>*				mSonsSubNodes;
 	//! list of father?
-	OctreeSubNode*					myFatherSubNode;
+	OctreeSubNode*					mFatherSubNode;
 
 	//! list of object 
-	kstl::vector<SceneNode*>		myObjectList;
+	kstl::vector<SceneNode*>		mObjectList;
 	//! numer of nodes
-	int								myTotalNodes;
+	int								mTotalNodes;
 	//! result of the culling
-	CullingObject::CULLING_RESULT   myCullingResult;
+	CullingObject::CULLING_RESULT   mCullingResult;
 
-	Octree*							myFatherOctree;
+	Octree*							mFatherOctree;
 };
+
 
 // ****************************************
 // * Octree class
@@ -153,30 +169,11 @@ protected:
  * \file	Octree.h
  * \class	Octree
  * \ingroup SceneGraph
- * \brief	An Octree is a special Node3D class used to subdivide space in OctreeSubNode allowing fast culling / drawing process
- * \author	ukn
- * \version ukn
- * \date	ukn
- * when culling or drawing scenegraph
- * base members are the global LOD, and the global time
+ * \brief   An octree subdivide it's bounding box in eight son to manage faster culling / sorting.
  *
- * Exported parameters :<br>
- * <ul>
- * <li>
- *		kfloat <strong>BoundingBoxMin[3]</strong> : min point of the bounding box
- * </li>
- * <li>
- *		kfloat <strong>BoundingBoxMax[3]</strong> : max point of the bounding box
- * </li>
- * <li>
- *		kfloat <strong>SubdivideLevel</strong> : subdivide level
- * </li>
- * <li>
- *		kfloat <strong>MaxRecursiveLevel</strong> : max recursive level
- * </li>
- * </ul>
+ * Probably obsolete.
  */
-// ****************************************
+ // ****************************************
 class Octree : public Node3D
 {
 public:
@@ -204,7 +201,7 @@ public:
 
 	bool isQuadtree()
 	{
-		return myIsQuadtree;
+		return mIsQuadtree;
 	}
 
 	int getSubdivisionCount()
@@ -218,15 +215,15 @@ public:
 
 	unsigned int getAxisMask()
 	{
-		return myAxisMask;
+		return mAxisMask;
 	}
 
 	void ReorganiseOctree();
 
 protected:
-	bool myIsInReorganise;
-	bool myIsInRemove;
-	bool myFirstReorganiseWasDone;
+	bool mIsInReorganise;
+	bool mIsInRemove;
+	bool mFirstReorganiseWasDone;
 
 	//! list of culling object
 	CullingObject::CULLING_RESULT  CullSubNodes(CullingObject* obj,TravState* state);
@@ -236,26 +233,26 @@ protected:
 
 
 	//! root of the octree
-	SP<OctreeSubNode> myRootSubNode;
+	SP<OctreeSubNode> mRootSubNode;
 
 	//! min point of the bounding box
-	maVect3DF myBBoxMin;
+	maVect3DF mBoundingBoxMin;
 	//! max point of the bounding box
-	maVect3DF myBBoxMax;
+	maVect3DF mBoundingBoxMax;
 	//! subdivide level
-	maInt mySubdivideLevel;
+	maInt mSubdivideLevel;
 	//! max recursive level
-	maInt myMaxRecursiveLevel;
+	maInt mMaxRecursiveLevel;
 	//! if we only want a quadtree
-	maEnum<4> myQuadTreeAxis;
+	maEnum<4> mQuadTreeAxis;
 
 	//! map of scene node
-	kigs::unordered_map<SceneNode*,OctreeSubNode*>  myObjectNodeAssociation;
+	kigs::unordered_map<SceneNode*,OctreeSubNode*>  mObjectNodeAssociation;
 
-	bool myIsQuadtree;
-	unsigned int myAxisMask;
+	bool mIsQuadtree;
+	unsigned int mAxisMask;
 
-	kstl::vector<OctreeSubNode::PrecomputedCullInfo> myPrecomputedCull;
+	kstl::vector<OctreeSubNode::PrecomputedCullInfo> mPrecomputedCull;
 protected:
 
 	void RecomputeBoundingBox() override;

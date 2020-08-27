@@ -36,24 +36,24 @@ void  DX11CameraOrtho::InitCullingObject(CullingObject* obj)
 	getRenderingScreen()->GetSize(width , height); 
 
 	kfloat aspect;
-	if (myAspectRatio!=0)
-		aspect = myAspectRatio;
+	if (mAspectRatio!=0)
+		aspect = mAspectRatio;
 	else
-		aspect = (width*myViewportSizeX) / (height*myViewportSizeY); 
+		aspect = (width*mViewportSizeX) / (height*mViewportSizeY); 
 
-	kfloat size2 = m_Size;
+	kfloat size2 = mSize;
 
 	auto l2g = GetLocalToGlobal();
 	// near plane
 	n.Set(1,0,0);
-	o.Set(myNear,0,0);
+	o.Set(mNearPlane,0,0);
 	l2g.TransformVector(&n);
 	l2g.TransformPoints(&o,1);
 	obj->InitPlane(0,n,o);
 
 	// far plane
 	n.Set(-1,0,0);
-	o.Set(myFar,0,0);
+	o.Set(mFarPlane,0,0);
 	l2g.TransformVector(&n);
 	l2g.TransformPoints(&o,1);
 	obj->InitPlane(1,n,o);
@@ -93,16 +93,16 @@ void DX11CameraOrtho::getRay(const kfloat &ScreenX, const kfloat &ScreenY, Point
 	getRenderingScreen()->GetSize(width , height); 
 
 	kfloat aspect;
-	if (myAspectRatio!=0)
-		aspect = myAspectRatio;
+	if (mAspectRatio!=0)
+		aspect = mAspectRatio;
 	else
-		aspect = (width*myViewportSizeX) / (height*myViewportSizeY); 
+		aspect = (width*mViewportSizeX) / (height*mViewportSizeY); 
 
 
 	SetupNodeIfNeeded();
 	RayOrigin.x = KFLOAT_CONST(0.0f);
-	RayOrigin.y = (ScreenX-0.5f)* m_Size*aspect;
-	RayOrigin.z = (ScreenY-0.5f)* m_Size;
+	RayOrigin.y = (ScreenX-0.5f)* mSize*aspect;
+	RayOrigin.z = (ScreenY-0.5f)* mSize;
 	auto l2g = GetLocalToGlobal();
 	l2g.TransformPoints(&RayOrigin,1);
 
@@ -116,7 +116,7 @@ bool	DX11CameraOrtho::ProtectedSetActive(TravState* state)
 	{
 		if(getRenderingScreen()->SetActive(state))
 		{
-			renderer->SetClearColorValue(myClearColor[0], myClearColor[1], myClearColor[2], myClearColor[3]);
+			renderer->SetClearColorValue(mClearColor[0], mClearColor[1], mClearColor[2], mClearColor[3]);
 
 			renderer->SetDepthValueMode(1.0);
 			renderer->SetDepthTestMode(true);
@@ -126,16 +126,16 @@ bool	DX11CameraOrtho::ProtectedSetActive(TravState* state)
 
 			kfloat aspect;
 
-			if (myAspectRatio != 0)
-				aspect = myAspectRatio;
+			if (mAspectRatio != 0)
+				aspect = mAspectRatio;
 			else
-				aspect = (width*myViewportSizeX) / (height*myViewportSizeY);
+				aspect = (width*mViewportSizeX) / (height*mViewportSizeY);
 
-			renderer->Viewport((int)(myViewportMinX*width), (int)(height - (myViewportSizeY + myViewportMinY)*height), (int)(myViewportSizeX*width), (int)(myViewportSizeY*height));
-			renderer->SetScissorValue((int)(myViewportMinX*width), (int)(height - (myViewportSizeY + myViewportMinY)*height), (int)(myViewportSizeX*width), (int)(myViewportSizeY*height));
+			renderer->Viewport((int)(mViewportMinX*width), (int)(height - (mViewportSizeY + mViewportMinY)*height), (int)(mViewportSizeX*width), (int)(mViewportSizeY*height));
+			renderer->SetScissorValue((int)(mViewportMinX*width), (int)(height - (mViewportSizeY + mViewportMinY)*height), (int)(mViewportSizeX*width), (int)(mViewportSizeY*height));
 
-			kfloat size2=m_Size*0.5f;
-			renderer->Ortho(MATRIX_MODE_PROJECTION,- size2*aspect, size2*aspect, -size2, size2, myNear, myFar);
+			kfloat size2=mSize*0.5f;
+			renderer->Ortho(MATRIX_MODE_PROJECTION,- size2*aspect, size2*aspect, -size2, size2, mNearPlane, mFarPlane);
 			
 			auto l2g = GetLocalToGlobal();
 			renderer->LookAt(MATRIX_MODE_VIEW,
@@ -150,8 +150,8 @@ bool	DX11CameraOrtho::ProtectedSetActive(TravState* state)
 
 			// CLEAR BUFFER
 			int clearMode = RENDERER_CLEAR_NONE;
-			if (myClearZBuffer)     clearMode = clearMode | RENDERER_CLEAR_DEPTH;
-			if (myClearColorBuffer) clearMode = clearMode | RENDERER_CLEAR_COLOR;
+			if (mClearZBuffer)     clearMode = clearMode | RENDERER_CLEAR_DEPTH;
+			if (mClearColorBuffer) clearMode = clearMode | RENDERER_CLEAR_COLOR;
 			renderer->ClearView((RendererClearMode)clearMode);
 
 			renderer->SetScissorTestMode(RENDERER_SCISSOR_TEST_OFF);

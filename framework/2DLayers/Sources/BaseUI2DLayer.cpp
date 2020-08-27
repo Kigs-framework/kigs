@@ -197,7 +197,6 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 {
 	if ((!IsInit()))
 	{
-		//kigsprintf("%p %s %s %s\n",this, getName().c_str(), (myShowNode == true) ? "true" : "false", (IsInit()) ? "true" : "false");
 		return;
 	}
 
@@ -207,7 +206,7 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 
 	auto holo_before = state->GetHolographicMode();
 	state->SetHolographicMode(GetRenderingScreen()->IsHolographic());
-	state->HolographicUseStackMatrix = true;
+	state->mHolographicUseStackMatrix = true;
 
 
 	// call predraw (activate the shader)!
@@ -216,7 +215,6 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 	ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer*)state->GetRenderer();
 
 	int lShaderMask = ModuleRenderer::VERTEX_ARRAY_MASK | ModuleRenderer::TEXCOORD_ARRAY_MASK | ModuleRenderer::NO_LIGHT_MASK;
-	//if (myColors)lShaderMask |= ModuleRenderer::COLOR_ARRAY_MASK;
 
 	// create shader if none
 	renderer->GetActiveShader()->ChooseShader(state, lShaderMask);
@@ -228,7 +226,7 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 	renderer->SetLightMode(RENDERER_LIGHT_OFF);
 
 
-	state->myCurrentMaterial = 0;
+	state->mCurrentMaterial = 0;
 
 	state->SetAllVisible(false);
 
@@ -385,7 +383,7 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 
 
 	}
-	state->HolographicUseStackMatrix = false;
+	state->mHolographicUseStackMatrix = false;
 	state->SetHolographicMode(holo_before);
 	renderer->PopState();
 	
