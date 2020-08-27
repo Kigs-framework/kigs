@@ -2123,7 +2123,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 				std::string old_filename = settings->current_xml_file;
 
 				/*auto hdl = Platform_fopen(filename.c_str(), "rb");
-				if (hdl->myStatus & FileHandle::Exist)
+				if (hdl->mStatus & FileHandle::Exist)
 				{
 					auto cm = test[filename];
 					__debugbreak();

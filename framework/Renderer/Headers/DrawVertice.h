@@ -189,7 +189,6 @@ protected:
 #endif
 
 	u32 mVertexBuffer = -1;
-	//u32 myIndexBuffer = -1;
 };
 
 

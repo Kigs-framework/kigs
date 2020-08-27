@@ -62,7 +62,7 @@ public:
 	static void DumpProfilers();
 
 	/**
-	 * \brief		getter to myComputedTime
+	 * \brief		getter to mComputedTime
 	 * \fn			kdouble GetTime()
 	 * \return		the computed time for this profiler
 	 */
@@ -91,9 +91,9 @@ public:
 	}
 
 	/**
-	 * \brief		getter to myWasUpdate
+	 * \brief		getter to mWasUpdate
 	 * \fn			bool	WasUpdate()
-	 * \return		the value of myWasUpdate
+	 * \return		the value of mWasUpdate
 	 */
 	bool	WasUpdate()
 	{

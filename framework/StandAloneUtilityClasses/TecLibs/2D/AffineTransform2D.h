@@ -15,9 +15,9 @@ public:
 
 protected:
 
-	Point2D	myTranslate;
-	Point2D	myScale;
-	Float	myRotation;
+	Point2D	mTranslate;
+	Point2D	mScale;
+	Float	mRotation;
 };
 
 
