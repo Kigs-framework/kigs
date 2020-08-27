@@ -407,9 +407,9 @@ void WindowWin32::ProtectedInit()
 		dwStyle=WS_POPUP;
 
 		WindowRect.left=0;
-		WindowRect.right=(long)mySizeX;
+		WindowRect.right=(long)mSizeX;
 		WindowRect.top=0;
-		WindowRect.bottom = (long)mySizeY;
+		WindowRect.bottom = (long)mSizeY;
 #endif
 	}
 	else

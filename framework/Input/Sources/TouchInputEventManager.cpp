@@ -763,7 +763,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 
 	//kigsprintf("touch before transform : %f %f \n", (*Touches.begin()).posInfos.pos.x, (*Touches.begin()).posInfos.pos.y);
 
-	// now do transformation hierarchy for myCurrentTouchSupportRoot
+	// now do transformation hierarchy for mCurrentTouchSupportRoot
 	kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>>	transformedInfosMap;
 	transformTouchesInTouchSupportHierarchy(mCurrentTouchSupportRoot, transformedInfosMap, Touches);
 

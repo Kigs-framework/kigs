@@ -61,7 +61,7 @@ static auto GetDataFromHTTPContent(IHttpContent content)
 void HTTPAsyncRequestWUP::InitModifiable()
 {
 	HTTPAsyncRequest::InitModifiable();
-	if (myConnection)
+	if (mConnection)
 	{
 		//mClient = ref new Windows::Web::Http::HttpClient;
 		auto& client = mClient.emplace<HttpClient>();
@@ -69,10 +69,10 @@ void HTTPAsyncRequestWUP::InitModifiable()
 		
 
 
-		auto hostname = myConnection->getValue<std::string>("HostName");
-		auto type = myConnection->getValue<std::string>("Type") == "HTTP" ? "http://" : "https://";
+		auto hostname = mConnection->getValue<std::string>("HostName");
+		auto htype = mConnection->getValue<std::string>("Type") == "HTTP" ? "http://" : "https://";
 
-		auto uri = type + hostname + ":" + std::to_string(myConnection->getValue<int>("Port")) + mURL.const_ref();
+		auto uri = htype + hostname + ":" + std::to_string(mConnection->getValue<int>("Port")) + mURL.const_ref();
 
 		std::wstring uriL;
 		std::transform(uri.begin(), uri.end(), std::back_inserter(uriL), [](auto& a){ return a;	});
@@ -103,7 +103,7 @@ void HTTPAsyncRequestWUP::InitModifiable()
 		}
 		
 		bool isSync = false;
-		myConnection->getValue("IsSynchronous", isSync);
+		mConnection->getValue("IsSynchronous", isSync);
 
 		if (isSync)
 		{

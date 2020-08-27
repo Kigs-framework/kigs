@@ -821,11 +821,6 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 			// everything is managed by datadriven sequence init
 			mCurrentSequence = L_tmp;
 
-			/*kstl::set<CoreModifiable*> instances;
-			myCurrentSequence->GetSonInstancesByType("Abstract2DLayer", instances, false);
-			for (auto itr : instances)
-				((Abstract2DLayer*)itr)->SetMouseInfo(theMouseInfo);*/
-
 		}
 		// add to scenegraph for layers
 		else if (L_tmp->isSubType("Abstract2DLayer"))
