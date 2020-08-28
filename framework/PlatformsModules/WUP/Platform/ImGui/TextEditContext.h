@@ -100,14 +100,11 @@ struct ImGuiUWPCoreTextEditContext
 			RemoveInternalFocus();
 		}
 
-		auto pos_after = ImGui::GetCursorPos();
 		if (!internalFocus && utf8_text.empty() && !ghost_text.empty())
 		{
-			//ImGui::SetCursorPos(pos_before);
-			//ImGui::TextDisabled(ghost_text.c_str());
 			pos_before.x += ImGui::GetStyle().ItemInnerSpacing.x;
+			pos_before.y += ImGui::GetStyle().FramePadding.y + ImGui::GetStyle().ItemSpacing.y;
 			ImGui::GetWindowDrawList()->AddText(pos_before, ImColor(v4f(0.5f, 0.5f, 0.5f, 1.0f)), ghost_text.c_str());
-			//ImGui::SetCursorPos(pos_after);
 		}
 
 	}

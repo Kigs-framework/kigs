@@ -2625,7 +2625,6 @@ void ReloadCurrentSequence()
 #endif
 }
 
-
 void DrawAnimationCoreItemRec(const std::string& key,const CoreItemSP& current_item)
 {
 	std::string name = "";

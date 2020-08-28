@@ -175,7 +175,6 @@ void Holo3DSequenceManager::InitModifiable()
 	mySpacialNode->Init();
 
 	v2f size = mySize;
-	if (gIsVR) size = mySize = size*2;
 	
 	//Create collidable object
 	myCollidablePanel = KigsCore::GetInstanceOf("HoloUIPanel", "InterfacePanel");
@@ -437,7 +436,9 @@ void Holo3DSequenceManager::NotifyUpdate(const unsigned int labelid)
 	}
 	else if (labelid == mySize.getLabelID())
 	{
-
+		v2f size = mySize;
+		if(myCollidablePanel) myCollidablePanel->setValue("Size", size);
+		if(myDrawer) myDrawer->setValue("Size", size);
 	}
 	else if (labelid == myUseFixedNormal.getLabelID()
 		|| labelid == myUseFixedUp.getLabelID()
