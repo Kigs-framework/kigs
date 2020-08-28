@@ -88,11 +88,6 @@ bool	OpenGLMaterial::PreDraw(TravState* travstate)
 		renderer->SetColorMaterial(RENDERER_FRONT_AND_BACK, RENDERER_AMBIENT_AND_DIFFUSE);			
 		renderer->SetColorMaterialMode(mMaterialColorEnabled);
 
-		/*if (mDiffuseColor[3] != 1.0 || m_IsTransparent)
-		{
-			renderer->SetDepthMaskMode(RENDERER_DEPTH_MASK_OFF);
-		}*/
-
 		if (mBlendEnabled || (mDiffuseColor[3] < 1.0f))// || m_IsTransparent)
 		{
 			RendererBlendFuncMode sourceType;

@@ -1285,7 +1285,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 
 						bool click_end_found = false;
 
-						// look in m_CurrentClickEnd to see if an already existint click at almost same position is there
+						// look in mCurrentClickEnd to see if an already existint click at almost same position is there
 						auto itendclick = mCurrentClickEnd.find(touch.ID);
 						if (itendclick != mCurrentClickEnd.end())
 						{
@@ -1639,7 +1639,7 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 		}
 		
 	}
-	// now check m_CurrentInfosMap for finished swipes
+	// now check mCurrentInfosMap for finished swipes
 
 	// check if a previous started click was ended
 	if (!is_down)
@@ -1772,7 +1772,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 								cscroll.maindir.Set(cscroll.startpos, position);
 								cscroll.maindir.Normalize();
 
-								// if m_ScrollForceMainDir is set, check if it's OK
+								// if mScrollForceMainDir is set, check if it's OK
 								if (NormSquare(mScrollForceMainDir) > 0.01f)
 								{
 									kfloat dot = Dot(mScrollForceMainDir, cscroll.maindir);

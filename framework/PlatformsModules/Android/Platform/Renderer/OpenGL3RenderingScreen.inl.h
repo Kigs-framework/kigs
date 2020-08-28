@@ -21,7 +21,7 @@ void OpenGLPlatformRenderingScreen::InitModifiable()
 		return;
 	RenderingScreen::InitModifiable();
 
-	InitializeGL(mySizeX, mySizeY);
+	InitializeGL(mSizeX, mSizeY);
 
 }  
 

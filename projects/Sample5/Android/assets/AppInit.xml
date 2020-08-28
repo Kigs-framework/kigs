@@ -5,7 +5,7 @@
 	<Attr N="SizeX" V="1280"/>
 	<Attr N="SizeY" V="800"/>
 	<Attr N="FullScreen" V="false"/>
-	<Attr N="Mouse Cursor" V="true"/>
+	<Attr N="ShowMouseCursor" V="true"/>
 	<Attr Type="string" N="BundleFileName" V="files.bundle" Dyn="true"/>
 	
 	<Inst N="theRenderingScreen" Type="RenderingScreen">

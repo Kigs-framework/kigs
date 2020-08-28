@@ -202,16 +202,14 @@ protected:
 	virtual void Reset() = 0;
 
 	friend class TouchInputEventManager;
-	TouchEventState(KigsID methodnameID, u32 flag/*, CoreModifiable* touchsupport*/, InputEventType type) : mCurrentState(StatePossible)
+	TouchEventState(KigsID methodnameID, u32 flag, InputEventType type) : mCurrentState(StatePossible)
 		, mMethodNameID(methodnameID)
 		, mFlag(flag)
-		//, m_TouchSupport(touchsupport)
 		, mType(type)
 	{};
 	GestureRecognizerState		mCurrentState;
 	KigsID						mMethodNameID;
 	u32	mFlag;
-	//CoreModifiable*				m_TouchSupport;
 	InputEventType				mType;
 };
 

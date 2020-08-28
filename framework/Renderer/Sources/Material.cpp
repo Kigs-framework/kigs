@@ -74,7 +74,7 @@ bool	Material::Equal(const CoreModifiable& other)
 void	Material::DoPreDraw(TravState* travstate)
 {
 	// change material
-	if(travstate->mCurrentMaterial != this /*|| m_IsTransparent*/)
+	if(travstate->mCurrentMaterial != this)
 	{
 		// force previous post draw
 		if(travstate->mCurrentMaterial)
@@ -93,7 +93,7 @@ void	Material::DoPreDraw(TravState* travstate)
 
 void	Material::DoPostDraw(TravState* travstate)
 {
-	if(travstate->mCurrentMaterial != this/* || m_IsTransparent*/)
+	if(travstate->mCurrentMaterial != this)
 	{
 		//kigsprintf("%p(%s) %d >> Postdraw\n", this, getName().c_str(), --count);
 		Drawable::DoPostDraw(travstate);

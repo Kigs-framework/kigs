@@ -15,5 +15,5 @@ protected:
 	void	ProtectedClose() override;
 
 	// add a string attribute
-	maString m_StringParam = BASE_ATTRIBUTE("StringParam", "Sample4 string attribute");
+	maString mStringParam = BASE_ATTRIBUTE("StringParam", "Sample4 string attribute");
 };

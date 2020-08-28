@@ -20,5 +20,5 @@ protected:
 	virtual bool addItem(const CMSP& item, ItemPosition pos = Last) override;
 
 	// int CoreModifiable attribute named CountWhenAdded
-	maInt	m_CountWhenAdded = BASE_ATTRIBUTE(CountWhenAdded,0);
+	maInt	mCountWhenAdded = BASE_ATTRIBUTE(CountWhenAdded,0);
 };

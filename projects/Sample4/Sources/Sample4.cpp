@@ -125,7 +125,7 @@ void	Sample4::ProtectedInit()
 void	Sample4::ProtectedUpdate()
 {
 	// ask exit 
-	myNeedExit = true;
+	mNeedExit = true;
 }
 
 void	Sample4::ProtectedClose()

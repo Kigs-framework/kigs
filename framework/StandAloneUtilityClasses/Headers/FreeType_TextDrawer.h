@@ -128,11 +128,11 @@ private:
 	{
 	public:
 		
-		FT_Face					m_fontFace;
-		std::string				m_fontName;
-		unsigned int			m_fontSize;
-		unsigned char *			m_FaceBuffer;
-		unsigned int			m_UsedCount;
+		FT_Face					mFontFace;
+		std::string				mFontName;
+		unsigned int			mFontSize;
+		unsigned char *			mFaceBuffer;
+		unsigned int			mUsedCount;
 
 		FontFaceStruct()
 		{

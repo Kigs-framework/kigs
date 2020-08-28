@@ -179,9 +179,9 @@ void OpenGLRenderingScreen::ScreenShot(char * filename)
 {
 	// TODO : use TinyImage and fetchpixel
 
-	int windowWidth = mSizeX;
+/*	int windowWidth = mSizeX;
 	int windowHeight = mSizeY;
-/*
+
 
 	char*  bmpBuffer = (char*)new char[windowWidth*windowHeight * 3];
 	if (!bmpBuffer)
