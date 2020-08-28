@@ -16,10 +16,10 @@ protected:
 
 	virtual void NotifyUpdate(const u32 labelid) override;
 
-	maInt			m_IntValue;
-	maString		m_StringValue;
-	maReference		m_Ref = BASE_ATTRIBUTE(Reference,"");
+	maInt			mIntValue;
+	maString		mStringValue;
+	maReference		mRef = BASE_ATTRIBUTE(Reference,"");
 
-	maVect4DF		m_Vector4D = BASE_ATTRIBUTE(Vector, 0.0,0.0,1.0,2.0);
+	maVect4DF		mVector4D = BASE_ATTRIBUTE(Vector, 0.0,0.0,1.0,2.0);
 };
 

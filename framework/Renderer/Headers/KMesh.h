@@ -1469,7 +1469,7 @@ namespace KigsFramework
 
 		//! TRUE if myVertex need to be updated
 		maBool	mVertexNeedUpdate;
-		//! TRUE if myColor need to be updated
+		//! TRUE if mColor need to be updated
 		maBool	mColorNeedUpdate;
 		//! TRUE if myTexCoord need to be updated
 		maBool	mTexCoordNeedUpdate;

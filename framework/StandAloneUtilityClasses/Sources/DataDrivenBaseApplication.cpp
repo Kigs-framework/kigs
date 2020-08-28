@@ -749,7 +749,7 @@ void DataDrivenBaseApplication::ProtectedClose()
 
 void DataDrivenSequenceManager::SetState(State_t NewState)
 {
-	DataDrivenBaseApplication* isApp = aggregate_cast<DataDrivenBaseApplication>(this);
+
 	if (mInTransition) return;
 
 	if (NewState == State_Empty)

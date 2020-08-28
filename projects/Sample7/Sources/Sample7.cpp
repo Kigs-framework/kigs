@@ -83,6 +83,6 @@ void	Sample7::HelloFromLua()
 
 	if (counter > 4000)
 	{
-		myNeedExit = true;
+		mNeedExit = true;
 	}
 }

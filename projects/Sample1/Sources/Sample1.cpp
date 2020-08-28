@@ -100,7 +100,7 @@ void	Sample1::ProtectedUpdate()
 	// if timer was init more than 0.1 seconde before, then exit app
 	if (currentTime > 0.1)
 	{
-		myNeedExit = true;
+		mNeedExit = true;
 	}
 
 	// retreive "Sample1Value" value on this

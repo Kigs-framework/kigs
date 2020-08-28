@@ -315,7 +315,7 @@ protected:
 	class abstractBufferStruct
 	{
 	public:
-		abstractBufferStruct(unsigned int count, unsigned int structsize) : mItemCount(count), m_ItemSize(structsize)
+		abstractBufferStruct(unsigned int count, unsigned int structsize) : mItemCount(count), mItemSize(structsize)
 		{
 			mBuffer = new unsigned char[structsize*count];
 		}
@@ -335,10 +335,10 @@ protected:
 			delete[] mBuffer;
 			mBuffer = other.mBuffer;
 			mItemCount = other.mItemCount;
-			m_ItemSize = other.m_ItemSize;
+			mItemSize = other.mItemSize;
 			other.mBuffer = nullptr;
 			other.mItemCount = 0;
-			other.m_ItemSize = 0;
+			other.mItemSize = 0;
 			return *this;
 		}
 
@@ -349,7 +349,7 @@ protected:
 
 		void* operator[] (const unsigned int index) const
 		{
-			return (void*)(mBuffer + (index*m_ItemSize));
+			return (void*)(mBuffer + (index*mItemSize));
 		}
 
 		unsigned int size()
@@ -365,7 +365,7 @@ protected:
 	protected:
 		unsigned char*	mBuffer = nullptr;
 		unsigned int	mItemCount;
-		unsigned int	m_ItemSize;
+		unsigned int	mItemSize;
 
 	};
 

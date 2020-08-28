@@ -52,6 +52,7 @@ public:
 		PAUSED
 	};
 
+	//! return current time for this timer.
 	virtual double GetTime() const;
 	virtual void SetTime(double t);
 

@@ -134,7 +134,7 @@ void	Sample2::ProtectedUpdate()
 	
 
 	// ask exit 
-  	myNeedExit = true;
+  	mNeedExit = true;
 }
 
 void	Sample2::ProtectedClose()

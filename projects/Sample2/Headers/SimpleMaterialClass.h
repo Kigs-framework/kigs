@@ -13,7 +13,7 @@ public:
 protected:
 
 	// RGB color 
-	maVect3DF	m_Color = BASE_ATTRIBUTE(Color,1.0,0.0,0.0);
+	maVect3DF	mColor = BASE_ATTRIBUTE(Color,1.0,0.0,0.0);
 	// shininess 
-	maFloat		m_Shininess = BASE_ATTRIBUTE(Shininess, 0.5);
+	maFloat		mShininess = BASE_ATTRIBUTE(Shininess, 0.5);
 };

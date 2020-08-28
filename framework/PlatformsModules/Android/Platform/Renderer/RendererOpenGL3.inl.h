@@ -14,31 +14,31 @@ void RendererOpenGL::PlatformClose()
 // # Draw functions
 void	RendererOpenGL::DrawArrays(TravState* state,unsigned int mode, int first, int count)
 {
-	myVertexBufferManager->FlushBindBuffer();
+	mVertexBufferManager->FlushBindBuffer();
 	FlushState();
 	FlushMatrix(state);
-	myVertexBufferManager->FlushUnusedVertexAttrib();
+	mVertexBufferManager->FlushUnusedVertexAttrib();
 	glDrawArrays(mode, first, count);
 
-	myVertexBufferManager->MarkVertexAttrib();
+	mVertexBufferManager->MarkVertexAttrib();
 }
 
 void	RendererOpenGL::DrawElements(TravState* state,unsigned int mode, int count, unsigned int type, void* indices)
 {
-	myVertexBufferManager->FlushBindBuffer();
+	mVertexBufferManager->FlushBindBuffer();
 	FlushState();
 	FlushMatrix(state);
-	myVertexBufferManager->FlushUnusedVertexAttrib();
+	mVertexBufferManager->FlushUnusedVertexAttrib();
 	glDrawElements(mode, count, type, indices);
 	
-	myVertexBufferManager->MarkVertexAttrib();
+	mVertexBufferManager->MarkVertexAttrib();
 }
 
 void RendererOpenGL::DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount)
 {
 	KIGS_ASSERT(false);
 	/*
-	myVertexBufferManager->FlushBindBuffer();
+	mVertexBufferManager->FlushBindBuffer();
 	FlushState();
 	FlushMatrix(state);
 	CHECK_GLERROR;
@@ -47,6 +47,6 @@ void RendererOpenGL::DrawElementsInstanced(TravState* state, unsigned int mode, 
 	CHECK_GLERROR;
 
 	if (clear_manager)
-		myVertexBufferManager->Clear();
+		mVertexBufferManager->Clear();
 	*/
 }

@@ -20,13 +20,13 @@ public:
 
     
 protected:
-    maFloat m_Radius;
-	maVect4DF	myColor;
+    maFloat mRadius;
+	maVect4DF	mColor;
 
-    GLUquadric *myQuadObj; 
+    GLUquadric *mQuadObj; 
     virtual ~OpenGLSphere();
 
-	unsigned int		myListIndex;
+	unsigned int		mListIndex;
 
 };    
 

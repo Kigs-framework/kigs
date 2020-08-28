@@ -101,7 +101,7 @@ unsigned char* FreeType_TextDrawer::DrawTextToImage(const unsigned short* text, 
 	}
 
 	FT_Error error = 0;
-	FT_GlyphSlot slot = mFontFaceCache[mCurrentFontFace]->m_fontFace->glyph;
+	FT_GlyphSlot slot = mFontFaceCache[mCurrentFontFace]->mFontFace->glyph;
 	//int addHeight = 0;
 
 	// estimate bitmap dimensions
@@ -118,7 +118,7 @@ unsigned char* FreeType_TextDrawer::DrawTextToImage(const unsigned short* text, 
 		foundw=2;
 	}
 
-	int fontHeight=(mFontFaceCache[mCurrentFontFace]->m_fontFace->size->metrics.height)>>6;
+	int fontHeight=(mFontFaceCache[mCurrentFontFace]->mFontFace->size->metrics.height)>>6;
 	if (fontHeight < 2)fontHeight = 2;
 
 	unsigned int lineHeight=(foundh-2*BORDER_PIXEL_MARGIN)/result.size();
@@ -243,7 +243,7 @@ unsigned char* FreeType_TextDrawer::DrawTextToImage(const unsigned short* text, 
 				previous = 0;
 				continue;
 			}
-			error = FT_Load_Char(mFontFaceCache[mCurrentFontFace]->m_fontFace, *readchar, FT_LOAD_RENDER);
+			error = FT_Load_Char(mFontFaceCache[mCurrentFontFace]->mFontFace, *readchar, FT_LOAD_RENDER);
 			if (error || (*readchar == 13))
 			{
 			
@@ -354,7 +354,7 @@ std::vector<FreeType_TextDrawer::LineStruct> FreeType_TextDrawer::splitString(co
 	std::map<unsigned short, FT_Glyph_Metrics>	 metrics; 
 	FT_Glyph_Metrics * check_metrics = NULL;
 
-	FT_GlyphSlot slot = mFontFaceCache[mCurrentFontFace]->m_fontFace->glyph;
+	FT_GlyphSlot slot = mFontFaceCache[mCurrentFontFace]->mFontFace->glyph;
 	int addHeight = 0;
 
 	// estimate bitmap dimensions
@@ -407,7 +407,7 @@ std::vector<FreeType_TextDrawer::LineStruct> FreeType_TextDrawer::splitString(co
 				check_metrics = &metrics[readchar];
 			else
 			{
-				if (FT_Load_Char(mFontFaceCache[mCurrentFontFace]->m_fontFace, readchar, FT_LOAD_NO_BITMAP))
+				if (FT_Load_Char(mFontFaceCache[mCurrentFontFace]->mFontFace, readchar, FT_LOAD_NO_BITMAP))
 				{
 					// char error (should never be there)
 					continue;
@@ -734,12 +734,12 @@ void	FreeType_TextDrawer::startBuildFonts()
 /*
 bool FreeType_TextDrawer::NeedChangeFont(const char* fontName, unsigned int nSize)
 {
-	return (fontName != m_FontFaceStruct.m_fontName || nSize != m_FontFaceStruct.m_fontSize);
+	return (fontName != m_FontFaceStruct.mFontName || nSize != m_FontFaceStruct.mFontSize);
 }
 
 bool FreeType_TextDrawer::NeedChangeFontBuffer(const char* fontName)
 {
-	return (fontName != m_FontFaceStruct.m_fontName);
+	return (fontName != m_FontFaceStruct.mFontName);
 }*/
 
 bool FreeType_TextDrawer::SetFont(const char* fontName , const char* fullPath, unsigned int nSize)
@@ -751,25 +751,25 @@ bool FreeType_TextDrawer::SetFont(const char* fontName , const char* fullPath, u
 	FontFaceStruct* current=getFontStruct(fontName);
 	if(current)
 	{
-		if(nSize > 0 && nSize != current->m_fontSize)
+		if(nSize > 0 && nSize != current->mFontSize)
 		{
-			current->m_fontSize = nSize;
+			current->mFontSize = nSize;
 		}
-		FT_Set_Char_Size(current->m_fontFace, 0, current->m_fontSize * 64, 96, 0);
+		FT_Set_Char_Size(current->mFontFace, 0, current->mFontSize * 64, 96, 0);
 	
-		current->m_UsedCount=mUseCount;
+		current->mUsedCount=mUseCount;
 		return true;
 	}
 
 	current=searchOlderFontFaceInCache();
-	current->m_UsedCount=mUseCount;
-	current->m_fontName = fontName;
-	if(nSize > 0 && nSize != current->m_fontSize)
+	current->mUsedCount=mUseCount;
+	current->mFontName = fontName;
+	if(nSize > 0 && nSize != current->mFontSize)
 	{
-		current->m_fontSize = nSize;
+		current->mFontSize = nSize;
 	}
 
-	error = FT_New_Face( mLibraryContext, fullPath, 0, &current->m_fontFace );
+	error = FT_New_Face( mLibraryContext, fullPath, 0, &current->mFontFace );
 	
 	// set default font
 	if(error)
@@ -779,7 +779,7 @@ bool FreeType_TextDrawer::SetFont(const char* fontName , const char* fullPath, u
 
 	if(!error)
 	{
-		error = FT_Set_Char_Size(current->m_fontFace, 0, current->m_fontSize * 64, 96, 0);
+		error = FT_Set_Char_Size(current->mFontFace, 0, current->mFontSize * 64, 96, 0);
 	}
 	else
 	{
@@ -800,22 +800,22 @@ bool FreeType_TextDrawer::SetFont(const char* fontName, unsigned char * data, un
 	FontFaceStruct* current=getFontStruct(fontName);
 	if(current)
 	{
-		if(current->m_fontSize != nSize)
+		if(current->mFontSize != nSize)
 		{
-			current->m_fontSize = nSize;
-			FT_Set_Char_Size(current->m_fontFace, 0, current->m_fontSize * 64, 96, 0);
+			current->mFontSize = nSize;
+			FT_Set_Char_Size(current->mFontFace, 0, current->mFontSize * 64, 96, 0);
 		}
-		current->m_UsedCount=mUseCount;
+		current->mUsedCount=mUseCount;
 		return true;
 	}
 
 	current=searchOlderFontFaceInCache();
-	current->m_UsedCount=mUseCount;
-	current->m_fontName = fontName;
-	current->m_fontSize = nSize;
+	current->mUsedCount=mUseCount;
+	current->mFontName = fontName;
+	current->mFontSize = nSize;
 
 	// create new fontFace
-	FT_New_Memory_Face( mLibraryContext, data, fileSize, 0, &current->m_fontFace );
+	FT_New_Memory_Face( mLibraryContext, data, fileSize, 0, &current->mFontFace );
 	if(error)
 	{
 		current->release();
@@ -826,9 +826,9 @@ bool FreeType_TextDrawer::SetFont(const char* fontName, unsigned char * data, un
 	}
 
 	// keep ref on buffer
-	current->m_FaceBuffer = data;
+	current->mFaceBuffer = data;
 
-	error = FT_Set_Char_Size(current->m_fontFace, 0, current->m_fontSize * 64, 96, 0);
+	error = FT_Set_Char_Size(current->mFontFace, 0, current->mFontSize * 64, 96, 0);
 
 	return true;
 }
@@ -974,9 +974,9 @@ FreeType_TextDrawer::FontFaceStruct*	FreeType_TextDrawer::searchOlderFontFaceInC
 		std::vector<FontFaceStruct*>::iterator	it;
 		for(it=mFontFaceCache.begin();it!=mFontFaceCache.end();it++)
 		{
-			if((*it)->m_UsedCount<older)
+			if((*it)->mUsedCount<older)
 			{
-				older=(*it)->m_UsedCount;
+				older=(*it)->mUsedCount;
 				olderIndex=index;
 			}
 			index++;
@@ -992,7 +992,7 @@ bool FreeType_TextDrawer::IsInCache(const char* fontName)
 	std::vector<FontFaceStruct*>::iterator	it;
 	for(it=mFontFaceCache.begin();it!=mFontFaceCache.end();it++)
 	{
-		if((*it)->m_fontName == fontName)
+		if((*it)->mFontName == fontName)
 		{
 			return true;
 		}
@@ -1006,7 +1006,7 @@ FreeType_TextDrawer::FontFaceStruct* FreeType_TextDrawer::getFontStruct(const ch
 	std::vector<FontFaceStruct*>::iterator	it;
 	for(it=mFontFaceCache.begin();it!=mFontFaceCache.end();it++)
 	{
-		if((*it)->m_fontName == fontname)
+		if((*it)->mFontName == fontname)
 		{
 			mCurrentFontFace=index;
 			return *it;
@@ -1018,16 +1018,16 @@ FreeType_TextDrawer::FontFaceStruct* FreeType_TextDrawer::getFontStruct(const ch
 
 void	FreeType_TextDrawer::FontFaceStruct::init()
 {
-	m_fontSize=-1;
-	m_fontName="";
-	m_fontFace=0;
-	m_FaceBuffer=0;
-	m_UsedCount=0;
+	mFontSize=-1;
+	mFontName="";
+	mFontFace=0;
+	mFaceBuffer=0;
+	mUsedCount=0;
 }
 
 void	FreeType_TextDrawer::FontFaceStruct::release()
 {
-	if(m_fontFace != 0) FT_Done_Face(m_fontFace);
-	if(m_FaceBuffer != 0) delete[] m_FaceBuffer;
+	if(mFontFace != 0) FT_Done_Face(mFontFace);
+	if(mFaceBuffer != 0) delete[] mFaceBuffer;
 	init();
 }
