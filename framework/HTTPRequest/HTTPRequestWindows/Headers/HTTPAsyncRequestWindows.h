@@ -50,7 +50,7 @@ typedef struct _REQUEST_CONTEXT
 	DWORD HandleUsageCount; // Request object is in use(not safe to close handle)
 	bool Closing;           // Request is closing(don't use handle)
 
-	HTTPAsyncRequestWindows*	myRequestCaller;
+	HTTPAsyncRequestWindows*	mRequestCaller;
 
 } REQUEST_CONTEXT;
 
@@ -167,13 +167,13 @@ protected:
 		int		mSize;
 	};
 
-	std::vector<receivedBuffer>	myBufferVector;
+	std::vector<receivedBuffer>	mBufferVector;
 
 	//! destructor
     virtual ~HTTPAsyncRequestWindows();
 	
 	//HINTERNET			myHandle;
-	REQUEST_CONTEXT*			myRequestContext;
+	REQUEST_CONTEXT*			mRequestContext;
 
 	bool mIsSync;
 };

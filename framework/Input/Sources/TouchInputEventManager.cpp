@@ -48,11 +48,11 @@ TouchEventState*	TouchInputEventManager::registerEvent(CoreModifiable* registere
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 	if (mStackedEventState.back().mEventMap.find(registeredObject) == mStackedEventState.back().mEventMap.end()) // need to create an mEntry
 	{
-		StackedEventStateStruct::EventMapEntry& currentEntry = mStackedEventState.back().mEventMap[registeredObject];
+		StackedEventStateStruct::EventMapEntry& lcurrentEntry = mStackedEventState.back().mEventMap[registeredObject];
 	
 		// We do the search for the root scene in the update if not found, no need to duplicate the code here
-		currentEntry.mRootScene3D = root_scene;
-		currentEntry.mTouchEventStateList.clear();
+		lcurrentEntry.mRootScene3D = root_scene;
+		lcurrentEntry.mTouchEventStateList.clear();
 	}
 
 	StackedEventStateStruct::EventMapEntry& currentEntry= mStackedEventState.back().mEventMap[registeredObject];
@@ -68,7 +68,7 @@ TouchEventState*	TouchInputEventManager::registerEvent(CoreModifiable* registere
 		if ((*itlist)->mType == type)
 		{
 			KIGS_WARNING("trying to register the same input event several time", 1);
-			return 0;
+			return (*itlist);
 		}
 		++itlist;
 	}

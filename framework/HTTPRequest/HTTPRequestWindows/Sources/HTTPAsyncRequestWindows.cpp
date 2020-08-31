@@ -9,20 +9,20 @@
 IMPLEMENT_CLASS_INFO(HTTPAsyncRequestWindows)
 
 IMPLEMENT_CONSTRUCTOR(HTTPAsyncRequestWindows)
-, myRequestContext(0)
+, mRequestContext(0)
 {
 	//default value
-	myFlags = INTERNET_FLAG_NO_CACHE_WRITE |
+	mFLAGS = INTERNET_FLAG_NO_CACHE_WRITE |
 		INTERNET_FLAG_KEEP_CONNECTION |
 		INTERNET_FLAG_PRAGMA_NOCACHE;
 }     
 
 HTTPAsyncRequestWindows::~HTTPAsyncRequestWindows()
 {
-	if (myRequestContext)
+	if (mRequestContext)
 	{
-		CleanUpRequestContext(myRequestContext);
-		myRequestContext = 0;
+		CleanUpRequestContext(mRequestContext);
+		mRequestContext = 0;
 	}
 }    
 
@@ -32,21 +32,21 @@ HTTPAsyncRequestWindows::~HTTPAsyncRequestWindows()
 void HTTPAsyncRequestWindows::InitModifiable()
 {
 	ParentClassType::InitModifiable();
-	if ((CoreModifiable*)myConnection)
+	if ((CoreModifiable*)mConnection)
 	{
 		
-		AllocateAndInitializeRequestContext(((HTTPConnectWindows*)(CoreModifiable*)myConnection)->getHandle(), &myRequestContext);
+		AllocateAndInitializeRequestContext(((HTTPConnectWindows*)(CoreModifiable*)mConnection)->getHandle(), &mRequestContext);
 		
-		ProcessRequest(myRequestContext, ERROR_SUCCESS);
+		ProcessRequest(mRequestContext, ERROR_SUCCESS);
 
 		bool isSync = false;
 
-		myConnection->getValue("IsSynchronous", isSync);
+		mConnection->getValue("IsSynchronous", isSync);
 
 		if (isSync)
 		{
 			// wait till done
-			WaitForRequestCompletion(myRequestContext, 2 * 60 * 1000);
+			WaitForRequestCompletion(mRequestContext, 2 * 60 * 1000);
 		}
 		
 	}
@@ -124,10 +124,10 @@ int HTTPAsyncRequestWindows::WriteResponse()
 	// retreive total size
 
 	unsigned int ReceivedRawBufferSize = 0;
-	if (myReceiveFullAnswer == true)
+	if (mReceiveFullAnswer == true)
 	{
 		std::vector<receivedBuffer>::iterator it;
-		for (it = myBufferVector.begin(); it != myBufferVector.end(); it++)
+		for (it = mBufferVector.begin(); it != mBufferVector.end(); it++)
 		{
 			ReceivedRawBufferSize += (*it).mSize;
 		}
@@ -142,32 +142,32 @@ int HTTPAsyncRequestWindows::WriteResponse()
 			ReceivedRawBuffer[ReceivedRawBufferSize + 1] = 0;
 			unsigned char*	writebuff = ReceivedRawBuffer;
 
-			for (it = myBufferVector.begin(); it != myBufferVector.end(); it++)
+			for (it = mBufferVector.begin(); it != mBufferVector.end(); it++)
 			{
 				memcpy(writebuff, (*it).mBuffer, (*it).mSize);
 				writebuff += (*it).mSize;
 			}
 
 			CoreRawBuffer*	tmp= new CoreRawBuffer(ReceivedRawBuffer, ReceivedRawBufferSize);
-			myReceivedBuffer = tmp;
+			mReceivedBuffer = tmp;
 			tmp->Destroy();
 
 		}
-		for (it = myBufferVector.begin(); it != myBufferVector.end(); it++)
+		for (it = mBufferVector.begin(); it != mBufferVector.end(); it++)
 		{
 			delete[](*it).mBuffer;
 		}
-		myBufferVector.clear();
+		mBufferVector.clear();
 	}
 	return ReceivedRawBufferSize;
 }
 
 void HTTPAsyncRequestWindows::protectedProcess()
 {
-	if (myRequestContext)
+	if (mRequestContext)
 	{
-		CleanUpRequestContext(myRequestContext);
-		myRequestContext = 0;
+		CleanUpRequestContext(mRequestContext);
+		mRequestContext = 0;
 	}
 	HTTPAsyncRequest::protectedProcess();
 
@@ -270,7 +270,7 @@ None.
 	}
 	else
 	{		
-		if (static_cast<HTTPConnectWindows*>(static_cast<CoreModifiable*>(myConnection))->IsSync())
+		if (static_cast<HTTPConnectWindows*>(static_cast<CoreModifiable*>(mConnection))->IsSync())
 			setTimedOut();
 	}
 
@@ -306,11 +306,11 @@ Error code for the operation.
 		return Error;
 	}
 
-	auto type = (const std::string&)myRequestType;
+	auto type = (const std::string&)mType;
 	if (type == "POST" || type == "PUT")
 	{
-		L_Data = myPostBuffer;
-		L_DataLength = myPostBufferLength;
+		L_Data = mPostBuffer;
+		L_DataLength = mPostBufferLength;
 	}
 
 	if (mHeaders.size())
@@ -568,8 +568,8 @@ DWORD HTTPAsyncRequestWindows::RecvHeader(
 
 
 	HttpQueryInfoA(ReqContext->RequestHandle, HTTP_QUERY_RAW_HEADERS, (void*)lpOutBuffer, &dwSize, NULL);
-	myContentEncoding = ANSI;
-	myContentType = "";
+	mContentEncoding = ANSI;
+	mContentType = "";
 	if (dwSize)
 	{
 		lpOutBuffer = new unsigned char[dwSize + 1];
@@ -583,21 +583,21 @@ DWORD HTTPAsyncRequestWindows::RecvHeader(
 
 			if (strcmp(encoding.c_str(), "utf-8") == 0)
 			{
-				myContentEncoding = UTF8;
+				mContentEncoding = UTF8;
 			}
 			else if (strcmp(encoding.c_str(), "utf-16") == 0)
 			{
-				myContentEncoding = UTF16;
+				mContentEncoding = UTF16;
 			}
 		}
 		parserHeader.SetPosition(0);
-		myFoundCharset = ANSI;
+		mFoundCharset = ANSI;
 		if (parserHeader.MoveToString("Content-Type: "))
 		{
 			AsciiParserUtils	contenttype(parserHeader);
 			parserHeader.GetString(contenttype, '.');
 
-			myContentType = contenttype;
+			mContentType = contenttype;
 
 			// search charset in content-type
 			if (contenttype.MoveToString("charset="))
@@ -607,11 +607,11 @@ DWORD HTTPAsyncRequestWindows::RecvHeader(
 				kstl::string strcharset = (const kstl::string&)charset;
 				if (strcharset == "utf-8")
 				{
-					myFoundCharset = UTF8;
+					mFoundCharset = UTF8;
 				}
 				else if (strcharset == "utf-16")
 				{
-					myFoundCharset = UTF16;
+					mFoundCharset = UTF16;
 				}
 
 			}
@@ -684,7 +684,7 @@ Error Code for the operation.
 
 	Success = InternetReadFile(ReqContext->RequestHandle,
 		ReqContext->OutputBuffer,
-		myReceiveBufferSize,
+		mReceiveBufferSize,
 		&ReqContext->DownloadedBytes);
 
 	ReleaseRequestHandle(ReqContext);
@@ -747,14 +747,14 @@ Error Code for the operation.
 
 	}
 
-	if (myReceiveFullAnswer == true)
+	if (mReceiveFullAnswer == true)
 	{
 		receivedBuffer toAdd;
 		toAdd.mBuffer = (char*)malloc(ReqContext->DownloadedBytes);
 		memcpy(toAdd.mBuffer, ReqContext->OutputBuffer, ReqContext->DownloadedBytes);
 		toAdd.mSize = ReqContext->DownloadedBytes;
 
-		myBufferVector.push_back(toAdd);
+		mBufferVector.push_back(toAdd);
 	}
 	else
 	{
@@ -810,7 +810,7 @@ Error Code for the operation.
 	LocalReqContext->ReadBytes = 0;
 	LocalReqContext->HandleUsageCount = 0;
 	LocalReqContext->Closing = FALSE;
-	LocalReqContext->Method = (int)(myRequestType);
+	LocalReqContext->Method = (int)(mType);
 	LocalReqContext->CompletionEvent = NULL;
 	LocalReqContext->CleanUpEvent = NULL;
 	LocalReqContext->OutputBuffer = NULL;
@@ -818,7 +818,7 @@ Error Code for the operation.
 		(LocalReqContext->Method == 0) ? REQ_STATE_SEND_REQ : REQ_STATE_SEND_REQ_WITH_BODY;
 	LocalReqContext->CritSecInitialized = FALSE;
 
-	LocalReqContext->myRequestCaller = this;
+	LocalReqContext->mRequestCaller = this;
 
 
 	// initialize critical section
@@ -837,7 +837,7 @@ Error Code for the operation.
 
 	LocalReqContext->CritSecInitialized = TRUE;
 
-	LocalReqContext->OutputBuffer = (LPSTR)malloc(myReceiveBufferSize);
+	LocalReqContext->OutputBuffer = (LPSTR)malloc(mReceiveBufferSize);
 
 	if (LocalReqContext->OutputBuffer == NULL)
 	{
@@ -876,7 +876,7 @@ Error Code for the operation.
 	}
 
 
-	((CoreModifiable*)myConnection)->getValue("Type", connecttype);
+	((CoreModifiable*)mConnection)->getValue("Type", connecttype);
 
 	if (connecttype == 1)
 	{
@@ -935,8 +935,8 @@ Error Code for the operation.
 {
 	DWORD Error = ERROR_SUCCESS;
 	
-	DWORD RequestFlags = myFlags;
-	kstl::string L_version = (myVersion) ? "HTTP/1.0" : "HTTP/1.1";
+	DWORD RequestFlags = mFLAGS;
+	kstl::string L_version = (mVersion) ? "HTTP/1.0" : "HTTP/1.1";
 	//
 	// Set the correct server port if using SSL
 	// Also set the flag for HttpOpenRequest 
@@ -948,7 +948,7 @@ Error Code for the operation.
 	}
 
 	// Create Connection handle and provide context for async operations
-	ReqContext->ConnectHandle = ((HTTPConnectWindows*)(CoreModifiable*)myConnection)->getHandle();
+	ReqContext->ConnectHandle = ((HTTPConnectWindows*)(CoreModifiable*)mConnection)->getHandle();
 	LPTSTR AcceptTypes[2] = { (LPTSTR)TEXT("*/*"), NULL };
 
 	// used during the callbacks
@@ -986,8 +986,8 @@ Error Code for the operation.
 	
 	// Create a Request handle
 	ReqContext->RequestHandle = HttpOpenRequestA(ReqContext->ConnectHandle,
-		((const kstl::string&)myRequestType).c_str(),                     // GET, POST, PUT, DELETE
-		myRequestURL.c_str(),                 // root "/" by default
+		((const kstl::string&)mType).c_str(),                     // GET, POST, PUT, DELETE
+		mURL.c_str(),                 // root "/" by default
 		L_version.c_str(),                     // Use default HTTP/1.1 as the version
 		NULL,                     // Do not provide any referrer
 		(LPCTSTR*)AcceptTypes,                     // Do not provide Accept types
