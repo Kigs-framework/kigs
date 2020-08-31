@@ -134,19 +134,19 @@ VOID  HTTPRequestModuleWindows::WinInetCallback(
 
 	case INTERNET_STATUS_REQUEST_COMPLETE:
 		DEBUG_PRINT("Status: Request complete\n");
-		ReqContext->myRequestCaller->ProcessRequest(ReqContext, ((LPINTERNET_ASYNC_RESULT)lpvStatusInformation)->dwError);
+		ReqContext->mRequestCaller->ProcessRequest(ReqContext, ((LPINTERNET_ASYNC_RESULT)lpvStatusInformation)->dwError);
 		break;
 	case INTERNET_STATUS_RESPONSE_RECEIVED:
 	{
 		int nb_bytes = *((LPDWORD)lpvStatusInformation);
-		ReqContext->myRequestCaller->AddDownloadProgress(nb_bytes);
+		ReqContext->mRequestCaller->AddDownloadProgress(nb_bytes);
 		DEBUG_PRINT("Status: Response Received (%d Bytes)\n", *((LPDWORD)lpvStatusInformation));
 		break;
 	}
 	case INTERNET_STATUS_REQUEST_SENT:
 	{
 		int nb_bytes = *((LPDWORD)lpvStatusInformation);
-		ReqContext->myRequestCaller->AddUploadProgress(nb_bytes);
+		ReqContext->mRequestCaller->AddUploadProgress(nb_bytes);
 		DEBUG_PRINT("Status: Request sent (%d Bytes)\n", *((LPDWORD)lpvStatusInformation));
 		break;
 	}
