@@ -4,18 +4,6 @@
 #include "TimeProfiler.h"
 #include "ControlledTimer.h"
 
-// ****************************************
-// * ModuleTimer class
-// * --------------------------------------
-/**
- * \file	ModuleTimer.cpp
- * \ingroup Module
- * \brief	time and profiler module (source)
- * \author	ukn
- * \version ukn
- * \date	ukn
- */
-// ****************************************
 IMPLEMENT_CLASS_INFO(ModuleTimer)
 
 ModuleTimer::ModuleTimer(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
@@ -49,8 +37,8 @@ void ModuleTimer::Update(const Timer& timer, void* addParam)
 
 	// update tickers
 
-	kstl::map<CoreModifiable*,CoreModifiable*>::iterator	itTickers=myTickerList.begin();
-	while(itTickers!=myTickerList.end())
+	kstl::map<CoreModifiable*,CoreModifiable*>::iterator	itTickers=mTickerList.begin();
+	while(itTickers!=mTickerList.end())
 	{
 		(*itTickers).first->CallUpdate(timer,addParam);
 		++itTickers;
@@ -63,9 +51,9 @@ bool	ModuleTimer::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	if(item->isSubType("TimeTicker"))
 	{
 		CoreModifiable* i = item.Pointer();
-		if(myTickerList.find(i)==myTickerList.end())
+		if(mTickerList.find(i)==mTickerList.end())
 		{
-			myTickerList[i]=i;
+			mTickerList[i]=i;
 		}
 	}
 
@@ -77,9 +65,9 @@ bool	ModuleTimer::removeItem(const CMSP& item DECLARE_LINK_NAME)
 	if(item->isSubType("TimeTicker"))
 	{
 		CoreModifiable* i = item.get();
-		if(myTickerList.find(i)!=myTickerList.end())
+		if(mTickerList.find(i)!=mTickerList.end())
 		{
-			myTickerList.erase(i);
+			mTickerList.erase(i);
 		}
 	}
 

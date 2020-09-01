@@ -6,25 +6,25 @@
 IMPLEMENT_CLASS_INFO(UIRatioKeeper)
 
 IMPLEMENT_CONSTRUCTOR(UIRatioKeeper)
-, myRatioIsOK(false)
+, mRatioIsOK(false)
 {
 	
 }
 
 void UIRatioKeeper::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mySizeX.getLabelID()) ||
-		(labelid == mySizeY.getLabelID()) ||
-		(labelid == myAnchor.getLabelID()) ||
-		(labelid == myPosition.getLabelID()) ||
-		(labelid == myDock.getLabelID()) ||
-		(labelid == myPreScaleX.getLabelID()) ||
-		(labelid == myPreScaleY.getLabelID()) ||
-		(labelid == myPostScaleX.getLabelID()) ||
-		(labelid == myPostScaleY.getLabelID()))
+	if ((labelid == mSizeX.getLabelID()) ||
+		(labelid == mSizeY.getLabelID()) ||
+		(labelid == mAnchor.getLabelID()) ||
+		(labelid == mPosition.getLabelID()) ||
+		(labelid == mDock.getLabelID()) ||
+		(labelid == mPreScaleX.getLabelID()) ||
+		(labelid == mPreScaleY.getLabelID()) ||
+		(labelid == mPostScaleX.getLabelID()) ||
+		(labelid == mPostScaleY.getLabelID()))
 	{
 		// I don't want this values to be changed, so reset them
-		myRatioIsOK = false;
+		mRatioIsOK = false;
 	}
 	ParentClassType::NotifyUpdate(labelid);
 
@@ -60,40 +60,40 @@ void	UIRatioKeeper::RecomputeRatio()
 		currentScreen->GetDesignSize(dsSize.x, dsSize.y);
 
 		// reset default
-		mySizeX = dsSize.x;
-		mySizeY = dsSize.y;
+		mSizeX = dsSize.x;
+		mSizeY = dsSize.y;
 
-		myRealSize = dsSize;
+		mRealSize = dsSize;
 
-		myPosition = v2f{ 0,0 };
-		myDock = v2f{ 0.5f, 0.5f };
-		myAnchor = v2f{ 0.5f, 0.5f };
+		mPosition = v2f{ 0,0 };
+		mDock = v2f{ 0.5f, 0.5f };
+		mAnchor = v2f{ 0.5f, 0.5f };
 		
-		myPostScaleX = 1.0f;
-		myPostScaleY = 1.0f;
-		myPreScaleX = 1.0f;
-		myPreScaleY = 1.0f;
+		mPostScaleX = 1.0f;
+		mPostScaleY = 1.0f;
+		mPreScaleX = 1.0f;
+		mPreScaleY = 1.0f;
 
 
 		Point2D ratio(pxSize.x / dsSize.x, pxSize.y / dsSize.y);
 
 		if (ratio.x < ratio.y)
 		{
-			myPreScaleY = ratio.x / ratio.y;
+			mPreScaleY = ratio.x / ratio.y;
 		}
 		else
 		{
-			myPreScaleX = ratio.y / ratio.x;
+			mPreScaleX = ratio.y / ratio.x;
 		}
 
-		myNeedUpdatePosition = true;
-		myRatioIsOK = true;
+		mNeedUpdatePosition = true;
+		mRatioIsOK = true;
 	}
 }
 
 void	UIRatioKeeper::Update(const Timer& a_Timer, void* addParam)
 {
-	if (!myRatioIsOK)
+	if (!mRatioIsOK)
 	{
 		RecomputeRatio();
 	}

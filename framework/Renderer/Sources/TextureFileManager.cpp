@@ -20,7 +20,7 @@ TextureFileManager::~TextureFileManager()
 
 bool TextureFileManager::HasTexture(const kstl::string& fileName)
 {
-	if (myTextureMap.find(fileName) != myTextureMap.end())
+	if (mTextureMap.find(fileName) != mTextureMap.end())
 		return true;
 	return false;
 }
@@ -29,7 +29,7 @@ void TextureFileManager::AddTexture(const kstl::string& fileName, CoreModifiable
 {
 	if (!HasTexture(fileName))
 	{
-		myTextureMap[fileName] = Tex;
+		mTextureMap[fileName] = Tex;
 	}
 	else
 	{
@@ -42,7 +42,7 @@ void TextureFileManager::AddTexture(const kstl::string& fileName, CMSP& Tex)
 {
 	if (!HasTexture(fileName))
 	{
-		myTextureMap[fileName] = Tex.get();
+		mTextureMap[fileName] = Tex.get();
 	}
 	else
 	{
@@ -76,7 +76,7 @@ SP<Texture> TextureFileManager::GetTexture(const kstl::string& fileName, bool do
 	// already loaded ?
 	if (HasTexture(fileName))
 	{
-		pTex = CMSP(myTextureMap[fileName], GetRefTag{});
+		pTex = CMSP(mTextureMap[fileName], GetRefTag{});
 	}
 	else
 	{
@@ -97,7 +97,7 @@ SP<Texture> TextureFileManager::GetTexture(const kstl::string& fileName, const k
 	// already loaded ?
 	if (HasTexture(a_textureName))
 	{
-		pTex = CMSP(myTextureMap[a_textureName], GetRefTag{});
+		pTex = CMSP(mTextureMap[a_textureName], GetRefTag{});
 	}
 	else
 	{
@@ -121,7 +121,7 @@ SP<SpriteSheetTexture> TextureFileManager::GetSpriteSheetTexture(const kstl::str
 	// already loaded ?
 	if (HasTexture(fileName))
 	{
-		L_pSpriteSheet = CMSP(myTextureMap[fileName], GetRefTag{});
+		L_pSpriteSheet = CMSP(mTextureMap[fileName], GetRefTag{});
 	}
 	else
 	{
@@ -136,10 +136,10 @@ SP<SpriteSheetTexture> TextureFileManager::GetSpriteSheetTexture(const kstl::str
 
 void TextureFileManager::ResetAllTexture()
 {
-	kstl::map<kstl::string, CoreModifiable*>::iterator	it = myTextureMap.begin();
-	for (; it != myTextureMap.end(); ++it)
+	kstl::map<kstl::string, CoreModifiable*>::iterator	it = mTextureMap.begin();
+	for (; it != mTextureMap.end(); ++it)
 	{
-		if ((*it).second->isSubType(Texture::myClassID))
+		if ((*it).second->isSubType(Texture::mClassID))
 		{
 			((Texture*)(*it).second)->SetFlag(Texture::isDirtyContext);
 			(*it).second->ReInit();
@@ -149,18 +149,18 @@ void TextureFileManager::ResetAllTexture()
 
 void TextureFileManager::UnloadAllTexture()
 {
-	myTextureMap.clear();
+	mTextureMap.clear();
 }
 
 void TextureFileManager::UnloadTexture(Texture* Tex)
 {
 	// search this texture
 	kstl::map<kstl::string, CoreModifiable*>::iterator	it;
-	for (it = myTextureMap.begin(); it != myTextureMap.end(); ++it)
+	for (it = mTextureMap.begin(); it != mTextureMap.end(); ++it)
 	{
 		if (it->second == Tex)
 		{
-			myTextureMap.erase(it);
+			mTextureMap.erase(it);
 			break;
 		}
 	}
@@ -172,11 +172,11 @@ void TextureFileManager::UnloadTexture(SpriteSheetTexture* Tex)
 
 	kstl::map<kstl::string, CoreModifiable*>::iterator	it;
 
-	for (it = myTextureMap.begin(); it != myTextureMap.end(); ++it)
+	for (it = mTextureMap.begin(); it != mTextureMap.end(); ++it)
 	{
 		if ((*it).second == Tex)
 		{
-			myTextureMap.erase(it);
+			mTextureMap.erase(it);
 			break;
 		}
 	}
@@ -185,5 +185,5 @@ void TextureFileManager::UnloadTexture(SpriteSheetTexture* Tex)
 
 void TextureFileManager::ClearCache()
 {
-	myTextureMap.clear();
+	mTextureMap.clear();
 }

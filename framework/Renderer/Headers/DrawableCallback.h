@@ -9,16 +9,12 @@
 /**
  * \file	DrawableCallback.h
  * \class	DrawableCallback
- * \ingroup Drawable
- * \ingroup RendererDrawable
- * \brief	
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \ingroup Renderer
+ * \brief	Post notification when in Predraw, Draw and Postdraw. 
  *
- * Module Dependency :<br><ul><li>ModuleRenderer</li></ul>
+
  */
-// ****************************************
+ // ****************************************
 class DrawableCallback : public Drawable
 {
 public:

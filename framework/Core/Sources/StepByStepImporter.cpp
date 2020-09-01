@@ -11,17 +11,17 @@ IMPLEMENT_CLASS_INFO(StepByStepImporter)
 
 //! constructor
 StepByStepImporter::StepByStepImporter(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG),
-myFileName(*this,true,LABEL_AND_ID(FileName)),
-myDeltaTimePerStep(*this,false,LABEL_AND_ID(DeltaTimePerStep),KFLOAT_CONST(0.01f))
+mFileName(*this,true,LABEL_AND_ID(FileName)),
+mDeltaTimePerStep(*this,false,LABEL_AND_ID(DeltaTimePerStep),KFLOAT_CONST(0.01f))
 {
-	myImportedRoot=0;
-	myXmlfile=0;
-	myXMLRootNode=0;
-	myImportTreeRoot=0;
-	myLoadedItems.clear();
-	myCurrentImportedTreeNode=0;
-	myTimer=0;
-	myLoadingIsDone = 0;
+	mImportedRoot=0;
+	mXmlfile=0;
+	mXMLRootNode=0;
+	mImportTreeRoot=0;
+	mLoadedItems.clear();
+	mCurrentImportedTreeNode=0;
+	mTimer=0;
+	mLoadingIsDone = 0;
 }     
 
 void	StepByStepImporter::InitModifiable()
@@ -29,39 +29,39 @@ void	StepByStepImporter::InitModifiable()
 	CoreModifiable::InitModifiable();
 	if(_isInit)
 	{
-		printf("create %s\n",myFileName.c_str());
-		myXmlfile=(XML*)XML::ReadFile(myFileName,0);
+		printf("create %s\n",mFileName.c_str());
+		mXmlfile=(XML*)XML::ReadFile(mFileName,0);
 
-		if(!myXmlfile)
+		if(!mXmlfile)
 		{
 			UninitModifiable();
 			return;
 		}
 
-		myLoadedItems.clear();
-		myXMLRootNode=(XMLNode*)myXmlfile->getRoot();
-		myImportTreeRoot=new ImportTree(myXMLRootNode,CMSP(nullptr));
-		myCurrentImportedTreeNode=myImportTreeRoot;
-		myTimer=KigsCore::GetInstanceOf("StepByStepTimer","Timer");
-		myTimer->Init();
-		myLoadingIsDone = 0;
+		mLoadedItems.clear();
+		mXMLRootNode=(XMLNode*)mXmlfile->getRoot();
+		mImportTreeRoot=new ImportTree(mXMLRootNode,CMSP(nullptr));
+		mCurrentImportedTreeNode=mImportTreeRoot;
+		mTimer=KigsCore::GetInstanceOf("StepByStepTimer","Timer");
+		mTimer->Init();
+		mLoadingIsDone = 0;
 	}
 }
 
 StepByStepImporter::~StepByStepImporter()
 {
-	if(myImportTreeRoot)
-		delete myImportTreeRoot;
+	if(mImportTreeRoot)
+		delete mImportTreeRoot;
 
-	if(myXmlfile)
-		delete myXmlfile;
+	if(mXmlfile)
+		delete mXmlfile;
 };
 
 int StepByStepImporter::UpdateImporter()
 {
 	if(_isInit)
 	{
-		kfloat startTime=(kfloat)myTimer->GetTime();
+		kfloat startTime=(kfloat)mTimer->GetTime();
 		if(!_isInit)
 		{
 			Init();
@@ -71,84 +71,84 @@ int StepByStepImporter::UpdateImporter()
 			}
 		}
 
-		kfloat totalTime=(kfloat)myTimer->GetTime()-startTime;
-		while((myCurrentImportedTreeNode)&&(totalTime<(kfloat)myDeltaTimePerStep))
+		kfloat totalTime=(kfloat)mTimer->GetTime()-startTime;
+		while((mCurrentImportedTreeNode)&&(totalTime<(kfloat)mDeltaTimePerStep))
 		{
-			myCurrentImportedTreeNode=StepImport(myCurrentImportedTreeNode);
-			totalTime=(kfloat)myTimer->GetTime()-startTime;
+			mCurrentImportedTreeNode=StepImport(mCurrentImportedTreeNode);
+			totalTime=(kfloat)mTimer->GetTime()-startTime;
 		}
 
 		// not finished
-		if(myCurrentImportedTreeNode)
+		if(mCurrentImportedTreeNode)
 		{
 			return 0;
 		}
 
 		// this time everything is loaded
-		myImportedRoot=myImportTreeRoot->myCurrent;
+		mImportedRoot=mImportTreeRoot->mCurrent;
 
-		myTimer=nullptr;
+		mTimer=nullptr;
 
 		UninitModifiable();
-		myLoadingIsDone = true;
+		mLoadingIsDone = true;
 
 		return 1;
 	}
 	else
-		return myLoadingIsDone;
+		return mLoadingIsDone;
 	
 }
 
 
 StepByStepImporter::ImportTree::ImportTree(XMLNode* xmlnode,CMSP currentCM)
 {
-	myFatherNode=xmlnode;
-	myCurrentCoreModifiable = currentCM;
-	mySonsImport.clear();
-	myNeedInit=false;
-	myIsDone=false;
-	myLinkID=-1;
-	myFatherImportTreeNode=0;
-	myBrotherImportTreeNode=0;
-	myCurrent=0;
+	mFatherNode=xmlnode;
+	mCurrentCoreModifiable = currentCM;
+	mSonsImport.clear();
+	mNeedInit=false;
+	mIsDone=false;
+	mLinkID=-1;
+	mFatherImportTreeNode=0;
+	mBrotherImportTreeNode=0;
+	mCurrent=0;
 }
 
 StepByStepImporter::ImportTree::~ImportTree()
 {
-	kstl::vector<ImportTree*>::iterator it = mySonsImport.begin();
-	kstl::vector<ImportTree*>::iterator end = mySonsImport.end();
+	kstl::vector<ImportTree*>::iterator it = mSonsImport.begin();
+	kstl::vector<ImportTree*>::iterator end = mSonsImport.end();
 	while(it!=end)
 	{
 		delete (*it);
 		it++;
 	}
-	mySonsImport.clear();
+	mSonsImport.clear();
 }
 
 StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImporter::ImportTree* treatedNode)
 {
 
-	XMLNode * currentNode=treatedNode->myFatherNode;
-	CMSP currentModifiable=treatedNode->myCurrentCoreModifiable;
+	XMLNode * currentNode=treatedNode->mFatherNode;
+	CMSP currentModifiable=treatedNode->mCurrentCoreModifiable;
 
-	if(treatedNode->myIsDone)
+	if(treatedNode->mIsDone)
 	{
-		if(treatedNode->myNeedInit)
+		if(treatedNode->mNeedInit)
 		{
-			treatedNode->myCurrent->Init();
-			treatedNode->myNeedInit=false;
+			treatedNode->mCurrent->Init();
+			treatedNode->mNeedInit=false;
 		}
 		// return brother if any
 
-		if(treatedNode->myBrotherImportTreeNode)
+		if(treatedNode->mBrotherImportTreeNode)
 		{
-			return treatedNode->myBrotherImportTreeNode;
+			return treatedNode->mBrotherImportTreeNode;
 		}
 
-		return treatedNode->myFatherImportTreeNode;
+		return treatedNode->mFatherImportTreeNode;
 	}
 	
-	if(!treatedNode->myCurrent)
+	if(!treatedNode->mCurrent)
 	{
 		if (currentNode->getName()=="Instance")
 		{ 
@@ -163,17 +163,7 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 			//if has a type then it's not a reference
 			if(type)
 			{
-
-#ifdef USE_LINK_TYPE
-				XMLAttribute*	linktypeID=currentNode->getAttribute("LinkIDToParent");
-				int	linkIDInt=-1;
-				if(linktypeID)
-				{
-					linkIDInt=linktypeID->getInt();
-				}
-#endif
-				
-				treatedNode->myNeedInit=true;
+				treatedNode->mNeedInit=true;
 				// check that parent doesn't already have this node
 				
 				if(currentModifiable)
@@ -184,19 +174,15 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 					//kstl::vector<int>::const_iterator	itsonlink=linklist.begin();
 					for(itson=instances.begin();itson!=instances.end();++itson)
 					{
-						CMSP son=(*itson).myItem;
-#ifdef USE_LINK_TYPE
-						int linktypeint=(*itson).myLinkType;
-#endif
+						CMSP son=(*itson).mItem;
+
 						if(son->getName() == name)
 						{
-#ifdef USE_LINK_TYPE
-							if(linktypeint==linkIDInt)
-#endif
-								if(son->isSubType(type->getString()))
+
+							if(son->isSubType(type->getString()))
 							{
-								treatedNode->myNeedInit=false;
-								treatedNode->myCurrent=son;
+								treatedNode->mNeedInit=false;
+								treatedNode->mCurrent=son;
 								break;
 							}
 						}
@@ -204,10 +190,10 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 					}
 				}
 				
-				if(treatedNode->myNeedInit)
+				if(treatedNode->mNeedInit)
 				{
-					treatedNode->myCurrent=KigsCore::GetInstanceOf(name,type->getString());
-					myLoadedItems.push_back(treatedNode->myCurrent);
+					treatedNode->mCurrent=KigsCore::GetInstanceOf(name,type->getString());
+					mLoadedItems.push_back(treatedNode->mCurrent);
 				}
 				ImportTree* lastimport=0;
 				for(int i=0;i<currentNode->getChildCount();i++)
@@ -220,23 +206,23 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 							// init attribute
 							// TODO : check for UTF-8
 							KIGS_ASSERT(false);
-							//InitAttribute(sonXML,treatedNode->myCurrent,false);
+							//InitAttribute(sonXML,treatedNode->mCurrent,false);
 						}
 						else
 						{
 							// create new ImportTree node
-							ImportTree* newimport=new ImportTree(sonXML,treatedNode->myCurrent);
-							newimport->myFatherImportTreeNode=myCurrentImportedTreeNode;
-							myCurrentImportedTreeNode->mySonsImport.push_back(newimport);
+							ImportTree* newimport=new ImportTree(sonXML,treatedNode->mCurrent);
+							newimport->mFatherImportTreeNode=mCurrentImportedTreeNode;
+							mCurrentImportedTreeNode->mSonsImport.push_back(newimport);
 							XMLAttribute*	linktype=sonXML->getAttribute("LinkIDToParent");
 
 							if(linktype)
 							{
-								newimport->myLinkID=linktype->getInt();
+								newimport->mLinkID=linktype->getInt();
 							}
 							if(lastimport)
 							{
-								lastimport->myBrotherImportTreeNode=newimport;
+								lastimport->mBrotherImportTreeNode=newimport;
 							}
 							lastimport=newimport;
 						}
@@ -244,19 +230,19 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 				}
 
 				// test if a son was added
-				if(myCurrentImportedTreeNode->mySonsImport.size())
+				if(mCurrentImportedTreeNode->mSonsImport.size())
 				{
-					return myCurrentImportedTreeNode->mySonsImport[0];
+					return mCurrentImportedTreeNode->mSonsImport[0];
 				}
 			}
 			else
 			{	
-				treatedNode->myCurrent=InitReference(currentNode,myLoadedItems,name);
+				treatedNode->mCurrent=InitReference(currentNode,mLoadedItems,name);
 			}
 		}
 	}
 
-	if(treatedNode->myCurrent&&currentModifiable)
+	if(treatedNode->mCurrent&&currentModifiable)
 	{
 		// check if son need add
 		bool sonNeedAdd=true;
@@ -265,8 +251,8 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 		kstl::vector<ModifiableItemStruct>::const_iterator itson;
 		for(itson=instances.begin();itson!=instances.end();++itson)
 		{
-			CMSP son=(*itson).myItem;
-			if(son==treatedNode->myCurrent)
+			CMSP son=(*itson).mItem;
+			if(son==treatedNode->mCurrent)
 			{
 				sonNeedAdd=false;
 				break;
@@ -275,22 +261,13 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 		
 		if(sonNeedAdd)
 		{
-#ifdef USE_LINK_TYPE
-			XMLAttribute*	linktype=currentNode->getAttribute("LinkIDToParent");
-
-			if(linktype)
 			{
-				currentModifiable->addItem(treatedNode->myCurrent,(*currentModifiable->getDeclaredLinkTypes())[(unsigned int)linktype->getInt()]);
-			}
-			else
-#endif
-			{
-				currentModifiable->addItem(treatedNode->myCurrent);
+				currentModifiable->addItem(treatedNode->mCurrent);
 			}
 		}
 	}
 
-	treatedNode->myIsDone=true;
+	treatedNode->mIsDone=true;
 
 	return treatedNode;
 }

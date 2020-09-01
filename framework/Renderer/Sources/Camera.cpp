@@ -16,28 +16,28 @@
 IMPLEMENT_CLASS_INFO(Camera)
 
 IMPLEMENT_CONSTRUCTOR(Camera)
-, myViewportMinX(*this, false, "ViewportMinX", 0.0f)
-, myViewportMinY(*this, false, "ViewportMinY", 0.0f)
-, myViewportSizeX(*this, false, "ViewportSizeX", 1.0f)
-, myViewportSizeY(*this, false, "ViewportSizeY", 1.0f)
-, myNear(*this, false, "NearPlane", 0.1f)
-, myFar(*this, false, "FarPlane", 40.0f)
-, myPosition(*this, false, "Position")
-, myUpVector(*this, false, "UpVector")
-, myViewVector(*this, false, "ViewVector")
-, myClearColor(*this, false, "ClearColor")
-, myRenderingScreen(*this, true, "RenderingScreen")
-, myVerticalFOV(*this, false, "VerticalFOV", 45.0f)
-, myAspectRatio(*this, false, "AspectRatio", 0.0f)
-, myClearZBuffer(*this, false, "ClearZBuffer", true)
-, myClearColorBuffer(*this, false, "ClearColorBuffer", true)
-, myClearStencilBuffer(*this, false, "ClearStencilBuffer", false)
-, mybCameraIsEnabled(*this, false, "CameraIsEnabled", true)
-, myPriority(*this, false, "Priority", 0)
-, myBrightness(*this, false, "Brightness", 0)
-, myAllVisible(*this, false, "AllVisible", false)
-, myTouchControlled(*this, false, "TouchControlled", false)
-, myIsActive(false)
+, mViewportMinX(*this, false, "ViewportMinX", 0.0f)
+, mViewportMinY(*this, false, "ViewportMinY", 0.0f)
+, mViewportSizeX(*this, false, "ViewportSizeX", 1.0f)
+, mViewportSizeY(*this, false, "ViewportSizeY", 1.0f)
+, mNearPlane(*this, false, "NearPlane", 0.1f)
+, mFarPlane(*this, false, "FarPlane", 40.0f)
+, mPosition(*this, false, "Position")
+, mUpVector(*this, false, "UpVector")
+, mViewVector(*this, false, "ViewVector")
+, mClearColor(*this, false, "ClearColor")
+, mRenderingScreen(*this, true, "RenderingScreen")
+, mVerticalFOV(*this, false, "VerticalFOV", 45.0f)
+, mAspectRatio(*this, false, "AspectRatio", 0.0f)
+, mClearZBuffer(*this, false, "ClearZBuffer", true)
+, mClearColorBuffer(*this, false, "ClearColorBuffer", true)
+, mClearStencilBuffer(*this, false, "ClearStencilBuffer", false)
+, mCameraIsEnabled(*this, false, "CameraIsEnabled", true)
+, mPriority(*this, false, "Priority", 0)
+, mBrightness(*this, false, "Brightness", 0)
+, mAllVisible(*this, false, "AllVisible", false)
+, mTouchControlled(*this, false, "TouchControlled", false)
+, mIsActive(false)
 {
 	SetPosition(0.0f, 0.0f, 0.0f);
 	SetViewVector(1.0f, 0.0f, 0.0f);
@@ -94,9 +94,9 @@ Camera::~Camera()
 void Camera::NotifyUpdate(const unsigned int  labelid)
 {
 	Node3D::NotifyUpdate(labelid);
-	if (labelid == myTouchControlled.getID())
+	if (labelid == mTouchControlled.getID())
 	{
-		activeTouchControlledCamera(myTouchControlled);
+		activeTouchControlledCamera(mTouchControlled);
 	}
 	else
 	{
@@ -109,20 +109,20 @@ void Camera::RecomputeMatrix()
 	// compute local matrix
 	Vector3D  view,up,right,pos;
 	
-	view.x=myViewVector[0];
-	view.y=myViewVector[1];
-	view.z=myViewVector[2];
+	view.x=mViewVector[0];
+	view.y=mViewVector[1];
+	view.z=mViewVector[2];
 	
 	view.Normalize();
 	
-	pos.x=myPosition[0];
-	pos.y=myPosition[1];
-	pos.z=myPosition[2];
+	pos.x=mPosition[0];
+	pos.y=mPosition[1];
+	pos.z=mPosition[2];
 	
 	
-	up.x=myUpVector[0];
-	up.y=myUpVector[1];
-	up.z=myUpVector[2];
+	up.x=mUpVector[0];
+	up.y=mUpVector[1];
+	up.z=mUpVector[2];
 	
 	up.Normalize();
 	
@@ -138,11 +138,11 @@ void Camera::RecomputeMatrix()
 
 bool Camera::SetActive(TravState* state)
 {	
-	myIsActive=true;
+	mIsActive=true;
 	bool b = ProtectedSetActive(state);
 	if (b)
 	{
-		getRenderingScreen()->setValue("Brightness", myBrightness);
+		getRenderingScreen()->setValue("Brightness", mBrightness);
 	}
 	KigsCore::GetNotificationCenter()->postNotificationName("OnCamera_SetActive", this);
 	return b;
@@ -150,7 +150,7 @@ bool Camera::SetActive(TravState* state)
 
 void Camera::Release(TravState* state)
 {	
-	myIsActive=false;
+	mIsActive=false;
 	ProtectedRelease(state);
 	KigsCore::GetNotificationCenter()->postNotificationName("OnCamera_Release", this);
 }
@@ -165,20 +165,20 @@ void Camera::InitModifiable()
 		{
 			RecomputeMatrix();
 			//! notification on matrix change
-			myPosition.changeNotificationLevel(Owner);
-			myUpVector.changeNotificationLevel(Owner);
-			myViewVector.changeNotificationLevel(Owner);
-			myViewportSizeX.changeNotificationLevel(Owner);
-			myViewportSizeY.changeNotificationLevel(Owner);
-			myTouchControlled.changeNotificationLevel(Owner);
+			mPosition.changeNotificationLevel(Owner);
+			mUpVector.changeNotificationLevel(Owner);
+			mViewVector.changeNotificationLevel(Owner);
+			mViewportSizeX.changeNotificationLevel(Owner);
+			mViewportSizeY.changeNotificationLevel(Owner);
+			mTouchControlled.changeNotificationLevel(Owner);
 
 			// declare as a touch support potential target with rendering screen as parent
 			ModuleInput* theInputModule = (ModuleInput*)KigsCore::GetModule("ModuleInput");
 			if(theInputModule)
-				theInputModule->getTouchManager()->addTouchSupport(this,myRenderingScreen);	
+				theInputModule->getTouchManager()->addTouchSupport(this,mRenderingScreen);	
 			
 
-			activeTouchControlledCamera(myTouchControlled);
+			activeTouchControlledCamera(mTouchControlled);
 			// test
 			//theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, emptyFlag);
 		}
@@ -205,7 +205,7 @@ bool Camera::ManageClickTouchEvent(v3f pos, int type, int state, int clickCount)
 bool Camera::GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout)
 {
 	// TODO : probably not enough as we can have several camera in a scene and not all attached to holographic view 
-	if (myRenderingScreen->as<RenderingScreen>()->IsHolographic())
+	if (mRenderingScreen->as<RenderingScreen>()->IsHolographic())
 	{
 		pout.origin = GetGlobalPosition();
 		pout.dir = GetGlobalViewVector();
@@ -218,7 +218,7 @@ bool Camera::GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& po
 
 		float width, height;
 		getRenderingScreen()->GetSize(width, height);
-		float aspect = (width*myViewportSizeX) / (height*myViewportSizeY);
+		float aspect = (width*mViewportSizeX) / (height*mViewportSizeY);
 
 		float dwidth, dheight;
 		getRenderingScreen()->GetDesignSize(dwidth, dheight);
@@ -230,11 +230,11 @@ bool Camera::GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& po
 		pos2D.y = posin.pos.y / dheight;
 
 		// pos in [-0.5,+0.5]
-		pos2D.x = ((pos2D.x - myViewportMinX) / myViewportSizeX) - 0.5f;
-		pos2D.y = ((pos2D.y - myViewportMinY) / myViewportSizeY) - 0.5f;
+		pos2D.x = ((pos2D.x - mViewportMinX) / mViewportSizeX) - 0.5f;
+		pos2D.y = ((pos2D.y - mViewportMinY) / mViewportSizeY) - 0.5f;
 		
 
-		float tt = 2.0f*tan(((float)myVerticalFOV)*DEG_TO_RAD_2);
+		float tt = 2.0f*tan(((float)mVerticalFOV)*DEG_TO_RAD_2);
 		pout.dir.x = 1.0f;
 		pout.dir.z = -pos2D.y*tt;
 		pout.dir.y = -pos2D.x*tt*aspect;
@@ -248,8 +248,8 @@ bool Camera::GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& po
 		pout.setHas3DInfos(true);
 
 		// pos in viewport
-		pout.pos.x = (pos2D.x + 0.5f)*myViewportSizeX*dwidth;
-		pout.pos.y = (pos2D.y + 0.5f)*myViewportSizeY*dheight;
+		pout.pos.x = (pos2D.x + 0.5f)*mViewportSizeX*dwidth;
+		pout.pos.y = (pos2D.y + 0.5f)*mViewportSizeY*dheight;
 		pout.pos.z = 0;
 		if ((pos2D.x >= -0.5f) && (pos2D.x < 0.5f))
 		{
@@ -290,32 +290,32 @@ void  Camera::InitCullingObject(CullingObject* obj)
 	getRenderingScreen()->GetRotation(screenRotation);
 	
 	
-	kfloat aspect = (width*myViewportSizeX) / (height*myViewportSizeY);
+	kfloat aspect = (width*mViewportSizeX) / (height*mViewportSizeY);
 	if((screenRotation==90.0f)||(screenRotation==270.0f))
 		aspect=1.0f/aspect;
 	
-	kfloat d = 2.0f*tanf(myVerticalFOV*DEG_TO_RAD*0.5f);
+	kfloat d = 2.0f*tanf(mVerticalFOV*DEG_TO_RAD*0.5f);
 	kfloat hfov = 2.0f*atanf(d*aspect*0.5f);
 	
 	auto l2g = GetLocalToGlobal();
 
 	// near plane
 	n.Set(1.0f,0.0f,0.0f);
-	o.Set(myNear,0.0f,0.0f);
+	o.Set(mNearPlane,0.0f,0.0f);
 	l2g.TransformVector(&n);
 	l2g.TransformPoints(&o,1);
 	obj->InitPlane(0,n,o);
 	
 	// far plane
 	n.Set(-1.0f,0.0f,0.0f);
-	o.Set(myFar,0.0f,0.0f);
+	o.Set(mFarPlane,0.0f,0.0f);
 	l2g.TransformVector(&n);
 	l2g.TransformPoints(&o,1);
 	obj->InitPlane(1,n,o);
 	
 	// down plane
-	kfloat s=sinf((kfloat)myVerticalFOV*0.5f*DEG_TO_RAD);
-	kfloat c=cosf((kfloat)myVerticalFOV*0.5f*DEG_TO_RAD);
+	kfloat s=sinf((kfloat)mVerticalFOV*0.5f*DEG_TO_RAD);
+	kfloat c=cosf((kfloat)mVerticalFOV*0.5f*DEG_TO_RAD);
 	
 	n.Set(s,0.0f,c);
 	o.Set(0.0f,0.0f,0.0f);
@@ -329,9 +329,9 @@ void  Camera::InitCullingObject(CullingObject* obj)
 	obj->InitPlane(3,n,o);
 	
 	// left plane
-	//s = sinf((kfloat)myVerticalFOV*aspect*0.5f*DEG_TO_RAD);
+	//s = sinf((kfloat)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
 	s = sinf(hfov*0.5f);
-	//c = cosf((kfloat)myVerticalFOV*aspect*0.5f*DEG_TO_RAD);
+	//c = cosf((kfloat)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
 	c = cosf(hfov*0.5f);
 	
 	n.Set(s,-c,0.0f);
@@ -359,18 +359,18 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	getRenderingScreen()->GetRotation(screenRotation);
 
 
-	kfloat aspect = (width*myViewportSizeX) / (height*myViewportSizeY);
+	kfloat aspect = (width*mViewportSizeX) / (height*mViewportSizeY);
 	if ((screenRotation == 90.0f) || (screenRotation == 270.0f))
 		aspect = 1.0f / aspect;
 
-	kfloat d = 2.0f*tanf(myVerticalFOV*DEG_TO_RAD*0.5f);
+	kfloat d = 2.0f*tanf(mVerticalFOV*DEG_TO_RAD*0.5f);
 	kfloat hfov = 2.0f*atanf(d*aspect*0.5f);
 
 	auto l2g = GetLocalToGlobal();
 
 	// near plane
 	n.Set(1.0f, 0.0f, 0.0f);
-	o.Set(myNear, 0.0f, 0.0f);
+	o.Set(mNearPlane, 0.0f, 0.0f);
 	l2g.TransformVector(&n);
 	l2g.TransformPoints(&o, 1);
 
@@ -379,15 +379,15 @@ Camera::FrustumPlanes Camera::GetFrustum()
 
 	// far plane
 	n.Set(-1.0f, 0.0f, 0.0f);
-	o.Set(myFar, 0.0f, 0.0f);
+	o.Set(mFarPlane, 0.0f, 0.0f);
 	l2g.TransformVector(&n);
 	l2g.TransformPoints(&o, 1);
 	result.Far.n = n;
 	result.Far.o = o;
 
 	// down plane
-	kfloat s = sinf((kfloat)myVerticalFOV*0.5f*DEG_TO_RAD);
-	kfloat c = cosf((kfloat)myVerticalFOV*0.5f*DEG_TO_RAD);
+	kfloat s = sinf((kfloat)mVerticalFOV*0.5f*DEG_TO_RAD);
+	kfloat c = cosf((kfloat)mVerticalFOV*0.5f*DEG_TO_RAD);
 
 	n.Set(s, 0.0f, c);
 	o.Set(0.0f, 0.0f, 0.0f);
@@ -403,9 +403,9 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	result.Up.o = o;
 
 	// left plane
-	//s = sinf((kfloat)myVerticalFOV*aspect*0.5f*DEG_TO_RAD);
+	//s = sinf((kfloat)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
 	s = sinf(hfov*0.5f);
-	//c = cosf((kfloat)myVerticalFOV*aspect*0.5f*DEG_TO_RAD);
+	//c = cosf((kfloat)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
 	c = cosf(hfov*0.5f);
 
 	n.Set(s, -c, 0.0f);
@@ -428,12 +428,12 @@ void Camera::getRay(const kfloat &ScreenX, const kfloat &ScreenY, Point3D &RayOr
 	
 	float width , height;
 	getRenderingScreen()->GetSize(width , height); 
-	float aspect = (width*myViewportSizeX) / (height*myViewportSizeY);
+	float aspect = (width*mViewportSizeX) / (height*mViewportSizeY);
 
-	float screenPosInCameraX = ((ScreenX - myViewportMinX) / myViewportSizeX) - 0.5f;
-	float screenPosInCameraY = ((ScreenY - myViewportMinY) / myViewportSizeY) - 0.5f;
+	float screenPosInCameraX = ((ScreenX - mViewportMinX) / mViewportSizeX) - 0.5f;
+	float screenPosInCameraY = ((ScreenY - mViewportMinY) / mViewportSizeY) - 0.5f;
 		
-	float tt = 2.0f*tan(((float)myVerticalFOV)*DEG_TO_RAD_2);
+	float tt = 2.0f*tan(((float)mVerticalFOV)*DEG_TO_RAD_2);
 	RayDirection.x = 1.0f;
 	RayDirection.z = -screenPosInCameraY*tt;
 	RayDirection.y = -screenPosInCameraX*tt*aspect;
@@ -457,40 +457,40 @@ bool Camera::Project(kfloat &ScreenX, kfloat &ScreenY, Point3D Pt)
 	
 	kfloat aspect;
 	
-	if (myAspectRatio != 0)
-		aspect = myAspectRatio;
+	if (mAspectRatio != 0)
+		aspect = mAspectRatio;
 	else
-		aspect = (width*myViewportSizeX) / (height*myViewportSizeY);
+		aspect = (width*mViewportSizeX) / (height*mViewportSizeY);
 	
 	
 	// projection (default is perspective)
-	kfloat frustumHeight = (kfloat)tanf(myVerticalFOV * fPI / 360.0f) * myNear;
+	kfloat frustumHeight = (kfloat)tanf(mVerticalFOV * fPI / 360.0f) * mNearPlane;
 	kfloat frustumWidth = frustumHeight * aspect;
 	
 	kfloat deltaX = frustumWidth + frustumWidth;
 	kfloat deltaY = frustumHeight + frustumHeight;
-	kfloat deltaZ = myFar - myNear;
+	kfloat deltaZ = mFarPlane - mNearPlane;
 	Matrix4x4 frust;
 	
-	if ((myNear <= 0.0f) || (myFar <= 0.0f) || (deltaX <= 0.0f) || (deltaY <= 0.0f) || (deltaZ <= 0.0f))
+	if ((mNearPlane <= 0.0f) || (mFarPlane <= 0.0f) || (deltaX <= 0.0f) || (deltaY <= 0.0f) || (deltaZ <= 0.0f))
 	{
 		KIGS_ERROR("Invalid frustrum", 1);
 		return false;
 	}
 	
 	// can be optimized a lot
-	frust[0] = 2.0f * myNear / deltaX;
+	frust[0] = 2.0f * mNearPlane / deltaX;
 	frust[4] = frust[8] = frust[12] = 0.0f;
 	
-	frust[5] = 2.0f * myNear / deltaY;
+	frust[5] = 2.0f * mNearPlane / deltaY;
 	frust[1] = frust[9] = frust[13] = 0.0f;
 	
 	frust[2] = 0.0f;
 	frust[6] = 0.0f;
-	frust[10] = -(myNear + myFar) / deltaZ;
+	frust[10] = -(mNearPlane + mFarPlane) / deltaZ;
 	frust[14] = -1.0f;
 	
-	frust[11] = -2.0f * myNear * myFar / deltaZ;
+	frust[11] = -2.0f * mNearPlane * mFarPlane / deltaZ;
 	frust[3] = frust[7] = frust[15] = 0.0f;
 	
 	
@@ -515,8 +515,8 @@ bool Camera::Project(kfloat &ScreenX, kfloat &ScreenY, Point3D Pt)
 	result.y *= result.w;
 	result.z *= result.w;
 	
-	ScreenX = ((result.x * 0.5f + 0.5f)*myViewportSizeX + myViewportMinX) * width;
-	ScreenY = ((result.y * 0.5f + 0.5f)*myViewportSizeY + myViewportMinY) * height;
+	ScreenX = ((result.x * 0.5f + 0.5f)*mViewportSizeX + mViewportMinX) * width;
+	ScreenY = ((result.y * 0.5f + 0.5f)*mViewportSizeY + mViewportMinY) * height;
 	
 	return (result.z > 0.0f);
 }
@@ -528,7 +528,7 @@ DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Camera, TravState* state, unsigned int c
 {
 	if(!Node3D::Implement_Cull(state,cullingMask))
 	{
-		myIsVisible=state->GetVisibilityFrame();
+		mIsVisible=state->GetVisibilityFrame();
 	}
 	return true;
 }
@@ -548,8 +548,8 @@ bool	Camera::Draw(TravState* state)
 	{
 		Point3D outP;
 		Vector3D outV;
-		const Matrix3x4& lMat = myFatherNode->GetLocalToGlobal();
-		Point3D* PosOffset = (Point3D*)myPosition.getVector();
+		const Matrix3x4& lMat = mFatherNode->GetLocalToGlobal();
+		Point3D* PosOffset = (Point3D*)mPosition.getVector();
 		lMat.TransformPoint(PosOffset, &outP);
 		lMat.TransformVector(&GetViewVector(), &outV);
 		
@@ -623,7 +623,7 @@ bool Camera::ManagePinchTouchEvent(PinchEvent& pinch_event)
 
 		// if already in scroll, return
 
-		if (currentDataStruct->state == 1)
+		if (currentDataStruct->mState == 1)
 		{
 			return false;
 		}
@@ -642,8 +642,8 @@ bool Camera::ManagePinchTouchEvent(PinchEvent& pinch_event)
 			currentPos.x /= dwidth;
 			currentPos.y /= dheight;
 
-			if ((currentPos.x >= 0.0f) && (currentPos.x < myViewportSizeX))
-				if ((currentPos.y >= 0.0f) && (currentPos.y < myViewportSizeY))
+			if ((currentPos.x >= 0.0f) && (currentPos.x < mViewportSizeX))
+				if ((currentPos.y >= 0.0f) && (currentPos.y < mViewportSizeY))
 				{
 					*pinch_event.swallow_mask = 0xFFFFFFFF;
 					return true;
@@ -653,12 +653,12 @@ bool Camera::ManagePinchTouchEvent(PinchEvent& pinch_event)
 		}
 		if (pinch_event.state == StateBegan)
 		{
-			currentDataStruct->state = 2;
-			currentDataStruct->targetPointDist = getValue<kfloat>("TargetPointDist");
+			currentDataStruct->mState = 2;
+			currentDataStruct->mTargetPointDist = getValue<kfloat>("TargetPointDist");
 
-			currentDataStruct->startV = ((Point3D)myViewVector);
-			currentDataStruct->startV *= currentDataStruct->targetPointDist;
-			currentDataStruct->startV += (Point3D)myPosition;
+			currentDataStruct->mStartV = ((Point3D)mViewVector);
+			currentDataStruct->mStartV *= currentDataStruct->mTargetPointDist;
+			currentDataStruct->mStartV += (Point3D)mPosition;
 		}
 
 		if (pinch_event.state == StateChanged)
@@ -667,23 +667,23 @@ bool Camera::ManagePinchTouchEvent(PinchEvent& pinch_event)
 
 			if (currentDist > 1.0f)
 			{
-				currentDataStruct->OneOnCoef = Norm(pinch_event.p1_start - pinch_event.p2_start)/ currentDist;
+				currentDataStruct->mOneOnCoef = Norm(pinch_event.p1_start - pinch_event.p2_start)/ currentDist;
 			}
-			Point3D newPosition((Point3D)myViewVector);
+			Point3D newPosition((Point3D)mViewVector);
 
-			newPosition *= -currentDataStruct->targetPointDist*currentDataStruct->OneOnCoef;
-			newPosition += currentDataStruct->startV;
+			newPosition *= -currentDataStruct->mTargetPointDist*currentDataStruct->mOneOnCoef;
+			newPosition += currentDataStruct->mStartV;
 
-			myPosition = newPosition;
+			mPosition = newPosition;
 
-			NotifyUpdate(myPosition.getID().toUInt());
+			NotifyUpdate(mPosition.getID().toUInt());
 		}
 
 		if (pinch_event.state == StateEnded)
 		{
-			currentDataStruct->state = 0;
+			currentDataStruct->mState = 0;
 
-			setValue("TargetPointDist", currentDataStruct->targetPointDist*currentDataStruct->OneOnCoef);
+			setValue("TargetPointDist", currentDataStruct->mTargetPointDist*currentDataStruct->mOneOnCoef);
 		}
 		*pinch_event.swallow_mask = 0xFFFFFFFF;
 		return true;
@@ -708,7 +708,7 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 
 		// if already in pinch, return
 
-		if (currentDataStruct->state > 1)
+		if (currentDataStruct->mState > 1)
 		{
 			return false;
 		}
@@ -722,8 +722,8 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 
 		if (scroll_event.state == StatePossible)
 		{
-			if((currentPos.x>=0.0f) && (currentPos.x <myViewportSizeX))
-				if ((currentPos.y >= 0.0f) && (currentPos.y < myViewportSizeY))
+			if((currentPos.x>=0.0f) && (currentPos.x <mViewportSizeX))
+				if ((currentPos.y >= 0.0f) && (currentPos.y < mViewportSizeY))
 				{
 					*scroll_event.swallow_mask = 0xFFFFFFFF;
 					return true;
@@ -738,28 +738,28 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 
 			if (dwidth > dheight)
 			{
-				currentDataStruct->OneOnCoef = 2.0f / dheight;
+				currentDataStruct->mOneOnCoef = 2.0f / dheight;
 			}
 			else
 			{
-				currentDataStruct->OneOnCoef = 2.0f / dwidth;
+				currentDataStruct->mOneOnCoef = 2.0f / dwidth;
 			}
 			Point2D		screenCenter;
 			screenCenter.x = dwidth*0.5f;
 			screenCenter.y = dheight*0.5f;
 
-			currentDataStruct->startPt = scroll_event.start_position.xy;
-			currentDataStruct->startPt -= screenCenter;
+			currentDataStruct->mStartPt = scroll_event.start_position.xy;
+			currentDataStruct->mStartPt -= screenCenter;
 
-			currentDataStruct->startPt *= currentDataStruct->OneOnCoef;
+			currentDataStruct->mStartPt *= currentDataStruct->mOneOnCoef;
 
-			currentDataStruct->state = 0;
-			if (NormSquare(currentDataStruct->startPt) < 1.0f)
+			currentDataStruct->mState = 0;
+			if (NormSquare(currentDataStruct->mStartPt) < 1.0f)
 			{
-				currentDataStruct->state = 1; // rotation
+				currentDataStruct->mState = 1; // rotation
 
 				// sphere ray intersection
-				kfloat d2 = (currentDataStruct->startPt.x*currentDataStruct->startPt.x + currentDataStruct->startPt.y*currentDataStruct->startPt.y);
+				kfloat d2 = (currentDataStruct->mStartPt.x*currentDataStruct->mStartPt.x + currentDataStruct->mStartPt.y*currentDataStruct->mStartPt.y);
 				kfloat thc = 1.0f - d2;
 				if (thc > 0.0f)
 				{
@@ -772,21 +772,21 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 
 				// store start V in "eye" coordinates (depth is on X axis)
 				// 
-				currentDataStruct->startV.Set(-thc, currentDataStruct->startPt.x, currentDataStruct->startPt.y);
+				currentDataStruct->mStartV.Set(-thc, currentDataStruct->mStartPt.x, currentDataStruct->mStartPt.y);
 
 				// store starting camera data
 
 				Vector3D	right;
-				right.CrossProduct( (Point3D)myUpVector, (Point3D)myViewVector);
-				currentDataStruct->StartMatrix.Set((Point3D)myViewVector, right, (Point3D)myUpVector, (Point3D)myPosition);
-				currentDataStruct->targetPointDist = getValue<kfloat>("TargetPointDist");
+				right.CrossProduct( (Point3D)mUpVector, (Point3D)mViewVector);
+				currentDataStruct->mStartMatrix.Set((Point3D)mViewVector, right, (Point3D)mUpVector, (Point3D)mPosition);
+				currentDataStruct->mTargetPointDist = getValue<kfloat>("TargetPointDist");
 			}
 
 		}
 
 		if (scroll_event.state == StateChanged)
 		{
-			if (currentDataStruct->state == 1) // rotation
+			if (currentDataStruct->mState == 1) // rotation
 			{
 				// sphere ray intersection at current position
 				Point2D		screenCenter;
@@ -796,7 +796,7 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 				Point2D currentPos;
 				currentPos = scroll_event.position.xy;
 				currentPos -= screenCenter;
-				currentPos *= currentDataStruct->OneOnCoef;
+				currentPos *= currentDataStruct->mOneOnCoef;
 
 				if (NormSquare(currentPos) > 1.0f)
 				{
@@ -820,52 +820,52 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 				currentV.Set(-thc, currentPos.x, currentPos.y );
 
 
-				// find normal vector to both currentV & currentDataStruct->startV
+				// find normal vector to both currentV & currentDataStruct->mStartV
 
 				Vector3D	normalV;
-				normalV.CrossProduct(currentDataStruct->startV, currentV);
+				normalV.CrossProduct(currentDataStruct->mStartV, currentV);
 				
 				normalV.Normalize();
 
-				currentDataStruct->StartMatrix.TransformVector(&normalV);
+				currentDataStruct->mStartMatrix.TransformVector(&normalV);
 
-				// quaternion transforming startV to currentV
-				Vector3D startV = currentDataStruct->startV;
+				// quaternion transforming mStartV to currentV
+				Vector3D startV = currentDataStruct->mStartV;
 
-				currentDataStruct->StartMatrix.TransformVector(&startV);
-				currentDataStruct->StartMatrix.TransformVector(&currentV);
+				currentDataStruct->mStartMatrix.TransformVector(&startV);
+				currentDataStruct->mStartMatrix.TransformVector(&currentV);
 
 				Quaternion	q = RotationArc(currentV, startV);
 
 				Matrix3x3	rotate(q);
 
-				Vector3D	rview = rotate*currentDataStruct->StartMatrix.XAxis;
+				Vector3D	rview = rotate*currentDataStruct->mStartMatrix.XAxis;
 
-				myViewVector = rview;
+				mViewVector = rview;
 
-				Vector3D	rup = rotate*currentDataStruct->StartMatrix.ZAxis;
+				Vector3D	rup = rotate*currentDataStruct->mStartMatrix.ZAxis;
 
-				myUpVector = rup;
+				mUpVector = rup;
 
-				Point3D	rotationCenterPos(currentDataStruct->StartMatrix.Pos);
-				rotationCenterPos += currentDataStruct->StartMatrix.XAxis*currentDataStruct->targetPointDist;
+				Point3D	rotationCenterPos(currentDataStruct->mStartMatrix.Pos);
+				rotationCenterPos += currentDataStruct->mStartMatrix.XAxis*currentDataStruct->mTargetPointDist;
 
-				Vector3D	posRotation(rotationCenterPos, currentDataStruct->StartMatrix.Pos,  asVector());
+				Vector3D	posRotation(rotationCenterPos, currentDataStruct->mStartMatrix.Pos,  asVector());
 
 				posRotation = rotate*posRotation;
 
 				posRotation += rotationCenterPos;
 
-				myPosition = posRotation;
+				mPosition = posRotation;
 
-				NotifyUpdate(myUpVector.getID().toUInt());
+				NotifyUpdate(mUpVector.getID().toUInt());
 				
 			}
 		}
 
 		if (scroll_event.state == StateEnded)
 		{
-			currentDataStruct->state = 0;
+			currentDataStruct->mState = 0;
 		}
 		*scroll_event.swallow_mask = 0xFFFFFFFF;
 		
@@ -880,8 +880,8 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 
 void Camera::ChangeMatrix(const Matrix3x4& m)
 {
-	myViewVector = m.XAxis;
-	myUpVector = m.ZAxis;
-	myPosition = m.Pos;
+	mViewVector = m.XAxis;
+	mUpVector = m.ZAxis;
+	mPosition = m.Pos;
 	RecomputeMatrix();
 }

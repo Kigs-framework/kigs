@@ -29,7 +29,7 @@ class maLuaRefHeritage : public CoreModifiableAttributeData<LuaRef>
 	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maLuaRefHeritage, maLuaRefHeritage, LuaRef, CoreModifiable::ATTRIBUTE_TYPE::LUAREF);
 	auto& operator=(const CurrentAttributeType& value)
 	{
-		_value = value; 
+		mValue = value; 
 		return *this; 
 	}
 public:
@@ -51,12 +51,12 @@ DEFINE_METHOD(LuaNotificationHook, CallLuaFunc)
 {
 	LuaImGuiStackProtector protector;
 	
-	lua_func.pushToStack();
-	L.push(obj);
-	if(L.pcall(1, 0, 0) != 0)
+	mLuaFunc.pushToStack();
+	mL.push(mObj);
+	if(mL.pcall(1, 0, 0) != 0)
 	{
-		printf("%s\n", L.toString(-1));
-		L.pop();
+		printf("%s\n", mL.toString(-1));
+		mL.pop();
 	}
 	return false;
 }
@@ -588,9 +588,9 @@ int CoreModifiableAddHook(CoreModifiable* obj, lua_State* lua)
 			obj->addItem(hook);
 		}
 		
-		hook->L = L;
-		hook->lua_func = L.toValue<LuaRef>(3);
-		hook->obj = obj;
+		hook->mL = L;
+		hook->mLuaFunc = L.toValue<LuaRef>(3);
+		hook->mObj = obj;
 		
 		KigsCore::GetNotificationCenter()->addObserver(hook.get(), "CallLuaFunc", notif);
 	}
@@ -695,7 +695,7 @@ kstl::vector<CoreModifiable*> CoreModifiableChildList(CoreModifiable* obj)
 	kstl::vector<CoreModifiable*> result; result.reserve(obj->getItems().size());
 	for(auto mis : obj->getItems())
 	{
-		result.push_back(mis.myItem.Pointer());
+		result.push_back(mis.mItem.Pointer());
 	}
 	return result;
 }

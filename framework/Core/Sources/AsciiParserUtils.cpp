@@ -2,12 +2,12 @@
 #include "AsciiParserUtils.h"
 
 template<typename charType>
-const charType	AsciiParserUtilsTemplate<charType>::myZeroChar = 0;
+const charType	AsciiParserUtilsTemplate<charType>::mZeroChar = 0;
 
 template<typename charType>
 AsciiParserUtilsTemplate<charType>::AsciiParserUtilsTemplate(CoreRawBuffer* buffer)
 {
-	myRawBuffer = NonOwningRawPtrToSmartPtr(buffer);
+	mRawBuffer = NonOwningRawPtrToSmartPtr(buffer);
 	// text len is buffer len -1
 	Set((charType*)buffer->buffer(), buffer->length() / sizeof(charType) - 1);
 
@@ -23,32 +23,32 @@ AsciiParserUtilsTemplate<charType>::AsciiParserUtilsTemplate(charType* buffer, i
 template<typename charType>
 void	AsciiParserUtilsTemplate<charType>::Set(charType* txt, int txtl)
 {
-	if(myBufferedEnd)
+	if(mBufferedEnd)
 	{
-		*myTextEnd=myBufferedEnd;
+		*mTextEnd=mBufferedEnd;
 	}
 
-	myText=txt;
-	myCurrentReadPos=0;
+	mText=txt;
+	mCurrentReadPos=0;
 
 	if(txtl == -1)
 	{
-		myTextLen = 0;
+		mTextLen = 0;
 		charType* readtxt = txt;
 		while (*readtxt != 0)
 		{
 			++readtxt;
-			++myTextLen;
+			++mTextLen;
 		}
 	}
 	else
 	{
-		myTextLen=txtl;
+		mTextLen=txtl;
 	}
 
-	myTextEnd = ((charType*)txt) + myTextLen;
-	myBufferedEnd=*(myTextEnd);
-	*(myTextEnd)=0;
+	mTextEnd = ((charType*)txt) + mTextLen;
+	mBufferedEnd=*(mTextEnd);
+	*(mTextEnd)=0;
 }
 
 // try to get a line at current position in the char stream
@@ -57,18 +57,18 @@ template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GetLine(AsciiParserUtilsTemplate<charType>& result, bool	removeLeadTrailWhitespace)
 {
 	bool	found=false;
-	charType *p = ((charType*)myText) + myCurrentReadPos;
+	charType *p = ((charType*)mText) + mCurrentReadPos;
 	while(!found)
 	{
 		if(removeLeadTrailWhitespace)
 		{
-			while (*p <= (charType)' ' && p<myTextEnd)
+			while (*p <= (charType)' ' && p<mTextEnd)
 				p++;
 		}
 
 		charType *pLineStart = p;
 
-		while ((*p != (charType)'\n') && (*p != (charType)'\r') && (p<myTextEnd))
+		while ((*p != (charType)'\n') && (*p != (charType)'\r') && (p<mTextEnd))
 			p++;
 
 		charType *pLineEnd = p;
@@ -88,14 +88,14 @@ bool	AsciiParserUtilsTemplate<charType>::GetLine(AsciiParserUtilsTemplate<charTy
 			found=true;
 		}
 
-		while ((*p == (charType)'\n' || *p == (charType)'\r' || *p == 0) && p<myTextEnd)
+		while ((*p == (charType)'\n' || *p == (charType)'\r' || *p == 0) && p<mTextEnd)
 			p++;	
 
-		myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText) / sizeof(charType));
+		mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText) / sizeof(charType));
 			
-		if (p==myTextEnd)
+		if (p==mTextEnd)
 		{
-			myCurrentReadPos=myTextLen;
+			mCurrentReadPos=mTextLen;
 			break;
 		}
 	}
@@ -108,23 +108,23 @@ template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GetWord(AsciiParserUtilsTemplate<charType>& result, charType	separator, bool	removeLeadTrailWhitespace)
 {
 	bool	found=false;
-	charType *p = ((charType*)myText) + myCurrentReadPos;
+	charType *p = ((charType*)mText) + mCurrentReadPos;
 	while(!found)
 	{
 		// remove previous separators
-		while (((*p<(charType)' ') || (*p == separator)) && p<myTextEnd)
+		while (((*p<(charType)' ') || (*p == separator)) && p<mTextEnd)
 			p++;
 
 		if(removeLeadTrailWhitespace)
 		{
-			while (*p <= (charType)' ' && p<myTextEnd)
+			while (*p <= (charType)' ' && p<mTextEnd)
 				p++;
 		}
 
 		charType *pWordStart = p;
 
 		// search word end
-		while (*p >= (charType)' ' && *p != separator && p<myTextEnd)
+		while (*p >= (charType)' ' && *p != separator && p<mTextEnd)
 			p++;
 
 		charType *pWordEnd = p;
@@ -144,14 +144,14 @@ bool	AsciiParserUtilsTemplate<charType>::GetWord(AsciiParserUtilsTemplate<charTy
 		}
 
 		// remove next separators
-		while (((*p<(charType)' ') || (*p == separator) || (*p == (charType)0)) && p<myTextEnd)
+		while (((*p<(charType)' ') || (*p == separator) || (*p == (charType)0)) && p<mTextEnd)
 			p++;
 
-		myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+		mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
 			
-		if (p==myTextEnd)
+		if (p==mTextEnd)
 		{
-			myCurrentReadPos=myTextLen;
+			mCurrentReadPos=mTextLen;
 			break;
 		}
 	}
@@ -162,17 +162,17 @@ template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GetWord(AsciiParserUtilsTemplate<charType>& result, const ValidCharArray<charType>&	validCharArray)
 {
 	bool	found = false;
-	charType *p = ((charType*)myText) + myCurrentReadPos;
+	charType *p = ((charType*)mText) + mCurrentReadPos;
 	while (!found)
 	{
 		// remove previous invalid
-		while ((!validCharArray.isValid(*p)) && p<myTextEnd)
+		while ((!validCharArray.isValid(*p)) && p<mTextEnd)
 			p++;
 
 		charType *pWordStart = p;
 
 		// search word end
-		while (validCharArray.isValid(*p) && p<myTextEnd)
+		while (validCharArray.isValid(*p) && p<mTextEnd)
 			p++;
 
 		charType *pWordEnd = p;
@@ -185,14 +185,14 @@ bool	AsciiParserUtilsTemplate<charType>::GetWord(AsciiParserUtilsTemplate<charTy
 		}
 
 		// remove next invalid
-		while ((!validCharArray.isValid(*p)) && p<myTextEnd)
+		while ((!validCharArray.isValid(*p)) && p<mTextEnd)
 			p++;
 
-		myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+		mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
 
-		if (p == myTextEnd)
+		if (p == mTextEnd)
 		{
-			myCurrentReadPos = myTextLen;
+			mCurrentReadPos = mTextLen;
 			break;
 		}
 	}
@@ -203,19 +203,19 @@ template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GetQuotationWord(AsciiParserUtilsTemplate<charType>& result)
 {
 	bool	found = false;
-	charType *p = ((charType*)myText) + myCurrentReadPos;
+	charType *p = ((charType*)mText) + mCurrentReadPos;
 	charType *prevP = p;
 	while (!found)
 	{
 		// remove previous white space
-		while ((*p<=(charType)' ') && p<myTextEnd)
+		while ((*p<=(charType)' ') && p<mTextEnd)
 		{
 			prevP = p;
 			p++;
 		}
 		// search first quotation mark (word Start)
 		// first quote can not be escaped 
-		while ((*p != (charType)'"') && (p<myTextEnd))
+		while ((*p != (charType)'"') && (p<mTextEnd))
 		{
 			prevP = p;
 			p++;
@@ -223,7 +223,7 @@ bool	AsciiParserUtilsTemplate<charType>::GetQuotationWord(AsciiParserUtilsTempla
 
 		charType *pWordStart = p;
 		bool EscapeChar = false;
-		if (p < myTextEnd)
+		if (p < mTextEnd)
 		{
 			// next character
 			prevP = p;
@@ -235,7 +235,7 @@ bool	AsciiParserUtilsTemplate<charType>::GetQuotationWord(AsciiParserUtilsTempla
 		}
 
 		// search word end
-		while (((*p != (charType)'"') || (EscapeChar)) && p<myTextEnd)
+		while (((*p != (charType)'"') || (EscapeChar)) && p<mTextEnd)
 		{
 			prevP = p;
 			p++;
@@ -249,7 +249,7 @@ bool	AsciiParserUtilsTemplate<charType>::GetQuotationWord(AsciiParserUtilsTempla
 			}
 		}
 		// second quotation mark is included in word
-		if (p < myTextEnd)
+		if (p < mTextEnd)
 		{
 			// next character
 			prevP = p;
@@ -265,11 +265,11 @@ bool	AsciiParserUtilsTemplate<charType>::GetQuotationWord(AsciiParserUtilsTempla
 			found = true;
 		}
 
-		myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+		mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
 
-		if (p == myTextEnd)
+		if (p == mTextEnd)
 		{
-			myCurrentReadPos = myTextLen;
+			mCurrentReadPos = mTextLen;
 			break;
 		}
 	}
@@ -281,12 +281,12 @@ template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GetChars(AsciiParserUtilsTemplate<charType>& result, int charCount)
 {
 	
-	charType *p = ((charType*)myText) + myCurrentReadPos;
+	charType *p = ((charType*)mText) + mCurrentReadPos;
 	int currentCount = 0;
 	charType *pWordStart = p;
 
 	// search word end
-	while (currentCount < charCount && p < myTextEnd)
+	while (currentCount < charCount && p < mTextEnd)
 	{
 		currentCount++;
 		p++;
@@ -301,11 +301,11 @@ bool	AsciiParserUtilsTemplate<charType>::GetChars(AsciiParserUtilsTemplate<charT
 		result.Set(pWordStart, lsize);
 	}
 
-	myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+	mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
 
-	if (p == myTextEnd)
+	if (p == mTextEnd)
 	{
-		myCurrentReadPos = myTextLen;
+		mCurrentReadPos = mTextLen;
 	}
 	
 	return (lsize>0);
@@ -314,12 +314,12 @@ bool	AsciiParserUtilsTemplate<charType>::GetChars(AsciiParserUtilsTemplate<charT
 template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GetPart(AsciiParserUtilsTemplate<charType>& result, int startPos, int charCount)
 {
-	charType *p = ((charType*)myText) + startPos;
+	charType *p = ((charType*)mText) + startPos;
 	int currentCount = 0;
 	charType *pWordStart = p;
 
 	// search word end
-	while (currentCount < charCount && p < myTextEnd)
+	while (currentCount < charCount && p < mTextEnd)
 	{
 		currentCount++;
 		p++;
@@ -334,11 +334,11 @@ bool	AsciiParserUtilsTemplate<charType>::GetPart(AsciiParserUtilsTemplate<charTy
 		result.Set(pWordStart, lsize);
 	}
 
-	myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+	mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
 
-	if (p == myTextEnd)
+	if (p == mTextEnd)
 	{
-		myCurrentReadPos = myTextLen;
+		mCurrentReadPos = mTextLen;
 	}
 
 	return (lsize>0);
@@ -349,20 +349,20 @@ template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GetString(AsciiParserUtilsTemplate<charType>& result, charType	separator, bool uniqueSeparator)
 {
 	bool	found=false;
-	charType *p = ((charType*)myText) + myCurrentReadPos;
+	charType *p = ((charType*)mText) + mCurrentReadPos;
 	while(!found)
 	{
 		// remove previous separators
 		if(!uniqueSeparator)
 		{
-			while((*p==separator) && p<myTextEnd)
+			while((*p==separator) && p<mTextEnd)
 				p++;
 		}
 
 		charType *pWordStart = p;
 
 		// search word end
-		while(*p!=separator && p<myTextEnd)
+		while(*p!=separator && p<mTextEnd)
 			p++;
 
 		charType *pWordEnd = p;
@@ -378,7 +378,7 @@ bool	AsciiParserUtilsTemplate<charType>::GetString(AsciiParserUtilsTemplate<char
 				found=true;
 			}
 
-			while(((*p==separator) || (*p==(charType)0))  && p<myTextEnd)
+			while(((*p==separator) || (*p==(charType)0))  && p<mTextEnd)
 				p++;
 		}
 		else
@@ -386,15 +386,15 @@ bool	AsciiParserUtilsTemplate<charType>::GetString(AsciiParserUtilsTemplate<char
 			result.Set(pWordStart, lsize);
 			found=true;
 
-			if (((*p == separator) || (*p == (charType)0)) && p<myTextEnd)
+			if (((*p == separator) || (*p == (charType)0)) && p<mTextEnd)
 				p++;
 		}
 
-		myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+		mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
 			
-		if (p==myTextEnd)
+		if (p==mTextEnd)
 		{
-			myCurrentReadPos=myTextLen;
+			mCurrentReadPos=mTextLen;
 			break;
 		}
 	}
@@ -405,7 +405,7 @@ template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::MoveToString(const charType* tofound)
 {
 	bool	found=false;
-	charType *p = ((charType*)myText) + myCurrentReadPos;
+	charType *p = ((charType*)mText) + mCurrentReadPos;
 	charType* toFoundChar = (charType*)tofound;
 	while(!found)
 	{
@@ -414,13 +414,13 @@ bool	AsciiParserUtilsTemplate<charType>::MoveToString(const charType* tofound)
 			if (*toFoundChar == (charType)0)
 			{
 				// this is the end of tofound, so we have found the whole word
-				myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+				mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
 				found=true;
 				break;
 			}
 			toFoundChar = (charType*)tofound;
 			++p;
-			if(p>=myTextEnd)
+			if(p>=mTextEnd)
 			{
 				// not found
 				break;
@@ -430,7 +430,7 @@ bool	AsciiParserUtilsTemplate<charType>::MoveToString(const charType* tofound)
 		{
 			++toFoundChar;
 			++p;
-			if(p>=myTextEnd)
+			if(p>=mTextEnd)
 			{
 				// not found
 				break;
@@ -445,13 +445,13 @@ bool	AsciiParserUtilsTemplate<char>::ReadInt(int& result)
 {
 	// search int start
 	bool	found=false;
-	char *p = ((char*)myText) + myCurrentReadPos;
+	char *p = ((char*)mText) + mCurrentReadPos;
 	while(!found)
 	{
 		if (((*p) == (char)' ') || ((*p) < (char)0x13)) // separators or special chars
 		{
 			++p;
-			if(p>=myTextEnd)
+			if(p>=mTextEnd)
 			{
 				// not found
 				break;
@@ -464,9 +464,9 @@ bool	AsciiParserUtilsTemplate<char>::ReadInt(int& result)
 			
 			if(test)
 			{
-				myCurrentReadPos = (p - (char*)myText);
+				mCurrentReadPos = (p - (char*)mText);
 				found=true;
-				myCurrentReadPos+=readlen;
+				mCurrentReadPos+=readlen;
 			}
 			
 			break;
@@ -479,11 +479,11 @@ template<>
 bool    AsciiParserUtilsTemplate<char>::ReadChar(char& result)
 {
 	bool	found = false;
-	char *p = ((char*)myText) + myCurrentReadPos;
-	if (p < myTextEnd)
+	char *p = ((char*)mText) + mCurrentReadPos;
+	if (p < mTextEnd)
 	{
 		result = *p;
-		myCurrentReadPos++;
+		mCurrentReadPos++;
 		found = true;
 	}
 
@@ -495,13 +495,13 @@ bool	AsciiParserUtilsTemplate<char>::ReadFloat(float& result)
 {
 	// search int start
 	bool	found=false;
-	char *p = ((char*)myText) + myCurrentReadPos;
+	char *p = ((char*)mText) + mCurrentReadPos;
 	while(!found)
 	{
 		if (((*p) == (char)' ') || ((*p) < (char)0x13)) // separators or special chars
 		{
 			++p;
-			if(p>=myTextEnd)
+			if(p>=mTextEnd)
 			{
 				// not found
 				break;
@@ -516,9 +516,9 @@ bool	AsciiParserUtilsTemplate<char>::ReadFloat(float& result)
 			if(test)
 			{
 				
-				myCurrentReadPos = (p - (char*)myText);
+				mCurrentReadPos = (p - (char*)mText);
 				found=true;
-				myCurrentReadPos+=readlen;
+				mCurrentReadPos+=readlen;
 			}
 			break;
 		}
@@ -531,13 +531,13 @@ bool	AsciiParserUtilsTemplate<char>::ReadDouble(double& result)
 {
 	// search int start
 	bool	found=false;
-	char *p = ((char*)myText) + myCurrentReadPos;
+	char *p = ((char*)mText) + mCurrentReadPos;
 	while(!found)
 	{
 		if (((*p) == (char)' ') || ((*p) < (char)0x13)) // separators or special chars
 		{
 			++p;
-			if(p>=myTextEnd)
+			if(p>=mTextEnd)
 			{
 				// not found
 				break;
@@ -552,9 +552,9 @@ bool	AsciiParserUtilsTemplate<char>::ReadDouble(double& result)
 			if(test)
 			{
 				
-				myCurrentReadPos = (p - (char*)myText);
+				mCurrentReadPos = (p - (char*)mText);
 				found=true;
-				myCurrentReadPos+=readlen;
+				mCurrentReadPos+=readlen;
 			}
 			break;
 		}
@@ -567,13 +567,13 @@ bool	AsciiParserUtilsTemplate<char>::ReadString(char* result, const int MAX_STRI
 {
 	// search int start
 	bool	found=false;
-	char *p = ((char*)myText) + myCurrentReadPos;
+	char *p = ((char*)mText) + mCurrentReadPos;
 	while(!found)
 	{
 		if (((*p) == (char)' ') || ((*p) < (char)0x13)) // separators or special chars
 		{
 			++p;
-			if(p>=myTextEnd)
+			if(p>=mTextEnd)
 			{
 				// not found
 				break;
@@ -588,9 +588,9 @@ bool	AsciiParserUtilsTemplate<char>::ReadString(char* result, const int MAX_STRI
 			
 			if(test)
 			{
-				myCurrentReadPos = (p - (char*)myText);
+				mCurrentReadPos = (p - (char*)mText);
 				found=true;
-				myCurrentReadPos+=strlen(result);
+				mCurrentReadPos+=strlen(result);
 			}
 			break;
 		}
@@ -621,13 +621,13 @@ bool	AsciiParserUtilsTemplate<unsigned short>::ReadInt(int& result)
 {
 	// search int start
 	bool	found = false;
-	unsigned short *p = ((unsigned short*)myText) + myCurrentReadPos;
+	unsigned short *p = ((unsigned short*)mText) + mCurrentReadPos;
 	while (!found)
 	{
 		if (((*p) == (unsigned short)' ') || ((*p) < (unsigned short)0x13)) // separators or special chars
 		{
 			++p;
-			if (p >= myTextEnd)
+			if (p >= mTextEnd)
 			{
 				// not found
 				break;
@@ -645,9 +645,9 @@ bool	AsciiParserUtilsTemplate<unsigned short>::ReadInt(int& result)
 
 			if (test)
 			{
-				myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(unsigned short);
+				mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(unsigned short);
 				found = true;
-				myCurrentReadPos += readlen;
+				mCurrentReadPos += readlen;
 			}
 
 			break;
@@ -660,11 +660,11 @@ template<>
 bool    AsciiParserUtilsTemplate<unsigned short>::ReadChar(unsigned short& result)
 {
 	bool	found = false;
-	unsigned short *p = ((unsigned short*)myText) + myCurrentReadPos;
-	if (p < myTextEnd)
+	unsigned short *p = ((unsigned short*)mText) + mCurrentReadPos;
+	if (p < mTextEnd)
 	{
 		result = *p;
-		myCurrentReadPos++;
+		mCurrentReadPos++;
 		found = true;
 	}
 
@@ -676,13 +676,13 @@ bool	AsciiParserUtilsTemplate<unsigned short>::ReadFloat(float& result)
 {
 	// search int start
 	bool	found = false;
-	unsigned short *p = ((unsigned short*)myText) + myCurrentReadPos;
+	unsigned short *p = ((unsigned short*)mText) + mCurrentReadPos;
 	while (!found)
 	{
 		if (((*p) == (unsigned short)' ') || ((*p) < (unsigned short)0x13)) // separators or special chars
 		{
 			++p;
-			if (p >= myTextEnd)
+			if (p >= mTextEnd)
 			{
 				// not found
 				break;
@@ -702,9 +702,9 @@ bool	AsciiParserUtilsTemplate<unsigned short>::ReadFloat(float& result)
 			if (test)
 			{
 
-				myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(unsigned short);
+				mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(unsigned short);
 				found = true;
-				myCurrentReadPos += readlen;
+				mCurrentReadPos += readlen;
 			}
 			break;
 		}
@@ -717,13 +717,13 @@ bool	AsciiParserUtilsTemplate<unsigned short>::ReadDouble(double& result)
 {
 	// search int start
 	bool	found = false;
-	unsigned short *p = ((unsigned short*)myText) + myCurrentReadPos;
+	unsigned short *p = ((unsigned short*)mText) + mCurrentReadPos;
 	while (!found)
 	{
 		if (((*p) == (unsigned short)' ') || ((*p) < (unsigned short)0x13)) // separators or special chars
 		{
 			++p;
-			if (p >= myTextEnd)
+			if (p >= mTextEnd)
 			{
 				// not found
 				break;
@@ -742,9 +742,9 @@ bool	AsciiParserUtilsTemplate<unsigned short>::ReadDouble(double& result)
 			if (test)
 			{
 
-				myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(unsigned short);
+				mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(unsigned short);
 				found = true;
-				myCurrentReadPos += readlen;
+				mCurrentReadPos += readlen;
 			}
 			break;
 		}
@@ -757,13 +757,13 @@ bool	AsciiParserUtilsTemplate<unsigned short>::ReadString(unsigned short* result
 {
 	// search int start
 	bool	found = false;
-	unsigned short *p = ((unsigned short*)myText) + myCurrentReadPos;
+	unsigned short *p = ((unsigned short*)mText) + mCurrentReadPos;
 	while (!found)
 	{
 		if (((*p) == (unsigned short)' ') || ((*p) < (unsigned short)0x13)) // separators or special chars
 		{
 			++p;
-			if (p >= myTextEnd)
+			if (p >= mTextEnd)
 			{
 				// not found
 				break;
@@ -784,9 +784,9 @@ bool	AsciiParserUtilsTemplate<unsigned short>::ReadString(unsigned short* result
 			{
 				memcpy(result, p, tmpString.strlen()*sizeof(unsigned short));
 
-				myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(unsigned short);
+				mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(unsigned short);
 				found = true;
-				myCurrentReadPos += tmpString.strlen();
+				mCurrentReadPos += tmpString.strlen();
 			}
 
 			break;
@@ -800,13 +800,13 @@ template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GetBlock(AsciiParserUtilsTemplate<charType>& result, charType	blkStart, charType	blkEnd)
 {
 	bool	found=false;
-	charType *p = ((charType*)myText) + myCurrentReadPos;
+	charType *p = ((charType*)mText) + mCurrentReadPos;
 	int openingfound=-1;
 	charType *pBlockStart = 0, *pBlockEnd = 0;
 	while(!found)
 	{
 		// search block start / end
-		while(*p!=blkStart && *p!=blkEnd && p<myTextEnd)
+		while(*p!=blkStart && *p!=blkEnd && p<mTextEnd)
 			p++;
 
 		if(*p == blkStart)
@@ -844,11 +844,11 @@ bool	AsciiParserUtilsTemplate<charType>::GetBlock(AsciiParserUtilsTemplate<charT
 			}
 		}
 
-		myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+		mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
 			
-		if (p>=myTextEnd)
+		if (p>=mTextEnd)
 		{
-			myCurrentReadPos=myTextLen;
+			mCurrentReadPos=mTextLen;
 			break;
 		}
 	}
@@ -860,7 +860,7 @@ template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GetBlockExcludeString(AsciiParserUtilsTemplate<charType>& result, charType	blkStart, charType	blkEnd)
 {
 	bool	found = false;
-	charType *p = ((charType*)myText) + myCurrentReadPos;
+	charType *p = ((charType*)mText) + mCurrentReadPos;
 	int openingfound = -1;
 	charType *pBlockStart = 0, *pBlockEnd = 0;
 
@@ -870,7 +870,7 @@ bool	AsciiParserUtilsTemplate<charType>::GetBlockExcludeString(AsciiParserUtilsT
 	{
 		bool EscapeChar = false;
 		// search block start / end (not in quote)
-		while (((*p != blkStart && *p != blkEnd) || inQuote) && p < myTextEnd)
+		while (((*p != blkStart && *p != blkEnd) || inQuote) && p < mTextEnd)
 		{
 			// jmp escape char in quote
 			if ((inQuote) && (prevp == '\\'))
@@ -930,14 +930,14 @@ bool	AsciiParserUtilsTemplate<charType>::GetBlockExcludeString(AsciiParserUtilsT
 			}
 		}
 
-		if (p >= myTextEnd)
+		if (p >= mTextEnd)
 		{
-			myCurrentReadPos = myTextLen;
+			mCurrentReadPos = mTextLen;
 			break;
 		}
 	}
 
-	myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+	mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
 
 	return found;
 }
@@ -945,15 +945,15 @@ bool	AsciiParserUtilsTemplate<charType>::GetBlockExcludeString(AsciiParserUtilsT
 template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GoAfterNextSeparator(charType	separator)
 {
-	charType *p = ((charType*)myText) + myCurrentReadPos;
+	charType *p = ((charType*)mText) + mCurrentReadPos;
 
-	while((*p!=separator) && p<myTextEnd)
+	while((*p!=separator) && p<mTextEnd)
 		p++;
 
 	if(*p == separator)
 	{
 		p++;
-		myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+		mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
 		return true;
 	}
 
@@ -963,14 +963,14 @@ bool	AsciiParserUtilsTemplate<charType>::GoAfterNextSeparator(charType	separator
 template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GoToNextNonWhitespace()
 {
-	charType *p = ((charType*)myText) + myCurrentReadPos;
+	charType *p = ((charType*)mText) + mCurrentReadPos;
 
-	while ((*p <= (charType)' ') && p<myTextEnd)
+	while ((*p <= (charType)' ') && p<mTextEnd)
 		p++;
 
-	if(p < myTextEnd)
+	if(p < mTextEnd)
 	{
-		myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+		mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
 		return true;
 	}
 
@@ -983,14 +983,14 @@ template<typename charType>
 unsigned int		AsciiParserUtilsTemplate<charType>::FindNext(charType toFind, unsigned int startpos)
 {
 	unsigned int currentPos = startpos;
-	charType *p = ((charType*)myText) + currentPos;
+	charType *p = ((charType*)mText) + currentPos;
 
-	while ((*p != (charType)toFind) && p < myTextEnd)
+	while ((*p != (charType)toFind) && p < mTextEnd)
 	{
 		currentPos++;
 		p++;
 	}
-	if (p < myTextEnd)
+	if (p < mTextEnd)
 	{
 		return currentPos;
 	}
@@ -1002,7 +1002,7 @@ template<typename charType>
 unsigned int		AsciiParserUtilsTemplate<charType>::FindNext(const charType* toFind, unsigned int startpos)
 {
 	unsigned int currentPos = startpos;
-	charType *p = ((charType*)myText) + currentPos;
+	charType *p = ((charType*)mText) + currentPos;
 
 	// search toFind Len
 	unsigned int toFindLen = 0;
@@ -1013,12 +1013,12 @@ unsigned int		AsciiParserUtilsTemplate<charType>::FindNext(const charType* toFin
 
 	while (true)
 	{
-		while ((*p != (charType)toFind[0]) && p < myTextEnd)
+		while ((*p != (charType)toFind[0]) && p < mTextEnd)
 		{
 			currentPos++;
 			p++;
 		}
-		if (p < myTextEnd)
+		if (p < mTextEnd)
 		{
 			bool wasFound = true;
 			// check if word toFind is here
@@ -1049,15 +1049,15 @@ unsigned int		AsciiParserUtilsTemplate<charType>::FindNext(const charType* toFin
 template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GoToNextValid(const ValidCharArray<charType>&	validCharArray)
 {
-	charType *p = ((charType*)myText) + myCurrentReadPos;
+	charType *p = ((charType*)mText) + mCurrentReadPos;
 
 
-	while ((!validCharArray.isValid(*p)) && p<myTextEnd)
+	while ((!validCharArray.isValid(*p)) && p<mTextEnd)
 		p++;
 
-	if (p < myTextEnd)
+	if (p < mTextEnd)
 	{
-		myCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)myText)) / sizeof(charType);
+		mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
 		return true;
 	}
 
@@ -1068,22 +1068,22 @@ bool	AsciiParserUtilsTemplate<charType>::GoToNextValid(const ValidCharArray<char
 template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GetLeadingPart(AsciiParserUtilsTemplate<charType>& result, bool	removeLeadTrailWhitespace)
 {
-	if(myCurrentReadPos)
+	if(mCurrentReadPos)
 	{
 		if(removeLeadTrailWhitespace)
 		{
 			bool	found=false;
-			charType *p = ((charType*)myText);
+			charType *p = ((charType*)mText);
 			while(!found)
 			{
 				// remove previous separators
-				while ((*p <= (charType)' ') && p<myTextEnd)
+				while ((*p <= (charType)' ') && p<mTextEnd)
 					p++;
 
 				charType *pWordStart = p;
 
 				// search word end
-				while (*p >= (charType)' ' && p<myTextEnd)
+				while (*p >= (charType)' ' && p<mTextEnd)
 					p++;
 
 				charType *pWordEnd = p;
@@ -1105,7 +1105,7 @@ bool	AsciiParserUtilsTemplate<charType>::GetLeadingPart(AsciiParserUtilsTemplate
 		}
 		else
 		{
-			result.Set(myText,myCurrentReadPos);
+			result.Set(mText,mCurrentReadPos);
 			return true;
 		}
 	}
@@ -1115,22 +1115,22 @@ bool	AsciiParserUtilsTemplate<charType>::GetLeadingPart(AsciiParserUtilsTemplate
 template<typename charType>
 bool	AsciiParserUtilsTemplate<charType>::GetTrailingPart(AsciiParserUtilsTemplate<charType>& result, bool	removeLeadTrailWhitespace)
 {
-	if(myCurrentReadPos<myTextLen)
+	if(mCurrentReadPos<mTextLen)
 	{
 		if(removeLeadTrailWhitespace)
 		{
 			bool	found=false;
-			charType *p = ((charType*)myText) + myCurrentReadPos;
+			charType *p = ((charType*)mText) + mCurrentReadPos;
 			while(!found)
 			{
 				// remove previous separators
-				while ((*p <= (charType)' ') && p<myTextEnd)
+				while ((*p <= (charType)' ') && p<mTextEnd)
 					p++;
 
 				charType *pWordStart = p;
 
-				p=myTextEnd;
-				charType *pWordEnd = myTextEnd;
+				p=mTextEnd;
+				charType *pWordEnd = mTextEnd;
 				
 				while ((*(pWordEnd - 1)) <= (charType)' ' && pWordEnd>pWordStart)
 				{
@@ -1151,8 +1151,8 @@ bool	AsciiParserUtilsTemplate<charType>::GetTrailingPart(AsciiParserUtilsTemplat
 		}
 		else
 		{
-			charType *p = ((charType*)myText) + myCurrentReadPos;
-			result.Set(p,myTextLen-myCurrentReadPos);
+			charType *p = ((charType*)mText) + mCurrentReadPos;
+			result.Set(p,mTextLen-mCurrentReadPos);
 			return true;
 		}
 	}
@@ -1211,7 +1211,7 @@ template<>
 AsciiParserUtilsTemplate<char>::operator kstl::string() const
 {
 	kstl::string	tmp;
-	tmp.assign(myText, myTextLen);
+	tmp.assign(mText, mTextLen);
 	return tmp;
 }
 
@@ -1220,7 +1220,7 @@ AsciiParserUtilsTemplate<unsigned short>::operator kstl::string() const
 {
 	kstl::string	tmp;
 	
-	usString	tmpUSString(myText);
+	usString	tmpUSString(mText);
 
 	tmp = tmpUSString.ToString();
 
@@ -1230,14 +1230,14 @@ AsciiParserUtilsTemplate<unsigned short>::operator kstl::string() const
 template<>
 AsciiParserUtilsTemplate<char>::operator usString() const
 {
-	usString	tmp(myText);
+	usString	tmp(mText);
 	return tmp;
 }
 
 template<>
 AsciiParserUtilsTemplate<unsigned short>::operator usString() const 
 {
-	usString	tmp(myText);
+	usString	tmp(mText);
 	return tmp;
 }
 
@@ -1245,7 +1245,7 @@ AsciiParserUtilsTemplate<unsigned short>::operator usString() const
 template<>
 const char * AsciiParserUtilsTemplate<char>::c_str()
 {
-	return (const char *)myText;
+	return (const char *)mText;
 }
 
 template<>
@@ -1266,14 +1266,14 @@ const unsigned short* AsciiParserUtilsTemplate<char>::us_str() const
 template<>
 const unsigned short* AsciiParserUtilsTemplate<unsigned short>::us_str() const
 {
-	return (const unsigned short*)myText;
+	return (const unsigned short*)mText;
 }
 
 template<>
 kstl::string	AsciiParserUtilsTemplate<char>::subString(int startpos, int len)
 {
 	kstl::string	tmp;
-	char* p = (char*)myText + startpos;
+	char* p = (char*)mText + startpos;
 
 	tmp.assign(p, len);
 	return tmp;
@@ -1283,7 +1283,7 @@ template<>
 kstl::string	AsciiParserUtilsTemplate<unsigned short>::subString(int startpos, int len)
 {
 	kstl::string	tmp;
-	unsigned short* p = (unsigned short*)myText + startpos;
+	unsigned short* p = (unsigned short*)mText + startpos;
 
 	usString	tmpUSString(p);
 

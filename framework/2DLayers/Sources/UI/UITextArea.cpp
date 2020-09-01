@@ -16,23 +16,22 @@ IMPLEMENT_CLASS_INFO(UITextArea)
 
 UITextArea::UITextArea(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-	//myTextColor(*this, false, "TextColor", KFLOAT_ZERO, KFLOAT_ZERO, KFLOAT_ZERO, 255.0f),
-	myText(*this, false, "Text", (kstl::string)"DefaultText"),
-	myFont(*this, false, "Font", ""),
-	myReleaseAction(*this, false, "ReleaseAction", ""),
-	myFontSize(*this, false, "FontSize", 12),
-	myLength(*this, false, "Length", 0),
-	myRow(*this, false, "Row", 1),
-	myCol(*this, false, "Col", 1),
-	myHasDefaultText(*this, false, "HasDefaultText", true),
-	myTextAlign(*this, false, "TextAlignment", 1)
+	mText(*this, false, "Text", (kstl::string)"DefaultText"),
+	mFont(*this, false, "Font", ""),
+	mReleaseAction(*this, false, "ReleaseAction", ""),
+	mFontSize(*this, false, "FontSize", 12),
+	mLength(*this, false, "Length", 0),
+	mRow(*this, false, "Row", 1),
+	mCol(*this, false, "Col", 1),
+	mHasDefaultText(*this, false, "HasDefaultText", true),
+	mTextAlignment(*this, false, "TextAlignment", 1)
 {
 
 	//unsetUserFlag(UserFlagUseColorArray);
 
-	myStayPressed = true;
-	myIsDown = false;
-	myIsDefaultText = true;
+	mStayPressed = true;
+	mIsDown = false;
+	mIsDefaultText = true;
 }
 
 void	UITextArea::InitModifiable()
@@ -40,15 +39,15 @@ void	UITextArea::InitModifiable()
 	UIDrawableItem::InitModifiable();
 
 	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-	myTexture = textureManager->CreateTexture(getName());
-	myTexture->Init();
-	myTexture->SetRepeatUV(false, false);
+	mTexturePointer = textureManager->CreateTexture(getName());
+	mTexturePointer->Init();
+	mTexturePointer->SetRepeatUV(false, false);
 }
 
 
 void UITextArea::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == myText.getLabelID()))
+	if ((labelid == mText.getLabelID()))
 	{
 		ChangeText(NULL);
 		KigsCore::GetNotificationCenter()->postNotificationName("TextChanged", this);
@@ -61,47 +60,47 @@ void UITextArea::NotifyUpdate(const unsigned int labelid)
 
 void	UITextArea::ReloadTexture()
 {
-	if (myTexture && myText != usString(""))
+	if (mTexturePointer && mText != usString(""))
 	{
-		ChangeText(myText.us_str());
+		ChangeText(mText.us_str());
 	}
 }
 
 UITextArea::~UITextArea()
 {
-	myStayPressed = false;
-	myIsDown = false;
+	mStayPressed = false;
+	mIsDown = false;
 
 }
 
 void UITextArea::CreateFirstText()
 {
-	myText.changeNotificationLevel(Owner);
+	mText.changeNotificationLevel(Owner);
 
 	ChangeText(NULL);
 }
 
 bool UITextArea::isAlpha(float X, float Y)
 {
-	//Try to get my mask
-	if (!myAlphaMask)
+	//Try to get mask
+	if (!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
 
 		for (unsigned int i = 0; i < sons.size(); i++)
 		{
-			if (sons[i].myItem->isSubType("AlphaMask"))
+			if (sons[i].mItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = sons[i].myItem;
+				mAlphaMask = sons[i].mItem;
 				break;
 			}
 		}
 	}
 
-	if (myAlphaMask)
+	if (mAlphaMask)
 	{
-		//Check on my mask the specified location
-		return !myAlphaMask->CheckTo(X, Y);
+		//Check on mask the specified location
+		return !mAlphaMask->CheckTo(X, Y);
 	}
 
 	return false;
@@ -109,7 +108,7 @@ bool UITextArea::isAlpha(float X, float Y)
 
 void UITextArea::GetFocus()
 {
-	myFocus = true;
+	mFocus = true;
 
 	//Get KeyBoard
 	ModuleInput* theInputModule = (ModuleInput*)CoreGetModule(ModuleInput);
@@ -125,13 +124,13 @@ void UITextArea::GetFocus()
 
 void UITextArea::LoseFocus()
 {
-	myFocus = false;
-	myIsDown = false;
+	mFocus = false;
+	mIsDown = false;
 
 	KigsCore::GetNotificationCenter()->removeObserver(this, "UpdateTextArea");
 
-	if (myReleaseAction.const_ref() != "")
-		KigsCore::GetNotificationCenter()->postNotificationName(myReleaseAction.const_ref(), this);
+	if (mReleaseAction.const_ref() != "")
+		KigsCore::GetNotificationCenter()->postNotificationName(mReleaseAction.const_ref(), this);
 
 
 	//Get KeyBoard
@@ -152,14 +151,14 @@ void UITextArea::LoseFocus()
 	KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
 
 	char tmptxt[512] = { 0 };
-	strcpywUtoC(tmptxt, (unsigned short*)myText.us_str());
+	strcpywUtoC(tmptxt, (unsigned short*)mText.us_str());
 	kstl::string newString = tmptxt;
 
-	if (newString == "DefaultText" || myHasDefaultText)
+	if (newString == "DefaultText" || mHasDefaultText)
 	{
 		newString = "";
-		myHasDefaultText = false;
-		myIsDefaultText = false;
+		mHasDefaultText = false;
+		mIsDefaultText = false;
 	}
 
 	for (unsigned int i = 0; i < _keycodeList.size(); i++)
@@ -182,9 +181,9 @@ void UITextArea::LoseFocus()
 void	UITextArea::ChangeText(const unsigned short* _newText)
 {
 	if (_newText)
-		myText = _newText;
+		mText = _newText;
 	else
-		_newText = (unsigned short*)myText.us_str();
+		_newText = (unsigned short*)mText.us_str();
 
 	char tmptxt[512] = { 0 };
 	strcpywUtoC(tmptxt, _newText);
@@ -204,11 +203,11 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 			kstl::string key = text.substr(1, text.length() - 1);
 
 			const PLATFORM_WCHAR* localized = theLocalizationManager->getLocalizedString(key.c_str());
-			myTexture->CreateFromText(localized, (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, 255,255, 255, 255, TinyImage::RGBA_32_8888);
+			mTexturePointer->CreateFromText(localized, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255,255, 255, 255, TinyImage::RGBA_32_8888);
 		}
 		else
 		{
-			myTexture->CreateFromText(myText.us_str(), (unsigned int)((float)((unsigned int)myFontSize) * LanguageScale), (myFont.const_ref()).c_str(), myTextAlign, 255, 255, 255, 255, TinyImage::RGBA_32_8888);
+			mTexturePointer->CreateFromText(mText.us_str(), (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255, 255, TinyImage::RGBA_32_8888);
 		}
 	}
 }
@@ -218,16 +217,16 @@ void UITextArea::ProtectedDraw(TravState* state)
 	UIDrawableItem::ProtectedDraw(state);
 
 	// draw text
-	if (!myTexture)
+	if (!mTexturePointer)
 		return;
 
-	myTexture->DoPreDraw(state);
+	mTexturePointer->DoPreDraw(state);
 
 	//VERTEX
 	float tx, ty;
-	myTexture->GetSize(tx, ty);
+	mTexturePointer->GetSize(tx, ty);
 
-	float posY = mySizeY - ty;
+	float posY = mSizeY - ty;
 
 	Point2D pt[4];
 	pt[0].Set(0.0f, posY);
@@ -247,7 +246,7 @@ void UITextArea::ProtectedDraw(TravState* state)
 
 	// TEXTURE COORD
 	kfloat ratioX, ratioY;
-	myTexture->GetRatio(ratioX, ratioY);
+	mTexturePointer->GetRatio(ratioX, ratioY);
 
 	mTextureQI->Flag |= UIVerticesInfo_Texture;
 	buf[0].setTexUV(0.0f, 0.0f);
@@ -262,12 +261,12 @@ void UITextArea::ProtectedDraw(TravState* state)
 	renderer->SetBlendFuncMode(RENDERER_BLEND_SRC_ALPHA, RENDERER_BLEND_ONE_MINUS_SRC_ALPHA);
 	renderer->DrawUIQuad(state, mTextureQI);
 
-	myTexture->DoPostDraw(state);
+	mTexturePointer->DoPostDraw(state);
 }
 
 DEFINE_METHOD(UITextArea, UpdateKeyBoard)
 {
-	if (!myFocus)
+	if (!mFocus)
 		return false;
 
 	kstl::vector<KeyEvent> * eventList = static_cast<kstl::vector<KeyEvent>*> (privateParams);
@@ -275,7 +274,7 @@ DEFINE_METHOD(UITextArea, UpdateKeyBoard)
 	kstl::vector<KeyEvent>::iterator ITStart = eventList->begin();
 	kstl::vector<KeyEvent>::iterator ITEND = eventList->end();
 
-	kstl::string newString = myText.ToString();
+	kstl::string newString = mText.ToString();
 
 	bool terminated = false;
 	while (ITStart != ITEND && !terminated)
@@ -308,10 +307,10 @@ DEFINE_METHOD(UITextArea, UpdateKeyBoard)
 		}
 	}
 
-	if (myText.ToString() != newString)
+	if (mText.ToString() != newString)
 	{
 		ChangeText(newString);
-		myText = newString;
+		mText = newString;
 
 		KigsCore::GetNotificationCenter()->postNotificationName("TextChanged", this);
 	}

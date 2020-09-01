@@ -4,17 +4,19 @@
 #include "MultiTouchDevice.h"
 #include "ModuleInputAndroid.h"
 
+
+#include <jni.h>
 // ****************************************
 // * MultiTouchAndroid class
 // * --------------------------------------
-/*!  \class MultiTouchAndroid
-     Android multi touch management (touch screen)
-	 \ingroup InputAndroid
+/**
+* \file	MultiTouchAndroid.h
+* \class	MultiTouchAndroid
+* \ingroup Input
+* \brief Android multitouch management.
+*
 */
 // ****************************************
-
-#include <jni.h>
-
 class	MultiTouchAndroid : public MultiTouchDevice
 {
 public:
@@ -31,14 +33,14 @@ protected:
    
 	DECLARE_METHOD(ReinitCB);
 	
-	kstl::vector<jobject> myTouchList;
-	jmethodID 	getEventCount;
-	jmethodID 	getEvent;
-	jmethodID 	clearEventList;
+	kstl::vector<jobject> mTouchList;
+	jmethodID 	mGetEventCount;
+	jmethodID 	mGetEvent;
+	jmethodID 	mClearEventList;
    
-	jmethodID Event_getX;
-	jmethodID Event_getY;
-	jmethodID Event_getAction;
+	jmethodID mEventGetX;
+	jmethodID mEventGetY;
+	jmethodID mEventGetAction;
   
 };    
 

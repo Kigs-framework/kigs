@@ -12,6 +12,17 @@ class Camera;
 class RendererDX11;
 struct LightStruct;
 
+// ****************************************
+// * API3DLight class
+// * --------------------------------------
+/**
+ * \file	HLSLLight.h
+ * \class	API3DLight
+ * \ingroup Renderer
+ * \brief	DX11 Light.
+ */
+ // ****************************************
+
 class API3DLight : public Light
 {
 public:

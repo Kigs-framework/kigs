@@ -1,11 +1,3 @@
-/*
- *  GeolocationAndroid.cpp
- *  AndroidInputAndroid
- *
- *  Created by Antoine on 22/01/15.
- *  Copyright 2011 __MyCompanyName__. All rights reserved.
- *
- */
 
 #include "GeolocationAndroid.h"
 #include "Core.h"
@@ -24,22 +16,22 @@ GeolocationAndroid::GeolocationAndroid(const kstl::string& name,CLASS_NAME_TREE_
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	jclass pMaClasse =g_env->FindClass("com/kigs/input/KigsGeolocation");
-	myKigsGeolocation = (jclass)g_env->NewGlobalRef(pMaClasse);
+	mKigsGeolocation = (jclass)g_env->NewGlobalRef(pMaClasse);
 
-	getLatitude=g_env->GetStaticMethodID(myKigsGeolocation, "getLatitude", "()D");
-	getLongitude = g_env->GetStaticMethodID(myKigsGeolocation, "getLongitude", "()D");
-	getAltitude = g_env->GetStaticMethodID(myKigsGeolocation, "getAltitude", "()D");
-	getAccuracy = g_env->GetStaticMethodID(myKigsGeolocation, "getAccuracy", "()F");
-	isActive = g_env->GetStaticMethodID(myKigsGeolocation, "isActive", "()Z");
-	setActive=g_env->GetStaticMethodID(myKigsGeolocation, "Activate", "(ZIF)V");
+	mGetLatitude=g_env->GetStaticMethodID(mKigsGeolocation, "getLatitude", "()D");
+	mGetLongitude = g_env->GetStaticMethodID(mKigsGeolocation, "getLongitude", "()D");
+	mGetAltitude = g_env->GetStaticMethodID(mKigsGeolocation, "getAltitude", "()D");
+	mGetAccuracy = g_env->GetStaticMethodID(mKigsGeolocation, "getAccuracy", "()F");
+	mGetActive = g_env->GetStaticMethodID(mKigsGeolocation, "isActive", "()Z");
+	mSetActive=g_env->GetStaticMethodID(mKigsGeolocation, "Activate", "(ZIF)V");
 }
 
 GeolocationAndroid::~GeolocationAndroid()
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	g_env->DeleteGlobalRef(myKigsGeolocation);
-	myKigsGeolocation=0;
+	g_env->DeleteGlobalRef(mKigsGeolocation);
+	mKigsGeolocation=0;
 }
 
 bool	GeolocationAndroid::Aquire()
@@ -67,10 +59,10 @@ void	GeolocationAndroid::UpdateDevice()
 	if (mIsActive)
 	{
 		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-		mLatitude = (kdouble)g_env->CallStaticDoubleMethod(myKigsGeolocation, getLatitude);
-		mLongitude = (kdouble)g_env->CallStaticDoubleMethod(myKigsGeolocation, getLongitude);
-		mAltitude = (kdouble)g_env->CallStaticDoubleMethod(myKigsGeolocation, getAltitude);
-		mAccuracy = (kfloat)g_env->CallStaticFloatMethod(myKigsGeolocation, getAccuracy);
+		mLatitude = (kdouble)g_env->CallStaticDoubleMethod(mKigsGeolocation, mGetLatitude);
+		mLongitude = (kdouble)g_env->CallStaticDoubleMethod(mKigsGeolocation, mGetLongitude);
+		mAltitude = (kdouble)g_env->CallStaticDoubleMethod(mKigsGeolocation, mGetAltitude);
+		mAccuracy = (kfloat)g_env->CallStaticFloatMethod(mKigsGeolocation, mGetAccuracy);
 	}
 }
 
@@ -84,7 +76,7 @@ void	GeolocationAndroid::Start()
 	if (!mIsActive)
 	{
 		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-		g_env->CallStaticVoidMethod(myKigsGeolocation, setActive, true, (int)myRate, (kfloat)myMinDistance);
+		g_env->CallStaticVoidMethod(mKigsGeolocation, mSetActive, true, (int)mRate, (kfloat)mMinDistance);
 		mIsActive = true;
 	}
 }
@@ -93,7 +85,7 @@ void	GeolocationAndroid::Stop()
 	if (mIsActive)
 	{
 		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-		g_env->CallStaticVoidMethod(myKigsGeolocation, setActive, false, (int)myRate, (kfloat)myMinDistance);
+		g_env->CallStaticVoidMethod(mKigsGeolocation, mSetActive, false, (int)mRate, (kfloat)mMinDistance);
 		mIsActive = false;
 	}
 }

@@ -65,7 +65,7 @@ LuaImGuiStackProtector::~LuaImGuiStackProtector()
 
 
 IMPLEMENT_CONSTRUCTOR(LuaKigsBindModule)
-, myLuaState(nullptr)
+, mLuaState(nullptr)
 {
 }
 
@@ -153,10 +153,10 @@ int KigsDoFile(lua_State *L)
 bool	LuaKigsBindModule::ExecuteString(const char* code)
 {
 	LuaImGuiStackProtector protector;
-	if(luaL_dostring(myLuaState, code) != 0)
+	if(luaL_dostring(mLuaState, code) != 0)
 	{
-		kigsprintf("%s\n",lua_tostring(myLuaState, -1));
-		lua_pop(myLuaState, 1);
+		kigsprintf("%s\n",lua_tostring(mLuaState, -1));
+		lua_pop(mLuaState, 1);
 		return false;
 	}
 	return true;
@@ -173,7 +173,7 @@ bool LuaKigsBindModule::ExecuteLuaFile(const char* filename, const char* prepend
 	auto& pathManager = KigsCore::Singleton<FilePathManager>();
 	SmartPointer<FileHandle> lFile = pathManager->FindFullName(filename);
 
-	if ((lFile->myStatus&FileHandle::Exist)==0)
+	if ((lFile->mStatus&FileHandle::Exist)==0)
 		return false;
 
 	u64 length;
@@ -208,10 +208,10 @@ bool LuaKigsBindModule::ExecuteLuaFile(const char* filename, const char* prepend
 bool    LuaKigsBindModule::SafePCall(int nb_args, int nb_ret)
 {
 	LuaImGuiStackProtector protector;
-	if (lua_pcall(myLuaState, nb_args, nb_ret, 0) != 0)
+	if (lua_pcall(mLuaState, nb_args, nb_ret, 0) != 0)
 	{
-		KIGS_MESSAGE(lua_tostring(myLuaState, -1));
-		lua_pop(myLuaState, 1);
+		KIGS_MESSAGE(lua_tostring(mLuaState, -1));
+		lua_pop(mLuaState, 1);
 		return false;
 	}
 	return true;
@@ -219,7 +219,7 @@ bool    LuaKigsBindModule::SafePCall(int nb_args, int nb_ret)
 
 bool	LuaKigsBindModule::CallLuaFunction(const kstl::string& funcName)
 {
-	lua_getglobal(myLuaState, funcName.c_str());
+	lua_getglobal(mLuaState, funcName.c_str());
 	return SafePCall(0, 0);
 }
 
@@ -228,7 +228,7 @@ bool	LuaKigsBindModule::CallCoreModifiableCallback(kstl::vector<CoreModifiableAt
 	if (params.size())
 	{
 		kstl::string funcName = ((maString*)params[0])->const_ref();
-		LuaState L = myLuaState;
+		LuaState L = mLuaState;
 		
 		LuaStackAssert protect{ L };
 
@@ -269,7 +269,7 @@ bool	LuaKigsBindModule::CallCoreModifiableCallback(kstl::vector<CoreModifiableAt
 			}
 			else
 			{
-				PushAttribute(myLuaState, *itparam);
+				PushAttribute(mLuaState, *itparam);
 				paramCount++;
 			}
 			++itparam;
@@ -368,8 +368,8 @@ void LuaKigsBindModule::LoadLibraries(lua_State* L)
 	luaL_openlibs(L);
 	
 	setup_bindings(L);
-	kstl::vector<LuaCLibrary>::iterator itlib = myLibraries.begin();
-	while (itlib != myLibraries.end()) 
+	kstl::vector<LuaCLibrary>::iterator itlib = mLibraries.begin();
+	while (itlib != mLibraries.end()) 
 	{
 		(*itlib).registerLibrary(L);
 		itlib++;
@@ -421,9 +421,9 @@ LuaKigsBindModule::~LuaKigsBindModule()
 
 void LuaKigsBindModule::AddLibrary(void(*func)(lua_State*)) 
 {
-	myLibraries.push_back(LuaCLibrary(func));
-	if (myLuaState)
-		func(myLuaState);
+	mLibraries.push_back(LuaCLibrary(func));
+	if (mLuaState)
+		func(mLuaState);
 }
 
 
@@ -436,9 +436,9 @@ void LuaKigsBindModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAt
 	DECLARE_FULL_CLASS_INFO(core, LuaImporter, LuaImporter, LuaBind);
 	DECLARE_FULL_CLASS_INFO(core, LuaNotificationHook, LuaNotificationHook, LuaBind);
 
-	myLuaState = luaL_newstate();
+	mLuaState = luaL_newstate();
 	
-	LoadLibraries(myLuaState);
+	LoadLibraries(mLuaState);
 
 }
 
@@ -454,9 +454,9 @@ void LuaKigsBindModule::Close()
 		it++;
 	}
 	
-	if (myLuaState)
-		lua_close(myLuaState);
-	myLuaState = 0;
+	if (mLuaState)
+		lua_close(mLuaState);
+	mLuaState = 0;
 }    
 
 void LuaKigsBindModule::ReleaseRefs(CoreModifiable* obj)
@@ -469,7 +469,7 @@ void LuaKigsBindModule::ReleaseRefs(CoreModifiable* obj)
 
 void LuaKigsBindModule::AddLuaMethodFromStack(CoreModifiable* obj, const kstl::string& func_name)
 {
-	LuaState L = myLuaState;
+	LuaState L = mLuaState;
 	{
 		LuaStackAssert protect{ L };
 
@@ -506,7 +506,7 @@ void LuaKigsBindModule::ConnectToLua(CoreModifiable* e, const kstl::string& sign
 
 void LuaKigsBindModule::SetValueLua(CoreModifiable* cm, const kstl::string& attrname, const kstl::string& code)
 {
-	LuaState L = myLuaState;
+	LuaState L = mLuaState;
 	LuaStackAssert protect{ L };
 	int topA = L.top();
 	L.pushCFunction(&CoreModifiableSetAttributeLua);
@@ -602,7 +602,7 @@ DEFINE_METHOD(LuaKigsBindModule, RegisterLuaMethod)
 		}
 		else // global code
 		{
-			LuaState L = myLuaState;
+			LuaState L = mLuaState;
 			LuaStackAssert protect{ L };
 			int top = L.top();
 			if (ExecuteString(privateCode->const_ref()))

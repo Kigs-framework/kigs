@@ -5,15 +5,17 @@
 #include "CoreModifiableAttribute.h"
 #include "Semaphore.h"
 
+
 // ****************************************
 // * ThreadEvent class
 // * --------------------------------------
-/*!  \class ThreadEvent
-	synchronisation object Event (or pthread_cond_t for pthread like)
-\ingroup Thread
-*/
-// ****************************************
-
+/**
+ * \file	ThreadEvent.h
+ * \class	ThreadEvent
+ * \ingroup Thread
+ * \brief	Thread synchronisation object Event.
+ */
+ // ****************************************
 class ThreadEvent : public CoreModifiable
 {
 public:
@@ -30,12 +32,12 @@ public:
 	{
 		if (semaphore)
 		{
-			if (myOwnCriticalSection)
+			if (mOwnCriticalSection)
 			{
-				delete myCriticalSection;
+				delete mCriticalSection;
 			}
-			myCriticalSection = &(semaphore->GetPrivateMutex());
-			myOwnCriticalSection = false;
+			mCriticalSection = &(semaphore->GetPrivateMutex());
+			mOwnCriticalSection = false;
 		}
 	}
 
@@ -47,13 +49,13 @@ protected:
 	//! destructor
 	virtual ~ThreadEvent();
 
-	maInt			myEventCounter;
-	int				myCurrentCount;
-	maBool			myAutoReset;
+	maInt			mEventCounter;
+	int				mCurrentCount;
+	maBool			mAutoReset;
 
-	std::mutex*					myCriticalSection=nullptr;
-	bool						myOwnCriticalSection=true;
-	std::condition_variable		myConditionVariable;
+	std::mutex*					mCriticalSection=nullptr;
+	bool						mOwnCriticalSection=true;
+	std::condition_variable		mConditionVariable;
 };
 
 #endif //_THREADEVENT_H_

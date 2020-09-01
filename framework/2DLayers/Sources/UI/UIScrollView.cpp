@@ -13,12 +13,12 @@ IMPLEMENT_CLASS_INFO(UIScrollView)
 UIScrollView::UIScrollView(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	xScroll = 0;
-	yScroll = 0;
+	mXScroll = 0;
+	mYScroll = 0;
 
-	myVision = KigsCore::GetInstanceOf(getName() + "_MYUIControlBoxForScrollViewUI", "UIControlBoxForScrollViewUI");
-	myVision->Init();
-	addItem((CMSP&)myVision);
+	mVision = KigsCore::GetInstanceOf(getName() + "_MYUIControlBoxForScrollViewUI", "UIControlBoxForScrollViewUI");
+	mVision->Init();
+	addItem((CMSP&)mVision);
 }
 
 void UIScrollView::InitModifiable()
@@ -28,14 +28,14 @@ void UIScrollView::InitModifiable()
 	{
 		UpdateContentSize();
 
-		Point2D posViewPort(myPosition[0], myPosition[1]);
-		myVision->Set_Position(posViewPort);
-		myVision->setValue("SizeX", mySizeX);
-		myVision->setValue("SizeY", mySizeY);
+		Point2D posViewPort(mPosition[0], mPosition[1]);
+		mVision->Set_Position(posViewPort);
+		mVision->setValue("SizeX", mSizeX);
+		mVision->setValue("SizeY", mSizeY);
 
 		kstl::vector<CMSP>	instances=	GetInstances("ModuleInput");
 		KIGS_ASSERT(instances.size() == 1);
-		myInput = (ModuleInput*)(instances[0].get());
+		mInput = (ModuleInput*)(instances[0].get());
 
 		return;
 	}
@@ -44,7 +44,7 @@ void UIScrollView::InitModifiable()
 
 UIScrollView::~UIScrollView()
 {
-	myVision = nullptr;
+	mVision = nullptr;
 }
 
 
@@ -54,24 +54,24 @@ bool UIScrollView::scrollTo(kfloat deltaPos)
 
 	if (isVertical)
 	{
-		if (yScroll + deltaPos > 0)
+		if (mYScroll + deltaPos > 0)
 		{
-			deltaPos = 0 - yScroll;
+			deltaPos = 0 - mYScroll;
 			stopped = true;
 		}
-		else if ((float)(deltaPos + yScroll) < (float)(-maxY + (int)mySizeY))
+		else if ((float)(deltaPos + mYScroll) < (float)(-mMaxY + (int)mSizeY))
 		{
-			deltaPos = (float)(-maxY + (int)mySizeY) - (float)(yScroll);
+			deltaPos = (float)(-mMaxY + (int)mSizeY) - (float)(mYScroll);
 			stopped = true;
 
 		}
 
 
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mySons.begin();
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mySons.end();
+		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
+		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
 		for (; itS != itE; ++itS)
 		{
-			if ((*itS) == myVision.get())
+			if ((*itS) == mVision.get())
 				continue;
 
 			kfloat x, y;
@@ -79,23 +79,23 @@ bool UIScrollView::scrollTo(kfloat deltaPos)
 			((Node2D*)(*itS))->setArrayValue("Position", x, y + deltaPos);
 		}
 
-		yScroll += deltaPos;
+		mYScroll += deltaPos;
 	}
 	else
 	{
-		if (xScroll + deltaPos < 0)
+		if (mXScroll + deltaPos < 0)
 		{
-			deltaPos = 0 - xScroll;
+			deltaPos = 0 - mXScroll;
 			stopped = true;
 		}
-		else if ((float)(deltaPos + xScroll) >(float)(-maxX + (int)mySizeX))
+		else if ((float)(deltaPos + mXScroll) >(float)(-mMaxX + (int)mSizeX))
 		{
 			deltaPos = 0;
 			stopped = true;
 
 		}
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mySons.begin();
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mySons.end();
+		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
+		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
 		while (itS != itE)
 		{
 			kfloat x, y;
@@ -103,7 +103,7 @@ bool UIScrollView::scrollTo(kfloat deltaPos)
 			((Node2D*)(*itS))->setArrayValue("Position", x + deltaPos, y);
 			itS++;
 		}
-		xScroll += deltaPos;
+		mXScroll += deltaPos;
 
 	}
 	return stopped;
@@ -126,64 +126,46 @@ bool UIScrollView::Draw(TravState* state)
 
 	renderer->getFirstRenderingScreen()->GetSize(screenW, screenH);
 
-	UIItem* myFirstFather = (UIItem*)getFirstParent(LABEL_TO_ID(UIItem));
-	v2f fsize = myFirstFather->GetSize();
+	UIItem* firstFather = (UIItem*)getFirstParent(LABEL_TO_ID(UIItem));
+	v2f fsize = firstFather->GetSize();
 	float ratioH = screenH / fsize.y;
 	float ratioW = screenW / fsize.x;
 
-	renderer->SetScissorValue((positionX)*ratioW, (int)(screenH - (positionY + myRealSize.y)*ratioH), myRealSize.x*ratioW, myRealSize.y*ratioH);
+	renderer->SetScissorValue((positionX)*ratioW, (int)(screenH - (positionY + mRealSize.y)*ratioH), mRealSize.x*ratioW, mRealSize.y*ratioH);
 	return UIDrawableItem::Draw(state);
 }
 
 void UIScrollView::UpdateContentSize()
 {
-	maxY = 0;
-	maxX = 0;
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mySons.begin();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mySons.end();
+	mMaxY = 0;
+	mMaxX = 0;
+	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
+	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
 	while (itS != itE)
 	{
 		kfloat x, y;
 		((Node2D*)(*itS))->GetGlobalPosition(x, y);
 		v2f size = ((Node2D*)(*itS))->GetSize();
-		if (size.y + y > maxY)
+		if (size.y + y > mMaxY)
 		{
-			maxY = size.y + y;
+			mMaxY = size.y + y;
 		}
-		if (size.x + x > maxX)
+		if (size.x + x > mMaxX)
 		{
-			maxX = size.x + x;
+			mMaxX = size.x + x;
 		}
 		itS++;
 	}
 }
 
-/*void UIScrollView::SendClickUpToChildren(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)
-{
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mySons.begin();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mySons.end();
-	while (itS != itE)
-	{
-		if (*itS == myVision.get())
-		{
-			itS++;
-			continue;
-		}
-		if (((UIItem*)(*itS))->ContainsPoint(X,Y))
-		{
-			((UIItem*)(*itS))->TriggerMouseClick(buttonState, buttonEvent, X, Y, catchClick);
-		}
-		itS++;
-	}
-}*/
 
 void UIScrollView::SendFalseClickUpToChildren()
 {
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mySons.begin();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mySons.end();
+	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
+	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
 	while (itS != itE)
 	{
-		if ((*itS)->isSubType(UIButton::myClassID))
+		if ((*itS)->isSubType(UIButton::mClassID))
 		{
 			((UIButton*)(*itS))->ForcedChangeState(false);
 		}
@@ -193,16 +175,16 @@ void UIScrollView::SendFalseClickUpToChildren()
 
 void UIScrollView::SendClickDownToChildren(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)
 {
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mySons.begin();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mySons.end();
+	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
+	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
 	while (itS != itE)
 	{
-		if (*itS == myVision.get())
+		if (*itS == mVision.get())
 		{
 			itS++;
 			continue;
 		}
-		if (((UIItem*)(*itS))->ContainsPoint(X, Y) && (*itS)->isSubType(UIButton::myClassID))
+		if (((UIItem*)(*itS))->ContainsPoint(X, Y) && (*itS)->isSubType(UIButton::mClassID))
 		{
 			((UIButton*)(*itS))->ForcedChangeState(buttonState&buttonEvent&UIInputEvent::LEFT);
 		}
@@ -210,32 +192,4 @@ void UIScrollView::SendClickDownToChildren(int buttonState, int buttonEvent, int
 	}
 }
 
-/*void UIScrollView::SendMouseMoveToChildren(bool over,float MouseDeltaX, float MouseDeltaY)
-{
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mySons.begin();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mySons.end();
-	kfloat x, y;
-	myInput->GetMouse()->getPos(x, y);
-	getRootLayerFather()->GetRenderingScreen()->GetMousePosInScreen(x, y, x, y);
-	while (itS != itE)
-	{
-		if ((*itS) == myVision.get())
-		{
-			itS++;
-			continue;
-		}
-		if (((UIItem*)(*itS))->ContainsPoint(x,y))
-		{
-			((UIItem*)(*itS))->TriggerMouseMove(over, MouseDeltaX, MouseDeltaY);
-		}
-		else
-		{
-			((UIItem*)(*itS))->TriggerMouseMove(false, MouseDeltaX, MouseDeltaY);
-		}
-		itS++;
-	}
-
-}
-
-*/
 

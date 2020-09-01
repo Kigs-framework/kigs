@@ -24,7 +24,7 @@ public:
 	//! Extra constructors
 	maUSStringHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, const kstl::string& value ) : CoreModifiableAttributeData<usString>(owner, isInitAttribute, ID)
 	{
-		_value = usString{ value };
+		mValue = usString{ value };
 	}
 
 
@@ -32,18 +32,18 @@ public:
 	/// getValue overloads
 	virtual bool getValue(kstl::string& value) const override
 	{
-		usString copy(_value);
+		usString copy(mValue);
 		value = copy.ToString();
 		return true;
 	}
 	virtual bool getValue(usString& value) const override
 	{
-		value = _value;
+		value = mValue;
 		return true;
 	}
 	virtual bool getValue(void*& value) const override
 	{
-		value = (void*)&_value;
+		value = (void*)&mValue;
 		return true;
 	}
 	///
@@ -54,7 +54,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 		
-		_value = usString(value);
+		mValue = usString(value);
 		
 		DO_NOTIFICATION(notificationLevel);
 		
@@ -65,7 +65,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 		
-		_value = value;
+		mValue = value;
 		
 		DO_NOTIFICATION(notificationLevel);
 		
@@ -76,7 +76,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 		
-		_value = value;
+		mValue = value;
 		DO_NOTIFICATION(notificationLevel);
 		
 		return true;
@@ -86,7 +86,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 		
-		_value = value;
+		mValue = value;
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
@@ -96,7 +96,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 
-		_value = value;
+		mValue = value;
 
 		DO_NOTIFICATION(notificationLevel);
 
@@ -109,64 +109,64 @@ public:
 	// Assign
 	auto& operator=(const unsigned short* attribute)
 	{
-		_value = attribute;
+		mValue = attribute;
 		return *this;
 	}	
 	auto& operator=(kstl::string& attribute)
 	{
-		_value = attribute;
+		mValue = attribute;
 		return *this;
 	}
 	auto& operator=(const char* attribute)
 	{
-		_value = attribute;
+		mValue = attribute;
 		return *this;
 	}
 
 	// Comparison
 	bool operator==(const usString& L_value) const
 	{
-		return (_value == L_value);
+		return (mValue == L_value);
 	}
 	bool operator==(unsigned short* L_value) const
 	{
-		return (_value == L_value);
+		return (mValue == L_value);
 	}
 	bool operator!=(const usString& L_value) const
 	{
-		return (_value != L_value);
+		return (mValue != L_value);
 	}
 	bool operator!=(unsigned short* L_value) const
 	{
-		return (_value != L_value);
+		return (mValue != L_value);
 	}
 
 	// Append
 	auto& operator+=(const usString& value)
 	{
-		_value += value;
+		mValue += value;
 		return *this;
 	}
 	auto& operator+=(unsigned short* value)
 	{
-		_value += value;
+		mValue += value;
 		return *this;
 	}
 	auto& operator+=(const CoreModifiableAttribute& value)
 	{
 		usString L_tmp = usString("");
 		if(value.getValue(L_tmp))
-			_value += L_tmp;
+			mValue += L_tmp;
 		return *this;
 	}
 	///
 
 	//! return a const unsigned short* pointer on internal value
-	const unsigned short* us_str() const { return _value.us_str(); }
-	kstl::string ToString() { return _value.ToString(); }
-	void strcpywUtoC(char * _Dest, const unsigned short * src) { _value.strcpywUtoC(_Dest, src); }
-	kstl::vector<usString>	SplitByCharacter(unsigned short value) const { return _value.SplitByCharacter(value); }
-	unsigned int strlen() const { return _value.strlen(); }
+	const unsigned short* us_str() const { return mValue.us_str(); }
+	kstl::string ToString() { return mValue.ToString(); }
+	void strcpywUtoC(char * _Dest, const unsigned short * src) { mValue.strcpywUtoC(_Dest, src); }
+	kstl::vector<usString>	SplitByCharacter(unsigned short value) const { return mValue.SplitByCharacter(value); }
+	unsigned int strlen() const { return mValue.strlen(); }
 
 };
 

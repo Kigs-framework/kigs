@@ -8,8 +8,19 @@
 
 class RenderingScreen;
 
-// create a zone in screen where design size ratio is kept
-// add this to root uiitem
+
+// ****************************************
+// * UIRatioKeeper class
+// * --------------------------------------
+/**
+* \file	UIRatioKeeper.h
+* \class	UIRatioKeeper
+* \ingroup 2DLayers
+* \brief	Create a zone in screen where design size ratio is kept.
+* 
+* UIRatioKeeper instance must be added to root uiitem.
+*/
+// ****************************************
 
 class UIRatioKeeper : public UIDrawableItem
 {
@@ -19,7 +30,7 @@ public:
 
 	void ForceRecomputeRatio()
 	{
-		myRatioIsOK = false;
+		mRatioIsOK = false;
 	}
 
 protected:
@@ -29,7 +40,7 @@ protected:
 
 	void RecomputeRatio();
 
-	bool myRatioIsOK;
+	bool mRatioIsOK;
 
 	WRAP_METHODS(ForceRecomputeRatio);
 

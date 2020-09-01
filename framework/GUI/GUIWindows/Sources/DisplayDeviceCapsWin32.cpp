@@ -9,7 +9,7 @@ DisplayDeviceCapsWin32::DisplayDeviceCapsWin32(const kstl::string& name,CLASS_NA
 {
 	// use    EnumDisplaySettings and EnumDisplayDevices
 
-	myDisplayDeviceList.clear();
+	mDisplayDeviceList.clear();
 
 	DISPLAY_DEVICE	displayDeviceDesc;
 	displayDeviceDesc.cb=sizeof(DISPLAY_DEVICE);
@@ -21,14 +21,8 @@ DisplayDeviceCapsWin32::DisplayDeviceCapsWin32(const kstl::string& name,CLASS_NA
 		{			
 			DisplayDevice toAdd;
 
-			toAdd.myName=displayDeviceDesc.DeviceName;
-			toAdd.myMain=false;
-			
-			// if first found, then it's the main one
-			/*if(myDisplayDeviceList.size()==0)
-			{
-				toAdd.myMain=true;
-			}*/
+			toAdd.mName=displayDeviceDesc.DeviceName;
+			toAdd.mMain=false;
 
 			DEVMODE devModeDesc;
 			devModeDesc.dmSize=sizeof(DEVMODE);
@@ -43,7 +37,7 @@ DisplayDeviceCapsWin32::DisplayDeviceCapsWin32(const kstl::string& name,CLASS_NA
 
 			if (devModeDesc.dmPosition.x == 0 && devModeDesc.dmPosition.y == 0)
 			{
-				toAdd.myMain = true;
+				toAdd.mMain = true;
 			}
 
 			int indexMode=0;
@@ -51,23 +45,23 @@ DisplayDeviceCapsWin32::DisplayDeviceCapsWin32(const kstl::string& name,CLASS_NA
 			{
 				
 				DisplayDeviceCapacity modeToAdd;
-				modeToAdd.myWidth=devModeDesc.dmPelsWidth;
-				modeToAdd.myHeight=devModeDesc.dmPelsHeight;
-				modeToAdd.myBitPerPixel=devModeDesc.dmBitsPerPel ;
-				modeToAdd.myIsCurrent=false;
-				if(	(currentBBP==modeToAdd.myBitPerPixel) &&
-					(currentWidth==modeToAdd.myWidth) &&
-					(currentHeight==modeToAdd.myHeight) )
+				modeToAdd.mWidth=devModeDesc.dmPelsWidth;
+				modeToAdd.mHeight=devModeDesc.dmPelsHeight;
+				modeToAdd.mBitPerPixel=devModeDesc.dmBitsPerPel ;
+				modeToAdd.mIsCurrent=false;
+				if(	(currentBBP==modeToAdd.mBitPerPixel) &&
+					(currentWidth==modeToAdd.mWidth) &&
+					(currentHeight==modeToAdd.mHeight) )
 				{
-					modeToAdd.myIsCurrent=true;
+					modeToAdd.mIsCurrent=true;
 				}
-				toAdd.myCapacityList.push_back(modeToAdd);
+				toAdd.mCapacityList.push_back(modeToAdd);
 
 				indexMode++;
 				
 			}
 
-			myDisplayDeviceList[toAdd.myName]=toAdd;
+			mDisplayDeviceList[toAdd.mName]=toAdd;
 		}
 		index++;
 	}

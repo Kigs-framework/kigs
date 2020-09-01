@@ -10,7 +10,7 @@ public:
 	
 	virtual void init(CoreSequence* sequence,CoreVector* params)
 	{
-		this->myTarget = sequence->getTarget();
+		this->mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
 		// kdouble duration,kfloat vStart,kfloat vEnd,unsigned int paramID => 4 params
 		if (!(params->size() == 4))
@@ -21,21 +21,21 @@ public:
 
 		float readfloat;
 		(*params)[0]->getValue(readfloat);
-		this->myDuration = readfloat;
+		this->mDuration = readfloat;
 
 		dataType	readPoint;
 		(*params)[1]->getValue(readPoint);
-		this->myStart = readPoint;
+		this->mStart = readPoint;
 
 		(*params)[2]->getValue(readPoint);
-		this->myEnd = readPoint;
+		this->mEnd = readPoint;
 
 		kstl::string readstring;
 		(*params)[3]->getValue(readstring);
 
-		this->myTarget = this->checkSubTarget(readstring);
+		this->mTarget = this->checkSubTarget(readstring);
 
-		this->myParamID = CharToID::GetID(readstring);
+		this->mParamID = CharToID::GetID(readstring);
 
 	}
 
@@ -54,7 +54,7 @@ public:
 
 	virtual void init(CoreSequence* sequence,CoreVector* params)
 	{
-		this->myTarget = sequence->getTarget();
+		this->mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
 		if (!(params->size() == 6))
 		{
@@ -64,7 +64,7 @@ public:
 
 		float readfloat;
 		(*params)[0]->getValue(readfloat);
-		this->myDuration = readfloat;
+		this->mDuration = readfloat;
 
 		dataType	readPoint;
 		(*params)[1]->getValue(readPoint);
@@ -81,9 +81,9 @@ public:
 
 		kstl::string readstring;
 		(*params)[5]->getValue(readstring);
-		this->myTarget = this->checkSubTarget(readstring);
+		this->mTarget = this->checkSubTarget(readstring);
 
-		this->myParamID = CharToID::GetID(readstring);
+		this->mParamID = CharToID::GetID(readstring);
 	}
 
 protected:
@@ -97,7 +97,7 @@ public:
 
 	virtual void init(CoreSequence* sequence,CoreVector* params)
 	{
-		this->myTarget = sequence->getTarget();
+		this->mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
 		// kdouble duration,kfloat vSet,unsigned int paramID => 3 params
 		if (!(params->size() == 3))
@@ -109,17 +109,17 @@ public:
 
 		float readfloat;
 		(*params)[0]->getValue(readfloat);
-		this->myDuration = readfloat;
+		this->mDuration = readfloat;
 
 		dataType	readPoint;
 		(*params)[1]->getValue(readPoint);
-		this->mySet = readPoint;
+		this->mSet = readPoint;
 
 		kstl::string readstring;
 		(*params)[2]->getValue(readstring);
-		this->myTarget = this->checkSubTarget(readstring);
+		this->mTarget = this->checkSubTarget(readstring);
 
-		this->myParamID = CharToID::GetID(readstring);
+		this->mParamID = CharToID::GetID(readstring);
 
 	}
 

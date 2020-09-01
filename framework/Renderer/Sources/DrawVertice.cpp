@@ -21,96 +21,96 @@ IMPLEMENT_CONSTRUCTOR(DrawVertice)
 void DrawVertice::RecalculateBBox() const
 {
 	BBox bbox{ BBox::PreInit{} };
-	if (myVertex)
+	if (mVertices)
 	{
 		// we want to jump to next vertex pos, so add all element to vSize if interleaved buffer
-		int vSize = myVertexSize;
-		if (myColorSize && (nullptr == myColor))
+		int vSize = mVertexSize;
+		if (mColorSize && (nullptr == mColors))
 		{
-			vSize += myColorSize;
+			vSize += mColorSize;
 		}
 
-		if (myNormalSize && (nullptr == myNormals))
+		if (mNormalSize && (nullptr == mNormals))
 		{
-			vSize += myNormalSize;
+			vSize += mNormalSize;
 		}
 
-		if (myTexCoordSize && (nullptr == myTexCoords))
+		if (mTexCoordSize && (nullptr == mTexCoords))
 		{
-			vSize += myTexCoordSize;
+			vSize += mTexCoordSize;
 		}
 
-		u8* read = reinterpret_cast<u8*>(myVertex);
-		read += myVertexDecal;
-		for (int i = 0; i < myVertexCount; i++)
+		u8* read = reinterpret_cast<u8*>(mVertices);
+		read += mVertexDecal;
+		for (int i = 0; i < mVertexCount; i++)
 		{
 			v3f* v = reinterpret_cast<v3f*>(read);
 			bbox.Update(*v);
 			read += vSize;
 		}
 	}
-	myBBox = bbox;
-	needRecomputeBBox = false;
+	mBBox = bbox;
+	mNeedRecomputeBBox = false;
 }
 
 void DrawVertice::GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const
 {
-	if (needRecomputeBBox)
+	if (mNeedRecomputeBBox)
 	{
 		RecalculateBBox();
 	}
-	pmin = myBBox.m_Min;
-	pmax = myBBox.m_Max;
+	pmin = mBBox.m_Min;
+	pmax = mBBox.m_Max;
 }
 
 void DrawVertice::clearArrays()
 {
-	if (myVertex)
+	if (mVertices)
 	{
-		delete[](char*)myVertex;
+		delete[](char*)mVertices;
 		
 	}
-	if (myIndex)
+	if (mIndices)
 	{
-		delete[](char*)myIndex;
+		delete[](char*)mIndices;
 		
 	}
-	if (myNormals)
+	if (mNormals)
 	{
-		delete[](char*)myNormals;
+		delete[](char*)mNormals;
 	
 	}
-	if (myTexCoords)
+	if (mTexCoords)
 	{
-		delete[](char*)myTexCoords;
+		delete[](char*)mTexCoords;
 		
 	
 	}
-	if (myColor)
+	if (mColors)
 	{
-		delete[](char*)myColor;
+		delete[](char*)mColors;
 
 	}
 
-	myVertex = 0;
-	myVertexCount = 0;
-	myVertexSize = 0;
-	myVertexDecal = 0;
-	myIndex = 0;
-	myIndiceCount = 0;
-	myIndiceSize = 0;
-	myNormals = 0;
-	myNormalCount = 0;
-	myNormalSize = 0;
-	myNormalDecal = 0;
-	myTexCoords = 0;
-	myTexCoordCount = 0;
-	myTexCoordSize = 0;
-	myTexCoordDecal = 0;
-	myColor = 0;
-	myColorCount = 0;
-	myColorSize = 0;
-	myColorDecal = 0;
+	mVertices = 0;
+	mVertexCount = 0;
+	mVertexSize = 0;
+	mVertexDecal = 0;
+	mIndices = 0;
+	mIndiceCount = 0;
+	mIndiceSize = 0;
+	mNormals = 0;
+	mNormalCount = 0;
+	mNormalSize = 0;
+	mNormalDecal = 0;
+	mTexCoords = 0;
+	mTexCoordCount = 0;
+	mTexCoordSize = 0;
+	mTexCoordDecal = 0;
+	mColors = 0;
+	mColorCount = 0;
+	mColorSize = 0;
+	mColorDecal = 0;
 }
 
 DrawVertice::~DrawVertice()
@@ -120,21 +120,21 @@ DrawVertice::~DrawVertice()
 
 void DrawVertice::InitModifiable()
 {
-	myPreset.changeNotificationLevel(Owner);
-	myPresetColor.changeNotificationLevel(Owner);
-	myTextureFileName.changeNotificationLevel(Owner);
-	myPresetOffset.changeNotificationLevel(Owner);
-	myPresetSize.changeNotificationLevel(Owner);
-	myPresetUVSize.changeNotificationLevel(Owner);
+	mPreset.changeNotificationLevel(Owner);
+	mPresetColor.changeNotificationLevel(Owner);
+	mTextureFileName.changeNotificationLevel(Owner);
+	mPresetOffset.changeNotificationLevel(Owner);
+	mPresetSize.changeNotificationLevel(Owner);
+	mPresetUVSize.changeNotificationLevel(Owner);
 
 	clearArrays();
 	Drawable::InitModifiable();
 	if (IsInit())
 	{
-		if (myTextureFileName.const_ref().size())
+		if (mTextureFileName.const_ref().size())
 		{
 			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-			mypTexture = textureManager->GetTexture(myTextureFileName);
+			mTexture = textureManager->GetTexture(mTextureFileName);
 		}
 		// set data after texture so that can get correct uv ratio
 		SetDataFromPreset();
@@ -144,23 +144,23 @@ void DrawVertice::InitModifiable()
 void DrawVertice::NotifyUpdate(const u32 labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
-	if (labelid == myTextureFileName.getID())
+	if (labelid == mTextureFileName.getID())
 	{
-		auto old_tex = mypTexture;
-		mypTexture = nullptr;
-		if (myTextureFileName.const_ref().size())
+		auto old_tex = mTexture;
+		mTexture = nullptr;
+		if (mTextureFileName.const_ref().size())
 		{
 			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-			mypTexture = textureManager->GetTexture(myTextureFileName);
+			mTexture = textureManager->GetTexture(mTextureFileName);
 			SetDataFromPreset();
 		}
 	}
-	else if (labelid == myPreset.getID()
-		|| labelid == myPresetColor.getID()
-		|| labelid == myPresetOffset.getID()
-		|| labelid == myPresetSize.getID()
-		|| labelid == myPresetUVSize.getID()
-		|| labelid == myPresetUVOffset.getID())
+	else if (labelid == mPreset.getID()
+		|| labelid == mPresetColor.getID()
+		|| labelid == mPresetOffset.getID()
+		|| labelid == mPresetSize.getID()
+		|| labelid == mPresetUVSize.getID()
+		|| labelid == mPresetUVOffset.getID())
 	{
 		SetDataFromPreset();
 	}
@@ -169,8 +169,8 @@ void DrawVertice::NotifyUpdate(const u32 labelid)
 void DrawVertice::SetDataFromPreset()
 {
 	clearArrays();
-	std::string type = myPreset;
-	if (type != "None") myIsStaticBuffer = true;
+	std::string type = mPreset;
+	if (type != "None") mIsStaticBuffer = true;
 
 	struct vertex
 	{
@@ -184,12 +184,12 @@ void DrawVertice::SetDataFromPreset()
 		std::array<u8, 4> c;
 		v2f uv;
 	};
-	std::array<u8, 4> color = { u8(myPresetColor[0] * 255.0f), u8(myPresetColor[1] * 255.0f),u8(myPresetColor[2] * 255.0f),u8(myPresetColor[3] * 255.0f) };
+	std::array<u8, 4> color = { u8(mPresetColor[0] * 255.0f), u8(mPresetColor[1] * 255.0f),u8(mPresetColor[2] * 255.0f),u8(mPresetColor[3] * 255.0f) };
 
-	v3f offset = myPresetOffset;
-	v3f preset_size = myPresetSize;
-	v2f uv_offset = myPresetUVOffset;
-	v2f uv_size = myPresetUVSize;
+	v3f offset = mPresetOffset;
+	v3f preset_size = mPresetSize;
+	v2f uv_offset = mPresetUVOffset;
+	v2f uv_size = mPresetUVSize;
 
 	if (type == "TexturedQuad" || type == "Quad")
 	{
@@ -220,9 +220,9 @@ void DrawVertice::SetDataFromPreset()
 			rx = ry = 1.0f;
 
 			// if texture is valid, get ratio
-			if (mypTexture)
+			if (mTexture)
 			{
-				mypTexture->GetRatio(rx, ry);
+				mTexture->GetRatio(rx, ry);
 			}
 			reinterpret_cast<textured_vertex*>(buffer + 0 * buffer_stride)->uv = v2f(0, ry);
 			reinterpret_cast<textured_vertex*>(buffer + 1 * buffer_stride)->uv = v2f(rx, ry);
@@ -252,8 +252,8 @@ void DrawVertice::SetDataFromPreset()
 		char* buffer = new char[buffer_size];
 		memset(buffer, 0, buffer_size);
 
-		v3f offset = myPresetOffset;
-		v3f preset_size = myPresetSize;
+		v3f offset = mPresetOffset;
+		v3f preset_size = mPresetSize;
 
 		mat3 m;
 
@@ -306,61 +306,61 @@ void DrawVertice::SetDataFromPreset()
 
 void DrawVertice::SetVertexArray(void *aArray, int aCount, int aSize, int decal, int aFormat)
 {
-	if (myVertex && myVertex != aArray)
+	if (mVertices && mVertices != aArray)
 	{
-		delete[](char*)myVertex;
-		myVertex = nullptr;
-		myVertexCount = 0;
+		delete[](char*)mVertices;
+		mVertices = nullptr;
+		mVertexCount = 0;
 	}
 
 	if (aCount)
 	{
-		myVertex = aArray;
-		myVertexCount = aCount;
-		myVertexSize = aSize;
-		myVertexFormat = aFormat;
-		myVertexDecal = decal;
+		mVertices = aArray;
+		mVertexCount = aCount;
+		mVertexSize = aSize;
+		mVertexFormat = aFormat;
+		mVertexDecal = decal;
 	}
 	
 	needReloadData = true;
-	needRecomputeBBox = true;
+	mNeedRecomputeBBox = true;
 }
 
 void DrawVertice::SetIndexArray(void *aArray, int aCount, int aSize, int aFormat)
 {
-	if (myIndex && myIndex != aArray)
+	if (mIndices && mIndices != aArray)
 	{
-		delete[](char*)myIndex;
-		myIndex = nullptr;
-		myIndiceCount = 0;
+		delete[](char*)mIndices;
+		mIndices = nullptr;
+		mIndiceCount = 0;
 	}
 
 	if (aCount)
 	{
-		myIndex = aArray;
-		myIndiceCount = aCount;
-		myIndiceSize = aSize;
-		myIndiceFormat = aFormat;
+		mIndices = aArray;
+		mIndiceCount = aCount;
+		mIndiceSize = aSize;
+		mIndiceFormat = aFormat;
 	}
 }
 
 // aArray = nullptr for interleaved array with vertex
 void DrawVertice::SetNormalArray(void *aArray, int aCount, int aSize, int decal, int aFormat)
 {
-	if (myNormals && myNormals != aArray)
+	if (mNormals && mNormals != aArray)
 	{
-		delete[](char*)myNormals;
-		myNormals = nullptr;
-		myNormalCount = 0;
+		delete[](char*)mNormals;
+		mNormals = nullptr;
+		mNormalCount = 0;
 	}
 
 	if (aCount)
 	{
-		myNormals = aArray;
-		myNormalCount = aCount;
-		myNormalSize = aSize;
-		myNormalDecal = decal;
-		myNormalFormat = aFormat;
+		mNormals = aArray;
+		mNormalCount = aCount;
+		mNormalSize = aSize;
+		mNormalDecal = decal;
+		mNormalFormat = aFormat;
 	}
 
 	needReloadData = true;
@@ -369,20 +369,20 @@ void DrawVertice::SetNormalArray(void *aArray, int aCount, int aSize, int decal,
 // aArray = nullptr for interleaved array with vertex
 void DrawVertice::SetTexCoordArray(void *aArray, int aCount, int aSize, int decal, int aFormat)
 {
-	if (myTexCoords && myTexCoords != aArray)
+	if (mTexCoords && mTexCoords != aArray)
 	{
-		delete[](char*)myTexCoords;
-		myTexCoords = nullptr;
-		myTexCoordCount = 0;
+		delete[](char*)mTexCoords;
+		mTexCoords = nullptr;
+		mTexCoordCount = 0;
 	}
 
 	if (aCount)
 	{
-		myTexCoords = aArray;
-		myTexCoordCount = aCount;
-		myTexCoordSize = aSize;
-		myTexCoordDecal = decal;
-		myTexCoordFormat = aFormat;
+		mTexCoords = aArray;
+		mTexCoordCount = aCount;
+		mTexCoordSize = aSize;
+		mTexCoordDecal = decal;
+		mTexCoordFormat = aFormat;
 	}
 	needReloadData = true;
 }
@@ -390,20 +390,20 @@ void DrawVertice::SetTexCoordArray(void *aArray, int aCount, int aSize, int deca
 // aArray = nullptr for interleaved array with vertex
 void DrawVertice::SetColorArray(void *aArray, int aCount, int aSize, int decal, int aFormat)
 {
-	if (myColor && myColor != aArray)
+	if (mColors && mColors != aArray)
 	{
-		delete[](char*)myColor;
-		myColor = nullptr;
-		myColorCount = 0;
+		delete[](char*)mColors;
+		mColors = nullptr;
+		mColorCount = 0;
 	}
 
 	if (aCount)
 	{
-		myColor = aArray;
-		myColorCount = aCount;
-		myColorSize = aSize;
-		myColorDecal = decal;
-		myColorFormat = aFormat;
+		mColors = aArray;
+		mColorCount = aCount;
+		mColorSize = aSize;
+		mColorDecal = decal;
+		mColorFormat = aFormat;
 	}
 	needReloadData = true;
 }
@@ -412,30 +412,30 @@ bool DrawVertice::Draw(TravState* travstate)
 {
 	if (ParentClassType::Draw(travstate))
 	{
-		if (myVertexCount > 0)
+		if (mVertexCount > 0)
 		{
 			auto renderer = /*(RendererOpenGL*)*/travstate->GetRenderer();
-			renderer->SetCullMode((RendererCullMode)(int)myCullMode);
+			renderer->SetCullMode((RendererCullMode)(int)mCullMode);
 
 			int lShaderMask = ModuleRenderer::VERTEX_ARRAY_MASK | ModuleRenderer::NO_LIGHT_MASK;
-			if (myColorCount)lShaderMask |= ModuleRenderer::COLOR_ARRAY_MASK;
-			if (myNormalCount)lShaderMask |= ModuleRenderer::NORMAL_ARRAY_MASK;
-			if (myTexCoordCount)lShaderMask |= ModuleRenderer::TEXCOORD_ARRAY_MASK;
+			if (mColorCount)lShaderMask |= ModuleRenderer::COLOR_ARRAY_MASK;
+			if (mNormalCount)lShaderMask |= ModuleRenderer::NORMAL_ARRAY_MASK;
+			if (mTexCoordCount)lShaderMask |= ModuleRenderer::TEXCOORD_ARRAY_MASK;
 
 #ifdef KIGS_TOOLS
-			if (myDrawNormals)
+			if (mDrawNormals)
 				lShaderMask |= ModuleRenderer::DRAW_NORMALS;
-			if (myDrawUVs)
+			if (mDrawUVs)
 				lShaderMask |= ModuleRenderer::DRAW_UVS;
 
-			renderer->SetPolygonMode(myWireMode ? RENDERER_LINE : RENDERER_FILL);
+			renderer->SetPolygonMode(mWireMode ? RENDERER_LINE : RENDERER_FILL);
 #endif
 
 
 			bool blend = false;
-			if (mypTexture)
+			if (mTexture)
 			{
-				switch (mypTexture->GetTransparency())
+				switch (mTexture->GetTransparency())
 				{
 				case 2:
 					lShaderMask |= ModuleRenderer::ALPHA_TEST_LOW;
@@ -455,10 +455,10 @@ bool DrawVertice::Draw(TravState* travstate)
 			// create shader if none
 			renderer->GetActiveShader()->ChooseShader(travstate, lShaderMask);
 
-			if (mypTexture)
+			if (mTexture)
 			{
 				renderer->ActiveTextureChannel(0);
-				mypTexture->DoPreDraw(travstate);
+				mTexture->DoPreDraw(travstate);
 			}
 
 			if (blend)
@@ -469,88 +469,88 @@ bool DrawVertice::Draw(TravState* travstate)
 
 			const Locations* locs = renderer->GetActiveShader()->GetLocation();
 
-			if (myIsStaticBuffer)
+			if (mIsStaticBuffer)
 			{
-				int vSize = myVertexSize;
-				if (myColorSize && (nullptr == myColor))
+				int vSize = mVertexSize;
+				if (mColorSize && (nullptr == mColors))
 				{
-					vSize += myColorSize;
+					vSize += mColorSize;
 				}
 
-				if (myNormalSize && (nullptr == myNormals))
+				if (mNormalSize && (nullptr == mNormals))
 				{
-					vSize += myNormalSize;
+					vSize += mNormalSize;
 				}
 
-				if (myTexCoordSize && (nullptr == myTexCoords))
+				if (mTexCoordSize && (nullptr == mTexCoords))
 				{
-					vSize += myTexCoordSize;
+					vSize += mTexCoordSize;
 				}
 
 				// try to init VBO
-				if (myVertexBuffer == -1 || needReloadData)
+				if (mVertexBuffer == -1 || needReloadData)
 				{
-					if (myVertexBuffer == -1)
-						renderer->CreateBuffer(1, &myVertexBuffer);
-					renderer->BufferData(myVertexBuffer, KIGS_BUFFER_TARGET_ARRAY, vSize * myVertexCount, myVertex, KIGS_BUFFER_USAGE_DYNAMIC);
+					if (mVertexBuffer == -1)
+						renderer->CreateBuffer(1, &mVertexBuffer);
+					renderer->BufferData(mVertexBuffer, KIGS_BUFFER_TARGET_ARRAY, vSize * mVertexCount, mVertices, KIGS_BUFFER_USAGE_DYNAMIC);
 				}
 
-				renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_VERTEX_ID, 3, myVertexFormat, false, vSize, (void*)myVertexDecal, locs);
-				if (myColorCount > 0)
-					renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_COLOR_ID, 4, myColorFormat, true, vSize, (void*)myColorDecal, locs);
-				if (myNormalCount > 0)
-					renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_NORMAL_ID, 3, myNormalFormat, false, vSize, (void*)myNormalDecal, locs);
-				if (myTexCoordCount > 0)
-					renderer->SetVertexAttrib(myVertexBuffer, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, 2, myTexCoordFormat, false, vSize, (void*)myTexCoordDecal, locs);
+				renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_VERTEX_ID, 3, mVertexFormat, false, vSize, (void*)mVertexDecal, locs);
+				if (mColorCount > 0)
+					renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_COLOR_ID, 4, mColorFormat, true, vSize, (void*)mColorDecal, locs);
+				if (mNormalCount > 0)
+					renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_NORMAL_ID, 3, mNormalFormat, false, vSize, (void*)mNormalDecal, locs);
+				if (mTexCoordCount > 0)
+					renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, 2, mTexCoordFormat, false, vSize, (void*)mTexCoordDecal, locs);
 
 				renderer->SetElementBuffer(0);
-				renderer->DrawArrays(travstate, myDrawMode, 0, myVertexCount);
+				renderer->DrawArrays(travstate, mDrawMode, 0, mVertexCount);
 
 			}
 			// with dynamic buffer use preallocated VBO (buffer may change)
 			else
 			{
 				int VBO = renderer->getVBO();
-				renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, myVertexCount * sizeof(Point3D), myVertex, KIGS_BUFFER_USAGE_DYNAMIC);
+				renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, mVertexCount * sizeof(Point3D), mVertices, KIGS_BUFFER_USAGE_DYNAMIC);
 				renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_VERTEX_ID, 3, KIGS_FLOAT, false, sizeof(Point3D), (void*)0, locs);
 
-				if (myNormals)
+				if (mNormals)
 				{
 					VBO = renderer->getVBO();
-					renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, myNormalCount * myNormalSize, myNormals, KIGS_BUFFER_USAGE_DYNAMIC);
-					renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_NORMAL_ID, 3, myNormalFormat, false, myNormalSize, (void*)0, locs);
+					renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, mNormalCount * mNormalSize, mNormals, KIGS_BUFFER_USAGE_DYNAMIC);
+					renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_NORMAL_ID, 3, mNormalFormat, false, mNormalSize, (void*)0, locs);
 				}
 
-				if (myColor)
+				if (mColors)
 				{
 
 					VBO = renderer->getVBO();
-					renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, myColorCount * sizeof(unsigned char) * 4, myColor, KIGS_BUFFER_USAGE_DYNAMIC);
+					renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, mColorCount * sizeof(unsigned char) * 4, mColors, KIGS_BUFFER_USAGE_DYNAMIC);
 					renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_COLOR_ID, 4, KIGS_UNSIGNED_BYTE, false, sizeof(unsigned char) * 4, (void*)0, locs);
 				}
 
-				if (myTexCoords && mypTexture)
+				if (mTexCoords && mTexture)
 				{
 					VBO = renderer->getVBO();
-					renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, myTexCoordCount * sizeof(Point2D), myTexCoords, KIGS_BUFFER_USAGE_DYNAMIC);
+					renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, mTexCoordCount * sizeof(Point2D), mTexCoords, KIGS_BUFFER_USAGE_DYNAMIC);
 					renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, 2, KIGS_FLOAT, false, sizeof(Point2D), (void*)0, locs);
 				}
 
 #ifdef WIN32
 				VBO = renderer->getVBO();
-				renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ELEMENT, myIndiceCount * myIndiceSize, myIndex, KIGS_BUFFER_USAGE_DYNAMIC);
+				renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ELEMENT, mIndiceCount * mIndiceSize, mIndices, KIGS_BUFFER_USAGE_DYNAMIC);
 				renderer->SetElementBuffer(VBO);
-				renderer->DrawElements(travstate, myDrawMode, myIndiceCount, myIndiceFormat, 0);
+				renderer->DrawElements(travstate, mDrawMode, mIndiceCount, mIndiceFormat, 0);
 #else
 				// TODO : no GL_UNSIGNED_INT on GL ES
-				renderer->DrawElements(travstate, myDrawMode, myIndiceCount, KIGS_UNSIGNED_SHORT, myIndex);
-				//glDrawElements(GL_TRIANGLES, myIndiceCount, GL_UNSIGNED_SHORT, myIndex);
+				renderer->DrawElements(travstate, mDrawMode, mIndiceCount, KIGS_UNSIGNED_SHORT, mIndices);
+				//glDrawElements(GL_TRIANGLES, mIndiceCount, GL_UNSIGNED_SHORT, mIndices);
 #endif
 			}
 
 
-			if (mypTexture)
-				mypTexture->DoPostDraw(travstate);
+			if (mTexture)
+				mTexture->DoPostDraw(travstate);
 
 #ifdef KIGS_TOOLS
 			renderer->SetPolygonMode(RENDERER_FILL);
@@ -565,12 +565,12 @@ void DrawVertice::ProtectedDestroy()
 {
 	ParentClassType::ProtectedDestroy();
 	ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-	if (myVertexBuffer != -1)
+	if (mVertexBuffer != -1)
 	{
-		scenegraph->AddDefferedItem((void*)myVertexBuffer, DefferedAction::DESTROY_BUFFER);
+		scenegraph->AddDefferedItem((void*)mVertexBuffer, DefferedAction::DESTROY_BUFFER);
 		//scenegraph->AddDefferedItem((void*)myIndexBuffer, DefferedAction::DESTROY_BUFFER);
-		//((RendererOpenGL*)ModuleRenderer::theGlobalRenderer)->DeleteBuffer(1, &myVertexBuffer);
-		myVertexBuffer = -1;
+		//((RendererOpenGL*)ModuleRenderer::mTheGlobalRenderer)->DeleteBuffer(1, &mVertexBuffer);
+		mVertexBuffer = -1;
 		// myIndexBuffer = -1;
 	}
 }

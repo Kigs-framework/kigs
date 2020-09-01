@@ -6,7 +6,7 @@
 
 TGAClass::TGAClass(FileHandle* fileName):TinyImage()
 {
-	myInitIsOK =Load(fileName);
+	mInitIsOK =Load(fileName);
 }
 
 TGAClass::~TGAClass()
@@ -21,7 +21,7 @@ TGAClass::TGAClass(void* data, int sx,int sy,TinyImage::ImageFormat internalfmt)
 
 void	TGAClass::Export(const char* filename)
 {
-	if(!myInitIsOK)
+	if(!mInitIsOK)
 	{
 		return;
 	}
@@ -40,8 +40,8 @@ void	TGAClass::Export(const char* filename)
 	towrite.colourmapbits=0;
 	towrite.bits=GetPixelValueSize(mFormat)*8;
 	towrite.xstart=towrite.ystart=0;
-	towrite.width=myWidth;
-	towrite.height=myHeight;
+	towrite.width=mWidth;
+	towrite.height=mHeight;
 	towrite.descriptor=0;
 
 	unsigned char* convertbuffer = 0;
@@ -70,7 +70,7 @@ void	TGAClass::Export(const char* filename)
 
 	SmartPointer<FileHandle> L_File = Platform_fopen(filename, "wb");
 
-	if(L_File->myFile)
+	if(L_File->mFile)
 	{
 		Platform_fwrite(&towrite.identsize, 1, 1, L_File.get());
 		Platform_fwrite(&towrite.colourmaptype, 1, 1, L_File.get());
@@ -104,7 +104,7 @@ bool	TGAClass::Load(FileHandle* fileName)
 	bool result = false;
 	u64 filelength;
 	
-	if(myInitIsOK)
+	if(mInitIsOK)
 	{
 		if(mPixels)
 		{
@@ -131,8 +131,8 @@ bool	TGAClass::Load(FileHandle* fileName)
 		
 		int	sx=(int)header.width;
 		int	sy=(int)header.height;
-		myWidth = sx;
-		myHeight = sy;
+		mWidth = sx;
+		mHeight = sy;
 		
 		// get screen origin bit
 		mIsVFlipped= (header.descriptor&0x40)!=0;
@@ -198,7 +198,7 @@ bool	TGAClass::Load(FileHandle* fileName)
 				// should be always 4 here 
 				//int readpaletteValueSize=GetPaletteValueSize(currentReadFormat);
 
-				mFormat=mLoaderContext->myFormatConvertion[(int)currentReadFormat];
+				mFormat=mLoaderContext->mFormatConvertion[(int)currentReadFormat];
 
 				// check if we just convert palette or if output format is direct color
 				int paletteValueSize=GetPaletteValueSize(mFormat);
@@ -248,7 +248,7 @@ bool	TGAClass::Load(FileHandle* fileName)
 				// pointer on file palette
 				u8* palette= memfile;
 
-				palette += headerSize;
+				palette += mHeaderSize;
 				// skip image indentification info
 				palette += header.identsize;
 
@@ -434,7 +434,7 @@ bool	TGAClass::Load(FileHandle* fileName)
 					currentReadFormat=ABGR_16_1555_DIRECT_COLOR;
 				}
 				
-				mFormat=mLoaderContext->myFormatConvertion[(int)currentReadFormat];
+				mFormat=mLoaderContext->mFormatConvertion[(int)currentReadFormat];
 
 				int outFormatPixelSize=GetPixelValueSize(mFormat);
 
@@ -463,7 +463,7 @@ bool	TGAClass::Load(FileHandle* fileName)
 				// pointer on file pixel data 
 				u8* pixels = memfile;
 				// skip header
-				pixels += headerSize;
+				pixels += mHeaderSize;
 				// skip image indentification info
 				pixels += header.identsize;
 				// skip palette data (useless here)
@@ -497,7 +497,7 @@ bool	TGAClass::Load(FileHandle* fileName)
 					currentReadFormat=RGB_24_888;
 				}
 				
-				mFormat=mLoaderContext->myFormatConvertion[(int)currentReadFormat];
+				mFormat=mLoaderContext->mFormatConvertion[(int)currentReadFormat];
 
 				int outFormatPixelSize=GetPixelValueSize(mFormat);
 
@@ -525,7 +525,7 @@ bool	TGAClass::Load(FileHandle* fileName)
 				// pointer on file pixel data 
 				u8* pixels = memfile;
 				// skip header
-				pixels += headerSize;
+				pixels += mHeaderSize;
 				// skip image indentification info
 				pixels += header.identsize;
 				// skip palette data (useless here)

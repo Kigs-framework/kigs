@@ -5,6 +5,17 @@
 #include "maUSString.h"
 class UIButton;
 
+// ****************************************
+// * UIGroupButton class
+// * --------------------------------------
+/**
+* \file	UIGroupButton.h
+* \class	UIGroupButton
+* \ingroup 2DLayers
+* \brief	Manage buttons in a group.
+*/
+// ****************************************
+
 class UIGroupButton : public UIItem
 {
 public:
@@ -27,12 +38,12 @@ protected:
 	void	computeSize(int _buttonNumber, CoreModifiable* a_item);
 
 
-	kstl::vector<UIButton*>		myButtonList;
-	maBool						myKeepOnePressed;
-	maBool						myOnlyOnePressed;
-	maString					myNoSelectedAction;
-	maUSString					myParameter;
-	unsigned int				myButtonNumber;
+	kstl::vector<UIButton*>		mButtonList;
+	maBool						mKeepOnePressed;
+	maBool						mOnlyOnePressed;
+	maString					mNoSelectedAction;
+	maUSString					mParameter;
+	unsigned int				mButtonNumber;
 };
 
 #endif //_UIGROUPBUTTON_H_

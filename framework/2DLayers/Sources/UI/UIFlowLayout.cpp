@@ -7,20 +7,20 @@ IMPLEMENT_CLASS_INFO(UIFlowLayout)
 
 UIFlowLayout::UIFlowLayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 UILayout(name, PASS_CLASS_NAME_TREE_ARG)
-, myPadding(*this, false, LABEL_AND_ID(Padding), 0, 0)
-, mySortByPriority(*this, false, LABEL_AND_ID(SortByPriority), false)
-, myRescaleToFit(*this, false, LABEL_AND_ID(RescaleToFit))
+, mPadding(*this, false, LABEL_AND_ID(Padding), 0, 0)
+, mSortByPriority(*this, false, LABEL_AND_ID(SortByPriority), false)
+, mRescaleToFit(*this, false, LABEL_AND_ID(RescaleToFit))
 {
-	myPadding.changeNotificationLevel(Owner);
-	mySortByPriority.changeNotificationLevel(Owner);
+	mPadding.changeNotificationLevel(Owner);
+	mSortByPriority.changeNotificationLevel(Owner);
 }
 
 void UIFlowLayout::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mySortByPriority.getLabelID()) ||
-		(labelid == myPadding.getLabelID()))
+	if ((labelid == mSortByPriority.getLabelID()) ||
+		(labelid == mPadding.getLabelID()))
 	{
-		myNeedRecompute = true;
+		mNeedRecompute = true;
 	}
 	UILayout::NotifyUpdate(labelid);
 }
@@ -30,29 +30,29 @@ void UIFlowLayout::RecomputeLayout()
 	if (!GetSons().empty())
 	{
 		kstl::vector<CoreModifiable*> items;
-		if (!mySortByPriority)
+		if (!mSortByPriority)
 		{
 			// Get sons ordered by insertion
 			auto& sons = getItems();
 			for (auto son : sons)
 			{
-				if (son.myItem->isSubType(Node2D::myClassID))
+				if (son.mItem->isSubType(Node2D::mClassID))
 				{
-					items.push_back(son.myItem.get());
+					items.push_back(son.mItem.get());
 				}
 			}
 		}
 		else 
 		{
 			// Get sons ordered by priority
-			for (auto son : mySons)
+			for (auto son : mSons)
 			{
 				items.push_back(son);
 			}
 		}
 
-		int padding_x = myPadding[0];
-		int padding_y = myPadding[1];
+		int padding_x = mPadding[0];
+		int padding_y = mPadding[1];
 
 		float rowHeight = 0;
 		float heightAccumulator = 0;
@@ -63,7 +63,7 @@ void UIFlowLayout::RecomputeLayout()
 			v2f size = item->as<Node2D>()->GetSize();
 
 			// cannot add another item on the row >> new line
-			if (widthAccumulator + size.x > myRealSize.x)
+			if (widthAccumulator + size.x > mRealSize.x)
 			{
 				widthAccumulator = 0;
 				heightAccumulator += rowHeight + padding_y;

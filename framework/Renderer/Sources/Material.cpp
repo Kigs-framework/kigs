@@ -11,17 +11,17 @@ static inline bool IsVecEqual(const maVect4DF &v1, const maVect4DF&v2)
 }
 
 Material::Material(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
-myFacing(*this,false,"Facing",1),
-myBlendFuncSource(*this,false,"BlendFuncSource",4),
-myBlendFuncDest(*this,false,"BlendFuncDest",5),
-myBlendEnabled(*this,false,"BlendEnabled",false),
-myMaterialColorEnabled(*this,false,"MaterialColorEnabled",false),
-myAmbientColor(*this,false,"AmbientColor"),
-myDiffuseColor(*this,false,"DiffuseColor"),
-mySpecularColor(*this,false,"SpecularColor"),
-myEmissionColor(*this,false,"EmissionColor"),
-myShininess(*this,false,"Shininess",120.0f),
-myTransparency(*this,false,"Transparency",1.0f)
+mFacing(*this,false,"Facing",1),
+mBlendFuncSource(*this,false,"BlendFuncSource",4),
+mBlendFuncDest(*this,false,"BlendFuncDest",5),
+mBlendEnabled(*this,false,"BlendEnabled",false),
+mMaterialColorEnabled(*this,false,"MaterialColorEnabled",false),
+mAmbientColor(*this,false,"AmbientColor"),
+mDiffuseColor(*this,false,"DiffuseColor"),
+mSpecularColor(*this,false,"SpecularColor"),
+mEmissionColor(*this,false,"EmissionColor"),
+mShininess(*this,false,"Shininess",120.0f),
+mTransparency(*this,false,"Transparency",1.0f)
 {
   SetAmbientColor(0.2f, 0.2f, 0.2f);
   SetDiffuseColor(0.3f, 0.3f, 0.3f);
@@ -47,17 +47,17 @@ bool	Material::Equal(const CoreModifiable& other)
 	}
 
 	Material *pOther = (Material*)&other;
-	bool PropsAreEqual = (int)myFacing==(int)pOther->myFacing &&
-		(int)myBlendFuncSource==(int)pOther->myBlendFuncSource &&
-		(int)myBlendFuncDest==(int)pOther->myBlendFuncDest &&
-		(bool)myBlendEnabled==(bool)pOther->myBlendEnabled &&
-		(bool)myMaterialColorEnabled==(bool)pOther->myMaterialColorEnabled &&
-		IsVecEqual(myAmbientColor, pOther->myAmbientColor) &&
-		IsVecEqual(myDiffuseColor, pOther->myDiffuseColor) &&
-		IsVecEqual(mySpecularColor, pOther->mySpecularColor) &&
-		IsVecEqual(myEmissionColor, pOther->myEmissionColor) &&
-		(kfloat)myShininess==(kfloat)pOther->myShininess &&
-		(kfloat)myTransparency==(kfloat)pOther->myTransparency;
+	bool PropsAreEqual = (int)mFacing==(int)pOther->mFacing &&
+		(int)mBlendFuncSource==(int)pOther->mBlendFuncSource &&
+		(int)mBlendFuncDest==(int)pOther->mBlendFuncDest &&
+		(bool)mBlendEnabled==(bool)pOther->mBlendEnabled &&
+		(bool)mMaterialColorEnabled==(bool)pOther->mMaterialColorEnabled &&
+		IsVecEqual(mAmbientColor, pOther->mAmbientColor) &&
+		IsVecEqual(mDiffuseColor, pOther->mDiffuseColor) &&
+		IsVecEqual(mSpecularColor, pOther->mSpecularColor) &&
+		IsVecEqual(mEmissionColor, pOther->mEmissionColor) &&
+		(kfloat)mShininess==(kfloat)pOther->mShininess &&
+		(kfloat)mTransparency==(kfloat)pOther->mTransparency;
 	if (!PropsAreEqual)
 		return false;
 	//compare children
@@ -65,7 +65,7 @@ bool	Material::Equal(const CoreModifiable& other)
 		return false;
 	for (size_t i = 0; i < getItems().size(); i++)
 	{
-		if (!(getItems()[i]).myItem->Equal(*((other.getItems()[i]).myItem.get())))
+		if (!(getItems()[i]).mItem->Equal(*((other.getItems()[i]).mItem.get())))
 			return false;
 	}
 	return true;
@@ -74,18 +74,18 @@ bool	Material::Equal(const CoreModifiable& other)
 void	Material::DoPreDraw(TravState* travstate)
 {
 	// change material
-	if(travstate->myCurrentMaterial != this /*|| m_IsTransparent*/)
+	if(travstate->mCurrentMaterial != this)
 	{
 		// force previous post draw
-		if(travstate->myCurrentMaterial)
+		if(travstate->mCurrentMaterial)
 		{
-			Material* toPostDraw=travstate->myCurrentMaterial;
-			travstate->myCurrentMaterial=0;
+			Material* toPostDraw=travstate->mCurrentMaterial;
+			travstate->mCurrentMaterial=0;
 			toPostDraw->DoPostDraw(travstate);
 		}
 
 		Drawable::DoPreDraw(travstate);
-		travstate->myCurrentMaterial = this;
+		travstate->mCurrentMaterial = this;
 		//kigsprintf("%p(%s) %d >> Predraw\n", this, getName().c_str(),count++);
 		// current material is now this
 	}
@@ -93,11 +93,11 @@ void	Material::DoPreDraw(TravState* travstate)
 
 void	Material::DoPostDraw(TravState* travstate)
 {
-	if(travstate->myCurrentMaterial != this/* || m_IsTransparent*/)
+	if(travstate->mCurrentMaterial != this)
 	{
 		//kigsprintf("%p(%s) %d >> Postdraw\n", this, getName().c_str(), --count);
 		Drawable::DoPostDraw(travstate);
 		// no more current material
-		travstate->myCurrentMaterial = 0;
+		travstate->mCurrentMaterial = 0;
 	}
 }

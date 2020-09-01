@@ -10,26 +10,26 @@ IMPLEMENT_CLASS_INFO(UISlider)
 
 UISlider::UISlider(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
 UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-myUpTextureName(*this,false,LABEL_AND_ID(UpTexture),""),
-myDownTextureName(*this,false,LABEL_AND_ID(DownTexture),""),
-myOverTextureName(*this,false,LABEL_AND_ID(OverTexture),""),
-myClickUpAction(*this, false, LABEL_AND_ID(ClickUpAction), ""),
-myParameter(*this, false, LABEL_AND_ID(Parameter), kstl::string("")),
-myMoveAction(*this,false,LABEL_AND_ID(MoveAction),""),
-myInitialRatio(*this, true, LABEL_AND_ID(InitialRatio), 0),
-myDirection(*this,true,LABEL_AND_ID(Direction),"Vertical","Horizontal")
+mUpTexture(*this,false,LABEL_AND_ID(UpTexture),""),
+mDownTexture(*this,false,LABEL_AND_ID(DownTexture),""),
+mOverTexture(*this,false,LABEL_AND_ID(OverTexture),""),
+mClickUpAction(*this, false, LABEL_AND_ID(ClickUpAction), ""),
+mParameter(*this, false, LABEL_AND_ID(Parameter), kstl::string("")),
+mMoveAction(*this,false,LABEL_AND_ID(MoveAction),""),
+mInitialRatio(*this, true, LABEL_AND_ID(InitialRatio), 0),
+mDirection(*this,true,LABEL_AND_ID(Direction),"Vertical","Horizontal")
 {
 	
 }
 
 UISlider::~UISlider()
 {
-	if(myUpTexture)
-		myUpTexture = NULL;
-	if(myOverTexture)
-		myOverTexture = NULL;
-	if(myDownTexture)
-		myDownTexture = NULL;
+	if(mUpTexturePointer)
+		mUpTexturePointer = NULL;
+	if(mOverTexturePointer)
+		mOverTexturePointer = NULL;
+	if(mDownTexturePointer)
+		mDownTexturePointer = NULL;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -37,31 +37,31 @@ UISlider::~UISlider()
 
 void	UISlider::ReloadTexture()
 {
-	if(myUpTexture)
+	if(mUpTexturePointer)
 	{
-		myUpTexture->ReInit();
+		mUpTexturePointer->ReInit();
 	}
 
-	if(myDownTexture)
+	if(mDownTexturePointer)
 	{
-		myDownTexture->ReInit();
+		mDownTexturePointer->ReInit();
 	}
 
-	if(myOverTexture)
+	if(mOverTexturePointer)
 	{
-		myOverTexture->ReInit();
+		mOverTexturePointer->ReInit();
 	}
 }
 
 void UISlider::NotifyUpdate(const unsigned int labelid )
 {
-	if(labelid==myIsEnabled.getLabelID()) 
+	if(labelid==mIsEnabled.getLabelID()) 
 	{
 		// if disabled "reset" button state
-		if(myIsEnabled == false)
+		if(mIsEnabled == false)
 		{
-			myIsDown=false;
-			myIsMouseOver=false;
+			mIsDown=false;
+			mIsMouseOver=false;
 		}
 	}
 	UIDrawableItem::NotifyUpdate(labelid);
@@ -81,9 +81,9 @@ void UISlider::InitModifiable()
 			{
 				if(parents[0]->IsInit())
 				{
-					if(parents[0]->isSubType(UIItem::myClassID))
+					if(parents[0]->isSubType(UIItem::mClassID))
 					{
-						myParent = (UIItem*)parents[0];
+						mParent = (UIItem*)parents[0];
 					}
 				}
 				else
@@ -93,9 +93,9 @@ void UISlider::InitModifiable()
 			}
 			else
 			{
-				if(parents[0]->isSubType(UIItem::myClassID))
+				if(parents[0]->isSubType(UIItem::mClassID))
 				{
-					myParent = (UIItem*)parents[0];
+					mParent = (UIItem*)parents[0];
 				}
 			}
 		}
@@ -107,53 +107,53 @@ void UISlider::InitModifiable()
 
 	if(_isInit)
 	{
-		myIsDown      = false;
-		myIsMouseOver = false;
+		mIsDown      = false;
+		mIsMouseOver = false;
 
 		// load texture
 		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-		if(myUpTexture)
-			myUpTexture=0;
+		if(mUpTexturePointer)
+			mUpTexturePointer=0;
 		
-		myUpTexture = textureManager->GetTexture(myUpTextureName);
+		mUpTexturePointer = textureManager->GetTexture(mUpTexture);
 
-		if(myOverTexture)
-			myOverTexture=0;
+		if(mOverTexturePointer)
+			mOverTexturePointer=0;
 
-		if(myOverTextureName.const_ref() !="")
+		if(mOverTexture.const_ref() !="")
 		{
-			myOverTexture = textureManager->GetTexture(myOverTextureName.const_ref());
+			mOverTexturePointer = textureManager->GetTexture(mOverTexture.const_ref());
 		}
 
-		if(myDownTexture)
-			myDownTexture=0;
+		if(mDownTexturePointer)
+			mDownTexturePointer=0;
 
-		if(myDownTextureName.const_ref() !="")
+		if(mDownTexture.const_ref() !="")
 		{
-			myDownTexture = textureManager->GetTexture(myDownTextureName.const_ref());
+			mDownTexturePointer = textureManager->GetTexture(mDownTexture.const_ref());
 		}
 
 
 		//sauvegarde les position initiales du slider
-		myInitialPosX = (int)myPosition[0];
-		myInitialPosY = (int)myPosition[1];
+		mInitialPosX = (int)mPosition[0];
+		mInitialPosY = (int)mPosition[1];
 
 		//Set slider Data
 		float Dock[2];
-		int newPos[2] = {myInitialPosX, myInitialPosY};
-		if(((const kstl::string&)myDirection) == "Vertical")
+		int newPos[2] = {mInitialPosX, mInitialPosY};
+		if(((const kstl::string&)mDirection) == "Vertical")
 		{
 			//Set Anchor and dock
 			Dock[0] = 0.5f;
 			Dock[1] = 1.0f;
 
 			//Set slider length 
-			GetParents()[0]->getValue(LABEL_TO_ID(SizeY),mySlideLength);
-			mySlideLength -= mySizeY;
+			GetParents()[0]->getValue(LABEL_TO_ID(SizeY),mSlideLength);
+			mSlideLength -= mSizeY;
 
-			if(myInitialRatio>0)
+			if(mInitialRatio>0)
 			{
-				 newPos[1] = myInitialPosY - ((mySlideLength * myInitialRatio) / 100);
+				 newPos[1] = mInitialPosY - ((mSlideLength * mInitialRatio) / 100);
 				 this->setArrayValue(LABEL_TO_ID(Position),newPos,2);
 			}
 		}
@@ -164,16 +164,16 @@ void UISlider::InitModifiable()
 			Dock[1] = 0.5f;
 
 			//Set slider length 
-			GetParents()[0]->getValue(LABEL_TO_ID(SizeX),mySlideLength);
-			mySlideLength -= mySizeX;
+			GetParents()[0]->getValue(LABEL_TO_ID(SizeX),mSlideLength);
+			mSlideLength -= mSizeX;
 
-			if(myInitialRatio>0)
+			if(mInitialRatio>0)
 			{
-				newPos[0] = myInitialPosX + ((mySlideLength * myInitialRatio) / 100);
+				newPos[0] = mInitialPosX + ((mSlideLength * mInitialRatio) / 100);
 				this->setArrayValue(LABEL_TO_ID(Position),newPos,2);
 			}
 		}
-		myCurrentRatio = myInitialRatio;
+		mCurrentRatio = mInitialRatio;
 
 		this->setArrayValue(LABEL_TO_ID(Dock),Dock,2);
 		this->setArrayValue(LABEL_TO_ID(Anchor),Dock,2);
@@ -181,19 +181,19 @@ void UISlider::InitModifiable()
 		
 
 		// auto size button
-		if( (((unsigned int)mySizeX)==0) && (((unsigned int)mySizeY)==0) )
+		if( (((unsigned int)mSizeX)==0) && (((unsigned int)mSizeY)==0) )
 		{
-			if(myUpTexture)
+			if(mUpTexturePointer)
 			{
 				unsigned int width,height;
 
-				myUpTexture->GetSize(width,height);
-				mySizeX=width;
-				mySizeY=height;
+				mUpTexturePointer->GetSize(width,height);
+				mSizeX=width;
+				mSizeY=height;
 			}
 		}
 
-		myIsEnabled.changeNotificationLevel(Owner);
+		mIsEnabled.changeNotificationLevel(Owner);
 
 	}
 }
@@ -201,36 +201,36 @@ void UISlider::InitModifiable()
 void	UISlider::ForcedRatio(unsigned int value)
 {
 	//Set slider Data
-	int newPos[2] = {myInitialPosX, myInitialPosY};
-	if(((const kstl::string&)myDirection) == "Vertical")
+	int newPos[2] = {mInitialPosX, mInitialPosY};
+	if(((const kstl::string&)mDirection) == "Vertical")
 	{
-		newPos[1] = myInitialPosY - ((mySlideLength * value) / 100);
+		newPos[1] = mInitialPosY - ((mSlideLength * value) / 100);
 		this->setArrayValue(LABEL_TO_ID(Position),newPos,2);
 	}
 	else
 	{
-		newPos[0] = myInitialPosX + ((mySlideLength * value) / 100);
+		newPos[0] = mInitialPosX + ((mSlideLength * value) / 100);
 		this->setArrayValue(LABEL_TO_ID(Position),newPos,2);
 	}
-	myCurrentRatio = value;
+	mCurrentRatio = value;
 }
 
 
 void	UISlider::ResetSlider()
 {
-	int newPos[2] = {myInitialPosX, myInitialPosY};
-	if(((const kstl::string&)myDirection) == "Vertical")
+	int newPos[2] = {mInitialPosX, mInitialPosY};
+	if(((const kstl::string&)mDirection) == "Vertical")
 	{
-		if(myInitialRatio>0)
+		if(mInitialRatio>0)
 		{
-			newPos[1] = myInitialPosY - ((mySlideLength * myInitialRatio) / 100);
+			newPos[1] = mInitialPosY - ((mSlideLength * mInitialRatio) / 100);
 		}
 	}
 	else
 	{
-		if(myInitialRatio>0)
+		if(mInitialRatio>0)
 		{
-			newPos[0] = myInitialPosX + ((mySlideLength * myInitialRatio) / 100);
+			newPos[0] = mInitialPosX + ((mSlideLength * mInitialRatio) / 100);
 		}
 	}
 	this->setArrayValue(LABEL_TO_ID(Position),newPos,2);
@@ -238,45 +238,45 @@ void	UISlider::ResetSlider()
 
 void UISlider::ChangeTexture(kstl::string _texturename, kstl::string _overtexturename, kstl::string _downtexturename)
 {
-	if(myIsEnabled) // down and mouse over only when enabled
+	if(mIsEnabled) // down and mouse over only when enabled
 	{
 		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-		if(myUpTexture)
-			myUpTexture=0;
+		if(mUpTexturePointer)
+			mUpTexturePointer=0;
 
-		myUpTextureName = _texturename;
-		myUpTexture = textureManager->GetTexture(myUpTextureName);
+		mUpTexture = _texturename;
+		mUpTexturePointer = textureManager->GetTexture(mUpTexture);
 
-		if(myOverTexture && _overtexturename != "")
-			myOverTexture=0;
+		if(mOverTexturePointer && _overtexturename != "")
+			mOverTexturePointer=0;
 
 		if(_overtexturename != "")
 		{
-			myOverTextureName = _overtexturename;
-			myOverTexture = textureManager->GetTexture(myOverTextureName);
+			mOverTexture = _overtexturename;
+			mOverTexturePointer = textureManager->GetTexture(mOverTexture);
 		}
 
-		if(myDownTexture && _downtexturename != "")
-			myDownTexture=0;
+		if(mDownTexturePointer && _downtexturename != "")
+			mDownTexturePointer=0;
 
 		if(_downtexturename != "")
 		{
-			myOverTextureName = _downtexturename;
-			myDownTexture = textureManager->GetTexture(myDownTextureName);
+			mOverTexture = _downtexturename;
+			mDownTexturePointer = textureManager->GetTexture(mDownTexture);
 		}
 
 		//auto Size
-		if(myUpTexture)
+		if(mUpTexturePointer)
 		{
 			unsigned int width,height;
 
-			myUpTexture->GetSize(width,height);
+			mUpTexturePointer->GetSize(width,height);
 
-			if(mySizeX != width || mySizeY != height)
+			if(mSizeX != width || mSizeY != height)
 			{
-				mySizeX = width;
-				mySizeY = height;
-				myNeedUpdatePosition = true;
+				mSizeX = width;
+				mSizeY = height;
+				mNeedUpdatePosition = true;
 			}
 		}
 	}
@@ -284,37 +284,37 @@ void UISlider::ChangeTexture(kstl::string _texturename, kstl::string _overtextur
 
 Texture* UISlider::GetTexture()
 {
-	if(myIsEnabled) // down and mouse over only when enabled
+	if(mIsEnabled) // down and mouse over only when enabled
 	{
-		if(myIsDown)
-			return (myDownTexture) ? myDownTexture.get() : myUpTexture.get();
-		if(myIsMouseOver)
-			return (myOverTexture) ? myOverTexture.get() : myUpTexture.get();
+		if(mIsDown)
+			return (mDownTexturePointer) ? mDownTexturePointer.get() : mUpTexturePointer.get();
+		if(mIsMouseOver)
+			return (mOverTexturePointer) ? mOverTexturePointer.get() : mUpTexturePointer.get();
 	}
-	return myUpTexture.get();
+	return mUpTexturePointer.get();
 }
 
 bool UISlider::isAlpha(float X, float Y)
 {
-	//Try to get my mask
-	if(!myAlphaMask)
+	//Try to get mask
+	if(!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
 
 		for(unsigned int i=0; i < sons.size(); i++)
 		{
-			if(sons[i].myItem->isSubType("AlphaMask"))
+			if(sons[i].mItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = sons[i].myItem;
+				mAlphaMask = sons[i].mItem;
 				break;
 			}
 		}
 	}
 
-	if(myAlphaMask)
+	if(mAlphaMask)
 	{
-		//Check on my mask the specified location
-		return !myAlphaMask->CheckTo(X,Y);
+		//Check on mask the specified location
+		return !mAlphaMask->CheckTo(X,Y);
 	}
 
 	return false;

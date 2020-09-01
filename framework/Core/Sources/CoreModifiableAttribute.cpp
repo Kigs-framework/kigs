@@ -121,40 +121,40 @@ kstl::string CoreModifiableAttribute::typeToString(CoreModifiable::ATTRIBUTE_TYP
 void CoreModifiableAttribute::changeNotificationLevel(AttributeNotificationLevel level)
 {
 	// Clear bit
-	_Flags &= ~((u32)notifyOwnerFlag);
+	mFlags &= ~((u32)notifyOwnerFlag);
 	switch (level)
 	{
 	case None:
 
 		break;
 	case Owner:
-		this->_Flags |= (u32)notifyOwnerFlag;
+		this->mFlags |= (u32)notifyOwnerFlag;
 		break;
 	}
 }
 
 void	CoreModifiableAttribute::attachModifier(AttachedModifierBase* toAttach)
 {
-	if (!_attachedModifier)
+	if (!mAttachedModifier)
 	{
-		this->_Flags |= (unsigned int)haveAttachedModifier;
-		_attachedModifier = toAttach;
+		this->mFlags |= (unsigned int)haveAttachedModifier;
+		mAttachedModifier = toAttach;
 		changeInheritance();
 	}
 	else
 	{
-		toAttach->setNext(_attachedModifier);
-		_attachedModifier = toAttach;
+		toAttach->setNext(mAttachedModifier);
+		mAttachedModifier = toAttach;
 	}
 }
 
 void	CoreModifiableAttribute::detachModifier(AttachedModifierBase* toDetach)
 {
-	if (!_attachedModifier)
+	if (!mAttachedModifier)
 		return;
 
 	AttachedModifierBase* prev = 0;
-	AttachedModifierBase* current = _attachedModifier;
+	AttachedModifierBase* current = mAttachedModifier;
 	while (current)
 	{
 		if (current == toDetach)
@@ -165,7 +165,7 @@ void	CoreModifiableAttribute::detachModifier(AttachedModifierBase* toDetach)
 			}
 			else
 			{
-				_attachedModifier = current->getNext();
+				mAttachedModifier = current->getNext();
 			}
 
 			toDetach->setNext(0);
@@ -176,26 +176,26 @@ void	CoreModifiableAttribute::detachModifier(AttachedModifierBase* toDetach)
 	}
 
 	// no more attached modifier
-	if (!_attachedModifier)
+	if (!mAttachedModifier)
 	{
-		this->_Flags &= ~((unsigned int)haveAttachedModifier);
+		this->mFlags &= ~((unsigned int)haveAttachedModifier);
 		changeInheritance();
 	}
 }
 
 CoreModifiableAttribute::~CoreModifiableAttribute()
 {
-	if (_owner)
+	if (mOwner)
 	{
-		kigs::unordered_map<KigsID, CoreModifiableAttribute*>::const_iterator it = _owner->_attributes.find(_id);
-		if (it != _owner->_attributes.end())
+		kigs::unordered_map<KigsID, CoreModifiableAttribute*>::const_iterator it = mOwner->mAttributes.find(mID);
+		if (it != mOwner->mAttributes.end())
 		{
-			_owner->_attributes.erase(it);
+			mOwner->mAttributes.erase(it);
 		}
 	}
-	if (_attachedModifier)
+	if (mAttachedModifier)
 	{
-		delete _attachedModifier;
+		delete mAttachedModifier;
 	}
 };
 
@@ -333,7 +333,7 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 {
 	AttachedModifierBase::Init(caller, isGetter, addParam);
 
-	CoreItemEvaluationContext::SetContext(&myContext);
+	CoreItemEvaluationContext::SetContext(&mContext);
 
 	CoreModifiable::ATTRIBUTE_TYPE type = caller->getType();
 
@@ -351,15 +351,15 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 	case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
 	case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 	{
-		myContext.myVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kfloat>(0.0f);
-		myCurrentItem = CoreItemOperator<kfloat>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+		mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kfloat>(0.0f);
+		mCurrentItem = CoreItemOperator<kfloat>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 	}
 	break;
 	case CoreModifiable::ATTRIBUTE_TYPE::STRING:
 	case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 	{
-		myContext.myVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kstl::string>("");
-		myCurrentItem = CoreItemOperator<kstl::string>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+		mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kstl::string>("");
+		mCurrentItem = CoreItemOperator<kstl::string>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 	}
 	break;
 	case CoreModifiable::ATTRIBUTE_TYPE::ARRAY:
@@ -368,18 +368,18 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 		unsigned int asize = caller->getNbArrayElements();
 		if (asize == 2)
 		{
-			myContext.myVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Point2D>();
-			myCurrentItem = CoreItemOperator<Point2D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Point2D>();
+			mCurrentItem = CoreItemOperator<Point2D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 		}
 		else if (asize == 3)
 		{
-			myContext.myVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Point3D>();
-			myCurrentItem = CoreItemOperator<Point3D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Point3D>();
+			mCurrentItem = CoreItemOperator<Point3D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 		}
 		else if (asize == 4)
 		{
-			myContext.myVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Vector4D>();
-			myCurrentItem = CoreItemOperator<Vector4D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Vector4D>();
+			mCurrentItem = CoreItemOperator<Vector4D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 
 		}
 	}
@@ -393,40 +393,40 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, kfloat& value)
 {
-	CoreItemEvaluationContext::SetContext(&myContext);
-	*((CoreValue<kfloat>*)myContext.myVariableList[LABEL_TO_ID(input).toUInt()]) = value;
-	value = *myCurrentItem.get();
+	CoreItemEvaluationContext::SetContext(&mContext);
+	*((CoreValue<kfloat>*)mContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
+	value = *mCurrentItem.get();
 	CoreItemEvaluationContext::ReleaseContext();
 };
 
 // strings
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, kstl::string& value)
 {
-	CoreItemEvaluationContext::SetContext(&myContext);
-	*((CoreValue<kstl::string>*)myContext.myVariableList[LABEL_TO_ID(input).toUInt()]) = value;
-	myCurrentItem->getValue(value);
+	CoreItemEvaluationContext::SetContext(&mContext);
+	*((CoreValue<kstl::string>*)mContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
+	mCurrentItem->getValue(value);
 	CoreItemEvaluationContext::ReleaseContext();
 }
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, usString& value)
 {
-	CoreItemEvaluationContext::SetContext(&myContext);
-	*((CoreValue<usString>*)myContext.myVariableList[LABEL_TO_ID(input).toUInt()]) = value;
-	myCurrentItem->getValue(value);
+	CoreItemEvaluationContext::SetContext(&mContext);
+	*((CoreValue<usString>*)mContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
+	mCurrentItem->getValue(value);
 	CoreItemEvaluationContext::ReleaseContext();
 }
 
 // 2D or 3D points
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, Point2D& value)
 {
-	CoreItemEvaluationContext::SetContext(&myContext);
-	*((CoreValue<Point2D>*)myContext.myVariableList[LABEL_TO_ID(input).toUInt()]) = value;
-	myCurrentItem->getValue(value);
+	CoreItemEvaluationContext::SetContext(&mContext);
+	*((CoreValue<Point2D>*)mContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
+	mCurrentItem->getValue(value);
 	CoreItemEvaluationContext::ReleaseContext();
 }
 void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, Point3D& value)
 {
-	CoreItemEvaluationContext::SetContext(&myContext);
-	*((CoreValue<Point3D>*)myContext.myVariableList[LABEL_TO_ID(input).toUInt()]) = value;
-	myCurrentItem->getValue(value);
+	CoreItemEvaluationContext::SetContext(&mContext);
+	*((CoreValue<Point3D>*)mContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
+	mCurrentItem->getValue(value);
 	CoreItemEvaluationContext::ReleaseContext();
 }

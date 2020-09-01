@@ -15,7 +15,7 @@ OpenGLPlatformRenderingScreen::OpenGLPlatformRenderingScreen(const kstl::string&
 
 	
 
-	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer);
+	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);
 	RenderingScreen* firstScreen = (RenderingScreen*)renderer->getFirstRenderingScreen();
 
 	if (firstScreen == this)
@@ -96,7 +96,7 @@ void    OpenGLPlatformRenderingScreen::InitModifiable()
 
 	RenderingScreen::InitModifiable();
 
-	ModuleSpecificRenderer* renderer = RendererOpenGL::theGlobalRenderer; // ((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	ModuleSpecificRenderer* renderer = ModuleRenderer::mTheGlobalRenderer; // ((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	OpenGLRenderingScreen* firstScreen = (OpenGLRenderingScreen*)renderer->getFirstRenderingScreen();
 
 #ifdef USE_EGL
@@ -173,9 +173,9 @@ void    OpenGLPlatformRenderingScreen::InitModifiable()
 	}
 #else
 
-	if (MyParentWindow && !myIsOffScreen)
+	if (mParentWindow && !mIsOffScreen)
 	{
-		std::string name = MyParentWindow->getName();
+		std::string name = mParentWindow->getName();
 		if (firstScreen == this)
 		{
 			name ="canvas";
@@ -206,7 +206,7 @@ void    OpenGLPlatformRenderingScreen::InitModifiable()
 #endif
 
 	setCurrentContext();
-	InitializeGL(mySizeX, mySizeY);
+	InitializeGL(mSizeX, mSizeY);
 
 }  
 

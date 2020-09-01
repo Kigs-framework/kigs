@@ -26,24 +26,34 @@ enum XMLNodeType
 };
 
 
+// ****************************************
+// * XMLNodeBase class
+// * --------------------------------------
+/**
+ * \file	XMLNode.h
+ * \class	XMLNodeBase
+ * \ingroup ModuleXML
+ * \brief	Base class for templated XML Node class.
+ */
+ // ****************************************
 class XMLNodeBase 
 {
 public:
 
 	XMLNodeBase() :
-		m_type(XML_NODE_UNKNOWN)
+		mType(XML_NODE_UNKNOWN)
 #ifdef USE_PARENT_AND_SIBLING
-		, m_parent(0)
-		, m_nextSibling(0)
+		, mParent(0)
+		, mNextSibling(0)
 #endif // USE_PARENT_AND_SIBLING
 	{
 
 	}
 
-	XMLNodeBase(XMLNodeType type) : m_type(type)
+	XMLNodeBase(XMLNodeType type) : mType(type)
 #ifdef USE_PARENT_AND_SIBLING
-		, m_parent(0)
-		, m_nextSibling(0)
+		, mParent(0)
+		, mNextSibling(0)
 #endif // USE_PARENT_AND_SIBLING
 	{
 
@@ -56,36 +66,36 @@ public:
 	//! set node type
 	void setType(XMLNodeType type)
 	{
-		m_type = type;
+		mType = type;
 	}
 
 	//! return node type
 	XMLNodeType getType()
 	{
-		return m_type;
+		return mType;
 	}
 #ifdef USE_PARENT_AND_SIBLING	
 
 	//! return node's parent
 	XMLNodeBase* getParent()
 	{
-		return m_parent;
+		return mParent;
 	}
 	//! set current node's parent
 	void setParent(XMLNodeBase* parent)
 	{
-		m_parent = parent;
+		mParent = parent;
 	}
 	//! return next "brother" node
 	XMLNodeBase* getNextSibling() 
 	{
-		return m_nextSibling;
+		return mNextSibling;
 	}
 
 	//! set next "brother" node
 	void setNextSibling(XMLNodeBase* nextSibling)
 	{
-		m_nextSibling = nextSibling;
+		mNextSibling = nextSibling;
 	}
 #endif // USE_PARENT_AND_SIBLING
 
@@ -93,24 +103,27 @@ public:
 
 protected:
 	//! node type
-	XMLNodeType m_type;
+	XMLNodeType mType;
 
 #ifdef USE_PARENT_AND_SIBLING
 	//! node parent
-	XMLNodeBase* m_parent;
+	XMLNodeBase* mParent;
 	//! node next "brother" in parent list
-	XMLNodeBase* m_nextSibling;
+	XMLNodeBase* mNextSibling;
 #endif // USE_PARENT_AND_SIBLING
 };
+
 
 // ****************************************
 // * XMLNodeTemplate class
 // * --------------------------------------
-/*!  \class XMLNodeTemplate
-      manage a xml node in the xml hierarchy
-	  \ingroup XML
-*/
-// ****************************************
+/**
+ * \file	XMLNode.h
+ * \class	XMLNodeTemplate
+ * \ingroup ModuleXML
+ * \brief	Manage XML node structure using string or string_view.
+ */
+ // ****************************************
 template<typename StringType>
 class XMLNodeTemplate : public XMLNodeBase
 {
@@ -134,12 +147,12 @@ public:
 	//! set node name
 	void setName( const StringType& name )
 	{
-		m_name = name;
+		mName = name;
 	}
 	//! set node value with given string
 	void setString( const StringType &value )
 	{
-		m_value = value;
+		mValue = value;
 	}
 	
 	//! set node value with given int
@@ -156,12 +169,12 @@ public:
 	//! return node name
 	const StringType& getName( ) const
 	{
-		return m_name;
+		return mName;
 	}
 	//! return node value as a string
 	const StringType& getString( )
 	{
-		return m_value;
+		return mValue;
 	}
 	//! return node value as an int
 	inline int getInt( );
@@ -171,7 +184,7 @@ public:
 	//! return node's children count
     int getChildCount( )
 	{
-		return (int)m_childs.size();
+		return (int)mChildren.size();
 	}
 
 	//! return child node by index
@@ -189,7 +202,7 @@ public:
 	//! return attribute count for this node
     int getAttributeCount( )
 	{
-		return (int)m_attributes.size();
+		return (int)mAttributes.size();
 	}
 	//! return one attribute by index
 	inline XMLAttributeTemplate<StringType>* getAttribute( int index );
@@ -208,7 +221,7 @@ public:
 	inline void addAttribute( XMLAttributeTemplate<StringType> *attribute );
 	void reserveAttribute(int count)
 	{
-		m_attributes.reserve(count);
+		mAttributes.reserve(count);
 	}
 	
 	//! remove the given attribute from the node
@@ -229,14 +242,14 @@ public:
 private:
 
 	//! node name
-	StringType m_name;
+	StringType mName;
 	//! node value
-	StringType m_value;
+	StringType mValue;
 
 	//! node attributes
-	kstl::vector< XMLAttributeTemplate<StringType> * > m_attributes;
+	kstl::vector< XMLAttributeTemplate<StringType> * > mAttributes;
 	//! node children
-	kstl::vector< XMLNodeTemplate * > m_childs;
+	kstl::vector< XMLNodeTemplate * > mChildren;
 
 
 
@@ -254,19 +267,19 @@ IMPLEMENT_PREALLOCATED_NEW(XMLNodeTemplate<T>, 4096)
 #endif
 
 template<typename StringType>
-XMLNodeTemplate<StringType>::XMLNodeTemplate(XMLNodeType type, const StringType& name) : XMLNodeBase(type), m_name(name)
+XMLNodeTemplate<StringType>::XMLNodeTemplate(XMLNodeType type, const StringType& name) : XMLNodeBase(type), mName(name)
 {
 
 }
 
 template<typename StringType>
-XMLNodeTemplate<StringType>::XMLNodeTemplate(XMLNodeType type, const char* name) : XMLNodeBase(type), m_name(name)
+XMLNodeTemplate<StringType>::XMLNodeTemplate(XMLNodeType type, const char* name) : XMLNodeBase(type), mName(name)
 {
 
 }
 
 template<typename StringType>
-XMLNodeTemplate<StringType>::XMLNodeTemplate(XMLNodeType type, const char* name, unsigned int strsize) : XMLNodeBase(type), m_name(name, strsize)
+XMLNodeTemplate<StringType>::XMLNodeTemplate(XMLNodeType type, const char* name, unsigned int strsize) : XMLNodeBase(type), mName(name, strsize)
 {
 
 }
@@ -276,17 +289,17 @@ XMLNodeTemplate<StringType>::~XMLNodeTemplate()
 {
 	unsigned int i;
 
-	for (i = 0; i < m_attributes.size(); ++i)
+	for (i = 0; i < mAttributes.size(); ++i)
 	{
-		delete m_attributes.at(i);
+		delete mAttributes.at(i);
 	}
-	m_attributes.clear();
+	mAttributes.clear();
 
-	for (i = 0; i < m_childs.size(); ++i)
+	for (i = 0; i < mChildren.size(); ++i)
 	{
-		delete m_childs.at(i);
+		delete mChildren.at(i);
 	}
-	m_childs.clear();
+	mChildren.clear();
 }
 
 template<>
@@ -294,7 +307,7 @@ inline void XMLNodeTemplate<std::string>::setInt(const int value)
 {
 	static char szValue[64];
 	snprintf(szValue, 64, "%d", value);
-	m_value = szValue;
+	mValue = szValue;
 }
 
 template<>
@@ -302,7 +315,7 @@ inline void XMLNodeTemplate<std::string>::setFloat(const kfloat value)
 {
 	static char szValue[64];
 	snprintf(szValue, 64, "%f", CastToFloat(value));
-	m_value = szValue;
+	mValue = szValue;
 }
 
 #if (__cplusplus >= 201703L || _MSVC_LANG  >= 201703L) && !defined(JAVASCRIPT) && !defined(__clang__)
@@ -311,7 +324,7 @@ template<typename StringType>
 inline int XMLNodeTemplate<StringType>::getInt()
 {
 	int result = 0;
-	std::from_chars(m_value.data(), m_value.data() + m_value.size(), result);
+	std::from_chars(mValue.data(), mValue.data() + mValue.size(), result);
 	return result;
 }
 
@@ -319,27 +332,27 @@ template<typename StringType>
 inline kfloat XMLNodeTemplate<StringType>::getFloat()
 {
 	float result = 0.0f;
-	std::from_chars(m_value.data(), m_value.data() + m_value.size(), result);
+	std::from_chars(mValue.data(), mValue.data() + mValue.size(), result);
 	return result;
 }
 #else
 template<>
 inline int XMLNodeTemplate<std::string>::getInt()
 {
-	int result = atoi(m_value.c_str());
+	int result = atoi(mValue.c_str());
 	return result;
 }
 
 template<>
 inline kfloat XMLNodeTemplate<std::string>::getFloat()
 {
-	float result = atof(m_value.c_str());
+	float result = atof(mValue.c_str());
 	return result;
 }
 template<>
 inline int XMLNodeTemplate<std::string_view>::getInt()
 {
-	std::string to_string(m_value);
+	std::string to_string(mValue);
 	int result = atoi(to_string.c_str());
 	return result;
 }
@@ -347,7 +360,7 @@ inline int XMLNodeTemplate<std::string_view>::getInt()
 template<>
 inline kfloat XMLNodeTemplate<std::string_view>::getFloat()
 {
-	std::string to_string(m_value);
+	std::string to_string(mValue);
 	float result = atof(to_string.c_str());
 	return result;
 }
@@ -357,20 +370,20 @@ inline kfloat XMLNodeTemplate<std::string_view>::getFloat()
 template<typename StringType>
 void XMLNodeTemplate<StringType>::addAttribute(XMLAttributeTemplate<StringType>* attribute)
 {
-	m_attributes.push_back(attribute);
+	mAttributes.push_back(attribute);
 }
 
 //! remove the given attribute from the node (not delete)
 template<typename StringType>
 void XMLNodeTemplate<StringType>::removeAttribute(XMLAttributeTemplate<StringType>* attribute)
 {
-	auto itb = m_attributes.begin();
-	auto ite = m_attributes.end();
+	auto itb = mAttributes.begin();
+	auto ite = mAttributes.end();
 	while (itb != ite)
 	{
 		if ((*itb) == attribute)
 		{
-			m_attributes.erase(itb);
+			mAttributes.erase(itb);
 			break;
 		}
 		++itb;
@@ -380,16 +393,16 @@ void XMLNodeTemplate<StringType>::removeAttribute(XMLAttributeTemplate<StringTyp
 template<typename StringType>
 void XMLNodeTemplate<StringType>::addChild(XMLNodeBase* child)
 {
-	m_childs.push_back((XMLNodeTemplate<StringType>*)child);
+	mChildren.push_back((XMLNodeTemplate<StringType>*)child);
 }
 
 template<typename StringType>
 void XMLNodeTemplate<StringType>::removeChild(XMLNodeTemplate* child)
 {
-	auto it = m_childs.begin();
-	for (; it != m_childs.end(); ++it) {
+	auto it = mChildren.begin();
+	for (; it != mChildren.end(); ++it) {
 		if (*it == child) {
-			m_childs.erase(it);
+			mChildren.erase(it);
 			break;
 		}
 	}
@@ -400,17 +413,17 @@ void XMLNodeTemplate<StringType>::removeChild(XMLNodeTemplate* child)
 template<typename StringType>
 XMLAttributeTemplate<StringType>* XMLNodeTemplate<StringType>::getAttribute(int index)
 {
-	return m_attributes.at((unsigned int)index);
+	return mAttributes.at((unsigned int)index);
 }
 
 template<typename StringType>
 XMLAttributeTemplate<StringType>* XMLNodeTemplate<StringType>::getAttribute(const std::string_view& name)
 {
-	for (unsigned int i = 0; i < m_attributes.size(); ++i)
+	for (unsigned int i = 0; i < mAttributes.size(); ++i)
 	{
-		if (m_attributes.at(i)->getName() == name)
+		if (mAttributes.at(i)->getName() == name)
 		{
-			return m_attributes.at(i);
+			return mAttributes.at(i);
 		}
 	}
 
@@ -428,14 +441,14 @@ XMLAttributeTemplate<StringType>* XMLNodeTemplate<StringType>::getAttribute(cons
 template<typename StringType>
 XMLAttributeTemplate<StringType>* XMLNodeTemplate<StringType>::getAndRemoveAttribute(const std::string_view& name)
 {
-	size_t attrl = m_attributes.size();
+	size_t attrl = mAttributes.size();
 	for (unsigned int i = 0; i < attrl; ++i)
 	{
-		if (m_attributes.at(i)->getName() == name)
+		if (mAttributes.at(i)->getName() == name)
 		{
-			XMLAttributeTemplate<StringType>* result = m_attributes.at(i);
-			m_attributes[i] = m_attributes[attrl - 1];
-			m_attributes.pop_back();
+			XMLAttributeTemplate<StringType>* result = mAttributes.at(i);
+			mAttributes[i] = mAttributes[attrl - 1];
+			mAttributes.pop_back();
 			return result;
 		}
 	}
@@ -509,12 +522,12 @@ XMLNodeTemplate<StringType>* XMLNodeTemplate<StringType>::addChildElementInteger
 template<typename StringType>
 XMLNodeTemplate<StringType>* XMLNodeTemplate<StringType>::getChildElement(unsigned int index)
 {
-	if (m_childs.size() <= index)
+	if (mChildren.size() <= index)
 	{
 		return 0;
 	}
 
-	return m_childs.at(index);
+	return mChildren.at(index);
 }
 
 template<typename StringType>
@@ -522,17 +535,17 @@ XMLNodeTemplate<StringType>* XMLNodeTemplate<StringType>::getChildElement(const 
 {
 	unsigned int i;
 
-	for (i = 0; i < m_childs.size(); ++i)
+	for (i = 0; i < mChildren.size(); ++i)
 	{
-		if (m_childs.at(i)->getName() == name)
+		if (mChildren.at(i)->getName() == name)
 		{
-			return m_childs.at(i);
+			return mChildren.at(i);
 		}
 	}
 
-	for (i = 0; i < m_childs.size(); ++i)
+	for (i = 0; i < mChildren.size(); ++i)
 	{
-		XMLNodeTemplate* node = m_childs.at(i)->getChildElement(name);
+		XMLNodeTemplate* node = mChildren.at(i)->getChildElement(name);
 		if (node)
 		{
 			return node;
@@ -562,16 +575,16 @@ void XMLNodeTemplate<StringType>::getNodes(XMLNodeType type, kstl::vector<XMLNod
 	}
 	unsigned int i;
 
-	for (i = 0; i < m_childs.size(); ++i)
+	for (i = 0; i < mChildren.size(); ++i)
 	{
-		m_childs.at(i)->getNodes(type, list);
+		mChildren.at(i)->getNodes(type, list);
 	}
 }
 
 template<typename StringType>
 bool XMLNodeTemplate<StringType>::nameOneOf(const char* a, const char* b)
 {
-	return (m_name == a) || (m_name == b);
+	return (mName == a) || (mName == b);
 }
 
 

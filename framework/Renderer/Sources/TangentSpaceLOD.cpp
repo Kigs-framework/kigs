@@ -9,14 +9,14 @@ bool TangentSpaceLOD::PreDraw(TravState* state)
 {
 	if (!ParentClassType::PreDraw(state)) return false;
 	
-	if (state->CurrentNode)
+	if (state->mCurrentNode)
 	{
-		LastRenderDisableMask = state->GetRenderDisableMask();
-		LastTangentSpaceLOD = state->TangentSpaceLOD;
+		mLastRenderDisableMask = state->GetRenderDisableMask();
+		mLastTangentSpaceLOD = state->mTangentSpaceLOD;
 
 		
 		BBox gbb;
-		state->CurrentNode->GetGlobalBoundingBox(gbb.m_Min, gbb.m_Max);
+		state->mCurrentNode->GetGlobalBoundingBox(gbb.m_Min, gbb.m_Max);
 
 		auto d = gbb.Distance(state->GetCurrentCamera()->GetPosition());
 		auto bbsize = Norm(gbb.m_Max - gbb.m_Min);
@@ -25,7 +25,7 @@ bool TangentSpaceLOD::PreDraw(TravState* state)
 
 		float coef = 1.0f;
 
-		if (ForceNoTangents)
+		if (mForceNoTangents)
 		{
 			disable_tangent_space = true;
 			coef = 0;
@@ -48,7 +48,7 @@ bool TangentSpaceLOD::PreDraw(TravState* state)
 		{
 			state->SetRenderDisableMask(ModuleRenderer::TANGENT_ARRAY_MASK);
 		}
-		state->TangentSpaceLOD = coef;
+		state->mTangentSpaceLOD = coef;
 	}
 	return true;
 }
@@ -57,10 +57,10 @@ bool TangentSpaceLOD::PostDraw(TravState* state)
 {
 	if (!ParentClassType::PostDraw(state)) return false;
 
-	if (state->CurrentNode)
+	if (state->mCurrentNode)
 	{
-		state->SetRenderDisableMask(LastRenderDisableMask);
-		state->TangentSpaceLOD = LastTangentSpaceLOD;
+		state->SetRenderDisableMask(mLastRenderDisableMask);
+		state->mTangentSpaceLOD = mLastTangentSpaceLOD;
 	}
 	return true;
 }

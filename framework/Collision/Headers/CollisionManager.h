@@ -24,9 +24,11 @@ class CollisionBaseObject;
 // ****************************************
 // * CollisionManager class
 // * --------------------------------------
-/*!  \class CollisionManager
-	 this class is the collision manager class, based on an Octree for optimisation
-	 \ingroup Collision
+/**
+* \file	CollisionManager.h
+* \class	CollisionManager
+* \ingroup Collision
+* \brief  Manager class to manage collision.
 */
 // ****************************************
 
@@ -38,13 +40,13 @@ public:
 	*/
 	struct MeshCollisionInfo
 	{
-		std::shared_ptr<CollisionBaseObject> myOwnedCollisionObject;
-		std::atomic<CollisionBaseObject*> myNodeCollisionObject;
+		std::shared_ptr<CollisionBaseObject> mOwnedCollisionObject;
+		std::atomic<CollisionBaseObject*> mNodeCollisionObject;
 
-		u32 uid = 0;
-		unsigned int			myCollisionMask = 0;
-		bool need_rebuild = false;
-		CoreModifiable* item = nullptr;
+		u32 mUID = 0;
+		unsigned int			mCollisionMask = 0;
+		bool mNeedRebuild = false;
+		CoreModifiable* mItem = nullptr;
 	};
 
 	struct SegmentList
@@ -93,7 +95,7 @@ public:
 	*/
 	bool GetAltitude(kfloat x, kfloat y, kfloat z, kfloat &alt);
 
-	/*! \brief set collision mask for a specific item
+	/*! \brief set collision mask for a specific mItem
 	*/
 	void	setCollisionCategories(CoreModifiable* a_Item, unsigned int a_Category = 0);
 
@@ -108,7 +110,7 @@ public:
 
 	MeshCollisionInfo* GetCollisionInfoForObject(CoreModifiable* Object);
 
-	// Will take ownership of collider if collider->IsCoreModifiable is false
+	// Will take ownership of collider if collider->mIsCoreModifiable is false
 	void SetCollisionObject(const CMSP& item, CollisionBaseObject* collider);
 
 	//const std::unordered_map<WeakRef, std::shared_ptr<MeshCollisionInfo>>& GetCollisionMap() { ProcessPendingItems(); return mCollisionObjectMap; }
@@ -147,10 +149,10 @@ protected:
 
 	struct Work
 	{
-		CoreModifiable* item;
-		u32 UID;
-		std::shared_ptr<MeshCollisionInfo> info;
-		std::function<CollisionBaseObject*()> func;
+		CoreModifiable* mItem;
+		u32 mUID;
+		std::shared_ptr<MeshCollisionInfo> mInfo;
+		std::function<CollisionBaseObject*()> mFunc;
 	};
 
 	moodycamel::BlockingConcurrentQueue<Work> mWork;
@@ -209,9 +211,9 @@ protected:
 	
 	struct ToDelete
 	{
-		CoreModifiable* ptr = nullptr;
-		u32 uid = 0;
-		std::string name;
+		CoreModifiable* mPtr = nullptr;
+		u32 mUID = 0;
+		std::string mName;
 	};
 	std::vector<ToDelete> mToDelete;
 	//std::atomic_bool mHasDeadRefs{ false };

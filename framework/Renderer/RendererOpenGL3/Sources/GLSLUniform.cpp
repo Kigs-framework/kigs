@@ -33,8 +33,8 @@ IMPLEMENT_CLASS_INFO(API3DUniformMatrixArray)
 
 API3DUniformBase::API3DUniformBase(const kstl::string& name, CLASS_NAME_TREE_ARG) 
 	: Drawable(name, PASS_CLASS_NAME_TREE_ARG)
-, myUniName(*this, false, "Name", "")
-,myID(-1)
+, mUniName(*this, false, "Name", "")
+,mID(-1)
 {
 	mRenderPassMask = 0xFFFFFFFF;
 }
@@ -44,20 +44,20 @@ void	API3DUniformBase::InitModifiable()
 	Drawable::InitModifiable();
 
 	kstl::string strKey;
-	myUniName.getValue(strKey);
-	myID = CharToID::GetID(strKey);
+	mUniName.getValue(strKey);
+	mID = CharToID::GetID(strKey);
 
-	myUniName.changeNotificationLevel(Owner);
+	mUniName.changeNotificationLevel(Owner);
 }
 
 void	API3DUniformBase::NotifyUpdate(const unsigned int  labelid)
 {
-	if (labelid == myUniName.getLabelID())
+	if (labelid == mUniName.getLabelID())
 	{
 		kstl::string strKey;
-		myUniName.getValue(strKey);
-		myID = CharToID::GetID(strKey);
-		//printf("%s >> %u\n", strKey.c_str(), myID);
+		mUniName.getValue(strKey);
+		mID = CharToID::GetID(strKey);
+		//printf("%s >> %u\n", strKey.c_str(), mID);
 	}
 	else
 	{
@@ -105,15 +105,15 @@ bool API3DUniformBase::Pop(TravState* t)
 
 //////////////////////////////////// Int ///////////////////////////////////////////
 API3DUniformInt::API3DUniformInt(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myValue(*this, false, "Value", -1)
+, mValue(*this, false, "Value", -1)
 {
 	
 }
 
 void	API3DUniformInt::Activate(unsigned int a_Location)
 {
-	GLPRINT("%s %d>%d\n", getName().c_str(), a_Location, (int)myValue);
-	glUniform1i(a_Location, myValue);
+	GLPRINT("%s %d>%d\n", getName().c_str(), a_Location, (int)mValue);
+	glUniform1i(a_Location, mValue);
 }
 
 void	API3DUniformInt::NotifyUpdate(const unsigned int  labelid)
@@ -127,15 +127,15 @@ void	API3DUniformInt::NotifyUpdate(const unsigned int  labelid)
 
 //////////////////////////////////// Float ///////////////////////////////////////////
 API3DUniformFloat::API3DUniformFloat(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myValue(*this, false, "Value", -1)
+, mValue(*this, false, "Value", -1)
 {
 	
 }
 
 void	API3DUniformFloat::Activate(unsigned int a_Location)
 {
-	GLPRINT("%s %d>%0.2f\n", getName().c_str(), a_Location, (float)myValue);
-	glUniform1f(a_Location, myValue);
+	GLPRINT("%s %d>%0.2f\n", getName().c_str(), a_Location, (float)mValue);
+	glUniform1f(a_Location, mValue);
 }
 
 void	API3DUniformFloat::NotifyUpdate(const unsigned int  labelid)
@@ -147,15 +147,15 @@ void	API3DUniformFloat::NotifyUpdate(const unsigned int  labelid)
 
 //////////////////////////////////// Float 2 ///////////////////////////////////////////
 API3DUniformFloat2::API3DUniformFloat2(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myValue(*this, false, "Value",0.0f,0.0f)
+, mValue(*this, false, "Value",0.0f,0.0f)
 {
 	
 }
 
 void	API3DUniformFloat2::Activate(unsigned int a_Location)
 {
-	GLPRINT("%s %d>(%0.2f:%0.2f)\n", getName().c_str(), a_Location, myValue[0], myValue[1]);
-	glUniform2f(a_Location, myValue[0], myValue[1]);
+	GLPRINT("%s %d>(%0.2f:%0.2f)\n", getName().c_str(), a_Location, mValue[0], mValue[1]);
+	glUniform2f(a_Location, mValue[0], mValue[1]);
 }
 
 void	API3DUniformFloat2::NotifyUpdate(const unsigned int  labelid)
@@ -168,8 +168,8 @@ void	API3DUniformFloat2::NotifyUpdate(const unsigned int  labelid)
 
 //////////////////////////////////// Float 3 ///////////////////////////////////////////
 API3DUniformFloat3::API3DUniformFloat3(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myValue(*this, false, "Value",0.0f,0.0f,0.0f)
-, myNormalize(*this, false, "Normalize", false)
+, mValue(*this, false, "Value",0.0f,0.0f,0.0f)
+, mNormalize(*this, false, "Normalize", false)
 {
 
 }
@@ -178,10 +178,10 @@ void API3DUniformFloat3::InitModifiable()
 {
 	API3DUniformBase::InitModifiable();
 
-	if (myNormalize)
+	if (mNormalize)
 		Normalize();
 
-	myNormalize.changeNotificationLevel(Owner);
+	mNormalize.changeNotificationLevel(Owner);
 }
 
 void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
@@ -189,14 +189,14 @@ void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
 	if (!IsInit())
 		return;
 
-	if (labelid == myNormalize.getLabelID())
+	if (labelid == mNormalize.getLabelID())
 	{
-		if (myNormalize)
+		if (mNormalize)
 			Normalize();
 	}
-	else if (labelid == myValue.getLabelID())
+	else if (labelid == mValue.getLabelID())
 	{
-		if (myNormalize)
+		if (mNormalize)
 			Normalize();
 	}
 	else
@@ -205,31 +205,31 @@ void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
 
 void API3DUniformFloat3::Normalize()
 {
-	Vector3D v(myValue[0], myValue[1], myValue[2]);
+	Vector3D v(mValue[0], mValue[1], mValue[2]);
 	v.Normalize();
 
-	myValue[0] = v.x;
-	myValue[1] = v.y;
-	myValue[2] = v.z;
+	mValue[0] = v.x;
+	mValue[1] = v.y;
+	mValue[2] = v.z;
 }
 
 void	API3DUniformFloat3::Activate(unsigned int a_Location)
 {
-	GLPRINT("%s %d>(%0.2f:%0.2f:%0.2f)\n", getName().c_str(), a_Location, myValue[0], myValue[1], myValue[2]);
-	glUniform3f(a_Location, myValue[0], myValue[1], myValue[2]);
+	GLPRINT("%s %d>(%0.2f:%0.2f:%0.2f)\n", getName().c_str(), a_Location, mValue[0], mValue[1], mValue[2]);
+	glUniform3f(a_Location, mValue[0], mValue[1], mValue[2]);
 }
 
 //////////////////////////////////// Float 4 ///////////////////////////////////////////
 API3DUniformFloat4::API3DUniformFloat4(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myValue(*this, false, "Value",0.0f,0.0f,0.0f,0.0f)
+, mValue(*this, false, "Value",0.0f,0.0f,0.0f,0.0f)
 {
-	myValue.changeNotificationLevel(Owner);
+	mValue.changeNotificationLevel(Owner);
 }
 
 void	API3DUniformFloat4::Activate(unsigned int a_Location)
 {
-	GLPRINT("%s %d>(%0.2f:%0.2f:%0.2f:%0.2f)\n", getName().c_str(), a_Location, myValue[0], myValue[1], myValue[2], myValue[3]);
-	glUniform4f(a_Location, myValue[0], myValue[1], myValue[2], myValue[3]);
+	GLPRINT("%s %d>(%0.2f:%0.2f:%0.2f:%0.2f)\n", getName().c_str(), a_Location, mValue[0], mValue[1], mValue[2], mValue[3]);
+	glUniform4f(a_Location, mValue[0], mValue[1], mValue[2], mValue[3]);
 }
 
 void	API3DUniformFloat4::NotifyUpdate(const unsigned int  labelid)
@@ -240,27 +240,27 @@ void	API3DUniformFloat4::NotifyUpdate(const unsigned int  labelid)
 }
 
 API3DUniformTexture::API3DUniformTexture(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myTextureChannel(*this, false, "Channel", 0)
-, myTextureName(*this, false, "TextureName", "")
-, myAttachedTexture(0)
+, mChannel(*this, false, "Channel", 0)
+, mTextureName(*this, false, "TextureName", "")
+, mAttachedTexture(0)
 {
-	myTextureChannel.changeNotificationLevel(Owner);
+	mChannel.changeNotificationLevel(Owner);
 }
 
 void	API3DUniformTexture::InitModifiable()
 {
 	if (!IsInit())
 	{
-		if ((myTextureName.const_ref()) != "")
+		if ((mTextureName.const_ref()) != "")
 		{
 			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-			myAttachedTexture = textureManager->GetTexture(myTextureName.const_ref(), false);
-			if (myAttachedTexture)
-				if (!myAttachedTexture->IsInit())
+			mAttachedTexture = textureManager->GetTexture(mTextureName.const_ref(), false);
+			if (mAttachedTexture)
+				if (!mAttachedTexture->IsInit())
 				{
-					myAttachedTexture->setValue("ForcePow2", true);
-					myAttachedTexture->setValue("HasMipmap", true);
-					myAttachedTexture->Init();
+					mAttachedTexture->setValue("ForcePow2", true);
+					mAttachedTexture->setValue("HasMipmap", true);
+					mAttachedTexture->Init();
 				}
 		}
 	}
@@ -270,14 +270,14 @@ void	API3DUniformTexture::InitModifiable()
 
 void API3DUniformTexture::Activate(unsigned int a_Location)
 {	
-	if (myAttachedTexture)
+	if (mAttachedTexture)
 	{
-		GLPRINT("%s %d>%d\n", getName().c_str(), a_Location, (int)myTextureChannel);
-		glUniform1i(a_Location, myTextureChannel);
-		RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+		GLPRINT("%s %d>%d\n", getName().c_str(), a_Location, (int)mChannel);
+		glUniform1i(a_Location, mChannel);
+		RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 		
-		renderer->ActiveTextureChannel(myTextureChannel);
-		renderer->BindTexture(RENDERER_TEXTURE_2D, static_cast<OpenGLTexture*>(myAttachedTexture.get())->GetGLID());
+		renderer->ActiveTextureChannel(mChannel);
+		renderer->BindTexture(RENDERER_TEXTURE_2D, static_cast<OpenGLTexture*>(mAttachedTexture.get())->GetGLID());
 	}
 }
 
@@ -291,17 +291,17 @@ void	API3DUniformTexture::NotifyUpdate(const unsigned int  labelid)
 
 bool	API3DUniformTexture::Deactivate(unsigned int a_Location)
 {
-	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->ActiveTextureChannel(myTextureChannel);
+	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	renderer->ActiveTextureChannel(mChannel);
 	renderer->BindTexture(RENDERER_TEXTURE_2D, 0);
 	return true;
 }
 
 bool API3DUniformTexture::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	if (item->isSubType(Texture::myClassID)) // if texture, don't call father addItem
+	if (item->isSubType(Texture::mClassID)) // if texture, don't call father addItem
 	{
-		myAttachedTexture = item;
+		mAttachedTexture = item;
 		return true;
 	}
 
@@ -311,11 +311,11 @@ bool API3DUniformTexture::addItem(const CMSP& item, ItemPosition pos DECLARE_LIN
 
 bool API3DUniformTexture::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
-	if (item->isSubType(Texture::myClassID)) // if texture, don't call father removeItem
+	if (item->isSubType(Texture::mClassID)) // if texture, don't call father removeItem
 	{
-		if (item == myAttachedTexture)
+		if (item == mAttachedTexture)
 		{
-			myAttachedTexture = 0;
+			mAttachedTexture = 0;
 			return true;
 		}
 
@@ -328,40 +328,40 @@ bool API3DUniformTexture::removeItem(const CMSP& item DECLARE_LINK_NAME)
 
 API3DUniformTexture::~API3DUniformTexture()
 {
-	myAttachedTexture = nullptr;
+	mAttachedTexture = nullptr;
 }
 
 
 API3DUniformDataTexture::API3DUniformDataTexture(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myTextureChannel(*this, false, "Channel", 0)
-, myTextureName(*this, false, "TextureName", "")
-, myTextureGLIndex(-1)
+, mChannel(*this, false, "Channel", 0)
+, mTextureName(*this, false, "TextureName", "")
+, mTextureGLIndex(-1)
 {
-	myTextureChannel.changeNotificationLevel(Owner);
+	mChannel.changeNotificationLevel(Owner);
 }
 
 void	API3DUniformDataTexture::InitModifiable()
 {
 	if (!IsInit())
 	{
-		if ((myTextureName.const_ref()) != "")
+		if ((mTextureName.const_ref()) != "")
 		{
 
 			auto& pathManager = KigsCore::Singleton<FilePathManager>();
 
-			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(myTextureName.const_ref());
+			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(mTextureName.const_ref());
 			if (fullfilenamehandle)
 			{
 
 				TinyImage* image = TinyImage::CreateImage(fullfilenamehandle.get());
 
-				RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+				RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 
-				renderer->CreateTexture(1, &myTextureGLIndex);
+				renderer->CreateTexture(1, &mTextureGLIndex);
 
-				//glBindTexture(GL_TEXTURE_3D, myTextureGLIndex);
-				renderer->ActiveTextureChannel(myTextureChannel);
-				renderer->BindTexture(RENDERER_TEXTURE_2D, myTextureGLIndex);
+				//glBindTexture(GL_TEXTURE_3D, mTextureGLIndex);
+				renderer->ActiveTextureChannel(mChannel);
+				renderer->BindTexture(RENDERER_TEXTURE_2D, mTextureGLIndex);
 				renderer->TextureParameteri(RENDERER_TEXTURE_2D, RENDERER_TEXTURE_MIN_FILTER, RENDERER_NEAREST);
 				renderer->TextureParameteri(RENDERER_TEXTURE_2D, RENDERER_TEXTURE_MAG_FILTER, RENDERER_NEAREST);
 				renderer->TextureParameteri(RENDERER_TEXTURE_2D, RENDERER_TEXTURE_WRAP_S, RENDERER_CLAMP_TO_EDGE);
@@ -379,16 +379,16 @@ void	API3DUniformDataTexture::InitModifiable()
 
 void API3DUniformDataTexture::Activate(unsigned int a_Location)
 {
-	if (myTextureGLIndex == (unsigned int)-1) // create texture in first predraw
+	if (mTextureGLIndex == (unsigned int)-1) // create texture in first predraw
 	{
 		return;
 	}
 
-	GLPRINT("%s %d>%d\n", getName().c_str(), a_Location, (int)myTextureChannel);
-	glUniform1i(a_Location, myTextureChannel);
-	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->ActiveTextureChannel(myTextureChannel); 
-	renderer->BindTexture(RENDERER_TEXTURE_2D, myTextureGLIndex);
+	GLPRINT("%s %d>%d\n", getName().c_str(), a_Location, (int)mChannel);
+	glUniform1i(a_Location, mChannel);
+	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	renderer->ActiveTextureChannel(mChannel); 
+	renderer->BindTexture(RENDERER_TEXTURE_2D, mTextureGLIndex);
 
 }
 
@@ -402,12 +402,12 @@ void	API3DUniformDataTexture::NotifyUpdate(const unsigned int  labelid)
 
 bool	API3DUniformDataTexture::Deactivate(unsigned int a_Location)
 {
-	if (myTextureGLIndex == (unsigned int)-1) // create texture in first predraw
+	if (mTextureGLIndex == (unsigned int)-1) // create texture in first predraw
 	{
 		return false;
 	}
-	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->ActiveTextureChannel(myTextureChannel);
+	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	renderer->ActiveTextureChannel(mChannel);
 	renderer->BindTexture(RENDERER_TEXTURE_2D, 0);
 	return true;
 }
@@ -420,28 +420,28 @@ API3DUniformDataTexture::~API3DUniformDataTexture()
 }
 
 API3DUniformGeneratedTexture::API3DUniformGeneratedTexture(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myTextureChannel(*this, false, "Channel", 0)
-, mySize(*this, true, "Size")
-, myScale(*this, true, "Scale", 0.5f)
-, myPersistence(*this, true, "Persistence", 0.5f)
-, myOctaveCount(*this, true, "OctaveCount", 3)
-, myTextureGLIndex((unsigned int)-1)
+, mChannel(*this, false, "Channel", 0)
+, mSize(*this, true, "Size")
+, mScale(*this, true, "Scale", 0.5f)
+, mPersistence(*this, true, "Persistence", 0.5f)
+, mOctaveCount(*this, true, "OctaveCount", 3)
+, mTextureGLIndex((unsigned int)-1)
 {
-	myTextureChannel.changeNotificationLevel(Owner);
+	mChannel.changeNotificationLevel(Owner);
 }
 
 void API3DUniformGeneratedTexture::Activate(unsigned int a_Location)
 {
-	if (myTextureGLIndex == (unsigned int)-1) // create texture in first predraw
+	if (mTextureGLIndex == (unsigned int)-1) // create texture in first predraw
 	{
 		Generate();
 	}
 
-	GLPRINT("%s %d>%d\n", getName().c_str(), a_Location, (int)myTextureChannel);
-	glUniform1i(a_Location, myTextureChannel);
-	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->ActiveTextureChannel(myTextureChannel);
-	renderer->BindTexture(RENDERER_TEXTURE_3D, myTextureGLIndex);
+	GLPRINT("%s %d>%d\n", getName().c_str(), a_Location, (int)mChannel);
+	glUniform1i(a_Location, mChannel);
+	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	renderer->ActiveTextureChannel(mChannel);
+	renderer->BindTexture(RENDERER_TEXTURE_3D, mTextureGLIndex);
 }
 
 void	API3DUniformGeneratedTexture::NotifyUpdate(const unsigned int  labelid)
@@ -454,8 +454,8 @@ void	API3DUniformGeneratedTexture::NotifyUpdate(const unsigned int  labelid)
 
 bool	API3DUniformGeneratedTexture::Deactivate(unsigned int a_Location)
 {
-	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->ActiveTextureChannel(myTextureChannel);
+	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	renderer->ActiveTextureChannel(mChannel);
 	renderer->BindTexture(RENDERER_TEXTURE_3D, 0);
 	return true;
 }
@@ -463,18 +463,18 @@ bool	API3DUniformGeneratedTexture::Deactivate(unsigned int a_Location)
 API3DUniformGeneratedTexture::~API3DUniformGeneratedTexture()
 {
 	ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-	scenegraph->AddDefferedItem((void*)myTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
+	scenegraph->AddDefferedItem((void*)mTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
 }
 
 void API3DUniformGeneratedTexture::Generate()
 {
 #ifndef GL_ES2
-	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(RendererOpenGL::theGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	int Sizes[3];
 
-	Sizes[0] = (int)mySize[0];
-	Sizes[1] = (int)mySize[1];
-	Sizes[2] = (int)mySize[2];
+	Sizes[0] = (int)mSize[0];
+	Sizes[1] = (int)mSize[1];
+	Sizes[2] = (int)mSize[2];
 
 	// always generate 3 dimension, but check if second and third are valid
 	if (Sizes[1] < 1)
@@ -496,17 +496,17 @@ void API3DUniformGeneratedTexture::Generate()
 		{
 			for (i = 0; i < Sizes[0]; i++)
 			{
-				*writeTextureRaw = (unsigned char)scaled_octave_noise_3d((float)myOctaveCount, myPersistence, myScale, -128.0f, 127.0f, (float)i, (float)j, (float)k);
+				*writeTextureRaw = (unsigned char)scaled_octave_noise_3d((float)mOctaveCount, mPersistence, mScale, -128.0f, 127.0f, (float)i, (float)j, (float)k);
 				++writeTextureRaw;
 			}
 		}
 	}
 
-	renderer->CreateTexture(1, &myTextureGLIndex);
+	renderer->CreateTexture(1, &mTextureGLIndex);
 
-	//glBindTexture(GL_TEXTURE_3D, myTextureGLIndex);
-	renderer->ActiveTextureChannel(myTextureChannel);
-	renderer->BindTexture(RENDERER_TEXTURE_3D, myTextureGLIndex);
+	//glBindTexture(GL_TEXTURE_3D, mTextureGLIndex);
+	renderer->ActiveTextureChannel(mChannel);
+	renderer->BindTexture(RENDERER_TEXTURE_3D, mTextureGLIndex);
 	renderer->TextureParameteri(RENDERER_TEXTURE_3D, RENDERER_TEXTURE_MIN_FILTER, RENDERER_LINEAR);
 	renderer->TextureParameteri(RENDERER_TEXTURE_3D, RENDERER_TEXTURE_MAG_FILTER, RENDERER_LINEAR);
 	renderer->TextureParameteri(RENDERER_TEXTURE_3D, RENDERER_TEXTURE_WRAP_S, RENDERER_REPEAT);
@@ -521,13 +521,13 @@ void API3DUniformGeneratedTexture::Generate()
 
 
 API3DUniformMatrixArray::API3DUniformMatrixArray(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myArraySize(*this, false, "ArraySize", 16)
-, myMatrixArrayAccess(*this, false, "MatrixArray")
-, myMatrixArray(0)
+, mArraySize(*this, false, "ArraySize", 16)
+, mMatrixArray(*this, false, "MatrixArray")
+, mMatrixArrayPointer(0)
 {
-	NotifyUpdate(myArraySize.getLabelID().toUInt());
+	NotifyUpdate(mArraySize.getLabelID().toUInt());
 
-	myArraySize.changeNotificationLevel(Owner);
+	mArraySize.changeNotificationLevel(Owner);
 
 	
 }
@@ -536,18 +536,18 @@ void	API3DUniformMatrixArray::NotifyUpdate(const unsigned int  labelid)
 {
 	API3DUniformBase::NotifyUpdate(labelid);
 
-	if(labelid == myArraySize.getLabelID())
+	if(labelid == mArraySize.getLabelID())
 	{
-		if (myMatrixArray)
+		if (mMatrixArrayPointer)
 		{
-			delete[] myMatrixArray;
+			delete[] mMatrixArrayPointer;
 		}
-		myMatrixArray = new Matrix4x4[myArraySize];
-		for (int i = 0; i < myArraySize; i++)
+		mMatrixArrayPointer = new Matrix4x4[mArraySize];
+		for (int i = 0; i < mArraySize; i++)
 		{
-			myMatrixArray[i].SetIdentity();
+			mMatrixArrayPointer[i].SetIdentity();
 		}
-		myMatrixArrayAccess.SetBuffer(myMatrixArray, myArraySize * sizeof(Matrix4x4), false);
+		mMatrixArray.SetBuffer(mMatrixArrayPointer, mArraySize * sizeof(Matrix4x4), false);
 	}
 	
 }
@@ -555,15 +555,15 @@ void	API3DUniformMatrixArray::NotifyUpdate(const unsigned int  labelid)
 void	API3DUniformMatrixArray::Activate(unsigned int a_Location)
 {
 	GLPRINT("%s (matrix) %d\n", getName().c_str(), a_Location);
-	glUniformMatrix4fv(a_Location, myArraySize, false, &((myMatrixArray[0]).e[0][0]));
+	glUniformMatrix4fv(a_Location, mArraySize, false, &((mMatrixArrayPointer[0]).e[0][0]));
 }
 
 API3DUniformMatrixArray::~API3DUniformMatrixArray()
 {
-	if (myMatrixArray)
+	if (mMatrixArrayPointer)
 	{
-		delete[] myMatrixArray;
-		myMatrixArray = 0;
+		delete[] mMatrixArrayPointer;
+		mMatrixArrayPointer = 0;
 	}
 }
 

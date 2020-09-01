@@ -7,67 +7,64 @@ IMPLEMENT_CLASS_INFO(UIGridLayout)
 
 UIGridLayout::UIGridLayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	UILayout(name, PASS_CLASS_NAME_TREE_ARG)
-	//, myRows(*this, false, LABEL_AND_ID(Rows), 0)
-	, myColumns(*this, false, LABEL_AND_ID(Columns), 0)
-	, myRowHeight(*this, false, LABEL_AND_ID(RowHeight), 0)
-	, myColumnWidth(*this, false, LABEL_AND_ID(ColumnWidth), 0)
-	, myHeaderRow(*this, false, LABEL_AND_ID(HeaderRow), false)
-	, myPadding(*this, false, LABEL_AND_ID(Padding), 0, 0)
-	, mySortByPriority(*this, false, LABEL_AND_ID(SortByPriority), false)
-	, myResizeElements(*this, false, LABEL_AND_ID(ResizeElements), false)
-	, myResizeMe(*this, false, LABEL_AND_ID(AutoResize), true)
+	, mColumns(*this, false, LABEL_AND_ID(Columns), 0)
+	, mRowHeight(*this, false, LABEL_AND_ID(RowHeight), 0)
+	, mColumnWidth(*this, false, LABEL_AND_ID(ColumnWidth), 0)
+	, mHeaderRow(*this, false, LABEL_AND_ID(HeaderRow), false)
+	, mPadding(*this, false, LABEL_AND_ID(Padding), 0, 0)
+	, mSortByPriority(*this, false, LABEL_AND_ID(SortByPriority), false)
+	, mResizeElements(*this, false, LABEL_AND_ID(ResizeElements), false)
+	, mAutoResize(*this, false, LABEL_AND_ID(AutoResize), true)
 {
-	//myRows.changeNotificationLevel(Owner);
-	myColumns.changeNotificationLevel(Owner);
-	myPadding.changeNotificationLevel(Owner);
-	myHeaderRow.changeNotificationLevel(Owner);
-	myRowHeight.changeNotificationLevel(Owner);
-	myColumnWidth.changeNotificationLevel(Owner);
-	mySortByPriority.changeNotificationLevel(Owner);
-	myResizeElements.changeNotificationLevel(Owner);
-	myResizeMe.changeNotificationLevel(Owner);
+	mColumns.changeNotificationLevel(Owner);
+	mPadding.changeNotificationLevel(Owner);
+	mHeaderRow.changeNotificationLevel(Owner);
+	mRowHeight.changeNotificationLevel(Owner);
+	mColumnWidth.changeNotificationLevel(Owner);
+	mSortByPriority.changeNotificationLevel(Owner);
+	mResizeElements.changeNotificationLevel(Owner);
+	mAutoResize.changeNotificationLevel(Owner);
 }
 
 void UIGridLayout::NotifyUpdate(const unsigned int labelid)
 {
-	if (/*(labelid == myRows.getLabelID()) ||*/
-		(labelid == myColumns.getLabelID()) ||
-		(labelid == myHeaderRow.getLabelID()) ||
-		(labelid == myRowHeight.getLabelID()) ||
-		(labelid == myColumnWidth.getLabelID()) ||
-		(labelid == mySortByPriority.getLabelID()) ||
-		(labelid == myResizeElements.getLabelID()) ||
-		(labelid == myResizeMe.getLabelID()) ||
-		(labelid == myPadding.getLabelID()))
+	if ((labelid == mColumns.getLabelID()) ||
+		(labelid == mHeaderRow.getLabelID()) ||
+		(labelid == mRowHeight.getLabelID()) ||
+		(labelid == mColumnWidth.getLabelID()) ||
+		(labelid == mSortByPriority.getLabelID()) ||
+		(labelid == mResizeElements.getLabelID()) ||
+		(labelid == mAutoResize.getLabelID()) ||
+		(labelid == mPadding.getLabelID()))
 	{
-		myNeedRecompute = true;
+		mNeedRecompute = true;
 	}
 	UILayout::NotifyUpdate(labelid);
 }
 
 void UIGridLayout::RecomputeLayout()
 {
-	if (!myNeedRecompute)
+	if (!mNeedRecompute)
 		return;
 
 	if (!GetSons().empty())
 	{
 
-		int padding_x = myPadding[0];
-		int padding_y = myPadding[1];
+		int padding_x = mPadding[0];
+		int padding_y = mPadding[1];
 
 
 		kstl::vector<CoreModifiable*> items;
 
-		if (!mySortByPriority) {
+		if (!mSortByPriority) {
 			// Get sons ordered by insertion
 			const kstl::vector<ModifiableItemStruct> sons = getItems();
 			kstl::vector<ModifiableItemStruct>::const_iterator itsons;
 			for (itsons = sons.begin(); itsons != sons.end(); itsons++)
 			{
-				if ((*itsons).myItem->isSubType(Node2D::myClassID))
+				if ((*itsons).mItem->isSubType(Node2D::mClassID))
 				{
-					items.push_back((CoreModifiable*)(*itsons).myItem.get());
+					items.push_back((CoreModifiable*)(*itsons).mItem.get());
 				}
 			}
 		}
@@ -94,12 +91,12 @@ void UIGridLayout::RecomputeLayout()
 
 
 		int r = 0;
-		unsigned int columns = myColumns == 0 ? items.size() : myColumns;
+		unsigned int columns = mColumns == 0 ? items.size() : mColumns;
 		while (it != end) {
 
 			float widthAccumulator = 0;
 			unsigned int i = 0;
-			float rowHeight = (float)myRowHeight;
+			float rowHeight = (float)mRowHeight;
 
 			while (i < columns && it != end) 
 			{
@@ -111,13 +108,13 @@ void UIGridLayout::RecomputeLayout()
 
 				node->setArrayValue("Position", widthAccumulator, heightAccumulator);
 
-				if (myResizeElements && size.x != 0 && size.y != 0) 
+				if (mResizeElements && size.x != 0 && size.y != 0) 
 				{
-					float allowedWidth = (float)myColumnWidth;
-					if (i == 0 && r == 0 && myHeaderRow) allowedWidth = (float)myColumnWidth*(float)myColumns + (float)(padding_x*((int)myColumns - 1));
+					float allowedWidth = (float)mColumnWidth;
+					if (i == 0 && r == 0 && mHeaderRow) allowedWidth = (float)mColumnWidth*(float)mColumns + (float)(padding_x*((int)mColumns - 1));
 
 					float ratioW = allowedWidth > 0 ? (float)allowedWidth / size.x : 1.0f;
-					float ratioH = myRowHeight > 0 ? (float)myRowHeight / size.y : 1.0f;
+					float ratioH = mRowHeight > 0 ? (float)mRowHeight / size.y : 1.0f;
 
 					float ratio = ratioW < ratioH ? ratioW : ratioH;
 
@@ -149,16 +146,16 @@ void UIGridLayout::RecomputeLayout()
 					widthAccumulator += padding_x;
 
 
-				if (myRowHeight == 0 && size.y > rowHeight) rowHeight = size.y;
+				if (mRowHeight == 0 && size.y > rowHeight) rowHeight = size.y;
 
 
 				// Find the real width and height of the current grid
-				unsigned int width = widthAccumulator + (size.x > myColumnWidth ? size.x : myColumnWidth);
-				unsigned int height = heightAccumulator + (size.y > myRowHeight ? size.y : myRowHeight);
+				unsigned int width = widthAccumulator + (size.x > mColumnWidth ? size.x : mColumnWidth);
+				unsigned int height = heightAccumulator + (size.y > mRowHeight ? size.y : mRowHeight);
 
 				// Increment wdith accumulator fot he current row
-				if (myColumnWidth > 0)
-					widthAccumulator += myColumnWidth;
+				if (mColumnWidth > 0)
+					widthAccumulator += mColumnWidth;
 				else
 					widthAccumulator += size.x;
 
@@ -166,7 +163,7 @@ void UIGridLayout::RecomputeLayout()
 				if ((float)width > maxWidth) maxWidth = (float)width;
 				if ((float)height > maxHeight) maxHeight = (float)height;
 
-				if (i == 0 && r == 0 && myHeaderRow) i = columns;
+				if (i == 0 && r == 0 && mHeaderRow) i = columns;
 				i++;
 				it++;
 			}
@@ -175,10 +172,10 @@ void UIGridLayout::RecomputeLayout()
 			r++;
 		}
 
-		if (myResizeMe) 
+		if (mAutoResize) 
 		{
-			mySizeX = maxWidth;
-			mySizeY = maxHeight;
+			mSizeX = maxWidth;
+			mSizeY = maxHeight;
 		}
 	}
 

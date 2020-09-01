@@ -69,12 +69,12 @@ public:
 
 
 	CoreModifiable*	operator->() const {
-            return myDynamicModule;
+            return mDynamicModule;
     }
 
 protected:
 
-	CoreModifiable*		myDynamicModule;
+	CoreModifiable*		mDynamicModule;
 }; 
 
 #endif //_ANONYMOUSMODULE_H_

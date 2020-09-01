@@ -34,7 +34,7 @@ class StorageFileFileAccess : public PureVirtualFileAccessDelegate
 {
 	public:
 
-	StorageFileFileAccess(winrt::Windows::Storage::StorageFile file) : myFile(file)
+	StorageFileFileAccess(winrt::Windows::Storage::StorageFile file) : mFile(file)
 	{
 
 	}
@@ -57,7 +57,7 @@ class StorageFileFileAccess : public PureVirtualFileAccessDelegate
 
 
 	static	void		setMainThreadID();
-	static std::thread::id		myMainThreadID;
+	static std::thread::id		mMainThreadID;
 
 protected:
 
@@ -71,10 +71,10 @@ protected:
 
 	}
 
-	winrt::Windows::Storage::StorageFile myFile = nullptr;
-	size_t myFileSize = 0;
-	winrt::Windows::Storage::Streams::IRandomAccessStream	myAccessStream = nullptr;
-	winrt::Windows::Storage::Streams::DataReader			myDataReader = nullptr;
+	winrt::Windows::Storage::StorageFile mFile = nullptr;
+	size_t mFileSize = 0;
+	winrt::Windows::Storage::Streams::IRandomAccessStream	mAccessStream = nullptr;
+	winrt::Windows::Storage::Streams::DataReader			mDataReader = nullptr;
 	winrt::Windows::Foundation::IAsyncOperationWithProgress<unsigned int, unsigned int> mLastWrite = nullptr;
 	
 };

@@ -7,33 +7,33 @@
 void UniformList::Push(API3DUniformBase * u)
 {
 	((CoreModifiable*)u)->GetRef();
-	List.push_back(u);
-	Current = u;
+	mList.push_back(u);
+	mCurrent = u;
 }
 void UniformList::Pop()
 {
-	if (Current == nullptr)
+	if (mCurrent == nullptr)
 		return;
 
-	((CoreModifiable*)Current)->Destroy();
-	List.pop_back();
+	((CoreModifiable*)mCurrent)->Destroy();
+	mList.pop_back();
 
-	if (List.size() > 0)
-		Current = List.back();
+	if (mList.size() > 0)
+		mCurrent = mList.back();
 	else
-		Current = nullptr;
+		mCurrent = nullptr;
 }
 
 IMPLEMENT_CLASS_INFO(ShaderBase)
 
 ShaderBase::ShaderBase(const kstl::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)
-, myCurrentShader(nullptr)
-, myVertexShaderText(*this, false, LABEL_AND_ID(VertexShader), "")
-, myFragmentShaderText(*this, false, LABEL_AND_ID(FragmentShader), "")
-, myAttachedCamera(*this, false, LABEL_AND_ID(AttachedCamera), "")
-, myUseGenericLight(*this, false, LABEL_AND_ID(useGenericLight), false)
-, myisGeneric(*this, false, LABEL_AND_ID(isGeneric), false)
-, myCurrentShaderKey(-1)
+, mCurrentShader(nullptr)
+, mVertexShaderText(*this, false, LABEL_AND_ID(VertexShader), "")
+, mFragmentShaderText(*this, false, LABEL_AND_ID(FragmentShader), "")
+, mAttachedCamera(*this, false, LABEL_AND_ID(AttachedCamera), "")
+, museGenericLight(*this, false, LABEL_AND_ID(useGenericLight), false)
+, misGeneric(*this, false, LABEL_AND_ID(isGeneric), false)
+, mCurrentShaderKey(-1)
 {
 	mRenderPassMask = 0xFFFFFFFF;
 }
@@ -45,14 +45,14 @@ ShaderBase::~ShaderBase()
 
 void ShaderBase::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == myVertexShaderText.getLabelID()) || (labelid == myFragmentShaderText.getLabelID()))
+	if ((labelid == mVertexShaderText.getLabelID()) || (labelid == mFragmentShaderText.getLabelID()))
 	{
 		Dealloc();
 		// rebuild only if both shaders are set
-		if ((((kstl::string)myVertexShaderText) != "") && (((kstl::string)myFragmentShaderText) != ""))
+		if ((((kstl::string)mVertexShaderText) != "") && (((kstl::string)mFragmentShaderText) != ""))
 		{
 			BuildShaderStruct* toAdd=Rebuild();
-			insertBuildShader(myCurrentShaderKey, toAdd);
+			insertBuildShader(mCurrentShaderKey, toAdd);
 		}
 	}
 
@@ -76,12 +76,12 @@ void	ShaderBase::setCurrentBuildShader(unsigned int key)
 	kstl::map<unsigned int, BuildShaderStruct*>::iterator found = mShaderSourceMap.find(key);
 	if (found != mShaderSourceMap.end())
 	{
-		myCurrentShader= (*found).second;
-		myCurrentShaderKey = key;
+		mCurrentShader= (*found).second;
+		mCurrentShaderKey = key;
 		return;
 	}
-	myCurrentShader = nullptr;
-	myCurrentShaderKey = -1;
+	mCurrentShader = nullptr;
+	mCurrentShaderKey = -1;
 
 }
 
@@ -93,16 +93,16 @@ void	ShaderBase::Dealloc()
 		delete it.second;
 	}
 	mShaderSourceMap.clear();
-	myCurrentShader = nullptr;
+	mCurrentShader = nullptr;
 }
 
 void ShaderBase::GetMatrixLoc(int loc[4])
 {
-	if ((myCurrentShader)->myLocations)
+	if ((mCurrentShader)->mLocations)
 	{
-		loc[0] = (myCurrentShader)->myLocations->projMatrix;
-		loc[1] = (myCurrentShader)->myLocations->modelMatrix;
-		loc[2] = (myCurrentShader)->myLocations->viewMatrix;
-		loc[3] = (myCurrentShader)->myLocations->farPlane;
+		loc[0] = (mCurrentShader)->mLocations->projMatrix;
+		loc[1] = (mCurrentShader)->mLocations->modelMatrix;
+		loc[2] = (mCurrentShader)->mLocations->viewMatrix;
+		loc[3] = (mCurrentShader)->mLocations->farPlane;
 	}
 }

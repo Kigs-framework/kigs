@@ -28,8 +28,8 @@ IMPLEMENT_CLASS_INFO(API3DUniformBuffer)
 
 API3DUniformBase::API3DUniformBase(const kstl::string& name, CLASS_NAME_TREE_ARG) 
 	: Drawable(name, PASS_CLASS_NAME_TREE_ARG)
-, myUniName(*this, false, "Name", "")
-,myID(-1)
+, mUniName(*this, false, "Name", "")
+,mID(-1)
 {
 	mRenderPassMask = 0xFFFFFFFF;
 }
@@ -39,20 +39,20 @@ void API3DUniformBase::InitModifiable()
 	Drawable::InitModifiable();
 
 	kstl::string strKey;
-	myUniName.getValue(strKey);
-	myID = CharToID::GetID(strKey);
+	mUniName.getValue(strKey);
+	mID = CharToID::GetID(strKey);
 
-	myUniName.changeNotificationLevel(Owner);
+	mUniName.changeNotificationLevel(Owner);
 }
 
 void API3DUniformBase::NotifyUpdate(const unsigned int  labelid)
 {
-	if (labelid == myUniName.getLabelID())
+	if (labelid == mUniName.getLabelID())
 	{
 		kstl::string strKey;
-		myUniName.getValue(strKey);
-		myID = CharToID::GetID(strKey);
-		//printf("%s >> %u\n", strKey.c_str(), myID);
+		mUniName.getValue(strKey);
+		mID = CharToID::GetID(strKey);
+		//printf("%s >> %u\n", strKey.c_str(), mID);
 	}
 	else
 	{
@@ -99,59 +99,59 @@ bool API3DUniformBase::Pop(TravState* t)
 
  void API3DUniformBase::ProtectedDestroy()
  {
-	 if (myCBuffer)
+	 if (mCBuffer)
 	 {
-		 myCBuffer->Release();
-		 myCBuffer = nullptr;
+		 mCBuffer->Release();
+		 mCBuffer = nullptr;
 	 }
  }
 
  void API3DUniformBase::CreateBufferIfNeeded()
  {
-	 if (myCBBufferNeededSize > myCBBufferCurrentSize)
+	 if (mCBBufferNeededSize > mCBBufferCurrentSize)
 	 {
-		 if (myCBuffer) myCBuffer->Release();
+		 if (mCBuffer) mCBuffer->Release();
 
-		 auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+		 auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 		 D3D11_BUFFER_DESC mBufferDesc;
 		 mBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		 mBufferDesc.ByteWidth = myCBBufferNeededSize;
+		 mBufferDesc.ByteWidth = mCBBufferNeededSize;
 		 if (mBufferDesc.ByteWidth % 16 != 0) mBufferDesc.ByteWidth = (mBufferDesc.ByteWidth / 16 + 1) * 16;
 		 mBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		 mBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		 mBufferDesc.MiscFlags = 0;
 		 mBufferDesc.StructureByteStride = 0;
-		 device->m_device->CreateBuffer(&mBufferDesc, NULL, &myCBuffer);
+		 device->mDevice->CreateBuffer(&mBufferDesc, NULL, &mCBuffer);
 
-		 myCBBufferCurrentSize = mBufferDesc.ByteWidth;
-		 myCBBufferNeededSize = 0;
+		 mCBBufferCurrentSize = mBufferDesc.ByteWidth;
+		 mCBBufferNeededSize = 0;
 	 }
  }
 
 
 //////////////////////////////////// Int ///////////////////////////////////////////
 API3DUniformInt::API3DUniformInt(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myValue(*this, false, "Value", -1)
+, mValue(*this, false, "Value", -1)
 {
-	myCBBufferNeededSize = sizeof(int);
+	mCBBufferNeededSize = sizeof(int);
 }
 
 void	API3DUniformInt::Activate(UniformList* ul)
 {
 	CreateBufferIfNeeded();
 
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	int* dataPtr;
 
-	device->m_deviceContext->Map(myCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	device->mDeviceContext->Map(mCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	dataPtr = (int*)mappedResource.pData;
-	*dataPtr = myValue;
-	device->m_deviceContext->Unmap(myCBuffer, 0);
+	*dataPtr = mValue;
+	device->mDeviceContext->Unmap(mCBuffer, 0);
 
-	if (ul->Location != 0xffffffff) device->m_deviceContext->VSSetConstantBuffers(ul->Location, 1, &myCBuffer);
-	if (ul->LocationFragment != 0xffffffff) device->m_deviceContext->PSSetConstantBuffers(ul->LocationFragment, 1, &myCBuffer);
+	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
+	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
 }
 
 void	API3DUniformInt::NotifyUpdate(const unsigned int  labelid)
@@ -162,27 +162,27 @@ void	API3DUniformInt::NotifyUpdate(const unsigned int  labelid)
 
 //////////////////////////////////// Float ///////////////////////////////////////////
 API3DUniformFloat::API3DUniformFloat(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myValue(*this, false, "Value", -1)
+, mValue(*this, false, "Value", -1)
 {
-	myCBBufferNeededSize = sizeof(float);
+	mCBBufferNeededSize = sizeof(float);
 }
 
 void	API3DUniformFloat::Activate(UniformList* ul)
 {
 	CreateBufferIfNeeded();
 
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	float* dataPtr;
 
-	device->m_deviceContext->Map(myCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	device->mDeviceContext->Map(mCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	dataPtr = (float*)mappedResource.pData;
-	*dataPtr = myValue;
-	device->m_deviceContext->Unmap(myCBuffer, 0);
+	*dataPtr = mValue;
+	device->mDeviceContext->Unmap(mCBuffer, 0);
 
-	if (ul->Location != 0xffffffff) device->m_deviceContext->VSSetConstantBuffers(ul->Location, 1, &myCBuffer);
-	if (ul->LocationFragment != 0xffffffff) device->m_deviceContext->PSSetConstantBuffers(ul->LocationFragment, 1, &myCBuffer);
+	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
+	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
 }
 
 void	API3DUniformFloat::NotifyUpdate(const unsigned int  labelid)
@@ -194,25 +194,25 @@ void	API3DUniformFloat::NotifyUpdate(const unsigned int  labelid)
 
 //////////////////////////////////// Float 2 ///////////////////////////////////////////
 API3DUniformFloat2::API3DUniformFloat2(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myValue(*this, false, "Value",0.0f,0.0f)
+, mValue(*this, false, "Value",0.0f,0.0f)
 {
-	myCBBufferNeededSize = sizeof(v2f);
+	mCBBufferNeededSize = sizeof(v2f);
 }
 
 void	API3DUniformFloat2::Activate(UniformList* ul)
 {
 	CreateBufferIfNeeded();
 
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-	device->m_deviceContext->Map(myCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, myValue.getVector(), 2 * sizeof(float));
-	device->m_deviceContext->Unmap(myCBuffer, 0);
+	device->mDeviceContext->Map(mCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, mValue.getVector(), 2 * sizeof(float));
+	device->mDeviceContext->Unmap(mCBuffer, 0);
 
-	if (ul->Location != 0xffffffff) device->m_deviceContext->VSSetConstantBuffers(ul->Location, 1, &myCBuffer);
-	if (ul->LocationFragment != 0xffffffff) device->m_deviceContext->PSSetConstantBuffers(ul->LocationFragment, 1, &myCBuffer);
+	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
+	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
 }
 
 void	API3DUniformFloat2::NotifyUpdate(const unsigned int  labelid)
@@ -225,21 +225,21 @@ void	API3DUniformFloat2::NotifyUpdate(const unsigned int  labelid)
 
 //////////////////////////////////// Float 3 ///////////////////////////////////////////
 API3DUniformFloat3::API3DUniformFloat3(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myValue(*this, false, "Value",0.0f,0.0f,0.0f)
-, myNormalize(*this, false, "Normalize", false)
+, mValue(*this, false, "Value",0.0f,0.0f,0.0f)
+, mNormalize(*this, false, "Normalize", false)
 {
-	myValue.changeNotificationLevel(Owner);
-	myCBBufferNeededSize = sizeof(v3f);
+	mValue.changeNotificationLevel(Owner);
+	mCBBufferNeededSize = sizeof(v3f);
 }
 
 void API3DUniformFloat3::InitModifiable()
 {
 	API3DUniformBase::InitModifiable();
 
-	if (myNormalize)
+	if (mNormalize)
 		Normalize();
 
-	myNormalize.changeNotificationLevel(Owner);
+	mNormalize.changeNotificationLevel(Owner);
 }
 
 void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
@@ -247,14 +247,14 @@ void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
 	if (!IsInit())
 		return;
 
-	if (labelid == myNormalize.getLabelID())
+	if (labelid == mNormalize.getLabelID())
 	{
-		if (myNormalize)
+		if (mNormalize)
 			Normalize();
 	}
-	else if (labelid == myValue.getLabelID())
+	else if (labelid == mValue.getLabelID())
 	{
-		if (myNormalize)
+		if (mNormalize)
 			Normalize();
 	}
 	else
@@ -263,51 +263,51 @@ void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
 
 void API3DUniformFloat3::Normalize()
 {
-	Vector3D v(myValue[0], myValue[1], myValue[2]);
+	Vector3D v(mValue[0], mValue[1], mValue[2]);
 	v.Normalize();
 
-	myValue[0] = v.x;
-	myValue[1] = v.y;
-	myValue[2] = v.z;
+	mValue[0] = v.x;
+	mValue[1] = v.y;
+	mValue[2] = v.z;
 }
 
 void	API3DUniformFloat3::Activate(UniformList* ul)
 {
 	CreateBufferIfNeeded();
 
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	
-	device->m_deviceContext->Map(myCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, myValue.getVector(), 3 * sizeof(float));
-	device->m_deviceContext->Unmap(myCBuffer, 0);
+	device->mDeviceContext->Map(mCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, mValue.getVector(), 3 * sizeof(float));
+	device->mDeviceContext->Unmap(mCBuffer, 0);
 
-	if (ul->Location != 0xffffffff) device->m_deviceContext->VSSetConstantBuffers(ul->Location, 1, &myCBuffer);
-	if (ul->LocationFragment != 0xffffffff) device->m_deviceContext->PSSetConstantBuffers(ul->LocationFragment, 1, &myCBuffer);
+	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
+	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
 }
 
 //////////////////////////////////// Float 4 ///////////////////////////////////////////
 API3DUniformFloat4::API3DUniformFloat4(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myValue(*this, false, "Value",0.0f,0.0f,0.0f,0.0f)
+, mValue(*this, false, "Value",0.0f,0.0f,0.0f,0.0f)
 {
-	myCBBufferNeededSize = sizeof(v4f);
+	mCBBufferNeededSize = sizeof(v4f);
 }
 
 void	API3DUniformFloat4::Activate(UniformList* ul)
 {
 	CreateBufferIfNeeded();
 
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-	device->m_deviceContext->Map(myCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, myValue.getVector(), 4 * sizeof(float));
-	device->m_deviceContext->Unmap(myCBuffer, 0);
+	device->mDeviceContext->Map(mCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, mValue.getVector(), 4 * sizeof(float));
+	device->mDeviceContext->Unmap(mCBuffer, 0);
 
-	if (ul->Location != 0xffffffff) device->m_deviceContext->VSSetConstantBuffers(ul->Location, 1, &myCBuffer);
-	if (ul->LocationFragment != 0xffffffff) device->m_deviceContext->PSSetConstantBuffers(ul->LocationFragment, 1, &myCBuffer);
+	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
+	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
 }
 
 void	API3DUniformFloat4::NotifyUpdate(const unsigned int  labelid)
@@ -318,27 +318,27 @@ void	API3DUniformFloat4::NotifyUpdate(const unsigned int  labelid)
 }
 
 API3DUniformTexture::API3DUniformTexture(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myTextureChannel(*this, false, "Channel", 0)
-, myTextureName(*this, false, "TextureName", "")
-, myAttachedTexture(0)
+, mChannel(*this, false, "Channel", 0)
+, mTextureName(*this, false, "TextureName", "")
+, mAttachedTexture(0)
 {
-	myTextureChannel.changeNotificationLevel(Owner);
+	mChannel.changeNotificationLevel(Owner);
 }
 
 void	API3DUniformTexture::InitModifiable()
 {
 	if (!IsInit())
 	{
-		if ((myTextureName.const_ref()) != "")
+		if ((mTextureName.const_ref()) != "")
 		{
 			SP<TextureFileManager>	fileManager = KigsCore::GetSingleton("TextureFileManager");
-			myAttachedTexture = fileManager->GetTexture(myTextureName.const_ref(), false);
-			if (myAttachedTexture)
-				if (!myAttachedTexture->IsInit())
+			mAttachedTexture = fileManager->GetTexture(mTextureName.const_ref(), false);
+			if (mAttachedTexture)
+				if (!mAttachedTexture->IsInit())
 				{
-					myAttachedTexture->setValue("ForcePow2", true);
-					myAttachedTexture->setValue("HasMipmap", true);
-					myAttachedTexture->Init();
+					mAttachedTexture->setValue("ForcePow2", true);
+					mAttachedTexture->setValue("HasMipmap", true);
+					mAttachedTexture->Init();
 				}
 		}
 	}
@@ -350,15 +350,15 @@ void API3DUniformTexture::Activate(UniformList* ul)
 {	
 	CreateBufferIfNeeded();
 
-	if (myAttachedTexture)
+	if (mAttachedTexture)
 	{
-		auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+		auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 		// TODO
-		/*glUniform1i(a_Location, myTextureChannel);
-		ModuleSpecificRenderer* renderer = (ModuleRenderer::theGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+		/*glUniform1i(a_Location, mChannel);
+		ModuleSpecificRenderer* renderer = (ModuleRenderer::mTheGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 		
-		renderer->ActiveTextureChannel(myTextureChannel);
-		renderer->BindTexture(RENDERER_TEXTURE_2D, static_cast<OpenGLTexture*>(myAttachedTexture)->GetGLID());*/
+		renderer->ActiveTextureChannel(mChannel);
+		renderer->BindTexture(RENDERER_TEXTURE_2D, static_cast<OpenGLTexture*>(mAttachedTexture)->GetGLID());*/
 	}
 }
 
@@ -372,22 +372,22 @@ void	API3DUniformTexture::NotifyUpdate(const unsigned int  labelid)
 
 bool	API3DUniformTexture::Deactivate(UniformList* ul)
 {
-	ModuleSpecificRenderer* renderer = (ModuleRenderer::theGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->ActiveTextureChannel(myTextureChannel);
+	ModuleSpecificRenderer* renderer = (ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	renderer->ActiveTextureChannel(mChannel);
 	renderer->BindTexture(RENDERER_TEXTURE_2D, 0);
 	return true;
 }
 
 bool API3DUniformTexture::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	if (item->isSubType(Texture::myClassID)) // if texture, don't call father addItem
+	if (item->isSubType(Texture::mClassID)) // if texture, don't call father addItem
 	{
-		if (item == myAttachedTexture)
+		if (item == mAttachedTexture)
 		{
 			return true;
 		}
 
-		myAttachedTexture = item;
+		mAttachedTexture = item;
 		
 
 		return true;
@@ -399,12 +399,12 @@ bool API3DUniformTexture::addItem(const CMSP& item, ItemPosition pos DECLARE_LIN
 
 bool API3DUniformTexture::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
-	if (item->isSubType(Texture::myClassID)) // if texture, don't call father removeItem
+	if (item->isSubType(Texture::mClassID)) // if texture, don't call father removeItem
 	{
 
-		if (item == myAttachedTexture)
+		if (item == mAttachedTexture)
 		{
-			myAttachedTexture = 0;
+			mAttachedTexture = 0;
 			return true;
 		}
 
@@ -420,34 +420,34 @@ bool API3DUniformTexture::removeItem(const CMSP& item DECLARE_LINK_NAME)
 #if DX11 // TODO ?
 
 API3DUniformDataTexture::API3DUniformDataTexture(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myTextureChannel(*this, false, "Channel", 0)
-, myTextureName(*this, false, "TextureName", "")
-, myTextureGLIndex(-1)
+, mChannel(*this, false, "Channel", 0)
+, mTextureName(*this, false, "TextureName", "")
+, mTextureGLIndex(-1)
 {
-	myTextureChannel.changeNotificationLevel(Owner);
+	mChannel.changeNotificationLevel(Owner);
 }
 
 void	API3DUniformDataTexture::InitModifiable()
 {
 	if (!IsInit())
 	{
-		if ((myTextureName.const_ref()) != "")
+		if ((mTextureName.const_ref()) != "")
 		{
 
 			FilePathManager* pathManager = (FilePathManager*)KigsCore::GetSingleton("FilePathManager");
 
-			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(myTextureName.const_ref());
+			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(mTextureName.const_ref());
 			if (fullfilenamehandle)
 			{
 
 				TinyImage* image = TinyImage::CreateImage(fullfilenamehandle.get());
 
-				ModuleSpecificRenderer* renderer = (ModuleRenderer::theGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+				ModuleSpecificRenderer* renderer = (ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 
-				renderer->CreateTexture(1, &myTextureGLIndex);
+				renderer->CreateTexture(1, &mTextureGLIndex);
 
-				renderer->ActiveTextureChannel(myTextureChannel);
-				renderer->BindTexture(RENDERER_TEXTURE_2D, myTextureGLIndex);
+				renderer->ActiveTextureChannel(mChannel);
+				renderer->BindTexture(RENDERER_TEXTURE_2D, mTextureGLIndex);
 				renderer->TextureParameteri(RENDERER_TEXTURE_2D, RENDERER_TEXTURE_MIN_FILTER, RENDERER_NEAREST);
 				renderer->TextureParameteri(RENDERER_TEXTURE_2D, RENDERER_TEXTURE_MAG_FILTER, RENDERER_NEAREST);
 				renderer->TextureParameteri(RENDERER_TEXTURE_2D, RENDERER_TEXTURE_WRAP_S, RENDERER_CLAMP_TO_EDGE);
@@ -466,15 +466,15 @@ void	API3DUniformDataTexture::InitModifiable()
 
 void API3DUniformDataTexture::Activate(unsigned int a_Location)
 {
-	if (myTextureGLIndex == (unsigned int)-1) // create texture in first predraw
+	if (mTextureGLIndex == (unsigned int)-1) // create texture in first predraw
 	{
 		return;
 	}
 
-	glUniform1i(a_Location, myTextureChannel);
-	ModuleSpecificRenderer* renderer = (ModuleRenderer::theGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->ActiveTextureChannel(myTextureChannel); 
-	renderer->BindTexture(RENDERER_TEXTURE_2D, myTextureGLIndex);
+	glUniform1i(a_Location, mChannel);
+	ModuleSpecificRenderer* renderer = (ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	renderer->ActiveTextureChannel(mChannel); 
+	renderer->BindTexture(RENDERER_TEXTURE_2D, mTextureGLIndex);
 
 }
 
@@ -488,12 +488,12 @@ void	API3DUniformDataTexture::NotifyUpdate(const unsigned int  labelid)
 
 bool	API3DUniformDataTexture::Deactivate(unsigned int a_Location)
 {
-	if (myTextureGLIndex == (unsigned int)-1) // create texture in first predraw
+	if (mTextureGLIndex == (unsigned int)-1) // create texture in first predraw
 	{
 		return false;
 	}
-	ModuleSpecificRenderer* renderer = (ModuleRenderer::theGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->ActiveTextureChannel(myTextureChannel);
+	ModuleSpecificRenderer* renderer = (ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	renderer->ActiveTextureChannel(mChannel);
 	renderer->BindTexture(RENDERER_TEXTURE_2D, 0);
 	return true;
 }
@@ -506,28 +506,28 @@ API3DUniformDataTexture::~API3DUniformDataTexture()
 }
 
 API3DUniformGeneratedTexture::API3DUniformGeneratedTexture(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myTextureChannel(*this, false, "Channel", 0)
-, mySize(*this, true, "Size")
-, myScale(*this, true, "Scale", 0.5f)
-, myPersistence(*this, true, "Persistence", 0.5f)
-, myOctaveCount(*this, true, "OctaveCount", 3)
-, myTextureGLIndex((unsigned int)-1)
+, mChannel(*this, false, "Channel", 0)
+, mSize(*this, true, "Size")
+, mScale(*this, true, "Scale", 0.5f)
+, mPersistence(*this, true, "Persistence", 0.5f)
+, mOctaveCount(*this, true, "OctaveCount", 3)
+, mTextureGLIndex((unsigned int)-1)
 {
-	myTextureChannel.changeNotificationLevel(Owner);
+	mChannel.changeNotificationLevel(Owner);
 }
 
 void API3DUniformGeneratedTexture::Activate(unsigned int a_Location)
 {
-	if (myTextureGLIndex == (unsigned int)-1) // create texture in first predraw
+	if (mTextureGLIndex == (unsigned int)-1) // create texture in first predraw
 	{
 		Generate();
 	}
 
 	
-	glUniform1i(a_Location, myTextureChannel);
-	ModuleSpecificRenderer* renderer = (ModuleRenderer::theGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->ActiveTextureChannel(myTextureChannel);
-	renderer->BindTexture(RENDERER_TEXTURE_3D, myTextureGLIndex);
+	glUniform1i(a_Location, mChannel);
+	ModuleSpecificRenderer* renderer = (ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	renderer->ActiveTextureChannel(mChannel);
+	renderer->BindTexture(RENDERER_TEXTURE_3D, mTextureGLIndex);
 }
 
 void	API3DUniformGeneratedTexture::NotifyUpdate(const unsigned int  labelid)
@@ -540,8 +540,8 @@ void	API3DUniformGeneratedTexture::NotifyUpdate(const unsigned int  labelid)
 
 bool	API3DUniformGeneratedTexture::Deactivate(unsigned int a_Location)
 {
-	ModuleSpecificRenderer* renderer = (ModuleRenderer::theGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-	renderer->ActiveTextureChannel(myTextureChannel);
+	ModuleSpecificRenderer* renderer = (ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	renderer->ActiveTextureChannel(mChannel);
 	renderer->BindTexture(RENDERER_TEXTURE_3D, 0);
 	return true;
 }
@@ -549,18 +549,18 @@ bool	API3DUniformGeneratedTexture::Deactivate(unsigned int a_Location)
 API3DUniformGeneratedTexture::~API3DUniformGeneratedTexture()
 {
 	ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-	scenegraph->AddDefferedItem((void*)myTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
+	scenegraph->AddDefferedItem((void*)mTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
 }
 
 void API3DUniformGeneratedTexture::Generate()
 {
 #ifndef GL_ES2
-	ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer::theGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
+	ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer::mTheGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	int Sizes[3];
 
-	Sizes[0] = (int)mySize[0];
-	Sizes[1] = (int)mySize[1];
-	Sizes[2] = (int)mySize[2];
+	Sizes[0] = (int)mSize[0];
+	Sizes[1] = (int)mSize[1];
+	Sizes[2] = (int)mSize[2];
 
 	// always generate 3 dimension, but check if second and third are valid
 	if (Sizes[1] < 1)
@@ -582,17 +582,17 @@ void API3DUniformGeneratedTexture::Generate()
 		{
 			for (i = 0; i < Sizes[0]; i++)
 			{
-				*writeTextureRaw = (unsigned char)scaled_octave_noise_3d((float)myOctaveCount, myPersistence, myScale, -128.0f, 127.0f, (float)i, (float)j, (float)k);
+				*writeTextureRaw = (unsigned char)scaled_octave_noise_3d((float)mOctaveCount, mPersistence, mScale, -128.0f, 127.0f, (float)i, (float)j, (float)k);
 				++writeTextureRaw;
 			}
 		}
 	}
 
-	renderer->CreateTexture(1, &myTextureGLIndex);
+	renderer->CreateTexture(1, &mTextureGLIndex);
 
-	//glBindTexture(GL_TEXTURE_3D, myTextureGLIndex);
-	renderer->ActiveTextureChannel(myTextureChannel);
-	renderer->BindTexture(RENDERER_TEXTURE_3D, myTextureGLIndex);
+	//glBindTexture(GL_TEXTURE_3D, mTextureGLIndex);
+	renderer->ActiveTextureChannel(mChannel);
+	renderer->BindTexture(RENDERER_TEXTURE_3D, mTextureGLIndex);
 	renderer->TextureParameteri(RENDERER_TEXTURE_3D, RENDERER_TEXTURE_MIN_FILTER, RENDERER_LINEAR);
 	renderer->TextureParameteri(RENDERER_TEXTURE_3D, RENDERER_TEXTURE_MAG_FILTER, RENDERER_LINEAR);
 	renderer->TextureParameteri(RENDERER_TEXTURE_3D, RENDERER_TEXTURE_WRAP_S, RENDERER_REPEAT);
@@ -608,32 +608,32 @@ void API3DUniformGeneratedTexture::Generate()
 #endif // DX11
 
 API3DUniformMatrixArray::API3DUniformMatrixArray(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, myArraySize(*this, false, "ArraySize", 16)
-, myMatrixArrayAccess(*this, false, "MatrixArray")
-, myMatrixArray(0)
+, mArraySize(*this, false, "ArraySize", 16)
+, mMatrixArray(*this, false, "MatrixArray")
+, mMatrixArrayPointer(0)
 {
-	NotifyUpdate(myArraySize.getLabelID().toUInt());
-	myArraySize.changeNotificationLevel(Owner);
+	NotifyUpdate(mArraySize.getLabelID().toUInt());
+	mArraySize.changeNotificationLevel(Owner);
 }
 
 void	API3DUniformMatrixArray::NotifyUpdate(const unsigned int  labelid)
 {
 	API3DUniformBase::NotifyUpdate(labelid);
 
-	if(labelid == myArraySize.getLabelID())
+	if(labelid == mArraySize.getLabelID())
 	{
-		myCBBufferNeededSize = myArraySize * sizeof(Matrix4x4);
+		mCBBufferNeededSize = mArraySize * sizeof(Matrix4x4);
 
-		if (myMatrixArray)
+		if (mMatrixArrayPointer)
 		{
-			delete[] myMatrixArray;
+			delete[] mMatrixArrayPointer;
 		}
-		myMatrixArray = new Matrix4x4[myArraySize];
-		for (int i = 0; i < myArraySize; i++)
+		mMatrixArrayPointer = new Matrix4x4[mArraySize];
+		for (int i = 0; i < mArraySize; i++)
 		{
-			myMatrixArray[i].SetIdentity();
+			mMatrixArrayPointer[i].SetIdentity();
 		}
-		myMatrixArrayAccess.SetBuffer(myMatrixArray, myArraySize * sizeof(Matrix4x4), false);
+		mMatrixArray.SetBuffer(mMatrixArrayPointer, mArraySize * sizeof(Matrix4x4), false);
 	}
 	
 }
@@ -642,24 +642,24 @@ void	API3DUniformMatrixArray::Activate(UniformList* ul)
 {
 	CreateBufferIfNeeded();
 
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	device->m_deviceContext->Map(myCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, &((myMatrixArray[0]).e[0][0]), myArraySize * sizeof(Matrix4x4));
-	device->m_deviceContext->Unmap(myCBuffer, 0);
+	device->mDeviceContext->Map(mCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, &((mMatrixArrayPointer[0]).e[0][0]), mArraySize * sizeof(Matrix4x4));
+	device->mDeviceContext->Unmap(mCBuffer, 0);
 
-	if (ul->Location != 0xffffffff) device->m_deviceContext->VSSetConstantBuffers(ul->Location, 1, &myCBuffer);
-	if (ul->LocationFragment != 0xffffffff) device->m_deviceContext->PSSetConstantBuffers(ul->LocationFragment, 1, &myCBuffer);
+	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
+	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
 
 }
 
 API3DUniformMatrixArray::~API3DUniformMatrixArray()
 {
-	if (myMatrixArray)
+	if (mMatrixArrayPointer)
 	{
-		delete[] myMatrixArray;
-		myMatrixArray = 0;
+		delete[] mMatrixArrayPointer;
+		mMatrixArrayPointer = 0;
 	}
 }
 
@@ -670,18 +670,18 @@ API3DUniformBuffer::API3DUniformBuffer(const kstl::string& name, CLASS_NAME_TREE
 
 void	API3DUniformBuffer::Activate(UniformList* ul)
 {
-	myCBBufferNeededSize = myBuffer.ref()->size();
+	mCBBufferNeededSize = mValue.ref()->size();
 	CreateBufferIfNeeded();
 
-	auto device = RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance();
+	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 	
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	device->m_deviceContext->Map(myCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, myBuffer.ref()->data(), myBuffer.ref()->size());
-	device->m_deviceContext->Unmap(myCBuffer, 0);
+	device->mDeviceContext->Map(mCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, mValue.ref()->data(), mValue.ref()->size());
+	device->mDeviceContext->Unmap(mCBuffer, 0);
 
-	if (ul->Location != 0xffffffff) device->m_deviceContext->VSSetConstantBuffers(ul->Location, 1, &myCBuffer);
-	if (ul->LocationFragment != 0xffffffff) device->m_deviceContext->PSSetConstantBuffers(ul->LocationFragment, 1, &myCBuffer);
+	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
+	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
 }
 
 

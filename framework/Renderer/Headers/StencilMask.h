@@ -1,6 +1,19 @@
 #pragma once
 
 #include "Drawable.h"
+
+// ****************************************
+// * StencilMask class
+// * --------------------------------------
+/**
+* \file	StencilMask.h
+* \class	StencilMask
+* \ingroup Renderer
+* \brief Manage stencil buffer mask.
+*
+*/
+// ****************************************
+
 class StencilMask : public Drawable
 {
 public:

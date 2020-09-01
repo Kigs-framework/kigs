@@ -32,6 +32,17 @@ private:
 	lua_State* mLua;
 };
 
+// ****************************************
+// * LuaNotificationHook class
+// * --------------------------------------
+/**
+ * \class	LuaNotificationHook
+ * \file	LuaBinding.h
+ * \ingroup LuaBind
+ * \brief	
+ */
+ // ****************************************
+
 class LuaNotificationHook : public CoreModifiable
 {
 	public:
@@ -41,9 +52,9 @@ class LuaNotificationHook : public CoreModifiable
 	
 	DECLARE_METHOD(CallLuaFunc);
 	COREMODIFIABLE_METHODS(CallLuaFunc);
-	CoreModifiable* obj;
-	LuaIntf::LuaState L;
-	LuaIntf::LuaRef lua_func;
+	CoreModifiable* mObj;
+	LuaIntf::LuaState mL;
+	LuaIntf::LuaRef mLuaFunc;
 };
 
 
@@ -68,7 +79,7 @@ class LuaChildIterator : public LuaIntf::CppFunctor
 		
 		LuaIntf::LuaState L = lua;
 		if(_i < _obj->getItems().size())
-			L.push(_obj->getItems()[_i++].myItem);
+			L.push(_obj->getItems()[_i++].mItem);
 		else
 			return 0;
 		return 1;

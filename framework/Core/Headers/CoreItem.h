@@ -11,6 +11,17 @@ class CoreItemIterator;
 class CoreModifiable;
 class CoreModifiableAttribute;
 
+// ****************************************
+// * CoreItemSP class
+// * --------------------------------------
+/**
+* \class	CoreItemSP
+* \file     CoreItem.h
+* \ingroup Core
+* \brief	SmartPointer class to manage CoreItem
+*/
+// ****************************************
+
 class CoreItemSP : public SmartPointer<CoreItem>
 {
 public:
@@ -94,21 +105,30 @@ public:
 
 };
 
-
+// ****************************************
+// * CoreItemIteratorBase class
+// * --------------------------------------
+/**
+* \class	CoreItemIteratorBase
+* \file     CoreItem.h
+* \ingroup Core
+* \brief	Base class for CoreItemIterator
+*/
+// ****************************************
 class CoreItemIteratorBase : public GenericRefCountedBaseClass
 {
 public:
 
 	CoreItemIteratorBase() : GenericRefCountedBaseClass()
-		,myAttachedCoreItem(nullptr)
-		, myPos(0xFFFFFFFF)
+		,mAttachedCoreItem(nullptr)
+		, mPos(0xFFFFFFFF)
 	{
 		
 	}
 
 	CoreItemIteratorBase(const CoreItemIteratorBase& other) : GenericRefCountedBaseClass()
-		,myAttachedCoreItem(other.myAttachedCoreItem)
-		, myPos(other.myPos)
+		,mAttachedCoreItem(other.mAttachedCoreItem)
+		, mPos(other.mPos)
 	{
 
 	}
@@ -119,13 +139,13 @@ public:
 
 	virtual CoreItemIteratorBase& operator+(const int decal)
 	{
-		myPos = 0xFFFFFFFF;
+		mPos = 0xFFFFFFFF;
 		return *this;
 	}
 
 	virtual CoreItemIteratorBase& operator++()
 	{
-		myPos = 0xFFFFFFFF;
+		mPos = 0xFFFFFFFF;
 		return *this;
 	}
 
@@ -138,8 +158,8 @@ public:
 
 	virtual bool operator==(const CoreItemIteratorBase & other) const
 	{
-		if ((myAttachedCoreItem == other.myAttachedCoreItem) &&
-			(myPos == other.myPos))
+		if ((mAttachedCoreItem == other.mAttachedCoreItem) &&
+			(mPos == other.mPos))
 		{
 			return true;
 		}
@@ -148,8 +168,8 @@ public:
 
 	virtual bool operator!=(const CoreItemIteratorBase & other) const
 	{
-		if ((myAttachedCoreItem != other.myAttachedCoreItem) ||
-			(myPos != other.myPos))
+		if ((mAttachedCoreItem != other.mAttachedCoreItem) ||
+			(mPos != other.mPos))
 		{
 			return true;
 		}
@@ -175,7 +195,7 @@ public:
 
 	virtual CoreItemIteratorBase*	clone()
 	{
-		CoreItemIteratorBase*	result = new CoreItemIteratorBase(myAttachedCoreItem, myPos);
+		CoreItemIteratorBase*	result = new CoreItemIteratorBase(mAttachedCoreItem, mPos);
 		return result;
 	}
 	virtual ~CoreItemIteratorBase()
@@ -187,18 +207,28 @@ protected:
 	friend class CoreItem;
 
 	CoreItemIteratorBase(const CoreItemSP& item, unsigned int pos) : GenericRefCountedBaseClass()
-		, myAttachedCoreItem(item)
-		, myPos(pos)
+		, mAttachedCoreItem(item)
+		, mPos(pos)
 	{
 
 	}
 
 
-	CoreItemSP		myAttachedCoreItem;
-	unsigned int	myPos;
+	CoreItemSP		mAttachedCoreItem;
+	unsigned int	mPos;
 };
 
-// same iterator for all CoreItem
+// ****************************************
+// * CoreItemIterator class
+// * --------------------------------------
+/**
+* \class	CoreItemIterator
+* \file     CoreItem.h
+* \ingroup Core
+* \brief	Iterator for all CoreItem classes
+*/
+// ****************************************
+
 class CoreItemIterator : public SmartPointer<CoreItemIteratorBase>
 {
 public:
@@ -237,11 +267,9 @@ protected:
 // * --------------------------------------
 /**
 * \class	CoreItem
+* \file     CoreItem.h
 * \ingroup Core
 * \brief	Super class for CoreItem to retreivre CoreItem Values
-* \author	ukn
-* \version ukn
-* \date	ukn
 */
 // ****************************************
 class CoreItem : public GenericRefCountedBaseClass
@@ -364,7 +392,7 @@ public:
 		return 0;
 	}
 
-	COREITEM_TYPE	GetType() const {return m_eType;}
+	COREITEM_TYPE	GetType() const {return mType;}
 
 	// operator [] needs to be overloaded on vectors and maps
 	virtual CoreItemSP operator[](int i) const;
@@ -398,37 +426,47 @@ public:
 
 protected:
 
-	CoreItem(COREITEM_TYPE _type) : m_eType(_type)
+	CoreItem(COREITEM_TYPE _type) : mType(_type)
 	{
 	
 	}
 
 
-	COREITEM_TYPE	m_eType;
+	COREITEM_TYPE	mType;
 };
 
 
+// ****************************************
+// * CoreNamedItem class
+// * --------------------------------------
+/**
+* \class	CoreNamedItem
+* \file     CoreItem.h
+* \ingroup Core
+* \brief	Base class for CoreItem with a name
+*/
+// ****************************************
 class CoreNamedItem : public CoreItem
 {
 protected:
-	CoreNamedItem(COREITEM_TYPE _type,const kstl::string& _name) : CoreItem(_type),m_Name(_name)
+	CoreNamedItem(COREITEM_TYPE _type,const kstl::string& _name) : CoreItem(_type),mName(_name)
 	{
 		
 	}
 
-	CoreNamedItem(COREITEM_TYPE _type) : CoreItem(_type),m_Name("")
+	CoreNamedItem(COREITEM_TYPE _type) : CoreItem(_type),mName("")
 	{
 		
 	}
 public:
 	virtual kstl::string getName() const
 	{
-		return m_Name;
+		return mName;
 	}
 
 	void	setName(const kstl::string& _name)
 	{
-		m_Name=_name;
+		mName=_name;
 	}
 
 
@@ -438,101 +476,101 @@ public:
 
 
 protected:
-	kstl::string	m_Name;
+	kstl::string	mName;
 };
 
 
 // operator [] needs to be overloaded on vectors and maps
 inline CoreItemSP CoreItemSP::operator[](int i) const
 {
-	if(myPointer)
-		return myPointer->operator[](i);
+	if(mPointer)
+		return mPointer->operator[](i);
 
 	return nullptr;
 }
 
 inline CoreItemSP CoreItemSP::operator[](const char* key) const
 {
-	if (myPointer)
-		return myPointer->operator[](key);
+	if (mPointer)
+		return mPointer->operator[](key);
 
 	return nullptr;
 }
 
 inline CoreItemSP CoreItemSP::operator[](const kstl::string& key) const
 {
-	if (myPointer)
-		return myPointer->operator[](key);
+	if (mPointer)
+		return mPointer->operator[](key);
 
 	return nullptr;
 }
 
 inline CoreItemSP CoreItemSP::operator[](const usString& key) const
 {
-	if (myPointer)
-		return myPointer->operator[](key);
+	if (mPointer)
+		return mPointer->operator[](key);
 
 	return nullptr;
 }
 
 inline CoreItemSP::operator bool() const
 {
-	return myPointer->operator bool();
+	return mPointer->operator bool();
 }
 
 inline CoreItemSP::operator float() const
 {
-	return myPointer->operator kfloat();
+	return mPointer->operator kfloat();
 }
 
 inline CoreItemSP::operator double() const
 {
-	return myPointer->operator double();
+	return mPointer->operator double();
 }
 
 inline CoreItemSP::operator int() const
 {
-	return myPointer->operator int();
+	return mPointer->operator int();
 }
 
 inline CoreItemSP::operator unsigned int() const
 {
-	return myPointer->operator unsigned int();
+	return mPointer->operator unsigned int();
 }
 
 inline CoreItemSP::operator kstl::string() const
 {
-	return myPointer->operator kstl::string();
+	return mPointer->operator kstl::string();
 }
 
 inline CoreItemSP::operator usString() const
 {
-	return myPointer->operator usString();
+	return mPointer->operator usString();
 }
 
 inline CoreItemSP::operator Point2D() const
 {
-	return myPointer->operator Point2D();
+	return mPointer->operator Point2D();
 }
 
 inline CoreItemSP::operator Point3D() const
 {
-	return myPointer->operator Point3D();
+	return mPointer->operator Point3D();
 } 
 
 inline CoreItemSP::operator Vector4D() const
 {
-	return myPointer->operator Vector4D();
+	return mPointer->operator Vector4D();
 }
 
 inline bool CoreItemSP::operator==(const CoreItemSP& other) const
 {
-	return myPointer->operator==(*other.get());
+	return mPointer->operator==(*other.get());
 }
 
 inline bool CoreItemSP::operator==(const CoreItem& other) const
 {
-	return myPointer->operator==(other);
+	return mPointer->operator==(other);
 }
 
 

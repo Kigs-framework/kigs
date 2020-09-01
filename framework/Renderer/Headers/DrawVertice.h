@@ -8,6 +8,17 @@
 
 #include "RendererDefines.h"
 
+// ****************************************
+// * DrawVertice class
+// * --------------------------------------
+/**
+ * \file	DrawVertice.h
+ * \class	DrawVertice
+ * \ingroup Renderer
+ * \brief	Draw a dynamic mesh.
+ */
+ // ****************************************
+
 class DrawVertice : public Drawable
 {
 public:
@@ -38,7 +49,7 @@ public:
 
 	/**
 	 * \brief	retreive the bounding box of the bitmap (point min and point max)
-	 * \fn 		virtual void	GetBoundingBox(Point3D& pmin,Point3D& pmax) const {pmin=myBBoxMin; pmax=myBBoxMax;}
+	 * \fn 		virtual void	GetBoundingBox(Point3D& pmin,Point3D& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
 	 * \param	pmin : point min of the bounding box (in/out param)
 	 * \param	pmax : point max of the bounding box (in/out param)
 	 */
@@ -53,10 +64,10 @@ public:
 	void SetVertexArray(void *aArray, int Count, int Size = 12/*default Size is 3 float*/, int decal = 0, int format = KIGS_FLOAT);
 	void GetVertexArray(void **aArray, int &Count, int &Size, int &format)
 	{
-		*aArray = myVertex;
-		Count = myVertexCount;
-		Size = myVertexSize;
-		format = myVertexFormat;
+		*aArray = mVertices;
+		Count = mVertexCount;
+		Size = mVertexSize;
+		format = mVertexFormat;
 	}
 	/**
 	 * \brief	set the indice list
@@ -67,10 +78,10 @@ public:
 	void SetIndexArray(void *aArray, int Count, int Size = 4/*default Size is 1 uint*/, int format = KIGS_UNSIGNED_INT);
 	void GetIndexArray(void **aArray, int &Count, int &Size, int &format)
 	{
-		*aArray = myIndex;
-		Count = myIndiceCount;
-		Size = myIndiceSize;
-		format = myIndiceFormat;
+		*aArray = mIndices;
+		Count = mIndiceCount;
+		Size = mIndiceSize;
+		format = mIndiceFormat;
 	}
 
 	// aArray = nullptr for interleaved array with vertex
@@ -80,8 +91,8 @@ public:
 	// aArray = nullptr for interleaved array with vertex
 	void SetColorArray(void* aArray, int Count, int Size = 4/*default Size is 4 char*/, int decal = 0, int format = KIGS_UNSIGNED_BYTE);
 
-	void SetTexture(SmartPointer<Texture> tex) { mypTexture = tex; SetDataFromPreset(); }
-	SmartPointer<Texture> GetTexture() { return mypTexture; }
+	void SetTexture(SmartPointer<Texture> tex) { mTexture = tex; SetDataFromPreset(); }
+	SmartPointer<Texture> GetTexture() { return mTexture; }
 
 protected:
 	void InitModifiable() override;
@@ -96,88 +107,88 @@ protected:
 	void clearArrays();
 
 	//! list of normal
-	void*								myNormals = nullptr;
+	void*								mNormals = nullptr;
 	//! number of normal
-	int									myNormalCount = 0;
+	int									mNormalCount = 0;
 	//! Size of normal
-	int									myNormalSize = 0;
+	int									mNormalSize = 0;
 	//! Decal of normal
-	int									myNormalDecal = 0;
+	int									mNormalDecal = 0;
 	//! format of normal
-	int									myNormalFormat = KIGS_FLOAT;
+	int									mNormalFormat = KIGS_FLOAT;
 
 	//! list of Vertex
-	void*								myVertex = nullptr;
+	void*								mVertices = nullptr;
 	//! number of Vertex
-	int									myVertexCount = 0;
+	int									mVertexCount = 0;
 	//! Size of Vertex
-	int									myVertexSize = 0;
+	int									mVertexSize = 0;
 	//! Decal of Vertex
-	int									myVertexDecal = 0;
+	int									mVertexDecal = 0;
 	//! format of Vertex
-	int									myVertexFormat = KIGS_FLOAT;
+	int									mVertexFormat = KIGS_FLOAT;
 
 	//! list of color
-	void *								myColor = nullptr;
+	void *								mColors = nullptr;
 	//! number of color
-	int									myColorCount = 0;
+	int									mColorCount = 0;
 	//! Size of color
-	int									myColorSize = 0;
+	int									mColorSize = 0;
 	//! Decal of color
-	int									myColorDecal = 0;
+	int									mColorDecal = 0;
 	//! format of color
-	int									myColorFormat = KIGS_UNSIGNED_BYTE;
+	int									mColorFormat = KIGS_UNSIGNED_BYTE;
 
 	//! list of indice
-	void*								myIndex = nullptr;
+	void*								mIndices = nullptr;
 	//! number of indice
-	int									myIndiceCount = 0;
+	int									mIndiceCount = 0;
 	//! Size of indice
-	int									myIndiceSize = 0;
+	int									mIndiceSize = 0;
 	//! format of indice
-	int									myIndiceFormat = KIGS_UNSIGNED_INT;
+	int									mIndiceFormat = KIGS_UNSIGNED_INT;
 
 	//! list of tex coord
-	void *								myTexCoords = nullptr;
+	void *								mTexCoords = nullptr;
 	//! number of tex coord
-	unsigned int						myTexCoordCount = 0;
+	unsigned int						mTexCoordCount = 0;
 	//! Size of tex coord
-	int									myTexCoordSize = 0;
+	int									mTexCoordSize = 0;
 	//! Decal of tex coord
-	int									myTexCoordDecal = 0;
+	int									mTexCoordDecal = 0;
 	//! format of tex coord
-	int									myTexCoordFormat = KIGS_FLOAT;
+	int									mTexCoordFormat = KIGS_FLOAT;
 
 
-	mutable BBox								myBBox;
-	mutable bool needRecomputeBBox = true;
+	mutable BBox								mBBox;
+	mutable bool mNeedRecomputeBBox = true;
 
 	bool needReloadData = false;
 
-	SmartPointer<Texture>				mypTexture = nullptr;
+	SmartPointer<Texture>				mTexture = nullptr;
 
-	maString							myTextureFileName = BASE_ATTRIBUTE(TextureFileName, "");
+	maString							mTextureFileName = BASE_ATTRIBUTE(TextureFileName, "");
 	
-	maBool								myIsStaticBuffer = BASE_ATTRIBUTE(IsStaticBuffer, false);
-	maInt								myDrawMode = BASE_ATTRIBUTE(DrawMode, KIGS_DRAW_MODE_TRIANGLES); 
+	maBool								mIsStaticBuffer = BASE_ATTRIBUTE(IsStaticBuffer, false);
+	maInt								mDrawMode = BASE_ATTRIBUTE(DrawMode, KIGS_DRAW_MODE_TRIANGLES); 
 
-	maInt								myCullMode = BASE_ATTRIBUTE(CullMode, 0);
+	maInt								mCullMode = BASE_ATTRIBUTE(CullMode, 0);
 
-	maEnum<5>							myPreset = BASE_ATTRIBUTE(Preset, "None", "TexturedQuad", "Quad", "TexturedBox", "Box");
-	maVect3DF							myPresetSize = BASE_ATTRIBUTE(PresetSize, 1, 1, 1);
-	maVect4DF							myPresetColor = BASE_ATTRIBUTE(PresetColor, 1, 1, 1, 1);
-	maVect3DF							myPresetOffset = BASE_ATTRIBUTE(PresetOffset, 0, 0, 0);
-	maVect2DF							myPresetUVSize = BASE_ATTRIBUTE(PresetUVSize, 1, 1);
-	maVect2DF							myPresetUVOffset = BASE_ATTRIBUTE(PresetUVOffset, 0, 0);
+	// preset should be done with an upgrador ?
+	maEnum<5>							mPreset = BASE_ATTRIBUTE(Preset, "None", "TexturedQuad", "Quad", "TexturedBox", "Box");
+	maVect3DF							mPresetSize = BASE_ATTRIBUTE(PresetSize, 1, 1, 1);
+	maVect4DF							mPresetColor = BASE_ATTRIBUTE(PresetColor, 1, 1, 1, 1);
+	maVect3DF							mPresetOffset = BASE_ATTRIBUTE(PresetOffset, 0, 0, 0);
+	maVect2DF							mPresetUVSize = BASE_ATTRIBUTE(PresetUVSize, 1, 1);
+	maVect2DF							mPresetUVOffset = BASE_ATTRIBUTE(PresetUVOffset, 0, 0);
 
 #ifdef KIGS_TOOLS
-	maBool myDrawNormals = BASE_ATTRIBUTE(DrawNormals, false);
-	maBool myDrawUVs = BASE_ATTRIBUTE(DrawUVs, false);
-	maBool myWireMode = BASE_ATTRIBUTE(WireMode, false);
+	maBool mDrawNormals = BASE_ATTRIBUTE(DrawNormals, false);
+	maBool mDrawUVs = BASE_ATTRIBUTE(DrawUVs, false);
+	maBool mWireMode = BASE_ATTRIBUTE(WireMode, false);
 #endif
 
-	u32 myVertexBuffer = -1;
-	//u32 myIndexBuffer = -1;
+	u32 mVertexBuffer = -1;
 };
 
 

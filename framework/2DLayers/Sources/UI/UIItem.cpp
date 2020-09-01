@@ -9,28 +9,28 @@
 IMPLEMENT_CLASS_INFO(UIItem)
 
 IMPLEMENT_CONSTRUCTOR(UIItem)
-, myIsHidden(*this, false, "IsHidden", false)
-, mybIsTouchable(*this, false, "IsTouchable", true)
-, mybDisableBlend(*this, false, "DisableBlend", true)
-, myIsEnabled(*this, false, "IsEnabled", true)
-, myColor(*this, false, "Color", 1.0f, 1.0f, 1.0f)
-, myOpacity(*this, false, "Opacity", 1.0f)
-, myAlphaMask(nullptr)
-, mySwallowInputs(*this, false, "SwallowInputs", false)
-, myFocus(false)
+, mIsHidden(*this, false, "IsHidden", false)
+, mIsTouchable(*this, false, "IsTouchable", true)
+, mDisableBlend(*this, false, "DisableBlend", true)
+, mIsEnabled(*this, false, "IsEnabled", true)
+, mColor(*this, false, "Color", 1.0f, 1.0f, 1.0f)
+, mOpacity(*this, false, "Opacity", 1.0f)
+, mAlphaMask(nullptr)
+, mSwallowInputs(*this, false, "SwallowInputs", false)
+, mFocus(false)
 {
 }
 
 
 void UIItem::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == myIsHidden.getID())
+	if (labelid == mIsHidden.getID())
 	{
 		PropagateNodeFlags();
 	}
-	else if(labelid == mySwallowInputs.getID())
+	else if(labelid == mSwallowInputs.getID())
 	{
-		if (mySwallowInputs)
+		if (mSwallowInputs)
 		{
 			KigsCore::GetModule<ModuleInput>()->getTouchManager()->registerEvent(this, "ManageInputSwallowEvent", InputSwallow, EmptyFlag);
 		}
@@ -46,7 +46,7 @@ BaseUI2DLayer*	UIItem::getParentLayer()
 {
 	for (auto p : GetParents())
 	{
-		if (p->isSubType(UIItem::myClassID))
+		if (p->isSubType(UIItem::mClassID))
 		{
 			BaseUI2DLayer* search = ((UIItem*)p)->getParentLayer();
 			if (search)
@@ -54,7 +54,7 @@ BaseUI2DLayer*	UIItem::getParentLayer()
 				return search;
 			}
 		}
-		else if (p->isSubType(BaseUI2DLayer::myClassID))
+		else if (p->isSubType(BaseUI2DLayer::mClassID))
 		{
 			return (BaseUI2DLayer*)p;
 		}
@@ -65,7 +65,7 @@ BaseUI2DLayer*	UIItem::getParentLayer()
 
 bool UIItem::Draw(TravState* state)
 {
-	if (myIsHidden)
+	if (mIsHidden)
 		return false;
 
 	return ParentClassType::Draw(state);
@@ -93,7 +93,7 @@ Point2D UIItem::GetCoordsInContainer(kfloat X, kfloat Y)
 
 bool UIItem::ContainsPoint(kfloat X, kfloat Y)
 {
-	if (myIsHidden || !mybIsTouchable)
+	if (mIsHidden || !mIsTouchable)
 		return false;
 
 	// recompute matrix if needed
@@ -121,7 +121,7 @@ bool UIItem::ContainsPoint(kfloat X, kfloat Y)
 
 bool UIItem::CanInteract(v2f pos, bool must_contain)
 {
-	return myIsEnabled && mybIsTouchable && !myIsHidden && !IsHiddenFlag() && (!must_contain || ContainsPoint(pos.x, pos.y)) && IsInClip(pos) ;
+	return mIsEnabled && mIsTouchable && !mIsHidden && !IsHiddenFlag() && (!must_contain || ContainsPoint(pos.x, pos.y)) && IsInClip(pos) ;
 }
 
 //bool UIItem::TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) { EmitSignal("MouseMove", this, over, MouseDeltaX, MouseDeltaY); return false; }

@@ -16,14 +16,14 @@ IMPLEMENT_CLASS_INFO(FilePathManager)
 
 FileHandle::~FileHandle()
 {
-	if (myStatus & (unsigned int)Open)
+	if (mStatus & (unsigned int)Open)
 	{
 		Platform_fclose(this);
 	}
 
-	if (myUseVirtualFileAccess)
+	if (mUseVirtualFileAccess)
 	{
-		delete myVirtualFileAccess;
+		delete mVirtualFileAccess;
 	}
 }
 
@@ -32,15 +32,15 @@ SmartPointer<FileHandle> FileHandle::MakeCopy()
 {
 	auto result = OwningRawPtrToSmartPtr(new FileHandle());
 
-	result->myFileName = myFileName;
-	result->myFullFileName = myFullFileName;
-	result->myExtension = myExtension;
-	result->myDeviceID = myDeviceID;
-	result->myUseVirtualFileAccess = myUseVirtualFileAccess;
-	if (myUseVirtualFileAccess)
-		result->myVirtualFileAccess = myVirtualFileAccess->MakeCopy();
+	result->mFileName = mFileName;
+	result->mFullFileName = mFullFileName;
+	result->mExtension = mExtension;
+	result->mDeviceID = mDeviceID;
+	result->mUseVirtualFileAccess = mUseVirtualFileAccess;
+	if (mUseVirtualFileAccess)
+		result->mVirtualFileAccess = mVirtualFileAccess->MakeCopy();
 	else
-		result->myFile = nullptr;
+		result->mFile = nullptr;
 
 	result->resetStatus();
 
@@ -49,12 +49,12 @@ SmartPointer<FileHandle> FileHandle::MakeCopy()
 
 //! constructor
 FilePathManager::FilePathManager(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, myPackageID(0)
+, mPackageID(0)
 {
-	myBundleList.clear();
-	myBundleRoot = "";
+	mBundleList.clear();
+	mBundleRoot = "";
 
-	myPackageList.clear();
+	mPackageList.clear();
 }
 
 //! destructor
@@ -98,7 +98,7 @@ std::string FilePathManager::MakeValidFileName(const std::string& filename)
 */
 void	FilePathManager::AddToPath(const kstl::string& path, kstl::string ext, DeviceID deviceID)
 {
-	kstl::vector<kstl::string>& localpath = myPath[ext];
+	kstl::vector<kstl::string>& localpath = mPath[ext];
 	if (deviceID)
 	{
 		localpath.push_back(GetDevicePathString(deviceID) + path);
@@ -126,9 +126,9 @@ void	FilePathManager::RemoveFromPath(const kstl::string& path, kstl::string ext,
 
 	// check if ext path exist
 
-	if (myPath.find(ext) != myPath.end())
+	if (mPath.find(ext) != mPath.end())
 	{
-		kstl::vector<kstl::string>& localpath = myPath[ext];
+		kstl::vector<kstl::string>& localpath = mPath[ext];
 
 		found = true;
 		while (found)
@@ -152,7 +152,7 @@ void	FilePathManager::RemoveFromPath(const kstl::string& path, kstl::string ext,
 SmartPointer<FileHandle> FilePathManager::CreateFileHandle(const kstl::string& filename)
 {
 	SmartPointer<FileHandle> result = OwningRawPtrToSmartPtr(new FileHandle());
-	result->myFileName = filename;
+	result->mFileName = filename;
 	SetFileInfos(result.get());
 	return result;
 }
@@ -160,14 +160,14 @@ SmartPointer<FileHandle> FilePathManager::CreateFileHandle(const kstl::string& f
 // load a package given a FileHandle
 bool	FilePathManager::LoadPackage(SmartPointer<FileHandle> L_File)
 {
-	CorePackage* newpackage = CorePackage::Open(L_File, L_File->myFileName);
+	CorePackage* newpackage = CorePackage::Open(L_File, L_File->mFileName);
 	if (newpackage)
 	{
-		myPackageList[myPackageID] = newpackage;
+		mPackageList[mPackageID] = newpackage;
 
-		insertPackage(myPackageID);
+		insertPackage(mPackageID);
 
-		myPackageID++;
+		mPackageID++;
 	}
 	return newpackage;
 }
@@ -181,11 +181,11 @@ bool	FilePathManager::LoadPackage(const kstl::string& filename)
 
 	if (newpackage)
 	{
-		myPackageList[myPackageID] = newpackage;
+		mPackageList[mPackageID] = newpackage;
 
-		insertPackage(myPackageID);
+		insertPackage(mPackageID);
 
-		myPackageID++;
+		mPackageID++;
 	}
 	return newpackage;
 }
@@ -195,8 +195,8 @@ void	FilePathManager::UnloadPackage(const kstl::string& filename)
 {
 	// search package with same filename
 	
-	kstl::map<int, CorePackage*>::iterator	itP = myPackageList.begin();
-	kstl::map<int, CorePackage*>::iterator	itE = myPackageList.end();
+	kstl::map<int, CorePackage*>::iterator	itP = mPackageList.begin();
+	kstl::map<int, CorePackage*>::iterator	itE = mPackageList.end();
 
 	while( itP != itE )
 	{
@@ -204,7 +204,7 @@ void	FilePathManager::UnloadPackage(const kstl::string& filename)
 		if ((*itP).second->GetName() == filename)
 		{
 			unloadPackage((*itP).first);
-			myPackageList.erase(itP);
+			mPackageList.erase(itP);
 			break;
 		}
 	}
@@ -212,19 +212,19 @@ void	FilePathManager::UnloadPackage(const kstl::string& filename)
 
 CorePackage* FilePathManager::GetLoadedPackage(const kstl::string& filename)
 {
-	for (auto& pkg : myPackageList)
+	for (auto& pkg : mPackageList)
 	{
 		if (pkg.second->GetName() == filename) return pkg.second;
 	}
 	return nullptr;
 }
 
-// add package entry in bundle list
+// add package mEntry in bundle list
 void	FilePathManager::insertPackage(unsigned int packageID)
 {
-	if (myPackageList.find(packageID) != myPackageList.end())
+	if (mPackageList.find(packageID) != mPackageList.end())
 	{
-		CorePackage* package = myPackageList[packageID];
+		CorePackage* package = mPackageList[packageID];
 		CorePackage::CorePackageIterator it = package->begin();
 		CorePackage::CorePackageIterator ite = package->end();
 
@@ -242,7 +242,7 @@ void	FilePathManager::insertPackage(unsigned int packageID)
 			if (!it.isFolder())
 			{
 				kstl::string key = it.name();
-				myBundleList[key].push_back(packagePath+it.path(false));
+				mBundleList[key].push_back(packagePath+it.path(false));
 			}
 			++it;
 		}
@@ -252,9 +252,9 @@ void	FilePathManager::insertPackage(unsigned int packageID)
 // unload a package given it's package id (protected)
 void	FilePathManager::unloadPackage(unsigned int packageID)
 {
-	if (myPackageList.find(packageID) != myPackageList.end())
+	if (mPackageList.find(packageID) != mPackageList.end())
 	{
-		CorePackage* package = myPackageList[packageID];
+		CorePackage* package = mPackageList[packageID];
 		CorePackage::CorePackageIterator it = package->begin();
 		CorePackage::CorePackageIterator ite = package->end();
 
@@ -273,22 +273,22 @@ void	FilePathManager::unloadPackage(unsigned int packageID)
 			{
 				kstl::string key = it.name();
 				
-				if (myBundleList.find(key) != myBundleList.end())
+				if (mBundleList.find(key) != mBundleList.end())
 				{
 					// search good string
 					kstl::vector<kstl::string>::iterator itStr;
-					for (itStr=myBundleList[key].begin(); itStr != myBundleList[key].end();++itStr)
+					for (itStr=mBundleList[key].begin(); itStr != mBundleList[key].end();++itStr)
 					{
 						if ((*itStr) == packagePath + it.path(false))
 						{
-							myBundleList[key].erase(itStr);
+							mBundleList[key].erase(itStr);
 							break;
 						}
 					}
-					if (myBundleList[key].size() == 0)
+					if (mBundleList[key].size() == 0)
 					{
-						auto toErase = myBundleList.find(key);
-						myBundleList.erase(toErase);
+						auto toErase = mBundleList.find(key);
+						mBundleList.erase(toErase);
 					}
 				}
 
@@ -324,15 +324,15 @@ kstl::string	FilePathManager::GetParentDirectory(const kstl::string& fullPath)
 void	FilePathManager::SetFileInfos(FileHandle* handle)
 {
 	// already set ? return
-	if (handle->myStatus&FileHandle::InfoSet)
+	if (handle->mStatus&FileHandle::InfoSet)
 	{
 		return;
 	}
 
-	handle->myFullFileName = handle->myFileName;
+	handle->mFullFileName = handle->mFileName;
 
-	int pos = (int)handle->myFileName.rfind("/") + 1;
-	int pos1 = (int)handle->myFileName.rfind("\\") + 1;
+	int pos = (int)handle->mFileName.rfind("/") + 1;
+	int pos1 = (int)handle->mFileName.rfind("\\") + 1;
 
 	if (pos1 > pos)
 	{
@@ -341,14 +341,14 @@ void	FilePathManager::SetFileInfos(FileHandle* handle)
 
 	if (pos > 0)
 	{
-		handle->myFileName = handle->myFileName.substr((unsigned int)pos, handle->myFileName.length() - pos);
+		handle->mFileName = handle->mFileName.substr((unsigned int)pos, handle->mFileName.length() - pos);
 	}
 
-	pos = (int)handle->myFileName.rfind(".");
+	pos = (int)handle->mFileName.rfind(".");
 	if (pos != -1)
-		handle->myExtension = handle->myFileName.substr((unsigned int)pos, handle->myFileName.length() - pos);
+		handle->mExtension = handle->mFileName.substr((unsigned int)pos, handle->mFileName.length() - pos);
 
-	handle->myStatus |= (unsigned int)FileHandle::InfoSet;
+	handle->mStatus |= (unsigned int)FileHandle::InfoSet;
 }
 
 
@@ -365,24 +365,24 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 	SmartPointer<FileHandle> result = CreateFileHandle(filename);
 
 	// init fullFileName with filename
-	kstl::string fullFileName = result->myFileName;
+	kstl::string fullFileName = result->mFileName;
 
 	// search in bundle
-	if (myBundleList.size())
+	if (mBundleList.size())
 	{
-		auto foundInBundle = myBundleList.find(result->myFileName);
-		if (foundInBundle != myBundleList.end())
+		auto foundInBundle = mBundleList.find(result->mFileName);
+		if (foundInBundle != mBundleList.end())
 		{
 			const kstl::vector<kstl::string>& bundlePathVector = (*foundInBundle).second;
 			if (bundlePathVector.size() == 0) // bundle root
 			{
-				result->myFullFileName = myBundleRoot + result->myFileName;
+				result->mFullFileName = mBundleRoot + result->mFileName;
 #ifdef _DEBUG
 				Platform_CheckState(result.get());
 #else
-				result->myStatus |= FileHandle::Exist; // if not debug, if is in bundle, suppose it really exist without having to test
+				result->mStatus |= FileHandle::Exist; // if not debug, if is in bundle, suppose it really exist without having to test
 #endif
-				if (result->myStatus&FileHandle::Exist)
+				if (result->mStatus&FileHandle::Exist)
 					return result;
 
 			}
@@ -403,15 +403,15 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 							int pkgID=0;
 							if (sscanf(pkgIDStr.c_str(), "%d", &pkgID))
 							{
-								if (myPackageList.find(pkgID) != myPackageList.end())
+								if (mPackageList.find(pkgID) != mPackageList.end())
 								{
-									CorePackage* package = myPackageList[pkgID];
-									result->myUseVirtualFileAccess = true;
-									result->myVirtualFileAccess = new CorePackageFileAccess(package);
+									CorePackage* package = mPackageList[pkgID];
+									result->mUseVirtualFileAccess = true;
+									result->mVirtualFileAccess = new CorePackageFileAccess(package);
 
-									result->myFullFileName = bundlePathVector[0].substr(pos+1, bundlePathVector[0].length() - pos -1 ) + result->myFileName;
+									result->mFullFileName = bundlePathVector[0].substr(pos+1, bundlePathVector[0].length() - pos -1 ) + result->mFileName;
 
-									result->myStatus |= FileHandle::Exist;
+									result->mStatus |= FileHandle::Exist;
 									return result;
 								}
 							}
@@ -419,13 +419,13 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 					}
 				}
 
-				result->myFullFileName = myBundleRoot + bundlePathVector[0] + result->myFileName;
+				result->mFullFileName = mBundleRoot + bundlePathVector[0] + result->mFileName;
 #ifdef _DEBUG
 				Platform_CheckState(result.get());
 #else
-				result->myStatus |= FileHandle::Exist; // if not debug, if is in bundle, suppose it really exist without having to test
+				result->mStatus |= FileHandle::Exist; // if not debug, if is in bundle, suppose it really exist without having to test
 #endif
-				if (result->myStatus&FileHandle::Exist)
+				if (result->mStatus&FileHandle::Exist)
 					return result;
 			}
 
@@ -434,21 +434,21 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 	}
 
 	// if given filename already has a path, search with only the path
-	if (result->myFileName != result->myFullFileName)
+	if (result->mFileName != result->mFullFileName)
 	{
 		Platform_CheckState(result.get());
-		if ((result->myStatus & FileHandle::Exist) || myStrictPath)
+		if ((result->mStatus & FileHandle::Exist) || mStrictPath)
 			return result;
 	}
 
 	kstl::string	fileext = "";
-	if (result->myExtension != "")
-		fileext.append(result->myExtension, 1, result->myExtension.length() - 1);
+	if (result->mExtension != "")
+		fileext.append(result->mExtension, 1, result->mExtension.length() - 1);
 
 	kstl::vector<kstl::string> localpath;
-	if (myPath.find(fileext) != myPath.end())
+	if (mPath.find(fileext) != mPath.end())
 	{
-		localpath = myPath[fileext];
+		localpath = mPath[fileext];
 	}
 
 
@@ -460,7 +460,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 		// extension not found
 		if (!localpath.size())
 		{
-			localpath = myPath["*"];
+			localpath = mPath["*"];
 			searchall = true;
 		}
 
@@ -471,21 +471,21 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 			// search from last added path to first one
 			for (it = localpath.rbegin(); it != localpath.rend(); ++it)
 			{
-				result->myFullFileName = (*it);
-				result->myFullFileName += "/";
-				result->myFullFileName += result->myFileName;
+				result->mFullFileName = (*it);
+				result->mFullFileName += "/";
+				result->mFullFileName += result->mFileName;
 
 				if ((*it)[0] == '#')
 				{
-					SmartPointer<FileHandle> specialresult=Platform_FindFullName(result->myFullFileName);
+					SmartPointer<FileHandle> specialresult=Platform_FindFullName(result->mFullFileName);
 					Platform_CheckState(specialresult.get());
-					if (specialresult->myStatus&FileHandle::Exist)
+					if (specialresult->mStatus&FileHandle::Exist)
 						return specialresult;
 				}
 				else
 				{
 					Platform_CheckState(result.get());
-					if (result->myStatus&FileHandle::Exist)
+					if (result->mStatus&FileHandle::Exist)
 						return result;
 				}
 			}
@@ -495,11 +495,11 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 		{
 			finished = true;
 		}
-		localpath = myPath["*"];
+		localpath = mPath["*"];
 		searchall = true;
 	}
 
-	result->myFullFileName = filename;
+	result->mFullFileName = filename;
 	Platform_CheckState(result.get());
 
 	return result;
@@ -536,15 +536,15 @@ kstl::string	FilePathManager::PreferedPath(const kstl::string&	filename)
 	fileext.append(shortfilename, (unsigned int)pos, shortfilename.length() - pos);
 
 	kstl::vector<kstl::string> localpath;
-	if (myPath.find(fileext) != myPath.end())
+	if (mPath.find(fileext) != mPath.end())
 	{
-		localpath = myPath[fileext];
+		localpath = mPath[fileext];
 	}
 
 	// extension not found
 	if (!localpath.size())
 	{
-		localpath = myPath["*"];
+		localpath = mPath["*"];
 	}
 
 
@@ -566,28 +566,28 @@ kstl::string	FilePathManager::DevicePath(const kstl::string&	filename, DeviceID 
 //! clear all pathes and all struct before destroying the instance
 void FilePathManager::Clear()
 {
-	for (auto it = myPath.begin(); it != myPath.end(); ++it)
+	for (auto it = mPath.begin(); it != mPath.end(); ++it)
 	{
 		kstl::vector<kstl::string>& list = (*it).second;
 		list.clear();
 	}
 
-	myPath.clear();
-	myBundleList.clear();
+	mPath.clear();
+	mBundleList.clear();
 
-	for (auto itpackage : myPackageList)
+	for (auto itpackage : mPackageList)
 	{
 		delete itpackage.second;
 	}
 
-	myPackageList.clear();
+	mPackageList.clear();
 }
 
 // return the full path, seperate by ";"
 kstl::string	FilePathManager::GetPathString()
 {
 	kstl::string result = "";
-	for (auto it = myPath.begin(); it != myPath.end(); ++it)
+	for (auto it = mPath.begin(); it != mPath.end(); ++it)
 	{
 		kstl::vector<kstl::string>& list = (*it).second;
 
@@ -626,7 +626,7 @@ bool	FilePathManager::AddExternPath(const kstl::string& path, int externPathInde
 {
 	if ((externPathIndex >= 0) && (externPathIndex <= 3))
 	{
-		myExternPath[externPathIndex] = path;
+		mExternPath[externPathIndex] = path;
 
 		return true;
 	}
@@ -639,7 +639,7 @@ bool	FilePathManager::AddDistantPath(const kstl::string& path, int distantPathIn
 {
 	if ((distantPathIndex >= 0) && (distantPathIndex <= 3))
 	{
-		myDistantPath[distantPathIndex] = path;
+		mDistantPath[distantPathIndex] = path;
 		return true;
 	}
 	return false;
@@ -650,7 +650,7 @@ bool	FilePathManager::GetDistantPath(int a_IndexPath, kstl::string& a_distantUrl
 {
 	if ((a_IndexPath >= 0) && (a_IndexPath <= 3))
 	{
-		a_distantUrl = myDistantPath[a_IndexPath];
+		a_distantUrl = mDistantPath[a_IndexPath];
 		return true;
 	}
 	return false;
@@ -790,7 +790,7 @@ void	FilePathManager::InitBundleList(const kstl::string& filename)
 
 	SmartPointer<FileHandle> lFile = FindFullName(filename);
 
-	if (lFile->myStatus&FileHandle::Exist)
+	if (lFile->mStatus&FileHandle::Exist)
 	{
 		u64 filelen;
 		CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFileAsCharString(lFile.get(), filelen,1);
@@ -808,12 +808,12 @@ void	FilePathManager::InitBundleList(const kstl::string& filename)
 				{
 					key = word;
 					kstl::vector<kstl::string> toAdd;
-					myBundleList[key] = toAdd;
+					mBundleList[key] = toAdd;
 
 					// next are the pathes
 					while (line.GetWord(word, ';'))
 					{
-						myBundleList[key].push_back((const kstl::string&)word);
+						mBundleList[key].push_back((const kstl::string&)word);
 					}
 				}
 			}
@@ -857,7 +857,7 @@ SmartPointer<FileHandle> Platform_fopen(const char * filename, const char * mode
 	{
 
 		fullfilenamehandle = FilePathManager::CreateFileHandle(filename);
-		fullfilenamehandle->myFullFileName = filename;
+		fullfilenamehandle->mFullFileName = filename;
 		Platform_fopen(fullfilenamehandle.get(), mode);
 	}
 
@@ -880,7 +880,7 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 		L_Connection->Init();
 
 		// use FILE* pointer to store connection, weird but OK
-		handle->myFile = (PLATFORM_FILE*)L_Connection.Pointer();
+		handle->mFile = (PLATFORM_FILE*)L_Connection.Pointer();
 		L_Connection->GetRef();
 
 		// create HTTPASyncRequest
@@ -889,7 +889,7 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 		L_FileName += mode;
 		L_FileName += ":";
 
-		L_FileName += handle->myFullFileName;
+		L_FileName += handle->mFullFileName;
 
 		CMSP request = (KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest"));
 		request->setValue(LABEL_TO_ID(Type), "GET");
@@ -911,23 +911,23 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 			else
 			{
 				L_Connection->Destroy();
-				handle->myFile = 0;
+				handle->mFile = 0;
 			}
 		}
 
 	}
 
 
-	return (handle->myFile != 0);
+	return (handle->mFile != 0);
 }
 
 // HTTP file management (should use PureVirtualFileAccessDelegate now)
 long int FilePathManager::HTTPfread(void * ptr, long size, long count, FileHandle* handle)
 {
 	long int receivedLen = 0;
-	if (handle->myFile)
+	if (handle->mFile)
 	{
-		CoreModifiable* L_Connection = (CoreModifiable*)handle->myFile;
+		CoreModifiable* L_Connection = (CoreModifiable*)handle->mFile;
 
 		char params[32];
 		// push parameters
@@ -965,10 +965,10 @@ long int FilePathManager::HTTPfread(void * ptr, long size, long count, FileHandl
 // HTTP file management (should use PureVirtualFileAccessDelegate now)
 long int FilePathManager::HTTPfwrite(const void * ptr, long size, long count, FileHandle* handle)
 {
-	if (handle->myFile)
+	if (handle->mFile)
 	{
 		// TODO !
-		//CoreModifiable* L_Connection = (CoreModifiable*)handle->myFile;
+		//CoreModifiable* L_Connection = (CoreModifiable*)handle->mFile;
 	}
 	return 0;
 }
@@ -976,9 +976,9 @@ long int FilePathManager::HTTPfwrite(const void * ptr, long size, long count, Fi
 long int FilePathManager::HTTPftell(FileHandle* handle)
 {
 	long int receivedLen = 0;
-	if (handle->myFile)
+	if (handle->mFile)
 	{
-		CoreModifiable* L_Connection = (CoreModifiable*)handle->myFile;
+		CoreModifiable* L_Connection = (CoreModifiable*)handle->mFile;
 
 		// push parameters
 		kstl::string L_FileName = "ftell:";
@@ -1013,9 +1013,9 @@ long int FilePathManager::HTTPftell(FileHandle* handle)
 int FilePathManager::HTTPfseek(FileHandle* handle, long int offset, int origin)
 {
 	long int receivedLen = 0;
-	if (handle->myFile)
+	if (handle->mFile)
 	{
-		CoreModifiable* L_Connection = (CoreModifiable*)handle->myFile;
+		CoreModifiable* L_Connection = (CoreModifiable*)handle->mFile;
 		// push parameters
 		char params[32];
 		kstl::string L_FileName = "fseek:";
@@ -1055,9 +1055,9 @@ int FilePathManager::HTTPfseek(FileHandle* handle, long int offset, int origin)
 // HTTP file management (should use PureVirtualFileAccessDelegate now)
 int FilePathManager::HTTPfflush(FileHandle* handle)
 {
-	if (handle->myFile)
+	if (handle->mFile)
 	{
-		CoreModifiable* L_Connection = (CoreModifiable*)handle->myFile;
+		CoreModifiable* L_Connection = (CoreModifiable*)handle->mFile;
 		kstl::string L_FileName = "fflush:";
 		kstl::string receivedID;
 		L_Connection->getValue(LABEL_TO_ID(fileid), receivedID); // retrieve ID
@@ -1085,9 +1085,9 @@ int FilePathManager::HTTPfflush(FileHandle* handle)
 // HTTP file management (should use PureVirtualFileAccessDelegate now)
 int FilePathManager::HTTPfclose(FileHandle* handle)
 {
-	if (handle->myFile)
+	if (handle->mFile)
 	{
-		CoreModifiable* L_Connection = (CoreModifiable*)handle->myFile;
+		CoreModifiable* L_Connection = (CoreModifiable*)handle->mFile;
 
 		kstl::string L_FileName = "fclose:";
 		kstl::string receivedID;
@@ -1110,7 +1110,7 @@ int FilePathManager::HTTPfclose(FileHandle* handle)
 		}
 
 		L_Connection->Destroy();
-		handle->myFile = 0;
+		handle->mFile = 0;
 	}
 	return 0;
 }
@@ -1119,9 +1119,9 @@ int FilePathManager::HTTPfclose(FileHandle* handle)
 bool		Platform_fopen(FileHandle* handle, const char * mode)
 {
 	// use virtual file access ?
-	if (handle->myUseVirtualFileAccess)
+	if (handle->mUseVirtualFileAccess)
 	{
-		return handle->myVirtualFileAccess->Platform_fopen(handle, mode);
+		return handle->mVirtualFileAccess->Platform_fopen(handle, mode);
 	}
 
 	// use classic file access
@@ -1132,9 +1132,9 @@ bool		Platform_fopen(FileHandle* handle, const char * mode)
 long int	Platform_fread(void * ptr, long size, long count, FileHandle* handle)
 {
 	// use virtual file access ?
-	if (handle->myUseVirtualFileAccess)
+	if (handle->mUseVirtualFileAccess)
 	{
-		return handle->myVirtualFileAccess->Platform_fread(ptr,size,count,handle);
+		return handle->mVirtualFileAccess->Platform_fread(ptr,size,count,handle);
 	}
 	// use classic file access
 	return Platform_Hiddenfread(ptr,size,count,handle);
@@ -1144,9 +1144,9 @@ long int	Platform_fread(void * ptr, long size, long count, FileHandle* handle)
 long int	Platform_fwrite(const void * ptr, long size, long count, FileHandle* handle)
 {
 	// use virtual file access ?
-	if (handle->myUseVirtualFileAccess)
+	if (handle->mUseVirtualFileAccess)
 	{
-		return handle->myVirtualFileAccess->Platform_fwrite(ptr,size,count,handle);
+		return handle->mVirtualFileAccess->Platform_fwrite(ptr,size,count,handle);
 	}
 
 	// use classic file access
@@ -1158,9 +1158,9 @@ long int	Platform_fwrite(const void * ptr, long size, long count, FileHandle* ha
 long int	Platform_ftell(FileHandle* handle)
 {
 	// use virtual file access ?
-	if (handle->myUseVirtualFileAccess)
+	if (handle->mUseVirtualFileAccess)
 	{
-		return handle->myVirtualFileAccess->Platform_ftell(handle);
+		return handle->mVirtualFileAccess->Platform_ftell(handle);
 	}
 
 	// use classic file access
@@ -1172,9 +1172,9 @@ long int	Platform_ftell(FileHandle* handle)
 int			Platform_fseek(FileHandle* handle, long int offset, int origin)
 {
 	// use virtual file access ?
-	if (handle->myUseVirtualFileAccess)
+	if (handle->mUseVirtualFileAccess)
 	{
-		return handle->myVirtualFileAccess->Platform_fseek(handle,offset,origin);
+		return handle->mVirtualFileAccess->Platform_fseek(handle,offset,origin);
 	}
 
 	// use classic file access
@@ -1186,9 +1186,9 @@ int			Platform_fseek(FileHandle* handle, long int offset, int origin)
 int			Platform_fflush(FileHandle* handle)
 {
 	// use virtual file access ?
-	if (handle->myUseVirtualFileAccess)
+	if (handle->mUseVirtualFileAccess)
 	{
-		return handle->myVirtualFileAccess->Platform_fflush(handle);
+		return handle->mVirtualFileAccess->Platform_fflush(handle);
 	}
 
 	// use classic file access
@@ -1199,9 +1199,9 @@ int			Platform_fflush(FileHandle* handle)
 int			Platform_fclose(FileHandle* handle)
 {
 	// use virtual file access ?
-	if (handle->myUseVirtualFileAccess)
+	if (handle->mUseVirtualFileAccess)
 	{
-		return handle->myVirtualFileAccess->Platform_fclose(handle);
+		return handle->mVirtualFileAccess->Platform_fclose(handle);
 	}
 
 	// use classic file access

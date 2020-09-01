@@ -16,8 +16,8 @@ IMPLEMENT_CLASS_INFO(ModuleInputJavascript)
 
 ModuleInputJavascript::ModuleInputJavascript(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
-	myJoystickCount=0;
-	myIsInitOK=true;
+	mJoystickCount=0;
+	mIsInitOK=true;
 	
 }
 
@@ -29,7 +29,7 @@ ModuleInputJavascript::~ModuleInputJavascript()
 
 void ModuleInputJavascript::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
-	if(myIsInitOK)
+	if(mIsInitOK)
 	{
 		BaseInit(core,"InputJavascript",params);
 		DECLARE_FULL_CLASS_INFO(core,MouseJavascript,Mouse,Input)
@@ -69,10 +69,10 @@ void ModuleInputJavascript::Update(const Timer& /* timer */, void* addParam)
 	
     for (it=getItems().begin();it!=getItems().end();++it)
     {
-		if((*it).myItem->isSubType(InputDevice::myClassID))
+		if((*it).mItem->isSubType(InputDevice::mClassID))
 		{
 			
-			InputDevice* device=(InputDevice*)(*it).myItem.get();
+			InputDevice* device=(InputDevice*)(*it).mItem.get();
 			if(!device->IsAquired())
 				device->Aquire();
 			if(device->IsAquired())
@@ -87,12 +87,12 @@ void ModuleInputJavascript::Update(const Timer& /* timer */, void* addParam)
 bool	ModuleInputJavascript::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	
-	if(item->isSubType(JoystickDevice::myClassID))
+	if(item->isSubType(JoystickDevice::mClassID))
 	{
-		myJoystickCount++;
+		mJoystickCount++;
 		return CoreModifiable::addItem(item);
 	}
-	else if(item->isSubType(InputDevice::myClassID))
+	else if(item->isSubType(InputDevice::mClassID))
 	{
 		return CoreModifiable::addItem(item);
 	}

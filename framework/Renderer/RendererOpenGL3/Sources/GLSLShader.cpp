@@ -46,11 +46,11 @@ API3DShader::API3DShader(const kstl::string& name, CLASS_NAME_TREE_ARG) : Shader
 
 void API3DShader::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == myVertexShaderText.getLabelID()) || (labelid == myFragmentShaderText.getLabelID()))
+	if ((labelid == mVertexShaderText.getLabelID()) || (labelid == mFragmentShaderText.getLabelID()))
 	{
 		Dealloc();
 		// rebuild only if both shaders are set
-		if ((((kstl::string)myVertexShaderText) != "") && (((kstl::string)myFragmentShaderText) != ""))
+		if ((((kstl::string)mVertexShaderText) != "") && (((kstl::string)mFragmentShaderText) != ""))
 		{
 			Rebuild();
 		}
@@ -74,32 +74,32 @@ void	API3DShader::PushUniform(CoreModifiable * a_Uniform)
 #endif
 
 	// get UniformList
-	kstl::map<UNIFORM_NAME_TYPE, UniformList*>::iterator it = (*(myCurrentShader)->myUniforms).find(l_UniformName);
+	kstl::map<UNIFORM_NAME_TYPE, UniformList*>::iterator it = (*(mCurrentShader)->mUniforms).find(l_UniformName);
 	UniformList * l_ul;
-	if (it == (*(myCurrentShader)->myUniforms).end())
+	if (it == (*(mCurrentShader)->mUniforms).end())
 	{
 		kstl::string lName = static_cast<API3DUniformBase*>(a_Uniform)->Get_Name();
 
 		//auto id = CharToID::GetID(lName);
 
 		l_ul = new UniformList(lName);
-		(*(myCurrentShader)->myUniforms)[l_UniformName] = l_ul;
+		(*(mCurrentShader)->mUniforms)[l_UniformName] = l_ul;
 
-		// retreive Location
-		l_ul->Location = glGetUniformLocation(myCurrentShader->myShaderProgram->mID, lName.c_str());
+		// retreive mLocation
+		l_ul->mLocation = glGetUniformLocation(mCurrentShader->mShaderProgram->mID, lName.c_str());
 	}
 	else
 	{
 		l_ul = it->second;
 	}
-	if (l_ul->Location == 0xffffffff)
+	if (l_ul->mLocation == 0xffffffff)
 	{
 		//printf("Try to set unknow uniform '%s' on shader %s\n", static_cast<API3DUniformBase*>(a_Uniform)->Get_Name().c_str(), getName().c_str());
 		return;
 	}
 
 	l_ul->Push(static_cast<API3DUniformBase*>(a_Uniform));
-	static_cast<API3DUniformBase*>(a_Uniform)->Activate(l_ul->Location);
+	static_cast<API3DUniformBase*>(a_Uniform)->Activate(l_ul->mLocation);
 }
 
 void	API3DShader::PopUniform(CoreModifiable * a_Uniform)
@@ -118,15 +118,15 @@ void	API3DShader::PopUniform(CoreModifiable * a_Uniform)
 #endif
 
 	// get UniformList
-	auto found = (*(myCurrentShader)->myUniforms).find(l_UniformName);
-	if (found == (*(myCurrentShader)->myUniforms).end())
+	auto found = (*(mCurrentShader)->mUniforms).find(l_UniformName);
+	if (found == (*(mCurrentShader)->mUniforms).end())
 	{
 		//printf("Try to pop unknow uniform '%s' on shader %s\n", static_cast<API3DUniformBase*>(a_Uniform)->Get_Name().c_str(), getName().c_str());
 		return;
 	}
 
 	UniformList * l_ul = found->second;
-	if (l_ul->Location == 0xffffffff)
+	if (l_ul->mLocation == 0xffffffff)
 	{
 		//printf("Try to pop unknow uniform '%s' on shader %s\n", static_cast<API3DUniformBase*>(a_Uniform)->Get_Name().c_str(), getName().c_str());
 		return;
@@ -137,7 +137,7 @@ void	API3DShader::PopUniform(CoreModifiable * a_Uniform)
 	API3DUniformBase* un = l_ul->Back();
 	if (un)
 	{
-		un->Activate(l_ul->Location);
+		un->Activate(l_ul->mLocation);
 	}
 
 }
@@ -160,7 +160,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 {
 
 	kstl::string str;
-	myVertexShaderText.getValue(str);
+	mVertexShaderText.getValue(str);
 
 	// Compile the shader source
 
@@ -176,7 +176,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		if (pathManager)
 		{
 			SmartPointer<FileHandle> file = pathManager->FindFullName(filename);
-			fullfilename = file->myFullFileName;
+			fullfilename = file->mFullFileName;
 		}
 		u64 length;
 		rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length,1);
@@ -203,7 +203,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		rawbuffer->Destroy();
 	rawbuffer = nullptr;
 
-	myFragmentShaderText.getValue(str);
+	mFragmentShaderText.getValue(str);
 	if (str[0] == '!') // load from file
 	{
 		const char* filename = (str.c_str() + 1);
@@ -213,7 +213,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		if (pathManager)
 		{
 			SmartPointer<FileHandle> file = pathManager->FindFullName(filename);
-			fullfilename = file->myFullFileName;
+			fullfilename = file->mFullFileName;
 		}
 		u64 length;
 		rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length,1);
@@ -240,37 +240,37 @@ BuildShaderStruct*	API3DShader::Rebuild()
 
 	BuildShaderStruct* toReturn = new BuildShaderStruct();
 
-	toReturn->myVertexShader = new GLSLShaderInfo();
-	toReturn->myVertexShader->mID = vshaderName;
-	toReturn->myVertexShader->mType = 1;
-	toReturn->myFragmentShader = new GLSLShaderInfo();
-	toReturn->myFragmentShader->mID = fshaderName;
-	toReturn->myFragmentShader->mType = 2;
+	toReturn->mVertexShader = new GLSLShaderInfo();
+	toReturn->mVertexShader->mID = vshaderName;
+	toReturn->mVertexShader->mType = 1;
+	toReturn->mFragmentShader = new GLSLShaderInfo();
+	toReturn->mFragmentShader->mID = fshaderName;
+	toReturn->mFragmentShader->mType = 2;
 
-	toReturn->myShaderProgram = new GLSLShaderInfo();
-	toReturn->myShaderProgram->mID = glCreateProgram(); CHECK_GLERROR;
-	toReturn->myShaderProgram->mType = 0;
-	//kigsprintf("%p rebuild shader %s (%d)\n",this, getName().c_str(), myShaderProgram);
+	toReturn->mShaderProgram = new GLSLShaderInfo();
+	toReturn->mShaderProgram->mID = glCreateProgram(); CHECK_GLERROR;
+	toReturn->mShaderProgram->mType = 0;
+	//kigsprintf("%p rebuild shader %s (%d)\n",this, getName().c_str(), mShaderProgram);
 
 	//Attach our shaders to our program
-	glAttachShader(toReturn->myShaderProgram->mID, ((GLSLShaderInfo*)toReturn->myVertexShader)->mID); CHECK_GLERROR;
-	glAttachShader(toReturn->myShaderProgram->mID, ((GLSLShaderInfo*)toReturn->myFragmentShader)->mID); CHECK_GLERROR;
+	glAttachShader(toReturn->mShaderProgram->mID, ((GLSLShaderInfo*)toReturn->mVertexShader)->mID); CHECK_GLERROR;
+	glAttachShader(toReturn->mShaderProgram->mID, ((GLSLShaderInfo*)toReturn->mFragmentShader)->mID); CHECK_GLERROR;
 
 	//Link our program
-	glLinkProgram(toReturn->myShaderProgram->mID); CHECK_GLERROR;
+	glLinkProgram(toReturn->mShaderProgram->mID); CHECK_GLERROR;
 
 	//Note the different functions here: glGetProgram* instead of glGetShader*.
 	GLint isLinked = 0;
-	glGetProgramiv(toReturn->myShaderProgram->mID, GL_LINK_STATUS, (int *)&isLinked); CHECK_GLERROR;
+	glGetProgramiv(toReturn->mShaderProgram->mID, GL_LINK_STATUS, (int *)&isLinked); CHECK_GLERROR;
 	if (isLinked == GL_FALSE)
 	{
 #ifdef _DEBUG
 		GLint maxLength = 0;
-		glGetProgramiv(toReturn->myShaderProgram->mID, GL_INFO_LOG_LENGTH, &maxLength); CHECK_GLERROR;
+		glGetProgramiv(toReturn->mShaderProgram->mID, GL_INFO_LOG_LENGTH, &maxLength); CHECK_GLERROR;
 
 		//The maxLength includes the NULL character
 		std::vector<GLchar> infoLog(maxLength);
-		glGetProgramInfoLog(toReturn->myShaderProgram->mID, maxLength, &maxLength, &infoLog[0]); CHECK_GLERROR;
+		glGetProgramInfoLog(toReturn->mShaderProgram->mID, maxLength, &maxLength, &infoLog[0]); CHECK_GLERROR;
 		kstl::string txt = "";
 		txt.reserve(maxLength);
 		std::vector<char>::iterator itr = infoLog.begin();
@@ -286,65 +286,65 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	}
 
 	//Always detach shaders after a successful link.
-	glDetachShader(toReturn->myShaderProgram->mID, ((GLSLShaderInfo*)toReturn->myVertexShader)->mID); CHECK_GLERROR;
-	glDetachShader(toReturn->myShaderProgram->mID, ((GLSLShaderInfo*)toReturn->myFragmentShader)->mID); CHECK_GLERROR;
+	glDetachShader(toReturn->mShaderProgram->mID, ((GLSLShaderInfo*)toReturn->mVertexShader)->mID); CHECK_GLERROR;
+	glDetachShader(toReturn->mShaderProgram->mID, ((GLSLShaderInfo*)toReturn->mFragmentShader)->mID); CHECK_GLERROR;
 
-	if (!toReturn->myUniforms)
+	if (!toReturn->mUniforms)
 	{
-		toReturn->myUniforms = new kstl::map<UNIFORM_NAME_TYPE, UniformList*>();
+		toReturn->mUniforms = new kstl::map<UNIFORM_NAME_TYPE, UniformList*>();
 	}
 
 	// location is only for generic shaders
 	if (isGeneric())
 	{
 
-		if (!toReturn->myLocations) // create locations if not set
+		if (!toReturn->mLocations) // create locations if not set
 		{
-			toReturn->myLocations = new Locations();
+			toReturn->mLocations = new Locations();
 		}
 
-		toReturn->myLocations->projMatrix = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_MATRIX_PROJ);
-		toReturn->myLocations->modelMatrix = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_MATRIX_MODEL);
-		toReturn->myLocations->viewMatrix = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_MATRIX_VIEW);
+		toReturn->mLocations->projMatrix = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_MATRIX_PROJ);
+		toReturn->mLocations->modelMatrix = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_MATRIX_MODEL);
+		toReturn->mLocations->viewMatrix = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_MATRIX_VIEW);
 
-		toReturn->myLocations->textureLocation[0] = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_TEXTURE_0);
-		toReturn->myLocations->textureLocation[1] = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_TEXTURE_1);
-		toReturn->myLocations->textureLocation[2] = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_TEXTURE_2);
-		toReturn->myLocations->textureLocation[3] = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_TEXTURE_3);
+		toReturn->mLocations->textureLocation[0] = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_TEXTURE_0);
+		toReturn->mLocations->textureLocation[1] = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_TEXTURE_1);
+		toReturn->mLocations->textureLocation[2] = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_TEXTURE_2);
+		toReturn->mLocations->textureLocation[3] = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_TEXTURE_3);
 
-		toReturn->myLocations->attribVertex = glGetAttribLocation(toReturn->myShaderProgram->mID, KIGS_VERTEX_ATTRIB_VERTEX);
-		toReturn->myLocations->attribNormal = glGetAttribLocation(toReturn->myShaderProgram->mID, KIGS_VERTEX_ATTRIB_NORMAL);
-		toReturn->myLocations->attribColor = glGetAttribLocation(toReturn->myShaderProgram->mID, KIGS_VERTEX_ATTRIB_COLOR);
-		toReturn->myLocations->attribTexcoord = glGetAttribLocation(toReturn->myShaderProgram->mID, KIGS_VERTEX_ATTRIB_TEXCOORD);
-		toReturn->myLocations->attribTangent = glGetAttribLocation(toReturn->myShaderProgram->mID, KIGS_VERTEX_ATTRIB_TANGENT);
-		toReturn->myLocations->attribBoneWeight = glGetAttribLocation(toReturn->myShaderProgram->mID, KIGS_VERTEX_ATTRIB_BONE_WEIGHT);
-		toReturn->myLocations->attribBoneIndex = glGetAttribLocation(toReturn->myShaderProgram->mID, KIGS_VERTEX_ATTRIB_BONE_INDEX);
-		toReturn->myLocations->attribInstanceMatrix[0] = glGetAttribLocation(toReturn->myShaderProgram->mID, KIGS_VERTEX_ATTRIB_INSTANCE_MATRIX);
-		if (toReturn->myLocations->attribInstanceMatrix[0] != 0xFFFFFFFF)
+		toReturn->mLocations->attribVertex = glGetAttribLocation(toReturn->mShaderProgram->mID, KIGS_VERTEX_ATTRIB_VERTEX);
+		toReturn->mLocations->attribNormal = glGetAttribLocation(toReturn->mShaderProgram->mID, KIGS_VERTEX_ATTRIB_NORMAL);
+		toReturn->mLocations->attribColor = glGetAttribLocation(toReturn->mShaderProgram->mID, KIGS_VERTEX_ATTRIB_COLOR);
+		toReturn->mLocations->attribTexcoord = glGetAttribLocation(toReturn->mShaderProgram->mID, KIGS_VERTEX_ATTRIB_TEXCOORD);
+		toReturn->mLocations->attribTangent = glGetAttribLocation(toReturn->mShaderProgram->mID, KIGS_VERTEX_ATTRIB_TANGENT);
+		toReturn->mLocations->attribBoneWeight = glGetAttribLocation(toReturn->mShaderProgram->mID, KIGS_VERTEX_ATTRIB_BONE_WEIGHT);
+		toReturn->mLocations->attribBoneIndex = glGetAttribLocation(toReturn->mShaderProgram->mID, KIGS_VERTEX_ATTRIB_BONE_INDEX);
+		toReturn->mLocations->attribInstanceMatrix[0] = glGetAttribLocation(toReturn->mShaderProgram->mID, KIGS_VERTEX_ATTRIB_INSTANCE_MATRIX);
+		if (toReturn->mLocations->attribInstanceMatrix[0] != 0xFFFFFFFF)
 		{
-			toReturn->myLocations->attribInstanceMatrix[1] = toReturn->myLocations->attribInstanceMatrix[0] + 1;
-			toReturn->myLocations->attribInstanceMatrix[2] = toReturn->myLocations->attribInstanceMatrix[1] + 1;
+			toReturn->mLocations->attribInstanceMatrix[1] = toReturn->mLocations->attribInstanceMatrix[0] + 1;
+			toReturn->mLocations->attribInstanceMatrix[2] = toReturn->mLocations->attribInstanceMatrix[1] + 1;
 		}
-		toReturn->myLocations->tangentSpaceLOD = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_TANGENT_SPACE_LOD);
-		toReturn->myLocations->farPlane = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_FAR_PLANE);
-		toReturn->myLocations->fogScale = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_FOG_SCALE);
-		toReturn->myLocations->fogColor = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_FOG_COLOR);
+		toReturn->mLocations->tangentSpaceLOD = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_TANGENT_SPACE_LOD);
+		toReturn->mLocations->farPlane = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_FAR_PLANE);
+		toReturn->mLocations->fogScale = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_FOG_SCALE);
+		toReturn->mLocations->fogColor = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_FOG_COLOR);
 
 #ifdef WUP // holographics
-		toReturn->myLocations->attribRenderTargetArrayIndex = glGetAttribLocation(toReturn->myShaderProgram->mID, KIGS_VERTEX_ATTRIB_RENDER_TARGET_ARRAY_INDEX);
-		toReturn->myLocations->holoViewMatrixLocation[0] = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_HOLO_VIEW_MATRIX_0);
-		toReturn->myLocations->holoViewMatrixLocation[1] = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_HOLO_VIEW_MATRIX_1);
-		toReturn->myLocations->holoViewMatrixLocation[2] = glGetUniformLocation(toReturn->myShaderProgram->mID, KIGS_HOLO_VIEW_MATRIX_2);
+		toReturn->mLocations->attribRenderTargetArrayIndex = glGetAttribLocation(toReturn->mShaderProgram->mID, KIGS_VERTEX_ATTRIB_RENDER_TARGET_ARRAY_INDEX);
+		toReturn->mLocations->holoViewMatrixLocation[0] = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_HOLO_VIEW_MATRIX_0);
+		toReturn->mLocations->holoViewMatrixLocation[1] = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_HOLO_VIEW_MATRIX_1);
+		toReturn->mLocations->holoViewMatrixLocation[2] = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_HOLO_VIEW_MATRIX_2);
 #endif
 	}
 
-	if (toReturn->myUniforms)
+	if (toReturn->mUniforms)
 	{
 		// reset uniform location
-		auto itr = (*toReturn->myUniforms).begin();
-		for (; itr != (*toReturn->myUniforms).end(); ++itr)
+		auto itr = (*toReturn->mUniforms).begin();
+		for (; itr != (*toReturn->mUniforms).end(); ++itr)
 		{
-			itr->second->Location = glGetUniformLocation(toReturn->myShaderProgram->mID, itr->second->myUniformName.c_str());
+			itr->second->mLocation = glGetUniformLocation(toReturn->mShaderProgram->mID, itr->second->mUniformName.c_str());
 		}
 		
 	}
@@ -376,13 +376,13 @@ void	API3DShader::InitModifiable()
 void	API3DShader::DelayedInit(TravState* state)
 {
 
-	if ((((kstl::string)myVertexShaderText) != "") && (((kstl::string)myFragmentShaderText) != ""))
+	if ((((kstl::string)mVertexShaderText) != "") && (((kstl::string)mFragmentShaderText) != ""))
 	{
 		Drawable::InitModifiable();
 
 		Rebuild();
-		myVertexShaderText.changeNotificationLevel(Owner);
-		myFragmentShaderText.changeNotificationLevel(Owner);
+		mVertexShaderText.changeNotificationLevel(Owner);
+		mFragmentShaderText.changeNotificationLevel(Owner);
 		Active(state);
 
 		// add child unifor as default uniform
@@ -421,9 +421,9 @@ void	API3DShader::DoPreDraw(TravState* state)
 
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
-			if ((*it).myItem->isUserFlagSet(UserFlagDrawable))
+			if ((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
+				SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
 				drawable->CheckPreDraw(state);
 			}
 		}
@@ -441,9 +441,9 @@ void	API3DShader::DoPostDraw(TravState* state)
 
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
-			if ((*it).myItem->isUserFlagSet(UserFlagDrawable))
+			if ((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
+				SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
 				drawable->CheckPostDraw(state);
 			}
 		}
@@ -459,9 +459,9 @@ bool	API3DShader::PreDraw(TravState* travstate)
 
 	if (Drawable::PreDraw(travstate))
 	{
-		if ((CoreModifiable*)myAttachedCamera)
+		if ((CoreModifiable*)mAttachedCamera)
 		{
-			if ((CoreModifiable*)myAttachedCamera != (CoreModifiable*)travstate->GetCurrentCamera())
+			if ((CoreModifiable*)mAttachedCamera != (CoreModifiable*)travstate->GetCurrentCamera())
 			{
 				return false;
 			}
@@ -476,9 +476,9 @@ bool	API3DShader::PostDraw(TravState* travstate)
 {
 	if (Drawable::PostDraw(travstate))
 	{
-		if ((CoreModifiable*)myAttachedCamera)
+		if ((CoreModifiable*)mAttachedCamera)
 		{
-			if ((CoreModifiable*)myAttachedCamera != (CoreModifiable*)travstate->GetCurrentCamera())
+			if ((CoreModifiable*)mAttachedCamera != (CoreModifiable*)travstate->GetCurrentCamera())
 			{
 				return false;
 			}
@@ -495,22 +495,22 @@ void	API3DShader::Active(TravState* state, bool resetUniform)
 	if (isOKToUse())
 	{
 		state->GetRenderer()->setCurrentShaderProgram(GetCurrentShaderProgram());
-		if (resetUniform && (myCurrentShader)->myUniforms)
+		if (resetUniform && (mCurrentShader)->mUniforms)
 		{
 			// reset all uniform
-			auto itr = (*(myCurrentShader)->myUniforms).begin();
-			auto end = (*(myCurrentShader)->myUniforms).end();
+			auto itr = (*(mCurrentShader)->mUniforms).begin();
+			auto end = (*(mCurrentShader)->mUniforms).end();
 			for (; itr != end; ++itr)
 			{
-				if (itr->second->Location == 0xffffffff)
+				if (itr->second->mLocation == 0xffffffff)
 					continue;
 
 				API3DUniformBase * uni = itr->second->Back();
 				if (uni)
-					itr->second->Back()->Activate(itr->second->Location);
+					itr->second->Back()->Activate(itr->second->mLocation);
 			}
 		}
-		if (myUseGenericLight && state)
+		if (museGenericLight && state)
 		{
 			RendererOpenGL* renderer = (RendererOpenGL*)state->GetRenderer();
 			renderer->SendLightsInfo(state);
@@ -522,7 +522,7 @@ void	API3DShader::Deactive(TravState* state)
 {
 	if (isOKToUse())
 	{
-		if (myUseGenericLight && state)
+		if (museGenericLight && state)
 		{
 			RendererOpenGL* renderer = (RendererOpenGL*)state->GetRenderer();
 			renderer->ClearLightsInfo(state);
@@ -533,25 +533,25 @@ void	API3DShader::Deactive(TravState* state)
 void	API3DShader::PrepareExport(ExportSettings* settings)
 {
 	ParentClassType::PrepareExport(settings);
-	if (!myCurrentShader)
+	if (!mCurrentShader)
 		return;
-	if (!(myCurrentShader)->myUniforms)
+	if (!(mCurrentShader)->mUniforms)
 		return;
-	auto itr = (*(myCurrentShader)->myUniforms).begin();
-	for (; itr != (*(myCurrentShader)->myUniforms).end(); ++itr)
+	auto itr = (*(mCurrentShader)->mUniforms).begin();
+	for (; itr != (*(mCurrentShader)->mUniforms).end(); ++itr)
 	{
-		if (!itr->second->List.empty())
+		if (!itr->second->mList.empty())
 		{
 			bool L_bAlreadyAdded = false;
-			kstl::vector<CoreModifiable*> L_parents = static_cast<CoreModifiable*>(*(itr->second->List.begin()))->GetParents();
-			for (int p = 0; p < static_cast<CoreModifiable*>(*(itr->second->List.begin()))->GetParentCount(); p++)
+			kstl::vector<CoreModifiable*> L_parents = static_cast<CoreModifiable*>(*(itr->second->mList.begin()))->GetParents();
+			for (int p = 0; p < static_cast<CoreModifiable*>(*(itr->second->mList.begin()))->GetParentCount(); p++)
 			{
 				if (L_parents[p] == this)
 					L_bAlreadyAdded = true;
 			}
 			if (!L_bAlreadyAdded)
 			{
-				CMSP toAdd(CMSP(static_cast<CoreModifiable*>(*(itr->second->List.begin())), StealRefTag()));
+				CMSP toAdd(CMSP(static_cast<CoreModifiable*>(*(itr->second->mList.begin())), StealRefTag()));
 				addItem(toAdd);
 			}
 		}
@@ -560,16 +560,16 @@ void	API3DShader::PrepareExport(ExportSettings* settings)
 
 void	API3DShader::EndExport(ExportSettings* settings)
 {
-	if (myCurrentShader)
-	if ((myCurrentShader)->myUniforms)
+	if (mCurrentShader)
+	if ((mCurrentShader)->mUniforms)
 	{
 
-		auto itr = (*(myCurrentShader)->myUniforms).begin();
-		for (; itr != (*(myCurrentShader)->myUniforms).end(); ++itr)
+		auto itr = (*(mCurrentShader)->mUniforms).begin();
+		for (; itr != (*(mCurrentShader)->mUniforms).end(); ++itr)
 		{
-			if (!itr->second->List.empty())
+			if (!itr->second->mList.empty())
 			{
-				CMSP toDel(*(itr->second->List.begin()), StealRefTag{});
+				CMSP toDel(*(itr->second->mList.begin()), StealRefTag{});
 				removeItem(toDel);
 			}
 		}
@@ -581,7 +581,7 @@ DEFINE_METHOD(API3DShader, Reload)
 {
 	Dealloc();
 	// rebuild only if both shaders are set
-	if ((((kstl::string)myVertexShaderText) != "") && (((kstl::string)myFragmentShaderText) != ""))
+	if ((((kstl::string)mVertexShaderText) != "") && (((kstl::string)mFragmentShaderText) != ""))
 	{
 		Rebuild();
 	}

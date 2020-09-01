@@ -21,44 +21,8 @@ class Window;
 * \file	RenderingScreen.h
 * \class	RenderingScreen
 * \ingroup Renderer
-* \brief	base for screen object
-* \author	ukn
-* \version ukn
-* \date	ukn
+* \brief Generic "draw surface".
 *
-* Exported parameters :<br>
-* <ul>
-* <li>
-*		int <strong>BitsPerPixel</strong> :
-* </li>
-* <li>
-*		int <strong>BitsPerZ</strong> :
-* </li>
-* <li>
-*		int <strong>SizeX</strong> : size of the screen on x axis
-* </li>
-* <li>
-*		int <strong>SizeY</strong> : size of the screen on y axis
-* </li>
-* <li>
-*		bool <strong>IsOverlay</strong> : TRUE if the screen is in overlay
-* </li>
-* <li>
-*		bool <strong>Is3DOverlay</strong> : TRUE if the screen is in 3D overlay
-* </li>
-* <li>
-*		bool <strong>IsOffScreen</strong> :
-* </li>
-* <li>
-*		string <strong>ParentWindowName</strong> : name of the parent windows
-* </li>
-* <li>
-*		bool <strong>VSync</strong> : TRUE if I wait for the VSync
-* </li>
-* <li>
-*		int <strong>Brightness</strong> : brightness : between -16 (black) and 16 (white)
-* </li>
-* </ul>
 */
 // ****************************************
 class RenderingScreen : public CoreModifiable
@@ -90,7 +54,7 @@ public:
 	*/
 	void	GetRotation(kfloat& rot)
 	{
-		rot = myRotation;
+		rot = mRotation;
 	}
 
 	/**
@@ -101,13 +65,13 @@ public:
 	*/
 	void	GetSize(kfloat& sizeX, kfloat& sizeY)
 	{
-		if (myUseFBO)
+		if (mUseFBO)
 		{
-			sizeX = (kfloat)myFBOSizeX; sizeY = (kfloat)myFBOSizeY;
+			sizeX = (kfloat)mFBOSizeX; sizeY = (kfloat)mFBOSizeY;
 		}
 		else
 		{
-			sizeX = (kfloat)(unsigned int)mySizeX; sizeY = (kfloat)(unsigned int)mySizeY;
+			sizeX = (kfloat)(unsigned int)mSizeX; sizeY = (kfloat)(unsigned int)mSizeY;
 		}
 	}
 
@@ -117,7 +81,7 @@ public:
 	* \param	dsizeX : design size on the x axis (in/out param)
 	* \param	dsizeY : design size on the y axis (in/out param)
 	*/
-	void	GetDesignSize(kfloat& dsizeX, kfloat& dsizeY) { dsizeX = (kfloat)(unsigned int)myDesignSizeX; dsizeY = (kfloat)(unsigned int)myDesignSizeY; }
+	void	GetDesignSize(kfloat& dsizeX, kfloat& dsizeY) { dsizeX = (kfloat)(unsigned int)mDesignSizeX; dsizeY = (kfloat)(unsigned int)mDesignSizeY; }
 
 
 	/**
@@ -125,7 +89,7 @@ public:
 	* \fn 		bool	IsInit()
 	* \return	TRUE if the screen has been initialized, FALSE if not
 	*/
-	bool	IsInit() { return myIsInit; }
+	bool	IsInit() { return mIsInit; }
 
 	/**
 	* \brief	resize the screen
@@ -171,13 +135,13 @@ public:
 
 	SP<Texture> GetFBOTexture() 
 	{
-		if(myUseFBO)
-			return myFBOTexture; 
+		if(mUseFBO)
+			return mFBOTexture; 
 
 		return nullptr;
 	}
 
-	bool IsHolographic() { return myIsStereo; }
+	bool IsHolographic() { return mIsStereo; }
 
 	/**
 	* \brief	convert touch pos in local "touch support" coordinates
@@ -193,13 +157,13 @@ public:
 	COREMODIFIABLE_METHODS(ResetContext);
 
 protected:
-	// recompute myDesignCoefX,myDesignCoefY;
+	// recompute mDesignCoefX,mDesignCoefY;
 	void	InitModifiable() override;
 
 	void Update(const Timer&  timer, void* /*addParam*/) override;
 
 	//! TRUE if the screen has been initialized
-	bool myIsInit;
+	bool mIsInit;
 
 	//! size of a pixel in bit
 	maInt mBitsPerPixel;
@@ -209,49 +173,47 @@ protected:
 	maInt mBitsForStencil;
 
 	//!  size of the screen on x axis
-	maUInt mySizeX;
+	maUInt mSizeX;
 	//!  size of the screen on y axis
-	maUInt mySizeY;
+	maUInt mSizeY;
 	//!  design size of the screen on x axis 
-	maUInt myDesignSizeX;
+	maUInt mDesignSizeX;
 	//!  design size of the screen on y axis
-	maUInt myDesignSizeY;
+	maUInt mDesignSizeY;
 	//! ?
-	maBool myIsOffScreen;
-	//Just for Nitro
-	maBool myScreenOnTop;
+	maBool mIsOffScreen;
 	//! name of the parent windows
-	maString myParentWindowName;
+	maString mParentWindowName;
 	//! TRUE if I wait for the VSync
-	maBool myWaitVSync;
+	maBool mVSync;
 	//! brightness : between -16 (black) and 16 (white)
-	maFloat myBrightness;
-	float myOldBrightness;
+	maFloat mBrightness;
+	float mOldBrightness;
 	//! back drop color
-	maVect3DF myBackDropColor;
+	maVect3DF mBackDropColor;
 	//! screen orientation (for handheld devices)
-	maFloat myRotation;
+	maFloat mRotation;
 	//! indicate the screen don't need clear (camera should still clear their part of screen)
-	maBool myDontClear;
+	maBool mDontClear;
 	//! double buffer on/off
-	maBool myNeedDoubleBuffer;
+	maBool mNeedDoubleBuffer;
 
-	maBool myIsStereo = BASE_ATTRIBUTE(IsStereo, false);
+	maBool mIsStereo = BASE_ATTRIBUTE(IsStereo, false);
 
-	Window* MyParentWindow;
+	Window* mParentWindow;
 
 	void				RecomputeDesignCoef();
 
-	kfloat				myDesignCoefX,myDesignCoefY;
+	kfloat				mDesignCoefX,mDesignCoefY;
 
-	bool				myWasActivated;
+	bool				mWasActivated;
 
-	maBool				myUseFBO;
+	maBool				mUseFBO;
 
-	maInt				myFBOSizeX;
-	maInt				myFBOSizeY;
+	maInt				mFBOSizeX;
+	maInt				mFBOSizeY;
 
-	SP<Texture>			myFBOTexture;
+	SP<Texture>			mFBOTexture;
 
 	virtual void		setCurrentContext() = 0;
 };

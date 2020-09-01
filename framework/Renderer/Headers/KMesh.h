@@ -54,49 +54,20 @@ namespace KigsFramework
 		eT3SG_Triangle=37
 
 	};
-	/*
-	enum TriangleTypeOld
-	{
-	// F is flat S is smooth (1 normal or 3 normals per triangle)
-	eF_Triangle=1,
-	eS_Triangle,
-	// C is Colored G is Gouraud (1 color or 3 colors per triangle)
-	eFC_Triangle,
-	eSC_Triangle,
-	eFG_Triangle,
-	eSG_Triangle,
-	// T for textured
-	eTF_Triangle,
-	eTS_Triangle,
-	eTFC_Triangle,
-	eTSC_Triangle,
-	eTFG_Triangle,
-	eTSG_Triangle
-	};*/
 
-	/*! \defgroup Triangle Triangle group
-	* \ingroup TriangleInternalStruct
-	*  triangle class
-	*/
 
-	/*! \defgroup TriangleInternalStruct Internal Mesh
-	* \ingroup Renderer
-	*  internal structure of mesh
-	*/
-
-	// ****************************************
-	// * MeshItemGroup class
-	// * --------------------------------------
-	/**
-	* \class	MeshItemGroup
-	* \ingroup Drawable
-	* \ingroup RendererDrawable
-	* \brief	
-	* \author	ukn
-	* \version ukn
-	* \date	ukn
-	*/
-	// ****************************************
+// ****************************************
+// * MeshItemGroup class
+// * --------------------------------------
+/**
+ * \file	KMesh.h
+ * \class	MeshItemGroup
+ * \ingroup Renderer
+ * \brief	Group used in old style Mesh.
+ *
+ * Obsolete
+ */
+ // ****************************************
 	class MeshItemGroup : public Drawable
 	{
 	public:
@@ -110,11 +81,11 @@ namespace KigsFramework
 		*/
 		MeshItemGroup(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG) 
 			: Drawable(name,PASS_CLASS_NAME_TREE_ARG),
-			myCullMode(*this,false,LABEL_AND_ID(CullMode),1)
+			mCullMode(*this,false,LABEL_AND_ID(CullMode),1)
 		{
-			myFirstTriangle = 0;
-			myTriangleCount = 0;
-			myTriangleSize = 0;
+			mFirstTriangle = 0;
+			mTriangleCount = 0;
+			mTriangleSize = 0;
 		};
 
 		/**
@@ -138,74 +109,34 @@ namespace KigsFramework
 		bool	BBoxUpdate(kdouble /* time*/) override {return true;}
 
 		//! List of Triangles
-		void*						myFirstTriangle;
+		void*						mFirstTriangle;
 		//! Triangle Count
-		int							myTriangleCount;
+		int							mTriangleCount;
 		//! size of a triangle
-		int							myTriangleSize;
+		int							mTriangleSize;
 		//! type of triangle
-		TriangleType				myTriangleType;
+		TriangleType				mTriangleType;
 
-		maInt						myCullMode;
+		maInt						mCullMode;
 	};
+
 
 	// ****************************************
 	// * Mesh class
 	// * --------------------------------------
 	/**
-	* \file	KMesh.h
-	* \class	Mesh
-	* \ingroup Drawable
-	* \ingroup RendererDrawable
-	* \brief	Mesh object class
-	* \author	ukn
-	* \version ukn
-	* \date	ukn
-	* 
-	* <dl class="dependency"><dt><b>Dependency:</b></dt><dd>ModuleRenderer</dd></dl>
-	* <dl class="exemple"><dt><b>Exemple:</b></dt><dd>
-	* <span class="comment"> Manage mesh file : </span><br>
-	* <span class="code">
-	* theFileManager=new ModuleFileManager(<i>instance_name</i>);<br>
-	* theFileManager->Init(KigsCore::Instance(),0);<br>
-	* theFileManager->AddToPath(<i>directory_path</i>,"mesh"); <span class="comment"> //manage .mesh file </span><br>
-	* </span>
-	* <span class="comment"> Load the module :</span><br>
-	* <span class="code">
-	* theRenderer=new ModuleRenderer(<i>instance_name</i>);<br>
-	* theRenderer->Init(KigsCore::Instance(),0);<br>
-	* </span>
-	* <span class="comment"> Create the object :</span><br>
-	* <span class="code">
-	* CoreModifiable* MeshObject=(CoreModifiable*)(KigsCore::GetInstanceOf(<i>instance_name</i>,"Mesh"));<br>
-	* </span>
-	* <span class="comment"> Initialization :</span><br>
-	* <span class="code">
-	* MeshObject->setValue(LABEL_TO_ID(FileName),<i>file_name.mesh</i>);<br>
-	* MeshObject->Init();<br>
-	* </span>
-	* </dd></dl>
-	*
-	* <dl class="exported"><dt><b>Exported parameters :</b></dt><dd>
-	* <table>
-	* <tr><td>string</td>	<td><strong>FileName</strong> :</td>			<td>name of the file to read in load method</td></tr>	
-	* <tr><td>bool</td>	<td><strong>VertexNeedUpdate</strong> :</td>	<td>TRUE if myVertex need to be updated</td></tr>
-	* <tr><td>bool</td>	<td><strong>ColorNeedUpdate</strong> :</td>		<td>TRUE if myColor need to be updated</td></tr>
-	* <tr><td>bool</td>	<td><strong>TexCoordNeedUpdate</strong> :</td>	<td>TRUE if myTexCoord need to be updated</td></tr>
-	* <tr><td>bool</td>	<td><strong>NormalNeedUpdate</strong> :</td>	<td>TRUE if myNormal need to be updated</td></tr>
-	* <tr><td>bool</td>	<td><strong>ShareMaterial</strong> :</td></tr>
-	* <tr><td>*</td>		<td><strong>GetVertexPointer</strong> :</td>	<td>function GetVertexPointer</td></tr>
-	* <tr><td>*</td>		<td><strong>GetColorPointer</strong> :</td>		<td>function GetColorPointer</td></tr>
-	* <tr><td>*</td>		<td><strong>GetNormalPointer</strong> :</td>	<td>function GetNormalPointer</td></tr>
-	* <tr><td>*</td>		<td><strong>GetTexCoordPointer</strong> :</td>	<td>function GetTexCoordPointer</td></tr>
-	* </table>
-	* </dd></dl>
-	*/
-	// ****************************************
+	 * \file	KMesh.h
+	 * \class	Mesh
+	 * \ingroup Renderer
+	 * \brief	Old style Mesh.
+	 *
+	 * Obsolete
+	 */
+	 // ****************************************
 	class Mesh : public HDrawable
 	{
 	protected:
-		inline void Set_FileName(const char* _value){myFileName=_value;}
+		inline void Set_FileName(const char* _value){mFileName=_value;}
 
 	public:
 		DECLARE_ABSTRACT_CLASS_INFO(Mesh,HDrawable,Renderer)
@@ -235,14 +166,14 @@ namespace KigsFramework
 
 		/**
 		* \brief	retreive the bounding box of the bitmap (point min and point max)
-		* \fn 		virtual void	GetBoundingBox(Point3D& pmin,Point3D& pmax) const {pmin=myBBoxMin; pmax=myBBoxMax;}
+		* \fn 		virtual void	GetBoundingBox(Point3D& pmin,Point3D& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
 		* \param	pmin : point min of the bounding box (in/out param)
 		* \param	pmax : point max of the bounding box (in/out param)
 		*/
 		void	GetNodeBoundingBox(Point3D& pmin,Point3D& pmax) const override
 		{
-			pmin = myBoundingBox.m_Min;
-			pmax = myBoundingBox.m_Max;
+			pmin = mBoundingBox.m_Min;
+			pmax = mBoundingBox.m_Max;
 		}
 
 		// RETRIEVING
@@ -295,14 +226,13 @@ namespace KigsFramework
 		// * TexCoord class
 		// * --------------------------------------
 		/**
-		* \class	TexCoord
-		* \ingroup TriangleInternalStruct
-		* \brief	texture coordinate class
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
+		 * \file	KMesh.h
+		 * \class	TexCoord
+		 * \ingroup Renderer
+		 * \brief	Texture Coordinates structure.
+		 *
+		 */
+		 // ****************************************
 		class TexCoord
 		{
 		public:
@@ -356,18 +286,18 @@ namespace KigsFramework
 		template<unsigned int textureCount>
 		class TSG_Triangle;
 
+
 		// ****************************************
 		// * Triangle class
 		// * --------------------------------------
 		/**
-		* \class	Triangle
-		* \ingroup Triangle
-		* \brief	Triangle alone (3 points)
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
+		 * \file	KMesh.h
+		 * \class	Triangle
+		 * \ingroup Renderer
+		 * \brief	Triangle structure.
+		 *
+		 */
+		 // ****************************************
 		class Triangle
 		{
 		public:
@@ -478,12 +408,11 @@ namespace KigsFramework
 		// * TexturedTriangleStructBase class
 		// * --------------------------------------
 		/**
+		* \file	KMesh.h
 		* \class	TexturedTriangleStructBase
-		* \ingroup TriangleInternalStruct
-		* \brief	nothing here, just get needed texture coord count
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
+		* \ingroup Renderer
+		* \brief	Textured triangle base structure.
+		*
 		*/
 		// ****************************************
 		class TexturedTriangleStructBase
@@ -508,12 +437,11 @@ namespace KigsFramework
 		// * TexturedTriangleStruct class
 		// * --------------------------------------
 		/**
+		* \file	KMesh.h
 		* \class	TexturedTriangleStruct
-		* \ingroup TriangleInternalStruct
-		* \brief	1 texture struct
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
+		* \ingroup Renderer
+		* \brief	Textured triangle structure, with templated texture count parameter.
+		*
 		*/
 		// ****************************************
 		class TexturedTriangleStruct : public TexturedTriangleStructBase
@@ -565,12 +493,11 @@ namespace KigsFramework
 		// * ThreeColorTriangleStruct class
 		// * --------------------------------------
 		/**
+		* \file	KMesh.h
 		* \class	ThreeColorTriangleStruct
-		* \ingroup TriangleInternalStruct
-		* \brief	3 colors struct
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
+		* \ingroup Renderer
+		* \brief	Triangle with a color at each vertex.
+		*
 		*/
 		// ****************************************
 		class ThreeColorTriangleStruct
@@ -612,12 +539,11 @@ namespace KigsFramework
 		// * OneColorTriangleStruct class
 		// * --------------------------------------
 		/**
+		* \file	KMesh.h
 		* \class	OneColorTriangleStruct
-		* \ingroup TriangleInternalStruct
-		* \brief	1 color struct
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
+		* \ingroup Renderer
+		* \brief	Triangle with a uniform color.
+		*
 		*/
 		// ****************************************
 		class OneColorTriangleStruct
@@ -653,12 +579,11 @@ namespace KigsFramework
 		// * ThreeNormalTriangleStruct class
 		// * --------------------------------------
 		/**
+		* \file	KMesh.h
 		* \class	ThreeNormalTriangleStruct
-		* \ingroup TriangleInternalStruct
-		* \brief	3 normals struct
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
+		* \ingroup Renderer
+		* \brief	Triangle with normal at each vertex.
+		*
 		*/
 		// ****************************************
 		class ThreeNormalTriangleStruct
@@ -700,12 +625,11 @@ namespace KigsFramework
 		// * OneNormalTriangleStruct class
 		// * --------------------------------------
 		/**
+		* \file	KMesh.h
 		* \class	OneNormalTriangleStruct
-		* \ingroup TriangleInternalStruct
-		* \brief	1 Normal struct
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
+		* \ingroup Renderer
+		* \brief	Triangle with a unique normal.
+		*
 		*/
 		// ****************************************
 		class OneNormalTriangleStruct
@@ -737,22 +661,7 @@ namespace KigsFramework
 			void	Load(BufferedFile* currentfile);
 		};
 
-		// *******************************************************************
-		// And now all possible triangle struct
-		// (not all in fact but enougth for now)
-		// *******************************************************************
-		// ****************************************
-		// * C_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	C_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 1 color
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
+	
 		class C_Triangle : public Triangle , public OneColorTriangleStruct
 		{
 		public:
@@ -800,18 +709,6 @@ namespace KigsFramework
 		};
 
 
-		// ****************************************
-		// * G_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	G_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 3 colors
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
 		class G_Triangle : public Triangle , public ThreeColorTriangleStruct
 		{
 		public:
@@ -857,18 +754,6 @@ namespace KigsFramework
 			}
 		};
 
-		// ****************************************
-		// * F_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	F_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 1 normal
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
 		class F_Triangle : public Triangle , public OneNormalTriangleStruct
 		{
 		public:
@@ -917,18 +802,7 @@ namespace KigsFramework
 			}
 		};
 
-		// ****************************************
-		// * FC_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	FC_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 1 normal and 1 color
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
+
 		class FC_Triangle : public F_Triangle ,  public OneColorTriangleStruct
 		{
 		public:
@@ -976,18 +850,6 @@ namespace KigsFramework
 			}
 		};
 
-		// ****************************************
-		// * FG_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	FG_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 1 normal and 3 colors
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
 		class FG_Triangle : public F_Triangle , public ThreeColorTriangleStruct
 		{
 		public:
@@ -1033,18 +895,7 @@ namespace KigsFramework
 			}
 		};
 
-		// ****************************************
-		// * S_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	S_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 3 normals
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
+
 		class S_Triangle : public Triangle , public ThreeNormalTriangleStruct
 		{
 		public:
@@ -1090,18 +941,7 @@ namespace KigsFramework
 			}
 		};
 
-		// ****************************************
-		// * SC_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	SC_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 3 normals and 1 color
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
+
 		class SC_Triangle : public S_Triangle , public OneColorTriangleStruct
 		{
 		public:
@@ -1148,18 +988,7 @@ namespace KigsFramework
 			}
 		};
 
-		// ****************************************
-		// * SG_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	SG_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 3 normals and 3 colors
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
+
 		class SG_Triangle : public S_Triangle , public ThreeColorTriangleStruct
 		{
 		public:
@@ -1206,18 +1035,6 @@ namespace KigsFramework
 		};
 
 		template<unsigned int textureCount>
-		// ****************************************
-		// * T_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	T_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 1 texture
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
 		class T_Triangle : public Triangle, public TexturedTriangleStruct<textureCount>
 		{
 		public:
@@ -1265,18 +1082,6 @@ namespace KigsFramework
 		};
 
 		template<unsigned int textureCount>
-		// ****************************************
-		// * TF_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	TF_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 1 texture and 1 normal
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
 		class TF_Triangle : public F_Triangle , public TexturedTriangleStruct<textureCount>
 		{
 		public:
@@ -1324,18 +1129,6 @@ namespace KigsFramework
 		};
 
 		template<unsigned int textureCount>
-		// ****************************************
-		// * TFC_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	TFC_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 1 texture and 1 normal and 1 color
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
 		class TFC_Triangle : public FC_Triangle , public TexturedTriangleStruct<textureCount>
 		{
 		public:
@@ -1383,18 +1176,6 @@ namespace KigsFramework
 		};
 
 		template<unsigned int textureCount>
-		// ****************************************
-		// * TFG_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	TFG_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 1 texture and 1 normal and 3 colors
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
 		class TFG_Triangle : public FG_Triangle , public TexturedTriangleStruct<textureCount>
 		{
 		public:
@@ -1442,18 +1223,6 @@ namespace KigsFramework
 		};
 
 		template<unsigned int textureCount>
-		// ****************************************
-		// * TS_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	TS_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 1 texture and 3 normals
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
 		class TS_Triangle : public S_Triangle , public TexturedTriangleStruct<textureCount>
 		{
 		public:
@@ -1501,17 +1270,6 @@ namespace KigsFramework
 		};
 
 		template<unsigned int textureCount>
-		// ****************************************
-		// * TSC_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	TSC_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 1 texture and 3 normals and 1 color
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
 		class TSC_Triangle : public SC_Triangle , public TexturedTriangleStruct<textureCount>
 		{
 		public:
@@ -1559,18 +1317,6 @@ namespace KigsFramework
 		};
 
 		template<unsigned int textureCount>
-		// ****************************************
-		// * TSG_Triangle class
-		// * --------------------------------------
-		/**
-		* \class	TSG_Triangle
-		* \ingroup Triangle
-		* \brief	triangle with 1 texture and 3 normals and 3 colors
-		* \author	ukn
-		* \version ukn
-		* \date	ukn
-		*/
-		// ****************************************
 		class TSG_Triangle : public SG_Triangle , public TexturedTriangleStruct<textureCount>
 		{
 		public:
@@ -1623,7 +1369,7 @@ namespace KigsFramework
 		* \param	index : index asked
 		* \return	vertex asked (in/out param)
 		*/	
-		const Point3D&	GetVertex(unsigned int index){return VertexArray[index];}
+		const Point3D&	GetVertex(unsigned int index){return mVertexArray[index];}
 
 		/**
 		* \brief	set a vertex to an index
@@ -1639,7 +1385,7 @@ namespace KigsFramework
 		* \param	index : index asked
 		* \return	color asked (in/out param)
 		*/	
-		const Vector4D&	GetColor(unsigned int index){return ColorArray[index];}
+		const Vector4D&	GetColor(unsigned int index){return mColorArray[index];}
 
 		/**
 		* \brief	set a color to an index
@@ -1655,7 +1401,7 @@ namespace KigsFramework
 		* \param	index : index asked
 		* \return	normal asked (in/out param)
 		*/	
-		const Vector3D&	GetNormal(unsigned int index){return NormalArray[index];}
+		const Vector3D&	GetNormal(unsigned int index){return mNormalArray[index];}
 
 		/**
 		* \brief	set a normal to an index
@@ -1671,7 +1417,7 @@ namespace KigsFramework
 		* \param	index : index asked
 		* \return	texCoord asked (in/out param)
 		*/	
-		const TexCoord&	GetTexCoord(unsigned int index){return TexArray[index];}
+		const TexCoord&	GetTexCoord(unsigned int index){return mTexArray[index];}
 
 		/**
 		* \brief	set a texCoord to an index
@@ -1722,20 +1468,20 @@ namespace KigsFramework
 		virtual void	UpdateMesh(){;}
 
 		//! TRUE if myVertex need to be updated
-		maBool	myVertexNeedUpdate;
-		//! TRUE if myColor need to be updated
-		maBool	myColorNeedUpdate;
+		maBool	mVertexNeedUpdate;
+		//! TRUE if mColor need to be updated
+		maBool	mColorNeedUpdate;
 		//! TRUE if myTexCoord need to be updated
-		maBool	myTexCoordNeedUpdate;
+		maBool	mTexCoordNeedUpdate;
 		//! TRUE if myNormal need to be updated
-		maBool	myNormalNeedUpdate;
+		maBool	mNormalNeedUpdate;
 		//! ?
-		maBool	myShareMaterial;
+		maBool	mShareMaterial;
 
 #ifdef _DEBUG
-		maBool myShowVertex;
+		maBool mShowVertex;
 #endif
-		maBool myWireMode;
+		maBool mWireMode;
 		/**
 		* \brief	protected initialization modifiable
 		* \fn 		virtual void ProtectedInit()=0;
@@ -1749,29 +1495,29 @@ namespace KigsFramework
 		void	InitModifiable() override;
 
 		//! name of the file to read in load method
-		maString	myFileName;
+		maString	mFileName;
 
 		//! number of vertice
-		unsigned int		VertexCount;
+		unsigned int		mVertexCount;
 		//! List of All Vertice
-		Point3D*			VertexArray;	
+		Point3D*			mVertexArray;	
 
 		//! number of normal
-		unsigned int		NormalCount;
+		unsigned int		mNormalCount;
 		//! List of All normals
-		Vector3D*			NormalArray;	
+		Vector3D*			mNormalArray;	
 
 		//! number of Texture coords
-		unsigned int		TexCoordCount;
+		unsigned int		mTexCoordCount;
 		//! List of all Texture coords
-		TexCoord*			TexArray;		
+		TexCoord*			mTexArray;		
 
 		//! number of color
-		unsigned int		ColorCount;
+		unsigned int		mColorCount;
 		//! List of All colors
-		Vector4D*			ColorArray;
+		Vector4D*			mColorArray;
 
-		maBool				myDynamicInit;
+		maBool				mDynamicInit;
 
 		/**
 		* \brief	destructor
@@ -1786,7 +1532,7 @@ namespace KigsFramework
 		virtual void  InitBoundingBox();
 
 		//! link to the bounding box
-		BBox          myBoundingBox;
+		BBox          mBoundingBox;
 
 	public:
 		friend class ASEMeshLoader;
@@ -1800,30 +1546,30 @@ namespace KigsFramework
 
 		//Setters
 		//! Set number of vertice
-		inline void Set_VertexCount(unsigned int _value){VertexCount = _value;}
+		inline void Set_VertexCount(unsigned int _value){mVertexCount = _value;}
 
 		//! Set List of All Vertice
-		inline void Set_VertexArray(Point3D* _value){VertexArray = _value;}	
+		inline void Set_VertexArray(Point3D* _value){mVertexArray = _value;}	
 
 		//! Set number of normal
-		inline void Set_NormalCount(unsigned int _value){NormalCount = _value;}
+		inline void Set_NormalCount(unsigned int _value){mNormalCount = _value;}
 
 		//! Set List of All normals
-		inline void Set_NormalArray(Vector3D* _value){NormalArray = _value;}	
+		inline void Set_NormalArray(Vector3D* _value){mNormalArray = _value;}	
 
 		//! Set number of Texture coords
-		inline void Set_TexCoordCount(unsigned int _value){TexCoordCount = _value;}
+		inline void Set_TexCoordCount(unsigned int _value){mTexCoordCount = _value;}
 
 		//! Set List of all Texture coords
-		inline void Set_TexArray(TexCoord* _value){TexArray = _value;}
+		inline void Set_TexArray(TexCoord* _value){mTexArray = _value;}
 
 		//! Set number of color
-		inline void Set_ColorCount(unsigned int _value){ColorCount = _value;}
+		inline void Set_ColorCount(unsigned int _value){mColorCount = _value;}
 
 		//! Set List of All colors
-		inline void Set_ColorArray(Vector4D* _value){ColorArray = _value;}
+		inline void Set_ColorArray(Vector4D* _value){mColorArray = _value;}
 
-		inline unsigned int Get_NormalCount() const {return NormalCount;}
+		inline unsigned int Get_NormalCount() const {return mNormalCount;}
 #ifdef WIN32
 		void ExportMeshTo(kstl::string _pathDirectory, kstl::string _fileName);
 #endif

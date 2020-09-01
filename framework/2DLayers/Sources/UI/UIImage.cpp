@@ -7,15 +7,15 @@ IMPLEMENT_CLASS_INFO(UIImage)
 
 UIImage::UIImage(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	UITexturedItem(name, PASS_CLASS_NAME_TREE_ARG)
-	//, myAutoresizeTexture(*this, false, LABEL_AND_ID(AutoResize), false)
-	, myTextureName(*this, false, LABEL_AND_ID(Texture), "")
+	// TODO : change Parameter ID to TextureName
+	, mTexture(*this, false, LABEL_AND_ID(Texture), "")
 {
-	myCurrentTextureName = "";
+	mCurrentTextureName = "";
 }
 
 void UIImage::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == myIsEnabled.getLabelID())
+	if (labelid == mIsEnabled.getLabelID())
 	{
 		if (!GetSons().empty())
 		{
@@ -24,12 +24,12 @@ void UIImage::NotifyUpdate(const unsigned int labelid)
 			kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = sons.end();
 			while (it != end)
 			{
-				(*it)->setValue("IsEnabled", myIsEnabled);
+				(*it)->setValue("IsEnabled", mIsEnabled);
 				it++;
 			}
 		}
 	}
-	else if (labelid == myTextureName.getLabelID() && IsInit())
+	else if (labelid == mTexture.getLabelID() && IsInit())
 	{
 		ChangeTexture();
 	}
@@ -45,16 +45,16 @@ void UIImage::InitModifiable()
 		ChangeTexture();
 
 		// auto size
-		if ((int)myDisplayMode == AUTO)
+		if ((int)mDisplayMode == AUTO)
 		{
-			if ((mySizeX.const_ref() == 0) && (mySizeY.const_ref() == 0))
-				myDisplayMode.setValue(RESIZE);
+			if ((mSizeX.const_ref() == 0) && (mSizeY.const_ref() == 0))
+				mDisplayMode.setValue(RESIZE);
 			else
-				myDisplayMode.setValue(SCALE);
+				mDisplayMode.setValue(SCALE);
 		}
 
-		myIsEnabled.changeNotificationLevel(Owner);
-		myTextureName.changeNotificationLevel(Owner);
+		mIsEnabled.changeNotificationLevel(Owner);
+		mTexture.changeNotificationLevel(Owner);
 
 
 		ComputeRealSize();
@@ -63,20 +63,20 @@ void UIImage::InitModifiable()
 
 void UIImage::ComputeRealSize()
 {
-	switch ((int)myDisplayMode)
+	switch ((int)mDisplayMode)
 	{
 	case RESIZE:
-		if (!myTexture.isNil()) myTexture->GetSize(myRealSize.x, myRealSize.y);
+		if (!mTexturePointer.isNil()) mTexturePointer->GetSize(mRealSize.x, mRealSize.y);
 		break;
 	case SCALE:
 		UITexturedItem::ComputeRealSize();
-		if (myKeepRatio && !myTexture.isNil())
+		if (mKeepRatio && !mTexturePointer.isNil())
 		{
 			unsigned int tsX, tsY;
-			myTexture->GetSize(tsX, tsY);
+			mTexturePointer->GetSize(tsX, tsY);
 
 			float ratioTex = (float)tsX / (float)tsY;
-			float ratioUI = myRealSize.x / myRealSize.y;
+			float ratioUI = mRealSize.x / mRealSize.y;
 
 			int dirTex = (ratioTex == 1) ? 0 : (ratioTex < 1) ? -1 : 1;
 			int dirUI = (ratioUI == 1) ? 0 : (ratioUI < 1) ? -1 : 1;
@@ -89,57 +89,57 @@ void UIImage::ComputeRealSize()
 			{
 				if (dirTex < 0) // x smaller than y
 				{
-					myRealSize.x *= ratioTex;
+					mRealSize.x *= ratioTex;
 				}
 				else // y smaller than x
 				{
-					myRealSize.y /= ratioTex;
+					mRealSize.y /= ratioTex;
 				}
 			}
 			else if (dirTex == 0) // scale Tex to fit in a rectangle
 			{
 				if (dirUI < 0) // x smaller than y
 				{
-					myRealSize.y = myRealSize.x;
+					mRealSize.y = mRealSize.x;
 				}
 				else // y smaller than x
 				{
-					myRealSize.x = myRealSize.y;
+					mRealSize.x = mRealSize.y;
 				}
 			}
 			else if (dirTex*dirUI < 0) //two rectangle with different dir
 			{
 				if (dirTex < 0) // x smaller than y
 				{
-					myRealSize.x = myRealSize.y*ratioTex;
+					mRealSize.x = mRealSize.y*ratioTex;
 				}
 				else // y smaller than x
 				{
-					myRealSize.y = myRealSize.x/ratioTex;
+					mRealSize.y = mRealSize.x/ratioTex;
 				}
 			}
 			else // two rectangle in the same direction
 			{
 				if (dirTex < 0)
 				{
-					if(myRealSize.y*ratioTex<myRealSize.x)
-						myRealSize.x = myRealSize.y*ratioTex;
+					if(mRealSize.y*ratioTex<mRealSize.x)
+						mRealSize.x = mRealSize.y*ratioTex;
 					else
-						myRealSize.y = myRealSize.x / ratioTex;
+						mRealSize.y = mRealSize.x / ratioTex;
 				}
 				else
 				{
-					if (myRealSize.x/ratioTex<myRealSize.y)
-						myRealSize.y = myRealSize.x / ratioTex;
+					if (mRealSize.x/ratioTex<mRealSize.y)
+						mRealSize.y = mRealSize.x / ratioTex;
 					else
-						myRealSize.x = myRealSize.y*ratioTex;
+						mRealSize.x = mRealSize.y*ratioTex;
 				}
 			}
 
 		}
 		break;
 	default:
-		if (!myTexture.isNil())myTexture->GetSize(myRealSize.x, myRealSize.y);
+		if (!mTexturePointer.isNil())mTexturePointer->GetSize(mRealSize.x, mRealSize.y);
 		kigsprintf("Display Mode not supported, use resize\n");
 		break;
 	}
@@ -148,36 +148,36 @@ void UIImage::ComputeRealSize()
 void UIImage::ChangeTexture()
 {
 	// no change
-	if (myCurrentTextureName == myTextureName.const_ref())
+	if (mCurrentTextureName == mTexture.const_ref())
 		return;
 
-	myTextureName.getValue(myCurrentTextureName);
+	mTexture.getValue(mCurrentTextureName);
 
 	// empty texture name >> destroy texture
-	if (myCurrentTextureName == "")
+	if (mCurrentTextureName == "")
 	{
-		myTexture = nullptr;
+		mTexturePointer = nullptr;
 		return;
 	}
 
-	auto arr = SplitStringByCharacter(myCurrentTextureName, ':');
+	auto arr = SplitStringByCharacter(mCurrentTextureName, ':');
 	if (arr.size() > 1) // use spritesheet
 	{
 		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-		mySpriteSheetTexture = textureManager->GetSpriteSheetTexture(arr[0]);
-		SetTexture(mySpriteSheetTexture->Get_Texture());
-		if (myTexture)
+		mSpriteSheetTexture = textureManager->GetSpriteSheetTexture(arr[0]);
+		SetTexture(mSpriteSheetTexture->Get_Texture());
+		if (mTexturePointer)
 		{
-			const SpriteSheetFrame* frame = mySpriteSheetTexture->Get_Frame(arr[1]);
+			const SpriteSheetFrame* frame = mSpriteSheetTexture->Get_Frame(arr[1]);
 			if (frame)
 			{
-				myAutoresizeValue.x = (float)frame->FrameSize_X;
-				myAutoresizeValue.y = (float)frame->FrameSize_Y;
+				mAutoresizeValue.x = (float)frame->FrameSize_X;
+				mAutoresizeValue.y = (float)frame->FrameSize_Y;
 
 
 				Point2D s, r;
-				myTexture->GetSize(s.x, s.y);
-				myTexture->GetRatio(r.x, r.y);
+				mTexturePointer->GetSize(s.x, s.y);
+				mTexturePointer->GetRatio(r.x, r.y);
 				s /= r;
 
 				mUVMin.Set((kfloat)frame->FramePos_X + 0.5f, (kfloat)frame->FramePos_Y + 0.5f);
@@ -188,7 +188,7 @@ void UIImage::ChangeTexture()
 			}
 			else // frame not found
 			{
-				myTexture->GetSize(myAutoresizeValue.x, myAutoresizeValue.y);
+				mTexturePointer->GetSize(mAutoresizeValue.x, mAutoresizeValue.y);
 				mUVMin.Set(FLT_MAX, FLT_MAX);
 				mUVMax.Set(FLT_MAX, FLT_MAX);
 			}
@@ -197,38 +197,38 @@ void UIImage::ChangeTexture()
 	else
 	{
 		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-		SetTexture(textureManager->GetTexture(myCurrentTextureName).get());
-		myTexture->GetSize(myAutoresizeValue.x, myAutoresizeValue.y);
+		SetTexture(textureManager->GetTexture(mCurrentTextureName).get());
+		mTexturePointer->GetSize(mAutoresizeValue.x, mAutoresizeValue.y);
 		mUVMin.Set(FLT_MAX, FLT_MAX);
 		mUVMax.Set(FLT_MAX, FLT_MAX);
 	}
 
-	if (!myTexture)
+	if (!mTexturePointer)
 		return;
 
-	myTexture->Init();
+	mTexturePointer->Init();
 }
 
 bool UIImage::isAlpha(float X, float Y)
 {
-	//Try to get my mask
-	if (!myAlphaMask)
+	//Try to get mask
+	if (!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
 
 		for (unsigned int i = 0; i < sons.size(); i++)
 		{
-			if (sons[i].myItem->isSubType("AlphaMask"))
+			if (sons[i].mItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = sons[i].myItem;
+				mAlphaMask = sons[i].mItem;
 				break;
 			}
 		}
 	}
 
-	if (myAlphaMask)
+	if (mAlphaMask)
 	{
-		return !myAlphaMask->CheckTo(X, Y);
+		return !mAlphaMask->CheckTo(X, Y);
 	}
 
 	return false;

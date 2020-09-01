@@ -1,6 +1,18 @@
 #pragma once 
 
 #include "Drawable.h"
+
+// ****************************************
+// * RenderingCustomizer class
+// * --------------------------------------
+/**
+* \file	RenderingCustomizer.h
+* \class	RenderingCustomizer
+* \ingroup Renderer
+* \brief Change some rendering states during draw
+*
+*/
+// ****************************************
 class RenderingCustomizer : public Drawable
 {
 public:
@@ -17,13 +29,13 @@ private:
 	virtual bool PreDraw(TravState*) override;
 	virtual bool PostDraw(TravState*) override;
 
-	maInt OverrideCullMode = BASE_ATTRIBUTE(OverrideCullMode, -1);
-	maInt OverrideDepthTest = BASE_ATTRIBUTE(OverrideDepthTest, -1);
+	maInt mOverrideCullMode = BASE_ATTRIBUTE(OverrideCullMode, -1);
+	maInt mOverrideDepthTest = BASE_ATTRIBUTE(OverrideDepthTest, -1);
 
-	int LastCullMode = -1;
-	int LastDepthTest = -1;
+	int mLastCullMode = -1;
+	int mLastDepthTest = -1;
 
-	bool NeedPop = false;
+	bool mNeedPop = false;
 
 	void SaveState(TravState* state);
 	void RestoreState(TravState* state);

@@ -12,27 +12,27 @@ IMPLEMENT_CONSTRUCTOR(MultiTouchAndroid)
 	jclass  pMaClasse =g_env->FindClass("com/kigs/kigsmain/KigsGLSurfaceView");
 
 	jmethodID getMaxTouch = g_env->GetStaticMethodID(pMaClasse, "getMaxTouch", "()I");
-	myMaxTouch = g_env->CallStaticIntMethod(pMaClasse, getMaxTouch);
-	myTouchList.resize(myMaxTouch);
+	mMaxTouch = g_env->CallStaticIntMethod(pMaClasse, getMaxTouch);
+	mTouchList.resize(mMaxTouch);
 
-	for (int i = 0; i < myMaxTouch; i++)
+	for (int i = 0; i < mMaxTouch; i++)
 	{
 
 		jmethodID getTouchClass = g_env->GetStaticMethodID(pMaClasse, "getTouchList", "(I)Lcom/kigs/input/KigsTouchEventList;");
 		jobject pobjet = g_env->CallStaticObjectMethod(pMaClasse, getTouchClass, i);
-		myTouchList[i] = g_env->NewGlobalRef(pobjet);
+		mTouchList[i] = g_env->NewGlobalRef(pobjet);
 	}
 	
 	pMaClasse =g_env->FindClass("com/kigs/input/KigsTouchEventList");
 
-	getEventCount=g_env->GetMethodID(pMaClasse, "getEventCount", "()I");
-	getEvent=g_env->GetMethodID(pMaClasse, "getEvent", "(I)Lcom/kigs/input/KigsTouchEvent;");
-	clearEventList=g_env->GetMethodID(pMaClasse, "clearEventList", "()V");
+	mGetEventCount=g_env->GetMethodID(pMaClasse, "getEventCount", "()I");
+	mGetEvent=g_env->GetMethodID(pMaClasse, "getEvent", "(I)Lcom/kigs/input/KigsTouchEvent;");
+	mClearEventList=g_env->GetMethodID(pMaClasse, "clearEventList", "()V");
 
 	pMaClasse =g_env->FindClass("com/kigs/input/KigsTouchEvent");
-	Event_getX = g_env->GetMethodID(pMaClasse, "getX", "()F");
-	Event_getY = g_env->GetMethodID(pMaClasse, "getY", "()F");
-	Event_getAction = g_env->GetMethodID(pMaClasse, "getAction", "()I");
+	mEventGetX = g_env->GetMethodID(pMaClasse, "getX", "()F");
+	mEventGetY = g_env->GetMethodID(pMaClasse, "getY", "()F");
+	mEventGetAction = g_env->GetMethodID(pMaClasse, "getAction", "()I");
 	
 	KigsCore::GetNotificationCenter()->addObserver(this, "ReinitCB", "ResetContext");
 }
@@ -40,7 +40,7 @@ IMPLEMENT_CONSTRUCTOR(MultiTouchAndroid)
 MultiTouchAndroid::~MultiTouchAndroid()
 {  
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	for (int i=0;i<myMaxTouch;i++) g_env->DeleteGlobalRef(myTouchList[i]);
+	for (int i=0;i<mMaxTouch;i++) g_env->DeleteGlobalRef(mTouchList[i]);
 }    
 
 
@@ -49,9 +49,9 @@ void	MultiTouchAndroid::UpdateDevice()
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	int currentDevice = 0;
 
-	for (int touch = 0; touch < myMaxTouch; touch++)
+	for (int touch = 0; touch < mMaxTouch; touch++)
 	{
-		int event_Count = g_env->CallIntMethod(myTouchList[touch], getEventCount);
+		int event_Count = g_env->CallIntMethod(mTouchList[touch], mGetEventCount);
 
 		if (event_Count)
 		{
@@ -60,33 +60,33 @@ void	MultiTouchAndroid::UpdateDevice()
 			// manage event
 			for (i = 0; i < event_Count; i++)
 			{
-				jobject event = g_env->CallObjectMethod(myTouchList[touch], getEvent, i);
+				jobject event = g_env->CallObjectMethod(mTouchList[touch], mGetEvent, i);
 
-				int action = (int)g_env->CallIntMethod(event, Event_getAction);
-				float x = (float)g_env->CallFloatMethod(event, Event_getX);
-				float y = (float)g_env->CallFloatMethod(event, Event_getY);
+				int action = (int)g_env->CallIntMethod(event, mEventGetAction);
+				float x = (float)g_env->CallFloatMethod(event, mEventGetX);
+				float y = (float)g_env->CallFloatMethod(event, mEventGetY);
 				currentDevice = touch*3;
 
 				if (action == 1) // released
 				{
-					myDeviceItems[currentDevice++]->getState()->SetValue(x);
-					myDeviceItems[currentDevice++]->getState()->SetValue(y);
-					myDeviceItems[currentDevice++]->getState()->SetValue((int)0x00);
+					mDeviceItems[currentDevice++]->getState()->SetValue(x);
+					mDeviceItems[currentDevice++]->getState()->SetValue(y);
+					mDeviceItems[currentDevice++]->getState()->SetValue((int)0x00);
 				}
 				else
 				{
-					myDeviceItems[currentDevice++]->getState()->SetValue(x);
-					myDeviceItems[currentDevice++]->getState()->SetValue(y);
-					myDeviceItems[currentDevice++]->getState()->SetValue((int)0x80);
+					mDeviceItems[currentDevice++]->getState()->SetValue(x);
+					mDeviceItems[currentDevice++]->getState()->SetValue(y);
+					mDeviceItems[currentDevice++]->getState()->SetValue((int)0x80);
 				}
 			}
 
-			g_env->CallVoidMethod(myTouchList[touch], clearEventList);
+			g_env->CallVoidMethod(mTouchList[touch], mClearEventList);
 		}
 	/*	else // no event = no move
 		{
-			myDeviceItems[currentDevice++]->getState()->SetValue((float)0);
-			myDeviceItems[currentDevice++]->getState()->SetValue((float)0);
+			mDeviceItems[currentDevice++]->getState()->SetValue((float)0);
+			mDeviceItems[currentDevice++]->getState()->SetValue((float)0);
 			currentDevice++;
 		}*/
 	}
@@ -98,22 +98,22 @@ void	MultiTouchAndroid::UpdateDevice()
 void	MultiTouchAndroid::DoInputDeviceDescription()
 {
 
-	myDeviceItemsCount=3 * myMaxTouch; // (posx + posy + state) * TouchCount
+	mDeviceItemsCount=3 * mMaxTouch; // (posx + posy + state) * TouchCount
 
-	DeviceItem**	devicearray=new DeviceItem*[myDeviceItemsCount];
+	DeviceItem**	devicearray=new DeviceItem*[mDeviceItemsCount];
 	
 	int currentDevice=0;
 
-	for (int i = 0; i < myMaxTouch; i++)
+	for (int i = 0; i < mMaxTouch; i++)
 	{
 		devicearray[currentDevice++] = new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0)));
 		devicearray[currentDevice++] = new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0)));
 		devicearray[currentDevice++] = new DeviceItem(DeviceItemState<int>(0));
 	}
 
-	InitItems(myDeviceItemsCount,devicearray);
+	InitItems(mDeviceItemsCount,devicearray);
 
-	for(currentDevice=0;currentDevice<myDeviceItemsCount;currentDevice++)
+	for(currentDevice=0;currentDevice<mDeviceItemsCount;currentDevice++)
 	{
 		delete devicearray[currentDevice];
 	}
@@ -127,19 +127,19 @@ DEFINE_METHOD(MultiTouchAndroid, ReinitCB)
 	printf("reinit MultiTouchAndroid\n");
 	
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	for (int i=0;i<myMaxTouch;i++) 
-		g_env->DeleteGlobalRef(myTouchList[i]);
+	for (int i=0;i<mMaxTouch;i++) 
+		g_env->DeleteGlobalRef(mTouchList[i]);
 	
 	jclass  pMaClasse = g_env->FindClass("com/kigs/kigsmain/KigsGLSurfaceView");	
 	jmethodID getMaxTouch = g_env->GetStaticMethodID(pMaClasse, "getMaxTouch", "()I");
-	myMaxTouch = g_env->CallStaticIntMethod(pMaClasse, getMaxTouch);
-	myTouchList.resize(myMaxTouch);
+	mMaxTouch = g_env->CallStaticIntMethod(pMaClasse, getMaxTouch);
+	mTouchList.resize(mMaxTouch);
 
-	for (int i = 0; i < myMaxTouch; i++)
+	for (int i = 0; i < mMaxTouch; i++)
 	{
 		jmethodID getTouchClass = g_env->GetStaticMethodID(pMaClasse, "getTouchList", "(I)Lcom/kigs/input/KigsTouchEventList;");
 		jobject pobjet = g_env->CallStaticObjectMethod(pMaClasse, getTouchClass, i);
-		myTouchList[i] = g_env->NewGlobalRef(pobjet);
+		mTouchList[i] = g_env->NewGlobalRef(pobjet);
 	}
 	
 	return false;

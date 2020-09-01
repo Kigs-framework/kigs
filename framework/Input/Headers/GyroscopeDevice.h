@@ -3,6 +3,17 @@
 
 #include "InputDevice.h"
 
+// ****************************************
+// * GyroscopeDevice class
+// * --------------------------------------
+/**
+ * \class	GyroscopeDevice
+ * \file	GyroscopeDevice.h
+ * \ingroup Input
+ * \brief	Device orientation management.
+ */
+ // ****************************************
+
 class GyroscopeDevice : public InputDevice
 {
 public:
@@ -26,13 +37,13 @@ public:
 	 * \param	posX : position on x axis (in/out param)
 	 * \param	posY : position on y axis (in/out param)
 	 */
-	void			getRotationVelocity(kfloat& X, kfloat& Y, kfloat& Z){ X = myRotationVelocity[0]; Y = myRotationVelocity[1]; Z = myRotationVelocity[2]; }
+	void			getRotationVelocity(kfloat& X, kfloat& Y, kfloat& Z){ X = mRotationVelocity[0]; Y = mRotationVelocity[1]; Z = mRotationVelocity[2]; }
 
 	void			getRotationQuaternion(kfloat& x, kfloat& y, kfloat& z, kfloat& w) {
-		x = myQuaternion[0];
-		y = myQuaternion[1];
-		z = myQuaternion[2];
-		w = myQuaternion[3];
+		x = mRotationQuaternion[0];
+		y = mRotationQuaternion[1];
+		z = mRotationQuaternion[2];
+		w = mRotationQuaternion[3];
 	}
 	/**
 	 * \brief	compute current position
@@ -52,10 +63,10 @@ protected:
 	virtual void	Stop() = 0;
 
 	
-	maVect3DF	myRotationVelocity;
-	maVect4DF   myQuaternion;
+	maVect3DF	mRotationVelocity;
+	maVect4DF   mRotationQuaternion;
 
-	maInt		myRate;
+	maInt		mRate;
 
 };
 

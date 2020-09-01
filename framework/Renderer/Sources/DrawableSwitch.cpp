@@ -6,35 +6,35 @@ IMPLEMENT_CLASS_INFO(DrawableSwitch)
 
 DrawableSwitch::DrawableSwitch(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)
 {
-	myChildrenHaveBbox=false;
-	myCurrentDrawable=0;
-	myNeedBBoxUpdate=false;
+	mChildrenHaveBbox=false;
+	mCurrentDrawable=0;
+	mNeedBBoxUpdate=false;
 }
 
 // call only myCurrentDrawable DoPreDraw
 void	DrawableSwitch::DoPreDraw(TravState* travstate)
 {
-	if(myCurrentDrawable)
+	if(mCurrentDrawable)
 	{
-		myCurrentDrawable->CheckPreDraw(travstate);
+		mCurrentDrawable->CheckPreDraw(travstate);
 	}
 }
 
 // call only myCurrentDrawable DoDraw
 void	DrawableSwitch::DoDraw(TravState* travstate)
 {
-	if(myCurrentDrawable)
+	if(mCurrentDrawable)
 	{
-		myCurrentDrawable->CheckDraw(travstate);
+		mCurrentDrawable->CheckDraw(travstate);
 	}
 }
 
 // call only myCurrentDrawable DoPostDraw
 void	DrawableSwitch::DoPostDraw(TravState* travstate)
 {
-	if(myCurrentDrawable)
+	if(mCurrentDrawable)
 	{
-		myCurrentDrawable->CheckPostDraw(travstate);
+		mCurrentDrawable->CheckPostDraw(travstate);
 	}
 }
 
@@ -43,15 +43,15 @@ bool	DrawableSwitch::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 	bool result=Drawable::addItem(item,pos PASS_LINK_NAME(linkName));
 	if(result)
 	{
-		if(item->isSubType(Drawable::myClassID))
+		if(item->isSubType(Drawable::mClassID))
 		{
 			// if a drawable was added, bbox needs update
-			myNeedBBoxUpdate=true;
+			mNeedBBoxUpdate=true;
 			
 			// if no current drawable, then this one will be the one
-			if(!myCurrentDrawable)
+			if(!mCurrentDrawable)
 			{
-				myCurrentDrawable=(Drawable*)item.get();
+				mCurrentDrawable=(Drawable*)item.get();
 			}
 		}
 	}
@@ -64,15 +64,15 @@ bool	DrawableSwitch::removeItem(const CMSP& item DECLARE_LINK_NAME)
 	bool result=Drawable::removeItem(item PASS_LINK_NAME(linkName));
 	if(result)
 	{
-		if(item->isSubType(Drawable::myClassID))
+		if(item->isSubType(Drawable::mClassID))
 		{
 			// if a drawable was removed, bbox needs update
-			myNeedBBoxUpdate=true;
+			mNeedBBoxUpdate=true;
 			
 			// if item is current drawable, then empty current drawable
-			if(myCurrentDrawable==(Drawable*)item.get())
+			if(mCurrentDrawable==(Drawable*)item.get())
 			{
-				myCurrentDrawable=0;
+				mCurrentDrawable=0;
 			}
 		}
 	}
@@ -89,9 +89,9 @@ void	DrawableSwitch::ComputeLocalBBox(kdouble time)
 
 	for (it=getItems().begin();it!=getItems().end();++it)
     {
-		if((*it).myItem->isSubType(Drawable::myClassID))
+		if((*it).mItem->isSubType(Drawable::mClassID))
 		{
-			SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
+			SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
 
 			//! if object has a valid BBox update return true
 			if(drawable->BBoxUpdate(time))
@@ -103,11 +103,11 @@ void	DrawableSwitch::ComputeLocalBBox(kdouble time)
 				{
 					if(isInit)
 					{
-						myBoundingBox.Update((Point3D *)boundingp,2);
+						mBoundingBox.Update((Point3D *)boundingp,2);
 					}
 					else
 					{
-						myBoundingBox.Init((Point3D *)boundingp,2);
+						mBoundingBox.Init((Point3D *)boundingp,2);
 						isInit=true;
 					}
 				}
@@ -115,21 +115,21 @@ void	DrawableSwitch::ComputeLocalBBox(kdouble time)
 		}
     }
 
-	myChildrenHaveBbox=isInit;
+	mChildrenHaveBbox=isInit;
 }
 
 void	DrawableSwitch::SetCurrentDrawable(int index)
 {
-	myCurrentDrawable=0;
+	mCurrentDrawable=0;
 	int sonindex=0;
 	kstl::vector<ModifiableItemStruct>::const_iterator it;
 	for (it=getItems().begin();it!=getItems().end();++it)
     {
-		if((*it).myItem->isSubType(Drawable::myClassID))
+		if((*it).mItem->isSubType(Drawable::mClassID))
 		{
 			if(sonindex==index)
 			{
-				myCurrentDrawable=(Drawable*)(*it).myItem.get();
+				mCurrentDrawable=(Drawable*)(*it).mItem.get();
 				break;
 			}
 			sonindex++;
@@ -140,14 +140,14 @@ void	DrawableSwitch::SetCurrentDrawable(int index)
 
 void	DrawableSwitch::SetCurrentDrawable(kstl::string drawablename)
 {
-	myCurrentDrawable=0;
+	mCurrentDrawable=0;
 	kstl::vector<ModifiableItemStruct>::const_iterator it;
 	for (it=getItems().begin();it!=getItems().end();++it)
     {
-		if((*it).myItem->getName()==drawablename)
-			if((*it).myItem->isSubType(Drawable::myClassID))
+		if((*it).mItem->getName()==drawablename)
+			if((*it).mItem->isSubType(Drawable::mClassID))
 		{
-			myCurrentDrawable=(Drawable*)(*it).myItem.get();
+			mCurrentDrawable=(Drawable*)(*it).mItem.get();
 			break;
 		}
 	}
@@ -155,14 +155,14 @@ void	DrawableSwitch::SetCurrentDrawable(kstl::string drawablename)
 
 void	DrawableSwitch::SetCurrentDrawable(Drawable* drawable)
 {
-	myCurrentDrawable=0;
+	mCurrentDrawable=0;
 	kstl::vector<ModifiableItemStruct>::const_iterator it;
 	for (it=getItems().begin();it!=getItems().end();++it)
     {
-		if(((*it).myItem)==drawable)
-		if((*it).myItem->isSubType(Drawable::myClassID))
+		if(((*it).mItem)==drawable)
+		if((*it).mItem->isSubType(Drawable::mClassID))
 		{
-			myCurrentDrawable=(Drawable*)(*it).myItem.get();
+			mCurrentDrawable=(Drawable*)(*it).mItem.get();
 			break;
 		}
 	}

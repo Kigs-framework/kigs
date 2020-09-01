@@ -7,7 +7,7 @@
 
 void CoreActionRemoveFromParent::init(CoreSequence* sequence,CoreVector* params)
 {
-	myTarget=sequence->getTarget();
+	mTarget=sequence->getTarget();
 
 #ifdef _DEBUG // test parameters count
 	// kdouble duration, int paramID => 2 params
@@ -19,34 +19,34 @@ void CoreActionRemoveFromParent::init(CoreSequence* sequence,CoreVector* params)
 
 	float readfloat;
 	(*params)[0]->getValue(readfloat);
-	myDuration=readfloat;
+	mDuration=readfloat;
 
 	kstl::string readstring;
 	(*params)[1]->getValue(readstring);
 
-	myParentTypeID=CharToID::GetID(readstring);
+	mParentTypeID=CharToID::GetID(readstring);
 }
 
 bool	CoreActionRemoveFromParent::protectedUpdate(kdouble time)
 {
 	CoreAction::protectedUpdate(time);
 	// wait the end of the action
-	if((time+TimeEpsilon)>=(myStartTime+myDuration))
+	if((time+TimeEpsilon)>=(mStartTime+mDuration))
 	{
-		const kstl::vector<CoreModifiable*>& parents=myTarget->GetParents();
+		const kstl::vector<CoreModifiable*>& parents=mTarget->GetParents();
 		if(parents.size())
 		{
 			// search parent
-			if(myParentTypeID != 0xFFFFFFFF)
+			if(mParentTypeID != 0xFFFFFFFF)
 			{
 				kstl::vector<CoreModifiable*>::const_iterator itparent=parents.begin();
 				kstl::vector<CoreModifiable*>::const_iterator itparentend=parents.end();
 				while(itparent != itparentend)
 				{
-					if((*itparent)->isSubType(myParentTypeID))
+					if((*itparent)->isSubType(mParentTypeID))
 					{
-						myTarget->flagAsPostDestroy();
-						CMSP todel(myTarget, StealRefTag{});
+						mTarget->flagAsPostDestroy();
+						CMSP todel(mTarget, StealRefTag{});
 						(*itparent)->removeItem(todel);
 						return true;
 					}
@@ -55,8 +55,8 @@ bool	CoreActionRemoveFromParent::protectedUpdate(kdouble time)
 			}
 			else // remove from first found parent
 			{
-				myTarget->flagAsPostDestroy();
-				CMSP todel(myTarget, StealRefTag{});
+				mTarget->flagAsPostDestroy();
+				CMSP todel(mTarget, StealRefTag{});
 				(*(parents.begin()))->removeItem(todel);
 				return true;
 			}
@@ -67,7 +67,7 @@ bool	CoreActionRemoveFromParent::protectedUpdate(kdouble time)
 
 void CoreActionSendMessage::init(CoreSequence* sequence,CoreVector* params)
 {
-	myTarget=sequence->getTarget();
+	mTarget=sequence->getTarget();
 
 #ifdef _DEBUG // test parameters count
 	// kdouble duration, message => 2 params
@@ -79,13 +79,13 @@ void CoreActionSendMessage::init(CoreSequence* sequence,CoreVector* params)
 
 	float readfloat;
 	(*params)[0]->getValue(readfloat);
-	myDuration=readfloat;
+	mDuration=readfloat;
 
-	(*params)[1]->getValue(myMessage);
+	(*params)[1]->getValue(mMessage);
 
 	if ((*params).size() > 2)
 	{
-		myParam = (const usString&)(*params)[2];
+		mParam = (const usString&)(*params)[2];
 	}
 }
 
@@ -93,16 +93,16 @@ bool	CoreActionSendMessage::protectedUpdate(kdouble time)
 {
 	CoreAction::protectedUpdate(time);
 	// wait the end of the action
-	if((time+TimeEpsilon)>=(myStartTime+myDuration))
+	if((time+TimeEpsilon)>=(mStartTime+mDuration))
 	{
 		setIsDone();
-		if (myParam.length())
+		if (mParam.length())
 		{
-			KigsCore::GetNotificationCenter()->postNotificationName(myMessage, myTarget, &myParam);
+			KigsCore::GetNotificationCenter()->postNotificationName(mMessage, mTarget, &mParam);
 		}
 		else
 		{
-			KigsCore::GetNotificationCenter()->postNotificationName(myMessage, myTarget);
+			KigsCore::GetNotificationCenter()->postNotificationName(mMessage, mTarget);
 		}
 		return true;
 	}
@@ -111,7 +111,7 @@ bool	CoreActionSendMessage::protectedUpdate(kdouble time)
 
 void CoreActionEmitSignal::init(CoreSequence* sequence, CoreVector* params)
 {
-	myTarget = sequence->getTarget();
+	mTarget = sequence->getTarget();
 
 #ifdef _DEBUG // test parameters count
 	// kdouble duration, message => 2 params
@@ -123,13 +123,13 @@ void CoreActionEmitSignal::init(CoreSequence* sequence, CoreVector* params)
 
 	float readfloat;
 	(*params)[0]->getValue(readfloat);
-	myDuration = readfloat;
+	mDuration = readfloat;
 
-	(*params)[1]->getValue(mySignal);
+	(*params)[1]->getValue(mSignal);
 
 	if ((*params).size() > 2)
 	{
-		myParam = (const usString&)(*params)[2];
+		mParam = (const usString&)(*params)[2];
 	}
 }
 
@@ -137,10 +137,10 @@ bool	CoreActionEmitSignal::protectedUpdate(kdouble time)
 {
 	CoreAction::protectedUpdate(time);
 	// wait the end of the action
-	if ((time + TimeEpsilon) >= (myStartTime + myDuration))
+	if ((time + TimeEpsilon) >= (mStartTime + mDuration))
 	{
 		setIsDone();
-		myTarget->EmitSignal(mySignal, myTarget, myParam);
+		mTarget->EmitSignal(mSignal, mTarget, mParam);
 		return true;
 	}
 	return false;
@@ -150,8 +150,8 @@ bool	CoreActionEmitSignal::protectedUpdate(kdouble time)
 void	CoreActionCombo::setStartTime(kdouble t)
 {
 	CoreAction::setStartTime(t);
-	kstl::vector<CoreAction*>::iterator itaction=myList.begin();
-	kstl::vector<CoreAction*>::iterator itactionEnd=myList.end();
+	kstl::vector<CoreAction*>::iterator itaction=mList.begin();
+	kstl::vector<CoreAction*>::iterator itactionEnd=mList.end();
 
 	while(itaction != itactionEnd)
 	{
@@ -165,8 +165,8 @@ bool	CoreActionCombo::protectedUpdate(kdouble time)
 {
 	CoreAction::protectedUpdate(time);
 	bool alldone=true;
-	kstl::vector<CoreAction*>::iterator itaction=myList.begin();
-	kstl::vector<CoreAction*>::iterator itactionEnd=myList.end();
+	kstl::vector<CoreAction*>::iterator itaction=mList.begin();
+	kstl::vector<CoreAction*>::iterator itactionEnd=mList.end();
 
 	while(itaction != itactionEnd)
 	{
@@ -186,11 +186,11 @@ bool	CoreActionCombo::protectedUpdate(kdouble time)
 
 void CoreActionCombo::init(CoreSequence* sequence,CoreVector* params)
 {
-	myTarget=sequence->getTarget();
+	mTarget=sequence->getTarget();
 
 	ModuleCoreAnimation*	module=(ModuleCoreAnimation*)KigsCore::Instance()->GetMainModuleInList(CoreAnimationModuleCoreIndex);
 
-	myDuration=-1.0;
+	mDuration=-1.0;
 	bool	onehasnoduration=false;	
 
 	unsigned int i;
@@ -202,10 +202,10 @@ void CoreActionCombo::init(CoreSequence* sequence,CoreVector* params)
 		actiontoaddSP->GetRef();
 		CoreAction* actiontoadd = (CoreAction * )actiontoaddSP.get();
 
-		myList.push_back(actiontoadd);
-		if(actiontoadd->getDuration()>myDuration)
+		mList.push_back(actiontoadd);
+		if(actiontoadd->getDuration()>mDuration)
 		{
-			myDuration=actiontoadd->getDuration();
+			mDuration=actiontoadd->getDuration();
 		}
 		if(actiontoadd->getDuration()<0.0)
 		{
@@ -214,15 +214,15 @@ void CoreActionCombo::init(CoreSequence* sequence,CoreVector* params)
 	}
 	if(onehasnoduration)
 	{
-		myDuration=-1.0f;
+		mDuration=-1.0f;
 	}
 
 }
 
 CoreActionCombo::~CoreActionCombo()
 {
-	kstl::vector<CoreAction*>::iterator itaction=myList.begin();
-	kstl::vector<CoreAction*>::iterator itactionEnd=myList.end();
+	kstl::vector<CoreAction*>::iterator itaction=mList.begin();
+	kstl::vector<CoreAction*>::iterator itactionEnd=mList.end();
 
 	while(itaction != itactionEnd)
 	{
@@ -235,41 +235,41 @@ CoreActionCombo::~CoreActionCombo()
 void	CoreActionSerie::setStartTime(kdouble t)
 {
 	CoreAction::setStartTime(t);
-	kstl::vector<CoreAction*>::iterator itaction=myList.begin();
+	kstl::vector<CoreAction*>::iterator itaction=mList.begin();
 
 	// start first action
 	(*itaction)->setStartTime(t);
 	(*itaction)->reset();				// make sure not in done mode
 	++itaction;
-	kstl::vector<CoreAction*>::iterator itactionEnd=myList.end();
+	kstl::vector<CoreAction*>::iterator itactionEnd=mList.end();
 
 	while(itaction != itactionEnd)
 	{
 		(*itaction)->reset();				// make sure not in done mode
 		++itaction;
 	}
-	myCurrentActionIndex=0;
+	mCurrentActionIndex=0;
 }
 
 bool	CoreActionSerie::protectedUpdate(kdouble time)
 {
 	CoreAction::protectedUpdate(time);
 	bool done=false;
-	CoreAction* current=(CoreAction*)myList[myCurrentActionIndex];
+	CoreAction* current=(CoreAction*)mList[mCurrentActionIndex];
 	while(!done)
 	{
 		if(current->update(time)) // action is finished, start next one
 		{
-			++myCurrentActionIndex;
-			if(myCurrentActionIndex < myList.size())
+			++mCurrentActionIndex;
+			if(mCurrentActionIndex < mList.size())
 			{
 				kdouble previousend=current->getEndTime();
-				current=(CoreAction*)myList[myCurrentActionIndex];
+				current=(CoreAction*)mList[mCurrentActionIndex];
 				current->setStartTime(previousend);
 			}
 			else
 			{
-				myCurrentActionIndex=0xFFFFFFFF;
+				mCurrentActionIndex=0xFFFFFFFF;
 				done=true;
 			}
 		}
@@ -278,7 +278,7 @@ bool	CoreActionSerie::protectedUpdate(kdouble time)
 			done=true;
 		}
 	}
-	if(myCurrentActionIndex == 0xFFFFFFFF)
+	if(mCurrentActionIndex == 0xFFFFFFFF)
 	{
 		return true;
 	}
@@ -287,11 +287,11 @@ bool	CoreActionSerie::protectedUpdate(kdouble time)
 
 void CoreActionSerie::init(CoreSequence* sequence,CoreVector* params)
 {
-	myTarget=sequence->getTarget();
+	mTarget=sequence->getTarget();
 
 	ModuleCoreAnimation*	module=(ModuleCoreAnimation*)KigsCore::Instance()->GetMainModuleInList(CoreAnimationModuleCoreIndex);
 
-	myDuration=0.0;
+	mDuration=0.0;
 	bool	onehasnoduration=false;	
 
 	unsigned int i;
@@ -302,25 +302,25 @@ void CoreActionSerie::init(CoreSequence* sequence,CoreVector* params)
 		CoreItemSP actiontoaddsp = module->createAction(sequence, tocreate);
 		actiontoaddsp->GetRef();
 		CoreAction* actiontoadd = (CoreAction * )actiontoaddsp.get();
-		myList.push_back(actiontoadd);
+		mList.push_back(actiontoadd);
 		
 		if(actiontoadd->getDuration()<0.0)
 		{
 			onehasnoduration=true;
 		}
-		myDuration+=actiontoadd->getDuration();	
+		mDuration+=actiontoadd->getDuration();	
 	}
 
 	if(onehasnoduration)
 	{
-		myDuration=-1.0f;
+		mDuration=-1.0f;
 	}
 }
 
 CoreActionSerie::~CoreActionSerie()
 {
-	kstl::vector<CoreAction*>::iterator itaction=myList.begin();
-	kstl::vector<CoreAction*>::iterator itactionEnd=myList.end();
+	kstl::vector<CoreAction*>::iterator itaction=mList.begin();
+	kstl::vector<CoreAction*>::iterator itactionEnd=mList.end();
 
 	while(itaction != itactionEnd)
 	{
@@ -339,9 +339,9 @@ void	CoreActionForLoop::setStartTime(kdouble t)
 	CoreAction::setStartTime(t);
 	
 	// start first action
-	if(myActionToLoop)
+	if(mActionToLoop)
 	{
-		myActionToLoop->setStartTime(t);
+		mActionToLoop->setStartTime(t);
 	}
 	
 }
@@ -350,26 +350,26 @@ void	CoreActionForLoop::setStartTime(kdouble t)
 bool	CoreActionForLoop::protectedUpdate(kdouble time)
 {
 	CoreAction::protectedUpdate(time);
-	bool done=(myActionToLoop==0) || ((myLoopCount>=0)&&(myCurrentLoopIndex>=myLoopCount));
+	bool done=(mActionToLoop==0) || ((mLoopCount>=0)&&(mCurrentLoopIndex>=mLoopCount));
 	
 	while(!done)
 	{
-		if(myActionToLoop->update(time)) // action is finished, start it again ?
+		if(mActionToLoop->update(time)) // action is finished, start it again ?
 		{
-			++myCurrentLoopIndex;
-			kdouble previousend=myActionToLoop->getEndTime();
+			++mCurrentLoopIndex;
+			kdouble previousend=mActionToLoop->getEndTime();
 
-			// myLoopCount<0 => infinite loop
-			if((myCurrentLoopIndex<myLoopCount) || (myLoopCount<0)) 
+			// mLoopCount<0 => infinite loop
+			if((mCurrentLoopIndex<mLoopCount) || (mLoopCount<0)) 
 			{
-				myActionToLoop->reset();
-				myActionToLoop->setStartTime(previousend);
+				mActionToLoop->reset();
+				mActionToLoop->setStartTime(previousend);
 			}
 			else
 			{
 				// set duration so that this action ends at same time the last son action loop end
-				myDuration=myActionToLoop->getEndTime()-myStartTime;
-				myActionToLoop->setIsDone();
+				mDuration=mActionToLoop->getEndTime()-mStartTime;
+				mActionToLoop->setIsDone();
 				done=true;
 				return true;
 			}
@@ -386,28 +386,28 @@ bool	CoreActionForLoop::protectedUpdate(kdouble time)
 
 void CoreActionForLoop::init(CoreSequence* sequence,CoreVector* params)
 {
-	myTarget=sequence->getTarget();
+	mTarget=sequence->getTarget();
 
 	ModuleCoreAnimation*	module=(ModuleCoreAnimation*)KigsCore::Instance()->GetMainModuleInList(CoreAnimationModuleCoreIndex);
 
-	myDuration=-1.0;
+	mDuration=-1.0;
 
 	int readint;
 	(*params)[0]->getValue(readint); // loop count
-	myLoopCount=readint;
+	mLoopCount=readint;
 
 	// create son action
 	CoreItemSP tocreate = (*params)[1];
 	CoreItemSP actiontoaddsp = module->createAction(sequence, tocreate);
 	actiontoaddsp->GetRef();
-	myActionToLoop = (CoreAction*)actiontoaddsp.get();
+	mActionToLoop = (CoreAction*)actiontoaddsp.get();
 
-	if(myActionToLoop)
+	if(mActionToLoop)
 	{
-		myDuration=((kdouble)myLoopCount)*myActionToLoop->getDuration();	
-		if(myDuration<0.0)
+		mDuration=((kdouble)mLoopCount)*mActionToLoop->getDuration();	
+		if(mDuration<0.0)
 		{
-			myDuration=-1.0;
+			mDuration=-1.0;
 		}
 	}
 	
@@ -415,9 +415,9 @@ void CoreActionForLoop::init(CoreSequence* sequence,CoreVector* params)
 
 CoreActionForLoop::~CoreActionForLoop()
 {
-	if(myActionToLoop)
+	if(mActionToLoop)
 	{
-		myActionToLoop->Destroy();
+		mActionToLoop->Destroy();
 	}
 }
 
@@ -427,9 +427,9 @@ void	CoreActionDoWhile::setStartTime(kdouble t)
 	CoreAction::setStartTime(t);
 	
 	// start first action
-	if(myActionToLoop)
+	if(mActionToLoop)
 	{
-		myActionToLoop->setStartTime(t);
+		mActionToLoop->setStartTime(t);
 	}
 	
 }
@@ -438,28 +438,28 @@ void	CoreActionDoWhile::setStartTime(kdouble t)
 bool	CoreActionDoWhile::protectedUpdate(kdouble time)
 {
 	CoreAction::protectedUpdate(time);
-	bool	done=(myActionToLoop==0);
+	bool	done=(mActionToLoop==0);
 
 	bool	whileTest=true;
-	myTarget->getValue(myParamID,whileTest);
+	mTarget->getValue(mParamID,whileTest);
 	
 	if(!whileTest) // end while
 	{
-		myDuration=time-myStartTime; // reset duration
-		myActionToLoop->setIsDone();
+		mDuration=time-mStartTime; // reset duration
+		mActionToLoop->setIsDone();
 		return true;
 	}
 
 	while(!done)
 	{
-		if(myActionToLoop->update(time)) // action is finished, start it again 
+		if(mActionToLoop->update(time)) // action is finished, start it again 
 		{
-			kdouble previousend=myActionToLoop->getEndTime();
+			kdouble previousend=mActionToLoop->getEndTime();
 			
-			myActionToLoop->reset();
-			myActionToLoop->setStartTime(previousend);
+			mActionToLoop->reset();
+			mActionToLoop->setStartTime(previousend);
 			
-			if(myIsZeroDuration) // do it once per frame if zero duration
+			if(mIsZeroDuration) // do it once per frame if zero duration
 			{
 				done=true;
 			}
@@ -476,30 +476,30 @@ bool	CoreActionDoWhile::protectedUpdate(kdouble time)
 
 void CoreActionDoWhile::init(CoreSequence* sequence,CoreVector* params)
 {
-	myTarget=sequence->getTarget();
+	mTarget=sequence->getTarget();
 
 	ModuleCoreAnimation*	module=(ModuleCoreAnimation*)KigsCore::Instance()->GetMainModuleInList(CoreAnimationModuleCoreIndex);
 
-	myDuration=-1.0;
+	mDuration=-1.0;
 
 	kstl::string readstring;
 	(*params)[0]->getValue(readstring);
-	myTarget = checkSubTarget(readstring);
+	mTarget = checkSubTarget(readstring);
 
-	myParamID=CharToID::GetID(readstring);										// parameter to test
+	mParamID=CharToID::GetID(readstring);										// parameter to test
 
 	// create son action
 	CoreItemSP tocreate = (*params)[1];
 	CoreItemSP actiontoaddsp = module->createAction(sequence, tocreate);
 	actiontoaddsp->GetRef();
-	myActionToLoop = (CoreAction*)actiontoaddsp.get();
+	mActionToLoop = (CoreAction*)actiontoaddsp.get();
 
-	if(myActionToLoop)
+	if(mActionToLoop)
 	{
 		// special case for 0.0 duration
-		if(myActionToLoop->getDuration()<=0.0)
+		if(mActionToLoop->getDuration()<=0.0)
 		{
-			myIsZeroDuration=true;
+			mIsZeroDuration=true;
 		}
 	}
 	
@@ -507,8 +507,8 @@ void CoreActionDoWhile::init(CoreSequence* sequence,CoreVector* params)
 
 CoreActionDoWhile::~CoreActionDoWhile()
 {
-	if(myActionToLoop)
+	if(mActionToLoop)
 	{
-		myActionToLoop->Destroy();
+		mActionToLoop->Destroy();
 	}
 }

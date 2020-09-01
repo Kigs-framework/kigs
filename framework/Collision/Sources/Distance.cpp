@@ -250,29 +250,29 @@ kfloat Distance::PointMesh(const Point3D &P, const Mesh *pMesh, Mesh::Triangle* 
 
 	for (it=pMesh->getItems().begin();it!=pMesh->getItems().end();++it)
 	{
-		if((*it).myItem->isSubType(MeshItemGroup::myClassID))
+		if((*it).mItem->isSubType(MeshItemGroup::mClassID))
 		{
-			MeshItemGroup* current=(MeshItemGroup*)(*it).myItem.get();
+			MeshItemGroup* current=(MeshItemGroup*)(*it).mItem.get();
 
-			Mesh::Triangle *Tr = (Mesh::Triangle*)current->myFirstTriangle;
-			int	sizeoftriangle=current->myTriangleSize;
+			Mesh::Triangle *Tr = (Mesh::Triangle*)current->mFirstTriangle;
+			int	sizeoftriangle=current->mTriangleSize;
 
-			for (j=0;j<current->myTriangleCount;j++)
+			for (j=0;j<current->mTriangleCount;j++)
 			{ 
 
 /*
 	for (i=0;i<pMesh->myGroupList.size();i++)
 	{
-		Mesh::Triangle *Tr = ((Mesh::GroupByMaterial*)pMesh->myGroupList[i])->myFirstTriangle;
+		Mesh::Triangle *Tr = ((Mesh::GroupByMaterial*)pMesh->myGroupList[i])->mFirstTriangle;
 
-		int	sizeoftriangle=((Mesh::GroupByMaterial*)pMesh->myGroupList[i])->myTriangleSize;
+		int	sizeoftriangle=((Mesh::GroupByMaterial*)pMesh->myGroupList[i])->mTriangleSize;
 
 		//! no optimisation here, check each triangle in the mesh
-		for (j=0;j<((Mesh::GroupByMaterial*)pMesh->myGroupList[i])->myTriangleCount;j++)
+		for (j=0;j<((Mesh::GroupByMaterial*)pMesh->myGroupList[i])->mTriangleCount;j++)
 		{*/
 				Mesh::Triangle* CurrentT=(Mesh::Triangle*)((unsigned char*)Tr+sizeoftriangle*j);
 
-				d = PointTriangle(P,pMesh->VertexArray[CurrentT->a],pMesh->VertexArray[CurrentT->b],pMesh->VertexArray[CurrentT->c]);
+				d = PointTriangle(P,pMesh->mVertexArray[CurrentT->a],pMesh->mVertexArray[CurrentT->b],pMesh->mVertexArray[CurrentT->c]);
 				
 				//! select the minimal distance
 				if (d<dmin)

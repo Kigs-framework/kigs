@@ -31,17 +31,17 @@ int STLMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
 
 	pMesh->setValue(LABEL_TO_ID(FileName),FileName);
 
-	myFile=BufferedFile::Open(FileName.c_str());
-	if(myFile)
+	mFile=BufferedFile::Open(FileName.c_str());
+	if(mFile)
 	{
 		Error = ReadFile(pMesh);
 		if (Error)
 		{
-			delete(myFile);
+			delete(mFile);
 			KIGS_ERROR("Error reading mesh file",1);
 			return 10+Error;
 		}
-		delete(myFile);
+		delete(mFile);
 		return 0;
 	}
 
@@ -55,7 +55,7 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 	int fileType=0;
 
 	char tmpbuf[10];
-	if(fread(&tmpbuf,sizeof(char),5,myFile) == 5)
+	if(fread(&tmpbuf,sizeof(char),5,mFile) == 5)
 	{
 		tmpbuf[5]=0;
 		kstl::string compare=	tmpbuf;
@@ -78,24 +78,24 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 	if(fileType == 1)
 	{
 		// fill face list with ascii
-		while(myFile->searchNextWord("facet"))
+		while(mFile->searchNextWord("facet"))
 		{
 			readFacet	toAdd;
-			if(myFile->searchNextWord("normal"))
+			if(mFile->searchNextWord("normal"))
 			{
-				if(	myFile->getNextFloat(toAdd.mNormal.x) &&
-					myFile->getNextFloat(toAdd.mNormal.y) &&
-					myFile->getNextFloat(toAdd.mNormal.z) )
+				if(	mFile->getNextFloat(toAdd.mNormal.x) &&
+					mFile->getNextFloat(toAdd.mNormal.y) &&
+					mFile->getNextFloat(toAdd.mNormal.z) )
 				{
 					int		vertexIndex;
 					bool	vertexOK=true;
 					for(vertexIndex=0;vertexIndex<3;vertexIndex++)
 					{
-						if(myFile->searchNextWord("vertex"))
+						if(mFile->searchNextWord("vertex"))
 						{
-							if(!(	myFile->getNextFloat(toAdd.mVertex[vertexIndex].x) &&
-									myFile->getNextFloat(toAdd.mVertex[vertexIndex].y) &&
-									myFile->getNextFloat(toAdd.mVertex[vertexIndex].z) ) )
+							if(!(	mFile->getNextFloat(toAdd.mVertex[vertexIndex].x) &&
+									mFile->getNextFloat(toAdd.mVertex[vertexIndex].y) &&
+									mFile->getNextFloat(toAdd.mVertex[vertexIndex].z) ) )
 							{
 								vertexOK=false;
 								break;
@@ -109,7 +109,7 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 					}
 					if(vertexOK)
 					{
-						if(myFile->searchNextWord("endfacet"))
+						if(mFile->searchNextWord("endfacet"))
 						{
 							myFacetList.push_back(toAdd);
 						}
@@ -135,13 +135,13 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 
 	SP<MeshItemGroup> newgroup=KigsCore::GetInstanceOf(objname,"MeshItemGroup");
 	newgroup->Init();
-	newgroup->myTriangleType=eF_Triangle;
+	newgroup->mTriangleType=eF_Triangle;
 
 	objname=pMesh->getName();
 	objname+="Material";
 
 	SP<Material> newMaterial=KigsCore::GetInstanceOf(objname,"Material");
-	newgroup->myTriangleCount=(int)myFacetList.size();
+	newgroup->mTriangleCount=(int)myFacetList.size();
 
 	objname=newMaterial->getName();
 	objname+="MaterialStage";
@@ -153,31 +153,31 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 
 
 	// totally unoptimized !
-	Mesh::F_Triangle* tmptriangles=new Mesh::F_Triangle[newgroup->myTriangleCount];
+	Mesh::F_Triangle* tmptriangles=new Mesh::F_Triangle[newgroup->mTriangleCount];
 
-	pMesh->VertexCount = newgroup->myTriangleCount * 3;
-	pMesh->VertexArray=new Point3D[pMesh->VertexCount];
-	pMesh->NormalCount = newgroup->myTriangleCount;
-	pMesh->NormalArray=new Vector3D[pMesh->NormalCount];
+	pMesh->mVertexCount = newgroup->mTriangleCount * 3;
+	pMesh->mVertexArray=new Point3D[pMesh->mVertexCount];
+	pMesh->mNormalCount = newgroup->mTriangleCount;
+	pMesh->mNormalArray=new Vector3D[pMesh->mNormalCount];
 
 	int j;
 	unsigned int indexV=0;
 	unsigned int indexN=0;
-	for(j=0;j<newgroup->myTriangleCount;j++)
+	for(j=0;j<newgroup->mTriangleCount;j++)
 	{
 		readFacet&	current=myFacetList[j];
 
-		pMesh->VertexArray[indexV]=current.mVertex[0];
+		pMesh->mVertexArray[indexV]=current.mVertex[0];
 		tmptriangles[j].a=indexV++;
-		pMesh->VertexArray[indexV]=current.mVertex[1];
+		pMesh->mVertexArray[indexV]=current.mVertex[1];
 		tmptriangles[j].b=indexV++;
-		pMesh->VertexArray[indexV]=current.mVertex[2];
+		pMesh->mVertexArray[indexV]=current.mVertex[2];
 		tmptriangles[j].c=indexV++;
-		pMesh->NormalArray[indexN]=current.mNormal;
+		pMesh->mNormalArray[indexN]=current.mNormal;
 		tmptriangles[j].N=indexN++;
 	}
-	newgroup->myFirstTriangle=(Mesh::Triangle*)tmptriangles;
-	newgroup->myTriangleSize = sizeof(Mesh::F_Triangle);
+	newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
+	newgroup->mTriangleSize = sizeof(Mesh::F_Triangle);
 
 	pMesh->addItem((CMSP&)newgroup);
 	

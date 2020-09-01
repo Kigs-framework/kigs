@@ -16,8 +16,19 @@ class   AnonymousModule;
 #define	CoreGetModule(moduleType)				KigsCore::GetModule(#moduleType)
 #define CoreDestroyModule(moduleType)			{ModuleBase* m = KigsCore::GetModule(#moduleType); m->Close(); m->Destroy();}
 
-//! base class for applications
-// inherit CoreModifiable so can receive and send notification, have parameters...
+// ****************************************
+// * CoreBaseApplication class
+// * --------------------------------------
+/**
+* \file	CoreBaseApplication.h
+* \class	CoreBaseApplication
+* \ingroup Core
+* \brief	 Base class for applications.
+*
+* Inherit CoreModifiable so can receive and send notification, have CoreModifiable attributes...
+*/
+// ****************************************
+
 class CoreBaseApplication : public	PlatformBaseApplication, public CoreModifiable
 {
 public:
@@ -52,31 +63,31 @@ public:
 	//!	return true if application can exit
 	bool			NeedExit()
 	{
-		return myNeedExit;
+		return mNeedExit;
 	}
 
 	void	ExternAskExit()
 	{
-		if(!myNeedExit)
+		if(!mNeedExit)
 		{
 			ProtectedExternAskExit();
-			myNeedExit=true;
+			mNeedExit=true;
 		}
 	}
 	
 
-	inline void SetFocus(bool aHasFocus) { myHasFocus = aHasFocus; }
-	inline bool HasFocus()               { return myHasFocus; }
+	inline void SetFocus(bool aHasFocus) { mHasFocus = aHasFocus; }
+	inline bool HasFocus()               { return mHasFocus; }
 
 
 	void	SetUpdateSleepTime(unsigned int ms)
 	{
-		myUpdateSleepTime=ms;
+		mUpdateSleepTime=ms;
 	}
 
 	unsigned int	GetUpdateSleepTime()
 	{
-		return myUpdateSleepTime;
+		return mUpdateSleepTime;
 	}
 
 	// args management
@@ -84,14 +95,14 @@ public:
 
 	unsigned int	GetArgCount() const
 	{
-		return ((unsigned int)myArgs.size());
+		return ((unsigned int)mArgs.size());
 	}
 
 	const kstl::string*	HasArg(const kstl::string& arg, bool startWith=false) const;
 
 	SP<Timer>&			GetApplicationTimer()
 	{
-		return myApplicationTimer;
+		return mApplicationTimer;
 	}
 
 	void			AddAutoUpdate(CoreModifiable*	toUpdate);
@@ -100,17 +111,17 @@ public:
 	// to be ckecked only during update
 	bool			BackKeyWasPressed()
 	{
-		return myBackKeyState == 2;
+		return mBackKeyState == 2;
 	}
 
 	void	setBuildVersion(float v)
 	{
-		myBuildVersion = v;
+		mBuildVersion = v;
 	}
 	 
 	float getBuildVersion()
 	{
-		return myBuildVersion;
+		return mBuildVersion;
 	}
 
 protected:
@@ -137,29 +148,29 @@ protected:
 
 	void DoAutoUpdate();
 
-	maBool			myNeedExit = BASE_ATTRIBUTE(NeedExit,false);
-	bool			myHasFocus;
+	maBool			mNeedExit = BASE_ATTRIBUTE(NeedExit,false);
+	bool			mHasFocus;
 
-	volatile bool	myAlreadyInUpdate;
+	volatile bool	mAlreadyInUpdate;
 
-	bool			myInitBaseModules;
+	bool			mInitBaseModules;
 
-	SP<Timer>			myApplicationTimer;
+	SP<Timer>			mApplicationTimer;
 
-	unsigned int	myUpdateSleepTime;
+	unsigned int	mUpdateSleepTime;
 
-	kstl::vector<kstl::string>			myArgs;
-	kstl::vector<CoreModifiable*>		myAutoUpdateList;
+	kstl::vector<kstl::string>			mArgs;
+	kstl::vector<CoreModifiable*>		mAutoUpdateList;
 
-	unsigned int	myBackKeyState;
+	unsigned int	mBackKeyState;
 
-	AnonymousModule*					myEditor;
+	AnonymousModule*					mEditor;
 
-	bool myAutoUpdateDone = false;
+	bool mAutoUpdateDone = false;
 
 	std::recursive_mutex mAutoUpdateMutex;
 
-	float		myBuildVersion = 1.0;
+	float		mBuildVersion = 1.0;
 };
 
 #endif

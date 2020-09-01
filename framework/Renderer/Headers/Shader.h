@@ -8,6 +8,17 @@
 
 #define UNIFORM_NAME_TYPE unsigned int
 
+// ****************************************
+// * ShaderInfo class
+// * --------------------------------------
+/**
+* \file	Shader.h
+* \class	ShaderInfo
+* \ingroup Renderer
+* \brief Utility class to register shaders
+*
+*/
+// ****************************************
 class ShaderInfo
 {
 public:
@@ -56,22 +67,34 @@ struct Locations
 
 class API3DUniformBase;
 
+
+// ****************************************
+// * UniformList struct
+// * --------------------------------------
+/**
+* \file	Shader.h
+* \class	UniformList
+* \ingroup Renderer
+* \brief Manage shader uniforms
+*
+*/
+// ****************************************
 struct UniformList
 {
 	UniformList(std::string aName)
 	{
-		Current = nullptr;
-		myUniformName = aName;
-		Location = 0xffffffff;
+		mCurrent = nullptr;
+		mUniformName = aName;
+		mLocation = 0xffffffff;
 #ifdef USE_D3D
-		LocationFragment = 0xffffffff;
+		mLocationFragment = 0xffffffff;
 #endif
-		List.clear();
+		mList.clear();
 	}
 
 	API3DUniformBase * Back()
 	{
-		return Current;
+		return mCurrent;
 	}
 
 	void ResetLocation(unsigned int program)
@@ -80,70 +103,93 @@ struct UniformList
 	void Push(API3DUniformBase * u);
 	void Pop();
 
-	unsigned int Location;
+	unsigned int mLocation;
 #ifdef USE_D3D
-	unsigned int LocationFragment;
+	unsigned int mLocationFragment;
 #endif
 
-	API3DUniformBase* Current;
-	std::vector<API3DUniformBase*> List;
+	API3DUniformBase* mCurrent;
+	std::vector<API3DUniformBase*> mList;
 
-	std::string myUniformName;
+	std::string mUniformName;
 };
 
 
+// ****************************************
+// * BuildShaderStruct class
+// * --------------------------------------
+/**
+* \file	Shader.h
+* \class	BuildShaderStruct
+* \ingroup Renderer
+* \brief Utility class to build shaders
+*
+*/
+// ****************************************
 class BuildShaderStruct
 {
 public:
-	BuildShaderStruct() : myVertexShader(nullptr), myFragmentShader(nullptr), myShaderProgram(nullptr)
+	BuildShaderStruct() : mVertexShader(nullptr), mFragmentShader(nullptr), mShaderProgram(nullptr)
 	{}
 
 	virtual ~BuildShaderStruct()
 	{
-		if (myVertexShader)
+		if (mVertexShader)
 		{
-			delete myVertexShader;
-			myVertexShader = nullptr;
+			delete mVertexShader;
+			mVertexShader = nullptr;
 		}
-		if (myFragmentShader)
+		if (mFragmentShader)
 		{
-			delete myFragmentShader;
-			myFragmentShader = nullptr;
+			delete mFragmentShader;
+			mFragmentShader = nullptr;
 		}
-		if (myShaderProgram)
+		if (mShaderProgram)
 		{
-			delete myShaderProgram;
-			myShaderProgram = nullptr;
+			delete mShaderProgram;
+			mShaderProgram = nullptr;
 		}
 
-		if (myLocations)
-			delete myLocations;
-		myLocations = nullptr;
+		if (mLocations)
+			delete mLocations;
+		mLocations = nullptr;
 
-		if (myUniforms)
+		if (mUniforms)
 		{
-			auto itr = myUniforms->begin();
-			for (; itr != myUniforms->end(); ++itr)
+			auto itr = mUniforms->begin();
+			for (; itr != mUniforms->end(); ++itr)
 			{
 				while (itr->second->Back())
 					itr->second->Pop();
 				delete itr->second;
 			}
-			myUniforms->clear();
+			mUniforms->clear();
 
-			delete myUniforms;
+			delete mUniforms;
 		}
-		myUniforms = nullptr;
+		mUniforms = nullptr;
 	}
 
-	ShaderInfo *	myVertexShader;
-	ShaderInfo *	myFragmentShader;
-	ShaderInfo *	myShaderProgram;
+	ShaderInfo *	mVertexShader;
+	ShaderInfo *	mFragmentShader;
+	ShaderInfo *	mShaderProgram;
 
-	Locations*		myLocations = nullptr;
-	std::map<UNIFORM_NAME_TYPE, UniformList*>*	myUniforms = nullptr;
+	Locations*		mLocations = nullptr;
+	std::map<UNIFORM_NAME_TYPE, UniformList*>*	mUniforms = nullptr;
 
 };
+
+// ****************************************
+// * ShaderBase class
+// * --------------------------------------
+/**
+* \file	Shader.h
+* \class	ShaderBase
+* \ingroup Renderer
+* \brief Base virtual class for shaders
+*
+*/
+// ****************************************
 
 class ShaderBase : public Drawable
 {
@@ -160,16 +206,16 @@ public:
 	virtual void	Active(TravState* state, bool resetUniform = false)=0;
 	virtual void	Deactive(TravState* state)=0;
 
-	bool isGeneric() { return myisGeneric; }
+	bool isGeneric() { return misGeneric; }
 
 	template<typename castType= ShaderInfo>
-	inline castType *	GetCurrentShaderProgram() const { if (myCurrentShader) return (castType*)myCurrentShader->myShaderProgram; return nullptr; }
+	inline castType *	GetCurrentShaderProgram() const { if (mCurrentShader) return (castType*)mCurrentShader->mShaderProgram; return nullptr; }
 
 	template<typename castType = ShaderInfo>
-	inline castType* GetCurrentVertexShaderInfo() { if (myCurrentShader) return (castType*)myCurrentShader->myVertexShader; return nullptr; }
+	inline castType* GetCurrentVertexShaderInfo() { if (mCurrentShader) return (castType*)mCurrentShader->mVertexShader; return nullptr; }
 
 	template<typename castType = ShaderInfo>
-	inline castType* GetCurrentFragmentShaderInfo() { if (myCurrentShader) return (castType*)myCurrentShader->myFragmentShader; return nullptr; }
+	inline castType* GetCurrentFragmentShaderInfo() { if (mCurrentShader) return (castType*)mCurrentShader->mFragmentShader; return nullptr; }
 
 	virtual void PushUniform(CoreModifiable*)=0;
 	virtual void PopUniform(CoreModifiable*)=0;
@@ -195,9 +241,9 @@ public:
 
 	API3DUniformBase * GetUniform(unsigned int aUniformNameID)
 	{
-		if (myCurrentShader)
+		if (mCurrentShader)
 		{
-			UniformList * l_ul = (*((myCurrentShader)->myUniforms))[aUniformNameID];
+			UniformList * l_ul = (*((mCurrentShader)->mUniforms))[aUniformNameID];
 			if (l_ul)
 				return l_ul->Back();
 		}
@@ -205,20 +251,20 @@ public:
 	}
 	unsigned int GetUniformLocation(unsigned int  aUniformNameID)
 	{
-		if (myCurrentShader)
+		if (mCurrentShader)
 		{
-			UniformList * l_ul = (*((myCurrentShader)->myUniforms))[aUniformNameID];
+			UniformList * l_ul = (*((mCurrentShader)->mUniforms))[aUniformNameID];
 			if (l_ul)
-				return l_ul->Location;
+				return l_ul->mLocation;
 		}
 		return (unsigned int)-1;
 	}
 
 	void GetMatrixLoc(int loc[3]);
 	const Locations * GetLocation() const {
-		if (myCurrentShader)
+		if (mCurrentShader)
 		{
-			return (myCurrentShader)->myLocations;
+			return (mCurrentShader)->mLocations;
 		}
 		return nullptr;
 	}
@@ -229,14 +275,16 @@ protected:
 	void	setCurrentBuildShader(unsigned int key);
 
 
-	BuildShaderStruct*	myCurrentShader;
-	unsigned int		myCurrentShaderKey;
+	BuildShaderStruct*	mCurrentShader;
+	unsigned int		mCurrentShaderKey;
 
-	maBool			myisGeneric;
-	maString		myVertexShaderText;
-	maString		myFragmentShaderText;
-	maReference		myAttachedCamera;
-	maBool			myUseGenericLight;
+	// TODO : rename to mIsGeneric ( but CoreModifiableAttribute ID should be renamed too ).
+	maBool			misGeneric;
+	maString		mVertexShaderText;
+	maString		mFragmentShaderText;
+	maReference		mAttachedCamera;
+	// TODO : rename rename to mUseGenericLight (but CoreModifiableAttribute ID should be renamed too ).
+	maBool			museGenericLight;
 
 	std::map<unsigned int, BuildShaderStruct*> mShaderSourceMap;
 };

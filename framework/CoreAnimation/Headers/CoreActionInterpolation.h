@@ -14,7 +14,7 @@ public:
 
 	virtual void init(CoreSequence* sequence,CoreVector* params)
 	{
-		myTarget = sequence->getTarget();
+		mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
 		// kdouble duration,kfloat vStart,kfloat vEnd,unsigned int paramID => 4 params
 		if ((params->size() < 4))
@@ -26,20 +26,20 @@ public:
 
 		float readfloat;
 		(*params)[0]->getValue(readfloat);
-		myDuration = readfloat;
+		mDuration = readfloat;
 
 		dataType	readPoint;
 		(*params)[1]->getValue(readPoint);
-		myStart = readPoint;
+		mStart = readPoint;
 
 		(*params)[2]->getValue(readPoint);
-		myEnd = readPoint;
+		mEnd = readPoint;
 
 		kstl::string readstring;
 		(*params)[3]->getValue(readstring);
-		myTarget = checkSubTarget(readstring);
+		mTarget = checkSubTarget(readstring);
 
-		myParamID = CharToID::GetID(readstring);
+		mParamID = CharToID::GetID(readstring);
 
 		// additionnal relative parameter ?
 		if (params->size() == 5)
@@ -49,18 +49,18 @@ public:
 			switch (readint)
 			{
 			case 0:
-				myActionFlags &= 0xFFFFFFFF ^ 3;
+				mActionFlags &= 0xFFFFFFFF ^ 3;
 				break;
 			case 2:
-				myActionFlags &= 0xFFFFFFFF ^ 3;
-				myActionFlags |= (unsigned int)(StartRelative);
+				mActionFlags &= 0xFFFFFFFF ^ 3;
+				mActionFlags |= (unsigned int)(StartRelative);
 				break;
 			case 3:
-				myActionFlags &= 0xFFFFFFFF ^ 3;
-				myActionFlags |= (unsigned int)(EndRelative);
+				mActionFlags &= 0xFFFFFFFF ^ 3;
+				mActionFlags |= (unsigned int)(EndRelative);
 				break;
 			default:
-				myActionFlags |= 3;
+				mActionFlags |= 3;
 				break;
 			}
 		}
@@ -81,8 +81,8 @@ protected:
 	virtual bool	protectedUpdate(kdouble time)
 	{
 		CoreAction::protectedUpdate(time);
-		dataType result = (dataType)(myStart + (myEnd - myStart) * ((float)((time - myStartTime) / myDuration)));
-		myTarget->setValue(myParamID, result);
+		dataType result = (dataType)(mStart + (mEnd - mStart) * ((float)((time - mStartTime) / mDuration)));
+		mTarget->setValue(mParamID, result);
 		return false;
 	}
 
@@ -90,17 +90,17 @@ protected:
 	{
 		CheckDelayTarget();
 		dataType currentval;
-		if (myTarget->getValue(myParamID, currentval))
+		if (mTarget->getValue(mParamID, currentval))
 		{
 			if (IsStartRelative())
-				myStart += currentval;
+				mStart += currentval;
 
 			if (IsEndRelative())
-				myEnd += currentval;
+				mEnd += currentval;
 		}
 	}
 
-	dataType			myStart,myEnd;
+	dataType			mStart,mEnd;
 
 	enum InterpolationFlags
 	{
@@ -110,16 +110,16 @@ protected:
 
 	bool	IsRelative()
 	{
-		return myActionFlags&(StartRelative|EndRelative);
+		return mActionFlags&(StartRelative|EndRelative);
 	}
 
 	bool IsStartRelative()
 	{
-		return myActionFlags&StartRelative;
+		return mActionFlags&StartRelative;
 	}
 	bool IsEndRelative()
 	{
-		return myActionFlags&EndRelative;
+		return mActionFlags&EndRelative;
 	}
 };
 
@@ -136,7 +136,7 @@ public:
 
 	virtual void init(CoreSequence* sequence,CoreVector* params)
 	{
-		myTarget = sequence->getTarget();
+		mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
 		if ((params->size() < 6))
 		{
@@ -146,7 +146,7 @@ public:
 
 		float readfloat;
 		(*params)[0]->getValue(readfloat);
-		myDuration = readfloat;
+		mDuration = readfloat;
 
 		dataType	readPoint;
 		(*params)[1]->getValue(readPoint);
@@ -163,9 +163,9 @@ public:
 
 		kstl::string readstring;
 		(*params)[5]->getValue(readstring);
-		myTarget = checkSubTarget(readstring);
+		mTarget = checkSubTarget(readstring);
 
-		myParamID = CharToID::GetID(readstring);
+		mParamID = CharToID::GetID(readstring);
 
 		// additionnal relative parameter ?
 		if (params->size() == 7)
@@ -175,18 +175,18 @@ public:
 			switch (readint)
 			{
 			case 0:
-				myActionFlags &= 0xFFFFFFFF ^ 3;
+				mActionFlags &= 0xFFFFFFFF ^ 3;
 				break;
 			case 2:
-				myActionFlags &= 0xFFFFFFFF ^ 3;
-				myActionFlags |= (unsigned int)(StartRelative);
+				mActionFlags &= 0xFFFFFFFF ^ 3;
+				mActionFlags |= (unsigned int)(StartRelative);
 				break;
 			case 3:
-				myActionFlags &= 0xFFFFFFFF ^ 3;
-				myActionFlags |= (unsigned int)(EndRelative);
+				mActionFlags &= 0xFFFFFFFF ^ 3;
+				mActionFlags |= (unsigned int)(EndRelative);
 				break;
 			default:
-				myActionFlags |= 3;
+				mActionFlags |= 3;
 				break;
 			}
 		}
@@ -218,13 +218,13 @@ protected:
 	virtual bool	protectedUpdate(kdouble time)
 	{
 		CoreAction::protectedUpdate(time);
-		kfloat t = (kfloat)((time - myStartTime) / myDuration);
+		kfloat t = (kfloat)((time - mStartTime) / mDuration);
 		kfloat a[4];
 		coefs(a[0], a[1], a[2], a[3], t);
 
 		dataType result = p[0] * a[0] + p[1] * a[1] + p[2] * a[2] + p[3] * a[3];
 
-		myTarget->setValue(myParamID, result);
+		mTarget->setValue(mParamID, result);
 		return false;
 	}
 
@@ -232,7 +232,7 @@ protected:
 	{
 		CheckDelayTarget();
 		dataType currentval;
-		if (myTarget->getValue(myParamID, currentval))
+		if (mTarget->getValue(mParamID, currentval))
 		{
 			if (IsStartRelative())
 				p[0] += currentval;
@@ -253,16 +253,16 @@ protected:
 
 	bool	IsRelative()
 	{
-		return myActionFlags&(StartRelative | EndRelative);
+		return mActionFlags&(StartRelative | EndRelative);
 	}
 
 	bool IsStartRelative()
 	{
-		return myActionFlags&StartRelative;
+		return mActionFlags&StartRelative;
 	}
 	bool IsEndRelative()
 	{
-		return myActionFlags&EndRelative;
+		return mActionFlags&EndRelative;
 	}
 };
 
@@ -276,7 +276,7 @@ public:
 
 	virtual void init(CoreSequence* sequence,CoreVector* params)
 	{
-		myTarget = sequence->getTarget();
+		mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
 		// kdouble duration,kfloat vSet,unsigned int paramID => 3 params
 		if (!(params->size() == 3))
@@ -288,17 +288,17 @@ public:
 
 		float readfloat;
 		(*params)[0]->getValue(readfloat);
-		myDuration = readfloat;
+		mDuration = readfloat;
 
 		dataType	readVal;
 		(*params)[1]->getValue(readVal);
-		mySet = readVal;
+		mSet = readVal;
 
 		kstl::string readstring;
 		(*params)[2]->getValue(readstring);
-		myTarget = checkSubTarget(readstring);
+		mTarget = checkSubTarget(readstring);
 
-		myParamID = CharToID::GetID(readstring);
+		mParamID = CharToID::GetID(readstring);
 	}
 
 protected:
@@ -307,16 +307,16 @@ protected:
 	{
 		CoreAction::protectedUpdate(time);
 		// wait the end of the action
-		if ((time + TimeEpsilon) >= (myStartTime + myDuration))
+		if ((time + TimeEpsilon) >= (mStartTime + mDuration))
 		{
 			setIsDone();
-			myTarget->setValue(myParamID, mySet);
+			mTarget->setValue(mParamID, mSet);
 			return true;
 		}
 		return false;
 	}
 
-	dataType			mySet;
+	dataType			mSet;
 
 };
 

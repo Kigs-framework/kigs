@@ -5,23 +5,19 @@
 #include "CoreItem.h"
 #include "CoreValue.h"
 
-// ****************************************
-// * CoreVector class
-// * --------------------------------------
-/**
-* \class	CoreVector
-* \ingroup Core
-* \brief	a vector of RefCountedBaseClass, maintain ref count of instances in vector
-* \author	ukn
-* \version ukn
-* \date	ukn
-*/
-// ****************************************
-
-
-
 template<class BaseClass>
 class CoreVectorBase;
+
+// ****************************************
+// * CoreVectorIterator class
+// * --------------------------------------
+/**
+* \class	CoreVectorIterator
+* \file		CoreVector.h
+* \ingroup Core
+* \brief	Iterator for CoreVector
+*/
+// ****************************************
 
 class CoreVectorIterator : public CoreItemIteratorBase
 {
@@ -29,15 +25,15 @@ public:
 
 	CoreVectorIterator(const CoreItemIteratorBase & other) : CoreItemIteratorBase(other)
 	{
-		myVectorIterator = ((const CoreVectorIterator*)&other)->myVectorIterator;
+		mVectorIterator = ((const CoreVectorIterator*)&other)->mVectorIterator;
 	}
 
 	virtual CoreItemSP operator*() const;
 
 	virtual CoreItemIteratorBase*	clone()
 	{
-		CoreVectorIterator*	result = new CoreVectorIterator(myAttachedCoreItem, myPos);
-		result->myVectorIterator = myVectorIterator;
+		CoreVectorIterator*	result = new CoreVectorIterator(mAttachedCoreItem, mPos);
+		result->mVectorIterator = mVectorIterator;
 		return result;
 	}
 
@@ -45,19 +41,19 @@ public:
 	{
 		CoreItemIteratorBase::operator=(other);
 
-		myVectorIterator = ((const CoreVectorIterator*)&other)->myVectorIterator;
+		mVectorIterator = ((const CoreVectorIterator*)&other)->mVectorIterator;
 		return *this;
 	}
 
 	virtual CoreItemIteratorBase& operator++()
 	{
-		myVectorIterator++;
+		mVectorIterator++;
 		return *this;
 	}
 
 	virtual CoreItemIteratorBase& operator+(const int decal)
 	{
-		myVectorIterator+=decal;
+		mVectorIterator+=decal;
 		return *this;
 	}
 
@@ -70,7 +66,7 @@ public:
 
 	virtual bool operator==(const CoreItemIteratorBase & other) const
 	{
-		if (myVectorIterator == ((CoreVectorIterator*)&other)->myVectorIterator)
+		if (mVectorIterator == ((CoreVectorIterator*)&other)->mVectorIterator)
 		{
 			return true;
 		}
@@ -79,7 +75,7 @@ public:
 
 	virtual bool operator!=(const CoreItemIteratorBase & other) const
 	{
-		if (myVectorIterator != ((CoreVectorIterator*)&other)->myVectorIterator)
+		if (mVectorIterator != ((CoreVectorIterator*)&other)->mVectorIterator)
 		{
 			return true;
 		}
@@ -91,10 +87,19 @@ public:
 
 	}
 
-	kstl::vector<CoreItemSP>::iterator	myVectorIterator;
+	kstl::vector<CoreItemSP>::iterator	mVectorIterator;
 };
 
-
+// ****************************************
+// * CoreVectorBase class
+// * --------------------------------------
+/**
+* \class	CoreVectorBase
+* \file		CoreVector.h
+* \ingroup Core
+* \brief	Base class for CoreVector
+*/
+// ****************************************
 
 template<class BaseClass>
 class CoreVectorBase : public BaseClass
@@ -104,14 +109,14 @@ protected:
 	CoreVectorBase(CoreItem::COREITEM_TYPE _type):
 	BaseClass(_type)
 	{
-		myVector.clear();
+		mVector.clear();
 	}
 
 public:
 
 	virtual void set(int key, const CoreItemSP& toinsert) override
 	{
-		myVector[key] = toinsert;
+		mVector[key] = toinsert;
 	}
 	virtual void set(const kstl::string& key, const CoreItemSP& toinsert) override
 	{
@@ -138,10 +143,10 @@ public:
 
 	virtual void erase(int key) override
 	{
-		auto it = myVector.begin();
+		auto it = mVector.begin();
 		it += key;
-		if(it!= myVector.end())
-			myVector.erase(it);
+		if(it!= mVector.end())
+			mVector.erase(it);
 	}
 	virtual void erase(const kstl::string& key) override
 	{
@@ -178,7 +183,7 @@ public:
 	CoreItemIterator begin() override
 	{
 		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this, GetRefTag{}), 0);
-		iter->myVectorIterator = myVector.begin();
+		iter->mVectorIterator = mVector.begin();
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
@@ -187,116 +192,116 @@ public:
 	CoreItemIterator end() override
 	{
 		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this, GetRefTag{}), 0);
-		iter->myVectorIterator = myVector.end();
+		iter->mVectorIterator = mVector.end();
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 
 	CoreItem::size_type size() const  override
 	{
-		return myVector.size();
+		return mVector.size();
 	}
 
 	CoreItem::size_type max_size() const
 	{
-		return myVector.max_size();
+		return mVector.max_size();
 	}
 
 	void resize(CoreItem::size_type n)
 	{
-		myVector.resize(n,0);
+		mVector.resize(n,0);
 	}
 
 	virtual bool empty() const  override
 	{
-		return myVector.empty();
+		return mVector.empty();
 	}
 
 	const CoreItemSP back() const
 	{
-		return myVector.back();
+		return mVector.back();
 	}
 
 	const CoreItemSP front() const
 	{
-		return myVector.front();
+		return mVector.front();
 	}
 
 	const CoreItemSP at(CoreItem::size_type n) const
 	{
-		return myVector.at(n);
+		return mVector.at(n);
 	}
 
 	void push_back (const CoreItemSP& val)
 	{
-		myVector.push_back(val);
+		mVector.push_back(val);
 	}
 
 	void pop_back()
 	{
-		myVector.pop_back();
+		mVector.pop_back();
 	}
 
 	CoreItemIterator erase(CoreItemIterator position)
 	{
 		CoreVectorIterator& pos = *(CoreVectorIterator*)position.Pointer();
 		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this, GetRefTag{}), 0);
-		iter->myVectorIterator = myVector.erase(pos.myVectorIterator);
+		iter->mVectorIterator = mVector.erase(pos.mVectorIterator);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 	CoreItemIterator erase(CoreItemIterator first, CoreItemIterator last)
 	{
 		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this, GetRefTag{}), 0);
-		iter->myVectorIterator = myVector.erase(((CoreVectorIterator*)first.myPointer)->myVectorIterator, ((CoreVectorIterator*)last.myPointer)->myVectorIterator);
+		iter->mVectorIterator = mVector.erase(((CoreVectorIterator*)first.mPointer)->mVectorIterator, ((CoreVectorIterator*)last.mPointer)->mVectorIterator);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 
 	void clear()
 	{
-		myVector.clear();
+		mVector.clear();
 	}
 
 	void insert(CoreItemIterator position, const CoreItemSP& toinsert)
 	{
-		myVector.insert(((CoreVectorIterator*)&position)->myVectorIterator, toinsert);
+		mVector.insert(((CoreVectorIterator*)&position)->mVectorIterator, toinsert);
 	}
 
 	void insert(CoreItem::size_type position, const CoreItemSP& toinsert)
 	{
-		myVector.insert(myVector.begin()+position,toinsert);
+		mVector.insert(mVector.begin()+position,toinsert);
 	}
 
 	void set(CoreItem::size_type position, const CoreItemSP& toinsert)
 	{
-		myVector[position]=toinsert;
+		mVector[position]=toinsert;
 	}
 
 	CoreVectorBase& operator= (const CoreVectorBase& x)
 	{
-		myVector.clear();
+		mVector.clear();
 		for(auto& el : x)
 		{
-			myVector.push_back(el);
+			mVector.push_back(el);
 		}
 		return *this;
 	}
 
 	virtual inline CoreItemSP operator[](int i) const  override
 	{
-		if ((i >= 0) && (i < (int)myVector.size()))
+		if ((i >= 0) && (i < (int)mVector.size()))
 		{
-			return myVector[i];
+			return mVector[i];
 		}
 		return CoreItemSP(nullptr);
 	}
 
 	virtual inline CoreItemSP operator[](const kstl::string& key) const  override
 	{
-		kstl::vector<CoreItemSP>::const_iterator it = myVector.begin();
+		kstl::vector<CoreItemSP>::const_iterator it = mVector.begin();
 
-		while (it != myVector.end())
+		while (it != mVector.end())
 		{
 			if ((*it)->GetType()&(unsigned int)CoreItem::CORENAMEDITEMMASK)
 			{
@@ -312,9 +317,9 @@ public:
 
 	virtual inline CoreItemSP operator[](const usString& key) const  override
 	{
-		kstl::vector<CoreItemSP>::const_iterator it = myVector.begin();
+		kstl::vector<CoreItemSP>::const_iterator it = mVector.begin();
 
-		while (it != myVector.end())
+		while (it != mVector.end())
 		{
 			if ((*it)->GetType()&(unsigned int)CoreItem::CORENAMEDITEMMASK)
 			{
@@ -330,15 +335,15 @@ public:
 
 	virtual void*	getContainerStruct()  override
 	{
-		return &myVector;
+		return &mVector;
 	}
 
 	virtual operator Point2D() const override
 	{
 		Point2D result;
 	
-		myVector[0]->getValue(result.x);
-		myVector[1]->getValue(result.y);
+		mVector[0]->getValue(result.x);
+		mVector[1]->getValue(result.y);
 
 		return result;
 	}
@@ -347,9 +352,9 @@ public:
 	{
 		Point3D result;
 
-		myVector[0]->getValue(result.x);
-		myVector[1]->getValue(result.y);
-		myVector[2]->getValue(result.z);
+		mVector[0]->getValue(result.x);
+		mVector[1]->getValue(result.y);
+		mVector[2]->getValue(result.z);
 
 		return result;
 	}
@@ -358,35 +363,57 @@ public:
 	{
 		Vector4D result;
 
-		myVector[0]->getValue(result.x);
-		myVector[1]->getValue(result.y);
-		myVector[2]->getValue(result.z);
-		myVector[3]->getValue(result.w);
+		mVector[0]->getValue(result.x);
+		mVector[1]->getValue(result.y);
+		mVector[2]->getValue(result.z);
+		mVector[3]->getValue(result.w);
 
 		return result;
 	}
 
 protected:
-	kstl::vector<CoreItemSP>	myVector;
+	kstl::vector<CoreItemSP>	mVector;
 };
+
+// ****************************************
+// * CoreNamedVector class
+// * --------------------------------------
+/**
+* \class	CoreNamedVector
+* \file		CoreVector.h
+* \ingroup Core
+* \brief	CoreNamedItem managing a vector of CoreItemSP
+*/
+// ****************************************
 
 class CoreNamedVector : public CoreVectorBase<CoreNamedItem>
 {
 public:
 	CoreNamedVector(const kstl::string& _name) : CoreVectorBase<CoreNamedItem>(CORENAMEDVECTOR)
 	{
-		m_Name=_name;
+		mName=_name;
 	}
 		
 	CoreNamedVector() : CoreVectorBase<CoreNamedItem>(CORENAMEDVECTOR)
 	{
-		m_Name="";
+		mName="";
 	}
 
 
 protected:
 
 };
+
+// ****************************************
+// * CoreVector class
+// * --------------------------------------
+/**
+* \class	CoreVector
+* \file		CoreVector.h
+* \ingroup Core
+* \brief	CoreItem managing a vector of CoreItemSP
+*/
+// ****************************************
 
 class CoreVector : public CoreVectorBase<CoreItem>
 {

@@ -1,11 +1,3 @@
-/*
- *  GyroscopeAndroid.cpp
- *  AndroidInputAndroid
- *
- *  Copyright 2011 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "GyroscopeAndroid.h"
 #include "Core.h"
 #include "DeviceItem.h"
@@ -18,19 +10,19 @@ GyroscopeAndroid::GyroscopeAndroid(const kstl::string& name, CLASS_NAME_TREE_ARG
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	jclass pMaClasse = g_env->FindClass("com/kigs/input/KigsGyroscope");
-	myKigsGyroscope = (jclass)g_env->NewGlobalRef(pMaClasse);
+	mKigsGyroscope = (jclass)g_env->NewGlobalRef(pMaClasse);
 
 	// check if supported
-	jmethodID method = g_env->GetStaticMethodID(myKigsGyroscope, "isSupported", "()Z");
-	isAvailable = g_env->CallStaticBooleanMethod(myKigsGyroscope, method);
+	jmethodID method = g_env->GetStaticMethodID(mKigsGyroscope, "isSupported", "()Z");
+	mIsAvailable = g_env->CallStaticBooleanMethod(mKigsGyroscope, method);
 
-	if (isAvailable)
+	if (mIsAvailable)
 	{
-		StopMethod = g_env->GetStaticMethodID(myKigsGyroscope, "stopListening", "(Z)V");
-		StartMethod = g_env->GetStaticMethodID(myKigsGyroscope, "startListening", "(I)V");
+		mStopMethod = g_env->GetStaticMethodID(mKigsGyroscope, "stopListening", "(Z)V");
+		mStartMethod = g_env->GetStaticMethodID(mKigsGyroscope, "startListening", "(I)V");
 
-		getVelocity = g_env->GetStaticMethodID(myKigsGyroscope, "getVelocity", "()[B");
-		getQuat = g_env->GetStaticMethodID(myKigsGyroscope, "getQuaternion", "()[B");
+		mGetVelocity = g_env->GetStaticMethodID(mKigsGyroscope, "getVelocity", "()[B");
+		mGetQuat = g_env->GetStaticMethodID(mKigsGyroscope, "getQuaternion", "()[B");
 	}
 }
 
@@ -38,8 +30,8 @@ GyroscopeAndroid::~GyroscopeAndroid()
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	g_env->DeleteGlobalRef(myKigsGyroscope);
-	myKigsGyroscope = 0;
+	g_env->DeleteGlobalRef(mKigsGyroscope);
+	mKigsGyroscope = 0;
 }
 
 bool	GyroscopeAndroid::Aquire()
@@ -64,42 +56,42 @@ bool	GyroscopeAndroid::Release()
 
 void	GyroscopeAndroid::Start()
 {
-	if (isAvailable)
+	if (mIsAvailable)
 	{
 		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-		g_env->CallStaticVoidMethod(myKigsGyroscope, StartMethod, (int)myRate);
-		isRunning = true;
+		g_env->CallStaticVoidMethod(mKigsGyroscope, mStartMethod, (int)mRate);
+		mIsRunning = true;
 	}
 }
 
 void	GyroscopeAndroid::Stop()
 {
-	if (isAvailable)
+	if (mIsAvailable)
 	{
 		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-		g_env->CallStaticVoidMethod(myKigsGyroscope, StopMethod, false);
-		isRunning = false;
+		g_env->CallStaticVoidMethod(mKigsGyroscope, mStopMethod, false);
+		mIsRunning = false;
 	}
 }
 void	GyroscopeAndroid::UpdateDevice()
 {
-	if (!isAvailable)
+	if (!mIsAvailable)
 		return;
-	if (!isRunning)
+	if (!mIsRunning)
 		return;
 
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(myKigsGyroscope, getVelocity);
+	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(mKigsGyroscope, mGetVelocity);
 	jbyte *body = g_env->GetByteArrayElements(arr, 0);
 
-	myRotationVelocity = *reinterpret_cast<Point3D*>(body);
+	mRotationVelocity = *reinterpret_cast<Point3D*>(body);
 	g_env->ReleaseByteArrayElements(arr, body, 0);
 
-	arr = (jbyteArray)g_env->CallStaticObjectMethod(myKigsGyroscope, getQuat);
+	arr = (jbyteArray)g_env->CallStaticObjectMethod(mKigsGyroscope, mGetQuat);
 	body = g_env->GetByteArrayElements(arr, 0);
 	
-	myQuaternion = *reinterpret_cast<Vector4D*>(body);
+	mRotationQuaternion = *reinterpret_cast<Vector4D*>(body);
 
 	g_env->ReleaseByteArrayElements(arr, body, 0);
 }
@@ -107,7 +99,7 @@ void	GyroscopeAndroid::UpdateDevice()
 void	GyroscopeAndroid::DoInputDeviceDescription()
 {
 	GyroscopeDevice::InitModifiable();
-	if (!isAvailable)
+	if (!mIsAvailable)
 	{
 		UninitModifiable();
 	}

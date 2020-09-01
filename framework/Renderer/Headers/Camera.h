@@ -9,7 +9,16 @@
 #include "TouchInputEventManager.h"
 
 class CullingObject;
-
+// ****************************************
+// * Camera class
+// * --------------------------------------
+/**
+ * \file	Camera.h
+ * \class	Camera
+ * \ingroup Renderer
+ * \brief	Abstract class, special Node3D to manage a camera ( viewpoint in the scene )
+ */
+ // ****************************************
 class Camera : public Node3D 
 {
 public:
@@ -42,18 +51,18 @@ public:
 		*/
 	void	SetViewport(kfloat vpminx,kfloat vpminy,kfloat vpsx,kfloat vpsy)
 	{
-		myViewportMinX=vpminx;
-		myViewportMinY=vpminy;
-		myViewportSizeX=vpsx;
-		myViewportSizeY=vpsy;
+		mViewportMinX=vpminx;
+		mViewportMinY=vpminy;
+		mViewportSizeX=vpsx;
+		mViewportSizeY=vpsy;
 	}
 		
 	void	GetViewport(kfloat& vpminx, kfloat& vpminy, kfloat& vpsx, kfloat& vpsy)
 	{
-		vpminx = myViewportMinX;
-		vpminy = myViewportMinY;
-		vpsx = myViewportSizeX;
-		vpsy = myViewportSizeY;
+		vpminx = mViewportMinX;
+		vpminy = mViewportMinY;
+		vpsx = mViewportSizeX;
+		vpsy = mViewportSizeY;
 	}
 
 
@@ -68,9 +77,9 @@ public:
 		*/
 	void	SetPosition(kfloat x,kfloat y,kfloat z)
 	{
-		myPosition[0]=x;
-		myPosition[1]=y;
-		myPosition[2]=z;
+		mPosition[0]=x;
+		mPosition[1]=y;
+		mPosition[2]=z;
 		RecomputeMatrix();
 	}
 		
@@ -88,11 +97,11 @@ public:
 		*/
 	void	GetPosition(kfloat& x,kfloat& y,kfloat& z)
 	{
-		x=myPosition[0];
-		y=myPosition[1];
-		z=myPosition[2];
+		x=mPosition[0];
+		y=mPosition[1];
+		z=mPosition[2];
 	}
-	Point3D GetPosition() const { return Point3D(myPosition[0], myPosition[1], myPosition[2]); }
+	Point3D GetPosition() const { return Point3D(mPosition[0], mPosition[1], mPosition[2]); }
 		
 	Point3D GetGlobalPosition() { return GetLocalToGlobal().Pos; }
 	/**
@@ -104,9 +113,9 @@ public:
 		*/
 	void	SetViewVector(kfloat x,kfloat y,kfloat z)
 	{
-		myViewVector[0]=x;
-		myViewVector[1]=y;
-		myViewVector[2]=z;
+		mViewVector[0]=x;
+		mViewVector[1]=y;
+		mViewVector[2]=z;
 		RecomputeMatrix();
 	}
 	void SetViewVector(const Point3D& v)
@@ -123,11 +132,11 @@ public:
 		*/
 	void	GetViewVector(kfloat& x,kfloat& y,kfloat& z )
 	{
-		x=myViewVector[0];
-		y=myViewVector[1];
-		z=myViewVector[2];
+		x=mViewVector[0];
+		y=mViewVector[1];
+		z=mViewVector[2];
 	}
-	Point3D GetViewVector() const { return Point3D(myViewVector[0], myViewVector[1], myViewVector[2]); }
+	Point3D GetViewVector() const { return Point3D(mViewVector[0], mViewVector[1], mViewVector[2]); }
 	Point3D GetGlobalViewVector() { return GetLocalToGlobal().XAxis.Normalized(); }
 		
 
@@ -144,9 +153,9 @@ public:
 		*/
 	void	SetUpVector(kfloat x,kfloat y,kfloat z)
 	{
-		myUpVector[0]=x;
-		myUpVector[1]=y;
-		myUpVector[2]=z;
+		mUpVector[0]=x;
+		mUpVector[1]=y;
+		mUpVector[2]=z;
 		RecomputeMatrix();
 	}
 		
@@ -164,11 +173,11 @@ public:
 		*/
 	void	GetUpVector(kfloat& x,kfloat& y,kfloat& z )
 	{
-		x=myUpVector[0];
-		y=myUpVector[1];
-		z=myUpVector[2];
+		x=mUpVector[0];
+		y=mUpVector[1];
+		z=mUpVector[2];
 	}
-	Point3D GetUpVector() const { return Point3D(myUpVector[0], myUpVector[1], myUpVector[2]); }
+	Point3D GetUpVector() const { return Point3D(mUpVector[0], mUpVector[1], mUpVector[2]); }
 	Point3D GetGlobalUpVector() { return GetLocalToGlobal().ZAxis.Normalized(); }
 
 	Point3D GetGlobalRightVector() { return GetLocalToGlobal().YAxis.Normalized(); }
@@ -186,8 +195,8 @@ public:
 		*/
 	void	SetNearAndFar(kfloat znear,kfloat zfar)
 	{
-		myNear=znear;
-		myFar=zfar;
+		mNearPlane=znear;
+		mFarPlane=zfar;
 	}
 		
 	/**
@@ -199,10 +208,10 @@ public:
 		*/
 	void	SetClearColor(kfloat r,kfloat g,kfloat b,kfloat a=1.0f)
 	{
-		myClearColor[0]=r;
-		myClearColor[1]=g;
-		myClearColor[2]=b;
-		myClearColor[3] = a;
+		mClearColor[0]=r;
+		mClearColor[1]=g;
+		mClearColor[2]=b;
+		mClearColor[3] = a;
 	}
 		
 	/**
@@ -210,19 +219,19 @@ public:
 		* \fn 		bool	IsActive()
 		* \return TRUE if the camera is active, FALSE otherwise
 		*/             
-	bool	IsActive(){return myIsActive;}
+	bool	IsActive(){return mIsActive;}
 		
 	/**
 	* \brief	check if the camera is in All Visible mode
 	* \fn 		bool	AllVisible()
 	* \return TRUE if the camera is in All Visible mode, FALSE otherwise
 	*/
-	bool	AllVisible() { return myAllVisible; }
+	bool	AllVisible() { return mAllVisible; }
 		
 	/**
 		* \brief	initialize the culling on an object
-		* \fn 		virtual void  InitCullingObject(CullingObject* obj);
-		* \param	obj : object to cull
+		* \fn 		virtual void  InitCullingObject(CullingObject* mObj);
+		* \param	mObj : object to cull
 		*/ 
 	virtual void  InitCullingObject(CullingObject* obj);
 
@@ -263,16 +272,16 @@ public:
 		
 	
 		
-	inline bool IsEnabled()const {return mybCameraIsEnabled;}
+	inline bool IsEnabled()const {return mCameraIsEnabled;}
 	inline void setIsEnabled(bool a_value)
 	{
-		mybCameraIsEnabled = a_value;
+		mCameraIsEnabled = a_value;
 	}
 		
-	inline unsigned int getPriority()const { return myPriority; }
+	inline unsigned int getPriority()const { return mPriority; }
 	inline void setPriority(unsigned int a_value)
 	{
-		myPriority = a_value;
+		mPriority = a_value;
 	}
 		
 	bool	Draw(TravState* state) override;
@@ -282,7 +291,7 @@ public:
 	//! link to the rendering screen
 	RenderingScreen*	getRenderingScreen()
 	{
-		return (RenderingScreen*)((CoreModifiable*)myRenderingScreen);
+		return (RenderingScreen*)((CoreModifiable*)mRenderingScreen);
 	}
 
 	virtual bool	GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout);
@@ -342,73 +351,73 @@ protected:
 		
 	void	activeTouchControlledCamera(bool active);
 	//! coordinate on x axis of the min point of the viewport
-	maFloat				myViewportMinX;
+	maFloat				mViewportMinX;
 	//! coordinate on y axis of the min point of the viewport
-	maFloat				myViewportMinY;
+	maFloat				mViewportMinY;
 	//! width of the viewport
-	maFloat				myViewportSizeX;
+	maFloat				mViewportSizeX;
 	//! height of the viewport
-	maFloat				myViewportSizeY;
+	maFloat				mViewportSizeY;
 		
 	//! zNear value
-	maFloat				myNear;
+	maFloat				mNearPlane;
 	//! zFar value
-	maFloat				myFar;
+	maFloat				mFarPlane;
 		
 	//! position of the camera
-	maVect3DF			myPosition;
+	maVect3DF			mPosition;
 	//! up vector of the camera
-	maVect3DF			myUpVector;
+	maVect3DF			mUpVector;
 	//! direction of the camera
-	maVect3DF			myViewVector;
+	maVect3DF			mViewVector;
 	//! clear color of the camera
-	maVect4DF			myClearColor;
+	maVect4DF			mClearColor;
 		
 		
 	//! reference on the rendering screen
-	maReference			myRenderingScreen;
+	maReference			mRenderingScreen;
 		
 	//! vertical FOV of the camera
-	maFloat				myVerticalFOV;
+	maFloat				mVerticalFOV;
 	//! aspect ration of the camera
-	maFloat				myAspectRatio;
+	maFloat				mAspectRatio;
 		
 	//! should clear zBuffer
-	maBool				myClearZBuffer;
+	maBool				mClearZBuffer;
 	//! should clear color buffer
-	maBool				myClearColorBuffer;
+	maBool				mClearColorBuffer;
 	//! should clear stencil buffer
-	maBool				myClearStencilBuffer;
+	maBool				mClearStencilBuffer;
 		
 	//! Disable or Enable camera
-	maBool				mybCameraIsEnabled;
+	maBool				mCameraIsEnabled;
 		
 	//! Camera priority
-	maUInt				myPriority;
+	maUInt				mPriority;
 		
 	//! Camera brightness, change rendering screen brightness
-	maFloat		myBrightness;
+	maFloat		mBrightness;
 		
 	//! Camera all visible(no cull)
-	maBool				myAllVisible;
+	maBool				mAllVisible;
 
-	maBool				myTouchControlled;
+	maBool				mTouchControlled;
 		
 	//! TRUE when the camera is active
-	bool				myIsActive;
+	bool				mIsActive;
 
 	struct touchControlledDataStruct
 	{
 		// data
-		Point2D		startPt; // used for rotation
-		kfloat		OneOnCoef; // used for rotation and zoom
-		kfloat		targetPointDist; // used for rotation and zoom
-		Vector3D	startV; // used for rotation and zoom
+		Point2D		mStartPt; // used for rotation
+		kfloat		mOneOnCoef; // used for rotation and zoom
+		kfloat		mTargetPointDist; // used for rotation and zoom
+		Vector3D	mStartV; // used for rotation and zoom
 
 		// store starting camera data
-		Matrix3x4	StartMatrix;
+		Matrix3x4	mStartMatrix;
 
-		unsigned int state;
+		unsigned int mState;
 	};
 
 	// remove touchControlledDataStruct if needed

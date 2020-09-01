@@ -7,12 +7,13 @@
 // ****************************************
 // * DisplayDeviceCapsJavascript class
 // * --------------------------------------
-/*!  \class DisplayDeviceCapsJavascript
-     a javascript DisplayDeviceCaps, used to get display device list and capacities
-     \ingroup GUIModuleJavascript
+/**
+* \file	DisplayDeviceCapsJavascript.h
+* \class	DisplayDeviceCapsJavascript
+* \ingroup GUIModule
+* \brief	Javascript display device capacities.
 */
 // ****************************************
-
 
 class DisplayDeviceCapsJavascript : public DisplayDeviceCaps
 {

@@ -10,6 +10,18 @@ class UIDrawableItem;
 
 #define		UserFlagUseColorArray	(8)
 
+// ****************************************
+// * UIDrawableItem class
+// * --------------------------------------
+/**
+* \file	UIDrawableItem.h
+* \class	UIDrawableItem
+* \ingroup 2DLayers
+* \brief	UIItem to be drawn.
+*
+*/
+// ****************************************
+
 class UIDrawableItem : public UIItem
 {
 public:

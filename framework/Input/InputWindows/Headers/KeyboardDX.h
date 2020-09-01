@@ -8,12 +8,14 @@
 // ****************************************
 // * KeyboardDX class
 // * --------------------------------------
-/*!  \class KeyboardDX
-     DirectX keyboard management
-	 \ingroup InputDX
+/**
+* \file	KeyboardDX.h
+* \class	KeyboardDX
+* \ingroup Input
+* \brief Specific DirectX keyboard device.
+*
 */
 // ****************************************
-
 class	KeyboardDX : public KeyboardDevice
 {
 public:
@@ -21,9 +23,9 @@ public:
 
     KeyboardDX(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
-	LPDIRECTINPUTDEVICE8& getDirectInputKeyboard(){return myDirectInputKeyboard;}
+	LPDIRECTINPUTDEVICE8& getDirectInputKeyboard(){return mDirectInputKeyboard;}
 
-	virtual const DeviceItemBaseState&	getKeyState(int key_id){return *myDeviceItems[key_id]->getState();}
+	virtual const DeviceItemBaseState&	getKeyState(int key_id){return *mDeviceItems[key_id]->getState();}
     
 	virtual void	UpdateDevice();
 
@@ -33,7 +35,7 @@ public:
 	void	DoInputDeviceDescription();
 
 	u16 ScanToChar(u32 scanCode, u32* vkCode) override;
-	byte* getKeys() {return myKeys.state;}
+	byte* getKeys() {return mKeys.state;}
     
 protected:
     virtual ~KeyboardDX();
@@ -43,11 +45,11 @@ protected:
 		byte state[256];
 	} keyboard_t;
 	
-	keyboard_t				myKeys;
+	keyboard_t				mKeys;
 
-	LPDIRECTINPUTDEVICE8	myDirectInputKeyboard;  
+	LPDIRECTINPUTDEVICE8	mDirectInputKeyboard;  
 
-	HKL						myLayout;
+	HKL						mLayout;
   
 };    
 

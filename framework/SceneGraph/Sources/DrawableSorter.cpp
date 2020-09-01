@@ -11,20 +11,20 @@ void DrawableSorter::AddDrawable(Drawable *pDrawable,TravState* state)
 {
 	DrawableSorterItem newItem;
 
-	newItem.myWay.myDrawable = pDrawable;
+	newItem.mWay.mDrawable = pDrawable;
 	CompleteInformationFor(&newItem,state);
-	newItem.myWay.myWay=myCurrentPath;
+	newItem.mWay.mWay=mCurrentPath;
 
-	m_DrawableList.push_back(newItem);
+	mDrawableList.push_back(newItem);
 }
 
 void	DrawableSorter::ConstructPath(TravPath& path)
 {
-	std::sort(m_DrawableList.begin(), m_DrawableList.end());
+	std::sort(mDrawableList.begin(), mDrawableList.end());
 	kstl::set<DrawableSorterItem>::iterator it;
-	for(auto& it : m_DrawableList)
+	for(auto& it : mDrawableList)
 	{
-		path.Push(it.myWay);
+		path.Push(it.mWay);
 	}
 	
 }

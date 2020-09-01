@@ -8,12 +8,13 @@
 // ****************************************
 // * KeyboardJavascript class
 // * --------------------------------------
-/*!  \class KeyboardJavascript
-     JavaScript keyboard management
-  \ingroup InputJavaScript
-*/
-// ****************************************
-
+/**
+ * \class	KeyboardJavascript
+ * \file	KeyboardJavascript.h
+ * \ingroup Input
+ * \brief	Javascript Keyboard management.
+ */
+ // ****************************************
 class	KeyboardJavascript : public KeyboardDevice
 {
 	public:
@@ -21,7 +22,7 @@ class	KeyboardJavascript : public KeyboardDevice
 	
 		KeyboardJavascript(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
     
-	const DeviceItemBaseState&	getKeyState(int key_id) override {return *myDeviceItems[key_id]->getState();}
+	const DeviceItemBaseState&	getKeyState(int key_id) override {return *mDeviceItems[key_id]->getState();}
 	
 	void	UpdateDevice() override;
 	
@@ -29,14 +30,14 @@ class	KeyboardJavascript : public KeyboardDevice
 	
 	void	Set_RecordingString(bool _value);
 	
-	inline kstl::string	Get_RecordingString() const {return MyString;}
+	inline kstl::string	Get_RecordingString() const {return mString;}
     
 	protected:
     virtual ~KeyboardJavascript();
 	
-	char Tab[256];
-	bool RecordingString_Enable;
-	kstl::string MyString;
+	char mTab[256];
+	bool mRecordingStringEnable;
+	kstl::string mString;
 };    
 
 #endif //_KEYBOARDJAVASCRIPT_H_

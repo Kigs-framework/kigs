@@ -8,12 +8,13 @@
 // ****************************************
 // * Plane class
 // * --------------------------------------
-/*!  \class Plane
-     a node in a Axis Aligned Bounding box tree, used to optimise intersection calculation 
-	 \ingroup Collision
+/**
+* \file	Plane.h
+* \class	Plane
+* \ingroup Collision
+* \brief  Plane structure for collision purpose.
 */
 // ****************************************
-
 class Plane : public CollisionBaseNode
 {
 public:
@@ -32,29 +33,29 @@ public:
 	virtual void DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer);
 #endif
 	
-	void SetIsDynamic(bool b)	{myIsDynamic = b;}
-	bool IsDynamic() { return myIsDynamic; }
+	void SetIsDynamic(bool b)	{mIsDynamic = b;}
+	bool IsDynamic() { return mIsDynamic; }
 
 	bool TestHit(Hit& hit, v3f local_origin, v3f local_direction) override;
 
 	void SetPlane(Point3D &pos, Vector3D &norm)
 	{
-		myPosition[0] = pos.x;
-		myPosition[1] = pos.y;
-		myPosition[2] = pos.z;
+		mPosition[0] = pos.x;
+		mPosition[1] = pos.y;
+		mPosition[2] = pos.z;
 
-		myNormal.setValue(norm);
+		mNormal.setValue(norm);
 	}
 	
 	void GetPlane(Point3D &pos, Vector3D &norm)
 	{
-		pos.x = myPosition[0];
-		pos.y = myPosition[1];
-		pos.z = myPosition[2];
+		pos.x = mPosition[0];
+		pos.y = mPosition[1];
+		pos.z = mPosition[2];
 
-		norm.x = myNormal[0];
-		norm.y = myNormal[1];
-		norm.z = myNormal[2];
+		norm.x = mNormal[0];
+		norm.y = mNormal[1];
+		norm.z = mNormal[2];
 	}
 	
 protected:
@@ -72,13 +73,22 @@ protected:
 
 	void	InitModifiable() override;
 
-	bool		myIsDynamic;
+	bool		mIsDynamic;
 
-	maVect3DF	myPosition;
-	maVect3DF	myNormal;
+	maVect3DF	mPosition;
+	maVect3DF	mNormal;
 };
 
-
+// ****************************************
+// * Panel class
+// * --------------------------------------
+/**
+* \file	Plane.h
+* \class	Panel
+* \ingroup Collision
+* \brief  Rectangular surface on a plane where collision is detected.
+*/
+// ****************************************
 class Panel :public Plane
 {
 public:
@@ -104,9 +114,9 @@ protected:
 	void InitModifiable() override;
 	
 
-	maVect2DF mySize;
-	maVect2DF myHitPos;
-	maVect3DF myUp;
+	maVect2DF mSize;
+	maVect2DF mHitPos;
+	maVect3DF mUp;
 
 };
 

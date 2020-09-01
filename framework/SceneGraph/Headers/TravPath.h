@@ -6,9 +6,6 @@
 class Drawable;
 class SceneNode;
 
-/*! \defgroup InternalTravPath TravPath Internal
- * \ingroup SceneGraph
-*/
 
 // ****************************************
 // * TravPath class
@@ -17,12 +14,9 @@ class SceneNode;
  * \file	TravPath.h
  * \class	TravPath
  * \ingroup SceneGraph
- * \brief	a class used to store pathes in the scenegraph and draw sorted objects following this path 
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \brief  Class used to store pathes in the scenegraph and draw sorted objects following the right path.
  */
-// ****************************************
+ // ****************************************
 class TravPath 
 {
 public:
@@ -46,22 +40,18 @@ public:
 	// * Way class
 	// * --------------------------------------
 	/**
-	 * \file	Way.h
+	 * \file	TravPath.h
 	 * \class	Way
-	 * \brief	
-	 * \ingroup InternalTravPath
-	 * \author	ukn
-	 * \version ukn
-	 * \date	ukn
+	 * \brief	Manage one path part to a specific Drawable
 	 */
 	// ****************************************
 	class Way
 	{
 	public:
 		//! a way is a list of node index in the scenegraph 
-		kstl::vector<int>	myWay;
+		kstl::vector<int>	mWay;
 		//! the targeted drawable
-		Drawable*			myDrawable;
+		Drawable*			mDrawable;
 	};
 
 	/**
@@ -71,7 +61,7 @@ public:
 	 */
 	inline void Push(const Way& way)	
 	{
-		myPath.push_back(way);
+		mPath.push_back(way);
 	}
 
 	/**
@@ -94,10 +84,10 @@ public:
 	int GetSize();
 	
 	/**
-	 * \brief	compute what to do to go to the next entry
+	 * \brief	compute what to do to go to the next mEntry
 	 * \fn 		PathNeed ComputeNeeds(kstl::vector<int>& currentway);
 	 * \param	currentway : the current way
-	 * \return	what to do to go to the next entry from the current position in path
+	 * \return	what to do to go to the next mEntry from the current position in path
 	 */
 	PathNeed ComputeNeeds(kstl::vector<int>& currentway);
 
@@ -133,11 +123,11 @@ public:
 
 protected:
 		//! the path
-	kstl::vector<Way>			myPath;
+	kstl::vector<Way>			mPath;
 	//! ?
-	int							myNeedPop;
+	int							mNeedPop;
 	//! current index in the path
-	int							myCurrentPathIndex;
+	int							mCurrentPathIndex;
 
 }; 
 
@@ -150,9 +140,9 @@ protected:
 	 */
 	inline void TravPath::Clear()
 	{
-		myPath.clear();
-		myNeedPop=0;
-		myCurrentPathIndex=0;
+		mPath.clear();
+		mNeedPop=0;
+		mCurrentPathIndex=0;
 	}
 
 	/**
@@ -160,7 +150,7 @@ protected:
 	 * \fn 		inline int TravPath::GetSize()
 	 * \return	the TravPath size
 	 */
-	inline int TravPath::GetSize(){return (int)myPath.size()-myCurrentPathIndex;}
+	inline int TravPath::GetSize(){return (int)mPath.size()-mCurrentPathIndex;}
 
 	/**
 	 * \brief	get the index of the next way
@@ -168,12 +158,12 @@ protected:
 	 * \param	currentway : the current way
 	 * \return	the index of the next way
 	 */
-	inline int TravPath::GotoWay(kstl::vector<int>& currentway){return myPath[(unsigned long)myCurrentPathIndex].myWay[currentway.size()];}
+	inline int TravPath::GotoWay(kstl::vector<int>& currentway){return mPath[(unsigned long)mCurrentPathIndex].mWay[currentway.size()];}
 
 	/**
 	 * \brief	get the drawable
 	 * \fn 		inline Drawable* TravPath::GetDrawable()
 	 * \return	the drawable
 	 */
-	inline Drawable* TravPath::GetDrawable(){return myPath[(unsigned long)myCurrentPathIndex].myDrawable;}
+	inline Drawable* TravPath::GetDrawable(){return mPath[(unsigned long)mCurrentPathIndex].mDrawable;}
 #endif //_TRAVPATH_H_

@@ -13,7 +13,7 @@ IMPLEMENT_CLASS_INFO(UIAnimatedSprite)
 
 void UIAnimatedSprite::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == myIsEnabled.getLabelID())
+	if (labelid == mIsEnabled.getLabelID())
 	{
 		if (!GetSons().empty())
 		{
@@ -22,18 +22,18 @@ void UIAnimatedSprite::NotifyUpdate(const unsigned int labelid)
 			std::set<Node2D*, Node2D::PriorityCompare>::iterator end = sons.end();
 			while (it != end)
 			{
-				(*it)->setValue("IsEnabled", myIsEnabled);
+				(*it)->setValue("IsEnabled", mIsEnabled);
 				it++;
 			}
 		}
 	}
-	else if (labelid == myCurrentAnimation.getLabelID())
+	else if (labelid == mCurrentAnimation.getLabelID())
 	{
-		ChangeAnimation(myCurrentAnimation.c_str());
+		ChangeAnimation(mCurrentAnimation.c_str());
 	}
-	else if (labelid == myFileName.getID())
+	else if (labelid == mFileName.getID())
 	{
-		ChangeSpriteSheet(myFileName);
+		ChangeSpriteSheet(mFileName);
 	}
 	UIDrawableItem::NotifyUpdate(labelid);
 }
@@ -44,62 +44,62 @@ void UIAnimatedSprite::InitModifiable()
 
 	if (IsInit())
 	{
-		if (myFileName.const_ref() != "")
+		if (mFileName.const_ref() != "")
 		{
-			ChangeSpriteSheet(myFileName);
+			ChangeSpriteSheet(mFileName);
 		}
-		myIsEnabled.changeNotificationLevel(Owner);
-		myCurrentAnimation.changeNotificationLevel(Owner);
-		myFileName.changeNotificationLevel(Owner);
+		mIsEnabled.changeNotificationLevel(Owner);
+		mCurrentAnimation.changeNotificationLevel(Owner);
+		mFileName.changeNotificationLevel(Owner);
 	}
 }
 
 void UIAnimatedSprite::ComputeRealSize()
 {
 	ParentClassType::ComputeRealSize();
-	if (myTexture)
+	if (mTexture)
 	{
-		if (mySizeX == 0 && mySizeModeX == DEFAULT)
-			myRealSize.x = mCurrentSourceSize.x;
-		if (mySizeY == 0 && mySizeModeY == DEFAULT)
-			myRealSize.y = mCurrentSourceSize.y;
+		if (mSizeX == 0 && mSizeModeX == DEFAULT)
+			mRealSize.x = mCurrentSourceSize.x;
+		if (mSizeY == 0 && mSizeModeY == DEFAULT)
+			mRealSize.y = mCurrentSourceSize.y;
 	}
 }
 
 void UIAnimatedSprite::ChangeSpriteSheet(std::string const& filename)
 {
 	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-	myFileName = filename;
-	myTexture = textureManager->GetSpriteSheetTexture(filename);
-	ChangeAnimation(myCurrentAnimation.c_str());
+	mFileName = filename;
+	mTexture = textureManager->GetSpriteSheetTexture(filename);
+	ChangeAnimation(mCurrentAnimation.c_str());
 }
 
 SpriteSheetTexture* UIAnimatedSprite::GetSpriteSheetTexture()
 {
-	return myTexture.get();
+	return mTexture.get();
 }
 
 bool UIAnimatedSprite::isAlpha(float X, float Y)
 {
-	//Try to get my mask
-	if (!myAlphaMask)
+	//Try to get mask
+	if (!mAlphaMask)
 	{
 		std::vector<ModifiableItemStruct> sons = getItems();
 
 		for (unsigned int i = 0; i < sons.size(); i++)
 		{
-			if (sons[i].myItem->isSubType("AlphaMask"))
+			if (sons[i].mItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = sons[i].myItem;
+				mAlphaMask = sons[i].mItem;
 				break;
 			}
 		}
 	}
 
-	if (myAlphaMask)
+	if (mAlphaMask)
 	{
-		//Check on my mask the specified location
-		return !myAlphaMask->CheckTo(X, Y);
+		//Check on mask the specified location
+		return !mAlphaMask->CheckTo(X, Y);
 	}
 
 	return false;
@@ -107,16 +107,16 @@ bool UIAnimatedSprite::isAlpha(float X, float Y)
 
 void UIAnimatedSprite::ChangeAnimation(const std::string& _newAnimation)
 {
-	if (myTexture)
+	if (mTexture)
 	{
-		m_FrameNumber = myTexture->Get_FrameNumber(_newAnimation);
-		myCurrentAnimation = _newAnimation;
-		m_CurrentFrame = 0;
-		m_dElpasedTime = 0;
+		mFrameNumber = mTexture->Get_FrameNumber(_newAnimation);
+		mCurrentAnimation = _newAnimation;
+		mCurrentFrame = 0;
+		mElpasedTime = 0;
 
 		int L_SourceSizeX = 0;
 		int L_SourceSizeY = 0;
-		myTexture->Get_SourceSize(myCurrentAnimation.const_ref(), L_SourceSizeX, L_SourceSizeY);
+		mTexture->Get_SourceSize(mCurrentAnimation.const_ref(), L_SourceSizeX, L_SourceSizeY);
 		mCurrentSourceSize = v2f(L_SourceSizeX, L_SourceSizeY);
 	}
 }
@@ -125,28 +125,28 @@ void UIAnimatedSprite::Update(const Timer& _timer, void* addParam)
 {
 	double L_delta = ((Timer&)_timer).GetDt(this);
 
-	if (m_FrameNumber > 0)
+	if (mFrameNumber > 0)
 	{
-		m_dElpasedTime += L_delta;
-		auto animationSpeed = 1.0f / m_FramePerSecond;
-		if (m_dElpasedTime >= animationSpeed)
+		mElpasedTime += L_delta;
+		auto animationSpeed = 1.0f / mFramePerSecond;
+		if (mElpasedTime >= animationSpeed)
 		{
-			int L_temp = (int)(m_dElpasedTime / animationSpeed);
-			m_CurrentFrame += L_temp;
-			if ((bool)m_AnimationLoop)
+			int L_temp = (int)(mElpasedTime / animationSpeed);
+			mCurrentFrame += L_temp;
+			if ((bool)mLoop)
 			{
-				m_CurrentFrame = m_CurrentFrame % m_FrameNumber;
+				mCurrentFrame = mCurrentFrame % mFrameNumber;
 			}
-			else if (m_CurrentFrame >= m_FrameNumber)
+			else if (mCurrentFrame >= mFrameNumber)
 			{
-				m_CurrentFrame = m_FrameNumber - 1;
+				mCurrentFrame = mFrameNumber - 1;
 			}
-			m_dElpasedTime -= animationSpeed * ((float)(L_temp));
+			mElpasedTime -= animationSpeed * ((float)(L_temp));
 		}
 	}
 	else
 	{
-		m_dElpasedTime = 0;
+		mElpasedTime = 0;
 	}
 }
 
@@ -156,7 +156,7 @@ void UIAnimatedSprite::SetVertexArray(UIVerticesInfo * aQI)
 	aQI->Resize(4);
 	VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
 
-	const SpriteSheetFrame * f = myTexture ? myTexture->Get_AnimFrame(myCurrentAnimation, m_CurrentFrame) : nullptr;
+	const SpriteSheetFrame * f = mTexture ? mTexture->Get_AnimFrame(mCurrentAnimation, mCurrentFrame) : nullptr;
 	if (!f || !f->Trimmed)
 	{
 		ParentClassType::SetVertexArray(aQI);
@@ -170,7 +170,7 @@ void UIAnimatedSprite::SetVertexArray(UIVerticesInfo * aQI)
 		v2f(f->Decal_X + f->FrameSize_X, f->Decal_Y + f->FrameSize_Y),
 		v2f(f->Decal_X + f->FrameSize_X,	f->Decal_Y)
 	};
-	for (auto& p : pt) p *= myRealSize * v2f(1.0f / f->SourceSize_X, 1.0f / f->SourceSize_Y);
+	for (auto& p : pt) p *= mRealSize * v2f(1.0f / f->SourceSize_X, 1.0f / f->SourceSize_Y);
 
 	TransformPoints(pt, 4);
 	// triangle strip order
@@ -182,22 +182,22 @@ void UIAnimatedSprite::SetVertexArray(UIVerticesInfo * aQI)
 
 void UIAnimatedSprite::SetTexUV(UIVerticesInfo * aQI)
 {
-	if (myTexture && myTexture->Get_Texture())
+	if (mTexture && mTexture->Get_Texture())
 	{
 		v2f s, r;
-		myTexture->Get_Texture()->GetSize(s.x, s.y);
-		myTexture->Get_Texture()->GetRatio(r.x, r.y);
+		mTexture->Get_Texture()->GetSize(s.x, s.y);
+		mTexture->Get_Texture()->GetRatio(r.x, r.y);
 		s /= r;
 
 		float dx = 0.5f / s.x;
 		float dy = 0.5f / s.y;
 
-		const SpriteSheetFrame * f = myTexture->Get_AnimFrame(myCurrentAnimation, m_CurrentFrame);
+		const SpriteSheetFrame * f = mTexture->Get_AnimFrame(mCurrentAnimation, mCurrentFrame);
 		if (f == nullptr)
 			return;
 
 		bool is_bgr = false;
-		if (myTexture->getValue("IsBGR", is_bgr) && is_bgr)
+		if (mTexture->getValue("IsBGR", is_bgr) && is_bgr)
 		{
 			aQI->Flag |= UIVerticesInfo_BGRTexture;
 		}
@@ -233,20 +233,20 @@ void UIAnimatedSprite::SetTexUV(UIVerticesInfo * aQI)
 
 void UIAnimatedSprite::PreDraw(TravState* state)
 {
-	if (myTexture  &&myTexture->Get_Texture())
-		myTexture->Get_Texture()->DoPreDraw(state);
+	if (mTexture  &&mTexture->Get_Texture())
+		mTexture->Get_Texture()->DoPreDraw(state);
 }
 
 void UIAnimatedSprite::PostDraw(TravState* state)
 {
-	if (myTexture &&myTexture->Get_Texture())
-		myTexture->Get_Texture()->DoPostDraw(state);
+	if (mTexture &&mTexture->Get_Texture())
+		mTexture->Get_Texture()->DoPostDraw(state);
 }
 
 int UIAnimatedSprite::GetTransparencyType()
 {
-	if (myTexture &&myTexture->Get_Texture() && GetOpacity() == 1.0f)
-		return myTexture->Get_Texture()->GetTransparency();
+	if (mTexture &&mTexture->Get_Texture() && GetOpacity() == 1.0f)
+		return mTexture->Get_Texture()->GetTransparency();
 	else // overall transparency
 		return 2;
 }

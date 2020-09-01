@@ -26,7 +26,7 @@ public:
 
 	HINTERNET getHandle()
 	{
-		return myConnectionHandle;
+		return mConnectionHandle;
 	}
 
 
@@ -38,9 +38,9 @@ protected:
 	//! destructor
     virtual ~HTTPConnectWindows();
 
-	HINTERNET					myConnectionHandle;
-	HINTERNET					myInternetHandle;
-	INTERNET_STATUS_CALLBACK	myiscCallback;
+	HINTERNET					mConnectionHandle;
+	HINTERNET					mInternetHandle;
+	INTERNET_STATUS_CALLBACK	mIsCallback;
 };
 
 #endif //_HTTPCONNECTWINDOWS_H_

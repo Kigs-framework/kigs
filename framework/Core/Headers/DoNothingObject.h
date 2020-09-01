@@ -13,12 +13,9 @@
  * \class	DoNothingObject
  * \ingroup Core
  * \brief	Object which do nothing
- * \author	ukn
- * \version ukn
- * \date	ukn
  *
- * well! an instanciable modifiable that do nothing
- * used to create an instance of unknown object instead of returning a NULL pointer
+ * An instanciable modifiable that do nothing.
+ * Used to create an instance of unknown object instead of returning a NULL pointer.
  */
 // ****************************************
 class DoNothingObject : public CoreModifiable

@@ -6,6 +6,19 @@
 #include "CoreRawBuffer.h"
 #include "AsciiParserUtils.h"
 
+
+// ****************************************
+// * ASEMeshLoader class
+// * --------------------------------------
+/**
+ * \file	ASEMeshLoader.h
+ * \class	ASEMeshLoader
+ * \ingroup Renderer
+ * \brief	Load mesh in ASE format.
+ * 
+ * Obsolete
+ */
+ // ****************************************
 class ASEMeshLoader 
 {
 public:
@@ -28,16 +41,16 @@ private:
     kstl::vector<BaseMaterialStruct> subMat;
   };
 
-  kstl::vector<materialStruct> myMaterialStructList;
+  kstl::vector<materialStruct> mMaterialStructList;
 
-	kstl::vector<kstl::string>	myTextureList;
-	kstl::vector<kstl::string>	myMaterialList;
+	kstl::vector<kstl::string>	mTextureList;
+	kstl::vector<kstl::string>	mMaterialList;
 
-	char *TextureName;
-	int MaterialCount;
-	int *MatIdArray;	
-	SmartPointer<CoreRawBuffer>			m_data;
-	AsciiParserUtils*		m_FileParser;
+	char *mTextureName;
+	int mMaterialCount;
+	int *mMatIdArray;	
+	SmartPointer<CoreRawBuffer>			mData;
+	AsciiParserUtils*		mFileParser;
 };
 
 #endif // _ASEMESHLOADER_H_

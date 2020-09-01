@@ -19,21 +19,19 @@ extern ModuleBase* PlatformInputModuleInit(KigsCore* core, const kstl::vector<Co
 #define MODULEINITFUNC			ModuleInit
 #endif
 
-/*! \defgroup InputDX InputDX module
- *  manage keyboards, pad, mouse... with direct X
-	\ingroup Input
-*/
-
 
 // ****************************************
 // * ModuleInputDX class
 // * --------------------------------------
-/*!  \class ModuleInputDX
-     this class is the module manager class
-	 \ingroup InputDX
+/**
+* \file	ModuleInputDX.h
+* \class	ModuleInputDX
+* \ingroup Input
+* \ingroup Module
+* \brief Specific Input Module for DirectX API.
+*
 */
 // ****************************************
-
 class ModuleInputDX : public ModuleBase
 {
 public:
@@ -46,11 +44,11 @@ public:
     void Close();
 	virtual void Update(const Timer& timer, void* addParam);
 
-	LPDIRECTINPUT8	getDirectInput(){return myDirectInput;}
+	LPDIRECTINPUT8	getDirectInput(){return mDirectInput;}
     
-	bool	isInit(){return myIsInitOK;}
+	bool	isInit(){return mIsInitOK;}
 
-	unsigned int	getJoystickCount(){return myJoystickCount;}
+	unsigned int	getJoystickCount(){return mJoystickCount;}
 
 	bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
 
@@ -58,9 +56,9 @@ public:
 protected:
     virtual ~ModuleInputDX();
 
-	LPDIRECTINPUT8			myDirectInput;   
-	bool					myIsInitOK;
-	unsigned int			myJoystickCount;
+	LPDIRECTINPUT8			mDirectInput;   
+	bool					mIsInitOK;
+	unsigned int			mJoystickCount;
 
 }; 
 

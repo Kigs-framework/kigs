@@ -3,7 +3,18 @@
 
 #include "UILayout.h"
 
-// Adjust the position of all children according to a flow layout algorithm
+
+// ****************************************
+// * UIBoxLayout class
+// * --------------------------------------
+/**
+* \file	UIBoxLayout.h
+* \class	UIBoxLayout
+* \ingroup 2DLayers
+* \brief	Adjust the position of all children according to the box layout
+*
+*/
+// ****************************************
 
 class UIBoxLayout : public UILayout
 {
@@ -15,16 +26,16 @@ protected:
 	void	NotifyUpdate(const unsigned int labelid)override;
 	void	RecomputeLayout()override;
 
-	maVect2DI				myPadding = BASE_ATTRIBUTE(Padding, 0, 0);
-	maBool					mySortByPriority = BASE_ATTRIBUTE(SortByPriority, false);
-	maBool					myVertical = BASE_ATTRIBUTE(Vertical, false);
+	maVect2DI				mPadding = BASE_ATTRIBUTE(Padding, 0, 0);
+	maBool					mSortByPriority = BASE_ATTRIBUTE(SortByPriority, false);
+	maBool					mVertical = BASE_ATTRIBUTE(Vertical, false);
 
 	/**
 	* 0 = Left/Top, 1 = Center, 2 = Right/Bottom
 	*/
-	maInt					myAlignment = BASE_ATTRIBUTE(Alignment, false);
-	maBool					myResizeLayoutX = BASE_ATTRIBUTE(ResizeLayoutX, false);
-	maBool					myResizeLayoutY = BASE_ATTRIBUTE(ResizeLayoutY, false);
+	maInt					mAlignment = BASE_ATTRIBUTE(Alignment, false);
+	maBool					mResizeLayoutX = BASE_ATTRIBUTE(ResizeLayoutX, false);
+	maBool					mResizeLayoutY = BASE_ATTRIBUTE(ResizeLayoutY, false);
 
 };
 

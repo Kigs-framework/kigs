@@ -8,6 +8,9 @@
 #include "Core.h"
 #include "PureVirtualFileAccessDelegate.h"
 
+
+class FilePathManager;
+
 // ****************************************
 // * CorePackage class
 // * --------------------------------------
@@ -15,13 +18,10 @@
 * \file	CorePackage.h
 * \class	CorePackage
 * \ingroup FileManager
-* \brief	manage packages and files inside packages
-* \author	ukn
-* \version ukn
-* \date	ukn
+* \brief	Manage packages and files inside packages.
+*
 */
-
-class FilePathManager;
+// ****************************************
 
 class CorePackage
 {
@@ -32,7 +32,7 @@ private:
 	{
 	}
 
-	CorePackage(SmartPointer<FileHandle> fileHandle) : myMainFile(fileHandle)
+	CorePackage(SmartPointer<FileHandle> fileHandle) : mMainFile(fileHandle)
 	{
 	}
 
@@ -45,29 +45,29 @@ private:
 
 	struct KPKGHeader
 	{
-		u32			myHeadID;
-		u32			myFATSize;
-		u64			myTotalSize;
+		u32			mHeadID;
+		u32			mFATSize;
+		u64			mTotalSize;
 	};
 
 	struct FATEntry
 	{
-		u64		myFileOffset;
-		u64		myFileSize;
-		u32		myFileNameSize;
-		u32		mySonCount;
+		u64		mFileOffset;
+		u64		mFileSize;
+		u32		mFileNameSize;
+		u32		mSonCount;
 	};
 
 	class FATEntryNode : public FATEntry
 	{
 	public:
-		std::string					myName;
-		std::vector<FATEntryNode*>		mySons;
-		KigsID							myFastCheckName;
+		std::string					mName;
+		std::vector<FATEntryNode*>		mSons;
+		KigsID							mFastCheckName;
 
 		~FATEntryNode()
 		{
-			for (auto son : mySons)
+			for (auto son : mSons)
 			{
 				delete son;
 			}
@@ -101,14 +101,14 @@ protected:
 			return 0;
 		}
 
-		package->myFileName = filename;
+		package->mFileName = filename;
 		
 		return package;
 	}
 
 	std::string GetName()
 	{
-		return myFileName;
+		return mFileName;
 	}
 
 	class CorePackageIterator
@@ -117,20 +117,20 @@ protected:
 
 		CorePackageIterator(const CorePackageIterator& other)
 		{
-			myPackage = other.myPackage;
-			myNodeStack = other.myNodeStack;
-			myState = other.myState;
+			mPackage = other.mPackage;
+			mNodeStack = other.mNodeStack;
+			mState = other.mState;
 		}
 
 		bool operator==(const CorePackageIterator& other)
 		{
-			if ((myPackage == other.myPackage) && (myState == other.myState) )
+			if ((mPackage == other.mPackage) && (mState == other.mState) )
 			{
-				if (myState == -1)
+				if (mState == -1)
 				{
 					return true;
 				}
-				else if ( (myNodeStack.back().entry == other.myNodeStack.back().entry) && (myNodeStack.back().stackedSonIndex == other.myNodeStack.back().stackedSonIndex) )
+				else if ( (mNodeStack.back().mEntry == other.mNodeStack.back().mEntry) && (mNodeStack.back().mStackedSonIndex == other.mNodeStack.back().mStackedSonIndex) )
 					return true;
 			}
 			return false;
@@ -146,7 +146,7 @@ protected:
 			FATEntryNode*	current = currentEntry();
 			if (current)
 			{
-				return current->myName;
+				return current->mName;
 			}
 			return "";
 		}
@@ -156,7 +156,7 @@ protected:
 			FATEntryNode*	current = currentEntry();
 			if (current)
 			{
-				return (current->mySons.size()!=0);
+				return (current->mSons.size()!=0);
 			}
 			return false;
 		}
@@ -185,19 +185,19 @@ protected:
 			FATEntryNode*	current = currentEntry();
 			if (current)
 			{
-				for (auto it : myNodeStack)
+				for (auto it : mNodeStack)
 				{
-					if(!it.entry->myName.empty())
-						toReturn.push_back(it.entry->myName);
+					if(!it.mEntry->mName.empty())
+						toReturn.push_back(it.mEntry->mName);
 				}
-				toReturn.push_back(myNodeStack.back().entry->mySons[myNodeStack.back().stackedSonIndex]->myName);
+				toReturn.push_back(mNodeStack.back().mEntry->mSons[mNodeStack.back().mStackedSonIndex]->mName);
 			}
 			return toReturn;
 		}
 
 		CorePackageIterator& operator++()
 		{
-			if (myState == -1)
+			if (mState == -1)
 			{
 				return *this;
 			}
@@ -207,24 +207,24 @@ protected:
 
 			
 			// current has unexplored sons ?
-			if (myNodeStack.back().entry->mySons.size()>myNodeStack.back().stackedSonIndex)
+			if (mNodeStack.back().mEntry->mSons.size()>mNodeStack.back().mStackedSonIndex)
 			{
 
-				myNodeStack.back().stackedSonIndex++;
-				if (current->mySons.size())
+				mNodeStack.back().mStackedSonIndex++;
+				if (current->mSons.size())
 				{
-					myNodeStack.push_back(current);
+					mNodeStack.push_back(current);
 					return *this;
 				}
 
 			}
 
-			while (myNodeStack.back().entry->mySons.size() <= myNodeStack.back().stackedSonIndex)
+			while (mNodeStack.back().mEntry->mSons.size() <= mNodeStack.back().mStackedSonIndex)
 			{
-				myNodeStack.pop_back();
-				if (!myNodeStack.size())
+				mNodeStack.pop_back();
+				if (!mNodeStack.size())
 				{
-					myState = -1;
+					mState = -1;
 					break;
 				}
 			}
@@ -243,50 +243,50 @@ protected:
 		
 		friend class CorePackage;
 		CorePackageIterator() :
-			myPackage(0)
+			mPackage(0)
 		{
 			
 		}
 
 		FATEntryNode*	currentEntry()
 		{
-			if (myState == -1)
+			if (mState == -1)
 			{
 				return 0;
 			}
 		
-			return myNodeStack.back().entry->mySons[myNodeStack.back().stackedSonIndex];
+			return mNodeStack.back().mEntry->mSons[mNodeStack.back().mStackedSonIndex];
 		}
 
-		CorePackage*	myPackage;
+		CorePackage*	mPackage;
 
 		struct StackedNode
 		{
-			StackedNode(FATEntryNode* e) : entry(e), stackedSonIndex(0){}
-			FATEntryNode*	entry;
-			int				stackedSonIndex;
+			StackedNode(FATEntryNode* e) : mEntry(e), mStackedSonIndex(0){}
+			FATEntryNode*	mEntry;
+			int				mStackedSonIndex;
 		};
 
-		std::vector<StackedNode>	myNodeStack;
-		int							myState;
+		std::vector<StackedNode>	mNodeStack;
+		int							mState;
 	};
 
 
 	CorePackageIterator	begin()
 	{
 		CorePackageIterator	toReturn;
-		toReturn.myPackage = this;
-		toReturn.myNodeStack.push_back(myRootFATEntry);
-		toReturn.myState = 0; // ok
+		toReturn.mPackage = this;
+		toReturn.mNodeStack.push_back(mRootFATEntry);
+		toReturn.mState = 0; // ok
 		return toReturn;
 	}
 
 	CorePackageIterator	end()
 	{
 		CorePackageIterator	toReturn;
-		toReturn.myPackage = this;
-		toReturn.myNodeStack.push_back(myRootFATEntry);
-		toReturn.myState = -1; // end
+		toReturn.mPackage = this;
+		toReturn.mNodeStack.push_back(mRootFATEntry);
+		toReturn.mState = -1; // end
 		return toReturn;
 	}
 
@@ -296,27 +296,27 @@ public:
 
 	~CorePackage() 
 	{ 
-		if(myMainFile)
-			Platform_fclose(myMainFile.get());
+		if(mMainFile)
+			Platform_fclose(mMainFile.get());
 
 		for (auto& thread_read : mThreadRead)
 		{
-			if(thread_read.second.myFile)
-				Platform_fclose(thread_read.second.myFile.get());
+			if(thread_read.second.mFile)
+				Platform_fclose(thread_read.second.mFile.get());
 		}
 
 
 #ifdef KIGS_TOOLS
-		if (myPackageBuilderStruct)
+		if (mPackageBuilderStruct)
 		{
 			KIGS_WARNING("CorePackage destroyed while being in construction", 2);
-			delete myPackageBuilderStruct;
+			delete mPackageBuilderStruct;
 		}
 #endif
 
-		if (myRootFATEntry)
+		if (mRootFATEntry)
 		{
-			delete myRootFATEntry;
+			delete mRootFATEntry;
 		}
 
 	}
@@ -328,16 +328,16 @@ public:
 	{
 		auto f = [&](FATEntryNode* node, const std::string& name)
 		{
-			func(name + node->myName);
+			func(name + node->mName);
 		};
-		IterateFATTree(myRootFATEntry, "", f);
+		IterateFATTree(mRootFATEntry, "", f);
 	}
 
 	static CorePackage *	CreateNewEmptyPackage()
 	{
 		CorePackage* package = new CorePackage();
 
-		package->myPackageBuilderStruct = new PackageCreationStruct();
+		package->mPackageBuilderStruct = new PackageCreationStruct();
 		return package;
 	}
 
@@ -351,22 +351,22 @@ public:
 
 
 private:
-	SmartPointer<FileHandle>	myMainFile;
+	SmartPointer<FileHandle>	mMainFile;
 
-	size_t						myFileSize = 0;
-	FATEntryNode*				myRootFATEntry = nullptr;
-	size_t						myDataStartOffset = 0;
-	std::string					myFileName;
+	size_t						mFileSize = 0;
+	FATEntryNode*				mRootFATEntry = nullptr;
+	size_t						mDataStartOffset = 0;
+	std::string					mFileName;
 
-	// 1 entry folder cache management (for find)
-	//FATEntryNode*				myCachedFATEntry;
-	//std::string				myCachedFolder;
+	// 1 mEntry folder cache management (for find)
+	//FATEntryNode*				mCachedFATEntry;
+	//std::string				mCachedFolder;
 
 	struct ThreadRead
 	{
-		SmartPointer<FileHandle>	myFile;
-		FATEntryNode*				myCachedFATEntry = nullptr;
-		std::string				myCachedFolder;
+		SmartPointer<FileHandle>	mFile;
+		FATEntryNode*				mCachedFATEntry = nullptr;
+		std::string				mCachedFolder;
 	};
 
 	kigs::unordered_map<std::thread::id, ThreadRead> mThreadRead;
@@ -388,15 +388,15 @@ private:
 
 		struct fileNames
 		{
-			std::string	PhysicalName;
-			std::string	PackageName;
+			std::string	mPhysicalName;
+			std::string	mPackageName;
 		};
 
 		struct FileTreeNode
 		{
-			std::string				name;
-			fileNames*					fileNames;	// null for folder
-			std::vector<FileTreeNode>	sons;
+			std::string				mName;
+			fileNames*					mFileNames;	// null for folder
+			std::vector<FileTreeNode>	mSons;
 		};
 
 		PackageCreationStruct() 
@@ -411,18 +411,18 @@ private:
 		void	AddFile(const std::string& filename, const std::string& filePathInPackage)
 		{
 			fileNames	toAdd;
-			toAdd.PhysicalName = filename;
-			toAdd.PackageName = filePathInPackage;
-			myFileList.push_back(toAdd);
+			toAdd.mPhysicalName = filename;
+			toAdd.mPackageName = filePathInPackage;
+			mFileList.push_back(toAdd);
 		}
 
 		void	RemoveFile(const std::string& filename)
 		{
-			for (auto it = myFileList.begin(); it!= myFileList.end(); ++it)
+			for (auto it = mFileList.begin(); it!= mFileList.end(); ++it)
 			{
-				if (it->PhysicalName == filename)
+				if (it->mPhysicalName == filename)
 				{
-					myFileList.erase(it);
+					mFileList.erase(it);
 					break;
 				}
 			}
@@ -436,21 +436,33 @@ private:
 
 		void ExportFiles(const FileTreeNode& node, SmartPointer<FileHandle>& L_File, unsigned char* tmpBuffer, unsigned int bufferLen);
 
-		FilePathManager* fpm=nullptr;
+		FilePathManager* mFPM=nullptr;
 
 	private:
 
-		std::vector<fileNames>	myFileList;
+		std::vector<fileNames>	mFileList;
 	};
 
-	PackageCreationStruct*	myPackageBuilderStruct = nullptr;
+	PackageCreationStruct*	mPackageBuilderStruct = nullptr;
 	
 };
+
+// ****************************************
+// * CorePackageFileAccess class
+// * --------------------------------------
+/**
+* \file	CorePackage.h
+* \class	CorePackageFileAccess
+* \ingroup FileManager
+* \brief	File access delegate for integration in Kigs generic file management
+*
+*/
+// ****************************************
 
 class CorePackageFileAccess : public PureVirtualFileAccessDelegate
 {
 public:
-	CorePackageFileAccess(CorePackage* pack) : myPackage(pack)
+	CorePackageFileAccess(CorePackage* pack) : mPackage(pack)
 	{
 
 	}
@@ -476,9 +488,9 @@ protected:
 
 	}
 
-	CorePackage*					myPackage = nullptr;
-	CorePackage::FATEntry*			myFileEntry = nullptr;
-	u64								myCurrentReadPos = 0;
+	CorePackage*					mPackage = nullptr;
+	CorePackage::FATEntry*			mFileEntry = nullptr;
+	u64								mCurrentReadPos = 0;
 };
 
 #endif //__COREPACKAGE_H__

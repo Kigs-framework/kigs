@@ -8,7 +8,7 @@
 BMPClass::BMPClass(FileHandle* fileName):TinyImage()
 {
 	mIsVFlipped=false;
-	myInitIsOK =Load(fileName);
+	mInitIsOK =Load(fileName);
 
 }
 
@@ -25,7 +25,7 @@ BMPClass::BMPClass(void* data, int sx,int sy,TinyImage::ImageFormat internalfmt)
 
 void	BMPClass::Export(const char* filename)
 {
-	if(!myInitIsOK)
+	if(!mInitIsOK)
 	{
 		return;
 	}
@@ -46,8 +46,8 @@ void	BMPClass::Export(const char* filename)
 	towrite.mColorCount=0;
 	towrite.mImportantColorCount=0;
 	towrite.mCompression=0;
-	towrite.mSizeX=myWidth;
-	towrite.mSizeY=myHeight;
+	towrite.mSizeX=mWidth;
+	towrite.mSizeY=mHeight;
 	towrite.mHRes=300;
 	towrite.mVRes=300;
 
@@ -78,7 +78,7 @@ void	BMPClass::Export(const char* filename)
 
 
 	SmartPointer<FileHandle> L_File = Platform_fopen(filename, "wb");
-	if (L_File->myFile)
+	if (L_File->mFile)
 	{
 		Platform_fwrite("BM", 2, 1, L_File.get());
 		Platform_fwrite(&towrite, sizeof(bmpHeader), 1, L_File.get());
@@ -105,7 +105,7 @@ bool	BMPClass::Load(FileHandle* fileName)
 	u64 filelength;
 
 	// free previous image if any
-	if(myInitIsOK)
+	if(mInitIsOK)
 	{
 		if(mPixels)
 		{
@@ -141,8 +141,8 @@ bool	BMPClass::Load(FileHandle* fileName)
 			sy=-sy;
 		}
 
-		myWidth = sx;
-		myHeight = sy;
+		mWidth = sx;
+		mHeight = sy;
 
 		// 4 bits and 8 bits bmps use palette and can be compressed
 		if(bpp==4 || bpp==8) 
@@ -163,7 +163,7 @@ bool	BMPClass::Load(FileHandle* fileName)
 			// should be always 4 here 
 			int readpaletteValueSize=GetPaletteValueSize(currentReadFormat);
 
-			mFormat=mLoaderContext->myFormatConvertion[(int)currentReadFormat];
+			mFormat=mLoaderContext->mFormatConvertion[(int)currentReadFormat];
 
 			// check if we just convert palette or if output format is direct color
 			int paletteValueSize=GetPaletteValueSize(mFormat);
@@ -412,7 +412,7 @@ bool	BMPClass::Load(FileHandle* fileName)
 					currentReadFormat=RGB_16_565;
 				}
 
-				mFormat=mLoaderContext->myFormatConvertion[(int)currentReadFormat];
+				mFormat=mLoaderContext->mFormatConvertion[(int)currentReadFormat];
 
 				int outFormatPixelSize=GetPixelValueSize(mFormat);
 
@@ -489,7 +489,7 @@ void	BMPClass::UncompressRLE8bits(u8* bytes,ReadColorFunc func,unsigned int outP
 					{
 						++y;
 						x=0;
-						if(y>=myHeight) finished=true;
+						if(y>=mHeight) finished=true;
 					}
 					break;
 
@@ -505,7 +505,7 @@ void	BMPClass::UncompressRLE8bits(u8* bytes,ReadColorFunc func,unsigned int outP
 						x+=(*readval);
 						++readval;
 						y+=(*readval);
-						if(y>=myHeight) 	finished=true;
+						if(y>=mHeight) 	finished=true;
 					}
 					break;
 
@@ -520,16 +520,16 @@ void	BMPClass::UncompressRLE8bits(u8* bytes,ReadColorFunc func,unsigned int outP
 							{
 								// convert
 								unsigned int pixelvalOffset=(unsigned int)(*readval)<<2;
-								unsigned int pixelOffset=outPixelSize*(x+((myHeight-1)-y)*myWidth);
+								unsigned int pixelOffset=outPixelSize*(x+((mHeight-1)-y)*mWidth);
 
 								func(&(mPalette[pixelvalOffset]),&(pixels[pixelOffset]));
 							}
 							else
 							{
-								pixels[x+((myHeight-1)-y)*myWidth]= *readval;
+								pixels[x+((mHeight-1)-y)*mWidth]= *readval;
 							}
 							++x;
-							if(x>=myWidth) x=0;
+							if(x>=mWidth) x=0;
 						}
 						// word aligned
 						if(count&1) ++readval;
@@ -549,16 +549,16 @@ void	BMPClass::UncompressRLE8bits(u8* bytes,ReadColorFunc func,unsigned int outP
 					{
 						// convert
 						unsigned int pixelvalOffset=(unsigned int)(*readval)<<2;
-						unsigned int pixelOffset=outPixelSize*(x+((myHeight-1)-y)*myWidth);
+						unsigned int pixelOffset=outPixelSize*(x+((mHeight-1)-y)*mWidth);
 
 						func(&(mPalette[pixelvalOffset]),&(pixels[pixelOffset]));
 					}
 					else
 					{
-						pixels[x+((myHeight-1)-y)*myWidth]= *readval;
+						pixels[x+((mHeight-1)-y)*mWidth]= *readval;
 					}
 					++x;
-					if(x>=myWidth) x=0;
+					if(x>=mWidth) x=0;
 				}
 			}
 			break;			
@@ -591,7 +591,7 @@ void	BMPClass::UncompressRLE4bits(u8* bytes,ReadColorFunc func,unsigned int outP
 					{
 						++y;
 						x=0;
-						if(y>=myHeight) finished=true;
+						if(y>=mHeight) finished=true;
 					}
 					break;
 
@@ -607,7 +607,7 @@ void	BMPClass::UncompressRLE4bits(u8* bytes,ReadColorFunc func,unsigned int outP
 						x+=(*readval);
 						++readval;
 						y+=(*readval);
-						if(y>=myHeight) 	finished=true;
+						if(y>=mHeight) 	finished=true;
 					}
 					break;
 
@@ -627,23 +627,23 @@ void	BMPClass::UncompressRLE4bits(u8* bytes,ReadColorFunc func,unsigned int outP
 
 									// convert
 									unsigned int pixelvalOffset=(unsigned int)(p1)<<2;
-									unsigned int pixelOffset=outPixelSize*(x+((myHeight-1)-y)*myWidth);
+									unsigned int pixelOffset=outPixelSize*(x+((mHeight-1)-y)*mWidth);
 
 									func(&(mPalette[pixelvalOffset]),&(pixels[pixelOffset]));
 
 									pixelvalOffset=(unsigned int)(p2)<<2;
-									pixelOffset=outPixelSize*(x+1+((myHeight-1)-y)*myWidth);
+									pixelOffset=outPixelSize*(x+1+((mHeight-1)-y)*mWidth);
 
 									func(&(mPalette[pixelvalOffset]),&(pixels[pixelOffset]));
 								}
 								else
 								{
-									pixels[(x+((myHeight-1)-y)*myWidth)>>1]= (u8) ( (((*readval)>>4)&0x0F) | ((*readval)<<4) );
+									pixels[(x+((mHeight-1)-y)*mWidth)>>1]= (u8) ( (((*readval)>>4)&0x0F) | ((*readval)<<4) );
 								}
 							}
 							
 							++x;
-							if(x>=myWidth) x=0;
+							if(x>=mWidth) x=0;
 						}
 						// word aligned
 						if(count&1) ++readval;
@@ -668,22 +668,22 @@ void	BMPClass::UncompressRLE4bits(u8* bytes,ReadColorFunc func,unsigned int outP
 
 							// convert
 							unsigned int pixelvalOffset=(unsigned int)(p1)<<2;
-							unsigned int pixelOffset=outPixelSize*(x+((myHeight-1)-y)*myWidth);
+							unsigned int pixelOffset=outPixelSize*(x+((mHeight-1)-y)*mWidth);
 
 							func(&(mPalette[pixelvalOffset]),&(pixels[pixelOffset]));
 
 							pixelvalOffset=(unsigned int)(p2)<<2;
-							pixelOffset=outPixelSize*(x+1+((myHeight-1)-y)*myWidth);
+							pixelOffset=outPixelSize*(x+1+((mHeight-1)-y)*mWidth);
 
 							func(&(mPalette[pixelvalOffset]),&(pixels[pixelOffset]));
 						}
 						else
 						{
-							pixels[(x+((myHeight-1)-y)*myWidth)>>1]= (u8) ( (((*readval)>>4)&0x0F) | ((*readval)<<4) );
+							pixels[(x+((mHeight-1)-y)*mWidth)>>1]= (u8) ( (((*readval)>>4)&0x0F) | ((*readval)<<4) );
 						}
 					}
 					++x;
-					if(x>=myWidth) x=0;
+					if(x>=mWidth) x=0;
 				}
 			}
 			break;			

@@ -9,7 +9,7 @@ class PlatformBaseApplication
 {
 public:
 	//! constructor
-	PlatformBaseApplication(){ myKeyboard=0; }
+	PlatformBaseApplication(){ mKeyboard=0; }
 
 	//! destructor
 	//! no virtual here
@@ -42,7 +42,7 @@ public:
 	static const char* getPlatformName();
 
 	// for back key check
-	KeyboardDevice* myKeyboard;
+	KeyboardDevice* mKeyboard;
 };
 
 #endif //_WINDOWS_PLATFORMBASEAPPLICATION_H_

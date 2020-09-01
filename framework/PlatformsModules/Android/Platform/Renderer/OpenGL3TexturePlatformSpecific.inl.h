@@ -47,10 +47,10 @@ bool	OpenGLTexture::CubeMapGeneration()
 	asciiCount[0]=0;
 
 	// get extension
-	kstl::string	extension=myFileName;
+	kstl::string	extension=mFileName;
 	extension=extension.substr(extension.rfind("."));
 	// remove extension
-	kstl::string basefilename=myFileName;
+	kstl::string basefilename=mFileName;
 	basefilename=basefilename.substr(0,basefilename.length()-extension.length());
 
 	// check if all 6 textures are ok
@@ -66,7 +66,7 @@ bool	OpenGLTexture::CubeMapGeneration()
 		SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(filename);
 		if (fullfilenamehandle)
 		{
-			fullfilename = fullfilenamehandle->myFullFileName;
+			fullfilename = fullfilenamehandle->mFullFileName;
 		}
 		else
 		{
@@ -93,8 +93,8 @@ bool	OpenGLTexture::CubeMapGeneration()
 
 bool	OpenGLTexture::UpdateBufferZone(unsigned char* bitmapbuffer, const BBox2DI& zone, const Point2DI& bitmapSize)
 {
-	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::theGlobalRenderer); 
-	renderer->BindTexture(RENDERER_TEXTURE_2D, myTextureGLIndex);
+	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer); 
+	renderer->BindTexture(RENDERER_TEXTURE_2D, mTextureGLIndex);
 	renderer->FlushState();
 	Point2DI	zonesize = zone.Size();
 
@@ -107,7 +107,7 @@ bool	OpenGLTexture::UpdateBufferZone(unsigned char* bitmapbuffer, const BBox2DI&
 
 bool			OpenGLTexture::CanUseDynamicTexture(TinyImage::ImageFormat format)
 {
-	if (!myIsDynamic)
+	if (!mIsDynamic)
 		return false;
 	
 	//kigsprintf("os version %d\n", KigsJavaIDManager::OsVersion);
@@ -129,29 +129,29 @@ bool			OpenGLTexture::CanUseDynamicTexture(TinyImage::ImageFormat format)
 }
 bool			OpenGLTexture::UseDynamicTexture(unsigned char* abuffer, unsigned int awidth, unsigned int aheight, TinyImage::ImageFormat aformat, bool needRealloc)
 {
-	myTransparencyType = 2; 
+	mTransparencyType = 2; 
 
-	AndroidGraphicBufferBase * mAGB = nullptr;
-	if (privatePointer)
+	AndroidGraphicBufferBase * lAGB = nullptr;
+	if (mPrivatePointer)
 	{
 		if (needRealloc)
 		{
-			delete privatePointer;
-			privatePointer = new OpenGLTexturePlatformImpl(myPow2Width, myPow2Height, AndroidGraphicBuffer::UsageSoftwareWrite | AndroidGraphicBuffer::UsageTexture, aformat);
+			delete mPrivatePointer;
+			mPrivatePointer = new OpenGLTexturePlatformImpl(mPow2Width, mPow2Height, AndroidGraphicBuffer::UsageSoftwareWrite | AndroidGraphicBuffer::UsageTexture, aformat);
 		}
 	}
 	else
 	{
-		privatePointer = new OpenGLTexturePlatformImpl(myPow2Width, myPow2Height, AndroidGraphicBufferBase::UsageSoftwareWrite | AndroidGraphicBufferBase::UsageTexture, aformat);
+		mPrivatePointer = new OpenGLTexturePlatformImpl(mPow2Width, mPow2Height, AndroidGraphicBufferBase::UsageSoftwareWrite | AndroidGraphicBufferBase::UsageTexture, aformat);
 	}
-	mAGB = privatePointer->buffers[privatePointer->current_buffer];
-	privatePointer->current_buffer = 1 - privatePointer->current_buffer;
+	lAGB = mPrivatePointer->buffers[mPrivatePointer->current_buffer];
+	mPrivatePointer->current_buffer = 1 - mPrivatePointer->current_buffer;
 
-	if(false==mAGB->Bind())  
+	if(false== lAGB->Bind())
 		return false;
 
 	unsigned char * buffer;
-	if(0!=mAGB->Lock(AndroidGraphicBufferBase::UsageSoftwareWrite, &buffer))
+	if(0!= lAGB->Lock(AndroidGraphicBufferBase::UsageSoftwareWrite, &buffer))
 		return false;
 
 	int pixSize = TinyImage::GetPixelValueSize(aformat);
@@ -160,7 +160,7 @@ bool			OpenGLTexture::UseDynamicTexture(unsigned char* abuffer, unsigned int awi
 	unsigned char* pos = (unsigned char*)buffer;
 	unsigned char* posRead = (unsigned char*)abuffer;
 	
-	ANativeWindow_Buffer * handle= mAGB->getNativeWindowsHandle();
+	ANativeWindow_Buffer * handle= lAGB->getNativeWindowsHandle();
 
 	if (awidth == handle->stride)
 	{
@@ -177,7 +177,7 @@ bool			OpenGLTexture::UseDynamicTexture(unsigned char* abuffer, unsigned int awi
 		}
 	}
 
-	mAGB->Unlock(); 
+	lAGB->Unlock();
 	
 	return true;
 }

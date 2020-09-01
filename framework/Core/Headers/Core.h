@@ -158,7 +158,7 @@ public:
 	 */
 	MiniInstanceFactory* GetUpgradorFactory() const
 	{
-		return myUpgradorFactory;
+		return mUpgradorFactory;
 	}
 
 	// create connection between a signal and a slot 
@@ -180,7 +180,7 @@ public:
 	static inline bool		Emit(CoreModifiable* a, KigsID asignalID, T&&... args)
 	{
 		return a->Emit(asignalID, std::forward<T>(args)...);
-		//return Instance()->myConnectionManager->Emit(a, asignalID, std::forward<T>(args)...);
+		//return Instance()->mConnectionManager->Emit(a, asignalID, std::forward<T>(args)...);
 	}
 	*/
 	/**
@@ -201,7 +201,7 @@ public:
 	template<typename T>
 	static T* GetModule()
 	{
-		return static_cast<T*>(GetModule(T::myClassID));
+		return static_cast<T*>(GetModule(T::mClassID));
 	}
 
 	/**
@@ -236,7 +236,7 @@ public:
 	template<typename askedType>
 	static SP<askedType>& Singleton()
 	{
-		return (SP<askedType>&)GetSingleton(askedType::myClassID);
+		return (SP<askedType>&)GetSingleton(askedType::mClassID);
 	}
 	/**
 	 * \brief		destroy the unique instance of the given class
@@ -395,8 +395,8 @@ public:
 	* \brief		Get the unique instance of ThreadProfiler
 	* \return		the unique instance of the ThreadProfiler
 	*/
-	static CoreModifiable* GetThreadProfiler(){ return myCoreInstance->myThreadProfiler; }
-	static void SetThreadProfiler(CoreModifiable* tp){ myCoreInstance->myThreadProfiler = tp; }
+	static CoreModifiable* GetThreadProfiler(){ return mCoreInstance->mThreadProfiler; }
+	static void SetThreadProfiler(CoreModifiable* tp){ mCoreInstance->mThreadProfiler = tp; }
 
 
 	/**
@@ -406,7 +406,7 @@ public:
 	*/
 	inline static kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >& getReferenceMap()
 	{
-		return *(myCoreInstance->myReferenceMap);
+		return *(mCoreInstance->mReferenceMap);
 	}
 
 
@@ -437,7 +437,7 @@ public:
 
 	ModuleBase*		GetMainModuleInList(CoreModuleIndex index)
 	{
-		return myCoreMainModuleList[(unsigned int)index];
+		return mCoreMainModuleList[(unsigned int)index];
 	}
 	void AddToPostDestroyList(CoreModifiable*);
 
@@ -454,9 +454,9 @@ public:
 
 	bool	hasAsyncRequestPending()
 	{
-		if (myAsyncRequestList)
+		if (mAsyncRequestList)
 		{
-			if (myAsyncRequestList->size())
+			if (mAsyncRequestList->size())
 			{
 				return true;
 			}
@@ -480,13 +480,13 @@ protected:
 	*/
 	static void SetNotificationCenter(NotificationCenter* _instance);
 
-	CoreBaseApplication* myCoreBaseApplication;
-	NotificationCenter* myNotificationCenter;
+	CoreBaseApplication* mCoreBaseApplication;
+	NotificationCenter* mNotificationCenter;
 
 	// nullptr wrapper
-	CMSP	myNullPtr = nullptr;
+	CMSP	mNullPtr = nullptr;
 
-	kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myCoreItemOperatorCreateMethodMap;
+	kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	mCoreItemOperatorCreateMethodMap;
 
 #if KIGS_ERROR_LEVEL<=2	
 	/**
@@ -512,14 +512,14 @@ protected:
 	 */
 	KigsCore()
 	{
-		myCoreBaseApplication = NULL;
-		myCoreMainModuleList=NULL;
+		mCoreBaseApplication = NULL;
+		mCoreMainModuleList=NULL;
 
-		myDecoratorMap=NULL;
+		mDecoratorMap=NULL;
 
-		myAsyncRequestList = NULL;
+		mAsyncRequestList = NULL;
 
-		myProfilerManager = NULL;
+		mProfilerManager = NULL;
 	}
 	
 	/**
@@ -529,22 +529,22 @@ protected:
 	~KigsCore(){}
 
 	//! pointer to instance factory singleton
-	InstanceFactory*		myInstanceFactory;
-	MiniInstanceFactory*	myUpgradorFactory;
+	InstanceFactory*		mInstanceFactory;
+	MiniInstanceFactory*	mUpgradorFactory;
 
 	//! pointer to initialised modules
-	kigs::unordered_map<KigsID, ModuleBase*>*			myModuleBaseInstanceMap;
+	kigs::unordered_map<KigsID, ModuleBase*>*			mModuleBaseInstanceMap;
 
 	//! decorator map
 	struct decorateMethodPair
 	{
-		decorateMethod	m_decorate;
-		decorateMethod	m_undecorate;
+		decorateMethod	mDecorate;
+		decorateMethod	mUndecorate;
 	};
-	kigs::unordered_map<KigsID, decorateMethodPair>*		myDecoratorMap;
+	kigs::unordered_map<KigsID, decorateMethodPair>*		mDecoratorMap;
 
 	// current pending async requests
-	kstl::vector<AsyncRequest*>*							myAsyncRequestList;
+	kstl::vector<AsyncRequest*>*							mAsyncRequestList;
 
 	// called by base application update
 	static void ManageAsyncRequests();
@@ -554,41 +554,41 @@ protected:
 
 
 	//! pointer to created singletons
-	kigs::unordered_map<KigsID, CMSP>*		mySingletonMap;
+	kigs::unordered_map<KigsID, CMSP>*		mSingletonMap;
 
 	//! manage post destruction
-	std::mutex								myPostDestructionListMutex;
-	std::vector<CoreModifiable*>			myPostDestructionList;
+	std::mutex								mPostDestructionListMutex;
+	std::vector<CoreModifiable*>			mPostDestructionList;
 	void ManagePostDestruction();
 
 	//! static pointer to the KigsCore singleton
-	static KigsCore*		myCoreInstance;
+	static KigsCore*		mCoreInstance;
 
 
 	//! CoreModifiable referenced by maReference
-	kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >*	myReferenceMap;
+	kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >*	mReferenceMap;
 
 
 MEMORYMANAGEMENT_START
 #ifndef _NO_MEMORY_MANAGER_
 	//! pointer the memory manager instance
-	MemoryManager*		myMemoryInstance;
-	unsigned int*		myMemoryManagerOutOfMainAlloc;
+	MemoryManager*		mMemoryInstance;
+	unsigned int*		mMemoryManagerOutOfMainAlloc;
 #endif
 MEMORYMANAGEMENT_END
 
 
 	//! pointer to the root of the class inheritance tree
-	CoreTreeNode*			 myRootNode;
-	kigs::unordered_map<KigsID, CoreTreeNode*>		myTypeNodeMap;
+	CoreTreeNode*			 mRootNode;
+	kigs::unordered_map<KigsID, CoreTreeNode*>		mTypeNodeMap;
 
 
 	//! list of semaphore
-	CMSP			mySemaphore;
+	CMSP			mSemaphore;
 	friend class	ModuleThread;
 
 
-	ModuleBase**	myCoreMainModuleList;
+	ModuleBase**	mCoreMainModuleList;
 
 
 	
@@ -605,13 +605,13 @@ MEMORYMANAGEMENT_END
 	static void		CloseMultiThread();
 
 	//! TRUE if the KigsCore is multiThread
-	bool*			myMultiThread;
+	bool*			mMultiThread;
 
 
 #if KIGS_ERROR_LEVEL<=2
 	// construct error list here
 	//! list of error
-	kstl::vector<kstl::string>*	myErrorList;
+	kstl::vector<kstl::string>*	mErrorList;
 	/**
 	 * \fn 		int	(*KigsMsgPrintf)(const char *format... );
 	 * \brief	output function for error and warning msb
@@ -619,8 +619,8 @@ MEMORYMANAGEMENT_END
 	int	(*KigsMsgPrintf)(const char *format... );
 #endif
 	//! Profilers management
-	GlobalProfilerManager*		myProfilerManager;
-	CoreModifiable*				myThreadProfiler;
+	GlobalProfilerManager*		mProfilerManager;
+	CoreModifiable*				mThreadProfiler;
 
 };
 

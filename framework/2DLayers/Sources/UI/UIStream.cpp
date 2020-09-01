@@ -8,14 +8,14 @@ IMPLEMENT_CLASS_INFO(UIStream)
 
 
 IMPLEMENT_CONSTRUCTOR(UIStream)
-, _video_file(*this, true, "VideoFile", "")
-, _framebuffer_ref(*this, false, "FrameBuffer", "")
-, _autoplay(*this, false, "Autoplay", true)
-, _loop(*this, false, "Loop", true)
-, _auto_size(*this, false, "AutoSize", false)
-, _notification_start(*this, false, "NotificationStart", "")
-, _notification_end(*this, false, "NotificationEnd", "")
-, myIsPlaying(false)
+, mVideoFile(*this, true, "VideoFile", "")
+, mFrameBuffer(*this, false, "FrameBuffer", "")
+, mAutoplay(*this, false, "Autoplay", true)
+, mLoop(*this, false, "Loop", true)
+, mAutoSize(*this, false, "AutoSize", false)
+, mNotificationStart(*this, false, "NotificationStart", "")
+, mNotificationEnd(*this, false, "NotificationEnd", "")
+, mIsPlaying(false)
 {
 }
 
@@ -27,41 +27,41 @@ void UIStream::InitModifiable()
 
 	if(IsInit())
 	{
-		if(!_video_file.const_ref().empty())
+		if(!mVideoFile.const_ref().empty())
 		{
-			_framebufferstream = KigsCore::GetInstanceOf(getName() + "_stream", "MPEG4BufferStream");
+			mFrameBufferStream = KigsCore::GetInstanceOf(getName() + "_stream", "MPEG4BufferStream");
 			CMSP timer = KigsCore::GetCoreApplication()->GetApplicationTimer();
-			_framebufferstream->addItem(timer);
-			_framebufferstream->setValue("FileName", _video_file);
-			_framebufferstream->setValue("Format", "RGB24");
-			_framebufferstream->setValue("Volume", (float)mVolume);
-			_framebufferstream->Init();
+			mFrameBufferStream->addItem(timer);
+			mFrameBufferStream->setValue("FileName", mVideoFile);
+			mFrameBufferStream->setValue("Format", "RGB24");
+			mFrameBufferStream->setValue("Volume", (float)mVolume);
+			mFrameBufferStream->Init();
 
-			KigsCore::Connect(_framebufferstream.get(), "EndReached", this, "EndReached", [this](CoreModifiable* fb)
+			KigsCore::Connect(mFrameBufferStream.get(), "EndReached", this, "EndReached", [this](CoreModifiable* fb)
 			{
-				if (_loop)
+				if (mLoop)
 				{
 					fb->SimpleCall("Stop");
 					fb->SimpleCall("Play");
 				}
 			});
 
-			if (!_framebufferstream->IsInit())
+			if (!mFrameBufferStream->IsInit())
 			{
-				_framebufferstream = nullptr;
+				mFrameBufferStream = nullptr;
 				return;
 			}
-			if (_autoplay)
+			if (mAutoplay)
 			{
-				myIsPlaying = true;
-				_framebufferstream->CallMethod("Play", this);
+				mIsPlaying = true;
+				mFrameBufferStream->CallMethod("Play", this);
 			}
 		}
 		else
 		{
-			CoreModifiable* fb = _framebuffer_ref;
+			CoreModifiable* fb = mFrameBuffer;
 			if (fb)
-				_framebufferstream = NonOwningRawPtrToSmartPtr(fb);
+				mFrameBufferStream = NonOwningRawPtrToSmartPtr(fb);
 			else
 			{
 				return;
@@ -75,59 +75,59 @@ void UIStream::InitModifiable()
 	texture->Init();
 	SetTexture(texture.get());
 
-	KigsCore::GetNotificationCenter()->addObserver(this, "StartVideo", _notification_start.const_ref());
+	KigsCore::GetNotificationCenter()->addObserver(this, "StartVideo", mNotificationStart.const_ref());
 }
 
 void UIStream::Update(const Timer& timer, void* v)
 {
-	if(myIsPlaying &&_framebufferstream)
+	if(mIsPlaying &&mFrameBufferStream)
 	{
-		_framebufferstream->CallUpdate(timer, 0);
+		mFrameBufferStream->CallUpdate(timer, 0);
 		bool is_ready=false;
-		_framebufferstream->CallMethod("HasReadyBuffer", this, &is_ready);
+		mFrameBufferStream->CallMethod("HasReadyBuffer", this, &is_ready);
 		if(is_ready)
 		{
 			Point2DI size;
-			_framebufferstream->getValue("Width", size.x);
-			_framebufferstream->getValue("Height", size.y);
+			mFrameBufferStream->getValue("Width", size.x);
+			mFrameBufferStream->getValue("Height", size.y);
 			//_temp.resize(size.x*size.y*4);
 
 			unsigned char * data = 0;
-			_framebufferstream->CallMethod("GetNewestReadyBuffer", this, (void*)&data);
+			mFrameBufferStream->CallMethod("GetNewestReadyBuffer", this, (void*)&data);
 
-			if(_auto_size)
+			if(mAutoSize)
 			{
-				myNeedUpdatePosition = true;
-				mySizeX = size.x;
-				mySizeY = size.y;				
+				mNeedUpdatePosition = true;
+				mSizeX = size.x;
+				mSizeY = size.y;				
 			}
 
 
-			auto linesize = _framebufferstream->getValue<u32>("LineSize");
+			auto linesize = mFrameBufferStream->getValue<u32>("LineSize");
 
 			SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(data, size.x, size.y, TinyImage::RGBA_32_8888, linesize));
 			//TinyImage::ExportImage("test.png", data, size.x, size.y, TinyImage::RGB_24_888, TinyImage::PNG_IMAGE);
 
 			GetTexture()->CreateFromImage(img);
 			
-			_framebufferstream->CallMethod("FreeBuffers", this);
+			mFrameBufferStream->CallMethod("FreeBuffers", this);
 		}
 		else
 		{
 			bool is_ended = false;
-			_framebufferstream->CallMethod("HasReachEnd", this, &is_ended);
+			mFrameBufferStream->CallMethod("HasReachEnd", this, &is_ended);
 			if(is_ended)
 			{
-				if (_loop)
+				if (mLoop)
 				{
-					_framebufferstream->CallMethod("Stop", this);
-					_framebufferstream->CallMethod("Play", this);
+					mFrameBufferStream->CallMethod("Stop", this);
+					mFrameBufferStream->CallMethod("Play", this);
 				}
 				else
-					myIsPlaying = false;
+					mIsPlaying = false;
 
-				if (!_notification_end.const_ref().empty())
-					KigsCore::GetNotificationCenter()->postNotificationName(_notification_end.const_ref(), this);
+				if (!mNotificationEnd.const_ref().empty())
+					KigsCore::GetNotificationCenter()->postNotificationName(mNotificationEnd.const_ref(), this);
 			}
 		}
 	}
@@ -137,11 +137,11 @@ bool UIStream::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType("FrameBufferStream"))
 	{
-		_framebufferstream = item;
-		if (_autoplay)
+		mFrameBufferStream = item;
+		if (mAutoplay)
 		{
-			myIsPlaying = true;
-			_framebufferstream->CallMethod("Play", this);
+			mIsPlaying = true;
+			mFrameBufferStream->CallMethod("Play", this);
 		}
 		return true;
 	}
@@ -150,9 +150,9 @@ bool UIStream::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 
 bool UIStream::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
-	if(_framebufferstream == item)
+	if(mFrameBufferStream == item)
 	{
-		_framebufferstream = 0;
+		mFrameBufferStream = 0;
 		return true;
 	}
 	
@@ -164,28 +164,28 @@ void UIStream::NotifyUpdate(const unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
 
-	if(labelid == _video_file.getLabelID() || labelid == _framebuffer_ref.getLabelID())
+	if(labelid == mVideoFile.getLabelID() || labelid == mFrameBuffer.getLabelID())
 	{
 		Init();
 	}
-	else if(labelid == _notification_start.getLabelID())
+	else if(labelid == mNotificationStart.getLabelID())
 	{
 		KigsCore::GetNotificationCenter()->removeObserver(this);
-		if (!_notification_end.const_ref().empty())
-			KigsCore::GetNotificationCenter()->postNotificationName(_notification_end.const_ref(), this);
+		if (!mNotificationEnd.const_ref().empty())
+			KigsCore::GetNotificationCenter()->postNotificationName(mNotificationEnd.const_ref(), this);
 	}
 	else if (labelid == mVolume.getID())
 	{
-		if (_framebufferstream) _framebufferstream->setValue("Volume", (float)mVolume);
+		if (mFrameBufferStream) mFrameBufferStream->setValue("Volume", (float)mVolume);
 	}
 }
 
 DEFINE_METHOD(UIStream, StartVideo)
 {
-	if (_framebufferstream)
+	if (mFrameBufferStream)
 	{
-		myIsPlaying = true;
-		_framebufferstream->CallMethod("Play", this);
+		mIsPlaying = true;
+		mFrameBufferStream->CallMethod("Play", this);
 	}
 	return false;
 }

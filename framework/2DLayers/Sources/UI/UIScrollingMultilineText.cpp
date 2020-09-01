@@ -11,5 +11,5 @@ IMPLEMENT_CLASS_INFO(UIScrollingMultilineText)
 UIScrollingMultilineText::UIScrollingMultilineText(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
 	UIScrollingText(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	myMaxWidth = 128;
+	mMaxWidth = 128;
 }

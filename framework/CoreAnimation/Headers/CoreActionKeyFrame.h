@@ -4,25 +4,37 @@
 #include "CoreAction.h"
 #include "CoreValue.h"
 
+// ****************************************
+// * CoreActionKeyFrameBase class
+// * --------------------------------------
+/**
+* \file	CoreActionKeyFrame.h
+* \class	CoreActionKeyFrameBase
+* \ingroup CoreAnimation
+* \brief	Base class for Keyframe CoreAction
+*
+*/
+// ****************************************
+
 class CoreActionKeyFrameBase : public CoreAction
 {
 public:
 
-	CoreActionKeyFrameBase() : CoreAction(),myKeyFrameCount(0),myLastKeyIndex(-1),myTimeArray(0)
+	CoreActionKeyFrameBase() : CoreAction(),mKeyFrameCount(0),mLastKeyIndex(-1),mTimeArray(0)
 	{
 	}
 
 	virtual void	setStartTime(kdouble t)
 	{
 		CoreAction::setStartTime(t);
-		myLastKeyIndex=-1;
+		mLastKeyIndex=-1;
 	}
 
 	virtual ~CoreActionKeyFrameBase()
 	{
-		if(myTimeArray)
+		if(mTimeArray)
 		{
-			delete[]	myTimeArray;
+			delete[]	mTimeArray;
 		}
 	}
 
@@ -33,30 +45,42 @@ protected:
 
 	virtual void	protectedSetValue(int index)=0;
 
-	unsigned int		myKeyFrameCount;
-	int					myLastKeyIndex;
+	unsigned int		mKeyFrameCount;
+	int					mLastKeyIndex;
 
-	kdouble*			myTimeArray;
+	kdouble*			mTimeArray;
 
 };
+
+// ****************************************
+// * CoreActionKeyFrame class
+// * --------------------------------------
+/**
+* \file	CoreActionKeyFrame.h
+* \class	CoreActionKeyFrame
+* \ingroup CoreAnimation
+* \brief	Keyframe CoreAction
+*
+*/
+// ****************************************
 
 template<typename dataType>
 class CoreActionKeyFrame : public CoreActionKeyFrameBase
 {
 public:
 
-	CoreActionKeyFrame() : CoreActionKeyFrameBase(),myKeyFrameArray(0)
+	CoreActionKeyFrame() : CoreActionKeyFrameBase(),mKeyFrameArray(0)
 	{}
 
 	virtual void init(CoreSequence* sequence,CoreVector* params)
 	{
-		myTarget = sequence->getTarget();
+		mTarget = sequence->getTarget();
 
 		kstl::string readstring;
 		(*params)[0]->getValue(readstring);
-		myTarget = checkSubTarget(readstring);
+		mTarget = checkSubTarget(readstring);
 
-		myParamID = CharToID::GetID(readstring);
+		mParamID = CharToID::GetID(readstring);
 
 		// stock in list before creating the final array
 		kstl::vector<dataType>	L_values;
@@ -80,25 +104,25 @@ public:
 			return;
 		}
 
-		myKeyFrameCount = (unsigned int)L_values.size();
-		myDuration = L_times[L_times.size() - 1];
+		mKeyFrameCount = (unsigned int)L_values.size();
+		mDuration = L_times[L_times.size() - 1];
 
-		myKeyFrameArray = new dataType[L_values.size()];
-		myTimeArray = new kdouble[L_values.size()];
+		mKeyFrameArray = new dataType[L_values.size()];
+		mTimeArray = new kdouble[L_values.size()];
 
 		for (i = 0; i < L_values.size(); i++)
 		{
-			myKeyFrameArray[i] = L_values[i];
-			myTimeArray[i] = L_times[i];
+			mKeyFrameArray[i] = L_values[i];
+			mTimeArray[i] = L_times[i];
 		}
 	}
 
 
 	virtual ~CoreActionKeyFrame()
 	{
-		if(myKeyFrameArray)
+		if(mKeyFrameArray)
 		{
-			delete[]	myKeyFrameArray;
+			delete[]	mKeyFrameArray;
 		}
 	}
 
@@ -106,10 +130,10 @@ protected:
 
 	inline void	protectedSetValue(int index)
 	{
-		myTarget->setValue(myParamID, myKeyFrameArray[index]);
+		mTarget->setValue(mParamID, mKeyFrameArray[index]);
 	}
 
-	dataType*			myKeyFrameArray;
+	dataType*			mKeyFrameArray;
 	
 };
 

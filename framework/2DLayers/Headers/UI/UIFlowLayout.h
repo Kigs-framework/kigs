@@ -3,7 +3,16 @@
 
 #include "UILayout.h"
 
-// Adjust the position of all children according to a flow layout algorithm
+// ****************************************
+// * UIFlowLayout class
+// * --------------------------------------
+/**
+* \file	UIFlowLayout.h
+* \class	UIFlowLayout
+* \ingroup 2DLayers
+* \brief	Adjust the position of all children according to a flow layout algorithm.
+*/
+// ****************************************
 
 class UIFlowLayout : public UILayout
 {
@@ -21,8 +30,8 @@ protected:
 	void		NotifyUpdate(const unsigned int labelid)override;
 	void		RecomputeLayout()override;
 	
-	maVect2DI	myPadding;
-	maBool		mySortByPriority;
-	maBool		myRescaleToFit;
+	maVect2DI	mPadding;
+	maBool		mSortByPriority;
+	maBool		mRescaleToFit;
 };
 #endif //_UIFlowLayout_H_

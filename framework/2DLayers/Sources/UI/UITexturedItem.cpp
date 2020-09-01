@@ -14,18 +14,18 @@ IMPLEMENT_CLASS_INFO(UITexturedItem)
 
 IMPLEMENT_CONSTRUCTOR(UITexturedItem)
 {
-	myTexture = nullptr;
+	mTexturePointer = nullptr;
 }
 
 void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 {
-	if (!myTexture.isNil())
+	if (!mTexturePointer.isNil())
 	{
 		kfloat ratioX, ratioY, sx, sy;
 		unsigned int p2sx, p2sy;
-		myTexture->GetSize(sx, sy);
-		myTexture->GetPow2Size(p2sx, p2sy);
-		myTexture->GetRatio(ratioX, ratioY);
+		mTexturePointer->GetSize(sx, sy);
+		mTexturePointer->GetPow2Size(p2sx, p2sy);
+		mTexturePointer->GetRatio(ratioX, ratioY);
 
 		v2f uv_min = mUVMin;
 		v2f uv_max = mUVMax;
@@ -43,7 +43,7 @@ void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 		aQI->Flag |= UIVerticesInfo_Texture;
 
 		bool is_bgr = false;
-		if (myTexture->getValue("IsBGR", is_bgr) && is_bgr)
+		if (mTexturePointer->getValue("IsBGR", is_bgr) && is_bgr)
 		{
 			aQI->Flag |= UIVerticesInfo_BGRTexture;
 		}
@@ -107,31 +107,14 @@ void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 
 UITexturedItem::~UITexturedItem()
 {
-	myTexture = NULL;
+	mTexturePointer = NULL;
 }
 
 void UITexturedItem::NotifyUpdate(const unsigned int labelid)
 {
-	if (!myTexture.isNil())
+	if (!mTexturePointer.isNil())
 	{
-		/*if (labelid == mySizeX.getLabelID())
-		{
-			if (mySizeX == 0)
-			{
-				unsigned int val;
-				myTexture->getValue(LABEL_TO_ID(Width), val);
-				mySizeX = val;
-			}
-		}
-		else if (labelid == mySizeY.getLabelID())
-		{
-			if (mySizeY == 0)
-			{
-				unsigned int val;
-				myTexture->getValue(LABEL_TO_ID(Height), val);
-				mySizeY = val;
-			}
-		}*/
+		
 	}
 
 	UIItem::NotifyUpdate(labelid);
@@ -139,35 +122,35 @@ void UITexturedItem::NotifyUpdate(const unsigned int labelid)
 
 void UITexturedItem::PreDraw(TravState* state)
 {
-	if (myTexture)
-		myTexture->DoPreDraw(state);
+	if (mTexturePointer)
+		mTexturePointer->DoPreDraw(state);
 }
 
 void UITexturedItem::PostDraw(TravState* state)
 {
-	if (myTexture)
-		myTexture->DoPostDraw(state);
+	if (mTexturePointer)
+		mTexturePointer->DoPostDraw(state);
 }
 
 int UITexturedItem::GetTransparencyType()
 {
-	if (myTexture && GetOpacity() == 1.0f)
-		return myTexture->GetTransparency();
+	if (mTexturePointer && GetOpacity() == 1.0f)
+		return mTexturePointer->GetTransparency();
 	else // overall transparency
 		return 2;
 }
 
 void     UITexturedItem::SetTexture(Texture* t)
 {
-	myTexture = NonOwningRawPtrToSmartPtr(t);
+	mTexturePointer = NonOwningRawPtrToSmartPtr(t);
 
-	if (myTexture == nullptr)
+	if (mTexturePointer == nullptr)
 		return;
 
 	if (getAttribute("HasDynamicTexture"))
-		myTexture->setValue("IsDynamic", true);
+		mTexturePointer->setValue("IsDynamic", true);
 
-	myTexture->SetRepeatUV(false, false);
+	mTexturePointer->SetRepeatUV(false, false);
 }
 
 
@@ -175,12 +158,12 @@ void     UITexturedItem::SetTexture(Texture* t)
 
 bool UITexturedItem::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	if (item->isSubType(Texture::myClassID))
+	if (item->isSubType(Texture::mClassID))
 	{
-		myTexture = item;
+		mTexturePointer = item;
 
-		if (myTexture && getAttribute("HasDynamicTexture"))
-			myTexture->setValue("IsDynamic", true);
+		if (mTexturePointer && getAttribute("HasDynamicTexture"))
+			mTexturePointer->setValue("IsDynamic", true);
 	}
 
 	return UIDrawableItem::addItem(item, pos PASS_LINK_NAME(linkName));
@@ -188,11 +171,11 @@ bool UITexturedItem::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 
 bool UITexturedItem::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
-	if (item->isSubType(Texture::myClassID))
+	if (item->isSubType(Texture::mClassID))
 	{
-		if (item == myTexture.get())
+		if (item == mTexturePointer.get())
 		{
-			myTexture = 0;
+			mTexturePointer = 0;
 		}
 	}
 	return UIDrawableItem::removeItem(item PASS_LINK_NAME(linkName));

@@ -41,31 +41,31 @@ HRESULT SetTouchDisableProperty(HWND hwnd, BOOL fDisableTouch)
 
 IMPLEMENT_CLASS_INFO(WindowWin32)
 
-std::map<msgProcCallBack, msgProcCallBack>*	WindowWin32::myCallBackMap = 0;
+std::map<msgProcCallBack, msgProcCallBack>*	WindowWin32::mCallBackMap = 0;
 
 void	WindowWin32::AddCallback(msgProcCallBack callback)
 {
-	if (!myCallBackMap)
+	if (!mCallBackMap)
 	{
-		myCallBackMap = new std::map<msgProcCallBack, msgProcCallBack>;
+		mCallBackMap = new std::map<msgProcCallBack, msgProcCallBack>;
 	}
 
-	(*myCallBackMap)[callback] = callback;
+	(*mCallBackMap)[callback] = callback;
 }
 
 void	WindowWin32::RemoveCallback(msgProcCallBack callback)
 {
-	if (myCallBackMap)
+	if (mCallBackMap)
 	{
-		std::map<msgProcCallBack, msgProcCallBack>::iterator	itmap = (*myCallBackMap).find(callback);
+		std::map<msgProcCallBack, msgProcCallBack>::iterator	itmap = (*mCallBackMap).find(callback);
 
-		if (itmap != (*myCallBackMap).end())
+		if (itmap != (*mCallBackMap).end())
 		{
-			(*myCallBackMap).erase(itmap);
-			if ((*myCallBackMap).size() == 0)
+			(*mCallBackMap).erase(itmap);
+			if ((*mCallBackMap).size() == 0)
 			{
-				delete myCallBackMap;
-				myCallBackMap = 0;
+				delete mCallBackMap;
+				mCallBackMap = 0;
 			}
 		}
 	}
@@ -115,14 +115,14 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 		break;
 	}
 	case WM_SETCURSOR:
-		SetCursor(pWindow->myCursor);
+		SetCursor(pWindow->mCursor);
 		break;
 
 		//Character typed
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
 	{
-		if (pWindow->myKeyDownCallback)
+		if (pWindow->mKeyDownCallback)
 		{
 			unsigned int VirtualKeyCode, ScanCode;
 			unsigned char KeyboardState[256];
@@ -135,7 +135,7 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 			if (1 != ToAsciiEx(VirtualKeyCode, ScanCode, KeyboardState, &ASCIIOutput, 0, GetKeyboardLayout(GetWindowThreadProcessId(hWnd, NULL))))
 				ASCIIOutput = 0;
 
-			pWindow->myKeyDownCallback(pWindow, (char)ASCIIOutput, (int)VirtualKeyCode);
+			pWindow->mKeyDownCallback(pWindow, (char)ASCIIOutput, (int)VirtualKeyCode);
 		}
 		break;
 	}
@@ -143,7 +143,7 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 	case WM_KEYUP:
 	case WM_SYSKEYUP:
 	{
-		if (pWindow->myKeyUpCallback)
+		if (pWindow->mKeyUpCallback)
 		{
 			unsigned int VirtualKeyCode, ScanCode;
 			unsigned char KeyboardState[256];
@@ -156,7 +156,7 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 			if (1 != ToAsciiEx(VirtualKeyCode, ScanCode, KeyboardState, &ASCIIOutput, 0, GetKeyboardLayout(GetWindowThreadProcessId(hWnd, NULL))))
 				ASCIIOutput = 0;
 
-			pWindow->myKeyUpCallback(pWindow, (char)ASCIIOutput, (int)VirtualKeyCode);
+			pWindow->mKeyUpCallback(pWindow, (char)ASCIIOutput, (int)VirtualKeyCode);
 		}
 		break;
 	}
@@ -168,7 +168,7 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP:
 	case WM_MBUTTONUP:
-		if (pWindow->myClickCallback != NULL)
+		if (pWindow->mClickCallback != NULL)
 		{
 			messageTreated = true;
 			bool isDown;
@@ -207,16 +207,16 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 			int X = GET_X_LPARAM(lParam);
 			int Y = ClientArea.bottom - 1 - GET_Y_LPARAM(lParam);
 
-			kfloat mX = (kfloat)X / pWindow->mySizeX;
-			kfloat mY = (kfloat)Y / pWindow->mySizeY;
-			pWindow->myClickCallback(pWindow, buttonId, mX, mY, isDown);
+			kfloat mX = (kfloat)X / pWindow->mSizeX;
+			kfloat mY = (kfloat)Y / pWindow->mSizeY;
+			pWindow->mClickCallback(pWindow, buttonId, mX, mY, isDown);
 			return 0;
 		}
 		break;
 	case WM_RBUTTONDBLCLK:
 	case WM_MBUTTONDBLCLK:
 	case WM_LBUTTONDBLCLK:
-		if (pWindow->myDoubleClickCallback != NULL)
+		if (pWindow->mDoubleClickCallback != NULL)
 		{
 			RECT ClientArea;
 
@@ -238,7 +238,7 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 				break;
 			}
 
-			pWindow->myDoubleClickCallback(pWindow, buttonId, (kfloat)X, (kfloat)Y, true);
+			pWindow->mDoubleClickCallback(pWindow, buttonId, (kfloat)X, (kfloat)Y, true);
 		}
 		break;
 		//Destroy
@@ -255,8 +255,8 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 			return 0;
 		}
 
-		if (pWindow->myDestroyCallback != NULL)
-			pWindow->myDestroyCallback(pWindow);
+		if (pWindow->mDestroyCallback != NULL)
+			pWindow->mDestroyCallback(pWindow);
 		break;
 	}
 	//Resize
@@ -276,11 +276,11 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 		return 0;
 	}
 
-	if (myCallBackMap)
+	if (mCallBackMap)
 	{
-		std::map<msgProcCallBack, msgProcCallBack>::iterator	itmap = (*myCallBackMap).begin();
+		std::map<msgProcCallBack, msgProcCallBack>::iterator	itmap = (*mCallBackMap).begin();
 
-		while (itmap != (*myCallBackMap).end())
+		while (itmap != (*mCallBackMap).end())
 		{
 			LRESULT	result = (*itmap).second(hWnd, msg, wParam, lParam);
 			++itmap;
@@ -297,59 +297,59 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 //! constructor
 WindowWin32::WindowWin32(const kstl::string& name, CLASS_NAME_TREE_ARG) : Window(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	myScreenSaverActive = false;
-	myDirtySize = false;
-	myParent = NULL;
-	myCursor = LoadCursor(NULL, IDC_ARROW);
+	mScreenSaverActive = false;
+	mDirtySize = false;
+	mParent = NULL;
+	mCursor = LoadCursor(NULL, IDC_ARROW);
 }
 
 //
 void WindowWin32::SetParentWindow(HWND hParent)
 {
-	myParent = hParent;
+	mParent = hParent;
 }
 
 void WindowWin32::SetCurrentCursor(LPCTSTR cursorName) {
 	if (cursorName == 0)
-		myCursor = NULL;
+		mCursor = NULL;
 	else
-		myCursor = LoadCursor(NULL, cursorName);
-	SetCursor(myCursor);
+		mCursor = LoadCursor(NULL, cursorName);
+	SetCursor(mCursor);
 }
 
 //! destructor
 WindowWin32::~WindowWin32()
 {
-	if (myFullScreen)								// Are We In Fullscreen Mode?
+	if (mFullScreen)								// Are We In Fullscreen Mode?
 	{
 		//! if fullscreen mode, switch back to init settings
 		ChangeDisplaySettings(NULL, 0);					// If So Switch Back To The Desktop
 	}
 
 	//! destroy rendering screen
-	if (myScreen)
-		myScreen->Destroy();
+	if (mScreen)
+		mScreen->Destroy();
 
 	//! win32 stuff
-	UnregisterClassA("Kigs Window", myWC.hInstance);
+	UnregisterClassA("Kigs Window", mWC.hInstance);
 
 	//! enable again screen saver if needed
 
-	if (myScreenSaverActive)
+	if (mScreenSaverActive)
 	{
 		// enable here
 		SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, TRUE, NULL, 0);
 	}
 
-	SetTouchDisableProperty((HWND)myHandle, false);
+	SetTouchDisableProperty((HWND)mHandle, false);
 
-	DestroyWindow((HWND)myHandle);
+	DestroyWindow((HWND)mHandle);
 }
 
 //! init the window, and if OK, show it
 void WindowWin32::ProtectedInit()
 {
-	unsigned int i = myDisplayIndex;
+	unsigned int i = mDisplayIndex;
 
 	SP<DisplayDeviceCaps>	L_displaycaps = KigsCore::GetInstanceOf("getdisplaycaps", "DisplayDeviceCaps");
 	auto device = L_displaycaps->Get_DisplayDevice(i);
@@ -360,7 +360,7 @@ void WindowWin32::ProtectedInit()
 	devModeDesc.dmSize = sizeof(DEVMODE);
 
 	// get current settings
-	EnumDisplaySettings(device->myName.c_str(), ENUM_CURRENT_SETTINGS, &devModeDesc);
+	EnumDisplaySettings(device->mName.c_str(), ENUM_CURRENT_SETTINGS, &devModeDesc);
 	
 	RECT WindowRect;
 
@@ -368,18 +368,18 @@ void WindowWin32::ProtectedInit()
 	DWORD		dwStyle;
 
 	//! if fullscreen mode, try to have fullscreen settings with given sizex and sizey, and with given rendering screen bitsPerPixel
-	if (myFullScreen)
+	if (mFullScreen)
 	{
 		SetCursor(NULL);
 		u32 bpp;
 
-		myScreen->getValue(LABEL_TO_ID(BitsPerPixel), bpp);
+		mScreen->getValue(LABEL_TO_ID(BitsPerPixel), bpp);
 
 		DEVMODE dmScreenSettings;
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-		dmScreenSettings.dmPelsWidth = mySizeX;
-		dmScreenSettings.dmPelsHeight = mySizeY;
+		dmScreenSettings.dmPelsWidth = mSizeX;
+		dmScreenSettings.dmPelsHeight = mSizeY;
 
 		dmScreenSettings.dmBitsPerPel = bpp;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
@@ -388,9 +388,9 @@ void WindowWin32::ProtectedInit()
 		{
 
 			// Try To Set Selected Mode And Get Results.  NOTE: CDS_FULLSCREEN Gets Rid Of Start Bar.
-			if (ChangeDisplaySettingsEx(device->myName.c_str(),&dmScreenSettings, NULL, CDS_FULLSCREEN,NULL) != DISP_CHANGE_SUCCESSFUL)
+			if (ChangeDisplaySettingsEx(device->mName.c_str(),&dmScreenSettings, NULL, CDS_FULLSCREEN,NULL) != DISP_CHANGE_SUCCESSFUL)
 			{
-				myFullScreen = false;
+				mFullScreen = false;
 			}
 		}
 
@@ -407,27 +407,27 @@ void WindowWin32::ProtectedInit()
 		dwStyle=WS_POPUP;
 
 		WindowRect.left=0;
-		WindowRect.right=(long)mySizeX;
+		WindowRect.right=(long)mSizeX;
 		WindowRect.top=0;
-		WindowRect.bottom = (long)mySizeY;
+		WindowRect.bottom = (long)mSizeY;
 #endif
 	}
 	else
 	{
 		//! create windowed window (:o)
 		dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
-		if (myIsMainWindow)
+		if (mIsMainWindow)
 			dwStyle = WS_OVERLAPPEDWINDOW;
 		else
 			dwStyle = WS_OVERLAPPED | WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;	// Windows Style
 
-		WindowRect.left = devModeDesc.dmPosition.x + (long)myPosX;
-		WindowRect.top  = devModeDesc.dmPosition.y + (long)myPosY;
-		WindowRect.right = WindowRect.left + (long)mySizeX;
+		WindowRect.left = devModeDesc.dmPosition.x + (long)mPositionX;
+		WindowRect.top  = devModeDesc.dmPosition.y + (long)mPositionY;
+		WindowRect.right = WindowRect.left + (long)mSizeX;
 #ifdef FRAPS_CAPTURE_MODE
-		WindowRect.bottom = WindowRect.top + (long)mySizeY + 96;
+		WindowRect.bottom = WindowRect.top + (long)mSizeY + 96;
 #else
-		WindowRect.bottom = WindowRect.top + (long)mySizeY;
+		WindowRect.bottom = WindowRect.top + (long)mSizeY;
 #endif
 	}
 
@@ -437,9 +437,9 @@ void WindowWin32::ProtectedInit()
 		"Kigs Window", NULL };
 
 	// Register the window class
-	myWC = tmpwc;
+	mWC = tmpwc;
 
-	RegisterClassEx(&myWC);
+	RegisterClassEx(&mWC);
 
 	//! resize window to fit size
 	AdjustWindowRectEx(&WindowRect, dwStyle, FALSE, dwExStyle);
@@ -447,24 +447,24 @@ void WindowWin32::ProtectedInit()
 	//! Create the window
 	HWND hWnd = CreateWindowEx(dwExStyle, "Kigs Window", getName().c_str(),
 		dwStyle | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WindowRect.left, WindowRect.top, WindowRect.right - WindowRect.left, WindowRect.bottom - WindowRect.top,
-		myParent, NULL, myWC.hInstance, (void*)this);
+		mParent, NULL, mWC.hInstance, (void*)this);
 
 #ifdef PSEUDO_FULLSCREEN
-	if (myFullScreen)
+	if (mFullScreen)
 	{	// remove caption
 		SetWindowLong(hWnd, GWL_STYLE, WS_BORDER);
 	}
 #endif
-	myHandle = (void*)hWnd;
+	mHandle = (void*)hWnd;
 
 
 
 	//! init msg buffer
-	ZeroMemory(&myMsg, sizeof(myMsg));
+	ZeroMemory(&mMsg, sizeof(mMsg));
 
-	if (m_bShowMouse == false)
+	if (mShowMouseCursor == false)
 	{
-		SetCursorPos(mySizeX, mySizeY);
+		SetCursorPos(mSizeX, mSizeY);
 		volatile int tst = ShowCursor(0);
 		while (tst > 0)
 		{
@@ -486,8 +486,8 @@ void WindowWin32::ProtectedInit()
 	// disable screen saver
 	// first get current screensaver state
 
-	SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &myScreenSaverActive, 0);
-	if (myScreenSaverActive)
+	SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &mScreenSaverActive, 0);
+	if (mScreenSaverActive)
 	{
 		// disable here
 		SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
@@ -497,46 +497,27 @@ void WindowWin32::ProtectedInit()
 
 void	WindowWin32::GetMousePosInWindow(int posx, int posy, kfloat& wposx, kfloat& wposy)
 {
-	/*if(myScreen)
-	{
-	GetMousePosInDesignWindow(posx,posy,wposx,wposy);
-	}
-	else
-	{*/
-	posx -= (int)myPosX;
-	//if(posx >= (int)mySizeX)
-	//	posx = ((int)mySizeX)-1;
-	//if(posx < 0)
-	//	posx = 0;
-
-	posy -= (int)myPosY;
-	//if(posy>=(int)mySizeY)
-	//	posy = ((int)mySizeY)-1;
-	//if(posy < 0)
-	//	posy = 0;
+	
+	posx -= (int)mPositionX;
+	
+	posy -= (int)mPositionY;
+	
 
 	wposx = (kfloat)posx;
 	wposy = (kfloat)posy;
-	//}
+
 }
 
 void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, kfloat& wposy)
 {
-	posx -= (int)myPosX;
-	//if(posx >= (int)mySizeX)
-	//	posx = ((int)mySizeX)-1;
-	//if(posx < 0)
-	//	posx = 0;
+	posx -= (int)mPositionX;
+	
+	posy -= (int)mPositionY;
 
-	posy -= (int)myPosY;
-	//if(posy>=(int)mySizeY)
-	//	posy = ((int)mySizeY)-1;
-	//if(posy < 0)
-	//	posy = 0;
 
-	if (myScreen)
+	if (mScreen)
 	{
-		myScreen->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
+		mScreen->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
 	}
 	else
 	{
@@ -545,66 +526,6 @@ void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, k
 	}
 }
 
-/*void	WindowWin32::MoveWindow(HWND hWnd)
-{
-	//! as I don't know the window to move
-	kstl::set<CoreModifiable*>	instances;
-	kstl::set<CoreModifiable*>::iterator	it;
-	CoreModifiable::GetInstances("Window", instances);
-
-	WindowWin32* localthis = 0;
-
-	for (it = instances.begin(); it != instances.end(); ++it)
-	{
-		localthis = (WindowWin32*)*it;
-		//! if found window has the same handle, then this is the good one to resize
-		if (localthis->myHandle == hWnd)
-		{
-			break;
-		}
-	}
-
-	if (localthis)
-	{
-		RECT rect;
-		GetWindowRect(hWnd, &rect);
-		//printf("%s : %d %d :: %d %d\n", getName().c_str(), rect.top, rect.bottom, rect.left, rect.right);
-
-		localthis->mySizeX = rect.right - rect.left;
-		localthis->mySizeY = rect.bottom - rect.top;
-		localthis->myPosX = rect.left;
-		localthis->myPosY = rect.top;
-	}
-}*/
-
-/*void	WindowWin32::Resize(HWND hWnd,int width,int height)
-{
-//! as I don't know the window to resize, search it
-kstl::set<CoreModifiable*>	instances;
-kstl::set<CoreModifiable*>::iterator	it;
-WindowWin32::GetInstances("Window",instances);
-
-WindowWin32* localthis=0;
-
-for(it=instances.begin();it!=instances.end();++it)
-{
-localthis=(	WindowWin32* ) *it;
-//! if found window has the same handle, then this is the good one to resize
-if(localthis->myHandle == hWnd)
-{
-break;
-}
-}
-
-if(localthis)
-{
-//! reset my parameters ans also ask screen to resize
-localthis->mySizeX=width;
-localthis->mySizeY=height;
-if(localthis->myScreen)
-localthis->myScreen->Resize((kfloat)width,(kfloat)height);
-}
-}*/
 
 //! show window
 void  WindowWin32::Show()
@@ -612,12 +533,12 @@ void  WindowWin32::Show()
 	//! init rendering screen after first show window
 
 	//! win32 stuff
-	HWND hWnd = (HWND)myHandle;
+	HWND hWnd = (HWND)mHandle;
 
 	SetTouchDisableProperty(hWnd, true);
 
 #ifdef PSEUDO_FULLSCREEN
-	if (myFullScreen)
+	if (mFullScreen)
 	{
 		// resize 
 		RECT rcClient;
@@ -631,56 +552,56 @@ void  WindowWin32::Show()
 	ShowWindow(hWnd, SW_SHOWDEFAULT);
 	UpdateWindow(hWnd);
 
-	if (myScreen && !myScreen->IsInit())
+	if (mScreen && !mScreen->IsInit())
 	{
-		myScreen->setValue(LABEL_TO_ID(ParentWindowName), getName());
-		myScreen->Init();
+		mScreen->setValue(LABEL_TO_ID(ParentWindowName), getName());
+		mScreen->Init();
 	}
 }
 
 //! update window
 void  WindowWin32::Update(const Timer&  timer, void* addParam)
 {
-	if (myDirtySize)
+	if (mDirtySize)
 	{
 		POINT scrPos;
 		scrPos.x = 0;
 		scrPos.y = 0;
-		ClientToScreen((HWND)myHandle, &scrPos);
-		myPosX = scrPos.x;
-		myPosY = scrPos.y;
+		ClientToScreen((HWND)mHandle, &scrPos);
+		mPositionX = scrPos.x;
+		mPositionY = scrPos.y;
 
 		RECT rect;
-		GetClientRect((HWND)myHandle, &rect);
-		mySizeX = rect.right;
-		mySizeY = rect.bottom;
+		GetClientRect((HWND)mHandle, &rect);
+		mSizeX = rect.right;
+		mSizeY = rect.bottom;
 
-		//printf("%s : %d %d :: %d %d\n", getName().c_str(), myPosX, myPosY, mySizeX, mySizeY);
+		//printf("%s : %d %d :: %d %d\n", getName().c_str(), mPositionX, mPositionY, mySizeX, mySizeY);
 
-		if (myScreen)
-			myScreen->Resize((kfloat)mySizeX, (kfloat)mySizeY);
+		if (mScreen)
+			mScreen->Resize((kfloat)mSizeX, (kfloat)mSizeY);
 
-		myDirtySize = false;
+		mDirtySize = false;
 
 	}
 
 	//! call screen update
-	if (myScreen)
-		myScreen->CallUpdate(timer, addParam);
+	if (mScreen)
+		mScreen->CallUpdate(timer, addParam);
 
 	//! manage messages
-	if (PeekMessage(&myMsg, NULL, 0U, 0U, PM_REMOVE))
+	if (PeekMessage(&mMsg, NULL, 0U, 0U, PM_REMOVE))
 	{
-		TranslateMessage(&myMsg);
-		DispatchMessage(&myMsg);
+		TranslateMessage(&mMsg);
+		DispatchMessage(&mMsg);
 	}
 }
 
 void WindowWin32::ShowMouse(bool bOn)
 {
-	if (m_bShowMouse != bOn) m_bShowMouse = bOn;
+	if (mShowMouseCursor != bOn) mShowMouseCursor = bOn;
 
-	if (m_bShowMouse == false)
+	if (mShowMouseCursor == false)
 	{
 		//SetCursorPos(mySizeX, mySizeY);
 		volatile int tst = ShowCursor(0);
@@ -701,7 +622,7 @@ void WindowWin32::ShowMouse(bool bOn)
 
 void WindowWin32::ShowBorder(bool show)
 {
-	HWND handle = (HWND)myHandle;
+	HWND handle = (HWND)mHandle;
 	auto style = GetWindowLongPtr(handle, GWL_STYLE);
 	auto ex_style = GetWindowLongPtr(handle, GWL_EXSTYLE);
 	auto to_change = WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU;
@@ -724,6 +645,6 @@ void WindowWin32::ShowBorder(bool show)
 
 void WindowWin32::SetWindowPosition(v2i pos, v2i size, bool force_topmost)
 {
-	HWND handle = (HWND)myHandle;
+	HWND handle = (HWND)mHandle;
 	SetWindowPos(handle, HWND_TOPMOST, pos.x, pos.y, size.x, size.y, force_topmost ? 0 : SWP_NOZORDER | SWP_NOOWNERZORDER);
 }

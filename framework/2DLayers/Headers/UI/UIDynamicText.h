@@ -20,7 +20,7 @@ note: respect spacing!
 
 <image>filename.png</image> insert an inline image in the text
 
-<item>UIButton:mybutton</item> insert an inline uiitem in the text. MUST BE a son of the UIDynamicText
+<item>UIButton:button</item> insert an inline uiitem in the text. MUST BE a son of the UIDynamicText
 
 <align xxx/> every image or item after this tag will be aligned according to xxx :
 	center halfchar
@@ -31,7 +31,7 @@ note: respect spacing!
 
 <link>UIItem:Test@TestMethod</link>...<link/>
 
-<marker>CoreModifiable:myCM@MyMethod</marker> calls myCM->MyMethod(this, IterationState& state)
+<marker>CoreModifiable:CM@MyMethod</marker> calls CM->MyMethod(this, IterationState& state)
 
 */
 
@@ -64,25 +64,36 @@ struct FontMap
 
 };
 
+// ****************************************
+// * FontMapManager class
+// * --------------------------------------
+/**
+* \file	UIDynamicText.h
+* \class	FontMapManager
+* \ingroup 2DLayers
+* \brief	Manage font textures.
+*/
+// ****************************************
+
 class FontMapManager : public CoreModifiable
 {
 public:
 	DECLARE_CLASS_INFO(FontMapManager, CoreModifiable, ModuleName);
 	DECLARE_CONSTRUCTOR(FontMapManager);
 
-	kigs::unordered_map<KigsID, FontMap> font_map;
+	kigs::unordered_map<KigsID, FontMap> mFontMap;
 	FontMap* PrecacheFont(const kstl::string& fontname, float fontsize);
 
 private:
 	void OnFontTextureDestroy(CoreModifiable* tex)
 	{
-		auto it = font_map.find(tex->getName());
-		if (it != font_map.end())
+		auto it = mFontMap.find(tex->getName());
+		if (it != mFontMap.end())
 		{
 			for(auto& range : it->second.mRanges)
 				delete[] range.mBakedChars;
 
-			font_map.erase(it);
+			mFontMap.erase(it);
 		}
 	}
 
@@ -124,7 +135,16 @@ struct TextTag
 
 usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_tags = nullptr, kstl::vector<CoreModifiable*>* inline_items = nullptr, CoreModifiable* obj = nullptr);
 
-
+// ****************************************
+// * UIDynamicText class
+// * --------------------------------------
+/**
+* \file	UIDynamicText.h
+* \class	UIDynamicText
+* \ingroup 2DLayers
+* \brief	Manage UI Texts with light html like tags.
+*/
+// ****************************************
 class UIDynamicText : public UITexturedItem
 {
 public:
@@ -142,8 +162,8 @@ public:
 		mIgnoreColorTags.changeNotificationLevel(Owner);
 		mShowCursor.changeNotificationLevel(Owner);
 		mExtraLineSpacing.changeNotificationLevel(Owner);
-		myOpacity.changeNotificationLevel(Owner);
-		myColor.changeNotificationLevel(Owner);
+		mOpacity.changeNotificationLevel(Owner);
+		mColor.changeNotificationLevel(Owner);
 	}
 	SIGNALS(TextRebuilt);
 

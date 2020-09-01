@@ -56,7 +56,7 @@ FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsi
 
 	const std::string str2 = str;
 
-	auto font = &font_map[str2];
+	auto font = &mFontMap[str2];
 	if (tfm->HasTexture(str)) return font;
 
 	font->font_id = str;
@@ -65,7 +65,7 @@ FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsi
 
 	if (font->mFontBuffer == nullptr)
 	{
-		font_map.erase(str2);
+		mFontMap.erase(str2);
 		return nullptr;
 	}
 
@@ -146,7 +146,7 @@ void FontMapManager::ReloadTextures()
 
 	kstl::vector<u8> bitmap_alpha;
 	kstl::vector<u8> bitmap_AI8;
-	for (auto& font : font_map)
+	for (auto& font : mFontMap)
 	{
 		bitmap_alpha.resize(font.second.mFontMapSize*font.second.mFontMapSize);
 		bitmap_AI8.resize(font.second.mFontMapSize*font.second.mFontMapSize * 2);
@@ -187,12 +187,12 @@ void UIDynamicText::LoadFont()
 
 	if (mFontMap)
 	{
-		myTexture = tfm->GetTexture(mFontMap->font_id);
+		mTexturePointer = tfm->GetTexture(mFontMap->font_id);
 		// make sure mFontMap is destoyed when texture is destoyed
 		mFontMap->mFontTexture = nullptr;
 	}
 	else
-		myTexture = nullptr;
+		mTexturePointer = nullptr;
 }
 
 static_assert(sizeof(VInfo2D::Data) == 20, "");
@@ -283,7 +283,7 @@ void UIDynamicText::IterateCharacters(std::function<bool(IterationState&)> func,
 			layer->GetRenderingScreen()->GetDesignSize(fsize.x, fsize.y);
 		}
 	}
-	switch ((int)mySizeModeX)
+	switch ((int)mSizeModeX)
 	{
 	case 0: // Default
 		if (mMaxWidth < 0)
@@ -740,12 +740,12 @@ void UIDynamicText::BuildVertexArray()
 		else
 		{
 			float opacity = GetOpacity();
-			data[offset + 0].setColorF(myColor[0], myColor[1], myColor[2], opacity);
-			data[offset + 1].setColorF(myColor[0], myColor[1], myColor[2], opacity);
-			data[offset + 2].setColorF(myColor[0], myColor[1], myColor[2], opacity);
-			data[offset + 3].setColorF(myColor[0], myColor[1], myColor[2], opacity);
-			data[offset + 4].setColorF(myColor[0], myColor[1], myColor[2], opacity);
-			data[offset + 5].setColorF(myColor[0], myColor[1], myColor[2], opacity);
+			data[offset + 0].setColorF(mColor[0], mColor[1], mColor[2], opacity);
+			data[offset + 1].setColorF(mColor[0], mColor[1], mColor[2], opacity);
+			data[offset + 2].setColorF(mColor[0], mColor[1], mColor[2], opacity);
+			data[offset + 3].setColorF(mColor[0], mColor[1], mColor[2], opacity);
+			data[offset + 4].setColorF(mColor[0], mColor[1], mColor[2], opacity);
+			data[offset + 5].setColorF(mColor[0], mColor[1], mColor[2], opacity);
 		}
 
 		last_cursor_pos = state.pos;
@@ -810,12 +810,12 @@ void UIDynamicText::BuildVertexArray()
 
 			float opacity = GetOpacity();
 
-			data[offset + 0].setColorF(myColor[0], myColor[1], myColor[2], opacity);
-			data[offset + 1].setColorF(myColor[0], myColor[1], myColor[2], opacity);
-			data[offset + 2].setColorF(myColor[0], myColor[1], myColor[2], opacity);
-			data[offset + 3].setColorF(myColor[0], myColor[1], myColor[2], opacity);
-			data[offset + 4].setColorF(myColor[0], myColor[1], myColor[2], opacity);
-			data[offset + 5].setColorF(myColor[0], myColor[1], myColor[2], opacity);
+			data[offset + 0].setColorF(mColor[0], mColor[1], mColor[2], opacity);
+			data[offset + 1].setColorF(mColor[0], mColor[1], mColor[2], opacity);
+			data[offset + 2].setColorF(mColor[0], mColor[1], mColor[2], opacity);
+			data[offset + 3].setColorF(mColor[0], mColor[1], mColor[2], opacity);
+			data[offset + 4].setColorF(mColor[0], mColor[1], mColor[2], opacity);
+			data[offset + 5].setColorF(mColor[0], mColor[1], mColor[2], opacity);
 
 			max_index++;
 		}
@@ -823,15 +823,15 @@ void UIDynamicText::BuildVertexArray()
 
 	vi->Resize(max_index * 6);
 
-	if (mySizeModeX == 0)
+	if (mSizeModeX == 0)
 	{
 		setValue("SizeX", size.m_Max.x);
-		myRealSize.x = size.m_Max.x;
+		mRealSize.x = size.m_Max.x;
 	}
-	if (mySizeModeY == 0)
+	if (mSizeModeY == 0)
 	{
 		setValue("SizeY", size.m_Max.y);
-		myRealSize.y = size.m_Max.y;
+		mRealSize.y = size.m_Max.y;
 	}
 }
 
@@ -887,7 +887,7 @@ void UIDynamicText::PreprocessTags()
 
 void UIDynamicText::SetUpNodeIfNeeded()
 {	
-	if(myNeedUpdatePosition && (myFlags & Node2D_SizeChanged) == Node2D_SizeChanged)
+	if(mNeedUpdatePosition && (mFlags & Node2D_SizeChanged) == Node2D_SizeChanged)
 		mChanged = true;
 	ForceSetupText();
 	ParentClassType::SetUpNodeIfNeeded();
@@ -899,19 +899,19 @@ void UIDynamicText::NotifyUpdate(const unsigned int labelID)
 	{
 		mTextChanged = true;
 	}
-	else if (labelID == mySizeX.getID()
-		|| labelID == mySizeY.getID()
+	else if (labelID == mSizeX.getID()
+		|| labelID == mSizeY.getID()
 		|| labelID == mTextAlign.getID()
 		|| labelID == mMaxWidth.getID()
 		|| labelID == mFontScaleFactor.getID()
-		|| labelID == mySizeModeX.getID()
-		|| labelID == mySizeModeY.getID()
+		|| labelID == mSizeModeX.getID()
+		|| labelID == mSizeModeY.getID()
 		|| labelID == mSelectedCharacter.getID()
 		|| labelID == mShowCursor.getID()
 		|| labelID == mIgnoreColorTags.getID()
 		|| labelID == mExtraLineSpacing.getID()
-		|| labelID == myOpacity.getID()
-		|| labelID == myColor.getID()
+		|| labelID == mOpacity.getID()
+		|| labelID == mColor.getID()
 		)
 	{
 		mChanged = true;
@@ -948,7 +948,7 @@ void UIDynamicText::ForceSetupText()
 	if (mChanged)
 	{
 		BuildVertexArray();
-		myNeedUpdatePosition = true;
+		mNeedUpdatePosition = true;
 		mChanged = false;
 		EmitSignal(Signals::TextRebuilt, this);
 	}

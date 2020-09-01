@@ -4,6 +4,17 @@
 #include "GeolocationDevice.h"
 #include "ModuleInputDX.h"
 
+// ****************************************
+// * GeolocationDX class
+// * --------------------------------------
+/**
+* \file	GeolocationDX.h
+* \class	GeolocationDX
+* \ingroup Input
+* \brief Specific DirectX geolocation device.
+*
+*/
+// ****************************************
 class	GeolocationDX : public GeolocationDevice
 {
 public:

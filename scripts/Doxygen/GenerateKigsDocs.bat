@@ -1,0 +1,1 @@
+"KigsDocs.exe" -p ./KigsDocsGenerated

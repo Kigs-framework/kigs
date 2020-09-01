@@ -25,9 +25,9 @@ bool sortCamera::operator() (const Camera* lhs, const Camera* rhs) const{
 }
 
 IMPLEMENT_CONSTRUCTOR(Scene3D)
-	, myLightsHaveChanged(true)
-	, myPriority(*this, false, "Priority", 0)
-	, mySort3DNodesFrontToBack(*this, false, "Sort3DNodesFrontToBack", false)
+	, mLightsHaveChanged(true)
+	, mPriority(*this, false, "Priority", 0)
+	, mSort3DNodesFrontToBack(*this, false, "Sort3DNodesFrontToBack", false)
 {
 }
 
@@ -37,8 +37,8 @@ void	Scene3D::InitModifiable()
 	if (IsInit())
 	{
 		// I want to be notified when Priority is changed
-		myPriority.changeNotificationLevel(Owner);
-		myLightsHaveChanged = true;
+		mPriority.changeNotificationLevel(Owner);
+		mLightsHaveChanged = true;
 	}
 }
 
@@ -58,8 +58,8 @@ void	Scene3D::UninitModifiable()
 Scene3D::~Scene3D()
 {
 	// release ref on light
-	auto itr= myLights.begin();
-	auto end= myLights.end();
+	auto itr= mLights.begin();
+	auto end= mLights.end();
 	for (; itr != end; itr++)
 	{
 		(*itr)->Destroy();
@@ -68,14 +68,14 @@ Scene3D::~Scene3D()
 
 void Scene3D::NotifyUpdate(const unsigned int  labelid)
 {
-	if (labelid == myPriority.getLabelID())
+	if (labelid == mPriority.getLabelID())
 	{
 		// search for module scenegraph in parents
 		kstl::vector<CoreModifiable*>::const_iterator itparents = GetParents().begin();
 		kstl::vector<CoreModifiable*>::const_iterator itparentsend = GetParents().end();
 		for (; itparents != itparentsend; ++itparents)
 		{
-			if ((*itparents)->isSubType(ModuleSceneGraph::myClassID))
+			if ((*itparents)->isSubType(ModuleSceneGraph::mClassID))
 			{
 				ModuleSceneGraph* tonotify = (ModuleSceneGraph*)(*itparents);
 				tonotify->setValue("SceneListNeedsSort", true);
@@ -90,20 +90,20 @@ void Scene3D::NotifyUpdate(const unsigned int  labelid)
 ///////////////////
 void  Scene3D::addCamera(CoreModifiable* camera)
 {
-	myCameras.insert(static_cast<Camera*>(camera));
+	mCameras.insert(static_cast<Camera*>(camera));
 }
 
 bool  Scene3D::hasCamera(CoreModifiable* camera)
 {
-	return (myCameras.find(static_cast<Camera*>(camera)) != myCameras.end());
+	return (mCameras.find(static_cast<Camera*>(camera)) != mCameras.end());
 }
 
 bool  Scene3D::removeCamera(CoreModifiable* camera)
 {
-	kstl::set<Camera*>::iterator found = myCameras.find(static_cast<Camera*>(camera));
-	if (found != myCameras.end())
+	kstl::set<Camera*>::iterator found = mCameras.find(static_cast<Camera*>(camera));
+	if (found != mCameras.end())
 	{
-		myCameras.erase(found);
+		mCameras.erase(found);
 		return true;
 	}
 	return false;
@@ -114,24 +114,24 @@ bool  Scene3D::removeCamera(CoreModifiable* camera)
 //////////////////
 void  Scene3D::addLight(CoreModifiable* light)
 {
-	myLights.insert(light);
+	mLights.insert(light);
 	light->GetRef();
-	myLightsHaveChanged = true;
+	mLightsHaveChanged = true;
 }
 
 bool  Scene3D::hasLight(CoreModifiable* light)
 {
-	return (myLights.find(light) != myLights.end());
+	return (mLights.find(light) != mLights.end());
 }
 
 bool  Scene3D::removeLight(CoreModifiable* light)
 {
-	auto found = myLights.find(light);
-	if (found != myLights.end())
+	auto found = mLights.find(light);
+	if (found != mLights.end())
 	{
 		(*found)->Destroy();
-		myLights.erase(found);
-		myLightsHaveChanged = true;
+		mLights.erase(found);
+		mLightsHaveChanged = true;
 		return true;
 
 	}
@@ -179,35 +179,35 @@ void Scene3D::TravDraw(TravState* state)
 	
 	state->SetHolographicMode(KigsCore::GetCoreApplication()->IsHolographic());
 
-	if (myLightsHaveChanged)
+	if (mLightsHaveChanged)
 	{
-		ModuleSpecificRenderer::LightCount count = state->GetRenderer()->SetLightsInfo(&myLights);
-		myDirLightCount = count.dir;
-		mySpotLightCount = count.spot;
-		myPointLightCount = count.point;
-		myLightsHaveChanged = false;
+		ModuleSpecificRenderer::LightCount count = state->GetRenderer()->SetLightsInfo(&mLights);
+		mDirLightCount = count.mDir;
+		mSpotLightCount = count.mSpot;
+		mPointLightCount = count.mPoint;
+		mLightsHaveChanged = false;
 	}
-	state->myLights = &myLights;
+	state->mLights = &mLights;
 
 	// add sort struct to travstate
-	if (mySort3DNodesFrontToBack)
+	if (mSort3DNodesFrontToBack)
 	{
-		state->pManageFrontToBackStruct = new ManageFrontToBackStruct();
+		state->mManageFrontToBackStruct = new ManageFrontToBackStruct();
 		ComputeNodePriority();
 	}
 
-	for (auto cam : myCameras)
+	for (auto cam : mCameras)
 	{
 		state->GetSceneGraph()->TreatNeedUpdateList();
 		if (!cam->IsEnabled()) continue;
 		if (!cam->SetActive(state)) continue;
 			
 		auto& passes = cam->GetRenderPasses();
-		if (mySort3DNodesFrontToBack)
+		if (mSort3DNodesFrontToBack)
 		{
-			state->pManageFrontToBackStruct->Init(cam);
+			state->mManageFrontToBackStruct->Init(cam);
 		}
-		state->myVisibilityFrame++;
+		state->mVisibilityFrame++;
 		state->SetCurrentCamera(cam);
 		state->SetAllVisible(cam->AllVisible());
 		cam->InitCullingObject(state->GetCullingObject().get());
@@ -228,9 +228,9 @@ void Scene3D::TravDraw(TravState* state)
 
 			state->SetCurrentLocalToGlobalMatrix(Matrix3x4::IdentityMatrix());
 			state->SetCurrentGlobalToLocalMatrix(Matrix3x4::IdentityMatrix());
-			state->myCurrentMaterial = 0;
+			state->mCurrentMaterial = 0;
 			
-			state->myPath = 0;
+			state->mPath = 0;
 			lDrawableSorter.SetCamera(cam);
 			lDrawableSorter.Clear();
 
@@ -248,13 +248,13 @@ void Scene3D::TravDraw(TravState* state)
 
 			TravPath path;
 			lDrawableSorter.ConstructPath(path);
-			state->myPath = &path;
+			state->mPath = &path;
 			if (path.GetSize())
 			{
-				if (state->myCurrentMaterial)
+				if (state->mCurrentMaterial)
 				{
-					Material* toPostDraw = state->myCurrentMaterial;
-					state->myCurrentMaterial = 0;
+					Material* toPostDraw = state->mCurrentMaterial;
+					state->mCurrentMaterial = 0;
 					toPostDraw->CheckPostDraw(state);
 				}
 
@@ -264,10 +264,10 @@ void Scene3D::TravDraw(TravState* state)
 
 			// TODO
 			// change multipass support for shared material
-			if (state->myCurrentMaterial)
+			if (state->mCurrentMaterial)
 			{
-				Material*	toPostDraw = state->myCurrentMaterial;
-				state->myCurrentMaterial = 0;
+				Material*	toPostDraw = state->mCurrentMaterial;
+				state->mCurrentMaterial = 0;
 				toPostDraw->CheckPostDraw(state);
 			}
 #ifdef KIGS_TOOLS
@@ -278,14 +278,14 @@ void Scene3D::TravDraw(TravState* state)
 		cam->Release(state);
 	}
 
-	if (mySort3DNodesFrontToBack)
+	if (mSort3DNodesFrontToBack)
 	{
-		delete state->pManageFrontToBackStruct;
-		state->pManageFrontToBackStruct = 0;
+		delete state->mManageFrontToBackStruct;
+		state->mManageFrontToBackStruct = 0;
 	}
 
 	// remove lights
-	state->myLights = nullptr;
+	state->mLights = nullptr;
 	// no more camera after scene 3D 
 	state->SetCurrentCamera(nullptr);
 }

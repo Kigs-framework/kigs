@@ -24,29 +24,29 @@ void JSCheckState(FileHandle * hndl)
 {
 	struct stat info;
 
-	if (stat(hndl->myFullFileName.c_str(), &info) != 0)
+	if (stat(hndl->mFullFileName.c_str(), &info) != 0)
 	{
 		hndl->resetStatus();
 		return;
 	}
-	hndl->myStatus |= FileHandle::Exist;
+	hndl->mStatus |= FileHandle::Exist;
 	if (info.st_mode & S_IFDIR)
-		hndl->myStatus |= FileHandle::IsDIr;
+		hndl->mStatus |= FileHandle::IsDIr;
 
 }
 
 void JSCreateFolderTree(FileHandle* hndl)
 {
-	if ((hndl->myStatus&FileHandle::Exist) == 0)
+	if ((hndl->mStatus&FileHandle::Exist) == 0)
 	{
-		SmartPointer<FileHandle> parent = FilePathManager::CreateFileHandle(FilePathManager::GetParentDirectory(hndl->myFullFileName));
-		if (parent->myFullFileName != "")
+		SmartPointer<FileHandle> parent = FilePathManager::CreateFileHandle(FilePathManager::GetParentDirectory(hndl->mFullFileName));
+		if (parent->mFullFileName != "")
 		{
 			JSCheckState(parent.get());
 
 			JSCreateFolderTree(parent.get());
 
-			mkdir(parent->myFullFileName.c_str(), 0x770);
+			mkdir(parent->mFullFileName.c_str(), 0x770);
 		}
 	}
 }
@@ -75,7 +75,7 @@ bool JSfopen(FileHandle* handle, const char * mode)
 {
 	unsigned int flagmode = FileHandle::OpeningFlags(mode);
 
-	if (handle->myStatus&FileHandle::Open) // already opened ? return true
+	if (handle->mStatus&FileHandle::Open) // already opened ? return true
 	{
 		// check if open mode is the same
 		if (flagmode == handle->getOpeningFlags())
@@ -93,12 +93,12 @@ bool JSfopen(FileHandle* handle, const char * mode)
 	{
 		JSCreateFolderTree(handle);
 	}
-	handle->myFile = fopen(handle->myFullFileName.c_str(), mode);
+	handle->mFile = fopen(handle->mFullFileName.c_str(), mode);
 
-	if (handle->myFile)
+	if (handle->mFile)
 	{
-		handle->myStatus |= FileHandle::Open;
-		handle->myStatus |= FileHandle::Exist;
+		handle->mStatus |= FileHandle::Open;
+		handle->mStatus |= FileHandle::Exist;
 		handle->setOpeningFlags(flagmode);
 		return true;
 	}
@@ -109,30 +109,30 @@ bool JSfopen(FileHandle* handle, const char * mode)
 
 long int JSfread(void * ptr, long size, long count, FileHandle* handle)
 {
-	return fread(ptr, size, count, handle->myFile);
+	return fread(ptr, size, count, handle->mFile);
 }
 
 long int JSfwrite(const void * ptr, long size, long count, FileHandle* handle)
 {
-	return fwrite(ptr, size, count, handle->myFile);
+	return fwrite(ptr, size, count, handle->mFile);
 }
 
 long int JSftell(FileHandle* handle)
 {
-	return ftell(handle->myFile);
+	return ftell(handle->mFile);
 }
 
 int JSfseek(FileHandle* handle, long int offset, int origin)
 {
-	return fseek(handle->myFile,offset,origin);
+	return fseek(handle->mFile,offset,origin);
 }
 int JSfflush(FileHandle* handle)
 {
-	return fflush(handle->myFile);
+	return fflush(handle->mFile);
 }
 int JSfclose(FileHandle* handle)
 {
-	int result=fclose(handle->myFile);
-	handle->myStatus=0; // reset 
+	int result=fclose(handle->mFile);
+	handle->mStatus=0; // reset 
 	return result;
 }

@@ -21,14 +21,14 @@ void	API3DLight::InitModifiable()
 	
 	Light::InitModifiable();
 
-	mySpecularColor.changeNotificationLevel(Owner);
-	myDiffuseColor.changeNotificationLevel(Owner);
-	myAmbientColor.changeNotificationLevel(Owner);
-	mySpotAttenuation.changeNotificationLevel(Owner);
-	mySpotCutOff.changeNotificationLevel(Owner);
-	myConstAttenuation.changeNotificationLevel(Owner);
-	myLinAttenuation.changeNotificationLevel(Owner);
-	myQuadAttenuation.changeNotificationLevel(Owner);
+	mSpecularColor.changeNotificationLevel(Owner);
+	mDiffuseColor.changeNotificationLevel(Owner);
+	mAmbientColor.changeNotificationLevel(Owner);
+	mSpotAttenuation.changeNotificationLevel(Owner);
+	mSpotCutOff.changeNotificationLevel(Owner);
+	mConstAttenuation.changeNotificationLevel(Owner);
+	mLinAttenuation.changeNotificationLevel(Owner);
+	mQuadAttenuation.changeNotificationLevel(Owner);
 }
 
 
@@ -46,7 +46,7 @@ void API3DLight::NotifyUpdate(const unsigned int  labelid)
 
 bool API3DLight::PreRendering(RendererDX11 * renderer, Camera * cam, Point3D & camPos)
 {
-	if (!myIsOn)
+	if (!mIsOn)
 		return false;
 
 	// init blend mode
@@ -57,7 +57,7 @@ bool API3DLight::PreRendering(RendererDX11 * renderer, Camera * cam, Point3D & c
 
 void API3DLight::PrepareLightInfo(LightStruct& light_data, Camera* cam)
 {
-	if (!myIsOn)
+	if (!mIsOn)
 		return;
 
 	Point3D outP;
@@ -73,10 +73,10 @@ void API3DLight::PrepareLightInfo(LightStruct& light_data, Camera* cam)
 	{
 		PointLight light;
 		light.position.xyz = outP;
-		light.ambient.xyz = (v3f)myAmbientColor;
-		light.diffuse.xyz = (v3f)myDiffuseColor;
-		light.specular.xyz = (v3f)mySpecularColor;
-		light.attenuation.xyz = v3f(myConstAttenuation, myLinAttenuation, myQuadAttenuation);
+		light.ambient.xyz = (v3f)mAmbientColor;
+		light.diffuse.xyz = (v3f)mDiffuseColor;
+		light.specular.xyz = (v3f)mSpecularColor;
+		light.attenuation.xyz = v3f(mConstAttenuation, mLinAttenuation, mQuadAttenuation);
 		light_data.pointlights.push_back(light);
 		break;
 	}
@@ -84,9 +84,9 @@ void API3DLight::PrepareLightInfo(LightStruct& light_data, Camera* cam)
 	{
 		DirLight light;
 		light.position.xyz = outP.Normalized();
-		light.ambient.xyz = (v3f)myAmbientColor;
-		light.diffuse.xyz = (v3f)myDiffuseColor;
-		light.specular.xyz = (v3f)mySpecularColor;
+		light.ambient.xyz = (v3f)mAmbientColor;
+		light.diffuse.xyz = (v3f)mDiffuseColor;
+		light.specular.xyz = (v3f)mSpecularColor;
 		light_data.dirlights.push_back(light);
 		break;
 	}
@@ -94,14 +94,14 @@ void API3DLight::PrepareLightInfo(LightStruct& light_data, Camera* cam)
 	{
 		SpotLight light;
 		light.position.xyz = outP;
-		light.ambient.xyz = (v3f)myAmbientColor;
-		light.diffuse.xyz = (v3f)myDiffuseColor;
-		light.specular.xyz = (v3f)mySpecularColor;
-		light.attenuationAndSpotExponent = v4f(myConstAttenuation, myLinAttenuation, myQuadAttenuation, mySpotAttenuation);
+		light.ambient.xyz = (v3f)mAmbientColor;
+		light.diffuse.xyz = (v3f)mDiffuseColor;
+		light.specular.xyz = (v3f)mSpecularColor;
+		light.attenuationAndSpotExponent = v4f(mConstAttenuation, mLinAttenuation, mQuadAttenuation, mSpotAttenuation);
 		Vector3D dir(0.0f, 0.0f, -1.0f);
 		lMat.TransformVector((Vector3D*)&dir.x, &outV);
 		light.directionAndCutOff.xyz = outV;
-		light.directionAndCutOff.w = cosf(mySpotCutOff); // send cos directly
+		light.directionAndCutOff.w = cosf(mSpotCutOff); // send cos directly
 		light_data.spotlights.push_back(light);
 		break;
 	}
@@ -115,7 +115,7 @@ void API3DLight::PrepareLightInfo(LightStruct& light_data, Camera* cam)
 
 bool	API3DLight::Draw(TravState* state)
 {
-	if (!myIsOn)
+	if (!mIsOn)
 		return true;
 
 
@@ -140,8 +140,8 @@ bool	API3DLight::Draw(TravState* state)
 		Point3D *PosOffset = (Point3D*)myPosOffset.getVector();
 		lMat.TransformPoint(PosOffset, &outP);
 
-		Vector3D *dir = (Vector3D*)mySpotDirection.getVector();
-		lMat.TransformVector(dir, &outDir);
+		Vector3D *mDir = (Vector3D*)mySpotDirection.getVector();
+		lMat.TransformVector(mDir, &outDir);
 		//dd::cone(outP, outDir*10, Vector3D(1, 0, 0),((1-mySpotCutOff)/PI)*100, 0);
 		dd::sphere(outP, Vector3D(1, 0, 0), 0.05);
 		dd::line(outP, outP + outDir, Vector3D(1, 0, 0));
@@ -169,5 +169,5 @@ void API3DLight::PostDrawLight(TravState* travstate)
 
 int API3DLight::GetTypeOfLight()
 {
-	return myLightType;
+	return mLightType;
 }

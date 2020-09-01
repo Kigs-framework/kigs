@@ -6,13 +6,13 @@
 // ****************************************
 // * WindowJavascript class
 // * --------------------------------------
-/*!  \class WindowJavascript
-     a Javascript (HTML5 Canvas) window , used for rendering, inherit Window base class from GUI module
-     \ingroup GUIModuleJavascript
+/**
+* \file	WindowJavascript.h
+* \class	WindowJavascript
+* \ingroup GUIModule
+* \brief	Javascript Window class.
 */
 // ****************************************
-
-
 class WindowJavascript : public Window
 {
 public:
@@ -46,8 +46,8 @@ protected:
 	//! os dependant Window creation, or fullscreen mode setup
     void  ProtectedInit() override;
 	
-	static	WindowJavascript*	myFirstWindow;
-	maBool myAbsolutePos = BASE_ATTRIBUTE(AbsolutePos, true);
+	static	WindowJavascript*	mFirstWindow;
+	maBool mAbsolutePos = BASE_ATTRIBUTE(AbsolutePos, true);
 };    
 
 #endif //_WINDOWJAVASCRIPT_H_

@@ -232,7 +232,7 @@ void UINode3DLayer::RecomputeBoundingBox()
 	uiBBox.m_Min.Set(-maxSize, -maxSize, -maxSize);
 	uiBBox.m_Max.Set(maxSize, maxSize, maxSize);
 
-	myLocalBBox.Update(uiBBox);
+	mLocalBBox.Update(uiBBox);
 }
 
 
@@ -268,7 +268,7 @@ void UINode3DLayer::TravDraw(TravState* state)
 	renderer->SetLightMode(RENDERER_LIGHT_OFF);
 
 
-	state->myCurrentMaterial = 0;
+	state->mCurrentMaterial = 0;
 
 	state->SetAllVisible(false);
 

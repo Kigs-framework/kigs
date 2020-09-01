@@ -3,6 +3,17 @@
 
 #include "UIText.h"
 
+// ****************************************
+// * UIScrollingText class
+// * --------------------------------------
+/**
+* \file	UIScrollingText.h
+* \class	UIScrollingText
+* \ingroup 2DLayers
+* \brief	?? Obsolete ??
+*/
+// ****************************************
+
 class UIScrollingText : public UIText
 {
 public:
@@ -20,9 +31,9 @@ protected:
 	void NotifyUpdate(const unsigned int labelid) override;
 	void			Update(const Timer& a_timer, void* addParam) override;
 
-	maFloat					myCaracterPerSeconde;
-	unsigned int			myScrollIndex;
-	double					mydElapsedTime;
+	maFloat					mCaracterPerSeconde;
+	unsigned int			mScrollIndex;
+	double					mElapsedTime;
 
 };
 

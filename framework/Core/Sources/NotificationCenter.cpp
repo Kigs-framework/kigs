@@ -7,56 +7,56 @@
 //! constructor, init all parameters
 NotificationCenter::NotificationCenter()
 {
-	myObserverMap.clear();
-	myNotificationMap.clear();
-	myRemoveObserverMap.clear();
+	mObserverMap.clear();
+	mNotificationMap.clear();
+	mRemoveObserverMap.clear();
 
-	myPostLevel=0;
+	mPostLevel=0;
 
 	// use context to pass variable to coreItemOperator
-	myContext.myVariableList[LABEL_TO_ID(sender).toUInt()] = 0;
-	myContext.myVariableList[LABEL_TO_ID(data).toUInt()] = 0;
+	mContext.mVariableList[LABEL_TO_ID(sender).toUInt()] = 0;
+	mContext.mVariableList[LABEL_TO_ID(data).toUInt()] = 0;
 }
 
 NotificationCenter::~NotificationCenter()
 {
-	myContext.myVariableList[LABEL_TO_ID(sender).toUInt()] = 0;
-	myContext.myVariableList[LABEL_TO_ID(data).toUInt()] = 0;
+	mContext.mVariableList[LABEL_TO_ID(sender).toUInt()] = 0;
+	mContext.mVariableList[LABEL_TO_ID(data).toUInt()] = 0;
 
-	myObserverMap.clear();
-	myNotificationMap.clear();
+	mObserverMap.clear();
+	mNotificationMap.clear();
 }
 
 void NotificationCenter::addObserver(CoreModifiable* observer, const std::string& selector, const std::string&  notificationName, CoreModifiable* sender)
 {
 	// first map : observers
 	ObserverStruct newobstruct;
-	newobstruct.myCurrentItem = nullptr;
-	newobstruct.myIsStringItem = false;
+	newobstruct.mCurrentItem = nullptr;
+	newobstruct.mIsStringItem = false;
 	unsigned int selectorID = CharToID::GetID(selector);
-	newobstruct.mySelectorID = selectorID;
-	newobstruct.mySender = sender;
-	newobstruct.myIsRemoved = false;
+	newobstruct.mSelectorID = selectorID;
+	newobstruct.mSender = sender;
+	newobstruct.mIsRemoved = false;
 
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 	if(selector.substr(0, 4) == "eval")
 	{
-		CoreItemEvaluationContext::SetContext(&myContext);
+		CoreItemEvaluationContext::SetContext(&mContext);
 
 		// check if eval float or string
 		if (selector.substr(4, 3) == "Str")
 		{
 			std::string toeval = selector.substr(7, selector.length() - 7);
 			CoreItemSP toAdd = CoreItemOperator<std::string>::Construct(toeval, observer, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-			newobstruct.myCurrentItem = toAdd;
-			newobstruct.myIsStringItem = true;
+			newobstruct.mCurrentItem = toAdd;
+			newobstruct.mIsStringItem = true;
 		}
 		else
 		{
 			std::string toeval = selector.substr(4, selector.length() - 4);
 
 			CoreItemSP toAdd = CoreItemOperator<kfloat>::Construct(toeval, observer, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-			newobstruct.myCurrentItem = toAdd;
+			newobstruct.mCurrentItem = toAdd;
 		}
 		CoreItemEvaluationContext::ReleaseContext();
 	}
@@ -70,15 +70,15 @@ void NotificationCenter::protectedAddObserver(CoreModifiable* observer, const Ob
 	unsigned int notificationID=CharToID::GetID(notificationName);
 
 	// first check if observer already exist
-	if(myObserverMap.find(observer)!=myObserverMap.end())
+	if(mObserverMap.find(observer)!=mObserverMap.end())
 	{
-		NotifVectorStruct&	currentvector=myObserverMap[observer];
+		NotifVectorStruct&	currentvector=mObserverMap[observer];
 
 		bool alreadythere=false;
 		// check in current list if observer is not already there 
-		for(unsigned int i=0;i<currentvector.myVector.size();i++)
+		for(unsigned int i=0;i<currentvector.mVector.size();i++)
 		{
-			if(currentvector.myVector[i] == notificationName)
+			if(currentvector.mVector[i] == notificationName)
 			{
 				alreadythere=true;
 				break;
@@ -86,36 +86,36 @@ void NotificationCenter::protectedAddObserver(CoreModifiable* observer, const Ob
 		}
 		if(!alreadythere)
 		{
-			currentvector.myVector.push_back(notificationName);
+			currentvector.mVector.push_back(notificationName);
 		}
 	}
 	else // first use of this observer
 	{
 		NotifVectorStruct	toadd;
-		toadd.myVector.push_back(notificationName);
-		myObserverMap[observer]=toadd;
+		toadd.mVector.push_back(notificationName);
+		mObserverMap[observer]=toadd;
 		observer->flagAsNotificationCenterRegistered();
 	}
 
 	// second map : messages
 
-	if(myNotificationMap.find(notificationID) != myNotificationMap.end())
+	if(mNotificationMap.find(notificationID) != mNotificationMap.end())
 	{
-		std::vector<ObserverStructVector >& currentmap=myNotificationMap[notificationID];
+		std::vector<ObserverStructVector >& currentmap=mNotificationMap[notificationID];
 		std::vector<ObserverStructVector >::iterator	itobs;
 
 		bool	found=false;
 		for(itobs = currentmap.begin();itobs != currentmap.end();itobs++)
 		{
-			if((*itobs).myObserver == observer)
+			if((*itobs).mObserver == observer)
 			{
 				bool alreadythere=false;
 				int alreadythereindex=0;
-				for(unsigned int i=0;i<(*itobs).myVector.size();i++)
+				for(unsigned int i=0;i<(*itobs).mVector.size();i++)
 				{
-					if(((*itobs).myVector[i].mySelectorID == newobstruct.mySelectorID)&&(((*itobs).myVector[i].mySender == newobstruct.mySender)|| (newobstruct.mySender == 0)))
+					if(((*itobs).mVector[i].mSelectorID == newobstruct.mSelectorID)&&(((*itobs).mVector[i].mSender == newobstruct.mSender)|| (newobstruct.mSender == 0)))
 					{
-						(*itobs).myVector[i].myIsRemoved=false;
+						(*itobs).mVector[i].mIsRemoved=false;
 						alreadythere=true;
 						alreadythereindex=i;
 						break;
@@ -124,16 +124,16 @@ void NotificationCenter::protectedAddObserver(CoreModifiable* observer, const Ob
 				}
 				if(!alreadythere)
 				{
-					(*itobs).myVector.push_back(newobstruct);
+					(*itobs).mVector.push_back(newobstruct);
 				}
-				else // already there, check if sender is different
+				else // already there, check if mSender is different
 				{
 
-					if(newobstruct.mySender == 0)
+					if(newobstruct.mSender == 0)
 					{
-						(*itobs).myVector[alreadythereindex].mySender=0;
+						(*itobs).mVector[alreadythereindex].mSender=0;
 					}
-					else if(newobstruct.mySender != (*itobs).myVector[alreadythereindex].mySender)
+					else if(newobstruct.mSender != (*itobs).mVector[alreadythereindex].mSender)
 					{
 						// what can I do ?
 					}
@@ -146,9 +146,9 @@ void NotificationCenter::protectedAddObserver(CoreModifiable* observer, const Ob
 		if(!found)
 		{
 			ObserverStructVector	newvectortoadd;
-			newvectortoadd.myVector.clear();
-			newvectortoadd.myObserver=observer;
-			newvectortoadd.myVector.push_back(newobstruct);
+			newvectortoadd.mVector.clear();
+			newvectortoadd.mObserver=observer;
+			newvectortoadd.mVector.push_back(newobstruct);
 			currentmap.push_back(newvectortoadd);
 		}
 	}
@@ -156,15 +156,15 @@ void NotificationCenter::protectedAddObserver(CoreModifiable* observer, const Ob
 	{
 
 		ObserverStructVector	newvectortoadd;
-		newvectortoadd.myVector.clear();
-		newvectortoadd.myObserver=observer;
-		newvectortoadd.myVector.push_back(newobstruct);
+		newvectortoadd.mVector.clear();
+		newvectortoadd.mObserver=observer;
+		newvectortoadd.mVector.push_back(newobstruct);
 
 		std::vector<ObserverStructVector > newmaptoadd;
 
 		newmaptoadd.push_back(newvectortoadd);
 		
-		myNotificationMap[notificationID]=newmaptoadd;
+		mNotificationMap[notificationID]=newmaptoadd;
 	}
 }
 
@@ -174,13 +174,13 @@ void NotificationCenter::removeObserver(CoreModifiable* observer,const std::stri
 	CoreModifiable* L_tmp = observer;
 	protectedSetRemoveState(L_tmp,notificationName,sender);
 
-	if(myRemoveObserverMap.find(observer)!=myRemoveObserverMap.end())
+	if(mRemoveObserverMap.find(observer)!=mRemoveObserverMap.end())
 	{
-		std::vector<removeObserverStruct>&	currentvector=myRemoveObserverMap[observer];
+		std::vector<removeObserverStruct>&	currentvector=mRemoveObserverMap[observer];
 		removeObserverStruct	toAdd;
-		toAdd.notificationName=notificationName;
-		toAdd.sender=sender;
-		toAdd.myWasDestroyed = fromDestructor;
+		toAdd.mNotificationName=notificationName;
+		toAdd.mSender=sender;
+		toAdd.mWasDestroyed = fromDestructor;
 		currentvector.push_back(toAdd);		
 	}
 	else
@@ -188,11 +188,11 @@ void NotificationCenter::removeObserver(CoreModifiable* observer,const std::stri
 		std::vector<removeObserverStruct>	currentvector;
 		
 		removeObserverStruct	toAdd;
-		toAdd.notificationName=notificationName;
-		toAdd.sender=sender;
-		toAdd.myWasDestroyed = fromDestructor;
+		toAdd.mNotificationName=notificationName;
+		toAdd.mSender=sender;
+		toAdd.mWasDestroyed = fromDestructor;
 		currentvector.push_back(toAdd);	
-		myRemoveObserverMap[observer]=currentvector;
+		mRemoveObserverMap[observer]=currentvector;
 		
 	}
 }
@@ -200,7 +200,7 @@ void NotificationCenter::removeObserver(CoreModifiable* observer,const std::stri
 void NotificationCenter::manageRemoveObserverList()
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	for(auto it = myRemoveObserverMap.begin(); it != myRemoveObserverMap.end(); ++it)
+	for(auto it = mRemoveObserverMap.begin(); it != mRemoveObserverMap.end(); ++it)
 	{
 		CoreModifiable* obs=(*it).first;
 		const std::vector<removeObserverStruct>&	currentvector=(*it).second;
@@ -210,16 +210,16 @@ void NotificationCenter::manageRemoveObserverList()
 		// check if was destroyed
 		for (itv = currentvector.begin(); itv != currentvector.end(); ++itv)
 		{
-			wasDestroyed |= (*itv).myWasDestroyed;
+			wasDestroyed |= (*itv).mWasDestroyed;
 		}
 
 		for(itv=currentvector.begin();itv!=currentvector.end();++itv)
 		{
-			protectedRemoveObserver(obs,(*itv).notificationName,(*itv).sender, wasDestroyed);
+			protectedRemoveObserver(obs,(*itv).mNotificationName,(*itv).mSender, wasDestroyed);
 		}
 	}
 
-	myRemoveObserverMap.clear();
+	mRemoveObserverMap.clear();
 
 }
 
@@ -233,31 +233,31 @@ void NotificationCenter::protectedSetRemoveState(CoreModifiable* observer,const 
 	unsigned int notificationID=CharToID::GetID(notificationName);
 				
 	//bool canErase=false;
-	auto it = myObserverMap.find(observer);
-	if(it != myObserverMap.end())
+	auto it = mObserverMap.find(observer);
+	if(it != mObserverMap.end())
 	{
-		NotifVectorStruct&	currentvector=myObserverMap[observer];
-		for(auto itvector=currentvector.myVector.begin(); itvector != currentvector.myVector.end(); itvector++)
+		NotifVectorStruct&	currentvector=mObserverMap[observer];
+		for(auto itvector=currentvector.mVector.begin(); itvector != currentvector.mVector.end(); itvector++)
 		{
 			if(notificationName == (*itvector))
 			{
-				if(myNotificationMap.find(notificationID) != myNotificationMap.end())
+				if(mNotificationMap.find(notificationID) != mNotificationMap.end())
 				{
-					std::vector<ObserverStructVector>&		currentprotocolmap=myNotificationMap[notificationID];
+					std::vector<ObserverStructVector>&		currentprotocolmap=mNotificationMap[notificationID];
 					std::vector<ObserverStructVector>::iterator  vectorToRemoveit;
 
 					for(vectorToRemoveit=currentprotocolmap.begin();vectorToRemoveit!=currentprotocolmap.end();vectorToRemoveit++)
 					{
-						if((*vectorToRemoveit).myObserver == observer)
+						if((*vectorToRemoveit).mObserver == observer)
 						{	
 							std::vector<ObserverStruct>::iterator removestructit;
-							for(removestructit = (*vectorToRemoveit).myVector.begin();removestructit != (*vectorToRemoveit).myVector.end();removestructit++)
+							for(removestructit = (*vectorToRemoveit).mVector.begin();removestructit != (*vectorToRemoveit).mVector.end();removestructit++)
 							{
-								if( ((*removestructit).mySender == sender) || (sender == 0))
+								if( ((*removestructit).mSender == sender) || (sender == 0))
 								{
-									(*removestructit).myIsRemoved=true;
+									(*removestructit).mIsRemoved=true;
 									
-									(*removestructit).myCurrentItem=CoreItemSP(nullptr);
+									(*removestructit).mCurrentItem=CoreItemSP(nullptr);
 									
 									break;
 								}
@@ -275,33 +275,33 @@ void NotificationCenter::protectedSetRemoveState(CoreModifiable* observer,const 
 void NotificationCenter::protectedSetRemoveState(CoreModifiable* observer)
 {
 	// search all notifications for this observer
-	auto it = myObserverMap.find(observer);
-	if(it != myObserverMap.end())
+	auto it = mObserverMap.find(observer);
+	if(it != mObserverMap.end())
 	{
-		NotifVectorStruct&	currentvector=myObserverMap[observer];
+		NotifVectorStruct&	currentvector=mObserverMap[observer];
 
 		// search each notification name and set remove state
 
 		unsigned int i;
-		for(i=0;i<currentvector.myVector.size();i++)
+		for(i=0;i<currentvector.mVector.size();i++)
 		{
-			std::string notifname=currentvector.myVector[i];
+			std::string notifname=currentvector.mVector[i];
 			unsigned int notificationID=CharToID::GetID(notifname);
 
-			if(myNotificationMap.find(notificationID) != myNotificationMap.end())
+			if(mNotificationMap.find(notificationID) != mNotificationMap.end())
 			{
-				std::vector<ObserverStructVector>&		currentprotocolmap=myNotificationMap[notificationID];
+				std::vector<ObserverStructVector>&		currentprotocolmap=mNotificationMap[notificationID];
 				std::vector<ObserverStructVector>::iterator  vectorToRemoveit;
 
 				for(vectorToRemoveit=currentprotocolmap.begin();vectorToRemoveit!=currentprotocolmap.end();vectorToRemoveit++)
 				{
-					if((*vectorToRemoveit).myObserver == observer)
+					if((*vectorToRemoveit).mObserver == observer)
 					{	
 						std::vector<ObserverStruct>::iterator	itFlag;
-						for(itFlag=(*vectorToRemoveit).myVector.begin();itFlag!=(*vectorToRemoveit).myVector.end();itFlag++)
+						for(itFlag=(*vectorToRemoveit).mVector.begin();itFlag!=(*vectorToRemoveit).mVector.end();itFlag++)
 						{
-							(*itFlag).myIsRemoved=true;
-							(*itFlag).myCurrentItem = CoreItemSP(nullptr);
+							(*itFlag).mIsRemoved=true;
+							(*itFlag).mCurrentItem = CoreItemSP(nullptr);
 						}
 						break;
 					}
@@ -315,38 +315,38 @@ void NotificationCenter::protectedRemoveObserver(CoreModifiable* observer, bool 
 {
 	// search all notifications for this observer
 
-	auto it = myObserverMap.find(observer);
+	auto it = mObserverMap.find(observer);
 	bool canErase=true;
-	if(it != myObserverMap.end())
+	if(it != mObserverMap.end())
 	{
-		NotifVectorStruct&	currentvector=myObserverMap[observer];
+		NotifVectorStruct&	currentvector=mObserverMap[observer];
 		// search each notification name and remove observer form the list
 
 		unsigned int i;
-		for(i=0;i<currentvector.myVector.size();i++)
+		for(i=0;i<currentvector.mVector.size();i++)
 		{
-			std::string notifname=currentvector.myVector[i];
+			std::string notifname=currentvector.mVector[i];
 
 			unsigned int notificationID=CharToID::GetID(notifname);
 
-			auto itfound = myNotificationMap.find(notificationID);
-			if(itfound != myNotificationMap.end())
+			auto itfound = mNotificationMap.find(notificationID);
+			if(itfound != mNotificationMap.end())
 			{
-				std::vector<ObserverStructVector>&		currentprotocolmap=myNotificationMap[notificationID];
+				std::vector<ObserverStructVector>&		currentprotocolmap=mNotificationMap[notificationID];
 				std::vector<ObserverStructVector>::iterator  vectorToRemoveit;
 
 				for(vectorToRemoveit=currentprotocolmap.begin();vectorToRemoveit!=currentprotocolmap.end();vectorToRemoveit++)
 				{
-					if((*vectorToRemoveit).myObserver == observer)
+					if((*vectorToRemoveit).mObserver == observer)
 					{	
 						std::vector<ObserverStruct>::iterator removestructit;
 
 						std::vector<ObserverStruct>	reconstructList;
 						reconstructList.clear();
 						
-						for(removestructit = (*vectorToRemoveit).myVector.begin();removestructit != (*vectorToRemoveit).myVector.end();removestructit++)
+						for(removestructit = (*vectorToRemoveit).mVector.begin();removestructit != (*vectorToRemoveit).mVector.end();removestructit++)
 						{
-							if((*removestructit).myIsRemoved)
+							if((*removestructit).mIsRemoved)
 							{	
 								
 								
@@ -360,11 +360,11 @@ void NotificationCenter::protectedRemoveObserver(CoreModifiable* observer, bool 
 
 						if(reconstructList.size())
 						{
-							(*vectorToRemoveit).myVector=reconstructList;
+							(*vectorToRemoveit).mVector=reconstructList;
 						}
 						else
 						{
-							(*vectorToRemoveit).myVector.clear();
+							(*vectorToRemoveit).mVector.clear();
 							currentprotocolmap.erase(vectorToRemoveit);
 						}
 
@@ -376,7 +376,7 @@ void NotificationCenter::protectedRemoveObserver(CoreModifiable* observer, bool 
 
 				if(currentprotocolmap.size()==0)
 				{
-					myNotificationMap.erase(itfound);				
+					mNotificationMap.erase(itfound);				
 				}
 				
 			}
@@ -384,8 +384,8 @@ void NotificationCenter::protectedRemoveObserver(CoreModifiable* observer, bool 
 		}
 		if(canErase)
 		{
-			currentvector.myVector.clear();
-			myObserverMap.erase(it);
+			currentvector.mVector.clear();
+			mObserverMap.erase(it);
 			if (!wasDestroyed)
 			{
 				observer->unflagAsNotificationCenterRegistered();
@@ -406,35 +406,35 @@ void NotificationCenter::protectedRemoveObserver(CoreModifiable* observer,const 
 	unsigned int notificationID=CharToID::GetID(notificationName);
 
 	bool canErase=false;
-	auto it = myObserverMap.find(observer);
-	if(it != myObserverMap.end())
+	auto it = mObserverMap.find(observer);
+	if(it != mObserverMap.end())
 	{
-		NotifVectorStruct&	currentvector=myObserverMap[observer];
+		NotifVectorStruct&	currentvector=mObserverMap[observer];
 		std::vector<std::string>::iterator	itvector;
 
-		for(itvector=currentvector.myVector.begin();itvector!=currentvector.myVector.end();itvector++)
+		for(itvector=currentvector.mVector.begin();itvector!=currentvector.mVector.end();itvector++)
 		{
 			if(notificationName == (*itvector))
 			{
-				auto itfound = myNotificationMap.find(notificationID);
-				if(itfound != myNotificationMap.end())
+				auto itfound = mNotificationMap.find(notificationID);
+				if(itfound != mNotificationMap.end())
 				{
-					std::vector<ObserverStructVector>&		currentprotocolmap=myNotificationMap[notificationID];
+					std::vector<ObserverStructVector>&		currentprotocolmap=mNotificationMap[notificationID];
 					std::vector<ObserverStructVector>::iterator  vectorToRemoveit;
 
 					for(vectorToRemoveit=currentprotocolmap.begin();vectorToRemoveit!=currentprotocolmap.end();vectorToRemoveit++)
 					{
-						if((*vectorToRemoveit).myObserver == observer)
+						if((*vectorToRemoveit).mObserver == observer)
 						{	
 							std::vector<ObserverStruct>::iterator removestructit;
-							for(removestructit = (*vectorToRemoveit).myVector.begin();removestructit != (*vectorToRemoveit).myVector.end();removestructit++)
+							for(removestructit = (*vectorToRemoveit).mVector.begin();removestructit != (*vectorToRemoveit).mVector.end();removestructit++)
 							{
-								if((*removestructit).myIsRemoved)
+								if((*removestructit).mIsRemoved)
 								{	
-									if( ((*removestructit).mySender == sender) || (sender == 0))
+									if( ((*removestructit).mSender == sender) || (sender == 0))
 									{
-										(*vectorToRemoveit).myVector.erase(removestructit);
-										if((*vectorToRemoveit).myVector.size() == 0)
+										(*vectorToRemoveit).mVector.erase(removestructit);
+										if((*vectorToRemoveit).mVector.size() == 0)
 										{
 											currentprotocolmap.erase(vectorToRemoveit);
 										}
@@ -448,16 +448,16 @@ void NotificationCenter::protectedRemoveObserver(CoreModifiable* observer,const 
 					}
 					if(currentprotocolmap.size() == 0)
 					{
-						myNotificationMap.erase(itfound);
+						mNotificationMap.erase(itfound);
 					}
 				}
 
 				if(canErase)
 				{
-					currentvector.myVector.erase(itvector);
-					if(currentvector.myVector.size() == 0)
+					currentvector.mVector.erase(itvector);
+					if(currentvector.mVector.size() == 0)
 					{
-						myObserverMap.erase(it);
+						mObserverMap.erase(it);
 						if (!wasDestroyed)
 						{
 							observer->unflagAsNotificationCenterRegistered();
@@ -473,14 +473,14 @@ void NotificationCenter::protectedRemoveObserver(CoreModifiable* observer,const 
 void NotificationCenter::postNotificationName(const KigsID& notificationID,std::vector<CoreModifiableAttribute*>& params,CoreModifiable* sender,void* data)
 {
 	std::unique_lock<std::recursive_mutex> lk{ mMutex };
-	if(myPostLevel == 0)
+	if(mPostLevel == 0)
 	{
 		manageRemoveObserverList();
 	}
-	myPostLevel++;
+	mPostLevel++;
 	// search if some observers exists for this msg
 
-	if(myNotificationMap.find(notificationID.toUInt()) != myNotificationMap.end())
+	if(mNotificationMap.find(notificationID.toUInt()) != mNotificationMap.end())
 	{
 		// add notificationID to params
 		CoreModifiableAttribute* notificationIDAttr = 0;
@@ -494,8 +494,8 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 
 		while(!endj)
 		{
-			NotificationCenter::ObserverStructVector& currentObsStructV=myNotificationMap[notificationID.toUInt()][j];
-			CoreModifiable* currentobserver = currentObsStructV.myObserver;
+			NotificationCenter::ObserverStructVector& currentObsStructV=mNotificationMap[notificationID.toUInt()][j];
+			CoreModifiable* currentobserver = currentObsStructV.mObserver;
 
 			if (notificationIDAttr == 0)
 			{
@@ -507,18 +507,18 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 			unsigned int i=0;
 			while(!endi)
 			{
-				NotificationCenter::ObserverStruct&	currentobsStruct=currentObsStructV.myVector[i];
+				NotificationCenter::ObserverStruct&	currentobsStruct=currentObsStructV.mVector[i];
 
-				if(!currentobsStruct.myIsRemoved)
+				if(!currentobsStruct.mIsRemoved)
 				{		
-					if((currentobsStruct.mySender == 0) || (currentobsStruct.mySender == sender))
+					if((currentobsStruct.mSender == 0) || (currentobsStruct.mSender == sender))
 					{
-						if (!currentobsStruct.myCurrentItem.isNil())
+						if (!currentobsStruct.mCurrentItem.isNil())
 						{
-							CoreItemEvaluationContext::SetContext(&myContext);
-							myContext.myVariableList[LABEL_TO_ID(sender).toUInt()] = sender;
+							CoreItemEvaluationContext::SetContext(&mContext);
+							mContext.mVariableList[LABEL_TO_ID(sender).toUInt()] = sender;
 							// Warning faked cast
-							myContext.myVariableList[LABEL_TO_ID(data).toUInt()] = (GenericRefCountedBaseClass*) data;
+							mContext.mVariableList[LABEL_TO_ID(data).toUInt()] = (GenericRefCountedBaseClass*) data;
 
 
 							// push params
@@ -544,13 +544,13 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 									case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
 									case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 									{
-										myContext.myVariableList[(*paramscurrent)->getLabelID().toUInt()] = new CoreModifiableAttributeOperator<kfloat>((*paramscurrent));
+										mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()] = new CoreModifiableAttributeOperator<kfloat>((*paramscurrent));
 									}
 									break;
 									case CoreModifiable::ATTRIBUTE_TYPE::STRING:
 									case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 									{
-										myContext.myVariableList[(*paramscurrent)->getLabelID().toUInt()] = new CoreModifiableAttributeOperator<std::string>((*paramscurrent));
+										mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()] = new CoreModifiableAttributeOperator<std::string>((*paramscurrent));
 									}
 									break;
 									default:
@@ -568,15 +568,15 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 
 							while (paramscurrent != paramsend)
 							{
-								myContext.myVariableList[(*paramscurrent)->getLabelID().toUInt()]->Destroy();
-								myContext.myVariableList[(*paramscurrent)->getLabelID().toUInt()] = 0;
+								mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()]->Destroy();
+								mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()] = 0;
 								++paramscurrent;
 							}
 
 							swallow=true;
 							break;
 						}
-						else if(currentobserver->CallMethod(currentobsStruct.mySelectorID,params,data,sender))
+						else if(currentobserver->CallMethod(currentobsStruct.mSelectorID,params,data,sender))
 						{
 							swallow=true;
 							break;
@@ -585,7 +585,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 				}
 
 				i++;
-				if(i>=currentObsStructV.myVector.size())
+				if(i>=currentObsStructV.mVector.size())
 				{
 					endi=true;
 				}
@@ -597,7 +597,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 			}
 
 			j++;
-			if(j>=myNotificationMap[notificationID.toUInt()].size())
+			if(j>=mNotificationMap[notificationID.toUInt()].size())
 			{
 				endj=true;
 			}
@@ -623,7 +623,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 			notificationIDAttr = 0;
 		}
 	}
-	myPostLevel--;
+	mPostLevel--;
 }
 
 void	NotificationCenter::Update()

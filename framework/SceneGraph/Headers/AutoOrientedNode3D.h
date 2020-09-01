@@ -5,8 +5,15 @@
 #include "Upgrador.h"
 
 // ****************************************
-// * AutoOrientedNode3D Upgrador
-// ****************************************
+// * AutoOrientedNode3DUp class
+// * --------------------------------------
+/**
+ * \file	AutoOrientedNode3D.h
+ * \class	AutoOrientedNode3DUp
+ * \ingroup SceneGraph
+ * \brief	Node3D updragor to auto orient node.
+ */
+ // ****************************************
 
 class AutoOrientedNode3DUp : public Upgrador<Node3D>
 {
@@ -23,12 +30,12 @@ protected:
 	// reference Node3D 
 	CoreModifiableAttribute* mTarget;
 	// axis pointing to target given as signed unit vector. ie : {1,0,0} or {-1,0,0} or {0,1,0}...
-	CoreModifiableAttribute* myOrientedAxis;
+	CoreModifiableAttribute* mOrientedAxis;
 	// define the pseudo constant axis (up vector) given as signed unit vector. ie : {1,0,0} or {-1,0,0} or {0,1,0}...
 	// abs(PseudoConstantAxis) must be different of abs( OrientedAxis )
-	CoreModifiableAttribute* myPseudoConstantAxis;
+	CoreModifiableAttribute* mPseudoConstantAxis;
 	// the pseudo constant axis (up) vector global coordinate
-	CoreModifiableAttribute* myPseudoConstantAxisDir;
+	CoreModifiableAttribute* mPseudoConstantAxisDir;
 
 	bool					mWasdAutoUpdate = false;
 

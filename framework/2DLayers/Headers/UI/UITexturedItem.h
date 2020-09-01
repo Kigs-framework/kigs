@@ -6,6 +6,18 @@
 #include "SmartPointer.h"
 #include "Texture.h"
 
+// ****************************************
+// * UITexturedItem class
+// * --------------------------------------
+/**
+* \file	UITexturedItem.h
+* \class	UITexturedItem
+* \ingroup 2DLayers
+* \brief	Textured UIDrawableItem
+*
+*/
+// ****************************************
+
 class UITexturedItem : public UIDrawableItem
 {
 public:
@@ -18,7 +30,7 @@ public:
 	*/
 	UITexturedItem(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	Texture* GetTexture() { return myTexture.get(); }
+	Texture* GetTexture() { return mTexturePointer.get(); }
 	void     SetTexture(Texture* t);
 
 	// manage texture directly added 
@@ -36,7 +48,7 @@ protected:
 	void PreDraw(TravState* state) override;  // use for texture predraw if needed
 	void PostDraw(TravState* state) override; // use for texture postdraw if needed
 
-	SmartPointer<Texture>				myTexture;
+	SmartPointer<Texture>				mTexturePointer;
 
 	v2f mUVMin{ FLT_MAX, FLT_MAX };
 	v2f mUVMax{ FLT_MAX, FLT_MAX };

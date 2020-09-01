@@ -5,6 +5,18 @@
 
 #include <atomic>
 
+// ****************************************
+// * Node3DDelayed class
+// * --------------------------------------
+/**
+ * \file	Node3DDelayed.h
+ * \class	Node3DDelayed
+ * \ingroup SceneGraph
+ * \brief	A Node3D loading it's sons only when needed.
+ *
+ */
+ // ****************************************
+
 class Node3DDelayed : public Node3D
 {
 public:
@@ -13,13 +25,6 @@ public:
 	
 	static bool sIsFrozen;
 	static BBox sAllowedBBox;
-
-    /*enum class LoadedState
-    {
-        Unloaded,
-        Loaded,
-        Displayed
-    };*/
 
 	enum class DisplayState
 	{

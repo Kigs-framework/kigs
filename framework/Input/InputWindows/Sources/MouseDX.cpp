@@ -34,14 +34,14 @@ BOOL CALLBACK EnumMouseObjectsCallback( const DIDEVICEOBJECTINSTANCEA* instancea
 
 MouseDX::MouseDX(const kstl::string& name,CLASS_NAME_TREE_ARG) : MouseDevice(name,PASS_CLASS_NAME_TREE_ARG)
 {
-    myDirectInputMouse=0;
+    mDirectInputMouse=0;
 }
 
 MouseDX::~MouseDX()
 {  
-	if(myDirectInputMouse)
+	if(mDirectInputMouse)
 	{
-		myDirectInputMouse->Release();
+		mDirectInputMouse->Release();
 	}
 }    
 
@@ -49,8 +49,8 @@ bool	MouseDX::Aquire()
 {
 	if (MouseDevice::Aquire())
 	{
-		myDirectInputMouse->SetCooperativeLevel((myInputWindow ? (HWND)myInputWindow->GetHandle() : NULL), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-		myDirectInputMouse->Acquire();
+		mDirectInputMouse->SetCooperativeLevel((mInputWindow ? (HWND)mInputWindow->GetHandle() : NULL), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+		mDirectInputMouse->Acquire();
 		return true;
 	}
 	return false;
@@ -60,7 +60,7 @@ bool	MouseDX::Release()
 {
 	if (MouseDevice::Release())
 	{
-		myDirectInputMouse->Unacquire();
+		mDirectInputMouse->Unacquire();
 		return true;
 	}
 	return false;
@@ -72,12 +72,12 @@ void	MouseDX::UpdateDevice()
   
     DIMOUSESTATE2 dims2;      // DirectInput mouse state structure
 
-    if( NULL == myDirectInputMouse ) 
+    if( NULL == mDirectInputMouse ) 
         return;
     
     // Get the input's device state, and put the state in dims
     ZeroMemory( &dims2, sizeof(dims2) );
-    hr = myDirectInputMouse->GetDeviceState( sizeof(DIMOUSESTATE2), &dims2 );
+    hr = mDirectInputMouse->GetDeviceState( sizeof(DIMOUSESTATE2), &dims2 );
     if( FAILED(hr) ) 
     {
         return; 
@@ -86,23 +86,23 @@ void	MouseDX::UpdateDevice()
 	int currentDevice=0;
 
 	// posX and posY
-	myDeviceItems[currentDevice++]->getState()->SetValue((kfloat)dims2.lX);
-	myDeviceItems[currentDevice++]->getState()->SetValue((kfloat)dims2.lY);
+	mDeviceItems[currentDevice++]->getState()->SetValue((kfloat)dims2.lX);
+	mDeviceItems[currentDevice++]->getState()->SetValue((kfloat)dims2.lY);
 	
 	// wheel
-	if(myWheelCount)
+	if(mWheelCount)
 	{
-		myDeviceItems[currentDevice++]->getState()->SetValue((kfloat)dims2.lZ);
-		if(myDZ != myPreviousDZ)
-			myPreviousDZ = myDZ;
-		myDZ += (kfloat)dims2.lZ;
+		mDeviceItems[currentDevice++]->getState()->SetValue((kfloat)dims2.lZ);
+		if(mDZ != mPreviousDZ)
+			mPreviousDZ = mDZ;
+		mDZ += (kfloat)dims2.lZ;
 	}
 
 	// buttons
 	int currentButton;
-	for(currentButton=0;currentButton<myButtonsCount;currentButton++)
+	for(currentButton=0;currentButton<mButtonsCount;currentButton++)
 	{
-		myDeviceItems[currentDevice++]->getState()->SetValue(dims2.rgbButtons[currentButton]& 0x80);
+		mDeviceItems[currentDevice++]->getState()->SetValue(dims2.rgbButtons[currentButton]& 0x80);
 	}
 	
 	// call father update
@@ -111,37 +111,37 @@ void	MouseDX::UpdateDevice()
 	POINT cursorPos;
 	GetCursorPos(&cursorPos);
 
-	myDX = (kfloat)cursorPos.x - myPosX;
-	myDY = (kfloat)cursorPos.y - myPosY;
-	myPosX = (kfloat)cursorPos.x;
-	myPosY = (kfloat)cursorPos.y;
+	mDX = (kfloat)cursorPos.x - mPosX;
+	mDY = (kfloat)cursorPos.y - mPosY;
+	mPosX = (kfloat)cursorPos.x;
+	mPosY = (kfloat)cursorPos.y;
 }
 
 void	MouseDX::DoInputDeviceDescription()
 {
-	myDirectInputMouse->EnumObjects(EnumMouseObjectsCallback,this,DIDFT_ALL);
+	mDirectInputMouse->EnumObjects(EnumMouseObjectsCallback,this,DIDFT_ALL);
 
-	myDeviceItemsCount=myButtonsCount+myWheelCount+2; // +2 for posx and posy
+	mDeviceItemsCount=mButtonsCount+mWheelCount+2; // +2 for posx and posy
 
-	DeviceItem**	devicearray=new DeviceItem*[myDeviceItemsCount];
+	DeviceItem**	devicearray=new DeviceItem*[mDeviceItemsCount];
 	
 	unsigned int currentDevice=0;
 
 	devicearray[currentDevice++]=new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0f)));
 	devicearray[currentDevice++]=new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0f)));
 
-	if(myWheelCount)
+	if(mWheelCount)
 		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0f)));
 
 	int currentButton;
-	for(currentButton=0;currentButton<myButtonsCount;currentButton++)
+	for(currentButton=0;currentButton<mButtonsCount;currentButton++)
 	{
 		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<int>(0));
 	}
 
-	InitItems(myDeviceItemsCount,devicearray);
+	InitItems(mDeviceItemsCount,devicearray);
 
-	for(currentDevice=0;currentDevice<myDeviceItemsCount;currentDevice++)
+	for(currentDevice=0;currentDevice<mDeviceItemsCount;currentDevice++)
 	{
 		delete devicearray[currentDevice];
 	}

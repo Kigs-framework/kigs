@@ -14,19 +14,19 @@ IMPLEMENT_CLASS_INFO(UIAnimatedButton)
 
 UIAnimatedButton::UIAnimatedButton(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 UIButton(name, PASS_CLASS_NAME_TREE_ARG)
-, myUpTextureName(*this, false, LABEL_AND_ID(UpTextureName), "")
-, myDownTextureName(*this, false, LABEL_AND_ID(DownTextureName), "")
-, myOverTextureName(*this, false, LABEL_AND_ID(OverTextureName), "")
-, myDefaultUpAnimation(*this, false, LABEL_AND_ID(DefaultUpAnimation), "")
-, myDefaultDownAnimation(*this, false, LABEL_AND_ID(DefaultDownAnimation), "")
-, myDefaultOverAnimation(*this, false, LABEL_AND_ID(DefaultOverAnimation), "")
-, m_AnimationLoop(*this, false, LABEL_AND_ID(Loop), true)
-, m_FramePerSecond(*this, false, LABEL_AND_ID(FramePerSecond), 0)
-, m_CurrentFrame(0)
-, m_FrameNumber(0)
+, mUpTexture(*this, false, LABEL_AND_ID(UpTextureName), "")
+, mDownTextureName(*this, false, LABEL_AND_ID(DownTextureName), "")
+, mOverTextureName(*this, false, LABEL_AND_ID(OverTextureName), "")
+, mDefaultUpAnimation(*this, false, LABEL_AND_ID(DefaultUpAnimation), "")
+, mDefaultDownAnimation(*this, false, LABEL_AND_ID(DefaultDownAnimation), "")
+, mDefaultOverAnimation(*this, false, LABEL_AND_ID(DefaultOverAnimation), "")
+, mLoop(*this, false, LABEL_AND_ID(Loop), true)
+, mFramePerSecond(*this, false, LABEL_AND_ID(FramePerSecond), 0)
+, mCurrentFrame(0)
+, mFrameNumber(0)
 {
-	m_dElpasedTime	= 0;
-	m_AnimationSpeed = 0.0f;
+	mElpasedTime	= 0;
+	mAnimationSpeed = 0.0f;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -34,17 +34,17 @@ UIButton(name, PASS_CLASS_NAME_TREE_ARG)
 
 UIAnimatedButton::~UIAnimatedButton()
 {
-	if (myUpTexture)
-		myUpTexture = NULL;
-	if (myDownTexture)
-		myDownTexture = NULL;
-	if (myOverTexture)
-		myOverTexture = NULL;
-	if (myCurrentTexture)
-		myCurrentTexture = NULL;
+	if (mUpTexturePointer)
+		mUpTexturePointer = NULL;
+	if (mDownTexturePointer)
+		mDownTexturePointer = NULL;
+	if (mOverTexturePointer)
+		mOverTexturePointer = NULL;
+	if (mCurrentTexture)
+		mCurrentTexture = NULL;
 
-	if(myAlphaMask)
-		myAlphaMask = NULL;
+	if(mAlphaMask)
+		mAlphaMask = NULL;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ UIAnimatedButton::~UIAnimatedButton()
 
 void UIAnimatedButton::NotifyUpdate(const unsigned int labelid)
 {
-	if(labelid==myIsEnabled.getLabelID()) 
+	if(labelid==mIsEnabled.getLabelID()) 
 	{
 		if(!GetSons().empty())
 		{
@@ -61,14 +61,14 @@ void UIAnimatedButton::NotifyUpdate(const unsigned int labelid)
 			kstl::set<Node2D*,Node2D::PriorityCompare>::iterator end = sons.end();
 			while(it!=end)
 			{
-				(*it)->setValue(LABEL_TO_ID(IsEnabled),myIsEnabled);
+				(*it)->setValue(LABEL_TO_ID(IsEnabled),mIsEnabled);
 				it++;
 			}
 		}
 	}
-	if (labelid == myDefaultUpAnimation.getLabelID() ||
-		labelid == myDefaultDownAnimation.getLabelID() || 
-		labelid == myDefaultOverAnimation.getLabelID()) {
+	if (labelid == mDefaultUpAnimation.getLabelID() ||
+		labelid == mDefaultDownAnimation.getLabelID() || 
+		labelid == mDefaultOverAnimation.getLabelID()) {
 		UpdateAnimatedValues();
 	}
 	UIButton::NotifyUpdate(labelid);
@@ -97,41 +97,40 @@ void UIAnimatedButton::InitModifiable()
 	
 	if(_isInit)
 	{
-		LoadTexture(myUpTexture, myUpTextureName);
-		LoadTexture(myDownTexture, myDownTextureName);
-		LoadTexture(myOverTexture, myOverTextureName); 
+		LoadTexture(mUpTexturePointer, mUpTexture);
+		LoadTexture(mDownTexturePointer, mDownTextureName);
+		LoadTexture(mOverTexturePointer, mOverTextureName); 
 		ChangeState();
 		
-		if (myUpTexture)
+		if (mUpTexturePointer)
 		{
-			if (myDefaultUpAnimation.const_ref() != "")
+			if (mDefaultUpAnimation.const_ref() != "")
 			{
-				//myCurrentAnimation = (const kstl::string&)myDefaultUpAnimation;
-				m_FrameNumber = myUpTexture->Get_FrameNumber(myDefaultUpAnimation.const_ref());
+				mFrameNumber = mUpTexturePointer->Get_FrameNumber(mDefaultUpAnimation.const_ref());
 			}
 
 			// auto size
-			if ((unsigned int)mySizeX == 0 && (unsigned int)mySizeY == 0 && myDefaultUpAnimation.const_ref() != "")
+			if ((unsigned int)mSizeX == 0 && (unsigned int)mSizeY == 0 && mDefaultUpAnimation.const_ref() != "")
 			{
-				if (myUpTexture)
+				if (mUpTexturePointer)
 				{
 
 					int L_SourceSizeX = 0;
 					int L_SourceSizeY = 0;
 
-					myUpTexture->Get_SourceSize(myDefaultUpAnimation.c_str(), L_SourceSizeX, L_SourceSizeY);
-					mySizeX = (float)L_SourceSizeX;
-					mySizeY = (float)L_SourceSizeY;
+					mUpTexturePointer->Get_SourceSize(mDefaultUpAnimation.c_str(), L_SourceSizeX, L_SourceSizeY);
+					mSizeX = (float)L_SourceSizeX;
+					mSizeY = (float)L_SourceSizeY;
 
 
 				}
 			}
 
-			m_AnimationSpeed = 1.0f / (float)m_FramePerSecond;
+			mAnimationSpeed = 1.0f / (float)mFramePerSecond;
 		}
-		myDefaultUpAnimation.changeNotificationLevel(Owner);
-		myDefaultDownAnimation.changeNotificationLevel(Owner);
-		myDefaultOverAnimation.changeNotificationLevel(Owner);
+		mDefaultUpAnimation.changeNotificationLevel(Owner);
+		mDefaultDownAnimation.changeNotificationLevel(Owner);
+		mDefaultOverAnimation.changeNotificationLevel(Owner);
 	}
 }
 
@@ -141,25 +140,25 @@ void UIAnimatedButton::InitModifiable()
 
 bool UIAnimatedButton::isAlpha(float X, float Y)
 {
-	//Try to get my mask
-	if(!myAlphaMask)
+	//Try to get mask
+	if(!mAlphaMask)
 	{
 		kstl::vector<ModifiableItemStruct> sons = getItems();
 
 		for(unsigned int i=0; i < sons.size(); i++)
 		{
-			if(sons[i].myItem->isSubType("AlphaMask"))
+			if(sons[i].mItem->isSubType("AlphaMask"))
 			{
-				myAlphaMask = sons[i].myItem;
+				mAlphaMask = sons[i].mItem;
 				break;
 			}
 		}
 	}
 
-	if(myAlphaMask)
+	if(mAlphaMask)
 	{
-		//Check on my mask the specified location
-		return !myAlphaMask->CheckTo(X,Y);
+		//Check on mask the specified location
+		return !mAlphaMask->CheckTo(X,Y);
 	}
 
 	return false;
@@ -173,27 +172,27 @@ void UIAnimatedButton::Update(const Timer& _timer, void* addParam)
 	
 	double L_delta = ((Timer&)_timer).GetDt(this);
 
-	if(m_FrameNumber > 0)
+	if(mFrameNumber > 0)
 	{
-		m_dElpasedTime += L_delta;
-		if(m_dElpasedTime >= m_AnimationSpeed)
+		mElpasedTime += L_delta;
+		if(mElpasedTime >= mAnimationSpeed)
 		{
-			int L_temp = (int)(m_dElpasedTime/m_AnimationSpeed);
-			m_CurrentFrame += L_temp;
-			if ((bool)m_AnimationLoop)
+			int L_temp = (int)(mElpasedTime/mAnimationSpeed);
+			mCurrentFrame += L_temp;
+			if ((bool)mLoop)
 			{
-				m_CurrentFrame = m_CurrentFrame % m_FrameNumber;
+				mCurrentFrame = mCurrentFrame % mFrameNumber;
 			}
-			else if (m_CurrentFrame >= m_FrameNumber)
+			else if (mCurrentFrame >= mFrameNumber)
 			{
-				m_CurrentFrame =m_FrameNumber-1;
+				mCurrentFrame =mFrameNumber-1;
 			}
-			m_dElpasedTime -= m_AnimationSpeed*((float)(L_temp));
+			mElpasedTime -= mAnimationSpeed*((float)(L_temp));
 		}
 	}
 	else
 	{
-		m_dElpasedTime = 0;
+		mElpasedTime = 0;
 	}
 }
 
@@ -201,9 +200,9 @@ void UIAnimatedButton::Update(const Timer& _timer, void* addParam)
 //UpdateAnimatedValues
 
 void	UIAnimatedButton::UpdateAnimatedValues() {
-	kstl::string anim = myCurrentAnimation;
-	if (myCurrentTexture && anim != "")
-		m_FrameNumber = myCurrentTexture->Get_FrameNumber(myCurrentAnimation);
+	kstl::string anim = mCurrentAnimation;
+	if (mCurrentTexture && anim != "")
+		mFrameNumber = mCurrentTexture->Get_FrameNumber(mCurrentAnimation);
 }
 
 
@@ -211,50 +210,50 @@ void	UIAnimatedButton::UpdateAnimatedValues() {
 
 void UIAnimatedButton::ChangeState()
 {
-	if (myIsEnabled) // down and mouse over only when enabled
+	if (mIsEnabled) // down and mouse over only when enabled
 	{
-		if (myIsDown)
+		if (mIsDown)
 		{
-			if (myDownTexture)
+			if (mDownTexturePointer)
 			{
-				myTexture = NonOwningRawPtrToSmartPtr(myDownTexture->Get_Texture());
-				myCurrentTexture = myDownTexture;
-				myCurrentAnimation = myDefaultDownAnimation.const_ref();
+				mTexturePointer = NonOwningRawPtrToSmartPtr(mDownTexturePointer->Get_Texture());
+				mCurrentTexture = mDownTexturePointer;
+				mCurrentAnimation = mDefaultDownAnimation.const_ref();
 			return;
 			}
 		}
 
-		if (myIsMouseOver)
+		if (mIsMouseOver)
 		{
-			if (myOverTexture)
+			if (mOverTexturePointer)
 			{
-				myTexture = NonOwningRawPtrToSmartPtr(myOverTexture->Get_Texture());
-				myCurrentTexture = myOverTexture;
-				myCurrentAnimation = myDefaultOverAnimation.const_ref();
+				mTexturePointer = NonOwningRawPtrToSmartPtr(mOverTexturePointer->Get_Texture());
+				mCurrentTexture = mOverTexturePointer;
+				mCurrentAnimation = mDefaultOverAnimation.const_ref();
 				return;
 			}
 		}
 	}
 
 	// set default color and texture
-	myTexture = NonOwningRawPtrToSmartPtr(myUpTexture->Get_Texture());
-	myCurrentTexture = myUpTexture;
-	myCurrentAnimation = myDefaultUpAnimation.const_ref();
+	mTexturePointer = NonOwningRawPtrToSmartPtr(mUpTexturePointer->Get_Texture());
+	mCurrentTexture = mUpTexturePointer;
+	mCurrentAnimation = mDefaultUpAnimation.const_ref();
 }
 
 void UIAnimatedButton::SetTexUV(UIVerticesInfo * aQI)
 {
-	if (!myTexture.isNil())
+	if (!mTexturePointer.isNil())
 	{
 		Point2D s, r;
-		myTexture->GetSize(s.x, s.y);
-		myTexture->GetRatio(r.x, r.y);
+		mTexturePointer->GetSize(s.x, s.y);
+		mTexturePointer->GetRatio(r.x, r.y);
 		s /= r;
 
 		kfloat dx = 0.5f / s.x;
 		kfloat dy = 0.5f / s.y;
 
-		const SpriteSheetFrame * f = myCurrentTexture->Get_AnimFrame(myCurrentAnimation, m_CurrentFrame);
+		const SpriteSheetFrame * f = mCurrentTexture->Get_AnimFrame(mCurrentAnimation, mCurrentFrame);
 
 		Point2D pMin((kfloat)f->FramePos_X, (kfloat)f->FramePos_Y);
 		pMin /= s;
@@ -276,5 +275,5 @@ void UIAnimatedButton::SetTexUV(UIVerticesInfo * aQI)
 
 SpriteSheetTexture* UIAnimatedButton::GetSpriteSheetTexture()
 {
-	return myCurrentTexture.get();
+	return mCurrentTexture.get();
 }

@@ -54,26 +54,26 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
 
 ModuleInputDX::ModuleInputDX(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
-	myDirectInput=0;
-	myJoystickCount=0;
+	mDirectInput=0;
+	mJoystickCount=0;
 
 	InitCommonControls();
-	myIsInitOK=true;
+	mIsInitOK=true;
 
 }
     
 ModuleInputDX::~ModuleInputDX()
 {
-    if(myDirectInput)
+    if(mDirectInput)
 	{
-		myDirectInput->Release();
+		mDirectInput->Release();
 	}
 }    
 
 
 void ModuleInputDX::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
-	if(myIsInitOK)
+	if(mIsInitOK)
 	{
 		BaseInit(core,"InputDX",params);
 		
@@ -89,9 +89,9 @@ void ModuleInputDX::Init(KigsCore* core, const kstl::vector<CoreModifiableAttrib
 		// to a IDirectInput interface we can use.
 		// Create a DInput object
 		if( FAILED( hr = DirectInput8Create( GetModuleHandle(NULL), DIRECTINPUT_VERSION, 
-											 IID_IDirectInput8, (VOID**)&myDirectInput, NULL ) ) )
+											 IID_IDirectInput8, (VOID**)&mDirectInput, NULL ) ) )
 		{
-			myIsInitOK=false;
+			mIsInitOK=false;
 			return;
 		}
 
@@ -101,7 +101,7 @@ void ModuleInputDX::Init(KigsCore* core, const kstl::vector<CoreModifiableAttrib
 																	EnumJoysticksCallback,
 																	NULL, DIEDFL_ATTACHEDONLY ) ) )
 		{
-			myIsInitOK=false;
+			mIsInitOK=false;
 			return ;
 		}
 
@@ -186,9 +186,9 @@ void ModuleInputDX::Update(const Timer& timer, void* addParam)
 	// read info on aquired devices
 	for(auto item : getItems())
     {
-		if(item.myItem->isSubType(InputDevice::myClassID))
+		if(item.mItem->isSubType(InputDevice::mClassID))
 		{
-			InputDevice* device=item.myItem->as<InputDevice>();
+			InputDevice* device=item.mItem->as<InputDevice>();
 			
 			if(!device->IsAquired())
 				device->Aquire();
@@ -202,12 +202,12 @@ void ModuleInputDX::Update(const Timer& timer, void* addParam)
 
 bool ModuleInputDX::addItem(const CMSP& item, ItemPosition pos)
 {
-	if(item->isSubType(JoystickDevice::myClassID))
+	if(item->isSubType(JoystickDevice::mClassID))
 	{
-		myJoystickCount++;
+		mJoystickCount++;
 		return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 	}
-	else if(item->isSubType(InputDevice::myClassID))
+	else if(item->isSubType(InputDevice::mClassID))
 	{
 		return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
 	}

@@ -163,15 +163,15 @@ public :
 
 	GestureRecognizerState getCurrentState()
 	{
-		return m_CurrentState;
+		return mCurrentState;
 	}
 
 	InputEventType getCurrentType()
 	{
-		return m_type;
+		return mType;
 	}
 
-	u32& flags() { return m_flag; }
+	u32& flags() { return mFlag; }
 
 protected:
 
@@ -204,17 +204,15 @@ protected:
 	virtual void Reset() = 0;
 
 	friend class TouchInputEventManager;
-	TouchEventState(KigsID methodnameID, u32 flag/*, CoreModifiable* touchsupport*/, InputEventType type) : m_CurrentState(StatePossible)
-		, m_methodNameID(methodnameID)
-		, m_flag(flag)
-		//, m_TouchSupport(touchsupport)
-		, m_type(type)
+	TouchEventState(KigsID methodnameID, u32 flag, InputEventType type) : mCurrentState(StatePossible)
+		, mMethodNameID(methodnameID)
+		, mFlag(flag)
+		, mType(type)
 	{};
-	GestureRecognizerState		m_CurrentState;
-	KigsID						m_methodNameID;
-	u32	m_flag;
-	//CoreModifiable*				m_TouchSupport;
-	InputEventType				m_type;
+	GestureRecognizerState		mCurrentState;
+	KigsID						mMethodNameID;
+	u32	mFlag;
+	InputEventType				mType;
 };
 
 
@@ -281,33 +279,33 @@ class TouchEventStateClick : public TouchEventState
 {
 public:
 	TouchEventStateClick(KigsID methodnameID, InputEventManagementFlag flag/*, CoreModifiable* touchsupport*/, InputEventType type) : TouchEventState(methodnameID, flag/*, touchsupport*/, type)
-		, m_MinClickCount(1)
-		, m_MaxClickCount(1)
-		, m_ClickMinDuration(0.0f)
-		, m_ClickMaxDuration(0.6f)
+		, mMinClickCount(1)
+		, mMaxClickCount(1)
+		, mClickMinDuration(0.0f)
+		, mClickMaxDuration(0.6f)
 	{};
 	void Update(TouchInputEventManager* manager, const Timer& timer,CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
 
 	void	setMinNeededClick(int c)
 	{
-		m_MinClickCount = c;
+		mMinClickCount = c;
 	}
 	void	setMaxNeededClick(int c)
 	{
-		m_MaxClickCount = c;
+		mMaxClickCount = c;
 	}
 
 	void setAutoClickDistance(float distance)
 	{
-		m_SpatialInteractionAutoClickDistance = distance;
+		mSpatialInteractionAutoClickDistance = distance;
 	}
 
 protected:
 
 	virtual void Reset() override
 	{
-		m_CurrentClickStart.clear();
-		m_CurrentClickEnd.clear();
+		mCurrentClickStart.clear();
+		mCurrentClickEnd.clear();
 	}
 
 	struct PotentialClick
@@ -325,14 +323,14 @@ protected:
 		float		 min_dist;
 	};
 
-	kigs::unordered_map<TouchSourceID, PotentialClick> m_CurrentClickStart;
-	kigs::unordered_map<TouchSourceID, PotentialClick> m_CurrentClickEnd;
+	kigs::unordered_map<TouchSourceID, PotentialClick> mCurrentClickStart;
+	kigs::unordered_map<TouchSourceID, PotentialClick> mCurrentClickEnd;
 
-	int											m_MinClickCount = 1;
-	int											m_MaxClickCount = 1;
-	kfloat										m_ClickMinDuration = 0.0f;
-	kfloat										m_ClickMaxDuration = 0.6f;
-	float										m_SpatialInteractionAutoClickDistance = 0.00f;
+	int											mMinClickCount = 1;
+	int											mMaxClickCount = 1;
+	kfloat										mClickMinDuration = 0.0f;
+	kfloat										mClickMaxDuration = 0.6f;
+	float										mSpatialInteractionAutoClickDistance = 0.00f;
 };
 
 struct DirectTouchEvent : InputEvent
@@ -366,13 +364,13 @@ public:
 	void Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
 	void setAutoTouchDownDistance(float distance)
 	{
-		m_SpatialInteractionAutoTouchDownDistance = distance;
+		mSpatialInteractionAutoTouchDownDistance = distance;
 	}
 protected:
 
 	virtual void Reset() override
 	{
-		m_CurrentInfosMap.clear();
+		mCurrentInfosMap.clear();
 	}
 
 	struct CurrentInfos
@@ -386,8 +384,8 @@ protected:
 		float min_dist;
 	};
 
-	std::map<TouchSourceID, CurrentInfos> m_CurrentInfosMap;
-	float								 m_SpatialInteractionAutoTouchDownDistance = 0.00f;
+	std::map<TouchSourceID, CurrentInfos> mCurrentInfosMap;
+	float								 mSpatialInteractionAutoTouchDownDistance = 0.00f;
 };
 
 
@@ -450,8 +448,8 @@ class TouchEventStateSwipe : public TouchEventState
 public:
 
 	TouchEventStateSwipe(KigsID methodnameID, InputEventManagementFlag flag, /*CoreModifiable* touchsupport,*/ InputEventType type) : TouchEventState(methodnameID, flag, /*touchsupport, */type)
-		, m_SwipeMinDuration(0.01)
-		, m_SwipeMaxDuration(0.6)
+		, mSwipeMinDuration(0.01)
+		, mSwipeMaxDuration(0.6)
 	{};
 	void Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
 protected:
@@ -469,13 +467,13 @@ protected:
 
 	virtual void Reset() override
 	{
-		m_CurrentInfosMap.clear();
+		mCurrentInfosMap.clear();
 	}
 
-	std::map<TouchSourceID, CurrentInfos>		m_CurrentInfosMap;
+	std::map<TouchSourceID, CurrentInfos>		mCurrentInfosMap;
 
-	double										m_SwipeMinDuration;
-	double										m_SwipeMaxDuration;
+	double										mSwipeMinDuration;
+	double										mSwipeMaxDuration;
 };
 
 struct ScrollEvent : InputEvent
@@ -502,21 +500,21 @@ class TouchEventStateScroll : public TouchEventState
 public:
 
 	TouchEventStateScroll(KigsID methodnameID, InputEventManagementFlag flag, /*CoreModifiable* touchsupport, */InputEventType type) : TouchEventState(methodnameID, flag,/* touchsupport,*/ type)
-		, m_ScrollForceMainDir(0,0,0)
+		, mScrollForceMainDir(0,0,0)
 	{};
 	void Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
 
 	void	forceMainDir(Vector3D maindir)
 	{
-		m_ScrollForceMainDir = maindir;
-		m_ScrollForceMainDir.Normalize();
+		mScrollForceMainDir = maindir;
+		mScrollForceMainDir.Normalize();
 	}
 
 protected:
 
 	virtual void Reset() override
 	{
-		m_CurrentInfosMap.clear();
+		mCurrentInfosMap.clear();
 	}
 
 	struct CurrentInfos
@@ -529,8 +527,8 @@ protected:
 		Vector3D	maindir;
 		Vector3D	currentSpeed;
 	};
-	std::map<TouchSourceID, CurrentInfos>		m_CurrentInfosMap;
-	Vector3D									m_ScrollForceMainDir;
+	std::map<TouchSourceID, CurrentInfos>		mCurrentInfosMap;
+	Vector3D									mScrollForceMainDir;
 };
 
 
@@ -582,6 +580,16 @@ class TouchEventStateDragAndDrop : public TouchEventState
 {
 };
 */
+// ****************************************
+// * TouchInputEventManager class
+// * --------------------------------------
+/**
+ * \class	TouchInputEventManager
+ * \file	TouchInputEventManager.h
+ * \ingroup Input
+ * \brief	Manager for all input events : click, swipe, scroll...
+ */
+ // ****************************************
 
 class TouchInputEventManager : public CoreModifiable
 {
@@ -616,39 +624,39 @@ public:
 
 	inline int getTriggerSquaredDist()
 	{
-		return myTriggerSquaredDist;
+		return mTriggerSquaredDist;
 	}
 
 	void	setTriggerDist(int dist)
 	{
-		myTriggerSquaredDist = dist*dist;
+		mTriggerSquaredDist = dist*dist;
 	}
 
 	inline float getSpatialInteractionOffset()
 	{
-		return mySpatialInteractionOffset;
+		return mSpatialInteractionOffset;
 	}
 
 	void setSpatialInteractionOffset(float offset)
 	{
-		mySpatialInteractionOffset = offset;
+		mSpatialInteractionOffset = offset;
 	}
 
 	void ManageCaptureObject(InputEvent& ev, CoreModifiable* target);
-	bool AllowEventOn(CoreModifiable* target) { return !myEventCaptureObject || target == myEventCaptureObject; }
+	bool AllowEventOn(CoreModifiable* target) { return !mEventCaptureObject || target == mEventCaptureObject; }
 	
 	void	activate(bool activate)
 	{
-		if ((myIsActive == true) && (activate == false))
+		if ((mIsActive == true) && (activate == false))
 		{
 			ResetCurrentStates();
 		}
-		myIsActive = activate;
+		mIsActive = activate;
 	}
 
 	bool	isActive()
 	{
-		return myIsActive;
+		return mIsActive;
 	}
 
 	const kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>& GetFrameTouches() { return mLastFrameTouches; }
@@ -690,7 +698,7 @@ protected:
 			int i;
 			for (i = 0; i < MaxType; i++)
 			{
-				myRegisteredCount[i] = 0;
+				mRegisteredCount[i] = 0;
 			}
 		}
 
@@ -707,54 +715,54 @@ protected:
 			}
 		};
 
-		unsigned short		myRegisteredCount[MaxType];
+		unsigned short		mRegisteredCount[MaxType];
 
 		struct EventMapEntry
 		{
-			std::vector<TouchEventState*>	myTouchEventStateList;
-			CoreModifiable*					myRootScene3D;
+			std::vector<TouchEventState*>	mTouchEventStateList;
+			CoreModifiable*					mRootScene3D;
 		};
 
-		kigs::unordered_map<CoreModifiable*, EventMapEntry>	myEventMap;
+		kigs::unordered_map<CoreModifiable*, EventMapEntry>	mEventMap;
 	};
 
 	bool	unregisterEventOnCurrentState(StackedEventStateStruct& state,CoreModifiable* registeredObject, InputEventType type);
 	bool	unregisterObjectOnCurrentState(StackedEventStateStruct& state, CoreModifiable* registeredObject);
 
 
-	std::vector<StackedEventStateStruct>	myStackedEventState;
-	CoreModifiable*										myEventCaptureObject = nullptr;
-	TouchSourceID										myEventCapturedEventID;
+	std::vector<StackedEventStateStruct>	mStackedEventState;
+	CoreModifiable*										mEventCaptureObject = nullptr;
+	TouchSourceID										mEventCapturedEventID;
 
-	ModuleInput*	theInputModule;
+	ModuleInput*	mTheInputModule;
 
 	class touchSupportTreeNode
 	{
 	public:
 		touchSupportTreeNode()
 		{
-			currentNode = 0;
-			parentNode = 0;
+			mCurrentNode = 0;
+			mParentNode = 0;
 		}
 
 		touchSupportTreeNode*	searchNode(CoreModifiable* toSearch, CoreModifiable* toSearchParentOptional = nullptr)
 		{
-			if (currentNode == toSearch && (!toSearchParentOptional || parentNode == toSearchParentOptional))
+			if (mCurrentNode == toSearch && (!toSearchParentOptional || mParentNode == toSearchParentOptional))
 			{
 				return this;
 			}
-			for (u32 i = 0; i < sons.size(); i++)
+			for (u32 i = 0; i < mSons.size(); i++)
 			{
-				touchSupportTreeNode* found = sons[i].searchNode(toSearch, toSearchParentOptional);
+				touchSupportTreeNode* found = mSons[i].searchNode(toSearch, toSearchParentOptional);
 				if (found)
 					return found;
 			}
 			return 0;
 		}
 
-		CoreModifiable*	currentNode;
-		CoreModifiable*	parentNode;
-		std::vector<touchSupportTreeNode>	sons;
+		CoreModifiable*	mCurrentNode;
+		CoreModifiable*	mParentNode;
+		std::vector<touchSupportTreeNode>	mSons;
 	};
 
 
@@ -791,8 +799,8 @@ protected:
 				{
 					if (a1.camera && a2.camera)
 					{
-						a1.camera->currentNode->getValue("Priority", p1);
-						a2.camera->currentNode->getValue("Priority", p2);
+						a1.camera->mCurrentNode->getValue("Priority", p1);
+						a2.camera->mCurrentNode->getValue("Priority", p2);
 
 						if (p1 == p2)
 						{
@@ -822,11 +830,11 @@ protected:
 	void	LinearCallEventUpdate(std::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchSourceID touch_id);
 
 	// touch support tree list (more than one root for multiple windows)
-	std::vector<touchSupportTreeNode>					myTouchSupportTreeRootList;
-	touchSupportTreeNode*								myCurrentTouchSupportRoot;
-	std::map<CoreModifiable*, touchSupportTreeNode*>	myTouchSupportMap;
-	bool												myInUpdate = false;
-	std::set<CoreModifiable*>							myDestroyedThisFrame;
+	std::vector<touchSupportTreeNode>					mTouchSupportTreeRootList;
+	touchSupportTreeNode*								mCurrentTouchSupportRoot;
+	std::map<CoreModifiable*, touchSupportTreeNode*>	mTouchSupportMap;
+	bool												mInUpdate = false;
+	std::set<CoreModifiable*>							mDestroyedThisFrame;
 
 	
 
@@ -834,14 +842,14 @@ protected:
 
 	bool	removeTemporaryUnmappedTouchSupport(CoreModifiable* ts);
 
-	std::vector<touchSupportTreeNode>					myTemporaryUnmappedTouchSupport;
+	std::vector<touchSupportTreeNode>					mTemporaryUnmappedTouchSupport;
 
 	// common squared dist to trigger scroll / click...
-	int													myTriggerSquaredDist;
-	float												mySpatialInteractionOffset = 0.1f;
+	int													mTriggerSquaredDist;
+	float												mSpatialInteractionOffset = 0.1f;
 
 	// manage touch active / not active
-	bool	myIsActive;
+	bool	mIsActive;
 
 	bool mForceClick = false;
 

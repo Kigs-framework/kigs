@@ -3,6 +3,18 @@
 
 #include "InputDevice.h"
 
+// ****************************************
+// * CompassDevice class
+// * --------------------------------------
+/**
+* \file	CompassDevice.h
+* \class	CompassDevice
+* \ingroup Input
+* \brief Base class for compass management.
+*
+*/
+// ****************************************
+
 class CompassDevice : public InputDevice
 {
 public:
@@ -26,7 +38,7 @@ public:
 	 * \param	posX : position on x axis (in/out param)
 	 * \param	posY : position on y axis (in/out param)
 	 */
-	void			getPos(kfloat& posX,kfloat& posY,kfloat& posZ){posX=myCompX; posY=myCompY; posZ=myCompZ;}
+	void			getPos(kfloat& posX,kfloat& posY,kfloat& posZ){posX=mCompX; posY=mCompY; posZ=mCompZ;}
 	
 	
 	/**
@@ -47,11 +59,11 @@ protected:
 	virtual void	Start() = 0;
 	virtual void	Stop() = 0;
 
-	maFloat	myCompX;
-	maFloat	myCompY;
-	maFloat	myCompZ;
+	maFloat	mCompX;
+	maFloat	mCompY;
+	maFloat	mCompZ;
 	
-	maInt	myRate;
+	maInt	mRate;
 
 };
 

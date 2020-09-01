@@ -11,34 +11,34 @@ template<typename datatype>
 class RawDataArrayAccess
 {
 protected:
-	datatype*		myArray;
-	unsigned int	mySizeX, mySizeY;
+	datatype*		mArray;
+	unsigned int	mSizeX, mSizeY;
 public:
-	RawDataArrayAccess(datatype* darray, unsigned int arraysizeX, unsigned int arraysizeY) : myArray(darray), mySizeX(arraysizeX), mySizeY(arraysizeY) {};
+	RawDataArrayAccess(datatype* darray, unsigned int arraysizeX, unsigned int arraysizeY) : mArray(darray), mSizeX(arraysizeX), mSizeY(arraysizeY) {};
 
 	inline datatype*	getVertex(unsigned int x, unsigned int y)
 	{
-		return &myArray[y*mySizeX + x];
+		return &mArray[y*mSizeX + x];
 	}
 
 	inline datatype*	getVertexLinear(unsigned int x)
 	{
-		return &myArray[x];
+		return &mArray[x];
 	}
 
 	inline datatype&	getVertexRef(unsigned int x, unsigned int y)
 	{
-		return myArray[y*mySizeX + x];
+		return mArray[y*mSizeX + x];
 	}
 
 	inline unsigned int getIndex(unsigned int x, unsigned int y)
 	{
-		return y*mySizeX + x;
+		return y*mSizeX + x;
 	}
 
 	inline unsigned int Count()
 	{
-		return mySizeX*mySizeY;
+		return mSizeX*mSizeY;
 	}
 };
 
@@ -52,58 +52,58 @@ protected:
 	class bufferStruct
 	{
 	public:
-		bufferStruct(unsigned int size) :m_ItemCount(size)
+		bufferStruct(unsigned int size) :mItemCount(size)
 		{
-			m_buffer = new bufferType[size];
+			mBuffer = new bufferType[size];
 		}
 		~bufferStruct()
 		{
-			delete[] m_buffer;
+			delete[] mBuffer;
 		}
 
 		bufferType& operator[] (const unsigned int index) const
 		{
-			return m_buffer[index];
+			return mBuffer[index];
 		}
 
 		unsigned int size()
 		{
-			return m_ItemCount;
+			return mItemCount;
 		}
 
 		bufferType*	buffer()
 		{
-			return m_buffer;
+			return mBuffer;
 		}
 
 	protected:
-		bufferType*		m_buffer;
-		unsigned int	m_ItemCount;
+		bufferType*		mBuffer;
+		unsigned int	mItemCount;
 
 	};
 
 public:
-	DynamicGrowingBuffer(unsigned int initSize) : m_totalSize(initSize), m_growSize(initSize), m_currentSize(-1)
+	DynamicGrowingBuffer(unsigned int initSize) : mTotalSize(initSize), mGrowSize(initSize), mCurrentSize(-1)
 	{
 		// cannot be null
 		if (initSize == 0)
 			initSize = 1;
 
-		m_bufferList.clear();
+		mBufferList.clear();
 		bufferStruct* first = new bufferStruct(initSize);
-		m_bufferList.push_back(first);
+		mBufferList.push_back(first);
 		recomputeCache(0);
 	}
 
-	DynamicGrowingBuffer(unsigned int initSize,unsigned int growingSize) : m_totalSize(initSize), m_growSize(growingSize), m_currentSize(-1)
+	DynamicGrowingBuffer(unsigned int initSize,unsigned int growingSize) : mTotalSize(initSize), mGrowSize(growingSize), mCurrentSize(-1)
 	{
 		// cannot be null
 		if (initSize == 0)
 			initSize = 1;
 
-		m_bufferList.clear();
+		mBufferList.clear();
 		bufferStruct* first = new bufferStruct(initSize);
-		m_bufferList.push_back(first);
+		mBufferList.push_back(first);
 		recomputeCache(0);
 	}
 
@@ -119,66 +119,66 @@ public:
 
 	bufferType& operator[] (const unsigned int index) 
 	{
-		if (((int)index) > m_currentSize)
+		if (((int)index) > mCurrentSize)
 		{
-			m_currentSize = index;
+			mCurrentSize = index;
 		}
-		if ((index >= m_currentCachedPosMin) && (index < m_currentCachedPosMax))
+		if ((index >= mCurrentCachedPosMin) && (index < mCurrentCachedPosMax))
 		{
-			return (*m_cachedStruct)[index - m_currentCachedPosMin];
+			return (*mCachedStruct)[index - mCurrentCachedPosMin];
 		}
 
 		recomputeCache(index);
 
-		return (*m_cachedStruct)[index - m_currentCachedPosMin];
+		return (*mCachedStruct)[index - mCurrentCachedPosMin];
 
 	}
 
 	bufferType* at(const unsigned int index)
 	{
-		if (((int)index) > m_currentSize)
+		if (((int)index) > mCurrentSize)
 		{
-			m_currentSize = index;
+			mCurrentSize = index;
 		}
-		if ((index >= m_currentCachedPosMin) && (index < m_currentCachedPosMax))
+		if ((index >= mCurrentCachedPosMin) && (index < mCurrentCachedPosMax))
 		{
-			return &(*m_cachedStruct)[index - m_currentCachedPosMin];
+			return &(*mCachedStruct)[index - mCurrentCachedPosMin];
 		}
 
 		recomputeCache(index);
 
-		return &(*m_cachedStruct)[index - m_currentCachedPosMin];
+		return &(*mCachedStruct)[index - mCurrentCachedPosMin];
 	}
 
 	void	push_back(bufferType& toadd)
 	{
-		unsigned int index = (unsigned int)(m_currentSize + 1);
+		unsigned int index = (unsigned int)(mCurrentSize + 1);
 		(*this)[index] = toadd;
 	}
 
 	bufferType& push_back()
 	{
-		unsigned int index = (unsigned int)(m_currentSize + 1);
+		unsigned int index = (unsigned int)(mCurrentSize + 1);
 		return (*this)[index];
 	}
 
 	bufferType& back()
 	{
-		unsigned int index = (unsigned int)(m_currentSize);
+		unsigned int index = (unsigned int)(mCurrentSize);
 		return (*this)[index];
 	}
 
 	unsigned int size()
 	{
-		return (unsigned int)m_currentSize + 1;
+		return (unsigned int)mCurrentSize + 1;
 	}
 
 	void resetValue(bufferType val)
 	{
 		if (size() > 0)
 		{
-			typename kstl::vector<bufferStruct*>::iterator	itbuf = m_bufferList.begin();
-			typename kstl::vector<bufferStruct*>::iterator	itbufend = m_bufferList.end();
+			typename kstl::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
+			typename kstl::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
 			for (; itbuf != itbufend; ++itbuf)
 			{
 				bufferType* writer = *itbuf->buffer();
@@ -192,8 +192,8 @@ public:
 	{
 		if (size() > 0)
 		{
-			typename kstl::vector<bufferStruct*>::iterator	itbuf = m_bufferList.begin();
-			typename kstl::vector<bufferStruct*>::iterator	itbufend = m_bufferList.end();
+			typename kstl::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
+			typename kstl::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
 			for (; itbuf != itbufend; ++itbuf)
 			{
 				memset((*itbuf)->buffer(), val, (*itbuf)->size() * sizeof(bufferType));
@@ -212,8 +212,8 @@ public:
 			bufferType* write = result;
 			int	copySize = 0;
 
-			typename kstl::vector<bufferStruct*>::iterator	itbuf = m_bufferList.begin();
-			typename kstl::vector<bufferStruct*>::iterator	itbufend = m_bufferList.end();
+			typename kstl::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
+			typename kstl::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
 			while (itbuf != itbufend)
 			{
 				bufferStruct* current = *itbuf;
@@ -241,69 +241,69 @@ protected:
 
 	void growBuffer(unsigned int index)
 	{
-		if (index < m_totalSize)
+		if (index < mTotalSize)
 		{
 			return;
 		}
-		unsigned int neededSize = index-m_totalSize;
-		if (neededSize < m_growSize)
+		unsigned int neededSize = index-mTotalSize;
+		if (neededSize < mGrowSize)
 		{
-			neededSize = m_growSize;
+			neededSize = mGrowSize;
 		}
 		bufferStruct* toadd = new bufferStruct(neededSize);
-		m_bufferList.push_back(toadd);
-		m_totalSize += neededSize;
+		mBufferList.push_back(toadd);
+		mTotalSize += neededSize;
 	}
 
 
 	void recomputeCache(unsigned int index)
 	{
-		if (index >= m_totalSize)
+		if (index >= mTotalSize)
 		{
 			growBuffer(index);
 		}
 
-		typename kstl::vector<bufferStruct*>::iterator	itbuf = m_bufferList.begin();
-		typename kstl::vector<bufferStruct*>::iterator	itbufend = m_bufferList.end();
+		typename kstl::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
+		typename kstl::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
 
-		m_currentCachedPosMin = 0;
-		m_cachedStruct = (*itbuf);
-		m_currentCachedPosMax = m_cachedStruct->size();
+		mCurrentCachedPosMin = 0;
+		mCachedStruct = (*itbuf);
+		mCurrentCachedPosMax = mCachedStruct->size();
 
 		while (itbuf != itbufend)
 		{
-			if ((index >= m_currentCachedPosMin) && (index < m_currentCachedPosMax))
+			if ((index >= mCurrentCachedPosMin) && (index < mCurrentCachedPosMax))
 			{
 				break;
 			}
 			++itbuf;
-			m_cachedStruct = (*itbuf);
-			m_currentCachedPosMin = m_currentCachedPosMax;
-			m_currentCachedPosMax += m_cachedStruct->size();
+			mCachedStruct = (*itbuf);
+			mCurrentCachedPosMin = mCurrentCachedPosMax;
+			mCurrentCachedPosMax += mCachedStruct->size();
 		}
 	}
 
 	void clearBuffers()
 	{
-		typename kstl::vector<bufferStruct*>::iterator	itbuf = m_bufferList.begin();
-		typename kstl::vector<bufferStruct*>::iterator	itbufend = m_bufferList.end();
+		typename kstl::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
+		typename kstl::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
 
 		while (itbuf != itbufend)
 		{
 			delete *itbuf;
 			++itbuf;
 		}
-		m_bufferList.clear();
+		mBufferList.clear();
 
 	}
 
-	kstl::vector<bufferStruct*>	m_bufferList;
-	bufferStruct*				m_cachedStruct;
-	unsigned int				m_currentCachedPosMin;
-	unsigned int				m_currentCachedPosMax;
-	unsigned int				m_totalSize;
-	unsigned int				m_growSize;
-	int							m_currentSize;
+	kstl::vector<bufferStruct*>	mBufferList;
+	bufferStruct*				mCachedStruct;
+	unsigned int				mCurrentCachedPosMin;
+	unsigned int				mCurrentCachedPosMax;
+	unsigned int				mTotalSize;
+	unsigned int				mGrowSize;
+	int							mCurrentSize;
 };
 
 
@@ -315,9 +315,9 @@ protected:
 	class abstractBufferStruct
 	{
 	public:
-		abstractBufferStruct(unsigned int count, unsigned int structsize) : m_ItemCount(count), m_ItemSize(structsize)
+		abstractBufferStruct(unsigned int count, unsigned int structsize) : mItemCount(count), mItemSize(structsize)
 		{
-			m_buffer = new unsigned char[structsize*count];
+			mBuffer = new unsigned char[structsize*count];
 		}
 		abstractBufferStruct(abstractBufferStruct&& other)
 		{
@@ -332,52 +332,52 @@ protected:
 		{
 			if (this == &other) return *this;
 
-			delete[] m_buffer;
-			m_buffer = other.m_buffer;
-			m_ItemCount = other.m_ItemCount;
-			m_ItemSize = other.m_ItemSize;
-			other.m_buffer = nullptr;
-			other.m_ItemCount = 0;
-			other.m_ItemSize = 0;
+			delete[] mBuffer;
+			mBuffer = other.mBuffer;
+			mItemCount = other.mItemCount;
+			mItemSize = other.mItemSize;
+			other.mBuffer = nullptr;
+			other.mItemCount = 0;
+			other.mItemSize = 0;
 			return *this;
 		}
 
 		~abstractBufferStruct()
 		{
-			delete[] m_buffer;
+			delete[] mBuffer;
 		}
 
 		void* operator[] (const unsigned int index) const
 		{
-			return (void*)(m_buffer + (index*m_ItemSize));
+			return (void*)(mBuffer + (index*mItemSize));
 		}
 
 		unsigned int size()
 		{
-			return m_ItemCount;
+			return mItemCount;
 		}
 
 		void*		buffer()
 		{
-			return (void*)m_buffer;
+			return (void*)mBuffer;
 		}
 
 	protected:
-		unsigned char*	m_buffer = nullptr;
-		unsigned int	m_ItemCount;
-		unsigned int	m_ItemSize;
+		unsigned char*	mBuffer = nullptr;
+		unsigned int	mItemCount;
+		unsigned int	mItemSize;
 
 	};
 
 public:
-	AbstractDynamicGrowingBuffer(unsigned int initSize, unsigned int structsize) : m_totalSize(initSize), m_growSize(initSize), m_structSize(structsize), m_currentSize(-1)
+	AbstractDynamicGrowingBuffer(unsigned int initSize, unsigned int structsize) : mTotalSize(initSize), mGrowSize(initSize), mStructSize(structsize), mCurrentSize(-1)
 	{
-		m_bufferList.clear();
-		m_bufferList.emplace_back(initSize, structsize);
+		mBufferList.clear();
+		mBufferList.emplace_back(initSize, structsize);
 		recomputeCache(0);
 	}
 
-	AbstractDynamicGrowingBuffer() : m_totalSize(0), m_growSize(0), m_structSize(0), m_currentSize(-1)
+	AbstractDynamicGrowingBuffer() : mTotalSize(0), mGrowSize(0), mStructSize(0), mCurrentSize(-1)
 	{
 		// Don't use it before calling init !
 	}
@@ -394,21 +394,21 @@ public:
 	{
 		if (this == &other) return *this;
 		
-		m_bufferList = std::move(other.m_bufferList);
-		m_cachedStruct = other.m_cachedStruct;
-		m_currentCachedPosMin = other.m_currentCachedPosMin;
-		m_currentCachedPosMax = other.m_currentCachedPosMax;
-		m_totalSize = other.m_totalSize;
-		m_growSize = other.m_growSize;
-		m_structSize = other.m_structSize;
-		m_currentSize = other.m_currentSize;
+		mBufferList = std::move(other.mBufferList);
+		mCachedStruct = other.mCachedStruct;
+		mCurrentCachedPosMin = other.mCurrentCachedPosMin;
+		mCurrentCachedPosMax = other.mCurrentCachedPosMax;
+		mTotalSize = other.mTotalSize;
+		mGrowSize = other.mGrowSize;
+		mStructSize = other.mStructSize;
+		mCurrentSize = other.mCurrentSize;
 
-		other.m_totalSize = 0;
-		other.m_growSize = 0;
-		other.m_structSize = 0;
-		other.m_currentSize = -1;
-		other.m_cachedStruct = nullptr;
-		other.m_bufferList = kstl::vector<abstractBufferStruct>();
+		other.mTotalSize = 0;
+		other.mGrowSize = 0;
+		other.mStructSize = 0;
+		other.mCurrentSize = -1;
+		other.mCachedStruct = nullptr;
+		other.mBufferList = kstl::vector<abstractBufferStruct>();
 
 		return *this;
 	}
@@ -416,12 +416,12 @@ public:
 
 	void init(unsigned int initSize, unsigned int structsize)
 	{
-		m_totalSize = initSize;
-		m_growSize = initSize;
-		m_structSize = structsize;
-		m_currentSize = -1;
-		m_bufferList.clear();
-		m_bufferList.emplace_back(initSize, structsize);
+		mTotalSize = initSize;
+		mGrowSize = initSize;
+		mStructSize = structsize;
+		mCurrentSize = -1;
+		mBufferList.clear();
+		mBufferList.emplace_back(initSize, structsize);
 		recomputeCache(0);
 	}
 
@@ -434,35 +434,35 @@ public:
 	void Clear()
 	{
 		recomputeCache(0);
-		m_currentSize = -1;
+		mCurrentSize = -1;
 	}
 
 	void* operator[] (const unsigned int index)
 	{
-		if (((int)index) > m_currentSize)
+		if (((int)index) > mCurrentSize)
 		{
-			m_currentSize = index;
+			mCurrentSize = index;
 		}
-		if ((index >= m_currentCachedPosMin) && (index < m_currentCachedPosMax))
+		if ((index >= mCurrentCachedPosMin) && (index < mCurrentCachedPosMax))
 		{
-			return (*m_cachedStruct)[index - m_currentCachedPosMin];
+			return (*mCachedStruct)[index - mCurrentCachedPosMin];
 		}
 
 		recomputeCache(index);
 
-		return (*m_cachedStruct)[index - m_currentCachedPosMin];
+		return (*mCachedStruct)[index - mCurrentCachedPosMin];
 
 	}
 
 	void	push_back(void* toadd)
 	{
-		unsigned int index = (unsigned int)(m_currentSize + 1);
-		memcpy((*this)[index], toadd, m_structSize);
+		unsigned int index = (unsigned int)(mCurrentSize + 1);
+		memcpy((*this)[index], toadd, mStructSize);
 	}
 
 	unsigned int size()
 	{
-		return (unsigned int)m_currentSize + 1;
+		return (unsigned int)mCurrentSize + 1;
 	}
 
 	void*	getArray(unsigned char * addr = NULL)
@@ -473,28 +473,28 @@ public:
 			int realSize = size();
 			unsigned char* result = addr;
 			if (addr == NULL)
-				result = new unsigned char[realSize*m_structSize];
+				result = new unsigned char[realSize*mStructSize];
 			unsigned char* write = result;
 			int	copySize = 0;
 
-			auto	itbuf = m_bufferList.begin();
-			auto	itbufend = m_bufferList.end();
+			auto	itbuf = mBufferList.begin();
+			auto	itbufend = mBufferList.end();
 			while (itbuf != itbufend)
 			{
 				abstractBufferStruct* current = &*itbuf;
 
 				if ((copySize + (int)current->size()) < realSize)
 				{
-					memcpy(write, current->buffer(), current->size()*m_structSize);
+					memcpy(write, current->buffer(), current->size()*mStructSize);
 				}
 				else
 				{
 					int remain = realSize - copySize;
-					memcpy(write, current->buffer(), remain*m_structSize);
+					memcpy(write, current->buffer(), remain*mStructSize);
 					break;
 				}
 				copySize += current->size();
-				write += current->size()*m_structSize;
+				write += current->size()*mStructSize;
 				++itbuf;
 			}
 
@@ -506,61 +506,61 @@ public:
 	void resize(unsigned int size)
 	{
 		growBuffer(size);
-		m_currentSize = size - 1;
+		mCurrentSize = size - 1;
 	}
 
 protected:
 
 	void growBuffer(unsigned int index)
 	{
-		if (index < m_totalSize)
+		if (index < mTotalSize)
 		{
 			return;
 		}
-		unsigned int neededSize =  index - m_totalSize;
-		if (neededSize < m_growSize)
+		unsigned int neededSize =  index - mTotalSize;
+		if (neededSize < mGrowSize)
 		{
-			neededSize = m_growSize;
+			neededSize = mGrowSize;
 		}
-		m_bufferList.emplace_back(neededSize, m_structSize);
-		m_totalSize += neededSize;
+		mBufferList.emplace_back(neededSize, mStructSize);
+		mTotalSize += neededSize;
 	}
 
 
 	void recomputeCache(unsigned int index)
 	{
-		if (index >= m_totalSize)
+		if (index >= mTotalSize)
 		{
 			growBuffer(index);
 		}
-		m_currentCachedPosMin = 0;
-		m_cachedStruct = &m_bufferList[0];
-		m_currentCachedPosMax = m_cachedStruct->size();
-		for (size_t i = 0; i < m_bufferList.size(); ++i)
+		mCurrentCachedPosMin = 0;
+		mCachedStruct = &mBufferList[0];
+		mCurrentCachedPosMax = mCachedStruct->size();
+		for (size_t i = 0; i < mBufferList.size(); ++i)
 		{
-			if ((index >= m_currentCachedPosMin) && (index < m_currentCachedPosMax))
+			if ((index >= mCurrentCachedPosMin) && (index < mCurrentCachedPosMax))
 			{
 				break;
 			}
-			m_cachedStruct = &m_bufferList[i+1];
-			m_currentCachedPosMin = m_currentCachedPosMax;
-			m_currentCachedPosMax += m_cachedStruct->size();
+			mCachedStruct = &mBufferList[i+1];
+			mCurrentCachedPosMin = mCurrentCachedPosMax;
+			mCurrentCachedPosMax += mCachedStruct->size();
 		}
 	}
 
 	void clearBuffers()
 	{
-		m_bufferList.clear();
+		mBufferList.clear();
 	}
 
-	kstl::vector<abstractBufferStruct>	m_bufferList;
-	abstractBufferStruct*				m_cachedStruct;
-	unsigned int						m_currentCachedPosMin;
-	unsigned int						m_currentCachedPosMax;
-	unsigned int						m_totalSize;
-	unsigned int						m_growSize;
-	unsigned int						m_structSize;
-	int									m_currentSize;
+	kstl::vector<abstractBufferStruct>	mBufferList;
+	abstractBufferStruct*				mCachedStruct;
+	unsigned int						mCurrentCachedPosMin;
+	unsigned int						mCurrentCachedPosMax;
+	unsigned int						mTotalSize;
+	unsigned int						mGrowSize;
+	unsigned int						mStructSize;
+	int									mCurrentSize;
 };
 
 #endif //_DYNAMICGROWINGBUFFER_H_

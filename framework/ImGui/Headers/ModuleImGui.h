@@ -9,6 +9,22 @@
 
 class ImGuiLayer;
 
+/*! \defgroup ImGUIModule Kigs ImGUI integration
+*/
+
+// ****************************************
+// * ModuleImGui class
+// * --------------------------------------
+/**
+* \file	ModuleImGui.h
+* \class	ModuleImGui
+* \ingroup ImGUIModule
+* \ingroup Module
+* \brief Generic Module for ImGUI integration classes.
+*
+*/
+// ****************************************
+
 class ModuleImGui : public ModuleBase
 {
 public:

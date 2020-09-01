@@ -4,10 +4,27 @@
 #include "TinyImageUtils.h"
 #include "Core.h"
 
+/*! \defgroup TinyImageModule 
+ *  Picture file management.
+ */
+
+
 class TinyImageLoaderContext;
 class FileHandle;
 
 typedef void (*ReadColorFunc)(unsigned char* src, unsigned char* dst);
+
+// ****************************************
+// * TinyImage class
+// * --------------------------------------
+/**
+* \file	TinyImage.h
+* \class	TinyImage
+* \ingroup TinyImageModule
+* \brief Base class for picture file loading.
+*
+*/
+// ****************************************
 
 class TinyImage : public GenericRefCountedBaseClass
 {
@@ -291,13 +308,13 @@ public:
 
 	bool	IsOK()
 	{
-		return myInitIsOK;
+		return mInitIsOK;
 	}
 	
-	int		GetWidth() const {return myWidth;}
-	int		GetHeight() const  {return myHeight;}
-	int		GetUsedWidth() const { return (myUsedWidth==-1)?myWidth: myUsedWidth; }
-	int		GetUsedHeight() const { return (myUsedHeight == -1) ? myHeight : myUsedHeight; }
+	int		GetWidth() const {return mWidth;}
+	int		GetHeight() const  {return mHeight;}
+	int		GetUsedWidth() const { return (mUsedWidth==-1)?mWidth: mUsedWidth; }
+	int		GetUsedHeight() const { return (mUsedHeight == -1) ? mHeight : mUsedHeight; }
 
 	unsigned int GetPixelLineSize()
 	{
@@ -364,10 +381,10 @@ protected:
 		return false;
 	}
 	
-	bool			myInitIsOK;
+	bool			mInitIsOK;
 	
-	int				myWidth, myHeight;
-	int				myUsedWidth, myUsedHeight;
+	int				mWidth, mHeight;
+	int				mUsedWidth, mUsedHeight;
 	unsigned char*	mPalette;
 	unsigned int	mPaletteDataSize;
 	unsigned char*	mPixels;

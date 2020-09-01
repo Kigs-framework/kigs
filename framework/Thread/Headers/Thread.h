@@ -11,12 +11,13 @@
 // ****************************************
 // * Thread class
 // * --------------------------------------
-/*!  \class Thread
-      base class for threads
-	 \ingroup Thread
-*/
-// ****************************************
-
+/**
+ * \file	Thread.h
+ * \class	Thread
+ * \ingroup Thread
+ * \brief	Manage a thread.
+ */
+ // ****************************************
 class Thread : public CoreModifiable
 {
 public:
@@ -34,41 +35,41 @@ public:
 	};
 
 	//! return current state (uninitialised, normal or paused)
-	State	GetState(){return myCurrentState;}
+	State	GetState(){return mCurrentState;}
 	
 	template<typename... T>
 	void	Start(T&&... params);
 
 	virtual void	Start();
 
-	kfloat	GetProgress(){return 	myProgress;}
-    inline State GetCurrentState() const {return myCurrentState;}
+	kfloat	GetProgress(){return 	mProgress;}
+    inline State GetCurrentState() const {return mCurrentState;}
     
 	void	setMethod(CoreModifiable* localthis, const std::string& method)
 	{
-		if (myFunctionWasInserted)
+		if (mFunctionWasInserted)
 		{
-			myCallee->RemoveMethod(myMethod.const_ref());
-			myFunctionWasInserted = false;
+			mCallee->RemoveMethod(mMethod.const_ref());
+			mFunctionWasInserted = false;
 		}
 
-		myCallee = localthis;
-		myMethod = method;
+		mCallee = localthis;
+		mMethod = method;
 	}
 	template<typename F>
 	void	setMethod(CoreModifiable* localthis, const std::string& method, F&& func)
 	{
-		if (myFunctionWasInserted)
+		if (mFunctionWasInserted)
 		{
-			myCallee->RemoveMethod(myMethod.const_ref());
-			myFunctionWasInserted = false;
+			mCallee->RemoveMethod(mMethod.const_ref());
+			mFunctionWasInserted = false;
 		}
 
-		myCallee = localthis;
-		myMethod = method;
+		mCallee = localthis;
+		mMethod = method;
 
-		myCallee->InsertFunction(method, func);
-		myFunctionWasInserted = true;
+		mCallee->InsertFunction(method, func);
+		mFunctionWasInserted = true;
 	}
 
 protected:
@@ -82,13 +83,13 @@ protected:
 	//! destructor
     virtual ~Thread();
  
-	State					myCurrentState;
-	kfloat					myProgress;
-	std::thread				myCurrentThread;
+	State					mCurrentState;
+	kfloat					mProgress;
+	std::thread				mCurrentThread;
 
-	maString				myMethod= INIT_ATTRIBUTE(Method, "");
-	maReference				myCallee= INIT_ATTRIBUTE(Callee,"");
-	bool					myFunctionWasInserted = false;
+	maString				mMethod= INIT_ATTRIBUTE(Method, "");
+	maReference				mCallee= INIT_ATTRIBUTE(Callee,"");
+	bool					mFunctionWasInserted = false;
 };
 
 #endif //_THREAD_H_

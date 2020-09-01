@@ -381,8 +381,8 @@ public:
     }
 
     // allocates, but does NOT initialize. Use in-place new constructor, e.g.
-    //   T* obj = pool.allocate();
-    //   ::new (static_cast<void*>(obj)) T();
+    //   T* mObj = pool.allocate();
+    //   ::new (static_cast<void*>(mObj)) T();
     T* allocate() {
         T* tmp = mHead;
         if (!tmp) {
@@ -395,8 +395,8 @@ public:
 
     // does not actually deallocate but puts it in store.
     // make sure you have already called the destructor! e.g. with
-    //  obj->~T();
-    //  pool.deallocate(obj);
+    //  mObj->~T();
+    //  pool.deallocate(mObj);
     void deallocate(T* obj) noexcept {
         *reinterpret_cast_no_cast_align_warning<T**>(obj) = mHead;
         mHead = obj;
@@ -1199,8 +1199,8 @@ private:
     }
 
     // Shift everything up by one element. Tries to move stuff around.
-    // True if some shifting has occured (entry under idx is a constructed object)
-    // Fals if no shift has occured (entry under idx is unconstructed memory)
+    // True if some shifting has occured (mEntry under idx is a constructed object)
+    // Fals if no shift has occured (mEntry under idx is unconstructed memory)
     void
     shiftUp(size_t idx,
             size_t const insertion_idx) noexcept(std::is_nothrow_move_assignable<Node>::value) {
@@ -1416,7 +1416,7 @@ public:
         }
     }
 
-    // Creates a copy of the given map. Copy constructor of each entry is used.
+    // Creates a copy of the given map. Copy constructor of each mEntry is used.
     unordered_map& operator=(unordered_map const& o) {
         ROBIN_HOOD_TRACE(this);
         if (&o == this) {
@@ -1669,7 +1669,7 @@ public:
     // Erases element at pos, returns iterator to the next element.
     iterator erase(iterator pos) {
         ROBIN_HOOD_TRACE(this);
-        // we assume that pos always points to a valid entry, and not end().
+        // we assume that pos always points to a valid mEntry, and not end().
         auto const idx = static_cast<size_t>(pos.mKeyVals - mKeyVals);
 
         shiftDown(idx);

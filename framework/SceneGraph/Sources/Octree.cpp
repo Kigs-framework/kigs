@@ -13,24 +13,24 @@
 IMPLEMENT_CLASS_INFO(Octree)
 
 IMPLEMENT_CONSTRUCTOR(Octree)
-, myIsInRemove(false)
-, myRootSubNode(nullptr)
-, myBBoxMin(*this, true, "BoundingBoxMin")
-, myBBoxMax(*this, true, "BoundingBoxMax")
-, mySubdivideLevel(*this, true, "SubdivideLevel", 10)
-, myMaxRecursiveLevel(*this, true, "MaxRecursiveLevel", 5)
-, myQuadTreeAxis(*this, true, "QuadTreeAxis", "None", "X", "Y", "Z")
-, myIsQuadtree(false)
+, mIsInRemove(false)
+, mRootSubNode(nullptr)
+, mBoundingBoxMin(*this, true, "BoundingBoxMin")
+, mBoundingBoxMax(*this, true, "BoundingBoxMax")
+, mSubdivideLevel(*this, true, "SubdivideLevel", 10)
+, mMaxRecursiveLevel(*this, true, "MaxRecursiveLevel", 5)
+, mQuadTreeAxis(*this, true, "QuadTreeAxis", "None", "X", "Y", "Z")
+, mIsQuadtree(false)
 
 {
-	myPrecomputedCull.clear();
-	myRootSubNode = KigsCore::GetInstanceOf("myRootSubNode", "OctreeSubNode");
-	addItem((CMSP&)myRootSubNode);
+	mPrecomputedCull.clear();
+	mRootSubNode = KigsCore::GetInstanceOf("myRootSubNode", "OctreeSubNode");
+	addItem((CMSP&)mRootSubNode);
 	
-	myRootSubNode->myFatherOctree = this;
-	myRootSubNode->Init();
-	myIsInReorganise = false;
-	myFirstReorganiseWasDone = false;
+	mRootSubNode->mFatherOctree = this;
+	mRootSubNode->Init();
+	mIsInReorganise = false;
+	mFirstReorganiseWasDone = false;
 
 	OVERLOAD_DECORABLE(Cull, Node3D, Octree);
 }
@@ -39,34 +39,34 @@ void	Octree::InitModifiable()
 {
 	Node3D::InitModifiable();
 
-	myLocalBBox.m_Min.Set(myBBoxMin[0], myBBoxMin[1], myBBoxMin[2]);
-	myLocalBBox.m_Max.Set(myBBoxMax[0], myBBoxMax[1], myBBoxMax[2]);
-	myBBox = myLocalBBox;
+	mLocalBBox.m_Min.Set(mBoundingBoxMin[0], mBoundingBoxMin[1], mBoundingBoxMin[2]);
+	mLocalBBox.m_Max.Set(mBoundingBoxMax[0], mBoundingBoxMax[1], mBoundingBoxMax[2]);
+	mBBox = mLocalBBox;
 	ComputeGlobalBBox();
 
-	myRootSubNode->myLocalBBox = myLocalBBox;
-	myRootSubNode->myBBox = myBBox;
-	myRootSubNode->myGlobalBBox = myGlobalBBox;
+	mRootSubNode->mLocalBBox = mLocalBBox;
+	mRootSubNode->mBBox = mBBox;
+	mRootSubNode->mGlobalBBox = mGlobalBBox;
 
-	myIsQuadtree = (((int)myQuadTreeAxis) != 0);
-	myAxisMask = 0;
-	if (myIsQuadtree)
+	mIsQuadtree = (((int)mQuadTreeAxis) != 0);
+	mAxisMask = 0;
+	if (mIsQuadtree)
 	{
-		myAxisMask = 1 << (((int)myQuadTreeAxis) - 1);
+		mAxisMask = 1 << (((int)mQuadTreeAxis) - 1);
 	}
 }
 
 void Octree::PropagateDirtyFlagsToParents(SceneNode* source)
 {
 	ParentClassType::PropagateDirtyFlagsToParents(source);
-	if (myIsInReorganise) return;
-	if (!myIsInRemove)
+	if (mIsInReorganise) return;
+	if (!mIsInRemove)
 	{
-		auto found = myObjectNodeAssociation.find(source);
-		if (found != myObjectNodeAssociation.end())
+		auto found = mObjectNodeAssociation.find(source);
+		if (found != mObjectNodeAssociation.end())
 		{
 			OctreeSubNode* subnode = (*found).second;
-			myObjectNodeAssociation.erase(found);  // avoid reentrance here
+			mObjectNodeAssociation.erase(found);  // avoid reentrance here
 			if (subnode)
 			{
 				CMSP toAdd(source, StealRefTag{});
@@ -79,15 +79,15 @@ void Octree::PropagateDirtyFlagsToParents(SceneNode* source)
 
 void Octree::RecomputeBoundingBox()
 {
-	if (!myFirstReorganiseWasDone)
+	if (!mFirstReorganiseWasDone)
 	{
 		return;
 	}
 
-	myLocalBBox.m_Min.Set(myBBoxMin[0], myBBoxMin[1], myBBoxMin[2]);
-	myLocalBBox.m_Max.Set(myBBoxMax[0], myBBoxMax[1], myBBoxMax[2]);
+	mLocalBBox.m_Min.Set(mBoundingBoxMin[0], mBoundingBoxMin[1], mBoundingBoxMin[2]);
+	mLocalBBox.m_Max.Set(mBoundingBoxMax[0], mBoundingBoxMax[1], mBoundingBoxMax[2]);
 
-	Matrix3x4		BBoxTransformMatrix(myTransform);
+	Matrix3x4		BBoxTransformMatrix(mTransform);
 
 	BBoxTransformMatrix.e[0][0] = fabsf(BBoxTransformMatrix.e[0][0]);
 	BBoxTransformMatrix.e[1][0] = fabsf(BBoxTransformMatrix.e[1][0]);
@@ -103,24 +103,24 @@ void Octree::RecomputeBoundingBox()
 
 	// compute local translation of the bounding box
 
-	Vector3D translation(myLocalBBox.m_Min);
-	translation += myLocalBBox.m_Max;
+	Vector3D translation(mLocalBBox.m_Min);
+	translation += mLocalBBox.m_Max;
 	translation *= 0.5f;
 
-	myBBox.m_Max = myLocalBBox.m_Max;
-	myBBox.m_Max -= translation;
+	mBBox.m_Max = mLocalBBox.m_Max;
+	mBBox.m_Max -= translation;
 
-	BBoxTransformMatrix.TransformVector((Vector3D*)&myBBox.m_Max);
-	myTransform.TransformVector(&translation);
+	BBoxTransformMatrix.TransformVector((Vector3D*)&mBBox.m_Max);
+	mTransform.TransformVector(&translation);
 
-	translation += myTransform.GetTranslation();
+	translation += mTransform.GetTranslation();
 
-	myBBox.m_Min = -myBBox.m_Max;
-	myBBox.m_Max += translation;
-	myBBox.m_Min += translation;
+	mBBox.m_Min = -mBBox.m_Max;
+	mBBox.m_Max += translation;
+	mBBox.m_Min += translation;
 
 
-	myRootSubNode->myBBox = myLocalBBox;
+	mRootSubNode->mBBox = mLocalBBox;
 
 
 	UnsetFlag(BoundingBoxIsDirty);
@@ -128,10 +128,10 @@ void Octree::RecomputeBoundingBox()
 
 DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Octree, TravState* state, unsigned int cullingMask)
 {
-	myCullingMask = cullingMask;
+	mCullingMask = cullingMask;
 	if (!IsRenderable())
 	{
-		myIsVisible = 0;
+		mIsVisible = 0;
 		return false;
 	}
 
@@ -139,7 +139,7 @@ DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Octree, TravState* state, unsigned int c
 
 	if (!state->IsAllVisible())
 	{
-		if (myIsVisible != state->GetVisibilityFrame())
+		if (mIsVisible != state->GetVisibilityFrame())
 		{
 			UnsetAllSonsVisible();
 
@@ -147,20 +147,20 @@ DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Octree, TravState* state, unsigned int c
 
 			if (result == CullingObject::all_out)
 			{
-				myIsVisible = 0;
+				mIsVisible = 0;
 				return false;
 			}
 
 			if (result == CullingObject::all_in)
 			{
-				myIsVisible = state->GetVisibilityFrame();
+				mIsVisible = state->GetVisibilityFrame();
 				SceneNode::SetAllSonsVisible();
 				return true;
 			}
 		}
 	}
 
-	myIsVisible = state->GetVisibilityFrame();
+	mIsVisible = state->GetVisibilityFrame();
 	return true;
 
 }
@@ -169,63 +169,63 @@ CullingObject::CULLING_RESULT  Octree::CullSubNodes(CullingObject* cullobj, Trav
 {
 	kstl::vector<OctreeSubNode::PrecomputedCullInfo>::iterator	itprecomp;
 
-	if (myPrecomputedCull.size() == 0)
+	if (mPrecomputedCull.size() == 0)
 	{
 		for (auto it = cullobj->GetCullPlaneList().begin(); it != cullobj->GetCullPlaneList().end(); ++it)
 		{
 			// create vector
 			OctreeSubNode::PrecomputedCullInfo toAdd;
-			myPrecomputedCull.push_back(toAdd);
+			mPrecomputedCull.push_back(toAdd);
 		}
 	}
 
 
-	itprecomp = myPrecomputedCull.begin();
+	itprecomp = mPrecomputedCull.begin();
 	// precompute
 	for (auto it = cullobj->GetCullPlaneList().begin(); it != cullobj->GetCullPlaneList().end(); ++it)
 	{
 		OctreeSubNode::PrecomputedCullInfo& current = (*itprecomp);
-		current.myOrigin = it->myOrigin;
-		current.myNormal = it->myNormal;
+		current.mOrigin = it->mOrigin;
+		current.mNormal = it->mNormal;
 
 		auto g2l = GetGlobalToLocal();
-		g2l.TransformVector(&current.myNormal);
-		g2l.TransformPoints(&current.myOrigin, 1);
+		g2l.TransformVector(&current.mNormal);
+		g2l.TransformPoints(&current.mOrigin, 1);
 
 
-		if (current.myNormal.x < 0.0f)
+		if (current.mNormal.x < 0.0f)
 		{
-			current.myPreTests[0] = 0;
+			current.mPreTests[0] = 0;
 		}
 		else
 		{
-			current.myPreTests[0] = 3;
+			current.mPreTests[0] = 3;
 		}
 
-		if (current.myNormal.y < 0.0f)
+		if (current.mNormal.y < 0.0f)
 		{
-			current.myPreTests[1] = 0;
+			current.mPreTests[1] = 0;
 		}
 		else
 		{
-			current.myPreTests[1] = 3;
+			current.mPreTests[1] = 3;
 		}
 
-		if (current.myNormal.z < 0.0f)
+		if (current.mNormal.z < 0.0f)
 		{
-			current.myPreTests[2] = 0;
+			current.mPreTests[2] = 0;
 		}
 		else
 		{
-			current.myPreTests[2] = 3;
+			current.mPreTests[2] = 3;
 		}
 
 		++itprecomp;
 	}
 
-	return myRootSubNode->RecurseCullSubNodes(myPrecomputedCull, state, myCullingMask);
+	return mRootSubNode->RecurseCullSubNodes(mPrecomputedCull, state, mCullingMask);
 
-	//myCullingMask=myRootSubNode->myCullingMask;
+	//mCullingMask=myRootSubNode->mCullingMask;
 }
 
 
@@ -237,7 +237,7 @@ bool	Octree::removeItem(const CMSP& item DECLARE_LINK_NAME)
 	{
 		if (!item->isSubType("OctreeSubNode"))
 		{
-			OctreeSubNode* subnode = myObjectNodeAssociation[(SceneNode*)item.get()];
+			OctreeSubNode* subnode = mObjectNodeAssociation[(SceneNode*)item.get()];
 			if (subnode)
 			{
 				foundsubnode = subnode->RemoveNode((SceneNode*)item.get());
@@ -251,7 +251,7 @@ bool	Octree::removeItem(const CMSP& item DECLARE_LINK_NAME)
 						father->KillSons();
 					}
 				}
-				myObjectNodeAssociation[(SceneNode*)item.get()] = 0;
+				mObjectNodeAssociation[(SceneNode*)item.get()] = 0;
 			}
 		}
 	}
@@ -265,11 +265,11 @@ bool	Octree::removeItem(const CMSP& item DECLARE_LINK_NAME)
 
 void  Octree::ReorganiseOctree()
 {
-	myIsInReorganise = true;
+	mIsInReorganise = true;
 
-	if (!myFirstReorganiseWasDone)
+	if (!mFirstReorganiseWasDone)
 	{
-		myFirstReorganiseWasDone = true;
+		mFirstReorganiseWasDone = true;
 		SetFlag(BoundingBoxIsDirty);
 		SetFlag(GlobalBoundingBoxIsDirty);
 		PropagateDirtyFlags(this);
@@ -280,14 +280,14 @@ void  Octree::ReorganiseOctree()
 	// add all concerned object to the octree
 	for (auto mis : getItems())
 	{
-		CMSP& item = mis.myItem;
+		CMSP& item = mis.mItem;
 
 		if (item->isUserFlagSet(UserFlagNode3D))
 		{
 			// make sure the bounding box, matrix... are ok before adding
 			if (!item->isSubType("OctreeSubNode"))
 			{
-				SP<OctreeSubNode> subNode = myRootSubNode->AddNode((SP<SceneNode>&)item, 0, myMaxRecursiveLevel, mySubdivideLevel);
+				SP<OctreeSubNode> subNode = mRootSubNode->AddNode((SP<SceneNode>&)item, 0, mMaxRecursiveLevel, mSubdivideLevel);
 
 				AddNodeToMap((SceneNode*)item.get(), subNode.get());
 				toRemove.push_back(item);
@@ -299,14 +299,14 @@ void  Octree::ReorganiseOctree()
 	{
 		Node3D::removeItem(todel);
 	}
-	myIsInReorganise = false;
+	mIsInReorganise = false;
 }
 
 void  Octree::AddNodeToMap(SceneNode* node, OctreeSubNode* subnode)
 {
 	if (subnode)
 	{
-		myObjectNodeAssociation[node] = subnode;
+		mObjectNodeAssociation[node] = subnode;
 	}
 }
 
@@ -318,47 +318,47 @@ IMPLEMENT_CLASS_INFO(OctreeSubNode)
 
 OctreeSubNode::OctreeSubNode(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	Node3D(name, PASS_CLASS_NAME_TREE_ARG)
-	, mySonsSubNodes(0)
-	, myFatherSubNode(0)
-	, myTotalNodes(0)
-	, myFatherOctree(0)
+	, mSonsSubNodes(0)
+	, mFatherSubNode(0)
+	, mTotalNodes(0)
+	, mFatherOctree(0)
 {
 	setUserFlag(UserFlagCameraSort);
-	myObjectList.clear();
+	mObjectList.clear();
 	OVERLOAD_DECORABLE(Cull, Node3D, OctreeSubNode);
 }
 
 OctreeSubNode::~OctreeSubNode()
 {
-	if (mySonsSubNodes)
+	if (mSonsSubNodes)
 	{
-		delete[] mySonsSubNodes;
+		delete[] mSonsSubNodes;
 	}
 }
 
 void  OctreeSubNode::KillSons()
 {
-	int soncount = myFatherOctree->getSubdivisionCount();
+	int soncount = mFatherOctree->getSubdivisionCount();
 	int index;
 	for (index = 0; index < soncount; index++)
 	{
-		removeItem((CMSP&)mySonsSubNodes[index]);
+		removeItem((CMSP&)mSonsSubNodes[index]);
 	}
-	delete[] mySonsSubNodes;
-	mySonsSubNodes = nullptr;
+	delete[] mSonsSubNodes;
+	mSonsSubNodes = nullptr;
 }
 
 bool  OctreeSubNode::SonsAreEmpty()
 {
-	if (mySonsSubNodes)
+	if (mSonsSubNodes)
 	{
 		int index;
 		int count = 0;
-		int soncount = myFatherOctree->getSubdivisionCount();
+		int soncount = mFatherOctree->getSubdivisionCount();
 
 		for (index = 0; index < soncount; index++)
 		{
-			count += mySonsSubNodes[index]->myTotalNodes;
+			count += mSonsSubNodes[index]->mTotalNodes;
 		}
 
 		return (count == 0);
@@ -371,18 +371,18 @@ bool  OctreeSubNode::SonsAreEmpty()
 SP<OctreeSubNode>  OctreeSubNode::AddNode(SP<SceneNode>& node, int currentlevel, int maxLevel, int subdivelevel)
 {
 	// add it to me
-	if ((myTotalNodes < subdivelevel) || (currentlevel >= maxLevel))
+	if ((mTotalNodes < subdivelevel) || (currentlevel >= maxLevel))
 	{
-		myObjectList.push_back(node.get());
+		mObjectList.push_back(node.get());
 		addItem((CMSP&)node);
 
-		myTotalNodes++;
+		mTotalNodes++;
 		return CMSP(this, GetRefTag{});
 	}
 	else // try to add it to sons
 	{
 		// check if we have to create sons
-		if (!mySonsSubNodes)
+		if (!mSonsSubNodes)
 		{
 			Divide();
 		}
@@ -390,14 +390,14 @@ SP<OctreeSubNode>  OctreeSubNode::AddNode(SP<SceneNode>& node, int currentlevel,
 		int index = FindSubNode(node.get());
 		if (index != -1)
 		{
-			myTotalNodes++;
-			return mySonsSubNodes[index]->AddNode(node, currentlevel + 1, maxLevel, subdivelevel);
+			mTotalNodes++;
+			return mSonsSubNodes[index]->AddNode(node, currentlevel + 1, maxLevel, subdivelevel);
 		}
 		else
 		{
-			myObjectList.push_back(node.get());
+			mObjectList.push_back(node.get());
 			addItem((CMSP&)node);
-			myTotalNodes++;
+			mTotalNodes++;
 			return CMSP(this, GetRefTag{});
 		}
 	}
@@ -405,31 +405,31 @@ SP<OctreeSubNode>  OctreeSubNode::AddNode(SP<SceneNode>& node, int currentlevel,
 
 void  OctreeSubNode::Divide()
 {
-	int soncount = myFatherOctree->getSubdivisionCount();
+	int soncount = mFatherOctree->getSubdivisionCount();
 
-	mySonsSubNodes = new SP<OctreeSubNode>[soncount];
+	mSonsSubNodes = new SP<OctreeSubNode>[soncount];
 
 	// compute son bounding box
 	int i, j, k, index;
 
 	for (i = 0; i < soncount; i++)
 	{
-		mySonsSubNodes[i] = KigsCore::GetInstanceOf("mySonsSubNodes", "OctreeSubNode");
-		addItem((CMSP&)mySonsSubNodes[i]);
-		mySonsSubNodes[i]->myFatherOctree = myFatherOctree;
-		mySonsSubNodes[i]->Init();
+		mSonsSubNodes[i] = KigsCore::GetInstanceOf("mySonsSubNodes", "OctreeSubNode");
+		addItem((CMSP&)mSonsSubNodes[i]);
+		mSonsSubNodes[i]->mFatherOctree = mFatherOctree;
+		mSonsSubNodes[i]->Init();
 	}
 
 	index = 0;
 
-	Vector3D size_on_two = myBBox.m_Max;
-	size_on_two -= myBBox.m_Min;
+	Vector3D size_on_two = mBBox.m_Max;
+	size_on_two -= mBBox.m_Min;
 	size_on_two *= 0.5;
 
 	int maxx, maxy, maxz;
 	maxx = maxy = maxz = 2;
 
-	unsigned int axismask = myFatherOctree->getAxisMask();
+	unsigned int axismask = mFatherOctree->getAxisMask();
 
 	switch (axismask)
 	{
@@ -437,15 +437,15 @@ void  OctreeSubNode::Divide()
 		break;
 	case 1:
 		maxx = 1;
-		size_on_two.x = myBBox.m_Max.x - myBBox.m_Min.x;
+		size_on_two.x = mBBox.m_Max.x - mBBox.m_Min.x;
 		break;
 	case 2:
 		maxy = 1;
-		size_on_two.y = myBBox.m_Max.y - myBBox.m_Min.y;
+		size_on_two.y = mBBox.m_Max.y - mBBox.m_Min.y;
 		break;
 	case 4:
 		maxz = 1;
-		size_on_two.z = myBBox.m_Max.z - myBBox.m_Min.z;
+		size_on_two.z = mBBox.m_Max.z - mBBox.m_Min.z;
 		break;
 	}
 
@@ -455,18 +455,18 @@ void  OctreeSubNode::Divide()
 		{
 			for (k = 0; k < maxz; k++)
 			{
-				mySonsSubNodes[index]->myFatherSubNode = this;
+				mSonsSubNodes[index]->mFatherSubNode = this;
 
-				mySonsSubNodes[index]->myBBox.m_Min.x = myBBox.m_Min.x + (kfloat)i*size_on_two.x;
-				mySonsSubNodes[index]->myBBox.m_Max.x = myBBox.m_Min.x + (kfloat)(i + 1)*size_on_two.x;
+				mSonsSubNodes[index]->mBBox.m_Min.x = mBBox.m_Min.x + (kfloat)i*size_on_two.x;
+				mSonsSubNodes[index]->mBBox.m_Max.x = mBBox.m_Min.x + (kfloat)(i + 1)*size_on_two.x;
 
-				mySonsSubNodes[index]->myBBox.m_Min.y = myBBox.m_Min.y + (kfloat)j*size_on_two.y;
-				mySonsSubNodes[index]->myBBox.m_Max.y = myBBox.m_Min.y + (kfloat)(j + 1)*size_on_two.y;
+				mSonsSubNodes[index]->mBBox.m_Min.y = mBBox.m_Min.y + (kfloat)j*size_on_two.y;
+				mSonsSubNodes[index]->mBBox.m_Max.y = mBBox.m_Min.y + (kfloat)(j + 1)*size_on_two.y;
 
-				mySonsSubNodes[index]->myBBox.m_Min.z = myBBox.m_Min.z + (kfloat)k*size_on_two.z;
-				mySonsSubNodes[index]->myBBox.m_Max.z = myBBox.m_Min.z + (kfloat)(k + 1)*size_on_two.z;
+				mSonsSubNodes[index]->mBBox.m_Min.z = mBBox.m_Min.z + (kfloat)k*size_on_two.z;
+				mSonsSubNodes[index]->mBBox.m_Max.z = mBBox.m_Min.z + (kfloat)(k + 1)*size_on_two.z;
 
-				mySonsSubNodes[index]->myLocalBBox = mySonsSubNodes[index]->myBBox;
+				mSonsSubNodes[index]->mLocalBBox = mSonsSubNodes[index]->mBBox;
 
 				index++;
 			}
@@ -476,27 +476,27 @@ void  OctreeSubNode::Divide()
 	// then move node in this to nodes in sons
 
 	// create temporary list of nodes not to move
-	j = (int)myObjectList.size();
+	j = (int)mObjectList.size();
 	SceneNode** tmpnodes = new SceneNode*[j];
 
 	kstl::vector<SceneNode*>::iterator it;
 	i = 0;
 
-	for (it = myObjectList.begin(); it != myObjectList.end(); ++it)
+	for (it = mObjectList.begin(); it != mObjectList.end(); ++it)
 	{
 		index = FindSubNode(*it);
 		if (index != -1)
 		{
 			tmpnodes[i] = 0;
-			mySonsSubNodes[index]->myTotalNodes++;
+			mSonsSubNodes[index]->mTotalNodes++;
 
-			myFatherOctree->AddNodeToMap(*it, mySonsSubNodes[index].get());
+			mFatherOctree->AddNodeToMap(*it, mSonsSubNodes[index].get());
 
-			mySonsSubNodes[index]->myObjectList.push_back(*it);
+			mSonsSubNodes[index]->mObjectList.push_back(*it);
 
 			CMSP totreat(*it, StealRefTag{});
 
-			mySonsSubNodes[index]->addItem(totreat);
+			mSonsSubNodes[index]->addItem(totreat);
 			removeItem(totreat);
 		}
 		else
@@ -506,13 +506,13 @@ void  OctreeSubNode::Divide()
 		i++;
 	}
 
-	myObjectList.clear();
+	mObjectList.clear();
 
 	for (i = 0; i < j; i++)
 	{
 		if (tmpnodes[i])
 		{
-			myObjectList.push_back(tmpnodes[i]);
+			mObjectList.push_back(tmpnodes[i]);
 		}
 	}
 
@@ -523,14 +523,14 @@ int   OctreeSubNode::FindSubNode(BBox* bbox)
 {
 	int index;
 
-	if (!mySonsSubNodes)
+	if (!mSonsSubNodes)
 	{
 		return -1;
 	}
-	int soncount = myFatherOctree->getSubdivisionCount();
+	int soncount = mFatherOctree->getSubdivisionCount();
 	for (index = 0; index < soncount; index++)
 	{
-		if (mySonsSubNodes[index]->myBBox.IsInWithAxisMask(*bbox, myFatherOctree->getAxisMask()))
+		if (mSonsSubNodes[index]->mBBox.IsInWithAxisMask(*bbox, mFatherOctree->getAxisMask()))
 		{
 			return index;
 		}
@@ -551,10 +551,10 @@ int   OctreeSubNode::FindSubNode(SceneNode* node)
 		((Node3D*)node)->GetBoundingBox(box.m_Min, box.m_Max);
 	}
 
-	int soncount = myFatherOctree->getSubdivisionCount();
+	int soncount = mFatherOctree->getSubdivisionCount();
 	for (index = 0; index < soncount; index++)
 	{
-		if (mySonsSubNodes[index]->myBBox.IsInWithAxisMask(box, myFatherOctree->getAxisMask()))
+		if (mSonsSubNodes[index]->mBBox.IsInWithAxisMask(box, mFatherOctree->getAxisMask()))
 		{
 			return index;
 		}
@@ -568,15 +568,15 @@ bool  OctreeSubNode::RemoveNode(SceneNode* node)
 	kstl::vector<SceneNode*>::iterator it;
 	bool found = false;
 
-	myFatherOctree->myIsInRemove = true;
-	for (it = myObjectList.begin(); it != myObjectList.end(); ++it)
+	mFatherOctree->mIsInRemove = true;
+	for (it = mObjectList.begin(); it != mObjectList.end(); ++it)
 	{
 		if ((*it) == node)
 		{
 			found = true;
 			CMSP todel(*it, StealRefTag{});
 			removeItem(todel);
-			myObjectList.erase(it);
+			mObjectList.erase(it);
 
 			break;
 		}
@@ -584,22 +584,22 @@ bool  OctreeSubNode::RemoveNode(SceneNode* node)
 
 	if (found)
 	{
-		myTotalNodes--;
-		OctreeSubNode* father = myFatherSubNode;
+		mTotalNodes--;
+		OctreeSubNode* father = mFatherSubNode;
 		while (father)
 		{
-			father->myTotalNodes--;
-			father = father->myFatherSubNode;
+			father->mTotalNodes--;
+			father = father->mFatherSubNode;
 		}
 	}
-	myFatherOctree->myIsInRemove = false;
+	mFatherOctree->mIsInRemove = false;
 	return found;
 }
 
 DECLARE_DECORABLE_IMPLEMENT(bool, Cull, OctreeSubNode, TravState* state, unsigned int cullingMask)
 {
 	// just return precomputed cull result
-	if (myCullingResult == CullingObject::all_out)
+	if (mCullingResult == CullingObject::all_out)
 	{
 		return false;
 	}
@@ -609,12 +609,12 @@ DECLARE_DECORABLE_IMPLEMENT(bool, Cull, OctreeSubNode, TravState* state, unsigne
 
 CullingObject::CULLING_RESULT  OctreeSubNode::RecurseCullSubNodes(const kstl::vector<PrecomputedCullInfo>& precull, TravState* state, unsigned int cullSubMask)
 {
-	myCullingMask = cullSubMask;
+	mCullingMask = cullSubMask;
 	UnsetAllSonsVisible();
-	if (!myTotalNodes)
+	if (!mTotalNodes)
 	{
-		myCullingResult = CullingObject::all_out;
-		myIsVisible = 0;
+		mCullingResult = CullingObject::all_out;
+		mIsVisible = 0;
 		return CullingObject::all_out;
 	}
 
@@ -634,32 +634,32 @@ CullingObject::CULLING_RESULT  OctreeSubNode::RecurseCullSubNodes(const kstl::ve
 		if ((cullSubMask&index) == 0)
 		{
 
-			toTest1.x = myBBox[current.myPreTests[0]];
-			toTest2.x = myBBox[3 - current.myPreTests[0]];
+			toTest1.x = mBBox[current.mPreTests[0]];
+			toTest2.x = mBBox[3 - current.mPreTests[0]];
 
-			toTest1.y = myBBox[1 + current.myPreTests[1]];
-			toTest2.y = myBBox[4 - current.myPreTests[1]];
+			toTest1.y = mBBox[1 + current.mPreTests[1]];
+			toTest2.y = mBBox[4 - current.mPreTests[1]];
 
-			toTest1.z = myBBox[2 + current.myPreTests[2]];
-			toTest2.z = myBBox[5 - current.myPreTests[2]];
+			toTest1.z = mBBox[2 + current.mPreTests[2]];
+			toTest2.z = mBBox[5 - current.mPreTests[2]];
 
-			toTest1 -= current.myOrigin;
+			toTest1 -= current.mOrigin;
 
-			if (Dot(toTest1, current.myNormal) < (kfloat)0)
+			if (Dot(toTest1, current.mNormal) < (kfloat)0)
 			{
-				myCullingResult = CullingObject::all_out;
-				myIsVisible = 0;
+				mCullingResult = CullingObject::all_out;
+				mIsVisible = 0;
 				return CullingObject::all_out;
 			}
 
-			toTest2 -= current.myOrigin;
-			if (Dot(toTest2, current.myNormal) < (kfloat)0)
+			toTest2 -= current.mOrigin;
+			if (Dot(toTest2, current.mNormal) < (kfloat)0)
 			{
 				localresult = CullingObject::partially_in;
 			}
 			else
 			{
-				myCullingMask |= index;
+				mCullingMask |= index;
 			}
 		}
 
@@ -668,18 +668,18 @@ CullingObject::CULLING_RESULT  OctreeSubNode::RecurseCullSubNodes(const kstl::ve
 		index = index << 1;
 	}
 
-	myCullingResult = result;
-	myIsVisible = state->GetVisibilityFrame();
+	mCullingResult = result;
+	mIsVisible = state->GetVisibilityFrame();
 
 	if (result == CullingObject::partially_in)
 	{
-		if (mySonsSubNodes)
+		if (mSonsSubNodes)
 		{
 			int i;
-			int soncount = myFatherOctree->getSubdivisionCount();
+			int soncount = mFatherOctree->getSubdivisionCount();
 			for (i = 0; i < soncount; i++)
 			{
-				mySonsSubNodes[i]->RecurseCullSubNodes(precull, state, myCullingMask);
+				mSonsSubNodes[i]->RecurseCullSubNodes(precull, state, mCullingMask);
 			}
 
 		}

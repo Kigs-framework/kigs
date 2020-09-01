@@ -14,6 +14,18 @@
 
 class RendererOpenGL;
 
+
+// ****************************************
+// * API3DUniformBase class
+// * --------------------------------------
+/**
+ * \file	GLSLUniform.h
+ * \class	API3DUniformBase
+ * \ingroup Renderer
+ * \brief	Base class for GLSL uniforms.
+ */
+ // ****************************************
+
 class API3DUniformBase : public Drawable
 {
 public:
@@ -28,8 +40,8 @@ public:
 	virtual bool	Push(TravState*);
 	virtual bool	Pop(TravState*);
 
-	UNIFORM_NAME_TYPE   Get_ID() { return myID; }
-	kstl::string		Get_Name() { return myUniName.const_ref(); }
+	UNIFORM_NAME_TYPE   Get_ID() { return mID; }
+	kstl::string		Get_Name() { return mUniName.const_ref(); }
 
 protected:
 	void	InitModifiable() override;
@@ -37,11 +49,22 @@ protected:
 	bool	PostDraw(TravState*) override;
 
 
-	maString			myUniName;
-	UNIFORM_NAME_TYPE	myID;
+	maString			mUniName;
+	UNIFORM_NAME_TYPE	mID;
 };
 
-// set myValue in predraw and -1 in post draw
+// ****************************************
+// * API3DUniformInt class
+// * --------------------------------------
+/**
+ * \file	GLSLUniform.h
+ * \class	API3DUniformInt
+ * \ingroup Renderer
+ * \brief	One int uniform.
+ *
+ * Set mValue in predraw and -1 in post draw
+ */
+ // ****************************************
 class API3DUniformInt : public API3DUniformBase
 {
 public:
@@ -49,15 +72,26 @@ public:
 	API3DUniformInt(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	void Activate(unsigned int a_Location) override;
-	void SetValue(int aV) { myValue = aV; }
+	void SetValue(int aV) { mValue = aV; }
 
 protected:
 	void	NotifyUpdate(const unsigned int  labelid) override;
 
-	maInt			myValue;
+	maInt			mValue;
 };
 
-// set myValue in predraw and -1 in post draw
+// ****************************************
+// * API3DUniformFloat class
+// * --------------------------------------
+/**
+ * \file	GLSLUniform.h
+ * \class	API3DUniformFloat
+ * \ingroup Renderer
+ * \brief	One float uniform.
+ *
+ * Set mValue in predraw and -1 in post draw
+ */
+ // ****************************************
 class API3DUniformFloat : public API3DUniformBase
 {
 public:
@@ -65,15 +99,26 @@ public:
 	API3DUniformFloat(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	void Activate(unsigned int a_Location) override;
-	void SetValue(float aV) { myValue = aV; }
+	void SetValue(float aV) { mValue = aV; }
 
 protected:
 	void	NotifyUpdate(const unsigned int  labelid) override;
 
-	maFloat			myValue;
+	maFloat			mValue;
 };
 
-// set myValue in predraw and -1 in post draw
+// ****************************************
+// * API3DUniformFloat2 class
+// * --------------------------------------
+/**
+ * \file	GLSLUniform.h
+ * \class	API3DUniformFloat2
+ * \ingroup Renderer
+ * \brief	Two float uniform.
+ *
+ * Set mValue in predraw and -1 in post draw
+ */
+ // ****************************************
 class API3DUniformFloat2 : public API3DUniformBase
 {
 public:
@@ -85,10 +130,21 @@ public:
 protected:
 	void	NotifyUpdate(const unsigned int  labelid) override;
 
-	maVect2DF			myValue;
+	maVect2DF			mValue;
 };
 
-// set myValue in predraw and -1 in post draw
+// ****************************************
+// * API3DUniformFloat3 class
+// * --------------------------------------
+/**
+ * \file	GLSLUniform.h
+ * \class	API3DUniformFloat3
+ * \ingroup Renderer
+ * \brief	Three float uniform.
+ *
+ * Set mValue in predraw and -1 in post draw
+ */
+ // ****************************************
 class API3DUniformFloat3 : public API3DUniformBase
 {
 public:
@@ -97,9 +153,9 @@ public:
 
 	void Activate(unsigned int a_Location) override;
 
-	void WrappedSetValue(float aX, float aY, float aZ) { myValue[0] = aX; myValue[1] = aY;	myValue[2] = aZ; }
-	void SetValue(float aX, float aY, float aZ) { myValue[0] = aX; myValue[1] = aY;	myValue[2] = aZ; }
-	void SetValue(float *aX) { myValue[0] = aX[0]; myValue[1] = aX[1];	myValue[2] = aX[2]; }
+	void WrappedSetValue(float aX, float aY, float aZ) { mValue[0] = aX; mValue[1] = aY;	mValue[2] = aZ; }
+	void SetValue(float aX, float aY, float aZ) { mValue[0] = aX; mValue[1] = aY;	mValue[2] = aZ; }
+	void SetValue(float *aX) { mValue[0] = aX[0]; mValue[1] = aX[1];	mValue[2] = aX[2]; }
 
 	WRAP_METHODS(WrappedSetValue);
 
@@ -109,11 +165,23 @@ protected:
 
 	void Normalize();
 
-	maVect3DF			myValue;
-	maBool				myNormalize;
+	maVect3DF			mValue;
+	maBool				mNormalize;
 };
 
-// set myValue in predraw and -1 in post draw
+
+// ****************************************
+// * API3DUniformFloat4 class
+// * --------------------------------------
+/**
+ * \file	GLSLUniform.h
+ * \class	API3DUniformFloat4
+ * \ingroup Renderer
+ * \brief	Four float uniform.
+ *
+ * Set mValue in predraw and -1 in post draw
+ */
+ // ****************************************
 class API3DUniformFloat4 : public API3DUniformBase
 {
 public:
@@ -125,9 +193,20 @@ public:
 protected:
 	void NotifyUpdate(const unsigned int  labelid) override;
 
-	maVect4DF			myValue;
+	maVect4DF			mValue;
 };
 
+// ****************************************
+// * API3DUniformTexture class
+// * --------------------------------------
+/**
+ * \file	GLSLUniform.h
+ * \class	API3DUniformTexture
+ * \ingroup Renderer
+ * \brief	Texture passed as a uniform.
+ *
+ */
+ // ****************************************
 class API3DUniformTexture : public API3DUniformBase
 {
 public:
@@ -146,12 +225,23 @@ protected:
 	void Activate(unsigned int a_Location) override;
 	bool Deactivate(unsigned int a_Location) override;
 
-	maInt		myTextureChannel;
-	maString	myTextureName;
+	maInt		mChannel;
+	maString	mTextureName;
 
-	SP<Texture>	myAttachedTexture = nullptr;
+	SP<Texture>	mAttachedTexture = nullptr;
 };
 
+// ****************************************
+// * API3DUniformDataTexture class
+// * --------------------------------------
+/**
+ * \file	GLSLUniform.h
+ * \class	API3DUniformDataTexture
+ * \ingroup Renderer
+ * \brief	Data texture (dynamic) passed as a uniform.
+ *
+ */
+ // ****************************************
 class API3DUniformDataTexture : public API3DUniformBase
 {
 public:
@@ -166,12 +256,23 @@ protected:
 	void Activate(unsigned int a_Location) override;
 	bool Deactivate(unsigned int a_Location) override;
 
-	maInt			myTextureChannel;
-	maString		myTextureName;
+	maInt			mChannel;
+	maString		mTextureName;
 
-	unsigned int	myTextureGLIndex;
+	unsigned int	mTextureGLIndex;
 };
 
+// ****************************************
+// * API3DUniformGeneratedTexture class
+// * --------------------------------------
+/**
+ * \file	GLSLUniform.h
+ * \class	API3DUniformGeneratedTexture
+ * \ingroup Renderer
+ * \brief	Generated Noise Data texture passed as a uniform.
+ *
+ */
+ // ****************************************
 class API3DUniformGeneratedTexture : public API3DUniformBase
 {
 public:
@@ -186,16 +287,26 @@ protected:
 	void Activate(unsigned int a_Location) override;
 	bool Deactivate(unsigned int a_Location) override;
 
-	maInt			myTextureChannel;
-	maVect3DF		mySize;
-	maFloat			myScale;
-	maFloat			myPersistence;
-	maInt			myOctaveCount;
+	maInt			mChannel;
+	maVect3DF		mSize;
+	maFloat			mScale;
+	maFloat			mPersistence;
+	maInt			mOctaveCount;
 
-	unsigned int	myTextureGLIndex;
+	unsigned int	mTextureGLIndex;
 };
 
-
+// ****************************************
+// * API3DUniformMatrixArray class
+// * --------------------------------------
+/**
+ * \file	GLSLUniform.h
+ * \class	API3DUniformMatrixArray
+ * \ingroup Renderer
+ * \brief	Manage an array of matrix as sharder uniform.
+ *
+ */
+ // ****************************************
 class API3DUniformMatrixArray : public API3DUniformBase
 {
 public:
@@ -207,8 +318,8 @@ protected:
 	void NotifyUpdate(const unsigned int  labelid) override;
 	void Activate(unsigned int a_Location) override;
 
-	maInt			myArraySize;
-	maBuffer		myMatrixArrayAccess;
-	Matrix4x4*		myMatrixArray;
+	maInt			mArraySize;
+	maBuffer		mMatrixArray;
+	Matrix4x4*		mMatrixArrayPointer;
 };
 #endif //_GLSLUNIFORM_H

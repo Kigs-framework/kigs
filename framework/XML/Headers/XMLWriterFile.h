@@ -7,11 +7,13 @@
 // ****************************************
 // * XMLWriterFile class
 // * --------------------------------------
-/*!  \class XMLWriterFile
-      write a XML file from an XML instance
-	  \ingroup XML
-*/
-// ****************************************
+/**
+ * \file	XMLWriterFile.h
+ * \class	XMLWriterFile
+ * \ingroup ModuleXML
+ * \brief	Write an XML file from an XML structure.
+ */
+ // ****************************************
 class XMLWriterFile 
 {
 public:

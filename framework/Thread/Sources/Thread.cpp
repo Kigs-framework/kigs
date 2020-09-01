@@ -7,7 +7,7 @@ IMPLEMENT_CLASS_INFO(Thread)
 
 Thread::Thread(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
 {
-  myCurrentState= State::UNINITIALISED;
+  mCurrentState= State::UNINITIALISED;
 }     
 
 Thread::~Thread()
@@ -17,19 +17,19 @@ Thread::~Thread()
 	if (threadProfiler)
 		threadProfiler->RemoveThread(this);
 #endif
-	if(myCurrentThread.joinable())
-		myCurrentThread.detach();
+	if(mCurrentThread.joinable())
+		mCurrentThread.detach();
 }    
 
 
 template<typename... T>
 void	Thread::Start(T&&... params)
 {
-	if ((myCurrentState == State::RUNNING) || (((CoreModifiable*)myCallee) == nullptr) || (myMethod.const_ref()==""))
+	if ((mCurrentState == State::RUNNING) || (((CoreModifiable*)mCallee) == nullptr) || (mMethod.const_ref()==""))
 	{
 		return;
 	}
-	myProgress = 0;
+	mProgress = 0;
 	GetRef();
 	PackCoreModifiableAttributes	attr(nullptr);
 	int expander[]
@@ -39,17 +39,17 @@ void	Thread::Start(T&&... params)
 	(void)expander;
 	auto& attr_list = (kstl::vector<CoreModifiableAttribute*>&)attr;
 
-	myCurrentThread = std::thread([this,&attr_list]()
+	mCurrentThread = std::thread([this,&attr_list]()
 		{
-			myCurrentState = State::RUNNING;
+			mCurrentState = State::RUNNING;
 #ifdef DO_THREAD_PROFILING
-			ThreadProfiler::myCurrentThread = this;
+			ThreadProfiler::mCurrentThread = this;
 			SP<ThreadProfiler> threadProfiler = KigsCore::GetSingleton("ThreadProfiler");
 			if (threadProfiler)
 				threadProfiler->RegisterThread(this);
 #endif
 
-			((CoreModifiable*)myCallee)->CallMethod(myMethod.const_ref(), attr_list);
+			((CoreModifiable*)mCallee)->CallMethod(mMethod.const_ref(), attr_list);
 
 			Done();
 		}
@@ -59,25 +59,25 @@ void	Thread::Start(T&&... params)
 
 void	Thread::Start()
 {
-	if ((myCurrentState == State::RUNNING) || (((CoreModifiable*)myCallee) == nullptr) || (myMethod.const_ref() == ""))
+	if ((mCurrentState == State::RUNNING) || (((CoreModifiable*)mCallee) == nullptr) || (mMethod.const_ref() == ""))
 	{
 		return;
 	}
 
-	myProgress = 0;
+	mProgress = 0;
 	GetRef();
-	myCurrentThread = std::thread([this]()
+	mCurrentThread = std::thread([this]()
 		{
-			myCurrentState = State::RUNNING;
+			mCurrentState = State::RUNNING;
 #ifdef DO_THREAD_PROFILING
-			ThreadProfiler::myCurrentThread = this;
+			ThreadProfiler::mCurrentThread = this;
 			SP<ThreadProfiler> threadProfiler = KigsCore::GetSingleton("ThreadProfiler");
 			if (threadProfiler)
 				threadProfiler->RegisterThread(this);
 #endif
 			
 			kstl::vector<CoreModifiableAttribute*> attr_list;
-			((CoreModifiable*)myCallee)->CallMethod(myMethod.const_ref(), attr_list);
+			((CoreModifiable*)mCallee)->CallMethod(mMethod.const_ref(), attr_list);
 
 			Done();
 		}
@@ -89,7 +89,7 @@ void Thread::InitModifiable()
 {
 	if (!IsInit())
 	{
-		if ((((CoreModifiable*)myCallee) == nullptr) || (myMethod.const_ref() == ""))
+		if ((((CoreModifiable*)mCallee) == nullptr) || (mMethod.const_ref() == ""))
 		{
 			return;
 		}
@@ -104,14 +104,14 @@ void Thread::InitModifiable()
 // reset all states
 void	Thread::Done()
 {
-	if (myFunctionWasInserted)
+	if (mFunctionWasInserted)
 	{
-		myCallee->RemoveMethod(myMethod.const_ref());
-		myFunctionWasInserted = false;
+		mCallee->RemoveMethod(mMethod.const_ref());
+		mFunctionWasInserted = false;
 	}
 
-	myProgress = 1;
-	myCurrentState = State::FINISHED;
+	mProgress = 1;
+	mCurrentState = State::FINISHED;
 	UnInit();
 	flagAsPostDestroy();
 	Destroy();

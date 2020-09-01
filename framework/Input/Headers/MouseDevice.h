@@ -3,45 +3,17 @@
 
 #include "InputDevice.h"
 
+
 // ****************************************
 // * MouseDevice class
 // * --------------------------------------
 /**
+ * \class	MouseDevice
  * \file	MouseDevice.h
- * \class	MouseDevice	
  * \ingroup Input
- * \brief	manage a mouse
- * \author	ukn
- * \version ukn
- * \date	ukn
- * 
- * <dl class="dependency"><dt><b>Dependency:</b></dt><dd>ModuleInput</dd></dl>
- * <dl class="exemple"><dt><b>Exemple:</b></dt><dd>
- * <span class="comment"> Load the module :</span><br>
- * <span class="code">
- * theInputModule=new ModuleInput(<i>instance_name</i>);<br>
- * theInputModule->Init(KigsCore::Instance(),0);<br>
- * </span>
- * <span class="comment"> Get the object :</span><br>
- * <span class="code">
- * theMouse=theInputModule->GetMouse();<br>
- * </span>
- * <span class="comment">Get a button state :</span><br>
- * <span class="code">
- * theInputModule->GetMouse()->getButtonState(<i>mouse_button_id</i>);<br>
- * <span class="comment">// 'mouse_button_id' is a MOUSE_BUTTONS</span><br>
- * </span>
- * <span class="comment">DO NOT FORGET MODULE UPDATE</span><br>
- * </dd></dl>
- *
- * <dl class="exported"><dt><b>Exported parameters :</b></dt><dd>
- * <table>
- * <tr><td>kfloat</td><td><strong>PosX</strong> :</td><td>current mouse position on x axis</td></tr>	
- * <tr><td>kfloat</td><td><strong>PosY</strong> :</td><td>current mouse position on y axis</td></tr>
- * </table>
- * </dd></dl>
+ * \brief	Base class to manage generic mouse device.
  */
-// ****************************************
+ // ****************************************
 class MouseDevice : public InputDevice
 {
 public:
@@ -68,28 +40,28 @@ public:
 	 * \fn 		int				getButtonsCount()
 	 * \return	the number of buttons
 	 */
-	int				getButtonsCount(){return myButtonsCount;}
+	int				getButtonsCount(){return mButtonsCount;}
 
 	/**
 	 * \brief	wheel count for this mouse
 	 * \fn 		int				getWheelCount()
 	 * \return	the wheel count for this mouse
 	 */
-	int				getWheelCount(){return myWheelCount;}
+	int				getWheelCount(){return mWheelCount;}
 
 	/**
 	 * \brief	wheel roll (Z axis) for this mouse
 	 * \fn 		int				getWheelRoll()
 	 * \return	the wheel roll (Z axis) for this mouse
 	 */
-	kfloat				getWheelRoll(){return myDZ;}
+	kfloat				getWheelRoll(){return mDZ;}
 
 	/**
 	 * \brief	delta for wheel roll (Z axis) for this mouse
 	 * \fn 		int				getWheelRollDelta()
 	 * \return	delta for the wheel roll (Z axis) for this mouse
 	 */
-	kfloat				getWheelRollDelta(){return myDZ - myPreviousDZ;}
+	kfloat				getWheelRollDelta(){return mDZ - mPreviousDZ;}
 
 	/**
 	 * \brief	retreive current position
@@ -97,9 +69,9 @@ public:
 	 * \param	posX : position on x axis (in/out param)
 	 * \param	posY : position on y axis (in/out param)
 	 */
-	void			getPos(kfloat& posX,kfloat& posY){posX=myPosX; posY=myPosY;}
+	void			getPos(kfloat& posX,kfloat& posY){posX=mPosX; posY=mPosY;}
 
-	v2f				GetPos() const { return v2f{ myPosX, myPosY }; }
+	v2f				GetPos() const { return v2f{ mPosX, mPosY }; }
 
 	//! retreive movement
 	/**
@@ -108,7 +80,7 @@ public:
 	 * \param	dX : movement on x axis (in/out param)
 	 * \param	dY : movement on y axis (in/out param)
 	 */
-	void			getMouvement(kfloat& dX,kfloat& dY){dX=myDX; dY=myDY;}
+	void			getMouvement(kfloat& dX,kfloat& dY){dX=mDX; dY=mDY;}
 
 	/**
 	 * \brief	compute current position
@@ -124,7 +96,7 @@ public:
 	 */
 	int getButtonState(MOUSE_BUTTONS button)
 	{
-		return GetItemiState(2+myWheelCount+button);
+		return GetItemiState(2+mWheelCount+button);
 	}
 	
 	void setButtonState(MOUSE_BUTTONS button, int val);
@@ -137,23 +109,23 @@ protected:
 	virtual ~MouseDevice(); 
 
 	//! wheel count
-	int		myWheelCount;
+	int		mWheelCount;
 	//! button count
-	int		myButtonsCount;
+	int		mButtonsCount;
 
 	//! mouse cursor current position on x axis
-	maFloat	myPosX;
+	maFloat	mPosX;
 	//! mouse cursor current position on y axis
-	maFloat	myPosY;
+	maFloat	mPosY;
 
 	//! mouse movement on x axis
-	kfloat	myDX;
+	kfloat	mDX;
 	//! mouse movement on y axis
-	kfloat	myDY;
+	kfloat	mDY;
 	//! wheel movement
-	kfloat	myDZ;
+	kfloat	mDZ;
 	//! delta for wheel movement
-	kfloat	myPreviousDZ;
+	kfloat	mPreviousDZ;
 };
 
 #endif //_MOUSEDEVICE_H_

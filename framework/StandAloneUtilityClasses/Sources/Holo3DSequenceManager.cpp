@@ -30,45 +30,45 @@ IMPLEMENT_CLASS_INFO(InterfacePanel);
 ///////////////////////////////////////////
 Holo3DSequenceManager::Holo3DSequenceManager(const kstl::string& name, CLASS_NAME_TREE_ARG)
 	: DataDrivenSequenceManager(name, PASS_CLASS_NAME_TREE_ARG)
-	, myPosition(*this, false, "Position", 0.0f, 0.0f, 0.0f)
-	, myNormal(*this, false, "Normal", 0.0f, 0.0f, 1.0f)
-	, myUp(*this, false, "Up", 0.0f, 1.0f, 0.0f)
-	, mySize(*this, false, "Size", .2f, .2f)
-	, myDesignSize(*this, false, "DesignSize", 1024.0f, 1024.0f)
-	, IsFirstDraw(true)
+	, mPosition(*this, false, "Position", 0.0f, 0.0f, 0.0f)
+	, mNormal(*this, false, "Normal", 0.0f, 0.0f, 1.0f)
+	, mUp(*this, false, "Up", 0.0f, 1.0f, 0.0f)
+	, mSize(*this, false, "Size", .2f, .2f)
+	, mDesignSize(*this, false, "DesignSize", 1024.0f, 1024.0f)
+	, mIsFirstDraw(true)
 {
-	myCurrentView.Set(0, 0, 0);
-	myCurrentPos.Set(0, 0, 0);
-	myCurrentUp.Set(0, 0, 0);
+	mCurrentView.Set(0, 0, 0);
+	mCurrentPos.Set(0, 0, 0);
+	mCurrentUp.Set(0, 0, 0);
 }
 
 Holo3DSequenceManager::~Holo3DSequenceManager()
 {
-	if (mySpacialNode != nullptr)
-		mySpacialNode->Destroy();
+	if (mSpacialNode != nullptr)
+		mSpacialNode->Destroy();
 }
 
 void Holo3DSequenceManager::UninitModifiable()
 {
 	// destroy sequence
 	std::vector<CMSP>	instances;
-	CoreModifiable* mySceneGraph = KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
-	mySceneGraph->GetSonInstancesByType("Abstract2DLayer", instances);
+	CoreModifiable* sceneGraph = KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
+	sceneGraph->GetSonInstancesByType("Abstract2DLayer", instances);
 
 	for (auto scene : instances)
 	{
 		CoreModifiable* uo=nullptr;
 		scene->getValue("RenderingScreen", uo);
 
-		if (uo == myRenderingScreen.get())
+		if (uo == mRenderingScreen.get())
 		{
-			mySceneGraph->removeItem(scene);
+			sceneGraph->removeItem(scene);
 		}
 	}
 
 
-	mySpacialNode=nullptr;
-	myRenderingScreen = nullptr;
+	mSpacialNode=nullptr;
+	mRenderingScreen = nullptr;
 
 	//delete theMouseInfo;
 
@@ -77,13 +77,13 @@ void Holo3DSequenceManager::UninitModifiable()
 
 void Holo3DSequenceManager::ShowPanel(bool show, bool atFront)
 {
-	SetIsShow = show;
-	ForceInFront = atFront;
+	mSetIsShow = show;
+	mForceInFront = atFront;
 }
 
 bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout)
 {
-	if (!IsShow || !myCollidablePanel)
+	if (!mIsShow || !mCollidablePanel)
 	{
 		pout.pos.x = -1;
 		pout.pos.y = -1;
@@ -93,20 +93,20 @@ bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, to
 	double dist = DBL_MAX;
 	Point3D		planePos;
 	Vector3D	planeNorm;
-	myCollidablePanel->GetPlane(planePos, planeNorm);
+	mCollidablePanel->GetPlane(planePos, planeNorm);
 
 	Vector3D pos = posin.origin;
 	Vector3D dir = posin.dir;
 
 	//! transform Ray in local mesh coordinate system if needed				
-	auto& g2l = mySpacialNode->GetGlobalToLocal();
+	auto& g2l = mSpacialNode->GetGlobalToLocal();
 	g2l.TransformPoint(&pos);
 	g2l.TransformVector(&dir);
 
 	bool is_in = Intersection::IntersectRayPlane(pos, dir, planePos, planeNorm, dist);
 	if (is_in)
 	{
-		auto& l2g = mySpacialNode->GetLocalToGlobal();
+		auto& l2g = mSpacialNode->GetLocalToGlobal();
 		Vector3D dist_vector = Vector3D(dist, 0, 0);
 		l2g.TransformVector(&dist_vector);
 		auto real_dist = Norm(dist_vector);
@@ -117,10 +117,10 @@ bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, to
 			return false;
 		}
 
-		pout.pos.xy = myCollidablePanel->ConvertHit(pos + ((float)dist*dir));
+		pout.pos.xy = mCollidablePanel->ConvertHit(pos + ((float)dist*dir));
 		pout.pos.x = 1 - pout.pos.x;
 		pout.pos.y = 1 - pout.pos.y;
-		is_in = myCollidablePanel->ValidHit(pos + dir * dist);
+		is_in = mCollidablePanel->ValidHit(pos + dir * dist);
 		if (is_in)
 		{
 			pout.hit.HitPosition = pos + dir * dist;
@@ -128,9 +128,9 @@ bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, to
 			l2g.TransformPoint(&pout.hit.HitPosition);
 			l2g.TransformVector(&pout.hit.HitNormal);
 			pout.hit.HitNormal.Normalize();
-			pout.hit.HitNode = mySpacialNode.get();
-			pout.hit.HitActor = myCollidablePanel.get();
-			pout.hit.HitCollisionObject = myCollidablePanel.get(); 
+			pout.hit.HitNode = mSpacialNode.get();
+			pout.hit.HitActor = mCollidablePanel.get();
+			pout.hit.HitCollisionObject = mCollidablePanel.get(); 
 		}
 		return is_in;
 	}
@@ -155,51 +155,51 @@ void Holo3DSequenceManager::InitModifiable()
 		}
 	}
 
-	NeedRecomputePosition = true;
-	IsFixed = myUseFixedNormal && myUseFixedUp && myUseFixedPosition;
+	mNeedRecomputePosition = true;
+	mIsFixed = mUseFixedNormal && mUseFixedUp && mUseFixedPosition;
 
-	myRenderingScreen = KigsCore::GetInstanceOf(myRenderingScreenName.const_ref(), "RenderingScreen");
-	myRenderingScreen->setValue("IsOffScreen", true);
-	myRenderingScreen->setValue("UseFBO", true);
-	myRenderingScreen->setValue("FBOSizeX", myDesignSize[0]);
-	myRenderingScreen->setValue("FBOSizeY", myDesignSize[1]);
-	myRenderingScreen->setValue("DesignSizeX", myDesignSize[0]);
-	myRenderingScreen->setValue("DesignSizeY", myDesignSize[1]);
-	myRenderingScreen->setValue("BitsPerZ", 0); // 16
+	mRenderingScreen = KigsCore::GetInstanceOf(mRenderingScreenName.const_ref(), "RenderingScreen");
+	mRenderingScreen->setValue("IsOffScreen", true);
+	mRenderingScreen->setValue("UseFBO", true);
+	mRenderingScreen->setValue("FBOSizeX", mDesignSize[0]);
+	mRenderingScreen->setValue("FBOSizeY", mDesignSize[1]);
+	mRenderingScreen->setValue("DesignSizeX", mDesignSize[0]);
+	mRenderingScreen->setValue("DesignSizeY", mDesignSize[1]);
+	mRenderingScreen->setValue("BitsPerZ", 0); // 16
 	//myRenderingScreen->setValue("BitsForStencil", 8);
-	myRenderingScreen->Init();
+	mRenderingScreen->Init();
 
 	//Create Node3D
-	mySpacialNode = KigsCore::GetInstanceOf("HoloUISpacialNode", "Node3D");
-	mySpacialNode->AddDynamicAttribute(ATTRIBUTE_TYPE::UINT, "CollideMask", (u64)myCollideMask);
-	mySpacialNode->Init();
+	mSpacialNode = KigsCore::GetInstanceOf("HoloUISpacialNode", "Node3D");
+	mSpacialNode->AddDynamicAttribute(ATTRIBUTE_TYPE::UINT, "CollideMask", (u64)mCollideMask);
+	mSpacialNode->Init();
 
-	v2f size = mySize;
+	v2f size = mSize;
 	
 	//Create collidable object
-	myCollidablePanel = KigsCore::GetInstanceOf("HoloUIPanel", "InterfacePanel");
-	mySpacialNode->addItem((CMSP&)myCollidablePanel);
-	myCollidablePanel->setValue("Size", size);
-	myCollidablePanel->setValue("LinkedItem", "Holo3DSequenceManager:" + getName());
-	myCollidablePanel->Init();
+	mCollidablePanel = KigsCore::GetInstanceOf("HoloUIPanel", "InterfacePanel");
+	mSpacialNode->addItem((CMSP&)mCollidablePanel);
+	mCollidablePanel->setValue("Size", size);
+	mCollidablePanel->setValue("LinkedItem", "Holo3DSequenceManager:" + getName());
+	mCollidablePanel->Init();
 
 
 	//Create drawable object
-	myDrawer = KigsCore::GetInstanceOf("Holo3DPanel", "Holo3DPanel");
-	mySpacialNode->addItem((CMSP&)myDrawer);
-	myDrawer->setValue("Size", size);
-	myDrawer->setValue("DepthTest", "Disabled");
-	myDrawer->setValue("RenderPassMask", 64);
-	myDrawer->Init();
+	mDrawer = KigsCore::GetInstanceOf("Holo3DPanel", "Holo3DPanel");
+	mSpacialNode->addItem((CMSP&)mDrawer);
+	mDrawer->setValue("Size", size);
+	mDrawer->setValue("DepthTest", "Disabled");
+	mDrawer->setValue("RenderPassMask", 64);
+	mDrawer->Init();
 
-	myPosition.changeNotificationLevel(Owner);
-	myNormal.changeNotificationLevel(Owner);
-	myUp.changeNotificationLevel(Owner);
-	mySize.changeNotificationLevel(Owner);
+	mPosition.changeNotificationLevel(Owner);
+	mNormal.changeNotificationLevel(Owner);
+	mUp.changeNotificationLevel(Owner);
+	mSize.changeNotificationLevel(Owner);
 
-	myUseFixedUp.changeNotificationLevel(Owner);
-	myUseFixedNormal.changeNotificationLevel(Owner);
-	myUseFixedPosition.changeNotificationLevel(Owner);
+	mUseFixedUp.changeNotificationLevel(Owner);
+	mUseFixedNormal.changeNotificationLevel(Owner);
+	mUseFixedPosition.changeNotificationLevel(Owner);
 
 	//theMouseInfo = new LayerMouseInfo();
 
@@ -207,7 +207,7 @@ void Holo3DSequenceManager::InitModifiable()
 	theInputModule->getTouchManager()->addTouchSupport(this, (CoreModifiable*)mFollowCamera);
 
 	// add offscreen rendering screen as touch support with this as parent
-	theInputModule->getTouchManager()->addTouchSupport(myRenderingScreen.get(), this);
+	theInputModule->getTouchManager()->addTouchSupport(mRenderingScreen.get(), this);
 }
 
 //#define DRAWDEBUG
@@ -223,7 +223,7 @@ void Holo3DSequenceManager::InitModifiable()
 void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 {
 	// first draw init
-	if (IsFirstDraw)
+	if (mIsFirstDraw)
 	{
 		if (!_isInit)
 		{
@@ -235,80 +235,80 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 
 		ShowPanel(true);
 		//((CoreModifiable*)mCollideScene)->addItem(mySpacialNode);
-		IsFirstDraw = false;
+		mIsFirstDraw = false;
 	}
 
-	if (SetIsShow != IsShow)
+	if (mSetIsShow != mIsShow)
 	{
 		if ((CoreModifiable*)mParentNode == nullptr)
 			return;
 
-		IsShow = SetIsShow;
+		mIsShow = mSetIsShow;
 
 		std::vector<CMSP> layers;
-		if(myCurrentSequence)
-			myCurrentSequence->GetSonInstancesByType("BaseUI2DLayer", layers);
+		if(mCurrentSequence)
+			mCurrentSequence->GetSonInstancesByType("BaseUI2DLayer", layers);
 
 		for (auto l : layers)
 		{
 			auto layer = (BaseUI2DLayer*)l.get();
-			layer->GetRootItem()->setValue("IsHidden", !IsShow);
+			layer->GetRootItem()->setValue("IsHidden", !mIsShow);
 		}
 		
-		if (IsShow)
-			((CoreModifiable*)mParentNode)->addItem((CMSP&)mySpacialNode, ItemPosition::First);
+		if (mIsShow)
+			((CoreModifiable*)mParentNode)->addItem((CMSP&)mSpacialNode, ItemPosition::First);
 		else
-			((CoreModifiable*)mParentNode)->removeItem((CMSP&)mySpacialNode);
+			((CoreModifiable*)mParentNode)->removeItem((CMSP&)mSpacialNode);
 	}
 	
 
 	// retreive texture id
-	myDrawer->SetTexture(myRenderingScreen->as<RenderingScreen>()->GetFBOTexture().get());
+	mDrawer->SetTexture(mRenderingScreen->as<RenderingScreen>()->GetFBOTexture().get());
 	// manage positionning
-	if (!mManualPosition && (NeedRecomputePosition || !IsFixed))
+	if (!mManualPosition && (mNeedRecomputePosition || !mIsFixed))
 	{
 		Camera * followCam = (Camera*)((CoreModifiable*)mFollowCamera);
 		Vector3D camPos = followCam->GetGlobalPosition();
 
-		Matrix3x4 myMat = mySpacialNode->GetLocalToGlobal();
+		Matrix3x4 myMat = mSpacialNode->GetLocalToGlobal();
 		Vector3D nodePos(myMat.e[3][0], myMat.e[3][1], myMat.e[3][2]);
 
 		Vector3D view, pos, up;
-		if (!myUseFixedNormal)
+		if (!mUseFixedNormal)
 		{
 			//view = followCam->GetGlobalViewVector();
 			view = (nodePos - camPos).Normalized();
 
-			if (view != myCurrentView)
-				NeedRecomputePosition = true;
+			if (view != mCurrentView)
+				mNeedRecomputePosition = true;
 		}
 		else
 		{
-			view = (Vector3D)myNormal;
+			view = (Vector3D)mNormal;
 		}
 
-		if (!myUseFixedUp)
+		if (!mUseFixedUp)
 		{
 			up = followCam->GetGlobalUpVector();
 
-			if (up != myCurrentUp)
-				NeedRecomputePosition = true;
+			if (up != mCurrentUp)
+				mNeedRecomputePosition = true;
 		}
 		else
 		{
-			up = (Vector3D)myUp;
+			up = (Vector3D)mUp;
 		}
 
-		if (ForceInFront)
+		if (mForceInFront)
 		{
-			pos = camPos + (myDistance * (followCam->GetGlobalViewVector() + myTargetOffset[0]*followCam->GetGlobalRightVector() + myTargetOffset[1] * followCam->GetGlobalUpVector()));
-			myCurrentVelocity = 0.0f;
-			ForceInFront = false;
-			NeedRecomputePosition = true;
+			pos = camPos + (mDistance * (followCam->GetGlobalViewVector() + mTargetOffset[0]*followCam->GetGlobalRightVector() + mTargetOffset[1] * followCam->GetGlobalUpVector()));
+			mCurrentVelocity = 0.0f;
+			mForceInFront = false;
+			mNeedRecomputePosition = true;
 		}
-		else if (!myUseFixedPosition)
+		else if (!mUseFixedPosition)
 		{
-			Vector3D targetPos = camPos + (myDistance * (followCam->GetGlobalViewVector() + myTargetOffset[0] * followCam->GetGlobalRightVector() + myTargetOffset[1] * followCam->GetGlobalUpVector()));
+			Vector3D targetPos = camPos + (mDistance * (followCam->GetGlobalViewVector() + mTargetOffset[0] * followCam->GetGlobalRightVector() + mTargetOffset[1] * followCam->GetGlobalUpVector()));
 			DRAWSPHERE(nodePos, Vector3D(0, 255, 255), 0.01);
 
 			Vector3D dir = (targetPos - nodePos);
@@ -318,25 +318,25 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 			bool needKeepDistance = false;
 
 			// check if we need to move
-			if (dist - myDeltaDist > 0.01f)
+			if (dist - mDeltaDist > 0.01f)
 			{
 				float lVelocity = 0.0f;
 
 				DRAWLINE(targetPos, nodePos, Vector3D(255, 0, 0));
 				DRAWSPHERE(targetPos, Vector3D(255, 0, 0), 0.01);
 
-				lVelocity = std::min(dist - myDeltaDist, (float)myMaxVelocity);
-				myCurrentVelocity = std::max(lVelocity, myCurrentVelocity);
+				lVelocity = std::min(dist - mDeltaDist, (float)mMaxVelocity);
+				mCurrentVelocity = std::max(lVelocity, mCurrentVelocity);
 			}
 			// check the distance to cam
-			else if (myKeepDistance)
+			else if (mKeepDistance)
 			{
 				DRAWLINE(targetPos, nodePos, Vector3D(255, 0, 0));
 				DRAWSPHERE(targetPos, Vector3D(255, 0, 0), 0.01);
 
 				Vector3D dirToCal = (nodePos - camPos);
 				float distToCam = NormSquare(dirToCal);
-				if (fabs(distToCam - (myDistance*myDistance)) > 0.001f)
+				if (fabs(distToCam - (mDistance*mDistance)) > 0.001f)
 				{
 					needKeepDistance = true;
 				}
@@ -348,41 +348,41 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 			}
 
 			//	apply velocity
-			if (myCurrentVelocity > 0.001f)
+			if (mCurrentVelocity > 0.001f)
 			{
-				if (dist < myCurrentVelocity)
+				if (dist < mCurrentVelocity)
 				{
 					pos = targetPos;
 				}
 				else
 				{
-					pos = nodePos + dir*myCurrentVelocity;
+					pos = nodePos + dir*mCurrentVelocity;
 				}
 
-				myCurrentVelocity *= 0.5f;
+				mCurrentVelocity *= 0.5f;
 			}
 			else if (needKeepDistance)
 			{
 				Vector3D dir = (nodePos - camPos);
 				dir.Normalize();
 
-				pos = camPos + (myDistance*dir);
+				pos = camPos + (mDistance*dir);
 			}
 			else
 			{
-				pos = myCurrentPos;
-				myCurrentVelocity = 0.0f;
+				pos = mCurrentPos;
+				mCurrentVelocity = 0.0f;
 			}
 
-			if (pos != myCurrentPos)
-				NeedRecomputePosition = true;
+			if (pos != mCurrentPos)
+				mNeedRecomputePosition = true;
 		}
 		else
 		{
-			pos = (Vector3D)myPosition;
+			pos = (Vector3D)mPosition;
 		}
 
-		if (NeedRecomputePosition)
+		if (mNeedRecomputePosition)
 		{
 			DRAWSPHERE(pos, Vector3D(255, 0, 0), 0.01);
 			// compute local matrix
@@ -390,12 +390,12 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 
 			right = up^view;
 			right.Normalize();
-			if (myUseFixedUp)
+			if (mUseFixedUp)
 			{
-				if (!myUseFixedNormal)
+				if (!mUseFixedNormal)
 					view = right^up;
 			}
-			else if (myUseFixedNormal)
+			else if (mUseFixedNormal)
 			{
 				up = right^-view;
 			}
@@ -403,24 +403,24 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 			Matrix3x4 mat(right, up, view, pos);
 
 			// check if moved (avoid recompute matrix and bbox if none)
-			if (myCurrentView == view &&
-				myCurrentPos == pos &&
-				myCurrentUp == up)
+			if (mCurrentView == view &&
+				mCurrentPos == pos &&
+				mCurrentUp == up)
 			{
 				// no change do nothing
 			}
 			else
 			{
-				if (mySpacialNode->getFather())
-					mat = mySpacialNode->getFather()->GetGlobalToLocal() * mat;
-				mySpacialNode->ChangeMatrix(mat);
+				if (mSpacialNode->getFather())
+					mat = mSpacialNode->getFather()->GetGlobalToLocal() * mat;
+				mSpacialNode->ChangeMatrix(mat);
 
-				myCurrentView = view;
-				myCurrentPos = pos;
-				myCurrentUp = up;
+				mCurrentView = view;
+				mCurrentPos = pos;
+				mCurrentUp = up;
 			}
 
-			NeedRecomputePosition = false;
+			mNeedRecomputePosition = false;
 		}
 	}
 	DataDrivenSequenceManager::Update(aTimer, addParam);
@@ -428,24 +428,24 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 
 void Holo3DSequenceManager::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == myPosition.getLabelID()
-		|| labelid == myNormal.getLabelID()
-		|| labelid == myUp.getLabelID())
+	if (labelid == mPosition.getLabelID()
+		|| labelid == mNormal.getLabelID()
+		|| labelid == mUp.getLabelID())
 	{
-		NeedRecomputePosition = true;
+		mNeedRecomputePosition = true;
 	}
-	else if (labelid == mySize.getLabelID())
+	else if (labelid == mSize.getLabelID())
 	{
-		v2f size = mySize;
-		if(myCollidablePanel) myCollidablePanel->setValue("Size", size);
-		if(myDrawer) myDrawer->setValue("Size", size);
+		v2f size = mSize;
+		if(mCollidablePanel) mCollidablePanel->setValue("Size", size);
+		if(mDrawer) mDrawer->setValue("Size", size);
 	}
-	else if (labelid == myUseFixedNormal.getLabelID()
-		|| labelid == myUseFixedUp.getLabelID()
-		|| labelid == myUseFixedPosition.getLabelID())
+	else if (labelid == mUseFixedNormal.getLabelID()
+		|| labelid == mUseFixedUp.getLabelID()
+		|| labelid == mUseFixedPosition.getLabelID())
 	{
-		NeedRecomputePosition = true;
-		IsFixed = myUseFixedNormal && myUseFixedUp && myUseFixedPosition;
+		mNeedRecomputePosition = true;
+		mIsFixed = mUseFixedNormal && mUseFixedUp && mUseFixedPosition;
 	}
 
 	DataDrivenSequenceManager::NotifyUpdate(labelid);
@@ -453,9 +453,9 @@ void Holo3DSequenceManager::NotifyUpdate(const unsigned int labelid)
 
 void Holo3DSequenceManager::GetDistanceForInputSort(GetDistanceForInputSortParam& params)
 {
-	params.inout_sorting_layer = myInputSortingLayer;
+	params.inout_sorting_layer = mInputSortingLayer;
 	params.inout_distance = DBL_MAX;
-	if (!IsShow || !myCollidablePanel)
+	if (!mIsShow || !mCollidablePanel)
 		return;
 
 	v3f local_pos = params.origin;
@@ -463,16 +463,16 @@ void Holo3DSequenceManager::GetDistanceForInputSort(GetDistanceForInputSortParam
 
 	Point3D		planePos;
 	Vector3D	planeNorm;
-	myCollidablePanel->GetPlane(planePos, planeNorm);
+	mCollidablePanel->GetPlane(planePos, planeNorm);
 
-	auto& inverseMatrix = mySpacialNode->GetGlobalToLocal();
+	auto& inverseMatrix = mSpacialNode->GetGlobalToLocal();
 	inverseMatrix.TransformPoint(&local_pos);
 	inverseMatrix.TransformVector(&local_dir);
 
 	f64 dist = DBL_MAX;
-	if (Intersection::IntersectRayPlane(local_pos, local_dir, planePos, planeNorm, dist, myCollidablePanel.get()))
+	if (Intersection::IntersectRayPlane(local_pos, local_dir, planePos, planeNorm, dist, mCollidablePanel.get()))
 	{
-		auto& l2g = mySpacialNode->GetLocalToGlobal();
+		auto& l2g = mSpacialNode->GetLocalToGlobal();
 		Vector3D dist_vector = Vector3D(dist, 0, 0);
 		l2g.TransformVector(&dist_vector);
 		auto real_dist = Norm(dist_vector);

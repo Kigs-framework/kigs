@@ -136,7 +136,7 @@ public:
 		c = filename[index];
 		while(c!=0)
 		{
-			// treat first letter (create new entry if needed)
+			// treat first letter (create new mEntry if needed)
 			nLetter = cLetter->Son(c);
 			if(nLetter==NULL)
 			{
@@ -153,7 +153,7 @@ public:
 
 		if(cLetter->stop==false)
 		{
-			// set the last character as a stop entry (a string has stopped here)
+			// set the last character as a stop mEntry (a string has stopped here)
 			cLetter->stop=true;
 
 			// add ref for each letter
@@ -187,7 +187,7 @@ public:
 			index++;
 		}
 
-		// set the last character as a stop entry (a string has stopped here)
+		// set the last character as a stop mEntry (a string has stopped here)
 		if(cLetter->stop)
 		{
 			cLetter->stop=false;

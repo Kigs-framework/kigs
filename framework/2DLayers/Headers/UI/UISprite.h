@@ -7,6 +7,19 @@
 class SpriteSheetTexture;
 struct FRAMES;
 
+// ****************************************
+// * UISprite class
+// * --------------------------------------
+/**
+* \file	UISprite.h
+* \class	UISprite
+* \ingroup 2DLayers
+* \brief	Manage sprite. Obsolete ?
+*
+* Obsolete ??
+*/
+// ****************************************
+
 class UISprite : public UITexturedItem
 {
 public:
@@ -29,14 +42,14 @@ protected:
 	bool isAlpha(float X, float Y)override;
 	void SetTexUV(UIVerticesInfo * aQI)override;
 
-	Point2D myUVMin, myUVMax;
+	Point2D mUVMin, mUVMax;
 
-	bool hasSprite;
+	bool mHasSprite;
 
-	maString				myTextureName;
-	maString				mySpriteName;
+	maString				mTexture;
+	maString				mSprite;
 
-	SmartPointer<SpriteSheetTexture>	mySpriteSheet;
+	SmartPointer<SpriteSheetTexture>	mSpriteSheet;
 };
 
 #endif //_UIIMAGE_H_

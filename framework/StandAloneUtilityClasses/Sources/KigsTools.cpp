@@ -581,9 +581,9 @@ void CoreModifiableContextMenu(CoreModifiable* item, CoreModifiable* parent=null
 		}
 
 		bool toggle_trace_ref = false;
-		if (item->myTraceRef) toggle_trace_ref = ImGui::MenuItem("Disable TraceRef");
+		if (item->mTraceRef) toggle_trace_ref = ImGui::MenuItem("Disable TraceRef");
 		else toggle_trace_ref = ImGui::MenuItem("Enable TraceRef");
-		if (toggle_trace_ref) item->myTraceRef = !item->myTraceRef;
+		if (toggle_trace_ref) item->mTraceRef = !item->mTraceRef;
 
 		if (ImGui::MenuItem("Inspect in debugger"))
 			Break(item);
@@ -882,7 +882,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 				std::vector<CMSP> toPass;
 				for (auto c : item->getItems())
 				{
-					toPass.push_back(c.myItem);
+					toPass.push_back(c.mItem);
 				}
 
 				RecursiveHierarchyTree(item.get(), toPass);
@@ -964,7 +964,7 @@ void DrawHierarchy()
 				std::vector<CMSP> toPass;
 				for (auto c : current_scope->getItems())
 				{
-					toPass.push_back(c.myItem);
+					toPass.push_back(c.mItem);
 				}
 
 				RecursiveHierarchyTree(current_scope, toPass, true);
@@ -1104,7 +1104,7 @@ void DrawCreateInstance()
 			int index = 0;
 			for (auto& it : factory->GetModuleList())
 			{
-				for (auto& id : it.second.myClassMap)
+				for (auto& id : it.second.mClassMap)
 				{
 					if (PassWildcardSearch(search, id.first._id_name))
 					{
@@ -1127,7 +1127,7 @@ void DrawCreateInstance()
 		{
 			for (auto& it : factory->GetModuleList())
 			{
-				for (auto& id : it.second.myClassMap)
+				for (auto& id : it.second.mClassMap)
 				{
 					if (ImGui::Selectable(id.first._id_name.c_str()))
 					{
@@ -1622,10 +1622,10 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 
 	auto typenode = item->GetTypeNode();
 	std::string typestring;
-	while (typenode && typenode->myID != 0u)
+	while (typenode && typenode->mID != 0u)
 	{
-		typestring = typenode->myID._id_name + "/" + typestring;
-		typenode = typenode->myFather;
+		typestring = typenode->mID._id_name + "/" + typestring;
+		typenode = typenode->mFather;
 	}
 
 	ImGui::Text(typestring.c_str());
@@ -2159,23 +2159,23 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 		}
 	}
 
-	/// Methods
+	/// mMethods
 	ImGui::SetNextTreeNodeOpen(gKigsTools->CurrentSettings.MethodsOpen, ImGuiCond_Once);
 	if ((gKigsTools->CurrentSettings.MethodsOpen = ImGui::CollapsingHeader("Methods")))
 	{
-		for (auto&& pair : item->GetTypeNode()->myMethods)
+		for (auto&& pair : item->GetTypeNode()->mMethods)
 		{
 			if (pair.second.IsMethod())
 				ImGui::Text("%s - %s", pair.first._id_name.c_str(), pair.second.GetMethod().mName.c_str());
 		}
 
-		if (item->GetTypeNode()->myMethods.size())
+		if (item->GetTypeNode()->mMethods.size())
 			ImGui::Text("-----");
 
 		auto lz = item->GetLazyContentNoCreate();
 		if (lz)
 		{
-			for (auto&& pair : lz->Methods)
+			for (auto&& pair : lz->mMethods)
 			{
 				ImGui::PushID(pair.first.toUInt());
 				if(pair.second.IsMethod())
@@ -2203,7 +2203,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 		auto lz = item->GetLazyContentNoCreate();
 		if(lz)
 		{
-			for (auto& obj : lz->ConnectedTo)
+			for (auto& obj : lz->mConnectedTo)
 			{
 				for (auto& c : obj.second)
 				{
@@ -2274,7 +2274,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 		{
 			if (ImGui::BeginCombo("Slot", selected_slot._id_name.c_str()))
 			{
-				for (auto&& pair : connect_to_item->GetTypeNode()->myMethods)
+				for (auto&& pair : connect_to_item->GetTypeNode()->mMethods)
 				{
 					if (ImGui::Selectable(pair.first._id_name.c_str())) selected_slot = pair.first;
 				}
@@ -2284,7 +2284,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 				auto lz = connect_to_item->GetLazyContentNoCreate();
 				if (lz)
 				{
-					for (auto&& pair : lz->Methods)
+					for (auto&& pair : lz->mMethods)
 					{
 						if (ImGui::Selectable(pair.first._id_name.c_str())) selected_slot = pair.first;
 					}
@@ -2407,7 +2407,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 
 			ImGui::SameLine();
 
-			ImGui::PushID(s._id);
+			ImGui::PushID(s.mID);
 			if (ImGui::Button(ICON_FA_PLUG))
 			{
 

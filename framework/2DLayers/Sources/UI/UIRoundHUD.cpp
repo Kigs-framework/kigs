@@ -17,18 +17,18 @@ void UIRoundHUD::InitModifiable()
 {
 	ParentClassType::InitModifiable();
 
-	myColor.changeNotificationLevel(Owner);
-	myOpacity.changeNotificationLevel(Owner);
+	mColor.changeNotificationLevel(Owner);
+	mOpacity.changeNotificationLevel(Owner);
 
-	myAngleStart.changeNotificationLevel(Owner);
-	myAngleWide.changeNotificationLevel(Owner);
-	mySlotCount.changeNotificationLevel(Owner);
-	myIsClockwise.changeNotificationLevel(Owner);
-	myRadius.changeNotificationLevel(Owner);
-	myRadiusOffset.changeNotificationLevel(Owner);
+	mAngleStart.changeNotificationLevel(Owner);
+	mAngleWide.changeNotificationLevel(Owner);
+	mSlotCount.changeNotificationLevel(Owner);
+	mIsClockwise.changeNotificationLevel(Owner);
+	mRadius.changeNotificationLevel(Owner);
+	mRadiusOffset.changeNotificationLevel(Owner);
 
-	voidZone = (myRadius + myRadiusOffset) *0.2f;
-	voidZone *= voidZone;
+	mVoidZone = (mRadius + mRadiusOffset) *0.2f;
+	mVoidZone *= mVoidZone;
 
 	ModuleInput* theInputModule = (ModuleInput*)KigsCore::GetModule("ModuleInput");
 	theInputModule->getTouchManager()->registerEvent(this, "ManageDirectTouchEvent", DirectTouch, EmptyFlag);
@@ -37,19 +37,19 @@ void UIRoundHUD::InitModifiable()
 
 void UIRoundHUD::ProtectedDraw(TravState* state)
 {
-	v2f p = myRealSize*0.5f;
+	v2f p = mRealSize*0.5f;
 	TransformPoints(&p, 1);
 
-	if (p.x != myMidPoint.x || p.y != myMidPoint.y)
+	if (p.x != mMidPoint.x || p.y != mMidPoint.y)
 	{
-		myNeedUpdateSlots = true;
-		myMidPoint = p;
+		mNeedUpdateSlots = true;
+		mMidPoint = p;
 	}
 
-	if (myNeedUpdateSlots)
+	if (mNeedUpdateSlots)
 	{
 		UpdateSlots();
-		myNeedUpdateSlots = false;
+		mNeedUpdateSlots = false;
 	}
 
 	ParentClassType::ProtectedDraw(state);
@@ -57,37 +57,32 @@ void UIRoundHUD::ProtectedDraw(TravState* state)
 
 bool UIRoundHUD::addItem(const CMSP& item, ItemPosition pos)
 {
-	myNeedUpdateSlots = true;
+	mNeedUpdateSlots = true;
 	return ParentClassType::addItem(item, pos);
 }
 
 bool UIRoundHUD::removeItem(const CMSP& item)
 {
-	myNeedUpdateSlots = true;
+	mNeedUpdateSlots = true;
 	return ParentClassType::removeItem(item);
 }
 
-/*
-maFloat myAngleStart = BASE_ATTRIBUTE(AngleStart, 0.0f);
-maFloat myAngleWide = BASE_ATTRIBUTE(AngleWide, 360.0f);
-maInt mySlotCount = BASE_ATTRIBUTE(SlotCount, -1); // -1 for dynamic
-maBool myIsClockWise = BASE_ATTRIBUTE(IsClockwise, true);
-*/
+
 void UIRoundHUD::NotifyUpdate(const unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
 
 	if (
-		labelid == myColor.getLabelID() ||
-		labelid == myOpacity.getLabelID() ||
-		labelid == myAngle.getLabelID() ||
-		labelid == myAngleStart.getLabelID() ||
-		labelid == myAngleWide.getLabelID() ||
-		labelid == mySlotCount.getLabelID() ||
-		labelid == myIsClockwise.getLabelID() ||
-		labelid == myRadiusOffset.getLabelID() ||
-		labelid == myRadius.getLabelID())
-		myNeedUpdateSlots = true;
+		labelid == mColor.getLabelID() ||
+		labelid == mOpacity.getLabelID() ||
+		labelid == mRotationAngle.getLabelID() ||
+		labelid == mAngleStart.getLabelID() ||
+		labelid == mAngleWide.getLabelID() ||
+		labelid == mSlotCount.getLabelID() ||
+		labelid == mIsClockwise.getLabelID() ||
+		labelid == mRadiusOffset.getLabelID() ||
+		labelid == mRadius.getLabelID())
+		mNeedUpdateSlots = true;
 }
 
 #define DEBUG_DRAW 1
@@ -116,11 +111,11 @@ void UIRoundHUD::UpdateSlots()
 	int idx = 0;
 
 	// get slot count (fixed count or dynamic)
-	myRealSlotCount = (mySlotCount >= 0) ? mySlotCount : GetSons().size();
+	mRealSlotCount = (mSlotCount >= 0) ? mSlotCount : GetSons().size();
 	
 	// create slot position array
-	mySlot.reserve(myRealSlotCount + 2);
-	generateCircle(mySlot, myRadius, (myAngleWide == 360.0f) ? myRealSlotCount : myRealSlotCount - 1, myAngleWide, myAngleStart);
+	mSlot.reserve(mRealSlotCount + 2);
+	generateCircle(mSlot, mRadius, (mAngleWide == 360.0f) ? mRealSlotCount : mRealSlotCount - 1, mAngleWide, mAngleStart);
 
 #if DEBUG_DRAW>0
 
@@ -131,9 +126,9 @@ void UIRoundHUD::UpdateSlots()
 #if DEBUG_DRAW==1
 	mVI = UIVerticesInfo(&vi, CircleDiv * 3);
 #elif DEBUG_DRAW==2
-	mVI = UIVerticesInfo(&vi, (mySelectedSlot >= 0)?CircleDiv * 3 * 2: CircleDiv * 3);
+	mVI = UIVerticesInfo(&vi, (mSelectedSlot >= 0)?CircleDiv * 3 * 2: CircleDiv * 3);
 #elif DEBUG_DRAW==3
-	mVI = UIVerticesInfo(&vi, CircleDiv * 3 * (myRealSlotCount + 1));
+	mVI = UIVerticesInfo(&vi, CircleDiv * 3 * (mRealSlotCount + 1));
 #endif
 	mVI.Flag |= UIVerticesInfo_Vertex;
 	mVI.Flag |= UIVerticesInfo_Color;
@@ -141,26 +136,26 @@ void UIRoundHUD::UpdateSlots()
 
 	std::vector<v2f> points;
 	points.reserve(CircleDiv + 1);
-	generateCircle(points, myRadius+ myRadiusOffset, CircleDiv,myAngleWide,myAngleStart);
+	generateCircle(points, mRadius+ mRadiusOffset, CircleDiv,mAngleWide,mAngleStart);
 
-	v4f color(myColor[0], myColor[1], myColor[2], GetOpacity());
+	v4f color(mColor[0], mColor[1], mColor[2], GetOpacity());
 	color *= 255;
 
 	auto data = reinterpret_cast<VInfo2D::Data*>(mVI.Buffer());
 	for (int i = 0; i < CircleDiv; ++i)
 	{
-		data[idx++].setValue(myMidPoint.x, myMidPoint.y, color.x, color.y, color.z, color.w, 0, 0);
-		data[idx++].setValue(myMidPoint.x + points[i].x, myMidPoint.y + points[i].y, color.x, color.y, color.z, color.w, 0, 0);
-		data[idx++].setValue(myMidPoint.x + points[i + 1].x, myMidPoint.y + points[i + 1].y, color.x, color.y, color.z, color.w, 0, 0);
+		data[idx++].setValue(mMidPoint.x, mMidPoint.y, color.x, color.y, color.z, color.w, 0, 0);
+		data[idx++].setValue(mMidPoint.x + points[i].x, mMidPoint.y + points[i].y, color.x, color.y, color.z, color.w, 0, 0);
+		data[idx++].setValue(mMidPoint.x + points[i + 1].x, mMidPoint.y + points[i + 1].y, color.x, color.y, color.z, color.w, 0, 0);
 	}
 
 #if DEBUG_DRAW==2
-	if (mySelectedSlot >= 0)
+	if (mSelectedSlot >= 0)
 	{
-		generateCircle(points, myRadius*0.1f, CircleDiv);
+		generateCircle(points, mRadius*0.1f, CircleDiv);
 
 		auto data = reinterpret_cast<VInfo2D::Data*>(mVI.Buffer());
-		v2f center = myMidPoint + mySlot[mySelectedSlot];
+		v2f center = mMidPoint + mSlot[mSelectedSlot];
 		for (int i = 0; i < CircleDiv; ++i)
 		{
 			data[idx++].setValue(center.x, center.y, 0, 0, 0, color.w, 0, 0);
@@ -169,11 +164,11 @@ void UIRoundHUD::UpdateSlots()
 		}
 	}
 #elif DEBUG_DRAW==3
-	for (int slot = 0; slot < myRealSlotCount; slot++)
+	for (int slot = 0; slot < mRealSlotCount; slot++)
 	{
-		generateCircle(points, myRadius*0.1f, CircleDiv);
+		generateCircle(points, mRadius*0.1f, CircleDiv);
 
-		v2f center = myMidPoint + mySlot[slot];
+		v2f center = mMidPoint + mSlot[slot];
 		auto data = reinterpret_cast<VInfo2D::Data*>(mVI.Buffer());
 		for (int i = 0; i < CircleDiv; ++i)
 		{
@@ -188,33 +183,33 @@ void UIRoundHUD::UpdateSlots()
 
 	// update sons position
 	idx = 0;
-	myItemList.clear();
-	for (auto i = mySons.rbegin(); i != mySons.rend(); ++i) {
+	mItemList.clear();
+	for (auto i = mSons.rbegin(); i != mSons.rend(); ++i) {
 
-		if (idx >= myRealSlotCount)
+		if (idx >= mRealSlotCount)
 		{
 			(*i)->setValue("IsHidden",true);
 			continue;
 		}
 
-		myItemList.push_back(*i);
+		mItemList.push_back(*i);
 		(*i)->setValue("IsHidden",false);
-		(*i)->setValue("Position", myMidPoint + mySlot[idx++]);
+		(*i)->setValue("Position", mMidPoint + mSlot[idx++]);
 	}
 }
 
 bool UIRoundHUD::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 {
 	bool ret = false;
-	int slot = mySelectedSlot;
-	float dist = NormSquare(myMidPoint - direct_touch.position.xy);
+	int slot = mSelectedSlot;
+	float dist = NormSquare(mMidPoint - direct_touch.position.xy);
 
-	bool can_interact = myIsEnabled && mybIsTouchable && !myIsHidden && !IsHiddenFlag() && IsInClip(direct_touch.position.xy);
-	float allowedRadius = (myRadius + myRadiusOffset) * (myRadius + myRadiusOffset);
+	bool can_interact = mIsEnabled && mIsTouchable && !mIsHidden && !IsHiddenFlag() && IsInClip(direct_touch.position.xy);
+	float allowedRadius = (mRadius + mRadiusOffset) * (mRadius + mRadiusOffset);
 	// touch is possible in the radius or when isDown
 	if (direct_touch.state == StatePossible) // check for hover
 	{
-		return (can_interact && dist<allowedRadius) || isDown;
+		return (can_interact && dist<allowedRadius) || mIsDown;
 	}
 
 	if (can_interact && dist < allowedRadius)
@@ -226,15 +221,15 @@ bool UIRoundHUD::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 		if (direct_touch.touch_state == DirectTouchEvent::TouchUp)
 		{
 			// emit signal if a slot is selected
-			if (mySelectedSlot != -1 && mySelectedSlot < myItemList.size() && can_interact && isDown)
+			if (mSelectedSlot != -1 && mSelectedSlot < mItemList.size() && can_interact && mIsDown)
 			{
-				auto cm = myItemList.at(mySelectedSlot);
+				auto cm = mItemList.at(mSelectedSlot);
 				if (cm->getValue<bool>("IsEnabled"))
 					EmitSignal(Signals::TouchUp, this, cm);
 			}
 				
 
-			isDown = false;
+			mIsDown = false;
 			return false;
 		}
 		else
@@ -245,20 +240,17 @@ bool UIRoundHUD::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 	}
 	else
 	{
-		if (dist < voidZone)
+		if (dist < mVoidZone)
 		{
 			slot = -1;
 		}
 		else
 		{
 			float nearest = Float_Max;
-			for (int i = 0; i < myRealSlotCount; i++)
+			for (int i = 0; i < mRealSlotCount; i++)
 			{
-				v2f center = myMidPoint + mySlot[i];
+				v2f center = mMidPoint + mSlot[i];
 				float tmpDist = NormSquare(center - direct_touch.position.xy);
-
-				/*if (tmpDist > myRadius*myRadius)
-					continue;*/
 
 				if (tmpDist < nearest)
 				{
@@ -270,38 +262,38 @@ bool UIRoundHUD::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 	}
 
 	if (direct_touch.touch_state == DirectTouchEvent::TouchDown)
-		isDown = true;
+		mIsDown = true;
 	else if (direct_touch.touch_state == DirectTouchEvent::TouchUp)
-		isDown = false;
+		mIsDown = false;
 
 
 //#if DEBUG_DRAW==2
-	if (mySelectedSlot != slot)
+	if (mSelectedSlot != slot)
 	{
-		if (slot != -1 && !myItemList[slot]->getValue<bool>("IsEnabled"))
+		if (slot != -1 && !mItemList[slot]->getValue<bool>("IsEnabled"))
 			slot = -1;
 
-		EmitSignal(Signals::SlotChanged, this, slot, (slot>-1) ? myItemList.at(slot) : nullptr);
+		EmitSignal(Signals::SlotChanged, this, slot, (slot>-1) ? mItemList.at(slot) : nullptr);
 		
 		if (slot != -1)
-			myItemList[slot]->SimpleCall("Highlight", false);
-		if (mySelectedSlot != -1)
-			myItemList[mySelectedSlot]->SimpleCall("Highlight", true);
+			mItemList[slot]->SimpleCall("Highlight", false);
+		if (mSelectedSlot != -1)
+			mItemList[mSelectedSlot]->SimpleCall("Highlight", true);
 
-		if ((CoreModifiable*)myLabel)
+		if ((CoreModifiable*)mLabel)
 		{
 			kstl::string str="";
-			if ((slot != -1 && slot < myItemList.size()))
+			if ((slot != -1 && slot < mItemList.size()))
 			{
-				if (!myItemList[slot]->getValue("Label", str))
-					str = myItemList[slot]->getName();
+				if (!mItemList[slot]->getValue("Label", str))
+					str = mItemList[slot]->getName();
 			}
 
-			((CoreModifiable*)myLabel)->setValue("Text", str.c_str());
+			((CoreModifiable*)mLabel)->setValue("Text", str.c_str());
 		}
 
-		mySelectedSlot = slot;
-		myNeedUpdateSlots = true;
+		mSelectedSlot = slot;
+		mNeedUpdateSlots = true;
 	}
 //#endif
 	return ret;

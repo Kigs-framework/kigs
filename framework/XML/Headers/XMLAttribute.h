@@ -11,15 +11,17 @@
 class XMLAttributeBase
 {};
 
+
 // ****************************************
 // * XMLAttributeTemplate class
 // * --------------------------------------
-/*!  \class XMLAttributeTemplate
-      manage one xml attribute
-	  \ingroup XML
-*/
-// ****************************************
-
+/**
+ * \file	XMLAttribute.h
+ * \class	XMLAttributeTemplate
+ * \ingroup ModuleXML
+ * \brief	Manage XML attributes structure using string or string_view.
+ */
+ // ****************************************
 template<typename StringType>
 class XMLAttributeTemplate : public XMLAttributeBase
 {
@@ -27,17 +29,17 @@ class XMLAttributeTemplate : public XMLAttributeBase
 
 public:
 	//! constructor for string attributes
-    XMLAttributeTemplate( const StringType& name, const StringType& value ) : m_name(name), m_value(value)
+    XMLAttributeTemplate( const StringType& name, const StringType& value ) : mName(name), mValue(value)
 	{
 
 	}
 	//! constructor for string attributes
-	XMLAttributeTemplate(const char* name, const char* value) : m_name(name), m_value(value)
+	XMLAttributeTemplate(const char* name, const char* value) : mName(name), mValue(value)
 	{
 
 	}
 	//! constructor for string attributes
-	XMLAttributeTemplate(const char* name,unsigned int namelen, const char* value, unsigned int valuelen) : m_name(name, namelen), m_value(value, valuelen)
+	XMLAttributeTemplate(const char* name,unsigned int namelen, const char* value, unsigned int valuelen) : mName(name, namelen), mValue(value, valuelen)
 	{
 
 	}
@@ -62,7 +64,7 @@ public:
 	//! set attribute value with the given string parameter
 	void setString( const StringType &value )
 	{
-		m_value = value;
+		mValue = value;
 	}
 	//! set attribute value with the given int parameter
 	inline void setInt(const int value)
@@ -78,16 +80,16 @@ public:
 	//! return attribute name
 	const StringType& getName( )
 	{
-		return m_name;
+		return mName;
 	}
 	void setName(const StringType& n)
 	{
-		m_name = n;
+		mName = n;
 	}
 	//! return value as a string
 	const StringType& getString( )
 	{
-		return m_value;
+		return mValue;
 	}
 
 	//! return value as an int
@@ -98,9 +100,9 @@ public:
 
 private:
 	//! name
-	StringType m_name;
+	StringType mName;
 	//! value
-	StringType m_value;
+	StringType mValue;
 };
 
 typedef XMLAttributeTemplate<std::string> XMLAttribute;
@@ -119,7 +121,7 @@ inline void XMLAttributeTemplate<std::string>::setInt(const int value)
 {
 	static char szValue[64];
 	auto sz=std::to_chars(szValue, szValue + 64, value);
-	m_value = std::string(szValue,sz.ptr- szValue);
+	mValue = std::string(szValue,sz.ptr- szValue);
 }
 
 template<>
@@ -127,17 +129,17 @@ inline void XMLAttributeTemplate<std::string>::setFloat(const kfloat value)
 {
 	static char szValue[64];
 	auto sz = std::to_chars(szValue, szValue + 64, value);
-	m_value = std::string(szValue, sz.ptr - szValue);
+	mValue = std::string(szValue, sz.ptr - szValue);
 }
 
 template<>
-inline XMLAttributeTemplate<std::string>::XMLAttributeTemplate(const std::string& name, int value) : m_name(name)
+inline XMLAttributeTemplate<std::string>::XMLAttributeTemplate(const std::string& name, int value) : mName(name)
 {
 	setInt(value);
 }
 
 template<>
-inline XMLAttributeTemplate<std::string>::XMLAttributeTemplate(const std::string& name, kfloat value) : m_name(name)
+inline XMLAttributeTemplate<std::string>::XMLAttributeTemplate(const std::string& name, kfloat value) : mName(name)
 {
 	setFloat(value);
 }
@@ -146,7 +148,7 @@ template<typename StringType>
 inline int XMLAttributeTemplate<StringType>::getInt()
 {
 	int result = 0;
-	std::from_chars(m_value.data(), m_value.data() + m_value.size(), result);
+	std::from_chars(mValue.data(), mValue.data() + mValue.size(), result);
 	return result;
 }
 
@@ -154,26 +156,26 @@ template<typename StringType>
 inline kfloat XMLAttributeTemplate<StringType>::getFloat()
 {
 	float result = 0.0f;
-	std::from_chars(m_value.data(), m_value.data() + m_value.size(), result);
+	std::from_chars(mValue.data(), mValue.data() + mValue.size(), result);
 	return result;
 }
 
 #else
 
 template<>
-inline XMLAttributeTemplate<std::string>::XMLAttributeTemplate(const std::string& name, int value) : m_name(name)
+inline XMLAttributeTemplate<std::string>::XMLAttributeTemplate(const std::string& name, int value) : mName(name)
 {
 	static char szValue[64];
 	snprintf(szValue, 64, "%d", value);
-	m_value = szValue;
+	mValue = szValue;
 }
 
 template<>
-inline XMLAttributeTemplate<std::string>::XMLAttributeTemplate(const std::string& name, kfloat value) : m_name(name)
+inline XMLAttributeTemplate<std::string>::XMLAttributeTemplate(const std::string& name, kfloat value) : mName(name)
 {
 	static char szValue[64];
 	snprintf(szValue, 64, "%f", CastToFloat(value));
-	m_value = szValue;
+	mValue = szValue;
 }
 
 template<>
@@ -181,7 +183,7 @@ inline void XMLAttributeTemplate<std::string>::setInt(const int value)
 {
 	static char szValue[64];
 	snprintf(szValue, 64, "%d", value);
-	m_value = szValue;
+	mValue = szValue;
 }
 
 template<>
@@ -189,7 +191,7 @@ inline void XMLAttributeTemplate<std::string>::setFloat(const kfloat value)
 {
 	static char szValue[64];
 	snprintf(szValue, 64, "%f", CastToFloat(value));
-	m_value = szValue;
+	mValue = szValue;
 }
 
 template<>
@@ -198,9 +200,9 @@ inline int XMLAttributeTemplate<std::string>::getInt()
 	// when no test is required, use atoi insteed of sscanf 
 	/*int temp=0;
 
-	sscanf(m_value.c_str( ), "%d",&temp);*/
+	sscanf(mValue.c_str( ), "%d",&temp);*/
 
-	return atoi(m_value.c_str());
+	return atoi(mValue.c_str());
 }
 
 template<>
@@ -209,8 +211,8 @@ inline int XMLAttributeTemplate<std::string_view>::getInt()
 	// when no test is required, use atoi insteed of sscanf 
 	/*int temp=0;
 
-	sscanf(m_value.c_str( ), "%d",&temp);*/
-	std::string to_string(m_value);
+	sscanf(mValue.c_str( ), "%d",&temp);*/
+	std::string to_string(mValue);
 	return atoi(to_string.c_str());
 }
 
@@ -220,9 +222,9 @@ inline kfloat XMLAttributeTemplate<std::string>::getFloat()
 	// when no test is required, use atof insteed of sscanf 
 	/*float temp=0;
 
-	sscanf(m_value.c_str( ),"%f",&temp);*/
+	sscanf(mValue.c_str( ),"%f",&temp);*/
 
-	return atof(m_value.c_str());
+	return atof(mValue.c_str());
 }
 
 template<>
@@ -231,8 +233,8 @@ inline kfloat XMLAttributeTemplate<std::string_view>::getFloat()
 	// when no test is required, use atof insteed of sscanf 
 	/*float temp=0;
 
-	sscanf(m_value.c_str( ),"%f",&temp);*/
-	std::string to_string(m_value);
+	sscanf(mValue.c_str( ),"%f",&temp);*/
+	std::string to_string(mValue);
 	return atof(to_string.c_str());
 }
 #endif

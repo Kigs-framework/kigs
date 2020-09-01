@@ -7,7 +7,7 @@ bool	JPEGClass::Load(FileHandle* fileName)
 {
 
 	// free previous image if any
-	if(myInitIsOK)
+	if(mInitIsOK)
 	{
 		if (mPixels)
 		{
@@ -22,11 +22,11 @@ bool	JPEGClass::Load(FileHandle* fileName)
 	}
 
 	int  width, height;
-	JSLoadTextureInCanvas(fileName->myFullFileName.c_str(), width,height);
+	JSLoadTextureInCanvas(fileName->mFullFileName.c_str(), width,height);
 	if ((width > 0) && (height > 0))
 	{
-		myWidth = width;
-		myHeight = height;
+		mWidth = width;
+		mHeight = height;
 		mPaletteDataSize = 0;
 		mPixelLineSize = width * 4;
 		mPixelDataSize = mPixelLineSize*height;

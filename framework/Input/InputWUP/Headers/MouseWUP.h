@@ -4,6 +4,18 @@
 #include "MouseDevice.h"
 #include "ModuleInputWUP.h"
 
+
+// ****************************************
+// * MouseWUP class
+// * --------------------------------------
+/**
+ * \class	MouseWUP
+ * \file	MouseWUP.h
+ * \ingroup Input
+ * \brief	UWP mouse management.
+ */
+ // ****************************************
+
 class	MouseWUP : public MouseDevice
 {
 	public:
@@ -21,8 +33,8 @@ class	MouseWUP : public MouseDevice
 	
 	void	DoInputDeviceDescription();
 	
-	void	IncWheelCount(){myWheelCount++;}
-	void	IncButtonCount(){myButtonsCount++;}
+	void	IncWheelCount(){mWheelCount++;}
+	void	IncButtonCount(){mButtonsCount++;}
 	
 	protected:
 	virtual ~MouseWUP();

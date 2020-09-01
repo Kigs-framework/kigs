@@ -15,7 +15,16 @@ public:
 	virtual ~GLSLShaderInfo();
 };
 
-
+// ****************************************
+// * API3DShader class
+// * --------------------------------------
+/**
+ * \file	GLSLShader.h
+ * \class	API3DShader
+ * \ingroup Renderer
+ * \brief	GLSL implementation of Shader.
+ */
+ // ****************************************
 
 class API3DShader : public ShaderBase
 {

@@ -26,7 +26,7 @@
 #include "Upgrador.cpp"
 #include "MiniInstanceFactory.cpp"
 
-// Windows.h
+
 #include "AnonymousModule.cpp"
 #include "ModuleBase.cpp"
 #include "LocalizationManager.cpp"

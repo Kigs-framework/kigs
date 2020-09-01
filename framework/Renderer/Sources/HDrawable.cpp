@@ -31,9 +31,9 @@ void HDrawable::DoDraw(TravState* state)
 
 		for (it=getItems().begin();it!=getItems().end();++it)
 		{
-			if((*it).myItem->isUserFlagSet(UserFlagDrawable))
+			if((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable = (SP<Drawable>&)(*it).myItem;
+				SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
 				drawable->CheckPreDraw(state);
 				drawable->CheckDraw(state);
 				drawable->CheckPostDraw(state);
@@ -52,10 +52,10 @@ void HDrawable::DoPostDraw(TravState* state)
 
 void	HDrawable::UpdateDrawingNeeds()
 {
-	if(myDrawingNeeds&((unsigned int)Not_Init))
+	if(mDrawingNeeds&((unsigned int)Not_Init))
 	{
 
-		myDrawingNeeds=GetSelfDrawingNeeds();
+		mDrawingNeeds=GetSelfDrawingNeeds();
 		
 		// then ask fathers to update
 		kstl::vector<CoreModifiable*>::const_iterator itfather;

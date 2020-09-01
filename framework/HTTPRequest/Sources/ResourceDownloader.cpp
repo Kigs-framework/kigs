@@ -4,9 +4,9 @@ IMPLEMENT_CLASS_INFO(ResourceDownloader)
 
 void ResourceDownloader::InitModifiable()
 {
-	if ((std::string)myURL != "")
+	if ((std::string)mURL != "")
 	{
-		std::string parseUrl = myURL;
+		std::string parseUrl = mURL;
 
 		std::string protocol = "";
 		unsigned int port = 0;

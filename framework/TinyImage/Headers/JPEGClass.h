@@ -6,10 +6,18 @@
 #include "TinyImage.h"
 
 class CoreRawBuffer;
+
+// ****************************************
+// * JPEGClass class
+// * --------------------------------------
 /**
-* \class JPEG
-* \brief holds TGA loading methods for standard and custom formats
+* \file	JPEGClass.h
+* \class	JPEGClass
+* \ingroup TinyImageModule
+* \brief TinyImage specialized for JPEG management.
+*
 */
+// ****************************************
 class JPEGClass : public TinyImage
 {
 friend class TinyImage;

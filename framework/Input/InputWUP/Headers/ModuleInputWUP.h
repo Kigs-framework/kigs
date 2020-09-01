@@ -4,6 +4,19 @@
 #include "ModuleBase.h"
 #include "ModuleInput.h"
 
+// ****************************************
+// * ModuleInputWUP class
+// * --------------------------------------
+/**
+ * \class	ModuleInputWUP
+ * \file	ModuleInputWUP.h
+ * \ingroup Input
+ * \ingroup Module
+ * \brief	UWP specific input module.
+ */
+ // ****************************************
+
+
 class ModuleInputWUP : public ModuleBase
 {
 public:
@@ -16,9 +29,9 @@ public:
     void Close();
 	virtual void Update(const Timer& timer, void* addParam);
 	    
-	bool	isInit(){return myIsInitOK;}
+	bool	isInit(){return mIsInitOK;}
 
-	unsigned int	getJoystickCount(){return myJoystickCount;}
+	unsigned int	getJoystickCount(){return mJoystickCount;}
 
 	virtual bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
 
@@ -26,8 +39,8 @@ public:
 protected:
     virtual ~ModuleInputWUP();
   
-	bool					myIsInitOK;
-	unsigned int			myJoystickCount;
+	bool					mIsInitOK;
+	unsigned int			mJoystickCount;
 
 }; 
 

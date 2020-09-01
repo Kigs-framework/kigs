@@ -5,6 +5,17 @@
 #include "TextureFileManager.h"
 #include "AttributePacking.h"
 
+// ****************************************
+// * UIImageHighlight class
+// * --------------------------------------
+/**
+* \file	UIImageHighlight.h
+* \class	UIImageHighlight
+* \ingroup 2DLayers
+* \brief	???
+*/
+// ****************************************
+
 class UIImageHighlight : public UIImage
 {
 public:
@@ -17,10 +28,10 @@ public:
 protected:
 	WRAP_METHODS(Highlight);
 
-	SmartPointer<Texture>				myPLTexture;
-	SmartPointer<Texture>				myHLTexture;
+	SmartPointer<Texture>				mPLTexturePointer;
+	SmartPointer<Texture>				mHLTexturePointer;
 
-	maString	myHLTextureName = BASE_ATTRIBUTE(HLTexture);
+	maString	mHLTexture = BASE_ATTRIBUTE(HLTexture);
 };
 
 #endif //_UIImageHighlight_H_

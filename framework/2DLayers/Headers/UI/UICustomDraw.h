@@ -11,30 +11,40 @@ public:
 	 virtual bool IsAlphafunc(float X, float Y){return false;}
 };
 
+// ****************************************
+// * UICustomDraw class
+// * --------------------------------------
+/**
+* \file	UICustomDraw.h
+* \class	UICustomDraw
+* \ingroup 2DLayers
+* \brief	Draw non UI objects.
+*
+*/
+// ****************************************
+
 class UICustomDraw : public UIItem
 {
 public:
 	DECLARE_CLASS_INFO(UICustomDraw,UIItem,2DLayers);
 	DECLARE_INLINE_CONSTRUCTOR(UICustomDraw) {}
 
-	inline UICustomDrawDelegate*		GetDelegate(){return myDelegate;}
-	inline void							SetDelegate(UICustomDrawDelegate* a_value){myDelegate = a_value;}
+	inline UICustomDrawDelegate*		GetDelegate(){return mDelegate;}
+	inline void							SetDelegate(UICustomDrawDelegate* a_value){mDelegate = a_value;}
 
 protected:
 	bool								isAlpha(float X, float Y) override;
-	//bool								TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
-	//bool								TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
-
+	
 	void								ProtectedDraw(TravState* state) override;
 
-	UICustomDrawDelegate*				myDelegate = nullptr;
-	maString							myClickDownAction = BASE_ATTRIBUTE(ClickDownAction, "");
-	maString							myClickUpAction = BASE_ATTRIBUTE(ClickUpAction, "");
-	maUSString							myParameter = BASE_ATTRIBUTE(Parameter, (kstl::string)"");
-	maBool								myStayPressed = BASE_ATTRIBUTE(StayPressed, false);
-	bool								myIsDown = false;
-	bool								myIsMouseOver = false;
-	bool								mybInside = false;
+	UICustomDrawDelegate*				mDelegate = nullptr;
+	maString							mClickDownAction = BASE_ATTRIBUTE(ClickDownAction, "");
+	maString							mClickUpAction = BASE_ATTRIBUTE(ClickUpAction, "");
+	maUSString							mParameter = BASE_ATTRIBUTE(Parameter, (kstl::string)"");
+	maBool								mStayPressed = BASE_ATTRIBUTE(StayPressed, false);
+	bool								mIsDown = false;
+	bool								mIsMouseOver = false;
+	bool								mInside = false;
 };
 
 #endif //_UICUSTOMDRAW_H_

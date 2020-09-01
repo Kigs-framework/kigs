@@ -7,12 +7,21 @@
 
 class SceneNode;
 
-
+// ****************************************
+// * DrawableSorterItem class
+// * --------------------------------------
+/**
+ * \file	DrawableSorter.h
+ * \class	DrawableSorterItem
+ * \ingroup SceneGraph
+ * \brief	Utility structure to sort drawable.
+ */
+ // ****************************************
 class DrawableSorterItem
 {
 public:
-	TravPath::Way			myWay;
-	kfloat					m_FloatVal;
+	TravPath::Way			mWay;
+	kfloat					mFloatVal;
 
 	inline friend bool operator<(const DrawableSorterItem &Item1,const DrawableSorterItem &Item2);
 };
@@ -20,32 +29,41 @@ public:
 //! overload < operator for comparison
 bool operator<(const DrawableSorterItem &Item1,const DrawableSorterItem &Item2)
 {
-	if(Item1.m_FloatVal==Item2.m_FloatVal)
+	if(Item1.mFloatVal==Item2.mFloatVal)
 	{
-		if(Item1.myWay.myDrawable == Item2.myWay.myDrawable)
+		if(Item1.mWay.mDrawable == Item2.mWay.mDrawable)
 		{
 			// check path
-			if(Item1.myWay.myWay.size() == Item2.myWay.myWay.size())
+			if(Item1.mWay.mWay.size() == Item2.mWay.mWay.size())
 			{
 				int pathIndex;
-				for(pathIndex=0;pathIndex<(int)Item1.myWay.myWay.size();pathIndex++)
+				for(pathIndex=0;pathIndex<(int)Item1.mWay.mWay.size();pathIndex++)
 				{
-					if(Item1.myWay.myWay[(unsigned int)pathIndex] != Item2.myWay.myWay[(unsigned int)pathIndex])
+					if(Item1.mWay.mWay[(unsigned int)pathIndex] != Item2.mWay.mWay[(unsigned int)pathIndex])
 					{
-						return (Item1.myWay.myWay[(unsigned int)pathIndex]>Item2.myWay.myWay[(unsigned int)pathIndex]);
+						return (Item1.mWay.mWay[(unsigned int)pathIndex]>Item2.mWay.mWay[(unsigned int)pathIndex]);
 					}
 				}
 			}
-			return (Item1.myWay.myWay.size()>Item2.myWay.myWay.size());
+			return (Item1.mWay.mWay.size()>Item2.mWay.mWay.size());
 		}
 
-		return Item1.myWay.myDrawable > Item2.myWay.myDrawable;
+		return Item1.mWay.mDrawable > Item2.mWay.mDrawable;
 	}
 
-	return Item1.m_FloatVal>Item2.m_FloatVal;
+	return Item1.mFloatVal>Item2.mFloatVal;
 }
 
-
+// ****************************************
+// * DrawableSorter class
+// * --------------------------------------
+/**
+ * \file	DrawableSorter.h
+ * \class	DrawableSorter
+ * \ingroup SceneGraph
+ * \brief	Abstract base class for Drawable sorting.
+ */
+ // ****************************************
 class DrawableSorter
 {
 public:
@@ -55,7 +73,7 @@ public:
 
 	void Clear() 
 	{
-		m_DrawableList.clear();
+		mDrawableList.clear();
 	}
 
 	virtual void AddDrawable(Drawable *pDrawable,TravState* state);
@@ -64,23 +82,23 @@ public:
 
 	void	PushCurrentPath(int i)
 	{
-		myCurrentPath.push_back(i);
+		mCurrentPath.push_back(i);
 	}
 
 	void	PopCurrentPath()
 	{
-		myCurrentPath.pop_back();
+		mCurrentPath.pop_back();
 	}
 
 	void	ConstructPath(TravPath& path);
 
 
-	kstl::vector<int>& GetCurrentWay(){return myCurrentPath;}
+	kstl::vector<int>& GetCurrentWay(){return mCurrentPath;}
 
 protected:
 	//! list of drawable
-	kstl::vector<DrawableSorterItem>	m_DrawableList;
+	kstl::vector<DrawableSorterItem>	mDrawableList;
 	//! current path
-	kstl::vector<int>				myCurrentPath;
+	kstl::vector<int>				mCurrentPath;
 };
 

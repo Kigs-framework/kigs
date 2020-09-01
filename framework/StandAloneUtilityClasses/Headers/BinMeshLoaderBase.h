@@ -1,11 +1,6 @@
 #ifndef _BINMESHLOADERBASE_H_
 #define _BINMESHLOADERBASE_H_
 
-/*! 
- * \defgroup  binMeshLoaderBase
- * \ingroup Standalone
- * structure of the binMeshFile
-*/
 
 #include <stdio.h>
 #include "BufferedFile.h"
@@ -17,14 +12,12 @@
 /**
  * \file	BinMeshLoaderBase.h
  * \class	BinMeshLoaderBase
- * \ingroup Standalone
- * \ingroup Standalone
- * \brief	load bin mesh infos
- * \author	ukn
- * \version ukn
- * \date	ukn
+ * \ingroup StandAlone
+ * \brief	Utility class to load mesh files.
+ *
  */
-// ****************************************
+ // ****************************************
+
 class BinMeshLoaderBase
 {
 public:
@@ -86,36 +79,12 @@ public:
 		D_ONE_MINUS_DST_ALPHA
 	};
 
-	// ****************************************
-	// * BinMeshLoaderBase class
-	// * --------------------------------------
-	/**
-	 * \class	BinFileStructDesc
-	 * \ingroup InternalBinMeshLoader
-	 * \brief	not yet used
-	 * \author	ukn
-	 * \version ukn
-	 * \date	ukn
-	 * \todo	implementation
-	 */
-	// ****************************************
+
 	class BinFileStructDesc
 	{
 	public:
 	};
 
-	// ****************************************
-	// * BinFileStruct class
-	// * --------------------------------------
-	/**
-	 * \class	BinFileStruct
-	 * \ingroup InternalBinMeshLoader
-	 * \brief	super class for binMesh's data's structures
-	 * \author	ukn
-	 * \version ukn
-	 * \date	ukn
-	 */
-	// ****************************************
 	class BinFileStruct
 	{
 	public:
@@ -141,11 +110,7 @@ public:
 	// * --------------------------------------
 	/**
 	 * \class	Header
-	 * \ingroup InternalBinMeshLoader
 	 * \brief	contain the header of the binMesh file
-	 * \author	ukn
-	 * \version ukn
-	 * \date	ukn
 	 */
 	// ****************************************
 	class Header : public BinFileStruct
@@ -155,19 +120,19 @@ public:
 		// give the group count
 		unsigned int	GetGroupCount()
 		{
-			return (nbGroup&0xFFFFFF);
+			return (mGroupCount&0xFFFFFF);
 		}
 
 		// give the version of the file
 		unsigned int	GetFileVersion()
 		{
-			return ((nbGroup&0xFF000000)>>24);
+			return ((mGroupCount &0xFF000000)>>24);
 		}
 
 		//! higher 8 bits for the file format version
 		//! then 24 bits for the grounp count
 		//! number of group in the binMesh
-		unsigned int	nbGroup;
+		unsigned int	mGroupCount;
 	};
 
 	// ****************************************
@@ -175,18 +140,14 @@ public:
 	// * --------------------------------------
 	/**
 	 * \class	GroupDesc
-	 * \ingroup InternalBinMeshLoader
 	 * \brief	contain the group description of the binMesh file
-	 * \author	ukn
-	 * \version ukn
-	 * \date	ukn
 	 */
 	// ****************************************
 	class GroupDesc : public BinFileStruct
 	{
 	public:
 		//! type of triangle used in the group
-		unsigned int	triangleType;
+		unsigned int	mTriangleType;
 	};
 
 	// ****************************************
@@ -194,22 +155,18 @@ public:
 	// * --------------------------------------
 	/**
 	 * \class	StageDesc
-	 * \ingroup InternalBinMeshLoader
 	 * \brief	contain the stage description of the binMesh file
-	 * \author	ukn
-	 * \version ukn
-	 * \date	ukn
 	 */
 	// ****************************************
 	class StageDesc : public BinFileStruct
 	{
 	public:
 		//! texture name
-		kstl::string	myTexture;
+		kstl::string	mTexture;
 		//! stage index
-		int				myStageIndex;
+		int				mStageIndex;
 		//! environment of the texture
-		TexEnvType		myTexEnv;
+		TexEnvType		mTexEnv;
 	};
 
 	// ****************************************
@@ -217,27 +174,23 @@ public:
 	// * --------------------------------------
 	/**
 	 * \class	MaterialDesc
-	 * \ingroup InternalBinMeshLoader
 	 * \brief	contain the material description of the binMesh file
-	 * \author	ukn
-	 * \version ukn
-	 * \date	ukn
 	 */
 	// ****************************************
 	class MaterialDesc : public BinFileStruct
 	{
 	public:
 		//! link to the Blend Function Source 
-		BlendFuncSource	myBlendFuncSource;
+		BlendFuncSource	mBlendFuncSource;
 		//! link to the Blend Function Destination
-		BlendFuncDest	myBlendFuncDest;
+		BlendFuncDest	mBlendFuncDest;
 		//! TRUE if blending is enabled
-		char			myBlendEnabled;
+		char			mBlendEnabled;
 		//! TRUE if material color is enabled
-		char			myMaterialColorEnabled;
+		char			mMaterialColorEnabled;
 
-		char			myUseless_One;
-		char			myUseless_Two;
+		char			mUseless_One;
+		char			mUseless_Two;
 
 		//! number of stage
 		int				stageCount;
@@ -266,10 +219,6 @@ public:
 	 * \class	OtherDataStruct
 	 * \ingroup InternalBinMeshLoader
 	 * \brief	contain other data information of the binMesh file
-	 * \author	ukn
-	 * \version ukn
-	 * \date	ukn
-	 * \todo	not used
 	 */
 	// ****************************************
 	class OtherDataStruct : public BinFileStruct
@@ -310,7 +259,7 @@ protected:
 	void			ReadFloatArray(kfloat* dst,unsigned int count,BufferedFile* file);
 
 	//! link to the readed file which contain the binMesh
-	BufferedFile*	myFile;
+	BufferedFile*	mFile;
 };
 
 #endif // _BINMESHLOADERBASE_H_

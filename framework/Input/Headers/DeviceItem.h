@@ -18,9 +18,6 @@
  * \class	DeviceItemBaseState
  * \ingroup Input
  * \brief	abstract base class for device item state
- * \author	ukn
- * \version ukn
- * \date	ukn
  */
 // ****************************************
 class DeviceItemBaseState
@@ -58,11 +55,9 @@ protected:
 // * --------------------------------------
 /**
  * \class	DeviceItemState
+ * \file	DeviceItem.h
  * \ingroup Input
  * \brief	base class for typed device item state
- * \author	ukn
- * \version ukn
- * \date	ukn
  */
 // ****************************************
 template<typename valueType>
@@ -76,7 +71,7 @@ public:
 	 * \fn 		DeviceItemState(valueType value) 
 	 * \param	value : state of the device
 	 */
-	DeviceItemState(valueType value) : myValue(value)
+	DeviceItemState(valueType value) : mValue(value)
 	{
 	}
 
@@ -95,7 +90,7 @@ public:
 	 */
 	DeviceItemBaseState*	MakeCopy() const
 	{
-		DeviceItemState<valueType>*	localstate=new DeviceItemState<valueType>(myValue);
+		DeviceItemState<valueType>*	localstate=new DeviceItemState<valueType>(mValue);
 		return localstate;
 	}
 
@@ -105,42 +100,40 @@ public:
 
 protected:
 	//! state of the device
-	valueType	myValue; 
+	valueType	mValue; 
 };
 
 template<>
-inline float DeviceItemState<float>::getValueMethod(float*) const {return myValue;}
+inline float DeviceItemState<float>::getValueMethod(float*) const {return mValue;}
 template<>
-inline int   DeviceItemState<float>::getValueMethod(int*)   const {return (int)myValue;}
+inline int   DeviceItemState<float>::getValueMethod(int*)   const {return (int)mValue;}
 template<>
-inline void  DeviceItemState<float>::SetValue(float v) {myValue = v;}
+inline void  DeviceItemState<float>::SetValue(float v) {mValue = v;}
 template<>
-inline void  DeviceItemState<float>::SetValue(int v)   {myValue = (float)v;}
+inline void  DeviceItemState<float>::SetValue(int v)   {mValue = (float)v;}
 
 template<>
-inline float DeviceItemState<int>::getValueMethod(float*)  const {return (float)myValue;}
+inline float DeviceItemState<int>::getValueMethod(float*)  const {return (float)mValue;}
 template<>
-inline int   DeviceItemState<int>::getValueMethod(int*)    const {return myValue;}
+inline int   DeviceItemState<int>::getValueMethod(int*)    const {return mValue;}
 template<>
-inline void  DeviceItemState<int>::SetValue(float v) {myValue = (int)v;}
+inline void  DeviceItemState<int>::SetValue(float v) {mValue = (int)v;}
 template<>
-inline void  DeviceItemState<int>::SetValue(int v)   {myValue = v;}
+inline void  DeviceItemState<int>::SetValue(int v)   {mValue = v;}
 
 template<>
-inline Point3D DeviceItemState<Point3D>::getValueMethod(Point3D*)  const {return myValue;}
+inline Point3D DeviceItemState<Point3D>::getValueMethod(Point3D*)  const {return mValue;}
 template<>
-inline void  DeviceItemState<Point3D>::SetValue(Point3D v)   {myValue = v;}
+inline void  DeviceItemState<Point3D>::SetValue(Point3D v)   {mValue = v;}
 
 // ****************************************
 // * DeviceItem class
 // * --------------------------------------
 /**
  * \class	DeviceItem
+ * \file	DeviceItem.h
  * \ingroup Input
  * \brief	manage device item
- * \author	ukn
- * \version ukn
- * \date	ukn
  */
 // ****************************************
 class DeviceItem 
@@ -161,7 +154,7 @@ public:
 	 */
 	DeviceItem(const DeviceItem& item)
 	{
-		myStates=item.myStates->MakeCopy();
+		mStates=item.mStates->MakeCopy();
 	}
 
 	/**
@@ -171,7 +164,7 @@ public:
 	 */
 	DeviceItem*	MakeCopy() const
 	{
-		DeviceItem*	localitem=new DeviceItem(*myStates);
+		DeviceItem*	localitem=new DeviceItem(*mStates);
 		return localitem;
 	}
 
@@ -186,11 +179,11 @@ public:
 	 * \fn 		inline DeviceItemBaseState*	getState()
 	 * \return	a lilst of DeviceItemBaseState
 	 */
-	inline DeviceItemBaseState*	getState(){return myStates; }
+	inline DeviceItemBaseState*	getState(){return mStates; }
 
 protected:
 	//! list of state
-	DeviceItemBaseState*	myStates;
+	DeviceItemBaseState*	mStates;
 };	
 
 
@@ -201,7 +194,7 @@ protected:
  */
 inline DeviceItem::DeviceItem(const DeviceItemBaseState& state) 
 {
-	myStates=state.MakeCopy();	
+	mStates=state.MakeCopy();	
 }
 
 /**
@@ -210,7 +203,7 @@ inline DeviceItem::DeviceItem(const DeviceItemBaseState& state)
  */
 inline DeviceItem::~DeviceItem()
 {
-	delete myStates;
+	delete mStates;
 }
 
 #endif //_DEVICEITEM_H_

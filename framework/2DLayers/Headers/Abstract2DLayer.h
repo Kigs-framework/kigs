@@ -19,35 +19,14 @@ protected:
 };
 
 // ****************************************
-// * Base2DLayer class
+// * Abstract2DLayer class
 // * --------------------------------------
 /**
-* \file	Base2DLayer.h
-* \class	Base2DLayer
+* \file	Abstract2DLayer.h
+* \class	Abstract2DLayer
 * \ingroup 2DLayers
-* \brief	base class for 2DLayer (background roto zoom screen, tiles ...)
-* \author	ukn
-* \version ukn
-* \date	ukn
-*
-* Base2DLayer inherits Scene3D so that it can be added in the scenegraph
-*
-* <dl class="dependency"><dt><b>Dependency:</b></dt><dd>Module2DLayer</dd></dl>
-*
-* <dl class="exported"><dt><b>Exported parameters :</b></dt><dd>
-* <table>
-* <tr><td>Enum</td>	<td><strong>Type</strong> :</td>				<td>type of the layer ("Character","Bitmap")</td></tr>
-* <tr><td>Int</td>		<td><strong>SizeX</strong> :</td>				<td>size on X axis</td></tr>
-* <tr><td>Int</td>		<td><strong>SizeY</strong> :</td>				<td>size on Y axis</td></tr>
-* <tr><td>Enum</td>	<td><strong>ColorMode</strong> :</td>			<td>type of the layer color mode ("16","256","256x16","DC")</td></tr>
-* <tr><td>reference</td>	<td><strong>RenderingScreen</strong> :</td>	<td>linked renderingScreen (for init)</td></tr>
-* <tr><td>string</td>	<td><strong>VirtualScreenName</strong> :</td>	<td>name of the linked VirtualTileScreen (for init)</td></tr>
-* <tr><td>Bool</td>	<td><strong>RepeatMode</strong> :</td>			<td>repeat mode</td></tr>
-* <tr><td>string</td>	<td><strong>FileName</strong> :</td>			<td>File name used by loading method</td></tr>
-* <tr><td>Int</td>		<td><strong>ScrollX</strong> :</td>				<td>Scroll position on X axis of the layer on the virtual screen</td></tr>
-* <tr><td>Int</td>		<td><strong>ScrollY</strong> :</td>				<td>Scroll position on Y axis of the layer on the virtual screen</td></tr>
-* </table>
-* </dd></dl>
+* \brief	Base class for 2D Layers.
+* 
 */
 // ****************************************
 class Abstract2DLayer : public Scene3D
@@ -67,12 +46,9 @@ public:
 
 	void	getSize(int& sx, int& sy)
 	{
-		sx = mySizeX.const_ref();
-		sy = mySizeY.const_ref();
+		sx = mSizeX.const_ref();
+		sy = mSizeY.const_ref();
 	}
-
-	//void SetMouseInfo(LayerMouseInfo* mi) { theMouseInfo = mi; }
-
 
 protected:
 	void InitModifiable() override;
@@ -87,17 +63,16 @@ protected:
 	maReference mManager;
 
 	//! size on X axis
-	maInt    mySizeX;
+	maInt    mSizeX;
 	//! size on Y axis
-	maInt    mySizeY;
+	maInt    mSizeY;
 
-	maBool		myClearZBuffer = BASE_ATTRIBUTE(ClearZBuffer, false);
-	maBool		myClearColorBuffer = BASE_ATTRIBUTE(ClearColorBuffer, false);
-	maVect4DF	myClearColor = BASE_ATTRIBUTE(ClearColor, 0.0f, 0.0f, 0.0f, 1.0f);
+	maBool		mClearZBuffer = BASE_ATTRIBUTE(ClearZBuffer, false);
+	maBool		mClearColorBuffer = BASE_ATTRIBUTE(ClearColorBuffer, false);
+	maVect4DF	mClearColor = BASE_ATTRIBUTE(ClearColor, 0.0f, 0.0f, 0.0f, 1.0f);
 
 	// if not interactive, don't do update (but still draw)
-	maBool	myIsInteractive;
+	maBool	mIsInteractive;
 
-	//LayerMouseInfo * theMouseInfo = nullptr;
 };
 #endif //ABSTRACT2DLAYER_H_

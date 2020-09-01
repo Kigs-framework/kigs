@@ -7,7 +7,7 @@ IMPLEMENT_CLASS_INFO(UILayout)
 
 UILayout::UILayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG)
-	, myNeedRecompute(true)
+	, mNeedRecompute(true)
 {
 
 }
@@ -15,7 +15,6 @@ UILayout::UILayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 
 bool UILayout::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	//myNeedRecompute = true;
 	bool ret = UIDrawableItem::addItem(item, pos PASS_LINK_NAME(linkName));
 	NeedRecomputeLayout();
 	return ret;
@@ -23,7 +22,6 @@ bool UILayout::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 
 bool UILayout::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
-	//myNeedRecompute = true;
 	bool ret = UIDrawableItem::removeItem(item PASS_LINK_NAME(linkName));
 	NeedRecomputeLayout();
 	return ret;
@@ -36,19 +34,19 @@ void UILayout::NotifyUpdate(const unsigned int labelid)
 
 void UILayout::Update(const Timer& timer, void*)
 {
-	if (myNeedRecompute)
+	if (mNeedRecompute)
 	{
 		RecomputeLayout();
-		myNeedRecompute = false;
+		mNeedRecompute = false;
 	}
 }
 
 void UILayout::ProtectedDraw(TravState* state)
 {
-	if (myNeedRecompute)
+	if (mNeedRecompute)
 	{
 		RecomputeLayout();
-		myNeedRecompute = false;
+		mNeedRecompute = false;
 	}
 	ParentClassType::ProtectedDraw(state);
 }

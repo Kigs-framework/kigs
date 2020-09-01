@@ -60,12 +60,24 @@ typedef struct tagTTF_NAME_RECORD{
 	unsigned short	uStringOffset;
 }TTF_NAME_RECORD;
 
+
+// ****************************************
+// * FreeType_TextDrawer class
+// * --------------------------------------
+/**
+ * \file	FreeType_TextDrawer.h
+ * \class	FreeType_TextDrawer
+ * \ingroup StandAlone
+ * \brief	Draw freetype texts in texture buffers.
+ *
+ */
+ // ****************************************
 class FreeType_TextDrawer
 {
 protected:
 
-	static unsigned int m_UseCount;
-	static unsigned int m_Interline;
+	static unsigned int mUseCount;
+	static unsigned int mInterline;
 
 public:
 	virtual ~FreeType_TextDrawer();
@@ -73,12 +85,12 @@ public:
 
 	static void SetDefaultInterline(unsigned int interline)
 	{
-		m_Interline = interline;
+		mInterline = interline;
 	}
 
 	static unsigned int GetDefaultInterline()
 	{
-		return m_Interline;
+		return mInterline;
 	}
 
 	bool IsInCache(const char* fontName);
@@ -116,11 +128,11 @@ private:
 	{
 	public:
 		
-		FT_Face					m_fontFace;
-		std::string				m_fontName;
-		unsigned int			m_fontSize;
-		unsigned char *			m_FaceBuffer;
-		unsigned int			m_UsedCount;
+		FT_Face					mFontFace;
+		std::string				mFontName;
+		unsigned int			mFontSize;
+		unsigned char *			mFaceBuffer;
+		unsigned int			mUsedCount;
 
 		FontFaceStruct()
 		{
@@ -135,15 +147,15 @@ private:
 		void	release();
 	};
 
-	FT_Library				m_LibraryContext;
+	FT_Library				mLibraryContext;
 
 	void			initFontFaceCache();
 	void			freeFontFaceCache();
 	FontFaceStruct*	searchOlderFontFaceInCache();
 	FontFaceStruct* getFontStruct(const char* fontname);
 
-	std::vector<FontFaceStruct*>	m_FontFaceCache;
-	unsigned int					m_CurrentFontFace;
+	std::vector<FontFaceStruct*>	mFontFaceCache;
+	unsigned int					mCurrentFontFace;
 
 	std::string GetFontNameFromFile(unsigned char* data,unsigned int fileLen);
 	

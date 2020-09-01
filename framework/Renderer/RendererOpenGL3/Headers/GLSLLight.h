@@ -11,6 +11,17 @@ class CoreModifiable;
 class Camera;
 class RendererOpenGL;
 
+// ****************************************
+// * API3DLight class
+// * --------------------------------------
+/**
+ * \file	GLSLLight.h
+ * \class	API3DLight
+ * \ingroup Renderer
+ * \brief	OpenGL implementation of Light.
+ */
+ // ****************************************
+
 class API3DLight : public Light
 {
 public:
@@ -30,24 +41,24 @@ public:
 	void SetUniformLocation(int uniform, const char* location);
 
 	int GetTypeOfLight();
-	//inline int		GetPriority() const { return (int)((unsigned int)myPriority); }
+	//inline int		GetPriority() const { return (int)((unsigned int)mPriority); }
 	void NotifyUpdate(const unsigned int  labelid) override;
 
 protected:
 	virtual ~API3DLight();
 	void	InitModifiable() override;
 
-	CMSP		myPositionUniform;
-	CMSP		myCamPosUniform;
+	CMSP		mPositionUniform;
+	CMSP		mCamPosUniform;
 
-	CMSP		myDiffuseUniform;
-	CMSP		mySpecularUniform;
-	CMSP		myAmbiantUniform;
+	CMSP		mDiffuseUniform;
+	CMSP		mSpecularUniform;
+	CMSP		mAmbiantUniform;
 
-	CMSP		myAttenuationUniform;
-	CMSP		mySpotDirUniform;
-	CMSP		mySpotCutoffUniform;
-	CMSP		mySpotExponentUniform;
+	CMSP		mAttenuationUniform;
+	CMSP		mSpotDirUniform;
+	CMSP		mSpotCutoffUniform;
+	CMSP		mSpotExponentUniform;
 	
 };
 

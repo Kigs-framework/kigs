@@ -4,8 +4,19 @@
 #include "UIItem.h"
 #include "maReference.h"
 
-// Adjust the position of all children according to a flow layout algorithm
 
+// ****************************************
+// * UI3DLinkedItem class
+// * --------------------------------------
+/**
+* \file	UI3DLinkedItem.h
+* \class	UI3DLinkedItem
+* \ingroup 2DLayers
+* \brief	adjust position of the UIItem to match a 3D position in a Scene3D
+*
+* Suppose the UI2DLayer cover the same surface as the attached camera.
+*/
+// ****************************************
 class UI3DLinkedItem : public UIItem
 {
 public:
@@ -23,10 +34,10 @@ protected:
 	void NotifyUpdate(const unsigned int /* labelid */) override;
 	void Update(const Timer&  timer, void* /*addParam*/) override;
 
-	maVect3DF				my3DPosition;
-	maReference				myCamera;
-	maReference				myNode;
-	maBool					myUseUpOrientation;
+	maVect3DF				m3DPosition;
+	maReference				mCamera;
+	maReference				mNode;
+	maBool					mUseUpOrientation;
 };
 
 #endif //_UI3DLINKEDITEM_H_

@@ -6,17 +6,22 @@
 #include "CoreRawBuffer.h"
 
 /*! \defgroup FileManager FileManager module
- *  manage pathes for resource files
+ *  manage pathes for resource files and file read / write ... methods
 */
+
 
 // ****************************************
 // * ModuleFileManager class
 // * --------------------------------------
-/*!  \class ModuleFileManager
-	 this class is the module manager class. It registers the FilePathManager class
-	 \ingroup FileManager
-*/
-// ****************************************
+/**
+ * \file	ModuleFileManager.h
+ * \class	ModuleFileManager
+ * \ingroup FileManager
+ * \ingroup Module
+ * \brief	Manage classes related to pathes and file reading / writing.
+ */
+ // ****************************************
+
 
 class ModuleFileManager : public ModuleBase
 {

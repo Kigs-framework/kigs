@@ -4,10 +4,17 @@
 // base class
 #include "TinyImage.h"
 
+// ****************************************
+// * BMPClass class
+// * --------------------------------------
 /**
-* \class BMPClass
-* \brief specific BMP class
+* \file	BMPClass.h
+* \class	BMPClass
+* \ingroup TinyImageModule
+* \brief TinyImage specialized for BMP management.
+*
 */
+// ****************************************
 class BMPClass : public TinyImage
 {
 public:	

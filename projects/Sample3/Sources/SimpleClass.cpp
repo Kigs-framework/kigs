@@ -5,28 +5,28 @@ IMPLEMENT_CLASS_INFO(SimpleClass)
 
 IMPLEMENT_CONSTRUCTOR(SimpleClass)
 // attribute is set as init attribute : it will be set as readonly after instance was initialized
-, m_IntValue(*this,true,"IntValue",5)					
+, mIntValue(*this,true,"IntValue",5)					
 // attribute is not set as init attribute : it will be read/write enabled
-, m_StringValue(* this, false, "StringValue")
+, mStringValue(* this, false, "StringValue")
 {
 	// this will be notified when StringValue is changed
-	m_StringValue.changeNotificationLevel(Owner);
+	mStringValue.changeNotificationLevel(Owner);
 }
 
 void SimpleClass::NotifyUpdate(const u32 labelid)
 {
-	if (labelid == m_StringValue.getID())
+	if (labelid == mStringValue.getID())
 	{
-		std::cout << "StringValue new value is : " <<  m_StringValue.const_ref() << std::endl;
+		std::cout << "StringValue new value is : " <<  mStringValue.const_ref() << std::endl;
 	}
 }
 
 void	SimpleClass::DoSomethingFun()
 {
-	if ((CoreModifiable*)m_Ref) // check that m_Ref point to an existing instance
+	if ((CoreModifiable*)mRef) // check that m_Ref point to an existing instance
 	{
-		CoreModifiable* other = (CoreModifiable*)m_Ref;
-		if (other->isSubType(SimpleClass::myClassID)) // if other is also a SimpleClass instance
+		CoreModifiable* other = (CoreModifiable*)mRef;
+		if (other->isSubType(SimpleClass::mClassID)) // if other is also a SimpleClass instance
 		{
 			std::cout << "referenced instance IntValue = " << other->getValue<int>("IntValue") << std::endl;
 		}

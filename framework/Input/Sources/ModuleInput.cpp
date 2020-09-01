@@ -55,75 +55,75 @@ void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myMouse = (MouseDevice*)(*it).get();
+		mMouse = (MouseDevice*)(*it).get();
 	}
 
 	instances = GetInstances("SpatialInteractionDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		mySpatialInteraction = (SpatialInteractionDevice*)(*it).get();
+		mSpatialInteraction = (SpatialInteractionDevice*)(*it).get();
 	}
 
 	instances = GetInstances("MultiTouchDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myMultiTouch = (MultiTouchDevice*)(*it).get();
+		mMultiTouch = (MultiTouchDevice*)(*it).get();
 	}
 
 	instances = GetInstances("AccelerometerDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myAccelerometer = (AccelerometerDevice*)(*it).get();
+		mAccelerometer = (AccelerometerDevice*)(*it).get();
 	}
 
 	instances = GetInstances("GyroscopeDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myGyroscope = (GyroscopeDevice*)(*it).get();
+		mGyroscope = (GyroscopeDevice*)(*it).get();
 	}
 
 	instances = GetInstances("GeolocationDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myGeolocation = (GeolocationDevice*)(*it).get();
+		mGeolocation = (GeolocationDevice*)(*it).get();
 	}
 
 	instances = GetInstances("CompassDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myCompass = (CompassDevice*)(*it).get();
+		mCompass = (CompassDevice*)(*it).get();
 	}
 	
 	instances = GetInstances("KeyboardDevice");
 	it = instances.begin();
 	if (it != instances.end())
 	{
-		myKeyboard = (KeyboardDevice*)(*it).get();
+		mKeyboard = (KeyboardDevice*)(*it).get();
 	}
 
 	instances = GetInstances("JoystickDevice");
 
 	if (instances.size())
 	{
-		myJoysticks.resize(instances.size());
+		mJoysticks.resize(instances.size());
 	}
 
 	int index = 0;
 	for (it = instances.begin(); it != instances.end(); it++)
 	{
-		myJoysticks[index++] = (JoystickDevice*)(*it).get();
+		mJoysticks[index++] = (JoystickDevice*)(*it).get();
 	}
 
 	// create TouchInputEventManager
 
-	myTouchManager = KigsCore::GetInstanceOf("toucheventmanager", "TouchInputEventManager");
-	myTouchManager->Init();
+	mTouchManager = KigsCore::GetInstanceOf("toucheventmanager", "TouchInputEventManager");
+	mTouchManager->Init();
 }
 
 void ModuleInput::Close()
@@ -150,48 +150,48 @@ void ModuleInput::Update(const Timer& timer, void* addParam)
 	BaseUpdate(timer, addParam);
 
 	kstl::list<WindowClick*>::iterator it;
-	for (it = activeWindow.begin(); it != activeWindow.end(); ++it)
+	for (it = mActiveWindows.begin(); it != mActiveWindows.end(); ++it)
 	{
 		WindowClick* theWC = (WindowClick*)*it;
 		theWC->update();
 	}
 
-	myTouchManager->CallUpdate(timer, addParam);
+	mTouchManager->CallUpdate(timer, addParam);
 }
 
 JoystickDevice*		ModuleInput::GetJoystick(int index)
 {
-	return myJoysticks[index];
+	return mJoysticks[index];
 }
 
 void ModuleInput::WindowClickEvent(CoreModifiable *w, int buttonId, kfloat X, kfloat Y, bool isDown)
 {
 	ModuleInput* theModuleInput = (ModuleInput*)KigsCore::Instance()->GetModule("ModuleInput");
 
-	WindowClick *myClick = theModuleInput->getWindowClick(w);
-	if (myClick)
-		myClick->setPos(buttonId, X, Y);
+	WindowClick * lClick = theModuleInput->getWindowClick(w);
+	if (lClick)
+		lClick->setPos(buttonId, X, Y);
 	else
 	{
-		myClick = new WindowClick(w);
-		myClick->setPos(buttonId, X, Y);
-		theModuleInput->addWindowClick(myClick);
+		lClick = new WindowClick(w);
+		lClick->setPos(buttonId, X, Y);
+		theModuleInput->addWindowClick(lClick);
 	}
 }
 
 void ModuleInput::WindowDestroyEvent(CoreModifiable *w)
 {
 	ModuleInput* theModuleInput = (ModuleInput*)KigsCore::Instance()->GetModule("ModuleInput");
-	WindowClick *myClick = theModuleInput->getWindowClick(w);
-	if (myClick)
-		theModuleInput->removeWindowClick(myClick);
+	WindowClick * lClick = theModuleInput->getWindowClick(w);
+	if (lClick)
+		theModuleInput->removeWindowClick(lClick);
 }
 
 bool ModuleInput::getActiveWindowPos(CoreModifiable *w, MouseDevice::MOUSE_BUTTONS buttonId, kfloat &X, kfloat &Y)
 {
-	WindowClick *myClick = getWindowClick(w);
-	if (myClick)
-		myClick->getPos(buttonId, X, Y);
+	WindowClick *lClick = getWindowClick(w);
+	if (lClick)
+		lClick->getPos(buttonId, X, Y);
 	else
 		return false;
 
@@ -202,9 +202,9 @@ bool ModuleInput::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType("Window"))
 	{
-		Window* myWindow = ((Window*)item.get());
-		myWindow->SetClickCallback(ModuleInput::WindowClickEvent);
-		myWindow->SetDestroyCallback(ModuleInput::WindowDestroyEvent);
+		Window* lwindow = ((Window*)item.get());
+		lwindow->SetClickCallback(ModuleInput::WindowClickEvent);
+		lwindow->SetDestroyCallback(ModuleInput::WindowDestroyEvent);
 	}
 
 	return ModuleBase::addItem(item, pos PASS_LINK_NAME(linkName));

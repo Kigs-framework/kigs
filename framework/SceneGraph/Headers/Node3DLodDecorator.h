@@ -3,6 +3,20 @@
 
 #include "Node3D.h"
 
+// ****************************************
+// * Node3DLodDecorator class
+// * --------------------------------------
+/**
+ * \file	Node3DLodDecorator.h
+ * \class	Node3DLodDecorator
+ * \ingroup SceneGraph
+ * \brief	Decorate Cull method to accep LOD.
+ * 
+ * ?? Obsolete ??
+ *
+ */
+ // ****************************************
+
 class	Node3DLodDecorator : public Node3D
 {
 public:

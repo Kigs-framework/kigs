@@ -60,14 +60,14 @@ void	CoreSequenceLauncher::checkDeadSequences()
 	while (deadFound)
 	{
 		deadFound = false;
-		auto itstart = mySequenceMap.begin();
-		auto itend = mySequenceMap.end();
+		auto itstart = mSequenceMap.begin();
+		auto itend = mSequenceMap.end();
 		// call destroy on each sequence
 		while (itstart != itend)
 		{
 			if ((*itstart).second->getRefCount() == 1) // only kept by me
 			{
-				mySequenceMap.erase(itstart);
+				mSequenceMap.erase(itstart);
 				deadFound = true;
 				break;
 			}
@@ -83,14 +83,14 @@ void	CoreSequenceLauncher::addSequencesToParents()
 	for(auto parent : GetParents())
 	{
 		// check that we did not already create the sequence
-		if (mySequenceMap.find(parent) == mySequenceMap.end() && (CoreItem*)mySequence)
+		if (mSequenceMap.find(parent) == mSequenceMap.end() && (CoreItem*)mSequence)
 		{
-			CoreItemSP sequence((CoreItem*)mySequence, GetRefTag{});
+			CoreItemSP sequence((CoreItem*)mSequence, GetRefTag{});
 			auto L_Sequence = OwningRawPtrToSmartPtr(L_CoreAnimation->createSequenceFromCoreMap(parent, sequence));
 			L_CoreAnimation->addSequence(L_Sequence.get());
-			if (myStartOnFirstUpdate)
+			if (mStartOnFirstUpdate)
 				L_Sequence->startAtFirstUpdate();
-			mySequenceMap[parent] = L_Sequence;
+			mSequenceMap[parent] = L_Sequence;
 		}
 	}
 }
@@ -106,17 +106,17 @@ void	CoreSequenceLauncher::InitModifiable()
 
 	addSequencesToParents();
 
-	if (myStartMessage.const_ref().size())
+	if (mStartMessage.const_ref().size())
 	{
-		KigsCore::GetNotificationCenter()->addObserver(this, "Start", myStartMessage);
+		KigsCore::GetNotificationCenter()->addObserver(this, "Start", mStartMessage);
 	}
 }
 
 void CoreSequenceLauncher::Start()
 {
-	if(myOnce) KigsCore::GetNotificationCenter()->removeObserver(this, myStartMessage);
+	if(mOnce) KigsCore::GetNotificationCenter()->removeObserver(this, mStartMessage);
 	addSequencesToParents();
-	for (auto& kv : mySequenceMap)
+	for (auto& kv : mSequenceMap)
 	{
 		kv.second->startAtFirstUpdate();
 	}
@@ -125,7 +125,7 @@ void CoreSequenceLauncher::Start()
 bool CoreSequenceLauncher::IsFinished()
 {
 	checkDeadSequences();
-	if (mySequenceMap.size() == 0)
+	if (mSequenceMap.size() == 0)
 	{
 		return true;
 	}
@@ -134,7 +134,7 @@ bool CoreSequenceLauncher::IsFinished()
 
 void CoreSequenceLauncher::Stop()
 {
-	for(auto& kv : mySequenceMap)
+	for(auto& kv : mSequenceMap)
 	{
 		kv.second->stop();
 	}

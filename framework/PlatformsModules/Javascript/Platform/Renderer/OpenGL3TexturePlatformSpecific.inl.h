@@ -13,10 +13,10 @@ bool	OpenGLTexture::CubeMapGeneration()
 	asciiCount[0] = 0;
 
 	// get extension
-	kstl::string	extension = myFileName;
+	kstl::string	extension = mFileName;
 	extension = extension.substr(extension.rfind("."));
 	// remove extension
-	kstl::string basefilename = myFileName;
+	kstl::string basefilename = mFileName;
 	basefilename = basefilename.substr(0, basefilename.length() - extension.length());
 
 	// check if all 6 textures are ok
@@ -32,7 +32,7 @@ bool	OpenGLTexture::CubeMapGeneration()
 		SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(filename);
 		if (!fullfilenamehandle.isNil())
 		{
-			fullfilename = fullfilenamehandle->myFullFileName;
+			fullfilename = fullfilenamehandle->mFullFileName;
 		}
 		else
 		{

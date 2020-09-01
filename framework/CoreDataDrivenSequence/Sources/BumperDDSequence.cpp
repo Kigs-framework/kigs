@@ -6,8 +6,8 @@ IMPLEMENT_CLASS_INFO(BumperDDSequence)
 
 BumperDDSequence::BumperDDSequence(const kstl::string& name, CLASS_NAME_TREE_ARG)
 : BaseDDSequence(name, PASS_CLASS_NAME_TREE_ARG)
-,myNextSequence(*this, true, LABEL_AND_ID(NextSequence))
-,myDuration(*this, true, LABEL_AND_ID(Duration), 0.0f)
+,mNextSequence(*this, true, LABEL_AND_ID(NextSequence))
+,mDuration(*this, true, LABEL_AND_ID(Duration), 0.0f)
 , mStartTime(0)
 {
 }
@@ -26,9 +26,9 @@ void BumperDDSequence::Update(const Timer&  timer, void* addParam)
 	if (mStartTime == 0)
 		mStartTime = time;
 	 
-	if (time - mStartTime > myDuration)
+	if (time - mStartTime > mDuration)
 	{
-		KigsCore::GetNotificationCenter()->postNotificationName("StackSequence", this, (void*)&myNextSequence.const_ref());
+		KigsCore::GetNotificationCenter()->postNotificationName("StackSequence", this, (void*)&mNextSequence.const_ref());
 		mStartTime = -1;
 	}
 }

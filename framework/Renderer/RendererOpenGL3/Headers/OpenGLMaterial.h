@@ -3,9 +3,17 @@
 
 #include "Material.h"
 #include "GLSLUniform.h"
-//#include "GLSLUniform.h"
-//#include "ModuleSceneGraph.h"
 
+// ****************************************
+// * OpenGLMaterial class
+// * --------------------------------------
+/**
+ * \file	OpenGLMaterial.h
+ * \class	OpenGLMaterial
+ * \ingroup Renderer
+ * \brief	OpenGL implementation of Material.
+ */
+ // ****************************************
 
 class OpenGLMaterial : public Material
 {
@@ -21,10 +29,10 @@ protected:
 
 	void NotifyUpdate(unsigned int labelid) override;
 
-	SP<API3DUniformBase> uniDiffuseColor = nullptr;
-	SP<API3DUniformBase> uniSpecularColor = nullptr;
-	SP<API3DUniformBase> uniAmbiantColor = nullptr;
-	SP<API3DUniformBase> uniShininess = nullptr;
+	SP<API3DUniformBase> mUniDiffuseColor = nullptr;
+	SP<API3DUniformBase> mUniSpecularColor = nullptr;
+	SP<API3DUniformBase> mUniAmbiantColor = nullptr;
+	SP<API3DUniformBase> mUniShininess = nullptr;
 };
 
 #endif //_OPENGLMATERIAL_H

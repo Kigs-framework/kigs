@@ -10,18 +10,18 @@ JoystickAndroid::JoystickAndroid(const kstl::string& name,CLASS_NAME_TREE_ARG) :
 	
 	jclass  pMaClasse =g_env->FindClass("com/kigs/kigsmain/kigsmainActivity");
 	
-	myActivityClass=(jclass)g_env->NewGlobalRef(pMaClasse);
+	mActivityClass=(jclass)g_env->NewGlobalRef(pMaClasse);
 	
-	getBackKey=g_env->GetStaticMethodID(myActivityClass, "GetBackKeyState", "()Z");
-	getMenuKey=g_env->GetStaticMethodID(myActivityClass, "GetMenuKeyState", "()Z");
+	mGetBackKey=g_env->GetStaticMethodID(mActivityClass, "GetBackKeyState", "()Z");
+	mGetMenuKey=g_env->GetStaticMethodID(mActivityClass, "GetMenuKeyState", "()Z");
 }
 
 JoystickAndroid::~JoystickAndroid()
 {  
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	
-	g_env->DeleteGlobalRef(myActivityClass);
-	myActivityClass=0;
+	g_env->DeleteGlobalRef(mActivityClass);
+	mActivityClass=0;
 }    
 
 void	JoystickAndroid::UpdateDevice()
@@ -29,28 +29,28 @@ void	JoystickAndroid::UpdateDevice()
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	int currentDevice=0;
 
-	bool keystate=(bool)g_env->CallStaticBooleanMethod(myActivityClass,getBackKey);
+	bool keystate=(bool)g_env->CallStaticBooleanMethod(mActivityClass,mGetBackKey);
 	
 	if(keystate)
 	{
 		// back key
-		myDeviceItems[currentDevice++]->getState()->SetValue((int)1);
+		mDeviceItems[currentDevice++]->getState()->SetValue((int)1);
 	}
 	else
 	{
-		myDeviceItems[currentDevice++]->getState()->SetValue((int)0);
+		mDeviceItems[currentDevice++]->getState()->SetValue((int)0);
 	}
 		
-	keystate=(bool)g_env->CallStaticBooleanMethod(myActivityClass,getMenuKey);
+	keystate=(bool)g_env->CallStaticBooleanMethod(mActivityClass,mGetMenuKey);
 	
 	if(keystate)
 	{
 		// menu key
-		myDeviceItems[currentDevice++]->getState()->SetValue((int)1);
+		mDeviceItems[currentDevice++]->getState()->SetValue((int)1);
 	}
 	else
 	{
-		myDeviceItems[currentDevice++]->getState()->SetValue((int)0);
+		mDeviceItems[currentDevice++]->getState()->SetValue((int)0);
 	}
 
 }
@@ -59,37 +59,37 @@ void	JoystickAndroid::DoInputDeviceDescription()
 {
 
 	// manage back and menu keys
-	myButtonsCount=2;
-	myPovCount=0;
-	myAxisCount=0;
+	mButtonsCount=2;
+	mPovCount=0;
+	mAxisCount=0;
 	
-	myDeviceItemsCount=(unsigned int)(myButtonsCount+myPovCount+myAxisCount);
+	mDeviceItemsCount=(unsigned int)(mButtonsCount+mPovCount+mAxisCount);
 
-	DeviceItem**	devicearray=new DeviceItem*[myDeviceItemsCount];
+	DeviceItem**	devicearray=new DeviceItem*[mDeviceItemsCount];
 	
 	int currentDevice=0;
 
 	int currentButton;
-	for(currentButton=0;currentButton<myButtonsCount;currentButton++)
+	for(currentButton=0;currentButton<mButtonsCount;currentButton++)
 	{
 		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<int>(0));
 	}
 
 	int currentAxis;
-	for(currentAxis=0;currentAxis<myAxisCount;currentAxis++)
+	for(currentAxis=0;currentAxis<mAxisCount;currentAxis++)
 	{
 		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0)));
 	}
 
 	int currentPOV;
-	for(currentPOV=0;currentPOV<myPovCount;currentPOV++)
+	for(currentPOV=0;currentPOV<mPovCount;currentPOV++)
 	{
 		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0)));
 	}
 
-	InitItems(myDeviceItemsCount,devicearray);
+	InitItems(mDeviceItemsCount,devicearray);
 
-	for(currentButton=0;currentButton<myDeviceItemsCount;currentButton++)
+	for(currentButton=0;currentButton<mDeviceItemsCount;currentButton++)
 	{
 		delete devicearray[currentButton];
 	}

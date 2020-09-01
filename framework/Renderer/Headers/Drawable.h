@@ -13,27 +13,12 @@
 /**
  * \file	Drawable.h
  * \class	Drawable
- * \ingroup Drawable
- * \ingroup RendererDrawable
- * \brief	A Drawable is the base class for any drawable object
- * \author	ukn
- * \version ukn
- * \date	ukn
- *
- * Exported parameters :<br>
- * <ul>
- * <li>
- *		bool <strong>TransarencyFlag</strong> : TRUE if transparent
- * </li>
- * <li>
- *		Uint <strong>PassMask</strong> : pass mask
- * </li>
- * <li>
- *		Uint <strong>PassCount</strong> : number of pass done
- * </li>
- * </ul>
+ * \ingroup Renderer
+ * \brief	Base class for all drawable objects.
+ * 
+ * Drawable objects can generally be shared ( textures, meshes ... ) to be drawn several times.
  */
-// ****************************************
+ // ****************************************
 class Drawable : public SceneNode 
 {
 public:	
@@ -68,7 +53,7 @@ public:
 	 */
 	inline void	CheckPreDraw(TravState* travstate)
 	{
-		if(myDrawingNeeds&((unsigned int)Need_Predraw) && (!travstate->mCurrentPass || IsUsedInRenderPass(travstate->mCurrentPass->pass_mask)))
+		if(mDrawingNeeds&((unsigned int)Need_Predraw) && (!travstate->mCurrentPass || IsUsedInRenderPass(travstate->mCurrentPass->pass_mask)))
 			DoPreDraw(travstate);
 	}
 	/**
@@ -78,7 +63,7 @@ public:
 	 */
 	inline void	CheckDraw(TravState* travstate)
 	{
-		if(myDrawingNeeds&((unsigned int)Need_Draw) && (!travstate->mCurrentPass || IsUsedInRenderPass(travstate->mCurrentPass->pass_mask)))
+		if(mDrawingNeeds&((unsigned int)Need_Draw) && (!travstate->mCurrentPass || IsUsedInRenderPass(travstate->mCurrentPass->pass_mask)))
 			DoDraw(travstate);
 	}
 	/**
@@ -88,7 +73,7 @@ public:
 	 */
 	inline void	CheckPostDraw(TravState* travstate)
 	{
-		if(myDrawingNeeds&((unsigned int)Need_Postdraw) && (!travstate->mCurrentPass || IsUsedInRenderPass(travstate->mCurrentPass->pass_mask)))
+		if(mDrawingNeeds&((unsigned int)Need_Postdraw) && (!travstate->mCurrentPass || IsUsedInRenderPass(travstate->mCurrentPass->pass_mask)))
 			DoPostDraw(travstate);
 	}
 	
@@ -134,7 +119,7 @@ public:
 
 	inline unsigned int	GetDrawingNeeds()
 	{
-		return myDrawingNeeds;
+		return mDrawingNeeds;
 	}
 
 	virtual	unsigned int	GetSelfDrawingNeeds()
@@ -144,7 +129,7 @@ public:
 
 	inline void SetDrawingNeeds(unsigned int needs)
 	{
-		myDrawingNeeds=needs;
+		mDrawingNeeds=needs;
 	}
 
 	bool IsSortable() { return mSortable; }
@@ -194,7 +179,7 @@ protected:
 		Need_Postdraw	= 8
 	};
 
-	unsigned int	myDrawingNeeds;
+	unsigned int	mDrawingNeeds;
 }; 
 
 #endif //_DRAWABLE_H_

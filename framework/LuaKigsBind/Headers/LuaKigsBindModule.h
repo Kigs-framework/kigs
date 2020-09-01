@@ -10,7 +10,7 @@ struct lua_State;
 
 //#define LUA_IMGUI
 
-/*! \defgroup LuaBind module
+/*! \defgroup LuaBind Lua Kigs integration
  *  
 */
 
@@ -36,11 +36,14 @@ struct LuaCLibrary
 // ****************************************
 // * LuaKigsBindModule class
 // * --------------------------------------
-/*!  \class LuaKigsBindModule
-     this class is the module manager class. 
-  \ingroup LuaBind
-*/
-// ****************************************
+/**
+ * \file	LuaKigsBindModule.h
+ * \class	LuaKigsBindModule
+ * \ingroup LuaBind
+ * \ingroup Module
+ * \brief	Generic module for LUA integration.
+ */
+ // ****************************************
 
 class LuaKigsBindModule : public ModuleBase
 {
@@ -60,7 +63,7 @@ public:
 	void RemoveFromAutoUpdate(LuaBehaviour* script);
 	
 
-	lua_State* getLuaState(){ return myLuaState; }
+	lua_State* getLuaState(){ return mLuaState; }
 	
 	void ReleaseRefs(CoreModifiable* obj);
 	
@@ -111,9 +114,9 @@ protected:
 
 	WRAP_METHODS(SetValueLua, AddLuaMethod, ConnectToLua);
 
-	lua_State*		myLuaState;
+	lua_State*		mLuaState;
 	
-	kstl::vector<LuaCLibrary> myLibraries;
+	kstl::vector<LuaCLibrary> mLibraries;
 }; 
 
 

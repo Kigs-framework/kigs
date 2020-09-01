@@ -4,17 +4,19 @@
 #include "KeyboardDevice.h"
 #include "ModuleInputAndroid.h"
 #include "DeviceItem.h"
+#include <jni.h>
 
 // ****************************************
 // * KeyboardAndroid class
 // * --------------------------------------
-/*!  \class KeyboardAndroid
-	 Android Keyboard management (touch screen)
-	 \ingroup InputAndroid
+/**
+* \file	KeyboardAndroid.h
+* \class	KeyboardAndroid
+* \ingroup Input
+* \brief Android keyboard management.
+*
 */
 // ****************************************
-
-#include <jni.h>
 
 class KeyboardAndroid : public KeyboardDevice
 {
@@ -24,7 +26,7 @@ public:
 
 	void	UpdateDevice() override;
 
-	const DeviceItemBaseState&	getKeyState(int key_id) override { return *myDeviceItems[key_id]->getState(); }
+	const DeviceItemBaseState&	getKeyState(int key_id) override { return *mDeviceItems[key_id]->getState(); }
 	void	DoInputDeviceDescription() override;
 
 	void Show() override;
@@ -34,9 +36,9 @@ public:
 
 protected:
 
-	jclass myJKeyboard;
-	jmethodID JGetActions;
-	jmethodID JClear;
+	jclass mJKeyboard;
+	jmethodID mJGetActions;
+	jmethodID mJClear;
 
 	kstl::vector<KeyEvent> mReceivedEvent;
 

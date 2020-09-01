@@ -7,7 +7,7 @@
 #if USE_CLASS_NAME_TREE
 #define CLASS_NAME_TREE_ARG CoreClassNameTree* classNameTree
 #define DECLARE_CLASS_NAME_TREE_ARG CLASS_NAME_TREE_ARG=0
-#define PASS_CLASS_NAME_TREE_ARG EnrichClassNameTree(classNameTree, myClassID, myRuntimeType)
+#define PASS_CLASS_NAME_TREE_ARG EnrichClassNameTree(classNameTree, mClassID, mRuntimeType)
 #else
 #define CLASS_NAME_TREE_ARG std::vector<CoreModifiableAttribute*>* args
 #define DECLARE_CLASS_NAME_TREE_ARG CLASS_NAME_TREE_ARG=0
@@ -15,15 +15,15 @@
 #endif
 
 #ifdef KEEP_NAME_AS_STRING
-#define DECLARE_GetRuntimeType(currentClass) virtual const kstl::string& GetRuntimeType() const override {return currentClass::myRuntimeType._id_name;} 
-#define DECLARE_getExactType(currentClass) virtual const kstl::string& getExactType() const override {return currentClass::myClassID._id_name;}
-#define DECLARE_GetRuntimeTypeBase(currentClass) virtual const kstl::string& GetRuntimeType() const {return currentClass::myRuntimeType._id_name;} 
-#define DECLARE_getExactTypeBase(currentClass) virtual const kstl::string& getExactType() const {return currentClass::myClassID._id_name;}
+#define DECLARE_GetRuntimeType(currentClass) virtual const kstl::string& GetRuntimeType() const override {return currentClass::mRuntimeType._id_name;} 
+#define DECLARE_getExactType(currentClass) virtual const kstl::string& getExactType() const override {return currentClass::mClassID._id_name;}
+#define DECLARE_GetRuntimeTypeBase(currentClass) virtual const kstl::string& GetRuntimeType() const {return currentClass::mRuntimeType._id_name;} 
+#define DECLARE_getExactTypeBase(currentClass) virtual const kstl::string& getExactType() const {return currentClass::mClassID._id_name;}
 #else
-#define DECLARE_GetRuntimeType(currentClass) virtual const KigsID& GetRuntimeType() const override {return currentClass::myRuntimeType;} 
-#define DECLARE_getExactType(currentClass) virtual const KigsID& getExactType() const override {return currentClass::myClassID;}
-#define DECLARE_GetRuntimeTypeBase(currentClass) virtual const KigsID& GetRuntimeType() const {return currentClass::myRuntimeType;} 
-#define DECLARE_getExactTypeBase(currentClass) virtual const KigsID& getExactType() const {return currentClass::myClassID;}
+#define DECLARE_GetRuntimeType(currentClass) virtual const KigsID& GetRuntimeType() const override {return currentClass::mRuntimeType;} 
+#define DECLARE_getExactType(currentClass) virtual const KigsID& getExactType() const override {return currentClass::mClassID;}
+#define DECLARE_GetRuntimeTypeBase(currentClass) virtual const KigsID& GetRuntimeType() const {return currentClass::mRuntimeType;} 
+#define DECLARE_getExactTypeBase(currentClass) virtual const KigsID& getExactType() const {return currentClass::mClassID;}
 #endif
 
 
@@ -101,8 +101,8 @@ inline DEFINE_METHOD(DynamicMethod##name,name)
 */
 #define BASE_DECLARE_ABSTRACT_CLASS_INFO(currentClass,parentClass,moduleManagerName) \
 public:\
-static const KigsID myClassID; \
-static KigsID myRuntimeType; \
+static const KigsID mClassID; \
+static KigsID mRuntimeType; \
 typedef bool (currentClass::*ModifiableMethod)(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>&,void* privateParams); \
 typedef currentClass CurrentClassType; \
 typedef parentClass ParentClassType; \
@@ -113,10 +113,10 @@ bool Call(CoreModifiable::ModifiableMethod method,CoreModifiable* sender,kstl::v
 }\
 DECLARE_GetRuntimeType(currentClass);\
 DECLARE_getExactType(currentClass);\
-KigsID getExactTypeID() const override {return currentClass::myClassID;} \
-bool isSubType(const KigsID& cid) const override {if(currentClass::myClassID==cid)return true;  return parentClass::isSubType(cid);} \
-static void GetClassNameTree(CoreClassNameTree& classNameTree) {parentClass::GetClassNameTree(classNameTree); classNameTree.addClassName(currentClass::myClassID, currentClass::myRuntimeType);}\
-virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) override {parentClass::ConstructClassNameTree(classNameTree); classNameTree.addClassName(currentClass::myClassID, currentClass::myRuntimeType);}\
+KigsID getExactTypeID() const override {return currentClass::mClassID;} \
+bool isSubType(const KigsID& cid) const override {if(currentClass::mClassID==cid)return true;  return parentClass::isSubType(cid);} \
+static void GetClassNameTree(CoreClassNameTree& classNameTree) {parentClass::GetClassNameTree(classNameTree); classNameTree.addClassName(currentClass::mClassID, currentClass::mRuntimeType);}\
+virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) override {parentClass::ConstructClassNameTree(classNameTree); classNameTree.addClassName(currentClass::mClassID, currentClass::mRuntimeType);}\
 static currentClass* Get()\
 {\
 	return GetFirstInstance(#currentClass, false)->as<currentClass>();\
@@ -127,7 +127,7 @@ static currentClass* Get(const std::string &name)\
 }\
 public:
 
-//static void GetClassNameTree(kstl::vector<KigsID>& classNameTree) {parentClass::GetClassNameTree(classNameTree); classNameTree.push_back(currentClass::myClassID);}\
+//static void GetClassNameTree(kstl::vector<KigsID>& classNameTree) {parentClass::GetClassNameTree(classNameTree); classNameTree.push_back(currentClass::mClassID);}\
 
 //virtual void	callConstructor(RefCountedBaseClass* tocall,const kstl::string& instancename) const { ((currentClass*)tocall)->currentClass::currentClass(instancename);	};
 
@@ -154,8 +154,8 @@ static CoreModifiable* CreateInstance(const kstl::string& instancename, kstl::ve
 
 
 #define  IMPLEMENT_CLASS_INFO(currentClass) \
-const KigsID currentClass::myClassID = #currentClass; \
-KigsID currentClass::myRuntimeType = "";
+const KigsID currentClass::mClassID = #currentClass; \
+KigsID currentClass::mRuntimeType = "";
 
 // auto registring does not work when not in "unity" mode 
 /*#define REGISTER_CLASS_INFO(currentClass, returnClassName, group)\
@@ -182,9 +182,9 @@ REGISTER_CLASS_INFO(currentClass, returnClassName, group)
 
 #define  IMPLEMENT_TEMPLATE_CLASS_INFO(templatetype,currentClass) \
 template<typename templatetype> \
-const KigsID currentClass<templatetype>::myClassID = #currentClass; \
+const KigsID currentClass<templatetype>::mClassID = #currentClass; \
 template<typename templatetype> \
-KigsID currentClass<templatetype>::myRuntimeType = "";
+KigsID currentClass<templatetype>::mRuntimeType = "";
 /*
 #define IMPLEMENT_AND_REGISTER_TEMPLATE_CLASS_INFO(templatetype, currentClass, returnClassName, group)\
 IMPLEMENT_TEMPLATE_CLASS_INFO(templatetype, currentClass)\
@@ -195,7 +195,7 @@ REGISTER_CLASS_INFO(currentClass<templatetype>, returnClassName, group)*/
 */
 #define DECLARE_CLASS_INFO_WITHOUT_FACTORY(currentClass,returnclassname) \
 {\
-	currentClass::myRuntimeType = returnclassname;\
+	currentClass::mRuntimeType = returnclassname;\
 	CoreClassNameTree TypeBranch;\
 	currentClass::GetClassNameTree(TypeBranch);\
 	std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>> MethodTable;\

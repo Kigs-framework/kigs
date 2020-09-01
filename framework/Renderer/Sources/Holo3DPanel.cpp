@@ -20,7 +20,7 @@ void Holo3DPanel::InitModifiable()
 
 void Holo3DPanel::SetTexture(Texture* t)
 {
-	myTexture = NonOwningRawPtrToSmartPtr(t);
+	mTexture = NonOwningRawPtrToSmartPtr(t);
 }
 
 bool Holo3DPanel::addItem(const CMSP& item, ItemPosition pos)
@@ -34,7 +34,7 @@ bool Holo3DPanel::addItem(const CMSP& item, ItemPosition pos)
 
 bool Holo3DPanel::removeItem(const CMSP& item)
 {
-	if (item == myTexture.get())
+	if (item == mTexture.get())
 	{
 		SetTexture(nullptr);
 	}
@@ -78,17 +78,17 @@ bool Holo3DPanel::Draw(TravState* travstate)
 		renderer->ActiveTextureChannel(0);
 
 		// active texture 
-		if (myTexture)
-			myTexture->DoPreDraw(travstate);
-		else if (myTextureID > -1)
+		if (mTexture)
+			mTexture->DoPreDraw(travstate);
+		else if (mTextureID > -1)
 		{
-			renderer->BindTexture(RENDERER_TEXTURE_2D, myTextureID);
+			renderer->BindTexture(RENDERER_TEXTURE_2D, mTextureID);
 		}
 
 		// compute position
 
-		Vector3D n = (v3f)myNormal;
-		Vector3D up = (v3f)myUp;
+		Vector3D n = (v3f)mNormal;
+		Vector3D up = (v3f)mUp;
 		Vector3D left = up ^ n;
 
 		up.Normalize();
@@ -98,17 +98,17 @@ bool Holo3DPanel::Draw(TravState* travstate)
 
 		if (mShape == 0)
 		{
-			auto offset_left = myOffset[0] * left;
-			auto offset_up = myOffset[1] * up;
+			auto offset_left = mOffset[0] * left;
+			auto offset_up = mOffset[1] * up;
 
-			left *= mySize[0] * 0.5f;
-			up *= mySize[1] * 0.5f;
-			myVI = UIVerticesInfo{ &vi, mTwoSided ? 12u : 6u };
-			VInfo3D::Data* buf = reinterpret_cast<VInfo3D::Data*>(myVI.Buffer());
+			left *= mSize[0] * 0.5f;
+			up *= mSize[1] * 0.5f;
+			mVI = UIVerticesInfo{ &vi, mTwoSided ? 12u : 6u };
+			VInfo3D::Data* buf = reinterpret_cast<VInfo3D::Data*>(mVI.Buffer());
 			// triangle strip order
 
-			v2f uv0 = myUVStart;
-			v2f uv1 = myUVEnd;
+			v2f uv0 = mUVStart;
+			v2f uv1 = mUVEnd;
 
 			buf[0].setValue(-left.x - up.x + offset_left.x + offset_up.x, -left.y - up.y + offset_left.y + offset_up.y, -left.z - up.z + offset_left.z + offset_up.z, 255, 255, 255, 255, uv1.x, uv0.y);
 			buf[1].setValue(-left.x + up.x + offset_left.x + offset_up.x, -left.y + up.y + offset_left.y + offset_up.y, -left.z + up.z + offset_left.z + offset_up.z, 255, 255, 255, 255, uv1.x, uv1.y);
@@ -130,13 +130,13 @@ bool Holo3DPanel::Draw(TravState* travstate)
 		}
 		else if (mShape == 1)
 		{
-			left *= mySize[0];
-			up *= mySize[0];
-			u32 nb_triangles = (u32)mySize[1];
+			left *= mSize[0];
+			up *= mSize[0];
+			u32 nb_triangles = (u32)mSize[1];
 			u32 nb_vertices = nb_triangles * 3u;
 			if (mTwoSided) nb_vertices *= 2u;
-			myVI = UIVerticesInfo{ &vi, nb_vertices };
-			VInfo3D::Data* buf = reinterpret_cast<VInfo3D::Data*>(myVI.Buffer());
+			mVI = UIVerticesInfo{ &vi, nb_vertices };
+			VInfo3D::Data* buf = reinterpret_cast<VInfo3D::Data*>(mVI.Buffer());
 			float radians_interval = 2.0f * fPI / nb_triangles;
 
 			auto proj = [&](v2f pos2D)
@@ -178,17 +178,17 @@ bool Holo3DPanel::Draw(TravState* travstate)
 			}
 		}
 
-		myVI.SetFlag(UIVerticesInfo_Vertex | UIVerticesInfo_Texture);
+		mVI.SetFlag(UIVerticesInfo_Vertex | UIVerticesInfo_Texture);
 
 		const Locations* locs = renderer->GetActiveShader()->GetLocation();
 
 		unsigned int bufferName = renderer->getVBO();
-		renderer->BufferData(bufferName, KIGS_BUFFER_TARGET_ARRAY, myVI.Offset * myVI.vertexCount, myVI.Buffer(), KIGS_BUFFER_USAGE_DYNAMIC);
-		renderer->SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_VERTEX_ID, myVI.vertexComp, KIGS_FLOAT, false, myVI.Offset, (void*)myVI.vertexStride, locs);
-		renderer->SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_COLOR_ID, myVI.colorComp, KIGS_UNSIGNED_BYTE, false, myVI.Offset, (void*)myVI.colorStride, locs);
-		renderer->SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, myVI.texComp, KIGS_FLOAT, false, myVI.Offset, (void*)myVI.texStride, locs);
+		renderer->BufferData(bufferName, KIGS_BUFFER_TARGET_ARRAY, mVI.Offset * mVI.vertexCount, mVI.Buffer(), KIGS_BUFFER_USAGE_DYNAMIC);
+		renderer->SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_VERTEX_ID, mVI.vertexComp, KIGS_FLOAT, false, mVI.Offset, (void*)mVI.vertexStride, locs);
+		renderer->SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_COLOR_ID, mVI.colorComp, KIGS_UNSIGNED_BYTE, false, mVI.Offset, (void*)mVI.colorStride, locs);
+		renderer->SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, mVI.texComp, KIGS_FLOAT, false, mVI.Offset, (void*)mVI.texStride, locs);
 
-		renderer->DrawArrays(travstate, KIGS_DRAW_MODE_TRIANGLES, 0, myVI.vertexCount);
+		renderer->DrawArrays(travstate, KIGS_DRAW_MODE_TRIANGLES, 0, mVI.vertexCount);
 
 		/*	unsigned short indice[6] = { 0,1,2,0,2,3 };
 			bufferName = renderer->getVBO();
@@ -198,9 +198,9 @@ bool Holo3DPanel::Draw(TravState* travstate)
 			renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, 6, KIGS_UNSIGNED_SHORT, 0);*/
 
 			// deactive texture 
-		if (myTexture)
-			myTexture->DoPostDraw(travstate);
-		else if (myTextureID > -1)
+		if (mTexture)
+			mTexture->DoPostDraw(travstate);
+		else if (mTextureID > -1)
 		{
 			renderer->BindTexture(RENDERER_TEXTURE_2D, 0);
 		}

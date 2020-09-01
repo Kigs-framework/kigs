@@ -2,10 +2,21 @@
 
 #include "CoreModifiable.h"
 
+// ****************************************
+// * CoreTreeNode class
+// * --------------------------------------
+/**
+ * \file	CoreTreeNode.h
+ * \class	CoreTreeNode
+ * \ingroup Core
+ * \brief	Manage all CoreModifiable classes and instances tree.
+ */
+ // ****************************************
+
 class CoreTreeNode
 {
 public:
-	explicit CoreTreeNode(CoreTreeNode* father, KigsID id) : myChildren(), myInstances(), myFather(father), myID(id) /*, myClassNameTree(0) */ {}
+	explicit CoreTreeNode(CoreTreeNode* father, KigsID id) : mChildren(), mInstances(), mFather(father), mID(id) {}
 	explicit CoreTreeNode(const CoreTreeNode& node) = delete;
 	CoreTreeNode& operator=(const CoreTreeNode& node) = delete;
 
@@ -26,15 +37,15 @@ public:
 	void getRootInstances(std::vector<CMSP>& result, bool recursive) const; 
 
 
-	kigs::unordered_map<KigsID, CoreTreeNode*> myChildren;
-	kigs::unordered_map <KigsID, ModifiableMethodStruct> myMethods;
-	std::vector<CoreModifiable*> myInstances;
+	kigs::unordered_map<KigsID, CoreTreeNode*> mChildren;
+	kigs::unordered_map <KigsID, ModifiableMethodStruct> mMethods;
+	std::vector<CoreModifiable*> mInstances;
 	
-	bool myInstanceVectorNeedSort = false;
+	bool mInstanceVectorNeedSort = false;
 
 	void sortInstanceVector();
-	CoreTreeNode* myFather;
-	KigsID myID;
+	CoreTreeNode* mFather;
+	KigsID mID;
 
-	mutable std::recursive_mutex myMutex;
+	mutable std::recursive_mutex mMutex;
 };

@@ -3,12 +3,12 @@
 
 IMPLEMENT_CONSTRUCTOR(API3DCutShader)
 {
-	PlaneCount.changeNotificationLevel(Owner);
+	mPlaneCount.changeNotificationLevel(Owner);
 }
 
 void API3DCutShader::NotifyUpdate(unsigned int labelid)
 {
-	if (labelid == PlaneCount.getID())
+	if (labelid == mPlaneCount.getID())
 	{
 		Dealloc();
 	}

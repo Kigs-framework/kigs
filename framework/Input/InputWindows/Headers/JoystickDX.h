@@ -4,12 +4,16 @@
 #include "JoystickDevice.h"
 #include "ModuleInputDX.h"
 
+
 // ****************************************
 // * JoystickDX class
 // * --------------------------------------
-/*!  \class JoystickDX
-     DirectX joystick management
-	 \ingroup InputDX
+/**
+* \file	JoystickDX.h
+* \class	JoystickDX
+* \ingroup Input
+* \brief Specific DirectX joystick device.
+*
 */
 // ****************************************
 
@@ -21,7 +25,7 @@ public:
 
     JoystickDX(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
-	LPDIRECTINPUTDEVICE8& getDirectInputJoystick(){return myDirectInputJoystick;}
+	LPDIRECTINPUTDEVICE8& getDirectInputJoystick(){return mDirectInputJoystick;}
     
 	virtual void	UpdateDevice();
 
@@ -30,21 +34,21 @@ public:
 
 	void	DoInputDeviceDescription();
 
-	void	IncButtonCount() {myButtonsCount++;}
-	void	IncAxisCount()   {myAxisCount++;}
-	void	IncPOVCount()    {myPovCount++;}
+	void	IncButtonCount() {mButtonsCount++;}
+	void	IncAxisCount()   {mAxisCount++;}
+	void	IncPOVCount()    {mPovCount++;}
 
-	void UseAxis() { myAxisIndex=1; }
-	void UseRotation() { myRotationIndex=1; }
+	void UseAxis() { mAxisIndex=1; }
+	void UseRotation() { mRotationIndex=1; }
 
 
 protected:
   virtual ~JoystickDX();
 
-	LPDIRECTINPUTDEVICE8 myDirectInputJoystick;
+	LPDIRECTINPUTDEVICE8 mDirectInputJoystick;
 
-	int myAxisIndex;
-	int myRotationIndex;
+	int mAxisIndex;
+	int mRotationIndex;
   
 };    
 

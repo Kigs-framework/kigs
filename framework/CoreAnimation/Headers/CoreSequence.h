@@ -4,6 +4,18 @@
 #include "CoreVector.h"
 #include "Timer.h"
 
+// ****************************************
+// * CoreSequence class
+// * --------------------------------------
+/**
+* \class	CoreSequence
+* \file		CoreSequence.h
+* \ingroup CoreAnimation
+* \brief	Manage a sequence of animation ( list of animations ) 
+*
+*/
+// ****************************************
+
 class CoreSequence : public CoreVector
 {
 public:
@@ -13,22 +25,22 @@ public:
 
 	KigsID	getID() const
 	{
-		return myID;
+		return mID;
 	}
 
 	void	startAtFirstUpdate()
 	{
-		myStartTime = -4.0;
+		mStartTime = -4.0;
 	}
 
 	inline void	start(const Timer& timer)
 	{
-		myRefTimer = &timer;
+		mRefTimer = &timer;
 		protectedStart(timer.GetTime());
 	}
 	inline void	start()// use ref timer
 	{
-		protectedStart(myRefTimer->GetTime());
+		protectedStart(mRefTimer->GetTime());
 	}
 
 	// return true if finished
@@ -40,7 +52,7 @@ public:
 	}
 	inline void	pause() // use ref timer
 	{
-		protectedPause(myRefTimer->GetTime());
+		protectedPause(mRefTimer->GetTime());
 	}
 
 	// reset sequence
@@ -48,19 +60,19 @@ public:
 
 	CoreModifiable*	getTarget() const
 	{
-		return myTarget;
+		return mTarget;
 	}
 
 	// remove the target if already destroyed
 	void removeTarget()
 	{
-		myTarget = NULL;
+		mTarget = NULL;
 	}
 
 	// return true if target is modifiable 
 	bool	useModifiable(CoreModifiable* modifiable) const
 	{
-		if (myTarget == modifiable)
+		if (mTarget == modifiable)
 		{
 			return true;
 		}
@@ -73,12 +85,12 @@ protected:
 	void	protectedPause(kdouble time);
 	void	protectedUpdate(kdouble time);
 
-	CoreModifiable*		myTarget;
-	KigsID				myID;
-	kdouble				myStartTime;
-	kdouble				myPauseTime;
-	const Timer*		myRefTimer;
-	unsigned int		myCurrentActionIndex;
+	CoreModifiable*		mTarget;
+	KigsID				mID;
+	kdouble				mStartTime;
+	kdouble				mPauseTime;
+	const Timer*		mRefTimer;
+	unsigned int		mCurrentActionIndex;
 };
 
 

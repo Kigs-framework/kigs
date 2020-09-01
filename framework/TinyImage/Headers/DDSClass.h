@@ -4,10 +4,17 @@
 // base class
 #include "TinyImage.h"
 
+// ****************************************
+// * DDSClass class
+// * --------------------------------------
 /**
-* \class DDSClass
-* \brief specific DDS class
+* \file	DDSClass.h
+* \class	DDSClass
+* \ingroup TinyImageModule
+* \brief TinyImage specialized for DDS management.
+*
 */
+// ****************************************
 class DDSClass : public TinyImage
 {
 public:
@@ -19,7 +26,7 @@ public:
 
 	virtual int	getMipMapCount()
 	{
-		return myMipmapCount;
+		return mMipmapCount;
 	}
 
 protected:
@@ -42,7 +49,7 @@ protected:
 	*/
 	virtual bool	Load(FileHandle* fileName);
 
-	int		myMipmapCount;
+	int		mMipmapCount;
 
 	struct DDS_PIXELFORMAT {
 		unsigned int dwSize;

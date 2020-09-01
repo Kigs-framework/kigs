@@ -15,7 +15,7 @@ public:
 	API3DPostProcess(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	virtual void	NotifyUpdate(const unsigned int labelid );
-	//inline ShaderInfo*	Get_ShaderProgram() const {return & myShaderProgram;}
+	//inline ShaderInfo*	Get_ShaderProgram() const {return & mShaderProgram;}
 protected:
 	
 	void			Active(TravState*);
@@ -30,9 +30,9 @@ protected:
 	virtual bool	PostDraw(TravState* travstate);
 	void			InitModifiable();
 
-	unsigned int	myVertexShader;
-	unsigned int	myFragmentShader;
-	ShaderInfo		myShaderProgram;
+	unsigned int	mVertexShader;
+	unsigned int	mFragmentShader;
+	ShaderInfo		mShaderProgram;
 
 	maString		myVertexShaderText;
 	maString		myFragmentShaderText;

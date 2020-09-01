@@ -54,7 +54,7 @@ protected:
     virtual ~RessourceFileManager();
 
 	//! For each extension, a path list.
-	kstl::map<kstl::string, CMSP>		myRessourceMap;
+	kstl::map<kstl::string, CMSP>		mRessourceMap;
 };
 
 #endif //_RessourceFILEMANAGER_H_

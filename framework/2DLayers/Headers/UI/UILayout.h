@@ -5,7 +5,17 @@
 
 #include "AttributePacking.h"
 
-// Adjust the position of all children according to a layout algorithm
+
+// ****************************************
+// * UILayout class
+// * --------------------------------------
+/**
+* \file	UILayout.h
+* \class	UILayout
+* \ingroup 2DLayers
+* \brief	Adjust the position of all children according to a layout algorithm
+*/
+// ****************************************
 
 class UILayout : public UIDrawableItem
 {
@@ -22,7 +32,7 @@ public:
 	bool			addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
 	bool			removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
 
-	inline void		NeedRecomputeLayout() { myNeedRecompute = true; }
+	inline void		NeedRecomputeLayout() { mNeedRecompute = true; }
 
 	WRAP_METHODS(NeedRecomputeLayout);
 protected:
@@ -32,7 +42,7 @@ protected:
 	void			ProtectedDraw(TravState*) override;
 	virtual void	RecomputeLayout() {};
 	
-	bool			myNeedRecompute;
+	bool			mNeedRecompute;
 };
 
 #endif //_UILayout_H_

@@ -4,17 +4,17 @@
 #include "Window.h"
 
 
+#define PSEUDO_FULLSCREEN
 // ****************************************
 // * WindowWin32 class
 // * --------------------------------------
-/*!  \class WindowWin32
-     a win32 window, used for rendering, inherit Window base class from GUI module
-     \ingroup GUIWindowsModule
+/**
+* \file	WindowWin32.h
+* \class	WindowWin32
+* \ingroup GUIModule
+* \brief	Win32 UWP Window class.
 */
 // ****************************************
-
-#define PSEUDO_FULLSCREEN
-
 class WindowWin32 : public Window
 {
 public:
@@ -49,7 +49,7 @@ protected:
     virtual void  ProtectedInit();
 			
 	//! manage screensaver desactivation
-	bool		   myScreenSaverActive;
+	bool		   mScreenSaverActive;
 	
 
 	float mSizeXToSet = 0.0f;

@@ -45,10 +45,9 @@ extern ModuleBase*				MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModi
 #endif
 
 // ## Static object initialization
-ModuleSpecificRenderer *	RendererDX11::theGlobalRenderer = NULL;
 FreeType_TextDrawer*		RendererDX11::myDrawer = NULL;
 
-unsigned int				RendererDX11::myDirtyShaderMatrix = 0;
+unsigned int				RendererDX11::mDirtyShaderMatrix = 0;
 
 IMPLEMENT_CLASS_INFO(RendererDX11)
 
@@ -85,15 +84,15 @@ ModuleSpecificRenderer::LightCount RendererDX11::SetLightsInfo(kstl::set<CoreMod
 	}
 
 	LightCount  count;
-	count.dir = newNumberOfDirectLights;
-	count.point = newNumberOfPointLights;
-	count.spot = newNumberOfSpotLights;
+	count.mDir = newNumberOfDirectLights;
+	count.mPoint = newNumberOfPointLights;
+	count.mSpot = newNumberOfSpotLights;
 	return count;
 }
 
 void RendererDX11::SendLightsInfo(TravState* travstate)
 {
-	if (travstate->myLights == nullptr)
+	if (travstate->mLights == nullptr)
 		return;
 
 	Camera*	cam = travstate->GetCurrentCamera();
@@ -103,7 +102,7 @@ void RendererDX11::SendLightsInfo(TravState* travstate)
 		cam_pos = cam->GetGlobalPosition();
 	}
 	LightStruct lights;
-	for (auto it : *travstate->myLights)
+	for (auto it : *travstate->mLights)
 	{
 		API3DLight* light = static_cast<API3DLight*>(it);
 		light->PrepareLightInfo(lights, cam);
@@ -111,19 +110,19 @@ void RendererDX11::SendLightsInfo(TravState* travstate)
 	
 	size_t needed_size = sizeof(v4f) + lights.pointlights.size() * sizeof(PointLight) + lights.dirlights.size() * sizeof(DirLight) + lights.spotlights.size() * sizeof(SpotLight);
 	
-	if (needed_size > myDXInstance.m_currentLightBufferSize)
+	if (needed_size > mDXInstance.mCurrentLightBufferSize)
 	{
-		myDXInstance.m_lightBuffer->Release();
-		//myDXInstance.m_lightBuffer = nullptr;
+		mDXInstance.mLightBuffer->Release();
+		//mDXInstance.mLightBuffer = nullptr;
 		D3D11_BUFFER_DESC lightBufferDesc;
 		lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		lightBufferDesc.ByteWidth = myDXInstance.m_currentLightBufferSize = needed_size;
+		lightBufferDesc.ByteWidth = mDXInstance.mCurrentLightBufferSize = needed_size;
 		if (lightBufferDesc.ByteWidth % 16 != 0) lightBufferDesc.ByteWidth = (lightBufferDesc.ByteWidth / 16 + 1) * 16;
 		lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		lightBufferDesc.MiscFlags = 0;
 		lightBufferDesc.StructureByteStride = 0;
-		DX::ThrowIfFailed(myDXInstance.m_device->CreateBuffer(&lightBufferDesc, NULL, &myDXInstance.m_lightBuffer));
+		DX::ThrowIfFailed(mDXInstance.mDevice->CreateBuffer(&lightBufferDesc, NULL, &mDXInstance.mLightBuffer));
 	}
 
 
@@ -136,11 +135,11 @@ void RendererDX11::SendLightsInfo(TravState* travstate)
 	crc = crc32_bitwise(lights.dirlights.data(), lights.dirlights.size() * sizeof(DirLight), crc);
 	crc = crc32_bitwise(lights.spotlights.data(), lights.spotlights.size() * sizeof(SpotLight), crc);*/
 	
-	if (myDXInstance.m_currentLightBufferHash != hash)
+	if (mDXInstance.mCurrentLightBufferHash != hash)
 	{
-		myDXInstance.m_currentLightBufferHash = hash;
+		mDXInstance.mCurrentLightBufferHash = hash;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		DX::ThrowIfFailed(myDXInstance.m_deviceContext->Map(myDXInstance.m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
+		DX::ThrowIfFailed(mDXInstance.mDeviceContext->Map(mDXInstance.mLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
 		u8* data_ptr = (u8*)mappedResource.pData;
 		*(v3f*)data_ptr = cam_pos;
 		data_ptr += sizeof(v4f);
@@ -151,12 +150,12 @@ void RendererDX11::SendLightsInfo(TravState* travstate)
 		data_ptr += lights.dirlights.size() * sizeof(DirLight);
 		memcpy(data_ptr, lights.spotlights.data(), lights.spotlights.size() * sizeof(SpotLight));
 
-		myDXInstance.m_deviceContext->Unmap(myDXInstance.m_lightBuffer, 0);
+		mDXInstance.mDeviceContext->Unmap(mDXInstance.mLightBuffer, 0);
 	}
-	myDXInstance.m_deviceContext->PSSetConstantBuffers(DX11_LIGHT_SLOT, 1, &myDXInstance.m_lightBuffer);
+	mDXInstance.mDeviceContext->PSSetConstantBuffers(DX11_LIGHT_SLOT, 1, &mDXInstance.mLightBuffer);
 
 
-	for(auto it : *travstate->myLights)
+	for(auto it : *travstate->mLights)
 	{
 		API3DLight* light = static_cast<API3DLight*>(it);
 		light->PreRendering(this, cam, cam_pos);
@@ -166,11 +165,11 @@ void RendererDX11::SendLightsInfo(TravState* travstate)
 
 void RendererDX11::ClearLightsInfo(TravState* travstate)
 {
-	if (travstate->myLights == nullptr)
+	if (travstate->mLights == nullptr)
 		return;
 
-	auto itr = travstate->myLights->begin();
-	auto end = travstate->myLights->end();
+	auto itr = travstate->mLights->begin();
+	auto end = travstate->mLights->end();
 	for (; itr != end; ++itr)
 	{
 		API3DLight* myLight = static_cast<API3DLight*>(*itr);
@@ -218,37 +217,37 @@ void RendererDX11::ProtectedFlushMatrix(TravState* state)
 			buffer.color = fog_color;
 			buffer.scale = fog_scale;
 
-			DX::ThrowIfFailed(myDXInstance.m_deviceContext->Map(myDXInstance.m_fogBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
+			DX::ThrowIfFailed(mDXInstance.mDeviceContext->Map(mDXInstance.mFogBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
 			*(FogBuffer*)mappedResource.pData = buffer;
-			myDXInstance.m_deviceContext->Unmap(myDXInstance.m_fogBuffer, 0);
-			myDXInstance.m_deviceContext->VSSetConstantBuffers(DX11_FOG_SLOT, 1, &myDXInstance.m_fogBuffer);
-			myDXInstance.m_deviceContext->PSSetConstantBuffers(DX11_FOG_SLOT, 1, &myDXInstance.m_fogBuffer);
+			mDXInstance.mDeviceContext->Unmap(mDXInstance.mFogBuffer, 0);
+			mDXInstance.mDeviceContext->VSSetConstantBuffers(DX11_FOG_SLOT, 1, &mDXInstance.mFogBuffer);
+			mDXInstance.mDeviceContext->PSSetConstantBuffers(DX11_FOG_SLOT, 1, &mDXInstance.mFogBuffer);
 		}
 
 		
 		MatrixBufferType* dataPtr;
 
-		if ((myDirtyShaderMatrix == 0) && (myDirtyMatrix == 0))
+		if ((mDirtyShaderMatrix == 0) && (mDirtyMatrix == 0))
 		{
 			return;
 		}
 
-		int previousMatrixMode = myCurrentMatrixMode;
+		int previousMatrixMode = mCurrentMatrixMode;
 
 		// Lock the constant buffer so it can be written to.
-		DX::ThrowIfFailed(myDXInstance.m_deviceContext->Map(myDXInstance.m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
+		DX::ThrowIfFailed(mDXInstance.mDeviceContext->Map(mDXInstance.mMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
 
 		// Get a pointer to the data in the constant buffer.
 		dataPtr = (MatrixBufferType*)mappedResource.pData;
-		dataPtr->model = myMatrixStack[MATRIX_MODE_MODEL].back();
+		dataPtr->model = mMatrixStack[MATRIX_MODE_MODEL].back();
 		
 		if (state->GetHolographicMode())
 		{
 			// In holographic mode, instead of view and proj we have two viewprojs, one for each render target
-			if (state->HolographicUseStackMatrix)
+			if (state->mHolographicUseStackMatrix)
 			{
-				auto proj = myMatrixStack[MATRIX_MODE_PROJECTION].back();
-				auto view = myMatrixStack[MATRIX_MODE_VIEW].back();
+				auto proj = mMatrixStack[MATRIX_MODE_PROJECTION].back();
+				auto view = mMatrixStack[MATRIX_MODE_VIEW].back();
 				dataPtr->stereo_viewproj[0] = dataPtr->stereo_viewproj[1] = proj * view;
 			}
 			else
@@ -261,21 +260,21 @@ void RendererDX11::ProtectedFlushMatrix(TravState* state)
 		}
 		else
 		{
-			auto proj = myMatrixStack[MATRIX_MODE_PROJECTION].back();
-			if (myDXInstance.m_isFBORenderTarget)
+			auto proj = mMatrixStack[MATRIX_MODE_PROJECTION].back();
+			if (mDXInstance.mIsFBORenderTarget)
 			{
 				proj[5] = -proj[5];
 				proj[13] = -proj[13];
 			}
-			auto view = myMatrixStack[MATRIX_MODE_VIEW].back();
+			auto view = mMatrixStack[MATRIX_MODE_VIEW].back();
 			dataPtr->viewproj = proj * view; // .Mult(view, proj);
 			//dataPtr->proj.SetIdentity();
 		}
 
-		myDirtyShaderMatrix = 0;
-		myDirtyMatrix = 0;
-		myDXInstance.m_deviceContext->Unmap(myDXInstance.m_matrixBuffer, 0);
-		myDXInstance.m_deviceContext->VSSetConstantBuffers(DX11_MATRIX_SLOT, 1, &myDXInstance.m_matrixBuffer);
+		mDirtyShaderMatrix = 0;
+		mDirtyMatrix = 0;
+		mDXInstance.mDeviceContext->Unmap(mDXInstance.mMatrixBuffer, 0);
+		mDXInstance.mDeviceContext->VSSetConstantBuffers(DX11_MATRIX_SLOT, 1, &mDXInstance.mMatrixBuffer);
 	}
 }
 
@@ -332,8 +331,8 @@ void RendererDX11::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribu
 
 	DECLARE_FULL_CLASS_INFO(core, DebugDraw, DebugDraw, Renderer)
 
-	if (!theGlobalRenderer)
-		theGlobalRenderer = this;
+	if (!ModuleRenderer::mTheGlobalRenderer)
+		ModuleRenderer::mTheGlobalRenderer = this;
 
 	//Drawer freetype
 	if (!myDrawer)
@@ -349,8 +348,8 @@ void RendererDX11::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribu
 
 	PlatformInit(core, params);
 
-	myDefaultUIShader = KigsCore::GetInstanceOf("UIShader", "API3DUIShader");
-	myVertexBufferManager = std::make_unique<VertexBufferManager>();
+	mDefaultUIShader = KigsCore::GetInstanceOf("UIShader", "API3DUIShader");
+	mVertexBufferManager = std::make_unique<VertexBufferManager>();
 }
 
 bool RendererDX11::CreateDevice()
@@ -370,8 +369,8 @@ bool RendererDX11::CreateDevice()
 	}
 #endif
 
-	dxinstance->m_device = nullptr;
-	dxinstance->m_deviceContext = nullptr;
+	dxinstance->mDevice = nullptr;
+	dxinstance->mDeviceContext = nullptr;
 #ifdef WUP
 	winrt::com_ptr<ID3D11Device> device;
 	winrt::com_ptr<ID3D11DeviceContext> context;
@@ -389,22 +388,22 @@ bool RendererDX11::CreateDevice()
 		auto d3dinteropdevice = object.as<IDirect3DDevice>();
 		space.SetDirect3D11Device(d3dinteropdevice);
 	}
-	dxinstance->m_device = device.as<ID3D11Device1>();
-	dxinstance->m_deviceContext = context.as<ID3D11DeviceContext1>();
+	dxinstance->mDevice = device.as<ID3D11Device1>();
+	dxinstance->mDeviceContext = context.as<ID3D11DeviceContext1>();
 
 #else
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
 	DX::ThrowIfFailed(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, device_creation_flags, featureLevels, _countof(featureLevels), D3D11_SDK_VERSION, device.ReleaseAndGetAddressOf(), nullptr, context.ReleaseAndGetAddressOf()));
-	DX::ThrowIfFailed(device.As<ID3D11Device1>(&dxinstance->m_device));
-		DX::ThrowIfFailed(context.As<ID3D11DeviceContext1>(&dxinstance->m_deviceContext));
+	DX::ThrowIfFailed(device.As<ID3D11Device1>(&dxinstance->mDevice));
+		DX::ThrowIfFailed(context.As<ID3D11DeviceContext1>(&dxinstance->mDeviceContext));
 
 #endif
 
 
 #ifdef WUP
 	D3D11_FEATURE_DATA_D3D11_OPTIONS3 options;
-	dxinstance->m_device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS3, &options, sizeof(options));
+	dxinstance->mDevice->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS3, &options, sizeof(options));
 	if (!options.VPAndRTArrayIndexFromAnyShaderFeedingRasterizer && gIsHolographic)
 	{
 		KIGS_ASSERT(!"Device doesn't support stereo rendering (VPAndRTArrayIndexFromAnyShaderFeedingRasterizer is FALSE)");
@@ -413,7 +412,7 @@ bool RendererDX11::CreateDevice()
 
 #ifdef KIGS_TOOLS
 	ID3D11Debug* d3dDebug = nullptr;
-	if (SUCCEEDED(dxinstance->m_device->QueryInterface(__uuidof(ID3D11Debug), (void**)& d3dDebug)))
+	if (SUCCEEDED(dxinstance->mDevice->QueryInterface(__uuidof(ID3D11Debug), (void**)& d3dDebug)))
 	{
 		ID3D11InfoQueue* d3dInfoQueue = nullptr;
 		if (SUCCEEDED(d3dDebug->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)& d3dInfoQueue)))
@@ -447,17 +446,17 @@ bool RendererDX11::CreateDevice()
 	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	matrixBufferDesc.MiscFlags = 0;
 	matrixBufferDesc.StructureByteStride = 0;
-	DX::ThrowIfFailed(dxinstance->m_device->CreateBuffer(&matrixBufferDesc, NULL, &dxinstance->m_matrixBuffer));
+	DX::ThrowIfFailed(dxinstance->mDevice->CreateBuffer(&matrixBufferDesc, NULL, &dxinstance->mMatrixBuffer));
 
 	D3D11_BUFFER_DESC lightBufferDesc;
 	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	lightBufferDesc.ByteWidth = dxinstance->m_currentLightBufferSize = sizeof(v3f) + 2 * sizeof(PointLight);
+	lightBufferDesc.ByteWidth = dxinstance->mCurrentLightBufferSize = sizeof(v3f) + 2 * sizeof(PointLight);
 	if (lightBufferDesc.ByteWidth % 16 != 0) lightBufferDesc.ByteWidth = (lightBufferDesc.ByteWidth / 16 + 1) * 16;
 	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	lightBufferDesc.MiscFlags = 0;
 	lightBufferDesc.StructureByteStride = 0;
-	DX::ThrowIfFailed(dxinstance->m_device->CreateBuffer(&lightBufferDesc, NULL, &dxinstance->m_lightBuffer));
+	DX::ThrowIfFailed(dxinstance->mDevice->CreateBuffer(&lightBufferDesc, NULL, &dxinstance->mLightBuffer));
 
 	D3D11_BUFFER_DESC fogBufferDesc;
 	fogBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -466,7 +465,7 @@ bool RendererDX11::CreateDevice()
 	fogBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	fogBufferDesc.MiscFlags = 0;
 	fogBufferDesc.StructureByteStride = 0;
-	DX::ThrowIfFailed(dxinstance->m_device->CreateBuffer(&fogBufferDesc, NULL, &dxinstance->m_fogBuffer));
+	DX::ThrowIfFailed(dxinstance->mDevice->CreateBuffer(&fogBufferDesc, NULL, &dxinstance->mFogBuffer));
 
 	return true;
 }
@@ -491,32 +490,32 @@ void RendererDX11::Close()
 	}
 
 	// clear d3d object
-	for (auto obj : myBlendStateList)
+	for (auto obj : mBlendStateList)
 		obj.second->Release();
-	for (auto obj : myDepthStateList)
+	for (auto obj : mDepthStateList)
 		obj.second->Release();
-	for (auto obj : myRasterizerStateList)
+	for (auto obj : mRasterizerStateList)
 		obj.second->Release();
-	for (auto obj : mySamplerStateList)
+	for (auto obj : mSamplerStateList)
 		obj.second->Release();
 
-	myDefaultUIShader=nullptr;
+	mDefaultUIShader=nullptr;
 
 	ID3D11Debug *d3dDebug = nullptr;
-	if (S_OK == myDXInstance.m_device->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug))
+	if (S_OK == mDXInstance.mDevice->QueryInterface(__uuidof(ID3D11Debug), (void**)&d3dDebug))
 		d3dDebug->Release();
 
-	myDXInstance.m_currentRenderTarget = nullptr;
-	myDXInstance.m_currentDepthStencilTarget = nullptr;
-	myDXInstance.m_swapChain = nullptr;
-	myDXInstance.m_deviceContext = nullptr;
-	myDXInstance.m_device = nullptr;
+	mDXInstance.mCurrentRenderTarget = nullptr;
+	mDXInstance.mCurrentDepthStencilTarget = nullptr;
+	mDXInstance.mSwapChain = nullptr;
+	mDXInstance.mDeviceContext = nullptr;
+	mDXInstance.mDevice = nullptr;
 	
-	myDXInstance.m_matrixBuffer->Release();
-	myDXInstance.m_lightBuffer->Release();
+	mDXInstance.mMatrixBuffer->Release();
+	mDXInstance.mLightBuffer->Release();
 	
-	if (myDXInstance.m_materialBuffer) 
-		myDXInstance.m_materialBuffer->Release();
+	if (mDXInstance.mMaterialBuffer) 
+		mDXInstance.mMaterialBuffer->Release();
 	
 #ifdef WIN32
 	//wglMakeCurrent(NULL, NULL);
@@ -533,9 +532,9 @@ void RendererDX11::Update(const Timer& timer, void* addParam)
 	// print allocated buffers size
 	kigsprintf("Start Buffer Desc    ***************************************\n");
 	// print vbo size
-	for (auto vbo : myVBO)
+	for (auto vbo : mVBO)
 	{
-		auto currentB=((VertexBufferManager*)myVertexBufferManager.get())->mBufferList[vbo];
+		auto currentB=((VertexBufferManager*)mVertexBufferManager.get())->mBufferList[vbo];
 		if (currentB.mDesc)
 		{
 			kigsprintf("Buffer %d size = %d\n",vbo, currentB.mDesc->ByteWidth);
@@ -559,33 +558,33 @@ ModuleBase* MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttr
 
 void DX11RenderingState::ClearView(RendererClearMode clearMode)
 {
-	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 	DXInstance * dxinstance = renderer->getDXInstance();
 	if (clearMode & RENDERER_CLEAR_COLOR)
 	{
 #ifdef WUP
-		dxinstance->m_deviceContext->ClearRenderTargetView(dxinstance->m_currentRenderTarget.get(), myGlobalClearValueFlag);
+		dxinstance->mDeviceContext->ClearRenderTargetView(dxinstance->mCurrentRenderTarget.get(), mGlobalClearValueFlag);
 #else
-		dxinstance->m_deviceContext->ClearRenderTargetView(dxinstance->m_currentRenderTarget.Get(), myGlobalClearValueFlag);
+		dxinstance->mDeviceContext->ClearRenderTargetView(dxinstance->mCurrentRenderTarget.Get(), mGlobalClearValueFlag);
 #endif
 	}
 	if ((clearMode & RENDERER_CLEAR_DEPTH) || (clearMode & RENDERER_CLEAR_STENCIL))
 	{
 		u32 flag = (clearMode & RENDERER_CLEAR_DEPTH ? D3D11_CLEAR_DEPTH : 0) | (clearMode & RENDERER_CLEAR_STENCIL ? D3D11_CLEAR_STENCIL : 0);
 #ifdef WUP
-		dxinstance->m_deviceContext->ClearDepthStencilView(dxinstance->m_currentDepthStencilTarget.get(), flag, 1.0f, 0);
+		dxinstance->mDeviceContext->ClearDepthStencilView(dxinstance->mCurrentDepthStencilTarget.get(), flag, 1.0f, 0);
 #else
-		dxinstance->m_deviceContext->ClearDepthStencilView(dxinstance->m_currentDepthStencilTarget.Get(), flag, 1.0f, 0);
+		dxinstance->mDeviceContext->ClearDepthStencilView(dxinstance->mCurrentDepthStencilTarget.Get(), flag, 1.0f, 0);
 #endif
 	}
 }
 
 void DX11RenderingState::Viewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height)
 {
-	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 	DXInstance * dxinstance = renderer->getDXInstance();
 	D3D11_VIEWPORT viewport = { (float)x, (float)y, (float)width, (float)height, 0.0f, 1.0f };
-	dxinstance->m_deviceContext->RSSetViewports(1, &viewport);
+	dxinstance->mDeviceContext->RSSetViewports(1, &viewport);
 	renderer->SetCurrentViewportSize(v2u(width, height));
 }
 
@@ -624,17 +623,17 @@ void DX11RenderingState::manageBlend(DX11RenderingState* currentState)
 {
 	size_t hash = 0;
 	hash_combine(hash,
-				 currentState->myGlobalBlendFlag,
-				 currentState->myGlobalBlendValue1Flag,
-				 currentState->myGlobalBlendValue2Flag,
-				 currentState->myGlobalColorMask[0],
-				 currentState->myGlobalColorMask[1],
-				 currentState->myGlobalColorMask[2],
-				 currentState->myGlobalColorMask[3]
+				 currentState->mGlobalBlendFlag,
+				 currentState->mGlobalBlendValue1Flag,
+				 currentState->mGlobalBlendValue2Flag,
+				 currentState->mGlobalColorMask[0],
+				 currentState->mGlobalColorMask[1],
+				 currentState->mGlobalColorMask[2],
+				 currentState->mGlobalColorMask[3]
 				 );
 
 
-	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 	DXInstance * dxinstance = renderer->getDXInstance();
 
 	ID3D11BlendState* alphaBlendingState;
@@ -648,10 +647,10 @@ void DX11RenderingState::manageBlend(DX11RenderingState* currentState)
 		D3D11_BLEND_DESC blendStateDescription;
 		ZeroMemory(&blendStateDescription, sizeof(D3D11_BLEND_DESC));
 		// Create an alpha enabled blend state description.
-		blendStateDescription.RenderTarget[0].BlendEnable = currentState->myGlobalBlendFlag;
+		blendStateDescription.RenderTarget[0].BlendEnable = currentState->mGlobalBlendFlag;
 
-		blendStateDescription.RenderTarget[0].SrcBlend = ConvertBlend((RendererBlendFuncMode)currentState->myGlobalBlendValue1Flag);
-		blendStateDescription.RenderTarget[0].DestBlend = ConvertBlend((RendererBlendFuncMode)currentState->myGlobalBlendValue2Flag);
+		blendStateDescription.RenderTarget[0].SrcBlend = ConvertBlend((RendererBlendFuncMode)currentState->mGlobalBlendValue1Flag);
+		blendStateDescription.RenderTarget[0].DestBlend = ConvertBlend((RendererBlendFuncMode)currentState->mGlobalBlendValue2Flag);
 
 		blendStateDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 
@@ -659,13 +658,13 @@ void DX11RenderingState::manageBlend(DX11RenderingState* currentState)
 		blendStateDescription.RenderTarget[0].DestBlendAlpha = blendStateDescription.RenderTarget[0].DestBlend;
 		blendStateDescription.RenderTarget[0].BlendOpAlpha = blendStateDescription.RenderTarget[0].BlendOp;
 		blendStateDescription.RenderTarget[0].RenderTargetWriteMask = 0;
-		blendStateDescription.RenderTarget[0].RenderTargetWriteMask |= currentState->myGlobalColorMask[0] ? D3D11_COLOR_WRITE_ENABLE_RED : 0;
-		blendStateDescription.RenderTarget[0].RenderTargetWriteMask |= currentState->myGlobalColorMask[1] ? D3D11_COLOR_WRITE_ENABLE_GREEN : 0;
-		blendStateDescription.RenderTarget[0].RenderTargetWriteMask |= currentState->myGlobalColorMask[2] ? D3D11_COLOR_WRITE_ENABLE_BLUE : 0;
-		blendStateDescription.RenderTarget[0].RenderTargetWriteMask |= currentState->myGlobalColorMask[3] ? D3D11_COLOR_WRITE_ENABLE_ALPHA : 0;
+		blendStateDescription.RenderTarget[0].RenderTargetWriteMask |= currentState->mGlobalColorMask[0] ? D3D11_COLOR_WRITE_ENABLE_RED : 0;
+		blendStateDescription.RenderTarget[0].RenderTargetWriteMask |= currentState->mGlobalColorMask[1] ? D3D11_COLOR_WRITE_ENABLE_GREEN : 0;
+		blendStateDescription.RenderTarget[0].RenderTargetWriteMask |= currentState->mGlobalColorMask[2] ? D3D11_COLOR_WRITE_ENABLE_BLUE : 0;
+		blendStateDescription.RenderTarget[0].RenderTargetWriteMask |= currentState->mGlobalColorMask[3] ? D3D11_COLOR_WRITE_ENABLE_ALPHA : 0;
 
 		// Create the blend state using the description.
-		HRESULT result = dxinstance->m_device->CreateBlendState(&blendStateDescription, &alphaBlendingState);
+		HRESULT result = dxinstance->mDevice->CreateBlendState(&blendStateDescription, &alphaBlendingState);
 		if (FAILED(result))
 			return;
 
@@ -680,7 +679,7 @@ void DX11RenderingState::manageBlend(DX11RenderingState* currentState)
 	blendFactor[2] = 0.0f;
 	blendFactor[3] = 0.0f;*/
 
-	dxinstance->m_deviceContext->OMSetBlendState(alphaBlendingState, NULL, 0xffffffff);
+	dxinstance->mDeviceContext->OMSetBlendState(alphaBlendingState, NULL, 0xffffffff);
 
 }
 
@@ -734,13 +733,13 @@ void DX11RenderingState::manageDepthStencilTest(DX11RenderingState* currentState
 	//In DX11 we cannot have different masks for front/back faces
 	size_t hash = 0; 
 	hash_combine(hash
-				 , currentState->myGlobalDepthTestFlag, currentState->myGlobalDepthMaskFlag
-				 , currentState->myGlobalStencilEnabled, currentState->myGlobalStencilMask[0], currentState->myGlobalStencilFuncMask[0]//, currentState->myGlobalStencilMask[1], currentState->myGlobalStencilFuncMask[1]
-				 , currentState->myGlobalStencilOpSFail[0], currentState->myGlobalStencilOpDPFail[0], currentState->myGlobalStencilOpPass[0], currentState->myGlobalStencilMode[0]
-				 , currentState->myGlobalStencilOpSFail[1], currentState->myGlobalStencilOpDPFail[1], currentState->myGlobalStencilOpPass[1], currentState->myGlobalStencilMode[1]
+				 , currentState->mGlobalDepthTestFlag, currentState->mGlobalDepthMaskFlag
+				 , currentState->mGlobalStencilEnabled, currentState->mGlobalStencilMask[0], currentState->mGlobalStencilFuncMask[0]//, currentState->mGlobalStencilMask[1], currentState->mGlobalStencilFuncMask[1]
+				 , currentState->mGlobalStencilOpSFail[0], currentState->mGlobalStencilOpDPFail[0], currentState->mGlobalStencilOpPass[0], currentState->mGlobalStencilMode[0]
+				 , currentState->mGlobalStencilOpSFail[1], currentState->mGlobalStencilOpDPFail[1], currentState->mGlobalStencilOpPass[1], currentState->mGlobalStencilMode[1]
 	);
 
-	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 	DXInstance * dxinstance = renderer->getDXInstance();
 
 
@@ -758,30 +757,30 @@ void DX11RenderingState::manageDepthStencilTest(DX11RenderingState* currentState
 		ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
 
 		// Set up the description of the stencil state.
-		depthStencilDesc.DepthEnable = currentState->myGlobalDepthTestFlag;
-		depthStencilDesc.DepthWriteMask = currentState->myGlobalDepthMaskFlag ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
+		depthStencilDesc.DepthEnable = currentState->mGlobalDepthTestFlag;
+		depthStencilDesc.DepthWriteMask = currentState->mGlobalDepthMaskFlag ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
 		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
 
 		
-		depthStencilDesc.StencilEnable = currentState->myGlobalStencilEnabled;
+		depthStencilDesc.StencilEnable = currentState->mGlobalStencilEnabled;
 		
-		depthStencilDesc.StencilReadMask = currentState->myGlobalStencilMask[0];
-		depthStencilDesc.StencilWriteMask = currentState->myGlobalStencilFuncMask[0];
+		depthStencilDesc.StencilReadMask = currentState->mGlobalStencilMask[0];
+		depthStencilDesc.StencilWriteMask = currentState->mGlobalStencilFuncMask[0];
 
 		// Stencil operations if pixel is front-facing.
-		depthStencilDesc.FrontFace.StencilFailOp = ConvertStencilOp(currentState->myGlobalStencilOpSFail[0]);
-		depthStencilDesc.FrontFace.StencilDepthFailOp = ConvertStencilOp(currentState->myGlobalStencilOpDPFail[0]);
-		depthStencilDesc.FrontFace.StencilPassOp = ConvertStencilOp(currentState->myGlobalStencilOpPass[0]);
-		depthStencilDesc.FrontFace.StencilFunc = ConvertStencilFunc(currentState->myGlobalStencilMode[0]);
+		depthStencilDesc.FrontFace.StencilFailOp = ConvertStencilOp(currentState->mGlobalStencilOpSFail[0]);
+		depthStencilDesc.FrontFace.StencilDepthFailOp = ConvertStencilOp(currentState->mGlobalStencilOpDPFail[0]);
+		depthStencilDesc.FrontFace.StencilPassOp = ConvertStencilOp(currentState->mGlobalStencilOpPass[0]);
+		depthStencilDesc.FrontFace.StencilFunc = ConvertStencilFunc(currentState->mGlobalStencilMode[0]);
 
 		// Stencil operations if pixel is back-facing.
-		depthStencilDesc.BackFace.StencilFailOp = ConvertStencilOp(currentState->myGlobalStencilOpSFail[1]);
-		depthStencilDesc.BackFace.StencilDepthFailOp = ConvertStencilOp(currentState->myGlobalStencilOpDPFail[1]);
-		depthStencilDesc.BackFace.StencilPassOp = ConvertStencilOp(currentState->myGlobalStencilOpPass[1]);
-		depthStencilDesc.BackFace.StencilFunc = ConvertStencilFunc(currentState->myGlobalStencilMode[1]);
+		depthStencilDesc.BackFace.StencilFailOp = ConvertStencilOp(currentState->mGlobalStencilOpSFail[1]);
+		depthStencilDesc.BackFace.StencilDepthFailOp = ConvertStencilOp(currentState->mGlobalStencilOpDPFail[1]);
+		depthStencilDesc.BackFace.StencilPassOp = ConvertStencilOp(currentState->mGlobalStencilOpPass[1]);
+		depthStencilDesc.BackFace.StencilFunc = ConvertStencilFunc(currentState->mGlobalStencilMode[1]);
 
 		// Create the depth stencil state.
-		HRESULT result = dxinstance->m_device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
+		HRESULT result = dxinstance->mDevice->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
 		if (FAILED(result))
 			return;
 
@@ -789,16 +788,16 @@ void DX11RenderingState::manageDepthStencilTest(DX11RenderingState* currentState
 	}
 
 	// Set the depth stencil state.
-	dxinstance->m_deviceContext->OMSetDepthStencilState(depthStencilState, currentState->myGlobalStencilFuncRef[0]);
+	dxinstance->mDeviceContext->OMSetDepthStencilState(depthStencilState, currentState->mGlobalStencilFuncRef[0]);
 
 }
 
 void DX11RenderingState::manageRasterizerState(DX11RenderingState* currentState)
 {
 	size_t hash = 0;
-	hash_combine(hash, currentState->myGlobalCullFlag, currentState->myPolygonMode, currentState->myGlobalScissorTestFlag);
+	hash_combine(hash, currentState->mGlobalCullFlag, currentState->mPolygonMode, currentState->mGlobalScissorTestFlag);
 
-	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::theGlobalRenderer);
+	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 	DXInstance * dxinstance = renderer->getDXInstance();
 
 
@@ -818,10 +817,10 @@ void DX11RenderingState::manageRasterizerState(DX11RenderingState* currentState)
 		rasterDesc.DepthClipEnable = true;
 		rasterDesc.FrontCounterClockwise = true;
 		rasterDesc.MultisampleEnable = false;
-		rasterDesc.ScissorEnable = currentState->myGlobalScissorTestFlag;
+		rasterDesc.ScissorEnable = currentState->mGlobalScissorTestFlag;
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
 
-		switch (currentState->myGlobalCullFlag)
+		switch (currentState->mGlobalCullFlag)
 		{
 		case RendererCullMode::RENDERER_CULL_NONE:
 			rasterDesc.CullMode = D3D11_CULL_NONE;
@@ -837,7 +836,7 @@ void DX11RenderingState::manageRasterizerState(DX11RenderingState* currentState)
 			break;
 		}
 
-		switch (currentState->myPolygonMode)
+		switch (currentState->mPolygonMode)
 		{
 		case RendererPolygonMode::RENDERER_LINE:
 			rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
@@ -851,7 +850,7 @@ void DX11RenderingState::manageRasterizerState(DX11RenderingState* currentState)
 		}
 
 		// Create the rasterizer state from the description we just filled out.
-		HRESULT result = dxinstance->m_device->CreateRasterizerState(&rasterDesc, &rasterizerState);
+		HRESULT result = dxinstance->mDevice->CreateRasterizerState(&rasterDesc, &rasterizerState);
 		if (FAILED(result))
 			return;
 
@@ -859,18 +858,18 @@ void DX11RenderingState::manageRasterizerState(DX11RenderingState* currentState)
 	}
 
 	// Now set the rasterizer state.
-	dxinstance->m_deviceContext->RSSetState(rasterizerState);
-	if (currentState->myGlobalScissorTestFlag)
+	dxinstance->mDeviceContext->RSSetState(rasterizerState);
+	if (currentState->mGlobalScissorTestFlag)
 	{
 		D3D11_RECT rect;
 		int vp_height = renderer->GetCurrentViewportSize().y;
 
-		rect.bottom = currentState->myGlobalScissorYFlag;
-		rect.top = (currentState->myGlobalScissorYFlag + currentState->myGlobalScissorHeightFlag);
-		rect.left = currentState->myGlobalScissorXFlag;
-		rect.right = currentState->myGlobalScissorXFlag + currentState->myGlobalScissorWidthFlag;
+		rect.bottom = currentState->mGlobalScissorYFlag;
+		rect.top = (currentState->mGlobalScissorYFlag + currentState->mGlobalScissorHeightFlag);
+		rect.left = currentState->mGlobalScissorXFlag;
+		rect.right = currentState->mGlobalScissorXFlag + currentState->mGlobalScissorWidthFlag;
 
-		if (!renderer->getDXInstance()->m_isFBORenderTarget)
+		if (!renderer->getDXInstance()->mIsFBORenderTarget)
 		{
 			rect.bottom = vp_height - rect.bottom;
 			rect.top = vp_height - rect.top;
@@ -880,7 +879,7 @@ void DX11RenderingState::manageRasterizerState(DX11RenderingState* currentState)
 			std::swap(rect.top, rect.bottom);
 		}
 
-		dxinstance->m_deviceContext->RSSetScissorRects(1, &rect);
+		dxinstance->mDeviceContext->RSSetScissorRects(1, &rect);
 	}
 }
 
@@ -889,44 +888,44 @@ void DX11RenderingState::FlushState(RenderingState* currentState, bool force)
 	DX11RenderingState* otherOne = static_cast<DX11RenderingState*>(currentState);
 	
 	// Blend State
-	otherOne->myGlobalBlendFlag = myGlobalBlendFlag;
-	otherOne->myGlobalBlendValue1Flag = myGlobalBlendValue1Flag;
-	otherOne->myGlobalBlendValue2Flag = myGlobalBlendValue2Flag;
+	otherOne->mGlobalBlendFlag = mGlobalBlendFlag;
+	otherOne->mGlobalBlendValue1Flag = mGlobalBlendValue1Flag;
+	otherOne->mGlobalBlendValue2Flag = mGlobalBlendValue2Flag;
 
 	for(int i=0;i<4;++i)
-		otherOne->myGlobalColorMask[i] = myGlobalColorMask[i];
+		otherOne->mGlobalColorMask[i] = mGlobalColorMask[i];
 
 	manageBlend(otherOne);
 
 	// Depth Stencil
-	otherOne->myGlobalDepthTestFlag = myGlobalDepthTestFlag;
-	otherOne->myGlobalDepthMaskFlag = myGlobalDepthMaskFlag;
+	otherOne->mGlobalDepthTestFlag = mGlobalDepthTestFlag;
+	otherOne->mGlobalDepthMaskFlag = mGlobalDepthMaskFlag;
 
-	otherOne->myGlobalDepthTestFlag = myGlobalDepthTestFlag;
-	otherOne->myGlobalDepthMaskFlag = myGlobalDepthMaskFlag;
-	otherOne->myGlobalStencilEnabled = myGlobalStencilEnabled;
+	otherOne->mGlobalDepthTestFlag = mGlobalDepthTestFlag;
+	otherOne->mGlobalDepthMaskFlag = mGlobalDepthMaskFlag;
+	otherOne->mGlobalStencilEnabled = mGlobalStencilEnabled;
 
 	for (int i = 0; i < 2; ++i)
 	{
-		otherOne->myGlobalStencilMode[i] = myGlobalStencilMode[i];
-		otherOne->myGlobalStencilFuncMask[i] = myGlobalStencilFuncMask[i];
-		otherOne->myGlobalStencilFuncRef[i] = myGlobalStencilFuncRef[i];
-		otherOne->myGlobalStencilOpSFail[i] = myGlobalStencilOpSFail[i];
-		otherOne->myGlobalStencilOpDPFail[i] = myGlobalStencilOpDPFail[i];
-		otherOne->myGlobalStencilOpPass[i] = myGlobalStencilOpPass[i];
-		otherOne->myGlobalStencilMode[i] = myGlobalStencilMode[i];
+		otherOne->mGlobalStencilMode[i] = mGlobalStencilMode[i];
+		otherOne->mGlobalStencilFuncMask[i] = mGlobalStencilFuncMask[i];
+		otherOne->mGlobalStencilFuncRef[i] = mGlobalStencilFuncRef[i];
+		otherOne->mGlobalStencilOpSFail[i] = mGlobalStencilOpSFail[i];
+		otherOne->mGlobalStencilOpDPFail[i] = mGlobalStencilOpDPFail[i];
+		otherOne->mGlobalStencilOpPass[i] = mGlobalStencilOpPass[i];
+		otherOne->mGlobalStencilMode[i] = mGlobalStencilMode[i];
 	}
 	manageDepthStencilTest(otherOne);
 
 	// manage raster
-	otherOne->myGlobalCullFlag = myGlobalCullFlag;
-	otherOne->myPolygonMode = myPolygonMode;
+	otherOne->mGlobalCullFlag = mGlobalCullFlag;
+	otherOne->mPolygonMode = mPolygonMode;
 
-	otherOne->myGlobalScissorTestFlag = myGlobalScissorTestFlag;
-	otherOne->myGlobalScissorXFlag = myGlobalScissorXFlag;
-	otherOne->myGlobalScissorYFlag = myGlobalScissorYFlag;
-	otherOne->myGlobalScissorWidthFlag = myGlobalScissorWidthFlag;
-	otherOne->myGlobalScissorHeightFlag = myGlobalScissorHeightFlag;
+	otherOne->mGlobalScissorTestFlag = mGlobalScissorTestFlag;
+	otherOne->mGlobalScissorXFlag = mGlobalScissorXFlag;
+	otherOne->mGlobalScissorYFlag = mGlobalScissorYFlag;
+	otherOne->mGlobalScissorWidthFlag = mGlobalScissorWidthFlag;
+	otherOne->mGlobalScissorHeightFlag = mGlobalScissorHeightFlag;
 
 	manageRasterizerState(otherOne);
 }
@@ -970,7 +969,7 @@ void RendererDX11::SetSampler(bool repeatU, bool repeatV, bool forceNearest)
 		| (repeatV ? 2 : 0) 
 		| (forceNearest ? 4 : 0); 
 
-	if (mySamplerStateList.find(hash) == mySamplerStateList.end())
+	if (mSamplerStateList.find(hash) == mSamplerStateList.end())
 	{
 		D3D11_SAMPLER_DESC samplerDesc;
 		samplerDesc.Filter = forceNearest ? D3D11_FILTER_MIN_MAG_MIP_POINT : D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -986,13 +985,13 @@ void RendererDX11::SetSampler(bool repeatU, bool repeatV, bool forceNearest)
 		samplerDesc.BorderColor[3] = 0;
 		samplerDesc.MinLOD = 0;
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-		HRESULT result = myDXInstance.m_device->CreateSamplerState(&samplerDesc, &mySamplerStateList[hash]);
+		HRESULT result = mDXInstance.mDevice->CreateSamplerState(&samplerDesc, &mSamplerStateList[hash]);
 		if (FAILED(result))
 		{
 			KIGS_ERROR("Failed to create sampler", 3);
 		}
 	}
-	myDXInstance.m_deviceContext->PSSetSamplers(GetActiveTextureChannel(), 1, &mySamplerStateList[hash]);
+	mDXInstance.mDeviceContext->PSSetSamplers(GetActiveTextureChannel(), 1, &mSamplerStateList[hash]);
 }
 
 // ### VertexBufferManager Section
@@ -1243,7 +1242,7 @@ void VertexBufferManager::BufferData(unsigned int bufferName, unsigned int buffe
 		InitData.SysMemSlicePitch = 0;
 
 		D3D11_SUBRESOURCE_DATA* setData =(D3D11_SUBRESOURCE_DATA*)( (data!=nullptr) ? &InitData : data);
-		RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance()->m_device->CreateBuffer(mBufferList[bufferName].mDesc, setData, &mBufferList[bufferName].mI3DBuffer);
+		ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance()->mDevice->CreateBuffer(mBufferList[bufferName].mDesc, setData, &mBufferList[bufferName].mI3DBuffer);
 	}
 	else if (data) // already created buffer
 	{
@@ -1252,11 +1251,11 @@ void VertexBufferManager::BufferData(unsigned int bufferName, unsigned int buffe
 		ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 
 		//  Disable GPU access to the vertex buffer data.
-		RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance()->m_deviceContext->Map(mBufferList[bufferName].mI3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance()->mDeviceContext->Map(mBufferList[bufferName].mI3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		//  Update the vertex buffer here.
 		memcpy(mappedResource.pData, data, size);
 		//  Reenable GPU access to the vertex buffer data.
-		RendererDX11::theGlobalRenderer->as<RendererDX11>()->getDXInstance()->m_deviceContext->Unmap(mBufferList[bufferName].mI3DBuffer, 0);
+		ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance()->mDeviceContext->Unmap(mBufferList[bufferName].mI3DBuffer, 0);
 	}
 }
 
@@ -1267,7 +1266,7 @@ size_t VertexBufferManager::GetAllocatedBufferCount()
 
 void RendererDX11::SetVertexAttribDivisor(TravState* state, unsigned int bufferName, int attribID, int divisor)
 {
-	myVertexBufferManager->SetVertexAttribDivisor(bufferName, attribID, divisor * (state->GetHolographicMode() ? 2 : 1));
+	mVertexBufferManager->SetVertexAttribDivisor(bufferName, attribID, divisor * (state->GetHolographicMode() ? 2 : 1));
 }
 
 size_t VertexBufferManager::GetCurrentLayoutHash()
@@ -1443,7 +1442,7 @@ void RendererDX11::DrawUIQuad(TravState * state, const UIVerticesInfo * qi)
 	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, qi->texComp, KIGS_FLOAT, false, qi->Offset, (void*)qi->texStride, nullptr);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
-	//	myDXInstance.m_deviceContext->IASetIndexBuffer(UIIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	//	mDXInstance.mDeviceContext->IASetIndexBuffer(UIIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	DrawArrays(state, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 0, qi->vertexCount);
 }
@@ -1459,21 +1458,21 @@ void RendererDX11::DrawUITriangles(TravState * state, const UIVerticesInfo * qi)
 	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, qi->texComp, KIGS_FLOAT, false, qi->Offset, (void*)qi->texStride, nullptr);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
-	// myDXInstance.m_deviceContext->IASetIndexBuffer(UIIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	// mDXInstance.mDeviceContext->IASetIndexBuffer(UIIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	DrawArrays(state, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, 0, qi->vertexCount);
 }
 
 void RendererDX11::DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount)
 {
-	myVertexBufferManager->FlushBindBuffer();
+	mVertexBufferManager->FlushBindBuffer();
 	GetActiveShader()->as<API3DShader>()->setLayout();
 
-	auto buffers = ((VertexBufferManager*)myVertexBufferManager.get())->GetBoundBuffersList();
-	auto strides = ((VertexBufferManager*)myVertexBufferManager.get())->GetBoundBuffersStride();
+	auto buffers = ((VertexBufferManager*)mVertexBufferManager.get())->GetBoundBuffersList();
+	auto strides = ((VertexBufferManager*)mVertexBufferManager.get())->GetBoundBuffersStride();
 	std::vector<u32> offsets; offsets.resize(buffers.size(), 0);
 
-	myDXInstance.m_deviceContext->IASetVertexBuffers(
+	mDXInstance.mDeviceContext->IASetVertexBuffers(
 		0,					// the first input slot for binding
 		buffers.size(),		// the number of buffers in the array
 		buffers.data(),		// the array of vertex buffers
@@ -1483,7 +1482,7 @@ void RendererDX11::DrawElementsInstanced(TravState* state, unsigned int mode, in
 	FlushState();
 	FlushMatrix(state);
 
-	ID3D11Buffer* ibuffer = ((VertexBufferManager*)myVertexBufferManager.get())->GetIBuffer();
+	ID3D11Buffer* ibuffer = ((VertexBufferManager*)mVertexBufferManager.get())->GetIBuffer();
 
 	u32 ioffset = 0;
 	if (indices != nullptr)
@@ -1491,7 +1490,7 @@ void RendererDX11::DrawElementsInstanced(TravState* state, unsigned int mode, in
 		ioffset = (u32)indices;
 	}
 
-	myDXInstance.m_deviceContext->IASetIndexBuffer(ibuffer, (DXGI_FORMAT)type, ioffset);
+	mDXInstance.mDeviceContext->IASetIndexBuffer(ibuffer, (DXGI_FORMAT)type, ioffset);
 
 	KIGS_ASSERT(mode != KIGS_DRAW_MODE_TRIANGLE_FAN);
 #ifdef KIGS_TOOLS
@@ -1499,10 +1498,10 @@ void RendererDX11::DrawElementsInstanced(TravState* state, unsigned int mode, in
 	gRendererStats.DrawCallsTriangleCount += primcount * count / 3;
 #endif
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	myDXInstance.m_deviceContext->IASetPrimitiveTopology((D3D_PRIMITIVE_TOPOLOGY)mode);
+	mDXInstance.mDeviceContext->IASetPrimitiveTopology((D3D_PRIMITIVE_TOPOLOGY)mode);
 
 	// Render the triangle.
-	myDXInstance.m_deviceContext->DrawIndexedInstanced(count, primcount * (state->GetHolographicMode() ? 2 : 1), 0, 0, 0);
+	mDXInstance.mDeviceContext->DrawIndexedInstanced(count, primcount * (state->GetHolographicMode() ? 2 : 1), 0, 0, 0);
 }
 
 void RendererDX11::DrawPendingInstances(TravState* state)
@@ -1513,7 +1512,7 @@ void RendererDX11::DrawPendingInstances(TravState* state)
 	static int t = -1;
 	if (gKigsToolsAvailable)
 	{
-		if (!state->myPath)
+		if (!state->mPath)
 			ImGui::SliderInt("o", &o, -1, state->mInstancing.size() - 1);
 		else
 			ImGui::SliderInt("t", &t, -1, state->mInstancing.size() - 1);
@@ -1544,8 +1543,8 @@ void RendererDX11::DrawPendingInstances(TravState* state)
 		auto& instance = *instance_ptr;
 		++k;
 #ifdef DEBUG_DRAW_INSTANCES
-		if (!state->myPath && o != -1 && o != k - 1) continue;
-		if (state->myPath && t != -1 && t != k - 1) continue;
+		if (!state->mPath && o != -1 && o != k - 1) continue;
+		if (state->mPath && t != -1 && t != k - 1) continue;
 #endif
 		auto mesh = instance.first;
 		state->mInstanceCount = instance.second.transforms.size();
@@ -1592,14 +1591,14 @@ void RendererDX11::DrawPendingInstances(TravState* state)
 // # Draw functions
 void RendererDX11::DrawArrays(TravState* state, unsigned int mode, int first, int count)
 {
-	myVertexBufferManager->FlushBindBuffer();
+	mVertexBufferManager->FlushBindBuffer();
 	GetActiveShader()->as<API3DShader>()->setLayout();
 
-	auto buffers = ((VertexBufferManager*)myVertexBufferManager.get())->GetBoundBuffersList();
-	auto strides = ((VertexBufferManager*)myVertexBufferManager.get())->GetBoundBuffersStride();
+	auto buffers = ((VertexBufferManager*)mVertexBufferManager.get())->GetBoundBuffersList();
+	auto strides = ((VertexBufferManager*)mVertexBufferManager.get())->GetBoundBuffersStride();
 	std::vector<u32> offsets; offsets.resize(buffers.size(), 0);
 
-	myDXInstance.m_deviceContext->IASetVertexBuffers(
+	mDXInstance.mDeviceContext->IASetVertexBuffers(
 		0,					// the first input slot for binding
 		buffers.size(),		// the number of buffers in the array
 		buffers.data(),		// the array of vertex buffers
@@ -1613,7 +1612,7 @@ void RendererDX11::DrawArrays(TravState* state, unsigned int mode, int first, in
 
 	KIGS_ASSERT(mode != KIGS_DRAW_MODE_TRIANGLE_FAN);
 
-	myDXInstance.m_deviceContext->IASetPrimitiveTopology((D3D_PRIMITIVE_TOPOLOGY)mode);
+	mDXInstance.mDeviceContext->IASetPrimitiveTopology((D3D_PRIMITIVE_TOPOLOGY)mode);
 #ifdef KIGS_TOOLS
 	gRendererStats.DrawCalls += 1;
 	gRendererStats.DrawCallsTriangleCount += count / 3;
@@ -1621,24 +1620,24 @@ void RendererDX11::DrawArrays(TravState* state, unsigned int mode, int first, in
 	// Render the triangle.
 	if (state->GetHolographicMode())
 	{
-		myDXInstance.m_deviceContext->DrawInstanced(count, 2, 0, 0);
+		mDXInstance.mDeviceContext->DrawInstanced(count, 2, 0, 0);
 	}
 	else
 	{
-		myDXInstance.m_deviceContext->Draw(count, 0);
+		mDXInstance.mDeviceContext->Draw(count, 0);
 	}
 }
 
 void RendererDX11::DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices)
 {
-	myVertexBufferManager->FlushBindBuffer();
+	mVertexBufferManager->FlushBindBuffer();
 	GetActiveShader()->as<API3DShader>()->setLayout();
 
-	auto buffers = ((VertexBufferManager*)myVertexBufferManager.get())->GetBoundBuffersList();
-	auto strides = ((VertexBufferManager*)myVertexBufferManager.get())->GetBoundBuffersStride();
+	auto buffers = ((VertexBufferManager*)mVertexBufferManager.get())->GetBoundBuffersList();
+	auto strides = ((VertexBufferManager*)mVertexBufferManager.get())->GetBoundBuffersStride();
 	std::vector<u32> offsets; offsets.resize(buffers.size(), 0);
 
-	myDXInstance.m_deviceContext->IASetVertexBuffers(
+	mDXInstance.mDeviceContext->IASetVertexBuffers(
 		0,					// the first input slot for binding
 		buffers.size(),		// the number of buffers in the array
 		buffers.data(),		// the array of vertex buffers
@@ -1648,7 +1647,7 @@ void RendererDX11::DrawElements(TravState* state, unsigned int mode, int count, 
 	FlushState();
 	FlushMatrix(state);
 
-	ID3D11Buffer* ibuffer = ((VertexBufferManager*)myVertexBufferManager.get())->GetIBuffer();
+	ID3D11Buffer* ibuffer = ((VertexBufferManager*)mVertexBufferManager.get())->GetIBuffer();
 
 	u32 ioffset = 0;
 	if (indices != nullptr)
@@ -1656,11 +1655,11 @@ void RendererDX11::DrawElements(TravState* state, unsigned int mode, int count, 
 		ioffset = (u32)indices;
 	}
 
-	myDXInstance.m_deviceContext->IASetIndexBuffer(ibuffer, (DXGI_FORMAT)type, ioffset);
+	mDXInstance.mDeviceContext->IASetIndexBuffer(ibuffer, (DXGI_FORMAT)type, ioffset);
 
 	KIGS_ASSERT(mode != KIGS_DRAW_MODE_TRIANGLE_FAN);
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	myDXInstance.m_deviceContext->IASetPrimitiveTopology((D3D_PRIMITIVE_TOPOLOGY)mode);
+	mDXInstance.mDeviceContext->IASetPrimitiveTopology((D3D_PRIMITIVE_TOPOLOGY)mode);
 
 #ifdef KIGS_TOOLS
 	gRendererStats.DrawCalls += 1;
@@ -1669,11 +1668,11 @@ void RendererDX11::DrawElements(TravState* state, unsigned int mode, int count, 
 	// Render the triangle.
 	if (state->GetHolographicMode())
 	{
-		myDXInstance.m_deviceContext->DrawIndexedInstanced(count, 2, 0, 0, 0);
+		mDXInstance.mDeviceContext->DrawIndexedInstanced(count, 2, 0, 0, 0);
 	}
 	else
 	{
-		myDXInstance.m_deviceContext->DrawIndexed(count, 0, 0);
+		mDXInstance.mDeviceContext->DrawIndexed(count, 0, 0);
 	}
 }
 
@@ -1724,7 +1723,7 @@ bool RendererDX11::BeginOcclusionQuery(TravState* state, u64& query_id, Renderer
 		auto& query = query_list.emplace_back();
 		D3D11_QUERY_DESC desc = {};
 		desc.Query = type == RENDERER_QUERY_SAMPLES_PASSED ? D3D11_QUERY_OCCLUSION : D3D11_QUERY_OCCLUSION_PREDICATE;
-		DX::ThrowIfFailed(myDXInstance.m_device->CreateQuery(&desc, &query.query));
+		DX::ThrowIfFailed(mDXInstance.mDevice->CreateQuery(&desc, &query.query));
 		encoder.index = (u16)(query_list.size() - 1);
 	}
 	auto& query = query_list[encoder.index];
@@ -1735,7 +1734,7 @@ bool RendererDX11::BeginOcclusionQuery(TravState* state, u64& query_id, Renderer
 	query.result_ok = false;
 	query.frames_to_keep = frames_to_keep;
 	query.frame_of_execution = frame_index;
-	myDXInstance.m_deviceContext->Begin(query.query);
+	mDXInstance.mDeviceContext->Begin(query.query);
 
 	query_id = encoder.id;
 #ifdef KIGS_TOOLS
@@ -1758,7 +1757,7 @@ void RendererDX11::EndOcclusionQuery(TravState* state, u64 query_id)
 
 	KIGS_ASSERT(frame_index == query.frame_of_execution); // Same frame as begin call
 
-	myDXInstance.m_deviceContext->End(query.query);
+	mDXInstance.mDeviceContext->End(query.query);
 }
 
 bool RendererDX11::GetOcclusionQueryResult(TravState* state, u64 query_id, u64& result, int frames_to_extend_if_not_ready)
@@ -1787,11 +1786,11 @@ bool RendererDX11::GetOcclusionQueryResult(TravState* state, u64 query_id, u64& 
 		HRESULT ok = S_FALSE;
 		if (type == RENDERER_QUERY_ANY_SAMPLES_PASSED)
 		{
-			ok = myDXInstance.m_deviceContext->GetData(query.query, &bool_result, sizeof(::BOOL), 0);
+			ok = mDXInstance.mDeviceContext->GetData(query.query, &bool_result, sizeof(::BOOL), 0);
 			query.result = bool_result ? 1 : 0;
 		}
 		else
-			ok = myDXInstance.m_deviceContext->GetData(query.query, &query.result, sizeof(::UINT64), 0);
+			ok = mDXInstance.mDeviceContext->GetData(query.query, &query.result, sizeof(::UINT64), 0);
 
 		query.result_ok = ok == S_OK;
 		
@@ -1818,7 +1817,7 @@ void RendererDX11::startFrame(TravState* state)
 	mOcclusionQueriesForFrame = 0;
 
 #ifdef KIGS_TOOLS
-	gRendererStats.AllocatedBuffers = myVertexBufferManager->GetAllocatedBufferCount();
+	gRendererStats.AllocatedBuffers = mVertexBufferManager->GetAllocatedBufferCount();
 #endif
 
 	// Manage queries
@@ -1835,13 +1834,13 @@ void RendererDX11::startFrame(TravState* state)
 	}
 #ifdef WUP
 	static bool s_canUseWaitForNextFrameReadyAPI = true;
-	if (myDXInstance.mCurrentFrame)
+	if (mDXInstance.mCurrentFrame)
 	{
 		if (s_canUseWaitForNextFrameReadyAPI)
 		{
 			try
 			{
-				myDXInstance.mHolographicSpace.WaitForNextFrameReady();
+				mDXInstance.mHolographicSpace.WaitForNextFrameReady();
 			}
 			catch (winrt::hresult_not_implemented const& /*ex*/)
 			{
@@ -1850,12 +1849,12 @@ void RendererDX11::startFrame(TravState* state)
 		}
 		else
 		{
-			myDXInstance.mCurrentFrame.WaitForFrameToFinish();
+			mDXInstance.mCurrentFrame.WaitForFrameToFinish();
 		}
 	}
-	if (myDXInstance.mHolographicSpace)
+	if (mDXInstance.mHolographicSpace)
 	{
-		myDXInstance.mCurrentFrame = myDXInstance.mHolographicSpace.CreateNextFrame();
+		mDXInstance.mCurrentFrame = mDXInstance.mHolographicSpace.CreateNextFrame();
 		std::vector<CMSP> cameras = GetInstances("Camera");
 		for (auto cam : cameras)
 		{
@@ -1864,12 +1863,12 @@ void RendererDX11::startFrame(TravState* state)
 			if (!rs) continue;
 			if (!rs->IsHolographic()) continue;
 
-			auto prediction = myDXInstance.mCurrentFrame.CurrentPrediction();
+			auto prediction = mDXInstance.mCurrentFrame.CurrentPrediction();
 			auto poses = prediction.CameraPoses();
 
 			for (auto pose : poses)
 			{
-				rs->as<DX11RenderingScreen>()->SetRenderingParameters(myDXInstance.mCurrentFrame.GetRenderingParameters(pose));
+				rs->as<DX11RenderingScreen>()->SetRenderingParameters(mDXInstance.mCurrentFrame.GetRenderingParameters(pose));
 				rs->as<DX11RenderingScreen>()->CreateResources();
 			}
 

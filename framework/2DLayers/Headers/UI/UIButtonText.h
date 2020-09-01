@@ -4,6 +4,19 @@
 #include "UIButton.h"
 #include "maUSString.h"
 
+// ****************************************
+// * UIButtonText class
+// * --------------------------------------
+/**
+* \file	UIButtonText.h
+* \class	UIButtonText
+* \ingroup 2DLayers
+* \brief	Three state button with different texts.
+*
+* Probably obsolete. Perhaps too keep has an upgrador
+*/
+// ****************************************
+
 class UIButtonText : public UIButton
 {
 public:
@@ -36,22 +49,22 @@ protected:
 	DECLARE_METHOD(ReloadTexture);
 	COREMODIFIABLE_METHODS(ReloadTexture);
 
-	SmartPointer<Texture>				myUpTexture;
-	SmartPointer<Texture>				myDownTexture;
-	SmartPointer<Texture>				myOverTexture;
+	SmartPointer<Texture>				mUpTexturePointer;
+	SmartPointer<Texture>				mDownTexturePointer;
+	SmartPointer<Texture>				mOverTexturePointer;
 
-	maString			myUpText;
-	maString			myDownText;
-	maString			myOverText;
+	maString			mUpText;
+	maString			mDownText;
+	maString			mOverText;
 
-	maVect4DF			myUpColor;
-	maVect4DF			myOverColor;
-	maVect4DF			myDownColor;
+	maVect4DF			mUpColor;
+	maVect4DF			mOverColor;
+	maVect4DF			mDownColor;
 
-	maString			myFont;
-	maUInt				myFontSize;
-	maUInt				myLength;
-	maUInt				myTextAlign;
+	maString			mFont;
+	maUInt				mFontSize;
+	maUInt				mLength;
+	maUInt				mTextAlignment;
 };
 
 #endif //_UIBUTTONTEXT_H_

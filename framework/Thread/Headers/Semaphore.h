@@ -6,12 +6,13 @@
 // ****************************************
 // * Semaphore class
 // * --------------------------------------
-/*!  \class Semaphore
-      base class for semaphores
-	 \ingroup Thread
-*/
-// ****************************************
-
+/**
+ * \file	Semaphore.h
+ * \class	Semaphore
+ * \ingroup Thread
+ * \brief	Thread management.
+ */
+ // ****************************************
 class Semaphore : public CoreModifiable
 {
 public:
@@ -21,7 +22,7 @@ public:
 	//! constructor
     Semaphore(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
-	auto& GetPrivateMutex() {return myPrivateMutex;}
+	auto& GetPrivateMutex() {return mPrivateMutex;}
 
 protected:
 
@@ -29,7 +30,7 @@ protected:
     virtual ~Semaphore();
 
 	// CoreModifiable mutex is recursive... Here we want a non recursive semaphore
-	std::mutex	myPrivateMutex;
+	std::mutex	mPrivateMutex;
 };
 
 #endif //_SEMAPHORE_H_

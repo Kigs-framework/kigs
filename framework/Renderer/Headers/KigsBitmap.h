@@ -6,22 +6,18 @@
 #include "Drawable.h"
 #include "CoreModifiableAttribute.h"
 
+
 // ****************************************
 // * KigsBitmap class
 // * --------------------------------------
 /**
-* \file	KigsBitmap.h
-* \class	KigsBitmap
-* \ingroup Drawable
-* \ingroup RendererDrawable
-* \brief
-* \author	ukn
-* \version ukn
-* \date	ukn
-*
-* Module Dependency :<br><ul><li>ModuleRenderer</li></ul>
-*/
-// ****************************************
+ * \file	KigsBitmap.h
+ * \class	KigsBitmap
+ * \ingroup Renderer
+ * \brief	Pixel buffer used as a Texture.
+ *
+ */
+ // ****************************************
 class KigsBitmap : public Drawable
 {
 public:
@@ -59,9 +55,9 @@ public:
 	// no check for out of bound
 	inline KigsBitmapPixel	GetPixel(int x, int y) const
 	{
-		KigsBitmapPixel* readPixel = (KigsBitmapPixel*)myRawPixels;
+		KigsBitmapPixel* readPixel = (KigsBitmapPixel*)mRawPixels;
 		readPixel += x;
-		readPixel += y*mySize[0];
+		readPixel += y*mSize[0];
 		return *readPixel;
 	}
 
@@ -69,16 +65,16 @@ public:
 
 	inline void Clear(const KigsBitmapPixel& clearColor)
 	{
-		Box(0, 0, mySize[0], mySize[1], clearColor);
+		Box(0, 0, mSize[0], mSize[1], clearColor);
 	}
 
 	inline void PutPixel(int x, int y, const KigsBitmapPixel& write)
 	{
-		myDirtyZone.Update(x, y);
+		mDirtyZone.Update(x, y);
 
-		KigsBitmapPixel* readPixel = (KigsBitmapPixel*)myRawPixels;
+		KigsBitmapPixel* readPixel = (KigsBitmapPixel*)mRawPixels;
 		readPixel += x;
-		readPixel += y*mySize[0];
+		readPixel += y*mSize[0];
 		*readPixel = write;
 	}
 
@@ -93,9 +89,9 @@ protected:
 
 	inline unsigned char*	GetPixelAddress(int x, int y)
 	{
-		KigsBitmapPixel* readPixel = (KigsBitmapPixel*)myRawPixels;
+		KigsBitmapPixel* readPixel = (KigsBitmapPixel*)mRawPixels;
 		readPixel += x;
-		readPixel += y*mySize[0];
+		readPixel += y*mSize[0];
 		return (unsigned char*)readPixel;
 	}
 
@@ -110,14 +106,14 @@ protected:
 	*/
 	bool PreDraw(TravState*)  override;
 
-	maVect2DI			mySize;
+	maVect2DI			mSize;
 
 	// manage a RGBA8888 array of pixel and update it's father texture if needed 
-	unsigned char*		myRawPixels;
+	unsigned char*		mRawPixels;
 
 	virtual ~KigsBitmap();
 
-	BBox2DI	myDirtyZone;
+	BBox2DI	mDirtyZone;
 
 };
 

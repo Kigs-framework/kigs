@@ -7,33 +7,12 @@
 // * JoystickDevice class
 // * --------------------------------------
 /**
- * \file	JoystickDevice.h
  * \class	JoystickDevice
+ * \file	JoystickDevice.h
  * \ingroup Input
- * \brief	joystick management
- * \author	ukn
- * \version ukn
- * \date	ukn
- * 
- * <dl class="dependency"><dt><b>Dependency:</b></dt><dd>ModuleInput</dd></dl>
- * <dl class="exemple"><dt><b>Exemple:</b></dt><dd>
- * <span class="comment"> Load the module :</span><br>
- * <span class="code">
- * theInputModule=new ModuleInput(<i>instance_name</i>);<br>
- * theInputModule->Init(KigsCore::Instance(),0);<br>
- * </span>
- * <span class="comment"> Get the object :</span><br>
- * <span class="code">
- * theMouse=theInputModule->GetJoystick();<br>
- * </span>
- * <span class="comment">Get a button state :</span><br>
- * <span class="code">
- * theInputModule->GetJoystick(<i>joystick_index</i>)->getButtonState(<i>button_id</i>);<br>
- * </span>
- * <span class="comment">DO NOT FORGET MODULE UPDATE</span><br>
- * </dd></dl>
+ * \brief	Generic Joystick / pad management.
  */
-// ****************************************
+ // ****************************************
 class JoystickDevice : public InputDevice
 {
 public:
@@ -58,21 +37,21 @@ public:
 	 * \fn 		int				getButtonsCount()
 	 * \return	the number of buttons
 	 */
-	int				getButtonsCount(){return myButtonsCount;}
+	int				getButtonsCount(){return mButtonsCount;}
 	
 	/**
 	 * \brief	axis count for this joystick
 	 * \fn 		int				getAxisCount()
 	 * \return	the number of axis
 	 */
-	int				getAxisCount(){return myAxisCount;}
+	int				getAxisCount(){return mAxisCount;}
 	
 	/**
 	 * \brief	POV count for this joystick
 	 * \fn 		int				getPovCount()
 	 * \return	the number of POV
 	 */
-	int				getPovCount(){return myPovCount;}
+	int				getPovCount(){return mPovCount;}
 	
 	/**
 	 * \brief	retreive given button state
@@ -117,7 +96,7 @@ public:
 	 */
 	int				getPOVState(int index)
 	{
-		return GetItemiState(myButtonsCount+myAxisCount+index);
+		return GetItemiState(mButtonsCount+mAxisCount+index);
 	}
 
 	/**
@@ -128,16 +107,16 @@ public:
 	 */
 	kfloat				getRorationState(int index)
 	{
-		return GetItemfState(myButtonsCount+myAxisCount+myPovCount+index);
+		return GetItemfState(mButtonsCount+mAxisCount+mPovCount+index);
 	}
 
 protected:
 	//! number of button
-	unsigned int myButtonsCount;
+	unsigned int mButtonsCount;
 	//! number of axis
-	unsigned int myAxisCount;
+	unsigned int mAxisCount;
 	//! number of pov
-	unsigned int myPovCount;
+	unsigned int mPovCount;
 
 	/**
 	 * \brief	destructor

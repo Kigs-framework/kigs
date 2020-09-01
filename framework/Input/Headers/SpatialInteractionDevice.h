@@ -56,6 +56,17 @@ struct Interaction
 	std::optional<Joint> middle_tip;
 };
 
+// ****************************************
+// * SpatialInteractionDevice class
+// * --------------------------------------
+/**
+ * \class	SpatialInteractionDevice
+ * \file	SpatialInteractionDevice.h
+ * \ingroup Input
+ * \brief	Base class to manage spacial interaction ( Hololens ).
+ */
+ // ****************************************
+
 class SpatialInteractionDevice : public InputDevice
 {
 public:
@@ -66,12 +77,12 @@ public:
 	virtual bool GetInteractionState(u32 ID, SourceState & state) const = 0;
 	virtual const Interaction* GetInteraction(u32 ID) const = 0;
 	
-	kigs::unordered_map<int, Interaction>& GetInteractions() { return myInteractions; }
-	const kigs::unordered_map<int, v2f>& GetAllThumbstick() const { return myThumbstickList; }
+	kigs::unordered_map<int, Interaction>& GetInteractions() { return mInteractions; }
+	const kigs::unordered_map<int, v2f>& GetAllThumbstick() const { return mThumbstickList; }
 
 protected:
-	kigs::unordered_map<int, Interaction> myInteractions;
-	kigs::unordered_map<int, v2f> myThumbstickList;
+	kigs::unordered_map<int, Interaction> mInteractions;
+	kigs::unordered_map<int, v2f> mThumbstickList;
 
 	maReference mGazeCamera = BASE_ATTRIBUTE(GazeCamera, "Camera:camera");
 };

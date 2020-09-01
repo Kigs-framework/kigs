@@ -19,7 +19,7 @@ OpenGLRenderingMatrix::~OpenGLRenderingMatrix()
 
 void	OpenGLRenderingMatrix::PushMatrix(TravState* state) const 
 {
-	state->GetRenderer()->PushAndMultMatrix(MATRIX_MODE_MODEL, myMatrix.getConstArrayBuffer());
+	state->GetRenderer()->PushAndMultMatrix(MATRIX_MODE_MODEL, mMatrix.getConstArrayBuffer());
 }
 
 // don't forget to pop matrix after that
@@ -27,7 +27,7 @@ void	OpenGLRenderingMatrix::SetMatrix(TravState* state) const
 {
 	ModuleSpecificRenderer* renderer=state->GetRenderer();
 	renderer->PushMatrix(MATRIX_MODE_MODEL);
-	renderer->LoadMatrix(MATRIX_MODE_MODEL, myMatrix.getConstArrayBuffer());
+	renderer->LoadMatrix(MATRIX_MODE_MODEL, mMatrix.getConstArrayBuffer());
 }
 
 void	OpenGLRenderingMatrix::RetrieveFromCurrentRenderingState(TravState* state)

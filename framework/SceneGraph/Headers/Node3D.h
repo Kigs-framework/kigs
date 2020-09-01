@@ -10,7 +10,18 @@
 class TravState;
 class Drawable;
 
-
+// ****************************************
+// * Node3D class
+// * --------------------------------------
+/**
+ * \file	Node3D.h
+ * \class	Node3D
+ * \ingroup SceneGraph
+ * \brief	Base class for 3D node in the scene graph ( with a 3x4 matrix ).
+ * 
+ * A Node3D must be unique ( can not be attached to several Node3D ).
+ */
+ // ****************************************
 class Node3D : public SceneNode
 {
 public:
@@ -34,35 +45,35 @@ public:
 	const BBox& GetLocalBoundingBox() {
 		if (HasFlag(BoundingBoxIsDirty))
 			RecomputeBoundingBox();
-		return myLocalBBox;
+		return mLocalBBox;
 	}
 	void GetLocalBoundingBox(Point3D& pmin, Point3D& pmax) 
 	{ 
 		if (HasFlag(BoundingBoxIsDirty)) 
 			RecomputeBoundingBox();
-		pmin = myLocalBBox.m_Min; pmax = myLocalBBox.m_Max; 
+		pmin = mLocalBBox.m_Min; pmax = mLocalBBox.m_Max; 
 	}
 
 	const BBox& GetBoundingBox() {
 		if (HasFlag(BoundingBoxIsDirty))
 			RecomputeBoundingBox();
-		return myBBox;
+		return mBBox;
 	}
 	void GetBoundingBox(Point3D& pmin, Point3D& pmax)
 	{
 		if (HasFlag(BoundingBoxIsDirty)) 
 			RecomputeBoundingBox();
-		pmin = myBBox.m_Min; pmax = myBBox.m_Max;
+		pmin = mBBox.m_Min; pmax = mBBox.m_Max;
 	}
 
 	const BBox& GetGlobalBoundingBox() { if (HasFlag(GlobalBoundingBoxIsDirty))
 										RecomputeGlobalBoundingBox();
-								return myGlobalBBox; }
+								return mGlobalBBox; }
 	void	GetGlobalBoundingBox(Point3D& pmin, Point3D& pmax) 
 	{ 
 		if (HasFlag(GlobalBoundingBoxIsDirty))
 			RecomputeGlobalBoundingBox();
-		pmin = myGlobalBBox.m_Min; pmax = myGlobalBBox.m_Max;
+		pmin = mGlobalBBox.m_Min; pmax = mGlobalBBox.m_Max;
 	}
 
 	
@@ -77,25 +88,25 @@ public:
 	}
 
 	/**
-	* \brief	set myIsVisible member, myIsVisible store current frame index so that it can be used to test if culling was already done
+	* \brief	set mIsVisible member, mIsVisible store current frame index so that it can be used to test if culling was already done
 	* \fn 		void SetVisible(int f)
-	* \param	f : set myIsVisible to t
+	* \param	f : set mIsVisible to t
 	*/
-	inline void SetVisibleFrame(unsigned int f) { myIsVisible = f; }
+	inline void SetVisibleFrame(unsigned int f) { mIsVisible = f; }
 
 	/**
 	* \brief	check if the last seen frame is the current one
 	* \fn 		void GetVisible(unsigned int f)
 	* \param	currentFrame : index of the current frame
 	*/
-	inline bool IsVisibleInFrame(unsigned int currentFrame) { return myIsVisible != currentFrame; }
+	inline bool IsVisibleInFrame(unsigned int currentFrame) { return mIsVisible != currentFrame; }
 
 
-	Node3D* getFather() { return myFatherNode; }
+	Node3D* getFather() { return mFatherNode; }
 
-	const Matrix3x4& GetLocalToGlobal() { if (HasFlag(LocalToGlobalMatrixIsDirty)) RecomputeLocalToGlobal(); return myLocalToGlobal; }
-	const Matrix3x4& GetGlobalToLocal() { if (HasFlag(GlobalToLocalMatrixIsDirty)) RecomputeGlobalToLocal(); return myGlobalToLocal; }
-	const Matrix3x4& GetLocal() { return myTransform; }
+	const Matrix3x4& GetLocalToGlobal() { if (HasFlag(LocalToGlobalMatrixIsDirty)) RecomputeLocalToGlobal(); return mLocalToGlobal; }
+	const Matrix3x4& GetGlobalToLocal() { if (HasFlag(GlobalToLocalMatrixIsDirty)) RecomputeGlobalToLocal(); return mGlobalToLocal; }
+	const Matrix3x4& GetLocal() { return mTransform; }
 
 	virtual void ChangeMatrix(const Matrix3x4& newmatrix);
 
@@ -125,13 +136,13 @@ public:
 	// use positive numbers 0,10,20,50... for priority, the higher the priority is, the earliest the node should be draw in travdraw
 	void	setPriority(int priority)
 	{
-		myDrawPriority = priority;
+		mDrawPriority = priority;
 		PropagateNodePriorityDirtyToParents();
 	}
 
 	int getDrawPriority()
 	{
-		return myDrawPriority;
+		return mDrawPriority;
 	}
 
 	//! move local node position ( pos = move + pos )
@@ -145,10 +156,10 @@ protected:
 	void addUser(CoreModifiable* user) override;
 	void InitModifiable() override;
 	
-	Node3D * myFatherNode;
+	Node3D * mFatherNode;
 
-	//! valid after scene TravCull : myIsVisible store current frame index if object is visible
-	unsigned int myIsVisible;
+	//! valid after scene TravCull : mIsVisible store current frame index if object is visible
+	unsigned int mIsVisible;
 
 
 	//! call predraw for drawable sons of this node return true if at least one drawable son was found
@@ -158,26 +169,26 @@ protected:
 	//! call postdraw for drawable sons of this node
 	void	PostDrawDrawable(TravState* state);
 
-	//!	first visible Node in ModuleSceneGraph::myVisiblesNodeList
+	//!	first visible Node in ModuleSceneGraph::mVisiblesNodeList
 	// values are update during TravCull and used during TravDraw
-	unsigned short myFirstVisibleNodeIndex;
+	unsigned short mFirstVisibleNodeIndex;
 	//!	number of visible node
-	unsigned short myVisibleNodeCount;
-	unsigned int myCullingMask;
+	unsigned short mVisibleNodeCount;
+	unsigned int mCullingMask;
 
 	//!	Local transformation matrix (father => this local coordinate system)
-	Matrix3x4 myTransform;
+	Matrix3x4 mTransform;
 	//!	Local to global transformation matrix (Local coordinate system => global "world" coordinate system)
-	Matrix3x4 myLocalToGlobal;
+	Matrix3x4 mLocalToGlobal;
 	//!	Global to local transformation matrix (Global "world" coordinate system => local coordinate system)
-	Matrix3x4 myGlobalToLocal;
+	Matrix3x4 mGlobalToLocal;
 
 	//! AABounding box in local coordinate system
-	BBox myLocalBBox;
+	BBox mLocalBBox;
 	//! AABounding box in father coordinate system
-	BBox myBBox;
+	BBox mBBox;
 	//! AABounding box in global "world" coordinate system
-	BBox myGlobalBBox;
+	BBox mGlobalBBox;
 
 	maBool mIgnoreBBox = BASE_ATTRIBUTE(IgnoreBBox, false);
 
@@ -192,7 +203,7 @@ protected:
 
 	// draw priority management (not strict, just hint)
 
-	int			myDrawPriority;
+	int			mDrawPriority;
 	void		PropagateNodePriorityDirtyToParents();
 	int			ComputeNodePriority();
 };

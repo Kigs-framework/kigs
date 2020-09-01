@@ -77,12 +77,12 @@ protected:
 	//! sequences manager
 	void updateSequences(const Timer& timer);
 
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >	mySequences;
+	kstl::map<unsigned int,kstl::vector<CoreSequence*> >	mSequences;
 
-	SP<MiniInstanceFactory>	myPrivateMiniFactory;
+	SP<MiniInstanceFactory>	mPrivateMiniFactory;
 
 	// animation specific CoreItemOperator Map
-	static kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	myCoreItemOperatorCreateMethodMap;
+	static kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	mCoreItemOperatorCreateMethodMap;
 
 }; 
 

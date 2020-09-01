@@ -61,7 +61,7 @@ SmartPointer<CoreRawBuffer> ModuleFileManager::LoadFileToBuffer(const std::strin
 CoreRawBuffer*	ModuleFileManager::LoadFile(const char *pFilename, u64& filelength, u64 startOffset, unsigned int trailing_zero)
 {
 	SmartPointer<FileHandle> result = KigsCore::Singleton<FilePathManager>()->FindFullName(pFilename);
-	if (result->myStatus&FileHandle::Exist)
+	if (result->mStatus&FileHandle::Exist)
 	{
 		return LoadFile(result.get(), filelength, startOffset, trailing_zero);
 	}
@@ -80,9 +80,9 @@ CoreRawBuffer*	ModuleFileManager::LoadFile(FileHandle *file,u64& filelength,u64 
 	CoreRawBuffer*	result=0;
 	u64 additionnalSize= trailing_zero;
 
-	if(file->myFile)
+	if(file->mFile)
 	{
-		if (file->mySize == -1)
+		if (file->mSize == -1)
 		{
 			Platform_fseek(file, 0, SEEK_END);
 			filelength = Platform_ftell(file) - startOffset;
@@ -90,7 +90,7 @@ CoreRawBuffer*	ModuleFileManager::LoadFile(FileHandle *file,u64& filelength,u64 
 		}
 		else
 		{
-			filelength = file->mySize - startOffset;
+			filelength = file->mSize - startOffset;
 		}
 		pFile = new unsigned char[filelength+additionnalSize];
 
@@ -133,7 +133,7 @@ bool	ModuleFileManager::SaveFile(const char *filename, unsigned char* data, u64 
 {
 	SmartPointer<FileHandle> File = Platform_fopen(filename, "wb");
 
-	if(!File->myFile) return false;
+	if(!File->mFile) return false;
 
 	Platform_fwrite((void*)data, sizeof(unsigned char), length, File.get());
 	Platform_fclose(File.get());
@@ -145,14 +145,14 @@ bool	ModuleFileManager::CoreCopyFile(const char *sourceFilename, const char *des
 	bool result = true;
 
 	SmartPointer<FileHandle> FileRead = KigsCore::Singleton<FilePathManager>()->FindFullName(sourceFilename);
-	if (!FileRead->myFile)
+	if (!FileRead->mFile)
 	{
 		result=false;
 	}
 	else
 	{
 		SmartPointer<FileHandle> FileWrite = Platform_fopen(destFileName, "wb");
-		if (!FileWrite->myFile)
+		if (!FileWrite->mFile)
 		{
 			result = false;
 		}

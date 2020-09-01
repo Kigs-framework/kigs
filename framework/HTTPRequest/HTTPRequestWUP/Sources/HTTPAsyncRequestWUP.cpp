@@ -61,7 +61,7 @@ static auto GetDataFromHTTPContent(IHttpContent content)
 void HTTPAsyncRequestWUP::InitModifiable()
 {
 	HTTPAsyncRequest::InitModifiable();
-	if (myConnection)
+	if (mConnection)
 	{
 		//mClient = ref new Windows::Web::Http::HttpClient;
 		auto& client = mClient.emplace<HttpClient>();
@@ -69,10 +69,10 @@ void HTTPAsyncRequestWUP::InitModifiable()
 		
 
 
-		auto hostname = myConnection->getValue<std::string>("HostName");
-		auto type = myConnection->getValue<std::string>("Type") == "HTTP" ? "http://" : "https://";
+		auto hostname = mConnection->getValue<std::string>("HostName");
+		auto htype = mConnection->getValue<std::string>("Type") == "HTTP" ? "http://" : "https://";
 
-		auto uri = type + hostname + ":" + std::to_string(myConnection->getValue<int>("Port")) + myRequestURL.const_ref();
+		auto uri = htype + hostname + ":" + std::to_string(mConnection->getValue<int>("Port")) + mURL.const_ref();
 
 		std::wstring uriL;
 		std::transform(uri.begin(), uri.end(), std::back_inserter(uriL), [](auto& a){ return a;	});
@@ -80,7 +80,7 @@ void HTTPAsyncRequestWUP::InitModifiable()
 
 		
 		IAsyncOperationWithProgress<HttpResponseMessage, HttpProgress> async_op;
-		auto request_type = (std::string)myRequestType;
+		auto request_type = (std::string)mType;
 		if (request_type == "GET")
 		{
 			async_op = client.GetAsync(request_uri);
@@ -88,7 +88,7 @@ void HTTPAsyncRequestWUP::InitModifiable()
 		else if (request_type == "POST")
 		{
 			DataWriter writer{};
-			writer.WriteBytes({ (u8*)myPostBuffer, (u8*)myPostBuffer + myPostBufferLength });
+			writer.WriteBytes({ (u8*)mPostBuffer, (u8*)mPostBuffer + mPostBufferLength });
 			auto ibuffer = writer.DetachBuffer();
 			HttpBufferContent content{ ibuffer };
 			async_op = client.PostAsync(request_uri, content);
@@ -96,14 +96,14 @@ void HTTPAsyncRequestWUP::InitModifiable()
 		else if (request_type == "PUT")
 		{
 			DataWriter writer{};
-			writer.WriteBytes({ (u8*)myPostBuffer, (u8*)myPostBuffer + myPostBufferLength });
+			writer.WriteBytes({ (u8*)mPostBuffer, (u8*)mPostBuffer + mPostBufferLength });
 			auto ibuffer = writer.DetachBuffer();
 			HttpBufferContent content{ ibuffer };
 			async_op = client.PutAsync(request_uri, content);
 		}
 		
 		bool isSync = false;
-		myConnection->getValue("IsSynchronous", isSync);
+		mConnection->getValue("IsSynchronous", isSync);
 
 		if (isSync)
 		{
@@ -190,7 +190,7 @@ void HTTPAsyncRequestWUP::protectedProcess()
 	auto data = new char[mData.size()];
 	memcpy(data, mData.data(), mData.size());
 	auto buf = OwningRawPtrToSmartPtr(new CoreRawBuffer(data, mData.size(), true));
-	myReceivedBuffer = buf.get();
+	mReceivedBuffer = buf.get();
 	mData.clear();
 	mData.shrink_to_fit();
 	mClient.reset();

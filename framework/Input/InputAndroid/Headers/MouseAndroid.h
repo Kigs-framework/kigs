@@ -10,6 +10,18 @@
 
 class MultiTouchDevice;
 
+// ****************************************
+// * MouseAndroid class
+// * --------------------------------------
+/**
+* \file	MouseAndroid.h
+* \class	MouseAndroid
+* \ingroup Input
+* \brief Android mouse management (touch).
+*
+*/
+// ****************************************
+
 class	MouseAndroid : public MouseDevice
 {
 public:
@@ -23,27 +35,27 @@ public:
 
 	void	DoInputDeviceDescription() override;
 
-	void	IncWheelCount() { myWheelCount++; }
-	void	IncButtonCount() { myButtonsCount++; }
+	void	IncWheelCount() { mWheelCount++; }
+	void	IncButtonCount() { mButtonsCount++; }
 
 protected:
 	virtual ~MouseAndroid();
 
 	DECLARE_METHOD(ReinitCB);
 
-	jobject		myTouchList;
-	jmethodID 	getEventCount;
-	jmethodID 	getEvent;
-	jmethodID 	clearEventList;
+	jobject		mTouchList;
+	jmethodID 	mGetEventCount;
+	jmethodID 	mGetEvent;
+	jmethodID 	mClearEventList;
 
-	jmethodID Event_getX;
-	jmethodID Event_getY;
-	jmethodID Event_getAction;
+	jmethodID mEventGetX;
+	jmethodID mEventGetY;
+	jmethodID mEventGetAction;
 
-	maReference mMultiTouchRef = BASE_ATTRIBUTE(MultiTouch, "");
-	MultiTouchDevice* mMultiTouch = nullptr;
+	maReference mMultiTouch = BASE_ATTRIBUTE(MultiTouch, "");
+	MultiTouchDevice* mMultiTouchPointer = nullptr;
 
-	int m_FrameCountSinceLastValidTouched;
+	int mFrameCountSinceLastValidTouched;
 };
 
 #endif //_MOUSEANDROID_H_

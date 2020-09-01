@@ -10,46 +10,46 @@
 IMPLEMENT_CLASS_INFO(RendererProfileDrawingObject)
 
 RendererProfileDrawingObject::RendererProfileDrawingObject(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
-, myFps(*this, false, LABEL_AND_ID(Fps), "30.0")
+, mFps(*this, false, LABEL_AND_ID(Fps), "30.0")
 {
 
 	// global timer is pure Red, don't use this color here
 
 	// GREEN
-	myColors[0].Set(0.0f,1.0f,0.0f);
+	mColors[0].Set(0.0f,1.0f,0.0f);
 	// BLUE
-	myColors[1].Set(0.0f,0.0f,1.0f);
+	mColors[1].Set(0.0f,0.0f,1.0f);
 	// 
-	myColors[2].Set(1.0f,1.0f,0.0f);
+	mColors[2].Set(1.0f,1.0f,0.0f);
 	//
-	myColors[3].Set(0.0f,1.0f,1.0f);
+	mColors[3].Set(0.0f,1.0f,1.0f);
 	//
-	myColors[4].Set(1.0f,0.0f,1.0f);
+	mColors[4].Set(1.0f,0.0f,1.0f);
 	//
-	myColors[5].Set(0.5f,1.0f,0.5f);
+	mColors[5].Set(0.5f,1.0f,0.5f);
 	//
-	myColors[6].Set(1.0f,0.5f,0.5f);
+	mColors[6].Set(1.0f,0.5f,0.5f);
 	//
-	myColors[7].Set(0.5f,0.5f,1.0f);
+	mColors[7].Set(0.5f,0.5f,1.0f);
 	//
-	myColors[8].Set(1.0f,1.0f,0.5f);
-	myColors[9].Set(0.5f,1.0f,1.0f);
+	mColors[8].Set(1.0f,1.0f,0.5f);
+	mColors[9].Set(0.5f,1.0f,1.0f);
 
 	// more than 10 timers ?
 	int i;
 	for(i=10;i<MAX_PROFILER_COUNT;i++)
 	{
-		myColors[i].Set((kfloat)Platform_rand()/((kfloat)RAND_MAX),(kfloat)Platform_rand()/((kfloat)RAND_MAX),(kfloat)Platform_rand()/((kfloat)RAND_MAX));
+		mColors[i].Set((kfloat)Platform_rand()/((kfloat)RAND_MAX),(kfloat)Platform_rand()/((kfloat)RAND_MAX),(kfloat)Platform_rand()/((kfloat)RAND_MAX));
 	}
 
-	myFirstDraw=true;
-	myProfilerCount=0;
+	mFirstDraw=true;
+	mProfilerCount=0;
 
 	for (i = 0; i < 16; i++)
 	{
-		myMaxGlobalFrameCount[i] = 0;
+		mMaxGlobalFrameCount[i] = 0;
 	}
-	myCurrentGlobalFrameCountIndex = 0;
+	mCurrentGlobalFrameCountIndex = 0;
 	
 }
 
@@ -58,7 +58,7 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 	
 	// retreive ModuleRenderer
 
-	ModuleSpecificRenderer* renderer = (ModuleRenderer::theGlobalRenderer);
+	ModuleSpecificRenderer* renderer = (ModuleRenderer::mTheGlobalRenderer);
 	//renderer->PushState();
 	renderer->SetCullMode(RENDERER_CULL_NONE);
 	renderer->SetLightMode(RENDERER_LIGHT_OFF);
@@ -88,7 +88,7 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 	int i;
 	int index=1;
 	int countprofilers=0;
-	if(myFirstDraw)
+	if(mFirstDraw)
 	{
 		printf("________________________________________________\n");
 		printf("Profilers Colors settings : \n");
@@ -98,7 +98,7 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 	// search global
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		SP<TimeProfiler>&	current=KigsCore::GetProfileManager()->myProfilers[i];
+		SP<TimeProfiler>&	current=KigsCore::GetProfileManager()->mProfilers[i];
 		if(current)
 		{
 			if(	current->getName() == "GLOBAL")
@@ -138,9 +138,9 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 		char	fpsbuffer[32];
 		sprintf(fpsbuffer, "%d fps", (int)fps);
 
-		myFps = fpsbuffer;
+		mFps = fpsbuffer;
 		kstl::vector<CoreModifiableAttribute*> mySendParams;
-		mySendParams.push_back(&myFps);
+		mySendParams.push_back(&mFps);
 		KigsCore::GetNotificationCenter()->postNotificationName("SetFPS", mySendParams, this);
 	}
 
@@ -148,7 +148,7 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
-		SP<TimeProfiler>&	current=KigsCore::GetProfileManager()->myProfilers[i];
+		SP<TimeProfiler>&	current=KigsCore::GetProfileManager()->mProfilers[i];
 		if(current)
 		{
 			if(	current->getName() != "GLOBAL")
@@ -172,7 +172,7 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 
 					kfloat startL=0.0f;
 
-					//renderer->SetColor(myColors[index - 1].x, myColors[index - 1].y, myColors[index - 1].z, 0.5f);
+					//renderer->SetColor(mColors[index - 1].x, mColors[index - 1].y, mColors[index - 1].z, 0.5f);
 
 					VInfo2D vi;
 					UIVerticesInfo mVI = UIVerticesInfo(&vi);
@@ -186,10 +186,10 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 						buf[3].setVertex(startL + oneOnFrameCount, h);
 
 
-						buf[0].setColor(myColors[index - 1].x*255.0f, myColors[index - 1].y*255.0f, myColors[index - 1].z*255.0f, 128);
-						buf[1].setColor(myColors[index - 1].x*255.0f, myColors[index - 1].y*255.0f, myColors[index - 1].z*255.0f, 128);
-						buf[2].setColor(myColors[index - 1].x*255.0f, myColors[index - 1].y*255.0f, myColors[index - 1].z*255.0f, 128);
-						buf[3].setColor(myColors[index - 1].x*255.0f, myColors[index - 1].y*255.0f, myColors[index - 1].z*255.0f, 128);
+						buf[0].setColor(mColors[index - 1].x*255.0f, mColors[index - 1].y*255.0f, mColors[index - 1].z*255.0f, 128);
+						buf[1].setColor(mColors[index - 1].x*255.0f, mColors[index - 1].y*255.0f, mColors[index - 1].z*255.0f, 128);
+						buf[2].setColor(mColors[index - 1].x*255.0f, mColors[index - 1].y*255.0f, mColors[index - 1].z*255.0f, 128);
+						buf[3].setColor(mColors[index - 1].x*255.0f, mColors[index - 1].y*255.0f, mColors[index - 1].z*255.0f, 128);
 
 						mVI.SetFlag(UIVerticesInfo_Vertex | UIVerticesInfo_Color);
 //						renderer->DrawUIQuad(&mVI);
@@ -209,18 +209,18 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 					buf[2].setVertex(startL + remaining + 0.01f, h + 0.03f);
 					buf[3].setVertex(startL + remaining + 0.01f, h);
 
-					buf[0].setColor(myColors[index - 1].x*255.0f, myColors[index - 1].y*255.0f, myColors[index - 1].z*255.0f, 128);
-					buf[1].setColor(myColors[index - 1].x*255.0f, myColors[index - 1].y*255.0f, myColors[index - 1].z*255.0f, 128);
-					buf[2].setColor(myColors[index - 1].x*255.0f, myColors[index - 1].y*255.0f, myColors[index - 1].z*255.0f, 128);
-					buf[3].setColor(myColors[index - 1].x*255.0f, myColors[index - 1].y*255.0f, myColors[index - 1].z*255.0f, 128);
+					buf[0].setColor(mColors[index - 1].x*255.0f, mColors[index - 1].y*255.0f, mColors[index - 1].z*255.0f, 128);
+					buf[1].setColor(mColors[index - 1].x*255.0f, mColors[index - 1].y*255.0f, mColors[index - 1].z*255.0f, 128);
+					buf[2].setColor(mColors[index - 1].x*255.0f, mColors[index - 1].y*255.0f, mColors[index - 1].z*255.0f, 128);
+					buf[3].setColor(mColors[index - 1].x*255.0f, mColors[index - 1].y*255.0f, mColors[index - 1].z*255.0f, 128);
 
 					mVI.SetFlag(UIVerticesInfo_Vertex | UIVerticesInfo_Color);
 //					renderer->DrawUIQuad(&mVI);
 					current->ClearUpdate();
 				}
-				if(myFirstDraw)
+				if(mFirstDraw)
 				{
-					printf("Profilers %d %s is R(%d),G(%d),B(%d) \n",i,current->getName().c_str(),(int)(myColors[index-1].x*256.0f),(int)(myColors[index-1].y*256.0f),(int)(myColors[index-1].z*256.0f));
+					printf("Profilers %d %s is R(%d),G(%d),B(%d) \n",i,current->getName().c_str(),(int)(mColors[index-1].x*256.0f),(int)(mColors[index-1].y*256.0f),(int)(mColors[index-1].z*256.0f));
 				}
 				index++;
 				countprofilers++;
@@ -310,23 +310,23 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 	renderer->PopMatrix(MATRIX_MODE_VIEW);
 	renderer->PopMatrix(MATRIX_MODE_MODEL);
 	
-	if(myFirstDraw)
+	if(mFirstDraw)
 	{
 		printf("________________________________________________\n");
 
-		myFirstDraw=false;
+		mFirstDraw=false;
 	}
-	if(!myFirstDraw)
+	if(!mFirstDraw)
 	{
-		if(myProfilerCount!=countprofilers)
+		if(mProfilerCount!=countprofilers)
 		{
-			myProfilerCount=countprofilers;
-			myFirstDraw=true;
+			mProfilerCount=countprofilers;
+			mFirstDraw=true;
 		}
 	}
 	else
 	{
-		myProfilerCount=countprofilers;
+		mProfilerCount=countprofilers;
 	}	
 
 	return true;

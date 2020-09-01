@@ -18,12 +18,9 @@
 * \class	Module2DLayers
 * \ingroup 2DLayers
 * \ingroup Module
-* \brief	base class for 2DLayers module
-* \author	ukn
-* \version ukn
-* \date	ukn
+* \brief Generic Module for 2D drawing ( IHM, sprites...)
 *
-* for exemple see Test2DLayersProject
+* Manage UI classes and other 2D drawing.
 */
 // ****************************************
 class Module2DLayers : public ModuleBase
@@ -65,12 +62,12 @@ public:
 
 	static void	setRotate180(bool rotate)
 	{
-		myRotate180=rotate;
+		mRotate180=rotate;
 	}
 
 	static bool	getRotate180()
 	{
-		return myRotate180;
+		return mRotate180;
 	}
 
 protected:
@@ -79,9 +76,6 @@ protected:
 	*/
 	virtual ~Module2DLayers();
 
-	//! list of layers
-//	kstl::set<CoreModifiable*> myLayerList;
-
-	static bool	myRotate180;
+	static bool	mRotate180;
 };
 #endif //_MODULE2DLAYERS_H_

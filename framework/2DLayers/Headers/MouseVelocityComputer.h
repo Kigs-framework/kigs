@@ -3,7 +3,18 @@
 
 #include "CoreModifiable.h"
 
-
+// ****************************************
+// * MouseVelocityComputer class
+// * --------------------------------------
+/**
+* \file	MouseVelocityComputer.h
+* \class	MouseVelocityComputer
+* \ingroup 2DLayers
+* \brief	Keep track of past mouse mouvement to compute a velocity.
+*
+*  Used to give some inertia to mouse ( or touch ) dragged objects.
+*/
+// ****************************************
 class MouseVelocityComputer : public CoreModifiable
 {
 public:
@@ -23,8 +34,6 @@ private:
 	kfloat	*mVelocityY;
 	int		mVelocityIndex;
 	int		mVelocityCount;
-	//kfloat	mDx;
-	//kfloat	mDy;
 	kdouble mOldTime;
 	const static int cMaxIndex = 5;
 };

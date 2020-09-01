@@ -31,9 +31,9 @@ IMPLEMENT_CLASS_INFO(ImGuiLayer);
 
 IMPLEMENT_CONSTRUCTOR(ImGuiLayer)
 {
-	myImGuiState = ImGui::CreateContext();
+	mImGuiState = ImGui::CreateContext();
 	ImGuiContext* old_state = ImGui::GetCurrentContext();
-	ImGui::SetCurrentContext(myImGuiState);
+	ImGui::SetCurrentContext(mImGuiState);
 
 	ImGui::GetIO().UserData = this;
 
@@ -57,7 +57,7 @@ ImGuiLayer::~ImGuiLayer()
 	ImGuiContext* old_state = SetActiveImGuiLayer();
 	ImGui::GetIO().Fonts->TexID = 0;
 	ImGui::SetCurrentContext(old_state);
-	ImGui::DestroyContext(myImGuiState);
+	ImGui::DestroyContext(mImGuiState);
 	mFontAtlas.Locked = false;
 }
 
@@ -227,14 +227,14 @@ void ImGuiLayer::InitModifiable()
 		config.MergeMode = false;
 
 		// before setting our font, release previous one
-		if (io.Fonts && myImGuiState->FontAtlasOwnedByContext)
+		if (io.Fonts && mImGuiState->FontAtlasOwnedByContext)
 		{
 			io.Fonts->Locked = false;
 			IM_DELETE(io.Fonts);
 		}
 
 		io.Fonts = &mFontAtlas;
-		myImGuiState->FontAtlasOwnedByContext = false;
+		mImGuiState->FontAtlasOwnedByContext = false;
 		
 		ImFont* font = nullptr;
 		SmartPointer<CoreRawBuffer> crb;
@@ -619,7 +619,7 @@ void ImGuiLayer::TravDraw(TravState* state)
 	auto holo_before = state->GetHolographicMode();
 
 	state->SetHolographicMode(mRenderingScreen->as<RenderingScreen>()->IsHolographic());
-	state->HolographicUseStackMatrix = true;
+	state->mHolographicUseStackMatrix = true;
 
 	//state->SetCurrentDrawablePass(0);
 	state->SetAllVisible(false);
@@ -663,9 +663,9 @@ void ImGuiLayer::TravDraw(TravState* state)
 
 	renderer->FlushState(true);
 
-	if (myClearColorBuffer)
+	if (mClearColorBuffer)
 	{
-		renderer->SetClearColorValue(myClearColor[0], myClearColor[1], myClearColor[2], myClearColor[3]);
+		renderer->SetClearColorValue(mClearColor[0], mClearColor[1], mClearColor[2], mClearColor[3]);
 		renderer->ClearView(RENDERER_CLEAR_COLOR);
 	}
 
@@ -740,7 +740,7 @@ void ImGuiLayer::TravDraw(TravState* state)
 	renderer->SetElementBuffer(-1);
 	renderer->DisableTexture();
 
-	state->HolographicUseStackMatrix = false;
+	state->mHolographicUseStackMatrix = false;
 	state->SetHolographicMode(holo_before);
 	renderer->PopState();
 

@@ -10,7 +10,7 @@
 IMPLEMENT_CLASS_INFO(SceneNode)
 
 SceneNode::SceneNode(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
-, myFlags(0)
+, mFlags(0)
 {
 }
 
@@ -42,7 +42,7 @@ bool SceneNode::IsVisibleInScene()
 bool	SceneNode::addItem(const CMSP& item,ItemPosition pos DECLARE_LINK_NAME )
 {
 	// update drawing needs flag if drawable
-	if(item->isSubType(Drawable::myClassID))
+	if(item->isSubType(Drawable::mClassID))
 	{
 		((SP<Drawable>&)item)->UpdateDrawingNeeds();
 	}
@@ -53,7 +53,7 @@ bool	SceneNode::addItem(const CMSP& item,ItemPosition pos DECLARE_LINK_NAME )
 bool SceneNode::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	// update drawing needs flag if drawable
-	if(item->isSubType(Drawable::myClassID))
+	if(item->isSubType(Drawable::mClassID))
 	{
 		((SP<Drawable>&)item)->UpdateDrawingNeeds();
 	}

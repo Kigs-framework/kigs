@@ -28,8 +28,8 @@ void Android_CheckState(FileHandle * hndl)
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	kstl::string stat;
-	jstring fname=g_env->NewStringUTF(hndl->myFullFileName.c_str());
-	jstring result=(jstring)g_env->CallStaticObjectMethod(KigsJavaIDManager::FileManager_class,  KigsJavaIDManager::CheckFile, fname, hndl->myDeviceID);
+	jstring fname=g_env->NewStringUTF(hndl->mFullFileName.c_str());
+	jstring result=(jstring)g_env->CallStaticObjectMethod(KigsJavaIDManager::FileManager_class,  KigsJavaIDManager::CheckFile, fname, hndl->mDeviceID);
 	KigsJavaIDManager::convertJstringToKstlString(result, stat);
 	g_env->DeleteLocalRef(fname);
 	g_env->DeleteLocalRef(result);
@@ -42,15 +42,15 @@ void Android_CheckState(FileHandle * hndl)
 
 	kstl::vector<kstl::string> arr = SplitStringByCharacter(stat, '|');
 	
-	hndl->myFullFileName = arr[0];
+	hndl->mFullFileName = arr[0];
 
     if(arr[1]=="1")
-        hndl->myStatus |= FileHandle::Exist;
+        hndl->mStatus |= FileHandle::Exist;
 
 	if (arr[2]=="1")
-		hndl->myStatus |= FileHandle::IsDIr;
+		hndl->mStatus |= FileHandle::IsDIr;
 	
-	//printf("%s %d(%d)\n", hndl->myFullFileName.c_str(), 0, hndl->myStatus);
+	//printf("%s %d(%d)\n", hndl->mFullFileName.c_str(), 0, hndl->mStatus);
 }
 
 
@@ -273,8 +273,8 @@ SmartPointer<FileHandle> Android_FindFullName(const kstl::string&	filename)
 	}
 	SmartPointer<FileHandle> result = FilePathManager::CreateFileHandle((const char*)(&(filename.c_str()[3])));
 
-	result->myFullFileName = (const char*)(&filename[3]);
-	result->myDeviceID =(FilePathManager::DeviceID)(filename[1]);
+	result->mFullFileName = (const char*)(&filename[3]);
+	result->mDeviceID =(FilePathManager::DeviceID)(filename[1]);
 
 	Android_CheckState(result.get());
 	return result;
@@ -283,15 +283,15 @@ SmartPointer<FileHandle> Android_FindFullName(const kstl::string&	filename)
 bool Android_CreateFolderTree(FileHandle* hndl)
 {
 
-	if ((hndl->myStatus&FileHandle::Exist) == 0)
+	if ((hndl->mStatus&FileHandle::Exist) == 0)
 	{
-		SmartPointer<FileHandle> parent = FilePathManager::CreateFileHandle(FilePathManager::GetParentDirectory(hndl->myFullFileName));
-		if (parent->myFullFileName != "")
+		SmartPointer<FileHandle> parent = FilePathManager::CreateFileHandle(FilePathManager::GetParentDirectory(hndl->mFullFileName));
+		if (parent->mFullFileName != "")
 		{
-			parent->myDeviceID = hndl->myDeviceID;
+			parent->mDeviceID = hndl->mDeviceID;
 			Android_CheckState(parent.get());
 
-			if ((parent->myStatus&FileHandle::Exist))
+			if ((parent->mStatus&FileHandle::Exist))
 			{
 				return true;
 			}
@@ -299,15 +299,15 @@ bool Android_CreateFolderTree(FileHandle* hndl)
 			JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 			jmethodID jmethod = g_env->GetStaticMethodID(KigsJavaIDManager::FileManager_class, "createFolder", "(Ljava/lang/String;I)V");
 
-			jstring fname = g_env->NewStringUTF(hndl->myFullFileName.c_str());
-			g_env->CallStaticVoidMethod(KigsJavaIDManager::FileManager_class, jmethod, fname, hndl->myDeviceID);
+			jstring fname = g_env->NewStringUTF(hndl->mFullFileName.c_str());
+			g_env->CallStaticVoidMethod(KigsJavaIDManager::FileManager_class, jmethod, fname, hndl->mDeviceID);
 			g_env->DeleteLocalRef(fname);
 
 			//Android_CreateFolderTree(parent);
 
-	//printf("mkdir %s", parent->myFullFileName.c_str());
-			//CreateDirectoryA(parent->myFullFileName.c_str(), NULL);
-			//return mkdir(parent->myFullFileName.c_str(), 0x0770);
+	//printf("mkdir %s", parent->mFullFileName.c_str());
+			//CreateDirectoryA(parent->mFullFileName.c_str(), NULL);
+			//return mkdir(parent->mFullFileName.c_str(), 0x0770);
 		}
 	}
 	return false;
@@ -317,7 +317,7 @@ bool  Android_fopen ( FileHandle* handle, const char * mode )
 {
 	unsigned int flagmode = FileHandle::OpeningFlags(mode);
 
-	if (handle->myStatus&FileHandle::Open) // already opened ? return true
+	if (handle->mStatus&FileHandle::Open) // already opened ? return true
 	{
 		// check if open mode is the same
 		if (flagmode == handle->getOpeningFlags())
@@ -340,20 +340,20 @@ bool  Android_fopen ( FileHandle* handle, const char * mode )
 	bool append = (flagmode & FileHandle::Append);
 	
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	jstring fname=g_env->NewStringUTF(handle->myFullFileName.c_str());
+	jstring fname=g_env->NewStringUTF(handle->mFullFileName.c_str());
 	
 	jobject	fdHandle=NULL;
 		
-	switch(handle->myDeviceID)
+	switch(handle->mDeviceID)
 	{
 		case 0: // assets
-			fdHandle=(jobject)g_env->CallStaticObjectMethod(KigsJavaIDManager::FileManager_class,  KigsJavaIDManager::OpenFile, fname, handle->myDeviceID, true, false);							
+			fdHandle=(jobject)g_env->CallStaticObjectMethod(KigsJavaIDManager::FileManager_class,  KigsJavaIDManager::OpenFile, fname, handle->mDeviceID, true, false);							
 		break;
 		
 		case FilePathManager::DEVICE_STORAGE:		
 		case FilePathManager::APPLICATION_STORAGE:
 		case FilePathManager::DOCUMENT_FOLDER:
-			fdHandle=(jobject)g_env->CallStaticObjectMethod(KigsJavaIDManager::FileManager_class,  KigsJavaIDManager::OpenFile, fname, handle->myDeviceID, read, append);						
+			fdHandle=(jobject)g_env->CallStaticObjectMethod(KigsJavaIDManager::FileManager_class,  KigsJavaIDManager::OpenFile, fname, handle->mDeviceID, read, append);						
 		break;
 	}
 	
@@ -363,7 +363,7 @@ bool  Android_fopen ( FileHandle* handle, const char * mode )
 
 	if(fdHandle)
 	{
-		handle->myFile=new ANDROIDFILE();
+		handle->mFile=new ANDROIDFILE();
 		
 		jobject globalFD = (jobject)g_env->NewGlobalRef(fdHandle);
 		/*
@@ -372,13 +372,13 @@ bool  Android_fopen ( FileHandle* handle, const char * mode )
 
 		jmethodID getMethodGetSize=KigsJavaIDManager::GetMethod(g_env, KigsJavaIDManager::GetFileSizeID);
 
-		handle->mySize = g_env->CallIntMethod(fdHandle, getMethodGetSize);
+		handle->mSize = g_env->CallIntMethod(fdHandle, getMethodGetSize);
 		
-		handle->myFile->myHandle = ((void *)globalFD);
+		handle->mFile->myHandle = ((void *)globalFD);
 		g_env->DeleteLocalRef(fdHandle);
 		
-		handle->myStatus |= FileHandle::Open;
-		handle->myStatus |= FileHandle::Exist;
+		handle->mStatus |= FileHandle::Open;
+		handle->mStatus |= FileHandle::Exist;
 		handle->setOpeningFlags(flagmode);		
 		
 		return true;
@@ -389,12 +389,12 @@ bool  Android_fopen ( FileHandle* handle, const char * mode )
 
 long int Android_fread ( void * ptr, long size, long count, FileHandle* handle )
 {
-	if(handle->myFile)
+	if(handle->mFile)
 	{
-		if(handle->myFile->myHandle)
+		if(handle->mFile->myHandle)
 		{
 			JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-			jobject globalFD = (jobject)handle->myFile->myHandle;
+			jobject globalFD = (jobject)handle->mFile->myHandle;
 			jobject	bytebuffer=g_env->NewDirectByteBuffer(ptr,size*count);
 			int result=g_env->CallStaticIntMethod(KigsJavaIDManager::FileManager_class,  KigsJavaIDManager::ReadFile, globalFD,bytebuffer,size*count);
 			g_env->DeleteLocalRef(bytebuffer);
@@ -406,12 +406,12 @@ long int Android_fread ( void * ptr, long size, long count, FileHandle* handle )
 
 long int Android_fwrite ( const void * ptr, long size, long count, FileHandle* handle )
 {
-	if(handle->myFile)
+	if(handle->mFile)
 	{
-		if(handle->myFile->myHandle)
+		if(handle->mFile->myHandle)
 		{
 			JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-			jobject globalFD = (jobject)handle->myFile->myHandle;
+			jobject globalFD = (jobject)handle->mFile->myHandle;
 			jobject	bytebuffer=g_env->NewDirectByteBuffer((void*)ptr,size*count);
 			int result=g_env->CallStaticIntMethod(KigsJavaIDManager::FileManager_class,  KigsJavaIDManager::WriteFile, globalFD,bytebuffer,size*count);
 			g_env->DeleteLocalRef(bytebuffer);
@@ -422,12 +422,12 @@ long int Android_fwrite ( const void * ptr, long size, long count, FileHandle* h
 }
 long int Android_ftell ( FileHandle* handle )
 {
-	if(handle->myFile)
+	if(handle->mFile)
 	{
-		if(handle->myFile->myHandle)
+		if(handle->mFile->myHandle)
 		{
 			JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-			jobject globalFD = (jobject)handle->myFile->myHandle;
+			jobject globalFD = (jobject)handle->mFile->myHandle;
 			int result=g_env->CallStaticIntMethod(KigsJavaIDManager::FileManager_class,  KigsJavaIDManager::TellFile, globalFD);
 			return result;
 		}
@@ -437,12 +437,12 @@ long int Android_ftell ( FileHandle* handle )
 }
 int Android_fseek ( FileHandle* handle, long int offset, int origin )
 {
-	if(handle->myFile)
+	if(handle->mFile)
 	{
-		if(handle->myFile->myHandle)
+		if(handle->mFile->myHandle)
 		{
 			JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-			jobject globalFD = (jobject)handle->myFile->myHandle;
+			jobject globalFD = (jobject)handle->mFile->myHandle;
 			int result=g_env->CallStaticIntMethod(KigsJavaIDManager::FileManager_class,  KigsJavaIDManager::SeekFile, globalFD,offset,origin);
 			return result;
 		}
@@ -457,20 +457,20 @@ return 0;
 }
 int Android_fclose ( FileHandle* handle )
 {
-	if(handle->myFile)
+	if(handle->mFile)
 	{
-		if(handle->myFile->myHandle)
+		if(handle->mFile->myHandle)
 		{
 			JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-			jobject globalFD = (jobject)handle->myFile->myHandle;
+			jobject globalFD = (jobject)handle->mFile->myHandle;
 			g_env->CallStaticVoidMethod(KigsJavaIDManager::FileManager_class,  KigsJavaIDManager::CloseFile, globalFD);
 			g_env->DeleteGlobalRef(globalFD);
 			
-			handle->myFile->myHandle=0;
+			handle->mFile->myHandle=0;
 		}
-		delete handle->myFile;
-		handle->myFile=0;
-		handle->myStatus=0;
+		delete handle->mFile;
+		handle->mFile=0;
+		handle->mStatus=0;
 	}
 	
 	return 0;

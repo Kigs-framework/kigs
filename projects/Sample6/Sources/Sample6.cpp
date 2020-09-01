@@ -134,7 +134,7 @@ void	Sample6::ProtectedUpdate()
 	static int loopcount = 0;
 	if (++loopcount > 5)
 	{
-		myNeedExit = true;
+		mNeedExit = true;
 	}
 }
 

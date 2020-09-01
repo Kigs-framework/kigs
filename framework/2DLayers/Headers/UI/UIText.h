@@ -4,6 +4,20 @@
 #include "UITexturedItem.h"
 #include "maUSString.h"
 
+// ****************************************
+// * UIText class
+// * --------------------------------------
+/**
+* \file	UIText.h
+* \class	UIText
+* \ingroup 2DLayers
+* \brief	Display a text.
+* 
+* The text is drawn to a texture each time it is changed. For text with fixed size / font changing often, use UIDynamicText insteed.
+* 
+*/
+// ****************************************
+
 class UIText : public UITexturedItem
 {
 public:
@@ -17,18 +31,18 @@ public:
 	UIText(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 
-	inline void				SetAlignment(unsigned int a) { myTextAlign = a; }
-	inline void				SetColor(kfloat R, kfloat G, kfloat B, kfloat A) { myColor[0] = R; myColor[1] = G; myColor[2] = B; myOpacity = A; }
+	inline void				SetAlignment(unsigned int a) { mTextAlignment = a; }
+	inline void				SetColor(kfloat R, kfloat G, kfloat B, kfloat A) { mColor[0] = R; mColor[1] = G; mColor[2] = B; mOpacity = A; }
 
 	using					UITexturedItem::SetColor;
-	kstl::string			GetText() { return myText.ToString(); }
-	kstl::string			GetFontName() const { return myFont; }
-	int						GetFontSize() const { return myFontSize; }
-	int						GetDirection() const { return myDirection; }
-	int						GetLength() const { return myLength; }
+	kstl::string			GetText() { return mText.ToString(); }
+	kstl::string			GetFontName() const { return mFont; }
+	int						GetFontSize() const { return mFontSize; }
+	int						GetDirection() const { return mDirection; }
+	int						GetLength() const { return mLength; }
 				
-	void Set_FontSize(int size) { size != 0 ? myFontSize = size : myFontSize = 12; }
-	void Set_FontName(const kstl::string& fontName) { fontName != "" ? myFont = fontName : myFont = "arial.ttf"; }
+	void Set_FontSize(int size) { size != 0 ? mFontSize = size : mFontSize = 12; }
+	void Set_FontName(const kstl::string& fontName) { fontName != "" ? mFont = fontName : mFont = "arial.ttf"; }
 
 	void			NotifyUpdate(const unsigned int /* labelid */) override;
 	
@@ -46,14 +60,14 @@ protected:
 	COREMODIFIABLE_METHODS(ReloadTexture);
 	unsigned short*			CutText(const unsigned short* text, bool& flag);
 
-	maUSString				myText;
-	maString				myFont;
-	maUInt					myFontSize;
-	maUInt					myDirection;
-	maUInt					myLength;
-	maUInt					myTextAlign;
-	maUInt					myMaxWidth;
-	maUInt					myMaxLines;
+	maUSString				mText;
+	maString				mFont;
+	maUInt					mFontSize;
+	maUInt					mDirection;
+	maUInt					mLength;
+	maUInt					mTextAlignment;
+	maUInt					mMaxWidth;
+	maUInt					mMaxLines;
 };
 
 #endif //_UITEXT_H_
