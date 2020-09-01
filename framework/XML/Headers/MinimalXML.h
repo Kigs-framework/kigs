@@ -8,27 +8,27 @@ class	StringRef
 {
 public:
 
-	StringRef() : myStringStart(0), myStringEnd(0), myBackupVal(0)
+	StringRef() : mStringStart(0), mStringEnd(0), mBackupVal(0)
 	{
 
 	}
 
 	void	set(unsigned char* end)
 	{
-		myStringEnd = end;
-		myBackupVal = *end;
-		*myStringEnd = 0;
+		mStringEnd = end;
+		mBackupVal = *end;
+		*mStringEnd = 0;
 	}
 
 	void	clear()
 	{
-		if (myStringEnd)
+		if (mStringEnd)
 		{
 			// restore backuped
-			*myStringEnd = myBackupVal;
-			myStringEnd = 0;
+			*mStringEnd = mBackupVal;
+			mStringEnd = 0;
 		}
-		myStringStart = 0;
+		mStringStart = 0;
 	}
 
 	~StringRef()
@@ -36,15 +36,15 @@ public:
 		clear();
 	}
 
-	unsigned char* myStringStart;
-	unsigned char* myStringEnd;
-	unsigned char	myBackupVal;
+	unsigned char* mStringStart;
+	unsigned char* mStringEnd;
+	unsigned char	mBackupVal;
 };
 
 class stringFromRef : public std::string
 {
 public:
-	stringFromRef(const StringRef& str) : std::string((const char*)str.myStringStart, (unsigned int)(str.myStringEnd - str.myStringStart)){}
+	stringFromRef(const StringRef& str) : std::string((const char*)str.mStringStart, (unsigned int)(str.mStringEnd - str.mStringStart)){}
 };
 
 

@@ -20,9 +20,9 @@
 IMPLEMENT_CLASS_INFO(ABoneSystem)
 
 ABoneSystem::ABoneSystem(const kstl::string& name,CLASS_NAME_TREE_ARG) : ASystem(name,PASS_CLASS_NAME_TREE_ARG)
-, myParentNode3D(0)
-, myBoneMatrixArray(0)
-, mySkeleton(0)
+, mParentNode3D(0)
+, mBoneMatrixArray(0)
+, mSkeleton(0)
 {
 	
 }
@@ -45,13 +45,13 @@ void    ABoneSystem::Animate(ATimeValue t)
 	SearchParentNode3D();
 	
 	InitLocalToGlobalData();
-	((ABoneChannel*)mp_Root.get())->AnimateRoot(t, this);
+	((ABoneChannel*)mRoot.get())->AnimateRoot(t, this);
 	
 	ApplyLocalToGlobalData();
 	
 #ifdef DRAW_DEBUG
-	if(myParentNode3D)
-		DrawSkeletonRec(0, {}, myParentNode3D->GetLocalToGlobal(), false);
+	if(mParentNode3D)
+		DrawSkeletonRec(0, {}, mParentNode3D->GetLocalToGlobal(), false);
 #endif
 };
 
@@ -59,20 +59,20 @@ void    ABoneSystem::Animate(ATimeValue t)
 void ABoneSystem::SetupDraw()
 {
 	AObject* aobject = GetAObject();
-	if(!mySkeleton)
+	if(!mSkeleton)
 	{
 		for (unsigned int i = 0; i < aobject->getItems().size(); i++)
 		{
 			// find skeleton item
-			if (aobject->getItems().at(i).myItem->isSubType("AObjectSkeletonResource"))
+			if (aobject->getItems().at(i).mItem->isSubType("AObjectSkeletonResource"))
 			{
-				mySkeleton = (AObjectSkeletonResource*)aobject->getItems().at(i).myItem.get();
+				mSkeleton = (AObjectSkeletonResource*)aobject->getItems().at(i).mItem.get();
 				break;
 			}
 		}
 	}
-	if(mySkeleton)
-		UpdateBoneMatrices(mySkeleton);
+	if(mSkeleton)
+		UpdateBoneMatrices(mSkeleton);
 	
 	
 }
@@ -80,24 +80,24 @@ void ABoneSystem::SetupDraw()
 
 void	ABoneSystem::SearchParentNode3D()
 {
-	if ( myParentNode3D == 0 )
+	if ( mParentNode3D == 0 )
 	{
 		CoreModifiable* attachedObject = GetAObject()->GetObject();
 		
 		while (attachedObject)
 		{
 			// depending on object type 
-			if (attachedObject->isSubType(Node3D::myClassID))
+			if (attachedObject->isSubType(Node3D::mClassID))
 			{
-				myParentNode3D = (Node3D*)attachedObject;
+				mParentNode3D = (Node3D*)attachedObject;
 				break;
 			}
-			attachedObject = attachedObject->getFirstParent(SceneNode::myClassID);
+			attachedObject = attachedObject->getFirstParent(SceneNode::mClassID);
 		}
 		
-		if (myParentNode3D) // add skinning
+		if (mParentNode3D) // add skinning
 		{
-			const Matrix3x4& currentMatrix= myParentNode3D->GetLocal();
+			const Matrix3x4& currentMatrix= mParentNode3D->GetLocal();
 			m_pStartingLocalToGlobalData.set(currentMatrix);
 			m_pInstantLocalToGlobalData.set(currentMatrix);
 			
@@ -112,12 +112,12 @@ void	ABoneSystem::SearchParentNode3D()
 			uniformMatrixArray->Init();
 			shader->addItem(uniformMatrixArray);
 			shader->Init();
-			animation->addShader(myParentNode3D, shader.get());
+			animation->addShader(mParentNode3D, shader.get());
 			
 			// retreive matrix buffer
 			void* buffer = nullptr;
 			uniformMatrixArray->getValue(LABEL_TO_ID(MatrixArray), buffer);
-			myBoneMatrixArray =(Matrix4x4*)((AlignedCoreRawBuffer<16,char>*)buffer)->buffer();
+			mBoneMatrixArray =(Matrix4x4*)((AlignedCoreRawBuffer<16,char>*)buffer)->buffer();
 		}
 	}
 }
@@ -125,7 +125,7 @@ void	ABoneSystem::SearchParentNode3D()
 void ABoneSystem::UpdateBoneMatrices(AObjectSkeletonResource* skeleton)
 {
 	SearchParentNode3D();
-	if(!myBoneMatrixArray)
+	if(!mBoneMatrixArray)
 	{
 		KIGS_WARNING("No bone matrix array to update", 0);
 		return;
@@ -134,13 +134,13 @@ void ABoneSystem::UpdateBoneMatrices(AObjectSkeletonResource* skeleton)
 	for (unsigned int i = 0; i < skeleton->GetGroupCount(); i++)
 	{
 		unsigned int id = skeleton->getID(i);
-		unsigned int uid = skeleton->getUID(i);
+		unsigned int mUID = skeleton->getUID(i);
 		
 		// get channel w/ UID
-		ABoneChannel* channel = (ABoneChannel*)this->GetChannelByUID(uid);
+		ABoneChannel* channel = (ABoneChannel*)this->GetChannelByUID(mUID);
 		Matrix3x4 global_transform = channel->GetCurrentPRSMatrix();
-		Matrix3x4 inv_bind_matrix = skeleton->getInvBindMatrix(i);
-		myBoneMatrixArray[id - 1] = global_transform *inv_bind_matrix;
+		Matrix3x4 mInvBindMatrix = skeleton->getInvBindMatrix(i);
+		mBoneMatrixArray[id - 1] = global_transform *mInvBindMatrix;
 	}
 }
 
@@ -149,15 +149,15 @@ void ABoneSystem::UpdateBoneMatrices(AObjectSkeletonResource* skeleton)
 
 void ABoneSystem::DrawSkeletonRec(int current_index, const Matrix3x4& parent_transform, const Matrix3x4& root, bool need_draw)
 {
-	if(!mySkeleton) return;
+	if(!mSkeleton) return;
 	
 	// get current bone data id 
-	unsigned int gid = mySkeleton->getID(current_index);
-	// get current bone data uid 
-	unsigned int uid = mySkeleton->getUID(current_index);
+	unsigned int mGID = mSkeleton->getID(current_index);
+	// get current bone data mUID 
+	unsigned int mUID = mSkeleton->getUID(current_index);
 	
-	// get current channel w/ bone data uid
-	ABoneChannel* channel = (ABoneChannel*)GetChannelByUID(uid);
+	// get current channel w/ bone data mUID
+	ABoneChannel* channel = (ABoneChannel*)GetChannelByUID(mUID);
 	
 	//  get current local transformation (PRS matrix)
 	Matrix3x4 local_transform = channel->GetCurrentPRSMatrix();
@@ -203,9 +203,9 @@ void ABoneSystem::DrawSkeletonRec(int current_index, const Matrix3x4& parent_tra
 	}
 	
 	// iterate
-	for (unsigned int i = 0; i<mySkeleton->GetGroupCount(); ++i)
+	for (unsigned int i = 0; i<mSkeleton->GetGroupCount(); ++i)
 	{
-		if (mySkeleton->getFatherID(i) == gid)
+		if (mSkeleton->getFatherID(i) == mGID)
 		{
 			DrawSkeletonRec(i, global_transform, root, true);
 		}
@@ -215,15 +215,15 @@ void ABoneSystem::DrawSkeletonRec(int current_index, const Matrix3x4& parent_tra
 
 void	ABoneSystem::InitLocalToGlobalData()
 {
-	if (myParentNode3D == 0)
+	if (mParentNode3D == 0)
 	{
 		return;
 	}
 	
-	const Matrix3x4& currentMatrix = myParentNode3D->GetLocal();
+	const Matrix3x4& currentMatrix = mParentNode3D->GetLocal();
 	
 	ABaseStream* tmp_stream = GetValidStream();
-	if (m_UseAnimationLocalToGlobal == false)
+	if (mUseAnimationLocalToGlobal == false)
 	{
 		if(m_LinkedChannel)
 		{
@@ -233,7 +233,7 @@ void	ABoneSystem::InitLocalToGlobalData()
 			/*
 			ABoneSystem* othersystem = (ABoneSystem*)lchannel->GetSystem();
 			ABaseStream* valid_stream = GetValidStream();
-			PRSKey m; m.set(othersystem->myParentNode3D->GetLocal());
+			PRSKey m; m.set(othersystem->mParentNode3D->GetLocal());
 			valid_stream->MulData(&m_pInstantLocalToGlobalData, &m);*/
 		}
 		else
@@ -252,13 +252,13 @@ void	ABoneSystem::InitLocalToGlobalData()
 
 void	ABoneSystem::ApplyLocalToGlobalData()
 {
-	if (!myParentNode3D)
+	if (!mParentNode3D)
 		return;
 	
-	if (m_UseAnimationLocalToGlobal || m_LinkedChannel)
+	if (mUseAnimationLocalToGlobal || m_LinkedChannel)
 	{
 		Matrix3x4 m; m_pInstantLocalToGlobalData.get(m);
-		myParentNode3D->ChangeMatrix(m);
+		mParentNode3D->ChangeMatrix(m);
 	}
 	
 	

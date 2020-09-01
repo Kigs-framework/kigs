@@ -22,7 +22,7 @@ IMPLEMENT_CLASS_INFO(AControledRotationStream)
 
 AControledRotationStream::AControledRotationStream(const kstl::string& name,CLASS_NAME_TREE_ARG) : APRSStream(name,PASS_CLASS_NAME_TREE_ARG)
 {
-	m_Priority = 50;
+	mPriority = 50;
 	m_RotationStruct=NULL;
 }
 
@@ -44,10 +44,10 @@ void    AControledRotationStream::UpdateData(LocalToGlobalBaseType* standdata)
 
 	if(m_RotationStruct->m_LastTime==KFLOAT_CONST(-1.0f))
 	{
-		m_RotationStruct->m_LastTime=m_LocalTime;
+		m_RotationStruct->m_LastTime=mLocalTime;
 	}
-	Float delta_t=(Float)(m_LocalTime-m_RotationStruct->m_LastTime);
-	m_RotationStruct->m_LastTime=m_LocalTime;
+	Float delta_t=(Float)(mLocalTime-m_RotationStruct->m_LastTime);
+	m_RotationStruct->m_LastTime=mLocalTime;
 
 	m_RotationStruct->m_Angle+=m_RotationStruct->m_AngularSpeed*delta_t/KFLOAT_CONST(1000.0f);
 
@@ -141,7 +141,7 @@ AnimationResourceInfo* AControledRotationStream::CreateAnimationResourceInfo(Int
     total_size += sizeof(AStreamResourceInfo**) + sizeof(AStreamResourceInfo) + sizeof(RotationStruct);
     AnimationResourceInfo*      resource=(AnimationResourceInfo *)(new char[total_size]);
 
-    resource->m_head.m_ID = 'OKTA';
+    resource->m_head.mID = 'OKTA';
     resource->m_head.m_StreamClassID = ControledRotationStreamClassID;
     resource->m_head.m_StreamSClassID = PRSStreamSuperClassID;
     resource->m_head.m_StreamCount = 1;
@@ -178,7 +178,7 @@ AnimationResourceInfo* AControledRotationStream::CreateAnimationResourceInfo(Int
     total_size += (sizeof(AStreamResourceInfo**) + sizeof(AStreamResourceInfo))*group_id_count + sizeof(RotationStruct);
     AnimationResourceInfo*      resource=(AnimationResourceInfo *)(new char[total_size]);
 
-    resource->m_head.m_ID = 'ATEC';
+    resource->m_head.mID = 'ATEC';
     resource->m_head.m_StreamClassID = ControledRotationStreamClassID;
     resource->m_head.m_StreamSClassID = PRSStreamSuperClassID;
     resource->m_head.m_StreamCount = group_id_count;

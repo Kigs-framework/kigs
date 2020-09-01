@@ -32,13 +32,13 @@ ABoneChannel::~ABoneChannel()
 
 void    ABoneChannel::UpdateTransformParameters()
 {
-	m_pLocalToGlobalStreamData.get(m_CurrentPRS);
+	mLocalToGlobalStreamData.get(m_CurrentPRS);
 };
 
 
 void    ABoneChannel::SetStandStreamData()
 {
-	maInt copythis(*this,false,"this",(int)m_GroupID);
+	maInt copythis(*this,false,"this",(int)mGroupID);
 	maInt restype(*this,false,"type",Resource_Bone_Information);
 	maInt result(*this,false,"result",0);
 	
@@ -47,15 +47,15 @@ void    ABoneChannel::SetStandStreamData()
 	params.push_back(&restype);
 	params.push_back(&result);
 	
-	m_pSystem->GetAObject()->CallMethod("GetResource",params);
+	mSystem->GetAObject()->CallMethod("GetResource",params);
 	
 	PRSKey * prskey=(PRSKey *)((int)result);
 	
 	if(prskey)
 	{
-		ABaseStream*    tmp_stream=m_pSystem->GetValidStream();
+		ABaseStream*    tmp_stream=mSystem->GetValidStream();
 		
-		tmp_stream->CopyData(&m_pStandStreamData,prskey);
+		tmp_stream->CopyData(&mStandStreamData,prskey);
 		
 		delete prskey;
 	}

@@ -80,11 +80,11 @@ public:
 	
 	virtual ~ASystem()
 	{
-		if(m_pChannelTab != NULL)
+		if(mChannelTab != NULL)
         {
             DeleteChannelTree();
-            delete[] m_pChannelTab;
-            m_pChannelTab=NULL;
+            delete[] mChannelTab;
+            mChannelTab=NULL;
         }
 		
 	}
@@ -129,7 +129,7 @@ void    ASystem<LocalToGlobalType>::SetLocalToGlobalData(LocalToGlobalBaseType* 
 	ABaseStream* tmp_stream = GetValidStream();
 	if (tmp_stream != NULL)
 	{
-		if (m_UseAnimationLocalToGlobal == false)
+		if (mUseAnimationLocalToGlobal == false)
 		{
 			// just copy data 
 			tmp_stream->CopyData(&m_pInstantLocalToGlobalData, new_data);
@@ -144,7 +144,7 @@ void    ASystem<LocalToGlobalType>::SetLocalToGlobalData(LocalToGlobalBaseType* 
 template<typename LocalToGlobalType>
 void   ASystem<LocalToGlobalType>::UseAnimationLocalToGlobalData(bool b)
 {
-	m_UseAnimationLocalToGlobal = b;
+	mUseAnimationLocalToGlobal = b;
 	if (b == false)
 	{
 		
@@ -180,8 +180,8 @@ void    ASystem<LocalToGlobalType>::LinkTo(ABaseChannel* data)
 {
 	
 	m_LinkedChannel = data;
-	m_UseAnimationLocalToGlobal = false;
-	m_UpdateLocalToGlobalWhenLoop = false;
+	mUseAnimationLocalToGlobal = false;
+	mUpdateLocalToGlobalWhenLoop = false;
 	
 };
 

@@ -146,7 +146,7 @@ void    APRSBezierKeyStream::UpdateData(LocalToGlobalBaseType* standdata)
     // Rotation keys
     // Search for the rotation key corresponding to time value
     
-    PRSKey* standprs=(PRSKey*)standdata;//m_pChannel->GetStandData();
+    PRSKey* standprs=(PRSKey*)standdata;//mChannel->GetStandData();
     IntU32  keycount=m_pPRSInfo->m_NbRotationKeys;
     
     if(keycount < 2)
@@ -201,7 +201,7 @@ void    APRSBezierKeyStream::UpdateData(LocalToGlobalBaseType* standdata)
 				{
 					p0=&(rkeys[k1-1].m_Orientation);
 				}
-				else if(m_Loop) // in loop mode we suppose first key == last key so we jump one key 
+				else if(mLoop) // in loop mode we suppose first key == last key so we jump one key 
 				{
 					p0=&(rkeys[keycount-2].m_Orientation);
 				}
@@ -209,7 +209,7 @@ void    APRSBezierKeyStream::UpdateData(LocalToGlobalBaseType* standdata)
 				{
 					q1=&(rkeys[k2+1].m_Orientation);
 				}
-				else if(m_Loop) // in loop mode we suppose first key == last key so we jump one key 
+				else if(mLoop) // in loop mode we suppose first key == last key so we jump one key 
 				{
 					q1=&(rkeys[1].m_Orientation);
 				}
@@ -282,7 +282,7 @@ void    APRSBezierKeyStream::UpdateData(LocalToGlobalBaseType* standdata)
 				{
 					p0=&(skeys[k1-1].m_ScaleValue);
 				}
-				else if(m_Loop)
+				else if(mLoop)
 				{
 					p0=&(skeys[keycount-2].m_ScaleValue);
 				}
@@ -291,7 +291,7 @@ void    APRSBezierKeyStream::UpdateData(LocalToGlobalBaseType* standdata)
 				{
 					q1=&(skeys[k2+1].m_ScaleValue);
 				}
-				else if(m_Loop)
+				else if(mLoop)
 				{
 					q1=&(skeys[1].m_ScaleValue);
 				}

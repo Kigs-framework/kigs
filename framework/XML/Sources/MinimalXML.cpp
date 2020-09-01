@@ -287,9 +287,9 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					if(charVal=='"') // value end
 					{
 						// check empty attributes
-						if(currentAttribute->mValue.myStringStart == 0)
+						if(currentAttribute->mValue.mStringStart == 0)
 						{
-							currentAttribute->mValue.myStringStart=currentChar;
+							currentAttribute->mValue.mStringStart=currentChar;
 						}
 						substate=NO_SUBSTATE;
 						currentAttribute->mValue.set(currentChar);
@@ -297,9 +297,9 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					else if(mIsAlphaNum[charVal]&4)
 					{
 						// check if first character
-						if(currentAttribute->mValue.myStringStart == 0)
+						if(currentAttribute->mValue.mStringStart == 0)
 						{
-							currentAttribute->mValue.myStringStart=currentChar;
+							currentAttribute->mValue.mStringStart=currentChar;
 						}
 					}
 				}
@@ -319,9 +319,9 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				{
 					state=OPENING;
 					// if some characters are here, call handler
-					if(mOutOfElementCharacters.myStringStart!=0)
+					if(mOutOfElementCharacters.mStringStart!=0)
 					{
-						(*mCharacterDataHandler)(mUserData,(const char*)mOutOfElementCharacters.myStringStart,(int)(currentChar-mOutOfElementCharacters.myStringStart));
+						(*mCharacterDataHandler)(mUserData,(const char*)mOutOfElementCharacters.mStringStart,(int)(currentChar-mOutOfElementCharacters.mStringStart));
 						mOutOfElementCharacters.clear();
 
 					}
@@ -333,9 +333,9 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				}
 				else if(mIsAlphaNum[charVal]&4)
 				{
-					if(mOutOfElementCharacters.myStringStart==0)
+					if(mOutOfElementCharacters.mStringStart==0)
 					{
-						mOutOfElementCharacters.myStringStart=currentChar;
+						mOutOfElementCharacters.mStringStart=currentChar;
 					}
 				}
 				break;
@@ -362,7 +362,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					{
 						state=IN_ELEMENT;
 						substate=ELEMENT_NAME;
-						mElementStart.mName.myStringStart=currentChar;
+						mElementStart.mName.mStringStart=currentChar;
 					}
 					else
 					{
@@ -419,19 +419,19 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					const char* encoding=0;
 					int			standalone=0;
 
-					if(mProlog.mAttributes[0].mName.myStringStart)
+					if(mProlog.mAttributes[0].mName.mStringStart)
 					{
-						version=(const char*)mProlog.mAttributes[0].mValue.myStringStart;
+						version=(const char*)mProlog.mAttributes[0].mValue.mStringStart;
 					}
 
-					if(mProlog.mAttributes[1].mName.myStringStart)
+					if(mProlog.mAttributes[1].mName.mStringStart)
 					{
-						encoding=(const char*)mProlog.mAttributes[1].mValue.myStringStart;
+						encoding=(const char*)mProlog.mAttributes[1].mValue.mStringStart;
 					}
 
-					if(mProlog.mAttributes[2].mName.myStringStart)
+					if(mProlog.mAttributes[2].mName.mStringStart)
 					{
-						if(strcmp((const char*)mProlog.mAttributes[2].mValue.myStringStart,"yes") == 0)
+						if(strcmp((const char*)mProlog.mAttributes[2].mValue.mStringStart,"yes") == 0)
 						{
 							standalone=1;
 						}
@@ -449,7 +449,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					{
 						substate=ATTRIBUTE_NAME;
 						currentAttribute=&mProlog.mAttributes[mProlog.mCurrentAttribute++];
-						currentAttribute->mName.myStringStart=currentChar;
+						currentAttribute->mName.mStringStart=currentChar;
 					}
 					else
 					{
@@ -542,9 +542,9 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				break;
 			case IN_DATA:
 				{
-					if(mOutOfElementCharacters.myStringStart==0)
+					if(mOutOfElementCharacters.mStringStart==0)
 					{
-						mOutOfElementCharacters.myStringStart=currentChar;
+						mOutOfElementCharacters.mStringStart=currentChar;
 					}
 					// wait for data end
 					if((']'==charVal) && (mSequenceDetect.size()==0))
@@ -558,9 +558,9 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					else if(('>' == charVal)&& (mSequenceDetect.size()>0) && (']' == mSequenceDetect.val(-1)))
 					{
 						// data end
-						if(mOutOfElementCharacters.myStringStart!=0)
+						if(mOutOfElementCharacters.mStringStart!=0)
 						{
-							(*mEndCdataSectionHandler)(mUserData,(const char*)mOutOfElementCharacters.myStringStart,(int)(currentChar-mOutOfElementCharacters.myStringStart-2));
+							(*mEndCdataSectionHandler)(mUserData,(const char*)mOutOfElementCharacters.mStringStart,(int)(currentChar-mOutOfElementCharacters.mStringStart-2));
 							mOutOfElementCharacters.clear();
 						}
 						else
@@ -590,7 +590,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				{
 					if('/'==charVal)
 					{
-						if(mElementStart.mName.myStringStart)
+						if(mElementStart.mName.mStringStart)
 						{
 							state=ELEMENT_START_SELF_CLOSED;
 						}
@@ -602,7 +602,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					else if('>'==charVal)
 					{
 						//const char** attribs=myElementStart.getAttribArray();
-						//(*myStartElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart,attribs);
+						//(*myStartElementHandler)(myUserData,(const char*)myElementStart.mName.mStringStart,attribs);
 						startElement();
 						mElementStart.clear(this);
 						state=NO_STATE;
@@ -615,14 +615,14 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 						// start element attribute
 						substate=ATTRIBUTE_NAME;
 						currentAttribute=mElementStart.getAttrib(this);
-						currentAttribute->mName.myStringStart=currentChar;
+						currentAttribute->mName.mStringStart=currentChar;
 					}
 				}
 				break;
 			case ELEMENT_START_END:
 				{
 					//const char** attribs=myElementStart.getAttribArray();
-					//(*myStartElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart,attribs);
+					//(*myStartElementHandler)(myUserData,(const char*)myElementStart.mName.mStringStart,attribs);
 					startElement();
 					mElementStart.clear(this);
 					state=NO_STATE;
@@ -632,9 +632,9 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 				{
 					startElement();
 					//const char** attribs=myElementStart.getAttribArray();
-					//(*myStartElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart,attribs);
+					//(*myStartElementHandler)(myUserData,(const char*)myElementStart.mName.mStringStart,attribs);
 					endElement();
-					//(*myEndElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart);
+					//(*myEndElementHandler)(myUserData,(const char*)myElementStart.mName.mStringStart);
 					//myElementStart.clear(this);
 					state=NO_STATE;
 				}
@@ -648,13 +648,13 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 					else if('>'==charVal)
 					{
 						endElement();
-						//(*myEndElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart);
+						//(*myEndElementHandler)(myUserData,(const char*)myElementStart.mName.mStringStart);
 						//myElementStart.clear(this);
 						state=NO_STATE;
 					}
 					else if(mIsAlphaNum[charVal]&4)
 					{
-						mElementStart.mName.myStringStart=currentChar;
+						mElementStart.mName.mStringStart=currentChar;
 						substate=ELEMENT_CLOSE_NAME;
 					}
 
@@ -663,7 +663,7 @@ bool	MinimalXML::Parse(unsigned char*	buffer, u64 len)
 			case ELEMENT_CLOSING_END:
 				{
 					endElement();
-					//(*myEndElementHandler)(myUserData,(const char*)myElementStart.mName.myStringStart);
+					//(*myEndElementHandler)(myUserData,(const char*)myElementStart.mName.mStringStart);
 					//myElementStart.clear(this);
 					state=NO_STATE;
 				}
@@ -693,7 +693,7 @@ void	MinimalXML::startElement()
 	else
 	{
 		const char** attribs = mElementStart.getAttribArray();
-		(*mStartElementHandler)(mUserData, (const char*)mElementStart.mName.myStringStart, attribs);
+		(*mStartElementHandler)(mUserData, (const char*)mElementStart.mName.mStringStart, attribs);
 	}
 }
 void	MinimalXML::endElement()
@@ -705,7 +705,7 @@ void	MinimalXML::endElement()
 	}
 	else
 	{
-		(*mEndElementHandler)(mUserData, (const char*)mElementStart.mName.myStringStart);
+		(*mEndElementHandler)(mUserData, (const char*)mElementStart.mName.mStringStart);
 		mElementStart.clear(this);
 	}
 }
@@ -788,8 +788,8 @@ const char**		MinimalXML::ElementStart_Parser::getAttribArray()
 	Attribut_Parser_LinkedNode* current=mFirstAttrib;
 	for(i=0;i<(mAttribCount*2);i+=2)
 	{
-		result[i]=(const char*)current->mAttribute.mName.myStringStart;
-		result[i+1]=(const char*)current->mAttribute.mValue.myStringStart;
+		result[i]=(const char*)current->mAttribute.mName.mStringStart;
+		result[i+1]=(const char*)current->mAttribute.mValue.mStringStart;
 		current=current->mNext;
 	}
 

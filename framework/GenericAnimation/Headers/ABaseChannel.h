@@ -52,7 +52,7 @@ public:
 	
 	bool   IsRootChannel()
 	{
-		if (mp_FatherNode == NULL)
+		if (mFatherNode == NULL)
 		{
 			return true;
 		}
@@ -96,9 +96,9 @@ public:
 		
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
-			if ((*it).myItem->isSubType(ABaseChannel::myClassID))
+			if ((*it).mItem->isSubType(ABaseChannel::mClassID))
 			{
-				(*it).myItem->as< ABaseChannel>()->GetSonGroupIDList(result, count);
+				(*it).mItem->as< ABaseChannel>()->GetSonGroupIDList(result, count);
 			}
 		}
 	};
@@ -114,7 +114,7 @@ public:
 	
 	void    SetSystem(ABaseSystem* sys)
 	{
-		m_pSystem = sys;
+		mSystem = sys;
 	};
 	
 	// ******************************
@@ -127,7 +127,7 @@ public:
 	
 	ABaseSystem*    GetSystem()
 	{
-		return m_pSystem;
+		return mSystem;
 	};
 	
 	// ******************************
@@ -217,7 +217,7 @@ public:
 	
 	IntU32       GetGroupID() const
 	{
-		return m_GroupID;
+		return mGroupID;
 	};
 	
 	// ******************************
@@ -229,31 +229,31 @@ public:
 	
 	void            SetGroupID(IntU32 groupID)
 	{
-		m_GroupID = groupID;
+		mGroupID = groupID;
 	};
 	
 	IntU32 GetBoneID() const
 	{
-		return m_BoneID;
+		return mBoneID;
 	}
 	
 	void SetBoneID(IntU32 id)
 	{
-		m_BoneID = id;
+		mBoneID = id;
 	}
 	
 	
 	virtual LocalToGlobalBaseType* GetChannelLocalToGlobalData() = 0;
 	
-	ABaseChannel*	mp_FatherNode;
-	IntU32		m_SonCount;
+	ABaseChannel*	mFatherNode;
+	IntU32		mSonCount;
 	
-	IntU32		m_GroupID;
-	IntU32		m_BoneID;
+	IntU32		mGroupID;
+	IntU32		mBoneID;
 	
 	// the first AStream in the list
-	ABaseStream*					m_pFirstStream;
-	ABaseSystem*					m_pSystem;
+	ABaseStream*					mFirstStream;
+	ABaseSystem*					mSystem;
 };
 
 

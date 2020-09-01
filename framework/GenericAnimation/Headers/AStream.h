@@ -42,19 +42,19 @@ public:
 
 	void Start() override
 	{
-		if (m_IsPlaying == false)
+		if (mIsPlaying == false)
 		{
-			if (m_pChannel)
-				if (m_pChannel->IsRootChannel())
+			if (mChannel)
+				if (mChannel->IsRootChannel())
 				{
-					LocalToGlobalBaseType*   tmp_data = ((AChannel<LocalToGlobalType>*)m_pChannel)->GetLocalToGlobalBeforeChange();
-					m_IsPlaying = true;
-					((AChannel<LocalToGlobalType>*)m_pChannel)->ResetLocalToGlobalAfterChange(tmp_data);
+					LocalToGlobalBaseType*   tmp_data = ((AChannel<LocalToGlobalType>*)mChannel)->GetLocalToGlobalBeforeChange();
+					mIsPlaying = true;
+					((AChannel<LocalToGlobalType>*)mChannel)->ResetLocalToGlobalAfterChange(tmp_data);
 				}
 
-			m_IsPlaying = true;
-			m_RepeatCount = 1;
-			m_bEndReached = false;
+			mIsPlaying = true;
+			mRepeatCount = 1;
+			mEndReached = false;
 		}
 	};
 
@@ -66,17 +66,17 @@ public:
 	// ******************************
 	void Stop() override
 	{
-		if (m_IsPlaying == true)
+		if (mIsPlaying == true)
 		{
-			if (m_pChannel)
-				if (m_pChannel->IsRootChannel())
+			if (mChannel)
+				if (mChannel->IsRootChannel())
 				{
-					LocalToGlobalBaseType*   tmp_data = ((AChannel<LocalToGlobalType>*)m_pChannel)->GetLocalToGlobalBeforeChange();
-					m_IsPlaying = false;
-					((AChannel<LocalToGlobalType>*)m_pChannel)->ResetLocalToGlobalAfterChange(tmp_data);
+					LocalToGlobalBaseType*   tmp_data = ((AChannel<LocalToGlobalType>*)mChannel)->GetLocalToGlobalBeforeChange();
+					mIsPlaying = false;
+					((AChannel<LocalToGlobalType>*)mChannel)->ResetLocalToGlobalAfterChange(tmp_data);
 				}
 
-			m_IsPlaying = false;
+			mIsPlaying = false;
 		}
 	};
 };
@@ -89,13 +89,13 @@ IMPLEMENT_TEMPLATE_CLASS_INFO(LocalToGlobalType, AStream)
 template<typename LocalToGlobalType>
 AStream<LocalToGlobalType>::AStream(const kstl::string& name, CLASS_NAME_TREE_ARG) : ABaseStream(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	m_pNextStream = NULL;
+	mNextStream = NULL;
 	InitStream(NULL, 100, KFLOAT_CONST(1.0f), KFLOAT_CONST(1.0f), true);
-	m_IsPlaying = false;
-	m_OutsideAnimFlag = false;
-	m_HasLoop = 0;
-	m_RepeatCount = 1;
-	m_pResourceInfo = NULL;
+	mIsPlaying = false;
+	mOutsideAnimFlag = false;
+	mHasLoop = 0;
+	mRepeatCount = 1;
+	mResourceInfo = NULL;
 }
 
 
