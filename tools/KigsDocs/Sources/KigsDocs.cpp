@@ -33,18 +33,18 @@ void	KigsDocs::RecursiveTreatClass(CoreTreeNode* n, KigsDocs::documentedInstance
 	
 	KigsDocs::documentedInstances* keepParent = parent;
 
-	if (mMap.find(n->myID._id_name) == mMap.end())
+	if (mMap.find(n->mID._id_name) == mMap.end())
 	{
-		documentedInstances& toAdd = mMap[n->myID._id_name];
-		toAdd.mClassName = n->myID._id_name;
+		documentedInstances& toAdd = mMap[n->mID._id_name];
+		toAdd.mClassName = n->mID._id_name;
 		
 		keepParent = &toAdd;
-		toAdd.mInstance = KigsCore::GetInstanceOf(n->myID._id_name + "_instance", n->myID);
+		toAdd.mInstance = KigsCore::GetInstanceOf(n->mID._id_name + "_instance", n->mID);
 		
 		toAdd.mFather = parent;
 		if (!toAdd.mInstance.isNil())
 		{
-			if (!toAdd.mInstance->isSubType("DoNothingObject") || (n->myID._id_name == "DoNothingObject"))
+			if (!toAdd.mInstance->isSubType("DoNothingObject") || (n->mID._id_name == "DoNothingObject"))
 			{
 				for (auto& a : toAdd.mInstance->getAttributes())
 				{
@@ -67,7 +67,7 @@ void	KigsDocs::RecursiveTreatClass(CoreTreeNode* n, KigsDocs::documentedInstance
 					}
 
 				// class methods
-				auto classmethods = &n->myMethods;
+				auto classmethods = &n->mMethods;
 				for (auto& m : *classmethods)
 				{
 					if (!documentedInstances::isParentMethod(parent, m.first._id_name))
@@ -79,7 +79,7 @@ void	KigsDocs::RecursiveTreatClass(CoreTreeNode* n, KigsDocs::documentedInstance
 		}
 	}
 
-	for (auto& s : n->myChildren)
+	for (auto& s : n->mChildren)
 	{
 		RecursiveTreatClass(s.second, keepParent);
 	}
@@ -106,13 +106,13 @@ void	KigsDocs::ProtectedInit()
 
 	// parse arguments
 	// retreive args
-	kstl::vector<kstl::string>::iterator itArgs = myArgs.begin();
+	kstl::vector<kstl::string>::iterator itArgs = mArgs.begin();
 	// skip app name
 	itArgs++;
 
 	kstl::string outpath = "";
 
-	for (; itArgs != myArgs.end(); itArgs++)
+	for (; itArgs != mArgs.end(); itArgs++)
 	{
 		kstl::string& current = (*itArgs);
 
@@ -146,7 +146,7 @@ void	KigsDocs::ProtectedInit()
 	}
 
 	auto r = KigsCore::GetRootNode();
-	auto coreModifiableR = r->myChildren["CoreModifiable"];
+	auto coreModifiableR = r->mChildren["CoreModifiable"];
 	RecursiveTreatClass(coreModifiableR,nullptr);
 
 
@@ -180,7 +180,7 @@ void	KigsDocs::ExportDoc(const std::pair<std::string, documentedInstances>& i)
 		bool foundInParent=false;
 		for (const auto& names : classNameTree.classNames())
 		{
-			if (names.myClassName == i.first)
+			if (names.mClassName == i.first)
 			{
 				foundInParent = true;
 				break;
@@ -375,9 +375,9 @@ void	KigsDocs::ExportDetailedAttribute(std::ofstream& DocFile, const std::pair<s
 
 	for(auto& v : classNameTree.classNames())
 	{
-		if ((v.myRuntimeName._id_name == "") && (v.myClassName._id_name != ExactType))
+		if ((v.mRuntimeName._id_name == "") && (v.mClassName._id_name != ExactType))
 		{
-			std::string parentName = v.myClassName._id_name;
+			std::string parentName = v.mClassName._id_name;
 			DocFile << "\\copydoc " << parentName << "::m" << a.first << std::endl;
 		}
 	}
@@ -402,9 +402,9 @@ void	KigsDocs::ExportDetailedMethod(std::ofstream& DocFile, const std::pair<std:
 
 	for (auto& v : classNameTree.classNames())
 	{
-		if ((v.myRuntimeName._id_name == "") && (v.myClassName._id_name != ExactType))
+		if ((v.mRuntimeName._id_name == "") && (v.mClassName._id_name != ExactType))
 		{
-			std::string parentName = v.myClassName._id_name;
+			std::string parentName = v.mClassName._id_name;
 			DocFile << "\\copydoc " << parentName << "::" << m.first << "()" << std::endl;
 		}
 	}

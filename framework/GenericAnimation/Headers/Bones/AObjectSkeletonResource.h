@@ -23,31 +23,31 @@ public:
 
 	unsigned int		GetGroupCount()
 	{
-		return m_BoneCount;
+		return mBoneCount;
 	}
 
 	unsigned int getID(int index)
 	{
-		return getBoneData(index)->gid;
+		return getBoneData(index)->mGID;
 	}
 	unsigned int getUID(int index)
 	{
-		return getBoneData(index)->uid;
+		return getBoneData(index)->mUID;
 	}
 
 	unsigned int getFatherID(int index)
 	{
-		return getBoneData(index)->fathergid;
+		return getBoneData(index)->mFatherGID;
 	}
 
 	const Matrix3x4& getInvBindMatrix(int index)
 	{
-		return getBoneData(index)->inv_bind_matrix;
+		return getBoneData(index)->mInvBindMatrix;
 	}
 
 	// create a skeleton in code
 	void	initSkeleton(int boneCount,unsigned int BoneDataSize);
-	void	addBone(int index, unsigned int uid, unsigned int gid, unsigned int fgid, const Matrix3x4& inv_bind_matrix);
+	void	addBone(int index, unsigned int mUID, unsigned int mGID, unsigned int fgid, const Matrix3x4& mInvBindMatrix);
 	void	setStandData(int index, LocalToGlobalBaseType* toSet);
 
 #ifdef WIN32
@@ -62,15 +62,15 @@ public:
 	// the skeleton file is organized like this :
 
 	// the header : ASkeletonFileHeader
-	//                                  - m_ID                      // 4 bytes 
-	//                                  - m_BoneCount				// 4 bytes 
-	//									- m_BoneDataSize			// 4 bytes   the size of the boneTreeNodeStruct
+	//                                  - mID                      // 4 bytes 
+	//                                  - mBoneCount				// 4 bytes 
+	//									- mBoneDataSize			// 4 bytes   the size of the boneTreeNodeStruct
 
 	//  then for each bone a boneTreeNodeStruct
 
-	//                                  - gid							// 4 bytes	the id of the bone (uid based on the name)
-	//                                  - fathergid						// 4 bytes  the id of this bone father (or 0 if root)
-	//									- inv_bind_matrix				// 16x4 bytes the inv bind matrix of this bone
+	//                                  - mGID							// 4 bytes	the id of the bone (mUID based on the name)
+	//                                  - mFatherGID						// 4 bytes  the id of this bone father (or 0 if root)
+	//									- mInvBindMatrix				// 16x4 bytes the inv bind matrix of this bone
 	//                                  - data						    // ? bytes the stand data for this bone 
 
 protected:
@@ -80,11 +80,11 @@ protected:
 
 	struct ASkeletonFileHeader
 	{
-		unsigned int			m_ID;
-		unsigned int			m_BoneCount;
-		unsigned int			m_BoneDataSize;
-		Matrix3x4				m_LocalTransformMatrix;
-		Matrix3x4				m_globalTransformMatrix;
+		unsigned int			mID;
+		unsigned int			mBoneCount;
+		unsigned int			mBoneDataSize;
+		Matrix3x4				mLocalTransformMatrix;
+		Matrix3x4				mGlobalTransformMatrix;
 		
 
 	};
@@ -95,8 +95,8 @@ protected:
 
 		boneTreeNodeStruct()
 		{
-			gid = 0;
-			fathergid = 0;
+			mGID = 0;
+			mFatherGID = 0;
 		}
 
 		~boneTreeNodeStruct()
@@ -110,26 +110,26 @@ protected:
 		}
 
 		//! id
-		unsigned int			gid;
-		unsigned int			fathergid;
-		unsigned int			uid;
-		Matrix3x4				inv_bind_matrix;
+		unsigned int			mGID;
+		unsigned int			mFatherGID;
+		unsigned int			mUID;
+		Matrix3x4				mInvBindMatrix;
 	};
 
 
 	boneTreeNodeStruct*	getBoneData(unsigned int index)
 	{
-		return(boneTreeNodeStruct*)(myBoneTreeNodeList + m_BoneDataSize*index);
+		return(boneTreeNodeStruct*)(mBoneTreeNodeList + mBoneDataSize*index);
 	}
 
 
-	maString					mySkeletonFileName;
+	maString					mSkeletonFileName;
 	
-	unsigned int				m_BoneCount;
+	unsigned int				mBoneCount;
 	
-	unsigned int				m_BoneDataSize;
+	unsigned int				mBoneDataSize;
 
-	char*						myBoneTreeNodeList;
+	char*						mBoneTreeNodeList;
 };
 
 #endif //_AOBJECTSKELETONRESOURCE_H_

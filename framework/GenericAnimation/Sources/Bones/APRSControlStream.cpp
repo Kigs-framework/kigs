@@ -23,7 +23,7 @@ IMPLEMENT_CLASS_INFO(APRSControlStream)
 APRSControlStream::APRSControlStream(const kstl::string& name,CLASS_NAME_TREE_ARG) : APRSStream(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	m_pPRSInfo = NULL;
-    m_Priority = 50;
+    mPriority = 50;
 }
 
 APRSControlStream::~APRSControlStream()
@@ -138,7 +138,7 @@ AnimationResourceInfo* APRSControlStream::CreateAnimationResourceInfo(IntU32 gro
 
     AnimationResourceInfo*      resource=(AnimationResourceInfo *)(new char[total_size]);
 
-    resource->m_head.m_ID = 'ATEC';
+    resource->m_head.mID = 'ATEC';
     resource->m_head.m_StreamCount = group_id_count;
 	resource->setStreamType(currentType);
 

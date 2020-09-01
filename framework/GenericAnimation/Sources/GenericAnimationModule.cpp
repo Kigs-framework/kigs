@@ -20,9 +20,9 @@ IMPLEMENT_CLASS_INFO(GenericAnimationModule)
 GenericAnimationModule::GenericAnimationModule(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 
-	myResourceInfoMap.clear();
+	mResourceInfoMap.clear();
 
-	postAddShaderList.clear();
+	mPostAddShaderList.clear();
 
 	gGenericAnimationModule = this;
 }
@@ -56,13 +56,13 @@ void GenericAnimationModule::Close()
     BaseClose();
 
 	kstl::map<kstl::string, CoreRawBuffer*>::iterator it;
-	for(it=myResourceInfoMap.begin();it!=myResourceInfoMap.end();++it)
+	for(it=mResourceInfoMap.begin();it!=mResourceInfoMap.end();++it)
 	{
 		CoreRawBuffer* result=((*it).second);
 		result->Destroy();
 	}
 
-	myResourceInfoMap.clear();
+	mResourceInfoMap.clear();
 }    
 
 //! module update
@@ -75,9 +75,9 @@ void GenericAnimationModule::Update(const Timer& timer, void* addParam)
 
 AnimationResourceInfo*	GenericAnimationModule::LoadAnimation(const kstl::string& fileName)
 {
-	if(myResourceInfoMap.find(fileName) != myResourceInfoMap.end())
+	if(mResourceInfoMap.find(fileName) != mResourceInfoMap.end())
 	{
-		return (AnimationResourceInfo*)myResourceInfoMap[fileName]->buffer();
+		return (AnimationResourceInfo*)mResourceInfoMap[fileName]->buffer();
 	}
 
 	CoreRawBuffer* result=0;
@@ -98,7 +98,7 @@ AnimationResourceInfo*	GenericAnimationModule::LoadAnimation(const kstl::string&
 
 		if(result)
 		{
-			myResourceInfoMap[fileName]=result;
+			mResourceInfoMap[fileName]=result;
 		}
 	}
 	return (AnimationResourceInfo*)result->buffer();
@@ -108,16 +108,16 @@ AnimationResourceInfo*	GenericAnimationModule::LoadAnimation(const kstl::string&
 
 void	GenericAnimationModule::UnLoad(const kstl::string& fileName)
 {
-	if(myResourceInfoMap.find(fileName) == myResourceInfoMap.end())
+	if(mResourceInfoMap.find(fileName) == mResourceInfoMap.end())
 	{
 		return;
 	}
 
-	CoreRawBuffer* result=myResourceInfoMap[fileName];
+	CoreRawBuffer* result=mResourceInfoMap[fileName];
 
 	result->Destroy();
 
-	myResourceInfoMap.erase(myResourceInfoMap.find(fileName));
+	mResourceInfoMap.erase(mResourceInfoMap.find(fileName));
 
 }
 
@@ -126,12 +126,12 @@ void	GenericAnimationModule::UnLoad(AnimationResourceInfo* info)
 	kstl::map<kstl::string, CoreRawBuffer*>::iterator it;
 
 	CoreRawBuffer* result =0;
-	for(it=myResourceInfoMap.begin();it!=myResourceInfoMap.end();++it)
+	for(it=mResourceInfoMap.begin();it!=mResourceInfoMap.end();++it)
 	{
 		if(((AnimationResourceInfo*)(*it).second->buffer())==info)
 		{
 			result = (*it).second;
-			myResourceInfoMap.erase(it);
+			mResourceInfoMap.erase(it);
 			break;
 		}
 	}

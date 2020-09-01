@@ -36,7 +36,7 @@ public:
 	
 	int getPriority() const
 	{
-		return m_Priority;
+		return mPriority;
 	}
 	
 	// ******************************
@@ -48,7 +48,7 @@ public:
 	
 	AObject*    GetAObject()
 	{
-		return m_pAObject;
+		return mAObject;
 	};
 	
 	
@@ -71,7 +71,7 @@ public:
 	
 	ABaseStream*   GetValidStream();
 	
-	void	DoOnlyLocalUpdate(bool val) { m_OnlyLocalSkeletonUpdate = val; }
+	void	DoOnlyLocalUpdate(bool val) { mOnlyLocalSkeletonUpdate = val; }
 	
 	// ******************************
 	// * GetChannelType
@@ -112,7 +112,7 @@ public:
 	
 	bool GetUseAnimationLocalToGlobal()
 	{
-		return m_UseAnimationLocalToGlobal;
+		return mUseAnimationLocalToGlobal;
 	}
 	
 	
@@ -172,7 +172,7 @@ public:
 	
 	ABaseChannel*               GetRootChannel()
 	{
-		return (ABaseChannel*)mp_Root.get();
+		return (ABaseChannel*)mRoot.get();
 	};
 	
 	// ******************************
@@ -185,7 +185,7 @@ public:
 	
 	IntU32     GetLinksCount()
 	{
-		return m_LinksCount;
+		return mLinksCount;
 	};
 	
 	// ******************************
@@ -198,7 +198,7 @@ public:
 	
 	void    AddLinks()
 	{
-		++m_LinksCount;
+		++mLinksCount;
 	};
 	
 	// ******************************
@@ -211,7 +211,7 @@ public:
 	
 	void    RemoveLinks()
 	{
-		--m_LinksCount;
+		--mLinksCount;
 	};
 	
 	// ******************************
@@ -224,7 +224,7 @@ public:
 	
 	void    SetAObject(AObject* object)
 	{
-		m_pAObject = object;
+		mAObject = object;
 	};
 	
 	// ----------------------------------------------------------------------------
@@ -260,13 +260,13 @@ public:
 	
 	void    UpdateLocalToGlobalWhenLoop(bool b)
 	{
-		m_UpdateLocalToGlobalWhenLoop = b;
+		mUpdateLocalToGlobalWhenLoop = b;
 	};
 	
 	
 	// ----------------------------------------------------------------------------
 	
-	IntU32                   m_LinksCount;
+	IntU32                   mLinksCount;
 	
 	// ******************************
 	// * DeleteChannelTree
@@ -298,7 +298,7 @@ public:
 
 	virtual void InitSystem() = 0;
 	
-	AObject*    m_pAObject;
+	AObject*    mAObject;
 	
 	// ******************************
 	// * Channel array
@@ -307,8 +307,8 @@ public:
 	// * -
 	// ******************************
 	
-	SP<ABaseChannel>*   m_pChannelTab;
-	IntU32				m_ChannelsCount;
+	SP<ABaseChannel>*   mChannelTab;
+	IntU32				mChannelsCount;
 	
 	// ******************************
 	// * SortChannels
@@ -320,15 +320,15 @@ public:
 	void    SortChannels();
 	
 	
-	bool                m_RecurseAnimate;
-	bool				m_OnlyLocalSkeletonUpdate;
+	bool                mRecurseAnimate;
+	bool				mOnlyLocalSkeletonUpdate;
 	
-	SP<ABaseChannel>			mp_Root;
+	SP<ABaseChannel>			mRoot;
 	
-	maInt						m_Priority;
+	maInt						mPriority;
 	
-	bool						m_UseAnimationLocalToGlobal;
-	bool						m_UpdateLocalToGlobalWhenLoop;
+	bool						mUseAnimationLocalToGlobal;
+	bool						mUpdateLocalToGlobalWhenLoop;
 };
 
 

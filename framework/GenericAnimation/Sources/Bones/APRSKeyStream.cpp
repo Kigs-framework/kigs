@@ -46,7 +46,7 @@ void    APRSKeyStream::UpdateData(LocalToGlobalBaseType * standdata)
 	// Rotation keys
 	// Search for the rotation key corresponding to time value
 
-	PRSKey* standprs=(PRSKey*)standdata;//m_pChannel->GetStandData();
+	PRSKey* standprs=(PRSKey*)standdata;//mChannel->GetStandData();
 	IntU32  keycount=m_pPRSInfo->m_NbRotationKeys;
 
 	if(keycount < 2)

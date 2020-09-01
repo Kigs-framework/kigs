@@ -18,7 +18,7 @@
 // the animation resource info file is organized like this :
 
 // the header : AResourceFileHeader
-//                                  - m_ID                      // 4 bytes 
+//                                  - mID                      // 4 bytes 
 //                                  - m_StreamCount             // 4 bytes 
 //                                  - m_StreamTypeNameSize;		// 4 bytes 
 
@@ -69,7 +69,7 @@ class   AResourceFileHeader
 {
 	public:
 	
-    IntU32          m_ID;               // todo 
+    IntU32          mID;               // todo 
     IntU32          m_StreamCount;
 	IntU32          m_StreamTypeNameSize;
 };

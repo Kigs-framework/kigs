@@ -36,9 +36,9 @@ IMPLEMENT_CLASS_INFO(AObject)
 
 //! constructor
 IMPLEMENT_CONSTRUCTOR(AObject)
-, m_pObject(nullptr)
+, mObject(nullptr)
 {
-	m_pSystemSet.clear();
+	mSystemSet.clear();
 }
 
 /*!******************************
@@ -51,12 +51,12 @@ IMPLEMENT_CONSTRUCTOR(AObject)
 void    AObject::AttachSystem(ABaseSystem* system)
 {
 	
-	kstl::set<ABaseSystem*>::iterator itbegin = m_pSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = m_pSystemSet.end();
+	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
+	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
 	
 	while (itbegin != itend)
 	{
-		if(system->isSubType((*itbegin)->myClassID)) // same class ID ? probably not enough
+		if(system->isSubType((*itbegin)->mClassID)) // same class ID ? probably not enough
 		{
 			system->SetHierarchyFromSystem((*itbegin));
 			break;
@@ -67,9 +67,9 @@ void    AObject::AttachSystem(ABaseSystem* system)
 
 void		AObject::addUser(CoreModifiable* user)
 {
-	if (m_pObject == 0)
+	if (mObject == 0)
 	{
-		m_pObject = user;
+		mObject = user;
 	}
 	else
 	{
@@ -79,9 +79,9 @@ void		AObject::addUser(CoreModifiable* user)
 }
 void		AObject::removeUser(CoreModifiable* user)
 {
-	if (m_pObject == user)
+	if (mObject == user)
 	{
-		m_pObject = 0;
+		mObject = 0;
 	}
 	else
 	{
@@ -104,10 +104,10 @@ void    AObject::Animate(ATimeValue t)
 	// | fading management
 	// +-----
 	
-	IntU32   fade_count=m_FadeList.size();
+	IntU32   fade_count=mFadeList.size();
 	if (fade_count)
 	{
-		kstl::vector<ALinearInterp*>::iterator it=m_FadeList.begin();
+		kstl::vector<ALinearInterp*>::iterator it=mFadeList.begin();
 		
 		while(fade_count--)
 		{
@@ -124,7 +124,7 @@ void    AObject::Animate(ATimeValue t)
 				{
 					StopAnimation(info1);
 				}
-				it=m_FadeList.erase(it);
+				it=mFadeList.erase(it);
 				delete (fade);
 			}
 			
@@ -137,8 +137,8 @@ void    AObject::Animate(ATimeValue t)
 			
 		}
 	}
-	kstl::set<ABaseSystem*>::iterator itbegin = m_pSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = m_pSystemSet.end();
+	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
+	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
 	
 	while(itbegin != itend)
 	{
@@ -177,7 +177,7 @@ void    AObject::AddAnimation(const std::string& fname)
 	// | streams, systems ...
 	// +---------
 	
-	if(m_ALinksTable.find(fname) != m_ALinksTable.end())
+	if(mALinksTable.find(fname) != mALinksTable.end())
 	{
 		// this animation is already in the table
 		return;
@@ -189,7 +189,7 @@ void    AObject::AddAnimation(const std::string& fname)
 
 	ALinks* tmp_links=new ALinks(info,info->GetStreamCount());
 	
-	m_ALinksTable[fname]=tmp_links;
+	mALinksTable[fname]=tmp_links;
 	
 	kstl::string ClassName;
 	kstl::string StreamClassName;
@@ -198,8 +198,8 @@ void    AObject::AddAnimation(const std::string& fname)
 	
 	if(StreamClassName == "")
 	{
-		auto it = m_ALinksTable.find(fname);
-		m_ALinksTable.erase(it);
+		auto it = mALinksTable.find(fname);
+		mALinksTable.erase(it);
 		delete tmp_links;
 		return; 
 	}
@@ -216,8 +216,8 @@ void    AObject::AddAnimation(const std::string& fname)
 	// | search for a system handling this streams 
 	// +---------
 	bool need_channel_init=false;
-	kstl::set<ABaseSystem*>::iterator itbegin = m_pSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = m_pSystemSet.end();
+	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
+	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
 	SP<ABaseSystem>    system = 0;
 	while (itbegin != itend)
 	{
@@ -270,8 +270,8 @@ void    AObject::AddAnimation(const std::string& fname)
 		{
 			
 			
-			auto it = m_ALinksTable.find(fname);
-			m_ALinksTable.erase(it);
+			auto it = mALinksTable.find(fname);
+			mALinksTable.erase(it);
 			delete tmp_links;
 			
 			return; 
@@ -345,8 +345,8 @@ void    AObject::AddAnimation(const std::string& fname)
 	}
 	else
 	{
-		auto it = m_ALinksTable.find(fname);
-		m_ALinksTable.erase(it);
+		auto it = mALinksTable.find(fname);
+		mALinksTable.erase(it);
 		delete(tmp_links);
 		if(system->GetValidStream() == nullptr)
 		{
@@ -368,12 +368,12 @@ void    AObject::RemoveAnimation(const KigsID& info)
 	// | first look for the slot in the list 
 	// +---------
 	
-	if(m_ALinksTable.find(info) == m_ALinksTable.end())
+	if(mALinksTable.find(info) == mALinksTable.end())
 	{
 		return;
 	}
 	
-	ALinks* tmp_links=m_ALinksTable[info];
+	ALinks* tmp_links=mALinksTable[info];
 	
 	if(tmp_links == nullptr)
 	{
@@ -397,8 +397,8 @@ void    AObject::RemoveAnimation(const KigsID& info)
 	
 	sys->RemoveLinks();
 	
-	auto it = m_ALinksTable.find(info);
-	m_ALinksTable.erase(it);
+	auto it = mALinksTable.find(info);
+	mALinksTable.erase(it);
 	delete (tmp_links);
 	
 	// +---------
@@ -438,8 +438,8 @@ void    AObject::RemoveAnimation(const KigsID& info)
 
 void    AObject::SetLocalToGlobalMode(const KigsID& system_type, int mode)
 {
-	kstl::set<ABaseSystem*>::iterator itbegin = m_pSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = m_pSystemSet.end();
+	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
+	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
 	
 	while (itbegin != itend)
 	{
@@ -520,8 +520,8 @@ void    AObject::UnLink(unsigned int system_type)
 
 ABaseSystem*    AObject::GetSystemByType(unsigned int system_type)
 {
-	kstl::set<ABaseSystem*>::iterator itbegin = m_pSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = m_pSystemSet.end();
+	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
+	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
 	
 	while (itbegin != itend)
 	{
@@ -551,8 +551,8 @@ ABaseSystem*    AObject::GetSystembyIndex(IntU32 index)
 {
 	
 	IntU32   i=0;
-	kstl::set<ABaseSystem*>::iterator itbegin = m_pSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = m_pSystemSet.end();
+	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
+	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
 	
 	while (itbegin != itend)
 	{
@@ -577,7 +577,7 @@ ABaseSystem*    AObject::GetSystembyIndex(IntU32 index)
 AnimationResourceInfo*     AObject::GetAnimationByIndex(IntU32 index)
 {
 	IntU32   j=0;
-	for(auto it = m_ALinksTable.begin(); it != m_ALinksTable.end();++it)
+	for(auto it = mALinksTable.begin(); it != mALinksTable.end();++it)
 	{
 		if(j == index)
 		{
@@ -599,8 +599,8 @@ AnimationResourceInfo*     AObject::GetAnimationByIndex(IntU32 index)
 
 void    AObject::StartAnimation(const KigsID& info,ATimeValue  t,IntU32* g_id,IntU32 g_count)
 {
-	const auto& found = m_ALinksTable.find(info);
-	if (found != m_ALinksTable.end())
+	const auto& found = mALinksTable.find(info);
+	if (found != mALinksTable.end())
 	{
 		DoForEachStream((*found).second, g_id, g_count, &t, &AObject::StartAnimationFor);
 	}
@@ -616,8 +616,8 @@ void    AObject::StartAnimation(const KigsID& info,ATimeValue  t,IntU32* g_id,In
 
 void    AObject::SetAnimationPos(const KigsID& info,Float  percent,IntU32* g_id,IntU32 g_count)
 {
-	const auto& found = m_ALinksTable.find(info);
-	if (found != m_ALinksTable.end())
+	const auto& found = mALinksTable.find(info);
+	if (found != mALinksTable.end())
 	{
 		DoForEachStream((*found).second, g_id, g_count, &percent, &AObject::SetAnimationPosFor);
 	}
@@ -638,8 +638,8 @@ struct repeatAnimationParamStruct
 
 void    AObject::StartRepeatAnimation(const KigsID& info,ATimeValue  t,IntU32 n,IntU32* g_id,IntU32 g_count)
 {
-	const auto& found = m_ALinksTable.find(info);
-	if (found != m_ALinksTable.end())
+	const auto& found = mALinksTable.find(info);
+	if (found != mALinksTable.end())
 	{
 		repeatAnimationParamStruct params;
 		params.repeatCount = n;
@@ -657,8 +657,8 @@ void    AObject::StartRepeatAnimation(const KigsID& info,ATimeValue  t,IntU32 n,
 
 void    AObject::StopAnimation(const KigsID& info,IntU32* g_id,IntU32 g_count)
 {
-	const auto& found = m_ALinksTable.find(info);
-	if (found != m_ALinksTable.end())
+	const auto& found = mALinksTable.find(info);
+	if (found != mALinksTable.end())
 	{
 		DoForEachStream((*found).second, g_id, g_count, nullptr, &AObject::StopAnimationFor);
 	}
@@ -674,7 +674,7 @@ void    AObject::StopAnimation(const KigsID& info,IntU32* g_id,IntU32 g_count)
 void    AObject::StopAllAnimations(IntU32* g_id,IntU32 g_count)
 {
 	
-	for(auto it=m_ALinksTable.begin();it!=m_ALinksTable.end();++it)
+	for(auto it=mALinksTable.begin();it!=mALinksTable.end();++it)
 	{
 		ALinks* tmp_links=(ALinks*)(*it).second;
 		DoForEachStream(tmp_links, g_id,g_count,nullptr,&AObject::StopAnimationFor);
@@ -690,8 +690,8 @@ void    AObject::StopAllAnimations(IntU32* g_id,IntU32 g_count)
 
 void    AObject::ResumeAnimation(const KigsID& info,ATimeValue  t,IntU32* g_id,IntU32 g_count)
 {
-	const auto& found = m_ALinksTable.find(info);
-	if (found != m_ALinksTable.end())
+	const auto& found = mALinksTable.find(info);
+	if (found != mALinksTable.end())
 	{
 		DoForEachStream((*found).second, g_id, g_count, &t, &AObject::ResumeAnimationFor);
 	}
@@ -706,8 +706,8 @@ void    AObject::ResumeAnimation(const KigsID& info,ATimeValue  t,IntU32* g_id,I
 
 void    AObject::SetAnimationWeight(const KigsID& info,Float weight,IntU32* g_id,IntU32 g_count)
 {
-	const auto& found = m_ALinksTable.find(info);
-	if (found != m_ALinksTable.end())
+	const auto& found = mALinksTable.find(info);
+	if (found != mALinksTable.end())
 	{
 		DoForEachStream((*found).second, g_id, g_count, &weight, &AObject::SetAnimationWeightFor);
 	}
@@ -722,8 +722,8 @@ void    AObject::SetAnimationWeight(const KigsID& info,Float weight,IntU32* g_id
 
 void    AObject::SetAnimationSpeed(const KigsID& info,Float speed,IntU32* g_id,IntU32 g_count)
 {
-	const auto& found = m_ALinksTable.find(info);
-	if (found != m_ALinksTable.end())
+	const auto& found = mALinksTable.find(info);
+	if (found != mALinksTable.end())
 	{
 		DoForEachStream((*found).second, g_id, g_count, &speed, &AObject::SetAnimationSpeedFor);
 	}
@@ -739,8 +739,8 @@ void    AObject::SetAnimationSpeed(const KigsID& info,Float speed,IntU32* g_id,I
 
 void    AObject::MulAnimationWeight(const KigsID& info,Float weight,IntU32* g_id,IntU32 g_count)
 {
-	const auto& found = m_ALinksTable.find(info);
-	if (found != m_ALinksTable.end())
+	const auto& found = mALinksTable.find(info);
+	if (found != mALinksTable.end())
 	{
 		DoForEachStream((*found).second, g_id, g_count, &weight, &AObject::MulAnimationWeightFor);
 	}
@@ -755,8 +755,8 @@ void    AObject::MulAnimationWeight(const KigsID& info,Float weight,IntU32* g_id
 
 void    AObject::MulAnimationSpeed(const KigsID& info,Float speed,IntU32* g_id,IntU32 g_count)
 {
-	const auto& found = m_ALinksTable.find(info);
-	if (found != m_ALinksTable.end())
+	const auto& found = mALinksTable.find(info);
+	if (found != mALinksTable.end())
 	{
 		DoForEachStream((*found).second, g_id, g_count, &speed, &AObject::MulAnimationSpeedFor);
 	}
@@ -772,11 +772,11 @@ void    AObject::MulAnimationSpeed(const KigsID& info,Float speed,IntU32* g_id,I
 void    AObject::FadeAnimationTo(const KigsID& info1, const KigsID& info2,ATimeValue  fade_length,ATimeValue  t)
 {
 	
-	if(m_ALinksTable.find(info1) == m_ALinksTable.end())
+	if(mALinksTable.find(info1) == mALinksTable.end())
 	{
 		return;
 	}
-	ALinks* tmp_links=m_ALinksTable[info1];
+	ALinks* tmp_links=mALinksTable[info1];
 	
 	if(tmp_links == nullptr)
 	{
@@ -790,15 +790,15 @@ void    AObject::FadeAnimationTo(const KigsID& info1, const KigsID& info2,ATimeV
 	// animations can not be faded twice at the same time, so stop 
 	// other fades 
 	
-	kstl::vector<ALinearInterp*>::iterator it=m_FadeList.begin();
+	kstl::vector<ALinearInterp*>::iterator it=mFadeList.begin();
 	
-	while (it != m_FadeList.end())
+	while (it != mFadeList.end())
 	{
 		ALinearInterp*  tmpFade=*it;
 		
 		if ( (tmpFade->GetData() == info2) || (tmpFade->GetData() == info1))
 		{
-			it=m_FadeList.erase(it);
+			it=mFadeList.erase(it);
 			delete (tmpFade);
 		}
 		else
@@ -810,14 +810,14 @@ void    AObject::FadeAnimationTo(const KigsID& info1, const KigsID& info2,ATimeV
 	// add fade for first animation
 	
 	ALinearInterp* fade=new ALinearInterp(w,KFLOAT_CONST(0.0f),t,fade_length,info1);
-	m_FadeList.push_back(fade);
+	mFadeList.push_back(fade);
 	
 	SetAnimationWeight(info2,KFLOAT_CONST(0.0f));
 	
 	// add fade for second animation
 	
 	fade=new ALinearInterp(KFLOAT_CONST(0.0),KFLOAT_CONST(1.0f),t,fade_length,info2);
-	m_FadeList.push_back(fade);
+	mFadeList.push_back(fade);
 };
 
 // ******************************
@@ -833,16 +833,16 @@ void    AObject::SynchroniseAnimations(const KigsID& info1, const KigsID& info2,
 	// | first look for the slot in the list 
 	// +---------
 	
-	if(m_ALinksTable.find(info1) == m_ALinksTable.end())
+	if(mALinksTable.find(info1) == mALinksTable.end())
 	{
 		return;
 	}
-	if(m_ALinksTable.find(info2) == m_ALinksTable.end())
+	if(mALinksTable.find(info2) == mALinksTable.end())
 	{
 		return;
 	}
 	
-	ALinks* links1=m_ALinksTable[info1];
+	ALinks* links1=mALinksTable[info1];
 	
 	if(links1 == nullptr)
 	{
@@ -850,7 +850,7 @@ void    AObject::SynchroniseAnimations(const KigsID& info1, const KigsID& info2,
 		return;
 	}
 	
-	ALinks* links2=m_ALinksTable[info2];
+	ALinks* links2=mALinksTable[info2];
 	
 	if(links2 == nullptr)
 	{
@@ -862,15 +862,15 @@ void    AObject::SynchroniseAnimations(const KigsID& info1, const KigsID& info2,
 	ABaseStream* stream1=(links1->GetStreamArray())[0];
 	ABaseStream* stream2=(links2->GetStreamArray())[0];
 	
-	if(stream1->m_Speed == KFLOAT_CONST(0.0f))
+	if(stream1->mSpeed == KFLOAT_CONST(0.0f))
 	{
 		SetAnimationSpeed(info1,KFLOAT_CONST(1.0f));
 	}
 	
-	Float coef=(Float)synchro1+((Float)(stream1->m_StartTime-stream2->m_StartTime)*stream1->m_Speed);
+	Float coef=(Float)synchro1+((Float)(stream1->mStartTime-stream2->mStartTime)*stream1->mSpeed);
 	if(coef != KFLOAT_CONST(0.0f))
 	{
-		SetAnimationSpeed(info2,(Float)synchro2*stream1->m_Speed/coef);
+		SetAnimationSpeed(info2,(Float)synchro2*stream1->mSpeed/coef);
 	}
 	
 };
@@ -885,12 +885,12 @@ void    AObject::SynchroniseAnimations(const KigsID& info1, const KigsID& info2,
 bool    AObject::HasAnimationLoop(const KigsID& info1)
 {
 	
-	if(m_ALinksTable.find(info1) == m_ALinksTable.end())
+	if(mALinksTable.find(info1) == mALinksTable.end())
 	{
 		return false;
 	}
 	
-	ALinks* links1=m_ALinksTable[info1];
+	ALinks* links1=mALinksTable[info1];
 	
 	if(links1 == nullptr)
 	{
@@ -916,7 +916,7 @@ bool    AObject::HasAnimationLoop(const KigsID& info1)
 
 bool    AObject::AnimationIsSet(const KigsID& info1)
 {
-	if(m_ALinksTable.find(info1) == m_ALinksTable.end())
+	if(mALinksTable.find(info1) == mALinksTable.end())
 	{
 		return false;
 	}
@@ -934,8 +934,8 @@ bool    AObject::AnimationIsSet(const KigsID& info1)
 
 void    AObject::SetLoop(const KigsID& info,bool loop,IntU32* g_id,IntU32 g_count)
 {
-	const auto& found = m_ALinksTable.find(info);
-	if (found != m_ALinksTable.end())
+	const auto& found = mALinksTable.find(info);
+	if (found != mALinksTable.end())
 	{
 		DoForEachStream((*found).second, g_id, g_count, &loop, &AObject::SetLoopFor);
 	}
@@ -951,12 +951,12 @@ void    AObject::SetLoop(const KigsID& info,bool loop,IntU32* g_id,IntU32 g_coun
 bool    AObject::HasAnimationReachEnd(const KigsID& info1)
 {
 	
-	if(m_ALinksTable.find(info1) == m_ALinksTable.end())
+	if(mALinksTable.find(info1) == mALinksTable.end())
 	{
 		return false;
 	}
 	
-	ALinks* links1=m_ALinksTable[info1];
+	ALinks* links1=mALinksTable[info1];
 	
 	if(links1 == nullptr)
 	{
@@ -985,7 +985,7 @@ void    AObject::AddSystem(ABaseSystem* system)
 {
 	
 	system->SetAObject(this);
-	m_pSystemSet.insert(system);
+	mSystemSet.insert(system);
 	system->GetRef();
 };
 
@@ -998,7 +998,7 @@ void    AObject::AddSystem(ABaseSystem* system)
 
 void    AObject::RemoveSystem(ABaseSystem* system)
 {
-	m_pSystemSet.erase(system);
+	mSystemSet.erase(system);
 	system->Destroy();
 };
 
@@ -1206,7 +1206,7 @@ void    AObject::SetLoopFor(ABaseStream* stream,void* param)
 
 bool	AObject::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	if(item->isSubType(AObjectResource::myClassID))
+	if(item->isSubType(AObjectResource::mClassID))
 	{
 		// only one skeleton per AObject
 		std::vector<CMSP>	instances;
@@ -1223,8 +1223,8 @@ bool	AObject::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 
 void AObject::Update(const Timer& timer, void* addParam)
 {
-	kstl::set<ABaseSystem*>::iterator itbegin = m_pSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = m_pSystemSet.end();
+	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
+	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
 	while (itbegin != itend)
 	{
 		(*itbegin)->SetupDraw();

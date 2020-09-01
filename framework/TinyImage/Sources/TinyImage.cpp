@@ -16,7 +16,7 @@
 
 TinyImageLoaderContext* TinyImage::mLoaderContext=&TinyImageLoaderContext::GetDefault();
 
-kstl::vector<TinyImageLoaderContext>*	TinyImage::myContextStack=0;
+kstl::vector<TinyImageLoaderContext>*	TinyImage::mContextStack=0;
 
 TinyImage::TinyImage(): GenericRefCountedBaseClass()
 ,mInitIsOK(false)
@@ -275,12 +275,12 @@ TinyImage*	TinyImage::CreateImage(void* data, int sx, int sy, TinyImage::ImageFo
 
 void	TinyImage::PushContext(const TinyImageLoaderContext& toPush)
 {
-	if(!myContextStack)
+	if(!mContextStack)
 	{
-		myContextStack=new kstl::vector<TinyImageLoaderContext>;
+		mContextStack=new kstl::vector<TinyImageLoaderContext>;
 	}
 
-	kstl::vector<TinyImageLoaderContext>& currentStack=*myContextStack;
+	kstl::vector<TinyImageLoaderContext>& currentStack=*mContextStack;
 	currentStack.push_back(toPush);
 	mLoaderContext=&(currentStack[currentStack.size()-1]);
 
@@ -288,13 +288,13 @@ void	TinyImage::PushContext(const TinyImageLoaderContext& toPush)
 
 void	TinyImage::PopContext()
 {
-	if(!myContextStack)
+	if(!mContextStack)
 	{
 		KIGS_ERROR("TinyImage : Pop context with empty stack",1);
 		return;
 	}
 
-	kstl::vector<TinyImageLoaderContext>& currentStack=*myContextStack;
+	kstl::vector<TinyImageLoaderContext>& currentStack=*mContextStack;
 	currentStack.pop_back();
 
 	if(currentStack.size())
@@ -303,8 +303,8 @@ void	TinyImage::PopContext()
 	}
 	else
 	{
-		delete myContextStack;
-		myContextStack=0;
+		delete mContextStack;
+		mContextStack=0;
 		mLoaderContext=&TinyImageLoaderContext::GetDefault();
 	}
 }

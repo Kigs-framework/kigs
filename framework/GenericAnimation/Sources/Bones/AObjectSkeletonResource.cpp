@@ -6,10 +6,10 @@ IMPLEMENT_CLASS_INFO(AObjectSkeletonResource)
 
 AObjectSkeletonResource::AObjectSkeletonResource(const kstl::string& name, CLASS_NAME_TREE_ARG)
 	: AObjectResource(name, PASS_CLASS_NAME_TREE_ARG)
-	, mySkeletonFileName(*this, true, LABEL_AND_ID(SkeletonFileName), "")
-	, m_BoneCount(0)
-	, m_BoneDataSize(0)
-	, myBoneTreeNodeList(0)
+	, mSkeletonFileName(*this, true, LABEL_AND_ID(SkeletonFileName), "")
+	, mBoneCount(0)
+	, mBoneDataSize(0)
+	, mBoneTreeNodeList(0)
 {
 
 }
@@ -35,10 +35,10 @@ void	AObjectSkeletonResource::InitModifiable()
 
 	if (pathManager)
 	{
-		fullfilenamehandle = pathManager->FindFullName(mySkeletonFileName.const_ref());
+		fullfilenamehandle = pathManager->FindFullName(mSkeletonFileName.const_ref());
 	}
 
-	if (!((fullfilenamehandle->myStatus&FileHandle::Exist) == 0))
+	if (!((fullfilenamehandle->mStatus&FileHandle::Exist) == 0))
 	{
 
 		u64 size;
@@ -52,18 +52,18 @@ void	AObjectSkeletonResource::InitModifiable()
 
 			char* read = (char*)result;
 			read += sizeof(ASkeletonFileHeader);
-			myBoneTreeNodeList = (char*)malloc(result->m_BoneCount*result->m_BoneDataSize);
+			mBoneTreeNodeList = (char*)malloc(result->mBoneCount*result->mBoneDataSize);
 			unsigned int i;
 
-			m_BoneCount = result->m_BoneCount;
-			m_BoneDataSize = result->m_BoneDataSize;
+			mBoneCount = result->mBoneCount;
+			mBoneDataSize = result->mBoneDataSize;
 
-			for (i = 0; i < result->m_BoneCount; i++)
+			for (i = 0; i < result->mBoneCount; i++)
 			{
 				boneTreeNodeStruct* node = getBoneData(i);
 
-				memcpy(node, read, m_BoneDataSize);
-				read += m_BoneDataSize;
+				memcpy(node, read, mBoneDataSize);
+				read += mBoneDataSize;
 			}
 			return;
 		}
@@ -75,60 +75,60 @@ void	AObjectSkeletonResource::InitModifiable()
 
 AObjectSkeletonResource::~AObjectSkeletonResource()
 {
-	if (myBoneTreeNodeList)
-		free(myBoneTreeNodeList);
-	myBoneTreeNodeList = 0;
+	if (mBoneTreeNodeList)
+		free(mBoneTreeNodeList);
+	mBoneTreeNodeList = 0;
 }
 
 void	AObjectSkeletonResource::initSkeleton(int boneCount, unsigned int BoneDataSize)
 {
-	m_BoneCount = boneCount;
-	m_BoneDataSize = BoneDataSize + sizeof(boneTreeNodeStruct);
+	mBoneCount = boneCount;
+	mBoneDataSize = BoneDataSize + sizeof(boneTreeNodeStruct);
 
-	myBoneTreeNodeList = (char*)malloc(m_BoneCount*m_BoneDataSize);
+	mBoneTreeNodeList = (char*)malloc(mBoneCount*mBoneDataSize);
 	
 }
-void	AObjectSkeletonResource::addBone(int index, unsigned int uid, unsigned int gid, unsigned int fgid, const Matrix3x4& inv_bind_matrix)
+void	AObjectSkeletonResource::addBone(int index, unsigned int mUID, unsigned int mGID, unsigned int fgid, const Matrix3x4& mInvBindMatrix)
 {
 	boneTreeNodeStruct* node = getBoneData(index); 
-	node->gid = gid;
-	node->fathergid = fgid;
-	node->uid = uid;
-	node->inv_bind_matrix = inv_bind_matrix;
+	node->mGID = mGID;
+	node->mFatherGID = fgid;
+	node->mUID = mUID;
+	node->mInvBindMatrix = mInvBindMatrix;
 }
 
 void	AObjectSkeletonResource::setStandData(int index, LocalToGlobalBaseType* toSet)
 {
 	boneTreeNodeStruct* node = getBoneData(index);
 
-	memcpy(node->getData(), toSet, m_BoneDataSize - sizeof(boneTreeNodeStruct));
+	memcpy(node->getData(), toSet, mBoneDataSize - sizeof(boneTreeNodeStruct));
 }
 
 #ifdef WIN32
 void	AObjectSkeletonResource::Export()
 {
-	if (m_BoneCount == 0)
+	if (mBoneCount == 0)
 	{
 		return;
 	}
 
-	SmartPointer<FileHandle> file = Platform_fopen(mySkeletonFileName.const_ref().c_str(), "wb");
+	SmartPointer<FileHandle> file = Platform_fopen(mSkeletonFileName.const_ref().c_str(), "wb");
 
-	if (file->myFile)
+	if (file->mFile)
 	{
 
 		ASkeletonFileHeader	header;
-		header.m_ID = 'ASKL';
-		header.m_BoneCount = m_BoneCount;
-		header.m_BoneDataSize = m_BoneDataSize;
+		header.mID = 'ASKL';
+		header.mBoneCount = mBoneCount;
+		header.mBoneDataSize = mBoneDataSize;
 
 		Platform_fwrite(&header, 1, sizeof(ASkeletonFileHeader), file.get());
 
 		unsigned int i;
-		for (i = 0; i < m_BoneCount; i++)
+		for (i = 0; i < mBoneCount; i++)
 		{
 			boneTreeNodeStruct* node = getBoneData(i);
-			Platform_fwrite(node, 1, m_BoneDataSize, file.get());
+			Platform_fwrite(node, 1, mBoneDataSize, file.get());
 		}
 
 		Platform_fflush(file.get());

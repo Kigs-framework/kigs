@@ -24,54 +24,54 @@ ABaseStream::ABaseStream(const kstl::string& name, CLASS_NAME_TREE_ARG)
 void    ABaseStream::SetTime(ATimeValue t)
 {
 
-    if(m_Speed)
+    if(mSpeed)
     {
         ATimeValue  end_time = GetStreamLength();
-        ATimeValue  new_time = (ATimeValue)((Float)(t-m_StartTime)*m_Speed);
+        ATimeValue  new_time = (ATimeValue)((Float)(t-mStartTime)*mSpeed);
 		
-		ATimeValue delta = (ATimeValue)((Float)end_time / m_Speed);
-		m_HasLoop = false;
+		ATimeValue delta = (ATimeValue)((Float)end_time / mSpeed);
+		mHasLoop = false;
 		// Catch Up
 		while(new_time < KFLOAT_ZERO)
         {
-            if(m_RepeatCount != 1)
+            if(mRepeatCount != 1)
             {
-				if (m_RepeatCount>1)
-					--m_RepeatCount;
+				if (mRepeatCount>1)
+					--mRepeatCount;
 
-				m_HasLoop = true;
+				mHasLoop = true;
                 new_time+=end_time;
-                m_StartTime-=delta;  
+                mStartTime-=delta;  
             }
 			else
             {
-                m_bEndReached=true;
+                mEndReached=true;
                 new_time = KFLOAT_ZERO;
             }
         }
 
         while(new_time > end_time)
         {
-            if(m_RepeatCount != 1)
+            if(mRepeatCount != 1)
             {
-				if(m_RepeatCount>1)
-					--m_RepeatCount;
+				if(mRepeatCount>1)
+					--mRepeatCount;
 
-				m_HasLoop = true;
+				mHasLoop = true;
                 new_time-=end_time;
-                m_StartTime+=delta;   
+                mStartTime+=delta;   
             }
 			else
             {
-                m_bEndReached=true;
+                mEndReached=true;
                 new_time = end_time;
             }
         }
  
-        m_LocalTime=new_time;
-        if(m_pChannel)
+        mLocalTime=new_time;
+        if(mChannel)
         {
-            UpdateData(m_pChannel->GetStandData());
+            UpdateData(mChannel->GetStandData());
         }
         else
         {
@@ -81,34 +81,34 @@ void    ABaseStream::SetTime(ATimeValue t)
     }
     else
     {
-        m_StartTime=t;
+        mStartTime=t;
     }
 };
 
 
 void    ABaseStream::SetTimeWithoutLoop(ATimeValue t)
 {
-    if(m_Speed)
+    if(mSpeed)
     {
         ATimeValue  end_time=GetStreamLength();
-		ATimeValue  new_time=(ATimeValue)((Float)(t-m_StartTime)*m_Speed);
-        m_OutsideAnimFlag=false;
+		ATimeValue  new_time=(ATimeValue)((Float)(t-mStartTime)*mSpeed);
+        mOutsideAnimFlag=false;
 
         if(new_time < KFLOAT_ZERO)
         {
             new_time = KFLOAT_ZERO;
-            m_OutsideAnimFlag=true;
+            mOutsideAnimFlag=true;
         }
         if(new_time > end_time)
         {
             new_time = end_time;
-            m_OutsideAnimFlag=true;
+            mOutsideAnimFlag=true;
         }
 
-		if(m_OutsideAnimFlag)
+		if(mOutsideAnimFlag)
 		{
-			m_LocalTime=new_time;
-			UpdateData(m_pChannel->GetStandData());
+			mLocalTime=new_time;
+			UpdateData(mChannel->GetStandData());
 		}
 		else
 		{
@@ -117,35 +117,35 @@ void    ABaseStream::SetTimeWithoutLoop(ATimeValue t)
     }
     else
     {
-        m_StartTime=t;
+        mStartTime=t;
     }
 };
 
 
 void    ABaseStream::SetTimeWithStartLoop(ATimeValue t)
 {
-    if(m_Speed)
+    if(mSpeed)
     {
         ATimeValue  end_time=GetStreamLength();
-		ATimeValue  new_time=(ATimeValue)((Float)(t-m_StartTime)*m_Speed);
-        m_OutsideAnimFlag=false;
+		ATimeValue  new_time=(ATimeValue)((Float)(t-mStartTime)*mSpeed);
+        mOutsideAnimFlag=false;
 
         if(new_time < KFLOAT_ZERO)
         {
             new_time = end_time;
-			m_OutsideAnimFlag=true;
+			mOutsideAnimFlag=true;
         }
         if(new_time > end_time)
         {
             new_time = KFLOAT_ZERO;
-			m_OutsideAnimFlag=true;
+			mOutsideAnimFlag=true;
         }
 		
-		if(m_OutsideAnimFlag)
+		if(mOutsideAnimFlag)
 		{
-			m_OutsideAnimFlag=false;
-			m_LocalTime=new_time;
-			UpdateData(m_pChannel->GetStandData());
+			mOutsideAnimFlag=false;
+			mLocalTime=new_time;
+			UpdateData(mChannel->GetStandData());
 		}
 		else
 		{
@@ -154,21 +154,21 @@ void    ABaseStream::SetTimeWithStartLoop(ATimeValue t)
     }
     else
     {
-        m_StartTime=t;
+        mStartTime=t;
     }
 };
 
 
 void ABaseStream::SetWeight(Float weight)
 {
-	if (m_Weight != weight)
+	if (mWeight != weight)
 	{
-		if (m_pChannel->IsRootChannel())
+		if (mChannel->IsRootChannel())
 		{
-			LocalToGlobalBaseType*   tmp_data = m_pChannel->GetLocalToGlobalBeforeChange();
-			m_Weight = weight;
-			m_pChannel->ResetLocalToGlobalAfterChange(tmp_data);
+			LocalToGlobalBaseType*   tmp_data = mChannel->GetLocalToGlobalBeforeChange();
+			mWeight = weight;
+			mChannel->ResetLocalToGlobalAfterChange(tmp_data);
 		}
-		m_Weight = weight;
+		mWeight = weight;
 	}
 };

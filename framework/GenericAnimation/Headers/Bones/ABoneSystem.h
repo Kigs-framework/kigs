@@ -102,9 +102,9 @@ public:
 	
 	void				SearchParentNode3D();
 	
-	Node3D*				  myParentNode3D;
-	Matrix4x4*			   myBoneMatrixArray;
-	AObjectSkeletonResource* mySkeleton;
+	Node3D*				  mParentNode3D;
+	Matrix4x4*			   mBoneMatrixArray;
+	AObjectSkeletonResource* mSkeleton;
 	
 };
 

@@ -42,7 +42,7 @@ public:
     // ******************************
 
     ALinks(AnimationResourceInfo* info,IntU32 streamcount)
-		: m_pSystem(0)
+		: mSystem(0)
     {
         m_pAnimResourceInfo=info;
         m_StreamArray= new ABaseStream*[streamcount];
@@ -85,7 +85,7 @@ protected:
     void    AddStream(ABaseStream* stream,IntU32 index)
     {
         m_StreamArray[index]=stream;
-        stream->m_pResourceInfo=m_pAnimResourceInfo;
+        stream->mResourceInfo=m_pAnimResourceInfo;
         
     };
 
@@ -98,7 +98,7 @@ protected:
 
     void    SetSystem(ABaseSystem* system)
     {
-        m_pSystem=system;
+        mSystem=system;
     };
 
     // ******************************
@@ -128,7 +128,7 @@ protected:
 
     ABaseSystem*    GetSystem()
     {
-        return m_pSystem;
+        return mSystem;
     };
 
     // ******************************
@@ -144,7 +144,7 @@ protected:
     };
 
     AnimationResourceInfo*		m_pAnimResourceInfo;
-    ABaseSystem*                m_pSystem;
+    ABaseSystem*                mSystem;
     ABaseStream**               m_StreamArray;
     IntU32						m_StreamCount;
 
