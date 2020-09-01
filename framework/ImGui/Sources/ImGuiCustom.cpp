@@ -52,7 +52,7 @@ namespace ImGui
 	}
 	void Label(const std::string& txt)
 	{
-		ImGui::GetWindowDrawList()->AddText(v2f(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x, ImGui::GetCursorPosY() + ImGui::GetStyle().FramePadding.y + ImGui::GetStyle().ItemSpacing.y), ImGui::GetColorU32(ImGuiCol_Text), txt.c_str());
+		ImGui::GetWindowDrawList()->AddText(v2f(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x, ImGui::GetCursorPosY() /*+ ImGui::GetStyle().FramePadding.y*/ + ImGui::GetStyle().ItemSpacing.y), ImGui::GetColorU32(ImGuiCol_Text), txt.c_str());
 		ImGui::Dummy(ImGui::CalcTextSize(txt.c_str()));
 	}
 	void ButtonLabel(const std::string& txt, v2f size)

@@ -93,6 +93,8 @@ struct Vector4D
 	// 
 	//// END
 	
+	friend inline Vector4D Hadamard(Vector4D a, const Vector4D& b);
+
     // +---------
     // | Euclidian operations
     // +---------
