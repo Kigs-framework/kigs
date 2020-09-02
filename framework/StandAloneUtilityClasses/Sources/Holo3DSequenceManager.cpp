@@ -265,7 +265,7 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 	// retreive texture id
 	mDrawer->SetTexture(mRenderingScreen->as<RenderingScreen>()->GetFBOTexture().get());
 	// manage positionning
-	if (!mManualPosition && (mNeedRecomputePosition || !mIsFixed))
+	if ((!mManualPosition && (mNeedRecomputePosition || !mIsFixed)) || mForceInFront)
 	{
 		Camera * followCam = (Camera*)((CoreModifiable*)mFollowCamera);
 		Vector3D camPos = followCam->GetGlobalPosition();
@@ -302,6 +302,7 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 		if (mForceInFront)
 		{
 			pos = camPos + (mDistance * (followCam->GetGlobalViewVector() + mTargetOffset[0]*followCam->GetGlobalRightVector() + mTargetOffset[1] * followCam->GetGlobalUpVector()));
+			view = (pos - camPos).Normalized();
 			mCurrentVelocity = 0.0f;
 			mForceInFront = false;
 			mNeedRecomputePosition = true;

@@ -45,6 +45,11 @@ namespace ImGui
 		ImGui::SameLine(w);
 		return w - ImGui::GetStyle().ItemSpacing.x;
 	}
+	float GetRemainingWidth(float sum_of_elements_width, u32 nb_of_elements)
+	{
+		auto w = ImGui::GetWindowWidth() - sum_of_elements_width - (nb_of_elements - 1) * ImGui::GetStyle().ItemSpacing.x - ImGui::GetColumnOffset();
+		return w - ImGui::GetStyle().ItemSpacing.x;
+	}
 	float GetElementWidthForSubdivision(int count)
 	{
 		if (count <= 0) count = 1;

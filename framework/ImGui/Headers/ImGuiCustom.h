@@ -13,6 +13,7 @@ namespace ImGui
 	// Align the next widget from the right of the window, with enough space for "nb_of_elements" (to account for spacing between elements) totaling "sum_of_elements_width" of size
 	// Returns the width available between current cursor pos and the right aligned element
 	float SameLineAlignRight(float sum_of_elements_width, u32 nb_of_elements = 1);
+	float GetRemainingWidth(float sum_of_elements_width, u32 nb_of_elements = 1);
 
 	// Get the size one element should have to fit "count" of them in a single line perfectly
 	float GetElementWidthForSubdivision(int count);

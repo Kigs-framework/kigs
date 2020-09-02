@@ -39,6 +39,7 @@ public:
 
 	bool	GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout);
 	void	ShowPanel(bool show, bool atFront=true);
+	void	ForceAtFront() { mForceInFront = true; }
 
 	void ChangePosition(Point3D pos) { mPosition = pos; mCurrentPos = pos; }
 	
