@@ -118,7 +118,8 @@ bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, to
 		}
 
 		pout.pos.xy = mCollidablePanel->ConvertHit(pos + ((float)dist*dir));
-		pout.pos.x = 1 - pout.pos.x;
+		if(Dot(dir, planeNorm) > 0)
+			pout.pos.x = 1 - pout.pos.x;
 		pout.pos.y = 1 - pout.pos.y;
 		is_in = mCollidablePanel->ValidHit(pos + dir * dist);
 		if (is_in)
@@ -190,6 +191,7 @@ void Holo3DSequenceManager::InitModifiable()
 	mDrawer->setValue("Size", size);
 	mDrawer->setValue("DepthTest", "Disabled");
 	mDrawer->setValue("RenderPassMask", 64);
+	mDrawer->setValue("TwoSided", true);
 	mDrawer->Init();
 
 	mPosition.changeNotificationLevel(Owner);

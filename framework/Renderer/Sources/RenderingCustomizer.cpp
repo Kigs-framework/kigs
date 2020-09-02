@@ -38,6 +38,13 @@ bool RenderingCustomizer::PreDraw(TravState* state)
 		SaveState(state);
 		state->GetRenderer()->SetDepthTestMode(mOverrideDepthTest);
 	}
+
+	if (mOverrideDepthWrite != -1)
+	{
+		SaveState(state);
+		state->GetRenderer()->SetDepthMaskMode(mOverrideDepthWrite == 0 ? RendererDepthMaskMode::RENDERER_DEPTH_MASK_OFF : RendererDepthMaskMode::RENDERER_DEPTH_MASK_ON);
+	}
+
 	return true;
 }
 
