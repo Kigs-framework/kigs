@@ -78,6 +78,20 @@ public:
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
+
+#undef DECLARE_SET_NUMERIC
+#define DECLARE_SET_NUMERIC(type)	virtual bool setValue(type value) override { \
+	if (this->isReadOnly())\
+		return false; \
+	kstl::string tmpValue = std::to_string(value); \
+	CALL_SETMODIFIER(notificationLevel, tmpValue); \
+	this->mValue = tmpValue; \
+	DO_NOTIFICATION(notificationLevel); \
+	return true; \
+}
+	
+	EXPAND_MACRO_FOR_NUMERIC_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET_NUMERIC);
+
 	///
 
 	// operators

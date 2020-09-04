@@ -333,6 +333,35 @@ CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(const 
 	return L_TempDictionary;
 }
 
+template <typename stringType, typename parserType>
+CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(SmartPointer<::FileHandle> filehandle)
+{
+	//Create instance of DictionaryFromJson
+	mDictionaryFromJson = CreateDictionnaryFromJSONInstance();
+	mDelegateObject = mDictionaryFromJson;
+
+	u64 size;
+	CoreRawBuffer* Buff = ModuleFileManager::LoadFileAsCharString(filehandle.get(), size, GetStringCharSize());
+
+	if (Buff)
+	{
+		InitParserFromString(Buff);
+		Buff->Destroy();
+	}
+#ifdef _DEBUG
+	else
+	{
+		printf("FILE NOT FOUND : %s\n", filehandle->mFileName.c_str());
+	}
+#endif
+
+	CoreItemSP L_TempDictionary = getDictionnary();
+
+	mDictionaryFromJson = nullptr;
+
+	return L_TempDictionary;
+}
+
 // specialized
 
 template <>

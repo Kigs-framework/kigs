@@ -103,6 +103,7 @@ public:
 
 	//! parse given JSON file and retreive an object dictionary
 	JSonFileParserBase();
+	CoreItemSP	Get_JsonDictionary(SmartPointer<::FileHandle> filehandle);
 	CoreItemSP	Get_JsonDictionary(const kstl::string& filename);
 	CoreItemSP	Get_JsonDictionaryFromString(const stringType& jsonString);
 	bool Export(CoreMap<stringType>* a_value, const kstl::string& a_fileName);
