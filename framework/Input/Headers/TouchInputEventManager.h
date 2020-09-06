@@ -48,6 +48,7 @@ namespace std
 	};
 }
 
+
 struct SortItemsFrontToBackParam
 {
 	CoreModifiable* camera;
@@ -62,6 +63,9 @@ struct SortItemsFrontToBackParam
 	TouchSourceID touchID;
 };
 
+// Adding a GetDistanceForInputSort function to an object with inputs allows for greater control over collisions for inputs
+// It's always called if it exist
+// Modify the inout_ members
 struct GetDistanceForInputSortParam
 {
 	CoreModifiable* camera;
@@ -75,7 +79,7 @@ struct GetDistanceForInputSortParam
 	double inout_distance;
 	Hit* inout_hit = nullptr;
 	// Each element is sorted within its layer by inout_distance. Layers go from front (-INT_MAX) to back (INT_MAX)
-	int inout_sorting_layer = INT_MAX;
+	int inout_sorting_layer = 0;
 };
 
 
