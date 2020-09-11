@@ -8,6 +8,8 @@
 #include "CorePackage.h"
 #include "PureVirtualFileAccessDelegate.h"
 
+#include <stdio.h>
+
 #ifdef HTTP_PROTOCOL
 #include "HTTPConnect.h"
 #endif
@@ -357,11 +359,30 @@ void	FilePathManager::SetFileInfos(FileHandle* handle)
 */
 SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filename)
 {
+	bool isDevice, isPackage;
+	isSpecialDeviceOrPackage(filename, isDevice, isPackage);
 
 	// if the file is in special '#' directory
-	if (filename[0] == '#')
+	if (isDevice)
+	{
 		return Platform_FindFullName(filename);
-
+	}
+	else if(isPackage)
+	{
+		
+		SmartPointer<FileHandle> result = CreateFileHandle(filename);
+		size_t pos = filename.find('#', 3);
+		if (pos == kstl::string::npos)
+		{
+			// malformed path
+			return result;
+		}
+		std::string kpkg = filename.substr(0, pos+1);
+		initHandleFromPackage(kpkg, result);
+			
+		return result;
+	
+	}
 	SmartPointer<FileHandle> result = CreateFileHandle(filename);
 
 	// init fullFileName with filename
@@ -393,28 +414,9 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 					kstl::string head = bundlePathVector[0].substr(1, 3);
 					if (head == "PKG")
 					{
-						// search end # (after package ID)
-						size_t pos=bundlePathVector[0].find('#', 3); 
-
-						if (pos != kstl::string::npos)
+						if (initHandleFromPackage(bundlePathVector[0], result))
 						{
-							kstl::string pkgIDStr = bundlePathVector[0].substr(4, pos - 4);
-
-							int pkgID=0;
-							if (sscanf(pkgIDStr.c_str(), "%d", &pkgID))
-							{
-								if (mPackageList.find(pkgID) != mPackageList.end())
-								{
-									CorePackage* package = mPackageList[pkgID];
-									result->mUseVirtualFileAccess = true;
-									result->mVirtualFileAccess = new CorePackageFileAccess(package);
-
-									result->mFullFileName = bundlePathVector[0].substr(pos+1, bundlePathVector[0].length() - pos -1 ) + result->mFileName;
-
-									result->mStatus |= FileHandle::Exist;
-									return result;
-								}
-							}
+							return result;
 						}
 					}
 				}
@@ -475,12 +477,28 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 				result->mFullFileName += "/";
 				result->mFullFileName += result->mFileName;
 
-				if ((*it)[0] == '#')
+				bool isDevice, isPackage;
+				isSpecialDeviceOrPackage((*it), isDevice, isPackage);
+
+				if (isDevice)
 				{
 					SmartPointer<FileHandle> specialresult=Platform_FindFullName(result->mFullFileName);
 					Platform_CheckState(specialresult.get());
 					if (specialresult->mStatus&FileHandle::Exist)
 						return specialresult;
+				}
+				else if (isPackage)
+				{
+					size_t pos = (*it).find('#', 3);
+					if (pos == kstl::string::npos)
+					{
+						// malformed path
+						return result;
+					}
+					std::string kpkg = (*it).substr(0, pos + 1);
+					initHandleFromPackage(kpkg, result);
+
+					return result;
 				}
 				else
 				{
@@ -504,6 +522,46 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 
 	return result;
 
+}
+
+bool	FilePathManager::initHandleFromPackage(const std::string& lpath, SmartPointer<FileHandle> result)
+{
+	// search end # (after package ID)
+	size_t pos = lpath.find('#', 3);
+
+	if (pos != kstl::string::npos)
+	{
+		kstl::string pkgIDStr = lpath.substr(4, pos - 4);
+
+		int pkgID = 0;
+		if (sscanf(pkgIDStr.c_str(), "%d", &pkgID))
+		{
+			if (mPackageList.find(pkgID) != mPackageList.end())
+			{
+				CorePackage* package = mPackageList[pkgID];
+				result->mUseVirtualFileAccess = true;
+				result->mVirtualFileAccess = new CorePackageFileAccess(package);
+
+				// if lpath only contains #PKGid# use mFullFileName else use lpath
+				if ((lpath.length()-1) == pos)
+				{
+					// remove #PKGid# from full file name
+					result->mFullFileName = result->mFullFileName.substr(pos + 1, result->mFullFileName.length() - pos - 1);
+				}
+				else
+				{
+					result->mFullFileName = lpath.substr(pos + 1, lpath.length() - pos - 1) + result->mFileName;
+				}
+
+				if (package->find(result->mFullFileName, true))
+				{
+					result->mStatus |= FileHandle::Exist;
+				}
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 // construct the "prefered path" according to filename extension
@@ -842,10 +900,42 @@ void	FilePathManager::InitWithConfigFile(const kstl::string& filename)
 	}
 }
 
+void	FilePathManager::isSpecialDeviceOrPackage(const std::string& fname,bool& SpecialDevice, bool& package)
+{
+	SpecialDevice = false;
+	package = false;
+	if (fname[0] == '#')
+	{
+		if ((fname[1] == 'P') && (fname[2] == 'K') && (fname[3] == 'G'))
+		{
+			package = true;
+		}
+		else
+		{
+			SpecialDevice = true;
+		}
+	}
+}
+
+bool		Platform_remove(FileHandle* handle)
+{
+	// use virtual file access ?
+	if (handle->mUseVirtualFileAccess)
+	{
+		return handle->mVirtualFileAccess->Platform_remove(handle);
+	}
+
+	return remove(handle->mFullFileName.c_str()) != 0;
+}
+
 SmartPointer<FileHandle> Platform_fopen(const char * filename, const char * mode)
 {
 	SmartPointer<FileHandle> fullfilenamehandle;
-	if (filename[0] == '#')
+
+	bool isDevice, isPackage;
+	FilePathManager::isSpecialDeviceOrPackage(filename, isDevice, isPackage);
+
+	if (isDevice)
 	{
 		fullfilenamehandle = Platform_FindFullName(filename);
 		if (fullfilenamehandle)
@@ -853,9 +943,14 @@ SmartPointer<FileHandle> Platform_fopen(const char * filename, const char * mode
 			Platform_fopen(fullfilenamehandle.get(), mode);
 		}
 	}
+	else if (isPackage)
+	{
+		SP<FilePathManager> fpm = KigsCore::GetSingleton("FilePathManager");
+		fullfilenamehandle = fpm->FindFullName(filename);
+		Platform_fopen(fullfilenamehandle.get(), mode);
+	}
 	else
 	{
-
 		fullfilenamehandle = FilePathManager::CreateFileHandle(filename);
 		fullfilenamehandle->mFullFileName = filename;
 		Platform_fopen(fullfilenamehandle.get(), mode);

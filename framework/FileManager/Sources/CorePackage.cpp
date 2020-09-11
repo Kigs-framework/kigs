@@ -1,6 +1,7 @@
 #include "PrecompiledHeaders.h"
 #include "CorePackage.h"
 #include "FilePathManager.h"
+#include "ModuleFileManager.h"
 
 
 #ifdef WIN32
@@ -14,12 +15,15 @@ void	CorePackage::ParseFATBuffer(unsigned char*& fatBuffer, FATEntryNode* curren
 	// read current value
 	*(FATEntry*)current = *(FATEntry*)fatBuffer;
 
+	// NodeNameL is aligned on 8 byte 
 	unsigned int NodeNameL = (current->mFileNameSize + 1 + 7) & 0xFFFFFFF8;
 
 	// retreive name
 	current->mName = (const char*)fatBuffer + sizeof(FATEntry);
+	// create associated KigsID
 	current->mFastCheckName = current->mName;
 
+	// go to next entry in loaded FAT buffer
 	fatBuffer += sizeof(FATEntry) + NodeNameL;
 
 	// then read sons
@@ -29,8 +33,6 @@ void	CorePackage::ParseFATBuffer(unsigned char*& fatBuffer, FATEntryNode* curren
 		ParseFATBuffer(fatBuffer, currentson);
 		current->mSons.push_back(currentson);
 	}
-
-
 }
 
 void CorePackage::RenameFile(const std::string& from, const std::string& to)
@@ -46,6 +48,13 @@ CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
 	FATEntryNode* currentEntry = mRootFATEntry;
 
 	size_t rfolderPos = path.rfind('/');
+	// if no folder, set rfolderPos to 0
+	// so string_view fullfolderName is not a huge string containing everything after filename
+	if (rfolderPos == std::string::npos)
+	{
+		rfolderPos = 0;
+	}
+
 	kstl::string_view fullfolderName(path.c_str(), rfolderPos);
 
 	size_t currentFolderPos = 0;
@@ -57,7 +66,8 @@ CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
 	{
 		if (fullfolderName == thread_read.mCachedFolder)
 		{
-			currentFolderPos = rfolderPos+1;
+			if(fullfolderName != "") // jump to next folder pos only if there's a folder
+				currentFolderPos = rfolderPos+1;
 			isOK = true;
 			currentEntry = thread_read.mCachedFATEntry;
 		}
@@ -166,7 +176,10 @@ bool	CorePackage::initFAT()
 
 	free(fatBuffer);
 
+	mFATSize = head.mFATSize;
+
 	mDataStartOffset = sizeof(KPKGHeader) + head.mFATSize;
+
 
 	return true;
 }
@@ -407,6 +420,338 @@ kstl::vector<kstl::string> RetreivePath(kstl::string filename, kstl::string& sho
 	
 }
 
+// update CorePackage both in memory and in file 
+void CorePackage::insertWrittenFile(SmartPointer<FileHandle> tmpWrittenFile, const CorePackageFileAccess* asker, FileHandle* toBeInserted)
+{
+
+	
+	// init new FAT size with current fat size
+	u32 newFATsize = mFATSize;
+
+	// offset of file 
+	u32 currentOffset = 0;
+
+	u64 newkpkgSize = mFileSize;
+	u64 newFileSize = tmpWrittenFile->getFileSize();
+	u64 padFileSize = (4 - (newFileSize & 3)) & 3;
+
+	u64 oldFileSize = 0;
+	u64 oldPadSize = 0;
+
+	int fileSizediff = 0;
+
+	// if new file modify compute added FAT size
+	if (!asker->mFileEntry) // new file
+	{
+		int newentriesSize = 0;
+		// test if need to create folders ?
+		std::string remainingPath=toBeInserted->mFullFileName;
+		size_t pos= remainingPath.find('/');
+
+		bool entryFound = true;
+		FATEntryNode* currententry = mRootFATEntry;
+		while (pos != std::string::npos)
+		{
+			std::string foldername = remainingPath.substr(0, pos);
+
+			// continue only if previous entry was found
+			if (entryFound)
+			{
+				// reset entryFound
+				entryFound = false;
+				// search currententry sons to find the one with the same name
+				for (auto s : currententry->mSons)
+				{
+					if (s->mName == foldername)
+					{
+						if (s->mFileSize == 0)
+						{
+							entryFound = true;
+							currententry = s;
+							break;
+						}
+						else
+						{
+							KIGS_WARNING("CorePackage file and folder mismatch", 1);
+							return;
+						}
+					}
+				}
+			}
+			// entry not found, a new folder is needed
+			if (!entryFound)
+			{
+				// init newFolder entry
+				FATEntryNode* newfolder = new FATEntryNode();
+				newfolder->mName = foldername;
+				newfolder->mFastCheckName = foldername;
+				newfolder->mFileNameSize = foldername.length();
+				newfolder->mFileOffset = 0;
+				newfolder->mFileSize = 0;
+				newfolder->mSonCount = 0;
+
+				// add to currentEntry
+				currententry->mSonCount++;
+				currententry->mSons.push_back(newfolder);
+
+				// compute new entry size
+				newentriesSize += sizeof(FATEntry);
+				newentriesSize += (foldername.length() + 1 + 7) & 0xFFFFFFF8;
+				// and currententry is now the new one
+				currententry = newfolder;
+			}
+			remainingPath = remainingPath.substr(pos + 1);
+			pos= remainingPath.find('/');
+		}
+		// and create entry for the file itself
+
+		FATEntryNode* newFileEntry = new FATEntryNode();
+		newFileEntry->mName = remainingPath;
+		newFileEntry->mFastCheckName = remainingPath;
+		newFileEntry->mFileNameSize = remainingPath.length();
+		newFileEntry->mSonCount = 0;
+		
+		// set currentOffset at the end of the file
+		currentOffset = mFileSize - mDataStartOffset;
+
+		newFileEntry->mFileOffset = currentOffset;
+		newFileEntry->mFileSize = newFileSize;
+		
+		// add to currentEntry
+		currententry->mSonCount++;
+		currententry->mSons.push_back(newFileEntry);
+
+		newentriesSize += sizeof(FATEntry);
+		newentriesSize += (remainingPath.length() + 1 + 7) & 0xFFFFFFF8;
+
+		// update newFATsize
+		newFATsize += newentriesSize;
+
+		newkpkgSize = sizeof(KPKGHeader) + newFATsize + currentOffset + newFileSize + padFileSize;
+
+		fileSizediff = newFileSize + padFileSize;
+	}
+	else // existing file
+	{
+		oldFileSize = asker->mFileEntry->mFileSize;
+		// set current offset to file current offset
+		currentOffset = asker->mFileEntry->mFileOffset;
+
+		// compute size difference
+		oldPadSize = (4 - (oldFileSize & 3)) & 3;
+		fileSizediff = (newFileSize + padFileSize) - (asker->mFileEntry->mFileSize + oldPadSize);
+
+		// only global size has changed
+		newkpkgSize += fileSizediff;
+
+		// update fileentry
+
+		asker->mFileEntry->mFileSize = newFileSize;
+	}
+	
+	// so now create new modified kpkg by copying the existing one
+
+	std::string tmpfilename = "#\3/temp_" + std::to_string(rand()) + ".kpkg";
+	SP<FileHandle> tmpFile = Platform_fopen(tmpfilename.c_str(), "wb");
+	if (tmpFile->mFile)
+	{
+		// write new header
+		KPKGHeader header;
+
+		header.mHeadID = 'kpkg';
+		header.mFATSize = newFATsize;
+		header.mTotalSize = newkpkgSize;
+
+		Platform_fwrite(&header, sizeof(KPKGHeader), 1, tmpFile.get());
+
+		// now write entries in FAT
+		CorePackageIterator it = begin();
+		CorePackageIterator ite = end();
+
+		// first root entry
+		int exporedFatSize = mRootFATEntry->exportInFAT(tmpFile);
+
+		while (it != ite)
+		{
+			// modify entry if needed
+			FATEntryNode* current = (*it);
+			if (current->mFileOffset > currentOffset)
+			{
+				current->mFileOffset += fileSizediff;
+			}
+			exporedFatSize += current->exportInFAT(tmpFile);
+
+			++it;
+		}
+		// then copy data from kpkg file to tmp file
+		// copy the part before the object offset
+
+		ModuleFileManager::CoreCopyPartOfFile(GetCurrentThreadRead().mFile, mDataStartOffset, currentOffset, tmpFile, 1024 * 2048);
+
+		// then copy tmpfile
+		::Platform_fopen(tmpWrittenFile.get(), "rb");
+		ModuleFileManager::CoreCopyPartOfFile(tmpWrittenFile, 0, newFileSize, tmpFile, 1024 * 2048);
+		::Platform_fclose(tmpWrittenFile.get());
+		// then pad
+		u64 zero = 0;
+		Platform_fwrite(&zero, 1, padFileSize, tmpFile.get());
+
+		if (asker->mFileEntry)
+		{
+			// then copy remaining files
+			ModuleFileManager::CoreCopyPartOfFile(GetCurrentThreadRead().mFile, mDataStartOffset + currentOffset + oldFileSize + oldPadSize, mFileSize - (mDataStartOffset + currentOffset + oldFileSize + oldPadSize), tmpFile, 1024 * 2048);
+		}
+
+		Platform_fclose(tmpFile.get());
+
+		mFileSize = newkpkgSize;
+		mFATSize = newFATsize;
+		mDataStartOffset = sizeof(KPKGHeader) + newFATsize;
+
+		// copy tmpFile to main kpkg file
+		auto writeMainFile = mMainFile->MakeCopy();
+		Platform_fopen(writeMainFile.get(), "wb");
+		Platform_fopen(tmpFile.get(), "rb");
+
+		ModuleFileManager::CoreCopyFile(tmpFile, writeMainFile, 1024 * 2048);
+
+		Platform_fclose(tmpFile.get());
+		Platform_fclose(writeMainFile.get());
+	}
+}
+
+// remove given file from package 
+bool CorePackage::removeFile(const CorePackageFileAccess* asker, FileHandle* toBeErased)
+{
+	// check that file is really in the package 
+	if (asker->mFileEntry)
+	{
+		if (asker->mFileEntry->mFileSize == 0) // folder
+		{
+			// can't remove folder
+			return false;
+		}
+		u32 removedOffset = asker->mFileEntry->mFileOffset;
+
+		// size of the removed entry
+		int entrySize = sizeof(FATEntry);
+		entrySize +=(asker->mFileEntry->mFileNameSize + 1 + 7) & 0xFFFFFFF8;
+
+		// compute new FAT size
+		u32 newFATsize = mFATSize - entrySize;
+
+		// compute new file size
+
+		u64 padFileSize = (4 - (asker->mFileEntry->mFileSize & 3)) & 3;
+		u64 removedSize = (asker->mFileEntry->mFileSize + padFileSize);
+		size_t newFileSize = mFileSize - entrySize - removedSize;
+
+		// so now create new modified kpkg by copying the existing one
+
+		std::string tmpfilename = "#\3/temp_" + std::to_string(rand()) + ".kpkg";
+		SP<FileHandle> tmpFile= Platform_fopen(tmpfilename.c_str(), "wb");
+		if (tmpFile->mFile)
+		{
+			// write new header
+			KPKGHeader header;
+
+			header.mHeadID = 'kpkg';
+			header.mFATSize = newFATsize;
+			header.mTotalSize = newFileSize;
+
+			Platform_fwrite(&header, sizeof(KPKGHeader), 1, tmpFile.get());
+
+			// son count --
+			FATEntry* p = getParent(asker->mFileEntry);
+			p->mSonCount--;
+			
+			// now write entries in FAT
+
+			CorePackageIterator it = begin();
+			CorePackageIterator ite = end();
+			
+			// first root entry
+			int exporedFatSize = mRootFATEntry->exportInFAT(tmpFile);
+
+			while (it != ite)
+			{
+				if ((*it) != asker->mFileEntry)
+				{
+					// modify entry if needed
+					FATEntryNode* current = (*it);
+					if (current->mFileOffset >= removedOffset)
+					{
+						current->mFileOffset -= removedSize;
+					}
+					
+					exporedFatSize+=current->exportInFAT(tmpFile);
+
+				}
+
+				++it;
+			}
+
+			// then copy data from kpkg file to tmp file
+			// copy the part before the removed file
+			if (removedOffset)
+			{
+				ModuleFileManager::CoreCopyPartOfFile(GetCurrentThreadRead().mFile, mDataStartOffset, removedOffset, tmpFile, 1024 * 2048);
+			}
+			// then the part after the removed file
+			if ((mDataStartOffset + removedOffset + removedSize) < mFileSize)
+			{
+				ModuleFileManager::CoreCopyPartOfFile(GetCurrentThreadRead().mFile, mDataStartOffset+ removedOffset+ removedSize, mFileSize- (mDataStartOffset + removedOffset + removedSize), tmpFile, 1024 * 2048);
+			}
+
+			Platform_fclose(tmpFile.get());
+
+			// now update in memory data
+			removeEntry(asker->mFileEntry);
+			delete ((FATEntryNode*)asker->mFileEntry);
+			mFileSize -= removedSize+ entrySize;
+			mFATSize = newFATsize;
+			mDataStartOffset -= entrySize;
+
+			// copy tmpFile to main kpkg file
+			auto writeMainFile = mMainFile->MakeCopy();
+			Platform_fopen(writeMainFile.get(), "wb");
+			Platform_fopen(tmpFile.get(), "rb");
+
+			ModuleFileManager::CoreCopyFile(tmpFile, writeMainFile, 1024 * 2048);
+
+			Platform_fclose(tmpFile.get());
+			Platform_fclose(writeMainFile.get());
+
+			// and finally remove tmp file
+			ModuleFileManager::RemoveFile(tmpfilename.c_str());
+
+			return true;
+		}
+		
+	}
+
+	return false;
+}
+
+int CorePackage::FATEntryNode::exportInFAT(SmartPointer<FileHandle> pFilehdl)
+{
+	int exportedSize = sizeof(FATEntry);
+	// write entry
+	Platform_fwrite(this, sizeof(FATEntry), 1, pFilehdl.get());
+	// write file name
+	exportedSize += this->mFileNameSize;
+	Platform_fwrite(mName.c_str(),this->mFileNameSize,1, pFilehdl.get());
+	// then write 0 for end of string + pad
+	unsigned int padzero = (mName.length() + 1 + 7) & 0xFFFFFFF8;
+	padzero -= mName.length();
+	exportedSize += padzero;
+	u64 zero = 0;
+	Platform_fwrite(&zero, 1, padzero, pFilehdl.get());
+
+	return exportedSize;
+}
+
+
 void CorePackage::PackageCreationStruct::ExportFiles(const FileTreeNode& node, SmartPointer<FileHandle>& L_File, unsigned char* tmpBuffer, unsigned int bufferLen)
 {
 	if (node.mFileNames) // this is a file (not a folder)
@@ -524,6 +869,7 @@ unsigned int CorePackage::PackageCreationStruct::computeFATSize(const FileTreeNo
 	return result;
 }
 
+
 CorePackage::PackageCreationStruct::FileTreeNode	CorePackage::PackageCreationStruct::getFileTree()
 {
 	FileTreeNode	root;
@@ -573,16 +919,40 @@ CorePackage::PackageCreationStruct::FileTreeNode	CorePackage::PackageCreationStr
 	return root;
 }
 
+bool		CorePackageFileAccess::checkWritable()
+{
+	bool isWritable = true;
+	
+	auto tstFile = mPackage->mMainFile->MakeCopy();
+	if (!::Platform_fopen(tstFile.get(), "ab"))
+	{
+		isWritable = false;
+	}
+	::Platform_fclose(tstFile.get());
+	
+	return isWritable;
+}
+
 bool		CorePackageFileAccess::Platform_fopen(FileHandle* handle, const char * mode)
 {
 	unsigned int flags=FileHandle::OpeningFlags(mode);
+	// package can be written if father file can be written
 	if (flags&FileHandle::Write)
 	{
-		return false;
+		if (!checkWritable())
+		{
+			return false;
+		}
 	}
 
 	handle->setOpeningFlags(flags);
 
+	if (flags & FileHandle::Write)
+	{
+		// create temporary file name
+		std::string tmpfilename = "#\3/temp_" + std::to_string(rand()) + ".txt";
+		mTmpWriteFile = ::Platform_fopen(tmpfilename.c_str(), "wb");
+	}
 	mCurrentReadPos = 0;
 
 	mFileEntry = mPackage->find(handle->mFullFileName,true);
@@ -594,9 +964,21 @@ bool		CorePackageFileAccess::Platform_fopen(FileHandle* handle, const char * mod
 		::Platform_fopen(th.mFile.get(), "rb");
 	}
 
-	if(mFileEntry)
+	if (mFileEntry)
+	{
+		// if append mode, first copy file to mTmpWriteFile
+		if (flags & FileHandle::Append)
+		{
+			SP<FileHandle>	readfile = NonOwningRawPtrToSmartPtr(handle);
+			ModuleFileManager::CoreCopyFile(readfile, mTmpWriteFile, 2048*1024);
+			mCurrentReadPos += mFileEntry->mFileSize;
+		}
 		return true;
-
+	}
+	else if (flags & FileHandle::Write)
+	{
+		return true;
+	}
 	return false;
 }
 
@@ -624,7 +1006,14 @@ long int	CorePackageFileAccess::Platform_fread(void * ptr, long size, long count
 
 long int	CorePackageFileAccess::Platform_fwrite(const void * ptr, long size, long count, FileHandle* handle)
 {
-	// can not write in package
+	// in write or append mode ?
+	// then write or append to tmpfile
+	if (!mTmpWriteFile.isNil())
+	{
+		long writed = ::Platform_fwrite(ptr, size, count, mTmpWriteFile.get());
+		mCurrentReadPos += writed * size;
+		return writed;
+	}
 	return -1;
 }
 
@@ -689,11 +1078,30 @@ int			CorePackageFileAccess::Platform_fflush(FileHandle* handle)
 
 int			CorePackageFileAccess::Platform_fclose(FileHandle* handle)
 {
+	// in write or append mode ?
+	// then close tmp file and do everything to update current package
+	if (!mTmpWriteFile.isNil())
+	{
+		// first close tmp file
+		::Platform_fclose(mTmpWriteFile.get());
+		// then update package in memory and in file
+		mPackage->insertWrittenFile(mTmpWriteFile,this,handle);
+		// finally delete tmp file
+		ModuleFileManager::RemoveFile(mTmpWriteFile->mFullFileName.c_str());
+	}
 	if (mFileEntry)
 	{
 		handle->resetStatus();
 	}
 	return 0;
+}
+
+bool CorePackageFileAccess::Platform_remove(FileHandle* handle)
+{
+	// search entry
+	mFileEntry = mPackage->find(handle->mFullFileName, true);
+
+	return mPackage->removeFile(this, handle);
 }
 
 PureVirtualFileAccessDelegate* CorePackageFileAccess::MakeCopy()
