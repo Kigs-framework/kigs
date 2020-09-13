@@ -11,7 +11,7 @@
 IMPLEMENT_CLASS_INFO(CoreBaseApplication)
 
 // 
-CoreBaseApplication::CoreBaseApplication(const kstl::string& name, CLASS_NAME_TREE_ARG) :  PlatformBaseApplication(), CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+CoreBaseApplication::CoreBaseApplication(const std::string& name, CLASS_NAME_TREE_ARG) :  PlatformBaseApplication(), CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	mHasFocus         = true;
 	mNeedExit         = false;
@@ -36,7 +36,7 @@ void CoreBaseApplication::AddAutoUpdate(CoreModifiable*	toUpdate)
 {
 	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
 	// check if not already there
-	kstl::vector<CoreModifiable*>::const_iterator itAutoUpdate;
+	std::vector<CoreModifiable*>::const_iterator itAutoUpdate;
 	for(itAutoUpdate = mAutoUpdateList.begin();itAutoUpdate != mAutoUpdateList.end();++itAutoUpdate)
 	{
 		if((*itAutoUpdate) == toUpdate)
@@ -54,7 +54,7 @@ void CoreBaseApplication::RemoveAutoUpdate(CoreModifiable*	toUpdate)
 {
 	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
 	// search in list
-	kstl::vector<CoreModifiable*>::iterator itAutoUpdate;
+	std::vector<CoreModifiable*>::iterator itAutoUpdate;
 	if(!mAutoUpdateList.empty())
 	{
 		for(itAutoUpdate = mAutoUpdateList.begin();itAutoUpdate != mAutoUpdateList.end();++itAutoUpdate)
@@ -71,15 +71,15 @@ void CoreBaseApplication::RemoveAutoUpdate(CoreModifiable*	toUpdate)
 	
 }
 
-void	CoreBaseApplication::PushArg(const kstl::string& arg)
+void	CoreBaseApplication::PushArg(const std::string& arg)
 {
 	mArgs.push_back(arg);
 }
 
-const kstl::string*	CoreBaseApplication::HasArg(const kstl::string& arg, bool startWith) const
+const std::string*	CoreBaseApplication::HasArg(const std::string& arg, bool startWith) const
 {
-	kstl::vector<kstl::string>::const_iterator	itstart = mArgs.begin();
-	kstl::vector<kstl::string>::const_iterator	itend = mArgs.end();
+	std::vector<std::string>::const_iterator	itstart = mArgs.begin();
+	std::vector<std::string>::const_iterator	itend = mArgs.end();
 
 	while (itstart != itend)
 	{
@@ -144,7 +144,7 @@ void	CoreBaseApplication::InitApp(const char* baseDataPath, bool	InitBaseModule)
 		val = getenv("KIGS_EDITOR");
 
 		if (val != NULL) {
-			kstl::string path = val;
+			std::string path = val;
 #ifdef _KIGS_ID_RELEASE_
 			path += "\\Release\\";
 #else
@@ -158,7 +158,7 @@ void	CoreBaseApplication::InitApp(const char* baseDataPath, bool	InitBaseModule)
 		}
 
 		
-		kstl::vector<CoreModifiableAttribute*> params;	
+		std::vector<CoreModifiableAttribute*> params;	
 		maBool* embedded = new maBool(*mEditor, true, LABEL_AND_ID(EmbeddedEditor), HasArg("UseEmbeddedEditor"));
 		//maBool* autoStart = new maBool(*mEditor, true, LABEL_AND_ID(AutoStart), HasArg("EditorAutoStart"));
 

@@ -28,7 +28,10 @@ enum class Handedness
 
 struct Interaction
 {
-	double Time;
+	double StartTime = 0.0;;
+	double LastTime = 0.0;;
+	double TimeStill = 0.0;
+
 	v3f Position;
 	
 	v3f Forward;

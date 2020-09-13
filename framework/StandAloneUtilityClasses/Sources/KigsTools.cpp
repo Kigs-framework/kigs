@@ -1534,6 +1534,22 @@ void CustomAttributeEditor(CoreModifiable* item)
 		if(ImGui::Button("Reload Shader"))
 			item->SimpleCall("Reload");
 	}
+
+
+	if (item->isSubType("CoreBaseApplication"))
+	{
+		auto app = item->as<CoreBaseApplication>();
+		auto list = app->GetAutoUpdateList();
+
+		if (ImGui::CollapsingHeader("AutoUpdateList"))
+		{
+			for (auto el : list)
+			{
+				ImGui::Text("%s - %s", el->getExactType().c_str(), el->getName().c_str());
+			}
+		}
+	}
+
 }
 
 void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false)

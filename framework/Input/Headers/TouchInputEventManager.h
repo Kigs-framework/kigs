@@ -323,12 +323,14 @@ protected:
 		TouchSourceID ID;
 		v3f          origin;
 		v3f          direction;
-		float		 start_dist;
-		float		 min_dist;
+		//float		 start_dist;
+		//float		 min_dist;
 	};
 
 	kigs::unordered_map<TouchSourceID, PotentialClick> mCurrentClickStart;
 	kigs::unordered_map<TouchSourceID, PotentialClick> mCurrentClickEnd;
+
+	double mNearTouchLastAboveTime = 0.0;
 
 	int											mMinClickCount = 1;
 	int											mMaxClickCount = 1;
@@ -341,11 +343,12 @@ struct DirectTouchEvent : InputEvent
 {
 	enum TouchState
 	{
-		TouchHover = 0,
-		TouchDown = 1,
-		TouchUp = 2,
+		TouchHover		= 0,
+		TouchDown		= 1,
+		TouchUp			= 2
 	} touch_state;
 	u32 button_state;
+	bool near_interaction_went_trough = false;
 };
 
 /*
@@ -383,9 +386,9 @@ protected:
 		// 1 => hover
 		// 2 => activation down
 		// 4 => not hover down
-		int			state;
-		float start_dist;
-		float min_dist;
+		int	state;
+		float last_dist;
+		double near_touch_last_above_time = 0.0;
 	};
 
 	std::map<TouchSourceID, CurrentInfos> mCurrentInfosMap;

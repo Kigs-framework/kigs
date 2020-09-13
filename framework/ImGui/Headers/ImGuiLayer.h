@@ -113,6 +113,7 @@ protected:
 	bool mIsDown = false;
 	bool mHasKeyboardFocus = false;
 	bool mWantMouse = false;
+	bool mNeedClearClicks = false;
 
 
 
