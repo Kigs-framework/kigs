@@ -318,6 +318,7 @@ SmartPointer<::FileHandle> Platform_fopen(winrt::Windows::Storage::StorageFile f
 }
 
 
+
 template<typename TResult>
 bool WaitForAsyncOperation(winrt::Windows::Foundation::IAsyncOperation<TResult> op)
 {
@@ -587,6 +588,14 @@ int			StorageFileFileAccess::Platform_fclose(::FileHandle* handle)
 		handle->resetStatus();
 	}
 	return 0;
+}
+
+bool			StorageFileFileAccess::Platform_remove(FileHandle* handle)
+{
+	// is it enough ?
+	auto act=mFile.DeleteAsync();
+	
+	return true;
 }
 
 PureVirtualFileAccessDelegate* StorageFileFileAccess::MakeCopy()
