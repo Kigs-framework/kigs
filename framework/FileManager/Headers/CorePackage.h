@@ -10,6 +10,7 @@
 
 
 class FilePathManager;
+class CorePackageFileAccess;
 
 // ****************************************
 // * CorePackage class
