@@ -39,19 +39,21 @@ class StorageFileFileAccess : public PureVirtualFileAccessDelegate
 
 	}
 
-	virtual bool		Platform_fopen(FileHandle* handle, const char * mode);
+	virtual bool		Platform_fopen(FileHandle* handle, const char * mode) override;
 
-	virtual long int	Platform_fread(void * ptr, long size, long count, FileHandle* handle);
+	virtual long int	Platform_fread(void * ptr, long size, long count, FileHandle* handle) override;
 
-	virtual long int	Platform_fwrite(const void * ptr, long size, long count, FileHandle* handle);
+	virtual long int	Platform_fwrite(const void * ptr, long size, long count, FileHandle* handle) override;
 
-	virtual long int	Platform_ftell(FileHandle* handle);
+	virtual long int	Platform_ftell(FileHandle* handle) override;
 
-	virtual int			Platform_fseek(FileHandle* handle, long int offset, int origin);
+	virtual int			Platform_fseek(FileHandle* handle, long int offset, int origin) override;
 
-	virtual int			Platform_fflush(FileHandle* handle);
+	virtual int			Platform_fflush(FileHandle* handle) override;
 
-	virtual int			Platform_fclose(FileHandle* handle);
+	virtual int			Platform_fclose(FileHandle* handle) override;
+
+	virtual bool			Platform_remove(FileHandle* handle)  override;
 
 	PureVirtualFileAccessDelegate* MakeCopy() override;
 

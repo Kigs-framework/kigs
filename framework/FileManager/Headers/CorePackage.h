@@ -2,6 +2,8 @@
 #define __COREPACKAGE_H__
 
 #include <thread>
+#include <shared_mutex>
+		
 #include "CoreModifiable.h"
 #include "Platform/Core/PlatformCore.h"
 #include "FilePathManager.h"
@@ -10,6 +12,7 @@
 
 
 class FilePathManager;
+class CorePackageFileAccess;
 
 // ****************************************
 // * CorePackage class
@@ -20,6 +23,8 @@ class FilePathManager;
 * \ingroup FileManager
 * \brief	Manage packages and files inside packages.
 *
+* Packages are mainly readable files. They are used to have a virtual file system grouping a lot of files into a unique one.
+* Writting to ( or deleting from ) a package is possible but each time you do it, the whole package is rewritten, so this is really not optimal and should be avoided when not necessary. 
 */
 // ****************************************
 
@@ -43,26 +48,39 @@ private:
 	*/
 	CorePackage(const CorePackage&) {}
 
+	// structure to hold package header
 	struct KPKGHeader
 	{
+		// must be 'kpkg'
 		u32			mHeadID;
+		// size of the FAT structure in the file, used to compute offset to first file data
 		u32			mFATSize;
+		// total size of the file
 		u64			mTotalSize;
 	};
 
+	// structure to hold FAT entry data in file and in memory as FATEntryNode base class
 	struct FATEntry
 	{
+		// offset of file data after Header and FAT
 		u64		mFileOffset;
+		// size of the current file
 		u64		mFileSize;
+		// size of the char* name of the file
 		u32		mFileNameSize;
+		// children count
 		u32		mSonCount;
 	};
 
+	// class holding FAT entry "decoded" in memory
 	class FATEntryNode : public FATEntry
 	{
 	public:
-		std::string					mName;
+		// entry name ( file or folder name )
+		std::string						mName;
+		// pointer to each child entry
 		std::vector<FATEntryNode*>		mSons;
+		// name converted to KigsID for fast equality checking
 		KigsID							mFastCheckName;
 
 		~FATEntryNode()
@@ -72,6 +90,11 @@ private:
 				delete son;
 			}
 		}
+
+	protected:
+		friend class CorePackage;
+		// return exported size
+		int exportInFAT(SmartPointer<FileHandle> pFilehdl);
 	};
 
 	void IterateFATTree(FATEntryNode* node, std::string current_path, const std::function<void(FATEntryNode*, const std::string&)>& func);
@@ -111,6 +134,12 @@ protected:
 		return mFileName;
 	}
 
+	// update CorePackage both in memory and kpkg file after file has been "written" in package
+	void insertWrittenFile(SmartPointer<FileHandle> tmpWrittenFile,const CorePackageFileAccess* asker,FileHandle* toBeInserted);
+	// remove file in CorePackage and update both in memory and kpkg file
+	bool removeFile(const CorePackageFileAccess* asker, FileHandle* toBeErased);
+
+	
 	class CorePackageIterator
 	{
 	public:
@@ -258,6 +287,11 @@ protected:
 			return mNodeStack.back().mEntry->mSons[mNodeStack.back().mStackedSonIndex];
 		}
 
+		FATEntryNode* operator*()
+		{
+			return currentEntry();
+		}
+
 		CorePackage*	mPackage;
 
 		struct StackedNode
@@ -291,6 +325,52 @@ protected:
 	}
 
 	FATEntry*	find(const std::string& path, bool isFile);
+	// retrieve parent entry
+	FATEntry* getParent(FATEntry* p)
+	{
+		CorePackageIterator it = begin();
+		CorePackageIterator ite = end();
+
+		while (it != ite)
+		{
+			for (auto s : (*it)->mSons)
+			{
+				if (s == p)
+				{
+					return (*it);
+				}
+			}
+
+
+			it++;
+		}
+
+		return nullptr;
+	}
+
+	// warning, can broke iterators
+	bool	removeEntry(FATEntry* p)
+	{
+		CorePackageIterator it = begin();
+		CorePackageIterator ite = end();
+
+		while (it != ite)
+		{
+			std::vector<CorePackage::FATEntryNode*>::iterator s;
+			for ( s=(*it)->mSons.begin();s!= (*it)->mSons.end();s++)
+			{
+				if ((*s) == p)
+				{
+					(*it)->mSons.erase(s);
+					return true;
+				}
+			}
+
+			it++;
+		}
+
+		return false;
+	}
 
 public:
 
@@ -351,24 +431,30 @@ public:
 
 
 private:
+	// handle of the kpkg file
 	SmartPointer<FileHandle>	mMainFile;
 
+	// kpkg file size
 	size_t						mFileSize = 0;
+
+	// size of FAT in current kpkg file
+	u32							mFATSize = 0;
+	// root entry
 	FATEntryNode*				mRootFATEntry = nullptr;
+	// offset to first file data ( size of header + size of FAT structure ) 
 	size_t						mDataStartOffset = 0;
+	// kpkg file name
 	std::string					mFileName;
 
-	// 1 mEntry folder cache management (for find)
-	//FATEntryNode*				mCachedFATEntry;
-	//std::string				mCachedFolder;
-
+	// structure to hold one cache + file handle per thread
 	struct ThreadRead
 	{
 		SmartPointer<FileHandle>	mFile;
 		FATEntryNode*				mCachedFATEntry = nullptr;
-		std::string				mCachedFolder;
+		std::string					mCachedFolder;
 	};
 
+	// map of all ThreadRead structure
 	kigs::unordered_map<std::thread::id, ThreadRead> mThreadRead;
 
 	ThreadRead& GetCurrentThreadRead() { return mThreadRead[std::this_thread::get_id()]; }
@@ -381,6 +467,7 @@ private:
 	void	RecursiveAddFolder(const std::string& foldername, const std::string& FolderNameInPackage, int cropFilePath);
 #endif
 
+	// class to manage package creation
 	class PackageCreationStruct
 	{
 
@@ -445,6 +532,7 @@ private:
 
 	PackageCreationStruct*	mPackageBuilderStruct = nullptr;
 	
+
 };
 
 // ****************************************
@@ -464,7 +552,7 @@ class CorePackageFileAccess : public PureVirtualFileAccessDelegate
 public:
 	CorePackageFileAccess(CorePackage* pack) : mPackage(pack)
 	{
-
+		
 	}
 
 	bool		Platform_fopen(FileHandle* handle, const char * mode) override;
@@ -474,23 +562,44 @@ public:
 	int			Platform_fseek(FileHandle* handle, long int offset, int origin) override;
 	int			Platform_fflush(FileHandle* handle) override;
 	int			Platform_fclose(FileHandle* handle) override;
+	bool		Platform_remove(FileHandle* handle) override;
 	PureVirtualFileAccessDelegate* MakeCopy() override;
 
 protected:
 
+	friend class CorePackage;
+
+	
+	virtual ~CorePackageFileAccess()
+	{
+		
+	}
+
+	// current package
+	CorePackage*					mPackage = nullptr;
+	// current entry
+	CorePackage::FATEntry*			mFileEntry = nullptr;
+	// read position in current file ( not in package )
+	u64								mCurrentReadPos = 0;
+
+	// limited write access
+	// write is done in a tmp file until close
+	// when closed, the tmpfile is really inserted into the package and package FAT is updated
+	SP<FileHandle>					mTmpWriteFile;
+
+	bool							checkWritable();
+
+private:
+
+	// private only default constructor. Only CorePackageFileAccess(CorePackage* pack) should be used
 	CorePackageFileAccess()
 	{
 
 	}
 
-	virtual ~CorePackageFileAccess()
-	{
+	// mutex only used to avoid reading when writting
+	static std::shared_mutex	mMutex;
 
-	}
-
-	CorePackage*					mPackage = nullptr;
-	CorePackage::FATEntry*			mFileEntry = nullptr;
-	u64								mCurrentReadPos = 0;
 };
 
 #endif //__COREPACKAGE_H__

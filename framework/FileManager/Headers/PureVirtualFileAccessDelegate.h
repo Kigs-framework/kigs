@@ -20,6 +20,8 @@ public:
 	
 	virtual int			Platform_fclose(FileHandle* handle) = 0;
 
+	virtual bool		Platform_remove(FileHandle* handle) = 0;
+
 	virtual PureVirtualFileAccessDelegate* MakeCopy() = 0;
 
 	virtual ~PureVirtualFileAccessDelegate() {};

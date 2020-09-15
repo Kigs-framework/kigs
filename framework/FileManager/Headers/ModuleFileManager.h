@@ -72,6 +72,14 @@ public:
 	static	bool	SaveFile(const char *filename, u8* data, u64 length);
 	
 	/**
+	* remove given file
+	* \param filename name of the file to delete (remove)
+	* \return true if the file was successfully removed
+	*/
+	static	bool	RemoveFile(const char* filename);
+
+
+	/**
 	* copy a binary file
 	* \param sourceFilename name of the file to copy 
 	* \param destFileName name of the file to create or overwrite 
@@ -79,6 +87,21 @@ public:
 	*/
 	static	bool	CoreCopyFile(const char *sourceFilename, const char *destFileName, int buffLen=2048);
 
+	/**
+	* copy a binary file
+	* \param source handle of source file
+	* \param dest handle of dest file
+	* \return true if file was copied
+	*/
+	static	bool	CoreCopyFile(SP<FileHandle> source, SP<FileHandle> dest, int buffLen = 2048);
+
+	/**
+	* copy a part of a file
+	* \param source handle of source file
+	* \param dest handle of dest file
+	* \return true if file was copied
+	*/
+	static	bool	CoreCopyPartOfFile(SP<FileHandle> lsource,u64 lstart,u64 lsize, SP<FileHandle> ldest, int lbuffLen = 2048);
 
 	// utility method, retreive a short from a const char* stream (pointer is not increased) 
 	inline static void GetShort(const char* read, s16& result)
