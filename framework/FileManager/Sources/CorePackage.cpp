@@ -10,6 +10,8 @@
 #endif
 
 
+std::shared_mutex	CorePackageFileAccess::mMutex;
+
 void	CorePackage::ParseFATBuffer(unsigned char*& fatBuffer, FATEntryNode* current)
 {
 	// read current value
@@ -954,7 +956,7 @@ bool		CorePackageFileAccess::Platform_fopen(FileHandle* handle, const char * mod
 		mTmpWriteFile = ::Platform_fopen(tmpfilename.c_str(), "wb");
 	}
 	mCurrentReadPos = 0;
-
+	std::shared_lock<std::shared_mutex>	lk(mMutex);
 	mFileEntry = mPackage->find(handle->mFullFileName,true);
 
 	auto& th = mPackage->GetCurrentThreadRead();
@@ -984,6 +986,7 @@ bool		CorePackageFileAccess::Platform_fopen(FileHandle* handle, const char * mod
 
 long int	CorePackageFileAccess::Platform_fread(void * ptr, long size, long count, FileHandle* handle)
 {
+	std::shared_lock<std::shared_mutex>	lk(mMutex);
 	if (mFileEntry)
 	{
 		long available = mFileEntry->mFileSize - mCurrentReadPos;
@@ -1006,6 +1009,7 @@ long int	CorePackageFileAccess::Platform_fread(void * ptr, long size, long count
 
 long int	CorePackageFileAccess::Platform_fwrite(const void * ptr, long size, long count, FileHandle* handle)
 {
+	std::shared_lock<std::shared_mutex>	lk(mMutex);
 	// in write or append mode ?
 	// then write or append to tmpfile
 	if (!mTmpWriteFile.isNil())
@@ -1019,7 +1023,7 @@ long int	CorePackageFileAccess::Platform_fwrite(const void * ptr, long size, lon
 
 long int	CorePackageFileAccess::Platform_ftell(FileHandle* handle)
 {
-
+	std::shared_lock<std::shared_mutex>	lk(mMutex);
 	if (mFileEntry)
 	{
 		return mCurrentReadPos;
@@ -1030,7 +1034,7 @@ long int	CorePackageFileAccess::Platform_ftell(FileHandle* handle)
 
 int			CorePackageFileAccess::Platform_fseek(FileHandle* handle, long int offset, int origin)
 {
-
+	std::shared_lock<std::shared_mutex>	lk(mMutex);
 	if (mFileEntry)
 	{
 		long int newpos = mCurrentReadPos;
@@ -1068,6 +1072,7 @@ int			CorePackageFileAccess::Platform_fseek(FileHandle* handle, long int offset,
 
 int			CorePackageFileAccess::Platform_fflush(FileHandle* handle)
 {
+	std::shared_lock<std::shared_mutex>	lk(mMutex);
 	if (mFileEntry)
 	{
 		auto& th = mPackage->GetCurrentThreadRead();
@@ -1085,7 +1090,9 @@ int			CorePackageFileAccess::Platform_fclose(FileHandle* handle)
 		// first close tmp file
 		::Platform_fclose(mTmpWriteFile.get());
 		// then update package in memory and in file
+		mMutex.lock();
 		mPackage->insertWrittenFile(mTmpWriteFile,this,handle);
+		mMutex.unlock();
 		// finally delete tmp file
 		ModuleFileManager::RemoveFile(mTmpWriteFile->mFullFileName.c_str());
 	}
@@ -1098,6 +1105,7 @@ int			CorePackageFileAccess::Platform_fclose(FileHandle* handle)
 
 bool CorePackageFileAccess::Platform_remove(FileHandle* handle)
 {
+	std::shared_lock<std::shared_mutex>	lk(mMutex);
 	// search entry
 	mFileEntry = mPackage->find(handle->mFullFileName, true);
 
@@ -1106,8 +1114,8 @@ bool CorePackageFileAccess::Platform_remove(FileHandle* handle)
 
 PureVirtualFileAccessDelegate* CorePackageFileAccess::MakeCopy()
 {
-	auto result = new CorePackageFileAccess();
-	result->mPackage = mPackage;
+	std::shared_lock<std::shared_mutex>	lk(mMutex);
+	auto result = new CorePackageFileAccess(mPackage);
 	result->mFileEntry = mFileEntry;
 	result->mCurrentReadPos = 0;
 	return result;

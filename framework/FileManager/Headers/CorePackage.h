@@ -2,6 +2,8 @@
 #define __COREPACKAGE_H__
 
 #include <thread>
+#include <shared_mutex>
+		
 #include "CoreModifiable.h"
 #include "Platform/Core/PlatformCore.h"
 #include "FilePathManager.h"
@@ -530,6 +532,7 @@ private:
 
 	PackageCreationStruct*	mPackageBuilderStruct = nullptr;
 	
+
 };
 
 // ****************************************
@@ -549,7 +552,7 @@ class CorePackageFileAccess : public PureVirtualFileAccessDelegate
 public:
 	CorePackageFileAccess(CorePackage* pack) : mPackage(pack)
 	{
-
+		
 	}
 
 	bool		Platform_fopen(FileHandle* handle, const char * mode) override;
@@ -566,14 +569,10 @@ protected:
 
 	friend class CorePackage;
 
-	CorePackageFileAccess()
-	{
-
-	}
-
+	
 	virtual ~CorePackageFileAccess()
 	{
-
+		
 	}
 
 	// current package
@@ -589,6 +588,18 @@ protected:
 	SP<FileHandle>					mTmpWriteFile;
 
 	bool							checkWritable();
+
+private:
+
+	// private only default constructor. Only CorePackageFileAccess(CorePackage* pack) should be used
+	CorePackageFileAccess()
+	{
+
+	}
+
+	// mutex only used to avoid reading when writting
+	static std::shared_mutex	mMutex;
+
 };
 
 #endif //__COREPACKAGE_H__
