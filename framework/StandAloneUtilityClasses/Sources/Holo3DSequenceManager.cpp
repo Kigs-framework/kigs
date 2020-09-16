@@ -118,7 +118,8 @@ bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, to
 		}
 
 		pout.pos.xy = mCollidablePanel->ConvertHit(pos + ((float)dist*dir));
-		pout.pos.x = 1 - pout.pos.x;
+		if(Dot(dir, planeNorm) > 0)
+			pout.pos.x = 1 - pout.pos.x;
 		pout.pos.y = 1 - pout.pos.y;
 		is_in = mCollidablePanel->ValidHit(pos + dir * dist);
 		if (is_in)
@@ -175,7 +176,6 @@ void Holo3DSequenceManager::InitModifiable()
 	mSpacialNode->Init();
 
 	v2f size = mSize;
-	if (gIsVR) size = mSize = size*2;
 	
 	//Create collidable object
 	mCollidablePanel = KigsCore::GetInstanceOf("HoloUIPanel", "InterfacePanel");
@@ -190,17 +190,9 @@ void Holo3DSequenceManager::InitModifiable()
 	mSpacialNode->addItem((CMSP&)mDrawer);
 	mDrawer->setValue("Size", size);
 	mDrawer->setValue("DepthTest", "Disabled");
-	mDrawer->setValue("RenderPassMask", 4);
+	mDrawer->setValue("RenderPassMask", 64);
+	mDrawer->setValue("TwoSided", true);
 	mDrawer->Init();
-
-
-	/*
-	auto customizer = KigsCore::CreateInstance("depth_test_disable", "RenderingCustomizer");
-	customizer->setValue("TransarencyFlag", true);
-	customizer->Init();
-	customizer->setValue("OverrideDepthTest", 0);
-	myDrawer->addItem(customizer.get());
-	*/
 
 	mPosition.changeNotificationLevel(Owner);
 	mNormal.changeNotificationLevel(Owner);
@@ -275,7 +267,7 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 	// retreive texture id
 	mDrawer->SetTexture(mRenderingScreen->as<RenderingScreen>()->GetFBOTexture().get());
 	// manage positionning
-	if (!mManualPosition && (mNeedRecomputePosition || !mIsFixed))
+	if ((!mManualPosition && (mNeedRecomputePosition || !mIsFixed)) || mForceInFront)
 	{
 		Camera * followCam = (Camera*)((CoreModifiable*)mFollowCamera);
 		Vector3D camPos = followCam->GetGlobalPosition();
@@ -311,14 +303,15 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 
 		if (mForceInFront)
 		{
-			pos = camPos + (mDistance*followCam->GetGlobalViewVector());
+			pos = camPos + (mDistance * (followCam->GetGlobalViewVector() + mTargetOffset[0]*followCam->GetGlobalRightVector() + mTargetOffset[1] * followCam->GetGlobalUpVector()));
+			view = (pos - camPos).Normalized();
 			mCurrentVelocity = 0.0f;
 			mForceInFront = false;
 			mNeedRecomputePosition = true;
 		}
 		else if (!mUseFixedPosition)
 		{
-			Vector3D targetPos = camPos + (mDistance*followCam->GetGlobalViewVector());
+			Vector3D targetPos = camPos + (mDistance * (followCam->GetGlobalViewVector() + mTargetOffset[0] * followCam->GetGlobalRightVector() + mTargetOffset[1] * followCam->GetGlobalUpVector()));
 			DRAWSPHERE(nodePos, Vector3D(0, 255, 255), 0.01);
 
 			Vector3D dir = (targetPos - nodePos);
@@ -446,7 +439,9 @@ void Holo3DSequenceManager::NotifyUpdate(const unsigned int labelid)
 	}
 	else if (labelid == mSize.getLabelID())
 	{
-
+		v2f size = mSize;
+		if(mCollidablePanel) mCollidablePanel->setValue("Size", size);
+		if(mDrawer) mDrawer->setValue("Size", size);
 	}
 	else if (labelid == mUseFixedNormal.getLabelID()
 		|| labelid == mUseFixedUp.getLabelID()

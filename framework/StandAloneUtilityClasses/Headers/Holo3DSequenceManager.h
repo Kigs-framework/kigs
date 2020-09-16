@@ -39,6 +39,7 @@ public:
 
 	bool	GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout);
 	void	ShowPanel(bool show, bool atFront=true);
+	void	ForceAtFront() { mForceInFront = true; }
 
 	void ChangePosition(Point3D pos) { mPosition = pos; mCurrentPos = pos; }
 	
@@ -76,6 +77,9 @@ protected:
 	maVect3DF mUp;
 	maVect2DF mSize;
 	maVect2DF mDesignSize;
+
+	// Offset is calculated as follow : (myTargetOffset.x*CameraRight + myTargetOffset.y*CameraUp)*myDistance
+	maVect2DF mTargetOffset = BASE_ATTRIBUTE(TargetOffset, 0, 0);
 
 	maBool mKeepDistance = BASE_ATTRIBUTE(KeepDistance, true);
 	maFloat mDistance = BASE_ATTRIBUTE(Distance, 1);
