@@ -1454,7 +1454,8 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			ev.touch_state = DirectTouchEvent::TouchHover;
 			target->SimpleCall<bool>(mMethodNameID, ev);
 			manager->ManageCaptureObject(ev, target);
-			if (is_near_interaction) near_active_items.insert(target);
+			if (is_near_interaction) 
+				near_active_items.insert(target);
 		}
 	}
 
@@ -1552,7 +1553,8 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			target->SimpleCall<bool>(mMethodNameID, ev);
 			current.state |= 1;
 			manager->ManageCaptureObject(ev, target);
-			if (is_near_interaction) near_active_items.insert(target);
+			if (is_near_interaction) 
+				near_active_items.insert(target);
 		}
 	}
 	else // not hover
@@ -1565,7 +1567,8 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			target->SimpleCall<bool>(mMethodNameID, ev);
 			current.state -= 1;
 			manager->ManageCaptureObject(ev, target);
-			if (is_near_interaction) near_active_items.erase(target);
+			if (is_near_interaction) 
+				near_active_items.erase(target);
 		}
 	}
 	
