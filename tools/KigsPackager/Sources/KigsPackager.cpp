@@ -87,11 +87,11 @@ void	KigsPackager::ProtectedInit()
 	InitExternClasses();
 
 	// retreive args
-	kstl::vector<kstl::string>::iterator itArgs=myArgs.begin();
+	kstl::vector<kstl::string>::iterator itArgs=mArgs.begin();
 	// skip app name
 	itArgs++;
 
-	int totalArgsCount=myArgs.size()-1;
+	int totalArgsCount=mArgs.size()-1;
 
 	if((totalArgsCount<3) && totalArgsCount != 1)
 	{
@@ -103,7 +103,7 @@ void	KigsPackager::ProtectedInit()
 	kstl::string fileNameOut="";
 	kstl::string packageRootName = "";
 
-	for(;itArgs!=myArgs.end();itArgs++)
+	for(;itArgs!=mArgs.end();itArgs++)
 	{
 		kstl::string& current=(*itArgs);
 
@@ -160,7 +160,7 @@ void	KigsPackager::ProtectedInit()
 
 	if (totalArgsCount == 1)
 	{
-		fileNameIn = myArgs[1];
+		fileNameIn = mArgs[1];
 		fileNameOut = "Assets.kpkg";
 	}
 
@@ -197,5 +197,5 @@ void	KigsPackager::ProtectedClose()
 
 void	KigsPackager::ProtectedExternAskExit()
 {
-	myNeedExit = true;
+	mNeedExit = true;
 }

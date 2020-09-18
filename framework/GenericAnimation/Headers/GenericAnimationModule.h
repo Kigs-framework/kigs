@@ -57,19 +57,19 @@ public:
 	
 	void	addShader(CoreModifiable* parent, CoreModifiable* shader)
 	{
-		postAddShaderList.push_back(std::pair<CoreModifiable*, CoreModifiable*>{parent, shader});
+		mPostAddShaderList.push_back(std::pair<CoreModifiable*, CoreModifiable*>{parent, shader});
 	}
 	
 	protected:
 	
 	
 	
-	kstl::map<kstl::string, CoreRawBuffer*>	myResourceInfoMap;
+	kstl::map<kstl::string, CoreRawBuffer*>	mResourceInfoMap;
 	
 	void ManagePostAdd()
 	{
-		kstl::vector<std::pair<CoreModifiable*, CoreModifiable*> >::iterator	itc = postAddShaderList.begin();
-		kstl::vector<std::pair<CoreModifiable*, CoreModifiable*> >::iterator	ite = postAddShaderList.end();
+		kstl::vector<std::pair<CoreModifiable*, CoreModifiable*> >::iterator	itc = mPostAddShaderList.begin();
+		kstl::vector<std::pair<CoreModifiable*, CoreModifiable*> >::iterator	ite = mPostAddShaderList.end();
 		
 		while (itc != ite)
 		{
@@ -77,9 +77,9 @@ public:
 			(*itc).first->addItem(toAdd,CoreModifiable::First);
 			itc++;
 		}
-		postAddShaderList.clear();
+		mPostAddShaderList.clear();
 	}
-	kstl::vector<std::pair<CoreModifiable*, CoreModifiable*> >	postAddShaderList;
+	kstl::vector<std::pair<CoreModifiable*, CoreModifiable*> >	mPostAddShaderList;
 	
     virtual ~GenericAnimationModule();    
 	

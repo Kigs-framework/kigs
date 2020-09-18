@@ -11,6 +11,20 @@ class CorePackage;
 class PureVirtualFileAccessDelegate;
 
 
+// global functions
+extern SmartPointer<FileHandle> Platform_fopen(const char* name, const char* mode);
+
+bool		Platform_fopen(FileHandle* handle, const char* mode);
+long int	Platform_fread(void* ptr, long size, long count, FileHandle* handle);
+long int	Platform_fwrite(const void* ptr, long size, long count, FileHandle* handle);
+long int	Platform_ftell(FileHandle* handle);
+int			Platform_fseek(FileHandle* handle, long int offset, int origin);
+int			Platform_fflush(FileHandle* handle);
+int			Platform_fclose(FileHandle* handle);
+bool		Platform_remove(FileHandle* handle);
+
+
+
 // ****************************************
 // * FileHandle class
 // * --------------------------------------
@@ -115,6 +129,33 @@ public:
 		Exist				=	1<<7,
 		InfoSet				=   1<<8,
 	};
+
+	int	getFileSize()
+	{
+		int filelength;
+		if (mSize != -1)
+		{
+			return mSize;
+		}
+		
+		bool needOpenClose = !(mStatus & Open);
+
+		if (needOpenClose)
+		{
+			Platform_fopen(this, "rb");
+		}
+
+		Platform_fseek(this, 0, SEEK_END);
+		filelength = Platform_ftell(this);
+		Platform_fseek(this, 0, SEEK_SET);
+
+		if (needOpenClose)
+		{
+			Platform_fclose(this);
+		}
+
+		return filelength;
+	}
 
 	unsigned int	mStatus; // status flag
 	int				mSize;
@@ -261,6 +302,7 @@ public:
 	}
 
 	static std::string MakeValidFileName(const std::string& filename);
+	static void	isSpecialDeviceOrPackage(const std::string& fname, bool& SpecialDevice, bool& package);
 
 protected:
 
@@ -288,6 +330,7 @@ protected:
 	friend class CorePackage;
 	void	insertPackage(unsigned int packageID);
 	void	unloadPackage(unsigned int packageID);
+	bool	initHandleFromPackage(const std::string& lpath, SmartPointer<FileHandle> result);
 	unsigned int				 mPackageID;
 	std::map<int, CorePackage*> mPackageList;
 
@@ -299,14 +342,5 @@ protected:
 	maBool	mStrictPath = BASE_ATTRIBUTE(StrictPath, false);
 };
 
-extern SmartPointer<FileHandle> Platform_fopen(const char* name, const char * mode);
-
-bool		Platform_fopen(FileHandle* handle, const char * mode);
-long int	Platform_fread(void * ptr, long size, long count, FileHandle* handle);
-long int	Platform_fwrite(const void * ptr, long size, long count, FileHandle* handle);
-long int	Platform_ftell(FileHandle* handle);
-int			Platform_fseek(FileHandle* handle, long int offset, int origin);
-int			Platform_fflush(FileHandle* handle);
-int			Platform_fclose(FileHandle* handle);
 
 #endif //_FILEPATHMANAGER_H_

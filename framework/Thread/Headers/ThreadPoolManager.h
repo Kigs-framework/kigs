@@ -70,7 +70,7 @@ protected:
 	//! destructor
 	virtual ~ThreadPoolManager();
 
-	maInt	myThreadCount;
+	maInt	mThreadCount;
 	kstl::vector<SP<WorkerThread>>				mThreadList;
 
 

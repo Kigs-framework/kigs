@@ -30,18 +30,18 @@ public:
 
 	void    InitStream(ABaseChannel* channel, IntU32 priority, Float  weight, Float speed, bool loop)
 	{
-		m_Priority = priority;
-		m_Weight = weight;
-		m_Speed = speed;
-		m_StartTime = KFLOAT_ZERO;
-		m_LocalTime = KFLOAT_ZERO;
-		m_pChannel = channel;
-		m_Loop = loop;
+		mPriority = priority;
+		mWeight = weight;
+		mSpeed = speed;
+		mStartTime = KFLOAT_ZERO;
+		mLocalTime = KFLOAT_ZERO;
+		mChannel = channel;
+		mLoop = loop;
 	};
 
 	AnimationResourceInfo* GetResourceInfo()
 	{
-		return m_pResourceInfo;
+		return mResourceInfo;
 	};
 
 	// ******************************
@@ -158,7 +158,7 @@ public:
 
 	ABaseStream*        GetNextStream() const
 	{
-		return m_pNextStream;
+		return mNextStream;
 	};
 
 	// ******************************
@@ -190,7 +190,7 @@ protected:
 	// ******************************
 	// * UpdateData
 	// *-----------------------------
-	/*! Update Data according to m_LocalTime
+	/*! Update Data according to mLocalTime
 	*/
 	// ******************************
 
@@ -205,7 +205,7 @@ protected:
 
 	ATimeValue     GetLocalTime()  const
 	{
-		return m_LocalTime;
+		return mLocalTime;
 	};
 
 	// ******************************
@@ -217,7 +217,7 @@ protected:
 
 	void            SetLocalTime(ATimeValue local_time)
 	{
-		m_LocalTime = local_time;
+		mLocalTime = local_time;
 	};
 
 	// ******************************
@@ -229,7 +229,7 @@ protected:
 
 	ATimeValue     GetStartTime()  const
 	{
-		return m_StartTime;
+		return mStartTime;
 	};
 
 	// ******************************
@@ -241,7 +241,7 @@ protected:
 
 	void            SetStartTime(ATimeValue start_time)
 	{
-		m_StartTime = start_time;
+		mStartTime = start_time;
 	};
 
 	// ******************************
@@ -253,7 +253,7 @@ protected:
 
 	ABaseChannel*   GetChannel()
 	{
-		return m_pChannel;
+		return mChannel;
 	};
 
 
@@ -267,14 +267,14 @@ protected:
 
 	void    SetRepeatCount(IntU32 count)
 	{
-		m_RepeatCount = (IntS32)count;
+		mRepeatCount = (IntS32)count;
 		if (count>0)
 		{
-			m_bEndReached = false;
+			mEndReached = false;
 		}
 		else
 		{
-			m_bEndReached = true;
+			mEndReached = true;
 		}
 	};
 
@@ -287,7 +287,7 @@ protected:
 
 	IntS32    GetRepeatCount()
 	{
-		return(m_RepeatCount);
+		return(mRepeatCount);
 	};
 
 	// ******************************
@@ -299,7 +299,7 @@ protected:
 
 	bool        IsPlaying()
 	{
-		return m_IsPlaying;
+		return mIsPlaying;
 	};
 
 	// ******************************
@@ -311,7 +311,7 @@ protected:
 
 	bool        IsOutsideAnim()
 	{
-		return m_OutsideAnimFlag;
+		return mOutsideAnimFlag;
 	};
 
 	// ******************************
@@ -323,7 +323,7 @@ protected:
 
 	bool        HasLoop()
 	{
-		return m_HasLoop;
+		return mHasLoop;
 	};
 
 	// ******************************
@@ -335,7 +335,7 @@ protected:
 
 	bool        HasReachedEnd()
 	{
-		return m_bEndReached;
+		return mEndReached;
 	};
 
 	// ******************************
@@ -347,7 +347,7 @@ protected:
 
 	void        SetLoop(bool loop)
 	{
-		m_Loop = loop;
+		mLoop = loop;
 	};
 
 	// ******************************
@@ -391,12 +391,12 @@ protected:
 
 	void        SetNextStream(ABaseStream* stream)
 	{
-		if (m_pNextStream != NULL)
+		if (mNextStream != NULL)
 		{
-			stream->m_pNextStream = m_pNextStream;
+			stream->mNextStream = mNextStream;
 		}
 
-		m_pNextStream = stream;
+		mNextStream = stream;
 
 	};
 
@@ -410,10 +410,10 @@ protected:
 
 	ABaseStream*    DelNextStream()
 	{
-		if (m_pNextStream != NULL)
+		if (mNextStream != NULL)
 		{
-			ABaseStream*    tmp_stream = m_pNextStream;
-			m_pNextStream = m_pNextStream->m_pNextStream;
+			ABaseStream*    tmp_stream = mNextStream;
+			mNextStream = mNextStream->mNextStream;
 			return  tmp_stream;
 		}
 
@@ -429,7 +429,7 @@ protected:
 
 	void    SetChannel(ABaseChannel* channel)
 	{
-		m_pChannel = channel;
+		mChannel = channel;
 	};
 
 	// ******************************
@@ -441,7 +441,7 @@ protected:
 
 	IntU32            GetPriority()   const
 	{
-		return m_Priority;
+		return mPriority;
 	};
 
 	// ******************************
@@ -454,7 +454,7 @@ protected:
 
 	void            SetPriority(IntU32    priority)
 	{
-		m_Priority = priority;
+		mPriority = priority;
 	};
 
 	// ******************************
@@ -466,7 +466,7 @@ protected:
 
 	Float           GetWeight() const
 	{
-		return m_Weight;
+		return mWeight;
 	};
 
 	// ******************************
@@ -487,7 +487,7 @@ protected:
 
 	Float           GetSpeed()  const
 	{
-		return m_Speed;
+		return mSpeed;
 	};
 
 	// ******************************
@@ -503,17 +503,17 @@ protected:
 
 		if (speed != KFLOAT_CONST(0.0))
 		{
-			if (m_Speed != KFLOAT_CONST(0.0))
+			if (mSpeed != KFLOAT_CONST(0.0))
 			{
-				m_StartTime += (ATimeValue)((Float)m_LocalTime / m_Speed - (Float)m_LocalTime / speed);
+				mStartTime += (ATimeValue)((Float)mLocalTime / mSpeed - (Float)mLocalTime / speed);
 			}
 			else
 			{
-				m_StartTime = (ATimeValue)(m_StartTime - (ATimeValue)((Float)m_LocalTime / speed));
+				mStartTime = (ATimeValue)(mStartTime - (ATimeValue)((Float)mLocalTime / speed));
 			}
 		}
 
-		m_Speed = speed;
+		mSpeed = speed;
 	};
 
 	// ******************************
@@ -525,30 +525,30 @@ protected:
 
 	void            ForceNextStream(const ABaseStream*  next)
 	{
-		m_pNextStream = (ABaseStream *)next;
+		mNextStream = (ABaseStream *)next;
 	};
 
 
 
-	AnimationResourceInfo*  m_pResourceInfo;
+	AnimationResourceInfo*  mResourceInfo;
 
 
-	bool            m_IsPlaying;
-	bool            m_Loop;
-	IntU32          m_Priority;
-	Float           m_Weight;
-	Float           m_Speed;
-	ATimeValue      m_LocalTime;
-	ATimeValue      m_StartTime;
-	bool            m_OutsideAnimFlag;
-	bool            m_bEndReached;
-	bool	        m_HasLoop;
-	IntS32          m_RepeatCount;
+	bool            mIsPlaying;
+	bool            mLoop;
+	IntU32          mPriority;
+	Float           mWeight;
+	Float           mSpeed;
+	ATimeValue      mLocalTime;
+	ATimeValue      mStartTime;
+	bool            mOutsideAnimFlag;
+	bool            mEndReached;
+	bool	        mHasLoop;
+	IntS32          mRepeatCount;
 
 	// The next stream in the linked list
-	ABaseStream*        m_pNextStream;
+	ABaseStream*        mNextStream;
 
-	ABaseChannel*       m_pChannel;
+	ABaseChannel*       mChannel;
 };
 
 

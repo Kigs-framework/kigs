@@ -92,7 +92,7 @@ public:
 	
     CoreModifiable*    GetObject() const
     {
-        return m_pObject;
+        return mObject;
     };
 	
 	
@@ -400,9 +400,9 @@ public:
         // +---------
         // | delete all the animations for this object
         // +---------
-		while(m_ALinksTable.size())
+		while(mALinksTable.size())
 		{
-			auto it1 = m_ALinksTable.begin();
+			auto it1 = mALinksTable.begin();
 			RemoveAnimation(it1->first);
         }
     };
@@ -422,10 +422,10 @@ public:
     // +---------
 	
  protected:
-	CoreModifiable*										m_pObject;
-	kstl::unordered_map<KigsID,ALinks*>					m_ALinksTable;
-	kstl::vector<ALinearInterp*>						m_FadeList;
-    kstl::set<ABaseSystem*, sortSystems>				m_pSystemSet;
+	CoreModifiable*										mObject;
+	kstl::unordered_map<KigsID,ALinks*>					mALinksTable;
+	kstl::vector<ALinearInterp*>						mFadeList;
+    kstl::set<ABaseSystem*, sortSystems>				mSystemSet;
 	
     // ******************************
     // * System management

@@ -4,7 +4,7 @@
 IMPLEMENT_CLASS_INFO(ThreadPoolManager)
 
 ThreadPoolManager::ThreadPoolManager(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, myThreadCount(*this, true, LABEL_AND_ID(ThreadCount),4)
+, mThreadCount(*this, true, LABEL_AND_ID(ThreadCount),4)
 , mSemaphore(nullptr)
 {
 	mThreadList.clear();
@@ -17,12 +17,12 @@ void	ThreadPoolManager::InitModifiable()
 	if (!IsInit())
 	{
 		// create a pool with n thread manage working / paused threads
-		if (myThreadCount > 0)
+		if (mThreadCount > 0)
 		{
 			mSemaphore = KigsCore::GetInstanceOf("ThreadPoolManagerSemaphore", "Semaphore");
 
 			int i;
-			for (i = 0; i < (int)myThreadCount; i++)
+			for (i = 0; i < (int)mThreadCount; i++)
 			{
 				char str[128];
 				snprintf(str, 128, "workerThread_%d", i+1);

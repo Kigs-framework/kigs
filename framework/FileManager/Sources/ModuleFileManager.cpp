@@ -82,16 +82,8 @@ CoreRawBuffer*	ModuleFileManager::LoadFile(FileHandle *file,u64& filelength,u64 
 
 	if(file->mFile)
 	{
-		if (file->mSize == -1)
-		{
-			Platform_fseek(file, 0, SEEK_END);
-			filelength = Platform_ftell(file) - startOffset;
-			Platform_fseek(file, 0, SEEK_SET);
-		}
-		else
-		{
-			filelength = file->mSize - startOffset;
-		}
+		filelength= file->getFileSize() - startOffset;
+		
 		pFile = new unsigned char[filelength+additionnalSize];
 
 		// goto offset
@@ -140,19 +132,43 @@ bool	ModuleFileManager::SaveFile(const char *filename, unsigned char* data, u64 
 	return true;
 }
 
+bool	ModuleFileManager::RemoveFile(const char* filename)
+{
+	// check if file exist
+	SmartPointer<FileHandle> fileHandle = KigsCore::Singleton<FilePathManager>()->FindFullName(filename);
+	if (!fileHandle->mFile) return false;
+
+	return Platform_remove(fileHandle.get());
+}
+
+
 bool	ModuleFileManager::CoreCopyFile(const char *sourceFilename, const char *destFileName, int buffLen)
 {
 	bool result = true;
 
 	SmartPointer<FileHandle> FileRead = KigsCore::Singleton<FilePathManager>()->FindFullName(sourceFilename);
-	if (!FileRead->mFile)
+	Platform_fopen(FileRead.get(), "rb");
+	SmartPointer<FileHandle> FileWrite = Platform_fopen(destFileName, "wb");
+
+	result = CoreCopyFile(FileRead, FileWrite, buffLen);
+
+	Platform_fclose(FileWrite.get());
+	Platform_fclose(FileRead.get());
+
+	return result;
+}
+
+bool	ModuleFileManager::CoreCopyFile(SP<FileHandle> source, SP<FileHandle> dest, int buffLen)
+{
+	bool result = true;
+
+	if (!source->mFile)
 	{
-		result=false;
+		result = false;
 	}
 	else
 	{
-		SmartPointer<FileHandle> FileWrite = Platform_fopen(destFileName, "wb");
-		if (!FileWrite->mFile)
+		if (!dest->mFile)
 		{
 			result = false;
 		}
@@ -162,21 +178,63 @@ bool	ModuleFileManager::CoreCopyFile(const char *sourceFilename, const char *des
 			unsigned int readlen;
 			do
 			{
-				readlen = Platform_fread((void*)buffer, 1, (int)buffLen, FileRead.get());
+				readlen = Platform_fread((void*)buffer, 1, (int)buffLen, source.get());
 				if (readlen)
 				{
-					Platform_fwrite((void*)buffer, 1, (int)buffLen, FileWrite.get());
+					Platform_fwrite((void*)buffer, 1, (int)readlen, dest.get());
 				}
 
 			} while (readlen);
 
-			Platform_fclose(FileWrite.get());
+			delete[] buffer;
+		}
+
+	}
+	return result;
+}
+
+bool	ModuleFileManager::CoreCopyPartOfFile(SP<FileHandle> lsource, u64 lstart, u64 lsize, SP<FileHandle> ldest, int lbuffLen)
+{
+	bool result = true;
+
+	if (!lsource->mFile)
+	{
+		result = false;
+	}
+	else
+	{
+		if (!ldest->mFile)
+		{
+			result = false;
+		}
+		else
+		{
+			// go to asked read position
+			Platform_fseek(lsource.get(), lstart, SEEK_SET);
+			unsigned char* buffer = new unsigned char[lbuffLen];
+			unsigned int readlen;
+			u64 remainingLen = lsize;
+			do
+			{
+				long askedLen = lbuffLen;
+				if (remainingLen < lbuffLen)
+				{
+					askedLen = remainingLen;
+				}
+				readlen = Platform_fread((void*)buffer, 1, askedLen, lsource.get());
+				if (readlen)
+				{
+					Platform_fwrite((void*)buffer, 1, (long)readlen, ldest.get());
+				}
+				remainingLen -= readlen;
+				if (remainingLen == 0)
+					break;
+
+			} while (readlen);
 
 			delete[] buffer;
 		}
 
-
-		Platform_fclose(FileRead.get());
 	}
 	return result;
 }

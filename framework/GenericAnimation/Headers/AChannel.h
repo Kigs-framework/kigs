@@ -50,11 +50,11 @@ class   AChannel : public ABaseChannel
 	
 	LocalToGlobalBaseType* GetChannelLocalToGlobalData() override
 	{
-		return &m_pLocalToGlobalStreamData;
+		return &mLocalToGlobalStreamData;
 	};
 	
 	
-	bool	isAnimated() { return m_pFirstStream != 0; }
+	bool	isAnimated() { return mFirstStream != 0; }
 	
 	//protected:
 	
@@ -63,16 +63,16 @@ class   AChannel : public ABaseChannel
 	// +---------
 	// | protected members
 	// +---------
-	LocalToGlobalType							m_pWorkingStreamData;
-	LocalToGlobalType							m_pStandStreamData;
-	LocalToGlobalType							m_pLocalToGlobalStreamData;
+	LocalToGlobalType							mWorkingStreamData;
+	LocalToGlobalType							mStandStreamData;
+	LocalToGlobalType							mLocalToGlobalStreamData;
 	
 	
 	
 	// ******************************
 	// * GetLocalToGlobalBeforeChange
 	// *-----------------------------
-	/*! Used to change root channel data when weight are changed, or when
+	/*! Used to change root channel data when mWeight are changed, or when
 	a animation is add or sub ...
 	*/
 	// ******************************
@@ -82,7 +82,7 @@ class   AChannel : public ABaseChannel
 	// ******************************
 	// * ResetLocalToGlobalAfterChange
 	// *-----------------------------
-	/*! After the weight change or sub/add animation done, reset
+	/*! After the mWeight change or sub/add animation done, reset
 	the local to global data, so the animation does not "jump"
 	*/
 	// ******************************
@@ -100,7 +100,7 @@ class   AChannel : public ABaseChannel
 	
 	LocalToGlobalBaseType*       GetStandData() override
 	{
-		return &m_pStandStreamData;
+		return &mStandStreamData;
 	};
 	
 	// ******************************
@@ -112,7 +112,7 @@ class   AChannel : public ABaseChannel
 	
 	void       SetStandData(LocalToGlobalBaseType* stddata) override
 	{
-		m_pStandStreamData = *(LocalToGlobalType*)stddata;
+		mStandStreamData = *(LocalToGlobalType*)stddata;
 	};
 	
 	// ******************************
@@ -179,15 +179,15 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 	
 	ASystem<LocalToGlobalType>*	sys = (ASystem<LocalToGlobalType>*)_sys;
 	
-	ABaseStream*     read = m_pFirstStream;
+	ABaseStream*     read = mFirstStream;
 	
-	ABaseStream*     valid_stream = m_pSystem->GetValidStream();
+	ABaseStream*     valid_stream = mSystem->GetValidStream();
 	
 	if (read == NULL)
 	{
 		if (valid_stream != NULL)
 		{
-			valid_stream->CopyData(&m_pWorkingStreamData, &m_pStandStreamData);
+			valid_stream->CopyData(&mWorkingStreamData, &mStandStreamData);
 		}
 		else
 		{
@@ -195,17 +195,17 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 		}
 	}
 	
-	Float       weight = KFLOAT_CONST(0.0f);
-	Float       coef_t;
+	Float       mWeight = KFLOAT_CONST(0.0f);
+	Float       mCoefT;
 	
 	//! first test if we use the animation local to global data
 	//! ( else we just have to copy the data given by user )
 	
-	if (sys->m_UseAnimationLocalToGlobal == true)
+	if (sys->mUseAnimationLocalToGlobal == true)
 	{
 		//! check if we have to update the local to global data when the animation loop
 		//! ( else we just restart the animation from the starting PRS data )
-		if (sys->m_UpdateLocalToGlobalWhenLoop == true)
+		if (sys->mUpdateLocalToGlobalWhenLoop == true)
 		{
 			//+-----
 			//| get the global data without loop
@@ -226,8 +226,8 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 					{
 						offset_init = true;
 					}
-					read->InitData(&m_pWorkingStreamData);
-					weight = read->GetWeight();
+					read->InitData(&mWorkingStreamData);
+					mWeight = read->GetWeight();
 					read = read->GetNextStream();
 					break;
 				}
@@ -242,7 +242,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 			{
 				if (read->IsPlaying())
 				{
-					weight += read->GetWeight();
+					mWeight += read->GetWeight();
 					StoredTimes.push_back(read->GetLocalTime());
 					read->SetTimeWithoutLoop(t);
 					if (read->IsOutsideAnim() == true)
@@ -250,10 +250,10 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 						offset_init = true;
 					}
 					
-					if (weight)
+					if (mWeight)
 					{
-						coef_t = read->GetWeight()*(KFLOAT_CONST(1.0f) / weight);
-						read->LERPData(&m_pWorkingStreamData, coef_t);
+						mCoefT = read->GetWeight()*(KFLOAT_CONST(1.0f) / mWeight);
+						read->LERPData(&mWorkingStreamData, mCoefT);
 					}
 				}
 				read = read->GetNextStream();
@@ -263,14 +263,14 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 			// before proceeding
 			if (offset_init == true)
 			{
-				LocalToGlobalBaseType*   tmp_data = m_pFirstStream->NewStreamOutputDataInstance();
-				m_pFirstStream->CopyData(tmp_data, &m_pWorkingStreamData);
+				LocalToGlobalBaseType*   tmp_data = mFirstStream->NewStreamOutputDataInstance();
+				mFirstStream->CopyData(tmp_data, &mWorkingStreamData);
 				
 				// +-----
 				// | then get the offset 
 				// +-----
-				weight = KFLOAT_CONST(0.0);
-				read = m_pFirstStream;
+				mWeight = KFLOAT_CONST(0.0);
+				read = mFirstStream;
 				offset_init = false;
 				
 				while (read != NULL)
@@ -282,8 +282,8 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 							read->SetTimeWithStartLoop(t);
 						}
 						
-						read->InitData(&m_pWorkingStreamData);
-						weight = read->GetWeight();
+						read->InitData(&mWorkingStreamData);
+						mWeight = read->GetWeight();
 						read = read->GetNextStream();
 						break;
 					}
@@ -295,16 +295,16 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 				{
 					if (read->IsPlaying())
 					{
-						weight += read->GetWeight();
+						mWeight += read->GetWeight();
 						
 						if (read->IsOutsideAnim() == true)
 						{
 							read->SetTimeWithStartLoop(t);
 						}
-						if (weight)
+						if (mWeight)
 						{
-							coef_t = read->GetWeight()*(KFLOAT_CONST(1.0f) / weight);
-							read->LERPData(&m_pWorkingStreamData, coef_t);
+							mCoefT = read->GetWeight()*(KFLOAT_CONST(1.0f) / mWeight);
+							read->LERPData(&mWorkingStreamData, mCoefT);
 						}
 						
 					}
@@ -313,34 +313,34 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 				
 				// tmp_data             : contains the PRS just before looping through the 
 				//                        animation relative to the StartingLocalToGlobalData
-				// m_pWorkingStreamData : contains the PRS just after looping through the animation 
+				// mWorkingStreamData : contains the PRS just after looping through the animation 
 				//                        relative to the StartingLocalToGlobalData
 				
 				// m_pStartingLocalToGlobalData is the PRS that defines where the animation
 				// started at the begin of the last loop or at the time t=0.
 				
-				// We first transform tmp_data and m_pWorkingStreamData in the world coordinate
+				// We first transform tmp_data and mWorkingStreamData in the world coordinate
 				// system by using the PRS transformation m_pStartingLocalToGlobalData
 				// Next we modify m_pStartingLocalToGlobalData so that the "PRS just after" in the
 				// new StartingLocalToGlobalData frame correspond to the "PRS just before" in the
 				// old StartingLocalToGlobalData frame so that the movement is continuous.
 				
-				m_pFirstStream->MulData(tmp_data, &sys->m_pStartingLocalToGlobalData);
-				m_pFirstStream->MulData(&m_pWorkingStreamData, &sys->m_pStartingLocalToGlobalData);
-				m_pFirstStream->SetAndModifyData(&m_pWorkingStreamData, tmp_data, &sys->m_pStartingLocalToGlobalData);
+				mFirstStream->MulData(tmp_data, &sys->m_pStartingLocalToGlobalData);
+				mFirstStream->MulData(&mWorkingStreamData, &sys->m_pStartingLocalToGlobalData);
+				mFirstStream->SetAndModifyData(&mWorkingStreamData, tmp_data, &sys->m_pStartingLocalToGlobalData);
 				
 				// then just do as if animation was playing normally
 				IntU32	countplayingstream = 0;
 				
-				read = m_pFirstStream;
+				read = mFirstStream;
 				while (read != NULL)
 				{
 					if (read->IsPlaying())
 					{
 						read->SetLocalTime(StoredTimes[countplayingstream++]);
 						read->SetTime(t);
-						read->InitData(&m_pWorkingStreamData);
-						weight = read->GetWeight();
+						read->InitData(&mWorkingStreamData);
+						mWeight = read->GetWeight();
 						read = read->GetNextStream();
 						break;
 					}
@@ -353,27 +353,27 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 				{
 					if (read->IsPlaying())
 					{
-						weight += read->GetWeight();
+						mWeight += read->GetWeight();
 						read->SetLocalTime(StoredTimes[countplayingstream++]);
 						read->SetTime(t);
-						if (weight)
+						if (mWeight)
 						{
-							coef_t = read->GetWeight()*(KFLOAT_CONST(1.0f) / weight);
-							read->LERPData(&m_pWorkingStreamData, coef_t);
+							mCoefT = read->GetWeight()*(KFLOAT_CONST(1.0f) / mWeight);
+							read->LERPData(&mWorkingStreamData, mCoefT);
 						}
 					}
 					read = read->GetNextStream();
 				}
 				
-				m_pFirstStream->DeleteStreamOutputDataInstance(tmp_data);
+				mFirstStream->DeleteStreamOutputDataInstance(tmp_data);
 			}
 			else
 			{
 				// if animation has not loop and no stream are playing, just copy
 				// stand data to the working data
-				if (weight == KFLOAT_CONST(0.0f))
+				if (mWeight == KFLOAT_CONST(0.0f))
 				{
-					valid_stream->CopyData(&m_pWorkingStreamData, &m_pStandStreamData);
+					valid_stream->CopyData(&mWorkingStreamData, &mStandStreamData);
 				}
 			}
 		}
@@ -384,8 +384,8 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 				if (read->IsPlaying())
 				{
 					read->SetTime(t);
-					read->InitData(&m_pWorkingStreamData);
-					weight = read->GetWeight();
+					read->InitData(&mWorkingStreamData);
+					mWeight = read->GetWeight();
 					read = read->GetNextStream();
 					break;
 				}
@@ -398,26 +398,26 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 			{
 				if (read->IsPlaying())
 				{
-					weight += read->GetWeight();
+					mWeight += read->GetWeight();
 					read->SetTime(t);
-					if (weight)
+					if (mWeight)
 					{
-						coef_t = read->GetWeight()*(KFLOAT_CONST(1.0f) / weight);
-						read->LERPData(&m_pWorkingStreamData, coef_t);
+						mCoefT = read->GetWeight()*(KFLOAT_CONST(1.0f) / mWeight);
+						read->LERPData(&mWorkingStreamData, mCoefT);
 					}
 				}
 				read = read->GetNextStream();
 			}
 			
-			if (weight == KFLOAT_CONST(0.0f))
+			if (mWeight == KFLOAT_CONST(0.0f))
 			{
-				valid_stream->CopyData(&m_pWorkingStreamData, &m_pStandStreamData);
+				valid_stream->CopyData(&mWorkingStreamData, &mStandStreamData);
 			}
 		}
 		// Calc the matrix of the root node based on the starting point and the current animation data
-		valid_stream->MulData(&m_pWorkingStreamData, &sys->m_pStartingLocalToGlobalData);
+		valid_stream->MulData(&mWorkingStreamData, &sys->m_pStartingLocalToGlobalData);
 		// Copy it to m_pInstantLocalToGlobalData to move the Node3D later
-		valid_stream->CopyData(&sys->m_pInstantLocalToGlobalData, &m_pWorkingStreamData);
+		valid_stream->CopyData(&sys->m_pInstantLocalToGlobalData, &mWorkingStreamData);
 	}
 	
 	
@@ -425,7 +425,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 	// The LocalToGlobal of the root node is already applied by the Node3D it's attached on, we don't want to apply it twice so we 
 	// set it to the identity
 	{	
-		valid_stream->IdentityData(&m_pLocalToGlobalStreamData);
+		valid_stream->IdentityData(&mLocalToGlobalStreamData);
 		UpdateTransformParameters();
 	}
 	
@@ -433,17 +433,17 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 	// | now call son animate
 	// +---------
 	
-	if (m_pSystem->m_RecurseAnimate)
+	if (mSystem->mRecurseAnimate)
 	{
-		if (m_pSystem->m_OnlyLocalSkeletonUpdate == false)
+		if (mSystem->mOnlyLocalSkeletonUpdate == false)
 		{
 			kstl::vector<ModifiableItemStruct>::const_iterator it;
 			
 			for (it = getItems().begin(); it != getItems().end(); ++it)
 			{
-				if ((*it).myItem->isSubType(AChannel::myClassID))
+				if ((*it).mItem->isSubType(AChannel::mClassID))
 				{
-					((AChannel*)(*it).myItem.get())->Animate(t, this);
+					((AChannel*)(*it).mItem.get())->Animate(t, this);
 				}
 			}
 		}
@@ -454,9 +454,9 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 			
 			for (it = getItems().begin(); it != getItems().end(); ++it)
 			{
-				if ((*it).myItem->isSubType(AChannel::myClassID))
+				if ((*it).mItem->isSubType(AChannel::mClassID))
 				{
-					((AChannel*)(*it).myItem.get())->Animate(t, 0);
+					((AChannel*)(*it).mItem.get())->Animate(t, 0);
 				}
 			}
 		}
@@ -480,14 +480,14 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 	// | Stream mixing
 	// +---------
 	
-	ABaseStream*     read = m_pFirstStream;
+	ABaseStream*     read = mFirstStream;
 	
 	if (read == NULL)
 	{
-		ABaseStream*     valid_stream = m_pSystem->GetValidStream();
+		ABaseStream*     valid_stream = mSystem->GetValidStream();
 		if (valid_stream != NULL)
 		{
-			valid_stream->CopyData(&m_pWorkingStreamData, &m_pStandStreamData);
+			valid_stream->CopyData(&mWorkingStreamData, &mStandStreamData);
 		}
 	}
 	else
@@ -501,7 +501,7 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 			if (read->IsPlaying())
 			{
 				read->SetTime(t);
-				read->InitData(&m_pWorkingStreamData);
+				read->InitData(&mWorkingStreamData);
 				weight = read->GetWeight();
 				read = read->GetNextStream();
 				break;
@@ -520,17 +520,17 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 				if (weight)
 				{
 					coef_t = read->GetWeight()*(KFLOAT_CONST(1.0f) / weight);
-					read->LERPData(&m_pWorkingStreamData, coef_t);
+					read->LERPData(&mWorkingStreamData, coef_t);
 				}
 			}
 			read = read->GetNextStream();
 		}
 		if (weight == KFLOAT_CONST(0.0f))
 		{
-			ABaseStream*     valid_stream = m_pSystem->GetValidStream();
+			ABaseStream*     valid_stream = mSystem->GetValidStream();
 			if (valid_stream != NULL)
 			{
-				valid_stream->CopyData(&m_pWorkingStreamData, &m_pStandStreamData);
+				valid_stream->CopyData(&mWorkingStreamData, &mStandStreamData);
 			}
 		}
 	}
@@ -541,11 +541,11 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 	}
 	else
 	{
-		ABaseStream*     valid_stream = m_pSystem->GetValidStream();
+		ABaseStream*     valid_stream = mSystem->GetValidStream();
 		
 		if (valid_stream != NULL)
 		{
-			valid_stream->CopyData(&m_pLocalToGlobalStreamData, &m_pWorkingStreamData);
+			valid_stream->CopyData(&mLocalToGlobalStreamData, &mWorkingStreamData);
 		}
 	}
 	
@@ -556,17 +556,17 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 	// | now call son animate
 	// +---------
 	
-	if (m_pSystem->m_RecurseAnimate)
+	if (mSystem->mRecurseAnimate)
 	{
-		if ((otherchannel != NULL) && (m_pSystem->m_OnlyLocalSkeletonUpdate == false))
+		if ((otherchannel != NULL) && (mSystem->mOnlyLocalSkeletonUpdate == false))
 		{
 			kstl::vector<ModifiableItemStruct>::const_iterator it;
 			
 			for (it = getItems().begin(); it != getItems().end(); ++it)
 			{
-				if ((*it).myItem->isSubType(AChannel::myClassID))
+				if ((*it).mItem->isSubType(AChannel::mClassID))
 				{
-					((AChannel*)(*it).myItem.get())->Animate(t, this);
+					((AChannel*)(*it).mItem.get())->Animate(t, this);
 				}
 			}
 		}
@@ -576,9 +576,9 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 			
 			for (it = getItems().begin(); it != getItems().end(); ++it)
 			{
-				if ((*it).myItem->isSubType(AChannel::myClassID))
+				if ((*it).mItem->isSubType(AChannel::mClassID))
 				{
-					((AChannel*)(*it).myItem.get())->Animate(t, 0);
+					((AChannel*)(*it).mItem.get())->Animate(t, 0);
 				}
 			}
 		}
@@ -603,12 +603,12 @@ LocalToGlobalBaseType*   AChannel<LocalToGlobalType>::GetLocalToGlobalBeforeChan
 	
 	if (sys->GetUseAnimationLocalToGlobal() == true)
 	{
-		if (m_pFirstStream != NULL)
+		if (mFirstStream != NULL)
 		{
-			if (m_pFirstStream->GetNextStream() != NULL)
+			if (mFirstStream->GetNextStream() != NULL)
 			{
-				tmp_data = m_pFirstStream->NewStreamOutputDataInstance();
-				m_pFirstStream->CopyData(tmp_data, &sys->m_pInstantLocalToGlobalData);
+				tmp_data = mFirstStream->NewStreamOutputDataInstance();
+				mFirstStream->CopyData(tmp_data, &sys->m_pInstantLocalToGlobalData);
 			}
 		}
 	}
@@ -634,7 +634,7 @@ void    AChannel<LocalToGlobalType>::ResetLocalToGlobalAfterChange(LocalToGlobal
 	{
 		Float  weight = KFLOAT_CONST(0.0f);
 		Float  coef_t;
-		ABaseStream* read = m_pFirstStream;
+		ABaseStream* read = mFirstStream;
 		while (read != NULL)
 		{
 			if (read->IsPlaying())
@@ -642,7 +642,7 @@ void    AChannel<LocalToGlobalType>::ResetLocalToGlobalAfterChange(LocalToGlobal
 				
 				read->UpdateData(GetStandData());
 				
-				read->InitData(&m_pWorkingStreamData);
+				read->InitData(&mWorkingStreamData);
 				weight = read->GetWeight();
 				read = read->GetNextStream();
 				break;
@@ -660,27 +660,27 @@ void    AChannel<LocalToGlobalType>::ResetLocalToGlobalAfterChange(LocalToGlobal
 				
 				weight += read->GetWeight();
 				coef_t = read->GetWeight()*(KFLOAT_CONST(1.0f) / weight);
-				read->LERPData(&m_pWorkingStreamData, coef_t);
+				read->LERPData(&mWorkingStreamData, coef_t);
 			}
 			read = read->GetNextStream();
 		}
 		
-		m_pFirstStream->MulData(&m_pWorkingStreamData, &sys->m_pStartingLocalToGlobalData);
-		m_pFirstStream->CopyData(&sys->m_pInstantLocalToGlobalData, &m_pWorkingStreamData);
+		mFirstStream->MulData(&mWorkingStreamData, &sys->m_pStartingLocalToGlobalData);
+		mFirstStream->CopyData(&sys->m_pInstantLocalToGlobalData, &mWorkingStreamData);
 		sys->SetLocalToGlobalData(tmp_data);
-		m_pFirstStream->DeleteStreamOutputDataInstance(tmp_data);
+		mFirstStream->DeleteStreamOutputDataInstance(tmp_data);
 	}
 };
 
 template<typename LocalToGlobalType>
 void    AChannel<LocalToGlobalType>::UpdateLocalToGlobalData(AChannel* otherchannel)
 {
-	ABaseStream*     valid_stream = m_pSystem->GetValidStream();
+	ABaseStream*     valid_stream = mSystem->GetValidStream();
 	
 	if (valid_stream != NULL)
 	{
-		valid_stream->CopyData(&m_pLocalToGlobalStreamData, &m_pWorkingStreamData);
-		valid_stream->MulData(&m_pLocalToGlobalStreamData, &otherchannel->m_pLocalToGlobalStreamData);
+		valid_stream->CopyData(&mLocalToGlobalStreamData, &mWorkingStreamData);
+		valid_stream->MulData(&mLocalToGlobalStreamData, &otherchannel->mLocalToGlobalStreamData);
 	}
 };
 

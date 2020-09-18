@@ -134,7 +134,7 @@ void  XMLReaderFile::StartDescriptionElementStringRef(void* data, StringRef* el,
 
 	kstl::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->mNodeHierarchy;
 
-	XMLNodeTemplate<StringType>* xmlNode = new XMLNodeTemplate<StringType>(XML_NODE_ELEMENT, (const char*)el->myStringStart, (unsigned int)(el->myStringEnd - el->myStringStart));
+	XMLNodeTemplate<StringType>* xmlNode = new XMLNodeTemplate<StringType>(XML_NODE_ELEMENT, (const char*)el->mStringStart, (unsigned int)(el->mStringEnd - el->mStringStart));
 	
 	if (nodeHierarchy.size())
 	{
@@ -156,7 +156,7 @@ void  XMLReaderFile::StartDescriptionElementStringRef(void* data, StringRef* el,
 		xmlNode->reserveAttribute(attrcount);
 		for (i = 0; attr[i]; i += 2)
 		{
-			XMLAttributeTemplate<StringType>* attribute = new XMLAttributeTemplate<StringType>((const char*)attr[i]->myStringStart, (unsigned int)(attr[i]->myStringEnd - attr[i]->myStringStart), (const char*)attr[i + 1]->myStringStart, (unsigned int)(attr[i + 1]->myStringEnd - attr[i + 1]->myStringStart));
+			XMLAttributeTemplate<StringType>* attribute = new XMLAttributeTemplate<StringType>((const char*)attr[i]->mStringStart, (unsigned int)(attr[i]->mStringEnd - attr[i]->mStringStart), (const char*)attr[i + 1]->mStringStart, (unsigned int)(attr[i + 1]->mStringEnd - attr[i + 1]->mStringStart));
 			xmlNode->addAttribute(attribute);
 		}
 	}
