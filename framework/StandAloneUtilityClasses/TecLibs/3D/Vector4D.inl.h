@@ -310,3 +310,9 @@ inline Vector4D Vector4D::Normalized(void)
 	result.Normalize();
 	return result;
 }
+
+inline Vector4D Hadamard(Vector4D a, const Vector4D& b)
+{
+    a *= b;
+    return a;
+}

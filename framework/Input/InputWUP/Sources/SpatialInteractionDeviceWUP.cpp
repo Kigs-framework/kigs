@@ -173,19 +173,25 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 			}
 
 			auto found = mInteractions.find(id);
+
+			bool update = false;
+			double dt = 0.0f;
 			if (found != mInteractions.end()) // update
 			{
+				update = true;
 				s = &found->second;
+				dt = time - s->LastTime;
+				s->LastTime = time;
 			}
 			else //create new one
 			{
 				s = &mInteractions[id];
-				s->Time = time;
+				s->LastTime = s->StartTime = time;
 			}
 
 			s->ID = id;
 			auto before = s->pressed;
-			s->pressed = (time - s->Time>0.1)&&(source.args.State().IsPressed());
+			s->pressed = (time - s->StartTime > 0.1)&&(source.args.State().IsPressed());
 
 			/*if (before != s->pressed)
 			{
@@ -237,8 +243,31 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 					if (hand_pose.TryGetJoint(coordinate_system, HandJointKind::Palm, joint))
 					{
 						Interaction::Joint j;
-						j.position = { joint.Position.x, joint.Position.y, joint.Position.z };
-						j.orientation = quat(-joint.Orientation.z, joint.Orientation.w, joint.Orientation.x, joint.Orientation.y);
+
+						if (update)
+						{
+							auto npos = v3f{ joint.Position.x, joint.Position.y, joint.Position.z };
+							const double max_time_still = 2.0;
+							if (Norm(s->palm->position - npos) < 0.01)
+							{
+								s->TimeStill = std::min(s->TimeStill + dt, max_time_still);
+							}
+							else
+							{
+								s->TimeStill = std::max(s->TimeStill - dt*2, 0.0);
+							}
+
+							auto t = std::clamp((max_time_still - s->TimeStill) / max_time_still, 0.1, 1.0);
+							j.position = Lerp(s->palm->position, npos, t);
+							auto nquat = quat(-joint.Orientation.z, joint.Orientation.w, joint.Orientation.x, joint.Orientation.y);
+							j.orientation = SlerpNearest(s->palm->orientation, nquat, t);
+						}
+						else
+						{
+							j.position = { joint.Position.x, joint.Position.y, joint.Position.z };
+							j.orientation = quat(-joint.Orientation.z, joint.Orientation.w, joint.Orientation.x, joint.Orientation.y);
+						}
+						
 						s->palm = j;
 						//dd::sphere(j.position, { 1,1,1 }, 0.01f);
 					}

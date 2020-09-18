@@ -42,11 +42,11 @@ public:
 
 	/**
 	* \brief	constructor
-	* \fn 		CoreBaseApplication(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	* \fn 		CoreBaseApplication(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	CoreBaseApplication(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	CoreBaseApplication(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	//! destructor
 	virtual ~CoreBaseApplication();
@@ -91,14 +91,14 @@ public:
 	}
 
 	// args management
-	void			PushArg(const kstl::string& arg);
+	void			PushArg(const std::string& arg);
 
 	unsigned int	GetArgCount() const
 	{
 		return ((unsigned int)mArgs.size());
 	}
 
-	const kstl::string*	HasArg(const kstl::string& arg, bool startWith=false) const;
+	const std::string*	HasArg(const std::string& arg, bool startWith=false) const;
 
 	SP<Timer>&			GetApplicationTimer()
 	{
@@ -123,6 +123,7 @@ public:
 	{
 		return mBuildVersion;
 	}
+	const std::vector<CoreModifiable*> GetAutoUpdateList() { return mAutoUpdateList; }
 
 protected:
 
@@ -159,8 +160,8 @@ protected:
 
 	unsigned int	mUpdateSleepTime;
 
-	kstl::vector<kstl::string>			mArgs;
-	kstl::vector<CoreModifiable*>		mAutoUpdateList;
+	std::vector<std::string>			mArgs;
+	std::vector<CoreModifiable*>		mAutoUpdateList;
 
 	unsigned int	mBackKeyState;
 

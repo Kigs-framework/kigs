@@ -136,6 +136,12 @@ namespace serializer_detail
 		return stream.SerializeBool(value);
 	}
 
+	template<typename PacketStream, typename F, REQUIRES(std::is_enum_v<F>)>
+	bool serialize(PacketStream& stream, F& value)
+	{
+		return serialize(stream, (std::underlying_type_t<F>&)value);
+	}
+
 	template<typename PacketStream, typename F, REQUIRES(std::is_floating_point_v<F>)>
 	bool serialize(PacketStream& stream, F& value)
 	{
@@ -209,7 +215,7 @@ namespace serializer_detail
 
 		CHECK_SERIALIZE(serialize(stream, count));
 
-		if constexpr (!PacketStream::IsWriting)
+		if constexpr (!PacketStream::IsWriting && is_detected_v<has_resize, T>)
 		{
 			range.resize((size_t)count);
 		}

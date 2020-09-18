@@ -31,12 +31,46 @@ namespace ImGui
 	void CenterWidget(float widget_width)
 	{
 		auto centered_x = (ImGui::GetWindowWidth() - widget_width) / 2;
-		ImGui::Dummy(v2f(centered_x, 0)); ImGui::SameLine();
+		ImGui::Dummy(v2f(0, 0)); ImGui::SameLine(centered_x);
 	}
 
 	void CenterText(const std::string& txt) 
 	{
 		CenterWidget(ImGui::CalcTextSize(txt.c_str()).x);
 		ImGui::Text(txt.c_str());
+	}
+	float SameLineAlignRight(float sum_of_elements_width, u32 nb_of_elements)
+	{
+		auto w = ImGui::GetWindowWidth() - sum_of_elements_width - (nb_of_elements-1) * ImGui::GetStyle().ItemSpacing.x - ImGui::GetColumnOffset();
+		ImGui::SameLine(w);
+		return w - ImGui::GetStyle().ItemSpacing.x;
+	}
+	float GetRemainingWidth(float sum_of_elements_width, u32 nb_of_elements)
+	{
+		auto w = ImGui::GetWindowWidth() - sum_of_elements_width - (nb_of_elements - 1) * ImGui::GetStyle().ItemSpacing.x - ImGui::GetColumnOffset();
+		return w - ImGui::GetStyle().ItemSpacing.x;
+	}
+	float GetElementWidthForSubdivision(int count)
+	{
+		if (count <= 0) count = 1;
+		return (ImGui::GetWindowWidth() - ImGui::GetColumnOffset()) / count - ImGui::GetStyle().ItemSpacing.x;
+	}
+	void Label(const std::string& txt)
+	{
+		ImGui::GetWindowDrawList()->AddText(v2f(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x, ImGui::GetCursorPosY() /*+ ImGui::GetStyle().FramePadding.y*/ + ImGui::GetStyle().ItemSpacing.y), ImGui::GetColorU32(ImGuiCol_Text), txt.c_str());
+		ImGui::Dummy(ImGui::CalcTextSize(txt.c_str()));
+	}
+	void ButtonLabel(const std::string& txt, v2f size)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
+		ImGui::ButtonEx(txt.c_str(), size, ImGuiButtonFlags_Disabled);
+		ImGui::PopStyleVar();
+	}
+	bool ButtonWithLabel(const std::string& label, const std::string txt, float label_width, v2f size)
+	{
+		bool b = ImGui::ButtonEx(label.c_str(), v2f(label_width, size.y), ImGuiButtonFlags_Disabled);
+		ImGui::SameLine(0, 0);
+		b = ImGui::Button(txt.c_str(), size) || b;
+		return b;
 	}
 }

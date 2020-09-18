@@ -72,7 +72,7 @@ bool Holo3DPanel::Draw(TravState* travstate)
 			break;
 		}
 
-		renderer->SetCullMode(RendererCullMode::RENDERER_CULL_BACK);
+		renderer->SetCullMode((RendererCullMode)(int)mCullMode);
 
 
 		renderer->ActiveTextureChannel(0);

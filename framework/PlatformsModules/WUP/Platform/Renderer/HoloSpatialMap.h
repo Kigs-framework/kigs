@@ -16,7 +16,6 @@
 #include <winrt/Windows.Perception.Spatial.Surfaces.h>
 
 
-class ContinuousMatching;
 class CollisionManager;
 
 struct SpatialMeshInfo
@@ -105,7 +104,6 @@ protected:
 	void CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::SpatialSurfaceMesh const& inMesh, SpatialMeshInfo& outInfo, SpatialMapSurfaceRecord* record_surface);
 	
 	CollisionManager* mCollisionManager = nullptr;
-	ContinuousMatching* mContinuousMatching = nullptr;
 	
 	maReference	mAttachNode = BASE_ATTRIBUTE(AttachNode, "Node3D:AttachMap");
 

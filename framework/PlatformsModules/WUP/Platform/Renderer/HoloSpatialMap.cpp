@@ -1,9 +1,6 @@
-#include "PrecompiledHeaders.h"
-
-#include <Unknwn.h>
+#include "HoloBimInfo.h"
 
 #include "Platform/Main/BaseApp.h"
-
 #include "Platform/Renderer/HoloSpatialMap.h"
 
 #include "DrawVertice.h"
@@ -15,15 +12,10 @@
 #include "AABBTree.h"
 #include "Camera.h"
 
-#include "ContinuousMatching.h"
-
-#include <winrt/Windows.Storage.h>
 #include <robuffer.h>
 
 #include <imgui.h>
 #include "KigsTools.h"
-
-
 
 #include "concurrentqueue.h"
 #include <functional>
@@ -32,14 +24,7 @@
 
 #include "utf8.h"
 
-//#include <winrt/Windows.Foundation.h>
-//#include <winrt/Windows.Storage.h>
-//#include <winrt/Windows.Storage.Streams.h>
-//#include <winrt/Windows.UI.Core.h>
-//#include <pplawait.h>
-
-
-
+#include <winrt/Windows.Storage.h>
 
 IMPLEMENT_CLASS_INFO(HoloSpatialMapShader);
 
@@ -389,7 +374,7 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 		if (collisionBVH)
 		{
 			mCollisionManager->SetCollisionObject(mesh, collisionBVH);
-			mContinuousMatching->RegisterSpatialMeshNode(outInfo.node);
+			theGlobals->State.Immersive.ContinuousMatching.RegisterSpatialMeshNode(outInfo.node);
 		}
 	}
 }
@@ -802,10 +787,7 @@ void HoloSpatialMap::Update(const Timer& timer, void* addParam)
 void HoloSpatialMap::InitModifiable()
 {
 	ParentClassType::InitModifiable();
-	
 	mCollisionManager = CollisionManager::Get();
-	mContinuousMatching = ContinuousMatching::Get();
-	//mShowMeshes = true;
 
 	if (mAllowed) return;
 

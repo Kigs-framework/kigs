@@ -228,6 +228,8 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 		if (direct_touch.touch_state == DirectTouchEvent::TouchHover)
 		{
 			// hover moved
+			if (mSwallowEvents)
+				*direct_touch.swallow_mask = 0xFFFFFFFF;
 			/**direct_touch.swallow_mask |= (
 				(1 << InputEventType::DirectTouch) |
 				(1 << InputEventType::Click) |

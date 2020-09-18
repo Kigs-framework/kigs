@@ -59,6 +59,8 @@ protected:
 	maVect4DF							mIdleColor = BASE_ATTRIBUTE(IdleColor, 1, 1, 1, 1);
 	maVect4DF							mClickedColor = BASE_ATTRIBUTE(ClickedColor, 0.5f, 0.5f, 0.5f, 1.0f);
 
+	maBool								mSwallowEvents = BASE_ATTRIBUTE(SwallowEvents, false);
+
 	bool								mInside;
 	bool								mIsDown;
 	bool								mIsMouseOver;

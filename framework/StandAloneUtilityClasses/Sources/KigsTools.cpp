@@ -735,7 +735,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 			}
 			else
 			{
-				auto xml_node = (XMLNodeStringRef*)item->GetXMLNodeForFile((XML*)gKigsTools->ActiveXMLFile.get());
+				auto xml_node = (XMLNode*)item->GetXMLNodeForFile((XML*)gKigsTools->ActiveXMLFile.get());
 				if (xml_node)
 				{
 					if (xml_node->nameOneOf("Rel", "RelativePath"))
@@ -1534,6 +1534,22 @@ void CustomAttributeEditor(CoreModifiable* item)
 		if(ImGui::Button("Reload Shader"))
 			item->SimpleCall("Reload");
 	}
+
+
+	if (item->isSubType("CoreBaseApplication"))
+	{
+		auto app = item->as<CoreBaseApplication>();
+		auto list = app->GetAutoUpdateList();
+
+		if (ImGui::CollapsingHeader("AutoUpdateList"))
+		{
+			for (auto el : list)
+			{
+				ImGui::Text("%s - %s", el->getExactType().c_str(), el->getName().c_str());
+			}
+		}
+	}
+
 }
 
 void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false)
@@ -2624,7 +2640,6 @@ void ReloadCurrentSequence()
 	}
 #endif
 }
-
 
 void DrawAnimationCoreItemRec(const std::string& key,const CoreItemSP& current_item)
 {

@@ -154,7 +154,7 @@ void ImGuiLayer::SetStyleHoloLens()
 	//style->FrameBorderSize = 1.0f;
 	//style->PopupBorderSize = 1.0f;
 
-	style->ScrollbarSize = 60.0f;
+	style->ScrollbarSize = 128.0f;
 	style->ScrollbarRounding = 0.0f;
 	style->GrabMinSize = 5.0f;
 	style->GrabRounding = 0.0f;
@@ -345,14 +345,21 @@ bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 			io.MouseDown[1] = (ev.button_state & 2);
 			io.MouseDown[2] = (ev.button_state & 4);
 			mIsDown = true;
-			EmitSignal(Signals::OnClickDown, this);
+			EmitSignal(Signals::OnClickDown, this, ev);
 		}
 		else if (ev.touch_state == DirectTouchEvent::TouchState::TouchUp)
 		{
 			mClickSource = TouchSourceID::Invalid;
 			io.MouseDown[0] = io.MouseDown[1] = io.MouseDown[2] = 0;
 			mIsDown = false;
-			EmitSignal(Signals::OnClickUp, this);
+
+			if (ev.near_interaction_went_trough || io.MouseDownDuration[0] > 0.6f)
+			{
+				ImGui::ClearActiveID();
+				mNeedClearClicks = true;
+			}
+			else
+				EmitSignal(Signals::OnClickUp, this, ev);
 		}
 	}
 	
@@ -396,7 +403,7 @@ void ImGuiLayer::NewFrame(Timer* timer)
 	ImGuiContext* old_state = SetActiveImGuiLayer();
 	
 	ImGuiIO& io = ImGui::GetIO();
-
+	
 #ifdef WUP
 	if (io.WantSaveIniSettings)
 	{
@@ -552,6 +559,12 @@ void ImGuiLayer::NewFrame(Timer* timer)
 	
 	mWantMouse = ImGui::GetIO().WantCaptureMouse;
 	ImGui::NewFrame();
+	if (mNeedClearClicks)
+	{
+		ImGui::ClearActiveID();
+		mNeedClearClicks = false;
+	}
+
 	mHasFrame = true;
 	
 	ImGui::SetCurrentContext(old_state);

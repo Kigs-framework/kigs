@@ -124,6 +124,7 @@ void DrawVertice::InitModifiable()
 	mPresetColor.changeNotificationLevel(Owner);
 	mTextureFileName.changeNotificationLevel(Owner);
 	mPresetOffset.changeNotificationLevel(Owner);
+	mPresetSize.changeNotificationLevel(Owner);
 	mPresetUVSize.changeNotificationLevel(Owner);
 
 	clearArrays();

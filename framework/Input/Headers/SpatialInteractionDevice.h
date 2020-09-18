@@ -5,6 +5,7 @@
 #include "AttributePacking.h"
 
 #include <optional>
+#include <unordered_set>
 
 struct Hit;
 
@@ -27,7 +28,10 @@ enum class Handedness
 
 struct Interaction
 {
-	double Time;
+	double StartTime = 0.0;;
+	double LastTime = 0.0;;
+	double TimeStill = 0.0;
+
 	v3f Position;
 	
 	v3f Forward;
@@ -40,7 +44,6 @@ struct Interaction
 	bool pressed = false;
 	bool hasPosition = false;
 
-	int near_interaction_active_count = 0;
 	float near_interaction_distance = FLT_MAX;
 	Handedness handedness = Handedness::Unspecified;
 
