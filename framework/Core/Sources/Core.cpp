@@ -66,19 +66,19 @@ kstl::vector<kstl::string>	SplitStringByCharacter(const kstl::string&  a_mstring
 
 // decorators
 //! class used to register a decorator
-RegisterDecoratorClass::RegisterDecoratorClass(KigsCore* core, KigsID decoratorName, decorateMethod method, decorateMethod undecoratemethod)
+RegisterDecoratorClass::RegisterDecoratorClass(KigsCore* core, KigsID decoratorName, DecorateMethod method, DecorateMethod undecoratemethod)
 {
 	core->RegisterDecorator(method,undecoratemethod,decoratorName); 
 }
 
-void	KigsCore::RegisterDecorator(decorateMethod method,decorateMethod undecoratemethod, KigsID decoratorName)
+void	KigsCore::RegisterDecorator(DecorateMethod method, DecorateMethod undecoratemethod, KigsID decoratorName)
 {
 	if(mDecoratorMap == 0)
 	{
-		mDecoratorMap=new kigs::unordered_map<KigsID,decorateMethodPair>;
+		mDecoratorMap=new kigs::unordered_map<KigsID, DecorateMethodPair>;
 	}
 
-	decorateMethodPair toadd;
+	DecorateMethodPair toadd;
 	toadd.mDecorate=method;
 	toadd.mUndecorate=undecoratemethod;
 
@@ -335,14 +335,15 @@ void KigsCore::Close(bool closeMemoryManager)
 			delete mCoreInstance->mAsyncRequestList;
 			mCoreInstance->mAsyncRequestList = 0;
 		}
-
+		
+		mCoreInstance->mSemaphore = nullptr;
 
 #ifdef _DEBUG
 		CoreModifiable::debugPrintfFullTree();
 #endif
 
 		delete mCoreInstance->mRootNode;
-
+		
 		mCoreInstance->mTypeNodeMap.clear();
 
 		delete mCoreInstance;
@@ -842,6 +843,8 @@ void KigsCore::AddToPostDestroyList(CoreModifiable* c)
 	std::lock_guard<std::mutex> lk{ mPostDestructionListMutex };
 	mPostDestructionList.push_back(c);
 }
+
+
 
 MEMORYMANAGEMENT_START
 #ifndef _NO_MEMORY_MANAGER_

@@ -1180,16 +1180,16 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 
 			bool is_touch_down = mCurrentClickStart.find(touch.ID) != mCurrentClickStart.end();
 
-			if (dist_from_finger_tip > mSpatialInteractionAutoClickDistance && !is_touch_down)
+			if (dist_from_finger_tip > 0.0f && !is_touch_down)
 			{
 				mNearTouchLastAboveTime = now; // Allow touch down for 1 sec
 			}
 
-			if (dist_from_finger_tip < mSpatialInteractionAutoClickDistance)
+			if (dist_from_finger_tip < 0.0f)
 			{
 				if (!is_touch_down)
 				{
-					if (now - mNearTouchLastAboveTime < 1.0 && dist_from_finger_tip > 0.0)
+					if (now - mNearTouchLastAboveTime < 1.0 /*&& dist_from_finger_tip > 0.0*/)
 					{
 						touch_state = 1;
 					}
@@ -1444,7 +1444,12 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 		CurrentInfos toAdd;
 		toAdd.currentPos = touch.posInfos.pos;
 		toAdd.state = isHover ? 1 : 0;
-		toAdd.last_dist= dist_from_finger_tip;
+		toAdd.last_dist = dist_from_finger_tip;
+
+		if (dist_from_finger_tip > -mSpatialInteractionAutoTouchDownDistance)
+		{
+			toAdd.near_touch_last_above_time = timer.GetTime();;
+		}
 
 		mCurrentInfosMap[touch.ID] = toAdd;
 
@@ -1469,16 +1474,16 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 
 		bool is_touch_down = (current.state & 6) != 0;
 
-		if (dist_from_finger_tip > mSpatialInteractionAutoTouchDownDistance && !is_touch_down)
+		if (dist_from_finger_tip > 0.0f && !is_touch_down)
 		{
 			current.near_touch_last_above_time = now; // Allow touch down for 1 sec
 		}
 		
-		if(dist_from_finger_tip < mSpatialInteractionAutoTouchDownDistance)
+		if(dist_from_finger_tip < 0.0f)
 		{
 			if (!is_touch_down)
 			{
-				if (now - current.near_touch_last_above_time < 1.0 && dist_from_finger_tip > 0.0)
+				if (now - current.near_touch_last_above_time < 1.0 /*&& dist_from_finger_tip > 0.0*/)
 				{
 					touch_state = 1;
 				}
@@ -1528,7 +1533,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			// send touch up 
 			ev.state = StateBegan; // always send touch up event if we sent a touch down before
 			ev.touch_state = DirectTouchEvent::TouchUp;
-			ev.near_interaction_went_trough = is_near_interaction && mSpatialInteractionAutoTouchDownDistance > 0.0 && dist_from_finger_tip < 0.0f;
+			ev.near_interaction_went_trough = is_near_interaction && mSpatialInteractionAutoTouchDownDistance > 0.0f && dist_from_finger_tip < 0.0f;
 			target->SimpleCall<bool>(mMethodNameID, ev);
 			manager->ManageCaptureObject(ev, target);
 		}

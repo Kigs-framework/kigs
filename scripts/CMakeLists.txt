@@ -50,6 +50,11 @@ function(add_library)
 	if("${KIGS_PLATFORM}" STREQUAL "WUP" AND "${ARGV1}" STREQUAL "SHARED" )
 		set_target_properties(${ARGV0} PROPERTIES VS_USER_PROPS "${CMAKE_BINARY_DIR}/WUP/WUP.props")
 	endif()
+
+	if("${KIGS_PLATFORM}" STREQUAL "WUP" AND NOT "${ARGV1}" STREQUAL "INTERFACE")
+		set_target_properties(${ARGV0} PROPERTIES VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "10.0.18362.0")
+	endif()
+
 endfunction()
 
 function(add_executable)
