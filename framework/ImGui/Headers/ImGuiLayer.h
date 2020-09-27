@@ -55,7 +55,7 @@ public:
 
 	bool WantMouse() { return mWantMouse; }
 
-	bool PanelValidHit(v2f hit_pos) { return WantMouse(); }
+	bool PanelValidHit(v2f hit_pos) { return true; /*WantMouse();*/ }
 
 	Texture* GetTexture(const std::string& name);
 

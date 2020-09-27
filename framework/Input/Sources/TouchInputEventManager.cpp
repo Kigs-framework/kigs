@@ -659,12 +659,18 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 					{
 						interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchSourceID::SpatialInteractionLeft : TouchSourceID::SpatialInteractionRight;
 						interaction_infos.posInfos.dir = (interaction.index_tip->position - camera->GetGlobalPosition()).Normalized();
+						//interaction_infos.posInfos.dir += (interaction.index_tip->orientation * v3f(0, 0, 1)).Normalized();
+						//interaction_infos.posInfos.dir.Normalize();
+
 						interaction_infos.posInfos.pos = interaction.index_tip->position;
-						interaction_infos.posInfos.origin = interaction_infos.posInfos.pos - interaction_infos.posInfos.dir * getSpatialInteractionOffset();
+						interaction_infos.posInfos.origin = interaction_infos.posInfos.pos - interaction_infos.posInfos.dir * GetSpatialInteractionOffset();
 						interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
 						interaction_infos.posInfos.min_distance = 0.0;
-						interaction_infos.posInfos.max_distance = (mEventCaptureObject && mEventCapturedEventID == interaction_infos.ID) ? DBL_MAX : 0.3;
+						interaction_infos.posInfos.max_distance = (mEventCaptureObject && mEventCapturedEventID == interaction_infos.ID) ? DBL_MAX : GetSpatialInteractionOffset() * 2.0;
 						
+						//dd::line(interaction_infos.posInfos.origin, interaction_infos.posInfos.origin + interaction_infos.posInfos.dir * GetSpatialInteractionOffset(), {1,0,0});
+						//dd::line(interaction_infos.posInfos.origin + interaction_infos.posInfos.dir * GetSpatialInteractionOffset(), interaction_infos.posInfos.origin + interaction_infos.posInfos.dir * GetSpatialInteractionOffset() * 2, { 0,0,1 });
+
 						Touches[interaction_infos.ID] = interaction_infos;
 					}
 				}
@@ -1108,7 +1114,16 @@ void TouchInputEventManager::ManageCaptureObject(InputEvent& ev, CoreModifiable*
 		mEventCaptureObject = target;
 		mEventCapturedEventID = ev.touch_id;
 	}
-	else if (mEventCaptureObject == target) mEventCaptureObject = nullptr;
+	else if (mEventCaptureObject == target/* && mEventCapturedEventID == ev.touch_id*/)
+	{
+		mEventCaptureObject = nullptr;
+		mEventCapturedEventID = TouchSourceID::Invalid;
+	}
+}
+
+bool TouchInputEventManager::AllowEventOn(TouchSourceID id, CoreModifiable* target)
+{ 
+	return !mEventCaptureObject || (target == mEventCaptureObject/* && mEventCapturedEventID == id*/);
 }
 
 DEFINE_METHOD(TouchInputEventManager, OnDestroyCallback)
@@ -1145,7 +1160,7 @@ bool	operator<(const TouchEventState::TouchInfos& first, const TouchEventState::
 void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& timer,CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
 	bool swallow = (swallowMask & (1 << mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
-	swallow = swallow || !manager->AllowEventOn(target);
+	swallow = swallow || !manager->AllowEventOn(touch.ID, target);
 	
 	ClickEvent ev;
 	ev.type = mType;
@@ -1158,21 +1173,17 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 
 	auto touch_state = touch.touch_state;
 
+	auto min_click_duration = mClickMinDuration >= 0.0 ? mClickMinDuration : manager->GetDefaultMinClickDuration();
+	auto max_click_duration = mClickMaxDuration >= 0.0 ? mClickMaxDuration : manager->GetDefaultMaxClickDuration();
 	
-	auto dist_from_finger_tip = Dot(ev.hit.HitPosition - (touch.posInfos.origin + touch.posInfos.dir * manager->getSpatialInteractionOffset()), touch.posInfos.dir);
-	bool is_near_interaction = IsNearInteraction(touch.ID) && manager->GetNearInteractionActiveItems(touch.interaction->handedness).size() > 0;
-	/*if (is_spatial_interaction && mSpatialInteractionAutoClickDistance > 0.0f) 
-	{
-		if (std::abs(dist - manager->getSpatialInteractionOffset()) < mSpatialInteractionAutoClickDistance)
-			touch_state = 1;
-		else
-			touch_state = 0;
-	}*/
+	auto dist_from_finger_tip = ev.hit.HitNode ? Dot(ev.hit.HitPosition - (touch.posInfos.origin + touch.posInfos.dir * manager->GetSpatialInteractionOffset()), touch.posInfos.dir) : -FLT_MAX;
+	bool auto_touch_enabled = IsNearInteraction(touch.ID) && manager->GetNearInteractionActiveItems(touch.interaction->handedness).size() > 0 && mSpatialInteractionAutoClickDistance > 0.0;
+	bool is_behind = auto_touch_enabled && dist_from_finger_tip < -2.0f * mSpatialInteractionAutoClickDistance && dist_from_finger_tip != -FLT_MAX;
 
 	bool is_down = false;
 	if (!swallow)
 	{
-		if (is_near_interaction && mSpatialInteractionAutoClickDistance > 0.0f && ev.hit.HitNode)
+		if (auto_touch_enabled && ev.hit.HitNode)
 		{
 			auto now = timer.GetTime();
 			touch_state = 0;
@@ -1185,13 +1196,14 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 				mNearTouchLastAboveTime = now; // Allow touch down for 1 sec
 			}
 
-			if (dist_from_finger_tip < 0.0f)
+			if (dist_from_finger_tip < 0.0f && !is_behind)
 			{
 				if (!is_touch_down)
 				{
-					if (now - mNearTouchLastAboveTime < 1.0 /*&& dist_from_finger_tip > 0.0*/)
+					if (now - mNearTouchLastAboveTime < 1.0)
 					{
 						touch_state = 1;
+						mNearTouchLastAboveTime = now - 10;
 					}
 				}
 				else
@@ -1244,12 +1256,9 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 					double duration = timer.GetTime() - startc.startTime;
 					//startc.min_dist = std::min(dist, startc.min_dist);
 					
-					if (is_near_interaction && mSpatialInteractionAutoClickDistance>0.0)
+					if (auto_touch_enabled && is_behind)
 					{
-						if (dist_from_finger_tip < -mSpatialInteractionAutoClickDistance)
-						{
-							startc.isValid = false;
-						}
+						startc.isValid = false;
 					}
 					if (startc.buttonState != touch_state) // not the same button ?
 					{
@@ -1259,7 +1268,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 					{
 						startc.isValid = false;
 					}
-					else if (duration > mClickMaxDuration)
+					else if (duration > max_click_duration)
 					{
 						startc.isValid = false;
 					}
@@ -1305,7 +1314,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 			{
 				// check if click time is ok
 				double duration = timer.GetTime() - endc.startTime;
-				if ((duration >= mClickMinDuration) && (duration <= mClickMaxDuration))
+				if ((duration >= min_click_duration) && (duration <= max_click_duration))
 				{
 					// call target to check if click end is "accepted"
 					ev.origin = endc.origin;
@@ -1372,7 +1381,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 		else
 		{
 			double duration = timer.GetTime() - click.startTime;
-			if (duration > mClickMaxDuration)
+			if (duration > max_click_duration)
 			{
 				if (click.clickCount >= mMinClickCount)
 				{
@@ -1399,7 +1408,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
 	bool swallow = (swallowMask & (1 << mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
-	swallow = swallow || !manager->AllowEventOn(target);
+	swallow = swallow || !manager->AllowEventOn(touch.ID, target);
 	
 	DirectTouchEvent ev;
 	ev.type = mType;
@@ -1409,19 +1418,11 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 	ev.hit = *touch.object_hit;
 	ev.item = target;
 
-	auto dist_from_finger_tip = Dot(ev.hit.HitPosition - (touch.posInfos.origin + touch.posInfos.dir*manager->getSpatialInteractionOffset()), touch.posInfos.dir);// Norm(ev.hit.HitPosition - touch.posInfos.pos);
+	auto dist_from_finger_tip = ev.hit.HitNode ? Dot(ev.hit.HitPosition - (touch.posInfos.origin + touch.posInfos.dir*manager->GetSpatialInteractionOffset()), touch.posInfos.dir) : -FLT_MAX;
 	auto touch_state = touch.touch_state;
-	bool is_near_interaction = IsNearInteraction(touch.ID);
+	bool auto_touch_enabled = IsNearInteraction(touch.ID) && mSpatialInteractionAutoTouchDownDistance > 0.0;
+	bool is_behind = auto_touch_enabled && dist_from_finger_tip < -2.0f * mSpatialInteractionAutoTouchDownDistance && dist_from_finger_tip != -FLT_MAX;
 	
-	/*if (is_near_interaction && mSpatialInteractionAutoTouchDownDistance > 0.0f)
-	{
-		touch.interaction->near_interaction_distance = dist_from_finger_tip;
-		if (std::abs(dist_from_finger_tip) < mSpatialInteractionAutoTouchDownDistance)
-			touch_state = 1;
-		else
-			touch_state = 0;
-	}*/
-
 	// type 0 for hover
 	ev.has_position = touch.has_position;
 	ev.origin = touch.posInfos.origin;
@@ -1431,8 +1432,9 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 	ev.state = StatePossible;
 	ev.touch_state = DirectTouchEvent::TouchHover;
 	
+	
 	// We need to send StateEnded when the event is swallowed by someone above us
-	bool isHover = !swallow && !touch.touch_ended && target->SimpleCall<bool>(mMethodNameID, ev);
+	bool isHover = !swallow && !is_behind && !touch.touch_ended && target->SimpleCall<bool>(mMethodNameID, ev);
 
 	auto foundPrevious = mCurrentInfosMap.find(touch.ID);
 
@@ -1446,7 +1448,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 		toAdd.state = isHover ? 1 : 0;
 		toAdd.last_dist = dist_from_finger_tip;
 
-		if (dist_from_finger_tip > -mSpatialInteractionAutoTouchDownDistance)
+		if (dist_from_finger_tip > 0.0)
 		{
 			toAdd.near_touch_last_above_time = timer.GetTime();;
 		}
@@ -1459,16 +1461,20 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			ev.touch_state = DirectTouchEvent::TouchHover;
 			target->SimpleCall<bool>(mMethodNameID, ev);
 			manager->ManageCaptureObject(ev, target);
-			if (is_near_interaction) 
+			if (auto_touch_enabled)
 				near_active_items.insert(target);
 		}
 	}
 
+	if (auto_touch_enabled && !isHover && !is_behind)
+		near_active_items.erase(target);
+
 	CurrentInfos&	current = mCurrentInfosMap[touch.ID];
 
-	if (is_near_interaction && mSpatialInteractionAutoTouchDownDistance > 0.0f && ev.hit.HitNode)
+	auto now = timer.GetTime();
+
+	if (auto_touch_enabled && ev.hit.HitNode)
 	{
-		auto now = timer.GetTime();
 		touch_state = 0;
 		touch.interaction->near_interaction_distance = dist_from_finger_tip;
 
@@ -1479,13 +1485,14 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			current.near_touch_last_above_time = now; // Allow touch down for 1 sec
 		}
 		
-		if(dist_from_finger_tip < 0.0f)
+		if(dist_from_finger_tip < 0.0f && !touch.touch_ended && !is_behind)
 		{
 			if (!is_touch_down)
 			{
-				if (now - current.near_touch_last_above_time < 1.0 /*&& dist_from_finger_tip > 0.0*/)
+				if (now - current.near_touch_last_above_time < 1.0)
 				{
 					touch_state = 1;
+					current.near_touch_last_above_time = now - 10.0;
 				}
 			}
 			else
@@ -1533,7 +1540,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			// send touch up 
 			ev.state = StateBegan; // always send touch up event if we sent a touch down before
 			ev.touch_state = DirectTouchEvent::TouchUp;
-			ev.near_interaction_went_trough = is_near_interaction && mSpatialInteractionAutoTouchDownDistance > 0.0f && dist_from_finger_tip < 0.0f;
+			ev.near_interaction_went_trough = auto_touch_enabled && dist_from_finger_tip < 0.0f;
 			target->SimpleCall<bool>(mMethodNameID, ev);
 			manager->ManageCaptureObject(ev, target);
 		}
@@ -1558,7 +1565,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			target->SimpleCall<bool>(mMethodNameID, ev);
 			current.state |= 1;
 			manager->ManageCaptureObject(ev, target);
-			if (is_near_interaction) 
+			if (auto_touch_enabled)
 				near_active_items.insert(target);
 		}
 	}
@@ -1572,7 +1579,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			target->SimpleCall<bool>(mMethodNameID, ev);
 			current.state -= 1;
 			manager->ManageCaptureObject(ev, target);
-			if (is_near_interaction) 
+			if (auto_touch_enabled && !is_behind)
 				near_active_items.erase(target);
 		}
 	}
@@ -1588,7 +1595,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 void TouchEventStateDirectAccess::Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
 	bool swallow = (swallowMask & (1 << mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
-	swallow = swallow || !manager->AllowEventOn(target);
+	swallow = swallow || !manager->AllowEventOn(touch.ID, target);
 
 	DirectAccessEvent ev;
 	ev.is_swallowed = swallow;
@@ -1631,7 +1638,7 @@ void TouchEventStateDirectAccess::Update(TouchInputEventManager* manager, const 
 void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
 	bool swallow = (swallowMask & (1 << mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
-	swallow = swallow || !manager->AllowEventOn(target);
+	swallow = swallow || !manager->AllowEventOn(touch.ID, target);
 
 	SwipeEvent ev;
 	ev.type = mType;
@@ -1770,7 +1777,7 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
 	bool swallow = (swallowMask & (1<<mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
-	swallow = swallow || !manager->AllowEventOn(target);
+	swallow = swallow || !manager->AllowEventOn(touch.ID, target);
 
 	ScrollEvent ev;
 	ev.type = mType;
@@ -1943,7 +1950,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 void TouchEventStatePinch::Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
 	bool swallow = (swallowMask & (1 << mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
-	swallow = swallow || !manager->AllowEventOn(target);
+	swallow = swallow || !manager->AllowEventOn(touch.ID, target);
 
 	PinchEvent ev;
 	ev.swallow_mask = &swallowMask;

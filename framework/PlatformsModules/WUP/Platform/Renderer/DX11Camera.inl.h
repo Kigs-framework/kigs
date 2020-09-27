@@ -5,6 +5,8 @@
 #include <winrt/Windows.UI.Input.Spatial.h>
 #include <winrt/Windows.Perception.People.h>
 
+#include <DirectXMath.h>
+
 using namespace winrt::Windows::UI::Input::Spatial;
 
 inline mat4 MatFromFloat4x4(const winrt::Windows::Foundation::Numerics::float4x4& transform)
@@ -55,11 +57,26 @@ void DX11Camera::PlatformProtectedSetActive(TravState* state)
 		if (view_transform_container)
 		{
 			auto viewCoordinateSystemTransform = view_transform_container.Value();
-			mCurrentStereoViewproj[0] = MatFromFloat4x4(camera_projection_transform.Left) * MatFromFloat4x4(viewCoordinateSystemTransform.Left);
-			mCurrentStereoViewproj[1] = MatFromFloat4x4(camera_projection_transform.Right) * MatFromFloat4x4(viewCoordinateSystemTransform.Right);
+
+			auto view_left = MatFromFloat4x4(viewCoordinateSystemTransform.Left);
+			auto view_right = MatFromFloat4x4(viewCoordinateSystemTransform.Right);
+
+			mCurrentStereoViewproj[0] = MatFromFloat4x4(camera_projection_transform.Left) * view_left;
+			mCurrentStereoViewproj[1] = MatFromFloat4x4(camera_projection_transform.Right) * view_right;
+
+			auto p1 = Inv(view_left);
+			auto p2 = Inv(view_right);
+			
+			auto pos = (p1.Pos.xyz + p2.Pos.xyz)*0.5f;
+			auto up = ((p1.YAxis.xyz + p2.YAxis.xyz) * 0.5f).Normalized();
+			auto view = (-(p1.ZAxis.xyz + p2.ZAxis.xyz) * 0.5f).Normalized();
+
+			SetViewVector(view);
+			SetUpVector(up);
+			SetPosition(pos);
 		}
 	}
-
+	/*
 	auto pointer_pose = SpatialPointerPose::TryGetAtTimestamp(coordinate_system, prediction.Timestamp());
 	if (pointer_pose)
 	{
@@ -70,6 +87,7 @@ void DX11Camera::PlatformProtectedSetActive(TravState* state)
 		auto pos = pointer_pose.Head().Position();
 		SetPosition(v3f(pos.x, pos.y, pos.z));
 	}
+	*/
 }
 
 void DX11Camera::PlatformProtectedRelease(TravState* state)

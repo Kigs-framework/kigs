@@ -283,12 +283,11 @@ class TouchEventStateClick : public TouchEventState
 {
 public:
 	TouchEventStateClick(KigsID methodnameID, InputEventManagementFlag flag/*, CoreModifiable* touchsupport*/, InputEventType type) : TouchEventState(methodnameID, flag/*, touchsupport*/, type)
-		, mMinClickCount(1)
-		, mMaxClickCount(1)
-		, mClickMinDuration(0.0f)
-		, mClickMaxDuration(0.6f)
 	{};
 	void Update(TouchInputEventManager* manager, const Timer& timer,CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
+
+	void SetMinClickDuration(float min_duration) { mClickMinDuration = min_duration; }
+	void SetMaxClickDuration(float max_duration) { mClickMaxDuration = max_duration; }
 
 	void	setMinNeededClick(int c)
 	{
@@ -334,8 +333,8 @@ protected:
 
 	int											mMinClickCount = 1;
 	int											mMaxClickCount = 1;
-	kfloat										mClickMinDuration = 0.0f;
-	kfloat										mClickMaxDuration = 0.6f;
+	kfloat										mClickMinDuration = -1.0f;
+	kfloat										mClickMaxDuration = -1.0f;
 	float										mSpatialInteractionAutoClickDistance = 0.00f;
 };
 
@@ -639,18 +638,18 @@ public:
 		mTriggerSquaredDist = dist*dist;
 	}
 
-	inline float getSpatialInteractionOffset()
+	inline float GetSpatialInteractionOffset()
 	{
 		return mSpatialInteractionOffset;
 	}
 
-	void setSpatialInteractionOffset(float offset)
+	void SetSpatialInteractionOffset(float offset)
 	{
 		mSpatialInteractionOffset = offset;
 	}
 
 	void ManageCaptureObject(InputEvent& ev, CoreModifiable* target);
-	bool AllowEventOn(CoreModifiable* target) { return !mEventCaptureObject || target == mEventCaptureObject; }
+	bool AllowEventOn(TouchSourceID id, CoreModifiable* target);
 	
 	void	activate(bool activate)
 	{
@@ -665,6 +664,12 @@ public:
 	{
 		return mIsActive;
 	}
+
+	float GetDefaultMinClickDuration() const { return mDefaultMinClickDuration; }
+	float GetDefaultMaxClickDuration() const { return mDefaultMaxClickDuration; }
+
+	void SetDefaultMinClickDuration(float duration) { mDefaultMinClickDuration = duration; }
+	void SetDefaultMaxClickDuration(float duration) { mDefaultMaxClickDuration = duration; }
 
 	const kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>& GetFrameTouches() { return mLastFrameTouches; }
 
@@ -694,6 +699,9 @@ protected:
 
 	std::recursive_mutex mMutex;
 	std::unique_lock<std::recursive_mutex> mLock;
+
+	float mDefaultMinClickDuration = 0.0f;
+	float mDefaultMaxClickDuration = 0.6f;
 
 	// states can be pushed on a stack, so that when creating a pop up or a fullscreen IHM in front of another, we can temporary mask previous registered events
 	// and go back to them after that
@@ -738,8 +746,8 @@ protected:
 
 
 	std::vector<StackedEventStateStruct>	mStackedEventState;
-	CoreModifiable*										mEventCaptureObject = nullptr;
-	TouchSourceID										mEventCapturedEventID;
+	CoreModifiable*							mEventCaptureObject;
+	TouchSourceID							mEventCapturedEventID;
 
 	ModuleInput*	mTheInputModule;
 
