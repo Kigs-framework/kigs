@@ -561,7 +561,7 @@ void ImGuiLayer::NewFrame(Timer* timer)
 		}
 	}
 	
-	mWantMouse = io.MousePos.x == -FLT_MAX || ImGui::GetIO().WantCaptureMouse;
+	mWantMouse = ImGui::GetIO().WantCaptureMouse;
 	ImGui::NewFrame();
 	if (mNeedClearClicks)
 	{

@@ -639,8 +639,9 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		{
 			//dd::line(itr.second.Position, itr.second.Position + itr.second.Forward, itr.second.pressed ? v3f{ 0,1,0 } : v3f{ 1,1,1 }, 0.02f);
 			//dd::arrow(itr.second.Position, itr.second.Position + itr.second.Up*0.05f, v3f{ 0,0,1 }, 0.02f);
-
 			auto& interaction = itr.second;
+			interaction.current_near_interaction_hit = Hit{};
+
 			if(interaction.allowed)
 			{
 				TouchEventState::TouchInfos interaction_infos;
@@ -658,19 +659,12 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 					if (Dot(orientation, camera->GetGlobalViewVector()) > 0)
 					{
 						interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchSourceID::SpatialInteractionLeft : TouchSourceID::SpatialInteractionRight;
-						interaction_infos.posInfos.dir = (interaction.index_tip->position - camera->GetGlobalPosition()).Normalized();
-						//interaction_infos.posInfos.dir += (interaction.index_tip->orientation * v3f(0, 0, 1)).Normalized();
-						//interaction_infos.posInfos.dir.Normalize();
-
-						interaction_infos.posInfos.pos = interaction.index_tip->position;
+						interaction_infos.posInfos.pos = interaction.index_tip->position + interaction.index_tip->orientation * v3f(0, 0, 1) * 0.015f;
+						interaction_infos.posInfos.dir = (interaction_infos.posInfos.pos - camera->GetGlobalPosition()).Normalized();
 						interaction_infos.posInfos.origin = interaction_infos.posInfos.pos - interaction_infos.posInfos.dir * GetSpatialInteractionOffset();
 						interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
 						interaction_infos.posInfos.min_distance = 0.0;
 						interaction_infos.posInfos.max_distance = (mEventCaptureObject && mEventCapturedEventID == interaction_infos.ID) ? DBL_MAX : GetSpatialInteractionOffset() * 2.0;
-						
-						//dd::line(interaction_infos.posInfos.origin, interaction_infos.posInfos.origin + interaction_infos.posInfos.dir * GetSpatialInteractionOffset(), {1,0,0});
-						//dd::line(interaction_infos.posInfos.origin + interaction_infos.posInfos.dir * GetSpatialInteractionOffset(), interaction_infos.posInfos.origin + interaction_infos.posInfos.dir * GetSpatialInteractionOffset() * 2, { 0,0,1 });
-
 						Touches[interaction_infos.ID] = interaction_infos;
 					}
 				}
@@ -696,7 +690,6 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 						interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchSourceID::SpatialInteractionRayLeft : TouchSourceID::SpatialInteractionRayRight;
 						interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
 						any_touch_state = any_touch_state | interaction_infos.touch_state;
-						//dd::line(interaction_infos.posInfos.pos, interaction_infos.posInfos.pos + interaction_infos.posInfos.dir*0.2f, v3f{ 1, 1, 1 });
 						Touches[interaction_infos.ID] = interaction_infos;
 					}
 				}
@@ -1557,6 +1550,8 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 			ev.touch_state = DirectTouchEvent::TouchHover;
 			target->SimpleCall<bool>(mMethodNameID, ev);
 			manager->ManageCaptureObject(ev, target);
+
+			if (auto_touch_enabled && touch.object_hit && dist_from_finger_tip > 0.0f) touch.interaction->current_near_interaction_hit = *touch.object_hit;
 		}
 		else
 		{

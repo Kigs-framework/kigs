@@ -47,7 +47,7 @@ public:
 
 	SP<Panel> GetCollidablePanel()
 	{
-		return mCollidablePanel;
+		return mCollidablePanelRegular;
 	}
 
 protected:
@@ -64,7 +64,8 @@ protected:
 	// Node3D placed in the scene3D for collision managment
 	SP<Node3D> mSpacialNode = nullptr;
 	CMSP mRenderingScreen = nullptr;
-	SP<Panel> mCollidablePanel = nullptr;
+	SP<Panel> mCollidablePanelRegular = nullptr;
+	SP<Panel> mCollidablePanelInputs = nullptr;
 	SP<Holo3DPanel> mDrawer = nullptr;
 
 	maReference mParentNode = BASE_ATTRIBUTE(ParentNode);

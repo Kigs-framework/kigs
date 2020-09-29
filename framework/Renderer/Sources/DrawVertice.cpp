@@ -433,24 +433,28 @@ bool DrawVertice::Draw(TravState* travstate)
 
 
 			bool blend = false;
-			if (mTexture)
-			{
-				switch (mTexture->GetTransparency())
-				{
-				case 2:
-					lShaderMask |= ModuleRenderer::ALPHA_TEST_LOW;
-					blend = true;
-					break;
-				case 1:
-					lShaderMask |= ModuleRenderer::ALPHA_TEST_HIGH;
-					renderer->SetBlendMode(RENDERER_BLEND_OFF);
 
-					break;
-				default:
-					renderer->SetBlendMode(RENDERER_BLEND_OFF);
-					break;
-				}
+			int transparency = mTransparencyType;
+			if (transparency == -1)
+			{
+				transparency = mTexture ? mTexture->GetTransparency() : 0;
 			}
+
+			switch (transparency)
+			{
+			case 2:
+				lShaderMask |= ModuleRenderer::ALPHA_TEST_LOW;
+				blend = true;
+				break;
+			case 1:
+				lShaderMask |= ModuleRenderer::ALPHA_TEST_HIGH;
+				renderer->SetBlendMode(RENDERER_BLEND_OFF);
+				break;
+			default:
+				renderer->SetBlendMode(RENDERER_BLEND_OFF);
+				break;
+			}
+			
 
 			// create shader if none
 			renderer->GetActiveShader()->ChooseShader(travstate, lShaderMask);

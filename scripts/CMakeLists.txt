@@ -104,11 +104,7 @@ set_kigsPlatform()
 add_library(Base INTERFACE)
 add_library(Holographic INTERFACE)
 
-target_sources(Holographic INTERFACE 
-		"${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/GazeManager.cpp"
-		"${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/GazeManagerWithCollider.cpp"
-		"${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/Holo3DSequenceManager.cpp")
-
+target_sources(Holographic INTERFACE "${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/Holo3DSequenceManager.cpp")
 
 set(CMAKE_C_FLAGS_STATICDEBUG "${CMAKE_C_FLAGS_DEBUG}")
 set(CMAKE_C_FLAGS_STATICRELEASE "${CMAKE_C_FLAGS_RELEASE}")
