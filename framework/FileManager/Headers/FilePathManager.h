@@ -272,8 +272,14 @@ public:
 	bool	LoadPackage(const std::string& filename);
 	// unload a package given it's filename
 	void	UnloadPackage(const std::string& filename);
-
+	// get a pointer on a loaded package
 	CorePackage* GetLoadedPackage(const std::string& filename);
+	// get the id of an already loaded package
+	int	GetPackageID(const std::string& filename);
+	// retreive package root path ( #PKGid#/rootname )
+	std::string GetPackageRootPath(int id);
+	std::string GetPackageRootPath(const std::string& filename);
+
 
 	void RemoveFromBundleList(const std::string& name) { mBundleList.erase(name); }
 

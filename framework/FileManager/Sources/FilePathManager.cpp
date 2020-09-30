@@ -174,6 +174,42 @@ bool	FilePathManager::LoadPackage(SmartPointer<FileHandle> L_File)
 	return newpackage;
 }
 
+int	FilePathManager::GetPackageID(const std::string& filename)
+{
+	for (auto& pkg : mPackageList)
+	{
+		if (pkg.second->GetName() == filename) return pkg.first;
+	}
+	return -1;
+}
+
+std::string FilePathManager::GetPackageRootPath(int id)
+{
+	std::string result = "";
+
+	auto found = mPackageList.find(id);
+	if (found != mPackageList.end())
+	{
+		result = "#PKG" + std::to_string((*found).first) + "#";
+		if ((*found).second->getRootFolderName() != "")
+		{
+			result += (*found).second->getRootFolderName();
+		}
+	}
+
+	return result;
+}
+std::string FilePathManager::GetPackageRootPath(const std::string& filename)
+{
+	int ID = GetPackageID(filename);
+	if (ID != -1)
+	{
+		return GetPackageRootPath(ID);
+	}
+
+	return "";
+}
+
 // load a package given it's filename
 bool	FilePathManager::LoadPackage(const kstl::string& filename)
 {
