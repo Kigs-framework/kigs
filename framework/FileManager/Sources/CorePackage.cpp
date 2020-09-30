@@ -187,6 +187,24 @@ bool	CorePackage::initFAT()
 }
 
 
+std::string CorePackage::getRootFolderName()
+{
+	// unnamed root
+	if (mRootFATEntry->mName == "")
+	{
+		// if one unique son, then return son name
+		if (mRootFATEntry->mSons.size() == 1)
+		{
+			return  mRootFATEntry->mSons[0]->mName;
+		}
+
+		return "";
+	}
+	
+	return mRootFATEntry->mName;
+	
+}
+
 void	CorePackage::AddFile(const kstl::string& filename, const kstl::string& filePathInPackage)
 {
 	if (!mPackageBuilderStruct)
@@ -930,8 +948,10 @@ bool		CorePackageFileAccess::checkWritable()
 	{
 		isWritable = false;
 	}
-	::Platform_fclose(tstFile.get());
-	
+	else
+	{
+		::Platform_fclose(tstFile.get());
+	}
 	return isWritable;
 }
 
