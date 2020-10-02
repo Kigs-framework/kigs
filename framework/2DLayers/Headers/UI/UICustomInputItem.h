@@ -24,6 +24,8 @@ public:
 protected:
 	void InitModifiable() override;
 
+	maFloat mAutoTouchDistance = BASE_ATTRIBUTE(AutoTouchDistance, 0.0f);
+
 };
 
 
