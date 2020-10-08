@@ -12,8 +12,8 @@
 #include "NotificationCenter.h"
 #include "ModuleRenderer.h"
 
-#include "IconsFontAwesome.h"
-#include "fontawesome.h"
+#include "IconsForkAwesome.h"
+#include "forkawesome.h"
 
 #include <algorithm>
 
@@ -251,8 +251,8 @@ void ImGuiLayer::InitModifiable()
 		else io.Fonts->AddFontDefault();
 
 		config.MergeMode = true;
-		const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-		io.Fonts->AddFontFromMemoryTTF((void*)g_fontawesome, sizeof(g_fontawesome) - 1, font ? mFontSize : 13.0f, &config, icon_ranges);
+		const ImWchar icon_ranges[] = { ICON_MIN_FK, ICON_MAX_FK, 0 };
+		io.Fonts->AddFontFromMemoryTTF((void*)g_forkawesome, sizeof(g_forkawesome) - 1, font ? mFontSize : 13.0f, &config, icon_ranges);
 		
 		io.Fonts->Build();
 
