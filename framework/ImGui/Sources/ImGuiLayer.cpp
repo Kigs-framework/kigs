@@ -253,6 +253,20 @@ void ImGuiLayer::InitModifiable()
 		config.MergeMode = true;
 		const ImWchar icon_ranges[] = { ICON_MIN_FK, ICON_MAX_FK, 0 };
 		io.Fonts->AddFontFromMemoryTTF((void*)g_forkawesome, sizeof(g_forkawesome) - 1, font ? mFontSize : 13.0f, &config, icon_ranges);
+
+		if (mBoldFontName.const_ref().size())
+		{
+			SmartPointer<CoreRawBuffer> crb_bold;
+			u64 len;
+			crb_bold = OwningRawPtrToSmartPtr(ModuleFileManager::Get()->LoadFile(mBoldFontName.c_str(), len));
+			if (crb_bold)
+			{
+				config.MergeMode = false;
+				mBoldFont = io.Fonts->AddFontFromMemoryTTF(crb_bold->buffer(), crb_bold->size(), mFontSize, &config, io.Fonts->GetGlyphRangesDefault());
+				config.MergeMode = true;
+				io.Fonts->AddFontFromMemoryTTF((void*)g_forkawesome, sizeof(g_forkawesome) - 1, font ? mFontSize : 13.0f, &config, icon_ranges);
+			}
+		}
 		
 		io.Fonts->Build();
 
