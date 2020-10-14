@@ -2483,37 +2483,37 @@ bool	CoreModifiable::ImportAttributes(const std::string &filename)
 		}
 		
 		// search for this in xml
-		XMLNodeTemplate<std::string_view>* rootnode = (XMLNodeTemplate<std::string_view> * )xmlfile->getRoot();
-		std::vector<XMLNodeTemplate<std::string_view>*> nodelist = rootnode->getNodes(XML_NODE_ELEMENT);
+		XMLNodeBase* rootnode = xmlfile->getRoot();
+		std::vector<XMLNodeBase*> nodelist = rootnode->getNodes(XML_NODE_ELEMENT);
 		
-		std::vector<XMLNodeTemplate<std::string_view>*>::iterator	itb = nodelist.begin();
-		std::vector<XMLNodeTemplate<std::string_view>*>::iterator	ite = nodelist.end();
+		std::vector<XMLNodeBase*>::iterator	itb = nodelist.begin();
+		std::vector<XMLNodeBase*>::iterator	ite = nodelist.end();
 		
 		while (itb != ite)
 		{
-			if (((*itb)->getName() == "Instance") || ((*itb)->getName() == "Inst"))
+			if ((*itb)->compareName("Instance") || (*itb)->compareName("Inst"))
 			{
-				XMLNodeTemplate<std::string_view>* currentNode = (*itb);
+				XMLNodeBase* currentNode = (*itb);
 				// retreive type and name attributes
-				XMLAttributeTemplate<std::string_view> *NameAttribute = currentNode->getAttribute("Name");
+				XMLAttributeBase *NameAttribute = currentNode->getAttribute("Name");
 				if (!NameAttribute)
 					NameAttribute = currentNode->getAttribute("N");
 				
-				XMLAttributeTemplate<std::string_view>*	TypeAttribute = currentNode->getAttribute("Type");
+				XMLAttributeBase*	TypeAttribute = currentNode->getAttribute("Type");
 				if (!TypeAttribute)
 					TypeAttribute = currentNode->getAttribute("T");
 				
 				if (NameAttribute && TypeAttribute)
 				{
-					std::string name = (std::string)NameAttribute->getString();
+					std::string name = NameAttribute->getString();
 					if (name == getName())
 					{
-						std::string type = (std::string)TypeAttribute->getString();
+						std::string type = TypeAttribute->getString();
 						if (isSubType(type))
 						{
 							std::vector<XMLNodeBase*>	sons;
 							sons.clear();
-							ImportAttributes(currentNode, this, importState,sons);
+							ImportAttributes<std::string_view>(currentNode, this, importState,sons);
 							ImportSons<std::string_view>(sons, this, importState);
 							result = true;
 							break;

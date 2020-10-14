@@ -94,14 +94,14 @@ void XMLWriterFile::writeNode( XMLNode *node, int tab )
         
 		
         s += "<";
-        s += node->getName( );
+        s += node->XMLNodeBase::getName( );
 		
         for ( i = 0; i < node->getAttributeCount( ); ++i )
         {
             s += " ";
-            s += node->getAttribute( i )->getName( ).c_str( );
+            s += node->getAttribute( i )->getName( );
             s += "=\"";
-            s += node->getAttribute( i )->getString( ).c_str( );
+            s += node->getAttribute( i )->getString( );
             s += "\"";
         }
 		
@@ -119,7 +119,7 @@ void XMLWriterFile::writeNode( XMLNode *node, int tab )
 		
 		case XML_NODE_TEXT:
 		
-		s += node->getString();
+		s += node->XMLNodeBase::getString();
 		
         appendString( s, true );
         break;
@@ -127,7 +127,7 @@ void XMLWriterFile::writeNode( XMLNode *node, int tab )
 		case XML_NODE_TEXT_NO_CHECK:
 		s += '\n';
 		s += "<![CDATA[";
-        s += node->getString();
+        s += node->XMLNodeBase::getString();
 		s += "]]>";
         appendString( s );
         break;
@@ -137,7 +137,7 @@ void XMLWriterFile::writeNode( XMLNode *node, int tab )
 		s += std::string(tab, '\t');
 		
         s += "<-- ";
-        s += node->getString( );
+        s += node->XMLNodeBase::getString( );
         s += " -->";
 		
         appendString( s );
@@ -148,7 +148,7 @@ void XMLWriterFile::writeNode( XMLNode *node, int tab )
 	
     for ( i = 0; i < node->getChildCount( ); ++i )
     {
-        writeNode( node->getChildElement( i ), tab + 1 );
+        writeNode((XMLNode*) node->getChildElement( i ), tab + 1 );
     }
 	
     if ( ( node->getType( ) == XML_NODE_ELEMENT ) && ( node->getChildCount( ) > 0 ) )
@@ -161,7 +161,7 @@ void XMLWriterFile::writeNode( XMLNode *node, int tab )
         }
 		
         s += "</";
-        s += node->getName( );
+        s += node->XMLNodeBase::getName( );
         s += ">";
         appendString( s );
     }

@@ -127,11 +127,11 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 	CMSP current = nullptr;
 
 #ifdef KEEP_XML_DOCUMENT
-	XMLAttributeTemplate< StringType >* autoUpdate = currentNode->getAttribute("AutoUpdate");
-	XMLAttributeTemplate< StringType >* aggregate = currentNode->getAttribute("Aggregate");
+	XMLAttributeTemplate< StringType >* autoUpdate = static_cast<XMLAttributeTemplate< StringType > * >(currentNode->getAttribute("AutoUpdate"));
+	XMLAttributeTemplate< StringType >* aggregate = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAttribute("Aggregate"));
 #else
-	XMLAttributeTemplate< StringType >* autoUpdate = currentNode->getAndRemoveAttribute("AutoUpdate");
-	XMLAttributeTemplate< StringType >* aggregate = currentNode->getAndRemoveAttribute("Aggregate");
+	XMLAttributeTemplate< StringType >* autoUpdate = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAndRemoveAttribute("AutoUpdate"));
+	XMLAttributeTemplate< StringType >* aggregate = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAndRemoveAttribute("Aggregate"));
 #endif
 	bool needInit = true;
 	bool do_not_add_as_son = false;
@@ -140,15 +140,15 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 	if (currentNode->nameOneOf("Instance", "Inst"))
 	{
 #ifdef KEEP_XML_DOCUMENT
-		XMLAttributeTemplate< StringType >* NameAttribute = currentNode->getAttribute("N", "Name");
-		XMLAttributeTemplate< StringType >* typeAttribute = currentNode->getAttribute("T", "Type");
-		XMLAttributeTemplate< StringType >* pathAttribute = currentNode->getAttribute("P", "Path");
-		XMLAttributeTemplate< StringType >* uniqueAttribute = currentNode->getAttribute("U", "Unique");
+		XMLAttributeTemplate< StringType >* NameAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAttribute("N", "Name"));
+		XMLAttributeTemplate< StringType >* typeAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAttribute("T", "Type"));
+		XMLAttributeTemplate< StringType >* pathAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAttribute("P", "Path"));
+		XMLAttributeTemplate< StringType >* uniqueAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAttribute("U", "Unique"));
 #else
-		XMLAttributeTemplate< StringType >* NameAttribute = currentNode->getAndRemoveAttribute("N", "Name");
-		XMLAttributeTemplate< StringType >* typeAttribute = currentNode->getAndRemoveAttribute("T", "Type");
-		XMLAttributeTemplate< StringType >* pathAttribute = currentNode->getAndRemoveAttribute("P", "Path");
-		XMLAttributeTemplate< StringType >* uniqueAttribute = currentNode->getAndRemoveAttribute("U", "Unique");
+		XMLAttributeTemplate< StringType >* NameAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAndRemoveAttribute("N", "Name"));
+		XMLAttributeTemplate< StringType >* typeAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAndRemoveAttribute("T", "Type"));
+		XMLAttributeTemplate< StringType >* pathAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAndRemoveAttribute("P", "Path"));
+		XMLAttributeTemplate< StringType >* uniqueAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAndRemoveAttribute("U", "Unique"));
 #endif
 
 		bool is_unique = importState.is_include_unique || uniqueAttribute;
@@ -159,7 +159,7 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 		std::string name;
 		if (NameAttribute)
 		{
-			name = NameAttribute->getString();
+			name = NameAttribute->XMLAttributeBase::getString();
 		}
 
 		if (!importState.override_name.empty())
@@ -183,7 +183,7 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 					CMSP son = (*itson).mItem;
 					if (son->getName() == name)
 					{
-						if (son->isSubType(typeAttribute->getString()))
+						if (son->isSubType(typeAttribute->XMLAttributeBase::getString()))
 						{
 							found = true;
 							needInit = false;
@@ -198,14 +198,14 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 			{
 				if (is_unique)
 				{
-					current = GetFirstInstanceByName(typeAttribute->getString(), name, false);
+					current = GetFirstInstanceByName(typeAttribute->XMLAttributeBase::getString(), name, false);
 					reused_unique_instance = current;
 					//if (current) current->GetRef(); // already set by GetFirstInstanceByName
 				}
 
 				if (!current)
 				{
-					current = KigsCore::GetInstanceOf(name, typeAttribute->getString());
+					current = KigsCore::GetInstanceOf(name, typeAttribute->XMLAttributeBase::getString());
 #ifdef KEEP_XML_DOCUMENT
 					current->mXMLNodes[importState.current_xml_file] = currentNode;
 #endif
@@ -220,11 +220,11 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 
 			if constexpr (std::is_same_v<StringType, std::string_view>)
 			{
-				current = Import(std::string(pathAttribute->getString()), importState.noInit, importState.keepImportFileName, &importState, name);
+				current = Import(std::string(pathAttribute->XMLAttributeBase::getString()), importState.noInit, importState.keepImportFileName, &importState, name);
 			}
 			else
 			{
-				current = Import(pathAttribute->getString(), importState.noInit, importState.keepImportFileName, &importState, name);
+				current = Import(pathAttribute->XMLAttributeBase::getString(), importState.noInit, importState.keepImportFileName, &importState, name);
 			}
 			importState.is_include_unique = false;
 
@@ -234,11 +234,11 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 				{
 					if constexpr (std::is_same_v<StringType, std::string_view>)
 					{
-						current->AddDynamicAttribute(ATTRIBUTE_TYPE::STRING, "SeparatedFile", std::string(pathAttribute->getString()).c_str());
+						current->AddDynamicAttribute(ATTRIBUTE_TYPE::STRING, "SeparatedFile", std::string(pathAttribute->XMLAttributeBase::getString()).c_str());
 					}
 					else
 					{
-						current->AddDynamicAttribute(ATTRIBUTE_TYPE::STRING, "SeparatedFile", pathAttribute->getString().c_str());
+						current->AddDynamicAttribute(ATTRIBUTE_TYPE::STRING, "SeparatedFile", pathAttribute->XMLAttributeBase::getString().c_str());
 					}
 				}
 
@@ -272,21 +272,21 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 
 	}
 	//permet de rajouter un xml avec la syntaxe <Include Name="fichier.xml"/>
-	else if (currentNode->getName() == "Include")
+	else if (currentNode->compareName("Include"))
 	{
 #ifdef KEEP_XML_DOCUMENT
-		XMLAttributeTemplate< StringType >* NameAttribute = currentNode->getAttribute("Name", "N");
-		XMLAttributeTemplate< StringType >* PathAttribute = currentNode->getAttribute("Path", "P");
+		XMLAttributeTemplate< StringType >* NameAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAttribute("Name", "N"));
+		XMLAttributeTemplate< StringType >* PathAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAttribute("Path", "P"));
 #else
-		XMLAttributeTemplate< StringType >* NameAttribute = currentNode->getAndRemoveAttribute("Name", "N");
-		XMLAttributeTemplate< StringType >* PathAttribute = currentNode->getAndRemoveAttribute("Path", "P");
+		XMLAttributeTemplate< StringType >* NameAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAndRemoveAttribute("Name", "N"));
+		XMLAttributeTemplate< StringType >* PathAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAndRemoveAttribute("Path", "P"));
 #endif
 		bool rename = NameAttribute && PathAttribute;
 
 		if (NameAttribute)
 		{
-			std::string name = (std::string)NameAttribute->getString();
-			std::string path = PathAttribute ? (std::string)PathAttribute->getString() : name;
+			std::string name = (std::string)NameAttribute->XMLAttributeBase::getString();
+			std::string path = PathAttribute ? (std::string)PathAttribute->XMLAttributeBase::getString() : name;
 
 			if (rename)
 				importState.override_name = name;
@@ -321,11 +321,11 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 	}
 	else if (currentNode->nameOneOf("Ref", "Reference"))
 	{
-		XMLAttributeTemplate< StringType >* DontAdd = currentNode->getAttribute("DontAddAsSon");
-		XMLAttributeTemplate< StringType >* pathAttribute = currentNode->getAttribute("P", "Path");
+		XMLAttributeTemplate< StringType >* DontAdd = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAttribute("DontAddAsSon"));
+		XMLAttributeTemplate< StringType >* pathAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAttribute("P", "Path"));
 		if (pathAttribute)
 		{
-			current = SearchInstance((std::string)pathAttribute->getString(), currentModifiable);
+			current = SearchInstance((std::string)pathAttribute->XMLAttributeBase::getString(), currentModifiable);
 			if (current)
 			{
 				//current->GetRef(); ref already get by searchinstance
@@ -344,18 +344,18 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 	}
 	else if (currentNode->nameOneOf("Rel", "RelativePath"))
 	{
-		XMLAttributeTemplate< StringType >* PathAttribute = currentNode->getAttribute("P", "Path");
-		XMLAttributeTemplate< StringType >* NameAttribute = currentNode->getAttribute("Name", "N");
+		XMLAttributeTemplate< StringType >* PathAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAttribute("P", "Path"));
+		XMLAttributeTemplate< StringType >* NameAttribute = static_cast<XMLAttributeTemplate< StringType >*>(currentNode->getAttribute("Name", "N"));
 		bool rename = NameAttribute && PathAttribute;
 		if (PathAttribute)
 		{
 
-			current = SearchInstance((std::string)PathAttribute->getString(), currentModifiable);
+			current = SearchInstance((std::string)PathAttribute->XMLAttributeBase::getString(), currentModifiable);
 			if (current)
 			{
 				if (rename)
 				{
-					std::string name = (std::string)NameAttribute->getString();
+					std::string name = (std::string)NameAttribute->XMLAttributeBase::getString();
 					current->setName(name);
 				}
 
@@ -373,12 +373,12 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 	if (current && !reused_unique_instance)
 	{
 		// import upgradors first
-		ImportUpgradors(currentNode, current.get(), importState);
+		ImportUpgradors<StringType>(currentNode, current.get(), importState);
 		std::vector<XMLNodeBase*>	sons;
 		sons.clear();
 
 
-		ImportAttributes(currentNode, current.get(), importState, sons);
+		ImportAttributes<StringType>(currentNode, current.get(), importState, sons);
 
 		// manage shared instances
 		CMSP shared = current->getSharedInstance();
@@ -448,7 +448,7 @@ template<typename StringType>
 CMSP CoreModifiable::InitReference(XMLNodeTemplate< StringType >* currentNode, std::vector<CMSP>& loadedItems, const std::string& name)
 {
 	CMSP current = nullptr;
-	XMLAttributeTemplate< StringType >* ref = currentNode->getAttribute("Ref", "Reference");
+	XMLAttributeTemplate< StringType >* ref = static_cast<XMLAttributeTemplate< StringType > * >(currentNode->getAttribute("Ref", "Reference"));
 
 	if (ref)
 	{
@@ -457,7 +457,7 @@ CMSP CoreModifiable::InitReference(XMLNodeTemplate< StringType >* currentNode, s
 
 		std::vector<CMSP>::const_iterator Iter = loadedItems.begin();
 		std::vector<CMSP>::const_iterator Iterend = loadedItems.end();
-		KigsID type = ref->getString();
+		KigsID type = ref->XMLAttributeBase::getString();
 		while (Iter != Iterend)
 		{
 			const CMSP& pLoaded = *Iter;
@@ -496,12 +496,12 @@ void 	CoreModifiable::ImportUpgradors(XMLNodeTemplate<StringType>* node, CoreMod
 {
 	for (s32 i = 0; i < node->getChildCount(); i++)
 	{
-		XMLNodeTemplate<StringType>* sonXML = node->getChildElement(i);
+		XMLNodeTemplate<StringType>* sonXML = static_cast<XMLNodeTemplate<StringType> *>(node->getChildElement(i));
 		if (sonXML->getType() == XML_NODE_ELEMENT)
 		{
-			if (sonXML->getName() == "Upgrd")
+			if (sonXML->compareName("Upgrd"))
 			{
-				XMLAttributeTemplate<StringType>* attr = sonXML->getAttribute("N", "Name");
+				XMLAttributeBase* attr = sonXML->getAttribute("N", "Name");
 				std::string name(attr->getString());
 				currentModifiable->Upgrade(name);
 			}
@@ -510,11 +510,11 @@ void 	CoreModifiable::ImportUpgradors(XMLNodeTemplate<StringType>* node, CoreMod
 }
 
 template<typename StringType>
-void 	CoreModifiable::ImportAttributes(XMLNodeTemplate<StringType>* node, CoreModifiable* currentModifiable, ImportState& importState, std::vector<XMLNodeBase*>& sons)
+void 	CoreModifiable::ImportAttributes(XMLNodeBase* node, CoreModifiable* currentModifiable, ImportState& importState, std::vector<XMLNodeBase*>& sons)
 {
 	for (s32 i = 0; i < node->getChildCount(); i++)
 	{
-		XMLNodeTemplate<StringType>* sonXML = node->getChildElement(i);
+		XMLNodeTemplate<StringType>* sonXML = static_cast<XMLNodeTemplate<StringType>*>(node->getChildElement(i));
 		if (sonXML->getType() == XML_NODE_ELEMENT)
 		{
 
@@ -525,8 +525,8 @@ void 	CoreModifiable::ImportAttributes(XMLNodeTemplate<StringType>* node, CoreMo
 			}
 			else if (sonXML->nameOneOf("CoreDecorator", "Deco"))
 			{
-				XMLAttributeTemplate<StringType>* attr = sonXML->getAttribute("N", "Name");
-				KigsCore::DecorateInstance(currentModifiable, attr->getString());
+				XMLAttributeTemplate<StringType>* attr = static_cast<XMLAttributeTemplate<StringType> *>(sonXML->getAttribute("N", "Name"));
+				KigsCore::DecorateInstance(currentModifiable, attr->XMLAttributeBase::getString());
 			}
 			else if (sonXML->nameOneOf("Lua", "LuaScript") || sonXML->nameOneOf("LUAScript", "LUA"))
 			{
@@ -537,18 +537,18 @@ void 	CoreModifiable::ImportAttributes(XMLNodeTemplate<StringType>* node, CoreMo
 			{
 				// init attribute
 				KIGS_WARNING("Use Connect instead of callback in the XML file !", 0);
-				XMLAttributeTemplate<StringType> * slot = sonXML->getAttribute("Name");
-				if (!slot) slot = sonXML->getAttribute("N");
+				XMLAttributeTemplate<StringType> * slot = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("Name"));
+				if (!slot) slot = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("N"));
 
-				XMLAttributeTemplate<StringType>* signal = sonXML->getAttribute("Type");
-				if (!signal) signal = sonXML->getAttribute("T");
+				XMLAttributeTemplate<StringType>* signal = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("Type"));
+				if (!signal) signal = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("T"));
 
-				KigsCore::Connect(currentModifiable, signal->getString(), currentModifiable, slot->getString());
+				KigsCore::Connect(currentModifiable, signal->XMLAttributeBase::getString(), currentModifiable, slot->XMLAttributeBase::getString());
 			}
 			else if (sonXML->nameOneOf("OnEvent", "OnE"))
 			{
-				XMLAttributeTemplate<StringType>* NameAttribute = sonXML->getAttribute("N", "Name");
-				XMLAttributeTemplate<StringType>* ActionAttribute = sonXML->getAttribute("A", "Action");
+				XMLAttributeTemplate<StringType>* NameAttribute = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("N", "Name"));
+				XMLAttributeTemplate<StringType>* ActionAttribute = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("A", "Action"));
 
 				if (NameAttribute && ActionAttribute)
 				{
@@ -556,8 +556,8 @@ void 	CoreModifiable::ImportAttributes(XMLNodeTemplate<StringType>* node, CoreMo
 					std::string name;
 					std::string action;
 
-					name = NameAttribute->getString();
-					action = ActionAttribute->getString();
+					name = NameAttribute->XMLAttributeBase::getString();
+					action = ActionAttribute->XMLAttributeBase::getString();
 
 					KigsCore::GetNotificationCenter()->addObserver(currentModifiable, action, name);
 
@@ -565,48 +565,48 @@ void 	CoreModifiable::ImportAttributes(XMLNodeTemplate<StringType>* node, CoreMo
 			}
 			else if (sonXML->nameOneOf("Connection", "Connect"))
 			{
-				XMLAttributeTemplate<StringType>* SiNameAttribute = sonXML->getAttribute("Si", "Signal");
-				XMLAttributeTemplate<StringType>* InstAAttribute = sonXML->getAttribute("E", "Emitter");
-				XMLAttributeTemplate<StringType>* SlNameAttribute = sonXML->getAttribute("Sl", "Slot");
-				XMLAttributeTemplate<StringType>* InstBAttribute = sonXML->getAttribute("R", "Receiver");
+				XMLAttributeTemplate<StringType>* SiNameAttribute = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("Si", "Signal"));
+				XMLAttributeTemplate<StringType>* InstAAttribute = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("E", "Emitter"));
+				XMLAttributeTemplate<StringType>* SlNameAttribute = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("Sl", "Slot"));
+				XMLAttributeTemplate<StringType>* InstBAttribute = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("R", "Receiver"));
 
-				XMLAttributeTemplate<StringType>* SetValueAttribute = sonXML->getAttribute("V", "SetValue");
+				XMLAttributeTemplate<StringType>* SetValueAttribute = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("V", "SetValue"));
 
 				if (SiNameAttribute && SlNameAttribute)
 				{
-					std::string signal = (std::string)SiNameAttribute->getString();
-					std::string slot = (std::string)SlNameAttribute->getString();
+					std::string signal = (std::string)SiNameAttribute->XMLAttributeBase::getString();
+					std::string slot = (std::string)SlNameAttribute->XMLAttributeBase::getString();
 
-					std::string ia = InstAAttribute ? (std::string)InstAAttribute->getString() : "this";
-					std::string ib = InstBAttribute ? (std::string) InstBAttribute->getString() : "this";
+					std::string ia = InstAAttribute ? (std::string)InstAAttribute->XMLAttributeBase::getString() : "this";
+					std::string ib = InstBAttribute ? (std::string) InstBAttribute->XMLAttributeBase::getString() : "this";
 
-					importState.toConnect.push_back(ImportState::ToConnect{ currentModifiable, ia, signal, ib, slot, SetValueAttribute ? (std::string)SetValueAttribute->getString() : "", sonXML });
+					importState.toConnect.push_back(ImportState::ToConnect{ currentModifiable, ia, signal, ib, slot, SetValueAttribute ? (std::string)SetValueAttribute->XMLAttributeBase::getString() : "", sonXML });
 				}
 			}
-			else if (sonXML->getName()=="Call")
+			else if (sonXML->XMLNodeBase::getName()=="Call")
 			{
-				XMLAttributeTemplate<StringType>* ParamList = sonXML->getAttribute("P","Params");
-				XMLAttributeTemplate<StringType>* MethodName = sonXML->getAttribute("N", "Name");
+				XMLAttributeTemplate<StringType>* ParamList = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("P","Params"));
+				XMLAttributeTemplate<StringType>* MethodName = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("N", "Name"));
 				if (MethodName)
 				{
 					std::string plist = "";
 					if (ParamList) // if param attribute found
 					{
-						plist = (std::string)ParamList->getString();
+						plist = (std::string)ParamList->XMLAttributeBase::getString();
 					}
 					else // check if text son node exists
 					{
 						if (sonXML->getChildCount() == 1)
 						{
-							XMLNodeTemplate<StringType>* textSon = sonXML->getChildElement(0);
+							XMLNodeTemplate<StringType>* textSon = static_cast<XMLNodeTemplate<StringType>*>(sonXML->getChildElement(0));
 							if ((textSon->getType() == XML_NODE_TEXT_NO_CHECK) || (textSon->getType() == XML_NODE_TEXT))
 							{
-								plist = (std::string)textSon->getString();
+								plist = (std::string)textSon->XMLNodeBase::getString();
 							}
 						}
 					}
 					
-					importState.toCall.push_back(ImportState::ToCall{ currentModifiable, (std::string)MethodName->getString() ,plist });
+					importState.toCall.push_back(ImportState::ToCall{ currentModifiable, (std::string)MethodName->XMLAttributeBase::getString() ,plist });
 				}
 			}
 			else if (sonXML->nameOneOf("RegisterTouchEvent", "REvent"))
@@ -615,9 +615,9 @@ void 	CoreModifiable::ImportAttributes(XMLNodeTemplate<StringType>* node, CoreMo
 
 				CoreModifiable* theInputModule = KigsCore::GetModule("ModuleInput");
 
-				XMLAttributeTemplate<StringType>* MethodNameAttribute = sonXML->getAttribute("M", "Method");
-				XMLAttributeTemplate<StringType>* EventNameAttribute = sonXML->getAttribute("E", "Event");
-				XMLAttributeTemplate<StringType>* FlagAttribute = sonXML->getAttribute("F", "Flag");
+				XMLAttributeTemplate<StringType>* MethodNameAttribute = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("M", "Method"));
+				XMLAttributeTemplate<StringType>* EventNameAttribute = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("E", "Event"));
+				XMLAttributeTemplate<StringType>* FlagAttribute = static_cast<XMLAttributeTemplate<StringType>*>(sonXML->getAttribute("F", "Flag"));
 
 				if (MethodNameAttribute && EventNameAttribute)
 				{
@@ -627,10 +627,10 @@ void 	CoreModifiable::ImportAttributes(XMLNodeTemplate<StringType>* node, CoreMo
 						flag = FlagAttribute->getInt();
 					}
 
-					theInputModule->SimpleCall("registerTouchEvent", currentModifiable, MethodNameAttribute->getString(), EventNameAttribute->getString(), flag);
+					theInputModule->SimpleCall("registerTouchEvent", currentModifiable, MethodNameAttribute->XMLAttributeBase::getString(), EventNameAttribute->XMLAttributeBase::getString(), flag);
 				}
 			}
-			else if (sonXML->getName() == "Upgrd")
+			else if (sonXML->compareName("Upgrd"))
 			{
 				// already done
 			}
@@ -641,7 +641,7 @@ void 	CoreModifiable::ImportAttributes(XMLNodeTemplate<StringType>* node, CoreMo
 		}
 		else if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
 		{
-			currentModifiable->ImportFromCData((std::string)sonXML->getString());
+			currentModifiable->ImportFromCData((std::string)sonXML->XMLNodeBase::getString());
 		}
 	}
 }
@@ -660,16 +660,16 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 {
 
 #ifdef KEEP_XML_DOCUMENT
-	XMLAttributeTemplate<StringType>* pathAttribute = currentNode->getAttribute("P", "Path");
-	XMLAttributeTemplate<StringType>* attrname = currentNode->getAttribute("N", "Name");
+	XMLAttributeTemplate<StringType>* pathAttribute = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("P", "Path"));
+	XMLAttributeTemplate<StringType>* attrname = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("N", "Name"));
 #else
-	XMLAttributeTemplate<StringType>* pathAttribute = currentNode->getAndRemoveAttribute("P", "Path");
-	XMLAttributeTemplate<StringType>* attrname = currentNode->getAndRemoveAttribute("N", "Name");
+	XMLAttributeTemplate<StringType>* pathAttribute = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAndRemoveAttribute("P", "Path"));
+	XMLAttributeTemplate<StringType>* attrname = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAndRemoveAttribute("N", "Name"));
 #endif
 
 	if (pathAttribute)
 	{
-		currentModifiable = SearchInstance((std::string)pathAttribute->getString(), currentModifiable).get();
+		currentModifiable = SearchInstance((std::string)pathAttribute->XMLAttributeBase::getString(), currentModifiable).get();
 		if (!currentModifiable)
 		{
 #ifndef KEEP_XML_DOCUMENT
@@ -682,13 +682,13 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 		}
 	}
 
-	XMLAttributeTemplate<StringType>* attrtype = currentNode->getAttribute("T", "Type");
-	if (attrtype && attrtype->getString() == "unknown")
+	XMLAttributeTemplate<StringType>* attrtype = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("T", "Type"));
+	if (attrtype && attrtype->XMLAttributeBase::getString() == "unknown")
 	{
 		return;
 	}
 
-	KigsID id = attrname->getString();
+	KigsID id = attrname->XMLAttributeBase::getString();
 
 	CoreModifiableAttribute* attr = 0;
 	bool attrfound = false;
@@ -700,11 +700,11 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 		attr = (*AttrByID).second;
 		if (attr)
 		{
-			XMLAttributeTemplate<StringType>* attrvalue = currentNode->getAttribute("V", "Value");
+			XMLAttributeTemplate<StringType>* attrvalue = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("V", "Value"));
 
 			if (attrvalue)
 			{
-				std::string tempvalue = (std::string)attrvalue->getString();
+				std::string tempvalue = (std::string)attrvalue->XMLAttributeBase::getString();
 				if (AttributeNeedEval(tempvalue))
 				{
 					EvalAttribute(tempvalue, currentModifiable, attr);
@@ -720,23 +720,23 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 					attr->setValue(tempvalue);
 				}
 			}
-			else if ((attrvalue = currentNode->getAttribute("LUA", "L"), attrvalue))
+			else if ((attrvalue = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("LUA", "L"), attrvalue)))
 			{
-				std::string code = (std::string)attrvalue->getString();
+				std::string code = (std::string)attrvalue->XMLAttributeBase::getString();
 				CoreModifiable* luamodule = KigsCore::GetModule("LuaKigsBindModule");
 				if (luamodule)
 				{
-					luamodule->SimpleCall("SetValueLua", currentModifiable, attrname->getString(), code);
+					luamodule->SimpleCall("SetValueLua", currentModifiable, attrname->XMLAttributeBase::getString(), code);
 				}
 			}
 			else // check if value is in text or CDATA
 			{
 				for (s32 i = 0; i < currentNode->getChildCount(); i++)
 				{
-					XMLNodeTemplate< StringType>* sonXML = currentNode->getChildElement(i);
+					XMLNodeTemplate< StringType>* sonXML = static_cast<XMLNodeTemplate<StringType>*>(currentNode->getChildElement(i));
 					if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
 					{
-						std::string tempvalue = (std::string)sonXML->getString();
+						std::string tempvalue = (std::string)sonXML->XMLNodeBase::getString();
 						if (AttributeNeedEval(tempvalue))
 						{
 							EvalAttribute(tempvalue, currentModifiable, attr);
@@ -760,25 +760,25 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 
 	if (!attrfound)
 	{
-		XMLAttributeTemplate<StringType>* attrdynamic = currentNode->getAttribute("Dyn", "Dynamic");
+		XMLAttributeTemplate<StringType>* attrdynamic = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("Dyn", "Dynamic"));
 
 		if (attrdynamic)
 		{
-			if ((attrdynamic->getString() == "true") || (attrdynamic->getString() == "yes"))
+			if ((attrdynamic->XMLAttributeBase::getString() == "true") || (attrdynamic->XMLAttributeBase::getString() == "yes"))
 			{
-				XMLAttributeTemplate<StringType>* attrvalue = currentNode->getAttribute("V", "Value");
+				XMLAttributeTemplate<StringType>* attrvalue = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("V", "Value"));
 
 				if (attrvalue)
 				{
 					if (attrtype)
 					{
-						ATTRIBUTE_TYPE atype = CoreModifiableAttribute::stringToType((std::string)attrtype->getString());
+						ATTRIBUTE_TYPE atype = CoreModifiableAttribute::stringToType((std::string)attrtype->XMLAttributeBase::getString());
 						if (atype != ATTRIBUTE_TYPE::UNKNOWN)
 						{
 							if ((atype != ATTRIBUTE_TYPE::ARRAY) && (atype != ATTRIBUTE_TYPE::REFERENCE))
 							{
-								attr = currentModifiable->AddDynamicAttribute(atype, (std::string)attrname->getString());
-								std::string tempvalue = (std::string)attrvalue->getString();
+								attr = currentModifiable->AddDynamicAttribute(atype, (std::string)attrname->XMLAttributeBase::getString());
+								std::string tempvalue = (std::string)attrvalue->XMLAttributeBase::getString();
 								if (AttributeNeedEval(tempvalue))
 								{
 									EvalAttribute(tempvalue, currentModifiable, attr);
@@ -796,7 +796,7 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 							}
 							else
 							{
-								attr = currentModifiable->AddDynamicAttribute(atype, (std::string)attrname->getString(), ((std::string)attrvalue->getString()).c_str());
+								attr = currentModifiable->AddDynamicAttribute(atype, (std::string)attrname->XMLAttributeBase::getString(), ((std::string)attrvalue->XMLAttributeBase::getString()).c_str());
 							}
 						}
 					}
@@ -805,14 +805,14 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 				{
 					for (s32 i = 0; i < currentNode->getChildCount(); i++)
 					{
-						XMLNodeTemplate< StringType>* sonXML = currentNode->getChildElement(i);
+						XMLNodeTemplate< StringType>* sonXML = static_cast<XMLNodeTemplate<StringType>*>(currentNode->getChildElement(i));
 						if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
 						{
-							ATTRIBUTE_TYPE atype = CoreModifiableAttribute::stringToType((std::string)attrtype->getString());
+							ATTRIBUTE_TYPE atype = CoreModifiableAttribute::stringToType((std::string)attrtype->XMLAttributeBase::getString());
 							if ((atype != ATTRIBUTE_TYPE::ARRAY) && (atype != ATTRIBUTE_TYPE::REFERENCE))
 							{
-								attr = currentModifiable->AddDynamicAttribute(atype, (std::string)attrname->getString());
-								std::string tempvalue = (std::string)sonXML->getString();
+								attr = currentModifiable->AddDynamicAttribute(atype, (std::string)attrname->XMLAttributeBase::getString());
+								std::string tempvalue = (std::string)sonXML->XMLNodeBase::getString();
 								if (AttributeNeedEval(tempvalue))
 								{
 									EvalAttribute(tempvalue, currentModifiable, attr);
@@ -828,7 +828,7 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 							}
 							else
 							{
-								attr = currentModifiable->AddDynamicAttribute(atype, (std::string)attrname->getString(), ((std::string)sonXML->getString()).c_str());
+								attr = currentModifiable->AddDynamicAttribute(atype, (std::string)attrname->XMLAttributeBase::getString(), ((std::string)sonXML->XMLNodeBase::getString()).c_str());
 							}
 							break;
 						}
@@ -843,7 +843,7 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 	{
 		for (s32 i = 0; i < currentNode->getChildCount(); i++)
 		{
-			XMLNodeTemplate< StringType>* sonXML = currentNode->getChildElement(i);
+			XMLNodeTemplate< StringType>* sonXML = static_cast<XMLNodeTemplate<StringType>*>(currentNode->getChildElement(i));
 			if (sonXML->getType() == XML_NODE_ELEMENT)
 			{
 				if (sonXML->nameOneOf("Modifier", "Mod"))
@@ -867,18 +867,18 @@ void	CoreModifiable::InitLuaScript(XMLNodeTemplate< StringType>* currentNode, Co
 	if (!luamodule)
 		return;
 
-	XMLAttributeTemplate<StringType>* attrname = currentNode->getAttribute("N", "Name");
+	XMLAttributeTemplate<StringType>* attrname = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("N", "Name"));
 
 	if (!attrname)
 		return;
 
-	XMLAttributeTemplate<StringType>* attrtype = currentNode->getAttribute("T", "Type");
-	XMLAttributeTemplate<StringType>* attrvalue = currentNode->getAttribute("V", "Value");
+	XMLAttributeTemplate<StringType>* attrtype = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("T", "Type"));
+	XMLAttributeTemplate<StringType>* attrvalue = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("V", "Value"));
 
 	std::string code = "";
 	if (attrvalue)
 	{
-		code = (std::string)attrvalue->getString();
+		code = (std::string)attrvalue->XMLAttributeBase::getString();
 		if (code.size() && code[0] == '#')
 		{
 			code.erase(code.begin());
@@ -903,10 +903,10 @@ void	CoreModifiable::InitLuaScript(XMLNodeTemplate< StringType>* currentNode, Co
 		{
 			for (s32 i = 0; i < currentNode->getChildCount(); i++)
 			{
-				XMLNodeTemplate< StringType>* sonXML = currentNode->getChildElement(i);
+				XMLNodeTemplate< StringType>* sonXML = static_cast<XMLNodeTemplate<StringType>*>(currentNode->getChildElement(i));
 				if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
 				{
-					code = (std::string)sonXML->getString();
+					code = (std::string)sonXML->XMLNodeBase::getString();
 					break;
 				}
 			}
@@ -915,7 +915,7 @@ void	CoreModifiable::InitLuaScript(XMLNodeTemplate< StringType>* currentNode, Co
 
 
 	std::vector<CoreModifiableAttribute*> params;
-	maString pName("pName", (std::string)attrname->getString());
+	maString pName("pName", (std::string)attrname->XMLAttributeBase::getString());
 	maString pCode("pCode", code);
 	maRawPtr pXML("pXML", currentNode);
 
@@ -927,7 +927,7 @@ void	CoreModifiable::InitLuaScript(XMLNodeTemplate< StringType>* currentNode, Co
 	localthis = currentModifiable;
 	params.push_back(&localthis);
 
-	maString cbType("cbType", attrtype ? (std::string)attrtype->getString() : "");
+	maString cbType("cbType", attrtype ? (std::string)attrtype->XMLAttributeBase::getString() : "");
 	if (attrtype)
 		params.push_back(&cbType);
 
@@ -937,12 +937,12 @@ void	CoreModifiable::InitLuaScript(XMLNodeTemplate< StringType>* currentNode, Co
 template<typename StringType>
 AttachedModifierBase* CoreModifiable::InitAttributeModifier(XMLNodeTemplate< StringType>* currentNode, CoreModifiableAttribute* attr)
 {
-	XMLAttributeTemplate<StringType>* attrtype = currentNode->getAttribute("T", "Type");
+	XMLAttributeTemplate<StringType>* attrtype = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("T", "Type"));
 
 	AttachedModifierBase* toAdd = 0;
 	if (attrtype)
 	{
-		std::string modifiertype = (std::string)attrtype->getString();
+		std::string modifiertype = (std::string)attrtype->XMLAttributeBase::getString();
 		if (modifiertype != "")
 		{
 			auto& instanceMap = KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap();
@@ -957,11 +957,11 @@ AttachedModifierBase* CoreModifiable::InitAttributeModifier(XMLNodeTemplate< Str
 		{
 			// is setter ?
 			bool isSetter = false;
-			XMLAttributeTemplate<StringType>* attrsetter = currentNode->getAttribute("Setter", "isSetter");
+			XMLAttributeTemplate<StringType>* attrsetter = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("Setter", "isSetter"));
 
 			if (attrsetter)
 			{
-				if ((attrsetter->getString() == "true") || (attrsetter->getString() == "yes"))
+				if ((attrsetter->XMLAttributeBase::getString() == "true") || (attrsetter->XMLAttributeBase::getString() == "yes"))
 				{
 					isSetter = true;
 				}
@@ -969,11 +969,11 @@ AttachedModifierBase* CoreModifiable::InitAttributeModifier(XMLNodeTemplate< Str
 
 			// search value
 			std::string value = "";
-			XMLAttributeTemplate<StringType>* attrvalue = currentNode->getAttribute("V", "Value");
+			XMLAttributeTemplate<StringType>* attrvalue = static_cast<XMLAttributeTemplate<StringType>*>(currentNode->getAttribute("V", "Value"));
 
 			if (attrvalue)
 			{
-				value = (std::string)attrvalue->getString();
+				value = (std::string)attrvalue->XMLAttributeBase::getString();
 			}
 
 			// check for direct string
@@ -981,10 +981,10 @@ AttachedModifierBase* CoreModifiable::InitAttributeModifier(XMLNodeTemplate< Str
 			{
 				for (s32 i = 0; i < currentNode->getChildCount(); i++)
 				{
-					XMLNodeTemplate< StringType>* sonXML = currentNode->getChildElement(i);
+					XMLNodeTemplate< StringType>* sonXML = static_cast<XMLNodeTemplate<StringType>*>(currentNode->getChildElement(i));
 					if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
 					{
-						value = sonXML->getString();
+						value = sonXML->XMLNodeBase::getString();
 						break;
 					}
 				}

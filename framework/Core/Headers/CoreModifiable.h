@@ -1145,7 +1145,7 @@ protected:
 
 	// separated import attributes / import sons, so be sure to import attribute first
 	template<typename StringType>
-	static void ImportAttributes(XMLNodeTemplate<StringType>* currentNode, CoreModifiable* currentModifiable, ImportState& importState, std::vector<XMLNodeBase *>& sons);
+	static void ImportAttributes(XMLNodeBase* currentNode, CoreModifiable* currentModifiable, ImportState& importState, std::vector<XMLNodeBase *>& sons);
 
 	template<typename StringType>
 	static void ImportUpgradors(XMLNodeTemplate<StringType>* currentNode, CoreModifiable* currentModifiable, ImportState& importState);

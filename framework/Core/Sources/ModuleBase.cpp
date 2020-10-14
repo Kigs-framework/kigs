@@ -46,14 +46,14 @@ bool ModuleDescription::Init(const kstl::string& fileName)
 		}
 		else
 		{
-			if(root->getName() != "ModuleDescription")
+			if(!root->compareName("ModuleDescription"))
 			{
 				mIsGoodFile=false;
 			}
 			else
 			{
 				//! get module name
-				XMLAttribute* attribute=root->getAttribute("name");
+				XMLAttributeBase* attribute=root->getAttribute("name");
 				if(attribute)
 				{
 					mModuleName=attribute->getString();
@@ -70,12 +70,12 @@ bool ModuleDescription::Init(const kstl::string& fileName)
 			//! get all dll names
 			for ( int i = 0; i < root->getChildCount( ); ++i )
 			{
-				XMLNode* dllnode=root->getChildElement( i );
+				XMLNodeBase* dllnode=root->getChildElement( i );
 				if(dllnode)
 				{
 					if( (dllnode->getName() == "fileName")&&(dllnode->getChildCount()) )
 					{
-						XMLNode*	textnode=dllnode->getChildElement( 0 );
+						XMLNodeBase*	textnode=dllnode->getChildElement( 0 );
 #if defined WIN64
 						kstl::string str = textnode->getString()+"64.dlk";
 #elif defined WIN32
