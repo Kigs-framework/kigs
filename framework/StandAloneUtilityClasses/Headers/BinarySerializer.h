@@ -96,10 +96,15 @@ inline constexpr u32 bits_required(T min_value, T max_value)
 
 
 #define CHECK_SERIALIZE(a) if(!a) return false;
+#define CO_CHECK_SERIALIZE(a) if(!a) co_return false;
 
 #define SERIALIZE_VERSION(stream, ver) const u16 current_version = ver;\
 		u16 loaded_version = current_version;\
 		CHECK_SERIALIZE(serialize_object(stream, loaded_version));
+
+#define CO_SERIALIZE_VERSION(stream, ver) const u16 current_version = ver;\
+		u16 loaded_version = current_version;\
+		CO_CHECK_SERIALIZE(serialize_object(stream, loaded_version));
 
 namespace serializer_detail
 {
