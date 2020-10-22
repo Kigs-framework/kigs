@@ -13,10 +13,12 @@
 
 //#include <windows.foundation.h>
 #include "winrt/Windows.System.Profile.h"
+#include "winrt/Windows.ApplicationModel.h"
 #include "winrt/Windows.ApplicationModel.Activation.h"
 #include "winrt/Windows.ApplicationModel.Preview.Holographic.h"
 #include "winrt/Windows.Storage.h"
 #include "winrt/Windows.UI.ViewManagement.h"
+#include "winrt/Windows.UI.Xaml.h"
 
 #include "winrt/Windows.Graphics.DirectX.Direct3D11.h"
 
@@ -72,6 +74,7 @@ void App::Initialize(CoreApplicationView const& applicationView)
 {	
 	StorageFileFileAccess::setMainThreadID();
 	using namespace winrt::Windows::ApplicationModel::Activation;
+	
 	applicationView.Activated([this](CoreApplicationView const& view, IActivatedEventArgs args)
 	{
 		if (args.Kind() == ActivationKind::File)
@@ -135,7 +138,7 @@ void App::OnHolographicDisplayIsAvailableChanged(winrt::Windows::Foundation::IIn
 void App::SetWindow(CoreWindow const& window)
 {
 	mWindow = window;
-
+	
 	window.VisibilityChanged([this](CoreWindow const& window, VisibilityChangedEventArgs args)
 	{
 		mWindowVisible = args.Visible();
@@ -200,7 +203,7 @@ void App::Run()
 
 	// no need to register app to factory
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));
-	CoreBaseApplication*	myApp = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
+	CoreBaseApplication* app = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
 
 	/*auto itr = args->begin();
 	auto end = args->end();
@@ -213,27 +216,37 @@ void App::Run()
 #ifdef INIT_DEFAULT_MODULES
 #ifdef BASE_DATA_PATH
 	//! then init
-	myApp->InitApp(BASE_DATA_PATH, true);
+	app->InitApp(BASE_DATA_PATH, true);
 #else
 	//! then init
-	myApp->InitApp(0, true);
+	app->InitApp(0, true);
 #endif //BASE_DATA_PATH
 
 #else
 	//! then init
-	myApp->InitApp(0, false);
+	app->InitApp(0, false);
 
 #endif //INIT_DEFAULT_MODULES
 	
 	//window.Activate();
 
 	//dispatcher.ProcessEvents(CoreProcessEventsOption::ProcessUntilQuit);
-	while (!mWindowClosed && (!myApp->NeedExit()))
+
+	/*using namespace winrt::Windows::ApplicationModel;
+	using namespace winrt::Windows::UI::Xaml;
+	auto winrt_app = Application::Current();
+
+	auto token = winrt_app.Suspending([](winrt::Windows::Foundation::IInspectable current, SuspendingEventArgs args)
+	{
+		KigsCore::GetNotificationCenter()->postNotificationName("ApplicationSuspending");
+	});*/
+
+	while (!mWindowClosed && (!app->NeedExit()))
 	{
 		if (mWindowVisible)
 		{
 			CoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
-			myApp->UpdateApp();
+			app->UpdateApp();
 		}
 		else
 		{
@@ -242,12 +255,13 @@ void App::Run()
 	}
 	//CleanupEGL();
 
+	//winrt_app.Suspending(token);
 
 	//! close
-	myApp->CloseApp();
+	app->CloseApp();
 
 	//! delete
-	myApp->Destroy();
+	app->Destroy();
 	
 	//! last thing to do
 	KigsCore::Close();
