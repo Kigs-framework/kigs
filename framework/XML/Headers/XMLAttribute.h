@@ -44,6 +44,8 @@ public:
 		return n;
 	}
 	virtual bool	compareName(const std::string& n) const = 0;
+	virtual bool	compareName(const std::string_view& n) const = 0;
+	virtual bool	compareValue(const std::string_view& n) const = 0;
 
 	//! return value as an int
 	virtual int getInt() const =0;
@@ -155,11 +157,16 @@ public:
 
 	bool	compareName(const std::string& n) const override
 	{
-		if (n == mName)
-		{
-			return true;
-		}
-		return false;
+		return  (n == mName);
+	}
+	bool	compareName(const std::string_view& n) const override
+	{
+		return (n == mName);
+	}
+
+	inline bool	compareValue(const std::string_view& n) const override
+	{
+		return (n == mValue);
 	}
 
 private:

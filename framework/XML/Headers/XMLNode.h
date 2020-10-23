@@ -153,7 +153,14 @@ public:
 		return n;
 	}
 
+	inline bool	compareName(const char* n) const
+	{
+		return compareName((std::string_view)n);
+	}
+
+
 	virtual bool	compareName(const std::string& n) const = 0;
+	virtual bool	compareName(const std::string_view& n) const = 0;
 
 	//! return attribute count for this node
 	int getAttributeCount()
@@ -180,6 +187,8 @@ public:
 
 	// return the list of all nodes with the given type in hierarchy
 	kstl::vector<XMLNodeBase*>	getNodes(XMLNodeType type);
+
+	virtual bool nameOneOf(const char* a, const char* b)=0;
 
 protected:
 
@@ -289,9 +298,6 @@ public:
 	//! create a new child with given name and int value and return the corresponding node
     inline XMLNodeTemplate *addChildElementInteger( const StringType &childName, int integerValue );
 
-
-
-
 	//! add the given attribute to the node
 	inline void addAttribute( XMLAttributeTemplate<StringType> *attribute );
 	void reserveAttribute(int count)
@@ -307,21 +313,16 @@ public:
 	//! remove the given child to the node
 	inline void removeChild(XMLNodeTemplate *child);
 
+	inline bool nameOneOf(const char* a, const char* b) override;
 
-
-
-
-	inline bool nameOneOf(const char* a, const char* b);
-
-	bool	compareName(const std::string& n) const override
+	inline bool	compareName(const std::string& n) const override
 	{
-		if (n == mName)
-		{
-			return true;
-		}
-		return false;
+		return (n == mName);
 	}
-
+	inline bool	compareName(const std::string_view& n) const override
+	{
+		return (n == mName);
+	}
 
 
 private:

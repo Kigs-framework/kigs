@@ -37,7 +37,7 @@ bool ModuleDescription::Init(const kstl::string& fileName)
 
 	if(xml)
 	{
-		XMLNode* root= (XMLNode*)xml->getRoot();
+		XMLNodeBase* root= (XMLNodeBase*)xml->getRoot();
 
 		//! check file validity
 		if(root->getType() != XML_NODE_ELEMENT)

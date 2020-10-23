@@ -71,7 +71,7 @@ XMLAttributeBase* XMLNodeBase::getAndRemoveAttribute(const std::string_view& nam
 	size_t attrl = mAttributes.size();
 	for (unsigned int i = 0; i < attrl; ++i)
 	{
-		if (mAttributes.at(i)->getName() == name)
+		if (mAttributes.at(i)->compareName(name))
 		{
 			XMLAttributeBase* result = mAttributes.at(i);
 			mAttributes[i] = mAttributes[attrl - 1];

@@ -1566,7 +1566,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	XMLNode* xml_node = xml_file_item ? (XMLNode*)item->GetXMLNodeForFile(xml_file) : nullptr;
 
 	std::string name = item->getName();
-	if (xml_node && (!xml_node->compareName("Rel")))
+	if (xml_node && (!xml_node->XMLNodeBase::compareName("Rel")))
 	{
 		auto name_attr = xml_node->getAttribute("N", "Name");
 		if (name_attr)
@@ -1577,7 +1577,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	std::string old_name = name;
 
 	u32 name_input_flags = ImGuiInputTextFlags_EnterReturnsTrue;
-	if ((xml_node && xml_node->compareName("Rel")) || (!xml_node && item->mXMLNodes.size()))
+	if ((xml_node && xml_node->XMLNodeBase::compareName("Rel")) || (!xml_node && item->mXMLNodes.size()))
 		name_input_flags |= ImGuiInputTextFlags_ReadOnly;
 	
 	if (ImGui::InputText("Name", name, name_input_flags))

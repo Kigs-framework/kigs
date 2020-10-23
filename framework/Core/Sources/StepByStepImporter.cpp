@@ -150,7 +150,7 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 	
 	if(!treatedNode->mCurrent)
 	{
-		if (currentNode->compareName("Instance"))
+		if (currentNode->XMLNodeBase::compareName("Instance"))
 		{ 
 			XMLAttributeBase *NameAttribute = currentNode->getAttribute("Name");
 

@@ -1156,11 +1156,9 @@ protected:
 	template<typename StringType>
 	static void	InitAttribute(XMLNodeTemplate<StringType>* currentNode, CoreModifiable* currentModifiable, ImportState& importState);
 
-	template<typename StringType>
-	static void	InitLuaScript(XMLNodeTemplate<StringType>* currentNode, CoreModifiable* currentModifiable, ImportState& importState);
+	static void	InitLuaScript(XMLNodeBase* currentNode, CoreModifiable* currentModifiable, ImportState& importState);
 
-	template<typename StringType>
-	static AttachedModifierBase* InitAttributeModifier(XMLNodeTemplate<StringType>* modifierNode, CoreModifiableAttribute* attr);
+	static AttachedModifierBase* InitAttributeModifier(XMLNodeBase* modifierNode, CoreModifiableAttribute* attr);
 
 	template<typename StringType>
 	static CMSP	InitReference(XMLNodeTemplate<StringType>* currentNode, std::vector<CMSP> &loadedItems, const std::string& name);
