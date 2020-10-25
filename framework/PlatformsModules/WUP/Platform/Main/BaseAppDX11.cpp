@@ -142,10 +142,10 @@ void App::SetWindow(CoreWindow const& window)
 	window.VisibilityChanged([this](CoreWindow const& window, VisibilityChangedEventArgs args)
 	{
 		mWindowVisible = args.Visible();
-		if (mWindowVisible)
+		//if (mWindowVisible)
 		{
-			auto notif = KigsCore::Instance() ? KigsCore::GetNotificationCenter() : nullptr; 
-			if(notif) notif->postNotificationName("WUPWindowVisible");
+			if (KigsCore::Instance() && KigsCore::Instance()->GetCoreApplication())
+				KigsCore::Instance()->GetCoreApplication()->EmitSignal("UWP_VisibilityChangedEvent", (bool)mWindowVisible);
 		}
 	});
 
