@@ -1145,7 +1145,7 @@ protected:
 
 	// separated import attributes / import sons, so be sure to import attribute first
 	template<typename StringType>
-	static void ImportAttributes(XMLNodeTemplate<StringType>* currentNode, CoreModifiable* currentModifiable, ImportState& importState, std::vector<XMLNodeBase *>& sons);
+	static void ImportAttributes(XMLNodeBase* currentNode, CoreModifiable* currentModifiable, ImportState& importState, std::vector<XMLNodeBase *>& sons);
 
 	template<typename StringType>
 	static void ImportUpgradors(XMLNodeTemplate<StringType>* currentNode, CoreModifiable* currentModifiable, ImportState& importState);
@@ -1156,11 +1156,9 @@ protected:
 	template<typename StringType>
 	static void	InitAttribute(XMLNodeTemplate<StringType>* currentNode, CoreModifiable* currentModifiable, ImportState& importState);
 
-	template<typename StringType>
-	static void	InitLuaScript(XMLNodeTemplate<StringType>* currentNode, CoreModifiable* currentModifiable, ImportState& importState);
+	static void	InitLuaScript(XMLNodeBase* currentNode, CoreModifiable* currentModifiable, ImportState& importState);
 
-	template<typename StringType>
-	static AttachedModifierBase* InitAttributeModifier(XMLNodeTemplate<StringType>* modifierNode, CoreModifiableAttribute* attr);
+	static AttachedModifierBase* InitAttributeModifier(XMLNodeBase* modifierNode, CoreModifiableAttribute* attr);
 
 	template<typename StringType>
 	static CMSP	InitReference(XMLNodeTemplate<StringType>* currentNode, std::vector<CMSP> &loadedItems, const std::string& name);

@@ -55,9 +55,9 @@ struct Controller
 	
 	//Per vertex weights
 	std::vector<vertex_weights> weights;
-	std::vector<std::pair<int, XMLNodeStringRef*>> joints_table;
+	std::vector<std::pair<int, XMLNodeBase*>> joints_table;
 	
-	XMLNodeStringRef* skin_node;
+	XMLNodeBase* skin_node;
 };
 
 struct ChannelData
@@ -73,7 +73,7 @@ struct ChannelData
 
 struct AnimationData
 {
-	XMLNodeStringRef* source_node;
+	XMLNodeBase* source_node;
 	std::vector<AnimationData*> sub_anims;
 	std::vector<ChannelData> channels;
 };
@@ -84,7 +84,7 @@ class SourceData
 {
 	public:
 	
-	SourceData(XMLNodeStringRef* source_node);
+	SourceData(XMLNodeBase* source_node);
 	~SourceData();
 	
 	SourceData(const SourceData&) = delete;
@@ -116,7 +116,7 @@ class SourceData
 	}
 	
 	
-	XMLNodeStringRef* source_node;
+	XMLNodeBase* source_node;
 	int item_count;
 	
 	private:
@@ -153,17 +153,17 @@ protected:
 	// specific parser
 	void	ParseAsset();
 	void	ParseScene();
-	void	ParseVScene(XMLNodeStringRef* vscene);
+	void	ParseVScene(XMLNodeBase* vscene);
 	
-	CMSP ParseNode(XMLNodeStringRef* scenenode, bool &isModernMeshRoot);
-	CMSP ParseGeometry(XMLNodeStringRef* geomnode);
-	CMSP ParseCamera(XMLNodeStringRef* cameranode);
-	CMSP ParseLight(XMLNodeStringRef* cameranode);
-	CMSP ParseMesh(XMLNodeStringRef* meshnode, const std::string& name, Controller* controller);
-	CMSP ParseInstanceController(XMLNodeStringRef* controller_node);
+	CMSP ParseNode(XMLNodeBase* scenenode, bool &isModernMeshRoot);
+	CMSP ParseGeometry(XMLNodeBase* geomnode);
+	CMSP ParseCamera(XMLNodeBase* cameranode);
+	CMSP ParseLight(XMLNodeBase* cameranode);
+	CMSP ParseMesh(XMLNodeBase* meshnode, const std::string& name, Controller* controller);
+	CMSP ParseInstanceController(XMLNodeBase* controller_node);
 	Controller* ParseController(std::string url);
-	SourceData* ParseSource(XMLNodeStringRef* sourceNode);
-	AnimationData* ParseAnimation(XMLNodeStringRef* currentAnimationNode);
+	SourceData* ParseSource(XMLNodeBase* sourceNode);
+	AnimationData* ParseAnimation(XMLNodeBase* currentAnimationNode);
 	bool ParseAnimationClips();
 	void ParseStandaloneAnimations();	
 	
@@ -172,27 +172,27 @@ protected:
 	CMSP CreateMeshFromMeshCollada(Controller* controller);
 
 	// Parse 3x4 transform matrix 
-	Matrix3x4 ParseTransform(XMLNodeStringRef* scenenode);
+	Matrix3x4 ParseTransform(XMLNodeBase* scenenode);
 	// Parse skinning weights
 	void ParseWeights(Controller* controller);
 	
-	void CalcTransformRec(Controller* controller, std::vector<std::pair<int, XMLNodeStringRef*>>& joints, XMLNodeStringRef* current, const Matrix3x4& parent_transform, const Matrix3x4& parent_inv);
+	void CalcTransformRec(Controller* controller, std::vector<std::pair<int, XMLNodeBase*>>& joints, XMLNodeBase* current, const Matrix3x4& parent_transform, const Matrix3x4& parent_inv);
 	
-	void ParseBindMaterial(XMLNodeStringRef* bindMaterialNode);
-	void ParseEffect(XMLNodeStringRef* effectNode, std::string materialName);
+	void ParseBindMaterial(XMLNodeBase* bindMaterialNode);
+	void ParseEffect(XMLNodeBase* effectNode, std::string materialName);
 	//Parse Faces
-	void parseFacetPolylist(XMLNodeStringRef* vertexCountNode, XMLNodeStringRef* indexesNode, std::map<int, std::vector<char>> offsets);
-	void parseFacetTriangle(XMLNodeStringRef* indexesNode, std::map<int, std::vector<char>> offsets);
-	void parseFacetPolygons(XMLNodeStringRef* indexesNode, std::map<int, std::vector<char>> offsets);
-	void parseFacetTrifans(XMLNodeStringRef* indexesNode, std::map<int, std::vector<char>> offsets);
+	void parseFacetPolylist(XMLNodeBase* vertexCountNode, XMLNodeBase* indexesNode, std::map<int, std::vector<char>> offsets);
+	void parseFacetTriangle(XMLNodeBase* indexesNode, std::map<int, std::vector<char>> offsets);
+	void parseFacetPolygons(XMLNodeBase* indexesNode, std::map<int, std::vector<char>> offsets);
+	void parseFacetTrifans(XMLNodeBase* indexesNode, std::map<int, std::vector<char>> offsets);
 	
 	
 	//Tools
-	Point3D ReadVector3D(XMLNodeStringRef* sceneNode);
-	float ReadFloat(XMLNodeStringRef* sceneNode);
-	Vector4D ReadVector4D(XMLNodeStringRef* sceneNode);
-	Quaternion ReadQuaternion(XMLNodeStringRef* sceneNode);
-	Matrix3x4 ReadMatrix3x4(XMLNodeStringRef* sceneNode);
+	Point3D ReadVector3D(XMLNodeBase* sceneNode);
+	float ReadFloat(XMLNodeBase* sceneNode);
+	Vector4D ReadVector4D(XMLNodeBase* sceneNode);
+	Quaternion ReadQuaternion(XMLNodeBase* sceneNode);
+	Matrix3x4 ReadMatrix3x4(XMLNodeBase* sceneNode);
 	
 	void	RetrieveShortFileName(const std::string& filename, std::string& shortname);
 	
@@ -313,8 +313,8 @@ protected:
 	maString									m_FileName;
 	
 	//Object used to parse
-	XMLStringRef*								myXMLFile;
-	XMLNodeStringRef*							myRoot;
+	XMLBase*									myXMLFile;
+	XMLNodeBase*								myRoot;
 	DynamicGrowingBuffer<MeshCollada>*			m_MeshColladaList;
 	MeshCollada* m_CurrentMeshCollada;
 	std::string								m_CurrentObjectName;
@@ -329,8 +329,8 @@ protected:
 	std::map<std::string, CMSP>	m_MeshList;
 	std::vector<Controller>					m_ParsedControllers;
 	
-	std::map<XMLNodeStringRef*, AnimationData> m_animations;
-	std::map<XMLNodeStringRef*, SourceData> m_sources;
+	std::map<XMLNodeBase*, AnimationData> m_animations;
+	std::map<XMLNodeBase*, SourceData> m_sources;
 	
 	SP<Node3D>										RootNode;
 	

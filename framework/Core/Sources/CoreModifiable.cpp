@@ -2483,37 +2483,37 @@ bool	CoreModifiable::ImportAttributes(const std::string &filename)
 		}
 		
 		// search for this in xml
-		XMLNodeTemplate<std::string_view>* rootnode = (XMLNodeTemplate<std::string_view> * )xmlfile->getRoot();
-		std::vector<XMLNodeTemplate<std::string_view>*> nodelist = rootnode->getNodes(XML_NODE_ELEMENT);
+		XMLNodeBase* rootnode = xmlfile->getRoot();
+		std::vector<XMLNodeBase*> nodelist = rootnode->getNodes(XML_NODE_ELEMENT);
 		
-		std::vector<XMLNodeTemplate<std::string_view>*>::iterator	itb = nodelist.begin();
-		std::vector<XMLNodeTemplate<std::string_view>*>::iterator	ite = nodelist.end();
+		std::vector<XMLNodeBase*>::iterator	itb = nodelist.begin();
+		std::vector<XMLNodeBase*>::iterator	ite = nodelist.end();
 		
 		while (itb != ite)
 		{
-			if (((*itb)->getName() == "Instance") || ((*itb)->getName() == "Inst"))
+			if ((*itb)->compareName("Instance") || (*itb)->compareName("Inst"))
 			{
-				XMLNodeTemplate<std::string_view>* currentNode = (*itb);
+				XMLNodeBase* currentNode = (*itb);
 				// retreive type and name attributes
-				XMLAttributeTemplate<std::string_view> *NameAttribute = currentNode->getAttribute("Name");
+				XMLAttributeBase *NameAttribute = currentNode->getAttribute("Name");
 				if (!NameAttribute)
 					NameAttribute = currentNode->getAttribute("N");
 				
-				XMLAttributeTemplate<std::string_view>*	TypeAttribute = currentNode->getAttribute("Type");
+				XMLAttributeBase*	TypeAttribute = currentNode->getAttribute("Type");
 				if (!TypeAttribute)
 					TypeAttribute = currentNode->getAttribute("T");
 				
 				if (NameAttribute && TypeAttribute)
 				{
-					std::string name = (std::string)NameAttribute->getString();
+					std::string name = NameAttribute->getString();
 					if (name == getName())
 					{
-						std::string type = (std::string)TypeAttribute->getString();
+						std::string type = TypeAttribute->getString();
 						if (isSubType(type))
 						{
 							std::vector<XMLNodeBase*>	sons;
 							sons.clear();
-							ImportAttributes(currentNode, this, importState,sons);
+							ImportAttributes<std::string_view>(currentNode, this, importState,sons);
 							ImportSons<std::string_view>(sons, this, importState);
 							result = true;
 							break;
@@ -2530,6 +2530,143 @@ bool	CoreModifiable::ImportAttributes(const std::string &filename)
 	}
 	return result;
 }
+
+void	CoreModifiable::InitLuaScript(XMLNodeBase* currentNode, CoreModifiable* currentModifiable, ImportState& importState)
+{
+	CoreModifiable* luamodule = KigsCore::GetModule("LuaKigsBindModule");
+	if (!luamodule)
+		return;
+
+	XMLAttributeBase* attrname = currentNode->getAttribute("N", "Name");
+
+	if (!attrname)
+		return;
+
+	XMLAttributeBase* attrtype = currentNode->getAttribute("T", "Type");
+	XMLAttributeBase* attrvalue = currentNode->getAttribute("V", "Value");
+
+	std::string code = "";
+	if (attrvalue)
+	{
+		code = attrvalue->getString();
+		if (code.size() && code[0] == '#')
+		{
+			code.erase(code.begin());
+
+			u64 size;
+			CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFileAsCharString(code.c_str(), size, 1);
+			if (rawbuffer)
+			{
+				code = rawbuffer->buffer();
+				rawbuffer->Destroy();
+			}
+			else
+			{
+				STACK_STRING(errstr, 1024, "Cannot load LUA script : %s", code.c_str());
+				KIGS_ERROR(errstr, 3);
+			}
+		}
+	}
+	else
+	{
+		if (currentNode->getChildCount())
+		{
+			for (s32 i = 0; i < currentNode->getChildCount(); i++)
+			{
+				XMLNodeBase* sonXML = currentNode->getChildElement(i);
+				if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
+				{
+					code = sonXML->getString();
+					break;
+				}
+			}
+		}
+	}
+
+
+	std::vector<CoreModifiableAttribute*> params;
+	maString pName("pName", (std::string)attrname->getString());
+	maString pCode("pCode", code);
+	maRawPtr pXML("pXML", currentNode);
+
+	params.push_back(&pName);
+	params.push_back(&pCode);
+	params.push_back(&pXML);
+
+	maReference localthis("pThis", { "" });
+	localthis = currentModifiable;
+	params.push_back(&localthis);
+
+	maString cbType("cbType", attrtype ? attrtype->getString() : "");
+	if (attrtype)
+		params.push_back(&cbType);
+
+	luamodule->CallMethod("RegisterLuaMethod", params);
+}
+
+AttachedModifierBase* CoreModifiable::InitAttributeModifier(XMLNodeBase* currentNode, CoreModifiableAttribute* attr)
+{
+	XMLAttributeBase* attrtype = currentNode->getAttribute("T", "Type");
+
+	AttachedModifierBase* toAdd = 0;
+	if (attrtype)
+	{
+		std::string modifiertype = attrtype->getString();
+		if (modifiertype != "")
+		{
+			auto& instanceMap = KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap();
+			auto itfound = instanceMap.find(modifiertype);
+			if (itfound != instanceMap.end())
+			{
+				toAdd = (AttachedModifierBase*)(*itfound).second();
+			}
+		}
+
+		if (toAdd != 0)
+		{
+			// is setter ?
+			bool isSetter = false;
+			XMLAttributeBase* attrsetter = currentNode->getAttribute("Setter", "isSetter");
+
+			if (attrsetter)
+			{
+				if ((attrsetter->getRefString() == "true") || (attrsetter->getRefString() == "yes"))
+				{
+					isSetter = true;
+				}
+			}
+
+			// search value
+			std::string value = "";
+			XMLAttributeBase* attrvalue = currentNode->getAttribute("V", "Value");
+
+			if (attrvalue)
+			{
+				value = attrvalue->getString();
+			}
+
+			// check for direct string
+			if (value == "")
+			{
+				for (s32 i = 0; i < currentNode->getChildCount(); i++)
+				{
+					XMLNodeBase* sonXML = currentNode->getChildElement(i);
+					if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
+					{
+						value = sonXML->getString();
+						break;
+					}
+				}
+			}
+
+			toAdd->Init(attr, !isSetter, value);
+			attr->attachModifier(toAdd);
+		}
+	}
+
+	return toAdd;
+}
+
 
 void	CoreModifiable::ReleaseLoadedItems(std::vector<CMSP> &loadedItems)
 {

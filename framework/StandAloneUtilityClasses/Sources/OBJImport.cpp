@@ -80,7 +80,7 @@ void	OBJImport::InitModifiable()
 			if (rawbuffer)
 			{
 				unsigned char* data=reinterpret_cast<unsigned char*>(rawbuffer->buffer());
-				m_CurrentObjectName= fullfilenamehandle->myFileName;
+				m_CurrentObjectName= fullfilenamehandle->mFileName;
 				ReinitReadBuffers();
 				AsciiParserUtils FileParser(rawbuffer);
 				AsciiParserUtils line(FileParser);
@@ -439,7 +439,7 @@ void	OBJImport::createObjectFromReadedData()
 					sprintf(L_tmpinstancename, "meshitem_%u", newmesh->getItems().size());
 					SP<MeshItemGroup> newgroup = KigsCore::GetInstanceOf(L_tmpinstancename, "MeshItemGroup");
 					newgroup->Init();
-					newgroup->myTriangleCount=current.m_ReadFacetCount;
+					newgroup->mTriangleCount=current.m_ReadFacetCount;
 
 					if((current.m_HasTextCoords) && (current.m_HasNormal))
 					{
@@ -505,9 +505,9 @@ void	OBJImport::createObjectFromReadedData()
 void	OBJImport::FacetGroup::InitTriangle(MeshItemGroup* mig,int startTriangleIndex)
 {
 	Mesh::F_Triangle* mF_Triangle = new Mesh::F_Triangle[m_ReadFacetCount];
-	mig->myFirstTriangle = mF_Triangle;
-	mig->myTriangleType=eF_Triangle;
-	mig->myTriangleSize = sizeof(Mesh::F_Triangle);
+	mig->mFirstTriangle = mF_Triangle;
+	mig->mTriangleType=eF_Triangle;
+	mig->mTriangleSize = sizeof(Mesh::F_Triangle);
 	
 	unsigned int i;
 	for(i=0;i<m_ReadFacetCount;i++)
@@ -522,9 +522,9 @@ void	OBJImport::FacetGroup::InitTriangle(MeshItemGroup* mig,int startTriangleInd
 void	OBJImport::FacetGroup::InitSTriangle(MeshItemGroup* mig,int startTriangleIndex)
 {
 	Mesh::S_Triangle* mS_Triangle = new Mesh::S_Triangle[m_ReadFacetCount];
-	mig->myFirstTriangle = mS_Triangle;
-	mig->myTriangleSize = sizeof(Mesh::S_Triangle);
-	mig->myTriangleType=eS_Triangle;
+	mig->mFirstTriangle = mS_Triangle;
+	mig->mTriangleSize = sizeof(Mesh::S_Triangle);
+	mig->mTriangleType=eS_Triangle;
 
 	unsigned int i;
 	for(i=0;i<m_ReadFacetCount;i++)
@@ -542,9 +542,9 @@ void	OBJImport::FacetGroup::InitSTriangle(MeshItemGroup* mig,int startTriangleIn
 void	OBJImport::FacetGroup::InitSGTriangle(MeshItemGroup* mig,int startTriangleIndex)
 {
 	Mesh::SG_Triangle* mSG_Triangle = new Mesh::SG_Triangle[m_ReadFacetCount];
-	mig->myFirstTriangle = mSG_Triangle;
-	mig->myTriangleSize = sizeof(Mesh::SG_Triangle);
-	mig->myTriangleType=eSG_Triangle;
+	mig->mFirstTriangle = mSG_Triangle;
+	mig->mTriangleSize = sizeof(Mesh::SG_Triangle);
+	mig->mTriangleType=eSG_Triangle;
 
 	unsigned int i;
 	for(i=0;i<m_ReadFacetCount;i++)
@@ -566,9 +566,9 @@ void	OBJImport::FacetGroup::InitSGTriangle(MeshItemGroup* mig,int startTriangleI
 void	OBJImport::FacetGroup::InitTTriangle(MeshItemGroup* mig,int startTriangleIndex)
 {
 	Mesh::TF_Triangle<1>* mFT_Triangle = new Mesh::TF_Triangle<1>[m_ReadFacetCount];
-	mig->myFirstTriangle = mFT_Triangle;
-	mig->myTriangleSize = sizeof(Mesh::TF_Triangle<1>);
-	mig->myTriangleType = eTF_Triangle;
+	mig->mFirstTriangle = mFT_Triangle;
+	mig->mTriangleSize = sizeof(Mesh::TF_Triangle<1>);
+	mig->mTriangleType = eTF_Triangle;
 
 	unsigned int i;
 	for(i=0;i<m_ReadFacetCount;i++)
@@ -586,9 +586,9 @@ void	OBJImport::FacetGroup::InitTTriangle(MeshItemGroup* mig,int startTriangleIn
 void	OBJImport::FacetGroup::InitSTTriangle(MeshItemGroup* mig,int startTriangleIndex)
 {
 	Mesh::TS_Triangle<1>* mTS_Triangle = new Mesh::TS_Triangle<1>[m_ReadFacetCount];
-	mig->myFirstTriangle = mTS_Triangle;
-	mig->myTriangleSize = sizeof(Mesh::TS_Triangle<1>);
-	mig->myTriangleType = eTS_Triangle;
+	mig->mFirstTriangle = mTS_Triangle;
+	mig->mTriangleSize = sizeof(Mesh::TS_Triangle<1>);
+	mig->mTriangleType = eTS_Triangle;
 
 	unsigned int i;
 	for(i=0;i<m_ReadFacetCount;i++)
