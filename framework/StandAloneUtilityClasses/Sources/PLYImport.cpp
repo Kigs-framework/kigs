@@ -36,9 +36,9 @@ void	PLYImport::InitModifiable()
 
 		if (!fullfilenamehandle.isNil())
 		{
-			m_CurrentObjectName = fullfilenamehandle->myFileName;
+			m_CurrentObjectName = fullfilenamehandle->mFileName;
 			u64 filelen;
-			CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilenamehandle->myFullFileName.c_str(), filelen,1);
+			CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilenamehandle->mFullFileName.c_str(), filelen,1);
 
 			if (rawbuffer)
 			{

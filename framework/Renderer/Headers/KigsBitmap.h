@@ -84,6 +84,13 @@ public:
 	void	ScrollX(int offset, const KigsBitmapPixel& color);
 	void	ScrollY(int offset, const KigsBitmapPixel& color);
 
+	inline unsigned char* GetPixelBuffer()
+	{
+		// reset dirty zone
+		mDirtyZone.Init(0,0);
+		mDirtyZone.Update(mSize[0]-1, mSize[1]-1);
+		return mRawPixels;
+	}
 
 protected:
 

@@ -55,7 +55,7 @@ void	STLImport::InitModifiable()
 			if (rawbuffer && filelen>=15)
 			{
 				unsigned char* data=reinterpret_cast<unsigned char*>(rawbuffer->buffer());
-				m_CurrentObjectName= fullfilenamehandle->myFileName;
+				m_CurrentObjectName= fullfilenamehandle->mFileName;
 				ReinitReadBuffers();
 
 			
