@@ -98,8 +98,6 @@ OpenGLTexture::~OpenGLTexture()
 	}
 #endif
 
-
-
 	if (mPrivatePointer)
 		delete mPrivatePointer;
 
