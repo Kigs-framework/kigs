@@ -12,8 +12,8 @@
 #include "NotificationCenter.h"
 #include "ModuleRenderer.h"
 
-#include "IconsFontAwesome.h"
-#include "fontawesome.h"
+#include "IconsForkAwesome.h"
+#include "forkawesome.h"
 
 #include <algorithm>
 
@@ -251,8 +251,22 @@ void ImGuiLayer::InitModifiable()
 		else io.Fonts->AddFontDefault();
 
 		config.MergeMode = true;
-		const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-		io.Fonts->AddFontFromMemoryTTF((void*)g_fontawesome, sizeof(g_fontawesome) - 1, font ? mFontSize : 13.0f, &config, icon_ranges);
+		const ImWchar icon_ranges[] = { ICON_MIN_FK, ICON_MAX_FK, 0 };
+		io.Fonts->AddFontFromMemoryTTF((void*)g_forkawesome, sizeof(g_forkawesome) - 1, font ? mFontSize : 13.0f, &config, icon_ranges);
+
+		if (mBoldFontName.const_ref().size())
+		{
+			SmartPointer<CoreRawBuffer> crb_bold;
+			u64 len;
+			crb_bold = OwningRawPtrToSmartPtr(ModuleFileManager::Get()->LoadFile(mBoldFontName.c_str(), len));
+			if (crb_bold)
+			{
+				config.MergeMode = false;
+				mBoldFont = io.Fonts->AddFontFromMemoryTTF(crb_bold->buffer(), crb_bold->size(), mFontSize, &config, io.Fonts->GetGlyphRangesDefault());
+				config.MergeMode = true;
+				io.Fonts->AddFontFromMemoryTTF((void*)g_forkawesome, sizeof(g_forkawesome) - 1, font ? mFontSize : 13.0f, &config, icon_ranges);
+			}
+		}
 		
 		io.Fonts->Build();
 
@@ -353,16 +367,20 @@ bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 			io.MouseDown[0] = io.MouseDown[1] = io.MouseDown[2] = 0;
 			mIsDown = false;
 
-			if (ev.near_interaction_went_trough || io.MouseDownDuration[0] > 0.6f)
+			if (ev.near_interaction_went_trough || io.MouseDownDuration[0] > 1.0f)
 			{
+				io.MouseClicked[0] = false;
+				io.MouseDoubleClicked[0] = false;
+				io.MouseReleased[0] = false;
 				ImGui::ClearActiveID();
+				mCurrentPos = v2f(-FLT_MAX, -FLT_MAX);
 				mNeedClearClicks = true;
 			}
 			else
 				EmitSignal(Signals::OnClickUp, this, ev);
 		}
 	}
-	
+
 	if (ev.state == GestureRecognizerState::StatePossible)
 	{
 	//	ImGui::Text(V2F_FMT(2) "\n", V2F_EXP(mCurrentPos));
@@ -470,7 +488,7 @@ void ImGuiLayer::NewFrame(Timer* timer)
 		}
 		else
 		{
-			io.MousePos = ImVec2(-1, -1);
+			io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
 		}
 		auto mouse = mInput->GetMouse();
 		if(mouse)
@@ -561,6 +579,9 @@ void ImGuiLayer::NewFrame(Timer* timer)
 	ImGui::NewFrame();
 	if (mNeedClearClicks)
 	{
+		io.MouseClicked[0] = false;
+		io.MouseDoubleClicked[0] = false;
+		io.MouseReleased[0] = false;
 		ImGui::ClearActiveID();
 		mNeedClearClicks = false;
 	}

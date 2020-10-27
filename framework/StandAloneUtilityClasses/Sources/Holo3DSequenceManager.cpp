@@ -15,6 +15,8 @@
 #include "ModuleInput.h"
 #include "TouchInputEventManager.h"
 
+#include "IFC/CollisionMasks.h"
+
 #include <algorithm>
 
 
@@ -83,7 +85,7 @@ void Holo3DSequenceManager::ShowPanel(bool show, bool atFront)
 
 bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout)
 {
-	if (!mIsShow || !mCollidablePanel)
+	if (!mIsShow || !mCollidablePanelInputs)
 	{
 		pout.pos.x = -1;
 		pout.pos.y = -1;
@@ -93,7 +95,7 @@ bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, to
 	double dist = DBL_MAX;
 	Point3D		planePos;
 	Vector3D	planeNorm;
-	mCollidablePanel->GetPlane(planePos, planeNorm);
+	mCollidablePanelInputs->GetPlane(planePos, planeNorm);
 
 	Vector3D pos = posin.origin;
 	Vector3D dir = posin.dir;
@@ -117,11 +119,11 @@ bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, to
 			return false;
 		}
 
-		pout.pos.xy = mCollidablePanel->ConvertHit(pos + ((float)dist*dir));
+		pout.pos.xy = mCollidablePanelInputs->ConvertHit(pos + ((float)dist*dir));
 		if(Dot(dir, planeNorm) > 0)
 			pout.pos.x = 1 - pout.pos.x;
 		pout.pos.y = 1 - pout.pos.y;
-		is_in = mCollidablePanel->ValidHit(pos + dir * dist);
+		is_in = mCollidablePanelInputs->ValidHit(pos + dir * dist);
 		if (is_in)
 		{
 			pout.hit.HitPosition = pos + dir * dist;
@@ -130,8 +132,8 @@ bool Holo3DSequenceManager::GetDataInTouchSupport(const touchPosInfos& posin, to
 			l2g.TransformVector(&pout.hit.HitNormal);
 			pout.hit.HitNormal.Normalize();
 			pout.hit.HitNode = mSpacialNode.get();
-			pout.hit.HitActor = mCollidablePanel.get();
-			pout.hit.HitCollisionObject = mCollidablePanel.get(); 
+			pout.hit.HitActor = mCollidablePanelInputs.get();
+			pout.hit.HitCollisionObject = mCollidablePanelInputs.get();
 		}
 		return is_in;
 	}
@@ -178,16 +180,21 @@ void Holo3DSequenceManager::InitModifiable()
 	v2f size = mSize;
 	
 	//Create collidable object
-	mCollidablePanel = KigsCore::GetInstanceOf("HoloUIPanel", "InterfacePanel");
-	mSpacialNode->addItem((CMSP&)mCollidablePanel);
-	mCollidablePanel->setValue("Size", size);
-	mCollidablePanel->setValue("LinkedItem", "Holo3DSequenceManager:" + getName());
-	mCollidablePanel->Init();
+	mCollidablePanelRegular = KigsCore::GetInstanceOf("HoloUIPanel", "InterfacePanel");
+	mSpacialNode->addItem(mCollidablePanelRegular);
+	mCollidablePanelRegular->setValue("Size", size);
+	mCollidablePanelRegular->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::UINT, "CollideMask", CollisionMask::Tools);
+	mCollidablePanelRegular->Init();
 
+	mCollidablePanelInputs = KigsCore::GetInstanceOf("HoloUIPanelInputs", "Panel");
+	mSpacialNode->addItem(mCollidablePanelInputs);
+	mCollidablePanelInputs->setValue("Size", size);
+	mCollidablePanelInputs->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::UINT, "CollideMask", 32768llu);
+	mCollidablePanelInputs->Init();
 
 	//Create drawable object
 	mDrawer = KigsCore::GetInstanceOf("Holo3DPanel", "Holo3DPanel");
-	mSpacialNode->addItem((CMSP&)mDrawer);
+	mSpacialNode->addItem(mDrawer);
 	mDrawer->setValue("Size", size);
 	mDrawer->setValue("DepthTest", "Disabled");
 	mDrawer->setValue("RenderPassMask", 64);
@@ -440,8 +447,9 @@ void Holo3DSequenceManager::NotifyUpdate(const unsigned int labelid)
 	else if (labelid == mSize.getLabelID())
 	{
 		v2f size = mSize;
-		if(mCollidablePanel) mCollidablePanel->setValue("Size", size);
-		if(mDrawer) mDrawer->setValue("Size", size);
+		if (mCollidablePanelRegular) mCollidablePanelRegular->setValue("Size", size);
+		if (mCollidablePanelInputs) mCollidablePanelInputs->setValue("Size", size);
+		if (mDrawer) mDrawer->setValue("Size", size);
 	}
 	else if (labelid == mUseFixedNormal.getLabelID()
 		|| labelid == mUseFixedUp.getLabelID()
@@ -458,7 +466,7 @@ void Holo3DSequenceManager::GetDistanceForInputSort(GetDistanceForInputSortParam
 {
 	params.inout_sorting_layer = mInputSortingLayer;
 	params.inout_distance = DBL_MAX;
-	if (!mIsShow || !mCollidablePanel)
+	if (!mIsShow || !mCollidablePanelInputs)
 		return;
 
 	v3f local_pos = params.origin;
@@ -466,14 +474,14 @@ void Holo3DSequenceManager::GetDistanceForInputSort(GetDistanceForInputSortParam
 
 	Point3D		planePos;
 	Vector3D	planeNorm;
-	mCollidablePanel->GetPlane(planePos, planeNorm);
+	mCollidablePanelInputs->GetPlane(planePos, planeNorm);
 
 	auto& inverseMatrix = mSpacialNode->GetGlobalToLocal();
 	inverseMatrix.TransformPoint(&local_pos);
 	inverseMatrix.TransformVector(&local_dir);
 
 	f64 dist = DBL_MAX;
-	if (Intersection::IntersectRayPlane(local_pos, local_dir, planePos, planeNorm, dist, mCollidablePanel.get()))
+	if (Intersection::IntersectRayPlane(local_pos, local_dir, planePos, planeNorm, dist, mCollidablePanelInputs.get()))
 	{
 		auto& l2g = mSpacialNode->GetLocalToGlobal();
 		Vector3D dist_vector = Vector3D(dist, 0, 0);

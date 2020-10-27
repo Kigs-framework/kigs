@@ -11,10 +11,14 @@
 #include "AttributePacking.h"
 
 #include <atomic>
+#include <thread>
+#include <functional>
 
+#include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Perception.Spatial.h>
 #include <winrt/Windows.Perception.Spatial.Surfaces.h>
 
+#include "concurrentqueue.h"
 
 class CollisionManager;
 
@@ -68,6 +72,7 @@ struct GuidHash
 class Camera;
 
 struct SpatialMapSurfaceRecord;
+using namespace winrt::Windows::Foundation;
 
 class HoloSpatialMap : public CoreModifiable
 {
@@ -123,6 +128,11 @@ protected:
 	std::mutex mListMtx;
 	std::atomic_int mRecordUses{ 0 };
 	std::atomic_bool mRecordEnabled{ false };
+
+
+	moodycamel::BlockingConcurrentQueue<std::function<winrt::Windows::Foundation::IAsyncAction()>, moodycamel::ConcurrentQueueDefaultTraits > mToProcess;
+	std::atomic_bool mContinueProcess;
+	std::thread mProcessThread;
 };
 
 

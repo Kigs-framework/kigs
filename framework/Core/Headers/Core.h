@@ -55,7 +55,7 @@ enum CoreModuleIndex
 } ;
 
 // decorator management
-typedef     bool (*decorateMethod)(CoreModifiable* toDecorate);
+typedef     bool (*DecorateMethod)(CoreModifiable* toDecorate);
 class RegisterDecoratorClass
 {
 public:
@@ -66,7 +66,7 @@ public:
 	 * \decoratorName : name of the decorator class
 	 * \method : static decorator method
 	 */
-	RegisterDecoratorClass(KigsCore* core, KigsID decoratorName, decorateMethod method, decorateMethod undecoratemethod);
+	RegisterDecoratorClass(KigsCore* core, KigsID decoratorName, DecorateMethod method, DecorateMethod undecoratemethod);
 
 	/**
 	 * \brief	destructor
@@ -441,7 +441,7 @@ public:
 	}
 	void AddToPostDestroyList(CoreModifiable*);
 
-	void	RegisterDecorator(decorateMethod method,decorateMethod undecoratemethod, KigsID decoratorName);
+	void	RegisterDecorator(DecorateMethod method, DecorateMethod undecoratemethod, KigsID decoratorName);
 
 	static  bool	DecorateInstance(CoreModifiable* cm, KigsID decoratorName);
 	static  bool	UnDecorateInstance(CoreModifiable* cm, KigsID decoratorName);
@@ -526,7 +526,7 @@ protected:
 	 * \fn 		~KigsCore();
 	 * \brief	protected destructor
 	 */
-	~KigsCore(){}
+	~KigsCore() {};
 
 	//! pointer to instance factory singleton
 	InstanceFactory*		mInstanceFactory;
@@ -536,12 +536,12 @@ protected:
 	kigs::unordered_map<KigsID, ModuleBase*>*			mModuleBaseInstanceMap;
 
 	//! decorator map
-	struct decorateMethodPair
+	struct DecorateMethodPair
 	{
-		decorateMethod	mDecorate;
-		decorateMethod	mUndecorate;
+		DecorateMethod	mDecorate;
+		DecorateMethod	mUndecorate;
 	};
-	kigs::unordered_map<KigsID, decorateMethodPair>*		mDecoratorMap;
+	kigs::unordered_map<KigsID, DecorateMethodPair>*		mDecoratorMap;
 
 	// current pending async requests
 	kstl::vector<AsyncRequest*>*							mAsyncRequestList;

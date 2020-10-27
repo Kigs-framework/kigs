@@ -4,11 +4,10 @@
 
 #include "AttributePacking.h"
 
+#include "TecLibs/Math/IntersectionAlgorithms.h"
+
 #include <optional>
 #include <unordered_set>
-
-struct Hit;
-
 
 enum class SourceState : u32
 {
@@ -57,6 +56,7 @@ struct Interaction
 	std::optional<Joint> palm;
 	std::optional<Joint> index_tip;
 	std::optional<Joint> middle_tip;
+	Hit current_near_interaction_hit;
 };
 
 // ****************************************

@@ -50,6 +50,11 @@ function(add_library)
 	if("${KIGS_PLATFORM}" STREQUAL "WUP" AND "${ARGV1}" STREQUAL "SHARED" )
 		set_target_properties(${ARGV0} PROPERTIES VS_USER_PROPS "${CMAKE_BINARY_DIR}/WUP/WUP.props")
 	endif()
+
+	if("${KIGS_PLATFORM}" STREQUAL "WUP" AND NOT "${ARGV1}" STREQUAL "INTERFACE")
+		set_target_properties(${ARGV0} PROPERTIES VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "10.0.18362.0")
+	endif()
+
 endfunction()
 
 function(add_executable)
@@ -99,11 +104,7 @@ set_kigsPlatform()
 add_library(Base INTERFACE)
 add_library(Holographic INTERFACE)
 
-target_sources(Holographic INTERFACE 
-		"${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/GazeManager.cpp"
-		"${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/GazeManagerWithCollider.cpp"
-		"${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/Holo3DSequenceManager.cpp")
-
+target_sources(Holographic INTERFACE "${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/Holo3DSequenceManager.cpp")
 
 set(CMAKE_C_FLAGS_STATICDEBUG "${CMAKE_C_FLAGS_DEBUG}")
 set(CMAKE_C_FLAGS_STATICRELEASE "${CMAKE_C_FLAGS_RELEASE}")

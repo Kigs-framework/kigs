@@ -25,7 +25,7 @@ bool gKigsToolsAvailable = false;
 #include "Timer.h"
 #include "Node3DDelayed.h"
 
-#include "IconsFontAwesome.h"
+#include "IconsForkAwesome.h"
 #include "imgui_internal.h"
 
 #include "XML.h"
@@ -1743,7 +1743,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 
 			if (xml_node && attr_xml)
 			{
-				if (ImGui::Button(ICON_FA_TRASH))
+				if (ImGui::Button(ICON_FK_TRASH))
 				{
 					xml_node->removeChild(attr_xml);
 					delete attr_xml;
@@ -1778,7 +1778,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 				std::string value = "";
 				attr->getValue(value);
 
-				if (ImGui::Button(ICON_FA_PLUS))
+				if (ImGui::Button(ICON_FK_PLUS))
 				{
 					add_to_xml = true;
 				}
@@ -2116,7 +2116,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 				if (!save)
 				{
 					ImGui::SameLine();
-					save = ImGui::Button(ICON_FA_FLOPPY_O);
+					save = ImGui::Button(ICON_FK_FLOPPY_O);
 				}
 				if (save)
 				{
@@ -2134,7 +2134,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			{
 
 				ImGui::SameLine();
-				bool clicked = ImGui::Button(ICON_FA_CODE);
+				bool clicked = ImGui::Button(ICON_FK_CODE);
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::SetTooltip("Lua initializer: %s", lua_initializer->getString().c_str());
@@ -2347,7 +2347,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 					if (current->xmlattr)
 					{
 
-						if (ImGui::Button(ICON_FA_TRASH))
+						if (ImGui::Button(ICON_FK_TRASH))
 						{
 
 						}
@@ -2358,7 +2358,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 					}
 					else
 					{
-						if (ImGui::Button(ICON_FA_PLUS))
+						if (ImGui::Button(ICON_FK_PLUS))
 						{
 							auto connect = node->addChildElement("Connect");
 
@@ -2424,7 +2424,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			ImGui::SameLine();
 
 			ImGui::PushID(s.mID);
-			if (ImGui::Button(ICON_FA_PLUG))
+			if (ImGui::Button(ICON_FK_PLUG))
 			{
 
 			}

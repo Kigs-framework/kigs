@@ -182,6 +182,9 @@ protected:
 	maVect2DF							mPresetUVSize = BASE_ATTRIBUTE(PresetUVSize, 1, 1);
 	maVect2DF							mPresetUVOffset = BASE_ATTRIBUTE(PresetUVOffset, 0, 0);
 
+	//! 0 = no transparency, 1 = billboard (binary transparency), 2 = need blend, -1 = use texture transparency type if available otherwise no transparency
+	maInt								mTransparencyType = BASE_ATTRIBUTE(TransparencyType, -1);;
+
 #ifdef KIGS_TOOLS
 	maBool mDrawNormals = BASE_ATTRIBUTE(DrawNormals, false);
 	maBool mDrawUVs = BASE_ATTRIBUTE(DrawUVs, false);

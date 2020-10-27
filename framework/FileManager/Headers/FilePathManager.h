@@ -336,7 +336,7 @@ protected:
 	friend class CorePackage;
 	void	insertPackage(unsigned int packageID);
 	void	unloadPackage(unsigned int packageID);
-	bool	initHandleFromPackage(const std::string& lpath, SmartPointer<FileHandle> result);
+	bool	initHandleFromPackage(const std::string& lpath, SmartPointer<FileHandle> result, bool in_bundle);
 	unsigned int				 mPackageID;
 	std::map<int, CorePackage*> mPackageList;
 

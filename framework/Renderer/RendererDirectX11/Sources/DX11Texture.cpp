@@ -732,6 +732,8 @@ void DX11Texture::SetD3DTexture(ID3D11Texture2D* texture)
 	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 
 	mTexturePointer = texture;
+	texture->AddRef();
+
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;

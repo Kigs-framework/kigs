@@ -34,10 +34,11 @@ namespace ImGui
 		ImGui::Dummy(v2f(0, 0)); ImGui::SameLine(centered_x);
 	}
 
-	void CenterText(const std::string& txt) 
+	void CenterText(const std::string& txt, bool wrapped)
 	{
 		CenterWidget(ImGui::CalcTextSize(txt.c_str()).x);
-		ImGui::Text(txt.c_str());
+		if(!wrapped) ImGui::Text(txt.c_str());
+		else ImGui::TextWrapped(txt.c_str());
 	}
 	float SameLineAlignRight(float sum_of_elements_width, u32 nb_of_elements)
 	{

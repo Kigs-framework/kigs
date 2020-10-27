@@ -59,6 +59,8 @@ public:
 
 	Texture* GetTexture(const std::string& name);
 
+	ImFont* GetBoldFont() { return mBoldFont; }
+
 protected:
 	DECLARE_METHOD(ResetContext);
 	COREMODIFIABLE_METHODS(ResetContext);
@@ -89,6 +91,7 @@ protected:
 
 
 	maString mFontName = BASE_ATTRIBUTE(FontName, "");
+	maString mBoldFontName = BASE_ATTRIBUTE(BoldFontName, "");
 	maFloat mFontSize = BASE_ATTRIBUTE(FontSize, 13.0f);
 
 	maString mStyle = BASE_ATTRIBUTE(Style, "Default");
@@ -99,6 +102,7 @@ protected:
 	std::vector<SmartPointer<Texture>> mUsedTexturesThisFrame;
 
 	ImFontAtlas mFontAtlas;
+	ImFont* mBoldFont = nullptr;
 
 	TouchSourceID mPosSource = TouchSourceID::Invalid;
 	TouchSourceID mClickSource = TouchSourceID::Invalid;

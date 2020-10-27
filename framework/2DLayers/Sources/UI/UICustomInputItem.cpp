@@ -20,9 +20,10 @@ void UICustomInputItem::InitModifiable()
 	if (theInputModule)
 	{
 		if(HasMethod("ManageDirectTouchEvent"))
-			theInputModule->getTouchManager()->registerEvent(this, "ManageDirectTouchEvent", DirectTouch, EmptyFlag);
+			static_cast<TouchEventStateDirectTouch*>(theInputModule->getTouchManager()->registerEvent(this, "ManageDirectTouchEvent", DirectTouch, EmptyFlag))->setAutoTouchDownDistance(mAutoTouchDistance);
 		if(HasMethod("ManageClickTouchEvent"))
-			theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, EmptyFlag);
+			static_cast<TouchEventStateClick*>(theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, EmptyFlag))->setAutoClickDistance(mAutoTouchDistance);
 	}
 }
+
 

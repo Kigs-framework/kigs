@@ -249,11 +249,6 @@ void App::Run()
 	//! delete
 	myApp->Destroy();
 	
-
-#ifdef _DEBUG
-	CoreModifiable::debugPrintfFullTree();
-#endif
-
 	//! last thing to do
 	KigsCore::Close();
 }

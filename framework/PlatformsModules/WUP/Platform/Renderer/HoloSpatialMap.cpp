@@ -1,7 +1,7 @@
 #include "HoloBimInfo.h"
 
 #include "Platform/Main/BaseApp.h"
-#include "Platform/Renderer/HoloSpatialMap.h"
+
 
 #include "DrawVertice.h"
 #include "ModernMesh.h"
@@ -14,10 +14,11 @@
 
 #include <robuffer.h>
 
+#include "Platform/Renderer/HoloSpatialMap.h"
+
 #include <imgui.h>
 #include "KigsTools.h"
 
-#include "concurrentqueue.h"
 #include <functional>
 
 #include "SpacialMeshBVH.h"
@@ -151,9 +152,7 @@ static GuidComp FromGUID(winrt::guid s)
 	return r;
 }
 
-static moodycamel::BlockingConcurrentQueue<std::function<IAsyncAction()>> sToProcess;
-static std::atomic_bool sContinueProcess;
-static std::thread sProcessThread;
+
 extern bool gIsVR;
 IMPLEMENT_CONSTRUCTOR(HoloSpatialMap)
 {
@@ -167,13 +166,13 @@ IMPLEMENT_CONSTRUCTOR(HoloSpatialMap)
 	{
 		mAllowed = true;
 		
-		sContinueProcess = true;
-		sProcessThread = std::thread([]()
+		mContinueProcess = true;
+		mProcessThread = std::thread([this]()
 		{
-			while (sContinueProcess)
+			while (mContinueProcess)
 			{
-				std::function<IAsyncAction()> action;
-				if (sToProcess.try_dequeue(action))
+				std::function<winrt::Windows::Foundation::IAsyncAction()> action;
+				if (mToProcess.try_dequeue(action))
 				{
 					action().get();
 				}
@@ -200,8 +199,9 @@ IMPLEMENT_CONSTRUCTOR(HoloSpatialMap)
 
 HoloSpatialMap::~HoloSpatialMap()
 {
-	sContinueProcess = false;
-	if (sProcessThread.joinable()) sProcessThread.join();
+	StopListening();
+	mContinueProcess = false;
+	if (mProcessThread.joinable()) mProcessThread.join();
 }
 
 static std::atomic<int> sIndex = 0;
@@ -560,6 +560,8 @@ void HoloSpatialMap::StartListening()
 	{
 		mEventToken = mSurfaceObserver.ObservedSurfacesChanged([this](Surfaces::SpatialSurfaceObserver const& sender, winrt::Windows::Foundation::IInspectable const& args)
 		{
+			if (!mContinueProcess) return;
+
 			bool exp = false;
 			if (!gInUpdate.compare_exchange_strong(exp, true))
 			{
@@ -656,7 +658,7 @@ void HoloSpatialMap::StartListening()
 				// use async task
 				if (current_surface)
 					mRecordUses++;
-				sToProcess.enqueue([this, info, val = current.Value(), current_surface]() -> IAsyncAction
+				mToProcess.enqueue([this, info, val = current.Value(), current_surface]() -> winrt::Windows::Foundation::IAsyncAction
 				{
 					Surfaces::SpatialSurfaceMeshOptions options = Surfaces::SpatialSurfaceMeshOptions();
 					options.IncludeVertexNormals(false); // (mMode == 2);

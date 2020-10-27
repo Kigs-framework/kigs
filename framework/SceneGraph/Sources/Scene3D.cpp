@@ -303,7 +303,7 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 {
 	unsigned int mask = 0;
 	auto collision = GetFirstInstance("CollisionManager");
-	if (!collision || !(param.camera && param.camera->getValue("SortForInputManager", mask))) 
+	if (!collision || !(param.camera && param.camera->getValue("MaskForInputManager", mask))) 
 	{
 		std::transform(param.toSort.begin(), param.toSort.end(), std::back_inserter(param.sorted), [](CoreModifiable* cm)
 		{
