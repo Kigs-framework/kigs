@@ -174,6 +174,42 @@ bool	FilePathManager::LoadPackage(SmartPointer<FileHandle> L_File)
 	return newpackage;
 }
 
+int	FilePathManager::GetPackageID(const std::string& filename)
+{
+	for (auto& pkg : mPackageList)
+	{
+		if (pkg.second->GetName() == filename) return pkg.first;
+	}
+	return -1;
+}
+
+std::string FilePathManager::GetPackageRootPath(int id)
+{
+	std::string result = "";
+
+	auto found = mPackageList.find(id);
+	if (found != mPackageList.end())
+	{
+		result = "#PKG" + std::to_string((*found).first) + "#";
+		if ((*found).second->getRootFolderName() != "")
+		{
+			result += (*found).second->getRootFolderName();
+		}
+	}
+
+	return result;
+}
+std::string FilePathManager::GetPackageRootPath(const std::string& filename)
+{
+	int ID = GetPackageID(filename);
+	if (ID != -1)
+	{
+		return GetPackageRootPath(ID);
+	}
+
+	return "";
+}
+
 // load a package given it's filename
 bool	FilePathManager::LoadPackage(const kstl::string& filename)
 {
@@ -378,7 +414,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 			return result;
 		}
 		std::string kpkg = filename.substr(0, pos+1);
-		initHandleFromPackage(kpkg, result);
+		initHandleFromPackage(kpkg, result, false);
 			
 		return result;
 	
@@ -414,7 +450,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 					kstl::string head = bundlePathVector[0].substr(1, 3);
 					if (head == "PKG")
 					{
-						if (initHandleFromPackage(bundlePathVector[0], result))
+						if (initHandleFromPackage(bundlePathVector[0], result, true))
 						{
 							return result;
 						}
@@ -496,7 +532,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 						return result;
 					}
 					std::string kpkg = (*it).substr(0, pos + 1);
-					initHandleFromPackage(kpkg, result);
+					initHandleFromPackage(kpkg, result, false);
 
 					return result;
 				}
@@ -524,7 +560,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 
 }
 
-bool	FilePathManager::initHandleFromPackage(const std::string& lpath, SmartPointer<FileHandle> result)
+bool	FilePathManager::initHandleFromPackage(const std::string& lpath, SmartPointer<FileHandle> result, bool in_bundle)
 {
 	// search end # (after package ID)
 	size_t pos = lpath.find('#', 3);
@@ -543,9 +579,8 @@ bool	FilePathManager::initHandleFromPackage(const std::string& lpath, SmartPoint
 				result->mVirtualFileAccess = new CorePackageFileAccess(package);
 
 				// if lpath only contains #PKGid# use mFullFileName else use lpath
-				if ((lpath.length()-1) == pos)
-				{
-					// remove #PKGid# from full file name
+				if (!in_bundle)
+				{					
 					result->mFullFileName = result->mFullFileName.substr(pos + 1, result->mFullFileName.length() - pos - 1);
 				}
 				else

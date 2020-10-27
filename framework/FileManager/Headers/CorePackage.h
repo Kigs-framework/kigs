@@ -101,6 +101,7 @@ private:
 
 	void ParseFATBuffer(unsigned char*& fatBuffer, FATEntryNode* current);
 
+	std::string getRootFolderName();
 
 protected:
 
