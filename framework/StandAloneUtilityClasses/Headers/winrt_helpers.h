@@ -53,3 +53,15 @@ inline auto resume_on_kigs_thread()
 {
 	return winrt::resume_foreground(App::GetApp()->GetWindow().Dispatcher());
 }
+
+template<typename Pred>
+winrt::Windows::Foundation::IAsyncAction wait_until(Pred predicate, winrt::Windows::Foundation::TimeSpan check_frequency, bool check_on_same_thread = false)
+{
+	winrt::apartment_context ctx;
+	while (!predicate())
+	{
+		co_await winrt::resume_after(check_frequency);
+		if (check_on_same_thread)
+			co_await ctx;
+	}
+}
