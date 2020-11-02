@@ -30,6 +30,7 @@ struct Interaction
 	double StartTime = 0.0;;
 	double LastTime = 0.0;;
 	double TimeStill = 0.0;
+	double DT = 0.0;
 
 	v3f Position;
 	
@@ -57,6 +58,9 @@ struct Interaction
 	std::optional<Joint> index_tip;
 	std::optional<Joint> middle_tip;
 	Hit current_near_interaction_hit;
+
+	v3f SmoothPosition{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
+	Vector3D SmoothDirection{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
 };
 
 // ****************************************

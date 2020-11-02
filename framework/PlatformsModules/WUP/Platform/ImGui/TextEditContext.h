@@ -390,6 +390,7 @@ struct ImGuiUWPCoreTextEditContext
 			text.substr(modifiedRange.EndCaretPosition);
 
 		if (text == old_text) return;
+		utf8_text = to_utf8(text);
 
 		// Move the caret to the end of the replacement text.
 		selection.StartCaretPosition = modifiedRange.StartCaretPosition + newtext.size();

@@ -675,9 +675,32 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 					{
 						if (interaction.palm.has_value())
 						{
-							interaction_infos.posInfos.pos = interaction.palm->position;
-							interaction_infos.posInfos.dir = ((interaction.palm->position - camera->GetGlobalPosition()).Normalized() + interaction.palm->orientation * v3f(interaction.handedness == Handedness::Left ? -0.15f : 0.15f, 0, 0.33f)).Normalized();
-							interaction_infos.posInfos.origin = interaction.palm->position;
+							auto npos = interaction.palm->position;
+							auto ndir = ((interaction.palm->position - camera->GetGlobalPosition()).Normalized() + interaction.palm->orientation * v3f(interaction.handedness == Handedness::Left ? -0.15f : 0.15f, 0, 0.33f)).Normalized();
+
+							if (interaction.SmoothPosition.x == -FLT_MAX)
+							{
+								interaction.SmoothPosition = npos;
+								interaction.SmoothDirection = ndir;
+							}
+
+							const double max_time_still = 2.0;
+							if (Norm(interaction.SmoothPosition - npos) < 0.01)
+							{
+								interaction.TimeStill = std::min(interaction.TimeStill + interaction.DT, max_time_still);
+							}
+							else
+							{
+								interaction.TimeStill = std::max(interaction.TimeStill - interaction.DT * 2, 0.0);
+							}
+
+							auto t = std::clamp((max_time_still - interaction.TimeStill) / max_time_still, 0.1, 1.0);
+							interaction.SmoothPosition = Lerp(interaction.SmoothPosition, npos, t);
+							interaction.SmoothDirection = Lerp(interaction.SmoothDirection, ndir, t).Normalized();
+
+							interaction_infos.posInfos.pos = interaction.SmoothPosition;
+							interaction_infos.posInfos.dir = interaction.SmoothDirection;
+							interaction_infos.posInfos.origin = interaction.SmoothPosition;
 						}
 						else
 						{
