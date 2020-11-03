@@ -168,7 +168,10 @@ public:
 		return (int)mAttributes.size();
 	}
 	//! return one attribute by index
-	inline XMLAttributeBase* getAttribute(int index);
+	inline XMLAttributeBase* getAttribute(int index)
+	{
+		return mAttributes.at((unsigned int)index);
+	}
 	//! return one attribute by name
 
 	XMLAttributeBase* getAttribute(const std::string_view& name);

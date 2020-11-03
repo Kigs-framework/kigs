@@ -41,11 +41,6 @@ XMLNodeBase* XMLNodeBase::getChildElement(const std::string& name)
 }
 
 
-XMLAttributeBase* XMLNodeBase::getAttribute(int index)
-{
-	return mAttributes.at((unsigned int)index);
-}
-
 XMLAttributeBase* XMLNodeBase::getAttribute(const std::string_view& name)
 {
 	for (unsigned int i = 0; i < mAttributes.size(); ++i)
