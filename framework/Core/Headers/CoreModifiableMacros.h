@@ -119,11 +119,11 @@ static void GetClassNameTree(CoreClassNameTree& classNameTree) {parentClass::Get
 virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) override {parentClass::ConstructClassNameTree(classNameTree); classNameTree.addClassName(currentClass::mClassID, currentClass::mRuntimeType);}\
 static currentClass* Get()\
 {\
-	return GetFirstInstance(#currentClass, false)->as<currentClass>();\
+	return parentClass::GetFirstInstance(#currentClass, false)->as<currentClass>();\
 }\
 static currentClass* Get(const std::string &name)\
 {\
-	return GetFirstInstanceByName(#currentClass, name, false)->as<currentClass>();\
+	return parentClass::GetFirstInstanceByName(#currentClass, name, false)->as<currentClass>();\
 }\
 public:
 
