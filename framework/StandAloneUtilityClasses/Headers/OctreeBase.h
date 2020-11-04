@@ -8,7 +8,7 @@
 class OctreeNodeBase
 {
 public:
-	OctreeNodeBase()
+	OctreeNodeBase() : mBrowsingFlag(0)
 	{
 #ifdef _DEBUG
 		mCurrentAllocatedNodeCount++;
@@ -97,7 +97,14 @@ public:
 		}
 		mChildren = nullptr;
 	}
-
+	void	setBrowsingFlag(unsigned int f)
+	{
+		mBrowsingFlag = f;
+	}
+	unsigned int	getBrowsingFlag() const
+	{
+		return mBrowsingFlag;
+	}
 protected:
 
 #ifdef _DEBUG
@@ -105,6 +112,8 @@ protected:
 #endif
 
 	OctreeNodeBase** mChildren = nullptr;
+	unsigned int	mBrowsingFlag;
+
 };
 
 
@@ -212,10 +221,15 @@ public:
 		delete[] mChildren[0];
 	}
 
+	bool	isEmpty() const
+	{
+		return mContentType.isEmpty();
+	}
 
 protected:
 	
 	ContentType		mContentType;
+
 
 };
 
@@ -261,6 +275,8 @@ public:
 
 protected:
 
+	void	recurseFloodFill(const nodeInfo& startPos, std::vector<nodeInfo>& notEmptyList);
+
 	// utility class to avoid passing the same parameters to the recursive method
 	// and mutualise some computation 
 	class recurseVoxelSideChildren
@@ -298,6 +314,34 @@ protected:
 		std::vector<nodeInfo>* mChildList;
 	};
 
+
+	class recursiveFloodFill
+	{
+	public:
+
+		recursiveFloodFill()
+		{
+
+		}
+
+		recursiveFloodFill(OctreeBase<BaseType>& octree, std::vector<nodeInfo>* notEmptyList)
+		{
+			reset(octree, notEmptyList);
+		}
+		~recursiveFloodFill() {}
+
+		void run(const nodeInfo& node);
+
+		void	reset(OctreeBase<BaseType>& octree, std::vector<nodeInfo>* notEmptyList)
+		{
+			octree.mCurrentBrowsingFlag++;
+			mNotEmptyList = notEmptyList;
+		}
+
+	private:
+		std::vector<nodeInfo>*	mNotEmptyList;
+	};
+
 	// get neighbour in the given direction ( as an index in mNeightboursDecalVectors)   
 	nodeInfo	getVoxelNeighbour(const nodeInfo& node, int dir);
 
@@ -305,6 +349,8 @@ protected:
 	maInt		mMaxDepth = INIT_ATTRIBUTE(MaxDepth, 8);
 
 	OctreeNodeBase* mRootNode = nullptr;
+
+	unsigned int	mCurrentBrowsingFlag = 0;
 
 	static inline const v3i				mNeightboursDecalVectors[6] = { {-1,0,0},{1,0,0},{0,-1,0},{0,1,0},{0,0,-1},{0,0,1} };
 	static inline const int				mInvDir[6] = { 1,0,3,2,5,4 };
@@ -442,4 +488,56 @@ void	OctreeBase<BaseType>::recurseVoxelSideChildren::run(const nodeInfo& node)
 		}
 	}
 
+}
+
+template<typename BaseType>
+void	OctreeBase<BaseType>::recursiveFloodFill::run(const nodeInfo& startPos)
+{
+	// set current node as "treated"
+	startPos.node->setBrowsingFlag(mCurrentBrowsingFlag);
+
+	// for each adjacent node
+	for (int dir = 0; dir < 6; dir++)
+	{
+		// get adjacent node
+		nodeInfo	n = getVoxelNeighbour(startPos, dir);
+
+		if (n.node == nullptr) // TODO => outside of this octree -> should check other octrees
+		{
+			continue;
+		}
+		if (n.node->getBrowsingFlag() == mCurrentBrowsingFlag) // already treated continue
+		{
+			continue;
+		}
+
+		std::vector< nodeInfo> child;
+		if (n.node->isLeaf()) // if this node is a leaf, then this is the only one to treat
+		{
+			child.push_back(n);
+		}
+		else // else get all sons on the correct side of n
+		{
+			recurseVoxelSideChildren r(mInvDir[dir], *this, &child);
+			r.run(n);
+		}
+
+		// for all the found nodes, check if they need to be added to visible list or to be flood fill
+		for (auto& c : child)
+		{
+			if (c.node->getBrowsingFlag() != mCurrentBrowsingFlag)
+			{
+				if (c.node->isEmpty()) // node is empty, recurse flood fill
+				{
+					run(c);
+					continue;
+				}
+				else // add this node to visibility list
+				{
+					c.node->setBrowsingFlag(mCurrentBrowsingFlag);
+					(*mNotEmptyList).push_back(c);
+				}
+			}
+		}
+	}
 }
