@@ -746,7 +746,7 @@ protected:
 
 
 	std::vector<StackedEventStateStruct>	mStackedEventState;
-	CoreModifiable*							mEventCaptureObject;
+	CoreModifiable*							mEventCaptureObject=nullptr;
 	TouchSourceID							mEventCapturedEventID;
 
 	ModuleInput*	mTheInputModule;

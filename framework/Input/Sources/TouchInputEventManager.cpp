@@ -1400,6 +1400,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 
 void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)
 {
+
 	bool swallow = (swallowMask & (1 << mType)) != 0 && (mFlag & IgnoreSwallow) == 0;
 	swallow = swallow || !manager->AllowEventOn(touch.ID, target);
 	
@@ -1424,10 +1425,10 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 	ev.button_state = touch_state;
 	ev.state = StatePossible;
 	ev.touch_state = DirectTouchEvent::TouchHover;
-	
-	
+
 	// We need to send StateEnded when the event is swallowed by someone above us
 	bool isHover = !swallow && !is_behind && !touch.touch_ended && target->SimpleCall<bool>(mMethodNameID, ev);
+
 
 	auto foundPrevious = mCurrentInfosMap.find(touch.ID);
 
@@ -1443,7 +1444,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 
 		if (dist_from_finger_tip > 0.0)
 		{
-			toAdd.near_touch_last_above_time = timer.GetTime();;
+			toAdd.near_touch_last_above_time = timer.GetTime();
 		}
 
 		mCurrentInfosMap[touch.ID] = toAdd;
