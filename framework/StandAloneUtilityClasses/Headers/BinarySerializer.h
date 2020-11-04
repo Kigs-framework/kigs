@@ -673,5 +673,27 @@ struct BasePacketWriteStream
 	void* user_data = nullptr;
 };
 
+
+template<typename T>
+std::string SaveToString(T& thing)
+{
+	std::vector<u32> data;
+	VectorWriteStream stream{ data };
+	if (!serialize_object(stream, thing)) return "";
+	stream.Flush();
+	return AsciiParserUtils::BufferToString((unsigned char*)data.data(), data.size() * sizeof(u32));
+}
+
+template<typename T>
+bool LoadFromString(T& thing, const std::string& str)
+{
+	unsigned int size = 0;
+	auto data = AsciiParserUtils::StringToBuffer(str, size);
+	kigs_defer{ delete[] data; };
+	PacketReadStream stream{ data, size };
+	return serialize_object(stream, thing);
+}
+
+
 using PacketWriteStream = BasePacketWriteStream<BitPacker>;
 using VectorWriteStream = BasePacketWriteStream<VectorBitPacker>;
