@@ -187,10 +187,6 @@ bool UINode3DLayer::GetDataInTouchSupport(const touchPosInfos& posin, touchPosIn
 
 		pout.pos.xy = v2f((Dot(left, hit_pos) / mSize[0]) + 0.5f, (Dot(up, hit_pos) / mSize[1]) + 0.5f);
 		
-		pout.pos.x *= mDesignSize[0];
-		pout.pos.y *= mDesignSize[1];
-
-
 		bool is_in = true;
 
 		if (pout.pos.x > 1.0f ||
@@ -199,6 +195,8 @@ bool UINode3DLayer::GetDataInTouchSupport(const touchPosInfos& posin, touchPosIn
 			pout.pos.y < 0.0f)
 			is_in = false;
 
+		pout.pos.x *= mDesignSize[0];
+		pout.pos.y *= mDesignSize[1];
 
 		auto& l2g = GetLocalToGlobal();
 		pout.hit.HitPosition = pos + dir * dist;

@@ -188,11 +188,11 @@ protected:
 		// transformed pos in TouchSupport object
 		touchPosInfos	posInfos;
 
-		TouchSourceID	ID;
-		unsigned short	touch_state;
-		unsigned short	in_touch_support;
+		TouchSourceID	ID = TouchSourceID::Invalid;
+		unsigned short	touch_state = 0;
+		unsigned short	in_touch_support = 1;
 		bool touch_ended = false;
-		bool has_position;
+		bool has_position = false;
 
 		Hit* object_hit = nullptr;
 		Interaction* interaction = nullptr;
