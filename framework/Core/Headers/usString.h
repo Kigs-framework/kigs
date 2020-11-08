@@ -139,10 +139,11 @@ public:
 
 	bool operator<(const usString& other) const
 	{
+
 		const unsigned short* read_char1 = mString;
 		const unsigned short* read_char2 = other.mString;
 
-		while (*read_char1)
+		do
 		{
 			if (*read_char1 < *read_char2)
 			{
@@ -154,7 +155,7 @@ public:
 			}
 			++read_char1;
 			++read_char2;
-		}
+		} while (((*read_char1) != 0) || ((*read_char2) != 0));
 		return false;
 	}
 

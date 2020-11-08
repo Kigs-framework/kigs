@@ -32,6 +32,8 @@ public:
 	CoreItemSP(const kfloat& other);
 	CoreItemSP(const int& other);
 	CoreItemSP(const unsigned int& other);
+	CoreItemSP(const s64& other);
+	CoreItemSP(const u64& other);
 	CoreItemSP(const kstl::string& other,CoreModifiable* owner=nullptr);
 	CoreItemSP(const char* other, CoreModifiable* owner = nullptr) : CoreItemSP(kstl::string(other), owner)
 	{
@@ -68,7 +70,11 @@ public:
 
 	inline operator int() const;
 
+	inline operator s64() const;
+
 	inline operator unsigned int() const;
+
+	inline operator u64() const;
 
 	inline operator kstl::string() const;
 
@@ -306,7 +312,11 @@ public:
 
 	virtual operator int() const;
 
+	virtual operator s64() const;
+
 	virtual operator unsigned int() const;
+
+	virtual operator u64() const;
 
 #ifndef _MSC_VER
 	// bug in VC++ can not have explicit virtual cast operator
@@ -332,9 +342,19 @@ public:
 		_value = (int)*this;
 		return true; }
 
+	bool getValue(s64& _value) const {
+		_value = (s64)*this;
+		return true;
+	}
+
 	bool getValue(unsigned int& _value) const {
 		_value = (unsigned int)*this;
 		return true; }
+
+	bool getValue(u64& _value) const {
+		_value = (u64)*this;
+		return true;
+	}
 
 	bool getValue(kstl::string& _value) const {
 		_value = (kstl::string)*this;
@@ -366,7 +386,9 @@ public:
 	virtual CoreItem& operator=(const bool& other);
 	virtual CoreItem& operator=(const kfloat& other);
 	virtual CoreItem& operator=(const int& other);
+	virtual CoreItem& operator=(const s64& other);
 	virtual CoreItem& operator=(const unsigned int& other);
+	virtual CoreItem& operator=(const u64& other);
 	virtual CoreItem& operator=(const kstl::string& other);
 	virtual CoreItem& operator=(const usString& other);
 	virtual CoreItem& operator=(const Point2D& other);
@@ -536,6 +558,16 @@ inline CoreItemSP::operator int() const
 inline CoreItemSP::operator unsigned int() const
 {
 	return mPointer->operator unsigned int();
+}
+
+inline CoreItemSP::operator s64() const
+{
+	return mPointer->operator s64();
+}
+
+inline CoreItemSP::operator u64() const
+{
+	return mPointer->operator u64();
 }
 
 inline CoreItemSP::operator kstl::string() const
