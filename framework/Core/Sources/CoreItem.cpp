@@ -137,7 +137,19 @@ CoreItem::operator int() const
 	return 0;
 }
 
+CoreItem::operator s64() const
+{
+	KIGS_ERROR("cast operator called on base CoreItem", 2);
+	return 0;
+}
+
 CoreItem::operator unsigned int() const
+{
+	KIGS_ERROR("cast operator called on base CoreItem", 2);
+	return 0;
+}
+
+CoreItem::operator u64() const
 {
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
 	return 0;
@@ -230,6 +242,14 @@ CoreItemSP::CoreItemSP(const unsigned int& value)
 {
 	mPointer = new CoreValue<unsigned int>(value);
 }
+CoreItemSP::CoreItemSP(const s64& value)
+{
+	mPointer = new CoreValue<s64>(value);
+}
+CoreItemSP::CoreItemSP(const u64& value)
+{
+	mPointer = new CoreValue<u64>(value);
+}
 CoreItemSP::CoreItemSP(const kstl::string& value, CoreModifiable* owner)
 {
 	// check eval
@@ -299,6 +319,16 @@ CoreItem& CoreItem::operator=(const int& other)
 	return *this;
 }
 CoreItem& CoreItem::operator=(const unsigned int& other)
+{
+	KIGS_WARNING("trying to assign base CoreItem with value", 2);
+	return *this;
+}
+CoreItem& CoreItem::operator=(const s64& other)
+{
+	KIGS_WARNING("trying to assign base CoreItem with value", 2);
+	return *this;
+}
+CoreItem& CoreItem::operator=(const u64& other)
 {
 	KIGS_WARNING("trying to assign base CoreItem with value", 2);
 	return *this;
