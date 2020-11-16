@@ -134,7 +134,7 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 		auto end = mInteractions.end();
 		while (itr != end) 
 		{
-			if (itr->second.removed)
+			if (itr->second->removed)
 			{
 				itr = mInteractions.erase(itr);
 			}
@@ -154,7 +154,7 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 	}
 
 	std::vector<u32> toRemove;
-	Interaction* s = nullptr;
+	
 	if (mUpdateList.size())
 	{
 		double time = KigsCore::GetCoreApplication()->GetApplicationTimer()->GetTime();
@@ -176,16 +176,19 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 
 			bool update = false;
 			double dt = 0.0f;
+
+			std::shared_ptr<Interaction> s;
+
 			if (found != mInteractions.end()) // update
 			{
 				update = true;
-				s = &found->second;
+				s = found->second;
 				dt = time - s->LastTime;
 				s->LastTime = time;
 			}
 			else //create new one
 			{
-				s = &mInteractions[id];
+				s = mInteractions[id] = std::make_shared<Interaction>();
 				s->LastTime = s->StartTime = time;
 			}
 
@@ -313,33 +316,3 @@ void	SpatialInteractionDeviceWUP::DoInputDeviceDescription()
 {
 }
 
-bool SpatialInteractionDeviceWUP::GetInteractionPosition(u32 ID, v3f& pos)const
-{
-	auto found = mInteractions.find(ID);
-	if (found == mInteractions.end())
-		return false;
-
-	pos.x = found->second.Position.x;
-	pos.y = found->second.Position.y;
-	pos.z = found->second.Position.z;
-	return true;
-}
-
-const Interaction* SpatialInteractionDeviceWUP::GetInteraction(u32 ID) const
-{
-	auto found = mInteractions.find(ID);
-	if (found != mInteractions.end())
-		return &(found->second);
-
-	return nullptr;
-}
-
-bool SpatialInteractionDeviceWUP::GetInteractionState(u32 ID, SourceState& state) const
-{
-	auto found = mInteractions.find(ID);
-	if (found == mInteractions.end())
-		return false;
-
-	state = found->second.state;
-	return true;
-}

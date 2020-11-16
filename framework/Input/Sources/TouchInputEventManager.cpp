@@ -627,7 +627,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 			}
 		}
 	}
-	Interaction* main_interaction = nullptr;
+	std::shared_ptr<Interaction> main_interaction;
 	if (spatial_interaction_device)
 	{
 		auto& interactions = spatial_interaction_device->GetInteractions();
@@ -636,7 +636,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		{
 			//dd::line(itr.second.Position, itr.second.Position + itr.second.Forward, itr.second.pressed ? v3f{ 0,1,0 } : v3f{ 1,1,1 }, 0.02f);
 			//dd::arrow(itr.second.Position, itr.second.Position + itr.second.Up*0.05f, v3f{ 0,0,1 }, 0.02f);
-			auto& interaction = itr.second;
+			auto& interaction = *itr.second;
 			interaction.current_near_interaction_hit = Hit{};
 
 			if(interaction.allowed)
@@ -648,7 +648,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 				interaction_infos.starting_touch_support = camera;
 				interaction_infos.need_starting_touch_support_transform = false;
 				interaction_infos.posInfos.setHas3DInfos(true);
-				interaction_infos.interaction = &interaction;
+				interaction_infos.interaction = itr.second;
 
 				if (interaction.index_tip.has_value())
 				{

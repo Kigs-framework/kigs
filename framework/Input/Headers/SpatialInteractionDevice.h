@@ -80,15 +80,15 @@ public:
 	DECLARE_ABSTRACT_CLASS_INFO(SpatialInteractionDevice, InputDevice, Input)
 	DECLARE_INLINE_CONSTRUCTOR(SpatialInteractionDevice){}
 
-	virtual bool GetInteractionPosition(u32 ID, v3f& pos) const = 0;
-	virtual bool GetInteractionState(u32 ID, SourceState & state) const = 0;
-	virtual const Interaction* GetInteraction(u32 ID) const = 0;
+	std::optional<v3f> GetInteractionPosition(u32 ID) const;
+	std::optional<SourceState> GetInteractionState(u32 ID) const;
+	std::shared_ptr<Interaction> GetInteraction(u32 ID) const;
 	
-	kigs::unordered_map<int, Interaction>& GetInteractions() { return mInteractions; }
+	kigs::unordered_map<int, std::shared_ptr<Interaction>>& GetInteractions() { return mInteractions; }
 	const kigs::unordered_map<int, v2f>& GetAllThumbstick() const { return mThumbstickList; }
 
 protected:
-	kigs::unordered_map<int, Interaction> mInteractions;
+	kigs::unordered_map<int, std::shared_ptr<Interaction>> mInteractions;
 	kigs::unordered_map<int, v2f> mThumbstickList;
 
 	maReference mGazeCamera = BASE_ATTRIBUTE(GazeCamera, "Camera:camera");

@@ -195,7 +195,7 @@ protected:
 		bool has_position = false;
 
 		Hit* object_hit = nullptr;
-		Interaction* interaction = nullptr;
+		std::shared_ptr<Interaction> interaction;
 		CoreModifiable* starting_touch_support = nullptr;
 		bool need_starting_touch_support_transform = true;
 	};
@@ -248,7 +248,7 @@ struct InputEvent
 	v3f direction;
 
 	Hit hit;
-	const Interaction* interaction = nullptr;
+	std::shared_ptr<Interaction> interaction;
 
 	// Bitfield of InputEventType
 	u32* swallow_mask;
