@@ -3,7 +3,7 @@ add_library(TinyImage STATIC "")
 target_link_libraries(TinyImage PUBLIC Core)
 
 if(NOT ${KIGS_PLATFORM} STREQUAL "Javascript")
-	target_link_libraries(TinyImage PRIVATE png jpeg zlib zstdlib)
+	target_link_libraries(TinyImage PRIVATE png jpeg gif zlib zstdlib)
 else()
 	target_link_libraries(TinyImage PRIVATE zstdlib)
 endif()
