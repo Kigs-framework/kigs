@@ -29,11 +29,6 @@ public:
 	virtual bool	Release();
 
 	void	UpdateDevice();
-
-	bool GetInteractionPosition(u32 ID, v3f& pos) const override;
-	bool GetInteractionState(u32 ID, SourceState& state) const override;
-	const Interaction* GetInteraction(u32 ID) const override;
-
 	void	DoInputDeviceDescription();
 
 	void StartListening();
