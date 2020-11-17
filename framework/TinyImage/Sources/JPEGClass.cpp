@@ -244,7 +244,7 @@ std::vector<u8> RGB24ToJpeg(unsigned char* image_buffer, int image_width, int im
 		* requires it in order to write binary files.
 		*/
 	u8* outbuffer=nullptr;
-	unsigned long outsize=0;
+	size_t outsize=0;
 	jpeg_mem_dest(&cinfo, &outbuffer, &outsize);
 	/* Step 3: set parameters for compression */
 

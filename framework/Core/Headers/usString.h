@@ -85,6 +85,8 @@ public:
 		return _Dest;
 	}*/
 
+	std::vector<UTF8Char>	toUTF8();
+
 
 	bool	operator == (const char* str)
 	{
@@ -356,30 +358,6 @@ public:
 
 		return *this;
 	}
-	/*
-	usString& operator=(const unsigned short* toCopy)
-	{
-		copy(toCopy);
-		return *this;
-	}
-
-	usString& operator=(const char * toCopy)
-	{
-		copy(toCopy);
-		return *this;
-	}
-
-	usString& operator=(const UTF8Char * toCopy)
-	{
-		copy(toCopy);
-		return *this;
-	}
-
-	usString& operator=(const kstl::string& toCopy)
-	{
-		copy(toCopy.c_str());
-		return *this;
-	}*/
 
 	bool operator==(const usString& _value) const
 	{

@@ -34,7 +34,7 @@ void HTTPAsyncRequestWindows::InitModifiable()
 	ParentClassType::InitModifiable();
 	if ((CoreModifiable*)mConnection)
 	{
-		
+		mProcessingFlag = 0;
 		AllocateAndInitializeRequestContext(((HTTPConnectWindows*)(CoreModifiable*)mConnection)->getHandle(), &mRequestContext);
 		
 		ProcessRequest(mRequestContext, ERROR_SUCCESS);

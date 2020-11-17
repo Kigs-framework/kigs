@@ -298,6 +298,34 @@ void usString::reserve(int size)
 	}
 }
 
+std::vector<UTF8Char>	usString::toUTF8()
+{
+	std::vector<UTF8Char> result;
+
+	unsigned short* utf= mString;
+
+	while (*utf)
+	{
+		if ((*utf) <= 0x7F) {
+			// Plain ASCII
+			result.push_back((UTF8Char)*utf);
+		}
+		else if ((*utf) <= 0x07FF) {
+			// 2-byte unicode
+			result.push_back((UTF8Char)((((*utf) >> 6) & 0x1F) | 0xC0));
+			result.push_back((UTF8Char)((((*utf) >> 0) & 0x3F) | 0x80));
+		}
+		else {
+			// 3-byte unicode
+			result.push_back((char)((((*utf) >> 12) & 0x0F) | 0xE0));
+			result.push_back((char)((((*utf) >> 6) & 0x3F) | 0x80));
+			result.push_back((char)((((*utf) >> 0) & 0x3F) | 0x80));
+		}
+		++utf;
+	}
+	return result;
+}
+
 
 kstl::string usString::encode()
 {
