@@ -10,6 +10,7 @@
 #include "Platform/Main/BaseApp.h"
 
 #include <winrt/Windows.Perception.People.h>
+#include <winrt/Windows.Foundation.Collections.h>
 
 #include "GLSLDebugDraw.h"
 

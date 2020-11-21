@@ -32,6 +32,10 @@
 #include "RendererDefines.h"
 #include "TextureFileManager.h"
 
+#ifdef WUP
+#include <winrt/Windows.Foundation.Collections.h>
+#endif
+
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "d3d11.lib")

@@ -4,6 +4,7 @@
 
 #include <winrt/Windows.UI.Input.Spatial.h>
 #include <winrt/Windows.Perception.People.h>
+#include <winrt/Windows.Foundation.Collections.h>
 
 #include <DirectXMath.h>
 

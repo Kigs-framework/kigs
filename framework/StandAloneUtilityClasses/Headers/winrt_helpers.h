@@ -5,6 +5,7 @@
 
 #include "Platform/Main/BaseApp.h"
 #include <winrt/Windows.UI.Core.h>
+#include <winrt/Windows.Foundation.h>
 
 template<typename TLambda>
 auto invoke_async_lambda(TLambda lambda) -> decltype(lambda())

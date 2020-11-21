@@ -22,6 +22,7 @@ using namespace concurrency;
 
 #include "winrt/Windows.Storage.Streams.h"
 #include "winrt/Windows.Storage.FileProperties.h"
+#include "winrt/Windows.Foundation.Collections.h"
 
 void WUPprintf(const char* fmt, ...)
 {

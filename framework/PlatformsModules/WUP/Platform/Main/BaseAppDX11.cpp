@@ -11,6 +11,7 @@
 #include <mutex>
 #include <future>
 
+//#include <windows.foundation.h>
 #include "winrt/Windows.System.Profile.h"
 #include "winrt/Windows.ApplicationModel.h"
 #include "winrt/Windows.ApplicationModel.Activation.h"
@@ -18,7 +19,7 @@
 #include "winrt/Windows.Storage.h"
 #include "winrt/Windows.UI.ViewManagement.h"
 #include "winrt/Windows.UI.Xaml.h"
-
+#include <winrt/Windows.Foundation.Collections.h>
 #include "winrt/Windows.Graphics.DirectX.Direct3D11.h"
 
 #include <sstream>
@@ -36,7 +37,7 @@ using namespace winrt::Windows::Graphics::Holographic;
 using namespace winrt::Windows::Perception::Spatial;
 using namespace winrt::Windows::Storage;
 
-App* App::sApp = nullptr;
+App* App::sApp=nullptr;
 bool gIsHolographic = true;
 bool gIsVR = false;
 
@@ -53,7 +54,7 @@ using namespace winrt::Windows::System::Profile;
 void wupmain()
 {
 	winrt::init_apartment();
-	CoreApplication::Run(App());
+	CoreApplication::Run(winrt::make<App>());
 	winrt::uninit_apartment();
 }
 
@@ -70,7 +71,6 @@ void App::Initialize(CoreApplicationView const& applicationView)
 {	
 	StorageFileFileAccess::setMainThreadID();
 	using namespace winrt::Windows::ApplicationModel::Activation;
-	
 	applicationView.Activated([this](CoreApplicationView const& view, IActivatedEventArgs args)
 	{
 		if (args.Kind() == ActivationKind::File)
@@ -123,7 +123,7 @@ void App::OnHolographicDisplayIsAvailableChanged(winrt::Windows::Foundation::IIn
 void App::SetWindow(CoreWindow const& window)
 {
 	mWindow = window;
-	
+
 	window.VisibilityChanged([this](CoreWindow const& window, VisibilityChangedEventArgs args)
 	{
 		mWindowVisible = args.Visible();

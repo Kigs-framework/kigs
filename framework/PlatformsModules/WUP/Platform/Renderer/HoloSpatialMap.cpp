@@ -26,6 +26,8 @@
 #include "utf8.h"
 
 #include <winrt/Windows.Storage.h>
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Storage.Streams.h>
 
 IMPLEMENT_CLASS_INFO(HoloSpatialMapShader);
 
