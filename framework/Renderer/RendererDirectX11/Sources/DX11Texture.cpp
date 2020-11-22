@@ -729,6 +729,11 @@ void DX11Texture::SetD3DTexture(ID3D11Texture2D* texture)
 {
 	if (mTexturePointer) mTexturePointer->Release();
 	if (mShaderRes) mShaderRes->Release();
+
+	mTexturePointer = nullptr;
+	mShaderRes = nullptr;
+	if (!texture) return;
+
 	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 
 	mTexturePointer = texture;

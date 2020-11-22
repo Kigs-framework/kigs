@@ -405,59 +405,69 @@ bool DX11RenderingScreen::CreateResources()
 #endif
 			swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
 
-			dxinstance->mSwapChain = nullptr;
+
 			mRenderTargetBuffer = nullptr;
 			mDepthStencilView = nullptr;
+			if(mFBOTexture) mFBOTexture->as<DX11Texture>()->SetD3DTexture(nullptr);
+
+			if (dxinstance->mSwapChain)
+			{
+				dxinstance->mSwapChain->ResizeBuffers(2, wanted_x, wanted_y, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
 #ifdef WUP
-			// First, retrieve the underlying DXGI Device from the D3D Device.
-			winrt::com_ptr<IDXGIDevice1> dxgiDevice = dxinstance->mDevice.as<IDXGIDevice1>();
-			
-			// Identify the physical adapter (GPU or card) this device is running on.
-			winrt::com_ptr<IDXGIAdapter> dxgiAdapter;
-			DX::ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.put()));
+				DX::ThrowIfFailed(dxinstance->mSwapChain->GetBuffer(0, __uuidof(mRenderTargetBuffer), mRenderTargetBuffer.put_void()));
+#else
+				DX::ThrowIfFailed(dxinstance->mSwapChain->GetBuffer(0, __uuidof(mRenderTargetBuffer), (void**)mRenderTargetBuffer.ReleaseAndGetAddressOf()));
+#endif
+			}
+			else
+			{
+#ifdef WUP
+				// First, retrieve the underlying DXGI Device from the D3D Device.
+				winrt::com_ptr<IDXGIDevice1> dxgiDevice = dxinstance->mDevice.as<IDXGIDevice1>();
 
-			// And obtain the factory object that created it.
-			winrt::com_ptr<IDXGIFactory2> dxgiFactory;
-			DX::ThrowIfFailed(dxgiAdapter->GetParent(__uuidof(dxgiFactory), dxgiFactory.put_void()));
+				// Identify the physical adapter (GPU or card) this device is running on.
+				winrt::com_ptr<IDXGIAdapter> dxgiAdapter;
+				DX::ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.put()));
 
+				// And obtain the factory object that created it.
+				winrt::com_ptr<IDXGIFactory2> dxgiFactory;
+				DX::ThrowIfFailed(dxgiAdapter->GetParent(__uuidof(dxgiFactory), dxgiFactory.put_void()));
 
-			auto windowPtr = static_cast<::IUnknown*>(winrt::get_abi(dxinstance->mWindow));
-			DX::ThrowIfFailed(dxgiFactory->CreateSwapChainForCoreWindow(
-				dxinstance->mDevice.get(),
-				windowPtr,
-				&swapChainDesc,
-				nullptr,
-				dxinstance->mSwapChain.put()
-			));
-			DX::ThrowIfFailed(dxinstance->mSwapChain->GetBuffer(0, __uuidof(mRenderTargetBuffer), mRenderTargetBuffer.put_void()));
-
+				auto windowPtr = static_cast<::IUnknown*>(winrt::get_abi(dxinstance->mWindow));
+				DX::ThrowIfFailed(dxgiFactory->CreateSwapChainForCoreWindow(
+					dxinstance->mDevice.get(),
+					windowPtr,
+					&swapChainDesc,
+					nullptr,
+					dxinstance->mSwapChain.put()
+				));
+				DX::ThrowIfFailed(dxinstance->mSwapChain->GetBuffer(0, __uuidof(mRenderTargetBuffer), mRenderTargetBuffer.put_void()));
 #else
 
-			// First, retrieve the underlying DXGI Device from the D3D Device.
-			Microsoft::WRL::ComPtr<IDXGIDevice1> dxgiDevice;
-			DX::ThrowIfFailed(dxinstance->mDevice->QueryInterface(__uuidof(IDXGIDevice1), (void**)dxgiDevice.ReleaseAndGetAddressOf()));
+				// First, retrieve the underlying DXGI Device from the D3D Device.
+				Microsoft::WRL::ComPtr<IDXGIDevice1> dxgiDevice;
+				DX::ThrowIfFailed(dxinstance->mDevice->QueryInterface(__uuidof(IDXGIDevice1), (void**)dxgiDevice.ReleaseAndGetAddressOf()));
 
-			// Identify the physical adapter (GPU or card) this device is running on.
-			Microsoft::WRL::ComPtr<IDXGIAdapter> dxgiAdapter;
-			DX::ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.ReleaseAndGetAddressOf()));
+				// Identify the physical adapter (GPU or card) this device is running on.
+				Microsoft::WRL::ComPtr<IDXGIAdapter> dxgiAdapter;
+				DX::ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.ReleaseAndGetAddressOf()));
 
-			// And obtain the factory object that created it.
-			Microsoft::WRL::ComPtr<IDXGIFactory2> dxgiFactory;
-			DX::ThrowIfFailed(dxgiAdapter->GetParent(__uuidof(dxgiFactory), (void**)dxgiFactory.ReleaseAndGetAddressOf()));
+				// And obtain the factory object that created it.
+				Microsoft::WRL::ComPtr<IDXGIFactory2> dxgiFactory;
+				DX::ThrowIfFailed(dxgiAdapter->GetParent(__uuidof(dxgiFactory), (void**)dxgiFactory.ReleaseAndGetAddressOf()));
 
-			DX::ThrowIfFailed(dxgiFactory->CreateSwapChainForHwnd(
-				dxinstance->mDevice.Get(),
-				mHWnd,
-				&swapChainDesc,
-				nullptr,
-				nullptr,
-				dxinstance->mSwapChain.GetAddressOf()
-			));
+				DX::ThrowIfFailed(dxgiFactory->CreateSwapChainForHwnd(
+					dxinstance->mDevice.Get(),
+					mHWnd,
+					&swapChainDesc,
+					nullptr,
+					nullptr,
+					dxinstance->mSwapChain.GetAddressOf()
+				));
 
-			DX::ThrowIfFailed(dxinstance->mSwapChain->GetBuffer(0, __uuidof(mRenderTargetBuffer), (void**)mRenderTargetBuffer.ReleaseAndGetAddressOf()));
-
-#endif		
-		
+				DX::ThrowIfFailed(dxinstance->mSwapChain->GetBuffer(0, __uuidof(mRenderTargetBuffer), (void**)mRenderTargetBuffer.ReleaseAndGetAddressOf()));
+#endif	
+			}
 		}
 	}
 	else
