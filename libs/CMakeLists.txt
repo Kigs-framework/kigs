@@ -14,10 +14,15 @@ message(STATUS "add png")
 add_subdirectory("cross_platform/png")
 SET_TARGET_PROPERTIES( png   					PROPERTIES  FOLDER "libs" )
 
-# png
+# tiff
 message(STATUS "add Tiff")
 add_subdirectory("cross_platform/tiff")
 SET_TARGET_PROPERTIES( tiff   					PROPERTIES  FOLDER "libs" )
+
+# gif
+message(STATUS "add gif")
+add_subdirectory("cross_platform/gif")
+SET_TARGET_PROPERTIES( gif   					PROPERTIES  FOLDER "libs" )
 
 # zlib
 message(STATUS "add zlib")
