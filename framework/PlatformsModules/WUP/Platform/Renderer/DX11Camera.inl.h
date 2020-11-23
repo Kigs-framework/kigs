@@ -6,20 +6,12 @@
 #include <winrt/Windows.Perception.People.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
+#include "winrt_helpers.h"
+
 #include <DirectXMath.h>
 
 using namespace winrt::Windows::UI::Input::Spatial;
 
-inline mat4 MatFromFloat4x4(const winrt::Windows::Foundation::Numerics::float4x4& transform)
-{
-	auto mat_row_major = mat4(
-		v4f(transform.m11, transform.m12, transform.m13, transform.m14),
-		v4f(transform.m21, transform.m22, transform.m23, transform.m24),
-		v4f(transform.m31, transform.m32, transform.m33, transform.m34),
-		v4f(transform.m41, transform.m42, transform.m43, transform.m44));
-
-	return mat_row_major;
-}
 
 void DX11Camera::PlatformProtectedSetActive(TravState* state)
 {
@@ -59,11 +51,11 @@ void DX11Camera::PlatformProtectedSetActive(TravState* state)
 		{
 			auto viewCoordinateSystemTransform = view_transform_container.Value();
 
-			auto view_left = MatFromFloat4x4(viewCoordinateSystemTransform.Left);
-			auto view_right = MatFromFloat4x4(viewCoordinateSystemTransform.Right);
+			auto view_left = Mat4FromFloat4x4(viewCoordinateSystemTransform.Left);
+			auto view_right = Mat4FromFloat4x4(viewCoordinateSystemTransform.Right);
 
-			mCurrentStereoViewproj[0] = MatFromFloat4x4(camera_projection_transform.Left) * view_left;
-			mCurrentStereoViewproj[1] = MatFromFloat4x4(camera_projection_transform.Right) * view_right;
+			mCurrentStereoViewproj[0] = Mat4FromFloat4x4(camera_projection_transform.Left) * view_left;
+			mCurrentStereoViewproj[1] = Mat4FromFloat4x4(camera_projection_transform.Right) * view_right;
 
 			auto p1 = Inv(view_left);
 			auto p2 = Inv(view_right);
