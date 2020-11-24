@@ -93,11 +93,12 @@ void	MouseWUP::UpdateDevice()
 	}
 	
 	// left right middle
-	if (mButtonsCount > 2)
+	if (mButtonsCount >= 2)
 	{
 		mDeviceItems[currentDevice++]->getState()->SetValue(LeftPressed);
 		mDeviceItems[currentDevice++]->getState()->SetValue(RightPressed);
-		mDeviceItems[currentDevice++]->getState()->SetValue(MiddlePressed);
+		if(mButtonsCount > 2)
+			mDeviceItems[currentDevice++]->getState()->SetValue(MiddlePressed);
 	}
 }
 

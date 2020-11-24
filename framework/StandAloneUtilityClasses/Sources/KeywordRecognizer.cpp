@@ -7,6 +7,8 @@
 
 #include <winrt/Windows.Media.Capture.h>
 
+#include "winrt_helpers.h"
+
 IMPLEMENT_CLASS_INFO(KeywordRecognizer);
 
 #if 0
@@ -42,7 +44,7 @@ void KeywordRecognizer::Update(const Timer& timer, void* addParam)
 	if (!IsAllowed() && t - mLastStartTry > std::chrono::seconds(10))
 	{
 		mLastStartTry = t;
-		StartRecognizeKeywords();
+		no_await(StartRecognizeKeywords());
 	}
 
 	winrt::hstring cmd;
@@ -71,6 +73,12 @@ winrt::Windows::Foundation::IAsyncAction KeywordRecognizer::StartRecognizeKeywor
 		co_await mediaCapture.InitializeAsync(settings);
 	}
 	catch (winrt::hresult_error const& ex)
+	{
+		mSpeechRecognizer = nullptr;
+		mRecognitionEnabled = false;
+		co_return;
+	}
+	catch (...)
 	{
 		mSpeechRecognizer = nullptr;
 		mRecognitionEnabled = false;
