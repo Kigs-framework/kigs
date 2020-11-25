@@ -253,6 +253,9 @@ public:
 
 	static SpacialMeshBVH* BuildFromMesh(ModernMesh* mesh,const Matrix3x4& LtoGMatrix,bool onlyHorizontalAndVertical);
 	virtual ~SpacialMeshBVH();
+
+	std::vector<v3f> GetVertices() const;
+
 #ifdef KIGS_TOOLS
 	// draw debug mInfo using GLSLDrawDebug
 	virtual void DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer);
