@@ -1134,6 +1134,26 @@ bool SpacialMeshBVH::CallLocalRayIntersection(std::vector<Hit> &hits, const Poin
 	return hits.size();
 }
 
+std::vector<v3f> SpacialMeshBVH::GetVertices() const
+{
+	std::vector<v3f> tris;
+	size_t nb_points = 0;
+	for (auto& node : mNodeList)
+	{
+		nb_points += node.mTriangles2D.size();
+	}
+	tris.reserve(nb_points);
+	
+	for (auto& node : mNodeList)
+	{
+		for (auto& tri : node.mTriangles2D)
+		{
+			tris.push_back(node.mO + node.mU * tri.x + node.mV * tri.y);
+		}
+	}
+	return tris;
+}
+
 #ifdef KIGS_TOOLS
 #include <GLSLDebugDraw.h>
 void SpacialMeshBVH::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
@@ -1157,7 +1177,7 @@ void SpacialMeshBVH::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer 
 			Triangles3D[i] = newOne.mO + newOne.mU * newOne.mTriangles2D[i].x + newOne.mV * newOne.mTriangles2D[i].y;
 		}
 
-		mLtoGMatrix.TransformPoints(&Triangles3D[0], Triangles3D.size());
+		mat->TransformPoints(&Triangles3D[0], Triangles3D.size());
 		for (int i = 0; i < Triangles3D.size(); i+=3)
 		{
 			dd::line(Triangles3D[i], Triangles3D[i+1], RGB[0]);
@@ -1169,8 +1189,8 @@ void SpacialMeshBVH::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer 
 		{
 			Vector3D bary(newOne.mO);
 			Vector3D normal(newOne.mNormal);
-			mLtoGMatrix.TransformPoints(&bary, 1);
-			mLtoGMatrix.TransformVector(&normal);
+			mat->TransformPoints(&bary, 1);
+			mat->TransformVector(&normal);
 			dd::arrow(bary, bary + normal * 0.1f, RGB[0], 0.02f);
 		}
 	}

@@ -373,9 +373,52 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 		mesh->Init();
 		node->addItem(mesh);
 		auto collisionBVH = SpacialMeshBVH::BuildFromMesh(mesh.get(), meshMat, true);
-		if (collisionBVH)
+		auto collisionAABB = AABBTree::BuildFromMesh(mesh->as<ModernMesh>());
+
+		if (collisionBVH && collisionAABB)
 		{
-			mCollisionManager->SetCollisionObject(mesh, collisionBVH);
+			
+
+			auto vertices = collisionBVH->GetVertices();
+			char* vertice_data = new char[vertices.size() * sizeof(v3f) * 2 + sizeof(v2f)];
+
+			struct vertex
+			{
+				v3f pos;
+				v3f n;
+			};
+
+			auto i = 0;
+			for (auto t = 0; t < vertices.size() / 3; ++t)
+			{
+				auto p1 = vertices[t * 3 + 0];
+				auto p2 = vertices[t * 3 + 1];
+				auto p3 = vertices[t * 3 + 2];
+				auto n = ((p2 - p1) ^ (p3 - p2)).Normalized();
+
+				auto& v1 = reinterpret_cast<vertex*>(vertice_data)[i++];
+				v1.pos = p1;
+				v1.n = n;
+
+				auto& v2 = reinterpret_cast<vertex*>(vertice_data)[i++];
+				v2.pos = p2;
+				v2.n = n;
+
+				auto& v3 = reinterpret_cast<vertex*>(vertice_data)[i++];
+				v3.pos = p3;
+				v3.n = n;
+			}
+
+			SP<DrawVertice> dv = KigsCore::GetInstanceOf("dv", "DrawVertice");
+			dv->setValue("IsStaticBuffer", true);
+			dv->Init();
+			dv->SetVertexArray(vertice_data, vertices.size());
+			dv->SetNormalArray(nullptr, vertices.size(), sizeof(v3f), offsetof(vertex, n));
+			node->addItem(dv);
+
+			mCollisionManager->SetCollisionObject(dv, collisionBVH);
+			mCollisionManager->SetCollisionObject(mesh, collisionAABB);
+
 			theGlobals->State.Immersive.ContinuousMatching.RegisterSpatialMeshNode(outInfo.node);
 		}
 	}
@@ -749,7 +792,10 @@ void HoloSpatialMap::Update(const Timer& timer, void* addParam)
 				if (it.second.node)
 				{
 					auto mesh = it.second.node->GetFirstSonByType("ModernMesh");
-					if(mesh) mesh->setValue("Show", mShowMeshes);
+					if(mesh) mesh->setValue("Show", mShowMeshMode == ShowMeshMode::Full);
+					auto dv = it.second.node->GetFirstSonByType("DrawVertice");
+					if (dv) dv->setValue("Show", mShowMeshMode == ShowMeshMode::PlaneOnly);
+
 					//kigsprintf("adding spatial mesh %u\n", mesh->getUID());
 					attach->addItem(it.second.node);
 				}
@@ -772,7 +818,9 @@ void HoloSpatialMap::Update(const Timer& timer, void* addParam)
 			{
 				attach->removeItem(it.second.old_node);
 				auto mesh = it.second.node->GetFirstSonByType("ModernMesh");
-				if (mesh) mesh->setValue("Show", mShowMeshes);
+				if (mesh) mesh->setValue("Show", mShowMeshMode == ShowMeshMode::Full);
+				auto dv = it.second.node->GetFirstSonByType("DrawVertice");
+				if (dv) dv->setValue("Show", mShowMeshMode == ShowMeshMode::PlaneOnly);
 				attach->addItem(it.second.node);
 				//it.second.old_node->GetRef(); ///TEST
 				//kigsprintf("deleting2 spatial mesh %u\n", it.second.old_node->GetFirstSonByType("ModernMesh")->getUID());
@@ -796,7 +844,7 @@ void HoloSpatialMap::InitModifiable()
 	if (mAllowed) return;
 
 #ifdef KIGS_TOOLS
-	mShowMeshes = true;
+	//mShowMeshMode = ShowMeshMode::PlaneOnly;
 
 	auto import_scan = [&](const std::string& filename)
 	{
@@ -804,26 +852,76 @@ void HoloSpatialMap::InitModifiable()
 		if (debugmap)
 		{
 			mat3x4 ref_matrix = mat3x4::IdentityMatrix();
-			/*if (debugmap->getArrayValue("ReferenceMatrix", &ref_matrix.e[0][0], 12))
+			if (debugmap->getArrayValue("ReferenceMatrix", &ref_matrix.e[0][0], 12))
 			{
 				//ref_matrix = Inv(ref_matrix);
-			}*/
+			}
 
 			while (debugmap->getItems().size())
 			{
 				auto item = debugmap->getItems().front().mItem;
-				item->GetRef();
 				debugmap->removeItem(item);
+				if (item->isSubType("Node3D"))
+				{
+					auto m = item->as<Node3D>()->GetLocal();
+					m = ref_matrix * m;
+					item->as<Node3D>()->ChangeMatrix(m);
 
-				auto m = item->as<Node3D>()->GetLocal();
-				m = ref_matrix * m;
-				item->as<Node3D>()->ChangeMatrix(m);
+					auto mesh = item->GetFirstSonByType("ModernMesh");
+					mesh->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "BVH", true);
+					mesh->setValue("Show", mShowMeshMode == ShowMeshMode::Full);
+					mesh->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "IsCreatedFromExport", true);
+					mesh->Init();
+					mAttachNode->addItem(item);
 
-				auto mesh = item->GetFirstSonByType("ModernMesh");
-				mesh->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "BVH", true);
-				mesh->setValue("Show", mShowMeshes);
-				mAttachNode->addItem(item);
-				item->Destroy();
+					auto collisionBVH = SpacialMeshBVH::BuildFromMesh(mesh->as<ModernMesh>(), item->as<Node3D>()->GetLocalToGlobal(), true);
+					auto collisionAABB = AABBTree::BuildFromMesh(mesh->as<ModernMesh>());
+
+					if (collisionBVH && collisionAABB)
+					{
+						auto vertices = collisionBVH->GetVertices();
+
+						struct vertex
+						{
+							v3f pos;
+							v3f n;
+						};
+
+						char* vertice_data = new char[vertices.size() * sizeof(vertex)];
+
+						auto i = 0;
+						for (auto t = 0; t < vertices.size() / 3; ++t)
+						{
+							auto p1 = vertices[t * 3+0];
+							auto p2 = vertices[t * 3+1];
+							auto p3 = vertices[t * 3+2];
+							auto n = ((p2 - p1) ^ (p3 - p2)).Normalized();
+
+							auto& v1 = reinterpret_cast<vertex*>(vertice_data)[i++];
+							v1.pos = p1;
+							v1.n = n;
+
+							auto& v2 = reinterpret_cast<vertex*>(vertice_data)[i++];
+							v2.pos = p2;
+							v2.n = n;
+
+							auto& v3 = reinterpret_cast<vertex*>(vertice_data)[i++];
+							v3.pos = p3;
+							v3.n = n;
+						}
+
+						SP<DrawVertice> dv = KigsCore::GetInstanceOf("dv", "DrawVertice");
+						dv->setValue("IsStaticBuffer", true);
+						dv->Init();
+						dv->SetVertexArray(vertice_data, vertices.size());
+						dv->SetNormalArray(nullptr, vertices.size(), sizeof(v3f), offsetof(vertex, n));
+						dv->setValue("Show", mShowMeshMode == ShowMeshMode::PlaneOnly);
+						item->addItem(dv);
+
+						mCollisionManager->SetCollisionObject(dv, collisionBVH);
+						mCollisionManager->SetCollisionObject(mesh, collisionAABB);
+					}
+				}
 			}
 			return;
 		}
@@ -853,7 +951,7 @@ void HoloSpatialMap::InitModifiable()
 	//import_timed_scan("spatial_map_kcomk_stephane_appart.bin");
 	
 	
-	//import_scan("spatial_map_1023_n1.xml");
+	//import_scan("spatial_map_80398810989.xml");
 	///import_scan("spatial_map_1028_n1.xml");
 	//import_scan("spatial_map_1040_n1.xml");
 
@@ -869,17 +967,23 @@ void HoloSpatialMap::InitModifiable()
 #endif
 }
 
-void HoloSpatialMap::SetShowMeshes(bool show)
+void HoloSpatialMap::SetShowMeshMode(ShowMeshMode mode)
 {
-	if (mShowMeshes != show)
+	if (mShowMeshMode != mode)
 	{
-		mShowMeshes = show;
+		mShowMeshMode = mode;
 
 		std::vector<CMSP> meshes;
 		mAttachNode->GetSonInstancesByType("ModernMesh", meshes, true);
+		std::vector<CMSP> dvs;
+		mAttachNode->GetSonInstancesByType("DrawVertice", dvs, true);
 		for (auto m : meshes)
 		{
-			m->setValue("Show", mShowMeshes);
+			m->setValue("Show", mShowMeshMode == ShowMeshMode::Full);
+		}
+		for (auto dv : dvs)
+		{
+			dv->setValue("Show", mShowMeshMode == ShowMeshMode::PlaneOnly);
 		}
 	}
 }
