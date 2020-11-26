@@ -20,8 +20,6 @@
 #include <algorithm>
 
 
-extern bool gIsVR;
-
 IMPLEMENT_CLASS_INFO(Holo3DSequenceManager);
 IMPLEMENT_CLASS_INFO(InterfacePanel);
 

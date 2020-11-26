@@ -11,17 +11,7 @@
 
 #include <algorithm>
 
-//#include "imgui.h"
-#ifdef WUP
-extern bool gIsVR;
-#endif
-
-
-
-
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(TouchInputEventManager, TouchInputEventManager, Input);
 IMPLEMENT_CLASS_INFO(TouchInputEventManager)
-
 
 IMPLEMENT_CONSTRUCTOR(TouchInputEventManager)
 , mTheInputModule(0)

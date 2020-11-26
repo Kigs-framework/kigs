@@ -51,6 +51,21 @@ using namespace winrt::Windows::System::Profile;
 
 #include "utf8.h"
 
+#include <Windows.h>
+
+void print_context(char* iden)
+{
+	APTTYPE type;
+	APTTYPEQUALIFIER qualifier;
+	HRESULT const result = CoGetApartmentType(&type, &qualifier);
+	const char* appart = "N/A";
+	if (result == S_OK)
+	{
+		appart = (type == APTTYPE_MTA ? "MTA" : "STA");
+	}
+	kigsprintf("[%s] thread:%d apartment:%s\n", iden, GetCurrentThreadId(), appart);
+}
+
 void wupmain()
 {
 	winrt::init_apartment();
@@ -171,6 +186,8 @@ void App::Load(winrt::hstring const& entryPoint)
 
 void App::Run()
 {
+	print_context("Run");
+
 	setlocale(LC_NUMERIC, "C");
 	KigsCore::Init();
 
@@ -213,7 +230,6 @@ void App::Run()
 void App::Uninitialize()
 {
 }
-
 
 void App::Swap()
 {
