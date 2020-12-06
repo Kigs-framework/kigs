@@ -63,6 +63,7 @@ protected:
 
 	maBool mTwoSided = BASE_ATTRIBUTE(TwoSided, false);
 	maEnum<3> mDepthTest = BASE_ATTRIBUTE(DepthTest, "NoChange", "Enabled", "Disabled");
+	maEnum<3> mDepthWrite = BASE_ATTRIBUTE(DepthWrite, "NoChange", "Enabled", "Disabled");
 	maEnum<2> mShape = BASE_ATTRIBUTE(Shape, "Plane", "Circle");
 
 	maInt mCullMode = BASE_ATTRIBUTE(CullMode, 1);

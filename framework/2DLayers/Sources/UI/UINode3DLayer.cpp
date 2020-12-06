@@ -391,7 +391,25 @@ void UINode3DLayer::TravDraw(TravState* state)
 				current_custom_shader = shader;
 			}
 
+			bool draw_depth = false;
+			draw_depth = item.node->getValue("DrawDepth", draw_depth) && draw_depth;
+
+			if (draw_depth)
+			{
+				renderer->SetDepthTestMode(true);
+				renderer->SetDepthMaskMode(RENDERER_DEPTH_MASK_ON);
+				renderer->SetDepthTestFunc(RENDERER_DEPTH_TEST_ALWAYS);
+			}
+				
+
 			item.node->ProtectedDraw(state);
+
+			if (draw_depth)
+			{
+				renderer->SetDepthTestMode(false);
+				//renderer->SetDepthMaskMode(RENDERER_DEPTH_MASK_OFF);
+			}
+				
 		}
 		if (current_custom_shader)
 			renderer->popShader(current_custom_shader, state);

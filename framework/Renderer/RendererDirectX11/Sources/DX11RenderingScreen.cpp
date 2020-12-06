@@ -212,7 +212,7 @@ void DX11RenderingScreen::Update(const Timer&  timer, void* addParam)
 #ifdef WUP
 	if (mRenderingParameters)
 	{
-		mRenderingParameters.CommitDirect3D11DepthBuffer(CreateDepthTextureInteropObject(mDepthStencilBuffer));
+		mRenderingParameters.CommitDirect3D11DepthBuffer(CreateDepthTextureInteropObject(mDepthStencilBuffers[mHoloCommittedDepthBuffer]));
 	}
 #endif
 	if (!mIsOffScreen && !mUseFBO)
@@ -359,7 +359,7 @@ bool DX11RenderingScreen::CreateResources()
 
 			if (mSizeX != wanted_x || mSizeY != wanted_y)
 			{
-				mDepthStencilView = nullptr;
+				mDepthStencilViews.clear();
 			}
 
 			mSizeX = wanted_x;
@@ -374,7 +374,7 @@ bool DX11RenderingScreen::CreateResources()
 			{
 				mRenderTargetBuffer = cameraBackBuffer;
 			}
-			else if(mDepthStencilView)
+			else if(mDepthStencilViews.size())
 			{
 				// No need to recreate depth stencil
 				return true;
@@ -407,7 +407,7 @@ bool DX11RenderingScreen::CreateResources()
 
 
 			mRenderTargetBuffer = nullptr;
-			mDepthStencilView = nullptr;
+			mDepthStencilViews.clear();
 			if(mFBOTexture) mFBOTexture->as<DX11Texture>()->SetD3DTexture(nullptr);
 
 			if (dxinstance->mSwapChain)
@@ -503,7 +503,7 @@ bool DX11RenderingScreen::CreateResources()
 #else
 		mFBOTexture->as<DX11Texture>()->SetD3DTexture(mRenderTargetBuffer.Get());
 #endif
-		mDepthStencilView = nullptr;
+		mDepthStencilViews.clear();
 	}
 
 	mRenderTargetView = nullptr;
@@ -513,7 +513,7 @@ bool DX11RenderingScreen::CreateResources()
 	DX::ThrowIfFailed(dxinstance->mDevice->CreateRenderTargetView(mRenderTargetBuffer.Get(), NULL, mRenderTargetView.ReleaseAndGetAddressOf()));
 #endif
 
-	if (mDepthStencilView) return true;
+	if (mDepthStencilViews.size()) return true;
 
 	CD3D11_TEXTURE2D_DESC depthBufferDesc = {};
 
@@ -549,25 +549,36 @@ bool DX11RenderingScreen::CreateResources()
 	depthBufferDesc.MiscFlags = 0;
 
 	// Create the texture for the depth buffer using the filled out description.
-	mDepthStencilBuffer = nullptr;
-#ifdef WUP
-	DX::ThrowIfFailed(dxinstance->mDevice->CreateTexture2D(&depthBufferDesc, NULL, mDepthStencilBuffer.put()));
-#else
-	DX::ThrowIfFailed(dxinstance->mDevice->CreateTexture2D(&depthBufferDesc, NULL, mDepthStencilBuffer.ReleaseAndGetAddressOf()));
-#endif
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
-	depthStencilViewDesc.Format = depth_stencil_view_format;
-	depthStencilViewDesc.ViewDimension = is_stereo ? D3D11_DSV_DIMENSION_TEXTURE2DARRAY : D3D11_DSV_DIMENSION_TEXTURE2D;
-	depthStencilViewDesc.Texture2D.MipSlice = 0;
-	depthStencilViewDesc.Texture2DArray.ArraySize = is_stereo ? 2 : 1;
+	mDepthStencilBuffers.clear();
+	mDepthStencilBuffers.resize(mDepthBufferCount);
+	mDepthStencilViews.clear();
+	mDepthStencilViews.resize(mDepthBufferCount);
 
-	// Create the depth stencil view.
-	mDepthStencilView = nullptr;
+	for (int i = 0; i < mDepthBufferCount; ++i)
+	{
+		auto& depth_stencil_buffer = mDepthStencilBuffers[i];
+		auto& depth_stencil_view = mDepthStencilViews[i];
+		
 #ifdef WUP
-	DX::ThrowIfFailed(dxinstance->mDevice->CreateDepthStencilView(mDepthStencilBuffer.get(), &depthStencilViewDesc, mDepthStencilView.put()));
+		DX::ThrowIfFailed(dxinstance->mDevice->CreateTexture2D(&depthBufferDesc, NULL, depth_stencil_buffer.put()));
 #else
-	DX::ThrowIfFailed(dxinstance->mDevice->CreateDepthStencilView(mDepthStencilBuffer.Get(), &depthStencilViewDesc, mDepthStencilView.ReleaseAndGetAddressOf()));
+		DX::ThrowIfFailed(dxinstance->mDevice->CreateTexture2D(&depthBufferDesc, NULL, depth_stencil_buffer.ReleaseAndGetAddressOf()));
 #endif
+		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
+		depthStencilViewDesc.Format = depth_stencil_view_format;
+		depthStencilViewDesc.ViewDimension = is_stereo ? D3D11_DSV_DIMENSION_TEXTURE2DARRAY : D3D11_DSV_DIMENSION_TEXTURE2D;
+		depthStencilViewDesc.Texture2D.MipSlice = 0;
+		depthStencilViewDesc.Texture2DArray.ArraySize = is_stereo ? 2 : 1;
+
+		// Create the depth stencil view.
+
+#ifdef WUP
+		DX::ThrowIfFailed(dxinstance->mDevice->CreateDepthStencilView(depth_stencil_buffer.get(), &depthStencilViewDesc, depth_stencil_view.put()));
+#else
+		DX::ThrowIfFailed(dxinstance->mDevice->CreateDepthStencilView(depth_stencil_buffer.Get(), &depthStencilViewDesc, depth_stencil_view.ReleaseAndGetAddressOf()));
+#endif
+	}
+
 	return true;
 }
 
@@ -583,13 +594,13 @@ void DX11RenderingScreen::setCurrentContext()
 	}
 
 	dxinstance->mCurrentRenderTarget = mRenderTargetView;
-	dxinstance->mCurrentDepthStencilTarget = mDepthStencilView;
+	dxinstance->mCurrentDepthStencilTarget = mDepthStencilViews[mActiveDepthBuffer];
 #ifdef WUP
 	ID3D11RenderTargetView* render_targets[] = { mRenderTargetView.get() };
-	dxinstance->mDeviceContext->OMSetRenderTargets(1, render_targets, mDepthStencilView.get());
+	dxinstance->mDeviceContext->OMSetRenderTargets(1, render_targets, dxinstance->mCurrentDepthStencilTarget.get());
 #else
 	ID3D11RenderTargetView* render_targets[] = { mRenderTargetView.Get() };
-	dxinstance->mDeviceContext->OMSetRenderTargets(1, render_targets, mDepthStencilView.Get());
+	dxinstance->mDeviceContext->OMSetRenderTargets(1, render_targets, dxinstance->mCurrentDepthStencilTarget.Get());
 #endif
 	dxinstance->mIsFBORenderTarget = mUseFBO;
 }
@@ -598,6 +609,6 @@ void DX11RenderingScreen::ReleaseResources()
 {
 	mRenderTargetBuffer = nullptr;
 	mRenderTargetView = nullptr;
-	mDepthStencilBuffer = nullptr;
-	mDepthStencilView = nullptr;
+	mDepthStencilBuffers.clear();
+	mDepthStencilViews.clear();
 }

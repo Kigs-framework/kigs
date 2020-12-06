@@ -48,14 +48,15 @@ bool Holo3DPanel::Draw(TravState* travstate)
 	if (ParentClassType::Draw(travstate))
 	{
 		// create shader if none
-		int lShaderMask = ModuleRenderer::VERTEX_ARRAY_MASK | ModuleRenderer::TEXCOORD_ARRAY_MASK | ModuleRenderer::NO_LIGHT_MASK;
+		int lShaderMask = ModuleRenderer::VERTEX_ARRAY_MASK | ModuleRenderer::TEXCOORD_ARRAY_MASK | ModuleRenderer::NO_LIGHT_MASK | ModuleRenderer::ALPHA_TEST_LOW;
 		auto renderer = travstate->GetRenderer();
 		renderer->GetActiveShader()->ChooseShader(travstate, lShaderMask);
 
 		// ** Manage Transparency **
 		renderer->PushState();
-		renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_ON);
-		renderer->SetAlphaMode(RENDERER_ALPHA_GREATER, 0.01f);
+		// NOTE(antoine) SetAlphaTestMode & SetAlphaMode don't do anything, it's a shader flag now
+		//renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_ON);
+		//renderer->SetAlphaMode(RENDERER_ALPHA_GREATER, 0.01f);
 		renderer->SetBlendMode(RENDERER_BLEND_ON);
 		renderer->SetBlendFuncMode(RENDERER_BLEND_SRC_ALPHA, RENDERER_BLEND_ONE_MINUS_SRC_ALPHA);
 
@@ -63,14 +64,30 @@ bool Holo3DPanel::Draw(TravState* travstate)
 		switch (depth_test)
 		{
 		case 1:
-			renderer->SetDepthTestMode(true);
+			//renderer->SetDepthTestMode(true);
+			renderer->SetDepthTestFunc(RENDERER_DEPTH_TEST_LESS);
 			break;
 		case 2:
-			renderer->SetDepthTestMode(false);
+			//renderer->SetDepthTestMode(false);
+			renderer->SetDepthTestFunc(RENDERER_DEPTH_TEST_ALWAYS);
 			break;
 		default:
 			break;
 		}
+
+		int depth_write = mDepthWrite;
+		switch (depth_write)
+		{
+		case 1:
+			renderer->SetDepthMaskMode(RENDERER_DEPTH_MASK_ON);
+			break;
+		case 2:
+			renderer->SetDepthMaskMode(RENDERER_DEPTH_MASK_OFF);
+			break;
+		default:
+			break;
+		}
+
 
 		renderer->SetCullMode((RendererCullMode)(int)mCullMode);
 

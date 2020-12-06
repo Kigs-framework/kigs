@@ -127,6 +127,18 @@ enum RendererDepthMaskMode
 	RENDERER_DEPTH_MASK_ON,
 };
 
+enum RendererDepthTestFunc
+{//GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, and GL_ALWAYS
+	RENDERER_DEPTH_TEST_NEVER = 0,
+	RENDERER_DEPTH_TEST_LESS = 1,
+	RENDERER_DEPTH_TEST_EQUAL = 2,
+	RENDERER_DEPTH_TEST_LEQUAL = 3,
+	RENDERER_DEPTH_TEST_GREATER = 4,
+	RENDERER_DEPTH_TEST_NOTEQUAL = 5,
+	RENDERER_DEPTH_TEST_GEQUAL = 6,
+	RENDERER_DEPTH_TEST_ALWAYS = 7
+};
+
 /*enum RendererDepthTestMode
 {
 	RENDERER_DEPTH_TEST_OFF = 0,
@@ -501,6 +513,11 @@ public:
 		mGlobalDepthTestFlag = mode;
 	}
 
+	void SetDepthTestFunc(RendererDepthTestFunc func)
+	{
+		mGlobalDepthTestFunc = func;
+	}
+
 	void SetDepthValueMode(float mode)
 	{
 		mGlobalDepthValueFlag = mode;
@@ -683,6 +700,7 @@ protected:
 	bool	mGlobalScissorTestFlag = RENDERER_SCISSOR_TEST_OFF;
 	bool	mGlobalDepthMaskFlag = RENDERER_DEPTH_MASK_ON;
 	bool	mGlobalDepthTestFlag = false;
+	RendererDepthTestFunc mGlobalDepthTestFunc = RENDERER_DEPTH_TEST_LESS;
 	bool	mGlobalBlendFlag = RENDERER_BLEND_OFF;
 	bool	mGlobalLightFlag = RENDERER_LIGHT_OFF;
 	bool	mGlobalAlphaTestFlag = RENDERER_ALPHA_TEST_OFF;
@@ -864,6 +882,11 @@ public:
 	void		SetDepthTestMode(bool mode)
 	{
 		mStateStackTop->SetDepthTestMode(mode);
+	}
+
+	void SetDepthTestFunc(RendererDepthTestFunc func)
+	{
+		mStateStackTop->SetDepthTestFunc(func);
 	}
 
 	void		SetDepthValueMode(float mode)

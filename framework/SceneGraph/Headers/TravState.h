@@ -50,6 +50,7 @@ struct RenderPass
 	bool write_depth = true;
 	bool allow_instancing = true;
 	DrawableSorter* sorter = nullptr;
+	int depth_buffer_index = 0;
 
 #ifdef KIGS_TOOLS
 	std::vector<std::string> debug_draw_path;

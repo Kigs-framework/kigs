@@ -69,16 +69,23 @@ protected:
 	HGLRC mHRC = NULL;
 	HWND  mHWnd = NULL;
 
+	maInt mDepthBufferCount = BASE_ATTRIBUTE(DepthBufferCount, 1);
+	maInt mActiveDepthBuffer = BASE_ATTRIBUTE(ActiveDepthBuffer, 0);
+
 #ifdef WUP
+
+	maInt mHoloCommittedDepthBuffer = BASE_ATTRIBUTE(HoloCommittedDepthBuffer, 0);
+
 	winrt::com_ptr<ID3D11Texture2D>			mRenderTargetBuffer;
 	winrt::com_ptr<ID3D11RenderTargetView>	mRenderTargetView;
-	winrt::com_ptr<ID3D11Texture2D>			mDepthStencilBuffer;
-	winrt::com_ptr<ID3D11DepthStencilView>	mDepthStencilView;
+
+	std::vector<winrt::com_ptr<ID3D11Texture2D>>			mDepthStencilBuffers;
+	std::vector<winrt::com_ptr<ID3D11DepthStencilView>>		mDepthStencilViews;
 #else
 	Microsoft::WRL::ComPtr<ID3D11Texture2D>			mRenderTargetBuffer;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	mRenderTargetView;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>			mDepthStencilBuffer;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	mDepthStencilView;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>		mDepthStencilBuffers;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11DepthStencilView>>	mDepthStencilViews;
 #endif
 	unsigned int mCurrentFrameNumber = -1;
 #ifdef WUP
