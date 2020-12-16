@@ -7,6 +7,7 @@
 
 #include "CoreModifiable.h"
 #include "usString.h"
+#include <any>
 
 class AttachedModifierBase;
 class CoreItem;
@@ -489,6 +490,7 @@ public:
 };
 using maRawPtr = maRawPtrHeritage<0>;
 
+
 // Template specializations defined in CoreModifiable.cpp
 //! \brief methods to convert a string to a value (numeric, boolean...)
 template<typename T> bool CoreConvertString2Value(const kstl::string &stringValue,T& value);
@@ -502,7 +504,7 @@ template<typename T> bool CoreConvertValue2String(kstl::string& stringValue,T va
 #include "maBool.h"
 #include "maEnum.h"
 #include "maArray.h"
-
+#include "maAny.h"
 
 // AttributeHolder methods
 

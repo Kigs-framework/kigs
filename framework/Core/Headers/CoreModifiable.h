@@ -14,6 +14,7 @@
 #include <set>
 #include <variant>
 #include <list>
+#include <any>
 
 #ifdef KEEP_XML_DOCUMENT
 #include "XML.h"
@@ -672,13 +673,12 @@ public:
 	EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET_VALUE);
 	DECLARE_SET_VALUE(const char*);
 	DECLARE_SET_VALUE(const u16*);
-
+	
 	#define DECLARE_GET_VALUE(type) bool getValue(const KigsID attributeLabel, type value) const;
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
 	EXPAND_MACRO_FOR_STRING_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
 	EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
 	
-
 	#define DECLARE_SETARRAY_VALUE2(valuetype) bool setArrayValue(KigsID attributeLabel, valuetype value1, valuetype value2);
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAY_VALUE2);
 
@@ -726,6 +726,22 @@ public:
 	}
 
 	template<typename T>
+	T* getAny(const KigsID id)
+	{
+		auto attr = getAttribute(id);
+		if (!attr)
+		{
+			attr = AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::ANY, id);
+			static_cast<maAny*>(attr)->ref() = T{};
+		}
+		if (attr && attr->getType() == CoreModifiable::ATTRIBUTE_TYPE::ANY)
+		{
+			return static_cast<maAny*>(attr)->getAny<T>();
+		}
+		return nullptr;
+	}
+
+	template<typename T>
 	void setValueRecursively(KigsID id, T&& value)
 	{
 		setValue(id, value);
@@ -750,7 +766,7 @@ public:
 	CoreModifiableAttribute*	AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID, kfloat defaultval);
 	CoreModifiableAttribute*	AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID, bool defaultval);
 	CoreModifiableAttribute*	AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID, const char* defaultval = 0);
-
+	
 	CoreModifiableAttribute*	AddDynamicVectorAttribute(KigsID ID, const int* defaultval, u32 valcount);
 	CoreModifiableAttribute*	AddDynamicVectorAttribute(KigsID ID, const kfloat* defaultval, u32 valcount);
 
