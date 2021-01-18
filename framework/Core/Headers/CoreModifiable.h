@@ -726,20 +726,7 @@ public:
 	}
 
 	template<typename T>
-	T* getAny(const KigsID id)
-	{
-		auto attr = getAttribute(id);
-		if (!attr)
-		{
-			attr = AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::ANY, id);
-			static_cast<maAny*>(attr)->ref() = T{};
-		}
-		if (attr && attr->getType() == CoreModifiable::ATTRIBUTE_TYPE::ANY)
-		{
-			return static_cast<maAny*>(attr)->getAny<T>();
-		}
-		return nullptr;
-	}
+	T* getAny(const KigsID id);
 
 	template<typename T>
 	void setValueRecursively(KigsID id, T&& value)
@@ -1449,5 +1436,21 @@ struct MethodCallingStruct
 	void* mPrivateParams =  nullptr;
 	CoreModifiable* mMethodInstance = nullptr;
 };
-
+#ifdef WUP
+template<typename T>
+T* CoreModifiable::getAny(const KigsID id)
+{
+	auto attr = getAttribute(id);
+	if (!attr)
+	{
+		attr = AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::ANY, id);
+		static_cast<maAny*>(attr)->ref() = T{};
+	}
+	if (attr && attr->getType() == CoreModifiable::ATTRIBUTE_TYPE::ANY)
+	{
+		return static_cast<maAny*>(attr)->getAny<T>();
+	}
+	return nullptr;
+}
+#endif
 #endif
