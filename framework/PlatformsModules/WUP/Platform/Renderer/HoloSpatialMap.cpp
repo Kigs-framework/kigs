@@ -186,7 +186,7 @@ IMPLEMENT_CONSTRUCTOR(HoloSpatialMap)
 		});
 	
 		mSurfaceObserver = Surfaces::SpatialSurfaceObserver();
-		mPrecision = 32; // 320 * 64.0;
+		//mPrecision = 32; // 320 * 64.0;
 
 		SpatialBoundingSphere bs;
 		bs.Center.x = 0.0f;

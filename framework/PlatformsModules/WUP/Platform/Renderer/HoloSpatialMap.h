@@ -129,7 +129,7 @@ protected:
 
 	std::atomic_bool gInUpdate = false;
 
-	double mPrecision = 512.0;
+	maDouble mPrecision = BASE_ATTRIBUTE(Precision, 32.0);
 
 	std::unordered_map<GuidComp, SpatialMeshInfo, GuidHash> mMeshList;
 	std::mutex mListMtx;
