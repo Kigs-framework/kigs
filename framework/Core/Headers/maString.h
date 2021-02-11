@@ -25,6 +25,8 @@ public:
 	//! Doesn't call modifiers!
 	const char* c_str() const { return mValue.c_str(); }
 
+	void* getRawValue() final { return (void*)mValue.data(); }
+	size_t MemorySize() const final { return mValue.size(); };
 
 	// getValue overloads
 	virtual bool getValue(kstl::string& value) const override

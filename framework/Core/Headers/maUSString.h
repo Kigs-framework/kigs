@@ -27,7 +27,8 @@ public:
 		mValue = usString{ value };
 	}
 
-
+	void* getRawValue() final { return (void*)mValue.us_str(); }
+	size_t MemorySize() const final { return mValue.length()*sizeof(u16); };
 
 	/// getValue overloads
 	virtual bool getValue(kstl::string& value) const override
