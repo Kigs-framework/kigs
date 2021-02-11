@@ -376,12 +376,12 @@ public:
 	T& ref() { return mValue; }
 	const T& const_ref() const { return mValue; }
 
-	virtual void* getRawValue() final { return static_cast<void*>(&mValue); }
+	void* getRawValue() override { return static_cast<void*>(&mValue); }
 	
 	friend class CoreModifiable;
 	
 
-	size_t MemorySize() const final { return sizeof(T); };
+	size_t MemorySize() const override { return sizeof(T); };
 	
 	CoreModifiableAttributeData<T>& operator=(const CoreModifiableAttributeData<T>& other)
 	{

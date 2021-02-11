@@ -151,6 +151,8 @@ public:
 	}
 	operator const CoreRawBuffer*() const { return mValue.get(); }
 
+	void* getRawValue() final { return (void*)buffer(); }
+	size_t MemorySize() const final { return length(); };
 
 };
 
