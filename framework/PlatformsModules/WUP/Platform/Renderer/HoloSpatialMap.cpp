@@ -11,6 +11,8 @@
 #include "CollisionManager.h"
 #include "AABBTree.h"
 #include "Camera.h"
+#include "NotificationCenter.h"
+#include "CoreBaseApplication.h"
 
 #include <robuffer.h>
 
@@ -603,6 +605,8 @@ void HoloSpatialMap::StartListening()
 
 	if (!mIsListening)
 	{
+		mIsListening = true;
+
 		mEventToken = mSurfaceObserver.ObservedSurfacesChanged([this](Surfaces::SpatialSurfaceObserver const& sender, winrt::Windows::Foundation::IInspectable const& args)
 		{
 			if (!mContinueProcess) return;
@@ -653,6 +657,8 @@ void HoloSpatialMap::StartListening()
 			int surface_index = 0;
 			for (auto& current : surfaces)
 			{
+				if (!mIsListening) break;
+
 				SpatialMeshInfo* info = nullptr;
 				auto itfind = mMeshList.find(FromGUID(current.Value().Id()));
 				
@@ -757,7 +763,7 @@ void HoloSpatialMap::StartListening()
 
 			gInUpdate = false;
 		});
-		mIsListening = true;
+		
 	}
 }
 
@@ -769,6 +775,8 @@ void HoloSpatialMap::StopListening()
 	{
 		mSurfaceObserver.ObservedSurfacesChanged(mEventToken);
 		mIsListening = false;
+		std::function<winrt::Windows::Foundation::IAsyncAction()> func;
+		while (mToProcess.try_dequeue(func)) {}
 	}
 }
 
@@ -840,7 +848,7 @@ void HoloSpatialMap::InitModifiable()
 {
 	ParentClassType::InitModifiable();
 	mCollisionManager = CollisionManager::Get();
-
+	KigsCore::Connect(KigsCore::Instance()->GetCoreApplication(), "UWP_ApplicationSuspendedEvent", this, "StopListening");
 	if (mAllowed) return;
 
 #ifdef KIGS_TOOLS
