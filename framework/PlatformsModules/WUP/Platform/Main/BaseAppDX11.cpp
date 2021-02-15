@@ -86,6 +86,7 @@ void App::Initialize(CoreApplicationView const& applicationView)
 {	
 	StorageFileFileAccess::setMainThreadID();
 	using namespace winrt::Windows::ApplicationModel::Activation;
+
 	applicationView.Activated([this](CoreApplicationView const& view, IActivatedEventArgs args)
 	{
 		if (args.Kind() == ActivationKind::File)
@@ -106,6 +107,14 @@ void App::Initialize(CoreApplicationView const& applicationView)
 		}
 		// Run() won't start until the CoreWindow is activated.
 		CoreWindow::GetForCurrentThread().Activate();
+	});
+	
+	CoreApplication::Suspending([this](winrt::Windows::Foundation::IInspectable sender, winrt::Windows::ApplicationModel::SuspendingEventArgs args)
+	{
+		if (KigsCore::Instance() && KigsCore::Instance()->GetCoreApplication())
+			KigsCore::Instance()->GetCoreApplication()->EmitSignal("UWP_ApplicationSuspendedEvent");
+		
+		mWindowClosed = true;
 	});
 }
 
@@ -145,7 +154,7 @@ void App::SetWindow(CoreWindow const& window)
 		if (KigsCore::Instance() && KigsCore::Instance()->GetCoreApplication())
 			KigsCore::Instance()->GetCoreApplication()->EmitSignal("UWP_VisibilityChangedEvent", (bool)mWindowVisible);
 	});
-
+	
 	window.Closed([this](CoreWindow const& window, CoreWindowEventArgs args)
 	{
 		mWindowClosed = true;
@@ -229,6 +238,7 @@ void App::Run()
 
 void App::Uninitialize()
 {
+	mWindowClosed = true;
 }
 
 void App::Swap()
