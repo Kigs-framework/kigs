@@ -310,6 +310,7 @@ public:
 					return (*it);
 				}
 			}
+			++it;
 		}
 
 		return CoreItemSP(nullptr);
@@ -328,6 +329,7 @@ public:
 					return (*it);
 				}
 			}
+			++it;
 		}
 
 		return CoreItemSP(nullptr);

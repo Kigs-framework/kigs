@@ -39,9 +39,9 @@ protected:
 
 	void	ReloadTexture();
 
-	SmartPointer<Texture>				mUpTexturePointer;
-	SmartPointer<Texture>				mDownTexturePointer;
-	SmartPointer<Texture>				mOverTexturePointer;
+	SmartPointer<TextureHandler>				mUpTexturePointer;
+	SmartPointer<TextureHandler>				mDownTexturePointer;
+	SmartPointer<TextureHandler>				mOverTexturePointer;
 
 	maString	mUpTexture;
 	maString	mDownTexture;

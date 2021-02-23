@@ -808,6 +808,22 @@ inline CoreValueBase<kstl::string, CoreNamedItem>::operator unsigned int() const
 }
 
 template<>
+inline CoreValueBase<kstl::string, CoreNamedItem>::operator u64() const
+{
+	u64 v;
+	sscanf(mValue.c_str(), "%llu", &v);
+	return v;
+}
+
+template<>
+inline CoreValueBase<kstl::string, CoreItem>::operator u64() const
+{
+	u64 v;
+	sscanf(mValue.c_str(), "%llu", &v);
+	return v;
+}
+
+template<>
 inline bool CoreValueBase<kstl::string,CoreItem>::isString() const
 {
 	return true;
@@ -854,6 +870,22 @@ template<>
 inline CoreValueBase<usString, CoreNamedItem>::operator unsigned int() const
 {
 	return (unsigned int)atoi(mValue.ToString().c_str());
+}
+
+template<>
+inline CoreValueBase<usString, CoreNamedItem>::operator u64() const
+{
+	u64 v;
+	sscanf(mValue.ToString().c_str(), "%llu", &v);
+	return v;
+}
+
+template<>
+inline CoreValueBase<usString, CoreItem>::operator u64() const
+{
+	u64 v;
+	sscanf(mValue.ToString().c_str(), "%llu", &v);
+	return v;
 }
 
 template<>

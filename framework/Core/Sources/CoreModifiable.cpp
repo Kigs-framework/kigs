@@ -262,16 +262,25 @@ void CoreModifiable::debugPrintfClassList(const std::string& className, s32 maxi
 void CoreModifiable::Upgrade(UpgradorBase* toAdd)
 {
 	LazyContent* c = GetLazyContent();
-	toAdd->mNextUpgrador = c->mUpgradors;
-	c->mUpgradors = toAdd;
+
+	toAdd->mNextItem = c->mLinkedListItem;
+	c->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(toAdd, LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 	toAdd->UpgradeInstance(this);
 }
 
-UpgradorBase* CoreModifiable::GetUpgrador()
+UpgradorBase* CoreModifiable::GetUpgrador(const KigsID& ID)
 {
 	if (mLazyContent)
-	{
-		return mLazyContent->mUpgradors;
+	{ 
+		UpgradorBase* current= (UpgradorBase*)mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+		while (current)
+		{
+			if( (current->getID() == ID) || (ID == ""))
+			{
+				return current;
+			}
+			current = (UpgradorBase*)current->getNext(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+		}
 	}
 	return nullptr;
 }
@@ -412,10 +421,9 @@ void CoreModifiable::RecursiveInit(bool a_childInFirst)
 	}
 	
 }
-
-const ModifiableMethodStruct* CoreModifiable::findMethod(const KigsID& id, const CoreModifiable*& localthis) const
+const ModifiableMethodStruct* CoreModifiable::findMethodOnThisOnly(const KigsID& id, const CoreModifiable*& localthis) const
 {
-	const CoreModifiable* search = this;
+	
 	// first check on this
 	if (mLazyContent)
 	{
@@ -437,7 +445,32 @@ const ModifiableMethodStruct* CoreModifiable::findMethod(const KigsID& id, const
 			return &it->second;
 		}
 	}
+	// if not found, check on forward ptr
+	if (mLazyContent)
+	{
+		StructLinkedListBase* found = mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
+		while (found)
+		{
+			CMSP f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
+			const ModifiableMethodStruct* search = f->findMethodOnThisOnly(id, localthis);
+			if (search)
+			{
+				return search;
+			}
+			found = found->getNext(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
+		}
+	}
+	return nullptr;
+}
+const ModifiableMethodStruct* CoreModifiable::findMethod(const KigsID& id, const CoreModifiable*& localthis) const
+{
+	const ModifiableMethodStruct* found = findMethodOnThisOnly(id, localthis);
+	if (found)
+	{
+		return found;
+	}
 
+	const CoreModifiable* search = this;
 	// if not found, search aggregate
 	if (isFlagAsAggregateSon())
 	{
@@ -448,25 +481,11 @@ const ModifiableMethodStruct* CoreModifiable::findMethod(const KigsID& id, const
 
 const ModifiableMethodStruct* CoreModifiable::recursivefindMethod(const KigsID& id, const CoreModifiable*& localthis) const
 {
-	if (mLazyContent)
-	{
-		auto& methods = GetLazyContent()->mMethods;
-		auto it = methods.find(id);
-		if (it != methods.end())
-		{
-			localthis = this;
-			return &(*it).second;
-		}
-	}
+	const ModifiableMethodStruct* foundonthis = findMethodOnThisOnly(id, localthis);
 
-	if (mTypeNode)
+	if (foundonthis)
 	{
-		auto it = mTypeNode->mMethods.find(id);
-		if (it != mTypeNode->mMethods.end())
-		{
-			localthis = this;
-			return &it->second;
-		}
+		return foundonthis;
 	}
 
 	if (isFlagAsAggregateParent()) // search if other aggregates
@@ -564,15 +583,44 @@ void CoreModifiable::UpdateAggregates(const Timer&  timer, void* addParam)
 	}
 }
 
-CoreModifiableAttribute* CoreModifiable::findAttribute(const KigsID& id) const
+CoreModifiableAttribute* CoreModifiable::findAttributeOnThisOnly(const KigsID& id) const
 {
-	const CoreModifiable* search = this;
 	// first check on this
 	auto i = mAttributes.find(id);
 	if (i != mAttributes.end())
 	{
 		return (*i).second;
 	}
+	// if not found, check on forward ptr
+	if (mLazyContent)
+	{
+		StructLinkedListBase* found = mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
+		while (found)
+		{
+			CMSP f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
+			if (!f.isNil())
+			{
+				CoreModifiableAttribute* search = f->findAttributeOnThisOnly(id);
+				if (search)
+				{
+					return search;
+				}
+			}
+			found = found->getNext(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
+		}
+	}
+	return nullptr;
+}
+
+CoreModifiableAttribute* CoreModifiable::findAttribute(const KigsID& id) const
+{
+	auto foundOnThis = findAttributeOnThisOnly(id);
+	if (foundOnThis)
+	{
+		return foundOnThis;
+	}
+
+	const CoreModifiable* search = this;
 	// if not found, check on aggregate
 	if (isFlagAsAggregateSon())
 	{
@@ -583,31 +631,32 @@ CoreModifiableAttribute* CoreModifiable::findAttribute(const KigsID& id) const
 
 CoreModifiableAttribute* CoreModifiable::recursivefindAttribute(const KigsID& id) const
 {
-	auto i = mAttributes.find(id);
-	if (i == mAttributes.end())
+	auto foundOnThis = findAttributeOnThisOnly(id);
+	if (foundOnThis)
 	{
-
-		if (isFlagAsAggregateParent()) // search if other aggregates
-		{
-			std::vector<ModifiableItemStruct>::const_iterator	itc = mItems.begin();
-			std::vector<ModifiableItemStruct>::const_iterator	ite = mItems.end();
-
-			while (itc != ite)
-			{
-				if ((*itc).isAggregate())
-				{
-					CoreModifiableAttribute* found = (*itc).mItem->recursivefindAttribute(id);
-					if (found)
-					{
-						return found;
-					}
-				}
-				++itc;
-			}
-		}
-		return 0;
+		return foundOnThis;
 	}
-	return (*i).second;
+
+	if (isFlagAsAggregateParent()) // search if other aggregates
+	{
+		std::vector<ModifiableItemStruct>::const_iterator	itc = mItems.begin();
+		std::vector<ModifiableItemStruct>::const_iterator	ite = mItems.end();
+
+		while (itc != ite)
+		{
+			if ((*itc).isAggregate())
+			{
+				CoreModifiableAttribute* found = (*itc).mItem->recursivefindAttribute(id);
+				if (found)
+				{
+					return found;
+				}
+			}
+			++itc;
+		}
+	}
+	return 0;
+	
 }
 
 bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAttribute*>& params,void* privateParams,CoreModifiable* sender)
@@ -656,19 +705,19 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 		}
 		else
 		{
-			// cache upgrador
-			UpgradorBase* cachedUpgrador = nullptr;
-			
+			// cache upgrador 
+			LazyContentLinkedListItemStruct cachedUpgrador = 0;
+			// set this upgrador at first pos
 			if (method.mUpgrador)
 			{
-				cachedUpgrador = localthis->mLazyContent->mUpgradors;
-				localthis->mLazyContent->mUpgradors = method.mUpgrador;
+				cachedUpgrador = localthis->mLazyContent->mLinkedListItem;
+				localthis->mLazyContent->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(method.mUpgrador,LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 			}
 			result = (localthis->*method.mMethod)(sender, params, privateParams);
 			// reset cached 
 			if (cachedUpgrador)
 			{
-				localthis->mLazyContent->mUpgradors = cachedUpgrador;
+				localthis->mLazyContent->mLinkedListItem = cachedUpgrador;
 			}
 		}
 		
@@ -867,6 +916,7 @@ EXPAND_MACRO_FOR_STRING_TYPES(const, &, IMPLEMENT_SET_VALUE);
 
 IMPLEMENT_SET_VALUE(const char*);
 IMPLEMENT_SET_VALUE(const u16*);
+IMPLEMENT_SET_VALUE(const UTF8Char*);
 
 //IMPLEMENT_GET_VALUE(CoreModifiable*&); 
 //IMPLEMENT_SET_VALUE(CoreModifiable*);
@@ -1597,20 +1647,20 @@ void CoreModifiable::ProtectedDestroy()
 	if (mLazyContent)
 	{
 		// first downgrade if needed
-		UpgradorBase* found = mLazyContent->mUpgradors;
+		UpgradorBase* found = (UpgradorBase * )mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 		while(found)
 		{
-			UpgradorBase* cachedUpgrador = nullptr;
-			cachedUpgrador = mLazyContent->mUpgradors;
-			mLazyContent->mUpgradors = found;
+			// set this upgrador at first pos
+			LazyContentLinkedListItemStruct cachedUpgrador = mLazyContent->mLinkedListItem;
+			mLazyContent->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(found, LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 			found->DowngradeInstance(this);
-			mLazyContent->mUpgradors = cachedUpgrador;
-			found = found->mNextUpgrador;
-		}
+			mLazyContent->mLinkedListItem = cachedUpgrador;
 
-		// delete the first one, to delete all the list
-		delete mLazyContent->mUpgradors;
-		mLazyContent->mUpgradors = nullptr;
+			UpgradorBase* nextfound = (UpgradorBase * )found->getNext(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+			delete found;
+			found = nextfound;
+		}
+		mLazyContent->mLinkedListItem = 0;
 	}
 
 	//! remove all items
@@ -1692,18 +1742,19 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 	// Upgrador updage
 	if (mLazyContent)
 	{
-		UpgradorBase* found = mLazyContent->mUpgradors;
+		UpgradorBase* found = (UpgradorBase * )mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 		while (found)
 		{
 			// set current at first place in the list so cache first one
-			UpgradorBase* cached = mLazyContent->mUpgradors;
-			mLazyContent->mUpgradors = found;
-
+			LazyContentLinkedListItemStruct cachedUpgrador = mLazyContent->mLinkedListItem;
+			// set this upgrador at first pos
+			mLazyContent->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(found, LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 			found->UpgradorUpdate(this,timer,addParam);
-			found = found->mNextUpgrador;
-
 			// reset cached
-			mLazyContent->mUpgradors = cached;
+			mLazyContent->mLinkedListItem = cachedUpgrador;
+
+			found = (UpgradorBase * )found->getNext(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+
 		}
 	}
 }
@@ -1760,7 +1811,7 @@ void CoreModifiable::Downgrade(const std::string& toRemove)
 		return;
 
 	UpgradorBase* previous = nullptr;
-	UpgradorBase* found = mLazyContent->mUpgradors;
+	UpgradorBase* found = (UpgradorBase * )mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 
 	while (found)
 	{
@@ -1768,17 +1819,17 @@ void CoreModifiable::Downgrade(const std::string& toRemove)
 		{
 			if (previous)
 			{
-				previous->mNextUpgrador = found->mNextUpgrador;
+				previous->mNextItem = found->mNextItem;
 			}
 			else
 			{
-				mLazyContent->mUpgradors = found->mNextUpgrador;
+				mLazyContent->mLinkedListItem = found->mNextItem;
 			}
 			found->DowngradeInstance(this);
 			break;
 		}
 		previous = found;
-		found = found->mNextUpgrador;
+		found = (UpgradorBase*)found->getNext(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 	}
 }
 
@@ -2398,7 +2449,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 		XMLAttribute* UpgradorAttribute = new XMLAttribute("N", upgradorfound->getID()._id_name);
 		upgradorNode->addAttribute(UpgradorAttribute);
 		currentNode->addChild(upgradorNode);
-		upgradorfound = upgradorfound->mNextUpgrador;
+		upgradorfound = (UpgradorBase * )upgradorfound->getNext(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 	}
 
 	savedList.push_back(this);
@@ -3392,11 +3443,11 @@ SmartPointer<CoreModifiable> WeakRef::Lock() const
 LazyContent::~LazyContent()
 {
 	// linked list so delete only the first one
-	if (mUpgradors)
+/*	if (mUpgradors)
 	{
 		delete mUpgradors;
 		mUpgradors = nullptr;
-	}
+	}*/
 }
 
 void RegisterClassToInstanceFactory(KigsCore* core, const std::string& moduleName, KigsID classID, createMethod method)
@@ -3452,4 +3503,11 @@ CMSP CoreModifiable::GetFirstInstanceByName(const KigsID& id, const std::string&
 	if (node) node->getInstancesByName(result, !exact_type_only, name, true);
 	if (result.size()) return result.front();
 	return nullptr;
+}
+
+LazyContentLinkedListItemStruct CoreModifiable::InsertForwardPtr(StructLinkedListBase* address)
+{
+	LazyContentLinkedListItemStruct result = GetLazyContent()->mLinkedListItem;
+	GetLazyContent()->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(address, LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
+	return result;
 }

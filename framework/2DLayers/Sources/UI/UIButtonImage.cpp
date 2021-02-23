@@ -28,25 +28,29 @@ void UIButtonImage::InitModifiable()
 	if(_isInit)
 	{
 		// load texture
-		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-
 		mUpTexturePointer =0;
 		mOverTexturePointer = 0;
 		mDownTexturePointer = 0;
 		
 		if(mUpTexture.const_ref() !="")
 		{
-			mUpTexturePointer = textureManager->GetTexture(mUpTexture.const_ref());
+			mUpTexturePointer = KigsCore::GetInstanceOf(mUpTexture.const_ref(),"TextureHandler");
+			mUpTexturePointer->setValue("TextureName", mUpTexture.const_ref());
+			mUpTexturePointer->Init();
 		}
 
 		if (mOverTexture.const_ref() != "")
 		{
-			mOverTexturePointer = textureManager->GetTexture(mOverTexture.const_ref());
+			mOverTexturePointer = KigsCore::GetInstanceOf(mOverTexture.const_ref(), "TextureHandler");
+			mOverTexturePointer->setValue("TextureName", mOverTexture.const_ref());
+			mOverTexturePointer->Init();
 		}
 
 		if (mDownTexture.const_ref() != "")
 		{
-			mDownTexturePointer = textureManager->GetTexture(mDownTexture.const_ref());
+			mDownTexturePointer = KigsCore::GetInstanceOf(mDownTexture.const_ref(), "TextureHandler");
+			mDownTexturePointer->setValue("TextureName", mDownTexture.const_ref());
+			mDownTexturePointer->Init();
 		}
 
 		mTexturePointer = mUpTexturePointer;
@@ -75,32 +79,23 @@ void UIButtonImage::NotifyUpdate(const unsigned int labelid)
 
 void UIButtonImage::ChangeTexture(kstl::string _texturename, kstl::string _overtexturename, kstl::string _downtexturename)
 {
-	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-	if (mUpTexturePointer)
-		mUpTexturePointer = 0;
-
+	
 	if(_texturename != "")
 	{
 		mUpTexture = _texturename;
-		mUpTexturePointer = textureManager->GetTexture(mUpTexture);
+		mUpTexturePointer->setValue("TextureName", _texturename);
 	}
-
-	if(mOverTexturePointer && _overtexturename != "")
-		mOverTexturePointer =0;
 
 	if(_overtexturename != "")
 	{
 		mOverTexture = _overtexturename;
-		mOverTexturePointer = textureManager->GetTexture(mOverTexture);
+		mOverTexturePointer->setValue("TextureName", _overtexturename);
 	}
-
-	if(mDownTexturePointer && _downtexturename != "")
-		mDownTexturePointer =0;
 
 	if(_downtexturename != "")
 	{
 		mDownTexture = _downtexturename;
-		mDownTexturePointer = textureManager->GetTexture(mDownTexture);
+		mDownTexturePointer->setValue("TextureName", _downtexturename);
 	}
 
 	if(mAlphaMask)

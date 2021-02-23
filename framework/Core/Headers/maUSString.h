@@ -131,11 +131,11 @@ public:
 		mValue = attribute;
 		return *this;
 	}
-	auto& operator=(const char* attribute)
+	/*auto& operator=(const char* attribute)
 	{
 		mValue = attribute;
 		return *this;
-	}
+	}*/
 
 	// Comparison
 	bool operator==(const usString& L_value) const

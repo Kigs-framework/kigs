@@ -157,6 +157,119 @@ namespace std
 struct LazyContent;
 struct ModifiableMethodStruct;
 class UpgradorBase;
+class StructLinkedListBase;
+
+struct LazyContentLinkedListItemStruct
+{
+protected:
+
+	// hack use first two unused bits of address (aligned on 4 bytes at least)
+	// to give a type
+	enum class ItemType
+	{
+		UpgradorType = 0,
+		ForwardSmartPtrType = 1,
+		// available for future usage = 2,
+		// available for future usage = 3
+	};
+
+	LazyContentLinkedListItemStruct(uintptr_t init) :mAddressAndType(init)
+	{
+
+	}
+
+	static LazyContentLinkedListItemStruct	FromAddressAndType(StructLinkedListBase* realaddress, const LazyContentLinkedListItemStruct::ItemType settype)
+	{
+		LazyContentLinkedListItemStruct	result((uintptr_t)realaddress);
+		result.mAddressAndType |= (uintptr_t)settype;
+		return result;
+	}
+
+
+	friend class CoreModifiable;
+	friend class StructLinkedListBase;
+	friend struct LazyContent;
+	uintptr_t	mAddressAndType;
+
+public:
+	operator StructLinkedListBase* () const
+	{
+		StructLinkedListBase* realaddress = (StructLinkedListBase*)(mAddressAndType & (((uintptr_t)-1) ^ (uintptr_t)3));
+		return realaddress;
+	}
+	operator uintptr_t () const
+	{
+		return mAddressAndType;
+	}
+
+	LazyContentLinkedListItemStruct::ItemType	getType()
+	{
+		return (LazyContentLinkedListItemStruct::ItemType)(mAddressAndType & 3);
+	}
+};
+
+class StructLinkedListBase
+{
+protected:
+
+	LazyContentLinkedListItemStruct mNextItem = 0; // store address + type 
+public:
+	StructLinkedListBase* getNext(const LazyContentLinkedListItemStruct::ItemType searchtype)
+	{
+		LazyContentLinkedListItemStruct next = mNextItem;
+		while ((uintptr_t)next)
+		{
+			StructLinkedListBase* realaddress = (StructLinkedListBase*)next;
+			if ((next & 3) == (u32)searchtype)
+			{
+				return realaddress;
+			}
+			next = realaddress->mNextItem;
+		}
+		return nullptr;
+	}
+
+	LazyContentLinkedListItemStruct getNext()
+	{
+		return mNextItem;
+	}
+
+};
+
+template<typename smartPointOn>
+class CoreAttributeAndMethodForwardSmartPointer : public SmartPointer<smartPointOn> , public StructLinkedListBase
+{
+protected:
+	CoreAttributeAndMethodForwardSmartPointer() : SmartPointer()
+	{
+
+	}
+public:
+	inline CoreAttributeAndMethodForwardSmartPointer(CoreModifiable* parent, CoreModifiable* p);
+
+	CoreAttributeAndMethodForwardSmartPointer& operator=(const SmartPointer<smartPointOn>& smcopy)
+	{
+		if (SmartPointer<smartPointOn>::mPointer != smcopy.get())
+		{
+			if (SmartPointer<smartPointOn>::mPointer)
+			{
+				SmartPointer<smartPointOn>::mPointer->Destroy();
+			}
+			//TODO(antoine) FIX const_cast
+			SmartPointer<smartPointOn>::mPointer = (smartPointOn*)smcopy.get();
+			if (SmartPointer<smartPointOn>::mPointer)
+			{
+				SmartPointer<smartPointOn>::mPointer->GetRef();
+			}
+		}
+		return *this;
+	}
+};
+
+template<typename smartPointOn>
+using ForwardSP = CoreAttributeAndMethodForwardSmartPointer<smartPointOn>;
+
+#define INSERT_FORWARDSP(pointOn,name)	ForwardSP<pointOn> name={this,this};
 
 // specialized smart pointer with a few more features
 class CMSP : public SmartPointer<CoreModifiable>
@@ -286,6 +399,7 @@ protected:
 #define AggregateParentRegistered			(64U)
 #define AggregateSonRegistered				(128U)
 #define AllowChanges						(256U)
+#define AutoCreateAttributes				(512U) // when loading from xml, add not found CoreModifiableAttributes even when not tagget as dynamic 
 
 // more generic UserFlags
 constexpr u32 UserFlagsBitSize = 16;
@@ -672,6 +786,7 @@ public:
 	EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET_VALUE);
 	DECLARE_SET_VALUE(const char*);
 	DECLARE_SET_VALUE(const u16*);
+	DECLARE_SET_VALUE(const UTF8Char*);
 
 	#define DECLARE_GET_VALUE(type) bool getValue(const KigsID attributeLabel, type value) const;
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
@@ -880,6 +995,19 @@ public:
 		return (mModifiableFlag&(u32)AllowChanges) != 0;
 	}
 
+	inline void flagAutoCreateAttributes()
+	{
+		mModifiableFlag |= (u32)AutoCreateAttributes;
+	}
+	inline void unflagAutoCreateAttributes()
+	{
+		mModifiableFlag &= 0xFFFFFFFF ^ (u32)AutoCreateAttributes;
+	}
+	inline bool isFlagAutoCreateAttributes()
+	{
+		return (mModifiableFlag & (u32)AutoCreateAttributes) != 0;
+	}
+
 	// for some type of classes when we want don't want duplicated instances (textures, shaders...)
 	// return an already existing instance equivalent of this
 	virtual CMSP	getSharedInstance()
@@ -999,11 +1127,16 @@ public:
 	// upgrador management
 	void Upgrade(const std::string& toAdd);
 	void Downgrade(const std::string& toRemove);
+	// insert forward ptr
+	LazyContentLinkedListItemStruct InsertForwardPtr(StructLinkedListBase* address);
+
 
 #ifdef KIGS_TOOLS
 	bool mTraceRef = false;
 #endif
 protected:
+
+
 
 	// used in import
 	bool SimpleCallWithCoreItemParams(KigsID methodNameID, const CoreItemSP& params);
@@ -1020,8 +1153,10 @@ protected:
 
 	/// Internals
 	void UpdateAggregates(const Timer&  timer, void* addParam);
+	const ModifiableMethodStruct* findMethodOnThisOnly(const KigsID& id, const CoreModifiable*& localthis) const;
 	const ModifiableMethodStruct* findMethod(const KigsID& id, const CoreModifiable*& localthis) const;
 	const ModifiableMethodStruct* recursivefindMethod(const KigsID& id, const CoreModifiable*& localthis) const;
+	CoreModifiableAttribute* findAttributeOnThisOnly(const KigsID& id) const;
 	CoreModifiableAttribute* findAttribute(const KigsID& id) const;
 	CoreModifiableAttribute* recursivefindAttribute(const KigsID& id) const;
 	
@@ -1182,7 +1317,9 @@ protected:
 	//! create and add dynamic attribute except arrays
 	CoreModifiableAttribute*	GenericCreateDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID);
 
-	UpgradorBase* GetUpgrador();
+	UpgradorBase* GetUpgrador(const KigsID& ID="");
+
+
 
 #ifdef KEEP_XML_DOCUMENT
 public:
@@ -1320,7 +1457,21 @@ struct LazyContent
 	kigs::unordered_map <KigsID, ModifiableMethodStruct> mMethods;
 	std::vector<WeakRef*> mWeakRefs;
 	// Upgrador management
-	UpgradorBase* mUpgradors = nullptr;
+	LazyContentLinkedListItemStruct mLinkedListItem = 0;
+
+	StructLinkedListBase* GetLinkedListItem(const LazyContentLinkedListItemStruct::ItemType	searchType)
+	{
+		LazyContentLinkedListItemStruct current = mLinkedListItem;
+		while (current)
+		{
+			if (current.getType() == searchType)
+			{
+				return (StructLinkedListBase*)current;
+			}
+			current = ((StructLinkedListBase*)current)->getNext();
+		}
+		return nullptr;
+	}
 
 	~LazyContent();
 };
@@ -1431,5 +1582,12 @@ struct MethodCallingStruct
 	void* mPrivateParams =  nullptr;
 	CoreModifiable* mMethodInstance = nullptr;
 };
+
+template<typename smartPointOn>
+inline CoreAttributeAndMethodForwardSmartPointer<smartPointOn>::CoreAttributeAndMethodForwardSmartPointer(CoreModifiable* parent,CoreModifiable* p) : SmartPointer<smartPointOn>(), StructLinkedListBase()
+{
+	mNextItem = parent->InsertForwardPtr(this);
+}
+
 
 #endif

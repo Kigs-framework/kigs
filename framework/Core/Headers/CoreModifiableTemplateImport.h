@@ -667,80 +667,74 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 
 	KigsID id(attrname->getRefString());
 
-	CoreModifiableAttribute* attr = 0;
+	CoreModifiableAttribute* attr = currentModifiable->findAttributeOnThisOnly(id);
 	bool attrfound = false;
-
-	auto AttrByID = currentModifiable->mAttributes.find(id);
-
-	if (AttrByID != currentModifiable->mAttributes.end())
+	if (attr)
 	{
-		attr = (*AttrByID).second;
-		if (attr)
+		XMLAttributeBase* attrvalue = currentNode->getAttribute("V", "Value");
+
+		if (attrvalue)
 		{
-			XMLAttributeBase* attrvalue = currentNode->getAttribute("V", "Value");
-
-			if (attrvalue)
+			std::string tempvalue = attrvalue->getString();
+			if (AttributeNeedEval(tempvalue))
 			{
-				std::string tempvalue = attrvalue->getString();
-				if (AttributeNeedEval(tempvalue))
-				{
-					EvalAttribute(tempvalue, currentModifiable, attr);
-				}
+				EvalAttribute(tempvalue, currentModifiable, attr);
+			}
 
-				// for usstring, manage UTF-8
-				if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
-				{
-					attr->setValue((const UTF8Char*)tempvalue.c_str());
-				}
-				else
-				{
-					attr->setValue(tempvalue);
-				}
-			}
-			else if (attrvalue = currentNode->getAttribute("LUA", "L"))
+			// for usstring, manage UTF-8
+			if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 			{
-				CoreModifiable* luamodule = KigsCore::GetModule("LuaKigsBindModule");
-				if (luamodule)
-				{
-					luamodule->SimpleCall("SetValueLua", currentModifiable, attrname->getString(), attrvalue->getString());
-				}
+				attr->setValue((const UTF8Char*)tempvalue.c_str());
 			}
-			else // check if value is in text or CDATA
+			else
 			{
-				for (s32 i = 0; i < currentNode->getChildCount(); i++)
-				{
-					XMLNodeBase* sonXML = currentNode->getChildElement(i);
-					if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
-					{
-						std::string tempvalue = sonXML->getString();
-						if (AttributeNeedEval(tempvalue))
-						{
-							EvalAttribute(tempvalue, currentModifiable, attr);
-						}
-
-						if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
-						{
-							attr->setValue((const UTF8Char*)tempvalue.c_str());
-						}
-						else
-						{
-							attr->setValue(tempvalue);
-						}
-						break;
-					}
-				}
+				attr->setValue(tempvalue);
 			}
-			attrfound = true;
 		}
+		else if (attrvalue = currentNode->getAttribute("LUA", "L"))
+		{
+			CoreModifiable* luamodule = KigsCore::GetModule("LuaKigsBindModule");
+			if (luamodule)
+			{
+				luamodule->SimpleCall("SetValueLua", currentModifiable, attrname->getString(), attrvalue->getString());
+			}
+		}
+		else // check if value is in text or CDATA
+		{
+			for (s32 i = 0; i < currentNode->getChildCount(); i++)
+			{
+				XMLNodeBase* sonXML = currentNode->getChildElement(i);
+				if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
+				{
+					std::string tempvalue = sonXML->getString();
+					if (AttributeNeedEval(tempvalue))
+					{
+						EvalAttribute(tempvalue, currentModifiable, attr);
+					}
+
+					if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
+					{
+						attr->setValue((const UTF8Char*)tempvalue.c_str());
+					}
+					else
+					{
+						attr->setValue(tempvalue);
+					}
+					break;
+				}
+			}
+		}
+		attrfound = true;
 	}
 
 	if (!attrfound)
 	{
+		// if attribute is dynamic or currentModifiable is tagget as autocreateattributes
 		XMLAttributeBase* attrdynamic = currentNode->getAttribute("Dyn", "Dynamic");
 
-		if (attrdynamic)
+		if (attrdynamic || currentModifiable->isFlagAutoCreateAttributes())
 		{
-			if (attrdynamic->compareValue("true") || attrdynamic->compareValue("yes"))
+			if (attrdynamic->compareValue("true") || attrdynamic->compareValue("yes") || currentModifiable->isFlagAutoCreateAttributes())
 			{
 				XMLAttributeBase* attrvalue = currentNode->getAttribute("V", "Value");
 

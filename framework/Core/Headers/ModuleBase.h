@@ -169,6 +169,12 @@ protected:
 
 	//! list of dll handles
     kstl::vector<DynamicModuleHandleAndPointer>    mDynamicModuleList;
+
+	// to be called by dynamic modules to set static instance of core
+	void	StaticInitCore(KigsCore* core)
+	{
+		KigsCore::mCoreInstance = core;
+	}
 };
 
 #endif //_MODULEBASE_H_

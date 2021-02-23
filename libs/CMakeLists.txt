@@ -71,3 +71,13 @@ if( ("${KIGS_PLATFORM}" STREQUAL "Windows") OR ("${KIGS_PLATFORM}" STREQUAL "WUP
 	set(FBXSDK_AVAILABLE ON CACHE BOOL "fbx sdk is available")
 	endif()
 endif()
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/cross_platform/box2d/src")
+	message(STATUS "add box2d")
+	set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL "no BOX2D_BUILD_UNIT_TESTS")
+	set(BOX2D_BUILD_TESTBED OFF CACHE BOOL "no BOX2D_BUILD_TESTBED")
+	set(BUILD_SHARED_LIBS OFF CACHE BOOL "no BUILD_SHARED_LIBS" FORCE)
+	add_subdirectory("cross_platform/box2d")
+	SET_TARGET_PROPERTIES(box2d   					PROPERTIES  FOLDER "libs" )
+endif()
+

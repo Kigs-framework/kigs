@@ -77,4 +77,20 @@ protected:
 	CoreModifiable*		mDynamicModule;
 }; 
 
+// use this base class for Dll modules instead of ModuleBase
+class BaseDllModule : public ModuleBase
+{
+public:
+	DECLARE_ABSTRACT_CLASS_INFO(BaseDllModule, ModuleBase, DllModule)
+	DECLARE_INLINE_CONSTRUCTOR(BaseDllModule)
+	{
+		
+	}
+
+	virtual void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override
+	{
+		ModuleBase::StaticInitCore(core);
+	}
+};
+
 #endif //_ANONYMOUSMODULE_H_

@@ -86,7 +86,7 @@ bool GIFClass::Load(CoreRawBuffer* rawbuffer)
 					int x, y;
 					for (y = 0; y < resultGif->Image.Height; y++)
 					{
-						unsigned char* readPixel = ((unsigned char*)currentImage.RasterBits)+ imgDesc.Top* readLineLen;
+						unsigned char* readPixel = ((unsigned char*)currentImage.RasterBits)+ y* readLineLen;
 						for (x = 0; x < resultGif->Image.Width; x++)
 						{
 							pixels[0] = resultGif->SColorMap->Colors[*readPixel].Red;
