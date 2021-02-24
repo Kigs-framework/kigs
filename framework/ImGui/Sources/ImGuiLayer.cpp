@@ -380,7 +380,11 @@ bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 				EmitSignal(Signals::OnClickUp, this, ev);
 		}
 	}
-
+	else if (ev.state == GestureRecognizerState::StateEnded)
+	{
+		if(mPosSource == TouchSourceID::Invalid || mPosSource == ev.touch_id)
+			mCurrentPos = v2f(-FLT_MAX, -FLT_MAX);
+	}
 	if (ev.state == GestureRecognizerState::StatePossible)
 	{
 	//	ImGui::Text(V2F_FMT(2) "\n", V2F_EXP(mCurrentPos));
@@ -468,7 +472,7 @@ void ImGuiLayer::NewFrame(Timer* timer)
 
 	mPosSource = TouchSourceID::Invalid;
 
-	if (!mInputsEnabled)
+	if (!mInputsEnabled || (mImGuiState->WindowsActiveCount <= 1 && mResetInputsWhenNoWindows))
 	{
 		io.MousePos = ImVec2(-1, -1);
 		io.KeyCtrl = false;
@@ -575,6 +579,8 @@ void ImGuiLayer::NewFrame(Timer* timer)
 		}
 	}
 	
+	mCurrentPos = v2f(-FLT_MAX, -FLT_MAX);
+
 	mWantMouse = ImGui::GetIO().WantCaptureMouse;
 	ImGui::NewFrame();
 	if (mNeedClearClicks)
