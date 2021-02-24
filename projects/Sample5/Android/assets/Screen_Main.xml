@@ -41,7 +41,7 @@
 				<Attr N="Color" V="{0.0, 0.2, 0.4, 1.0}"/>
 			</Inst>
 			<Inst N="Logo" T="UIImage">
-				<Attr N="Texture" V="KigsHD.png" />
+				<Attr N="TextureName" V="KigsHD.png" />
 				<Attr N="Priority" V="8" />
 				<Attr N="Dock" V="{0.5,0.5}" />
 				<Attr N="Anchor" V="{0.5,0.5}" />

@@ -41,7 +41,7 @@ public:
 
 protected:
 	void InitModifiable() override;
-	virtual void NotifyUpdate(const unsigned int /* labelid */)override;
+	//virtual void NotifyUpdate(const unsigned int /* labelid */)override;
 	bool isAlpha(float X, float Y) override;
 	void ComputeRealSize()override;
 
@@ -49,11 +49,10 @@ protected:
 
 	Point2D					mAutoresizeValue;
 
-
 	maBool					mKeepRatio = BASE_ATTRIBUTE(KeepRatio, true);
 	maEnum<5>				mDisplayMode = BASE_ATTRIBUTE(DisplayMode, "Auto", "Resize", "Scale", "Shrink", "Repeat");
-	maString				mTexture;
-	SmartPointer<SpriteSheetTexture>	mSpriteSheetTexture;
+	//maString				mTextureName; // now forwarded to TextureHandler
+
 };
 
 #endif //_UIIMAGE_H_

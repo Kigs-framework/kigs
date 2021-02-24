@@ -88,6 +88,16 @@ public:
 	KIGS_TOOLS_ONLY(auto& GetTextureMap() const { return mTextureMap; })
 
 
+	std::string	GetTextureFromSpriteSheetJSON(const std::string& json)
+	{
+		const auto& found = mSpritesheetMap.find(json);
+		if (found != mSpritesheetMap.end())
+		{
+			return (*found).second;
+		}
+		return "";
+	}
+
 protected:
 	/**
 	* \brief	destructor
@@ -95,8 +105,10 @@ protected:
 	*/
 	virtual ~TextureFileManager();
 
-	//! For each extension, a path list.
-	kstl::map<kstl::string, CoreModifiable*> mTextureMap;
+	//! associate a texture to its name
+	kstl::map<std::string, CoreModifiable*> mTextureMap;
+	//! associate a spritesheet json file to its texture name
+	kstl::map<std::string, std::string>		mSpritesheetMap;
 };
 
 #endif //_TEXTUREFILEMANAGER_H_

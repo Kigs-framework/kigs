@@ -11,7 +11,7 @@
 		<Attr N="Dock" V="{0.500000,0.50000}"/>
 		<Attr N="Anchor" V="{0.500000,0.50000}"/>
 		<Inst N="Logo" T="UIImage">
-			<Attr N="Texture" V="Logo.png"/>
+			<Attr N="TextureName" V="Logo.png"/>
 			<Attr N="SizeY" V="800"/>
 			<Attr N="SizeX" V="1280"/>
 			<Attr N="Priority" V="50"/>

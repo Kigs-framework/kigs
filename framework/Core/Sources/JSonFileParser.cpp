@@ -150,15 +150,32 @@ void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(co
 		}
 		else
 		{
-			// int
-			// check negative
-			if (strvalue.find('-') != std::string::npos)
+			// fast check u32 / u64
+			if (strvalue.length() <= 9)
 			{
-				Value = new maInt(*mDelegateObject.get(), false, strObjName, 0);
+				// int
+				// check negative
+				if (strvalue.find('-') != std::string::npos)
+				{
+					Value = new maInt(*mDelegateObject.get(), false, strObjName, 0);
+				}
+				else
+				{
+					Value = new maUInt(*mDelegateObject.get(), false, strObjName, 0);
+				}
 			}
 			else
 			{
-				Value = new maUInt(*mDelegateObject.get(), false, strObjName, 0);
+				// int64
+				// check negative
+				if (strvalue.find('-') != std::string::npos)
+				{
+					Value = new maLong(*mDelegateObject.get(), false, strObjName, 0);
+				}
+				else
+				{
+					Value = new maULong(*mDelegateObject.get(), false, strObjName, 0);
+				}
 			}
 		}
 
@@ -200,8 +217,33 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const u
 		}
 		else
 		{
-			// int
-			Value = new maInt(*mDelegateObject.get(), false, name, 0);
+			// fast check u32 / u64
+			if (strvalue.length() <= 9)
+			{
+				// int
+				// check negative
+				if (strvalue.find('-') != std::string::npos)
+				{
+					Value = new maInt(*mDelegateObject.get(), false, name, 0);
+				}
+				else
+				{
+					Value = new maUInt(*mDelegateObject.get(), false, name, 0);
+				}
+			}
+			else
+			{
+				// int64
+				// check negative
+				if (strvalue.find('-') != std::string::npos)
+				{
+					Value = new maLong(*mDelegateObject.get(), false, name, 0);
+				}
+				else
+				{
+					Value = new maULong(*mDelegateObject.get(), false, name, 0);
+				}
+			}
 		}
 		Value->setValue(strvalue);
 	}
@@ -827,6 +869,16 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 			
 			}
+			else if (paramType == ATTRIBUTE_TYPE::LONG)
+			{
+				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<s64>((*(maLong*)params[idx])), StealRefTag{});
+
+				if (L_IsVector)
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
+				else
+					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key, L_Value);
+
+			}
 			else if(paramType == ATTRIBUTE_TYPE::BOOL)
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
@@ -846,6 +898,16 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				else
 					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 				
+			}
+			else if (paramType == ATTRIBUTE_TYPE::ULONG)
+			{
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<u64>((*(maULong*)params[idx])), StealRefTag{});
+
+				if (L_IsVector)
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
+				else
+					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key, L_Value);
+
 			}
 			else if(paramType == ATTRIBUTE_TYPE::DOUBLE)
 			{
@@ -1018,6 +1080,16 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 					((CoreMap<usString>*)mCurrentObject.get())->set(L_Key, L_Value);
 
 			}
+			else if (paramType == ATTRIBUTE_TYPE::LONG)
+			{
+				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<s64>((*(maLong*)params[idx])), StealRefTag{});
+
+				if (L_IsVector)
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
+				else
+					((CoreMap<usString>*)mCurrentObject.get())->set(L_Key, L_Value);
+
+			}
 			else if (paramType == ATTRIBUTE_TYPE::BOOL)
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
@@ -1031,6 +1103,16 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 			else if (paramType == ATTRIBUTE_TYPE::UINT)
 			{
 				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])), StealRefTag{});
+
+				if (L_IsVector)
+					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
+				else
+					((CoreMap<usString>*)mCurrentObject.get())->set(L_Key, L_Value);
+
+			}
+			else if (paramType == ATTRIBUTE_TYPE::ULONG)
+			{
+				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<u64>((*(maULong*)params[idx])), StealRefTag{});
 
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);

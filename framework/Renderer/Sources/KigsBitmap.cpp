@@ -72,6 +72,31 @@ void	KigsBitmap::InitModifiable()
 {
 	if (!IsInit())
 	{
+		Texture* parentTexture = nullptr;
+		for (auto p : GetParents())
+		{
+			if (p->isSubType(Texture::mClassID))
+			{
+				parentTexture = static_cast<Texture*>(p);
+				break;
+			}
+		}
+		if (!parentTexture) // don't init if no parent texture
+		{
+			return;
+		}
+
+		// if no size, check if parent texture has a size
+		if ((mSize[0] <= 0) || (mSize[1] <= 0))
+		{
+			if (parentTexture)
+			{
+				mSize[0] = parentTexture->getValue<int>("Width");
+				mSize[1] = parentTexture->getValue<int>("Height");
+			}
+		}
+
+		// check if a size was given
 		if ((mSize[0] > 0) && (mSize[1] > 0))
 		{
 			Drawable::InitModifiable();
@@ -83,6 +108,17 @@ void	KigsBitmap::InitModifiable()
 
 			mDirtyZone.m_Min.Set(0, 0);
 			mDirtyZone.m_Max.Set(mSize[0]-1, mSize[1]-1);
+
+			if (parentTexture)
+			{
+				if ((parentTexture->getValue<int>("Width") == 0) && (parentTexture->getValue<int>("Height") == 0))
+				{
+					SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(mRawPixels, mSize[0], mSize[1], TinyImage::ImageFormat::RGBA_32_8888));
+					parentTexture->CreateFromImage(img);
+				}
+			}
+
+			ParentClassType::InitModifiable();
 		}
 	}
 }

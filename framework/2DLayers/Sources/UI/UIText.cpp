@@ -60,8 +60,9 @@ void UIText::InitModifiable()
 
 		sprintf(nameBuffer, "%s_%u_TEX", name.c_str(), getUID());
 
-		mTexturePointer = KigsCore::GetInstanceOf(nameBuffer, "Texture");
+		mTexturePointer = KigsCore::GetInstanceOf(nameBuffer, "TextureHandler");
 		mTexturePointer->Init();
+		mTexturePointer->GetEmptyTexture(nameBuffer);
 		mTexturePointer->SetRepeatUV(false, false);
 		ChangeText(mText.const_ref());
 	}
@@ -119,8 +120,10 @@ void	UIText::ChangeText(const usString& _newText)
 			localized = CutText(localized, modified);
 
 		if (localized)
-			mTexturePointer->CreateFromText(localized, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255,255, 255, 255, TinyImage::RGBA_32_8888);
-
+		{
+			mTexturePointer->GetEmptyTexture()->CreateFromText(localized, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255, 255, TinyImage::RGBA_32_8888);
+			mTexturePointer->refreshTextureInfos();
+		}
 		if (modified)
 			free(localized);
 	}
@@ -133,15 +136,15 @@ void	UIText::ChangeText(const usString& _newText)
 		else
 			L_returneValue = const_cast<unsigned short*>(_newText.us_str());
 
-		mTexturePointer->CreateFromText(L_returneValue, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255,255, TinyImage::RGBA_32_8888);
-
+		mTexturePointer->GetEmptyTexture()->CreateFromText(L_returneValue, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255,255, TinyImage::RGBA_32_8888);
+		mTexturePointer->refreshTextureInfos();
 		if (modified)
 			free(L_returneValue);
 	}
 
 	int width, height;
-	mTexturePointer->getValue(LABEL_TO_ID(Width), width);
-	mTexturePointer->getValue(LABEL_TO_ID(Height), height);
+	mTexturePointer->GetEmptyTexture()->getValue(LABEL_TO_ID(Width), width);
+	mTexturePointer->GetEmptyTexture()->getValue(LABEL_TO_ID(Height), height);
 
 	if (mSizeX != width || mSizeY != height)
 	{

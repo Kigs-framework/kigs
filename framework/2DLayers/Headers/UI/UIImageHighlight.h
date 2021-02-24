@@ -25,11 +25,14 @@ public:
 	void ChangeTexture() override;
 	void Highlight(bool b);
 
+	void InitModifiable() override;
+	virtual void NotifyUpdate(const unsigned int /* labelid */)override;
+
 protected:
 	WRAP_METHODS(Highlight);
 
-	SmartPointer<Texture>				mPLTexturePointer;
-	SmartPointer<Texture>				mHLTexturePointer;
+	SmartPointer<TextureHandler>				mPLTexturePointer;
+	SmartPointer<TextureHandler>				mHLTexturePointer;
 
 	maString	mHLTexture = BASE_ATTRIBUTE(HLTexture);
 };

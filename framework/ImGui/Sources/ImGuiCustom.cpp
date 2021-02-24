@@ -2,6 +2,8 @@
 
 #include "ImGuiLayer.h"
 
+#include "imgui_internal.h"
+
 namespace ImGui
 {
 	bool TextureButton(const std::string& texture_name, ImVec2 size, const ImVec2& uv0, const ImVec2& uv1, int frame_padding, const ImVec4& bg_col, const ImVec4& tint_col)

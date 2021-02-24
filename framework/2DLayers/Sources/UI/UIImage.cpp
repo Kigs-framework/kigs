@@ -7,34 +7,19 @@ IMPLEMENT_CLASS_INFO(UIImage)
 
 UIImage::UIImage(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	UITexturedItem(name, PASS_CLASS_NAME_TREE_ARG)
-	// TODO : change Parameter ID to TextureName
-	, mTexture(*this, false, LABEL_AND_ID(Texture), "")
+	//, mTextureName(*this, false, LABEL_AND_ID(TextureName), "")
 {
 	mCurrentTextureName = "";
 }
-
+/*
 void UIImage::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == mIsEnabled.getLabelID())
-	{
-		if (!GetSons().empty())
-		{
-			kstl::set<Node2D*, Node2D::PriorityCompare> sons = GetSons();
-			kstl::set<Node2D*, Node2D::PriorityCompare>::iterator it = sons.begin();
-			kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = sons.end();
-			while (it != end)
-			{
-				(*it)->setValue("IsEnabled", mIsEnabled);
-				it++;
-			}
-		}
-	}
-	else if (labelid == mTexture.getLabelID() && IsInit())
+	if (labelid == mTextureName.getLabelID())
 	{
 		ChangeTexture();
 	}
 	UITexturedItem::NotifyUpdate(labelid);
-}
+}*/
 
 void UIImage::InitModifiable()
 {
@@ -42,7 +27,7 @@ void UIImage::InitModifiable()
 	if (IsInit())
 	{
 		// load texture
-		ChangeTexture();
+		//ChangeTexture();
 
 		// auto size
 		if ((int)mDisplayMode == AUTO)
@@ -53,8 +38,8 @@ void UIImage::InitModifiable()
 				mDisplayMode.setValue(SCALE);
 		}
 
-		mIsEnabled.changeNotificationLevel(Owner);
-		mTexture.changeNotificationLevel(Owner);
+		//mIsEnabled.changeNotificationLevel(Owner);
+		//mTextureName.changeNotificationLevel(Owner);
 
 
 		ComputeRealSize();
@@ -148,10 +133,10 @@ void UIImage::ComputeRealSize()
 void UIImage::ChangeTexture()
 {
 	// no change
-	if (mCurrentTextureName == mTexture.const_ref())
+	/*if (mCurrentTextureName == mTextureName.const_ref())
 		return;
 
-	mTexture.getValue(mCurrentTextureName);
+	mTextureName.getValue(mCurrentTextureName);
 
 	// empty texture name >> destroy texture
 	if (mCurrentTextureName == "")
@@ -160,53 +145,13 @@ void UIImage::ChangeTexture()
 		return;
 	}
 
-	auto arr = SplitStringByCharacter(mCurrentTextureName, ':');
-	if (arr.size() > 1) // use spritesheet
+	mTexturePointer = KigsCore::GetInstanceOf(mCurrentTextureName, "TextureHandler");
+	mTexturePointer->setValue("TextureName", mCurrentTextureName);
+	mTexturePointer->Init();*/
+	if (mTexturePointer)
 	{
-		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-		mSpriteSheetTexture = textureManager->GetSpriteSheetTexture(arr[0]);
-		SetTexture(mSpriteSheetTexture->Get_Texture());
-		if (mTexturePointer)
-		{
-			const SpriteSheetFrame* frame = mSpriteSheetTexture->Get_Frame(arr[1]);
-			if (frame)
-			{
-				mAutoresizeValue.x = (float)frame->FrameSize_X;
-				mAutoresizeValue.y = (float)frame->FrameSize_Y;
-
-
-				Point2D s, r;
-				mTexturePointer->GetSize(s.x, s.y);
-				mTexturePointer->GetRatio(r.x, r.y);
-				s /= r;
-
-				mUVMin.Set((kfloat)frame->FramePos_X + 0.5f, (kfloat)frame->FramePos_Y + 0.5f);
-				mUVMin /= s;
-
-				mUVMax.Set((kfloat)(frame->FramePos_X + frame->FrameSize_X - 0.5f), (kfloat)(frame->FramePos_Y + frame->FrameSize_Y - 0.5f));
-				mUVMax /= s;
-			}
-			else // frame not found
-			{
-				mTexturePointer->GetSize(mAutoresizeValue.x, mAutoresizeValue.y);
-				mUVMin.Set(FLT_MAX, FLT_MAX);
-				mUVMax.Set(FLT_MAX, FLT_MAX);
-			}
-		}
+		mTexturePointer->changeTexture();
 	}
-	else
-	{
-		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
-		SetTexture(textureManager->GetTexture(mCurrentTextureName).get());
-		mTexturePointer->GetSize(mAutoresizeValue.x, mAutoresizeValue.y);
-		mUVMin.Set(FLT_MAX, FLT_MAX);
-		mUVMax.Set(FLT_MAX, FLT_MAX);
-	}
-
-	if (!mTexturePointer)
-		return;
-
-	mTexturePointer->Init();
 }
 
 bool UIImage::isAlpha(float X, float Y)

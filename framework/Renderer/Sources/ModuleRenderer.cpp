@@ -21,6 +21,7 @@
 #include "Holo3DPanel.h"
 
 #include "UIVerticesInfo.h"
+#include "TextureHandler.h"
 
 #ifdef KIGS_TOOLS
 RendererStats gRendererStats;
@@ -43,6 +44,9 @@ void ModuleRenderer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 
 	RegisterDynamic(PlatformRendererModuleInit(core, params));
 
+	REGISTER_UPGRADOR(SpriteSheetData); 
+	REGISTER_UPGRADOR(AnimationUpgrador);
+
 	// Init system independant classes
 	DECLARE_FULL_CLASS_INFO(core, TextureFileManager, TextureFileManager, Renderer)
 	DECLARE_FULL_CLASS_INFO(core, DrawableCallback, DrawableCallback, Renderer)
@@ -58,6 +62,8 @@ void ModuleRenderer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	DECLARE_FULL_CLASS_INFO(core, ModernMeshItemGroup, ModernMeshItemGroup, Renderer)
 	DECLARE_FULL_CLASS_INFO(core, MaterialStage, MaterialStage, Renderer);
 	DECLARE_FULL_CLASS_INFO(core, Holo3DPanel, Holo3DPanel, Renderer);
+	DECLARE_FULL_CLASS_INFO(core, TextureHandler, TextureHandler, Renderer);
+
 
 	//DECLARE_FULL_CLASS_INFO(core, RendererProfileDrawingObject, ProfileDrawingObject, Renderer)
 

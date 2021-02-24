@@ -72,10 +72,10 @@ inline void Quaternion::Set(const Float& x, const Float& y, const Float& z, cons
 // +---------
 inline void Quaternion::Set(const Matrix3x3& crMatrix)
 {
-	Float T = 1 + crMatrix.e[0][0] + crMatrix.e[1][1] + crMatrix.e[2][2];
+	Float T = crMatrix.e[0][0] + crMatrix.e[1][1] + crMatrix.e[2][2];
 	if ( T > 0.001f )
 	{
-		Float S = sqrtf(T) * 2;
+		Float S = sqrtf(T+1.0f) * 2;
 		V.x = ( crMatrix.e[2][1] - crMatrix.e[1][2] ) / S;
 		V.y = ( crMatrix.e[0][2] - crMatrix.e[2][0] ) / S;
 		V.z = ( crMatrix.e[1][0] - crMatrix.e[0][1] ) / S;
@@ -116,10 +116,10 @@ inline void Quaternion::Set(const Matrix3x3& crMatrix)
 // +---------
 inline void Quaternion::Set(const Matrix3x4& crMatrix)
 {
-	Float T = 1 + crMatrix.e[0][0] + crMatrix.e[1][1] + crMatrix.e[2][2];
+	Float T = crMatrix.e[0][0] + crMatrix.e[1][1] + crMatrix.e[2][2];
 	if ( T > 0.001f )
 	{
-		Float S = sqrtf(T) * 2;
+		Float S = sqrtf(T+1.0f) * 2;
 		V.x = ( crMatrix.e[2][1] - crMatrix.e[1][2] ) / S;
 		V.y = ( crMatrix.e[0][2] - crMatrix.e[2][0] ) / S;
 		V.z = ( crMatrix.e[1][0] - crMatrix.e[0][1] ) / S;

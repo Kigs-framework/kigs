@@ -30,14 +30,25 @@ void UIDrawableItem::SetVertexArray(UIVerticesInfo * aQI)
 	// TODO NONO update only when changed
 	aQI->Flag |= UIVerticesInfo_Vertex;
 
+	if (mShape)
+	{
+		return mShape->SetVertexArray(this, aQI);
+	}
 	auto slice_size = (v2f)mSliced;
 	if (slice_size == v2f(0, 0))
 	{
 		aQI->Resize(4);
 		VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
-
 		Point2D pt[4];
-		GetTransformedPoints(pt);
+
+		pt[0] = getDrawablePos({ 0.0f,0.0f });
+		pt[1] = getDrawablePos({ 0.0f,1.0f });
+		pt[2] = getDrawablePos({ 1.0f,1.0f });
+		pt[3] = getDrawablePos({ 1.0f,0.0f });
+
+		for (auto& p : pt) p *= mRealSize;
+
+		TransformPoints(pt, 4);
 		// triangle strip order
 		buf[0].setVertex(pt[0].x, pt[0].y);
 		buf[1].setVertex(pt[1].x, pt[1].y);
@@ -206,4 +217,26 @@ void UIDrawableItem::ProtectedDraw(TravState* state)
 	if ((lQI->Flag & UIVerticesInfo_UseModelMatrix) != 0)
 		renderer->PopMatrix(MATRIX_MODE_MODEL);
 
+}
+
+bool UIDrawableItem::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
+{
+	if (item->isSubType(UIShapeDelegate::mClassID))
+	{
+		mShape = (UIShapeDelegate*)item.get();
+	}
+
+	return UIItem::addItem(item, pos PASS_LINK_NAME(linkName));
+}
+
+bool UIDrawableItem::removeItem(const CMSP& item DECLARE_LINK_NAME)
+{
+	if (item->isSubType(UIShapeDelegate::mClassID))
+	{
+		if (item == mShape)
+		{
+			mShape = nullptr;
+		}
+	}
+	return UIItem::removeItem(item PASS_LINK_NAME(linkName));
 }
