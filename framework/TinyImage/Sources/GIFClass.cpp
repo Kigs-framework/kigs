@@ -25,7 +25,7 @@ GIFClass::~GIFClass()
 
 
 
-#ifdef USE_LIB_PNG // TODO specific define here ?
+#ifdef USE_LIB_GIF
 #include "gif_lib.h"
 
 struct memoryGifRead
@@ -156,6 +156,22 @@ void	GIFClass::Export(const char* filename)
 
 #else
 
-#include "Platform/TinyImage/GIFClassLoader.inl.h"
 
-#endif // USE_LIB_PNG
+
+bool GIFClass::Load(CoreRawBuffer* rawbuffer)
+{
+	return false;
+}
+
+bool GIFClass::Load(FileHandle* fileName)
+{
+	return false;
+}
+
+void	GIFClass::Export(const char* filename)
+{
+}
+
+//#include "Platform/TinyImage/GIFClassLoader.inl.h"
+
+#endif 
