@@ -73,7 +73,7 @@ void UIStream::InitModifiable()
 	texture->setValue("IsDynamic", true);
 	texture->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "IsBGR", false);
 	texture->Init();
-	SetTexture(texture.get());
+	mTexturePointer->setTexture(texture);
 
 	KigsCore::GetNotificationCenter()->addObserver(this, "StartVideo", mNotificationStart.const_ref());
 }
@@ -108,7 +108,7 @@ void UIStream::Update(const Timer& timer, void* v)
 			SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(data, size.x, size.y, TinyImage::RGBA_32_8888, linesize));
 			//TinyImage::ExportImage("test.png", data, size.x, size.y, TinyImage::RGB_24_888, TinyImage::PNG_IMAGE);
 
-			GetTexture()->CreateFromImage(img);
+			mTexturePointer->getTexture()->CreateFromImage(img);
 			
 			mFrameBufferStream->CallMethod("FreeBuffers", this);
 		}

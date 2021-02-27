@@ -39,6 +39,20 @@ void UIItem::NotifyUpdate(const unsigned int labelid)
 			KigsCore::GetModule<ModuleInput>()->getTouchManager()->unregisterEvent(this, InputSwallow);
 		}
 	}
+	else if (labelid == mIsEnabled.getLabelID())
+	{
+		if (!GetSons().empty())
+		{
+			kstl::set<Node2D*, Node2D::PriorityCompare> sons = GetSons();
+			kstl::set<Node2D*, Node2D::PriorityCompare>::iterator it = sons.begin();
+			kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = sons.end();
+			while (it != end)
+			{
+				(*it)->setValue("IsEnabled", mIsEnabled);
+				it++;
+			}
+		}
+	}
 	ParentClassType::NotifyUpdate(labelid);
 }
 

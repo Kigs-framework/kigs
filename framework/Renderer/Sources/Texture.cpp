@@ -98,3 +98,20 @@ CMSP	Texture::getSharedInstance()
 	}
 	return  CMSP(this, GetRefTag{});
 }
+
+DEFINE_UPGRADOR_METHOD(SpriteSheetData, GetAnimationList)
+{
+	// TODO
+	return false;
+}
+
+// do orientation
+DEFINE_UPGRADOR_UPDATE(SpriteSheetData)
+{
+
+}
+
+SpriteSheetData* Texture::getSpriteSheetData()
+{
+	return static_cast<SpriteSheetData*>(GetUpgrador("SpriteSheetData"));
+}

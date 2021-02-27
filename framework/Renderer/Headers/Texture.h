@@ -4,6 +4,22 @@
 #include "Drawable.h"
 #include "TinyImage.h"
 #include "TecLibs/2D/BBox2DI.h"
+#include "Upgrador.h"
+
+struct SpriteSheetFrameData
+{
+	int FramePos_X;
+	int FramePos_Y;
+	int Decal_X;
+	int Decal_Y;
+	int FrameSize_X;
+	int FrameSize_Y;
+	int SourceSize_X;
+	int SourceSize_Y;
+	bool Rotated;
+	bool Trimmed;
+};
+
 
 
 // data struct to delay init in draw (for single thread opengl)
@@ -13,6 +29,7 @@ struct TextureDelayedInitData
 	bool needRealloc;
 };
 
+class SpriteSheetData;
 
 // ****************************************
 // * Texture class
@@ -111,6 +128,8 @@ public:
 
 	virtual  CMSP	getSharedInstance() override;
 
+	SpriteSheetData* getSpriteSheetData();
+
 	/**
 	* \brief	load the texture
 	* \fn 		virtual bool	Load()=0;
@@ -148,6 +167,8 @@ public:
 	}
 
 	virtual void	InitForFBO();
+
+	friend class TextureHandler;
 
 protected:
 	/**
@@ -206,5 +227,62 @@ protected:
 	*/
 	virtual ~Texture();
 };
+
+// spritesheet data upgrades a Texture
+class 	SpriteSheetData : public Upgrador<Texture>
+{
+protected:
+	// create and init Upgrador if needed and add dynamic attributes
+	virtual void	Init(CoreModifiable* toUpgrade) override
+	{
+		// nothing more here
+	}
+
+	// destroy UpgradorData and remove dynamic attributes 
+	virtual void	Destroy(CoreModifiable* toDowngrade) override;
+
+	START_UPGRADOR(SpriteSheetData);
+
+	UPGRADOR_METHODS(GetAnimationList);
+
+public:
+	bool	isOK()
+	{
+		return mAllFrameList.size();
+	}
+
+	bool	Init(const std::string& json, std::string& texturename);
+
+	const SpriteSheetFrameData*	getFrame(const std::string fr) const
+	{
+		auto f = mAllFrameList.find(fr);
+		if (f != mAllFrameList.end())
+		{
+			return (*f).second.get();
+		}
+		return nullptr;
+	}
+
+	const std::vector<SpriteSheetFrameData*>* getAnimation(const std::string an) const
+	{
+		auto f = mAnimationList.find(an);
+		if (f != mAnimationList.end())
+		{
+			return &(*f).second;
+		}
+		return nullptr;
+	}
+
+protected:
+	void sortAnimation(CoreItemSP& _FrameVector);
+	// keep track of json filename
+	std::string														mJSonFilename;
+
+	// list of frame per animation
+	std::map<std::string, std::vector<SpriteSheetFrameData*>>		mAnimationList;
+	// list of frame per frame name
+	std::map<std::string, std::unique_ptr<SpriteSheetFrameData>>	mAllFrameList;
+};
+
 
 #endif //_TEXTURE_H_

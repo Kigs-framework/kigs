@@ -43,6 +43,11 @@ public:
 	{
 		mHeaders.push_back(header);
 	}
+	void ClearHeaders()
+	{
+		mHeaders.clear();
+	}
+
 
 	virtual u32 GetCurrentProgress() { return 0; }
 

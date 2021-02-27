@@ -30,6 +30,7 @@
 #include "STLMeshLoader.cpp"
 #include "TangentSpaceLOD.cpp"
 #include "Texture.cpp"
+#include "TextureHandler.cpp"
 #include "TextureFileManager.cpp"
 #include "TextureMatrix.cpp"
 #include "Shader.cpp"

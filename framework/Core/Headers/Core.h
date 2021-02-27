@@ -561,6 +561,7 @@ protected:
 	std::vector<CoreModifiable*>			mPostDestructionList;
 	void ManagePostDestruction();
 
+	friend class ModuleBase;
 	//! static pointer to the KigsCore singleton
 	static KigsCore*		mCoreInstance;
 

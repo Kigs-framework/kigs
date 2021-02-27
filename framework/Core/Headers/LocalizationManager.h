@@ -30,22 +30,31 @@ enum GAMELANGUAGE
 class LocalizationManager : public CoreModifiable
 {
 public:
+	struct DoubleLocalizedUTF8UTF16
+	{
+		PLATFORM_WCHAR* mUTF16;
+		UTF8Char* mUTF8;
+	};
+
 	DECLARE_CLASS_INFO(LocalizationManager,CoreModifiable,LocalizationManager);
 	
 	LocalizationManager(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	virtual void	setLocalizationFilePath(const char* path,bool a_erasePreviousLoc=false);
 
-	virtual const PLATFORM_WCHAR*	getLocalizedString(const kstl::string& key) const;
+	virtual const PLATFORM_WCHAR*	getLocalizedString(const kstl::string& key);
+	virtual const UTF8Char* getLocalizedStringUTF8(const kstl::string& key);
 
 	void			addLocalizationFromFileAtPath(const char* path);
+
+	template<typename charType>
 	void			addLocalizationFromBuffer(char* _buffer, unsigned int bufferSize);
 	static kstl::string		getCurrentUserLanguage();
 	inline kstl::string		getLocalizationFilePath(){ return mLocalizationFilePath; }
 
 	void			InitWithConfigFile(const kstl::string& filename);
 
-	kstl::map<const kstl::string, PLATFORM_WCHAR* > getDebugFullMap()
+	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 > getDebugFullMap()
 	{
 		return mLocalizedString;
 	}
@@ -55,17 +64,22 @@ protected:
 	void				EraseMap();
 
 	bool				ParseStringsFile(const char*);
-	PLATFORM_WCHAR*		GetNextLocalizedString(char* pBuffer,unsigned long& currentpos,kstl::string& key,unsigned long filelen);
-	bool				ExtractQuoted(PLATFORM_WCHAR*& startchar,kstl::string& quoted,unsigned long& currentpos,unsigned long filelen,bool isKey);
-	bool				ExtractQuoted(PLATFORM_WCHAR*& startchar,unsigned short* buffer,unsigned long& currentpos,unsigned long filelen,bool isKey);
-	void				ExtractComment(PLATFORM_WCHAR*& startchar,unsigned long& currentpos,unsigned long filelen);
-	void				GotoNextLine(PLATFORM_WCHAR*& startchar,unsigned long& currentpos,unsigned long filelen);
-	void				GotoCommentEnd(PLATFORM_WCHAR*& startchar,unsigned long& currentpos,unsigned long filelen);
+	template<typename charType>
+	charType*			GetNextLocalizedString(char* pBuffer,unsigned long& currentpos,kstl::string& key,unsigned long filelen);
+	template<typename charType>
+	bool				ExtractQuoted(charType*& startchar, std::vector<charType>& buffer, unsigned long& currentpos, unsigned long filelen);
+	template<typename charType>
+	void				ExtractComment(charType*& startchar,unsigned long& currentpos,unsigned long filelen);
+	template<typename charType>
+	void				GotoNextLine(charType*& startchar,unsigned long& currentpos,unsigned long filelen);
+	template<typename charType>
+	void				GotoCommentEnd(charType*& startchar,unsigned long& currentpos,unsigned long filelen);
+	template<typename charType>
 	void				ParseBuffer(char* _pBuffer, unsigned long size);
 	kstl::string										mLocalizationFilePath;
 
-	kstl::map<const kstl::string,PLATFORM_WCHAR* >		mLocalizedString;
-	unsigned short										mWbuffer[4096];
+
+	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 >		mLocalizedString;
 
 	maFloat mLanguageScale = BASE_ATTRIBUTE(LanguageScale, 1.0f);
 };

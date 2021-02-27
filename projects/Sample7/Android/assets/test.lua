@@ -8,7 +8,7 @@ function Sample7Script:init()
 	-- self.logo is now the CoreModifiable object 
 	self.logo=logoSP:get()
 	-- set CoreModifiable attributes directly
-	self.logo.Texture = "KigsHD.png"
+	self.logo.TextureName = "KigsHD.png"
 	self.logo.Dock = {0.5,0.5}
 	self.logo.Anchor = {0.5,0.5}
 	self.logo.Priority = 10

@@ -285,8 +285,8 @@ CMSP	FBXImport::ParseNode(FbxNode* fatherNode)
 		auto copy = myNode->getItems();
 		for (auto it : copy)
 		{
-			if (it.myItem->isSubType("ModernMesh")) 
-				myNode->removeItem(it.myItem);
+			if (it.mItem->isSubType("ModernMesh")) 
+				myNode->removeItem(it.mItem);
 		}
 	}
 

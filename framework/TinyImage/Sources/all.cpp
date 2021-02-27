@@ -3,6 +3,7 @@
 #include "BMPClass.cpp"
 #include "DDSClass.cpp"
 #include "PNGClass.cpp"
+#include "GIFClass.cpp"
 #include "JPEGClass.cpp"
 #include "TGAClass.cpp"
 #include "ETCClass.cpp"

@@ -6,6 +6,9 @@
 #include "ModuleRenderer.h"
 #include "Texture.h"
 
+
+const v2f UITexturedItem::mInvalidUV = { FLT_MAX, FLT_MAX };
+
 //#//////////////////////////////
 //#		UITexturedItem
 //#//////////////////////////////
@@ -14,32 +17,20 @@ IMPLEMENT_CLASS_INFO(UITexturedItem)
 
 IMPLEMENT_CONSTRUCTOR(UITexturedItem)
 {
-	mTexturePointer = nullptr;
+	// create empty Textured Item
+	mTexturePointer = KigsCore::GetInstanceOf(getName()+"_TextureHandler", "TextureHandler");
+	mTexturePointer->Init();
 }
 
 void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 {
+	
 	if (!mTexturePointer.isNil())
 	{
-		kfloat ratioX, ratioY, sx, sy;
-		unsigned int p2sx, p2sy;
-		mTexturePointer->GetSize(sx, sy);
-		mTexturePointer->GetPow2Size(p2sx, p2sy);
-		mTexturePointer->GetRatio(ratioX, ratioY);
-
-		v2f uv_min = mUVMin;
-		v2f uv_max = mUVMax;
-
-		if (uv_min == v2f(FLT_MAX, FLT_MAX)) uv_min = { 0,0 };
-		if (uv_max == v2f(FLT_MAX, FLT_MAX)) uv_max = { ratioX, ratioY };
-
-		v2f image_size{ sx*ratioX, sy*ratioY };
-
-		kfloat dx = 0.5f / ((float)p2sx);
-		kfloat dy = 0.5f / ((float)p2sy);
-
-		VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
-
+		if (mTexturePointer->getTexture().isNil())
+		{
+			return;
+		}
 		aQI->Flag |= UIVerticesInfo_Texture;
 
 		bool is_bgr = false;
@@ -48,30 +39,50 @@ void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 			aQI->Flag |= UIVerticesInfo_BGRTexture;
 		}
 
+		if (mShape)
+		{
+			return mShape->SetTexUV(this, aQI);
+		}
+		
+		v2f isize;
+		mTexturePointer->GetSize(isize.x, isize.y);
+
+	
+		VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
+
 		auto slice_size = (v2f)mSliced;
 		if (slice_size == v2f(0, 0))
 		{
 			// triangle strip order
-			buf[0].setTexUV(uv_min.x + dx, uv_min.y + dy);
-			buf[1].setTexUV(uv_min.x + dx, uv_max.y - dy);
-			buf[3].setTexUV(uv_max.x - dx, uv_max.y - dy);
-			buf[2].setTexUV(uv_max.x - dx, uv_min.y + dy);
+			v2f uvpos = mTexturePointer->getUVforPosInPixels({ 0.f,0.f });
+			buf[0].setTexUV(uvpos.x, uvpos.y);
+			uvpos = mTexturePointer->getUVforPosInPixels({ 0.f,isize.y - 1.0f });
+			buf[1].setTexUV(uvpos.x, uvpos.y);
+			uvpos = mTexturePointer->getUVforPosInPixels({ isize.x-1.0f,isize.y - 1.0f });
+			buf[3].setTexUV(uvpos.x, uvpos.y);
+			uvpos = mTexturePointer->getUVforPosInPixels({ isize.x - 1.0f,0.0f });
+			buf[2].setTexUV(uvpos.x, uvpos.y);
 		}
 		else
 		{
-			v2f pixelRatio = (uv_max - uv_min) * (1.0f / image_size);
+			kfloat ratioX, ratioY;
+			mTexturePointer->GetRatio(ratioX, ratioY);
+
+			v2f image_size{ isize.x * ratioX, isize.y * ratioY };
 
 			auto set_quad_uv = [&](v2f*& pts, v2f start_pos, v2f size)
 			{
-				start_pos *= pixelRatio;
-				size *= pixelRatio;
-				pts[0] = uv_min + start_pos;
-				pts[1] = uv_min + start_pos + v2f(0, size.y);
-				pts[2] = uv_min + start_pos + v2f(size.x, 0);
-
-				pts[3] = uv_min + start_pos + v2f(size.x, 0);;
-				pts[4] = uv_min + start_pos + v2f(0, size.y);
-				pts[5] = uv_min + start_pos + v2f(size.x, size.y);
+			
+				v2f uvpos = mTexturePointer->getUVforPosInPixels(start_pos);
+				pts[0] = uvpos;
+				uvpos = mTexturePointer->getUVforPosInPixels({ start_pos.x,start_pos.y + size.y });
+				pts[1] = uvpos;
+				pts[4] = uvpos;
+				uvpos = mTexturePointer->getUVforPosInPixels({ start_pos.x+size.x ,start_pos.y });
+				pts[2] = uvpos;
+				pts[3] = uvpos;
+				uvpos = mTexturePointer->getUVforPosInPixels({ start_pos.x + size.x ,start_pos.y+size.y });
+				pts[5] = uvpos;
 				
 				pts += 6;
 			};
@@ -110,16 +121,6 @@ UITexturedItem::~UITexturedItem()
 	mTexturePointer = NULL;
 }
 
-void UITexturedItem::NotifyUpdate(const unsigned int labelid)
-{
-	if (!mTexturePointer.isNil())
-	{
-		
-	}
-
-	UIItem::NotifyUpdate(labelid);
-}
-
 void UITexturedItem::PreDraw(TravState* state)
 {
 	if (mTexturePointer)
@@ -139,10 +140,10 @@ int UITexturedItem::GetTransparencyType()
 	else // overall transparency
 		return 2;
 }
-
-void     UITexturedItem::SetTexture(Texture* t)
+/*
+void     UITexturedItem::SetTexture(const SP<TextureHandler>& t)
 {
-	mTexturePointer = NonOwningRawPtrToSmartPtr(t);
+	mTexturePointer = t;
 
 	if (mTexturePointer == nullptr)
 		return;
@@ -151,7 +152,7 @@ void     UITexturedItem::SetTexture(Texture* t)
 		mTexturePointer->setValue("IsDynamic", true);
 
 	mTexturePointer->SetRepeatUV(false, false);
-}
+}*/
 
 
 
@@ -160,7 +161,7 @@ bool UITexturedItem::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 {
 	if (item->isSubType(Texture::mClassID))
 	{
-		mTexturePointer = item;
+		mTexturePointer->setTexture((SP<Texture>&)item);
 
 		if (mTexturePointer && getAttribute("HasDynamicTexture"))
 			mTexturePointer->setValue("IsDynamic", true);
@@ -173,9 +174,9 @@ bool UITexturedItem::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Texture::mClassID))
 	{
-		if (item == mTexturePointer.get())
+		if (item.get() == mTexturePointer->getTexture().get())
 		{
-			mTexturePointer = 0;
+			mTexturePointer->setTexture(nullptr);
 		}
 	}
 	return UIDrawableItem::removeItem(item PASS_LINK_NAME(linkName));

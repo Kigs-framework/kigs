@@ -7,6 +7,7 @@
 #include "PNGClass.h"
 #include "DDSClass.h"
 #include "ETCClass.h"
+#include "GIFClass.h"
 
 #include "Core.h"
 #include "FilePathManager.h"
@@ -252,6 +253,7 @@ TinyImage*	TinyImage::CreateImage(FileHandle* aFile)
 	else if (upExtension == ".TGA")	img= new TGAClass(aFile);
 	else if (upExtension == ".PNG")	img= new PNGClass(aFile);
 	else if (upExtension == ".JPG")	img = new JPEGClass(aFile);
+	else if (upExtension == ".GIF")	img = new GIFClass(aFile);
 	else if (upExtension == ".DDS" || upExtension == ".DDZ" || upExtension == ".DDX")	img = new DDSClass(aFile);
 	else if (upExtension == ".ETC" || upExtension == ".ETZ" || upExtension == ".ETX")	img = new ETCClass(aFile);
 

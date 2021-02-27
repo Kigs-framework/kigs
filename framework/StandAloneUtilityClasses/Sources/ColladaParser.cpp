@@ -38,13 +38,13 @@ void	ColladaParser::InitModifiable()
 	Base3DImporter::InitModifiable();
 	if (_isInit)
 	{
-		myXMLFile = (XMLStringRef*)XML::ReadFile(m_FileName, "xml");
+		myXMLFile = XML::ReadFile(m_FileName, "xml");
 		if (myXMLFile != nullptr)
 		{
 			RetrieveShortFileName(m_FileName, shortFileName);
 			
 			m_MeshColladaList = new DynamicGrowingBuffer<MeshCollada>(140);
-			myRoot = (XMLNodeStringRef*)myXMLFile->getRoot();
+			myRoot = myXMLFile->getRoot();
 			
 			ParseAsset();
 			
@@ -82,20 +82,20 @@ ColladaParser::~ColladaParser()
 
 
 
-static std::string GetNodeName(XMLNodeStringRef* scenenode)
+static std::string GetNodeName(XMLNodeBase* scenenode)
 {
 	std::string nodeName;
-	XMLAttributeStringRef* name = (XMLAttributeStringRef*)scenenode->getAttribute("name");
+	XMLAttributeBase* name = scenenode->getAttribute("name");
 	if (name != nullptr)
 	{
 		nodeName = name->getString();
 	}
 	else
 	{
-		XMLAttributeStringRef* id = (XMLAttributeStringRef*)scenenode->getAttribute("id");
+		XMLAttributeBase* id = scenenode->getAttribute("id");
 		if (id != nullptr)
 		{
-			nodeName = id->getString();
+			nodeName = id->XMLAttributeBase::getString();
 		}
 		else
 		{
@@ -106,17 +106,17 @@ static std::string GetNodeName(XMLNodeStringRef* scenenode)
 }
 
 
-static std::string GetNodeUniqueID(XMLNodeStringRef* scenenode)
+static std::string GetNodeUniqueID(XMLNodeBase* scenenode)
 {
 	std::string nodeUniqueID;
-	XMLAttributeStringRef* id = (XMLAttributeStringRef*)scenenode->getAttribute("id");
+	XMLAttributeBase* id = scenenode->getAttribute("id");
 	if (id != nullptr)
 	{
 		nodeUniqueID = id->getString();
 	}
 	else
 	{
-		XMLAttributeStringRef* name = (XMLAttributeStringRef*)scenenode->getAttribute("name");
+		XMLAttributeBase* name = scenenode->getAttribute("name");
 		if (name != nullptr)
 		{
 			nodeUniqueID = name->getString();
@@ -163,9 +163,9 @@ void	ColladaParser::RetrieveShortFileName(const std::string& filename, std::stri
 
 
 
-static XMLNodeStringRef* SearchNode(XMLNodeStringRef* father, const std::string& name, const std::string& param, const std::string& value, bool recursive=false)
+static XMLNodeBase* SearchNode(XMLNodeBase* father, const std::string& name, const std::string& param, const std::string& value, bool recursive=false)
 {
-	XMLNodeStringRef* result = nullptr;
+	XMLNodeBase* result = nullptr;
 	int ccount = father->getChildCount();
 	for (auto i = 0; i < ccount; i++)
 	{
@@ -178,7 +178,7 @@ static XMLNodeStringRef* SearchNode(XMLNodeStringRef* father, const std::string&
 				{
 					if (check->getAttribute(param) != nullptr)
 					{
-						XMLAttributeStringRef* checkattr = (XMLAttributeStringRef*)check->getAttribute(param);
+						XMLAttributeBase* checkattr = check->getAttribute(param);
 						if (checkattr->getString() == value)
 						{
 							result = check;
@@ -211,7 +211,7 @@ void ColladaParser::ParseAsset()
 
 void ColladaParser::ParseScene()
 {
-	XMLNodeStringRef* scene = myRoot->getChildElement("scene");
+	XMLNodeBase* scene = myRoot->getChildElement("scene");
 	if (scene != nullptr)
 	{
 		// Parse visual scene
@@ -234,7 +234,7 @@ std::string make_string(const std::string_view& sv)
 	return std::string(sv.data(), sv.size());
 }
 
-void ColladaParser::ParseVScene(XMLNodeStringRef* vscene)
+void ColladaParser::ParseVScene(XMLNodeBase* vscene)
 {
 	auto sceneurl = vscene->getAttribute("url");
 	if (sceneurl != nullptr)
@@ -284,19 +284,19 @@ void ColladaParser::ParseVScene(XMLNodeStringRef* vscene)
 }
 
 
-CMSP ColladaParser::ParseCamera(XMLNodeStringRef* cameranode)
+CMSP ColladaParser::ParseCamera(XMLNodeBase* cameranode)
 {
 	SP<Camera> toAdd = nullptr;
-	XMLAttributeStringRef* cameraurl = cameranode->getAttribute("url");
+	XMLAttributeBase* cameraurl = cameranode->getAttribute("url");
 	if (cameraurl != nullptr)
 	{
 		std::string url = make_string(cameraurl->getString());
-		XMLNodeStringRef* cam_lib = myRoot->getChildElement("library_cameras");
+		XMLNodeBase* cam_lib = myRoot->getChildElement("library_cameras");
 		
 		if ((url.at(0) == '#') && cam_lib != nullptr)
 		{
 			url = url.substr(1, url.length() - 1);
-			XMLNodeStringRef* current_cam = SearchNode(cam_lib, "camera", "id", url);
+			XMLNodeBase* current_cam = SearchNode(cam_lib, "camera", "id", url);
 			if (current_cam != nullptr)
 			{
 				toAdd = KigsCore::GetInstanceOf(url, "Camera");
@@ -318,10 +318,10 @@ CMSP ColladaParser::ParseCamera(XMLNodeStringRef* cameranode)
 							{
 								if (current_cam->getChildElement("technique_common") != nullptr)
 								{
-									XMLNodeStringRef* currentTechniqueCommon = current_cam->getChildElement("technique_common");
+									XMLNodeBase* currentTechniqueCommon = current_cam->getChildElement("technique_common");
 									if (currentTechniqueCommon->getChildElement(0) != nullptr)
 									{
-										XMLNodeStringRef* sonNode = currentTechniqueCommon->getChildElement(0);
+										XMLNodeBase* sonNode = currentTechniqueCommon->getChildElement(0);
 										if (sonNode->getName() == "perspective")
 										{
 											kfloat znear = sonNode->getChildElement("znear")->getChildElement(0)->getFloat();
@@ -368,7 +368,7 @@ CMSP ColladaParser::ParseCamera(XMLNodeStringRef* cameranode)
 								/*TODO Information de position ect*/
 								if (current_cam->getChildElement(i) != nullptr)
 								{
-									XMLNodeStringRef* current_ass = current_cam->getChildElement(i);
+									XMLNodeBase* current_ass = current_cam->getChildElement(i);
 									int nCountAsset = current_ass->getChildCount();
 									for (auto j = 0; j < nCountAsset; j++)
 									{
@@ -411,29 +411,29 @@ CMSP ColladaParser::ParseCamera(XMLNodeStringRef* cameranode)
 
 
 /*To FINISH, not the same attributes from collada than from the framework, over this*/
-CMSP ColladaParser::ParseLight(XMLNodeStringRef* lightnode)
+CMSP ColladaParser::ParseLight(XMLNodeBase* lightnode)
 {
 	SP<Light> toAdd = nullptr;
 	
-	XMLAttributeStringRef* lighturl = lightnode->getAttribute("url");
+	XMLAttributeBase* lighturl = lightnode->getAttribute("url");
 	
 	if (lighturl)
 	{
 		std::string url = make_string(lighturl->getString());
 		std::string name = "";
-		XMLAttributeStringRef* lightnameattrib = lightnode->getAttribute("name");
+		XMLAttributeBase* lightnameattrib = lightnode->getAttribute("name");
 		if (lightnameattrib)
 		{
 			name = make_string(lightnameattrib->getString());
 		}
 		//toAdd = KigsCore::GetInstanceOf(make_string(lighturl->getString()), "Light");
 		
-		XMLNodeStringRef* light_lib = myRoot->getChildElement("library_lights");
+		XMLNodeBase* light_lib = myRoot->getChildElement("library_lights");
 		
 		if ((url.at(0) == '#') && light_lib)
 		{
 			url = url.substr(1, url.length() - 1);
-			XMLNodeStringRef* current_light = SearchNode(light_lib, "light", "id", url);
+			XMLNodeBase* current_light = SearchNode(light_lib, "light", "id", url);
 			if (current_light)
 			{
 				if (name == "")
@@ -441,8 +441,8 @@ CMSP ColladaParser::ParseLight(XMLNodeStringRef* lightnode)
 					name = url;
 				}
 				
-				XMLNodeStringRef* currentTechniqueCommon = current_light->getChildElement("technique_common");
-				XMLNodeStringRef* currentTechnique = current_light->getChildElement("technique");
+				XMLNodeBase* currentTechniqueCommon = current_light->getChildElement("technique_common");
+				XMLNodeBase* currentTechnique = current_light->getChildElement("technique");
 				if(currentTechniqueCommon)
 				{
 					toAdd = KigsCore::GetInstanceOf(name, "Light");
@@ -472,7 +472,7 @@ CMSP ColladaParser::ParseLight(XMLNodeStringRef* lightnode)
 					{
 						diffusecolor.z = 1.0f;
 					}
-					XMLNodeStringRef* sonNode = currentTechniqueCommon->getChildElement(0);
+					XMLNodeBase* sonNode = currentTechniqueCommon->getChildElement(0);
 
 					if (sonNode->getName() == "ambient")
 					{
@@ -497,7 +497,7 @@ CMSP ColladaParser::ParseLight(XMLNodeStringRef* lightnode)
 						int nCountPoint = sonNode->getChildCount();
 						for (int j = 0; j < nCountPoint; j++)
 						{
-							XMLNodeStringRef* JNode = sonNode->getChildElement(j);
+							XMLNodeBase* JNode = sonNode->getChildElement(j);
 							if (JNode->getName() == "color")
 							{
 								toAdd->SetDiffuseColor(diffusecolor.x, diffusecolor.y, diffusecolor.z);
@@ -526,7 +526,7 @@ CMSP ColladaParser::ParseLight(XMLNodeStringRef* lightnode)
 						int nCountPoint = sonNode->getChildCount();
 						for (int j = 0; j < nCountPoint; j++)
 						{
-							XMLNodeStringRef* JNode = sonNode->getChildElement(j);
+							XMLNodeBase* JNode = sonNode->getChildElement(j);
 							if (JNode->getName() == "color")
 							{
 								toAdd->SetDiffuseColor(diffusecolor.x, diffusecolor.y, diffusecolor.z);
@@ -572,7 +572,7 @@ CMSP ColladaParser::ParseLight(XMLNodeStringRef* lightnode)
 	return toAdd;
 }
 
-CMSP ColladaParser::ParseGeometry(XMLNodeStringRef* geomnode)
+CMSP ColladaParser::ParseGeometry(XMLNodeBase* geomnode)
 {
 	
 	//Parse material
@@ -592,11 +592,11 @@ CMSP ColladaParser::ParseGeometry(XMLNodeStringRef* geomnode)
 	}
 	
 	CMSP toAdd = nullptr;
-	XMLAttributeStringRef* geomurl = geomnode->getAttribute("url");
+	XMLAttributeBase* geomurl = geomnode->getAttribute("url");
 	if (geomurl != nullptr)
 	{
 		std::string url = make_string(geomurl->getString());
-		XMLNodeStringRef* geom_lib = myRoot->getChildElement("library_geometries");
+		XMLNodeBase* geom_lib = myRoot->getChildElement("library_geometries");
 		
 		if ((url.at(0) == '#') && geom_lib != nullptr)
 		{
@@ -607,7 +607,7 @@ CMSP ColladaParser::ParseGeometry(XMLNodeStringRef* geomnode)
 				return m_MeshList[url];
 			}
 			m_CurrentObjectName = url;
-			XMLNodeStringRef* current_geom = SearchNode(geom_lib, "geometry", "id", url);
+			XMLNodeBase* current_geom = SearchNode(geom_lib, "geometry", "id", url);
 			
 			if (current_geom != nullptr)
 			{
@@ -624,7 +624,7 @@ CMSP ColladaParser::ParseGeometry(XMLNodeStringRef* geomnode)
 						if (current_geom->getChildElement(i)->getName() == "mesh")
 						{
 							// retreive mesh name
-							XMLAttributeStringRef* attrname = current_geom->getAttribute("name");
+							XMLAttributeBase* attrname = current_geom->getAttribute("name");
 							if (attrname != nullptr)
 							{
 								toAdd = ParseMesh(current_geom->getChildElement(i), make_string(attrname->getString()), nullptr);
@@ -654,40 +654,40 @@ CMSP ColladaParser::ParseGeometry(XMLNodeStringRef* geomnode)
 	return toAdd;
 }
 
-void ColladaParser::ParseBindMaterial(XMLNodeStringRef* bindMaterialNode)
+void ColladaParser::ParseBindMaterial(XMLNodeBase* bindMaterialNode)
 {
 	if (bindMaterialNode->getChildElement("technique_common") != nullptr)
 	{
-		XMLNodeStringRef* techniqueCommonNode = bindMaterialNode->getChildElement("technique_common");
+		XMLNodeBase* techniqueCommonNode = bindMaterialNode->getChildElement("technique_common");
 		for (auto i = 0; i < techniqueCommonNode->getChildCount(); i++)
 		{
 			if (techniqueCommonNode->getChildElement(i) != nullptr)
 			{
-				XMLNodeStringRef* instanceMaterialNode = techniqueCommonNode->getChildElement(i);
+				XMLNodeBase* instanceMaterialNode = techniqueCommonNode->getChildElement(i);
 				if(instanceMaterialNode->getAttribute("target") != nullptr)
 				{
 					std::string targetString = make_string(instanceMaterialNode->getAttribute("target")->getString());
 					if (myRoot->getChildElement("library_materials") != nullptr)
 					{
-						XMLNodeStringRef* materialLib = myRoot->getChildElement("library_materials");
+						XMLNodeBase* materialLib = myRoot->getChildElement("library_materials");
 						
 						if ((targetString.at(0) == '#') && materialLib != nullptr)
 						{
 							targetString = targetString.substr(1, targetString.length() - 1);
 							//m_CurrentObjectName = "Mesh_" + targetString;
-							XMLNodeStringRef* current_material = SearchNode(materialLib, "material", "id", targetString);
+							XMLNodeBase* current_material = SearchNode(materialLib, "material", "id", targetString);
 							if (current_material->getChildElement("instance_effect") != nullptr)
 							{
-								XMLNodeStringRef* instanceEffectNode = current_material->getChildElement("instance_effect");
+								XMLNodeBase* instanceEffectNode = current_material->getChildElement("instance_effect");
 								std::string url = make_string(instanceEffectNode->getAttribute("url")->getString());
 								
 								if (myRoot->getChildElement("library_effects") != nullptr)
 								{
-									XMLNodeStringRef* effectsLib = myRoot->getChildElement("library_effects");
+									XMLNodeBase* effectsLib = myRoot->getChildElement("library_effects");
 									if ((url.at(0) == '#') && effectsLib != nullptr)
 									{
 										url = url.substr(1, url.length() - 1);
-										XMLNodeStringRef* current_effect = SearchNode(effectsLib, "effect", "id", url);
+										XMLNodeBase* current_effect = SearchNode(effectsLib, "effect", "id", url);
 										ParseEffect(current_effect, make_string(instanceMaterialNode->getAttribute("symbol")->getString()));
 									}
 									else
@@ -708,16 +708,16 @@ void ColladaParser::ParseBindMaterial(XMLNodeStringRef* bindMaterialNode)
 	}
 }
 
-void ColladaParser::ParseEffect(XMLNodeStringRef* effectNode, std::string materialName)
+void ColladaParser::ParseEffect(XMLNodeBase* effectNode, std::string materialName)
 {
 	ReadMaterial *mat = &m_materialList[materialName];
 	mat->name = materialName;
 	for (auto i = 0; i < effectNode->getChildCount(); i++)
 	{
-		XMLNodeStringRef* childNode = effectNode->getChildElement(i);
+		XMLNodeBase* childNode = effectNode->getChildElement(i);
 		if (childNode->getName() == "profile_COMMON")
 		{
-			XMLNodeStringRef* techniqueNode = childNode->getChildElement("technique");
+			XMLNodeBase* techniqueNode = childNode->getChildElement("technique");
 			
 			for (auto j = 0; j < techniqueNode->getChildCount(); j++)
 			{
@@ -727,7 +727,7 @@ void ColladaParser::ParseEffect(XMLNodeStringRef* effectNode, std::string materi
 					
 					for (auto h = 0; h < techniqueNode->getChildElement(j)->getChildCount(); h++)
 					{
-						XMLNodeStringRef* paramMat = techniqueNode->getChildElement(j)->getChildElement(h);
+						XMLNodeBase* paramMat = techniqueNode->getChildElement(j)->getChildElement(h);
 						if (paramMat->getName() == "emission")
 						{
 							if (paramMat->getChildElement("color") != nullptr)
@@ -764,12 +764,12 @@ void ColladaParser::ParseEffect(XMLNodeStringRef* effectNode, std::string materi
 								mat->diffuseColor[0] = 1;
 								mat->diffuseColor[1] = 1;
 								mat->diffuseColor[2] = 1;
-								XMLNodeStringRef* textureNode = SearchNode(childNode, "newparam", "sid", textureUrl);
+								XMLNodeBase* textureNode = SearchNode(childNode, "newparam", "sid", textureUrl);
 								if (textureNode == nullptr)
 								{
-									XMLNodeStringRef* libImage = myRoot->getChildElement("library_images");
-									XMLNodeStringRef* imageNode = SearchNode(libImage, "image", "id", textureUrl);
-									XMLNodeStringRef* imageInitNode = imageNode->getChildElement("init_from");
+									XMLNodeBase* libImage = myRoot->getChildElement("library_images");
+									XMLNodeBase* imageNode = SearchNode(libImage, "image", "id", textureUrl);
+									XMLNodeBase* imageInitNode = imageNode->getChildElement("init_from");
 									if (imageInitNode->getChildElement(0)->getName() == "ref")
 									{
 										mat->texturesName.push_back(make_string(imageInitNode->getChildElement(0)->getChildElement(0)->getString()));
@@ -794,11 +794,11 @@ void ColladaParser::ParseEffect(XMLNodeStringRef* effectNode, std::string materi
 										surfaceNode = surfaceNode->getChildElement("surface");
 										if (surfaceNode != nullptr)
 										{
-											XMLNodeStringRef* imageInitNode = surfaceNode->getChildElement("init_from");
+											XMLNodeBase* imageInitNode = surfaceNode->getChildElement("init_from");
 											if (imageInitNode != nullptr)
 											{
-												XMLNodeStringRef* libImage = myRoot->getChildElement("library_images");
-												XMLNodeStringRef* imageNode;
+												XMLNodeBase* libImage = myRoot->getChildElement("library_images");
+												XMLNodeBase* imageNode;
 												if (imageInitNode->getChildElement(0)->getName() == "ref")
 												{
 													imageNode = SearchNode(libImage, "image", "id", make_string(imageInitNode->getChildElement(0)->getChildElement(0)->getString()));
@@ -855,7 +855,7 @@ void ColladaParser::ParseEffect(XMLNodeStringRef* effectNode, std::string materi
 					//For bump map
 					for (auto h = 0; h < techniqueNode->getChildElement(j)->getChildCount(); h++)
 					{
-						XMLNodeStringRef* extraChild = techniqueNode->getChildElement(j)->getChildElement(h);
+						XMLNodeBase* extraChild = techniqueNode->getChildElement(j)->getChildElement(h);
 						if (extraChild->getName() == "technique")
 						{
 							for (auto k = 0; k < extraChild->getChildCount(); k++)
@@ -863,12 +863,12 @@ void ColladaParser::ParseEffect(XMLNodeStringRef* effectNode, std::string materi
 								if (extraChild->getChildElement(k)->getName() == "bump")
 								{
 									std::string textureUrl = make_string(extraChild->getChildElement(k)->getChildElement("texture")->getAttribute("texture")->getString());
-									XMLNodeStringRef* textureNode = SearchNode(childNode, "newparam", "sid", textureUrl);
+									XMLNodeBase* textureNode = SearchNode(childNode, "newparam", "sid", textureUrl);
 									if (textureNode == nullptr)
 									{
-										XMLNodeStringRef* libImage = myRoot->getChildElement("library_images");
-										XMLNodeStringRef* imageNode = SearchNode(libImage, "image", "id", textureUrl);
-										XMLNodeStringRef* imageInitNode = imageNode->getChildElement("init_from");
+										XMLNodeBase* libImage = myRoot->getChildElement("library_images");
+										XMLNodeBase* imageNode = SearchNode(libImage, "image", "id", textureUrl);
+										XMLNodeBase* imageInitNode = imageNode->getChildElement("init_from");
 										if (imageInitNode->getChildElement(0)->getName() == "ref")
 										{
 											mat->NormalMapName.push_back(make_string(imageInitNode->getChildElement(0)->getChildElement(0)->getString()));
@@ -882,22 +882,22 @@ void ColladaParser::ParseEffect(XMLNodeStringRef* effectNode, std::string materi
 										break;
 									}
 									
-									XMLNodeStringRef* sampler2DNode = textureNode->getChildElement("sampler2D");
+									XMLNodeBase* sampler2DNode = textureNode->getChildElement("sampler2D");
 									if (sampler2DNode != nullptr)
 									{
-										XMLNodeStringRef* sourceNode = sampler2DNode->getChildElement("source");
+										XMLNodeBase* sourceNode = sampler2DNode->getChildElement("source");
 										if (sourceNode != nullptr)
 										{
 											std::string surfaceUrl = make_string(sourceNode->getChildElement(0)->getString());
-											XMLNodeStringRef* surfaceNode = SearchNode(childNode, "newparam", "sid", surfaceUrl);
+											XMLNodeBase* surfaceNode = SearchNode(childNode, "newparam", "sid", surfaceUrl);
 											surfaceNode = surfaceNode->getChildElement("surface");
 											if (surfaceNode != nullptr)
 											{
-												XMLNodeStringRef* imageInitNode = surfaceNode->getChildElement("init_from");
+												XMLNodeBase* imageInitNode = surfaceNode->getChildElement("init_from");
 												if (imageInitNode != nullptr)
 												{
-													XMLNodeStringRef* libImage = myRoot->getChildElement("library_images");
-													XMLNodeStringRef* imageNode;
+													XMLNodeBase* libImage = myRoot->getChildElement("library_images");
+													XMLNodeBase* imageNode;
 													if (imageInitNode->getChildElement(0)->getName() == "ref")
 													{
 														imageNode = SearchNode(libImage, "image", "id", make_string(imageInitNode->getChildElement(0)->getChildElement(0)->getString()));
@@ -939,7 +939,7 @@ void ColladaParser::ParseEffect(XMLNodeStringRef* effectNode, std::string materi
 }
 
 
-SourceData* ColladaParser::ParseSource(XMLNodeStringRef* sourceNode)
+SourceData* ColladaParser::ParseSource(XMLNodeBase* sourceNode)
 {
 	
 	return &m_sources.emplace(std::piecewise_construct,
@@ -948,7 +948,7 @@ SourceData* ColladaParser::ParseSource(XMLNodeStringRef* sourceNode)
 	
 }
 
-CMSP ColladaParser::ParseMesh(XMLNodeStringRef* meshnode, const std::string& name, Controller* controller)
+CMSP ColladaParser::ParseMesh(XMLNodeBase* meshnode, const std::string& name, Controller* controller)
 {
 	CMSP toAdd;
 	int meshChildCount = meshnode->getChildCount();
@@ -957,7 +957,7 @@ CMSP ColladaParser::ParseMesh(XMLNodeStringRef* meshnode, const std::string& nam
 	
 	for (auto i = 0; i < meshChildCount; i++)
 	{
-		XMLNodeStringRef* childNode = meshnode->getChildElement(i);
+		XMLNodeBase* childNode = meshnode->getChildElement(i);
 		
 		if (childNode->getName() == "source")
 		{
@@ -986,17 +986,17 @@ CMSP ColladaParser::ParseMesh(XMLNodeStringRef* meshnode, const std::string& nam
 			
 			for (auto j = 0; j < childNode->getChildCount(); j++)
 			{
-				XMLNodeStringRef* childPolylisteNode = childNode->getChildElement(j);
+				XMLNodeBase* childPolylisteNode = childNode->getChildElement(j);
 				if (childPolylisteNode->getName() == "input")
 				{
-					XMLAttributeStringRef* semanticAttribute = childPolylisteNode->getAttribute("semantic");
+					XMLAttributeBase* semanticAttribute = childPolylisteNode->getAttribute("semantic");
 					bool otherOnVertice = true;
 					if (semanticAttribute->getString() == "VERTEX")
 					{
-						XMLNodeStringRef* VerticesNode = meshnode->getChildElement("vertices");
+						XMLNodeBase* VerticesNode = meshnode->getChildElement("vertices");
 						for (auto h = 0; h < VerticesNode->getChildCount(); h++)
 						{
-							XMLAttributeStringRef* semanticOfVerticesAttribute = VerticesNode->getChildElement(h)->getAttribute("semantic");
+							XMLAttributeBase* semanticOfVerticesAttribute = VerticesNode->getChildElement(h)->getAttribute("semantic");
 							if (semanticOfVerticesAttribute->getString() == "POSITION")
 							{
 								offsets[childPolylisteNode->getAttribute("offset")->getInt()].push_back('P');
@@ -1371,9 +1371,9 @@ CMSP ColladaParser::CreateMeshFromMeshCollada(Controller* controller)
 }
 
 
-void ColladaParser::parseFacetPolylist(XMLNodeStringRef* vertexCountNode, XMLNodeStringRef* indexesNode, std::map<int, std::vector<char>> offsets)
+void ColladaParser::parseFacetPolylist(XMLNodeBase* vertexCountNode, XMLNodeBase* indexesNode, std::map<int, std::vector<char>> offsets)
 {
-	XMLNodeStringRef* nbrVertexNode = vertexCountNode->getChildElement(0);
+	XMLNodeBase* nbrVertexNode = vertexCountNode->getChildElement(0);
 	std::string nbrVertexString = make_string(nbrVertexNode->getString());
 	AsciiParserUtils numberVertexParser(const_cast<char*>(nbrVertexString.c_str()), nbrVertexString.size());
 	AsciiParserUtils numberVertex(numberVertexParser);
@@ -1465,7 +1465,7 @@ void ColladaParser::parseFacetPolylist(XMLNodeStringRef* vertexCountNode, XMLNod
 	}
 }
 
-void ColladaParser::parseFacetTriangle(XMLNodeStringRef* indexesNode, std::map<int, std::vector<char>> offsets)
+void ColladaParser::parseFacetTriangle(XMLNodeBase* indexesNode, std::map<int, std::vector<char>> offsets)
 {
 	std::string indexesString;
 	if (indexesNode->getChildElement(0) != nullptr)
@@ -1549,7 +1549,7 @@ void ColladaParser::parseFacetTriangle(XMLNodeStringRef* indexesNode, std::map<i
 
 
 
-void ColladaParser::parseFacetTrifans(XMLNodeStringRef* indexesNode, std::map<int, std::vector<char>> offsets)
+void ColladaParser::parseFacetTrifans(XMLNodeBase* indexesNode, std::map<int, std::vector<char>> offsets)
 {
 	std::string indexesString = make_string(indexesNode->getChildElement(0)->getString());
 	if (indexesNode->getChildElement(0) != nullptr)
@@ -1669,7 +1669,7 @@ void ColladaParser::parseFacetTrifans(XMLNodeStringRef* indexesNode, std::map<in
 	
 }
 
-void ColladaParser::parseFacetPolygons(XMLNodeStringRef* indexesNode, std::map<int, std::vector<char>> offsets)
+void ColladaParser::parseFacetPolygons(XMLNodeBase* indexesNode, std::map<int, std::vector<char>> offsets)
 {
 	std::string indexesString = make_string(indexesNode->getChildElement(0)->getString());
 	indexesNode = indexesNode->getChildElement(0);
@@ -1770,7 +1770,7 @@ void ColladaParser::parseFacetPolygons(XMLNodeStringRef* indexesNode, std::map<i
 }
 
 
-Matrix3x4 ColladaParser::ParseTransform(XMLNodeStringRef* scenenode)
+Matrix3x4 ColladaParser::ParseTransform(XMLNodeBase* scenenode)
 {
 	// Init
 	Matrix3x4 transform;
@@ -1787,7 +1787,7 @@ Matrix3x4 ColladaParser::ParseTransform(XMLNodeStringRef* scenenode)
 	int ncount = scenenode->getChildCount();
 	for (int i = 0; i < ncount; i++)
 	{
-		XMLNodeStringRef* childNode = scenenode->getChildElement(i);
+		XMLNodeBase* childNode = scenenode->getChildElement(i);
 		// Parse translation
 		if (childNode->getName() == "translate")
 		{
@@ -1840,7 +1840,7 @@ Transformation to do: <skew> ???, lookat
 instance_node
 instance_controller for the animations
 */
-CMSP ColladaParser::ParseNode(XMLNodeStringRef* scenenode, bool &isModernMeshRoot)
+CMSP ColladaParser::ParseNode(XMLNodeBase* scenenode, bool &isModernMeshRoot)
 {
 	std::string nodeName = GetNodeName(scenenode);
 	SP<Node3D> result = KigsCore::GetInstanceOf(nodeName, "Node3D");
@@ -1859,7 +1859,7 @@ CMSP ColladaParser::ParseNode(XMLNodeStringRef* scenenode, bool &isModernMeshRoo
 		int i;
 		for (i = 0; i < ncount; i++)
 		{
-			XMLNodeStringRef* childNode = scenenode->getChildElement(i);
+			XMLNodeBase* childNode = scenenode->getChildElement(i);
 			std::string childNodeName = make_string(childNode->getName());
 			if (childNodeName == "node")
 			{
@@ -1928,30 +1928,30 @@ CMSP ColladaParser::ParseNode(XMLNodeStringRef* scenenode, bool &isModernMeshRoo
 
 void ColladaParser::ParseWeights(Controller* controller)
 {
-	XMLNodeStringRef* skin_node = controller->skin_node;
+	XMLNodeBase* skin_node = controller->skin_node;
 	// Parse Weights
-	XMLNodeStringRef* vertex_weights = skin_node->getChildElement("vertex_weights");
+	XMLNodeBase* vertex_weights = skin_node->getChildElement("vertex_weights");
 	if(!vertex_weights) return;
 	
 	// Get count
 	int vertex_weights_count = vertex_weights->getAttribute("count")->getInt();
 	
 	// Find inputs
-	XMLNodeStringRef* input_joint_node=nullptr;
-	XMLNodeStringRef* input_weights_node=nullptr;
-	XMLNodeStringRef* vcount_node=nullptr;
-	XMLNodeStringRef* v_node=nullptr;
+	XMLNodeBase* input_joint_node=nullptr;
+	XMLNodeBase* input_weights_node=nullptr;
+	XMLNodeBase* vcount_node=nullptr;
+	XMLNodeBase* v_node=nullptr;
 	
 	for(int n=0; n<vertex_weights->getChildCount(); ++n)
 	{
-		XMLNodeStringRef* vertex_weights_child = vertex_weights->getChildElement(n);
+		XMLNodeBase* vertex_weights_child = vertex_weights->getChildElement(n);
 		std::string name = make_string(vertex_weights_child->getName());
 		
 		// input :
 		// The <input> elements describe the joints and the attributes to be associated with them
 		if(name == "input")
 		{
-			XMLAttributeStringRef* semantic_attr = vertex_weights_child->getAttribute("semantic");
+			XMLAttributeBase* semantic_attr = vertex_weights_child->getAttribute("semantic");
 			// Skin influence identifier 
 			if(semantic_attr->getString() == "JOINT")
 				input_joint_node = vertex_weights_child;
@@ -1981,12 +1981,12 @@ void ColladaParser::ParseWeights(Controller* controller)
 	joints_url = joints_url.substr(1, joints_url.length()-1);
 	weight_url= weight_url.substr(1, weight_url.length()-1);
 	
-	XMLNodeStringRef* weight_source_node=nullptr;
+	XMLNodeBase* weight_source_node=nullptr;
 	
 	// Parse <skin> child nodes 
 	for(int n=0; n<skin_node->getChildCount(); ++n)
 	{
-		XMLNodeStringRef* child_skin = skin_node->getChildElement(n);
+		XMLNodeBase* child_skin = skin_node->getChildElement(n);
 		if(child_skin->getName() != "source") continue;
 		if(child_skin->getAttribute("id")->getString() == weight_url)
 		{
@@ -2078,14 +2078,14 @@ Controller* ColladaParser::ParseController(std::string url)
 	// A skinning <instance_controller> instantiates a skinning <controller> and associates it with a run-time skeleton. 
 	// COLLADA defines skinning in object space, so the <instance_controller>’s placement in the <node> hierarchy contributes to the final vertex location. 
 	
-	XMLNodeStringRef* lib_controllers = myRoot->getChildElement("library_controllers");
+	XMLNodeBase* lib_controllers = myRoot->getChildElement("library_controllers");
 	if(!lib_controllers) return nullptr;
 	
 	url = url.substr(1, url.length() - 1);
 	
 	for (int i = 0; i < lib_controllers->getChildCount(); i++)
 	{
-		XMLNodeStringRef* controller_node = lib_controllers->getChildElement(i);
+		XMLNodeBase* controller_node = lib_controllers->getChildElement(i);
 		if(!controller_node) continue;
 		if(controller_node->getAttribute("id")->getString() != url) continue;
 		
@@ -2093,7 +2093,7 @@ Controller* ColladaParser::ParseController(std::string url)
 		controller.id = std::move(url);
 		
 		// Get skin node
-		XMLNodeStringRef* skin_node = controller_node->getChildElement("skin");
+		XMLNodeBase* skin_node = controller_node->getChildElement("skin");
 		if(!skin_node) continue;
 		controller.skin_node = skin_node;
 		
@@ -2104,7 +2104,7 @@ Controller* ColladaParser::ParseController(std::string url)
 		bind_shape_matrix.SetIdentity();
 		
 		// Get bind shape matrix node
-		XMLNodeStringRef* bind_shape_matrix_node = skin_node->getChildElement("bind_shape_matrix");
+		XMLNodeBase* bind_shape_matrix_node = skin_node->getChildElement("bind_shape_matrix");
 		if(bind_shape_matrix_node)
 		{
 			std::string matrix_string = make_string(bind_shape_matrix_node->getChildElement(0)->getString());
@@ -2123,18 +2123,18 @@ Controller* ColladaParser::ParseController(std::string url)
 		ParseWeights(&controller);
 		
 		// Get joints node
-		XMLNodeStringRef* joints_node = skin_node->getChildElement("joints");
+		XMLNodeBase* joints_node = skin_node->getChildElement("joints");
 		if(!joints_node) continue;
 		
-		XMLNodeStringRef* joint_input_field = SearchNode(joints_node, "input", "semantic", "JOINT");
+		XMLNodeBase* joint_input_field = SearchNode(joints_node, "input", "semantic", "JOINT");
 		
 		// Inverse bind matrix :
 		// Inverse of local-to-world matrix. Typically stored in a <float_array> taken 16 floating-point numbers at a time.
 		// The <joints> element associates the joints to their inverse bind matrices.
 		
-		XMLNodeStringRef* inv_bind_matrix_input_field = SearchNode(joints_node, "input", "semantic", "INV_BIND_MATRIX");
+		XMLNodeBase* inv_bind_matrix_input_field = SearchNode(joints_node, "input", "semantic", "INV_BIND_MATRIX");
 		
-		XMLNodeStringRef* joint_source, *inv_bind_matrix_source;
+		XMLNodeBase* joint_source, *inv_bind_matrix_source;
 		if(joint_input_field)
 		{
 			std::string joint_source_id = make_string(joint_input_field->getAttribute("source")->getString());
@@ -2151,7 +2151,7 @@ Controller* ColladaParser::ParseController(std::string url)
 		if(!joint_source || !inv_bind_matrix_source) continue;
 		
 		// Get name array (joint name array)
-		XMLNodeStringRef* name_array_node = joint_source->getChildElement("Name_array");
+		XMLNodeBase* name_array_node = joint_source->getChildElement("Name_array");
 		if(!name_array_node) continue;
 		std::string names = make_string(name_array_node->getChildElement(0)->getString());
 		//auto vec = SplitStringByCharacter(names, ' ');
@@ -2180,7 +2180,7 @@ Controller* ColladaParser::ParseController(std::string url)
 		}
 		
 		// NOTE(antoine) assume always float4x4
-		XMLNodeStringRef* accessor = inv_bind_matrix_source->getChildElement("accessor");
+		XMLNodeBase* accessor = inv_bind_matrix_source->getChildElement("accessor");
 		int matrix_count = accessor->getAttribute("count")->getInt();
 		
 		if(matrix_count != controller.sids.size())
@@ -2193,7 +2193,7 @@ Controller* ColladaParser::ParseController(std::string url)
 			KIGS_ERROR("float4x4 is the only supported type in INV_BIND_MATRIX accessor", 1);
 		}
 		
-		XMLNodeStringRef* float_array_node = inv_bind_matrix_source->getChildElement("float_array");
+		XMLNodeBase* float_array_node = inv_bind_matrix_source->getChildElement("float_array");
 		if(!float_array_node) continue;
 		
 		std::string floats_string = make_string(float_array_node->getChildElement(0)->getString());
@@ -2236,9 +2236,9 @@ Controller* ColladaParser::ParseController(std::string url)
 	return nullptr;
 }
 
-static void FindSkeleton(XMLNodeStringRef* current_node, const std::vector<std::string>& sids, std::vector<int>& remaining_sids, std::vector<std::pair<int, XMLNodeStringRef*>>& joints)
+static void FindSkeleton(XMLNodeBase* current_node, const std::vector<std::string>& sids, std::vector<int>& remaining_sids, std::vector<std::pair<int, XMLNodeBase*>>& joints)
 {
-	XMLAttributeStringRef* sid_attr = current_node->getAttribute("sid");
+	XMLAttributeBase* sid_attr = current_node->getAttribute("sid");
 	
 	if(sid_attr)
 	{
@@ -2258,7 +2258,7 @@ static void FindSkeleton(XMLNodeStringRef* current_node, const std::vector<std::
 	
 	for(int i=0; i<current_node->getChildCount(); ++i)
 	{
-		XMLNodeStringRef* child = current_node->getChildElement(i);
+		XMLNodeBase* child = current_node->getChildElement(i);
 		if(!child) continue;
 		
 		// Iterate through skeleton hierarchy
@@ -2267,10 +2267,10 @@ static void FindSkeleton(XMLNodeStringRef* current_node, const std::vector<std::
 	}
 }
 
-CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
+CMSP ColladaParser::ParseInstanceController(XMLNodeBase* controller_node)
 {
 	CMSP toAdd = nullptr;
-	XMLAttributeStringRef* instance_controller_url = controller_node->getAttribute("url");
+	XMLAttributeBase* instance_controller_url = controller_node->getAttribute("url");
 	
 	// Parse controller
 	Controller* controller = ParseController(make_string(instance_controller_url->getString()));
@@ -2284,10 +2284,10 @@ CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
 	std::iota(remainings_sids.begin(), remainings_sids.end(), 0);
 	
 	auto& joints = controller->joints_table;
-	XMLNodeStringRef* skeleton_root = nullptr;
+	XMLNodeBase* skeleton_root = nullptr;
 	for (int i = 0; i < controller_node->getChildCount(); i++)
 	{	
-		XMLNodeStringRef* child = controller_node->getChildElement(i);
+		XMLNodeBase* child = controller_node->getChildElement(i);
 		
 		if (child == nullptr)
 			continue;
@@ -2304,7 +2304,7 @@ CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
 			
 			//TODO(antoine): skeleton root might not be a root in the scene and might need to be transformed
 			
-			XMLNodeStringRef* library_visual_scenes = myRoot->getChildElement("library_visual_scenes");
+			XMLNodeBase* library_visual_scenes = myRoot->getChildElement("library_visual_scenes");
 			if(!library_visual_scenes) 
 			{
 				KIGS_ERROR("Could not find a visual scene", 1);
@@ -2346,7 +2346,7 @@ CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
 		int i = 0;
 		for(const auto& pair : joints)
 		{
-			XMLNodeStringRef* node = pair.second;
+			XMLNodeBase* node = pair.second;
 			std::string nodeName = GetNodeName(node);
 			
 			unsigned int id = pair.first + 1;
@@ -2356,9 +2356,9 @@ CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
 				uid = CharToID::GetID(node->getAttribute("id")->getString());
 			
 			
-			XMLNodeStringRef* parent=node;
+			XMLNodeBase* parent=node;
 			unsigned int parent_id = 0;
-			while(parent = (XMLNodeStringRef*)parent->getParent())
+			while(parent = (XMLNodeBase*)parent->getParent())
 			{
 				if(parent->getName() != "node") break;
 				unsigned int joint_index = -1;
@@ -2375,7 +2375,7 @@ CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
 				
 				if(found)
 				{
-					/*XMLAttributeStringRef* id_attr = parent->getAttribute("id");
+					/*XMLAttributeBase* id_attr = parent->getAttribute("id");
 					if(id_attr)
 					 parent_id = CharToID::GetID(id_attr->getString());
 					else
@@ -2399,7 +2399,7 @@ CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
 		
 		//TODO(antoine) Save skeleton binary data in xml in base64
 		// Export skeleton resource (.SKL)
-		skeleton_resource->setValue("SkeletonFileName", shortFileName + "_" + make_string(((XMLNodeStringRef*)controller_node->getParent())->getAttribute("id")->getString()) + ".skl");
+		skeleton_resource->setValue("SkeletonFileName", shortFileName + "_" + make_string(((XMLNodeBase*)controller_node->getParent())->getAttribute("id")->getString()) + ".skl");
 		skeleton_resource->Export();
 		
 	}
@@ -2408,14 +2408,14 @@ CMSP ColladaParser::ParseInstanceController(XMLNodeStringRef* controller_node)
 	std::string source;
 	std::map<int, std::vector<char>> offsets;
 	
-	XMLNodeStringRef* skin_node = controller->skin_node;
+	XMLNodeBase* skin_node = controller->skin_node;
 	
 	source = skin_node->getAttribute("source")->getString();
 	source = source.substr(1, source.length() - 1);
-	XMLNodeStringRef* geometry_lib  = myRoot->getChildElement("library_geometries");
+	XMLNodeBase* geometry_lib  = myRoot->getChildElement("library_geometries");
 	if (SearchNode(geometry_lib, "geometry", "id", source) != nullptr)
 	{
-		XMLNodeStringRef* mesh_node = SearchNode(geometry_lib, "geometry", "id", source);
+		XMLNodeBase* mesh_node = SearchNode(geometry_lib, "geometry", "id", source);
 		toAdd = ParseMesh(mesh_node->getChildElement("mesh"), source, controller);
 	}
 
@@ -2505,7 +2505,7 @@ static void CreateAnimationFile(std::string animation_name, const std::vector<An
 	if(!stream_count) return;
 	
 	AnimationResourceInfo* animationResourceInfo = (AnimationResourceInfo*)malloc(total_file_size);
-	animationResourceInfo->m_head.m_ID = CharToID::GetID(animation_name);
+	animationResourceInfo->m_head.mID = CharToID::GetID(animation_name);
 	animationResourceInfo->m_head.m_StreamCount = stream_count;
 	animationResourceInfo->m_head.m_StreamTypeNameSize = stream_type_aligned_size;
 	
@@ -2521,7 +2521,7 @@ static void CreateAnimationFile(std::string animation_name, const std::vector<An
 	// Export animation resource (.ANIM)
 	animation_name += ".anim";
 	SmartPointer<FileHandle> file = Platform_fopen(animation_name.c_str(), "wb");
-	if (file->myFile)
+	if (file->mFile)
 	{
 		Platform_fwrite(animationResourceInfo, 1, total_file_size, file.get());
 		Platform_fclose(file.get());
@@ -2536,19 +2536,19 @@ bool ColladaParser::ParseAnimationClips()
 	std::string animationClipName, instanceAnimationUrl;
 	
 	// Get animation clips node
-	XMLNodeStringRef* animationClipLib = myRoot->getChildElement("library_animation_clips");
+	XMLNodeBase* animationClipLib = myRoot->getChildElement("library_animation_clips");
 	if(!animationClipLib) return false;
 	
 	animationClipCount = animationClipLib->getChildCount();
 	bool found = false;
 	
 	// Get animations
-	XMLNodeStringRef* anim_library = myRoot->getChildElement("library_animations");
+	XMLNodeBase* anim_library = myRoot->getChildElement("library_animations");
 	for (auto i = 0; i < animationClipCount; i++)
 	{
 		if (animationClipLib->getChildElement("animation_clip") != nullptr)
 		{
-			XMLNodeStringRef* currentAnimationClipNode = animationClipLib->getChildElement(i);				
+			XMLNodeBase* currentAnimationClipNode = animationClipLib->getChildElement(i);				
 			auto instanceAnimationCount = currentAnimationClipNode->getChildCount();
 			
 			std::vector<AnimationData*> clip_anims;
@@ -2556,13 +2556,13 @@ bool ColladaParser::ParseAnimationClips()
 			{
 				if (currentAnimationClipNode->getChildElement(j) != nullptr)
 				{
-					XMLNodeStringRef* instanceAnimationNode = currentAnimationClipNode->getChildElement(j);
+					XMLNodeBase* instanceAnimationNode = currentAnimationClipNode->getChildElement(j);
 					if (instanceAnimationNode->getName() == "instance_animation")
 					{
 						instanceAnimationUrl = instanceAnimationNode->getAttribute("url")->getString();
 						instanceAnimationUrl = instanceAnimationUrl.substr(1, instanceAnimationUrl.length() - 1);
 						m_CurrentObjectName = instanceAnimationUrl;
-						XMLNodeStringRef* animationNode = SearchNode(anim_library, "animation", "id", instanceAnimationUrl);
+						XMLNodeBase* animationNode = SearchNode(anim_library, "animation", "id", instanceAnimationUrl);
 						
 						if(!animationNode) 
 							KIGS_ERROR("Cannot find animation from clip", 1);
@@ -2580,7 +2580,7 @@ bool ColladaParser::ParseAnimationClips()
 	return found;
 }
 
-AnimationData* ColladaParser::ParseAnimation(XMLNodeStringRef* currentAnimationNode)
+AnimationData* ColladaParser::ParseAnimation(XMLNodeBase* currentAnimationNode)
 {
 	auto pair = m_animations.emplace(currentAnimationNode, AnimationData{});
 	if(!pair.second)
@@ -2607,7 +2607,7 @@ AnimationData* ColladaParser::ParseAnimation(XMLNodeStringRef* currentAnimationN
 	
 	for (auto i = 0; i < animChildCount; i++)
 	{
-		XMLNodeStringRef* currentAnimationChildNode = currentAnimationNode->getChildElement(i);
+		XMLNodeBase* currentAnimationChildNode = currentAnimationNode->getChildElement(i);
 		std::string nodeName = make_string(currentAnimationChildNode->getName());
 		if (nodeName  == "sampler")
 		{
@@ -2617,18 +2617,18 @@ AnimationData* ColladaParser::ParseAnimation(XMLNodeStringRef* currentAnimationN
 			
 			for (auto j = 0; j < childCount; j++)
 			{
-				XMLNodeStringRef* childSamplerNode = currentAnimationChildNode->getChildElement(j);
+				XMLNodeBase* childSamplerNode = currentAnimationChildNode->getChildElement(j);
 				if (childSamplerNode->getName() == "input")
 				{
 					if (childSamplerNode->getAttribute("semantic") != nullptr)
 					{
-						XMLAttributeStringRef* semanticAttribute = childSamplerNode->getAttribute("semantic");
+						XMLAttributeBase* semanticAttribute = childSamplerNode->getAttribute("semantic");
 						// Sampler input (time)
 						if (semanticAttribute->getString() == "INPUT")
 						{
 							std::string source = make_string(childSamplerNode->getAttribute("source")->getString());
 							source = source.substr(1, source.length() - 1);
-							XMLNodeStringRef* sourceNode = SearchNode(currentAnimationNode, "source", "id", source);
+							XMLNodeBase* sourceNode = SearchNode(currentAnimationNode, "source", "id", source);
 							if (sourceNode)
 							{
 								sampler.time_source = ParseSource(sourceNode);
@@ -2639,7 +2639,7 @@ AnimationData* ColladaParser::ParseAnimation(XMLNodeStringRef* currentAnimationN
 						{
 							std::string source = make_string(childSamplerNode->getAttribute("source")->getString());
 							source = source.substr(1, source.length() - 1);
-							XMLNodeStringRef* sourceNode = SearchNode(currentAnimationNode, "source", "id", source);
+							XMLNodeBase* sourceNode = SearchNode(currentAnimationNode, "source", "id", source);
 							if (sourceNode)
 							{
 								sampler.matrix_source = ParseSource(sourceNode);
@@ -2650,7 +2650,7 @@ AnimationData* ColladaParser::ParseAnimation(XMLNodeStringRef* currentAnimationN
 						{
 							std::string source = make_string(childSamplerNode->getAttribute("source")->getString());
 							source = source.substr(1, source.length() - 1);
-							XMLNodeStringRef* sourceNode = SearchNode(currentAnimationNode, "source", "id", source);
+							XMLNodeBase* sourceNode = SearchNode(currentAnimationNode, "source", "id", source);
 							if (sourceNode)
 							{
 								sampler.interpolation_source = ParseSource(sourceNode);
@@ -2671,7 +2671,7 @@ AnimationData* ColladaParser::ParseAnimation(XMLNodeStringRef* currentAnimationN
 	// Now we can create the channels
 	for (auto i = 0; i < animChildCount; i++)
 	{
-		XMLNodeStringRef* currentAnimationChildNode = currentAnimationNode->getChildElement(i);
+		XMLNodeBase* currentAnimationChildNode = currentAnimationNode->getChildElement(i);
 		std::string nodeName = make_string(currentAnimationChildNode->getName());
 		if (nodeName == "channel")
 		{
@@ -2749,7 +2749,7 @@ void ColladaParser::ParseStandaloneAnimations()
 {
 	int animCount, animChildCount = 0;
 	
-	XMLNodeStringRef* animationLibNode = myRoot->getChildElement("library_animations");
+	XMLNodeBase* animationLibNode = myRoot->getChildElement("library_animations");
 	
 	if (!animationLibNode)
 		return;
@@ -2761,7 +2761,7 @@ void ColladaParser::ParseStandaloneAnimations()
 	// Parse animations through array 
 	for (auto i = 0; i < animCount; i++)
 	{
-		XMLNodeStringRef* currentAnimationNode = animationLibNode->getChildElement(i);
+		XMLNodeBase* currentAnimationNode = animationLibNode->getChildElement(i);
 		if(currentAnimationNode->getName()=="animation")
 			anims.push_back(ParseAnimation(currentAnimationNode));
 	}
@@ -2777,10 +2777,10 @@ void ColladaParser::ParseStandaloneAnimations()
 	}
 }
 
-Matrix3x4 ColladaParser::ReadMatrix3x4(XMLNodeStringRef* sceneNode)
+Matrix3x4 ColladaParser::ReadMatrix3x4(XMLNodeBase* sceneNode)
 {
 	Matrix3x4 result;
-	XMLNodeStringRef* value = sceneNode->getChildElement(0);
+	XMLNodeBase* value = sceneNode->getChildElement(0);
 	
 	std::string toParse = make_string(value->getString());
 	const char* buffer = toParse.c_str();
@@ -2798,10 +2798,10 @@ Matrix3x4 ColladaParser::ReadMatrix3x4(XMLNodeStringRef* sceneNode)
 	return result;
 }
 
-float ColladaParser::ReadFloat(XMLNodeStringRef* sceneNode)
+float ColladaParser::ReadFloat(XMLNodeBase* sceneNode)
 {
 	float result = 0.0f;
-	XMLNodeStringRef* value = sceneNode;
+	XMLNodeBase* value = sceneNode;
 
 	if (sceneNode->getString() == "") // if value is empty for sceneNode, then the value is in first child
 	{
@@ -2815,9 +2815,9 @@ float ColladaParser::ReadFloat(XMLNodeStringRef* sceneNode)
 
 }
 
-Point3D ColladaParser::ReadVector3D(XMLNodeStringRef* sceneNode)
+Point3D ColladaParser::ReadVector3D(XMLNodeBase* sceneNode)
 {
-	XMLNodeStringRef* value = sceneNode;
+	XMLNodeBase* value = sceneNode;
 
 	if (sceneNode->getString() == "") // if value is empty for sceneNode, then the value is in first child
 	{
@@ -2836,10 +2836,10 @@ Point3D ColladaParser::ReadVector3D(XMLNodeStringRef* sceneNode)
 	return result;
 }
 
-Vector4D ColladaParser::ReadVector4D(XMLNodeStringRef* sceneNode)
+Vector4D ColladaParser::ReadVector4D(XMLNodeBase* sceneNode)
 {
 	Vector4D result;
-	XMLNodeStringRef* value = sceneNode->getChildElement(0);
+	XMLNodeBase* value = sceneNode->getChildElement(0);
 	
 	std::string toParse = make_string(value->getString());
 	const char* buffer = toParse.c_str();
@@ -2854,7 +2854,7 @@ Vector4D ColladaParser::ReadVector4D(XMLNodeStringRef* sceneNode)
 	return result;
 }
 
-Quaternion ColladaParser::ReadQuaternion(XMLNodeStringRef* sceneNode)
+Quaternion ColladaParser::ReadQuaternion(XMLNodeBase* sceneNode)
 {
 	Vector4D result = ReadVector4D(sceneNode);
 	return Quaternion(result.x, result.y, result.z, result.x);
@@ -2948,10 +2948,10 @@ void	ColladaParser::ReadMaterial::Init()
 }
 
 
-SourceData::SourceData(XMLNodeStringRef* node)
+SourceData::SourceData(XMLNodeBase* node)
 {
 	source_node = node;
-	XMLNodeStringRef* array = source_node->getChildElement("float_array");
+	XMLNodeBase* array = source_node->getChildElement("float_array");
 	if(!array) array = source_node->getChildElement("Name_array");
 	if(!array) array = source_node->getChildElement("int_array");
 	
@@ -2961,13 +2961,13 @@ SourceData::SourceData(XMLNodeStringRef* node)
 		KIGS_ERROR("No array found under the source node", 1);
 	}
 	
-	XMLNodeStringRef* technique_common_node = source_node->getChildElement("technique_common");
+	XMLNodeBase* technique_common_node = source_node->getChildElement("technique_common");
 	if (!technique_common_node)
 	{
 		KIGS_ERROR("No technique_common node under the source node", 1);
 	}
 	
-	XMLNodeStringRef* accessor = technique_common_node->getChildElement("accessor");
+	XMLNodeBase* accessor = technique_common_node->getChildElement("accessor");
 	if (!accessor)
 	{
 		KIGS_ERROR("No accessor node under the technique_common node", 1);
@@ -2979,7 +2979,7 @@ SourceData::SourceData(XMLNodeStringRef* node)
 		KIGS_ERROR("No param node found under the accessor node", 1);
 	}
 	
-	XMLNodeStringRef* param = accessor->getChildElement(0);
+	XMLNodeBase* param = accessor->getChildElement(0);
 	
 	std::string type_str = make_string(param->getAttribute("type")->getString());
 	std::transform(type_str.begin(), type_str.end(), type_str.begin(), ::tolower);

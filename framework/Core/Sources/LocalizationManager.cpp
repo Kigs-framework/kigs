@@ -3,7 +3,8 @@
 #include "FilePathManager.h"
 #include "ModuleFileManager.h"
 #include "JSonFileParser.h"
-
+#include "utf8.h"
+#include "utf8_decode.h"
 
 
 // ************************************************************
@@ -23,8 +24,6 @@ CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 LocalizationManager::~LocalizationManager()
 {
 	EraseMap();
-
-	mWbuffer[0]=0;
 }
 
 void LocalizationManager::setLocalizationFilePath(const char* path,bool a_erasePreviousLoc)
@@ -91,20 +90,67 @@ void LocalizationManager::addLocalizationFromFileAtPath(const char* path)
 	}
 }
 
+template<typename charType>
 void LocalizationManager::addLocalizationFromBuffer(char* Buffer, unsigned int bufferSize)
 {
 	if(Buffer)
 	{
-		ParseBuffer(Buffer,bufferSize);
+		ParseBuffer<charType>(Buffer,bufferSize);
 	}
 }
 
-const PLATFORM_WCHAR*	LocalizationManager::getLocalizedString(const kstl::string& key) const
+const UTF8Char* LocalizationManager::getLocalizedStringUTF8(const kstl::string& key)
 {
-	kstl::map<const kstl::string,PLATFORM_WCHAR* >::const_iterator itfound=mLocalizedString.find(key);
+	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 >::iterator itfound = mLocalizedString.find(key);
+
+	if (itfound != mLocalizedString.end())
+	{
+		// if no utf8, then create it
+		if (!(*itfound).second.mUTF8)
+		{
+			usString				tmpOne((*itfound).second.mUTF16);
+			std::vector<UTF8Char>	tmpUTF8=tmpOne.toUTF8();
+			int l = tmpUTF8.size();
+			UTF8Char* tempBuffer = nullptr;
+			if (l)
+			{
+				tempBuffer = new UTF8Char[l + 1];
+				memcpy(tempBuffer, tmpUTF8.data(), l * sizeof(UTF8Char));
+				tempBuffer[l] = 0;
+				(*itfound).second.mUTF8 = tempBuffer;
+			}
+		}
+		return (*itfound).second.mUTF8;
+	}
+#ifdef _DEBUG
+	printf("Localization not found for key : %s\n", key.c_str());
+#endif
+	return 0;
+}
+
+
+const PLATFORM_WCHAR*	LocalizationManager::getLocalizedString(const kstl::string& key)
+{
+	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 >::iterator itfound=mLocalizedString.find(key);
+
 	if(itfound != mLocalizedString.end())
 	{
-		return (*itfound).second;
+		// if no utf16, then create it
+		if (!(*itfound).second.mUTF16)
+		{
+			usString			tmpOne((*itfound).second.mUTF8);
+			PLATFORM_WCHAR*		tempBuffer = nullptr;
+			int l = tmpOne.length();
+			if (l)
+			{
+				tempBuffer = new PLATFORM_WCHAR[l + 1];
+				memcpy(tempBuffer, tmpOne.us_str(), l * sizeof(PLATFORM_WCHAR));
+				
+				tempBuffer[l] = 0;
+				(*itfound).second.mUTF16 = tempBuffer;
+			}
+		}
+		return (*itfound).second.mUTF16;
 	}
 #ifdef _DEBUG
 	printf("Localization not found for key : %s\n",key.c_str());
@@ -125,20 +171,31 @@ bool	LocalizationManager::ParseStringsFile(const char* pszFile)
 	{
 		fullfilenamehandle = pathManager->FindFullName(pszFile);
 	}
-	u64 size;
-	CoreRawBuffer* pBuffer=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),size,2);
 
+	u64 size;
+	CoreRawBuffer* pBuffer = ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(), size, 0);
 	if(!pBuffer)
 	{
 		return false;
 	}
 
-	ParseBuffer(pBuffer->buffer(),size);
-	
+	// check file format (UTF16 or UTF8)
+	unsigned char* bufferStart = (unsigned char*)pBuffer->buffer();
+	if ((bufferStart[0] == 0xff) && (bufferStart[1] == 0xfe)) // utf16 bom
+	{
+		ParseBuffer<unsigned short>(pBuffer->buffer()+2, size);
+	}
+	else
+	{
+		// utf8
+		ParseBuffer<UTF8Char>(pBuffer->buffer(), size);
+	}
+
 	pBuffer->Destroy();
 	return true;
 }
 
+template<typename charType>
 void LocalizationManager::ParseBuffer(char* _pBuffer, unsigned long size)
 {
 	bool	finished=false;
@@ -148,18 +205,30 @@ void LocalizationManager::ParseBuffer(char* _pBuffer, unsigned long size)
 	{
 		kstl::string	key="";
 		
-		PLATFORM_WCHAR*	localized=GetNextLocalizedString(_pBuffer,currentpos,key,size);
+		charType*	localized=GetNextLocalizedString<charType>(_pBuffer,currentpos,key,size);
 
 		if(localized)
 		{
 			// check if not already allocated
-			kstl::map<const kstl::string,PLATFORM_WCHAR* >::const_iterator itfound=mLocalizedString.find(key);
+			kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 >::const_iterator itfound=mLocalizedString.find(key);
+			
 			if(itfound != mLocalizedString.end())
 			{
-				delete[] (*itfound).second;
+				if((*itfound).second.mUTF16)
+					delete[] (*itfound).second.mUTF16;
+				if ((*itfound).second.mUTF8)
+					delete[](*itfound).second.mUTF8;
 			}
-
-			mLocalizedString[key]=localized;
+			if (sizeof(charType) == 2)
+			{
+				mLocalizedString[key].mUTF16 = (unsigned short*)localized;
+				mLocalizedString[key].mUTF8 = nullptr;
+			}
+			else
+			{
+				mLocalizedString[key].mUTF16 = nullptr;
+				mLocalizedString[key].mUTF8 = (UTF8Char*)localized;
+			}
 		}
 		else
 		{
@@ -169,26 +238,29 @@ void LocalizationManager::ParseBuffer(char* _pBuffer, unsigned long size)
 	}
 }
 
-PLATFORM_WCHAR*	LocalizationManager::GetNextLocalizedString(char* pBuffer,unsigned long& currentpos,kstl::string& key,unsigned long filelen)
+template<typename charType>
+charType*	LocalizationManager::GetNextLocalizedString(char* pBuffer,unsigned long& currentpos,kstl::string& key,unsigned long filelen)
 {
-	PLATFORM_WCHAR* startchar=(PLATFORM_WCHAR*)&pBuffer[currentpos];
+
+	std::vector<charType>	retreiveQuoted;
+	charType* startchar=(charType*)&pBuffer[currentpos];
 
 	bool keyStartFound=false;
 
 	while(!keyStartFound)
 	{
-		if((*startchar) == (PLATFORM_WCHAR)'"')
+		if((*startchar) == (charType)'"')
 		{
-			keyStartFound=ExtractQuoted(startchar,key,currentpos,filelen,true);
+			keyStartFound=ExtractQuoted(startchar, retreiveQuoted,currentpos,filelen);
 		}
-		else if((*startchar) == (PLATFORM_WCHAR)'/')
+		else if((*startchar) == (charType)'/')
 		{
 			ExtractComment(startchar,currentpos,filelen);
 		}
 		else
 		{
 			startchar++;
-			currentpos+=sizeof(PLATFORM_WCHAR);
+			currentpos+=sizeof(charType);
 
 			// end of file
 			if(currentpos>=filelen)
@@ -198,24 +270,33 @@ PLATFORM_WCHAR*	LocalizationManager::GetNextLocalizedString(char* pBuffer,unsign
 		}
 	}
 
+	if (keyStartFound)
+	{
+		key = "";
+		for (auto c : retreiveQuoted)
+		{
+			key += c;
+		}
+	}
+	retreiveQuoted.clear();
 	// search next quoted 
 	keyStartFound=false;
 	kstl::string localizedstring="";
 
 	while(!keyStartFound)
 	{
-		if((*startchar) == (PLATFORM_WCHAR)'"')
+		if((*startchar) == (charType)'"')
 		{
-			keyStartFound=ExtractQuoted(startchar,&mWbuffer[0],currentpos,filelen,false);
+			keyStartFound=ExtractQuoted(startchar, retreiveQuoted,currentpos,filelen);
 		}
-		else if((*startchar) == (PLATFORM_WCHAR)'/')
+		else if((*startchar) == (charType)'/')
 		{
 			ExtractComment(startchar,currentpos,filelen);
 		}
 		else
 		{
 			startchar++;
-			currentpos+=sizeof(PLATFORM_WCHAR);
+			currentpos+=sizeof(charType);
 
 			// end of file
 			if(currentpos>=filelen)
@@ -224,128 +305,63 @@ PLATFORM_WCHAR*	LocalizationManager::GetNextLocalizedString(char* pBuffer,unsign
 			}
 		}
 	}
-
-	// compute mWbuffer len
-	int i=0;
-	while(mWbuffer[i] != 0)
+	charType* tempBuffer = nullptr;
+	if (keyStartFound)
 	{
-		i++;
+
+		tempBuffer = new charType[retreiveQuoted.size()+1];
+		int i = 0;
+		for (auto c : retreiveQuoted)
+		{
+			tempBuffer[i] = c;
+			i++;
+		}
+		tempBuffer[i] = 0;
+		
 	}
-
-	PLATFORM_WCHAR* tempBuffer=new PLATFORM_WCHAR[i+1];
-
-	// copy buffer
-	i=0;
-	while(mWbuffer[i] != 0)
-	{
-		tempBuffer[i]=mWbuffer[i];
-		i++;
-	}
-	tempBuffer[i]=0;
-
 	return tempBuffer;
 
 }
 
-bool	LocalizationManager::ExtractQuoted(PLATFORM_WCHAR*& startchar,kstl::string& quoted,unsigned long& currentpos,unsigned long filelen,bool isKey)
+template<typename charType>
+bool	LocalizationManager::ExtractQuoted(charType*& startchar,std::vector<charType>& buffer,unsigned long& currentpos,unsigned long filelen)
 {
 	bool keyEndFound=false;
 	startchar++;
-	currentpos+=sizeof(PLATFORM_WCHAR);
+	currentpos+=sizeof(charType);
+
 	if(currentpos<filelen)
 	{
 		while(!keyEndFound)
 		{
-			if((*startchar) == '"')
+			if((*startchar) == (charType)'"')
 			{
-				if(isKey)
-				{
-					keyEndFound=true;
-					startchar++;
-					currentpos+=sizeof(PLATFORM_WCHAR);
-				}
-				else // not a key, check if next char is a ';'
-				{
-					if((startchar[1]) == ';')
-					{
-						startchar++;
-						currentpos+=sizeof(PLATFORM_WCHAR);
-						keyEndFound=true;
-						startchar++;
-						currentpos+=sizeof(PLATFORM_WCHAR);
-					}
-				}
-			}
-
-			if(!keyEndFound)
-			{
-				quoted+=(char)startchar[0];
+				keyEndFound = true;
 				startchar++;
-				currentpos+=sizeof(PLATFORM_WCHAR);
+				currentpos += sizeof(charType);
 
-				// end of file
-				if(currentpos>=filelen)
+				// end of localized string
+				if ((startchar[0]) == ';')
 				{
-					quoted="";
-					return false;
-				}
-			}
-		}
-
-		if(!keyEndFound)
-		{
-			quoted="";
-		}
-	}
-
-	return keyEndFound;
-}
-
-bool	LocalizationManager::ExtractQuoted(PLATFORM_WCHAR*& startchar,unsigned short* buffer,unsigned long& currentpos,unsigned long filelen,bool isKey)
-{
-	bool keyEndFound=false;
-	startchar++;
-	currentpos+=sizeof(PLATFORM_WCHAR);
-	int currentindex=0;
-	if(currentpos<filelen)
-	{
-		while(!keyEndFound)
-		{
-			if((*startchar) == '"')
-			{
-				if(isKey)
-				{
-					keyEndFound=true;
 					startchar++;
-					currentpos+=sizeof(PLATFORM_WCHAR);
-				}
-				else // not a key, check if next char is a ';'
-				{
-					if((startchar[1]) == ';')
-					{
-						startchar++;
-						currentpos+=sizeof(PLATFORM_WCHAR);
-						keyEndFound=true;
-						startchar++;
-						currentpos+=sizeof(PLATFORM_WCHAR);
-					}
+					currentpos += sizeof(charType);
 				}
 			}
 
 			if(!keyEndFound)
 			{
 				// remove escape characters
-				if(startchar[0] != '\\')
+				if(startchar[0] != (charType)'\\')
 				{
-					buffer[currentindex++]=startchar[0];
+					buffer.push_back(startchar[0]);
 				}
 				startchar++;
-				currentpos+=sizeof(PLATFORM_WCHAR);
+				currentpos+=sizeof(charType);
 
 				// end of file
 				if(currentpos>=filelen)
 				{
-					buffer[0]=0;
+					buffer.clear();
 					return false;
 				}
 			}
@@ -353,28 +369,25 @@ bool	LocalizationManager::ExtractQuoted(PLATFORM_WCHAR*& startchar,unsigned shor
 
 		if(!keyEndFound)
 		{
-			buffer[0]=0;
-		}
-		else
-		{
-			buffer[currentindex++]=0;
+			buffer.clear();
 		}
 	}
 
 	return keyEndFound;
 }
 
-void	LocalizationManager::ExtractComment(PLATFORM_WCHAR*& startchar,unsigned long& currentpos,unsigned long filelen)
+template<typename charType>
+void	LocalizationManager::ExtractComment(charType*& startchar,unsigned long& currentpos,unsigned long filelen)
 {
 	startchar++;
-	currentpos+=sizeof(PLATFORM_WCHAR);
+	currentpos+=sizeof(charType);
 	if(currentpos<filelen)
 	{
-		if((*startchar) == '/')	// single line comment 
+		if((*startchar) == (charType)'/')	// single line comment 
 		{
 			GotoNextLine(startchar,currentpos,filelen);
 		}
-		else if((*startchar) == '*') // multi line comment
+		else if((*startchar) == (charType)'*') // multi line comment
 		{
 			GotoCommentEnd(startchar,currentpos,filelen);
 		}
@@ -384,48 +397,56 @@ void	LocalizationManager::ExtractComment(PLATFORM_WCHAR*& startchar,unsigned lon
 		}
 	}
 }
-
-void	LocalizationManager::GotoNextLine(PLATFORM_WCHAR*& startchar,unsigned long& currentpos,unsigned long filelen)
+template<typename charType>
+void	LocalizationManager::GotoNextLine(charType*& startchar,unsigned long& currentpos,unsigned long filelen)
 {
 	startchar++;
-	currentpos+=sizeof(PLATFORM_WCHAR);
+	currentpos+=sizeof(charType);
 	while(currentpos<filelen)
 	{
-		if( ((*startchar) == '\n' ) ||  ((*startchar) == '\r' ) )
+		if( ((*startchar) == (charType)'\n' ) ||  ((*startchar) == (charType)'\r' ) )
 		{
 			return;
 		}
 		startchar++;
-		currentpos+=sizeof(PLATFORM_WCHAR);
+		currentpos+=sizeof(charType);
 	}
 }
-void	LocalizationManager::GotoCommentEnd(PLATFORM_WCHAR*& startchar,unsigned long& currentpos,unsigned long filelen)
+
+template<typename charType>
+void	LocalizationManager::GotoCommentEnd(charType*& startchar,unsigned long& currentpos,unsigned long filelen)
 {
 	startchar++;
-	currentpos+=sizeof(PLATFORM_WCHAR);
+	currentpos+=sizeof(charType);
 	while(currentpos<(filelen-1))
 	{
-		if( ((startchar[0]) == '*' ) &&  ((startchar[1]) == '/' ) )
+		if( ((startchar[0]) == (charType)'*' ) &&  ((startchar[1]) == (charType)'/' ) )
 		{
 			startchar++;
-			currentpos+=sizeof(PLATFORM_WCHAR);
+			currentpos+=sizeof(charType);
 			return;
 		}
 		startchar++;
-		currentpos+=sizeof(PLATFORM_WCHAR);
+		currentpos+=sizeof(charType);
 	}
 }
 
 void	LocalizationManager::EraseMap()
 {
-	kstl::map<const kstl::string,PLATFORM_WCHAR* >::const_iterator it=mLocalizedString.begin();
+	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 >::const_iterator it=mLocalizedString.begin();
 	while(it!=mLocalizedString.end())
 	{
-		PLATFORM_WCHAR* currentString=(*it).second;
+		PLATFORM_WCHAR* currentString=(*it).second.mUTF16;
 		if(currentString)
 		{
 			delete[] currentString;
 		}
+		UTF8Char* currentUTF8String = (*it).second.mUTF8;
+		if (currentUTF8String)
+		{
+			delete[] currentUTF8String;
+		}
+
 		++it;
 	}
 	mLocalizedString.clear();

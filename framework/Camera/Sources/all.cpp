@@ -1,0 +1,8 @@
+#include "BasePixelBufferStruct.cpp"
+#include "CameraModule.cpp"
+#include "FixedImageBufferStream.cpp"
+#include "FrameBufferStream.cpp"
+#include "GenericCamera.cpp"
+#include "GenericShrinker.cpp"
+#include "MPEG4BufferStream.cpp"
+#include "MPEG4Encoder.cpp"
