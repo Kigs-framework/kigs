@@ -59,7 +59,13 @@ void Drawable::DoPreDraw(TravState* state)
 	if(PreDraw(state)) // first ProtectedPreDraw for this
 	{
 #ifdef KIGS_TOOLS
-		if (state && state->mCurrentPass && state->mCurrentPass->record_pass) { state->mCurrentPass->debug_draw_path.push_back("PRE - " + getName() + " (" + std::to_string(getUID()) + ")"); }
+		if (state && state->mCurrentPass && state->mCurrentPass->record_pass) 
+		{ 
+			RenderPass::DrawPathElement el;
+			el.DrawStep = RenderPass::DrawPathElement::Step::PreDraw;
+			el.Object = CMSP(this, GetRefTag{});
+			state->mCurrentPass->debug_draw_path.push_back(el);
+		}
 #endif
 		// then PreDraw for sons
 		kstl::vector<ModifiableItemStruct>::const_iterator it;
@@ -80,7 +86,13 @@ void Drawable::DoDraw(TravState* state)
 	if(Draw(state)) // first ProtectedDraw for this
 	{
 #ifdef KIGS_TOOLS
-		if (state && state->mCurrentPass && state->mCurrentPass->record_pass) { state->mCurrentPass->debug_draw_path.push_back("DRAW - " + getName() + " (" + std::to_string(getUID()) + ")"); }
+		if (state && state->mCurrentPass && state->mCurrentPass->record_pass) 
+		{ 
+			RenderPass::DrawPathElement el;
+			el.DrawStep = RenderPass::DrawPathElement::Step::Draw;
+			el.Object = CMSP(this, GetRefTag{});
+			state->mCurrentPass->debug_draw_path.push_back(el);
+		}
 #endif
 		// then Draw for sons
 		kstl::vector<ModifiableItemStruct>::const_iterator it;
@@ -101,7 +113,13 @@ void Drawable::DoPostDraw(TravState* state)
 	if(PostDraw(state)) // first PostDraw for this
 	{
 #ifdef KIGS_TOOLS
-		if (state && state->mCurrentPass && state->mCurrentPass->record_pass) { state->mCurrentPass->debug_draw_path.push_back("POST - " + getName() + " (" + std::to_string(getUID()) + ")"); }
+		if (state && state->mCurrentPass && state->mCurrentPass->record_pass) 
+		{
+			RenderPass::DrawPathElement el;
+			el.DrawStep = RenderPass::DrawPathElement::Step::PostDraw;
+			el.Object = CMSP(this, GetRefTag{});
+			state->mCurrentPass->debug_draw_path.push_back(el);
+		}
 #endif
 		// then PostDraw for sons
 		kstl::vector<ModifiableItemStruct>::const_iterator it;

@@ -1466,16 +1466,46 @@ void CustomAttributeEditor(CoreModifiable* item)
 		{
 			auto camera = c->as<Camera>();
 			auto& passes = camera->GetRenderPasses();
-				
+			static bool OnlyDraws = true;
 			if (ImGui::CollapsingHeader("RenderPasses"))
 			{
+				ImGui::Checkbox("Only show draws", &OnlyDraws);
 				for (auto& p : passes)
 				{
-					if (ImGui::CollapsingHeader(std::to_string(p.pass_mask).c_str()))
+					if (ImGui::CollapsingHeader((p.name._id_name + " [" + std::to_string(p.pass_mask) + "]").c_str()))
 					{
 						p.record_pass = true;
-						for (auto& str : p.debug_draw_path)
-							ImGui::Text(str.c_str());
+						int step = 0;
+						for (auto& el : p.debug_draw_path)
+						{
+							if (el.DrawStep == RenderPass::DrawPathElement::Step::PostDraw)
+								--step;
+
+							if (el.DrawStep == RenderPass::DrawPathElement::Step::Draw || !OnlyDraws)
+							{
+								auto txt = el.Object->getName() + " [" + std::to_string(el.Object->getUID()) + "]";
+								
+								
+
+								if (!OnlyDraws)
+								{
+									if (el.DrawStep == RenderPass::DrawPathElement::Step::PreDraw)
+										txt = "| PreDraw  | " + txt;
+									else if (el.DrawStep == RenderPass::DrawPathElement::Step::Draw)
+										txt = "| Draw     | " + txt;
+									else if(el.DrawStep == RenderPass::DrawPathElement::Step::PostDraw)
+										txt = "| PostDraw | " + txt;
+								}
+
+								for (int i = 1; i < step ; ++i)
+									txt = " " + txt;
+
+								ImGui::Text(txt.c_str());
+							}
+
+							if (el.DrawStep == RenderPass::DrawPathElement::Step::PreDraw)
+								++step;
+						}
 					}
 				}
 			}
@@ -2979,6 +3009,10 @@ void DrawEditor()
 						no_await_lambda([]() -> winrt::Windows::Foundation::IAsyncAction
 						{
 #endif
+							kigs_defer
+							{
+								saving = false;
+							};
 							kigs::unordered_map<CoreModifiable*, KigsToolsState::XMLChange> ToReAdd;
 							for (auto& el : gKigsTools->XMLChanged)
 							{
@@ -3032,7 +3066,6 @@ void DrawEditor()
 								}
 							}
 							gKigsTools->XMLChanged = ToReAdd;
-							saving = false;
 #ifdef WUP
 						});
 #endif
@@ -3094,7 +3127,7 @@ void DrawEditor()
 			if (gKigsTools->HierarchyWindow.Scope.size()==1 && seq)
 			{
 				PushToScope(seq.get());
-				gKigsTools->HierarchyWindow.ForceExpandAll = true;
+				//gKigsTools->HierarchyWindow.ForceExpandAll = true;
 				if (seq->mXMLFiles.size())
 				{
 					gKigsTools->ActiveXMLItem = seq.get();
