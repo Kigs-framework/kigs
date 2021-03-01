@@ -129,8 +129,8 @@ void UIImage::ComputeRealSize()
 		kigsprintf("Display Mode not supported, use resize\n");
 		break;
 	}
-	mSizeX = mRealSize.x;
-	mSizeY = mRealSize.y;
+/*	mSizeX = mRealSize.x;
+	mSizeY = mRealSize.y;*/
 
 }
 

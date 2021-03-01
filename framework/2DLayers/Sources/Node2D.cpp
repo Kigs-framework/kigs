@@ -311,7 +311,7 @@ void Node2D::ComputeMatrices()
 void	Node2D::InitModifiable()
 {
 	// check if son rendering matrix is init and this is not init
-	if (!IsInit())
+	if (!IsInit() && ( getFather() || (getLayerFather())))
 	{
 		mAnchor.changeNotificationLevel(Owner);
 		mDock.changeNotificationLevel(Owner);
