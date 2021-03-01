@@ -52,6 +52,7 @@ void UIImage::ComputeRealSize()
 	{
 	case RESIZE:
 		if (!mTexturePointer.isNil()) mTexturePointer->GetSize(mRealSize.x, mRealSize.y);
+
 		break;
 	case SCALE:
 		UITexturedItem::ComputeRealSize();
@@ -128,6 +129,9 @@ void UIImage::ComputeRealSize()
 		kigsprintf("Display Mode not supported, use resize\n");
 		break;
 	}
+	mSizeX = mRealSize.x;
+	mSizeY = mRealSize.y;
+
 }
 
 void UIImage::ChangeTexture()
