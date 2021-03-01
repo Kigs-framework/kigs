@@ -676,7 +676,10 @@ struct BasePacketWriteStream
 	void* user_data = nullptr;
 };
 
+using PacketWriteStream = BasePacketWriteStream<BitPacker>;
+using VectorWriteStream = BasePacketWriteStream<VectorBitPacker>;
 
+#if 0
 template<typename T>
 std::string SaveToString(T& thing)
 {
@@ -696,7 +699,4 @@ bool LoadFromString(T& thing, const std::string& str)
 	PacketReadStream stream{ data, size };
 	return serialize_object(stream, thing);
 }
-
-
-using PacketWriteStream = BasePacketWriteStream<BitPacker>;
-using VectorWriteStream = BasePacketWriteStream<VectorBitPacker>;
+#endif

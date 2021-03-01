@@ -161,7 +161,7 @@ struct KigsToolsState
 		bool LibraryOpen = false;
 		bool ResourcesOpen = false;
 
-		std::string ProjectLocation = "C:\\work\\nextbim\\private\\projects\\NextBIMExplorer\\assets\\";
+		std::string ProjectLocation = ""; // "C:\\work\\nextbim\\private\\projects\\NextBIMExplorer\\assets\\";
 		std::string ProjectFolderAccessToken;
 
 		std::unordered_map<std::string, std::string> TrueFilePaths;
@@ -348,6 +348,10 @@ void SaveSettings()
 	});
 	
 #else
+	std::vector<u32> data;
+	VectorWriteStream stream{ data };
+	if (!serialize_object(stream, gKigsTools->CurrentSettings)) return;
+	stream.Flush();
 	ModuleFileManager::Get()->SaveFile((location + "\\debug.kigstools").c_str(), (u8*)data.data(), data.size()*sizeof(u32));
 #endif
 }
@@ -3052,6 +3056,7 @@ void DrawEditor()
 									}
 									else
 									{
+#ifdef WUP
 										std::string output;
 										XMLWriterFile::WriteString(*(XML*)xml.get(), output);
 										auto file = co_await StorageFile::GetFileFromPathAsync(to_wchar(path));
@@ -3062,6 +3067,9 @@ void DrawEditor()
 											writer.WriteBytes({ (u8*)output.data(), (u8*)(output.data() + output.size()) });
 											co_await writer.StoreAsync();
 										}
+#else
+										((XML*)xml.get())->WriteFile(path);
+#endif
 									}
 								}
 							}
