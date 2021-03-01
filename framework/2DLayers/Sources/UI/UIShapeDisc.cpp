@@ -24,7 +24,8 @@ void UIShapeDisc::SetTexUV(UIItem* item, UIVerticesInfo* aQI)
 
 	v2f isize;
 	texturedLocalThis->GetTexture()->GetSize(isize.x, isize.y);
-	
+	isize.x -= 1.0f;
+	isize.y -= 1.0f;
 	v2f center = isize * 0.5f;
 
 	std::vector<v2f>	circlePos;

@@ -1167,7 +1167,7 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 				else
 				{
 					cm = KigsCore::GetInstanceOf("inlineitem", "UIImage");
-					cm->setValue("Texture", image_path);
+					cm->setValue("TextureName", image_path);
 				}
 				
 				if(obj)
