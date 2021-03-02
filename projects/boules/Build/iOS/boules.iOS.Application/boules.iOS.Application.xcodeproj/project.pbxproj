@@ -1,0 +1,444 @@
+{
+	archiveVersion = 1;
+	objectVersion = 46;
+	classes = {
+	};
+	objects = {
+		9DC111901B2B501900AAD119 = {
+			isa = PBXBuildFile;
+			fileRef = 9DC1118F1B2B501900AAD119;
+		};
+		9DC111921B2B501F00AAD119 = {
+			isa = PBXBuildFile;
+			fileRef = 9DC111911B2B501F00AAD119;
+		};
+		9DC111941B2B502300AAD119 = {
+			isa = PBXBuildFile;
+			fileRef = 9DC111931B2B502300AAD119;
+		};
+		D732ADFC1AD8974300D69854 = {
+			isa = PBXBuildFile;
+			fileRef = D732ADFB1AD8974300D69854;
+		};
+		D732AE0B1AD8974300D69854 = {
+			isa = PBXBuildFile;
+			fileRef = D732AE0A1AD8974300D69854;
+		};
+		d7420596a5014c46af5b690e = {
+			isa = PBXFileReference;
+			name = GameViewController.h;
+			path = ../../../../framework/PlatformsModules/iOS/Platform/Main/GameViewController.h;
+			sourceTree = SOURCE_ROOT;
+		};
+		D732AE2B1AD89BDB00D69854 = {
+			isa = PBXBuildFile;
+			fileRef = D732AE251AD89BDB00D69854;
+		};
+		e6972c76bfbc4901889aa962 = {
+			isa = PBXFileReference;
+			name = AppDelegate.h;
+			path = ../../../../framework/PlatformsModules/iOS/Platform/Main/AppDelegate.h;
+			sourceTree = SOURCE_ROOT;
+		};
+		9DC1118F1B2B501900AAD119 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = UIKit.framework;
+			path = System/Library/Frameworks/UIKit.framework;
+			sourceTree = SDKROOT;
+		};
+		9DC111911B2B501F00AAD119 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = GLKit.framework;
+			path = System/Library/Frameworks/GLKit.framework;
+			sourceTree = SDKROOT;
+		};
+		9DC111931B2B502300AAD119 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = OpenGLES.framework;
+			path = System/Library/Frameworks/OpenGLES.framework;
+			sourceTree = SDKROOT;
+		};
+		D732ADF61AD8974300D69854 = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.application;
+			path = boules.app;
+			sourceTree = BUILT_PRODUCTS_DIR;
+			includeInIndex = 0;
+		};
+		D732ADFB1AD8974300D69854 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
+			path = main.mm;
+			sourceTree = "<group>";
+		};
+		D732AE0A1AD8974300D69854 = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder.assetcatalog;
+			path = Images.xcassets;
+			sourceTree = "<group>";
+		};
+		82eaef2e3c8c442ebf7c2356 = {
+			isa = PBXBuildFile;
+			fileRef = d24e5636716842faafbb9a40;
+		};
+		d24e5636716842faafbb9a40 = {
+			isa = PBXFileReference;
+			name = GameViewController.mm;
+			path = ../../../../framework/PlatformsModules/iOS/Platform/Main/GameViewController.mm;
+			sourceTree = SOURCE_ROOT;
+		};
+		D732AE251AD89BDB00D69854 = {
+			isa = PBXFileReference;
+			lastKnownFileType = file.storyboard;
+			name = Base;
+			path = Base.lproj/Main.storyboard;
+			sourceTree = "<group>";
+		};
+		d13dabf63d49490a8c309571 = {
+			isa = PBXBuildFile;
+			fileRef = ee1162fe27574f459598644b;
+		};
+		ee1162fe27574f459598644b = {
+			isa = PBXFileReference;
+			name = AppDelegate.mm;
+			path = ../../../../framework/PlatformsModules/iOS/Platform/Main/AppDelegate.mm;
+			sourceTree = SOURCE_ROOT;
+		};
+		D732AE291AD89BDB00D69854 = {
+			isa = PBXFileReference;
+			fileEncoding = 4;
+			lastKnownFileType = text.xcconfig;
+			path = ../vcreference.xcconfig;
+			sourceTree = "<group>";
+		};
+		D732ADF31AD8974300D69854 = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				9DC111941B2B502300AAD119,
+				9DC111921B2B501F00AAD119,
+				9DC111901B2B501900AAD119,
+				37b8e0739ae746d58c01a3ee,
+				ee631e50458449179f7fb81d,
+			);
+			buildActionMask = 2147483647;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D732ADED1AD8974300D69854 = {
+			isa = PBXGroup;
+			sourceTree = "<group>";
+			children = (
+				9DC111931B2B502300AAD119,
+				9DC111911B2B501F00AAD119,
+				9DC1118F1B2B501900AAD119,
+				D732ADF81AD8974300D69854,
+				D732ADF71AD8974300D69854,
+				f42605962ad746d497372a5d,
+				50363fe903864c02beb30e24,
+			);
+		};
+		D732ADF71AD8974300D69854 = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+			children = (
+				D732ADF61AD8974300D69854,
+			);
+		};
+		D732ADF81AD8974300D69854 = {
+			isa = PBXGroup;
+			path = boules.iOS;
+			sourceTree = "<group>";
+			children = (
+				D732AE251AD89BDB00D69854,
+				D732AE291AD89BDB00D69854,
+				D732AE0A1AD8974300D69854,
+				D732ADF91AD8974300D69854,
+			);
+		};
+		D732ADF91AD8974300D69854 = {
+			isa = PBXGroup;
+			name = "Supporting Files";
+			sourceTree = "<group>";
+			children = (
+				D732ADFB1AD8974300D69854,
+				e6972c76bfbc4901889aa962,
+				ee1162fe27574f459598644b,
+				d7420596a5014c46af5b690e,
+				d24e5636716842faafbb9a40,
+				4d123f8836f14d11a44d2679,
+				12487beae496458a8eb545de,
+				548370b09e9c45808bb073cc,
+				d5b93983ca7946319912677b,
+			);
+		};
+		D732ADF51AD8974300D69854 = {
+			isa = PBXNativeTarget;
+			buildPhases = (
+				D732ADF21AD8974300D69854,
+				D732ADF31AD8974300D69854,
+				D732ADF41AD8974300D69854,
+			);
+			dependencies = (
+			);
+			name = boules;
+			productName = boules;
+			productReference = D732ADF61AD8974300D69854;
+			productType = "com.apple.product-type.application";
+			buildConfigurationList = D732AE1D1AD8974300D69854;
+			buildRules = (
+			);
+		};
+		D732ADEE1AD8974300D69854 = {
+			isa = PBXProject;
+			buildConfigurationList = D732ADF11AD8974300D69854;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			mainGroup = D732ADED1AD8974300D69854;
+			productRefGroup = D732ADF71AD8974300D69854;
+			projectDirPath = "";
+			attributes = {
+				LastUpgradeCheck = 0610;
+				TargetAttributes = {
+					D732ADF51AD8974300D69854 = {
+						CreatedOnToolsVersion = 6.1;
+					};
+				};
+				VC_Properties = {
+					VC_ProjectGuid = fe3d9154-e038-4ab4-aec2-7e9e0676429f;
+					VC_ProjectReferences = {
+						a11655ab-3658-4e48-8469-31fcb0045fd0 = "..\\boules.iOS.StaticLibrary\\boules.iOS.StaticLibrary.vcxproj";
+						ae4b3f1b-9be5-4b61-8e88-8886d09ec8d7 = ../../../../framework/2DLayers/2DLayersOpenGL/scripts/2DLayersiOS/2DLayersiOS.vcxproj;
+						2d1ec866-64d6-4cb9-a1c0-9b9908b85a37 = ../../../../framework/CoreAnimation/scripts/CoreAnimationiOS/CoreAnimationiOS.vcxproj;
+						ab139ac2-d73d-4d1e-ac92-b2dfb720ca3a = ../../../../framework/Core/scripts/CoreiOS/CoreiOS.vcxproj;
+						39df6821-06d0-49ca-9f3e-7554c0c6e229 = ../../../../framework/FileManager/scripts/FileManageriOS/FileManageriOS.vcxproj;
+						d5f0c691-dcaf-44ae-aa72-74c217bad253 = ../../../../framework/GUI/GUIiOS/scripts/GUIiOS/GUIiOS.vcxproj;
+						fc3fb631-f2d9-4e10-b49d-20f3b86a2c0f = ../../../../framework/Input/InputiOS/scripts/InputiOS/InputiOS.vcxproj;
+						14f8c837-5de5-4546-acb1-74b77fc0f242 = ../../../../ExternalLibraries/ExternWin32Libraries/freetype/scripts/libfreetypeiOS/libfreetypeiOS.vcxproj;
+						5140a570-99ad-41d5-9a8a-929ed281c2b1 = ../../../../ExternalLibraries/ExternWin32Libraries/libjpeg/scripts/libjpegiOS/libjpegiOS.vcxproj;
+						5ea1bf65-3c58-43eb-9220-c781ef666e7f = ../../../../ExternalLibraries/ExternWin32Libraries/lua/build/iOS/libLuaiOS.vcxproj;
+						2d271eb4-56f5-42bf-93c1-22725ad1d16f = ../../../../ExternalLibraries/ExternWin32Libraries/libpng/scripts/libpngiOS/libpngiOS.vcxproj;
+						a61431bf-64dc-4be0-9383-6ca53813746a = ../../../../framework/LuaKigsBind/scripts/LuaKigsBindiOS/LuaKigsBindiOS.vcxproj;
+						8e1f600d-40a9-41ba-b439-efd65d9f4416 = ../../../../framework/Renderer/RendererOpenGL3/scripts/RendereriOSOGL3/RendereriOSOGL3.vcxproj;
+						12a1ca49-b4b2-4314-a91e-26465eed05b4 = ../../../../framework/SceneGraph/scripts/ScenegraphiOS/ScenegraphiOS.vcxproj;
+						7dff9d72-64a8-4056-b3cc-588e4fd52340 = ../../../../framework/Timer/TimeriOS/scripts/TimeriOS/TimeriOS.vcxproj;
+						6804226d-94a3-4791-b208-a61b7db4b5e3 = ../../../../framework/TinyImage/scripts/TinyImageiOS/TinyImageiOS.vcxproj;
+						8f05b0c5-1817-4ac3-ac09-ecb56f65cf67 = ../../../../framework/XML/scripts/XMLiOS/XMLiOS.vcxproj;
+						bcd0df99-be56-4ca4-a9bf-696f81e034b4 = ../../../../ExternalLibraries/ExternWin32Libraries/zlib/scripts/zlibiOS/zlibiOS.vcxproj;
+					};
+				};
+			};
+			projectRoot = "";
+			targets = (
+				D732ADF51AD8974300D69854,
+			);
+		};
+		D732ADF41AD8974300D69854 = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				D732AE2B1AD89BDB00D69854,
+				D732AE0B1AD8974300D69854,
+				8c0117834a0e43b9a05731ab,
+				e3129563b92b40f5819463ce,
+				177852a2e2dd4335a9594826,
+				902c536d3f3142d0a5f7ae98,
+			);
+			buildActionMask = 2147483647;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D732ADF21AD8974300D69854 = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				D732ADFC1AD8974300D69854,
+				d13dabf63d49490a8c309571,
+				82eaef2e3c8c442ebf7c2356,
+			);
+			buildActionMask = 2147483647;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D732AE1B1AD8974300D69854 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMPRESS_PNG_FILES = NO;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+			baseConfigurationReference = D732AE291AD89BDB00D69854;
+		};
+		D732AE1C1AD8974300D69854 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMPRESS_PNG_FILES = NO;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+			baseConfigurationReference = D732AE291AD89BDB00D69854;
+		};
+		D732AE1E1AD8974300D69854 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = boules.iOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		D732AE1F1AD8974300D69854 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = boules.iOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		D732ADF11AD8974300D69854 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D732AE1B1AD8974300D69854,
+				D732AE1C1AD8974300D69854,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D732AE1D1AD8974300D69854 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D732AE1E1AD8974300D69854,
+				D732AE1F1AD8974300D69854,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		f42605962ad746d497372a5d = {
+			isa = PBXFileReference;
+			name = CoreLocation.framework;
+			path = CoreLocation.framework;
+			sourceTree = DEVELOPER_DIR;
+		};
+		37b8e0739ae746d58c01a3ee = {
+			isa = PBXBuildFile;
+			fileRef = f42605962ad746d497372a5d;
+		};
+		50363fe903864c02beb30e24 = {
+			isa = PBXFileReference;
+			name = CoreMotion.framework;
+			path = CoreMotion.framework;
+			sourceTree = DEVELOPER_DIR;
+		};
+		ee631e50458449179f7fb81d = {
+			isa = PBXBuildFile;
+			fileRef = 50363fe903864c02beb30e24;
+		};
+		4d123f8836f14d11a44d2679 = {
+			isa = PBXFileReference;
+			name = AppInit.xml;
+			path = ../../Android/assets/AppInit.xml;
+			sourceTree = SOURCE_ROOT;
+		};
+		8c0117834a0e43b9a05731ab = {
+			isa = PBXBuildFile;
+			fileRef = 4d123f8836f14d11a44d2679;
+		};
+		12487beae496458a8eb545de = {
+			isa = PBXFileReference;
+			name = LaunchScreen.xml;
+			path = ../../Android/assets/LaunchScreen.xml;
+			sourceTree = SOURCE_ROOT;
+		};
+		e3129563b92b40f5819463ce = {
+			isa = PBXBuildFile;
+			fileRef = 12487beae496458a8eb545de;
+		};
+		548370b09e9c45808bb073cc = {
+			isa = PBXFileReference;
+			name = Logo.png;
+			path = ../../Android/assets/Logo.png;
+			sourceTree = SOURCE_ROOT;
+		};
+		177852a2e2dd4335a9594826 = {
+			isa = PBXBuildFile;
+			fileRef = 548370b09e9c45808bb073cc;
+		};
+		d5b93983ca7946319912677b = {
+			isa = PBXFileReference;
+			name = Screen_Main.xml;
+			path = ../../Android/assets/Screen_Main.xml;
+			sourceTree = SOURCE_ROOT;
+		};
+		902c536d3f3142d0a5f7ae98 = {
+			isa = PBXBuildFile;
+			fileRef = d5b93983ca7946319912677b;
+		};
+	};
+	rootObject = D732ADEE1AD8974300D69854;
+}

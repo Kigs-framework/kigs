@@ -887,7 +887,7 @@ void UIDynamicText::PreprocessTags()
 
 void UIDynamicText::SetUpNodeIfNeeded()
 {	
-	if(mNeedUpdatePosition && (mFlags & Node2D_SizeChanged) == Node2D_SizeChanged)
+	if(GetNodeFlag(Node2D_NeedUpdatePosition) && GetNodeFlag(Node2D_SizeChanged))
 		mChanged = true;
 	ForceSetupText();
 	ParentClassType::SetUpNodeIfNeeded();
@@ -948,7 +948,7 @@ void UIDynamicText::ForceSetupText()
 	if (mChanged)
 	{
 		BuildVertexArray();
-		mNeedUpdatePosition = true;
+		SetNodeFlag(Node2D_NeedUpdatePosition);
 		mChanged = false;
 		EmitSignal(Signals::TextRebuilt, this);
 	}

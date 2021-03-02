@@ -44,13 +44,13 @@ public:
 	virtual SpriteSheetTexture*							GetSpriteSheetTexture() { return NULL; }
 
 	/*Setter*/
-	inline void											Set_RotationAngle(kfloat a_radAngle) { mRotationAngle = a_radAngle; mNeedUpdatePosition = true; }
-	inline void											Set_Position(kfloat a_x, kfloat a_y) { mPosition[0] = a_x; mPosition[1] = a_y; mNeedUpdatePosition = true; }
+	inline void											Set_RotationAngle(kfloat a_radAngle) { mRotationAngle = a_radAngle; SetNodeFlag(Node2D_NeedUpdatePosition); }
+	inline void											Set_Position(kfloat a_x, kfloat a_y) { mPosition[0] = a_x; mPosition[1] = a_y; SetNodeFlag(Node2D_NeedUpdatePosition); 	}
 	inline void											Set_Position(Point2D a_pos) { Set_Position(a_pos.x, a_pos.y); }
 	inline void											IsTouchable(bool a_value) { mIsTouchable = a_value; }
 	inline void											Set_Opacity(float a_value) { mOpacity = a_value; }
-	inline void											Set_PreScale(kfloat a_valueX, kfloat a_valueY) { mPreScaleX = a_valueX; mPreScaleY = a_valueY; mNeedUpdatePosition = true; }
-	inline void											Set_PostScale(kfloat a_valueX, kfloat a_valueY) { mPostScaleX = a_valueX; mPostScaleY = a_valueY; mNeedUpdatePosition = true; }
+	inline void											Set_PreScale(kfloat a_valueX, kfloat a_valueY) { mPreScaleX = a_valueX; mPreScaleY = a_valueY; SetNodeFlag(Node2D_NeedUpdatePosition); 	}
+	inline void											Set_PostScale(kfloat a_valueX, kfloat a_valueY) { mPostScaleX = a_valueX; mPostScaleY = a_valueY; SetNodeFlag(Node2D_NeedUpdatePosition); }
 	inline void											Set_DisableBlend(bool a_value) { mDisableBlend = a_value; }
 	
 	bool												Draw(TravState* state) override;
@@ -65,7 +65,7 @@ public:
 	// utility method
 	Point2D												GetCoordsInContainer(kfloat X, kfloat Y);
 
-	inline void											TranslateWithOffSet(int a_offsetX, int a_offsetY) { mPosition[0] += a_offsetX; mPosition[1] += a_offsetY; mNeedUpdatePosition = true; }
+	inline void											TranslateWithOffSet(int a_offsetX, int a_offsetY) { mPosition[0] += a_offsetX; mPosition[1] += a_offsetY; SetNodeFlag(Node2D_NeedUpdatePosition);}
 
 	// call just before opengl drawelement
 	virtual void PreDraw(TravState* state) {} // use for texture predraw if needed

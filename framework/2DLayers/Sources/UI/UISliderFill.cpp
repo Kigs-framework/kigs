@@ -141,7 +141,7 @@ void UISliderFill::ChangeTexture(kstl::string _voidtexturename,kstl::string _sta
 			{
 				mSizeX = width;
 				mSizeY = height;
-				mNeedUpdatePosition = true;
+				SetNodeFlag(Node2D_SizeChanged);
 			}
 		}
 

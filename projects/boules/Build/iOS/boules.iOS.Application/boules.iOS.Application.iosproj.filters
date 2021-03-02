@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="boules.iOS">
+      <UniqueIdentifier>{77c18cbd-d652-4684-ab54-4dad8157a0cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="boules.iOS\Images.xcassets">
+      <UniqueIdentifier>{00d7a3de-7f83-4fd6-a663-48c2bda62352}</UniqueIdentifier>
+      <Extensions>boules.iOS\Images.xcassets\*</Extensions>
+    </Filter>
+    <Filter Include="boules.iOS\Images.xcassets\AppIcon.appiconset">
+      <UniqueIdentifier>{9365dc37-5719-48c9-b499-679221b12878}</UniqueIdentifier>
+      <Extensions>boules.iOS\Images.xcassets\AppIcon.appiconset\*</Extensions>
+    </Filter>
+    <Filter Include="boules.iOS\Supporting Files">
+      <UniqueIdentifier>{56fc3eec-d9f7-4ba7-91e0-ed4ca733af6e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\framework\PlatformsModules\iOS\Platform\Main\AppDelegate.mm">
+      <Filter>boules.iOS\Supporting Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\framework\PlatformsModules\iOS\Platform\Main\GameViewController.mm">
+      <Filter>boules.iOS\Supporting Files</Filter>
+    </ClCompile>
+    <ClCompile Include="boules.iOS\main.mm">
+      <Filter>boules.iOS\Supporting Files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\..\framework\PlatformsModules\iOS\Platform\Main\AppDelegate.h">
+      <Filter>boules.iOS\Supporting Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\framework\PlatformsModules\iOS\Platform\Main\GameViewController.h">
+      <Filter>boules.iOS\Supporting Files</Filter>
+    </ClInclude>
+    <Content Include="..\..\Android\assets\AppInit.xml">
+      <Filter>boules.iOS\Supporting Files</Filter>
+    </Content>
+    <Content Include="..\..\Android\assets\LaunchScreen.xml">
+      <Filter>boules.iOS\Supporting Files</Filter>
+    </Content>
+    <Content Include="..\..\Android\assets\Logo.png">
+      <Filter>boules.iOS\Supporting Files</Filter>
+    </Content>
+    <Content Include="..\..\Android\assets\Screen_Main.xml">
+      <Filter>boules.iOS\Supporting Files</Filter>
+    </Content>
+    <Content Include="boules.iOS\Base.lproj\Main.storyboard">
+      <Filter>boules.iOS</Filter>
+    </Content>
+    <Content Include="boules.iOS\Images.xcassets\AppIcon.appiconset\Contents.json">
+      <Filter>boules.iOS\Images.xcassets\AppIcon.appiconset</Filter>
+    </Content>
+    <InfoPlist Include="boules.iOS\Info.plist">
+      <Filter>boules.iOS\Supporting Files</Filter>
+    </InfoPlist>
+  </ItemGroup>
+</Project>

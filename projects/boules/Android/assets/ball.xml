@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<Inst N="ball" T="UIPanel">
+	<Attr N="Priority" V="10"/>
+	<Attr N="SizeX" V="32"/>
+	<Attr N="SizeY" V="32"/>
+	<Attr N="Color" V="{0.9,0.9,0.1,0.5}"/>
+	<Attr N="Dock" V="{0.5,0.5}"/>
+	<Attr N="Anchor" V="{0.5,0.5}"/>
+	<Inst N="shape" T="UIShapeDisc">
+		<Attr N="SliceCount" V="32"/>
+	</Inst>
+</Inst>

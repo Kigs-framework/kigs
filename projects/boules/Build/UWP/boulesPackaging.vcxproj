@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4b5266b3-fca2-4185-b00b-b30296c50479}</ProjectGuid>
+    <RootNamespace>boulesPackaging</RootNamespace>
+    <DefaultLanguage>fr-FR</DefaultLanguage>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <ProjectName>boulesPackaging</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="StaticDebug|Win32">
+      <Configuration>StaticDebug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+	<ProjectConfiguration Include="StaticReleaseTools|Win32">
+      <Configuration>StaticReleaseTools</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="StaticRelease|Win32">
+      <Configuration>StaticRelease</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StaticReleaseTools|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='StaticReleaseTools|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <PackageCertificateKeyFile>Packaging_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
+    <PackageCertificateThumbprint>e6094915b1504035738b0842b12540e0f9cf4788</PackageCertificateThumbprint>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;KIGS_TOOLS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>WindowsApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='StaticReleaseTools|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;KIGS_TOOLS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>WindowsApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>WindowsApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <None Include="Packaging_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Android\assets\AppInit.xml" />
+    <Xml Include="..\..\Android\assets\LaunchScreen.xml" />
+    <Xml Include="..\..\Android\assets\Screen_Main.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\..\Android\assets\Calibri.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Android\assets\Logo.png" />
+    <Image Include="Assets\Generated\LargeTile.scale-100.png" />
+    <Image Include="Assets\Generated\LargeTile.scale-125.png" />
+    <Image Include="Assets\Generated\LargeTile.scale-150.png" />
+    <Image Include="Assets\Generated\LargeTile.scale-200.png" />
+    <Image Include="Assets\Generated\LargeTile.scale-400.png" />
+    <Image Include="Assets\Generated\SmallTile.scale-100.png" />
+    <Image Include="Assets\Generated\SmallTile.scale-125.png" />
+    <Image Include="Assets\Generated\SmallTile.scale-150.png" />
+    <Image Include="Assets\Generated\SmallTile.scale-200.png" />
+    <Image Include="Assets\Generated\SmallTile.scale-400.png" />
+    <Image Include="Assets\Generated\SplashScreen.scale-100.png" />
+    <Image Include="Assets\Generated\SplashScreen.scale-125.png" />
+    <Image Include="Assets\Generated\SplashScreen.scale-150.png" />
+    <Image Include="Assets\Generated\SplashScreen.scale-200.png" />
+    <Image Include="Assets\Generated\SplashScreen.scale-400.png" />
+    <Image Include="Assets\Generated\Square150x150Logo.scale-100.png" />
+    <Image Include="Assets\Generated\Square150x150Logo.scale-125.png" />
+    <Image Include="Assets\Generated\Square150x150Logo.scale-150.png" />
+    <Image Include="Assets\Generated\Square150x150Logo.scale-200.png" />
+    <Image Include="Assets\Generated\Square150x150Logo.scale-400.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.altform-unplated_targetsize-16.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.altform-unplated_targetsize-24.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.altform-unplated_targetsize-256.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.altform-unplated_targetsize-32.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.altform-unplated_targetsize-48.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.scale-100.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.scale-125.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.scale-150.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.scale-200.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.scale-400.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.targetsize-16.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.targetsize-24.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.targetsize-256.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.targetsize-32.png" />
+    <Image Include="Assets\Generated\Square44x44Logo.targetsize-48.png" />
+    <Image Include="Assets\Generated\StoreLogo.scale-100.png" />
+    <Image Include="Assets\Generated\StoreLogo.scale-125.png" />
+    <Image Include="Assets\Generated\StoreLogo.scale-150.png" />
+    <Image Include="Assets\Generated\StoreLogo.scale-200.png" />
+    <Image Include="Assets\Generated\StoreLogo.scale-400.png" />
+    <Image Include="Assets\Generated\Wide310x150Logo.scale-100.png" />
+    <Image Include="Assets\Generated\Wide310x150Logo.scale-125.png" />
+    <Image Include="Assets\Generated\Wide310x150Logo.scale-150.png" />
+    <Image Include="Assets\Generated\Wide310x150Logo.scale-200.png" />
+    <Image Include="Assets\Generated\Wide310x150Logo.scale-400.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\kigs\framework\PlatformsModules\WUP\Platform\Main\mainWUP.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Build\solutionWUPD3DCMake\kigs\projects\boules\boules.vcxproj">
+      <Project>{e40b7e25-3bb8-48b2-8cff-e12bee76cfeb}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

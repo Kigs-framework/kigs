@@ -49,6 +49,19 @@ public:
 	
 protected:
 
+	void	TextureNotifyUpdate(const unsigned int  labelid);
+
+	virtual v2f	GetContentSize() override
+	{
+		if (HasTexture())
+		{
+			v2f textureSize;
+			mTexturePointer->GetSize(textureSize.x, textureSize.y);
+			return textureSize;
+		}
+		return ParentClassType::GetContentSize();
+	}
+
 	virtual v2f getDrawablePos(const v2f& pos)
 	{
 		if (mTexturePointer)
@@ -67,8 +80,7 @@ protected:
 
 	INSERT_FORWARDSP(TextureHandler,mTexturePointer);
 
-	static const v2f mInvalidUV;
-
+	WRAP_METHODS(TextureNotifyUpdate);
 };
 
 #endif //_UIItem_H_

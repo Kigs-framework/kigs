@@ -35,7 +35,7 @@ void UI3DLinkedItem::NotifyUpdate(const unsigned int labelid)
 			mIsHidden = false;
 			mDock[0] = 0.5f;
 			mDock[1] = 0.5f;
-			mNeedUpdatePosition = true;
+			SetNodeFlag(Node2D_NeedUpdatePosition);
 			PropagateNeedUpdateToFather();
 		}
 	}
@@ -105,7 +105,7 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 
 				mDock[0] = result.x;
 				mDock[1] = result.y;
-				mNeedUpdatePosition = true;
+				SetNodeFlag(Node2D_NeedUpdatePosition);
 				PropagateNeedUpdateToFather();
 			}
 		}

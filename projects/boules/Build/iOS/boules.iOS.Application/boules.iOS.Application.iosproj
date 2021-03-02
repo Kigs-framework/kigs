@@ -1,0 +1,264 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <ProjectVersion>1.0</ProjectVersion>
+    <ProjectGuid>{fe3d9154-e038-4ab4-aec2-7e9e0676429f}</ProjectGuid>
+    <PbxprojDirectory>boules.iOS.Application.xcodeproj</PbxprojDirectory>
+    <TARGET_NAME>boules</TARGET_NAME>
+  </PropertyGroup>
+  <Import Project="$(iOSTargetsPath)\iOS.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <iOSConfigurationType>Application</iOSConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'" Label="Configuration">
+    <UseOfStl>libc++</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <UseOfStl>libc++</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'" Label="Configuration">
+    <UseOfStl>libc++</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'" Label="Configuration">
+    <UseOfStl>libc++</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'" Label="Configuration">
+    <UseOfStl>libc++</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <UseOfStl>libc++</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'" Label="Configuration">
+    <UseOfStl>libc++</UseOfStl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'" Label="Configuration">
+    <UseOfStl>libc++</UseOfStl>
+  </PropertyGroup>
+  <Import Project="$(iOSTargetsPath)\iOS.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'" Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'" Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'" Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'" Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'" Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'" Label="UserMacros" />
+  <PropertyGroup>
+    <TargetName>boules</TargetName>
+    <TargetExt>.app</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'" />
+  <ItemDefinitionGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+      <ObjCAutomaticRefCounting>true</ObjCAutomaticRefCounting>
+      <CLanguageStandard>gnu99</CLanguageStandard>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>"DEBUG=1";"$(inherited)";</PreprocessorDefinitions>
+      <SymbolsHiddenByDefault>false</SymbolsHiddenByDefault>
+      <GenerateDebugSymbols>true</GenerateDebugSymbols>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+      <ObjCAutomaticRefCounting>true</ObjCAutomaticRefCounting>
+      <CLanguageStandard>gnu99</CLanguageStandard>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>"DEBUG=1";"$(inherited)";</PreprocessorDefinitions>
+      <SymbolsHiddenByDefault>false</SymbolsHiddenByDefault>
+      <GenerateDebugSymbols>true</GenerateDebugSymbols>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+      <ObjCAutomaticRefCounting>true</ObjCAutomaticRefCounting>
+      <CLanguageStandard>gnu99</CLanguageStandard>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>"DEBUG=1";"$(inherited)";</PreprocessorDefinitions>
+      <SymbolsHiddenByDefault>false</SymbolsHiddenByDefault>
+      <GenerateDebugSymbols>true</GenerateDebugSymbols>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+      <ObjCAutomaticRefCounting>true</ObjCAutomaticRefCounting>
+      <CLanguageStandard>gnu99</CLanguageStandard>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>"DEBUG=1";"$(inherited)";</PreprocessorDefinitions>
+      <SymbolsHiddenByDefault>false</SymbolsHiddenByDefault>
+      <GenerateDebugSymbols>true</GenerateDebugSymbols>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+      <ObjCAutomaticRefCounting>true</ObjCAutomaticRefCounting>
+      <CLanguageStandard>gnu99</CLanguageStandard>
+      <GenerateDebugSymbols>false</GenerateDebugSymbols>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+      <ObjCAutomaticRefCounting>true</ObjCAutomaticRefCounting>
+      <CLanguageStandard>gnu99</CLanguageStandard>
+      <GenerateDebugSymbols>false</GenerateDebugSymbols>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+      <ObjCAutomaticRefCounting>true</ObjCAutomaticRefCounting>
+      <CLanguageStandard>gnu99</CLanguageStandard>
+      <GenerateDebugSymbols>false</GenerateDebugSymbols>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'">
+    <ClCompile>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
+      <ObjCAutomaticRefCounting>true</ObjCAutomaticRefCounting>
+      <CLanguageStandard>gnu99</CLanguageStandard>
+      <GenerateDebugSymbols>false</GenerateDebugSymbols>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\framework\PlatformsModules\iOS\Platform\Main\AppDelegate.mm" />
+    <ClCompile Include="..\..\..\..\framework\PlatformsModules\iOS\Platform\Main\GameViewController.mm" />
+    <ClCompile Include="boules.iOS\main.mm" />
+    <ClInclude Include="..\..\..\..\framework\PlatformsModules\iOS\Platform\Main\AppDelegate.h" />
+    <ClInclude Include="..\..\..\..\framework\PlatformsModules\iOS\Platform\Main\GameViewController.h" />
+    <Content Include="..\..\Android\assets\AppInit.xml" />
+    <Content Include="..\..\Android\assets\LaunchScreen.xml" />
+    <Content Include="..\..\Android\assets\Logo.png" />
+    <Content Include="..\..\Android\assets\Screen_Main.xml" />
+    <Content Include="boules.iOS\Base.lproj\Main.storyboard" />
+    <Content Include="boules.iOS\Images.xcassets\AppIcon.appiconset\Contents.json" />
+    <InfoPlist Include="boules.iOS\Info.plist" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\ExternalLibraries\ExternWin32Libraries\freetype\scripts\libfreetypeiOS\libfreetypeiOS.vcxproj">
+      <Project>{14f8c837-5de5-4546-acb1-74b77fc0f242}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ExternalLibraries\ExternWin32Libraries\libjpeg\scripts\libjpegiOS\libjpegiOS.vcxproj">
+      <Project>{5140a570-99ad-41d5-9a8a-929ed281c2b1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ExternalLibraries\ExternWin32Libraries\libpng\scripts\libpngiOS\libpngiOS.vcxproj">
+      <Project>{2d271eb4-56f5-42bf-93c1-22725ad1d16f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ExternalLibraries\ExternWin32Libraries\lua\build\iOS\libLuaiOS.vcxproj">
+      <Project>{5ea1bf65-3c58-43eb-9220-c781ef666e7f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ExternalLibraries\ExternWin32Libraries\zlib\scripts\zlibiOS\zlibiOS.vcxproj">
+      <Project>{bcd0df99-be56-4ca4-a9bf-696f81e034b4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\framework\2DLayers\2DLayersOpenGL\scripts\2DLayersiOS\2DLayersiOS.vcxproj">
+      <Project>{ae4b3f1b-9be5-4b61-8e88-8886d09ec8d7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\framework\CoreAnimation\scripts\CoreAnimationiOS\CoreAnimationiOS.vcxproj">
+      <Project>{2d1ec866-64d6-4cb9-a1c0-9b9908b85a37}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\framework\Core\scripts\CoreiOS\CoreiOS.vcxproj">
+      <Project>{ab139ac2-d73d-4d1e-ac92-b2dfb720ca3a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\framework\FileManager\scripts\FileManageriOS\FileManageriOS.vcxproj">
+      <Project>{39df6821-06d0-49ca-9f3e-7554c0c6e229}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\framework\GUI\GUIiOS\scripts\GUIiOS\GUIiOS.vcxproj">
+      <Project>{d5f0c691-dcaf-44ae-aa72-74c217bad253}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\framework\Input\InputiOS\scripts\InputiOS\InputiOS.vcxproj">
+      <Project>{fc3fb631-f2d9-4e10-b49d-20f3b86a2c0f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\framework\LuaKigsBind\scripts\LuaKigsBindiOS\LuaKigsBindiOS.vcxproj">
+      <Project>{a61431bf-64dc-4be0-9383-6ca53813746a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\framework\Renderer\RendererOpenGL3\scripts\RendereriOSOGL3\RendereriOSOGL3.vcxproj">
+      <Project>{8e1f600d-40a9-41ba-b439-efd65d9f4416}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\framework\SceneGraph\scripts\ScenegraphiOS\ScenegraphiOS.vcxproj">
+      <Project>{12a1ca49-b4b2-4314-a91e-26465eed05b4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\framework\Timer\TimeriOS\scripts\TimeriOS\TimeriOS.vcxproj">
+      <Project>{7dff9d72-64a8-4056-b3cc-588e4fd52340}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\framework\TinyImage\scripts\TinyImageiOS\TinyImageiOS.vcxproj">
+      <Project>{6804226d-94a3-4791-b208-a61b7db4b5e3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\framework\XML\scripts\XMLiOS\XMLiOS.vcxproj">
+      <Project>{8f05b0c5-1817-4ac3-ac09-ecb56f65cf67}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\boules.iOS.StaticLibrary\boules.iOS.StaticLibrary.vcxproj">
+      <Project>{a11655ab-3658-4e48-8469-31fcb0045fd0}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="CoreLocation.framework">
+      <SourceTree>DEVELOPER_DIR</SourceTree>
+    </FrameworkReference>
+    <FrameworkReference Include="CoreMotion.framework">
+      <SourceTree>DEVELOPER_DIR</SourceTree>
+    </FrameworkReference>
+    <FrameworkReference Include="System\Library\Frameworks\GLKit.framework">
+      <SourceTree>SDKROOT</SourceTree>
+    </FrameworkReference>
+    <FrameworkReference Include="System\Library\Frameworks\OpenGLES.framework">
+      <SourceTree>SDKROOT</SourceTree>
+    </FrameworkReference>
+    <FrameworkReference Include="System\Library\Frameworks\UIKit.framework">
+      <SourceTree>SDKROOT</SourceTree>
+    </FrameworkReference>
+  </ItemGroup>
+  <ItemGroup>
+    <pbxproj Include="boules.iOS.Application.xcodeproj\project.pbxproj" />
+  </ItemGroup>
+  <Import Project="$(iOSTargetsPath)\iOS.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>
