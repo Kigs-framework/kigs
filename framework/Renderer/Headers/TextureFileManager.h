@@ -2,7 +2,7 @@
 #define _TEXTUREFILEMANAGER_H_
 
 #include "CoreModifiable.h"
-#include "SpriteSheetTexture.h"
+#include "Texture.h"
 
 // ****************************************
 // * TextureFileManager class
@@ -53,14 +53,6 @@ public:
 	SP<Texture> GetTexture(const kstl::string& fileName, const kstl::string& a_textureName, bool doInit=true);
 
 	/**
-	* \brief	get a spritesheey
-	* \fn		SpriteSheetTexture* GetSpriteSheetTexture(const kstl::string& fileName);
-	* \param	fileName : filemane of the asked SpriteSheet Texture
-	* \return	the asked SpriteSheetTexture if found
-	*/
-	SP<SpriteSheetTexture> GetSpriteSheetTexture(const kstl::string& fileName);
-
-	/**
 	* \brief	add a texture
 	* \fn		void AddTexture(const kstl::string& fileName, Texture* tex);
 	* \param	fileName : filemane of the texture to add
@@ -75,18 +67,15 @@ public:
 	* \param	tex : filemane of the texture to unload
 	*/
 	void UnloadTexture(Texture* Texture);
-	void UnloadTexture(SpriteSheetTexture* Tex);
 	void UnloadAllTexture();
 	void ResetAllTexture();
 
 	void ClearCache();
 
 	CMSP CreateTexture(const kstl::string& textureName);
-	CMSP CreateSpriteSheetTexture(const kstl::string& textureName);
 
 
 	KIGS_TOOLS_ONLY(auto& GetTextureMap() const { return mTextureMap; })
-
 
 	std::string	GetTextureFromSpriteSheetJSON(const std::string& json)
 	{

@@ -1,7 +1,7 @@
 #ifndef _UIShape_H_
 #define _UIShape_H_
 
-#include "UIVerticesInfo.h"
+#include "CoreModifiable.h"
 
 
 // ****************************************
@@ -15,6 +15,9 @@
 *
 */
 // ****************************************
+
+class UIItem;
+class UIVerticesInfo;
 
 class UIShapeDelegate : public CoreModifiable
 {

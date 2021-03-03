@@ -3,6 +3,9 @@
 #include "TextureHandler.h"
 #include "TextureFileManager.h"
 #include "Core.h"
+#include "JSonFileParser.h"
+#include "MiniInstanceFactory.h"
+#include "CoreBaseApplication.h"
 
 
 IMPLEMENT_CLASS_INFO(TextureHandler)
@@ -121,7 +124,7 @@ bool	SpriteSheetData::Init(const std::string& json, std::string& texturename)
 
 		if (!L_Meta.isNil())
 		{
-			texturename = L_Meta["image"];
+			texturename = L_Meta["image"]->toString();
 		}
 		mJSonFilename = json;
 		return true;

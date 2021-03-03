@@ -2,6 +2,7 @@
 #define _UIShapeDisc_H_
 
 #include "UIShapeDelegate.h"
+#include "CoreModifiableAttribute.h"
 
 
 // ****************************************

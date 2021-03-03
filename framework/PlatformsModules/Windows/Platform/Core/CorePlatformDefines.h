@@ -114,6 +114,7 @@ typedef	void ThreadReturnType;
 
 #define USE_LIB_PNG
 #define USE_LIB_JPG
+#define USE_LIB_GIF
 
 #define SUPPORT_S3TC_TEXTURE
 #define SUPPORT_ETC_TEXTURE

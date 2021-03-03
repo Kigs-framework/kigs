@@ -246,6 +246,10 @@ void Node2D::ComputeRealSize()
 			case CONTENT:
 				size[i] = contentSize[i];
 				referenceSize[i] = contentSize[i];
+				if (i == 0)
+					mSizeX = size[i];
+				else
+					mSizeY = size[i];
 				break;
 			case CONTENT_MULTIPLY:
 				size[i] = size[i] * contentSize[i];
@@ -276,6 +280,14 @@ void Node2D::ComputeRealSize()
 				if (s_mode[i] == KEEP_RATIO)
 				{
 					size[i] = referenceSize[i] * size[1 - i] / referenceSize[1 - i];
+
+					if ((s_mode[1 - i] == CONTENT) || (s_mode[1 - i] == DEFAULT))
+					{
+						if (i == 0)
+							mSizeX = size[i];
+						else
+							mSizeY = size[i];
+					}
 				}
 			}
 		}

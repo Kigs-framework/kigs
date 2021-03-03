@@ -7,6 +7,7 @@
 
 #include "ModuleRenderer.h"
 #include "TravState.h"
+#include "UI/UIShapeDelegate.h"
 
 class TravState;
 

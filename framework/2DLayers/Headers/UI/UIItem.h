@@ -11,7 +11,6 @@
 
 class TravState;
 class Texture;
-class SpriteSheetTexture;
 class UIVerticesInfo;
 class BaseUI2DLayer;
 
@@ -41,7 +40,6 @@ public:
 	}
 	inline bool											Get_DisableBlend() const { return mDisableBlend; }
 	inline bool                                         Get_IsHidden() const { return mIsHidden; }
-	virtual SpriteSheetTexture*							GetSpriteSheetTexture() { return NULL; }
 
 	/*Setter*/
 	inline void											Set_RotationAngle(kfloat a_radAngle) { mRotationAngle = a_radAngle; SetNodeFlag(Node2D_NeedUpdatePosition); }

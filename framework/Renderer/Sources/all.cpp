@@ -25,7 +25,6 @@
 #include "SimpleDrawing.cpp"
 #include "SkyBox.cpp"
 #include "Sprite.cpp"
-#include "SpriteSheetTexture.cpp"
 #include "StencilMask.cpp"
 #include "STLMeshLoader.cpp"
 #include "TangentSpaceLOD.cpp"

@@ -236,40 +236,6 @@ public:
 
 };
 
-template<typename smartPointOn>
-class CoreAttributeAndMethodForwardSmartPointer : public SmartPointer<smartPointOn> , public StructLinkedListBase
-{
-protected:
-	CoreAttributeAndMethodForwardSmartPointer() : SmartPointer()
-	{
-
-	}
-public:
-	inline CoreAttributeAndMethodForwardSmartPointer(CoreModifiable* parent, CoreModifiable* p);
-
-	CoreAttributeAndMethodForwardSmartPointer& operator=(const SmartPointer<smartPointOn>& smcopy)
-	{
-		if (SmartPointer<smartPointOn>::mPointer != smcopy.get())
-		{
-			if (SmartPointer<smartPointOn>::mPointer)
-			{
-				SmartPointer<smartPointOn>::mPointer->Destroy();
-			}
-			//TODO(antoine) FIX const_cast
-			SmartPointer<smartPointOn>::mPointer = (smartPointOn*)smcopy.get();
-			if (SmartPointer<smartPointOn>::mPointer)
-			{
-				SmartPointer<smartPointOn>::mPointer->GetRef();
-			}
-		}
-		return *this;
-	}
-};
-
-template<typename smartPointOn>
-using ForwardSP = CoreAttributeAndMethodForwardSmartPointer<smartPointOn>;
-
-#define INSERT_FORWARDSP(pointOn,name)	ForwardSP<pointOn> name={this,this};
 
 // specialized smart pointer with a few more features
 class CMSP : public SmartPointer<CoreModifiable>
@@ -1582,6 +1548,47 @@ struct MethodCallingStruct
 	void* mPrivateParams =  nullptr;
 	CoreModifiable* mMethodInstance = nullptr;
 };
+
+template<typename smartPointOn>
+class CoreAttributeAndMethodForwardSmartPointer : public SmartPointer<smartPointOn>, public StructLinkedListBase
+{
+protected:
+	CoreAttributeAndMethodForwardSmartPointer() : SmartPointer<smartPointOn>()
+	{
+
+	}
+public:
+	inline CoreAttributeAndMethodForwardSmartPointer(CoreModifiable* parent, CoreModifiable* p);
+
+	CoreAttributeAndMethodForwardSmartPointer& operator=(const SmartPointer<smartPointOn>& smcopy)
+	{
+		if (SmartPointer<smartPointOn>::mPointer != smcopy.get())
+		{
+			if (SmartPointer<smartPointOn>::mPointer)
+			{
+				SmartPointer<smartPointOn>::mPointer->Destroy();
+			}
+			//TODO(antoine) FIX const_cast
+			SmartPointer<smartPointOn>::mPointer = (smartPointOn*)smcopy.get();
+			if (SmartPointer<smartPointOn>::mPointer)
+			{
+				SmartPointer<smartPointOn>::mPointer->GetRef();
+			}
+		}
+		return *this;
+	}
+
+	operator SmartPointer<smartPointOn>*() const
+	{
+		return this;
+	}
+};
+
+template<typename smartPointOn>
+using ForwardSP = CoreAttributeAndMethodForwardSmartPointer<smartPointOn>;
+
+#define INSERT_FORWARDSP(pointOn,name)	ForwardSP<pointOn> name={this,this};
+
 
 template<typename smartPointOn>
 inline CoreAttributeAndMethodForwardSmartPointer<smartPointOn>::CoreAttributeAndMethodForwardSmartPointer(CoreModifiable* parent,CoreModifiable* p) : SmartPointer<smartPointOn>(), StructLinkedListBase()
