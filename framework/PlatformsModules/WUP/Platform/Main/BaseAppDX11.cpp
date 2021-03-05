@@ -114,7 +114,7 @@ void App::Initialize(CoreApplicationView const& applicationView)
 		if (KigsCore::Instance() && KigsCore::Instance()->GetCoreApplication())
 			KigsCore::Instance()->GetCoreApplication()->EmitSignal("UWP_ApplicationSuspendedEvent");
 		
-		mWindowClosed = true;
+		//mWindowClosed = true;
 	});
 }
 
