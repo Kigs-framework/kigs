@@ -58,6 +58,10 @@ public:
     
 	void SetWindowPosition(v2i pos, v2i size, bool force_topmost=false) override;
 
+	bool IsPlatformClipboardSupported() override { return true; }
+	const std::string& GetClipboardText() override;
+	void SetClipboardText(const std::string& txt) override;
+
 protected:
     
 	//! destructor

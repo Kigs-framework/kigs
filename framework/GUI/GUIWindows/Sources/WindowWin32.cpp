@@ -72,7 +72,34 @@ void	WindowWin32::RemoveCallback(msgProcCallBack callback)
 }
 
 
+const std::string& WindowWin32::GetClipboardText()
+{
+	if (OpenClipboard(nullptr))
+	{
+		HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+		wchar_t* pszText = static_cast<wchar_t*>(GlobalLock(hData));
+		mClipboard = to_utf8(pszText);
+		GlobalUnlock(hData);
+		CloseClipboard();
+	}
+	return mClipboard;
+}
 
+void WindowWin32::SetClipboardText(const std::string& txt)
+{
+	if (OpenClipboard(nullptr))
+	{
+		auto wtxt = to_wchar(txt);
+		auto len = (wtxt.size() + 1) * sizeof(wchar_t);
+		auto hMem = GlobalAlloc(GMEM_MOVEABLE, len);
+		auto str_ptr = GlobalLock(hMem);
+		memcpy(str_ptr, wtxt.data(), len);
+		GlobalUnlock(hMem);
+		EmptyClipboard();
+		SetClipboardData(CF_UNICODETEXT, hMem);
+		CloseClipboard();
+	}
+}
 
 //! manage some messages (destroy and resize)
 LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM lParam)
