@@ -32,11 +32,11 @@ void	BundleList::ProtectedInit()
 
 
 	// retreive args
-	kstl::vector<kstl::string>::iterator itArgs = myArgs.begin();
+	kstl::vector<kstl::string>::iterator itArgs = mArgs.begin();
 	// skip app name
 	itArgs++;
 
-	for (; itArgs != myArgs.end(); itArgs++)
+	for (; itArgs != mArgs.end(); itArgs++)
 	{
 		kstl::string& current = (*itArgs);
 
@@ -99,7 +99,7 @@ void	BundleList::ProtectedUpdate()
 	std::cout << "Processed file count : " << mBundle.size() << std::endl;
 	if (mBundleIsDone)
 	{
-		myNeedExit = true;
+		mNeedExit = true;
 		mThread = nullptr;
 	}
 }

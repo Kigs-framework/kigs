@@ -673,11 +673,11 @@ void	ETC1TextureCompress::RetreiveShortNameAndExt(const kstl::string& filename,k
 void	ETC1TextureCompress::ProtectedInit()
 {
 	// retreive args
-	kstl::vector<kstl::string>::iterator itArgs=myArgs.begin();
+	kstl::vector<kstl::string>::iterator itArgs=mArgs.begin();
 	// skip app name
 	itArgs++;
 
-	int totalArgsCount=myArgs.size()-1;
+	int totalArgsCount=mArgs.size()-1;
 
 	if((totalArgsCount<2))
 	{
@@ -699,7 +699,7 @@ void	ETC1TextureCompress::ProtectedInit()
 	int quality = 0;		// 0: low-quality, 1: middle-quality, 2: high-quality
 	int perceptual = 0;		// 0: phisical noise reduction, 1: perceptual noise		
 
-	for(;itArgs!=myArgs.end();itArgs++)
+	for(;itArgs!=mArgs.end();itArgs++)
 	{
 		kstl::string& current=(*itArgs);
 
@@ -1650,7 +1650,7 @@ bool	ETC1TextureCompress::exportDDS(TinyImage* toexport,const kstl::string& outf
 
 void	ETC1TextureCompress::ProtectedUpdate()
 {
-	myNeedExit=true;
+	mNeedExit=true;
 }
 
 void	ETC1TextureCompress::ProtectedClose()

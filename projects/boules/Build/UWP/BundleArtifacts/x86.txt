@@ -1,5 +1,0 @@
-MainPackage=F:\Kigs\Build\solutionWUPCMake\kigsProject\DDProjectOGL3\StaticRelease\boulesPackaging\boulesPackaging_1.0.5.0_Win32_StaticRelease.appx
-ResourcePack=F:\Kigs\Build\solutionWUPCMake\kigsProject\DDProjectOGL3\StaticRelease\boulesPackaging\boulesPackaging_1.0.5.0_scale-100.appx
-ResourcePack=F:\Kigs\Build\solutionWUPCMake\kigsProject\DDProjectOGL3\StaticRelease\boulesPackaging\boulesPackaging_1.0.5.0_scale-125.appx
-ResourcePack=F:\Kigs\Build\solutionWUPCMake\kigsProject\DDProjectOGL3\StaticRelease\boulesPackaging\boulesPackaging_1.0.5.0_scale-150.appx
-ResourcePack=F:\Kigs\Build\solutionWUPCMake\kigsProject\DDProjectOGL3\StaticRelease\boulesPackaging\boulesPackaging_1.0.5.0_scale-400.appx

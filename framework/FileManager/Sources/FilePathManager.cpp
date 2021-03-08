@@ -423,6 +423,9 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 
 	// init fullFileName with filename
 	kstl::string fullFileName = result->mFileName;
+	kstl::string	fileext = "";
+	if (result->mExtension != "")
+		fileext.append(result->mExtension, 1, result->mExtension.length() - 1);
 
 	// search in bundle
 	if (mBundleList.size())
@@ -443,21 +446,53 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 					return result;
 
 			}
-			else // TODO check compatible with current path
+			else 
 			{
-				if (bundlePathVector[0][0] == '#') // check if package
+				int bundlePathVectorIndex = 0;
+				if (bundlePathVector.size() > 1) // several pathes available
 				{
-					kstl::string head = bundlePathVector[0].substr(1, 3);
+					kstl::vector<kstl::string>* localpath = nullptr;
+					if (mPath.find(fileext) != mPath.end()) // if this extension is in pathes map 
+					{
+						localpath = &mPath[fileext];
+					}
+					else
+					{
+						localpath = &mPath["*"];
+					}
+					bool foundinbundle = false;
+					for (int i = 0; i < bundlePathVector.size(); i++)
+					{
+						for (auto& lp : *localpath)
+						{
+							size_t pos = bundlePathVector[i].find(lp);
+							if (pos == 0)
+							{
+								bundlePathVectorIndex = i;
+								foundinbundle = true;
+								break;
+							}
+						}
+						if (foundinbundle)
+						{
+							break;
+						}
+					}
+				}
+
+				if (bundlePathVector[bundlePathVectorIndex][0] == '#') // check if package
+				{
+					kstl::string head = bundlePathVector[bundlePathVectorIndex].substr(1, 3);
 					if (head == "PKG")
 					{
-						if (initHandleFromPackage(bundlePathVector[0], result, true))
+						if (initHandleFromPackage(bundlePathVector[bundlePathVectorIndex], result, true))
 						{
 							return result;
 						}
 					}
 				}
 
-				result->mFullFileName = mBundleRoot + bundlePathVector[0] + result->mFileName;
+				result->mFullFileName = mBundleRoot + bundlePathVector[bundlePathVectorIndex] + result->mFileName;
 #ifdef _DEBUG
 				Platform_CheckState(result.get());
 #else
@@ -479,9 +514,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 			return result;
 	}
 
-	kstl::string	fileext = "";
-	if (result->mExtension != "")
-		fileext.append(result->mExtension, 1, result->mExtension.length() - 1);
+
 
 	kstl::vector<kstl::string> localpath;
 	if (mPath.find(fileext) != mPath.end())
