@@ -32,6 +32,10 @@
 #include "RendererDefines.h"
 #include "TextureFileManager.h"
 
+#ifdef WUP
+#include <winrt/Windows.Foundation.Collections.h>
+#endif
+
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "d3d11.lib")
@@ -728,22 +732,45 @@ static D3D11_COMPARISON_FUNC ConvertStencilFunc(RendererStencilMode func)
 	return D3D11_COMPARISON_ALWAYS;
 }
 
+static D3D11_COMPARISON_FUNC ConvertDepthTestFunc(RendererDepthTestFunc func)
+{
+	if (func == RENDERER_DEPTH_TEST_NEVER)
+		return D3D11_COMPARISON_NEVER;
+	if (func == RENDERER_DEPTH_TEST_LESS)
+		return D3D11_COMPARISON_LESS;
+	if (func == RENDERER_DEPTH_TEST_EQUAL)
+		return D3D11_COMPARISON_EQUAL;
+	if (func == RENDERER_DEPTH_TEST_LEQUAL)
+		return D3D11_COMPARISON_LESS_EQUAL;
+	if (func == RENDERER_DEPTH_TEST_GREATER)
+		return D3D11_COMPARISON_GREATER;
+	if (func == RENDERER_DEPTH_TEST_NOTEQUAL)
+		return D3D11_COMPARISON_NOT_EQUAL;
+	if (func == RENDERER_DEPTH_TEST_GEQUAL)
+		return D3D11_COMPARISON_GREATER_EQUAL;
+	if (func == RENDERER_DEPTH_TEST_ALWAYS)
+		return D3D11_COMPARISON_ALWAYS;
+
+	return D3D11_COMPARISON_ALWAYS;
+}
+
 void DX11RenderingState::manageDepthStencilTest(DX11RenderingState* currentState)
 {
 	//In DX11 we cannot have different masks for front/back faces
 	size_t hash = 0; 
 	hash_combine(hash
-				 , currentState->mGlobalDepthTestFlag, currentState->mGlobalDepthMaskFlag
+				 , currentState->mGlobalDepthTestFlag, currentState->mGlobalDepthMaskFlag, currentState->mGlobalDepthTestFunc
 				 , currentState->mGlobalStencilEnabled, currentState->mGlobalStencilMask[0], currentState->mGlobalStencilFuncMask[0]//, currentState->mGlobalStencilMask[1], currentState->mGlobalStencilFuncMask[1]
 				 , currentState->mGlobalStencilOpSFail[0], currentState->mGlobalStencilOpDPFail[0], currentState->mGlobalStencilOpPass[0], currentState->mGlobalStencilMode[0]
 				 , currentState->mGlobalStencilOpSFail[1], currentState->mGlobalStencilOpDPFail[1], currentState->mGlobalStencilOpPass[1], currentState->mGlobalStencilMode[1]
 	);
 
+
 	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 	DXInstance * dxinstance = renderer->getDXInstance();
 
 
-	ID3D11DepthStencilState* depthStencilState;
+	ID3D11DepthStencilState* depthStencilState = nullptr;
 	auto found = renderer->DepthStateList().find(hash);
 	if (found != renderer->DepthStateList().end())
 	{
@@ -759,7 +786,7 @@ void DX11RenderingState::manageDepthStencilTest(DX11RenderingState* currentState
 		// Set up the description of the stencil state.
 		depthStencilDesc.DepthEnable = currentState->mGlobalDepthTestFlag;
 		depthStencilDesc.DepthWriteMask = currentState->mGlobalDepthMaskFlag ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
-		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+		depthStencilDesc.DepthFunc = ConvertDepthTestFunc(currentState->mGlobalDepthTestFunc);
 
 		
 		depthStencilDesc.StencilEnable = currentState->mGlobalStencilEnabled;
@@ -783,7 +810,6 @@ void DX11RenderingState::manageDepthStencilTest(DX11RenderingState* currentState
 		HRESULT result = dxinstance->mDevice->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
 		if (FAILED(result))
 			return;
-
 		renderer->DepthStateList()[hash] = depthStencilState;
 	}
 
@@ -900,6 +926,7 @@ void DX11RenderingState::FlushState(RenderingState* currentState, bool force)
 	// Depth Stencil
 	otherOne->mGlobalDepthTestFlag = mGlobalDepthTestFlag;
 	otherOne->mGlobalDepthMaskFlag = mGlobalDepthMaskFlag;
+	otherOne->mGlobalDepthTestFunc = mGlobalDepthTestFunc;
 
 	otherOne->mGlobalDepthTestFlag = mGlobalDepthTestFlag;
 	otherOne->mGlobalDepthMaskFlag = mGlobalDepthMaskFlag;

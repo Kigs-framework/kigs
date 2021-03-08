@@ -187,10 +187,6 @@ bool UINode3DLayer::GetDataInTouchSupport(const touchPosInfos& posin, touchPosIn
 
 		pout.pos.xy = v2f((Dot(left, hit_pos) / mSize[0]) + 0.5f, (Dot(up, hit_pos) / mSize[1]) + 0.5f);
 		
-		pout.pos.x *= mDesignSize[0];
-		pout.pos.y *= mDesignSize[1];
-
-
 		bool is_in = true;
 
 		if (pout.pos.x > 1.0f ||
@@ -199,6 +195,8 @@ bool UINode3DLayer::GetDataInTouchSupport(const touchPosInfos& posin, touchPosIn
 			pout.pos.y < 0.0f)
 			is_in = false;
 
+		pout.pos.x *= mDesignSize[0];
+		pout.pos.y *= mDesignSize[1];
 
 		auto& l2g = GetLocalToGlobal();
 		pout.hit.HitPosition = pos + dir * dist;
@@ -393,7 +391,25 @@ void UINode3DLayer::TravDraw(TravState* state)
 				current_custom_shader = shader;
 			}
 
+			bool draw_depth = false;
+			draw_depth = item.node->getValue("DrawDepth", draw_depth) && draw_depth;
+
+			if (draw_depth)
+			{
+				renderer->SetDepthTestMode(true);
+				renderer->SetDepthMaskMode(RENDERER_DEPTH_MASK_ON);
+				renderer->SetDepthTestFunc(RENDERER_DEPTH_TEST_ALWAYS);
+			}
+				
+
 			item.node->ProtectedDraw(state);
+
+			if (draw_depth)
+			{
+				renderer->SetDepthTestMode(false);
+				//renderer->SetDepthMaskMode(RENDERER_DEPTH_MASK_OFF);
+			}
+				
 		}
 		if (current_custom_shader)
 			renderer->popShader(current_custom_shader, state);

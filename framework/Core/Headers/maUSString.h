@@ -27,7 +27,8 @@ public:
 		mValue = usString{ value };
 	}
 
-
+	void* getRawValue() final { return (void*)mValue.us_str(); }
+	size_t MemorySize() const final { return mValue.length()*sizeof(u16); };
 
 	/// getValue overloads
 	virtual bool getValue(kstl::string& value) const override
@@ -131,11 +132,11 @@ public:
 		mValue = attribute;
 		return *this;
 	}
-	auto& operator=(const char* attribute)
+	/*auto& operator=(const char* attribute)
 	{
 		mValue = attribute;
 		return *this;
-	}
+	}*/
 
 	// Comparison
 	bool operator==(const usString& L_value) const

@@ -85,6 +85,8 @@ public:
 		return _Dest;
 	}*/
 
+	std::vector<UTF8Char>	toUTF8();
+
 
 	bool	operator == (const char* str)
 	{
@@ -139,10 +141,11 @@ public:
 
 	bool operator<(const usString& other) const
 	{
+
 		const unsigned short* read_char1 = mString;
 		const unsigned short* read_char2 = other.mString;
 
-		while (*read_char1)
+		do
 		{
 			if (*read_char1 < *read_char2)
 			{
@@ -154,7 +157,7 @@ public:
 			}
 			++read_char1;
 			++read_char2;
-		}
+		} while (((*read_char1) != 0) || ((*read_char2) != 0));
 		return false;
 	}
 
@@ -355,30 +358,6 @@ public:
 
 		return *this;
 	}
-	/*
-	usString& operator=(const unsigned short* toCopy)
-	{
-		copy(toCopy);
-		return *this;
-	}
-
-	usString& operator=(const char * toCopy)
-	{
-		copy(toCopy);
-		return *this;
-	}
-
-	usString& operator=(const UTF8Char * toCopy)
-	{
-		copy(toCopy);
-		return *this;
-	}
-
-	usString& operator=(const kstl::string& toCopy)
-	{
-		copy(toCopy.c_str());
-		return *this;
-	}*/
 
 	bool operator==(const usString& _value) const
 	{

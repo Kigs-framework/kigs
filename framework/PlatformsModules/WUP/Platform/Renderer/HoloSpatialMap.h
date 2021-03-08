@@ -74,6 +74,13 @@ class Camera;
 struct SpatialMapSurfaceRecord;
 using namespace winrt::Windows::Foundation;
 
+enum class ShowMeshMode
+{
+	Hidden,
+	PlaneOnly,
+	Full
+};
+
 class HoloSpatialMap : public CoreModifiable
 {
 public:
@@ -88,8 +95,8 @@ public:
 	void SetObservedBoundingSphere(v3f pos, float radius);
 	void SetObservedBoundingFrustum(Camera* camera);
 
-	void SetShowMeshes(bool show);
-	bool GetShowMeshes() const { return mShowMeshes; }
+	void SetShowMeshMode(ShowMeshMode mode);
+	ShowMeshMode GetShowMeshMode() const { return mShowMeshMode; }
 
 	void Export();
 
@@ -112,7 +119,7 @@ protected:
 	
 	maReference	mAttachNode = BASE_ATTRIBUTE(AttachNode, "Node3D:AttachMap");
 
-	bool mShowMeshes = false;
+	ShowMeshMode mShowMeshMode = ShowMeshMode::Hidden;
 
 	winrt::Windows::Perception::Spatial::Surfaces::SpatialSurfaceObserver mSurfaceObserver = nullptr;
 
@@ -122,7 +129,7 @@ protected:
 
 	std::atomic_bool gInUpdate = false;
 
-	double mPrecision = 512.0;
+	maDouble mPrecision = BASE_ATTRIBUTE(Precision, 32.0);
 
 	std::unordered_map<GuidComp, SpatialMeshInfo, GuidHash> mMeshList;
 	std::mutex mListMtx;

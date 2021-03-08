@@ -80,7 +80,17 @@ public:
 		return 0;
 	}
 
+	virtual inline operator s64() const override
+	{
+		return 0;
+	}
+
 	virtual inline operator unsigned int() const override
+	{
+		return 0;
+	}
+
+	virtual inline operator u64() const override
 	{
 		return 0;
 	}
@@ -147,7 +157,6 @@ protected:
 	T  mValue;
 };
 
-
 template<>
 inline CoreValueBase<bool,CoreItem>::operator bool() const
 {
@@ -167,7 +176,19 @@ inline CoreValueBase<bool,CoreItem>::operator int() const
 }
 
 template<>
+inline CoreValueBase<bool, CoreItem>::operator s64() const
+{
+	return mValue ? 1 : 0;
+}
+
+template<>
 inline CoreValueBase<bool, CoreItem>::operator unsigned int() const
+{
+	return mValue ? 1 : 0;
+}
+
+template<>
+inline CoreValueBase<bool, CoreItem>::operator u64() const
 {
 	return mValue ? 1 : 0;
 }
@@ -233,53 +254,25 @@ inline CoreValueBase<bool, CoreNamedItem>::operator  usString() const
 	return mValue ? usString("true") : usString("false");
 }
 
-template<>
-inline CoreValueBase<kfloat,CoreItem>::operator  kfloat() const
-{
-	return mValue;
-}
+#define DEFINE_COREVALUE_CAST_OPERATOR(basetype,itemtype,casttype) \
+template<> \
+inline CoreValueBase<basetype, itemtype>::operator casttype() const \
+{ \
+	return (casttype)mValue; \
+} 
 
-template<>
-inline CoreValueBase<kfloat,CoreNamedItem>::operator  kfloat() const
-{
-	return mValue;
-}
-
-template<>
-inline CoreValueBase<kfloat, CoreItem>::operator double() const
-{
-	return (double)mValue;
-}
-
-template<>
-inline CoreValueBase<kfloat, CoreNamedItem>::operator double() const
-{
-	return (double)mValue;
-}
-
-template<>
-inline CoreValueBase<kfloat,CoreItem>::operator  int() const
-{
-	return (int)mValue;
-}
-
-template<>
-inline CoreValueBase<kfloat,CoreNamedItem>::operator  int() const
-{
-	return (int)mValue;
-}
-
-template<>
-inline CoreValueBase<kfloat, CoreItem>::operator unsigned int() const
-{
-	return (unsigned int)mValue;
-}
-
-template<>
-inline CoreValueBase<kfloat, CoreNamedItem>::operator unsigned int() const
-{
-	return (unsigned int)mValue;
-}
+DEFINE_COREVALUE_CAST_OPERATOR(kfloat, CoreItem, kfloat);
+DEFINE_COREVALUE_CAST_OPERATOR(kfloat, CoreNamedItem, kfloat);
+DEFINE_COREVALUE_CAST_OPERATOR(kfloat, CoreItem, double);
+DEFINE_COREVALUE_CAST_OPERATOR(kfloat, CoreNamedItem, double);
+DEFINE_COREVALUE_CAST_OPERATOR(kfloat, CoreItem, int);
+DEFINE_COREVALUE_CAST_OPERATOR(kfloat, CoreNamedItem, int);
+DEFINE_COREVALUE_CAST_OPERATOR(kfloat, CoreItem, s64);
+DEFINE_COREVALUE_CAST_OPERATOR(kfloat, CoreNamedItem, s64);
+DEFINE_COREVALUE_CAST_OPERATOR(kfloat, CoreItem, unsigned int);
+DEFINE_COREVALUE_CAST_OPERATOR(kfloat, CoreNamedItem, unsigned int);
+DEFINE_COREVALUE_CAST_OPERATOR(kfloat, CoreItem, u64);
+DEFINE_COREVALUE_CAST_OPERATOR(kfloat, CoreNamedItem, u64);
 
 template<>
 inline CoreValueBase<kfloat,CoreItem>::operator  kstl::string() const
@@ -373,8 +366,6 @@ inline CoreValueBase<kfloat, CoreItem>::operator Vector4D()  const
 	_value.w = (kfloat)mValue;
 	return _value;
 }
-
-
 
 template<>
 inline CoreValueBase<Point2D, CoreNamedItem>::operator  Point2D() const
@@ -475,41 +466,19 @@ inline CoreValueBase<Point3D, CoreItem>::operator Point3D()  const
 	return _value;
 }
 
+DEFINE_COREVALUE_CAST_OPERATOR(int, CoreItem, kfloat);
+DEFINE_COREVALUE_CAST_OPERATOR(int, CoreNamedItem, kfloat);
+DEFINE_COREVALUE_CAST_OPERATOR(int, CoreItem, double);
+DEFINE_COREVALUE_CAST_OPERATOR(int, CoreNamedItem, double);
+DEFINE_COREVALUE_CAST_OPERATOR(int, CoreItem, int);
+DEFINE_COREVALUE_CAST_OPERATOR(int, CoreNamedItem, int);
+DEFINE_COREVALUE_CAST_OPERATOR(int, CoreItem, s64);
+DEFINE_COREVALUE_CAST_OPERATOR(int, CoreNamedItem, s64);
+DEFINE_COREVALUE_CAST_OPERATOR(int, CoreItem, unsigned int);
+DEFINE_COREVALUE_CAST_OPERATOR(int, CoreNamedItem, unsigned int);
+DEFINE_COREVALUE_CAST_OPERATOR(int, CoreItem, u64);
+DEFINE_COREVALUE_CAST_OPERATOR(int, CoreNamedItem, u64);
 
-
-template<>
-inline CoreValueBase<int,CoreItem>::operator  int() const
-{
-	return mValue;
-}
-
-template<>
-inline CoreValueBase<int,CoreNamedItem>::operator  int() const
-{
-	return mValue;
-}
-
-template<>
-inline CoreValueBase<int, CoreItem>::operator unsigned int() const
-{
-	return (unsigned int)mValue;
-}
-
-template<>
-inline CoreValueBase<int, CoreNamedItem>::operator unsigned int() const
-{
-	return  (unsigned int)mValue;
-}
-template<>
-inline CoreValueBase<int,CoreItem>::operator  kfloat() const
-{
-	return  (kfloat)mValue;
-}
-template<>
-inline CoreValueBase<int,CoreNamedItem>::operator  kfloat() const
-{
-	return  (kfloat)mValue;
-}
 
 template<>
 inline CoreValueBase<int,CoreItem>::operator bool()  const
@@ -551,40 +520,73 @@ inline CoreValueBase<int, CoreNamedItem>::operator  usString() const
 	return usString(L_Buffer);
 }
 
+DEFINE_COREVALUE_CAST_OPERATOR(s64, CoreItem, kfloat);
+DEFINE_COREVALUE_CAST_OPERATOR(s64, CoreNamedItem, kfloat);
+DEFINE_COREVALUE_CAST_OPERATOR(s64, CoreItem, double);
+DEFINE_COREVALUE_CAST_OPERATOR(s64, CoreNamedItem, double);
+DEFINE_COREVALUE_CAST_OPERATOR(s64, CoreItem, int);
+DEFINE_COREVALUE_CAST_OPERATOR(s64, CoreNamedItem, int);
+DEFINE_COREVALUE_CAST_OPERATOR(s64, CoreItem, s64);
+DEFINE_COREVALUE_CAST_OPERATOR(s64, CoreNamedItem, s64);
+DEFINE_COREVALUE_CAST_OPERATOR(s64, CoreItem, unsigned int);
+DEFINE_COREVALUE_CAST_OPERATOR(s64, CoreNamedItem, unsigned int);
+DEFINE_COREVALUE_CAST_OPERATOR(s64, CoreItem, u64);
+DEFINE_COREVALUE_CAST_OPERATOR(s64, CoreNamedItem, u64);
+
 
 template<>
-inline CoreValueBase<unsigned int, CoreItem>::operator int() const
+inline CoreValueBase<s64, CoreItem>::operator bool()  const
 {
-	return mValue;
+	return (mValue != 0);
+}
+template<>
+inline CoreValueBase<s64, CoreNamedItem>::operator bool()  const
+{
+	return (mValue != 0);
+}
+template<>
+inline CoreValueBase<s64, CoreItem>::operator kstl::string() const
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%lli", (s64)mValue);
+	return L_Buffer;
+}
+template<>
+inline CoreValueBase<s64, CoreNamedItem>::operator kstl::string() const
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%lli", (s64)mValue);
+	return L_Buffer;
 }
 
 template<>
-inline CoreValueBase<unsigned int, CoreNamedItem>::operator int() const
+inline CoreValueBase<s64, CoreItem>::operator usString() const
 {
-	return mValue;
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%lli", (s64)mValue);
+	return usString(L_Buffer);
+}
+template<>
+inline CoreValueBase<s64, CoreNamedItem>::operator usString() const
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%lli", (s64)mValue);
+	return usString(L_Buffer);
 }
 
-template<>
-inline CoreValueBase<unsigned int, CoreItem>::operator unsigned int() const
-{
-	return (unsigned int)mValue;
-}
 
-template<>
-inline CoreValueBase<unsigned int, CoreNamedItem>::operator unsigned int() const
-{
-	return  (unsigned int)mValue;
-}
-template<>
-inline CoreValueBase<unsigned int, CoreItem>::operator kfloat() const
-{
-	return  (kfloat)mValue;
-}
-template<>
-inline CoreValueBase<unsigned int, CoreNamedItem>::operator kfloat() const
-{
-	return  (kfloat)mValue;
-}
+DEFINE_COREVALUE_CAST_OPERATOR(unsigned int, CoreItem, kfloat);
+DEFINE_COREVALUE_CAST_OPERATOR(unsigned int, CoreNamedItem, kfloat);
+DEFINE_COREVALUE_CAST_OPERATOR(unsigned int, CoreItem, double);
+DEFINE_COREVALUE_CAST_OPERATOR(unsigned int, CoreNamedItem, double);
+DEFINE_COREVALUE_CAST_OPERATOR(unsigned int, CoreItem, int);
+DEFINE_COREVALUE_CAST_OPERATOR(unsigned int, CoreNamedItem, int);
+DEFINE_COREVALUE_CAST_OPERATOR(unsigned int, CoreItem, s64);
+DEFINE_COREVALUE_CAST_OPERATOR(unsigned int, CoreNamedItem, s64);
+DEFINE_COREVALUE_CAST_OPERATOR(unsigned int, CoreItem, unsigned int);
+DEFINE_COREVALUE_CAST_OPERATOR(unsigned int, CoreNamedItem, unsigned int);
+DEFINE_COREVALUE_CAST_OPERATOR(unsigned int, CoreItem, u64);
+DEFINE_COREVALUE_CAST_OPERATOR(unsigned int, CoreNamedItem, u64);
 
 template<>
 inline CoreValueBase<unsigned int, CoreItem>::operator bool()  const
@@ -626,6 +628,59 @@ inline CoreValueBase<unsigned int, CoreNamedItem>::operator usString() const
 	return usString(L_Buffer);
 }
 
+DEFINE_COREVALUE_CAST_OPERATOR(u64, CoreItem, kfloat);
+DEFINE_COREVALUE_CAST_OPERATOR(u64, CoreNamedItem, kfloat);
+DEFINE_COREVALUE_CAST_OPERATOR(u64, CoreItem, double);
+DEFINE_COREVALUE_CAST_OPERATOR(u64, CoreNamedItem, double);
+DEFINE_COREVALUE_CAST_OPERATOR(u64, CoreItem, int);
+DEFINE_COREVALUE_CAST_OPERATOR(u64, CoreNamedItem, int);
+DEFINE_COREVALUE_CAST_OPERATOR(u64, CoreItem, s64);
+DEFINE_COREVALUE_CAST_OPERATOR(u64, CoreNamedItem, s64);
+DEFINE_COREVALUE_CAST_OPERATOR(u64, CoreItem, unsigned int);
+DEFINE_COREVALUE_CAST_OPERATOR(u64, CoreNamedItem, unsigned int);
+DEFINE_COREVALUE_CAST_OPERATOR(u64, CoreItem, u64);
+DEFINE_COREVALUE_CAST_OPERATOR(u64, CoreNamedItem, u64);
+
+
+template<>
+inline CoreValueBase<u64, CoreItem>::operator bool()  const
+{
+	return (mValue != 0);
+}
+template<>
+inline CoreValueBase<u64, CoreNamedItem>::operator bool()  const
+{
+	return (mValue != 0);
+}
+template<>
+inline CoreValueBase<u64, CoreItem>::operator kstl::string() const
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%llu", (u64)mValue);
+	return L_Buffer;
+}
+template<>
+inline CoreValueBase<u64, CoreNamedItem>::operator kstl::string() const
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%llu", (u64)mValue);
+	return L_Buffer;
+}
+
+template<>
+inline CoreValueBase<u64, CoreItem>::operator usString() const
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%llu", (u64)mValue);
+	return usString(L_Buffer);
+}
+template<>
+inline CoreValueBase<u64, CoreNamedItem>::operator usString() const
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%llu", (u64)mValue);
+	return usString(L_Buffer);
+}
 
 
 template<>
@@ -753,6 +808,22 @@ inline CoreValueBase<kstl::string, CoreNamedItem>::operator unsigned int() const
 }
 
 template<>
+inline CoreValueBase<kstl::string, CoreNamedItem>::operator u64() const
+{
+	u64 v;
+	sscanf(mValue.c_str(), "%llu", &v);
+	return v;
+}
+
+template<>
+inline CoreValueBase<kstl::string, CoreItem>::operator u64() const
+{
+	u64 v;
+	sscanf(mValue.c_str(), "%llu", &v);
+	return v;
+}
+
+template<>
 inline bool CoreValueBase<kstl::string,CoreItem>::isString() const
 {
 	return true;
@@ -799,6 +870,22 @@ template<>
 inline CoreValueBase<usString, CoreNamedItem>::operator unsigned int() const
 {
 	return (unsigned int)atoi(mValue.ToString().c_str());
+}
+
+template<>
+inline CoreValueBase<usString, CoreNamedItem>::operator u64() const
+{
+	u64 v;
+	sscanf(mValue.ToString().c_str(), "%llu", &v);
+	return v;
+}
+
+template<>
+inline CoreValueBase<usString, CoreItem>::operator u64() const
+{
+	u64 v;
+	sscanf(mValue.ToString().c_str(), "%llu", &v);
+	return v;
 }
 
 template<>
@@ -860,7 +947,17 @@ public:
 		this->mValue = (T)other;
 		return *this;
 	}
+	virtual CoreItem& operator=(const s64& other)
+	{
+		this->mValue = (T)other;
+		return *this;
+	}
 	virtual CoreItem& operator=(const unsigned int& other)
+	{
+		this->mValue = (T)other;
+		return *this;
+	}
+	virtual CoreItem& operator=(const u64& other)
 	{
 		this->mValue = (T)other;
 		return *this;
@@ -914,10 +1011,28 @@ inline CoreItem& CoreNamedValue<kstl::string>::operator= (const int& _value)
 }
 
 template<>
+inline CoreItem& CoreNamedValue<kstl::string>::operator= (const s64& _value)
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%lli", _value);
+	this->mValue = L_Buffer;
+	return *this;
+}
+
+template<>
 inline CoreItem& CoreNamedValue<usString>::operator= (const int& _value)
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
+	this->mValue = usString(L_Buffer);
+	return *this;
+}
+
+template<>
+inline CoreItem& CoreNamedValue<usString>::operator= (const s64& _value)
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%lli", _value);
 	this->mValue = usString(L_Buffer);
 	return *this;
 }
@@ -936,6 +1051,24 @@ inline CoreItem& CoreNamedValue<usString>::operator= (const unsigned int& _value
 {
 	char L_Buffer[64] = { 0 };
 	snprintf(L_Buffer, 64, "%i", _value);
+	this->mValue = usString(L_Buffer);
+	return *this;
+}
+
+template<>
+inline CoreItem& CoreNamedValue<kstl::string>::operator= (const u64& _value)
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%llu", _value);
+	this->mValue = L_Buffer;
+	return *this;
+}
+
+template<>
+inline CoreItem& CoreNamedValue<usString>::operator= (const u64& _value)
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%llu", _value);
 	this->mValue = usString(L_Buffer);
 	return *this;
 }
@@ -1010,7 +1143,17 @@ public:
 		this->mValue = (T)other;
 		return *this;
 	}
+	virtual CoreItem& operator=(const s64& other)
+	{
+		this->mValue = (T)other;
+		return *this;
+	}
 	virtual CoreItem& operator=(const unsigned int& other)
+	{
+		this->mValue = (T)other;
+		return *this;
+	}
+	virtual CoreItem& operator=(const u64& other)
 	{
 		this->mValue = (T)other;
 		return *this;
@@ -1085,6 +1228,24 @@ inline CoreItem& CoreValue<usString>::operator= (const int& _value)
 }
 
 template<>
+inline CoreItem& CoreValue<kstl::string>::operator= (const s64& _value)
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%lli", _value);
+	this->mValue = L_Buffer;
+	return *this;
+}
+
+template<>
+inline CoreItem& CoreValue<usString>::operator= (const s64& _value)
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%lli", _value);
+	this->mValue = usString(L_Buffer);
+	return *this;
+}
+
+template<>
 inline CoreItem& CoreValue<kstl::string>::operator= (const unsigned int& _value)
 {
 	char L_Buffer[64] = { 0 };
@@ -1101,6 +1262,25 @@ inline CoreItem& CoreValue<usString>::operator= (const unsigned int& _value)
 	this->mValue = usString(L_Buffer);
 	return *this;
 }
+
+template<>
+inline CoreItem& CoreValue<kstl::string>::operator= (const u64& _value)
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%llu", _value);
+	this->mValue = L_Buffer;
+	return *this;
+}
+
+template<>
+inline CoreItem& CoreValue<usString>::operator= (const u64& _value)
+{
+	char L_Buffer[64] = { 0 };
+	snprintf(L_Buffer, 64, "%llu", _value);
+	this->mValue = usString(L_Buffer);
+	return *this;
+}
+
 
 template<>
 inline CoreItem& CoreValue<kstl::string>::operator= (const bool& _value)
@@ -1140,10 +1320,21 @@ inline CoreItem& CoreValue<Point3D>::operator= (const int& _value)
 	return *this;
 }
 template<>
+inline CoreItem& CoreValue<Point3D>::operator= (const s64& _value)
+{
+	return *this;
+}
+template<>
 inline CoreItem& CoreValue<Point3D>::operator= (const unsigned int& _value)
 {
 	return *this;
 }
+template<>
+inline CoreItem& CoreValue<Point3D>::operator= (const u64& _value)
+{
+	return *this;
+}
+
 
 template<>
 inline CoreItem& CoreValue<Point3D>::operator=(const Point2D& other)
@@ -1177,11 +1368,20 @@ inline CoreItem& CoreValue<Point2D>::operator= (const int& _value)
 	return *this;
 }
 template<>
+inline CoreItem& CoreValue<Point2D>::operator= (const s64& _value)
+{
+	return *this;
+}
+template<>
 inline CoreItem& CoreValue<Point2D>::operator= (const unsigned int& _value)
 {
 	return *this;
 }
-
+template<>
+inline CoreItem& CoreValue<Point2D>::operator= (const u64& _value)
+{
+	return *this;
+}
 template<>
 inline CoreItem& CoreValue<Point2D>::operator=(const Point2D& other)
 {

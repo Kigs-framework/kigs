@@ -36,7 +36,8 @@ bool RenderingCustomizer::PreDraw(TravState* state)
 	if (mOverrideDepthTest != -1)
 	{
 		SaveState(state);
-		state->GetRenderer()->SetDepthTestMode(mOverrideDepthTest);
+		//state->GetRenderer()->SetDepthTestMode(mOverrideDepthTest);
+		state->GetRenderer()->SetDepthTestFunc(mOverrideDepthTest == 0 ? RendererDepthTestFunc::RENDERER_DEPTH_TEST_ALWAYS : RendererDepthTestFunc::RENDERER_DEPTH_TEST_LESS);
 	}
 
 	if (mOverrideDepthWrite != -1)

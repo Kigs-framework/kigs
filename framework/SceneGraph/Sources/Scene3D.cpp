@@ -219,12 +219,16 @@ void Scene3D::TravDraw(TravState* state)
 			Node3D::TravCull(state);
 		}
 
+		auto rs = cam->getValue<CoreModifiable*>("RenderingScreen");
+
 		for (auto& pass : passes)
 		{
 #ifdef KIGS_TOOLS
 			pass.debug_draw_path.clear();
 #endif
 			DrawableSorter_Camera lDrawableSorter;
+			rs->setValue("ActiveDepthBuffer", pass.depth_buffer_index);
+			rs->as<RenderingScreen>()->SetActive(state);
 
 			state->SetCurrentLocalToGlobalMatrix(Matrix3x4::IdentityMatrix());
 			state->SetCurrentGlobalToLocalMatrix(Matrix3x4::IdentityMatrix());
@@ -275,6 +279,8 @@ void Scene3D::TravDraw(TravState* state)
 #endif
 		}
 		state->mCurrentPass = nullptr;
+		rs->setValue("ActiveDepthBuffer", 0);
+		rs->as<RenderingScreen>()->SetActive(state);
 		cam->Release(state);
 	}
 

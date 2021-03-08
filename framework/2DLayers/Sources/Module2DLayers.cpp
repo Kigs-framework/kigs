@@ -16,8 +16,8 @@
 // registered UI class includes
 #include "UI/PassiveColoredMask.h"
 #include "UI/UI3DLinkedItem.h"
-#include "UI/UIAnimatedButton.h"
-#include "UI/UIAnimatedSprite.h"
+//#include "UI/UIAnimatedButton.h"
+//#include "UI/UIAnimatedSprite.h"
 #include "UI/UIBoxLayout.h"
 #include "UI/UIButton.h"
 #include "UI/UIButtonImage.h"
@@ -47,16 +47,16 @@
 #include "UI/UISlider.h"
 #include "UI/UISliderFill.h"
 #include "UI/UISlidersGroup.h"
-#include "UI/UISprite.h"
+//#include "UI/UISprite.h"
 #include "UI/UIStream.h"
 #include "UI/UIText.h"
 #include "UI/UITextArea.h"
 #include "UI/UITextInput.h"
-#include "UI/UITexture.h"
+//#include "UI/UITexture.h"
 #include "UI/UITexturedItem.h"
-#include "UI/UIVideo.h"
+//#include "UI/UIVideo.h"
 #include "UI/UINode3DLayer.h"
-
+#include "UI/UIShapeDisc.h"
 
 IMPLEMENT_CLASS_INFO(Module2DLayers)
 
@@ -84,8 +84,8 @@ void Module2DLayers::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 
 	DECLARE_FULL_CLASS_INFO(core, UI3DLinkedItem, UI3DLinkedItem, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, PassiveColoredMask, PassiveColoredMask, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, UIAnimatedButton, UIAnimatedButton, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, UIAnimatedSprite, UIAnimatedSprite, 2DLayers);
+	//DECLARE_FULL_CLASS_INFO(core, UIAnimatedButton, UIAnimatedButton, 2DLayers);
+	//DECLARE_FULL_CLASS_INFO(core, UIAnimatedSprite, UIAnimatedSprite, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIBoxLayout, UIBoxLayout, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIButton, UIButton, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIButtonImage, UIButtonImage, 2DLayers);
@@ -120,18 +120,18 @@ void Module2DLayers::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	DECLARE_FULL_CLASS_INFO(core, UISlider, UISlider, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UISliderFill, UISliderFill, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UISlidersGroup, UISlidersGroup, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, UISprite, UISprite, 2DLayers);
+	//DECLARE_FULL_CLASS_INFO(core, UISprite, UISprite, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIStream, UIStream, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UIText, UIText, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UITextArea, UITextArea, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UITextInput, UITextInput, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, UITexture, UITexture, 2DLayers);
+	//DECLARE_FULL_CLASS_INFO(core, UITexture, UITexture, 2DLayers);
 	DECLARE_FULL_CLASS_INFO(core, UITexturedItem, UITexturedItem, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, UIVideo, UIVideo, 2DLayers);
+	//DECLARE_FULL_CLASS_INFO(core, UIVideo, UIVideo, 2DLayers);
 
 	DECLARE_FULL_CLASS_INFO(core, UINode3DLayer, UINode3DLayer, 2DLayers);
 
-
+	DECLARE_FULL_CLASS_INFO(core, UIShapeDisc, UIShapeDisc, 2DLayers);
 
 	core->RegisterMainModuleList(this, Layer2DModuleCoreIndex);
 	

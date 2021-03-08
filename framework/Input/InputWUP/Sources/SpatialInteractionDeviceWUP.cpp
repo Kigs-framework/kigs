@@ -10,6 +10,7 @@
 #include "Platform/Main/BaseApp.h"
 
 #include <winrt/Windows.Perception.People.h>
+#include <winrt/Windows.Foundation.Collections.h>
 
 #include "GLSLDebugDraw.h"
 
@@ -192,6 +193,8 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 				s->LastTime = s->StartTime = time;
 			}
 
+			s->DT = dt;
+
 			s->ID = id;
 			auto before = s->pressed;
 			s->pressed = (time - s->StartTime > 0.1)&&(source.args.State().IsPressed());
@@ -247,7 +250,7 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 					{
 						Interaction::Joint j;
 
-						if (update)
+						/*if (update)
 						{
 							auto npos = v3f{ joint.Position.x, joint.Position.y, joint.Position.z };
 							const double max_time_still = 2.0;
@@ -265,7 +268,7 @@ void	SpatialInteractionDeviceWUP::UpdateDevice()
 							auto nquat = quat(-joint.Orientation.z, joint.Orientation.w, joint.Orientation.x, joint.Orientation.y);
 							j.orientation = SlerpNearest(s->palm->orientation, nquat, t);
 						}
-						else
+						else*/
 						{
 							j.position = { joint.Position.x, joint.Position.y, joint.Position.z };
 							j.orientation = quat(-joint.Orientation.z, joint.Orientation.w, joint.Orientation.x, joint.Orientation.y);

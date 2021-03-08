@@ -211,4 +211,5 @@ SmartPointer<smartPointOn> MakeRefCounted(Args&& ... args)
 template<typename smartPointOn>
 using SP=SmartPointer<smartPointOn>;
 
+
 #endif //_SMARTPOINTER_H_

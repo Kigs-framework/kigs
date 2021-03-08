@@ -13,6 +13,8 @@
 
 #include <winrt/Windows.Devices.h>
 #include <winrt/Windows.Devices.Input.h>
+#include <winrt/Windows.Foundation.Collections.h>
+
 using namespace winrt::Windows::Devices;
 
 ModuleInputWUP* gInstanceModuleInputWUP=0;

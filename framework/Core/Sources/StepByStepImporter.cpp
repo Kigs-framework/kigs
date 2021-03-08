@@ -150,15 +150,15 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 	
 	if(!treatedNode->mCurrent)
 	{
-		if (currentNode->getName()=="Instance")
+		if (currentNode->XMLNodeBase::compareName("Instance"))
 		{ 
-			XMLAttribute *NameAttribute = currentNode->getAttribute("Name");
+			XMLAttributeBase *NameAttribute = currentNode->getAttribute("Name");
 
 			kstl::string name;
 			if (NameAttribute)
 				name = NameAttribute->getString();
 
-			XMLAttribute*	type=currentNode->getAttribute("Type");
+			XMLAttributeBase*	type=currentNode->getAttribute("Type");
 
 			//if has a type then it's not a reference
 			if(type)
@@ -198,10 +198,10 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 				ImportTree* lastimport=0;
 				for(int i=0;i<currentNode->getChildCount();i++)
 				{
-					XMLNode*	sonXML=currentNode->getChildElement(i);
+					XMLNodeBase*	sonXML=currentNode->getChildElement(i);
 					if(sonXML->getType() == XML_NODE_ELEMENT)
 					{
-						if(sonXML->getName()=="CoreModifiableAttribute")
+						if(sonXML->compareName("CoreModifiableAttribute"))
 						{
 							// init attribute
 							// TODO : check for UTF-8
@@ -211,10 +211,10 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 						else
 						{
 							// create new ImportTree node
-							ImportTree* newimport=new ImportTree(sonXML,treatedNode->mCurrent);
+							ImportTree* newimport=new ImportTree((XMLNode*)sonXML,treatedNode->mCurrent);
 							newimport->mFatherImportTreeNode=mCurrentImportedTreeNode;
 							mCurrentImportedTreeNode->mSonsImport.push_back(newimport);
-							XMLAttribute*	linktype=sonXML->getAttribute("LinkIDToParent");
+							XMLAttributeBase*	linktype=sonXML->getAttribute("LinkIDToParent");
 
 							if(linktype)
 							{

@@ -89,6 +89,8 @@ protected:
 
 	maBool mInputsEnabled = BASE_ATTRIBUTE(InputsEnabled, true);
 
+	maBool mResetInputsWhenNoWindows = BASE_ATTRIBUTE(ResetInputsWhenNoWindows, false);
+
 
 	maString mFontName = BASE_ATTRIBUTE(FontName, "");
 	maString mBoldFontName = BASE_ATTRIBUTE(BoldFontName, "");

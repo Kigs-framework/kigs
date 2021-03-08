@@ -46,13 +46,21 @@ CoreModifiableAttribute* CoreValue<int>::createAttribute(CoreModifiable* target)
 {
 	return new maInt(*target, false, LABEL_AND_ID(Val), (this->mValue));
 }
-
+template<>
+CoreModifiableAttribute* CoreValue<s64>::createAttribute(CoreModifiable* target)
+{
+	return new maLong(*target, false, LABEL_AND_ID(Val), (this->mValue));
+}
 template<>
 CoreModifiableAttribute* CoreValue<unsigned int>::createAttribute(CoreModifiable* target)
 {
 	return new maUInt(*target, false, LABEL_AND_ID(Val), (this->mValue));
 }
-
+template<>
+CoreModifiableAttribute* CoreValue<u64>::createAttribute(CoreModifiable* target)
+{
+	return new maULong(*target, false, LABEL_AND_ID(Val), (this->mValue));
+}
 template<>
 CoreModifiableAttribute* CoreValue<kstl::string>::createAttribute(CoreModifiable* target)
 {

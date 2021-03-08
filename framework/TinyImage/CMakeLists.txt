@@ -8,6 +8,10 @@ else()
 	target_link_libraries(TinyImage PRIVATE zstdlib)
 endif()
 
+if(NOT ${KIGS_PLATFORM} STREQUAL "WUP")
+	target_link_libraries(TinyImage PRIVATE gif)
+endif()
+
 target_include_directories(TinyImage PUBLIC "Headers")
 
 

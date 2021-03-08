@@ -11,6 +11,7 @@
 using Clock = std::chrono::high_resolution_clock;
 using TimePoint = Clock::time_point;
 using Duration = Clock::duration;
+using DurationF64 = std::chrono::duration<double>;
 
 // ****************************************
 // * TimeProfiler class

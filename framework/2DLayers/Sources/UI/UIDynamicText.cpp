@@ -187,7 +187,7 @@ void UIDynamicText::LoadFont()
 
 	if (mFontMap)
 	{
-		mTexturePointer = tfm->GetTexture(mFontMap->font_id);
+		mTexturePointer->setTexture(tfm->GetTexture(mFontMap->font_id));
 		// make sure mFontMap is destoyed when texture is destoyed
 		mFontMap->mFontTexture = nullptr;
 	}

@@ -1182,7 +1182,7 @@ struct AttributeChange
 	bool changed = false;
 	std::string value;
 	std::string old_value;
-	XMLAttribute* attr_value = nullptr;
+	XMLAttributeBase* attr_value = nullptr;
 };
 
 AttributeChange CheckAttributeChange(XMLNode* attr_xml, CoreModifiableAttribute* attr)
@@ -1193,7 +1193,7 @@ AttributeChange CheckAttributeChange(XMLNode* attr_xml, CoreModifiableAttribute*
 	result.attr_value = attr_xml->getAttribute("Value", "V");
 	if (result.attr_value)
 	{
-		result.old_value = result.attr_value->getString();
+		result.old_value = result.attr_value->XMLAttributeBase::getString();
 		if (type == CoreModifiable::ATTRIBUTE_TYPE::FLOAT)
 		{
 			float val;
@@ -1582,7 +1582,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	XMLNode* xml_node = xml_file_item ? (XMLNode*)item->GetXMLNodeForFile(xml_file) : nullptr;
 
 	std::string name = item->getName();
-	if (xml_node && xml_node->getName() != "Rel")
+	if (xml_node && (!xml_node->XMLNodeBase::compareName("Rel")))
 	{
 		auto name_attr = xml_node->getAttribute("N", "Name");
 		if (name_attr)
@@ -1593,7 +1593,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	std::string old_name = name;
 
 	u32 name_input_flags = ImGuiInputTextFlags_EnterReturnsTrue;
-	if ((xml_node && xml_node->getName() == "Rel") || (!xml_node && item->mXMLNodes.size()))
+	if ((xml_node && xml_node->XMLNodeBase::compareName("Rel")) || (!xml_node && item->mXMLNodes.size()))
 		name_input_flags |= ImGuiInputTextFlags_ReadOnly;
 	
 	if (ImGui::InputText("Name", name, name_input_flags))
@@ -1605,7 +1605,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			if (xml_node)
 			{
 				KIGS_ASSERT(xml_node->nameOneOf("Inst", "Instance"));
-				auto name_attr = xml_node->getAttribute("N", "Name");
+				auto name_attr = static_cast<XMLAttribute*>(xml_node->getAttribute("N", "Name"));
 				if (name_attr)
 				{
 					name_attr->setString(name);
@@ -1618,10 +1618,10 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 				{
 					if (((XMLNode*)n.second)->nameOneOf("Rel", "RelativePath"))
 					{
-						auto path_attr = ((XMLNode*)n.second)->getAttribute("P", "Path");
+						auto path_attr = static_cast<XMLAttribute*>(((XMLNode*)n.second)->getAttribute("P", "Path"));
 						if (path_attr)
 						{
-							if (path_attr->getString() == old_name)
+							if (path_attr->XMLAttributeBase::getString() == old_name)
 							{
 								path_attr->setString(name);
 								AddToXMLChanged(item, *std::find_if(item->mXMLFiles.begin(), item->mXMLFiles.end(), [&](auto& sp) { return sp.get() == n.first; }));
@@ -1709,8 +1709,8 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			{
 				for (int i = 0; i < xml_node->getChildCount(); i++)
 				{
-					auto child = xml_node->getChildElement(i);
-					auto child_name = child->getName();
+					auto child = static_cast<XMLNode*>(xml_node->getChildElement(i));
+					auto child_name = child->XMLNodeBase::getName();
 					if (child->nameOneOf("CoreModifiableAttribute", "Attr"))
 					{
 						auto name = child->getAttribute("Name", "N");
@@ -1720,7 +1720,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 							break;
 						}
 					}
-					else if (is_lua_method && child->getName() == "LUA")
+					else if (is_lua_method && child->XMLNodeBase::getName() == "LUA")
 					{
 						auto name = child->getAttribute("Name", "N");
 						if (name && name->getString() == func_name)
@@ -1748,7 +1748,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 					xml_node->removeChild(attr_xml);
 					delete attr_xml;
 					attr_xml = nullptr;
-					if (xml_node->getChildCount() == 0 && xml_node->getName() == "Rel")
+					if (xml_node->getChildCount() == 0 && xml_node->XMLNodeBase::getName() == "Rel")
 					{
 						auto parent_node = xml_node->getParent();
 						if (parent_node) ((XMLNode*)parent_node)->removeChild(xml_node);
@@ -2094,7 +2094,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			}
 
 			AttributeChange attr_change;
-			XMLAttribute* lua_initializer = nullptr;
+			XMLAttributeBase* lua_initializer = nullptr;
 			if (!is_lua_method && attr_xml)
 			{
 				if (attr_xml->getAttribute("Value", "V"))
@@ -2123,7 +2123,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 					if (is_lua_method)
 						attr_xml->setString(attr_change.value);
 					else
-						attr_change.attr_value->setString(attr_change.value);
+						static_cast<XMLAttribute*>(attr_change.attr_value)->setString(attr_change.value);
 
 					AddToXMLChanged(xml_file_item, gKigsTools->ActiveXMLFile);
 				}
@@ -2547,10 +2547,10 @@ void DrawIncludeNode(XMLNode* node)
 
 void DrawInstanceNode(XMLNode* node)
 {
-	XMLAttribute* name_attr		= node->getAttribute("N", "Name");
-	XMLAttribute* type_attr		= node->getAttribute("T", "Type");
-	XMLAttribute* path_attr		= node->getAttribute("P", "Path");
-	XMLAttribute* unique_attr	= node->getAttribute("U", "Unique");
+	XMLAttributeBase* name_attr		= node->getAttribute("N", "Name");
+	XMLAttributeBase* type_attr		= node->getAttribute("T", "Type");
+	XMLAttributeBase* path_attr		= node->getAttribute("P", "Path");
+	XMLAttributeBase* unique_attr	= node->getAttribute("U", "Unique");
 	std::string name = "";
 	if (name_attr) name = name_attr->getString();
 
@@ -2560,7 +2560,7 @@ void DrawInstanceNode(XMLNode* node)
 		{
 			for (u32 i = 0; i < node->getChildCount(); ++i)
 			{
-				DrawXMLNode(node->getChildElement(i));
+				DrawXMLNode(static_cast<XMLNode*>(node->getChildElement(i)));
 			}
 			ImGui::TreePop();
 		}
@@ -2571,7 +2571,7 @@ void DrawXMLNode(XMLNode* node)
 {
 	if (node->nameOneOf("Instance", "Inst"))
 		DrawInstanceNode(node);
-	else if (node->getName() == "Include")
+	else if (node->XMLNodeBase::getName() == "Include")
 		DrawIncludeNode(node);
 	else if (node->nameOneOf("Ref", "Reference"))
 		DrawReferenceNode(node);

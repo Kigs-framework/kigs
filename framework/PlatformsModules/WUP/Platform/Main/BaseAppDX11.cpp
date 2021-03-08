@@ -13,16 +13,16 @@
 
 //#include <windows.foundation.h>
 #include "winrt/Windows.System.Profile.h"
+#include "winrt/Windows.ApplicationModel.h"
 #include "winrt/Windows.ApplicationModel.Activation.h"
 #include "winrt/Windows.ApplicationModel.Preview.Holographic.h"
 #include "winrt/Windows.Storage.h"
 #include "winrt/Windows.UI.ViewManagement.h"
-
+#include "winrt/Windows.UI.Xaml.h"
+#include <winrt/Windows.Foundation.Collections.h>
 #include "winrt/Windows.Graphics.DirectX.Direct3D11.h"
 
 #include <sstream>
-
-//#include <Inspectable.h>
 
 #include <mutex>
 
@@ -43,7 +43,6 @@ bool gIsVR = false;
 
 std::mutex gPickedFileMutex;
 winrt::Windows::Storage::StorageFile gPickedStorageFile = nullptr;
-SmartPointer<::FileHandle> gPickedFile;
 
 using namespace winrt::Windows::System::Profile;
 
@@ -52,10 +51,25 @@ using namespace winrt::Windows::System::Profile;
 
 #include "utf8.h"
 
+#include <Windows.h>
+
+void print_context(char* iden)
+{
+	APTTYPE type;
+	APTTYPEQUALIFIER qualifier;
+	HRESULT const result = CoGetApartmentType(&type, &qualifier);
+	const char* appart = "N/A";
+	if (result == S_OK)
+	{
+		appart = (type == APTTYPE_MTA ? "MTA" : "STA");
+	}
+	kigsprintf("[%s] thread:%d apartment:%s\n", iden, GetCurrentThreadId(), appart);
+}
+
 void wupmain()
 {
 	winrt::init_apartment();
-	CoreApplication::Run(App());
+	CoreApplication::Run(winrt::make<App>());
 	winrt::uninit_apartment();
 }
 
@@ -72,6 +86,7 @@ void App::Initialize(CoreApplicationView const& applicationView)
 {	
 	StorageFileFileAccess::setMainThreadID();
 	using namespace winrt::Windows::ApplicationModel::Activation;
+
 	applicationView.Activated([this](CoreApplicationView const& view, IActivatedEventArgs args)
 	{
 		if (args.Kind() == ActivationKind::File)
@@ -84,25 +99,22 @@ void App::Initialize(CoreApplicationView const& applicationView)
 				{
 					auto file = item.as<StorageFile>();
 					{
-						no_await_lambda([this, file]() -> winrt::Windows::Foundation::IAsyncAction
-						{
-							auto hdl = co_await MakeHandleFromStorageFile(file);
-							//co_await winrt::resume_foreground(mWindow.Dispatcher());
-							{
-								std::lock_guard<std::mutex> lk{ gPickedFileMutex };
-								gPickedFile = hdl;
-							}
-							/*if (KigsCore::Instance())
-							{
-								KigsCore::GetNotificationCenter()->postNotificationName("WUPFileActivation");
-							}*/
-						});
+						std::lock_guard<std::mutex> lk{ gPickedFileMutex };
+						gPickedStorageFile = file;
 					}
 				}
 			}
 		}
 		// Run() won't start until the CoreWindow is activated.
 		CoreWindow::GetForCurrentThread().Activate();
+	});
+	
+	CoreApplication::Suspending([this](winrt::Windows::Foundation::IInspectable sender, winrt::Windows::ApplicationModel::SuspendingEventArgs args)
+	{
+		if (KigsCore::Instance() && KigsCore::Instance()->GetCoreApplication())
+			KigsCore::Instance()->GetCoreApplication()->EmitSignal("UWP_ApplicationSuspendedEvent");
+		
+		//mWindowClosed = true;
 	});
 }
 
@@ -139,13 +151,10 @@ void App::SetWindow(CoreWindow const& window)
 	window.VisibilityChanged([this](CoreWindow const& window, VisibilityChangedEventArgs args)
 	{
 		mWindowVisible = args.Visible();
-		if (mWindowVisible)
-		{
-			auto notif = KigsCore::Instance() ? KigsCore::GetNotificationCenter() : nullptr; 
-			if(notif) notif->postNotificationName("WUPWindowVisible");
-		}
+		if (KigsCore::Instance() && KigsCore::Instance()->GetCoreApplication())
+			KigsCore::Instance()->GetCoreApplication()->EmitSignal("UWP_VisibilityChangedEvent", (bool)mWindowVisible);
 	});
-
+	
 	window.Closed([this](CoreWindow const& window, CoreWindowEventArgs args)
 	{
 		mWindowClosed = true;
@@ -186,77 +195,51 @@ void App::Load(winrt::hstring const& entryPoint)
 
 void App::Run()
 {
-	setlocale(LC_NUMERIC, "C");
-	//! First thing to do
+	print_context("Run");
 
+	setlocale(LC_NUMERIC, "C");
 	KigsCore::Init();
 
-#if defined(WUP) && 0
-	Win32OpenFilePicker();
-#endif
 	CoreWindow window = CoreWindow::GetForCurrentThread();
 	CoreDispatcher dispatcher = window.Dispatcher();
 
-
-	// no need to register app to factory
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));
-	CoreBaseApplication*	myApp = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
-
-	/*auto itr = args->begin();
-	auto end = args->end();
-	for(;itr!=end;++itr)
-	{
-	myApp->PushArg((*itr)->Data);
-	}*/
-
+	CoreBaseApplication* app = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
 
 #ifdef INIT_DEFAULT_MODULES
 #ifdef BASE_DATA_PATH
-	//! then init
-	myApp->InitApp(BASE_DATA_PATH, true);
+	app->InitApp(BASE_DATA_PATH, true);
 #else
-	//! then init
-	myApp->InitApp(0, true);
+	app->InitApp(0, true);
 #endif //BASE_DATA_PATH
 
 #else
-	//! then init
-	myApp->InitApp(0, false);
-
+	app->InitApp(0, false);
 #endif //INIT_DEFAULT_MODULES
-	
-	//window.Activate();
 
-	//dispatcher.ProcessEvents(CoreProcessEventsOption::ProcessUntilQuit);
-	while (!mWindowClosed && (!myApp->NeedExit()))
+
+	while (!mWindowClosed && (!app->NeedExit()))
 	{
 		if (mWindowVisible)
 		{
 			CoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
-			myApp->UpdateApp();
+			app->UpdateApp();
 		}
 		else
 		{
 			CoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
 		}
 	}
-	//CleanupEGL();
 
-
-	//! close
-	myApp->CloseApp();
-
-	//! delete
-	myApp->Destroy();
-	
-	//! last thing to do
+	app->CloseApp();
+	app->Destroy();
 	KigsCore::Close();
 }
 
 void App::Uninitialize()
 {
+	mWindowClosed = true;
 }
-
 
 void App::Swap()
 {

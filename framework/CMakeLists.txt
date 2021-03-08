@@ -1,6 +1,8 @@
 project(Framework)
 
+
 add_kigs_module(2DLayers)
+add_kigs_module(Camera)
 add_kigs_module(Collision)
 add_kigs_module(Core)
 add_kigs_module(CoreAnimation)
@@ -18,5 +20,20 @@ add_kigs_module(Thread)
 add_kigs_module(Timer)
 add_kigs_module(TinyImage)
 add_kigs_module(XML)
+
+IF(EXISTS AugmentedReality/CMakeLists.txt)
+	add_kigs_module(AugmentedReality)
+endif()
+
+if(TARGET avcodec)
+	if(${KIGS_PLATFORM} STREQUAL "Windows" OR ${KIGS_PLATFORM} STREQUAL "Android")
+		add_subdirectory(Camera/CameraFFMPEG)
+		SET_TARGET_PROPERTIES( CameraFFMPEG PROPERTIES  FOLDER "framework" )
+	endif()
+endif()
+	
+if(TARGET box2d)
+	add_kigs_module(Box2DBind)
+endif()
 
 add_subdirectory(StandAloneUtilityClasses)

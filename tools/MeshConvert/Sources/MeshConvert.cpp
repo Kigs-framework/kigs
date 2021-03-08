@@ -117,11 +117,11 @@ void	MeshConvert::ProtectedInit()
 	do // pseudo loop for exit management
 	{
 		// retreive args
-		kstl::vector<kstl::string>::iterator itArgs = myArgs.begin();
+		kstl::vector<kstl::string>::iterator itArgs = mArgs.begin();
 		// skip app name
 		itArgs++;
 
-		int totalArgsCount = myArgs.size() - 1;
+		int totalArgsCount = mArgs.size() - 1;
 
 		if ((totalArgsCount < 2))
 		{
@@ -134,7 +134,7 @@ void	MeshConvert::ProtectedInit()
 
 		bool wholeScene=false;
 
-		for (; itArgs != myArgs.end(); itArgs++)
+		for (; itArgs != mArgs.end(); itArgs++)
 		{
 			kstl::string& current = (*itArgs);
 
@@ -486,9 +486,9 @@ void	MeshConvert::ProtectedInit()
 
 			Scene->GetRef();
 			theSceneGraph->addItem(Scene);
-			theSceneGraph->Update(*myApplicationTimer.get(), nullptr);
+			theSceneGraph->Update(*mApplicationTimer.get(), nullptr);
 			// update twice
-			theSceneGraph->Update(*myApplicationTimer.get(), nullptr);
+			theSceneGraph->Update(*mApplicationTimer.get(), nullptr);
 			
 			if (wholeScene)
 			{
@@ -550,9 +550,9 @@ void	MeshConvert::ProtectedInit()
 			Scene->GetRef();
 
 			theSceneGraph->addItem(Scene);
-			theSceneGraph->Update(*myApplicationTimer.get(), nullptr);
+			theSceneGraph->Update(*mApplicationTimer.get(), nullptr);
 			// update twice
-			theSceneGraph->Update(*myApplicationTimer.get(), nullptr);
+			theSceneGraph->Update(*mApplicationTimer.get(), nullptr);
 
 			if (wholeScene)
 			{
@@ -569,7 +569,7 @@ void	MeshConvert::ProtectedInit()
 
 	}while (0);// pseudo loop for exit management
 
-	myNeedExit = true;
+	mNeedExit = true;
 }
 
 //-------------------------------------------------------------------------
@@ -595,5 +595,5 @@ void	MeshConvert::ProtectedClose()
 
 void	MeshConvert::ProtectedExternAskExit()
 {
-	myNeedExit = true;
+	mNeedExit = true;
 }

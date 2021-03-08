@@ -22,6 +22,7 @@ using namespace concurrency;
 
 #include "winrt/Windows.Storage.Streams.h"
 #include "winrt/Windows.Storage.FileProperties.h"
+#include "winrt/Windows.Foundation.Collections.h"
 
 void WUPprintf(const char* fmt, ...)
 {
@@ -124,40 +125,7 @@ bool Win32CreateFolderTree(::FileHandle* hndl)
 
 SmartPointer<::FileHandle>	Win32OpenFilePicker()
 {
-	/*
-	auto fop = ref new FileOpenPicker();
-
-	fop->ViewMode = PickerViewMode::List;
-	fop->SuggestedStartLocation = PickerLocationId::ComputerFolder;
-	fop->FileTypeFilter->Append(".xml");
-	
-	auto pick_async = fop->PickSingleFileAsync();
-	if (!WaitForAsyncOperation(pick_async)) return nullptr;
-
-	auto f = pick_async->GetResults();
-	if (!f) return nullptr;
-
-	auto stream_async = f->OpenReadAsync(); 
-	if (!WaitForAsyncOperation(stream_async)) return nullptr;
-	auto stream = stream_async->GetResults();
-	if (!stream) return nullptr;
-
-	auto reader = ref new DataReader(stream);
-	if (!WaitForAsyncOperation(reader->LoadAsync(stream->Size))) return nullptr;
-
-	{
-		//std::lock_guard<std::mutex> lk{ gPickedFileMutex };
-		gPickedFileData.resize(stream->Size);
-		reader->ReadBytes(Platform::ArrayReference<u8>(gPickedFileData.data(), stream->Size));
-	}
-	*/
 	return {};
-	/*auto p = f->Path;
-	usString test = (u16*)p->Data();
-
-	SmartPointer<::FileHandle> hdl = FilePathManager::CreateFileHandle(test.ToString());
-	hdl->mFullFileName = test.ToString();
-	return hdl;*/
 }
 
 
