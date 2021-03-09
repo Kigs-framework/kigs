@@ -11,6 +11,7 @@
 #include "TextureFileManager.h"
 #include "NotificationCenter.h"
 #include "ModuleRenderer.h"
+#include "Window.h"
 
 #include "IconsForkAwesome.h"
 #include "forkawesome.h"
@@ -29,13 +30,34 @@ using namespace winrt::Windows::Storage;
 
 IMPLEMENT_CLASS_INFO(ImGuiLayer);
 
+const char* GetClipboardTextFunc(void* user_data)
+{
+	auto layer = (ImGuiLayer*)user_data;
+	auto rs = layer->GetRenderingScreen();
+	auto window = rs->GetParentWindow();
+	const auto& txt = window->GetClipboardText();
+	return txt.c_str();
+}
+
+void SetClipboardTextFunc(void* user_data, const char* txt)
+{
+	auto layer = (ImGuiLayer*)user_data;
+	auto rs = layer->GetRenderingScreen();
+	auto window = rs->GetParentWindow();
+	window->SetClipboardText(txt);
+}
+
 IMPLEMENT_CONSTRUCTOR(ImGuiLayer)
 {
 	mImGuiState = ImGui::CreateContext();
 	ImGuiContext* old_state = ImGui::GetCurrentContext();
 	ImGui::SetCurrentContext(mImGuiState);
 
-	ImGui::GetIO().UserData = this;
+	
+	auto& io = ImGui::GetIO();
+	io.UserData = this;
+
+	
 
 #ifdef WUP
 	ImGui::GetIO().IniFilename = nullptr;
@@ -209,6 +231,7 @@ void ImGuiLayer::InitModifiable()
 		// TODO(antoine) actual cursor support
 		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 
+		
 		mApp = KigsCore::Instance()->GetCoreApplication();
 		mInput = (ModuleInput*)KigsCore::Instance()->GetMainModuleInList(InputModuleCoreIndex);
 
@@ -425,6 +448,21 @@ void ImGuiLayer::NewFrame(Timer* timer)
 	ImGuiContext* old_state = SetActiveImGuiLayer();
 	
 	ImGuiIO& io = ImGui::GetIO();
+
+	if (!io.ClipboardUserData)
+	{
+		auto rs = GetRenderingScreen();
+		if (rs)
+		{
+			auto window = rs->GetParentWindow();
+			if (window && window->IsPlatformClipboardSupported())
+			{
+				io.GetClipboardTextFn = GetClipboardTextFunc;
+				io.SetClipboardTextFn = SetClipboardTextFunc;
+				io.ClipboardUserData = this;
+			}
+		}
+	}
 	
 #ifdef WUP
 	if (io.WantSaveIniSettings)

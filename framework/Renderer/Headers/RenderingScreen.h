@@ -156,6 +156,8 @@ public:
 
 	COREMODIFIABLE_METHODS(ResetContext);
 
+	Window* GetParentWindow() const { return mParentWindow; };
+
 protected:
 	// recompute mDesignCoefX,mDesignCoefY;
 	void	InitModifiable() override;

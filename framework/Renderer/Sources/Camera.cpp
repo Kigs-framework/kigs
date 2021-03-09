@@ -46,12 +46,14 @@ IMPLEMENT_CONSTRUCTOR(Camera)
 	
 	RenderPass opaque_pass;
 	opaque_pass.pass_mask = 1;
+	opaque_pass.name = "Opaque Pass";
 	mRenderPasses.push_back(opaque_pass);
 
 	RenderPass transparent_pass;
 	transparent_pass.pass_mask = 2;
 	transparent_pass.use_front_to_back_sorter = true;
 	transparent_pass.allow_instancing = false;
+	transparent_pass.name = "Transparent Pass";
 	mRenderPasses.push_back(transparent_pass);
 
 	OVERLOAD_DECORABLE(Cull, Node3D, Camera);

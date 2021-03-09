@@ -77,6 +77,10 @@ public:
 
 	virtual void ChangeWindowText(const char * txt){}
 
+	virtual bool IsPlatformClipboardSupported() { return false; }
+	virtual const std::string& GetClipboardText() { return mClipboard; };
+	virtual void SetClipboardText(const std::string& txt) { mClipboard = txt; };
+
 protected:
 	//! destructor
     virtual ~Window();
@@ -115,6 +119,8 @@ protected:
 	KeyDownCallbackFn mKeyDownCallback,mKeyUpCallback;
 	//! destroy callback
 	DestroyCallbackFn mDestroyCallback;
+
+	std::string mClipboard;
 };    
 
 #endif

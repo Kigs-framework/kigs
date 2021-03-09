@@ -24,13 +24,17 @@ bool gKigsToolsAvailable = false;
 #include "Camera.h"
 #include "Timer.h"
 #include "Node3DDelayed.h"
+#include "XMLWriterFile.h"
 
 #include "IconsForkAwesome.h"
 #include "imgui_internal.h"
+#include "ImGuiCustom.h"
 
 #include "XML.h"
 #include "XMLNode.h"
 #include "XMLAttribute.h"
+
+#include "BinarySerializer.h"
 
 #include <algorithm>
 #include <regex>
@@ -39,6 +43,10 @@ bool gKigsToolsAvailable = false;
 #ifdef WUP
 #include <utf8.h>
 #include <winrt/Windows.Storage.h>
+#include <winrt/Windows.Storage.Pickers.h>
+#include <winrt/Windows.Storage.AccessCache.h>
+
+#include <winrt_helpers.h>
 using namespace winrt::Windows::Storage;
 #endif
 
@@ -132,8 +140,6 @@ struct KigsToolsState
 	};
 	ShowNextDraw ShowNextDrawAction = ShowNextDraw::DoNothing;
 
-#pragma pack(push, 1)
-	// Only add at the end, don't remove stuff
 	struct Settings
 	{
 		bool IsSetAsParent = false;
@@ -154,11 +160,68 @@ struct KigsToolsState
 
 		bool LibraryOpen = false;
 		bool ResourcesOpen = false;
+
+		std::string ProjectLocation = ""; // "C:\\work\\nextbim\\private\\projects\\NextBIMExplorer\\assets\\";
+		std::string ProjectFolderAccessToken;
+
+		std::unordered_map<std::string, std::string> TrueFilePaths;
+
+		bool operator==(const Settings& o) const 
+		{
+			return IsSetAsParent == o.IsSetAsParent &&
+				Node2DDebugDraw == o.Node2DDebugDraw &&
+				HideNotInXML == o.HideNotInXML &&
+				HideUnconnectedSignals == o.HideUnconnectedSignals &&
+				AttributesOpen == o.AttributesOpen &&
+				MethodsOpen == o.MethodsOpen &&
+				ConnectionsOpen == o.ConnectionsOpen &&
+				MainWindowPos == o.MainWindowPos &&
+				MainWindowSize == o.MainWindowSize &&
+				Node3DDebugDraw == o.Node3DDebugDraw &&
+				ShowUID == o.ShowUID &&
+				SequenceEditor == o.SequenceEditor &&
+				AutoCommit == o.AutoCommit &&
+				LibraryOpen == o.LibraryOpen &&
+				ResourcesOpen == o.ResourcesOpen &&
+				ProjectLocation == o.ProjectLocation &&
+				ProjectFolderAccessToken == o.ProjectFolderAccessToken &&
+				TrueFilePaths == o.TrueFilePaths;
+		}
+
+		bool operator!=(const Settings& o) const
+		{
+			return !(*this == o);
+		}
+
+		template<typename PacketStream>
+		bool Serialize(PacketStream& stream)
+		{
+			SERIALIZE_VERSION(stream, 1);
+			CHECK_SERIALIZE(serialize_object(stream, IsSetAsParent));
+			CHECK_SERIALIZE(serialize_object(stream, Node2DDebugDraw));
+			CHECK_SERIALIZE(serialize_object(stream, HideNotInXML));
+			CHECK_SERIALIZE(serialize_object(stream, HideUnconnectedSignals));
+			CHECK_SERIALIZE(serialize_object(stream, AttributesOpen));
+			CHECK_SERIALIZE(serialize_object(stream, MethodsOpen));
+			CHECK_SERIALIZE(serialize_object(stream, ConnectionsOpen));
+			CHECK_SERIALIZE(serialize_object(stream, MainWindowPos));
+			CHECK_SERIALIZE(serialize_object(stream, MainWindowSize));
+			CHECK_SERIALIZE(serialize_object(stream, Node3DDebugDraw));
+			CHECK_SERIALIZE(serialize_object(stream, ShowUID));
+			CHECK_SERIALIZE(serialize_object(stream, SequenceEditor));
+			CHECK_SERIALIZE(serialize_object(stream, AutoCommit));
+			CHECK_SERIALIZE(serialize_object(stream, LibraryOpen));
+			CHECK_SERIALIZE(serialize_object(stream, ResourcesOpen));
+			CHECK_SERIALIZE(serialize_object(stream, ProjectLocation));
+			CHECK_SERIALIZE(serialize_object(stream, ProjectFolderAccessToken));
+			CHECK_SERIALIZE(serialize_object(stream, TrueFilePaths));
+			return true;
+		}
 	};
 
 	Settings CurrentSettings;
 	Settings LastSettings;
-#pragma pack(pop)
+
 	
 	struct XMLChange
 	{
@@ -219,38 +282,123 @@ DEFINE_DYNAMIC_METHOD(CoreModifiable, KigsToolsOnDestroy)
 	return false;
 }
 
-void LoadSettings(const std::string& filename)
+void LoadSettings()
 {
-#ifdef WUP
-	auto local_folder = ApplicationData::Current().LocalFolder().Path();
-	std::string utf8_path;
-	utf8::utf16to8(local_folder.begin(), local_folder.end(), std::back_inserter(utf8_path));
-#else
-	std::string utf8_path = "../";
-#endif
+	auto location = gKigsTools->CurrentSettings.ProjectLocation;
+	SmartPointer<CoreRawBuffer> buffer;
 	u64 len;
-	//auto path = FilePathManager::DevicePath(filename, FilePathManager::DOCUMENT_FOLDER);
-	auto buffer = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFile((utf8_path + "\\KigsTools.dat").c_str(), len));
+
+	buffer = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFile("debug.kigstools", len));
+
+	if (location.empty())
+	{
+#ifdef WUP
+		auto local_folder = ApplicationData::Current().LocalFolder().Path();
+		utf8::utf16to8(local_folder.begin(), local_folder.end(), std::back_inserter(location));
+#else
+		std::string utf8_path = "../";
+#endif
+	}
+
+	if(!buffer)
+		buffer = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFile((location + "\\debug.kigstools").c_str(), len));
 
 	if (buffer)
 	{
-		gKigsTools->CurrentSettings = *(KigsToolsState::Settings*)buffer->buffer();
+		PacketReadStream stream{ buffer->data(), buffer->size() };
+		gKigsTools->LastSettings = gKigsTools->CurrentSettings;
+		if (!serialize_object(stream, gKigsTools->CurrentSettings))
+		{
+			gKigsTools->CurrentSettings = gKigsTools->LastSettings;
+			return;
+		}
 		gKigsTools->LastSettings = gKigsTools->CurrentSettings;
 	}
 }
 
-void SaveSettings(const std::string& filename)
+void SaveSettings()
 {
-	//auto path = FilePathManager::DevicePath(filename, FilePathManager::DOCUMENT_FOLDER);
-	//ModuleFileManager::SaveFile(path.c_str(), (unsigned char*)&gKigsTools->CurrentSettings, sizeof(KigsToolsState::Settings));
+	auto location = gKigsTools->CurrentSettings.ProjectLocation;
+	if (location.empty())
+	{
 #ifdef WUP
-	auto local_folder = ApplicationData::Current().LocalFolder().Path();
-	std::string utf8_path;
-	utf8::utf16to8(local_folder.begin(), local_folder.end(), std::back_inserter(utf8_path));
+		auto local_folder = ApplicationData::Current().LocalFolder().Path();
+		utf8::utf16to8(local_folder.begin(), local_folder.end(), std::back_inserter(location));
 #else
-	std::string utf8_path = "../";
+		std::string utf8_path = "../";
 #endif
-	ModuleFileManager::Get()->SaveFile((utf8_path + "\\KigsTools.dat").c_str(), (u8*)&gKigsTools->CurrentSettings, sizeof(KigsToolsState::Settings));
+	}
+
+#ifdef WUP
+	no_await_lambda([location]() -> winrt::Windows::Foundation::IAsyncAction
+	{
+		std::vector<u32> data;
+		VectorWriteStream stream{ data };
+		if (!serialize_object(stream, gKigsTools->CurrentSettings)) return;
+		stream.Flush();
+
+		auto folder = co_await StorageFolder::GetFolderFromPathAsync(to_wchar(location));
+		if (!folder) co_return;
+		auto file = co_await folder.CreateFileAsync(L"debug.kigstools", CreationCollisionOption::ReplaceExisting);
+		if (!file) co_return;
+		auto file_stream = co_await file.OpenAsync(FileAccessMode::ReadWrite);
+		Streams::DataWriter writer(file_stream);
+		writer.WriteBytes({ (u8*)data.data(), (u8*)(data.data() + data.size()) });
+		co_await writer.StoreAsync();
+	});
+	
+#else
+	std::vector<u32> data;
+	VectorWriteStream stream{ data };
+	if (!serialize_object(stream, gKigsTools->CurrentSettings)) return;
+	stream.Flush();
+	ModuleFileManager::Get()->SaveFile((location + "\\debug.kigstools").c_str(), (u8*)data.data(), data.size()*sizeof(u32));
+#endif
+}
+
+void RequestAccessToProjectFolder()
+{
+	return;
+
+#ifdef WUP
+	no_await_lambda([]() -> winrt::Windows::Foundation::IAsyncAction
+	{
+		auto token = gKigsTools->CurrentSettings.ProjectFolderAccessToken;
+		auto access_list = winrt::Windows::Storage::AccessCache::StorageApplicationPermissions::FutureAccessList();
+		bool request = true;
+
+		StorageFolder folder = nullptr;
+
+		if (!token.empty())
+		{
+			if (access_list.ContainsItem(to_wchar(token)))
+			{
+				folder = co_await access_list.GetFolderAsync(to_wchar(token));
+				if (folder)
+				{
+					request = false;
+				}
+			}
+		}
+
+		if (request)
+		{
+			using namespace winrt::Windows::Storage::Pickers;
+			FolderPicker picker;
+			picker.SuggestedStartLocation(PickerLocationId::ComputerFolder);
+			picker.FileTypeFilter().Append(L"*");
+			folder = co_await picker.PickSingleFolderAsync();
+			if (!folder) co_return;
+			token = to_utf8(access_list.Add(folder).c_str());
+		}
+
+		if (folder)
+		{
+			gKigsTools->CurrentSettings.ProjectFolderAccessToken = token;
+		}
+	});
+
+#endif
 }
 	
 bool SetupTools() 
@@ -282,8 +430,9 @@ bool SetupTools()
 	{
 		gKigsTools->Application = KigsCore::GetCoreApplication();
 		gKigsTools->Application->INSERT_DYNAMIC_METHOD(KigsToolsOnDestroy, KigsToolsOnDestroy);
-		LoadSettings("KigsTools.settings");
+		LoadSettings();
 
+		RequestAccessToProjectFolder();
 
 		gDrawBBoxForNode = [](Node3D* n) -> bool
 		{
@@ -413,7 +562,6 @@ bool PassWildcardSearch(const std::vector<std::string>& splitted_search, const s
 	return true;
 }
 
-
 void DrawMenuBar()
 {
 	constexpr size_t dt_nb_samples = 60;
@@ -434,8 +582,9 @@ void DrawMenuBar()
 		
 		
 	if (!gKigsTools->ShowWindow.MenuBar && !gKigsTools->Paused) return;
-
-		
+	
+	static std::string edited_location;
+	bool open_location_popup = false;
 	auto show_menu_bar = ImGui::BeginMainMenuBar();
 	ImVec2 menu_bar_size = ImGui::GetWindowSize();
 	if (show_menu_bar)
@@ -464,6 +613,7 @@ void DrawMenuBar()
 			ImGui::EndMenu();
 		}
 
+		
 		if (ImGui::BeginMenu("Settings"))
 		{
 			if (ImGui::MenuItem("Show/Hide UID")) gKigsTools->CurrentSettings.ShowUID = !gKigsTools->CurrentSettings.ShowUID;
@@ -471,6 +621,10 @@ void DrawMenuBar()
 #if KIGS_COREDATADRIVENSEQUENCE_AVAILABLE
 			if (ImGui::MenuItem("Sequence Editor")) gKigsTools->CurrentSettings.SequenceEditor = !gKigsTools->CurrentSettings.SequenceEditor;
 #endif
+			if (ImGui::MenuItem("Project Location"))
+			{
+				open_location_popup = true;
+			}
 			ImGui::EndMenu();
 		}
 
@@ -520,6 +674,26 @@ void DrawMenuBar()
 		}
 #endif
 		ImGui::EndMainMenuBar();
+	}
+	if (open_location_popup)
+	{
+		edited_location = gKigsTools->CurrentSettings.ProjectLocation;
+		ImGui::OpenPopup("ProjectLocation");
+	}
+	if (ImGui::BeginPopup("ProjectLocation"))
+	{
+		ImGui::InputText("Project Location", edited_location);
+		if (ImGui::Button("Ok"))
+		{
+			gKigsTools->CurrentSettings.ProjectLocation = edited_location;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel"))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
 	}
 
 	auto viewport = ImGui::GetMainViewport();
@@ -1296,16 +1470,46 @@ void CustomAttributeEditor(CoreModifiable* item)
 		{
 			auto camera = c->as<Camera>();
 			auto& passes = camera->GetRenderPasses();
-				
+			static bool OnlyDraws = true;
 			if (ImGui::CollapsingHeader("RenderPasses"))
 			{
+				ImGui::Checkbox("Only show draws", &OnlyDraws);
 				for (auto& p : passes)
 				{
-					if (ImGui::CollapsingHeader(std::to_string(p.pass_mask).c_str()))
+					if (ImGui::CollapsingHeader((p.name._id_name + " [" + std::to_string(p.pass_mask) + "]").c_str()))
 					{
 						p.record_pass = true;
-						for (auto& str : p.debug_draw_path)
-							ImGui::Text(str.c_str());
+						int step = 0;
+						for (auto& el : p.debug_draw_path)
+						{
+							if (el.DrawStep == RenderPass::DrawPathElement::Step::PostDraw)
+								--step;
+
+							if (el.DrawStep == RenderPass::DrawPathElement::Step::Draw || !OnlyDraws)
+							{
+								auto txt = el.Object->getName() + " [" + std::to_string(el.Object->getUID()) + "]";
+								
+								
+
+								if (!OnlyDraws)
+								{
+									if (el.DrawStep == RenderPass::DrawPathElement::Step::PreDraw)
+										txt = "| PreDraw  | " + txt;
+									else if (el.DrawStep == RenderPass::DrawPathElement::Step::Draw)
+										txt = "| Draw     | " + txt;
+									else if(el.DrawStep == RenderPass::DrawPathElement::Step::PostDraw)
+										txt = "| PostDraw | " + txt;
+								}
+
+								for (int i = 1; i < step ; ++i)
+									txt = " " + txt;
+
+								ImGui::Text(txt.c_str());
+							}
+
+							if (el.DrawStep == RenderPass::DrawPathElement::Step::PreDraw)
+								++step;
+						}
 					}
 				}
 			}
@@ -2801,19 +3005,79 @@ void DrawEditor()
 			{
 				if (ImGui::GetIO().KeyCtrl)
 				{
-					bool need_reload = false;
-					for (auto& el : gKigsTools->XMLChanged)
+					static bool saving = false;
+					if (!saving)
 					{
-						for (auto& xml : el.second.FileChanged)
+						saving = true;
+#ifdef WUP
+						no_await_lambda([]() -> winrt::Windows::Foundation::IAsyncAction
 						{
-							auto path = xml->getPath();
-							if (path.empty()) path = "test.xml";
-							((XML*)xml.get())->WriteFile(path);
-							need_reload = true;
-						}
+#endif
+							kigs_defer
+							{
+								saving = false;
+							};
+							kigs::unordered_map<CoreModifiable*, KigsToolsState::XMLChange> ToReAdd;
+							for (auto& el : gKigsTools->XMLChanged)
+							{
+								for (auto& xml : el.second.FileChanged)
+								{
+									auto path = xml->getPath();
+#ifdef WUP
+									if (auto itfind = gKigsTools->CurrentSettings.TrueFilePaths.find(path); itfind != gKigsTools->CurrentSettings.TrueFilePaths.end())
+									{
+										path = itfind->second;
+									}
+									else
+									{
+										using namespace winrt::Windows::Storage::Pickers;
+										FileSavePicker picker;
+										picker.SuggestedStartLocation(PickerLocationId::ComputerFolder);
+										picker.SuggestedFileName(to_wchar(path));
+										auto types = winrt::single_threaded_vector<winrt::hstring>({ L".xml" });
+										picker.FileTypeChoices().Insert(L"XML", types);
+										auto file = co_await picker.PickSaveFileAsync();
+
+										if (file)
+										{
+											auto true_path = to_utf8(file.Path().c_str());
+											gKigsTools->CurrentSettings.TrueFilePaths[path] = true_path;
+											path = true_path;
+										}
+										else
+										{
+											path = "";
+										}
+									}
+#endif
+									if (path.empty())
+									{
+										ToReAdd[el.first].FileChanged.insert(xml);
+									}
+									else
+									{
+#ifdef WUP
+										std::string output;
+										XMLWriterFile::WriteString(*(XML*)xml.get(), output);
+										auto file = co_await StorageFile::GetFileFromPathAsync(to_wchar(path));
+										if (file)
+										{
+											auto file_stream = co_await file.OpenAsync(FileAccessMode::ReadWrite);
+											Streams::DataWriter writer(file_stream);
+											writer.WriteBytes({ (u8*)output.data(), (u8*)(output.data() + output.size()) });
+											co_await writer.StoreAsync();
+										}
+#else
+										((XML*)xml.get())->WriteFile(path);
+#endif
+									}
+								}
+							}
+							gKigsTools->XMLChanged = ToReAdd;
+#ifdef WUP
+						});
+#endif
 					}
-					gKigsTools->XMLChanged.clear();
-					//if (need_reload) ReloadCurrentSequence();
 				}
 				break;
 			}
@@ -2871,7 +3135,7 @@ void DrawEditor()
 			if (gKigsTools->HierarchyWindow.Scope.size()==1 && seq)
 			{
 				PushToScope(seq.get());
-				gKigsTools->HierarchyWindow.ForceExpandAll = true;
+				//gKigsTools->HierarchyWindow.ForceExpandAll = true;
 				if (seq->mXMLFiles.size())
 				{
 					gKigsTools->ActiveXMLItem = seq.get();
@@ -2956,9 +3220,9 @@ void DrawEditor()
 	//gKigsTools->CurrentSettings.Node3DDebugDraw = true;
 	gCullingDrawBBox = gKigsTools->CurrentSettings.Node3DDebugDraw;
 
-	if (memcmp(&gKigsTools->CurrentSettings, &gKigsTools->LastSettings, sizeof(KigsToolsState::Settings)) != 0)
+	if (gKigsTools->CurrentSettings != gKigsTools->LastSettings)
 	{
-		SaveSettings("KigsTools.settings");
+		SaveSettings();
 	}
 	gKigsTools->LastSettings = gKigsTools->CurrentSettings;
 }

@@ -52,8 +52,20 @@ struct RenderPass
 	DrawableSorter* sorter = nullptr;
 	int depth_buffer_index = 0;
 
+	KigsID name;
+
 #ifdef KIGS_TOOLS
-	std::vector<std::string> debug_draw_path;
+	struct DrawPathElement
+	{
+		CMSP Object;
+		enum class Step
+		{
+			PreDraw,
+			Draw,
+			PostDraw
+		} DrawStep = Step::PreDraw;
+	};
+	std::vector<DrawPathElement> debug_draw_path;
 	bool record_pass = false;
 #endif
 };

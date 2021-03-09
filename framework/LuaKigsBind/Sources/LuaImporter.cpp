@@ -96,7 +96,6 @@ s32 LuaImporter::Import(const std::string& fileName, std::vector<CoreModifiable*
 
 		InternalImport(parent, table, import);
 		FinalizeImport(L, import);
-
 		return root.size();
 	}
 	else
@@ -138,7 +137,6 @@ void LuaImporter::InitModifiable()
 
 			InternalImport(parent, table, import);
 			FinalizeImport(L, import);
-
 		}
 		else
 		{
