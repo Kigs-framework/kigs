@@ -2,6 +2,7 @@
 
 #include "CoreSTL.h"
 #include "TecLibs/Tec3D.h"
+#include "AsciiParserUtils.h"
 
 #include <limits>
 #include <algorithm>
@@ -676,6 +677,8 @@ struct BasePacketWriteStream
 	void* user_data = nullptr;
 };
 
+using PacketWriteStream = BasePacketWriteStream<BitPacker>;
+using VectorWriteStream = BasePacketWriteStream<VectorBitPacker>;
 
 template<typename T>
 std::string SaveToString(T& thing)
@@ -698,5 +701,3 @@ bool LoadFromString(T& thing, const std::string& str)
 }
 
 
-using PacketWriteStream = BasePacketWriteStream<BitPacker>;
-using VectorWriteStream = BasePacketWriteStream<VectorBitPacker>;

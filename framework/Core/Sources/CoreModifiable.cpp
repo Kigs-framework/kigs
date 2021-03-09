@@ -925,7 +925,6 @@ EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, &, IMPLEMENT_GET_VALUE);
 EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SET_VALUE);
 
 
-
 ////////////////////////////////////////////////////////////////////////////
 
 //! macro implementing body of get/set values for array
@@ -1529,6 +1528,11 @@ CoreModifiableAttribute*	CoreModifiable::GenericCreateDynamicAttribute(CoreModif
 		case  CoreModifiable::ATTRIBUTE_TYPE::RAWPTR:
 		{
 			toadd = new maRawPtr(*this, false, ID);
+		}
+		break;
+		case  CoreModifiable::ATTRIBUTE_TYPE::ANY:
+		{
+			toadd = new maAny(*this, false, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::ARRAY:

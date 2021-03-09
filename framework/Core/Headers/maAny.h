@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "CoreModifiableAttribute.h"
 
 #include <any>
@@ -6,7 +8,7 @@
 template<int notificationLevel>
 class maAnyHeritage : public CoreModifiableAttributeData<std::any>
 {
-	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maAnyHeritage, maAnyHeritage, std::any, CoreModifiable::ANY);
+	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maAnyHeritage, maAnyHeritage, std::any, CoreModifiable::ATTRIBUTE_TYPE::ANY);
 public:
 	virtual operator CurrentAttributeType() const
 	{
@@ -23,17 +25,16 @@ public:
 	template<typename T> 
 	std::optional<T> get()
 	{
-		try
-		{
-			return std::any_cast<T>(mValue);
-		}
-		catch (const std::bad_any_cast& e)
-		{
-			return {};
-		}
+		T* value = std::any_cast<T>(&mValue);
+		if (value) return *value;
+		return {};
 	}
 	
-
+	template<typename T>
+	T* getAny()
+	{
+		return std::any_cast<T>(&mValue);
+	}
 
 };
 
