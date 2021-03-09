@@ -355,6 +355,12 @@ bool XMLReaderFile::ReadFile( const kstl::string &file ,CoreModifiable*	delegate
 	return result;
 }
 
+XMLBase* XMLReaderFile::ReadCoreRawBuffer(CoreRawBuffer* buffer)
+{
+	XMLReaderFile reader;
+	return reader.ProtectedReadFileString((char*)buffer->buffer(), buffer->length());
+}
+
 XMLBase* XMLReaderFile::ReadString( const char * Buff )
 {
 #if 1

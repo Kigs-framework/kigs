@@ -466,15 +466,30 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 						for (auto& lp : *localpath)
 						{
 							size_t pos = bundlePathVector[i].find(lp);
-							if (pos == 0)
+							if (pos != std::string::npos)
 							{
-								bundlePathVectorIndex = i;
-								foundinbundle = true;
-								break;
+								if ((lp.length() + pos) == (bundlePathVector[i].length()-1))
+								{
+									if (pos==0)
+									{
+										foundinbundle = true;
+										break;
+									}
+									if (pos<=7) // can be a kpkg ?
+									{
+										kstl::string head = bundlePathVector[bundlePathVectorIndex].substr(1, 3);
+										if (head == "PKG")
+										{
+											foundinbundle = true;
+											break;
+										}
+									}
+								}
 							}
 						}
 						if (foundinbundle)
 						{
+							bundlePathVectorIndex = i;
 							break;
 						}
 					}
