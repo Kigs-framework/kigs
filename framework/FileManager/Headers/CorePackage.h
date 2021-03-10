@@ -426,7 +426,7 @@ public:
 	void	AddFolder(const std::string& foldername, const std::string& FolderNameInPackage);
 	void	RemoveFile(const std::string& filename);
 
-	void	Export(const std::string& filename);
+	void	Export(const std::string& filename, const std::string& working_directory="");
 
 	void	ImportPackage(CorePackage* to_import);
 
@@ -525,6 +525,8 @@ private:
 		void ExportFiles(const FileTreeNode& node, SmartPointer<FileHandle>& L_File, unsigned char* tmpBuffer, unsigned int bufferLen);
 
 		FilePathManager* mFPM=nullptr;
+
+		std::string working_directory;
 
 	private:
 

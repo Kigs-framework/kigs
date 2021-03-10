@@ -376,22 +376,23 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 #endif
 				path += (compressManager ? ".kaabb" : ".aabb");
 				setValue("AABBTree", path);
-
+				
 				if (settings->external_files_exported.find(path) == settings->external_files_exported.end())
 				{
+					auto filepath = settings->working_directory + path;
 					if (compressManager)
 					{
 						auto result = OwningRawPtrToSmartPtr(new CoreRawBuffer);
 						compressManager->SimpleCall("CompressData", crb.get(), result.get());
-						ModuleFileManager::SaveFile(path.c_str(), (u8*)result->data(), result->size());
+						ModuleFileManager::SaveFile(filepath.c_str(), (u8*)result->data(), result->size());
 					}
 					else
 					{
-						ModuleFileManager::SaveFile(path.c_str(), (u8*)crb->data(), crb->length());
+						ModuleFileManager::SaveFile(filepath.c_str(), (u8*)crb->data(), crb->length());
 					}
 
 					if(settings->current_package)
-						settings->current_package->AddFile(path, path);
+						settings->current_package->AddFile(filepath, path);
 
 					settings->external_files_exported.insert(path);
 				}
