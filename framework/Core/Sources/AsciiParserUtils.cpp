@@ -857,7 +857,7 @@ bool	AsciiParserUtilsTemplate<charType>::GetBlock(AsciiParserUtilsTemplate<charT
 
 // retreive block but don't search in parts between quotes
 template<typename charType>
-bool	AsciiParserUtilsTemplate<charType>::GetBlockExcludeString(AsciiParserUtilsTemplate<charType>& result, charType	blkStart, charType	blkEnd)
+bool	AsciiParserUtilsTemplate<charType>::GetBlockExcludeString(AsciiParserUtilsTemplate<charType>& result, charType	blkStart, charType	blkEnd, charType string_delim)
 {
 	bool	found = false;
 	charType *p = ((charType*)mText) + mCurrentReadPos;
@@ -881,7 +881,7 @@ bool	AsciiParserUtilsTemplate<charType>::GetBlockExcludeString(AsciiParserUtilsT
 			{
 				EscapeChar = false;
 			}
-			if ((*p == '"') && (EscapeChar == false))
+			if ((*p == string_delim) && (EscapeChar == false))
 			{
 				inQuote = !inQuote;
 			}

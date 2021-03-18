@@ -209,7 +209,7 @@ public:
 	// push start / pop end until real block end is found
 	bool	GetBlock(AsciiParserUtilsTemplate<charType>& result, charType	blkStart = (charType)'{', charType	blkEnd = (charType)'}');
 
-	bool	GetBlockExcludeString(AsciiParserUtilsTemplate<charType>& result, charType	blkStart = (charType)'{', charType	blkEnd = (charType)'}');
+	bool	GetBlockExcludeString(AsciiParserUtilsTemplate<charType>& result, charType	blkStart = (charType)'{', charType	blkEnd = (charType)'}', charType string_delim = (charType)'"');
 
 	// get part before CurrentReadPos
 	bool	GetLeadingPart(AsciiParserUtilsTemplate<charType>& result, bool	removeLeadTrailWhitespace = false);
