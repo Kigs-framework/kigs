@@ -1,5 +1,6 @@
 #include "PrecompiledHeaders.h"
 #include "MinimalXML.h"
+#include "Core.h"
 
 
 // mask : 1 => space or tab
@@ -827,4 +828,99 @@ StringRef** MinimalXML::ElementStart_Parser::getStringRefAttribArray()
 
 	return result;
 
+}
+
+std::string MinimalXML::decodeEscaped(const std::string& toDecode)
+{
+
+	if (toDecode.find('&') == std::string::npos) // no escape char
+	{
+		return toDecode;
+	}
+
+	std::string result;
+
+	size_t pos = toDecode.find('&');
+	size_t last_pos = 0;
+	while (pos != std::string::npos)
+	{
+		std::string part = toDecode.substr(pos + 1, 3);
+		if (part == "amp")
+		{
+			if (toDecode[pos + 4] == ';')
+			{
+				result += toDecode.substr(last_pos, pos - last_pos);
+				result += "&";
+				pos += 5;
+			}
+		}
+		else if (part == "lt;")
+		{
+			result += toDecode.substr(last_pos, pos - last_pos);
+			result += "<";
+			pos += 4;
+		}
+		else if (part == "gt;")
+		{
+			result += toDecode.substr(last_pos, pos - last_pos);
+			result += ">";
+			pos += 4;
+		}
+		else if (part == "quo")
+		{
+			if ((toDecode[pos + 4] == 't') && (toDecode[pos + 5] == ';'))
+			{
+				result += toDecode.substr(last_pos, pos - last_pos);
+				result += "\"";
+				pos +=6;
+			}
+		}
+		else if (part == "apo")
+		{
+			if ((toDecode[pos + 4] == 's') && (toDecode[pos + 5] == ';'))
+			{
+				result += toDecode.substr(last_pos, pos - last_pos);
+				result += "\'";
+				pos += 6;
+			}
+		}
+		else
+		{
+			result += toDecode.substr(last_pos, pos+1 - last_pos);
+			pos++;
+		}
+		last_pos = pos;
+		pos = toDecode.find('&',pos);
+	}
+
+	result+= toDecode.substr(last_pos);
+	return result;
+}
+
+std::string MinimalXML::encodeEscaped(const std::string& toEncode)
+{
+	std::string result= toEncode;
+
+	if (result.find('&') != std::string::npos)
+	{
+		replaceAll(result, "&", "&amp;");
+	}
+	if (result.find('<') != std::string::npos)
+	{
+		replaceAll(result, "<", "&lt;");
+	}
+	if (result.find('>') != std::string::npos)
+	{
+		replaceAll(result, ">", "&gt;");
+	}
+	if (result.find('"') != std::string::npos)
+	{
+		replaceAll(result, "\"", "&quot;");
+	}
+	if (result.find('\'') != std::string::npos)
+	{
+		replaceAll(result, "'", "&apos;");
+	}
+
+	return result;
 }

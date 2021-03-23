@@ -156,6 +156,10 @@ public:
 	bool	Parse(u8* buffer, u64 len);
 
 
+	static std::string decodeEscaped(const std::string& toDecode);
+
+	static std::string encodeEscaped(const std::string& toEncode);
+
 protected:
 
 	void	startElement();

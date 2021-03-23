@@ -735,6 +735,6 @@ inline CMSP KigsCore::GetInstanceOf(const kstl::string& instancename, const Kigs
 	return instance;
 }
 
-
+void replaceAll(std::string& source, const std::string& from, const std::string& to);
 
 #endif //_CORE_H_
