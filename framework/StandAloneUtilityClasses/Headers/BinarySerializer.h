@@ -464,8 +464,8 @@ struct BitUnpacker
 {
 	u64 scratch = 0;
 	s32 scratch_bits = 0;
-	s32 total_bits = 0;
-	s32 num_bits_read = 0;
+	u64 total_bits = 0;
+	u64 num_bits_read = 0;
 	s32 word_index = 0;
 	u32* buffer_start = nullptr;
 
@@ -520,7 +520,7 @@ struct BasePacketReadStream
 	BasePacketReadStream(std::vector<u32> buffer) : backing_buffer{ std::move(buffer) }
 	{
 		packer.buffer_start = backing_buffer.data();
-		packer.total_bits = s32(backing_buffer.size()) * sizeof(u32) * 8;
+		packer.total_bits = u64(backing_buffer.size()) * sizeof(u32) * 8llu;
 	}
 
 	BasePacketReadStream(void* b, size_t size, bool make_copy=false)
@@ -532,7 +532,7 @@ struct BasePacketReadStream
 			packer.buffer_start = backing_buffer.data();
 		}
 		else packer.buffer_start = (u32*)b;
-		packer.total_bits = s32(size) * 8;
+		packer.total_bits = u64(size) * 8llu;
 	}
 
 	template<typename T>
