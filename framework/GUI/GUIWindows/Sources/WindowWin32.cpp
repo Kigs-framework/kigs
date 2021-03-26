@@ -109,11 +109,21 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 	WindowWin32 *pWindow = (WindowWin32*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 	switch (msg)
 	{
+	case WM_CHAR:
+	{
+		if (wParam > 0 && wParam < 0x10000)
+		{
+			auto utf16_char = (unsigned short)wParam;
+			pWindow->EmitSignal("WM_CHAR", utf16_char);
+		}	
+		messageTreated = true;
+	}
+	break;
 		// lose focus / reset click position
 	case WM_KILLFOCUS:
 	{
 		bool IsMainWnd;
-		pWindow->getValue(LABEL_TO_ID(IsMainWindow), IsMainWnd);
+		pWindow->getValue("IsMainWindow", IsMainWnd);
 		if (IsMainWnd)
 		{
 			if (KigsCore::GetCoreApplication())
@@ -125,7 +135,7 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 	case WM_SETFOCUS:
 	{
 		bool IsMainWnd = true;
-		pWindow->getValue(LABEL_TO_ID(IsMainWindow), IsMainWnd);
+		pWindow->getValue("IsMainWindow", IsMainWnd);
 		if (IsMainWnd)
 		{
 			CoreBaseApplication* app = KigsCore::GetCoreApplication();
@@ -272,7 +282,7 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 	case WM_DESTROY:
 	{
 		bool IsMainWnd;
-		pWindow->getValue(LABEL_TO_ID(IsMainWindow), IsMainWnd);
+		pWindow->getValue("IsMainWindow", IsMainWnd);
 		if (IsMainWnd)
 		{
 			if (KigsCore::GetCoreApplication())
@@ -299,7 +309,7 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 		ClientToScreen(hWnd, &p);
 		WindowWin32::MoveWindow(hWnd, p.x, p.y);*/
 
-		pWindow->setValue(LABEL_TO_ID(DirtySize),true);
+		pWindow->setValue("DirtySize",true);
 		return 0;
 	}
 

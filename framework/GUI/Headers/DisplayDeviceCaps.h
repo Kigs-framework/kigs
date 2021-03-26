@@ -49,6 +49,7 @@ public:
 		kstl::string						mName;
 		kstl::vector<DisplayDeviceCapacity>	mCapacityList;		
 		bool								mMain;
+		float								mScaling = 1.0f;
 	};
 
 	DisplayDeviceCapacity* Get_CurrentDisplay(const kstl::string& a_deviceName)
@@ -167,6 +168,21 @@ public:
 		}
 
 		return 0;
+	}
+
+	float GetMainDisplayDeviceScaling() const
+	{
+		if (mDisplayDeviceList.size())
+		{
+			for (auto it = mDisplayDeviceList.cbegin(); it != mDisplayDeviceList.cend(); it++)
+			{
+				if ((*it).second.mMain)
+				{
+					return (*it).second.mScaling;
+				}
+			}
+		}
+		return 1.0f;
 	}
 
 	virtual bool SupportWindowedMode()

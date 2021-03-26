@@ -14,7 +14,7 @@ class   AnonymousModule;
 //! useful macro to create / retreive / destroy modules 
 #define	CoreCreateModule(moduleType,params)		KigsCore::LoadKigsModule<moduleType>(#moduleType,params)
 #define	CoreGetModule(moduleType)				KigsCore::GetModule(#moduleType)
-#define CoreDestroyModule(moduleType)			{ModuleBase* m = KigsCore::GetModule(#moduleType); m->Close(); m->Destroy();}
+#define CoreDestroyModule(moduleType)			{ModuleBase* m = KigsCore::GetModule(#moduleType); if(m){ m->Close(); m->Destroy(); }}
 
 // ****************************************
 // * CoreBaseApplication class

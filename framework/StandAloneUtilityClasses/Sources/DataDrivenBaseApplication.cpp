@@ -554,27 +554,40 @@ void DataDrivenBaseApplication::ProtectedInit()
 				}
 				else
 				{
+					mApplicationScaling = L_displaycaps->GetMainDisplayDeviceScaling();
+					int w = current.mWidth;
+					int h = current.mHeight;
+
+					if (L_ScreenSizeX < 0)
+						L_ScreenSizeX = (w * -L_ScreenSizeX) / 100;
+
+					if (L_ScreenSizeY < 0)
+						L_ScreenSizeY = (h * -L_ScreenSizeY) / 100;
+
 					// if -1 center window
 					if (L_ScreenPosX == -1)
-						L_ScreenPosX = (current.mWidth - L_ScreenSizeX) >> 1;
+						L_ScreenPosX = (w - L_ScreenSizeX) >> 1;
 
 					// if -1 center window
 					if (L_ScreenPosY == -1)
-						L_ScreenPosY = (current.mHeight - L_ScreenSizeY) >> 1;
+						L_ScreenPosY = (h - L_ScreenSizeY) >> 1;
 
 					// if negative (and not -1) set position relative to right border 
 					if(L_ScreenPosX < 0)
-						L_ScreenPosX = current.mWidth - L_ScreenSizeX + L_ScreenPosX;
+						L_ScreenPosX = w - L_ScreenSizeX + L_ScreenPosX;
 
 					// if negative (and not -1) set position relative to bottom border 
 					if (L_ScreenPosY < 0)
-						L_ScreenPosY = current.mHeight - L_ScreenSizeY + L_ScreenPosY;
+						L_ScreenPosY = h - L_ScreenSizeY + L_ScreenPosY;
 				}
 				break;
 			}
 			it++;
 		}
 	}
+
+	if (L_ScreenSizeX < 0) L_ScreenSizeX = 1280;
+	if (L_ScreenSizeY < 0) L_ScreenSizeY = 720;
 
 	// reset value according to display caps
 

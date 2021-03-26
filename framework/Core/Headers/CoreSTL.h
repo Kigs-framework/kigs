@@ -68,6 +68,9 @@ template<class T>
 using has_resize = decltype(std::declval<T&>().resize((size_t)0u));
 
 template<class T>
+using has_bracket_operator = decltype(std::declval<T&>()[std::declval<typename T::key_type&>()]);
+
+template<class T>
 using has_key_type = decltype(std::declval<typename T::key_type&>());
 
 template<class T>

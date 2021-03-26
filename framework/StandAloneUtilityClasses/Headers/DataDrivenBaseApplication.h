@@ -248,7 +248,7 @@ protected:
 	bool mCanUpdateNextFrame = true;
 #endif
 
-
+	float				mApplicationScaling = 1.0f;
 	bool				mPreviousShortcutEnabled;
 
 	// anonymous class used to store global parameters 

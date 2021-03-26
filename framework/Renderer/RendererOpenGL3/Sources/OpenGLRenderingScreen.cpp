@@ -66,6 +66,12 @@ void	OpenGLRenderingScreen::Resize(kfloat sizeX, kfloat sizeY)
 		InitializeGL((int)sizeX, (int)sizeY);
 	}
 
+	if (mResizeDesignSize)
+	{
+		mDesignSizeX = mSizeX;
+		mDesignSizeY = mSizeY;
+	}
+
 	RecomputeDesignCoef();
 
 	EmitSignal(Signals::Resized);

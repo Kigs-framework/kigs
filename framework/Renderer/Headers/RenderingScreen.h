@@ -201,6 +201,8 @@ protected:
 	maBool mNeedDoubleBuffer;
 
 	maBool mIsStereo = BASE_ATTRIBUTE(IsStereo, false);
+	
+	maBool mResizeDesignSize = BASE_ATTRIBUTE(ResizeDesignSize, false);
 
 	Window* mParentWindow;
 

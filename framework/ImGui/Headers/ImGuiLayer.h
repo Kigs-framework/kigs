@@ -50,6 +50,7 @@ public:
 
 	void SetStyleMSFT();
 	void SetStyleHoloLens();
+	void SetStyleLightGreen();
 
 	void RegisterTouch();
 

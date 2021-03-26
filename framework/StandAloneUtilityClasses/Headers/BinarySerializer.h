@@ -271,6 +271,37 @@ namespace serializer_detail
 		return true;
 	}
 
+	template<typename PacketStream, typename T>
+	bool serialize_set_range(PacketStream& stream, T& range)
+	{
+		u64 count = 0;
+
+		if constexpr (PacketStream::IsWriting)
+		{
+			count = std::size(range);
+		}
+
+		CHECK_SERIALIZE(serialize(stream, count));
+
+		if constexpr (!PacketStream::IsWriting)
+		{
+			for (u64 i = 0; i < count; ++i)
+			{
+				std::remove_cv_t<typename T::key_type> value;
+				CHECK_SERIALIZE(serialize_object(stream, value));
+				range.insert(std::move(value));
+			}
+		}
+		else
+		{
+			for (auto& value : range)
+			{
+				CHECK_SERIALIZE(serialize_object(stream, value));
+			}
+		}
+		return true;
+	}
+
 
 	template <typename Tuple, typename F, size_t... Is>
 	bool tuple_for_each(Tuple&& t, F&& f, std::index_sequence<Is...>)
@@ -318,7 +349,10 @@ bool serialize_object(PacketStream& stream, T& value, Args&& ... args)
 		using namespace serializer_detail;
 		if constexpr (is_detected_v<has_key_type, T>)
 		{
-			return serialize_map_range(stream, value, FWD(args)...);
+			if constexpr (is_detected_v<has_bracket_operator, T>)
+				return serialize_map_range(stream, value, FWD(args)...);
+			else
+				return serialize_set_range(stream, value, FWD(args)...);
 		}
 		else
 		{
