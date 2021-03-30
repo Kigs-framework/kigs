@@ -9,7 +9,7 @@
 #include <algorithm>
 #endif
 
-#pragma optimize("", off)
+
 std::shared_mutex	CorePackageFileAccess::mMutex;
 
 void	CorePackage::ParseFATBuffer(unsigned char*& fatBuffer, FATEntryNode* current)
