@@ -5,6 +5,7 @@
 #include "TinyImage.h"
 #include "TecLibs/2D/BBox2DI.h"
 #include "Upgrador.h"
+#include <map>
 
 struct SpriteSheetFrameData
 {

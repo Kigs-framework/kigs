@@ -6,8 +6,7 @@
 #include "Texture.h"
 #include "Camera.h"
 #include "SmartPointer.h"
-#include "SpriteSheetTexture.h"
-
+#include "TextureHandler.h"
 
 // ****************************************
 // * Billboard3D class
@@ -128,22 +127,9 @@ public:
 	Node3D *GetFatherNode() {return mFatherNode;}
 
 	inline void	SetCamera(Camera* a_value){mCamera = a_value;}
-	inline bool	Get_AnimationFinished() const {return mAnimationFinished;}
 
-	void Update(const Timer& _timer, void* addParam) override;
+	
 protected:
-	/**
-	 * \brief	initialize modifiable
-	 * \fn 		virtual void InitModifiable();
-	 */
-	void InitModifiable() override;
-
-	/**
-	* \brief	Change sprite sheet animation
-	* \fn 		void	ChangeAnimation(const char* _newAnimation)
-	* \param	_newAnimation : New animation
-	*/
-	void	ChangeAnimation(const kstl::string& _newAnimation);
 
 	/**
 	 * \brief	prepare the vertex for the drawing
@@ -163,8 +149,6 @@ protected:
 	 */
 	virtual void PrepareVertexBufferCol() = 0;
 
-	void NotifyUpdate(const unsigned int labelid) override;
-
 protected:
 	/**
 	 * \brief	update the orientation far a specific camera
@@ -182,9 +166,10 @@ protected:
 	bool Draw(TravState*) override;
 
 	//! file name of the texture
-	maString mTextureFileName;
+	//maString mTextureFileName;
 	//! Pointer to a Texture... If ==NULL, Billboard should belong to a Billboard Group
-	SP<Texture> mTex;
+	//SP<Texture> mTex;
+	INSERT_FORWARDSP(TextureHandler, mTexturePointer);
 	//! Center of BillBoard
 	maVect3DF mPosition;
 	//! Size = Width,Height
@@ -214,27 +199,12 @@ protected:
 	//! BillBoard Anchor point
 	maVect2DF			mAnchor;
 
-	//----------------------------------SPRITE SHEET TEXTURE-----------------------------------//
-	//! Animation name
-	maString	mCurrentAnimation;
-	//! Frame per second playing per the spritesheet texture
-	maUInt		mFramePerSecond;
 	//! item is enable?
 	maBool		mIsEnabled;
-	//! this item use a spritesheet texture
-	maBool		mIsSpriteSheet;
+
 	//! ratio between scene unit and pixel unit
 	maFloat				mRatio;
 
-	//! Spritesheet texture
-	SP<SpriteSheetTexture>	mTexture;
-	int					mCurrentFrame;
-	float				mAnimationSpeed;
-	double				mElpasedTime;
-	unsigned int		mFrameNumber;
-	maBool				mLoopAnimation;
-	maBool				mReverse;
-	bool				mAnimationFinished;
 };
 
 #endif

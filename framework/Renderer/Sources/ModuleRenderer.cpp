@@ -5,7 +5,6 @@
 #include "Timer.h"
 #include "ModuleRenderer.h"
 #include "DrawableSwitch.h"
-#include "SpriteSheetTexture.h"
 #include "DrawableCallback.h"
 #include "DrawVertice.h"
 #include "KigsBitmap.h"
@@ -52,7 +51,7 @@ void ModuleRenderer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	DECLARE_FULL_CLASS_INFO(core, DrawableCallback, DrawableCallback, Renderer)
 	DECLARE_FULL_CLASS_INFO(core, DrawableSwitch, DrawableSwitch, Renderer)
 	DECLARE_FULL_CLASS_INFO(core, DrawVertice, DrawVertice, Renderer)
-	DECLARE_FULL_CLASS_INFO(core, SpriteSheetTexture, SpriteSheetTexture, Renderer)
+	//DECLARE_FULL_CLASS_INFO(core, SpriteSheetTexture, SpriteSheetTexture, Renderer)
 	DECLARE_FULL_CLASS_INFO(core, KigsBitmap, KigsBitmap, Renderer);
 	DECLARE_FULL_CLASS_INFO(core, MultiMesh, MultiMesh, Renderer);
 	DECLARE_FULL_CLASS_INFO(core, RenderingCustomizer, RenderingCustomizer, Renderer);

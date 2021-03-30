@@ -64,6 +64,12 @@ if( ("${KIGS_PLATFORM}" STREQUAL "Windows") OR ("${KIGS_PLATFORM}" STREQUAL "WUP
 
 endif()
 
+# miniz
+message(STATUS "add miniz")
+add_subdirectory("cross_platform/miniz")
+SET_TARGET_PROPERTIES( miniz   					PROPERTIES  FOLDER "libs" )
+
+
 if( ("${KIGS_PLATFORM}" STREQUAL "Windows") OR ("${KIGS_PLATFORM}" STREQUAL "WUP") )
 	if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/win32/fbxsdk/lib")
 	message(STATUS "add fbxsdk")

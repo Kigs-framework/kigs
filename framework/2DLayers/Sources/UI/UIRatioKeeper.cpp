@@ -86,7 +86,7 @@ void	UIRatioKeeper::RecomputeRatio()
 			mPreScaleX = ratio.y / ratio.x;
 		}
 
-		mNeedUpdatePosition = true;
+		SetNodeFlag(Node2D_NeedUpdatePosition);
 		mRatioIsOK = true;
 	}
 }

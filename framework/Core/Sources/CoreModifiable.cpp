@@ -451,7 +451,7 @@ const ModifiableMethodStruct* CoreModifiable::findMethodOnThisOnly(const KigsID&
 		StructLinkedListBase* found = mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
 		while (found)
 		{
-			CMSP f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
+			ForwardSP<CoreModifiable> f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
 			const ModifiableMethodStruct* search = f->findMethodOnThisOnly(id, localthis);
 			if (search)
 			{
@@ -597,7 +597,7 @@ CoreModifiableAttribute* CoreModifiable::findAttributeOnThisOnly(const KigsID& i
 		StructLinkedListBase* found = mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
 		while (found)
 		{
-			CMSP f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
+			ForwardSP<CoreModifiable> f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
 			if (!f.isNil())
 			{
 				CoreModifiableAttribute* search = f->findAttributeOnThisOnly(id);

@@ -356,7 +356,7 @@ void UIPointInteret::RecalculatePosition()
 		/*myPosition[0] = (kfloat)((mCoordGPS_Long - topLeftLong)*xMap / (botRightLong - topLeftLong)) - (mSizeX / 2);
 		myPosition[1] = (kfloat)((mCoordGPS_Lat - bopRightLat)*yMap / (topLeftLat - bopRightLat)) - (mySizeY / 2);
 		myPosition[1] = yMap - myPosition[1];*/
-		mNeedUpdatePosition = true;
+		SetNodeFlag(Node2D_NeedUpdatePosition);
 		PropagateNeedUpdateToFather();
 	}
 }

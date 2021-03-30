@@ -53,6 +53,8 @@ public:
 	//! return value as a kfloat
 	virtual kfloat getFloat() const =0;
 
+	virtual XMLAttributeBase* Copy() = 0;
+
 protected:
 	virtual void getName(std::string& n) const = 0;
 	virtual void getName(std::string_view& n) const = 0;
@@ -109,6 +111,12 @@ public:
 	~XMLAttributeTemplate()
 	{
 
+	}
+
+	XMLAttributeBase* Copy() override
+	{
+		XMLAttributeTemplate<StringType>* newone = new XMLAttributeTemplate<StringType>(mName,mValue);
+		return newone;
 	}
 
 	//! set attribute value with the given string parameter

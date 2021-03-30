@@ -5,6 +5,7 @@
 // #### Renderer Include
 #include "ModuleRenderer.h"
 #include "Texture.h"
+#include "UI/UITexturedItem.h"
 
 //#//////////////////////////////
 //#		UIShapeRectangle

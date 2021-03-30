@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include "Core.h"
 #include "Texture.h"
-#include "SpriteSheetTexture.h"
 #include "AttributePacking.h"
 
 IMPLEMENT_CLASS_INFO(TextureFileManager)
@@ -58,13 +57,6 @@ CMSP TextureFileManager::CreateTexture(const kstl::string& textureName)
 }
 
 
-CMSP TextureFileManager::CreateSpriteSheetTexture(const kstl::string& textureName)
-{
-	CMSP L_pSpriteSheet = KigsCore::GetInstanceOf(textureName, "SpriteSheetTexture");
-	AddTexture(textureName, L_pSpriteSheet);
-	return L_pSpriteSheet;
-}
-
 SP<Texture> TextureFileManager::GetTexture(const kstl::string& fileName, bool doInit)
 {
 	// crash in editor when creating an UIImage
@@ -111,29 +103,6 @@ SP<Texture> TextureFileManager::GetTexture(const kstl::string& fileName, const k
 }
 
 
-SP<SpriteSheetTexture> TextureFileManager::GetSpriteSheetTexture(const kstl::string& fileName)
-{
-	if (fileName == "")
-		return NULL;
-
-	SP<SpriteSheetTexture> L_pSpriteSheet;
-
-	// already loaded ?
-	if (HasTexture(fileName))
-	{
-		L_pSpriteSheet = CMSP(mTextureMap[fileName], GetRefTag{});
-	}
-	else
-	{
-		L_pSpriteSheet = CreateSpriteSheetTexture(fileName);
-		L_pSpriteSheet->setValue(LABEL_TO_ID(FileName), fileName);
-		L_pSpriteSheet->Init();
-	}
-
-	return L_pSpriteSheet;
-}
- 
-
 void TextureFileManager::ResetAllTexture()
 {
 	kstl::map<kstl::string, CoreModifiable*>::iterator	it = mTextureMap.begin();
@@ -165,23 +134,6 @@ void TextureFileManager::UnloadTexture(Texture* Tex)
 		}
 	}
 }
-
-void TextureFileManager::UnloadTexture(SpriteSheetTexture* Tex)
-{
-	// search this texture
-
-	kstl::map<kstl::string, CoreModifiable*>::iterator	it;
-
-	for (it = mTextureMap.begin(); it != mTextureMap.end(); ++it)
-	{
-		if ((*it).second == Tex)
-		{
-			mTextureMap.erase(it);
-			break;
-		}
-	}
-}
-
 
 void TextureFileManager::ClearCache()
 {

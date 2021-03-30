@@ -276,7 +276,7 @@ void UISlider::ChangeTexture(kstl::string _texturename, kstl::string _overtextur
 			{
 				mSizeX = width;
 				mSizeY = height;
-				mNeedUpdatePosition = true;
+				SetNodeFlag(Node2D_SizeChanged);
 			}
 		}
 	}

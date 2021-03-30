@@ -35,6 +35,9 @@ public:
 	//! read a "memory" xml file (in a string)
 	static XMLBase* ReadString( const char * TheString );
 
+	//! read a "memory" xml file (in a CoreRawBuffer)
+	static XMLBase* ReadCoreRawBuffer(CoreRawBuffer* buffer);
+
 	//! utility method 
 	static void  StartDescriptionElement(void *data, const char *el, const char **attr);
 	//! utility method 

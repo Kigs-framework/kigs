@@ -150,7 +150,7 @@ void	UIText::ChangeText(const usString& _newText)
 	{
 		mSizeX = width;
 		mSizeY = height;
-		mNeedUpdatePosition = true;
+		SetNodeFlag(Node2D_SizeChanged);
 	}
 	SetUpNodeIfNeeded();
 }

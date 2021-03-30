@@ -94,7 +94,7 @@ void UIBoxLayout::RecomputeLayout()
 		while (it != end)
 		{
 			Node2D* node = (Node2D*)*it;
-			node->ComputeRealSize();
+			node->SetUpNodeIfNeeded();
 			v2f size = node->GetSize();
 
 			int px, py;

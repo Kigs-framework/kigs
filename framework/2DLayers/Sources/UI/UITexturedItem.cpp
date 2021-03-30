@@ -7,8 +7,6 @@
 #include "Texture.h"
 
 
-const v2f UITexturedItem::mInvalidUV = { FLT_MAX, FLT_MAX };
-
 //#//////////////////////////////
 //#		UITexturedItem
 //#//////////////////////////////
@@ -20,6 +18,8 @@ IMPLEMENT_CONSTRUCTOR(UITexturedItem)
 	// create empty Textured Item
 	mTexturePointer = KigsCore::GetInstanceOf(getName()+"_TextureHandler", "TextureHandler");
 	mTexturePointer->Init();
+
+	KigsCore::Connect(mTexturePointer.get(), "NotifyUpdate", this , "TextureNotifyUpdate");
 }
 
 void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
@@ -118,6 +118,8 @@ void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 
 UITexturedItem::~UITexturedItem()
 {
+	if(!mTexturePointer.isNil())
+		KigsCore::Disconnect(mTexturePointer.get(), "NotifyUpdate", this, "TextureNotifyUpdate");
 	mTexturePointer = NULL;
 }
 
@@ -140,28 +142,14 @@ int UITexturedItem::GetTransparencyType()
 	else // overall transparency
 		return 2;
 }
-/*
-void     UITexturedItem::SetTexture(const SP<TextureHandler>& t)
-{
-	mTexturePointer = t;
-
-	if (mTexturePointer == nullptr)
-		return;
-
-	if (getAttribute("HasDynamicTexture"))
-		mTexturePointer->setValue("IsDynamic", true);
-
-	mTexturePointer->SetRepeatUV(false, false);
-}*/
-
-
-
 
 bool UITexturedItem::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType(Texture::mClassID))
 	{
 		mTexturePointer->setTexture((SP<Texture>&)item);
+
+		SetNodeFlag(Node2D_SizeChanged);
 
 		if (mTexturePointer && getAttribute("HasDynamicTexture"))
 			mTexturePointer->setValue("IsDynamic", true);
@@ -177,7 +165,16 @@ bool UITexturedItem::removeItem(const CMSP& item DECLARE_LINK_NAME)
 		if (item.get() == mTexturePointer->getTexture().get())
 		{
 			mTexturePointer->setTexture(nullptr);
+			SetNodeFlag(Node2D_SizeChanged);
 		}
 	}
 	return UIDrawableItem::removeItem(item PASS_LINK_NAME(linkName));
+}
+
+void	UITexturedItem::TextureNotifyUpdate(const unsigned int  labelid)
+{
+	if (labelid == KigsID("TextureName"))
+	{
+		SetNodeFlag(Node2D_SizeChanged);
+	}
 }

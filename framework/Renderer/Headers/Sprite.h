@@ -2,6 +2,7 @@
 #define _SPRITE_H_
 
 #include "Drawable.h"
+#include "TextureHandler.h"
 
 //! default displacement
 #define KIGS_SPRITE_DEFAULT_DISPLACEMENT KFLOAT_CONST(0.002f)
@@ -74,13 +75,7 @@ public:
 	 * \param	sy : size on y axis (in/out param)
 	 */
 	virtual void getSize(kfloat &sx, kfloat &sy) {sx=mSizeX;sy=mSizeY;}
-	
-	/**
-	 * \brief	change the texture
-	 * \fn 		virtual void changeTexture(kstl::string FileName);
-	 * \param	FileName : file name of the texture
-	 */
-	virtual void changeTexture(kstl::string FileName);
+
 
 protected:
 	/**
@@ -89,11 +84,6 @@ protected:
 	 */
 	virtual	~Sprite();
 
-	/**
-	 * \brief	initialize modifiable
-	 * \fn 		virtual void InitModifiable();
-	 */
-	void InitModifiable() override;
 
 	/**
 	 * \brief	retreive the bounding box of the bitmap (point min and point max)
@@ -104,7 +94,7 @@ protected:
 	void	GetNodeBoundingBox(Point3D& pmin,Point3D& pmax) const override {pmin.Set((kfloat)mPosX,KFLOAT_CONST(0.0f),(kfloat)mPosY); pmax.Set((kfloat)mPosX+(kfloat)mSizeX,(kfloat)mDisplacement,(kfloat)mPosY+(kfloat)mSizeY);}
 
 	//! file name of the used texture
-	maString mTextureFileName;
+	//maString mTextureFileName;
 	//! displacement
 	maFloat mDisplacement;
 	//! position on x axis
@@ -127,7 +117,8 @@ protected:
 	maVect4DF	mColor;
 
 	//! link to the texture
-	SP<Texture>	mTexture;
+	//SP<Texture>	mTexture;
+	INSERT_FORWARDSP(TextureHandler, mTexturePointer);
 };
 
 #endif //_SPRITE_H_

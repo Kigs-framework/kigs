@@ -13,6 +13,7 @@ set(KIGS_EXTERN_LIBS "${KIGS_ROOT}/kigs/libs/")
 set(KIGS_PRIVATE_EXTERN_LIBS "${KIGS_ROOT}/kigs/libs/")
 set(KIGS_SIDEPROJECTS "${KIGS_ROOT}/sideProjects/")
 set(KIGS_PUBLICPROJECTS "${KIGS_ROOT}/publicKigsProjects/")
+set(KIGS_TESTS "${KIGS_ROOT}/KigsTests/")
 
 if("${CMAKE_GENERATOR}" MATCHES "(Win64|x64)" OR "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "x64")
 	set(KIGS_PLATFORM_X64 TRUE)
@@ -451,4 +452,8 @@ IF(EXISTS ${KIGS_PUBLICPROJECTS})
 	add_subdirectory(${KIGS_PUBLICPROJECTS} publicKigsProjects)
 endif()
 
+IF(EXISTS ${KIGS_TESTS})
+	message(STATUS "CMake enter Kigs tests projects/")
+	add_subdirectory(${KIGS_TESTS} KigsTests)
+endif()
 

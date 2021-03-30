@@ -92,10 +92,10 @@ void UIButton::AutoSize()
 		mTexturePointer->GetSize(width, height);
 
 		if (mSizeX == 0 && mSizeModeX == 0)
-			mSizeX = width;
+			setValue("SizeX", width);
 
 		if (mSizeY == 0 && mSizeModeY == 0)
-			mSizeY = height;
+			setValue("SizeY",height);
 
 		if (mParent && mParent->isSubType("UIGroupButton"))
 			((UIGroupButton*)mParent)->reComputeSize();
