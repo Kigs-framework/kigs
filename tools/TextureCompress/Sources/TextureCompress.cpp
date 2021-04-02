@@ -1069,8 +1069,8 @@ void	ETC1TextureCompress::ProtectedInit()
 					// add alpha data size
 					header.dataSize+=width*height;
 
-					FILE* fp = fopen(fileNameOut.c_str(), "wb");
-					fwrite(&header, sizeof(ETC_Header), 1, fp);
+					auto fp = Platform_fopen(fileNameOut.c_str(), "wb");
+					Platform_fwrite(&header, sizeof(ETC_Header), 1, fp.get());
 
 					if(m_ZipExport)
 					{
@@ -1084,8 +1084,8 @@ void	ETC1TextureCompress::ProtectedInit()
 						unsigned char * outbuffer;
 						unsigned int	outLength;
 						ZipUtils::DeflateMemory(tozip,etcLength + width*height,&outbuffer,outLength);
-						fwrite(outbuffer, outLength, 1, fp);
-						fflush(fp);
+						Platform_fwrite(outbuffer, outLength, 1, fp.get());
+						Platform_fflush(fp.get());
 						delete[] outbuffer;
 
 						delete[] tozip;
@@ -1109,21 +1109,21 @@ void	ETC1TextureCompress::ProtectedInit()
 
 						if (!ZSTD_isError(compressedSize))
 						{
-							fwrite(result.data(), compressedSize, 1, fp);
-							fflush(fp);
+							Platform_fwrite(result.data(), compressedSize, 1, fp.get());
+							Platform_fflush(fp.get());
 						}
 
 						delete[] tozip;
 					}
 					else
 					{
-						fwrite(outpixels, etcLength, 1, fp);
+						Platform_fwrite(outpixels, etcLength, 1, fp.get());
 						unsigned char*	toexport=export8BitAlpha(pixelData,width,height);
-						fwrite(toexport, width*height, 1, fp);
+						Platform_fwrite(toexport, width*height, 1, fp.get());
 						delete[] toexport;
 					}
 
-					fclose(fp);
+					Platform_fclose(fp.get());
 
 					delete[] outpixels;
 				}
@@ -1302,8 +1302,8 @@ void	ETC1TextureCompress::ProtectedInit()
 							header.dataSize+=width*height/2;
 						}
 
-						FILE* fp = fopen(fileNameOut.c_str(), "wb");
-						fwrite(&header, sizeof(ETC_Header), 1, fp);
+						auto fp = Platform_fopen(fileNameOut.c_str(), "wb");
+						Platform_fwrite(&header, sizeof(ETC_Header), 1, fp.get());
 
 						if(m_ZipExport)
 						{
@@ -1337,8 +1337,8 @@ void	ETC1TextureCompress::ProtectedInit()
 							unsigned char * outbuffer;
 							unsigned int	outLength;
 							ZipUtils::DeflateMemory(tozip,psize + extrachannelsize,&outbuffer,outLength);
-							fwrite(outbuffer, outLength, 1, fp);
-							fflush(fp);
+							Platform_fwrite(outbuffer, outLength, 1, fp.get());
+							Platform_fflush(fp.get());
 							delete[] outbuffer;
 							delete[] tozip;
 						}
@@ -1383,31 +1383,31 @@ void	ETC1TextureCompress::ProtectedInit()
 
 							if (!ZSTD_isError(compressedSize))
 							{
-								fwrite(result.data(), compressedSize, 1, fp);
-								fflush(fp);
+								Platform_fwrite(result.data(), compressedSize, 1, fp.get());
+								Platform_fflush(fp.get());
 							}
 							delete[] tozip;
 						}
 						else
 						{
 
-							fwrite(outpixels, psize, 1, fp);
+							Platform_fwrite(outpixels, psize, 1, fp.get());
 
 							if((int)ETC1A8 == compress)
 							{
 								unsigned char*	toexport=export8BitAlpha(pixelData,width,height);
-								fwrite(toexport, width*height, 1, fp);
+								Platform_fwrite(toexport, width*height, 1, fp.get());
 								delete[] toexport;
 							}
 							else if(((int)ETC1A4 == compress) ) // android has no ETC1A4 internaly
 							{
 								unsigned char*	toexport=export4BitAlpha(pixelData,width,height);
-								fwrite(toexport, width*height/2, 1, fp);
+								Platform_fwrite(toexport, width*height/2, 1, fp.get());
 								delete[] toexport;
 							}
 						}
 
-						fclose(fp);
+						Platform_fclose(fp.get());
 
 					}
 					else
@@ -1568,8 +1568,8 @@ bool	ETC1TextureCompress::exportDDS(TinyImage* toexport,const kstl::string& outf
 
 	delete[] inBlock;
 
-	FILE* fp = fopen(outfile.c_str(), "wb");
-	if(fp)
+	auto fp = Platform_fopen(outfile.c_str(), "wb");
+	if(!fp.isNil())
 	{
 		DDS_HEADER header;
 
@@ -1599,9 +1599,9 @@ bool	ETC1TextureCompress::exportDDS(TinyImage* toexport,const kstl::string& outf
 
 		unsigned int prehead=*(unsigned int*)"DDS ";
 		// pre header ?
-		fwrite(&prehead, sizeof(unsigned int), 1, fp);
+		Platform_fwrite(&prehead, sizeof(unsigned int), 1, fp.get());
 
-		fwrite(&header, sizeof(DDS_HEADER), 1, fp);
+		Platform_fwrite(&header, sizeof(DDS_HEADER), 1, fp.get());
 
 		// compress only data
 		if(m_ZipExport)
@@ -1609,8 +1609,8 @@ bool	ETC1TextureCompress::exportDDS(TinyImage* toexport,const kstl::string& outf
 			unsigned char * outbuffer;
 			unsigned int	outLength;
 			ZipUtils::DeflateMemory(outpixels,Length,&outbuffer,outLength);
-			fwrite(outbuffer, outLength, 1, fp);
-			fflush(fp);
+			Platform_fwrite(outbuffer, outLength, 1, fp.get());
+			Platform_fflush(fp.get());
 			delete[] outbuffer;
 		}
 		else if (m_ZstdExport) 
@@ -1626,15 +1626,15 @@ bool	ETC1TextureCompress::exportDDS(TinyImage* toexport,const kstl::string& outf
 
 			if (!ZSTD_isError(compressedSize))
 			{
-				fwrite(result.data(), compressedSize, 1, fp);
-				fflush(fp);
+				Platform_fwrite(result.data(), compressedSize, 1, fp.get());
+				Platform_fflush(fp.get());
 			}
 		}
 		else
 		{
-			fwrite(outpixels, Length, 1, fp);
+			Platform_fwrite(outpixels, Length, 1, fp.get());
 		}
-		fclose(fp);
+		Platform_fclose(fp.get());
 	}
 
 	delete[] outpixels;
