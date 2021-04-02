@@ -328,8 +328,9 @@ public:
 #define CM_KEY_MAIL            0xEC    
 #define CM_KEY_MEDIASELECT     0xED    */
 
-#define CM_KEY_LCONTROL        VK_LCONTROL
-#define CM_KEY_RCONTROL        VK_RCONTROL
+
+#define CM_KEY_LCONTROL        VK_CONTROL
+#define CM_KEY_RCONTROL        VK_CONTROL
 
 #define CM_KEY_LSHIFT		   VK_LSHIFT
 #define CM_KEY_RSHIFT		   VK_RSHIFT

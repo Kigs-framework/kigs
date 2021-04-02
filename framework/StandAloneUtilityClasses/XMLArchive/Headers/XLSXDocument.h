@@ -254,7 +254,7 @@ public:
 	void	initEmpty();
 
 	// add one sheet
-	void addSheet(std::string n = "");
+	XLSXSheet* addSheet(std::string n = "");
 
 	virtual SP<CoreRawBuffer> save() override;
 };

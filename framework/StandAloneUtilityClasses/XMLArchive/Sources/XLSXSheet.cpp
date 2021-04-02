@@ -159,7 +159,7 @@ void XLSXSheet::updateXML(XMLBase* xml)
 					{
 						XMLNode* newcell = new XMLNode(XML_NODE_ELEMENT, "c");
 						newcell->addAttribute(new XMLAttribute("r", XLSXSheet::getCellName(cindex, rindex)));
-						newcell->addAttribute(new XMLAttribute("s", (int)0));
+						newcell->addAttribute(new XMLAttribute(std::string("s"), (int)0));
 						cell = newcell;
 					}
 
@@ -225,7 +225,7 @@ void XLSXSheet::updateXML(XMLBase* xml)
 					row->addAttribute(new XMLAttribute("hidden", "false"));
 					row->addAttribute(new XMLAttribute("ht", 12.8f));
 					row->addAttribute(new XMLAttribute("customHeight", "false"));
-					row->addAttribute(new XMLAttribute("outlineLevel",(int)0));
+					row->addAttribute(new XMLAttribute(std::string("outlineLevel"),(int)0));
 					row->addAttribute(new XMLAttribute("collapsed", "false"));
 				}
 				addcells(row, rindex);

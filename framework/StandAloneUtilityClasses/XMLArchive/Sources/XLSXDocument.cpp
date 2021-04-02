@@ -356,7 +356,7 @@ std::vector<XLSXElementRef>	XLSXDocument::find(int content)
 	return result;
 }
 
-void XLSXDocument::addSheet(std::string name)
+XLSXSheet* XLSXDocument::addSheet(std::string name)
 {
 	int id = mSheets.size()+1;
 	char cid[12];
@@ -422,6 +422,7 @@ void XLSXDocument::addSheet(std::string name)
 	sheet->initFromXML(sheetfile->getXML());
 
 	mSheets.push_back(sheet);
+	return sheet;
 }
 
 

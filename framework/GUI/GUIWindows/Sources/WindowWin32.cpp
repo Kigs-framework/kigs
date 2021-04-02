@@ -584,11 +584,12 @@ void  WindowWin32::Show()
 		SetWindowPos(hWnd, HWND_TOP, rcClient.left, rcClient.top, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top, SWP_NOCOPYBITS);
 	}
 #endif
-
-	// Show the window
-	ShowWindow(hWnd, SW_SHOWDEFAULT);
-	UpdateWindow(hWnd);
-
+	if (mShow)
+	{
+		// Show the window
+		ShowWindow(hWnd, SW_SHOWDEFAULT);
+		UpdateWindow(hWnd);
+	}
 	if (mScreen && !mScreen->IsInit())
 	{
 		mScreen->setValue(LABEL_TO_ID(ParentWindowName), getName());

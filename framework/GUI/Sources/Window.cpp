@@ -35,7 +35,7 @@ void	Window::InitModifiable()
 	{
 		if((mSizeX != 0)&&(mSizeY != 0))
 		{
-			ProtectedInit();	
+			ProtectedInit();
 		}
 		else
 		{

@@ -104,6 +104,8 @@ protected:
 
 	maBool mDirtySize;
 
+	maBool mShow = BASE_ATTRIBUTE(Show, true);
+
 	//! window size and position on screen (size is also used if fullscreen)
     maInt     mPositionX,mPositionY,mSizeX,mSizeY;
 
