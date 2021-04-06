@@ -12,6 +12,8 @@ public:
 	bool						mWasTreated = false;
 	bool						mWasMatched = false;
 	WIN32_FIND_DATAA			mFileInfos;
+
+	bool						isInDirectory(const FileStruct&);
 };
 
 inline ULARGE_INTEGER	getLargeInteger(FILETIME* t)
@@ -47,6 +49,7 @@ protected:
 	FileStruct*		getFileStructFromName(const std::string& name);
 	void			removeFileStructFromlist(const std::string& name);
 	void			removeFileStructFromlistUsingPattern(const std::string& pattern);
+	void			matchAllDir(FileStruct&);
 
 	CMSP							mThread;
 	std::string						mFolderIn = "";

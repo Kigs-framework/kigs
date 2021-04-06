@@ -17,6 +17,7 @@ class AMRule
 
 	// set to true when no file is needed
 	bool	mIsActionOnly = false;
+	bool	mIsDirRule = false;
 
 public:
 
@@ -33,6 +34,16 @@ public:
 	bool	isActionOnly()
 	{
 		return mIsActionOnly;
+	}
+
+	void	setDirRule(bool isaction)
+	{
+		mIsDirRule = true;
+	}
+
+	bool	isDirRule()
+	{
+		return mIsDirRule;
 	}
 
 	bool match(FileStruct&, RulesContext&);

@@ -196,6 +196,15 @@ bool AssetManager::initRules(CoreItemSP rules)
 				mRules.push_back({ (std::string)isAction[0],"",(std::string)isAction[1]});
 				mRules.back().setActionOnly(true);
 			}
+			else
+			{
+				CoreItemSP isDirRule = r["dir_rule"];
+				if (!isDirRule.isNil() && (isDirRule->size() == 3))
+				{
+					mRules.push_back({ (std::string)isDirRule[0],(std::string)isDirRule[1], (std::string)isDirRule[2] });
+					mRules.back().setDirRule(true);
+				}
+			}
 		}
 	}
 
@@ -215,10 +224,7 @@ void	AssetManager::doTheJob()
 
 	// if rules have changed, redo everything
 
-	u64 lastDoneTime = getLargeInteger(&lastDone->mFileInfos.ftLastWriteTime).QuadPart;
-	u64 lastRulesTime = getLargeInteger(&fs->mFileInfos.ftLastWriteTime).QuadPart;
-
-	if ((!lastDone) || (lastDoneTime < lastRulesTime))
+	if ((!lastDone) || (getLargeInteger(&lastDone->mFileInfos.ftLastWriteTime).QuadPart < getLargeInteger(&fs->mFileInfos.ftLastWriteTime).QuadPart))
 	{
 		mResetAll = true;
 		std::filesystem::remove_all(mFolderInterm); // Delete directory
@@ -261,6 +267,12 @@ void	AssetManager::recursiveSearchFiles(std::string	startDirectory,std::vector<s
 				// only valid directory
 				if (!(asciifilename[0] == '.'))
 				{
+
+					FileStruct toAdd;
+					toAdd.mFolders = currentDirectoryList;
+					toAdd.mFileInfos = wfd;
+					mFileList.push_back(toAdd);
+
 					currentDirectoryList.push_back(asciifilename);
 					recursiveSearchFiles(startDirectory + "\\" + asciifilename + "\\", currentDirectoryList);
 					currentDirectoryList.pop_back();
@@ -342,18 +354,59 @@ void	AssetManager::runRules()
 		{
 			for (auto& f : mFileList) // check all files
 			{
+				if (r.isDirRule() ^ ((f.mFileInfos.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)!=0))
+				{
+					continue;
+				}
+				
 				if (!f.mWasMatched) // this file was not already catched by a rule
 				{
 					context.setCurrentFile(f);
 					f.mWasMatched = r.match(f, context); // check if it matches
-					if (f.mWasMatched) 
+					if (f.mWasMatched)
 					{
 						// then try to treat it
 						f.mWasTreated = r.treat(f, context, mResetAll);
 						SomethingChanged |= f.mWasTreated;
+
+						if (r.isDirRule()) // set all files in dir as matched
+						{
+							matchAllDir(f);
+						}
 					}
 				}
 			}
 		}
 	}
+}
+
+void		AssetManager::matchAllDir(FileStruct& d)
+{
+	for (auto& f : mFileList) // mark all files under d directory as matched
+	{
+		if (!f.mWasMatched)
+			f.mWasMatched = f.isInDirectory(d);
+	}
+}
+
+bool		FileStruct::isInDirectory(const FileStruct& d)
+{
+	size_t s= mFolders.size();
+	if (s <= d.mFolders.size())
+	{
+		return false;
+	}
+	for (size_t i=0;i< d.mFolders.size();i++)
+	{
+		if (d.mFolders[i] != mFolders[i])
+		{
+			return false;
+		}
+	}
+
+	if (mFolders[d.mFolders.size()] != d.mFileInfos.cFileName)
+	{
+		return false;
+	}
+	return true;
 }
