@@ -27,20 +27,13 @@ public:
 
     void Close() override;
             
-
 	void Update(const Timer& timer, void* addParam) override;
 
-
-	bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
-
-	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
                
 protected:
 	
     virtual ~ModuleTimer();    
 
-	// maintain a map of timeticker for fast access
-	kstl::map<CoreModifiable*,CoreModifiable*>	mTickerList;
 }; 
 
 #endif //_MODULETIMER_H_

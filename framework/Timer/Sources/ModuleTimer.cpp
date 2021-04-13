@@ -3,6 +3,7 @@
 #include "Timer.h"
 #include "TimeProfiler.h"
 #include "ControlledTimer.h"
+#include "Ticker.h"
 
 IMPLEMENT_CLASS_INFO(ModuleTimer)
 
@@ -20,6 +21,7 @@ void ModuleTimer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 
 	core->RegisterMainModuleList(this,TimerModuleCoreIndex);
 
+	REGISTER_UPGRADOR(TickerUpgrador);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), Timer, Timer, Timer);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), TimeProfiler,TimeProfiler,Timer);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), ControlledTimer, ControlledTimer, Timer);
@@ -34,42 +36,5 @@ void ModuleTimer::Close()
 void ModuleTimer::Update(const Timer& timer, void* addParam)
 {
 	BaseUpdate(timer,addParam);
-
-	// update tickers
-
-	kstl::map<CoreModifiable*,CoreModifiable*>::iterator	itTickers=mTickerList.begin();
-	while(itTickers!=mTickerList.end())
-	{
-		(*itTickers).first->CallUpdate(timer,addParam);
-		++itTickers;
-	}
 }    
 
-
-bool	ModuleTimer::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
-{
-	if(item->isSubType("TimeTicker"))
-	{
-		CoreModifiable* i = item.Pointer();
-		if(mTickerList.find(i)==mTickerList.end())
-		{
-			mTickerList[i]=i;
-		}
-	}
-
-	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
-}
-
-bool	ModuleTimer::removeItem(const CMSP& item DECLARE_LINK_NAME)
-{
-	if(item->isSubType("TimeTicker"))
-	{
-		CoreModifiable* i = item.get();
-		if(mTickerList.find(i)!=mTickerList.end())
-		{
-			mTickerList.erase(i);
-		}
-	}
-
-	return CoreModifiable::removeItem(item PASS_LINK_NAME(linkName));
-}

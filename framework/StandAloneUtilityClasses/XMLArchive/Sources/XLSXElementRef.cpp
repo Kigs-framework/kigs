@@ -27,6 +27,29 @@ std::string	CellName::getRow()
 	return XLSXSheet::getRowName(mName);
 }
 
+
+XLSXElementRef XLSXElementRef::operator[](u32 index)const
+{
+	XLSXElementRef result(mSheet);
+
+	if (mSheet)
+	{
+		if (mRow) // if this ref a row, then name should contain a column
+		{
+			result.mCell = mSheet->getCell({ (int)index,mRow->mIndex });
+		}
+		else if (mCol.mIndex >= 0) // if this ref a col, then name should contain a row
+		{
+			result.mCell = mSheet->getCell({ mCol.mIndex,(int)index });
+		}
+		else 
+		{
+			result = *this;
+		}
+	}
+	return result;
+}
+
 XLSXElementRef XLSXElementRef::operator[](const std::string& name) const
 {
 	XLSXElementRef result(mSheet);
