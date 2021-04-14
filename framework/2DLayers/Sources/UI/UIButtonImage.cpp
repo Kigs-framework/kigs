@@ -100,13 +100,13 @@ void UIButtonImage::ChangeTexture(kstl::string _texturename, kstl::string _overt
 
 	if(mAlphaMask)
 	{
-		this->removeItem((CMSP&)mAlphaMask);
+		this->removeItem(mAlphaMask);
 
 		//Make new Mask
 		mAlphaMask = KigsCore::GetInstanceOf(getName(), "AlphaMask");
 		mAlphaMask->setValue(LABEL_TO_ID(Threshold),0.1);
 		mAlphaMask->setValue(LABEL_TO_ID(TextureName),mUpTexture.c_str());
-		this->addItem((CMSP&)mAlphaMask);
+		this->addItem(mAlphaMask);
 		mAlphaMask->Init();
 	}
 	//auto Size

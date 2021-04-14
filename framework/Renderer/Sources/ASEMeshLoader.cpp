@@ -406,7 +406,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 
 				Tex->Init();
 
-				MatStage->addItem((CMSP&)Tex);
+				MatStage->addItem(Tex);
 			}
 
 			MatStage->Init();
@@ -454,7 +454,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 			}
 
 
-			Mat->addItem((CMSP&)MatStage);
+			Mat->addItem(MatStage);
 
 			char L_tmpinstancename[128] = { 0 };
 			sprintf(L_tmpinstancename, "meshitem_%i", realindex);
@@ -475,7 +475,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 						{
 							mTriangle = new Mesh::Triangle[TriangleCountByGroup[i]];
 							newgroup->mFirstTriangle = mTriangle;
-							newgroup->addItem((CMSP&)Mat);
+							newgroup->addItem(Mat);
 							newgroup->mTriangleCount = 0;
 							newgroup->mTriangleSize = sizeof(Mesh::Triangle);
 							newgroup->mTriangleType = eF_Triangle;
@@ -489,7 +489,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 						{
 							mS_Triangle = new Mesh::S_Triangle[TriangleCountByGroup[i]];
 							newgroup->mFirstTriangle = mS_Triangle;
-							newgroup->addItem((CMSP&)Mat);
+							newgroup->addItem(Mat);
 							newgroup->mTriangleCount = 0;
 							newgroup->mTriangleSize = sizeof(Mesh::S_Triangle);
 							newgroup->mTriangleType = eS_Triangle;
@@ -503,7 +503,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 						{
 							mT_Triangle = new Mesh::T_Triangle<1>[TriangleCountByGroup[i]];
 							newgroup->mFirstTriangle = mT_Triangle;
-							newgroup->addItem((CMSP&)Mat);
+							newgroup->addItem(Mat);
 							newgroup->mTriangleCount = 0;
 							newgroup->mTriangleSize = sizeof(Mesh::T_Triangle<1>);
 							newgroup->mTriangleType = eTF_Triangle;
@@ -517,7 +517,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 						{
 							mTS_Triangle = new Mesh::TS_Triangle<1>[TriangleCountByGroup[i]];
 							newgroup->mFirstTriangle = mTS_Triangle;
-							newgroup->addItem((CMSP&)Mat);
+							newgroup->addItem(Mat);
 							newgroup->mTriangleCount = 0;
 							newgroup->mTriangleSize = sizeof(Mesh::TS_Triangle<1>);
 							newgroup->mTriangleType = eTS_Triangle;
@@ -529,7 +529,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 					} // switch mode
 				}
 			} // For TriangleCount
-			pMesh->addItem((CMSP&)newgroup);
+			pMesh->addItem(newgroup);
 		
 		} // if TriangleCountByGroup
 	}	// for MaterialCount

@@ -13,18 +13,18 @@ IMPLEMENT_CONSTRUCTOR(MultiMesh)
 {
 	mFullMeshNode = KigsCore::GetInstanceOf("full_mesh_node", "Node3D");
 	mFullMeshNode->Init();
-	ParentClassType::addItem((CMSP&)mFullMeshNode);
+	ParentClassType::addItem(mFullMeshNode);
 }
 
 void MultiMesh::PrepareExport(ExportSettings* settings)
 {
 	ParentClassType::PrepareExport(settings);
-	ParentClassType::removeItem((CMSP&)mFullMeshNode);
+	ParentClassType::removeItem(mFullMeshNode);
 }
 
 void MultiMesh::EndExport(ExportSettings* settings)
 {
-	ParentClassType::addItem((CMSP&)mFullMeshNode);
+	ParentClassType::addItem(mFullMeshNode);
 	ParentClassType::EndExport(settings);
 }
 
@@ -288,7 +288,7 @@ void MultiMesh::RecomputeBoundingBox()
 		full_mesh_item->mTriangleBuffer.SetBuffer(index_buffer, total_index_buffer_size);
 
 		full_mesh_item->Init();
-		full_mesh->addItem((CMSP&)full_mesh_item);
+		full_mesh->addItem(full_mesh_item);
 		full_mesh->Init();
 		mFullMeshNode->addItem(full_mesh);
 	}

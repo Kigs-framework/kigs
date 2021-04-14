@@ -74,7 +74,7 @@ SP<ModernMesh> ModernMesh::CreateClonedMesh(const std::string& name, bool reuse_
 	{
 		SP<ModernMeshItemGroup> mesh_group = KigsCore::GetInstanceOf("group0", "ModernMeshItemGroup");
 		mesh_group->SetupClonedMesh(it.mItem->as<ModernMeshItemGroup>());
-		mesh->addItem((CMSP&)mesh_group);
+		mesh->addItem(mesh_group);
 
 		if (reuse_materials)
 		{
@@ -82,7 +82,7 @@ SP<ModernMesh> ModernMesh::CreateClonedMesh(const std::string& name, bool reuse_
 			{
 				if (mat.mItem->isSubType("Material"))
 				{
-					mesh_group->addItem((CMSP&)mat.mItem);
+					mesh_group->addItem(mat.mItem);
 				}
 			}
 		}
@@ -267,7 +267,7 @@ SP<ModernMeshItemGroup>	ModernMesh::EndMeshGroup()
 		createdGroup = mCurrentMeshBuilder->EndGroup((bool)mOptimize);
 		if (createdGroup)
 		{
-			addItem((CMSP&)createdGroup);
+			addItem(createdGroup);
 		}
 	}
 	return createdGroup;
@@ -281,7 +281,7 @@ SP<ModernMeshItemGroup>	ModernMesh::EndMeshGroup(void * vertex, int vertexCount,
 		createdGroup = mCurrentMeshBuilder->EndGroup(vertex, vertexCount, index, indexCount);
 		if (createdGroup)
 		{
-			addItem((CMSP&)createdGroup);
+			addItem(createdGroup);
 		}
 	}
 	return createdGroup;
@@ -295,7 +295,7 @@ SP<ModernMeshItemGroup> ModernMesh::EndMeshGroup(int vertex_count, v3f* vertices
 		createdGroup = mCurrentMeshBuilder->EndGroup(vertex_count, vertices, normals, colors, texCoords, face_count, faces, offset);
 		if (createdGroup)
 		{
-			addItem((CMSP&)createdGroup);
+			addItem(createdGroup);
 		}
 	}
 	return createdGroup;
@@ -354,7 +354,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 		{
 			if (crb->size() >= settings->export_buffer_attribute_as_external_file_size_threshold)
 			{
-				CMSP& compressManager = KigsCore::GetSingleton("KXMLManager");
+				CMSP compressManager = KigsCore::GetSingleton("KXMLManager");
 
 				auto poscrc = path.find("$CRCHASH$");
 				auto posmeow = path.find("$MEOWHASH$");

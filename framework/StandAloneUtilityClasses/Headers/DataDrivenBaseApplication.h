@@ -123,8 +123,8 @@ public:
 
 	void RequestBackToPreviousState();
 
-	inline State_t			GetState() { return mStateStack.back(); }
-	inline CMSP&	GetCurrentSequence() { return mCurrentSequence; }
+	inline State_t GetState() { return mStateStack.back(); }
+	inline CMSP	GetCurrentSequence() { return mCurrentSequence; }
 	
 	friend class DataDrivenTransition;
 	friend class DataDrivenSequence;
@@ -141,7 +141,7 @@ protected:
 	static bool	IsParent(CoreModifiable* toCheck, CoreModifiable* p);
 	static CoreModifiable*	getParentSequence(CoreModifiable* s);
 
-	CoreModifiable*		mSceneGraph;
+	CoreModifiable* mSceneGraph;
 
 	void InitModifiable() override;
 	void Update(const Timer&, void*) override;

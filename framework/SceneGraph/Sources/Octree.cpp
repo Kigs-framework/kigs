@@ -25,7 +25,7 @@ IMPLEMENT_CONSTRUCTOR(Octree)
 {
 	mPrecomputedCull.clear();
 	mRootSubNode = KigsCore::GetInstanceOf("myRootSubNode", "OctreeSubNode");
-	addItem((CMSP&)mRootSubNode);
+	addItem(mRootSubNode);
 	
 	mRootSubNode->mFatherOctree = this;
 	mRootSubNode->Init();
@@ -280,7 +280,7 @@ void  Octree::ReorganiseOctree()
 	// add all concerned object to the octree
 	for (auto mis : getItems())
 	{
-		CMSP& item = mis.mItem;
+		CMSP item = mis.mItem;
 
 		if (item->isUserFlagSet(UserFlagNode3D))
 		{
@@ -342,7 +342,7 @@ void  OctreeSubNode::KillSons()
 	int index;
 	for (index = 0; index < soncount; index++)
 	{
-		removeItem((CMSP&)mSonsSubNodes[index]);
+		removeItem(mSonsSubNodes[index]);
 	}
 	delete[] mSonsSubNodes;
 	mSonsSubNodes = nullptr;
@@ -374,7 +374,7 @@ SP<OctreeSubNode>  OctreeSubNode::AddNode(SP<SceneNode>& node, int currentlevel,
 	if ((mTotalNodes < subdivelevel) || (currentlevel >= maxLevel))
 	{
 		mObjectList.push_back(node.get());
-		addItem((CMSP&)node);
+		addItem(node);
 
 		mTotalNodes++;
 		return CMSP(this, GetRefTag{});
@@ -396,7 +396,7 @@ SP<OctreeSubNode>  OctreeSubNode::AddNode(SP<SceneNode>& node, int currentlevel,
 		else
 		{
 			mObjectList.push_back(node.get());
-			addItem((CMSP&)node);
+			addItem(node);
 			mTotalNodes++;
 			return CMSP(this, GetRefTag{});
 		}
@@ -415,7 +415,7 @@ void  OctreeSubNode::Divide()
 	for (i = 0; i < soncount; i++)
 	{
 		mSonsSubNodes[i] = KigsCore::GetInstanceOf("mySonsSubNodes", "OctreeSubNode");
-		addItem((CMSP&)mSonsSubNodes[i]);
+		addItem(mSonsSubNodes[i]);
 		mSonsSubNodes[i]->mFatherOctree = mFatherOctree;
 		mSonsSubNodes[i]->Init();
 	}

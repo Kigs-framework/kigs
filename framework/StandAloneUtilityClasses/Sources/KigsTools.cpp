@@ -1334,7 +1334,7 @@ void ResetContext()
 
 	for (itInstances = instances.begin(); itInstances != instances.end(); itInstances++)
 	{
-		CMSP& current = (*itInstances);
+		CMSP current = (*itInstances);
 		current->setValue("Reinit", true);
 	}
 	instances.clear();
@@ -1345,7 +1345,7 @@ void ResetContext()
 
 	for (itInstances = instances.begin(); itInstances != instances.end(); itInstances++)
 	{
-		CMSP& current = (*itInstances);
+		CMSP current = (*itInstances);
 		current->setValue("Reinit", true);
 	}
 }

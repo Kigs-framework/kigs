@@ -185,7 +185,7 @@ void Node3DDelayed::UnloadContent()
 		|| mLoadState.compare_exchange_strong(exp2, LoadState::NotLoaded))
 	{
 		if (mContentAdded)
-			removeItem((CMSP&)mContent);
+			removeItem(mContent);
 		mContentAdded = false;
 		mContent.Reset();
 	}
@@ -198,7 +198,7 @@ void Node3DDelayed::Update(const Timer&, void*)
 		&& mLoadState == LoadState::Loaded
 		&& !sIsFrozen)
 	{
-		addItem((CMSP&)mContent);
+		addItem(mContent);
 		mContentAdded = true;
 		mDrawCounter = 0;
 	}
@@ -243,7 +243,7 @@ void Node3DDelayed::SetShowContent(bool show, bool no_async)
 			mHideTime = std::chrono::steady_clock::now();
 			if (mContentAdded)
 			{
-				removeItem((CMSP&)mContent);
+				removeItem(mContent);
 				mContentAdded = false;
 			}
 		}
@@ -253,7 +253,7 @@ void Node3DDelayed::SetShowContent(bool show, bool no_async)
 void Node3DDelayed::SetContent(SmartPointer<Node3D> content, bool force_display)
 {
 	EmptyItemList();
-	addItem((CMSP&)content);
+	addItem(content);
 
 	if (force_display)
 	{
@@ -270,7 +270,7 @@ void Node3DDelayed::SetContent(SmartPointer<Node3D> content, bool force_display)
 	mBBoxMax = bb.m_Max;
 
 	if (!mContentAdded)
-		removeItem((CMSP&)content);
+		removeItem(content);
 
 	mContent = content;
 	mLoadState = LoadState::Loaded;
@@ -281,7 +281,7 @@ void Node3DDelayed::PrepareExport(ExportSettings *settings)
 	ParentClassType::PrepareExport(settings);
 	if (mDisplayState == DisplayState::Displayed)
 	{
-		removeItem((CMSP&)mContent);
+		removeItem(mContent);
 		mContentAdded = false;
 	}
 
@@ -298,7 +298,7 @@ void Node3DDelayed::EndExport(ExportSettings *settings)
 {
 	if (mDisplayState == DisplayState::Displayed)
 	{
-		addItem((CMSP&)mContent);
+		addItem(mContent);
 		mContentAdded = true;
 	}
 	ParentClassType::EndExport(settings);

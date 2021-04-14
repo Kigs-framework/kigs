@@ -509,7 +509,7 @@ const ModifiableMethodStruct* CoreModifiable::recursivefindMethod(const KigsID& 
 	return nullptr;
 }
 
-bool CoreModifiable::aggregateWith(CMSP& item, ItemPosition pos)
+bool CoreModifiable::aggregateWith(const CMSP& item, ItemPosition pos)
 {
 	if (addItem(item, pos PASS_LINK_NAME(linkName)))
 	{
@@ -531,7 +531,7 @@ bool CoreModifiable::aggregateWith(CMSP& item, ItemPosition pos)
 	return false;
 }
 
-bool CoreModifiable::removeAggregateWith(CMSP& item)
+bool CoreModifiable::removeAggregateWith(const CMSP& item)
 {
 	bool itemIsAlive = (item->getRefCount() > 1);
 
@@ -2337,7 +2337,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 					current->getValue((void*&)buffer);
 					if (buffer->size() >= settings->export_buffer_attribute_as_external_file_size_threshold)
 					{
-						CMSP& compressManager = KigsCore::GetSingleton("KXMLManager");
+						CMSP compressManager = KigsCore::GetSingleton("KXMLManager");
 						auto path = unique_id + "_" + current->getLabel()._id_name + (compressManager ? std::string(".kbin") : ".bin");
 						attribute = new XMLAttribute("V", "#" + path);
 						modifiableAttrNode->addAttribute(attribute);
@@ -2783,9 +2783,7 @@ CMSP CoreModifiable::GetInstanceByGlobalPath(const std::string &path)
 	std::vector<CMSP>::iterator	itset;
 	for (itset = instances.begin(); itset != instances.end(); itset++)
 	{
-		CMSP&	current = (*itset);
-		
-		CMSP	test = current->GetInstanceByPath(RemainingPath);
+		CMSP	test = (*itset)->GetInstanceByPath(RemainingPath);
 		if (test)
 		{
 			return test;

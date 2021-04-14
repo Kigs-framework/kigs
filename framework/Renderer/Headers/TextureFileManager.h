@@ -59,7 +59,7 @@ public:
 	* \param	tex : texture to add
 	*/
 	void AddTexture(const kstl::string& fileName, CoreModifiable* Tex);
-	void AddTexture(const kstl::string& fileName, CMSP& Tex);
+	void AddTexture(const kstl::string& fileName, const CMSP& Tex);
 
 	/**
 	* \brief	unload a texture

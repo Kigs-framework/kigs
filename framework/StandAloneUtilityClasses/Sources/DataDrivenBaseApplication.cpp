@@ -85,7 +85,7 @@ void DataDrivenSequence::InitModifiable()
 
 	CoreModifiable::InitModifiable();
 
-	CMSP& currentSequence = currentManager->GetCurrentSequence();
+	CMSP currentSequence = currentManager->GetCurrentSequence();
 
 	// first search for a transition
 	kstl::vector<CMSP>	instances;
@@ -198,7 +198,7 @@ void DataDrivenTransition::InitModifiable()
 		return;
 	}
 	mIsFirstUpdate = true;
-	CMSP& currentSequence = currentManager->GetCurrentSequence();
+	CMSP currentSequence = currentManager->GetCurrentSequence();
 	mPreviousSequence = currentSequence;
 	
 	mPrevLauncherList.clear();
@@ -639,7 +639,7 @@ void DataDrivenBaseApplication::CreateSequenceManager()
 	mSequenceManager= KigsCore::GetInstanceOf("AppSequenceManager", "DataDrivenSequenceManager");
 	mSequenceManager->Init();
 	RemoveAutoUpdate(mSequenceManager.get());
-	aggregateWith((CMSP&)mSequenceManager);
+	aggregateWith(mSequenceManager);
 }
 
 void DataDrivenBaseApplication::setInTransition(DataDrivenTransition* transition, bool active)
@@ -743,7 +743,7 @@ void DataDrivenBaseApplication::ProtectedClose()
 	
 	mSequenceManager->UnInit();
 
-	removeAggregateWith((CMSP&)mSequenceManager);
+	removeAggregateWith(mSequenceManager);
 	mSequenceManager = nullptr;
 
 	KigsCore::ReleaseSingleton("FilePathManager");

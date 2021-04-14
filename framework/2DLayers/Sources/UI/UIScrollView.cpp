@@ -18,7 +18,7 @@ UIScrollView::UIScrollView(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 
 	mVision = KigsCore::GetInstanceOf(getName() + "_MYUIControlBoxForScrollViewUI", "UIControlBoxForScrollViewUI");
 	mVision->Init();
-	addItem((CMSP&)mVision);
+	addItem(mVision);
 }
 
 void UIScrollView::InitModifiable()

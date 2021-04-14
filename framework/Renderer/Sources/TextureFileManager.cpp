@@ -37,7 +37,7 @@ void TextureFileManager::AddTexture(const kstl::string& fileName, CoreModifiable
 }
 
 
-void TextureFileManager::AddTexture(const kstl::string& fileName, CMSP& Tex)
+void TextureFileManager::AddTexture(const kstl::string& fileName, const CMSP& Tex)
 {
 	if (!HasTexture(fileName))
 	{
@@ -52,7 +52,7 @@ void TextureFileManager::AddTexture(const kstl::string& fileName, CMSP& Tex)
 CMSP TextureFileManager::CreateTexture(const kstl::string& textureName)
 {
 	SP<Texture> Tex = KigsCore::GetInstanceOf(textureName, "Texture", true);
-	AddTexture(textureName,(CMSP&) Tex);
+	AddTexture(textureName, Tex);
 	return Tex;
 }
 

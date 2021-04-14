@@ -263,9 +263,9 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 		}
 		
 		if (mIsShow)
-			((CoreModifiable*)mParentNode)->addItem((CMSP&)mSpacialNode, ItemPosition::First);
+			((CoreModifiable*)mParentNode)->addItem(mSpacialNode, ItemPosition::First);
 		else
-			((CoreModifiable*)mParentNode)->removeItem((CMSP&)mSpacialNode);
+			((CoreModifiable*)mParentNode)->removeItem(mSpacialNode);
 	}
 	
 

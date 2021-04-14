@@ -148,8 +148,8 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 	SP<MaterialStage> MatStage = KigsCore::GetInstanceOf(objname,"MaterialStage");
 	MatStage->Init();
 
-	newMaterial->addItem((CMSP&)MatStage);
-	newgroup->addItem((CMSP&)newMaterial);
+	newMaterial->addItem(MatStage);
+	newgroup->addItem(newMaterial);
 
 
 	// totally unoptimized !
@@ -179,7 +179,7 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 	newgroup->mFirstTriangle=(Mesh::Triangle*)tmptriangles;
 	newgroup->mTriangleSize = sizeof(Mesh::F_Triangle);
 
-	pMesh->addItem((CMSP&)newgroup);
+	pMesh->addItem(newgroup);
 	
 
 	return 0;

@@ -231,12 +231,12 @@ public:
 	 * get the instance of 'classname' or call the instance factory if not exist<br>
 	 * return NULL if the factory failed
 	 */
-	static	CMSP& GetSingleton(const KigsID& classname);
+	static CMSP GetSingleton(const KigsID& classname);
 
 	template<typename askedType>
-	static SP<askedType>& Singleton()
+	static SP<askedType> Singleton()
 	{
-		return (SP<askedType>&)GetSingleton(askedType::mClassID);
+		return (SP<askedType>)GetSingleton(askedType::mClassID);
 	}
 	/**
 	 * \brief		destroy the unique instance of the given class
@@ -482,9 +482,6 @@ protected:
 
 	CoreBaseApplication* mCoreBaseApplication;
 	NotificationCenter* mNotificationCenter;
-
-	// nullptr wrapper
-	CMSP	mNullPtr = nullptr;
 
 	kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	mCoreItemOperatorCreateMethodMap;
 

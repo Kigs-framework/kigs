@@ -587,11 +587,11 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ResetTimedScan()
 		{
 			if (it.second.node)
 			{
-				attach->removeItem((CMSP&)it.second.node);
+				attach->removeItem(it.second.node);
 			}
 			if (it.second.old_node)
 			{
-				attach->removeItem((CMSP&)it.second.old_node);
+				attach->removeItem(it.second.old_node);
 			}
 		}
 		mMeshList.clear();

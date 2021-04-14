@@ -25,7 +25,7 @@ ImGuiLayer* ModuleImGui::CreateDebugLayer(kfloat bg_opacity)
 		DEBUG_ImGuiDebugLayer->setValue("ClearColorBuffer", false);
 		DEBUG_ImGuiDebugLayer->setValue("UseOldWUPKeyboard", true);
 		DEBUG_ImGuiDebugLayer->Init();
-		KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex)->addItem((CMSP&)DEBUG_ImGuiDebugLayer);
+		KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex)->addItem(DEBUG_ImGuiDebugLayer);
 	}
 	DEBUG_ImGuiDebugLayer->SetActiveImGuiLayer();
 	if(bg_opacity>=0.0f)

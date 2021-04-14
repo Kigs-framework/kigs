@@ -384,7 +384,7 @@ void ImGuiLayer::InitModifiable()
 		else if (style == "LightGreen")
 			SetStyleLightGreen();
 
-		if (mFontTexture) removeItem((CMSP&)mFontTexture);
+		if (mFontTexture) removeItem(mFontTexture);
 
 		auto tex = KigsCore::GetInstanceOf(getName() + "_font_tex", "Texture");
 		mFontTexture = tex;
@@ -942,7 +942,7 @@ DEFINE_METHOD(ImGuiLayer, ResetContext)
 
 	ImGuiIO& io = ImGui::GetIO();
 
-	if (mFontTexture) removeItem((CMSP&)mFontTexture);
+	if (mFontTexture) removeItem(mFontTexture);
 	auto tex = KigsCore::GetInstanceOf(getName() + "_font_tex", "Texture");
 	mFontTexture = tex;
 

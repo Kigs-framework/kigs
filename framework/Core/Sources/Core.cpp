@@ -534,7 +534,7 @@ void KigsCore::ReleaseSemaphore()
 	}
 }
 
-CMSP& KigsCore::GetSingleton(const KigsID& classname)
+CMSP KigsCore::GetSingleton(const KigsID& classname)
 {
 	CMSP* found=nullptr;
 	Instance()->GetSemaphore();
@@ -579,7 +579,7 @@ CMSP& KigsCore::GetSingleton(const KigsID& classname)
 	if(found)
 		return *found;
 
-	return Instance()->mNullPtr;
+	return nullptr;
 }
 
 void	KigsCore::CleanSingletonMap()

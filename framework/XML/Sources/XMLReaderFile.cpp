@@ -299,7 +299,7 @@ XMLBase* XMLReaderFile::ReadFile(const kstl::string& file,const char* force_as_f
 
 	if (realExtension == ".kxml" || forceFormat == "kxml") // compressed
 	{
-		CMSP& uncompressManager= KigsCore::GetSingleton("KXMLManager");
+		CMSP uncompressManager= KigsCore::GetSingleton("KXMLManager");
 		if (uncompressManager)
 		{
 			u64 size;

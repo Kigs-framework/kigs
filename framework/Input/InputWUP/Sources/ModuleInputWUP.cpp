@@ -52,7 +52,7 @@ void ModuleInputWUP::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 			{
 				SP<SpatialInteractionDeviceWUP> localGaze = core->GetInstanceOf("spatialinteraction", "SpatialInteractionDevice");
 				localGaze->DoInputDeviceDescription();
-				addItem((CMSP&)localGaze);
+				addItem(localGaze);
 			}
 			else
 			{
@@ -61,7 +61,7 @@ void ModuleInputWUP::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 				{
 					SP<MouseWUP> localmouse = core->GetInstanceOf("mouse", "MouseDevice");
 					localmouse->DoInputDeviceDescription();
-					addItem((CMSP&)localmouse);
+					addItem(localmouse);
 				}
 			}
 		}
@@ -82,7 +82,7 @@ void ModuleInputWUP::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 			if (localkeyboard)
 			{
 				localkeyboard->DoInputDeviceDescription();
-				addItem((CMSP&)localkeyboard);
+				addItem(localkeyboard);
 				
 			}
 		}		

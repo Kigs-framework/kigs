@@ -827,7 +827,7 @@ public:
 		mDirtyShaderMatrix = 0xffffffff;
 	}
 
-	CMSP&	getDefaultUiShader()
+	CMSP getDefaultUiShader()
 	{
 		return mDefaultUIShader;
 	}

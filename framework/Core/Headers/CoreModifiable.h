@@ -869,9 +869,9 @@ public:
 
 	/// Aggregate management
 	// Adds a new son as aggregate
-	bool aggregateWith(CMSP& item, ItemPosition pos = Last);
+	bool aggregateWith(const CMSP& item, ItemPosition pos = Last);
 	// Removes a son as aggregate
-	bool removeAggregateWith(CMSP& item);
+	bool removeAggregateWith(const CMSP& item);
 	// Recursive search all aggregate sons for an aggregate of the given type  
 	CoreModifiable*	getAggregateByType(KigsID id);
 	// Search parent to see if one of them is aggregate root of this, then recurse
