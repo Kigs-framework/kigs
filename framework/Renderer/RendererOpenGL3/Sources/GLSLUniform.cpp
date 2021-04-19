@@ -253,7 +253,7 @@ void	API3DUniformTexture::InitModifiable()
 	{
 		if ((mTextureName.const_ref()) != "")
 		{
-			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+			auto textureManager = KigsCore::Singleton<TextureFileManager>();
 			mAttachedTexture = textureManager->GetTexture(mTextureName.const_ref(), false);
 			if (mAttachedTexture)
 				if (!mAttachedTexture->IsInit())
@@ -347,7 +347,7 @@ void	API3DUniformDataTexture::InitModifiable()
 		if ((mTextureName.const_ref()) != "")
 		{
 
-			auto& pathManager = KigsCore::Singleton<FilePathManager>();
+			auto pathManager = KigsCore::Singleton<FilePathManager>();
 
 			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(mTextureName.const_ref());
 			if (fullfilenamehandle)

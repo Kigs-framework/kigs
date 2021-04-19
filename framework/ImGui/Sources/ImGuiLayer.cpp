@@ -739,7 +739,7 @@ void ImGuiLayer::NewFrame(Timer* timer)
 
 Texture* ImGuiLayer::GetTexture(const std::string& name)
 {
-	auto& tfm = KigsCore::Singleton<TextureFileManager>();
+	auto tfm = KigsCore::Singleton<TextureFileManager>();
 	auto tex = tfm->GetTexture(name);
 	mUsedTexturesThisFrame.push_back(tex);
 	return tex.get();

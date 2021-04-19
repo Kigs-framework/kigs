@@ -168,7 +168,7 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 			mDownText = _text;
 			break;
 		}
-		auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
+		auto theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 		float LanguageScale = 1.0f;
 		theLocalizationManager->getValue("LanguageScale", LanguageScale);
 		// need localization ?

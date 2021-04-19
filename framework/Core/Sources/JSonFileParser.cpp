@@ -85,7 +85,7 @@ void JSonFileParserBase<stringType,parserType>::InitParserFromString(CoreRawBuff
 template <typename stringType, typename parserType>
 void JSonFileParserBase<stringType,parserType>::InitParser(const kstl::string& filename)
 {
-	auto& pathManager = KigsCore::Singleton<FilePathManager>();
+	auto pathManager = KigsCore::Singleton<FilePathManager>();
 
 	SmartPointer<::FileHandle> fullfilenamehandle=pathManager->FindFullName(filename);
 

@@ -170,7 +170,7 @@ bool	LuaKigsBindModule::ExecuteString(const kstl::string& funcCode)
 
 bool LuaKigsBindModule::ExecuteLuaFile(const char* filename, const char* prepend)
 {
-	auto& pathManager = KigsCore::Singleton<FilePathManager>();
+	auto pathManager = KigsCore::Singleton<FilePathManager>();
 	SmartPointer<FileHandle> lFile = pathManager->FindFullName(filename);
 
 	if ((lFile->mStatus&FileHandle::Exist)==0)

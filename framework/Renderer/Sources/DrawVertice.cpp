@@ -133,7 +133,7 @@ void DrawVertice::InitModifiable()
 	{
 		if (mTextureFileName.const_ref().size())
 		{
-			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+			auto textureManager = KigsCore::Singleton<TextureFileManager>();
 			mTexture = textureManager->GetTexture(mTextureFileName);
 		}
 		// set data after texture so that can get correct uv ratio
@@ -150,7 +150,7 @@ void DrawVertice::NotifyUpdate(const u32 labelid)
 		mTexture = nullptr;
 		if (mTextureFileName.const_ref().size())
 		{
-			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+			auto textureManager = KigsCore::Singleton<TextureFileManager>();
 			mTexture = textureManager->GetTexture(mTextureFileName);
 			SetDataFromPreset();
 		}

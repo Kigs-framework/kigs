@@ -38,7 +38,7 @@ void	UITextArea::InitModifiable()
 {
 	UIDrawableItem::InitModifiable();
 
-	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+	auto textureManager = KigsCore::Singleton<TextureFileManager>();
 	mTexturePointer = textureManager->CreateTexture(getName());
 	mTexturePointer->Init();
 	mTexturePointer->SetRepeatUV(false, false);
@@ -191,7 +191,7 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 	if (((kstl::string)tmptxt) != "")
 	{
 
-		auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
+		auto theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 		float LanguageScale = 1.0f;
 		theLocalizationManager->getValue("LanguageScale", LanguageScale);
 

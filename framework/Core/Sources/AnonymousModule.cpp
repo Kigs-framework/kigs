@@ -32,7 +32,7 @@ void AnonymousModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttr
 	mCore=core;
 	KigsCore::ModuleInit(core,this);
 
-	auto& pathManager = KigsCore::Singleton<FilePathManager>();
+	auto pathManager = KigsCore::Singleton<FilePathManager>();
 
 	kstl::string fullfilename=getName();
 	SP<FileHandle> fullfilenamehandle;

@@ -351,7 +351,7 @@ void	OpenGLRenderingScreen::DelayedInit()
 
 
 		// create texture with fbo
-		auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
+		auto texfileManager = KigsCore::Singleton<TextureFileManager>();
 		mFBOTexture = texfileManager->CreateTexture(getName());
 		mFBOTexture->setValue("Width", mFBOSizeX);
 		mFBOTexture->setValue("Height", mFBOSizeY);

@@ -237,7 +237,7 @@ TinyImage::TinyImage(void* data, int sx,int sy,TinyImage::ImageFormat internalfm
 	
 TinyImage*	TinyImage::CreateImage(const char* filename)
 {
-	auto& pathManager = KigsCore::Singleton<FilePathManager>();
+	auto pathManager = KigsCore::Singleton<FilePathManager>();
 	auto hdl = pathManager->FindFullName(filename);
 	return CreateImage(hdl.get());
 }

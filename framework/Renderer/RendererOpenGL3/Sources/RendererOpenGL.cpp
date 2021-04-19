@@ -549,7 +549,7 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 		{
 			return OpenGLTexture::CreateInstance(instancename, args);
 		}
-		auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
+		auto texfileManager = KigsCore::Singleton<TextureFileManager>();
 		SP<Texture> texture = texfileManager->GetTexture(instancename, false);
 		// texture will be delete when lambda exit ( as only the pointer is returned )
 		if (texture)

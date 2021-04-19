@@ -103,7 +103,7 @@ void	UIText::ChangeText(const kstl::string& _newText)
 
 void	UIText::ChangeText(const usString& _newText)
 {
-	auto& theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
+	auto theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 	float LanguageScale = 1.0f;
 	theLocalizationManager->getValue("LanguageScale", LanguageScale);
 

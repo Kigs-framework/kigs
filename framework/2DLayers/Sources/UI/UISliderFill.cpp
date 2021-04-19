@@ -51,7 +51,7 @@ void UISliderFill::InitModifiable()
 	if(_isInit)
 	{
 		// load texture
-		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+		auto textureManager = KigsCore::Singleton<TextureFileManager>();
 		mVoidTexturePointer = textureManager->GetTexture(mVoidTexture);
 
 		// auto size button
@@ -107,7 +107,7 @@ void UISliderFill::ChangeTexture(kstl::string _voidtexturename,kstl::string _sta
 {
 	if(mIsEnabled) // down and mouse over only when enabled
 	{
-		auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+		auto textureManager = KigsCore::Singleton<TextureFileManager>();
 
 		mVoidTexture = _voidtexturename;
 		mVoidTexturePointer = textureManager->GetTexture(mVoidTexture);

@@ -28,7 +28,7 @@ Texture::Texture(const kstl::string& name, CLASS_NAME_TREE_ARG) : Drawable(name,
 
 Texture::~Texture()
 {
-	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+	auto textureManager = KigsCore::Singleton<TextureFileManager>();
 
 	textureManager->UnloadTexture(this);
 }
@@ -62,7 +62,7 @@ void	Texture::InitModifiable()
 				UninitModifiable();
 			}
 
-			auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+			auto textureManager = KigsCore::Singleton<TextureFileManager>();
 
 			if (textureManager->HasTexture(mFileName.const_ref()))
 			{
@@ -88,7 +88,7 @@ void	Texture::InitModifiable()
 // return an already existing instance equivalent of this
 CMSP	Texture::getSharedInstance()
 {
-	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+	auto textureManager = KigsCore::Singleton<TextureFileManager>();
 
 	if (textureManager->HasTexture(mFileName.const_ref()))
 	{

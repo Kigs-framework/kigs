@@ -82,7 +82,7 @@ void	Mesh::InitModifiable()
 	{
 		if (!mDynamicInit)
 		{
-			auto& pathManager = KigsCore::Singleton<FilePathManager>();
+			auto pathManager = KigsCore::Singleton<FilePathManager>();
 
 			kstl::string fullfilename;
 			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(mFileName);

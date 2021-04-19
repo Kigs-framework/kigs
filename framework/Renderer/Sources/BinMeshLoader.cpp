@@ -223,7 +223,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 
 			if(stagedesc.mTexture != "empty")
 			{
-				auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
+				auto texfileManager = KigsCore::Singleton<TextureFileManager>();
 				SP<Texture> Tex = texfileManager->GetTexture(stagedesc.mTexture, false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 				Tex->Init();
@@ -628,7 +628,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 			if(stagedesc.mTexture != "empty")
 			{
-				auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
+				auto texfileManager = KigsCore::Singleton<TextureFileManager>();
 				SP<Texture> Tex = texfileManager->GetTexture(stagedesc.mTexture, false);
 				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
 				Tex->Init();

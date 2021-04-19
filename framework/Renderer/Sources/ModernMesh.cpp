@@ -124,7 +124,7 @@ void ModernMesh::InitModifiable()
 		}
 		else if ((!mWasBuild) && (mFileName.const_ref() != ""))
 		{
-			auto& pathManager = KigsCore::Singleton<FilePathManager>();
+			auto pathManager = KigsCore::Singleton<FilePathManager>();
 			auto filename = mFileName.const_ref();
 
 			/*if (filename.substr(filename.size() - 4) == ".xml" || filename.substr(filename.size() - 5) == ".kxml")

@@ -218,7 +218,7 @@ DEFINE_METHOD(RenderingScreen, ResetContext)
 	ModuleSpecificRenderer* renderer = ModuleRenderer::mTheGlobalRenderer; //((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	renderer->FlushState(true);
 
-	auto& textureManager = KigsCore::Singleton<TextureFileManager>();
+	auto textureManager = KigsCore::Singleton<TextureFileManager>();
 	textureManager->ResetAllTexture();
 
 	KigsCore::GetNotificationCenter()->postNotificationName("ResetContext", this);

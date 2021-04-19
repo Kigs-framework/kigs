@@ -286,7 +286,7 @@ XMLBase* XMLReaderFile::ReadFile(const kstl::string& file,const char* force_as_f
 
 	// 
 	SmartPointer<FileHandle> lFileHandle;
-	auto& pathManager = KigsCore::Singleton<FilePathManager>();
+	auto pathManager = KigsCore::Singleton<FilePathManager>();
 	if (!pathManager.isNil())
 		lFileHandle = pathManager->FindFullName(file);
 
@@ -344,7 +344,7 @@ bool XMLReaderFile::ReadFile( const kstl::string &file ,CoreModifiable*	delegate
 {
 	bool result=false;
 
-	auto& pathManager = KigsCore::Singleton<FilePathManager>();
+	auto pathManager = KigsCore::Singleton<FilePathManager>();
 	SP<FileHandle> fullfilenamehandle=pathManager->FindFullName(file);
 
 	
