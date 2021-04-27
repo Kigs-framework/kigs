@@ -132,6 +132,8 @@ bool JPEGClass::Load(CoreRawBuffer* rawbuffer)
 		* jpeg_read_header(), so we do nothing here.
 		*/
 
+		cinfo.out_color_space = JCS_RGB;
+
 		/* Step 5: Start decompressor */
 		jpeg_start_decompress(&cinfo);
 		/* We can ignore the return value since suspension is not possible
@@ -153,9 +155,9 @@ bool JPEGClass::Load(CoreRawBuffer* rawbuffer)
 
 		mPixels = new u8[mPixelDataSize];
 
-		while (cinfo.output_scanline < cinfo.image_height)
+		while (cinfo.output_scanline < cinfo.output_height)
 		{
-			u8* p = mPixels + cinfo.output_scanline*cinfo.image_width*cinfo.num_components;
+			u8* p = mPixels + cinfo.output_scanline*cinfo.output_width *cinfo.output_components;
 			jpeg_read_scanlines(&cinfo, &p, 1);
 		}
 

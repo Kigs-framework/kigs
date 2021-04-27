@@ -248,40 +248,38 @@ public:
 
 	bool	empty() const
 	{
-		return (strlen(mString) == 0);
+		return (strlen() == 0);
 	}
 
 	inline unsigned int length() const
 	{
-		return strlen(mString);
+		return mLen;
 	}
 
 	usString	substr(int pos, int len) const
 	{
 		usString result;
-		int origlen = strlen(mString);
+		u32 origlen = strlen();
 		if ((origlen - pos) < len)
 		{
 			len = origlen - pos;
 			if (len < 0)
 			{
 				len = 0;
+				return result;
 			}
 		}
 
-		if (result.mString)
-			delete[] result.mString;
-		result.mString = new unsigned short[len + 1];
+		result.doRealloc(len);
 		memcpy(result.mString, mString + pos, len * sizeof(unsigned short));
 		result.mString[len] = 0;
-
 		return result;
 	}
 
 	std::string::size_type	find(unsigned short toFind, int startpos = 0) const 
 	{
-		int Len = strlen(mString);
-		if (startpos >= Len)
+		u32 Len = strlen();
+		if ((startpos >= Len) || (startpos < 0) || (!Len))
 		{
 			return  std::string::npos;
 		}
@@ -301,8 +299,8 @@ public:
 	}
 	std::string::size_type	rfind(unsigned short toFind, int startpos = 0) const 
 	{
-		int Len = strlen(mString);
-		if (startpos < 0)
+		u32 Len = strlen();
+		if ((startpos >= Len) || (startpos < 0) || (!Len))
 		{
 			return  std::string::npos;
 		}
@@ -347,14 +345,24 @@ public:
 
 	}
 
-	inline unsigned int strlen() const
+	inline u32 strlen() const
 	{
-		return strlen(mString);
+		return mLen;
 	}
 
 	usString& operator=(const usString& toCopy)
 	{
-		copy(toCopy.us_str());
+		// clear reserved if needed
+
+		if ((mReservedSize>>1) > toCopy.mReservedSize)
+		{
+			delete[] mString;
+			mString = nullptr;
+			mLen = 0;
+			mReservedSize = 0;
+		}
+
+		copy(toCopy);
 
 		return *this;
 	}
@@ -466,42 +474,27 @@ public:
 		unsigned int len1 = _value.strlen();
 		unsigned int len2 = strlen();
 
-		unsigned int totalsize = len1 + len2 + 1;
+		unsigned int totalsize = len1 + len2;
 
-		unsigned short* result = new unsigned short[totalsize];
-		memset(result, 0, totalsize * sizeof(unsigned short));
-		if (mString)
-			memcpy(result, mString, len2 * sizeof(unsigned short));
+		doRealloc(totalsize, true); // copy previous val
 
-		memcpy(result + len2, _value.mString, len1 * sizeof(unsigned short));
-
-		if (mString)
-			delete[] mString;
-		mString = result;
+		memcpy(mString + len2, _value.mString, (len1+1) * sizeof(unsigned short));
 
 		return *this;
-
 	}
 
 	usString& operator+=(unsigned short _value)
 	{
 		unsigned int len2 = strlen();
 
+		unsigned int totalsize =len2 + 1;
 
-		unsigned int totalsize = 1 + len2 + 1;
-
-		unsigned short* result = new unsigned short[totalsize];
-		result[totalsize - 2] = _value;
-		result[totalsize - 1] = 0;
-		if (mString)
-			memcpy(result, mString, len2 * sizeof(unsigned short));
-
-		if (mString)
-			delete[] mString;
-		mString = result;
-
+		doRealloc(totalsize, true); // copy previous val
+	
+		mString[totalsize - 1] = _value;
+		mString[totalsize] = 0;
+		
 		return *this;
-
 	}
 
 	inline unsigned int hexaCharacterToInt(unsigned short character)
@@ -527,17 +520,12 @@ public:
 		unsigned int len1 = strlen(_value);
 		unsigned int len2 = strlen();
 
-		unsigned int totalsize = len1 + len2 + 1;
+		unsigned int totalsize = len1 + len2;
 
-		unsigned short* result = new unsigned short[totalsize];
-		memset(result, 0, totalsize * sizeof(unsigned short));
-		if (mString)
-			memcpy(result, mString, len2 * sizeof(unsigned short));
-		memcpy(result + len2, _value, len1 * sizeof(unsigned short));
+		doRealloc(totalsize,true); // copy previous val
 
-		if (mString)
-			delete[] mString;
-		mString = result;
+		memcpy(mString + len2, _value, (len1+1) * sizeof(unsigned short));
+
 		return *this;
 	}
 
@@ -545,14 +533,16 @@ public:
 
 protected:
 
+	inline void copy(const usString& str)
+	{
+		doRealloc(str.length());
+		memcpy(mString, str.mString, (mLen + 1) * sizeof(unsigned short));
+	}
+
 	inline void copy(const char* str)
 	{
-		if (mString)
-		{
-			delete[] mString;
-		}
-		unsigned int len = strlen(str);
-		mString = new unsigned short[len + 1];
+		doRealloc(strlen(str));
+
 		unsigned char*	read = (unsigned char*)str;
 		unsigned short*	write = mString;
 		*write = *read;
@@ -564,21 +554,52 @@ protected:
 
 	}
 
+	u32		computeReservedSize(u32 newLen)
+	{
+		if (newLen < 8)
+			return 8;
+		if (newLen < 512)
+			return newLen + (newLen >> 1);
+
+		return newLen + 256;
+	}
+
+	void	doRealloc(u32 newLen,bool copy=false)
+	{
+		if ((newLen+1) >= mReservedSize)
+		{
+			mReservedSize = computeReservedSize(newLen + 1);
+
+			unsigned short* newBuffer = new unsigned short[mReservedSize];
+			if (copy)
+			{
+				memcpy(newBuffer, mString, (mLen + 1) * sizeof(unsigned short));
+			}
+
+			if (mString)
+				delete[] mString;
+
+			mString = newBuffer;
+		}
+		
+		mLen = newLen;
+	}
+
+
 	inline void copy(const unsigned short* str)
 	{
-		// mString is always valid and allocated
-		if (mString)
-			delete[] mString;
-
-		unsigned int len = strlen(str);
-		mString = new unsigned short[len + 1];
-		memcpy(mString, str, (len + 1) * sizeof(unsigned short));
+		doRealloc(strlen(str));
+		memcpy(mString, str, (mLen + 1) * sizeof(unsigned short));
 	}
 
 	void copy(const UTF8Char* str);
 
 
 	unsigned short*	mString;
+	// store len to avoid strlen
+	u32			mLen=0;
+	// store reserved size to avoid some realloc
+	u32			mReservedSize = 0;
 };
 
 
@@ -594,6 +615,7 @@ static inline usString ToLowerCase(const usString& a_entry)
 {
 	std::locale loc;
 	usString str;
+	str.reserve(a_entry.length() + 1);
 
 	unsigned int al = a_entry.length();
 

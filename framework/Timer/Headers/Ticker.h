@@ -25,5 +25,5 @@ protected:
 	
 	double		mLastUpdate=-1.0;
 
-	bool				mWasdAutoUpdate = false;
+	bool		mWasdAutoUpdate = false;
 };
