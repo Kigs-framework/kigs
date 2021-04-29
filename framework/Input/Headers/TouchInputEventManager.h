@@ -78,7 +78,7 @@ struct GetDistanceForInputSortParam
 
 	double inout_distance;
 	Hit* inout_hit = nullptr;
-	// Each element is sorted within its layer by inout_distance. Layers go from front (-INT_MAX) to back (INT_MAX)
+	// Each element is sorted within its layer by inout_distance. Layers go from front (INT_MIN) to back (INT_MAX)
 	int inout_sorting_layer = 0;
 };
 

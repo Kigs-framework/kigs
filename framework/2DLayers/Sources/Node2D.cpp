@@ -363,6 +363,8 @@ void	Node2D::InitModifiable()
 		mPostScaleY.changeNotificationLevel(Owner);
 		mPriority.changeNotificationLevel(Owner);
 		mRotationAngle.changeNotificationLevel(Owner);
+		if (mParent)
+			mParent->SetNodeFlag(Node2D_SonPriorityChanged);
 		CoreModifiable::InitModifiable();
 	}
 }
@@ -452,18 +454,14 @@ void	Node2D::GetTransformedPoints(Point2D * pt)
 	TransformPoints(pt, 4);
 }
 
-
 void	Node2D::ResortSons()
 {
 	if (GetNodeFlag(Node2D_SonPriorityChanged))
 	{
 		kstl::set<Node2D*, Node2D::PriorityCompare> resortset = mSons;
-
 		mSons.clear();
-
 		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator it = resortset.begin();
 		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = resortset.end();
-
 		for (; it != end; ++it)
 		{
 			mSons.insert(*it);

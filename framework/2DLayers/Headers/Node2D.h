@@ -100,7 +100,7 @@ public:
 	bool										addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
 	bool										removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
-	inline const kstl::set<Node2D*, Node2D::PriorityCompare>&	GetSons() { return mSons; }
+	inline const kstl::set<Node2D*, Node2D::PriorityCompare>& GetSons() { ResortSons(); return mSons; }
 
 	// transform local points to global
 	inline void	TransformPoints(Point2D* totransform, int count) const
