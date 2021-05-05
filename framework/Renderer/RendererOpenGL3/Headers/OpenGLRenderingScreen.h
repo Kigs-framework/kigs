@@ -49,12 +49,12 @@ protected:
 
 	void InitializeGL(GLsizei width, GLsizei height) override;
 
-	unsigned int	mFBOFrameBufferID;
-	unsigned int	mFBODepthBufferID;
-	unsigned int	mFBOStencilBufferID;
-	unsigned int	mFBOTextureID;
+	unsigned int	mFBOFrameBufferID = 0xffffffff;
+	unsigned int	mFBODepthBufferID = 0xffffffff;
+	unsigned int	mFBOStencilBufferID = 0xffffffff;
+	unsigned int	mFBOTextureID = 0xffffffff;
 
-	int	mDefaultFrameBuffer;
+	unsigned int	mDefaultFrameBuffer = 0xffffffff;
 };
 
 

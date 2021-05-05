@@ -337,7 +337,13 @@ void	OpenGLRenderingScreen::DelayedInit()
 
 	if (mUseFBO)
 	{
-		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &mDefaultFrameBuffer); CHECK_GLERROR;
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, (GLint*)&mDefaultFrameBuffer); CHECK_GLERROR;
+
+		if (mFBOFrameBufferID != 0xffffffff)
+			glDeleteFramebuffers(1, &mFBOFrameBufferID);
+
+		if (mFBODepthBufferID != 0xffffffff)
+			glDeleteRenderbuffers(1, &mFBODepthBufferID);
 
 		glGenFramebuffers(1, &mFBOFrameBufferID); CHECK_GLERROR;
 		int zbits = (int)mBitsPerZ;
@@ -348,11 +354,15 @@ void	OpenGLRenderingScreen::DelayedInit()
 		{
 			glGenRenderbuffers(1, &mFBODepthBufferID);
 		}
-
+		
 
 		// create texture with fbo
 		auto texfileManager = KigsCore::Singleton<TextureFileManager>();
-		mFBOTexture = texfileManager->CreateTexture(getName());
+		if (!mFBOTexture)
+			mFBOTexture = texfileManager->CreateTexture(getName());
+		else
+			mFBOTexture->UnInit();
+
 		mFBOTexture->setValue("Width", mFBOSizeX);
 		mFBOTexture->setValue("Height", mFBOSizeY);
 		mFBOTexture->InitForFBO();

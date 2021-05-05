@@ -98,8 +98,11 @@ inline constexpr u32 bits_required(T min_value, T max_value)
 
 #define CHECK_SERIALIZE(a) if(!a) return false;
 #define CHECK_SERIALIZE_VER(ver, a) if(loaded_version >= ver) if(!a) return false;
+#define CHECK_SERIALIZE_VERSION_RANGE(ver_start, ver_end, a) if(loaded_version >= ver_start && loaded_version <= ver_end) if(!a) return false;
+
 #define CO_CHECK_SERIALIZE(a) if(!a) co_return false;
 #define CO_CHECK_SERIALIZE_VER(ver, a) if(loaded_version >= ver) if(!a) co_return false;
+#define CO_CHECK_SERIALIZE_VERSION_RANGE(ver_start, ver_end, a) if(loaded_version >= ver_start && loaded_version <= ver_end) if(!a) co_return false;
 
 
 #define SERIALIZE_VERSION(stream, ver) const u16 current_version = ver;\

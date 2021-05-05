@@ -34,7 +34,13 @@ void	UIRenderingScreen::InitModifiable()
 		{
 			auto textureManager = KigsCore::Singleton<TextureFileManager>();
 
-			mTexturePointer = rs->as<RenderingScreen>()->GetFBOTexture();
+			auto texture = rs->as<RenderingScreen>()->GetFBOTexture();
+			if (!texture)
+			{
+				UninitModifiable();
+				return;
+			}
+			mTexturePointer->setTexture(texture);
 			mTexturePointer->setValue("TransparencyType",2);
 			mTexturePointer->setValue("ForceNearest", (bool)mForceNearest);
 			mForceNearest.changeNotificationLevel(Owner);
