@@ -88,10 +88,10 @@ void Node3DDelayed::NotifyUpdate(const unsigned int labelid)
 	ParentClassType::NotifyUpdate(labelid);
 	if (labelid == mBBoxMin.getID() || labelid == mBBoxMax.getID())
 	{
-		SetFlag(LocalToGlobalMatrixIsDirty);
-		SetFlag(GlobalToLocalMatrixIsDirty);
-		SetFlag(BoundingBoxIsDirty);
-		SetFlag(GlobalBoundingBoxIsDirty);
+		setUserFlag(LocalToGlobalMatrixIsDirty);
+		setUserFlag(GlobalToLocalMatrixIsDirty);
+		setUserFlag(BoundingBoxIsDirty);
+		setUserFlag(GlobalBoundingBoxIsDirty);
 
 		PropagateDirtyFlagsToSons(this);
 		PropagateDirtyFlagsToParents(this);

@@ -9,7 +9,6 @@ class Texture;
 class UIDrawableItem;
 class UIShapeDelegate;
 
-#define		UserFlagUseColorArray	(8)
 
 // ****************************************
 // * UIDrawableItem class
@@ -29,6 +28,10 @@ public:
 	DECLARE_CLASS_INFO(UIDrawableItem, UIItem, 2DLayers);
 	DECLARE_CONSTRUCTOR(UIDrawableItem);
 	
+	static constexpr unsigned int UserFlagUseColorArray = 1 << ParentClassType::usedUserFlags;
+	static constexpr unsigned int usedUserFlags = ParentClassType::usedUserFlags + 1;
+
+
 	void ProtectedDraw(TravState* state) override;
 	void SetVertexArray(UIVerticesInfo * aQI) override;
 	void SetColor(UIVerticesInfo * aQI) override;
@@ -46,6 +49,7 @@ protected:
 	{
 		return pos;
 	}
+
 	UIVerticesInfo mVI;
 
 	maVect2DI mSliced = BASE_ATTRIBUTE(Sliced, 0, 0);

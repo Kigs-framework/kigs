@@ -42,14 +42,12 @@ IMPLEMENT_CONSTRUCTOR(Node2D)
 bool Node2D::IsInClip(v2f pos) const
 {
 	bool allow = true;
-	if (mFlags & Node2D_Clipped)
+	if ((Flags)mFlags & Flags::Node2D_Clipped)
 	{
 		auto father = getFather();
 		while (father && allow)
 		{
-			bool clip = false;
-			father->getValue("ClipSons", clip);
-			if (clip && father->isSubType("UIItem"))
+			if (father->GetNodeFlag(Node2D::Node2D_ClipSons) && father->isSubType("UIItem"))
 			{
 				allow = static_cast<UIItem*>(father)->ContainsPoint(pos.x, pos.y);
 			}
@@ -65,6 +63,7 @@ void Node2D::NotifyUpdate(const unsigned int labelid)
 {
 	if (labelid == mClipSons.getID())
 	{
+		ChangeNodeFlag(Node2D_ClipSons,mClipSons);
 		PropagateNodeFlags();
 	}
 	
@@ -95,6 +94,10 @@ void Node2D::NotifyUpdate(const unsigned int labelid)
 			if (mParent->isSubType(UILayout::mClassID))
 				static_cast<UILayout*>(mParent)->NeedRecomputeLayout();
 		}
+	}
+	else if (labelid == mCustomShader.getLabelID())
+	{
+		ChangeNodeFlag(Node2D_UseCustomShader, ((std::string)mCustomShader != ""));
 	}
 	CoreModifiable::NotifyUpdate(labelid);
 }
@@ -363,6 +366,15 @@ void	Node2D::InitModifiable()
 		mPostScaleY.changeNotificationLevel(Owner);
 		mPriority.changeNotificationLevel(Owner);
 		mRotationAngle.changeNotificationLevel(Owner);
+		mClipSons.changeNotificationLevel(Owner);
+
+		ChangeNodeFlag(Node2D_ClipSons, mClipSons);
+
+		// call me if custom shader is set
+		mCustomShader.changeNotificationLevel(Owner);
+		
+		ChangeNodeFlag(Node2D_UseCustomShader, ((std::string)mCustomShader != ""));
+
 		CoreModifiable::InitModifiable();
 	}
 }

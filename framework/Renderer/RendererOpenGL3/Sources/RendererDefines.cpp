@@ -5,6 +5,7 @@
 const char * KIGS_MATRIX_PROJ            = "proj_matrix";
 const char * KIGS_MATRIX_MODEL           = "model_matrix";
 const char * KIGS_MATRIX_VIEW            = "view_matrix";
+const char * KIGS_MATRIX_UV				 = "uv_matrix";
 const char * KIGS_TEXTURE_0		 		 = "s0_colorMap";
 const char * KIGS_TEXTURE_1				 = "s1_colorMap";
 const char * KIGS_TEXTURE_2				 = "s2_colorMap";

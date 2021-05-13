@@ -96,7 +96,7 @@ void	ShaderBase::Dealloc()
 	mCurrentShader = nullptr;
 }
 
-void ShaderBase::GetMatrixLoc(int loc[4])
+void ShaderBase::GetMatrixLoc(int loc[5])
 {
 	if ((mCurrentShader)->mLocations)
 	{
@@ -104,5 +104,6 @@ void ShaderBase::GetMatrixLoc(int loc[4])
 		loc[1] = (mCurrentShader)->mLocations->modelMatrix;
 		loc[2] = (mCurrentShader)->mLocations->viewMatrix;
 		loc[3] = (mCurrentShader)->mLocations->farPlane;
+		loc[4] = (mCurrentShader)->mLocations->uvMatrix;
 	}
 }

@@ -83,22 +83,22 @@ void UIDrawableItem::SetVertexArray(UIVerticesInfo * aQI)
 	auto current_pos = positions;
 	// Top Left
 	make_quad(current_pos, v2f(0, 0), slice_size);
+	// Top
+	make_quad(current_pos, v2f(slice_size.x, 0), v2f((mRealSize.x - slice_size.x * 2.0f), slice_size.y));
 	// Top Right
 	make_quad(current_pos, v2f(mRealSize.x - slice_size.x, 0), slice_size);
+	// Left
+	make_quad(current_pos, v2f(0, slice_size.y), v2f(slice_size.x, (mRealSize.y - slice_size.y * 2.0f)));
+	// Center
+	make_quad(current_pos, v2f(slice_size.x, slice_size.y), mRealSize - slice_size * 2.0f);
+	// Right
+	make_quad(current_pos, v2f(mRealSize.x - slice_size.x, slice_size.y), v2f(slice_size.x, (mRealSize.y - slice_size.y * 2.0f)));
 	// Bottom Left
 	make_quad(current_pos, v2f(0, mRealSize.y - slice_size.y), slice_size);
+	// Bottom
+	make_quad(current_pos, v2f(slice_size.x, mRealSize.y - slice_size.y), v2f((mRealSize.x - slice_size.x * 2.0f), slice_size.y));
 	// Bottom Right
 	make_quad(current_pos, v2f(mRealSize.x - slice_size.x, mRealSize.y - slice_size.y), slice_size);
-	// Center
-	make_quad(current_pos, v2f(slice_size.x, slice_size.y), mRealSize - slice_size*2);
-	// Top
-	make_quad(current_pos, v2f(slice_size.x, 0), v2f((mRealSize - slice_size * 2).x, slice_size.y));
-	// Bottom
-	make_quad(current_pos, v2f(slice_size.x, mRealSize.y - slice_size.y), v2f((mRealSize - slice_size * 2).x, slice_size.y));
-	// Left
-	make_quad(current_pos, v2f(0, slice_size.y), v2f(slice_size.x, (mRealSize - slice_size * 2).y));
-	// Right
-	make_quad(current_pos, v2f(mRealSize.x - slice_size.x, slice_size.y), v2f(slice_size.x, (mRealSize - slice_size * 2).y));
 
 	TransformPoints(positions, 6 * 9);
 	for (int i = 0; i < 6 * 9; ++i)

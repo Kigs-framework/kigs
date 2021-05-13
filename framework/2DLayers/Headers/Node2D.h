@@ -137,11 +137,15 @@ public:
 		Node2D_Hidden = 1u << 2u,
 		Node2D_NeedUpdatePosition = 1u << 3u,
 		Node2D_SonPriorityChanged = 1u << 4u,
+		Node2D_UseCustomShader = 1u << 5u,
+		Node2D_hasBGRTexture = 1u << 6u,
+		Node2D_ClipSons = 1u << 7u,
 
 		Node2D_PropagatedFlags = Node2D_Clipped | Node2D_Hidden,
 	};
 
-	u32													GetNodeFlags() const { return mFlags; }
+	u32														GetNodeFlags() const { return mFlags; }
+
 	inline bool												GetNodeFlag(Flags f)
 	{
 		return mFlags & f;
@@ -153,6 +157,18 @@ public:
 	inline void												ClearNodeFlag(Flags f)
 	{
 		mFlags &= ~(f);
+	}
+
+	inline void												ChangeNodeFlag(Flags f,bool set)
+	{
+		if (set)
+		{
+			SetNodeFlag(f);
+		}
+		else
+		{
+			ClearNodeFlag(f);
+		}
 	}
 
 	bool IsHiddenFlag() const { return (mFlags & Node2D_Hidden) != 0; }
@@ -205,8 +221,7 @@ protected:
 	maEnum<7>											mSizeModeX = BASE_ATTRIBUTE(SizeModeX, "Default", "Multiply", "Add", "Content","ContentMult","ContentAdd","KeepRatio");
 	maEnum<7>											mSizeModeY = BASE_ATTRIBUTE(SizeModeY, "Default", "Multiply", "Add", "Content", "ContentMult", "ContentAdd", "KeepRatio");
 	maBoolHeritage<1>									mClipSons;
-	//bool												mNeedUpdatePosition;
-	//bool												mSonPriorityChanged;
+
 	maReference											mCustomShader = BASE_ATTRIBUTE(CustomShader, "");
 
 	WRAP_METHODS(GetSize);

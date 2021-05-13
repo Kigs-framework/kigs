@@ -138,9 +138,6 @@ public:
 	void DrawUIQuad(TravState * state, const UIVerticesInfo * qi) override;
 	void DrawUITriangles(TravState * state, const UIVerticesInfo * qi) override;
 
-	static FreeType_TextDrawer*		mDrawer;
-
-
 	virtual void	setCurrentShaderProgram(ShaderInfo* p) override;
 
 	void DrawPendingInstances(TravState* state) override;

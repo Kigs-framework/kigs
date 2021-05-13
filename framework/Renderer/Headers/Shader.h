@@ -34,7 +34,7 @@ struct Locations
 	unsigned int projMatrix = 0xFFFFFFFF;
 	unsigned int modelMatrix = 0xFFFFFFFF;
 	unsigned int viewMatrix = 0xFFFFFFFF;
-
+	unsigned int uvMatrix = 0xFFFFFFFF;
 
 	unsigned int attribVertex = 0xFFFFFFFF;
 	unsigned int attribNormal = 0xFFFFFFFF;
@@ -260,7 +260,7 @@ public:
 		return (unsigned int)-1;
 	}
 
-	void GetMatrixLoc(int loc[3]);
+	void GetMatrixLoc(int loc[5]);
 	const Locations * GetLocation() const {
 		if (mCurrentShader)
 		{

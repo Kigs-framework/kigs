@@ -5,6 +5,7 @@
 extern const char * KIGS_MATRIX_PROJ;
 extern const char * KIGS_MATRIX_MODEL;
 extern const char * KIGS_MATRIX_VIEW;
+extern const char * KIGS_MATRIX_UV;
 extern const char * KIGS_TEXTURE_0;
 extern const char * KIGS_TEXTURE_1;
 extern const char * KIGS_TEXTURE_2;

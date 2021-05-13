@@ -265,6 +265,11 @@ std::string API3DGenericMeshShader::GetDefaultVertexShaderUniforms()
 	uniform mat4	view_matrix;
 	uniform mat4	proj_matrix;
 	#endif
+
+#ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0 
+	uniform mat3    uv_matrix;
+#endif
+
 	uniform vec3 camPos;
 	#ifdef CLIENT_STATE_FOG
 	uniform float far_plane;
@@ -312,7 +317,8 @@ std::string API3DGenericMeshShader::GetDefaultVertexShaderMain()
 	vOneOnFogScale=1.0/fog_scale;
 #endif
 #ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0 
-	vTexcoord = attrib_texcoord;
+	vec3 uvtmp = uv_matrix* vec3(attrib_texcoord,1.0);
+	vTexcoord = uvtmp.xy;
 #endif
 #ifdef CLIENT_STATE_TANGENT_ARRAY 
 	T = normalize(actual_model_matrix * vec4(attrib_tangent, 0.0)).xyz;

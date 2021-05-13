@@ -18,6 +18,9 @@ IMPLEMENT_CONSTRUCTOR(UITexturedItem)
 	// create empty Textured Item
 	mTexturePointer = KigsCore::GetInstanceOf(getName()+"_TextureHandler", "TextureHandler");
 	mTexturePointer->Init();
+	bool is_bgr = false;
+	mTexturePointer->getValue("IsBGR", is_bgr);
+	ChangeNodeFlag(Node2D_hasBGRTexture, is_bgr);
 
 	KigsCore::Connect(mTexturePointer.get(), "NotifyUpdate", this , "TextureNotifyUpdate");
 }
@@ -33,8 +36,7 @@ void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 		}
 		aQI->Flag |= UIVerticesInfo_Texture;
 
-		bool is_bgr = false;
-		if (mTexturePointer->getValue("IsBGR", is_bgr) && is_bgr)
+		if(GetNodeFlag(Node2D_hasBGRTexture))
 		{
 			aQI->Flag |= UIVerticesInfo_BGRTexture;
 		}
@@ -47,67 +49,59 @@ void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 		v2f isize;
 		mTexturePointer->GetSize(isize.x, isize.y);
 
-	
 		VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
 
 		auto slice_size = (v2f)mSliced;
 		if (slice_size == v2f(0, 0))
 		{
+			std::vector<v2f>	transformed = { {0.0f, 0.0f},{0.0f, 1.0f},{1.0f, 1.0f},{1.0f, 0.0f} };
+			TransformUV(transformed.data(), transformed.size());
+
 			// triangle strip order
-			v2f uvpos = mTexturePointer->getUVforPosInPixels({ 0.f,0.f });
-			buf[0].setTexUV(uvpos.x, uvpos.y);
-			uvpos = mTexturePointer->getUVforPosInPixels({ 0.f,isize.y - 1.0f });
-			buf[1].setTexUV(uvpos.x, uvpos.y);
-			uvpos = mTexturePointer->getUVforPosInPixels({ isize.x-1.0f,isize.y - 1.0f });
-			buf[3].setTexUV(uvpos.x, uvpos.y);
-			uvpos = mTexturePointer->getUVforPosInPixels({ isize.x - 1.0f,0.0f });
-			buf[2].setTexUV(uvpos.x, uvpos.y);
+			buf[0].setTexUV(transformed[0]);
+			buf[1].setTexUV(transformed[1]);
+			buf[3].setTexUV(transformed[2]);
+			buf[2].setTexUV(transformed[3]);
 		}
 		else
 		{
-			kfloat ratioX, ratioY;
-			mTexturePointer->GetRatio(ratioX, ratioY);
-
-			v2f image_size{ isize.x * ratioX, isize.y * ratioY };
-
 			auto set_quad_uv = [&](v2f*& pts, v2f start_pos, v2f size)
 			{
-			
-				v2f uvpos = mTexturePointer->getUVforPosInPixels(start_pos);
-				pts[0] = uvpos;
-				uvpos = mTexturePointer->getUVforPosInPixels({ start_pos.x,start_pos.y + size.y });
-				pts[1] = uvpos;
-				pts[4] = uvpos;
-				uvpos = mTexturePointer->getUVforPosInPixels({ start_pos.x+size.x ,start_pos.y });
-				pts[2] = uvpos;
-				pts[3] = uvpos;
-				uvpos = mTexturePointer->getUVforPosInPixels({ start_pos.x + size.x ,start_pos.y+size.y });
-				pts[5] = uvpos;
+				pts[0] = start_pos;
+				pts[1] = { start_pos.x,start_pos.y + size.y };
+				pts[4] = { start_pos.x,start_pos.y + size.y };
+				pts[2] = { start_pos.x + size.x ,start_pos.y };
+				pts[3] = { start_pos.x + size.x ,start_pos.y };
+				pts[5] = { start_pos.x + size.x ,start_pos.y + size.y };
 				
 				pts += 6;
 			};
 
 			v2f uvs[6 * 9];
 			v2f* current_uv = uvs;
+
+			slice_size /= isize;
 			
 			// Top Left
 			set_quad_uv(current_uv, v2f(0, 0), slice_size);
-			// Top Right
-			set_quad_uv(current_uv, v2f(image_size.x - slice_size.x, 0), slice_size);
-			// Bottom Left
-			set_quad_uv(current_uv, v2f(0, image_size.y - slice_size.y), slice_size);
-			// Bottom Right
-			set_quad_uv(current_uv, v2f(image_size.x - slice_size.x, image_size.y - slice_size.y), slice_size);
-			// Center
-			set_quad_uv(current_uv, v2f(slice_size.x, slice_size.y), image_size - slice_size * 2);
 			// Top
-			set_quad_uv(current_uv, v2f(slice_size.x, 0), v2f((image_size - slice_size * 2).x, slice_size.y));
-			// Bottom
-			set_quad_uv(current_uv, v2f(slice_size.x, image_size.y - slice_size.y), v2f((image_size - slice_size * 2).x, slice_size.y));
+			set_quad_uv(current_uv, v2f(slice_size.x, 0), v2f((1.0f - slice_size.x * 2.0f), slice_size.y));
+			// Top Right
+			set_quad_uv(current_uv, v2f(1.0f - slice_size.x, 0), slice_size);
 			// Left
-			set_quad_uv(current_uv, v2f(0, slice_size.y), v2f(slice_size.x, (image_size - slice_size * 2).y));
+			set_quad_uv(current_uv, v2f(0, slice_size.y), v2f(slice_size.x, (1.0f - slice_size.y * 2.0f)));
+			// Center
+			set_quad_uv(current_uv, v2f(slice_size.x, slice_size.y), v2f(1.0f - slice_size.x * 2.0f, 1.0f - slice_size.y * 2.0f));
 			// Right
-			set_quad_uv(current_uv, v2f(image_size.x - slice_size.x, slice_size.y), v2f(slice_size.x, (image_size - slice_size * 2).y));
+			set_quad_uv(current_uv, v2f(1.0f - slice_size.x, slice_size.y), v2f(slice_size.x, 1.0f - slice_size.y * 2.0f));
+			// Bottom Left
+			set_quad_uv(current_uv, v2f(0, 1.0f - slice_size.y), slice_size);
+			// Bottom
+			set_quad_uv(current_uv, v2f(slice_size.x, 1.0f - slice_size.y), v2f(1.0f - slice_size.x * 2.0f, slice_size.y));
+			// Bottom Right
+			set_quad_uv(current_uv, v2f(1.0f - slice_size.x, 1.0f - slice_size.y), slice_size);
+
+			TransformUV(uvs, 6*9);
 
 			for (int i = 0; i < 6 * 9; ++i)
 				buf[i].setTexUV(uvs[i]);
@@ -148,6 +142,7 @@ bool UITexturedItem::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 	if (item->isSubType(Texture::mClassID))
 	{
 		mTexturePointer->setTexture((SP<Texture>&)item);
+		mTexturePointer->refreshTextureInfos();
 
 		SetNodeFlag(Node2D_SizeChanged);
 
@@ -176,5 +171,11 @@ void	UITexturedItem::TextureNotifyUpdate(const unsigned int  labelid)
 	if (labelid == KigsID("TextureName"))
 	{
 		SetNodeFlag(Node2D_SizeChanged);
+
+		bool is_bgr = false;
+		mTexturePointer->getValue("IsBGR", is_bgr);
+		
+		ChangeNodeFlag(Node2D_hasBGRTexture, is_bgr);
+		
 	}
 }

@@ -96,6 +96,8 @@ public:
 	template<typename T>
 	operator T*(){ return static_cast<T*>(SearchRef()); }
 
+	operator const std::string& () const { return mValue.mSearchString; }
+
 	CoreModifiable*	operator->()
 	{
 		return SearchRef();

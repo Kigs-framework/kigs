@@ -51,4 +51,5 @@
 #include "UI/UINode3DLayer.cpp"					// To Check
 #include "UI/UIShapeDelegate.cpp"				// OK
 #include "UI/UIShapeDisc.cpp"					// OK
+#include "UI/UIShapePolygon.cpp"					// OK
 #include "UI/UIShapeRectangle.cpp"				// To Check 

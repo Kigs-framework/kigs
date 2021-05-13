@@ -65,6 +65,7 @@ kstl::string API3DUIShader::GetVertexShader()
 cbuffer MatrixBuffer : register(b0)
 {
 	row_major float4x4 model_matrix;
+	column_major float4x4 uv_matrix;
 #ifdef HOLOGRAPHIC
 	row_major float4x4 stereo_viewproj[2];
 #else
@@ -72,6 +73,8 @@ cbuffer MatrixBuffer : register(b0)
 	//row_major float4x4 view_matrix;
 	//row_major float4x4 proj_matrix;
 #endif
+
+
 };
 
 struct VS_INPUT
@@ -120,7 +123,8 @@ VS_OUTPUT main(VS_INPUT input)
 	output.Color = input.Color;
 #endif
 #ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0
-	output.Texcoord = input.Texcoord;
+    float2 uvtmp = mul(float4(input.Texcoord,1.0,0.0),uv_matrix).xy;
+	output.Texcoord = uvtmp;
 #endif
 	return output;
 }

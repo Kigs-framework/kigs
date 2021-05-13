@@ -292,19 +292,19 @@ DEFINE_METHOD(UIButtonText, ReloadTexture)
 {
 	if (mUpTexturePointer)
 	{
-		mTexturePointer->SetFlag(Texture::isDirtyContext);
+		mTexturePointer->setUserFlag(Texture::isDirtyContext);
 		mTexturePointer->ReInit();
 		ChangeTextTexture(mUpText.c_str(), 0);
 	}
 	if (mOverTexturePointer)
 	{
-		mOverTexturePointer->SetFlag(Texture::isDirtyContext);
+		mOverTexturePointer->setUserFlag(Texture::isDirtyContext);
 		mOverTexturePointer->ReInit();
 		ChangeTextTexture(mOverText.c_str(), 1);
 	}
 	if (mDownTexturePointer)
 	{
-		mDownTexturePointer->SetFlag(Texture::isDirtyContext);
+		mDownTexturePointer->setUserFlag(Texture::isDirtyContext);
 		mDownTexturePointer->ReInit();
 		ChangeTextTexture(mDownText.c_str(), 2);
 	}

@@ -44,7 +44,7 @@ DEFINE_METHOD(MaterialStage, ResetContext)
 	GetSonInstancesByType("Texture", inst);
 	for (auto it : inst)
 	{
-		it->as<Texture>()->SetFlag(Texture::isDirtyContext);
+		it->as<Texture>()->setUserFlag(Texture::isDirtyContext);
 		it->ReInit();	
 	}
 	return false;

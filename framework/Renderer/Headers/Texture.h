@@ -46,13 +46,14 @@ class SpriteSheetData;
 class Texture : public Drawable
 {
 public:
-	static constexpr unsigned int isDirtyContext = 1<<usedFlags;
-	static constexpr unsigned int usedFlags = Drawable::usedFlags+1;
+	DECLARE_ABSTRACT_CLASS_INFO(Texture, Drawable, Renderer)
+
+
+	static constexpr unsigned int isDirtyContext = 1<< ParentClassType::usedUserFlags;
+	static constexpr unsigned int hasNearestPixelSet = 1 << (ParentClassType::usedUserFlags +1);
+	static constexpr unsigned int usedUserFlags = ParentClassType::usedUserFlags +2;
 
 	friend class RenderingScreen;
-
-
-	DECLARE_ABSTRACT_CLASS_INFO(Texture,Drawable,Renderer)
 
 	/**
 	* \brief	constructor
@@ -172,6 +173,14 @@ public:
 	friend class TextureHandler;
 
 protected:
+
+	/**
+	* \brief	this method is called to notify this that one of its attribute has changed.
+	* \fn 		virtual void NotifyUpdate(const unsigned int);
+	* \param	const unsigned int  : attribute ID
+	*/
+	void NotifyUpdate(const unsigned int /* labelid */) override;
+
 	/**
 	* \brief	initialize modifiable
 	* \fn		virtual	void	InitModifiable();
@@ -179,7 +188,7 @@ protected:
 	void	InitModifiable() override;
 	void	UninitModifiable() override
 	{
-		UnsetFlag(isDirtyContext);
+		unsetUserFlag(isDirtyContext);
 		Drawable::UninitModifiable();
 	}
 

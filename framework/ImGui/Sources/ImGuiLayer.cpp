@@ -843,6 +843,7 @@ void ImGuiLayer::TravDraw(TravState* state)
 	renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, design_size.x, design_size.y, 0.0f, -1.0f, 1.0f);
 	renderer->LoadIdentity(MATRIX_MODE_MODEL);
 	renderer->LoadIdentity(MATRIX_MODE_VIEW);
+	renderer->LoadIdentity(MATRIX_MODE_UV);
 
 	renderer->FlushState(true);
 

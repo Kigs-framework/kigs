@@ -95,6 +95,7 @@ void OpenGLRenderingScreen::InitializeGL(GLsizei width, GLsizei height)
 
 	renderer->LoadIdentity(MATRIX_MODE_MODEL);
 	renderer->LoadIdentity(MATRIX_MODE_VIEW);
+	renderer->LoadIdentity(MATRIX_MODE_UV);
 	
 }
 
@@ -149,6 +150,7 @@ void    OpenGLRenderingScreen::Release(TravState* state)
 			renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)mSizeX, 0.0f, (float)mSizeY, -1.0f, 1.0f);
 			renderer->LoadIdentity(MATRIX_MODE_MODEL);
 			renderer->LoadIdentity(MATRIX_MODE_VIEW);
+			renderer->LoadIdentity(MATRIX_MODE_UV);
 			renderer->BindTexture(RENDERER_TEXTURE_2D, mFBOTextureID);
 			renderer->SetScissorValue(0, 0, mSizeX, mSizeY);
 			renderer->Viewport(0, 0, mSizeX, mSizeY);

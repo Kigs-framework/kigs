@@ -586,7 +586,7 @@ void CoreModifiable::UpdateAggregates(const Timer&  timer, void* addParam)
 CoreModifiableAttribute* CoreModifiable::findAttributeOnThisOnly(const KigsID& id) const
 {
 	// first check on this
-	auto i = mAttributes.find(id);
+	const auto i = mAttributes.find(id);
 	if (i != mAttributes.end())
 	{
 		return (*i).second;
@@ -597,7 +597,7 @@ CoreModifiableAttribute* CoreModifiable::findAttributeOnThisOnly(const KigsID& i
 		StructLinkedListBase* found = mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
 		while (found)
 		{
-			ForwardSP<CoreModifiable> f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
+			ForwardSP<CoreModifiable>& f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
 			if (!f.isNil())
 			{
 				CoreModifiableAttribute* search = f->findAttributeOnThisOnly(id);

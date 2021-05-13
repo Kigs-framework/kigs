@@ -68,6 +68,7 @@ uniform mat4	proj_matrix;
 #ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0
 attribute vec2 attrib_texcoord;
 varying vec2 vTexcoord;
+uniform mat3    uv_matrix;
 #endif
 #ifdef CLIENT_STATE_COLOR_ARRAY
 attribute vec4 attrib_color;
@@ -76,7 +77,8 @@ varying vec4 vColor;
 void main()
 {
 #ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0
-	vTexcoord = attrib_texcoord;
+	vec3 uvtmp = uv_matrix* vec3(attrib_texcoord,1.0f);
+	vTexcoord = uvtmp.xy;
 #endif
 #ifdef CLIENT_STATE_COLOR_ARRAY
 	vColor = attrib_color / 255.0;

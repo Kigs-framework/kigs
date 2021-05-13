@@ -6,6 +6,7 @@
 #include "TecLibs/2D/BBox2DI.h"
 #include "Upgrador.h"
 #include "Texture.h"
+#include "ModuleRenderer.h"
 
 
 // ****************************************
@@ -21,9 +22,14 @@
 // ****************************************
 class TextureHandler : public CoreModifiable
 {
+
 public:
+	
+	
 	friend class AnimationUpgrador;
 	DECLARE_CLASS_INFO(TextureHandler, CoreModifiable,Renderer)
+	static constexpr unsigned int pushUVMatrix = 1 << ParentClassType::usedUserFlags;
+	static constexpr unsigned int usedUserFlags = ParentClassType::usedUserFlags + 1;
 
 	/**
 	* \brief	constructor
@@ -47,12 +53,20 @@ public:
 		if (mTexture)
 		{
 			mTexture->DoPreDraw(st);
+			if (st && isUserFlagSet(pushUVMatrix))
+			{
+				st->GetRenderer()->PushAndLoadMatrix(MATRIX_MODE_UV, mUVTexture);
+			}
 		}
 	}
 	void	DoPostDraw(TravState* st)
 	{
 		if (mTexture)
 		{
+			if (st && isUserFlagSet(pushUVMatrix))
+			{
+				st->GetRenderer()->PopMatrix(MATRIX_MODE_UV);
+			}
 			mTexture->DoPostDraw(st);
 		}
 	}
@@ -93,15 +107,13 @@ public:
 		return 0;
 	}
 
-	void SetFlag(unsigned int flag)
+	void setUserFlag(unsigned int flag)
 	{
 		if (mTexture)
 		{
-			mTexture->SetFlag(flag);
+			mTexture->setUserFlag(flag);
 		}
 	}
-
-	v2f	getUVforPosInPixels(const v2f& pos);
 
 	v2f getDrawablePos(const v2f& pos);
 
@@ -112,7 +124,7 @@ public:
 
 	SP<Texture>	GetEmptyTexture(const std::string& name="");
 	// use mTextureName to load texture
-	void	changeTexture();
+	bool	changeTexture();
 
 	void	refreshTextureInfos();
 
@@ -126,22 +138,22 @@ public:
 		// replace texture
 		mTexture = texture;
 
-		if (mTexture)
-		{
-			refreshTextureInfos();
-		}
-		else // reset some values
+		if (mTexture.isNil())
 		{
 			mSize.Set( 0.0f,0.0f );
-			mUVStart.Set(0.0f, 0.0f);
 		}
-
 	}
 
 	SP<Texture> getTexture()
 	{
 		return mTexture;
 	}
+
+	const Matrix4x4& getUVTexture() const
+	{
+		return mUVTexture;
+	}
+
 protected:
 
 	/**
@@ -165,26 +177,32 @@ protected:
 
 	INSERT_FORWARDSP(Texture,mTexture);
 
-	maString mTextureName = BASE_ATTRIBUTE(TextureName, "");
+	maString	mTextureName = BASE_ATTRIBUTE(TextureName, "");
+	maBool		mPushUVMatrix = BASE_ATTRIBUTE(PushUVMatrix, false);
 
 	void	refreshSizeAndUVs(const SpriteSheetFrameData* ssf);
 
-	// starting pos of texture in uv coordinates
-	v2f mUVStart = { 0.0f,0.0f };
 	// size of one pixel in uv coordinates
 	v2f mOneOnPower2Size;
-	// unit vector in U direction (for rotated textures)
-	v2f mUVector;
-	// unit vector in V direction (for rotated textures)
-	v2f mVVector;
 
 	v2f mSize = {0.0f,0.0f};
 
-	void	initFromSpriteSheet(const std::string& jsonfilename);
-	void	initFromPicture(const std::string& picfilename);
+	Matrix4x4	mUVTexture;
+
+	// return true if something changed
+	bool	initFromSpriteSheet(const std::string& jsonfilename);
+	// return true if something changed
+	bool	initFromPicture(const std::string& picfilename);
 	void	setCurrentFrame(const SpriteSheetFrameData* ssf);
 
 	const SpriteSheetFrameData* mCurrentFrame = nullptr;
+
+	void	textureWasInit();
+
+	void TextureNotifyUpdate(CoreModifiable* sender,const unsigned int /* labelid */);
+
+	WRAP_METHODS(textureWasInit, TextureNotifyUpdate);
+
 };
 
 

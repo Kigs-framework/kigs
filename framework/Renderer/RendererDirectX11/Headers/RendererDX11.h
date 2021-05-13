@@ -25,7 +25,6 @@ class RendererDX11;
 #endif
 #endif
 
-class FreeType_TextDrawer;
 
 namespace DX
 {
@@ -222,6 +221,9 @@ public:
 struct MatrixBufferType
 {
 	Matrix4x4 model;
+	
+	Matrix4x4 uvMatrix;
+
 	union
 	{
 		struct
@@ -307,8 +309,6 @@ public:
 	virtual void DrawUITriangles(TravState * state, const UIVerticesInfo * qi) override;
 
 	virtual void InitLayerDraw(Scene3D * scene) { /* nothing here */ }
-
-	static FreeType_TextDrawer *	myDrawer;
 
 	void DrawPendingInstances(TravState * state) override;
 

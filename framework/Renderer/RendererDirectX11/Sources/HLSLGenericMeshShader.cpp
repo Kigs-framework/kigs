@@ -280,6 +280,7 @@ std::string API3DGenericMeshShader::GetDefaultVertexShaderUniforms()
 cbuffer MatrixBuffer : register(b0)
 {
 	row_major float4x4 model_matrix;
+	column_major float4x4    uv_matrix;
 #ifdef HOLOGRAPHIC
 	row_major float4x4 stereo_viewproj[2];
 #else
@@ -287,6 +288,8 @@ cbuffer MatrixBuffer : register(b0)
 	//row_major float4x4 view_matrix;
 	//row_major float4x4 proj_matrix;
 #endif
+
+
 };
 #ifdef CLIENT_STATE_FOG
 cbuffer FogBuffer : register(b3)
@@ -345,7 +348,8 @@ VS_OUTPUT main(VS_INPUT input)
 	output.OneOnFogScale=1.0/fog_scale;
 #endif
 #ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0 
-	output.Texcoord = input.attrib_texcoord;
+    float2 uvtmp = mul(float4(attrib_texcoord,1.0,0.0),uv_matrix).xy;
+	output.Texcoord = uvtmp.xy;
 #endif
 #ifdef CLIENT_STATE_TANGENT_ARRAY 
 	output.Tangent = normalize(mul(float4(input.attrib_tangent, 0.0), actual_model_matrix)).xyz;

@@ -15,7 +15,7 @@
 #include "OpenGLRenderingMatrix.h"
 #include "OpenGLHolo3DPanel.h"
 #include "OpenGLMaterial.h"
-#include "FreeType_TextDrawer.h"
+
 
 #include "GLSLDeferred.h"
 #include "GLSLGenericMeshShader.h"
@@ -36,9 +36,7 @@
 
 #include "algorithm"
 
-// ## Static object initialization
 
-FreeType_TextDrawer*		RendererOpenGL::mDrawer = NULL;
 
 /*API3DShader*					RendererOpenGL::mCurrentShader = NULL;
 unsigned int				RendererOpenGL::mCurrentShaderProgram=0;
@@ -147,7 +145,25 @@ void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 				}
 			}
 		}
+		if ((mDirtyMatrix & 8) || mDirtyShaderMatrix)
+		{
+			if (locations->uvMatrix != -1)
+			{
+				// get only needed elements from 4x4 matrix
 
+				Matrix3x3	uvm;
+				Matrix4x4& uvm4x4 = mMatrixStack[3].back();
+				uvm.e[0][0]= uvm4x4.e[0][0];
+				uvm.e[1][0] = uvm4x4.e[1][0];
+				uvm.e[0][1] = uvm4x4.e[0][1];
+				uvm.e[1][1] = uvm4x4.e[1][1];
+				uvm.e[0][2] = uvm4x4.e[0][2];
+				uvm.e[1][2] = uvm4x4.e[1][2];
+				uvm.e[2][0] = uvm.e[2][1] = uvm.e[2][2]=0.0f;
+
+				glUniformMatrix3fv(locations->uvMatrix, 1, true, &(uvm.e[0][0])); CHECK_GLERROR;
+			}
+		}
 		mDirtyShaderMatrix = 0;
 	}
 }
@@ -587,13 +603,6 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 #endif*/
 	
 
-	// create the freetype drawer
-	if (!mDrawer)
-	{
-		mDrawer = new FreeType_TextDrawer();
-		mDrawer->startBuildFonts();
-	}
-
 	mVertexBufferManager = std::make_unique<VertexBufferManager>();
 
 	if (!ModuleRenderer::mTheGlobalRenderer)
@@ -611,11 +620,7 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 
 void RendererOpenGL::Close()
 {
-	if (mDrawer)
-	{
-		delete mDrawer;
-		mDrawer = NULL;
-	}
+	
 
 	mDefaultUIShader = nullptr;
 
@@ -1423,9 +1428,9 @@ void VertexBufferManager::SetVertexAttrib(unsigned int bufferName, unsigned int 
 	glEnableVertexAttribArray(locs->attribs[attribID]); CHECK_GLERROR;
 	glVertexAttribPointer(locs->attribs[attribID], size, type, normalized, stride, offset); CHECK_GLERROR;
 
-
-	mEnableVertexAttrib[locs->attribs[attribID]].mBufferName= bufferName;
-	mEnableVertexAttrib[locs->attribs[attribID]].mUsed = 1;
+	VAStruct& str = mEnableVertexAttrib[locs->attribs[attribID]];
+	str.mBufferName= bufferName;
+	str.mUsed = 1;
 }
 
 void VertexBufferManager::BufferData(unsigned int bufferName, unsigned int bufferType, int size, void* data, unsigned int usage)
