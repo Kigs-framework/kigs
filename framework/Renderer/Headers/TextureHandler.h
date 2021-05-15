@@ -1,6 +1,7 @@
 #ifndef _TEXTUREHANDLER_H_
 #define _TEXTUREHANDLER_H_
 
+#include "AttributePacking.h"
 #include "Drawable.h"
 #include "TinyImage.h"
 #include "TecLibs/2D/BBox2DI.h"

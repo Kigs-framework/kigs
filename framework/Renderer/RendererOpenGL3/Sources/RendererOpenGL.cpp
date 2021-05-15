@@ -154,14 +154,14 @@ void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 				Matrix3x3	uvm;
 				Matrix4x4& uvm4x4 = mMatrixStack[3].back();
 				uvm.e[0][0]= uvm4x4.e[0][0];
-				uvm.e[1][0] = uvm4x4.e[1][0];
-				uvm.e[0][1] = uvm4x4.e[0][1];
+				uvm.e[0][1] = uvm4x4.e[1][0];
+				uvm.e[1][0] = uvm4x4.e[0][1];
 				uvm.e[1][1] = uvm4x4.e[1][1];
-				uvm.e[0][2] = uvm4x4.e[0][2];
-				uvm.e[1][2] = uvm4x4.e[1][2];
-				uvm.e[2][0] = uvm.e[2][1] = uvm.e[2][2]=0.0f;
+				uvm.e[2][0] = uvm4x4.e[0][2];
+				uvm.e[2][1] = uvm4x4.e[1][2];
+				uvm.e[0][2] = uvm.e[1][2] = uvm.e[2][2]=0.0f;
 
-				glUniformMatrix3fv(locations->uvMatrix, 1, true, &(uvm.e[0][0])); CHECK_GLERROR;
+				glUniformMatrix3fv(locations->uvMatrix, 1, false, &(uvm.e[0][0])); CHECK_GLERROR;
 			}
 		}
 		mDirtyShaderMatrix = 0;

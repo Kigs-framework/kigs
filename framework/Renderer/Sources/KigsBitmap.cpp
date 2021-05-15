@@ -3,6 +3,10 @@
 #include "KigsBitmap.h"
 #include "Texture.h"
 #include "FreeType_TextDrawer.h"
+#include "ModuleRenderer.h"
+#include "ModuleFileManager.h"
+#include "FilePathManager.h"
+
 #define FREETYPE_SIZE_COEFF	0.65f
 
 IMPLEMENT_CLASS_INFO(KigsBitmap)

@@ -38,6 +38,15 @@ protected:
 
 	}
 	
+	/**
+* \brief	initialize modifiable
+* \fn 		void InitModifiable() override
+*/
+	void	InitModifiable() override;
+
+	void NotifyUpdate(const unsigned int labelid) override;
+
+
 	maInt	mSliceCount=BASE_ATTRIBUTE(SliceCount,16);
 
 };

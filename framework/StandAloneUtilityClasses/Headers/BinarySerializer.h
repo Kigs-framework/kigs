@@ -331,6 +331,7 @@ namespace serializer_detail
 template<typename T, typename PacketStream, typename ... Args>
 bool serialize_object(PacketStream& stream, T& value, Args&& ... args)
 {
+#ifdef WIN32
 	if constexpr (!PacketStream::IsWriting && is_detected_v<has_allocator_type, T>)
 	{
 		if constexpr (std::is_same_v<std::pmr::polymorphic_allocator<typename T::value_type>, typename T::allocator_type>)
@@ -339,7 +340,7 @@ bool serialize_object(PacketStream& stream, T& value, Args&& ... args)
 				value = { std::pmr::polymorphic_allocator<typename T::value_type>(stream.memory_resource) };
 		}
 	}
-
+#endif
 	if constexpr (is_detected_v<has_member_serialize, T, PacketStream>)
 	{
 		return value.Serialize(stream, FWD(args)...);
@@ -622,7 +623,9 @@ struct BasePacketReadStream
 	std::vector<u32> backing_buffer;
 
 	void* user_data = nullptr;
+#ifdef WIN32
 	std::pmr::memory_resource* memory_resource = nullptr;
+#endif
 };
 
 using PacketReadStream = BasePacketReadStream<BitUnpacker>;

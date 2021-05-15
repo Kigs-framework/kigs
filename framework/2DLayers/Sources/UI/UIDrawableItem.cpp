@@ -148,22 +148,27 @@ void UIDrawableItem::ProtectedDraw(TravState* state)
 	PreDraw(state); // activate texture if any
 	//lQI->resetFlag();
 
-	// ** set vertex array **
-	SetVertexArray(lQI);
-
-	if (lQI->vertexCount == 0) return;
-
-	if (isUserFlagSet(UserFlagUseColorArray))
+	if (GetNodeFlag(Node2D_NeedVerticeInfoUpdate))
 	{
-		SetColor(lQI);
-	}
-	else
-	{
-		SetWhiteColor(lQI); // only for alpha
-	}
+		// ** set vertex array **
+		SetVertexArray(lQI);
 
-	// ** set UV array **
-	SetTexUV(lQI);
+		if (lQI->vertexCount == 0) return;
+
+		if (isUserFlagSet(UserFlagUseColorArray))
+		{
+			SetColor(lQI);
+		}
+		else
+		{
+			SetWhiteColor(lQI); // only for alpha
+		}
+
+		// ** set UV array **
+		SetTexUV(lQI);
+
+		ClearNodeFlag(Node2D_NeedVerticeInfoUpdate);
+	}
 
 
 	if ((lQI->Flag & UIVerticesInfo_Color) != 0)
@@ -224,7 +229,8 @@ bool UIDrawableItem::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 {
 	if (item->isSubType(UIShapeDelegate::mClassID))
 	{
-		mShape = (UIShapeDelegate*)item.get();
+		mShape = item;
+		SetNodeFlag(Node2D_NeedVerticeInfoUpdate);
 	}
 
 	return UIItem::addItem(item, pos PASS_LINK_NAME(linkName));
@@ -237,6 +243,7 @@ bool UIDrawableItem::removeItem(const CMSP& item DECLARE_LINK_NAME)
 		if (item == mShape)
 		{
 			mShape = nullptr;
+			SetNodeFlag(Node2D_NeedVerticeInfoUpdate);
 		}
 	}
 	return UIItem::removeItem(item PASS_LINK_NAME(linkName));

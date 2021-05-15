@@ -30,7 +30,15 @@ void UIShapePolygon::NotifyUpdate(const unsigned int labelid)
 	if (labelid == mVertices.getID())
 	{
 		triangulatePolygon();
+		for (auto p : GetParents())
+		{
+			if (p->isSubType(Node2D::mClassID))
+			{
+				p->setUserFlag(Node2D::Node2D_NeedVerticeInfoUpdate);
+			}
+		}
 	}
+	ParentClassType::NotifyUpdate(labelid);
 }
 
 void	UIShapePolygon::triangulatePolygon()

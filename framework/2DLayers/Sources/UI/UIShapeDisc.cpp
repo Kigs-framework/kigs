@@ -84,3 +84,32 @@ void UIShapeDisc::SetVertexArray(UIItem* item, UIVerticesInfo* aQI)
 		j += 3;
 	}
 }
+
+
+/**
+* \brief	initialize modifiable
+* \fn 		void InitModifiable() override
+*/
+void	UIShapeDisc::InitModifiable()
+{
+	if (!IsInit())
+	{
+		ParentClassType::InitModifiable();
+		mSliceCount.changeNotificationLevel(Owner);
+	}
+}
+
+void UIShapeDisc::NotifyUpdate(const unsigned int labelid)
+{
+	if (labelid == mSliceCount.getLabelID())
+	{
+		for (auto p : GetParents())
+		{
+			if (p->isSubType(Node2D::mClassID))
+			{
+				p->setUserFlag(Node2D::Node2D_NeedVerticeInfoUpdate);
+			}
+		}
+	}
+	ParentClassType::NotifyUpdate(labelid);
+}

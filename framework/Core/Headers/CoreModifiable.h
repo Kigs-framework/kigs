@@ -956,8 +956,14 @@ public:
 
 	inline bool isUserFlagSet(u32 flag) const
 	{
-		return ((mModifiableFlag&(((u32)flag) << UserFlagsShift)) != 0);
+		return ((mModifiableFlag&(flag << UserFlagsShift)) != 0);
 	}
+
+	u32	getUserFlags(u32 mask) const
+	{
+		return ((mModifiableFlag & (mask << UserFlagsShift)) >> UserFlagsShift);
+	}
+
 	inline bool isInitFlagSet() const { return ((mModifiableFlag&((u32)InitFlag)) != 0); }
 
 	inline void flagAllowChanges()

@@ -284,6 +284,7 @@ void TextureHandler::TextureNotifyUpdate(CoreModifiable* sender, const unsigned 
 	if (labelid == mTexture->mForceNearest.getID())
 	{
 		refreshSizeAndUVs(mCurrentFrame);
+		NotifyUpdate(labelid); // launch notify update signal
 	}
 }
 

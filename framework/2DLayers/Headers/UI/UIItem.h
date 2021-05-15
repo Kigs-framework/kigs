@@ -38,7 +38,7 @@ public:
 		if (mParent) return mParent->GetOpacity(); // if opacity is < 0.0 then check parent opacity
 		return 0.0;
 	}
-	inline bool											Get_DisableBlend() const { return mDisableBlend; }
+	inline bool											Get_DisableBlend() const { return mDisableBlend;}
 	inline bool                                         Get_IsHidden() const { return mIsHidden; }
 
 	/*Setter*/
@@ -46,10 +46,10 @@ public:
 	inline void											Set_Position(kfloat a_x, kfloat a_y) { mPosition[0] = a_x; mPosition[1] = a_y; SetNodeFlag(Node2D_NeedUpdatePosition); 	}
 	inline void											Set_Position(Point2D a_pos) { Set_Position(a_pos.x, a_pos.y); }
 	inline void											IsTouchable(bool a_value) { mIsTouchable = a_value; }
-	inline void											Set_Opacity(float a_value) { mOpacity = a_value; }
+	inline void											Set_Opacity(float a_value) { mOpacity = a_value; SetNodeFlag(Node2D_NeedVerticeInfoUpdate); }
 	inline void											Set_PreScale(kfloat a_valueX, kfloat a_valueY) { mPreScaleX = a_valueX; mPreScaleY = a_valueY; SetNodeFlag(Node2D_NeedUpdatePosition); 	}
 	inline void											Set_PostScale(kfloat a_valueX, kfloat a_valueY) { mPostScaleX = a_valueX; mPostScaleY = a_valueY; SetNodeFlag(Node2D_NeedUpdatePosition); }
-	inline void											Set_DisableBlend(bool a_value) { mDisableBlend = a_value; }
+	inline void											Set_DisableBlend(bool a_value) { mDisableBlend = a_value; SetNodeFlag(Node2D_NeedVerticeInfoUpdate);}
 	
 	bool												Draw(TravState* state) override;
 
@@ -85,6 +85,12 @@ public:
 protected:
 
 	bool ManageInputSwallowEvent(InputEvent& ev);
+
+	/**
+	* \brief	initialize modifiable
+	* \fn 		void InitModifiable() override
+	*/
+	void	InitModifiable() override;
 
 	void NotifyUpdate(const unsigned int labelid) override;
 

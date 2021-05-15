@@ -42,7 +42,7 @@ IMPLEMENT_CONSTRUCTOR(Node2D)
 bool Node2D::IsInClip(v2f pos) const
 {
 	bool allow = true;
-	if ((Flags)mFlags & Flags::Node2D_Clipped)
+	if (isUserFlagSet(Node2D_Clipped))
 	{
 		auto father = getFather();
 		while (father && allow)
@@ -73,7 +73,7 @@ void Node2D::NotifyUpdate(const unsigned int labelid)
 		(labelid == mSizeModeY.getLabelID());
 	
 	if (sizechanged)
-		mFlags |= Node2D_SizeChanged;
+		SetNodeFlag(Node2D_SizeChanged);
 
 	if (sizechanged || (labelid == mAnchor.getLabelID()) ||
 		(labelid == mPosition.getLabelID()) ||
@@ -104,20 +104,21 @@ void Node2D::NotifyUpdate(const unsigned int labelid)
 
 void Node2D::SetParent(CoreModifiable* value)
 {
-	u32 old_flag = mFlags;
-	mFlags &= ~(Node2D_PropagatedFlags);
+	u32 old_flag = getUserFlags(0xFFFFFFFF);
+	unsetUserFlag(Node2D_PropagatedFlags);
+
 	mParent = (Node2D*)value;
 	if (mParent)
 	{
-		mFlags |= (mParent->mFlags & Node2D_PropagatedFlags);
+		setUserFlag(mParent->getUserFlags(Node2D_PropagatedFlags));
 		if (mParent->mClipSons) 
-			mFlags |= Node2D_Clipped;
+			setUserFlag (Node2D_Clipped);
 
 		bool hidden = false;
 		if(mParent->getValue("IsHidden", hidden) && hidden) 
-			mFlags |= Node2D_Hidden;
+			setUserFlag(Node2D_Hidden);
 	}
-	if (old_flag != mFlags)
+	if (old_flag != getUserFlags(0xFFFFFFFF))
 		PropagateNodeFlags();
 }
 
@@ -125,19 +126,18 @@ void Node2D::PropagateNodeFlags()
 {
 	for (auto son : mSons)
 	{
-		u32 old = son->mFlags; 
-
-		son->mFlags &= ~(Node2D_PropagatedFlags);
-		son->mFlags |= (mFlags & Node2D_PropagatedFlags);
-
+		u32 old = son->getUserFlags(0xFFFFFFFF);
+		son->unsetUserFlag(Node2D_PropagatedFlags);
+		son->setUserFlag(getUserFlags(Node2D_PropagatedFlags));
+		
 		if (mClipSons)
-			son->mFlags |= Node2D_Clipped;
+			son->setUserFlag(Node2D_Clipped);
 
 		bool hidden = false;
 		if (getValue("IsHidden", hidden) && hidden)
-			son->mFlags |= Node2D_Hidden;
+			son->setUserFlag(Node2D_Hidden);
 
-		if (old != son->mFlags)
+		if (old != son->getUserFlags(0xFFFFFFFF))
 			son->PropagateNodeFlags();
 	}
 }
@@ -343,7 +343,7 @@ void Node2D::ComputeMatrices()
 	if (mParent)
 	{
 		mGlobalTransformMatrix.PostMultiply(mParent->mGlobalTransformMatrix);
-		if (mParent && (mFlags & Node2D_SizeChanged) == Node2D_SizeChanged && mParent->isSubType(UILayout::mClassID))
+		if (mParent && GetNodeFlag(Node2D_SizeChanged) && mParent->isSubType(UILayout::mClassID))
 			static_cast<UILayout*>(mParent)->NeedRecomputeLayout();
 	}
 }
@@ -413,6 +413,8 @@ void	Node2D::SetUpNodeIfNeeded()
 
 		ClearNodeFlag(Node2D_SizeChanged);
 		ClearNodeFlag(Node2D_NeedUpdatePosition);
+
+		SetNodeFlag(Node2D_NeedVerticeInfoUpdate);
 	}
 }
 

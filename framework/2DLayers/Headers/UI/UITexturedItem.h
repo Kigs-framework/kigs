@@ -79,7 +79,7 @@ protected:
 		return ParentClassType::GetContentSize();
 	}
 
-	virtual v2f getDrawablePos(const v2f& pos)
+	virtual v2f getDrawablePos(const v2f& pos) override
 	{
 		if (mTexturePointer)
 			return mTexturePointer->getDrawablePos(pos);

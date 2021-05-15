@@ -21,9 +21,20 @@ IMPLEMENT_CONSTRUCTOR(UIItem)
 {
 }
 
+void	UIItem::InitModifiable()
+{
+	ParentClassType::InitModifiable();
+	mColor.changeNotificationLevel(Owner);
+	mOpacity.changeNotificationLevel(Owner);
+}
 
 void UIItem::NotifyUpdate(const unsigned int labelid)
 {
+	if ( (labelid == mColor.getID()) || (labelid == mOpacity.getID()) )
+	{
+		SetNodeFlag(Node2D_NeedVerticeInfoUpdate);
+	}
+
 	if (labelid == mIsHidden.getID())
 	{
 		PropagateNodeFlags();

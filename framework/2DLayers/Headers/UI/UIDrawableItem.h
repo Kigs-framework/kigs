@@ -4,6 +4,7 @@
 #include "UI/UIItem.h"
 #include "SmartPointer.h"
 #include "UIVerticesInfo.h"
+#include "UIShapeDelegate.h"
 
 class Texture;
 class UIDrawableItem;
@@ -55,7 +56,7 @@ protected:
 	maVect2DI mSliced = BASE_ATTRIBUTE(Sliced, 0, 0);
 
 	// override SetVertexArray SetColor and SetTexUV to draw UI as a Shape
-	UIShapeDelegate* mShape = nullptr;
+	INSERT_FORWARDSP(UIShapeDelegate,mShape);
 };
 
 

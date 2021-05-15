@@ -178,4 +178,6 @@ void	UITexturedItem::TextureNotifyUpdate(const unsigned int  labelid)
 		ChangeNodeFlag(Node2D_hasBGRTexture, is_bgr);
 		
 	}
+	
+	SetNodeFlag(Node2D_NeedVerticeInfoUpdate);
 }

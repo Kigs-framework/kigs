@@ -136,7 +136,7 @@ bool	ModuleFileManager::RemoveFile(const char* filename)
 {
 	// check if file exist
 	SmartPointer<FileHandle> fileHandle = KigsCore::Singleton<FilePathManager>()->FindFullName(filename);
-	if (!fileHandle->mStatus & FileHandle::Exist) return false;
+	if (!(fileHandle->mStatus & FileHandle::Exist)) return false;
 
 	return Platform_remove(fileHandle.get());
 }
