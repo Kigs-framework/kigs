@@ -56,7 +56,7 @@ protected:
 	maVect2DI mSliced = BASE_ATTRIBUTE(Sliced, 0, 0);
 
 	// override SetVertexArray SetColor and SetTexUV to draw UI as a Shape
-	INSERT_FORWARDSP(UIShapeDelegate,mShape);
+	SP<UIShapeDelegate> mShape;
 };
 
 
