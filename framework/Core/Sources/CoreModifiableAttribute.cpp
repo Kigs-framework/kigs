@@ -133,50 +133,69 @@ void CoreModifiableAttribute::changeNotificationLevel(AttributeNotificationLevel
 	}
 }
 
+CoreModifiable* CoreModifiableAttribute::getOwner() const
+{
+	uintptr_t firstp = mOwnerAndModifiers;
+	while (firstp & 1) // this is a modifier
+	{
+		AttachedModifierBase* realaddress = (AttachedModifierBase*)(firstp & (((uintptr_t)-1) ^ (uintptr_t)3));
+		firstp = realaddress->getNextObject();
+	}
+
+	return (CoreModifiable*)firstp;
+}
+
 void	CoreModifiableAttribute::attachModifier(AttachedModifierBase* toAttach)
 {
-	if (!mAttachedModifier)
+	if (!toAttach)
+	{
+		return;
+	}
+	AttachedModifierBase* modifier = getFirstAttachedModifier();
+
+	toAttach->setNextObject(mOwnerAndModifiers);
+	mOwnerAndModifiers = (uintptr_t)toAttach;
+	mOwnerAndModifiers |= 1;
+
+	if (!modifier) // first one
 	{
 		this->mFlags |= (unsigned int)haveAttachedModifier;
-		mAttachedModifier = toAttach;
 		changeInheritance();
 	}
-	else
-	{
-		toAttach->setNext(mAttachedModifier);
-		mAttachedModifier = toAttach;
-	}
+	
 }
 
 void	CoreModifiableAttribute::detachModifier(AttachedModifierBase* toDetach)
 {
-	if (!mAttachedModifier)
+	AttachedModifierBase* modifier = getFirstAttachedModifier();
+	if (!modifier)
 		return;
 
 	AttachedModifierBase* prev = 0;
-	AttachedModifierBase* current = mAttachedModifier;
+	AttachedModifierBase* current = modifier;
 	while (current)
 	{
 		if (current == toDetach)
 		{
 			if (prev)
 			{
-				prev->setNext(current->getNext());
+				prev->setNextObject(current->getNextObject());
 			}
 			else
 			{
-				mAttachedModifier = current->getNext();
+				mOwnerAndModifiers = current->getNextObject();
 			}
 
-			toDetach->setNext(0);
+			toDetach->setNextObject(0);
 			break;
 		}
 		prev = current;
 		current = current->getNext();
 	}
 
+	modifier = getFirstAttachedModifier();
 	// no more attached modifier
-	if (!mAttachedModifier)
+	if (!modifier)
 	{
 		this->mFlags &= ~((unsigned int)haveAttachedModifier);
 		changeInheritance();
@@ -185,17 +204,21 @@ void	CoreModifiableAttribute::detachModifier(AttachedModifierBase* toDetach)
 
 CoreModifiableAttribute::~CoreModifiableAttribute()
 {
-	if (mOwner)
+	CoreModifiable* owner = getOwner();
+	if (owner)
 	{
-		kigs::unordered_map<KigsID, CoreModifiableAttribute*>::const_iterator it = mOwner->mAttributes.find(mID);
-		if (it != mOwner->mAttributes.end())
+		kigs::unordered_map<KigsID, CoreModifiableAttribute*>::const_iterator it = owner->mAttributes.find(mID);
+		if (it != owner->mAttributes.end())
 		{
-			mOwner->mAttributes.erase(it);
+			owner->mAttributes.erase(it);
 		}
 	}
-	if (mAttachedModifier)
+
+	AttachedModifierBase* modifier = getFirstAttachedModifier();
+
+	if (modifier)
 	{
-		delete mAttachedModifier;
+		delete modifier;
 	}
 };
 
@@ -352,14 +375,14 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 	case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 	{
 		mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kfloat>(0.0f);
-		mCurrentItem = CoreItemOperator<kfloat>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+		mCurrentItem = CoreItemOperator<kfloat>::Construct(addParam, caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 	}
 	break;
 	case CoreModifiable::ATTRIBUTE_TYPE::STRING:
 	case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 	{
 		mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<kstl::string>("");
-		mCurrentItem = CoreItemOperator<kstl::string>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+		mCurrentItem = CoreItemOperator<kstl::string>::Construct(addParam, caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 	}
 	break;
 	case CoreModifiable::ATTRIBUTE_TYPE::ARRAY:
@@ -369,17 +392,17 @@ void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGett
 		if (asize == 2)
 		{
 			mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Point2D>();
-			mCurrentItem = CoreItemOperator<Point2D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			mCurrentItem = CoreItemOperator<Point2D>::Construct(addParam, caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 		}
 		else if (asize == 3)
 		{
 			mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Point3D>();
-			mCurrentItem = CoreItemOperator<Point3D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			mCurrentItem = CoreItemOperator<Point3D>::Construct(addParam, caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 		}
 		else if (asize == 4)
 		{
 			mContext.mVariableList[LABEL_TO_ID(input).toUInt()] = new CoreValue<Vector4D>();
-			mCurrentItem = CoreItemOperator<Vector4D>::Construct(addParam, &caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			mCurrentItem = CoreItemOperator<Vector4D>::Construct(addParam, caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 
 		}
 	}

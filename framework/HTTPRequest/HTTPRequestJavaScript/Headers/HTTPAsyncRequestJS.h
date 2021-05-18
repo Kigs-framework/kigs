@@ -20,7 +20,7 @@ public:
 	//! constructor
     HTTPAsyncRequestJS(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
-	virtual void			InitModifiable();
+	virtual void			InitModifiable() override;
 
 	void					ParseHeader(const char* header);
 	void					ParseContent(const char* buffer, int buflen);

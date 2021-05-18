@@ -47,21 +47,21 @@ void		HTTPAsyncRequestJS::ParseHeader(const char* header)
 
 		if (strcmp(encoding.c_str(), "utf-8") == 0)
 		{
-			myContentEncoding = UTF8;
+			mContentEncoding = UTF8;
 		}
 		else if (strcmp(encoding.c_str(), "utf-16") == 0)
 		{
-			myContentEncoding = UTF16;
+			mContentEncoding = UTF16;
 		}
 	}
 	parserHeader.SetPosition(0);
-	myFoundCharset = ANSI;
+	mFoundCharset = ANSI;
 	if (parserHeader.MoveToString("Content-Type: "))
 	{
 		AsciiParserUtils	contenttype(parserHeader);
 		parserHeader.GetString(contenttype, '.');
 
-		myContentType = contenttype;
+		mContentType = contenttype;
 
 		// search charset in content-type
 		if (contenttype.MoveToString("charset="))
@@ -71,11 +71,11 @@ void		HTTPAsyncRequestJS::ParseHeader(const char* header)
 			kstl::string strcharset = (const kstl::string&)charset;
 			if (strcharset == "utf-8")
 			{
-				myFoundCharset = UTF8;
+				mFoundCharset = UTF8;
 			}
 			else if (strcharset == "utf-16")
 			{
-				myFoundCharset = UTF16;
+				mFoundCharset = UTF16;
 			}
 
 		}
@@ -89,13 +89,13 @@ void HTTPAsyncRequestJS::ParseContent(const char* buffer, int buflen) {
 		printf("%c", buffer[i]);
 
 	printf("\n");*/
-	if (myReceivedRawBuffer)
-		delete[] myReceivedRawBuffer;
+	if (mReceivedRawBuffer)
+		delete[] mReceivedRawBuffer;
 
-	myReceivedRawBufferSize = buflen;
-	myReceivedRawBuffer = new unsigned char[buflen];
+	mReceivedRawBufferSize = buflen;
+	mReceivedRawBuffer = new unsigned char[buflen];
 
-	memcpy(myReceivedRawBuffer, buffer, buflen);
+	memcpy(mReceivedRawBuffer, buffer, buflen);
 
 	setDone();
 
@@ -109,16 +109,16 @@ void HTTPAsyncRequestJS::ParseError(const char* error) {
 void HTTPAsyncRequestJS::InitModifiable()
 {
 	HTTPAsyncRequest::InitModifiable();
-	if (myConnection)
+	if (mConnection)
 	{
 		bool isSync = false;
-		myConnection->getValue(LABEL_TO_ID(IsSynchronous), isSync);
+		mConnection->getValue(LABEL_TO_ID(IsSynchronous), isSync);
 
 		kstl::string L_host, L_URL;
-		myConnection->getValue(LABEL_TO_ID(HostName), L_host);
-		L_URL = "http://" + L_host + "/"+ myRequestURL;
+		mConnection->getValue(LABEL_TO_ID(HostName), L_host);
+		L_URL = "http://" + L_host + "/"+ mRequestURL;
 
-		JSSendHTTPRequest(((const kstl::string&)myRequestType).c_str(), L_URL.c_str(), this, !isSync, myPostBuffer, myPostBufferLength);
+		JSSendHTTPRequest(((const kstl::string&)mRequestType).c_str(), L_URL.c_str(), this, !isSync, mPostBuffer, mPostBufferLength);
 	}
 }
 

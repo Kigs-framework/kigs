@@ -50,7 +50,7 @@ public:
 		for (size_t i = 0; i < count; i++)
 		{
 			result.x = totransform[i].x * mat.e[0][0] + totransform[i].y * mat.e[0][1] + mat.e[0][2];
-			result.y = totransform[i].y * mat.e[1][0] + totransform[i].y * mat.e[1][1] + mat.e[1][2];
+			result.y = totransform[i].x * mat.e[1][0] + totransform[i].y * mat.e[1][1] + mat.e[1][2];
 
 			totransform[i] = result;
 		}

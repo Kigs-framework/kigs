@@ -34,7 +34,7 @@ public:
 
 	kstl::string			GetReleaseAction() const {return mReleaseAction.c_str();}
 	
-	bool			HasFocus() override {return mFocus;}
+	bool			HasFocus() override { return GetNodeFlag(UIItem_HasFocus); }
 	void			LoseFocus() override;
 	void			GetFocus() override;
 

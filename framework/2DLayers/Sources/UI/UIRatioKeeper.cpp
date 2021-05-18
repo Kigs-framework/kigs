@@ -18,10 +18,9 @@ void UIRatioKeeper::NotifyUpdate(const unsigned int labelid)
 		(labelid == mAnchor.getLabelID()) ||
 		(labelid == mPosition.getLabelID()) ||
 		(labelid == mDock.getLabelID()) ||
-		(labelid == mPreScaleX.getLabelID()) ||
-		(labelid == mPreScaleY.getLabelID()) ||
-		(labelid == mPostScaleX.getLabelID()) ||
-		(labelid == mPostScaleY.getLabelID()))
+		(labelid == mPreScale.getLabelID()) ||
+		(labelid == mPostScale.getLabelID()))
+		
 	{
 		// I don't want this values to be changed, so reset them
 		mRatioIsOK = false;
@@ -69,21 +68,19 @@ void	UIRatioKeeper::RecomputeRatio()
 		mDock = v2f{ 0.5f, 0.5f };
 		mAnchor = v2f{ 0.5f, 0.5f };
 		
-		mPostScaleX = 1.0f;
-		mPostScaleY = 1.0f;
-		mPreScaleX = 1.0f;
-		mPreScaleY = 1.0f;
+		mPostScale = v2f(1.0f,1.0f);
+		mPreScale = v2f(1.0f, 1.0f);
 
 
 		Point2D ratio(pxSize.x / dsSize.x, pxSize.y / dsSize.y);
 
 		if (ratio.x < ratio.y)
 		{
-			mPreScaleY = ratio.x / ratio.y;
+			mPreScale[1] = ratio.x / ratio.y;
 		}
 		else
 		{
-			mPreScaleX = ratio.y / ratio.x;
+			mPreScale[0] = ratio.y / ratio.x;
 		}
 
 		SetNodeFlag(Node2D_NeedUpdatePosition);

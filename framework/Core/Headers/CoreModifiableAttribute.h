@@ -152,15 +152,18 @@ protected:
 
 
 	CoreModifiableAttribute(CoreModifiable* owner, bool isInitParam, KigsID ID) :
-		mOwner(owner)
-		, mAttachedModifier(nullptr)
-		, mFlags(0)
+		//mOwner(owner)
+		//, mAttachedModifier(nullptr)
+		 mFlags(0)
 		, mID(ID)
+		,mOwnerAndModifiers(0)
 	{
 		setIsInitParam(isInitParam);
+		mOwnerAndModifiers = (uintptr_t)owner;
 
-		if(mOwner)
-			mOwner->mAttributes[ID] = this;
+		if(owner)
+			owner->mAttributes[ID] = this;
+
 	}
 
 
@@ -215,7 +218,15 @@ public:
 	
 
 
-	AttachedModifierBase*	getFirstAttachedModifier() { return mAttachedModifier; }
+	AttachedModifierBase* getFirstAttachedModifier() const
+	{
+		if (mOwnerAndModifiers & 1)
+		{
+			AttachedModifierBase* realaddress = (AttachedModifierBase*)(mOwnerAndModifiers & (((uintptr_t)-1) ^ (uintptr_t)3));
+			return realaddress;
+		}
+		return nullptr;
+	}
 	void	attachModifier(AttachedModifierBase* toAttach);
 	void	detachModifier(AttachedModifierBase* toDetach);
 	
@@ -270,8 +281,7 @@ public:
 #undef DECLARE_SETARRAYELEMENTVALUE
 #undef DECLARE_GETARRAYELEMENTVALUE
 
-	CoreModifiable& getOwner() const {return *mOwner;}
-	
+	CoreModifiable* getOwner() const;
 
 	//! Read only attributes cannot be modified with setValue
 	virtual bool isReadOnly()  { return (bool)((((u32)isReadOnlyFlag) & this->mFlags) != 0); }
@@ -325,15 +335,14 @@ public:
 	// Return true if the copy was done correctly
 	virtual bool	CopyAttribute(const CoreModifiableAttribute& other) = 0;
 
-
-
 protected:
+	u32						mFlags;
+	KigsID					mID;
 
-	CoreModifiable*   mOwner;
-	AttachedModifierBase*	mAttachedModifier;
-	u32 mFlags;
-	KigsID mID;
-	
+	uintptr_t				mOwnerAndModifiers;
+
+	//CoreModifiable*			mOwner;
+	//AttachedModifierBase*	mAttachedModifier;
 };
 
 // ****************************************
@@ -400,14 +409,14 @@ protected:
 		mID.~KigsID();
 		T old_value = mValue;
 		mValue.~T();
-		AttachedModifierBase* modifier = mAttachedModifier;
+		uintptr_t modifier = mOwnerAndModifiers;
 		u32 old_flags = mFlags;
 		u32 inheritlevel = (mFlags >> INHERIT_LEVEL_SHIFT) & INHERIT_LEVEL_MOD;
 		doPlacementNew(inheritlevel);
 		mID = old_id;
 		mValue = old_value;
 		mFlags = old_flags;
-		mAttachedModifier = modifier;
+		mOwnerAndModifiers = modifier;
 	}
 	
 
@@ -443,10 +452,10 @@ protected:
 };
 
 
-#define CALL_GETMODIFIER(level,value) if(level&2){this->mAttachedModifier->CallModifier((CoreModifiableAttribute *)this,value,true);}
-#define CALL_SETMODIFIER(level,value) if(level&2){this->mAttachedModifier->CallModifier((CoreModifiableAttribute *)this,value,false);}
+#define CALL_GETMODIFIER(level,value) if(level&2){this->getFirstAttachedModifier()->CallModifier((CoreModifiableAttribute *)this,value,true);}
+#define CALL_SETMODIFIER(level,value) if(level&2){this->getFirstAttachedModifier()->CallModifier((CoreModifiableAttribute *)this,value,false);}
 
-#define DO_NOTIFICATION(level)	if(level&1){this->mOwner->NotifyUpdate(CoreModifiableAttribute::getLabel().toUInt());}
+#define DO_NOTIFICATION(level)	if(level&1){this->getOwner()->NotifyUpdate(CoreModifiableAttribute::getLabel().toUInt());}
 
 
 // ****************************************

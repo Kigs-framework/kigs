@@ -27,10 +27,8 @@ IMPLEMENT_CONSTRUCTOR(Node2D)
 , mAnchor(*this, false, "Anchor", 0, 0)
 , mPosition(*this, false, "Position", 0, 0)
 , mRotationAngle(*this, false, "RotationAngle", 0)
-, mPreScaleX(*this, false, "PreScaleX", 1)
-, mPreScaleY(*this, false, "PreScaleY", 1)
-, mPostScaleX(*this, false, "PostScaleX", 1)
-, mPostScaleY(*this, false, "PostScaleY", 1)
+, mPreScale(*this, false, "PreScale", 1,1)
+, mPostScale(*this, false, "PostScale", 1,1)
 , mClipSons(*this, false, "ClipSons", false)
 {
 	SetNodeFlag(Node2D_NeedUpdatePosition);
@@ -78,10 +76,8 @@ void Node2D::NotifyUpdate(const unsigned int labelid)
 	if (sizechanged || (labelid == mAnchor.getLabelID()) ||
 		(labelid == mPosition.getLabelID()) ||
 		(labelid == mDock.getLabelID()) ||
-		(labelid == mPreScaleX.getLabelID()) ||
-		(labelid == mPreScaleY.getLabelID()) ||
-		(labelid == mPostScaleX.getLabelID()) ||
-		(labelid == mPostScaleY.getLabelID()) ||
+		(labelid == mPreScale.getLabelID()) ||
+		(labelid == mPostScale.getLabelID()) ||
 		(labelid == mRotationAngle.getLabelID()))
 	{
 		SetNodeFlag(Node2D_NeedUpdatePosition);
@@ -304,9 +300,9 @@ void Node2D::ComputeRealSize()
 void Node2D::ComputeMatrices()
 {
 	mLocalTransformMatrix.SetIdentity();
-	mLocalTransformMatrix.SetScale((kfloat)mPreScaleX, (kfloat)mPreScaleY, 1.0);
+	mLocalTransformMatrix.SetScale((kfloat)mPreScale[0], (kfloat)mPreScale[1], 1.0);
 	mLocalTransformMatrix.PreRotateZ((kfloat)mRotationAngle);
-	mLocalTransformMatrix.PostScale((kfloat)mPostScaleX,(kfloat)mPostScaleY, 1.0);
+	mLocalTransformMatrix.PostScale((kfloat)mPostScale[0],(kfloat)mPostScale[1], 1.0);
 	
 	ComputeRealSize();
 
@@ -360,10 +356,8 @@ void	Node2D::InitModifiable()
 		mSizeModeY.changeNotificationLevel(Owner);
 		mSizeX.changeNotificationLevel(Owner);
 		mSizeY.changeNotificationLevel(Owner);
-		mPreScaleX.changeNotificationLevel(Owner);
-		mPreScaleY.changeNotificationLevel(Owner);
-		mPostScaleX.changeNotificationLevel(Owner);
-		mPostScaleY.changeNotificationLevel(Owner);
+		mPreScale.changeNotificationLevel(Owner);
+		mPostScale.changeNotificationLevel(Owner);
 		mPriority.changeNotificationLevel(Owner);
 		mRotationAngle.changeNotificationLevel(Owner);
 		mClipSons.changeNotificationLevel(Owner);

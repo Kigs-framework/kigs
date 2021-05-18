@@ -265,7 +265,7 @@ protected:
 		CMSP obj = nullptr;
 		if (!mValue.mSearchString.empty())
 		{
-			obj = CoreModifiable::SearchInstance(mValue.mSearchString, mOwner);
+			obj = CoreModifiable::SearchInstance(mValue.mSearchString, getOwner());
 		}
 		else
 		{

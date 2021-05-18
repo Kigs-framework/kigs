@@ -46,7 +46,7 @@ public:
 	//void			UpdateText(kstl::vector<int> keycodeList);
 
 	//bool			TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)override;
-	bool			HasFocus()override { return mFocus; }
+	bool			HasFocus()override { return GetNodeFlag(UIItem_HasFocus); }
 	void			LoseFocus()override;
 	void			GetFocus()override;
 

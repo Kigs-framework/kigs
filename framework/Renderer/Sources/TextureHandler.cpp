@@ -46,9 +46,10 @@ void	TextureHandler::InitModifiable()
 
 void SpriteSheetData::sortAnimation(CoreItemSP& _FrameVector)
 {
-	std::vector<std::string>  str;
 	std::string AnimeName;
 	std::string CurrentName;
+
+	std::map<std::string,std::map<std::string, SpriteSheetFrameData*>> currentAnimList;
 
 	for (auto it : _FrameVector)
 	{
@@ -105,14 +106,23 @@ void SpriteSheetData::sortAnimation(CoreItemSP& _FrameVector)
 		if (str.size() == 2)
 		{
 			AnimeName = str[0];
-			auto& FrameVector = mAnimationList[AnimeName];
-			FrameVector.push_back(L_FrameInfo.get());
+			std::string framename = str[1];
+			auto& FrameList = currentAnimList[AnimeName];
+			FrameList[framename]=L_FrameInfo.get();
 		}
 		mAllFrameList[CurrentName] = std::move(L_FrameInfo);
 	}
+
+	for (auto& anim : currentAnimList)
+	{
+		auto& FrameVector = mAnimationList[anim.first];
+		for (auto& f : anim.second)
+		{
+			FrameVector.push_back(f.second);
+		}
+	}
+
 }
-
-
 
 bool	SpriteSheetData::Init(const std::string& json, std::string& texturename)
 {
@@ -308,6 +318,9 @@ void	TextureHandler::setCurrentFrame(const SpriteSheetFrameData* ssf)
 	mCurrentFrame = ssf;
 
 	refreshSizeAndUVs(ssf);
+
+	// notify parent that something changed
+	NotifyUpdate(0);
 }
 
 
@@ -335,6 +348,8 @@ void	TextureHandler::refreshSizeAndUVs(const SpriteSheetFrameData* ssf)
 
 	if (ssf)
 	{
+		mUVTexture.e[0][2] = (ssf->FramePos_X) * mOneOnPower2Size.x;
+		mUVTexture.e[1][2] = (ssf->FramePos_Y) * mOneOnPower2Size.y;
 
 		if (ssf->Rotated)
 		{
@@ -343,23 +358,16 @@ void	TextureHandler::refreshSizeAndUVs(const SpriteSheetFrameData* ssf)
 			mUVTexture.e[0][1] = -1.0f;
 			mUVTexture.e[1][0] = 1.0f;
 			mUVTexture.e[1][1] = 0.0f;
+			mUVTexture.e[0][2] += ssf->FrameSize_Y * mOneOnPower2Size.x;
+			uvSize.x = ssf->FrameSize_Y;
+			uvSize.y = ssf->FrameSize_X;
 		}
-
-
-		/*if (ssf->Trimmed)
+		else
 		{
-			mUVTexture.e[0][2] = (ssf->FramePos_X + ssf->Decal_X) * mOneOnPower2Size.x;
-			mUVTexture.e[1][2] = (ssf->FramePos_Y + ssf->Decal_Y) * mOneOnPower2Size.y;
 			uvSize.x = ssf->FrameSize_X;
 			uvSize.y = ssf->FrameSize_Y;
 		}
-		else*/
-		{
-			mUVTexture.e[0][2] = (ssf->FramePos_X) * mOneOnPower2Size.x;
-			mUVTexture.e[1][2] = (ssf->FramePos_Y) * mOneOnPower2Size.y;
-			uvSize.x = ssf->FrameSize_X;
-			uvSize.y = ssf->FrameSize_Y;
-		}
+		
 
 		mSize.x = ssf->SourceSize_X;
 		mSize.y = ssf->SourceSize_Y;
@@ -372,16 +380,24 @@ void	TextureHandler::refreshSizeAndUVs(const SpriteSheetFrameData* ssf)
 
 	if (!perfectPix)
 	{
-		mUVTexture.e[0][2] += 0.5f * mOneOnPower2Size.x;
+		if (ssf && ssf->Rotated)
+		{
+			mUVTexture.e[0][2] -= 0.5f * mOneOnPower2Size.x;
+		}
+		else
+		{
+			mUVTexture.e[0][2] += 0.5f * mOneOnPower2Size.x;
+		}
 		mUVTexture.e[1][2] += 0.5f * mOneOnPower2Size.y;
 		uvSize.x -= 1.0f;
 		uvSize.y -= 1.0f;
 	}
 
 	uvSize *= mOneOnPower2Size;
+	
 	mUVTexture.e[0][0] *= uvSize.x;
-	mUVTexture.e[1][0] *= uvSize.x;
-	mUVTexture.e[0][1] *= uvSize.y;
+	mUVTexture.e[1][0] *= uvSize.y;
+	mUVTexture.e[0][1] *= uvSize.x;
 	mUVTexture.e[1][1] *= uvSize.y;
 }
 

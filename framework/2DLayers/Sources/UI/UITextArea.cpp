@@ -108,7 +108,7 @@ bool UITextArea::isAlpha(float X, float Y)
 
 void UITextArea::GetFocus()
 {
-	mFocus = true;
+	SetNodeFlag(UIItem_HasFocus);
 
 	//Get KeyBoard
 	ModuleInput* theInputModule = (ModuleInput*)CoreGetModule(ModuleInput);
@@ -124,7 +124,7 @@ void UITextArea::GetFocus()
 
 void UITextArea::LoseFocus()
 {
-	mFocus = false;
+	ClearNodeFlag(UIItem_HasFocus);
 	mIsDown = false;
 
 	KigsCore::GetNotificationCenter()->removeObserver(this, "UpdateTextArea");
@@ -266,7 +266,7 @@ void UITextArea::ProtectedDraw(TravState* state)
 
 DEFINE_METHOD(UITextArea, UpdateKeyBoard)
 {
-	if (!mFocus)
+	if (!GetNodeFlag(UIItem_HasFocus))
 		return false;
 
 	kstl::vector<KeyEvent> * eventList = static_cast<kstl::vector<KeyEvent>*> (privateParams);

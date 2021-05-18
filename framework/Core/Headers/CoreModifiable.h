@@ -1322,13 +1322,19 @@ private:
 	friend class KigsCore;
 
 	static void	ReleaseLoadedItems(std::vector<CMSP> &loadedItems);
-
-	unsigned int mUID;
 	static std::atomic<unsigned int> mUIDCounter;
-	CoreTreeNode* mTypeNode = nullptr;
-	std::string	mName;
-	KigsID mNameID;
 
+	unsigned int	mUID;
+	KigsID			mNameID;
+	// Flags
+	unsigned int	mModifiableFlag = AllowChanges;
+	mutable std::recursive_mutex mObjectMutex;
+	
+	CoreTreeNode* mTypeNode = nullptr;
+	mutable LazyContent* mLazyContent = nullptr;
+
+	std::string	mName;
+	
 	// attribute map
 	kigs::unordered_map<KigsID, CoreModifiableAttribute*> mAttributes;
 	// sons vector
@@ -1336,14 +1342,10 @@ private:
 	// parent vector
 	std::vector<CoreModifiable*>					mUsers;
 
-	
-	mutable std::recursive_mutex mObjectMutex;
-	mutable LazyContent* mLazyContent = nullptr;
 
 	LazyContent* GetLazyContent() const;
 
-	// Flags
-	unsigned int mModifiableFlag =  AllowChanges;
+
 
 #ifdef KEEP_NAME_AS_STRING
 	// keep track of Decorators only on win32 to be able to export them

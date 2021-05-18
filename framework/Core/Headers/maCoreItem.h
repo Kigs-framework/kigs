@@ -75,7 +75,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 
-		mValue.InitWithJSON(value, this->mOwner);
+		mValue.InitWithJSON(value, this->getOwner());
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
@@ -84,7 +84,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 
-		mValue.InitWithJSON(value, this->mOwner);
+		mValue.InitWithJSON(value, this->getOwner());
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}

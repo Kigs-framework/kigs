@@ -34,7 +34,7 @@ void UITextInput::InitModifiable()
 
 DEFINE_METHOD(UITextInput, FocusChanged)
 {
-	if (sender != this && mFocus)
+	if (sender != this && GetNodeFlag(UIItem_HasFocus))
 		LoseFocus();
 
 	return false;
@@ -103,7 +103,7 @@ void UITextInput::UpdateKeyboard(kstl::vector<KeyEvent>& keys)
 
 UITextInput::~UITextInput()
 {
-	if(mFocus) LoseFocus();
+	if(GetNodeFlag(UIItem_HasFocus)) LoseFocus();
 }
 
 
@@ -113,7 +113,7 @@ void UITextInput::GetFocus()
 	ModuleInput* theInputModule= KigsCore::GetModule<ModuleInput>();
 	KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
 	KigsCore::Connect(theKeyboard, "KeyboardEvent", this, "UpdateKeyboard");
-	mFocus = true;
+	SetNodeFlag(UIItem_HasFocus);
 	KigsCore::GetNotificationCenter()->postNotificationName("GetFocus", this);
 	theKeyboard->Show();
 	setValue("ShowCursor", true);
@@ -126,7 +126,7 @@ void UITextInput::LoseFocus()
 	KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
 	KigsCore::Disconnect(theKeyboard, "KeyboardEvent", this, "UpdateKeyboard");
 
-	mFocus = false;
+	ClearNodeFlag(UIItem_HasFocus);
 	KigsCore::GetNotificationCenter()->removeObserver(this,"UpdateTextInput");
 
 	if(mReleaseAction.const_ref() != "")
@@ -152,7 +152,7 @@ bool UITextInput::ManageClickTouchEvent(ClickEvent& click_event)
 
 	if (click_event.state == StateRecognized && !swallow)
 	{
-		if (!mFocus && (click_event.button_state_mask & ClickEvent::LeftButton) == ClickEvent::LeftButton)
+		if (!GetNodeFlag(UIItem_HasFocus) && (click_event.button_state_mask & ClickEvent::LeftButton) == ClickEvent::LeftButton)
 		{	
 			GetFocus();
 		}

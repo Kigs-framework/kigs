@@ -32,6 +32,10 @@ public:
 	DECLARE_CLASS_INFO(UIItem, Node2D, 2DLayers);
 	DECLARE_CONSTRUCTOR(UIItem);
 
+	static constexpr unsigned int UIItem_HasFocus = 1 << ParentClassType::usedUserFlags;
+	static constexpr unsigned int usedUserFlags = ParentClassType::usedUserFlags + 1;
+
+
 	/*Getter*/
 	float												GetOpacity() override {
 		if (mOpacity >= 0.0f) return mOpacity;
@@ -47,8 +51,8 @@ public:
 	inline void											Set_Position(Point2D a_pos) { Set_Position(a_pos.x, a_pos.y); }
 	inline void											IsTouchable(bool a_value) { mIsTouchable = a_value; }
 	inline void											Set_Opacity(float a_value) { mOpacity = a_value; SetNodeFlag(Node2D_NeedVerticeInfoUpdate); }
-	inline void											Set_PreScale(kfloat a_valueX, kfloat a_valueY) { mPreScaleX = a_valueX; mPreScaleY = a_valueY; SetNodeFlag(Node2D_NeedUpdatePosition); 	}
-	inline void											Set_PostScale(kfloat a_valueX, kfloat a_valueY) { mPostScaleX = a_valueX; mPostScaleY = a_valueY; SetNodeFlag(Node2D_NeedUpdatePosition); }
+	inline void											Set_PreScale(kfloat a_valueX, kfloat a_valueY) { mPreScale = v2f(a_valueX,a_valueY); SetNodeFlag(Node2D_NeedUpdatePosition); 	}
+	inline void											Set_PostScale(kfloat a_valueX, kfloat a_valueY) { mPostScale = v2f(a_valueX,a_valueY); SetNodeFlag(Node2D_NeedUpdatePosition); }
 	inline void											Set_DisableBlend(bool a_value) { mDisableBlend = a_value; SetNodeFlag(Node2D_NeedVerticeInfoUpdate);}
 	
 	bool												Draw(TravState* state) override;
@@ -84,6 +88,22 @@ public:
 
 protected:
 
+	void propagateOpacityChange()
+	{
+		SetNodeFlag(Node2D_NeedVerticeInfoUpdate);
+		for (auto s : mSons)
+		{
+			if (s->isSubType(UIItem::mClassID))
+			{
+				UIItem* sonItem = static_cast<UIItem*>(s);
+				if (sonItem->mOpacity < 0.0f)
+				{
+					sonItem->propagateOpacityChange();
+				}
+			}
+		}
+	}
+
 	bool ManageInputSwallowEvent(InputEvent& ev);
 
 	/**
@@ -111,7 +131,6 @@ protected:
 	maFloat												mOpacity;
 	SP<AlphaMask>										mAlphaMask;
 	maBoolHeritage<1>									mSwallowInputs;
-	bool												mFocus;
 
 	WRAP_METHODS(ContainsPoint, ManageInputSwallowEvent);
 };

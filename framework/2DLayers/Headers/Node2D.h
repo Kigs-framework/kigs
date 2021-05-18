@@ -119,8 +119,8 @@ public:
 	int GetFinalPriority() const;
 
 	v2f GetSize() const { return mRealSize; }
-	v2f GetPreScale() const { return v2f{ mPreScaleX, mPreScaleY }; }
-	v2f GetPostScale() const { return v2f{ mPostScaleX, mPostScaleY }; }
+	v2f GetPreScale() const { return mPreScale; }
+	v2f GetPostScale() const { return mPostScale; }
 	v2f GetSizeScaled() const { return GetSize() * GetPreScale() * GetPostScale(); }
 	virtual float GetOpacity() { return 1.0f; }
 
@@ -220,16 +220,14 @@ protected:
 	Matrix3x3											mGlobalTransformMatrix;
 
 	maInt												mPriority;
+	maFloat												mRotationAngle;
 	maFloat												mSizeX;
 	maFloat												mSizeY;
 	maVect2DF											mDock;
 	maVect2DF											mAnchor;
 	maVect2DF											mPosition;
-	maFloat												mRotationAngle;
-	maFloat												mPreScaleX;
-	maFloat												mPreScaleY;
-	maFloat												mPostScaleX;
-	maFloat												mPostScaleY;
+	maVect2DF											mPreScale;
+	maVect2DF											mPostScale;
 	maEnum<7>											mSizeModeX = BASE_ATTRIBUTE(SizeModeX, "Default", "Multiply", "Add", "Content","ContentMult","ContentAdd","KeepRatio");
 	maEnum<7>											mSizeModeY = BASE_ATTRIBUTE(SizeModeY, "Default", "Multiply", "Add", "Content", "ContentMult", "ContentAdd", "KeepRatio");
 	maBoolHeritage<1>									mClipSons;

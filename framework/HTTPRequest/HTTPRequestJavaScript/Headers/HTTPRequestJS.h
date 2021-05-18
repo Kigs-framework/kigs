@@ -20,7 +20,7 @@ public:
 	//! constructor
 	HTTPRequestJS(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	virtual void				InitModifiable();
+	virtual void				InitModifiable() override;
 	virtual unsigned short*		GetAnswer();
 
 
@@ -29,9 +29,9 @@ protected:
 	//! destructor
 	virtual						~HTTPRequestJS();
 	
-	unsigned int				myHandle;
-	unsigned int				myBufferSize;
-	unsigned short*				myBuffer;
+	unsigned int				mHandle;
+	unsigned int				mBufferSize;
+	unsigned short*				mBuffer;
 };
 
 #endif //_HTTPREQUESTJS_H_
