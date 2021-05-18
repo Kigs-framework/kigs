@@ -83,10 +83,21 @@ ImGuiLayer::~ImGuiLayer()
 	mFontAtlas.Locked = false;
 }
 
+void ImGuiLayer::ApplyScaling()
+{
+	if (mScaling == 1.0f) return;
+	ImGuiContext* old_state = SetActiveImGuiLayer();
+	auto style = &ImGui::GetStyle();
+	style->ScaleAllSizes((float)mScaling);
+	ImGui::SetCurrentContext(old_state);
+}
+
 void ImGuiLayer::SetStyleLightGreen()
 {
 	ImGuiContext* old_state = SetActiveImGuiLayer();
 	auto style = &ImGui::GetStyle();
+	*style = ImGuiStyle();
+
 	ImVec4* colors = style->Colors;
 
 	style->WindowRounding = 2.0f;             // Radius of window corners rounding. Set to 0.0f to have rectangular windows
@@ -113,8 +124,8 @@ void ImGuiLayer::SetStyleLightGreen()
 	//colors[ImGuiCol_ChildWindowBg]         = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 	colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 	colors[ImGuiCol_PopupBg] = ImVec4(0.93f, 0.93f, 0.93f, 0.98f);
-	colors[ImGuiCol_Border] = ImVec4(0.71f, 0.71f, 0.71f, 0.08f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.04f);
+	colors[ImGuiCol_Border] = ImVec4(0.71f, 0.71f, 0.71f, 0.28f);
+	colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.14f);
 	colors[ImGuiCol_FrameBg] = ImVec4(0.71f, 0.71f, 0.71f, 0.55f);
 	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.94f, 0.94f, 0.94f, 0.55f);
 	colors[ImGuiCol_FrameBgActive] = ImVec4(0.71f, 0.78f, 0.69f, 0.98f);
@@ -170,6 +181,8 @@ void ImGuiLayer::SetStyleMSFT()
 {
 	ImGuiContext* old_state = SetActiveImGuiLayer();
 	auto style = &ImGui::GetStyle();
+	*style = ImGuiStyle();
+
 	int hspacing = 8;
 	int vspacing = 6;
 	style->DisplaySafeAreaPadding = ImVec2(0, 0);
@@ -275,7 +288,16 @@ void ImGuiLayer::UpdateKeyboard(kstl::vector<KeyEvent>& keys)
 void ImGuiLayer::RegisterTouch()
 {
 	//mInput->getTouchManager()->registerEvent(this, "ManageTouch", InputEventType::DirectAccess, InputEventManagementFlag::EmptyFlag, this);
+
+	ModuleInput* theInputModule = KigsCore::GetModule<ModuleInput>();
+	theInputModule->getTouchManager()->addTouchSupport(this, mRenderingScreen);
 	static_cast<TouchEventStateDirectTouch*>(mInput->getTouchManager()->registerEvent(this, "ManageTouch", InputEventType::DirectTouch, InputEventManagementFlag::EmptyFlag, this))->setAutoTouchDownDistance(0.05f);
+}
+
+bool ImGuiLayer::GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout)
+{
+	pout = posin;
+	return true;
 }
 
 void ImGuiLayer::InitModifiable()
@@ -383,6 +405,8 @@ void ImGuiLayer::InitModifiable()
 			SetStyleHoloLens();
 		else if (style == "LightGreen")
 			SetStyleLightGreen();
+
+		ApplyScaling();
 
 		if (mFontTexture) removeItem(mFontTexture);
 
@@ -539,6 +563,9 @@ bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 
 void ImGuiLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 {
+	param.sorted.push_back({ this, Hit{} });
+	return;
+
 	std::transform(param.toSort.begin(), param.toSort.end(), std::back_inserter(param.sorted), [](CoreModifiable* cm) -> std::pair<CoreModifiable*, Hit>
 	{
 		return { cm, Hit{} };
@@ -771,6 +798,7 @@ void ImGuiLayer::TravDraw(TravState* state)
 	
 	mHasFrame = false;
 	ImDrawData* draw_data = nullptr;
+
 	ImGui::Render();
 	draw_data = ImGui::GetDrawData();
 	
@@ -811,6 +839,8 @@ void ImGuiLayer::TravDraw(TravState* state)
 	window_size.y = io.DisplaySize.y;
 
 	// FIXME(antoine) zero size (when minimizing) causes renderer to crash
+	bool no_draw = window_size.x == 0 || window_size.y == 0;
+
 	if (window_size.x == 0) window_size.x = 1;
 	if (window_size.y == 0) window_size.y = 1;
 
@@ -860,65 +890,67 @@ void ImGuiLayer::TravDraw(TravState* state)
 	auto clip_scale = draw_data->FramebufferScale;
 
 	// Render command lists
-	for (int n = 0; n < draw_data->CmdListsCount; n++)
+	if (!no_draw)
 	{
-		const ImDrawList* cmd_list = draw_data->CmdLists[n];
-		unsigned char* vtx_buffer = (unsigned char*)& cmd_list->VtxBuffer.front();
-		const ImDrawIdx* idx_buffer = &cmd_list->IdxBuffer.front();
-		int offset = 0;
-
-		unsigned int vbo_array = renderer->getVBO();
-		unsigned int vbo_index = renderer->getVBO();
-
-		renderer->SetArrayBuffer(vbo_array);
-		renderer->GetVertexBufferManager()->FlushBindBuffer();
-		renderer->BufferData(vbo_array, KIGS_BUFFER_TARGET_ARRAY, cmd_list->VtxBuffer.size() * sizeof(ImDrawVert), (void*)vtx_buffer, KIGS_BUFFER_USAGE_DYNAMIC);
-
-		renderer->SetElementBuffer(vbo_index);
-		renderer->GetVertexBufferManager()->FlushBindBuffer();
-		renderer->BufferData(vbo_index, KIGS_BUFFER_TARGET_ELEMENT, cmd_list->IdxBuffer.size() * sizeof(u16), (void*)idx_buffer, KIGS_BUFFER_USAGE_DYNAMIC);
-
-		idx_buffer = nullptr;
-
-		for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.size(); cmd_i++)
+		for (int n = 0; n < draw_data->CmdListsCount; n++)
 		{
-			const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
-			if (pcmd->UserCallback)
+			const ImDrawList* cmd_list = draw_data->CmdLists[n];
+			unsigned char* vtx_buffer = (unsigned char*)&cmd_list->VtxBuffer.front();
+			const ImDrawIdx* idx_buffer = &cmd_list->IdxBuffer.front();
+			int offset = 0;
+
+			unsigned int vbo_array = renderer->getVBO();
+			unsigned int vbo_index = renderer->getVBO();
+
+			renderer->SetArrayBuffer(vbo_array);
+			renderer->GetVertexBufferManager()->FlushBindBuffer();
+			renderer->BufferData(vbo_array, KIGS_BUFFER_TARGET_ARRAY, cmd_list->VtxBuffer.size() * sizeof(ImDrawVert), (void*)vtx_buffer, KIGS_BUFFER_USAGE_DYNAMIC);
+
+			renderer->SetElementBuffer(vbo_index);
+			renderer->GetVertexBufferManager()->FlushBindBuffer();
+			renderer->BufferData(vbo_index, KIGS_BUFFER_TARGET_ELEMENT, cmd_list->IdxBuffer.size() * sizeof(u16), (void*)idx_buffer, KIGS_BUFFER_USAGE_DYNAMIC);
+
+			idx_buffer = nullptr;
+
+			for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.size(); cmd_i++)
 			{
-				pcmd->UserCallback(cmd_list, pcmd);
-			}
-			else
-			{
-				renderer->SetArrayBuffer(vbo_array);
-				renderer->SetVertexAttrib(vbo_array, KIGS_VERTEX_ATTRIB_VERTEX_ID, 2, KIGS_FLOAT, false, sizeof(ImDrawVert), (void*)OFFSETOF(ImDrawVert, pos), locs);
-				renderer->SetVertexAttrib(vbo_array, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, 2, KIGS_FLOAT, false, sizeof(ImDrawVert), (void*)OFFSETOF(ImDrawVert, uv), locs);
-				renderer->SetVertexAttrib(vbo_array, KIGS_VERTEX_ATTRIB_COLOR_ID, 4, KIGS_UNSIGNED_BYTE, false, sizeof(ImDrawVert), (void*)OFFSETOF(ImDrawVert, col), locs);
-
-				//unsigned int id = pcmd->TextureId != 0 ? ((OpenGLTexture*)(Texture*)pcmd->TextureId)->GetGLID() : 0;
-				if (pcmd->TextureId != 0)
+				const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
+				if (pcmd->UserCallback)
 				{
-					((Texture*)pcmd->TextureId)->DoPreDraw(state);
+					pcmd->UserCallback(cmd_list, pcmd);
 				}
-
-				ImVec4 clip_rect;
-				clip_rect.x = (pcmd->ClipRect.x - clip_offset.x) * clip_scale.x;
-				clip_rect.y = (pcmd->ClipRect.y - clip_offset.y) * clip_scale.y;
-				clip_rect.z = (pcmd->ClipRect.z - clip_offset.x) * clip_scale.x;
-				clip_rect.w = (pcmd->ClipRect.w - clip_offset.y) * clip_scale.y;
-
-				renderer->SetScissorValue((int)clip_rect.x, (int)(fb_height - clip_rect.w), (int)(clip_rect.z - clip_rect.x), (int)(clip_rect.w - clip_rect.y));
-				renderer->DrawElements(state, KIGS_DRAW_MODE_TRIANGLES, pcmd->ElemCount, KIGS_UNSIGNED_SHORT, (void*)idx_buffer);
-
-				if (pcmd->TextureId != 0)
+				else
 				{
-					((Texture*)pcmd->TextureId)->DoPostDraw(state);
+					renderer->SetArrayBuffer(vbo_array);
+					renderer->SetVertexAttrib(vbo_array, KIGS_VERTEX_ATTRIB_VERTEX_ID, 2, KIGS_FLOAT, false, sizeof(ImDrawVert), (void*)OFFSETOF(ImDrawVert, pos), locs);
+					renderer->SetVertexAttrib(vbo_array, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, 2, KIGS_FLOAT, false, sizeof(ImDrawVert), (void*)OFFSETOF(ImDrawVert, uv), locs);
+					renderer->SetVertexAttrib(vbo_array, KIGS_VERTEX_ATTRIB_COLOR_ID, 4, KIGS_UNSIGNED_BYTE, false, sizeof(ImDrawVert), (void*)OFFSETOF(ImDrawVert, col), locs);
+
+					//unsigned int id = pcmd->TextureId != 0 ? ((OpenGLTexture*)(Texture*)pcmd->TextureId)->GetGLID() : 0;
+					if (pcmd->TextureId != 0)
+					{
+						((Texture*)pcmd->TextureId)->DoPreDraw(state);
+					}
+
+					ImVec4 clip_rect;
+					clip_rect.x = (pcmd->ClipRect.x - clip_offset.x) * clip_scale.x;
+					clip_rect.y = (pcmd->ClipRect.y - clip_offset.y) * clip_scale.y;
+					clip_rect.z = (pcmd->ClipRect.z - clip_offset.x) * clip_scale.x;
+					clip_rect.w = (pcmd->ClipRect.w - clip_offset.y) * clip_scale.y;
+
+					renderer->SetScissorValue((int)clip_rect.x, (int)(fb_height - clip_rect.w), (int)(clip_rect.z - clip_rect.x), (int)(clip_rect.w - clip_rect.y));
+					renderer->DrawElements(state, KIGS_DRAW_MODE_TRIANGLES, pcmd->ElemCount, KIGS_UNSIGNED_SHORT, (void*)idx_buffer);
+
+					if (pcmd->TextureId != 0)
+					{
+						((Texture*)pcmd->TextureId)->DoPostDraw(state);
+					}
 				}
+				idx_buffer += pcmd->ElemCount;
+				offset += pcmd->ElemCount;
 			}
-			idx_buffer += pcmd->ElemCount;
-			offset += pcmd->ElemCount;
 		}
 	}
-
 	renderer->SetArrayBuffer(-1);
 	renderer->SetElementBuffer(-1);
 	renderer->DisableTexture();

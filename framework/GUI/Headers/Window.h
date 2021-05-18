@@ -81,6 +81,8 @@ public:
 	virtual const std::string& GetClipboardText() { return mClipboard; };
 	virtual void SetClipboardText(const std::string& txt) { mClipboard = txt; };
 
+	virtual void SetCurrentCursor(const char* cursorName) {};
+
 protected:
 	//! destructor
     virtual ~Window();

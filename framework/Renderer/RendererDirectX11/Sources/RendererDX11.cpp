@@ -821,11 +821,11 @@ void DX11RenderingState::manageDepthStencilTest(DX11RenderingState* currentState
 void DX11RenderingState::manageRasterizerState(DX11RenderingState* currentState)
 {
 	size_t hash = 0;
-	hash_combine(hash, currentState->mGlobalCullFlag, currentState->mPolygonMode, currentState->mGlobalScissorTestFlag);
 
 	RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
-	DXInstance * dxinstance = renderer->getDXInstance();
+	DXInstance* dxinstance = renderer->getDXInstance();
 
+	hash_combine(hash, currentState->mGlobalCullFlag, currentState->mPolygonMode, currentState->mGlobalScissorTestFlag, renderer->getDXInstance()->mIsFBORenderTarget);
 
 	ID3D11RasterizerState* rasterizerState;
 	auto found = renderer->RasterizerStateList().find(hash);
@@ -841,7 +841,7 @@ void DX11RenderingState::manageRasterizerState(DX11RenderingState* currentState)
 		rasterDesc.DepthBias = 0;
 		rasterDesc.DepthBiasClamp = 0.0f;
 		rasterDesc.DepthClipEnable = true;
-		rasterDesc.FrontCounterClockwise = true;
+		rasterDesc.FrontCounterClockwise = !renderer->getDXInstance()->mIsFBORenderTarget;
 		rasterDesc.MultisampleEnable = false;
 		rasterDesc.ScissorEnable = currentState->mGlobalScissorTestFlag;
 		rasterDesc.SlopeScaledDepthBias = 0.0f;

@@ -279,19 +279,28 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 		}
 		break;
 		//Destroy
+	case WM_CLOSE:
+		bool IsMainWnd;
+		pWindow->getValue("IsMainWindow", IsMainWnd);
+		if (IsMainWnd)
+		{
+			if (KigsCore::GetCoreApplication())
+			{
+				KigsCore::GetCoreApplication()->ExternAskExit();
+				if(KigsCore::GetCoreApplication()->NeedExit())
+					DestroyWindow(hWnd);
+				return 0;
+			}
+		}
+		break;
 	case WM_DESTROY:
 	{
 		bool IsMainWnd;
 		pWindow->getValue("IsMainWindow", IsMainWnd);
 		if (IsMainWnd)
 		{
-			if (KigsCore::GetCoreApplication())
-				KigsCore::GetCoreApplication()->ExternAskExit();
-			//else
-			//	exit( 0 );
 			return 0;
 		}
-
 		if (pWindow->mDestroyCallback != NULL)
 			pWindow->mDestroyCallback(pWindow);
 		break;
@@ -346,8 +355,9 @@ void WindowWin32::SetParentWindow(HWND hParent)
 	mParent = hParent;
 }
 
-void WindowWin32::SetCurrentCursor(LPCTSTR cursorName) {
-	if (cursorName == 0)
+void WindowWin32::SetCurrentCursor(const char* cursorName)
+{
+	if (!cursorName)
 		mCursor = NULL;
 	else
 		mCursor = LoadCursor(NULL, cursorName);
@@ -467,11 +477,13 @@ void WindowWin32::ProtectedInit()
 		WindowRect.bottom = WindowRect.top + (long)mSizeY;
 #endif
 	}
-
+	
 	//! win32 stuff
 	WNDCLASSEX tmpwc = { sizeof(WNDCLASSEX), CS_OWNDC | CS_DBLCLKS, MsgProc, 0L, 0L,
 		GetModuleHandleA(NULL), NULL, NULL, NULL, NULL,
 		"Kigs Window", NULL };
+	
+	tmpwc.hIcon = LoadIcon(GetModuleHandleA(NULL), "ICON_KIGS_APP");
 
 	// Register the window class
 	mWC = tmpwc;

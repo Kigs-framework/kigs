@@ -52,7 +52,7 @@ public:
 		SetWindowTextA((HWND)mHandle, txt);
 	}
 
-	void	SetCurrentCursor(LPCTSTR cursorName);
+	void SetCurrentCursor(const char* cursorName) override;
 
 	void ShowBorder(bool show) override;
     

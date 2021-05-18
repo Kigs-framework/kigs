@@ -70,8 +70,7 @@ public:
 	{
 		if(!mNeedExit)
 		{
-			ProtectedExternAskExit();
-			mNeedExit=true;
+			mNeedExit = ProtectedExternAskExit();
 		}
 	}
 	
@@ -145,7 +144,7 @@ protected:
 	//! to overload if needed
 	virtual void	ProtectedSleep(){;}
 	virtual void	ProtectedResume(){;}
-	virtual void	ProtectedExternAskExit(){;}
+	virtual bool	ProtectedExternAskExit() { return true; }
 
 	void DoAutoUpdate();
 

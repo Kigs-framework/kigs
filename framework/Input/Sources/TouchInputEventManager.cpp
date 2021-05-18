@@ -24,7 +24,6 @@ IMPLEMENT_CONSTRUCTOR(TouchInputEventManager)
 	mTheInputModule = reinterpret_cast<ModuleInput*>(CoreGetModule(ModuleInput));
 }
 
-
 bool TouchInputEventManager::isRegisteredOnCurrentState(CoreModifiable* obj)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
@@ -655,7 +654,8 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 						Touches[interaction_infos.ID] = interaction_infos;
 					}
 				}
-				if(GetNearInteractionActiveItems(interaction.handedness).size() == 0 || !interaction.index_tip.has_value())
+				
+				if((GetNearInteractionActiveItems(interaction.handedness).size() == 0 || !interaction.index_tip.has_value()) && interaction.palm.has_value())
 				{
 					auto orientation = (interaction.palm->orientation * v3f(0, -1, 1)).Normalized();
 					if (Dot(orientation, camera->GetGlobalViewVector()) > 0)

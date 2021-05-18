@@ -405,7 +405,6 @@ void	ModernMeshBuilder::OptimiseTriangle::ComputeScore(OptimiseBuildVertexStruct
 
 SP<ModernMeshItemGroup> ModernMeshBuilder::EndGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset)
 {
-	KIGS_WARNING("Deprecated EngGroup function", 3);
 	char tmp[32];
 	sprintf(tmp, "group%d", mGroupCount++);
 	SP<ModernMeshItemGroup> result(nullptr);

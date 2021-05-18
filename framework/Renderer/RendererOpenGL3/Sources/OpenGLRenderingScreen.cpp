@@ -54,24 +54,34 @@ void OpenGLRenderingScreen::FetchDepth(int x, int y, int width, int height, unsi
 
 void	OpenGLRenderingScreen::Resize(kfloat sizeX, kfloat sizeY)
 {
-	// before screen is init, only update sizeX and sizeY
-	if (!IsInit())
-	{
-		mSizeX = (unsigned int)sizeX;
-		mSizeY = (unsigned int)sizeY;
-	}
-	else
-	{
-		//When resizing an offscreen surface, we keep the big surface but we let the camera clip the scene
-		InitializeGL((int)sizeX, (int)sizeY);
-	}
-
 	if (mResizeDesignSize)
 	{
-		mDesignSizeX = mSizeX;
-		mDesignSizeY = mSizeY;
+		mDesignSizeX = (unsigned int)sizeX;
+		mDesignSizeY = (unsigned int)sizeY;
 	}
+	mSizeX = (unsigned int)sizeX;
+	mSizeY = (unsigned int)sizeY;
+	mFBOSizeX = (unsigned int)sizeX;
+	mFBOSizeY = (unsigned int)sizeY;
 
+	// before screen is init, only update sizeX and sizeY
+	if (IsInit())
+	{
+		//When resizing an offscreen surface, we keep the big surface but we let the camera clip the scene
+		//InitializeGL((int)sizeX, (int)sizeY);
+#ifdef NO_DELAYED_INIT
+		DelayedInit();
+#else
+		CoreModifiableAttribute* delayed = getAttribute("DelayedInit");
+		if (delayed) // delayed init already asked
+		{
+			return;
+		}
+		// ask for delayed init
+		CoreModifiableAttribute* newAttr = AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "DelayedInit");
+		newAttr->setValue(true);
+#endif
+	}
 	RecomputeDesignCoef();
 
 	EmitSignal(Signals::Resized);

@@ -28,7 +28,7 @@ public:
 	DECLARE_CLASS_INFO(ImGuiLayer, Abstract2DLayer, ImGui);
 	DECLARE_CONSTRUCTOR(ImGuiLayer);
 	SIGNALS(OnClickDown, OnClickUp);
-	WRAP_METHODS(UpdateKeyboard, ManageTouch, PanelValidHit);
+	WRAP_METHODS(UpdateKeyboard, ManageTouch, PanelValidHit, GetDataInTouchSupport);
 	
 	virtual ~ImGuiLayer();
 	
@@ -72,6 +72,9 @@ protected:
 	bool ManageTouch(DirectTouchEvent& ev);
 
 	void SortItemsFrontToBack(SortItemsFrontToBackParam& param) override;
+	bool GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout);
+
+	void ApplyScaling();
 
 	ImGuiContext* mImGuiState = nullptr;
 	CoreBaseApplication* mApp = nullptr;
@@ -96,6 +99,7 @@ protected:
 	maString mFontName = BASE_ATTRIBUTE(FontName, "");
 	maString mBoldFontName = BASE_ATTRIBUTE(BoldFontName, "");
 	maFloat mFontSize = BASE_ATTRIBUTE(FontSize, 13.0f);
+	maFloat mScaling = BASE_ATTRIBUTE(Scaling, 1.0f);
 
 	maString mStyle = BASE_ATTRIBUTE(Style, "Default");
 
