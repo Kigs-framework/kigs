@@ -46,8 +46,8 @@ public:
 
 	void	getSize(int& sx, int& sy)
 	{
-		sx = mSizeX.const_ref();
-		sy = mSizeY.const_ref();
+		sx = mSize[0];
+		sy = mSize[1];
 	}
 
 protected:
@@ -62,17 +62,16 @@ protected:
 	maReference mRenderingScreen;
 	maReference mManager;
 
-	//! size on X axis
-	maInt    mSizeX;
-	//! size on Y axis
-	maInt    mSizeY;
-
+	//! size
+	maVect2DF    mSize;
+	
 	maBool		mClearZBuffer = BASE_ATTRIBUTE(ClearZBuffer, false);
 	maBool		mClearColorBuffer = BASE_ATTRIBUTE(ClearColorBuffer, false);
+	// if not interactive, don't do update (but still draw)
+	maBool		mIsInteractive;
 	maVect4DF	mClearColor = BASE_ATTRIBUTE(ClearColor, 0.0f, 0.0f, 0.0f, 1.0f);
 
-	// if not interactive, don't do update (but still draw)
-	maBool	mIsInteractive;
+
 
 };
 #endif //ABSTRACT2DLAYER_H_

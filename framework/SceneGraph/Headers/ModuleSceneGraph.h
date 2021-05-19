@@ -34,14 +34,6 @@ struct DefferedAction{
 	};
 };
 
-enum UserFlagsSceneGraph
-{
-	UserFlagNode3D		= 1,
-	UserFlagDrawable	= 2,
-	UserFlagCameraSort	= 4,
-	UserFlagFrontToBackSort = 8
-};
-
 // fast type check
 
 

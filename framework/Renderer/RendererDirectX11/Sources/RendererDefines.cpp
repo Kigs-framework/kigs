@@ -6,7 +6,7 @@
 const char * KIGS_MATRIX_PROJ            = "proj_matrix";
 const char * KIGS_MATRIX_MODEL           = "model_matrix";
 const char * KIGS_MATRIX_VIEW            = "view_matrix";
-
+const char * KIGS_MATRIX_UV				 = "uv_matrix";
 
 const int    KIGS_VERTEX_ATTRIB_VERTEX_ID=0;
 const int    KIGS_VERTEX_ATTRIB_NORMAL_ID=1;

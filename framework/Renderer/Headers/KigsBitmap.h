@@ -84,6 +84,9 @@ public:
 	void	ScrollX(int offset, const KigsBitmapPixel& color);
 	void	ScrollY(int offset, const KigsBitmapPixel& color);
 
+
+	void	Print(const std::string& txt, int posx, int posy, unsigned int _maxLineNumber, unsigned int maxSize, unsigned int fontSize, const std::string& fontName, unsigned int a_Alignment, const KigsBitmapPixel& color);
+
 	inline unsigned char* GetPixelBuffer()
 	{
 		// reset dirty zone

@@ -22,10 +22,14 @@
 #include "UIVerticesInfo.h"
 #include "TextureHandler.h"
 
+#include "FreeType_TextDrawer.h"
+
 #ifdef KIGS_TOOLS
 RendererStats gRendererStats;
 #endif
 
+
+FreeType_TextDrawer* ModuleSpecificRenderer::mDrawer = NULL;
 ModuleSpecificRenderer * ModuleRenderer::mTheGlobalRenderer = nullptr;
 
 IMPLEMENT_CLASS_INFO(ModuleRenderer);
@@ -118,6 +122,16 @@ void ModuleSpecificRenderer::Init(KigsCore* core, const kstl::vector<CoreModifia
 	mMatrixStack[1][0].SetIdentity();
 	mMatrixStack[2].push_back();
 	mMatrixStack[2][0].SetIdentity();
+	mMatrixStack[3].push_back();
+	mMatrixStack[3][0].SetIdentity();
+	
+	// create the freetype drawer
+	if (!mDrawer)
+	{
+		mDrawer = new FreeType_TextDrawer();
+		mDrawer->startBuildFonts();
+	}
+
 }
 
 void	ModuleSpecificRenderer::endFrame(TravState* state)
@@ -137,6 +151,12 @@ void	ModuleSpecificRenderer::endFrame(TravState* state)
 
 void ModuleSpecificRenderer::Close()
 {
+	if (mDrawer)
+	{
+		delete mDrawer;
+		mDrawer = NULL;
+	}
+
 	if (mCurrentState)
 	{
 		delete mCurrentState;
@@ -238,7 +258,8 @@ void	ModuleSpecificRenderer::PopState()
 void	ModuleSpecificRenderer::LoadIdentity(int mode)
 {
 	mDirtyMatrix |= (1 << mode);
-	mMatrixStack[mode].back().SetIdentity();
+	if (mode < 3)
+		mMatrixStack[mode].back().SetIdentity();
 }
 
 void	ModuleSpecificRenderer::LoadMatrix(int mode, const kfloat *newMat)

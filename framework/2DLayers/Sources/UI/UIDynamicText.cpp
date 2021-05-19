@@ -825,12 +825,12 @@ void UIDynamicText::BuildVertexArray()
 
 	if (mSizeModeX == 0)
 	{
-		setValue("SizeX", size.m_Max.x);
+		setValue("Size", v2f(size.m_Max.x,mSize[1]));
 		mRealSize.x = size.m_Max.x;
 	}
 	if (mSizeModeY == 0)
 	{
-		setValue("SizeY", size.m_Max.y);
+		setValue("Size", v2f(mSize[0],size.m_Max.y));
 		mRealSize.y = size.m_Max.y;
 	}
 }
@@ -899,8 +899,7 @@ void UIDynamicText::NotifyUpdate(const unsigned int labelID)
 	{
 		mTextChanged = true;
 	}
-	else if (labelID == mSizeX.getID()
-		|| labelID == mSizeY.getID()
+	else if (labelID == mSize.getID()
 		|| labelID == mTextAlign.getID()
 		|| labelID == mMaxWidth.getID()
 		|| labelID == mFontScaleFactor.getID()
@@ -1160,8 +1159,7 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 				{
 					cm = KigsCore::GetInstanceOf("inlineitem", "UIRenderingScreen");
 					cm->setValue("RenderingScreen", "RenderingScreen:offscreen");
-					cm->setValue("SizeX", 320);
-					cm->setValue("SizeY", 240);
+					cm->setValue("Size", v2f(320,240));
 					cm->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::STRING, "Texture", image_path.c_str());
 				}
 				else

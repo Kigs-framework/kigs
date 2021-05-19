@@ -582,7 +582,7 @@ bool DX11Texture::CreateFromText(const unsigned short* text, unsigned int _maxLi
 			textSize++;
 
 
-		if (!RendererDX11::myDrawer->IsInCache(fontName))
+		if (!ModuleSpecificRenderer::mDrawer->IsInCache(fontName))
 		{
 			SP<FilePathManager> L_PathManager = KigsCore::GetSingleton("FilePathManager");
 			SmartPointer<FileHandle> fullfilenamehandle;
@@ -599,7 +599,7 @@ bool DX11Texture::CreateFromText(const unsigned short* text, unsigned int _maxLi
 			if (L_Buffer)
 			{
 				unsigned char* pBuffer = (unsigned char*)L_Buffer->CopyBuffer();
-				RendererDX11::myDrawer->SetFont(fontName, pBuffer, size, fontSize);
+				ModuleSpecificRenderer::mDrawer->SetFont(fontName, pBuffer, size, fontSize);
 				L_Buffer->Destroy();
 			}
 			else
@@ -607,12 +607,12 @@ bool DX11Texture::CreateFromText(const unsigned short* text, unsigned int _maxLi
 		}
 		else
 		{
-			RendererDX11::myDrawer->SetFont(fontName, 0, 0, fontSize);
+			ModuleSpecificRenderer::mDrawer->SetFont(fontName, 0, 0, fontSize);
 		}
 
 		int L_Width = 0;
 		int L_Height = 0;
-		pImageData = RendererDX11::myDrawer->DrawTextToImage(text, textSize, L_Width, L_Height, (TextAlignment)a_Alignment, false, _maxLineNumber, maxSize, a_drawingLimit, (unsigned char)R, (unsigned char)G, (unsigned char)B);
+		pImageData = ModuleSpecificRenderer::mDrawer->DrawTextToImage(text, textSize, L_Width, L_Height, (TextAlignment)a_Alignment, false, _maxLineNumber, maxSize, a_drawingLimit, (unsigned char)R, (unsigned char)G, (unsigned char)B);
 
 		if (!pImageData)
 			break;

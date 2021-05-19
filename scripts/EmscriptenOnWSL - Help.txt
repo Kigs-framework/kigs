@@ -1,0 +1,11 @@
+If script generate CMake errors : 
+
+1. Create file wsl.conf in /etc/ with content: 
+
+# /etc/wsl.conf
+[automount]
+options = "metadata"
+enabled = true
+
+2. Reboot your wsl
+wsl.exe -t Ubuntu // (or other e.g. Debian) 

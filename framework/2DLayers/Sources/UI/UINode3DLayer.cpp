@@ -35,8 +35,7 @@ void UINode3DLayer::InitModifiable()
 			// add the root UIItem
 			mRootItem = KigsCore::GetInstanceOf(getName(), "UIItem");
 
-			mRootItem->setValue("SizeX", 1.0f);
-			mRootItem->setValue("SizeY", 1.0f);
+			mRootItem->setValue("Size", v2f(1.0f,1.0f));
 			addItem(mRootItem);
 			mRootItem->Init();
 		}
@@ -94,7 +93,7 @@ void UINode3DLayer::NotifyUpdate(const unsigned int labelid)
 	ParentClassType::NotifyUpdate(labelid);
 	if ((labelid == mSize.getLabelID()) || (labelid == mDesignSize.getLabelID()))
 	{
-		SetFlag(BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
+		setUserFlag(BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
 		if(mCollider) mCollider->setValue("Size", (v2f)mSize);
 		PropagateDirtyFlagsToSons(this);
 		PropagateDirtyFlagsToParents(this);
@@ -328,15 +327,12 @@ void UINode3DLayer::TravDraw(TravState* state)
 
 				while (father && current_stencil_stack.size() < item.clip_count)
 				{
-					bool clip;
-					if (father->getValue("ClipSons", clip) && clip)
+					if (father->GetNodeFlag(Node2D::Node2D_ClipSons))
 					{
 						current_stencil_stack.push_back(father);
 					}
 					father = father->getFather();
 				}
-
-
 
 				if (compare_stencil_stacks())
 				{
@@ -379,7 +375,11 @@ void UINode3DLayer::TravDraw(TravState* state)
 
 			renderer->SetStencilOp(RendererCullMode::RENDERER_CULL_FRONT_AND_BACK, RENDERER_STENCIL_OP_KEEP, RENDERER_STENCIL_OP_KEEP, RENDERER_STENCIL_OP_KEEP);
 
-			auto shader = item.node->getValue<CoreModifiable*>("CustomShader")->as<ShaderBase>();
+			ShaderBase* shader = nullptr;
+			if (item.node->GetNodeFlag(Node2D::Node2D_UseCustomShader))
+			{
+				shader = item.node->getValue<CoreModifiable*>("CustomShader")->as<ShaderBase>();
+			}
 			if (shader != current_custom_shader)
 			{
 				if (current_custom_shader)

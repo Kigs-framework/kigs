@@ -57,6 +57,36 @@ public:
 	DECLARE_CLASS_INFO(Node2D, CoreModifiable, SceneGraph)
 	DECLARE_CONSTRUCTOR(Node2D);
 
+/*
+	enum Flags
+	{
+		Node2D_SizeChanged = 1u << 0u,
+		Node2D_Clipped = 1u << 1u,
+		Node2D_Hidden = 1u << 2u,
+		Node2D_NeedUpdatePosition = 1u << 3u,
+		Node2D_SonPriorityChanged = 1u << 4u,
+		Node2D_UseCustomShader = 1u << 5u,
+		Node2D_hasBGRTexture = 1u << 6u,
+		Node2D_ClipSons = 1u << 7u,
+		Node2D_NeedVerticeInfoUpdate = 1u << 8u,
+		Node2D_PropagatedFlags = Node2D_Clipped | Node2D_Hidden,
+	};*/
+
+	static constexpr unsigned int Node2D_SizeChanged = 1 << ParentClassType::usedUserFlags;
+	static constexpr unsigned int Node2D_Clipped = 1 << (ParentClassType::usedUserFlags + 1);
+	static constexpr unsigned int Node2D_Hidden = 1 << (ParentClassType::usedUserFlags + 2);
+	static constexpr unsigned int Node2D_NeedUpdatePosition = 1 << (ParentClassType::usedUserFlags + 3);
+	static constexpr unsigned int Node2D_SonPriorityChanged = 1 << (ParentClassType::usedUserFlags + 4);
+	static constexpr unsigned int Node2D_UseCustomShader = 1 << (ParentClassType::usedUserFlags + 5);
+	static constexpr unsigned int Node2D_hasBGRTexture = 1 << (ParentClassType::usedUserFlags + 6);
+	static constexpr unsigned int Node2D_ClipSons = 1 << (ParentClassType::usedUserFlags + 7);
+	static constexpr unsigned int Node2D_NeedVerticeInfoUpdate = 1 << (ParentClassType::usedUserFlags + 8);
+
+	static constexpr unsigned int Node2D_PropagatedFlags = Node2D_Clipped | Node2D_Hidden;
+
+	static constexpr unsigned int usedUserFlags = ParentClassType::usedUserFlags + 9;
+
+
 	// call just before travdraw, set state for branch (this and his descendancy)
 	virtual void PreTravDraw(TravState* state) {}
 	virtual void PostTravDraw(TravState* state) {}
@@ -89,8 +119,8 @@ public:
 	int GetFinalPriority() const;
 
 	v2f GetSize() const { return mRealSize; }
-	v2f GetPreScale() const { return v2f{ mPreScaleX, mPreScaleY }; }
-	v2f GetPostScale() const { return v2f{ mPostScaleX, mPostScaleY }; }
+	v2f GetPreScale() const { return mPreScale; }
+	v2f GetPostScale() const { return mPostScale; }
 	v2f GetSizeScaled() const { return GetSize() * GetPreScale() * GetPostScale(); }
 	virtual float GetOpacity() { return 1.0f; }
 
@@ -130,32 +160,32 @@ public:
 	Abstract2DLayer*									getRootLayerFather() const;
 	Node2D*												getRootFather();
 
-	enum Flags
+	inline bool												GetNodeFlag(u32 f)
 	{
-		Node2D_SizeChanged = 1u << 0u,
-		Node2D_Clipped = 1u << 1u,
-		Node2D_Hidden = 1u << 2u,
-		Node2D_NeedUpdatePosition = 1u << 3u,
-		Node2D_SonPriorityChanged = 1u << 4u,
-
-		Node2D_PropagatedFlags = Node2D_Clipped | Node2D_Hidden,
-	};
-
-	u32													GetNodeFlags() const { return mFlags; }
-	inline bool												GetNodeFlag(Flags f)
-	{
-		return mFlags & f;
+		return isUserFlagSet(f);
 	}
-	inline void												SetNodeFlag(Flags f)
+	inline void												SetNodeFlag(u32 f)
 	{
-		mFlags |= f;
+		setUserFlag(f);
 	}
-	inline void												ClearNodeFlag(Flags f)
+	inline void												ClearNodeFlag(u32 f)
 	{
-		mFlags &= ~(f);
+		unsetUserFlag(f);
 	}
 
-	bool IsHiddenFlag() const { return (mFlags & Node2D_Hidden) != 0; }
+	inline void												ChangeNodeFlag(u32 f,bool set)
+	{
+		if (set)
+		{
+			SetNodeFlag(f);
+		}
+		else
+		{
+			ClearNodeFlag(f);
+		}
+	}
+
+	bool IsHiddenFlag() const { return isUserFlagSet(Node2D_Hidden); }
 	bool IsInClip(v2f pos) const;
 
 protected:
@@ -181,8 +211,6 @@ protected:
 	virtual void										ComputeRealSize();
 	void												ResortSons();
 
-	u32													mFlags = 0;
-
 	Node2D*												mParent;
 	kstl::set<Node2D*, Node2D::PriorityCompare>			mSons;
 
@@ -192,21 +220,17 @@ protected:
 	Matrix3x3											mGlobalTransformMatrix;
 
 	maInt												mPriority;
-	maFloat												mSizeX;
-	maFloat												mSizeY;
+	maFloat												mRotationAngle;
+	maVect2DF											mSize;
 	maVect2DF											mDock;
 	maVect2DF											mAnchor;
 	maVect2DF											mPosition;
-	maFloat												mRotationAngle;
-	maFloat												mPreScaleX;
-	maFloat												mPreScaleY;
-	maFloat												mPostScaleX;
-	maFloat												mPostScaleY;
+	maVect2DF											mPreScale;
+	maVect2DF											mPostScale;
 	maEnum<7>											mSizeModeX = BASE_ATTRIBUTE(SizeModeX, "Default", "Multiply", "Add", "Content","ContentMult","ContentAdd","KeepRatio");
 	maEnum<7>											mSizeModeY = BASE_ATTRIBUTE(SizeModeY, "Default", "Multiply", "Add", "Content", "ContentMult", "ContentAdd", "KeepRatio");
 	maBoolHeritage<1>									mClipSons;
-	//bool												mNeedUpdatePosition;
-	//bool												mSonPriorityChanged;
+
 	maReference											mCustomShader = BASE_ATTRIBUTE(CustomShader, "");
 
 	WRAP_METHODS(GetSize);

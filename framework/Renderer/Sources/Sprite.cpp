@@ -9,14 +9,9 @@ IMPLEMENT_CLASS_INFO(Sprite)
 
 Sprite::Sprite(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
 mDisplacement(*this,true,LABEL_AND_ID(Displacement),KIGS_SPRITE_DEFAULT_DISPLACEMENT),
-mPosX(*this,false,LABEL_AND_ID(PosX),KFLOAT_CONST(-0.5f)),
-mPosY(*this,false,LABEL_AND_ID(PosY),KFLOAT_CONST(-0.5f)),
-mSizeX(*this,false,LABEL_AND_ID(SizeX),KFLOAT_CONST(1.0f)),
-mSizeY(*this,false,LABEL_AND_ID(SizeY),KFLOAT_CONST(1.0f)),
-mTexu1(*this,false,LABEL_AND_ID(Texu1),KFLOAT_CONST(0.0f)),
-mTexu2(*this,false,LABEL_AND_ID(Texu2),KFLOAT_CONST(1.0f)),
-mTexv1(*this,false,LABEL_AND_ID(Texv1),KFLOAT_CONST(0.0f)),
-mTexv2(*this,false,LABEL_AND_ID(Texv2),KFLOAT_CONST(1.0f)),
+mPosition(*this,false,LABEL_AND_ID(Position),-0.5f,-0.5f),
+mSize(*this,false,LABEL_AND_ID(Size),1.0f,1.0f),
+mTexUV(*this,false,LABEL_AND_ID(TexUV),0.0f,0.0f,1.0f,1.0f),
 mColor(*this,false,LABEL_AND_ID(Color),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f),KFLOAT_CONST(1.f))
 {
 

@@ -2,6 +2,12 @@
 
 #include "KigsBitmap.h"
 #include "Texture.h"
+#include "FreeType_TextDrawer.h"
+#include "ModuleRenderer.h"
+#include "ModuleFileManager.h"
+#include "FilePathManager.h"
+
+#define FREETYPE_SIZE_COEFF	0.65f
 
 IMPLEMENT_CLASS_INFO(KigsBitmap)
 
@@ -188,6 +194,95 @@ void KigsBitmap::Line(int sx, int sy, int ex, int ey, const KigsBitmapPixel& col
 {
 	Line(Point2DI(sx, sy), Point2DI(ex, ey), color);
 }
+
+void	KigsBitmap::Print(const std::string& txt, int posx, int posy, unsigned int _maxLineNumber, unsigned int maxSize, unsigned int fontSize, const std::string& fontName, unsigned int a_Alignment, const KigsBitmapPixel& color)
+{
+	bool bRet = false;
+	unsigned char* pImageData = 0;
+	
+	int L_Width = 0;
+	int L_Height = 0;
+
+	do
+	{
+		if (!txt.length())
+			break;
+		fontSize = (int)(((float)fontSize) * FREETYPE_SIZE_COEFF);
+
+		int textSize = txt.length();
+
+		if (!ModuleSpecificRenderer::mDrawer->IsInCache(fontName.c_str()))
+		{
+			auto pathManager = KigsCore::Singleton<FilePathManager>();
+			SmartPointer<FileHandle> fullfilenamehandle;
+
+			if (pathManager)
+			{
+				fullfilenamehandle = pathManager->FindFullName(fontName);
+			}
+			if ((fullfilenamehandle->mStatus & FileHandle::Exist) == 0)
+				break;
+
+			u64 size;
+			CoreRawBuffer* L_Buffer = ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
+			if (L_Buffer)
+			{
+				unsigned char* pBuffer = (unsigned char*)L_Buffer->CopyBuffer();
+				ModuleSpecificRenderer::mDrawer->SetFont(fontName.c_str(), pBuffer, size, fontSize);
+				L_Buffer->Destroy();
+			}
+			else
+				break;
+		}
+		else
+		{
+			ModuleSpecificRenderer::mDrawer->SetFont(fontName.c_str(), 0, 0, fontSize);
+		}
+
+		pImageData = ModuleSpecificRenderer::mDrawer->DrawTextToImage(txt.c_str(), textSize, L_Width, L_Height, (TextAlignment)a_Alignment, false, _maxLineNumber, maxSize, -1, (unsigned char)color.R, (unsigned char)color.G, (unsigned char)color.B);
+
+		if (!pImageData)
+			break;
+
+		bRet = true;
+	} while (0);
+
+	if (bRet)
+	{
+		KigsBitmapPixel* readbuffer = (KigsBitmapPixel * )pImageData;
+
+		KigsBitmapPixel* writePixel = (KigsBitmapPixel*)mRawPixels;
+		writePixel += posx;
+		writePixel += posy * mSize[0];
+
+		// copy bitmap
+		for (u32 y = 0; y < L_Height; y++)
+		{
+			u32 writeposy = posy + y;
+			if ((writeposy >= 0) && (writeposy < mSize[1]))
+			{
+				for (u32 x = 0; x < L_Width; x++)
+				{
+					u32 writeposx = posx + x;
+					if ((writeposx >= 0) && (writeposx < mSize[0]))
+					{
+						if (readbuffer[x + y * L_Width].A != 0)
+						{
+							writePixel[x + y * mSize[0]] = readbuffer[x + y * L_Width];
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	if (pImageData)
+		delete[] pImageData;
+
+	return;
+}
+
 
 void KigsBitmap::Line(Point2DI p1, Point2DI p2, const KigsBitmapPixel& color)
 {

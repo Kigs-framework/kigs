@@ -2,3 +2,4 @@
 #include "ModuleTimer.cpp"
 #include "TimeProfiler.cpp"
 #include "Timer.cpp"
+#include "Ticker.cpp"

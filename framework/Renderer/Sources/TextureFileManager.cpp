@@ -110,7 +110,7 @@ void TextureFileManager::ResetAllTexture()
 	{
 		if ((*it).second->isSubType(Texture::mClassID))
 		{
-			((Texture*)(*it).second)->SetFlag(Texture::isDirtyContext);
+			((Texture*)(*it).second)->setUserFlag(Texture::isDirtyContext);
 			(*it).second->ReInit();
 		}
 	}

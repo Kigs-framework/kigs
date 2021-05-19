@@ -203,7 +203,7 @@ public:
 		return mAddressAndType;
 	}
 
-	LazyContentLinkedListItemStruct::ItemType	getType()
+	LazyContentLinkedListItemStruct::ItemType	getType() const
 	{
 		return (LazyContentLinkedListItemStruct::ItemType)(mAddressAndType & 3);
 	}
@@ -215,7 +215,7 @@ protected:
 
 	LazyContentLinkedListItemStruct mNextItem = 0; // store address + type 
 public:
-	StructLinkedListBase* getNext(const LazyContentLinkedListItemStruct::ItemType searchtype)
+	StructLinkedListBase* getNext(const LazyContentLinkedListItemStruct::ItemType searchtype) const
 	{
 		LazyContentLinkedListItemStruct next = mNextItem;
 		while ((uintptr_t)next)
@@ -230,7 +230,7 @@ public:
 		return nullptr;
 	}
 
-	LazyContentLinkedListItemStruct getNext()
+	LazyContentLinkedListItemStruct getNext() const
 	{
 		return mNextItem;
 	}
@@ -371,7 +371,7 @@ protected:
 // more generic UserFlags
 constexpr u32 UserFlagsBitSize = 16;
 constexpr u32 UserFlagsShift = (32 - UserFlagsBitSize);
-// user flag is set at 0xFF000000
+// user flag is set at 0xFFFF0000
 constexpr u32 UserFlagsMask = 0xFFFFFFFF<< UserFlagsShift;
 
 #define SIGNAL_ARRAY_CONTENT(a) #a, 
@@ -484,6 +484,8 @@ public:
 	//DECLARE_ABSTRACT_CLASS_INFO(CoreModifiable, RefCountedClass, KigsCore);
 	static const KigsID mClassID;
 	static KigsID mRuntimeType;
+
+	static constexpr unsigned int usedUserFlags = 0;
 	
 	typedef CoreModifiable CurrentClassType;
 	typedef GenericRefCountedBaseClass ParentClassType;
@@ -754,12 +756,18 @@ public:
 	DECLARE_SET_VALUE(const char*);
 	DECLARE_SET_VALUE(const u16*);
 	DECLARE_SET_VALUE(const UTF8Char*);
+	DECLARE_SET_VALUE(const v2f&);
+	DECLARE_SET_VALUE(const v3f&);
+	DECLARE_SET_VALUE(const v4f&);
 
 	#define DECLARE_GET_VALUE(type) bool getValue(const KigsID attributeLabel, type value) const;
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
 	EXPAND_MACRO_FOR_STRING_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
 	EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
-	
+
+	DECLARE_GET_VALUE(v2f&);
+	DECLARE_GET_VALUE(v3f&);
+	DECLARE_GET_VALUE(v4f&);
 
 	#define DECLARE_SETARRAY_VALUE2(valuetype) bool setArrayValue(KigsID attributeLabel, valuetype value1, valuetype value2);
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAY_VALUE2);
@@ -790,9 +798,7 @@ public:
 #define DECLARE_GET_VALUE_VECTOR(type, nb) bool getValue(const KigsID attributeLabel, type& vec) const { return getArrayValue(attributeLabel, &vec[0], nb); }
 #define DECLARE_GET_SET_VALUE_VECTOR(type, nb) DECLARE_SET_VALUE_VECTOR(type, nb) DECLARE_GET_VALUE_VECTOR(type, nb)
 
-	DECLARE_GET_SET_VALUE_VECTOR(v2f, 2);
-	DECLARE_GET_SET_VALUE_VECTOR(v3f, 3);
-	DECLARE_GET_SET_VALUE_VECTOR(v4f, 4);
+
 	DECLARE_GET_SET_VALUE_VECTOR(Quaternion, 4);
 
 	DECLARE_GET_SET_VALUE_VECTOR(v2i, 2);
@@ -898,7 +904,7 @@ public:
 	{
 		mModifiableFlag &= 0xFFFFFFFF ^ (u32)NotificationCenterRegistered;
 	}
-	inline bool isFlagAsNotificationCenterRegistered()
+	inline bool isFlagAsNotificationCenterRegistered() const
 	{
 		return (mModifiableFlag&(u32)NotificationCenterRegistered) != 0;
 	}
@@ -910,7 +916,7 @@ public:
 	{
 		mModifiableFlag &= 0xFFFFFFFF ^ (u32)ReferenceRegistered;
 	}
-	inline bool isFlagAsReferenceRegistered()
+	inline bool isFlagAsReferenceRegistered() const
 	{
 		return (mModifiableFlag&(u32)ReferenceRegistered) != 0;
 	}
@@ -922,7 +928,7 @@ public:
 	{
 		mModifiableFlag &= 0xFFFFFFFF ^ (u32)AutoUpdateRegistered;
 	}
-	inline bool isFlagAsAutoUpdateRegistered()
+	inline bool isFlagAsAutoUpdateRegistered() const
 	{
 		return (mModifiableFlag&(u32)AutoUpdateRegistered) != 0;
 	}
@@ -934,7 +940,7 @@ public:
 	{
 		mModifiableFlag &= 0xFFFFFFFF ^ (u32)PostDestroyFlag;
 	}
-	inline bool isFlagAsPostDestroy()
+	inline bool isFlagAsPostDestroy() const
 	{
 		return (mModifiableFlag & (u32)PostDestroyFlag) != 0;
 	}
@@ -946,11 +952,23 @@ public:
 	{
 		mModifiableFlag &= 0xFFFFFFFF ^ (((u32)flag) << UserFlagsShift);
 	}
-	inline bool isUserFlagSet(u32 flag)
+
+	inline void changeUserFlag(u32 flag, bool setit)
 	{
-		return ((mModifiableFlag&(((u32)flag) << UserFlagsShift)) != 0);
+		setit?setUserFlag(flag):unsetUserFlag(flag);
 	}
-	inline bool isInitFlagSet() { return ((mModifiableFlag&((u32)InitFlag)) != 0); }
+
+	inline bool isUserFlagSet(u32 flag) const
+	{
+		return ((mModifiableFlag&(flag << UserFlagsShift)) != 0);
+	}
+
+	u32	getUserFlags(u32 mask) const
+	{
+		return ((mModifiableFlag & (mask << UserFlagsShift)) >> UserFlagsShift);
+	}
+
+	inline bool isInitFlagSet() const { return ((mModifiableFlag&((u32)InitFlag)) != 0); }
 
 	inline void flagAllowChanges()
 	{
@@ -960,7 +978,7 @@ public:
 	{
 		mModifiableFlag &= 0xFFFFFFFF ^ (u32)AllowChanges;
 	}
-	inline bool isFlagAllowChanges()
+	inline bool isFlagAllowChanges() const
 	{
 		return (mModifiableFlag&(u32)AllowChanges) != 0;
 	}
@@ -973,7 +991,7 @@ public:
 	{
 		mModifiableFlag &= 0xFFFFFFFF ^ (u32)AutoCreateAttributes;
 	}
-	inline bool isFlagAutoCreateAttributes()
+	inline bool isFlagAutoCreateAttributes() const
 	{
 		return (mModifiableFlag & (u32)AutoCreateAttributes) != 0;
 	}
@@ -1308,13 +1326,19 @@ private:
 	friend class KigsCore;
 
 	static void	ReleaseLoadedItems(std::vector<CMSP> &loadedItems);
-
-	unsigned int mUID;
 	static std::atomic<unsigned int> mUIDCounter;
-	CoreTreeNode* mTypeNode = nullptr;
-	std::string	mName;
-	KigsID mNameID;
 
+	unsigned int	mUID;
+	KigsID			mNameID;
+	// Flags
+	unsigned int	mModifiableFlag = AllowChanges;
+	mutable std::recursive_mutex mObjectMutex;
+	
+	CoreTreeNode* mTypeNode = nullptr;
+	mutable LazyContent* mLazyContent = nullptr;
+
+	std::string	mName;
+	
 	// attribute map
 	kigs::unordered_map<KigsID, CoreModifiableAttribute*> mAttributes;
 	// sons vector
@@ -1322,14 +1346,10 @@ private:
 	// parent vector
 	std::vector<CoreModifiable*>					mUsers;
 
-	
-	mutable std::recursive_mutex mObjectMutex;
-	mutable LazyContent* mLazyContent = nullptr;
 
 	LazyContent* GetLazyContent() const;
 
-	// Flags
-	int mModifiableFlag =  AllowChanges;
+
 
 #ifdef KEEP_NAME_AS_STRING
 	// keep track of Decorators only on win32 to be able to export them
@@ -1432,7 +1452,7 @@ struct LazyContent
 	StructLinkedListBase* GetLinkedListItem(const LazyContentLinkedListItemStruct::ItemType	searchType)
 	{
 		LazyContentLinkedListItemStruct current = mLinkedListItem;
-		while (current)
+		while ((uintptr_t)current)
 		{
 			if (current.getType() == searchType)
 			{

@@ -61,6 +61,7 @@ using Microsoft::WRL::ComPtr;
 
 IMPLEMENT_CLASS_INFO(DX11RenderingScreen)
 
+
 void DX11RenderingScreen::FetchPixels(int x, int y, int width, int height, void *pRGBAPixels)
 {
 }
@@ -75,22 +76,11 @@ void DX11RenderingScreen::FetchDepth(int x, int y, int width, int height, unsign
 
 void DX11RenderingScreen::Resize(kfloat sizeX, kfloat sizeY)
 {
-	// before screen is init, only update sizeX and sizeY
-
 	if (mResizeDesignSize)
 	{
-		mDesignSizeX = (unsigned int)sizeX;
-		mDesignSizeY = (unsigned int)sizeY;
+		mDesignSize = v2f(sizeX,sizeY);
 	}
-	if (mUseFBO)
-	{
-		mFBOSizeX = (unsigned int)sizeX;
-		mFBOSizeY = (unsigned int)sizeY;
-	}
-
-	mSizeX = (unsigned int)sizeX;
-	mSizeY = (unsigned int)sizeY;
-
+	mSize = v2f(sizeX,sizeY);
 	if (IsInit())
 	{
 		ReleaseResources();
@@ -159,23 +149,23 @@ void DX11RenderingScreen::Release(TravState* state)
 			renderer->SetLightMode(RENDERER_LIGHT_OFF);
 			renderer->SetDepthTestMode(false);
 			renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_OFF);
-			renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)mSizeX, 0.0f, (float)mSizeY, -1.0f, 1.0f);
+			renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)mSize[0], 0.0f, (float)mSize[1], -1.0f, 1.0f);
 			renderer->LoadIdentity(MATRIX_MODE_MODEL);
 			renderer->LoadIdentity(MATRIX_MODE_VIEW);
 			renderer->ActiveTextureChannel(DX11_COLOR_MAP_SLOT);
 			mFBOTexture->DoPreDraw(state);
 			//renderer->BindTexture(RENDERER_TEXTURE_2D, fbo_texture_id);
-			renderer->SetScissorValue(0, 0, mSizeX, mSizeY);
-			renderer->Viewport(0, 0, mSizeX, mSizeY);
+			renderer->SetScissorValue(0, 0, mSize[0], mSize[1]);
+			renderer->Viewport(0, 0, mSize[0], mSize[1]);
 
 			VInfo2D vi;
 			UIVerticesInfo mVI = UIVerticesInfo(&vi);
 			VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(mVI.Buffer());
 
 			buf[0].setVertex(0.0f, 0.0f);
-			buf[1].setVertex(0.0, (float)mSizeY);
-			buf[2].setVertex((float)mSizeX, 0.0);
-			buf[3].setVertex((float)mSizeX, (float)mSizeY);
+			buf[1].setVertex(0.0, (float)mSize[1]);
+			buf[2].setVertex((float)mSize[0], 0.0);
+			buf[3].setVertex((float)mSize[0], (float)mSize[1]);
 
 			//Draw Quad that fits the screen
 
@@ -345,14 +335,8 @@ bool DX11RenderingScreen::CreateResources()
 	}
 #endif
 
-	int wanted_x = mSizeX;
-	int wanted_y = mSizeY;
-	
-	if (mUseFBO)
-	{
-		wanted_x = mFBOSizeX;
-		wanted_y = mFBOSizeY;
-	}
+	int wanted_x = mSize[0];
+	int wanted_y = mSize[1];
 
 	if (wanted_x <= 0) wanted_x = 1280;
 	if (wanted_y <= 0) wanted_y = 960;
@@ -366,13 +350,13 @@ bool DX11RenderingScreen::CreateResources()
 			wanted_x = surface.Description().Width;
 			wanted_y = surface.Description().Height;
 
-			if (mSizeX != wanted_x || mSizeY != wanted_y)
+			if (mSize[0] != wanted_x || mSize[1] != wanted_y)
 			{
 				mDepthStencilViews.clear();
 			}
 
-			mSizeX = wanted_x;
-			mSizeY = wanted_y;
+			mSize[0] = wanted_x;
+			mSize[1] = wanted_y;
 			/*myDesignSizeX = wanted_x;
 			myDesignSizeY = wanted_y;*/
 			RecomputeDesignCoef();

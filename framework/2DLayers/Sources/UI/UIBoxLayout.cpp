@@ -134,15 +134,15 @@ void UIBoxLayout::RecomputeLayout()
 			if (mResizeLayoutX && mSizeModeX == 0)
 			{
 				mRealSize.x = biggest;
-				if (mSizeX != biggest)
-					setValue("SizeX", biggest);
+				if (mSize[0] != biggest)
+					setValue("Size", v2f(biggest, mSize[1]));
 			}
 
 			if (mResizeLayoutY && mSizeModeY == 0)
 			{
 				mRealSize.y = (float)accumulator;
-				if (mSizeY != (float)accumulator)
-					setValue("SizeY", (float)accumulator);
+				if (mSize[1] != (float)accumulator)
+					setValue("Size", v2f(mSize[0],(float)accumulator));
 			}
 		}
 		else
@@ -150,14 +150,14 @@ void UIBoxLayout::RecomputeLayout()
 			if (mResizeLayoutY && mSizeModeY == 0)
 			{
 				mRealSize.y = biggest;
-				if (mSizeY != biggest)
-					setValue("SizeY", biggest);
+				if (mSize[1] != biggest)
+					setValue("Size", v2f(mSize[0],biggest));
 			}
 			if (mResizeLayoutX && mSizeModeX == 0)
 			{
 				mRealSize.x = (float)accumulator;
-				if (mSizeX != (float)accumulator)
-					setValue("SizeX", (float)accumulator);
+				if (mSize[0]!= (float)accumulator)
+					setValue("Size", v2f((float)accumulator, mSize[1]));
 			}
 		}
 

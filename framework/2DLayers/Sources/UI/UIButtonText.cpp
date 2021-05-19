@@ -199,10 +199,9 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 		float width, height;
 		L_Texture->GetSize(width, height);
 
-		if (mSizeX != width || mSizeY != height)
+		if (width != mSize[0] || height != mSize[1])
 		{
-			mSizeX = width;
-			mSizeY = height;
+			mSize = v2f(width, height);
 			SetNodeFlag(Node2D_SizeChanged);
 		}
 	}
@@ -241,10 +240,10 @@ void UIButtonText::ChangeTexture(kstl::string & _UpText, kstl::string & _overTex
 	{
 		float width, height;
 		mUpTexturePointer->GetSize(width, height);
-		if (width != mSizeX || height != mSizeY)
+
+		if (width != mSize[0] || height != mSize[1])
 		{
-			mSizeX = width;
-			mSizeY = height;
+			mSize = v2f(width, height);
 			SetNodeFlag(Node2D_SizeChanged);
 		}
 	}
@@ -292,19 +291,19 @@ DEFINE_METHOD(UIButtonText, ReloadTexture)
 {
 	if (mUpTexturePointer)
 	{
-		mTexturePointer->SetFlag(Texture::isDirtyContext);
+		mTexturePointer->setUserFlag(Texture::isDirtyContext);
 		mTexturePointer->ReInit();
 		ChangeTextTexture(mUpText.c_str(), 0);
 	}
 	if (mOverTexturePointer)
 	{
-		mOverTexturePointer->SetFlag(Texture::isDirtyContext);
+		mOverTexturePointer->setUserFlag(Texture::isDirtyContext);
 		mOverTexturePointer->ReInit();
 		ChangeTextTexture(mOverText.c_str(), 1);
 	}
 	if (mDownTexturePointer)
 	{
-		mDownTexturePointer->SetFlag(Texture::isDirtyContext);
+		mDownTexturePointer->setUserFlag(Texture::isDirtyContext);
 		mDownTexturePointer->ReInit();
 		ChangeTextTexture(mDownText.c_str(), 2);
 	}

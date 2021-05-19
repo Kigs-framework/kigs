@@ -214,8 +214,8 @@ bool UIMap::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 			mMousePosX = direct_touch.position.x;
 			mMousePosY = direct_touch.position.y;
 
-			 Rx = (double)mMousePosX / (double)mSizeX;
-			 Ry = (double)mMousePosX / (double)mSizeY;
+			 Rx = (double)mMousePosX / (double)mSize[0];
+			 Ry = (double)mMousePosX / (double)mSize[1];
 
 			 lon = (botRightLong - topLeftLong)*Rx + topLeftLong;
 			 lat = (botRightLat - topLeftLat)*Ry + topLeftLat;
@@ -241,8 +241,8 @@ bool UIMap::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 				double topLeftLong = 0, botRightLong = 0, topLeftLat = 0, botRightLat = 0;
 				GetPositionsGPS(topLeftLong, topLeftLat, botRightLong, botRightLat);
 
-				Rx = (double)mMousePosX / (double)mSizeX;
-				Ry = (double)mMousePosY / (double)mSizeY;
+				Rx = (double)mMousePosX / (double)mSize[0];
+				Ry = (double)mMousePosY / (double)mSize[1];
 
 				lon = (botRightLong - topLeftLong)*Rx + topLeftLong;
 				lat = (botRightLat - topLeftLat)*Ry + topLeftLat;

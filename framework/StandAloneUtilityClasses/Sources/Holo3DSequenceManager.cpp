@@ -162,10 +162,8 @@ void Holo3DSequenceManager::InitModifiable()
 	mRenderingScreen = KigsCore::GetInstanceOf(mRenderingScreenName.const_ref(), "RenderingScreen");
 	mRenderingScreen->setValue("IsOffScreen", true);
 	mRenderingScreen->setValue("UseFBO", true);
-	mRenderingScreen->setValue("FBOSizeX", mDesignSize[0]);
-	mRenderingScreen->setValue("FBOSizeY", mDesignSize[1]);
-	mRenderingScreen->setValue("DesignSizeX", mDesignSize[0]);
-	mRenderingScreen->setValue("DesignSizeY", mDesignSize[1]);
+	mRenderingScreen->setValue("Size", (v2f)mDesignSize);
+	mRenderingScreen->setValue("DesignSize", (v2f)mDesignSize);
 	mRenderingScreen->setValue("BitsPerZ", 0); // 16
 	//myRenderingScreen->setValue("BitsForStencil", 8);
 	mRenderingScreen->Init();

@@ -43,10 +43,10 @@ void	UIRenderingScreen::InitModifiable()
 			mTexturePointer->setTexture(texture);
 			mTexturePointer->setValue("TransparencyType",2);
 			mTexturePointer->setValue("ForceNearest", (bool)mForceNearest);
+			mTexturePointer->refreshTextureInfos();
 			mForceNearest.changeNotificationLevel(Owner);
 
 			kfloat sx, sy;
-
 			mTexturePointer->GetSize(sx, sy);
 
 			kfloat ratioX, ratioY;
@@ -65,6 +65,8 @@ void	UIRenderingScreen::InitModifiable()
 			buf[2].setTexUV(ratioX - dx, ratioY - dy );
 
 			mVI.Flag |= UIVerticesInfo_Texture;
+
+			setUserFlag(Node2D::Node2D_NeedVerticeInfoUpdate);
 
 			//mTexturePointer->Init();
 

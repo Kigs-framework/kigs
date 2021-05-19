@@ -19,7 +19,7 @@ public:
 	//! constructor
     HTTPConnectJS(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
-	virtual void InitModifiable();
+	virtual void InitModifiable() override;
 
 
 	virtual bool	Open();

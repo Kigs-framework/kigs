@@ -307,6 +307,8 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		toReturn->mLocations->modelMatrix = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_MATRIX_MODEL);
 		toReturn->mLocations->viewMatrix = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_MATRIX_VIEW);
 
+		toReturn->mLocations->uvMatrix = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_MATRIX_UV);
+
 		toReturn->mLocations->textureLocation[0] = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_TEXTURE_0);
 		toReturn->mLocations->textureLocation[1] = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_TEXTURE_1);
 		toReturn->mLocations->textureLocation[2] = glGetUniformLocation(toReturn->mShaderProgram->mID, KIGS_TEXTURE_2);

@@ -69,8 +69,8 @@ public:
 	//! return the window handle
 	void*	GetHandle(){return mHandle;}
 
-	Point2DI	GetPos() { return { mPositionX, mPositionY }; }
-	Point2DI    GetSize() { return { mSizeX, mSizeY }; }
+	Point2DI	GetPos() { return { mPosition[0], mPosition[1] }; }
+	Point2DI    GetSize() { return { mSize[0], mSize[1] }; }
 
 	virtual void	GetMousePosInWindow(int posx,int posy,kfloat& wposx,kfloat& wposy)=0;
 	virtual void	GetMousePosInDesignWindow(int posx,int posy,kfloat& wposx,kfloat& wposy)=0;
@@ -109,7 +109,8 @@ protected:
 	maBool mShow = BASE_ATTRIBUTE(Show, true);
 
 	//! window size and position on screen (size is also used if fullscreen)
-    maInt     mPositionX,mPositionY,mSizeX,mSizeY;
+	maVect2DF		mPosition;
+	maVect2DF		mSize;
 
 	//!	platform independant handle
     void*   mHandle; 

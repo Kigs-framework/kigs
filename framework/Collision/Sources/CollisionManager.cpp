@@ -147,9 +147,9 @@ void CollisionManager::OnDeleteCallBack(CoreModifiable* localthis)
 void CollisionManager::OnAddItemCallback(CoreModifiable* localthis, CoreModifiable* item)
 {
 	// Only interested in Node3D father with Node3D or Drawable mItem 
-	if (localthis->isUserFlagSet(UserFlagNode3D))
+	if (localthis->isUserFlagSet(SceneNode::UserFlagNode3D))
 	{
-		if (item->isUserFlagSet(UserFlagNode3D) || item->isUserFlagSet(UserFlagDrawable))
+		if (item->isUserFlagSet(SceneNode::UserFlagNode3D) || item->isUserFlagSet(SceneNode::UserFlagDrawable))
 		{
 			// now I want to be notified when removed
 			//KigsCore::Connect(localthis, "RemoveItem", this, "OnRemoveItemCallback");
@@ -264,7 +264,7 @@ void CollisionManager::Update(const Timer&  timer, void* addParam)
 void CollisionManager::RecursiveCheck(CoreModifiable* item, u32 branchMask, bool maskWasTest)
 {
 	u32 mask = 0;
-	if (item->isUserFlagSet(UserFlagNode3D))
+	if (item->isUserFlagSet(SceneNode::UserFlagNode3D))
 	{
 		if(!maskWasTest)
 			if (item->getValue("CollideMask", mask))
@@ -296,7 +296,7 @@ CollisionManager::MeshCollisionInfo * CollisionManager::GetCollisionInfoForObjec
 
 bool CollisionManager::CheckType(CoreModifiable* item)
 {
-	if (item->isUserFlagSet(UserFlagDrawable))
+	if (item->isUserFlagSet(SceneNode::UserFlagDrawable))
 	{
 		if ((item->isSubType(ModernMesh::mClassID)) ||
 			(item->isSubType(DrawVertice::mClassID)) ||
@@ -623,7 +623,7 @@ bool CollisionManager::RecursiveSearchRayIntersection(CoreModifiable* lastCollid
 
 	//! on Node3D, mark as last seen node au recurse to sons
 	// check collision on BBox
-	if (item->isUserFlagSet(UserFlagNode3D))
+	if (item->isUserFlagSet(SceneNode::UserFlagNode3D))
 	{
 		bool retVal = false;
 		lastNode = (Node3D*)item;
@@ -797,7 +797,7 @@ void CollisionManager::RecursiveSearchAllRayIntersection(CoreModifiable* lastCol
 
 	//! on Node3D, mark as last seen node au recurse to sons
 	// check collision on BBox
-	if (item->isUserFlagSet(UserFlagNode3D))
+	if (item->isUserFlagSet(SceneNode::UserFlagNode3D))
 		//if (mItem->isSubType("Node3D"))
 	{
 		lastNode = (Node3D*)item;
@@ -969,7 +969,7 @@ void CollisionManager::RecursiveSearchPlaneIntersection(Node3D* lastNode, CoreMo
 
 	//! on Node3D, mark as last seen node au recurse to sons
 	// check collision on BBox
-	if (item->isUserFlagSet(UserFlagNode3D))
+	if (item->isUserFlagSet(SceneNode::UserFlagNode3D))
 		//if (mItem->isSubType("Node3D"))
 	{
 		lastNode = (Node3D*)item;

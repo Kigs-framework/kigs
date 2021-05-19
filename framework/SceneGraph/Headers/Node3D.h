@@ -43,35 +43,35 @@ public:
 	virtual void TravCull(TravState* state);
 
 	const BBox& GetLocalBoundingBox() {
-		if (HasFlag(BoundingBoxIsDirty))
+		if (isUserFlagSet(BoundingBoxIsDirty))
 			RecomputeBoundingBox();
 		return mLocalBBox;
 	}
 	void GetLocalBoundingBox(Point3D& pmin, Point3D& pmax) 
 	{ 
-		if (HasFlag(BoundingBoxIsDirty)) 
+		if (isUserFlagSet(BoundingBoxIsDirty))
 			RecomputeBoundingBox();
 		pmin = mLocalBBox.m_Min; pmax = mLocalBBox.m_Max; 
 	}
 
 	const BBox& GetBoundingBox() {
-		if (HasFlag(BoundingBoxIsDirty))
+		if (isUserFlagSet(BoundingBoxIsDirty))
 			RecomputeBoundingBox();
 		return mBBox;
 	}
 	void GetBoundingBox(Point3D& pmin, Point3D& pmax)
 	{
-		if (HasFlag(BoundingBoxIsDirty)) 
+		if (isUserFlagSet(BoundingBoxIsDirty))
 			RecomputeBoundingBox();
 		pmin = mBBox.m_Min; pmax = mBBox.m_Max;
 	}
 
-	const BBox& GetGlobalBoundingBox() { if (HasFlag(GlobalBoundingBoxIsDirty))
+	const BBox& GetGlobalBoundingBox() { if (isUserFlagSet(GlobalBoundingBoxIsDirty))
 										RecomputeGlobalBoundingBox();
 								return mGlobalBBox; }
 	void	GetGlobalBoundingBox(Point3D& pmin, Point3D& pmax) 
 	{ 
-		if (HasFlag(GlobalBoundingBoxIsDirty))
+		if (isUserFlagSet(GlobalBoundingBoxIsDirty))
 			RecomputeGlobalBoundingBox();
 		pmin = mGlobalBBox.m_Min; pmax = mGlobalBBox.m_Max;
 	}
@@ -104,8 +104,8 @@ public:
 
 	Node3D* getFather() { return mFatherNode; }
 
-	const Matrix3x4& GetLocalToGlobal() { if (HasFlag(LocalToGlobalMatrixIsDirty)) RecomputeLocalToGlobal(); return mLocalToGlobal; }
-	const Matrix3x4& GetGlobalToLocal() { if (HasFlag(GlobalToLocalMatrixIsDirty)) RecomputeGlobalToLocal(); return mGlobalToLocal; }
+	const Matrix3x4& GetLocalToGlobal() { if (isUserFlagSet(LocalToGlobalMatrixIsDirty)) RecomputeLocalToGlobal(); return mLocalToGlobal; }
+	const Matrix3x4& GetGlobalToLocal() { if (isUserFlagSet(GlobalToLocalMatrixIsDirty)) RecomputeGlobalToLocal(); return mGlobalToLocal; }
 	const Matrix3x4& GetLocal() { return mTransform; }
 
 	virtual void ChangeMatrix(const Matrix3x4& newmatrix);
@@ -130,7 +130,7 @@ public:
 	void RecursiveUpdateAndBoundingVolume(kdouble time) {}
 	//
 
-	bool IsScaled() const { return HasFlag(IsScaledFlag); }
+	bool IsScaled() const { return isUserFlagSet(IsScaledFlag); }
 	void PropagateDirtyFlags(SceneNode* source);
 
 	// use positive numbers 0,10,20,50... for priority, the higher the priority is, the earliest the node should be draw in travdraw

@@ -55,17 +55,25 @@ public:
 
 	//! return current time for this timer.
 	virtual double GetTime() const;
+	//! set current time
 	virtual void SetTime(double t);
 
+	//! get current state (UNINITIALISED, NORMAL, PAUSED)
 	State	GetState(){return mCurrentState;}
+	//! change state : pause or restart timer
 	virtual void SetState(State newstate);
 
+	//! get current date as string, using given format
 	void GetDate(kstl::string& a_value, DateFormat a_format) const;
+	//! get all values for the current date
 	void GetDate(unsigned int& a_year, unsigned int& a_month, unsigned int& a_day, unsigned int& a_hour, unsigned int& a_min, unsigned int& a_sec) const;
 	
+	//! get elapsed time since this method was called for the given caller
 	double GetDt(CoreModifiable* caller);
+	//! reset elapsed time for this caller
 	void ResetDt(CoreModifiable* caller);
 	
+	//! sleep this thread for given ms
 	void Sleep(unsigned int ms);
 
 protected:
@@ -80,6 +88,7 @@ protected:
 
  	std::map<CoreModifiable*, double> mTimerMap;
 
+	//! Time coremodifiable attribute
 	maComputedNumeric<double>	mTime;
 };
 

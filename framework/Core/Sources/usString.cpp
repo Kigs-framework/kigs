@@ -262,37 +262,45 @@ extern "C"
 
 
 
-usString::usString()
+usString::usString() : mString(0)
 {
-	mString = new unsigned short[1];
+	doRealloc(0);
 	mString[0] = 0;
 }
 
 usString::usString(const usString& other) :
 	mString(0)
 {
-	copy(other.us_str());
+	copy(other);
 }
 
 usString::~usString()
 {
 	if (mString)
 		delete[] mString;
+	mString = nullptr;
+	mLen = 0;
+	mReservedSize = 0;
 }
 
-void usString::reserve(int size)
+// if nsize < current reserved size => do nothing 
+void usString::reserve(int nsize)
 {
-	int cursize = 0;
-	if (mString) cursize = strlen(mString);
-	int nsize = std::max(cursize, size);
-	if (nsize > cursize)
+	if ((nsize+1) > mReservedSize)
 	{
-		auto nmString = new unsigned short[nsize + 1];
-		nmString[nsize] = 0;
+		mReservedSize = (nsize+1);
+
+		auto nmString = new unsigned short[mReservedSize];
+		
 		if (mString)
 		{
-			memcpy(nmString, mString, (cursize + 1) * sizeof(unsigned short));
+			memcpy(nmString, mString, (mLen + 1) * sizeof(unsigned short));
 			delete[] mString;
+		}
+		else
+		{
+			mLen = 0;
+			nmString[0] = 0;
 		}
 		mString = nmString;
 	}
@@ -366,11 +374,8 @@ void usString::decode(const kstl::string& todecode)
 	len = dotcount;
 	if (len)
 	{
-		if (mString)
-			delete[] mString;
-
-		mString = new unsigned short[len + 1];
-
+		doRealloc(len);
+		
 		unsigned short* write = mString;
 
 		char*	read = (char*)todecode.c_str();
@@ -400,11 +405,7 @@ void usString::decode(const kstl::string& todecode)
 
 void usString::copy(const UTF8Char* str)
 {
-	if (mString)
-	{
-		delete[] mString;
-	}
-
+	
 	int decodedLen = 0;
 	int strl = strlen((char*)str);
 	utf8_decode decoder((char*)str, strl);
@@ -415,7 +416,8 @@ void usString::copy(const UTF8Char* str)
 
 	if (decodedLen)
 	{
-		mString = new unsigned short[decodedLen + 1];
+		doRealloc(decodedLen);
+		
 		unsigned short*	write = mString;
 
 		decoder.reset();
@@ -442,7 +444,7 @@ void usString::copy(const UTF8Char* str)
 	}
 	else
 	{
-		mString = new unsigned short[1];
+		doRealloc(0);
 		mString[0] = 0;
 	}
 }
@@ -485,11 +487,15 @@ usString::operator kstl::string() const
 void	usString::removeEscapeBackslash()
 {
 	unsigned int len = strlen();
+	if (!len)
+	{
+		return;
+	}
 
 	unsigned short*	read = mString;
 
 	// new buffer will be shorter, but keep same size
-	unsigned short* result = new unsigned short[len + 1];
+	unsigned short* result = new unsigned short[mReservedSize];
 	unsigned short* write = result;
 
 	int inJumpCount = 0;
@@ -518,16 +524,16 @@ void	usString::removeEscapeBackslash()
 	// end
 	*write = 0;
 
-	if (mString)
-		delete[] mString;
-	mString = result;
+	mLen = write - result;
 
+	delete[] mString;
+	mString = result;
 
 }
 
 std::string::size_type	usString::find(const usString& toFind, int startpos) const
 {
-	int Len = strlen(mString);
+	int Len = strlen();
 	int	toFindL = toFind.length();
 	if ( (startpos+ toFindL) > Len) 
 	{
@@ -606,13 +612,14 @@ std::string::size_type	usString::rfind(const usString&  toFind, int startpos) co
 
 void usString::replaceEscapeUnicode()
 {
-	int Len = strlen(mString);
+	int Len = strlen();
 	if (Len == 0)
 	{
 		return;
 	}
 
 	usString result ("");
+	result.reserve(mReservedSize);
 
 	usString toReplace("\\u");
 
@@ -642,7 +649,7 @@ void usString::replaceEscapeUnicode()
 	*this = result;
 
 	result = usString("");
-
+	result.reserve(mReservedSize);
 	// also replace \n
 	toReplace = usString("\\n");
 
@@ -671,7 +678,7 @@ void usString::replaceEscapeUnicode()
 
 void	usString::replaceAllOccurence(const usString& toReplace, const usString& Replacement, int startpos)
 {
-	int Len = strlen(mString);
+	int Len = strlen();
 	int	toReplaceL = toReplace.length();
 	
 	if ((startpos + toReplaceL) > Len)
@@ -680,7 +687,7 @@ void	usString::replaceAllOccurence(const usString& toReplace, const usString& Re
 	}
 
 	usString result("");
-
+	result.reserve(mReservedSize);
 	int pos = 0;
 	int lastpos = pos;
 	pos = find(toReplace, pos);
@@ -702,7 +709,7 @@ void	usString::replaceAllOccurence(const usString& toReplace, const usString& Re
 
 void	usString::replaceAt(const usString& Replacement, int start, int lenToReplace)
 {
-	int Len = strlen(mString);
+	int Len = strlen();
 	
 	if ((start + lenToReplace) > Len)
 	{
@@ -710,7 +717,7 @@ void	usString::replaceAt(const usString& Replacement, int start, int lenToReplac
 	}
 
 	usString result("");
-
+	result.reserve(mReservedSize);
 
 	result += substr(0, start);
 	result += Replacement;
@@ -721,16 +728,14 @@ void	usString::replaceAt(const usString& Replacement, int start, int lenToReplac
 
 void usString::removeRange(size_t start, int len)
 {
+	
+	size_t size = strlen();
+	if (start + len > size)
+		len = size-start;
+
 	if (len == 0) return;
 
-	size_t size = strlen(mString);
-	if (start + len >= size)
-		len = -1;
-
-	if (len == -1)
-	{
-		mString[start] = 0;
-		return;
-	}
 	memmove(mString + start, mString + (start + len), (size + 1 - start - len) * sizeof(unsigned short));
+
+	mLen = size - len;
 }

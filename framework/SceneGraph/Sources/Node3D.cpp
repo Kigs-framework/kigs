@@ -89,14 +89,14 @@ bool Node3D::addItem(const CMSP& item,ItemPosition pos DECLARE_LINK_NAME)
 		if (item->isUserFlagSet(UserFlagNode3D))
 		{
 			auto node = static_cast<Node3D*>(item.get());
-			node->SetFlag(LocalToGlobalMatrixIsDirty);
-			node->SetFlag(GlobalToLocalMatrixIsDirty);
+			node->setUserFlag(LocalToGlobalMatrixIsDirty);
+			node->setUserFlag(GlobalToLocalMatrixIsDirty);
 			node->PropagateDirtyFlagsToSons(node);
 			PropagateNodePriorityDirtyToParents();
 		}
 
-		SetFlag(BoundingBoxIsDirty);
-		SetFlag(GlobalBoundingBoxIsDirty);
+		setUserFlag(BoundingBoxIsDirty);
+		setUserFlag(GlobalBoundingBoxIsDirty);
 		PropagateDirtyFlagsToParents((SceneNode*)item.get());
 	}
 
@@ -121,13 +121,13 @@ bool Node3D::removeItem(const CMSP& item DECLARE_LINK_NAME)
 		if (item->isUserFlagSet(UserFlagNode3D))
 		{
 			auto node = static_cast<Node3D*>(item.get());
-			node->SetFlag(LocalToGlobalMatrixIsDirty);
-			node->SetFlag(GlobalToLocalMatrixIsDirty);
+			node->setUserFlag(LocalToGlobalMatrixIsDirty);
+			node->setUserFlag(GlobalToLocalMatrixIsDirty);
 			node->PropagateDirtyFlagsToSons(node);
 			PropagateNodePriorityDirtyToParents();
 		}
-		SetFlag(BoundingBoxIsDirty);
-		SetFlag(GlobalBoundingBoxIsDirty);
+		setUserFlag(BoundingBoxIsDirty);
+		setUserFlag(GlobalBoundingBoxIsDirty);
 		PropagateDirtyFlagsToParents((SceneNode*)item.get());
 	}
 
@@ -148,7 +148,7 @@ void Node3D::InitModifiable()
 		ChangeMatrix(m);
 		RemoveDynamicAttribute("LocalMatrix");
 	}
-	SetFlag(BoundingBoxIsDirty);
+	setUserFlag(BoundingBoxIsDirty);
 
 	int drawPriority;
 	if (getValue("DrawPriority", drawPriority))
@@ -164,7 +164,7 @@ void Node3D::ChangeMatrix(const Matrix3x4& newmatrix)
 	{
 		mTransform = newmatrix;
 
-		SetFlag(LocalToGlobalMatrixIsDirty | GlobalToLocalMatrixIsDirty | BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
+		setUserFlag(LocalToGlobalMatrixIsDirty | GlobalToLocalMatrixIsDirty | BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
 
 		PropagateDirtyFlagsToSons(this);
 		PropagateDirtyFlagsToParents(this);
@@ -177,7 +177,7 @@ void	Node3D::localMove(const v3f& move)
 	v3f pos = mTransform.GetTranslation();
 	pos += move;
 	mTransform.SetTranslation(pos);
-	SetFlag(LocalToGlobalMatrixIsDirty | GlobalToLocalMatrixIsDirty | BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
+	setUserFlag(LocalToGlobalMatrixIsDirty | GlobalToLocalMatrixIsDirty | BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
 
 	PropagateDirtyFlagsToSons(this);
 	PropagateDirtyFlagsToParents(this);
@@ -198,7 +198,7 @@ void Node3D::PropagateDirtyFlagsToSons(SceneNode* source)
 		if (item.mItem->isUserFlagSet(UserFlagNode3D))
 		{
 			auto& node = (SP<Node3D>&)(item.mItem);
-			node->SetFlag(LocalToGlobalMatrixIsDirty| GlobalBoundingBoxIsDirty | GlobalToLocalMatrixIsDirty);
+			node->setUserFlag(LocalToGlobalMatrixIsDirty| GlobalBoundingBoxIsDirty | GlobalToLocalMatrixIsDirty);
 			node->PropagateDirtyFlagsToSons(source);
 		}
 	}
@@ -209,7 +209,7 @@ void Node3D::PropagateDirtyFlagsToParents(SceneNode* source)
 	auto node = getFather();
 	if (node)
 	{
-		node->SetFlag(BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
+		node->setUserFlag(BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
 		node->PropagateDirtyFlagsToParents(source);
 	}
 }
@@ -766,7 +766,7 @@ void Node3D::RecomputeLocalToGlobal()
 	int current_index = 1;
 	nodes[0] = this;
 	auto father = getFather();
-	while (father && father->HasFlag(LocalToGlobalMatrixIsDirty))
+	while (father && father->isUserFlagSet(LocalToGlobalMatrixIsDirty))
 	{
 		KIGS_ASSERT(current_index < 512);
 		nodes[current_index++] = father;
@@ -790,18 +790,18 @@ void Node3D::RecomputeLocalToGlobal()
 		kfloat sz = 1.0f / (l2g.e[2][0] * l2g.e[2][0] + l2g.e[2][1] * l2g.e[2][1] + l2g.e[2][2] * l2g.e[2][2]);
 
 		if (NormSquare(v3f{ sx - 1.0f, sy - 1.0f, sz - 1.0f }) > 0.001f)
-			nodes[i]->SetFlag(IsScaledFlag);
+			nodes[i]->setUserFlag(IsScaledFlag);
 		else
-			nodes[i]->UnsetFlag(IsScaledFlag);
+			nodes[i]->unsetUserFlag(IsScaledFlag);
 
-		nodes[i]->UnsetFlag(LocalToGlobalMatrixIsDirty);
+		nodes[i]->unsetUserFlag(LocalToGlobalMatrixIsDirty);
 		father_local_to_global = nodes[i]->mLocalToGlobal;
 	}
 }
 
 void Node3D::RecomputeGlobalToLocal()
 {
-	if (HasFlag(LocalToGlobalMatrixIsDirty))
+	if (isUserFlagSet(LocalToGlobalMatrixIsDirty))
 		RecomputeLocalToGlobal();
 
 	kfloat sx = 1.0f / (mLocalToGlobal.e[0][0] * mLocalToGlobal.e[0][0] + mLocalToGlobal.e[0][1] * mLocalToGlobal.e[0][1] + mLocalToGlobal.e[0][2] * mLocalToGlobal.e[0][2]);
@@ -830,12 +830,12 @@ void Node3D::RecomputeGlobalToLocal()
 	mGlobalToLocal.e[3][1] = -invtrans[1];
 	mGlobalToLocal.e[3][2] = -invtrans[2];
 
-	UnsetFlag(GlobalToLocalMatrixIsDirty);
+	unsetUserFlag(GlobalToLocalMatrixIsDirty);
 }
 
 void Node3D::RecomputeBoundingBox()
 {
-	if (HasFlag(LocalToGlobalMatrixIsDirty)) 
+	if (isUserFlagSet(LocalToGlobalMatrixIsDirty))
 		RecomputeLocalToGlobal();
 	
 	bool isInit = false;
@@ -970,13 +970,13 @@ void Node3D::RecomputeBoundingBox()
 		mBBox.m_Max += finaltranslate;
 		mBBox.m_Min += finaltranslate;
 	}
-	UnsetFlag(BoundingBoxIsDirty);
-	SetFlag(GlobalBoundingBoxIsDirty);
+	unsetUserFlag(BoundingBoxIsDirty);
+	setUserFlag(GlobalBoundingBoxIsDirty);
 }
 
 void Node3D::RecomputeGlobalBoundingBox()
 {
-	if (HasFlag(BoundingBoxIsDirty) || HasFlag(LocalToGlobalMatrixIsDirty)) 
+	if (isUserFlagSet(BoundingBoxIsDirty) || isUserFlagSet(LocalToGlobalMatrixIsDirty))
 		RecomputeBoundingBox();
 
 	//! use abs(3x3 local to global matrix) to transform bbox
@@ -1018,7 +1018,7 @@ void Node3D::RecomputeGlobalBoundingBox()
 	mGlobalBBox.m_Max += finalTranslate;
 	mGlobalBBox.m_Min += finalTranslate;
 
-	UnsetFlag(GlobalBoundingBoxIsDirty);
+	unsetUserFlag(GlobalBoundingBoxIsDirty);
 }
 
 void Node3D::PropagateNodePriorityDirtyToParents()

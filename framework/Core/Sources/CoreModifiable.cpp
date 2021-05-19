@@ -586,7 +586,7 @@ void CoreModifiable::UpdateAggregates(const Timer&  timer, void* addParam)
 CoreModifiableAttribute* CoreModifiable::findAttributeOnThisOnly(const KigsID& id) const
 {
 	// first check on this
-	auto i = mAttributes.find(id);
+	const auto i = mAttributes.find(id);
 	if (i != mAttributes.end())
 	{
 		return (*i).second;
@@ -597,7 +597,7 @@ CoreModifiableAttribute* CoreModifiable::findAttributeOnThisOnly(const KigsID& i
 		StructLinkedListBase* found = mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
 		while (found)
 		{
-			ForwardSP<CoreModifiable> f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
+			ForwardSP<CoreModifiable>& f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
 			if (!f.isNil())
 			{
 				CoreModifiableAttribute* search = f->findAttributeOnThisOnly(id);
@@ -906,6 +906,13 @@ IMPLEMENT_ACCESS_VALUE_BODY_BY_ID(getValue)
 #define IMPLEMENT_SET_VALUE(T) bool CoreModifiable::setValue(KigsID attributeID, T value) \
 IMPLEMENT_ACCESS_VALUE_BODY_BY_ID(setValue)
 
+
+IMPLEMENT_GET_VALUE(v2f&);
+IMPLEMENT_SET_VALUE(const v2f&);
+IMPLEMENT_GET_VALUE(v3f&);
+IMPLEMENT_SET_VALUE(const v3f&);
+IMPLEMENT_GET_VALUE(v4f&);
+IMPLEMENT_SET_VALUE(const v4f&);
 
 //! implement get/set methods for all types
 EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, IMPLEMENT_GET_VALUE);

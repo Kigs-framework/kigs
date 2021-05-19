@@ -21,16 +21,13 @@ IMPLEMENT_CLASS_INFO(Node2D)
 IMPLEMENT_CONSTRUCTOR(Node2D)
 , mParent(nullptr)
 , mPriority(*this, false, "Priority", 0)
-, mSizeX(*this, false, "SizeX", 0)
-, mSizeY(*this, false, "SizeY", 0)
+, mSize(*this, false, "Size", 0,0)
 , mDock(*this, false, "Dock", 0, 0)
 , mAnchor(*this, false, "Anchor", 0, 0)
 , mPosition(*this, false, "Position", 0, 0)
 , mRotationAngle(*this, false, "RotationAngle", 0)
-, mPreScaleX(*this, false, "PreScaleX", 1)
-, mPreScaleY(*this, false, "PreScaleY", 1)
-, mPostScaleX(*this, false, "PostScaleX", 1)
-, mPostScaleY(*this, false, "PostScaleY", 1)
+, mPreScale(*this, false, "PreScale", 1,1)
+, mPostScale(*this, false, "PostScale", 1,1)
 , mClipSons(*this, false, "ClipSons", false)
 {
 	SetNodeFlag(Node2D_NeedUpdatePosition);
@@ -42,14 +39,12 @@ IMPLEMENT_CONSTRUCTOR(Node2D)
 bool Node2D::IsInClip(v2f pos) const
 {
 	bool allow = true;
-	if (mFlags & Node2D_Clipped)
+	if (isUserFlagSet(Node2D_Clipped))
 	{
 		auto father = getFather();
 		while (father && allow)
 		{
-			bool clip = false;
-			father->getValue("ClipSons", clip);
-			if (clip && father->isSubType("UIItem"))
+			if (father->GetNodeFlag(Node2D::Node2D_ClipSons) && father->isSubType("UIItem"))
 			{
 				allow = static_cast<UIItem*>(father)->ContainsPoint(pos.x, pos.y);
 			}
@@ -65,24 +60,22 @@ void Node2D::NotifyUpdate(const unsigned int labelid)
 {
 	if (labelid == mClipSons.getID())
 	{
+		ChangeNodeFlag(Node2D_ClipSons,mClipSons);
 		PropagateNodeFlags();
 	}
 	
-	bool sizechanged = (labelid == mSizeX.getLabelID()) ||
-		(labelid == mSizeY.getLabelID()) || 
+	bool sizechanged = (labelid == mSize.getLabelID()) ||
 		(labelid == mSizeModeX.getLabelID()) ||
 		(labelid == mSizeModeY.getLabelID());
 	
 	if (sizechanged)
-		mFlags |= Node2D_SizeChanged;
+		SetNodeFlag(Node2D_SizeChanged);
 
 	if (sizechanged || (labelid == mAnchor.getLabelID()) ||
 		(labelid == mPosition.getLabelID()) ||
 		(labelid == mDock.getLabelID()) ||
-		(labelid == mPreScaleX.getLabelID()) ||
-		(labelid == mPreScaleY.getLabelID()) ||
-		(labelid == mPostScaleX.getLabelID()) ||
-		(labelid == mPostScaleY.getLabelID()) ||
+		(labelid == mPreScale.getLabelID()) ||
+		(labelid == mPostScale.getLabelID()) ||
 		(labelid == mRotationAngle.getLabelID()))
 	{
 		SetNodeFlag(Node2D_NeedUpdatePosition);
@@ -96,25 +89,30 @@ void Node2D::NotifyUpdate(const unsigned int labelid)
 				static_cast<UILayout*>(mParent)->NeedRecomputeLayout();
 		}
 	}
+	else if (labelid == mCustomShader.getLabelID())
+	{
+		ChangeNodeFlag(Node2D_UseCustomShader, ((std::string)mCustomShader != ""));
+	}
 	CoreModifiable::NotifyUpdate(labelid);
 }
 
 void Node2D::SetParent(CoreModifiable* value)
 {
-	u32 old_flag = mFlags;
-	mFlags &= ~(Node2D_PropagatedFlags);
+	u32 old_flag = getUserFlags(0xFFFFFFFF);
+	unsetUserFlag(Node2D_PropagatedFlags);
+
 	mParent = (Node2D*)value;
 	if (mParent)
 	{
-		mFlags |= (mParent->mFlags & Node2D_PropagatedFlags);
+		setUserFlag(mParent->getUserFlags(Node2D_PropagatedFlags));
 		if (mParent->mClipSons) 
-			mFlags |= Node2D_Clipped;
+			setUserFlag (Node2D_Clipped);
 
 		bool hidden = false;
 		if(mParent->getValue("IsHidden", hidden) && hidden) 
-			mFlags |= Node2D_Hidden;
+			setUserFlag(Node2D_Hidden);
 	}
-	if (old_flag != mFlags)
+	if (old_flag != getUserFlags(0xFFFFFFFF))
 		PropagateNodeFlags();
 }
 
@@ -122,19 +120,18 @@ void Node2D::PropagateNodeFlags()
 {
 	for (auto son : mSons)
 	{
-		u32 old = son->mFlags; 
-
-		son->mFlags &= ~(Node2D_PropagatedFlags);
-		son->mFlags |= (mFlags & Node2D_PropagatedFlags);
-
+		u32 old = son->getUserFlags(0xFFFFFFFF);
+		son->unsetUserFlag(Node2D_PropagatedFlags);
+		son->setUserFlag(getUserFlags(Node2D_PropagatedFlags));
+		
 		if (mClipSons)
-			son->mFlags |= Node2D_Clipped;
+			son->setUserFlag(Node2D_Clipped);
 
 		bool hidden = false;
 		if (getValue("IsHidden", hidden) && hidden)
-			son->mFlags |= Node2D_Hidden;
+			son->setUserFlag(Node2D_Hidden);
 
-		if (old != son->mFlags)
+		if (old != son->getUserFlags(0xFFFFFFFF))
 			son->PropagateNodeFlags();
 	}
 }
@@ -187,7 +184,7 @@ void Node2D::ComputeRealSize()
 		return;
 	}
 	
-	Point2D size(mSizeX, mSizeY);
+	Point2D size(mSize);
 
 	SizeMode	s_mode[2];
 	s_mode[0] = (SizeMode)(int)mSizeModeX;
@@ -227,10 +224,7 @@ void Node2D::ComputeRealSize()
 					size[i] = fsize[i];
 					if (fsize[i] >= 0.0f)
 					{
-						if (i == 0)
-							mSizeX = size[i];
-						else
-							mSizeY = size[i];
+						mSize[i] = size[i];
 					}
 					referenceSize[i] = size[i];
 				}
@@ -246,10 +240,7 @@ void Node2D::ComputeRealSize()
 			case CONTENT:
 				size[i] = contentSize[i];
 				referenceSize[i] = contentSize[i];
-				if (i == 0)
-					mSizeX = size[i];
-				else
-					mSizeY = size[i];
+				mSize[i] = size[i];
 				break;
 			case CONTENT_MULTIPLY:
 				size[i] = size[i] * contentSize[i];
@@ -283,10 +274,7 @@ void Node2D::ComputeRealSize()
 
 					if ((s_mode[1 - i] == CONTENT) || (s_mode[1 - i] == DEFAULT))
 					{
-						if (i == 0)
-							mSizeX = size[i];
-						else
-							mSizeY = size[i];
+						mSize[i] = size[i];
 					}
 				}
 			}
@@ -301,9 +289,9 @@ void Node2D::ComputeRealSize()
 void Node2D::ComputeMatrices()
 {
 	mLocalTransformMatrix.SetIdentity();
-	mLocalTransformMatrix.SetScale((kfloat)mPreScaleX, (kfloat)mPreScaleY, 1.0);
+	mLocalTransformMatrix.SetScale((kfloat)mPreScale[0], (kfloat)mPreScale[1], 1.0);
 	mLocalTransformMatrix.PreRotateZ((kfloat)mRotationAngle);
-	mLocalTransformMatrix.PostScale((kfloat)mPostScaleX,(kfloat)mPostScaleY, 1.0);
+	mLocalTransformMatrix.PostScale((kfloat)mPostScale[0],(kfloat)mPostScale[1], 1.0);
 	
 	ComputeRealSize();
 
@@ -340,7 +328,7 @@ void Node2D::ComputeMatrices()
 	if (mParent)
 	{
 		mGlobalTransformMatrix.PostMultiply(mParent->mGlobalTransformMatrix);
-		if (mParent && (mFlags & Node2D_SizeChanged) == Node2D_SizeChanged && mParent->isSubType(UILayout::mClassID))
+		if (mParent && GetNodeFlag(Node2D_SizeChanged) && mParent->isSubType(UILayout::mClassID))
 			static_cast<UILayout*>(mParent)->NeedRecomputeLayout();
 	}
 }
@@ -355,14 +343,19 @@ void	Node2D::InitModifiable()
 		mPosition.changeNotificationLevel(Owner);
 		mSizeModeX.changeNotificationLevel(Owner);
 		mSizeModeY.changeNotificationLevel(Owner);
-		mSizeX.changeNotificationLevel(Owner);
-		mSizeY.changeNotificationLevel(Owner);
-		mPreScaleX.changeNotificationLevel(Owner);
-		mPreScaleY.changeNotificationLevel(Owner);
-		mPostScaleX.changeNotificationLevel(Owner);
-		mPostScaleY.changeNotificationLevel(Owner);
+		mSize.changeNotificationLevel(Owner);
+		mPreScale.changeNotificationLevel(Owner);
+		mPostScale.changeNotificationLevel(Owner);
 		mPriority.changeNotificationLevel(Owner);
 		mRotationAngle.changeNotificationLevel(Owner);
+		mClipSons.changeNotificationLevel(Owner);
+
+		ChangeNodeFlag(Node2D_ClipSons, mClipSons);
+
+		// call me if custom shader is set
+		mCustomShader.changeNotificationLevel(Owner);
+		
+		ChangeNodeFlag(Node2D_UseCustomShader, ((std::string)mCustomShader != ""));
 		if (mParent)
 			mParent->SetNodeFlag(Node2D_SonPriorityChanged);
 		CoreModifiable::InitModifiable();
@@ -403,6 +396,8 @@ void	Node2D::SetUpNodeIfNeeded()
 
 		ClearNodeFlag(Node2D_SizeChanged);
 		ClearNodeFlag(Node2D_NeedUpdatePosition);
+
+		SetNodeFlag(Node2D_NeedVerticeInfoUpdate);
 	}
 }
 
@@ -454,14 +449,18 @@ void	Node2D::GetTransformedPoints(Point2D * pt)
 	TransformPoints(pt, 4);
 }
 
+
 void	Node2D::ResortSons()
 {
 	if (GetNodeFlag(Node2D_SonPriorityChanged))
 	{
 		kstl::set<Node2D*, Node2D::PriorityCompare> resortset = mSons;
+
 		mSons.clear();
+
 		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator it = resortset.begin();
 		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = resortset.end();
+
 		for (; it != end; ++it)
 		{
 			mSons.insert(*it);

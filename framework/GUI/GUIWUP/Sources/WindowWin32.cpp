@@ -41,20 +41,20 @@ WindowWin32::~WindowWin32()
 void WindowWin32::ProtectedInit()
 {
 	auto view = ApplicationView::GetForCurrentView();
-	auto size = winrt::Windows::Foundation::Size(mSizeX, mSizeY);
+	auto size = winrt::Windows::Foundation::Size(mSize[0], mSize[1]);
 	view.PreferredLaunchWindowingMode(ApplicationViewWindowingMode::PreferredLaunchViewSize);
 	view.PreferredLaunchViewSize(size);
 	view.SetPreferredMinSize(size);
 
 	CoreWindow::GetForCurrentThread().Activate();
 
-	mSizeXToSet = mSizeX;
-	mSizeYToSet = mSizeY;
+	mSizeXToSet = mSize[0];
+	mSizeYToSet = mSize[1];
 	mRetryResize = false;// !view.TryResizeView(size);
 	
 	auto rect = App::GetApp()->GetWindow().Bounds();
-	mPositionX = (int)rect.X;
-	mPositionY = (int)rect.Y;
+	mPosition[0] = (int)rect.X;
+	mPosition[1] = (int)rect.Y;
 	//mySizeX = (int)rect.Width;
 	//mySizeY = (int)rect.Height;
 	
@@ -73,13 +73,13 @@ void	WindowWin32::GetMousePosInWindow(int posx, int posy, kfloat& wposx, kfloat&
 	}
 	else
 	{*/
-	posx -= (int)mPositionX;
+	posx -= (int)mPosition[0];
 	//if(posx >= (int)mySizeX)
 	//	posx = ((int)mySizeX)-1;
 	//if(posx < 0)
 	//	posx = 0;
 
-	posy -= (int)mPositionY;
+	posy -= (int)mPosition[1];
 	//if(posy>=(int)mySizeY)
 	//	posy = ((int)mySizeY)-1;
 	//if(posy < 0)
@@ -92,13 +92,13 @@ void	WindowWin32::GetMousePosInWindow(int posx, int posy, kfloat& wposx, kfloat&
 
 void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, kfloat& wposy)
 {
-	posx -= (int)mPositionX;
+	posx -= (int)mPosition[0];
 	//if(posx >= (int)mySizeX)
 	//	posx = ((int)mySizeX)-1;
 	//if(posx < 0)
 	//	posx = 0;
 
-	posy -= (int)mPositionY;
+	posy -= (int)mPosition[1];
 	//if(posy>=(int)mySizeY)
 	//	posy = ((int)mySizeY)-1;
 	//if(posy < 0)
@@ -132,23 +132,22 @@ void  WindowWin32::Update(const Timer&  timer, void* addParam)
 	if (mHasEvent)
 	{
 		mRetryResize = false;
-		mSizeX = (int)mSizeXToSet;
-		mSizeY = (int)mSizeYToSet;
+		mSize = v2f((int)mSizeXToSet, (int)mSizeYToSet);
 		mHasEvent = false;
 		//printf("size : %d %d\n", (int)mySizeX, (int)mySizeY);
 
 		if (mScreen)
-			mScreen->Resize((kfloat)mSizeX, (kfloat)mSizeY);
+			mScreen->Resize(mSize[0], mSize[1]);
 	}
 
 	// update position and size
 	auto rect = App::GetApp()->GetWindow().Bounds();
-	if (mPositionX != (int)rect.X ||
-		mPositionY != (int)rect.Y
+	if (mPosition[0] != (int)rect.X ||
+		mPosition[1] != (int)rect.Y
 		)
 	{
-		mPositionX = (int)rect.X;
-		mPositionY = (int)rect.Y;
+		mPosition[0] = (int)rect.X;
+		mPosition[1] = (int)rect.Y;
 		//printf("pos : %d %d\n", (int)myPosX, (int)myPosY);
 	}
 

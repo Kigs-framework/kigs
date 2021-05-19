@@ -11,21 +11,21 @@ extern "C" void		JSSendHTTPRequestUTF16(const char* type, const char* url, const
 //! constructor
 HTTPRequestJS::HTTPRequestJS(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 HTTPRequest(name,PASS_CLASS_NAME_TREE_ARG)
-, myHandle(NULL)
-, myBufferSize(0)
-, myBuffer(NULL)
+, mHandle(NULL)
+, mBufferSize(0)
+, mBuffer(NULL)
 {
 }     
 
 //! destructor
 HTTPRequestJS::~HTTPRequestJS()
 {
-	if (myBuffer)
+	if (mBuffer)
 	{
-		delete[] myBuffer;
-		myBuffer = NULL;
+		delete[] mBuffer;
+		mBuffer = NULL;
 	}
-	myBufferSize = 0;
+	mBufferSize = 0;
 }    
 
 
@@ -34,23 +34,23 @@ void HTTPRequestJS::InitModifiable()
 {
 	HTTPRequest::InitModifiable();
 
-	if (myConnection)
+	if (mConnection)
 	{
-		if (myBuffer)
+		if (mBuffer)
 		{
-			delete[] myBuffer;
-			myBuffer = NULL;
+			delete[] mBuffer;
+			mBuffer = NULL;
 		}
-		myBufferSize = 0;
+		mBufferSize = 0;
 
 		kstl::string L_host, L_URL;
-		myConnection->getValue(LABEL_TO_ID(HostName), L_host);
-		L_URL = "http://" + L_host + "/" + myRequestURL;
-		JSSendHTTPRequestUTF16(((const kstl::string&)myRequestType).c_str(), L_URL.c_str(), NULL, myBufferSize, &myBuffer);
+		mConnection->getValue(LABEL_TO_ID(HostName), L_host);
+		L_URL = "http://" + L_host + "/" + mRequestURL;
+		JSSendHTTPRequestUTF16(((const kstl::string&)mRequestType).c_str(), L_URL.c_str(), NULL, mBufferSize, &mBuffer);
 	}
 }
 
 unsigned short* HTTPRequestJS::GetAnswer()
 {
-	return myBuffer;
+	return mBuffer;
 }

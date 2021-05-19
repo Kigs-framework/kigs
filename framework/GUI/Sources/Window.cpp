@@ -12,10 +12,8 @@ mShowMouseCursor(*this, true, LABEL_AND_ID(ShowMouseCursor), false),
 mIsMainWindow(*this, true, LABEL_AND_ID(IsMainWindow), true),
 mDisplayIndex(*this, true, LABEL_AND_ID(DisplayIndex), 0xFFFFFFFF),
 mDirtySize(*this, false, LABEL_AND_ID(DirtySize), false),
-mPositionX(*this,true,LABEL_AND_ID(PositionX),-1), // -1 => centered on screen
-mPositionY(*this,true,LABEL_AND_ID(PositionY),-1), // -1 => centered on screen
-mSizeX(*this,true,LABEL_AND_ID(SizeX)),
-mSizeY(*this,true,LABEL_AND_ID(SizeY)),
+mPosition(*this,true,LABEL_AND_ID(Position),-1,-1), // -1 => centered on screen
+mSize(*this,true,LABEL_AND_ID(Size)),
 mClickCallback(NULL), mDoubleClickCallback(NULL), mKeyDownCallback(NULL),mKeyUpCallback(NULL), mDestroyCallback(NULL)
 {
    mScreen = 0;
@@ -33,7 +31,7 @@ void	Window::InitModifiable()
 	CoreModifiable::InitModifiable();
 	if(_isInit)
 	{
-		if((mSizeX != 0)&&(mSizeY != 0))
+		if((mSize[0] != 0)&&(mSize[1] != 0))
 		{
 			ProtectedInit();
 		}

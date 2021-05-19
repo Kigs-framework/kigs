@@ -44,7 +44,7 @@ void UIButton::NotifyUpdate(const unsigned int labelid)
 			mIsMouseOver = false;
 		}
 	}
-	else if (labelid == mSizeX.getLabelID() || labelid == mSizeY.getLabelID())
+	else if (labelid == mSize.getLabelID())
 	{
 		if (mParent && mParent->isSubType("UIGroupButton"))
 			((UIGroupButton*)mParent)->reComputeSize();
@@ -68,8 +68,7 @@ void UIButton::InitModifiable()
 			mIsDown = true;
 
 		mIsEnabled.changeNotificationLevel(Owner);
-		mSizeX.changeNotificationLevel(Owner);
-		mSizeY.changeNotificationLevel(Owner);
+		mSize.changeNotificationLevel(Owner);
 
 		ModuleInput* theInputModule = (ModuleInput*)KigsCore::GetModule("ModuleInput");
 		// retreive click for activation
@@ -88,14 +87,21 @@ void UIButton::AutoSize()
 	// auto size button
 	if (!mTexturePointer.isNil())
 	{
-		float width, height;
-		mTexturePointer->GetSize(width, height);
+		v2f autosize;
+		mTexturePointer->GetSize(autosize.x,autosize.y);
+		
+		if (!((int)mSize[0] == 0 && mSizeModeX == SizeMode::DEFAULT))
+		{
+			autosize.x = mSize[0];
+		}
 
-		if (mSizeX == 0 && mSizeModeX == 0)
-			setValue("SizeX", width);
+		if (!((int)mSize[1] == 0 && mSizeModeY == SizeMode::DEFAULT))
+		{
+			autosize.y = mSize[1];
+		}
 
-		if (mSizeY == 0 && mSizeModeY == 0)
-			setValue("SizeY",height);
+		if((v2f)mSize != autosize)
+			setValue("Size", autosize);
 
 		if (mParent && mParent->isSubType("UIGroupButton"))
 			((UIGroupButton*)mParent)->reComputeSize();

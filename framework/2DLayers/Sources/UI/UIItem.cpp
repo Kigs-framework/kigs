@@ -17,14 +17,27 @@ IMPLEMENT_CONSTRUCTOR(UIItem)
 , mOpacity(*this, false, "Opacity", 1.0f)
 , mAlphaMask(nullptr)
 , mSwallowInputs(*this, false, "SwallowInputs", false)
-, mFocus(false)
 {
 }
 
+void	UIItem::InitModifiable()
+{
+	ParentClassType::InitModifiable();
+	mColor.changeNotificationLevel(Owner);
+	mOpacity.changeNotificationLevel(Owner);
+}
 
 void UIItem::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == mIsHidden.getID())
+	if ( labelid == mColor.getID())
+	{
+		SetNodeFlag(Node2D_NeedVerticeInfoUpdate);
+	}
+	else if (labelid == mOpacity.getID())
+	{
+		propagateOpacityChange();
+	}
+	else if (labelid == mIsHidden.getID())
 	{
 		PropagateNodeFlags();
 	}

@@ -243,23 +243,23 @@ public:
 
 	virtual bool getValue(void*& value) const override { value = (void*)mValue.data(); return true; }
 
-	virtual bool getValue(bool& value) const override { value = (s32)at(0, 0) != 0; return true; }
-	virtual bool getValue(s8& value) const override { value = (s8)at(0, 0); return true; }
-	virtual bool getValue(s16& value) const override { value = (s16)at(0, 0); return true; }
-	virtual bool getValue(s32& value) const override { value = (s32)at(0, 0); return true; }
-	virtual bool getValue(s64& value) const override { value = (s64)at(0, 0); return true; }
-	virtual bool getValue(u8& value) const override { value = (u8)at(0, 0); return true; }
-	virtual bool getValue(u16& value) const override { value = (u16)at(0, 0); return true; }
-	virtual bool getValue(u32& value) const override { value = (u32)at(0, 0); return true; }
-	virtual bool getValue(u64& value) const override { value = (u64)at(0, 0); return true; }
-	virtual bool getValue(kfloat& value) const override { value = (kfloat)at(0, 0); return true; }
-	virtual bool getValue(kdouble& value) const override { value = (kdouble)at(0, 0); return true; }
+	virtual bool getValue(bool& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (tmpValue != (T)0); return true; }
+	virtual bool getValue(s8& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s8)tmpValue; return true; }
+	virtual bool getValue(s16& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s16)tmpValue; return true; }
+	virtual bool getValue(s32& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s32)tmpValue; return true; }
+	virtual bool getValue(s64& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s64)tmpValue; return true; }
+	virtual bool getValue(u8& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u8)tmpValue; return true; }
+	virtual bool getValue(u16& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u16)tmpValue; return true; }
+	virtual bool getValue(u32& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u32)tmpValue; return true; }
+	virtual bool getValue(u64& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u64)tmpValue; return true; }
+	virtual bool getValue(kfloat& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (kfloat)tmpValue; return true; }
+	virtual bool getValue(kdouble& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (kdouble)tmpValue; return true; }
 
 	virtual bool getValue(kstl::string& value) const override { return CoreConvertArray2String<T>(value, getConstArrayBuffer(), getNbArrayElements()); }
 
-	virtual bool getValue(Point2D& value) const override { value.x = (kfloat)at(0, 0); value.y = (kfloat)at(0, 1); return true; }
-	virtual bool getValue(Point3D& value) const override { value.x = (kfloat)at(0, 0); value.y = (kfloat)at(0, 1); value.z = (kfloat)at(0, 2); return true; }
-	virtual bool getValue(Vector4D& value) const override { value.x = (kfloat)at(0, 0); value.y = (kfloat)at(0, 1); value.z = (kfloat)at(0, 2); value.w = (kfloat)at(0, 3); return true; }
+	virtual bool getValue(Point2D& value) const override { if (nbColumns < 2) return false; Point2D tmpValue((kfloat)at(0, 0), (kfloat)at(0, 1)); CALL_GETMODIFIER(notificationLevel, tmpValue); value = tmpValue; return true; }
+	virtual bool getValue(Point3D& value) const override { if (nbColumns < 3) return false; Point3D tmpValue((kfloat)at(0, 0), (kfloat)at(0, 1), (kfloat)at(0, 2)); CALL_GETMODIFIER(notificationLevel, tmpValue); value = tmpValue; return true; }
+	virtual bool getValue(Vector4D& value) const override { if (nbColumns < 4) return false; Vector4D tmpValue((kfloat)at(0, 0), (kfloat)at(0, 1), (kfloat)at(0, 2), (kfloat)at(0, 3)); CALL_GETMODIFIER(notificationLevel, tmpValue); value = tmpValue; return true; }
 
 	using CoreModifiableAttributeData<ArrayType>::setValue;
 

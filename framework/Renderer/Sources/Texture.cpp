@@ -42,6 +42,15 @@ void	Texture::InitForFBO()
 	ComputeRatio();
 }
 
+void Texture::NotifyUpdate(const unsigned int  labelid )
+{
+	if (labelid == mForceNearest.getLabelID())
+	{
+		changeUserFlag(hasNearestPixelSet, mForceNearest);
+	}
+	Drawable::NotifyUpdate(labelid); // always call parent so that notifyupdate signal is called
+}
+
 void	Texture::InitModifiable()
 {
 	// avoid double init
@@ -81,6 +90,9 @@ void	Texture::InitModifiable()
 			}
 			ComputeRatio();
 		}
+
+		changeUserFlag(hasNearestPixelSet, mForceNearest);
+		mForceNearest.changeNotificationLevel(Owner);
 	}
 }
 

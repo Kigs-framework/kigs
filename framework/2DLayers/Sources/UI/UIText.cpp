@@ -146,10 +146,9 @@ void	UIText::ChangeText(const usString& _newText)
 	mTexturePointer->GetEmptyTexture()->getValue(LABEL_TO_ID(Width), width);
 	mTexturePointer->GetEmptyTexture()->getValue(LABEL_TO_ID(Height), height);
 
-	if (mSizeX != width || mSizeY != height)
+	if (mSize[0] != width || mSize[1] != height)
 	{
-		mSizeX = width;
-		mSizeY = height;
+		mSize = v2f(width, height);
 		SetNodeFlag(Node2D_SizeChanged);
 	}
 	SetUpNodeIfNeeded();
@@ -204,7 +203,7 @@ DEFINE_METHOD(UIText, ReloadTexture)
 {
 	if (!mTexturePointer.isNil())
 	{
-		mTexturePointer->SetFlag(Texture::isDirtyContext);
+		mTexturePointer->setUserFlag(Texture::isDirtyContext);
 		mTexturePointer->ReInit();
 		ChangeText(mText.us_str());
 	}

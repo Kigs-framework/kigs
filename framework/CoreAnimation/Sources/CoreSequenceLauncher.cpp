@@ -19,37 +19,6 @@
 // sequence readed directly in the xml and auto launched on parent instance (StartOnFirstUpdate) 
 
 
-<Instance Name="AnimButton" Type="CoreSequenceLauncher" ID="51">
-	<CoreModifiableAttribute Type="bool" Name="StartOnFirstUpdate" Value="true" Dynamic="false"/>
-	<CoreModifiableAttribute Type="string" Name="StartMessage" Value="" Dynamic="false"/>
-	<CoreModifiableAttribute Type="coreitem" Name="Sequence" Dynamic="false">
-	<![CDATA[
-	{
-	"SequenceTest":[
-		{ "DoWhile" : ["Priority",
-			{	"Serie" : 	[
-				{
-				"Linear1D":[1.000000,1.000,1.1,"PreScaleX"]
-				}
-				,
-				{
-				"Linear1D":[0.8,1.100,1.0,"PreScaleX"]
-				}
-				,
-				{
-				"Wait":[0.500000]
-				}
-			]
-			}
-			]
-		}
-		]
-	}
-	]]>
-	</CoreModifiableAttribute>
-</Instance>
-
-
 */
 
 IMPLEMENT_CLASS_INFO(CoreSequenceLauncher)

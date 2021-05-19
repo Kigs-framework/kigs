@@ -244,8 +244,8 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 			int X = GET_X_LPARAM(lParam);
 			int Y = ClientArea.bottom - 1 - GET_Y_LPARAM(lParam);
 
-			kfloat mX = (kfloat)X / pWindow->mSizeX;
-			kfloat mY = (kfloat)Y / pWindow->mSizeY;
+			kfloat mX = (kfloat)X / pWindow->mSize[0];
+			kfloat mY = (kfloat)Y / pWindow->mSize[1];
 			pWindow->mClickCallback(pWindow, buttonId, mX, mY, isDown);
 			return 0;
 		}
@@ -425,8 +425,8 @@ void WindowWin32::ProtectedInit()
 		DEVMODE dmScreenSettings;
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-		dmScreenSettings.dmPelsWidth = mSizeX;
-		dmScreenSettings.dmPelsHeight = mSizeY;
+		dmScreenSettings.dmPelsWidth = mSize[0];
+		dmScreenSettings.dmPelsHeight = mSize[1];
 
 		dmScreenSettings.dmBitsPerPel = bpp;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
@@ -454,9 +454,9 @@ void WindowWin32::ProtectedInit()
 		dwStyle=WS_POPUP;
 
 		WindowRect.left=0;
-		WindowRect.right=(long)mSizeX;
+		WindowRect.right=(long)mSize[0];
 		WindowRect.top=0;
-		WindowRect.bottom = (long)mSizeY;
+		WindowRect.bottom = (long)mSize[1];
 #endif
 	}
 	else
@@ -468,13 +468,13 @@ void WindowWin32::ProtectedInit()
 		else
 			dwStyle = WS_OVERLAPPED | WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;	// Windows Style
 
-		WindowRect.left = devModeDesc.dmPosition.x + (long)mPositionX;
-		WindowRect.top  = devModeDesc.dmPosition.y + (long)mPositionY;
-		WindowRect.right = WindowRect.left + (long)mSizeX;
+		WindowRect.left = devModeDesc.dmPosition.x + (long)mPosition[0];
+		WindowRect.top  = devModeDesc.dmPosition.y + (long)mPosition[1];
+		WindowRect.right = WindowRect.left + (long)mSize[0];
 #ifdef FRAPS_CAPTURE_MODE
-		WindowRect.bottom = WindowRect.top + (long)mSizeY + 96;
+		WindowRect.bottom = WindowRect.top + (long)mSize[1] + 96;
 #else
-		WindowRect.bottom = WindowRect.top + (long)mSizeY;
+		WindowRect.bottom = WindowRect.top + (long)mSize[1];
 #endif
 	}
 	
@@ -513,7 +513,7 @@ void WindowWin32::ProtectedInit()
 
 	if (mShowMouseCursor == false)
 	{
-		SetCursorPos(mSizeX, mSizeY);
+		SetCursorPos(mSize[0], mSize[1]);
 		volatile int tst = ShowCursor(0);
 		while (tst > 0)
 		{
@@ -547,9 +547,8 @@ void WindowWin32::ProtectedInit()
 void	WindowWin32::GetMousePosInWindow(int posx, int posy, kfloat& wposx, kfloat& wposy)
 {
 	
-	posx -= (int)mPositionX;
-	
-	posy -= (int)mPositionY;
+	posx -= (int)mPosition[0];
+	posy -= (int)mPosition[1];
 	
 
 	wposx = (kfloat)posx;
@@ -559,9 +558,8 @@ void	WindowWin32::GetMousePosInWindow(int posx, int posy, kfloat& wposx, kfloat&
 
 void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, kfloat& wposy)
 {
-	posx -= (int)mPositionX;
-	
-	posy -= (int)mPositionY;
+	posx -= (int)mPosition[0];
+	posy -= (int)mPosition[1];
 
 
 	if (mScreen)
@@ -618,18 +616,16 @@ void  WindowWin32::Update(const Timer&  timer, void* addParam)
 		scrPos.x = 0;
 		scrPos.y = 0;
 		ClientToScreen((HWND)mHandle, &scrPos);
-		mPositionX = scrPos.x;
-		mPositionY = scrPos.y;
+		mPosition = v2f(scrPos.x,scrPos.y);
 
 		RECT rect;
 		GetClientRect((HWND)mHandle, &rect);
-		mSizeX = rect.right;
-		mSizeY = rect.bottom;
+		mSize = v2f(rect.right,rect.bottom);
 
 		//printf("%s : %d %d :: %d %d\n", getName().c_str(), mPositionX, mPositionY, mySizeX, mySizeY);
 
 		if (mScreen)
-			mScreen->Resize((kfloat)mSizeX, (kfloat)mSizeY);
+			mScreen->Resize((kfloat)mSize[0], (kfloat)mSize[1]);
 
 		mDirtySize = false;
 

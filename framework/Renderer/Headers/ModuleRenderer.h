@@ -34,7 +34,7 @@ class MaterialStage;
 class Scene3D;
 class TravState;
 class ShaderBase;
-
+class FreeType_TextDrawer;
 //! number max of stage
 #define MAX_MATERIAL_STAGE	4
 
@@ -724,6 +724,7 @@ protected:
 static const int MATRIX_MODE_MODEL = 0;
 static const int MATRIX_MODE_PROJECTION = 1;
 static const int MATRIX_MODE_VIEW = 2;
+static const int MATRIX_MODE_UV = 3;
 
 // ****************************************
 // * VertexBufferManagerBase class
@@ -1057,17 +1058,19 @@ public:
 		mMatrixStack[mode].push_back(mMatrixStack[mode].back());
 		mDirtyMatrix |= (1 << mode);
 	}
+	
 	inline void			PushAndLoadMatrix(int mode,const Matrix4x4& m)
 	{
 		mMatrixStack[mode].push_back(m);
 		mDirtyMatrix |= (1 << mode);
 	}
-
+	
 	inline void			PopMatrix(int mode)
 	{
 		mDirtyMatrix |= (1 << mode);
 		mMatrixStack[mode].pop_back();
 	}
+	
 
 	void			LoadIdentity(int mode);
 	void			LoadMatrix(int mode, const kfloat *newMat);
@@ -1188,6 +1191,9 @@ public:
 	virtual void    EndOcclusionQuery(TravState* state, u64 query_id) { KIGS_ASSERT(!"Occlusion queries not supported"); }
 	virtual bool    GetOcclusionQueryResult(TravState* state, u64 query_id, u64& result, int frames_to_extend_if_not_ready = 0) { KIGS_ASSERT(!"Occlusion queries not supported"); return false; }
 
+
+	static FreeType_TextDrawer* mDrawer;
+
 protected:
 
 	virtual void	ProtectedFlushMatrix(TravState* state) = 0;	// rendering specific
@@ -1201,7 +1207,7 @@ protected:
 
 	// matrix management
 
-	FixedSizeStack<Matrix4x4, 32>						mMatrixStack[3];
+	FixedSizeStack<Matrix4x4, 32>						mMatrixStack[4];
 	unsigned int										mDirtyMatrix;			// flag to check if matrix stack was modified
 
 	int													mCurrentTextureUnit=0;

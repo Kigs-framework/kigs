@@ -155,7 +155,7 @@ void UIPointInteret::NotifyUpdate(const unsigned int 	labelid)
 			mNameText->setValue("Text", mNameOfInterestPoint);
 
 			v2f size = mNameText->GetSize();
-			mNameText->Set_Position(-(size.x / 2) + ((int)mSizeX / 2), -size.y + 5);
+			mNameText->Set_Position(-(size.x / 2) + ((int)mSize[0] / 2), -size.y + 5);
 			mIsTitleShown = true;
 		}
 		else if (mIsTitleShown)
@@ -352,10 +352,6 @@ void UIPointInteret::RecalculatePosition()
 		mDock[0] = (topLeftLong - mCoordGPS_Long) / (topLeftLong - botRightLong);
 		mDock[1] = (topLeftLat - mCoordGPS_Lat) / (topLeftLat - bopRightLat);
 
-
-		/*myPosition[0] = (kfloat)((mCoordGPS_Long - topLeftLong)*xMap / (botRightLong - topLeftLong)) - (mSizeX / 2);
-		myPosition[1] = (kfloat)((mCoordGPS_Lat - bopRightLat)*yMap / (topLeftLat - bopRightLat)) - (mySizeY / 2);
-		myPosition[1] = yMap - myPosition[1];*/
 		SetNodeFlag(Node2D_NeedUpdatePosition);
 		PropagateNeedUpdateToFather();
 	}

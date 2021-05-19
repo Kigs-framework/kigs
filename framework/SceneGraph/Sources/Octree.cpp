@@ -123,7 +123,7 @@ void Octree::RecomputeBoundingBox()
 	mRootSubNode->mBBox = mLocalBBox;
 
 
-	UnsetFlag(BoundingBoxIsDirty);
+	unsetUserFlag(BoundingBoxIsDirty);
 }
 
 DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Octree, TravState* state, unsigned int cullingMask)
@@ -270,8 +270,8 @@ void  Octree::ReorganiseOctree()
 	if (!mFirstReorganiseWasDone)
 	{
 		mFirstReorganiseWasDone = true;
-		SetFlag(BoundingBoxIsDirty);
-		SetFlag(GlobalBoundingBoxIsDirty);
+		setUserFlag(BoundingBoxIsDirty);
+		setUserFlag(GlobalBoundingBoxIsDirty);
 		PropagateDirtyFlags(this);
 		RecomputeBoundingBox();
 	}

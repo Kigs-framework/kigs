@@ -30,6 +30,7 @@ public:
 	XLSXElementRef(const std::string& ref, XLSXSheet* sheetRef);
 
 	XLSXElementRef operator[](const std::string& name)const;
+	XLSXElementRef operator[](u32 index)const;
 
 	XLSXCell&		operator*() const;
 

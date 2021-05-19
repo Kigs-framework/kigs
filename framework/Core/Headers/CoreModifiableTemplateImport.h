@@ -691,36 +691,40 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 				attr->setValue(tempvalue);
 			}
 		}
-		else if (attrvalue = currentNode->getAttribute("LUA", "L"))
+		else 
 		{
-			CoreModifiable* luamodule = KigsCore::GetModule("LuaKigsBindModule");
-			if (luamodule)
+			attrvalue = currentNode->getAttribute("LUA", "L");
+			if (attrvalue)
 			{
-				luamodule->SimpleCall("SetValueLua", currentModifiable, attrname->getString(), attrvalue->getString());
-			}
-		}
-		else // check if value is in text or CDATA
-		{
-			for (s32 i = 0; i < currentNode->getChildCount(); i++)
-			{
-				XMLNodeBase* sonXML = currentNode->getChildElement(i);
-				if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
+				CoreModifiable* luamodule = KigsCore::GetModule("LuaKigsBindModule");
+				if (luamodule)
 				{
-					std::string tempvalue = sonXML->getString();
-					if (AttributeNeedEval(tempvalue))
+					luamodule->SimpleCall("SetValueLua", currentModifiable, attrname->getString(), attrvalue->getString());
+				}
+			}
+			else // check if value is in text or CDATA
+			{
+				for (s32 i = 0; i < currentNode->getChildCount(); i++)
+				{
+					XMLNodeBase* sonXML = currentNode->getChildElement(i);
+					if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
 					{
-						EvalAttribute(tempvalue, currentModifiable, attr);
-					}
+						std::string tempvalue = sonXML->getString();
+						if (AttributeNeedEval(tempvalue))
+						{
+							EvalAttribute(tempvalue, currentModifiable, attr);
+						}
 
-					if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
-					{
-						attr->setValue((const UTF8Char*)tempvalue.c_str());
+						if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
+						{
+							attr->setValue((const UTF8Char*)tempvalue.c_str());
+						}
+						else
+						{
+							attr->setValue(tempvalue);
+						}
+						break;
 					}
-					else
-					{
-						attr->setValue(tempvalue);
-					}
-					break;
 				}
 			}
 		}
