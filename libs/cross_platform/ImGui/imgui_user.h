@@ -42,6 +42,16 @@ namespace ImGui
         cb_user_data.ChainCallbackUserData = user_data;
         return InputText(label, (char*)str.data(), str.capacity() + 1, flags, InputTextCallback, &cb_user_data);
     }
+    inline bool InputTextWithHint(const char* label, std::string& str, const std::string& hint, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback cb = (ImGuiInputTextCallback)0, void* user_data = nullptr)
+    {
+        IM_ASSERT((flags & ImGuiInputTextFlags_CallbackResize) == 0);
+        flags |= ImGuiInputTextFlags_CallbackResize;
+        InputTextCallback_UserData cb_user_data;
+        cb_user_data.Str = &str;
+        cb_user_data.ChainCallback = cb;
+        cb_user_data.ChainCallbackUserData = user_data;
+        return InputTextWithHint(label, hint.c_str(), (char*)str.data(), str.capacity() + 1, flags, InputTextCallback, &cb_user_data);
+    }
 
     inline bool InputTextCommitOnDeactivation(const char* label, std::string& str, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback cb = (ImGuiInputTextCallback)0, void* user_data = nullptr)
     {
