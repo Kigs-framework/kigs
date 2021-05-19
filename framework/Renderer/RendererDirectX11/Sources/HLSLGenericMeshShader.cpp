@@ -348,7 +348,7 @@ VS_OUTPUT main(VS_INPUT input)
 	output.OneOnFogScale=1.0/fog_scale;
 #endif
 #ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0 
-    float2 uvtmp = mul(float4(attrib_texcoord,1.0,0.0),uv_matrix).xy;
+    float2 uvtmp = mul(float4(input.attrib_texcoord,1.0,0.0),uv_matrix).xy;
 	output.Texcoord = uvtmp.xy;
 #endif
 #ifdef CLIENT_STATE_TANGENT_ARRAY 

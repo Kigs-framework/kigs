@@ -16,12 +16,12 @@ void UIImage::InitModifiable()
 	UITexturedItem::InitModifiable();
 	if (IsInit())
 	{
-		if ((mSizeModeX == DEFAULT) && (mSizeX.const_ref() == 0))
+		if ((mSizeModeX == DEFAULT) && (mSize[0] == 0))
 		{
 			mSizeModeX.setValue(CONTENT);
 		}
 
-		if ((mSizeModeY == DEFAULT) && (mSizeY.const_ref() == 0))
+		if ((mSizeModeY == DEFAULT) && (mSize[1] == 0))
 		{
 			mSizeModeY.setValue(CONTENT);
 		}

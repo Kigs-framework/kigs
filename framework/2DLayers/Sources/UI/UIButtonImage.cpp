@@ -115,10 +115,9 @@ void UIButtonImage::ChangeTexture(kstl::string _texturename, kstl::string _overt
 		float width,height;
 
 		mUpTexturePointer->GetSize(width,height);
-		if(width != mSizeX || height != mSizeY)
+		if(width != mSize[0] || height != mSize[1])
 		{
-			mSizeX=width;
-			mSizeY=height;
+			mSize=v2f(width, height);
 			SetNodeFlag(Node2D_SizeChanged);
 		}
 	}

@@ -199,10 +199,9 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 		float width, height;
 		L_Texture->GetSize(width, height);
 
-		if (mSizeX != width || mSizeY != height)
+		if (width != mSize[0] || height != mSize[1])
 		{
-			mSizeX = width;
-			mSizeY = height;
+			mSize = v2f(width, height);
 			SetNodeFlag(Node2D_SizeChanged);
 		}
 	}
@@ -241,10 +240,10 @@ void UIButtonText::ChangeTexture(kstl::string & _UpText, kstl::string & _overTex
 	{
 		float width, height;
 		mUpTexturePointer->GetSize(width, height);
-		if (width != mSizeX || height != mSizeY)
+
+		if (width != mSize[0] || height != mSize[1])
 		{
-			mSizeX = width;
-			mSizeY = height;
+			mSize = v2f(width, height);
 			SetNodeFlag(Node2D_SizeChanged);
 		}
 	}

@@ -46,32 +46,30 @@ bool	UISlidersGroup::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 
 		bool value = UIItem::addItem(item,pos PASS_LINK_NAME(linkName));
 		//Recompute group button size
-		int sizeX, sizeY = 0;
+		v2f sizeS(0,0);
 		int _Position[2];
-		item->getValue(LABEL_TO_ID(SizeX),sizeX);
-		item->getValue(LABEL_TO_ID(SizeY),sizeY);
-		item->getArrayValue(LABEL_TO_ID(Position),_Position,2);
+		item->getValue("Size", sizeS);
+		item->getArrayValue("Position",_Position,2);
 		
 		
 		if(mSliderNumber==1)
 		{
-			mSizeX = sizeX;
-			mSizeY = sizeY;
+			mSize = sizeS;
 		}
 		else
 		{
 			//Check X axis
-			if ((sizeX + _Position[0])>0)
-			if(((unsigned int)(sizeX + _Position[0])) > mSizeX)
+			if ((sizeS.x + _Position[0])>0)
+			if(((unsigned int)(sizeS.x + _Position[0])) > mSize[0])
 			{
-				mSizeX += ((sizeX + _Position[0]) - mSizeX);
+				mSize[0] += ((sizeS.x + _Position[0]) - mSize[0]);
 			}
 			
 			//Check Y axis
-			if ((sizeY + _Position[1])>0)
-			if (((unsigned int)(sizeY + _Position[1])) > mSizeY)
+			if ((sizeS.y + _Position[1])>0)
+			if (((unsigned int)(sizeS.y + _Position[1])) > mSize[1])
 			{
-				mSizeY += ((sizeY + _Position[1]) - mSizeY);
+				mSize[1] += ((sizeS.y + _Position[1]) - mSize[1]);
 			}
 		}
 
@@ -128,33 +126,31 @@ bool	UISlidersGroup::removeItem(const CMSP& item DECLARE_LINK_NAME)
 				//Compute new group button size
 				Slidercount++;
 
-				int sizeX, sizeY = 0;
+				v2f sizeS(0,0);
 				int _Position[2];
-				(*ItStart)->GetParents()[0]->getValue(LABEL_TO_ID(SizeX),sizeX);
-				(*ItStart)->GetParents()[0]->getValue(LABEL_TO_ID(SizeY),sizeY);
+				(*ItStart)->GetParents()[0]->getValue("Size", sizeS);
 				(*ItStart)->GetParents()[0]->getArrayValue(LABEL_TO_ID(Position),_Position,2);
 		
 		
 
 				if(Slidercount==1)
 				{
-					mSizeX = sizeX;
-					mSizeY = sizeY;
+					mSize = sizeS;
 				}
 				else
 				{
 					//Check X axis
-					if ((sizeX + _Position[0])>0)
-					if (((unsigned int)(sizeX + _Position[0])) > mSizeX)
+					if ((sizeS.x + _Position[0])>0)
+					if (((unsigned int)(sizeS.x + _Position[0])) > mSize[0])
 					{
-						mSizeX += ((sizeX + _Position[0]) - mSizeX);
+						mSize[0] += ((sizeS.x + _Position[0]) - mSize[0]);
 					}
 			
 					//Check Y axis
-					if ((sizeY + _Position[1])>0)
-					if (((unsigned int)(sizeY + _Position[1])) > mSizeY)
-					{
-						mSizeY += ((sizeY + _Position[1]) - mSizeY);
+					if ((sizeS.y + _Position[1])>0)
+						if (((unsigned int)(sizeS.y + _Position[1])) > mSize[1])
+						{
+							mSize[1] += ((sizeS.y + _Position[1]) - mSize[1]);
 					}
 				}
 			}

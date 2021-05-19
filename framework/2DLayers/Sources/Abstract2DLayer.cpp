@@ -26,8 +26,7 @@ Abstract2DLayer::Abstract2DLayer(const kstl::string& name, CLASS_NAME_TREE_ARG)
 	: Scene3D(name, PASS_CLASS_NAME_TREE_ARG)
 	, mRenderingScreen(*this, true, LABEL_AND_ID(RenderingScreen))
 	, mManager(*this, true, LABEL_AND_ID(SequenceManager), "DataDrivenSequenceManager:AppSequenceManager") // default is app
-	, mSizeX(*this, false, LABEL_AND_ID(SizeX), -1)
-	, mSizeY(*this, false, LABEL_AND_ID(SizeY), -1)
+	, mSize(*this, false, LABEL_AND_ID(Size), -1,-1)
 	, mIsInteractive(*this, false, LABEL_AND_ID(IsInteractive), true)
 {
 }
@@ -45,13 +44,12 @@ void Abstract2DLayer::InitModifiable()
 		}
 
 		// Use the RenderingScreen size if one of the size is -1
-		if (mSizeX.const_ref() == -1 || mSizeY.const_ref() == -1)
+		if (mSize[0] <= -1.0f || mSize[1] <= -1.0f)
 		{
 			float sX, sY;
 			GetRenderingScreen()->GetDesignSize(sX, sY);
 
-			mSizeX = (unsigned int)sX;
-			mSizeY = (unsigned int)sY;
+			mSize = v2f(sX,sY);
 		}
 		
 		//ModuleSpecificRenderer* renderer = ((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();

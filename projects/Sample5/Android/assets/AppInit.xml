@@ -1,22 +1,16 @@
 <?xml version="1.0"?>
-<Inst N="AppWindow" Type="Window">
-    <Attr N="PositionX" V="-1"/>
-	<Attr N="PositionY" V="-1"/>
-	<Attr N="SizeX" V="1280"/>
-	<Attr N="SizeY" V="800"/>
+<Inst N="Sample5" Type="Window">
+    <Attr N="Position" V="{-1,-1}"/>
+	<Attr N="Size" V="{1280,800}"/>
 	<Attr N="FullScreen" V="false"/>
 	<Attr N="ShowMouseCursor" V="true"/>
 	<Attr Type="string" N="BundleFileName" V="files.bundle" Dyn="true"/>
 	
 	<Inst N="theRenderingScreen" Type="RenderingScreen">
-		<Attr N="SizeX" V="0">
-			<Modifier Type="CoreItemOperatorModifier" V="#..->SizeX#"/>
+		<Attr N="Size" V="{0,0}">
+			<Modifier Type="CoreItemOperatorModifier" V="#..->Size#"/>
 		</Attr>
-		<Attr N="SizeY" V="0">
-			<Modifier Type="CoreItemOperatorModifier" V="#..->SizeY#"/>
-		</Attr>
-		<Attr N="DesignSizeX" V="1280"/>
-		<Attr N="DesignSizeY" V="800"/>
+		<Attr N="DesignSize" V="{1280,800}"/>
 		<Attr N="BitsPerZ" V="32"/>
 		<Attr N="Brightness" V="0"/>
 		<Attr N="BackDropColor" V="{0.0,0.0,0.0}"/>
@@ -25,16 +19,14 @@
 	
 	<Inst N="ConfirmExitPopup" Type="UIPanel">
 	  <Attr N="Anchor" V="{0.500000,0.500000}"/>
-	  <Attr N="SizeY" V="800"/>
-	  <Attr N="SizeX" V="1280"/>
+	  <Attr N="Size" V="{1280,800}"/>
 	  <Attr N="Opacity" V="0.600000"/>
 	  <Attr N="Dock" V="{0.500000,0.500000}"/>
 	  <Attr N="Color" V="{0.200000,0.200000,0.200000,1.000000}"/>
 	  <Attr N="Priority" V="0"/>
 	  <Inst N="BGBulle" Type="UIPanel">
 		<Attr N="Anchor" V="{0.500000,0.500000}"/>
-		<Attr N="SizeY" V="240"/>
-		<Attr N="SizeX" V="500"/>
+		<Attr N="Size" V="{500,240}"/>
 		<Attr N="Priority" V="500"/>
 		<Attr N="Dock" V="{0.500000,0.500000}"/>
 		<Attr N="Color" V="{1.000000,1.000000,1.000000,1.000000}"/>

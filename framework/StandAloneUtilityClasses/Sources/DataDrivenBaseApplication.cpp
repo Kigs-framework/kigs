@@ -506,18 +506,14 @@ void DataDrivenBaseApplication::ProtectedInit()
 		L_capacitylist = L_displaycaps->GetMainDisplayDeviceCapacityList();
 
 	// default
-	int L_ScreenSizeX = 1280;
-	int L_ScreenSizeY = 720;
+	v2f L_ScreenSize( 1280, 720 );
 
 	// retrieve wanted values
-	AppInit->getValue("SizeX", L_ScreenSizeX);
-	AppInit->getValue("SizeY", L_ScreenSizeY);
+	AppInit->getValue("Size", L_ScreenSize);
 
-	int L_ScreenPosX = 0;
-	int L_ScreenPosY = 0;
+	v2f L_ScreenPos(0,0);
 
-	AppInit->getValue("PositionX", L_ScreenPosX);
-	AppInit->getValue("PositionY", L_ScreenPosY);
+	AppInit->getValue("Position", L_ScreenPos);
 
 	bool	L_isWindowed = false;
 
@@ -546,11 +542,10 @@ void DataDrivenBaseApplication::ProtectedInit()
 				if (!L_isWindowed)
 				{
 					// if not windowed, just set pos at 0,0
-					L_ScreenPosX = 0;
-					L_ScreenPosY = 0;
+					L_ScreenPos.Set(0,0);
 
-					L_ScreenSizeX = current.mWidth;
-					L_ScreenSizeY = current.mHeight;
+					L_ScreenSize.x = current.mWidth;
+					L_ScreenSize.y = current.mHeight;
 				}
 				else
 				{
@@ -558,27 +553,27 @@ void DataDrivenBaseApplication::ProtectedInit()
 					int w = current.mWidth;
 					int h = current.mHeight;
 
-					if (L_ScreenSizeX < 0)
-						L_ScreenSizeX = (w * -L_ScreenSizeX) / 100;
+					if (L_ScreenSize.x < 0)
+						L_ScreenSize.x = (w * -L_ScreenSize.x) / 100;
 
-					if (L_ScreenSizeY < 0)
-						L_ScreenSizeY = (h * -L_ScreenSizeY) / 100;
-
-					// if -1 center window
-					if (L_ScreenPosX == -1)
-						L_ScreenPosX = (w - L_ScreenSizeX) >> 1;
+					if (L_ScreenSize.y < 0)
+						L_ScreenSize.y = (h * -L_ScreenSize.y) / 100;
 
 					// if -1 center window
-					if (L_ScreenPosY == -1)
-						L_ScreenPosY = (h - L_ScreenSizeY) >> 1;
+					if (L_ScreenPos.x == -1)
+						L_ScreenPos.x = (w - (int)L_ScreenSize.x) >> 1;
+
+					// if -1 center window
+					if (L_ScreenPos.y == -1)
+						L_ScreenPos.y = (h - (int)L_ScreenSize.y) >> 1;
 
 					// if negative (and not -1) set position relative to right border 
-					if(L_ScreenPosX < 0)
-						L_ScreenPosX = w - L_ScreenSizeX + L_ScreenPosX;
+					if(L_ScreenPos.x < 0)
+						L_ScreenPos.x = w - L_ScreenSize.x + L_ScreenPos.x;
 
 					// if negative (and not -1) set position relative to bottom border 
-					if (L_ScreenPosY < 0)
-						L_ScreenPosY = h - L_ScreenSizeY + L_ScreenPosY;
+					if (L_ScreenPos.y < 0)
+						L_ScreenPos.y = h - L_ScreenSize.y + L_ScreenPos.y;
 				}
 				break;
 			}
@@ -586,15 +581,13 @@ void DataDrivenBaseApplication::ProtectedInit()
 		}
 	}
 
-	if (L_ScreenSizeX < 0) L_ScreenSizeX = 1280;
-	if (L_ScreenSizeY < 0) L_ScreenSizeY = 720;
+	if (L_ScreenSize.x < 0) L_ScreenSize.x = 1280;
+	if (L_ScreenSize.y < 0) L_ScreenSize.y = 720;
 
 	// reset value according to display caps
 
-	AppInit->setValue("PositionX", L_ScreenPosX);
-	AppInit->setValue("PositionY", L_ScreenPosY);
-	AppInit->setValue("SizeX", L_ScreenSizeX);
-	AppInit->setValue("SizeY", L_ScreenSizeY);
+	AppInit->setValue("Position", L_ScreenPos);
+	AppInit->setValue("Size", L_ScreenSize);
 
 	// retrieve rendering screen
 	kstl::vector<CMSP>	instances;
@@ -603,8 +596,7 @@ void DataDrivenBaseApplication::ProtectedInit()
 	{
 		mRenderingScreen = instances[0].get();
 
-		mRenderingScreen->setValue("SizeX", L_ScreenSizeX);
-		mRenderingScreen->setValue("SizeY", L_ScreenSizeY);
+		mRenderingScreen->setValue("Size", L_ScreenSize);
 
 		ModuleInput* theInputModule = (ModuleInput*)KigsCore::GetModule("ModuleInput");
 		theInputModule->getTouchManager()->addTouchSupport(mRenderingScreen,0);	// root touchsupport

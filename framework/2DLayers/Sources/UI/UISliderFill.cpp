@@ -55,15 +55,14 @@ void UISliderFill::InitModifiable()
 		mVoidTexturePointer = textureManager->GetTexture(mVoidTexture);
 
 		// auto size button
-		if( (((unsigned int)mSizeX)==0) && (((unsigned int)mSizeY)==0) )
+		if( (((int)mSize[0])==0) && (((int)mSize[1])==0) )
 		{
 			if(mVoidTexturePointer)
 			{
 				unsigned int width,height;
 
 				mVoidTexturePointer->GetSize(width,height);
-				mSizeX=width;
-				mSizeY=height;
+				mSize=v2f(width,height);
 			}
 		}
 
@@ -137,10 +136,9 @@ void UISliderFill::ChangeTexture(kstl::string _voidtexturename,kstl::string _sta
 
 			mVoidTexturePointer->GetSize(width,height);
 
-			if(mSizeX != width || mSizeY != height)
+			if(mSize[0] != width || mSize[1] != height)
 			{
-				mSizeX = width;
-				mSizeY = height;
+				mSize = v2f(width, height);
 				SetNodeFlag(Node2D_SizeChanged);
 			}
 		}
@@ -218,21 +216,20 @@ void UISliderFill::ComputeInitialElementsPosition()
 			unsigned int px,py;
 			mStartTexturePointer->GetSize(px,py);
 			
-			int currentx,currenty;
+			v2f currentS;
 			int newpos[2] ={0};
-			child->getArrayValue(LABEL_TO_ID(Position),newpos,2);
-			child->getValue(LABEL_TO_ID(SizeX),currentx);
-			child->getValue(LABEL_TO_ID(SizeY),currenty);
+			child->getArrayValue("Position",newpos,2);
+			child->getValue("Size", currentS);
 
 			if(((const kstl::string&)mDirection) == "Vertical")
 			{
-				mMiddleSizeX =  newpos[0] - px + (currentx/2);
+				mMiddleSizeX =  newpos[0] - px + (currentS.x/2);
 				mMiddleSizeY = py;
 				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, px, 0, width, height, mMiddlePositionX, mMiddlePositionY);
 			}
 			else
 			{
-				mMiddleSizeY =  newpos[1] + py - (currenty);
+				mMiddleSizeY =  newpos[1] + py - (currentS.y);
 				mMiddleSizeX = px;
 				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, 0, mRealSize.y - py, mMiddleSizeX, mMiddleSizeY, mMiddlePositionX, mMiddlePositionY);
 			}

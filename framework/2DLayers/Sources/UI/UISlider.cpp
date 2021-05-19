@@ -141,6 +141,7 @@ void UISlider::InitModifiable()
 		//Set slider Data
 		float Dock[2];
 		int newPos[2] = {mInitialPosX, mInitialPosY};
+		v2f getL;
 		if(((const kstl::string&)mDirection) == "Vertical")
 		{
 			//Set Anchor and dock
@@ -148,13 +149,14 @@ void UISlider::InitModifiable()
 			Dock[1] = 1.0f;
 
 			//Set slider length 
-			GetParents()[0]->getValue(LABEL_TO_ID(SizeY),mSlideLength);
-			mSlideLength -= mSizeY;
+			GetParents()[0]->getValue("Size", getL);
+			mSlideLength = getL.y;
+			mSlideLength -= mSize[1];
 
 			if(mInitialRatio>0)
 			{
 				 newPos[1] = mInitialPosY - ((mSlideLength * mInitialRatio) / 100);
-				 this->setArrayValue(LABEL_TO_ID(Position),newPos,2);
+				 this->setArrayValue("Position",newPos,2);
 			}
 		}
 		else
@@ -164,32 +166,32 @@ void UISlider::InitModifiable()
 			Dock[1] = 0.5f;
 
 			//Set slider length 
-			GetParents()[0]->getValue(LABEL_TO_ID(SizeX),mSlideLength);
-			mSlideLength -= mSizeX;
+			GetParents()[0]->getValue("Size", getL);
+			mSlideLength = getL.x;
+			mSlideLength -= mSize[0];
 
 			if(mInitialRatio>0)
 			{
 				newPos[0] = mInitialPosX + ((mSlideLength * mInitialRatio) / 100);
-				this->setArrayValue(LABEL_TO_ID(Position),newPos,2);
+				this->setArrayValue("Position",newPos,2);
 			}
 		}
 		mCurrentRatio = mInitialRatio;
 
-		this->setArrayValue(LABEL_TO_ID(Dock),Dock,2);
-		this->setArrayValue(LABEL_TO_ID(Anchor),Dock,2);
+		this->setArrayValue("Dock",Dock,2);
+		this->setArrayValue("Anchor",Dock,2);
 
 		
 
 		// auto size button
-		if( (((unsigned int)mSizeX)==0) && (((unsigned int)mSizeY)==0) )
+		if( (((int)mSize[0])==0) && (((int)mSize[1])==0) )
 		{
 			if(mUpTexturePointer)
 			{
 				unsigned int width,height;
 
 				mUpTexturePointer->GetSize(width,height);
-				mSizeX=width;
-				mSizeY=height;
+				mSize=v2f(width,height);
 			}
 		}
 
@@ -205,12 +207,12 @@ void	UISlider::ForcedRatio(unsigned int value)
 	if(((const kstl::string&)mDirection) == "Vertical")
 	{
 		newPos[1] = mInitialPosY - ((mSlideLength * value) / 100);
-		this->setArrayValue(LABEL_TO_ID(Position),newPos,2);
+		this->setArrayValue("Position",newPos,2);
 	}
 	else
 	{
 		newPos[0] = mInitialPosX + ((mSlideLength * value) / 100);
-		this->setArrayValue(LABEL_TO_ID(Position),newPos,2);
+		this->setArrayValue("Position",newPos,2);
 	}
 	mCurrentRatio = value;
 }
@@ -233,7 +235,7 @@ void	UISlider::ResetSlider()
 			newPos[0] = mInitialPosX + ((mSlideLength * mInitialRatio) / 100);
 		}
 	}
-	this->setArrayValue(LABEL_TO_ID(Position),newPos,2);
+	this->setArrayValue("Position",newPos,2);
 }
 
 void UISlider::ChangeTexture(kstl::string _texturename, kstl::string _overtexturename, kstl::string _downtexturename)
@@ -272,10 +274,9 @@ void UISlider::ChangeTexture(kstl::string _texturename, kstl::string _overtextur
 
 			mUpTexturePointer->GetSize(width,height);
 
-			if(mSizeX != width || mSizeY != height)
+			if(mSize[0] != width || mSize[1] != height)
 			{
-				mSizeX = width;
-				mSizeY = height;
+				mSize = v2f(width, height);
 				SetNodeFlag(Node2D_SizeChanged);
 			}
 		}

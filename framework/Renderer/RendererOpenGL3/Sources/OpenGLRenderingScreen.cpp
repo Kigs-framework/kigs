@@ -41,14 +41,14 @@ void OpenGLRenderingScreen::FetchPixels(int x, int y, int width, int height, voi
 void OpenGLRenderingScreen::FetchDepth(int x, int y, int width, int height, float *pDepthPixels)
 {
 	glFlush();
-	y = mSizeY - 1 - y;
+	y = mSize[1] - 1 - y;
 	glReadPixels(x, y, width, height, GL_DEPTH_COMPONENT, GL_FLOAT, pDepthPixels);
 }
 
 void OpenGLRenderingScreen::FetchDepth(int x, int y, int width, int height, unsigned int *pDepthPixels)
 {
 	glFlush();
-	y = mSizeY - 1 - y;
+	y = mSize[1] - 1 - y;
 	glReadPixels(x, y, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, pDepthPixels);
 }
 
@@ -57,8 +57,7 @@ void	OpenGLRenderingScreen::Resize(kfloat sizeX, kfloat sizeY)
 	// before screen is init, only update sizeX and sizeY
 	if (!IsInit())
 	{
-		mSizeX = (unsigned int)sizeX;
-		mSizeY = (unsigned int)sizeY;
+		mSize = v2f(sizeX,sizeY);
 	}
 	else
 	{
@@ -68,8 +67,7 @@ void	OpenGLRenderingScreen::Resize(kfloat sizeX, kfloat sizeY)
 
 	if (mResizeDesignSize)
 	{
-		mDesignSizeX = mSizeX;
-		mDesignSizeY = mSizeY;
+		mDesignSize = (v2f)mSize;
 	}
 
 	RecomputeDesignCoef();
@@ -82,8 +80,7 @@ void OpenGLRenderingScreen::InitializeGL(GLsizei width, GLsizei height)
 {
 	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 
-	mSizeX = (unsigned int)width;
-	mSizeY = (unsigned int)height;
+	mSize = v2f(width,height);
 	kfloat    aspect;
 	
 	renderer->SetClearColorValue(0.8f, 0.8f, 1.0f, 0.0f);
@@ -147,22 +144,22 @@ void    OpenGLRenderingScreen::Release(TravState* state)
 			renderer->SetLightMode(RENDERER_LIGHT_OFF);
 			renderer->SetDepthTestMode(false);
 			renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_OFF);
-			renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)mSizeX, 0.0f, (float)mSizeY, -1.0f, 1.0f);
+			renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)mSize[0], 0.0f, (float)mSize[1], -1.0f, 1.0f);
 			renderer->LoadIdentity(MATRIX_MODE_MODEL);
 			renderer->LoadIdentity(MATRIX_MODE_VIEW);
 			renderer->LoadIdentity(MATRIX_MODE_UV);
 			renderer->BindTexture(RENDERER_TEXTURE_2D, mFBOTextureID);
-			renderer->SetScissorValue(0, 0, mSizeX, mSizeY);
-			renderer->Viewport(0, 0, mSizeX, mSizeY);
+			renderer->SetScissorValue(0, 0, mSize[0], mSize[1]);
+			renderer->Viewport(0, 0, mSize[0], mSize[1]);
 
 			VInfo2D vi;
 			UIVerticesInfo mVI = UIVerticesInfo(&vi);
 			VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(mVI.Buffer());
 
 			buf[0].setVertex(0.0f, 0.0f);
-			buf[1].setVertex(0.0, (float)mSizeY);
-			buf[2].setVertex((float)mSizeX, 0.0);
-			buf[3].setVertex((float)mSizeX, (float)mSizeY);
+			buf[1].setVertex(0.0, (float)mSize[1]);
+			buf[2].setVertex((float)mSize[0], 0.0);
+			buf[3].setVertex((float)mSize[0], (float)mSize[1]);
 
 			//Draw Quad that fits the screen
 
@@ -355,8 +352,8 @@ void	OpenGLRenderingScreen::DelayedInit()
 		// create texture with fbo
 		auto& texfileManager = KigsCore::Singleton<TextureFileManager>();
 		mFBOTexture = texfileManager->CreateTexture(getName());
-		mFBOTexture->setValue("Width", mFBOSizeX);
-		mFBOTexture->setValue("Height", mFBOSizeY);
+		mFBOTexture->setValue("Width", mSize[0]);
+		mFBOTexture->setValue("Height", mSize[1]);
 		mFBOTexture->InitForFBO();
 		mFBOTexture->SetRepeatUV(false, false);
 
@@ -370,7 +367,7 @@ void	OpenGLRenderingScreen::DelayedInit()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mFBOSizeX, mFBOSizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mSize[0], mSize[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 		if (use_depth_buffer)
 		{
@@ -385,18 +382,18 @@ void	OpenGLRenderingScreen::DelayedInit()
 
 #ifndef GL_ES2
 			if (zbits == 32)
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, mFBOSizeX, mFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, mSize[0], mSize[1]);
 			else if (zbits == 24)
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mFBOSizeX, mFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mSize[0], mSize[1]);
 			else if (zbits == 16)
 #endif
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, mFBOSizeX, mFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, mSize[0], mSize[1]);
 
 #ifndef GL_ES2
 			else
 			{
 				KIGS_WARNING("Unsupported depth buffer bit size, using 32 bits instead", 3);
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, mFBOSizeX, mFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, mSize[0], mSize[1]);
 			}
 #endif
 
@@ -413,15 +410,15 @@ void	OpenGLRenderingScreen::DelayedInit()
 			mFBOStencilBufferID = mFBODepthBufferID;
 			glBindRenderbuffer(GL_RENDERBUFFER, mFBOStencilBufferID);
 			if (stencilbits == 8)
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, mFBOSizeX, mFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, mSize[0], mSize[1]);
 #ifndef GL_ES2
 			else if (stencilbits == 16)
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX16, mFBOSizeX, mFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX16, mSize[0], mSize[1]);
 #endif
 			else
 			{
 				KIGS_WARNING("Unsupported stencil buffer bit size, using 8 bits instead", 3);
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, mFBOSizeX, mFBOSizeY);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, mSize[0], mSize[1]);
 			}
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mFBOStencilBufferID);
 

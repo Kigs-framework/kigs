@@ -172,8 +172,7 @@ void UIGridLayout::RecomputeLayout()
 
 		if (mAutoResize) 
 		{
-			mSizeX = maxWidth;
-			mSizeY = maxHeight;
+			mSize = v2f(maxWidth,maxHeight);
 		}
 	}
 

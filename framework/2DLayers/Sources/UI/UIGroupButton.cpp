@@ -12,8 +12,7 @@ UIGroupButton::UIGroupButton(const kstl::string& name, CLASS_NAME_TREE_ARG) :
 	, mNoSelectedAction(*this, false, "NoSelectedAction", "")
 	, mParameter(*this, false, "Parameter", (kstl::string)"")
 {
-	mSizeX = 0;
-	mSizeY = 0;
+	mSize = v2f(0,0);
 	mButtonNumber = 0;
 }
 
@@ -32,28 +31,25 @@ UIGroupButton::~UIGroupButton()
 void	UIGroupButton::computeSize(int _buttonNumber, CoreModifiable* a_item)
 {
 	//Recompute group button size
-	int sizeX, sizeY = 0;
+	v2f lsize(0,0);
 	int _Position[2];
-	a_item->getValue(LABEL_TO_ID(SizeX), sizeX);
-	a_item->getValue(LABEL_TO_ID(SizeY), sizeY);
+	a_item->getValue("Size",lsize);
 	a_item->getArrayValue(LABEL_TO_ID(Position), _Position, 2);
 
-	float tmpX = (float)(sizeX + _Position[0]);
-	float tmpY = (float)(sizeY + _Position[1]);
+	v2f tmpS((float)(lsize.x + _Position[0]),(float)(lsize.y + _Position[1]));
 	if (_buttonNumber == 1)
 	{
-		mSizeX = tmpX;
-		mSizeY = tmpY;
+		mSize = tmpS;
 	}
 	else
 	{
 		//Check X axis
-		if (tmpX > mSizeX)
-			mSizeX += (tmpX - mSizeX);
+		if (tmpS[0] > mSize[0])
+			mSize[0] += (tmpS[0] - mSize[0]);
 
 		//Check Y axis
-		if (tmpY > mSizeY)
-			mSizeY += (tmpY - mSizeY);
+		if (tmpS[1] > mSize[1])
+			mSize[1] += (tmpS[1] - mSize[1]);
 	}
 }
 

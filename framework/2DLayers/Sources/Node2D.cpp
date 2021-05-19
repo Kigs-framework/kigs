@@ -21,8 +21,7 @@ IMPLEMENT_CLASS_INFO(Node2D)
 IMPLEMENT_CONSTRUCTOR(Node2D)
 , mParent(nullptr)
 , mPriority(*this, false, "Priority", 0)
-, mSizeX(*this, false, "SizeX", 0)
-, mSizeY(*this, false, "SizeY", 0)
+, mSize(*this, false, "Size", 0,0)
 , mDock(*this, false, "Dock", 0, 0)
 , mAnchor(*this, false, "Anchor", 0, 0)
 , mPosition(*this, false, "Position", 0, 0)
@@ -65,8 +64,7 @@ void Node2D::NotifyUpdate(const unsigned int labelid)
 		PropagateNodeFlags();
 	}
 	
-	bool sizechanged = (labelid == mSizeX.getLabelID()) ||
-		(labelid == mSizeY.getLabelID()) || 
+	bool sizechanged = (labelid == mSize.getLabelID()) ||
 		(labelid == mSizeModeX.getLabelID()) ||
 		(labelid == mSizeModeY.getLabelID());
 	
@@ -186,7 +184,7 @@ void Node2D::ComputeRealSize()
 		return;
 	}
 	
-	Point2D size(mSizeX, mSizeY);
+	Point2D size(mSize);
 
 	SizeMode	s_mode[2];
 	s_mode[0] = (SizeMode)(int)mSizeModeX;
@@ -226,10 +224,7 @@ void Node2D::ComputeRealSize()
 					size[i] = fsize[i];
 					if (fsize[i] >= 0.0f)
 					{
-						if (i == 0)
-							mSizeX = size[i];
-						else
-							mSizeY = size[i];
+						mSize[i] = size[i];
 					}
 					referenceSize[i] = size[i];
 				}
@@ -245,10 +240,7 @@ void Node2D::ComputeRealSize()
 			case CONTENT:
 				size[i] = contentSize[i];
 				referenceSize[i] = contentSize[i];
-				if (i == 0)
-					mSizeX = size[i];
-				else
-					mSizeY = size[i];
+				mSize[i] = size[i];
 				break;
 			case CONTENT_MULTIPLY:
 				size[i] = size[i] * contentSize[i];
@@ -282,10 +274,7 @@ void Node2D::ComputeRealSize()
 
 					if ((s_mode[1 - i] == CONTENT) || (s_mode[1 - i] == DEFAULT))
 					{
-						if (i == 0)
-							mSizeX = size[i];
-						else
-							mSizeY = size[i];
+						mSize[i] = size[i];
 					}
 				}
 			}
@@ -354,8 +343,7 @@ void	Node2D::InitModifiable()
 		mPosition.changeNotificationLevel(Owner);
 		mSizeModeX.changeNotificationLevel(Owner);
 		mSizeModeY.changeNotificationLevel(Owner);
-		mSizeX.changeNotificationLevel(Owner);
-		mSizeY.changeNotificationLevel(Owner);
+		mSize.changeNotificationLevel(Owner);
 		mPreScale.changeNotificationLevel(Owner);
 		mPostScale.changeNotificationLevel(Owner);
 		mPriority.changeNotificationLevel(Owner);

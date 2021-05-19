@@ -41,7 +41,7 @@ public:
 	 * \param	x : position on x axis
 	 * \param	y : position on y axis
 	 */
-	virtual void setPosition(kfloat x, kfloat y) {mPosX=x;mPosY=y;}
+	virtual void setPosition(kfloat x, kfloat y) {mPosition[0]=x; mPosition[1]=y;}
 
 	/**
 	 * \brief	set the texture
@@ -51,14 +51,14 @@ public:
 	 * \param	u2 : 
 	 * \param	v2 : 
 	 */
-	virtual void setTexture(const kfloat &u1,const kfloat &v1,const kfloat &u2,const kfloat &v2) {mTexu1=u1;mTexu2=u2;mTexv1=v1;;mTexv2=v2;}
+	virtual void setTexture(const kfloat &u1,const kfloat &v1,const kfloat &u2,const kfloat &v2) { mTexUV[0]=u1; mTexUV[2]=u2; mTexUV[1]=v1;; mTexUV[3]=v2;}
 	
 	/**
 	 * \brief	set the size
 	 * \fn 		virtual void setSize(const kfloat &s)
 	 * \param	s : new size
 	 */
-	virtual void setSize(const kfloat &s) {mSizeX=mSizeY=s;}
+	virtual void setSize(const kfloat &s) {mSize[0]=mSize[1]=s;}
 	
 	/**
 	 * \brief	set the size
@@ -66,7 +66,7 @@ public:
 	 * \param	sx : size on x axis
 	 * \param	sy : size on y axis
 	 */
-	virtual void setSize(const kfloat &sx, const kfloat &sy) {mSizeX=sx;mSizeY=sy;}
+	virtual void setSize(const kfloat &sx, const kfloat &sy) {mSize[0]=sx;mSize[1]=sy;}
 	
 	/**
 	 * \brief	get the size
@@ -74,7 +74,7 @@ public:
 	 * \param	sx : size on x axis (in/out param)
 	 * \param	sy : size on y axis (in/out param)
 	 */
-	virtual void getSize(kfloat &sx, kfloat &sy) {sx=mSizeX;sy=mSizeY;}
+	virtual void getSize(kfloat &sx, kfloat &sy) {sx=mSize[0];sy=mSize[1];}
 
 
 protected:
@@ -91,28 +91,18 @@ protected:
 	 * \param	pmin : point min of the bounding box (in/out param)
 	 * \param	pmax : point max of the bounding box (in/out param)
 	 */
-	void	GetNodeBoundingBox(Point3D& pmin,Point3D& pmax) const override {pmin.Set((kfloat)mPosX,KFLOAT_CONST(0.0f),(kfloat)mPosY); pmax.Set((kfloat)mPosX+(kfloat)mSizeX,(kfloat)mDisplacement,(kfloat)mPosY+(kfloat)mSizeY);}
+	void	GetNodeBoundingBox(Point3D& pmin,Point3D& pmax) const override {pmin.Set((kfloat)mPosition[0],KFLOAT_CONST(0.0f),(kfloat)mPosition[1]); pmax.Set((kfloat)mPosition[0] +(kfloat)mSize[0],(kfloat)mDisplacement,(kfloat)mPosition[1] +(kfloat)mSize[1]);}
 
 	//! file name of the used texture
 	//maString mTextureFileName;
 	//! displacement
 	maFloat mDisplacement;
-	//! position on x axis
-	maFloat mPosX;
-	//! position on y axis
-	maFloat mPosY;
-	//! size on x axis
-	maFloat mSizeX;
-	//! size on y axis
-	maFloat mSizeY;
-	//! coord texture u
-	maFloat mTexu1;
-	//! coord texture u
-	maFloat mTexu2;
-	//! coord texture v
-	maFloat mTexv1;
-	//! coord texture v
-	maFloat mTexv2;
+	//! position
+	maVect2DF mPosition;
+	//! size 
+	maVect2DF mSize;
+	//! coord texture u1,v1,u2,v2
+	maVect4DF mTexUV;
 	//! color
 	maVect4DF	mColor;
 

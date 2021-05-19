@@ -1178,6 +1178,11 @@ public:
 		KIGS_WARNING("trying to assign Point3D value to non Point3D CoreValue", 2);
 		return *this;
 	}
+	virtual CoreItem& operator=(const Vector4D& other)
+	{
+		KIGS_WARNING("trying to assign Point3D value to non Point3D CoreValue", 2);
+		return *this;
+	}
 
 	virtual ~CoreValue()
 	{}
@@ -1350,6 +1355,15 @@ inline CoreItem& CoreValue<Point3D>::operator=(const Point3D& other)
 	this->mValue = other;
 	return *this;
 }
+template<>
+inline CoreItem& CoreValue<Point3D>::operator=(const Vector4D& other)
+{
+	this->mValue.x = other.x;
+	this->mValue.y = other.y;
+	this->mValue.z = other.z;
+
+	return *this;
+}
 
 template<>
 inline CoreItem& CoreValue<Point2D>::operator= (const bool& _value)
@@ -1395,4 +1409,70 @@ inline CoreItem& CoreValue<Point2D>::operator=(const Point3D& other)
 	this->mValue.y = other.y;
 	return *this;
 }
+template<>
+inline CoreItem& CoreValue<Point2D>::operator=(const Vector4D& other)
+{
+	this->mValue.x = other.x;
+	this->mValue.y = other.y;
+	return *this;
+}
+
+template<>
+inline CoreItem& CoreValue<Vector4D>::operator= (const bool& _value)
+{
+	return *this;
+}
+template<>
+inline CoreItem& CoreValue<Vector4D>::operator= (const float& _value)
+{
+	this->mValue.x = this->mValue.y = this->mValue.z = this->mValue.w = _value;
+	return *this;
+}
+template<>
+inline CoreItem& CoreValue<Vector4D>::operator= (const int& _value)
+{
+	this->mValue.x = this->mValue.y = this->mValue.z = this->mValue.w = _value;
+	return *this;
+}
+template<>
+inline CoreItem& CoreValue<Vector4D>::operator= (const s64& _value)
+{
+	this->mValue.x = this->mValue.y = this->mValue.z = this->mValue.w = _value;
+	return *this;
+}
+template<>
+inline CoreItem& CoreValue<Vector4D>::operator= (const unsigned int& _value)
+{
+	this->mValue.x = this->mValue.y = this->mValue.z = this->mValue.w = _value;
+	return *this;
+}
+template<>
+inline CoreItem& CoreValue<Vector4D>::operator= (const u64& _value)
+{
+	this->mValue.x = this->mValue.y = this->mValue.z = this->mValue.w = _value;
+	return *this;
+}
+template<>
+inline CoreItem& CoreValue<Vector4D>::operator=(const Point2D& other)
+{
+	this->mValue.x = other.x;
+	this->mValue.y = other.y;
+
+	return *this;
+}
+template<>
+inline CoreItem& CoreValue<Vector4D>::operator=(const Point3D& other)
+{
+	this->mValue.x = other.x;
+	this->mValue.y = other.y;
+	this->mValue.z = other.z;
+	return *this;
+}
+template<>
+inline CoreItem& CoreValue<Vector4D>::operator=(const Vector4D& other)
+{
+	this->mValue = other;
+	return *this;
+}
+
 #endif // _COREVALUE_H

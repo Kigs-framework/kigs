@@ -65,14 +65,7 @@ public:
 	*/
 	void	GetSize(kfloat& sizeX, kfloat& sizeY)
 	{
-		if (mUseFBO)
-		{
-			sizeX = (kfloat)mFBOSizeX; sizeY = (kfloat)mFBOSizeY;
-		}
-		else
-		{
-			sizeX = (kfloat)(unsigned int)mSizeX; sizeY = (kfloat)(unsigned int)mSizeY;
-		}
+		sizeX = (kfloat)mSize[0]; sizeY = (kfloat)mSize[1];
 	}
 
 	/**
@@ -81,7 +74,7 @@ public:
 	* \param	dsizeX : design size on the x axis (in/out param)
 	* \param	dsizeY : design size on the y axis (in/out param)
 	*/
-	void	GetDesignSize(kfloat& dsizeX, kfloat& dsizeY) { dsizeX = (kfloat)(unsigned int)mDesignSizeX; dsizeY = (kfloat)(unsigned int)mDesignSizeY; }
+	void	GetDesignSize(kfloat& dsizeX, kfloat& dsizeY) { dsizeX = (kfloat)mDesignSize[0]; dsizeY = (kfloat)mDesignSize[1]; }
 
 
 	/**
@@ -174,14 +167,11 @@ protected:
 
 	maInt mBitsForStencil;
 
-	//!  size of the screen on x axis
-	maUInt mSizeX;
-	//!  size of the screen on y axis
-	maUInt mSizeY;
-	//!  design size of the screen on x axis 
-	maUInt mDesignSizeX;
-	//!  design size of the screen on y axis
-	maUInt mDesignSizeY;
+	//!  size of the screen 
+	maVect2DF mSize;
+	//!  design size of the screen  
+	maVect2DF mDesignSize;
+
 	//! ?
 	maBool mIsOffScreen;
 	//! name of the parent windows
@@ -208,14 +198,11 @@ protected:
 
 	void				RecomputeDesignCoef();
 
-	kfloat				mDesignCoefX,mDesignCoefY;
+	v2f					mDesignCoef;
 
 	bool				mWasActivated;
 
 	maBool				mUseFBO;
-
-	maInt				mFBOSizeX;
-	maInt				mFBOSizeY;
 
 	SP<Texture>			mFBOTexture;
 

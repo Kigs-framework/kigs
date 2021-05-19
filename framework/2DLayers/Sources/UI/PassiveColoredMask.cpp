@@ -103,14 +103,13 @@ void	PassiveColoredMask::InitModifiable()
 				}
 
 				// auto size button
-				if( (((unsigned int)mSizeX)==0) && (((unsigned int)mSizeY)==0) )
+				if( (((int)mSize[0])==0) && (((int)mSize[1])==0) )
 				{
 					if(mTexture)
 					{
 						float width,height;
 						mTexture->GetSize(width,height);
-						mSizeX=width;
-						mSizeY=height;
+						mSize=v2f(width,height);
 					}
 				}
 			}

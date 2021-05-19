@@ -221,8 +221,7 @@ protected:
 
 	maInt												mPriority;
 	maFloat												mRotationAngle;
-	maFloat												mSizeX;
-	maFloat												mSizeY;
+	maVect2DF											mSize;
 	maVect2DF											mDock;
 	maVect2DF											mAnchor;
 	maVect2DF											mPosition;

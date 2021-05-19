@@ -226,7 +226,7 @@ void UITextArea::ProtectedDraw(TravState* state)
 	float tx, ty;
 	mTexturePointer->GetSize(tx, ty);
 
-	float posY = mSizeY - ty;
+	float posY = mSize[1] - ty;
 
 	Point2D pt[4];
 	pt[0].Set(0.0f, posY);

@@ -13,10 +13,8 @@ IMPLEMENT_CONSTRUCTOR(RenderingScreen)
 	, mBitsPerPixel(*this, true, "BitsPerPixel", 32)
 	, mBitsPerZ(*this, true, "BitsPerZ", 16)
 	, mBitsForStencil(*this, true, "BitsForStencil", 0)
-	, mSizeX(*this, false, "SizeX", 256)
-	, mSizeY(*this, false, "SizeY", 256)
-	, mDesignSizeX(*this, false, "DesignSizeX", 256)
-	, mDesignSizeY(*this, false, "DesignSizeY", 256)
+	, mSize(*this, false, "Size", 256,256)
+	, mDesignSize(*this, false, "DesignSize", 256,256)
 	, mIsOffScreen(*this, true, "IsOffScreen", false)
 	, mParentWindowName(*this, true, "ParentWindowName", "")
 	, mVSync(*this, true, "VSync", false)
@@ -27,8 +25,6 @@ IMPLEMENT_CONSTRUCTOR(RenderingScreen)
 	, mNeedDoubleBuffer(*this, false, "NeedDoubleBuffer", true)
 	, mWasActivated(false)
 	, mUseFBO(*this, true, "UseFBO", false)
-	, mFBOSizeX(*this, true, "FBOSizeX", 640)
-	, mFBOSizeY(*this, true, "FBOSizeY", 480)
 	, mFBOTexture(0)
 {
 	// retreive renderer
@@ -74,28 +70,25 @@ void RenderingScreen::InitModifiable()
 	// I want to be notified on brightness change
 	mBrightness.changeNotificationLevel(Owner);
 
-	if (mDesignSizeX == 0 && mDesignSizeY == 0)
+	if (mDesignSize[0] == 0 && mDesignSize[1] == 0)
 	{
-		mDesignSizeX = mSizeX;
-		mDesignSizeY = mSizeY;
+		mDesignSize = (v2f)mSize;
 	}
 	else
 	{
-		if (mDesignSizeX == 0)
+		if (mDesignSize[0] == 0)
 		{
-			mDesignSizeX = mDesignSizeY * mSizeX / mSizeY;
+			mDesignSize[0] = mDesignSize[1] * mSize[0] / mSize[1];
 		}
-		else if (mDesignSizeY == 0)
+		else if (mDesignSize[1] == 0)
 		{
-			mDesignSizeY = mDesignSizeX * mSizeY / mSizeX;
+			mDesignSize[1] = mDesignSize[0] * mSize[1] / mSize[0];
 		}
 	}
 
 	// recompute mDesignCoefX,mDesignCoefY;
-	mSizeX.changeNotificationLevel(Owner);
-	mSizeY.changeNotificationLevel(Owner);
-	mDesignSizeX.changeNotificationLevel(Owner);
-	mDesignSizeY.changeNotificationLevel(Owner);
+	mSize.changeNotificationLevel(Owner);
+	mDesignSize.changeNotificationLevel(Owner);
 
 	RecomputeDesignCoef();
 	CoreModifiable::InitModifiable();
@@ -103,10 +96,8 @@ void RenderingScreen::InitModifiable()
 
 void RenderingScreen::NotifyUpdate(const unsigned int  labelid )
 {
-	if(	(labelid==mSizeX.getLabelID()) ||
-		(labelid==mSizeY.getLabelID()) ||
-		(labelid==mDesignSizeX.getLabelID()) ||
-		(labelid==mDesignSizeY.getLabelID()) )
+	if(	(labelid==mSize.getLabelID()) ||
+		(labelid==mDesignSize.getLabelID()))
 	{
 		RecomputeDesignCoef();
 	}
@@ -116,8 +107,8 @@ void RenderingScreen::NotifyUpdate(const unsigned int  labelid )
 
 void RenderingScreen::RecomputeDesignCoef()
 {
-	mDesignCoefX=((kfloat)(int)mDesignSizeX)/((kfloat)(int)mSizeX);
-	mDesignCoefY=((kfloat)(int)mDesignSizeY)/((kfloat)(int)mSizeY);
+	mDesignCoef[0] = mDesignSize[0] / mSize[0];
+	mDesignCoef[1] = mDesignSize[1] / mSize[1];
 }
 
 v2f RenderingScreen::GlobalMousePositionToDesignPosition(v2i pos)
@@ -127,8 +118,8 @@ v2f RenderingScreen::GlobalMousePositionToDesignPosition(v2i pos)
 	{
 		mParentWindow->GetMousePosInWindow(pos.x, pos.y, result.x, result.y);
 		auto size = mParentWindow->GetSize();
-		result.x = mDesignSizeX * result.x / size.x;
-		result.y = mDesignSizeY * result.y / size.y;
+		result.x = mDesignSize[0] * result.x / size.x;
+		result.y = mDesignSize[1] * result.y / size.y;
 	}
 	return result;
 }
@@ -144,13 +135,11 @@ void RenderingScreen::GetMouseRatioInScreen(int posx,int posy,kfloat& sposx,kflo
 	if(mParentWindow !=0)
 	{
 		mParentWindow->GetMousePosInDesignWindow(posx, posy, sposx, sposy);
-		/*int L_WinSizeX, L_WinSizeY = 0;
-		mParentWindow->getValue(LABEL_TO_ID(SizeX),L_WinSizeX);
-		mParentWindow->getValue(LABEL_TO_ID(SizeY),L_WinSizeY);*/
-		sposx -= ((int)mDesignSizeX)*0.5f;
-		sposy -= ((int)mDesignSizeY)*0.5f;
-		sposx /= (float)mDesignSizeX;
-		sposy /= (float)mDesignSizeY;
+
+		sposx -= ((int)mDesignSize[0])*0.5f;
+		sposy -= ((int)mDesignSize[1])*0.5f;
+		sposx /= (float)mDesignSize[0];
+		sposy /= (float)mDesignSize[1];
 	}
 }
 
@@ -158,13 +147,12 @@ void RenderingScreen::GetMouseRatio(int posx,int posy,kfloat& sposx,kfloat& spos
 {
 	if(mParentWindow !=0)
 	{
-		int L_WinSizeX, L_WinSizeY = 0;
-		mParentWindow->getValue(LABEL_TO_ID(SizeX),L_WinSizeX);
-		mParentWindow->getValue(LABEL_TO_ID(SizeY),L_WinSizeY);
-		sposx = posx-(int)L_WinSizeX*0.5f;
-		sposy = posy-(int)L_WinSizeY*0.5f;
-		sposx /= L_WinSizeX;
-		sposy /= L_WinSizeY;
+		v2f L_WinSize( 0,0);
+		mParentWindow->getValue("Size", L_WinSize);
+		sposx = posx-(int)L_WinSize.x*0.5f;
+		sposy = posy-(int)L_WinSize.y*0.5f;
+		sposx /= L_WinSize.x;
+		sposy /= L_WinSize.y;
 	}
 }
 
@@ -172,14 +160,12 @@ bool RenderingScreen::MouseIsInScreen(int posx,int posy)
 {
 	if(mParentWindow !=0)
 	{
-		int L_WinSizeX, L_WinSizeY, L_PosX, L_PosY;
-		mParentWindow->getValue(LABEL_TO_ID(PositionX),L_PosX);
-		mParentWindow->getValue(LABEL_TO_ID(PositionY),L_PosY);
-		mParentWindow->getValue(LABEL_TO_ID(SizeX),L_WinSizeX);
-		mParentWindow->getValue(LABEL_TO_ID(SizeY),L_WinSizeY);
+		v2f L_WinSize, L_Pos;
+		mParentWindow->getValue("Position",L_Pos);
+		mParentWindow->getValue("Size",L_WinSize);
 
-		if( (posx < L_PosX) || (posx > (L_PosX+L_WinSizeX)) ||
-			(posy < L_PosY) || (posy > (L_PosY+L_WinSizeY)) )
+		if( (posx < L_Pos.x) || (posx > (L_Pos.x+L_WinSize.x)) ||
+			(posy < L_Pos.y) || (posy > (L_Pos.y+L_WinSize.y)) )
 			return false;
 	}
 	return true;
@@ -187,19 +173,19 @@ bool RenderingScreen::MouseIsInScreen(int posx,int posy)
 
 void RenderingScreen::GetMousePosInDesignScreen(int posx,int posy,kfloat& sposx,kfloat& sposy)
 {
-	sposx=((kfloat)posx)*mDesignCoefX;
-	sposy=((kfloat)posy)*mDesignCoefY;
+	sposx=((kfloat)posx)*mDesignCoef[0];
+	sposy=((kfloat)posy)*mDesignCoef[1];
 }
 
 void RenderingScreen::GetMouseMoveInScreen(kfloat posx,kfloat posy,kfloat& sposx,kfloat& sposy)
 {
-	sposx=posx*mDesignCoefX;
-	sposy=posy*mDesignCoefY;
+	sposx=posx*mDesignCoef[0];
+	sposy=posy*mDesignCoef[1];
 }
 
 bool RenderingScreen::SetActive(TravState* state)
 {
-	if (mSizeX == -1 || mSizeY == -1)
+	if (mSize[0] == -1 || mSize[1] == -1)
 		return false;
 
 	mWasActivated = true;
@@ -231,8 +217,8 @@ bool RenderingScreen::GetDataInTouchSupport(const touchPosInfos& posin, touchPos
 
 	if (mIsOffScreen)
 	{
-		kfloat cx = (kfloat)(unsigned int)mDesignSizeX;
-		kfloat cy = (kfloat)(unsigned int)mDesignSizeY;
+		kfloat cx = mDesignSize[0];
+		kfloat cy = mDesignSize[1];
 
 		pout.pos.x = posin.pos.x*cx;
 		pout.pos.y = posin.pos.y*cy;
@@ -244,9 +230,9 @@ bool RenderingScreen::GetDataInTouchSupport(const touchPosInfos& posin, touchPos
 		pout.pos.z = 0;
 	}
 
-	if ((pout.pos.x >= 0.0f) && (pout.pos.x < (kfloat)(unsigned int)mDesignSizeX))
+	if ((pout.pos.x >= 0.0f) && (pout.pos.x < mDesignSize[0]))
 	{
-		if ((pout.pos.y >= 0.0f) && (pout.pos.y < (kfloat)(unsigned int)mDesignSizeY))
+		if ((pout.pos.y >= 0.0f) && (pout.pos.y < mDesignSize[1]))
 		{
 			return true;
 		}
@@ -264,7 +250,7 @@ bool RenderingScreen::IsValidTouchSupport(Vector3D posin)
 	GetMousePosInScreen((s32)posin.x, (s32)posin.y, pout.x, pout.y);
 
 	// return true if pos is inside screen
-	if ((pout.x >= 0) && (pout.x < mDesignSizeX) && (pout.y >= 0) && (pout.y < mDesignSizeY))
+	if ((pout.x >= 0) && (pout.x < mDesignSize[0]) && (pout.y >= 0) && (pout.y < mDesignSize[1]))
 	{
 		return true;
 	}
@@ -291,7 +277,7 @@ void RenderingScreen::ManageFade(TravState* state)
 		renderer->SetLightMode(RENDERER_LIGHT_OFF);
 		renderer->SetDepthTestMode(false);
 		renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_OFF);
-		renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)mDesignSizeX, 0.0f, (float)mDesignSizeY, -1.0f, 1.0f);
+		renderer->Ortho(MATRIX_MODE_PROJECTION, 0.0f, (float)mDesignSize[0], 0.0f, (float)mDesignSize[1], -1.0f, 1.0f);
 		renderer->LoadIdentity(MATRIX_MODE_MODEL);
 		renderer->LoadIdentity(MATRIX_MODE_VIEW);
 
@@ -306,9 +292,9 @@ void RenderingScreen::ManageFade(TravState* state)
 
 		// triangle strip order
 		buf[0].setVertex(0.0f, 0.0f);
-		buf[1].setVertex((float)mDesignSizeX, 0.0);
-		buf[3].setVertex((float)mDesignSizeX, (float)mDesignSizeY);
-		buf[2].setVertex(0.0, (float)mDesignSizeY);
+		buf[1].setVertex((float)mDesignSize[0], 0.0);
+		buf[3].setVertex((float)mDesignSize[0], (float)mDesignSize[1]);
+		buf[2].setVertex(0.0, (float)mDesignSize[1]);
 
 		//Draw Quad that fits the screen
 		if (mBrightness > 0)

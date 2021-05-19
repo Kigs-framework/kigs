@@ -453,3 +453,10 @@ void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* ca
 	mCurrentItem->getValue(value);
 	CoreItemEvaluationContext::ReleaseContext();
 }
+void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, Vector4D& value)
+{
+	CoreItemEvaluationContext::SetContext(&mContext);
+	*((CoreValue<Vector4D>*)mContext.mVariableList[LABEL_TO_ID(input).toUInt()]) = value;
+	mCurrentItem->getValue(value);
+	CoreItemEvaluationContext::ReleaseContext();
+}

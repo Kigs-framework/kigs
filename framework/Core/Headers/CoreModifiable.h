@@ -756,12 +756,18 @@ public:
 	DECLARE_SET_VALUE(const char*);
 	DECLARE_SET_VALUE(const u16*);
 	DECLARE_SET_VALUE(const UTF8Char*);
+	DECLARE_SET_VALUE(const v2f&);
+	DECLARE_SET_VALUE(const v3f&);
+	DECLARE_SET_VALUE(const v4f&);
 
 	#define DECLARE_GET_VALUE(type) bool getValue(const KigsID attributeLabel, type value) const;
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
 	EXPAND_MACRO_FOR_STRING_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
 	EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
-	
+
+	DECLARE_GET_VALUE(v2f&);
+	DECLARE_GET_VALUE(v3f&);
+	DECLARE_GET_VALUE(v4f&);
 
 	#define DECLARE_SETARRAY_VALUE2(valuetype) bool setArrayValue(KigsID attributeLabel, valuetype value1, valuetype value2);
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAY_VALUE2);
@@ -792,9 +798,7 @@ public:
 #define DECLARE_GET_VALUE_VECTOR(type, nb) bool getValue(const KigsID attributeLabel, type& vec) const { return getArrayValue(attributeLabel, &vec[0], nb); }
 #define DECLARE_GET_SET_VALUE_VECTOR(type, nb) DECLARE_SET_VALUE_VECTOR(type, nb) DECLARE_GET_VALUE_VECTOR(type, nb)
 
-	DECLARE_GET_SET_VALUE_VECTOR(v2f, 2);
-	DECLARE_GET_SET_VALUE_VECTOR(v3f, 3);
-	DECLARE_GET_SET_VALUE_VECTOR(v4f, 4);
+
 	DECLARE_GET_SET_VALUE_VECTOR(Quaternion, 4);
 
 	DECLARE_GET_SET_VALUE_VECTOR(v2i, 2);

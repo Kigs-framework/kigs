@@ -100,6 +100,11 @@ public:
 		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 
+	void	CallModifier(CoreModifiableAttribute* caller, Vector4D& value, bool isGetter)
+	{
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+	};
+
 	inline bool	isGetterModifier() { return mIsGetter; }
 
 	/*inline void setNext(AttachedModifierBase* nexttoset)
@@ -154,6 +159,7 @@ protected:
 	// 2D or 3D points
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Point2D& value) {};
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Point3D& value) {};
+	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Vector4D& value) {};
 
 	uintptr_t				mNextModifier;
 
@@ -277,6 +283,7 @@ protected:
 	// 2D or 3D points
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Point2D& value);
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Point3D& value);
+	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Vector4D& value);
 
 	CoreItemSP					mCurrentItem;
 	CoreItemEvaluationContext	mContext;

@@ -30,8 +30,7 @@ void UIScrollView::InitModifiable()
 
 		Point2D posViewPort(mPosition[0], mPosition[1]);
 		mVision->Set_Position(posViewPort);
-		mVision->setValue("SizeX", mSizeX);
-		mVision->setValue("SizeY", mSizeY);
+		mVision->setValue("Size", (v2f)mSize);
 
 		kstl::vector<CMSP>	instances=	GetInstances("ModuleInput");
 		KIGS_ASSERT(instances.size() == 1);
@@ -59,9 +58,9 @@ bool UIScrollView::scrollTo(kfloat deltaPos)
 			deltaPos = 0 - mYScroll;
 			stopped = true;
 		}
-		else if ((float)(deltaPos + mYScroll) < (float)(-mMaxY + (int)mSizeY))
+		else if ((float)(deltaPos + mYScroll) < (float)(-mMaxY + (int)mSize[1]))
 		{
-			deltaPos = (float)(-mMaxY + (int)mSizeY) - (float)(mYScroll);
+			deltaPos = (float)(-mMaxY + (int)mSize[1]) - (float)(mYScroll);
 			stopped = true;
 
 		}
@@ -88,7 +87,7 @@ bool UIScrollView::scrollTo(kfloat deltaPos)
 			deltaPos = 0 - mXScroll;
 			stopped = true;
 		}
-		else if ((float)(deltaPos + mXScroll) >(float)(-mMaxX + (int)mSizeX))
+		else if ((float)(deltaPos + mXScroll) >(float)(-mMaxX + (int)mSize[0]))
 		{
 			deltaPos = 0;
 			stopped = true;

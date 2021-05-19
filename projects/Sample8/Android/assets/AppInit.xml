@@ -1,27 +1,20 @@
 <?xml version="1.0"?>
 <!-- create application window -->
-<Inst N="AppWindow" Type="Window">
+<Inst N="Sample8" Type="Window">
 	<!-- PositionX is from screen left side if positive, centered if -1 and from right side if negative ( and not -1 )
 		 PositionY is from screen upper side if positive, centered if -1 and from lower side if negative ( and not -1 ) -->
-    <Attr N="PositionX" V="-1"/>
-	<Attr N="PositionY" V="-1"/>
-	<Attr N="SizeX" V="1280"/>
-	<Attr N="SizeY" V="800"/>
+    <Attr N="Position" V="{-1,-1}"/>
+	<Attr N="Size" V="{1280,800}"/>
 	<Attr N="FullScreen" V="false"/>
 	<Attr N="ShowMouseCursor" V="true"/>
 	<!-- create global rendering screen ( <=> rendering surface ) -->
 	<Inst N="theRenderingScreen" Type="RenderingScreen">
-		<Attr N="SizeX" V="0">
-			<!-- retrieve Window size X -->
-			<Modifier Type="CoreItemOperatorModifier" V="#..->SizeX#"/>
-		</Attr>
-		<Attr N="SizeY" V="0">
-			<!-- retrieve Window size Y -->
-			<Modifier Type="CoreItemOperatorModifier" V="#..->SizeY#"/>
+		<Attr N="Size" V="{0,0}">
+			<!-- retrieve Window size  -->
+			<Modifier Type="CoreItemOperatorModifier" V="#..->Size#"/>
 		</Attr>
 		<!-- virtual screen size if 1280*800 -->
-		<Attr N="DesignSizeX" V="1280"/>
-		<Attr N="DesignSizeY" V="800"/>
+		<Attr N="DesignSize" V="{1280,800}"/>
 		<Attr N="BitsPerZ" V="32"/>
 		<Attr N="Brightness" V="0"/>
 		<Attr N="BackDropColor" V="{0.0,0.0,0.0}"/>

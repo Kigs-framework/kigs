@@ -13,8 +13,7 @@ IMPLEMENT_CONSTRUCTOR(UIRatioKeeper)
 
 void UIRatioKeeper::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mSizeX.getLabelID()) ||
-		(labelid == mSizeY.getLabelID()) ||
+	if ((labelid == mSize.getLabelID()) ||
 		(labelid == mAnchor.getLabelID()) ||
 		(labelid == mPosition.getLabelID()) ||
 		(labelid == mDock.getLabelID()) ||
@@ -59,8 +58,7 @@ void	UIRatioKeeper::RecomputeRatio()
 		currentScreen->GetDesignSize(dsSize.x, dsSize.y);
 
 		// reset default
-		mSizeX = dsSize.x;
-		mSizeY = dsSize.y;
+		mSize = v2f(dsSize.x,dsSize.y);
 
 		mRealSize = dsSize;
 

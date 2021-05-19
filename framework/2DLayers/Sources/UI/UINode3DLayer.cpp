@@ -35,8 +35,7 @@ void UINode3DLayer::InitModifiable()
 			// add the root UIItem
 			mRootItem = KigsCore::GetInstanceOf(getName(), "UIItem");
 
-			mRootItem->setValue("SizeX", 1.0f);
-			mRootItem->setValue("SizeY", 1.0f);
+			mRootItem->setValue("Size", v2f(1.0f,1.0f));
 			addItem(mRootItem);
 			mRootItem->Init();
 		}

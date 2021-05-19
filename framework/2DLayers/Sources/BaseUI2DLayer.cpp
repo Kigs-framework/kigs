@@ -52,8 +52,7 @@ void BaseUI2DLayer::InitModifiable()
 			// set the root size to the screen size
 			kfloat X, Y;
 			GetRenderingScreen()->GetDesignSize(X, Y);
-			mRootItem->setValue("SizeX", X);
-			mRootItem->setValue("SizeY", Y);
+			mRootItem->setValue("Size", v2f(X,Y));
 			addItem(mRootItem);
 			mRootItem->Init();
 		}

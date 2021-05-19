@@ -28,8 +28,7 @@ PointInteretVignette::PointInteretVignette(const kstl::string & name, CLASS_NAME
 	, mDescriptionColor(*this, false, LABEL_AND_ID(DescriptionColor), KFLOAT_ONE, KFLOAT_ONE, KFLOAT_ONE, KFLOAT_ZERO)
 	, mPointOfInterest(0)
 {
-	mSizeX.changeNotificationLevel(Owner);
-	mSizeY.changeNotificationLevel(Owner);
+	mSize.changeNotificationLevel(Owner);
 	mPositionOnWindow.changeNotificationLevel(Owner);
 	mTitleFontSize.changeNotificationLevel(Owner);
 	mFontTitleName.changeNotificationLevel(Owner);
@@ -65,7 +64,7 @@ void PointInteretVignette::PositionVignette()
 	if (mPositionOnWindow.const_ref() == "Center" || mPointOfInterest == NULL)
 	{
 		v2f size = getRootFather()->GetSize();
-		Set_Position((size.x - mSizeX) / 2, (size.y - mSizeY) / 2);
+		Set_Position((size.x - mSize[0]) / 2, (size.y - mSize[1]) / 2);
 	}
 	else if (mPositionOnWindow.const_ref() == "Vignette")
 	{
@@ -126,7 +125,7 @@ void PointInteretVignette::SetParameters(kstl::string params)
 void PointInteretVignette::PositionTitle()
 {
 	v2f size = mNamePointInteretTextShow->GetSize();
-	mNamePointInteretTextShow->Set_Position((mSizeX / 2) - (size.x / 2), 5);
+	mNamePointInteretTextShow->Set_Position((mSize[0] / 2) - (size.x / 2), 5);
 }
 
 void PointInteretVignette::PositionDescription()
@@ -134,7 +133,7 @@ void PointInteretVignette::PositionDescription()
 	if (mDescriptionAlignment == 2)
 	{
 		v2f size = mDescriptionPointInteretTextShow->GetSize();
-		mDescriptionPointInteretTextShow->Set_Position(mSizeX - size.x - 30, mDescriptionPositionY);
+		mDescriptionPointInteretTextShow->Set_Position(mSize[0] - size.x - 30, mDescriptionPositionY);
 	}
 	else if (mDescriptionAlignment == 0)
 	{
@@ -143,12 +142,12 @@ void PointInteretVignette::PositionDescription()
 	else
 	{
 		v2f size = mDescriptionPointInteretTextShow->GetSize();
-		mDescriptionPointInteretTextShow->Set_Position((mSizeX / 2) - (size.x / 2), mDescriptionPositionY);
+		mDescriptionPointInteretTextShow->Set_Position((mSize[0] / 2) - (size.x / 2), mDescriptionPositionY);
 	}
 }
 void PointInteretVignette::NotifyUpdate(const unsigned int 	labelid)
 {
-	if ((labelid == mSizeX.getLabelID()) || (labelid == mSizeY.getLabelID()))
+	if (labelid == mSize.getLabelID() )
 	{
 		PositionVignette();
 		PositionTitle();
@@ -199,7 +198,7 @@ void PointInteretVignette::NotifyUpdate(const unsigned int 	labelid)
 void PointInteretVignette::PositionExitButton()
 {
 	v2f size = mExitButton->GetSize();
-	mExitButton->Set_Position(mSizeX - size.x - 10, 10);
+	mExitButton->Set_Position(mSize[0] - size.x - 10, 10);
 
 }
 void PointInteretVignette::InitModifiable()
@@ -248,8 +247,7 @@ void PointInteretVignette::InitModifiable()
 		mDescriptionPointInteretTextShow->setValue("Text", mDescriptionOfInterestPoint);
 		PositionDescription();
 
-		mExitButton->setValue("SizeX", 30);
-		mExitButton->setValue("SizeY", 30);
+		mExitButton->setValue("Size", v2f( 30,30 ));
 		mExitButton->ChangeTexture(mExitButtonTextureUp, mExitButtonTextureOver, mExitButtonTextureDown);
 		mExitButton->setValue("ClickUpAction","HideVignette");
 		PositionExitButton();
