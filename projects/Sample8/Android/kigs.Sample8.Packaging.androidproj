@@ -20,12 +20,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
     <TargetName>com.kigs.Sample8</TargetName>
-	<AndroidAPILevel>android-19</AndroidAPILevel>
+    <AndroidAPILevel>android-19</AndroidAPILevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
     <TargetName>com.kigs.Sample8</TargetName>
-	<AndroidAPILevel>android-19</AndroidAPILevel>
+    <AndroidAPILevel>android-19</AndroidAPILevel>
   </PropertyGroup>
   <Import Project="$(AndroidTargetsPath)\Android.props" />
   <ImportGroup Label="ExtensionSettings" />
@@ -47,10 +47,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Content Include="assets\AppInit.xml" />
+    <Content Include="assets\button.lua" />
     <Content Include="assets\Calibri.ttf" />
+    <Content Include="assets\de.loc" />
+    <Content Include="assets\Default.xml" />
+    <Content Include="assets\Down.png" />
+    <Content Include="assets\en.loc" />
+    <Content Include="assets\fr.loc" />
+    <Content Include="assets\imgui.ini" />
+    <Content Include="assets\InitLoc.json" />
     <Content Include="assets\LaunchScreen.xml" />
     <Content Include="assets\Logo.png" />
+    <Content Include="assets\NormalMap.png" />
     <Content Include="assets\Screen_Main.xml" />
+    <Content Include="assets\SecondSequence.xml" />
+    <Content Include="assets\sp.loc" />
+    <Content Include="assets\Texture.png" />
+    <Content Include="assets\Up.png" />
     <Content Include="res\drawable-hdpi\ic_launcher.png" />
     <Content Include="res\drawable-mdpi\ic_launcher.png" />
     <Content Include="res\drawable-xhdpi\ic_launcher.png" />

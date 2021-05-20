@@ -206,7 +206,7 @@ void    OpenGLPlatformRenderingScreen::InitModifiable()
 #endif
 
 	setCurrentContext();
-	InitializeGL(mSizeX, mSizeY);
+	InitializeGL(mSize[0], mSize[1]);
 
 }  
 
