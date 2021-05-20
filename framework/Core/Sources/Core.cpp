@@ -330,6 +330,16 @@ void KigsCore::Close(bool closeMemoryManager)
 
 		mCoreInstance=0;
 
+#ifdef GenericRefCountedBaseClassLeakCheck
+		if (AllObjects.size())
+		{
+			for (auto obj : AllObjects)
+			{
+				kigsprintf("leaked %s\n", typeid(obj).name());
+			}
+		}
+#endif
+
 
 #if KIGSID_CHECK_COLLISIONS
 		kigs::unordered_map<u32, std::string> test;
@@ -489,12 +499,12 @@ InstanceFactory*    KigsCore::GetInstanceFactory()
 
 void		KigsCore::Connect(CoreModifiable* a, KigsID asignalID, CoreModifiable* b, KigsID bslotID CONNECT_PARAM)
 {
-	a->Connect(asignalID, b, bslotID CONNECT_PASS_PARAM);
+	a->Connect(asignalID, b->SharedFromThis(), bslotID CONNECT_PASS_PARAM);
 }
 
 void		KigsCore::Disconnect(CoreModifiable* a, KigsID asignalID, CoreModifiable* b, KigsID bslotID)
 {
-	a->Disconnect(asignalID, b, bslotID);
+	a->Disconnect(asignalID, b->SharedFromThis(), bslotID);
 }
 
 void	KigsCore::GetSemaphore()

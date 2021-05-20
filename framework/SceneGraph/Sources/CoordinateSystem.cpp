@@ -35,8 +35,9 @@ void	CoordinateSystemUp::Init(CoreModifiable* toUpgrade)
 }
 
 //  remove dynamic attributes and disconnect events
-void	CoordinateSystemUp::Destroy(CoreModifiable* toDowngrade)
+void	CoordinateSystemUp::Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted)
 {
+	if (toDowngradeDeleted) return;
 	KigsCore::Disconnect(toDowngrade, "NotifyUpdate", toDowngrade, "CoordinateSystemNotifyUpdate");
 	toDowngrade->RemoveDynamicAttribute("Scale");
 	toDowngrade->RemoveDynamicAttribute("Position");
@@ -223,8 +224,10 @@ void	PivotUp::Init(CoreModifiable* toUpgrade)
 }
 
 //  remove dynamic attributes and disconnect events
-void	PivotUp::Destroy(CoreModifiable* toDowngrade)
+void	PivotUp::Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted)
 {
+	if (toDowngradeDeleted) return;
+
 	KigsCore::Disconnect(toDowngrade, "NotifyUpdate", toDowngrade, "PivotNotifyUpdate");
 	toDowngrade->RemoveDynamicAttribute("Angle");
 	toDowngrade->RemoveDynamicAttribute("PivotPosition");

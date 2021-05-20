@@ -20,7 +20,7 @@ class CoordinateSystemUp : public Upgrador<Node3D>
 	virtual void	Init(CoreModifiable* toUpgrade) override;
 
 	// destroy UpgradorData and remove dynamic attributes 
-	virtual void	Destroy(CoreModifiable* toDowngrade) override;
+	virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
 
 	START_UPGRADOR(CoordinateSystemUp);
 	UPGRADOR_METHODS(CoordinateSystemNotifyUpdate,AngAxisRotate,globalMoveNode,localMoveNode);
@@ -53,7 +53,7 @@ class PivotUp : public Upgrador<Node3D>
 	virtual void	Init(CoreModifiable* toUpgrade) override;
 
 	// destroy UpgradorData and remove dynamic attributes 
-	virtual void	Destroy(CoreModifiable* toDowngrade) override;
+	virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
 
 	START_UPGRADOR(PivotUp);
 	UPGRADOR_METHODS(PivotNotifyUpdate);

@@ -62,7 +62,7 @@ SmartPointer<ThreadEvent>	ThreadPoolManager::setTask(MethodCallingStruct* task)
 {
 
 	// lock 
-	mSemaphore->GetMutex().lock();
+	mSemaphore->GetPrivateMutex().lock();
 	
 	// getAvailableEvent always returns a valid available event 
 	SmartPointer<ThreadEvent> result = getTaskEndEvent();
@@ -74,7 +74,7 @@ SmartPointer<ThreadEvent>	ThreadPoolManager::setTask(MethodCallingStruct* task)
 		addTaskToQueue(task,result);
 
 	// unlock
-	mSemaphore->GetMutex().unlock();
+	mSemaphore->GetPrivateMutex().unlock();
 	return result;
 }
 
@@ -150,7 +150,7 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 {
 	TaskGroup* taskgroup = (TaskGroup*)tgh;
 	// lock 
-	std::lock_guard<std::recursive_mutex> lk(mSemaphore->GetMutex());
+	std::lock_guard<std::mutex> lk(mSemaphore->GetPrivateMutex());
 	int taskgroupsize = taskgroup->mTaskList.size();
 	if (taskgroupsize == 0)
 	{

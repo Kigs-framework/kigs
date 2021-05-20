@@ -246,7 +246,28 @@ public:
 	virtual void erase(const std::string& key) {};
 	virtual void erase(const usString& key) {};
 
-	CoreItemSP SharedFromThis() { return std::static_pointer_cast<CoreItem>(shared_from_this()); }
+	CoreItemSP SharedFromThis() 
+	{ 
+#ifdef _DEBUG
+		try
+		{
+			return std::static_pointer_cast<CoreItem>(shared_from_this());
+		}
+		catch (const std::bad_weak_ptr&)
+		{
+			// NOTE(antoine) : Possible reasons :
+			// It's forbidden to call shared_from_this inside the constructor
+			// If the object was new'ed manually and not yet assigned to a shared_ptr, consider using the Make* functions below instead, or std::make_shared/MakeRefCounted
+			__debugbreak();
+		}
+		return nullptr;
+#else
+		return std::static_pointer_cast<CoreItem>(shared_from_this());
+#endif	
+	}
+
+
+
 //	CoreItemSP SharedFromThis() const { return std::static_pointer_cast<CoreItem>(shared_from_this()); }
 
 	typedef size_t size_type;

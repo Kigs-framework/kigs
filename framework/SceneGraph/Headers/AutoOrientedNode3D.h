@@ -22,7 +22,7 @@ protected:
 	virtual void	Init(CoreModifiable* toUpgrade) override;
 
 	// destroy UpgradorData and remove dynamic attributes 
-	virtual void	Destroy(CoreModifiable* toDowngrade) override;
+	virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
 
 	START_UPGRADOR(AutoOrientedNode3DUp);
 	UPGRADOR_METHODS(AutoOrientedNotifyUpdate);

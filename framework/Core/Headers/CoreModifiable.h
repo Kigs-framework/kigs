@@ -278,7 +278,7 @@ protected:
 #define AutoUpdateRegistered				(32U)
 #define AggregateParentRegistered			(64U)
 #define AggregateSonRegistered				(128U)
-#define AllowChanges						(256U)
+//#define AllowChanges						(256U) // Free slot, feel free to use for something else
 #define AutoCreateAttributes				(512U) // when loading from xml, add not found CoreModifiableAttributes even when not tagget as dynamic 
 
 // more generic UserFlags
@@ -421,7 +421,26 @@ public:
 
 	virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) { classNameTree.addClassName("CoreModifiable", "CoreModifiable"); }
 	
-	CMSP SharedFromThis() { return std::static_pointer_cast<CoreModifiable>(shared_from_this()); }
+	CMSP SharedFromThis() 
+	{
+#ifdef _DEBUG
+		try
+		{
+			return std::static_pointer_cast<CoreModifiable>(shared_from_this());
+		}
+		catch (const std::bad_weak_ptr&)
+		{
+			// NOTE(antoine)
+			// It's forbidden to call shared_from_this inside the constructor
+			// Connect and Upgrade are common functions that will do so, move them out of the constructor (InitModidiable most likely)
+			// Another possibility is that this object was new'ed manually, DON'T!
+			__debugbreak();
+		}
+		return nullptr;
+#else
+		return std::static_pointer_cast<CoreModifiable>(shared_from_this());
+#endif
+	}
 
 	virtual KigsID getExactTypeID() const { return CoreModifiable::mClassID; }
 	virtual bool isSubType(const KigsID& cid) const { return CoreModifiable::mClassID == cid; }
@@ -862,19 +881,6 @@ public:
 
 	inline bool isInitFlagSet() const { return ((mModifiableFlag&((u32)InitFlag)) != 0); }
 
-	inline void flagAllowChanges()
-	{
-		mModifiableFlag |= (u32)AllowChanges;
-	}
-	inline void unflagAllowChanges()
-	{
-		mModifiableFlag &= 0xFFFFFFFF ^ (u32)AllowChanges;
-	}
-	inline bool isFlagAllowChanges() const
-	{
-		return (mModifiableFlag&(u32)AllowChanges) != 0;
-	}
-
 	inline void flagAutoCreateAttributes()
 	{
 		mModifiableFlag |= (u32)AutoCreateAttributes;
@@ -944,8 +950,6 @@ public:
 
 	// called after the object was exported (remove dynamics added before export)
 	virtual void EndExport(ExportSettings* settings) {}
-
-	auto& GetMutex() const { return mObjectMutex; }
 
 	// CDATA Export/Import API
 	virtual int	HasCDataToExport() { return 0; }
@@ -1025,8 +1029,8 @@ protected:
 	// protected upgrador management
 	void Upgrade(UpgradorBase* toAdd);
 
-	void Connect(KigsID signal, CoreModifiable* other, KigsID slot CONNECT_PARAM_DEFAULT);
-	void Disconnect(KigsID signal, CoreModifiable* other, KigsID slot);
+	void Connect(KigsID signal, CMSP other, KigsID slot CONNECT_PARAM_DEFAULT);
+	void Disconnect(KigsID signal, const CMSP& other, KigsID slot);
 
 	// check if we can destroy object
 	// virtual bool checkDestroy() override;
@@ -1202,17 +1206,19 @@ private:
 	friend class IMEditor;
 	friend class KigsCore;
 
+	auto& GetMutex() const { return mObjectMutex; }
+
 	static void	ReleaseLoadedItems(std::vector<CMSP> &loadedItems);
 	static std::atomic<unsigned int> mUIDCounter;
 
 	unsigned int	mUID;
 	KigsID			mNameID;
 	// Flags
-	unsigned int	mModifiableFlag = AllowChanges;
-	mutable std::recursive_mutex mObjectMutex;
+	unsigned int	mModifiableFlag = 0;
+	mutable std::shared_mutex mObjectMutex;
 	
 	CoreTreeNode* mTypeNode = nullptr;
-	mutable LazyContent* mLazyContent = nullptr;
+	mutable std::atomic<LazyContent*> mLazyContent{ nullptr };
 
 	std::string	mName;
 	
@@ -1289,8 +1295,8 @@ protected:
 
 struct LazyContent
 {
-	kigs::unordered_map<KigsID, std::vector<std::pair<KigsID, CoreModifiable*>>> mConnectedTo;
-	kigs::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> mConnectedToMe;
+	kigs::unordered_map<KigsID, std::vector<std::pair<KigsID, std::weak_ptr<CoreModifiable>>>> mConnectedTo;
+	//kigs::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> mConnectedToMe;
 	kigs::unordered_map <KigsID, ModifiableMethodStruct> mMethods;
 	// Upgrador management
 	LazyContentLinkedListItemStruct mLinkedListItem = 0;

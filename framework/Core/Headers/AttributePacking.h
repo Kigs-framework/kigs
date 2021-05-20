@@ -549,18 +549,16 @@ bool CoreModifiable::SimpleCall(KigsID methodNameID, T&&... params)
 template<typename... T>
 inline bool CoreModifiable::EmitSignal(const KigsID& SignalID, T&&... params)
 {
-	if (!isFlagAllowChanges()) return false;
-	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
-	if (!isFlagAllowChanges()) return false;
-
 	if (!mLazyContent) return false;
-
-	auto it = GetLazyContent()->mConnectedTo.find(SignalID);
-	if(it != GetLazyContent()->mConnectedTo.end())
+	auto& mutex = GetMutex();
+	mutex.lock_shared();
+	auto& connected_to = GetLazyContent()->mConnectedTo;
+	auto it = connected_to.find(SignalID);
+	if (it != connected_to.end())
 	{
-		std::vector<std::pair<KigsID, CoreModifiable*>> copy = it->second;
-		lk.unlock();
-		
+		auto copy = it->second;
+		mutex.unlock_shared();
+
 		PackCoreModifiableAttributes	attr(nullptr);
 		int expander[]
 		{
@@ -569,16 +567,16 @@ inline bool CoreModifiable::EmitSignal(const KigsID& SignalID, T&&... params)
 		(void)expander;
 		auto& attr_list = (kstl::vector<CoreModifiableAttribute*>&)attr;
 
-		for(auto p : copy)
+		for (auto& p : copy)
 		{
-			if (!p.second->isFlagAllowChanges()) continue;
-			std::unique_lock<std::recursive_mutex> lk{ p.second->GetMutex() };
-			if (!p.second->isFlagAllowChanges()) continue;
-			p.second->CallMethod(p.first, attr_list, nullptr, this);
+			if (auto ptr = p.second.lock())
+			{
+				ptr->CallMethod(p.first, attr_list, nullptr, this);
+			}
 		}
 		return true;
 	}
-	
+	mutex.unlock_shared();
 	return false;
 }
 

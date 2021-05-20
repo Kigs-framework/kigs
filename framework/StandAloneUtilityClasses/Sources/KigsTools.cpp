@@ -2424,7 +2424,8 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			{
 				for (auto& c : obj.second)
 				{
-					ImGui::Text("%s => %s->%s()", obj.first._id_name.c_str(), c.second->getName().c_str(), c.first._id_name.c_str());
+					if(auto ptr = c.second.lock())
+						ImGui::Text("%s => %s->%s()", obj.first._id_name.c_str(), ptr->getName().c_str(), c.first._id_name.c_str());
 				}
 			}
 		}

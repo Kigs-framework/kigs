@@ -70,6 +70,8 @@ struct TimeEventCircularBuffer
  */
  // ****************************************
 
+class Semaphore;
+
 class ThreadProfiler : public CoreModifiable
 {
 public:
@@ -131,7 +133,7 @@ private:
 	
 
 	bool mAllowNewEvents;
-	CMSP mSemaphore;
+	std::mutex mMutex;
 };
 
 

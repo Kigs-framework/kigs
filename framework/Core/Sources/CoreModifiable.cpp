@@ -89,7 +89,7 @@ CoreModifiable::~CoreModifiable()
 LazyContent* CoreModifiable::GetLazyContent() const
 {
 	if (mLazyContent) return mLazyContent;
-	std::lock_guard<std::recursive_mutex> lk{ GetMutex() };
+	std::lock_guard<std::shared_mutex> lk{ GetMutex() };
 	if (mLazyContent) return mLazyContent;
 	mLazyContent = new LazyContent;
 	return mLazyContent;
@@ -267,9 +267,9 @@ void CoreModifiable::Upgrade(UpgradorBase* toAdd)
 
 UpgradorBase* CoreModifiable::GetUpgrador(const KigsID& ID)
 {
-	if (mLazyContent)
+	if (auto lz = mLazyContent.load())
 	{ 
-		UpgradorBase* current= (UpgradorBase*)mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+		UpgradorBase* current= (UpgradorBase*)lz->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 		while (current)
 		{
 			if( (current->getID() == ID) || (ID == ""))
@@ -443,9 +443,9 @@ const ModifiableMethodStruct* CoreModifiable::findMethodOnThisOnly(const KigsID&
 		}
 	}
 	// if not found, check on forward ptr
-	if (mLazyContent)
+	if (auto lz = mLazyContent.load())
 	{
-		StructLinkedListBase* found = mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
+		StructLinkedListBase* found = lz->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
 		while (found)
 		{
 			ForwardSP<CoreModifiable> f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
@@ -589,9 +589,9 @@ CoreModifiableAttribute* CoreModifiable::findAttributeOnThisOnly(const KigsID& i
 		return (*i).second;
 	}
 	// if not found, check on forward ptr
-	if (mLazyContent)
+	if (auto lz = mLazyContent.load())
 	{
-		StructLinkedListBase* found = mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
+		StructLinkedListBase* found = lz->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
 		while (found)
 		{
 			ForwardSP<CoreModifiable>& f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
@@ -707,14 +707,14 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 			// set this upgrador at first pos
 			if (method.mUpgrador)
 			{
-				cachedUpgrador = localthis->mLazyContent->mLinkedListItem;
-				localthis->mLazyContent->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(method.mUpgrador,LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+				cachedUpgrador = localthis->mLazyContent.load()->mLinkedListItem;
+				localthis->mLazyContent.load()->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(method.mUpgrador,LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 			}
 			result = (localthis->*method.mMethod)(sender, params, privateParams);
 			// reset cached 
 			if (cachedUpgrador)
 			{
-				localthis->mLazyContent->mLinkedListItem = cachedUpgrador;
+				localthis->mLazyContent.load()->mLinkedListItem = cachedUpgrador;
 			}
 		}
 		
@@ -786,71 +786,53 @@ bool CoreModifiable::EmitSignal(const KigsID& signalID)
 
 bool CoreModifiable::EmitSignal(const KigsID& signalID, std::vector<CoreModifiableAttribute*>& params, void* privateParams)
 {
-	if (!isFlagAllowChanges()) return false;
-	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
-	if (!isFlagAllowChanges()) return false;
 	if (!mLazyContent) return false;
+	auto& mutex = GetMutex();
+	mutex.lock_shared();
 	auto& connected_to = GetLazyContent()->mConnectedTo;
 	auto it = connected_to.find(signalID);
 	if(it != connected_to.end())
 	{
-		std::vector<std::pair<KigsID, CoreModifiable*>> copy = it->second;
-		lk.unlock();
-		for(auto p : copy)
+		auto copy = it->second;
+		mutex.unlock_shared();
+
+		for(auto& p : copy)
 		{
-			if (!p.second->isFlagAllowChanges()) continue;
-			std::unique_lock<std::recursive_mutex> lk{ p.second->GetMutex() };
-			if (!p.second->isFlagAllowChanges()) continue;
-			p.second->CallMethod(p.first, params, privateParams);
+			if (auto ptr = p.second.lock())
+			{
+				ptr->CallMethod(p.first, params, privateParams);
+			}
 		}
 		return true;
 	}
 	return false;
 }
 
-void CoreModifiable::Connect(KigsID signal, CoreModifiable* other, KigsID slot CONNECT_PARAM)
+void CoreModifiable::Connect(KigsID signal, CMSP other, KigsID slot CONNECT_PARAM)
 {
-	if(!isFlagAllowChanges() || !other->isFlagAllowChanges())
-		return;
-
-	std::unique_lock<std::recursive_mutex> lock_this{ GetMutex(), std::defer_lock};
-	std::unique_lock<std::recursive_mutex> lock_other{other->GetMutex(), std::defer_lock};
-	std::lock(lock_this, lock_other);
-
-	if (!isFlagAllowChanges() || !other->isFlagAllowChanges())
-		return;
-	
 	auto& vec = GetLazyContent()->mConnectedTo[signal];
-	for(auto p : vec)
+	std::unique_lock<std::shared_mutex> lock_this{ GetMutex() };
+	for(auto& p : vec)
 	{
-		if(p.first == slot && p.second == other)
+		if(p.first == slot && p.second.lock() == other)
 		return;
 	}
 	vec.push_back({slot, other});
-	other->GetLazyContent()->mConnectedToMe[this].insert(std::make_pair(signal, slot));
 }
 
-void CoreModifiable::Disconnect(KigsID signal, CoreModifiable* other, KigsID slot)
+void CoreModifiable::Disconnect(KigsID signal, const CMSP& other, KigsID slot)
 {
-	if (!isFlagAllowChanges() || !other->isFlagAllowChanges()) return;
-	std::unique_lock<std::recursive_mutex> lock_this{ GetMutex(), std::defer_lock};
-	std::unique_lock<std::recursive_mutex> lock_other{other->GetMutex(), std::defer_lock};
-	std::lock(lock_this, lock_other);
-	if (!isFlagAllowChanges() || !other->isFlagAllowChanges()) return;
-
-	if (!mLazyContent || !other->mLazyContent) return;
-
+	if (!mLazyContent) return;
 	auto& vec = GetLazyContent()->mConnectedTo[signal];
+	std::unique_lock<std::shared_mutex> lock_this{ GetMutex() };
 	for(auto it = vec.begin(); it != vec.end(); ++it)
 	{
-		if(it->first == slot && it->second == other)
+		if(it->first == slot && it->second.lock() == other)
 		{
 			vec.erase(it);
-			other->GetLazyContent()->mConnectedToMe[this].erase(std::make_pair(signal, slot));
 			return;
 		}	
 	}
-
 }
 
 std::string	CoreModifiable::GetRuntimeID() const
@@ -1542,7 +1524,6 @@ void CoreModifiable::RemoveDynamicAttribute(KigsID id)
 //! add item at first or last position
 bool CoreModifiable::addItem(const CMSP& item, ItemPosition pos)
 {
-	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	if(item)
 	{
 
@@ -1570,14 +1551,12 @@ bool CoreModifiable::addItem(const CMSP& item, ItemPosition pos)
 //! add the given parent to list
 void CoreModifiable::addUser(CoreModifiable* user)
 {
-	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	mUsers.push_back(user);
 }
 
 //! remove user (parent)
 void CoreModifiable::removeUser(CoreModifiable* user)
 {
-	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
 	bool found=false;
 	do
 	{
@@ -1622,33 +1601,31 @@ void CoreModifiable::ProtectedDestroy()
 	if (mLazyContent)
 	{
 		// first downgrade if needed
-		UpgradorBase* found = (UpgradorBase * )mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+		UpgradorBase* found = (UpgradorBase * )mLazyContent.load()->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 		while(found)
 		{
 			// set this upgrador at first pos
-			LazyContentLinkedListItemStruct cachedUpgrador = mLazyContent->mLinkedListItem;
-			mLazyContent->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(found, LazyContentLinkedListItemStruct::ItemType::UpgradorType);
-			found->DowngradeInstance(this);
-			mLazyContent->mLinkedListItem = cachedUpgrador;
+			LazyContentLinkedListItemStruct cachedUpgrador = mLazyContent.load()->mLinkedListItem;
+			mLazyContent.load()->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(found, LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+			found->Destroy(this, true);
+			mLazyContent.load()->mLinkedListItem = cachedUpgrador;
 
 			UpgradorBase* nextfound = (UpgradorBase * )found->getNext(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 			delete found;
 			found = nextfound;
 		}
-		mLazyContent->mLinkedListItem = 0;
+		mLazyContent.load()->mLinkedListItem = 0;
 	}
 
 	//! remove all items
 	EmptyItemList();
 	
-	std::lock_guard<std::recursive_mutex> lock_this{ GetMutex() };
-	unflagAllowChanges();
-
 	// delete dynamic attributes
 	DeleteDynamicAttributes();
 	if (mLazyContent)
 	{
 		// Notify connected items
+		/*
 		for (auto& signal : GetLazyContent()->mConnectedTo)
 		{
 			for (auto& p : signal.second)
@@ -1675,8 +1652,7 @@ void CoreModifiable::ProtectedDestroy()
 				}
 			}
 		}
-
-		
+		*/
 	}
 }
 
@@ -1710,18 +1686,18 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 	EmitSignal(Signals::Update, this, (CoreModifiable*)&timer);
 	Update(timer, addParam);
 	// Upgrador updage
-	if (mLazyContent)
+	if (auto lz = mLazyContent.load())
 	{
-		UpgradorBase* found = (UpgradorBase * )mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+		UpgradorBase* found = (UpgradorBase * )lz->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 		while (found)
 		{
 			// set current at first place in the list so cache first one
-			LazyContentLinkedListItemStruct cachedUpgrador = mLazyContent->mLinkedListItem;
+			LazyContentLinkedListItemStruct cachedUpgrador = lz->mLinkedListItem;
 			// set this upgrador at first pos
-			mLazyContent->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(found, LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+			lz->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(found, LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 			found->UpgradorUpdate(this,timer,addParam);
 			// reset cached
-			mLazyContent->mLinkedListItem = cachedUpgrador;
+			lz->mLinkedListItem = cachedUpgrador;
 
 			found = (UpgradorBase * )found->getNext(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 
@@ -1732,10 +1708,6 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 //! remove item (son)
 bool CoreModifiable::removeItem(const CMSP& item)
 {
-	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
-
-	auto item_ptr = item.get();
-
 	bool found=false, res=false;
 	do
 	{
@@ -1744,7 +1716,7 @@ bool CoreModifiable::removeItem(const CMSP& item)
 		std::vector<ModifiableItemStruct>::iterator end=mItems.end();
 		for(; it!=end ; ++it)
 		{
-			if(item_ptr == (*it).mItem.get())
+			if(item == (*it).mItem)
 			{
 				found = true;
 				break;
@@ -1754,8 +1726,8 @@ bool CoreModifiable::removeItem(const CMSP& item)
 		if(found)
 		{
 			res=true;
-			item_ptr->removeUser(this);
-			EmitSignal(Signals::RemoveItem, this, item_ptr);
+			item->removeUser(this);
+			EmitSignal(Signals::RemoveItem, this, item.get());
 			mItems.erase(it);
 		}
 	} while(found);
@@ -1777,11 +1749,12 @@ void CoreModifiable::Upgrade(const std::string& toAdd)
 
 void CoreModifiable::Downgrade(const std::string& toRemove)
 {
-	if (!mLazyContent)
+	auto lz = mLazyContent.load();
+	if (!lz)
 		return;
 
 	UpgradorBase* previous = nullptr;
-	UpgradorBase* found = (UpgradorBase * )mLazyContent->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+	UpgradorBase* found = (UpgradorBase * )lz->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 
 	while (found)
 	{
@@ -1793,7 +1766,7 @@ void CoreModifiable::Downgrade(const std::string& toRemove)
 			}
 			else
 			{
-				mLazyContent->mLinkedListItem = found->mNextItem;
+				lz->mLinkedListItem = found->mNextItem;
 			}
 			found->DowngradeInstance(this);
 			break;
@@ -2823,7 +2796,6 @@ std::vector<CMSP> CoreModifiable::getRootParentsWithPath(std::string &remainingp
 
 void CoreModifiable::recursiveGetRootParentsWithPath(const std::string& searchType, const std::string& searchName, std::vector<CMSP>& parents)
 {
-	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // Don't want to be modified by another thread here
 	// check this
 	if (getName() == searchName)
 	{
@@ -2862,7 +2834,6 @@ CMSP CoreModifiable::SearchInstance(const std::string& infos, CoreModifiable* se
 //! return the instance corresponding to the given path in sons tree
 CMSP CoreModifiable::GetInstanceByPath(const std::string &path)
 {
-	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread during search
 	std::string RemainingPath;
 	std::string sonName=GetFirstNameInPath(path,RemainingPath);
 
@@ -2969,7 +2940,6 @@ CMSP CoreModifiable::GetInstanceByPath(const std::string &path)
 
 void CoreModifiable::GetSonInstancesByName(KigsID cid, const std::string &name, std::vector<CMSP>& instances,bool recursive)
 {
-	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	std::vector<ModifiableItemStruct>::iterator itsons;
 	for(itsons=mItems.begin();itsons!=mItems.end();itsons++)
 	{
@@ -2989,7 +2959,6 @@ void CoreModifiable::GetSonInstancesByName(KigsID cid, const std::string &name, 
 
 CMSP CoreModifiable::GetFirstSonByName(KigsID cid, const std::string &name, bool recursive)
 {
-	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	for (auto& son : getItems())
 	{
 		if (son.mItem->isSubType(cid) && name == son.mItem->getName())
@@ -3008,7 +2977,6 @@ CMSP CoreModifiable::GetFirstSonByName(KigsID cid, const std::string &name, bool
 
 void CoreModifiable::GetSonInstancesByType(KigsID cid, std::vector<CMSP>& instances,bool recursive)
 {
-	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	std::vector<ModifiableItemStruct>::iterator itsons;
 	for(itsons=mItems.begin();itsons!=mItems.end();itsons++)
 	{
@@ -3026,7 +2994,6 @@ void CoreModifiable::GetSonInstancesByType(KigsID cid, std::vector<CMSP>& instan
 
 CMSP CoreModifiable::GetFirstSonByType(KigsID cid, bool recursive)
 {
-	std::unique_lock<std::recursive_mutex> lk{ GetMutex() }; // don't want to be changed in another thread
 	for (auto& son : getItems())
 	{
 		if (son.mItem->isSubType(cid))

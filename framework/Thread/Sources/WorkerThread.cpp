@@ -78,12 +78,12 @@ void	WorkerThread::resume()
 
 void	WorkerThread::processDone()
 {
-	mSemaphore->GetMutex().lock();
+	mSemaphore->GetPrivateMutex().lock();
 	cleanTask();
 	mThreadEventEnd->signal();
 	mThreadEventEnd = 0;
 	mIsAutoFeed=mParentPoolManager->ManageQueue(this);
-	mSemaphore->GetMutex().unlock();
+	mSemaphore->GetPrivateMutex().unlock();
 }
 
 // to be called in a locked block

@@ -27,8 +27,10 @@ void	TickerUpgrador::Init(CoreModifiable* toUpgrade)
 }
 
 //  remove dynamic attributes and disconnect events
-void	TickerUpgrador::Destroy(CoreModifiable* toDowngrade)
+void	TickerUpgrador::Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted)
 {
+	if (toDowngradeDeleted) return;
+
 	KigsCore::Disconnect(toDowngrade, "NotifyUpdate", toDowngrade, "TickerNotifyUpdate");
 
 	toDowngrade->RemoveDynamicAttribute("TickerFunction");

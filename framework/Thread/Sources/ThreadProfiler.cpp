@@ -10,7 +10,6 @@ IMPLEMENT_CLASS_INFO(ThreadProfiler)
 ThreadProfiler::ThreadProfiler(const kstl::string& name, CLASS_NAME_TREE_ARG): CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	//rmt_CreateGlobalInstance(&rmt);
-	mSemaphore = KigsCore::GetInstanceOf("threadprofilersepmaphore", "Semaphore");
 	mGlobalTimer = KigsCore::GetInstanceOf("ThreadProfilerTimer", "Timer");
 #ifdef DO_THREAD_PROFILING
 	mAllowNewEvents = true;
@@ -35,19 +34,19 @@ void ThreadProfiler::ClearProfiler()
 void ThreadProfiler::RemoveThread(Thread* thread)
 {
 #ifdef DO_THREAD_PROFILING
-	mSemaphore->GetMutex().lock();
+	mMutex.lock();
 	mCircularBufferMap.erase(thread);
-	mSemaphore->GetMutex().unlock();
+	mMutex.unlock();
 #endif 
 }
 
 void ThreadProfiler::RegisterThread(Thread* thread)
 {
 #ifdef DO_THREAD_PROFILING
-	mSemaphore->GetMutex().lock();
+	mMutex.lock();
 	//myCircularBufferMap[thread];
 	mCircularBufferIndexes[thread] = 0;
-	mSemaphore->GetMutex().unlock();
+	mMutex.unlock();
 #endif
 }
 

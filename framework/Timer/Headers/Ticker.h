@@ -11,7 +11,7 @@ public:
 	virtual void	Init(CoreModifiable* toUpgrade) override;
 
 	// destroy UpgradorData and remove dynamic attributes 
-	virtual void	Destroy(CoreModifiable* toDowngrade) override;
+	virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
 
 	START_UPGRADOR(TickerUpgrador);
 

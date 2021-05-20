@@ -67,6 +67,8 @@ public:
 	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 	
 protected:
+	
+	void InitModifiable() override;
 
 	void	TextureNotifyUpdate(const unsigned int  labelid);
 

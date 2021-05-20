@@ -147,7 +147,7 @@ bool	SpriteSheetData::Init(const std::string& json, std::string& texturename)
 }
 
 //  remove dynamic attributes and disconnect events
-void	SpriteSheetData::Destroy(CoreModifiable* toDowngrade)
+void	SpriteSheetData::Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted)
 {
 	
 }
@@ -435,8 +435,10 @@ void	AnimationUpgrador::Init(CoreModifiable* toUpgrade)
 }
 
 //  remove dynamic attributes and disconnect events
-void	AnimationUpgrador::Destroy(CoreModifiable* toDowngrade)
+void	AnimationUpgrador::Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted)
 {
+	if (toDowngradeDeleted) return;
+
 	KigsCore::Disconnect(toDowngrade, "NotifyUpdate", toDowngrade, "AnimationNotifyUpdate");
 
 	toDowngrade->RemoveDynamicAttribute("CurrentAnimation");

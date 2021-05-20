@@ -20,8 +20,10 @@ void	PopUpUpgrador::Init(CoreModifiable* toUpgrade)
 }
 
 //  remove dynamic attributes and disconnect events
-void	PopUpUpgrador::Destroy(CoreModifiable* toDowngrade)
+void	PopUpUpgrador::Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted)
 {
+	if (toDowngradeDeleted) return;
+
 	Hide((UIItem*)toDowngrade);
 
 	KigsCore::GetNotificationCenter()->removeObserver(toDowngrade, "HidePopUp");

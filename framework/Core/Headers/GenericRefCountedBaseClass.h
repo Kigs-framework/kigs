@@ -26,14 +26,34 @@ class CoreModifiableAttribute;
 #define TRACEREF_VIRTUAL 
 #endif
 
-
+#define GenericRefCountedBaseClassLeakCheck
+#ifdef GenericRefCountedBaseClassLeakCheck
+#include <unordered_set>
+#include <shared_mutex>
+class GenericRefCountedBaseClass;
+inline std::shared_mutex AllObjectsMutex;
+inline std::unordered_set<GenericRefCountedBaseClass*> AllObjects;
+#endif
 
 class GenericRefCountedBaseClass : public std::enable_shared_from_this<GenericRefCountedBaseClass>
 {
 public:
 	typedef bool (GenericRefCountedBaseClass::* ModifiableMethod)(CoreModifiable* sender, std::vector<CoreModifiableAttribute*>&, void* privateParams);
-	GenericRefCountedBaseClass() {}
-	virtual ~GenericRefCountedBaseClass() {};
+	GenericRefCountedBaseClass() 
+	{
+#ifdef GenericRefCountedBaseClassLeakCheck
+		std::lock_guard<std::shared_mutex> lk{ AllObjectsMutex };
+		AllObjects.insert(this);
+#endif
+	}
+
+	virtual ~GenericRefCountedBaseClass() 
+	{
+#ifdef GenericRefCountedBaseClassLeakCheck
+		std::lock_guard<std::shared_mutex> lk{ AllObjectsMutex };
+		AllObjects.erase(this);
+#endif
+	};
 };
 
 #endif //_GENERICREFCOUNTEDBASECLASS_H_

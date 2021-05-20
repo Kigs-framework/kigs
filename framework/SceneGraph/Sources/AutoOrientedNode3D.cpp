@@ -28,8 +28,10 @@ void	AutoOrientedNode3DUp::Init(CoreModifiable* toUpgrade)
 }
 
 //  remove dynamic attributes and disconnect events
-void	AutoOrientedNode3DUp::Destroy(CoreModifiable* toDowngrade)
+void	AutoOrientedNode3DUp::Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted)
 {
+	if (toDowngradeDeleted) return;
+
 	KigsCore::Disconnect(toDowngrade, "NotifyUpdate", toDowngrade, "CoordinateSystemNotifyUpdate");
 	toDowngrade->RemoveDynamicAttribute("Target");
 	toDowngrade->RemoveDynamicAttribute("OrientedAxis");

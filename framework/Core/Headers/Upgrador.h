@@ -50,7 +50,7 @@ protected:
 	virtual void	Init(CoreModifiable* toUpgrade) { ; }
 
 	// destroy Upgrador and remove dynamic attributes, disconnect things 
-	virtual void	Destroy(CoreModifiable* toDowngrade) {;}
+	virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted=false) {;}
 
 public:
 	virtual ~UpgradorBase()
