@@ -43,12 +43,10 @@ public:
 
 	void InitLua(kdouble current_time);
 
-protected:
-	
-	
 	//! destructor
 	virtual ~LuaBehaviour();
-	
+
+protected:
 	//! init method
 	void	InitModifiable() override;
 	void	UninitModifiable() override;

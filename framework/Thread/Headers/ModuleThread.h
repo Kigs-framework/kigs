@@ -24,10 +24,8 @@ class ModuleThread : public ModuleBase
 public:
 
 	DECLARE_CLASS_INFO(ModuleThread,ModuleBase,Thread)
-
-	//! constructor
     ModuleThread(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-         
+	virtual ~ModuleThread();
 	//! init module
     void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
 	//! close module
@@ -35,12 +33,6 @@ public:
             
 	//! update module
 	void Update(const Timer& timer, void* addParam) override;
-               
-protected:
-	//! destructor
-    virtual ~ModuleThread();    
-
-
 }; 
 
 #endif //_MODULETHREAD_H_

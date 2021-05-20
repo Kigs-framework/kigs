@@ -36,11 +36,9 @@ public:
 class SplittableTask : public CoreModifiable
 {
 public:
-
 	DECLARE_ABSTRACT_CLASS_INFO(SplittableTask, CoreModifiable, Thread)
-
-	//! constructor
 	SplittableTask(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~SplittableTask();
 
 	void	Update(const Timer& timer, void* addParam) override;
 
@@ -61,9 +59,6 @@ protected:
 
 	// to be overloaded, default do nothing
 	virtual	void	protectedSplitUpdate(SplitDataStructBase*){};
-
-	//! destructor
-	virtual ~SplittableTask();
 
 	DECLARE_METHOD(SplittedUpdate);
 	COREMODIFIABLE_METHODS(SplittedUpdate);

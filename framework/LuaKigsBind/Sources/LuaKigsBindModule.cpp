@@ -80,11 +80,10 @@ int LuaKigsBindModule::GetFile(lua_State *L)
 	path += ".lua";
 	
 	u64 len;
-	CoreRawBuffer* buffer = ModuleFileManager::LoadFileAsCharString(path.c_str(), len,1);
+	auto buffer = ModuleFileManager::LoadFileAsCharString(path.c_str(), len,1);
 	if (buffer) 
 	{
 		luaL_loadstring(L, buffer->buffer());
-		buffer->Destroy();
 	}
 	else
 	{
@@ -99,7 +98,7 @@ int KigsLoadFile(lua_State *L)
 {
 	std::string path = luaL_checkstring(L, 1);
 	u64 len;
-	CoreRawBuffer* buffer = ModuleFileManager::LoadFileAsCharString(path.c_str(), len,1);
+	auto buffer = ModuleFileManager::LoadFileAsCharString(path.c_str(), len,1);
 	if (buffer)
 	{
 		if (luaL_loadstring(L, buffer->buffer()) != 0)
@@ -108,7 +107,6 @@ int KigsLoadFile(lua_State *L)
 			lua_pop(L, 1);
 			lua_pushnil(L);
 		}
-		buffer->Destroy();
 	}
 	else
 	{
@@ -177,15 +175,13 @@ bool LuaKigsBindModule::ExecuteLuaFile(const char* filename, const char* prepend
 		return false;
 
 	u64 length;
-	CoreRawBuffer* buffer = ModuleFileManager::LoadFileAsCharString(filename, length,1);
+	auto buffer = ModuleFileManager::LoadFileAsCharString(filename, length,1);
 	if (buffer)
 	{
 		std::string str = (char*)buffer->buffer();
 		if (prepend)
 			str = prepend + str;
 		bool ok = ExecuteString(str.c_str());
-		buffer->Destroy();
-
 		if (!ok)
 		{
 			char str[256];

@@ -77,57 +77,57 @@ public:
 
 	inline operator float() const
 	{
-		if (mPointer)
-			return mPointer->operator kfloat();
+		if (get())
+			return get()->operator kfloat();
 		return 0.0f;
 	}
 
 	inline operator double() const
 	{
-		if (mPointer)
-			return mPointer->operator double();
+		if (get())
+			return get()->operator double();
 		return 0.0;
 	}
 
 	inline operator int() const
 	{
-		if (mPointer)
-			return mPointer->operator int();
+		if (get())
+			return get()->operator int();
 		return 0;
 	}
 
 	inline operator unsigned int() const
 	{
-		if (mPointer)
-			return mPointer->operator unsigned int();
+		if (get())
+			return get()->operator unsigned int();
 		return 0;
 	}
 
 	inline operator s64() const
 	{
-		if (mPointer)
-			return mPointer->operator s64();
+		if (get())
+			return get()->operator s64();
 		return 0;
 	}
 
 	inline operator u64() const
 	{
-		if (mPointer)
-			return mPointer->operator u64();
+		if (get())
+			return get()->operator u64();
 		return 0;
 	}
 
 	inline operator kstl::string() const
 	{
-		if (mPointer)
-			return mPointer->operator kstl::string();
+		if (get())
+			return get()->operator kstl::string();
 		return "";
 	}
 
 	inline operator usString() const
 	{
-		if (mPointer)
-			return mPointer->operator usString();
+		if (get())
+			return get()->operator usString();
 		return usString("");
 	}
 

@@ -86,6 +86,12 @@ public:
 
 	bool CanInteract(v2f pos, bool must_contain=true);
 
+	virtual												~UIItem()
+	{
+		if (mAlphaMask)
+			mAlphaMask = nullptr;
+	}
+
 protected:
 
 	void propagateOpacityChange()
@@ -117,11 +123,7 @@ protected:
 	// real drawing
 	void										ProtectedDraw(TravState* state)  override {}
 
-	virtual												~UIItem()
-	{
-		if (mAlphaMask)
-			mAlphaMask = nullptr;
-	}
+	
 
 	maBoolHeritage<1>									mIsHidden;
 	maBool												mIsTouchable;

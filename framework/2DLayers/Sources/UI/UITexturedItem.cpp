@@ -28,9 +28,9 @@ IMPLEMENT_CONSTRUCTOR(UITexturedItem)
 void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 {
 	
-	if (!mTexturePointer.isNil())
+	if (mTexturePointer)
 	{
-		if (mTexturePointer->getTexture().isNil())
+		if (!mTexturePointer->getTexture())
 		{
 			return;
 		}
@@ -112,7 +112,7 @@ void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 
 UITexturedItem::~UITexturedItem()
 {
-	if(!mTexturePointer.isNil())
+	if(mTexturePointer)
 		KigsCore::Disconnect(mTexturePointer.get(), "NotifyUpdate", this, "TextureNotifyUpdate");
 	mTexturePointer = NULL;
 }

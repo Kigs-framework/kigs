@@ -42,12 +42,12 @@ void HTTPRequestModuleWUP::Update(const Timer& timer, void* addParam)
 	BaseUpdate(timer,addParam);
 }    
 
-ModuleBase* PlatformHTTPRequestModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
-
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(HTTPRequestModuleWUP, "HTTPRequestModuleWindows");
-	gInstanceModuleHTTPRequestWUP = new HTTPRequestModuleWUP("HTTPRequestModuleWindows");
+	auto ptr = MakeRefCounted<HTTPRequestModuleWUP>("HTTPRequestModuleWindows");
+	gInstanceModuleHTTPRequestWUP = ptr.get();
 	gInstanceModuleHTTPRequestWUP->Init(core, params);
-	return gInstanceModuleHTTPRequestWUP;
+	return ptr;
 }    

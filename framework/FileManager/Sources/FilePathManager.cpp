@@ -32,7 +32,7 @@ FileHandle::~FileHandle()
 
 SmartPointer<FileHandle> FileHandle::MakeCopy()
 {
-	auto result = OwningRawPtrToSmartPtr(new FileHandle());
+	auto result = MakeRefCounted<FileHandle>();
 
 	result->mFileName = mFileName;
 	result->mFullFileName = mFullFileName;
@@ -153,7 +153,7 @@ void	FilePathManager::RemoveFromPath(const kstl::string& path, kstl::string ext,
 // create a file handle from a filename
 SmartPointer<FileHandle> FilePathManager::CreateFileHandle(const kstl::string& filename)
 {
-	SmartPointer<FileHandle> result = OwningRawPtrToSmartPtr(new FileHandle());
+	SmartPointer<FileHandle> result = MakeRefCounted<FileHandle>();
 	result->mFileName = filename;
 	SetFileInfos(result.get());
 	return result;
@@ -934,8 +934,7 @@ void	FilePathManager::InitBundleList(const kstl::string& filename)
 	if (lFile->mStatus&FileHandle::Exist)
 	{
 		u64 filelen;
-		CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFileAsCharString(lFile.get(), filelen,1);
-
+		auto rawbuffer = ModuleFileManager::LoadFileAsCharString(lFile.get(), filelen,1);
 		if (rawbuffer)
 		{
 			AsciiParserUtils FileParser(rawbuffer);
@@ -958,7 +957,6 @@ void	FilePathManager::InitBundleList(const kstl::string& filename)
 					}
 				}
 			}
-			rawbuffer->Destroy();
 		}
 	}
 }
@@ -968,15 +966,15 @@ void	FilePathManager::InitWithConfigFile(const kstl::string& filename)
 {
 	JSonFileParser L_JsonParser;
 	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionary(filename);
-	if (!L_Dictionary.isNil())
+	if (L_Dictionary)
 	{
 		CoreItemSP pathList = L_Dictionary;
 		int nbpath = pathList->size();
 		int i;
 		for (i = 0; i < nbpath; i += 2)
 		{
-			CoreItemSP currentpathname = pathList[i];
-			CoreItemSP currentpath = pathList[i + 1];
+			CoreItemSP currentpathname = (*pathList)[i];
+			CoreItemSP currentpath = (*pathList)[i + 1];
 			AddToPath((kstl::string)*currentpathname.get(), (kstl::string)*currentpath.get());
 		}
 
@@ -1028,7 +1026,7 @@ SmartPointer<FileHandle> Platform_fopen(const char * filename, const char * mode
 	}
 	else if (isPackage)
 	{
-		SP<FilePathManager> fpm = KigsCore::GetSingleton("FilePathManager");
+		SP<FilePathManager> fpm = KigsCore::Singleton<FilePathManager>();
 		fullfilenamehandle = fpm->FindFullName(filename);
 		Platform_fopen(fullfilenamehandle.get(), mode);
 	}
@@ -1041,6 +1039,8 @@ SmartPointer<FileHandle> Platform_fopen(const char * filename, const char * mode
 
 	return fullfilenamehandle;
 }
+
+std::set<CMSP> FilePathManager::mHTTPConnections;
 
 // HTTP file management (should use PureVirtualFileAccessDelegate now)
 bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kstl::string& L_hostname)
@@ -1058,9 +1058,8 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 		L_Connection->Init();
 
 		// use FILE* pointer to store connection, weird but OK
-		handle->mFile = (PLATFORM_FILE*)L_Connection.Pointer();
-		L_Connection->GetRef();
-
+		handle->mFile = (PLATFORM_FILE*)L_Connection.get();
+		mHTTPConnections.insert(L_Connection);
 		// create HTTPASyncRequest
 
 		kstl::string L_FileName = "fopen:";
@@ -1072,7 +1071,7 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 		CMSP request = (KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest"));
 		request->setValue(LABEL_TO_ID(Type), "GET");
 		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), L_Connection.Pointer());
+		request->setValue(LABEL_TO_ID(Connection), L_Connection.get());
 		request->Init();
 
 		void* received=nullptr;
@@ -1088,7 +1087,7 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 			}
 			else
 			{
-				L_Connection->Destroy();
+				mHTTPConnections.erase(L_Connection);
 				handle->mFile = 0;
 			}
 		}
@@ -1098,6 +1097,7 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 
 	return (handle->mFile != 0);
 }
+
 
 // HTTP file management (should use PureVirtualFileAccessDelegate now)
 long int FilePathManager::HTTPfread(void * ptr, long size, long count, FileHandle* handle)
@@ -1286,8 +1286,7 @@ int FilePathManager::HTTPfclose(FileHandle* handle)
 		{
 
 		}
-
-		L_Connection->Destroy();
+		mHTTPConnections.erase(L_Connection->SharedFromThis());
 		handle->mFile = 0;
 	}
 	return 0;

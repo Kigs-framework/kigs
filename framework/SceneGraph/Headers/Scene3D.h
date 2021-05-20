@@ -141,7 +141,7 @@ public:
 	{
 		mLightsHaveChanged = true;
 	}
-
+	virtual ~Scene3D();
 protected:
 
 
@@ -155,7 +155,7 @@ protected:
 	//! link to the cameras
 	kstl::set<Camera*, sortCamera>	mCameras;
 	//! link to the lights
-	kstl::set<CoreModifiable*>	    mLights;
+	kstl::set<CoreModifiable*>		mLights;
 	bool							mLightsHaveChanged;
 
 	int mSpotLightCount = 0;
@@ -166,7 +166,7 @@ protected:
 	maInt			 		        mPriority;
 	maBool							mSort3DNodesFrontToBack;
 
-	virtual ~Scene3D();
+	
 };
 
 #endif //_SCENE3D_H_

@@ -14,9 +14,9 @@ bool maCoreItemValue::ExportToString(kstl::string& value) const
 
 void maCoreItemValue::InitWithJSON(const kstl::string& currentval, CoreModifiable* owner)
 {
-	if(!item.isNil())
+	if(item)
 	{
-		item.Reset();
+		item = nullptr;
 	}
 
 	JSonFileParser L_JsonParser;

@@ -68,7 +68,7 @@ void CollisionManager::InitModifiable()
 				Work w;
 				while (mHighPrioWork.try_dequeue(w))
 				{
-					if (w.mItem->getRefCount() != 1)
+					if (auto ptr = w.mItem.lock())
 					{
 						auto result = w.mFunc();
 						if (result)
@@ -90,7 +90,7 @@ void CollisionManager::InitModifiable()
 
 				if (mWork.try_dequeue(w))
 				{
-					if (w.mItem->getRefCount() != 1)
+					if (auto ptr = w.mItem.lock())
 					{
 						auto result = w.mFunc();
 						if (result)
@@ -323,7 +323,7 @@ void CollisionManager::CreateCollisionObject(CoreModifiable* item, unsigned int 
 	if (found == mCollisionObjectMap.end() || found->second->mNeedRebuild)
 	{
 		CollisionBaseObject* col = nullptr;
-		SmartPointer<CoreModifiable> ref{ item, GetRefTag{} };
+		SmartPointer<CoreModifiable> ref = item->SharedFromThis();
 		std::function<CollisionBaseObject*()> work;
 
 		if (item->isSubType("ModernMesh"))
@@ -363,24 +363,24 @@ void CollisionManager::CreateCollisionObject(CoreModifiable* item, unsigned int 
 			{
 				auto parent_node = item->getFirstParent("Node3D");
 				auto mat = parent_node ? parent_node->as<Node3D>()->GetLocalToGlobal() : mat3x4::IdentityMatrix();
-				work = [ref, mat]() -> CollisionBaseObject*
+				work = [ref = ref.get(), mat]() -> CollisionBaseObject*
 				{
-					return static_cast<CollisionBaseObject*>(SpacialMeshBVH::BuildFromMesh((ModernMesh*)ref.get(), mat, true));
+					return static_cast<CollisionBaseObject*>(SpacialMeshBVH::BuildFromMesh((ModernMesh*)ref, mat, true));
 				};
 			}
 			else
 			{
-				work = [ref]() -> CollisionBaseObject*
+				work = [ref = ref.get()]() -> CollisionBaseObject*
 				{
-					return static_cast<CollisionBaseObject*>(AABBTree::BuildFromMesh((ModernMesh*)ref.get()));
+					return static_cast<CollisionBaseObject*>(AABBTree::BuildFromMesh((ModernMesh*)ref));
 				};
 			}
 		}
 		else if (item->isSubType("DrawVertice"))
 		{
-			work = [ref]()
+			work = [ref = ref.get()]()
 			{
-				DrawVertice * mesh = (DrawVertice*)ref.get();
+				DrawVertice * mesh = (DrawVertice*)ref;
 				
 				// extract vertex position
 				int vCount, stride, format;
@@ -463,9 +463,7 @@ void CollisionManager::CreateCollisionObject(CoreModifiable* item, unsigned int 
 			
 			if (work)
 			{
-				Work w{ item, item->getUID(), newinfo, work };
-
-
+				Work w{ ref, item->getUID(), newinfo, work };
 				if (false)
 				{
 					auto result = w.mFunc();

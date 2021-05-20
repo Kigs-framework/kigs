@@ -197,7 +197,7 @@ bool JPEGClass::Load(FileHandle* fileName)
 	}
 
 	u64 nDatalen;
-	auto rawbuffer = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFile(fileName, nDatalen));
+	auto rawbuffer = ModuleFileManager::LoadFile(fileName, nDatalen);
 	result = Load(rawbuffer.get());
 
 	return result;

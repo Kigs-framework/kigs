@@ -133,7 +133,7 @@ struct TextTag
 	u32 start_index;
 };
 
-usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_tags = nullptr, kstl::vector<CoreModifiable*>* inline_items = nullptr, CoreModifiable* obj = nullptr);
+usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_tags = nullptr, kstl::vector<CMSP>* inline_items = nullptr, CoreModifiable* obj = nullptr);
 
 // ****************************************
 // * UIDynamicText class
@@ -251,7 +251,7 @@ private:
 
 	usString mCurrentString;
 
-	kstl::vector<CoreModifiable*> mInlineItems;
+	kstl::vector<CMSP> mInlineItems;
 	kstl::vector<TextTag> mPreprocessedTags;
 
 

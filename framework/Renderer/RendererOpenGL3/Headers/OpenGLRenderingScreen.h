@@ -20,8 +20,8 @@ class OpenGLRenderingScreen : public OpenGLPlatformRenderingScreen
 {
 public:
 	DECLARE_CLASS_INFO(OpenGLRenderingScreen, OpenGLPlatformRenderingScreen, Renderer)
-
 	OpenGLRenderingScreen(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~OpenGLRenderingScreen();
 
 	bool    SetActive(TravState* state) override;
 	void    Release(TravState* state) override;
@@ -37,15 +37,11 @@ public:
 	DECLARE_METHOD(Snapshot);
 	COREMODIFIABLE_METHODS(Snapshot);
 protected:
-
 	void	DelayedInit();
-
 	void Update(const Timer&  timer, void* /*addParam*/) override;
 
 	void	InitModifiable() override;
 	void	UninitModifiable() override;
-
-	virtual ~OpenGLRenderingScreen();
 
 	void InitializeGL(GLsizei width, GLsizei height) override;
 

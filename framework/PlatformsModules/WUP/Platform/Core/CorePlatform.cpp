@@ -18,6 +18,10 @@
 
 #include <ppltasks.h>
 
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <Windows.h>
+
 using namespace concurrency;
 
 #include "winrt/Windows.Storage.Streams.h"

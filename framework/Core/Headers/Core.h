@@ -158,7 +158,7 @@ public:
 	 */
 	MiniInstanceFactory* GetUpgradorFactory() const
 	{
-		return mUpgradorFactory;
+		return mUpgradorFactory.get();
 	}
 
 	// create connection between a signal and a slot 
@@ -196,12 +196,12 @@ public:
 	 * \param		classname : name of the module to retreive
 	 * \return		the asked module or NULL if not exist
 	 */
-	static ModuleBase* GetModule(const KigsID& classname);
+	static SP<ModuleBase> GetModule(const KigsID& classname);
 
 	template<typename T>
-	static T* GetModule()
+	static SP<T> GetModule()
 	{
-		return static_cast<T*>(GetModule(T::mClassID));
+		return std::static_pointer_cast<T>(GetModule(T::mClassID));
 	}
 
 	/**
@@ -220,8 +220,11 @@ public:
 	template<typename... Args>
 	static CMSP GetInstanceOf(const kstl::string& instancename, const KigsID& classname, Args&&... args);
 
-
-	//static CMSP CreateInstance(const kstl::string& instancename, KigsID classname);
+	template<typename T>
+	static SP<T> CreateInstance(const kstl::string& instancename)
+	{
+		return std::static_pointer_cast<T>(GetInstanceOf(instancename, T::mClassID));
+	}
 
 	/**
 	 * \brief		return an unique instance of the given class (Design Pattern Singleton)
@@ -236,7 +239,7 @@ public:
 	template<typename askedType>
 	static SP<askedType> Singleton()
 	{
-		return (SP<askedType>)GetSingleton(askedType::mClassID);
+		return std::static_pointer_cast<askedType>(GetSingleton(askedType::mClassID));
 	}
 	/**
 	 * \brief		destroy the unique instance of the given class
@@ -293,17 +296,19 @@ public:
 	 * \brief		Load and initialize the given module
 	 * \return		the loaded module
 	 */
-	template<class Module_Type> static Module_Type* LoadKigsModule(const std::string& Module_Type_Name,const kstl::vector<CoreModifiableAttribute*>* params=0)
+	template<class Module_Type> static SP<Module_Type> LoadKigsModule(const std::string& Module_Type_Name,const kstl::vector<CoreModifiableAttribute*>* params=0)
 	{
 		DECLARE_CLASS_INFO_WITHOUT_FACTORY(Module_Type, Module_Type_Name);
-		Module_Type *Module = (Module_Type*)GetModule(Module_Type_Name);
+		SP<Module_Type> Module = GetModule<Module_Type>();
 		if (!Module)
-			Module = new Module_Type(kstl::string("the")+kstl::string(Module_Type_Name));
-
+			Module = SP<Module_Type>(new Module_Type(kstl::string("the")+kstl::string(Module_Type_Name)));
 		if (Module)
 			Module->Init(Instance(), params);
 		return Module;
 	}
+
+	static void RemoveModule(const std::string& classname);
+	
 
 	/**
 	 * \fn			static void	GetSemaphore()
@@ -398,18 +403,6 @@ public:
 	static CoreModifiable* GetThreadProfiler(){ return mCoreInstance->mThreadProfiler; }
 	static void SetThreadProfiler(CoreModifiable* tp){ mCoreInstance->mThreadProfiler = tp; }
 
-
-	/**
-	* \fn			inline  static kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >& getReferenceMap()
-	* \brief		Get the map of referenced CoreModifiable (maReference)
-	* \return		
-	*/
-	inline static kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >& getReferenceMap()
-	{
-		return *(mCoreInstance->mReferenceMap);
-	}
-
-
 	/**
 	 * \fn			bool	ParseXml(const kstl::string& filename,CoreModifiable*	delegateObject,const char* force_as_format=0)
 	 * \brief		Parse the given xml file, using delegateObject as delegate
@@ -439,7 +432,6 @@ public:
 	{
 		return mCoreMainModuleList[(unsigned int)index];
 	}
-	void AddToPostDestroyList(CoreModifiable*);
 
 	void	RegisterDecorator(DecorateMethod method, DecorateMethod undecoratemethod, KigsID decoratorName);
 
@@ -463,6 +455,9 @@ public:
 		}
 		return false;
 	}
+
+	void AddToPostDestroy(CMSP obj);
+	void RemoveFromPostDestroy(CMSP obj);
 
 protected:
 
@@ -527,10 +522,10 @@ protected:
 
 	//! pointer to instance factory singleton
 	InstanceFactory*		mInstanceFactory;
-	MiniInstanceFactory*	mUpgradorFactory;
+	SP<MiniInstanceFactory>	mUpgradorFactory;
 
 	//! pointer to initialised modules
-	kigs::unordered_map<KigsID, ModuleBase*>*			mModuleBaseInstanceMap;
+	kigs::unordered_map<KigsID, SP<ModuleBase>>*			mModuleBaseInstanceMap;
 
 	//! decorator map
 	struct DecorateMethodPair
@@ -541,7 +536,7 @@ protected:
 	kigs::unordered_map<KigsID, DecorateMethodPair>*		mDecoratorMap;
 
 	// current pending async requests
-	kstl::vector<AsyncRequest*>*							mAsyncRequestList;
+	kstl::vector<SP<AsyncRequest>>*							mAsyncRequestList;
 
 	// called by base application update
 	static void ManageAsyncRequests();
@@ -555,17 +550,12 @@ protected:
 
 	//! manage post destruction
 	std::mutex								mPostDestructionListMutex;
-	std::vector<CoreModifiable*>			mPostDestructionList;
+	std::unordered_map<CoreModifiable*, SP<CoreModifiable>>			mPostDestructionList;
 	void ManagePostDestruction();
 
 	friend class ModuleBase;
 	//! static pointer to the KigsCore singleton
 	static KigsCore*		mCoreInstance;
-
-
-	//! CoreModifiable referenced by maReference
-	kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >*	mReferenceMap;
-
 
 MEMORYMANAGEMENT_START
 #ifndef _NO_MEMORY_MANAGER_
@@ -671,16 +661,14 @@ MEMORYMANAGEMENT_END
 
 
 //#include "AttributePacking.h"
-
-
 template<>
 inline CMSP KigsCore::GetInstanceOf(const kstl::string& instancename, const KigsID& classname)
 {
-	CMSP instance = OwningRawPtrToSmartPtr(Instance()->GetInstanceFactory()->GetInstance(instancename, classname));
+	CMSP instance = Instance()->GetInstanceFactory()->GetInstance(instancename, classname);
 	//! if instance factory fail then create a DoNothingObject (and print debug messages)
-	if (instance.isNil())
+	if (!instance)
 	{
-		instance = OwningRawPtrToSmartPtr(Instance()->GetInstanceFactory()->GetInstance(instancename, "DoNothingObject"));
+		instance = Instance()->GetInstanceFactory()->GetInstance(instancename, "DoNothingObject");
 #ifdef _DEBUG
 #ifdef KEEP_NAME_AS_STRING
 		kigsprintf("unknown object : %s of type %s \n", instancename.c_str(), classname._id_name.c_str());
@@ -689,7 +677,7 @@ inline CMSP KigsCore::GetInstanceOf(const kstl::string& instancename, const Kigs
 #endif
 
 #ifdef KEEP_NAME_AS_STRING
-		if (instance.isNil())
+		if (!instance)
 			kigsprintf("ALLOCATION ERROR : %s \n", classname._id_name.c_str());
 #endif
 #endif
@@ -710,12 +698,12 @@ inline CMSP KigsCore::GetInstanceOf(const kstl::string& instancename, const Kigs
 		(packer << std::forward<Args>(args), 0)...
 	};
 	(void)expander;
-	CMSP instance = OwningRawPtrToSmartPtr(Instance()->GetInstanceFactory()->GetInstance(instancename, classname, &(kstl::vector<CoreModifiableAttribute*>&)packer));
+	CMSP instance = Instance()->GetInstanceFactory()->GetInstance(instancename, classname, &(kstl::vector<CoreModifiableAttribute*>&)packer);
 		
 	//! if instance factory fail then create a DoNothingObject (and print debug messages)
-	if (instance.isNil())
+	if (!instance)
 	{
-		instance = OwningRawPtrToSmartPtr(Instance()->GetInstanceFactory()->GetInstance(instancename, "DoNothingObject"));
+		instance = Instance()->GetInstanceFactory()->GetInstance(instancename, "DoNothingObject");
 #ifdef _DEBUG
 #ifdef KEEP_NAME_AS_STRING
 		kigsprintf("unknown object : %s of type %s \n", instancename.c_str(), classname._id_name.c_str());
@@ -724,7 +712,7 @@ inline CMSP KigsCore::GetInstanceOf(const kstl::string& instancename, const Kigs
 #endif
 
 #ifdef KEEP_NAME_AS_STRING
-		if (instance.isNil())
+		if (!instance)
 			kigsprintf("ALLOCATION ERROR : %s \n", classname._id_name.c_str());
 #endif
 #endif

@@ -21,9 +21,8 @@ class ThreadEvent : public CoreModifiable
 public:
 
 	DECLARE_CLASS_INFO(ThreadEvent, CoreModifiable, Thread)
-
-	//! constructor
 	ThreadEvent(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~ThreadEvent();
 
 	void	wait();
 	void	signal();
@@ -45,9 +44,6 @@ protected:
 
 	friend class WorkerThread;
 	friend class ThreadPoolManager;
-
-	//! destructor
-	virtual ~ThreadEvent();
 
 	maInt			mEventCounter;
 	int				mCurrentCount;

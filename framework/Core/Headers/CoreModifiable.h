@@ -57,8 +57,8 @@ class CoreTreeNode;
 #include "XMLNode.h"
 class Timer;
 class CoreItem;
-class KigsCore;
 class CoreItemSP;
+class KigsCore;
 
 // utility class to pack variable argument list in std::vector<CoreModifiableAttribute*>
 
@@ -107,53 +107,6 @@ struct ExportSettings
 	}
 
 };
-
-struct WeakRef
-{
-	WeakRef() = default;
-	WeakRef(const WeakRef& copy_that)
-	{
-		*this = copy_that;
-	}
-	WeakRef(WeakRef&& move_that)
-	{
-		*this = std::move(move_that);
-	}
-	WeakRef& operator=(const WeakRef& copy_that);
-	WeakRef& operator=(WeakRef&& move_that);
-	WeakRef(CoreModifiable* item)
-	{
-		*this = item;
-	}
-	WeakRef& operator=(CoreModifiable* item);
-
-	bool operator==(const WeakRef& other) const { return to == other.to; }
-	bool operator!=(const WeakRef& other) const { return to != other.to; }
-	bool operator<(const WeakRef& other) const { return to < other.to; }
-	
-	CoreModifiable* Pointer() const { return to; }
-
-	~WeakRef();
-	void ItemIsBeingDeleted();
-	SmartPointer<CoreModifiable> Lock() const;
-	bool IsValid() const { return alive && to; }
-private:
-	bool alive = false;
-	CoreModifiable* to = nullptr;
-};
-
-
-namespace std
-{
-	template <>
-	struct hash<WeakRef>
-	{
-		std::size_t operator()(const WeakRef& k) const
-		{
-			return std::hash<CoreModifiable*>{}(k.Pointer());
-		}
-	};
-}
 
 struct LazyContent;
 struct ModifiableMethodStruct;
@@ -238,47 +191,7 @@ public:
 };
 
 
-// specialized smart pointer with a few more features
-class CMSP : public SmartPointer<CoreModifiable>
-{
-public:
-
-	// Move constructor, steal other ref
-	CMSP(SmartPointer<CoreModifiable>&& other) : SmartPointer<CoreModifiable>(other)
-	{}
-
-	using SmartPointer<CoreModifiable>::SmartPointer;
-	inline CMSP operator [](const std::string& son) const;
-
-	template<size_t _Size>
-	inline CMSP operator [](const char(&son)[_Size]) const;
-
-	// CoreModifiable Attributes management
-	class AttributeHolder
-	{
-
-	protected:
-		CoreModifiableAttribute* mAttr=nullptr;
-	public: 
-
-		AttributeHolder() : mAttr(nullptr) {};
-		AttributeHolder(CoreModifiableAttribute* attr) : mAttr(attr) {};
-		AttributeHolder(const AttributeHolder& other) : mAttr(other.mAttr) {};
-
-		template<typename T>
-		inline operator T() const;
-
-		template<typename T>
-		inline const AttributeHolder& operator =(T toset) const;
-
-		template<typename T>
-		inline const bool operator ==(T totest) const;
-	};
-
-
-	inline AttributeHolder operator()(const std::string& son) const;
-	
-};
+using CMSP = SmartPointer<CoreModifiable>;
 
 class ModifiableItemStruct
 {
@@ -358,10 +271,10 @@ protected:
 
 // generic flag
 #define InitFlag							(1U)
-#define PostDestroyFlag						(2U)
+//#define PostDestroyFlag					(2U) // Free slot, feel free to use for something else
 #define RecursiveUpdateFlag					(4U)
 #define NotificationCenterRegistered		(8U)
-#define ReferenceRegistered					(16U)
+//#define ReferenceRegistered				(16U) // Free slot, feel free to use for something else
 #define AutoUpdateRegistered				(32U)
 #define AggregateParentRegistered			(64U)
 #define AggregateSonRegistered				(128U)
@@ -508,6 +421,8 @@ public:
 
 	virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) { classNameTree.addClassName("CoreModifiable", "CoreModifiable"); }
 	
+	CMSP SharedFromThis() { return std::static_pointer_cast<CoreModifiable>(shared_from_this()); }
+
 	virtual KigsID getExactTypeID() const { return CoreModifiable::mClassID; }
 	virtual bool isSubType(const KigsID& cid) const { return CoreModifiable::mClassID == cid; }
 	static void GetClassNameTree(CoreClassNameTree& classNameTree);
@@ -528,13 +443,17 @@ public:
 	inline unsigned int getUID() { return mUID; }
 	CoreTreeNode* GetTypeNode() const { return mTypeNode; }
 
+	/*
 #ifdef KIGS_TOOLS
 	void GetRef() override;
 	bool TryGetRef() override;
 	void Destroy() override;
 #endif
+*/
+
 	// Don't call this manually!
 	void RegisterToCore();
+	virtual ~CoreModifiable();
 
 protected:
 	explicit CoreModifiable(std::string name, DECLARE_CLASS_NAME_TREE_ARG) : GenericRefCountedBaseClass() 
@@ -545,8 +464,7 @@ protected:
 		mName = name;
 		mNameID = name;
 	}
-	virtual ~CoreModifiable();
-
+	
 	struct ImportState;
 public:	
 	SIGNALS_BASE(PreInit,
@@ -577,7 +495,8 @@ public:
 		STRING,
 		ARRAY,
 		ENUM,
-		REFERENCE,
+		WEAK_REFERENCE,
+		STRONG_REFERENCE,
 		USSTRING, // u16 string for UTF-16 style
 		COREITEM,
 		COREBUFFER,
@@ -733,8 +652,6 @@ public:
 		std::vector<CoreModifiableAttribute*> p = (std::vector<CoreModifiableAttribute*>) params;
 		return CallMethod(methodNameID, p, privateParams, sender); }
 
-
-
 	/// ID
 	// RuntimeID is name:runtimeType:pointer:UID
 	std::string	GetRuntimeID() const;
@@ -870,9 +787,6 @@ public:
 	// Remove a private methods
 	void RemoveMethod(KigsID labelID);
 
-	void AddWeakRef(WeakRef* ref);
-	void RemoveWeakRef(WeakRef* ref);
-
 	/// Aggregate management
 	// Adds a new son as aggregate
 	bool aggregateWith(const CMSP& item, ItemPosition pos = Last);
@@ -908,18 +822,6 @@ public:
 	{
 		return (mModifiableFlag&(u32)NotificationCenterRegistered) != 0;
 	}
-	inline void flagAsReferenceRegistered()
-	{
-		mModifiableFlag |= (u32)ReferenceRegistered;
-	}
-	inline void unflagAsReferenceRegistered()
-	{
-		mModifiableFlag &= 0xFFFFFFFF ^ (u32)ReferenceRegistered;
-	}
-	inline bool isFlagAsReferenceRegistered() const
-	{
-		return (mModifiableFlag&(u32)ReferenceRegistered) != 0;
-	}
 	inline void flagAsAutoUpdateRegistered()
 	{
 		mModifiableFlag |= (u32)AutoUpdateRegistered;
@@ -932,18 +834,8 @@ public:
 	{
 		return (mModifiableFlag&(u32)AutoUpdateRegistered) != 0;
 	}
-	inline void flagAsPostDestroy()
-	{
-		mModifiableFlag |= (u32)PostDestroyFlag;
-	}
-	inline void unflagAsPostDestroy()
-	{
-		mModifiableFlag &= 0xFFFFFFFF ^ (u32)PostDestroyFlag;
-	}
-	inline bool isFlagAsPostDestroy() const
-	{
-		return (mModifiableFlag & (u32)PostDestroyFlag) != 0;
-	}
+	void flagAsPostDestroy();
+	void unflagAsPostDestroy();
 	inline void setUserFlag(u32 flag)
 	{
 		mModifiableFlag |= ((u32)flag) << UserFlagsShift;
@@ -998,9 +890,9 @@ public:
 
 	// for some type of classes when we want don't want duplicated instances (textures, shaders...)
 	// return an already existing instance equivalent of this
-	virtual CMSP	getSharedInstance()
+	virtual CMSP getSharedInstance()
 	{
-		return CMSP(this, GetRefTag{});
+		return SharedFromThis();
 	}
 
 
@@ -1137,7 +1029,7 @@ protected:
 	void Disconnect(KigsID signal, CoreModifiable* other, KigsID slot);
 
 	// check if we can destroy object
-	virtual bool checkDestroy() override;
+	// virtual bool checkDestroy() override;
 
 	/// Internals
 	void UpdateAggregates(const Timer&  timer, void* addParam);
@@ -1200,7 +1092,7 @@ protected:
 				{
 					if ((*itc).isAggregate()) // if aggregate 
 					{
-						if ((*itc).mItem == this) // and aggregate son is this
+						if ((*itc).mItem.get() == this) // and aggregate son is this
 						{
 							return true;
 						}
@@ -1215,7 +1107,6 @@ protected:
 	}
 
 	void unregisterFromNotificationCenter();
-	void unregisterFromReferenceMap();
 	void unregisterFromAutoUpdate();
 	void DeleteDynamicAttributes();
 
@@ -1286,20 +1177,7 @@ protected:
 	template<typename StringType>
 	static CMSP	InitReference(XMLNodeTemplate<StringType>* currentNode, std::vector<CMSP> &loadedItems, const std::string& name);
 	
-	static bool AttributeNeedEval(const std::string& attr)
-	{
-		if (attr.size() > 6)
-		{
-			if (attr.substr(0, 4) == "eval")
-			{
-				if (attr[attr.size() - 1] == ')')
-				{
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+	
 	static void	EvalAttribute(std::string& attr, CoreModifiable* owner, CoreModifiableAttribute* destattr = 0);
 
 	//! create and add dynamic attribute except arrays
@@ -1322,7 +1200,6 @@ public:
 private:
 	friend class CoreModifiableAttribute;
 	friend class IMEditor;
-	friend class CoreItemSP;
 	friend class KigsCore;
 
 	static void	ReleaseLoadedItems(std::vector<CMSP> &loadedItems);
@@ -1410,42 +1287,11 @@ protected:
 	CoreModifiable*							mOwner;
 };
 
-// CMSP methods
-
-inline CMSP CMSP::operator [](const std::string& son) const
-{
-	if (mPointer)
-		return mPointer->GetFirstSonByName("CoreModifiable", son);
-	return nullptr;
-}
-
-template<size_t _Size>
-inline CMSP CMSP::operator [](const char(&son)[_Size]) const
-{
-	if (mPointer)
-		return mPointer->GetFirstSonByName("CoreModifiable", son);
-	return nullptr;
-}
-
-
-inline CMSP::AttributeHolder CMSP::operator()(const std::string& attr) const
-{
-	
-	if (mPointer)
-	{
-		CoreModifiableAttribute* attrib = mPointer->getAttribute(attr);
-		return AttributeHolder(attrib);
-	}
-
-	return AttributeHolder(nullptr);
-}
-
 struct LazyContent
 {
 	kigs::unordered_map<KigsID, std::vector<std::pair<KigsID, CoreModifiable*>>> mConnectedTo;
 	kigs::unordered_map<CoreModifiable*, std::set<std::pair<KigsID, KigsID>>> mConnectedToMe;
 	kigs::unordered_map <KigsID, ModifiableMethodStruct> mMethods;
-	std::vector<WeakRef*> mWeakRefs;
 	// Upgrador management
 	LazyContentLinkedListItemStruct mLinkedListItem = 0;
 
@@ -1550,7 +1396,7 @@ TypeOut* KigsDynamicCast(TypeIn* obj)
 	return nullptr;
 }
 
-typedef CoreModifiable* (*createMethod)(const std::string& instancename, std::vector<CoreModifiableAttribute*>* args);
+typedef CMSP (*createMethod)(const std::string& instancename, std::vector<CoreModifiableAttribute*>* args);
 void RegisterClassToInstanceFactory(KigsCore* core, const std::string& moduleName, KigsID classID, createMethod method);
 
 
@@ -1586,27 +1432,29 @@ public:
 
 	CoreAttributeAndMethodForwardSmartPointer& operator=(const SmartPointer<smartPointOn>& smcopy)
 	{
-		if (SmartPointer<smartPointOn>::mPointer != smcopy.get())
-		{
-			if (SmartPointer<smartPointOn>::mPointer)
-			{
-				SmartPointer<smartPointOn>::mPointer->Destroy();
-			}
-			//TODO(antoine) FIX const_cast
-			SmartPointer<smartPointOn>::mPointer = (smartPointOn*)smcopy.get();
-			if (SmartPointer<smartPointOn>::mPointer)
-			{
-				SmartPointer<smartPointOn>::mPointer->GetRef();
-			}
-		}
+		SmartPointer<smartPointOn>::operator=(smcopy);
 		return *this;
 	}
-
-	operator SmartPointer<smartPointOn>*() const
+	operator SmartPointer<smartPointOn>*()
 	{
 		return this;
 	}
 };
+
+inline bool AttributeNeedEval(const std::string& attr)
+{
+	if (attr.size() > 6)
+	{
+		if (attr.substr(0, 4) == "eval")
+		{
+			if (attr[attr.size() - 1] == ')')
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
 
 template<typename smartPointOn>
 using ForwardSP = CoreAttributeAndMethodForwardSmartPointer<smartPointOn>;

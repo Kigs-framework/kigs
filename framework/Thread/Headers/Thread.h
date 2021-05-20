@@ -23,10 +23,9 @@ class Thread : public CoreModifiable
 public:
 
     DECLARE_CLASS_INFO(Thread,CoreModifiable,Thread)
-
-	//! constructor
     Thread(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	
+	virtual ~Thread();
+
 	enum class State
 	{
 		UNINITIALISED=0,
@@ -80,9 +79,7 @@ protected:
 	// reset all states
 	void	Done();
 
-	//! destructor
-    virtual ~Thread();
- 
+	CMSP					mKeepAlive;
 	State					mCurrentState;
 	kfloat					mProgress;
 	std::thread				mCurrentThread;

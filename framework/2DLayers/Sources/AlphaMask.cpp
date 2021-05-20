@@ -11,7 +11,7 @@ void AlphaMask::InitModifiable()
 	ParentClassType::InitModifiable();
 	if(IsInit())
 	{
-		auto img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(mTextureName.c_str()));
+		auto img = TinyImage::CreateImage(mTextureName.c_str());
 		auto pixel_size = img->GetPixelValueSize(img->GetFormat());
 		
 		mSize.x = img->GetUsedWidth();

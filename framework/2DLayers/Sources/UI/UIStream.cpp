@@ -61,7 +61,7 @@ void UIStream::InitModifiable()
 		{
 			CoreModifiable* fb = mFrameBuffer;
 			if (fb)
-				mFrameBufferStream = NonOwningRawPtrToSmartPtr(fb);
+				mFrameBufferStream = fb->SharedFromThis();
 			else
 			{
 				return;
@@ -104,7 +104,7 @@ void UIStream::Update(const Timer& timer, void* v)
 
 			auto linesize = mFrameBufferStream->getValue<u32>("LineSize");
 
-			SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(data, size.x, size.y, TinyImage::RGBA_32_8888, linesize));
+			SmartPointer<TinyImage>	img = TinyImage::CreateImage(data, size.x, size.y, TinyImage::RGBA_32_8888, linesize);
 			//TinyImage::ExportImage("test.png", data, size.x, size.y, TinyImage::RGB_24_888, TinyImage::PNG_IMAGE);
 
 			mTexturePointer->getTexture()->CreateFromImage(img);

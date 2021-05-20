@@ -188,11 +188,10 @@ bool PNGClass::Load(FileHandle* fileName)
 	}
 
 	u64 nDatalen;
-	CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFile(fileName, nDatalen);
+	auto rawbuffer = ModuleFileManager::LoadFile(fileName, nDatalen);
 	if (rawbuffer)
 	{
-		result = Load(rawbuffer);
-		rawbuffer->Destroy();
+		result = Load(rawbuffer.get());
 	}
 	return result;
 }

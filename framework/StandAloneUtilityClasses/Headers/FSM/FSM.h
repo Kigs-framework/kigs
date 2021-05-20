@@ -22,7 +22,7 @@ class FSM_Manager : public CoreModifiable
 public:
 	DECLARE_CLASS_INFO(FSM_Manager, CoreModifiable, FSM)
 	DECLARE_INLINE_CONSTRUCTOR(FSM_Manager) {}
-
+	virtual ~FSM_Manager();
 
 	void	registerFSM(FSM* newfsm);
 	void	unregisterFSM(FSM* newfsm);
@@ -30,9 +30,7 @@ public:
 	virtual void Update(const Timer&  timer, void* addParam);
 
 protected:
-
 	virtual void	InitModifiable();
-	virtual ~FSM_Manager();
 
 	kstl::vector<FSM*>	m_FSM_List;
 };
@@ -42,6 +40,8 @@ class FSM : public CoreModifiable
 public:
 	DECLARE_CLASS_INFO(FSM, CoreModifiable, FSM);
 	DECLARE_CONSTRUCTOR(FSM);
+	virtual ~FSM();
+
 	WRAP_METHODS(sendEventName, sendEventNameWithData)
 
 	void	updateFSM();
@@ -91,10 +91,7 @@ protected:
 
 	virtual void	InitModifiable();
 
-	void eraseStateMap();
-	
-	virtual ~FSM();
-
+	void	eraseStateMap();
 	void	initStateFromDescription(CoreItemSP statedescription);
 	void	initTransitionsFromDescription(CoreItemSP statedescription);
 	void	initFSM_StateFromDescription(CoreItemSP statedescription);

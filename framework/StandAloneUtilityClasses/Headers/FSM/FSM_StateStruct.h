@@ -64,18 +64,7 @@ public:
 		return m_StateID;
 	}
 
-	bool	addInstance(FSM_State* state_instance)
-	{
-		// instance or action pack already set
-		if ((m_State != 0) || m_isSubFSM)
-		{
-			return false;
-		}
-
-		m_State = state_instance;
-		m_isSubFSM = true;
-		return true;
-	}
+	bool	addInstance(FSM_State* state_instance);
 
 	bool	addAction(STATE_ACTION_TYPE atype, const kstl::string& methodName)
 	{
@@ -100,11 +89,9 @@ public:
 	}
 
 //protected:
-	union
-	{
-		FSM_State*				m_State;
-		FSM_StateActionPack*	m_Actions;
-	};
+	
+	SP<FSM_State>			m_State;
+	FSM_StateActionPack*	m_Actions;
 
 	
 	// unsigned int is notificationID

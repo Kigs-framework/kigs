@@ -27,11 +27,12 @@ public:
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
 	UIButtonImage(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~UIButtonImage();
 
 	void ChangeTexture(kstl::string texturename, kstl::string overtexturename = "", kstl::string downtexturename = "");
 
 protected:
-	virtual ~UIButtonImage();
+	
 	void InitModifiable()override;
 	void NotifyUpdate(const unsigned int /* labelid */)override;
 

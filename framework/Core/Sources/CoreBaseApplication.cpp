@@ -22,9 +22,6 @@ CoreBaseApplication::CoreBaseApplication(const std::string& name, CLASS_NAME_TRE
 	mBackKeyState     = 0;
 	KigsCore::SetCoreApplication(this);
 	mAutoUpdateList.clear();
-	mEditor		   = NULL;
-
-	
 }
 
 CoreBaseApplication::~CoreBaseApplication()
@@ -133,42 +130,6 @@ void	CoreBaseApplication::InitApp(const char* baseDataPath, bool	InitBaseModule)
 
 	ProtectedPreInit();
 	ProtectedInit();
-	
-#ifdef WIN32
-#ifndef WUP
-	if (HasArg("UseEditor") || HasArg("UseEmbeddedEditor"))
-	{
-
-		// search for environment variable 
-		char * val;
-		val = getenv("KIGS_EDITOR");
-
-		if (val != NULL) {
-			std::string path = val;
-#ifdef _KIGS_ID_RELEASE_
-			path += "\\Release\\";
-#else
-			path += "\\Debug\\";
-#endif
-			mEditor = new AnonymousModule(path + "\\libIMEditor32.dll", 0);
-		}
-		else
-		{
-			mEditor = new AnonymousModule("libIMEditor32.dll", 0);
-		}
-
-		
-		std::vector<CoreModifiableAttribute*> params;	
-		maBool* embedded = new maBool(*mEditor, true, LABEL_AND_ID(EmbeddedEditor), HasArg("UseEmbeddedEditor"));
-		//maBool* autoStart = new maBool(*mEditor, true, LABEL_AND_ID(AutoStart), HasArg("EditorAutoStart"));
-
-		params.push_back(embedded);
-		//params.push_back(autoStart);
-		mEditor->Init(KigsCore::Instance(), &params);
-		AddAutoUpdate(mEditor);
-	}
-#endif
-#endif
 }
 void CoreBaseApplication::DoAutoUpdate()
 {
@@ -250,11 +211,6 @@ void	CoreBaseApplication::CloseApp()
 
 		CoreDestroyModule(ModuleTimer);
 		CoreDestroyModule(ModuleFileManager);
-	}
-
-	if (mEditor) {
-		mEditor->Close();
-		mEditor->Destroy();
 	}
 #ifdef PRINT_REFTRACING
 	CoreModifiable::debugPrintfFullTree();

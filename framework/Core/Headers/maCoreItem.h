@@ -48,13 +48,13 @@ public:
 	
 	// getValue overloads
 
-	virtual bool getValue(bool&  value) const override { if (!mValue.item.isNil()) { value = (bool)(*mValue.item.get()); return true; }  return false; }
-	virtual bool getValue(int&  value) const override { if (!mValue.item.isNil()) { value = (int)(*mValue.item.get()); return true; } return false; }
-	virtual bool getValue(unsigned int&  value) const override { if (!mValue.item.isNil()) { value = (unsigned int)(*mValue.item.get()); return true; }  return false; }
-	virtual bool getValue(kfloat&  value) const override { if (!mValue.item.isNil()) { value = (kfloat)(*mValue.item.get()); return true; }  return false; }
+	virtual bool getValue(bool&  value) const override { if (mValue.item) { value = (bool)(*mValue.item.get()); return true; }  return false; }
+	virtual bool getValue(int&  value) const override { if (mValue.item) { value = (int)(*mValue.item.get()); return true; } return false; }
+	virtual bool getValue(unsigned int&  value) const override { if (mValue.item) { value = (unsigned int)(*mValue.item.get()); return true; }  return false; }
+	virtual bool getValue(kfloat&  value) const override { if (mValue.item) { value = (kfloat)(*mValue.item.get()); return true; }  return false; }
 	virtual bool getValue(kstl::string& value) const override
 	{
-		if (!mValue.item.isNil())
+		if (mValue.item)
 		{
 			return mValue.ExportToString(value);
 		}
@@ -93,9 +93,9 @@ public:
 		if (this->isReadOnly())
 			return false;
 		
-		if (mValue.item != value)
+		if (mValue.item.get() != value)
 		{
-			mValue.item = CoreItemSP(value, GetRefTag{});
+			mValue.item = value->SharedFromThis();
 			mValue.ref_file = "";
 			DO_NOTIFICATION(notificationLevel);
 		}
@@ -106,6 +106,9 @@ public:
 	operator CoreItem*() { return mValue.item.get(); }
 	//! cast to CoreModifiable& operator
 	operator CoreItem&() { return (*mValue.item.get()); }
+	
+	operator CoreItemSP() { return mValue.item; }
+
 	//! return a reference on internal value
 	CoreItem& ref() { return (*mValue.item.get()); }
 	//! return a const reference on internal value

@@ -105,7 +105,7 @@ public:
 protected:
 
 	virtual bool	protectedUpdate(kdouble time);
-	kstl::vector<CoreAction*>	mList;
+	kstl::vector<SP<CoreAction>>	mList;
 };
 
 // ****************************************
@@ -134,7 +134,7 @@ public:
 protected:
 
 	virtual bool				protectedUpdate(kdouble time);
-	kstl::vector<CoreAction*>	mList;
+	kstl::vector<SP<CoreAction>>	mList;
 	unsigned int				mCurrentActionIndex;
 };
 
@@ -165,7 +165,7 @@ protected:
 	virtual bool				protectedUpdate(kdouble time);
 	int							mLoopCount;
 	int							mCurrentLoopIndex;
-	CoreAction*					mActionToLoop;
+	SP<CoreAction>					mActionToLoop;
 };
 
 // ****************************************
@@ -193,7 +193,7 @@ public:
 protected:
 
 	virtual bool				protectedUpdate(kdouble time);
-	CoreAction*					mActionToLoop;
+	SP<CoreAction>				mActionToLoop;
 	bool						mIsZeroDuration;
 };
 

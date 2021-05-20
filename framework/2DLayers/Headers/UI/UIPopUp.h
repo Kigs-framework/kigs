@@ -40,6 +40,6 @@ protected:
 	// upgrador member variable
 	kdouble mTimeOpen = 0;
 	bool mOpenPopup = false;
-	CoreModifiable* mActivator = nullptr;
+	CMSP mActivator;
 };
 

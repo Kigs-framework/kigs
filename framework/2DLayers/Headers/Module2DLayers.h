@@ -34,6 +34,7 @@ public:
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
 	Module2DLayers(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~Module2DLayers();
 
 	/**
 	* \brief		initialize module
@@ -71,10 +72,6 @@ public:
 	}
 
 protected:
-	/**
-	* \brief	destructor
-	*/
-	virtual ~Module2DLayers();
 
 	static bool	mRotate180;
 };

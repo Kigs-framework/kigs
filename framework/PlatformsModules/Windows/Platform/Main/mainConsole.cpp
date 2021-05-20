@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 
 	// no need to register app to factory
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));
-	CoreBaseApplication*	lApp = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
+	SP<CoreBaseApplication>	lApp = KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
 
 	int i;
 	for(i=0;i<argc;i++)
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 	lApp->CloseApp();
 
 	//! delete
-	lApp->Destroy();
+	lApp = nullptr;
 
 	//! last thing to do
 	KigsCore::Close();
@@ -111,7 +111,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	// no need to register app to factory
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));
-	CoreBaseApplication*	lApp = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
+	SP<CoreBaseApplication>	lApp = KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
 	   
 #ifdef INIT_DEFAULT_MODULES
 #ifdef BASE_DATA_PATH
@@ -138,7 +138,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	lApp->CloseApp();
 
 	//! delete
-	lApp->Destroy();
+	lApp = nullptr;
 
 	//! last thing to do
 	KigsCore::Close();

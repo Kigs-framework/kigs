@@ -63,7 +63,7 @@ void Drawable::DoPreDraw(TravState* state)
 		{ 
 			RenderPass::DrawPathElement el;
 			el.DrawStep = RenderPass::DrawPathElement::Step::PreDraw;
-			el.Object = CMSP(this, GetRefTag{});
+			el.Object = SharedFromThis();
 			state->mCurrentPass->debug_draw_path.push_back(el);
 		}
 #endif
@@ -90,7 +90,7 @@ void Drawable::DoDraw(TravState* state)
 		{ 
 			RenderPass::DrawPathElement el;
 			el.DrawStep = RenderPass::DrawPathElement::Step::Draw;
-			el.Object = CMSP(this, GetRefTag{});
+			el.Object = SharedFromThis();
 			state->mCurrentPass->debug_draw_path.push_back(el);
 		}
 #endif
@@ -117,7 +117,7 @@ void Drawable::DoPostDraw(TravState* state)
 		{
 			RenderPass::DrawPathElement el;
 			el.DrawStep = RenderPass::DrawPathElement::Step::PostDraw;
-			el.Object = CMSP(this, GetRefTag{});
+			el.Object = SharedFromThis();
 			state->mCurrentPass->debug_draw_path.push_back(el);
 		}
 #endif

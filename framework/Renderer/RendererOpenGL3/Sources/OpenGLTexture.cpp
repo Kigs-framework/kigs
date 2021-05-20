@@ -357,7 +357,7 @@ bool OpenGLTexture::ManagePow2Buffer(u32 aWidth, u32 aHeight, u32 aPixSize)
 
 bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool directInit)
 {
-	if (image.isNil())
+	if (!image)
 		return false;
 
 	unsigned char * data;
@@ -842,12 +842,11 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumbe
 				return false;
 
 			u64 size;
-			CoreRawBuffer* L_Buffer = ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
+			auto L_Buffer = ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
 			if (L_Buffer)
 			{
 				unsigned char* pBuffer = (unsigned char*)L_Buffer->CopyBuffer();
 				ModuleSpecificRenderer::mDrawer->SetFont(fontName, pBuffer, size, fontSize);
-				L_Buffer->Destroy();
 			}
 			else
 				break;
@@ -878,7 +877,7 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumbe
 
 #endif*/
 
-		SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(pImageData, L_Width, L_Height, TinyImage::RGBA_32_8888));
+		SmartPointer<TinyImage>	img = TinyImage::CreateImage(pImageData, L_Width, L_Height, TinyImage::RGBA_32_8888);
 
 		if (!CreateFromImage(img))
 			break;
@@ -911,8 +910,8 @@ bool	OpenGLTexture::Load()
 			if (!lFile)
 				return false;
 
-			SmartPointer<TinyImage> toload = OwningRawPtrToSmartPtr(TinyImage::CreateImage(lFile.get()));
-			if (!toload.isNil())
+			SmartPointer<TinyImage> toload = TinyImage::CreateImage(lFile.get());
+			if (toload)
 			{
 				bool result = false;
 				if (toload->IsOK())

@@ -287,7 +287,7 @@ XMLBase* XMLReaderFile::ReadFile(const kstl::string& file,const char* force_as_f
 	// 
 	SmartPointer<FileHandle> lFileHandle;
 	auto pathManager = KigsCore::Singleton<FilePathManager>();
-	if (!pathManager.isNil())
+	if (pathManager)
 		lFileHandle = pathManager->FindFullName(file);
 
 	if (!lFileHandle || (lFileHandle->mStatus&FileHandle::Exist)==0)
@@ -303,18 +303,16 @@ XMLBase* XMLReaderFile::ReadFile(const kstl::string& file,const char* force_as_f
 		if (uncompressManager)
 		{
 			u64 size;
-			CoreRawBuffer* compressedbuffer = ModuleFileManager::LoadFile(lFileHandle.get(), size);
+			auto compressedbuffer = ModuleFileManager::LoadFile(lFileHandle.get(), size);
 			if (compressedbuffer)
 			{
-				CoreRawBuffer* result=new CoreRawBuffer();
-				uncompressManager->SimpleCall("UncompressZeroEndedData", compressedbuffer,result);
-				compressedbuffer->Destroy();
+				auto result = std::make_unique<CoreRawBuffer>();
+				uncompressManager->SimpleCall("UncompressZeroEndedData", compressedbuffer.get(), result.get());
 				if (result->length())
 				{
 					XMLReaderFile reader;
-					xml = reader.ProtectedReadFile(result);
+					xml = reader.ProtectedReadFile(result.get());
 				}
-				result->Destroy();
 			}
 		}
 		else
@@ -435,14 +433,12 @@ bool	XMLReaderFile::ProtectedReadFile(char* Buff, CoreModifiable* delegateObject
 bool	XMLReaderFile::ProtectedReadFile(FileHandle* file,CoreModifiable*	delegateObject )
 {
 	u64 size;
-	CoreRawBuffer* rawbuffer=ModuleFileManager::LoadFileAsCharString(file,size,1);
-
+	auto rawbuffer = ModuleFileManager::LoadFileAsCharString(file,size,1);
 	if(rawbuffer)
 	{
 		char* Buff=(char*)rawbuffer->buffer();
 		bool result=false;
 		result = ProtectedReadFile(Buff, delegateObject,size);
-		rawbuffer->Destroy();
 		return result;
 	}
 
@@ -485,7 +481,7 @@ XMLBase* XMLReaderFile::ProtectedReadFileString(char* data, size_t size, char* e
 }
 
 
-XMLBase* XMLReaderFile::ProtectedReadFileStringRef(CoreRawBuffer* buffer, char* encoding)
+XMLBase* XMLReaderFile::ProtectedReadFileStringRef(const SP<CoreRawBuffer> buffer, char* encoding)
 {
 	MinimalXML p;
 
@@ -522,13 +518,12 @@ XMLBase* XMLReaderFile::ProtectedReadFileStringRef(CoreRawBuffer* buffer, char* 
 XMLBase* XMLReaderFile::ProtectedReadFile( FileHandle * file )
 {
 	u64 size;
-	CoreRawBuffer* rawbuffer=ModuleFileManager::LoadFileAsCharString(file,size,1);
+	auto rawbuffer = ModuleFileManager::LoadFileAsCharString(file,size,1);
 
 	if(rawbuffer)
 	{
 		XMLBase* result=0;
-		result = ProtectedReadFile(rawbuffer);
-		rawbuffer->Destroy();
+		result = ProtectedReadFile(rawbuffer.get());
 		return result;	
 	}
 

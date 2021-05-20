@@ -48,17 +48,15 @@ public:
 	{
 		return mImportedRoot;
 	}
-
-protected:
 	/**
 	 * \fn 		virtual ~StepByStepImporter(){};
 	 * \brief	destructor
-	 * 
+	 *
 	 * Do nothing
 	 */
 	virtual ~StepByStepImporter();
 
-
+protected:
 	/**
 	 * \brief	initialize modifiable
 	 * \fn 		void InitModifiable() override

@@ -26,10 +26,9 @@ class CollisionModule : public ModuleBase
 public:
 
 	DECLARE_CLASS_INFO(CollisionModule,ModuleBase,Collision)
-
-	//! module constructor 
     CollisionModule(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-         
+	~CollisionModule() override;
+
 	//! module init
     void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
 	
@@ -38,10 +37,6 @@ public:
                  
 	//! module update
 	void Update(const Timer& timer, void* addParam) override;
-               
-protected:
-	//! destructor
-    ~CollisionModule() override;    
 }; 
 
 #endif //_COLLISIONMODULE_H_

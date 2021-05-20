@@ -29,7 +29,8 @@ typedef void (*ReadColorFunc)(unsigned char* src, unsigned char* dst);
 class TinyImage : public GenericRefCountedBaseClass
 {
 public:	
-		
+	
+
 	/**
 	* \enum ImageFormat
 	* \brief enumeration of supported texture format
@@ -85,7 +86,8 @@ public:
 	};
 
 
-	
+	TinyImage();
+	TinyImage(void* data, int sx, int sy, TinyImage::ImageFormat internalfmt, int linesize = -1);
 	virtual ~TinyImage();
 
 	// negative valeur is for division : -1 =1/2 -2=1/4
@@ -301,9 +303,9 @@ public:
 		return 0;
 	}
 	
-	static	TinyImage*	CreateImage(const char* filename);
-	static	TinyImage*	CreateImage(FileHandle* filename);	
-	static	TinyImage*	CreateImage(void* data, int sx, int sy, TinyImage::ImageFormat internalfmt, int linesize = -1);
+	static	SP<TinyImage>	CreateImage(const char* filename);
+	static	SP<TinyImage>	CreateImage(FileHandle* filename);
+	static	SP<TinyImage>	CreateImage(void* data, int sx, int sy, TinyImage::ImageFormat internalfmt, int linesize = -1);
 	static void		ExportImage(const char* filename, void* data, int width, int height, ImageFormat internalfmt, ImageFileFormat file_format, bool flip = true);
 
 	bool	IsOK()
@@ -368,10 +370,7 @@ public:
 		KIGS_ASSERT(0);
 	}
 protected:	
-	// use static CreateImage, no direct access
-	TinyImage();
-
-	TinyImage(void* data, int sx,int sy,TinyImage::ImageFormat internalfmt, int linesize=-1);
+	
 
 	virtual bool	Load(FileHandle* fileName)
 	{

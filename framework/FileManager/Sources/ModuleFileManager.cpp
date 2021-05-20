@@ -49,7 +49,7 @@ void ModuleFileManager::Update(const Timer& timer, void* addParam)
 SmartPointer<CoreRawBuffer> ModuleFileManager::LoadFileToBuffer(const std::string& pFilename)
 {
 	u64 len;
-	return OwningRawPtrToSmartPtr(LoadFile(pFilename.c_str(), len));
+	return LoadFile(pFilename.c_str(), len);
 }
 
 // utility method 
@@ -58,7 +58,7 @@ SmartPointer<CoreRawBuffer> ModuleFileManager::LoadFileToBuffer(const std::strin
 // param 2 : returned file length
 // param 3 : start offset 
 // return a pointer on the loaded file in memory, must be deleted with delete[] after use
-CoreRawBuffer*	ModuleFileManager::LoadFile(const char *pFilename, u64& filelength, u64 startOffset, unsigned int trailing_zero)
+SmartPointer<CoreRawBuffer>	ModuleFileManager::LoadFile(const char *pFilename, u64& filelength, u64 startOffset, unsigned int trailing_zero)
 {
 	SmartPointer<FileHandle> result = KigsCore::Singleton<FilePathManager>()->FindFullName(pFilename);
 	if (result->mStatus&FileHandle::Exist)
@@ -68,7 +68,7 @@ CoreRawBuffer*	ModuleFileManager::LoadFile(const char *pFilename, u64& filelengt
 	return 0;
 }
 
-CoreRawBuffer*	ModuleFileManager::LoadFile(FileHandle *file,u64& filelength,u64 startOffset, unsigned int trailing_zero)
+SmartPointer<CoreRawBuffer>	ModuleFileManager::LoadFile(FileHandle *file,u64& filelength,u64 startOffset, unsigned int trailing_zero)
 {
 	// init file length to 0
 	filelength=0;	
@@ -77,7 +77,7 @@ CoreRawBuffer*	ModuleFileManager::LoadFile(FileHandle *file,u64& filelength,u64 
 		return 0;
 	}
 	unsigned char* pFile=0;
-	CoreRawBuffer*	result=0;
+	SP<CoreRawBuffer> result;
 	u64 additionnalSize= trailing_zero;
 
 	if(file->mFile)
@@ -103,7 +103,7 @@ CoreRawBuffer*	ModuleFileManager::LoadFile(FileHandle *file,u64& filelength,u64 
 			{
 				pFile[filelength+i]=0;
 			}
-			result=new CoreRawBuffer(pFile,filelength+additionnalSize);
+			result = std::make_unique<CoreRawBuffer>(pFile, filelength + additionnalSize);
 		}
 		Platform_fclose(file);
 	}
@@ -111,12 +111,12 @@ CoreRawBuffer*	ModuleFileManager::LoadFile(FileHandle *file,u64& filelength,u64 
 }
 
 //! load a file and add a zero at the end of the char buffer 
-CoreRawBuffer*	ModuleFileManager::LoadFileAsCharString(const char *pFilename, u64& filelength, u8 charSize, u64 startOffset)
+SP<CoreRawBuffer>	ModuleFileManager::LoadFileAsCharString(const char *pFilename, u64& filelength, u8 charSize, u64 startOffset)
 {
 	return LoadFile(pFilename, filelength, startOffset, charSize);
 }
 
-CoreRawBuffer*	ModuleFileManager::LoadFileAsCharString(FileHandle *pFilename,u64& filelength, u8 charSize,u64 startOffset)
+SP<CoreRawBuffer>	ModuleFileManager::LoadFileAsCharString(FileHandle *pFilename,u64& filelength, u8 charSize,u64 startOffset)
 {
 	return LoadFile(pFilename,filelength,startOffset, charSize);
 }

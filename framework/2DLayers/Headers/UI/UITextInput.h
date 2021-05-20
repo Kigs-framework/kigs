@@ -29,7 +29,7 @@ class UITextInput : public UIDynamicText
 public:
 	DECLARE_CLASS_INFO(UITextInput, UIDynamicText, 2DLayers);
 	DECLARE_INLINE_CONSTRUCTOR(UITextInput) {}
-
+	virtual ~UITextInput();
 	SIGNALS(TextChanged);
 
 	kstl::string			GetReleaseAction() const {return mReleaseAction.c_str();}
@@ -41,7 +41,7 @@ public:
 protected:
 	
 	void InitModifiable() override;
-	virtual ~UITextInput();
+	
 
 	DECLARE_METHOD(FocusChanged);
 	COREMODIFIABLE_METHODS(FocusChanged);

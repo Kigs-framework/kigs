@@ -19,11 +19,11 @@ class UIRoundHUD : public UIDrawableItem
 public:
 	DECLARE_CLASS_INFO(UIRoundHUD, UIDrawableItem, 2DLayers);
 	DECLARE_CONSTRUCTOR(UIRoundHUD);
-
+	virtual ~UIRoundHUD();
 	SIGNALS(TouchUp, SlotChanged);
 
 protected:
-	virtual ~UIRoundHUD();
+	
 	void InitModifiable() override;
 	void ProtectedDraw(TravState* state)override;
 	//void Update(const Timer& timer, void* addParam) override;

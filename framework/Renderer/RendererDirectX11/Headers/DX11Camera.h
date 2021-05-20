@@ -20,21 +20,17 @@ class DX11Camera : public Camera
 {
 public:
     DECLARE_CLASS_INFO(DX11Camera,Camera,Renderer)
-
     DX11Camera(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~DX11Camera();
 
 	std::array<mat4, 2> GetStereoViewProjections() override { return mCurrentStereoViewproj; }
+
 protected:
-
-	//void SetAmbient(kfloat r, kfloat g, kfloat b) override;
-
 	bool ProtectedSetActive(TravState* state) override;
 	virtual void PlatformProtectedSetActive(TravState* state);
 
 	void ProtectedRelease(TravState* state) override;
 	virtual void PlatformProtectedRelease(TravState* state);
-
-	virtual ~DX11Camera();
 
 #if defined(WUP) && defined(GL_ES2)
 	bool mNeedNearFarUpdate = true;

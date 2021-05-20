@@ -77,7 +77,7 @@ void	Texture::InitModifiable()
 			{
 #ifdef _DEBUG		
 				SP<Texture> registered=textureManager->GetTexture(mFileName.const_ref());
-				if (registered != this)
+				if (registered.get() != this)
 				{
 				//	KIGS_ERROR("texture with same name already in cache", 1);
 					printf("texture with same name (%s) already in cache \n", mFileName.const_ref().c_str());
@@ -98,7 +98,7 @@ void	Texture::InitModifiable()
 
 // for some type of classes when we want don't want duplicated instances (textures, shaders...)
 // return an already existing instance equivalent of this
-CMSP	Texture::getSharedInstance()
+CMSP Texture::getSharedInstance()
 {
 	auto textureManager = KigsCore::Singleton<TextureFileManager>();
 
@@ -108,7 +108,7 @@ CMSP	Texture::getSharedInstance()
 		
 		return shared;
 	}
-	return  CMSP(this, GetRefTag{});
+	return SharedFromThis();
 }
 
 DEFINE_UPGRADOR_METHOD(SpriteSheetData, GetAnimationList)

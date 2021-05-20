@@ -116,11 +116,11 @@ struct KigsToolsState
 
 	maReference mClipboardItem;
 
-	maReference CurrentSequenceManager{ 0u, maReferenceObject{"DataDrivenSequenceManager:AppSequenceManager"} };
+	maReference CurrentSequenceManager{ 0u, maWeakReferenceObject{"DataDrivenSequenceManager:AppSequenceManager"} };
 
 	kigs::unordered_map<std::string, std::pair<std::function<void()>, bool>> CustomWidgets;
 
-	kigs::unordered_map<Timer*, Timer::State> TimerStates;
+	kigs::unordered_map<Timer*, std::pair<Timer::State, SP<Timer>>> TimerStates;
 	struct
 	{
 		bool MenuBar = false;
@@ -288,7 +288,7 @@ void LoadSettings()
 	SmartPointer<CoreRawBuffer> buffer;
 	u64 len;
 
-	buffer = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFile("debug.kigstools", len));
+	buffer = ModuleFileManager::LoadFile("debug.kigstools", len);
 
 	if (location.empty())
 	{
@@ -301,7 +301,7 @@ void LoadSettings()
 	}
 
 	if(!buffer)
-		buffer = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFile((location + "\\debug.kigstools").c_str(), len));
+		buffer = ModuleFileManager::LoadFile((location + "\\debug.kigstools").c_str(), len);
 
 	if (buffer)
 	{
@@ -410,10 +410,10 @@ bool SetupTools()
 		
 	if (!gKigsTools->ImGuiModule)
 	{
-		gKigsTools->ImGuiModule = (ModuleImGui*)CoreGetModule(ModuleImGui);
+		gKigsTools->ImGuiModule = (ModuleImGui*)CoreGetModule(ModuleImGui).get();
 		if (!gKigsTools->ImGuiModule)
 		{
-			gKigsTools->ImGuiModule = CoreCreateModule(ModuleImGui, 0);
+			gKigsTools->ImGuiModule = CoreCreateModule(ModuleImGui, 0).get();
 			gKigsTools->ImGuiModuleOwned = true;
 		}
 	}
@@ -424,7 +424,7 @@ bool SetupTools()
 
 	if (!gKigsTools->InputModule)
 	{
-		gKigsTools->InputModule = (ModuleInput*)CoreGetModule(ModuleInput);
+		gKigsTools->InputModule = (ModuleInput*)CoreGetModule(ModuleInput).get();
 	}
 	if (!gKigsTools->Application)
 	{
@@ -958,7 +958,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 				if (auto pl = ImGui::AcceptDragDropPayload("DND_KIGS_KIGSID"))
 				{
 					KigsID type_id = (std::string)(const char*)pl->Data;
-					CMSP new_item = OwningRawPtrToSmartPtr(KigsCore::Instance()->GetInstanceFactory()->GetInstance("unnamed", type_id));
+					CMSP new_item = KigsCore::Instance()->GetInstanceFactory()->GetInstance("unnamed", type_id);
 					if (new_item)
 					{
 						item->addItem(new_item);
@@ -988,8 +988,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 					{
 						if (auto pl = ImGui::AcceptDragDropPayload("DND_KIGS_ITEM"))
 						{
-							data.item->GetRef();
-
+							auto ref = data.item->SharedFromThis();
 							//@TODO(antoine): XML
 							if (data.copy)
 							{
@@ -997,12 +996,9 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 							}
 							else
 							{
-								CMSP toremove(data.item, StealRefTag{});
-								data.parent->removeItem(toremove);
-								item->addItem(toremove);
+								data.parent->removeItem(ref);
+								item->addItem(ref);
 							}
-
-							data.item->Destroy();
 						}
 					}
 				}
@@ -1154,8 +1150,8 @@ void DrawHierarchy()
 				std::vector<CMSP> apps;
 				std::vector<CMSP> inputs;
 				std::vector<CMSP> timers;
-
-				apps.push_back(CMSP(KigsCore::GetCoreApplication(), GetRefTag{}));
+				
+				apps.push_back(KigsCore::GetCoreApplication()->SharedFromThis());
 
 				for (auto& cm : instances)
 				{
@@ -2180,7 +2176,8 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			}
 
 			case CoreModifiable::ATTRIBUTE_TYPE::STRING:
-			case CoreModifiable::ATTRIBUTE_TYPE::REFERENCE:
+			case CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE:
+			case CoreModifiable::ATTRIBUTE_TYPE::STRONG_REFERENCE:
 			case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 			{
 				if (!is_lua_method)
@@ -3251,8 +3248,7 @@ bool UpdateKigsTools()
 		for (auto cm : timers)
 		{
 			SP<Timer> t = cm;
-			t->GetRef();
-			gKigsTools->TimerStates[t.get()] = t->GetState();
+			gKigsTools->TimerStates[t.get()] = { t->GetState(), t };
 			t->SetState(Timer::PAUSED);
 		}
 	}
@@ -3285,16 +3281,17 @@ bool UpdateKigsTools()
 		DrawEditor();
 	}
 #endif
-	if(was_paused != gKigsTools->Paused && !gKigsTools->Paused)
-	for (auto pair : gKigsTools->TimerStates)
+	if (was_paused != gKigsTools->Paused && !gKigsTools->Paused)
 	{
-		if (pair.second == Timer::State::NORMAL)
+		for (auto pair : gKigsTools->TimerStates)
 		{
-			pair.first->SetState(Timer::State::NORMAL);
+			if (pair.second.first == Timer::State::NORMAL)
+			{
+				pair.first->SetState(Timer::State::NORMAL);
+			}
 		}
-		pair.first->Destroy();
+		gKigsTools->TimerStates.clear();
 	}
-	//gKigsTools->TimerStates.clear();
 
 	if (gKigsTools->FramesToRun) { gKigsTools->FramesToRun--; return true; }
 	return !gKigsTools->Paused;

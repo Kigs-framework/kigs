@@ -49,14 +49,14 @@ void HTTPRequestModuleWindows::Update(const Timer& timer, void* addParam)
 }    
 
 
-ModuleBase* PlatformHTTPRequestModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
- 
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(HTTPRequestModuleWindows,"HTTPRequestModuleWindows");
-	gInstanceModuleHTTPRequestWindows = new HTTPRequestModuleWindows("HTTPRequestModuleWindows");
+	auto ptr = MakeRefCounted<HTTPRequestModuleWindows>("HTTPRequestModuleWindows");
+	gInstanceModuleHTTPRequestWindows = ptr.get();
 	gInstanceModuleHTTPRequestWindows->Init(core, params);
-	return gInstanceModuleHTTPRequestWindows;
+	return ptr;
 }    
 
 

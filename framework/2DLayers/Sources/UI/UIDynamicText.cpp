@@ -61,7 +61,7 @@ FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsi
 
 	font->font_id = str;
 	u64 len = 0;
-	font->mFontBuffer = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFile(fontname.c_str(), len));
+	font->mFontBuffer = ModuleFileManager::LoadFile(fontname.c_str(), len);
 
 	if (font->mFontBuffer == nullptr)
 	{
@@ -76,7 +76,7 @@ FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsi
 
 	
 
-	KIGS_ASSERT(!font->mFontBuffer.isNil());
+	KIGS_ASSERT(font->mFontBuffer);
 
 	stbtt_InitFont(&font->mFontInfo, (unsigned char*)font->mFontBuffer->buffer(), 0);
 
@@ -129,7 +129,7 @@ FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsi
 	}
 	font->mFontTexture->Init();
 
-	SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(bitmap_AI8, font->mFontMapSize, font->mFontMapSize, TinyImage::ImageFormat::AI88));
+	SmartPointer<TinyImage>	img = TinyImage::CreateImage(bitmap_AI8, font->mFontMapSize, font->mFontMapSize, TinyImage::ImageFormat::AI88);
 	font->mFontTexture->CreateFromImage(img);
 
 	delete[] bitmap_AI8;
@@ -166,7 +166,7 @@ void FontMapManager::ReloadTextures()
 			*(bitmap_AI8.data() + (2 * i + 1)) = *(bitmap_alpha.data() + i);
 		}
 		
-		SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(bitmap_AI8.data(), font.second.mFontMapSize, font.second.mFontMapSize, TinyImage::ImageFormat::AI88));
+		SmartPointer<TinyImage>	img = TinyImage::CreateImage(bitmap_AI8.data(), font.second.mFontMapSize, font.second.mFontMapSize, TinyImage::ImageFormat::AI88);
 
 		SP<Texture> tex = tfm->GetTexture(font.second.font_id, false);
 		tex->CreateFromImage(img);
@@ -202,7 +202,7 @@ void UIDynamicText::InitModifiable()
 	ParentClassType::InitModifiable();
 	if (IsInit())
 	{
-		ModuleInput* theInputModule = KigsCore::GetModule<ModuleInput>();
+		auto theInputModule = KigsCore::GetModule<ModuleInput>();
 		if(mPickable)
 			if(theInputModule) mEventState = theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, EmptyFlag);
 		if (theInputModule)
@@ -871,8 +871,7 @@ void UIDynamicText::PreprocessTags()
 {
 	for (auto item : mInlineItems)
 	{
-		CMSP toDel(item, StealRefTag{});
-		removeItem(toDel);
+		removeItem(item);
 	}
 	mPreprocessedTags.clear();
 	mInlineItems.clear();
@@ -921,7 +920,7 @@ void UIDynamicText::NotifyUpdate(const unsigned int labelID)
 	}
 	else if (labelID == mPickable.getID())
 	{
-		ModuleInput* theInputModule = KigsCore::GetModule<ModuleInput>();
+		auto theInputModule = KigsCore::GetModule<ModuleInput>();
 		if (mPickable)
 			mEventState = theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, EmptyFlag);
 		else
@@ -957,7 +956,7 @@ void UIDynamicText::ForceSetupText()
 }
 
 
-usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_tags, kstl::vector<CoreModifiable*>* inline_items, CoreModifiable* obj)
+usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_tags, kstl::vector<CMSP>* inline_items, CoreModifiable* obj)
 {
 	auto current_character = text.us_str();
 	if (text.length() > 0 && text[0] == (unsigned short)'#')
@@ -1178,7 +1177,7 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 				cm->Init();
 				
 				current_tag.item = cm.get();
-				inline_items->push_back(cm.get());
+				inline_items->push_back(cm);
 			}
 
 			current_tag.align = current_align_mode;

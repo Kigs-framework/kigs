@@ -3,7 +3,7 @@
 
 #include <string>
 #include "MinimalXML.h"
-
+#include <SmartPointer.h>
 
 class CoreModifiable;
 class XMLNodeBase;
@@ -37,7 +37,7 @@ public:
 		mStandalone = "";
 	}
 
-	XMLBase(CoreRawBuffer* buffer);
+	XMLBase(const SP<CoreRawBuffer>& buffer);
 
 	virtual ~XMLBase();
 
@@ -108,7 +108,7 @@ protected:
 
 	//! root node
 	XMLNodeBase* mRoot=nullptr;
-	CoreRawBuffer* mReadedRawBuffer = nullptr;
+	SP<CoreRawBuffer> mReadedRawBuffer = nullptr;
 };
 
 
@@ -136,7 +136,7 @@ public:
 	{
 
 	}
-	XMLTemplate(CoreRawBuffer* buffer) : XMLBase(buffer)
+	XMLTemplate(const SP<CoreRawBuffer>& buffer) : XMLBase(buffer)
 	{
 
 	}

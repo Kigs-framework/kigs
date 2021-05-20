@@ -346,19 +346,13 @@ void	API3DUniformDataTexture::InitModifiable()
 	{
 		if ((mTextureName.const_ref()) != "")
 		{
-
 			auto pathManager = KigsCore::Singleton<FilePathManager>();
-
 			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(mTextureName.const_ref());
 			if (fullfilenamehandle)
 			{
-
-				TinyImage* image = TinyImage::CreateImage(fullfilenamehandle.get());
-
+				SP<TinyImage> image = TinyImage::CreateImage(fullfilenamehandle.get());
 				RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
-
 				renderer->CreateTexture(1, &mTextureGLIndex);
-
 				//glBindTexture(GL_TEXTURE_3D, mTextureGLIndex);
 				renderer->ActiveTextureChannel(mChannel);
 				renderer->BindTexture(RENDERER_TEXTURE_2D, mTextureGLIndex);
@@ -368,8 +362,6 @@ void	API3DUniformDataTexture::InitModifiable()
 				renderer->TextureParameteri(RENDERER_TEXTURE_2D, RENDERER_TEXTURE_WRAP_T, RENDERER_CLAMP_TO_EDGE);
 
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->GetWidth(), image->GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image->GetPixelData());
-
-				delete image;
 			}
 		}
 	}

@@ -1,3 +1,5 @@
+#include <Unknwn.h>
+
 #include "RendererDX11.h"
 
 #include "Core.h"
@@ -34,6 +36,7 @@
 
 #ifdef WUP
 #include <winrt/Windows.Foundation.Collections.h>
+#include <windows.graphics.directx.direct3d11.interop.h>
 #endif
 
 #pragma comment(lib, "dxgi.lib")
@@ -43,7 +46,7 @@
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
 #define MODULEINITFUNC			PlatformRendererModuleInit
-extern ModuleBase*				MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+extern SP<ModuleBase>			MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 #else
 #define MODULEINITFUNC			ModuleInit
 #endif
@@ -300,7 +303,7 @@ void RendererDX11::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribu
 
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(DX11Texture, "Texture");
 	RegisterClassToInstanceFactory(core, "Renderer", "Texture",
-								   [](const kstl::string& instancename, kstl::vector<CoreModifiableAttribute*>* args) -> CoreModifiable *
+	 [](const kstl::string& instancename, kstl::vector<CoreModifiableAttribute*>* args) -> CMSP
 	{
 		if (args && args->size())
 		{
@@ -308,12 +311,7 @@ void RendererDX11::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribu
 		}
 		SP<TextureFileManager> fileManager = KigsCore::GetSingleton("TextureFileManager");
 		SP<Texture> texture = fileManager->GetTexture(instancename, false);
-		// texture will be delete when lambda exit ( as only the pointer is returned )
-		if (texture)
-		{
-			texture->GetRef(); // so get a ref before exiting
-		}
-		return texture.get();
+		return texture;
 	});
 
 	DECLARE_FULL_CLASS_INFO(core, DX11Camera, Camera, Renderer);
@@ -379,12 +377,11 @@ bool RendererDX11::CreateDevice()
 	if (space)
 	{
 		winrt::com_ptr<IDXGIDevice1> dxgiDevice = device.as<IDXGIDevice1>();
-
+		
 		// Wrap the native device using a WinRT interop object.
 		winrt::com_ptr<::IInspectable> object;
 		winrt::check_hresult(CreateDirect3D11DeviceFromDXGIDevice(dxgiDevice.get(), object.put()));
-
-		auto d3dinteropdevice = object.as<IDirect3DDevice>();
+		auto d3dinteropdevice = object.as<winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice>();
 		space.SetDirect3D11Device(d3dinteropdevice);
 	}
 	dxinstance->mDevice = device.as<ID3D11Device1>();
@@ -538,16 +535,13 @@ void RendererDX11::Update(const Timer& timer, void* addParam)
 
 }
 
-ModuleBase* MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
-
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(RendererDX11, "RendererDX11");
-	ModuleBase*    gInstanceRendererDX11 = new RendererDX11("RendererDX11");
-	gInstanceRendererDX11->Init(core, params);
-
-	return gInstanceRendererDX11;
-
+	auto ptr = MakeRefCounted<RendererDX11>("RendererDX11");
+	ptr->Init(core, params);
+	return ptr;
 }
 
 void DX11RenderingState::ClearView(RendererClearMode clearMode)

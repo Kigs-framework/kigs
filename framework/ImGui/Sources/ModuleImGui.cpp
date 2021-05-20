@@ -19,7 +19,7 @@ ImGuiLayer* ModuleImGui::CreateDebugLayer(kfloat bg_opacity)
 		DEBUG_ImGuiDebugLayer = insts[0];
 	else
 	{
-		DEBUG_ImGuiDebugLayer = KigsCore::GetInstanceOf("imgui_debug_layer", "ImGuiLayer");
+		DEBUG_ImGuiDebugLayer = KigsCore::CreateInstance<ImGuiLayer>("imgui_debug_layer");
 		DEBUG_ImGuiDebugLayer->setValue("RenderingScreen", "RenderingScreen:theRenderingScreen");
 		DEBUG_ImGuiDebugLayer->setValue("Priority", INT_MIN);
 		DEBUG_ImGuiDebugLayer->setValue("ClearColorBuffer", false);

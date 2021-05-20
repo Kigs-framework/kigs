@@ -189,7 +189,7 @@ void HTTPAsyncRequestWUP::protectedProcess()
 {
 	auto data = new char[mData.size()];
 	memcpy(data, mData.data(), mData.size());
-	auto buf = OwningRawPtrToSmartPtr(new CoreRawBuffer(data, mData.size(), true));
+	auto buf = MakeRefCounted<CoreRawBuffer>(data, mData.size(), true);
 	mReceivedBuffer = buf.get();
 	mData.clear();
 	mData.shrink_to_fit();

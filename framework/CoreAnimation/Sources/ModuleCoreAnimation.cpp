@@ -31,7 +31,7 @@ void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiable
 	core->RegisterMainModuleList(this,CoreAnimationModuleCoreIndex);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreSequenceLauncher, CoreSequenceLauncher, CoreAnimation)
 	// register actions
-	mPrivateMiniFactory=KigsCore::GetInstanceOf("myPrivateMiniFactory","MiniInstanceFactory");
+	mPrivateMiniFactory = KigsCore::GetInstanceOf("myPrivateMiniFactory","MiniInstanceFactory");
 
 	// action using "slow" setValue
 	MiniFactoryRegister(mPrivateMiniFactory,"Linear1D",CoreActionLinear<kfloat>);
@@ -129,51 +129,47 @@ void	ModuleCoreAnimation::addSequence(CoreSequence* sequence)
 {
 	unsigned int seqID=sequence->getID().toUInt();
 	// retain
-	sequence->GetRef();
+	auto seq = std::static_pointer_cast<CoreSequence>(sequence->SharedFromThis());
 
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator foundid=mSequences.find(seqID);
+	auto foundid=mSequences.find(seqID);
 	
 	// id already exists, search in vector
 	if(foundid != mSequences.end())
 	{
 		// check for double add
-		kstl::vector<CoreSequence*>& sequenceVector=(*foundid).second;
-		kstl::vector<CoreSequence*>::iterator itSeq=sequenceVector.begin();
-		kstl::vector<CoreSequence*>::iterator itSeqEnd=sequenceVector.end();
+		auto& sequenceVector = (*foundid).second;
+		auto itSeq=sequenceVector.begin();
+		auto itSeqEnd=sequenceVector.end();
 		while(itSeq != itSeqEnd)
 		{
-			if((*itSeq) == sequence)
+			if(itSeq->get() == sequence)
 			{
 				return; // sequence is already in manager
 			}
 			++itSeq;
 		}
-
-		sequenceVector.push_back(sequence);
-
+		sequenceVector.push_back(seq);
 	}
 	else
 	{
-		kstl::vector<CoreSequence*> toAdd;
-		toAdd.push_back(sequence);
-		mSequences[seqID]=toAdd;
+		mSequences[seqID].push_back(seq);
 	}
 	
 }
 
 void	ModuleCoreAnimation::removeAllSequencesOnTarget(CoreModifiable* target)
 {
-	kstl::vector<CoreSequence*>	deadSequences;
+	kstl::vector<SP<CoreSequence>>	deadSequences;
 
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMap=mSequences.begin();
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMapEnd=mSequences.end();
+	auto itMap=mSequences.begin();
+	auto itMapEnd=mSequences.end();
 	
 	while(itMap != itMapEnd)
 	{
 		// search sequence in vector
-		kstl::vector<CoreSequence*>& sequenceVector=(*itMap).second;
-		kstl::vector<CoreSequence*>::iterator itSeq=sequenceVector.begin();
-		kstl::vector<CoreSequence*>::iterator itSeqEnd=sequenceVector.end();
+		auto& sequenceVector=(*itMap).second;
+		auto itSeq = sequenceVector.begin();
+		auto itSeqEnd = sequenceVector.end();
 		while(itSeq != itSeqEnd)
 		{
 			if((*itSeq)->useModifiable(target))
@@ -186,12 +182,9 @@ void	ModuleCoreAnimation::removeAllSequencesOnTarget(CoreModifiable* target)
 	}
 
 	// remove dead sequences
-	kstl::vector<CoreSequence*>::iterator itSeq=deadSequences.begin();
-	kstl::vector<CoreSequence*>::iterator itSeqEnd=deadSequences.end();
-	while(itSeq != itSeqEnd)
+	for(auto& seq : deadSequences)
 	{
-		removeSequence(*itSeq);
-		++itSeq;
+		removeSequence(seq.get());
 	}
 }
 
@@ -200,27 +193,23 @@ void	ModuleCoreAnimation::removeSequence(CoreSequence* sequence)
 {
 	unsigned int seqID=sequence->getID().toUInt();
 
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator foundid=mSequences.find(seqID);
+	auto foundid=mSequences.find(seqID);
 	
 	if(foundid != mSequences.end())
 	{
 		// search sequence in vector
-		kstl::vector<CoreSequence*>& sequenceVector=(*foundid).second;
-		kstl::vector<CoreSequence*>::iterator itSeq=sequenceVector.begin();
-		kstl::vector<CoreSequence*>::iterator itSeqEnd=sequenceVector.end();
+		auto& sequenceVector=(*foundid).second;
+		auto itSeq=sequenceVector.begin();
+		auto itSeqEnd=sequenceVector.end();
 		while(itSeq != itSeqEnd)
 		{
-			if((*itSeq) == sequence)
+			if(itSeq->get() == sequence)
 			{
-				
-				(*itSeq)->Destroy();
-				
 				sequenceVector.erase(itSeq);
 				if(sequenceVector.size() == 0) // remove also map mEntry
 				{
 					mSequences.erase(foundid);
 				}
-				
 				return; 
 			}
 			++itSeq;
@@ -250,17 +239,17 @@ void	ModuleCoreAnimation::startSequenceAtFirstUpdate(CoreSequence* sequence)
 
 void ModuleCoreAnimation::updateSequences(const Timer& timer)
 {
-	kstl::vector<CoreSequence*>	deadSequences;
+	kstl::vector<SP<CoreSequence>>	deadSequences;
 
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMap=mSequences.begin();
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMapEnd=mSequences.end();
+	auto itMap=mSequences.begin();
+	auto itMapEnd=mSequences.end();
 	
 	while(itMap != itMapEnd)
 	{
 		// search sequence in vector
-		kstl::vector<CoreSequence*>& sequenceVector=(*itMap).second;
-		kstl::vector<CoreSequence*>::iterator itSeq=sequenceVector.begin();
-		kstl::vector<CoreSequence*>::iterator itSeqEnd=sequenceVector.end();
+		auto& sequenceVector=(*itMap).second;
+		auto itSeq=sequenceVector.begin();
+		auto itSeqEnd=sequenceVector.end();
 		while(itSeq != itSeqEnd)
 		{
 			if((*itSeq)->update(timer))
@@ -273,12 +262,9 @@ void ModuleCoreAnimation::updateSequences(const Timer& timer)
 	}
 
 	// remove dead sequences
-	kstl::vector<CoreSequence*>::iterator itSeq=deadSequences.begin();
-	kstl::vector<CoreSequence*>::iterator itSeqEnd=deadSequences.end();
-	while(itSeq != itSeqEnd)
+	for(auto& seq : deadSequences)
 	{
-		removeSequence(*itSeq);
-		++itSeq;
+		removeSequence(seq.get());
 	}
 }
 
@@ -286,17 +272,16 @@ void ModuleCoreAnimation::updateSequences(const Timer& timer)
 // so we need to find and remove concerned sequences
 DEFINE_METHOD(ModuleCoreAnimation, OnDestroyCallBack)
 {
-	kstl::vector<CoreSequence*>	deadSequences;
-
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMap=mSequences.begin();
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >::iterator itMapEnd=mSequences.end();
+	kstl::vector<SP<CoreSequence>>	deadSequences;
+	auto itMap = mSequences.begin();
+	auto itMapEnd = mSequences.end();
 	
 	while(itMap != itMapEnd)
 	{
 		// search sequence in vector
-		kstl::vector<CoreSequence*>& sequenceVector=(*itMap).second;
-		kstl::vector<CoreSequence*>::iterator itSeq=sequenceVector.begin();
-		kstl::vector<CoreSequence*>::iterator itSeqEnd=sequenceVector.end();
+		auto& sequenceVector=(*itMap).second;
+		auto itSeq=sequenceVector.begin();
+		auto itSeqEnd=sequenceVector.end();
 		while(itSeq != itSeqEnd)
 		{
 			if((*itSeq)->useModifiable(sender))
@@ -309,53 +294,50 @@ DEFINE_METHOD(ModuleCoreAnimation, OnDestroyCallBack)
 	}
 
 	// remove dead sequences
-	kstl::vector<CoreSequence*>::iterator itSeq=deadSequences.begin();
-	kstl::vector<CoreSequence*>::iterator itSeqEnd=deadSequences.end();
-	while(itSeq != itSeqEnd)
+	for (auto& seq : deadSequences)
 	{
-		(*itSeq)->removeTarget();
-		removeSequence(*itSeq);
-		++itSeq;
+		seq->removeTarget();
+		removeSequence(seq.get());
 	}
 	return true;
 }
 
-CoreSequence* ModuleCoreAnimation::createSequenceFromString(CoreModifiable* target, const kstl::string& json, Timer* reftimer)
+SP<CoreSequence> ModuleCoreAnimation::createSequenceFromString(CoreModifiable* target, const kstl::string& json, Timer* reftimer)
 {
 	JSonFileParser L_JsonParser;
 	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionaryFromString(json);
 
-	if (!L_Dictionary.isNil())
+	if (L_Dictionary)
 	{
-		CoreSequence* result = createSequenceFromCoreMap(target, L_Dictionary, reftimer);
+		SP<CoreSequence> result = createSequenceFromCoreMap(target, L_Dictionary, reftimer);
 		return result;
 	}
 	return 0;
 }
 
-CoreSequence*	ModuleCoreAnimation::createSequenceFromJSON(CoreModifiable* target,const kstl::string& file,Timer* reftimer)
+SP<CoreSequence> ModuleCoreAnimation::createSequenceFromJSON(CoreModifiable* target,const kstl::string& file,Timer* reftimer)
 {
 	
 	JSonFileParser L_JsonParser;
 	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionary(file);
 	
-	if (!L_Dictionary.isNil())
+	if (L_Dictionary)
 	{
-		CoreSequence* result=createSequenceFromCoreMap(target,L_Dictionary,reftimer);
+		SP<CoreSequence> result=createSequenceFromCoreMap(target,L_Dictionary,reftimer);
 		return result;
 	}
 
 	return 0;
 }
 
-CoreSequence*	ModuleCoreAnimation::createSequenceFromCoreMap(CoreModifiable* target, CoreItemSP& L_Dictionary,Timer* reftimer)
+SP<CoreSequence> ModuleCoreAnimation::createSequenceFromCoreMap(CoreModifiable* target, CoreItemSP& L_Dictionary,Timer* reftimer)
 {
 	CoreItemIterator iter=L_Dictionary->begin();
 
 	kstl::string	key;
 	iter.getKey(key);
 
-	CoreSequence*	result = new CoreSequence(target, key, reftimer);
+	SP<CoreSequence> result = MakeRefCounted<CoreSequence>(target, key, reftimer);
 
 	CoreItem& actions= (CoreItem & )(*iter);
 
@@ -363,8 +345,8 @@ CoreSequence*	ModuleCoreAnimation::createSequenceFromCoreMap(CoreModifiable* tar
 	for(actionindex = 0; actionindex<actions.size();actionindex++)
 	{
 		auto	actiondesc=actions[actionindex];
-		CoreItemSP newaction=createAction(result,actiondesc);
-		if(!newaction.isNil())
+		CoreItemSP newaction=createAction(result.get(), actiondesc);
+		if(newaction)
 		{
 			result->push_back(newaction);
 		}
@@ -380,10 +362,10 @@ CoreItemSP		ModuleCoreAnimation::createAction(CoreSequence* sequence, CoreItemSP
 	kstl::string	key;
 	firstactiondesc.getKey(key);
 
-	CoreAction* newaction = (CoreAction*)mPrivateMiniFactory->CreateClassInstance(key);
+	SP<CoreAction> newaction = CoreItemSP((CoreAction*)mPrivateMiniFactory->CreateClassInstance(key));
 	if(newaction)
 	{
 		newaction->init(sequence,(CoreVector*)(*firstactiondesc).get());
 	}
-	return CoreItemSP(newaction, StealRefTag{});
+	return newaction;
 }

@@ -33,14 +33,6 @@ public:
 
 	virtual void SetTexUV(UIItem* item, UIVerticesInfo* aQI)=0;
 	virtual void SetVertexArray(UIItem* item, UIVerticesInfo* aQI)=0;
-
-protected:
-	virtual ~UIShapeDelegate()
-	{
-
-	}
-	
-
 };
 
 #endif //_UIShape_H_

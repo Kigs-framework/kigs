@@ -58,9 +58,10 @@ public:
 	{
 		return mLocalizedString;
 	}
+	virtual				~LocalizationManager();
 
 protected:
-	virtual				~LocalizationManager();
+	
 	void				EraseMap();
 
 	bool				ParseStringsFile(const char*);

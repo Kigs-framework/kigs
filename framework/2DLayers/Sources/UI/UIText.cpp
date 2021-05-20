@@ -201,7 +201,7 @@ unsigned short*		UIText::CutText(const unsigned short* _text, bool& _flag)
 
 DEFINE_METHOD(UIText, ReloadTexture)
 {
-	if (!mTexturePointer.isNil())
+	if (mTexturePointer)
 	{
 		mTexturePointer->setUserFlag(Texture::isDirtyContext);
 		mTexturePointer->ReInit();

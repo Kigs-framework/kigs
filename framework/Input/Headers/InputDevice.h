@@ -131,7 +131,7 @@ protected:
 	//! >0 if acquire (started) 
 	unsigned int		mAquireCount;
 	//! link to the input windows
-	Window*				mInputWindow;
+	SP<Window>				mInputWindow;
 };
 
 #endif //_INPUTDEVICE_H_

@@ -86,6 +86,7 @@ class HoloSpatialMap : public CoreModifiable
 public:
 	DECLARE_CLASS_INFO(HoloSpatialMap, CoreModifiable,Renderer)
 	DECLARE_CONSTRUCTOR(HoloSpatialMap);
+	virtual ~HoloSpatialMap();
 
 	WRAP_METHODS(StartListening, StopListening);
 
@@ -107,7 +108,6 @@ public:
 
 protected:
 	void InitModifiable() override;
-	virtual ~HoloSpatialMap();
 
 	winrt::Windows::Foundation::IAsyncAction ReplayRecordedSpatialMap();
 

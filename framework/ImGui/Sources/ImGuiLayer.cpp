@@ -65,7 +65,7 @@ IMPLEMENT_CONSTRUCTOR(ImGuiLayer)
 	std::string utf8_path;
 	utf8::utf16to8(local_folder.begin(), local_folder.end(), std::back_inserter(utf8_path));
 	u64 len;
-	auto crb = OwningRawPtrToSmartPtr(ModuleFileManager::Get()->LoadFile((utf8_path + "\\imgui.ini").c_str(), len));
+	auto crb = ModuleFileManager::Get()->LoadFile((utf8_path + "\\imgui.ini").c_str(), len);
 	if (crb)
 	{
 		ImGui::LoadIniSettingsFromMemory(crb->data(), crb->size());
@@ -289,7 +289,7 @@ void ImGuiLayer::RegisterTouch()
 {
 	//mInput->getTouchManager()->registerEvent(this, "ManageTouch", InputEventType::DirectAccess, InputEventManagementFlag::EmptyFlag, this);
 
-	ModuleInput* theInputModule = KigsCore::GetModule<ModuleInput>();
+	auto theInputModule = KigsCore::GetModule<ModuleInput>();
 	theInputModule->getTouchManager()->addTouchSupport(this, mRenderingScreen);
 	static_cast<TouchEventStateDirectTouch*>(mInput->getTouchManager()->registerEvent(this, "ManageTouch", InputEventType::DirectTouch, InputEventManagementFlag::EmptyFlag, this))->setAutoTouchDownDistance(0.05f);
 }
@@ -369,7 +369,7 @@ void ImGuiLayer::InitModifiable()
 		if (mFontName.const_ref().size())
 		{
 			u64 len;
-			crb  = OwningRawPtrToSmartPtr(ModuleFileManager::Get()->LoadFile(mFontName.c_str(), len));
+			crb = ModuleFileManager::Get()->LoadFile(mFontName.c_str(), len);
 			if (crb)
 			{
 				font = io.Fonts->AddFontFromMemoryTTF(crb->buffer(), crb->size(), mFontSize, &config, io.Fonts->GetGlyphRangesDefault());
@@ -386,7 +386,7 @@ void ImGuiLayer::InitModifiable()
 		{
 			SmartPointer<CoreRawBuffer> crb_bold;
 			u64 len;
-			crb_bold = OwningRawPtrToSmartPtr(ModuleFileManager::Get()->LoadFile(mBoldFontName.c_str(), len));
+			crb_bold = ModuleFileManager::Get()->LoadFile(mBoldFontName.c_str(), len);
 			if (crb_bold)
 			{
 				config.MergeMode = false;
@@ -410,7 +410,7 @@ void ImGuiLayer::InitModifiable()
 
 		if (mFontTexture) removeItem(mFontTexture);
 
-		auto tex = KigsCore::GetInstanceOf(getName() + "_font_tex", "Texture");
+		auto tex = KigsCore::CreateInstance<Texture>(getName() + "_font_tex");
 		mFontTexture = tex;
 
 		addItem(tex);
@@ -419,7 +419,7 @@ void ImGuiLayer::InitModifiable()
 		int bpp;
 		io.Fonts->GetTexDataAsRGBA32(&mPixelData, &mPixelDataWidth, &mPixelDataHeight, &bpp);
 
-		SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(mPixelData, mPixelDataWidth, mPixelDataHeight, TinyImage::RGBA_32_8888));
+		SmartPointer<TinyImage>	img = TinyImage::CreateImage(mPixelData, mPixelDataWidth, mPixelDataHeight, TinyImage::RGBA_32_8888);
 		mFontTexture->CreateFromImage(img);
 		
 		// Store our identifier
@@ -976,7 +976,7 @@ DEFINE_METHOD(ImGuiLayer, ResetContext)
 	ImGuiIO& io = ImGui::GetIO();
 
 	if (mFontTexture) removeItem(mFontTexture);
-	auto tex = KigsCore::GetInstanceOf(getName() + "_font_tex", "Texture");
+	auto tex = KigsCore::CreateInstance<Texture>(getName() + "_font_tex");
 	mFontTexture = tex;
 
 	// Build texture atlas
@@ -986,7 +986,7 @@ DEFINE_METHOD(ImGuiLayer, ResetContext)
 
 	mFontTexture->Init();
 
-	SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(mPixelData, mPixelDataWidth, mPixelDataHeight, TinyImage::RGBA_32_8888));
+	SmartPointer<TinyImage>	img = TinyImage::CreateImage(mPixelData, mPixelDataWidth, mPixelDataHeight, TinyImage::RGBA_32_8888);
 
 	mFontTexture->CreateFromImage(img);
 

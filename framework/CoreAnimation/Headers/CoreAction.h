@@ -82,7 +82,7 @@ protected:
 	}
 
 	// if paramstring contains -> then extract param name part and return real target (son on current target)
-	CoreModifiable*	checkSubTarget(kstl::string& paramstring);
+	CMSP	checkSubTarget(kstl::string& paramstring);
 
 	inline void CheckDelayTarget()
 	{
@@ -92,7 +92,7 @@ protected:
 			CMSP findTarget = mTarget->GetInstanceByPath(mTargetPath);
 			if (findTarget)
 			{
-				mTarget = findTarget.get();
+				mTarget = findTarget;
 				mTargetPath = "";
 			}
 		}
@@ -105,7 +105,7 @@ protected:
 		return false; // no used
 	}
 
-	CoreModifiable*		mTarget;
+	CMSP				mTarget;
 	kdouble				mStartTime;
 	kdouble				mDuration;
 

@@ -7,7 +7,7 @@ class HTTPRequestModuleWUP;
 
 
 extern HTTPRequestModuleWUP* gInstanceModuleHTTPRequestWUP;
-extern ModuleBase* PlatformHTTPRequestModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
+extern SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 
 // ****************************************
 // * HTTPRequestModuleWUP class
@@ -28,7 +28,8 @@ public:
 
 	DECLARE_CLASS_INFO(HTTPRequestModuleWUP, ModuleBase, HTTPRequestModule)
 	DECLARE_INLINE_CONSTRUCTOR(HTTPRequestModuleWUP){}
-	     
+	virtual ~HTTPRequestModuleWUP();
+
 	//! module init
 	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 
@@ -37,10 +38,6 @@ public:
 	             
 	//! module update
 	virtual void Update(const Timer& timer, void* addParam);
-
-
-protected:
-    virtual ~HTTPRequestModuleWUP();    
 }; 
 
 

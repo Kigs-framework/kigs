@@ -106,15 +106,10 @@ bool HTTPAsyncRequest::GetAnswer(void** buffer, int& buflen)
 	return false;
 }
 
-bool HTTPAsyncRequest::GetAnswer(CoreRawBuffer*& buffer)
+bool HTTPAsyncRequest::GetAnswer(SP<CoreRawBuffer>& buffer)
 {
-	buffer = mReceivedBuffer.const_ref().get();
-	if (buffer)
-	{
-		buffer->GetRef();
-		return true;
-	}
-	return false;
+	buffer = mReceivedBuffer.const_ref();
+	return (bool)buffer;
 }
 
 void HTTPAsyncRequest::protectedProcess()

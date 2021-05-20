@@ -28,7 +28,8 @@ public:
 
 	//! module constructor 
 	HTTPRequestModule(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	     
+	virtual ~HTTPRequestModule();
+
 	//! module init
 	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
 
@@ -37,10 +38,6 @@ public:
 	             
 	//! module update
 	void Update(const Timer& timer, void* addParam) override;
-
-protected:
-	//! destructor
-    virtual ~HTTPRequestModule();    
 }; 
 
 #endif //_HTTPREQUESTMODULE_H_

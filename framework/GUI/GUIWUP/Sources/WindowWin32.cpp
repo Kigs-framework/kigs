@@ -106,7 +106,7 @@ void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, k
 
 	if (mScreen)
 	{
-		mScreen->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
+		mScreen->as<RenderingScreen>()->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
 	}
 	else
 	{
@@ -137,7 +137,7 @@ void  WindowWin32::Update(const Timer&  timer, void* addParam)
 		//printf("size : %d %d\n", (int)mySizeX, (int)mySizeY);
 
 		if (mScreen)
-			mScreen->Resize(mSize[0], mSize[1]);
+			mScreen->as<RenderingScreen>()->Resize(mSize[0], mSize[1]);
 	}
 
 	// update position and size

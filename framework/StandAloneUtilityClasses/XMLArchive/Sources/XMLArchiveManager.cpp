@@ -89,7 +89,7 @@ bool	XMLArchiveManager::open(const std::string& filename)
 {
 	clear();
 	u64 flen;
-	CoreRawBuffer* buffer = ModuleFileManager::LoadFile(filename.c_str(), flen);
+	auto buffer = ModuleFileManager::LoadFile(filename.c_str(), flen);
 	if (buffer)
 	{
 		bool arOK = false;
@@ -109,7 +109,7 @@ bool	XMLArchiveManager::open(const std::string& filename)
 					{
 						size_t filesize;
 						void* data=mz_zip_reader_extract_to_heap(&ar,i, &filesize, 0);
-						CoreRawBuffer* buf = new CoreRawBuffer();
+						auto buf = MakeRefCounted<CoreRawBuffer>();
 						buf->SetBuffer(nullptr, filesize, true); // alloc buffer
 						memcpy(buf->buffer(), data, filesize);
 						free(data);
@@ -128,7 +128,6 @@ bool	XMLArchiveManager::open(const std::string& filename)
 				}
 			}
 		}
-		buffer->Destroy();
 		return arOK;
 
 	}
@@ -139,11 +138,10 @@ bool	XMLArchiveFile::interpretAsXML()
 {
 	if (mRawData)
 	{
-		mXMLData = XMLReaderFile::ReadCoreRawBuffer(mRawData);
+		mXMLData = XMLReaderFile::ReadCoreRawBuffer(mRawData.get());
 		if (mXMLData)
 		{
-			mRawData->Destroy();
-			mRawData = nullptr;
+			mRawData.reset();
 			return true;
 		}
 	}
@@ -201,7 +199,7 @@ SP<CoreRawBuffer> XMLArchiveManager::save()
 		return nullptr;
 	}
 
-	SP<CoreRawBuffer> result = OwningRawPtrToSmartPtr(new CoreRawBuffer());
+	SP<CoreRawBuffer> result = MakeRefCounted<CoreRawBuffer>();
 	result->SetBuffer(nullptr, bufsize, true); // alloc buffer
 	memcpy(result->buffer(), buf, bufsize);
 	free(buf);

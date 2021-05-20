@@ -81,7 +81,8 @@ public:
 	//! declare module  
 	DECLARE_CLASS_INFO(ModuleSceneGraph,ModuleBase,SceneGraph)
 	DECLARE_CONSTRUCTOR(ModuleSceneGraph);
-	
+	virtual ~ModuleSceneGraph();
+
 	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
 	void Close() override;
 	void Update(const Timer& timer, void* addParam) override;
@@ -151,16 +152,11 @@ public:
 	void AddNeedUpdate(Node3D* node) {}
 	void RemoveNeedUpdate(Node3D* node) {}
 	//
-
+	
 protected:
 	void DoDefferedAction();
 	bool FindParentScene(CoreModifiable* item, Scene3D** parent, bool checkSceneNode=false );
 	bool RemoveFromParentScene(CoreModifiable* item);
-	
-
-
-	virtual ~ModuleSceneGraph();
-
 
 	void	SortSceneList();
 

@@ -4,6 +4,7 @@
 
 #include <atomic>
 #include <vector>
+#include <memory>
 
 class CoreModifiable;
 class CoreModifiableAttribute;
@@ -27,27 +28,11 @@ class CoreModifiableAttribute;
 
 
 
-class GenericRefCountedBaseClass
+class GenericRefCountedBaseClass : public std::enable_shared_from_this<GenericRefCountedBaseClass>
 {
 public:
-
 	typedef bool (GenericRefCountedBaseClass::* ModifiableMethod)(CoreModifiable* sender, std::vector<CoreModifiableAttribute*>&, void* privateParams);
 	GenericRefCountedBaseClass() {}
-	
-	TRACEREF_VIRTUAL void GetRef();
-	TRACEREF_VIRTUAL bool TryGetRef();
-	TRACEREF_VIRTUAL void Destroy();
-
-	inline int getRefCount() { return mRefCounter; }
-
-protected:
-	std::atomic_int	mRefCounter{1};
-
-	// if true is returned then don't do final delete
-	virtual bool checkDestroy()
-	{
-		return false;
-	}
 	virtual ~GenericRefCountedBaseClass() {};
 };
 

@@ -42,7 +42,7 @@ bool	DDSClass::Load(FileHandle* fileName)
 		}
 	}
 
-	CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFile(fileName, filelength);
+	auto rawbuffer = ModuleFileManager::LoadFile(fileName, filelength);
 	if (rawbuffer)
 	{
 		u8* memfile = (u8*)rawbuffer->buffer();
@@ -87,8 +87,6 @@ bool	DDSClass::Load(FileHandle* fileName)
 			memcpy(mPixels, imgdata, (size_t)mPixelDataSize);
 		}
 		result = true;
-
-		rawbuffer->Destroy();
 	}
 
 	if (result == false)

@@ -52,7 +52,16 @@ DEFINE_MAKE_ATTR_FUNC(const char*, maString)
 DEFINE_MAKE_ATTR_FUNC(const usString&, maUSString)
 DEFINE_MAKE_ATTR_FUNC(usString&&, maUSString)
 
-DEFINE_MAKE_ATTR_FUNC(CoreModifiable*, maReference);
+DEFINE_MAKE_ATTR_FUNC(CoreModifiable*, maRawPtr);
+
+template<typename T>
+inline CoreModifiableAttribute* MakeAttributeSpec(SP<T> value, CoreModifiable* owner, const kstl::string& name = "maStrongReference")
+{
+	if (owner)
+		return new maStrongReference(*owner, false, name, maStrongReferenceObject{ value });
+	else
+		return new maStrongReference(name, maStrongReferenceObject{ value });
+}
 
 template<typename T, REQUIRES(!std::is_fundamental<std::decay_t<T>>::value)>
 CoreModifiableAttribute* MakeAttributeSpec(T&& value, CoreModifiable* owner, const kstl::string& name = "maRawPtrStruct")
@@ -271,7 +280,7 @@ namespace kigs_impl
 	{
 		void* ptr;
 		if (attr->getValue(ptr))
-			value = NonOwningRawPtrToSmartPtr((T*)ptr);
+			value = ((T*)ptr)->SharedFromThis();
 	}
 	
 	template<typename T>

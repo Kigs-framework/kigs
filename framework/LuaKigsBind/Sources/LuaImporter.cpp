@@ -24,11 +24,6 @@ LuaImporter::~LuaImporter()
 
 void LuaImporter::FinalizeImport(LuaIntf::LuaState L, ImportStruct& import)
 {
-	for (auto item : import.loaded)
-	{
-		item->Destroy();
-	}
-
 	for (auto& cb : import.CBList)
 	{
 		cb.func.pushToStack();
@@ -74,11 +69,8 @@ void LuaImporter::FinalizeImport(LuaIntf::LuaState L, ImportStruct& import)
 
 s32 LuaImporter::Import(const std::string& fileName, std::vector<CoreModifiable*>& root, CoreModifiable* parent)
 {
-	LuaKigsBindModule * _luamodule = (LuaKigsBindModule*)KigsCore::GetModule("LuaKigsBindModule");
+	SP<LuaKigsBindModule> _luamodule = KigsCore::GetModule("LuaKigsBindModule");
 	auto _lua = _luamodule->getLuaState();
-
-
-
 	if (_luamodule->ExecuteLuaFile(fileName.c_str()))
 	{
 		LuaState L = _lua;
@@ -119,7 +111,7 @@ void LuaImporter::InitModifiable()
 			return;
 		}
 
-		LuaKigsBindModule* _luamodule = (LuaKigsBindModule*)KigsCore::GetModule("LuaKigsBindModule");
+		SP<LuaKigsBindModule> _luamodule = KigsCore::GetModule("LuaKigsBindModule");
 		if (_luamodule->ExecuteLuaFile(Script.c_str()))
 		{
 			LuaState L = _luamodule->getLuaState();
@@ -185,8 +177,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 		if (needinit)
 		{
 			current = KigsCore::GetInstanceOf(name, type);
-			current->GetRef();
-			import.loaded.push_back(current.get());
+			import.loaded.push_back(current);
 			import.rootObj.push_back(current.get());
 		}
 
@@ -195,11 +186,11 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 	{
 
 		auto ref_type = infos["ref"].value().toValue<std::string>();
-		auto it = std::find_if(import.loaded.begin(), import.loaded.end(), [&](CoreModifiable* item) { return item->getName() == name && item->isSubType(CharToID::GetID(ref_type)); });
+		auto it = std::find_if(import.loaded.begin(), import.loaded.end(), [&](CMSP& item) { return item->getName() == name && item->isSubType(CharToID::GetID(ref_type)); });
 
 		if (it != import.loaded.end())
 		{
-			current = CMSP(*it, GetRefTag{});
+			current = *it;
 		}
 		else
 		{
@@ -208,7 +199,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 			if (instances.size())
 			{
 				current = instances[0];
-				import.loaded.push_back(current.get());
+				import.loaded.push_back(current);
 				import.rootObj.push_back(current.get());
 			}
 		}
@@ -221,8 +212,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 			current = CoreModifiable::Import(infos["xml"].value().toValue<std::string>(),false,false,nullptr,name);
 			if (current)
 			{
-				current->GetRef();
-				import.loaded.push_back(current.get());
+				import.loaded.push_back(current);
 				import.rootObj.push_back(current.get());
 				needinit = false;
 			}
@@ -230,10 +220,10 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 		else if (infos.has("lua"))
 		{
 			u64 length;
-			CoreRawBuffer* buffer = ModuleFileManager::LoadFileAsCharString(infos["lua"].value().toValue<std::string>().c_str(), length,1);
+			auto buffer = ModuleFileManager::LoadFileAsCharString(infos["lua"].value().toValue<std::string>().c_str(), length,1);
 			if (buffer)
 			{
-				LuaKigsBindModule* _luamodule = (LuaKigsBindModule*)KigsCore::GetModule("LuaKigsBindModule");
+				SP<LuaKigsBindModule> _luamodule = KigsCore::GetModule("LuaKigsBindModule");
 				luaL_dostring(_luamodule->getLuaState(), buffer->buffer());
 
 				LuaState L = _luamodule->getLuaState();
@@ -246,7 +236,6 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 				{
 					current->setName(name);
 				}
-				buffer->Destroy();
 			}
 		}
 	}
@@ -266,7 +255,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 		if (current)
 		{
 			needinit = false;
-			import.loaded.push_back(current.get());
+			import.loaded.push_back(current);
 			need_add = false;
 		}
 	}
@@ -313,7 +302,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 {
 
-	LuaKigsBindModule* _luamodule = (LuaKigsBindModule*)KigsCore::GetModule("LuaKigsBindModule");
+	SP<LuaKigsBindModule> _luamodule = KigsCore::GetModule("LuaKigsBindModule");
 
 	// TODO(antoine) : modifiers 
 	for (auto it : table)
@@ -349,7 +338,7 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 			if (value_type == LuaTypeID::STRING)
 			{
 				std::string tmpvalue = value.toValue<std::string>();
-				if (CoreModifiable::AttributeNeedEval(tmpvalue))
+				if (AttributeNeedEval(tmpvalue))
 				{
 					CoreModifiable::EvalAttribute(tmpvalue, current, attribute);
 					attribute->setValue(tmpvalue);
@@ -409,7 +398,8 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 			{
 				switch (attr_type)
 				{
-				case ATTRIBUTE_TYPE::REFERENCE:
+				case ATTRIBUTE_TYPE::WEAK_REFERENCE:
+				case ATTRIBUTE_TYPE::STRONG_REFERENCE:
 				case ATTRIBUTE_TYPE::USSTRING:
 				case ATTRIBUTE_TYPE::STRING:
 					attribute->setValue(value.toValue<std::string>());
@@ -521,7 +511,7 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 					std::string tmpvalue;
 					attribute = current->AddDynamicAttribute(ATTRIBUTE_TYPE::STRING, attr_name);
 					tmpvalue = value.toValue<std::string>();
-					if (CoreModifiable::AttributeNeedEval(tmpvalue))
+					if (AttributeNeedEval(tmpvalue))
 					{
 						CoreModifiable::EvalAttribute(tmpvalue, current, attribute);
 					}

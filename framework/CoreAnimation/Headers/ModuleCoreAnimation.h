@@ -44,10 +44,10 @@ public:
 	//! update module
 	void Update(const Timer& timer, void* addParam) override;
 
-	CoreSequence*   createSequenceFromString(CoreModifiable* target, const kstl::string& json, Timer* reftimer = 0);
-	CoreSequence*	createSequenceFromJSON(CoreModifiable* target,const kstl::string& file,Timer* reftimer=0);
-	CoreSequence*	createSequenceFromCoreMap(CoreModifiable* target,CoreItemSP& sequenceDesc,Timer* reftimer=0);
-	CoreItemSP		createAction(CoreSequence* sequence, CoreItemSP& actiondesc);
+	SP<CoreSequence> createSequenceFromString(CoreModifiable* target, const kstl::string& json, Timer* reftimer = 0);
+	SP<CoreSequence> createSequenceFromJSON(CoreModifiable* target,const kstl::string& file,Timer* reftimer=0);
+	SP<CoreSequence> createSequenceFromCoreMap(CoreModifiable* target,CoreItemSP& sequenceDesc,Timer* reftimer=0);
+	CoreItemSP		 createAction(CoreSequence* sequence, CoreItemSP& actiondesc);
 
 	void	addSequence(CoreSequence* sequence);
     void	removeSequence(CoreSequence* sequence);
@@ -70,14 +70,15 @@ public:
 	static kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	GetCoreItemOperatorConstructMap();
 
 	WRAP_METHODS(addSequence, removeSequence, removeAllSequencesOnTarget, createSequenceFromString, createSequenceFromJSON, startSequence, pauseSequence, stopSequence, startSequenceAtFirstUpdate);
-protected:
-	//! destructor
-    virtual ~ModuleCoreAnimation();    
 
+	//! destructor
+	virtual ~ModuleCoreAnimation();
+
+protected:
 	//! sequences manager
 	void updateSequences(const Timer& timer);
 
-	kstl::map<unsigned int,kstl::vector<CoreSequence*> >	mSequences;
+	kstl::map<unsigned int,kstl::vector<SP<CoreSequence>> >	mSequences;
 
 	SP<MiniInstanceFactory>	mPrivateMiniFactory;
 

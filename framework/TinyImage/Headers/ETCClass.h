@@ -18,20 +18,16 @@
 class ETCClass : public TinyImage
 {
 public:
-
-	friend class TinyImage;
-
-	/// destructor
-	virtual ~ETCClass();
-
-protected:
 	/**
 	* constructor
 	* \param filename  the name of the file to load
 	*/
 	ETCClass(FileHandle* fileName);
 
+	/// destructor
+	virtual ~ETCClass();
 
+protected:
 	virtual void	Export(const char* filename)
 	{
 		printf("can not export to ETC\n");

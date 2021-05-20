@@ -48,8 +48,7 @@ void	Scene3D::UninitModifiable()
 	{
 		// Notify scenegraph  that I am dead
 		ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
-		CMSP todel(this, GetRefTag{});
-		scenegraph->removeItem(todel);
+		scenegraph->removeItem(SharedFromThis());
 		Node3D::UninitModifiable();
 	}
 }
@@ -57,13 +56,6 @@ void	Scene3D::UninitModifiable()
 
 Scene3D::~Scene3D()
 {
-	// release ref on light
-	auto itr= mLights.begin();
-	auto end= mLights.end();
-	for (; itr != end; itr++)
-	{
-		(*itr)->Destroy();
-	}
 }
 
 void Scene3D::NotifyUpdate(const unsigned int  labelid)
@@ -85,6 +77,8 @@ void Scene3D::NotifyUpdate(const unsigned int  labelid)
 		}
 	}
 }
+
+// NOTE(antoine) camera and light have similar code (with DEFERRED_REMOVE etc...) but lights are stored with CMSP and cameras are not
 
 // Camera managment
 ///////////////////
@@ -108,15 +102,12 @@ bool  Scene3D::removeCamera(CoreModifiable* camera)
 	}
 	return false;
 }
-
-
 // Light managment
 //////////////////
 void  Scene3D::addLight(CoreModifiable* light)
 {
-	mLights.insert(light);
-	light->GetRef();
-	mLightsHaveChanged = true;
+	if(mLights.insert(light).second)
+		mLightsHaveChanged = true;
 }
 
 bool  Scene3D::hasLight(CoreModifiable* light)
@@ -129,11 +120,9 @@ bool  Scene3D::removeLight(CoreModifiable* light)
 	auto found = mLights.find(light);
 	if (found != mLights.end())
 	{
-		(*found)->Destroy();
 		mLights.erase(found);
 		mLightsHaveChanged = true;
 		return true;
-
 	}
 	return false;
 }

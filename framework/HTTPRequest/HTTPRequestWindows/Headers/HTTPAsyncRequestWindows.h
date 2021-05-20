@@ -57,13 +57,9 @@ typedef struct _REQUEST_CONTEXT
 class HTTPAsyncRequestWindows : public HTTPAsyncRequest
 {
 public:
-
 	DECLARE_CLASS_INFO(HTTPAsyncRequestWindows, HTTPAsyncRequest, HTTPRequestModule)
-
-	//! constructor
     HTTPAsyncRequestWindows(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-
-	void InitModifiable() override;
+	virtual ~HTTPAsyncRequestWindows();
 
 	void protectedProcess() override;
 
@@ -160,6 +156,7 @@ public:
 
 	
 protected:
+	void InitModifiable() override;
 
 	struct receivedBuffer
 	{
@@ -169,9 +166,6 @@ protected:
 
 	std::vector<receivedBuffer>	mBufferVector;
 
-	//! destructor
-    virtual ~HTTPAsyncRequestWindows();
-	
 	//HINTERNET			myHandle;
 	REQUEST_CONTEXT*			mRequestContext;
 

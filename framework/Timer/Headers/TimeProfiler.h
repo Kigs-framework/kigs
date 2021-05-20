@@ -110,6 +110,12 @@ public:
 		mComputedTime=KDOUBLE_CONST(0.0);
 	}
 
+	/**
+	 * \brief	destructor
+	 * \fn 		~TimeProfiler();
+	 */
+	virtual ~TimeProfiler();
+
 protected:
 	/**
 	 * \brief		start this profiler
@@ -135,12 +141,6 @@ protected:
 	kdouble	mMinDT;
 	//! TRUE if the profile was updated
 	bool	mWasUpdate=false;
-
-	/**
-	 * \brief	destructor
-	 * \fn 		~TimeProfiler();
-	 */
-	virtual ~TimeProfiler();
 };
 
 // ****************************************

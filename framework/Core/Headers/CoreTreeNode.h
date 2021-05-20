@@ -39,7 +39,7 @@ public:
 
 	kigs::unordered_map<KigsID, CoreTreeNode*> mChildren;
 	kigs::unordered_map <KigsID, ModifiableMethodStruct> mMethods;
-	std::vector<CoreModifiable*> mInstances;
+	std::vector<std::pair<CoreModifiable*, std::weak_ptr<CoreModifiable>>> mInstances;
 	
 	bool mInstanceVectorNeedSort = false;
 

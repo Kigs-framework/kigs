@@ -204,7 +204,7 @@ void App::Run()
 	CoreDispatcher dispatcher = window.Dispatcher();
 
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));
-	CoreBaseApplication* app = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
+	SP<CoreBaseApplication> app = KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
 
 #ifdef INIT_DEFAULT_MODULES
 #ifdef BASE_DATA_PATH
@@ -232,7 +232,7 @@ void App::Run()
 	}
 
 	app->CloseApp();
-	app->Destroy();
+	app.reset();
 	KigsCore::Close();
 }
 

@@ -59,16 +59,12 @@ CMSP TextureFileManager::CreateTexture(const kstl::string& textureName)
 
 SP<Texture> TextureFileManager::GetTexture(const kstl::string& fileName, bool doInit)
 {
-	// crash in editor when creating an UIImage
-	/*if (fileName == "")
-		return NULL;*/
-
 	SP<Texture> pTex(nullptr);
 
 	// already loaded ?
 	if (HasTexture(fileName))
 	{
-		pTex = CMSP(mTextureMap[fileName], GetRefTag{});
+		pTex = mTextureMap[fileName]->SharedFromThis();
 	}
 	else
 	{
@@ -89,7 +85,7 @@ SP<Texture> TextureFileManager::GetTexture(const kstl::string& fileName, const k
 	// already loaded ?
 	if (HasTexture(a_textureName))
 	{
-		pTex = CMSP(mTextureMap[a_textureName], GetRefTag{});
+		pTex = mTextureMap[a_textureName]->SharedFromThis();
 	}
 	else
 	{

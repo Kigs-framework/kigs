@@ -410,7 +410,7 @@ void AABBTree::LoadFromFile(const std::string& filename)
 	mFileName = filename;
 	u64 len;
 
-	auto crb = OwningRawPtrToSmartPtr(ModuleFileManager::Get()->LoadFile(filename.c_str(), len)); 
+	auto crb = ModuleFileManager::Get()->LoadFile(filename.c_str(), len);
 	auto result = crb;
 
 	if (crb && filename.substr(filename.find_last_of('.')) == ".kaabb")
@@ -418,7 +418,7 @@ void AABBTree::LoadFromFile(const std::string& filename)
 		CMSP uncompressManager = KigsCore::GetSingleton("KXMLManager");
 		if (uncompressManager)
 		{
-			result = OwningRawPtrToSmartPtr(new CoreRawBuffer);
+			result = MakeRefCounted<CoreRawBuffer>();
 			uncompressManager->SimpleCall("UncompressData", crb.get(), result.get());
 		}
 	}

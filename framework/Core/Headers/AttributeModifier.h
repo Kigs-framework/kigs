@@ -186,9 +186,9 @@ public:
 		auto itend = mContext.mVariableList.end();
 		while (itcurrent != itend)
 		{
-			if ((*itcurrent).second)
+			if ((*itcurrent).second.size())
 			{
-				(*itcurrent).second->Destroy();
+				(*itcurrent).second.pop_back();
 			}
 			++itcurrent;
 		}

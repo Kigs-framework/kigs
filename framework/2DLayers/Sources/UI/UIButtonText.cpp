@@ -318,7 +318,7 @@ void UIButtonText::ChangeState()
 		if (mIsDown)
 		{
 			if (mDownTexturePointer)
-				mTexturePointer = mDownTexturePointer;
+				mTexturePointer->setTexture(mDownTexturePointer);
 			if (mDownColor[3] != 0.0f)
 			{
 				mColor[0] = mDownColor[0];
@@ -332,7 +332,7 @@ void UIButtonText::ChangeState()
 		if (mIsMouseOver)
 		{
 			if (mOverTexturePointer)
-				mTexturePointer = mOverTexturePointer;
+				mTexturePointer->setTexture(mOverTexturePointer);
 			if (mOverColor[3] != 0.0f)
 			{
 				mColor[0] = mOverColor[0];
@@ -352,7 +352,7 @@ void UIButtonText::ChangeState()
 	}
 
 	// set default color and texture
-	mTexturePointer = mUpTexturePointer;
+	mTexturePointer->setTexture(mUpTexturePointer);
 	mColor[0] = mUpColor[0];
 	mColor[1] = mUpColor[1];
 	mColor[2] = mUpColor[2];

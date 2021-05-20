@@ -18,8 +18,11 @@
 class DDSClass : public TinyImage
 {
 public:
-
-	friend class TinyImage;
+	/**
+	* constructor
+	* \param filename  the name of the file to load
+	*/
+	DDSClass(FileHandle* fileName);
 
 	/// destructor
 	virtual ~DDSClass();
@@ -30,13 +33,6 @@ public:
 	}
 
 protected:
-	/**
-	* constructor
-	* \param filename  the name of the file to load
-	*/
-	DDSClass(FileHandle* fileName);
-
-
 	virtual void	Export(const char* filename)
 	{
 		printf("can not export to DDS\n");

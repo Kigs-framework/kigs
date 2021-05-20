@@ -20,7 +20,7 @@ void Holo3DPanel::InitModifiable()
 
 void Holo3DPanel::SetTexture(Texture* t)
 {
-	mTexture = NonOwningRawPtrToSmartPtr(t);
+	mTexture = t->SharedFromThis();
 }
 
 bool Holo3DPanel::addItem(const CMSP& item, ItemPosition pos)
@@ -34,7 +34,7 @@ bool Holo3DPanel::addItem(const CMSP& item, ItemPosition pos)
 
 bool Holo3DPanel::removeItem(const CMSP& item)
 {
-	if (item == mTexture.get())
+	if (item.get() == mTexture.get())
 	{
 		SetTexture(nullptr);
 	}

@@ -881,8 +881,9 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 		int structSize=0;
 
-		CoreItemSP	description = CoreItemSP(new CoreVector(), StealRefTag{});
-		CoreItemSP	vertices	= CoreItemSP(new CoreNamedVector("vertices"), StealRefTag{});
+		
+		CoreItemSP description = MakeCoreVector();
+		CoreItemSP vertices = MakeCoreNamedVector("vertices");
 		description->set("",vertices);
 
 		structSize+=3*sizeof(float);
@@ -890,21 +891,21 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		// vertices have a color
 		if(currentgrp.mTriangleType & 6)
 		{
-			CoreItemSP	colors	= CoreItemSP(new CoreNamedVector("colors"), StealRefTag{});
+			CoreItemSP colors = MakeCoreNamedVector("colors");
 			description->set("",colors);
 			structSize+=4*sizeof(float);
 		}
 
 		// always have normals in kmesh
 		{
-			CoreItemSP	normal	= CoreItemSP(new CoreNamedVector("normals"), StealRefTag{});
+			CoreItemSP normal = MakeCoreNamedVector("normals");
 			description->set("",normal);
 			structSize+=3*sizeof(float);
 		}
 
 		if(currentgrp.mTriangleType & 8)
 		{
-			CoreItemSP	texCoords	= CoreItemSP(new CoreNamedVector("texCoords"), StealRefTag{});
+			CoreItemSP texCoords = MakeCoreNamedVector("texCoords");
 			description->set("",texCoords);
 			structSize+=2*sizeof(float);
 		}

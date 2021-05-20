@@ -203,7 +203,7 @@ CMSP CoreModifiable::Import(XMLNodeTemplate< StringType >* currentNode, CoreModi
 				if (is_unique)
 				{
 					current = GetFirstInstanceByName(typeAttribute->getRefString(), name, false);
-					reused_unique_instance = current;
+					reused_unique_instance = (bool)current;
 					//if (current) current->GetRef(); // already set by GetFirstInstanceByName
 				}
 
@@ -590,7 +590,7 @@ void 	CoreModifiable::ImportAttributes(XMLNodeBase* node, CoreModifiable* curren
 			{
 				// don't want to include ModuleInput and dependencies, so use call method
 
-				CoreModifiable* theInputModule = KigsCore::GetModule("ModuleInput");
+				auto theInputModule = KigsCore::GetModule("ModuleInput");
 
 				XMLAttributeBase * MethodNameAttribute = sonXML->getAttribute("M", "Method");
 				XMLAttributeBase * EventNameAttribute = sonXML->getAttribute("E", "Event");
@@ -696,7 +696,7 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 			attrvalue = currentNode->getAttribute("LUA", "L");
 			if (attrvalue)
 			{
-				CoreModifiable* luamodule = KigsCore::GetModule("LuaKigsBindModule");
+				auto luamodule = KigsCore::GetModule("LuaKigsBindModule");
 				if (luamodule)
 				{
 					luamodule->SimpleCall("SetValueLua", currentModifiable, attrname->getString(), attrvalue->getString());
@@ -749,7 +749,7 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 						ATTRIBUTE_TYPE atype = CoreModifiableAttribute::stringToType(attrtype->getRefString());
 						if (atype != ATTRIBUTE_TYPE::UNKNOWN)
 						{
-							if ((atype != ATTRIBUTE_TYPE::ARRAY) && (atype != ATTRIBUTE_TYPE::REFERENCE))
+							if ((atype != ATTRIBUTE_TYPE::ARRAY) && (atype != ATTRIBUTE_TYPE::WEAK_REFERENCE) && (atype != ATTRIBUTE_TYPE::STRONG_REFERENCE))
 							{
 								attr = currentModifiable->AddDynamicAttribute(atype, attrname->getRefString());
 								std::string tempvalue = attrvalue->getString();
@@ -783,7 +783,7 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 						if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
 						{
 							ATTRIBUTE_TYPE atype = CoreModifiableAttribute::stringToType(attrtype->getRefString());
-							if ((atype != ATTRIBUTE_TYPE::ARRAY) && (atype != ATTRIBUTE_TYPE::REFERENCE))
+							if ((atype != ATTRIBUTE_TYPE::ARRAY) && (atype != ATTRIBUTE_TYPE::WEAK_REFERENCE) && (atype != ATTRIBUTE_TYPE::STRONG_REFERENCE))
 							{
 								attr = currentModifiable->AddDynamicAttribute(atype, attrname->getRefString());
 								std::string tempvalue = sonXML->getString();

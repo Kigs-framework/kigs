@@ -65,13 +65,13 @@ void AnonymousModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttr
 		{
 			DynamicModuleHandleAndPointer toAdd;
 			toAdd.mHandle=(void*)handle;
-			toAdd.mInstance=ImpFuncDLL(core,params); 
+			toAdd.mInstance = ImpFuncDLL(core,params)->SharedFromThis(); 
 
 			mDynamicModuleList.push_back(toAdd);
 			
 			if(mDynamicModule == 0)
 			{
-				mDynamicModule=toAdd.mInstance;
+				mDynamicModule = toAdd.mInstance.get();
 			}
 		}
 		else

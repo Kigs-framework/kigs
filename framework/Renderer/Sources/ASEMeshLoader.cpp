@@ -16,22 +16,10 @@ ASEMeshLoader::ASEMeshLoader()
 	 mMaterialList.clear();
 	mMaterialCount = 0;
 	mData=0;
-	mFileParser=0;
 }
 
 ASEMeshLoader::~ASEMeshLoader()
 {
-	mTextureList.clear();
-	mMaterialList.clear();
-
-	if(mFileParser)
-	{
-		delete mFileParser;
-		mFileParser=0;
-	}
-
-	mData=0;
-
 }
 
 int ASEMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
@@ -42,12 +30,6 @@ int ASEMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
 
 	pMesh->mFileName=FileName;
 
-	if(mFileParser)
-	{
-		delete mFileParser;
-		mFileParser=0;
-	}
-
 	if(mData)
 	{
 		mData=0;
@@ -55,11 +37,10 @@ int ASEMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
 
 	// first load txt file
 	u64 filelen;
-	mData = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFileAsCharString(FileName.c_str(),filelen,1));
+	mData = ModuleFileManager::LoadFileAsCharString(FileName.c_str(),filelen,1);
 	if (mData)
 	{
-
-		mFileParser=new AsciiParserUtils(mData.get());
+		mFileParser = AsciiParserUtils(mData);
 
 		Error = ReadFile(pMesh);
 		if (Error)
@@ -87,127 +68,127 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 	bool		HasTexture;
 	bool		HasNormal;
 
-	mFileParser->Reset();
+	mFileParser.Reset();
 
 	int matRef=0;
 	// get ref Material for the Node
 
-	if(mFileParser->MoveToString("*MATERIAL_REF"))
+	if(mFileParser.MoveToString("*MATERIAL_REF"))
 	{
-		mFileParser->ReadInt(matRef);
+		mFileParser.ReadInt(matRef);
 	}
-	mFileParser->Reset();
+	mFileParser.Reset();
 
 	// Get Materials
-	mFileParser->MoveToString("*MATERIAL_COUNT");
-	mFileParser->ReadInt(mMaterialCount);
+	mFileParser.MoveToString("*MATERIAL_COUNT");
+	mFileParser.ReadInt(mMaterialCount);
 
 	char TextureName[512];
 	for(i = 0; i < (unsigned int)mMaterialCount; i++)
 	{
-		mFileParser->MoveToString("*MATERIAL");
-		mFileParser->MoveToString("*MATERIAL_NAME");
+		mFileParser.MoveToString("*MATERIAL");
+		mFileParser.MoveToString("*MATERIAL_NAME");
 	    int subMatCount=0;
 
-		unsigned CurrentPosition = mFileParser->GetPosition();
-		if(mFileParser->MoveToString("*NUMSUBMTLS"))
+		unsigned CurrentPosition = mFileParser.GetPosition();
+		if(mFileParser.MoveToString("*NUMSUBMTLS"))
 		{
-			unsigned submtlpos=mFileParser->GetPosition();
+			unsigned submtlpos=mFileParser.GetPosition();
 
-			mFileParser->ReadInt(subMatCount);
+			mFileParser.ReadInt(subMatCount);
 
-			mFileParser->SetPosition(CurrentPosition);
+			mFileParser.SetPosition(CurrentPosition);
 
-			if(mFileParser->MoveToString("*MATERIAL"))
+			if(mFileParser.MoveToString("*MATERIAL"))
 			{
-				if(mFileParser->GetPosition()<submtlpos)
+				if(mFileParser.GetPosition()<submtlpos)
 				{
 					subMatCount=0;
 				}
 			}
 		}
 
-		mFileParser->SetPosition(CurrentPosition);
+		mFileParser.SetPosition(CurrentPosition);
 
-		mFileParser->ReadString(TextureName);
+		mFileParser.ReadString(TextureName);
 		TextureName[strlen(TextureName)-1]=0;
 
 		mMaterialList.push_back(&TextureName[1]);
 
 		materialStruct  tmpStruct;
 
-		if(mFileParser->MoveToString("*MATERIAL_AMBIENT"))
+		if(mFileParser.MoveToString("*MATERIAL_AMBIENT"))
 		{
-			mFileParser->ReadFloat(tmpStruct.ambient[0]);
-			mFileParser->ReadFloat(tmpStruct.ambient[1]);
-			mFileParser->ReadFloat(tmpStruct.ambient[2]);
+			mFileParser.ReadFloat(tmpStruct.ambient[0]);
+			mFileParser.ReadFloat(tmpStruct.ambient[1]);
+			mFileParser.ReadFloat(tmpStruct.ambient[2]);
 		}
 
-		if(mFileParser->MoveToString("*MATERIAL_DIFFUSE"))
+		if(mFileParser.MoveToString("*MATERIAL_DIFFUSE"))
 		{
-			mFileParser->ReadFloat(tmpStruct.diffuse[0]);
-			mFileParser->ReadFloat(tmpStruct.diffuse[1]);
-			mFileParser->ReadFloat(tmpStruct.diffuse[2]);
+			mFileParser.ReadFloat(tmpStruct.diffuse[0]);
+			mFileParser.ReadFloat(tmpStruct.diffuse[1]);
+			mFileParser.ReadFloat(tmpStruct.diffuse[2]);
 		}
 
-		if(mFileParser->MoveToString("*MATERIAL_SPECULAR"))
+		if(mFileParser.MoveToString("*MATERIAL_SPECULAR"))
 		{
-			mFileParser->ReadFloat(tmpStruct.specular[0]);
-			mFileParser->ReadFloat(tmpStruct.specular[1]);
-			mFileParser->ReadFloat(tmpStruct.specular[2]);
+			mFileParser.ReadFloat(tmpStruct.specular[0]);
+			mFileParser.ReadFloat(tmpStruct.specular[1]);
+			mFileParser.ReadFloat(tmpStruct.specular[2]);
 		}
 
-		if(mFileParser->MoveToString("*MATERIAL_SHINE"))
+		if(mFileParser.MoveToString("*MATERIAL_SHINE"))
 		{
-			mFileParser->ReadFloat(tmpStruct.shininess);
+			mFileParser.ReadFloat(tmpStruct.shininess);
 		}
 
 		kstl::string cutGuillemet1("");
-		CurrentPosition = mFileParser->GetPosition();
-		if(mFileParser->MoveToString("*MAP_DIFFUSE"))
+		CurrentPosition = mFileParser.GetPosition();
+		if(mFileParser.MoveToString("*MAP_DIFFUSE"))
 		{
-			if(mFileParser->MoveToString("*BITMAP"))
+			if(mFileParser.MoveToString("*BITMAP"))
 			{
-				mFileParser->ReadString(TextureName);
+				mFileParser.ReadString(TextureName);
 
 				TextureName[strlen(TextureName)-1]=0;
 
 				cutGuillemet1=&TextureName[1];
 			}
 		}
-		mFileParser->SetPosition(CurrentPosition);
+		mFileParser.SetPosition(CurrentPosition);
 
 		if(subMatCount)
 		{
-			mFileParser->MoveToString("*NUMSUBMTLS");
+			mFileParser.MoveToString("*NUMSUBMTLS");
 			for(int j=0;j<subMatCount;j++)
 			{
 				materialStruct  tmpsubStruct;
 
-				if(mFileParser->MoveToString("*MATERIAL_AMBIENT"))
+				if(mFileParser.MoveToString("*MATERIAL_AMBIENT"))
 				{
-					mFileParser->ReadFloat(tmpsubStruct.ambient[0]);
-					mFileParser->ReadFloat(tmpsubStruct.ambient[1]);
-					mFileParser->ReadFloat(tmpsubStruct.ambient[2]);
+					mFileParser.ReadFloat(tmpsubStruct.ambient[0]);
+					mFileParser.ReadFloat(tmpsubStruct.ambient[1]);
+					mFileParser.ReadFloat(tmpsubStruct.ambient[2]);
 				}
 
-				if(mFileParser->MoveToString("*MATERIAL_DIFFUSE"))
+				if(mFileParser.MoveToString("*MATERIAL_DIFFUSE"))
 				{
-					mFileParser->ReadFloat(tmpsubStruct.diffuse[0]);
-					mFileParser->ReadFloat(tmpsubStruct.diffuse[1]);
-					mFileParser->ReadFloat(tmpsubStruct.diffuse[2]);
+					mFileParser.ReadFloat(tmpsubStruct.diffuse[0]);
+					mFileParser.ReadFloat(tmpsubStruct.diffuse[1]);
+					mFileParser.ReadFloat(tmpsubStruct.diffuse[2]);
 				}
 
-				if(mFileParser->MoveToString("*MATERIAL_SPECULAR"))
+				if(mFileParser.MoveToString("*MATERIAL_SPECULAR"))
 				{
-					mFileParser->ReadFloat(tmpsubStruct.specular[0]);
-					mFileParser->ReadFloat(tmpsubStruct.specular[1]);
-					mFileParser->ReadFloat(tmpsubStruct.specular[2]);
+					mFileParser.ReadFloat(tmpsubStruct.specular[0]);
+					mFileParser.ReadFloat(tmpsubStruct.specular[1]);
+					mFileParser.ReadFloat(tmpsubStruct.specular[2]);
 				}
 
-				if(mFileParser->MoveToString("*MATERIAL_SHINE"))
+				if(mFileParser.MoveToString("*MATERIAL_SHINE"))
 				{
-					mFileParser->ReadFloat(tmpsubStruct.shininess);
+					mFileParser.ReadFloat(tmpsubStruct.shininess);
 				}
 				tmpStruct.subMat.push_back(tmpsubStruct);
 			}
@@ -217,128 +198,128 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 
 		mTextureList.push_back(cutGuillemet1);
 	}
-	mFileParser->Reset();
+	mFileParser.Reset();
 	//Get Mesh
 
-	mFileParser->MoveToString("*GEOMOBJECT");
-	mFileParser->MoveToString("*MESH");
-	mFileParser->MoveToString("*MESH_NUMVERTEX");	// jump to the vertices count
-	mFileParser->ReadInt(fake);
+	mFileParser.MoveToString("*GEOMOBJECT");
+	mFileParser.MoveToString("*MESH");
+	mFileParser.MoveToString("*MESH_NUMVERTEX");	// jump to the vertices count
+	mFileParser.ReadInt(fake);
 	pMesh->mVertexCount = fake;
 	pMesh->mVertexArray = new Point3D[pMesh->mVertexCount];
-	mFileParser->MoveToString("*MESH_NUMFACES");
-	mFileParser->ReadInt(TriangleCount);
+	mFileParser.MoveToString("*MESH_NUMFACES");
+	mFileParser.ReadInt(TriangleCount);
 	TempTriangle = new Mesh::TS_Triangle<1>[TriangleCount];
 	mMatIdArray = new int[TriangleCount];
-	mFileParser->MoveToString("*MESH_VERTEX_LIST");
+	mFileParser.MoveToString("*MESH_VERTEX_LIST");
 
 	for (i=0;i<pMesh->mVertexCount;i++)
 	{
-		mFileParser->MoveToString("*MESH_VERTEX");
-		mFileParser->ReadInt(fake);
-		mFileParser->ReadFloat(pMesh->mVertexArray[i].x);
-		mFileParser->ReadFloat(pMesh->mVertexArray[i].y);
-		mFileParser->ReadFloat(pMesh->mVertexArray[i].z);
+		mFileParser.MoveToString("*MESH_VERTEX");
+		mFileParser.ReadInt(fake);
+		mFileParser.ReadFloat(pMesh->mVertexArray[i].x);
+		mFileParser.ReadFloat(pMesh->mVertexArray[i].y);
+		mFileParser.ReadFloat(pMesh->mVertexArray[i].z);
 	}
 
-	mFileParser->MoveToString("*MESH_FACE_LIST");
+	mFileParser.MoveToString("*MESH_FACE_LIST");
 	for (i=0;i<(unsigned int)TriangleCount;i++)
 	{
-		mFileParser->MoveToString("*MESH_FACE");
-		mFileParser->MoveToString("A:");
-		mFileParser->ReadInt(fake);
+		mFileParser.MoveToString("*MESH_FACE");
+		mFileParser.MoveToString("A:");
+		mFileParser.ReadInt(fake);
 		TempTriangle[i].a = fake;
-		mFileParser->MoveToString("B:");
-		mFileParser->ReadInt(fake);
+		mFileParser.MoveToString("B:");
+		mFileParser.ReadInt(fake);
 		TempTriangle[i].b = fake;
-		mFileParser->MoveToString("C:");
-		mFileParser->ReadInt(fake);
+		mFileParser.MoveToString("C:");
+		mFileParser.ReadInt(fake);
 		TempTriangle[i].c = fake;
-		mFileParser->MoveToString("*MESH_MTLID");
-		mFileParser->ReadInt(mMatIdArray[i]);
+		mFileParser.MoveToString("*MESH_MTLID");
+		mFileParser.ReadInt(mMatIdArray[i]);
 	}
 
-	FilePos = mFileParser->GetPosition();
-	if (mFileParser->MoveToString("*MESH_NUMTVERTEX"))
+	FilePos = mFileParser.GetPosition();
+	if (mFileParser.MoveToString("*MESH_NUMTVERTEX"))
 	{
 		HasTexture = true;
-		mFileParser->ReadInt(fake);
+		mFileParser.ReadInt(fake);
 		pMesh->mTexCoordCount = fake;
 		pMesh->mTexArray = new Mesh::TexCoord[pMesh->mTexCoordCount];
 
-		mFileParser->MoveToString("*MESH_TVERTLIST");
+		mFileParser.MoveToString("*MESH_TVERTLIST");
 		for (i=0;i<pMesh->mTexCoordCount;i++)
 		{
-			mFileParser->MoveToString("*MESH_TVERT");
-			mFileParser->ReadInt(fake);
-			mFileParser->ReadFloat(pMesh->mTexArray[i].u);
-			mFileParser->ReadFloat(pMesh->mTexArray[i].v);
+			mFileParser.MoveToString("*MESH_TVERT");
+			mFileParser.ReadInt(fake);
+			mFileParser.ReadFloat(pMesh->mTexArray[i].u);
+			mFileParser.ReadFloat(pMesh->mTexArray[i].v);
 		}
 
-		mFileParser->MoveToString("*MESH_NUMTVFACES");
-		mFileParser->MoveToString("*MESH_TFACELIST");
+		mFileParser.MoveToString("*MESH_NUMTVFACES");
+		mFileParser.MoveToString("*MESH_TFACELIST");
 		for (i=0;i<(unsigned int)TriangleCount;i++)
 		{
-			mFileParser->MoveToString("*MESH_TFACE");
-			mFileParser->ReadInt(fake);
-			mFileParser->ReadInt(fake);
+			mFileParser.MoveToString("*MESH_TFACE");
+			mFileParser.ReadInt(fake);
+			mFileParser.ReadInt(fake);
 			TempTriangle[i].Ta[0] = fake;
-			mFileParser->ReadInt(fake);
+			mFileParser.ReadInt(fake);
 			TempTriangle[i].Tb[0] = fake;
-			mFileParser->ReadInt(fake);
+			mFileParser.ReadInt(fake);
 			TempTriangle[i].Tc[0] = fake;
 		}
 
 	}
 	else
 	{
-		mFileParser->SetPosition(FilePos);
+		mFileParser.SetPosition(FilePos);
 		HasTexture = false;
 	}
 
-	if (mFileParser->MoveToString("*MESH_NORMALS"))
+	if (mFileParser.MoveToString("*MESH_NORMALS"))
 	{
-		unsigned CurrentPosition = mFileParser->GetPosition();
+		unsigned CurrentPosition = mFileParser.GetPosition();
 		HasNormal = true;
 
 		// Retrieve the Normal Count as the max index
 		pMesh->mNormalCount = 0;
 		for (i=0;i<(unsigned int)TriangleCount;i++)
 		{
-			mFileParser->MoveToString("*MESH_VERTEXNORMAL");
-			mFileParser->ReadInt(fake);
+			mFileParser.MoveToString("*MESH_VERTEXNORMAL");
+			mFileParser.ReadInt(fake);
 			if ((unsigned int)fake>pMesh->mNormalCount) pMesh->mNormalCount = fake;
-			mFileParser->MoveToString("*MESH_VERTEXNORMAL");
-			mFileParser->ReadInt(fake);
+			mFileParser.MoveToString("*MESH_VERTEXNORMAL");
+			mFileParser.ReadInt(fake);
 			if ((unsigned int)fake>pMesh->mNormalCount) pMesh->mNormalCount = fake;
-			mFileParser->MoveToString("*MESH_VERTEXNORMAL");
-			mFileParser->ReadInt(fake);
+			mFileParser.MoveToString("*MESH_VERTEXNORMAL");
+			mFileParser.ReadInt(fake);
 			if ((unsigned int)fake>pMesh->mNormalCount) pMesh->mNormalCount = fake;
 		}
 
 		pMesh->mNormalCount++;
 		pMesh->mNormalArray = new Vector3D[pMesh->mNormalCount];
-		mFileParser->SetPosition(CurrentPosition);
+		mFileParser.SetPosition(CurrentPosition);
 		for (i=0;i<(unsigned int)TriangleCount;i++)
 		{
-			mFileParser->MoveToString("*MESH_VERTEXNORMAL");
-			mFileParser->ReadInt(fake);
+			mFileParser.MoveToString("*MESH_VERTEXNORMAL");
+			mFileParser.ReadInt(fake);
 			TempTriangle[i].Na = fake;
-			mFileParser->ReadFloat(pMesh->mNormalArray[fake].x);
-			mFileParser->ReadFloat(pMesh->mNormalArray[fake].y);
-			mFileParser->ReadFloat(pMesh->mNormalArray[fake].z);
-			mFileParser->MoveToString("*MESH_VERTEXNORMAL");
-			mFileParser->ReadInt(fake);
+			mFileParser.ReadFloat(pMesh->mNormalArray[fake].x);
+			mFileParser.ReadFloat(pMesh->mNormalArray[fake].y);
+			mFileParser.ReadFloat(pMesh->mNormalArray[fake].z);
+			mFileParser.MoveToString("*MESH_VERTEXNORMAL");
+			mFileParser.ReadInt(fake);
 			TempTriangle[i].Nb = fake;
-			mFileParser->ReadFloat(pMesh->mNormalArray[fake].x);
-			mFileParser->ReadFloat(pMesh->mNormalArray[fake].y);
-			mFileParser->ReadFloat(pMesh->mNormalArray[fake].z);
-			mFileParser->MoveToString("*MESH_VERTEXNORMAL");
-			mFileParser->ReadInt(fake);
+			mFileParser.ReadFloat(pMesh->mNormalArray[fake].x);
+			mFileParser.ReadFloat(pMesh->mNormalArray[fake].y);
+			mFileParser.ReadFloat(pMesh->mNormalArray[fake].z);
+			mFileParser.MoveToString("*MESH_VERTEXNORMAL");
+			mFileParser.ReadInt(fake);
 			TempTriangle[i].Nc = fake;
-			mFileParser->ReadFloat(pMesh->mNormalArray[fake].x);
-			mFileParser->ReadFloat(pMesh->mNormalArray[fake].y);
-			mFileParser->ReadFloat(pMesh->mNormalArray[fake].z);
+			mFileParser.ReadFloat(pMesh->mNormalArray[fake].x);
+			mFileParser.ReadFloat(pMesh->mNormalArray[fake].y);
+			mFileParser.ReadFloat(pMesh->mNormalArray[fake].z);
 		}
 	}
 	else

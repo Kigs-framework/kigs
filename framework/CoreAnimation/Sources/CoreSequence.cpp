@@ -81,7 +81,7 @@ CoreSequence::~CoreSequence()
 
 	if (mTarget)
 	{
-		KigsCore::Disconnect(mTarget, "Destroy", coreanim, "OnDestroyCallBack");
+		KigsCore::Disconnect(mTarget.get(), "Destroy", coreanim, "OnDestroyCallBack");
 	}
 }
 

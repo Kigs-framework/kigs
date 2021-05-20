@@ -14,14 +14,14 @@ NotificationCenter::NotificationCenter()
 	mPostLevel=0;
 
 	// use context to pass variable to coreItemOperator
-	mContext.mVariableList[LABEL_TO_ID(sender).toUInt()] = 0;
-	mContext.mVariableList[LABEL_TO_ID(data).toUInt()] = 0;
+	mContext.mVariableList[LABEL_TO_ID(sender).toUInt()];
+	mContext.mVariableList[LABEL_TO_ID(data).toUInt()];
 }
 
 NotificationCenter::~NotificationCenter()
 {
-	mContext.mVariableList[LABEL_TO_ID(sender).toUInt()] = 0;
-	mContext.mVariableList[LABEL_TO_ID(data).toUInt()] = 0;
+	mContext.mVariableList[LABEL_TO_ID(sender).toUInt()];
+	mContext.mVariableList[LABEL_TO_ID(data).toUInt()];
 
 	mObserverMap.clear();
 	mNotificationMap.clear();
@@ -513,12 +513,12 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 				{		
 					if((currentobsStruct.mSender == 0) || (currentobsStruct.mSender == sender))
 					{
-						if (!currentobsStruct.mCurrentItem.isNil())
+						if (currentobsStruct.mCurrentItem)
 						{
 							CoreItemEvaluationContext::SetContext(&mContext);
-							mContext.mVariableList[LABEL_TO_ID(sender).toUInt()] = sender;
+							mContext.mVariableList[LABEL_TO_ID(sender).toUInt()].push_back(sender->shared_from_this());
 							// Warning faked cast
-							mContext.mVariableList[LABEL_TO_ID(data).toUInt()] = (GenericRefCountedBaseClass*) data;
+							mContext.mVariableList[LABEL_TO_ID(data).toUInt()].push_back(((GenericRefCountedBaseClass*) data)->shared_from_this());
 
 
 							// push params
@@ -544,13 +544,13 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 									case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
 									case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 									{
-										mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()] = new CoreModifiableAttributeOperator<kfloat>((*paramscurrent));
+										mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()].push_back(std::make_shared<CoreModifiableAttributeOperator<kfloat>>(*paramscurrent));
 									}
 									break;
 									case CoreModifiable::ATTRIBUTE_TYPE::STRING:
 									case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 									{
-										mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()] = new CoreModifiableAttributeOperator<std::string>((*paramscurrent));
+										mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()].push_back(std::make_shared<CoreModifiableAttributeOperator<std::string>>(*paramscurrent));
 									}
 									break;
 									default:
@@ -568,8 +568,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 
 							while (paramscurrent != paramsend)
 							{
-								mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()]->Destroy();
-								mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()] = 0;
+								mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()].pop_back();
 								++paramscurrent;
 							}
 

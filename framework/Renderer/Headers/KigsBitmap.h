@@ -46,7 +46,9 @@ public:
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
 	KigsBitmap(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	
+
+	virtual ~KigsBitmap();
+
 	unsigned int	GetSelfDrawingNeeds() override
 	{
 		return ((unsigned int)Need_Predraw);
@@ -121,7 +123,7 @@ protected:
 	// manage a RGBA8888 array of pixel and update it's father texture if needed 
 	unsigned char*		mRawPixels;
 
-	virtual ~KigsBitmap();
+	
 
 	BBox2DI	mDirtyZone;
 

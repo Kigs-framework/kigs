@@ -559,7 +559,7 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	//DECLARE_FULL_CLASS_INFO(core, OpenGLTexture, Texture, Renderer)
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(OpenGLTexture, "Texture");
 	RegisterClassToInstanceFactory( core, "Renderer", "Texture",
-		[](const kstl::string& instancename, kstl::vector<CoreModifiableAttribute*>* args) -> CoreModifiable*
+		[](const kstl::string& instancename, kstl::vector<CoreModifiableAttribute*>* args) -> CMSP
 	{
 		if (args && args->size())
 		{
@@ -567,12 +567,7 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 		}
 		auto texfileManager = KigsCore::Singleton<TextureFileManager>();
 		SP<Texture> texture = texfileManager->GetTexture(instancename, false);
-		// texture will be delete when lambda exit ( as only the pointer is returned )
-		if (texture)
-		{
-			texture->GetRef(); // so get a ref before exiting
-		}
-		return texture.get(); // and return the pointer
+		return texture;
 	} );
 
 	
@@ -646,15 +641,14 @@ void RendererOpenGL::Update(const Timer& timer, void* addParam)
 	ModuleSpecificRenderer::Update(timer, addParam);
 }
 
-ModuleBase*	PlatformRendererModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> PlatformRendererModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
-
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(RendererOpenGL, "RendererOpenGL");
-	ModuleBase*    gInstanceRendererOpenGL = new RendererOpenGL("RendererOpenGL");
+	auto ptr = MakeRefCounted<RendererOpenGL>("RendererOpenGL");
+	ModuleBase* gInstanceRendererOpenGL = ptr.get();
 	gInstanceRendererOpenGL->Init(core, params);
-
-	return gInstanceRendererOpenGL;
+	return ptr;
 }
 /*
 bool	RendererOpenGL::HasShader()
@@ -839,7 +833,7 @@ ModuleSpecificRenderer::LightCount RendererOpenGL::SetLightsInfo(std::set<CoreMo
 	auto end = lights->end();
 	for (; itr != end; ++itr)
 	{
-		API3DLight* currentLight = static_cast<API3DLight*>(*itr);
+		API3DLight* currentLight = (API3DLight*)*itr;
 
 		if (!currentLight->getIsOn())
 			continue;
@@ -948,7 +942,7 @@ void RendererOpenGL::SendLightsInfo(TravState* travstate)
 	auto end = travstate->mLights->end();
 	for (; itr != end; ++itr)
 	{
-		API3DLight* currentLight = static_cast<API3DLight*>(*itr);
+		API3DLight* currentLight = (API3DLight*)*itr;
 		currentLight->PreRendering(this, cam, lCamPos);
 		currentLight->DrawLight(travstate);
 	}
@@ -963,7 +957,7 @@ void RendererOpenGL::ClearLightsInfo(TravState* travstate)
 	auto end = travstate->mLights->end();
 	for (; itr != end; ++itr)
 	{
-		API3DLight* currentLight = static_cast<API3DLight*>(*itr);
+		API3DLight* currentLight = (API3DLight*)*itr;
 		currentLight->PostDrawLight(travstate);
 	}
 }

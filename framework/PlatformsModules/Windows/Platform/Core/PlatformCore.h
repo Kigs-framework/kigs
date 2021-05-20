@@ -1,12 +1,11 @@
 #ifndef _WINDOWS_CORE_H_
 #define _WINDOWS_CORE_H_
 
+#include "SmartPointer.h"
+
 #include <stdio.h>
 
 class FileHandle;
-
-template<typename smartPointOn>
-class SmartPointer ;
 
 extern bool Win32fopen(FileHandle* handle, const char * mode);
 //extern SmartPointer<FileHandle> Win32fopen(const char* name, const char * mode);
@@ -17,7 +16,7 @@ extern int Win32fseek( FileHandle* handle, long int offset, int origin);
 extern int Win32fflush( FileHandle* handle);
 extern int Win32fclose( FileHandle* handle);
 
-extern SmartPointer<FileHandle> Win32FindFullName(const std::string&	filename);
+extern SmartPointer<FileHandle> Win32FindFullName(const std::string& filename);
 extern void Win32CheckState(FileHandle* handle);
 extern bool Win32CreateFolderTree(FileHandle* hndl);
 

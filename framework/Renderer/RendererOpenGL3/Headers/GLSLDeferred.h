@@ -16,8 +16,8 @@ public:
 	friend class RendererOpenGL;
 
 	DECLARE_CLASS_INFO(API3DDeferred, Node3D, Renderer)
-
 	API3DDeferred(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~API3DDeferred();
 
 	int getColorChannel() { return myFboTexture[0]; }
 	int getNormalChannel() { return myFboTexture[1]; }
@@ -29,7 +29,6 @@ public:
 	void RenderQuad();
 
 protected:
-	virtual ~API3DDeferred();
 	void	InitModifiable() override;
 	void	TravDraw(TravState* state) override;
 

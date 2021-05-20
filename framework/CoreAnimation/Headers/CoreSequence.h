@@ -58,7 +58,7 @@ public:
 	// reset sequence
 	void	stop();
 
-	CoreModifiable*	getTarget() const
+	CMSP	getTarget() const
 	{
 		return mTarget;
 	}
@@ -72,7 +72,7 @@ public:
 	// return true if target is modifiable 
 	bool	useModifiable(CoreModifiable* modifiable) const
 	{
-		if (mTarget == modifiable)
+		if (mTarget.get() == modifiable)
 		{
 			return true;
 		}
@@ -85,7 +85,7 @@ protected:
 	void	protectedPause(kdouble time);
 	void	protectedUpdate(kdouble time);
 
-	CoreModifiable*		mTarget;
+	SP<CoreModifiable>	mTarget;
 	KigsID				mID;
 	kdouble				mStartTime;
 	kdouble				mPauseTime;

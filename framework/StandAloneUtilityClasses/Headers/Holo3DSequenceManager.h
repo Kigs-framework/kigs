@@ -43,7 +43,7 @@ public:
 
 	void ChangePosition(Point3D pos) { mPosition = pos; mCurrentPos = pos; }
 	
-	SP<Node3D>& GetSpatialNode() { return mSpacialNode; }
+	SP<Node3D> GetSpatialNode() { return mSpacialNode; }
 
 	SP<Panel> GetCollidablePanel()
 	{

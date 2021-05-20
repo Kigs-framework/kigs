@@ -33,15 +33,10 @@ public:
 	void SetVertexArray(UIItem* item, UIVerticesInfo* aQI) override;
 
 protected:
-	virtual ~UIShapeDisc()
-	{
-
-	}
-	
 	/**
-* \brief	initialize modifiable
-* \fn 		void InitModifiable() override
-*/
+	* \brief	initialize modifiable
+	* \fn 		void InitModifiable() override
+	*/
 	void	InitModifiable() override;
 
 	void NotifyUpdate(const unsigned int labelid) override;

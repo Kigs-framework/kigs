@@ -14,9 +14,9 @@ class OpenGLPlatformRenderingScreen : public RenderingScreen
 {
 public:
     DECLARE_ABSTRACT_CLASS_INFO(OpenGLPlatformRenderingScreen,RenderingScreen,Renderer)
-
 	OpenGLPlatformRenderingScreen(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-    
+	virtual ~OpenGLPlatformRenderingScreen();
+
 	void	SetWindowByHandle(void *PtrToHandle);
 
 	void*	GetContextHandle()
@@ -26,17 +26,17 @@ public:
 
 protected:
     
-	 void Update(const Timer&  timer, void* /*addParam*/)override;
+	void Update(const Timer&  timer, void* /*addParam*/)override;
 
 
-	 virtual void InitializeGL(GLsizei width, GLsizei height)=0;
+	virtual void InitializeGL(GLsizei width, GLsizei height)=0;
 
-	 void	InitModifiable()override;
-	 void	UninitModifiable()override;
+	void	InitModifiable()override;
+	void	UninitModifiable()override;
 
-	 void	setCurrentContext() override;
+	void	setCurrentContext() override;
 
-	virtual ~OpenGLPlatformRenderingScreen();
+	
    
 	bool SetupPixelFormat(HDC hdc);
 

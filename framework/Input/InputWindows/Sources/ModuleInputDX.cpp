@@ -31,7 +31,7 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
 
 	joystickname+=_itoa(gInstanceModuleInputDX->getJoystickCount()+1,countstring,10);
 
-	SP<JoystickDX> localJoystick=gInstanceModuleInputDX->getCore()->GetInstanceOf(joystickname,"Joystick");
+	SP<JoystickDX> localJoystick = gInstanceModuleInputDX->getCore()->GetInstanceOf(joystickname,"Joystick");
 
     HRESULT hr;
 
@@ -125,7 +125,7 @@ void ModuleInputDX::Init(KigsCore* core, const kstl::vector<CoreModifiableAttrib
 			if (localmouse)
 			{
 				localmouse->DoInputDeviceDescription();
-				addItem((CMSP&)localmouse);
+				addItem(localmouse);
 			}
 		}
 
@@ -142,7 +142,7 @@ void ModuleInputDX::Init(KigsCore* core, const kstl::vector<CoreModifiableAttrib
 			if (localkeyboard)
 			{
 				localkeyboard->DoInputDeviceDescription();
-				addItem((CMSP&)localkeyboard);
+				addItem(localkeyboard);
 			}
 		}
 
@@ -151,7 +151,7 @@ void ModuleInputDX::Init(KigsCore* core, const kstl::vector<CoreModifiableAttrib
 			SP<GeolocationDevice> localGeolocation = core->GetInstanceOf("geolocation", "GeolocationDevice");
 			if (localGeolocation)
 			{
-				addItem((CMSP&)localGeolocation);
+				addItem(localGeolocation);
 			}
 		}
 
@@ -215,14 +215,13 @@ bool ModuleInputDX::addItem(const CMSP& item, ItemPosition pos)
 	return false;
 }
 
-ModuleBase* MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
- 
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(ModuleInputDX, "ModuleInputDX");
-    gInstanceModuleInputDX=new ModuleInputDX("ModuleInputDX");
+	auto ptr = MakeRefCounted<ModuleInputDX>("ModuleInputDX");
+	gInstanceModuleInputDX = ptr.get();
     gInstanceModuleInputDX->Init(core,params);
-        
-	return gInstanceModuleInputDX;
+	return ptr;
 }    
 

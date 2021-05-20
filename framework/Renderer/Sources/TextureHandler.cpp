@@ -128,7 +128,7 @@ bool	SpriteSheetData::Init(const std::string& json, std::string& texturename)
 {
 	JSonFileParser L_JsonParser;
 	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionary(json);
-	if (!L_Dictionary.isNil())
+	if (L_Dictionary)
 	{
 		CoreItemSP	L_vFrames = L_Dictionary["frames"];
 
@@ -136,7 +136,7 @@ bool	SpriteSheetData::Init(const std::string& json, std::string& texturename)
 
 		CoreItemSP L_Meta = L_Dictionary["meta"];
 
-		if (!L_Meta.isNil())
+		if (L_Meta)
 		{
 			texturename = L_Meta["image"]->toString();
 		}
@@ -158,7 +158,7 @@ bool	TextureHandler::initFromSpriteSheet(const std::string& jsonfilename)
 	auto textureManager = KigsCore::Singleton<TextureFileManager>();
 	std::string texturename = textureManager->GetTextureFromSpriteSheetJSON(jsonfilename);
 
-	if (!mTexture.isNil())
+	if (mTexture)
 	{
 		if (mTexture->getValue<std::string>("TextureName") == texturename) // same texture, just returns
 		{
@@ -182,7 +182,7 @@ bool	TextureHandler::initFromSpriteSheet(const std::string& jsonfilename)
 		{
 			mTexture = textureManager->GetTexture(texturename);
 
-			if ((!newspritesheet->isOK()) || mTexture.isNil())
+			if ((!newspritesheet->isOK()) || !mTexture)
 			{
 				delete newspritesheet;
 				newspritesheet = nullptr;
@@ -254,7 +254,7 @@ bool TextureHandler::changeTexture()
 		}
 	}
 
-	if (!mTexture.isNil())
+	if (mTexture)
 	{
 		refreshTextureInfos();
 	

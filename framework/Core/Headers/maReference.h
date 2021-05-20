@@ -6,21 +6,39 @@
 
 
 
-struct maReferenceObject
+struct maWeakReferenceObject
 {
-	maReferenceObject() = default;
+	maWeakReferenceObject() = default;
 
-	maReferenceObject(CoreModifiable* lobj)
+	maWeakReferenceObject(CoreModifiable* lobj)
 	{
-		mObj = lobj;
+		mObj = lobj->SharedFromThis();
 	}
-	maReferenceObject(const kstl::string& nametype) : mObj(nullptr)
+	maWeakReferenceObject(const kstl::string& nametype)
 	{
 		mSearchString = nametype;
 	}
+	std::weak_ptr<CoreModifiable> mObj;
+	kstl::string mSearchString;
+};
 
-	CoreModifiable* mObj;
-	kstl::string	mSearchString;
+struct maStrongReferenceObject
+{
+	maStrongReferenceObject() = default;
+	maStrongReferenceObject(GenericRefCountedBaseClass* lobj)
+	{
+		mObj = lobj->shared_from_this();
+	}
+	maStrongReferenceObject(SP<GenericRefCountedBaseClass> lobj)
+	{
+		mObj = lobj;
+	}
+	maStrongReferenceObject(const kstl::string& nametype)
+	{
+		mSearchString = nametype;
+	}
+	SP<GenericRefCountedBaseClass> mObj;
+	kstl::string mSearchString;
 };
 
 // ****************************************
@@ -34,80 +52,58 @@ struct maReferenceObject
 // ****************************************
 
 template<int notificationLevel>
-class maReferenceHeritage : public CoreModifiableAttributeData<maReferenceObject>
+class maReferenceHeritage : public CoreModifiableAttributeData<maWeakReferenceObject>
 {
-	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maReferenceHeritage, maReferenceHeritage, maReferenceObject, CoreModifiable::ATTRIBUTE_TYPE::REFERENCE);
+	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maReferenceHeritage, maReferenceHeritage, maWeakReferenceObject, CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE);
 
 
 public:
 
-	maReferenceHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, kstl::string value) : CoreModifiableAttributeData<maReferenceObject>(owner, isInitAttribute, ID)
+	maReferenceHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, kstl::string value) : CoreModifiableAttributeData<maWeakReferenceObject>(owner, isInitAttribute, ID)
 	{
-		mValue = maReferenceObject{ value };
+		mValue = maWeakReferenceObject{ value };
 		Search();
 	}
 
-	maReferenceHeritage() : CoreModifiableAttributeData<maReferenceObject>(KigsID{0u}, maReferenceObject{}) {}
+	maReferenceHeritage() : CoreModifiableAttributeData<maWeakReferenceObject>(KigsID{0u}, maWeakReferenceObject{}) {}
 
 	virtual ~maReferenceHeritage()
 	{
-		if (mValue.mObj)
-		{
-			UnreferenceModifiable(mValue.mObj);
-		}
 	}
-
 
 	// Sets the internal pointer to null, forcing to search again next time we query the reference
 	void	ResetFoundModifiable()
 	{
-		mValue.mObj = nullptr;
+		mValue.mObj.reset();
 	}
-	virtual void CopyData(const CoreModifiableAttributeData<maReferenceObject>& toCopy) override
+	virtual void CopyData(const CoreModifiableAttributeData<maWeakReferenceObject>& toCopy) override
 	{
 		const auto& toCopyValue = toCopy.const_ref();
-		if (toCopyValue.mObj)
-		{
-			// check if value has changed
-			if (mValue.mObj != toCopyValue.mObj)
-			{
-				if (mValue.mObj)
-					UnreferenceModifiable(mValue.mObj);
-
-				mValue = toCopyValue;
-
-				if (mValue.mObj)
-					ReferenceModifiable(mValue.mObj);
-			}
-		}
-		else
-		{
-			if (mValue.mObj)
-				UnreferenceModifiable(mValue.mObj);
-
-			mValue = toCopyValue;
-		}
+		mValue = toCopyValue;
 	}
 
-	operator CoreModifiable*() { return SearchRef(); }
-	//! cast to CoreModifiable* operator
-	//operator CoreModifiable*() { return (CoreModifiable*)SearchRef(); }
+	operator CMSP() { return SearchRef(); }
 
 	template<typename T>
-	operator T*(){ return static_cast<T*>(SearchRef()); }
+	operator SP<T>(){ return SearchRef(); }
+
+	// NOTE(antoine) Thread unsafe, need to remove method
+	operator CoreModifiable*() { return SearchRef().get(); }
+	// NOTE(antoine) Thread unsafe, need to remove method
+	template<typename T>
+	operator T* () { return static_cast<T*>(SearchRef().get()); }
 
 	operator const std::string& () const { return mValue.mSearchString; }
 
 	CoreModifiable*	operator->()
 	{
-		return SearchRef();
+		return SearchRef().get();
 	}
 
+	// NOTE(antoine) null references ?????
+	// Thread unsafe, need to remove method
 	operator CoreModifiable&() { return (*SearchRef()); }
-
-	//! return a reference on internal value
 	CoreModifiable& ref() { return (*SearchRef()); }
-	//! return a const reference on internal value
 	const CoreModifiable& const_ref() { return (*SearchRef()); }
 
 
@@ -116,16 +112,16 @@ public:
 	{
 
 		((maReferenceHeritage*)this)->SearchRef();
-		if (mValue.mObj)
+		if (auto ptr = mValue.mObj.lock())
 		{
 #ifdef KEEP_NAME_AS_STRING
-			value = mValue.mObj->GetRuntimeType();
+			value = ptr->GetRuntimeType();
 #else
-			value = std::to_string(mValue.mObj->GetRuntimeType().toUInt());
+			value = std::to_string(ptr->GetRuntimeType().toUInt());
 #endif
 
 			value += ":";
-			value += mValue.mObj->getName();
+			value += ptr->getName();
 			return true;
 		}
 		else
@@ -141,17 +137,20 @@ public:
 		// TODO ?
 		return false;
 	}
+
+	// Thread unsafe, need to add getValue method with CMSP
 	virtual bool getValue(CoreModifiable*&  value) const override
 	{
-		value = (CoreModifiable*)((maReferenceHeritage*)this)->SearchRef();
+		value = (CoreModifiable*) const_cast<maReferenceHeritage*>(this)->SearchRef().get();
 		return true;
 	}
+	
+	// Thread unsafe, this one is really bad...
 	virtual bool getValue(void*& value) const override
 	{
-		value = (void*)((maReferenceHeritage*)this)->SearchRef();
+		value = (void*) const_cast<maReferenceHeritage*>(this)->SearchRef().get();
 		return true;
 	}
-
 
 	/// setValue overloads
 	virtual bool setValue(const char* value) override
@@ -176,18 +175,7 @@ public:
 	{
 		if (this->isReadOnly())
 			return false;
-
-		if (mValue.mObj != value)
-		{
-			if (mValue.mObj)
-				UnreferenceModifiable(mValue.mObj);
-
-			mValue.mObj = value;
-
-			if (mValue.mObj)
-				ReferenceModifiable(mValue.mObj);
-		}
-
+		mValue.mObj = value->SharedFromThis();
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
@@ -206,111 +194,29 @@ public:
 	}
 
 protected:
-
-	/// Internals;
-	void	UnreferenceModifiable(CoreModifiable* current)
+	CMSP Search()
 	{
-		auto& coremodigiablemap = KigsCore::Instance()->getReferenceMap();
-		auto found = coremodigiablemap.find(current);
-
-		// ok, the CoreModifiable is here
-		if (found != coremodigiablemap.end())
-		{
-			kstl::vector<CoreModifiableAttribute*>& referencevector = (*found).second;
-
-			kstl::vector<CoreModifiableAttribute*>::iterator	itcurrent = referencevector.begin();
-			kstl::vector<CoreModifiableAttribute*>::iterator	itend = referencevector.end();
-
-			while (itcurrent != itend)
-			{
-				if ((*itcurrent) == this)
-				{
-					referencevector.erase(itcurrent);
-					break;
-				}
-				++itcurrent;
-			}
-
-			if (referencevector.size() == 0)
-			{
-				current->unflagAsReferenceRegistered();
-				coremodigiablemap.erase(found);
-			}
-		}
-	}
-	void	ReferenceModifiable(CoreModifiable* current)
-	{
-		auto& coremodigiablemap = KigsCore::Instance()->getReferenceMap();
-		auto found = coremodigiablemap.find(current);
-
-		// ok, the CoreModifiable is already there, add a vector mEntry
-		if (found != coremodigiablemap.end())
-		{
-			kstl::vector<CoreModifiableAttribute*>& referencevector = (*found).second;
-			referencevector.push_back(this);
-		}
-		else
-		{
-			// create a new map mEntry
-			kstl::vector<CoreModifiableAttribute*> toAdd;
-			toAdd.push_back(this);
-			coremodigiablemap[current] = toAdd;
-
-			current->flagAsReferenceRegistered();
-		}
-	}
-
-	void	Search()
-	{
-		CMSP obj = nullptr;
+		CMSP obj;
 		if (!mValue.mSearchString.empty())
 		{
 			obj = CoreModifiable::SearchInstance(mValue.mSearchString, getOwner());
 		}
-		else
-		{
-			if (mValue.mObj)
-			{
-				UnreferenceModifiable(mValue.mObj);
-				mValue.mObj = nullptr;
-			}
-			return;
-		}
-		if (obj)
-		{
-			if (mValue.mObj != obj.get())
-			{
-				if (mValue.mObj)
-					UnreferenceModifiable(mValue.mObj);
-
-				mValue.mObj = obj.get();
-				ReferenceModifiable(mValue.mObj);
-			}
-		}
-		else
-		{
-			if (mValue.mObj)
-				UnreferenceModifiable(mValue.mObj);
-			mValue.mObj = nullptr;
-		}
+		mValue.mObj = obj;
+		return obj;
 	}
 	void InitAndSearch(const kstl::string& nametype)
 	{
-		CoreModifiable* old_obj = mValue.mObj;
-		mValue = maReferenceObject{ nametype };
+		auto old_obj = mValue.mObj;
+		mValue = maWeakReferenceObject{ nametype };
 		mValue.mObj = old_obj;
 		Search();
 	}
-	CoreModifiable*	SearchRef()
+	CMSP SearchRef()
 	{
-		if (mValue.mObj)
-		{
-			return mValue.mObj;
-		}
-		Search();
-		return mValue.mObj;
+		if (auto ptr = mValue.mObj.lock())
+			return ptr;
+		return Search();
 	}
-
 };
 
 // ****************************************
@@ -326,6 +232,173 @@ protected:
 using maReference = maReferenceHeritage<0>;
 
 
+
+template<int notificationLevel>
+class maStrongReferenceHeritage : public CoreModifiableAttributeData<maStrongReferenceObject>
+{
+	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maStrongReferenceHeritage, maStrongReferenceHeritage, maStrongReferenceObject, CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE);
+
+
+public:
+
+	maStrongReferenceHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, kstl::string value) : CoreModifiableAttributeData<maStrongReferenceObject>(owner, isInitAttribute, ID)
+	{
+		mValue = maStrongReferenceObject{ value };
+		Search();
+	}
+
+	maStrongReferenceHeritage() : CoreModifiableAttributeData<maStrongReferenceObject>(KigsID{ 0u }, maStrongReferenceObject{}) {}
+
+	virtual ~maStrongReferenceHeritage()
+	{
+	}
+
+	// Sets the internal pointer to null, forcing to search again next time we query the reference
+	void	ResetFoundModifiable()
+	{
+		mValue.mObj.reset();
+	}
+	virtual void CopyData(const CoreModifiableAttributeData<maStrongReferenceObject>& toCopy) override
+	{
+		const auto& toCopyValue = toCopy.const_ref();
+		mValue = toCopyValue;
+	}
+
+	operator CMSP() { return SearchRef(); }
+
+	template<typename T>
+	operator SP<T>() { return SearchRef(); }
+
+	operator CoreModifiable* () { return SearchRef().get(); }
+	
+	template<typename T>
+	operator T* () { return static_cast<T*>(SearchRef().get()); }
+
+	operator const std::string& () const { return mValue.mSearchString; }
+
+	CoreModifiable* operator->()
+	{
+		return SearchRef().get();
+	}
+
+	// NOTE(antoine) null references ?????
+	operator CoreModifiable& () { return (*SearchRef()); }
+	CoreModifiable& ref() { return (*SearchRef()); }
+	const CoreModifiable& const_ref() { return (*SearchRef()); }
+
+	/// getValue overloads
+	virtual bool getValue(kstl::string& value) const override
+	{
+		
+		((maStrongReferenceHeritage*)this)->SearchRef();
+		if (auto ptr = std::dynamic_pointer_cast<CoreModifiable>(mValue.mObj).get())
+		{
+#ifdef KEEP_NAME_AS_STRING
+			value = ptr->GetRuntimeType();
+#else
+			value = std::to_string(ptr->GetRuntimeType().toUInt());
+#endif
+
+			value += ":";
+			value += ptr->getName();
+			return true;
+		}
+		else
+		{
+			value = mValue.mSearchString;
+			return true;
+		}
+
+		return false;
+	}
+	virtual bool getValue(usString& value) const override
+	{
+		// TODO ?
+		return false;
+	}
+	
+	virtual bool getValue(CoreModifiable*& value) const override
+	{
+		value = (CoreModifiable*) const_cast<maStrongReferenceHeritage*>(this)->SearchRef().get();
+		return true;
+	}
+	
+	virtual bool getValue(void*& value) const override
+	{
+		value = (void*) const_cast<maStrongReferenceHeritage*>(this)->SearchRef().get();
+		return true;
+	}
+
+	/// setValue overloads
+	virtual bool setValue(const char* value) override
+	{
+		if (this->isReadOnly())
+			return false;
+
+		InitAndSearch(value);
+		DO_NOTIFICATION(notificationLevel);
+		return true;
+	}
+	virtual bool setValue(const kstl::string& value) override
+	{
+		if (this->isReadOnly())
+			return false;
+
+		InitAndSearch(value);
+		DO_NOTIFICATION(notificationLevel);
+		return true;
+	}
+	virtual bool setValue(CoreModifiable* value) override
+	{
+		if (this->isReadOnly())
+			return false;
+		mValue.mObj = value->SharedFromThis();
+		DO_NOTIFICATION(notificationLevel);
+		return true;
+	}
+
+	/// operators
+	auto& operator=(const kstl::string& value)
+	{
+		InitAndSearch(value);
+		DO_NOTIFICATION(notificationLevel);
+		return *this;
+	}
+	auto& operator=(CoreModifiable* value)
+	{
+		setValue(value);
+		return *this;
+	}
+
+protected:
+	CMSP Search()
+	{
+		CMSP obj;
+		if (!mValue.mSearchString.empty())
+		{
+			obj = CoreModifiable::SearchInstance(mValue.mSearchString, getOwner());
+		}
+		mValue.mObj = obj;
+		return obj;
+	}
+	void InitAndSearch(const kstl::string& nametype)
+	{
+		auto old_obj = mValue.mObj;
+		mValue = maStrongReferenceObject{ nametype };
+		mValue.mObj = old_obj;
+		Search();
+	}
+	CMSP SearchRef()
+	{
+		if (mValue.mObj)
+			return mValue.mObj;
+		return Search();
+	}
+};
+
+
+
+using maStrongReference = maStrongReferenceHeritage<0>;
 
 
 

@@ -37,10 +37,9 @@ public:
 	DictionaryFromJson(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	CoreItemSP Get_Dictionary() const { if (mObjectStack.size()) return mObjectStack[0]; return CoreItemSP(nullptr); }
-
-protected:
 	virtual ~DictionaryFromJson();
 
+protected:
 	kstl::vector<CoreItemSP>					mObjectStack;
 	CoreItemSP								mCurrentObject;
 
@@ -69,9 +68,10 @@ public:
 	DictionaryFromJsonUTF16(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	CoreItemSP Get_Dictionary() const { if (mObjectStack.size()) return mObjectStack[0]; return CoreItemSP(nullptr); }
+	virtual ~DictionaryFromJsonUTF16();
 
 protected:
-	virtual ~DictionaryFromJsonUTF16();
+	
 
 	kstl::vector<CoreItemSP>					mObjectStack;
 	CoreItemSP								mCurrentObject;
@@ -110,7 +110,7 @@ public:
 	bool ExportToString(CoreMap<stringType>* a_value, stringType& output);
 protected:
 	void InitParser(const kstl::string& filename);
-	void InitParserFromString(CoreRawBuffer* Buff);
+	void InitParserFromString(const SP<CoreRawBuffer>& Buff);
 	bool ParseBlock(parserType& Block);
 	bool ParseArray(parserType& Array);
 	void NotifyDelegateWithParamList();

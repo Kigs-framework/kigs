@@ -47,10 +47,9 @@ void	FSM::InitModifiable()
 		if (IsInit())
 		{
 			// init with description
-
-			CoreItemSP ItemToEval = CoreItemSP(myDescription, GetRefTag{});
+			CoreItemSP ItemToEval = myDescription;
 			
-			if(!ItemToEval.isNil())
+			if(ItemToEval)
 				initFromDescription(ItemToEval);
 
 			kstl::string initstate = myInitState;

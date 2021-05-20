@@ -58,11 +58,10 @@ public:
 
 	void SetShowContent(bool show, bool no_async = false);
 
-	//void ChangeLoadedState(LoadedState loaded, bool no_async = false);
+    virtual ~Node3DDelayed();
 
 protected:
     
-    virtual ~Node3DDelayed();
 
     void PrepareExport(ExportSettings*) override;
     void EndExport(ExportSettings*) override;

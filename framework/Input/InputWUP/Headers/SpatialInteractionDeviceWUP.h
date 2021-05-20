@@ -24,6 +24,7 @@ class SpatialInteractionDeviceWUP : public SpatialInteractionDevice
 public:
 	DECLARE_CLASS_INFO(SpatialInteractionDeviceWUP, SpatialInteractionDevice, Input);
 	DECLARE_CONSTRUCTOR(SpatialInteractionDeviceWUP);
+	virtual ~SpatialInteractionDeviceWUP();
 
 	virtual bool	Aquire();
 	virtual bool	Release();
@@ -35,8 +36,6 @@ public:
 	void StopListening();
 
 protected:
-	virtual ~SpatialInteractionDeviceWUP();
-	
 	winrt::Windows::UI::Input::Spatial::SpatialInteractionManager mSpatialInteractionManager = nullptr;
 	bool mIsListening = false;
 	std::mutex mMutex;

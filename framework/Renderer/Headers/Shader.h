@@ -109,7 +109,7 @@ struct UniformList
 #endif
 
 	API3DUniformBase* mCurrent;
-	std::vector<API3DUniformBase*> mList;
+	std::vector<CMSP> mList;
 
 	std::string mUniformName;
 };

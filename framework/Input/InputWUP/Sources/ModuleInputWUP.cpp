@@ -126,14 +126,14 @@ bool	ModuleInputWUP::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 	return false;
 }
 
-ModuleBase* PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(ModuleInputWUP,"ModuleInputWUP");
-	gInstanceModuleInputWUP=new ModuleInputWUP("ModuleInputWUP");
+	auto ptr = MakeRefCounted<ModuleInputWUP>("ModuleInputWUP");
+	gInstanceModuleInputWUP = ptr.get();
 	gInstanceModuleInputWUP->Init(core,params);
-	
-	return gInstanceModuleInputWUP;
+	return ptr;
 }    
 

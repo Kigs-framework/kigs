@@ -36,7 +36,7 @@ bool  InstanceFactory::GetModuleIDFromClassName(const KigsID& className, KigsID&
 }    
 
 //! create an instance of the given class type with the given instance name    
-CoreModifiable*    InstanceFactory::GetInstance(const std::string& instancename,const KigsID& className, std::vector<CoreModifiableAttribute*>* args)
+CMSP InstanceFactory::GetInstance(const std::string& instancename,const KigsID& className, std::vector<CoreModifiableAttribute*>* args)
 {
 	KigsID	realClassName(className);
 	// check alias
@@ -61,7 +61,7 @@ CoreModifiable*    InstanceFactory::GetInstance(const std::string& instancename,
 	KigsCore::Instance()->ReleaseSemaphore();
 	if (method)
 	{
-		CoreModifiable* L_tmp = (method)(instancename, args);
+		CMSP L_tmp = (method)(instancename, args);
 		
 		// add upgrador if needed
 		if (aliasFound != mAliasList.end())
@@ -73,12 +73,12 @@ CoreModifiable*    InstanceFactory::GetInstance(const std::string& instancename,
 		}
 
 		if (L_tmp && mEventClassList.find(realClassName) != mEventClassList.end())
-			KigsCore::GetNotificationCenter()->postNotificationName("Create_CoreModifiable", 0, L_tmp);
+			KigsCore::GetNotificationCenter()->postNotificationName("Create_CoreModifiable", 0, L_tmp.get());
 
 		// add callback on objects
 		if (mModifiableCallbackMap.size())
 		{
-			registerCallbackList(L_tmp);
+			registerCallbackList(L_tmp.get());
 		}
 
 		return L_tmp;

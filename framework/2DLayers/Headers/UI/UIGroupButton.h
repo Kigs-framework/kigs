@@ -27,13 +27,13 @@ public:
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
 	UIGroupButton(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-
+	virtual ~UIGroupButton();
 	bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
 	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
 
 	void			reComputeSize();
 protected:
-	virtual ~UIGroupButton();
+	
 	void InitModifiable()override;
 	void	computeSize(int _buttonNumber, CoreModifiable* a_item);
 

@@ -29,9 +29,9 @@ class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<Aligned
 
 	void InitData()
 	{
-		if (mValue.isNil())
+		if (!mValue)
 		{
-			mValue = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<alignement, allocatedType>());
+			mValue = MakeRefCounted<AlignedCoreRawBuffer<alignement, allocatedType>>();
 		}
 	}
 
@@ -46,7 +46,7 @@ class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<Aligned
 
 			auto ext = filename.substr(filename.find_last_of('.'));
 			u64 filelength = 0;
-			auto loaded = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFile(filename.c_str(), filelength));
+			auto loaded = ModuleFileManager::LoadFile(filename.c_str(), filelength);
 			if (loaded)
 			{
 				if (ext == ".kbin")
@@ -103,7 +103,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 
-		mValue = NonOwningRawPtrToSmartPtr((typename CurrentAttributeType::ValueType*)((CoreRawBuffer*)value));
+		mValue = std::static_pointer_cast<CurrentAttributeType::element_type>(((CoreRawBuffer*)value)->shared_from_this());
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
@@ -113,7 +113,7 @@ public:
 	virtual bool getValue(kstl::string& value) const override
 	{
 
-		if (!mValue.isNil())
+		if (mValue)
 		{
 			value = AsciiParserUtils::BufferToString((unsigned char*)mValue->buffer(), mValue->length());
 			return true;
@@ -138,11 +138,11 @@ public:
 
 	char * buffer() const
 	{
-		return mValue.isNil() ? nullptr :  mValue->buffer();
+		return !mValue ? nullptr :  mValue->buffer();
 	}
 	unsigned int	length() const
 	{
-		return mValue.isNil() ? 0u :mValue->length();
+		return !mValue ? 0u :mValue->length();
 	}
 	void	SetBuffer(void* buffer, unsigned int length, bool manageMemory = true)
 	{

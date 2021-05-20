@@ -108,6 +108,7 @@ public:
 	SP<ModernMeshItemGroup> EndMeshGroup(s32 vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, s32 face_count, v3u* faces, v3f offset = { 0,0,0 });
 
 	void EndMeshBuilder();
+	virtual ~ModernMesh();
 
 protected:
 #ifdef KEEP_NAME_AS_STRING
@@ -123,7 +124,7 @@ protected:
 
 	void InitModifiable() override;
 
-	virtual ~ModernMesh();
+	
 
 	virtual void  InitBoundingBox();
 

@@ -23,9 +23,8 @@ class ThreadPoolManager : public CoreModifiable
 public:
 
 	DECLARE_CLASS_INFO(ThreadPoolManager, CoreModifiable, Thread)
-
-	//! constructor
 	ThreadPoolManager(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~ThreadPoolManager();
 
 	void	InitModifiable() override;
 
@@ -66,9 +65,6 @@ protected:
 		kstl::vector<MethodCallingStruct*> mTaskList;
 		virtual ~TaskGroup() {};
 	};
-
-	//! destructor
-	virtual ~ThreadPoolManager();
 
 	maInt	mThreadCount;
 	kstl::vector<SP<WorkerThread>>				mThreadList;

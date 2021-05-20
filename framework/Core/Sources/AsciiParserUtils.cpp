@@ -5,11 +5,11 @@ template<typename charType>
 const charType	AsciiParserUtilsTemplate<charType>::mZeroChar = 0;
 
 template<typename charType>
-AsciiParserUtilsTemplate<charType>::AsciiParserUtilsTemplate(CoreRawBuffer* buffer)
+AsciiParserUtilsTemplate<charType>::AsciiParserUtilsTemplate(SP<CoreRawBuffer> buffer)
 {
-	mRawBuffer = NonOwningRawPtrToSmartPtr(buffer);
+	mRawBuffer = std::move(buffer);
 	// text len is buffer len -1
-	Set((charType*)buffer->buffer(), buffer->length() / sizeof(charType) - 1);
+	Set((charType*)mRawBuffer->buffer(), mRawBuffer->length() / sizeof(charType) - 1);
 
 }
 

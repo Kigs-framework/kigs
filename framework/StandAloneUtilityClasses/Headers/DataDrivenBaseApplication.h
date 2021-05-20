@@ -39,11 +39,10 @@ public:
 	friend class DataDrivenTransition;
 
 	DECLARE_CLASS_INFO(DataDrivenSequence, CoreModifiable, Core)
-
 	DataDrivenSequence(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~DataDrivenSequence();
 
 	DataDrivenSequenceManager*	getManager();
-
 
 protected:
 	void	InitModifiable() override;
@@ -54,9 +53,6 @@ protected:
 
 	maBool			mKeepParamsOnStateChange;
 	maReference		mSequenceManager;
-
-
-	virtual ~DataDrivenSequence();
 };
 
 // ****************************************

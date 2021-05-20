@@ -33,14 +33,7 @@ public:
 	void SetTexUV(UIItem* item, UIVerticesInfo* aQI) override;
 	void SetVertexArray(UIItem* item, UIVerticesInfo* aQI) override;
 
-
-
 protected:
-	virtual ~UIShapePolygon()
-	{
-
-	}
-	
 	void InitModifiable() override;
 	virtual void NotifyUpdate(const unsigned int /* labelid */)override;
 

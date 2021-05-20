@@ -13,5 +13,5 @@ IF NOT EXIST %myDir%\..\..\Build\solutionWinCMakeWin64 MKDIR %myDir%\..\..\Build
 
 cd %myDir%\..\..\Build\solutionWinCMakeWin64
 REM  -DUNITY_BUILD=TRUE
-%cmakeCmd% %myDir% -DUNITY_BUILD=TRUE -G"%targetName%" -A x64
+%cmakeCmd% %myDir% -DUNITY_BUILD=FALSE -G"%targetName%" -A x64
 pause

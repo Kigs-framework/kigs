@@ -17,14 +17,14 @@ class OpenGLCameraOrtho : public Camera
 public:
 	DECLARE_CLASS_INFO(OpenGLCameraOrtho, Camera, Renderer)
 	DECLARE_INLINE_CONSTRUCTOR(OpenGLCameraOrtho) {}
-
+	~OpenGLCameraOrtho()override;
 
 	void	InitCullingObject(CullingObject* obj)override;
 	void	getRay(const kfloat &ScreenX, const kfloat &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection)override;
 
 
 protected:
-	~OpenGLCameraOrtho()override;
+	
 
     bool ProtectedSetActive(TravState* state)override;
    	void ProtectedRelease(TravState* state) override; 

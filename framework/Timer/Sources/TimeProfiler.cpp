@@ -86,7 +86,7 @@ int TimeProfiler::NewProfiler(const kstl::string& name)
 	{
 		if(KigsCore::GetProfileManager()->mProfilers[i]==nullptr)
 		{
-			KigsCore::GetProfileManager()->mProfilers[i]=KigsCore::GetInstanceOf(name,"TimeProfiler");
+			KigsCore::GetProfileManager()->mProfilers[i] = KigsCore::GetInstanceOf(name,"TimeProfiler");
 			return i;
 		}
 	}
@@ -268,7 +268,7 @@ void TimeProfiler::DumpProfilers()
 void	GlobalProfilerManager::InitAll()
 {
 	// init common timer for all profilers
-	mGlobalTimer=KigsCore::GetInstanceOf("GlobalTimer","Timer");
+	mGlobalTimer = KigsCore::GetInstanceOf("GlobalTimer","Timer");
 	mGlobalTimer->Init();
 	// check is a graphic object can be created
 	mProfileDrawingObject=KigsCore::GetInstanceOf("myProfileDrawingObject","ProfileDrawingObject");

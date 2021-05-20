@@ -20,9 +20,8 @@ class	MouseDX : public MouseDevice
 {
 public:
     DECLARE_CLASS_INFO(MouseDX,MouseDevice,Input)
-
     MouseDX(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-
+	virtual ~MouseDX();
 
 	virtual bool	Aquire();
 	virtual bool	Release();
@@ -37,8 +36,6 @@ public:
 	void	IncButtonCount(){mButtonsCount++;}
     
 protected:
-   virtual ~MouseDX();
-
 	LPDIRECTINPUTDEVICE8 mDirectInputMouse;  
 };    
 

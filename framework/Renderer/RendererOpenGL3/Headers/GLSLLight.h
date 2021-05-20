@@ -28,8 +28,8 @@ public:
 	friend class RendererOpenGL;
 
 	DECLARE_CLASS_INFO(API3DLight, Light, Renderer)
-
 	API3DLight(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~API3DLight();
 
 	virtual bool PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D & camPos);
 
@@ -45,7 +45,6 @@ public:
 	void NotifyUpdate(const unsigned int  labelid) override;
 
 protected:
-	virtual ~API3DLight();
 	void	InitModifiable() override;
 
 	CMSP		mPositionUniform;

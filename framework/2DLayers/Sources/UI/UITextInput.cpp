@@ -110,7 +110,7 @@ UITextInput::~UITextInput()
 void UITextInput::GetFocus()
 {
 	//Get KeyBoard
-	ModuleInput* theInputModule= KigsCore::GetModule<ModuleInput>();
+	auto theInputModule = KigsCore::GetModule<ModuleInput>();
 	KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
 	KigsCore::Connect(theKeyboard, "KeyboardEvent", this, "UpdateKeyboard");
 	SetNodeFlag(UIItem_HasFocus);
@@ -122,7 +122,7 @@ void UITextInput::GetFocus()
 void UITextInput::LoseFocus()
 {
 	//Get KeyBoard
-	ModuleInput* theInputModule= KigsCore::GetModule<ModuleInput>();
+	auto theInputModule= KigsCore::GetModule<ModuleInput>();
 	KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
 	KigsCore::Disconnect(theKeyboard, "KeyboardEvent", this, "UpdateKeyboard");
 

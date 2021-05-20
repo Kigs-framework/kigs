@@ -11,6 +11,7 @@
 #include <mutex>
 #include <functional>
 #include <atomic>
+#include <map>
 
 #include "blockingconcurrentqueue.h"
 
@@ -63,6 +64,8 @@ public:
 
 	DECLARE_CLASS_INFO(CollisionManager, CoreModifiable, Collision)
 	DECLARE_CONSTRUCTOR(CollisionManager);
+	~CollisionManager() override;
+
 	WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback, OnDeleteCallBack, GetAllRayIntersection, SerializeAABBTree, DeserializeAABBTree, SetAABBTreeFromFile);
 
 	bool SerializeAABBTree(CoreRawBuffer* buffer, const CMSP& node);
@@ -117,7 +120,6 @@ public:
 	const std::unordered_map<u32, std::shared_ptr<MeshCollisionInfo>>& GetCollisionMap() { ProcessPendingItems(); return mCollisionObjectMap; }
 
 protected:
-	~CollisionManager() override;
 	void InitModifiable() override;
 	void Update(const Timer&  timer, void* addParam) override;
 
@@ -149,7 +151,7 @@ protected:
 
 	struct Work
 	{
-		CoreModifiable* mItem;
+		std::weak_ptr<CoreModifiable> mItem;
 		u32 mUID;
 		std::shared_ptr<MeshCollisionInfo> mInfo;
 		std::function<CollisionBaseObject*()> mFunc;

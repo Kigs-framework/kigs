@@ -96,15 +96,16 @@ public:
 	void ConnectToLua(CoreModifiable* e, const kstl::string& signal, CoreModifiable* r, const kstl::string& code);
 
 	bool	CallCoreModifiableCallback(kstl::vector<CoreModifiableAttribute*>& params,CoreModifiable* localthis);
+
+	//! destructor
+	virtual ~LuaKigsBindModule();
 protected:
 	
 	void Update(const Timer& timer, void* addParam) override
 	{
 		// nothing to do
 	}
-
-	//! destructor
-    virtual ~LuaKigsBindModule();    
+	
 	DECLARE_METHOD(RegisterLuaMethod);
 	COREMODIFIABLE_METHODS(RegisterLuaMethod);
 	void SetValueLua(CoreModifiable* cm, const kstl::string& attrname, const kstl::string& code);
@@ -125,7 +126,7 @@ DEFINE_DYNAMIC_INLINE_METHOD(CoreModifiable, LuaGlobalCallback)
 {
 	if (params.size()) // params[0] must contain method name (maString)
 	{
-		LuaKigsBindModule* lua = (LuaKigsBindModule*)KigsCore::GetModule("LuaKigsBindModule");
+		SP<LuaKigsBindModule> lua = KigsCore::GetModule("LuaKigsBindModule");
 		return lua->CallCoreModifiableCallback(params, this);
 	}
 	return false;

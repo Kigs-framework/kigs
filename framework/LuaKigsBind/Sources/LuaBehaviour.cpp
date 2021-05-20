@@ -116,7 +116,7 @@ void	LuaBehaviour::InitModifiable()
 	if (GetParentCount() == 0) return;
 	CoreModifiable::InitModifiable();
 	
-	mLuaModule = (LuaKigsBindModule*)KigsCore::GetModule("LuaKigsBindModule");
+	mLuaModule = (LuaKigsBindModule*)KigsCore::GetModule("LuaKigsBindModule").get();
 	
 	mL = mLuaModule->getLuaState();
 	

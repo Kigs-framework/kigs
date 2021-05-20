@@ -18,11 +18,10 @@
 
 class	MouseWUP : public MouseDevice
 {
-	public:
+public:
     DECLARE_CLASS_INFO(MouseWUP,MouseDevice,Input)
-	
-		MouseWUP(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	
+	MouseWUP(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~MouseWUP();
 	
 	virtual bool	Aquire();
 	virtual bool	Release();
@@ -36,10 +35,7 @@ class	MouseWUP : public MouseDevice
 	void	IncWheelCount(){mWheelCount++;}
 	void	IncButtonCount(){mButtonsCount++;}
 	
-	protected:
-	virtual ~MouseWUP();
-	
-
+protected:
 	int WheelDelta=0;
 	bool LeftPressed=false;
 	bool RightPressed=false;

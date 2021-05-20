@@ -273,13 +273,12 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 
 	mesh->StartMeshBuilder();
 
-	CoreItemSP desc = CoreItemSP::getCoreVector();
-	auto cnv_vertices = CoreItemSP::getCoreItemOfType<CoreNamedVector>("vertices");
+	CoreItemSP desc = MakeCoreVector();
+	auto cnv_vertices = MakeCoreNamedVector("vertices");
 	desc->set("",cnv_vertices); 
-	auto cnv_normals = CoreItemSP::getCoreItemOfType <CoreNamedVector>("generate_normals");
+	auto cnv_normals = MakeCoreNamedVector("generate_normals");
 	desc->set("", cnv_normals);
-
-	auto no_merge = CoreItemSP::getCoreItemOfType <CoreNamedVector>("no_merge");
+	auto no_merge = MakeCoreNamedVector("no_merge");
 	desc->set("", no_merge);
 
 	mesh->StartMeshGroup((CoreVector*)desc.get());
@@ -938,7 +937,7 @@ void HoloSpatialMap::InitModifiable()
 	auto import_timed_scan = [&](const std::string& filename)
 	{
 		u64 len;
-		auto crb = OwningRawPtrToSmartPtr(ModuleFileManager::Get()->LoadFile(filename.c_str(), len));
+		auto crb = ModuleFileManager::Get()->LoadFile(filename.c_str(), len);
 		if (crb)
 		{
 			PacketReadStream stream{ crb->data(), crb->size() };

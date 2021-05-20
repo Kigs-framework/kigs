@@ -35,6 +35,8 @@ public:
 	
 	DECLARE_ABSTRACT_CLASS_INFO(HTTPAsyncRequest, AsyncRequest, HTTPRequestModule)
 	DECLARE_INLINE_CONSTRUCTOR(HTTPAsyncRequest) {}
+	virtual ~HTTPAsyncRequest();
+
 	SIGNALS(OnResponse,OnBufferPartReceived);
 	
 	void SetPostBufferValue(const char* a_buffer, unsigned int buflen);
@@ -54,7 +56,7 @@ public:
 	virtual bool	GetAnswer(usString& answer);
 	virtual bool	GetAnswer(kstl::string& answer);
 	virtual bool	GetAnswer(void** buffer, int& buflen);
-	virtual bool	GetAnswer(CoreRawBuffer*& buffer);
+	virtual bool	GetAnswer(SP<CoreRawBuffer>& buffer);
 
 	void AddUploadProgress(s32 bytes) { mUploadProgress += bytes; }
 	void AddDownloadProgress(s32 bytes) { mDownloadProgress += bytes; }
@@ -68,9 +70,6 @@ protected:
 	std::atomic<s32> mDownloadProgress{ 0 };
 
 	void	protectedProcess() override;
-
-	//! destructor
-    virtual ~HTTPAsyncRequest();
 
 	maReference												mConnection = BASE_ATTRIBUTE(Connection, "");
 	maEnum<4>												mType = BASE_ATTRIBUTE(Type, "GET", "POST", "PUT", "DELETE");

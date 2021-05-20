@@ -26,7 +26,9 @@ public:
 
 	//! constructor
     WindowWin32(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-    
+	//! destructor
+	virtual ~WindowWin32();
+
 	//! show method, display the window
     void  Show();
 	//! update method, call rendering screen update and manage messages
@@ -63,10 +65,6 @@ public:
 	void SetClipboardText(const std::string& txt) override;
 
 protected:
-    
-	//! destructor
-	virtual ~WindowWin32();
- 
 	//! os dependant Window creation, or fullscreen mode setup
     virtual void  ProtectedInit();
 

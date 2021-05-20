@@ -97,8 +97,9 @@ void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 	
 	if (!isArray)
 	{
-		if (type == CoreModifiable::ATTRIBUTE_TYPE::REFERENCE)
+		if (type == CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE || type == CoreModifiable::ATTRIBUTE_TYPE::STRONG_REFERENCE)
 		{
+			//NOTE(antoine) thread unsafe in weak_reference's case
 			CoreModifiable*	ModifiableRef=nullptr;
 			attrib->getValue(ModifiableRef);
 			L.push(ModifiableRef);
@@ -695,7 +696,7 @@ kstl::vector<CoreModifiable*> CoreModifiableChildList(CoreModifiable* obj)
 	kstl::vector<CoreModifiable*> result; result.reserve(obj->getItems().size());
 	for(auto mis : obj->getItems())
 	{
-		result.push_back(mis.mItem.Pointer());
+		result.push_back(mis.mItem.get());
 	}
 	return result;
 }
@@ -704,7 +705,7 @@ kstl::vector<CoreModifiable*> CoreModifiableChildList(CoreModifiable* obj)
 
 DEFINE_DYNAMIC_METHOD(CoreModifiable, LuaReleaseCallbacks)
 {
-	LuaKigsBindModule* lua = KigsCore::GetModule<LuaKigsBindModule>();
+	SP<LuaKigsBindModule> lua = KigsCore::GetModule<LuaKigsBindModule>();
 	if (!lua) return false;
 
 	for (auto pair : getAttributes())
@@ -752,7 +753,7 @@ LuaRef GetModifiableLuaData(lua_State* lua, CoreModifiable* obj)
 
 void QuickAnim(ModuleCoreAnimation* m, CoreModifiable* target, const char* str)
 {
-	auto seq = OwningRawPtrToSmartPtr(m->createSequenceFromString(target, str));
+	auto seq = m->createSequenceFromString(target, str);
 	m->addSequence(seq.get());
 	m->startSequenceAtFirstUpdate(seq.get());
 }
@@ -852,7 +853,7 @@ void setup_bindings(lua_State* lua)
 	
 	LuaBinding(L).beginClass<CMSP>("CMSP")
 		.addConstructor(LUA_ARGS())
-		.addFunction("get", &CMSP::Pointer)
+		//.addFunction("get", &CMSP::get)
 		.endClass();
 
 	LuaBinding(L).beginClass<v2f>("v2f")
@@ -1005,7 +1006,6 @@ void setup_bindings(lua_State* lua)
 		.addFunction("getSonsByType", &CoreModifiableGetSonByType, LUA_ARGS(const char*, _opt<bool>))
 		.addFunction("getSonsByName", &CoreModifiableGetSonByName, LUA_ARGS(const char*, _opt<bool>))
 		.addFunction("init", &CoreModifiable::Init)
-		.addFunction("destroy", &CoreModifiable::Destroy)
 		.addFunction("uid", &CoreModifiable::getUID)
 		.addFunction("type", &CoreModifiable::getExactType)
 		.addFunction("isSubType", [](CoreModifiable* obj, const char* type) { return obj->isSubType((std::string)type); })
@@ -1139,7 +1139,7 @@ void setup_bindings(lua_State* lua)
 		.addFunction("ByName", &CoreModifiableByName)
 		.addFunction("ByType", &CoreModifiableByType)
 		.addFunction("GetFirstInstanceByName", &CoreModifiableGet)
-		.addFunction("GetModule", [](const char* id) { return (CoreModifiable*)KigsCore::GetModule((std::string)id); })
+		.addFunction("GetModule", [](const char* id) { return (CoreModifiable*)KigsCore::GetModule((std::string)id).get(); })
 		.addFunction("PostNotification", [](const char* notif, CoreModifiable* sender, CoreModifiable* data) 
 					 {
 					 KigsCore::GetNotificationCenter()->postNotificationName((std::string)notif, sender, data);

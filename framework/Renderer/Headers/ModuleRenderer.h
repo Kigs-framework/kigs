@@ -27,7 +27,7 @@ struct RendererStats
 extern RendererStats gRendererStats;
 #endif
 
-ModuleBase*	PlatformRendererModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+SP<ModuleBase>	PlatformRendererModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 
 class ModuleSpecificRenderer;
 class MaterialStage;

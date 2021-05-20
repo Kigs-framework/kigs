@@ -20,6 +20,7 @@ class UIStream : public UITexturedItem
 public:
 	DECLARE_CLASS_INFO(UIStream, UITexturedItem, 2DLayers);
 	DECLARE_CONSTRUCTOR(UIStream);
+	virtual ~UIStream() {}
 
 	virtual void InitModifiable() override;
 	virtual void Update(const Timer&, void*) override;
@@ -29,7 +30,7 @@ public:
 
 protected:
 
-	virtual ~UIStream() {}
+	
 	virtual void NotifyUpdate(const unsigned int labelid) override;
 
 	SmartPointer<CoreModifiable> mFrameBufferStream;

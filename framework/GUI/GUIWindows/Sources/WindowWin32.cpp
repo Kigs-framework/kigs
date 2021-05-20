@@ -372,11 +372,6 @@ WindowWin32::~WindowWin32()
 		//! if fullscreen mode, switch back to init settings
 		ChangeDisplaySettings(NULL, 0);					// If So Switch Back To The Desktop
 	}
-
-	//! destroy rendering screen
-	if (mScreen)
-		mScreen->Destroy();
-
 	//! win32 stuff
 	UnregisterClassA("Kigs Window", mWC.hInstance);
 
@@ -564,7 +559,7 @@ void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, k
 
 	if (mScreen)
 	{
-		mScreen->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
+		mScreen->as<RenderingScreen>()->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
 	}
 	else
 	{
@@ -625,7 +620,7 @@ void  WindowWin32::Update(const Timer&  timer, void* addParam)
 		//printf("%s : %d %d :: %d %d\n", getName().c_str(), mPositionX, mPositionY, mySizeX, mySizeY);
 
 		if (mScreen)
-			mScreen->Resize((kfloat)mSize[0], (kfloat)mSize[1]);
+			mScreen->as<RenderingScreen>()->Resize((kfloat)mSize[0], (kfloat)mSize[1]);
 
 		mDirtySize = false;
 

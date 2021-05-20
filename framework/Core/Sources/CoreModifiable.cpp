@@ -55,14 +55,11 @@ IMPLEMENT_CLASS_INFO(CoreModifiable);
 
 CoreModifiable::~CoreModifiable()
 {
+	ProtectedDestroy();
+
 	if (isFlagAsNotificationCenterRegistered())
 	{
 		unregisterFromNotificationCenter();
-	}
-
-	if (isFlagAsReferenceRegistered())
-	{
-		unregisterFromReferenceMap();
 	}
 
 	if (isFlagAsAutoUpdateRegistered())
@@ -178,7 +175,7 @@ CoreModifiable*	CoreModifiable::getAggregateRoot() const
 					{
 						if ((*itc).isAggregate()) // if aggregate is same type as asked
 						{
-							if ((*itc).mItem == returnedVal)
+							if ((*itc).mItem.get() == returnedVal)
 							{
 								found = currentAggregate;
 								returnedVal = currentAggregate;
@@ -297,9 +294,9 @@ void CoreModifiable::debugPrintfTree(s32 indent, s32 maxindent)
 		kigsprintf("|\t");
 	
 #ifdef KEEP_NAME_AS_STRING
-	kigsprintf("%s : %s(%p) %d refs %s items:%d\n", getExactType().c_str(), getName().c_str(), this, (int)mRefCounter, IsInit() ? "" : "Not init!!", (s32)getItems().size());
+	kigsprintf("%s : %s(%p) %d refs %s items:%d\n", getExactType().c_str(), getName().c_str(), this, (int)shared_from_this().use_count(), IsInit() ? "" : "Not init!!", (s32)getItems().size());
 #else
-	kigsprintf("%d : %s(%p) %d refs %s items:%d\n", (u32)getExactType().toUInt(), getName().c_str(), this, (int)mRefCounter, IsInit()?"": "Not init!!", (s32)getItems().size());
+	kigsprintf("%d : %s(%p) %d refs %s items:%d\n", (u32)getExactType().toUInt(), getName().c_str(), this, (int)shared_from_this().use_count(), IsInit()?"": "Not init!!", (s32)getItems().size());
 #endif
 	
 	if(indent+1>maxindent)
@@ -533,12 +530,12 @@ bool CoreModifiable::aggregateWith(const CMSP& item, ItemPosition pos)
 
 bool CoreModifiable::removeAggregateWith(const CMSP& item)
 {
-	bool itemIsAlive = (item->getRefCount() > 1);
+	//bool itemIsAlive = (item->getRefCount() > 1);
 
 	if (removeItem(item PASS_LINK_NAME(linkName)))
 	{
 
-		if (itemIsAlive)
+		//if (itemIsAlive)
 		{
 			if (!item->checkIfAggregateSon()) // item is no more an aggregate son ?
 			{
@@ -598,7 +595,7 @@ CoreModifiableAttribute* CoreModifiable::findAttributeOnThisOnly(const KigsID& i
 		while (found)
 		{
 			ForwardSP<CoreModifiable>& f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
-			if (!f.isNil())
+			if (f)
 			{
 				CoreModifiableAttribute* search = f->findAttributeOnThisOnly(id);
 				if (search)
@@ -730,7 +727,7 @@ bool CoreModifiable::SimpleCallWithCoreItemParams(KigsID methodNameID, const Cor
 {
 	PackCoreModifiableAttributes	attr(this);
 
-	for (const auto& p : params)
+	for (const auto& p : *params)
 	{
 		if (p->GetType() & CoreItem::COREITEM_TYPE::COREVALUE)
 		{
@@ -741,13 +738,13 @@ bool CoreModifiable::SimpleCallWithCoreItemParams(KigsID methodNameID, const Cor
 			switch (p->size())
 			{
 			case 2:
-				attr << (Point2D)p;
+				attr << (Point2D)*p;
 				break;
 			case 3:
-				attr << (Point3D)p;
+				attr << (Point3D)*p;
 				break;
 			case 4:
-				attr << (Vector4D)p;
+				attr << (Vector4D)*p;
 				break;
 			default:
 				KIGS_WARNING("bad params for calls from xml", 2);
@@ -769,7 +766,7 @@ void CoreModifiable::ManageToCall(CoreModifiable::ImportState::ToCall& c)
 	std::string plist = "[" + c.paramList + "]";
 	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionaryFromString(plist);
 
-	if (!L_Dictionary.isNil())
+	if (L_Dictionary)
 	{
 		c.currentNode->SimpleCallWithCoreItemParams(c.methodName, L_Dictionary);
 	}
@@ -1060,37 +1057,6 @@ void CoreModifiable::unregisterFromAutoUpdate()
 		currentApp->RemoveAutoUpdate(this);
 	}
 }
-
-void CoreModifiable::unregisterFromReferenceMap()
-{
-	// check if this coremodifiable is referenced
-	
-	auto& coremodigiablemap = KigsCore::Instance()->getReferenceMap();
-	auto found = coremodigiablemap.find(this);
-	
-	// ok, the CoreModifiable is here
-	if (found != coremodigiablemap.end())
-	{
-		std::vector<CoreModifiableAttribute*>& referencevector = (*found).second;
-		
-		std::vector<CoreModifiableAttribute*>::iterator	itcurrent = referencevector.begin();
-		std::vector<CoreModifiableAttribute*>::iterator	itend = referencevector.end();
-		
-		while (itcurrent != itend)
-		{
-			// clear each reference
-			
-			maReference* currentRef = (maReference*)(*itcurrent);
-			currentRef->ResetFoundModifiable();
-			
-			++itcurrent;
-		}
-		
-		coremodigiablemap.erase(found);
-	}
-	
-}
-
 
 void	CoreModifiable::DeleteDynamicAttributes()
 {
@@ -1512,9 +1478,13 @@ CoreModifiableAttribute*	CoreModifiable::GenericCreateDynamicAttribute(CoreModif
 			toadd = new maString(*this, false, ID);
 		}
 		break;
-		case CoreModifiable::ATTRIBUTE_TYPE::REFERENCE:
+		case CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE:
 		{
 			toadd = new maReference(*this, false, ID);
+		}
+		case CoreModifiable::ATTRIBUTE_TYPE::STRONG_REFERENCE:
+		{
+			toadd = new maStrongReference(*this, false, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::COREITEM:
@@ -1573,7 +1543,7 @@ void CoreModifiable::RemoveDynamicAttribute(KigsID id)
 bool CoreModifiable::addItem(const CMSP& item, ItemPosition pos)
 {
 	std::unique_lock<std::recursive_mutex> lk{ GetMutex() };
-	if(!item.isNil())
+	if(item)
 	{
 
 		if (pos == First)
@@ -1629,20 +1599,14 @@ void CoreModifiable::removeUser(CoreModifiable* user)
 	} while(found);
 }
 
-bool CoreModifiable::checkDestroy()
+void CoreModifiable::flagAsPostDestroy()
 {
-	if (isFlagAsPostDestroy())
-	{
-		unflagAsPostDestroy(); // remove flag
-		KigsCore::Instance()->AddToPostDestroyList(this);
-		return true;
-	}
-#ifdef KIGS_TOOLS
-	if (mTraceRef)
-		TRACEREF_DELETE
-#endif
-	ProtectedDestroy();
-	return GenericRefCountedBaseClass::checkDestroy();
+	KigsCore::Instance()->AddToPostDestroy(SharedFromThis());
+}
+
+void CoreModifiable::unflagAsPostDestroy()
+{
+	KigsCore::Instance()->RemoveFromPostDestroy(SharedFromThis());
 }
 
 //! Destroy method decrement refcounter and delete instance if no more used
@@ -1684,11 +1648,6 @@ void CoreModifiable::ProtectedDestroy()
 	DeleteDynamicAttributes();
 	if (mLazyContent)
 	{
-		for (auto ref : GetLazyContent()->mWeakRefs)
-		{
-			ref->ItemIsBeingDeleted();
-		}
-
 		// Notify connected items
 		for (auto& signal : GetLazyContent()->mConnectedTo)
 		{
@@ -2352,7 +2311,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 						auto filepath = settings->working_directory + path;
 						if (compressManager)
 						{
-							auto result = OwningRawPtrToSmartPtr(new CoreRawBuffer);
+							auto result = MakeRefCounted<CoreRawBuffer>();
 							compressManager->SimpleCall("CompressData", buffer, result.get());
 							ModuleFileManager::SaveFile(filepath.c_str(), (u8*)result->data(), result->size());
 						}
@@ -2484,7 +2443,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 		std::vector<ModifiableItemStruct>::iterator e = mItems.end();
 		for (; i != e; ++i)
 		{
-			CoreModifiable* current = (*i).mItem.Pointer();
+			CoreModifiable* current = (*i).mItem.get();
 			
 			if (current->getAttribute("NoExport")) continue;
 
@@ -2606,7 +2565,7 @@ bool	CoreModifiable::ImportAttributes(const std::string &filename)
 
 void	CoreModifiable::InitLuaScript(XMLNodeBase* currentNode, CoreModifiable* currentModifiable, ImportState& importState)
 {
-	CoreModifiable* luamodule = KigsCore::GetModule("LuaKigsBindModule");
+	auto luamodule = KigsCore::GetModule("LuaKigsBindModule");
 	if (!luamodule)
 		return;
 
@@ -2627,11 +2586,10 @@ void	CoreModifiable::InitLuaScript(XMLNodeBase* currentNode, CoreModifiable* cur
 			code.erase(code.begin());
 
 			u64 size;
-			CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFileAsCharString(code.c_str(), size, 1);
+			auto rawbuffer = ModuleFileManager::LoadFileAsCharString(code.c_str(), size, 1);
 			if (rawbuffer)
 			{
 				code = rawbuffer->buffer();
-				rawbuffer->Destroy();
 			}
 			else
 			{
@@ -2871,7 +2829,7 @@ void CoreModifiable::recursiveGetRootParentsWithPath(const std::string& searchTy
 	{
 		if (isSubType(searchType))
 		{
-			parents.push_back(CMSP(this, GetRefTag{}));
+			parents.push_back(SharedFromThis());
 		}
 	}
 
@@ -2910,7 +2868,7 @@ CMSP CoreModifiable::GetInstanceByPath(const std::string &path)
 
 	if (sonName == "")
 	{
-		return CMSP(this, GetRefTag{});
+		return SharedFromThis();
 	}
 
 
@@ -3139,7 +3097,7 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 			{
 				ItemToEval = CoreItemOperator<Point2D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 
-				Point2D result((Point2D)ItemToEval);
+				Point2D result((Point2D)*ItemToEval);
 				char resultBuffer[128];
 				sprintf(resultBuffer, "{%f,%f}", result.x,result.y);
 				attr = resultBuffer;
@@ -3147,7 +3105,7 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 			else if (arraySize == 3)
 			{
 				ItemToEval = CoreItemOperator<Point3D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-				Point3D result((Point3D)ItemToEval);
+				Point3D result((Point3D)*ItemToEval);
 				char resultBuffer[128];
 				sprintf(resultBuffer, "{%f,%f,%f}", result.x, result.y,result.z);
 				attr = resultBuffer;
@@ -3166,7 +3124,7 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 		{
 			ItemToEval = CoreItemOperator<kfloat>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 
-			kfloat result((kfloat)ItemToEval);
+			kfloat result((kfloat)*ItemToEval);
 
 			char resultBuffer[128];
 
@@ -3241,20 +3199,7 @@ CoreModifiable* CoreModifiable::recursiveGetRootParentByType(const KigsID& Paren
 	return 0;
 }
 
-void CoreModifiable::AddWeakRef(WeakRef* ref)
-{
-	GetLazyContent()->mWeakRefs.push_back(ref);
-}
-
-void CoreModifiable::RemoveWeakRef(WeakRef* ref)
-{
-	auto lz = GetLazyContent();
-	auto itfind = std::find(lz->mWeakRefs.begin(), lz->mWeakRefs.end(), ref);
-	if (*itfind != lz->mWeakRefs.back())
-		*itfind = lz->mWeakRefs.back();
-	lz->mWeakRefs.pop_back();
-}
-
+/*
 #ifdef KIGS_TOOLS
 void CoreModifiable::GetRef()
 {
@@ -3282,7 +3227,7 @@ void CoreModifiable::Destroy()
 	GenericRefCountedBaseClass::Destroy();
 }
 #endif
-
+*/
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 //! some utility MACROS for string to value and value to string conversion
@@ -3405,60 +3350,6 @@ PackCoreModifiableAttributes::~PackCoreModifiableAttributes()
 		delete attr;
 }
 
-
-
-WeakRef& WeakRef::operator=(const WeakRef& copy_that)
-{
-	if (&copy_that == this) return *this;
-	to = copy_that.to;
-	alive = copy_that.alive;
-	if (IsValid()) to->AddWeakRef(this);
-	return *this;
-}
-
-WeakRef& WeakRef::operator=(WeakRef&& move_that)
-{
-	if (&move_that == this) return *this;
-	
-	to = move_that.to;
-	alive = move_that.alive;
-
-	if (IsValid())
-	{
-		to->AddWeakRef(this);
-		to->RemoveWeakRef(&move_that);
-	}
-	move_that.to = nullptr;
-	move_that.alive = false;
-	return *this;
-}
-
-WeakRef& WeakRef::operator=(CoreModifiable* item)
-{
-	if (item == to) return *this;
-
-	to = item;
-	alive = true;
-	if (IsValid()) to->AddWeakRef(this);
-	return *this;
-}
-
-WeakRef::~WeakRef()
-{
-	if (IsValid()) to->RemoveWeakRef(this);
-}
-
-void WeakRef::ItemIsBeingDeleted()
-{
-	alive = false;
-}
-
-SmartPointer<CoreModifiable> WeakRef::Lock() const
-{
-	if (!IsValid()) return {};
-	if (to) to->GetRef();
-	return OwningRawPtrToSmartPtr(to);
-}
 
 LazyContent::~LazyContent()
 {

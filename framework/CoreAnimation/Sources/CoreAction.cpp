@@ -11,7 +11,7 @@ CoreAction::~CoreAction()
 }
 
 // if paramstring contains -> then extract param name part and return real target (son on current target)
-CoreModifiable*	CoreAction::checkSubTarget(kstl::string& paramstring)
+CMSP	CoreAction::checkSubTarget(kstl::string& paramstring)
 {
 	int found = paramstring.find_last_of("->");
 	if (found != kstl::string::npos)
@@ -22,7 +22,7 @@ CoreModifiable*	CoreAction::checkSubTarget(kstl::string& paramstring)
 		CMSP findTarget = mTarget->GetInstanceByPath(CoreModifiablePath);
 		if (findTarget)
 		{
-			return findTarget.get();
+			return findTarget;
 		}
 
 		mTargetPath = CoreModifiablePath;
@@ -74,7 +74,7 @@ bool	CoreAction::update(kdouble time)
 
 void CoreActionWait::init(CoreSequence* sequence,CoreVector* params)
 {
-	mTarget=sequence->getTarget();
+	mTarget = sequence->getTarget()->SharedFromThis();
 #ifdef _DEBUG // test parameters count
 	// kdouble duration,kfloat vStart,kfloat vEnd,unsigned int paramID => 4 params
 	if(!(params->size() == 1))

@@ -36,9 +36,11 @@ public:
 
 	static int Import(const kstl::string& fileName, kstl::vector<CoreModifiable*>& root, CoreModifiable* parent = nullptr);
 
+	virtual ~LuaImporter();
+
 protected:
 	virtual void InitModifiable() override;
-	virtual ~LuaImporter();
+	
 
 	struct ConnectParam
 	{
@@ -49,7 +51,7 @@ protected:
 	struct ImportStruct
 	{
 		kstl::vector<CoreModifiable*> rootObj;
-		kstl::vector<CoreModifiable*> loaded;
+		kstl::vector<CMSP> loaded;
 		kstl::vector<PostImportCallback> CBList;
 		kstl::vector<ConnectParam> connects;
 		bool noinit = false;

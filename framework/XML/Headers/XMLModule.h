@@ -34,11 +34,8 @@ public:
                  
 	//! update module
 	void Update(const Timer& timer, void* addParam) override;
-               
+	virtual ~XMLModule();
 protected:
-	//! destructor
-    virtual ~XMLModule();   
-
 }; 
 
 #endif //_XMLMODULE_H_

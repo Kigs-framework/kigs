@@ -1,211 +1,56 @@
 #ifndef _SMARTPOINTER_H_
 #define _SMARTPOINTER_H_
-
-/*! smart pointer on GenericRefCountedBaseClass mecanism
-useful when you want to auto manage retain / release on elements that you don't want to "addItem"
-*/
-
-// Tag Dispatch
-struct GetRefTag {};
-struct StealRefTag {};
+#include <memory>
 
 
-template<typename smartPointOn>
-class SmartPointer
+template<typename T>
+class SmartPointer : public std::shared_ptr<T>
 {
 public:
-	using ValueType = smartPointOn;
-	using IsSP = std::true_type;
-	
-	SmartPointer() : mPointer(nullptr) {};
-	SmartPointer(std::nullptr_t) : SmartPointer() {};
+	using std::shared_ptr<T>::shared_ptr;
 
-	// DOES NOT GET REF!
-	// SmartPointer(smartPointOn* point) : mPointer(point) {};
-	
-	SmartPointer(smartPointOn* point, StealRefTag stealref) : mPointer(point) {};
-	SmartPointer(smartPointOn* point, GetRefTag getref) : mPointer(point) { if(mPointer) mPointer->GetRef(); };
-
-	~SmartPointer()
+	// Auto casts
+	template<typename U>
+	SmartPointer(const std::shared_ptr<U>& other) : std::shared_ptr<T>(std::static_pointer_cast<T>(other))
 	{
-		if (mPointer)
-		{
-			mPointer->Destroy();
-			mPointer = nullptr;
-		}
 	}
-
-	template<typename smartPointOnOther>
-	SmartPointer(const SmartPointer<smartPointOnOther>& smcopy) : mPointer(nullptr)
+	template<typename U>
+	SmartPointer(std::shared_ptr<U>&& other) : std::shared_ptr<T>(std::static_pointer_cast<T>(other))
 	{
-		*this = smcopy;
 	}
-
-	SmartPointer(const SmartPointer& other) : mPointer(nullptr)
+	template<typename U>
+	SmartPointer<T>& operator=(const std::shared_ptr<U>& other)
 	{
-		*this = other;
-	}
-
-	// Move constructor, steal other ref
-	SmartPointer(SmartPointer&& other) noexcept
-	{
-		mPointer = other.mPointer;
-		other.mPointer = nullptr;
-	}
-
-
-	smartPointOn*	operator->() const {
-		return mPointer;
-	}
-
-	bool	isNil() const
-	{
-		return mPointer == nullptr;
-	}
-
-	/*
-	SmartPointer& operator=(smartPointOn* copy)
-	{
-		if (mPointer != copy)
-		{
-			if (mPointer)
-			{
-				mPointer->Destroy();
-			}
-			mPointer = copy;
-			if (mPointer)
-			{
-				mPointer->GetRef();
-			}
-		}
+		std::shared_ptr<T>::operator=(std::static_pointer_cast<T>(other));
 		return *this;
 	}
-	*/
-
-	SmartPointer& operator=(std::nullptr_t)
+	template<typename U>
+	SmartPointer<T>& operator=(std::shared_ptr<U>&& other)
 	{
-		Reset();
+		std::shared_ptr<T>::operator=(std::static_pointer_cast<T>(other));
 		return *this;
 	}
-
-	// Steal other's ref
-	SmartPointer& operator=(SmartPointer&& smmove)
+	template<typename U>
+	operator SmartPointer<U>()
 	{
-		if (mPointer) mPointer->Destroy();
-		mPointer = smmove.mPointer;
-		smmove.mPointer = nullptr;
-		return *this;
+		return std::static_pointer_cast<U>(*this);
 	}
-
-
-	SmartPointer& operator=(const SmartPointer& smcopy)
+	template<typename U>
+	bool operator==(const U* other) const
 	{
-		if (mPointer != smcopy.get())
-		{
-			if (mPointer)
-			{
-				mPointer->Destroy();
-			}
-			//TODO(antoine) FIX const_cast
-			mPointer = (smartPointOn*)smcopy.get();
-			if (mPointer)
-			{
-				mPointer->GetRef();
-			}
-		}
-		return *this;
+		return this->get() == other;
 	}
-
-	template<typename smartPointOnOther>
-	SmartPointer& operator=(const SmartPointer<smartPointOnOther>& smcopy)
+	template<typename U>
+	bool operator!=(const U* other) const
 	{
-		smartPointOn* copy = (smartPointOn*)smcopy.get();
-		if (mPointer != copy)
-		{
-			if (mPointer)
-			{
-				mPointer->Destroy();
-			}
-			mPointer = copy;
-			if (mPointer)
-			{
-				mPointer->GetRef();
-			}
-		}
-		return *this;
+		return this->get() != other;
 	}
-
-	//operator smartPointOn*() const { return mPointer; }
-	operator bool() const { return mPointer != nullptr; }
-
-	bool	operator == (const smartPointOn* other) const
-	{
-		return mPointer == other;
-	}
-
-	bool	operator != (const smartPointOn* other) const
-	{
-		return mPointer != other;
-	}
-
-	template<typename smartPointOnOther>
-	bool	operator == (const SmartPointer<smartPointOnOther>& other) const
-	{
-		return mPointer == other.get();
-	}
-
-	template<typename smartPointOnOther>
-	bool	operator != (const SmartPointer<smartPointOnOther>& other) const
-	{
-		return mPointer != other.get();
-	}
-
-	void Reset()
-	{
-		if (mPointer) mPointer->Destroy();
-		mPointer = nullptr;
-	}
-	
-	smartPointOn* Pointer() const { return mPointer; }
-	smartPointOn* get() const { return mPointer; }
-
-	template<typename othertype>
-	operator SmartPointer<othertype>() {
-
-		SmartPointer<othertype> result((othertype*)mPointer, GetRefTag{}); // create a new ref here
-		return result;
-	}
-
-
-protected:
-
-	smartPointOn*	mPointer;
-
 };
-
-// The smart pointer will own the current ref on the object
-/*template<typename smartPointOn>
-SmartPointer<smartPointOn> MakeSmartPointer(smartPointOn* object)
-{
-	return SmartPointer<smartPointOn>{object};
-}*/
-
-template<typename smartPointOn>
-SmartPointer<smartPointOn> OwningRawPtrToSmartPtr(smartPointOn* object)
-{
-	return SmartPointer<smartPointOn>{object, StealRefTag{}};
-}
-
-template<typename smartPointOn>
-SmartPointer<smartPointOn> NonOwningRawPtrToSmartPtr(smartPointOn* object)
-{
-	return SmartPointer<smartPointOn>{object, GetRefTag{}};
-}
 
 template<typename smartPointOn, typename ... Args>
 SmartPointer<smartPointOn> MakeRefCounted(Args&& ... args)
 {
-	return OwningRawPtrToSmartPtr(new smartPointOn(std::forward<decltype(args)>(args)...));
+	return std::make_shared<smartPointOn>(std::forward<decltype(args)>(args)...);
 }
 
 template<typename smartPointOn>

@@ -47,8 +47,8 @@ public:
 	* \return a pointer on the loaded file in memory
 	* \note returned pointer must be deleted with delete[] after use
 	*/
-	static	CoreRawBuffer*	LoadFile(const char *pFilename, u64& filelength, u64 startOffset = 0, unsigned int trailing_zero = 0);
-	static	CoreRawBuffer*	LoadFile(FileHandle *pFilename,u64& filelength, u64 startOffset=0, unsigned int trailing_zero = 0);
+	static	SP<CoreRawBuffer>	LoadFile(const char *pFilename, u64& filelength, u64 startOffset = 0, unsigned int trailing_zero = 0);
+	static	SP<CoreRawBuffer>	LoadFile(FileHandle *pFilename,u64& filelength, u64 startOffset=0, unsigned int trailing_zero = 0);
 	static	SmartPointer<CoreRawBuffer> LoadFileToBuffer(const std::string& pFilename);
 
 	/**
@@ -59,8 +59,8 @@ public:
 	* \return a pointer on the loaded file in memory
 	* \note returned pointer must be deleted with delete[] after use
 	*/
-	static  CoreRawBuffer*	LoadFileAsCharString(const char *pFilename, u64& filelength, u8 charSize,u64 startOffset = 0);
-	static  CoreRawBuffer*	LoadFileAsCharString(FileHandle *pFilename,u64& filelength, u8 charSize,u64 startOffset=0);
+	static  SP<CoreRawBuffer> LoadFileAsCharString(const char *pFilename, u64& filelength, u8 charSize,u64 startOffset = 0);
+	static  SP<CoreRawBuffer> LoadFileAsCharString(FileHandle *pFilename, u64& filelength, u8 charSize,u64 startOffset=0);
 
 	/**
 	* save a binary file 

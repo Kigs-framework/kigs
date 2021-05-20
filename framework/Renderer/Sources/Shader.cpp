@@ -6,8 +6,7 @@
 
 void UniformList::Push(API3DUniformBase * u)
 {
-	((CoreModifiable*)u)->GetRef();
-	mList.push_back(u);
+	mList.push_back(((CoreModifiable*)u)->SharedFromThis());
 	mCurrent = u;
 }
 void UniformList::Pop()
@@ -15,11 +14,10 @@ void UniformList::Pop()
 	if (mCurrent == nullptr)
 		return;
 
-	((CoreModifiable*)mCurrent)->Destroy();
 	mList.pop_back();
 
 	if (mList.size() > 0)
-		mCurrent = mList.back();
+		mCurrent = (API3DUniformBase*)mList.back().get();
 	else
 		mCurrent = nullptr;
 }

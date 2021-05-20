@@ -32,10 +32,9 @@ bool InputDevice::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	{
 		if (mInputWindow)
 		{
-			CMSP w(mInputWindow, StealRefTag{});
-			removeItem(w PASS_LINK_NAME(linkName));
+			removeItem(mInputWindow PASS_LINK_NAME(linkName));
 		}
-		mInputWindow = (Window*)item.get();
+		mInputWindow = item;
 	}
 
 	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));
@@ -45,8 +44,8 @@ bool InputDevice::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType(Window::mClassID))
 	{
-		if (mInputWindow==(Window*)item.get())
-			mInputWindow=NULL;		
+		if (mInputWindow.get() == (Window*)item.get())
+			mInputWindow = nullptr;		
 	}
 
 	return CoreModifiable::removeItem(item PASS_LINK_NAME(linkName));

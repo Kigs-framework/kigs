@@ -42,9 +42,9 @@ void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 	DECLARE_FULL_CLASS_INFO(core, VirtualAccelerometer, AccelerometerDevice, ModuleInput);
 
 	CMSP cm = KigsCore::GetInstanceOf("virtual_gyroscope", "GyroscopeDevice");
-	cm->GetRef();
+	mVirtualSensors.push_back(cm);
 	cm = KigsCore::GetInstanceOf("virtual_accelerometer", "AccelerometerDevice");
-	cm->GetRef();
+	mVirtualSensors.push_back(cm);
 #endif
 	// search for mouse, joystick and keyboard
 
@@ -129,19 +129,8 @@ void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 void ModuleInput::Close()
 {
 #if USE_VIRTUAL_SENSORS
-	kstl::vector<CMSP> L_instances=	CoreModifiable::GetInstancesByName("GyroscopeDevice", "virtual_gyroscope");
-	auto itr = L_instances.begin();
-	auto end = L_instances.end();
-	for (; itr != end; ++itr)
-		(*itr)->Destroy();
-	L_instances = CoreModifiable::GetInstancesByName("AccelerometerDevice", "virtual_accelerometer");
-	itr = L_instances.begin();
-	end = L_instances.end();
-	for(;itr!=end;++itr)
-		(*itr)->Destroy();
+	mVirtualSensors.clear();
 #endif
-
-
 	BaseClose();
 }
 
@@ -166,8 +155,7 @@ JoystickDevice*		ModuleInput::GetJoystick(int index)
 
 void ModuleInput::WindowClickEvent(CoreModifiable *w, int buttonId, kfloat X, kfloat Y, bool isDown)
 {
-	ModuleInput* theModuleInput = (ModuleInput*)KigsCore::Instance()->GetModule("ModuleInput");
-
+	auto theModuleInput = KigsCore::Instance()->GetModule<ModuleInput>();
 	WindowClick * lClick = theModuleInput->getWindowClick(w);
 	if (lClick)
 		lClick->setPos(buttonId, X, Y);
@@ -181,7 +169,7 @@ void ModuleInput::WindowClickEvent(CoreModifiable *w, int buttonId, kfloat X, kf
 
 void ModuleInput::WindowDestroyEvent(CoreModifiable *w)
 {
-	ModuleInput* theModuleInput = (ModuleInput*)KigsCore::Instance()->GetModule("ModuleInput");
+	auto theModuleInput = KigsCore::Instance()->GetModule<ModuleInput>();
 	WindowClick * lClick = theModuleInput->getWindowClick(w);
 	if (lClick)
 		theModuleInput->removeWindowClick(lClick);

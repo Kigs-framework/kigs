@@ -18,22 +18,17 @@ class OpenGLTexture : public Texture
 {
 public:
 	DECLARE_CLASS_INFO(OpenGLTexture,Texture,Renderer)
-
 	OpenGLTexture(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	virtual	~OpenGLTexture();
 
 	bool	PreDraw(TravState*) override;
 	bool	PostDraw(TravState* travstate) override;
 
 	unsigned int	GetGLID() { return mTextureGLIndex; }
-
-	
 protected:
 
 	void	ProtectedDestroy() override;
-
 	void	InitForFBO() override;
-
-	virtual			~OpenGLTexture();
 	void	InitModifiable() override;
 	void	UninitModifiable()override;
 	bool	Load()override;

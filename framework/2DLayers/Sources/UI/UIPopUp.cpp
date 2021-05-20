@@ -117,9 +117,7 @@ void PopUpUpgrador::Show(UIItem* localthis, CoreModifiable * aActivator)
 	mOpenPopup = true;
 	if (aActivator)
 	{
-		mActivator = aActivator;
-		aActivator->GetRef();
-
+		mActivator = aActivator->SharedFromThis();
 		v3f activeColor;
 		localthis->getValue("ActiveColor", activeColor);
 		mActivator->setValue("Color", activeColor);
@@ -136,7 +134,6 @@ void PopUpUpgrador::Hide(UIItem* localthis)
 		v3f usedColor;
 		localthis->getValue("UsedColor", usedColor);
 		mActivator->setValue("Color", usedColor);
-		mActivator->Destroy();
 		mActivator = nullptr;
 	}
 }

@@ -19,10 +19,9 @@ class WindowWin32 : public Window
 {
 public:
     DECLARE_CLASS_INFO(WindowWin32,Window,GUI)
-
-	//! constructor
     WindowWin32(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-    
+	virtual ~WindowWin32();
+
 	//! show method, display the window
 	virtual void  Show() {};
 
@@ -41,10 +40,6 @@ public:
 	}
     
 protected:
-    
-	//! destructor
-	virtual ~WindowWin32();
- 
 	//! os dependant Window creation, or fullscreen mode setup
     virtual void  ProtectedInit();
 			

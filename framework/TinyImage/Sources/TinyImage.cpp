@@ -235,27 +235,24 @@ TinyImage::TinyImage(void* data, int sx,int sy,TinyImage::ImageFormat internalfm
 
 //#endif
 	
-TinyImage*	TinyImage::CreateImage(const char* filename)
+SP<TinyImage> TinyImage::CreateImage(const char* filename)
 {
 	auto pathManager = KigsCore::Singleton<FilePathManager>();
 	auto hdl = pathManager->FindFullName(filename);
 	return CreateImage(hdl.get());
 }
 
-
-TinyImage*	TinyImage::CreateImage(FileHandle* aFile)
+SP<TinyImage> TinyImage::CreateImage(FileHandle* aFile)
 {
-	TinyImage* img= NULL;
-	
+	SP<TinyImage> img;
 	kstl::string upExtension = ToUpperCase(aFile->mExtension);
-
-	if(upExtension == ".BMP")		img= new BMPClass(aFile);
-	else if (upExtension == ".TGA")	img= new TGAClass(aFile);
-	else if (upExtension == ".PNG")	img= new PNGClass(aFile);
-	else if (upExtension == ".JPG")	img = new JPEGClass(aFile);
-	else if (upExtension == ".GIF")	img = new GIFClass(aFile);
-	else if (upExtension == ".DDS" || upExtension == ".DDZ" || upExtension == ".DDX")	img = new DDSClass(aFile);
-	else if (upExtension == ".ETC" || upExtension == ".ETZ" || upExtension == ".ETX")	img = new ETCClass(aFile);
+	if(upExtension == ".BMP")		img = std::make_shared<BMPClass>(aFile);
+	else if (upExtension == ".TGA")	img = std::make_shared<TGAClass>(aFile);
+	else if (upExtension == ".PNG")	img = std::make_shared<PNGClass>(aFile);
+	else if (upExtension == ".JPG")	img = std::make_shared<JPEGClass>(aFile);
+	else if (upExtension == ".GIF")	img = std::make_shared<GIFClass>(aFile);
+	else if (upExtension == ".DDS" || upExtension == ".DDZ" || upExtension == ".DDX")	img = std::make_shared<DDSClass>(aFile);
+	else if (upExtension == ".ETC" || upExtension == ".ETZ" || upExtension == ".ETX")	img = std::make_shared<ETCClass>(aFile);
 
 	if(img && img->mInitIsOK) 
 	{
@@ -265,14 +262,12 @@ TinyImage*	TinyImage::CreateImage(FileHandle* aFile)
 		}
 
 	}
-
-	
 	return img;
 }
 
-TinyImage*	TinyImage::CreateImage(void* data, int sx, int sy, TinyImage::ImageFormat internalfmt, int linesize)
+SP<TinyImage>	TinyImage::CreateImage(void* data, int sx, int sy, TinyImage::ImageFormat internalfmt, int linesize)
 {
-	return new TinyImage(data, sx, sy, internalfmt, linesize);
+	return std::make_shared<TinyImage>(data, sx, sy, internalfmt, linesize);
 }
 
 void	TinyImage::PushContext(const TinyImageLoaderContext& toPush)

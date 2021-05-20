@@ -18,9 +18,8 @@ void	XMLBase::WriteFile(const std::string& filename)
 	}
 }
 
-XMLBase::XMLBase(CoreRawBuffer* buffer) : mReadedRawBuffer(buffer)
+XMLBase::XMLBase(const SP<CoreRawBuffer>& buffer) : mReadedRawBuffer(buffer)
 {
-	mReadedRawBuffer->GetRef();
 	mVersion = "1.0";
 	mEncoding = "";
 	mStandalone = "";
@@ -33,12 +32,6 @@ XMLBase::~XMLBase()
 		delete mRoot;
 		mRoot = nullptr;
 	}
-	if (mReadedRawBuffer)
-	{
-		mReadedRawBuffer->Destroy();
-		mReadedRawBuffer = nullptr;
-	}
-
 }
 
 

@@ -29,6 +29,7 @@ public:
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
 	UISlidersGroup(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~UISlidersGroup();
 
 	bool addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
 	bool removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
@@ -41,7 +42,7 @@ public:
 	kstl::vector<UISlider*> GetSliderList() { return mSliderList; }
 
 protected:
-	virtual ~UISlidersGroup();
+	
 	void InitModifiable()override;
 
 

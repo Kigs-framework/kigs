@@ -19,16 +19,14 @@ class	GeolocationDX : public GeolocationDevice
 {
 public:
 	DECLARE_CLASS_INFO(GeolocationDX, GeolocationDevice, Input)
-	
     GeolocationDX(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	
+	virtual ~GeolocationDX();
+
 	virtual void	UpdateDevice();
 	
 	void	DoInputDeviceDescription();
     
 protected:
-	virtual ~GeolocationDX();  
-
 	virtual void Start() {}
 	virtual void Stop() {}
 	

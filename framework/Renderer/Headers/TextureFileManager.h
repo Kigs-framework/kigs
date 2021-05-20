@@ -29,6 +29,12 @@ public:
 	TextureFileManager(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/**
+	* \brief	destructor
+	* \fn		~TextureFileManager();
+	*/
+	virtual ~TextureFileManager();
+
+	/**
 	* \brief	return TRUE if a texture with the name 'fileName' exist
 	* \fn		bool	HasTexture(const kstl::string& fileName);
 	* \param	fileName : filemane of the asked texture
@@ -88,12 +94,6 @@ public:
 	}
 
 protected:
-	/**
-	* \brief	destructor
-	* \fn		~TextureFileManager();
-	*/
-	virtual ~TextureFileManager();
-
 	//! associate a texture to its name
 	kstl::map<std::string, CoreModifiable*> mTextureMap;
 	//! associate a spritesheet json file to its texture name

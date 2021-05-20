@@ -21,17 +21,13 @@ public:
 	//! constructor
     DisplayDeviceCapsWin32(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
+	//! destructor
+	virtual ~DisplayDeviceCapsWin32();
+
 	bool SupportWindowedMode() override
 	{
 		return true; // enable creation of several windows on Win32
 	}
-
-    
-protected:
-    
-	//! destructor
-	virtual ~DisplayDeviceCapsWin32();
- 
 };    
 
 #endif //_DISPLAYDEVICECAPSWIN32_H_

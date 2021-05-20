@@ -7,7 +7,7 @@
 
 void CoreActionRemoveFromParent::init(CoreSequence* sequence,CoreVector* params)
 {
-	mTarget=sequence->getTarget();
+	mTarget = sequence->getTarget();
 
 #ifdef _DEBUG // test parameters count
 	// kdouble duration, int paramID => 2 params
@@ -46,8 +46,7 @@ bool	CoreActionRemoveFromParent::protectedUpdate(kdouble time)
 					if((*itparent)->isSubType(mParentTypeID))
 					{
 						mTarget->flagAsPostDestroy();
-						CMSP todel(mTarget, StealRefTag{});
-						(*itparent)->removeItem(todel);
+						(*itparent)->removeItem(mTarget);
 						return true;
 					}
 					++itparent;
@@ -56,8 +55,7 @@ bool	CoreActionRemoveFromParent::protectedUpdate(kdouble time)
 			else // remove from first found parent
 			{
 				mTarget->flagAsPostDestroy();
-				CMSP todel(mTarget, StealRefTag{});
-				(*(parents.begin()))->removeItem(todel);
+				(*(parents.begin()))->removeItem(mTarget);
 				return true;
 			}
 		}
@@ -67,7 +65,7 @@ bool	CoreActionRemoveFromParent::protectedUpdate(kdouble time)
 
 void CoreActionSendMessage::init(CoreSequence* sequence,CoreVector* params)
 {
-	mTarget=sequence->getTarget();
+	mTarget = sequence->getTarget();
 
 #ifdef _DEBUG // test parameters count
 	// kdouble duration, message => 2 params
@@ -98,11 +96,11 @@ bool	CoreActionSendMessage::protectedUpdate(kdouble time)
 		setIsDone();
 		if (mParam.length())
 		{
-			KigsCore::GetNotificationCenter()->postNotificationName(mMessage, mTarget, &mParam);
+			KigsCore::GetNotificationCenter()->postNotificationName(mMessage, mTarget.get(), &mParam);
 		}
 		else
 		{
-			KigsCore::GetNotificationCenter()->postNotificationName(mMessage, mTarget);
+			KigsCore::GetNotificationCenter()->postNotificationName(mMessage, mTarget.get());
 		}
 		return true;
 	}
@@ -150,8 +148,8 @@ bool	CoreActionEmitSignal::protectedUpdate(kdouble time)
 void	CoreActionCombo::setStartTime(kdouble t)
 {
 	CoreAction::setStartTime(t);
-	kstl::vector<CoreAction*>::iterator itaction=mList.begin();
-	kstl::vector<CoreAction*>::iterator itactionEnd=mList.end();
+	auto itaction=mList.begin();
+	auto itactionEnd=mList.end();
 
 	while(itaction != itactionEnd)
 	{
@@ -165,8 +163,8 @@ bool	CoreActionCombo::protectedUpdate(kdouble time)
 {
 	CoreAction::protectedUpdate(time);
 	bool alldone=true;
-	kstl::vector<CoreAction*>::iterator itaction=mList.begin();
-	kstl::vector<CoreAction*>::iterator itactionEnd=mList.end();
+	auto itaction=mList.begin();
+	auto itactionEnd=mList.end();
 
 	while(itaction != itactionEnd)
 	{
@@ -186,7 +184,7 @@ bool	CoreActionCombo::protectedUpdate(kdouble time)
 
 void CoreActionCombo::init(CoreSequence* sequence,CoreVector* params)
 {
-	mTarget=sequence->getTarget();
+	mTarget = sequence->getTarget();
 
 	ModuleCoreAnimation*	module=(ModuleCoreAnimation*)KigsCore::Instance()->GetMainModuleInList(CoreAnimationModuleCoreIndex);
 
@@ -198,16 +196,14 @@ void CoreActionCombo::init(CoreSequence* sequence,CoreVector* params)
 	{
 		// create each action
 		CoreItemSP tocreate=(*params)[i];
-		CoreItemSP	actiontoaddSP=module->createAction(sequence,tocreate);
-		actiontoaddSP->GetRef();
-		CoreAction* actiontoadd = (CoreAction * )actiontoaddSP.get();
-
-		mList.push_back(actiontoadd);
-		if(actiontoadd->getDuration()>mDuration)
+		auto actiontoaddSP = std::static_pointer_cast<CoreAction>(module->createAction(sequence,tocreate));
+		mList.push_back(actiontoaddSP);
+		
+		if(actiontoaddSP->getDuration()>mDuration)
 		{
-			mDuration=actiontoadd->getDuration();
+			mDuration= actiontoaddSP->getDuration();
 		}
-		if(actiontoadd->getDuration()<0.0)
+		if(actiontoaddSP->getDuration()<0.0)
 		{
 			onehasnoduration=true;
 		}
@@ -221,27 +217,19 @@ void CoreActionCombo::init(CoreSequence* sequence,CoreVector* params)
 
 CoreActionCombo::~CoreActionCombo()
 {
-	kstl::vector<CoreAction*>::iterator itaction=mList.begin();
-	kstl::vector<CoreAction*>::iterator itactionEnd=mList.end();
-
-	while(itaction != itactionEnd)
-	{
-		(*itaction)->Destroy();
-		++itaction;
-	}
 }
 
 
 void	CoreActionSerie::setStartTime(kdouble t)
 {
 	CoreAction::setStartTime(t);
-	kstl::vector<CoreAction*>::iterator itaction=mList.begin();
+	auto itaction=mList.begin();
 
 	// start first action
 	(*itaction)->setStartTime(t);
 	(*itaction)->reset();				// make sure not in done mode
 	++itaction;
-	kstl::vector<CoreAction*>::iterator itactionEnd=mList.end();
+	auto itactionEnd=mList.end();
 
 	while(itaction != itactionEnd)
 	{
@@ -255,7 +243,7 @@ bool	CoreActionSerie::protectedUpdate(kdouble time)
 {
 	CoreAction::protectedUpdate(time);
 	bool done=false;
-	CoreAction* current=(CoreAction*)mList[mCurrentActionIndex];
+	CoreAction* current=(CoreAction*)mList[mCurrentActionIndex].get();
 	while(!done)
 	{
 		if(current->update(time)) // action is finished, start next one
@@ -264,7 +252,7 @@ bool	CoreActionSerie::protectedUpdate(kdouble time)
 			if(mCurrentActionIndex < mList.size())
 			{
 				kdouble previousend=current->getEndTime();
-				current=(CoreAction*)mList[mCurrentActionIndex];
+				current=(CoreAction*)mList[mCurrentActionIndex].get();
 				current->setStartTime(previousend);
 			}
 			else
@@ -299,16 +287,14 @@ void CoreActionSerie::init(CoreSequence* sequence,CoreVector* params)
 	{
 		// create each action
 		CoreItemSP tocreate=(*params)[i];
-		CoreItemSP actiontoaddsp = module->createAction(sequence, tocreate);
-		actiontoaddsp->GetRef();
-		CoreAction* actiontoadd = (CoreAction * )actiontoaddsp.get();
-		mList.push_back(actiontoadd);
+		auto action = std::static_pointer_cast<CoreAction>(module->createAction(sequence, tocreate));
+		mList.push_back(action);
 		
-		if(actiontoadd->getDuration()<0.0)
+		if(action->getDuration()<0.0)
 		{
 			onehasnoduration=true;
 		}
-		mDuration+=actiontoadd->getDuration();	
+		mDuration+= action->getDuration();
 	}
 
 	if(onehasnoduration)
@@ -319,14 +305,6 @@ void CoreActionSerie::init(CoreSequence* sequence,CoreVector* params)
 
 CoreActionSerie::~CoreActionSerie()
 {
-	kstl::vector<CoreAction*>::iterator itaction=mList.begin();
-	kstl::vector<CoreAction*>::iterator itactionEnd=mList.end();
-
-	while(itaction != itactionEnd)
-	{
-		(*itaction)->Destroy();
-		++itaction;
-	}
 }
 
 
@@ -398,9 +376,8 @@ void CoreActionForLoop::init(CoreSequence* sequence,CoreVector* params)
 
 	// create son action
 	CoreItemSP tocreate = (*params)[1];
-	CoreItemSP actiontoaddsp = module->createAction(sequence, tocreate);
-	actiontoaddsp->GetRef();
-	mActionToLoop = (CoreAction*)actiontoaddsp.get();
+	auto actiontoaddsp = std::static_pointer_cast<CoreAction>(module->createAction(sequence, tocreate));
+	mActionToLoop = actiontoaddsp;
 
 	if(mActionToLoop)
 	{
@@ -415,10 +392,6 @@ void CoreActionForLoop::init(CoreSequence* sequence,CoreVector* params)
 
 CoreActionForLoop::~CoreActionForLoop()
 {
-	if(mActionToLoop)
-	{
-		mActionToLoop->Destroy();
-	}
 }
 
 // set son action start time
@@ -490,10 +463,8 @@ void CoreActionDoWhile::init(CoreSequence* sequence,CoreVector* params)
 
 	// create son action
 	CoreItemSP tocreate = (*params)[1];
-	CoreItemSP actiontoaddsp = module->createAction(sequence, tocreate);
-	actiontoaddsp->GetRef();
-	mActionToLoop = (CoreAction*)actiontoaddsp.get();
-
+	auto actiontoaddsp = std::static_pointer_cast<CoreAction>(module->createAction(sequence, tocreate));
+	mActionToLoop = actiontoaddsp;
 	if(mActionToLoop)
 	{
 		// special case for 0.0 duration
@@ -507,8 +478,4 @@ void CoreActionDoWhile::init(CoreSequence* sequence,CoreVector* params)
 
 CoreActionDoWhile::~CoreActionDoWhile()
 {
-	if(mActionToLoop)
-	{
-		mActionToLoop->Destroy();
-	}
 }

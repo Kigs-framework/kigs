@@ -69,8 +69,7 @@ void Octree::PropagateDirtyFlagsToParents(SceneNode* source)
 			mObjectNodeAssociation.erase(found);  // avoid reentrance here
 			if (subnode)
 			{
-				CMSP toAdd(source, StealRefTag{});
-				addItem(toAdd);
+				addItem(source->SharedFromThis());
 				subnode->RemoveNode(source);
 			}
 		}
@@ -377,7 +376,7 @@ SP<OctreeSubNode>  OctreeSubNode::AddNode(SP<SceneNode>& node, int currentlevel,
 		addItem(node);
 
 		mTotalNodes++;
-		return CMSP(this, GetRefTag{});
+		return SharedFromThis();
 	}
 	else // try to add it to sons
 	{
@@ -398,7 +397,7 @@ SP<OctreeSubNode>  OctreeSubNode::AddNode(SP<SceneNode>& node, int currentlevel,
 			mObjectList.push_back(node.get());
 			addItem(node);
 			mTotalNodes++;
-			return CMSP(this, GetRefTag{});
+			return SharedFromThis();
 		}
 	}
 }
@@ -494,10 +493,9 @@ void  OctreeSubNode::Divide()
 
 			mSonsSubNodes[index]->mObjectList.push_back(*it);
 
-			CMSP totreat(*it, StealRefTag{});
-
-			mSonsSubNodes[index]->addItem(totreat);
-			removeItem(totreat);
+			auto to_treat = (*it)->SharedFromThis();
+			mSonsSubNodes[index]->addItem(to_treat);
+			removeItem(to_treat);
 		}
 		else
 		{
@@ -574,10 +572,8 @@ bool  OctreeSubNode::RemoveNode(SceneNode* node)
 		if ((*it) == node)
 		{
 			found = true;
-			CMSP todel(*it, StealRefTag{});
-			removeItem(todel);
+			removeItem(node->SharedFromThis());
 			mObjectList.erase(it);
-
 			break;
 		}
 	}

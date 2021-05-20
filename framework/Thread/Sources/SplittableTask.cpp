@@ -57,7 +57,7 @@ void	SplittableTask::Update(const Timer& timer, void* addParam)
 
 		SmartPointer<ThreadEvent> testendwait = ((ThreadPoolManager*)((CoreModifiable*)mThreadPoolManager))->LaunchTaskGroup(grouphandle);
 		
-		if (mWaitFinish && !testendwait.isNil())
+		if (mWaitFinish && testendwait)
 			testendwait->wait();
 	}
 }

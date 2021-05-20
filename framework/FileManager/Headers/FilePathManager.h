@@ -309,12 +309,9 @@ public:
 
 	static std::string MakeValidFileName(const std::string& filename);
 	static void	isSpecialDeviceOrPackage(const std::string& fname, bool& SpecialDevice, bool& package);
+	virtual ~FilePathManager();
 
 protected:
-
-	//! destructor
-	virtual ~FilePathManager();
-	
 	// return the string to add to a path to indicate a special device where to search 
 	static std::string GetDevicePathString(DeviceID);
 
@@ -343,6 +340,8 @@ protected:
 	// extension aliases
 	// KigsID key is KigsID(alias), second string is original 
 	kigs::unordered_map<KigsID, std::string>	mExtensionAlias;
+
+	static std::set<CMSP> mHTTPConnections;
 
 	// if a path is given, FindFullName search only with the current path 
 	maBool	mStrictPath = BASE_ATTRIBUTE(StrictPath, false);

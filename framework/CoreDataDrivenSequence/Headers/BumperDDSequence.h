@@ -21,14 +21,10 @@ class BumperDDSequence : public BaseDDSequence
 {
 public:
 	DECLARE_CLASS_INFO(BumperDDSequence, BaseDDSequence, CoreDataDrivenSequence)
-
-	//! constructor
 	BumperDDSequence(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-
-protected:
-	//! destructor
 	virtual ~BumperDDSequence();
 
+protected:
 	void Update(const Timer&  timer, void* /*addParam*/) override;
 
 	maUSString mNextSequence;

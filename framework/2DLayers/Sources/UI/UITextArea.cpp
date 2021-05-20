@@ -111,14 +111,13 @@ void UITextArea::GetFocus()
 	SetNodeFlag(UIItem_HasFocus);
 
 	//Get KeyBoard
-	ModuleInput* theInputModule = (ModuleInput*)CoreGetModule(ModuleInput);
+	auto theInputModule = KigsCore::GetModule<ModuleInput>();
 	KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
 	if (theKeyboard == NULL)
 		return;
 
-	CMSP toAdd(this, GetRefTag{});
-
-	theKeyboard->addItem(toAdd);
+	
+	theKeyboard->addItem(SharedFromThis());
 	theKeyboard->Show();
 }
 
@@ -134,13 +133,12 @@ void UITextArea::LoseFocus()
 
 
 	//Get KeyBoard
-	ModuleInput* theInputModule = (ModuleInput*)CoreGetModule(ModuleInput);
+	auto theInputModule = KigsCore::GetModule<ModuleInput>();
 	KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
 	if (theKeyboard == NULL)
 		return;
 
-	CMSP toDel(this, GetRefTag{});
-	theKeyboard->removeItem(toDel);
+	theKeyboard->removeItem(SharedFromThis());
 	theKeyboard->Hide();
 }
 

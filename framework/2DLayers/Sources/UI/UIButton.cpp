@@ -70,7 +70,7 @@ void UIButton::InitModifiable()
 		mIsEnabled.changeNotificationLevel(Owner);
 		mSize.changeNotificationLevel(Owner);
 
-		ModuleInput* theInputModule = (ModuleInput*)KigsCore::GetModule("ModuleInput");
+		auto theInputModule = KigsCore::GetModule<ModuleInput>();
 		// retreive click for activation
 		// theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, emptyFlag);
 		// retreive direct touch for visual hover / push ...
@@ -85,7 +85,7 @@ void UIButton::InitModifiable()
 void UIButton::AutoSize()
 {
 	// auto size button
-	if (!mTexturePointer.isNil())
+	if (mTexturePointer)
 	{
 		v2f autosize;
 		mTexturePointer->GetSize(autosize.x,autosize.y);

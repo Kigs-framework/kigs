@@ -516,7 +516,7 @@ template<typename T> bool CoreConvertValue2String(kstl::string& stringValue,T va
 #include "maAny.h"
 
 // AttributeHolder methods
-
+/*
 template<typename T>
 inline CMSP::AttributeHolder::operator T() const {
 	T	tmp{};
@@ -548,6 +548,6 @@ inline const bool CMSP::AttributeHolder::operator ==(T totest) const {
 	}
 	return false;
 }
-
+*/
 
 #endif //_COREMODIFIABLEATTRIBUTE_H

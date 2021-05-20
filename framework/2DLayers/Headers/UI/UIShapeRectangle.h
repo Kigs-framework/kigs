@@ -30,13 +30,6 @@ public:
 
 	void SetTexUV(UIItem* item, UIVerticesInfo* aQI) override;
 	void SetVertexArray(UIItem* item, UIVerticesInfo* aQI) override;
-
-protected:
-	virtual ~UIShapeRectangle()
-	{
-
-	}
-
 };
 
 #endif //_UIShapeRectangle_H_

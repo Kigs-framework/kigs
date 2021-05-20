@@ -26,6 +26,12 @@ public:
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
 	VirtualDevice(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	
+	/**
+	 * \brief	destructor
+	 * \fn 		~VirtualDevice();
+	 */
+	virtual ~VirtualDevice();
 
 	/**
 	 * \brief	initialize the device (overloaded function for each devices)
@@ -40,11 +46,7 @@ public:
 	void	UpdateDevice() override;
 
 protected:
-	/**
-	 * \brief	destructor
-	 * \fn 		~VirtualDevice();
-	 */
-	virtual ~VirtualDevice(); 
+	
 };
 
 #endif //_VIRTUALDEVICE_H_

@@ -46,15 +46,15 @@ void XLSXSheet::initFromXML(XMLBase* xml)
 
 								if (type && (type->getString() == "s"))
 								{
-									*cell = mSharedStrings->getString(val->getInt()); //CoreItemSP::getCoreValue(mSharedStrings->getString(val->getInt()));
+									*cell = MakeCoreValue(mSharedStrings->getString(val->getInt())); //CoreItemSP::getCoreValue(mSharedStrings->getString(val->getInt()));
 								}
 								else if(val->getString().find('.')!=std::string::npos)
 								{
-									*cell = val->getFloat(); 
+									*cell = MakeCoreValue(val->getFloat());
 								}
 								else
 								{
-									*cell = val->getInt(); 
+									*cell = MakeCoreValue(val->getInt());
 								}
 
 							}

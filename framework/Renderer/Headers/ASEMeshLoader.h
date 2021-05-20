@@ -50,7 +50,7 @@ private:
 	int mMaterialCount;
 	int *mMatIdArray;	
 	SmartPointer<CoreRawBuffer>			mData;
-	AsciiParserUtils*		mFileParser;
+	AsciiParserUtils					mFileParser;
 };
 
 #endif // _ASEMESHLOADER_H_

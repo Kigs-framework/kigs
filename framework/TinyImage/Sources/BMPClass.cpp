@@ -118,7 +118,7 @@ bool	BMPClass::Load(FileHandle* fileName)
 	}
 
 	// warning ! jump two first bytes of the file, so offset are wrongs
-	CoreRawBuffer* rawbuffer=ModuleFileManager::LoadFile(fileName, filelength,2);
+	auto rawbuffer = ModuleFileManager::LoadFile(fileName, filelength,2);
 	if(rawbuffer)
 	{
 		u8* memfile=(u8*)rawbuffer->buffer();
@@ -453,9 +453,7 @@ bool	BMPClass::Load(FileHandle* fileName)
 
 				result = true;
 			}		
-		}		
-
-		rawbuffer->Destroy();
+		}
 	}
 
 	if(result == false)

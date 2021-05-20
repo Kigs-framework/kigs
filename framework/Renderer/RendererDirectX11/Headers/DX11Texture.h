@@ -22,16 +22,14 @@ class DX11Texture : public Texture
 {
 public:
 	DECLARE_CLASS_INFO(DX11Texture,Texture,Renderer)
-
 	DX11Texture(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~DX11Texture();
 
 	bool	PreDraw(TravState*) override;
 	bool	PostDraw(TravState* travstate) override;
 	   	
 	void	SetD3DTexture(ID3D11Texture2D* texture);
 protected:
-	virtual ~DX11Texture();
-
 	void	ProtectedDestroy() override;	
 	void	InitModifiable() override;
 	void	UninitModifiable()override;
@@ -48,10 +46,9 @@ protected:
 	bool	CanUseDynamicTexture(TinyImage::ImageFormat format);
 	bool	UseDynamicTexture(unsigned char* buffer, unsigned int width, unsigned int height, TinyImage::ImageFormat format, bool needRealloc);
 
-#ifdef WIN32
-	void	GetPixels(unsigned int* _array)override;
+#
+	void	GetPixels(unsigned int* _array) override;
 	void	SetPixels(unsigned int* _array, int Width, int Height)override;
-#endif
 
 	bool mCanReuseBuffer;
 

@@ -48,7 +48,7 @@ public:
 	virtual void SetWindowPosition(v2i pos, v2i size, bool force_topmost = false) {}
 
 	//! return the rendering screen associated with this window
-	RenderingScreen*	GetRenderingScreen(){return mScreen;}
+	RenderingScreen*	GetRenderingScreen(){ return (RenderingScreen*)mScreen.get(); }
 
 	//!Set the callback which is called when the user types the given character
 	void SetKeyDownCallback(KeyDownCallbackFn Callback) {mKeyDownCallback = Callback;}
@@ -116,7 +116,7 @@ protected:
     void*   mHandle; 
 
 	//! windows rendering screen
-	RenderingScreen*	mScreen;
+	CMSP mScreen;
 
 	//! mouse callbacks
 	ClickMessageCallbackFn mClickCallback, mDoubleClickCallback;

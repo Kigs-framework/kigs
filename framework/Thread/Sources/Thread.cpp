@@ -65,7 +65,7 @@ void	Thread::Start()
 	}
 
 	mProgress = 0;
-	GetRef();
+	mKeepAlive = SharedFromThis();
 	mCurrentThread = std::thread([this]()
 		{
 			mCurrentState = State::RUNNING;
@@ -114,5 +114,5 @@ void	Thread::Done()
 	mCurrentState = State::FINISHED;
 	UnInit();
 	flagAsPostDestroy();
-	Destroy();
+	mKeepAlive.reset();
 }

@@ -53,11 +53,9 @@ class KXMLManager : public CoreModifiable
 {
 
 public:
-
 	DECLARE_CLASS_INFO(KXMLManager, CoreModifiable, FileManager)
-
-	//! constructor
 	KXMLManager(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~KXMLManager();
 
 	void UncompressKXML(CoreRawBuffer* compressedBuffer, std::vector<u8>& result)
 	{
@@ -331,11 +329,7 @@ public:
 	WRAP_METHODS(UncompressKXML, CompressKXML, CompressData, UncompressData, UncompressZeroEndedData);
 
 protected:
-
 	maBool	myUseZSTD;
-	//! destructor
-	virtual ~KXMLManager();
-
 	std::unordered_map<std::thread::id, ZSTD_DCtx*> mZSTDDecompressContexts;
 	std::unordered_map<std::thread::id, ZSTD_CCtx*> mZSTDCompressContexts;
 };

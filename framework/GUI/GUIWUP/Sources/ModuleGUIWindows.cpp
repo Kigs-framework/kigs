@@ -32,13 +32,11 @@ void ModuleGUIWindows::Update(const Timer& timer, void* addParam)
 {
 }
 
-ModuleBase* PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
-
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(ModuleGUIWindows,"ModuleGUIWindows");
-	ModuleBase* gInstanceModuleGUIWindows = new ModuleGUIWindows("ModuleGUIWindows");
-	gInstanceModuleGUIWindows->Init(core, params);
-
-	return gInstanceModuleGUIWindows;
+	auto ptr = MakeRefCounted<ModuleGUIWindows>("ModuleGUIWindows");
+	ptr->Init(core, params);
+	return ptr;
 }

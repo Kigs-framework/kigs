@@ -119,15 +119,13 @@ bool	KigsCore::UnDecorateInstance(CoreModifiable* cm, KigsID decoratorName)
 	return false;
 }
 
-
 void	KigsCore::addAsyncRequest(AsyncRequest* toAdd)
 {
 	if (!mCoreInstance->mAsyncRequestList)
 	{
-		mCoreInstance->mAsyncRequestList = new kstl::vector<AsyncRequest*>;
+		mCoreInstance->mAsyncRequestList = new kstl::vector<SP<AsyncRequest>>;
 	}
-
-	mCoreInstance->mAsyncRequestList->push_back(toAdd);
+	mCoreInstance->mAsyncRequestList->push_back(toAdd->SharedFromThis());
 }
 
 void KigsCore::ManageAsyncRequests()
@@ -141,10 +139,10 @@ void KigsCore::ManageAsyncRequests()
 void KigsCore::ProtectedManageAsyncRequests()
 {
 	// copy, so that a process can add new requests
-	kstl::vector<AsyncRequest*> requestlist=*mAsyncRequestList;
+	kstl::vector<SP<AsyncRequest>> requestlist=*mAsyncRequestList;
 
-	kstl::vector<AsyncRequest*>::const_iterator itstart = requestlist.begin();
-	kstl::vector<AsyncRequest*>::const_iterator itend = requestlist.end();
+	auto itstart = requestlist.begin();
+	auto itend = requestlist.end();
 
 	while (itstart != itend)
 	{
@@ -163,12 +161,7 @@ void KigsCore::ProtectedManageAsyncRequests()
 
 	while (itstart != itend)
 	{
-		if ((*itstart)->isProcessed())
-		{
-			// processed ? destroy it
-			(*itstart)->Destroy();
-		}
-		else
+		if (!(*itstart)->isProcessed())
 		{
 			requestlist.push_back((*itstart));
 		}
@@ -196,7 +189,6 @@ NotificationCenter* KigsCore::GetNotificationCenter()
 {
 	return mCoreInstance->mNotificationCenter;
 }
-
 
 ///////////////////////////////////////////////////////////////
 
@@ -231,7 +223,7 @@ MEMORYMANAGEMENT_END
 	mCoreInstance->mInstanceFactory = new InstanceFactory(mCoreInstance);
 
 	//! map for all initialised modules
-	mCoreInstance->mModuleBaseInstanceMap = new kigs::unordered_map<KigsID,ModuleBase*>;
+	mCoreInstance->mModuleBaseInstanceMap = new kigs::unordered_map<KigsID,SP<ModuleBase>>;
 
 	//! map for all singleton
 	mCoreInstance->mSingletonMap = new kigs::unordered_map<KigsID,CMSP>;
@@ -242,9 +234,6 @@ MEMORYMANAGEMENT_END
 	//! init error management
 	mCoreInstance->mErrorList=new kstl::vector<kstl::string>;
 #endif
-
-	//! map for references
-	mCoreInstance->mReferenceMap = new kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiableAttribute*> >;
 
 	mCoreInstance->mCoreMainModuleList=new ModuleBase*[8];
 	int i=0;
@@ -269,11 +258,8 @@ MEMORYMANAGEMENT_END
 
 	CoreItemOperator<kfloat>::ConstructContextMap(mCoreInstance->mCoreItemOperatorCreateMethodMap, &specificList);
 
-
-	 CMSP createUpgradorFactory=GetInstanceOf("UpgradorFactory", "MiniInstanceFactory");
-	 createUpgradorFactory->GetRef();
-	 mCoreInstance->mUpgradorFactory = (MiniInstanceFactory*)createUpgradorFactory.get();
-
+	CMSP createUpgradorFactory = GetInstanceOf("UpgradorFactory", "MiniInstanceFactory");
+	mCoreInstance->mUpgradorFactory = ((MiniInstanceFactory*)createUpgradorFactory.get())->SharedFromThis();
 }
 
 
@@ -295,7 +281,6 @@ void KigsCore::Close(bool closeMemoryManager)
 
 	if(mCoreInstance)
 	{
-		mCoreInstance->mUpgradorFactory->Destroy();
 		mCoreInstance->mUpgradorFactory = nullptr;
 
 		mCoreInstance->CleanSingletonMap();
@@ -316,11 +301,6 @@ void KigsCore::Close(bool closeMemoryManager)
 		mCoreInstance->mErrorList->clear();
 		delete mCoreInstance->mErrorList;
 #endif
-
-		delete mCoreInstance->mReferenceMap;
-
-		
-
 		delete [] mCoreInstance->mCoreMainModuleList;
 
 
@@ -498,7 +478,7 @@ MEMORYMANAGEMENT_END
 void KigsCore::ModuleInit(KigsCore* /* core */,ModuleBase* newmodule)
 {
 	auto* instancemap = mCoreInstance->mModuleBaseInstanceMap;
-	(*instancemap)[newmodule->getExactTypeID()]=newmodule;
+	(*instancemap)[newmodule->getExactTypeID()] = newmodule->SharedFromThis();
 }
 
 //! return instance factory
@@ -563,7 +543,7 @@ CMSP KigsCore::GetSingleton(const KigsID& classname)
 	instancename += buffer;
 	#endif
 
-	CMSP newone= OwningRawPtrToSmartPtr(Instance()->GetInstanceFactory()->GetInstance(instancename,classname));
+	CMSP newone= Instance()->GetInstanceFactory()->GetInstance(instancename,classname);
 
 	Instance()->GetSemaphore();
 	
@@ -626,17 +606,25 @@ void KigsCore::ReleaseSingleton(KigsID classname)
 }
 
 //! get the registered module given its name
-ModuleBase*		KigsCore::GetModule(const KigsID& classname)
+SP<ModuleBase>		KigsCore::GetModule(const KigsID& classname)
 {
 	auto* instancemap = Instance()->mModuleBaseInstanceMap;
 	if (!instancemap)
-		return NULL;
+		return nullptr;
 
 	auto Iter = instancemap->find(classname);
 	if (Iter==instancemap->end())
-		return NULL;
+		return nullptr;
 
 	return Iter->second;
+}
+
+void KigsCore::RemoveModule(const std::string& classname)
+{
+	auto* instancemap = Instance()->mModuleBaseInstanceMap;
+	if (!instancemap)
+		return;
+	instancemap->erase(classname);
 }
 
 bool KigsCore::IsInit()
@@ -833,15 +821,27 @@ bool	KigsCore::ParseXml(char* buffer,CoreModifiable*	delegateObject,unsigned lon
 void KigsCore::ManagePostDestruction()
 {
 	std::lock_guard<std::mutex> lk{ mPostDestructionListMutex };
-	for(auto c : mPostDestructionList)
-		c->Destroy();
-	mPostDestructionList.clear();
+	for (auto it = mPostDestructionList.begin(); it != mPostDestructionList.end();)
+	{
+		if (it->second.use_count() == 1)
+		{
+			it = mPostDestructionList.erase(it);
+		}
+		else
+			++it;
+	}
 }
-	
-void KigsCore::AddToPostDestroyList(CoreModifiable* c)
+
+void KigsCore::AddToPostDestroy(CMSP obj)
 {
-	std::lock_guard<std::mutex> lk{ mPostDestructionListMutex };
-	mPostDestructionList.push_back(c);
+	std::lock_guard lk{ mPostDestructionListMutex };
+	mPostDestructionList[obj.get()] = obj;
+}
+
+void KigsCore::RemoveFromPostDestroy(CMSP obj)
+{
+	std::lock_guard lk{ mPostDestructionListMutex };
+	mPostDestructionList.erase(obj.get());
 }
 
 // utility func

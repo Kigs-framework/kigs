@@ -4,7 +4,7 @@
 
 bool SQLiteDB::ExistDatabase(const char * dbName)
 {
-	SP<FilePathManager>	pathManager = KigsCore::GetSingleton("FilePathManager");
+	SP<FilePathManager>	pathManager = KigsCore::Singleton<FilePathManager>();
 	kstl::string filePath = FilePathManager::DevicePath(dbName, FilePathManager::DB_STORAGE);
 	
 	SmartPointer<FileHandle> fullfilenamehandle = Platform_fopen(filePath.c_str(), "rb");

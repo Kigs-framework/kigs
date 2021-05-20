@@ -27,6 +27,7 @@ public:
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
 	UISlider(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~UISlider();
 
 	Texture*		GetTexture();
 	void			ChangeTexture(kstl::string texturename, kstl::string overtexturename = "", kstl::string downtexturename = "");
@@ -41,7 +42,7 @@ public:
 	void			ReloadTexture();
 
 protected:
-	virtual ~UISlider();
+	
 	void InitModifiable()override;
 	void NotifyUpdate(const unsigned int /* labelid */)override;
 

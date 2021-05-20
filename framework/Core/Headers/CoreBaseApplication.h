@@ -14,7 +14,9 @@ class   AnonymousModule;
 //! useful macro to create / retreive / destroy modules 
 #define	CoreCreateModule(moduleType,params)		KigsCore::LoadKigsModule<moduleType>(#moduleType,params)
 #define	CoreGetModule(moduleType)				KigsCore::GetModule(#moduleType)
-#define CoreDestroyModule(moduleType)			{ModuleBase* m = KigsCore::GetModule(#moduleType); if(m){ m->Close(); m->Destroy(); }}
+#define CoreDestroyModule(moduleType)			{SP<ModuleBase> m = KigsCore::GetModule(#moduleType); if(m){ m->Close(); KigsCore::RemoveModule(#moduleType); }}
+
+
 
 // ****************************************
 // * CoreBaseApplication class
@@ -163,8 +165,6 @@ protected:
 	std::vector<CoreModifiable*>		mAutoUpdateList;
 
 	unsigned int	mBackKeyState;
-
-	AnonymousModule*					mEditor;
 
 	bool mAutoUpdateDone = false;
 

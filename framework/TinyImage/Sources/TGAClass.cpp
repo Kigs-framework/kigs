@@ -120,7 +120,7 @@ bool	TGAClass::Load(FileHandle* fileName)
 		}
 	}
 
-	CoreRawBuffer* rawbuffer=ModuleFileManager::LoadFile(fileName, filelength);
+	auto rawbuffer=ModuleFileManager::LoadFile(fileName, filelength);
 	
 	if(rawbuffer)
 	{
@@ -191,7 +191,6 @@ bool	TGAClass::Load(FileHandle* fileName)
 				if(currentReadFormat == NO_TEXTURE)
 				{
 					// not supported
-					rawbuffer->Destroy();
 					return false;
 				}
 
@@ -452,7 +451,6 @@ bool	TGAClass::Load(FileHandle* fileName)
 				}
 				else
 				{
-					rawbuffer->Destroy();
 					return false;
 				}
 				
@@ -515,7 +513,6 @@ bool	TGAClass::Load(FileHandle* fileName)
 				}
 				else
 				{
-					rawbuffer->Destroy();
 					return false;
 				}
 
@@ -680,8 +677,6 @@ bool	TGAClass::Load(FileHandle* fileName)
 				// todo: implement more TGA formats
 				break;
 		}
-		
-		rawbuffer->Destroy();
 	}
 	return result;
 }

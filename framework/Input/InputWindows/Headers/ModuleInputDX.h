@@ -14,7 +14,7 @@ class ModuleInputDX;
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
 #define MODULEINITFUNC			PlatformInputModuleInit
-extern ModuleBase* PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+extern SP<ModuleBase> PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 #else
 #define MODULEINITFUNC			ModuleInit
 #endif
@@ -52,9 +52,9 @@ public:
 
 	bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
 
-
+	virtual ~ModuleInputDX();
 protected:
-    virtual ~ModuleInputDX();
+    
 
 	LPDIRECTINPUT8			mDirectInput;   
 	bool					mIsInitOK;

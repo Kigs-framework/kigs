@@ -20,8 +20,8 @@ class	KeyboardDX : public KeyboardDevice
 {
 public:
     DECLARE_CLASS_INFO(KeyboardDX,KeyboardDevice,Input)
-
     KeyboardDX(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~KeyboardDX();
 
 	LPDIRECTINPUTDEVICE8& getDirectInputKeyboard(){return mDirectInputKeyboard;}
 
@@ -38,8 +38,6 @@ public:
 	byte* getKeys() {return mKeys.state;}
     
 protected:
-    virtual ~KeyboardDX();
-
 	typedef struct tagKeyboard
 	{
 		byte state[256];

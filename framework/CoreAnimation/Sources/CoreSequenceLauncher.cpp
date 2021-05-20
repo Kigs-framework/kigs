@@ -34,7 +34,7 @@ void	CoreSequenceLauncher::checkDeadSequences()
 		// call destroy on each sequence
 		while (itstart != itend)
 		{
-			if ((*itstart).second->getRefCount() == 1) // only kept by me
+			if ((*itstart).second.use_count() == 1) // only kept by me
 			{
 				mSequenceMap.erase(itstart);
 				deadFound = true;
@@ -54,8 +54,8 @@ void	CoreSequenceLauncher::addSequencesToParents()
 		// check that we did not already create the sequence
 		if (mSequenceMap.find(parent) == mSequenceMap.end() && (CoreItem*)mSequence)
 		{
-			CoreItemSP sequence((CoreItem*)mSequence, GetRefTag{});
-			auto L_Sequence = OwningRawPtrToSmartPtr(L_CoreAnimation->createSequenceFromCoreMap(parent, sequence));
+			CoreItemSP sequence = ((CoreItem*)mSequence)->SharedFromThis();
+			auto L_Sequence = L_CoreAnimation->createSequenceFromCoreMap(parent, sequence);
 			L_CoreAnimation->addSequence(L_Sequence.get());
 			if (mStartOnFirstUpdate)
 				L_Sequence->startAtFirstUpdate();

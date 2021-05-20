@@ -114,8 +114,8 @@ void UIVideo::InitModifiable()
 			mTexturePointer=nullptr;
 
 		mTexturePointer = KigsCore::GetInstanceOf(mVideoName, "Texture");
-		mTexturePointer->setValue("Width",mSizeX);
-		mTexturePointer->setValue("Height",mSizeY);
+		mTexturePointer->setValue("Width",mSize[0]);
+		mTexturePointer->setValue("Height",mSize[1]);
 		mTexturePointer->Init();
 
 		//Buffer Texture
@@ -125,13 +125,13 @@ void UIVideo::InitModifiable()
 		kstl::string LBufferName = mVideoName;
 		LBufferName = LBufferName + "Buffer";
 		mBufferTexturePointer = KigsCore::GetInstanceOf(LBufferName, "Texture");
-		mBufferTexturePointer->setValue("Width",mSizeX);
-		mBufferTexturePointer->setValue("Height",mSizeY*2);
+		mBufferTexturePointer->setValue("Width",mSize[0]);
+		mBufferTexturePointer->setValue("Height",mSize[1]*2);
 		mBufferTexturePointer->Init();
 
 		// auto size
 #ifdef _DEBUG
-		if( (((unsigned int)mSizeX)==0) && (((unsigned int)mSizeY)==0) )
+		if( (((unsigned int)mSize[0])==0) && (((unsigned int)mSize[1])==0) )
 		{
 			printf("You must specify a size for init a video element\n");
 		}

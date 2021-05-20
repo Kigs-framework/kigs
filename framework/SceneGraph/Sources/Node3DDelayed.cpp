@@ -152,7 +152,7 @@ void Node3DDelayed::LoadContent(bool no_async)
 	LoadState exp = LoadState::NotLoaded;
 	if (mLoadState.compare_exchange_strong(exp, LoadState::InQueue))
 	{
-		auto job = Job{ NonOwningRawPtrToSmartPtr(this), [this]()
+		auto job = Job{ SharedFromThis(), [this]()
 		{
 			LoadState exp = LoadState::InQueue;
 			if (mLoadState.compare_exchange_strong(exp, LoadState::Loading))
@@ -187,7 +187,7 @@ void Node3DDelayed::UnloadContent()
 		if (mContentAdded)
 			removeItem(mContent);
 		mContentAdded = false;
-		mContent.Reset();
+		mContent = nullptr;
 	}
 }
 

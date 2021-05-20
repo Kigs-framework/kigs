@@ -212,13 +212,12 @@ class API3DUniformTexture : public API3DUniformBase
 public:
 	DECLARE_CLASS_INFO(API3DUniformTexture, API3DUniformBase, Renderer)
 	API3DUniformTexture(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~API3DUniformTexture();
 
 	bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
 	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
-
 protected:
-	virtual ~API3DUniformTexture();
 	void InitModifiable() override;
 	void NotifyUpdate(const unsigned int  labelid) override;
 
@@ -247,9 +246,9 @@ class API3DUniformDataTexture : public API3DUniformBase
 public:
 	DECLARE_CLASS_INFO(API3DUniformDataTexture, API3DUniformBase, Renderer)
 	API3DUniformDataTexture(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	~API3DUniformDataTexture() override;
 
 protected:
-	~API3DUniformDataTexture() override;
 	void InitModifiable() override;
 	void NotifyUpdate(const unsigned int  labelid) override;
 
@@ -278,9 +277,9 @@ class API3DUniformGeneratedTexture : public API3DUniformBase
 public:
 	DECLARE_CLASS_INFO(API3DUniformGeneratedTexture, API3DUniformBase, Renderer)
 	API3DUniformGeneratedTexture(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~API3DUniformGeneratedTexture();
 
 protected:
-	virtual ~API3DUniformGeneratedTexture();
 	void NotifyUpdate(const unsigned int  labelid) override;
 	void Generate();
 
@@ -312,9 +311,9 @@ class API3DUniformMatrixArray : public API3DUniformBase
 public:
 	DECLARE_CLASS_INFO(API3DUniformMatrixArray, API3DUniformBase, Renderer)
 	API3DUniformMatrixArray(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~API3DUniformMatrixArray();
 
 protected:
-	virtual ~API3DUniformMatrixArray();
 	void NotifyUpdate(const unsigned int  labelid) override;
 	void Activate(unsigned int a_Location) override;
 

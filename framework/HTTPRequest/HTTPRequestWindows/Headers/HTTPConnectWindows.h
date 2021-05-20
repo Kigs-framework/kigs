@@ -21,22 +21,18 @@ public:
 
 	//! constructor
     HTTPConnectWindows(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-
-	virtual void InitModifiable();
+	virtual ~HTTPConnectWindows();
 
 	HINTERNET getHandle()
 	{
 		return mConnectionHandle;
 	}
 
-
 	virtual bool	Open();
 	virtual void	Close();
 
 protected:
-
-	//! destructor
-    virtual ~HTTPConnectWindows();
+	virtual void InitModifiable();
 
 	HINTERNET					mConnectionHandle;
 	HINTERNET					mInternetHandle;

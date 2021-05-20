@@ -74,7 +74,6 @@ public:
 		mFactoryMap[name]=new RegisterClass<T>();
 
 	}
-
 	void*	CreateClassInstance(const kstl::string& name)
 	{
 		auto alreadyfound=mFactoryMap.find(name);
@@ -86,12 +85,10 @@ public:
 		
 		return (*alreadyfound).second->createStruct();
 	}
-	
-protected:
-
 	virtual ~MiniInstanceFactory();
-	std::unordered_map<kstl::string, FactoryCreateStruct*>	mFactoryMap;
 
+protected:
+	std::unordered_map<kstl::string, FactoryCreateStruct*>	mFactoryMap;
 };
 
 

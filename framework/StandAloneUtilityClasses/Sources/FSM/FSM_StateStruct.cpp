@@ -2,6 +2,19 @@
 #include "FSM/FSM_State.h"
 #include "FSM/FSM.h"
 
+bool	FSM_StateStruct::addInstance(FSM_State* state_instance)
+{
+	// instance or action pack already set
+	if ((m_State != 0) || m_isSubFSM)
+	{
+		return false;
+	}
+
+	m_State = state_instance->SharedFromThis();
+	m_isSubFSM = true;
+	return true;
+}
+
 void	FSM_StateStruct::invokeAction(FSM* caller, void* statedata)
 {
 	if (!m_isSubFSM) // method
@@ -43,8 +56,7 @@ void	FSM_StateStruct::invokeBeginAction(FSM* caller, void* statedata)
 	{
 		if (m_State)
 		{
-			CMSP toAdd(m_State, GetRefTag{});
-			caller->aggregateWith(toAdd);
+			caller->aggregateWith(m_State->SharedFromThis());
 			m_State->InvokeBeginAction(statedata);
 		}
 	}
@@ -67,8 +79,7 @@ void	FSM_StateStruct::invokeEndAction(FSM* caller, void* statedata)
 		if (m_State)
 		{
 			m_State->InvokeEndAction(statedata);
-			CMSP toDel(m_State, GetRefTag{});
-			caller->removeAggregateWith(toDel);
+			caller->removeAggregateWith(m_State->SharedFromThis());
 		}
 	}
 }
@@ -79,7 +90,7 @@ FSM_StateStruct::~FSM_StateStruct()
 	{
 		if (m_isSubFSM)
 		{
-			m_State->Destroy();
+			m_State.reset();
 		}
 		else
 		{

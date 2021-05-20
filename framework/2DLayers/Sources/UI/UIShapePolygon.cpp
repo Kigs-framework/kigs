@@ -43,7 +43,8 @@ void UIShapePolygon::NotifyUpdate(const unsigned int labelid)
 
 void	UIShapePolygon::triangulatePolygon()
 {
-	CoreItemSP poly(&mVertices.ref(),GetRefTag());
+	CoreItemSP poly = mVertices.ref().SharedFromThis();
+
 	if (poly->size()>2)
 	{
 		int vcount = poly->size();

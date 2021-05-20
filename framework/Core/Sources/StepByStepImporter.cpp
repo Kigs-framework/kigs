@@ -42,7 +42,7 @@ void	StepByStepImporter::InitModifiable()
 		mXMLRootNode=(XMLNode*)mXmlfile->getRoot();
 		mImportTreeRoot=new ImportTree(mXMLRootNode,CMSP(nullptr));
 		mCurrentImportedTreeNode=mImportTreeRoot;
-		mTimer=KigsCore::GetInstanceOf("StepByStepTimer","Timer");
+		mTimer = KigsCore::GetInstanceOf("StepByStepTimer","Timer");
 		mTimer->Init();
 		mLoadingIsDone = 0;
 	}

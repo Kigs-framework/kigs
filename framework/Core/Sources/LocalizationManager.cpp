@@ -44,7 +44,7 @@ void LocalizationManager::InitWithConfigFile(const kstl::string& filename)
 	JSonFileParser L_JsonParser;
 	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionary(filename);
 
-	if (!L_Dictionary.isNil())
+	if (L_Dictionary)
 	{
 		// init map
 		kstl::map<kstl::string, kstl::string>	langageMap;
@@ -54,7 +54,7 @@ void LocalizationManager::InitWithConfigFile(const kstl::string& filename)
 		int i;
 		for (i = 0; i < nbpath; i += 2)
 		{
-			langageMap[(kstl::string)(CoreItem&)pathList[i]] = (kstl::string)(CoreItem&)pathList[i + 1];;
+			langageMap[(kstl::string)(CoreItem&)(*pathList)[i]] = (kstl::string)(CoreItem&)(*pathList)[i + 1];;
 		}
 
 		kstl::string	L_Lang = LocalizationManager::getCurrentUserLanguage();
@@ -173,7 +173,7 @@ bool	LocalizationManager::ParseStringsFile(const char* pszFile)
 	}
 
 	u64 size;
-	CoreRawBuffer* pBuffer = ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(), size, 0);
+	auto pBuffer = ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(), size, 0);
 	if(!pBuffer)
 	{
 		return false;
@@ -190,8 +190,6 @@ bool	LocalizationManager::ParseStringsFile(const char* pszFile)
 		// utf8
 		ParseBuffer<UTF8Char>(pBuffer->buffer(), size);
 	}
-
-	pBuffer->Destroy();
 	return true;
 }
 

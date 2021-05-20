@@ -58,7 +58,7 @@ void ThreadProfiler::ExportProfile(const kstl::string path)
 
 	SmartPointer<FileHandle> file = Platform_fopen(str.c_str(), "wb");
 
-	if (!file.isNil())
+	if (file)
 	{
 		int num_threads = mCircularBufferMap.size();
 		Platform_fwrite(&num_threads, sizeof(int), 1, file.get());

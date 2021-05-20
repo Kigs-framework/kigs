@@ -711,6 +711,7 @@ public:
 	void GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override;
 
 	void Drawfunc(TravState* trav, UIItem*) override { Draw(trav); };
+	virtual ~DebugDraw();
 
 protected:
 
@@ -719,7 +720,6 @@ protected:
 
 	bool Draw(TravState*) override;
 
-	virtual ~DebugDraw();
 
 	ModuleSpecificRenderer* _renderer;
 	const Locations* _locs;

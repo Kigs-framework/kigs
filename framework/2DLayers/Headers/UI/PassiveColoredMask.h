@@ -20,8 +20,8 @@ class PassiveColoredMask : public UIItem
 {
 public:
 	DECLARE_CLASS_INFO(PassiveColoredMask,UIItem,2DLayers)
-
 	PassiveColoredMask(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	virtual					~PassiveColoredMask();
 
 	void					ApplyColorFrom(float X, float Y, int R, int G, int B, bool IsRGBA=true, unsigned int extendedRay=0);
 	void					ApplyColorFrom(float TopLeftCornerX, float TopLeftCornerY, int SizeX, int SizeY, int R, int G, int B, bool IsRGBA);
@@ -31,11 +31,6 @@ public:
 	virtual void			ReloadTexture();
 	inline void				GetSize(unsigned int &X,unsigned int &Y) { X=mWidth; Y=mHeight; }
 protected:
-	/**
-	 * \brief	destructor
-	 */
-	virtual					~PassiveColoredMask();
-
 	/**
 	 * \brief	init the modifiable and set the isInit flag to true if OK
 	 */

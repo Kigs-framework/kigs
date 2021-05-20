@@ -29,6 +29,7 @@ public:
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
 	UITextArea(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual		~UITextArea();
 
 	usString		GetText() const { return mText.us_str(); }
 	kstl::string	GetFontName() const { return mFont; }
@@ -54,9 +55,8 @@ public:
 
 	DECLARE_METHOD(UpdateKeyBoard);
 	COREMODIFIABLE_METHODS(UpdateKeyBoard);
-protected:
-	virtual		~UITextArea();
 
+protected:
 	void		InitModifiable() override;
 	void		NotifyUpdate(const unsigned int /* labelid */)override;
 

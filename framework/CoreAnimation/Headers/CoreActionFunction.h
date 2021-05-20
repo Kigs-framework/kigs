@@ -87,7 +87,7 @@ protected:
 
 			if (mHasUniqueMultidimensionnalFunc)
 			{
-				result = mFunctions[0].operator dataType();
+				result = mFunctions[0]->operator dataType();
 			}
 			else
 			{
@@ -96,7 +96,7 @@ protected:
 				{
 					if (mFunctions[i])
 					{
-						result[i] = (float)mFunctions[i];
+						result[i] = (float)*mFunctions[i];
 					}
 				}
 			}
@@ -122,7 +122,7 @@ inline bool	CoreActionFunction<kfloat,1>::protectedUpdate(kdouble time)
 	mContext.mTime = time;
 	if (mFunctions[0])
 	{
-		kfloat result = (kfloat)mFunctions[0];
+		kfloat result = (kfloat)*mFunctions[0];
 		mTarget->setValue(mParamID, result);
 	}
 	CoreItemEvaluationContext::ReleaseContext();

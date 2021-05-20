@@ -49,7 +49,7 @@ bool Win32CreateFolderTree(FileHandle* hndl)
 	return true;
 }
 
-SmartPointer<FileHandle>	Win32FindFullName(const kstl::string&	filename)
+SmartPointer<FileHandle> Win32FindFullName(const kstl::string&	filename)
 {
 	if (filename[0] != '#')
 	{

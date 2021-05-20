@@ -87,7 +87,7 @@ protected:
 
 	XMLBase* ProtectedReadFileString(CoreRawBuffer* buffer, char* encoding = 0);
 	XMLBase* ProtectedReadFileString(char* data, size_t size, char* encoding = 0);
-	XMLBase* ProtectedReadFileStringRef(CoreRawBuffer* buffer, char* encoding = 0);
+	XMLBase* ProtectedReadFileStringRef(const SP<CoreRawBuffer> buffer, char* encoding = 0);
 
 	bool	ProtectedReadFile(FileHandle* file,CoreModifiable*	delegateObject );
 

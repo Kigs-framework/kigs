@@ -39,7 +39,7 @@ bool	ETCClass::Load(FileHandle* fileName)
 		}
 	}
 
-	CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFile(fileName, filelength);
+	auto rawbuffer = ModuleFileManager::LoadFile(fileName, filelength);
 	if (rawbuffer)
 	{
 
@@ -128,8 +128,6 @@ bool	ETCClass::Load(FileHandle* fileName)
 		}
 	
 		result = true;
-
-		rawbuffer->Destroy();
 	}
 
 	if (result == false)

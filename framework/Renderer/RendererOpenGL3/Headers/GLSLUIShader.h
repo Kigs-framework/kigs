@@ -21,12 +21,11 @@ public:
 	friend class RendererOpenGL;
 
 	DECLARE_CLASS_INFO(API3DUIShader, API3DGenericMeshShader, Renderer)
-
 	API3DUIShader(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-
+	virtual ~API3DUIShader();
 
 protected:
-	virtual ~API3DUIShader();
+	
 
 	std::string GetVertexShader() override;
 	std::string GetFragmentShader() override;

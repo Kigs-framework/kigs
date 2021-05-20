@@ -18,7 +18,6 @@
 // ****************************************
 class TGAClass : public TinyImage
 {
-friend class TinyImage;
 public:
 	/// Destructor
 	virtual ~TGAClass();

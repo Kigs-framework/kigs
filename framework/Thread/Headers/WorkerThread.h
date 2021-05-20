@@ -24,9 +24,8 @@ class WorkerThread : public Thread
 public:
 
 	DECLARE_CLASS_INFO(WorkerThread, Thread, Thread)
-
-	//! constructor
 	WorkerThread(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	virtual ~WorkerThread();
 
 	void	setSemaphore(Semaphore* semaphore)
 	{
@@ -69,9 +68,6 @@ protected:
 
 	//! the thread run method
 	void	Start() override;
-
-	//! destructor
-	virtual ~WorkerThread();
 
 	MethodCallingStruct*	mCurrentTask;
 

@@ -31,6 +31,7 @@ public:
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
 	UIVideo(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	virtual	~UIVideo();
 
 	Texture*		GetTexture();
 	Texture*		Get_BufferTexture();
@@ -51,7 +52,7 @@ public:
 	 void	ReloadTexture();
 
 protected:
-	virtual			 ~UIVideo();
+	
 	void InitModifiable()override;
 	void NotifyUpdate(const unsigned int /* labelid */)override;
 	bool isAlpha(float X, float Y)override;

@@ -40,6 +40,12 @@ public:
 	*/
 	TextureHandler(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
+	/**
+	* \brief	destructor
+	* \fn 		~TextureHandler();
+	*/
+	virtual ~TextureHandler();
+
 	// access to texture methods
 	void SetRepeatUV(bool RU, bool RV) 
 	{
@@ -120,7 +126,7 @@ public:
 
 	bool HasTexture()
 	{
-		return !mTexture.isNil();
+		return mTexture;
 	}
 
 	SP<Texture>	GetEmptyTexture(const std::string& name="");
@@ -139,7 +145,7 @@ public:
 		// replace texture
 		mTexture = texture;
 
-		if (mTexture.isNil())
+		if (!mTexture)
 		{
 			mSize.Set( 0.0f,0.0f );
 		}
@@ -170,11 +176,7 @@ protected:
 	*/
 	void NotifyUpdate(const unsigned int /* labelid */) override;
 
-	/**
-	* \brief	destructor
-	* \fn 		~TextureHandler();
-	*/
-	virtual ~TextureHandler();
+	
 
 	INSERT_FORWARDSP(Texture,mTexture);
 

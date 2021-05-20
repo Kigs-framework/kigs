@@ -2,7 +2,7 @@
 #include "HTTPRequestModule.h"
 #include "ResourceDownloader.h"
 
-ModuleBase* PlatformHTTPRequestModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 
 IMPLEMENT_CLASS_INFO(HTTPRequestModule)
 

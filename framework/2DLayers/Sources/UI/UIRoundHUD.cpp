@@ -30,7 +30,7 @@ void UIRoundHUD::InitModifiable()
 	mVoidZone = (mRadius + mRadiusOffset) *0.2f;
 	mVoidZone *= mVoidZone;
 
-	ModuleInput* theInputModule = (ModuleInput*)KigsCore::GetModule("ModuleInput");
+	auto theInputModule = KigsCore::GetModule<ModuleInput>();
 	theInputModule->getTouchManager()->registerEvent(this, "ManageDirectTouchEvent", DirectTouch, EmptyFlag);
 }
 

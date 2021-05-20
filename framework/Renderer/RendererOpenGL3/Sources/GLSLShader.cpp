@@ -165,7 +165,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	// Compile the shader source
 
 	const char* SrcTxt = 0;
-	CoreRawBuffer* rawbuffer = nullptr;
+	SP<CoreRawBuffer> rawbuffer;
 
 	if (str[0] == '!') // load from file
 	{
@@ -198,9 +198,6 @@ BuildShaderStruct*	API3DShader::Rebuild()
 
 	glShaderSource(vshaderName, 1, &SrcTxt, 0); CHECK_GLERROR;
 	glCompileShader(vshaderName); CHECK_GLERROR;
-
-	if (rawbuffer)
-		rawbuffer->Destroy();
 	rawbuffer = nullptr;
 
 	mFragmentShaderText.getValue(str);
@@ -233,9 +230,6 @@ BuildShaderStruct*	API3DShader::Rebuild()
 
 	glShaderSource(fshaderName, 1, &SrcTxt, 0); CHECK_GLERROR;
 	glCompileShader(fshaderName); CHECK_GLERROR;
-
-	if (rawbuffer)
-		rawbuffer->Destroy();
 	rawbuffer = nullptr;
 
 	BuildShaderStruct* toReturn = new BuildShaderStruct();
@@ -545,16 +539,16 @@ void	API3DShader::PrepareExport(ExportSettings* settings)
 		if (!itr->second->mList.empty())
 		{
 			bool L_bAlreadyAdded = false;
-			kstl::vector<CoreModifiable*> L_parents = static_cast<CoreModifiable*>(*(itr->second->mList.begin()))->GetParents();
-			for (int p = 0; p < static_cast<CoreModifiable*>(*(itr->second->mList.begin()))->GetParentCount(); p++)
+			auto first_uniform = itr->second->mList.front();
+			kstl::vector<CoreModifiable*> L_parents = first_uniform->GetParents();
+			for (int p = 0; p < first_uniform->GetParentCount(); p++)
 			{
 				if (L_parents[p] == this)
 					L_bAlreadyAdded = true;
 			}
 			if (!L_bAlreadyAdded)
 			{
-				CMSP toAdd(CMSP(static_cast<CoreModifiable*>(*(itr->second->mList.begin())), StealRefTag()));
-				addItem(toAdd);
+				addItem(first_uniform);
 			}
 		}
 	}
@@ -571,8 +565,8 @@ void	API3DShader::EndExport(ExportSettings* settings)
 		{
 			if (!itr->second->mList.empty())
 			{
-				CMSP toDel(*(itr->second->mList.begin()), StealRefTag{});
-				removeItem(toDel);
+				auto first_uniform = itr->second->mList.front();
+				removeItem(first_uniform);
 			}
 		}
 	}

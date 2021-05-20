@@ -151,7 +151,7 @@ void Module2DLayers::Update(const Timer& timer, void* addParam)
 
 kstl::set<CoreModifiable*>	Module2DLayers::GetLayerList()
 {
-	ModuleSceneGraph* scenegraph=(ModuleSceneGraph*)CoreGetModule(ModuleSceneGraph);
+	SP<ModuleSceneGraph> scenegraph = CoreGetModule(ModuleSceneGraph);
 	kstl::set<CoreModifiable*> layerlist;
 	layerlist.clear();
 

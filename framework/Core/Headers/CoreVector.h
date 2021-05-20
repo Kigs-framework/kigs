@@ -182,7 +182,7 @@ public:
 	// wrapper on member vector
 	CoreItemIterator begin() override
 	{
-		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this, GetRefTag{}), 0);
+		CoreVectorIterator* iter = new CoreVectorIterator(this->SharedFromThis(), 0);
 		iter->mVectorIterator = mVector.begin();
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
@@ -191,7 +191,7 @@ public:
 
 	CoreItemIterator end() override
 	{
-		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this, GetRefTag{}), 0);
+		CoreVectorIterator* iter = new CoreVectorIterator(this->SharedFromThis(), 0);
 		iter->mVectorIterator = mVector.end();
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
@@ -244,16 +244,16 @@ public:
 
 	CoreItemIterator erase(CoreItemIterator position)
 	{
-		CoreVectorIterator& pos = *(CoreVectorIterator*)position.Pointer();
-		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this, GetRefTag{}), 0);
+		CoreVectorIterator& pos = *(CoreVectorIterator*)position.get();
+		CoreVectorIterator* iter = new CoreVectorIterator(this->SharedFromThis(), 0);
 		iter->mVectorIterator = mVector.erase(pos.mVectorIterator);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
 	CoreItemIterator erase(CoreItemIterator first, CoreItemIterator last)
 	{
-		CoreVectorIterator* iter = new CoreVectorIterator(CoreItemSP(this, GetRefTag{}), 0);
-		iter->mVectorIterator = mVector.erase(((CoreVectorIterator*)first.mPointer)->mVectorIterator, ((CoreVectorIterator*)last.mPointer)->mVectorIterator);
+		CoreVectorIterator* iter = new CoreVectorIterator(this->SharedFromThis(), 0);
+		iter->mVectorIterator = mVector.erase(((CoreVectorIterator*)first.get())->mVectorIterator, ((CoreVectorIterator*)last.get())->mVectorIterator);
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
@@ -288,7 +288,7 @@ public:
 		return *this;
 	}
 
-	virtual inline CoreItemSP operator[](int i) const  override
+	virtual inline CoreItemSP operator[](int i) override
 	{
 		if ((i >= 0) && (i < (int)mVector.size()))
 		{
@@ -297,7 +297,7 @@ public:
 		return CoreItemSP(nullptr);
 	}
 
-	virtual inline CoreItemSP operator[](const kstl::string& key) const  override
+	virtual inline CoreItemSP operator[](const kstl::string& key) override
 	{
 		kstl::vector<CoreItemSP>::const_iterator it = mVector.begin();
 
@@ -316,7 +316,7 @@ public:
 		return CoreItemSP(nullptr);
 	}
 
-	virtual inline CoreItemSP operator[](const usString& key) const  override
+	virtual inline CoreItemSP operator[](const usString& key) override
 	{
 		kstl::vector<CoreItemSP>::const_iterator it = mVector.begin();
 

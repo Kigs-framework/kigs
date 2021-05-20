@@ -21,14 +21,10 @@ class BaseDDSequence : public DataDrivenSequence
 {
 public:
 	DECLARE_CLASS_INFO(BaseDDSequence, DataDrivenSequence, CoreDataDrivenSequence)
-
-	//! constructor
 	BaseDDSequence(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-
-protected:
-	//! destructor
 	virtual ~BaseDDSequence();
 
+protected:
 	maString mTransitionData;
 };
 

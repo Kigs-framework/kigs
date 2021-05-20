@@ -55,7 +55,7 @@ bool	OpenGLTexture::CubeMapGeneration()
 
 		unsigned int minwidth=1024;
 		unsigned int minheight=1024;
-		TinyImage* Img[6];
+		SP<TinyImage> Img[6];
 		unsigned Format;
 		int components=3;
 		for(index=0;index<6;index++)
@@ -207,9 +207,7 @@ bool	OpenGLTexture::CubeMapGeneration()
 			}
 
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, Format, mWidth, mHeight, 0, Format, GL_UNSIGNED_BYTE, T);
-			delete Img[index];
 		}
-
 		return true;
 
 	}

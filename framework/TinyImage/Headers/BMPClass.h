@@ -18,25 +18,18 @@
 class BMPClass : public TinyImage
 {
 public:	
-
-	friend class TinyImage;
-	
-	/// destructor
-	virtual ~BMPClass();
-	
-protected:		
 	/**
 	* constructor
 	* \param filename  the name of the file to load
 	*/
 	BMPClass(FileHandle* fileName);
-
-//#ifdef WIN32
-	// create images from data, to export them
-	BMPClass(void* data, int sx,int sy,TinyImage::ImageFormat internalfmt);
-	virtual void	Export(const char* filename);
-//#endif
+	BMPClass(void* data, int sx, int sy, TinyImage::ImageFormat internalfmt);
 	
+	/// destructor
+	virtual ~BMPClass();
+	
+protected:		
+	virtual void	Export(const char* filename);
 	/**
 	* load image from file
 	* \param filename the name of the file to load

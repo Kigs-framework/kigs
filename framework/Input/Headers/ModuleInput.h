@@ -17,7 +17,7 @@ class GyroscopeDevice;
 class CompassDevice;
 
 
-ModuleBase* PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+SP<ModuleBase> PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 
 /*! \defgroup Input Input module
  *  manage keyboards, pad, mouse...
@@ -328,6 +328,8 @@ protected:
 	std::list<WindowClick*>		mActiveWindows;
 
 	SP<TouchInputEventManager>	mTouchManager;
+
+	std::vector<CMSP> mVirtualSensors;
 };
 
 #endif //_MODULEINPUT_H_

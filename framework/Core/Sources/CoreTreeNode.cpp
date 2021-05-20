@@ -17,20 +17,16 @@ CoreTreeNode::~CoreTreeNode()
 void CoreTreeNode::AddInstance(CoreModifiable* toAdd)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-	mInstances.push_back(toAdd);
-	mInstanceVectorNeedSort = true;
+	mInstances.push_back({ toAdd, toAdd->SharedFromThis() });
+	//mInstanceVectorNeedSort = true;
 }
 
 void CoreTreeNode::RemoveInstance(CoreModifiable* toRemove)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
-
-	std::vector< CoreModifiable* >::iterator	i;
-	std::vector< CoreModifiable* >::iterator	e = mInstances.end();
-
-	for (i = mInstances.begin(); i != e; ++i)
+	for (auto i = mInstances.begin(); i != mInstances.end(); ++i)
 	{
-		if ((*i) == toRemove)
+		if (i->first == toRemove)
 		{
 			mInstances.erase(i);
 			break;
@@ -159,12 +155,11 @@ void CoreTreeNode::getRootInstances(std::vector<CMSP>& result, bool recursive) c
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 	for (auto i : mInstances)
 	{
-		CoreModifiable* testFather = ((CoreModifiable*)i);
-		if (testFather->GetParentCount() == 0)
+		if (auto ptr = i.second.lock(); ptr)
 		{
-			if (i->TryGetRef())
+			if (ptr->GetParentCount() == 0)
 			{
-				result.push_back(OwningRawPtrToSmartPtr(static_cast<CoreModifiable*>(i)));
+				result.push_back(ptr);
 			}
 		}
 	}
@@ -183,9 +178,9 @@ void CoreTreeNode::getInstances(std::vector<CMSP>& result, bool recursive, bool 
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 	for (auto i : mInstances)
 	{
-		if (i->TryGetRef())
+		if (auto ptr = i.second.lock(); ptr)
 		{
-			result.push_back(OwningRawPtrToSmartPtr(static_cast<CoreModifiable*>(i)));
+			result.push_back(ptr);
 			if (only_one) return;
 		}
 	}
@@ -211,18 +206,21 @@ void CoreTreeNode::getInstancesByName(std::vector<CMSP>& result, bool recursive,
 		KigsID searchedOne = name;
 		if (mInstanceVectorNeedSort)
 		{
-			sortInstanceVector();
+			// sortInstanceVector();
 		}
-		std::vector<CoreModifiable*>::const_iterator i = mInstances.begin();
-		std::vector<CoreModifiable*>::const_iterator e = mInstances.end();
+		auto i = mInstances.begin();
+		auto e = mInstances.end();
 
-		size_t	currentSize = mInstances.size();
+		//size_t	currentSize = mInstances.size();
 
 		// little dichotomie to reduce the test set
-		while (currentSize > 8)
+		// NOTE(antoine) with weak_ptr, it's not clear to me how to do the dichitomie
+		// Until we redo that, I've diasbled the sorting of mInstances, as it's not necessary
+
+		/*while (currentSize > 8)
 		{
 			currentSize = currentSize / 2;
-			std::vector<CoreModifiable*>::const_iterator mid = i;
+			auto mid = i;
 			std::advance(mid, currentSize);
 			if (searchedOne.toUInt() == (*mid)->getNameID().toUInt())
 			{
@@ -236,18 +234,18 @@ void CoreTreeNode::getInstancesByName(std::vector<CMSP>& result, bool recursive,
 			{
 				e = mid;
 			}
-		}
+		}*/
 
 		for (; i != e; ++i)
 		{
-			if ((*i)->getNameID().toUInt() == searchedOne.toUInt())
+			if (auto ptr = i->second.lock(); ptr)
 			{
-				if ((*i)->getName() == name)
+				if (ptr->getNameID().toUInt() == searchedOne.toUInt())
 				{
-					bool ok = true;
-					if((*i)->TryGetRef())
+					if (ptr->getName() == name)
 					{
-						result.push_back(OwningRawPtrToSmartPtr(static_cast<CoreModifiable*>(*i)));
+						bool ok = true;
+						result.push_back(ptr);
 						if (only_one) return;
 					}
 				}
@@ -272,6 +270,7 @@ void CoreTreeNode::getInstancesByName(std::vector<CMSP>& result, bool recursive,
 
 void CoreTreeNode::sortInstanceVector()
 {
+	/*
 	std::sort(mInstances.begin(), mInstances.end(), [](const CoreModifiable* a1, const CoreModifiable* a2)
 		{
 			if (a1->getNameID().toUInt() == a2->getNameID().toUInt())
@@ -283,5 +282,6 @@ void CoreTreeNode::sortInstanceVector()
 		}
 	);
 	mInstanceVectorNeedSort = false;
+	*/
 }
 

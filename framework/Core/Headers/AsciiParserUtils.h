@@ -138,26 +138,11 @@ public:
 template<typename charType>
 class	AsciiParserUtilsTemplate 
 {
-protected:
-	// empty constructor do nothing
-	AsciiParserUtilsTemplate() : mBufferedEnd(0)
-	{
-		mTextLen=0;
-		mCurrentReadPos = 0;
-		mTextEnd = 0;
-	}
-
 public:
-
-	AsciiParserUtilsTemplate(const AsciiParserUtilsTemplate<charType>& other) :  mText(other.mText), mTextEnd(other.mTextEnd), mTextLen(other.mTextLen), mCurrentReadPos(other.mCurrentReadPos), mBufferedEnd(0)
-	{
-		mRawBuffer=other.mRawBuffer;
-	}
-
+	AsciiParserUtilsTemplate() = default;
+	//AsciiParserUtilsTemplate(const AsciiParserUtilsTemplate<charType>& other) = default;
 	AsciiParserUtilsTemplate(charType* buffer, int len);
-
-	AsciiParserUtilsTemplate(CoreRawBuffer* buffer);
-
+	AsciiParserUtilsTemplate(SP<CoreRawBuffer> buffer);
 	~AsciiParserUtilsTemplate()
 	{
 		if(mBufferedEnd)

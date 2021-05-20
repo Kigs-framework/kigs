@@ -3,7 +3,7 @@
 #include "Core.h"
 #include "GenericRefCountedBaseClass.h"
 
-
+/*
 void GenericRefCountedBaseClass::GetRef()
 {
 	mRefCounter.fetch_add(1, std::memory_order_relaxed);
@@ -35,3 +35,4 @@ void     GenericRefCountedBaseClass::Destroy()
 		}
 	}
 }
+*/

@@ -22,13 +22,12 @@ class DX11Material : public Material
 public:
 	DECLARE_CLASS_INFO(DX11Material, Material, Renderer)
 	DECLARE_INLINE_CONSTRUCTOR(DX11Material) {}
+	~DX11Material() override;
 
 	bool	PreDraw(TravState*) override;
 	bool	PostDraw(TravState* travstate) override;
 
 protected:
-	~DX11Material() override;
-	
 	void NotifyUpdate(unsigned int labelid) override;
 
 };

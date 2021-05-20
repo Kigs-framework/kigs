@@ -158,19 +158,19 @@ protected:
 	// only one of this pointer should be available
 	// as the file is an XML file or another data file
 	XMLBase*			mXMLData = nullptr;
-	CoreRawBuffer*		mRawData = nullptr;
+	SP<CoreRawBuffer>		mRawData = nullptr;
 
 public:
 	XMLArchiveFile(const std::string& n, XMLArchiveFolder* p) : XMLArchiveHierarchy(n, p) {
 		p->addSon(this);
 	};
-	XMLArchiveFile(const std::string& n,CoreRawBuffer* buf, XMLArchiveFolder* p) : XMLArchiveHierarchy(n,p), mRawData(buf){
+	XMLArchiveFile(const std::string& n, SP<CoreRawBuffer> buf, XMLArchiveFolder* p) : XMLArchiveHierarchy(n,p), mRawData(buf){
 		p->addSon(this);
 	};
 	// init file with an XML string
 	XMLArchiveFile(const std::string& n, const std::string& xmlstring, XMLArchiveFolder* p) : XMLArchiveHierarchy(n, p)
 	{
-		mRawData = new CoreRawBuffer();
+		mRawData = MakeRefCounted<CoreRawBuffer>();
 		mRawData->SetBuffer(nullptr, xmlstring.length(), true);
 		memcpy(mRawData->buffer(), xmlstring.c_str(), xmlstring.length());
 		p->addSon(this);
@@ -183,11 +183,6 @@ public:
 		{
 			delete mXMLData;
 			mXMLData = nullptr;
-		}
-		if (mRawData)
-		{
-			mRawData->Destroy();
-			mRawData = nullptr;
 		}
 	}
 
@@ -203,7 +198,7 @@ public:
 	// return mRawData if available
 	CoreRawBuffer* getRawBuffer()
 	{
-		return mRawData;
+		return mRawData.get();
 	}
 
 };

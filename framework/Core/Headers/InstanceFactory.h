@@ -37,7 +37,7 @@ public:
 	 * \param	classname : class of the new instance
 	 * \return	the instance of 'classname' named 'instancename', or a DoNothingObject if failed
 	 */
-	CoreModifiable*    GetInstance(const std::string& instancename,const KigsID& classname, std::vector<CoreModifiableAttribute*>* args = nullptr);
+	CMSP GetInstance(const std::string& instancename,const KigsID& classname, std::vector<CoreModifiableAttribute*>* args = nullptr);
 
 	/**
 	 * \fn 		void  RegisterClass(createMethod method,const STRINGS_NAME_TYPE& className,const std::string& moduleName);

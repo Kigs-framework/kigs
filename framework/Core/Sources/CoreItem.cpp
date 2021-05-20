@@ -6,57 +6,6 @@
 
 
 
-CoreItemSP CoreItemIterator::operator*() const
-{
-	return mPointer->operator*();
-}
-
-CoreItemIterator& CoreItemIterator::operator=(const CoreItemIterator & other)
-{
-	SmartPointer<CoreItemIteratorBase>::operator=(other);
-	return *this;
-}
-
-CoreItemIterator& CoreItemIterator::operator+(const int decal)
-{
-	mPointer->operator+(decal);
-	return *this;
-}
-
-CoreItemIterator& CoreItemIterator::operator++()
-{
-	mPointer->operator++();
-	return *this;
-}
-
-CoreItemIterator CoreItemIterator::operator++(int)
-{
-	CoreItemIterator	tmp(mPointer->clone());
-	mPointer->operator++();
-	return tmp;
-}
-
-bool CoreItemIterator::operator==(const CoreItemIterator & other) const
-{
-	return (*mPointer) == *(other.mPointer);
-}
-
-bool CoreItemIterator::operator!=(const CoreItemIterator & other) const
-{
-	return (*mPointer) != *(other.mPointer);
-}
-
-bool CoreItemIterator::getKey(kstl::string& returnedkey)
-{
-	return mPointer->getKey(returnedkey);
-}
-
-bool CoreItemIterator::getKey(usString& returnedkey)
-{
-	return mPointer->getKey(returnedkey);
-}
-
-
 CoreItemSP CoreItemIteratorBase::operator*() const
 {
 	if (mPos == 0)
@@ -66,49 +15,98 @@ CoreItemSP CoreItemIteratorBase::operator*() const
 	return CoreItemSP(nullptr);
 }
 
-CoreItemIteratorBase& CoreItemIteratorBase::operator=(const CoreItemIteratorBase & other)
+CoreItemIteratorBase& CoreItemIteratorBase::operator=(const CoreItemIteratorBase& other)
 {
 	mAttachedCoreItem = other.mAttachedCoreItem;
 	mPos = other.mPos;
 	return *this;
 }
 
+CoreItemSP CoreItemIterator::operator*() const
+{
+	return get()->operator*();
+}
+
+CoreItemIterator& CoreItemIterator::operator=(const CoreItemIterator& other)
+{
+	SmartPointer<CoreItemIteratorBase>::operator=(other);
+	return *this;
+}
+
+CoreItemIterator& CoreItemIterator::operator+(const int decal)
+{
+	get()->operator+(decal);
+	return *this;
+}
+
+CoreItemIterator& CoreItemIterator::operator++()
+{
+	get()->operator++();
+	return *this;
+}
+
+CoreItemIterator CoreItemIterator::operator++(int)
+{
+	CoreItemIterator	tmp(get()->clone());
+	get()->operator++();
+	return tmp;
+}
+
+bool CoreItemIterator::operator==(const CoreItemIterator& other) const
+{
+	return (*get()) == *(other.get());
+}
+
+bool CoreItemIterator::operator!=(const CoreItemIterator& other) const
+{
+	return (*get()) != *(other.get());
+}
+
+bool CoreItemIterator::getKey(kstl::string& returnedkey)
+{
+	return get()->getKey(returnedkey);
+}
+
+bool CoreItemIterator::getKey(usString& returnedkey)
+{
+	return get()->getKey(returnedkey);
+}
 
 
 // operator [] needs to be overloaded on vectors and maps
-CoreItemSP CoreItem::operator[](int i) const
+CoreItemSP CoreItem::operator[](int i)
 {
 	if (i == 0)
 	{
-		return CoreItemSP((CoreItem*)this, StealRefTag{}); // hack
+		return SharedFromThis();
 	}
 	return CoreItemSP(nullptr);
 }
 
-CoreItemSP CoreItem::operator[](const kstl::string& key) const
+CoreItemSP CoreItem::operator[](const kstl::string& key)
 {
 	return CoreItemSP(nullptr);
 }
 
-CoreItemSP CoreItem::operator[](const usString& key) const
+CoreItemSP CoreItem::operator[](const usString& key)
 {
 	return CoreItemSP(nullptr);
 }
 
-CoreItemSP CoreNamedItem::operator[](const kstl::string& key) const
+CoreItemSP CoreNamedItem::operator[](const kstl::string& key)
 {
 	if (key == mName)
 	{
-		return CoreItemSP((CoreItem*)this, StealRefTag{}); // hack
+		return SharedFromThis();
 	}
 	return CoreItemSP(nullptr);
 }
 
-CoreItemSP CoreNamedItem::operator[](const usString& key) const
+CoreItemSP CoreNamedItem::operator[](const usString& key)
 {
 	if (key.ToString() == mName)
 	{
-		return   CoreItemSP((CoreItem*)this, StealRefTag{}); // hack
+		return SharedFromThis();
 	}
 	return CoreItemSP(nullptr);
 }
@@ -181,7 +179,6 @@ CoreItem::operator Vector4D() const
 	return result;
 }
 
-
 CoreItem::operator Point3D() const
 {
 	Point3D result;
@@ -189,118 +186,100 @@ CoreItem::operator Point3D() const
 	return result;
 }
 
-CoreItemSP	CoreItemSP::getCoreMap()
+CoreItemSP MakeCoreNamedMap(const std::string& name)
 {
-	return CoreItemSP(new CoreMap<kstl::string>(), StealRefTag{});
+	return std::make_shared<CoreNamedMap<std::string>>(name);
 }
-CoreItemSP	CoreItemSP::getCoreVector()
+CoreItemSP MakeCoreMap()
 {
-	return CoreItemSP(new CoreVector(), StealRefTag{});
+	return std::make_shared<CoreMap<std::string>>();
 }
-CoreItemSP	CoreItemSP::getCoreValue(int i)
+CoreItemSP MakeCoreMapUS()
 {
-	return CoreItemSP(new CoreValue<int>(i), StealRefTag{});
+	return std::make_shared<CoreMap<usString>>();
 }
-CoreItemSP	CoreItemSP::getCoreValue(float f)
+CoreItemSP MakeCoreNamedMapUS(const std::string& name)
 {
-	return CoreItemSP(new CoreValue<float>(f), StealRefTag{});
+	return std::make_shared<CoreNamedMap<usString>>(name);
 }
-CoreItemSP	CoreItemSP::getCoreValue(const kstl::string& s)
+CoreItemSP MakeCoreVector()
 {
-	return CoreItemSP(new CoreValue<kstl::string>(s), StealRefTag{});
+	return std::make_shared<CoreVector>();
 }
-CoreItemSP	CoreItemSP::getCoreValue(const usString& s)
+CoreItemSP MakeCoreNamedVector(const std::string& name)
 {
-	return CoreItemSP(new CoreValue<usString>(s), StealRefTag{});
+	return std::make_shared<CoreNamedVector>(name);
 }
-
-CoreItemIterator CoreItemSP::begin() const
-{
-	return mPointer->begin();
-}
-
-CoreItemIterator CoreItemSP::end() const
-{
-	return mPointer->end();
+#define IMPLEMENT_MAKE_COREVALUE(type) CoreItemSP MakeCoreValue(const type& value)\
+{\
+	return std::make_shared<CoreValue<type>>(value);\
+}\
+CoreItemSP MakeCoreNamedValue(const type& value, const std::string& name)\
+{\
+	return std::make_shared<CoreNamedValue<type>>(value, name);\
 }
 
+IMPLEMENT_MAKE_COREVALUE(bool)
+IMPLEMENT_MAKE_COREVALUE(int)
+IMPLEMENT_MAKE_COREVALUE(unsigned int)
+IMPLEMENT_MAKE_COREVALUE(s64)
+IMPLEMENT_MAKE_COREVALUE(u64)
+IMPLEMENT_MAKE_COREVALUE(float)
+IMPLEMENT_MAKE_COREVALUE(double)
+IMPLEMENT_MAKE_COREVALUE(std::string)
+IMPLEMENT_MAKE_COREVALUE(usString)
 
-CoreItemSP::CoreItemSP(const bool& value) 
-{
-	mPointer = new CoreValue<bool>(value);
-}
-
-CoreItemSP::CoreItemSP(const kfloat& value)
-{
-	mPointer = new CoreValue<kfloat>(value);
-}
-CoreItemSP::CoreItemSP(const int& value)
-{
-	mPointer = new CoreValue<int>(value);
-}
-CoreItemSP::CoreItemSP(const unsigned int& value)
-{
-	mPointer = new CoreValue<unsigned int>(value);
-}
-CoreItemSP::CoreItemSP(const s64& value)
-{
-	mPointer = new CoreValue<s64>(value);
-}
-CoreItemSP::CoreItemSP(const u64& value)
-{
-	mPointer = new CoreValue<u64>(value);
-}
-CoreItemSP::CoreItemSP(const kstl::string& value, CoreModifiable* owner)
+CoreItemSP MakeCoreValue(const std::string& value, CoreModifiable* owner)
 {
 	// check eval
-	if (CoreModifiable::AttributeNeedEval(value))
+	if (AttributeNeedEval(value))
 	{
 		maCoreItemValue	tmpVal;
-		tmpVal.InitWithJSON(value,owner);
-		*this = tmpVal.item;
+		tmpVal.InitWithJSON(value, owner);
+		return tmpVal.item;
 	}
 	else
-	{
-		mPointer = new CoreValue<kstl::string>(value);
-	}
+		return std::make_shared<CoreValue<std::string>>(value);
 }
-CoreItemSP::CoreItemSP(const usString& value, CoreModifiable* owner)
+CoreItemSP MakeCoreValue(const usString& value, CoreModifiable* owner)
 {
-	// check eval
-	if (CoreModifiable::AttributeNeedEval(value.ToString()))
+	if (AttributeNeedEval(value.ToString()))
 	{
 		maCoreItemValue	tmpVal;
 		tmpVal.InitWithJSON(value.ToString(), owner);
-		*this = tmpVal.item;
+		return tmpVal.item;
 	}
 	else
-	{
-		mPointer = new CoreValue<usString>(value);
-	}
-}
-CoreItemSP::CoreItemSP(const Point2D& value)
-{
-	mPointer = new CoreVector();
-
-	(*mPointer).set("", CoreItemSP(value.x));
-	(*mPointer).set("", CoreItemSP(value.y));
-}
-CoreItemSP::CoreItemSP(const Point3D& value)
-{
-	mPointer = new CoreVector();
-	(*mPointer).set("", CoreItemSP(value.x));
-	(*mPointer).set("", CoreItemSP(value.y));
-	(*mPointer).set("", CoreItemSP(value.z));
+		return std::make_shared<CoreValue<usString>>(value);
 }
 
-CoreItemSP::CoreItemSP(const Vector4D& value)
+CoreItemSP MakeCoreValue(const v2f& value)
 {
-	mPointer = new CoreVector();
-	(*mPointer).set("", CoreItemSP(value.x));
-	(*mPointer).set("", CoreItemSP(value.y));
-	(*mPointer).set("", CoreItemSP(value.z));
-	(*mPointer).set("", CoreItemSP(value.w));
+	auto vector = MakeCoreVector();
+	vector->set("", MakeCoreValue(value.x));
+	vector->set("", MakeCoreValue(value.y));
+	return vector;
 }
+
+CoreItemSP MakeCoreValue(const v3f& value)
+{
+	auto vector = MakeCoreVector();
+	vector->set("", MakeCoreValue(value.x));
+	vector->set("", MakeCoreValue(value.y));
+	vector->set("", MakeCoreValue(value.z));
+	return vector;
+}
+
+CoreItemSP MakeCoreValue(const v4f& value)
+{
+	auto vector = MakeCoreVector();
+	vector->set("", MakeCoreValue(value.x));
+	vector->set("", MakeCoreValue(value.y));
+	vector->set("", MakeCoreValue(value.z));
+	vector->set("", MakeCoreValue(value.w));
+	return vector;
+}
+
 
 // empty assignement with value
 CoreItem& CoreItem::operator=(const bool& other)

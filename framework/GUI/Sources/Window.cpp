@@ -1,5 +1,6 @@
 #include "PrecompiledHeaders.h"
 #include "Window.h"
+
 #ifdef _MSC_VER
 #pragma warning( disable : 4355 )
 #endif
@@ -47,7 +48,7 @@ bool	Window::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if(item->isSubType("RenderingScreen"))
 	{
-		mScreen=(RenderingScreen*)item.get();
+		mScreen = item;
 	}
 
 	return CoreModifiable::addItem(item,pos PASS_LINK_NAME(linkName));

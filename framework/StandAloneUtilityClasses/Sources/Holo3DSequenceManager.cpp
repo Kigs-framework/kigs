@@ -44,8 +44,6 @@ Holo3DSequenceManager::Holo3DSequenceManager(const kstl::string& name, CLASS_NAM
 
 Holo3DSequenceManager::~Holo3DSequenceManager()
 {
-	if (mSpacialNode != nullptr)
-		mSpacialNode->Destroy();
 }
 
 void Holo3DSequenceManager::UninitModifiable()
@@ -208,7 +206,7 @@ void Holo3DSequenceManager::InitModifiable()
 
 	//theMouseInfo = new LayerMouseInfo();
 
-	ModuleInput* theInputModule = (ModuleInput*)KigsCore::GetModule("ModuleInput");
+	ModuleInput* theInputModule = KigsCore::GetModule<ModuleInput>().get();
 	theInputModule->getTouchManager()->addTouchSupport(this, (CoreModifiable*)mFollowCamera);
 
 	// add offscreen rendering screen as touch support with this as parent

@@ -48,10 +48,11 @@ public:
 	//! remove item. 
 	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
+	//! destructor
+	virtual ~RessourceFileManager();
 
 protected:
-	//! destructor
-    virtual ~RessourceFileManager();
+	
 
 	//! For each extension, a path list.
 	kstl::map<kstl::string, CMSP>		mRessourceMap;

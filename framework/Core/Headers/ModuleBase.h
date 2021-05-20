@@ -71,7 +71,7 @@ extern "C"  DLLIMPORT ModuleBase*	 ModuleInit(KigsCore* core, const kstl::vector
 struct DynamicModuleHandleAndPointer
 {
 	void*			mHandle = nullptr;
-	ModuleBase*		mInstance = nullptr;
+	SP<ModuleBase>		mInstance = nullptr;
 };
 
 // ****************************************
@@ -147,7 +147,7 @@ protected:
 	 * \param		moduleName :name of the module
 	 * \param		params : list of parameters
 	 */
-    void    RegisterDynamic(ModuleBase* dynamic);
+    void    RegisterDynamic(SP<ModuleBase> dynamic);
 #endif
 	/**
 	 * \fn			void    BaseClose();

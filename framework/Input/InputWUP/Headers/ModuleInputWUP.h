@@ -22,9 +22,9 @@ class ModuleInputWUP : public ModuleBase
 public:
 
 	DECLARE_CLASS_INFO(ModuleInputWUP,ModuleBase,Input)
-             
 	ModuleInputWUP(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-    
+	virtual ~ModuleInputWUP();
+
     void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params); 
     void Close();
 	virtual void Update(const Timer& timer, void* addParam);
@@ -35,10 +35,7 @@ public:
 
 	virtual bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
 
-
 protected:
-    virtual ~ModuleInputWUP();
-  
 	bool					mIsInitOK;
 	unsigned int			mJoystickCount;
 

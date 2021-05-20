@@ -25,7 +25,8 @@ class	KeyboardWUP : public KeyboardDevice
 public:
 	DECLARE_CLASS_INFO(KeyboardWUP, KeyboardDevice, Input);
 	KeyboardWUP(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	
+	virtual ~KeyboardWUP();
+
 	const DeviceItemBaseState&	getKeyState(int key_id)override {return *mDeviceItems[key_id]->getState();}
     
 	void	UpdateDevice()override;
@@ -37,9 +38,7 @@ public:
 	
 	unsigned short ScanToChar(u32 scanCode, u32* vkCode) override;
     
-	protected:
-    virtual ~KeyboardWUP();
-	
+protected:
 	std::vector<std::pair<int, winrt::Windows::UI::Core::KeyEventArgs>> mEvents;
 };    
 

@@ -20,13 +20,10 @@ class API3DUIShader : public API3DGenericMeshShader
 public:
 
 	DECLARE_CLASS_INFO(API3DUIShader, API3DGenericMeshShader, Renderer)
-
 	API3DUIShader(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-
-
-protected:
 	virtual ~API3DUIShader();
 
+protected:
 	std::string GetVertexShader() override;
 	std::string GetFragmentShader() override;
 

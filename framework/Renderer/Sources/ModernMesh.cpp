@@ -349,7 +349,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 			}
 		}
 
-		SmartPointer<CoreRawBuffer> crb = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<16, char>);
+		SmartPointer<CoreRawBuffer> crb = MakeRefCounted<AlignedCoreRawBuffer<16, char>>();
 		if (cm->SimpleCall<bool>("SerializeAABBTree", crb.get(), this))
 		{
 			if (crb->size() >= settings->export_buffer_attribute_as_external_file_size_threshold)
@@ -382,7 +382,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 					auto filepath = settings->working_directory + path;
 					if (compressManager)
 					{
-						auto result = OwningRawPtrToSmartPtr(new CoreRawBuffer);
+						auto result = MakeRefCounted<CoreRawBuffer>();
 						compressManager->SimpleCall("CompressData", crb.get(), result.get());
 						ModuleFileManager::SaveFile(filepath.c_str(), (u8*)result->data(), result->size());
 					}
@@ -448,39 +448,38 @@ void ModernMeshItemGroup::PrepareExport(ExportSettings* settings)
 	CoreItemSP	desc(nullptr);
 	if (mVertexDesc.size())
 	{
-
-		desc = CoreItemSP(new CoreMap<std::string>(), StealRefTag{});
+		desc = MakeCoreMap();
 
 		auto s1 = mVertexBufferArray.const_ref()->size();
 		auto s2 = mVertexCount * mVertexSize;
 		KIGS_ASSERT(s1 == s2);
 		
 		//add general parameters
-		desc->set("TriangleCount",CoreItemSP::getCoreValue((int)mTriangleCount));
-		desc->set("VertexCount",CoreItemSP::getCoreValue((int)mVertexCount));
-		desc->set("VertexSize",CoreItemSP::getCoreValue((int)mVertexSize));
-		desc->set("VertexArrayMask",CoreItemSP::getCoreValue((int)mVertexArrayMask));
+		desc->set("TriangleCount", MakeCoreValue((int)mTriangleCount));
+		desc->set("VertexCount", MakeCoreValue((int)mVertexCount));
+		desc->set("VertexSize", MakeCoreValue((int)mVertexSize));
+		desc->set("VertexArrayMask", MakeCoreValue((int)mVertexArrayMask));
 
 		std::vector<ModernMesh::VertexElem>::iterator itstart = mVertexDesc.begin();
 		std::vector<ModernMesh::VertexElem>::iterator itend = mVertexDesc.end();
 
 		while (itstart != itend)
 		{
-			CoreItemSP params = CoreItemSP::getCoreVector();
+			CoreItemSP params = MakeCoreVector();
 			desc->set((*itstart).name,params);
 			
-			params->set("",CoreItemSP::getCoreValue((int)(*itstart).size));
-			params->set("",CoreItemSP::getCoreValue((int)(*itstart).startpos));
-			params->set("",CoreItemSP::getCoreValue((int)(*itstart).mask));
-			params->set("",CoreItemSP::getCoreValue((int)(*itstart).elemCount));
+			params->set("", MakeCoreValue((int)(*itstart).size));
+			params->set("", MakeCoreValue((int)(*itstart).startpos));
+			params->set("", MakeCoreValue((int)(*itstart).mask));
+			params->set("", MakeCoreValue((int)(*itstart).elemCount));
 
 			++itstart;
 		}
 
-		desc->set("TexCoordsScale",CoreItemSP::getCoreValue((float)mTexCoordsScale));
+		desc->set("TexCoordsScale",MakeCoreValue((float)mTexCoordsScale));
 	}
 
-	if (!desc.isNil())
+	if (desc)
 	{
 		AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::COREITEM, "VertexDescription");
 		setValue("VertexDescription", desc.get());
@@ -519,7 +518,7 @@ void ModernMeshItemGroup::InitModifiable()
 		} 
 
 		auto indices_collider = (*item)["indices_collider"];
-		if (!indices_collider.isNil())
+		if (indices_collider)
 		{
 			for (auto v : indices_collider)
 			{
@@ -538,38 +537,38 @@ void ModernMeshItemGroup::InitModifiable()
 		CoreMap<std::string>*	desc = (CoreMap<std::string>*)itdesc;
 		mVertexDesc.clear();
 		CoreItemSP val = desc->GetItem("TriangleCount");
-		if (!val.isNil())
+		if (val)
 		{
 			mTriangleCount = val;
 		}
 
 		val = desc->GetItem("VertexCount");
-		if (!val.isNil())
+		if (val)
 		{
 			mVertexCount = val;
 		}
 
 		val = desc->GetItem("VertexSize");
-		if (!val.isNil())
+		if (val)
 		{
 			mVertexSize = val;
 		}
 
 		val = desc->GetItem("VertexArrayMask");
-		if (!val.isNil())
+		if (val)
 		{
 			mVertexArrayMask = val;
 		}
 
 		val = desc->GetItem("TexCoordsScale");
-		if (!val.isNil())
+		if (val)
 		{
 			mTexCoordsScale = (float)val;
 		}
 
 		auto params = desc->GetItem("vertices");
 
-		if (!params.isNil())
+		if (params)
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "vertices";
@@ -582,7 +581,7 @@ void ModernMeshItemGroup::InitModifiable()
 		}
 
 		params = desc->GetItem("colors");
-		if (!params.isNil())
+		if (params)
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "colors";
@@ -595,7 +594,7 @@ void ModernMeshItemGroup::InitModifiable()
 		}
 
 		params = desc->GetItem("texCoords");
-		if (!params.isNil())
+		if (params)
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "texCoords";
@@ -608,7 +607,7 @@ void ModernMeshItemGroup::InitModifiable()
 		}
 
 		params = desc->GetItem("normals");
-		if (!params.isNil())
+		if (params)
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "normals";
@@ -622,7 +621,7 @@ void ModernMeshItemGroup::InitModifiable()
 		}
 
 		params = desc->GetItem("tangents");
-		if (!params.isNil())
+		if (params)
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "tangents";
@@ -636,7 +635,7 @@ void ModernMeshItemGroup::InitModifiable()
 		}
 
 		params = desc->GetItem("bone_weights");
-		if (!params.isNil())
+		if (params)
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "bone_weights";
@@ -650,7 +649,7 @@ void ModernMeshItemGroup::InitModifiable()
 		}
 
 		params = desc->GetItem("bone_indexes");
-		if (!params.isNil())
+		if (params)
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "bone_indexes";

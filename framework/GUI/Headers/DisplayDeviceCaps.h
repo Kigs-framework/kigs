@@ -25,6 +25,9 @@ public:
     
 	//! constructor
     DisplayDeviceCaps(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	
+	//! destructor
+	virtual ~DisplayDeviceCaps();
 
 	//! get the display device count 
 	unsigned int	GetDisplayDeviceCount()
@@ -191,9 +194,6 @@ public:
 	}
 	
 protected:
-	//! destructor
-    virtual ~DisplayDeviceCaps();
-
 	kstl::map<kstl::string,DisplayDevice>		mDisplayDeviceList;
 
 };    

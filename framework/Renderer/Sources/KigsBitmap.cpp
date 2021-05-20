@@ -119,7 +119,7 @@ void	KigsBitmap::InitModifiable()
 			{
 				if ((parentTexture->getValue<int>("Width") == 0) && (parentTexture->getValue<int>("Height") == 0))
 				{
-					SmartPointer<TinyImage>	img = OwningRawPtrToSmartPtr(TinyImage::CreateImage(mRawPixels, mSize[0], mSize[1], TinyImage::ImageFormat::RGBA_32_8888));
+					SmartPointer<TinyImage>	img = TinyImage::CreateImage(mRawPixels, mSize[0], mSize[1], TinyImage::ImageFormat::RGBA_32_8888);
 					parentTexture->CreateFromImage(img);
 				}
 			}
@@ -224,12 +224,11 @@ void	KigsBitmap::Print(const std::string& txt, int posx, int posy, unsigned int 
 				break;
 
 			u64 size;
-			CoreRawBuffer* L_Buffer = ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
+			auto L_Buffer = ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
 			if (L_Buffer)
 			{
 				unsigned char* pBuffer = (unsigned char*)L_Buffer->CopyBuffer();
 				ModuleSpecificRenderer::mDrawer->SetFont(fontName.c_str(), pBuffer, size, fontSize);
-				L_Buffer->Destroy();
 			}
 			else
 				break;

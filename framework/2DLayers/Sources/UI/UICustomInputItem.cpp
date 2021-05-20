@@ -9,7 +9,7 @@ void UICustomInputItem::InitModifiable()
 {
 	ParentClassType::InitModifiable();
 
-	ModuleInput* theInputModule = (ModuleInput*)KigsCore::GetModule("ModuleInput");
+	auto theInputModule = KigsCore::GetModule<ModuleInput>();
 
 	if (!HasMethod("ManageDirectTouchEvent") && !HasMethod("ManageClickTouchEvent"))
 	{

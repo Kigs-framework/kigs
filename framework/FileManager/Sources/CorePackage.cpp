@@ -984,7 +984,7 @@ bool		CorePackageFileAccess::Platform_fopen(FileHandle* handle, const char * mod
 		// if append mode, first copy file to mTmpWriteFile
 		if (flags & FileHandle::Append)
 		{
-			SP<FileHandle>	readfile = NonOwningRawPtrToSmartPtr(handle);
+			SP<FileHandle> readfile = handle->shared_from_this();
 			ModuleFileManager::CoreCopyFile(readfile, mTmpWriteFile, 2048*1024);
 			mCurrentReadPos += mFileEntry->mFileSize;
 		}
@@ -1025,7 +1025,7 @@ long int	CorePackageFileAccess::Platform_fwrite(const void * ptr, long size, lon
 	std::shared_lock<std::shared_mutex>	lk(mMutex);
 	// in write or append mode ?
 	// then write or append to tmpfile
-	if (!mTmpWriteFile.isNil())
+	if (mTmpWriteFile)
 	{
 		long writed = ::Platform_fwrite(ptr, size, count, mTmpWriteFile.get());
 		mCurrentReadPos += writed * size;
@@ -1098,7 +1098,7 @@ int			CorePackageFileAccess::Platform_fclose(FileHandle* handle)
 {
 	// in write or append mode ?
 	// then close tmp file and do everything to update current package
-	if (!mTmpWriteFile.isNil())
+	if (mTmpWriteFile)
 	{
 		// first close tmp file
 		::Platform_fclose(mTmpWriteFile.get());

@@ -138,7 +138,7 @@ void    ModuleBase::BaseInit(KigsCore* core,const kstl::string& moduleName, cons
 }
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
-void    ModuleBase::RegisterDynamic(ModuleBase* dynamic)
+void    ModuleBase::RegisterDynamic(SP<ModuleBase> dynamic)
 {
 	DynamicModuleHandleAndPointer toAdd;
 	toAdd.mHandle=0;
@@ -156,7 +156,6 @@ void    ModuleBase::BaseClose()
 	for(it=mDynamicModuleList.begin();it!=mDynamicModuleList.end();++it)
 	{
 		it->mInstance->Close();
-		it->mInstance->Destroy();
 		PlatformCloseDLL(it->mHandle);
 	}
 	mDynamicModuleList.clear();

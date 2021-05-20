@@ -8,7 +8,7 @@
 
 template <typename stringType, typename parserType>
 JSonFileParserBase<stringType,parserType>::JSonFileParserBase(const kstl::string& filename, CoreModifiable*	delegateObject) :
-	mDelegateObject(delegateObject, GetRefTag{})
+	mDelegateObject(delegateObject->SharedFromThis())
 {
 	InitParser(filename);
 }
@@ -19,7 +19,7 @@ JSonFileParserBase<stringType,parserType>::JSonFileParserBase()
 }
 
 template <typename stringType, typename parserType>
-void JSonFileParserBase<stringType,parserType>::InitParserFromString(CoreRawBuffer* Buff)
+void JSonFileParserBase<stringType,parserType>::InitParserFromString(const SP<CoreRawBuffer>& Buff)
 {
 	// init often used IDs
 	mJSonObjectStartID=CharToID::GetID("JSonObjectStart");
@@ -90,12 +90,10 @@ void JSonFileParserBase<stringType,parserType>::InitParser(const kstl::string& f
 	SmartPointer<::FileHandle> fullfilenamehandle=pathManager->FindFullName(filename);
 
 	u64 size;
-	CoreRawBuffer* Buff=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),size, GetStringCharSize());
-
+	auto Buff = ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),size, GetStringCharSize());
 	if(Buff)
 	{
 		InitParserFromString(Buff);
-		Buff->Destroy();
 	}
 #ifdef _DEBUG
 	else
@@ -383,12 +381,10 @@ CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(SmartP
 	mDelegateObject = mDictionaryFromJson;
 
 	u64 size;
-	CoreRawBuffer* Buff = ModuleFileManager::LoadFileAsCharString(filehandle.get(), size, GetStringCharSize());
-
+	auto Buff = ModuleFileManager::LoadFileAsCharString(filehandle.get(), size, GetStringCharSize());
 	if (Buff)
 	{
 		InitParserFromString(Buff);
-		Buff->Destroy();
 	}
 #ifdef _DEBUG
 	else
@@ -485,14 +481,9 @@ CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionaryFromStr
 	{
 		copybuffer[byteSize - i] = 0;
 	}
-	CoreRawBuffer*	Buff = new CoreRawBuffer((void*)copybuffer, byteSize);
-
+	auto Buff = MakeRefCounted<CoreRawBuffer>((void*)copybuffer, byteSize);
 	InitParserFromString(Buff);
-
-	Buff->Destroy();
-
 	CoreItemSP L_TempDictionary = getDictionnary();
-
 	mDictionaryFromJson = nullptr;
 	
 	return L_TempDictionary;
@@ -735,9 +726,9 @@ DictionaryFromJson::~DictionaryFromJson()
 
 DEFINE_METHOD(DictionaryFromJson,JSonObjectStart)
 {
-	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreMap<kstl::string>(), StealRefTag{});
+	CoreItemSP toAdd = MakeCoreMap();
 
-	if (!mCurrentObject.isNil())
+	if (mCurrentObject)
 	{
 		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
@@ -778,9 +769,9 @@ DEFINE_METHOD(DictionaryFromJson,JSonObjectEnd)
 
 DEFINE_METHOD(DictionaryFromJson,JSonArrayStart)
 {
-	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreVector(), StealRefTag{});
+	CoreItemSP toAdd = MakeCoreVector();
 
-	if (!mCurrentObject.isNil())
+	if (mCurrentObject)
 	{
 		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
@@ -826,7 +817,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 	if(!params.empty())
 	{
 		bool L_IsVector = false;
-		if(!mCurrentObject.isNil())
+		if(mCurrentObject)
 		{
 			L_IsVector = (mCurrentObject->GetType() == CoreItem::COREVECTOR);
 		}
@@ -841,7 +832,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 
 			if ((paramType == ATTRIBUTE_TYPE::STRING) || (paramType == ATTRIBUTE_TYPE::USSTRING))
 			{
-				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kstl::string>((*(maString*)params[idx])), StealRefTag{});
+				CoreItemSP L_Value = MakeCoreValue((*(maString*)params[idx]));
 
 				if(L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -851,7 +842,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 			}
 			else if(paramType == ATTRIBUTE_TYPE::FLOAT)
 			{
-				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])), StealRefTag{});
+				CoreItemSP L_Value = MakeCoreValue((*(maFloat*)params[idx]));
 				
 				if(L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -861,7 +852,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 			}
 			else if(paramType == ATTRIBUTE_TYPE::INT)
 			{
-				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])), StealRefTag{});
+				CoreItemSP  L_Value = MakeCoreValue((*(maInt*)params[idx]));
 				
 				if(L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -871,7 +862,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 			}
 			else if (paramType == ATTRIBUTE_TYPE::LONG)
 			{
-				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<s64>((*(maLong*)params[idx])), StealRefTag{});
+				CoreItemSP  L_Value = MakeCoreValue((*(maLong*)params[idx]));
 
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -881,7 +872,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 			}
 			else if(paramType == ATTRIBUTE_TYPE::BOOL)
 			{
-				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
+				CoreItemSP L_Value = MakeCoreValue((*(maBool*)params[idx]));
 
 				if(L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -891,7 +882,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 			}
 			else if(paramType == ATTRIBUTE_TYPE::UINT)
 			{
-				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])), StealRefTag{});
+				CoreItemSP L_Value = MakeCoreValue((*(maUInt*)params[idx]));
 
 				if(L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -901,7 +892,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 			}
 			else if (paramType == ATTRIBUTE_TYPE::ULONG)
 			{
-				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<u64>((*(maULong*)params[idx])), StealRefTag{});
+				CoreItemSP L_Value = MakeCoreValue((*(maULong*)params[idx]));
 
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -911,7 +902,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 			}
 			else if(paramType == ATTRIBUTE_TYPE::DOUBLE)
 			{
-				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])), StealRefTag{});
+				CoreItemSP L_Value = MakeCoreValue((*(maDouble*)params[idx]));
 
 				if(L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -947,9 +938,9 @@ DictionaryFromJsonUTF16::~DictionaryFromJsonUTF16()
 
 DEFINE_METHOD(DictionaryFromJsonUTF16, JSonObjectStart)
 {
-	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreMap<usString>(), StealRefTag{});
+	CoreItemSP toAdd = MakeCoreMapUS();
 
-	if (!mCurrentObject.isNil())
+	if (mCurrentObject)
 	{
 		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
@@ -990,9 +981,9 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonObjectEnd)
 
 DEFINE_METHOD(DictionaryFromJsonUTF16, JSonArrayStart)
 {
-	CoreItemSP toAdd = CoreItemSP((CoreItem*)new CoreVector(), StealRefTag{});
+	CoreItemSP toAdd = MakeCoreVector();
 
-	if (!mCurrentObject.isNil())
+	if (mCurrentObject)
 	{
 		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
@@ -1037,7 +1028,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 	if (!params.empty())
 	{
 		bool L_IsVector = false;
-		if (!mCurrentObject.isNil())
+		if (mCurrentObject)
 		{
 			L_IsVector = (mCurrentObject->GetType() == CoreItem::COREVECTOR);
 		}
@@ -1052,7 +1043,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 
 			if ((paramType == ATTRIBUTE_TYPE::STRING) || (paramType == ATTRIBUTE_TYPE::USSTRING))
 			{
-				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<usString>(((maUSString*)params[idx])->const_ref()), StealRefTag{});
+				CoreItemSP L_Value = MakeCoreValue(((maUSString*)params[idx])->const_ref());
 
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -1062,7 +1053,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 			}
 			else if (paramType == ATTRIBUTE_TYPE::FLOAT)
 			{
-				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<kfloat>((*(maFloat*)params[idx])), StealRefTag{});
+				CoreItemSP L_Value = MakeCoreValue((*(maFloat*)params[idx]));
 
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -1072,7 +1063,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 			}
 			else if (paramType == ATTRIBUTE_TYPE::INT)
 			{
-				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<int>((*(maInt*)params[idx])), StealRefTag{});
+				CoreItemSP  L_Value = MakeCoreValue((*(maInt*)params[idx]));
 
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -1082,7 +1073,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 			}
 			else if (paramType == ATTRIBUTE_TYPE::LONG)
 			{
-				CoreItemSP  L_Value = CoreItemSP((CoreItem*)new CoreValue<s64>((*(maLong*)params[idx])), StealRefTag{});
+				CoreItemSP  L_Value = MakeCoreValue((*(maLong*)params[idx]));
 
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -1092,7 +1083,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 			}
 			else if (paramType == ATTRIBUTE_TYPE::BOOL)
 			{
-				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<bool>((*(maBool*)params[idx])), StealRefTag{});
+				CoreItemSP L_Value = MakeCoreValue((*(maBool*)params[idx]));
 
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -1102,7 +1093,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 			}
 			else if (paramType == ATTRIBUTE_TYPE::UINT)
 			{
-				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<unsigned int>((*(maUInt*)params[idx])), StealRefTag{});
+				CoreItemSP L_Value = MakeCoreValue((*(maUInt*)params[idx]));
 
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -1112,7 +1103,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 			}
 			else if (paramType == ATTRIBUTE_TYPE::ULONG)
 			{
-				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<u64>((*(maULong*)params[idx])), StealRefTag{});
+				CoreItemSP L_Value = MakeCoreValue((*(maULong*)params[idx]));
 
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
@@ -1122,7 +1113,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 			}
 			else if (paramType == ATTRIBUTE_TYPE::DOUBLE)
 			{
-				CoreItemSP L_Value = CoreItemSP((CoreItem*)new CoreValue<double>((*(maDouble*)params[idx])), StealRefTag{});
+				CoreItemSP L_Value = MakeCoreValue((*(maDouble*)params[idx]));
 
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);

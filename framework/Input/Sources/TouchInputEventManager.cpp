@@ -21,7 +21,7 @@ IMPLEMENT_CONSTRUCTOR(TouchInputEventManager)
 {
 	StackedEventStateStruct	firstOne;
 	mStackedEventState.push_back(firstOne);
-	mTheInputModule = reinterpret_cast<ModuleInput*>(CoreGetModule(ModuleInput));
+	mTheInputModule = (ModuleInput*)CoreGetModule(ModuleInput).get();
 }
 
 bool TouchInputEventManager::isRegisteredOnCurrentState(CoreModifiable* obj)
@@ -1028,8 +1028,7 @@ void	TouchInputEventManager::LinearCallEventUpdate(kstl::vector<SortedElementNod
 	{
 		if (mDestroyedThisFrame.find(element.element) == mDestroyedThisFrame.end() && mDestroyedThisFrame.find(element.touchSupport) == mDestroyedThisFrame.end())
 		{
-			element.element->GetRef(); // In case a modifiable decide to commit suicide during one of its callbacks
-
+			auto keepalive = element.element->SharedFromThis(); // In case a modifiable decide to commit suicide during one of its callbacks
 			StackedEventStateStruct::EventMapEntry& currentEntry = state.mEventMap[element.element];
 
 			auto	itEvent = currentEntry.mTouchEventStateList.begin();
@@ -1054,7 +1053,6 @@ void	TouchInputEventManager::LinearCallEventUpdate(kstl::vector<SortedElementNod
 				++itEvent;
 			}
 			swallowMask = swallowMaskResult;
-			element.element->Destroy();
 		}
 	}
 }

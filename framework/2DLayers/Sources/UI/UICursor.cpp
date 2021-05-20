@@ -6,7 +6,7 @@ IMPLEMENT_CLASS_INFO(UICursor)
 
 IMPLEMENT_CONSTRUCTOR(UICursor)
 {
-	ModuleInput* theInputModule = (ModuleInput*)KigsCore::GetModule("ModuleInput");
+	auto theInputModule = KigsCore::GetModule<ModuleInput>();
 	theInputModule->getTouchManager()->registerEvent(this, "ManageDirectTouchEvent", DirectTouch, IgnoreSwallow);
 }
 
