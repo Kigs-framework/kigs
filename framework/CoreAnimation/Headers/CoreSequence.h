@@ -19,7 +19,7 @@
 class CoreSequence : public CoreVector
 {
 public:
-	CoreSequence(CoreModifiable* target, KigsID name, Timer* reftimer = 0);
+	CoreSequence(CMSP target, KigsID name, Timer* reftimer = 0);
 
 	virtual ~CoreSequence();
 

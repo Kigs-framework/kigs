@@ -33,7 +33,7 @@ public:
 	bool removeItem(const CMSP& item) override;
 
 	void SetTextureID(unsigned int id) { mTextureID = id; }
-	void SetTexture(Texture* t);
+	void SetTexture(SP<Texture> t);
 
 	bool Draw(TravState* travstate) override;
 

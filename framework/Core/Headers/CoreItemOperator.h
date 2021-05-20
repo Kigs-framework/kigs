@@ -36,7 +36,7 @@ protected:
 
 
 
-typedef     CoreVector* (*CoreItemOperatorCreateMethod)();
+typedef SP<CoreVector> (*CoreItemOperatorCreateMethod)();
 
 class SpecificOperator
 {
@@ -148,8 +148,8 @@ protected:
 	static kstl::vector<CoreItemOperatorStruct>	FindFirstLevelOperators(AsciiParserUtils& formulae, ConstructContext& context);
 	static kstl::vector<CoreItemOperatorStruct>	FindFirstLevelSeparator(AsciiParserUtils& formulae, ConstructContext& context);
 	static kstl::vector<kstl::string>	FindFirstLevelParams(AsciiParserUtils& formulae, ConstructContext& context);
-	static CoreItemOperator<operandType>* getOperator(const kstl::string& keyword, ConstructContext& context);
-	static GenericRefCountedBaseClass* getVariable(const kstl::string& keyword);
+	static SP<CoreItemOperator<operandType>> getOperator(const kstl::string& keyword, ConstructContext& context);
+	static SP<GenericRefCountedBaseClass> getVariable(const kstl::string& keyword);
 };
 
 
@@ -412,9 +412,9 @@ public:
 		return (result<(operandType)0) ? (-result) : result;
 	}
 
-	static CoreVector* create()
+	static SP<CoreVector> create()
 	{
-		return new AbsOperator<operandType>();
+		return std::make_shared<AbsOperator<operandType>>();
 	}
 
 };
@@ -454,9 +454,9 @@ public:
 		return result;
 	}
 
-	static CoreVector* create()
+	static SP<CoreVector> create()
 	{
-		return new MaxOperator<operandType>();
+		return std::make_shared<MaxOperator<operandType>>();
 	}
 };
 
@@ -494,9 +494,9 @@ public:
 		return result;
 	}
 
-	static CoreVector* create()
+	static SP<CoreVector> create()
 	{
-		return new MinOperator<operandType>();
+		return std::make_shared<MinOperator<operandType>>();
 	}
 };
 
@@ -527,9 +527,9 @@ public:
 		return sinf(result);
 	}
 
-	static CoreVector* create()
+	static SP<CoreVector> create()
 	{
-		return new SinusOperator<operandType>();
+		return std::make_shared<SinusOperator<operandType>>();
 	}
 };
 
@@ -547,9 +547,9 @@ public:
 		return cosf(result);
 	}
 
-	static CoreVector* create()
+	static SP<CoreVector> create()
 	{
-		return new CosinusOperator<operandType>();
+		return std::make_shared<CosinusOperator<operandType>>();
 	}
 
 };
@@ -568,9 +568,9 @@ public:
 		return tanf(result);
 	}
 
-	static CoreVector* create()
+	static SP<CoreVector> create()
 	{
-		return new TangentOperator<operandType>();
+		return std::make_shared<TangentOperator<operandType>>();
 	}
 
 };
@@ -1013,9 +1013,9 @@ public:
 		
 		return result;
 	}
-	static CoreVector* create()
+	static SP<CoreVector> create()
 	{
-		return new IfThenElseOperator<operandType>();
+		return std::make_shared<IfThenElseOperator<operandType>>();
 	}
 };
 

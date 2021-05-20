@@ -163,9 +163,9 @@ public:
 		}
 		return ((operandType)0);
 	}
-	static CoreVector* create()
+	static SP<CoreVector> create()
 	{
-		return new ActionTimeOperator<operandType>();
+		return SP<ActionTimeOperator<operandType>>();
 	}
 
 protected:

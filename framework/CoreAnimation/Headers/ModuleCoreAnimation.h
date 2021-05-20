@@ -44,9 +44,9 @@ public:
 	//! update module
 	void Update(const Timer& timer, void* addParam) override;
 
-	SP<CoreSequence> createSequenceFromString(CoreModifiable* target, const kstl::string& json, Timer* reftimer = 0);
-	SP<CoreSequence> createSequenceFromJSON(CoreModifiable* target,const kstl::string& file,Timer* reftimer=0);
-	SP<CoreSequence> createSequenceFromCoreMap(CoreModifiable* target,CoreItemSP& sequenceDesc,Timer* reftimer=0);
+	SP<CoreSequence> createSequenceFromString(CMSP target, const kstl::string& json, Timer* reftimer = 0);
+	SP<CoreSequence> createSequenceFromJSON(CMSP target, const kstl::string& file,Timer* reftimer=0);
+	SP<CoreSequence> createSequenceFromCoreMap(CMSP target, CoreItemSP& sequenceDesc,Timer* reftimer=0);
 	CoreItemSP		 createAction(CoreSequence* sequence, CoreItemSP& actiondesc);
 
 	void	addSequence(CoreSequence* sequence);

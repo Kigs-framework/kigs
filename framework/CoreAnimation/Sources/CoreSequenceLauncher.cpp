@@ -55,7 +55,7 @@ void	CoreSequenceLauncher::addSequencesToParents()
 		if (mSequenceMap.find(parent) == mSequenceMap.end() && (CoreItem*)mSequence)
 		{
 			CoreItemSP sequence = ((CoreItem*)mSequence)->SharedFromThis();
-			auto L_Sequence = L_CoreAnimation->createSequenceFromCoreMap(parent, sequence);
+			auto L_Sequence = L_CoreAnimation->createSequenceFromCoreMap(parent->SharedFromThis(), sequence);
 			L_CoreAnimation->addSequence(L_Sequence.get());
 			if (mStartOnFirstUpdate)
 				L_Sequence->startAtFirstUpdate();

@@ -2345,7 +2345,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 			}
 			
 			// export modifier
-			AttachedModifierBase* exportedModifier=current->getFirstAttachedModifier();
+			SP<AttachedModifierBase> exportedModifier=current->getFirstAttachedModifier();
 			while (exportedModifier)
 			{
 				XMLNode*	modifierNode = new XMLNode();
@@ -2635,11 +2635,11 @@ void	CoreModifiable::InitLuaScript(XMLNodeBase* currentNode, CoreModifiable* cur
 	luamodule->CallMethod("RegisterLuaMethod", params);
 }
 
-AttachedModifierBase* CoreModifiable::InitAttributeModifier(XMLNodeBase* currentNode, CoreModifiableAttribute* attr)
+SP<AttachedModifierBase> CoreModifiable::InitAttributeModifier(XMLNodeBase* currentNode, CoreModifiableAttribute* attr)
 {
 	XMLAttributeBase* attrtype = currentNode->getAttribute("T", "Type");
 
-	AttachedModifierBase* toAdd = 0;
+	SP<AttachedModifierBase> toAdd;
 	if (attrtype)
 	{
 		std::string modifiertype = attrtype->getString();
@@ -2649,11 +2649,11 @@ AttachedModifierBase* CoreModifiable::InitAttributeModifier(XMLNodeBase* current
 			auto itfound = instanceMap.find(modifiertype);
 			if (itfound != instanceMap.end())
 			{
-				toAdd = (AttachedModifierBase*)(*itfound).second();
+				toAdd = (*itfound).second();
 			}
 		}
 
-		if (toAdd != 0)
+		if (toAdd)
 		{
 			// is setter ?
 			bool isSetter = false;

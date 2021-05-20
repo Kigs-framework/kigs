@@ -753,7 +753,7 @@ LuaRef GetModifiableLuaData(lua_State* lua, CoreModifiable* obj)
 
 void QuickAnim(ModuleCoreAnimation* m, CoreModifiable* target, const char* str)
 {
-	auto seq = m->createSequenceFromString(target, str);
+	auto seq = m->createSequenceFromString(target->SharedFromThis(), str);
 	m->addSequence(seq.get());
 	m->startSequenceAtFirstUpdate(seq.get());
 }

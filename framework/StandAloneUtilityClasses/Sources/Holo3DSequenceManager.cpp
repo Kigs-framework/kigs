@@ -266,7 +266,7 @@ void Holo3DSequenceManager::Update(const Timer&  aTimer, void* addParam)
 	
 
 	// retreive texture id
-	mDrawer->SetTexture(mRenderingScreen->as<RenderingScreen>()->GetFBOTexture().get());
+	mDrawer->SetTexture(mRenderingScreen->as<RenderingScreen>()->GetFBOTexture());
 	// manage positionning
 	if ((!mManualPosition && (mNeedRecomputePosition || !mIsFixed)) || mForceInFront)
 	{

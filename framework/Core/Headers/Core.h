@@ -39,7 +39,7 @@ class CoreItem;
 class CoreVector;
 
 
-typedef     CoreVector* (*CoreItemOperatorCreateMethod)();
+typedef     SP<CoreVector> (*CoreItemOperatorCreateMethod)();
 
 // keep a fast array access on main generic modules (using enum as index)
 enum CoreModuleIndex

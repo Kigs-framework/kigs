@@ -18,16 +18,16 @@ void Holo3DPanel::InitModifiable()
 	ParentClassType::InitModifiable();
 }
 
-void Holo3DPanel::SetTexture(Texture* t)
+void Holo3DPanel::SetTexture(SP<Texture> t)
 {
-	mTexture = t->SharedFromThis();
+	mTexture = std::move(t);
 }
 
 bool Holo3DPanel::addItem(const CMSP& item, ItemPosition pos)
 {
 	if (item->isSubType("Texture"))
 	{
-		SetTexture((Texture*)item.get());
+		SetTexture(item);
 	}
 	return ParentClassType::addItem(item, pos);
 }

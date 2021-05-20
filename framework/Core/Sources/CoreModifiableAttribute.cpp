@@ -140,27 +140,19 @@ void CoreModifiableAttribute::changeNotificationLevel(AttributeNotificationLevel
 
 CoreModifiable* CoreModifiableAttribute::getOwner() const
 {
-	uintptr_t firstp = mOwnerAndModifiers;
-	while (firstp & 1) // this is a modifier
-	{
-		AttachedModifierBase* realaddress = (AttachedModifierBase*)(firstp & (((uintptr_t)-1) ^ (uintptr_t)3));
-		firstp = realaddress->getNextObject();
-	}
-
-	return (CoreModifiable*)firstp;
+	return mOwner;
 }
 
-void	CoreModifiableAttribute::attachModifier(AttachedModifierBase* toAttach)
+void	CoreModifiableAttribute::attachModifier(SP<AttachedModifierBase> toAttach)
 {
 	if (!toAttach)
 	{
 		return;
 	}
-	AttachedModifierBase* modifier = getFirstAttachedModifier();
+	SP<AttachedModifierBase> modifier = getFirstAttachedModifier();
 
-	toAttach->setNextObject(mOwnerAndModifiers);
-	mOwnerAndModifiers = (uintptr_t)toAttach;
-	mOwnerAndModifiers |= 1;
+	toAttach->setNextObject(mAttachedModifier);
+	mAttachedModifier = toAttach;
 
 	if (!modifier) // first one
 	{
@@ -170,28 +162,27 @@ void	CoreModifiableAttribute::attachModifier(AttachedModifierBase* toAttach)
 	
 }
 
-void	CoreModifiableAttribute::detachModifier(AttachedModifierBase* toDetach)
+void	CoreModifiableAttribute::detachModifier(SP<AttachedModifierBase> toDetach)
 {
-	AttachedModifierBase* modifier = getFirstAttachedModifier();
+	SP<AttachedModifierBase> modifier = getFirstAttachedModifier();
 	if (!modifier)
 		return;
 
-	AttachedModifierBase* prev = 0;
-	AttachedModifierBase* current = modifier;
+	SP<AttachedModifierBase> prev;
+	SP<AttachedModifierBase> current = modifier;
 	while (current)
 	{
 		if (current == toDetach)
 		{
 			if (prev)
 			{
-				prev->setNextObject(current->getNextObject());
+				prev->setNextObject(current);
 			}
 			else
 			{
-				mOwnerAndModifiers = current->getNextObject();
+				mAttachedModifier = current;
 			}
-
-			toDetach->setNextObject(0);
+			toDetach->setNextObject(nullptr);
 			break;
 		}
 		prev = current;
@@ -217,13 +208,6 @@ CoreModifiableAttribute::~CoreModifiableAttribute()
 		{
 			owner->mAttributes.erase(it);
 		}
-	}
-
-	AttachedModifierBase* modifier = getFirstAttachedModifier();
-
-	if (modifier)
-	{
-		delete modifier;
 	}
 };
 

@@ -396,7 +396,7 @@ void	FSM::initStateFromDescription(CoreItemSP statedescription)
 
 			for (u32 i = 0; i < actionarray->size(); i++)
 			{
-				kstl::string action(actionarray[i]);
+				kstl::string action(*actionarray[i]);
 				if (action != "")
 				{
 					addStateAction((STATE_ACTION_TYPE)i, action);
@@ -416,7 +416,7 @@ void	FSM::initStateFromDescription(CoreItemSP statedescription)
 		}
 		else if (key == "importXML") // extern file
 		{
-			kstl::string filename(*iterstate);
+			kstl::string filename(**iterstate);
 			SP<FSM_State> newstate = CoreModifiable::Import(filename);
 			if (newstate)
 			{
@@ -425,11 +425,11 @@ void	FSM::initStateFromDescription(CoreItemSP statedescription)
 		}
 		else if (key == "importJSON") // extern file
 		{
-			initStateFromJSONFile((kstl::string)*iterstate);
+			initStateFromJSONFile((kstl::string)**iterstate);
 		}
 		else if (key == "reference") // reference in current FSM
 		{
-			kstl::string instancename(*iterstate);
+			kstl::string instancename(**iterstate);
 			kstl::vector<CMSP> instances;
 			GetSonInstancesByName("FSM_State", instancename, instances);
 			if (instances.size() == 1)
@@ -470,11 +470,11 @@ void	FSM::initTransitionsFromDescription(CoreItemSP transitiondescription)
 
 		if (transarray->size() > 1)
 		{
-			addTransition(key, (kstl::string)transarray[0], (kstl::string)transarray[1]);
+			addTransition(key, (kstl::string)*transarray[0], (kstl::string)*transarray[1]);
 		}
 		else
 		{
-			addTransition(key, (kstl::string) transarray[0]);
+			addTransition(key, (kstl::string) *transarray[0]);
 		}
 
 		itertrans++;
@@ -488,9 +488,9 @@ void	FSM::initFSM_StateFromDescription(CoreItemSP statedescription)
 
 	kstl::string	statetype,statename,initstate;
 	
-	statetype = (kstl::string)stateInfos[0];
-	statename = (kstl::string)stateInfos[1];
-	initstate = (kstl::string)stateInfos[2];
+	statetype = (kstl::string)*stateInfos[0];
+	statename = (kstl::string)*stateInfos[1];
+	initstate = (kstl::string)*stateInfos[2];
 
 	SP<FSM_State> newstate = KigsCore::GetInstanceOf(statename, statetype);
 	newstate->setValue("Description", statedescription.get());

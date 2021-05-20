@@ -302,20 +302,20 @@ DEFINE_METHOD(ModuleCoreAnimation, OnDestroyCallBack)
 	return true;
 }
 
-SP<CoreSequence> ModuleCoreAnimation::createSequenceFromString(CoreModifiable* target, const kstl::string& json, Timer* reftimer)
+SP<CoreSequence> ModuleCoreAnimation::createSequenceFromString(CMSP target, const kstl::string& json, Timer* reftimer)
 {
 	JSonFileParser L_JsonParser;
 	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionaryFromString(json);
 
 	if (L_Dictionary)
 	{
-		SP<CoreSequence> result = createSequenceFromCoreMap(target, L_Dictionary, reftimer);
+		SP<CoreSequence> result = createSequenceFromCoreMap(std::move(target), L_Dictionary, reftimer);
 		return result;
 	}
 	return 0;
 }
 
-SP<CoreSequence> ModuleCoreAnimation::createSequenceFromJSON(CoreModifiable* target,const kstl::string& file,Timer* reftimer)
+SP<CoreSequence> ModuleCoreAnimation::createSequenceFromJSON(CMSP target,const kstl::string& file,Timer* reftimer)
 {
 	
 	JSonFileParser L_JsonParser;
@@ -323,21 +323,21 @@ SP<CoreSequence> ModuleCoreAnimation::createSequenceFromJSON(CoreModifiable* tar
 	
 	if (L_Dictionary)
 	{
-		SP<CoreSequence> result=createSequenceFromCoreMap(target,L_Dictionary,reftimer);
+		SP<CoreSequence> result=createSequenceFromCoreMap(std::move(target),L_Dictionary,reftimer);
 		return result;
 	}
 
 	return 0;
 }
 
-SP<CoreSequence> ModuleCoreAnimation::createSequenceFromCoreMap(CoreModifiable* target, CoreItemSP& L_Dictionary,Timer* reftimer)
+SP<CoreSequence> ModuleCoreAnimation::createSequenceFromCoreMap(CMSP target, CoreItemSP& L_Dictionary,Timer* reftimer)
 {
 	CoreItemIterator iter=L_Dictionary->begin();
 
 	kstl::string	key;
 	iter.getKey(key);
 
-	SP<CoreSequence> result = MakeRefCounted<CoreSequence>(target, key, reftimer);
+	SP<CoreSequence> result = MakeRefCounted<CoreSequence>(std::move(target), key, reftimer);
 
 	CoreItem& actions= (CoreItem & )(*iter);
 

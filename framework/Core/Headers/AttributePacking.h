@@ -177,8 +177,7 @@ CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const k
 template<typename T>
 CoreModifiableAttribute* MakeAttribute(const SmartPointer<T>& value, CoreModifiable* owner, const kstl::string& name = "ParamSP")
 {
-	CoreModifiable* ptr = static_cast<CoreModifiable*>(value.get());
-	return MakeAttributeSpec(ptr, owner, name);
+	return MakeAttributeSpec(value, owner, name);
 }
 
 // r-value reference of a fundamental type. use equivalent CoreModifiableAttribute type

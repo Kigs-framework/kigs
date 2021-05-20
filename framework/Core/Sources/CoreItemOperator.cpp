@@ -382,7 +382,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		if (matchkeywork != "")
 		{
 
-			CoreItemOperator<operandType>*	newfunction = 0;
+			SP<CoreItemOperator<operandType>>	newfunction;
 			newfunction = getOperator(matchkeywork, context);
 
 			if (newfunction)
@@ -420,14 +420,14 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 						}
 					}
 				}
-				return CoreItemSP((CoreItem*)newfunction);
+				return newfunction;
 			}
 
 			// try to find a variable with this name
-			CoreItem* variable= (CoreItem *)getVariable(matchkeywork);
+			CoreItemSP variable = std::static_pointer_cast<CoreItem>(getVariable(matchkeywork));
 			if (variable)
 			{
-				return variable->SharedFromThis();
+				return variable;
 			}
 			/*// just set value as a string
 			CoreValue < kstl::string > &   corevalue = *(new CoreValue< kstl::string>());
@@ -435,8 +435,8 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 			return corevalue;
 			*/
 			// dynamic var
-			variable = new DynamicVariableOperator<operandType>(matchkeywork);
-			return CoreItemSP((CoreItem*)variable);
+			variable = std::make_shared<DynamicVariableOperator<operandType>>(matchkeywork);
+			return variable;
 		}
 
 	}
@@ -562,26 +562,26 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 }
 
 template<typename operandType>
-CoreItemOperator<operandType>* CoreItemOperator<operandType>::getOperator(const kstl::string& keyword, ConstructContext& context)
+SP<CoreItemOperator<operandType>> CoreItemOperator<operandType>::getOperator(const kstl::string& keyword, ConstructContext& context)
 {
 
 	typename kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>::const_iterator itfound = context.mMap.find(keyword);
 	while (itfound != context.mMap.end())
 	{
-		return  (CoreItemOperator<operandType>*)((*itfound).second());
+		return (*itfound).second();
 	}
 	return 0;
 }
 
 template<typename operandType>
-GenericRefCountedBaseClass* CoreItemOperator<operandType>::getVariable(const kstl::string& keyword)
+SP<GenericRefCountedBaseClass> CoreItemOperator<operandType>::getVariable(const kstl::string& keyword)
 {
 	if (CoreItemEvaluationContext::GetContext())
 	{
 		auto itfound = CoreItemEvaluationContext::GetContext()->mVariableList.find(CharToID::GetID(keyword));
 		if (itfound != CoreItemEvaluationContext::GetContext()->mVariableList.end())
 		{
-			return (*itfound).second.size() ? (*itfound).second.back().get() : nullptr;
+			return (*itfound).second.size() ? (*itfound).second.back() : nullptr;
 		}
 	}
 	return nullptr;
@@ -1184,7 +1184,7 @@ CoreModifiableAttributeOperator<kfloat>::operator kfloat() const
 
 			if (!attribute)
 			{
-				kfloat val = (kfloat)(*(*itOperand).get());
+				kfloat val = (kfloat)(**itOperand);
 				attribute = new maFloat(*mTarget, false, LABEL_AND_ID(Val), val);
 			}
 			attributes.push_back(attribute);
@@ -1196,8 +1196,8 @@ CoreModifiableAttributeOperator<kfloat>::operator kfloat() const
 		int attrCount = attributes.size();
 
 		// check if current context has mSender or data
-		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
-		void* datavariable = (void*)getVariable("data");
+		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender").get();
+		void* datavariable = (void*)getVariable("data").get();
 		mTarget->CallMethod(mMethodID, attributes, datavariable, sendervariable);
 	
 		if (attributes.size() > attrCount)
@@ -1259,7 +1259,7 @@ CoreModifiableAttributeOperator<kstl::string>::operator kstl::string() const
 
 			if (!attribute)
 			{
-				kstl::string val = (kstl::string)(*(*itOperand).get());
+				kstl::string val = (kstl::string)(**itOperand);
 				attribute = new maString(*mTarget, false, LABEL_AND_ID(Val), val);
 			}
 			attributes.push_back(attribute);
@@ -1271,8 +1271,8 @@ CoreModifiableAttributeOperator<kstl::string>::operator kstl::string() const
 		int attrCount = attributes.size();
 
 		// check if current context has mSender or data
-		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
-		void* datavariable = (void*)getVariable("data");
+		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender").get();
+		void* datavariable = (void*)getVariable("data").get();
 		mTarget->CallMethod(mMethodID, attributes, datavariable, sendervariable);
 
 		if (attributes.size() > attrCount)
@@ -1336,7 +1336,7 @@ CoreModifiableAttributeOperator<v2f>::operator v2f() const
 			
 			if (!attribute)
 			{
-				v2f val((v2f)(*itOperand));
+				v2f val((v2f)(**itOperand));
 				((*itOperand).get())->getValue(val);
 				attribute = new maVect2DF(*mTarget, false, LABEL_AND_ID(Val), &(val.x));
 			}
@@ -1350,8 +1350,8 @@ CoreModifiableAttributeOperator<v2f>::operator v2f() const
 		int attrCount = attributes.size();
 
 		// check if current context has mSender or data
-		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
-		void* datavariable = (void*)getVariable("data");
+		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender").get();
+		void* datavariable = (void*)getVariable("data").get();
 		mTarget->CallMethod(mMethodID, attributes, datavariable, sendervariable);
 
 		if (attributes.size() > attrCount)
@@ -1416,7 +1416,7 @@ CoreModifiableAttributeOperator<v3f>::operator v3f() const
 
 			if (!attribute)
 			{
-				v3f val = (v3f)(*itOperand);
+				v3f val = (v3f)(**itOperand);
 				attribute = new maVect3DF(*mTarget, false, LABEL_AND_ID(Val), &(val.x));
 			}
 			attributes.push_back(attribute);
@@ -1428,8 +1428,8 @@ CoreModifiableAttributeOperator<v3f>::operator v3f() const
 		int attrCount = attributes.size();
 
 		// check if current context has mSender or data
-		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
-		void* datavariable = (void*)getVariable("data");
+		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender").get();
+		void* datavariable = (void*)getVariable("data").get();
 		mTarget->CallMethod(mMethodID, attributes, datavariable, sendervariable);
 
 		if (attributes.size() > attrCount)
@@ -1493,7 +1493,7 @@ CoreModifiableAttributeOperator<v4f>::operator v4f() const
 
 			if (!attribute)
 			{
-				v4f val(*itOperand);
+				v4f val(**itOperand);
 				attribute = new maVect4DF(*mTarget, false, LABEL_AND_ID(Val), &(val.x));
 			}
 			attributes.push_back(attribute);
@@ -1505,8 +1505,8 @@ CoreModifiableAttributeOperator<v4f>::operator v4f() const
 		int attrCount = attributes.size();
 
 		// check if current context has mSender or data
-		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender");
-		void* datavariable = (void*)getVariable("data");
+		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender").get();
+		void* datavariable = (void*)getVariable("data").get();
 		mTarget->CallMethod(mMethodID, attributes, datavariable, sendervariable);
 
 		if (attributes.size() > attrCount)
@@ -1634,7 +1634,7 @@ CoreItem& CoreModifiableAttributeOperator<v4f>::operator=(const v4f& other)
 template<>
 DynamicVariableOperator<kstl::string>::operator kstl::string() const
 {
-	CoreItem* var = (CoreItem * )getVariable(mVarName);
+	CoreItem* var = (CoreItem*)getVariable(mVarName).get();
 	if (var)
 	{
 		return (kstl::string)(*var);
@@ -1646,7 +1646,7 @@ DynamicVariableOperator<kstl::string>::operator kstl::string() const
 template<>
 DynamicVariableOperator<kfloat>::operator kfloat() const
 {
-	CoreItem* var = (CoreItem*)getVariable(mVarName);
+	CoreItem* var = (CoreItem*)getVariable(mVarName).get();
 	if (var)
 	{
 		return (kfloat)(*var);
@@ -1660,7 +1660,7 @@ DynamicVariableOperator<kfloat>::operator kfloat() const
 template<>
 DynamicVariableOperator<v2f>::operator v2f() const
 {
-	CoreItem* var = (CoreItem*)getVariable(mVarName);
+	CoreItem* var = (CoreItem*)getVariable(mVarName).get();
 	if (var)
 	{
 		return (v2f)(*var);
@@ -1671,7 +1671,7 @@ DynamicVariableOperator<v2f>::operator v2f() const
 template<>
 DynamicVariableOperator<v3f>::operator v3f() const
 {
-	CoreItem* var = (CoreItem*)getVariable(mVarName);
+	CoreItem* var = (CoreItem*)getVariable(mVarName).get();
 	if (var)
 	{
 		return (v3f)(*var);
@@ -1682,7 +1682,7 @@ DynamicVariableOperator<v3f>::operator v3f() const
 template<>
 DynamicVariableOperator<v4f>::operator v4f() const
 {
-	CoreItem* var = (CoreItem*)getVariable(mVarName);
+	CoreItem* var = (CoreItem*)getVariable(mVarName).get();
 	if (var)
 	{
 		return (v4f)*var;

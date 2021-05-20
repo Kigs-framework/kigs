@@ -173,11 +173,11 @@ void ModernMesh::InitModifiable()
 			{
 				std::string path;
 				tree->getValue(path);
-				cm->SimpleCall("SetAABBTreeFromFile", path, this);
+				cm->SimpleCall("SetAABBTreeFromFile", path, SharedFromThis());
 			}
 			else
 			{
-				cm->SimpleCall("DeserializeAABBTree", ((maBuffer*)tree)->const_ref().get(), this);
+				cm->SimpleCall("DeserializeAABBTree", ((maBuffer*)tree)->const_ref().get(), SharedFromThis());
 			}
 			SetCanFree();
 			RemoveDynamicAttribute("AABBTree");
@@ -539,31 +539,31 @@ void ModernMeshItemGroup::InitModifiable()
 		CoreItemSP val = desc->GetItem("TriangleCount");
 		if (val)
 		{
-			mTriangleCount = val;
+			mTriangleCount = *val;
 		}
 
 		val = desc->GetItem("VertexCount");
 		if (val)
 		{
-			mVertexCount = val;
+			mVertexCount = *val;
 		}
 
 		val = desc->GetItem("VertexSize");
 		if (val)
 		{
-			mVertexSize = val;
+			mVertexSize = *val;
 		}
 
 		val = desc->GetItem("VertexArrayMask");
 		if (val)
 		{
-			mVertexArrayMask = val;
+			mVertexArrayMask = *val;
 		}
 
 		val = desc->GetItem("TexCoordsScale");
 		if (val)
 		{
-			mTexCoordsScale = (float)val;
+			mTexCoordsScale = (float)*val;
 		}
 
 		auto params = desc->GetItem("vertices");
@@ -572,10 +572,10 @@ void ModernMeshItemGroup::InitModifiable()
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "vertices";
-			toAdd.size = params[0];
-			toAdd.startpos = params[1];
-			toAdd.mask = params[2];
-			toAdd.elemCount = params[3];
+			toAdd.size = *params[0];
+			toAdd.startpos = *params[1];
+			toAdd.mask = *params[2];
+			toAdd.elemCount = *params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::Position3D;
 			mVertexDesc.push_back(toAdd);
 		}
@@ -585,10 +585,10 @@ void ModernMeshItemGroup::InitModifiable()
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "colors";
-			toAdd.size = params[0];
-			toAdd.startpos = params[1];
-			toAdd.mask = params[2];
-			toAdd.elemCount = params[3];
+			toAdd.size = *params[0];
+			toAdd.startpos = *params[1];
+			toAdd.mask = *params[2];
+			toAdd.elemCount = *params[3];
 			toAdd.type = toAdd.elemCount == 3 ? ModernMesh::VertexElem::Type::ColorRGB : ModernMesh::VertexElem::Type::ColorRGBA;
 			mVertexDesc.push_back(toAdd);
 		}
@@ -598,10 +598,10 @@ void ModernMeshItemGroup::InitModifiable()
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "texCoords";
-			toAdd.size = params[0];
-			toAdd.startpos = params[1];
-			toAdd.mask = params[2];
-			toAdd.elemCount = params[3];
+			toAdd.size = *params[0];
+			toAdd.startpos = *params[1];
+			toAdd.mask = *params[2];
+			toAdd.elemCount = *params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::TextureCoordinate2D;
 			mVertexDesc.push_back(toAdd);
 		}
@@ -611,10 +611,10 @@ void ModernMeshItemGroup::InitModifiable()
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "normals";
-			toAdd.size = params[0];
-			toAdd.startpos = params[1];
-			toAdd.mask = params[2];
-			toAdd.elemCount = params[3];
+			toAdd.size = *params[0];
+			toAdd.startpos = *params[1];
+			toAdd.mask = *params[2];
+			toAdd.elemCount = *params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::Normal3D;
 			mVertexDesc.push_back(toAdd);
 
@@ -625,10 +625,10 @@ void ModernMeshItemGroup::InitModifiable()
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "tangents";
-			toAdd.size = params[0];
-			toAdd.startpos = params[1];
-			toAdd.mask = params[2];
-			toAdd.elemCount = params[3];
+			toAdd.size = *params[0];
+			toAdd.startpos = *params[1];
+			toAdd.mask = *params[2];
+			toAdd.elemCount = *params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::Tangent3D;
 			mVertexDesc.push_back(toAdd);
 
@@ -639,10 +639,10 @@ void ModernMeshItemGroup::InitModifiable()
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "bone_weights";
-			toAdd.size = params[0];
-			toAdd.startpos = params[1];
-			toAdd.mask = params[2];
-			toAdd.elemCount = params[3];
+			toAdd.size = *params[0];
+			toAdd.startpos = *params[1];
+			toAdd.mask = *params[2];
+			toAdd.elemCount = *params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::BoneWeights;
 			mVertexDesc.push_back(toAdd);
 
@@ -653,10 +653,10 @@ void ModernMeshItemGroup::InitModifiable()
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "bone_indexes";
-			toAdd.size = params[0];
-			toAdd.startpos = params[1];
-			toAdd.mask = params[2];
-			toAdd.elemCount = params[3];
+			toAdd.size = *params[0];
+			toAdd.startpos = *params[1];
+			toAdd.mask = *params[2];
+			toAdd.elemCount = *params[3];
 			toAdd.type = ModernMesh::VertexElem::Type::BoneIndexes;
 			mVertexDesc.push_back(toAdd);
 

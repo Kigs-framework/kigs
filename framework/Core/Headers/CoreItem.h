@@ -61,7 +61,11 @@ public:
 	CoreItemSP operator[](const char* key) const;
 	CoreItemSP operator[](const std::string& key) const;
 	CoreItemSP operator[](const usString& key) const;
-	operator bool() const;
+
+	// NOTE(antoine) i've disabled these conversion operators, they can be error prone
+	// - the shared_ptr must not be null
+	// - shared_ptr already has a bool operator which is commonly used in patterns like this : if(myCoreItemSP) { doSomething... }
+	/*operator bool() const;
 	operator float() const;
 	operator double() const;
 	operator int() const;
@@ -72,7 +76,7 @@ public:
 	operator usString() const;
 	operator v2f() const;
 	operator v3f() const;
-	operator v4f() const;
+	operator v4f() const;*/
 
 	CoreItemIterator begin() const;
 	CoreItemIterator end() const;
@@ -512,7 +516,7 @@ inline CoreItemSP CoreItemSP::operator[](const usString& key) const
 	return nullptr;
 }
 
-inline CoreItemSP::operator bool() const
+/*inline CoreItemSP::operator bool() const
 {
 	return get()->operator bool();
 }
@@ -570,7 +574,7 @@ inline CoreItemSP::operator v3f() const
 inline CoreItemSP::operator v4f() const
 {
 	return get()->operator v4f();
-}
+}*/
 
 inline CoreItemIterator CoreItemSP::begin() const
 {

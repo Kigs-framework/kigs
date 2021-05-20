@@ -7,7 +7,6 @@
 
 CoreAction::~CoreAction()
 {
-
 }
 
 // if paramstring contains -> then extract param name part and return real target (son on current target)
@@ -74,7 +73,7 @@ bool	CoreAction::update(kdouble time)
 
 void CoreActionWait::init(CoreSequence* sequence,CoreVector* params)
 {
-	mTarget = sequence->getTarget()->SharedFromThis();
+	mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
 	// kdouble duration,kfloat vStart,kfloat vEnd,unsigned int paramID => 4 params
 	if(!(params->size() == 1))

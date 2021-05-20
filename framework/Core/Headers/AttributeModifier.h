@@ -10,7 +10,7 @@ class AttachedModifierBase : public CoreVector
 {
 public:
 
-	AttachedModifierBase() : CoreVector(), mNextModifier(0), mIsGetter(true)
+	AttachedModifierBase() : CoreVector(), mIsGetter(true)
 	{
 	}
 
@@ -25,84 +25,79 @@ public:
 
 	virtual ~AttachedModifierBase()
 	{
-		if (mNextModifier & 1)
-		{
-			delete getNext();
-			mNextModifier = 0;
-		}
 	}
 
 	// numeric
 	void	CallModifier(CoreModifiableAttribute* caller, bool& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier&1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, s8& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, s16& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, s32& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, s64& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, u8& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, u16& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, u32& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, u64& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, kfloat& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 	void	CallModifier(CoreModifiableAttribute* caller, kdouble& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 
 	// strings
 	void	CallModifier(CoreModifiableAttribute* caller, kstl::string& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 
 	void	CallModifier(CoreModifiableAttribute* caller, usString& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 
 	// 2D or 3D points
 	void	CallModifier(CoreModifiableAttribute* caller, Point2D& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 
 	void	CallModifier(CoreModifiableAttribute* caller, Point3D& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 
 	void	CallModifier(CoreModifiableAttribute* caller, Vector4D& value, bool isGetter)
 	{
-		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
+		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNext) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 
 	inline bool	isGetterModifier() { return mIsGetter; }
@@ -112,22 +107,17 @@ public:
 		mNextModifier = (uintptr_t)nexttoset;
 	}*/
 
-	inline void setNextObject(uintptr_t nexttoset)
+	inline void setNextObject(const SP<AttachedModifierBase>& nexttoset)
 	{
-		mNextModifier = nexttoset;
+		mNext = nexttoset;
 	}
 
-	inline AttachedModifierBase* getNext()
+	inline const SP<AttachedModifierBase>& getNext()
 	{
-		AttachedModifierBase* realaddress = (AttachedModifierBase*)(mNextModifier & (((uintptr_t)-1) ^ (uintptr_t)3));
-		return realaddress;
+		return mNext;
+		//AttachedModifierBase* realaddress = (AttachedModifierBase*)(mNextModifier & (((uintptr_t)-1) ^ (uintptr_t)3));
+		//return realaddress;
 	}
-
-	inline uintptr_t getNextObject()
-	{
-		return mNextModifier;
-	}
-
 #ifdef   KEEP_NAME_AS_STRING
 	// for export
 	virtual kstl::string	GetModifierType() = 0;
@@ -161,8 +151,8 @@ protected:
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Point3D& value) {};
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, Vector4D& value) {};
 
-	uintptr_t				mNextModifier;
-
+	//uintptr_t				mNextModifier;
+	SP<AttachedModifierBase> mNext;
 	bool					mIsGetter;
 
 #ifdef   KEEP_NAME_AS_STRING
@@ -197,9 +187,9 @@ public:
 
 	virtual void	Init(CoreModifiableAttribute* caller, bool isGetter, const kstl::string& addParam);
 
-	static CoreVector* create()
+	static SP<CoreVector> create()
 	{
-		return new CoreItemOperatorModifier();
+		return std::make_shared<CoreItemOperatorModifier>();
 	}
 
 #ifdef   KEEP_NAME_AS_STRING

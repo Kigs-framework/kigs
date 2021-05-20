@@ -175,7 +175,7 @@ public:
 	{
 		if (this->isReadOnly())
 			return false;
-		mValue.mObj = value->SharedFromThis();
+		mValue.mObj = value ? value->SharedFromThis() : nullptr;
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}

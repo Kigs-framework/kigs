@@ -152,18 +152,13 @@ protected:
 
 
 	CoreModifiableAttribute(CoreModifiable* owner, bool isInitParam, KigsID ID) :
-		//mOwner(owner)
-		//, mAttachedModifier(nullptr)
-		 mFlags(0)
+		mOwner(owner)
+		, mFlags(0)
 		, mID(ID)
-		,mOwnerAndModifiers(0)
 	{
 		setIsInitParam(isInitParam);
-		mOwnerAndModifiers = (uintptr_t)owner;
-
 		if(owner)
 			owner->mAttributes[ID] = this;
-
 	}
 
 
@@ -218,17 +213,12 @@ public:
 	
 
 
-	AttachedModifierBase* getFirstAttachedModifier() const
+	const SP<AttachedModifierBase>& getFirstAttachedModifier() const
 	{
-		if (mOwnerAndModifiers & 1)
-		{
-			AttachedModifierBase* realaddress = (AttachedModifierBase*)(mOwnerAndModifiers & (((uintptr_t)-1) ^ (uintptr_t)3));
-			return realaddress;
-		}
-		return nullptr;
+		return mAttachedModifier;
 	}
-	void	attachModifier(AttachedModifierBase* toAttach);
-	void	detachModifier(AttachedModifierBase* toDetach);
+	void	attachModifier(SP<AttachedModifierBase> toAttach);
+	void	detachModifier(SP<AttachedModifierBase> toDetach);
 	
 
 	virtual void changeNotificationLevel(AttributeNotificationLevel level);
@@ -339,10 +329,9 @@ protected:
 	u32						mFlags;
 	KigsID					mID;
 
-	uintptr_t				mOwnerAndModifiers;
-
-	//CoreModifiable*			mOwner;
-	//AttachedModifierBase*	mAttachedModifier;
+	//uintptr_t				mOwnerAndModifiers;
+	CoreModifiable*				mOwner;
+	SP<AttachedModifierBase>	mAttachedModifier;
 };
 
 // ****************************************
@@ -409,14 +398,16 @@ protected:
 		mID.~KigsID();
 		T old_value = mValue;
 		mValue.~T();
-		uintptr_t modifier = mOwnerAndModifiers;
+		auto owner = mOwner;
+		auto modifier = mAttachedModifier;
 		u32 old_flags = mFlags;
 		u32 inheritlevel = (mFlags >> INHERIT_LEVEL_SHIFT) & INHERIT_LEVEL_MOD;
 		doPlacementNew(inheritlevel);
 		mID = old_id;
 		mValue = old_value;
 		mFlags = old_flags;
-		mOwnerAndModifiers = modifier;
+		mOwner = owner;
+		mAttachedModifier = modifier;
 	}
 	
 

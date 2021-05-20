@@ -66,11 +66,11 @@ void SpriteSheetData::sortAnimation(CoreItemSP& _FrameVector)
 
 			if (L_map->size())
 			{
-				L_FrameInfo->FramePos_X = L_map["x"];
-				L_FrameInfo->FramePos_Y = L_map["y"];
+				L_FrameInfo->FramePos_X = *L_map["x"];
+				L_FrameInfo->FramePos_Y = *L_map["y"];
 
-				L_FrameInfo->FrameSize_X = L_map["w"];
-				L_FrameInfo->FrameSize_Y = L_map["h"];
+				L_FrameInfo->FrameSize_X = *L_map["w"];
+				L_FrameInfo->FrameSize_Y = *L_map["h"];
 			}
 		}
 
@@ -79,8 +79,8 @@ void SpriteSheetData::sortAnimation(CoreItemSP& _FrameVector)
 
 			if (L_map->size())
 			{
-				L_FrameInfo->SourceSize_X = L_map["w"];
-				L_FrameInfo->SourceSize_Y = L_map["h"];
+				L_FrameInfo->SourceSize_X = *L_map["w"];
+				L_FrameInfo->SourceSize_Y = *L_map["h"];
 			}
 		}
 
@@ -89,17 +89,17 @@ void SpriteSheetData::sortAnimation(CoreItemSP& _FrameVector)
 
 			if (L_map->size())
 			{
-				L_FrameInfo->Decal_X = L_map["x"];
-				L_FrameInfo->Decal_Y = L_map["y"];
+				L_FrameInfo->Decal_X = *L_map["x"];
+				L_FrameInfo->Decal_Y = *L_map["y"];
 			}
 		}
 
 		{
-			L_FrameInfo->Rotated = it["rotated"];
+			L_FrameInfo->Rotated = *it["rotated"];
 		}
 
 		{
-			L_FrameInfo->Trimmed = it["trimmed"];
+			L_FrameInfo->Trimmed = *it["trimmed"];
 		}
 
 		// add in anim list if needed
