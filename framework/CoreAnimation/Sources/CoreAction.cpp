@@ -10,7 +10,7 @@ CoreAction::~CoreAction()
 }
 
 // if paramstring contains -> then extract param name part and return real target (son on current target)
-CMSP	CoreAction::checkSubTarget(kstl::string& paramstring)
+CMSP CoreAction::checkSubTarget(kstl::string& paramstring)
 {
 	int found = paramstring.find_last_of("->");
 	if (found != kstl::string::npos)
@@ -18,15 +18,18 @@ CMSP	CoreAction::checkSubTarget(kstl::string& paramstring)
 		found -= 1;
 		kstl::string CoreModifiablePath = paramstring.substr(0, found);
 		paramstring = paramstring.substr(found + 2, paramstring.length() - found - 2);
-		CMSP findTarget = mTarget->GetInstanceByPath(CoreModifiablePath);
-		if (findTarget)
+		auto ptr = mTarget.lock();
+		if (ptr)
 		{
-			return findTarget;
+			CMSP findTarget = ptr->GetInstanceByPath(CoreModifiablePath);
+			if (findTarget)
+			{
+				return findTarget;
+			}
 		}
-
 		mTargetPath = CoreModifiablePath;
 	}
-	return mTarget;
+	return mTarget.lock();
 }
 
 

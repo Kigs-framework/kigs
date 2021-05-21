@@ -27,7 +27,6 @@ public:
 	unsigned int	GetGLID() { return mTextureGLIndex; }
 protected:
 
-	void	ProtectedDestroy() override;
 	void	InitForFBO() override;
 	void	InitModifiable() override;
 	void	UninitModifiable()override;

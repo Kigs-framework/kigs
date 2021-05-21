@@ -27,11 +27,11 @@ public:
 	//! Do drawing here if any
 	void TravDraw(TravState* state) override;
 
-	SP<UIItem>& GetRootItem() { return mRootItem; }
+	SP<UIItem> GetRootItem() { return mRootItem; }
 
 protected:
 
-	virtual void	NotifyUpdate(const unsigned int labelid) override;
+	virtual void NotifyUpdate(const unsigned int labelid) override;
 
 	void RecomputeBoundingBox() override;
 

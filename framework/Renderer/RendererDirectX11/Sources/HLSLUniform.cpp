@@ -97,9 +97,8 @@ bool API3DUniformBase::Pop(TravState* t)
 	 return false;
  }
 
- void API3DUniformBase::ProtectedDestroy()
+ API3DUniformBase::~API3DUniformBase()
  {
-	 ParentClassType::ProtectedDestroy();
 	 if (mCBuffer)
 	 {
 		 mCBuffer->Release();

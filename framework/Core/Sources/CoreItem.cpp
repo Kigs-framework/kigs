@@ -4,7 +4,7 @@
 #include "CoreMap.h"
 #include "maCoreItem.h"
 
-
+#include <type_traits>
 
 CoreItemSP CoreItemIteratorBase::operator*() const
 {
@@ -72,6 +72,20 @@ bool CoreItemIterator::getKey(usString& returnedkey)
 	return get()->getKey(returnedkey);
 }
 
+
+CoreItemSP::CoreItemSP(const bool& value) { *this = MakeCoreValue(value); }
+CoreItemSP::CoreItemSP(const float& value) { *this = MakeCoreValue(value); }
+CoreItemSP::CoreItemSP(const double& value) { *this = MakeCoreValue(value); }
+CoreItemSP::CoreItemSP(const s32& value) { *this = MakeCoreValue(value); }
+CoreItemSP::CoreItemSP(const u32& value) { *this = MakeCoreValue(value); }
+CoreItemSP::CoreItemSP(const s64& value) { *this = MakeCoreValue(value); }
+CoreItemSP::CoreItemSP(const u64& value) { *this = MakeCoreValue(value); }
+CoreItemSP::CoreItemSP(const v2f& value) { *this = MakeCoreValue(value); }
+CoreItemSP::CoreItemSP(const v3f& value) { *this = MakeCoreValue(value); }
+CoreItemSP::CoreItemSP(const v4f& value) { *this = MakeCoreValue(value); }
+CoreItemSP::CoreItemSP(const std::string& value, CoreModifiable* owner) { *this = MakeCoreValue(value, owner); }
+CoreItemSP::CoreItemSP(const char* value, CoreModifiable* owner) { *this = MakeCoreValue(value, owner); }
+CoreItemSP::CoreItemSP(const usString& value, CoreModifiable* owner) { *this = MakeCoreValue(value, owner); }
 
 // operator [] needs to be overloaded on vectors and maps
 CoreItemSP CoreItem::operator[](int i)
@@ -210,24 +224,41 @@ CoreItemSP MakeCoreNamedVector(const std::string& name)
 {
 	return std::make_shared<CoreNamedVector>(name);
 }
-#define IMPLEMENT_MAKE_COREVALUE(type) CoreItemSP MakeCoreValue(const type& value)\
+
+#define IMPLEMENT_MAKE_COREVALUE(type) CoreItemSP MakeCoreValue(type value)\
 {\
-	return std::make_shared<CoreValue<type>>(value);\
+	return std::make_shared<CoreValue<std::decay_t<type>>>(value);\
 }\
-CoreItemSP MakeCoreNamedValue(const type& value, const std::string& name)\
+CoreItemSP MakeCoreNamedValue(type value, const std::string& name)\
 {\
-	return std::make_shared<CoreNamedValue<type>>(value, name);\
+	return std::make_shared<CoreNamedValue<std::decay_t<type>>>(value, name);\
 }
 
-IMPLEMENT_MAKE_COREVALUE(bool)
-IMPLEMENT_MAKE_COREVALUE(int)
-IMPLEMENT_MAKE_COREVALUE(unsigned int)
-IMPLEMENT_MAKE_COREVALUE(s64)
-IMPLEMENT_MAKE_COREVALUE(u64)
-IMPLEMENT_MAKE_COREVALUE(float)
-IMPLEMENT_MAKE_COREVALUE(double)
-IMPLEMENT_MAKE_COREVALUE(std::string)
-IMPLEMENT_MAKE_COREVALUE(usString)
+IMPLEMENT_MAKE_COREVALUE(const bool&)
+IMPLEMENT_MAKE_COREVALUE(const s32&)
+IMPLEMENT_MAKE_COREVALUE(const u32&)
+IMPLEMENT_MAKE_COREVALUE(const s64&)
+IMPLEMENT_MAKE_COREVALUE(const u64&)
+IMPLEMENT_MAKE_COREVALUE(const float&)
+IMPLEMENT_MAKE_COREVALUE(const double&)
+
+CoreItemSP MakeCoreValue(const char* value, CoreModifiable* owner)
+{
+	// check eval
+	if (AttributeNeedEval(value))
+	{
+		maCoreItemValue	tmpVal;
+		tmpVal.InitWithJSON(value, owner);
+		return tmpVal.item;
+	}
+	else
+		return std::make_shared<CoreValue<std::string>>(value);
+}
+
+CoreItemSP MakeCoreNamedValue(const char* value, const std::string& name)
+{
+	return std::make_shared<CoreNamedValue<std::string>>(value, name);
+}
 
 CoreItemSP MakeCoreValue(const std::string& value, CoreModifiable* owner)
 {
@@ -241,6 +272,12 @@ CoreItemSP MakeCoreValue(const std::string& value, CoreModifiable* owner)
 	else
 		return std::make_shared<CoreValue<std::string>>(value);
 }
+
+CoreItemSP MakeCoreNamedValue(const std::string& value, const std::string& name)
+{
+	return std::make_shared<CoreNamedValue<std::string>>(value, name);
+}
+
 CoreItemSP MakeCoreValue(const usString& value, CoreModifiable* owner)
 {
 	if (AttributeNeedEval(value.ToString()))
@@ -251,6 +288,11 @@ CoreItemSP MakeCoreValue(const usString& value, CoreModifiable* owner)
 	}
 	else
 		return std::make_shared<CoreValue<usString>>(value);
+}
+
+CoreItemSP MakeCoreNamedValue(const usString& value, const std::string& name)
+{
+	return std::make_shared<CoreNamedValue<usString>>(value, name);
 }
 
 CoreItemSP MakeCoreValue(const v2f& value)

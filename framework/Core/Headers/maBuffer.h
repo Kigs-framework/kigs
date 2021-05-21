@@ -103,7 +103,7 @@ public:
 		if (this->isReadOnly())
 			return false;
 
-		mValue = std::static_pointer_cast<CurrentAttributeType::element_type>(((CoreRawBuffer*)value)->shared_from_this());
+		mValue = ((CoreRawBuffer*)value)->shared_from_this();
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}

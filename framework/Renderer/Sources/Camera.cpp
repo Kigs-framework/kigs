@@ -59,7 +59,6 @@ IMPLEMENT_CONSTRUCTOR(Camera)
 	OVERLOAD_DECORABLE(Cull, Node3D, Camera);
 }
 
-
 void Camera::UninitModifiable()
 {
 	void* datastruct;
@@ -70,20 +69,20 @@ void Camera::UninitModifiable()
 			delete (touchControlledDataStruct*) datastruct;
 		}
 	}
-
 	Node3D::UninitModifiable();
-
 }
-
-void Camera::ProtectedDestroy()
-{
-	UninitModifiable();
-	Node3D::ProtectedDestroy();
-}
-
 
 Camera::~Camera()
 {
+	void* datastruct;
+	if (getValue("TouchControlledData", datastruct))
+	{
+		if (datastruct)
+		{
+			delete (touchControlledDataStruct*)datastruct;
+		}
+	}
+
 	// notify scenegraph that I am dead
 	ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
 	scenegraph->NotifyDefferedItemDeath(this);

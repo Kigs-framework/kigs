@@ -39,27 +39,6 @@ struct InheritanceSwitch {};;
 #define INHERIT_LEVEL_MOD 3
 
 
-#define IMPLEMENT_CHANGE_LEVEL \
-void changeInheritance() override\
-{\
-	KigsID old_id = _id; \
-	_id.~KigsID(); \
-	CurrentAttributeType old_value = mValue; \
-	mValue.~CurrentAttributeType(); \
-	AttachedModifierBase* modifier = _attachedModifier; \
-	u32 old_flags = _Flags; \
-	u32 inheritlevel = (_Flags >> INHERIT_LEVEL_SHIFT) & INHERIT_LEVEL_MOD; \
-	doPlacementNew(inheritlevel); \
-	mValue = old_value; \
-	_Flags = old_flags; \
-	_attachedModifier = modifier; \
-}\
-void changeNotificationLevel(AttributeNotificationLevel level) override\
-{\
-	CoreModifiableAttributeData::changeNotificationLevel(level);\
-	changeInheritance();\
-}
-
 #define STATIC_ASSERT_NOTIF_LEVEL_SIZES(classname) static_assert(sizeof(classname<0>) == sizeof(classname<1>), "Size mismatch between notification levels");\
 static_assert(sizeof(classname<0>) == sizeof(classname<2>), "Size mismatch between notification levels");\
 static_assert(sizeof(classname<0>) == sizeof(classname<3>), "Size mismatch between notification levels");\
@@ -151,16 +130,12 @@ protected:
 	explicit CoreModifiableAttribute(InheritanceSwitch tag) {}
 
 
-	CoreModifiableAttribute(CoreModifiable* owner, bool isInitParam, KigsID ID) :
-		mOwner(owner)
-		, mFlags(0)
-		, mID(ID)
+	CoreModifiableAttribute(CoreModifiable* owner, bool isInitParam, KigsID ID) : mOwnerAndModifiers((uintptr_t)owner), mID(ID), mFlags(0)
 	{
 		setIsInitParam(isInitParam);
 		if(owner)
 			owner->mAttributes[ID] = this;
 	}
-
 
 public:
 
@@ -210,15 +185,17 @@ public:
 		haveAttachedModifier = 16
 	};
 
-	
-
-
-	const SP<AttachedModifierBase>& getFirstAttachedModifier() const
+	AttachedModifierBase* getFirstAttachedModifier() const
 	{
-		return mAttachedModifier;
+		if (mOwnerAndModifiers & 1)
+		{
+			AttachedModifierBase* realaddress = (AttachedModifierBase*)(mOwnerAndModifiers & (((uintptr_t)-1) ^ (uintptr_t)3));
+			return realaddress;
+		}
+		return nullptr;
 	}
-	void	attachModifier(SP<AttachedModifierBase> toAttach);
-	void	detachModifier(SP<AttachedModifierBase> toDetach);
+	void	attachModifier(std::unique_ptr<AttachedModifierBase> toAttach);
+	void	detachModifier(AttachedModifierBase* toDetach);
 	
 
 	virtual void changeNotificationLevel(AttributeNotificationLevel level);
@@ -274,41 +251,41 @@ public:
 	CoreModifiable* getOwner() const;
 
 	//! Read only attributes cannot be modified with setValue
-	virtual bool isReadOnly()  { return (bool)((((u32)isReadOnlyFlag) & this->mFlags) != 0); }
+	virtual bool isReadOnly()  { return (bool)((((u8)isReadOnlyFlag) & this->mFlags) != 0); }
 	//! \brief  return true if attribute is an init attribute (necessary for the CoreModifiable Init to be done)
-	virtual bool isInitParam()  { return (bool)((((u32)isInitFlag) & this->mFlags) != 0); }
-	virtual bool isDynamic()  { return (bool)((((u32)isDynamicFlag) & this->mFlags) != 0); }
+	virtual bool isInitParam()  { return (bool)((((u8)isInitFlag) & this->mFlags) != 0); }
+	virtual bool isDynamic()  { return (bool)((((u8)isDynamicFlag) & this->mFlags) != 0); }
 	virtual void setReadOnly(bool val) 
 	{
 		if (val)
 		{
-			this->mFlags |= (u32)isReadOnlyFlag;
+			this->mFlags |= (u8)isReadOnlyFlag;
 		}
 		else
 		{
-			this->mFlags &= ~(u32)isReadOnlyFlag;
+			this->mFlags &= ~(u8)isReadOnlyFlag;
 		}
 	}
 	virtual void setDynamic(bool dyn) 
 	{
 		if (dyn)
 		{
-			this->mFlags |= (u32)isDynamicFlag;
+			this->mFlags |= (u8)isDynamicFlag;
 		}
 		else
 		{
-			this->mFlags &= ~(u32)isDynamicFlag;
+			this->mFlags &= ~(u8)isDynamicFlag;
 		}
 	}
 	virtual void setIsInitParam(bool init)
 	{
 		if (init)
 		{
-			this->mFlags |= (u32)isInitFlag;
+			this->mFlags |= (u8)isInitFlag;
 		}
 		else
 		{
-			this->mFlags &= ~(u32)isInitFlag;
+			this->mFlags &= ~(u8)isInitFlag;
 		}
 	}
 
@@ -326,12 +303,9 @@ public:
 	virtual bool	CopyAttribute(const CoreModifiableAttribute& other) = 0;
 
 protected:
-	u32						mFlags;
+	uintptr_t				mOwnerAndModifiers;
 	KigsID					mID;
-
-	//uintptr_t				mOwnerAndModifiers;
-	CoreModifiable*				mOwner;
-	SP<AttachedModifierBase>	mAttachedModifier;
+	u8						mFlags;
 };
 
 // ****************************************
@@ -398,16 +372,14 @@ protected:
 		mID.~KigsID();
 		T old_value = mValue;
 		mValue.~T();
-		auto owner = mOwner;
-		auto modifier = mAttachedModifier;
+		uintptr_t modifier = mOwnerAndModifiers;
 		u32 old_flags = mFlags;
 		u32 inheritlevel = (mFlags >> INHERIT_LEVEL_SHIFT) & INHERIT_LEVEL_MOD;
 		doPlacementNew(inheritlevel);
 		mID = old_id;
 		mValue = old_value;
 		mFlags = old_flags;
-		mOwner = owner;
-		mAttachedModifier = modifier;
+		mOwnerAndModifiers = modifier;
 	}
 	
 
@@ -507,7 +479,7 @@ template<typename T> bool CoreConvertValue2String(kstl::string& stringValue,T va
 #include "maAny.h"
 
 // AttributeHolder methods
-/*
+
 template<typename T>
 inline CMSP::AttributeHolder::operator T() const {
 	T	tmp{};
@@ -539,6 +511,6 @@ inline const bool CMSP::AttributeHolder::operator ==(T totest) const {
 	}
 	return false;
 }
-*/
+
 
 #endif //_COREMODIFIABLEATTRIBUTE_H

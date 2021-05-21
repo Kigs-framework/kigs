@@ -60,19 +60,19 @@ public:
 
 	CMSP	getTarget() const
 	{
-		return mTarget;
+		return mTarget.lock();
 	}
 
 	// remove the target if already destroyed
 	void removeTarget()
 	{
-		mTarget = NULL;
+		mTarget.reset();
 	}
 
 	// return true if target is modifiable 
 	bool	useModifiable(CoreModifiable* modifiable) const
 	{
-		if (mTarget.get() == modifiable)
+		if (mTarget.lock().get() == modifiable)
 		{
 			return true;
 		}
@@ -85,7 +85,7 @@ protected:
 	void	protectedPause(kdouble time);
 	void	protectedUpdate(kdouble time);
 
-	SP<CoreModifiable>	mTarget;
+	std::weak_ptr<CoreModifiable> mTarget;
 	KigsID				mID;
 	kdouble				mStartTime;
 	kdouble				mPauseTime;

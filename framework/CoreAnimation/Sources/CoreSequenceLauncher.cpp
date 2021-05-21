@@ -32,15 +32,15 @@ void	CoreSequenceLauncher::checkDeadSequences()
 		auto itstart = mSequenceMap.begin();
 		auto itend = mSequenceMap.end();
 		// call destroy on each sequence
-		while (itstart != itend)
+		for (auto& el : mSequenceMap)
 		{
-			if ((*itstart).second.use_count() == 1) // only kept by me
+			auto ptr = el.second.lock();
+			if (!ptr)
 			{
 				mSequenceMap.erase(itstart);
 				deadFound = true;
 				break;
 			}
-			++itstart;
 		}
 	}
 }
@@ -52,7 +52,17 @@ void	CoreSequenceLauncher::addSequencesToParents()
 	for(auto parent : GetParents())
 	{
 		// check that we did not already create the sequence
-		if (mSequenceMap.find(parent) == mSequenceMap.end() && (CoreItem*)mSequence)
+		auto existing = mSequenceMap.find(parent);
+		bool already_added = existing != mSequenceMap.end();
+		if (already_added)
+		{
+			auto ptr = existing->second.lock();
+			if (!ptr)
+			{
+				already_added = false;
+			}
+		}
+		if (!already_added && (CoreItem*)mSequence)
 		{
 			CoreItemSP sequence = ((CoreItem*)mSequence)->SharedFromThis();
 			auto L_Sequence = L_CoreAnimation->createSequenceFromCoreMap(parent->SharedFromThis(), sequence);
@@ -87,7 +97,9 @@ void CoreSequenceLauncher::Start()
 	addSequencesToParents();
 	for (auto& kv : mSequenceMap)
 	{
-		kv.second->startAtFirstUpdate();
+		auto ptr = kv.second.lock();
+		if(ptr)
+			ptr->startAtFirstUpdate();
 	}
 }
 
@@ -105,6 +117,8 @@ void CoreSequenceLauncher::Stop()
 {
 	for(auto& kv : mSequenceMap)
 	{
-		kv.second->stop();
+		auto ptr = kv.second.lock();
+		if (ptr)
+			ptr->stop();
 	}
 }

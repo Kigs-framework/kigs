@@ -81,6 +81,19 @@ OpenGLTexture::OpenGLTexture(const kstl::string& name, CLASS_NAME_TREE_ARG)
 
 OpenGLTexture::~OpenGLTexture()
 {
+	CoreModifiableAttribute* delayed = getAttribute("DelayedInit");
+
+	if (delayed) // delay init
+	{
+		void* datastruct;
+		if (delayed->getValue(datastruct))
+		{
+			TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
+			delete delayedStruct;
+			RemoveDynamicAttribute("DelayedInit");
+		}
+
+	}
 
 	if (mTextureGLIndex != (u32)-1)
 	{
@@ -115,23 +128,6 @@ void	OpenGLTexture::InitModifiable()
 	Texture::InitModifiable();
 }
 
-void	OpenGLTexture::ProtectedDestroy()
-{
-	CoreModifiableAttribute* delayed = getAttribute("DelayedInit");
-
-	if (delayed) // delay init
-	{
-		void* datastruct;
-		if (delayed->getValue(datastruct))
-		{
-			TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
-			delete delayedStruct;
-			RemoveDynamicAttribute("DelayedInit");
-		}
-
-	}
-	Texture::ProtectedDestroy();
-}
 
 void	OpenGLTexture::UninitModifiable()
 {

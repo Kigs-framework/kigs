@@ -380,6 +380,15 @@ struct KigsID
 	}
 	unsigned int toUInt() const { return _id; }
 
+	std::string toString() const
+	{
+#ifdef KEEP_NAME_AS_STRING
+		return _id_name.size() ? _id_name : std::to_string(_id);
+#else
+		return std::to_string(_id);
+#endif
+	}
+
 
 #ifdef KEEP_NAME_AS_STRING
 	template<size_t _Size> KigsID(const char(&aid)[_Size]) : _id_name(aid), _id(CharToID::GetID(aid)) {

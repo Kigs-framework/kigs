@@ -76,7 +76,7 @@ public:
 protected:
 
 	// default constructor called by sons only
-	CoreAction() : CoreItem((COREITEM_TYPE)10), mTarget(0), mStartTime(-1.0f), mDuration(-1.0f), mActionFlags(0),mParamID(0)
+	CoreAction() : CoreItem((COREITEM_TYPE)10), mStartTime(-1.0f), mDuration(-1.0f), mActionFlags(0),mParamID(0)
 	{
 		mTargetPath = "";
 	}
@@ -89,12 +89,17 @@ protected:
 		// if delayed target
 		if (mTargetPath != "")
 		{
-			CMSP findTarget = mTarget->GetInstanceByPath(mTargetPath);
-			if (findTarget)
+			auto ptr = mTarget.lock();
+			if (ptr)
 			{
-				mTarget = findTarget;
-				mTargetPath = "";
+				CMSP findTarget = ptr->GetInstanceByPath(mTargetPath);
+				if (findTarget)
+				{
+					mTarget = findTarget;
+					mTargetPath = "";
+				}
 			}
+			else mTarget.reset();
 		}
 	}
 
@@ -105,7 +110,7 @@ protected:
 		return false; // no used
 	}
 
-	CMSP				mTarget;
+	std::weak_ptr<CoreModifiable> mTarget;
 	kdouble				mStartTime;
 	kdouble				mDuration;
 

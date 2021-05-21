@@ -35,7 +35,7 @@ public:
 	template<typename U>
 	operator SmartPointer<U>()
 	{
-		return std::static_pointer_cast<U>(*this);
+		return debug_checked_pointer_cast<U>(*this);
 	}
 
 	explicit operator CoreItem& ()
@@ -43,18 +43,20 @@ public:
 		return *get();
 	}
 	
-	CoreItemSP(bool);
-	CoreItemSP(float);
-	CoreItemSP(double);
-	CoreItemSP(s32);
-	CoreItemSP(u32);
-	CoreItemSP(s64);
-	CoreItemSP(u64);
-	CoreItemSP(std::string);
-	CoreItemSP(usString);
-	CoreItemSP(v2f);
-	CoreItemSP(v3f);
-	CoreItemSP(v4f);
+	CoreItemSP(const bool&);
+	CoreItemSP(const float&);
+	CoreItemSP(const double&);
+	CoreItemSP(const s32&);
+	CoreItemSP(const u32&);
+	CoreItemSP(const s64&);
+	CoreItemSP(const u64&);
+	CoreItemSP(const v2f&);
+	CoreItemSP(const v3f&);
+	CoreItemSP(const v4f&);
+
+	CoreItemSP(const std::string&, CoreModifiable* owner = nullptr);
+	CoreItemSP(const char*, CoreModifiable* owner = nullptr);
+	CoreItemSP(const usString&, CoreModifiable* owner=nullptr);
 
 
 	CoreItemSP operator[](int i) const;
@@ -62,10 +64,8 @@ public:
 	CoreItemSP operator[](const std::string& key) const;
 	CoreItemSP operator[](const usString& key) const;
 
-	// NOTE(antoine) i've disabled these conversion operators, they can be error prone
-	// - the shared_ptr must not be null
-	// - shared_ptr already has a bool operator which is commonly used in patterns like this : if(myCoreItemSP) { doSomething... }
-	/*operator bool() const;
+	// NOTE(antoine) shared_ptr already has a bool operator which is commonly used in patterns like this : if(myCoreItemSP) { doSomething... }
+	//operator bool() const;
 	operator float() const;
 	operator double() const;
 	operator int() const;
@@ -76,7 +76,7 @@ public:
 	operator usString() const;
 	operator v2f() const;
 	operator v3f() const;
-	operator v4f() const;*/
+	operator v4f() const;
 
 	CoreItemIterator begin() const;
 	CoreItemIterator end() const;
@@ -251,7 +251,7 @@ public:
 #ifdef _DEBUG
 		try
 		{
-			return std::static_pointer_cast<CoreItem>(shared_from_this());
+			return debug_checked_pointer_cast<CoreItem>(shared_from_this());
 		}
 		catch (const std::bad_weak_ptr&)
 		{
@@ -262,13 +262,9 @@ public:
 		}
 		return nullptr;
 #else
-		return std::static_pointer_cast<CoreItem>(shared_from_this());
+		return debug_checked_pointer_cast<CoreItem>(shared_from_this());
 #endif	
 	}
-
-
-
-//	CoreItemSP SharedFromThis() const { return std::static_pointer_cast<CoreItem>(shared_from_this()); }
 
 	typedef size_t size_type;
 
@@ -466,12 +462,8 @@ protected:
 };
 
 
-#define DECLARE_MAKE_COREVALUE(type) CoreItemSP MakeCoreValue(const type& value);\
-CoreItemSP MakeCoreNamedValue(const type& value, const std::string& name);\
-inline CoreItemSP::CoreItemSP(type value)\
-{\
-	*this = MakeCoreValue(value);\
-}
+#define DECLARE_MAKE_COREVALUE(type) CoreItemSP MakeCoreValue(type value);\
+CoreItemSP MakeCoreNamedValue(type value, const std::string& name);\
 
 CoreItemSP MakeCoreMap();
 CoreItemSP MakeCoreNamedMap(const std::string& name);
@@ -480,21 +472,20 @@ CoreItemSP MakeCoreNamedMapUS(const std::string& name);
 CoreItemSP MakeCoreVector();
 CoreItemSP MakeCoreNamedVector(const std::string& name);
 
-DECLARE_MAKE_COREVALUE(bool);
-DECLARE_MAKE_COREVALUE(s32);
-DECLARE_MAKE_COREVALUE(u32);
-DECLARE_MAKE_COREVALUE(s64);
-DECLARE_MAKE_COREVALUE(u64);
-DECLARE_MAKE_COREVALUE(float);
-DECLARE_MAKE_COREVALUE(double);
-DECLARE_MAKE_COREVALUE(std::string);
-DECLARE_MAKE_COREVALUE(usString);
-DECLARE_MAKE_COREVALUE(v2f);
-DECLARE_MAKE_COREVALUE(v3f);
-DECLARE_MAKE_COREVALUE(v4f);
+DECLARE_MAKE_COREVALUE(const bool&);
+DECLARE_MAKE_COREVALUE(const s32&);
+DECLARE_MAKE_COREVALUE(const u32&);
+DECLARE_MAKE_COREVALUE(const s64&);
+DECLARE_MAKE_COREVALUE(const u64&);
+DECLARE_MAKE_COREVALUE(const float&);
+DECLARE_MAKE_COREVALUE(const double&);
+DECLARE_MAKE_COREVALUE(const v2f&);
+DECLARE_MAKE_COREVALUE(const v3f&);
+DECLARE_MAKE_COREVALUE(const v4f&);
 
-CoreItemSP MakeCoreValue(const std::string& value, CoreModifiable* owner);
-CoreItemSP MakeCoreValue(const usString& value, CoreModifiable* owner);
+CoreItemSP MakeCoreValue(const std::string& value, CoreModifiable* owner = nullptr);
+CoreItemSP MakeCoreValue(const usString& value, CoreModifiable* owner = nullptr);
+CoreItemSP MakeCoreValue(const char* value, CoreModifiable* owner = nullptr);
 
 template<typename smartPointOn, typename ... Args>
 CoreItemSP MakeCoreItemOfType(Args&& ... args)
@@ -540,7 +531,7 @@ inline CoreItemSP CoreItemSP::operator[](const usString& key) const
 /*inline CoreItemSP::operator bool() const
 {
 	return get()->operator bool();
-}
+}*/
 
 inline CoreItemSP::operator float() const
 {
@@ -595,7 +586,7 @@ inline CoreItemSP::operator v3f() const
 inline CoreItemSP::operator v4f() const
 {
 	return get()->operator v4f();
-}*/
+}
 
 inline CoreItemIterator CoreItemSP::begin() const
 {

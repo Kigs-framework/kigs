@@ -81,8 +81,12 @@ protected:
 	virtual bool	protectedUpdate(kdouble time)
 	{
 		CoreAction::protectedUpdate(time);
-		dataType result = (dataType)(mStart + (mEnd - mStart) * ((float)((time - mStartTime) / mDuration)));
-		mTarget->setValue(mParamID, result);
+		auto ptr = mTarget.lock();
+		if (ptr)
+		{
+			dataType result = (dataType)(mStart + (mEnd - mStart) * ((float)((time - mStartTime) / mDuration)));
+			ptr->setValue(mParamID, result);
+		}
 		return false;
 	}
 
@@ -90,7 +94,8 @@ protected:
 	{
 		CheckDelayTarget();
 		dataType currentval;
-		if (mTarget->getValue(mParamID, currentval))
+		auto ptr = mTarget.lock();
+		if (ptr && ptr->getValue(mParamID, currentval))
 		{
 			if (IsStartRelative())
 				mStart += currentval;
@@ -218,13 +223,16 @@ protected:
 	virtual bool	protectedUpdate(kdouble time)
 	{
 		CoreAction::protectedUpdate(time);
-		kfloat t = (kfloat)((time - mStartTime) / mDuration);
-		kfloat a[4];
-		coefs(a[0], a[1], a[2], a[3], t);
 
-		dataType result = p[0] * a[0] + p[1] * a[1] + p[2] * a[2] + p[3] * a[3];
-
-		mTarget->setValue(mParamID, result);
+		auto ptr = mTarget.lock();
+		if (ptr)
+		{
+			kfloat t = (kfloat)((time - mStartTime) / mDuration);
+			kfloat a[4];
+			coefs(a[0], a[1], a[2], a[3], t);
+			dataType result = p[0] * a[0] + p[1] * a[1] + p[2] * a[2] + p[3] * a[3];
+			ptr->setValue(mParamID, result);
+		}
 		return false;
 	}
 
@@ -232,7 +240,8 @@ protected:
 	{
 		CheckDelayTarget();
 		dataType currentval;
-		if (mTarget->getValue(mParamID, currentval))
+		auto ptr = mTarget.lock();
+		if (ptr && ptr->getValue(mParamID, currentval))
 		{
 			if (IsStartRelative())
 				p[0] += currentval;
@@ -310,7 +319,9 @@ protected:
 		if ((time + TimeEpsilon) >= (mStartTime + mDuration))
 		{
 			setIsDone();
-			mTarget->setValue(mParamID, mSet);
+			auto ptr = mTarget.lock();
+			if (ptr)
+				ptr->setValue(mParamID, mSet);
 			return true;
 		}
 		return false;

@@ -191,13 +191,14 @@ void	Node3D::globalMove(const v3f& move)
 	localMove(lmove);
 }
 
+
 void Node3D::PropagateDirtyFlagsToSons(SceneNode* source)
 {
 	for (auto& item : getItems())
 	{
 		if (item.mItem->isUserFlagSet(UserFlagNode3D))
 		{
-			auto& node = (SP<Node3D>&)(item.mItem);
+			auto node = item.mItem->as<Node3D>();
 			node->setUserFlag(LocalToGlobalMatrixIsDirty| GlobalBoundingBoxIsDirty | GlobalToLocalMatrixIsDirty);
 			node->PropagateDirtyFlagsToSons(source);
 		}

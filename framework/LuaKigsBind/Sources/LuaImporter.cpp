@@ -550,7 +550,7 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 		TestPrintf("\n");
 		if (addModifier)
 		{
-			SP<AttachedModifierBase> toAdd = 0;
+			std::unique_ptr<AttachedModifierBase> toAdd ;
 			std::string modifiertype = modifier["type"].value().toValue<std::string>();
 
 			auto& instancemap = KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap();
@@ -559,7 +559,7 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 
 			if (itfound != instancemap.end())
 			{
-				toAdd = itfound->second();
+				toAdd = static_unique_pointer_cast<AttachedModifierBase>(itfound->second());
 			}
 
 			if (toAdd != nullptr)
@@ -578,7 +578,7 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 				}
 
 				toAdd->Init(attribute, isGetter, modvalue);
-				attribute->attachModifier(toAdd);
+				attribute->attachModifier(std::move(toAdd));
 			}
 
 		}

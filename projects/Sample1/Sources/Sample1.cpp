@@ -63,17 +63,17 @@ void	Sample1::ProtectedInit()
 #endif // KIGS_TOOLS
 
 	// import instances from file "Sample1.xml"
-	CMSP imported=CoreModifiable::Import("Sample1.xml");
+	CMSP imported = CoreModifiable::Import("Sample1.xml");
 
-	// if file was found, add a ref so that imported will not be destroyed when exiting ProtectedInit
+	// if file was found, save a smart pointer so that imported will not be destroyed when exiting ProtectedInit
 	if (imported)
 	{
-		imported->GetRef();
+		mSimpleClass = imported;
 	}
 	else
 	{
-		// if the file was not found, get a ref on simpleclass to keep it alive after exiting this method
-		simpleclass->GetRef();
+		// if the file was not found, save a smart pointer on simpleclass to keep it alive after exiting this method
+		mSimpleClass = simpleclass;
 	}
 	
 }
@@ -97,12 +97,6 @@ void	Sample1::ProtectedUpdate()
 	printf("current time is %lf with GetTime\n", currentTime);
 	printf("current time is %lf with getValue<double>(\"Time\");\n", currentTimeWithGetVal);
 
-	// if timer was init more than 0.1 seconde before, then exit app
-	if (currentTime > 0.1)
-	{
-		mNeedExit = true;
-	}
-
 	// retreive "Sample1Value" value on this
 	int _value;
 	simpleclass->getValue("Sample1Value", _value);
@@ -119,13 +113,13 @@ void	Sample1::ProtectedUpdate()
 
 	// set dynamic float attribute with string 
 	localtimer->setValue("floatValue","24");
+
+	// ask exit 
+	mNeedExit = true;
 }
 
 void	Sample1::ProtectedClose()
 {
-	// destroy simpleclass (and recursively  all its sons) 
-	CMSP simpleclass = GetFirstInstance("SimpleSampleClass");
-	// here we need to destroy simpleclass only because we get a ref on it in ProtectedInit
-	// to keep it alive even if it was not add to another instance (with addItem)
-	simpleclass->Destroy();
+	// release simpleclass smartpointer that we saved
+	mSimpleClass = nullptr;
 }

@@ -39,7 +39,7 @@ class CoreItem;
 class CoreVector;
 
 
-typedef     SP<CoreVector> (*CoreItemOperatorCreateMethod)();
+typedef     std::unique_ptr<CoreVector> (*CoreItemOperatorCreateMethod)();
 
 // keep a fast array access on main generic modules (using enum as index)
 enum CoreModuleIndex
@@ -201,7 +201,7 @@ public:
 	template<typename T>
 	static SP<T> GetModule()
 	{
-		return std::static_pointer_cast<T>(GetModule(T::mClassID));
+		return GetModule(T::mClassID);
 	}
 
 	/**
@@ -223,7 +223,7 @@ public:
 	template<typename T>
 	static SP<T> CreateInstance(const kstl::string& instancename)
 	{
-		return std::static_pointer_cast<T>(GetInstanceOf(instancename, T::mClassID));
+		return GetInstanceOf(instancename, T::mClassID);
 	}
 
 	/**
@@ -239,7 +239,7 @@ public:
 	template<typename askedType>
 	static SP<askedType> Singleton()
 	{
-		return std::static_pointer_cast<askedType>(GetSingleton(askedType::mClassID));
+		return GetSingleton(askedType::mClassID);
 	}
 	/**
 	 * \brief		destroy the unique instance of the given class

@@ -338,13 +338,11 @@ protected:
 		*/ 
 	void	InitModifiable() override;
 
-	void	ProtectedDestroy() override;
-		
 	/**
 		* \brief	destructor
 		* \fn 		~Camera();
 		*/
-	virtual ~Camera();  
+	virtual ~Camera();
 		
 	//! recompute matrix
 	void	RecomputeMatrix();

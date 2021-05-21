@@ -9,6 +9,12 @@
 class CoreModifiable;
 class CoreModifiableAttribute;
 
+template<typename To, typename From>
+inline std::unique_ptr<To> static_unique_pointer_cast(std::unique_ptr<From>&& old)
+{
+	return std::unique_ptr<To>{static_cast<To*>(old.release())};
+}
+
 // ****************************************
 // * GenericRefCountedBaseClass class
 // * --------------------------------------
@@ -20,13 +26,10 @@ class CoreModifiableAttribute;
 */
 // ****************************************
 
-#ifdef KIGS_TOOLS
-#define TRACEREF_VIRTUAL virtual
-#else
-#define TRACEREF_VIRTUAL 
+#ifdef _DEBUG
+#define GenericRefCountedBaseClassLeakCheck
 #endif
 
-#define GenericRefCountedBaseClassLeakCheck
 #ifdef GenericRefCountedBaseClassLeakCheck
 #include <unordered_set>
 #include <shared_mutex>

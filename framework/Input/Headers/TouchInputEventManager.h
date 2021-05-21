@@ -626,7 +626,7 @@ public:
 
 	void	addTouchSupport(CoreModifiable* ts, CoreModifiable* parent);
 
-	void	removeTouchSupport(CoreModifiable* ts);
+	void	removeTouchSupport(CoreModifiable* ts, bool was_destroyed=false);
 
 	inline int getTriggerSquaredDist()
 	{

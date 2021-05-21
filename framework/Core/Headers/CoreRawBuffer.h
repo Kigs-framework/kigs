@@ -250,7 +250,7 @@ protected:
 	}
 
 	// manage buffer destruction when no more refcount
-	virtual void ProtectedDestroy()
+	virtual void ProtectedDestroy() final
 	{
 		if (mBuffer)
 		{

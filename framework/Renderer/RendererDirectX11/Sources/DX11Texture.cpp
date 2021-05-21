@@ -72,6 +72,19 @@ DX11Texture::DX11Texture(const std::string& name, CLASS_NAME_TREE_ARG)
 
 DX11Texture::~DX11Texture()
 {
+	CoreModifiableAttribute* delayed = getAttribute("DelayedInit");
+	if (delayed) // delay init
+	{
+		void* datastruct;
+		if (delayed->getValue(datastruct))
+		{
+			TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
+			delete delayedStruct;
+			RemoveDynamicAttribute("DelayedInit");
+		}
+
+	}
+
 	// release d3d object
 	if (mTexturePointer)
 		mTexturePointer->Release();
@@ -93,24 +106,6 @@ void DX11Texture::InitModifiable()
 	mCanReuseBuffer = false;
 
 	Texture::InitModifiable();
-}
-
-void DX11Texture::ProtectedDestroy()
-{
-	CoreModifiableAttribute* delayed = getAttribute("DelayedInit");
-
-	if (delayed) // delay init
-	{
-		void* datastruct;
-		if (delayed->getValue(datastruct))
-		{
-			TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
-			delete delayedStruct;
-			RemoveDynamicAttribute("DelayedInit");
-		}
-
-	}
-	Texture::ProtectedDestroy();
 }
 
 void DX11Texture::UninitModifiable()
@@ -552,11 +547,6 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 	mCanReuseBuffer = true;
 	return true;
 	}
-
-
-
-
-	
 
 bool DX11Texture::CreateFromText(const unsigned short* text, unsigned int fontSize, const char* fontName, unsigned int a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, int a_drawingLimit) 
 {

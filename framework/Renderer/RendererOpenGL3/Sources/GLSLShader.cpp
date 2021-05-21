@@ -44,6 +44,11 @@ API3DShader::API3DShader(const kstl::string& name, CLASS_NAME_TREE_ARG) : Shader
 	KigsCore::GetNotificationCenter()->addObserver(this, "Reload", "ResetContext");
 }
 
+API3DShader::~API3DShader()
+{
+	Dealloc();
+}
+
 void API3DShader::NotifyUpdate(const unsigned int labelid)
 {
 	if ((labelid == mVertexShaderText.getLabelID()) || (labelid == mFragmentShaderText.getLabelID()))
@@ -140,13 +145,6 @@ void	API3DShader::PopUniform(CoreModifiable * a_Uniform)
 		un->Activate(l_ul->mLocation);
 	}
 
-}
-
-
-void API3DShader::ProtectedDestroy()
-{
-	Dealloc();
-	Drawable::ProtectedDestroy();
 }
 
 void	API3DShader::Dealloc()

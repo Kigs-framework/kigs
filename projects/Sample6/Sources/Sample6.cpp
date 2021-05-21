@@ -39,11 +39,7 @@ void	Sample6::ProtectedInit()
 	auto signallist=simpleclass->GetSignalList();
 	for (const auto& s : signallist)
 	{
-#ifdef KEEP_NAME_AS_STRING
-		std::cout << s._id_name << std::endl;
-#else
-		std::cout << s._id << std::endl;
-#endif
+		std::cout << s.toString() << std::endl;
 	}
 
 	std::cout << std::endl;
@@ -77,7 +73,6 @@ void    Sample6::OnSimpleClassPreInit()
 // member method that catch notif 
 DEFINE_METHOD(Sample6, CatchNotifMethod)
 {
-
 	std::cout << "Sample6 CatchNotifMethod method" << std::endl;
 
 	if (sender)
@@ -85,27 +80,15 @@ DEFINE_METHOD(Sample6, CatchNotifMethod)
 
 	for (auto p : params)
 	{
-#ifdef KEEP_NAME_AS_STRING
 		std::string v;
 		if (p->getValue(v))
 		{
-			std::cout << "-- parameter : " << p->getID()._id_name << " value is : " << v << std::endl;
+			std::cout << "-- parameter : " << p->getID().toString() << " value is : " << v << std::endl;
 		}
 		else
 		{
-			std::cout << "-- parameter : " << p->getID()._id_name << " value cannot be evaluated as string" << std::endl;
+			std::cout << "-- parameter : " << p->getID().toString() << " value cannot be evaluated as string" << std::endl;
 		}
-#else
-		std::string v;
-		if (p->getValue(v))
-		{
-			std::cout << "-- parameter : " << p->getID()._id << " value is : " << v << std::endl;
-		}
-		else
-		{
-			std::cout << "-- parameter : " << p->getID()._id << " value cannot be evaluated as string" << std::endl;
-		}
-#endif
 	}
 
 	if (privateParams)

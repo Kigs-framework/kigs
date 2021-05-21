@@ -36,14 +36,18 @@ protected:
 
 	virtual void	protectedSetValue(int index)
 	{
-		if (mPParamID == 0)
+		auto ptr = mTarget.lock();
+		if (ptr)
 		{
-			CoreModifiableAttribute* attr = mTarget->getAttribute(mParamID);
-			mPParamID = (dataType*)attr->getRawValue();
-		}
-		if (mPParamID)
-		{
-			*mPParamID = mKeyFrameArray[index];
+			if (mPParamID == 0)
+			{
+				CoreModifiableAttribute* attr = ptr->getAttribute(mParamID);
+				mPParamID = (dataType*)attr->getRawValue();
+			}
+			if (mPParamID)
+			{
+				*mPParamID = mKeyFrameArray[index];
+			}
 		}
 	}
 

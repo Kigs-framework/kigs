@@ -330,13 +330,14 @@ void TouchInputEventManager::dumpTouchSupportTrees()
 
 }
 
-void	TouchInputEventManager::removeTouchSupport(CoreModifiable* ts)
+void	TouchInputEventManager::removeTouchSupport(CoreModifiable* ts, bool was_destroyed)
 {
 	std::lock_guard<std::recursive_mutex> lk{ mMutex };
 
 	if (removeTemporaryUnmappedTouchSupport(ts))
 	{
-		KigsCore::Disconnect(ts, "Destroy", this, "OnDestroyTouchSupportCallback");
+		if(!was_destroyed)
+			KigsCore::Disconnect(ts, "Destroy", this, "OnDestroyTouchSupportCallback");
 		return;
 	}
 
@@ -376,9 +377,8 @@ void	TouchInputEventManager::removeTouchSupport(CoreModifiable* ts)
 			{
 				mTouchSupportTreeRootList.erase(itfound);
 			}
-
-			KigsCore::Disconnect(ts, "Destroy", this, "OnDestroyTouchSupportCallback");
-
+			if (!was_destroyed)
+				KigsCore::Disconnect(ts, "Destroy", this, "OnDestroyTouchSupportCallback");
 			break;
 		}
 		++itfound;
@@ -1150,7 +1150,7 @@ DEFINE_METHOD(TouchInputEventManager, OnDestroyTouchSupportCallback)
 	if (mInUpdate)
 		mDestroyedThisFrame.insert(sender);
 
-	removeTouchSupport(sender);
+	removeTouchSupport(sender, true);
 	return false;
 }
 

@@ -129,7 +129,7 @@ void	ModuleCoreAnimation::addSequence(CoreSequence* sequence)
 {
 	unsigned int seqID=sequence->getID().toUInt();
 	// retain
-	auto seq = std::static_pointer_cast<CoreSequence>(sequence->SharedFromThis());
+	SP<CoreSequence> seq = sequence->SharedFromThis();
 
 	auto foundid=mSequences.find(seqID);
 	

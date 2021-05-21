@@ -32,8 +32,8 @@ public:
 	friend class RendererOpenGL;
 
 	DECLARE_CLASS_INFO(API3DShader, ShaderBase,Renderer)
-
 	API3DShader(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	~API3DShader();
 
 	void	NotifyUpdate(const unsigned int labelid ) override;
 	bool	PreDraw(TravState*) override;
@@ -83,7 +83,6 @@ protected:
 	virtual BuildShaderStruct*	Rebuild() override;
 
 	void	InitModifiable()  override;
-	void	ProtectedDestroy()  override;
 
 };
 #endif //_GLSLSHADER_H

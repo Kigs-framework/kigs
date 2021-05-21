@@ -48,7 +48,9 @@ bool	CoreSequence::update(const Timer& timer)
 
 	if (mCurrentActionIndex == 0xFFFFFFFF)
 	{
-		mTarget->EmitSignal("SequenceFinished", mTarget, this);
+		auto ptr = mTarget.lock();
+		if(ptr)
+			ptr->EmitSignal("SequenceFinished", ptr.get(), this);
 		return true;
 	}
 	return false;
@@ -77,11 +79,12 @@ void	CoreSequence::stop()
 
 CoreSequence::~CoreSequence()
 {
-	ModuleCoreAnimation* coreanim = (ModuleCoreAnimation*)KigsCore::Instance()->GetMainModuleInList(CoreAnimationModuleCoreIndex);
+	auto coreanim = KigsCore::GetModule<ModuleCoreAnimation>();
+	if (!coreanim) return;
 
-	if (mTarget)
+	if (auto ptr = mTarget.lock())
 	{
-		KigsCore::Disconnect(mTarget.get(), "Destroy", coreanim, "OnDestroyCallBack");
+		KigsCore::Disconnect(ptr.get(), "Destroy", coreanim.get(), "OnDestroyCallBack");
 	}
 }
 

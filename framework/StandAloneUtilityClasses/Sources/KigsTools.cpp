@@ -43,6 +43,7 @@ bool gKigsToolsAvailable = false;
 #ifdef WUP
 #include <utf8.h>
 #include <winrt/Windows.Storage.h>
+#include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.Storage.Pickers.h>
 #include <winrt/Windows.Storage.AccessCache.h>
 

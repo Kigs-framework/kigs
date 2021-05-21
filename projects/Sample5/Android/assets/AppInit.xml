@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Inst N="Sample5" Type="Window">
+<Inst N="Sample5Window" Type="Window">
     <Attr N="Position" V="{-1,-1}"/>
 	<Attr N="Size" V="{1280,800}"/>
 	<Attr N="FullScreen" V="false"/>

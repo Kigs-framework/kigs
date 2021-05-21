@@ -218,8 +218,7 @@ protected:
 		mGetter.~KigsID();
 		KigsID old_setter = mSetter;
 		mSetter.~KigsID();
-		auto modifier = mAttachedModifier;
-		auto owner = mOwner;
+		auto modifier = mOwnerAndModifiers;
 		u32 old_flags = mFlags;
 		u32 inheritlevel = (mFlags >> INHERIT_LEVEL_SHIFT)& INHERIT_LEVEL_MOD;
 		doPlacementNew(inheritlevel);
@@ -227,8 +226,7 @@ protected:
 		mGetter = old_getter;
 		mSetter = old_setter;
 		mFlags = old_flags;
-		mAttachedModifier = modifier;
-		mOwner = owner;
+		mOwnerAndModifiers = modifier;
 	}
 
 public:

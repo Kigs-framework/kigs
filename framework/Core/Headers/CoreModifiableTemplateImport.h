@@ -1,7 +1,6 @@
 #ifndef _COREMODIFIABLETEMPLATEIMPORT_H
 #define _COREMODIFIABLETEMPLATEIMPORT_H
 
-
 template<typename StringType>
 CMSP CoreModifiable::Import(std::shared_ptr<XMLTemplate<StringType> > xmlfile, const std::string& filename, bool noInit, bool keepImportFileName, ImportState* state, const std::string& override_name)
 {

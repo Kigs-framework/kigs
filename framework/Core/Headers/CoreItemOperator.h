@@ -36,7 +36,7 @@ protected:
 
 
 
-typedef SP<CoreVector> (*CoreItemOperatorCreateMethod)();
+typedef std::unique_ptr<CoreVector> (*CoreItemOperatorCreateMethod)();
 
 class SpecificOperator
 {
@@ -412,9 +412,9 @@ public:
 		return (result<(operandType)0) ? (-result) : result;
 	}
 
-	static SP<CoreVector> create()
+	static std::unique_ptr<CoreVector> create()
 	{
-		return std::make_shared<AbsOperator<operandType>>();
+		return std::unique_ptr<CoreVector>(new AbsOperator<operandType>());
 	}
 
 };
@@ -454,9 +454,9 @@ public:
 		return result;
 	}
 
-	static SP<CoreVector> create()
+	static std::unique_ptr<CoreVector> create()
 	{
-		return std::make_shared<MaxOperator<operandType>>();
+		return std::unique_ptr<CoreVector>(new MaxOperator<operandType>());
 	}
 };
 
@@ -494,9 +494,9 @@ public:
 		return result;
 	}
 
-	static SP<CoreVector> create()
+	static std::unique_ptr<CoreVector> create()
 	{
-		return std::make_shared<MinOperator<operandType>>();
+		return std::unique_ptr<CoreVector>(new MinOperator<operandType>());
 	}
 };
 
@@ -527,9 +527,9 @@ public:
 		return sinf(result);
 	}
 
-	static SP<CoreVector> create()
+	static std::unique_ptr<CoreVector> create()
 	{
-		return std::make_shared<SinusOperator<operandType>>();
+		return std::unique_ptr<CoreVector>(new SinusOperator<operandType>());
 	}
 };
 
@@ -547,9 +547,9 @@ public:
 		return cosf(result);
 	}
 
-	static SP<CoreVector> create()
+	static std::unique_ptr<CoreVector> create()
 	{
-		return std::make_shared<CosinusOperator<operandType>>();
+		return std::unique_ptr<CoreVector>(new CosinusOperator<operandType>());
 	}
 
 };
@@ -568,9 +568,9 @@ public:
 		return tanf(result);
 	}
 
-	static SP<CoreVector> create()
+	static std::unique_ptr<CoreVector> create()
 	{
-		return std::make_shared<TangentOperator<operandType>>();
+		return std::unique_ptr<CoreVector>(new TangentOperator<operandType>());
 	}
 
 };
@@ -1013,9 +1013,9 @@ public:
 		
 		return result;
 	}
-	static SP<CoreVector> create()
+	static std::unique_ptr<CoreVector> create()
 	{
-		return std::make_shared<IfThenElseOperator<operandType>>();
+		return std::unique_ptr<CoreVector>(new IfThenElseOperator<operandType>());
 	}
 };
 

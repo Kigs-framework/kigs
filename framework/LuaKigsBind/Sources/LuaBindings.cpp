@@ -853,7 +853,7 @@ void setup_bindings(lua_State* lua)
 	
 	LuaBinding(L).beginClass<CMSP>("CMSP")
 		.addConstructor(LUA_ARGS())
-		//.addFunction("get", &CMSP::get)
+		.addFunction("get", [](const CMSP* v) -> CoreModifiable* { return v->get(); })
 		.endClass();
 
 	LuaBinding(L).beginClass<v2f>("v2f")

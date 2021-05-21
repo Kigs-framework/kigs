@@ -115,6 +115,12 @@ void DrawVertice::clearArrays()
 
 DrawVertice::~DrawVertice()
 {
+	ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
+	if (mVertexBuffer != -1)
+	{
+		scenegraph->AddDefferedItem((void*)mVertexBuffer, DefferedAction::DESTROY_BUFFER);
+		mVertexBuffer = -1;
+	}
 	clearArrays();
 }
 
@@ -563,18 +569,4 @@ bool DrawVertice::Draw(TravState* travstate)
 		}
 	}
 	return false;
-}
-
-void DrawVertice::ProtectedDestroy()
-{
-	ParentClassType::ProtectedDestroy();
-	ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-	if (mVertexBuffer != -1)
-	{
-		scenegraph->AddDefferedItem((void*)mVertexBuffer, DefferedAction::DESTROY_BUFFER);
-		//scenegraph->AddDefferedItem((void*)myIndexBuffer, DefferedAction::DESTROY_BUFFER);
-		//((RendererOpenGL*)ModuleRenderer::mTheGlobalRenderer)->DeleteBuffer(1, &mVertexBuffer);
-		mVertexBuffer = -1;
-		// myIndexBuffer = -1;
-	}
 }

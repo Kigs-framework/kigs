@@ -130,7 +130,9 @@ protected:
 
 	inline void	protectedSetValue(int index)
 	{
-		mTarget->setValue(mParamID, mKeyFrameArray[index]);
+		auto ptr = mTarget.lock();
+		if (ptr)
+			ptr->setValue(mParamID, mKeyFrameArray[index]);
 	}
 
 	dataType*			mKeyFrameArray;

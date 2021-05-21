@@ -102,8 +102,6 @@ protected:
 
 	void SetDataFromPreset();
 
-	void ProtectedDestroy() override;
-
 	void clearArrays();
 
 	//! list of normal

@@ -6,6 +6,9 @@ template<>
 inline void CoreActionFunction<kfloat, 1>::init(CoreSequence* sequence, CoreVector* params)
 {
 	mTarget = sequence->getTarget();
+	auto ptr = mTarget.lock();
+	if (!ptr) return;
+
 #ifdef _DEBUG // test parameters count
 	if ((params->size()<3))
 	{
@@ -20,7 +23,7 @@ inline void CoreActionFunction<kfloat, 1>::init(CoreSequence* sequence, CoreVect
 	(*params)[1]->getValue(readstring);
 
 	// eval
-	CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, mTarget.get(), ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
+	CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, ptr.get(), ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
 	if (eval)
 	{
 		mFunctions[0] = eval;		
@@ -35,6 +38,10 @@ template<typename dataType, int dimension>
 inline void CoreActionFunction<dataType, dimension>::init(CoreSequence* sequence, CoreVector* params)
 {
 	mTarget = sequence->getTarget();
+
+	auto ptr = mTarget.lock();
+	if (!ptr) return;
+
 #ifdef _DEBUG // test parameters count
 	if ((params->size()<3))
 	{
@@ -58,7 +65,7 @@ inline void CoreActionFunction<dataType, dimension>::init(CoreSequence* sequence
 			auto two = (*one)[i];
 			readstring = (kstl::string)*two;
 			// eval
-			CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, mTarget.get(), ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
+			CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, ptr.get(), ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
 			if (eval)
 			{
 				mFunctions[i] = eval;
@@ -71,7 +78,7 @@ inline void CoreActionFunction<dataType, dimension>::init(CoreSequence* sequence
 		
 		(*params)[1]->getValue(readstring);
 		// eval
-		CoreItemSP eval = CoreItemOperator<dataType>::Construct(readstring, mTarget.get(), ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
+		CoreItemSP eval = CoreItemOperator<dataType>::Construct(readstring, ptr.get(), ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
 		if (eval)
 		{
 			mFunctions[0] = eval;

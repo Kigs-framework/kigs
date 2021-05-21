@@ -166,7 +166,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 					AsciiParserUtils leading(formulae);
 					formulae.GetString(leading, '(');
 					// create a method
-					CoreModifiableAttributeOperator<operandType>* opeattribute = new CoreModifiableAttributeOperator<operandType>((const kstl::string&)leading, context.mTarget);
+					SP<CoreModifiableAttributeOperator<operandType>> opeattribute = MakeRefCounted<CoreModifiableAttributeOperator<operandType>>((const kstl::string&)leading, context.mTarget);
 					if (paramblock.length())
 					{
 						CoreItemSP	op1;
@@ -190,7 +190,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 						}
 					}
 
-					return CoreItemSP((CoreItem*)opeattribute);
+					return opeattribute;
 				}
 
 			}
@@ -222,7 +222,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 					if (params.size())
 					{
 						
-						CoreVector* opeattribute = new CoreVector();
+						SP<CoreVector> opeattribute = MakeCoreVector();
 						CoreItemSP	op1;
 
 						kstl::vector<kstl::string>::iterator	itparambegin = params.begin();
@@ -242,8 +242,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 							}
 							++itparambegin;
 						}
-
-						return CoreItemSP((CoreItem*)opeattribute);
+						return opeattribute;
 					}
 				}
 
@@ -266,8 +265,8 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 			{
 				if (block.length() == (formulae.length() - 2))
 				{
-					CoreModifiableAttributeOperator<operandType>* opeattribute = new CoreModifiableAttributeOperator<operandType>((const kstl::string&)block, context.mTarget);
-					return CoreItemSP((CoreItem*)opeattribute);
+					SP<CoreModifiableAttributeOperator<operandType>> opeattribute = MakeRefCounted<CoreModifiableAttributeOperator<operandType>>((const kstl::string&)block, context.mTarget);
+					return opeattribute;
 				}
 			}
 
@@ -281,7 +280,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 
 	if (FirstLevelOperatorList.size())
 	{
-		CoreVector* newOperator = new InstructionListOperator <operandType>();
+		SP<CoreVector> newOperator = MakeRefCounted<InstructionListOperator<operandType>>();
 
 		// push each separated instruction 
 		AsciiParserUtils	remaining(formulae);
@@ -310,7 +309,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		if (instruction)
 			newOperator->push_back(instruction);
 
-		return CoreItemSP((CoreItem*)newOperator);
+		return newOperator;
 	}
 	formulae.Reset();
 	// no first level separator, search operators now
@@ -336,9 +335,9 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 				if (op1)
 				{
 					// check where to add neg operator
-					NegOperator<operandType>*   neg = (new NegOperator<operandType>());
+					SP<NegOperator<operandType>> neg = MakeRefCounted<NegOperator<operandType>>();
 					neg->push_back(op1);
-					return  CoreItemSP((CoreItem*)neg);
+					return neg;
 				}
 			}
 		}
@@ -356,9 +355,9 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 			if (op1)
 			{
 				// check where to add neg operator
-				NotOperator*   neg = (new NotOperator());
+				SP<NotOperator> neg = MakeRefCounted<NotOperator>();
 				neg->push_back(op1);
-				return  CoreItemSP((CoreItem*)neg);
+				return neg;
 			}
 		}
 
@@ -367,9 +366,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		float value;
 		if (formulae.ReadFloat(value)) // check for leaf constant
 		{
-			CoreValue<kfloat>*   corevalue = (new CoreValue<kfloat>());
-			*corevalue = value;
-			return CoreItemSP((CoreItem*)corevalue);
+			return MakeCoreValue(value);
 		}
 		
 		// try to match other keyword
@@ -382,7 +379,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		if (matchkeywork != "")
 		{
 
-			SP<CoreItemOperator<operandType>>	newfunction;
+			SP<CoreItemOperator<operandType>> newfunction;
 			newfunction = getOperator(matchkeywork, context);
 
 			if (newfunction)
@@ -424,7 +421,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 			}
 
 			// try to find a variable with this name
-			CoreItemSP variable = std::static_pointer_cast<CoreItem>(getVariable(matchkeywork));
+			CoreItemSP variable = debug_checked_pointer_cast<CoreItem>(getVariable(matchkeywork));
 			if (variable)
 			{
 				return variable;
@@ -435,14 +432,14 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 			return corevalue;
 			*/
 			// dynamic var
-			variable = std::make_shared<DynamicVariableOperator<operandType>>(matchkeywork);
+			variable = MakeRefCounted<DynamicVariableOperator<operandType>>(matchkeywork);
 			return variable;
 		}
 
 	}
 	else // create operator tree
 	{
-		CoreVector*	newOperator = 0;
+		SP<CoreVector> newOperator;
 		while (FirstLevelOperatorList.size())
 		{
 			// find higher level
@@ -473,67 +470,67 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 			{
 			case '*':
 			{
-				newOperator = new MultOperator < operandType>();
+				newOperator = MakeRefCounted<MultOperator<operandType>>();
 			}
 			break;
 			case '+':
 			{
-				newOperator = new AddOperator < operandType>();
+				newOperator = MakeRefCounted<AddOperator<operandType>>();
 			}
 			break;
 			case '-':
 			{
-				newOperator = new SubOperator < operandType>();
+				newOperator = MakeRefCounted<SubOperator<operandType>>();
 			}
 			break;
 			case '/':
 			{
-				newOperator = new DivOperator < operandType>();
+				newOperator = MakeRefCounted<DivOperator<operandType>>();
 			}
 			break;
 			case '=':
 			{
-				newOperator = new EqualOperator();
+				newOperator = MakeRefCounted<EqualOperator>();
 			}
 			break;
 			case 'd':
 			{
-				newOperator = new NotEqualOperator();
+				newOperator = MakeRefCounted<NotEqualOperator>();
 			}
 			break;
 			case 's':
 			{
-				newOperator = new SupEqualOperator();
+				newOperator = MakeRefCounted<SupEqualOperator>();
 			}
 			break;
 			case 'i':
 			{
-				newOperator = new InfEqualOperator();
+				newOperator = MakeRefCounted<InfEqualOperator>();
 			}
 			break;
 			case '>':
 			{
-				newOperator = new SupOperator();
+				newOperator = MakeRefCounted<SupOperator>();
 			}
 			break;
 			case '<':
 			{
-				newOperator = new InfOperator();
+				newOperator = MakeRefCounted<InfOperator>();
 			}
 			break;
 			case '&':
 			{
-				newOperator = new AndOperator();
+				newOperator = MakeRefCounted<AndOperator>();
 			}
 			break;
 			case '|':
 			{
-				newOperator = new OrOperator();
+				newOperator = MakeRefCounted<OrOperator>();
 			}
 			break;
 			case 'a': // affectation
 			{
-				newOperator = new AffectOperator<operandType>();
+				newOperator = MakeRefCounted<AffectOperator<operandType>>();
 			}
 			break;
 
@@ -545,20 +542,18 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 			// replace newOperator in previous and next 
 			if (ifound > 0)
 			{
-				FirstLevelOperatorList[ifound - 1].mOp2 = CoreItemSP(newOperator);
+				FirstLevelOperatorList[ifound - 1].mOp2 = newOperator;
 			}
 			if (ifound < ((int)FirstLevelOperatorList.size() - 1))
 			{
-				FirstLevelOperatorList[ifound + 1].mOp1 = CoreItemSP(newOperator);
+				FirstLevelOperatorList[ifound + 1].mOp1 = newOperator;
 			}
 
 			FirstLevelOperatorList.erase(itfound);
 		}
-		return CoreItemSP((CoreItem*)newOperator);
+		return newOperator;
 	}
-
-
-	return CoreItemSP(nullptr);
+	return nullptr;
 }
 
 template<typename operandType>
@@ -568,7 +563,7 @@ SP<CoreItemOperator<operandType>> CoreItemOperator<operandType>::getOperator(con
 	typename kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>::const_iterator itfound = context.mMap.find(keyword);
 	while (itfound != context.mMap.end())
 	{
-		return (*itfound).second();
+		return SP<CoreVector>((*itfound).second());
 	}
 	return 0;
 }

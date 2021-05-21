@@ -31,6 +31,7 @@ class API3DUniformBase : public Drawable
 public:
 	DECLARE_ABSTRACT_CLASS_INFO(API3DUniformBase, Drawable, Renderer);
 	API3DUniformBase(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	~API3DUniformBase();
 
 	void	NotifyUpdate(const unsigned int  labelid) override;
 
@@ -42,8 +43,6 @@ public:
 
 	UNIFORM_NAME_TYPE   Get_ID() { return mID; }
 	kstl::string		Get_Name() { return mUniName.const_ref(); }
-
-	void ProtectedDestroy() override;
 
 protected:
 	void	InitModifiable() override;

@@ -33,30 +33,34 @@ bool	CoreActionRemoveFromParent::protectedUpdate(kdouble time)
 	// wait the end of the action
 	if((time+TimeEpsilon)>=(mStartTime+mDuration))
 	{
-		const kstl::vector<CoreModifiable*>& parents=mTarget->GetParents();
-		if(parents.size())
+		auto ptr = mTarget.lock();
+		if (ptr)
 		{
-			// search parent
-			if(mParentTypeID != 0xFFFFFFFF)
+			const kstl::vector<CoreModifiable*>& parents = ptr->GetParents();
+			if (parents.size())
 			{
-				kstl::vector<CoreModifiable*>::const_iterator itparent=parents.begin();
-				kstl::vector<CoreModifiable*>::const_iterator itparentend=parents.end();
-				while(itparent != itparentend)
+				// search parent
+				if (mParentTypeID != 0xFFFFFFFF)
 				{
-					if((*itparent)->isSubType(mParentTypeID))
+					kstl::vector<CoreModifiable*>::const_iterator itparent = parents.begin();
+					kstl::vector<CoreModifiable*>::const_iterator itparentend = parents.end();
+					while (itparent != itparentend)
 					{
-						mTarget->flagAsPostDestroy();
-						(*itparent)->removeItem(mTarget);
-						return true;
+						if ((*itparent)->isSubType(mParentTypeID))
+						{
+							ptr->flagAsPostDestroy();
+							(*itparent)->removeItem(ptr);
+							return true;
+						}
+						++itparent;
 					}
-					++itparent;
 				}
-			}
-			else // remove from first found parent
-			{
-				mTarget->flagAsPostDestroy();
-				(*(parents.begin()))->removeItem(mTarget);
-				return true;
+				else // remove from first found parent
+				{
+					ptr->flagAsPostDestroy();
+					(*(parents.begin()))->removeItem(ptr);
+					return true;
+				}
 			}
 		}
 	}
@@ -83,7 +87,7 @@ void CoreActionSendMessage::init(CoreSequence* sequence,CoreVector* params)
 
 	if ((*params).size() > 2)
 	{
-		mParam = (const usString&)(*params)[2];
+		mParam = (const usString&)(*params)[2];;
 	}
 }
 
@@ -94,13 +98,17 @@ bool	CoreActionSendMessage::protectedUpdate(kdouble time)
 	if((time+TimeEpsilon)>=(mStartTime+mDuration))
 	{
 		setIsDone();
-		if (mParam.length())
+		auto ptr = mTarget.lock();
+		if (ptr)
 		{
-			KigsCore::GetNotificationCenter()->postNotificationName(mMessage, mTarget.get(), &mParam);
-		}
-		else
-		{
-			KigsCore::GetNotificationCenter()->postNotificationName(mMessage, mTarget.get());
+			if (mParam.length())
+			{
+				KigsCore::GetNotificationCenter()->postNotificationName(mMessage, ptr.get(), &mParam);
+			}
+			else
+			{
+				KigsCore::GetNotificationCenter()->postNotificationName(mMessage, ptr.get());
+			}
 		}
 		return true;
 	}
@@ -138,7 +146,9 @@ bool	CoreActionEmitSignal::protectedUpdate(kdouble time)
 	if ((time + TimeEpsilon) >= (mStartTime + mDuration))
 	{
 		setIsDone();
-		mTarget->EmitSignal(mSignal, mTarget, mParam);
+		auto ptr = mTarget.lock();
+		if (ptr)
+			ptr->EmitSignal(mSignal, ptr.get(), mParam);
 		return true;
 	}
 	return false;
@@ -196,7 +206,7 @@ void CoreActionCombo::init(CoreSequence* sequence,CoreVector* params)
 	{
 		// create each action
 		CoreItemSP tocreate=(*params)[i];
-		auto actiontoaddSP = std::static_pointer_cast<CoreAction>(module->createAction(sequence,tocreate));
+		SP<CoreAction> actiontoaddSP = module->createAction(sequence,tocreate);
 		mList.push_back(actiontoaddSP);
 		
 		if(actiontoaddSP->getDuration()>mDuration)
@@ -287,7 +297,7 @@ void CoreActionSerie::init(CoreSequence* sequence,CoreVector* params)
 	{
 		// create each action
 		CoreItemSP tocreate=(*params)[i];
-		auto action = std::static_pointer_cast<CoreAction>(module->createAction(sequence, tocreate));
+		SP<CoreAction> action = module->createAction(sequence, tocreate);
 		mList.push_back(action);
 		
 		if(action->getDuration()<0.0)
@@ -376,7 +386,7 @@ void CoreActionForLoop::init(CoreSequence* sequence,CoreVector* params)
 
 	// create son action
 	CoreItemSP tocreate = (*params)[1];
-	auto actiontoaddsp = std::static_pointer_cast<CoreAction>(module->createAction(sequence, tocreate));
+	SP<CoreAction> actiontoaddsp = module->createAction(sequence, tocreate);
 	mActionToLoop = actiontoaddsp;
 
 	if(mActionToLoop)
@@ -414,7 +424,10 @@ bool	CoreActionDoWhile::protectedUpdate(kdouble time)
 	bool	done=(mActionToLoop==0);
 
 	bool	whileTest=true;
-	mTarget->getValue(mParamID,whileTest);
+
+	auto ptr = mTarget.lock();
+	if (ptr)
+		ptr->getValue(mParamID, whileTest);
 	
 	if(!whileTest) // end while
 	{
@@ -463,7 +476,7 @@ void CoreActionDoWhile::init(CoreSequence* sequence,CoreVector* params)
 
 	// create son action
 	CoreItemSP tocreate = (*params)[1];
-	auto actiontoaddsp = std::static_pointer_cast<CoreAction>(module->createAction(sequence, tocreate));
+	SP<CoreAction> actiontoaddsp = module->createAction(sequence, tocreate);
 	mActionToLoop = actiontoaddsp;
 	if(mActionToLoop)
 	{

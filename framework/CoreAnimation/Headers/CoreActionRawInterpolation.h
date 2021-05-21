@@ -21,15 +21,19 @@ protected:
 	virtual bool	protectedUpdate(kdouble time)
 	{
 		CoreAction::protectedUpdate(time);
-		if (mPParamID==0)
+		auto ptr = mTarget.lock();
+		if (ptr)
 		{
-			CoreModifiableAttribute* attr = mTarget->getAttribute(mParamID);
-			mPParamID = (dataType*)attr->getRawValue();
-		}
-		if (mPParamID)
-		{
-			dataType result = mStart + (mEnd - mStart)*(kfloat)((time - mStartTime) / mDuration);
-			*mPParamID = result;
+			if (mPParamID==0)
+			{
+				CoreModifiableAttribute* attr = ptr->getAttribute(mParamID);
+				mPParamID = (dataType*)attr->getRawValue();
+			}
+			if (mPParamID)
+			{
+				dataType result = mStart + (mEnd - mStart)*(kfloat)((time - mStartTime) / mDuration);
+				*mPParamID = result;
+			}
 		}
 		return false;
 	}
@@ -66,23 +70,22 @@ protected:
 	virtual bool	protectedUpdate(kdouble time)
 	{
 		CoreAction::protectedUpdate(time);
-
-		if (mPParamID == 0)
+		auto ptr = mTarget.lock();
+		if (ptr)
 		{
-			CoreModifiableAttribute* attr = mTarget->getAttribute(mParamID);
-			mPParamID = (dataType*)attr->getRawValue();
-		}
-		if (mPParamID)
-		{
-
-			kfloat t = (kfloat)((time - mStartTime) / mDuration);
-
-			kfloat a[4];
-			coefs(a[0], a[1], a[2], a[3], t);
-
-			dataType result = p[0] * a[0] + p[1] * a[1] + p[2] * a[2] + p[3] * a[3];
-
-			*mPParamID = result;
+			if (mPParamID == 0)
+			{
+				CoreModifiableAttribute* attr = ptr->getAttribute(mParamID);
+				mPParamID = (dataType*)attr->getRawValue();
+			}
+			if (mPParamID)
+			{
+				kfloat t = (kfloat)((time - mStartTime) / mDuration);
+				kfloat a[4];
+				coefs(a[0], a[1], a[2], a[3], t);
+				dataType result = p[0] * a[0] + p[1] * a[1] + p[2] * a[2] + p[3] * a[3];
+				*mPParamID = result;
+			}
 		}
 		return false;
 	}
@@ -106,19 +109,23 @@ protected:
 	virtual bool	protectedUpdate(kdouble time)
 	{
 		CoreAction::protectedUpdate(time);
-		if (mPParamID == 0)
+		auto ptr = mTarget.lock();
+		if (ptr)
 		{
-			CoreModifiableAttribute* attr = mTarget->getAttribute(mParamID);
-			mPParamID = (dataType*)attr->getRawValue();
-		}
-		if (mPParamID)
-		{
-			// wait the end of the action
-			if ((time + TimeEpsilon) >= (mStartTime + mDuration))
+			if (mPParamID == 0)
 			{
-				setIsDone();
-				*mPParamID = mSet;
-				return true;
+				CoreModifiableAttribute* attr = ptr->getAttribute(mParamID);
+				mPParamID = (dataType*)attr->getRawValue();
+			}
+			if (mPParamID)
+			{
+				// wait the end of the action
+				if ((time + TimeEpsilon) >= (mStartTime + mDuration))
+				{
+					setIsDone();
+					*mPParamID = mSet;
+					return true;
+				}
 			}
 		}
 		return false;

@@ -402,7 +402,7 @@ XMLBase* XMLReaderFile::ProtectedReadFile(CoreRawBuffer* buffer, char* encoding)
 #ifdef KIGS_TOOLS
 	return ProtectedReadFileString(buffer, encoding);
 #else
-	return ProtectedReadFileStringRef(buffer, encoding);
+	return ProtectedReadFileStringRef(buffer->shared_from_this(), encoding);
 #endif
 }
 

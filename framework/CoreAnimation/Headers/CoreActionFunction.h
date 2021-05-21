@@ -82,7 +82,10 @@ protected:
 		CoreItemEvaluationContext::SetContext(&mContext);
 		mContext.mTime = time;
 		dataType result;
-		if (mTarget->getValue(mParamID, result))
+
+		auto ptr = mTarget.lock();
+
+		if (ptr && ptr->getValue(mParamID, result))
 		{
 
 			if (mHasUniqueMultidimensionnalFunc)
@@ -100,7 +103,7 @@ protected:
 					}
 				}
 			}
-			mTarget->setValue(mParamID, result);
+			ptr->setValue(mParamID, result);
 		}
 		CoreItemEvaluationContext::ReleaseContext();
 		return false;
@@ -123,7 +126,7 @@ inline bool	CoreActionFunction<kfloat,1>::protectedUpdate(kdouble time)
 	if (mFunctions[0])
 	{
 		kfloat result = (kfloat)*mFunctions[0];
-		mTarget->setValue(mParamID, result);
+		auto ptr = mTarget.lock(); if (ptr) ptr->setValue(mParamID, result);
 	}
 	CoreItemEvaluationContext::ReleaseContext();
 	return false;
@@ -163,9 +166,9 @@ public:
 		}
 		return ((operandType)0);
 	}
-	static SP<CoreVector> create()
+	static std::unique_ptr<CoreVector> create()
 	{
-		return SP<ActionTimeOperator<operandType>>();
+		return std::unique_ptr<CoreVector>(new ActionTimeOperator<operandType>());
 	}
 
 protected:

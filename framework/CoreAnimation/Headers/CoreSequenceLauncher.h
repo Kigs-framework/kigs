@@ -42,7 +42,7 @@ protected:
 	maString		mStartMessage = BASE_ATTRIBUTE(StartMessage, "");
 	maBool			mOnce = BASE_ATTRIBUTE(Once, false);
 
-	kigs::unordered_map<CoreModifiable*, SmartPointer<CoreSequence>>	mSequenceMap;
+	kigs::unordered_map<CoreModifiable*, std::weak_ptr<CoreSequence>> mSequenceMap;
 
 	void Start();
 	void Stop();

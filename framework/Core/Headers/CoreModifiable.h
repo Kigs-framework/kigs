@@ -15,6 +15,7 @@
 #include <variant>
 #include <list>
 #include <any>
+#include <shared_mutex>
 
 #ifdef KEEP_XML_DOCUMENT
 #include "XML.h"
@@ -191,7 +192,80 @@ public:
 };
 
 
-using CMSP = SmartPointer<CoreModifiable>;
+class CMSP : public SmartPointer<CoreModifiable>
+{
+public:
+	using SmartPointer<CoreModifiable>::SmartPointer;
+
+	// Auto casts
+	template<typename U>
+	CMSP(const std::shared_ptr<U>& other) : SmartPointer<CoreModifiable>(debug_checked_pointer_cast<CoreModifiable>(other))
+	{
+	}
+	template<typename U>
+	CMSP(std::shared_ptr<U>&& other) : SmartPointer<CoreModifiable>(debug_checked_pointer_cast<CoreModifiable>(other))
+	{
+	}
+	template<typename U>
+	CMSP& operator=(const std::shared_ptr<U>& other)
+	{
+		std::shared_ptr<CoreModifiable>::operator=(debug_checked_pointer_cast<CoreModifiable>(other));
+		return *this;
+	}
+	template<typename U>
+	CMSP& operator=(std::shared_ptr<U>&& other)
+	{
+		std::shared_ptr<CoreModifiable>::operator=(debug_checked_pointer_cast<CoreModifiable>(other));
+		return *this;
+	}
+	template<typename U>
+	operator SmartPointer<U>()
+	{
+		return debug_checked_pointer_cast<U>(*this);
+	}
+	template<typename U>
+	bool operator==(const U* other) const
+	{
+		return this->get() == other;
+	}
+	template<typename U>
+	bool operator!=(const U* other) const
+	{
+		return this->get() != other;
+	}
+
+	inline CMSP operator [](const std::string& son) const;
+
+	template<size_t _Size>
+	inline CMSP operator [](const char(&son)[_Size]) const;
+
+	// CoreModifiable Attributes management
+	class AttributeHolder
+	{
+
+	protected:
+		CoreModifiableAttribute* mAttr = nullptr;
+	public:
+
+		AttributeHolder() : mAttr(nullptr) {};
+		AttributeHolder(CoreModifiableAttribute* attr) : mAttr(attr) {};
+		AttributeHolder(const AttributeHolder& other) : mAttr(other.mAttr) {};
+
+		template<typename T>
+		inline operator T() const;
+
+		template<typename T>
+		inline const AttributeHolder& operator =(T toset) const;
+
+		template<typename T>
+		inline const bool operator ==(T totest) const;
+	};
+
+
+	inline AttributeHolder operator()(const std::string& son) const;
+
+};
+
 
 class ModifiableItemStruct
 {
@@ -398,7 +472,9 @@ public:
 	static const KigsID mClassID;
 	static KigsID mRuntimeType;
 
-	static constexpr unsigned int usedUserFlags = 0;
+	static constexpr unsigned int UserFlagNode3D = 1 << 0;
+	static constexpr unsigned int UserFlagDrawable = 1 << 1;
+	static constexpr unsigned int usedUserFlags = 2;
 	
 	typedef CoreModifiable CurrentClassType;
 	typedef GenericRefCountedBaseClass ParentClassType;
@@ -426,19 +502,19 @@ public:
 #ifdef _DEBUG
 		try
 		{
-			return std::static_pointer_cast<CoreModifiable>(shared_from_this());
+			return debug_checked_pointer_cast<CoreModifiable>(shared_from_this());
 		}
 		catch (const std::bad_weak_ptr&)
 		{
 			// NOTE(antoine)
-			// It's forbidden to call shared_from_this inside the constructor
+			// It's forbidden to call shared_from_this inside the constructor or the destructor 
 			// Connect and Upgrade are common functions that will do so, move them out of the constructor (InitModidiable most likely)
 			// Another possibility is that this object was new'ed manually, DON'T!
 			__debugbreak();
 		}
 		return nullptr;
 #else
-		return std::static_pointer_cast<CoreModifiable>(shared_from_this());
+		return debug_checked_pointer_cast<CoreModifiable>(shared_from_this());
 #endif
 	}
 
@@ -918,7 +994,7 @@ public:
 	virtual	void UninitModifiable();
 	
 	// Called before the object is deleted. 
-	virtual void ProtectedDestroy();
+	virtual void ProtectedDestroy() final;
 	
 	// Update method. Call to ParentClassType::Update is not necessary when overriding
 	virtual void Update(const Timer&  timer, void* addParam) {}
@@ -1176,7 +1252,7 @@ protected:
 
 	static void	InitLuaScript(XMLNodeBase* currentNode, CoreModifiable* currentModifiable, ImportState& importState);
 
-	static SP<AttachedModifierBase> InitAttributeModifier(XMLNodeBase* modifierNode, CoreModifiableAttribute* attr);
+	static AttachedModifierBase* InitAttributeModifier(XMLNodeBase* modifierNode, CoreModifiableAttribute* attr);
 
 	template<typename StringType>
 	static CMSP	InitReference(XMLNodeTemplate<StringType>* currentNode, std::vector<CMSP> &loadedItems, const std::string& name);
@@ -1292,6 +1368,33 @@ protected:
 	std::vector<CoreModifiableAttribute*>	mAttributeList;
 	CoreModifiable*							mOwner;
 };
+
+// CMSP methods
+inline CMSP CMSP::operator [](const std::string& son) const
+{
+	if (get())
+		return get()->GetFirstSonByName("CoreModifiable", son);
+	return nullptr;
+}
+
+template<size_t _Size>
+inline CMSP CMSP::operator [](const char(&son)[_Size]) const
+{
+	if (get())
+		return get()->GetFirstSonByName("CoreModifiable", son);
+	return nullptr;
+}
+
+
+inline CMSP::AttributeHolder CMSP::operator()(const std::string& attr) const
+{
+	if (get())
+	{
+		CoreModifiableAttribute* attrib = get()->getAttribute(attr);
+		return AttributeHolder(attrib);
+	}
+	return AttributeHolder(nullptr);
+}
 
 struct LazyContent
 {

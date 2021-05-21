@@ -100,13 +100,13 @@ void	Sample3::ProtectedInit()
 	auto itfound = instanceMap.find("CoreItemOperatorModifier");
 	if (itfound != instanceMap.end())
 	{
-		AttachedModifierBase* toAdd = (AttachedModifierBase*)(*itfound).second();
+		auto toAdd = static_unique_pointer_cast<AttachedModifierBase>((*itfound).second());
 		CoreModifiableAttribute* attr = instance1->getAttribute("IntValue");
 		if (toAdd && attr)
 		{
 			// define getter modifier multiplying by two the value retreive with getValue
 			toAdd->Init(attr, true, "input*2");
-			attr->attachModifier(toAdd);
+			attr->attachModifier(std::move(toAdd));
 		}
 	}
 
@@ -119,7 +119,6 @@ void	Sample3::ProtectedInit()
 	// expressions can be more complex and be based on other attributes.
 	auto testAttributeImport = CoreModifiable::Import("testImport.xml");
 	std::cout << "Evaluated Int Value (eval(32*4)) : " << testAttributeImport->getValue<int>("IntValue") << std::endl;
-	
 }
 
 void	Sample3::ProtectedUpdate()

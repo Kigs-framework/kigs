@@ -38,16 +38,6 @@
 
 #include "CorePackage.h"
 
-#ifdef KIGS_TOOLS
-#define TRACEREF_RETAIN  kigsprintf("+++ REF ON %p (%s) (%03d>%03d) \n",this, getExactTypeID()._id_name.c_str(), (int)mRefCounter-1, (int)mRefCounter);
-#define TRACEREF_RELEASE kigsprintf("--- REF ON %p (%s) (%03d>%03d) \n",this, getExactTypeID()._id_name.c_str(), (int)mRefCounter, (int)mRefCounter-1);
-#define TRACEREF_DELETE  kigsprintf("### REF ON %p (%s)\n",this, getExactTypeID()._id_name.c_str());
-#else
-#define TRACEREF_RETAIN
-#define TRACEREF_RELEASE
-#define TRACEREF_DELETE
-#endif
-
 std::atomic<unsigned int> CoreModifiable::mUIDCounter{ 0 };
 
 //! auto implement static members
@@ -2318,7 +2308,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 			}
 			
 			// export modifier
-			SP<AttachedModifierBase> exportedModifier=current->getFirstAttachedModifier();
+			AttachedModifierBase* exportedModifier = current->getFirstAttachedModifier();
 			while (exportedModifier)
 			{
 				XMLNode*	modifierNode = new XMLNode();
@@ -2608,11 +2598,12 @@ void	CoreModifiable::InitLuaScript(XMLNodeBase* currentNode, CoreModifiable* cur
 	luamodule->CallMethod("RegisterLuaMethod", params);
 }
 
-SP<AttachedModifierBase> CoreModifiable::InitAttributeModifier(XMLNodeBase* currentNode, CoreModifiableAttribute* attr)
+AttachedModifierBase* CoreModifiable::InitAttributeModifier(XMLNodeBase* currentNode, CoreModifiableAttribute* attr)
 {
 	XMLAttributeBase* attrtype = currentNode->getAttribute("T", "Type");
 
-	SP<AttachedModifierBase> toAdd;
+	std::unique_ptr<AttachedModifierBase> toAdd;
+	AttachedModifierBase* return_value = nullptr;
 	if (attrtype)
 	{
 		std::string modifiertype = attrtype->getString();
@@ -2622,7 +2613,7 @@ SP<AttachedModifierBase> CoreModifiable::InitAttributeModifier(XMLNodeBase* curr
 			auto itfound = instanceMap.find(modifiertype);
 			if (itfound != instanceMap.end())
 			{
-				toAdd = (*itfound).second();
+				toAdd = static_unique_pointer_cast<AttachedModifierBase>((*itfound).second());
 			}
 		}
 
@@ -2664,11 +2655,11 @@ SP<AttachedModifierBase> CoreModifiable::InitAttributeModifier(XMLNodeBase* curr
 			}
 
 			toAdd->Init(attr, !isSetter, value);
-			attr->attachModifier(toAdd);
+			return_value = toAdd.get();
+			attr->attachModifier(std::move(toAdd));
 		}
 	}
-
-	return toAdd;
+	return return_value;
 }
 
 

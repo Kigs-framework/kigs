@@ -14,5 +14,6 @@ protected:
 	void	ProtectedUpdate() override;
 	void	ProtectedClose() override;
 
+	CMSP mSimpleClass;
 	
 };

@@ -42,7 +42,6 @@ void	Sample5::ProtectedInit()
 	// CoreItem can be used to manage JSon slyle objects
 	// main CoreItem types are CoreValue, CoreMap and CoreVector
 	// A CoreItem hierarchy can be created from json file (or json string)
-
 	JSonFileParser L_JsonParser;
 	CoreItemSP item = L_JsonParser.Get_JsonDictionaryFromString(R"====(
 	{
@@ -52,30 +51,30 @@ void	Sample5::ProtectedInit()
 )====");
 
 	// check if val2 exist
-	if (item["val2"].isNil())
+	if (!item["val2"])
 	{
 		std::cout << "val 2 not found " << std::endl;
 	}
 	else
 	{
-		std::cout << "val 2 : " << (int)item["val2"] << std::endl;
+		std::cout << "val 2 : " << (int)*item["val2"] << std::endl;
 	}
 
 	// create a CoreValue<int> with value 52
-	CoreItemSP toInsert = CoreItemSP::getCoreValue(52);
+	CoreItemSP toInsert = MakeCoreValue(52);
 
 	// add it to item with key val2
 	item->set("val2", toInsert);
 
 	// print values accessing map at val1 and val2
-	std::cout << "val 1 : " << (int)item["val1"] << std::endl;
-	std::cout << "val 2 : " << (int)item["val2"] << std::endl;
+	std::cout << "val 1 : " << (int)*item["val1"] << std::endl;
+	std::cout << "val 2 : " << (int)*item["val2"] << std::endl;
 
 	// retreive obj1
 	CoreItemSP obj1 = item["obj1"];
 
 	// obj3 is an array, add a CoreValue<std::string> at the end of the array (for an array, set with no key <=> push_back) 
-	obj1["obj3"]->set("", CoreItemSP::getCoreValue("lastElem"));
+	obj1["obj3"]->set("", MakeCoreValue("lastElem"));
 
 	// print all obj 3 values
 	bool first = true;
@@ -87,7 +86,7 @@ void	Sample5::ProtectedInit()
 			std::cout << " , ";
 		}
 		first = false;
-		std::cout << (std::string)tst;
+		std::cout << (std::string)*tst;
 	}
 	std::cout << "]" << std::endl;
 
@@ -107,7 +106,7 @@ void	Sample5::ProtectedInit()
 	// with the eval keywork
 	// (basic string operation are also available with evalStr keyword)
 	// create a mathematic expression : 
-	CoreItemSP	tsteval("eval(12.0*sin(4.0))");
+	CoreItemSP tsteval("eval(12.0*sin(4.0))");
 
 	// evaluate the expression and print it
 	std::cout << "Expression : 12.0*sin(4.0) = " << (float)tsteval << std::endl;
@@ -134,7 +133,7 @@ void	Sample5::ProtectedInit()
 
 	// It's also possible to compute 2D or 3D expressions
 	tsteval = std::string("eval2D(#/Sample5->EvalResult#+{1.0,#/Sample5->EvalResult.x#})");
-	Point2D checkresult = tsteval;
+	Point2D checkresult = *tsteval;
 	std::cout << "checkresult = [ " << checkresult[0] << "," << checkresult[1] << " ]" << std::endl;
 
 	// Load AppInit, GlobalConfig then launch first sequence

@@ -30,7 +30,6 @@ public:
 	   	
 	void	SetD3DTexture(ID3D11Texture2D* texture);
 protected:
-	void	ProtectedDestroy() override;	
 	void	InitModifiable() override;
 	void	UninitModifiable()override;
 

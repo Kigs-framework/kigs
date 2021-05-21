@@ -20,27 +20,15 @@ DEFINE_METHOD(SimpleClass, GiveInfos)
 
 	for (auto p : params)
 	{
-#ifdef KEEP_NAME_AS_STRING
 		std::string v;
 		if (p->getValue(v))
 		{
-			std::cout << "-- parameter : " << p->getID()._id_name << " value is : " << v << std::endl;
+			std::cout << "-- parameter : " << p->getID().toString() << " value is : " << v << std::endl;
 		}
 		else
 		{
-			std::cout << "-- parameter : " << p->getID()._id_name << " value cannot be evaluated as string" << std::endl;
+			std::cout << "-- parameter : " << p->getID().toString() << " value cannot be evaluated as string" << std::endl;
 		}
-#else
-		std::string v;
-		if (p->getValue(v))
-		{
-			std::cout << "-- parameter : " << p->getID()._id << " value is : " << v << std::endl;
-		}
-		else
-		{
-			std::cout << "-- parameter : " << p->getID()._id << " value cannot be evaluated as string" << std::endl;
-		}
-#endif
 	}
 
 	if(privateParams)
