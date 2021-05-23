@@ -47,7 +47,7 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
 
 	localJoystick->DoInputDeviceDescription();
 
-	gInstanceModuleInputDX->addItem((CMSP&)localJoystick);
+	gInstanceModuleInputDX->addItem(localJoystick);
   
     return DIENUM_CONTINUE;
 }

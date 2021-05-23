@@ -101,7 +101,7 @@ public:
 
 	const std::string*	HasArg(const std::string& arg, bool startWith=false) const;
 
-	SP<Timer>&			GetApplicationTimer()
+	SP<Timer>			GetApplicationTimer()
 	{
 		return mApplicationTimer;
 	}

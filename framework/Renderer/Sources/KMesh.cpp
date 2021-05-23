@@ -239,7 +239,7 @@ int Mesh::getTriangleCount()
 	{
 		if((*it).mItem->isSubType(MeshItemGroup::mClassID))
 		{
-			Count += ((SP<MeshItemGroup>&)(*it).mItem)->mTriangleCount;
+			Count += it->mItem->as<MeshItemGroup>()->mTriangleCount;
 		}
 	}
 	return Count;
@@ -291,15 +291,16 @@ bool Mesh::getTriangle(int index, int &a, int &b, int &c)
 	kstl::vector<ModifiableItemStruct>::const_iterator it;
 	for (it=getItems().begin();it!=getItems().end();++it)
 	{
+		auto mesh_group = it->mItem->as<MeshItemGroup>();
 		if((*it).mItem->isSubType(MeshItemGroup::mClassID))
 		{
-			if(index>=((SP<MeshItemGroup>&)(*it).mItem)->mTriangleCount)
+			if(index>= mesh_group->mTriangleCount)
 			{
-				index-=((SP<MeshItemGroup>&)(*it).mItem)->mTriangleCount;
+				index-= mesh_group->mTriangleCount;
 			}
 			else
 			{
-				Tr = (Mesh::Triangle *)(((char*)((SP<MeshItemGroup>&)(*it).mItem)->mFirstTriangle) + ((SP<MeshItemGroup>&)(*it).mItem)->mTriangleSize*index);
+				Tr = (Mesh::Triangle *)(((char*)mesh_group->mFirstTriangle) + mesh_group->mTriangleSize*index);
 				break;
 			}
 			if(index<0)
@@ -344,11 +345,12 @@ bool Mesh::CopyVertexAndTriangle(int &VCount, int &TCount, Point3D *&VArray, int
 	{
 		if((*it).mItem->isSubType(MeshItemGroup::mClassID))
 		{
-			Mesh::Triangle *Tr=(Mesh::Triangle *)(((SP<MeshItemGroup>&)(*it).mItem)->mFirstTriangle) ;
+			auto mesh_group = it->mItem->as<MeshItemGroup>();
+			Mesh::Triangle *Tr=(Mesh::Triangle *)(mesh_group->mFirstTriangle) ;
 
-			int	sizeoftriangle=(((SP<MeshItemGroup>&)(*it).mItem)->mTriangleSize);
+			int	sizeoftriangle=(mesh_group->mTriangleSize);
 
-			for (j=0;j<(((SP<MeshItemGroup>&)(*it).mItem)->mTriangleCount);j++)
+			for (j=0;j<(mesh_group->mTriangleCount);j++)
 			{
 				Mesh::Triangle* CurrentT=(Mesh::Triangle*)((unsigned char*)Tr+sizeoftriangle*j);
 
@@ -504,7 +506,7 @@ void	Mesh::RecomputeNormals()
 	{
 		if((*it).mItem->isSubType(MeshItemGroup::mClassID))
 		{
-			SP<MeshItemGroup>& currentGroup= ((SP<MeshItemGroup>&)(*it).mItem);
+			MeshItemGroup* currentGroup= (*it).mItem->as<MeshItemGroup>();
 
 			if( ((unsigned int)currentGroup->mTriangleType) & 1 ) // check if smooth triangle
 			{
@@ -564,7 +566,7 @@ void	Mesh::RecomputeNormalsFast()
 	{
 		if((*it).mItem->isSubType(MeshItemGroup::mClassID))
 		{
-			SP<MeshItemGroup>& currentGroup= ((SP<MeshItemGroup>&)(*it).mItem);
+			MeshItemGroup* currentGroup= (*it).mItem->as<MeshItemGroup>();
 
 			if( ((unsigned int)currentGroup->mTriangleType) & 1 ) // check if smooth triangle
 			{

@@ -6,6 +6,8 @@
 #if __has_include("time.h")
 #include <time.h>
 
+#include <iostream>
+
 void Timer::GetDate(kstl::string& a_value, DateFormat a_format) const
 {
 	time_t     now = time(0);
@@ -168,4 +170,13 @@ void Timer::ResetDt(CoreModifiable* caller)
 	{
 		mTimerMap.erase(It);
 	}
+}
+
+void TimeTracker::PrintTimeElapsed(const char* txt_before, bool use_cout)
+{
+	if (use_cout) 
+		std::cout << txt_before << GetTimeElapsed().count() / 1'000'000 << "ms\n";
+	else
+		kigsprintf("%s%lld\n", txt_before, GetTimeElapsed().count() / 1'000'000);
+	
 }

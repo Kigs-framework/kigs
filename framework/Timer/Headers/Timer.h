@@ -108,6 +108,14 @@ public:
 	}
 };
 
+struct TimeTracker
+{
+	TimeTracker() : mStartTime{ TimePoint::clock::now() } {}
+	void PrintTimeElapsed(const char* txt_before="", bool use_cout = false);
+	auto GetTimeElapsed() { return TimePoint::clock::now() - mStartTime; }
+	TimePoint mStartTime;
+};
+
 struct DelayedExecutor
 {
 	template<typename F>

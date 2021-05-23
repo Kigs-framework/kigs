@@ -52,7 +52,7 @@ public:
 	//! Do drawing here if any
 	void TravDraw(TravState* state) override;
 
-	SP<UIItem>& GetRootItem() { return mRootItem; }
+	SP<UIItem> GetRootItem() { return mRootItem; }
 
 	static void AccumulateToDraw(TravState* state, kstl::vector<NodeToDraw>& todraw, CoreModifiable* current, int depth = 0, u32 clip_count = 0);
 	static void UpdateChildrens(const Timer& a_timer, UIItem* current, void* addParam);

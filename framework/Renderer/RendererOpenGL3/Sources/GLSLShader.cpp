@@ -417,8 +417,7 @@ void	API3DShader::DoPreDraw(TravState* state)
 		{
 			if ((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
-				drawable->CheckPreDraw(state);
+				it->mItem->as<Drawable>()->CheckPreDraw(state);
 			}
 		}
 	}
@@ -437,8 +436,7 @@ void	API3DShader::DoPostDraw(TravState* state)
 		{
 			if ((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
-				drawable->CheckPostDraw(state);
+				it->mItem->as<Drawable>()->CheckPostDraw(state);
 			}
 		}
 

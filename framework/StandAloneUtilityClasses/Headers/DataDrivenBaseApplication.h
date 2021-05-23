@@ -205,7 +205,7 @@ public:
 	DECLARE_ABSTRACT_CLASS_INFO(DataDrivenBaseApplication, CoreBaseApplication, Core);
 	DECLARE_CONSTRUCTOR(DataDrivenBaseApplication);
 
-	inline SP<DataDrivenSequenceManager>&	GetSequenceManager() { return mSequenceManager; }
+	inline SP<DataDrivenSequenceManager> GetSequenceManager() { return mSequenceManager; }
 
 	friend class DataDrivenSequenceManager;
 	friend class DataDrivenTransition;

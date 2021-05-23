@@ -286,7 +286,7 @@ void  Octree::ReorganiseOctree()
 			// make sure the bounding box, matrix... are ok before adding
 			if (!item->isSubType("OctreeSubNode"))
 			{
-				SP<OctreeSubNode> subNode = mRootSubNode->AddNode((SP<SceneNode>&)item, 0, mMaxRecursiveLevel, mSubdivideLevel);
+				SP<OctreeSubNode> subNode = mRootSubNode->AddNode(item, 0, mMaxRecursiveLevel, mSubdivideLevel);
 
 				AddNodeToMap((SceneNode*)item.get(), subNode.get());
 				toRemove.push_back(item);
@@ -367,7 +367,7 @@ bool  OctreeSubNode::SonsAreEmpty()
 	return true;
 }
 
-SP<OctreeSubNode>  OctreeSubNode::AddNode(SP<SceneNode>& node, int currentlevel, int maxLevel, int subdivelevel)
+SP<OctreeSubNode>  OctreeSubNode::AddNode(SP<SceneNode> node, int currentlevel, int maxLevel, int subdivelevel)
 {
 	// add it to me
 	if ((mTotalNodes < subdivelevel) || (currentlevel >= maxLevel))

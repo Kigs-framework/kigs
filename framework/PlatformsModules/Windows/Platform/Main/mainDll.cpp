@@ -26,7 +26,7 @@ void signal_handler(int sig)
 	quit = 1;
 }
 
-CoreBaseApplication*	myApp=0;
+SP<CoreBaseApplication>	myApp;
 
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -77,7 +77,7 @@ extern "C" void __declspec(dllexport) InitKigs()
 
 	// no need to register app to factory
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));
-	myApp = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
+	myApp = KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
 
 
 #ifdef INIT_DEFAULT_MODULES
@@ -106,7 +106,7 @@ extern "C" void __declspec(dllexport) CloseKigs()
 	myApp->CloseApp();
 
 	//! delete
-	myApp->Destroy();
+	myApp.reset();
 
 	//! last thing to do
 	KigsCore::Close();

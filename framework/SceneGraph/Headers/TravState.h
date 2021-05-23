@@ -142,7 +142,7 @@ public:
 	* \fn 		CullingObject* GetCullingObject() const
 	* \return	the culling object
 	*/
-	SP<CullingObject>& GetCullingObject() {return mCullingObject;}
+	SP<CullingObject> GetCullingObject() {return mCullingObject;}
 
 	/**
 	* \brief	get the visible frame

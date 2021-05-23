@@ -288,7 +288,7 @@ void Node3D::PreDrawDrawable(TravState* state)
 		{
 			if (it.mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto& d = (SP<Drawable>&)it.mItem;
+				auto d = it.mItem->as<Drawable>();
 				if (!state->mCurrentPass || d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 					d->CheckPreDraw(state);
 			}
@@ -301,7 +301,7 @@ void Node3D::PreDrawDrawable(TravState* state)
 		{
 			if (it.mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto& d = (SP<Drawable>&)it.mItem;
+				auto d = it.mItem->as<Drawable>();
 				if(d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 				{
 					d->CheckPreDraw(state);
@@ -326,7 +326,7 @@ void Node3D::DrawDrawable(TravState* state)
 		{
 			if (it.mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto& d = (SP<Drawable>&)it.mItem;
+				auto d = it.mItem->as<Drawable>();
 				if (d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 					d->CheckDraw(state);
 			}
@@ -340,12 +340,12 @@ void Node3D::DrawDrawable(TravState* state)
 		{
 			if(it.mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto& d = (SP<Drawable>&)it.mItem;
+				auto d = it.mItem->as<Drawable>();
 				if (d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 				{
 					if (d->IsRenderable() && d->IsSortable())
 					{
-						state->mCurrentPass->sorter->AddDrawable(d.get(), state);
+						state->mCurrentPass->sorter->AddDrawable(d, state);
 					}
 				}
 				/*else
@@ -366,7 +366,7 @@ void Node3D::PostDrawDrawable(TravState* state)
 		{
 			if (it.mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto& d = (SP<Drawable>&)it.mItem;
+				auto d = it.mItem->as<Drawable>();
 				if (!state->mCurrentPass || d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 					d->CheckPostDraw(state);
 			}
@@ -379,7 +379,7 @@ void Node3D::PostDrawDrawable(TravState* state)
 		{
 			if (it.mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				auto& d = (SP<Drawable>&)it.mItem;
+				auto d = it.mItem->as<Drawable>();
 				if (d->IsUsedInRenderPass(state->mCurrentPass->pass_mask))
 				{
 					d->CheckPostDraw(state);
@@ -476,7 +476,7 @@ void Node3D::TravDraw(TravState* state)
 							}
 
 							//! recurse to sons
-							((SP<Node3D>&)(*it).mItem)->TravDraw(state);
+							it->mItem->as<Node3D>()->TravDraw(state);
 
 	
 							if(state->mCurrentPass->sorter)
@@ -633,11 +633,11 @@ void Node3D::TravCull(TravState* state)
 			// if node3D, then full process
 			if ((*it).mItem->isUserFlagSet(UserFlagNode3D))
 			{
-				SP<Node3D>& node = (SP<Node3D>&)(*it).mItem;
+				auto node = it->mItem->as<Node3D>();
 				if (node->Cull(state, mCullingMask))
 				{
 					nodeDistPair toAdd;
-					toAdd.node = node.get();
+					toAdd.node = node;
 					const Matrix3x4& nodemat = node->GetLocalToGlobal();
 					Point3D	nodepos(nodemat.GetTranslation());
 					nodepos -= camPos;
@@ -675,11 +675,11 @@ void Node3D::TravCull(TravState* state)
 			// if node3D, then full process
 			if ((*it).mItem->isUserFlagSet(UserFlagNode3D))
 			{
-				SP<Node3D>& node = (SP<Node3D>&)(*it).mItem;
+				auto node = it->mItem->as<Node3D>();
 				if (node->Cull(state, mCullingMask))
 				{
 					nodeDistPair toAdd;
-					toAdd.node = node.get();
+					toAdd.node = node;
 					
 					BBox nodeBBox;
 					node->GetGlobalBoundingBox(nodeBBox.m_Min, nodeBBox.m_Max);
@@ -717,10 +717,10 @@ void Node3D::TravCull(TravState* state)
 			// if node3D, then full process
 			if ((*it).mItem->isUserFlagSet(UserFlagNode3D))
 			{
-				SP<Node3D>& node = (SP<Node3D>&)(*it).mItem;
+				auto node = it->mItem->as<Node3D>();
 				if (node->Cull(state, mCullingMask))
 				{
-					scenegraph->AddVisibleNode(node.get());
+					scenegraph->AddVisibleNode(node);
 					mVisibleNodeCount++;
 				}
 			}
@@ -856,7 +856,7 @@ void Node3D::RecomputeBoundingBox()
 	{
 		if ((*it).mItem->isSubType(Drawable::mClassID))
 		{
-			SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
+			auto drawable = it->mItem->as<Drawable>();
 			//hasDrawable = true;
 			//! if object has a valid BBox update return true
 			if (drawable->BBoxUpdate(0))
@@ -885,8 +885,7 @@ void Node3D::RecomputeBoundingBox()
 	{
 		if ((*it).mItem->isUserFlagSet(UserFlagNode3D))
 		{
-			SP<Node3D>& node = (SP<Node3D>&)(*it).mItem;
-
+			auto node = it->mItem->as<Node3D>();
 			if (node->mIgnoreBBox) continue;
 			
 			//! this is the son bounding box in the coordinate system of this node
@@ -1044,7 +1043,7 @@ int	Node3D::ComputeNodePriority()
 		{
 			if (item.mItem->isUserFlagSet(UserFlagNode3D))
 			{
-				auto& node = (SP<Node3D>&)item.mItem;
+				auto node = item.mItem->as<Node3D>();
 				int currentP = node->ComputeNodePriority();
 				if (currentP > maxPriority)
 				{

@@ -249,7 +249,7 @@ template<typename BaseType>
 class OctreeBase : public BaseType
 {
 public:
-	DECLARE_ABSTRACT_CLASS_INFO(OctreeBase, CoreModifiable, Core);
+	DECLARE_ABSTRACT_CLASS_INFO(OctreeBase<BaseType>, BaseType, Core);
 	DECLARE_INLINE_CONSTRUCTOR(OctreeBase)
 	{
 	}

@@ -43,7 +43,7 @@ bool	SceneNode::addItem(const CMSP& item,ItemPosition pos DECLARE_LINK_NAME )
 	// update drawing needs flag if drawable
 	if(item->isSubType(Drawable::mClassID))
 	{
-		((SP<Drawable>&)item)->UpdateDrawingNeeds();
+		item->as<Drawable>()->UpdateDrawingNeeds();
 	}
 
 	return CoreModifiable::addItem(item, pos PASS_LINK_NAME(linkName));
@@ -54,7 +54,7 @@ bool SceneNode::removeItem(const CMSP& item DECLARE_LINK_NAME)
 	// update drawing needs flag if drawable
 	if(item->isSubType(Drawable::mClassID))
 	{
-		((SP<Drawable>&)item)->UpdateDrawingNeeds();
+		item->as<Drawable>()->UpdateDrawingNeeds();
 	}
 
 	return CoreModifiable::removeItem(item PASS_LINK_NAME(linkName));

@@ -48,7 +48,7 @@ public:
 	 * \param	subdivelevel : subdivide level
 	 * \return	the OctreeSubNode
 	 */
-	SP<OctreeSubNode>  AddNode(SP<SceneNode>& node,int currentlevel,int maxLevel,int subdivelevel);
+	SP<OctreeSubNode>  AddNode(SP<SceneNode> node,int currentlevel,int maxLevel,int subdivelevel);
 
 	/**
 	 * \brief	remove a node
@@ -126,7 +126,7 @@ public:
 	 * \param	index : index of the root
 	 * \return	a sub node
 	 */
-	SP<OctreeSubNode>&				GetSubNode(int index){return mSonsSubNodes[index];}
+	SP<OctreeSubNode>				GetSubNode(int index){return mSonsSubNodes[index];}
 
 	/**
 	 * \brief	get object list

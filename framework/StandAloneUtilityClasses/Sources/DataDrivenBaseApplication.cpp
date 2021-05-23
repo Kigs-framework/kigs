@@ -99,7 +99,7 @@ void DataDrivenSequence::InitModifiable()
 			if (currentSequence->isSubType(DataDrivenSequence::mClassID))
 			{
 				kstl::map<unsigned int, kstl::string> savedParamsList;
-				((SP<DataDrivenSequence>&)currentSequence)->saveParams(savedParamsList);
+				currentSequence->as<DataDrivenSequence>()->saveParams(savedParamsList);
 				if (savedParamsList.size())
 				{
 					currentManager->mSequenceParametersMap[currentSequence->getName()] = savedParamsList;
@@ -304,7 +304,7 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 				if (mPreviousSequence->isSubType(DataDrivenSequence::mClassID))
 				{
 					kstl::map<unsigned int, kstl::string> savedParamsList;
-					((SP<DataDrivenSequence>&)mPreviousSequence)->saveParams(savedParamsList);
+					mPreviousSequence->as<DataDrivenSequence>()->saveParams(savedParamsList);
 					if (savedParamsList.size())
 					{
 						currentManager->mSequenceParametersMap[mPreviousSequence->getName()] = savedParamsList;

@@ -206,7 +206,7 @@ public:
 	CMSP(std::shared_ptr<U>&& other) : SmartPointer<CoreModifiable>(debug_checked_pointer_cast<CoreModifiable>(other))
 	{
 	}
-	template<typename U>
+	/*template<typename U>
 	CMSP& operator=(const std::shared_ptr<U>& other)
 	{
 		std::shared_ptr<CoreModifiable>::operator=(debug_checked_pointer_cast<CoreModifiable>(other));
@@ -217,12 +217,12 @@ public:
 	{
 		std::shared_ptr<CoreModifiable>::operator=(debug_checked_pointer_cast<CoreModifiable>(other));
 		return *this;
-	}
-	template<typename U>
+	}*/
+	/*template<typename U>
 	operator SmartPointer<U>()
 	{
 		return debug_checked_pointer_cast<U>(*this);
-	}
+	}*/
 	template<typename U>
 	bool operator==(const U* other) const
 	{
@@ -263,8 +263,8 @@ public:
 
 
 	inline AttributeHolder operator()(const std::string& son) const;
-
 };
+
 
 
 class ModifiableItemStruct
@@ -467,6 +467,8 @@ struct ModifiableMethodStruct
  // ****************************************
 class CoreModifiable : public GenericRefCountedBaseClass
 {
+	static_assert(sizeof(CMSP) == sizeof(SmartPointer<CoreModifiable>));
+	static_assert(sizeof(std::shared_ptr<CoreModifiable>) == sizeof(SmartPointer<CoreModifiable>));
 public:
 	//DECLARE_ABSTRACT_CLASS_INFO(CoreModifiable, RefCountedClass, KigsCore);
 	static const KigsID mClassID;

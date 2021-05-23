@@ -91,7 +91,7 @@ void	DrawableSwitch::ComputeLocalBBox(kdouble time)
     {
 		if((*it).mItem->isSubType(Drawable::mClassID))
 		{
-			SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
+			Drawable* drawable = (*it).mItem->as<Drawable>();
 
 			//! if object has a valid BBox update return true
 			if(drawable->BBoxUpdate(time))

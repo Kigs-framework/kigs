@@ -143,7 +143,7 @@ bool UITexturedItem::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 {
 	if (item->isSubType(Texture::mClassID))
 	{
-		mTexturePointer->setTexture((SP<Texture>&)item);
+		mTexturePointer->setTexture(item);
 		mTexturePointer->refreshTextureInfos();
 
 		SetNodeFlag(Node2D_SizeChanged);

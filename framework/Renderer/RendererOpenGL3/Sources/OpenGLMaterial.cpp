@@ -25,25 +25,25 @@ void OpenGLMaterial::InitModifiable()
 		mUniDiffuseColor->setValue("Name", "MaterialDiffuseColor");
 		mUniDiffuseColor->setArrayValue("Value", mDiffuseColor[0], mDiffuseColor[1], mDiffuseColor[2], mDiffuseColor[3]);
 		mUniDiffuseColor->Init();
-		addItem((CMSP&)mUniDiffuseColor);
+		addItem(mUniDiffuseColor);
 
 		mUniSpecularColor = KigsCore::GetInstanceOf("uniSpecularColor", "API3DUniformFloat4");
 		mUniSpecularColor->setValue("Name", "MaterialSpecularColor");
 		mUniSpecularColor->setArrayValue("Value", mSpecularColor[0], mSpecularColor[1], mSpecularColor[2], mSpecularColor[3]);
 		mUniSpecularColor->Init();
-		addItem((CMSP&)mUniSpecularColor);
+		addItem(mUniSpecularColor);
 
 		mUniShininess = KigsCore::GetInstanceOf("shininessUniform", "API3DUniformFloat");
 		mUniShininess->setValue("Name", "MaterialShininess");
 		mUniShininess->setValue("Value", mShininess);
 		mUniShininess->Init();
-		addItem((CMSP&)mUniShininess);
+		addItem(mUniShininess);
 
 		mUniAmbiantColor = KigsCore::GetInstanceOf("uniAmbiantColor", "API3DUniformFloat4");
 		mUniAmbiantColor->setValue("Name", "MaterialAmbiantColor");
 		mUniAmbiantColor->setArrayValue("Value", mAmbientColor[0], mAmbientColor[1], mAmbientColor[2], mAmbientColor[3]);
 		mUniAmbiantColor->Init();
-		addItem((CMSP&)mUniAmbiantColor);
+		addItem(mUniAmbiantColor);
 
 #ifdef KIGS_TOOLS
 		mUniDiffuseColor->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);

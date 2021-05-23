@@ -1385,7 +1385,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					if ( ((*It_Material).mItem)->isSubType(MaterialStage::mClassID) )
 					{
 						keep=true;
-						SP<MaterialStage>& MatStage = (SP<MaterialStage> & )(*It_Material).mItem;
+						MaterialStage* MatStage = (*It_Material).mItem->as<MaterialStage>();
 
 						int valuematstage=0;
 						MatStage->getValue("StageIndex",valuematstage);
@@ -1409,7 +1409,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 								//check if this children is a Texture
 								if ( ((*It_MatStage).mItem)->isSubType(Texture::mClassID) )
 								{
-									SP<Texture>& temptex =(SP<Texture> &) (*It_MatStage).mItem;
+									Texture* temptex = (*It_MatStage).mItem->as<Texture>();
 									temptex->getValue("FileName",stagedesc->mTexture);
 								}
 								It_MatStage++;

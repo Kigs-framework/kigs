@@ -306,23 +306,23 @@ void API3DLight::DrawLight(TravState* travstate)
 	if (!mIsOn)
 		return;
 	if (mPositionUniform)
-		((SP<API3DUniformBase>&)mPositionUniform)->DoPreDraw(travstate);
+		mPositionUniform->as<Drawable>()->DoPreDraw(travstate);
 	if (mCamPosUniform)
-		((SP < API3DUniformBase>&)mCamPosUniform)->DoPreDraw(travstate);
+		mCamPosUniform->as<Drawable>()->DoPreDraw(travstate);
 	if (mDiffuseUniform)
-		((SP < API3DUniformBase>&)mDiffuseUniform)->DoPreDraw(travstate);
+		mDiffuseUniform->as<Drawable>()->DoPreDraw(travstate);
 	if (mSpecularUniform)
-		((SP < API3DUniformBase>&)mSpecularUniform)->DoPreDraw(travstate);
+		mSpecularUniform->as<Drawable>()->DoPreDraw(travstate);
 	if (mAmbiantUniform)
-		((SP < API3DUniformBase>&)mAmbiantUniform)->DoPreDraw(travstate);
+		mAmbiantUniform->as<Drawable>()->DoPreDraw(travstate);
 	if (mSpotDirUniform)
-		((SP < API3DUniformBase>&)mSpotDirUniform)->DoPreDraw(travstate);
+		mSpotDirUniform->as<Drawable>()->DoPreDraw(travstate);
 	if (mAttenuationUniform)
-		((SP < API3DUniformBase>&)mAttenuationUniform)->DoPreDraw(travstate);
+		mAttenuationUniform->as<Drawable>()->DoPreDraw(travstate);
 	if (mSpotCutoffUniform)
-		((SP < API3DUniformBase>&)mSpotCutoffUniform)->DoPreDraw(travstate);
+		mSpotCutoffUniform->as<Drawable>()->DoPreDraw(travstate);
 	if (mSpotExponentUniform)
-		((SP < API3DUniformBase>&)mSpotExponentUniform)->DoPreDraw(travstate);
+		mSpotExponentUniform->as<Drawable>()->DoPreDraw(travstate);
 }
 
 void API3DLight::PostDrawLight(TravState* travstate)
@@ -330,23 +330,23 @@ void API3DLight::PostDrawLight(TravState* travstate)
 	if (!mIsOn)
 		return;
 	if (mPositionUniform)
-		((SP < API3DUniformBase>&)mPositionUniform)->DoPostDraw(travstate);
+		mPositionUniform->as<Drawable>()->DoPostDraw(travstate);
 	if (mCamPosUniform)
-		((SP < API3DUniformBase>&)mCamPosUniform)->DoPostDraw(travstate);
+		mCamPosUniform->as<Drawable>()->DoPostDraw(travstate);
 	if (mDiffuseUniform)
-		((SP < API3DUniformBase>&)mDiffuseUniform)->DoPostDraw(travstate);
+		mDiffuseUniform->as<Drawable>()->DoPostDraw(travstate);
 	if (mSpecularUniform)
-		((SP < API3DUniformBase>&)mSpecularUniform)->DoPostDraw(travstate);
+		mSpecularUniform->as<Drawable>()->DoPostDraw(travstate);
 	if (mAmbiantUniform)
-		((SP < API3DUniformBase>&)mAmbiantUniform)->DoPostDraw(travstate);
+		mAmbiantUniform->as<Drawable>()->DoPostDraw(travstate);
 	if (mAttenuationUniform)
-		((SP < API3DUniformBase>&)mAttenuationUniform)->DoPostDraw(travstate);
+		mAttenuationUniform->as<Drawable>()->DoPostDraw(travstate);
 	if (mSpotDirUniform)
-		((SP < API3DUniformBase>&)mSpotDirUniform)->DoPostDraw(travstate);
+		mSpotDirUniform->as<Drawable>()->DoPostDraw(travstate);
 	if (mSpotCutoffUniform)
-		((SP < API3DUniformBase>&)mSpotCutoffUniform)->DoPostDraw(travstate);
+		mSpotCutoffUniform->as<Drawable>()->DoPostDraw(travstate);
 	if (mSpotExponentUniform)
-		((SP < API3DUniformBase>&)mSpotExponentUniform)->DoPostDraw(travstate);
+		mSpotExponentUniform->as<Drawable>()->DoPostDraw(travstate);
 }
 
 int API3DLight::GetTypeOfLight()

@@ -46,7 +46,7 @@ void UIBoxLayout::RecomputeLayout()
 			{
 				if ((*itsons).mItem->isSubType(Node2D::mClassID))
 				{
-					auto& node = (SP<Node2D>&)(itsons->mItem);
+					SP<Node2D> node = itsons->mItem;
 					bool is_enabled = false;
 					node->getValue("IsHidden", is_enabled);
 					if (!is_enabled)

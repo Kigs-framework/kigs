@@ -34,7 +34,7 @@ void Drawable::UpdateDrawingNeeds()
 		{
 			if((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable=(SP<Drawable> & )(*it).mItem;
+				Drawable* drawable = (*it).mItem->as<Drawable>();
 				drawable->UpdateDrawingNeeds();
 				mDrawingNeeds|=drawable->GetDrawingNeeds();
 			}
@@ -74,7 +74,7 @@ void Drawable::DoPreDraw(TravState* state)
 		{
 			if((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable=(SP<Drawable>&)(*it).mItem;
+				Drawable* drawable = (*it).mItem->as<Drawable>();
 				drawable->CheckPreDraw(state);
 			}
 		}        
@@ -101,7 +101,7 @@ void Drawable::DoDraw(TravState* state)
 		{
 			if((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
+				Drawable* drawable = (*it).mItem->as<Drawable>();
 				drawable->CheckDraw(state);
 			}
 		}      
@@ -128,7 +128,7 @@ void Drawable::DoPostDraw(TravState* state)
 		{
 			if((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
+				Drawable* drawable = (*it).mItem->as<Drawable>();
 				drawable->CheckPostDraw(state);
 			}
 		}       

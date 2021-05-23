@@ -195,7 +195,7 @@ void ModernMesh::InitBoundingBox()
 		{
 			if ((*it).mItem->isSubType(ModernMeshItemGroup::mClassID))
 			{
-				SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).mItem;
+				ModernMeshItemGroup* current = it->mItem->as<ModernMeshItemGroup>();
 				if (current->mVertexCount)
 				{
 					unsigned char* vertexStart = (unsigned char*)current->mVertexBufferArray.buffer();
@@ -692,7 +692,7 @@ void ModernMesh::ComputeTangents(bool useTextureCoords)
 	{
 		if ((*it).mItem->isSubType(ModernMeshItemGroup::mClassID))
 		{
-			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).mItem;
+			ModernMeshItemGroup* current = it->mItem->as<ModernMeshItemGroup>();
 			current->ComputeTangents(useTextureCoords);
 		}
 	}
@@ -706,7 +706,7 @@ void ModernMesh::ComputeNormals()
 	{
 		if ((*it).mItem->isSubType(ModernMeshItemGroup::mClassID))
 		{
-			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).mItem;
+			ModernMeshItemGroup* current = it->mItem->as<ModernMeshItemGroup>();
 			current->ComputeNormals();
 		}
 	}
@@ -721,7 +721,7 @@ void ModernMesh::ApplyScaleFactor(kfloat scaleFactor)
 	{
 		if ((*it).mItem->isSubType(ModernMeshItemGroup::mClassID))
 		{
-			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).mItem;
+			ModernMeshItemGroup* current = it->mItem->as<ModernMeshItemGroup>();
 			current->ApplyScaleFactor(scaleFactor);
 		}
 	}
@@ -735,7 +735,7 @@ void ModernMesh::FlipAxis(int axisX, int axisY, int axisZ)
 	{
 		if ((*it).mItem->isSubType(ModernMeshItemGroup::mClassID))
 		{
-			SP<ModernMeshItemGroup>& current = (SP<ModernMeshItemGroup>&)(*it).mItem;
+			ModernMeshItemGroup* current = it->mItem->as<ModernMeshItemGroup>();
 			current->FlipAxis(axisX,axisY,axisZ);
 		}
 	}

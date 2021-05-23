@@ -33,7 +33,7 @@ void HDrawable::DoDraw(TravState* state)
 		{
 			if((*it).mItem->isUserFlagSet(UserFlagDrawable))
 			{
-				SP<Drawable>& drawable = (SP<Drawable>&)(*it).mItem;
+				Drawable* drawable = (*it).mItem->as<Drawable>();
 				drawable->CheckPreDraw(state);
 				drawable->CheckDraw(state);
 				drawable->CheckPostDraw(state);
