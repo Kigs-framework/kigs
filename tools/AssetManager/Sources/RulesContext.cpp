@@ -35,18 +35,34 @@ void	RetreiveShortNameAndExt(const std::string& filename, std::string& shortname
 
 }
 
-void			RulesContext::setBasicReplacements()
+void			RulesContext::removeEndingSlash(std::string& lpath)
+{
+	while (lpath.length() && ( (lpath[lpath.length() - 1] == '\\') || (lpath[lpath.length() - 1] == '/') ))
+	{
+		lpath = lpath.substr(0, lpath.length() - 1);
+	}
+}
+
+void			RulesContext::protectedSetBasicReplacements()
 {
 	mReplacements.clear();
-	mReplacements["{iFolder}"] = mFolderIn + "\\";
-	mReplacements["{tFolder}"] = mFolderInterm + "\\";
-	mReplacements["{oFolder}"] = mFolderOut + "\\";
+	mReplacements["{iFolder}"] = mFolderIn;
+	mReplacements["{tFolder}"] = mFolderInterm;
+	mReplacements["{oFolder}"] = mFolderOut;
+}
 
+void			RulesContext::setBasicReplacements()
+{
+	protectedSetBasicReplacements();
+	for (auto& pathes : mReplacements)
+	{
+		replaceAll(pathes.second, "/", "\\");
+	}
 }
 
 void			RulesContext::setCurrentFile(const FileStruct& file)
 {
-	setBasicReplacements();
+	protectedSetBasicReplacements();
 	// compute available replacements
 	std::string shortname;
 	std::string ext;
@@ -59,15 +75,19 @@ void			RulesContext::setCurrentFile(const FileStruct& file)
 	std::string insidepath = "";
 	for (const auto& p : file.mFolders)
 	{
-		insidepath += p + "\\";
+		insidepath += "\\" + p ;
 	}
 
-	mReplacements["{iPath}"] = mFolderIn + "\\" + insidepath;
-	mReplacements["{tPath}"] = mFolderInterm + "\\" + insidepath;
-	mReplacements["{oPath}"] = mFolderOut + "\\" + insidepath;
+	mReplacements["{iPath}"] = mFolderIn + insidepath;
+	mReplacements["{tPath}"] = mFolderInterm + insidepath;
+	mReplacements["{oPath}"] = mFolderOut + insidepath;
 
-	mReplacements["{iFullPathName}"] = mFolderIn + "\\" + insidepath + file.mFileInfos.cFileName;
+	mReplacements["{iFullPathName}"] = mFolderIn + insidepath + "\\" + file.mFileInfos.cFileName;
 
+	for (auto& pathes : mReplacements)
+	{
+		replaceAll(pathes.second, "/", "\\");
+	}
 }
 std::string		RulesContext::parse(const std::string& txt) const
 {

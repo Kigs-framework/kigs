@@ -593,7 +593,8 @@ void	MeshConvert::ProtectedClose()
 
 }
 
-void	MeshConvert::ProtectedExternAskExit()
+bool	MeshConvert::ProtectedExternAskExit()
 {
 	mNeedExit = true;
+	return true;
 }

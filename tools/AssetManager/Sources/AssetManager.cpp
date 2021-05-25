@@ -95,6 +95,11 @@ void	AssetManager::ProtectedInit()
 				mPlatform = (*itArgs);
 			}
 			break;
+			case 'v':
+			{
+				mVerbose = true;
+			}
+			break;
 			default:
 				break;
 			}
@@ -108,7 +113,7 @@ void	AssetManager::ProtectedInit()
 	}
 		// check if rules are presents
 
-	auto& pathManager = KigsCore::Singleton<FilePathManager>();
+	auto pathManager = KigsCore::Singleton<FilePathManager>();
 
 	std::string fullRulesPath = mFolderIn + "\\AssetManagerRules" + mPlatform + ".json";
 
@@ -146,13 +151,8 @@ void	AssetManager::ProtectedUpdate()
 	//std::cout << "Processed file count : " << mBundle.size() << std::endl;
 	if (mJobIsDone)
 	{
-
-		auto& pathManager = KigsCore::Singleton<FilePathManager>();
-		auto filenamehandle = pathManager->FindFullName(mFolderIn + "\\AMLastDone.txt");
-
-		Platform_fopen(filenamehandle.get(), "wt");
-		Platform_fwrite("done", 1, 5, filenamehandle.get());
-		Platform_fclose(filenamehandle.get());
+		JSonFileParser json;
+		json.Export(static_cast<CoreMap<std::string>* >(mFileHierarchy.get()),mFolderIn + "\\AMLastDone.json");
 
 		mNeedExit = true;
 		mThread = nullptr;
@@ -168,11 +168,12 @@ void	AssetManager::ProtectedClose()
 void	AssetManager::usage()
 {
 	printf("Usage : \n");
-	printf("AssetManager -i inputFolder -o outputPackage -t intermFolder [-p platform]\n\n");
+	printf("AssetManager -i inputFolder -o outputPackage -t intermFolder [-p platform] [-v] \n\n");
 	printf("-i inputFolder : path of the folder where to find raw assets\n");
 	printf("-o outputFolder : path of ouput folder where to set transformed assets\n");
 	printf("-t intermFolder : path of an intermediary folder\n");
 	printf("-p platform : platform appended to AssetManagerRules filename \n");
+	printf("-v : verbose mode \n");
 
 	printf("inputFolder should contains raw assets and AssetManagerRules[platform].json\n");
 	printf("check associated documentation for AssetManagerRules[platform].json format\n");
@@ -211,20 +212,55 @@ bool AssetManager::initRules(CoreItemSP rules)
 	return mRules.size();
 }
 
+CoreItemSP		AssetManager::createJSONFromFileList()
+{
+	CoreItemSP root = CoreItemSP::getCoreMap();
+	std::vector<CoreItemSP> folderlist;
+	folderlist.push_back(root);
+
+	std::vector<std::string> localfolderlist;
+
+	for (auto& fs : mFileList)
+	{
+		if (localfolderlist != fs.mFolders)
+		{
+			if (localfolderlist.size() >= fs.mFolders.size())
+			{
+				localfolderlist.pop_back();
+				folderlist.pop_back();
+			}
+		}
+		CoreItemSP newfile = CoreItemSP::getCoreMap();
+		newfile->set("UID", (u64)fs.mUID);
+		folderlist.back()->set(fs.mFileInfos.cFileName, newfile);
+		if (fs.mFileInfos.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
+			folderlist.push_back(newfile);
+			localfolderlist.push_back(fs.mFileInfos.cFileName);
+		}
+	}
+
+	return root;
+}
+
+
 void	AssetManager::doTheJob()
 {
 	std::vector<std::string> dirlist;
 	recursiveSearchFiles(mFolderIn,dirlist);
+	mFileHierarchy=createJSONFromFileList();
+
 	// if we are here, AssetManagerRules.json exist
 
 	std::string Rulesfile = "AssetManagerRules" + mPlatform + ".json";
 
 	FileStruct* fs=getFileStructFromName(Rulesfile);
-	FileStruct* lastDone = getFileStructFromName("AMLastDone.txt");
+
+	JSonFileParser L_JsonParser;
+	CoreItemSP initP = L_JsonParser.Get_JsonDictionary(mFolderIn + "\\AMLastDone.json");
 
 	// if rules have changed, redo everything
-
-	if ((!lastDone) || (getLargeInteger(&lastDone->mFileInfos.ftLastWriteTime).QuadPart < getLargeInteger(&fs->mFileInfos.ftLastWriteTime).QuadPart))
+	if (initP.isNil() || (((u64)initP[Rulesfile]["UID"]) != fs->mUID))
 	{
 		mResetAll = true;
 		std::filesystem::remove_all(mFolderInterm); // Delete directory
@@ -232,14 +268,14 @@ void	AssetManager::doTheJob()
 	}
 
 	removeFileStructFromlistUsingPattern("AssetManagerRules");
-	removeFileStructFromlist("AMLastDone.txt");
+	removeFileStructFromlist("AMLastDone.json");
 
-	runRules();
+	runRules(initP);
 
 	mJobIsDone = true;
 }
 
-void	AssetManager::recursiveSearchFiles(std::string	startDirectory,std::vector<std::string>& currentDirectoryList)
+std::pair<u64, u64>	AssetManager::recursiveSearchFiles(std::string	startDirectory,std::vector<std::string>& currentDirectoryList)
 {
 	HANDLE			hFind;
 
@@ -253,6 +289,9 @@ void	AssetManager::recursiveSearchFiles(std::string	startDirectory,std::vector<s
 	std::string search = startDirectory + "\\*";
 
 	hFind = ::FindFirstFileA(search.c_str(), &wfd);
+
+	u64 returnedmaxtime = 0;
+	u64 returnedUID = 0;
 
 	if (hFind != INVALID_HANDLE_VALUE)
 	{
@@ -271,11 +310,21 @@ void	AssetManager::recursiveSearchFiles(std::string	startDirectory,std::vector<s
 					FileStruct toAdd;
 					toAdd.mFolders = currentDirectoryList;
 					toAdd.mFileInfos = wfd;
+					
 					mFileList.push_back(toAdd);
 
 					currentDirectoryList.push_back(asciifilename);
-					recursiveSearchFiles(startDirectory + "\\" + asciifilename + "\\", currentDirectoryList);
+					std::pair<u64,u64> returnedPair=recursiveSearchFiles(startDirectory + "\\" + asciifilename + "\\", currentDirectoryList);
 					currentDirectoryList.pop_back();
+
+					if (returnedmaxtime < returnedPair.first)
+					{
+						returnedmaxtime = returnedPair.first;
+					}
+					FileStruct* currentFS = getCurrentFileStructure(currentDirectoryList, wfd.cFileName);
+					currentFS->mUID = returnedPair.second;
+					currentFS->mFileTouchTime = returnedmaxtime;
+					returnedUID ^= currentFS->mUID;
 				}
 			}
 			else
@@ -283,15 +332,39 @@ void	AssetManager::recursiveSearchFiles(std::string	startDirectory,std::vector<s
 				FileStruct toAdd;
 				toAdd.mFolders = currentDirectoryList;
 				toAdd.mFileInfos = wfd;
+				
+				toAdd.mFileTouchTime = getLargeInteger(&wfd.ftLastWriteTime).QuadPart;
+				if (returnedmaxtime < toAdd.mFileTouchTime)
+				{
+					returnedmaxtime = toAdd.mFileTouchTime;
+				}
+				toAdd.mUID = toAdd.mFileTouchTime ^ toAdd.mFileInfos.nFileSizeLow ^ toAdd.mFileInfos.nFileSizeHigh;
 				mFileList.push_back(toAdd);
+				returnedUID ^= toAdd.mUID;
 			}
 
 		} while (::FindNextFileA(hFind, &wfd));
 
 		::FindClose(hFind);
 	}
-
+	return { returnedmaxtime,returnedUID };
 }
+
+FileStruct* AssetManager::getCurrentFileStructure(const std::vector<std::string>& currentDirectoryList, const std::string& name)
+{
+	for (auto& fs : mFileList)
+	{
+		if (fs.mFileInfos.cFileName == name)
+		{
+			if (fs.mFolders == currentDirectoryList)
+			{
+				return &fs;
+			}
+		}
+	}
+	return nullptr;
+}
+
 
 FileStruct* AssetManager::getFileStructFromName(const std::string& name)
 {
@@ -336,10 +409,25 @@ void	AssetManager::removeFileStructFromlistUsingPattern(const std::string& patte
 	}
 }
 
+CoreItemSP	AssetManager::getCorrespondingItem(CoreItemSP fileInfos, FileStruct& str)
+{
+	CoreItemSP current = fileInfos;
+	for (auto f : str.mFolders)
+	{
+		current = current[f];
+		if (current.isNil())
+			return current;
+	}
 
-void	AssetManager::runRules()
+	current = current[(std::string)str.mFileInfos.cFileName];
+	return current;
+}
+
+
+void	AssetManager::runRules(CoreItemSP fileinfos)
 {
 	RulesContext	context(mFolderIn, mFolderInterm, mFolderOut);
+	context.setVerbose(mVerbose);
 	// rules are sorted by priority
 	bool	SomethingChanged = false;
 
@@ -365,9 +453,25 @@ void	AssetManager::runRules()
 					f.mWasMatched = r.match(f, context); // check if it matches
 					if (f.mWasMatched)
 					{
-						// then try to treat it
-						f.mWasTreated = r.treat(f, context, mResetAll);
-						SomethingChanged |= f.mWasTreated;
+						u64 prevUID = 0;
+						u64 currentUID = 0;
+						if (!mResetAll)
+						{
+							CoreItemSP checkPreviousState = getCorrespondingItem(fileinfos, f);
+							if (!checkPreviousState.isNil())
+							{
+								prevUID = checkPreviousState["UID"];
+							}
+							CoreItemSP checkCurrentState = getCorrespondingItem(mFileHierarchy, f);
+							currentUID = checkCurrentState["UID"];
+						}
+
+						if ((prevUID != currentUID) || (mResetAll))
+						{
+							// then try to treat it
+ 							f.mWasTreated = r.treat(f, context, mResetAll || (prevUID != currentUID));
+							SomethingChanged |= f.mWasTreated;
+						}
 
 						if (r.isDirRule()) // set all files in dir as matched
 						{
@@ -377,6 +481,11 @@ void	AssetManager::runRules()
 				}
 			}
 		}
+	}
+
+	if ((!SomethingChanged) && mVerbose)
+	{
+		printf("AssetManager : nothing changed\n");
 	}
 }
 

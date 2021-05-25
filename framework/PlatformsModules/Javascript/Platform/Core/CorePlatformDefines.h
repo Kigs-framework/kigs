@@ -115,8 +115,8 @@ typedef	void ThreadReturnType;
 //
 // **********************************************************************
 
-//#define USE_LIB_PNG
-//#define USE_LIB_JPG
+#define USE_LIB_PNG
+#define USE_LIB_JPG
 
 #define kigsprintf(...) printf(__VA_ARGS__)
 

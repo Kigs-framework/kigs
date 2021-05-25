@@ -31,7 +31,7 @@ protected:
 	virtual void									ProtectedInit();
 	virtual void									ProtectedUpdate();
 	virtual void									ProtectedClose();
-	virtual void									ProtectedExternAskExit();
+	virtual bool									ProtectedExternAskExit();
 	float											myStartTime;
 
 	ModuleSceneGraph*		theSceneGraph;
