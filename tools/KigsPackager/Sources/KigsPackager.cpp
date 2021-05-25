@@ -195,7 +195,8 @@ void	KigsPackager::ProtectedClose()
 
 }
 
-void	KigsPackager::ProtectedExternAskExit()
+bool	KigsPackager::ProtectedExternAskExit()
 {
 	mNeedExit = true;
+	return true;
 }
