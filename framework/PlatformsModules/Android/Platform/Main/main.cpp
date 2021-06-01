@@ -11,7 +11,7 @@
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 
-CoreBaseApplication*	myApp=0;
+SP<CoreBaseApplication>	myApp=nullptr;
 bool					gResumeReloadTexture=false;
 
 #include <string.h>
@@ -125,7 +125,7 @@ KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Init(JNIEnv *
 
 	// no need to register app to factory
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));
-	myApp = (CoreBaseApplication*)KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
+	myApp = KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
 	
 	#ifdef INIT_DEFAULT_MODULES
 	#ifdef BASE_DATA_PATH
@@ -164,11 +164,7 @@ KIGS_JNIEXPORT void JNICALL Java_com_kigs_kigsmain_KigsMainManager_Close(JNIEnv 
 	{
 		//! close
 		myApp->CloseApp();
-
-		//! delete
-		myApp->Destroy();
-		
-		myApp=0;
+		myApp=nullptr;
 	}
 
 }

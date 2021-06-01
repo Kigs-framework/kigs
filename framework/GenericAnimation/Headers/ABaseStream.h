@@ -28,7 +28,7 @@ public:
 	*/
 	// ******************************
 
-	void    InitStream(ABaseChannel* channel, IntU32 priority, Float  weight, Float speed, bool loop)
+	void    InitStream(SP<ABaseChannel> channel, IntU32 priority, Float  weight, Float speed, bool loop)
 	{
 		mPriority = priority;
 		mWeight = weight;
@@ -156,7 +156,7 @@ public:
 	*/
 	// ******************************
 
-	ABaseStream*        GetNextStream() const
+	SP<ABaseStream>        GetNextStream() const
 	{
 		return mNextStream;
 	};
@@ -171,12 +171,12 @@ public:
 	// ******************************
 
 	virtual   void      SetAndModifyData(LocalToGlobalBaseType* data1, LocalToGlobalBaseType* data2, LocalToGlobalBaseType* modifieddata) = 0;
-
-protected:
-
 	virtual ~ABaseStream()
 	{
 	}
+protected:
+
+
 
 	// ******************************
 	// * GetStreamLength
@@ -251,7 +251,7 @@ protected:
 	*/
 	// ******************************
 
-	ABaseChannel*   GetChannel()
+	SP<ABaseChannel>   GetChannel()
 	{
 		return mChannel;
 	};
@@ -389,7 +389,7 @@ protected:
 	*/
 	// ******************************
 
-	void        SetNextStream(ABaseStream* stream)
+	void        SetNextStream(SP<ABaseStream> stream)
 	{
 		if (mNextStream != NULL)
 		{
@@ -408,16 +408,16 @@ protected:
 	*/
 	// ******************************
 
-	ABaseStream*    DelNextStream()
+	SP<ABaseStream>    DelNextStream()
 	{
-		if (mNextStream != NULL)
+		if (mNextStream)
 		{
-			ABaseStream*    tmp_stream = mNextStream;
+			SP<ABaseStream>    tmp_stream = mNextStream;
 			mNextStream = mNextStream->mNextStream;
 			return  tmp_stream;
 		}
 
-		return NULL;
+		return nullptr;
 	};
 
 	// ******************************
@@ -427,7 +427,7 @@ protected:
 	*/
 	// ******************************
 
-	void    SetChannel(ABaseChannel* channel)
+	void    SetChannel(SP<ABaseChannel> channel)
 	{
 		mChannel = channel;
 	};
@@ -523,14 +523,12 @@ protected:
 	*/
 	// ******************************
 
-	void            ForceNextStream(const ABaseStream*  next)
+	void            ForceNextStream(SP<ABaseStream> next)
 	{
-		mNextStream = (ABaseStream *)next;
-	};
+		mNextStream = next;
+	}
 
-
-
-	AnimationResourceInfo*  mResourceInfo;
+	AnimationResourceInfo* mResourceInfo;
 
 
 	bool            mIsPlaying;
@@ -546,9 +544,9 @@ protected:
 	IntS32          mRepeatCount;
 
 	// The next stream in the linked list
-	ABaseStream*        mNextStream;
+	SP<ABaseStream>        mNextStream;
 
-	ABaseChannel*       mChannel;
+	SP<ABaseChannel>       mChannel;
 };
 
 

@@ -112,7 +112,7 @@ public:
 	*/
 	// ******************************
 	
-	void    SetSystem(ABaseSystem* sys)
+	void    SetSystem(SP<ABaseSystem> sys)
 	{
 		mSystem = sys;
 	};
@@ -125,7 +125,7 @@ public:
 	*/
 	// ******************************
 	
-	ABaseSystem*    GetSystem()
+	SP<ABaseSystem>    GetSystem()
 	{
 		return mSystem;
 	};
@@ -137,7 +137,7 @@ public:
 	*/
 	// ******************************
 	
-	static  void    AutoChannelTree(SP<ABaseChannel>* channels, AObjectSkeletonResource* hierarchy);
+	static  void    AutoChannelTree(const std::vector<SP<ABaseChannel>>& channels, SP<AObjectSkeletonResource> hierarchy);
 	
 	// ******************************
 	// * AutoChannelTree
@@ -146,7 +146,7 @@ public:
 	*/
 	// ******************************
 	
-	static  void    AutoChannelTree(SP<ABaseChannel>* channels, ABaseSystem *sys);
+	static  void    AutoChannelTree(const std::vector<SP<ABaseChannel>>& channels, SP<ABaseSystem> sys);
 	
 	
 	//protected:
@@ -169,7 +169,7 @@ public:
 	*/
 	// ******************************
 	
-	void            AddStream(ABaseStream* stream);
+	void            AddStream(SP<ABaseStream> stream);
 	
 	// ******************************
 	// * RemoveStream
@@ -178,7 +178,7 @@ public:
 	*/
 	// ******************************
 	
-	void            RemoveStream(ABaseStream* stream);
+	void            RemoveStream(SP<ABaseStream> stream);
 	
 	
 	
@@ -245,15 +245,15 @@ public:
 	
 	virtual LocalToGlobalBaseType* GetChannelLocalToGlobalData() = 0;
 	
-	ABaseChannel*	mFatherNode;
-	IntU32		mSonCount;
+	SP<ABaseChannel>	mFatherNode;
+	IntU32				mSonCount;
 	
-	IntU32		mGroupID;
-	IntU32		mBoneID;
+	IntU32				mGroupID;
+	IntU32				mBoneID;
 	
 	// the first AStream in the list
-	ABaseStream*					mFirstStream;
-	ABaseSystem*					mSystem;
+	SP<ABaseStream>					mFirstStream;
+	SP<ABaseSystem>					mSystem;
 };
 
 

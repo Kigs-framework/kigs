@@ -34,9 +34,9 @@ protected:
 	virtual bool									ProtectedExternAskExit();
 	float											myStartTime;
 
-	ModuleSceneGraph*		theSceneGraph;
-	ModuleRenderer*			theRenderer;
-	ModuleGUI*				theGUI;
+	SP<ModuleSceneGraph>		theSceneGraph;
+	SP<ModuleRenderer>			theRenderer;
+	SP<ModuleGUI>				theGUI;
 
 	MeshConvertParams		myParams;
 

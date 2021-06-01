@@ -12,9 +12,6 @@
 #include "GyroscopeAndroid.h"
 #include "CompassAndroid.h"
 
-ModuleInputAndroid* gInstanceModuleInputAndroid = 0;
-
-
 
 IMPLEMENT_CLASS_INFO(ModuleInputAndroid)
 IMPLEMENT_CONSTRUCTOR(ModuleInputAndroid)
@@ -182,12 +179,12 @@ bool	ModuleInputAndroid::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK
 
 }
 
-ModuleBase* MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(ModuleInputAndroid, "ModuleInputAndroid");
-	ModuleBase* gInstanceModuleInputAndroid = new ModuleInputAndroid("ModuleInputAndroid");
-	gInstanceModuleInputAndroid->Init(core, params);
-	return  gInstanceModuleInputAndroid;
+	auto ptr = MakeRefCounted<ModuleInputAndroid>("ModuleInputAndroid");
+	ptr->Init(core, params);
+	return  ptr;
 }

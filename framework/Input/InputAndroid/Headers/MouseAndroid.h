@@ -37,9 +37,9 @@ public:
 
 	void	IncWheelCount() { mWheelCount++; }
 	void	IncButtonCount() { mButtonsCount++; }
+	virtual ~MouseAndroid();
 
 protected:
-	virtual ~MouseAndroid();
 
 	DECLARE_METHOD(ReinitCB);
 

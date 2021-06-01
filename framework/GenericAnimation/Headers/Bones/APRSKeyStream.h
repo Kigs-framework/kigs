@@ -186,9 +186,9 @@ public:
     void InitFromResource(AnimationResourceInfo* info,IntU32 streamindex) override;
 
 
-    
-protected:
     virtual ~APRSKeyStream();
+
+protected:
     // ******************************
     // * UpdateData
     // *-----------------------------

@@ -47,9 +47,9 @@ public:
 			if (mChannel)
 				if (mChannel->IsRootChannel())
 				{
-					LocalToGlobalBaseType*   tmp_data = ((AChannel<LocalToGlobalType>*)mChannel)->GetLocalToGlobalBeforeChange();
+					LocalToGlobalBaseType*   tmp_data = ((SP<AChannel<LocalToGlobalType>>)mChannel)->GetLocalToGlobalBeforeChange();
 					mIsPlaying = true;
-					((AChannel<LocalToGlobalType>*)mChannel)->ResetLocalToGlobalAfterChange(tmp_data);
+					((SP<AChannel<LocalToGlobalType>>)mChannel)->ResetLocalToGlobalAfterChange(tmp_data);
 				}
 
 			mIsPlaying = true;
@@ -71,9 +71,9 @@ public:
 			if (mChannel)
 				if (mChannel->IsRootChannel())
 				{
-					LocalToGlobalBaseType*   tmp_data = ((AChannel<LocalToGlobalType>*)mChannel)->GetLocalToGlobalBeforeChange();
+					LocalToGlobalBaseType*   tmp_data = ((SP<AChannel<LocalToGlobalType>>)mChannel)->GetLocalToGlobalBeforeChange();
 					mIsPlaying = false;
-					((AChannel<LocalToGlobalType>*)mChannel)->ResetLocalToGlobalAfterChange(tmp_data);
+					((SP<AChannel<LocalToGlobalType>>)mChannel)->ResetLocalToGlobalAfterChange(tmp_data);
 				}
 
 			mIsPlaying = false;
@@ -89,8 +89,8 @@ IMPLEMENT_TEMPLATE_CLASS_INFO(LocalToGlobalType, AStream)
 template<typename LocalToGlobalType>
 AStream<LocalToGlobalType>::AStream(const kstl::string& name, CLASS_NAME_TREE_ARG) : ABaseStream(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	mNextStream = NULL;
-	InitStream(NULL, 100, KFLOAT_CONST(1.0f), KFLOAT_CONST(1.0f), true);
+	mNextStream = nullptr;
+	InitStream(nullptr, 100, KFLOAT_CONST(1.0f), KFLOAT_CONST(1.0f), true);
 	mIsPlaying = false;
 	mOutsideAnimFlag = false;
 	mHasLoop = 0;

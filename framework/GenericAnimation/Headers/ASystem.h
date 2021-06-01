@@ -64,7 +64,7 @@ public:
 	*/
 	// *******************
 	
-	void LinkTo(ABaseChannel* data) override;
+	void LinkTo(SP<ABaseChannel> data) override;
 	
 	// *******************
 	// * UnLink
@@ -80,13 +80,8 @@ public:
 	
 	virtual ~ASystem()
 	{
-		if(mChannelTab != NULL)
-        {
-            DeleteChannelTree();
-            delete[] mChannelTab;
-            mChannelTab=NULL;
-        }
-		
+        DeleteChannelTree();
+		mChannelTab.clear();
 	}
 	
 	void    UseAnimationLocalToGlobalData(bool b) override;
@@ -100,9 +95,9 @@ public:
 	// * - 
 	// ******************************
 	
-	LocalToGlobalType			 m_pInstantLocalToGlobalData;		// current computed local to global
-	LocalToGlobalType			 m_pStartingLocalToGlobalData;	   // local to global at init
-	ABaseChannel*	     		m_LinkedChannel;
+	LocalToGlobalType			m_pInstantLocalToGlobalData;		// current computed local to global
+	LocalToGlobalType			m_pStartingLocalToGlobalData;	   // local to global at init
+	SP<ABaseChannel>	     	m_LinkedChannel;
 	
 };
 
@@ -126,8 +121,8 @@ ASystem<LocalToGlobalType>::ASystem(const kstl::string& name, CLASS_NAME_TREE_AR
 template<typename LocalToGlobalType>
 void    ASystem<LocalToGlobalType>::SetLocalToGlobalData(LocalToGlobalBaseType* new_data)
 {
-	ABaseStream* tmp_stream = GetValidStream();
-	if (tmp_stream != NULL)
+	SP<ABaseStream> tmp_stream = GetValidStream();
+	if (tmp_stream)
 	{
 		if (mUseAnimationLocalToGlobal == false)
 		{
@@ -176,7 +171,7 @@ void   ASystem<LocalToGlobalType>::UseAnimationLocalToGlobalData(bool b)
 // * 
 // *******************
 template<typename LocalToGlobalType>
-void    ASystem<LocalToGlobalType>::LinkTo(ABaseChannel* data)
+void    ASystem<LocalToGlobalType>::LinkTo(SP<ABaseChannel> data)
 {
 	
 	m_LinkedChannel = data;

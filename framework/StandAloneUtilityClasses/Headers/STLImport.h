@@ -30,6 +30,7 @@ public:
 #ifdef WIN32
 	void ExportResult(); // used by edit
 #endif //WIN32
+	virtual ~STLImport();
 protected:
 
 	struct readFacet
@@ -43,7 +44,7 @@ protected:
 	void	createObjectFromReadedData();
 
 	virtual void	InitModifiable();
-	virtual ~STLImport();
+	
 	maString								m_FileName;
 
 	kstl::vector<CMSP>			m_MeshList;

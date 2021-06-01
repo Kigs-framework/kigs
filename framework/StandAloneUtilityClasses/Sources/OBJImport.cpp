@@ -75,7 +75,7 @@ void	OBJImport::InitModifiable()
 		if (fullfilenamehandle)
 		{
 			u64 filelen;
-			CoreRawBuffer* rawbuffer=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),filelen,1);
+			SP<CoreRawBuffer> rawbuffer=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),filelen,1);
 
 			if (rawbuffer)
 			{
@@ -173,7 +173,6 @@ void	OBJImport::InitModifiable()
 					ExportResult();
 				}
 #endif
-				rawbuffer->Destroy();
 				return;
 			}
 
@@ -246,8 +245,8 @@ void	OBJImport::createObjectFromReadedData()
 				{
 					int structSize=0;
 
-					CoreItemSP	description= CoreItemSP::getCoreVector();
-					CoreItemSP	vertices= CoreItemSP::getCoreItemOfType<CoreNamedVector>("vertices");
+					CoreItemSP	description= MakeCoreVector();
+					CoreItemSP	vertices= MakeCoreNamedVector("vertices");
 					description->set("",vertices);
 
 					structSize+=3*sizeof(float);
@@ -255,21 +254,21 @@ void	OBJImport::createObjectFromReadedData()
 					// vertices have a color, so  
 					if(m_ReadColorIndex)
 					{
-						CoreItemSP	colors	= CoreItemSP::getCoreItemOfType<CoreNamedVector>("colors");
+						CoreItemSP	colors	= MakeCoreNamedVector("colors");
 						description->set("", colors);
 						structSize+=4*sizeof(float);
 					}
 
 					if(current.m_HasNormal)
 					{
-						CoreItemSP	normal	= CoreItemSP::getCoreItemOfType<CoreNamedVector>("normals");
+						CoreItemSP	normal	= MakeCoreNamedVector("normals");
 						description->set("", normal);
 						structSize+=3*sizeof(float);
 					}
 
 					if(current.m_HasTextCoords)
 					{
-						CoreItemSP	texCoords	= CoreItemSP::getCoreItemOfType<CoreNamedVector>("texCoords");
+						CoreItemSP	texCoords	= MakeCoreNamedVector("texCoords");
 						description->set("", texCoords);
 						structSize+=2*sizeof(float);
 					}
@@ -749,7 +748,7 @@ void	OBJImport::MTLImport(const kstl::string& name)
 	if (fullfilenamehandle)
 	{	
 		u64 filelen;
-		CoreRawBuffer* rawbuffer=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),filelen,1);
+		SP<CoreRawBuffer> rawbuffer=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),filelen,1);
 		if (!rawbuffer)
 		{
 			kstl::string shortname, ext, path;
@@ -828,7 +827,7 @@ void	OBJImport::MTLImport(const kstl::string& name)
 				}
 			}
 	
-			rawbuffer->Destroy();
+			
 		}
 	}
 }
@@ -844,7 +843,7 @@ OBJImport::ReadMaterial::~ReadMaterial()
 {
 	if(m_Material)
 	{
-		m_Material->Destroy();
+		m_Material=nullptr;
 	}
 }
 
@@ -872,7 +871,7 @@ void	OBJImport::ReadMaterial::Init()
 		MatStage->Init();
 
 		m_Material->addItem((CMSP&)MatStage);
-		MatStage->Destroy();
+		
 #else
 		if (textureName != "")
 		{

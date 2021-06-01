@@ -213,12 +213,12 @@ public:
 
     ATimeValue	GetStreamLength() override;
 
- 
+	~APRSStream();
+
 
 protected:
 
-	~APRSStream();
-    // +---------
+  // +---------
     // | protected members
     // +---------
 

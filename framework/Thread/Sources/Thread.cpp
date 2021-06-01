@@ -30,7 +30,7 @@ void	Thread::Start(T&&... params)
 		return;
 	}
 	mProgress = 0;
-	GetRef();
+
 	PackCoreModifiableAttributes	attr(nullptr);
 	int expander[]
 	{

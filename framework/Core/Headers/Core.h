@@ -442,7 +442,7 @@ public:
 	// asynchronous request management
 	// only add is available, and must be called in main thread
 	// management is done automatically
-	static void	addAsyncRequest(AsyncRequest*);
+	static void	addAsyncRequest(SP<AsyncRequest>);
 
 	bool	hasAsyncRequestPending()
 	{

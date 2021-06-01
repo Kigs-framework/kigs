@@ -27,10 +27,10 @@ public:
 	void	UpdateDevice() override;
 
 	void	DoInputDeviceDescription() override;
-    
-protected:
-	virtual ~MultiTouchAndroid();
+   	virtual ~MultiTouchAndroid();
    
+protected:
+ 
 	DECLARE_METHOD(ReinitCB);
 	
 	kstl::vector<jobject> mTouchList;

@@ -35,7 +35,7 @@ class	ABaseStream;
 
 
 struct sortSystems {
-	bool operator() (const ABaseSystem* lhs, const ABaseSystem* rhs) const;
+	bool operator() (const SP<ABaseSystem>& lhs, const SP<ABaseSystem>& rhs) const;
 };
 
 // +---------
@@ -90,7 +90,7 @@ public:
     */ 
     // ******************************
 	
-    CoreModifiable*    GetObject() const
+    SP<CoreModifiable>    GetObject() const
     {
         return mObject;
     };
@@ -344,7 +344,7 @@ public:
     */ 
     // *******************
 	
-    void    LinkTo(unsigned int system_type,AObject* other_object,IntU32 g_id);
+    void    LinkTo(unsigned int system_type,SP<AObject> other_object,IntU32 g_id);
 	
 	
     // *******************
@@ -364,7 +364,7 @@ public:
     */
     // ******************************/
 	
-	ABaseSystem*     GetSystemByType(unsigned int system_type);
+	SP<ABaseSystem>     GetSystemByType(unsigned int system_type);
 	
 	
     // ******************************
@@ -374,7 +374,7 @@ public:
     */
     // ******************************/
 	
-	ABaseSystem*     GetSystembyIndex(IntU32 index);
+	SP<ABaseSystem>     GetSystembyIndex(IntU32 index);
 	
     // ******************************
     // * GetAnimationByIndex
@@ -415,17 +415,17 @@ public:
     */ 
     // ******************************
 	
-    void AttachSystem(ABaseSystem* system);
+    void AttachSystem(SP<ABaseSystem> system);
 	
     // +---------
     // | protected members
     // +---------
 	
  protected:
-	CoreModifiable*										mObject;
-	kstl::unordered_map<KigsID,ALinks*>					mALinksTable;
+	SP<CoreModifiable>									mObject;
+	kstl::unordered_map<KigsID,ALinks*>				    mALinksTable;
 	kstl::vector<ALinearInterp*>						mFadeList;
-    kstl::set<ABaseSystem*, sortSystems>				mSystemSet;
+    kstl::set<SP<ABaseSystem>, sortSystems>				mSystemSet;
 	
     // ******************************
     // * System management
@@ -434,7 +434,7 @@ public:
     */
     // ******************************
 	
-    void            AddSystem(ABaseSystem* system);
+    void            AddSystem(SP<ABaseSystem> system);
 	
     // ******************************
     // * System management
@@ -442,7 +442,7 @@ public:
     /*! Remove a ASystem from the list of ASystem used by this AObject
     */
     // ******************************
-    void            RemoveSystem(ABaseSystem* system);
+    void            RemoveSystem(SP<ABaseSystem> system);
 	
     // ----------------------------------------------------------------------------
 	
@@ -473,39 +473,28 @@ public:
     */ 
     // ******************************
 
-    void    DoForEachStream(ALinks* info,IntU32* g_id,IntU32 g_count,void* params,void (AObject::*func)(ABaseStream* stream,void* param));
+    void    DoForEachStream(ALinks* info,IntU32* g_id,IntU32 g_count,void* params,void (AObject::*func)(SP<ABaseStream> stream,void* param));
 	
-    void    StartAnimationFor(ABaseStream* stream,void* param);
+    void    StartAnimationFor(SP<ABaseStream> stream,void* param);
 	
-	void	SetAnimationPosFor(ABaseStream* stream,void* param);
+	void	SetAnimationPosFor(SP<ABaseStream> stream,void* param);
 	
-    void    StartRepeatAnimationFor(ABaseStream* stream,void* param);
+    void    StartRepeatAnimationFor(SP<ABaseStream> stream,void* param);
 	
-    void    StopAnimationFor(ABaseStream* stream,void* param);
+    void    StopAnimationFor(SP<ABaseStream> stream,void* param);
 	
-    void    ResumeAnimationFor(ABaseStream* stream,void* param);
+    void    ResumeAnimationFor(SP<ABaseStream> stream,void* param);
 	
-    void    SetAnimationWeightFor(ABaseStream* stream,void* param);
+    void    SetAnimationWeightFor(SP<ABaseStream> stream,void* param);
 	
-    void    SetAnimationSpeedFor(ABaseStream* stream,void* param);
+    void    SetAnimationSpeedFor(SP<ABaseStream> stream,void* param);
 	
-    void    MulAnimationWeightFor(ABaseStream* stream,void* param);
+    void    MulAnimationWeightFor(SP<ABaseStream> stream,void* param);
 	
-    void    MulAnimationSpeedFor(ABaseStream* stream,void* param);
+    void    MulAnimationSpeedFor(SP<ABaseStream> stream,void* param);
 	
-    void    SetLoopFor(ABaseStream* stream,void* param);
+    void    SetLoopFor(SP<ABaseStream> stream,void* param);
 	
-	
-	/*void	SetAnimCount(int count)
-	{
-	 m_animCount = count;
-	}
-	
-	int GetAnimCount()
-	{
-	 return m_animCount;
-	}
-	*/
 };
 
 #endif //__AOBJECT_H__

@@ -42,7 +42,7 @@ void	KigsDocs::RecursiveTreatClass(CoreTreeNode* n, KigsDocs::documentedInstance
 		toAdd.mInstance = KigsCore::GetInstanceOf(n->mID._id_name + "_instance", n->mID);
 		
 		toAdd.mFather = parent;
-		if (!toAdd.mInstance.isNil())
+		if (toAdd.mInstance)
 		{
 			if (!toAdd.mInstance->isSubType("DoNothingObject") || (n->mID._id_name == "DoNothingObject"))
 			{

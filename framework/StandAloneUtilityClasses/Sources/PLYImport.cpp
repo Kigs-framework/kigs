@@ -34,11 +34,11 @@ void	PLYImport::InitModifiable()
 		SmartPointer<FileHandle> fullfilenamehandle;
 		fullfilenamehandle = pathManager->FindFullName(m_FileName);
 
-		if (!fullfilenamehandle.isNil())
+		if (fullfilenamehandle)
 		{
 			m_CurrentObjectName = fullfilenamehandle->mFileName;
 			u64 filelen;
-			CoreRawBuffer* rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilenamehandle->mFullFileName.c_str(), filelen,1);
+			SP<CoreRawBuffer> rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilenamehandle->mFullFileName.c_str(), filelen,1);
 
 			if (rawbuffer)
 			{
@@ -53,7 +53,6 @@ void	PLYImport::InitModifiable()
 					kstl::string	content = line;
 					if (content != "ply")
 					{
-						rawbuffer->Destroy();
 						goto init_error;
 					}
 				}
@@ -166,7 +165,7 @@ void	PLYImport::InitModifiable()
 					}
 				}
 
-				rawbuffer->Destroy();
+				
 				return;
 			}
 
@@ -238,9 +237,9 @@ SP<ModernMeshItemGroup>	PLYImport::readBinData(unsigned char* bindata,ModernMesh
 
 	// check structure type
 	int structSize = 0;
-	CoreItemSP	description = CoreItemSP::getCoreVector();
+	CoreItemSP	description = MakeCoreVector();
 	// always have vertices
-	CoreItemSP	vertices = CoreItemSP::getCoreItemOfType<CoreNamedVector>("vertices");
+	CoreItemSP	vertices = MakeCoreNamedVector("vertices");
 	description->set("",vertices);
 
 	structSize += 3 * sizeof(float);
@@ -251,14 +250,14 @@ SP<ModernMeshItemGroup>	PLYImport::readBinData(unsigned char* bindata,ModernMesh
 	// vertices have a color, so  
 	if (l_hasColor != -1)
 	{
-		CoreItemSP	colors = CoreItemSP::getCoreItemOfType<CoreNamedVector>("colors");
+		CoreItemSP	colors = MakeCoreNamedVector("colors");
 		description->set("", colors);
 		structSize += 4 * sizeof(float);
 	}
 
 	if (l_hasNormal != -1)
 	{
-		CoreItemSP	normal = CoreItemSP::getCoreItemOfType<CoreNamedVector>("normals");
+		CoreItemSP	normal = MakeCoreNamedVector("normals");
 		description->set("", normal);
 		structSize += 3 * sizeof(float);
 	}

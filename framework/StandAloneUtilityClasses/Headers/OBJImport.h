@@ -33,6 +33,7 @@ public:
 #ifdef WIN32
 	void ExportResult(); // used by edit
 #endif //WIN32
+	virtual ~OBJImport();
 protected:
 
 	class ReadMaterial
@@ -111,7 +112,7 @@ protected:
 	void	createObjectFromReadedData();
 
 	virtual void	InitModifiable();
-	virtual ~OBJImport();
+
 	maString								m_FileName;
 	maReference								m_FirstMesh;
 	maBool									m_ModernMesh;

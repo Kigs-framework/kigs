@@ -60,10 +60,10 @@ public:
     // ******************************
 
     void            SetStandStreamData() override;
+    virtual	~ABoneChannel();
 
 protected:
 
-	virtual	~ABoneChannel();
 
     // +---------
     // | protected members

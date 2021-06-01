@@ -34,9 +34,9 @@ public:
 
 //	virtual void Activate(bool active, int minTime=10000, float minDistance=0.0f);
 	
-    
+   	virtual ~GeolocationAndroid();  
+ 
 protected:
-	virtual ~GeolocationAndroid();  
 
 	void	Start() override;
 	void	Stop() override;

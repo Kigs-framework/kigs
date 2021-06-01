@@ -41,10 +41,10 @@ public:
 
 	
 	void	DoInputDeviceDescription() override;
+	virtual ~AccelerometerAndroid();  
 	
     
 protected:
-	virtual ~AccelerometerAndroid();  
 
 	bool mIsAvailable;
 	bool mIsWCAvailable;

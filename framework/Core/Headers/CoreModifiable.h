@@ -512,7 +512,9 @@ public:
 			// It's forbidden to call shared_from_this inside the constructor or the destructor 
 			// Connect and Upgrade are common functions that will do so, move them out of the constructor (InitModidiable most likely)
 			// Another possibility is that this object was new'ed manually, DON'T!
+#ifdef WIN32			
 			__debugbreak();
+#endif	
 		}
 		return nullptr;
 #else
@@ -1539,6 +1541,12 @@ protected:
 
 	}
 public:
+
+	operator bool() const
+	{
+		return SmartPointer<smartPointOn>::get();
+	}
+
 	inline CoreAttributeAndMethodForwardSmartPointer(CoreModifiable* parent, CoreModifiable* p);
 
 	CoreAttributeAndMethodForwardSmartPointer& operator=(const SmartPointer<smartPointOn>& smcopy)
@@ -1546,9 +1554,9 @@ public:
 		SmartPointer<smartPointOn>::operator=(smcopy);
 		return *this;
 	}
-	operator SmartPointer<smartPointOn>*()
+	operator SmartPointer<smartPointOn>()
 	{
-		return this;
+		return *this;
 	}
 };
 

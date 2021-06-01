@@ -31,6 +31,11 @@ class CoreItemSP : public std::shared_ptr<CoreItem>
 public:
 	using std::shared_ptr<CoreItem>::shared_ptr;
 
+	CoreItemSP(std::shared_ptr<CoreItem> p) : std::shared_ptr<CoreItem>(p)
+	{
+
+	}
+
 	// Auto cast
 	template<typename U>
 	operator SmartPointer<U>()
@@ -77,6 +82,16 @@ public:
 	operator v2f() const;
 	operator v3f() const;
 	operator v4f() const;
+
+	template<typename T>
+	inline T value() const
+	{
+		if(get())
+		return (T)(*get());
+
+		T noval(0);
+		return noval;
+	}
 
 	CoreItemIterator begin() const;
 	CoreItemIterator end() const;
@@ -258,7 +273,9 @@ public:
 			// NOTE(antoine) : Possible reasons :
 			// It's forbidden to call shared_from_this inside the constructor
 			// If the object was new'ed manually and not yet assigned to a shared_ptr, consider using the Make* functions below instead, or std::make_shared/MakeRefCounted
+			#ifdef WIN32			
 			__debugbreak();
+			#endif		
 		}
 		return nullptr;
 #else
@@ -598,5 +615,24 @@ inline CoreItemIterator CoreItemSP::end() const
 	return get()->end();
 }
 
+template<>
+inline std::string CoreItemSP::value<std::string>() const
+{
+	if (get())
+		return (std::string)(*get());
+
+	std::string noval = "";
+	return noval;
+}
+
+template<>
+inline usString CoreItemSP::value<usString>() const
+{
+	if (get())
+		return (usString)(*get());
+
+	usString noval("");
+	return noval;
+}
 
 #endif // _COREITEM_H

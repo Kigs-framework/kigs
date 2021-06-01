@@ -1166,8 +1166,8 @@ CMSP ColladaParser::CreateMeshFromMeshCollada(Controller* controller)
 		{
 			int structSize = 0;
 			
-			CoreItemSP	description = CoreItemSP::getCoreVector();
-			CoreItemSP	vertices = CoreItemSP::getCoreItemOfType<CoreNamedVector>("vertices");
+			CoreItemSP	description = MakeCoreVector();
+			CoreItemSP	vertices = MakeCoreNamedVector("vertices");
 			description->set("",vertices);
 		
 			structSize += 3 * sizeof(float);
@@ -1175,14 +1175,14 @@ CMSP ColladaParser::CreateMeshFromMeshCollada(Controller* controller)
 			// vertices have a color, so
 			if (current->m_HasColor)
 			{
-				CoreItemSP	colors = CoreItemSP::getCoreItemOfType<CoreNamedVector>("colors");
+				CoreItemSP	colors = MakeCoreNamedVector("colors");
 				description->set("", colors);
 				structSize += 4 * sizeof(float);
 			}
 			
 			if (current->m_HasNormal)
 			{
-				CoreItemSP	normal = CoreItemSP::getCoreItemOfType<CoreNamedVector>("normals");
+				CoreItemSP	normal = MakeCoreNamedVector("normals");
 				description->set("", normal);
 				structSize += 3 * sizeof(float);
 				hasNormal = true;
@@ -1190,18 +1190,18 @@ CMSP ColladaParser::CreateMeshFromMeshCollada(Controller* controller)
 			
 			if (current->m_HasTextCoords && hasTexture)
 			{
-				CoreItemSP	texCoords = CoreItemSP::getCoreItemOfType<CoreNamedVector>("texCoords");
+				CoreItemSP	texCoords = MakeCoreNamedVector("texCoords");
 				description->set("", texCoords);
 				structSize += 2 * sizeof(float);
 			}
 			
 			if (has_weights)
 			{
-				CoreItemSP	boneWeights = CoreItemSP::getCoreItemOfType<CoreNamedVector>("bone_weights");
+				CoreItemSP	boneWeights = MakeCoreNamedVector("bone_weights");
 				description->set("", boneWeights);
 				structSize += 4 * sizeof(unsigned char);
 				
-				CoreItemSP	boneIndexes = CoreItemSP::getCoreItemOfType<CoreNamedVector>("bone_indexes");
+				CoreItemSP	boneIndexes = MakeCoreNamedVector("bone_indexes");
 				description->set("", boneIndexes);
 				structSize += 4 * sizeof(unsigned char);
 			}

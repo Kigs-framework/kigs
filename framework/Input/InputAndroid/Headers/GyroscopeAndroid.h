@@ -31,10 +31,10 @@ public:
 
 
 	void	DoInputDeviceDescription() override;
-	
+		virtual ~GyroscopeAndroid();  
+
     
 protected:
-	virtual ~GyroscopeAndroid();  
 
 	bool	mIsAvailable;
 	bool	mIsRunning;

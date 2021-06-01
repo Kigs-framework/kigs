@@ -10,7 +10,7 @@ extern ModuleInputJavascript* gInstanceModuleInputJavascript;
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
 #define MODULEINITFUNC			PlatformInputModuleInit
-extern ModuleBase* PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+extern SP<ModuleBase> PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 #else
 #define MODULEINITFUNC			ModuleInit
 #endif
@@ -44,10 +44,10 @@ public:
 	unsigned int	getJoystickCount(){return mJoystickCount;}
 
 	bool addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+   virtual ~ModuleInputJavascript();
 
 protected:
-    virtual ~ModuleInputJavascript();
-
+ 
 	bool					mIsInitOK;
 	unsigned int			mJoystickCount;
 

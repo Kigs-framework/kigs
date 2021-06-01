@@ -24,7 +24,7 @@
 #include "TravState.h"
 #include "Timer.h"
 
-bool sortSystems::operator() (const ABaseSystem* lhs, const ABaseSystem* rhs) const
+bool sortSystems::operator() (const SP<ABaseSystem>& lhs, const SP<ABaseSystem>& rhs) const
 {
 	if (lhs->getPriority() == rhs->getPriority())
 		return lhs < rhs;
@@ -48,11 +48,11 @@ IMPLEMENT_CONSTRUCTOR(AObject)
 // * - 
 // ******************************/
 
-void    AObject::AttachSystem(ABaseSystem* system)
+void    AObject::AttachSystem(SP<ABaseSystem> system)
 {
 	
-	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
+	kstl::set<SP<ABaseSystem>>::iterator itbegin = mSystemSet.begin();
+	kstl::set<SP<ABaseSystem>>::iterator itend = mSystemSet.end();
 	
 	while (itbegin != itend)
 	{
@@ -67,21 +67,14 @@ void    AObject::AttachSystem(ABaseSystem* system)
 
 void		AObject::addUser(CoreModifiable* user)
 {
-	if (mObject == 0)
-	{
-		mObject = user;
-	}
-	else
-	{
-		KIGS_WARNING("AObject : addUser already done", 1);
-	}
+	mObject = user->SharedFromThis();
 	CoreModifiable::addUser(user);
 }
 void		AObject::removeUser(CoreModifiable* user)
 {
 	if (mObject == user)
 	{
-		mObject = 0;
+		mObject = nullptr;
 	}
 	else
 	{
@@ -137,13 +130,10 @@ void    AObject::Animate(ATimeValue t)
 			
 		}
 	}
-	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
 	
-	while(itbegin != itend)
+	for(auto s : mSystemSet)
 	{
-		(*itbegin)->Animate(t);
-		++itbegin;
+		s->Animate(t);
 	}
 };
 
@@ -216,20 +206,18 @@ void    AObject::AddAnimation(const std::string& fname)
 	// | search for a system handling this streams 
 	// +---------
 	bool need_channel_init=false;
-	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
+	
 	SP<ABaseSystem>    system = 0;
-	while (itbegin != itend)
+	for(auto s: mSystemSet)
 	{
-		if ((*itbegin)->isSubType(system_type))
+		if (s->isSubType(system_type))
 		{
-			system = CMSP((*itbegin), GetRefTag{});
+			system = s;
 			break;
 		}
-		++itbegin;
 	}
 	
-	if( system == nullptr )
+	if( !system )
 	{
 		// +---------
 		// | create a new system to handle this animation
@@ -243,7 +231,7 @@ void    AObject::AddAnimation(const std::string& fname)
 		if(system != nullptr)
 		{
 			
-			AddSystem( system.get() );
+			AddSystem( system );
 			
 			// +---------
 			// | set the hierarchy
@@ -257,12 +245,12 @@ void    AObject::AddAnimation(const std::string& fname)
 				
 				if (instances.size())
 				{
-					system->SetHierarchy((AObjectSkeletonResource*)instances[0].Pointer());
+					system->SetHierarchy(instances[0]);
 				}
 			}
 			else
 			{
-				AttachSystem(system.get());
+				AttachSystem(system);
 			}
 			need_channel_init=true;
 		}
@@ -278,7 +266,7 @@ void    AObject::AddAnimation(const std::string& fname)
 		}
 	}
 	
-	tmp_links->SetSystem(system.get());
+	tmp_links->SetSystem(system);
 	
 	// +---------
 	// | search for the good channel and add the streams
@@ -287,13 +275,13 @@ void    AObject::AddAnimation(const std::string& fname)
 	
 	IntU32 g_id=info->GetStreamGroupID(0);
 	
-	ABaseChannel* channel=system->GetChannelByUID(g_id);
+	SP<ABaseChannel> channel=system->GetChannelByUID(g_id);
 	bool    one_stream_is_ok=false;
 	
-	if(channel != nullptr)
+	if(channel)
 	{
 		channel->addItem(stream);
-		tmp_links->AddStream(stream.get(),0);
+		tmp_links->AddStream(stream,0);
 		stream->InitFromResource(info,0);
 		one_stream_is_ok=true;
 	}
@@ -324,7 +312,7 @@ void    AObject::AddAnimation(const std::string& fname)
 		if(channel != nullptr)
 		{
 			channel->addItem(stream);
-			tmp_links->AddStream(stream.get(),streamindex);
+			tmp_links->AddStream(stream,streamindex);
 			++streamindex;
 			stream->InitFromResource(info,i);
 			one_stream_is_ok=true;
@@ -350,7 +338,7 @@ void    AObject::AddAnimation(const std::string& fname)
 		delete(tmp_links);
 		if(system->GetValidStream() == nullptr)
 		{
-			RemoveSystem( system.get() );
+			RemoveSystem( system );
 		}
 	}
 };
@@ -381,17 +369,16 @@ void    AObject::RemoveAnimation(const KigsID& info)
 		return;
 	}
 	
-	ABaseSystem* sys=tmp_links->GetSystem();
+	SP<ABaseSystem> sys=tmp_links->GetSystem();
 	
-	ABaseStream** stream_array=tmp_links->GetStreamArray();
+	const std::vector<SP<ABaseStream>>& stream_array=tmp_links->GetStreamArray();
 	
 	IntU32    i;
 	
 	for(i=0;i<tmp_links->GetStreamCount();++i)
 	{
-		ABaseChannel* channel=stream_array[i]->GetChannel();
-		CMSP toDel(stream_array[i], GetRefTag{});
-		channel->removeItem(toDel);
+		SP<ABaseChannel> channel=stream_array[i]->GetChannel();
+		channel->removeItem(stream_array[i]);
 	}
 	
 	
@@ -437,32 +424,28 @@ void    AObject::RemoveAnimation(const KigsID& info)
 // ******************************
 
 void    AObject::SetLocalToGlobalMode(const KigsID& system_type, int mode)
-{
-	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
-	
-	while (itbegin != itend)
+{	
+	for(auto s: mSystemSet)
 	{
-		if ((*itbegin)->isSubType(system_type))
+		if (s->isSubType(system_type))
 		{
 			if (mode == FromAnimation)
 			{
-				(*itbegin)->UseAnimationLocalToGlobalData(true);
-				(*itbegin)->UpdateLocalToGlobalWhenLoop(false);
+				s->UseAnimationLocalToGlobalData(true);
+				s->UpdateLocalToGlobalWhenLoop(false);
 			}
 			else if (mode == FromAnimationWithLoop)
 			{
-				(*itbegin)->UseAnimationLocalToGlobalData(true);
-				(*itbegin)->UpdateLocalToGlobalWhenLoop(true);
+				s->UseAnimationLocalToGlobalData(true);
+				s->UpdateLocalToGlobalWhenLoop(true);
 			}
 			else if (mode == FromEngine)
 			{
-				(*itbegin)->UseAnimationLocalToGlobalData(false);
+				s->UseAnimationLocalToGlobalData(false);
 			}
 			
 			break;
 		}
-		++itbegin;
 	}
 	
 };
@@ -479,14 +462,14 @@ void    AObject::SetLocalToGlobalMode(const KigsID& system_type, int mode)
 // * 
 // *******************
 
-void    AObject::LinkTo(unsigned int   system_type,AObject* other_object,IntU32 g_id)
+void    AObject::LinkTo(unsigned int   system_type,SP<AObject> other_object,IntU32 g_id)
 {
-	ABaseSystem*  sys1 = GetSystemByType(system_type);
-	ABaseSystem*  sys2 = other_object->GetSystemByType(system_type);
+	SP<ABaseSystem>  sys1 = GetSystemByType(system_type);
+	SP<ABaseSystem>  sys2 = other_object->GetSystemByType(system_type);
 	
 	if((sys1 != nullptr) && (sys2 != nullptr))
 	{
-		ABaseChannel*   channel=sys2->GetChannelByUID(g_id);
+		SP<ABaseChannel>   channel=sys2->GetChannelByUID(g_id);
 		if(channel)
 			sys1->LinkTo(channel);
 	}
@@ -494,9 +477,9 @@ void    AObject::LinkTo(unsigned int   system_type,AObject* other_object,IntU32 
 
 void    AObject::UnLink(unsigned int system_type)
 {
-	ABaseSystem*  sys1= GetSystemByType(system_type);
+	SP<ABaseSystem>  sys1= GetSystemByType(system_type);
 	
-	if(sys1 != nullptr)
+	if(sys1)
 	{
 		sys1->UnLink();
 	}
@@ -518,18 +501,14 @@ void    AObject::UnLink(unsigned int system_type)
 // * 
 // *******************
 
-ABaseSystem*    AObject::GetSystemByType(unsigned int system_type)
+SP<ABaseSystem>    AObject::GetSystemByType(unsigned int system_type)
 {
-	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
-	
-	while (itbegin != itend)
+	for(auto s: mSystemSet)
 	{
-		if ((*itbegin)->isSubType(system_type))
+		if (s->isSubType(system_type))
 		{
-			return (*itbegin);
+			return s;
 		}
-		++itbegin;
 	}
 	
 	return nullptr;
@@ -547,21 +526,16 @@ ABaseSystem*    AObject::GetSystemByType(unsigned int system_type)
 // * 
 // *******************
 
-ABaseSystem*    AObject::GetSystembyIndex(IntU32 index)
+SP<ABaseSystem>    AObject::GetSystembyIndex(IntU32 index)
 {
-	
 	IntU32   i=0;
-	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
-	
-	while (itbegin != itend)
+	for(auto s: mSystemSet)
 	{
 		if (i == index)
 		{
-			return (*itbegin);
+			return s;
 		}
 		++i;
-		++itbegin;
 	}
 	
 	return nullptr;
@@ -784,7 +758,7 @@ void    AObject::FadeAnimationTo(const KigsID& info1, const KigsID& info2,ATimeV
 		return;
 	}
 	
-	ABaseStream* stream=(tmp_links->GetStreamArray())[0];
+	SP<ABaseStream> stream=(tmp_links->GetStreamArray())[0];
 	Float w=stream->GetWeight();
 	
 	// animations can not be faded twice at the same time, so stop 
@@ -859,8 +833,8 @@ void    AObject::SynchroniseAnimations(const KigsID& info1, const KigsID& info2,
 	}
 	
 	
-	ABaseStream* stream1=(links1->GetStreamArray())[0];
-	ABaseStream* stream2=(links2->GetStreamArray())[0];
+	SP<ABaseStream> stream1=(links1->GetStreamArray())[0];
+	SP<ABaseStream> stream2=(links2->GetStreamArray())[0];
 	
 	if(stream1->mSpeed == KFLOAT_CONST(0.0f))
 	{
@@ -898,8 +872,8 @@ bool    AObject::HasAnimationLoop(const KigsID& info1)
 		return false;
 	}
 	
-	ABaseStream* stream1=(links1->GetStreamArray())[0];
-	if(stream1 != nullptr)
+	SP<ABaseStream> stream1=(links1->GetStreamArray())[0];
+	if(stream1)
 	{
 		return stream1->HasLoop();
 	}
@@ -964,8 +938,8 @@ bool    AObject::HasAnimationReachEnd(const KigsID& info1)
 		return false;
 	}
 	
-	ABaseStream* stream1=(links1->GetStreamArray())[0];
-	if(stream1 != nullptr)
+	SP<ABaseStream> stream1=(links1->GetStreamArray())[0];
+	if(stream1)
 	{
 		return stream1->HasReachedEnd();
 	}
@@ -981,12 +955,10 @@ bool    AObject::HasAnimationReachEnd(const KigsID& info1)
 // * - 
 // ******************************
 
-void    AObject::AddSystem(ABaseSystem* system)
+void    AObject::AddSystem(SP<ABaseSystem> system)
 {
-	
-	system->SetAObject(this);
+	system->SetAObject(SharedFromThis());
 	mSystemSet.insert(system);
-	system->GetRef();
 };
 
 // ******************************
@@ -996,10 +968,9 @@ void    AObject::AddSystem(ABaseSystem* system)
 // * -
 // ******************************
 
-void    AObject::RemoveSystem(ABaseSystem* system)
+void    AObject::RemoveSystem(SP<ABaseSystem> system)
 {
 	mSystemSet.erase(system);
-	system->Destroy();
 };
 
 // ******************************
@@ -1009,7 +980,7 @@ void    AObject::RemoveSystem(ABaseSystem* system)
 // * - 
 // ******************************
 
-void    AObject::DoForEachStream(ALinks* info,IntU32* g_id,IntU32 g_count,void* params,void (AObject::*callfunc)(ABaseStream* stream,void* param))
+void    AObject::DoForEachStream(ALinks* info,IntU32* g_id,IntU32 g_count,void* params,void (AObject::*callfunc)(SP<ABaseStream> stream,void* param))
 {
 
 	if(info == nullptr)
@@ -1026,8 +997,8 @@ void    AObject::DoForEachStream(ALinks* info,IntU32* g_id,IntU32 g_count,void* 
 		if(g_count == 0)
 		{
 			// construct g_id list from the given g_id
-			ABaseChannel* channel= info->GetSystem()->GetChannelByUID(g_id[0]);
-			if(channel != nullptr)
+			SP<ABaseChannel> channel= info->GetSystem()->GetChannelByUID(g_id[0]);
+			if(channel)
 			{
 				id_list= info->GetSystem()->GetSonGroupIDList(channel,id_count);
 			}
@@ -1071,7 +1042,7 @@ void    AObject::DoForEachStream(ALinks* info,IntU32* g_id,IntU32 g_count,void* 
 // * - 
 // ******************************
 
-void    AObject::StartAnimationFor(ABaseStream* stream,void* param)
+void    AObject::StartAnimationFor(SP<ABaseStream> stream,void* param)
 {
 	stream->SetStartTime(*((ATimeValue*)param));
 	stream->SetLocalTime(0);
@@ -1085,7 +1056,7 @@ void    AObject::StartAnimationFor(ABaseStream* stream,void* param)
 // * - 
 // ******************************
 
-void    AObject::SetAnimationPosFor(ABaseStream* stream,void* param)
+void    AObject::SetAnimationPosFor(SP<ABaseStream> stream,void* param)
 {
 	Float newlocalt = ((Float)stream->GetStreamLength()*(*(Float*)param));
 	Float time = (Float)stream->GetStartTime()+	(Float)stream->GetLocalTime()/stream->GetSpeed();
@@ -1102,7 +1073,7 @@ void    AObject::SetAnimationPosFor(ABaseStream* stream,void* param)
 // * - 
 // ******************************
 
-void    AObject::StartRepeatAnimationFor(ABaseStream* stream,void* param)
+void    AObject::StartRepeatAnimationFor(SP<ABaseStream> stream,void* param)
 {
 	repeatAnimationParamStruct& params = *(repeatAnimationParamStruct*)param;
 	
@@ -1120,7 +1091,7 @@ void    AObject::StartRepeatAnimationFor(ABaseStream* stream,void* param)
 // * - 
 // ******************************
 
-void    AObject::StopAnimationFor(ABaseStream* stream,void* /* param */)
+void    AObject::StopAnimationFor(SP<ABaseStream> stream,void* /* param */)
 {
 	stream->Stop();
 };
@@ -1132,7 +1103,7 @@ void    AObject::StopAnimationFor(ABaseStream* stream,void* /* param */)
 // * - 
 // ******************************
 
-void    AObject::ResumeAnimationFor(ABaseStream* stream,void* param)
+void    AObject::ResumeAnimationFor(SP<ABaseStream> stream,void* param)
 {
 	stream->SetStartTime((*((ATimeValue*)param))-stream->GetLocalTime());
 	IntS32 tmp_count=stream->GetRepeatCount();
@@ -1148,7 +1119,7 @@ void    AObject::ResumeAnimationFor(ABaseStream* stream,void* param)
 // * - 
 // ******************************
 
-void    AObject::SetAnimationWeightFor(ABaseStream* stream,void* param)
+void    AObject::SetAnimationWeightFor(SP<ABaseStream> stream,void* param)
 {
 	stream->SetWeight(*((Float*)param));
 };
@@ -1160,7 +1131,7 @@ void    AObject::SetAnimationWeightFor(ABaseStream* stream,void* param)
 // * - 
 // ******************************
 
-void    AObject::SetAnimationSpeedFor(ABaseStream* stream,void* param)
+void    AObject::SetAnimationSpeedFor(SP<ABaseStream> stream,void* param)
 {
 	stream->SetSpeed(*((Float*)param));
 };
@@ -1172,7 +1143,7 @@ void    AObject::SetAnimationSpeedFor(ABaseStream* stream,void* param)
 // * - 
 // ******************************
 
-void    AObject::MulAnimationWeightFor(ABaseStream* stream,void* param)
+void    AObject::MulAnimationWeightFor(SP<ABaseStream> stream,void* param)
 {
 	Float w=stream->GetWeight();
 	stream->SetWeight((*((Float*)param))*w);
@@ -1185,7 +1156,7 @@ void    AObject::MulAnimationWeightFor(ABaseStream* stream,void* param)
 // * - 
 // ******************************
 
-void    AObject::MulAnimationSpeedFor(ABaseStream* stream,void* param)
+void    AObject::MulAnimationSpeedFor(SP<ABaseStream> stream,void* param)
 {
 	Float w=stream->GetSpeed();
 	stream->SetSpeed((*((Float*)param))*w);
@@ -1198,7 +1169,7 @@ void    AObject::MulAnimationSpeedFor(ABaseStream* stream,void* param)
 // * - 
 // ******************************/
 
-void    AObject::SetLoopFor(ABaseStream* stream,void* param)
+void    AObject::SetLoopFor(SP<ABaseStream> stream,void* param)
 {
 	stream->SetLoop(*((bool*)param));
 };
@@ -1223,12 +1194,9 @@ bool	AObject::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 
 void AObject::Update(const Timer& timer, void* addParam)
 {
-	kstl::set<ABaseSystem*>::iterator itbegin = mSystemSet.begin();
-	kstl::set<ABaseSystem*>::iterator itend = mSystemSet.end();
-	while (itbegin != itend)
+	for(auto s: mSystemSet)
 	{
-		(*itbegin)->SetupDraw();
-		++itbegin;
+		s->SetupDraw();
 	}
 	Animate(timer.GetTime());
 }

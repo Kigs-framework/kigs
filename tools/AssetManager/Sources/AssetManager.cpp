@@ -134,7 +134,7 @@ void	AssetManager::ProtectedInit()
 
 	JSonFileParser L_JsonParser;
 	CoreItemSP initP = L_JsonParser.Get_JsonDictionary(filenamehandle);
-	if (!initP.isNil())
+	if (!initP)
 	{
 		if (initRules(initP))
 		{
@@ -185,14 +185,14 @@ bool AssetManager::initRules(CoreItemSP rules)
 	for (auto r : rules)
 	{
 		CoreItemSP isRule = r["rule"];
-		if(!isRule.isNil() && (isRule->size() == 3))
+		if(!isRule && (isRule->size() == 3))
 		{
 			mRules.push_back({ (std::string)isRule[0],(std::string)isRule[1], (std::string)isRule[2] });
 		}
 		else
 		{
 			CoreItemSP isAction = r["action"];
-			if (!isAction.isNil() && (isAction->size() == 2))
+			if (!isAction && (isAction->size() == 2))
 			{
 				mRules.push_back({ (std::string)isAction[0],"",(std::string)isAction[1]});
 				mRules.back().setActionOnly(true);
@@ -200,7 +200,7 @@ bool AssetManager::initRules(CoreItemSP rules)
 			else
 			{
 				CoreItemSP isDirRule = r["dir_rule"];
-				if (!isDirRule.isNil() && (isDirRule->size() == 3))
+				if (!isDirRule && (isDirRule->size() == 3))
 				{
 					mRules.push_back({ (std::string)isDirRule[0],(std::string)isDirRule[1], (std::string)isDirRule[2] });
 					mRules.back().setDirRule(true);
@@ -214,7 +214,7 @@ bool AssetManager::initRules(CoreItemSP rules)
 
 CoreItemSP		AssetManager::createJSONFromFileList()
 {
-	CoreItemSP root = CoreItemSP::getCoreMap();
+	CoreItemSP root = MakeCoreMap();
 	std::vector<CoreItemSP> folderlist;
 	folderlist.push_back(root);
 
@@ -230,7 +230,7 @@ CoreItemSP		AssetManager::createJSONFromFileList()
 				folderlist.pop_back();
 			}
 		}
-		CoreItemSP newfile = CoreItemSP::getCoreMap();
+		CoreItemSP newfile = MakeCoreMap();
 		newfile->set("UID", (u64)fs.mUID);
 		folderlist.back()->set(fs.mFileInfos.cFileName, newfile);
 		if (fs.mFileInfos.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -260,7 +260,7 @@ void	AssetManager::doTheJob()
 	CoreItemSP initP = L_JsonParser.Get_JsonDictionary(mFolderIn + "\\AMLastDone.json");
 
 	// if rules have changed, redo everything
-	if (initP.isNil() || (((u64)initP[Rulesfile]["UID"]) != fs->mUID))
+	if (initP || (((u64)initP[Rulesfile]["UID"]) != fs->mUID))
 	{
 		mResetAll = true;
 		std::filesystem::remove_all(mFolderInterm); // Delete directory
@@ -415,7 +415,7 @@ CoreItemSP	AssetManager::getCorrespondingItem(CoreItemSP fileInfos, FileStruct& 
 	for (auto f : str.mFolders)
 	{
 		current = current[f];
-		if (current.isNil())
+		if (current)
 			return current;
 	}
 
@@ -458,7 +458,7 @@ void	AssetManager::runRules(CoreItemSP fileinfos)
 						if (!mResetAll)
 						{
 							CoreItemSP checkPreviousState = getCorrespondingItem(fileinfos, f);
-							if (!checkPreviousState.isNil())
+							if (!checkPreviousState)
 							{
 								prevUID = checkPreviousState["UID"];
 							}

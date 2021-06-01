@@ -96,10 +96,10 @@ protected:
 	void	RetreiveShortNameAndExt(const kstl::string& filename,kstl::string& shortname,kstl::string& fileext);
 
 	// check only if alpha is needed or not
-	int	checkIfNeedsAlpha(TinyImage*);
-	int	checkBestMatchingAlpha(TinyImage* toCheck);
+	int	checkIfNeedsAlpha(SP<TinyImage>);
+	int	checkBestMatchingAlpha(SP<TinyImage> toCheck);
 
-	bool	exportDDS(TinyImage*,const kstl::string& outfile,int quality,int perceptual);
+	bool	exportDDS(SP<TinyImage>,const kstl::string& outfile,int quality,int perceptual);
 
 	void packInBlock(unsigned int* rgbaread,unsigned int* inBlock,unsigned int width);
 	void packInBlockKeepAlpha(unsigned int* rgbaread,unsigned int* inBlock,unsigned int width);
@@ -107,7 +107,7 @@ protected:
 	unsigned char*	export4BitAlpha(unsigned char* data,int sizex,int sizey);
 	void			GetRGB24(unsigned char* pixelData,unsigned char* outpixels,unsigned int width,unsigned int height);
 
-	unsigned char*	CopyToPot(TinyImage*,int sizex,int sizey);
+	unsigned char*	CopyToPot(SP<TinyImage>,int sizex,int sizey);
 	void			FloydSteinberg(unsigned char* data, int sizex,int sizey);
 
 	float* convertToFloatRGBA(unsigned char* input,int sizex,int sizey, bool isRGB,bool useAlpha);

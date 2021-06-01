@@ -38,8 +38,8 @@ Window(name,PASS_CLASS_NAME_TREE_ARG)
 WindowJavascript::~WindowJavascript()
 {  
 	//! destroy rendering screen
-	if(mScreen)
-		mScreen->Destroy();
+	
+	mScreen = nullptr;
 
 }    
 
@@ -105,7 +105,7 @@ void  WindowJavascript::Update(const Timer&  timer, void* addParam)
 				mSize[0] = screenSize.x;
 				mSize[1] = screenSize.y;
 				SetCanvasSize(getName().c_str(),screenSize.x, screenSize.y);
-				mScreen->Resize((int)mSize[0], (int)mSize[1]);
+				mScreen->as<RenderingScreen>()->Resize((int)mSize[0], (int)mSize[1]);
 			}
 		}
 
@@ -160,7 +160,7 @@ void	WindowJavascript::GetMousePosInDesignWindow(int posx,int posy,kfloat& wposx
 
 	if(mScreen)
 	{
-		mScreen->GetMousePosInDesignScreen(posx,posy,wposx,wposy);
+		mScreen->as<RenderingScreen>()->GetMousePosInDesignScreen(posx,posy,wposx,wposy);
 	}
 	else
 	{

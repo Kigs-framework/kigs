@@ -57,7 +57,7 @@ void	Sample5::ProtectedInit()
 	}
 	else
 	{
-		std::cout << "val 2 : " << (int)*item["val2"] << std::endl;
+		std::cout << "val 2 : " << (int)item["val2"] << std::endl;
 	}
 
 	// create a CoreValue<int> with value 52
@@ -67,8 +67,8 @@ void	Sample5::ProtectedInit()
 	item->set("val2", toInsert);
 
 	// print values accessing map at val1 and val2
-	std::cout << "val 1 : " << (int)*item["val1"] << std::endl;
-	std::cout << "val 2 : " << (int)*item["val2"] << std::endl;
+	std::cout << "val 1 : " << (int)item["val1"] << std::endl;
+	std::cout << "val 2 : " << (int)item["val2"] << std::endl;
 
 	// retreive obj1
 	CoreItemSP obj1 = item["obj1"];

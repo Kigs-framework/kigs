@@ -46,7 +46,7 @@ public:
 	*/
 	// ******************************
 	
-	AObject*    GetAObject()
+	SP<AObject>    GetAObject()
 	{
 		return mAObject;
 	};
@@ -59,7 +59,7 @@ public:
 	*/
 	// ******************************
 	
-	ABaseChannel*   GetChannelByUID(IntU32 g_id);
+	SP<ABaseChannel>   GetChannelByUID(IntU32 g_id);
 	
 	// *******************
 	// * GetValidStream
@@ -69,7 +69,7 @@ public:
 	*/
 	// *******************
 	
-	ABaseStream*   GetValidStream();
+	SP<ABaseStream>   GetValidStream();
 	
 	void	DoOnlyLocalUpdate(bool val) { mOnlyLocalSkeletonUpdate = val; }
 	
@@ -140,7 +140,7 @@ public:
 	*/
 	// *******************
 	
-	virtual void    LinkTo(ABaseChannel* data) = 0;
+	virtual void    LinkTo(SP<ABaseChannel> data) = 0;
 	
 	// *******************
 	// * UnLink
@@ -159,7 +159,7 @@ public:
 	*/
 	// *******************
 	
-	IntU32*          GetSonGroupIDList(ABaseChannel* first, IntU32& count);
+	IntU32*          GetSonGroupIDList(SP<ABaseChannel> first, IntU32& count);
 	
 	// ******************************
 	// * GetRootChannel
@@ -170,9 +170,9 @@ public:
 	// ******************************
 	
 	
-	ABaseChannel*               GetRootChannel()
+	SP<ABaseChannel>               GetRootChannel()
 	{
-		return (ABaseChannel*)mRoot.get();
+		return mRoot;
 	};
 	
 	// ******************************
@@ -222,7 +222,7 @@ public:
 	*/
 	// ******************************
 	
-	void    SetAObject(AObject* object)
+	void    SetAObject(SP<AObject> object)
 	{
 		mAObject = object;
 	};
@@ -284,7 +284,7 @@ public:
 	*/
 	// ******************************
 	
-	void    SetHierarchy(AObjectSkeletonResource* hierarchy);
+	void    SetHierarchy(SP<AObjectSkeletonResource> hierarchy);
 	
 	// ******************************
 	// * Hierarchy management
@@ -293,12 +293,12 @@ public:
 	*/
 	// ******************************
 	
-	void    SetHierarchyFromSystem(ABaseSystem* sys);
+	void    SetHierarchyFromSystem(SP<ABaseSystem> sys);
 
 
 	virtual void InitSystem() = 0;
 	
-	AObject*    mAObject;
+	SP<AObject>    mAObject;
 	
 	// ******************************
 	// * Channel array
@@ -307,7 +307,7 @@ public:
 	// * -
 	// ******************************
 	
-	SP<ABaseChannel>*   mChannelTab;
+	std::vector<SP<ABaseChannel>>   mChannelTab;
 	IntU32				mChannelsCount;
 	
 	// ******************************

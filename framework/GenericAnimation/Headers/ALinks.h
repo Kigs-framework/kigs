@@ -45,7 +45,7 @@ public:
 		: mSystem(0)
     {
         m_pAnimResourceInfo=info;
-        m_StreamArray= new ABaseStream*[streamcount];
+        m_StreamArray.resize(streamcount);
         m_StreamCount=streamcount;
     };
 
@@ -58,13 +58,13 @@ public:
 
     ~ALinks()
     {
-        delete[] m_StreamArray;
-    };
+        m_StreamArray.clear();
+    }
 
     IntU32  GetStreamCount()
     {
         return m_StreamCount;
-    };
+    }
 
 protected:
 
@@ -82,7 +82,7 @@ protected:
     */
     // ******************************
 
-    void    AddStream(ABaseStream* stream,IntU32 index)
+    void    AddStream(SP<ABaseStream> stream,IntU32 index)
     {
         m_StreamArray[index]=stream;
         stream->mResourceInfo=m_pAnimResourceInfo;
@@ -96,7 +96,7 @@ protected:
     */
     // ******************************
 
-    void    SetSystem(ABaseSystem* system)
+    void    SetSystem(SP<ABaseSystem> system)
     {
         mSystem=system;
     };
@@ -115,7 +115,7 @@ protected:
     */
     // ******************************
 
-    ABaseStream**   GetStreamArray()
+    const std::vector<SP<ABaseStream>>&   GetStreamArray()
     {
         return m_StreamArray;
     }
@@ -126,7 +126,7 @@ protected:
     */
     // ******************************
 
-    ABaseSystem*    GetSystem()
+    SP<ABaseSystem>    GetSystem()
     {
         return mSystem;
     };
@@ -143,10 +143,10 @@ protected:
         return m_pAnimResourceInfo;
     };
 
-    AnimationResourceInfo*		m_pAnimResourceInfo;
-    ABaseSystem*                mSystem;
-    ABaseStream**               m_StreamArray;
-    IntU32						m_StreamCount;
+    AnimationResourceInfo*       m_pAnimResourceInfo;
+    SP<ABaseSystem>                 mSystem;
+    std::vector<SP<ABaseStream>>    m_StreamArray;
+    IntU32						    m_StreamCount;
 
 };
 

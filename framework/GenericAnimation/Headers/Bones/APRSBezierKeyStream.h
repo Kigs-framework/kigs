@@ -33,11 +33,11 @@ public:
     	
 	DECLARE_CLASS_INFO(APRSBezierKeyStream, APRSKeyStream, Animation);
     DECLARE_CONSTRUCTOR(APRSBezierKeyStream);
+    virtual ~APRSBezierKeyStream();
 
 protected:
 
-	virtual ~APRSBezierKeyStream();
-    
+  
     // ******************************
     // * UpdateData
     // *-----------------------------
