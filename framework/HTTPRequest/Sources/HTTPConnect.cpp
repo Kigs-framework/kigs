@@ -27,7 +27,7 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreiveGetAsyncRequest(const char* 
 	if (a_CallbackObject)
 		request->setValue("CallbackReceiver", a_CallbackObject);
 
-	KigsCore::addAsyncRequest(request.get());
+	KigsCore::addAsyncRequest(request);
 
 	
 	return request;
@@ -57,7 +57,7 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreivePostAsyncRequest(const char*
 		request->setValue("CallbackReceiver", a_CallbackObject);
 
 	
-	KigsCore::addAsyncRequest(request.get());
+	KigsCore::addAsyncRequest(request);
 	
 	
 	return request;

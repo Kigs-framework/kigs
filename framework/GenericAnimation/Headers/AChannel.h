@@ -29,7 +29,7 @@ class   AChannel : public ABaseChannel
 	*/
 	// ******************************
 	
-	void    AnimateRoot(ATimeValue t, ABaseSystem* system);
+	void    AnimateRoot(ATimeValue t, SP<ABaseSystem> system);
 	
 	// ******************************
 	// * Animate
@@ -39,7 +39,7 @@ class   AChannel : public ABaseChannel
 	*/
 	// ******************************
 	
-	void    Animate(ATimeValue t, AChannel* otherchannel);
+	void    Animate(ATimeValue t, SP<AChannel> otherchannel);
 	
 	// ******************************
 	// * GetChannelLocalToGlobalData
@@ -141,7 +141,7 @@ class   AChannel : public ABaseChannel
 	*/
 	// ******************************
 	
-	void            UpdateLocalToGlobalData(AChannel* otherchannel);
+	void            UpdateLocalToGlobalData(SP<AChannel> otherchannel);
 	
 	
 };
@@ -170,22 +170,22 @@ AChannel<LocalToGlobalType>::~AChannel()
 //!*    and then call the sons Animate()
 // ******************************
 template<typename LocalToGlobalType>
-void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys)
+void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, SP<ABaseSystem> _sys)
 {
 	
 	//+---------
 	//! Stream mixing
 	//+---------
 	
-	ASystem<LocalToGlobalType>*	sys = (ASystem<LocalToGlobalType>*)_sys;
+	SP<ASystem<LocalToGlobalType>>	sys = _sys;
 	
-	ABaseStream*     read = mFirstStream;
+	SP<ABaseStream>     read = mFirstStream;
 	
-	ABaseStream*     valid_stream = mSystem->GetValidStream();
+	SP<ABaseStream>     valid_stream = mSystem->GetValidStream();
 	
-	if (read == NULL)
+	if (read == nullptr)
 	{
-		if (valid_stream != NULL)
+		if (valid_stream)
 		{
 			valid_stream->CopyData(&mWorkingStreamData, &mStandStreamData);
 		}
@@ -216,7 +216,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 			StoredTimes.reserve(10);
 			// find the first playing stream, and init the working data with it
 			// in the same time check if the local time is outside the anim time ( offset_init == true )
-			while (read != NULL)
+			while (read != nullptr)
 			{
 				if (read->IsPlaying())
 				{
@@ -238,7 +238,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 			// find other playing streams ( if any )
 			// and also check the time ( offset_init == true )
 			
-			while (read != NULL)
+			while (read != nullptr)
 			{
 				if (read->IsPlaying())
 				{
@@ -273,7 +273,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 				read = mFirstStream;
 				offset_init = false;
 				
-				while (read != NULL)
+				while (read != nullptr)
 				{
 					if (read->IsPlaying())
 					{
@@ -291,7 +291,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 					read = read->GetNextStream();
 				}
 				
-				while (read != NULL)
+				while (read != nullptr)
 				{
 					if (read->IsPlaying())
 					{
@@ -333,7 +333,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 				IntU32	countplayingstream = 0;
 				
 				read = mFirstStream;
-				while (read != NULL)
+				while (read != nullptr)
 				{
 					if (read->IsPlaying())
 					{
@@ -349,7 +349,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 				}
 				
 				
-				while (read != NULL)
+				while (read != nullptr)
 				{
 					if (read->IsPlaying())
 					{
@@ -379,7 +379,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 		}
 		else // the animation is not in update when loop mode , so we play it normally
 		{
-			while (read != NULL)
+			while (read != nullptr)
 			{
 				if (read->IsPlaying())
 				{
@@ -394,7 +394,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 			}
 			
 			
-			while (read != NULL)
+			while (read != nullptr)
 			{
 				if (read->IsPlaying())
 				{
@@ -435,35 +435,22 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 	
 	if (mSystem->mRecurseAnimate)
 	{
+		SP<AChannel>	param = nullptr;
+
 		if (mSystem->mOnlyLocalSkeletonUpdate == false)
 		{
-			kstl::vector<ModifiableItemStruct>::const_iterator it;
-			
-			for (it = getItems().begin(); it != getItems().end(); ++it)
-			{
-				if ((*it).mItem->isSubType(AChannel::mClassID))
-				{
-					((AChannel*)(*it).mItem.get())->Animate(t, this);
-				}
-			}
+			param = SharedFromThis();
 		}
-		else
+		kstl::vector<ModifiableItemStruct>::const_iterator it;
+			
+		for (const auto& i : getItems())
 		{
-			
-			kstl::vector<ModifiableItemStruct>::const_iterator it;
-			
-			for (it = getItems().begin(); it != getItems().end(); ++it)
+			if (i.mItem->isSubType(AChannel::mClassID))
 			{
-				if ((*it).mItem->isSubType(AChannel::mClassID))
-				{
-					((AChannel*)(*it).mItem.get())->Animate(t, 0);
-				}
+				((AChannel*)i.mItem.get())->Animate(t, param);
 			}
 		}
-		
 	}
-	
-	
 };
 
 
@@ -474,18 +461,18 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, ABaseSystem* _sys
 // *    and the call the sons Animate()
 // ******************************
 template<typename LocalToGlobalType>
-void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchannel)
+void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, SP<AChannel> otherchannel)
 {
 	// +---------
 	// | Stream mixing
 	// +---------
 	
-	ABaseStream*     read = mFirstStream;
+	SP<ABaseStream>     read = mFirstStream;
 	
-	if (read == NULL)
+	if (read == nullptr)
 	{
-		ABaseStream*     valid_stream = mSystem->GetValidStream();
-		if (valid_stream != NULL)
+		SP<ABaseStream>     valid_stream = mSystem->GetValidStream();
+		if (valid_stream)
 		{
 			valid_stream->CopyData(&mWorkingStreamData, &mStandStreamData);
 		}
@@ -496,7 +483,7 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 		Float       weight = 0;
 		Float       coef_t;
 		
-		while (read != NULL)
+		while (read != nullptr)
 		{
 			if (read->IsPlaying())
 			{
@@ -511,7 +498,7 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 		}
 		
 		
-		while (read != NULL)
+		while (read != nullptr)
 		{
 			if (read->IsPlaying())
 			{
@@ -527,23 +514,23 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 		}
 		if (weight == KFLOAT_CONST(0.0f))
 		{
-			ABaseStream*     valid_stream = mSystem->GetValidStream();
-			if (valid_stream != NULL)
+			SP<ABaseStream>     valid_stream = mSystem->GetValidStream();
+			if (valid_stream)
 			{
 				valid_stream->CopyData(&mWorkingStreamData, &mStandStreamData);
 			}
 		}
 	}
 	
-	if (otherchannel != NULL)
+	if (otherchannel)
 	{
 		UpdateLocalToGlobalData(otherchannel);
 	}
 	else
 	{
-		ABaseStream*     valid_stream = mSystem->GetValidStream();
+		SP<ABaseStream>     valid_stream = mSystem->GetValidStream();
 		
-		if (valid_stream != NULL)
+		if (valid_stream)
 		{
 			valid_stream->CopyData(&mLocalToGlobalStreamData, &mWorkingStreamData);
 		}
@@ -558,7 +545,7 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 	
 	if (mSystem->mRecurseAnimate)
 	{
-		if ((otherchannel != NULL) && (mSystem->mOnlyLocalSkeletonUpdate == false))
+		if (otherchannel && (mSystem->mOnlyLocalSkeletonUpdate == false))
 		{
 			kstl::vector<ModifiableItemStruct>::const_iterator it;
 			
@@ -566,7 +553,7 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 			{
 				if ((*it).mItem->isSubType(AChannel::mClassID))
 				{
-					((AChannel*)(*it).mItem.get())->Animate(t, this);
+					((AChannel*)(*it).mItem.get())->Animate(t, SharedFromThis());
 				}
 			}
 		}
@@ -596,16 +583,16 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, AChannel* otherchanne
 template<typename LocalToGlobalType>
 LocalToGlobalBaseType*   AChannel<LocalToGlobalType>::GetLocalToGlobalBeforeChange()
 {
-	LocalToGlobalBaseType*   tmp_data = NULL;
+	LocalToGlobalBaseType*   tmp_data = nullptr;
 	
 	
-	ASystem<LocalToGlobalType>* sys = (ASystem<LocalToGlobalType>*)GetSystem();
+	SP<ASystem<LocalToGlobalType>> sys = GetSystem();
 	
 	if (sys->GetUseAnimationLocalToGlobal() == true)
 	{
-		if (mFirstStream != NULL)
+		if (mFirstStream != nullptr)
 		{
-			if (mFirstStream->GetNextStream() != NULL)
+			if (mFirstStream->GetNextStream() != nullptr)
 			{
 				tmp_data = mFirstStream->NewStreamOutputDataInstance();
 				mFirstStream->CopyData(tmp_data, &sys->m_pInstantLocalToGlobalData);
@@ -625,17 +612,17 @@ LocalToGlobalBaseType*   AChannel<LocalToGlobalType>::GetLocalToGlobalBeforeChan
 template<typename LocalToGlobalType>
 void    AChannel<LocalToGlobalType>::ResetLocalToGlobalAfterChange(LocalToGlobalBaseType* tmp_data)
 {
-	if (tmp_data == NULL)
+	if (tmp_data == nullptr)
 	{
 		return;
 	}
-	ASystem<LocalToGlobalType>* sys = (ASystem<LocalToGlobalType>*)GetSystem();
+	SP<ASystem<LocalToGlobalType>> sys = GetSystem();
 	if (sys->GetUseAnimationLocalToGlobal() == true)
 	{
 		Float  weight = KFLOAT_CONST(0.0f);
 		Float  coef_t;
-		ABaseStream* read = mFirstStream;
-		while (read != NULL)
+		SP<ABaseStream> read = mFirstStream;
+		while (read != nullptr)
 		{
 			if (read->IsPlaying())
 			{
@@ -652,7 +639,7 @@ void    AChannel<LocalToGlobalType>::ResetLocalToGlobalAfterChange(LocalToGlobal
 		}
 		
 		
-		while (read != NULL)
+		while (read != nullptr)
 		{
 			if (read->IsPlaying())
 			{
@@ -673,11 +660,11 @@ void    AChannel<LocalToGlobalType>::ResetLocalToGlobalAfterChange(LocalToGlobal
 };
 
 template<typename LocalToGlobalType>
-void    AChannel<LocalToGlobalType>::UpdateLocalToGlobalData(AChannel* otherchannel)
+void    AChannel<LocalToGlobalType>::UpdateLocalToGlobalData(SP<AChannel> otherchannel)
 {
-	ABaseStream*     valid_stream = mSystem->GetValidStream();
+	SP<ABaseStream>     valid_stream = mSystem->GetValidStream();
 	
-	if (valid_stream != NULL)
+	if (valid_stream)
 	{
 		valid_stream->CopyData(&mLocalToGlobalStreamData, &mWorkingStreamData);
 		valid_stream->MulData(&mLocalToGlobalStreamData, &otherchannel->mLocalToGlobalStreamData);

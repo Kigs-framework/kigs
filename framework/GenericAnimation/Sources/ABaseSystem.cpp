@@ -22,7 +22,6 @@ ABaseSystem::ABaseSystem(const kstl::string& name, CLASS_NAME_TREE_ARG)
 	, mPriority(*this, true, LABEL_AND_ID(Priority), 100)
 {
 	mLinksCount = 0;
-	mChannelTab = NULL;
 	mRecurseAnimate = true;
 	mOnlyLocalSkeletonUpdate = false;
 	mChannelsCount = 0;
@@ -39,10 +38,10 @@ ABaseSystem::ABaseSystem(const kstl::string& name, CLASS_NAME_TREE_ARG)
 // ******************************
 
 
-void    ABaseSystem::SetHierarchy(AObjectSkeletonResource* hierarchy)
+void    ABaseSystem::SetHierarchy(SP<AObjectSkeletonResource> hierarchy)
 {
 
-    if(hierarchy == NULL)
+    if(!hierarchy)
     {
         return;
     }
@@ -63,7 +62,7 @@ void    ABaseSystem::SetHierarchy(AObjectSkeletonResource* hierarchy)
 		}
 
         mChannelsCount=grp_count;
-        mChannelTab=new SP<ABaseChannel>[grp_count];
+        mChannelTab.resize(grp_count);
 
         IntU32 i;
         for(i=0;i<grp_count;++i)
@@ -85,7 +84,7 @@ void    ABaseSystem::SetHierarchy(AObjectSkeletonResource* hierarchy)
             {
                 mRoot=mChannelTab[i];
             }
-            mChannelTab[i]->SetSystem(this);
+            mChannelTab[i]->SetSystem(SharedFromThis());
         }
 
 		ABaseChannel::AutoChannelTree(mChannelTab,hierarchy);
@@ -98,7 +97,7 @@ void    ABaseSystem::SetHierarchy(AObjectSkeletonResource* hierarchy)
 };
 
 
-void    ABaseSystem::SetHierarchyFromSystem(ABaseSystem* sys)
+void    ABaseSystem::SetHierarchyFromSystem(SP<ABaseSystem> sys)
 {
     // +---------
     // | construct channel tree
@@ -111,7 +110,7 @@ void    ABaseSystem::SetHierarchyFromSystem(ABaseSystem* sys)
         IntU32 grp_count=sys->mChannelsCount;
         mChannelsCount=grp_count;
 
-        mChannelTab=new SP<ABaseChannel>[grp_count];
+        mChannelTab.resize(grp_count);
 
         IntU32 i;
         for(i=0;i<grp_count;++i)
@@ -132,7 +131,7 @@ void    ABaseSystem::SetHierarchyFromSystem(ABaseSystem* sys)
             {
                 mRoot=mChannelTab[i];
             }
-            mChannelTab[i]->SetSystem(this);
+            mChannelTab[i]->SetSystem(SharedFromThis());
         }
     
         // create channel hierarchy
@@ -151,9 +150,9 @@ void    ABaseSystem::SetHierarchyFromSystem(ABaseSystem* sys)
 // * - 
 // ******************************
 
-ABaseChannel*   ABaseSystem::GetChannelByUID(IntU32 g_id)
+SP<ABaseChannel>   ABaseSystem::GetChannelByUID(IntU32 g_id)
 {
-	ABaseChannel* found=NULL;
+	SP<ABaseChannel> found=nullptr;
 
     if(mChannelsCount < 2)
     {
@@ -161,7 +160,7 @@ ABaseChannel*   ABaseSystem::GetChannelByUID(IntU32 g_id)
         {
             if(mChannelTab[0]->GetGroupID() == g_id)
             {
-                found=mChannelTab[0].get();
+                found=mChannelTab[0];
             }
         }
         return found;
@@ -174,11 +173,11 @@ ABaseChannel*   ABaseSystem::GetChannelByUID(IntU32 g_id)
     {
         if(mChannelTab[index1]->GetGroupID() == g_id)
         {
-            return     mChannelTab[index1].get();
+            return     mChannelTab[index1];
         }
         if(mChannelTab[index2]->GetGroupID() == g_id)
         {
-            return     mChannelTab[index2].get();
+            return     mChannelTab[index2];
         }
 
         if((index2-index1) < 2)
@@ -211,7 +210,7 @@ ABaseChannel*   ABaseSystem::GetChannelByUID(IntU32 g_id)
 
 void ABaseSystem::DeleteChannelTree()
 {
-	GetRootChannel()->Destroy();
+    mRoot = nullptr;
 };
 
 // ******************************
@@ -264,7 +263,7 @@ void    ABaseSystem::SortChannels()
 };
 
 
-IntU32* ABaseSystem::GetSonGroupIDList(ABaseChannel* first, IntU32& count)
+IntU32* ABaseSystem::GetSonGroupIDList(SP<ABaseChannel> first, IntU32& count)
 {
 	IntU32*  result = new IntU32[mChannelsCount];
 	count = 0;
@@ -275,7 +274,7 @@ IntU32* ABaseSystem::GetSonGroupIDList(ABaseChannel* first, IntU32& count)
 };
 
 
-ABaseStream*   ABaseSystem::GetValidStream()
+SP<ABaseStream>   ABaseSystem::GetValidStream()
 {
 	IntU32 i;
 

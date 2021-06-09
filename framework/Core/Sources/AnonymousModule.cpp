@@ -30,7 +30,8 @@ AnonymousModule::~AnonymousModule()
 void AnonymousModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
 	mCore=core;
-	KigsCore::ModuleInit(core,this);
+	// don't add anonymous modules to module map
+	//KigsCore::ModuleInit(core,this);
 
 	auto pathManager = KigsCore::Singleton<FilePathManager>();
 

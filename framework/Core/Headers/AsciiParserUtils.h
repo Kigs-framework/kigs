@@ -157,6 +157,18 @@ public:
 		mCurrentReadPos=0;
 	}
 
+	void	Clear()
+	{
+		if (mBufferedEnd)
+		{
+			*mTextEnd = mBufferedEnd;
+			mBufferedEnd = 0;
+		}
+		mText = nullptr;
+		mCurrentReadPos = 0;
+		mTextLen = 0;
+	}
+
 	bool	GetLine(AsciiParserUtilsTemplate<charType>& result, bool	removeLeadTrailWhitespace = false);
 	bool	GetWord(AsciiParserUtilsTemplate<charType>& result, charType	separator = ' ', bool	removeLeadTrailWhitespace = false);
 	bool	GetWord(AsciiParserUtilsTemplate<charType>& result, const ValidCharArray<charType>&	validCharArray);

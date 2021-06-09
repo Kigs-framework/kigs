@@ -73,9 +73,9 @@ public:
 
     static AnimationResourceInfo* CreateAnimationResourceInfo(IntU32 group_id);
     static AnimationResourceInfo* CreateAnimationResourceInfo(IntU32 group_id_count,IntU32* group_id_list);
-    
-protected:
     virtual ~APRSControlStream();
+
+protected:
     // ******************************
     // * UpdateData
     // *-----------------------------

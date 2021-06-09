@@ -101,11 +101,12 @@ bool	ModuleInputJavascript::addItem(const CMSP& item, ItemPosition pos DECLARE_L
 	
 }
 
-ModuleBase* MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(ModuleInputJavascript, "ModuleInputJavascript");
-	ModuleBase* gInstanceModuleInputJavascript=new ModuleInputJavascript("ModuleInputJavascript");
+	auto ptr = MakeRefCounted<ModuleInputJavascript>("ModuleInputJavascript");
+	gInstanceModuleInputJavascript=ptr.get();
     gInstanceModuleInputJavascript->Init(core,params);
-    return gInstanceModuleInputJavascript;
+    return ptr;
 }    

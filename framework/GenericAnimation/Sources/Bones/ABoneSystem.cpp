@@ -45,7 +45,7 @@ void    ABoneSystem::Animate(ATimeValue t)
 	SearchParentNode3D();
 	
 	InitLocalToGlobalData();
-	((ABoneChannel*)mRoot.get())->AnimateRoot(t, this);
+	((ABoneChannel*)mRoot.get())->AnimateRoot(t, SharedFromThis());
 	
 	ApplyLocalToGlobalData();
 	
@@ -58,15 +58,17 @@ void    ABoneSystem::Animate(ATimeValue t)
 
 void ABoneSystem::SetupDraw()
 {
-	AObject* aobject = GetAObject();
+	SP<AObject> aobject = GetAObject();
 	if(!mSkeleton)
 	{
-		for (unsigned int i = 0; i < aobject->getItems().size(); i++)
+		const auto& itms = aobject->getItems();
+
+		for (const auto& i: itms)
 		{
 			// find skeleton item
-			if (aobject->getItems().at(i).mItem->isSubType("AObjectSkeletonResource"))
+			if (i.mItem->isSubType("AObjectSkeletonResource"))
 			{
-				mSkeleton = (AObjectSkeletonResource*)aobject->getItems().at(i).mItem.get();
+				mSkeleton = i.mItem;
 				break;
 			}
 		}
@@ -82,17 +84,17 @@ void	ABoneSystem::SearchParentNode3D()
 {
 	if ( mParentNode3D == 0 )
 	{
-		CoreModifiable* attachedObject = GetAObject()->GetObject();
+		SP<CoreModifiable> attachedObject = GetAObject()->GetObject();
 		
 		while (attachedObject)
 		{
 			// depending on object type 
 			if (attachedObject->isSubType(Node3D::mClassID))
 			{
-				mParentNode3D = (Node3D*)attachedObject;
+				mParentNode3D = attachedObject;
 				break;
 			}
-			attachedObject = attachedObject->getFirstParent(SceneNode::mClassID);
+			attachedObject = attachedObject->getFirstParent(SceneNode::mClassID)->SharedFromThis();
 		}
 		
 		if (mParentNode3D) // add skinning
@@ -101,9 +103,8 @@ void	ABoneSystem::SearchParentNode3D()
 			m_pStartingLocalToGlobalData.set(currentMatrix);
 			m_pInstantLocalToGlobalData.set(currentMatrix);
 			
-			GenericAnimationModule* animation = (GenericAnimationModule*)KigsCore::GetModule("GenericAnimationModule");
+			SP<GenericAnimationModule> animation = KigsCore::GetModule("GenericAnimationModule");
 			CMSP shader = KigsCore::GetInstanceOf(getName()+"SkinShader", "API3DSkinShader");
-			shader->GetRef();
 			// add matrices to shader
 			CMSP uniformMatrixArray = KigsCore::GetInstanceOf(getName() + "SkinShaderMatrix", "API3DUniformMatrixArray");
 			
@@ -112,7 +113,7 @@ void	ABoneSystem::SearchParentNode3D()
 			uniformMatrixArray->Init();
 			shader->addItem(uniformMatrixArray);
 			shader->Init();
-			animation->addShader(mParentNode3D, shader.get());
+			animation->addShader(mParentNode3D, shader);
 			
 			// retreive matrix buffer
 			void* buffer = nullptr;
@@ -122,7 +123,7 @@ void	ABoneSystem::SearchParentNode3D()
 	}
 }
 
-void ABoneSystem::UpdateBoneMatrices(AObjectSkeletonResource* skeleton)
+void ABoneSystem::UpdateBoneMatrices(SP<AObjectSkeletonResource> skeleton)
 {
 	SearchParentNode3D();
 	if(!mBoneMatrixArray)
@@ -137,7 +138,7 @@ void ABoneSystem::UpdateBoneMatrices(AObjectSkeletonResource* skeleton)
 		unsigned int mUID = skeleton->getUID(i);
 		
 		// get channel w/ UID
-		ABoneChannel* channel = (ABoneChannel*)this->GetChannelByUID(mUID);
+		SP<ABoneChannel> channel = this->GetChannelByUID(mUID);
 		Matrix3x4 global_transform = channel->GetCurrentPRSMatrix();
 		Matrix3x4 mInvBindMatrix = skeleton->getInvBindMatrix(i);
 		mBoneMatrixArray[id - 1] = global_transform *mInvBindMatrix;
@@ -222,12 +223,12 @@ void	ABoneSystem::InitLocalToGlobalData()
 	
 	const Matrix3x4& currentMatrix = mParentNode3D->GetLocal();
 	
-	ABaseStream* tmp_stream = GetValidStream();
+	SP<ABaseStream> tmp_stream = GetValidStream();
 	if (mUseAnimationLocalToGlobal == false)
 	{
 		if(m_LinkedChannel)
 		{
-			ABaseStream* valid_stream = GetValidStream();
+			SP<ABaseStream> valid_stream = GetValidStream();
 			if(valid_stream)
 				valid_stream->CopyData(&m_pInstantLocalToGlobalData, m_LinkedChannel->GetChannelLocalToGlobalData());
 			/*

@@ -22,8 +22,8 @@ ABaseChannel::ABaseChannel(const kstl::string& name, CLASS_NAME_TREE_ARG)
 : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 
 {
-	mFirstStream = NULL;
-	mSystem = NULL;
+	mFirstStream = nullptr;
+	mSystem = nullptr;
 	mFatherNode = 0;
 	mSonCount = 0;
 }
@@ -34,8 +34,7 @@ bool	ABaseChannel::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	//! if item is a stream, then add it to the streams list 
 	if(item->isSubType(ABaseStream::mClassID))
 	{
-		ABaseStream* stream=(ABaseStream*)item.get();
-		AddStream(stream);
+		AddStream(item);
 	}
 	
 	return CoreModifiable::addItem(item, pos PASS_LINK_NAME(linkName));
@@ -46,8 +45,7 @@ bool	ABaseChannel::removeItem(const CMSP& item DECLARE_LINK_NAME)
 	//! if item is a stream, then try to remove it from streams list
 	if(item->isSubType(ABaseStream::mClassID))
 	{		
-		ABaseStream* stream=(ABaseStream*)item.get();
-		RemoveStream(stream);
+		RemoveStream(item);
 	}
 	return CoreModifiable::removeItem(item PASS_LINK_NAME(linkName));
 }
@@ -60,20 +58,20 @@ bool	ABaseChannel::removeItem(const CMSP& item DECLARE_LINK_NAME)
 // * - 
 // ******************************
 
-void        ABaseChannel::AddStream(ABaseStream* stream)
+void        ABaseChannel::AddStream(SP<ABaseStream> stream)
 {
 	
     //+---------
     //! if the stream list is empty, just set this stream in first place
     //+---------
 	
-    if(mFirstStream == NULL)
+    if(!mFirstStream)
     {
         mFirstStream=stream;
     }
     else
     {
-		ABaseStream*    read=mFirstStream;
+		SP<ABaseStream>    read=mFirstStream;
         if(stream->GetPriority()>=read->GetPriority())
         {
             //+---------
@@ -90,7 +88,7 @@ void        ABaseChannel::AddStream(ABaseStream* stream)
             //! else search where to insert this stream
             //+---------
 			
-			ABaseStream*    next=read->GetNextStream();
+			SP<ABaseStream>    next=read->GetNextStream();
             while(1)
             {
                 if(next == NULL)
@@ -113,7 +111,7 @@ void        ABaseChannel::AddStream(ABaseStream* stream)
         }
     }
 	
-    stream->SetChannel(this);
+    stream->SetChannel(SharedFromThis());
 };
 
 // ******************************
@@ -123,13 +121,13 @@ void        ABaseChannel::AddStream(ABaseStream* stream)
 //!* - the stream is not really deleted, if the stream is not found, return 
 // ******************************
 
-void        ABaseChannel::RemoveStream(ABaseStream* stream)
+void        ABaseChannel::RemoveStream(SP<ABaseStream> stream)
 {
     //+---------
     //! if the list is empty, return
     //+---------
 	
-    if(mFirstStream == NULL)
+    if(!mFirstStream)
     {
         return;
     }
@@ -139,12 +137,12 @@ void        ABaseChannel::RemoveStream(ABaseStream* stream)
         //! else search for the stream to substract
         //+---------
 		
-		ABaseStream*    read=mFirstStream;
-		ABaseStream*    last=NULL;
+		SP<ABaseStream>    read=mFirstStream;
+		SP<ABaseStream>    last=nullptr;
         while(read->GetPriority()>stream->GetPriority())
         {
-			ABaseStream*    next=read->GetNextStream();
-            if(next==NULL)
+			SP<ABaseStream>    next=read->GetNextStream();
+            if(!next)
             {
                 return;
             }
@@ -167,8 +165,8 @@ void        ABaseChannel::RemoveStream(ABaseStream* stream)
                 return;
             }
 			
-			ABaseStream*    next=read->GetNextStream();
-            if(next==NULL)
+			SP<ABaseStream>    next=read->GetNextStream();
+            if(!next)
             {
                 return;
             }
@@ -189,12 +187,13 @@ void        ABaseChannel::RemoveStream(ABaseStream* stream)
 // * 
 // *******************
 
-void    ABaseChannel::AutoChannelTree(SP<ABaseChannel>* channels, AObjectSkeletonResource* hierarchy)
+void    ABaseChannel::AutoChannelTree(const std::vector<SP<ABaseChannel>>& channels, SP<AObjectSkeletonResource> hierarchy)
 {
     IntU32 i,j;
     IntU32 grp_count=hierarchy->GetGroupCount();
 	
-	ABaseChannel**  tmpsonchannels=new ABaseChannel*[grp_count];
+    std::vector<SP<ABaseChannel>>  tmpsonchannels;
+    tmpsonchannels.resize(grp_count);
 	
     for(i=0;i<grp_count;++i)
     {
@@ -202,8 +201,8 @@ void    ABaseChannel::AutoChannelTree(SP<ABaseChannel>* channels, AObjectSkeleto
         {
             if(hierarchy->getID(i) == hierarchy->getFatherID(j) )
             {
-                channels[j]->mFatherNode=channels[i].get();
-                tmpsonchannels[channels[i]->mSonCount++]=channels[j].get();
+                channels[j]->mFatherNode=channels[i];
+                tmpsonchannels[channels[i]->mSonCount++]=channels[j];
             }
         }
 		
@@ -211,37 +210,35 @@ void    ABaseChannel::AutoChannelTree(SP<ABaseChannel>* channels, AObjectSkeleto
         {
             for(j=0;j<(IntU32)channels[i]->mSonCount;++j)
             {
-                CMSP toAdd(tmpsonchannels[j], GetRefTag{});
-				channels[i]->addItem(toAdd);
-				
+				channels[i]->addItem(tmpsonchannels[j]);
             }
         }
     }
 	
-    delete[] tmpsonchannels;
 	
 };
 
-void    ABaseChannel::AutoChannelTree(SP<ABaseChannel>* channels,ABaseSystem* sys)
+void    ABaseChannel::AutoChannelTree(const std::vector<SP<ABaseChannel>>& channels,SP<ABaseSystem> sys)
 {
     IntU32 i,j;
     IntU32 grp_count=sys->mChannelsCount;
 	
-	ABaseChannel**  tmpsonchannels=new ABaseChannel*[grp_count];
-	
+    std::vector<SP<ABaseChannel>>  tmpsonchannels;
+    tmpsonchannels.resize(grp_count);
+
     for(i=0;i<grp_count;++i)
     {
-		ABaseChannel* other_channel=sys->mChannelTab[i].get();	
+		SP<ABaseChannel> other_channel=sys->mChannelTab[i];	
         for(j=0;j<grp_count;++j)
         {
-			ABaseChannel* father_channel=(ABaseChannel*)sys->mChannelTab[j]->mFatherNode;
+			SP<ABaseChannel> father_channel=sys->mChannelTab[j]->mFatherNode;
 			
             if(father_channel)
             {
                 if(other_channel->GetGroupID() == father_channel->GetGroupID() )
                 {
-                    channels[j]->mFatherNode=channels[i].get();
-                    tmpsonchannels[channels[i]->mSonCount++]=channels[j].get();
+                    channels[j]->mFatherNode=channels[i];
+                    tmpsonchannels[channels[i]->mSonCount++]=channels[j];
                 }  
             }
         }
@@ -250,13 +247,11 @@ void    ABaseChannel::AutoChannelTree(SP<ABaseChannel>* channels,ABaseSystem* sy
         {
             for(j=0;j<(IntU32)channels[i]->mSonCount;++j)
             {
-                CMSP toAdd(tmpsonchannels[j], GetRefTag{});
-				channels[i]->addItem(toAdd);
+				channels[i]->addItem(tmpsonchannels[j]);
             }
         }
     }
-	
-    delete[] tmpsonchannels;
+
 	
 };
 

@@ -10,7 +10,7 @@ extern ModuleGUIJavascript* gInstanceModuleGUIJavascript;
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
 #define MODULEINITFUNC			PlatformGUIModuleInit
-extern ModuleBase* PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+extern SP<ModuleBase> PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 #else
 #define MODULEINITFUNC			ModuleInit
 #endif
@@ -39,11 +39,11 @@ public:
     void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override; 
     void Close() override;
 	void Update(const Timer& timer, void* addParam) override;
-    
+     virtual ~ModuleGUIJavascript();
+ 
 protected:
 	
-   virtual ~ModuleGUIJavascript();
-
+ 
 }; 
 
 #endif //_MODULEGUIJAVASCRIPT_H_

@@ -3,12 +3,11 @@
 
 #include "ModuleBase.h"
 
-class ModuleInputAndroid;
-extern ModuleInputAndroid* gInstanceModuleInputAndroid;
+
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
 #define MODULEINITFUNC			PlatformInputModuleInit
-extern ModuleBase* PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+extern SP<ModuleBase> PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 #else
 #define MODULEINITFUNC			ModuleInit
 #endif

@@ -31,11 +31,11 @@ public:
 	{
 		return m_MeshList;
 	}
-
+	virtual ~PLYImport();
 protected:
 
 	virtual void	InitModifiable();
-	virtual ~PLYImport();
+	
 	maString								m_FileName;
 	
 	enum propertyType

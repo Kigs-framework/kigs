@@ -150,7 +150,7 @@ ETC1TextureCompress::ETC1TextureCompress(const kstl::string& name, CLASS_NAME_TR
 
 
 // return number of bit per alpha pixel (0, 1 or 4)
-int		ETC1TextureCompress::checkBestMatchingAlpha(TinyImage* toCheck)
+int		ETC1TextureCompress::checkBestMatchingAlpha(SP<TinyImage> toCheck)
 {
 
 	if (toCheck->GetFormat() == TinyImage::RGB_24_888)
@@ -264,7 +264,7 @@ int		ETC1TextureCompress::checkBestMatchingAlpha(TinyImage* toCheck)
 }
 
 // check only if alpha is needed or not
-int	ETC1TextureCompress::checkIfNeedsAlpha(TinyImage* toCheck)
+int	ETC1TextureCompress::checkIfNeedsAlpha(SP<TinyImage> toCheck)
 {
 	int alphaCount[16];
 
@@ -301,7 +301,7 @@ int	ETC1TextureCompress::checkIfNeedsAlpha(TinyImage* toCheck)
 	return result;
 }
 
-unsigned char*	ETC1TextureCompress::CopyToPot(TinyImage* tocopy,int sizex,int sizey)
+unsigned char*	ETC1TextureCompress::CopyToPot(SP<TinyImage> tocopy,int sizex,int sizey)
 {
 	int width,height;
 	width=tocopy->GetWidth();
@@ -952,7 +952,7 @@ void	ETC1TextureCompress::ProtectedInit()
 
 	TinyImage::PushContext(Context32);
 	
-	TinyImage*	toConvert=TinyImage::CreateImage(fileNameIn.c_str());
+	SP<TinyImage>	toConvert=TinyImage::CreateImage(fileNameIn.c_str());
 	TinyImage::PopContext();
 	if(toConvert)
 	{
@@ -1446,7 +1446,7 @@ const unsigned int FCC_DXT1=*(unsigned int*)"DXT1";
 const unsigned int FCC_DXT3=*(unsigned int*)"DXT3";
 const unsigned int FCC_DXT5=*(unsigned int*)"DXT5";
 
-bool	ETC1TextureCompress::exportDDS(TinyImage* toexport,const kstl::string& outfile,int quality,int perceptual)
+bool	ETC1TextureCompress::exportDDS(SP<TinyImage> toexport,const kstl::string& outfile,int quality,int perceptual)
 {
 	int width,height,dstFormat;
 				
@@ -1455,18 +1455,13 @@ bool	ETC1TextureCompress::exportDDS(TinyImage* toexport,const kstl::string& outf
 
 	int bits = 0;
 
-	TinyImage* backupExport=0;
-	
-
 	if (toexport->GetFormat() == TinyImage::RGB_24_888) // change to RGBA_32_8888
 	{
-		backupExport = toexport;
-
 		int sx = toexport->GetWidth();
 		int sy = toexport->GetHeight();
 
 		unsigned int*	newrgbaBuffer = new unsigned int[sx*sy];
-		unsigned char*  inBuffer = backupExport->GetPixelData();
+		unsigned char*  inBuffer = toexport->GetPixelData();
 		unsigned int*   outBuffer = newrgbaBuffer;
 		for (int py = 0; py < sy; py++)
 		{
@@ -1569,7 +1564,7 @@ bool	ETC1TextureCompress::exportDDS(TinyImage* toexport,const kstl::string& outf
 	delete[] inBlock;
 
 	auto fp = Platform_fopen(outfile.c_str(), "wb");
-	if(!fp.isNil())
+	if(fp)
 	{
 		DDS_HEADER header;
 
@@ -1638,11 +1633,6 @@ bool	ETC1TextureCompress::exportDDS(TinyImage* toexport,const kstl::string& outf
 	}
 
 	delete[] outpixels;
-
-	if (backupExport)
-	{
-		delete toexport;
-	}
 
 	return true;
 }

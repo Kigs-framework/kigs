@@ -119,13 +119,13 @@ bool	KigsCore::UnDecorateInstance(CoreModifiable* cm, KigsID decoratorName)
 	return false;
 }
 
-void	KigsCore::addAsyncRequest(AsyncRequest* toAdd)
+void	KigsCore::addAsyncRequest(SP<AsyncRequest> toAdd)
 {
 	if (!mCoreInstance->mAsyncRequestList)
 	{
 		mCoreInstance->mAsyncRequestList = new kstl::vector<SP<AsyncRequest>>;
 	}
-	mCoreInstance->mAsyncRequestList->push_back(toAdd->SharedFromThis());
+	mCoreInstance->mAsyncRequestList->push_back(toAdd);
 }
 
 void KigsCore::ManageAsyncRequests()
@@ -335,7 +335,9 @@ void KigsCore::Close(bool closeMemoryManager)
 #ifdef GenericRefCountedBaseClassLeakCheck
 		if (AllObjects.size())
 		{
-			__debugbreak();
+#ifdef WIN32			
+			__debugbreak(); 
+#endif	
 			for (auto obj : AllObjects)
 			{
 				kigsprintf("leaked %s\n", typeid(obj).name());
@@ -352,7 +354,9 @@ void KigsCore::Close(bool closeMemoryManager)
 			if (!test.insert({ id, s }).second)
 			{
 				auto val = test[id];
+#ifdef WIN32			
 				__debugbreak();
+#endif
 			}
 		}
 #endif

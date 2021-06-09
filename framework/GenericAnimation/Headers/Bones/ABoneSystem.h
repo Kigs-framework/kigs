@@ -92,19 +92,19 @@ public:
 	void		ApplyLocalToGlobalData() override;
 	
 	
-	void				UpdateBoneMatrices(AObjectSkeletonResource* skeleton);
-	
+	void				UpdateBoneMatrices(SP<AObjectSkeletonResource> skeleton);
+	virtual				~ABoneSystem();
+
 	protected:
 	
-	virtual				~ABoneSystem();
 	
 	// for animation localToGlobalManagement
 	
 	void				SearchParentNode3D();
 	
-	Node3D*				  mParentNode3D;
-	Matrix4x4*			   mBoneMatrixArray;
-	AObjectSkeletonResource* mSkeleton;
+	SP<Node3D>					mParentNode3D;
+	Matrix4x4*					mBoneMatrixArray;
+	SP<AObjectSkeletonResource> mSkeleton;
 	
 };
 

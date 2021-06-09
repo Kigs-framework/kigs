@@ -49,7 +49,7 @@ void	STLImport::InitModifiable()
 		if (fullfilenamehandle)
 		{
 			u64 filelen;
-			CoreRawBuffer* rawbuffer=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),filelen,1);
+			SP<CoreRawBuffer> rawbuffer=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),filelen,1);
 
 
 			if (rawbuffer && filelen>=15)
@@ -128,7 +128,6 @@ void	STLImport::InitModifiable()
 			
 				createObjectFromReadedData();
 
-				rawbuffer->Destroy();
 				return;
 			}
 
@@ -192,8 +191,8 @@ void	STLImport::createObjectFromReadedData()
 		
 	int structSize=0;
 
-	CoreItemSP	description = CoreItemSP::getCoreVector();
-	CoreItemSP	vertices = CoreItemSP::getCoreItemOfType<CoreNamedVector>("vertices");
+	CoreItemSP	description = MakeCoreVector();
+	CoreItemSP	vertices = MakeCoreNamedVector("vertices");
 	description->set("", vertices);
 
 	structSize += 3 * sizeof(float);

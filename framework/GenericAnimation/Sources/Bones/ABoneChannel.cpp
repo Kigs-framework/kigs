@@ -53,7 +53,7 @@ void    ABoneChannel::SetStandStreamData()
 	
 	if(prskey)
 	{
-		ABaseStream*    tmp_stream=mSystem->GetValidStream();
+		SP<ABaseStream>    tmp_stream=mSystem->GetValidStream();
 		
 		tmp_stream->CopyData(&mStandStreamData,prskey);
 		

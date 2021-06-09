@@ -547,8 +547,6 @@ void	MeshConvert::ProtectedInit()
 				SceneCamera->setValue(LABEL_TO_ID(RenderingScreen), "RenderingScreen:theRenderingScreen");
 			}
 
-			Scene->GetRef();
-
 			theSceneGraph->addItem(Scene);
 			theSceneGraph->Update(*mApplicationTimer.get(), nullptr);
 			// update twice
@@ -564,7 +562,6 @@ void	MeshConvert::ProtectedInit()
 				Export(fileNameOut, rootNode.get(), true, &export_settings);
 			}
 			printf("export %s \n", ext.data());
-			Scene->Destroy();
 		}
 
 	}while (0);// pseudo loop for exit management

@@ -42,9 +42,9 @@ public:
 	
 	void	DoInputDeviceDescription() override;
 	
-    
+    	virtual ~CompassAndroid();  
 protected:
-	virtual ~CompassAndroid();  
+
 
 	bool mIsAvailable;
 	bool mIsRunning;

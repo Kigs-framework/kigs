@@ -32,9 +32,9 @@ class	MouseJavascript : public MouseDevice
 	
 	void	IncWheelCount(){mWheelCount++;}
 	void	IncButtonCount(){mButtonsCount++;}
-    
+ 	virtual ~MouseJavascript();   
+   
 	protected:
-	virtual ~MouseJavascript();   
 	
 	
 };    

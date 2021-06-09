@@ -43,7 +43,7 @@ void	AObjectSkeletonResource::InitModifiable()
 
 		u64 size;
 
-		SmartPointer<CoreRawBuffer> rawbuffer = OwningRawPtrToSmartPtr(ModuleFileManager::LoadFile(fullfilenamehandle.get(), size));
+		SmartPointer<CoreRawBuffer> rawbuffer = ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
 
 		if (rawbuffer)
 		{

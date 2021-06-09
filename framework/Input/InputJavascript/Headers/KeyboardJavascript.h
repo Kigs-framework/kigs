@@ -31,10 +31,10 @@ class	KeyboardJavascript : public KeyboardDevice
 	void	Set_RecordingString(bool _value);
 	
 	inline kstl::string	Get_RecordingString() const {return mString;}
-    
+     virtual ~KeyboardJavascript();
+  
 	protected:
-    virtual ~KeyboardJavascript();
-	
+ 	
 	char mTab[256];
 	bool mRecordingStringEnable;
 	kstl::string mString;

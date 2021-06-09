@@ -70,7 +70,7 @@ extern "C"  DLLIMPORT ModuleBase*	 ModuleInit(KigsCore* core, const kstl::vector
 
 struct DynamicModuleHandleAndPointer
 {
-	void*			mHandle = nullptr;
+	void*				mHandle = nullptr;
 	SP<ModuleBase>		mInstance = nullptr;
 };
 
@@ -94,15 +94,10 @@ public:
 	// some typedef to point on dll methods
 	//! dll methods init
 	typedef ModuleBase*		(*mDllInitFunc)(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params );
-	//! dll methods close
-	typedef void			(*mDllCloseFunc)(KigsCore* core );
-	//! dll methods update
-    typedef void			(*mDllUpdateFunc)(const Timer* timer);
-	//! dll methods get function
-	typedef void			(*mDLLGetModuleFunc)(ModuleBase** instance);
 
 	/**
 	 * \brief		pure virtual initialize module 
+	 * 
 	 * \fn			virtual void Init(Core* core, const kstl::vector<CoreModifiableAttribute*>* params)=0;
 	 * \param		core : link to the core, NOT NULL
 	 * \param		params : list of parameters, CAN BE NULL

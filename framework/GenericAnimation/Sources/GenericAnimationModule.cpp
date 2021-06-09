@@ -54,14 +54,6 @@ void GenericAnimationModule::Close()
 {
 
     BaseClose();
-
-	kstl::map<kstl::string, CoreRawBuffer*>::iterator it;
-	for(it=mResourceInfoMap.begin();it!=mResourceInfoMap.end();++it)
-	{
-		CoreRawBuffer* result=((*it).second);
-		result->Destroy();
-	}
-
 	mResourceInfoMap.clear();
 }    
 
@@ -80,7 +72,7 @@ AnimationResourceInfo*	GenericAnimationModule::LoadAnimation(const kstl::string&
 		return (AnimationResourceInfo*)mResourceInfoMap[fileName]->buffer();
 	}
 
-	CoreRawBuffer* result=0;
+	SP<CoreRawBuffer> result=0;
 
 	SP<FilePathManager>	pathManager=KigsCore::GetSingleton("FilePathManager");
 
@@ -113,31 +105,21 @@ void	GenericAnimationModule::UnLoad(const kstl::string& fileName)
 		return;
 	}
 
-	CoreRawBuffer* result=mResourceInfoMap[fileName];
-
-	result->Destroy();
-
 	mResourceInfoMap.erase(mResourceInfoMap.find(fileName));
 
 }
 
 void	GenericAnimationModule::UnLoad(AnimationResourceInfo* info)
 {
-	kstl::map<kstl::string, CoreRawBuffer*>::iterator it;
+	kstl::map<kstl::string, SP<CoreRawBuffer>>::iterator it;
 
 	CoreRawBuffer* result =0;
 	for(it=mResourceInfoMap.begin();it!=mResourceInfoMap.end();++it)
 	{
 		if(((AnimationResourceInfo*)(*it).second->buffer())==info)
 		{
-			result = (*it).second;
 			mResourceInfoMap.erase(it);
 			break;
 		}
-	}
-
-	if (result)
-	{
-		result->Destroy();
 	}
 }

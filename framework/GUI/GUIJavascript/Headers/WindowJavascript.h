@@ -37,12 +37,12 @@ public:
 	void	GetMousePosInWindow(int posx,int posy,kfloat& wposx,kfloat& wposy) override;
 	void	GetMousePosInDesignWindow(int posx,int posy,kfloat& wposx,kfloat& wposy) override;
 
-    
+  	//! destructor
+	virtual ~WindowJavascript();
+   
 protected:
     
-	//! destructor
-	virtual ~WindowJavascript();
- 
+
 	//! os dependant Window creation, or fullscreen mode setup
     void  ProtectedInit() override;
 	

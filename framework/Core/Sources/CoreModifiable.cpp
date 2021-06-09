@@ -2130,7 +2130,9 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 				if (hdl->mStatus & FileHandle::Exist)
 				{
 					auto cm = test[filename];
-					__debugbreak();
+#ifdef WIN32
+			__debugbreak();
+#endif
 				}
 				test.insert({ filename, this });*/
 

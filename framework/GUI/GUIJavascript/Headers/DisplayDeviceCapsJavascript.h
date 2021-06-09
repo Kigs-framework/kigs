@@ -27,12 +27,12 @@ public:
 	{
 		return true; // enable creation of several windows in browser ?
 	}
-    
-protected:
-    
-	//! destructor
+    	//! destructor
 	virtual ~DisplayDeviceCapsJavascript();
  
+protected:
+    
+
 };    
 
 #endif //_DISPLAYDEVICECAPSJAVASCRIPT_H_

@@ -12,7 +12,9 @@ inline std::shared_ptr<To> debug_checked_pointer_cast(std::shared_ptr<From>&& pt
 	auto result = std::dynamic_pointer_cast<To>(ptr);
 	if (result.get() != ptr.get())
 	{
+#ifdef WIN32			
 		__debugbreak(); // Type mismatch
+#endif		
 	}
 	return result;
 }
@@ -22,7 +24,9 @@ inline std::shared_ptr<To> debug_checked_pointer_cast(const std::shared_ptr<From
 	auto result = std::dynamic_pointer_cast<To>(ptr);
 	if (result.get() != ptr.get())
 	{
+#ifdef WIN32			
 		__debugbreak(); // Type mismatch
+#endif		
 	}
 	return result;
 }

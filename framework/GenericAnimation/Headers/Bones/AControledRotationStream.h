@@ -55,11 +55,11 @@ public:
 
     static AnimationResourceInfo* CreateAnimationResourceInfo(IntU32 group_id,Float*& angular_speed, Float*& max_angle,Float*& min_angle,Float* &angle,Float*& axis,bool*& use_min_max);
     static AnimationResourceInfo* CreateAnimationResourceInfo(IntU32 group_id_count,IntU32* group_id_list,Float*& angular_speed, Float*& max_angle,Float*& min_angle,Float* &angle,Float*& axis,bool*& use_min_max);
-    
+    virtual ~AControledRotationStream();
+
 protected:
     
-	virtual ~AControledRotationStream();
-    // ******************************
+   // ******************************
     // * UpdateData
     // *-----------------------------
     /*! 

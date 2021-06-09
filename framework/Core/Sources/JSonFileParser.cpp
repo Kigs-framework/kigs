@@ -495,13 +495,20 @@ bool JSonFileParserBase<stringType, parserType>::ParseBlock(parserType& Block)
 {
 	// retreive mObj name first (quoted word followed by ':')
 	parserType objName(Block);
-	while(Block.GetWord(objName,':',true))
+	while(Block.GetQuotationWord(objName))
 	{
 		// check that it's a valid name
 		if((objName[0]=='"')&&(objName[objName.length()-1]=='"'))
 		{
 			// remove quotes
 			stringType strObjName = objName.subString(1, objName.length() - 2);
+			// remove object name so it doesn't interact with Block anymore
+			objName.Clear();
+			Block.GoToNextNonWhitespace();
+			stringType isDoubleDot(" ");
+			Block.ReadChar(isDoubleDot[0]);
+			if (isDoubleDot[0] != ':')
+				return false;
 
 			parserType objValue(Block);
 			Block.GetTrailingPart(objValue,true);

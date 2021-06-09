@@ -32,10 +32,10 @@ public:
 	void	IncButtonCount(){mButtonsCount++;}
 	void	IncAxisCount(){mAxisCount++;}
 	void	IncPOVCount(){mPovCount++;}
-
+ virtual ~JoystickAndroid();
+ 
 
 protected:
-  virtual ~JoystickAndroid();
   
    jclass		mActivityClass;
    jmethodID 	mGetBackKey;

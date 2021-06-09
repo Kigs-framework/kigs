@@ -3,7 +3,6 @@
 #include "WindowJavascript.h"
 #include "DisplayDeviceCapsJavascript.h"
 
-ModuleGUIJavascript* gInstanceModuleGUIJavascript=0;
 
 IMPLEMENT_CLASS_INFO(ModuleGUIJavascript);
 
@@ -34,13 +33,11 @@ void ModuleGUIJavascript::Update(const Timer& timer, void* addParam)
 {
 }
 
-ModuleBase* MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
-
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(ModuleGUIJavascript, "ModuleGUIJavascript");
-	ModuleBase* gInstanceModuleGUIJavascript=new ModuleGUIJavascript("ModuleGUIJavascript");
-	gInstanceModuleGUIJavascript->Init(core,params);
-	
-	return gInstanceModuleGUIJavascript;
+	auto ptr = MakeRefCounted<ModuleGUIJavascript>("ModuleGUIJavascript");
+	ptr->Init(core,params);
+	return ptr;
 }
