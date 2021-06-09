@@ -19,6 +19,7 @@
 #include "DynamicGrowingBuffer.h"
 #include "NotificationCenter.h"
 #include "ModuleSceneGraph.h"
+#include "maCoreItem.h"
 
 #include "CorePackage.h"
 //#include "BinarySerializer.h"
@@ -181,6 +182,14 @@ void ModernMesh::InitModifiable()
 			}
 			SetCanFree();
 			RemoveDynamicAttribute("AABBTree");
+		}
+		auto simpleshape = getAttribute("SimpleShapeCollider");
+		if (cm && simpleshape)
+		{
+			CoreItemSP desc = (*static_cast<maCoreItem*>(simpleshape));
+			// TODO
+			SetCanFree();
+			RemoveDynamicAttribute("SimpleShapeCollider");
 		}
 	}
 }
