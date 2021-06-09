@@ -26,12 +26,6 @@ public:
 	void RemoveInstance(CoreModifiable* toRemove);
 	size_t GetInstanceCount() const;
 
-	// Not thread safe if getref is false
-	/*void getInstances(std::set<CoreModifiable*>& instances, bool recursive, bool only_one = false, bool getref = false) const;
-	void getInstancesByName(std::set<CoreModifiable*>& instances, bool recursive, const std::string& name, bool only_one = false, bool getref = false);
-	void getRootInstances(std::set<CoreModifiable*>& instances, bool recursive, bool get_ref = false) const;*/
-	/////
-
 	void getInstances(std::vector<CMSP>& result, bool recursive, bool only_one = false) const;
 	void getInstancesByName(std::vector<CMSP>& result, bool recursive, const std::string& name, bool only_one = false);
 	void getRootInstances(std::vector<CMSP>& result, bool recursive) const; 
@@ -40,10 +34,9 @@ public:
 	kigs::unordered_map<KigsID, CoreTreeNode*> mChildren;
 	kigs::unordered_map <KigsID, ModifiableMethodStruct> mMethods;
 	std::vector<std::pair<CoreModifiable*, std::weak_ptr<CoreModifiable>>> mInstances;
-	
-	bool mInstanceVectorNeedSort = false;
+	std::unordered_map<std::string, size_t> mNameLookup;
+	bool mHasNameLookup=false;
 
-	void sortInstanceVector();
 	CoreTreeNode* mFather;
 	KigsID mID;
 

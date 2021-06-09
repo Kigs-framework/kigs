@@ -306,7 +306,7 @@ XMLBase* XMLReaderFile::ReadFile(const kstl::string& file,const char* force_as_f
 			auto compressedbuffer = ModuleFileManager::LoadFile(lFileHandle.get(), size);
 			if (compressedbuffer)
 			{
-				auto result = std::make_unique<CoreRawBuffer>();
+				auto result = std::make_shared<CoreRawBuffer>();
 				uncompressManager->SimpleCall("UncompressZeroEndedData", compressedbuffer.get(), result.get());
 				if (result->length())
 				{

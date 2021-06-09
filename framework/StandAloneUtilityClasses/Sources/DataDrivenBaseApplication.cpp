@@ -1,4 +1,5 @@
 #include "PrecompiledHeaders.h"
+#include "KigsApplication.h"
 #include "DataDrivenBaseApplication.h"
 #include "FilePathManager.h"
 #include "../GUI/Headers/ModuleGUI.h"
@@ -417,6 +418,9 @@ IMPLEMENT_CONSTRUCTOR(DataDrivenBaseApplication)
 
 }
 
+#ifndef APP_KIGS_PACKAGE_NAME
+#define APP_KIGS_PACKAGE_NAME "Assets.kpkg"
+#endif
 
 void DataDrivenBaseApplication::ProtectedPreInit()
 {
@@ -434,13 +438,14 @@ void DataDrivenBaseApplication::ProtectedPreInit()
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), DataDrivenSequenceManager, DataDrivenSequenceManager, Core)
 	
 	auto pathManager = KigsCore::Singleton<FilePathManager>();
-	pathManager->LoadPackage("Assets.kpkg");
+	pathManager->LoadPackage(APP_KIGS_PACKAGE_NAME);
 }
+
 
 void DataDrivenBaseApplication::ProtectedInit()
 {
 	auto pathManager = KigsCore::Singleton<FilePathManager>();
-	bool has_kpkg = pathManager->GetLoadedPackage("Assets.kpkg");
+	bool has_kpkg = pathManager->GetLoadedPackage(APP_KIGS_PACKAGE_NAME);
 
 	// load an anonymous CoreModifiableInstance containing global params
 	// try to load platform specific config file

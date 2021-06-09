@@ -12,7 +12,8 @@ struct maWeakReferenceObject
 
 	maWeakReferenceObject(CoreModifiable* lobj)
 	{
-		mObj = lobj->SharedFromThis();
+		if (lobj)
+			mObj = lobj->SharedFromThis();
 	}
 	maWeakReferenceObject(const kstl::string& nametype)
 	{
@@ -27,7 +28,8 @@ struct maStrongReferenceObject
 	maStrongReferenceObject() = default;
 	maStrongReferenceObject(GenericRefCountedBaseClass* lobj)
 	{
-		mObj = lobj->shared_from_this();
+		if(lobj)
+			mObj = lobj->shared_from_this();
 	}
 	maStrongReferenceObject(SP<GenericRefCountedBaseClass> lobj)
 	{

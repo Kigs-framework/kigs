@@ -103,7 +103,7 @@ SmartPointer<CoreRawBuffer>	ModuleFileManager::LoadFile(FileHandle *file,u64& fi
 			{
 				pFile[filelength+i]=0;
 			}
-			result = std::make_unique<CoreRawBuffer>(pFile, filelength + additionnalSize);
+			result = std::make_shared<CoreRawBuffer>(pFile, filelength + additionnalSize);
 		}
 		Platform_fclose(file);
 	}

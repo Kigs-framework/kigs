@@ -52,13 +52,9 @@ IMPLEMENT_CONSTRUCTOR(ImGuiLayer)
 	mImGuiState = ImGui::CreateContext();
 	ImGuiContext* old_state = ImGui::GetCurrentContext();
 	ImGui::SetCurrentContext(mImGuiState);
-
-	
 	auto& io = ImGui::GetIO();
 	io.UserData = this;
-
 	
-
 #ifdef WUP
 	ImGui::GetIO().IniFilename = nullptr;
 	auto local_folder = ApplicationData::Current().LocalFolder().Path();

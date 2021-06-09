@@ -136,3 +136,11 @@ template <class F> kigs_deferrer<F> operator*(kigs_defer_dummy, F f) { return { 
 #define KIGS_DEFER(LINE) KIGS_DEFER_(LINE)
 #define kigs_defer auto KIGS_DEFER(__LINE__) = kigs_defer_dummy {} *[&]()
 #endif // kigs_defer
+
+template<typename Container>
+typename Container::mapped_type* FindOrNull(Container& container, const typename Container::key_type& key)
+{
+	auto it = container.find(key);
+	if (it != container.end()) return &it->second;
+	return nullptr;
+}
