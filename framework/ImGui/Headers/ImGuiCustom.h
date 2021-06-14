@@ -1,6 +1,7 @@
 #pragma once
 
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "CoreSTL.h"
 
 namespace ImGui
@@ -22,4 +23,19 @@ namespace ImGui
 
 	void ButtonLabel(const std::string& txt, v2f size = v2f(0, 0));
 	bool ButtonWithLabel(const std::string& label, const std::string txt, float label_width = 0.0f, v2f size = v2f(0, 0));
+
+	void Strikethrough(float offset_before = 0.0f, float offset_after = 0.0f, ImColor color = ImColor(0, 0, 0, 255));
+
+	template<auto F, typename ... Args>
+	inline auto FlowLayout(const std::string& str, Args&&... args)
+	{
+		auto window = ImGui::GetCurrentWindow();
+		auto remaining = ImGui::GetContentRegionMaxAbs().x - window->DC.CursorPosPrevLine.x;
+		remaining -= ImGui::GetStyle().ItemSpacing.x;
+		remaining -= ImGui::GetStyle().FramePadding.x * 2;
+		if (ImGui::CalcTextSize(str.c_str(), 0, true).x < remaining)
+			ImGui::SameLine();
+
+		return F(str.c_str(), FWD(args)...);
+	}
 }

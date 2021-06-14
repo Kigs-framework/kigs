@@ -76,4 +76,15 @@ namespace ImGui
 		b = ImGui::Button(txt.c_str(), size) || b;
 		return b;
 	}
+
+	void Strikethrough(float offset_before, float offset_after, ImColor color)
+	{
+		auto rect_min = ImGui::GetItemRectMin();
+		auto rect_max = ImGui::GetItemRectMax();
+		v2f from{ rect_min.x + offset_before, (rect_min.y + rect_max.y) / 2 };
+		v2f to{ rect_max.x + offset_after, from.y };
+		ImGui::GetWindowDrawList()->AddLine(from, to, color);
+	}
+	
+
 }

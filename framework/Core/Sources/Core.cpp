@@ -281,6 +281,8 @@ void KigsCore::Close(bool closeMemoryManager)
 
 	if(mCoreInstance)
 	{
+		mCoreInstance->ManagePostDestruction();
+
 		mCoreInstance->mUpgradorFactory = nullptr;
 
 		mCoreInstance->CleanSingletonMap();

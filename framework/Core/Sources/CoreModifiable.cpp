@@ -795,6 +795,7 @@ bool CoreModifiable::EmitSignal(const KigsID& signalID, std::vector<CoreModifiab
 		}
 		return true;
 	}
+	mutex.unlock_shared();
 	return false;
 }
 
@@ -1059,7 +1060,7 @@ void		CoreModifiable::EmptyItemList()
 {
 	while(!mItems.empty())
 	{
-		ModifiableItemStruct& item=(*mItems.begin());
+		ModifiableItemStruct item=(*mItems.begin());
 		{
 			removeItem(item.mItem);
 		}
@@ -1514,6 +1515,7 @@ void CoreModifiable::RemoveDynamicAttribute(KigsID id)
 //! add item at first or last position
 bool CoreModifiable::addItem(const CMSP& item, ItemPosition pos)
 {
+	std::unique_lock<std::shared_mutex> lk{ GetMutex() };
 	if(item)
 	{
 
@@ -1529,9 +1531,8 @@ bool CoreModifiable::addItem(const CMSP& item, ItemPosition pos)
 		{
 			mItems.insert(mItems.begin()+pos, ModifiableItemStruct(item));
 		}
-
-		
 		item->addUser(this);
+		lk.unlock();
 		EmitSignal(Signals::AddItem, this, item);
 		return true;
 	}
@@ -1541,12 +1542,14 @@ bool CoreModifiable::addItem(const CMSP& item, ItemPosition pos)
 //! add the given parent to list
 void CoreModifiable::addUser(CoreModifiable* user)
 {
+	std::unique_lock<std::shared_mutex> lk{ GetMutex() };
 	mUsers.push_back(user);
 }
 
 //! remove user (parent)
 void CoreModifiable::removeUser(CoreModifiable* user)
 {
+	std::unique_lock<std::shared_mutex> lk{ GetMutex() };
 	bool found=false;
 	do
 	{
@@ -1699,6 +1702,9 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 //! remove item (son)
 bool CoreModifiable::removeItem(const CMSP& item)
 {
+	std::unique_lock<std::shared_mutex> lk{ GetMutex() };
+	// NOTE(antoine) the const CMSP& item can point to a smart pointer inside mItems, in which case the pointed object will change or become invalid when we do mItems.erase(it) 
+	auto ref = item; 
 	bool found=false, res=false;
 	do
 	{
@@ -1707,7 +1713,7 @@ bool CoreModifiable::removeItem(const CMSP& item)
 		std::vector<ModifiableItemStruct>::iterator end=mItems.end();
 		for(; it!=end ; ++it)
 		{
-			if(item == (*it).mItem)
+			if(ref == (*it).mItem)
 			{
 				found = true;
 				break;
@@ -1717,9 +1723,11 @@ bool CoreModifiable::removeItem(const CMSP& item)
 		if(found)
 		{
 			res=true;
-			item->removeUser(this);
-			EmitSignal(Signals::RemoveItem, this, item.get());
+			ref->removeUser(this);
 			mItems.erase(it);
+			lk.unlock();
+			EmitSignal(Signals::RemoveItem, this, ref.get());
+			lk.lock();
 		}
 	} while(found);
 	
@@ -1769,6 +1777,8 @@ void CoreModifiable::Downgrade(const KigsID& toRemove)
 
 CoreModifiable* CoreModifiable::getFirstParent(KigsID ParentClassID) const
 {
+	GetMutex().lock_shared();
+	kigs_defer{ GetMutex().unlock_shared(); };
 	for(const auto i : mUsers)
 	{
 		if(i->isSubType(ParentClassID))
@@ -2934,6 +2944,8 @@ CMSP CoreModifiable::GetInstanceByPath(const std::string &path)
 
 void CoreModifiable::GetSonInstancesByName(KigsID cid, const std::string &name, std::vector<CMSP>& instances,bool recursive)
 {
+	GetMutex().lock_shared();
+	kigs_defer{ GetMutex().unlock_shared(); };
 	std::vector<ModifiableItemStruct>::iterator itsons;
 	for(itsons=mItems.begin();itsons!=mItems.end();itsons++)
 	{
@@ -2953,6 +2965,8 @@ void CoreModifiable::GetSonInstancesByName(KigsID cid, const std::string &name, 
 
 CMSP CoreModifiable::GetFirstSonByName(KigsID cid, const std::string &name, bool recursive)
 {
+	GetMutex().lock_shared();
+	kigs_defer{ GetMutex().unlock_shared(); };
 	for (auto& son : getItems())
 	{
 		if (son.mItem->isSubType(cid) && name == son.mItem->getName())
@@ -2971,6 +2985,8 @@ CMSP CoreModifiable::GetFirstSonByName(KigsID cid, const std::string &name, bool
 
 void CoreModifiable::GetSonInstancesByType(KigsID cid, std::vector<CMSP>& instances,bool recursive)
 {
+	GetMutex().lock_shared();
+	kigs_defer{ GetMutex().unlock_shared(); };
 	std::vector<ModifiableItemStruct>::iterator itsons;
 	for(itsons=mItems.begin();itsons!=mItems.end();itsons++)
 	{
@@ -2988,6 +3004,8 @@ void CoreModifiable::GetSonInstancesByType(KigsID cid, std::vector<CMSP>& instan
 
 CMSP CoreModifiable::GetFirstSonByType(KigsID cid, bool recursive)
 {
+	GetMutex().lock_shared();
+	kigs_defer{ GetMutex().unlock_shared(); };
 	for (auto& son : getItems())
 	{
 		if (son.mItem->isSubType(cid))
@@ -2995,9 +3013,9 @@ CMSP CoreModifiable::GetFirstSonByType(KigsID cid, bool recursive)
 	}
 	if (recursive)
 	{
-		for (auto& son : getItems())
+		for (auto son : getItems())
 		{
-			auto found = son.mItem->GetFirstSonByType(cid, true);
+			auto found = son.mItem->GetFirstSonByType(cid, true);;
 			if (found) return found;
 		}
 	}

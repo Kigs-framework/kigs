@@ -58,9 +58,12 @@ ModernMeshItemGroup::~ModernMeshItemGroup()
 {
 	if (mVertexBuffer != -1 && mOwnedBuffer)
 	{
-		ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-		scenegraph->AddDefferedItem((void*)mVertexBuffer, DefferedAction::DESTROY_BUFFER);
-		scenegraph->AddDefferedItem((void*)mIndexBuffer, DefferedAction::DESTROY_BUFFER);
+		ModuleSceneGraph* scenegraph = KigsCore::GetModule<ModuleSceneGraph>().get();
+		if (scenegraph)
+		{
+			scenegraph->AddDefferedItem((void*)mVertexBuffer, DefferedAction::DESTROY_BUFFER);
+			scenegraph->AddDefferedItem((void*)mIndexBuffer, DefferedAction::DESTROY_BUFFER);
+		}
 	}
 }
 
