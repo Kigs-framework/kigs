@@ -21,6 +21,14 @@ Thread::~Thread()
 		mCurrentThread.detach();
 }    
 
+void	Thread::Kill()
+{
+	if (mCurrentState == State::RUNNING)
+	{
+		mKeepAlive = nullptr;
+	}
+}
+
 
 template<typename... T>
 void	Thread::Start(T&&... params)
@@ -43,10 +51,12 @@ void	Thread::Start(T&&... params)
 		{
 			mCurrentState = State::RUNNING;
 #ifdef DO_THREAD_PROFILING
-			ThreadProfiler::mCurrentThread = this;
-			SP<ThreadProfiler> threadProfiler = KigsCore::GetSingleton("ThreadProfiler");
-			if (threadProfiler)
-				threadProfiler->RegisterThread(this);
+			{ // use block so ThreadProfiler smartpointer is not retained
+				ThreadProfiler::mCurrentThread = this;
+				SP<ThreadProfiler> threadProfiler = KigsCore::GetSingleton("ThreadProfiler");
+				if (threadProfiler)
+					threadProfiler->RegisterThread(this);
+			}
 #endif
 
 			((CoreModifiable*)mCallee)->CallMethod(mMethod.const_ref(), attr_list);
@@ -70,10 +80,12 @@ void	Thread::Start()
 		{
 			mCurrentState = State::RUNNING;
 #ifdef DO_THREAD_PROFILING
-			ThreadProfiler::mCurrentThread = this;
-			SP<ThreadProfiler> threadProfiler = KigsCore::GetSingleton("ThreadProfiler");
-			if (threadProfiler)
-				threadProfiler->RegisterThread(this);
+			{// use block so ThreadProfiler smartpointer is not retained
+				ThreadProfiler::mCurrentThread = this;
+				SP<ThreadProfiler> threadProfiler = KigsCore::GetSingleton("ThreadProfiler");
+				if (threadProfiler)
+					threadProfiler->RegisterThread(this);
+			}
 #endif
 			
 			kstl::vector<CoreModifiableAttribute*> attr_list;

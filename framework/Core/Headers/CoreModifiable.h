@@ -1090,7 +1090,9 @@ public:
 
 	// upgrador management
 	void Upgrade(const std::string& toAdd);
-	void Downgrade(const std::string& toRemove);
+	// upgrador management
+	void Upgrade(UpgradorBase* toAdd);
+	void Downgrade(const KigsID& toRemove);
 	// insert forward ptr
 	LazyContentLinkedListItemStruct InsertForwardPtr(StructLinkedListBase* address);
 
@@ -1106,8 +1108,6 @@ protected:
 	bool SimpleCallWithCoreItemParams(KigsID methodNameID, const CoreItemSP& params);
 
 
-	// protected upgrador management
-	void Upgrade(UpgradorBase* toAdd);
 
 	void Connect(KigsID signal, CMSP other, KigsID slot CONNECT_PARAM_DEFAULT);
 	void Disconnect(KigsID signal, const CMSP& other, KigsID slot);
@@ -1322,7 +1322,6 @@ private:
 
 };
 
-
 template<typename attribute_type, typename value_type>
 attribute_type*	CoreModifiable::AddDynamicAttribute(KigsID ID, const value_type& value)
 {
@@ -1425,8 +1424,22 @@ struct LazyContent
 	~LazyContent();
 };
 
+// specialize some 
+template<>
+inline bool CoreModifiable::getValue(const KigsID id) const
+{
+	bool val=false;
+	getValue(id, val);
+	return val;
+}
 
-
+template<>
+inline CoreModifiable* CoreModifiable::getValue(const KigsID id) const
+{
+	CoreModifiable* val = nullptr;
+	getValue(id, val);
+	return val;
+}
 
 // Mainly used for numeric types
 template<CoreModifiable::ATTRIBUTE_TYPE type>

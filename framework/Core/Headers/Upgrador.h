@@ -31,6 +31,21 @@ virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::Modif
 	FOR_EACH(UPGRADOR_METHOD_PUSH_BACK, __VA_ARGS__)\
 }
 
+#define UPGRADOR_WITHOUT_METHODS() class UpgradorMethods : public currentBaseClass \
+{ \
+ public:\
+	UpgradorType* GetUpgrador(){return (UpgradorType*)CoreModifiable::GetUpgrador();}\
+	void UpgradorUpdate(const Timer& timer, void* addParam);\
+};\
+public:\
+void	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) override\
+{\
+	((UpgradorMethods*)toUpdate)->UpgradorUpdate(timer, addParam);\
+}\
+virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+{\
+}
+
 #define START_UPGRADOR(name) \
 	static inline const KigsID	m_ID = #name;\
 	const KigsID& getID() const override {return m_ID; };\

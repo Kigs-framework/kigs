@@ -21,6 +21,17 @@ struct SpriteSheetFrameData
 	bool Trimmed;
 };
 
+class SpriteSheetDataResource : GenericRefCountedBaseClass
+{
+public:
+
+	// list of frame per animation
+	std::map<std::string, std::vector<SpriteSheetFrameData*>>		mAnimationList;
+	// list of frame per frame name
+	std::map<std::string, std::unique_ptr<SpriteSheetFrameData>>	mAllFrameList;
+	// keep track of texture filename
+	std::string														mTextureFilename;
+};
 
 
 // data struct to delay init in draw (for single thread opengl)
@@ -258,15 +269,15 @@ protected:
 public:
 	bool	isOK()
 	{
-		return mAllFrameList.size();
+		return mSpriteResources->mAllFrameList.size();
 	}
 
 	bool	Init(const std::string& json, std::string& texturename);
 
 	const SpriteSheetFrameData*	getFrame(const std::string fr) const
 	{
-		auto f = mAllFrameList.find(fr);
-		if (f != mAllFrameList.end())
+		auto f = mSpriteResources->mAllFrameList.find(fr);
+		if (f != mSpriteResources->mAllFrameList.end())
 		{
 			return (*f).second.get();
 		}
@@ -275,23 +286,25 @@ public:
 
 	const std::vector<SpriteSheetFrameData*>* getAnimation(const std::string an) const
 	{
-		auto f = mAnimationList.find(an);
-		if (f != mAnimationList.end())
+		auto f = mSpriteResources->mAnimationList.find(an);
+		if (f != mSpriteResources->mAnimationList.end())
 		{
 			return &(*f).second;
 		}
 		return nullptr;
 	}
 
+	SP<SpriteSheetDataResource>	getResource()
+	{
+		return mSpriteResources;
+	}
+
 protected:
 	void sortAnimation(CoreItemSP& _FrameVector);
+
 	// keep track of json filename
 	std::string														mJSonFilename;
-
-	// list of frame per animation
-	std::map<std::string, std::vector<SpriteSheetFrameData*>>		mAnimationList;
-	// list of frame per frame name
-	std::map<std::string, std::unique_ptr<SpriteSheetFrameData>>	mAllFrameList;
+	SP<SpriteSheetDataResource>										mSpriteResources = nullptr;
 };
 
 

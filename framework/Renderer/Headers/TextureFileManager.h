@@ -4,6 +4,8 @@
 #include "CoreModifiable.h"
 #include "Texture.h"
 
+
+
 // ****************************************
 // * TextureFileManager class
 // * --------------------------------------
@@ -83,21 +85,29 @@ public:
 
 	KIGS_TOOLS_ONLY(auto& GetTextureMap() const { return mTextureMap; })
 
-	std::string	GetTextureFromSpriteSheetJSON(const std::string& json)
+	SP<SpriteSheetDataResource>	GetTextureFromSpriteSheetJSON(const std::string& json) const
 	{
 		const auto& found = mSpritesheetMap.find(json);
 		if (found != mSpritesheetMap.end())
 		{
-			return (*found).second;
+			return (*found).second.lock();
 		}
-		return "";
+		return nullptr;
+	}
+
+	void	InsertSpriteSheetJSONReference(const std::string& json, SP<SpriteSheetDataResource> dr)
+	{
+		if (dr)
+		{
+			mSpritesheetMap[json] = dr;
+		}
 	}
 
 protected:
 	//! associate a texture to its name
 	kstl::map<std::string, CoreModifiable*> mTextureMap;
 	//! associate a spritesheet json file to its texture name
-	kstl::map<std::string, std::string>		mSpritesheetMap;
+	kstl::map<std::string, std::weak_ptr<SpriteSheetDataResource>>		mSpritesheetMap;
 };
 
 #endif //_TEXTUREFILEMANAGER_H_

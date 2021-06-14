@@ -1588,6 +1588,10 @@ void CoreModifiable::ProtectedDestroy()
 
 	EmitSignal(Signals::Destroy, this);
 
+	//! remove all items
+	EmptyItemList();
+
+	// downgrade after removing sons
 	if (mLazyContent)
 	{
 		// first downgrade if needed
@@ -1607,9 +1611,6 @@ void CoreModifiable::ProtectedDestroy()
 		mLazyContent.load()->mLinkedListItem = 0;
 	}
 
-	//! remove all items
-	EmptyItemList();
-	
 	// delete dynamic attributes
 	DeleteDynamicAttributes();
 	if (mLazyContent)
@@ -1737,7 +1738,7 @@ void CoreModifiable::Upgrade(const std::string& toAdd)
 		Upgrade(newone);
 }
 
-void CoreModifiable::Downgrade(const std::string& toRemove)
+void CoreModifiable::Downgrade(const KigsID& toRemove)
 {
 	auto lz = mLazyContent.load();
 	if (!lz)
