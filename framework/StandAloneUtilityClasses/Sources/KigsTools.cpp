@@ -1704,7 +1704,8 @@ void CustomAttributeEditor(CoreModifiable* item)
 				auto direction_local = g2l * direction_global;
 				double dist = FLT_MAX;
 				v3f intersection;
-				if (Intersection::IntersectionRayBBox(origin_local, direction_local, bbox.m_Min, bbox.m_Max, intersection, dist))
+				v3f normal;
+				if (Intersection::IntersectionRayBBox(origin_local, direction_local, bbox.m_Min, bbox.m_Max, intersection, normal,dist))
 				{
 					hit.push_back({ NormSquare(n->as<Node3D>()->GetLocalToGlobal() * intersection - origin_global), n->as<Node3D>() });
 				}

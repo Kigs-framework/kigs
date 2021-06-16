@@ -190,7 +190,9 @@ void ModernMesh::InitModifiable()
 		if (cm && simpleshape)
 		{
 			CoreItemSP desc = (*static_cast<maCoreItem*>(simpleshape));
-			// TODO
+
+			cm->SimpleCall("addSimpleShapeFromDescription", desc.get(), SharedFromThis() );
+
 			SetCanFree();
 			RemoveDynamicAttribute("SimpleShapeCollider");
 		}

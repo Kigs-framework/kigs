@@ -66,11 +66,13 @@ public:
 	DECLARE_CONSTRUCTOR(CollisionManager);
 	~CollisionManager() override;
 
-	WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback, OnDeleteCallBack, GetAllRayIntersection, SerializeAABBTree, DeserializeAABBTree, SetAABBTreeFromFile);
+	WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback, OnDeleteCallBack, GetAllRayIntersection, SerializeAABBTree, DeserializeAABBTree, SetAABBTreeFromFile, addSimpleShapeFromDescription);
 
 	bool SerializeAABBTree(CoreRawBuffer* buffer, const CMSP& node);
 	bool DeserializeAABBTree(CoreRawBuffer* buffer, const CMSP& node);
 	void SetAABBTreeFromFile(const std::string& filename, const CMSP& node);
+
+	void	addSimpleShapeFromDescription(CoreItem* desc, const CMSP& node);
 
 	enum Categories
 	{

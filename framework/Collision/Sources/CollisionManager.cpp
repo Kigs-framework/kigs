@@ -14,7 +14,7 @@
 #include "DrawVertice.h"
 #include "ModernMesh.h"
 #include "ModuleSceneGraph.h"
-
+#include "SimpleShapeMeshCollider.h"
 #include <atomic>
 
 #ifdef KIGS_TOOLS
@@ -311,6 +311,13 @@ void CollisionManager::SetCollisionObject(const CMSP& item, CollisionBaseObject*
 	std::lock_guard<std::mutex> lock(mToAddMutex);
 	mToAdd.push_back({ item, collider });
 }
+
+void	CollisionManager::addSimpleShapeFromDescription(CoreItem* desc, const CMSP& node)
+{
+	auto newshape = SimpleShapeBase::createFromDesc(desc->SharedFromThis());
+	SetCollisionObject(node, newshape);
+}
+
 
 void CollisionManager::CreateCollisionObject(CoreModifiable* item, unsigned int ColMask)
 {

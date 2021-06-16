@@ -19,8 +19,9 @@ public:
 
 	virtual SimpleShapeType getType() const = 0;
 	virtual CoreItemSP	getCoreItemDesc() const = 0;
+	virtual void initFromCoreItemDesc(CoreItemSP init) = 0;
 
-	static std::shared_ptr<SimpleShapeBase> createFromDesc(CoreItemSP desc);
+	static SimpleShapeBase* createFromDesc(CoreItemSP desc);
 
 #ifdef KIGS_TOOLS
 	// draw debug mInfo using GLSLDrawDebug
@@ -52,6 +53,8 @@ public:
 	}
 
 	CoreItemSP	getCoreItemDesc() const override;
+	void initFromCoreItemDesc(CoreItemSP init) override;
+
 
 	virtual bool CallLocalRayIntersection(Hit& hit, const Point3D& start, const Vector3D& dir)  const override;
 	virtual bool CallLocalRayIntersection(std::vector<Hit>& hit, const Point3D& start, const Vector3D& dir)  const override;
@@ -77,6 +80,7 @@ public:
 	}
 
 	CoreItemSP	getCoreItemDesc() const override;
+	void initFromCoreItemDesc(CoreItemSP init) override;
 
 	virtual bool CallLocalRayIntersection(Hit& hit, const Point3D& start, const Vector3D& dir)  const override;
 	virtual bool CallLocalRayIntersection(std::vector<Hit>& hit, const Point3D& start, const Vector3D& dir)  const override;
