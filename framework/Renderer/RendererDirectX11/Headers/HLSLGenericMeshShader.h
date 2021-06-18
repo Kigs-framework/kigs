@@ -47,6 +47,7 @@ protected:
 
 	virtual kstl::string GetVertexShader();
 	virtual kstl::string GetFragmentShader();
+	virtual kstl::string GetGeometryShader() { return ""; };
 
 };
 

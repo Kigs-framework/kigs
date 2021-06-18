@@ -153,6 +153,7 @@ void API3DShader::Active(TravState* state, bool resetUniform)
 #endif
 		device->mDeviceContext->VSSetShader((ID3D11VertexShader*)GetCurrentVertexShaderInfo<HLSLShaderInfo>()->mInternalShaderStruct, nullptr, 0);
 		device->mDeviceContext->PSSetShader((ID3D11PixelShader*)(GetCurrentFragmentShaderInfo<HLSLShaderInfo>()->mInternalShaderStruct), nullptr, 0);
+		device->mDeviceContext->GSSetShader((ID3D11GeometryShader*)(GetCurrentGeometryShaderInfo<HLSLShaderInfo>()->mInternalShaderStruct), nullptr, 0);
 
 		//ActiveSampler();
 		if (museGenericLight && state)
@@ -169,6 +170,7 @@ void API3DShader::Deactive(TravState* state)
 	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 	device->mDeviceContext->VSSetShader(nullptr, nullptr, 0);
 	device->mDeviceContext->PSSetShader(nullptr, nullptr, 0);
+	device->mDeviceContext->GSSetShader(nullptr, nullptr, 0);
 
 	//DeactiveSampler();
 
@@ -182,6 +184,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	ID3DBlob* errorMessage;
 	ID3DBlob* vertexShaderBuffer = nullptr;
 	ID3DBlob* pixelShaderBuffer = nullptr;
+	ID3DBlob* geometryShaderBuffer = nullptr;
 
 	// Initialize the pointers this function will use to null.
 	errorMessage = 0;
@@ -239,6 +242,30 @@ BuildShaderStruct*	API3DShader::Rebuild()
 
 		return nullptr;
 	}
+
+	mGeometryShaderText.getValue(str);
+	if (str.size())
+	{
+		name = getName();
+		name.append("geo");
+
+		// Compile the geometry shader code.
+		result = D3DCompile(str.c_str(), str.length(), name.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "gs_5_0", flags
+			, 0, &geometryShaderBuffer, &errorMessage);
+		if (FAILED(result))
+		{
+			// If the shader failed to compile it should have writen something to the error message.
+			if (errorMessage)
+			{
+				auto ptr = errorMessage->GetBufferPointer();
+				kigsprintf("%s\n", str.c_str());
+				kigsprintf("%s\n", (char*)ptr);
+			}
+
+			return nullptr;
+		}
+	}
+
 		
 	// create shader object from bitcode
 	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
@@ -247,9 +274,11 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	
 	toReturn->mVertexShader = new HLSLShaderInfo();
 	toReturn->mFragmentShader = new HLSLShaderInfo();
+	toReturn->mGeometryShader = new HLSLShaderInfo();
 
 	static_cast<HLSLShaderInfo*>(toReturn->mVertexShader)->mBlob = vertexShaderBuffer;
 	static_cast<HLSLShaderInfo*>(toReturn->mFragmentShader)->mBlob = pixelShaderBuffer;
+	static_cast<HLSLShaderInfo*>(toReturn->mGeometryShader)->mBlob = geometryShaderBuffer;
 
 	ID3D11VertexShader* m_pVertexShader;
 	DX::ThrowIfFailed(device->mDevice->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &m_pVertexShader));
@@ -261,6 +290,14 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	DX::ThrowIfFailed(device->mDevice->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), nullptr, &m_pPixelShader));
 	((HLSLShaderInfo*)toReturn->mFragmentShader)->mInternalShaderStruct = m_pPixelShader;
 	D3DReflect(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**) & ((HLSLShaderInfo*)toReturn->mFragmentShader)->mReflector);
+
+	if (geometryShaderBuffer)
+	{
+		ID3D11GeometryShader* m_pGeometryShader;
+		DX::ThrowIfFailed(device->mDevice->CreateGeometryShader(geometryShaderBuffer->GetBufferPointer(), geometryShaderBuffer->GetBufferSize(), nullptr, &m_pGeometryShader));
+		((HLSLShaderInfo*)toReturn->mGeometryShader)->mInternalShaderStruct = m_pGeometryShader;
+		D3DReflect(geometryShaderBuffer->GetBufferPointer(), geometryShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&((HLSLShaderInfo*)toReturn->mGeometryShader)->mReflector);
+	}
 
 	toReturn->mShaderProgram=CreateProgram();
 
@@ -308,6 +345,7 @@ void API3DShader::PushUniform(CoreModifiable* uni)
 
 		auto vs = GetCurrentVertexShaderInfo<HLSLShaderInfo>()->mReflector;
 		auto ps = GetCurrentFragmentShaderInfo<HLSLShaderInfo>()->mReflector;
+		auto gs = GetCurrentGeometryShaderInfo<HLSLShaderInfo>()->mReflector;
 
 		D3D11_SHADER_INPUT_BIND_DESC sib_desc;
 		HRESULT result;
@@ -320,6 +358,14 @@ void API3DShader::PushUniform(CoreModifiable* uni)
 		if (!FAILED(result))
 		{
 			ul->mLocationFragment = sib_desc.BindPoint;
+		}
+		if (gs)
+		{
+			result = gs->GetResourceBindingDescByName(uni_name.c_str(), &sib_desc);
+			if (!FAILED(result))
+			{
+				ul->mLocationGeometry = sib_desc.BindPoint;
+			}
 		}
 	}
 

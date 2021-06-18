@@ -88,6 +88,7 @@ struct UniformList
 		mLocation = 0xffffffff;
 #ifdef USE_D3D
 		mLocationFragment = 0xffffffff;
+		mLocationGeometry = 0xffffffff;
 #endif
 		mList.clear();
 	}
@@ -106,6 +107,7 @@ struct UniformList
 	unsigned int mLocation;
 #ifdef USE_D3D
 	unsigned int mLocationFragment;
+	unsigned int mLocationGeometry;
 #endif
 
 	API3DUniformBase* mCurrent;
@@ -129,7 +131,7 @@ struct UniformList
 class BuildShaderStruct
 {
 public:
-	BuildShaderStruct() : mVertexShader(nullptr), mFragmentShader(nullptr), mShaderProgram(nullptr)
+	BuildShaderStruct() : mVertexShader(nullptr), mFragmentShader(nullptr), mGeometryShader(nullptr), mShaderProgram(nullptr)
 	{}
 
 	virtual ~BuildShaderStruct()
@@ -143,6 +145,11 @@ public:
 		{
 			delete mFragmentShader;
 			mFragmentShader = nullptr;
+		}
+		if (mGeometryShader)
+		{
+			delete mGeometryShader;
+			mGeometryShader = nullptr;
 		}
 		if (mShaderProgram)
 		{
@@ -172,6 +179,7 @@ public:
 
 	ShaderInfo *	mVertexShader;
 	ShaderInfo *	mFragmentShader;
+	ShaderInfo*		mGeometryShader;
 	ShaderInfo *	mShaderProgram;
 
 	Locations*		mLocations = nullptr;
@@ -216,6 +224,9 @@ public:
 
 	template<typename castType = ShaderInfo>
 	inline castType* GetCurrentFragmentShaderInfo() { if (mCurrentShader) return (castType*)mCurrentShader->mFragmentShader; return nullptr; }
+
+	template<typename castType = ShaderInfo>
+	inline castType* GetCurrentGeometryShaderInfo() { if (mCurrentShader) return (castType*)mCurrentShader->mGeometryShader; return nullptr; }
 
 	virtual void PushUniform(CoreModifiable*)=0;
 	virtual void PopUniform(CoreModifiable*)=0;
@@ -282,6 +293,7 @@ protected:
 	maBool			misGeneric;
 	maString		mVertexShaderText;
 	maString		mFragmentShaderText;
+	maString		mGeometryShaderText;
 	maReference		mAttachedCamera;
 	// TODO : rename rename to mUseGenericLight (but CoreModifiableAttribute ID should be renamed too ).
 	maBool			museGenericLight;

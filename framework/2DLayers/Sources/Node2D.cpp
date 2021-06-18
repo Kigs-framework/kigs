@@ -91,7 +91,7 @@ void Node2D::NotifyUpdate(const unsigned int labelid)
 	}
 	else if (labelid == mCustomShader.getLabelID())
 	{
-		ChangeNodeFlag(Node2D_UseCustomShader, ((std::string)mCustomShader != ""));
+		ChangeNodeFlag(Node2D_UseCustomShader, (mCustomShader.RefString() != ""));
 	}
 	CoreModifiable::NotifyUpdate(labelid);
 }
@@ -355,7 +355,7 @@ void	Node2D::InitModifiable()
 		// call me if custom shader is set
 		mCustomShader.changeNotificationLevel(Owner);
 		
-		ChangeNodeFlag(Node2D_UseCustomShader, ((std::string)mCustomShader != ""));
+		ChangeNodeFlag(Node2D_UseCustomShader, (mCustomShader.RefString() != ""));
 		if (mParent)
 			mParent->SetNodeFlag(Node2D_SonPriorityChanged);
 		CoreModifiable::InitModifiable();
