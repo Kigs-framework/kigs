@@ -11,8 +11,7 @@
 #define THREAD_PROFILER_BUFFER_SIZE 4096
 #define THREAD_PROFILER_STRING_SIZE 64
 
-#define DO_THREAD_PROFILING
-
+//#define DO_THREAD_PROFILING
 
 enum class TimeEventType : unsigned int
 {
@@ -80,7 +79,6 @@ public:
 
 	//! constructor
 	ThreadProfiler(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-
 
 	void AddTimeEvent(TimeEventType type, const char* name, const char* function_name)
 	{

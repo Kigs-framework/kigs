@@ -71,6 +71,8 @@ public:
 		mFunctionWasInserted = true;
 	}
 
+	void	Kill();
+
 protected:
 
 	// Init start thread if Method && Callee parameters are set
