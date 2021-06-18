@@ -95,7 +95,12 @@ public:
 	template<typename T>
 	operator T* () { return static_cast<T*>(SearchRef().get()); }
 
-	operator const std::string& () const { return mValue.mSearchString; }
+	std::string RefString() const
+	{
+		std::string result;
+		getValue(result);
+		return result;
+	}
 
 	CoreModifiable*	operator->()
 	{
@@ -276,7 +281,12 @@ public:
 	template<typename T>
 	operator T* () { return static_cast<T*>(SearchRef().get()); }
 
-	operator const std::string& () const { return mValue.mSearchString; }
+	std::string RefString() const
+	{
+		std::string result;
+		getValue(result);
+		return result;
+	}
 
 	CoreModifiable* operator->()
 	{
@@ -291,7 +301,6 @@ public:
 	/// getValue overloads
 	virtual bool getValue(kstl::string& value) const override
 	{
-		
 		((maStrongReferenceHeritage*)this)->SearchRef();
 		if (auto ptr = std::dynamic_pointer_cast<CoreModifiable>(mValue.mObj).get())
 		{

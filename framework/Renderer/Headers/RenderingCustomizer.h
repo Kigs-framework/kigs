@@ -33,6 +33,7 @@ private:
 	maInt mOverrideDepthTest = BASE_ATTRIBUTE(OverrideDepthTest, -1);
 	maInt mOverrideDepthWrite = BASE_ATTRIBUTE(OverrideDepthWrite, -1);
 
+
 	int mLastCullMode = -1;
 	int mLastDepthTest = -1;
 

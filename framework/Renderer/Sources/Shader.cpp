@@ -28,6 +28,7 @@ ShaderBase::ShaderBase(const kstl::string& name, CLASS_NAME_TREE_ARG) : Drawable
 , mCurrentShader(nullptr)
 , mVertexShaderText(*this, false, LABEL_AND_ID(VertexShader), "")
 , mFragmentShaderText(*this, false, LABEL_AND_ID(FragmentShader), "")
+, mGeometryShaderText(*this, false, LABEL_AND_ID(GeometryShader), "")
 , mAttachedCamera(*this, false, LABEL_AND_ID(AttachedCamera), "")
 , museGenericLight(*this, false, LABEL_AND_ID(useGenericLight), false)
 , misGeneric(*this, false, LABEL_AND_ID(isGeneric), false)

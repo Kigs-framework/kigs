@@ -152,6 +152,7 @@ void	API3DUniformInt::Activate(UniformList* ul)
 
 	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
 	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
+	if (ul->mLocationGeometry != 0xffffffff) device->mDeviceContext->GSSetConstantBuffers(ul->mLocationGeometry, 1, &mCBuffer);
 }
 
 void	API3DUniformInt::NotifyUpdate(const unsigned int  labelid)
@@ -183,6 +184,7 @@ void	API3DUniformFloat::Activate(UniformList* ul)
 
 	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
 	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
+	if (ul->mLocationGeometry != 0xffffffff) device->mDeviceContext->GSSetConstantBuffers(ul->mLocationGeometry, 1, &mCBuffer);
 }
 
 void	API3DUniformFloat::NotifyUpdate(const unsigned int  labelid)
@@ -213,6 +215,7 @@ void	API3DUniformFloat2::Activate(UniformList* ul)
 
 	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
 	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
+	if (ul->mLocationGeometry != 0xffffffff) device->mDeviceContext->GSSetConstantBuffers(ul->mLocationGeometry, 1, &mCBuffer);
 }
 
 void	API3DUniformFloat2::NotifyUpdate(const unsigned int  labelid)
@@ -285,6 +288,7 @@ void	API3DUniformFloat3::Activate(UniformList* ul)
 
 	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
 	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
+	if (ul->mLocationGeometry != 0xffffffff) device->mDeviceContext->GSSetConstantBuffers(ul->mLocationGeometry, 1, &mCBuffer);
 }
 
 //////////////////////////////////// Float 4 ///////////////////////////////////////////
@@ -308,6 +312,7 @@ void	API3DUniformFloat4::Activate(UniformList* ul)
 
 	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
 	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
+	if (ul->mLocationGeometry != 0xffffffff) device->mDeviceContext->GSSetConstantBuffers(ul->mLocationGeometry, 1, &mCBuffer);
 }
 
 void	API3DUniformFloat4::NotifyUpdate(const unsigned int  labelid)
@@ -651,6 +656,7 @@ void	API3DUniformMatrixArray::Activate(UniformList* ul)
 
 	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
 	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
+	if (ul->mLocationGeometry != 0xffffffff) device->mDeviceContext->GSSetConstantBuffers(ul->mLocationGeometry, 1, &mCBuffer);
 
 }
 
@@ -682,6 +688,7 @@ void	API3DUniformBuffer::Activate(UniformList* ul)
 
 	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
 	if (ul->mLocationFragment != 0xffffffff) device->mDeviceContext->PSSetConstantBuffers(ul->mLocationFragment, 1, &mCBuffer);
+	if (ul->mLocationGeometry != 0xffffffff) device->mDeviceContext->GSSetConstantBuffers(ul->mLocationGeometry, 1, &mCBuffer);
 }
 
 

@@ -528,11 +528,15 @@ void	API3DGenericMeshShader::ChooseShader(TravState* state, unsigned int attribF
 		
 		mVertexShaderText = defines + GetVertexShader();
 		mFragmentShaderText = defines + GetFragmentShader();
+		auto geo_shader_txt = GetGeometryShader();
+		if (geo_shader_txt.size())
+			mGeometryShaderText = defines + geo_shader_txt;
 		
 		BuildShaderStruct* toAdd = Rebuild();
 
 		mVertexShaderText = "";
 		mFragmentShaderText = "";
+		mGeometryShaderText = "";
 
 		insertBuildShader(flag, toAdd);
 		
