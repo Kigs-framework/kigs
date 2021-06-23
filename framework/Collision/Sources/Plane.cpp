@@ -38,27 +38,30 @@ bool Plane::TestHit(Hit& hit, v3f local_origin, v3f local_direction)
 #ifdef KIGS_TOOLS
 #include <GLSLDebugDraw.h>
 #include <Timer.h>
-void Plane::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
+void Plane::DrawDebug(const Hit& h, const Matrix3x4& mat)
 {
 	Vector3D n(mNormal[0], mNormal[1], mNormal[2]);
-	double d = timer->GetTime();
-	while (d > 1) d -= 1;
+	
+	auto t = TimePoint::clock::now();
+	auto d = t.time_since_epoch().count() / 1'000'000'000.0;
+	d = d - (s64)d;
 
 	// draw center
 	Point3D localPos(0, 0, 0);
-	mat->TransformPoint(&localPos);
+	mat.TransformPoint(&localPos);
 	dd::plane(localPos, n, mDebugColor, Vector3D(abs(n.x), abs(n.y), abs(n.z)) * 255, 10, 1);
 
 	// draw hit
-	dd::circle(pos, n, mDebugColor, 2 * d, 50);
+	dd::circle(h.HitPosition, n, mDebugColor, 2 * d, 50);
 }
 
-void Panel::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
+void Panel::DrawDebug(const Hit& h, const Matrix3x4& mat)
 {
 	Point3D p[5];
 
-	double d = timer->GetTime();
-	while (d > 1) d -= 1;
+	auto t = TimePoint::clock::now();
+	auto d = t.time_since_epoch().count() / 1'000'000'000.0;
+	d = d - (s64)d;
 
 	Vector3D n(mNormal[0], mNormal[1], mNormal[2]);
 	Vector3D up(mUp[0], mUp[1], mUp[2]);
@@ -75,8 +78,7 @@ void Panel::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
 	p[2] = mPosition - left + up;
 	p[3] = mPosition + left + up;
 	p[4] = mPosition + left - up;
-	mat->TransformPoints(p, 5);
-
+	mat.TransformPoints(p, 5);
 
 	// draw quad
 	dd::line(p[1], p[2], mDebugColor);
@@ -89,15 +91,15 @@ void Panel::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
 
 	// draw up
 	up.Normalize();
-	mat->TransformVector(&up); up.Normalize();
+	mat.TransformVector(&up); up.Normalize();
 	dd::line(p[0], p[0] + up*0.1f, Vector3D(abs(up.x), abs(up.y), abs(up.z)) * 255);
 
 	// draw normal
-	mat->TransformVector(&n); n.Normalize();
+	mat.TransformVector(&n); n.Normalize();
 	dd::line(p[0], p[0] + n*0.1f, Vector3D(abs(n.x), abs(n.y), abs(n.z)) * 255);
 
 	// draw hit
-	dd::circle(pos, n, mDebugColor, 2 * d, 50);
+	dd::circle(h.HitPosition, n, mDebugColor, 2 * d, 50);
 }
 #endif
 

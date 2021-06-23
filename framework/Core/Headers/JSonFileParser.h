@@ -146,4 +146,7 @@ protected:
 typedef JSonFileParserBase< kstl::string, AsciiParserUtils>	JSonFileParser;
 typedef JSonFileParserBase< usString, US16ParserUtils >		JSonFileParserUTF16;
 
+std::string CoreItemToJSon(CoreItemSP);
+CoreItemSP JSonToCoreItem(const std::string&);
+
 #endif //_JSONFILEPARSER_H_

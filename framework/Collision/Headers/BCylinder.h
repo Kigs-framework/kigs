@@ -50,9 +50,8 @@ protected:
 	maEnum<3> mAxle;
 
 #ifdef KIGS_TOOLS
-	void	Update(const Timer&  timer, void* addParam)override;
-	// draw debug mInfo using GLSLDrawDebug
-	virtual void DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer);
+	void Update(const Timer&  timer, void* addParam) override;
+	void DrawDebug(const Hit& h, const Matrix3x4& mat) override;
 #endif
 };
 

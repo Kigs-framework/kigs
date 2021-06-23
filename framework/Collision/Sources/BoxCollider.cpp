@@ -67,9 +67,9 @@ bool BoxCollider::TestHit(Hit& hit, v3f local_origin, v3f local_direction)
 
 #ifdef KIGS_TOOLS
 #include <GLSLDebugDraw.h>
-void BoxCollider::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
+void BoxCollider::DrawDebug(const Hit& h, const Matrix3x4& mat)
 {
-	dd::local_bbox(*mat, mBoundingBox, mDebugColor);
+	dd::local_bbox(mat, mBoundingBox, mDebugColor);
 }
 #endif
 

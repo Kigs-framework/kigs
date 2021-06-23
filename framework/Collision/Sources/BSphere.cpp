@@ -25,12 +25,12 @@ bool BSphere::TestHit(Hit& hit, v3f local_origin, v3f local_direction)
 
 #ifdef KIGS_TOOLS
 #include <GLSLDebugDraw.h>
-void BSphere::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
+void BSphere::DrawDebug(const Hit& h, const Matrix3x4& mat)
 {
 	Point3D p(0,0,0);
-	mat->TransformPoint(&p);
+	mat.TransformPoint(&p);
 	Vector3D r{ 0,0,mRadius };
-	mat->TransformVector(&r);
+	mat.TransformVector(&r);
 	dd::sphere(p, mDebugColor, Norm(r));
 }
 #endif

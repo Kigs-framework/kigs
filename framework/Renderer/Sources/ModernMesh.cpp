@@ -171,7 +171,9 @@ void ModernMesh::InitModifiable()
 		
 		auto cm = CoreModifiable::GetFirstInstance("CollisionManager");
 		auto tree = getAttribute("AABBTree");
-		if (cm && tree)
+		auto simpleshape = getAttribute("SimpleShapeCollider");
+
+		if (cm && tree && !simpleshape)
 		{
 			if (tree->getType() == ATTRIBUTE_TYPE::STRING)
 			{
@@ -186,12 +188,12 @@ void ModernMesh::InitModifiable()
 			SetCanFree();
 			RemoveDynamicAttribute("AABBTree");
 		}
-		auto simpleshape = getAttribute("SimpleShapeCollider");
+		
 		if (cm && simpleshape)
 		{
 			CoreItemSP desc = (*static_cast<maCoreItem*>(simpleshape));
 
-			cm->SimpleCall("addSimpleShapeFromDescription", desc.get(), SharedFromThis() );
+			cm->SimpleCall("AddSimpleShapeFromDescription", desc.get(), SharedFromThis() );
 
 			SetCanFree();
 			RemoveDynamicAttribute("SimpleShapeCollider");

@@ -18,16 +18,10 @@ struct Hit
 	unsigned int			HitFlag = 0u;
 	CollisionBaseObject *	HitCollisionObject = nullptr;
 	s32						HitTriangleVertexIndices[3] = { -1,-1,-1 };
-	s32						HitTriangleIndex = -1;
+	s32						HitFaceIndex = -1;
 	void Clear()
 	{
-		HitFlag = 0u;
-		HitDistance = DBL_MAX;
-		HitPosition.Set(0.0f, 0.0f, 0.0f);
-		HitNormal.Set(0.0f, 0.0f, 0.0f);
-		HitActor = nullptr;
-		HitNode = nullptr;
-		HitCollisionObject = nullptr;
+		*this = Hit{};
 	}
 };
 

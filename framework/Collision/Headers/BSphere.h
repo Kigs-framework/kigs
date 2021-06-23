@@ -46,8 +46,7 @@ protected:
 	maFloat mRadius;
 
 #ifdef KIGS_TOOLS
-	// draw debug mInfo using GLSLDrawDebug
-	virtual void DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer);
+	void DrawDebug(const Hit& h, const Matrix3x4& mat) override;
 #endif
 };
 
