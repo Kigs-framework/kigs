@@ -6,7 +6,17 @@
 class CoreFSM;
 class CoreFSMStateBase;
 
-
+// ****************************************
+// * CoreFSMTransition class
+// * --------------------------------------
+/**
+ * \class	CoreFSMTransition
+ * \file	CoreFSMTransition.h
+ * \ingroup CoreFSM
+ * \brief	FSM transition base class.
+ *
+ */
+ // ****************************************
 class CoreFSMTransition : public CoreModifiable
 {
 public:
@@ -44,7 +54,17 @@ protected:
 	bool				mIsRunning = false;
 };
 
-// TODO ?
+// ****************************************
+// * CoreFSMOnSignalTransition class
+// * --------------------------------------
+/**
+ * \class	CoreFSMOnSignalTransition
+ * \file	CoreFSMTransition.h
+ * \ingroup CoreFSM
+ * \brief	FSM transition activated on signal
+ *
+ */
+ // ****************************************
 class CoreFSMOnSignalTransition : public CoreFSMTransition
 {
 public:
@@ -68,22 +88,34 @@ public:
 		return false;
 	}
 
-	void	start() override
-	{
-		ParentClassType::start();
-		mSignalReceived = false;
-	}
-	void	stop() override
-	{
-		ParentClassType::stop();
-		mSignalReceived = false;
-	}
+	void	start() override;
+	void	stop() override;
+
+	WRAP_METHODS(receiveSignal);
 
 protected:
 
-	bool		mSignalReceived = false;
+	void	receiveSignal()
+	{
+		mSignalReceived = true;
+	}
+
+	bool			mSignalReceived = false;
+	maReference		mConnectedClass = BASE_ATTRIBUTE(ConnectedClass, "");
+	maString		mSignal = BASE_ATTRIBUTE(Signal, "");
 };
 
+// ****************************************
+// * CoreFSMOnEventTransition class
+// * --------------------------------------
+/**
+ * \class	CoreFSMOnEventTransition
+ * \file	CoreFSMTransition.h
+ * \ingroup CoreFSM
+ * \brief	FSM transition activated on event
+ *
+ */
+ // ****************************************
 class CoreFSMOnEventTransition : public CoreFSMTransition
 {
 public:
@@ -123,6 +155,18 @@ protected:
 	maString	mEventName = BASE_ATTRIBUTE(EventName,"");
 };
 
+// ****************************************
+// * CoreFSMDelayTransition class
+// * --------------------------------------
+/**
+ * \class	CoreFSMDelayTransition
+ * \file	CoreFSMTransition.h
+ * \ingroup CoreFSM
+ * \brief	FSM transition activated after given delay
+ *
+ */
+ // ****************************************
+
 class CoreFSMDelayTransition : public CoreFSMTransition
 {
 public:
@@ -134,6 +178,7 @@ public:
 
 	bool checkTransition(CoreModifiable* currentParentClass) override;
 	double getRemainingTime();
+	double getElapsedTime();
 
 	virtual void	start() override;
 
@@ -143,6 +188,17 @@ protected:
 
 };
 
+// ****************************************
+// * CoreFSMOnValueTransition class
+// * --------------------------------------
+/**
+ * \class	CoreFSMOnValueTransition
+ * \file	CoreFSMTransition.h
+ * \ingroup CoreFSM
+ * \brief	FSM transition activated when a CoreAttribute is set on parent instance
+ *
+ */
+ // ****************************************
 class CoreFSMOnValueTransition : public CoreFSMTransition
 {
 public:
@@ -160,6 +216,17 @@ protected:
 
 };
 
+// ****************************************
+// * CoreFSMOnMethodTransition class
+// * --------------------------------------
+/**
+ * \class	CoreFSMOnMethodTransition
+ * \file	CoreFSMTransition.h
+ * \ingroup CoreFSM
+ * \brief	FSM transition activated when a CoreMethod on parent instance return true
+ *
+ */
+ // ****************************************
 class CoreFSMOnMethodTransition : public CoreFSMTransition
 {
 public:
