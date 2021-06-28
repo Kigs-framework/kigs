@@ -80,6 +80,8 @@ void XLSXSheet::updateXML(XMLBase* xml)
 			ref->setString(dimstr);
 		}
 
+		//NOTE(antoine) excel doesn't like this ???
+#if 0
 		{
 			// first update cols
 			XMLNodeBase* cols = worksheet->getChildElement("cols");
@@ -111,6 +113,7 @@ void XLSXSheet::updateXML(XMLBase* xml)
 				cols->addChild(c);
 			}
 		}
+#endif
 		
 		{
 
