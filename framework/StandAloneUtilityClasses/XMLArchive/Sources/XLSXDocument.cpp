@@ -67,7 +67,7 @@ const char* DefaultWorkbookXml = R"===(
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
 <fileVersion appName="Calc"/>
-<workbookPr backupFile="false" showObjects="all" dateCompatibility="false"/>
+<workbookPr backupFile="false" showObjects="all" dateCompatibility="true"/>
 <workbookProtection/>
 <bookViews>
 <workbookView showHorizontalScroll="true" showVerticalScroll="true" showSheetTabs="true" xWindow="0" yWindow="0" windowWidth="16384" windowHeight="8192" tabRatio="500" firstSheet="0" activeTab="0"/>
@@ -377,15 +377,23 @@ XLSXSheet* XLSXDocument::addSheet(std::string name)
 	xmlname += cid;
 	xmlname += ".xml";
 
+	XML* _xml;
+	XMLNodeBase* _xmlroot;
+	XMLNode* newNode;
+	XMLAttribute* newAttr;
+
 	// add <Override PartName="/xl/worksheets/sheet#.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/> to content_type
-	XML* _xml = static_cast<XML*>( (static_cast<XMLArchiveFile*>(mRoot.getFile("[Content_Types].xml")))->getXML());
-	XMLNodeBase* _xmlroot= _xml->getRoot();
-	XMLNode* newNode = new XMLNode(XML_NODE_ELEMENT,"Override");
-	XMLAttribute* newAttr = new XMLAttribute("PartName", std::string("/xl/worksheets/")+ xmlname);
+	/*_xml = static_cast<XML*>( (static_cast<XMLArchiveFile*>(mRoot.getFile("[Content_Types].xml")))->getXML());
+	_xmlroot= _xml->getRoot();
+	newNode = new XMLNode(XML_NODE_ELEMENT,"Override");
+	newAttr = new XMLAttribute("PartName", std::string("/xl/worksheets/")+ xmlname);
 	newNode->addAttribute(newAttr);
 	newAttr = new XMLAttribute("ContentType", DefaultContentTypeSheet);
 	newNode->addAttribute(newAttr);
 	_xmlroot->addChild(newNode);
+	*/
+	mContentType.addOverride(std::string("/xl/worksheets/") + xmlname, "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml");
+
 
 	//add relationship <Relationship Id = "rId2" Type = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target = "worksheets/sheet1.xml" / >
 	_xml = static_cast<XML*>((static_cast<XMLArchiveFile*>(mRoot.getFile("xl/_rels/workbook.xml.rels")))->getXML());
@@ -476,11 +484,11 @@ SP<CoreRawBuffer> XLSXDocument::save()
 		mSharedStrings.updateXML(mSharedStringsXML);
 
 		// update content type for sharedstrings
-		mContentType.addOverride("xl/sharedStrings.xml", "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml");
+		mContentType.addOverride("/xl/sharedStrings.xml", "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml");
 	}
 	else
 	{
-		mContentType.removeOverride("xl/sharedStrings.xml");
+		mContentType.removeOverride("/xl/sharedStrings.xml");
 	}
 
 	// update content type

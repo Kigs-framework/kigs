@@ -1,7 +1,8 @@
 #include "CoreFSMState.h"
 
-
-bool CoreFSMStateBase::Update(CoreModifiable* currentParentClass, u32& specialOrder, KigsID& stateID)
+// state update check all transitions and return true if need transition
+// when true is returned, specialOrder and stateID parameters are correctly set
+bool CoreFSMStateBase::update(CoreModifiable* currentParentClass, u32& specialOrder, KigsID& stateID)
 {
 	CoreFSMStateBase* found=nullptr;
 	for (auto t : mTransitions)
@@ -17,7 +18,8 @@ bool CoreFSMStateBase::Update(CoreModifiable* currentParentClass, u32& specialOr
 	return false;
 }
 
-void	CoreFSMStateBase::start(CoreFSMStateBase* prevstate)
+// when state start, start all transitions
+void	CoreFSMStateBase::start(CoreModifiable* currentParentClass, CoreFSMStateBase* prevstate)
 {
 	// start all transitions
 	for (auto t : mTransitions)
@@ -25,7 +27,9 @@ void	CoreFSMStateBase::start(CoreFSMStateBase* prevstate)
 		t->start();
 	}
 }
-void	CoreFSMStateBase::stop(CoreFSMStateBase* nextstate)
+
+// when state stop, stop all transitions
+void	CoreFSMStateBase::stop(CoreModifiable* currentParentClass, CoreFSMStateBase* nextstate)
 {
 	// stop all transitions
 	for (auto t : mTransitions)

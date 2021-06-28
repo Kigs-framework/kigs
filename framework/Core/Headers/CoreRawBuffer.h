@@ -35,7 +35,7 @@ public:
 
 	}
 
-	void Init(int elemCount)
+	void init(int elemCount)
 	{
 		if (_elementBuffer)
 		{
@@ -53,7 +53,7 @@ public:
 			delete[] _elementBuffer;
 	}
 
-	void	push(const element& elem)
+	void	push_back(const element& elem)
 	{
 		_elementBuffer[_currentElement] = elem;
 		++_currentElement;
@@ -65,7 +65,7 @@ public:
 			++_currentSize;
 	}
 
-	void	pop() // remove last set value, but can not retreive lost value in circular buffer
+	void	pop_back() // remove last set value, but can not retreive lost value in circular buffer
 	{
 		if (_currentSize)
 		{
@@ -95,19 +95,32 @@ public:
 		return *this;
 	}
 
-	int getSize()
+	int size()
 	{
 		return _currentSize;
 	}
 
-	virtual element& operator[](int i) const
+	// CircularBuffer works as a vector, elem at size -1 is last pushed elem
+	// elem at 0 is first (not overlapped) elem
+	virtual const element& operator[](int i) const
 	{
-		while ((_currentElement + i) < 0)
+		while ((_currentElement + i - _currentSize) < 0)
 		{
 			i += _elementCount;
 		}
-		return _elementBuffer[(_currentElement + i) % _elementCount];
+		return _elementBuffer[(_currentElement + i - _currentSize) % _elementCount];
 	}
+
+	virtual const element& back() const
+	{
+		int index = _currentElement - 1;
+		while (index < 0)
+		{
+			index += _elementCount;
+		}
+		return _elementBuffer[index % _elementCount];
+	}
+
 };
 
 class CoreRawBuffer : public GenericRefCountedBaseClass

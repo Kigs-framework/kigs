@@ -85,6 +85,4 @@ namespace ImGui
 		v2f to{ rect_max.x + offset_after, from.y };
 		ImGui::GetWindowDrawList()->AddLine(from, to, color);
 	}
-	
-
 }
