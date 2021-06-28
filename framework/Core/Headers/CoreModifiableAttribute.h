@@ -345,8 +345,8 @@ public:
 		changeInheritance();
 	}
 
-	T& ref() { return mValue; }
-	const T& const_ref() const { return mValue; }
+	inline T& ref() { return mValue; }
+	inline const T& const_ref() const { return mValue; }
 
 	void* getRawValue() override { return static_cast<void*>(&mValue); }
 	
