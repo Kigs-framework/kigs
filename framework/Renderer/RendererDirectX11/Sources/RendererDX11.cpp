@@ -159,6 +159,7 @@ void RendererDX11::SendLightsInfo(TravState* travstate)
 		mDXInstance.mDeviceContext->Unmap(mDXInstance.mLightBuffer, 0);
 	}
 	mDXInstance.mDeviceContext->PSSetConstantBuffers(DX11_LIGHT_SLOT, 1, &mDXInstance.mLightBuffer);
+	mDXInstance.mDeviceContext->GSSetConstantBuffers(DX11_LIGHT_SLOT, 1, &mDXInstance.mLightBuffer);
 
 
 	for(auto it : *travstate->mLights)
@@ -228,6 +229,7 @@ void RendererDX11::ProtectedFlushMatrix(TravState* state)
 			mDXInstance.mDeviceContext->Unmap(mDXInstance.mFogBuffer, 0);
 			mDXInstance.mDeviceContext->VSSetConstantBuffers(DX11_FOG_SLOT, 1, &mDXInstance.mFogBuffer);
 			mDXInstance.mDeviceContext->PSSetConstantBuffers(DX11_FOG_SLOT, 1, &mDXInstance.mFogBuffer);
+			mDXInstance.mDeviceContext->GSSetConstantBuffers(DX11_FOG_SLOT, 1, &mDXInstance.mFogBuffer);
 		}
 
 		
@@ -284,6 +286,7 @@ void RendererDX11::ProtectedFlushMatrix(TravState* state)
 		mDirtyMatrix = 0;
 		mDXInstance.mDeviceContext->Unmap(mDXInstance.mMatrixBuffer, 0);
 		mDXInstance.mDeviceContext->VSSetConstantBuffers(DX11_MATRIX_SLOT, 1, &mDXInstance.mMatrixBuffer);
+		mDXInstance.mDeviceContext->GSSetConstantBuffers(DX11_MATRIX_SLOT, 1, &mDXInstance.mMatrixBuffer);
 	}
 }
 

@@ -34,14 +34,6 @@ struct DefferedAction{
 	};
 };
 
-// fast type check
-
-
-	/**
-	 * \brief		max visible node
-	 * \def 		MAX_VISIBLE_NODES
-	 */
-#define		MAX_VISIBLE_NODES	(1<<16)
 
 // ****************************************
 // * Scene3DPriorityCompare class
@@ -79,7 +71,7 @@ class ModuleSceneGraph : public ModuleBase
 {
 public:
 	//! declare module  
-	DECLARE_CLASS_INFO(ModuleSceneGraph,ModuleBase,SceneGraph)
+	DECLARE_CLASS_INFO(ModuleSceneGraph, ModuleBase, SceneGraph)
 	DECLARE_CONSTRUCTOR(ModuleSceneGraph);
 	virtual ~ModuleSceneGraph();
 
@@ -88,10 +80,10 @@ public:
 	void Update(const Timer& timer, void* addParam) override;
 
 
-	ModuleSpecificRenderer*	GetRenderer(){return mRenderer;}
+	ModuleSpecificRenderer* GetRenderer() { return mRenderer; }
 
 
-	bool addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
+	bool addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
 	bool removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
 	/**
@@ -108,15 +100,8 @@ public:
 	 */
 	inline void	AddVisibleNode(Node3D* node)
 	{
-		mVisiblesNodeList[mCurrentVisibleNodeIndex]=node;
+		mVisiblesNodeList[mCurrentVisibleNodeIndex] = node;
 		mCurrentVisibleNodeIndex++;
-#ifdef	_DEBUG
-		if(mCurrentVisibleNodeIndex>MAX_VISIBLE_NODES)
-		{
-			printf("Error current index : %u put by : %s \n",mCurrentVisibleNodeIndex,node->getName().c_str());
-			KIGS_ASSERT(0);
-		}
-#endif
 	}
 
 	/**
@@ -139,8 +124,10 @@ public:
 	 */
 	inline void ResetVisibleNodeList()
 	{
-		mCurrentVisibleNodeIndex=0;
+		mCurrentVisibleNodeIndex = 0;
 	}
+
+	void SetVisiblesNodeListMaxSize(size_t size);
 
 	void AddDefferedItem(void* item, DefferedAction::ENUM action);
 	void NotifyDefferedItemDeath(CoreModifiable* item);
@@ -152,10 +139,10 @@ public:
 	void AddNeedUpdate(Node3D* node) {}
 	void RemoveNeedUpdate(Node3D* node) {}
 	//
-	
+
 protected:
 	void DoDefferedAction();
-	bool FindParentScene(CoreModifiable* item, Scene3D** parent, bool checkSceneNode=false );
+	bool FindParentScene(CoreModifiable* item, Scene3D** parent, bool checkSceneNode = false);
 	bool RemoveFromParentScene(CoreModifiable* item);
 
 	void	SortSceneList();
@@ -164,14 +151,14 @@ protected:
 	SP<TravState>	mTravState = nullptr;
 
 	//! renderer used by the module
-	ModuleSpecificRenderer*	mRenderer;
+	ModuleSpecificRenderer* mRenderer;
 
 	kigs::unordered_map<void*, DefferedAction::ENUM> mDefferedAction;
 
 	//! list of scene
-	kstl::set<Scene3D*,Scene3DPriorityCompare>	mScenes;
+	kstl::set<Scene3D*, Scene3DPriorityCompare>	mScenes;
 	//! visibles 3D nodes, the liste is setup during the travcull for each nodes
-	Node3D*				mVisiblesNodeList[MAX_VISIBLE_NODES];
+	Node3D** mVisiblesNodeList = nullptr;
 
 	//! index of the current visible node
 	unsigned int		mCurrentVisibleNodeIndex;

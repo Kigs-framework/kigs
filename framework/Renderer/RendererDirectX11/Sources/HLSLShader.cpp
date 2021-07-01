@@ -374,7 +374,7 @@ void API3DShader::PushUniform(CoreModifiable* uni)
 		ul = itfind->second;
 	}
 
-	if (ul->mLocation == 0xffffffff && ul->mLocationFragment == 0xffffffff)
+	if (ul->mLocation == 0xffffffff && ul->mLocationFragment == 0xffffffff && ul->mLocationGeometry == 0xffffffff)
 	{
 		kigsprintf("Failed to bind uniform: %s\n", uniform->Get_Name().c_str());
 		return;

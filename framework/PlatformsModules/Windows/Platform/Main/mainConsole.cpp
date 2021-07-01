@@ -48,6 +48,14 @@ int main(int argc, char *argv[])
 	signal(SIGBREAK, signal_handler);
 #endif
 
+	DWORD console_mode;
+	HANDLE console_hdl;
+	console_hdl = GetStdHandle(STD_INPUT_HANDLE);
+	GetConsoleMode(console_hdl, &console_mode);
+	DWORD old_mode = console_mode;
+	console_mode = console_mode & ~(ENABLE_QUICK_EDIT_MODE | ENABLE_EXTENDED_FLAGS);
+	SetConsoleMode(console_hdl, console_mode);
+
 	//! First thing to do
 	KigsCore::Init();
 
@@ -92,6 +100,8 @@ int main(int argc, char *argv[])
 	//! last thing to do
 	KigsCore::Close();
 
+	SetConsoleMode(console_hdl, old_mode);
+
 	return 0;
 }
 
@@ -105,6 +115,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 #ifdef SIGBREAK
 	signal(SIGBREAK, signal_handler);
 #endif
+
+	DWORD console_mode;
+	HANDLE console_hdl;
+	console_hdl = GetStdHandle(STD_INPUT_HANDLE);
+	GetConsoleMode(console_hdl, &console_mode);
+	DWORD old_mode = console_mode;
+	console_mode = console_mode & ~(ENABLE_QUICK_EDIT_MODE | ENABLE_EXTENDED_FLAGS);
+	SetConsoleMode(console_hdl, console_mode);
 
 	//! First thing to do
 	KigsCore::Init();
@@ -142,6 +160,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	//! last thing to do
 	KigsCore::Close();
+
+	SetConsoleMode(console_hdl, old_mode);
+
 	return 0;
 }
 
