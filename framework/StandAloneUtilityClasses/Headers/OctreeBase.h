@@ -242,6 +242,11 @@ struct nodeInfo
 	v3i				coord;
 	OctreeNodeBase*	node = nullptr;
 
+	bool	operator==(const nodeInfo& other)
+	{
+		return (node == other.node);
+	}
+
 	template<typename T>
 	T* getNode() const { return static_cast<T*>(node); }
 };
@@ -274,6 +279,10 @@ public:
 	// set coord to real cube center
 	// minimal cube is 2 units wide
 	void	setValidCubeCenter(v3i& pos, unsigned int decal);
+
+	// get neighbour in the given direction ( as an index in mNeightboursDecalVectors)   
+	nodeInfo	getVoxelNeighbour(const nodeInfo& node, int dir);
+
 
 protected:
 
@@ -322,35 +331,48 @@ protected:
 	public:
 
 		
-		recursiveFloodFill(OctreeBase<BaseType>& octree, std::vector<nodeInfo>* notEmptyList) : 
+		recursiveFloodFill(OctreeBase<BaseType>& octree, std::vector<nodeInfo>* fillborderList) : 
 			mOctree(octree),
-			mNotEmptyList(notEmptyList)
+			mFillBorderList(fillborderList)
 		{
 			reset();
 		}
 		~recursiveFloodFill() {}
 
-		void run(const nodeInfo& node);
+		template<typename F>
+		void run(const nodeInfo& node, F&& condition);
 
 		void	reset()
 		{
 			mOctree.mCurrentBrowsingFlag++;
-			mNotEmptyList->clear();
+			if(mFillBorderList)
+				mFillBorderList->clear();
 		}
 
 	private:
-		std::vector<nodeInfo>*	mNotEmptyList;
+		std::vector<nodeInfo>*	mFillBorderList=nullptr;
 		OctreeBase<BaseType>&	mOctree;
 	};
+
+	template<typename F>
+	void	callRecurseFloodFill(const nodeInfo& startPos, std::vector<nodeInfo>& notEmptyList,F&& condition)
+	{
+		recursiveFloodFill t(*this, &notEmptyList);
+		t.run(startPos,condition);
+	}
 
 	void	callRecurseFloodFill(const nodeInfo& startPos, std::vector<nodeInfo>& notEmptyList)
 	{
 		recursiveFloodFill t(*this, &notEmptyList);
-		t.run(startPos);
+
+		auto condition = [](const nodeInfo& c)->bool
+		{
+			return c.node->isEmpty();
+		};
+
+		t.run(startPos, condition);
 	}
 
-	// get neighbour in the given direction ( as an index in mNeightboursDecalVectors)   
-	nodeInfo	getVoxelNeighbour(const nodeInfo& node, int dir);
 
 	// default depth max is 8 => 256x256x256 cubes = 512 x 512 x 512 units
 	maInt		mMaxDepth = INIT_ATTRIBUTE(MaxDepth, 8);
@@ -498,7 +520,8 @@ void	OctreeBase<BaseType>::recurseVoxelSideChildren::run(const nodeInfo& node)
 }
 
 template<typename BaseType>
-void	OctreeBase<BaseType>::recursiveFloodFill::run(const nodeInfo& startPos)
+template<typename F>
+void	OctreeBase<BaseType>::recursiveFloodFill::run(const nodeInfo& startPos, F&& condition)
 {
 	// set current node as "treated"
 	startPos.node->setBrowsingFlag(mOctree.mCurrentBrowsingFlag);
@@ -534,15 +557,21 @@ void	OctreeBase<BaseType>::recursiveFloodFill::run(const nodeInfo& startPos)
 		{
 			if (c.node->getBrowsingFlag() != mOctree.mCurrentBrowsingFlag)
 			{
-				if (c.node->isEmpty()) // node is empty, recurse flood fill
+				if (condition(c)) // recurse flood fill
 				{
-					run(c);
+					run(c,condition);
 					continue;
 				}
-				else // add this node to visibility list
+				else // add this node to limit of flood fill list
 				{
 					c.node->setBrowsingFlag(mOctree.mCurrentBrowsingFlag);
-					(*mNotEmptyList).push_back(c);
+					if (mFillBorderList)
+					{
+						if (std::find((*mFillBorderList).begin(), (*mFillBorderList).end(), c) == (*mFillBorderList).end())
+						{
+							(*mFillBorderList).push_back(c);
+						}
+					}
 				}
 			}
 		}
