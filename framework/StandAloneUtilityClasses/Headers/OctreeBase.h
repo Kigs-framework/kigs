@@ -340,18 +340,42 @@ protected:
 		~recursiveFloodFill() {}
 
 		template<typename F>
-		void run(const nodeInfo& node, F&& condition);
+		void run(const nodeInfo& node, F&& condition)
+		{
+			mToParseList.push_back(node);
+
+			while (mToParseList.size())
+			{
+				nodeInfo toparse = mToParseList.back();
+				mToParseList.pop_back();
+
+				if (toparse.node->getBrowsingFlag() != mOctree.mCurrentBrowsingFlag)
+				{
+					subrun(toparse, condition);
+				}
+			}
+		}
 
 		void	reset()
 		{
 			mOctree.mCurrentBrowsingFlag++;
 			if(mFillBorderList)
 				mFillBorderList->clear();
+
+			mToParseList.clear();
 		}
 
+	protected:
+
+		template<typename F>
+		void subrun(const nodeInfo& node, F&& condition);
+
 	private:
+
 		std::vector<nodeInfo>*	mFillBorderList=nullptr;
 		OctreeBase<BaseType>&	mOctree;
+		std::vector<nodeInfo>	mToParseList;
+
 	};
 
 	template<typename F>
@@ -380,6 +404,7 @@ protected:
 	OctreeNodeBase* mRootNode = nullptr;
 
 	unsigned int	mCurrentBrowsingFlag = 0;
+
 
 	static inline const v3i				mNeightboursDecalVectors[6] = { {-1,0,0},{1,0,0},{0,-1,0},{0,1,0},{0,0,-1},{0,0,1} };
 	static inline const int				mInvDir[6] = { 1,0,3,2,5,4 };
@@ -521,7 +546,7 @@ void	OctreeBase<BaseType>::recurseVoxelSideChildren::run(const nodeInfo& node)
 
 template<typename BaseType>
 template<typename F>
-void	OctreeBase<BaseType>::recursiveFloodFill::run(const nodeInfo& startPos, F&& condition)
+void	OctreeBase<BaseType>::recursiveFloodFill::subrun(const nodeInfo& startPos, F&& condition)
 {
 	// set current node as "treated"
 	startPos.node->setBrowsingFlag(mOctree.mCurrentBrowsingFlag);
@@ -532,7 +557,7 @@ void	OctreeBase<BaseType>::recursiveFloodFill::run(const nodeInfo& startPos, F&&
 		// get adjacent node
 		nodeInfo	n = mOctree.getVoxelNeighbour(startPos, dir);
 
-		if (n.node == nullptr) // TODO => outside of this octree -> should check other octrees
+		if (n.node == nullptr) // TODO ? => outside of this octree -> should check other octrees
 		{
 			continue;
 		}
@@ -559,12 +584,12 @@ void	OctreeBase<BaseType>::recursiveFloodFill::run(const nodeInfo& startPos, F&&
 			{
 				if (condition(c)) // recurse flood fill
 				{
-					run(c,condition);
+					mToParseList.push_back(c);
 					continue;
 				}
 				else // add this node to limit of flood fill list
 				{
-					c.node->setBrowsingFlag(mOctree.mCurrentBrowsingFlag);
+					//c.node->setBrowsingFlag(mOctree.mCurrentBrowsingFlag);
 					if (mFillBorderList)
 					{
 						if (std::find((*mFillBorderList).begin(), (*mFillBorderList).end(), c) == (*mFillBorderList).end())
