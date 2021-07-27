@@ -87,9 +87,17 @@ std::string XMLArchiveManager::getFilename(const std::string& fullpath)
 
 bool	XMLArchiveManager::open(const std::string& filename)
 {
-	clear();
 	u64 flen;
 	auto buffer = ModuleFileManager::LoadFile(filename.c_str(), flen);
+	if(buffer)
+		return open(buffer);
+	return false;
+}
+
+bool	XMLArchiveManager::open(const SP<CoreRawBuffer>& buffer)
+{
+	clear();
+	u64 flen = buffer->size();
 	if (buffer)
 	{
 		bool arOK = false;
@@ -98,8 +106,8 @@ bool	XMLArchiveManager::open(const std::string& filename)
 		{
 			arOK = true;
 			u32 fcount = mz_zip_reader_get_num_files(&ar);
-			
-			for (u32 i=0; i < fcount; i++)
+
+			for (u32 i = 0; i < fcount; i++)
 			{
 				mz_zip_archive_file_stat stats = {};
 				if (mz_zip_reader_file_stat(&ar, i, &stats))
@@ -108,7 +116,7 @@ bool	XMLArchiveManager::open(const std::string& filename)
 					if (!stats.m_is_directory)
 					{
 						size_t filesize;
-						void* data=mz_zip_reader_extract_to_heap(&ar,i, &filesize, 0);
+						void* data = mz_zip_reader_extract_to_heap(&ar, i, &filesize, 0);
 						auto buf = MakeRefCounted<CoreRawBuffer>();
 						buf->SetBuffer(nullptr, filesize, true); // alloc buffer
 						memcpy(buf->buffer(), data, filesize);
@@ -119,7 +127,7 @@ bool	XMLArchiveManager::open(const std::string& filename)
 						XMLArchiveFile* toAdd = new XMLArchiveFile(currentFilename, buf, folder);
 
 						// check the ones that you can immediatly convert to xml
-						std::string ext = currentFilename.substr(currentFilename.length() - 4,4);
+						std::string ext = currentFilename.substr(currentFilename.length() - 4, 4);
 						if (ext == ".xml")
 						{
 							toAdd->interpretAsXML();
