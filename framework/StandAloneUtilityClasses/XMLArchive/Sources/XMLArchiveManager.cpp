@@ -90,7 +90,7 @@ bool	XMLArchiveManager::open(const std::string& filename)
 	u64 flen;
 	auto buffer = ModuleFileManager::LoadFile(filename.c_str(), flen);
 	if(buffer)
-		return open(buffer);
+		return XMLArchiveManager::open(buffer);
 	return false;
 }
 

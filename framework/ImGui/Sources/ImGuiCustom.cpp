@@ -66,12 +66,16 @@ namespace ImGui
 	void ButtonLabel(const std::string& txt, v2f size)
 	{
 		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
-		ImGui::ButtonEx(txt.c_str(), size, ImGuiButtonFlags_Disabled);
+		ImGui::PushDisabled();
+		ImGui::ButtonEx(txt.c_str(), size);
+		ImGui::PopDisabled();
 		ImGui::PopStyleVar();
 	}
 	bool ButtonWithLabel(const std::string& label, const std::string txt, float label_width, v2f size)
 	{
-		bool b = ImGui::ButtonEx(label.c_str(), v2f(label_width, size.y), ImGuiButtonFlags_Disabled);
+		ImGui::PushDisabled();
+		bool b = ImGui::ButtonEx(label.c_str(), v2f(label_width, size.y));
+		ImGui::PopDisabled();
 		ImGui::SameLine(0, 0);
 		b = ImGui::Button(txt.c_str(), size) || b;
 		return b;
