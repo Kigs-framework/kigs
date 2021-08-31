@@ -216,6 +216,32 @@ namespace serializer_detail
 		return true;
 	}
 
+	template<typename PacketStream>
+	bool serialize(PacketStream& stream, SP<CoreRawBuffer>& value)
+	{
+		size_t size = 0;
+		if constexpr (PacketStream::IsWriting)
+		{
+			if(value)
+				size = value->size();
+		}
+		CHECK_SERIALIZE(serialize(stream, size));
+		if (size == 0)
+		{
+			if(!PacketStream::IsWriting && value)
+				value->clear();
+			return true;
+		}
+		if constexpr (!PacketStream::IsWriting)
+		{
+			if(!value)
+				value = MakeRefCounted<CoreRawBuffer>();
+			value->resize(size);
+		}
+		CHECK_SERIALIZE(serialize_bytes(stream, (u8*)value->buffer(), (u64)value->size()));
+		return true;
+	}
+
 	template<typename PacketStream, typename T>
 	bool serialize_range(PacketStream& stream, T& range)
 	{

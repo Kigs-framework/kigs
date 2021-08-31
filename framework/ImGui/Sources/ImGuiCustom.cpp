@@ -56,7 +56,7 @@ namespace ImGui
 	float GetElementWidthForSubdivision(int count)
 	{
 		if (count <= 0) count = 1;
-		return (ImGui::GetWindowWidth() - ImGui::GetColumnOffset()) / count - ImGui::GetStyle().ItemSpacing.x;
+		return (ImGui::GetWindowWidth() - ImGui::GetColumnOffset() - ImGui::GetCurrentWindow()->ScrollbarSizes.x) / count - ImGui::GetStyle().ItemSpacing.x;
 	}
 	void Label(const std::string& txt)
 	{
