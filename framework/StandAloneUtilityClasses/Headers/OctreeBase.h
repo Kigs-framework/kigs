@@ -293,8 +293,32 @@ public:
 	// minimal cube is 2 units wide
 	void	setValidCubeCenter(v3i& pos, unsigned int decal);
 
-	// get neighbour in the given direction ( as an index in mNeightboursDecalVectors)   
-	nodeInfo	getVoxelNeighbour(const nodeInfo& node, int dir);
+	// convert one of the 6 main direction to corresponding dir mask (2 bits per axis)
+	u32 mainDirToDirMask(u32 dir)
+	{
+		u32 mask = 2; // 10 => negative way on axis
+		if (dir & 1) // positive way on axis
+		{
+			mask = 1; // 01
+		}
+
+		dir = dir >> 1;
+
+		mask = mask << (dir << 1);
+
+		return mask;
+	}
+
+	
+
+	// get neighbour in the given direction mask (add index in mNeightboursDecalVectors)
+	// each axis is coded on two bits:
+	// 00 =>  0
+	// 10 => -1
+	// 01 =>  1
+
+
+	nodeInfo	getVoxelNeighbour(const nodeInfo& node, u32 dir);
 
 
 	class	applyOnAllNodes
@@ -501,7 +525,7 @@ void	OctreeBase<BaseType>::setValidCubeCenter(v3i& pos, unsigned int decal)
 }
 
 template<typename BaseType>
-nodeInfo	OctreeBase<BaseType>::getVoxelNeighbour(const nodeInfo& node, int dir)
+nodeInfo	OctreeBase<BaseType>::getVoxelNeighbour(const nodeInfo& node, u32 dirmask)
 {
 	nodeInfo result;
 	result.node = nullptr;
@@ -512,34 +536,28 @@ nodeInfo	OctreeBase<BaseType>::getVoxelNeighbour(const nodeInfo& node, int dir)
 
 	v3i	dposv(node.coord);
 
-	dposv += mNeightboursDecalVectors[dir] * dpos;
-
-	if (dir < 2)
+	for (u32 axis = 0; axis < 3; axis++)
 	{
-		if ((dposv.x >= 0) && (dposv.x < maxSize))
-		{
-			return getVoxelAt(dposv, node.level);
-		}
-		return result;
-	}
-	else if (dir < 4)
-	{
-		if ((dposv.y >= 0) && (dposv.y < maxSize))
-		{
-			return getVoxelAt(dposv, node.level);
-		}
-		return result;
-	}
-	else
-	{
-		if ((dposv.z >= 0) && (dposv.z < maxSize))
-		{
-			return getVoxelAt(dposv, node.level);
-		}
 
-	}
-	return result;
+		// 00 =>  0
+		// 10 => -1
+		// 01 =>  1
 
+		u32 daxis = (axis << 1);
+		u32 currentMask = (dirmask >> daxis) & 3;
+
+		if (currentMask)
+		{
+			// should compute each axis separately
+			dposv += mNeightboursDecalVectors[daxis+(currentMask&1)] * dpos;
+		}
+		if ((dposv[axis] < 0) || (dposv[axis] >= maxSize))
+		{
+			return result;
+		}
+	}
+
+	return getVoxelAt(dposv, node.level);
 }
 
 template<typename BaseType>
@@ -609,7 +627,7 @@ void	OctreeBase<BaseType>::recursiveFloodFill::subrun(const nodeInfo& startPos, 
 		if (startPos.node->mDirNDoneFlag & (1 << dir))
 			continue;
 		// get adjacent node
-		nodeInfo	n = mOctree.getVoxelNeighbour(startPos, dir);
+		nodeInfo	n = mOctree.getVoxelNeighbour(startPos, mOctree.mainDirToDirMask(dir));
 
 		if (n.node == nullptr) // TODO ? => outside of this octree -> should check other octrees
 		{
