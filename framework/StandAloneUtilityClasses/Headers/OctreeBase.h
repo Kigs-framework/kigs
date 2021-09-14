@@ -125,7 +125,9 @@ protected:
 	unsigned int	mBrowsingFlag;
 	// check if neighbor already visited
 	u32				mDirNDoneFlag = 0;
-
+public:
+		static inline const v3i				mNeightboursDecalVectors[6] = { {-1,0,0},{1,0,0},{0,-1,0},{0,1,0},{0,0,-1},{0,0,1} };
+		static inline const int				mInvDir[6] = { 1,0,3,2,5,4 };
 };
 
 
@@ -466,8 +468,6 @@ protected:
 	unsigned int	mCurrentBrowsingFlag = 0;
 
 
-	static inline const v3i				mNeightboursDecalVectors[6] = { {-1,0,0},{1,0,0},{0,-1,0},{0,1,0},{0,0,-1},{0,0,1} };
-	static inline const int				mInvDir[6] = { 1,0,3,2,5,4 };
 };
 
 IMPLEMENT_TEMPLATE_CLASS_INFO(BaseType, OctreeBase)
@@ -549,7 +549,7 @@ nodeInfo	OctreeBase<BaseType>::getVoxelNeighbour(const nodeInfo& node, u32 dirma
 		if (currentMask)
 		{
 			// should compute each axis separately
-			dposv += mNeightboursDecalVectors[daxis+(currentMask&1)] * dpos;
+			dposv += OctreeNodeBase::mNeightboursDecalVectors[daxis+(currentMask&1)] * dpos;
 		}
 		if ((dposv[axis] < 0) || (dposv[axis] >= maxSize))
 		{
@@ -646,7 +646,7 @@ void	OctreeBase<BaseType>::recursiveFloodFill::subrun(const nodeInfo& startPos, 
 		}
 		else // else get all sons on the correct side of n
 		{
-			recurseVoxelSideChildren r(mInvDir[dir], mOctree, &child);
+			recurseVoxelSideChildren r(OctreeNodeBase::mInvDir[dir], mOctree, &child);
 			r.run(n);
 		}
 
@@ -654,20 +654,21 @@ void	OctreeBase<BaseType>::recursiveFloodFill::subrun(const nodeInfo& startPos, 
 		for (auto& c : child)
 		{
 			// mark the direction from where the node was added
-			c.node->mDirNDoneFlag |= (1 << mInvDir[dir]);
+			c.node->mDirNDoneFlag |= (1 << OctreeNodeBase::mInvDir[dir]);
 			if (c.node->getBrowsingFlag() != mOctree.mCurrentBrowsingFlag)
 			{
-				if (condition(c)) // recurse flood fill
+				if (!(c.node->mDirNDoneFlag & (1 << 8))) // not already added to toparse list or envelope ?
 				{
-					mToParseList.push_back(c);
-					continue;
-				}
-				else // add this node to limit of flood fill list
-				{
-					//c.node->setBrowsingFlag(mOctree.mCurrentBrowsingFlag);
-					if (mFillBorderList)
+					c.node->mDirNDoneFlag |= (1 << 8);
+					if (condition(c)) // recurse flood fill
 					{
-						if (std::find((*mFillBorderList).begin(), (*mFillBorderList).end(), c) == (*mFillBorderList).end())
+						mToParseList.push_back(c);
+						continue;
+					}
+					else // add this node to limit of flood fill list
+					{
+						//c.node->setBrowsingFlag(mOctree.mCurrentBrowsingFlag);
+						if (mFillBorderList)
 						{
 							(*mFillBorderList).push_back(c);
 						}
