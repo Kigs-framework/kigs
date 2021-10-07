@@ -27,9 +27,12 @@
 
 #include "utf8.h"
 
+
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Storage.Streams.h>
+
+#include "winrt_helpers.h"
 
 IMPLEMENT_CLASS_INFO(HoloSpatialMapShader);
 
@@ -309,9 +312,6 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 		}
 	}
 
-	auto vertices_format = inMesh.VertexPositions().Format();
-
-
 	v4f scale = v4f(1, 1, 1, 1);
 	// retreive position scale
 	if (inMesh)
@@ -339,10 +339,6 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 	{
 		if (record_surface->recording)
 		{
-			if (indices_count == 0)
-			{
-				__debugbreak();
-			}
 			record_surface->vertex_position_scale = scale.xyz;
 			record_surface->indices_count = indices_count;
 			record_surface->indices_data.resize(size);
@@ -352,6 +348,15 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 		{
 			indices_count = record_surface->indices_count;
 			indices = (u16*)record_surface->indices_data.data();
+			vertex_buffer = (float*)record_surface->vertex_data.data();
+			vertices_count = record_surface->vertex_data.size() / sizeof(v4f);
+
+			for (int i = 0; i < vertices_count; ++i)
+			{
+				reinterpret_cast<v4f*>(vertex_buffer)[i].x *= scale.x;
+				reinterpret_cast<v4f*>(vertex_buffer)[i].y *= scale.y;
+				reinterpret_cast<v4f*>(vertex_buffer)[i].z *= scale.z;
+			}
 		}
 	}
 
@@ -443,11 +448,18 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ExportTimedScan()
 	bool success = serialize_object(stream, to_save);
 	stream.Flush();
 
-	auto local_folder = winrt::Windows::Storage::ApplicationData::Current().LocalFolder().Path();
-	std::string utf8_path;
-	utf8::utf16to8(local_folder.begin(), local_folder.end(), std::back_inserter(utf8_path));
-	utf8_path += "\\timed_spatial_map_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + ".bin";
-	ModuleFileManager::Get()->SaveFile(utf8_path.c_str(), (u8*)data.data(), data.size()*sizeof(u32));
+	std::vector<u8> data2((u8*)data.data(), (u8*)data.data() + data.size()*sizeof(u32));
+	using namespace winrt::Windows::Storage;
+	using namespace winrt::Windows::Storage::Pickers;
+	using namespace winrt::Windows::Storage::Streams;
+	auto path = "timed_spatial_map_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + ".bin";
+	auto file = co_await KnownFolders::PicturesLibrary().CreateFileAsync(to_wchar(path), CreationCollisionOption::ReplaceExisting);
+	if (!file) co_return;
+	auto result = co_await file.OpenAsync(FileAccessMode::ReadWrite);
+	if (!result) co_return;
+	DataWriter writer(result);
+	writer.WriteBytes(data2);
+	co_await writer.StoreAsync();
 }
 
 winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ReplayRecordedSpatialMap()
@@ -851,7 +863,7 @@ void HoloSpatialMap::InitModifiable()
 	if (mAllowed) return;
 
 #ifdef KIGS_TOOLS
-	//mShowMeshMode = ShowMeshMode::PlaneOnly;
+	mShowMeshMode = ShowMeshMode::Full;
 
 	auto import_scan = [&](const std::string& filename)
 	{
@@ -949,7 +961,7 @@ void HoloSpatialMap::InitModifiable()
 		}
 	};
 
-	//import_timed_scan("spatial_map_local_assoria.bin");
+	//import_timed_scan("timed_spatial_map_8164153702343.bin");
 
 	//import_timed_scan("spatial_map_kcomk_antoine_cantine.bin");
 	//import_timed_scan("spatial_map_kcomk_antoine_appart.bin");

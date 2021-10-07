@@ -81,7 +81,6 @@ void	KeyboardDX::UpdateDevice()
 	}
 }
 
-
 u16 KeyboardDX::ScanToChar(u32 scanCode, u32* vkCode)
 {
 	u32 tmpVk;
@@ -114,7 +113,7 @@ u16 KeyboardDX::ScanToChar(u32 scanCode, u32* vkCode)
 	case CM_KEY_DOWN: *vkCode = VK_DOWN; break;
 	case CM_KEY_LEFT:  *vkCode = VK_LEFT; break;
 	case CM_KEY_RIGHT:  *vkCode = VK_RIGHT; break;
-
+	case CM_KEY_DELETE:  *vkCode = VK_DELETE; break;
 
 
 	default:break;

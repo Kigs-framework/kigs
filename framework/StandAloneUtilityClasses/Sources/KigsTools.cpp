@@ -3083,8 +3083,8 @@ void DrawEditor()
 
 			case VK_R:
 			{
-				if (ImGui::GetIO().KeyCtrl)
-					ReloadCurrentSequence();
+				/*if (ImGui::GetIO().KeyCtrl)
+					ReloadCurrentSequence();*/
 				break;
 			}
 			case VK_F6:

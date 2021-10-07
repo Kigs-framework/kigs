@@ -1890,6 +1890,20 @@ namespace dd
 
 		inline void vecOrthogonalBasis(ddVec3 & left, ddVec3 & up, ddVec3Param v)
 		{
+			v3f pt;
+			if (DD_FABS(v.y) > 0.97f)
+			{
+				pt = {1, 0, 0};
+			}
+			else
+			{
+				pt = { 0, 1, 0 };
+			}
+			ddVec3 p1 = ddVec3(0, 0, 0);
+			auto p2 = ProjectOnPlane(pt, v3f(0, 0, 0), v);
+			left = (p2 - p1).Normalized();
+			up = (left ^ v).Normalized();
+			/*
 			// Produces two orthogonal vectors for normalized vector v.
 			float lenSqr, invLen;
 			if (DD_FABS(v.z) > 0.7f)
@@ -1914,6 +1928,7 @@ namespace dd
 				up.y = v.z * left.x;
 				up.z = lenSqr * invLen;
 			}
+			*/
 		}
 
 		// ========================================================

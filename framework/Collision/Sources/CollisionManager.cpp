@@ -357,8 +357,6 @@ void CollisionManager::CreateCollisionObject(CoreModifiable* item, unsigned int 
 				};
 			}
 			else*/
-
-			
 			if (item->getAttribute("BVH"))
 			{
 				auto parent_node = item->getFirstParent("Node3D");
