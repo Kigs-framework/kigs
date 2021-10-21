@@ -469,10 +469,14 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ReplayRecordedSpatialMa
 	if (gMapRecording.callbacks.empty()) co_return;
 	auto start_time_record = gMapRecording.callbacks.front().callback_time;
 	auto start_time_replay = std::chrono::steady_clock::now();
+	
+	auto pause_time = std::chrono::steady_clock::now();
+
 	int i = -1;
 
-	static std::atomic_int end_index = 50;
-	RegisterWidget("Replay", [&i, size = gMapRecording.callbacks.size()]()
+	static std::atomic_int end_index = -1;
+	static std::atomic_bool is_paused = false;
+	RegisterWidget("Replay", [&i, &pause_time, &start_time_replay, size = gMapRecording.callbacks.size()]()
 	{
 		ImGui::Text("Callback %d/%d", i, size);
 		if (ImGui::Button("Set End Index"))
@@ -484,6 +488,24 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ReplayRecordedSpatialMa
 		if (ImGui::SliderInt("End Index", &index, -1, size-1))
 		{
 			end_index = index;
+		}
+		
+		bool paused = is_paused;
+		if (ImGui::Checkbox("Paused", &paused))
+		{
+			if(paused)
+				pause_time = std::chrono::steady_clock::now();
+			else
+			{
+				auto time_paused = std::chrono::steady_clock::now() - pause_time;
+				start_time_replay += time_paused;
+			}
+			is_paused = paused;
+		}
+
+		if (ImGui::Button("Skip 5s"))
+		{
+			start_time_replay -= std::chrono::seconds(5);
 		}
 	});
 	
@@ -500,7 +522,14 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ReplayRecordedSpatialMa
 		auto current_time_replay = std::chrono::steady_clock::now();
 		auto current_time_record = cb.callback_time;
 		auto elapsed_record = current_time_record - start_time_record;
-		auto elapsed_replay = current_time_replay - start_time_replay;
+
+		auto actual_start_time_replay = start_time_replay;
+		if (is_paused)
+		{
+			auto time_paused = current_time_replay - pause_time;
+			actual_start_time_replay += time_paused;
+		}
+		auto elapsed_replay = current_time_replay - actual_start_time_replay;
 
 
 		while (current_matrix_index < gMapRecording.frame_of_ref_changes.size() 
@@ -961,7 +990,7 @@ void HoloSpatialMap::InitModifiable()
 		}
 	};
 
-	//import_timed_scan("timed_spatial_map_8164153702343.bin");
+	//import_timed_scan("timed_spatial_map_4948626757552.bin");
 
 	//import_timed_scan("spatial_map_kcomk_antoine_cantine.bin");
 	//import_timed_scan("spatial_map_kcomk_antoine_appart.bin");
