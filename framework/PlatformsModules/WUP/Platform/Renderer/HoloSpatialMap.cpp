@@ -524,13 +524,18 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ReplayRecordedSpatialMa
 		auto elapsed_record = current_time_record - start_time_record;
 
 		auto actual_start_time_replay = start_time_replay;
+
+		while (is_paused)
+		{
+			co_await winrt::resume_after(std::chrono::milliseconds(250));
+		}
+
 		if (is_paused)
 		{
 			auto time_paused = current_time_replay - pause_time;
 			actual_start_time_replay += time_paused;
 		}
 		auto elapsed_replay = current_time_replay - actual_start_time_replay;
-
 
 		while (current_matrix_index < gMapRecording.frame_of_ref_changes.size() 
 			&& gMapRecording.frame_of_ref_changes[current_matrix_index].first < current_time_record)

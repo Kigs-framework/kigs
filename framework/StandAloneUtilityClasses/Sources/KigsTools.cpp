@@ -3319,7 +3319,7 @@ void RegisterWidget(const std::string& id, std::function<void()> draw_function)
 	if (!draw_function) gKigsTools->CustomWidgets.erase(id);
 	auto& w = gKigsTools->CustomWidgets[id];
 	w.first = draw_function;
-	//w.second = true;
+	w.second = true;
 }
 
 void SelectObjectKigsTools(CoreModifiable* obj)
