@@ -128,6 +128,8 @@ protected:
 public:
 		static inline const v3i				mNeightboursDecalVectors[6] = { {-1,0,0},{1,0,0},{0,-1,0},{0,1,0},{0,0,-1},{0,0,1} };
 		static inline const int				mInvDir[6] = { 1,0,3,2,5,4 };
+		static inline const int				mOppositeFace[33] = { 0,2,1,0,8,0,0,0,4,0,0,0,0,0,0,0,32,
+																 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16 };
 };
 
 
@@ -298,10 +300,10 @@ public:
 	// convert one of the 6 main direction to corresponding dir mask (2 bits per axis)
 	u32 mainDirToDirMask(u32 dir)
 	{
-		u32 mask = 2; // 10 => negative way on axis
+		u32 mask = 1; // 01 => negative way on axis
 		if (dir & 1) // positive way on axis
 		{
-			mask = 1; // 01
+			mask = 2; // 10
 		}
 
 		dir = dir >> 1;
@@ -316,10 +318,8 @@ public:
 	// get neighbour in the given direction mask (add index in mNeightboursDecalVectors)
 	// each axis is coded on two bits:
 	// 00 =>  0
-	// 10 => -1
-	// 01 =>  1
-
-
+	// 01 => -1
+	// 10 =>  1
 	nodeInfo	getVoxelNeighbour(const nodeInfo& node, u32 dir);
 
 
@@ -540,8 +540,8 @@ nodeInfo	OctreeBase<BaseType>::getVoxelNeighbour(const nodeInfo& node, u32 dirma
 	{
 
 		// 00 =>  0
-		// 10 => -1
-		// 01 =>  1
+		// 01 => -1
+		// 10 =>  1
 
 		u32 daxis = (axis << 1);
 		u32 currentMask = (dirmask >> daxis) & 3;
@@ -549,7 +549,7 @@ nodeInfo	OctreeBase<BaseType>::getVoxelNeighbour(const nodeInfo& node, u32 dirma
 		if (currentMask)
 		{
 			// should compute each axis separately
-			dposv += OctreeNodeBase::mNeightboursDecalVectors[daxis+(currentMask&1)] * dpos;
+			dposv += OctreeNodeBase::mNeightboursDecalVectors[daxis+((currentMask>>1)&1)] * dpos;
 		}
 		if ((dposv[axis] < 0) || (dposv[axis] >= maxSize))
 		{
