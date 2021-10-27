@@ -995,7 +995,7 @@ void HoloSpatialMap::InitModifiable()
 		}
 	};
 
-	//import_timed_scan("timed_spatial_map_4948626757552.bin");
+	import_timed_scan("timed_spatial_map_4948626757552.bin");
 
 	//import_timed_scan("spatial_map_kcomk_antoine_cantine.bin");
 	//import_timed_scan("spatial_map_kcomk_antoine_appart.bin");
