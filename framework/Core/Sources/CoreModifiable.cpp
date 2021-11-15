@@ -1550,25 +1550,10 @@ void CoreModifiable::addUser(CoreModifiable* user)
 void CoreModifiable::removeUser(CoreModifiable* user)
 {
 	std::unique_lock<std::shared_mutex> lk{ GetMutex() };
-	bool found=false;
-	do
+	mUsers.erase(std::remove_if(mUsers.begin(), mUsers.end(), [&](CoreModifiable* el)
 	{
-		found=false;
-		std::vector<CoreModifiable*>::iterator i=mUsers.begin();
-		std::vector<CoreModifiable*>::iterator e=mUsers.end();
-		for(; i!=e ; ++i)
-		{
-			if(user==(*i))
-			{
-				found=true;
-				break;
-			}
-		}
-		if(found)
-		{
-			mUsers.erase(i);
-		}
-	} while(found);
+		return el == user;
+	}), mUsers.end());
 }
 
 void CoreModifiable::flagAsPostDestroy()
@@ -1706,6 +1691,26 @@ bool CoreModifiable::removeItem(const CMSP& item)
 	// NOTE(antoine) the const CMSP& item can point to a smart pointer inside mItems, in which case the pointed object will change or become invalid when we do mItems.erase(it) 
 	auto ref = item; 
 	bool found=false, res=false;
+
+	for (auto it = mItems.begin(); it != mItems.end();)
+	{
+		if (it->mItem == ref)
+		{
+			
+			it = mItems.erase(it);
+			found = true;
+		}
+		else
+			++it;
+	}
+	
+	if (found)
+	{
+		ref->removeUser(this);
+		lk.unlock();
+		EmitSignal(Signals::RemoveItem, this, ref.get());
+	}
+	/*
 	do
 	{
 		found=false;
@@ -1730,8 +1735,8 @@ bool CoreModifiable::removeItem(const CMSP& item)
 			lk.lock();
 		}
 	} while(found);
-	
-	return res;
+	*/
+	return found;
 }
 
 void CoreModifiable::NotifyUpdate(const u32 labelid)
