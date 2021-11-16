@@ -121,7 +121,7 @@ DEFINE_UPGRADOR_METHOD(SpriteSheetData, GetAnimationList)
 // do orientation
 DEFINE_UPGRADOR_UPDATE(SpriteSheetData)
 {
-
+	return false;
 }
 
 SpriteSheetData* Texture::getSpriteSheetData()

@@ -431,4 +431,5 @@ DEFINE_UPGRADOR_UPDATE(AnimationUpgrador)
 {
 	AnimationUpgrador* currentAnim=static_cast<AnimationUpgrador*>(GetUpgrador());
 	currentAnim->Update(timer,this);
+	return false;
 }

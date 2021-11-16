@@ -8,6 +8,8 @@ IMPLEMENT_CLASS_INFO(CoreFSMOnEventTransition)
 IMPLEMENT_CLASS_INFO(CoreFSMDelayTransition)
 IMPLEMENT_CLASS_INFO(CoreFSMOnValueTransition)
 IMPLEMENT_CLASS_INFO(CoreFSMOnMethodTransition)
+IMPLEMENT_CLASS_INFO(CoreFSMInternalSetTransition)
+
 
 CoreFSMTransition::CoreFSMTransition(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 {
@@ -82,7 +84,12 @@ bool CoreFSMOnValueTransition::checkTransition(CoreModifiable* currentParentClas
 		KIGS_ERROR("check a not started transition", 1);
 	}
 
-	return currentParentClass->getValue<bool>((std::string)mValueName);
+	bool result= currentParentClass->getValue<bool>((std::string)mValueName);
+
+	if (mNotValue)
+		result = !result;
+
+	return result;
 
 }
 
@@ -112,3 +119,12 @@ void	CoreFSMOnEventTransition::stop()
 	mEventReceived = false;
 }
 
+bool CoreFSMInternalSetTransition::checkTransition(CoreModifiable* currentParentClass)
+{
+	if (!mIsRunning)
+	{
+		KIGS_ERROR("check a not started transition", 1);
+	}
+
+	return false;
+}

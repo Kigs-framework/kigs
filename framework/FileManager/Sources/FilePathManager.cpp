@@ -214,7 +214,11 @@ std::string FilePathManager::GetPackageRootPath(const std::string& filename)
 bool	FilePathManager::LoadPackage(const kstl::string& filename)
 {
 	// TODO : check if this package was already loaded ?
-	SmartPointer<FileHandle> L_File = Platform_fopen(filename.c_str(), "rb");
+	auto L_File =FindFullName(filename);
+	if (!Platform_fopen(L_File.get(), "rb"))
+	{
+		return false;
+	}
 	CorePackage* newpackage = CorePackage::Open(L_File, filename);
 
 	if (newpackage)

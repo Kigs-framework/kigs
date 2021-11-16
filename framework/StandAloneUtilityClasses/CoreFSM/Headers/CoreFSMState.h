@@ -59,6 +59,12 @@ protected:
 	// transition list for this state
 	std::vector<SP<CoreFSMTransition>> mTransitions;
 
+	// a state can activate one of its transition
+
+	bool activateTransition(const KigsID& transitionname);
+
+	CoreFSMTransition* mActiveTransition = nullptr;
+
 };
 
 #define StringifyClassName(a) #a
@@ -140,15 +146,15 @@ protected: \
 { \
  public:\
 	UpgradorType*	GetUpgrador(){return (UpgradorType*)CoreModifiable::GetUpgrador();}\
-	void			UpgradorUpdate(const Timer& timer, void* addParam);\
+	bool			UpgradorUpdate(const Timer& timer, void* addParam);\
 	void			start(CoreFSMStateBase* prevstate);\
 	void			stop(CoreFSMStateBase* nextstate);
 
 #define DO_COREFSMSTATE_BASE_METHOD_DEFINITION() };\
 public:\
-void	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) override\
+bool	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) override\
 {\
-	((UpgradorMethods*)toUpdate)->UpgradorUpdate(timer, addParam);\
+	return ((UpgradorMethods*)toUpdate)->UpgradorUpdate(timer, addParam);\
 }\
 virtual void	start(CoreModifiable* toStart,CoreFSMStateBase* prevstate) override\
 {\
