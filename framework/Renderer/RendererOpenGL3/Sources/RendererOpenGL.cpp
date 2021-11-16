@@ -1201,7 +1201,7 @@ void RendererOpenGL::DrawPendingInstances(TravState* state)
 		if (state->mPath && t != -1 && t != k - 1) continue;
 #endif
 		auto mesh = instance.first;
-		state->mInstanceCount = instance.second.transforms.size();
+		state->mInstanceCount = (u32)instance.second.transforms.size();
 		if (active_shader != instance.second.shader)
 		{
 			if(!first)
@@ -1214,7 +1214,7 @@ void RendererOpenGL::DrawPendingInstances(TravState* state)
 		mesh->DoPreDraw(state);
 
 		state->mInstanceBufferIndex = getVBO();
-		BufferData(state->mInstanceBufferIndex, KIGS_BUFFER_TARGET_ARRAY, sizeof(float) * 12 * instance.second.transforms.size(), instance.second.transforms.data(), KIGS_BUFFER_USAGE_STREAM);
+		BufferData(state->mInstanceBufferIndex, KIGS_BUFFER_TARGET_ARRAY,(int)( sizeof(float) * 12 * instance.second.transforms.size()), instance.second.transforms.data(), KIGS_BUFFER_USAGE_STREAM);
 
 		auto shader = RendererOpenGL::GetActiveShader();
 		const Locations * locs = shader->GetLocation();
@@ -1225,11 +1225,11 @@ void RendererOpenGL::DrawPendingInstances(TravState* state)
 		mVertexBufferManager->FlushBindBuffer();
 
 		glEnableVertexAttribArray(locs->attribInstanceMatrix[0]);
-		glVertexAttribPointer(locs->attribInstanceMatrix[0], 4, GL_FLOAT, false, 3 * vec4size, (void*)0);
+		glVertexAttribPointer(locs->attribInstanceMatrix[0], 4, GL_FLOAT, false, (int)(3 * vec4size), (void*)0);
 		glEnableVertexAttribArray(locs->attribInstanceMatrix[1]);
-		glVertexAttribPointer(locs->attribInstanceMatrix[1], 4, GL_FLOAT, false, 3 * vec4size, (void*)(vec4size));
+		glVertexAttribPointer(locs->attribInstanceMatrix[1], 4, GL_FLOAT, false, (int)(3 * vec4size), (void*)(vec4size));
 		glEnableVertexAttribArray(locs->attribInstanceMatrix[2]);
-		glVertexAttribPointer(locs->attribInstanceMatrix[2], 4, GL_FLOAT, false, 3 * vec4size, (void*)(2 * vec4size));
+		glVertexAttribPointer(locs->attribInstanceMatrix[2], 4, GL_FLOAT, false, (int)(3 * vec4size), (void*)(2 * vec4size));
 
 		SetVertexAttribDivisor(state, state->mInstanceBufferIndex, locs->attribInstanceMatrix[0], 1);
 		SetVertexAttribDivisor(state, state->mInstanceBufferIndex, locs->attribInstanceMatrix[1], 1);
@@ -1303,7 +1303,7 @@ void VertexBufferManager::DoDelayedAction()
 {
 	if (!mToDeleteBuffer.empty())
 	{
-		DelBuffer(mToDeleteBuffer.size(), mToDeleteBuffer.data());
+		DelBuffer((int)mToDeleteBuffer.size(), mToDeleteBuffer.data());
 		mToDeleteBuffer.clear();
 	}
 }
@@ -1441,9 +1441,9 @@ void RendererOpenGL::DrawUIQuad(TravState * state, const UIVerticesInfo * qi)
 
 	BufferData(bufferName, KIGS_BUFFER_TARGET_ARRAY, qi->Offset * qi->vertexCount, qi->Buffer(), KIGS_BUFFER_USAGE_STATIC);
 
-	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_VERTEX_ID, qi->vertexComp, KIGS_FLOAT, false, qi->Offset, (void*)qi->vertexStride, locs);
-	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_COLOR_ID, qi->colorComp, KIGS_UNSIGNED_BYTE, false, qi->Offset, (void*)qi->colorStride, locs);
-	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, qi->texComp, KIGS_FLOAT, false, qi->Offset, (void*)qi->texStride, locs);
+	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_VERTEX_ID, qi->vertexComp, KIGS_FLOAT, false, qi->Offset, (void*)(uintptr_t)qi->vertexStride, locs);
+	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_COLOR_ID, qi->colorComp, KIGS_UNSIGNED_BYTE, false, qi->Offset, (void*)(uintptr_t)qi->colorStride, locs);
+	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, qi->texComp, KIGS_FLOAT, false, qi->Offset, (void*)(uintptr_t)qi->texStride, locs);
 
 	DrawArrays(state, GL_TRIANGLE_STRIP, 0, qi->vertexCount);
 
@@ -1456,9 +1456,9 @@ void RendererOpenGL::DrawUITriangles(TravState * state, const UIVerticesInfo * q
 	
 	unsigned int bufferName = getUIVBO();
 	BufferData(bufferName, KIGS_BUFFER_TARGET_ARRAY, qi->Offset * qi->vertexCount, qi->Buffer(), KIGS_BUFFER_USAGE_STATIC);
-	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_VERTEX_ID, qi->vertexComp, KIGS_FLOAT, false, qi->Offset, (void*)qi->vertexStride, locs);
-	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_COLOR_ID, qi->colorComp, KIGS_UNSIGNED_BYTE, false, qi->Offset, (void*)qi->colorStride, locs);
-	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, qi->texComp, KIGS_FLOAT, false, qi->Offset, (void*)qi->texStride, locs);
+	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_VERTEX_ID, qi->vertexComp, KIGS_FLOAT, false, qi->Offset, (void*)(uintptr_t)qi->vertexStride, locs);
+	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_COLOR_ID, qi->colorComp, KIGS_UNSIGNED_BYTE, false, qi->Offset, (void*)(uintptr_t)qi->colorStride, locs);
+	SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, qi->texComp, KIGS_FLOAT, false, qi->Offset, (void*)(uintptr_t)qi->texStride, locs);
 
 	DrawArrays(state,GL_TRIANGLES, 0, qi->vertexCount);
 

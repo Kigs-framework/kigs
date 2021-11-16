@@ -88,7 +88,7 @@ s32 LuaImporter::Import(const std::string& fileName, std::vector<CoreModifiable*
 
 		InternalImport(parent, table, import);
 		FinalizeImport(L, import);
-		return root.size();
+		return (s32)root.size();
 	}
 	else
 	{
@@ -147,7 +147,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 			else
 				InternalImport(parent, it.value(), import);
 		}
-		return import.rootObj.size();
+		return (s32)import.rootObj.size();
 	}
 
 	// TODO(antoine): references / includes

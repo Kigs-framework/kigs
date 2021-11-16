@@ -419,7 +419,7 @@ template <>
 int	JSonFileParserBase<kstl::string, AsciiParserUtils>::GetStringByteSize(const kstl::string& tocheck)
 {
 	// add trailing 0
-	return tocheck.size()+1;
+	return (int)(tocheck.size()+1);
 }
 
 template <>

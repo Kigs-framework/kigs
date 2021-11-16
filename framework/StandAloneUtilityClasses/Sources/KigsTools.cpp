@@ -553,7 +553,7 @@ auto PrepareWildcardSearch(std::string search_string)
 bool PassWildcardSearch(const std::vector<std::string>& splitted_search, const std::string& to_search)
 {
 	auto to_test_lower = ToLowerCase(to_search);
-	auto current_pos = 0;
+	size_t current_pos = 0;
 	for (auto& part : splitted_search)
 	{
 		auto found = to_test_lower.find(part, current_pos);

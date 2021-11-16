@@ -406,7 +406,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 				unsigned int submatIndex=i;
 				if(submatIndex>mMaterialStructList[matRef].subMat.size())
 				{
-					submatIndex=mMaterialStructList[matRef].subMat.size();
+					submatIndex=(unsigned int)mMaterialStructList[matRef].subMat.size();
 				}
 
 				BaseMaterialStruct* currentMat;

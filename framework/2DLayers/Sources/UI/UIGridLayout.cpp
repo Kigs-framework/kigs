@@ -91,7 +91,7 @@ void UIGridLayout::RecomputeLayout()
 
 
 		int r = 0;
-		unsigned int columns = mColumns == 0 ? items.size() : mColumns;
+		unsigned int columns = mColumns == 0 ? (unsigned int)items.size() : mColumns;
 		while (it != end) {
 
 			float widthAccumulator = 0;

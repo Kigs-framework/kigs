@@ -226,7 +226,7 @@ public:
 	 * \fn			unsigned int	GetJoystickCount()
 	 * \return		Joystick count
 	 */	
-	unsigned int	GetJoystickCount(){return mJoysticks.size();}
+	unsigned int	GetJoystickCount(){return (unsigned int)mJoysticks.size();}
 	
 	AccelerometerDevice* GetAccelerometer(){return mAccelerometer;}   
 	GeolocationDevice* GetGeolocation(){ return mGeolocation; }

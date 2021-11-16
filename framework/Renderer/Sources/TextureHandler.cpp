@@ -371,7 +371,7 @@ void	AnimationUpgrador::NotifyUpdate(const unsigned int  labelid, TextureHandler
 		const std::vector<SpriteSheetFrameData*>* ssanim = currentspritesheet->getAnimation(*mCurrentAnimation);
 		if(ssanim)
 		{
-			mFrameNumber = ssanim->size();
+			mFrameNumber = (unsigned int) ssanim->size();
 			parent->setCurrentFrame((*ssanim)[mCurrentFrame]);
 		}
 	}

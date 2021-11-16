@@ -590,7 +590,7 @@ bool	AsciiParserUtilsTemplate<char>::ReadString(char* result, const int MAX_STRI
 			{
 				mCurrentReadPos = (p - (char*)mText);
 				found=true;
-				mCurrentReadPos+=strlen(result);
+				mCurrentReadPos+=(unsigned int)strlen(result);
 			}
 			break;
 		}
@@ -1185,7 +1185,7 @@ template<typename charType>
 unsigned char*	AsciiParserUtilsTemplate<charType>::StringToBuffer(const kstl::string& str, unsigned int& size)
 {
 	// byte size is half string size
-	size=str.size()/2;
+	size=(unsigned int)str.size()/2;
 	unsigned char* result=0;
 	unsigned char*	readzone=(unsigned char*)str.c_str();	
 	if(size)

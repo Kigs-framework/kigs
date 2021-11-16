@@ -196,12 +196,12 @@ bool XMLWriterFile::WriteFile(const kstl::string& name,XML& xml)
 				}
 				std::vector<u8> result;
 				kxml_manager->SimpleCall("CompressKXML", writer.mData, result);
-				Platform_fwrite(result.data(), 1, result.size(), file.get());
+				Platform_fwrite(result.data(), 1, (long)result.size(), file.get());
 			}
 			else
 			{
 				for (auto& str : writer.mData)
-					Platform_fwrite(str.data(), 1, str.size(), file.get());
+					Platform_fwrite(str.data(), 1, (long)str.size(), file.get());
 			}
             Platform_fflush(file.get());
             Platform_fclose(file.get());

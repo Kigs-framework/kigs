@@ -59,7 +59,7 @@ void UITexturedItem::SetTexUV(UIVerticesInfo * aQI)
 		if (slice_size == v2f(0, 0))
 		{
 			std::vector<v2f>	transformed = { {0.0f, 0.0f},{0.0f, 1.0f},{1.0f, 1.0f},{1.0f, 0.0f} };
-			TransformUV(transformed.data(), transformed.size());
+			TransformUV(transformed.data(), (int)transformed.size());
 
 			// triangle strip order
 			buf[0].setTexUV(transformed[0]);

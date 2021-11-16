@@ -973,12 +973,12 @@ void	FilePathManager::InitWithConfigFile(const kstl::string& filename)
 	if (L_Dictionary)
 	{
 		CoreItemSP pathList = L_Dictionary;
-		int nbpath = pathList->size();
-		int i;
+		size_t nbpath = pathList->size();
+		size_t i;
 		for (i = 0; i < nbpath; i += 2)
 		{
-			CoreItemSP currentpathname = (*pathList)[i];
-			CoreItemSP currentpath = (*pathList)[i + 1];
+			CoreItemSP currentpathname = (*pathList)[(int)i];
+			CoreItemSP currentpath = (*pathList)[(int)i + 1];
 			AddToPath((kstl::string)*currentpathname.get(), (kstl::string)*currentpath.get());
 		}
 

@@ -118,7 +118,7 @@ DrawVertice::~DrawVertice()
 	ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
 	if (mVertexBuffer != -1)
 	{
-		scenegraph->AddDefferedItem((void*)mVertexBuffer, DefferedAction::DESTROY_BUFFER);
+		scenegraph->AddDefferedItem((void*)(uintptr_t)mVertexBuffer, DefferedAction::DESTROY_BUFFER);
 		mVertexBuffer = -1;
 	}
 	clearArrays();
@@ -505,13 +505,13 @@ bool DrawVertice::Draw(TravState* travstate)
 					renderer->BufferData(mVertexBuffer, KIGS_BUFFER_TARGET_ARRAY, vSize * mVertexCount, mVertices, KIGS_BUFFER_USAGE_DYNAMIC);
 				}
 
-				renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_VERTEX_ID, 3, mVertexFormat, false, vSize, (void*)mVertexDecal, locs);
+				renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_VERTEX_ID, 3, mVertexFormat, false, vSize, (void*)(intptr_t)mVertexDecal, locs);
 				if (mColorCount > 0)
-					renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_COLOR_ID, 4, mColorFormat, true, vSize, (void*)mColorDecal, locs);
+					renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_COLOR_ID, 4, mColorFormat, true, vSize, (void*)(intptr_t)mColorDecal, locs);
 				if (mNormalCount > 0)
-					renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_NORMAL_ID, 3, mNormalFormat, false, vSize, (void*)mNormalDecal, locs);
+					renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_NORMAL_ID, 3, mNormalFormat, false, vSize, (void*)(intptr_t)mNormalDecal, locs);
 				if (mTexCoordCount > 0)
-					renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, 2, mTexCoordFormat, false, vSize, (void*)mTexCoordDecal, locs);
+					renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, 2, mTexCoordFormat, false, vSize, (void*)(intptr_t)mTexCoordDecal, locs);
 
 				renderer->SetElementBuffer(0);
 				renderer->DrawArrays(travstate, mDrawMode, 0, mVertexCount);

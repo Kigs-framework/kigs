@@ -62,8 +62,8 @@ ModernMeshItemGroup::~ModernMeshItemGroup()
 		ModuleSceneGraph* scenegraph = KigsCore::GetModule<ModuleSceneGraph>().get();
 		if (scenegraph)
 		{
-			scenegraph->AddDefferedItem((void*)mVertexBuffer, DefferedAction::DESTROY_BUFFER);
-			scenegraph->AddDefferedItem((void*)mIndexBuffer, DefferedAction::DESTROY_BUFFER);
+			scenegraph->AddDefferedItem((void*)(uintptr_t)mVertexBuffer, DefferedAction::DESTROY_BUFFER);
+			scenegraph->AddDefferedItem((void*)(uintptr_t)mIndexBuffer, DefferedAction::DESTROY_BUFFER);
 		}
 	}
 }
@@ -1563,26 +1563,26 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 					switch (current.mask)
 					{
 					case ModuleRenderer::VERTEX_ARRAY_MASK:
-						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_VERTEX_ID, current.elemCount, KIGS_FLOAT, false, mVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_VERTEX_ID, current.elemCount, KIGS_FLOAT, false, mVertexSize, (void*)(uintptr_t)current.startpos, locs);
 						break;
 					case ModuleRenderer::NORMAL_ARRAY_MASK:
-						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_NORMAL_ID, current.elemCount, KIGS_BYTE, false, mVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_NORMAL_ID, current.elemCount, KIGS_BYTE, false, mVertexSize, (void*)(uintptr_t)current.startpos, locs);
 						break;
 					case ModuleRenderer::COLOR_ARRAY_MASK:
-						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_COLOR_ID, current.elemCount, KIGS_UNSIGNED_BYTE, true, mVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_COLOR_ID, current.elemCount, KIGS_UNSIGNED_BYTE, true, mVertexSize, (void*)(uintptr_t)current.startpos, locs);
 						break;
 					case ModuleRenderer::TEXCOORD_ARRAY_MASK:
-						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, current.elemCount, KIGS_FLOAT, false, mVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, current.elemCount, KIGS_FLOAT, false, mVertexSize, (void*)(uintptr_t)current.startpos, locs);
 						break;
 					case ModuleRenderer::TANGENT_ARRAY_MASK:
-						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_TANGENT_ID, current.elemCount, KIGS_BYTE, false, mVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_TANGENT_ID, current.elemCount, KIGS_BYTE, false, mVertexSize, (void*)(uintptr_t)current.startpos, locs);
 						break;
 					case ModuleRenderer::BONE_WEIGHT_ARRAY_MASK:
 						// normalize needs to be set to true for weight to be in [0.0,1.0] GPU side 
-						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_BONE_WEIGHT_ID, current.elemCount, KIGS_UNSIGNED_BYTE, true, mVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_BONE_WEIGHT_ID, current.elemCount, KIGS_UNSIGNED_BYTE, true, mVertexSize, (void*)(uintptr_t)current.startpos, locs);
 						break;
 					case ModuleRenderer::BONE_INDEX_ARRAY_MASK:
-						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_BONE_INDEX_ID, current.elemCount, KIGS_UNSIGNED_BYTE, false, mVertexSize, (void*)current.startpos, locs);
+						renderer->SetVertexAttrib(mVertexBuffer, KIGS_VERTEX_ATTRIB_BONE_INDEX_ID, current.elemCount, KIGS_UNSIGNED_BYTE, false, mVertexSize, (void*)(uintptr_t)current.startpos, locs);
 						break;
 					}
 				}
@@ -1592,9 +1592,9 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 			if (instanced)
 			{
 				size_t vec4size = sizeof(v4f);
-				renderer->SetVertexAttrib(travstate->mInstanceBufferIndex, KIGS_VERTEX_ATTRIB_INSTANCE_MATRIX_ID + 0, 4, KIGS_FLOAT, false, 3 * vec4size, (void*)0);
-				renderer->SetVertexAttrib(travstate->mInstanceBufferIndex, KIGS_VERTEX_ATTRIB_INSTANCE_MATRIX_ID + 1, 4, KIGS_FLOAT, false, 3 * vec4size, (void*)(vec4size));
-				renderer->SetVertexAttrib(travstate->mInstanceBufferIndex, KIGS_VERTEX_ATTRIB_INSTANCE_MATRIX_ID + 2, 4, KIGS_FLOAT, false, 3 * vec4size, (void*)(2 * vec4size));
+				renderer->SetVertexAttrib(travstate->mInstanceBufferIndex, KIGS_VERTEX_ATTRIB_INSTANCE_MATRIX_ID + 0, 4, KIGS_FLOAT, false, (unsigned int)(3 * vec4size), (void*)(uintptr_t)0);
+				renderer->SetVertexAttrib(travstate->mInstanceBufferIndex, KIGS_VERTEX_ATTRIB_INSTANCE_MATRIX_ID + 1, 4, KIGS_FLOAT, false, (unsigned int)(3 * vec4size), (void*)(uintptr_t)(vec4size));
+				renderer->SetVertexAttrib(travstate->mInstanceBufferIndex, KIGS_VERTEX_ATTRIB_INSTANCE_MATRIX_ID + 2, 4, KIGS_FLOAT, false, (unsigned int)(3 * vec4size), (void*)(uintptr_t)(2 * vec4size));
 
 				renderer->SetVertexAttribDivisor(travstate, travstate->mInstanceBufferIndex, KIGS_VERTEX_ATTRIB_INSTANCE_MATRIX_ID + 0, 1);
 				renderer->SetVertexAttribDivisor(travstate, travstate->mInstanceBufferIndex, KIGS_VERTEX_ATTRIB_INSTANCE_MATRIX_ID + 1, 1);
@@ -1628,7 +1628,7 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 					{
 						if (!current_draw)
 						{
-							renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, count - last_count, mIndexType, (void*)(sizeofindex * last_count));
+							renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, count - last_count, mIndexType, (void*)(intptr_t)(sizeofindex * last_count));
 						}
 						else
 						{
@@ -1641,7 +1641,7 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 				}
 				if (last_draw)
 				{
-					renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, count - last_count, mIndexType, (void*)(sizeofindex * last_count));
+					renderer->DrawElements(travstate, KIGS_DRAW_MODE_TRIANGLES, count - last_count, mIndexType, (void*)(intptr_t)(sizeofindex * last_count));
 				}
 			}
 			else
