@@ -1556,6 +1556,21 @@ void CoreModifiable::removeUser(CoreModifiable* user)
 	}), mUsers.end());
 }
 
+void CoreModifiable::RemoveFromAllParents()
+{
+	std::vector<CoreModifiable*> users;
+	{
+		std::unique_lock<std::shared_mutex> lk{ GetMutex() };
+		users = std::move(mUsers);
+		mUsers.clear();
+	}
+	auto me = SharedFromThis();
+	for (auto user : users)
+	{
+		user->removeItem(me);
+	}
+}
+
 void CoreModifiable::flagAsPostDestroy()
 {
 	KigsCore::Instance()->AddToPostDestroy(SharedFromThis());

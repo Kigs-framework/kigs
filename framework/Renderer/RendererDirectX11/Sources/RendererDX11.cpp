@@ -209,17 +209,13 @@ void RendererDX11::ProtectedFlushMatrix(TravState* state)
 				float scale = 1;
 			} buffer;
 
-			auto nearPlane = 0.1f; // D / (C - 1.0f);
-			auto farPlane = 100.0f; // D / (C + 1.0f);
-			cam->getValue("NearPlane", nearPlane);
-			cam->getValue("FarPlane", farPlane);
+			auto nearPlane = cam->GetNearPlane();
+			auto farPlane = cam->GetFarPlane();
 			buffer.far_plane = farPlane;
 
 			
-			v4f fog_color(0, 0, 0, 1);
-			float fog_scale = (farPlane - nearPlane) / 10;
-			cam->getValue("FogColor", fog_color);
-			cam->getValue("FogScale", fog_scale);
+			v4f fog_color = cam->GetFogColor();
+			float fog_scale = cam->GetFogScale();
 			
 			buffer.color = fog_color;
 			buffer.scale = fog_scale;

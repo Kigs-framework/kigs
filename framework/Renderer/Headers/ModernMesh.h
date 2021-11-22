@@ -105,7 +105,7 @@ public:
 	SP<ModernMeshItemGroup> EndMeshGroup();
 	SP<ModernMeshItemGroup> EndMeshGroup(void * vertex, s32 vertexCount, void * index, s32 indexCount);
 
-	SP<ModernMeshItemGroup> EndMeshGroup(s32 vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, s32 face_count, v3u* faces, v3f offset = { 0,0,0 });
+	SP<ModernMeshItemGroup> EndMeshGroup(s32 vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, s32 face_count, v3u* faces, v3f offset = { 0,0,0 }, SP<ModernMeshItemGroup> reuse_group=nullptr);
 
 	void EndMeshBuilder();
 	virtual ~ModernMesh();
@@ -272,10 +272,6 @@ protected:
 	// called after the object was exported (remove dynamics added before export)
 	void EndExport(ExportSettings* settings) override;
 #endif
-
-	DECLARE_METHOD(ResetContext);
-
-	COREMODIFIABLE_METHODS(ResetContext);
 };
 
 

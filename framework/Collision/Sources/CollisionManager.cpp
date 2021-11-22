@@ -195,14 +195,24 @@ void CollisionManager::ProcessPendingItems()
 			info->mItem = item.get();
 			info->mUID = item->getUID();
 			info->mNeedRebuild = false;
-			if (collider->mIsCoreModifiable)
+
+			if (std::holds_alternative<CollisionBaseObject*>(collider))
 			{
-				info->mNodeCollisionObject = collider;
+				auto raw_ptr = std::get<CollisionBaseObject*>(collider);
+				if (raw_ptr->mIsCoreModifiable)
+				{
+					info->mNodeCollisionObject = raw_ptr;
+				}
+				else
+				{
+					std::shared_ptr<CollisionBaseObject> ptr(raw_ptr);
+					std::atomic_store(&info->mOwnedCollisionObject, ptr);
+				}
 			}
 			else
 			{
-				std::shared_ptr<CollisionBaseObject> ptr(collider);
-				std::atomic_store(&info->mOwnedCollisionObject, ptr);
+				auto shared_ptr = std::get<std::shared_ptr<CollisionBaseObject>>(collider);
+				std::atomic_store(&info->mOwnedCollisionObject, shared_ptr);
 			}
 		}
 		mToAdd.clear();
@@ -307,6 +317,12 @@ bool CollisionManager::CheckType(CoreModifiable* item)
 }
 
 void CollisionManager::SetCollisionObject(const CMSP& item, CollisionBaseObject* collider)
+{
+	std::lock_guard<std::mutex> lock(mToAddMutex);
+	mToAdd.push_back({ item, collider });
+}
+
+void CollisionManager::SetCollisionObject(const CMSP& item, std::shared_ptr<CollisionBaseObject> collider)
 {
 	std::lock_guard<std::mutex> lock(mToAddMutex);
 	mToAdd.push_back({ item, collider });

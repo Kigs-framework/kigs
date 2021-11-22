@@ -14,7 +14,7 @@ IMPLEMENT_CLASS_INFO(MaterialStage);
 
 IMPLEMENT_CONSTRUCTOR(MaterialStage)
 {
-	KigsCore::GetNotificationCenter()->addObserver(this, "ResetContext", "ResetContext");
+	//KigsCore::GetNotificationCenter()->addObserver(this, "ResetContext", "ResetContext");
 }
 
 bool MaterialStage::PreDraw(TravState* state)

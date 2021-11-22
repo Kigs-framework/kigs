@@ -25,7 +25,7 @@ public:
 	void	StartGroup(CoreVector* description, int hintVertexBufferSize, int hintTriangleBufferSize);
 	SP<ModernMeshItemGroup>	EndGroup(bool optimize = true);
 	SP<ModernMeshItemGroup>	EndGroup(void * vertex, int vertexCount, void * index, int indexCount);
-	SP<ModernMeshItemGroup>	EndGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset);
+	SP<ModernMeshItemGroup>	EndGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset, SP<ModernMeshItemGroup> reuse_group);
 	void	AddTriangle(void* v1, void* v2, void* v3);
 	void PlaceMergeBarrier();
 

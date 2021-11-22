@@ -659,6 +659,8 @@ public:
 	// Get parents/users count
 	size_t GetParentCount() const { return mUsers.size(); }
 
+	void RemoveFromAllParents();
+
 	// Get the first parent matching the ID
 	CoreModifiable* getFirstParent(KigsID ParentClassID) const;
 
