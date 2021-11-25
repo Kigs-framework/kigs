@@ -31,7 +31,7 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
 
 	joystickname+=_itoa(gInstanceModuleInputDX->getJoystickCount()+1,countstring,10);
 
-	SP<JoystickDX> localJoystick = gInstanceModuleInputDX->getCore()->GetInstanceOf(joystickname,"Joystick");
+	SP<JoystickDX> localJoystick = gInstanceModuleInputDX->getCore()->GetInstanceOf(joystickname,"JoystickDevice");
 
     HRESULT hr;
 
