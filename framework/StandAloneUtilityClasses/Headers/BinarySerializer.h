@@ -261,7 +261,7 @@ namespace serializer_detail
 
 		for (auto& element : range)
 		{
-			serialize_object(stream, element);
+			CHECK_SERIALIZE(serialize_object(stream, element));
 		}
 
 		return true;
@@ -344,6 +344,13 @@ namespace serializer_detail
 		return true;
 	}
 
+	template<typename PacketStream, typename T1, typename T2>
+	bool serialize(PacketStream& stream, std::pair<T1, T2>& t)
+	{
+		CHECK_SERIALIZE(serialize_object(stream, t.first));
+		CHECK_SERIALIZE(serialize_object(stream, t.second));
+		return true;
+	}
 
 	template <typename Tuple, typename F, size_t... Is>
 	bool tuple_for_each(Tuple&& t, F&& f, std::index_sequence<Is...>)
@@ -369,6 +376,43 @@ namespace serializer_detail
 	}
 }
 
+
+/*template<typename T, typename PacketStream, typename ... Args>
+bool serialize_object(PacketStream& stream, T&& value, Args&& ... args)
+{
+	if constexpr (is_detected_v<has_member_serialize, T, PacketStream>)
+	{
+		return value.Serialize(stream, FWD(args)...);
+	}
+	else if constexpr (is_detected_v<has_begin, T> && is_detected_v<has_end, T>)
+	{
+		using namespace serializer_detail;
+		if constexpr (is_detected_v<has_key_type, T>)
+		{
+			if constexpr (is_detected_v<has_bracket_operator, T>)
+				return serialize_map_range(stream, value, FWD(args)...);
+			else
+				return serialize_set_range(stream, value, FWD(args)...);
+		}
+		else
+		{
+			return serialize_range(stream, value, FWD(args)...);
+		}
+	}
+	else if constexpr (is_detected_v<has_first_type, T> && is_detected_v<has_second_type, T>)
+	{
+		using namespace serializer_detail;
+		CHECK_SERIALIZE(serialize_object(stream, value.first));
+		CHECK_SERIALIZE(serialize_object(stream, value.second));
+		return true;
+	}
+	else
+	{
+		using namespace serializer_detail;
+		return serialize(stream, FWD(value), FWD(args)...);
+	}
+	return false;
+}*/
 
 template<typename T, typename PacketStream, typename ... Args>
 bool serialize_object(PacketStream& stream, T& value, Args&& ... args)
@@ -406,6 +450,8 @@ bool serialize_object(PacketStream& stream, T& value, Args&& ... args)
 	}
 	return false;
 }
+
+
 template<typename PacketStream>
 bool serialize_bytes(PacketStream& stream, u8* data, u64 size)
 {
@@ -832,6 +878,7 @@ struct BasePacketWriteStream
 		CHECK_SERIALIZE(serialize_object(*this, thing));
 		packer.merge_into(before);
 		packer = before;
+		return true;
 	}
 
 	PackerType packer;
@@ -843,7 +890,7 @@ using PacketWriteStream = BasePacketWriteStream<BitPacker>;
 using VectorWriteStream = BasePacketWriteStream<VectorBitPacker>;
 
 template<typename T>
-std::string SaveToString(T& thing, void* user_data = nullptr)
+std::string SaveToString(T&& thing, void* user_data = nullptr)
 {
 	std::vector<u32> data;
 	VectorWriteStream stream{ data };
@@ -854,7 +901,7 @@ std::string SaveToString(T& thing, void* user_data = nullptr)
 }
 
 template<typename T>
-bool LoadFromString(T& thing, const std::string& str, void* user_data=nullptr)
+bool LoadFromString(T&& thing, const std::string& str, void* user_data=nullptr)
 {
 	unsigned int size = 0;
 	auto data = AsciiParserUtils::StringToBuffer(str, size);

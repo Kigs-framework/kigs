@@ -42,19 +42,6 @@ using namespace winrt::Windows::Foundation;
 
 #define UPDATE_DELAY (3'000'000'000/100)
 
-namespace serializer_detail
-{
-	template<typename PacketStream>
-	bool serialize(PacketStream& stream, GuidComp& value)
-	{
-		CHECK_SERIALIZE(serialize_object(stream, value.Data1));
-		CHECK_SERIALIZE(serialize_object(stream, value.Data2));
-		CHECK_SERIALIZE(serialize_object(stream, value.Data3));
-		CHECK_SERIALIZE(serialize_bytes(stream, value.Data4, 8 * sizeof(u8)));
-		return true;
-	}
-}
-
 
 struct SpatialMapSurfaceRecord
 {
@@ -700,7 +687,7 @@ void HoloSpatialMap::StartListening()
 			lock.unlock();
 
 			int surface_index = 0;
-			for (auto& current : surfaces)
+			for (auto current : surfaces)
 			{
 				if (!mIsListening) break;
 
@@ -996,7 +983,7 @@ void HoloSpatialMap::InitModifiable()
 	};
 
 	//import_timed_scan("timed_spatial_map_4948626757552.bin");
-	import_timed_scan("timed_spatial_map_8734318291510.bin");
+	//import_timed_scan("timed_spatial_map_8734318291510.bin");
 	
 
 	//import_timed_scan("spatial_map_kcomk_antoine_cantine.bin");

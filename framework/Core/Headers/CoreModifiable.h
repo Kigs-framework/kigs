@@ -1602,21 +1602,5 @@ inline CoreAttributeAndMethodForwardSmartPointer<smartPointOn>::CoreAttributeAnd
 	mNextItem = parent->InsertForwardPtr(this);
 }
 
-#ifdef WUP
-template<typename T>
-T* CoreModifiable::getAny(const KigsID id)
-{
-	auto attr = getAttribute(id);
-	if (!attr)
-	{
-		attr = AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::ANY, id);
-		static_cast<maAny*>(attr)->ref() = T{};
-	}
-	if (attr && attr->getType() == CoreModifiable::ATTRIBUTE_TYPE::ANY)
-	{
-		return static_cast<maAny*>(attr)->getAny<T>();
-	}
-	return nullptr;
-}
-#endif
+
 #endif

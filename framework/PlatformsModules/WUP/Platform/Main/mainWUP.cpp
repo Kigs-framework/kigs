@@ -3,7 +3,7 @@
 // *   THIS FILE IS A GENERIC FILE COMMON TO SEVERAL APPLICATION                *
 // ******************************************************************************
 #pragma once
-#define NEXTBIM_EXPLORER_STATIC
+//#define NEXTBIM_EXPLORER_STATIC
 #ifdef NEXTBIM_EXPLORER_STATIC
 void wupmain();
 #else

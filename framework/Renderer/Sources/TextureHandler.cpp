@@ -248,7 +248,7 @@ void	TextureHandler::refreshSizeAndUVs(const SpriteSheetFrameData* ssf)
 
 		if (ssf->Rotated)
 		{
-			// 2d 90° rotation matrix
+			// 2d 90Â° rotation matrix
 			mUVTexture.e[0][0] = 0.0f;
 			mUVTexture.e[0][1] = -1.0f;
 			mUVTexture.e[1][0] = 1.0f;

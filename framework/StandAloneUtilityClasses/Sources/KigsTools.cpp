@@ -1585,7 +1585,7 @@ void CustomAttributeEditor(CoreModifiable* item)
 
 		auto f = [](float* v, float amount)
 		{
-			STACK_STRING(str, 128, "%.0f°", amount);
+			STACK_STRING(str, 128, "%.0fÂ°", amount);
 			ImGui::SameLine();
 			if (ImGui::SmallButton(str))
 				*v = amount * fPI_180;
@@ -1896,7 +1896,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			bool is_lua_method = false;
 			if (attr->isDynamic() && attr->getType() == CoreModifiable::ATTRIBUTE_TYPE::STRING)
 			{
-				std::vector<std::string> splitted = SplitStringByCharacter(attr->getLabel()._id_name, '§');
+				std::vector<std::string> splitted = SplitStringByCharacter(attr->getLabel()._id_name, 'Â§');
 				if (splitted.size() == 3 && splitted[1] == "LUA_CODE")
 				{
 					func_name = splitted[2];

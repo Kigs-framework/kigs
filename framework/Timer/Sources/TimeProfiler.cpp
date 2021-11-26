@@ -206,7 +206,7 @@ void TimeProfiler::DumpProfilers()
 	CoreModifiable::GetInstances("TimeProfiler",instances);
 
 	fprintf(myDump,"_______________________________________________\n");
-	fprintf(myDump,"Profiler's stats N° %d: at time : %lf\n\n",myProfileCount,myGlobalTimer->GetTime());
+	fprintf(myDump,"Profiler's stats NÂ° %d: at time : %lf\n\n",myProfileCount,myGlobalTimer->GetTime());
 
 	kdouble max=KFLOAT_CONST(0.0);
 	kstl::string maxname;
