@@ -511,7 +511,7 @@ bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 			io.MouseDown[0] = io.MouseDown[1] = io.MouseDown[2] = 0;
 			mIsDown = false;
 
-			if (ev.near_interaction_went_trough || io.MouseDownDuration[0] > 1.0f)
+			if (ev.near_interaction_went_trough || io.MouseDownDuration[0] > std::max(1.0f, 2.0f*io.DeltaTime))
 			{
 				io.MouseClicked[0] = false;
 				io.MouseDoubleClicked[0] = false;
