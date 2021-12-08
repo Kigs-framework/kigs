@@ -50,7 +50,7 @@ void LocalizationManager::InitWithConfigFile(const kstl::string& filename)
 		kstl::map<kstl::string, kstl::string>	langageMap;
 
 		CoreItemSP pathList = L_Dictionary;
-		int nbpath = pathList->size();
+		int nbpath = (int)pathList->size();
 		int i;
 		for (i = 0; i < nbpath; i += 2)
 		{
@@ -110,7 +110,7 @@ const UTF8Char* LocalizationManager::getLocalizedStringUTF8(const kstl::string& 
 		{
 			usString				tmpOne((*itfound).second.mUTF16);
 			std::vector<UTF8Char>	tmpUTF8=tmpOne.toUTF8();
-			int l = tmpUTF8.size();
+			int l = (int)tmpUTF8.size();
 			UTF8Char* tempBuffer = nullptr;
 			if (l)
 			{

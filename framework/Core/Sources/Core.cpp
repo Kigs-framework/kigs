@@ -50,8 +50,8 @@ kstl::vector<kstl::string>	SplitStringByCharacter(const kstl::string&  a_mstring
 {
 	kstl::vector<kstl::string> elems;
 	kstl::string ss = a_mstring;
-	int start = 0;
-	int pos = 0;
+	size_t start = 0;
+	size_t pos = 0;
 	while (!a_mstring.empty())
 	{
 		pos = ss.find_first_of(delim, pos + 1);

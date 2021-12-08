@@ -80,7 +80,7 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	// No target, no orientation
 	if (!GetUpgrador()->mCurrentTarget)
 	{
-		return;
+		return false;
 	}
 
 	// check that target axis & up axis are OK ( orthogonal, normalized and X, Y or Z axis colinear )
@@ -89,14 +89,14 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	if(!isValidAxis(axis1))
 	{
 		KIGS_WARNING("AutoOrientedNode bad OrientedAxis", 1);
-		return;
+		return false;
 	}
 	
 	GetUpgrador()->mPseudoConstantAxis->getValue(axis2);
 	if (!isValidAxis(axis2))
 	{
 		KIGS_WARNING("AutoOrientedNode bad PseudoConstantAxis", 1);
-		return;
+		return false;
 	}
 
 	BBox	tstAxis(axis1);
@@ -106,7 +106,7 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	if ((bboxdiagsqr < 1.98f) || (bboxdiagsqr > 2.02f))
 	{
 		KIGS_WARNING("AutoOrientedNode bad axis", 1);
-		return;
+		return false;
 	}
 
 	// compute third vector (axis3) from axis1 and axis2
@@ -172,4 +172,6 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 
 	// update mLastValidUpAxis 
 	// TODO
+
+	return false;
 }

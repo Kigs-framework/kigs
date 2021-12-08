@@ -121,7 +121,7 @@ unsigned char* FreeType_TextDrawer::DrawTextToImage(const unsigned short* text, 
 	int fontHeight=(mFontFaceCache[mCurrentFontFace]->mFontFace->size->metrics.height)>>6;
 	if (fontHeight < 2)fontHeight = 2;
 
-	unsigned int lineHeight=(foundh-2*BORDER_PIXEL_MARGIN)/result.size();
+	unsigned int lineHeight=(foundh-2*BORDER_PIXEL_MARGIN)/(unsigned int)result.size();
 
 	// center text around baseline - fontHeight/4
 
@@ -557,9 +557,9 @@ std::vector<FreeType_TextDrawer::LineStruct> FreeType_TextDrawer::splitString(co
 	foundh =((computedH+63) >> 6);
 	baseline = (computedH+63) >> 6;
 	foundh += (addHeight);
-	foundh*=returned.size();
+	foundh*=(unsigned int)returned.size();
 
-	foundh += mInterline*(returned.size()-1);
+	foundh += mInterline*(unsigned int)(returned.size()-1);
 
 
 	foundh+=BORDER_PIXEL_MARGIN*2;
@@ -964,7 +964,7 @@ FreeType_TextDrawer::FontFaceStruct*	FreeType_TextDrawer::searchOlderFontFaceInC
 	if(mFontFaceCache.size()<MAX_FONT_CACHE_SIZE)
 	{
 		mFontFaceCache.push_back(new FontFaceStruct());
-		mCurrentFontFace=mFontFaceCache.size()-1;
+		mCurrentFontFace=(unsigned int)(mFontFaceCache.size()-1);
 	}
 	else
 	{

@@ -5,7 +5,7 @@
 #include "TecLibs/Tec3D.h"
 #include "TecLibs/3D/3DObject/BBox.h"
 #include "Node3D.h"
-#include "CollisionBaseObject.h"
+#include "SimpleShapeMeshCollider.h"
 
 #include "DynamicGrowingBuffer.h"
 
@@ -50,12 +50,12 @@ protected:
 		u32 A() const { u32 result=0; memcpy(&result, &data[0], 3); return result; }
 		u32 B() const { u32 result=0; memcpy(&result, &data[3], 3); return result; }
 		u32 C() const { u32 result=0; memcpy(&result, &data[6], 3); return result; }
-		u32 TriangleIndex() const { u32 result = 0; memcpy(&result, &data[9], 3); return result; }
+		u32 FaceIndex() const { u32 result = 0; memcpy(&result, &data[9], 3); return result; }
 
 		void SetA(u32 value) { memcpy(&data[0], &value, 3); }
 		void SetB(u32 value) { memcpy(&data[3], &value, 3); }
 		void SetC(u32 value) { memcpy(&data[6], &value, 3); }
-		void SetTriangleIndex(u32 value) {memcpy(&data[9], &value, 3); }
+		void SetFaceIndex(u32 value) {memcpy(&data[9], &value, 3); }
 	};
 
 	class BuildTriangle_base
@@ -113,7 +113,7 @@ protected:
 		*/
 		
 		t* mIndex;
-		u32 mTriangleIndex=0;
+		u32 mFaceIndex = 0;
 
 		virtual BuildTriangle_base* Next() { return (this)+1; }
 
@@ -122,7 +122,7 @@ protected:
 		virtual void SetIndex(void *iArray, int first)
 		{
 			mIndex = &reinterpret_cast<t*>(iArray)[first];
-			mTriangleIndex = first/3;
+			mFaceIndex = first/3;
 		}
 
 		virtual void GetIndex(unsigned int &a, unsigned int &b, unsigned int &c)
@@ -156,6 +156,7 @@ protected:
 	int mTriangleCount = 0;
 
 public:
+	int mFaceCount = 0;
 	/*! \brief sons. AABBTree is a binary tree 
 	*/
 	AABBTreeNode *mSon1 = nullptr;
@@ -203,51 +204,16 @@ public:
 */
 // ****************************************
 
-class AABBTree : public CollisionBaseObject, public AABBTreeNode
+class AABBTree : public SimpleShapeBase, public AABBTreeNode
 {
-protected:
-	NormalTriangle * mNormalTriangleArray = nullptr;
-	unsigned int	 mCurrentFreeTriangleIndex = 0;
-	unsigned int	 mCurrentFreeAABBTreeNode = 0;
-	NormalTriangle * getFreeNormalTriangleBuffer(int trcount)
-	{
-		NormalTriangle * result = &mNormalTriangleArray[mCurrentFreeTriangleIndex];
-		mCurrentFreeTriangleIndex += trcount;
-		return result;
-	}
-
-	std::string mFileName;
-
-	Point3D *		mVertexList = nullptr;
-	unsigned int	mVertexCount = 0;
-
-	DynamicGrowingBuffer<AABBTreeNode>*	mDynamicGrowingBuffer = nullptr;
-
-	AABBTreeNode * getFreeAABBTreeNode()
-	{
-		AABBTreeNode * result = mDynamicGrowingBuffer->at(mCurrentFreeAABBTreeNode);
-		++mCurrentFreeAABBTreeNode;
-		return result;
-	}
-
-	// temporary construction buffer
-	kstl::vector<unsigned int>*	mIndexlist1 = nullptr;
-	kstl::vector<unsigned int>*	mIndexlist2 = nullptr;
-
-	virtual bool CallLocalRayIntersection(Hit &hit, const Point3D& start, const Vector3D& dir)  const override;
-	virtual bool CallLocalRayIntersection(std::vector<Hit> &hit, const Point3D& start, const Vector3D& dir)  const override;
-	virtual AABBTree* getAABBTree() override
-	{
-		return this;
-	}
 public:
-
+	SimpleShapeType getType() const override { return SimpleShapeType::ST_AABBTree; }
+	CoreItemSP getCoreItemDesc() const override;
 
 	static AABBTree* BuildFromMesh(ModernMesh* mesh);
 
 #ifdef KIGS_TOOLS
-	// draw debug mInfo using GLSLDrawDebug
-	virtual void DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer);
+	void DrawDebug(const Hit& h, const Matrix3x4& mat) override;
 #endif
 	friend class AABBTreeNode;
 
@@ -260,6 +226,9 @@ public:
 
 	AABBTree() {};
 	AABBTree(int trCount);
+
+	void InitDynamicBuffer(int trCount);
+
 	virtual ~AABBTree();
 
 	const Point3D* GetVertexList() const { return mVertexList; }
@@ -274,6 +243,47 @@ public:
 	{
 		return *mIndexlist2;
 	}
+	bool IsBuilt() const
+	{
+		return mVertexList;
+	}
+protected:
+	NormalTriangle* mNormalTriangleArray = nullptr;
+	unsigned int	 mCurrentFreeTriangleIndex = 0;
+	unsigned int	 mCurrentFreeAABBTreeNode = 0;
+	NormalTriangle* getFreeNormalTriangleBuffer(int trcount)
+	{
+		NormalTriangle* result = &mNormalTriangleArray[mCurrentFreeTriangleIndex];
+		mCurrentFreeTriangleIndex += trcount;
+		return result;
+	}
+
+	std::string mFileName;
+
+	Point3D* mVertexList = nullptr;
+	unsigned int	mVertexCount = 0;
+
+	DynamicGrowingBuffer<AABBTreeNode>* mDynamicGrowingBuffer = nullptr;
+
+	AABBTreeNode* getFreeAABBTreeNode()
+	{
+		AABBTreeNode* result = mDynamicGrowingBuffer->at(mCurrentFreeAABBTreeNode);
+		++mCurrentFreeAABBTreeNode;
+		return result;
+	}
+
+	// temporary construction buffer
+	kstl::vector<unsigned int>* mIndexlist1 = nullptr;
+	kstl::vector<unsigned int>* mIndexlist2 = nullptr;
+
+	virtual bool CallLocalRayIntersection(Hit& hit, const Point3D& start, const Vector3D& dir)  const override;
+	virtual bool CallLocalRayIntersection(std::vector<Hit>& hit, const Point3D& start, const Vector3D& dir)  const override;
+	virtual AABBTree* getAABBTree() override
+	{
+		return this;
+	}
+
+	void initFromCoreItemDesc(CoreItemSP init) override;
 };
 
 

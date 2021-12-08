@@ -124,7 +124,7 @@ static int printw(unsigned short **out, const unsigned short *format, va_list ar
 				width += *format - '0';
 			}
 			if (*format == 's') {
-				unsigned short *s = (unsigned short *)va_arg(args, int);
+				unsigned short *s = (unsigned short *)(intptr_t)va_arg(args, int);
 				if (s)
 				{
 					pc += printsw(out, s, width, pad);
@@ -359,7 +359,7 @@ kstl::string usString::encode()
 void usString::decode(const kstl::string& todecode)
 {
 	// first count '.' numbers to find decoded string len
-	unsigned int len = todecode.length();
+	unsigned int len = (unsigned int)todecode.length();
 	char*	read = (char*)todecode.c_str();
 	unsigned int dotcount = 0;
 	unsigned int i = 0;
@@ -625,7 +625,7 @@ void usString::replaceEscapeUnicode()
 
 	int pos = 0;
 	int lastpos = pos;
-	pos = find(toReplace, pos);
+	pos = (int)find(toReplace, pos);
 
 	unsigned int Replacement = 32;
 
@@ -640,7 +640,7 @@ void usString::replaceEscapeUnicode()
 		result += (unsigned short)Replacement;
 		pos += 6; // \u####
 		lastpos = pos;
-		pos = find(toReplace, pos);
+		pos = (int)find(toReplace, pos);
 	}
 
 	pos = Len;
@@ -655,7 +655,7 @@ void usString::replaceEscapeUnicode()
 
 	pos = 0;
 	lastpos = pos;
-	pos = find(toReplace, pos);
+	pos = (int)find(toReplace, pos);
 
 	Replacement = 10;
 
@@ -665,7 +665,7 @@ void usString::replaceEscapeUnicode()
 		result += (unsigned short)Replacement;
 		pos += 2; // \n
 		lastpos = pos;
-		pos = find(toReplace, pos);
+		pos = (int)find(toReplace, pos);
 	}
 
 	pos = Len;
@@ -690,7 +690,7 @@ void	usString::replaceAllOccurence(const usString& toReplace, const usString& Re
 	result.reserve(mReservedSize);
 	int pos = 0;
 	int lastpos = pos;
-	pos = find(toReplace, pos);
+	pos = (int) find(toReplace, pos);
 
 	while (pos != std::string::npos)
 	{
@@ -698,7 +698,7 @@ void	usString::replaceAllOccurence(const usString& toReplace, const usString& Re
 		result += Replacement;
 		pos += toReplaceL;
 		lastpos = pos;
-		pos = find(toReplace, pos);
+		pos = (int)find(toReplace, pos);
 	}
 
 	pos = Len;
@@ -731,11 +731,11 @@ void usString::removeRange(size_t start, int len)
 	
 	size_t size = strlen();
 	if (start + len > size)
-		len = size-start;
+		len = (int)(size-start);
 
 	if (len == 0) return;
 
 	memmove(mString + start, mString + (start + len), (size + 1 - start - len) * sizeof(unsigned short));
 
-	mLen = size - len;
+	mLen = (u32)(size - len);
 }

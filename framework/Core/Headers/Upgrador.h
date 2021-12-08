@@ -18,13 +18,13 @@ class Timer;
 { \
  public:\
 	UpgradorType* GetUpgrador(){return (UpgradorType*)CoreModifiable::GetUpgrador();}\
-	void UpgradorUpdate(const Timer& timer, void* addParam);\
+	bool UpgradorUpdate(const Timer& timer, void* addParam);\
 FOR_EACH(DECLARE_METHOD, __VA_ARGS__)\
 };\
 public:\
-void	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) override\
+bool	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) override\
 {\
-	((UpgradorMethods*)toUpdate)->UpgradorUpdate(timer, addParam);\
+	return ((UpgradorMethods*)toUpdate)->UpgradorUpdate(timer, addParam);\
 }\
 virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
 {\
@@ -35,12 +35,12 @@ virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::Modif
 { \
  public:\
 	UpgradorType* GetUpgrador(){return (UpgradorType*)CoreModifiable::GetUpgrador();}\
-	void UpgradorUpdate(const Timer& timer, void* addParam);\
+	bool UpgradorUpdate(const Timer& timer, void* addParam);\
 };\
 public:\
-void	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) override\
+bool	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) override\
 {\
-	((UpgradorMethods*)toUpdate)->UpgradorUpdate(timer, addParam);\
+	return ((UpgradorMethods*)toUpdate)->UpgradorUpdate(timer, addParam);\
 }\
 virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
 {\
@@ -51,7 +51,7 @@ virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::Modif
 	const KigsID& getID() const override {return m_ID; };\
 	typedef name UpgradorType; 
 
-#define DEFINE_UPGRADOR_UPDATE(upgrador) void upgrador::UpgradorMethods::UpgradorUpdate(const Timer& timer, void* addParam) 
+#define DEFINE_UPGRADOR_UPDATE(upgrador) bool upgrador::UpgradorMethods::UpgradorUpdate(const Timer& timer, void* addParam) 
 
 
 class UpgradorBase : public StructLinkedListBase
@@ -77,7 +77,7 @@ public:
 			mNextItem = nullptr;
 		}*/
 	}
-	virtual void	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) = 0;
+	virtual bool	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) = 0;
 
 	virtual const KigsID& getID() const = 0;
 }; 

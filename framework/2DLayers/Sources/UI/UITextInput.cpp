@@ -45,7 +45,7 @@ void UITextInput::UpdateKeyboard(kstl::vector<KeyEvent>& keys)
 	if (!keys.empty() && HasFocus())
 	{
 		usString newString = mIsCueBanner ? usString("") : mText.const_ref();
-		newString.reserve(newString.length() + mKeycodeList.size());
+		newString.reserve((int)(newString.length() + mKeycodeList.size()));
 
 		for (auto& key : keys)
 		{

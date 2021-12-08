@@ -12,7 +12,7 @@ CoreAction::~CoreAction()
 // if paramstring contains -> then extract param name part and return real target (son on current target)
 CMSP CoreAction::checkSubTarget(kstl::string& paramstring)
 {
-	int found = paramstring.find_last_of("->");
+	size_t found = paramstring.find_last_of("->");
 	if (found != kstl::string::npos)
 	{
 		found -= 1;

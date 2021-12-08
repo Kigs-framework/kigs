@@ -388,10 +388,10 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 
 				double distance = DBL_MAX;
 				v3f intersection;
-				
+				v3f normal;
 				v3f dir;
 
-				if (Intersection::IntersectionRayBBox(origin_local, direction_local, bbox_local.m_Min, bbox_local.m_Max, intersection, distance))
+				if (Intersection::IntersectionRayBBox(origin_local, direction_local, bbox_local.m_Min, bbox_local.m_Max, intersection, normal,distance))
 				{
 					dir = param.toSort[i]->as<Node3D>()->GetLocalToGlobal()*intersection - cam_pos;
 				}

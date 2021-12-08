@@ -161,12 +161,12 @@ bool Win32fopen(FileHandle* handle, const char * mode)
 
 long int Win32fread(void * ptr, long size, long count, FileHandle* handle)
 {
-	return fread(ptr, size, count, handle->mFile);
+	return (long int)fread(ptr, size, count, handle->mFile);
 }
 
 long int Win32fwrite(const void * ptr, long size, long count, FileHandle* handle)
 {
-	return fwrite(ptr, size, count, handle->mFile);
+	return (long int)fwrite(ptr, size, count, handle->mFile);
 }
 
 long int Win32ftell(FileHandle* handle)

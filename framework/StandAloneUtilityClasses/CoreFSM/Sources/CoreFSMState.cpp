@@ -4,7 +4,14 @@
 // when true is returned, specialOrder and stateID parameters are correctly set
 bool CoreFSMStateBase::update(CoreModifiable* currentParentClass, u32& specialOrder, KigsID& stateID)
 {
-	CoreFSMStateBase* found=nullptr;
+	if (mActiveTransition) // the state has activated itself the next transition
+	{
+		stateID = mActiveTransition->getState();
+		specialOrder = mActiveTransition->getValue<u32>("TransitionBehavior");
+		mActiveTransition = nullptr;
+
+		return true;
+	}
 	for (auto t : mTransitions)
 	{
 		if(t->checkTransition(currentParentClass))
@@ -17,6 +24,21 @@ bool CoreFSMStateBase::update(CoreModifiable* currentParentClass, u32& specialOr
 	}
 	return false;
 }
+
+bool CoreFSMStateBase::activateTransition(const KigsID& transitionname)
+{
+	for (auto t : mTransitions)
+	{
+		if (t->getNameID() == transitionname)
+		{
+			mActiveTransition = t.get();
+			return true;
+		}
+	}
+	return false;
+}
+
+CoreFSMTransition* mNextState = nullptr;
 
 // when state start, start all transitions
 void	CoreFSMStateBase::start(CoreModifiable* currentParentClass, CoreFSMStateBase* prevstate)

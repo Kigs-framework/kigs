@@ -336,7 +336,7 @@ bool IntersectionRayAABBTree(const Point3D* vertex_list, const Point3D &RayOrigi
 					h->HitTriangleVertexIndices[0] = triangle_array[i].A();
 					h->HitTriangleVertexIndices[1] = triangle_array[i].B();
 					h->HitTriangleVertexIndices[2] = triangle_array[i].C();
-					h->HitTriangleIndex = triangle_array[i].TriangleIndex();
+					h->HitFaceIndex = triangle_array[i].FaceIndex();
 					found = true;
 
 

@@ -14,7 +14,7 @@
 #include "DrawVertice.h"
 #include "ModernMesh.h"
 #include "ModuleSceneGraph.h"
-
+#include "SimpleShapeMeshCollider.h"
 #include <atomic>
 
 #ifdef KIGS_TOOLS
@@ -312,6 +312,13 @@ void CollisionManager::SetCollisionObject(const CMSP& item, CollisionBaseObject*
 	mToAdd.push_back({ item, collider });
 }
 
+void	CollisionManager::AddSimpleShapeFromDescription(CoreItem* desc, const CMSP& node)
+{
+	auto newshape = SimpleShapeBase::createFromDesc(desc->SharedFromThis());
+	SetCollisionObject(node, newshape);
+}
+
+
 void CollisionManager::CreateCollisionObject(CoreModifiable* item, unsigned int ColMask)
 {
 	// check allowed type
@@ -515,7 +522,7 @@ bool CollisionManager::GetRayIntersection(Hit &hit, const Point3D &start, const 
 		{
 			dd::sphere(hit.HitPosition, Point3D(255, 255, 0), 0.01f);
 			dd::line(hit.HitPosition, hit.HitPosition + (hit.HitNormal*0.1f), Point3D(0, 0, 255));
-			hit.HitCollisionObject->DrawDebug(hit.HitPosition, &hit.HitNode->GetLocalToGlobal(), KigsCore::GetCoreApplication()->GetApplicationTimer().get());
+			hit.HitCollisionObject->DrawDebug(hit, hit.HitNode->GetLocalToGlobal());
 		}
 #endif
 
@@ -554,8 +561,7 @@ void CollisionManager::GetAllRayIntersection(const Point3D &start, const Vector3
 		auto& hit = *hits.begin();
 		dd::sphere(hit.HitPosition, Point3D(255, 255, 0), 0.01f);
 		dd::line(hit.HitPosition, hit.HitPosition + (hit.HitNormal*0.1f), Point3D(0, 0, 255));
-
-		hit.HitCollisionObject->DrawDebug(hit.HitPosition, &hit.HitNode->GetLocalToGlobal(), KigsCore::GetCoreApplication()->GetApplicationTimer().get());
+		hit.HitCollisionObject->DrawDebug(hit, hit.HitNode->GetLocalToGlobal());
 	}
 #endif
 }

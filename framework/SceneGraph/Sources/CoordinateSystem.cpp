@@ -140,7 +140,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, globalMoveNode)
 
 DEFINE_UPGRADOR_UPDATE(CoordinateSystemUp)
 {
-	return;
+	return false; // mmhh ?
 
 	if (GetUpgrador()->mWasChanged)
 	{
@@ -281,6 +281,7 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 
 		GetUpgrador()->mWasChanged = false;
 	}
+	return false;
 }
 
 DEFINE_UPGRADOR_METHOD(PivotUp, PivotNotifyUpdate)

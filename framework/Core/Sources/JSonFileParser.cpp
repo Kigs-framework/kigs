@@ -419,7 +419,7 @@ template <>
 int	JSonFileParserBase<kstl::string, AsciiParserUtils>::GetStringByteSize(const kstl::string& tocheck)
 {
 	// add trailing 0
-	return tocheck.size()+1;
+	return (int)(tocheck.size()+1);
 }
 
 template <>
@@ -1138,3 +1138,18 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 // force method creation
 template class JSonFileParserBase< kstl::string, AsciiParserUtils >;
 template class JSonFileParserBase< usString , US16ParserUtils>;
+
+std::string CoreItemToJSon(CoreItemSP map)
+{
+	KIGS_ASSERT(map->GetType() == CoreItem::COREMAP);
+	std::string result;
+	JSonFileParser parser;
+	parser.ExportToString((CoreMap<std::string>*)map.get(), result);
+	return result;
+}
+
+CoreItemSP JSonToCoreItem(const std::string& str)
+{
+	JSonFileParser parser;
+	return parser.Get_JsonDictionaryFromString(str);
+}

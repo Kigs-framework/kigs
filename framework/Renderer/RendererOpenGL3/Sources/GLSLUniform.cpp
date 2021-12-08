@@ -455,7 +455,7 @@ bool	API3DUniformGeneratedTexture::Deactivate(unsigned int a_Location)
 API3DUniformGeneratedTexture::~API3DUniformGeneratedTexture()
 {
 	ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-	scenegraph->AddDefferedItem((void*)mTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
+	scenegraph->AddDefferedItem((void*)(uintptr_t)mTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
 }
 
 void API3DUniformGeneratedTexture::Generate()

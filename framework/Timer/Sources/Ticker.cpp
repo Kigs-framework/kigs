@@ -85,6 +85,7 @@ DEFINE_UPGRADOR_UPDATE(TickerUpgrador)
 {
 	TickerUpgrador* currentTicker = static_cast<TickerUpgrador*>(GetUpgrador());
 	currentTicker->Update(timer, this);
+	return false;
 }
 
 DEFINE_UPGRADOR_METHOD(TickerUpgrador, TickerNotifyUpdate)

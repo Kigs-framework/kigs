@@ -41,7 +41,7 @@ public:
 	Point3D mDebugColor;
 
 	// draw debug mInfo using GLSLDrawDebug
-	virtual void DrawDebug(const Point3D& pos, const Matrix3x4* mat, Timer *timer) = 0;
+	virtual void DrawDebug(const Hit& h, const Matrix3x4& mat) = 0;
 #endif
 
 	bool mIsCoreModifiable = false;

@@ -201,9 +201,9 @@ bool Holo3DPanel::Draw(TravState* travstate)
 
 		unsigned int bufferName = renderer->getVBO();
 		renderer->BufferData(bufferName, KIGS_BUFFER_TARGET_ARRAY, mVI.Offset * mVI.vertexCount, mVI.Buffer(), KIGS_BUFFER_USAGE_DYNAMIC);
-		renderer->SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_VERTEX_ID, mVI.vertexComp, KIGS_FLOAT, false, mVI.Offset, (void*)mVI.vertexStride, locs);
-		renderer->SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_COLOR_ID, mVI.colorComp, KIGS_UNSIGNED_BYTE, false, mVI.Offset, (void*)mVI.colorStride, locs);
-		renderer->SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, mVI.texComp, KIGS_FLOAT, false, mVI.Offset, (void*)mVI.texStride, locs);
+		renderer->SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_VERTEX_ID, mVI.vertexComp, KIGS_FLOAT, false, mVI.Offset, (void*)(uintptr_t)mVI.vertexStride, locs);
+		renderer->SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_COLOR_ID, mVI.colorComp, KIGS_UNSIGNED_BYTE, false, mVI.Offset, (void*)(uintptr_t)mVI.colorStride, locs);
+		renderer->SetVertexAttrib(bufferName, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, mVI.texComp, KIGS_FLOAT, false, mVI.Offset, (void*)(uintptr_t)mVI.texStride, locs);
 
 		renderer->DrawArrays(travstate, KIGS_DRAW_MODE_TRIANGLES, 0, mVI.vertexCount);
 

@@ -44,20 +44,19 @@ void UIShapePolygon::NotifyUpdate(const unsigned int labelid)
 void	UIShapePolygon::triangulatePolygon()
 {
 	CoreItemSP poly = mVertices.ref().SharedFromThis();
-
-	if (poly->size()>2)
+	size_t vcount = poly->size();
+	if (vcount >2)
 	{
-		int vcount = poly->size();
 		if (isConvex())
 		{
-			mTriangulatedPoly.resize((poly->size() - 2) * 3);
+			mTriangulatedPoly.resize((vcount - 2) * 3);
 
 			int tindex = 0;
 			for (size_t vi = 1; vi < vcount - 1; vi++)
 			{
 				mTriangulatedPoly[tindex] = (const Point2D&)poly[0];
-				mTriangulatedPoly[tindex + 1] = (const Point2D&)poly[vi];
-				mTriangulatedPoly[tindex + 2] = (const Point2D&)poly[vi+1];
+				mTriangulatedPoly[tindex + 1] = (const Point2D&)poly[(int)vi];
+				mTriangulatedPoly[tindex + 2] = (const Point2D&)poly[(int)vi+1];
 				tindex += 3;
 			}
 		}
@@ -80,7 +79,7 @@ void UIShapePolygon::SetTexUV(UIItem* item, UIVerticesInfo* aQI)
 	VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
 
 	std::vector<v2f>	transformed = mTriangulatedPoly;
-	texturedLocalThis->TransformUV(transformed.data(), transformed.size());
+	texturedLocalThis->TransformUV(transformed.data(), (int)transformed.size());
 
 	size_t j = 0;
 	for (const auto& p : transformed)
@@ -97,7 +96,7 @@ void UIShapePolygon::SetVertexArray(UIItem* item, UIVerticesInfo* aQI)
 	}	
 
 	v2f realsize = item->GetSize();
-	aQI->Resize(mTriangulatedPoly.size()); 
+	aQI->Resize((unsigned int)mTriangulatedPoly.size()); 
 	VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
 
 	std::vector<v2f>	transformed = mTriangulatedPoly;
@@ -107,7 +106,7 @@ void UIShapePolygon::SetVertexArray(UIItem* item, UIVerticesInfo* aQI)
 		p*= realsize;
 	}
 
-	item->TransformPoints(transformed.data(), transformed.size());
+	item->TransformPoints(transformed.data(), (int)transformed.size());
 
 	size_t j = 0;
 	for (const auto& p : transformed)

@@ -110,6 +110,7 @@ DEFINE_UPGRADOR_UPDATE(PopUpUpgrador)
 		GetUpgrador()->Hide(this);
 		GetUpgrador()->mTimeOpen = -1.0;
 	}
+	return false;
 }
 
 // internal show method

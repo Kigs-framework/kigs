@@ -51,7 +51,7 @@ void BCylinder::GetAxle(Point3D &Axle)
 
 #ifdef KIGS_TOOLS
 #include <GLSLDebugDraw.h>
-void BCylinder::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
+void BCylinder::DrawDebug(const Hit& h, const Matrix3x4& mat)
 {
 	Point3D p[2];
 	p[0].Set(0, 0, 0);
@@ -71,7 +71,7 @@ void BCylinder::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *time
 		break;
 	}
 
-	mat->TransformPoints(p, 2);
+	mat.TransformPoints(p, 2);
 
 	p[1].Normalize();
 
