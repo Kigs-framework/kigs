@@ -214,7 +214,11 @@ std::string FilePathManager::GetPackageRootPath(const std::string& filename)
 bool	FilePathManager::LoadPackage(const kstl::string& filename)
 {
 	// TODO : check if this package was already loaded ?
-	SmartPointer<FileHandle> L_File = Platform_fopen(filename.c_str(), "rb");
+	auto L_File =FindFullName(filename);
+	if (!Platform_fopen(L_File.get(), "rb"))
+	{
+		return false;
+	}
 	CorePackage* newpackage = CorePackage::Open(L_File, filename);
 
 	if (newpackage)
@@ -969,12 +973,12 @@ void	FilePathManager::InitWithConfigFile(const kstl::string& filename)
 	if (L_Dictionary)
 	{
 		CoreItemSP pathList = L_Dictionary;
-		int nbpath = pathList->size();
-		int i;
+		size_t nbpath = pathList->size();
+		size_t i;
 		for (i = 0; i < nbpath; i += 2)
 		{
-			CoreItemSP currentpathname = (*pathList)[i];
-			CoreItemSP currentpath = (*pathList)[i + 1];
+			CoreItemSP currentpathname = (*pathList)[(int)i];
+			CoreItemSP currentpath = (*pathList)[(int)i + 1];
 			AddToPath((kstl::string)*currentpathname.get(), (kstl::string)*currentpath.get());
 		}
 

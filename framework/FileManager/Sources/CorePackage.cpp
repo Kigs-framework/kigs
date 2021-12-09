@@ -323,7 +323,7 @@ void	CorePackage::AddFolder(const kstl::string& foldername, const kstl::string& 
 
 	kstl::string fullfoldername = foldername+"\\";
 
-	RecursiveAddFolder(fullfoldername, FolderNameInPackage, foldername.length());
+	RecursiveAddFolder(fullfoldername, FolderNameInPackage, (int)foldername.length());
 
 	
 #endif
@@ -401,7 +401,7 @@ kstl::vector<kstl::string> RetreivePath(kstl::string filename, kstl::string& sho
 	bool finish = false;
 	while (!finish)
 	{
-		int pos = remaining.find("/");
+		size_t pos = remaining.find("/");
 		if (pos == kstl::string::npos)
 		{
 			finish = true;
@@ -492,7 +492,7 @@ void CorePackage::insertWrittenFile(SmartPointer<FileHandle> tmpWrittenFile, con
 				FATEntryNode* newfolder = new FATEntryNode();
 				newfolder->mName = foldername;
 				newfolder->mFastCheckName = foldername;
-				newfolder->mFileNameSize = foldername.length();
+				newfolder->mFileNameSize = (u32)foldername.length();
 				newfolder->mFileOffset = 0;
 				newfolder->mFileSize = 0;
 				newfolder->mSonCount = 0;
@@ -515,11 +515,11 @@ void CorePackage::insertWrittenFile(SmartPointer<FileHandle> tmpWrittenFile, con
 		FATEntryNode* newFileEntry = new FATEntryNode();
 		newFileEntry->mName = remainingPath;
 		newFileEntry->mFastCheckName = remainingPath;
-		newFileEntry->mFileNameSize = remainingPath.length();
+		newFileEntry->mFileNameSize = (u32)remainingPath.length();
 		newFileEntry->mSonCount = 0;
 		
 		// set currentOffset at the end of the file
-		currentOffset = mFileSize - mDataStartOffset;
+		currentOffset = (u32)(mFileSize - mDataStartOffset);
 
 		newFileEntry->mFileOffset = currentOffset;
 		newFileEntry->mFileSize = newFileSize;
@@ -750,7 +750,7 @@ int CorePackage::FATEntryNode::exportInFAT(SmartPointer<FileHandle> pFilehdl)
 	Platform_fwrite(mName.c_str(),this->mFileNameSize,1, pFilehdl.get());
 	// then write 0 for end of string + pad
 	unsigned int padzero = (mName.length() + 1 + 7) & 0xFFFFFFF8;
-	padzero -= mName.length();
+	padzero -= (unsigned int)mName.length();
 	exportedSize += padzero;
 	u64 zero = 0;
 	Platform_fwrite(&zero, 1, padzero, pFilehdl.get());
@@ -811,14 +811,14 @@ void CorePackage::PackageCreationStruct::ExportFiles(const FileTreeNode& node, S
 
 void	CorePackage::PackageCreationStruct::FillFATExportedStruct(const FileTreeNode& node, FATEntry*& CurrentEntry,u64& currentOffset)
 {
-	CurrentEntry->mFileNameSize = node.mName.length();
+	CurrentEntry->mFileNameSize = (u32)node.mName.length();
 	// add 1 for 0 ended string, then align to 8 bytes
 	unsigned int NodeNameL = (node.mName.length() + 1 + 7) & 0xFFFFFFF8;
-	unsigned int NodeNameP = NodeNameL - node.mName.length();
+	unsigned int NodeNameP = NodeNameL - (unsigned int)node.mName.length();
 
 	CurrentEntry->mFileOffset = 0;
 	CurrentEntry->mFileSize = 0;
-	CurrentEntry->mSonCount = node.mSons.size();
+	CurrentEntry->mSonCount = (u32)node.mSons.size();
 
 	if (node.mFileNames) // this is a file (not a folder)
 	{
@@ -1011,7 +1011,7 @@ long int	CorePackageFileAccess::Platform_fread(void * ptr, long size, long count
 
 		auto& th = mPackage->GetCurrentThreadRead();
 
-		::Platform_fseek(th.mFile.get(), mCurrentReadPos + mPackage->mDataStartOffset + mFileEntry->mFileOffset, SEEK_SET);
+		::Platform_fseek(th.mFile.get(), (long)(mCurrentReadPos + mPackage->mDataStartOffset + mFileEntry->mFileOffset), SEEK_SET);
 		long read  =::Platform_fread(ptr, size, wanted/size, th.mFile.get());
 		mCurrentReadPos += read * size;
 		return read;

@@ -29,7 +29,7 @@ void BoxCollider::NotifyUpdate(const u32 labelid)
 
 namespace
 {
-	v3f normalAt(BBox bbox, v3f point)
+	v3f normalAt(const BBox& bbox,const v3f& point)
 	{
 		v3f normal;
 		v3f localPoint = point - bbox.Center();
@@ -62,19 +62,14 @@ namespace
 
 bool BoxCollider::TestHit(Hit& hit, v3f local_origin, v3f local_direction)
 {
-	if (Intersection::IntersectionRayBBox(local_origin, local_direction, mBoundingBox.m_Min, mBoundingBox.m_Max, hit.HitPosition, hit.HitDistance))
-	{
-		hit.HitNormal = normalAt(mBoundingBox, hit.HitPosition);
-		return true;
-	}
-	return false;
+	return Intersection::IntersectionRayBBox(local_origin, local_direction, mBoundingBox.m_Min, mBoundingBox.m_Max, hit.HitPosition, hit.HitNormal, hit.HitDistance);
 }
 
 #ifdef KIGS_TOOLS
 #include <GLSLDebugDraw.h>
-void BoxCollider::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
+void BoxCollider::DrawDebug(const Hit& h, const Matrix3x4& mat)
 {
-	dd::local_bbox(*mat, mBoundingBox, mDebugColor);
+	dd::local_bbox(mat, mBoundingBox, mDebugColor);
 }
 #endif
 

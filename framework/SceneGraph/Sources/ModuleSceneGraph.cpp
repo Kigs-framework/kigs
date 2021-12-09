@@ -195,13 +195,13 @@ void ModuleSceneGraph::DoDefferedAction()
 			break;
 		case DefferedAction::DESTROY_TEXTURE:
 		{
-			unsigned int textureID = (unsigned int)(itr->first);
+			unsigned int textureID = (unsigned int)(uintptr_t)(itr->first);
 			mRenderer->DeleteTexture(1, &textureID);
 			break;
 		}
 		case DefferedAction::DESTROY_BUFFER:
 		{	
-			unsigned int buffer = (unsigned int)(itr->first);
+			unsigned int buffer = (unsigned int)(uintptr_t)(itr->first);
 			mRenderer->DeleteBuffer(1, &buffer);
 			break;
 		}

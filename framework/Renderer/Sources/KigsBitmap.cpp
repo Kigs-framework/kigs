@@ -209,7 +209,7 @@ void	KigsBitmap::Print(const std::string& txt, int posx, int posy, unsigned int 
 			break;
 		fontSize = (int)(((float)fontSize) * FREETYPE_SIZE_COEFF);
 
-		int textSize = txt.length();
+		int textSize =(int) txt.length();
 
 		if (!ModuleSpecificRenderer::mDrawer->IsInCache(fontName.c_str()))
 		{

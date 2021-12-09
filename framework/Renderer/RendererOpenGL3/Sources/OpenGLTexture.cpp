@@ -98,7 +98,7 @@ OpenGLTexture::~OpenGLTexture()
 	if (mTextureGLIndex != (u32)-1)
 	{
 		ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-		scenegraph->AddDefferedItem((void*)mTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
+		scenegraph->AddDefferedItem((void*)(uintptr_t)mTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
 		//kigsprintf("del texture %d - %s\n", mTextureGLIndex, getName().c_str());
 	}
 	//ModuleRenderer::mTheGlobalRenderer->DeleteTexture(1, &mTextureGLIndex);
@@ -106,7 +106,7 @@ OpenGLTexture::~OpenGLTexture()
 	if (mIDETCAlphaTexture)
 	{
 		ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-		scenegraph->AddDefferedItem((void*)mIDETCAlphaTexture, DefferedAction::DESTROY_TEXTURE);
+		scenegraph->AddDefferedItem((void*)(uintptr_t)mIDETCAlphaTexture, DefferedAction::DESTROY_TEXTURE);
 		//	ModuleRenderer::mTheGlobalRenderer->DeleteTexture(1, &mIDETCAlphaTexture);
 	}
 #endif
@@ -137,7 +137,7 @@ void	OpenGLTexture::UninitModifiable()
 	if (!isUserFlagSet(isDirtyContext) && mTextureGLIndex != (u32)-1)
 	{
 		ModuleSceneGraph* scenegraph = static_cast<ModuleSceneGraph*>(KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex));
-		scenegraph->AddDefferedItem((void*)mTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
+		scenegraph->AddDefferedItem((void*)(uintptr_t)mTextureGLIndex, DefferedAction::DESTROY_TEXTURE);
 		//ModuleRenderer::mTheGlobalRenderer->DeleteTexture(1, &mTextureGLIndex);
 	}
 	mTextureGLIndex = (u32)-1;

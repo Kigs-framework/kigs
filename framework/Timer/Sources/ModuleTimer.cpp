@@ -4,6 +4,7 @@
 #include "TimeProfiler.h"
 #include "ControlledTimer.h"
 #include "Ticker.h"
+#include "DelayedFunc.h"
 
 IMPLEMENT_CLASS_INFO(ModuleTimer)
 
@@ -22,6 +23,7 @@ void ModuleTimer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 	core->RegisterMainModuleList(this,TimerModuleCoreIndex);
 
 	REGISTER_UPGRADOR(TickerUpgrador);
+	REGISTER_UPGRADOR(DelayedFuncUpgrador);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), Timer, Timer, Timer);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), TimeProfiler,TimeProfiler,Timer);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), ControlledTimer, ControlledTimer, Timer);

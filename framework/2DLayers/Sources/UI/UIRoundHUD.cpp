@@ -111,7 +111,7 @@ void UIRoundHUD::UpdateSlots()
 	int idx = 0;
 
 	// get slot count (fixed count or dynamic)
-	mRealSlotCount = (mSlotCount >= 0) ? mSlotCount : GetSons().size();
+	mRealSlotCount = (mSlotCount >= 0) ? mSlotCount : (int)GetSons().size();
 	
 	// create slot position array
 	mSlot.reserve(mRealSlotCount + 2);

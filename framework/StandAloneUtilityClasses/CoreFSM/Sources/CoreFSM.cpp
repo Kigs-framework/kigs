@@ -302,4 +302,5 @@ void	initCoreFSM()
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreFSMDelayTransition, CoreFSMDelayTransition, CoreFSM);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreFSMOnValueTransition, CoreFSMOnValueTransition, CoreFSM);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreFSMOnMethodTransition, CoreFSMOnMethodTransition, CoreFSM);
+	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreFSMInternalSetTransition, CoreFSMInternalSetTransition, CoreFSM);
 }

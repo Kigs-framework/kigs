@@ -194,7 +194,7 @@ void	LuaBehaviour::InitModifiable()
 								PushAttribute(mL, attr);
 							}
 
-							if (mL.pcall(params.size()+1, LUA_MULTRET, 0) != 0)
+							if (mL.pcall((int)params.size()+1, LUA_MULTRET, 0) != 0)
 							{
 								printf("%s\n", mL.toString(-1));
 								mL.pop();

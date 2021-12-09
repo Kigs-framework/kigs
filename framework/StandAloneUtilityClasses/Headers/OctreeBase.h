@@ -4,6 +4,8 @@
 #include "CoreModifiableAttribute.h"
 #include "TecLibs/Tec3D.h"
 
+template<typename BaseType>
+class OctreeBase;
 
 class OctreeNodeBase
 {
@@ -31,7 +33,7 @@ public:
 	}
 #endif
 
-	inline bool isLeaf()
+	inline bool isLeaf() const
 	{
 		// children are all set or all null, so test only one
 		if (mChildren)
@@ -43,6 +45,7 @@ public:
 
 	virtual void	initChildrenArray() = 0;
 	virtual void	destroyChildrenArray() = 0;
+	virtual bool	isEmpty() const = 0;
 
 	// try to split node ( create 8 children )
 	// only leaf nodes can be splitted 
@@ -105,7 +108,14 @@ public:
 	{
 		return mBrowsingFlag;
 	}
+
+	void clearNFlag()
+	{
+		mDirNDoneFlag = 0;
+	}
 protected:
+	template<typename BaseType>
+	friend class OctreeBase;
 
 #ifdef _DEBUG
 	static unsigned int	mCurrentAllocatedNodeCount;
@@ -113,7 +123,13 @@ protected:
 
 	OctreeNodeBase** mChildren = nullptr;
 	unsigned int	mBrowsingFlag;
-
+	// check if neighbor already visited
+	u32				mDirNDoneFlag = 0;
+public:
+		static inline const v3i				mNeightboursDecalVectors[6] = { {-1,0,0},{1,0,0},{0,-1,0},{0,1,0},{0,0,-1},{0,0,1} };
+		static inline const int				mInvDir[6] = { 1,0,3,2,5,4 };
+		static inline const int				mOppositeFace[33] = { 0,2,1,0,8,0,0,0,4,0,0,0,0,0,0,0,32,
+																 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16 };
 };
 
 
@@ -221,9 +237,12 @@ public:
 		delete[] mChildren[0];
 	}
 
-	bool	isEmpty() const
+	virtual bool	isEmpty() const override
 	{
-		return mContentType.isEmpty();
+		if (isLeaf()) // only leaf can be empty
+			return mContentType.isEmpty();
+
+		return false;
 	}
 
 protected:
@@ -239,6 +258,14 @@ struct nodeInfo
 	int				level;
 	v3i				coord;
 	OctreeNodeBase*	node = nullptr;
+#ifdef _DEBUG
+	u32				mDebugFlag=0;
+#endif
+
+	bool	operator==(const nodeInfo& other)
+	{
+		return (node == other.node);
+	}
 
 	template<typename T>
 	T* getNode() const { return static_cast<T*>(node); }
@@ -273,9 +300,51 @@ public:
 	// minimal cube is 2 units wide
 	void	setValidCubeCenter(v3i& pos, unsigned int decal);
 
+	// convert one of the 6 main direction to corresponding dir mask (2 bits per axis)
+	u32 mainDirToDirMask(u32 dir)
+	{
+		u32 mask = 1; // 01 => negative way on axis
+		if (dir & 1) // positive way on axis
+		{
+			mask = 2; // 10
+		}
+
+		dir = dir >> 1;
+
+		mask = mask << (dir << 1);
+
+		return mask;
+	}
+
+	
+
+	// get neighbour in the given direction mask (add index in mNeightboursDecalVectors)
+	// each axis is coded on two bits:
+	// 00 =>  0
+	// 01 => -1
+	// 10 =>  1
+	nodeInfo	getVoxelNeighbour(const nodeInfo& node, u32 dir);
+
+
+	class	applyOnAllNodes
+	{
+	public:
+
+		template<typename F>
+		applyOnAllNodes(OctreeBase<BaseType>& octree, F&& toapply)
+		{
+			run(octree.mRootNode, toapply);
+		}
+
+		template<typename F>
+		void run(OctreeNodeBase* currentNode, F&& toapply);
+
+		~applyOnAllNodes() {}
+	};
+
 protected:
 
-	void	recurseFloodFill(const nodeInfo& startPos, std::vector<nodeInfo>& notEmptyList);
+
 
 	// utility class to avoid passing the same parameters to the recursive method
 	// and mutualise some computation 
@@ -319,31 +388,80 @@ protected:
 	{
 	public:
 
-		recursiveFloodFill()
+		
+		recursiveFloodFill(OctreeBase<BaseType>& octree, std::vector<nodeInfo>* fillborderList,s32 setBrowsingFlag=-1) : 
+			mOctree(octree),
+			mFillBorderList(fillborderList)
 		{
-
-		}
-
-		recursiveFloodFill(OctreeBase<BaseType>& octree, std::vector<nodeInfo>* notEmptyList)
-		{
-			reset(octree, notEmptyList);
+			reset(setBrowsingFlag);
 		}
 		~recursiveFloodFill() {}
 
-		void run(const nodeInfo& node);
-
-		void	reset(OctreeBase<BaseType>& octree, std::vector<nodeInfo>* notEmptyList)
+		template<typename F>
+		void run(const nodeInfo& node, F&& condition)
 		{
-			octree.mCurrentBrowsingFlag++;
-			mNotEmptyList = notEmptyList;
+			mToParseList.push_back(node);
+
+			while (mToParseList.size())
+			{
+				nodeInfo toparse = mToParseList.back();
+				mToParseList.pop_back();
+
+				if (toparse.node->getBrowsingFlag() != mOctree.mCurrentBrowsingFlag)
+				{
+					subrun(toparse, condition);
+				}
+			}
 		}
 
+		void	reset(s32 setBrowsingFlag)
+		{
+			if (setBrowsingFlag == -1)
+			{
+				mOctree.mCurrentBrowsingFlag++;
+			}
+			else
+			{
+				mOctree.mCurrentBrowsingFlag = setBrowsingFlag;
+			}
+			if(mFillBorderList)
+				mFillBorderList->clear();
+
+			mToParseList.clear();
+		}
+
+	protected:
+
+		template<typename F>
+		void subrun(const nodeInfo& node, F&& condition);
+
 	private:
-		std::vector<nodeInfo>*	mNotEmptyList;
+
+		std::vector<nodeInfo>*	mFillBorderList=nullptr;
+		OctreeBase<BaseType>&	mOctree;
+		std::vector<nodeInfo>	mToParseList;
+
 	};
 
-	// get neighbour in the given direction ( as an index in mNeightboursDecalVectors)   
-	nodeInfo	getVoxelNeighbour(const nodeInfo& node, int dir);
+	template<typename F>
+	void	callRecurseFloodFill(const nodeInfo& startPos, std::vector<nodeInfo>& notEmptyList,F&& condition, u32 setBrowsingFlag)
+	{
+		recursiveFloodFill t(*this, &notEmptyList, setBrowsingFlag);
+		t.run(startPos,condition);
+	}
+
+	void	callRecurseFloodFill(const nodeInfo& startPos, std::vector<nodeInfo>& notEmptyList,u32 setBrowsingFlag)
+	{
+		recursiveFloodFill t(*this, &notEmptyList, setBrowsingFlag);
+
+		auto condition = [](const nodeInfo& c)->bool
+		{
+			return c.node->isEmpty();
+		};
+
+		t.run(startPos, condition);
+	}
+
 
 	// default depth max is 8 => 256x256x256 cubes = 512 x 512 x 512 units
 	maInt		mMaxDepth = INIT_ATTRIBUTE(MaxDepth, 8);
@@ -352,8 +470,7 @@ protected:
 
 	unsigned int	mCurrentBrowsingFlag = 0;
 
-	static inline const v3i				mNeightboursDecalVectors[6] = { {-1,0,0},{1,0,0},{0,-1,0},{0,1,0},{0,0,-1},{0,0,1} };
-	static inline const int				mInvDir[6] = { 1,0,3,2,5,4 };
+
 };
 
 IMPLEMENT_TEMPLATE_CLASS_INFO(BaseType, OctreeBase)
@@ -411,7 +528,7 @@ void	OctreeBase<BaseType>::setValidCubeCenter(v3i& pos, unsigned int decal)
 }
 
 template<typename BaseType>
-nodeInfo	OctreeBase<BaseType>::getVoxelNeighbour(const nodeInfo& node, int dir)
+nodeInfo	OctreeBase<BaseType>::getVoxelNeighbour(const nodeInfo& node, u32 dirmask)
 {
 	nodeInfo result;
 	result.node = nullptr;
@@ -422,34 +539,28 @@ nodeInfo	OctreeBase<BaseType>::getVoxelNeighbour(const nodeInfo& node, int dir)
 
 	v3i	dposv(node.coord);
 
-	dposv += mNeightboursDecalVectors[dir] * dpos;
-
-	if (dir < 2)
+	for (u32 axis = 0; axis < 3; axis++)
 	{
-		if ((dposv.x >= 0) && (dposv.x < maxSize))
-		{
-			return getVoxelAt(dposv, node.level);
-		}
-		return result;
-	}
-	else if (dir < 4)
-	{
-		if ((dposv.y >= 0) && (dposv.y < maxSize))
-		{
-			return getVoxelAt(dposv, node.level);
-		}
-		return result;
-	}
-	else
-	{
-		if ((dposv.z >= 0) && (dposv.z < maxSize))
-		{
-			return getVoxelAt(dposv, node.level);
-		}
 
-	}
-	return result;
+		// 00 =>  0
+		// 01 => -1
+		// 10 =>  1
 
+		u32 daxis = (axis << 1);
+		u32 currentMask = (dirmask >> daxis) & 3;
+
+		if (currentMask)
+		{
+			// should compute each axis separately
+			dposv += OctreeNodeBase::mNeightboursDecalVectors[daxis+((currentMask>>1)&1)] * dpos;
+		}
+		if ((dposv[axis] < 0) || (dposv[axis] >= maxSize))
+		{
+			return result;
+		}
+	}
+
+	return getVoxelAt(dposv, node.level);
 }
 
 template<typename BaseType>
@@ -491,51 +602,84 @@ void	OctreeBase<BaseType>::recurseVoxelSideChildren::run(const nodeInfo& node)
 }
 
 template<typename BaseType>
-void	OctreeBase<BaseType>::recursiveFloodFill::run(const nodeInfo& startPos)
+template<typename F>
+void OctreeBase<BaseType>::applyOnAllNodes::run(OctreeNodeBase* currentnode, F&& toapply)
+{
+	toapply(currentnode);
+	if (currentnode->mChildren)
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			auto sonNode = currentnode->mChildren[i];
+			run(sonNode, toapply);
+		}
+	}
+}
+
+
+template<typename BaseType>
+template<typename F>
+void	OctreeBase<BaseType>::recursiveFloodFill::subrun(const nodeInfo& startPos, F&& condition)
 {
 	// set current node as "treated"
-	startPos.node->setBrowsingFlag(mCurrentBrowsingFlag);
-
+	startPos.node->setBrowsingFlag(mOctree.mCurrentBrowsingFlag);
+	u32 startLevel = startPos.level;
 	// for each adjacent node
 	for (int dir = 0; dir < 6; dir++)
 	{
+		if (startPos.node->mDirNDoneFlag & (1 << dir))
+			continue;
 		// get adjacent node
-		nodeInfo	n = getVoxelNeighbour(startPos, dir);
+		nodeInfo	n = mOctree.getVoxelNeighbour(startPos, mOctree.mainDirToDirMask(dir));
 
-		if (n.node == nullptr) // TODO => outside of this octree -> should check other octrees
-		{
-			continue;
-		}
-		if (n.node->getBrowsingFlag() == mCurrentBrowsingFlag) // already treated continue
+		if (n.node == nullptr) // TODO ? => outside of this octree -> should check other octrees
 		{
 			continue;
 		}
 
-		std::vector< nodeInfo> child;
-		if (n.node->isLeaf()) // if this node is a leaf, then this is the only one to treat
+		if (n.node->getBrowsingFlag() == mOctree.mCurrentBrowsingFlag) // already treated continue
 		{
-			child.push_back(n);
+			continue;
+		}
+
+		std::vector< nodeInfo> neighborschild;
+		if (n.node->isLeaf()) // if this node is a leaf then this is the only one to treat
+		{
+			neighborschild.push_back(n);
 		}
 		else // else get all sons on the correct side of n
 		{
-			recurseVoxelSideChildren r(mInvDir[dir], *this, &child);
+			recurseVoxelSideChildren r(OctreeNodeBase::mInvDir[dir], mOctree, &neighborschild);
 			r.run(n);
 		}
 
 		// for all the found nodes, check if they need to be added to visible list or to be flood fill
-		for (auto& c : child)
+		for (auto& c : neighborschild)
 		{
-			if (c.node->getBrowsingFlag() != mCurrentBrowsingFlag)
+			if (startLevel <= c.level)
 			{
-				if (c.node->isEmpty()) // node is empty, recurse flood fill
+				// mark the direction from where the node was added only if this node level is higher or equal
+				c.node->mDirNDoneFlag |= (1 << OctreeNodeBase::mInvDir[dir]);
+			}
+			
+			if (c.node->getBrowsingFlag() != mOctree.mCurrentBrowsingFlag)
+			{
+				if (!(c.node->mDirNDoneFlag & (1 << 8))) // not already added to toparse list or envelope ?
 				{
-					run(c);
-					continue;
-				}
-				else // add this node to visibility list
-				{
-					c.node->setBrowsingFlag(mCurrentBrowsingFlag);
-					(*mNotEmptyList).push_back(c);
+					c.node->mDirNDoneFlag |= (1 << 8);
+					if (condition(c)) // recurse flood fill
+					{
+						mToParseList.push_back(c);
+						continue;
+					}
+					else // add this node to limit of flood fill list
+					{
+						//c.node->setBrowsingFlag(mOctree.mCurrentBrowsingFlag);
+						if (mFillBorderList)
+						{
+							(*mFillBorderList).push_back(c);
+						}
+					}
 				}
 			}
 		}

@@ -1508,6 +1508,7 @@ void CoreModifiable::RemoveDynamicAttribute(KigsID id)
 	auto it=mAttributes.find(id);
 	if(it != mAttributes.end() && it->second->isDynamic())
 	{
+		// attribute is removed from map by the attribute destructor
 		delete ((*it).second);
 	}
 }
@@ -1679,6 +1680,8 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 
 	EmitSignal(Signals::Update, this, (CoreModifiable*)&timer);
 	Update(timer, addParam);
+	std::vector<KigsID>	toDowngrade;
+
 	// Upgrador updage
 	if (auto lz = mLazyContent.load())
 	{
@@ -1689,13 +1692,21 @@ void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 			LazyContentLinkedListItemStruct cachedUpgrador = lz->mLinkedListItem;
 			// set this upgrador at first pos
 			lz->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(found, LazyContentLinkedListItemStruct::ItemType::UpgradorType);
-			found->UpgradorUpdate(this,timer,addParam);
+			if (found->UpgradorUpdate(this, timer, addParam))
+			{
+				toDowngrade.push_back(found->getID());
+			}
 			// reset cached
 			lz->mLinkedListItem = cachedUpgrador;
 
 			found = (UpgradorBase * )found->getNext(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
 
 		}
+	}
+
+	for (const auto& d : toDowngrade)
+	{
+		Downgrade(d);
 	}
 }
 

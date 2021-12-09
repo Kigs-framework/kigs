@@ -33,7 +33,7 @@ CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae
 {
 	kstl::string cleanFormulae = formulae;
 	cleanFormulae.erase(std::remove_if(cleanFormulae.begin(), cleanFormulae.end(), RemoveDelimiter()), cleanFormulae.end());
-	AsciiParserUtils	parser((char*)cleanFormulae.c_str(), cleanFormulae.length());
+	AsciiParserUtils	parser((char*)cleanFormulae.c_str(), (int)cleanFormulae.length());
 
 	ConstructContext	context;
 	context.mTarget = target;
@@ -52,7 +52,7 @@ CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae
 {
 	kstl::string cleanFormulae = formulae;
 	cleanFormulae.erase(std::remove_if(cleanFormulae.begin(), cleanFormulae.end(), RemoveDelimiter()), cleanFormulae.end());
-	AsciiParserUtils	parser((char*)cleanFormulae.c_str(), cleanFormulae.length());
+	AsciiParserUtils	parser((char*)cleanFormulae.c_str(), (int)cleanFormulae.length());
 
 	ConstructContext	context;
 	context.mTarget = target;
@@ -180,7 +180,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 							kstl::string& currentParam = (*itparambegin);
 							char* currentParamC = (char*)currentParam.c_str();
 
-							AsciiParserUtils	param(currentParamC, currentParam.length());
+							AsciiParserUtils	param(currentParamC, (int)currentParam.length());
 							op1 = Parse(param, context);
 							if (op1)
 							{
@@ -233,7 +233,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 							kstl::string& currentParam = (*itparambegin);
 							char* currentParamC = (char*)currentParam.c_str();
 
-							AsciiParserUtils	param(currentParamC, currentParam.length());
+							AsciiParserUtils	param(currentParamC, (int)currentParam.length());
 							// inside a vector, each param is a float
 							op1 = CoreItemOperator<float>::Parse(param, context);
 							if (op1)
@@ -385,7 +385,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 			if (newfunction)
 			{
 				AsciiParserUtils	operand(formulae);
-				formulae.SetPosition(matchkeywork.size());
+				formulae.SetPosition((unsigned int)matchkeywork.size());
 
 				CoreItemSP	op1;
 				if (formulae.GetTrailingPart(operand))
@@ -407,7 +407,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 							kstl::string& currentParam=(*itparambegin);
 							char* currentParamC = (char*)currentParam.c_str();
 
-							AsciiParserUtils	param(currentParamC, currentParam.length());
+							AsciiParserUtils	param(currentParamC, (int)currentParam.length());
 							op1 = Parse(param, context);
 							if (op1)
 							{
@@ -1188,7 +1188,7 @@ CoreModifiableAttributeOperator<kfloat>::operator kfloat() const
 		}
 
 		// check if method adds an attribute
-		int attrCount = attributes.size();
+		size_t attrCount = attributes.size();
 
 		// check if current context has mSender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender").get();
@@ -1263,7 +1263,7 @@ CoreModifiableAttributeOperator<kstl::string>::operator kstl::string() const
 		}
 
 		// check if method adds an attribute
-		int attrCount = attributes.size();
+		size_t attrCount = attributes.size();
 
 		// check if current context has mSender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender").get();
@@ -1342,7 +1342,7 @@ CoreModifiableAttributeOperator<v2f>::operator v2f() const
 		}
 
 		// check if method adds an attribute
-		int attrCount = attributes.size();
+		size_t attrCount = attributes.size();
 
 		// check if current context has mSender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender").get();
@@ -1420,7 +1420,7 @@ CoreModifiableAttributeOperator<v3f>::operator v3f() const
 		}
 
 		// check if method adds an attribute
-		int attrCount = attributes.size();
+		size_t attrCount = attributes.size();
 
 		// check if current context has mSender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender").get();
@@ -1497,7 +1497,7 @@ CoreModifiableAttributeOperator<v4f>::operator v4f() const
 		}
 
 		// check if method adds an attribute
-		int attrCount = attributes.size();
+		size_t attrCount = attributes.size();
 
 		// check if current context has mSender or data
 		CoreModifiable* sendervariable = (CoreModifiable*)getVariable("sender").get();

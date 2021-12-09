@@ -324,7 +324,7 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 
 				if (compare_stencil_stacks())
 				{
-					renderer->SetStencilMode(RendererCullMode::RENDERER_CULL_FRONT_AND_BACK, RENDERER_STENCIL_EQUAL, cache_stencil_stack.size(), 0xFFFFFFFF);
+					renderer->SetStencilMode(RendererCullMode::RENDERER_CULL_FRONT_AND_BACK, RENDERER_STENCIL_EQUAL, (int)cache_stencil_stack.size(), 0xFFFFFFFF);
 				}
 				else
 				{

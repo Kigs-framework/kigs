@@ -371,7 +371,7 @@ int CoreModifiableSetAttributeLua(lua_State* lua)
 				{
 					PushAttribute(L, attr);
 				}
-				if (L.pcall(params.size(), LUA_MULTRET, 0) != 0)
+				if (L.pcall((int)params.size(), LUA_MULTRET, 0) != 0)
 				{
 					printf("%s\n", L.toString(-1));
 					L.pop();
@@ -508,7 +508,7 @@ static int CoreModifiableMethodCaller(lua_State* lua)
 	//printf("Calling %s on %s\n", name, cm->getName().c_str());
 #endif
 
-	int args = p.size();
+	int args = (int)p.size();
 	bool result = cm->CallMethod(name, p, nullptr, cm);
 	int nb_result = 1;
 	for(int i=args; i<p.size(); ++i)

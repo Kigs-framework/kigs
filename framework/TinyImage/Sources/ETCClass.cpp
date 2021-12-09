@@ -103,7 +103,7 @@ bool	ETCClass::Load(FileHandle* fileName)
 		if (upExtension == ".ETX")// use zstd
 		{
 
-			unsigned int outLenght = ZSTD_decompress(mPixels, mPixelDataSize, imgdata, filelength- sizeof(ETC_Header));
+			unsigned int outLenght =(unsigned int) ZSTD_decompress(mPixels, mPixelDataSize, imgdata, filelength- sizeof(ETC_Header));
 			if (mPixelDataSize != outLenght)
 			{
 				KIGS_ERROR("Error decompressing ETX image", 2);

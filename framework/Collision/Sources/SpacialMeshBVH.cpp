@@ -1156,7 +1156,7 @@ std::vector<v3f> SpacialMeshBVH::GetVertices() const
 
 #ifdef KIGS_TOOLS
 #include <GLSLDebugDraw.h>
-void SpacialMeshBVH::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
+void SpacialMeshBVH::DrawDebug(const Hit& h, const Matrix3x4& mat)
 {
 	v3f RGB[2];
 	srand(((unsigned int)this) / 16); // initialisation de rand
@@ -1177,7 +1177,7 @@ void SpacialMeshBVH::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer 
 			Triangles3D[i] = newOne.mO + newOne.mU * newOne.mTriangles2D[i].x + newOne.mV * newOne.mTriangles2D[i].y;
 		}
 
-		mat->TransformPoints(&Triangles3D[0], Triangles3D.size());
+		mat.TransformPoints(&Triangles3D[0], Triangles3D.size());
 		for (int i = 0; i < Triangles3D.size(); i+=3)
 		{
 			dd::line(Triangles3D[i], Triangles3D[i+1], RGB[0]);
@@ -1189,8 +1189,8 @@ void SpacialMeshBVH::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer 
 		{
 			Vector3D bary(newOne.mO);
 			Vector3D normal(newOne.mNormal);
-			mat->TransformPoints(&bary, 1);
-			mat->TransformVector(&normal);
+			mat.TransformPoints(&bary, 1);
+			mat.TransformVector(&normal);
 			dd::arrow(bary, bary + normal * 0.1f, RGB[0], 0.02f);
 		}
 	}

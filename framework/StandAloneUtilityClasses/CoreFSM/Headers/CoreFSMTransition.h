@@ -213,6 +213,7 @@ public:
 protected:
 
 	maString	mValueName = BASE_ATTRIBUTE(ValueName, "");
+	maBool		mNotValue = BASE_ATTRIBUTE(NotValue, false);
 
 };
 
@@ -241,5 +242,32 @@ public:
 protected:
 
 	maString	mMethodName = BASE_ATTRIBUTE(MethodName, "");
+
+};
+
+// ****************************************
+// * CoreFSMInternalSetTransition class
+// * --------------------------------------
+/**
+ * \class	CoreFSMInternalSetTransition
+ * \file	CoreFSMTransition.h
+ * \ingroup CoreFSM
+ * \brief	FSM transition activated by the state itself
+ *
+ */
+ // ****************************************
+
+class CoreFSMInternalSetTransition : public CoreFSMTransition
+{
+public:
+	DECLARE_CLASS_INFO(CoreFSMInternalSetTransition, CoreFSMTransition, CoreFSM);
+	DECLARE_INLINE_CONSTRUCTOR(CoreFSMInternalSetTransition)
+	{
+
+	}
+
+	bool checkTransition(CoreModifiable* currentParentClass) override;
+
+protected:
 
 };

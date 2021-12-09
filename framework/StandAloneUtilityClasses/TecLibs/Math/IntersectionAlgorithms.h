@@ -18,16 +18,10 @@ struct Hit
 	unsigned int			HitFlag = 0u;
 	CollisionBaseObject *	HitCollisionObject = nullptr;
 	s32						HitTriangleVertexIndices[3] = { -1,-1,-1 };
-	s32						HitTriangleIndex = -1;
+	s32						HitFaceIndex = -1;
 	void Clear()
 	{
-		HitFlag = 0u;
-		HitDistance = DBL_MAX;
-		HitPosition.Set(0.0f, 0.0f, 0.0f);
-		HitNormal.Set(0.0f, 0.0f, 0.0f);
-		HitActor = nullptr;
-		HitNode = nullptr;
-		HitCollisionObject = nullptr;
+		*this = Hit{};
 	}
 };
 
@@ -127,7 +121,7 @@ namespace Intersection
 	*/
 	inline bool IntersectionRayBBox(const Point3D &RayOrigin, const Vector3D &RayDirection,
 		const Point3D &BBoxMin, const Point3D &BBoxMax,
-		Point3D &IntersectionPoint,
+		Point3D &IntersectionPoint,Point3D& IntersectionNormal,
 		kdouble &IntersectionDistance)
 	{
 		enum IRBB_Side
@@ -247,6 +241,7 @@ namespace Intersection
 						MinT = IntersectionDistance;
 						IntersectionFound = true;
 						IntersectionPoint = CandidatePoint;
+						IntersectionNormal = v3f((SideX== IRBB_POSITIVE)?1.0f:-1.0f,0.0f,0.0f); // side X
 					}
 				}
 			}
@@ -268,6 +263,7 @@ namespace Intersection
 						MinT = IntersectionDistance;
 						IntersectionFound = true;
 						IntersectionPoint = CandidatePoint;
+						IntersectionNormal = v3f(0.0f,(SideY == IRBB_POSITIVE) ? 1.0f : -1.0f,  0.0f); // side Y
 					}
 				}
 			}
@@ -289,10 +285,12 @@ namespace Intersection
 						MinT = IntersectionDistance;
 						IntersectionFound = true;
 						IntersectionPoint = CandidatePoint;
+						IntersectionNormal = v3f(0.0f, 0.0f,(SideZ == IRBB_POSITIVE) ? 1.0f : -1.0f);  // side Z
 					}
 				}
 			}
 		}
+	
 
 		IntersectionDistance = MinT;
 		return IntersectionFound;

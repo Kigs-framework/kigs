@@ -402,7 +402,7 @@ inline Point3D ProjectOnPlane(Point3D q, Point3D o, Point3D n)
 
 
 
-
+/*
 bool operator<( const Point3D& U , const Point3D& V )
 {
 	return (U.x < V.x && U.y < V.y && U.z < V.z);
@@ -421,7 +421,7 @@ bool operator>( const Point3D& U , const Point3D& V )
 bool operator>=( const Point3D& U , const Point3D& V )
 {
 	return (U.x >= V.x && U.y >= V.y && U.z >= V.z);
-}
+}*/
 
 bool operator==( const Point3D& U , const Point3D& V )
 {

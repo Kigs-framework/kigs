@@ -8,7 +8,7 @@
 #include "Intersection.h"
 
 #include <stdlib.h>
-
+#pragma optimize("", off)
 AABBTreeNode::AABBTreeNode() 
 {
 	//! call base class constructor (CollisionBaseObject) and init members
@@ -30,33 +30,18 @@ AABBTreeNode::~AABBTreeNode()
 
 #ifdef KIGS_TOOLS
 #include <GLSLDebugDraw.h>
-void AABBTree::DrawDebug(const Point3D& pos, const  Matrix3x4* mat, Timer *timer)
+void AABBTree::DrawDebug(const Hit& h, const Matrix3x4& mat)
 {
 	if (!mHit)
 		return;
-
 	mHit = false;
-
 	Point3D p[8];
-	p[0].Set(mBBox.m_Max.x, mBBox.m_Min.y, mBBox.m_Min.z);
-	p[1].Set(mBBox.m_Max.x, mBBox.m_Max.y, mBBox.m_Min.z);
-	p[2].Set(mBBox.m_Min.x, mBBox.m_Max.y, mBBox.m_Min.z);
-	p[3].Set(mBBox.m_Min.x, mBBox.m_Min.y, mBBox.m_Min.z);
-
-	p[4].Set(mBBox.m_Max.x, mBBox.m_Min.y, mBBox.m_Max.z);
-	p[5].Set(mBBox.m_Max.x, mBBox.m_Max.y, mBBox.m_Max.z);
-	p[6].Set(mBBox.m_Min.x, mBBox.m_Max.y, mBBox.m_Max.z);
-	p[7].Set(mBBox.m_Min.x, mBBox.m_Min.y, mBBox.m_Max.z);
-
-
-
-	mat->TransformPoints(p, 8);
+	mBBox.ConvertToPoint(p);
+	mat.TransformPoints(p, 8);
 	if (mTriangleCount)
 		dd::box(p, Point3D(255, 0, 0));
 	else
 		dd::box(p, mDebugColor);
-
-
 	/*if (Son1)
 	{
 		Son1->DrawDebug(pos, mat, timer);
@@ -181,7 +166,7 @@ void AABBTreeNode::Build2(AABBTree* root, AABBTreeNode::BuildTriangle<t> * TrArr
 			mTriangleArray2[i].SetA(a);
 			mTriangleArray2[i].SetB(b);
 			mTriangleArray2[i].SetC(c);
-			mTriangleArray2[i].SetTriangleIndex(TrArray[i].mTriangleIndex);
+			mTriangleArray2[i].SetFaceIndex(TrArray[i].mFaceIndex);
 			const Point3D * P1 = &vertex_list[mTriangleArray2[i].A()];
 			const Point3D * P2 = &vertex_list[mTriangleArray2[i].B()];
 			const Point3D * P3 = &vertex_list[mTriangleArray2[i].C()];
@@ -369,8 +354,15 @@ void AABBTreeNode::RescursiveSearchMesh(Node3D *root, kstl::vector<ModernMesh*>	
 };
 
 
-AABBTree::AABBTree(int trCount) : AABBTreeNode() , CollisionBaseObject()
+AABBTree::AABBTree(int trCount) : SimpleShapeBase(), AABBTreeNode()
 {
+	InitDynamicBuffer(trCount);
+}
+
+void AABBTree::InitDynamicBuffer(int trCount)
+{
+	if (mDynamicGrowingBuffer) return;
+
 	mNormalTriangleArray = new NormalTriangle[trCount];
 	mCurrentFreeTriangleIndex = 0;
 
@@ -387,11 +379,27 @@ AABBTree::AABBTree(int trCount) : AABBTreeNode() , CollisionBaseObject()
 bool AABBTree::CallLocalRayIntersection(Hit &hit, const Point3D& start, const Vector3D& dir) const
 {
 	kfloat u, v;
-	return Intersection::IntersectionRayAABBTree(GetVertexList(), start, dir, *this, hit.HitDistance, hit.HitNormal, u, v, hit.HitTriangleVertexIndices);
+	bool found = Intersection::IntersectionRayAABBTree(GetVertexList(), start, dir, *this, hit.HitDistance, hit.HitNormal, u, v, hit.HitTriangleVertexIndices);
+	if (found && mFaceCount != 0)
+		hit.HitFaceIndex = mFaceIndex;
+	return found;
 }
+
 bool AABBTree::CallLocalRayIntersection(std::vector<Hit> &hit, const Point3D& start, const Vector3D& dir) const
 {
-	return Intersection::IntersectionRayAABBTree(GetVertexList(), start, dir, *this, hit);
+	int count_before = hit.size();
+	if (Intersection::IntersectionRayAABBTree(GetVertexList(), start, dir, *this, hit))
+	{
+		if (mFaceCount != 0)
+		{
+			for (int i = count_before; i < hit.size(); ++i)
+			{
+				hit[i].HitFaceIndex = mFaceIndex;
+			}
+		}
+		return true;
+	}
+	return false;
 }
 
 AABBTree::~AABBTree()
@@ -427,5 +435,39 @@ void AABBTree::LoadFromFile(const std::string& filename)
 	{
 		PacketReadStream stream_reader{ (u32*)result->data(), result->size() };
 		serialize_object(stream_reader, *this);
+	}
+}
+
+
+CoreItemSP AABBTree::getCoreItemDesc() const
+{
+	CoreItemSP map = getBaseCoreItemDesc();
+	map->set("FaceCount", mFaceCount);
+	if (mTriangleCount)
+	{
+		if(mFileName.size())
+			map->set("Filename", mFileName);
+		else
+			map->set("Buffer", SaveToString(*const_cast<AABBTree*>(this)));
+	}
+	return map;
+}
+
+void AABBTree::initFromCoreItemDesc(CoreItemSP init)
+{
+	mFaceCount = init["FaceCount"];
+
+	auto filename = init["Filename"];
+	if (filename)
+	{
+		LoadFromFile(filename);
+		return;
+	}
+
+	auto buffer = init["Buffer"];
+	if (buffer)
+	{
+		LoadFromString(*this, buffer);
+		return;
 	}
 }
