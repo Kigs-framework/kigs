@@ -604,6 +604,8 @@ protected:
 	bool	checkVerticeTrivialCase(nodeInfo node, v3f& goodOne);
 	bool	checkVerticeEasyCase(nodeInfo node, v3f& goodOne);
 
+
+
 	// all cases
 	void manageDirectionalFreeFace(const MSOctreeContent& node,const nodeInfo& n);
 	void manageSeparateFreeFaces(const MSOctreeContent& node, const nodeInfo& n);
@@ -620,6 +622,8 @@ protected:
 	}
 
 	v3f searchGoodPointInCellForDirection(const MSOctreeContent& node, const v3f& direction);
+
+	std::pair<v3f,v3f> searchGoodPlaneInCellForDirection(const MSOctreeContent& node, const v3f& direction);
 
 public:
 

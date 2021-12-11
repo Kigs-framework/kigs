@@ -1454,9 +1454,53 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 
 }
 
+std::pair<v3f, v3f> BuildMeshFromEnveloppe::searchGoodPlaneInCellForDirection(const MSOctreeContent& node, const v3f& direction)
+{
+	std::pair<v3f, v3f>	result;
+	// put vertices in a vector
+	std::vector<v3f> vvector;
+	for (const auto& v : node.mData->mEnvelopeData->mPerVSurfaces)
+	{
+		vvector.push_back(v.first);
+	}
+
+	// sort vector according to direction
+	std::sort(vvector.begin(), vvector.end(), [direction](const v3f& a, const v3f& b)->bool {
+
+		float vala = Dot(direction, a);
+		float valb = Dot(direction, b);
+		return vala < valb; });
+
+	// compute transform matrix (should be done just by swapping vector composant index)
+	v3f up(0.0f, 0.0f, 1.0f);
+	v3f right;
+
+	if (fabsf(direction.z) > 0.7)
+	{
+		up.Set(1.0f, 0.0f, 0.0f);
+	}
+	right.CrossProduct(direction, up);
+	right.Normalize();
+	up.CrossProduct(right, direction);
+
+	Matrix3x3 transform;
+	transform.Axis[0] = direction;
+	transform.Axis[1] = up;
+	transform.Axis[2] = right;
+	transform = Transpose(transform);
+
+	// transform vertices in new coordinate system
+	transform.TransformVectors((Vector3D*)&(vvector[0]), (int)vvector.size());
+
+
+
+	return result;
+}
+
+
 v3f BuildMeshFromEnveloppe::searchGoodPointInCellForDirection(const MSOctreeContent& node, const v3f& direction)
 {
-	// now put vertices and w in a vector
+	// put vertices in a vector
 	std::vector<v3f> vvector;
 	for (const auto& v : node.mData->mEnvelopeData->mPerVSurfaces)
 	{
@@ -1485,8 +1529,6 @@ v3f BuildMeshFromEnveloppe::searchGoodPointInCellForDirection(const MSOctreeCont
 
 		float vala = Dot(direction, a);
 		float valb = Dot(direction, b);
-
-
 		return vala<valb; });
 
 
