@@ -38,4 +38,6 @@ namespace ImGui
 
 		return F(str.c_str(), FWD(args)...);
 	}
+
+	bool ToggleButton(const char* str_id, bool* v);
 }

@@ -73,6 +73,7 @@ struct Matrix3x4
 	void SetFromRightHanded(const Quaternion& q);
 
 	inline static Matrix3x4 LookAt(Point3D eye, Point3D target, Vector3D up);
+	inline static Matrix3x4 LookAtDir(Point3D eye, Vector3D direction, Vector3D up);
 	// +---------
 	// | Pure Matrix Operations [ Matrix operator???(Matrix) ]
 	// +---------

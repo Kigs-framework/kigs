@@ -48,6 +48,16 @@ struct GuidComp
 	unsigned short Data3;
 	unsigned char  Data4[8];
 
+	template<typename PacketStream>
+	bool Serialize(PacketStream& stream)
+	{
+		CHECK_SERIALIZE(serialize_object(stream, Data1));
+		CHECK_SERIALIZE(serialize_object(stream, Data2));
+		CHECK_SERIALIZE(serialize_object(stream, Data3));
+		CHECK_SERIALIZE(serialize_bytes(stream, Data4, 8 * sizeof(u8)));
+		return true;
+	}
+
 	inline friend bool operator==(const GuidComp& a, const GuidComp& b)
 	{
 		return memcmp(&a, &b, sizeof(GuidComp)) == 0;

@@ -349,7 +349,8 @@ public:
 	}
 
 	// open xml archive and init 
-	virtual bool	open(const std::string& filename);
+	virtual bool open(const std::string& filename);
+	virtual bool open(const SP<CoreRawBuffer>& buffer);
 
 	// create a binary buffer from current XMLArchiveManager
 	// so it can be saved directly as a XML Archive file

@@ -403,19 +403,32 @@ void	ModernMeshBuilder::OptimiseTriangle::ComputeScore(OptimiseBuildVertexStruct
 	Score1 = (countCached << 24) | ((255 - minUse) << 16) | ((maxUse - minUse) << 8) | (recentlyAdded);
 }
 
-SP<ModernMeshItemGroup> ModernMeshBuilder::EndGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset)
+SP<ModernMeshItemGroup> ModernMeshBuilder::EndGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset, SP<ModernMeshItemGroup> reuse_group)
 {
 	char tmp[32];
 	sprintf(tmp, "group%d", mGroupCount++);
 	SP<ModernMeshItemGroup> result(nullptr);
 	if (!vertex_count) return result;
 
+	result = reuse_group;
 	unsigned char * interleaved_vertex_buffer = new unsigned char[vertex_count*mCurrentVertexSize];
-	result = KigsCore::GetInstanceOf(tmp, "ModernMeshItemGroup");
+	if (!result)
+		result = KigsCore::GetInstanceOf(tmp, "ModernMeshItemGroup");
+	else
+	{
+		result->~ModernMeshItemGroup();
+		new (result.get()) ModernMeshItemGroup(tmp);
+		/*result->mBoundaries.clear();
+		result->mColliderBoundaries.clear();
+		result->mCanFreeBuffers = 0;
+		result->mBoundariesMask = UINT64_MAX;*/
+	}
+
 	result->mVertexCount = vertex_count;
 	result->mVertexSize = mCurrentVertexSize;
 	result->mVertexArrayMask = mVertexArrayMask;
 	result->mVertexDesc = mVertexDesc;
+	
 	result->setValue("TexCoordsScale", mTexCoordsScale);
 
 	int vertex_offset, texcoord_offset, normal_offset, color_offset;

@@ -52,7 +52,6 @@ ModernMesh::~ModernMesh()
 
 IMPLEMENT_CONSTRUCTOR(ModernMeshItemGroup)
 {
-	KigsCore::GetNotificationCenter()->addObserver(this, "ResetContext", "ResetContext");
 };
 
 ModernMeshItemGroup::~ModernMeshItemGroup()
@@ -303,12 +302,12 @@ SP<ModernMeshItemGroup>	ModernMesh::EndMeshGroup(void * vertex, int vertexCount,
 	return createdGroup;
 }
 
-SP<ModernMeshItemGroup> ModernMesh::EndMeshGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset)
+SP<ModernMeshItemGroup> ModernMesh::EndMeshGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset, SP<ModernMeshItemGroup> reuse_group)
 {
 	SP<ModernMeshItemGroup> createdGroup(nullptr);
 	if (mCurrentMeshBuilder)
 	{
-		createdGroup = mCurrentMeshBuilder->EndGroup(vertex_count, vertices, normals, colors, texCoords, face_count, faces, offset);
+		createdGroup = mCurrentMeshBuilder->EndGroup(vertex_count, vertices, normals, colors, texCoords, face_count, faces, offset, reuse_group);
 		if (createdGroup)
 		{
 			addItem(createdGroup);
@@ -1408,7 +1407,7 @@ bool ModernMeshItemGroup::PreDraw(TravState* travstate)
 		unsigned int render_mask = mVertexArrayMask & ~travstate->GetRenderDisableMask();
 		if (mNoLight) render_mask |= ModuleRenderer::ShaderFlags::NO_LIGHT_MASK;
 
-#ifdef KIGS_TOOLS
+#if defined(KIGS_TOOLS) && 0
 		auto parent = GetParents().front();
 		bool drawnormals = false;
 		bool drawuvs = false;
@@ -1479,7 +1478,7 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 		else
 			renderer->SetCullMode((RendererCullMode)(int)mCullMode);
 
-#ifdef KIGS_TOOLS
+#if defined(KIGS_TOOLS) && 0
 		auto parent = (ModernMesh*)GetParents().front();
 		bool wiremode = false;
 		bool reset_polygon_mode = false;
@@ -1492,7 +1491,6 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 				renderer->SetPolygonMode(RENDERER_FILL);
 		}
 #endif
-
 
 		bool need_end_occlusion_query = false;
 		bool disable_write = false;
@@ -1656,7 +1654,7 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 			renderer->PopState();
 		}
 
-#ifdef KIGS_TOOLS
+#if defined(KIGS_TOOLS) && 0
 		if (reset_polygon_mode)
 		{
 			renderer->SetPolygonMode(RENDERER_FILL);
@@ -1672,11 +1670,3 @@ bool ModernMeshItemGroup::Draw(TravState* travstate)
 	return false;
 }
 
-DEFINE_METHOD(ModernMeshItemGroup, ResetContext)
-{
-	// force creation of buffers
-	mVertexBuffer = -1;
-	mIndexBuffer = -1;
-
-	return false;
-}

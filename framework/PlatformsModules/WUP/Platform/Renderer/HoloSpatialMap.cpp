@@ -27,9 +27,12 @@
 
 #include "utf8.h"
 
+
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Storage.Streams.h>
+
+#include "winrt_helpers.h"
 
 IMPLEMENT_CLASS_INFO(HoloSpatialMapShader);
 
@@ -38,19 +41,6 @@ using namespace winrt::Windows::Perception::Spatial;
 using namespace winrt::Windows::Foundation;
 
 #define UPDATE_DELAY (3'000'000'000/100)
-
-namespace serializer_detail
-{
-	template<typename PacketStream>
-	bool serialize(PacketStream& stream, GuidComp& value)
-	{
-		CHECK_SERIALIZE(serialize_object(stream, value.Data1));
-		CHECK_SERIALIZE(serialize_object(stream, value.Data2));
-		CHECK_SERIALIZE(serialize_object(stream, value.Data3));
-		CHECK_SERIALIZE(serialize_bytes(stream, value.Data4, 8 * sizeof(u8)));
-		return true;
-	}
-}
 
 
 struct SpatialMapSurfaceRecord
@@ -309,9 +299,6 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 		}
 	}
 
-	auto vertices_format = inMesh.VertexPositions().Format();
-
-
 	v4f scale = v4f(1, 1, 1, 1);
 	// retreive position scale
 	if (inMesh)
@@ -339,10 +326,6 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 	{
 		if (record_surface->recording)
 		{
-			if (indices_count == 0)
-			{
-				__debugbreak();
-			}
 			record_surface->vertex_position_scale = scale.xyz;
 			record_surface->indices_count = indices_count;
 			record_surface->indices_data.resize(size);
@@ -352,6 +335,15 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 		{
 			indices_count = record_surface->indices_count;
 			indices = (u16*)record_surface->indices_data.data();
+			vertex_buffer = (float*)record_surface->vertex_data.data();
+			vertices_count = record_surface->vertex_data.size() / sizeof(v4f);
+
+			for (int i = 0; i < vertices_count; ++i)
+			{
+				reinterpret_cast<v4f*>(vertex_buffer)[i].x *= scale.x;
+				reinterpret_cast<v4f*>(vertex_buffer)[i].y *= scale.y;
+				reinterpret_cast<v4f*>(vertex_buffer)[i].z *= scale.z;
+			}
 		}
 	}
 
@@ -443,11 +435,18 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ExportTimedScan()
 	bool success = serialize_object(stream, to_save);
 	stream.Flush();
 
-	auto local_folder = winrt::Windows::Storage::ApplicationData::Current().LocalFolder().Path();
-	std::string utf8_path;
-	utf8::utf16to8(local_folder.begin(), local_folder.end(), std::back_inserter(utf8_path));
-	utf8_path += "\\timed_spatial_map_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + ".bin";
-	ModuleFileManager::Get()->SaveFile(utf8_path.c_str(), (u8*)data.data(), data.size()*sizeof(u32));
+	std::vector<u8> data2((u8*)data.data(), (u8*)data.data() + data.size()*sizeof(u32));
+	using namespace winrt::Windows::Storage;
+	using namespace winrt::Windows::Storage::Pickers;
+	using namespace winrt::Windows::Storage::Streams;
+	auto path = "timed_spatial_map_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + ".bin";
+	auto file = co_await KnownFolders::PicturesLibrary().CreateFileAsync(to_wchar(path), CreationCollisionOption::ReplaceExisting);
+	if (!file) co_return;
+	auto result = co_await file.OpenAsync(FileAccessMode::ReadWrite);
+	if (!result) co_return;
+	DataWriter writer(result);
+	writer.WriteBytes(data2);
+	co_await writer.StoreAsync();
 }
 
 winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ReplayRecordedSpatialMap()
@@ -457,10 +456,14 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ReplayRecordedSpatialMa
 	if (gMapRecording.callbacks.empty()) co_return;
 	auto start_time_record = gMapRecording.callbacks.front().callback_time;
 	auto start_time_replay = std::chrono::steady_clock::now();
+	
+	auto pause_time = std::chrono::steady_clock::now();
+
 	int i = -1;
 
-	static std::atomic_int end_index = 50;
-	RegisterWidget("Replay", [&i, size = gMapRecording.callbacks.size()]()
+	static std::atomic_int end_index = -1;
+	static std::atomic_bool is_paused = false;
+	RegisterWidget("Replay", [&i, &pause_time, &start_time_replay, size = gMapRecording.callbacks.size()]()
 	{
 		ImGui::Text("Callback %d/%d", i, size);
 		if (ImGui::Button("Set End Index"))
@@ -472,6 +475,24 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ReplayRecordedSpatialMa
 		if (ImGui::SliderInt("End Index", &index, -1, size-1))
 		{
 			end_index = index;
+		}
+		
+		bool paused = is_paused;
+		if (ImGui::Checkbox("Paused", &paused))
+		{
+			if(paused)
+				pause_time = std::chrono::steady_clock::now();
+			else
+			{
+				auto time_paused = std::chrono::steady_clock::now() - pause_time;
+				start_time_replay += time_paused;
+			}
+			is_paused = paused;
+		}
+
+		if (ImGui::Button("Skip 5s"))
+		{
+			start_time_replay -= std::chrono::seconds(5);
 		}
 	});
 	
@@ -488,8 +509,20 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ReplayRecordedSpatialMa
 		auto current_time_replay = std::chrono::steady_clock::now();
 		auto current_time_record = cb.callback_time;
 		auto elapsed_record = current_time_record - start_time_record;
-		auto elapsed_replay = current_time_replay - start_time_replay;
 
+		auto actual_start_time_replay = start_time_replay;
+
+		while (is_paused)
+		{
+			co_await winrt::resume_after(std::chrono::milliseconds(250));
+		}
+
+		if (is_paused)
+		{
+			auto time_paused = current_time_replay - pause_time;
+			actual_start_time_replay += time_paused;
+		}
+		auto elapsed_replay = current_time_replay - actual_start_time_replay;
 
 		while (current_matrix_index < gMapRecording.frame_of_ref_changes.size() 
 			&& gMapRecording.frame_of_ref_changes[current_matrix_index].first < current_time_record)
@@ -654,7 +687,7 @@ void HoloSpatialMap::StartListening()
 			lock.unlock();
 
 			int surface_index = 0;
-			for (auto& current : surfaces)
+			for (auto current : surfaces)
 			{
 				if (!mIsListening) break;
 
@@ -851,7 +884,7 @@ void HoloSpatialMap::InitModifiable()
 	if (mAllowed) return;
 
 #ifdef KIGS_TOOLS
-	//mShowMeshMode = ShowMeshMode::PlaneOnly;
+	mShowMeshMode = ShowMeshMode::Full;
 
 	auto import_scan = [&](const std::string& filename)
 	{
@@ -949,7 +982,9 @@ void HoloSpatialMap::InitModifiable()
 		}
 	};
 
-	//import_timed_scan("spatial_map_local_assoria.bin");
+	//import_timed_scan("timed_spatial_map_4948626757552.bin");
+	//import_timed_scan("timed_spatial_map_8734318291510.bin");
+	
 
 	//import_timed_scan("spatial_map_kcomk_antoine_cantine.bin");
 	//import_timed_scan("spatial_map_kcomk_antoine_appart.bin");

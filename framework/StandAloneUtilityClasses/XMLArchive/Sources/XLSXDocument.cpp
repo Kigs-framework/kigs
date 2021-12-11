@@ -258,70 +258,83 @@ void	XLSXDocument::initEmpty()
 	createFolderHierarchy();
 }
 
+bool XLSXDocument::initAfterOpen()
+{
+	XMLArchiveFile* xlsxfile = static_cast<XMLArchiveFile*>(mRoot.getFile("[Content_Types].xml"));
+	if ((xlsxfile) && (xlsxfile->getXML()))
+	{
+		XMLBase* type_xml = xlsxfile->getXML();
+		mContentType.initFromXML(type_xml);
+	}
+	else
+	{
+		return false;
+	}
+
+	// check all contents that can be converted to xml
+	for (auto f : (*this))
+	{
+		if (!f->isFolder())
+		{
+			std::string path = f->getName(true);
+			std::string ctype = mContentType.getContentType(path);
+
+			if (ctype.length() >= 3)
+			{
+				if (ctype.substr(ctype.length() - 3, 3) == "xml")
+				{
+					static_cast<XMLArchiveFile*>(f)->interpretAsXML();
+				}
+			}
+
+			// manage rels
+			if (f->getExtension() == "rels")
+			{
+				xlsxfile = static_cast<XMLArchiveFile*>(f);
+				XMLBase* rels_xml = xlsxfile->getXML();
+
+				std::string concernedFile = f->getName(true);
+
+				// remove .rels extension
+				concernedFile.erase(concernedFile.length() - 5);
+
+				// remove _rels/
+
+				size_t p = concernedFile.find("_rels/");
+				if (p != std::string::npos)
+				{
+					concernedFile.erase(p, 6);
+				}
+
+
+				mRels[concernedFile].initFromXML(rels_xml);
+			}
+		}
+	}
+
+	// search document
+	std::string workbook = mRels[""].getTargetFromType("officeDocument");
+	if (workbook.length())
+	{
+		initWorkbook(workbook);
+	}
+	return true;
+}
+
+bool XLSXDocument::open(const SP<CoreRawBuffer>& buffer)
+{
+	if (XMLArchiveManager::open(buffer))
+	{
+		return initAfterOpen();
+	}
+	return false;
+}
+
 bool	XLSXDocument::open(const std::string& filename)
 {
 	if (XMLArchiveManager::open(filename))
 	{
-		XMLArchiveFile* xlsxfile=static_cast<XMLArchiveFile*>(mRoot.getFile("[Content_Types].xml"));
-		if ((xlsxfile) && (xlsxfile->getXML()))
-		{
-			XMLBase* type_xml= xlsxfile->getXML();
-			mContentType.initFromXML(type_xml);
-		}
-		else
-		{
-			return false;
-		}
-
-		// check all contents that can be converted to xml
-		for (auto f : (*this))
-		{
-			if (!f->isFolder())
-			{
-				std::string path = f->getName(true);
-				std::string ctype=mContentType.getContentType(path);
-
-				if (ctype.length()>=3)
-				{
-					if (ctype.substr(ctype.length() - 3, 3) == "xml")
-					{
-						static_cast<XMLArchiveFile*>(f)->interpretAsXML();
-					}
-				}
-
-				// manage rels
-				if (f->getExtension() == "rels")
-				{
-					xlsxfile = static_cast<XMLArchiveFile*>(f);
-					XMLBase* rels_xml = xlsxfile->getXML();
-
-					std::string concernedFile = f->getName(true);
-
-					// remove .rels extension
-					concernedFile.erase(concernedFile.length() - 5);
-
-					// remove _rels/
-
-					size_t p = concernedFile.find("_rels/");
-					if (p != std::string::npos)
-					{
-						concernedFile.erase(p,6);
-					}
-
-
-					mRels[concernedFile].initFromXML(rels_xml);
-				}
-			}
-		}
-
-		// search document
-		std::string workbook = mRels[""].getTargetFromType("officeDocument");
-		if (workbook.length())
-		{
-			initWorkbook(workbook);
-		}
-
-		return true;
+		return initAfterOpen();
 	}
 	return false;
 }

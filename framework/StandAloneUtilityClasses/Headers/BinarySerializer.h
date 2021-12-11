@@ -216,6 +216,32 @@ namespace serializer_detail
 		return true;
 	}
 
+	template<typename PacketStream>
+	bool serialize(PacketStream& stream, SP<CoreRawBuffer>& value)
+	{
+		size_t size = 0;
+		if constexpr (PacketStream::IsWriting)
+		{
+			if(value)
+				size = value->size();
+		}
+		CHECK_SERIALIZE(serialize(stream, size));
+		if (size == 0)
+		{
+			if(!PacketStream::IsWriting && value)
+				value->clear();
+			return true;
+		}
+		if constexpr (!PacketStream::IsWriting)
+		{
+			if(!value)
+				value = MakeRefCounted<CoreRawBuffer>();
+			value->resize(size);
+		}
+		CHECK_SERIALIZE(serialize_bytes(stream, (u8*)value->buffer(), (u64)value->size()));
+		return true;
+	}
+
 	template<typename PacketStream, typename T>
 	bool serialize_range(PacketStream& stream, T& range)
 	{
@@ -235,7 +261,7 @@ namespace serializer_detail
 
 		for (auto& element : range)
 		{
-			serialize_object(stream, element);
+			CHECK_SERIALIZE(serialize_object(stream, element));
 		}
 
 		return true;
@@ -318,6 +344,13 @@ namespace serializer_detail
 		return true;
 	}
 
+	template<typename PacketStream, typename T1, typename T2>
+	bool serialize(PacketStream& stream, std::pair<T1, T2>& t)
+	{
+		CHECK_SERIALIZE(serialize_object(stream, t.first));
+		CHECK_SERIALIZE(serialize_object(stream, t.second));
+		return true;
+	}
 
 	template <typename Tuple, typename F, size_t... Is>
 	bool tuple_for_each(Tuple&& t, F&& f, std::index_sequence<Is...>)
@@ -343,6 +376,43 @@ namespace serializer_detail
 	}
 }
 
+
+/*template<typename T, typename PacketStream, typename ... Args>
+bool serialize_object(PacketStream& stream, T&& value, Args&& ... args)
+{
+	if constexpr (is_detected_v<has_member_serialize, T, PacketStream>)
+	{
+		return value.Serialize(stream, FWD(args)...);
+	}
+	else if constexpr (is_detected_v<has_begin, T> && is_detected_v<has_end, T>)
+	{
+		using namespace serializer_detail;
+		if constexpr (is_detected_v<has_key_type, T>)
+		{
+			if constexpr (is_detected_v<has_bracket_operator, T>)
+				return serialize_map_range(stream, value, FWD(args)...);
+			else
+				return serialize_set_range(stream, value, FWD(args)...);
+		}
+		else
+		{
+			return serialize_range(stream, value, FWD(args)...);
+		}
+	}
+	else if constexpr (is_detected_v<has_first_type, T> && is_detected_v<has_second_type, T>)
+	{
+		using namespace serializer_detail;
+		CHECK_SERIALIZE(serialize_object(stream, value.first));
+		CHECK_SERIALIZE(serialize_object(stream, value.second));
+		return true;
+	}
+	else
+	{
+		using namespace serializer_detail;
+		return serialize(stream, FWD(value), FWD(args)...);
+	}
+	return false;
+}*/
 
 template<typename T, typename PacketStream, typename ... Args>
 bool serialize_object(PacketStream& stream, T& value, Args&& ... args)
@@ -380,6 +450,8 @@ bool serialize_object(PacketStream& stream, T& value, Args&& ... args)
 	}
 	return false;
 }
+
+
 template<typename PacketStream>
 bool serialize_bytes(PacketStream& stream, u8* data, u64 size)
 {
@@ -425,6 +497,14 @@ struct BitPacker
 			scratch = 0;
 		}
 	}
+
+	void merge(const BitPacker& with)
+	{
+		if (word_index == with.word_index)
+		{
+			scratch |= with.scratch;
+		}
+	}
 };
 
 struct VectorBitPacker
@@ -448,7 +528,11 @@ struct VectorBitPacker
 		scratch_bits += bits;
 		if (scratch_bits >= 32)
 		{
-			buffer->push_back(u32(scratch & 0xFFFFFFFF));
+			if(word_index == buffer->size())
+				buffer->push_back(u32(scratch & 0xFFFFFFFF));
+			else
+				(*buffer)[word_index] = u32(scratch & 0xFFFFFFFF);
+			
 			word_index++;
 			scratch_bits -= 32;
 			scratch = scratch >> 32llu;
@@ -459,10 +543,26 @@ struct VectorBitPacker
 	{
 		if (scratch_bits)
 		{
-			buffer->push_back(u32(scratch & 0xFFFFFFFF));
+			if (word_index == buffer->size())
+				buffer->push_back(u32(scratch & 0xFFFFFFFF));
+			else
+				(*buffer)[word_index] = u32(scratch & 0xFFFFFFFF);
+
 			word_index++;
 			scratch_bits = 0;
 			scratch = 0;
+		}
+	}
+
+	void merge_into(VectorBitPacker& into)
+	{
+		if (word_index == into.word_index)
+		{
+			into.scratch |= scratch;
+		}
+		else
+		{
+			(*buffer)[word_index] |= scratch;
 		}
 	}
 };
@@ -494,6 +594,50 @@ struct BitUnpacker
 		scratch_bits -= bits;
 		scratch = scratch >> bits;
 		num_bits_read += bits;
+	}
+
+	void align_u32()
+	{
+		if ((scratch_bits % 32) != 0)
+		{
+			if (would_read_past_end(scratch_bits))
+			{
+				num_bits_read = total_bits;
+				word_index = total_bits / 32;
+				scratch_bits = 0;
+				scratch = 0;
+			}
+			else
+			{
+				u32 value;
+				serialize_bits(value, scratch_bits);
+			}
+		}
+	}
+
+	template<typename PacketStream>
+	bool Serialize(PacketStream& stream)
+	{
+		CHECK_SERIALIZE(serialize_object(stream, total_bits));
+	
+		u8* data_location = nullptr;
+		if constexpr (PacketStream::IsWriting)
+		{
+			data_location = (u8*)buffer_start;
+		}
+		else
+		{
+			auto& vec = *(std::vector<u32>*)stream.user_data;
+			vec.resize(total_bits / 32);
+			data_location = (u8*)vec.data();
+			buffer_start = (u32*)vec.data();
+		}
+		CHECK_SERIALIZE(serialize_bytes(stream, data_location, total_bits/8));
+		CHECK_SERIALIZE(serialize_object(stream, scratch));
+		CHECK_SERIALIZE(serialize_object(stream, scratch_bits));
+		CHECK_SERIALIZE(serialize_object(stream, num_bits_read));
+		CHECK_SERIALIZE(serialize_object(stream, word_index));
+		return true;
 	}
 
 };
@@ -615,6 +759,19 @@ struct BasePacketReadStream
 		return true;
 	}
 
+	bool SkipBits(u64 bits)
+	{
+		if (packer.would_read_past_end(bits)) { return false; }
+		while (bits != 0)
+		{
+			auto count = s32(std::min(bits, 32llu));
+			u32 value = 0;
+			packer.serialize_bits(value, count);
+			bits -= count;
+		}
+		return true;
+	}
+
 	UnPackerType GetState()
 	{
 		return packer;
@@ -712,6 +869,18 @@ struct BasePacketWriteStream
 		return true;
 	}
 
+	
+	template<typename T>
+	bool SerializeAtPos(T& thing, const PackerType& at_pos)
+	{
+		auto before = packer;
+		packer = at_pos;
+		CHECK_SERIALIZE(serialize_object(*this, thing));
+		packer.merge_into(before);
+		packer = before;
+		return true;
+	}
+
 	PackerType packer;
 
 	void* user_data = nullptr;
@@ -721,22 +890,24 @@ using PacketWriteStream = BasePacketWriteStream<BitPacker>;
 using VectorWriteStream = BasePacketWriteStream<VectorBitPacker>;
 
 template<typename T>
-std::string SaveToString(T& thing)
+std::string SaveToString(T&& thing, void* user_data = nullptr)
 {
 	std::vector<u32> data;
 	VectorWriteStream stream{ data };
+	stream.user_data = user_data;
 	if (!serialize_object(stream, thing)) return "";
 	stream.Flush();
 	return AsciiParserUtils::BufferToString((unsigned char*)data.data(), data.size() * sizeof(u32));
 }
 
 template<typename T>
-bool LoadFromString(T& thing, const std::string& str)
+bool LoadFromString(T&& thing, const std::string& str, void* user_data=nullptr)
 {
 	unsigned int size = 0;
 	auto data = AsciiParserUtils::StringToBuffer(str, size);
 	kigs_defer{ delete[] data; };
 	PacketReadStream stream{ data, size };
+	stream.user_data = user_data;
 	return serialize_object(stream, thing);
 }
 

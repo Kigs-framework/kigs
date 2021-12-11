@@ -1745,7 +1745,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 			fwrite(&(stagedesc->mStageIndex),sizeof(int),1,pFile);
 			fwrite(&(stagedesc->mTexEnv),sizeof(TexEnvType),1,pFile);
 
-			//Incrémentation de l'itérateur
+			//IncrÃ©mentation de l'itÃ©rateur
 			++Stagedesc_It;
 		}
 
@@ -1771,12 +1771,12 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 					fwrite(&temp.T_type[2],sizeof(unsigned int),1,pFile);
 				}
 
-				//Incrémentation de l'itérateur
+				//IncrÃ©mentation de l'itÃ©rateur
 				++triangleList_It;
 			}
 		}
 
-		//Incrémentation de l'iterateur
+		//IncrÃ©mentation de l'iterateur
 		++meshitemGroup_It;
 
 	}//fin du parcour des meshitemGroup

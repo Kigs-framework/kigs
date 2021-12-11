@@ -202,7 +202,7 @@ protected:
 	friend bool	operator<(const TouchInfos& first, const TouchInfos& other);
 	friend bool	operator<(const TouchInfos& first, unsigned int other);
 
-	// return value is swallow mask, bit n° eventType is set to 1 when swallowed
+	// return value is swallow mask, bit nÂ° eventType is set to 1 when swallowed
 	virtual void Update(TouchInputEventManager* manager,const Timer& timer,CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask)=0;
 
 	virtual void Reset() = 0;

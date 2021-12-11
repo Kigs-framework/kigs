@@ -26,6 +26,11 @@ void	RendererOpenGL::DrawArrays(TravState* state, unsigned int mode, int first, 
 	glDrawArrays(mode, first, count);
 
 	mVertexBufferManager->MarkVertexAttrib();
+
+#ifdef KIGS_TOOLS
+	gRendererStats.DrawCalls += 1;
+	gRendererStats.DrawCallsTriangleCount += count / 3;
+#endif
 }
 
 void	RendererOpenGL::DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices)
@@ -41,6 +46,10 @@ void	RendererOpenGL::DrawElements(TravState* state, unsigned int mode, int count
 	glDrawElements(mode, count, type, indices);
 	
 	mVertexBufferManager->MarkVertexAttrib();
+#ifdef KIGS_TOOLS
+	gRendererStats.DrawCalls += 1;
+	gRendererStats.DrawCallsTriangleCount += count / 3;
+#endif
 }
 
 void RendererOpenGL::DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount)
@@ -55,4 +64,8 @@ void RendererOpenGL::DrawElementsInstanced(TravState* state, unsigned int mode, 
 	glDrawElementsInstanced(mode, count, type, indices, primcount);
 	
 	mVertexBufferManager->MarkVertexAttrib();
+#ifdef KIGS_TOOLS
+	gRendererStats.DrawCalls += 1;
+	gRendererStats.DrawCallsTriangleCount += primcount * count / 3;
+#endif
 }

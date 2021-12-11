@@ -73,7 +73,7 @@ IMPLEMENT_CONSTRUCTOR(ImGuiLayer)
 ImGuiLayer::~ImGuiLayer()
 {
 	ImGuiContext* old_state = SetActiveImGuiLayer();
-	ImGui::GetIO().Fonts->TexID = 0;
+	ImGui::GetIO().Fonts->SetTexID(0);
 	ImGui::SetCurrentContext(old_state);
 	ImGui::DestroyContext(mImGuiState);
 	mFontAtlas.Locked = false;
@@ -165,7 +165,7 @@ void ImGuiLayer::SetStyleLightGreen()
 	colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
 	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
 	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
-	colors[ImGuiCol_ModalWindowDarkening] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
 	colors[ImGuiCol_DragDropTarget] = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
 	colors[ImGuiCol_NavHighlight] = colors[ImGuiCol_HeaderHovered];
 	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.70f, 0.70f, 0.70f, 0.70f);
@@ -326,7 +326,6 @@ void ImGuiLayer::InitModifiable()
 		io.KeyMap[ImGuiKey_Z] = VK_Z;
 
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		io.ConfigDockingWithShift = false;
 		io.ConfigWindowsResizeFromEdges = true;
 
 		// TODO(antoine) actual cursor support
@@ -419,10 +418,10 @@ void ImGuiLayer::InitModifiable()
 		mFontTexture->CreateFromImage(img);
 		
 		// Store our identifier
-		io.Fonts->TexID = (void*)(intptr_t)mFontTexture.get();
+		io.Fonts->SetTexID((void*)(intptr_t)mFontTexture.get());
 
 		// Cleanup (don't clear the input data if you want to append new fonts later)
-		io.Fonts->ClearInputData();
+		//io.Fonts->ClearInputData();
 
 		// We need to keep that pixel data available in case of a reset context (only on android or when debugging with kigstools)
 #if !defined(_M_ARM) && !defined(KIGS_TOOLS)
@@ -511,8 +510,7 @@ bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 			mClickSource = TouchSourceID::Invalid;
 			io.MouseDown[0] = io.MouseDown[1] = io.MouseDown[2] = 0;
 			mIsDown = false;
-
-			if (ev.near_interaction_went_trough || io.MouseDownDuration[0] > 1.0f)
+			if (ev.near_interaction_went_trough || io.MouseDownDuration[0] > std::max(1.5f, 2.0f*io.DeltaTime))
 			{
 				io.MouseClicked[0] = false;
 				io.MouseDoubleClicked[0] = false;
@@ -989,7 +987,7 @@ DEFINE_METHOD(ImGuiLayer, ResetContext)
 	addItem(tex);
 
 	// Store our identifier
-	io.Fonts->TexID = (void*)(intptr_t)mFontTexture.get();
+	io.Fonts->SetTexID((void*)(intptr_t)mFontTexture.get());
 
 	// Cleanup (don't clear the input data if you want to append new fonts later)
 	//io.Fonts->ClearInputData();

@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Platform/Renderer/OpenGLInclude.h"
 #include "Scene3D.h"
+#include "Camera.h"
 
 #ifdef WUP
 extern bool gIsHolographic;
@@ -397,7 +398,7 @@ void	API3DGenericMeshShader::ChooseShader(TravState* state, unsigned int attribF
 
 	auto cam = state->GetCurrentCamera();
 	bool fog = false;
-	if (cam && cam->getValue("UseFog", fog) && fog)
+	if (cam && cam->UsesFog())
 	{
 		flag |= ModuleRenderer::ShaderFlags::FOG;
 	}
