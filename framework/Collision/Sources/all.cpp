@@ -10,4 +10,5 @@
 #include "Distance.cpp"
 #include "Intersection.cpp"
 #include "Plane.cpp"
+#include "SimpleShapeMeshCollider.cpp"
 #include "SpacialMeshBVH.cpp"

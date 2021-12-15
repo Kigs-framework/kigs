@@ -2,6 +2,7 @@
 #include "Billboard3D.cpp"
 #include "BinMeshLoader.cpp"
 #include "Camera.cpp"
+#include "CameraUpgradors.cpp"
 #include "DirectRenderingMethods.cpp"
 #include "DrawVertice.cpp"
 #include "Drawable.cpp"

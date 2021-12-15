@@ -1,4 +1,5 @@
 #include "ControlledTimer.cpp"
+#include "DelayedFunc.cpp"
 #include "ModuleTimer.cpp"
 #include "TimeProfiler.cpp"
 #include "Timer.cpp"
