@@ -4,3 +4,4 @@ target_include_directories(XMLArchive INTERFACE "Headers")
 
 file(GLOB_RECURSE allcpps "Sources/*")
 target_sources(XMLArchive INTERFACE ${allcpps})
+source_group("Source Files\\XMLArchive" FILES ${allcpps})

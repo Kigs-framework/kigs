@@ -911,4 +911,10 @@ bool LoadFromString(T&& thing, const std::string& str, void* user_data=nullptr)
 	return serialize_object(stream, thing);
 }
 
-
+template<typename T>
+bool LoadFromBuffer(T&& thing, CoreRawBuffer* buffer, void* user_data = nullptr)
+{
+	PacketReadStream stream{ buffer->data(), buffer->size() };
+	stream.user_data = user_data;
+	return serialize_object(stream, thing);
+}

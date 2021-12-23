@@ -54,7 +54,7 @@ protected:
 		if (f == mStringIndex.end())
 		{
 			mSharedStrings.push_back(s);
-			result = mSharedStrings.size() - 1;
+			result = (u32)mSharedStrings.size() - 1;
 			mStringIndex[s] = result;
 		}
 		else

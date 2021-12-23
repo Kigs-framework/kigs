@@ -137,7 +137,7 @@ public:
 	// return son file & folder count 
 	u32 getFileCount()
 	{
-		return mSons.size();
+		return (u32)mSons.size();
 	}
 
 	// get file or folder at given index
@@ -171,7 +171,7 @@ public:
 	XMLArchiveFile(const std::string& n, const std::string& xmlstring, XMLArchiveFolder* p) : XMLArchiveHierarchy(n, p)
 	{
 		mRawData = MakeRefCounted<CoreRawBuffer>();
-		mRawData->SetBuffer(nullptr, xmlstring.length(), true);
+		mRawData->SetBuffer(nullptr, (u32)xmlstring.length(), true);
 		memcpy(mRawData->buffer(), xmlstring.c_str(), xmlstring.length());
 		p->addSon(this);
 		interpretAsXML();
