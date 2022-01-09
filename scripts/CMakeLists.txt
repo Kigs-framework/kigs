@@ -217,7 +217,7 @@ if(WIN32 OR KIGS_ANDROID)
 	endif()
 	
 	if(NOT KIGS_ANDROID)
-		target_compile_options(Base INTERFACE $<$<CONFIG:StaticReleaseTools>:/ZI>)
+		target_compile_options(Base INTERFACE $<$<CONFIG:StaticReleaseTools>:/Zi>)
 		target_compile_options(Base INTERFACE $<$<CONFIG:StaticDebug>:/ZI>)
 		target_compile_options(Base INTERFACE /bigobj)
 		target_link_options(Base INTERFACE $<$<CONFIG:StaticReleaseTools>:/INCREMENTAL>)
