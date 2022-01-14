@@ -32,7 +32,7 @@ class LocalizationManager : public CoreModifiable
 public:
 	struct DoubleLocalizedUTF8UTF16
 	{
-		PLATFORM_WCHAR* mUTF16;
+		PLATFORM_WCHAR* mUTF16 = nullptr;
 		std::string mUTF8;
 	};
 

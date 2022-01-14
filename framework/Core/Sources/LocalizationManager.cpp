@@ -102,31 +102,22 @@ void LocalizationManager::addLocalizationFromBuffer(char* Buffer, unsigned int b
 const std::string& LocalizationManager::getLocalizedStringUTF8(const kstl::string& key)
 {
 	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 >::iterator itfound = mLocalizedString.find(key);
-
 	if (itfound != mLocalizedString.end())
 	{
 		// if no utf8, then create it
-		auto wchar_str = (wchar_t*)(*itfound).second.mUTF16;
-		if ((*itfound).second.mUTF8.empty() && wchar_str)
+		auto wchar_str = (wchar_t*)itfound->second.mUTF16;
+		if (itfound->second.mUTF8.empty())
 		{
-			(*itfound).second.mUTF8 = to_utf8(wchar_str, wcslen(wchar_str));
-			/*
-			usString				tmpOne((*itfound).second.mUTF16);
-			std::vector<UTF8Char>	tmpUTF8=tmpOne.toUTF8();
-			int l = (int)tmpUTF8.size();
-			UTF8Char* tempBuffer = nullptr;
-			if (l)
+			if (wchar_str)
 			{
-				tempBuffer = new UTF8Char[l + 1];
-				memcpy(tempBuffer, tmpUTF8.data(), l * sizeof(UTF8Char));
-				tempBuffer[l] = 0;
-				(*itfound).second.mUTF8 = tempBuffer;
-			}*/
+				itfound->second.mUTF8 = to_utf8(wchar_str, wcslen(wchar_str));
+			}
+			//else itfound->second.mUTF8 = "#" + key;
 		}
-		return (*itfound).second.mUTF8;
+		return itfound->second.mUTF8;
 	}
 #ifdef _DEBUG
-	printf("Localization not found for key : %s\n", key.c_str());
+	kigsprintf("Localization not found for key : %s\n", key.c_str());
 #endif
 	return "";
 }
