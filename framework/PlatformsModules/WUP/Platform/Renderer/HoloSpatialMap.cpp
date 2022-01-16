@@ -412,7 +412,7 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 			mCollisionManager->SetCollisionObject(dv, collisionBVH);
 			mCollisionManager->SetCollisionObject(mesh, collisionAABB);
 
-			theGlobals->State.Immersive.ContinuousMatching.RegisterSpatialMeshNode(outInfo.node);
+			GetContinuousMatchingTool().RegisterSpatialMeshNode(outInfo.node);
 		}
 	}
 }
