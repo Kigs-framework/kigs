@@ -38,7 +38,8 @@ namespace ImGui
 
 	void CenterText(const std::string& txt, bool wrapped)
 	{
-		CenterWidget(ImGui::CalcTextSize(txt.c_str()).x);
+		const float wrap_width = wrapped ? ImGui::CalcWrapWidthForPos(ImGui::GetCursorScreenPos(), 0.0f) : -1.0f;
+		CenterWidget(ImGui::CalcTextSize(txt.c_str(), 0, false, wrap_width).x);
 		if(!wrapped) ImGui::Text(txt.c_str());
 		else ImGui::TextWrapped(txt.c_str());
 	}
@@ -79,6 +80,13 @@ namespace ImGui
 		ImGui::SameLine(0, 0);
 		b = ImGui::Button(txt.c_str(), size) || b;
 		return b;
+	}
+	bool ButtonCenteredSTD(const std::string& label, v2f size)
+	{
+		auto label_size = ImGui::CalcTextSize(label.c_str());
+		ImVec2 item_size = CalcItemSize(size, label_size.x + ImGui::GetStyle().FramePadding.x * 2.0f, label_size.y + ImGui::GetStyle().FramePadding.y * 2.0f);
+		ImGui::CenterWidget(item_size.x);
+		return ImGui::Button(label.c_str(), size);
 	}
 
 	void Strikethrough(float offset_before, float offset_after, ImColor color)

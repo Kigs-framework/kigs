@@ -31,6 +31,8 @@ namespace ImGui
 		return ImGui::Button(label.c_str(), size);
 	}
 
+	bool ButtonCenteredSTD(const std::string& label, v2f size = v2f(0, 0));
+	
 	inline void TextSTD(const std::string& text)
 	{
 		ImGui::Text(text.c_str());
