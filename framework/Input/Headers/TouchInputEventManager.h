@@ -3,6 +3,7 @@
 #include "SpatialInteractionDevice.h"
 #include "CoreModifiable.h"
 #include "TecLibs/Tec3D.h"
+#include "Timer.h"
 
 #include "maReference.h"
 
@@ -850,7 +851,7 @@ protected:
 	std::map<CoreModifiable*, touchSupportTreeNode*>	mTouchSupportMap;
 	bool												mInUpdate = false;
 	std::set<CoreModifiable*>							mDestroyedThisFrame;
-
+	TimePoint											mLastTimeNearInteraction;
 	
 
 	void	manageTemporaryUnmappedTouchSupport(CoreModifiable* ts, CoreModifiable* parent);
