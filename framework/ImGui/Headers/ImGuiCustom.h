@@ -58,3 +58,6 @@ namespace ImGui
 
 	bool ToggleButton(const char* str_id, bool* v);
 }
+
+std::string CheckButtonText(bool checked, const std::string& txt, bool before = true);
+std::string SelectedOptionText(bool selected, const std::string& txt, bool before = true);

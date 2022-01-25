@@ -1,6 +1,7 @@
 #include "ImGuiCustom.h"
 
 #include "ImGuiLayer.h"
+#include "IconsForkAwesome.h"
 
 #include "imgui_internal.h"
 
@@ -127,4 +128,20 @@ namespace ImGui
 		
 		return changed;
 	}
+}
+
+std::string CheckButtonText(bool checked, const std::string& txt, bool before)
+{
+	if (before)
+		return checked ? ICON_FK_CHECK_SQUARE " " + txt : ICON_FK_SQUARE_O " " + txt;
+
+	return checked ? txt + " " ICON_FK_CHECK_SQUARE : txt + ICON_FK_SQUARE_O" ";
+}
+
+std::string SelectedOptionText(bool selected, const std::string& txt, bool before)
+{
+	if (before)
+		return selected ? ICON_FK_CHECK" " + txt : " " + txt;
+
+	return selected ? txt + " " ICON_FK_CHECK : txt + " ";
 }
