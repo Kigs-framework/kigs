@@ -39,8 +39,6 @@ IMPLEMENT_CLASS_INFO(CoreFSM)
 // constructor ask for autoupdate
 CoreFSM::CoreFSM(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	KigsCore::GetCoreApplication()->AddAutoUpdate(this);
-
 #ifdef DEBUG_COREFSM
 	mStateChangeBuffer.init(100);
 #endif
@@ -266,9 +264,11 @@ void	CoreFSM::InitModifiable()
 	ParentClassType::InitModifiable();
 	if (IsInit())
 	{
-		if (GetParents().size() || (mCurrentState.size()==0)) // can't init without parent or start state
+		if (GetParents().size() && (mCurrentState.size()==0)) // can't init without parent and start state
 		{
 			mAttachedObject = GetParents()[0];
+			// auto update only after init is OK
+			KigsCore::GetCoreApplication()->AddAutoUpdate(this);
 		}
 		else
 		{

@@ -80,6 +80,8 @@ struct Point3D
 	
     // With assignement
     inline Point3D& operator *= ( const Float& fValue );
+	inline Point3D& operator += ( const Float& fValue );
+	inline Point3D& operator -= ( const Float& fValue );
     inline Point3D& operator /= ( const Float& fValue );
 	
 	inline Point3D& operator *= ( const Point3D& p);
