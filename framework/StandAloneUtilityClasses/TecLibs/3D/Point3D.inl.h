@@ -175,6 +175,16 @@ Point3D& Point3D::operator *= ( const Float& fValue )
     return *this;
 }
 
+// add the same value to the 3 coords
+Point3D& Point3D::operator += (const Float& fValue)
+{
+    x += fValue;
+    y += fValue;
+    z += fValue;
+
+    return *this;
+}
+
 Point3D& Point3D::operator /= ( const Float& fValue )
 {
 	const Float invfValue = KFLOAT_ONE / fValue;
@@ -184,6 +194,17 @@ Point3D& Point3D::operator /= ( const Float& fValue )
 	
     return *this;
 }
+
+// remove the same value to the 3 coords
+Point3D& Point3D::operator -= (const Float& fValue)
+{
+    x -= fValue;
+    y -= fValue;
+    z -= fValue;
+
+    return *this;
+}
+
 
 
 Point3D& Point3D::operator *= ( const Point3D& p )

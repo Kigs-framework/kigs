@@ -322,6 +322,7 @@ void CollisionManager::SetCollisionObject(const CMSP& item, CollisionBaseObject*
 	mToAdd.push_back({ item, collider });
 }
 
+
 void CollisionManager::SetCollisionObject(const CMSP& item, std::shared_ptr<CollisionBaseObject> collider)
 {
 	std::lock_guard<std::mutex> lock(mToAddMutex);
