@@ -143,6 +143,7 @@ void ImGuiLayer::SetStyleLightGreen()
 	colors[ImGuiCol_HeaderHovered] = ImVec4(0.71f, 0.78f, 0.69f, 0.80f);
 	colors[ImGuiCol_HeaderActive] = ImVec4(0.71f, 0.78f, 0.69f, 1.00f);
 
+	colors[ImGuiCol_TableHeaderBg] = colors[ImGuiCol_Header];
 
 	colors[ImGuiCol_Tab] = ImVec4(0.71f, 0.78f, 0.69f, 0.51f);
 	colors[ImGuiCol_TabHovered] = ImVec4(0.725f, 0.805f, 0.702f, 1.00f);
