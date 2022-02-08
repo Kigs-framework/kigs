@@ -655,52 +655,62 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 					}
 				}
 				
-				if((GetNearInteractionActiveItems(interaction.handedness).size() == 0 || !interaction.index_tip.has_value()) && interaction.palm.has_value())
+				auto nb_near_items = GetNearInteractionActiveItems(interaction.handedness).size();
+
+				if (nb_near_items > 0)
 				{
-					auto orientation = (interaction.palm->orientation * v3f(0, -1, 1)).Normalized();
-					if (Dot(orientation, camera->GetGlobalViewVector()) > 0)
+					mLastTimeNearInteraction = TimePoint::clock::now();
+				}
+
+				if((nb_near_items == 0 || !interaction.index_tip.has_value()) && interaction.palm.has_value())
+				{
+					if (TimePoint::clock::now() - mLastTimeNearInteraction > std::chrono::milliseconds(500))
 					{
-						if (interaction.palm.has_value())
+						auto orientation = (interaction.palm->orientation * v3f(0, -1, 1)).Normalized();
+						if (Dot(orientation, camera->GetGlobalViewVector()) > 0)
 						{
-							auto npos = interaction.palm->position;
-							auto ndir = ((interaction.palm->position - camera->GetGlobalPosition()).Normalized() + interaction.palm->orientation * v3f(interaction.handedness == Handedness::Left ? -0.15f : 0.15f, 0, 0.33f)).Normalized();
-
-							if (interaction.SmoothPosition.x == -FLT_MAX)
+							if (interaction.palm.has_value())
 							{
-								interaction.SmoothPosition = npos;
-								interaction.SmoothDirection = ndir;
-							}
+								auto npos = interaction.palm->position;
+								auto ndir = ((interaction.palm->position - camera->GetGlobalPosition()).Normalized() + interaction.palm->orientation * v3f(interaction.handedness == Handedness::Left ? -0.15f : 0.15f, 0, 0.33f)).Normalized();
 
-							const double max_time_still = 2.0;
-							if (Norm(interaction.SmoothPosition - npos) < 0.01)
-							{
-								interaction.TimeStill = std::min(interaction.TimeStill + interaction.DT, max_time_still);
+								if (interaction.SmoothPosition.x == -FLT_MAX)
+								{
+									interaction.SmoothPosition = npos;
+									interaction.SmoothDirection = ndir;
+								}
+
+								const double max_time_still = 2.0;
+								if (Norm(interaction.SmoothPosition - npos) < 0.01)
+								{
+									interaction.TimeStill = std::min(interaction.TimeStill + interaction.DT, max_time_still);
+								}
+								else
+								{
+									interaction.TimeStill = std::max(interaction.TimeStill - interaction.DT * 2, 0.0);
+								}
+
+								auto t = std::clamp((max_time_still - interaction.TimeStill) / max_time_still, 0.1, 1.0);
+								interaction.SmoothPosition = Lerp(interaction.SmoothPosition, npos, t);
+								interaction.SmoothDirection = Lerp(interaction.SmoothDirection, ndir, t).Normalized();
+
+								interaction_infos.posInfos.pos = interaction.SmoothPosition;
+								interaction_infos.posInfos.dir = interaction.SmoothDirection;
+								interaction_infos.posInfos.origin = interaction.SmoothPosition;
 							}
 							else
 							{
-								interaction.TimeStill = std::max(interaction.TimeStill - interaction.DT * 2, 0.0);
+								interaction_infos.posInfos.pos = interaction.Position;
+								interaction_infos.posInfos.dir = interaction.Forward;
+								interaction_infos.posInfos.origin = interaction.Position;
 							}
-
-							auto t = std::clamp((max_time_still - interaction.TimeStill) / max_time_still, 0.1, 1.0);
-							interaction.SmoothPosition = Lerp(interaction.SmoothPosition, npos, t);
-							interaction.SmoothDirection = Lerp(interaction.SmoothDirection, ndir, t).Normalized();
-
-							interaction_infos.posInfos.pos = interaction.SmoothPosition;
-							interaction_infos.posInfos.dir = interaction.SmoothDirection;
-							interaction_infos.posInfos.origin = interaction.SmoothPosition;
+							interaction_infos.posInfos.min_distance = -DBL_MAX;
+							interaction_infos.posInfos.max_distance = DBL_MAX;
+							interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchSourceID::SpatialInteractionRayLeft : TouchSourceID::SpatialInteractionRayRight;
+							interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
+							any_touch_state = any_touch_state | interaction_infos.touch_state;
+							Touches[interaction_infos.ID] = interaction_infos;
 						}
-						else
-						{
-							interaction_infos.posInfos.pos = interaction.Position;
-							interaction_infos.posInfos.dir = interaction.Forward;
-							interaction_infos.posInfos.origin = interaction.Position;
-						}
-						interaction_infos.posInfos.min_distance = -DBL_MAX;
-						interaction_infos.posInfos.max_distance = DBL_MAX;
-						interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchSourceID::SpatialInteractionRayLeft : TouchSourceID::SpatialInteractionRayRight;
-						interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
-						any_touch_state = any_touch_state | interaction_infos.touch_state;
-						Touches[interaction_infos.ID] = interaction_infos;
 					}
 				}
 			}

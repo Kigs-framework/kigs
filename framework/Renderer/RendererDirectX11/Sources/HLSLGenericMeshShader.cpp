@@ -285,8 +285,6 @@ cbuffer MatrixBuffer : register(b0)
 	row_major float4x4 stereo_viewproj[2];
 #else
 	row_major float4x4 viewproj_matrix;
-	//row_major float4x4 view_matrix;
-	//row_major float4x4 proj_matrix;
 #endif
 
 
@@ -431,7 +429,7 @@ void	API3DGenericMeshShader::ChooseShader(TravState* state, unsigned int attribF
 
 	auto cam = state->GetCurrentCamera();
 	bool fog = false;
-	if (cam && cam->getValue("UseFog", fog) && fog)
+	if (cam && cam->UsesFog())
 	{
 		flag |= ModuleRenderer::ShaderFlags::FOG;
 	}

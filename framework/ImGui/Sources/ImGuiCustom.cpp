@@ -1,6 +1,7 @@
 #include "ImGuiCustom.h"
 
 #include "ImGuiLayer.h"
+#include "IconsForkAwesome.h"
 
 #include "imgui_internal.h"
 
@@ -38,7 +39,8 @@ namespace ImGui
 
 	void CenterText(const std::string& txt, bool wrapped)
 	{
-		CenterWidget(ImGui::CalcTextSize(txt.c_str()).x);
+		const float wrap_width = wrapped ? ImGui::CalcWrapWidthForPos(ImGui::GetCursorScreenPos(), 0.0f) : -1.0f;
+		CenterWidget(ImGui::CalcTextSize(txt.c_str(), 0, false, wrap_width).x);
 		if(!wrapped) ImGui::Text(txt.c_str());
 		else ImGui::TextWrapped(txt.c_str());
 	}
@@ -56,7 +58,7 @@ namespace ImGui
 	float GetElementWidthForSubdivision(int count)
 	{
 		if (count <= 0) count = 1;
-		return (ImGui::GetWindowWidth() - ImGui::GetColumnOffset()) / count - ImGui::GetStyle().ItemSpacing.x;
+		return (ImGui::GetWindowWidth() - ImGui::GetColumnOffset() - ImGui::GetCurrentWindow()->ScrollbarSizes.x) / count - ImGui::GetStyle().ItemSpacing.x;
 	}
 	void Label(const std::string& txt)
 	{
@@ -66,15 +68,26 @@ namespace ImGui
 	void ButtonLabel(const std::string& txt, v2f size)
 	{
 		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
-		ImGui::ButtonEx(txt.c_str(), size, ImGuiButtonFlags_Disabled);
+		ImGui::PushDisabled();
+		ImGui::ButtonEx(txt.c_str(), size);
+		ImGui::PopDisabled();
 		ImGui::PopStyleVar();
 	}
 	bool ButtonWithLabel(const std::string& label, const std::string txt, float label_width, v2f size)
 	{
-		bool b = ImGui::ButtonEx(label.c_str(), v2f(label_width, size.y), ImGuiButtonFlags_Disabled);
+		ImGui::PushDisabled();
+		bool b = ImGui::ButtonEx(label.c_str(), v2f(label_width, size.y));
+		ImGui::PopDisabled();
 		ImGui::SameLine(0, 0);
 		b = ImGui::Button(txt.c_str(), size) || b;
 		return b;
+	}
+	bool ButtonCenteredSTD(const std::string& label, v2f size)
+	{
+		auto label_size = ImGui::CalcTextSize(label.c_str());
+		ImVec2 item_size = CalcItemSize(size, label_size.x + ImGui::GetStyle().FramePadding.x * 2.0f, label_size.y + ImGui::GetStyle().FramePadding.y * 2.0f);
+		ImGui::CenterWidget(item_size.x);
+		return ImGui::Button(label.c_str(), size);
 	}
 
 	void Strikethrough(float offset_before, float offset_after, ImColor color)
@@ -85,4 +98,50 @@ namespace ImGui
 		v2f to{ rect_max.x + offset_after, from.y };
 		ImGui::GetWindowDrawList()->AddLine(from, to, color);
 	}
+
+	bool ToggleButton(const char* str_id, bool* v)
+	{
+		bool changed = false;
+
+		v2f p = ImGui::GetCursorScreenPos();
+		p.y += 1;
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+		float border_size = ImGui::GetStyle().ChildBorderSize / 2;
+		float height = ImGui::GetFrameHeight() - 2 * border_size;
+		float width = height * 1.55f;
+		float radius = height * 0.50f;
+
+		changed = ImGui::InvisibleButton(str_id, ImVec2(width, height));
+		if(changed)
+			*v = !*v;
+		
+		ImColor col_bg = ImGui::IsItemHovered() ? ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered) : ImGui::GetStyleColorVec4(ImGuiCol_FrameBg);
+		ImColor circle_color = ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered);
+		ImColor border_color = ImGui::GetStyleColorVec4(ImGuiCol_Separator);
+		
+		draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), border_color, height * 0.5f);
+		draw_list->AddRectFilled(p + v2f(border_size, border_size), ImVec2(p.x + width - border_size, p.y + height - border_size), ImColor(ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg)), (height - 2 * border_size) * 0.5f);
+		draw_list->AddRectFilled(p + v2f(border_size, border_size), ImVec2(p.x + width - border_size, p.y + height - border_size), col_bg, (height - 2 * border_size) * 0.5f);
+		draw_list->AddCircleFilled(ImVec2(*v ? (p.x + width - radius) : (p.x + radius), p.y + radius), radius - 1.5f, border_color);
+		draw_list->AddCircleFilled(ImVec2(*v ? (p.x + width - radius) : (p.x + radius), p.y + radius), radius - 1.5f - border_size, circle_color);
+		
+		return changed;
+	}
+}
+
+std::string CheckButtonText(bool checked, const std::string& txt, bool before)
+{
+	if (before)
+		return checked ? ICON_FK_CHECK_SQUARE " " + txt : ICON_FK_SQUARE_O " " + txt;
+
+	return checked ? txt + " " ICON_FK_CHECK_SQUARE : txt + ICON_FK_SQUARE_O" ";
+}
+
+std::string SelectedOptionText(bool selected, const std::string& txt, bool before)
+{
+	if (before)
+		return selected ? ICON_FK_CHECK" " + txt : " " + txt;
+
+	return selected ? txt + " " ICON_FK_CHECK : txt + " ";
 }

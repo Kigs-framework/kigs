@@ -63,6 +63,9 @@ void KeywordRecognizer::Update(const Timer& timer, void* addParam)
 
 winrt::Windows::Foundation::IAsyncAction KeywordRecognizer::StartRecognizeKeywords()
 {
+#ifndef KIGS_HOLOLENS2
+	co_return;
+#endif
 	mRecognitionEnabled = true;
 
 	try
@@ -72,7 +75,7 @@ winrt::Windows::Foundation::IAsyncAction KeywordRecognizer::StartRecognizeKeywor
 		settings.StreamingCaptureMode(StreamingCaptureMode::Audio);
 		co_await mediaCapture.InitializeAsync(settings);
 	}
-	catch (winrt::hresult_error const& ex)
+	catch (winrt::hresult_error const&)
 	{
 		mSpeechRecognizer = nullptr;
 		mRecognitionEnabled = false;

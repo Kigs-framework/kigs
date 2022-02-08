@@ -32,8 +32,8 @@ class LocalizationManager : public CoreModifiable
 public:
 	struct DoubleLocalizedUTF8UTF16
 	{
-		PLATFORM_WCHAR* mUTF16;
-		UTF8Char* mUTF8;
+		PLATFORM_WCHAR* mUTF16 = nullptr;
+		std::string mUTF8;
 	};
 
 	DECLARE_CLASS_INFO(LocalizationManager,CoreModifiable,LocalizationManager);
@@ -42,8 +42,8 @@ public:
 
 	virtual void	setLocalizationFilePath(const char* path,bool a_erasePreviousLoc=false);
 
-	virtual const PLATFORM_WCHAR*	getLocalizedString(const kstl::string& key);
-	virtual const UTF8Char* getLocalizedStringUTF8(const kstl::string& key);
+	virtual const PLATFORM_WCHAR* getLocalizedString(const kstl::string& key);
+	virtual const std::string& getLocalizedStringUTF8(const kstl::string& key);
 
 	void			addLocalizationFromFileAtPath(const char* path);
 
@@ -53,6 +53,12 @@ public:
 	inline kstl::string		getLocalizationFilePath(){ return mLocalizationFilePath; }
 
 	void			InitWithConfigFile(const kstl::string& filename);
+
+	void SetLocalizationMap(kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16> new_map)
+	{
+		EraseMap();
+		mLocalizedString = std::move(new_map);
+	}
 
 	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 > getDebugFullMap()
 	{

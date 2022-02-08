@@ -76,7 +76,7 @@ void HTTPAsyncRequestWUP::InitModifiable()
 
 		std::wstring uriL;
 		std::transform(uri.begin(), uri.end(), std::back_inserter(uriL), [](auto& a){ return a;	});
-		Uri request_uri = uriL.c_str();
+		Uri request_uri(uriL.c_str());
 
 		
 		IAsyncOperationWithProgress<HttpResponseMessage, HttpProgress> async_op;

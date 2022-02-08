@@ -8,7 +8,7 @@
 #include "Intersection.h"
 
 #include <stdlib.h>
-#pragma optimize("", off)
+
 AABBTreeNode::AABBTreeNode() 
 {
 	//! call base class constructor (CollisionBaseObject) and init members

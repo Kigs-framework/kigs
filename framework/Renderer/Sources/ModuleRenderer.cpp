@@ -23,6 +23,7 @@
 #include "TextureHandler.h"
 
 #include "FreeType_TextDrawer.h"
+#include "CameraUpgradors.h"
 
 #ifdef KIGS_TOOLS
 RendererStats gRendererStats;
@@ -66,7 +67,7 @@ void ModuleRenderer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	DECLARE_FULL_CLASS_INFO(core, MaterialStage, MaterialStage, Renderer);
 	DECLARE_FULL_CLASS_INFO(core, Holo3DPanel, Holo3DPanel, Renderer);
 	DECLARE_FULL_CLASS_INFO(core, TextureHandler, TextureHandler, Renderer);
-
+	REGISTER_UPGRADOR(OrbitCameraUp);
 
 	//DECLARE_FULL_CLASS_INFO(core, RendererProfileDrawingObject, ProfileDrawingObject, Renderer)
 

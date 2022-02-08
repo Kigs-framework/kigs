@@ -19,6 +19,14 @@
  * Drawable objects can generally be shared ( textures, meshes ... ) to be drawn several times.
  */
  // ****************************************
+
+class Drawable;
+class DrawableCallbackInterface
+{
+public:
+	virtual bool operator()(TravState* travstate, Drawable* drawable, int drawable_need) = 0;
+};
+
 class Drawable : public SceneNode 
 {
 public:	
@@ -134,6 +142,16 @@ public:
 
 	bool IsSortable() { return mSortable; }
 
+	void SetDrawableCallback(DrawableCallbackInterface* callback) { mCallback = callback; }
+
+	enum	DRAWABLE_DRAWING_NEEDS
+	{
+		Not_Init = 1,
+		Need_Predraw = 2,
+		Need_Draw = 4,
+		Need_Postdraw = 8
+	};
+
 protected:
 	maUInt mRenderPassMask = BASE_ATTRIBUTE(RenderPassMask, 0xffffffff);
 	maBool mSortable = BASE_ATTRIBUTE(Sortable, false);
@@ -171,15 +189,8 @@ protected:
 	 */
 	virtual void FatherNode3DNeedBoundingBoxUpdate();
 
-	enum	DRAWABLE_DRAWING_NEEDS
-	{
-		Not_Init		= 1,
-		Need_Predraw	= 2,
-		Need_Draw		= 4,
-		Need_Postdraw	= 8
-	};
-
 	unsigned int	mDrawingNeeds;
+	DrawableCallbackInterface* mCallback = nullptr;
 }; 
 
 #endif //_DRAWABLE_H_

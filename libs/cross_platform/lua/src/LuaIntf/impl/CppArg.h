@@ -95,7 +95,8 @@ template <typename T>
 struct CppArgTraits
 {
     using Type = T;
-    using ValueType = typename std::result_of<decltype(&LuaType<T>::get)(lua_State*, int)>::type;
+    
+    using ValueType = typename std::invoke_result_t<decltype(&LuaType<T>::get), lua_State*, int>;
     using HolderType = CppArgHolder<ValueType>;
 
     static constexpr bool isInput = true;

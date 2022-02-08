@@ -53,7 +53,7 @@ using namespace winrt::Windows::System::Profile;
 
 #include <Windows.h>
 
-void print_context(char* iden)
+void print_context(const char* iden)
 {
 	APTTYPE type;
 	APTTYPEQUALIFIER qualifier;

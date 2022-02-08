@@ -80,6 +80,11 @@ inline Matrix3x4 Matrix3x4::LookAt(Point3D eye, Point3D target, Vector3D up)
 	return m;
 }
 
+inline Matrix3x4 Matrix3x4::LookAtDir(Point3D eye, Vector3D direction, Vector3D up)
+{
+	return LookAt(eye, eye + direction, up);
+}
+
 inline void Matrix3x4::Set(const Vector3D& vx, const Vector3D& vy, const Vector3D& vz, const Point3D& pos)
 {
 	e[0][0] = vx.x; e[0][1] = vx.y; e[0][2] = vx.z;

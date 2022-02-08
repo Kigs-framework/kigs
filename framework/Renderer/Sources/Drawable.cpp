@@ -152,6 +152,7 @@ bool Drawable::PreDraw(TravState* state)
 {
 	if(IsRenderable())
 	{
+		if (mCallback) return (*mCallback)(state, this, Need_Predraw);
 		return true;
 	}
 	return false;
@@ -188,7 +189,7 @@ bool Drawable::Draw(TravState* state)
 			}
 		}
 #endif
-
+		if (mCallback) return (*mCallback)(state, this, Need_Draw);
 		return true;
 	}
 	
@@ -199,6 +200,7 @@ bool Drawable::PostDraw(TravState* state)
 {
 	if(IsRenderable())
 	{
+		if (mCallback) return (*mCallback)(state, this, Need_Postdraw);
 		return true;
 	}
 	return false;

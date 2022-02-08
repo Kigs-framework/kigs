@@ -139,18 +139,18 @@ public:
 	}*/
 
 	// Comparison
-	bool operator==(const usString& L_value) const
+	/*bool operator==(const usString& L_value) const
 	{
 		return (mValue == L_value);
-	}
+	}*/
 	bool operator==(unsigned short* L_value) const
 	{
 		return (mValue == L_value);
 	}
-	bool operator!=(const usString& L_value) const
+	/*bool operator!=(const usString& L_value) const
 	{
 		return (mValue != L_value);
-	}
+	}*/
 	bool operator!=(unsigned short* L_value) const
 	{
 		return (mValue != L_value);

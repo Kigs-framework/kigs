@@ -54,7 +54,7 @@ protected:
 		if (f == mStringIndex.end())
 		{
 			mSharedStrings.push_back(s);
-			result = mSharedStrings.size() - 1;
+			result = (u32)mSharedStrings.size() - 1;
 			mStringIndex[s] = result;
 		}
 		else
@@ -220,6 +220,8 @@ protected:
 
 	void		createFolderHierarchy();
 
+	bool initAfterOpen();
+
 public:
 
 	XLSXDocument();
@@ -245,10 +247,13 @@ public:
 		return XLSXElementRef();
 	}
 
+	const std::vector<XLSXSheet*>& GetSheets() { return mSheets; }
+
 	std::vector<XLSXElementRef>	find(const std::string& content,bool exactmatch=false);
 	std::vector<XLSXElementRef>	find(int val);
 
-	virtual bool	open(const std::string& filename) override;
+	virtual bool open(const std::string& filename) override;
+	virtual bool open(const SP<CoreRawBuffer>& buffer) override;
 
 	// create empty document
 	void	initEmpty();

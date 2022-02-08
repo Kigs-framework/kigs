@@ -28,6 +28,11 @@ public:
 		return mName;
 	}
 
+	s32 getSheetID()
+	{
+		return mSheedID;
+	}
+
 	void initFromXML(XMLBase* xml);
 	void updateXML(XMLBase* xml);
 

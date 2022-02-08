@@ -306,6 +306,12 @@ public:
 
 	auto& GetRenderPasses() { return mRenderPasses; }
 
+	bool UsesFog() { return mUseFog; }
+	float GetFogScale(){ return mFogScale; }
+	v4f GetFogColor() { return mFogColor; }
+	float GetNearPlane() { return mNearPlane; }
+	float GetFarPlane() { return mFarPlane; }
+
 protected:
 
 	std::vector<RenderPass> mRenderPasses;
@@ -400,6 +406,10 @@ protected:
 	maBool				mAllVisible;
 
 	maBool				mTouchControlled;
+
+	maBool mUseFog = BASE_ATTRIBUTE(UseFog, false);
+	maVect4DF mFogColor = BASE_ATTRIBUTE(FogColor, 0, 0, 0, 1);
+	maFloat mFogScale = BASE_ATTRIBUTE(FogScale, 10.0f);
 		
 	//! TRUE when the camera is active
 	bool				mIsActive;

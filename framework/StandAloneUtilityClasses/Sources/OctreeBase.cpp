@@ -3,5 +3,3 @@
 #ifdef _DEBUG
 unsigned int	OctreeNodeBase::mCurrentAllocatedNodeCount = 0;
 #endif
-
-

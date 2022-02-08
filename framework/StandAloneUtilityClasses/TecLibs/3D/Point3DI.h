@@ -10,6 +10,8 @@
 #ifndef _Point3DI_h_
 #define _Point3DI_h_
 
+#include "Point3D.h"
+
 // ----------------------------------------------------------------------
 // **************************************************
 // * Point3DIBase & Point3DSI
@@ -46,18 +48,18 @@ struct Point3DIBase
     inline const Point3DIBase& operator += ( const Point3DIBase& V );
     inline const Point3DIBase& operator -= ( const Point3DIBase& V );
 	
-	
-	
-    
-    
-	
     // With assignement
     inline const Point3DIBase& operator *= ( const coordType& iValue );
     inline const Point3DIBase& operator /= ( const coordType& iValue );
 	inline const Point3DIBase& operator *= ( const Point3DIBase& p);
 	inline const Point3DIBase& operator /= ( const Point3DIBase& p);
 	
-	
+	inline operator Point3D() const
+	{
+		Point3D result((Float)x, (Float)y, (Float)z);
+		return result;
+	}
+
     // +---------
     // | Utilities
     // +---------

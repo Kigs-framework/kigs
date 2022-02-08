@@ -26,6 +26,23 @@ namespace ImGui
 
 	void Strikethrough(float offset_before = 0.0f, float offset_after = 0.0f, ImColor color = ImColor(0, 0, 0, 255));
 
+	inline bool ButtonSTD(const std::string& label, v2f size = v2f(0,0))
+	{
+		return ImGui::Button(label.c_str(), size);
+	}
+
+	bool ButtonCenteredSTD(const std::string& label, v2f size = v2f(0, 0));
+	
+	inline void TextSTD(const std::string& text)
+	{
+		ImGui::Text(text.c_str());
+	}
+
+	inline void SetTooltipSTD(const std::string& text)
+	{
+		ImGui::SetTooltip(text.c_str());
+	}
+
 	template<auto F, typename ... Args>
 	inline auto FlowLayout(const std::string& str, Args&&... args)
 	{
@@ -38,4 +55,9 @@ namespace ImGui
 
 		return F(str.c_str(), FWD(args)...);
 	}
+
+	bool ToggleButton(const char* str_id, bool* v);
 }
+
+std::string CheckButtonText(bool checked, const std::string& txt, bool before = true);
+std::string SelectedOptionText(bool selected, const std::string& txt, bool before = true);

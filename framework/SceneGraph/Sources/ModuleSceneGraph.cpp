@@ -15,11 +15,18 @@ IMPLEMENT_CONSTRUCTOR(ModuleSceneGraph)
 , mTravState(nullptr)
 , mSceneListNeedsSort(*this, false, "SceneListNeedsSort", false)
 {
+	mVisiblesNodeList = new Node3D*[1 << 16];
 }
 
 ModuleSceneGraph::~ModuleSceneGraph()
 {
+	delete[] mVisiblesNodeList;
+}
 
+void ModuleSceneGraph::SetVisiblesNodeListMaxSize(size_t size)
+{
+	delete[] mVisiblesNodeList;
+	mVisiblesNodeList = new Node3D*[size];
 }
 
 void ModuleSceneGraph::AddDefferedItem(void* item, DefferedAction::ENUM action)

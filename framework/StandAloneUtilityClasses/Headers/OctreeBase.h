@@ -7,6 +7,7 @@
 template<typename BaseType>
 class OctreeBase;
 
+// base class for octree node
 class OctreeNodeBase
 {
 public:
@@ -130,9 +131,11 @@ public:
 		static inline const int				mInvDir[6] = { 1,0,3,2,5,4 };
 		static inline const int				mOppositeFace[33] = { 0,2,1,0,8,0,0,0,4,0,0,0,0,0,0,0,32,
 																 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16 };
+		static inline const int				mSetBitIndex[33] = { -1,0,1,-1,2,-1,-1,-1,3,-1,-1,-1,-1,-1,-1,-1,4,
+																 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5 };
 };
 
-
+// octree node with template content
 template<typename ContentType>
 class OctreeNode : public OctreeNodeBase
 {
@@ -252,12 +255,15 @@ protected:
 
 };
 
-
+// structure describing an octree node 
 struct nodeInfo
 {
 	int				level;
 	v3i				coord;
 	OctreeNodeBase*	node = nullptr;
+#ifdef _DEBUG
+	u32				mDebugFlag=0;
+#endif
 
 	bool	operator==(const nodeInfo& other)
 	{
@@ -268,7 +274,7 @@ struct nodeInfo
 	T* getNode() const { return static_cast<T*>(node); }
 };
 
-
+// base class for octree with templated inherited class
 template<typename BaseType>
 class OctreeBase : public BaseType
 {
@@ -313,8 +319,6 @@ public:
 		return mask;
 	}
 
-	
-
 	// get neighbour in the given direction mask (add index in mNeightboursDecalVectors)
 	// each axis is coded on two bits:
 	// 00 =>  0
@@ -322,7 +326,7 @@ public:
 	// 10 =>  1
 	nodeInfo	getVoxelNeighbour(const nodeInfo& node, u32 dir);
 
-
+	// utility class to apply a function on all nodes
 	class	applyOnAllNodes
 	{
 	public:
@@ -340,8 +344,6 @@ public:
 	};
 
 protected:
-
-
 
 	// utility class to avoid passing the same parameters to the recursive method
 	// and mutualise some computation 
@@ -380,12 +382,11 @@ protected:
 		std::vector<nodeInfo>* mChildList;
 	};
 
-
+	// utility class to recursively flood fill the octree
 	class recursiveFloodFill
 	{
 	public:
 
-		
 		recursiveFloodFill(OctreeBase<BaseType>& octree, std::vector<nodeInfo>* fillborderList,s32 setBrowsingFlag=-1) : 
 			mOctree(octree),
 			mFillBorderList(fillborderList)
@@ -472,6 +473,7 @@ protected:
 
 IMPLEMENT_TEMPLATE_CLASS_INFO(BaseType, OctreeBase)
 
+// OctreeBase methods implementation
 template<typename BaseType>
 nodeInfo OctreeBase<BaseType>::getVoxelAt(const v3i& coordinate, unsigned int maxDepth)
 {
@@ -620,7 +622,7 @@ void	OctreeBase<BaseType>::recursiveFloodFill::subrun(const nodeInfo& startPos, 
 {
 	// set current node as "treated"
 	startPos.node->setBrowsingFlag(mOctree.mCurrentBrowsingFlag);
-
+	u32 startLevel = startPos.level;
 	// for each adjacent node
 	for (int dir = 0; dir < 6; dir++)
 	{
@@ -639,22 +641,26 @@ void	OctreeBase<BaseType>::recursiveFloodFill::subrun(const nodeInfo& startPos, 
 			continue;
 		}
 
-		std::vector< nodeInfo> child;
+		std::vector< nodeInfo> neighborschild;
 		if (n.node->isLeaf()) // if this node is a leaf then this is the only one to treat
 		{
-			child.push_back(n);
+			neighborschild.push_back(n);
 		}
 		else // else get all sons on the correct side of n
 		{
-			recurseVoxelSideChildren r(OctreeNodeBase::mInvDir[dir], mOctree, &child);
+			recurseVoxelSideChildren r(OctreeNodeBase::mInvDir[dir], mOctree, &neighborschild);
 			r.run(n);
 		}
 
 		// for all the found nodes, check if they need to be added to visible list or to be flood fill
-		for (auto& c : child)
+		for (auto& c : neighborschild)
 		{
-			// mark the direction from where the node was added
-			c.node->mDirNDoneFlag |= (1 << OctreeNodeBase::mInvDir[dir]);
+			if (startLevel <= c.level)
+			{
+				// mark the direction from where the node was added only if this node level is higher or equal
+				c.node->mDirNDoneFlag |= (1 << OctreeNodeBase::mInvDir[dir]);
+			}
+			
 			if (c.node->getBrowsingFlag() != mOctree.mCurrentBrowsingFlag)
 			{
 				if (!(c.node->mDirNDoneFlag & (1 << 8))) // not already added to toparse list or envelope ?

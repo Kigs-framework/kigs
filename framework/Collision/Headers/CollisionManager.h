@@ -12,6 +12,7 @@
 #include <functional>
 #include <atomic>
 #include <map>
+#include <variant>
 
 #include "blockingconcurrentqueue.h"
 
@@ -117,6 +118,7 @@ public:
 
 	// Will take ownership of collider if collider->mIsCoreModifiable is false
 	void SetCollisionObject(const CMSP& item, CollisionBaseObject* collider);
+	void SetCollisionObject(const CMSP& item, std::shared_ptr<CollisionBaseObject> collider);
 
 	//const std::unordered_map<WeakRef, std::shared_ptr<MeshCollisionInfo>>& GetCollisionMap() { ProcessPendingItems(); return mCollisionObjectMap; }
 	const std::unordered_map<u32, std::shared_ptr<MeshCollisionInfo>>& GetCollisionMap() { ProcessPendingItems(); return mCollisionObjectMap; }
@@ -211,7 +213,8 @@ protected:
 	std::mutex mToDeleteMutex;
 	std::mutex mToAddMutex;
 
-	std::vector<std::pair<SmartPointer<CoreModifiable>, CollisionBaseObject*>> mToAdd;
+	using RawOrSharedPtr = std::variant<CollisionBaseObject*, std::shared_ptr<CollisionBaseObject>>;
+	std::vector<std::pair<SmartPointer<CoreModifiable>, RawOrSharedPtr>> mToAdd;
 	
 	struct ToDelete
 	{

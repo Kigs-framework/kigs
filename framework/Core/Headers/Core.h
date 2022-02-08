@@ -654,7 +654,11 @@ MEMORYMANAGEMENT_END
 // DEFINE ASSERTS
 
 #ifdef KIGS_TOOLS
+#ifdef _MSC_VER
+#define KIGS_ASSERT(a)	{ if(!(a)) __debugbreak(); }
+#else
 #define KIGS_ASSERT(a)	assert(a)
+#endif
 #else
 #define KIGS_ASSERT(a)	
 #endif

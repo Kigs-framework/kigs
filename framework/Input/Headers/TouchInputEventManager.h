@@ -3,6 +3,7 @@
 #include "SpatialInteractionDevice.h"
 #include "CoreModifiable.h"
 #include "TecLibs/Tec3D.h"
+#include "Timer.h"
 
 #include "maReference.h"
 
@@ -202,7 +203,7 @@ protected:
 	friend bool	operator<(const TouchInfos& first, const TouchInfos& other);
 	friend bool	operator<(const TouchInfos& first, unsigned int other);
 
-	// return value is swallow mask, bit n° eventType is set to 1 when swallowed
+	// return value is swallow mask, bit nÂ° eventType is set to 1 when swallowed
 	virtual void Update(TouchInputEventManager* manager,const Timer& timer,CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask)=0;
 
 	virtual void Reset() = 0;
@@ -850,7 +851,7 @@ protected:
 	std::map<CoreModifiable*, touchSupportTreeNode*>	mTouchSupportMap;
 	bool												mInUpdate = false;
 	std::set<CoreModifiable*>							mDestroyedThisFrame;
-
+	TimePoint											mLastTimeNearInteraction;
 	
 
 	void	manageTemporaryUnmappedTouchSupport(CoreModifiable* ts, CoreModifiable* parent);

@@ -99,33 +99,27 @@ void LocalizationManager::addLocalizationFromBuffer(char* Buffer, unsigned int b
 	}
 }
 
-const UTF8Char* LocalizationManager::getLocalizedStringUTF8(const kstl::string& key)
+const std::string& LocalizationManager::getLocalizedStringUTF8(const kstl::string& key)
 {
 	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 >::iterator itfound = mLocalizedString.find(key);
-
 	if (itfound != mLocalizedString.end())
 	{
 		// if no utf8, then create it
-		if (!(*itfound).second.mUTF8)
+		auto wchar_str = (wchar_t*)itfound->second.mUTF16;
+		if (itfound->second.mUTF8.empty())
 		{
-			usString				tmpOne((*itfound).second.mUTF16);
-			std::vector<UTF8Char>	tmpUTF8=tmpOne.toUTF8();
-			int l = (int)tmpUTF8.size();
-			UTF8Char* tempBuffer = nullptr;
-			if (l)
+			if (wchar_str)
 			{
-				tempBuffer = new UTF8Char[l + 1];
-				memcpy(tempBuffer, tmpUTF8.data(), l * sizeof(UTF8Char));
-				tempBuffer[l] = 0;
-				(*itfound).second.mUTF8 = tempBuffer;
+				itfound->second.mUTF8 = to_utf8(wchar_str, wcslen(wchar_str));
 			}
+			//else itfound->second.mUTF8 = "#" + key;
 		}
-		return (*itfound).second.mUTF8;
+		return itfound->second.mUTF8;
 	}
 #ifdef _DEBUG
-	printf("Localization not found for key : %s\n", key.c_str());
+	kigsprintf("Localization not found for key : %s\n", key.c_str());
 #endif
-	return 0;
+	return "";
 }
 
 
@@ -138,7 +132,15 @@ const PLATFORM_WCHAR*	LocalizationManager::getLocalizedString(const kstl::string
 		// if no utf16, then create it
 		if (!(*itfound).second.mUTF16)
 		{
-			usString			tmpOne((*itfound).second.mUTF8);
+			auto wstr = to_wchar((*itfound).second.mUTF8);
+			if (wstr.size())
+			{
+				PLATFORM_WCHAR* tempBuffer = new PLATFORM_WCHAR[wstr.size()+1];
+				memcpy(tempBuffer, wstr.c_str(), wstr.size() * sizeof(PLATFORM_WCHAR));
+				tempBuffer[wstr.size()] = 0;
+				(*itfound).second.mUTF16 = tempBuffer;
+			}
+			/*usString			tmpOne((*itfound).second.mUTF8);
 			PLATFORM_WCHAR*		tempBuffer = nullptr;
 			int l = tmpOne.length();
 			if (l)
@@ -148,7 +150,7 @@ const PLATFORM_WCHAR*	LocalizationManager::getLocalizedString(const kstl::string
 				
 				tempBuffer[l] = 0;
 				(*itfound).second.mUTF16 = tempBuffer;
-			}
+			}*/
 		}
 		return (*itfound).second.mUTF16;
 	}
@@ -214,18 +216,18 @@ void LocalizationManager::ParseBuffer(char* _pBuffer, unsigned long size)
 			{
 				if((*itfound).second.mUTF16)
 					delete[] (*itfound).second.mUTF16;
-				if ((*itfound).second.mUTF8)
-					delete[](*itfound).second.mUTF8;
+				/*if ((*itfound).second.mUTF8)
+					delete[](*itfound).second.mUTF8;*/
 			}
 			if (sizeof(charType) == 2)
 			{
 				mLocalizedString[key].mUTF16 = (unsigned short*)localized;
-				mLocalizedString[key].mUTF8 = nullptr;
+				mLocalizedString[key].mUTF8.clear();
 			}
 			else
 			{
 				mLocalizedString[key].mUTF16 = nullptr;
-				mLocalizedString[key].mUTF8 = (UTF8Char*)localized;
+				mLocalizedString[key].mUTF8 = (char*)localized;
 			}
 		}
 		else
@@ -439,12 +441,11 @@ void	LocalizationManager::EraseMap()
 		{
 			delete[] currentString;
 		}
-		UTF8Char* currentUTF8String = (*it).second.mUTF8;
+		/*UTF8Char* currentUTF8String = (*it).second.mUTF8;
 		if (currentUTF8String)
 		{
 			delete[] currentUTF8String;
-		}
-
+		}*/
 		++it;
 	}
 	mLocalizedString.clear();

@@ -79,11 +79,15 @@ private:
 extern bool gIsHolographic;
 
 #endif
-
+//#define NEXTBIM_EXPLORER_STATIC
+#ifdef NEXTBIM_EXPLORER_STATIC
+#define DECL_SPEC
+#else
 #ifdef BASE_APP_IMPORT
 #define DECL_SPEC __declspec(dllimport)
 #else
 #define DECL_SPEC __declspec(dllexport)
+#endif
 #endif
 
 DECL_SPEC void wupmain();
