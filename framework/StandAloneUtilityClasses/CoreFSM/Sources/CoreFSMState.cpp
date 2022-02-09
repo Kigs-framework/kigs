@@ -1,4 +1,5 @@
 #include "CoreFSMState.h"
+#include "CoreFSM.h"
 
 // state update check all transitions and return true if need transition
 // when true is returned, specialOrder and stateID parameters are correctly set
@@ -58,4 +59,10 @@ void	CoreFSMStateBase::stop(CoreModifiable* currentParentClass, CoreFSMStateBase
 	{
 		t->stop();
 	}
+}
+
+// a state can also ask itself to pop 
+void CoreFSMStateBase::popState()
+{
+	mActiveTransition = CoreFSM::mPopTransition.get();
 }

@@ -106,8 +106,9 @@ public:
 		return mApplicationTimer;
 	}
 
-	void			AddAutoUpdate(CoreModifiable*	toUpdate);
+	void			AddAutoUpdate(CoreModifiable*	toUpdate,double frequency=-1.0);
 	void			RemoveAutoUpdate(CoreModifiable*	toUpdate);
+	void			ChangeAutoUpdateFrequency(CoreModifiable* toUpdate, double frequency = -1.0);
 
 	// to be ckecked only during update
 	bool			BackKeyWasPressed()
@@ -124,7 +125,7 @@ public:
 	{
 		return mBuildVersion;
 	}
-	const std::vector<CoreModifiable*> GetAutoUpdateList() { return mAutoUpdateList; }
+	const std::vector<std::tuple<CoreModifiable*,double,double>> GetAutoUpdateList() { return mAutoUpdateList; }
 
 protected:
 
@@ -162,7 +163,8 @@ protected:
 	unsigned int	mUpdateSleepTime;
 
 	std::vector<std::string>			mArgs;
-	std::vector<CoreModifiable*>		mAutoUpdateList;
+	// list of auto updated elements + update frequency and last update time
+	std::vector<std::tuple<CoreModifiable*,double,double>>		mAutoUpdateList;
 
 	unsigned int	mBackKeyState;
 

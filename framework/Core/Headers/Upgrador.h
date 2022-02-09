@@ -59,8 +59,8 @@ class UpgradorBase : public StructLinkedListBase
 protected:
 	friend class CoreModifiable;
 	virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) = 0;
-	void UpgradeInstance(CoreModifiable* toUpgrade);
-	void DowngradeInstance(CoreModifiable* toDowngrade);
+	void UpgradeInstance(CoreModifiable* toUpgrade, bool reinit = true);
+	void DowngradeInstance(CoreModifiable* toDowngrade, bool dodestroy = true);
 	// create and init Upgrador if needed, add dynamic attributes, connect things
 	virtual void	Init(CoreModifiable* toUpgrade) { ; }
 
