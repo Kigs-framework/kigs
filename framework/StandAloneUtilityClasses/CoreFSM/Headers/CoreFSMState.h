@@ -54,17 +54,28 @@ public:
 		return nullptr;
 	}
 
+	std::vector<KigsID>	getTransitionList()
+	{
+		std::vector<KigsID> result;
+		for (auto t : mTransitions)
+		{
+			result.push_back(t->getNameID());
+		}
+		return result;
+	}
+
 protected:
 
 	// transition list for this state
 	std::vector<SP<CoreFSMTransition>> mTransitions;
 
 	// a state can activate one of its transition
-
 	bool activateTransition(const KigsID& transitionname);
 
-	CoreFSMTransition* mActiveTransition = nullptr;
+	// a state can also ask itself to pop 
+	void popState();
 
+	CoreFSMTransition*	mActiveTransition = nullptr;
 };
 
 #define StringifyClassName(a) #a
@@ -129,6 +140,7 @@ DEFINE_UPGRADOR_UPDATE(CoreFSMStateClass(Ghost, Hunted))
 */
 
 #define CoreFSMStateClass(baseclassname,statename)  CoreFSMState##baseclassname##statename
+#define CoreFSMStateClassMethods(baseclassname,statename)  CoreFSMState##baseclassname##statename::UpgradorMethods
 
 #define CoreFSMStartMethod(baseclassname,statename)  CoreFSMState##baseclassname##statename::UpgradorMethods::start(class CoreFSMStateBase*)
 #define CoreFSMStopMethod(baseclassname,statename)  CoreFSMState##baseclassname##statename::UpgradorMethods::stop(class CoreFSMStateBase*)
@@ -167,6 +179,12 @@ virtual void	stop(CoreModifiable* toStop,CoreFSMStateBase* nextstate) override\
 	((UpgradorMethods*)toStop)->stop(nextstate);\
 }
 
+#define COREFSM_WRAP_METHOD_NO_CTOR(name) inline bool	name##Wrap(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& params,void* privateParams){\
+	kigs_impl::UnpackAndCall(&UpgradorMethods::name, this, sender, params); return false; }
+
+#define COREFSM_WRAP_METHOD_PUSH_BACK(name) table.push_back({ #name, static_cast<CoreModifiable::ModifiableMethod>(&UpgradorMethods::name##Wrap) });
+
+
 #define COREFSMSTATE_WITHOUT_METHODS() DO_COREFSMSTATE_SUBCLASS_DECLARATION() \
 DO_COREFSMSTATE_BASE_METHOD_DEFINITION() \
 virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
@@ -183,3 +201,22 @@ virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::Modif
 
 #define END_DECLARE_COREFSMSTATE() \
 };
+
+#define COREFSMSTATE_WRAPMETHODS(...) DO_COREFSMSTATE_SUBCLASS_DECLARATION() \
+FOR_EACH(COREFSM_WRAP_METHOD_NO_CTOR, __VA_ARGS__)\
+DO_COREFSMSTATE_BASE_METHOD_DEFINITION() \
+virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+{\
+	FOR_EACH(COREFSM_WRAP_METHOD_PUSH_BACK, __VA_ARGS__)\
+}
+
+#define STARTCOREFSMSTATE_WRAPMETHODS() DO_COREFSMSTATE_SUBCLASS_DECLARATION() 
+
+#define ENDCOREFSMSTATE_WRAPMETHODS(...) \
+FOR_EACH(COREFSM_WRAP_METHOD_NO_CTOR, __VA_ARGS__)\
+DO_COREFSMSTATE_BASE_METHOD_DEFINITION() \
+virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+{\
+	FOR_EACH(COREFSM_WRAP_METHOD_PUSH_BACK, __VA_ARGS__)\
+}
+

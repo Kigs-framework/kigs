@@ -246,13 +246,13 @@ void CoreModifiable::debugPrintfClassList(const std::string& className, s32 maxi
 	kigsprintf("%i items\n", (s32)instances.size());
 }
 
-void CoreModifiable::Upgrade(UpgradorBase* toAdd)
+void CoreModifiable::Upgrade(UpgradorBase* toAdd, bool doInit)
 {
 	LazyContent* c = GetLazyContent();
 
 	toAdd->mNextItem = c->mLinkedListItem;
 	c->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(toAdd, LazyContentLinkedListItemStruct::ItemType::UpgradorType);
-	toAdd->UpgradeInstance(this);
+	toAdd->UpgradeInstance(this, doInit);
 }
 
 UpgradorBase* CoreModifiable::GetUpgrador(const KigsID& ID)
@@ -1777,7 +1777,7 @@ void CoreModifiable::Upgrade(const std::string& toAdd)
 		Upgrade(newone);
 }
 
-void CoreModifiable::Downgrade(const KigsID& toRemove)
+void CoreModifiable::Downgrade(const KigsID& toRemove, bool doDestroy)
 {
 	auto lz = mLazyContent.load();
 	if (!lz)
@@ -1798,7 +1798,7 @@ void CoreModifiable::Downgrade(const KigsID& toRemove)
 			{
 				lz->mLinkedListItem = found->mNextItem;
 			}
-			found->DowngradeInstance(this);
+			found->DowngradeInstance(this, doDestroy);
 			break;
 		}
 		previous = found;

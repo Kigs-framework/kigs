@@ -33,6 +33,7 @@
 
 */
 
+SP<CoreFSMTransition> CoreFSM::mPopTransition=nullptr;
 
 IMPLEMENT_CLASS_INFO(CoreFSM)
 
@@ -161,8 +162,8 @@ void	CoreFSM::pushCurrentState(CoreFSMStateBase* newone)
 		prevone = mCurrentState.back();
 		// stop previous state
 		prevone->stop(mAttachedObject,newone);
-		// downgrade object from previous state
-		mAttachedObject->Downgrade(mCurrentState.back()->getID());
+		// downgrade object from previous state but don't destroy it as we will get back there
+		mAttachedObject->Downgrade(mCurrentState.back()->getID(),false);
 	}
 
 #ifdef DEBUG_COREFSM
@@ -202,8 +203,8 @@ void	CoreFSM::popCurrentState()
 
 	if (newone)
 	{
-		// if stack is not empty upgrade object with new stack back
-		mAttachedObject->Upgrade(dynamic_cast<UpgradorBase*>(newone));
+		// if stack is not empty upgrade object with new stack back but don't init it again
+		mAttachedObject->Upgrade(dynamic_cast<UpgradorBase*>(newone),false);
 		// and start upgrador
 		newone->start(mAttachedObject,prevone);
 	}
@@ -303,4 +304,25 @@ void	initCoreFSM()
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreFSMOnValueTransition, CoreFSMOnValueTransition, CoreFSM);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreFSMOnMethodTransition, CoreFSMOnMethodTransition, CoreFSM);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreFSMInternalSetTransition, CoreFSMInternalSetTransition, CoreFSM);
+
+	CoreFSM::initStaticCoreFSMInstances();
+}
+
+void	closeCoreFSM()
+{
+	CoreFSM::closeStaticCoreFSMInstances();
+}
+
+void CoreFSM::initStaticCoreFSMInstances()
+{
+	if (CoreFSM::mPopTransition == nullptr)
+	{
+		CoreFSM::mPopTransition = KigsCore::GetInstanceOf("gobalPopTransition", "CoreFSMInternalSetTransition");
+		mPopTransition->setValue("TransitionBehavior", "Pop");
+		mPopTransition->Init();
+	}
+}
+void CoreFSM::closeStaticCoreFSMInstances()
+{
+	CoreFSM::mPopTransition == nullptr;
 }

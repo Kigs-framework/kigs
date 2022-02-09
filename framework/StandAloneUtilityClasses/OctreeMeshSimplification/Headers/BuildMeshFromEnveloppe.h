@@ -103,11 +103,11 @@ protected:
 
 	void	separateVertices(const MSOctreeContent& node, const nodeInfo& n);
 
-	u32	addEdge(u32 v1, u32 v2)
+	u32	addEdge(u32 v1, u32 v2,bool checkExisting=true)
 	{
 		const std::vector< u32>& searchExisting = mEdgeMap[v1 ^ v2];
 
-		if (searchExisting.size())
+		if (searchExisting.size() && checkExisting)
 		{
 			for (const auto& i : searchExisting)
 			{

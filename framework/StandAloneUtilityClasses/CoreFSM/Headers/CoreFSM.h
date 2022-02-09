@@ -5,6 +5,9 @@
 // declare FSM classes to instance factory
 void	initCoreFSM();
 
+// should be called to clear static instances 
+void	closeCoreFSM();
+
 
 #ifdef _DEBUG
 // keep track of state changes
@@ -16,6 +19,7 @@ void	initCoreFSM();
 #endif
 
 class CoreFSMStateBase;
+class CoreFSMTransition;
 
 
 // ****************************************
@@ -62,6 +66,10 @@ public:
 	//! destructor
 	virtual ~CoreFSM();
 
+	static	void initStaticCoreFSMInstances();
+	static	void closeStaticCoreFSMInstances();
+
+
 protected:
 
 	//! state transition management
@@ -81,6 +89,9 @@ protected:
 	//! map of possible states for this FSM 
 	std::unordered_map<KigsID, CoreFSMStateBase*>	mPossibleStates;
 
+	friend class CoreFSMStateBase;
+	static SP<CoreFSMTransition> mPopTransition;
+
 #ifdef DEBUG_COREFSM
 
 	struct trackStateChange
@@ -91,6 +102,7 @@ protected:
 	};
 
 	CircularBuffer<trackStateChange>	mStateChangeBuffer;
+
 public:
 	void	dumpLastStates();
 

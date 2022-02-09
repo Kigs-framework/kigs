@@ -1,23 +1,29 @@
 #include "Upgrador.h"
 #include "CoreModifiable.h"
 
-void UpgradorBase::UpgradeInstance(CoreModifiable* toUpgrade)
+void UpgradorBase::UpgradeInstance(CoreModifiable* toUpgrade, bool reinit)
 {
-	std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>> MethodTable;
-	GetMethodTable(MethodTable);
-	for (auto& t : MethodTable)
+	if (reinit)
 	{
-		toUpgrade->InsertUpgradeMethod(t.first, t.second, this);
+		std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>> MethodTable;
+		GetMethodTable(MethodTable);
+		for (auto& t : MethodTable)
+		{
+			toUpgrade->InsertUpgradeMethod(t.first, t.second, this);
+		}
+		Init(toUpgrade);
 	}
-	Init(toUpgrade);
 }
-void UpgradorBase::DowngradeInstance(CoreModifiable* toDowngrade)
+void UpgradorBase::DowngradeInstance(CoreModifiable* toDowngrade, bool doDestroy)
 {
-	std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>> MethodTable;
-	GetMethodTable(MethodTable);
-	for (auto& t : MethodTable)
+	if (doDestroy)
 	{
-		toDowngrade->RemoveMethod(t.first);
+		std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>> MethodTable;
+		GetMethodTable(MethodTable);
+		for (auto& t : MethodTable)
+		{
+			toDowngrade->RemoveMethod(t.first);
+		}
+		Destroy(toDowngrade);
 	}
-	Destroy(toDowngrade);
 }

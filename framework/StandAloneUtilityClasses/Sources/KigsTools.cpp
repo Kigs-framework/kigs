@@ -1747,7 +1747,7 @@ void CustomAttributeEditor(CoreModifiable* item)
 		{
 			for (auto el : list)
 			{
-				ImGui::Text("%s - %s", el->getExactType().c_str(), el->getName().c_str());
+				ImGui::Text("%s - %s", std::get<0>(el)->getExactType().c_str(), std::get<0>(el)->getName().c_str());
 			}
 		}
 	}
