@@ -147,32 +147,49 @@ void CoreBaseApplication::DoAutoUpdate()
 	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
 
 	// copy list so that if an autoupdated object is removed during loop, the loop can work correctly
-	auto	autoUpdateCopy = mAutoUpdateList;
+	std::vector	autoUpdateCopy = mAutoUpdateList;
+
+	auto accessRealElemInList = [&](CoreModifiable* el)->std::tuple<CoreModifiable*,double,double>* {
+		for (auto& rel : mAutoUpdateList)
+		{
+			if (std::get<0>(rel) == el)
+			{
+				return &rel;
+			}
+			
+		}
+		return nullptr;
+	};
 
 	const Timer& appTimer = (const Timer&)*mApplicationTimer.get();
 	double currentTime = appTimer.GetTime();
 	for(auto& el: autoUpdateCopy)
 	{
-		u32	callCount = 1;
-		if (std::get<1>(el) > 0.0) // has frequency
+		auto rel = accessRealElemInList(std::get<0>(el));
+		if (rel)
 		{
-			if (std::get<2>(el) <= 0.0) // first time
+			u32	callCount = 1;
+			if (std::get<1>(*rel) > 0.0) // has frequency
 			{
-				callCount = 1;
-				std::get<2>(el) = currentTime;
+
+				if (std::get<2>(*rel) <= 0.0) // first time
+				{
+					callCount = 1;
+					std::get<2>(*rel) = currentTime;
+				}
+				else
+				{
+					double dt = currentTime - std::get<2>(*rel); // elapsed time since last call
+					callCount = (u32)(dt / std::get<1>(*rel));
+					std::get<2>(*rel) += ((double)callCount) / std::get<1>(*rel);
+				}
 			}
-			else
+			for (u32 i = 0; i < callCount; i++)
 			{
-				double dt = currentTime - std::get<2>(el); // elapsed time since last call
-				callCount = (u32)(dt / std::get<1>(el));
-				std::get<2>(el) += ((double)callCount)/ std::get<1>(el);
+				// when callCount>1 we should call each update at a different time but we suppose
+				// callCount will be 0 or 1 most of the time here
+				std::get<0>(*rel)->CallUpdate(appTimer, 0);
 			}
-		}
-		for (u32 i = 0; i < callCount; i++)
-		{
-			// when callCount>1 we should call each update at a different time but we suppose
-			// callCount will be 0 or 1 most of the time here
-			std::get<0>(el)->CallUpdate(appTimer, 0);
 		}
 	}
 	mAutoUpdateDone = true;
