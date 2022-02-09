@@ -422,6 +422,7 @@ void	BuildMeshFromEnveloppe::splitFaces()
 
 void	BuildMeshFromEnveloppe::checkVerticeCoherency()
 {
+#ifdef _DEBUG
 	u32 vindex = 0;
 	for (const auto& v : mVertices) // for each vertice
 	{
@@ -446,6 +447,7 @@ void	BuildMeshFromEnveloppe::checkVerticeCoherency()
 		}
 		vindex++;
 	}
+#endif
 }
 
 void	BuildMeshFromEnveloppe::checkCoherency()
@@ -551,7 +553,7 @@ void	BuildMeshFromEnveloppe::splitQuadFace(u32 fi)
 	u32 v1 = mEdges[ei[0]].v[ew[0]];
 	u32 v2 = mEdges[ei[1]].v[1 - ew[1]];
 
-	u32 edgeindex = addEdge(v1, v2);
+	u32 edgeindex = addEdge(v1, v2,false); // always add a new edge here
 
 	mVertices[v1].insertEdgeBefore(ei[0], edgeindex);
 	//mVertices[v1].mEdges.push_back(edgeindex);
@@ -648,7 +650,7 @@ void BuildMeshFromEnveloppe::splitMoreThanQuadFace(u32 fi)
 		}
 
 		// so now, create a new edge between first vertice and last-2 vertice
-		u32 edgeindex = addEdge(decalvlist[0], decalvlist[decalvlist.size()-2] );
+		u32 edgeindex = addEdge(decalvlist[0], decalvlist[decalvlist.size()-2],false );// always add a new edge here
 
 		//mVertices[vlist[0]].mEdges.push_back(edgeindex);
 		mVertices[decalvlist[0]].insertEdgeBefore(decalEdges[0]&0x7fffffff, edgeindex);
