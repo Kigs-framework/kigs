@@ -269,7 +269,7 @@ void ImGuiLayer::SetStyleHoloLens()
 	//style->FrameBorderSize = 1.0f;
 	//style->PopupBorderSize = 1.0f;
 
-	style->ScrollbarSize = 128.0f;
+	style->ScrollbarSize = 16.0f;
 	style->ScrollbarRounding = 0.0f;
 	style->GrabMinSize = 5.0f;
 	style->GrabRounding = 0.0f;
@@ -476,7 +476,10 @@ bool ImGuiLayer::ManageTouch(DirectTouchEvent& ev)
 	if (mClickSource != TouchSourceID::Invalid && ev.touch_id != mClickSource)
 		return false;
 
-	if (ev.position.x < 0 || ev.position.y < 0) return false;
+	/*if (ev.state == GestureRecognizerState::StatePossible)
+	{
+		if (ev.position.x < 0 || ev.position.y < 0) return ev.capture_inputs;
+	}*/
 
 	auto old = SetActiveImGuiLayer();
 	auto& io = ImGui::GetIO();

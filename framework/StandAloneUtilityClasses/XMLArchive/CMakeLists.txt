@@ -1,7 +1,12 @@
-add_library(XMLArchive INTERFACE)
 
-target_include_directories(XMLArchive INTERFACE "Headers")
+file(GLOB_RECURSE all_headers "Headers/*.h")
+add_library(XMLArchive STATIC  
+    ${all_headers}
+    "Sources/XLSXCellRowCol.cpp"
+    "Sources/XLSXDocument.cpp"
+    "Sources/XLSXElementRef.cpp"
+    "Sources/XLSXSheet.cpp"
+    "Sources/XMLArchiveManager.cpp")
 
-file(GLOB_RECURSE allcpps "Sources/*")
-target_sources(XMLArchive INTERFACE ${allcpps})
-source_group("Source Files\\XMLArchive" FILES ${allcpps})
+target_include_directories(XMLArchive PUBLIC "Headers")
+target_link_libraries(XMLArchive PUBLIC Core XML miniz)

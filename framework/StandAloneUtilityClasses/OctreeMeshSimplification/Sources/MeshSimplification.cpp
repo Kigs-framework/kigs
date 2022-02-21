@@ -145,7 +145,7 @@ void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::
 				}
 			}
 
-			// don't take exactly the middle of the bestd so try to avoid 45° edges also
+			// don't take exactly the middle of the bestd so try to avoid 45deg edges also
 			mOctreeShift[dim] = 1.0f - (switches[dim][besti] + bestd * 0.47f);
 
 		}

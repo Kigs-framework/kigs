@@ -29,6 +29,8 @@ public:
 	bool	PostDraw(TravState* travstate) override;
 	   	
 	void	SetD3DTexture(ID3D11Texture2D* texture);
+
+	void	LoadtoGPUIfNeeded() override;
 protected:
 	void	InitModifiable() override;
 	void	UninitModifiable()override;

@@ -11,6 +11,9 @@ namespace ImGui
 	void CenterWidget(float widget_width);
 	void CenterText(const std::string& txt, bool wrapped=false);
 
+	void TextMiddleAligned(const std::string& txt, v2f size);
+	bool ButtonCenteredText(const std::string& txt, v2f size_arg);
+
 	// Align the next widget from the right of the window, with enough space for "nb_of_elements" (to account for spacing between elements) totaling "sum_of_elements_width" of size
 	// Returns the width available between current cursor pos and the right aligned element
 	float SameLineAlignRight(float sum_of_elements_width, u32 nb_of_elements = 1);
@@ -24,7 +27,7 @@ namespace ImGui
 	void ButtonLabel(const std::string& txt, v2f size = v2f(0, 0));
 	bool ButtonWithLabel(const std::string& label, const std::string txt, float label_width = 0.0f, v2f size = v2f(0, 0));
 
-	void Strikethrough(float offset_before = 0.0f, float offset_after = 0.0f, ImColor color = ImColor(0, 0, 0, 255));
+	void Strikethrough(float offset_before = 0.0f, float offset_after = 0.0f, ImColor color = ImColor(0, 0, 0, 255), int width = 1);
 
 	inline bool ButtonSTD(const std::string& label, v2f size = v2f(0,0))
 	{
@@ -57,6 +60,8 @@ namespace ImGui
 	}
 
 	bool ToggleButton(const char* str_id, bool* v);
+
+	void ScrollWhenDragging(const ImVec2& mult, float threshold = 96.0f, ImGuiMouseButton mouse_button = ImGuiMouseButton_Left);
 }
 
 std::string CheckButtonText(bool checked, const std::string& txt, bool before = true);

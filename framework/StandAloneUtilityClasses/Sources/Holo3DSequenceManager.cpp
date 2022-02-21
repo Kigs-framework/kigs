@@ -15,7 +15,7 @@
 #include "ModuleInput.h"
 #include "TouchInputEventManager.h"
 
-#include "IFC/CollisionMasks.h"
+#include "CollisionMasks.h"
 
 #include <algorithm>
 

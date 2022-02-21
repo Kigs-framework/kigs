@@ -152,6 +152,8 @@ public:
 	virtual void	GetPixels(unsigned int* _array){};
 	virtual void	SetPixels(unsigned int* _array, int Width, int Height){};
 
+	virtual void	LoadtoGPUIfNeeded() {};
+
 	//! type of texture
 	enum TextureType
 	{

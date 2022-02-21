@@ -129,7 +129,7 @@ void DX11Texture::UninitModifiable()
 	Texture::UninitModifiable();
 }
 
-bool DX11Texture::PreDraw(TravState* travstate)
+void DX11Texture::LoadtoGPUIfNeeded()
 {
 	CoreModifiableAttribute* delayed = getAttribute("DelayedInit");
 	if (delayed) // delay init
@@ -143,7 +143,11 @@ bool DX11Texture::PreDraw(TravState* travstate)
 			RemoveDynamicAttribute("DelayedInit");
 		}
 	}
+}
 
+bool DX11Texture::PreDraw(TravState* travstate)
+{
+	LoadtoGPUIfNeeded();
 	if (Texture::PreDraw(travstate))
 	{
 #ifdef WUP
