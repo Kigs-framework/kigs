@@ -29,32 +29,32 @@ CoreBaseApplication::~CoreBaseApplication()
 	
 }
 
-void CoreBaseApplication::AddAutoUpdate(CoreModifiable*	toUpdate, double frequency)
+void	CoreBaseApplication::PrivateAddAutoUpdate(CoreModifiable* toUpdate, double frequency)
 {
-	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
-	// check if not already there
-	for(const auto& el : mAutoUpdateList)
+	// no lock here as it's already locked by calling DoAutoUpdate
+
+	for (const auto& el : mAutoUpdateList)
 	{
-		if(std::get<0>(el) == toUpdate)
+		if (std::get<0>(el) == toUpdate)
 		{
 			// already in the list, do nothing
 			return;
 		}
 	}
 	toUpdate->flagAsAutoUpdateRegistered();
-	mAutoUpdateList.push_back(std::make_tuple(toUpdate,frequency,-1.0));
+	mAutoUpdateList.push_back(std::make_tuple(toUpdate, frequency, -1.0));
 }
 
-void CoreBaseApplication::RemoveAutoUpdate(CoreModifiable*	toUpdate)
+void	CoreBaseApplication::PrivateRemoveAutoUpdate(CoreModifiable* toUpdate)
 {
-	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
-	// search in list
-	if(!mAutoUpdateList.empty())
+	// no lock here as it's already locked by calling DoAutoUpdate
+		// search in list
+	if (!mAutoUpdateList.empty())
 	{
-		std::vector<std::tuple<CoreModifiable*,double,double>>::iterator itAutoUpdate;
-		for(itAutoUpdate = mAutoUpdateList.begin();itAutoUpdate != mAutoUpdateList.end();++itAutoUpdate)
+		std::vector<std::tuple<CoreModifiable*, double, double>>::iterator itAutoUpdate;
+		for (itAutoUpdate = mAutoUpdateList.begin(); itAutoUpdate != mAutoUpdateList.end(); ++itAutoUpdate)
 		{
-			if(std::get<0>(*itAutoUpdate) == toUpdate)
+			if (std::get<0>(*itAutoUpdate) == toUpdate)
 			{
 				mAutoUpdateList.erase(itAutoUpdate);
 				toUpdate->unflagAsAutoUpdateRegistered();
@@ -63,7 +63,34 @@ void CoreBaseApplication::RemoveAutoUpdate(CoreModifiable*	toUpdate)
 			}
 		}
 	}
-	
+}
+
+void			CoreBaseApplication::ManageDelayedAutoUpdateModification()
+{
+	for (const auto& el : mAutoUpdateToAddRemoveList)
+	{
+		if (std::get<2>(el) == 1) // add
+		{
+			PrivateAddAutoUpdate(std::get<0>(el), std::get<1>(el));
+		}
+		else // remove
+		{
+			PrivateRemoveAutoUpdate(std::get<0>(el));
+		}
+	}
+	mAutoUpdateToAddRemoveList.clear();
+}
+
+void CoreBaseApplication::AddAutoUpdate(CoreModifiable*	toUpdate, double frequency)
+{
+	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
+	mAutoUpdateToAddRemoveList.push_back(std::make_tuple(toUpdate, frequency, 1)); // add
+}
+
+void CoreBaseApplication::RemoveAutoUpdate(CoreModifiable*	toUpdate)
+{
+	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
+	mAutoUpdateToAddRemoveList.push_back(std::make_tuple(toUpdate, -1.0, 0)); // remove
 }
 
 void	CoreBaseApplication::ChangeAutoUpdateFrequency(CoreModifiable* toUpdate, double frequency)
@@ -74,9 +101,20 @@ void	CoreBaseApplication::ChangeAutoUpdateFrequency(CoreModifiable* toUpdate, do
 		if (std::get<0>(el) == toUpdate)
 		{
 			std::get<1>(el) = frequency;
+			std::get<2>(el) = -1.0;
 			return;
 		}
 	}
+	// not found in autoUpdateList, search in mAutoUpdateToAddRemoveList
+	for (auto& el : mAutoUpdateToAddRemoveList)
+	{
+		if (std::get<0>(el) == toUpdate)
+		{
+			std::get<1>(el) = frequency;
+			return;
+		}
+	}
+
 }
 
 void	CoreBaseApplication::PushArg(const std::string& arg)
@@ -145,51 +183,38 @@ void	CoreBaseApplication::InitApp(const char* baseDataPath, bool	InitBaseModule)
 void CoreBaseApplication::DoAutoUpdate()
 {
 	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
-
+	ManageDelayedAutoUpdateModification();
 	// copy list so that if an autoupdated object is removed during loop, the loop can work correctly
-	std::vector	autoUpdateCopy = mAutoUpdateList;
-
-	auto accessRealElemInList = [&](CoreModifiable* el)->std::tuple<CoreModifiable*,double,double>* {
-		for (auto& rel : mAutoUpdateList)
-		{
-			if (std::get<0>(rel) == el)
-			{
-				return &rel;
-			}
-			
-		}
-		return nullptr;
-	};
+	
 
 	const Timer& appTimer = (const Timer&)*mApplicationTimer.get();
 	double currentTime = appTimer.GetTime();
-	for(auto& el: autoUpdateCopy)
+	for(auto& el: mAutoUpdateList)
 	{
-		auto rel = accessRealElemInList(std::get<0>(el));
-		if (rel)
+		u32	callCount = 1;
+		if (std::get<1>(el) > 0.0) // has frequency
 		{
-			u32	callCount = 1;
-			if (std::get<1>(*rel) > 0.0) // has frequency
+			if (std::get<2>(el) <= 0.0) // first time
 			{
-
-				if (std::get<2>(*rel) <= 0.0) // first time
-				{
+				callCount = 1;
+				std::get<2>(el) = currentTime;
+			}
+			else
+			{
+				double dt = currentTime - std::get<2>(el); // elapsed time since last call
+				callCount = (u32)(dt * std::get<1>(el));
+				std::get<2>(el) += ((double)callCount) / std::get<1>(el);
+				// for now, if need update, the call it only once
+				if(callCount)
 					callCount = 1;
-					std::get<2>(*rel) = currentTime;
-				}
-				else
-				{
-					double dt = currentTime - std::get<2>(*rel); // elapsed time since last call
-					callCount = (u32)(dt / std::get<1>(*rel));
-					std::get<2>(*rel) += ((double)callCount) / std::get<1>(*rel);
-				}
 			}
-			for (u32 i = 0; i < callCount; i++)
-			{
-				// when callCount>1 we should call each update at a different time but we suppose
-				// callCount will be 0 or 1 most of the time here
-				std::get<0>(*rel)->CallUpdate(appTimer, 0);
-			}
+			
+		}
+		for (u32 i = 0; i < callCount; i++)
+		{
+			// when callCount>1 we should call each update at a different time but we suppose
+			// callCount will be 0 or 1 most of the time here
+			std::get<0>(el)->CallUpdate(appTimer, 0);
 		}
 	}
 	mAutoUpdateDone = true;

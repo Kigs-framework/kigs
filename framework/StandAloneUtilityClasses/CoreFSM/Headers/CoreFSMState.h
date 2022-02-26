@@ -66,6 +66,7 @@ public:
 
 protected:
 
+	friend class CoreFSM;
 	// transition list for this state
 	std::vector<SP<CoreFSMTransition>> mTransitions;
 

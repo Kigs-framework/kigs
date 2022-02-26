@@ -108,6 +108,12 @@ public:
 
 	void			AddAutoUpdate(CoreModifiable*	toUpdate,double frequency=-1.0);
 	void			RemoveAutoUpdate(CoreModifiable*	toUpdate);
+
+private:
+	void			PrivateAddAutoUpdate(CoreModifiable* toUpdate, double frequency);
+	void			PrivateRemoveAutoUpdate(CoreModifiable* toUpdate);
+	void			ManageDelayedAutoUpdateModification();
+public:
 	void			ChangeAutoUpdateFrequency(CoreModifiable* toUpdate, double frequency = -1.0);
 
 	// to be ckecked only during update
@@ -128,6 +134,7 @@ public:
 	const std::vector<std::tuple<CoreModifiable*,double,double>> GetAutoUpdateList() { return mAutoUpdateList; }
 
 protected:
+
 
 	CoreBaseApplication& operator=(const CoreBaseApplication&) = delete;
 
@@ -165,6 +172,7 @@ protected:
 	std::vector<std::string>			mArgs;
 	// list of auto updated elements + update frequency and last update time
 	std::vector<std::tuple<CoreModifiable*,double,double>>		mAutoUpdateList;
+	std::vector<std::tuple<CoreModifiable*, double,int>>		mAutoUpdateToAddRemoveList;
 
 	unsigned int	mBackKeyState;
 

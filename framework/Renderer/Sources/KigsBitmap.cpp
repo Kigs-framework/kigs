@@ -250,9 +250,24 @@ void	KigsBitmap::Print(const std::string& txt, int posx, int posy, unsigned int 
 	{
 		KigsBitmapPixel* readbuffer = (KigsBitmapPixel * )pImageData;
 
+		switch (a_Alignment)
+		{
+		case TextAlignmentLeft:
+		case TextAlignmentJustified:
+			// nothing to change
+			break;
+		case TextAlignmentCenter:
+			posx -= L_Width / 2;
+			break;
+		case TextAlignmentRight:
+			posx -= L_Width;
+			break;
+		}
+
 		KigsBitmapPixel* writePixel = (KigsBitmapPixel*)mRawPixels;
 		writePixel += posx;
 		writePixel += posy * mSize[0];
+
 
 		// copy bitmap
 		for (u32 y = 0; y < L_Height; y++)

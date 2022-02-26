@@ -255,6 +255,14 @@ void	CoreFSM::addState(const KigsID& id, CoreFSMStateBase* base)
 	mPossibleStates[id] = base;
 }
 
+void CoreFSM::activateTransition(const KigsID& id)
+{
+	if (mCurrentState.size())
+	{
+		mCurrentState.back()->activateTransition(id);
+	}
+}
+
 // Init CoreFSM
 void	CoreFSM::InitModifiable()
 {

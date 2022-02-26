@@ -24,6 +24,21 @@ public:
 		return 0;
 	}
 
+	unsigned int		getMaxValueColumnIndex()
+	{
+		storageType bestFound = mHistogram[0];
+		unsigned int bestIndex = 0;
+		for (unsigned int ci = 1; ci < mHistogram.size(); ci++)
+		{
+			if (bestFound < mHistogram[ci])
+			{
+				bestFound = mHistogram[ci];
+				bestIndex = ci;
+			}
+		}
+		return bestIndex;
+	}
+
 	void				normalize(float sum = 1.0f)
 	{
 		if (mValueCount)
