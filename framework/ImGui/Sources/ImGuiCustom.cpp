@@ -152,32 +152,39 @@ namespace ImGui
 		ImGuiContext& g = *ImGui::GetCurrentContext();
 		ImGuiWindow* window = g.CurrentWindow;
 		//if (g.HoveredId == 0) // If nothing hovered so far in the frame (not same as IsAnyItemHovered()!)
-		bool held = ImGui::IsMouseDown(mouse_button);
-		static float cumulative_delta = 0.0f;
-		if (window->ScrollbarY)
-		{
-			auto rect = ImGui::GetWindowScrollbarRect(window, ImGuiAxis_Y);
-			if (held && rect.Contains(ImGui::GetMousePos()) && cumulative_delta <= threshold) held = false;
-		}
+		//static float cumulative_delta = 0.0f;
+
+		bool clicked_in_scrollbar = (window->ScrollbarY && ImGui::GetWindowScrollbarRect(window, ImGuiAxis_Y).Contains(ImGui::GetIO().MouseClickedPos[mouse_button]))
+			|| (window->ScrollbarX && ImGui::GetWindowScrollbarRect(window, ImGuiAxis_X).Contains(ImGui::GetIO().MouseClickedPos[mouse_button]));
+
+		bool held = ImGui::IsMouseDown(mouse_button) && !clicked_in_scrollbar;
+
+		float cumulative_delta = Norm(ImGui::GetMouseDragDelta(mouse_button));
+
 		if (!held)
 		{
 			cumulative_delta = 0.0f;
 		}
+
 		if (held && delta.x != 0.0f)
 		{
-			if (cumulative_delta > threshold)
+			//if (cumulative_delta > threshold * 0.5f)
+			if(cumulative_delta != 0.0f)
 				ImGui::SetScrollX(window, window->Scroll.x + delta.x * mult.x);
 			cumulative_delta += std::abs(delta.x);
 		}
 		if (held && delta.y != 0.0f)
 		{
-			if (cumulative_delta > threshold)
+			//if (cumulative_delta > threshold * 0.5f)
+			if (cumulative_delta != 0.0f)
 				ImGui::SetScrollY(window, window->Scroll.y + delta.y * mult.y);
 			cumulative_delta += std::abs(delta.y);
 		}
-		if (cumulative_delta > threshold)
+		if (cumulative_delta != 0.0f)
+		//if (cumulative_delta > threshold)
 		{
 			ImGui::ClearActiveID();
+			ImGui::SetHoveredID(ImGui::GetID("ScrollID"));
 		}
 	}
 

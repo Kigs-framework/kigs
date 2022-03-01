@@ -269,7 +269,7 @@ void ImGuiLayer::SetStyleHoloLens()
 	//style->FrameBorderSize = 1.0f;
 	//style->PopupBorderSize = 1.0f;
 
-	style->ScrollbarSize = 16.0f;
+	style->ScrollbarSize = 128.0f;
 	style->ScrollbarRounding = 0.0f;
 	style->GrabMinSize = 5.0f;
 	style->GrabRounding = 0.0f;
