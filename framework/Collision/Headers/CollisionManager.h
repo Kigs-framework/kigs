@@ -67,11 +67,12 @@ public:
 	DECLARE_CONSTRUCTOR(CollisionManager);
 	~CollisionManager() override;
 
-	WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback, OnDeleteCallBack, GetAllRayIntersection, SerializeAABBTree, DeserializeAABBTree, SetAABBTreeFromFile, AddSimpleShapeFromDescription);
+	WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback, OnDeleteCallBack, GetAllRayIntersection, SerializeAABBTree, DeserializeAABBTree, SetAABBTreeFromFile, ExportLeafAABBTrees, AddSimpleShapeFromDescription);
 
 	bool SerializeAABBTree(CoreRawBuffer* buffer, const CMSP& node);
 	bool DeserializeAABBTree(CoreRawBuffer* buffer, const CMSP& node);
 	void SetAABBTreeFromFile(const std::string& filename, const CMSP& node);
+	void ExportLeafAABBTrees(const CMSP& node, ExportSettings* settings);
 
 	void AddSimpleShapeFromDescription(CoreItem* desc, const CMSP& node);
 

@@ -63,16 +63,12 @@ void CompoundShape::initFromCoreItemDesc(CoreItemSP init)
 	{
 		for (auto shape : vec)
 		{
-			mShapes.push_back(createFromDesc(shape));
+			mShapes.push_back(SP<SimpleShapeBase>(createFromDesc(shape)));
 		}
 	}
 }
 CompoundShape::~CompoundShape()
 {
-	for (auto shape : mShapes)
-	{
-		delete shape;
-	}
 }
 bool CompoundShape::CallLocalRayIntersection(Hit& hit, const Point3D& start, const Vector3D& dir) const
 {
@@ -132,7 +128,7 @@ CoreItemSP	TransformShape::getCoreItemDesc() const
 void TransformShape::initFromCoreItemDesc(CoreItemSP init)
 {
 	CoreItemSP shape = init["Shape"];
-	mShape = SimpleShapeBase::createFromDesc(shape);
+	mShape = SP<SimpleShapeBase>(SimpleShapeBase::createFromDesc(shape));
 
 	CoreItemSP TransformX = init["TransformX"];
 	CoreItemSP TransformY = init["TransformY"];
@@ -148,7 +144,6 @@ void TransformShape::initFromCoreItemDesc(CoreItemSP init)
 }
 TransformShape::~TransformShape()
 {
-	delete mShape;
 }
 bool TransformShape::CallLocalRayIntersection(Hit& hit, const Point3D& start, const Vector3D& dir) const
 {

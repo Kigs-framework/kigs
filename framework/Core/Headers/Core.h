@@ -458,6 +458,7 @@ public:
 
 	void AddToPostDestroy(CMSP obj);
 	void RemoveFromPostDestroy(CMSP obj);
+	void ManagePostDestruction();
 
 protected:
 
@@ -551,7 +552,7 @@ protected:
 	//! manage post destruction
 	std::mutex								mPostDestructionListMutex;
 	std::unordered_map<CoreModifiable*, SP<CoreModifiable>>			mPostDestructionList;
-	void ManagePostDestruction();
+	
 
 	friend class ModuleBase;
 	//! static pointer to the KigsCore singleton

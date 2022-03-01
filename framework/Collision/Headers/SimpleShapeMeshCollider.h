@@ -83,7 +83,7 @@ public:
 	std::vector<SimpleShapeBase*> GetLeafShapes() override
 	{
 		std::vector<SimpleShapeBase*> result;
-		for (auto ss : mShapes)
+		for (auto& ss : mShapes)
 		{
 			auto vec = ss->GetLeafShapes();
 			for (auto s : vec)
@@ -99,7 +99,7 @@ public:
 	virtual bool CallLocalRayIntersection(Hit& hit, const Point3D& start, const Vector3D& dir)  const override;
 	virtual bool CallLocalRayIntersection(std::vector<Hit>& hit, const Point3D& start, const Vector3D& dir)  const override;
 
-	std::vector<SimpleShapeBase*> mShapes;
+	std::vector<SP<SimpleShapeBase>> mShapes;
 
 protected:
 	void initFromCoreItemDesc(CoreItemSP init) override;
@@ -146,7 +146,7 @@ public:
 	virtual bool CallLocalRayIntersection(Hit& hit, const Point3D& start, const Vector3D& dir)  const override;
 	virtual bool CallLocalRayIntersection(std::vector<Hit>& hit, const Point3D& start, const Vector3D& dir)  const override;
 
-	SimpleShapeBase* mShape = nullptr;
+	SP<SimpleShapeBase> mShape;
 	mat3x4 mTransform{ mat3x4::Identity{} };
 	mat3x4 mInvertTransform{ mat3x4::Identity{} };
 protected:

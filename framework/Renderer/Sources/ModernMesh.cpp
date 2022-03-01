@@ -421,6 +421,10 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 		}
 			
 	}
+	else if (export_colliders && getAttribute("SimpleShapeCollider"))
+	{
+		cm->SimpleCall<bool>("ExportLeafAABBTrees", this, settings);
+	}
 #endif // WIN32
 }
 

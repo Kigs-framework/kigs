@@ -5,6 +5,7 @@
 #include "Intersection.h"
 #include "Collision.h"
 #include "Core.h"
+#include "CorePackage.h"
 
 #include "AABBTree.h"
 #include "SpacialMeshBVH.h"
@@ -1652,6 +1653,69 @@ bool CollisionManager::SerializeAABBTree(CoreRawBuffer* buffer, const CMSP& node
 	compare_tree(aabbtree, aabbtree_read);*/
 	return true;
 }
+
+void CollisionManager::ExportLeafAABBTrees(const CMSP& node, ExportSettings* settings)
+{
+	auto it = mCollisionObjectMap.find(node->getUID());
+	if (it == mCollisionObjectMap.end()) return;
+
+	std::shared_ptr<CollisionBaseObject> root_ref = std::atomic_load(&it->second->mOwnedCollisionObject);
+	auto root = (SimpleShapeBase*)root_ref.get();
+	if (!root) return;
+
+	auto leafs = root->GetLeafShapes();
+
+	for (auto leaf : leafs)
+	{
+		if (leaf->getType() != SimpleShapeType::ST_AABBTree) continue;
+		auto tree = (AABBTree*)leaf;
+		auto path = tree->GetFilename();
+		if (path.empty()) continue;
+		
+		if (settings->external_files_exported.find(path) != settings->external_files_exported.end())
+		{
+			continue;
+		}
+
+		SmartPointer<CoreRawBuffer> crb = MakeRefCounted<AlignedCoreRawBuffer<16, char>>();
+		std::vector<u32> data;
+		VectorWriteStream stream{ data };
+		bool b1 = serialize_object(stream, *tree);
+		stream.Flush();
+		crb->resize(data.size() * sizeof(u32));
+		memcpy(crb->data(), data.data(), data.size() * sizeof(u32));
+		
+		if (crb->size() >= settings->export_buffer_attribute_as_external_file_size_threshold)
+		{
+			CMSP compressManager = KigsCore::GetSingleton("KXMLManager");
+			if (settings->external_files_exported.find(path) == settings->external_files_exported.end())
+			{
+				auto filepath = settings->working_directory + path;
+				if (compressManager)
+				{
+					auto result = MakeRefCounted<CoreRawBuffer>();
+					compressManager->SimpleCall("CompressData", crb.get(), result.get());
+					ModuleFileManager::SaveFile(filepath.c_str(), (u8*)result->data(), result->size());
+				}
+				else
+				{
+					ModuleFileManager::SaveFile(filepath.c_str(), (u8*)crb->data(), crb->length());
+				}
+
+				if (settings->current_package)
+					settings->current_package->AddFile(filepath, path);
+
+				settings->external_files_exported.insert(path);
+			}
+		}
+		else
+		{
+			tree->SetFilename("");
+		}
+	}
+	return;
+}
+
 
 bool CollisionManager::DeserializeAABBTree(CoreRawBuffer* buffer, const CMSP& node)
 {

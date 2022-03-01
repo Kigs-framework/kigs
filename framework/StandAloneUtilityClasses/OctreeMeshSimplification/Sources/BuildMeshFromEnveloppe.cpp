@@ -604,9 +604,9 @@ void	BuildMeshFromEnveloppe::setEdgesInteriorFace(MSFace& toSet, u32 fi,u32 oldf
 
 void BuildMeshFromEnveloppe::splitMoreThanQuadFace(u32 fi)
 {
-	MSFace& currentFace = mFaces[fi];
-	while (currentFace.edges.size() > 4)
+	while (mFaces[fi].edges.size() > 4)
 	{
+		MSFace& currentFace = mFaces[fi];
 		// compute face barycenter
 		// first make a normalised v3f list (1 for each edge)
 		std::vector<u32>	vlist;
@@ -671,7 +671,6 @@ void BuildMeshFromEnveloppe::splitMoreThanQuadFace(u32 fi)
 		setEdgesInteriorFace(toAdd, mFaces.size(),fi);
 
 		mFaces.push_back(toAdd);
-		
 	}
 	splitQuadFace(fi);
 }

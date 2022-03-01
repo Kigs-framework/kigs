@@ -743,6 +743,8 @@ void DataDrivenBaseApplication::ProtectedClose()
 	removeAggregateWith(mSequenceManager);
 	mSequenceManager = nullptr;
 
+	KigsCore::Instance()->ManagePostDestruction(); // Before module destruction
+
 	KigsCore::ReleaseSingleton("FilePathManager");
 	KigsCore::ReleaseSingleton("LocalizationManager");
 
@@ -754,7 +756,8 @@ void DataDrivenBaseApplication::ProtectedClose()
 	CoreDestroyModule(ModuleInput);
 	CoreDestroyModule(ModuleRenderer);
 	CoreDestroyModule(ModuleCoreAnimation);
-	
+
+	KigsCore::Instance()->ManagePostDestruction(); // After module destruction
 }
 
 void DataDrivenSequenceManager::SetState(State_t NewState)

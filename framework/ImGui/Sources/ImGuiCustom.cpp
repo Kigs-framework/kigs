@@ -159,8 +159,7 @@ namespace ImGui
 
 		bool held = ImGui::IsMouseDown(mouse_button) && !clicked_in_scrollbar;
 
-		float cumulative_delta = Norm(ImGui::GetMouseDragDelta(mouse_button));
-
+		float cumulative_delta = std::sqrtf(ImGui::GetIO().MouseDragMaxDistanceSqr[mouse_button]);
 		if (!held)
 		{
 			cumulative_delta = 0.0f;
@@ -168,20 +167,17 @@ namespace ImGui
 
 		if (held && delta.x != 0.0f)
 		{
-			//if (cumulative_delta > threshold * 0.5f)
-			if(cumulative_delta != 0.0f)
+			if (cumulative_delta > threshold * 0.75f)
 				ImGui::SetScrollX(window, window->Scroll.x + delta.x * mult.x);
 			cumulative_delta += std::abs(delta.x);
 		}
 		if (held && delta.y != 0.0f)
 		{
-			//if (cumulative_delta > threshold * 0.5f)
-			if (cumulative_delta != 0.0f)
+			if (cumulative_delta > threshold * 0.75f)
 				ImGui::SetScrollY(window, window->Scroll.y + delta.y * mult.y);
 			cumulative_delta += std::abs(delta.y);
 		}
-		if (cumulative_delta != 0.0f)
-		//if (cumulative_delta > threshold)
+		if (cumulative_delta > threshold)
 		{
 			ImGui::ClearActiveID();
 			ImGui::SetHoveredID(ImGui::GetID("ScrollID"));

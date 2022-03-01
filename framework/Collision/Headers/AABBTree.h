@@ -247,6 +247,10 @@ public:
 	{
 		return mVertexList;
 	}
+
+	void SetFilename(const std::string& filename) { mFileName = filename; }
+	std::string GetFilename() { return mFileName; }
+
 protected:
 	NormalTriangle* mNormalTriangleArray = nullptr;
 	unsigned int	 mCurrentFreeTriangleIndex = 0;
