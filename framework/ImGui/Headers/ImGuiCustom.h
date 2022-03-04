@@ -29,9 +29,10 @@ namespace ImGui
 
 	void Strikethrough(float offset_before = 0.0f, float offset_after = 0.0f, ImColor color = ImColor(0, 0, 0, 255), int width = 1);
 
-	inline bool ButtonSTD(const std::string& label, v2f size = v2f(0,0))
+	template<typename ... Args>
+	bool ButtonSTD(const std::string& label, Args&& ... args)
 	{
-		return ImGui::Button(label.c_str(), size);
+		return ImGui::Button(label.c_str(), FWD(args)...);
 	}
 
 	bool ButtonCenteredSTD(const std::string& label, v2f size = v2f(0, 0));
