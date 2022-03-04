@@ -57,6 +57,8 @@ public:
 	//! get state given by its name
 	CoreFSMStateBase* getState(const KigsID& id);
 
+	void activateTransition(const KigsID& id);
+
 	//! init method
 	void	InitModifiable()override;
 
