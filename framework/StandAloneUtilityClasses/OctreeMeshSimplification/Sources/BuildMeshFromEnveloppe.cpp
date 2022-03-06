@@ -407,7 +407,7 @@ void	BuildMeshFromEnveloppe::splitFaces()
 
 	for (u32 fi = 0; fi < faceCount; fi++)
 	{
-		if (mFaces[fi].edges.size() == 3) // triangle, don't need to split
+		if (mFaces[fi].edges.size() <= 3) // triangle, don't need to split
 		{
 			continue;
 		}
@@ -604,6 +604,7 @@ void	BuildMeshFromEnveloppe::setEdgesInteriorFace(MSFace& toSet, u32 fi,u32 oldf
 
 void BuildMeshFromEnveloppe::splitMoreThanQuadFace(u32 fi)
 {
+	
 	while (mFaces[fi].edges.size() > 4)
 	{
 		MSFace& currentFace = mFaces[fi];
@@ -671,6 +672,7 @@ void BuildMeshFromEnveloppe::splitMoreThanQuadFace(u32 fi)
 		setEdgesInteriorFace(toAdd, mFaces.size(),fi);
 
 		mFaces.push_back(toAdd);
+		
 	}
 	splitQuadFace(fi);
 }
@@ -1831,6 +1833,12 @@ void BuildMeshFromEnveloppe::Build()
 #ifdef _DEBUG
 		debug_index++;
 #endif
+	}
+
+	if (mVertices.size() < 4)
+	{
+		mVertices.clear();
+		return;
 	}
 
 #ifdef _DEBUG

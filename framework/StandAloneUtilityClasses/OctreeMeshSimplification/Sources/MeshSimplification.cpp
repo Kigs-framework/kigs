@@ -145,7 +145,7 @@ void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::
 				}
 			}
 
-			// don't take exactly the middle of the bestd so try to avoid 45deg edges also
+			// don't take exactly the middle of the bestd so try to avoid 45° edges also
 			mOctreeShift[dim] = 1.0f - (switches[dim][besti] + bestd * 0.47f);
 
 		}
@@ -261,7 +261,7 @@ void MeshSimplification::rebuildMesh(u32 groupIndex, std::vector<nodeInfo>& enve
 		}
 	}
 
-	if (thisGroupEnvelopeNodes.size() <= 1) // just one isolated cell for this group ? discard it
+	if (thisGroupEnvelopeNodes.size() <= 2) // not enough nodes
 	{
 		return;
 	}
