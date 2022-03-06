@@ -110,3 +110,5 @@ public:
 
 #endif
 };
+
+#define getFSMState(fsm,baseclass,state) (CoreFSMStateClass(baseclass, state)*)fsm->getState(#state);
