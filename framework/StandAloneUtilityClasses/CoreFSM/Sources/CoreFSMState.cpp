@@ -9,8 +9,8 @@ bool CoreFSMStateBase::update(CoreModifiable* currentParentClass, u32& specialOr
 	{
 		stateID = mActiveTransition->getState();
 		specialOrder = mActiveTransition->getValue<u32>("TransitionBehavior");
+		mActiveTransition->executeTransition(this);
 		mActiveTransition = nullptr;
-
 		return true;
 	}
 	for (auto t : mTransitions)
@@ -19,7 +19,7 @@ bool CoreFSMStateBase::update(CoreModifiable* currentParentClass, u32& specialOr
 		{
 			stateID = t->getState();
 			specialOrder = t->getValue<u32>("TransitionBehavior");
-
+			t->executeTransition(this);
 			return true;
 		}
 	}
@@ -38,8 +38,6 @@ bool CoreFSMStateBase::activateTransition(const KigsID& transitionname)
 	}
 	return false;
 }
-
-CoreFSMTransition* mNextState = nullptr;
 
 // when state start, start all transitions
 void	CoreFSMStateBase::start(CoreModifiable* currentParentClass, CoreFSMStateBase* prevstate)

@@ -1,6 +1,7 @@
 #include "CoreFSMTransition.h"
 #include "CoreBaseApplication.h"
 #include "NotificationCenter.h"
+#include "CoreFSMState.h"
 
 IMPLEMENT_CLASS_INFO(CoreFSMTransition)
 IMPLEMENT_CLASS_INFO(CoreFSMOnSignalTransition)
@@ -10,6 +11,11 @@ IMPLEMENT_CLASS_INFO(CoreFSMOnValueTransition)
 IMPLEMENT_CLASS_INFO(CoreFSMOnMethodTransition)
 IMPLEMENT_CLASS_INFO(CoreFSMInternalSetTransition)
 
+
+void	CoreFSMTransition::executeTransition(CoreFSMStateBase* from)
+{
+	EmitSignal(Signals::ExecuteTransition, this, from);
+}
 
 CoreFSMTransition::CoreFSMTransition(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 {

@@ -23,6 +23,8 @@ public:
 	DECLARE_ABSTRACT_CLASS_INFO(CoreFSMTransition, CoreModifiable, CoreFSM);
 	DECLARE_CONSTRUCTOR(CoreFSMTransition);
 
+	SIGNALS(ExecuteTransition);
+
 	friend class CoreFSM;
 	friend class CoreFSMStateBase;
 
@@ -45,6 +47,9 @@ public:
 	}
 
 protected:
+
+	void	executeTransition(CoreFSMStateBase* from);
+
 	virtual bool checkTransition(CoreModifiable* currentParentClass) = 0;
 
 	KigsID				mGotoState="";
