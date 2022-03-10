@@ -60,6 +60,9 @@ protected:
 
 	void	initOctree(const std::vector<u32>& indices, const std::vector<v3f>& vertices, float precision);
 
+	// if precision gives a too deep octree, then change precision
+	void	adjustPrecision(const BBox& bbox, float& precision);
+
 	std::vector<u32>	mFinalIndices;
 	std::vector<v3f>	mFinalVertices;
 

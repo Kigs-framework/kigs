@@ -89,6 +89,34 @@ void		MeshSimplification::computeSurfaceList(const std::vector<u32>& indices, co
 	}
 }
 
+// if precision gives a too deep octree, then change precision
+void	MeshSimplification::adjustPrecision(const BBox& bbox, float& precision)
+{
+	v3f edges(bbox.m_Max);
+	edges -= bbox.m_Min;
+
+	float maxedge = edges.x;
+	if (maxedge < edges.y)
+		maxedge = edges.y;
+	if (maxedge < edges.z)
+		maxedge = edges.z;
+
+	maxedge += 4.0f * precision;
+
+	float subdivision = maxedge / precision;
+	int poweroftwodecal = 0;
+	while ((1 << poweroftwodecal) < subdivision)
+	{
+		poweroftwodecal++;
+	}
+
+	while (poweroftwodecal > 8)
+	{
+		poweroftwodecal--;
+		precision *= 2.0f;
+	}
+}
+
 
 void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::vector<v3f>& vertices, float precision)
 {
@@ -100,6 +128,8 @@ void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::
 	{
 		b.Update(p);
 	}
+
+	adjustPrecision(b,precision);
 
 	// now compute best switch to apply to avoid segment on octree cutting planes
 	mOctreeShift.Set(0.0f, 0.0f, 0.0f);
