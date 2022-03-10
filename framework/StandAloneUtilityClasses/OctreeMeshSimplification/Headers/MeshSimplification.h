@@ -33,8 +33,6 @@ protected:
 	v3f							mOctreeShift;
 	v3f							mObjectShift;
 
-	bool mWTF = false;
-
 	class surfaceListBuilder
 	{
 	protected:
@@ -96,11 +94,6 @@ protected:
 	std::vector<v3f>	mFinalVertices;
 
 public:
-
-	bool hasError()
-	{
-		return mWTF;
-	}
 
 	const std::vector<v3f>& getOctreeCoordVertices()
 	{
