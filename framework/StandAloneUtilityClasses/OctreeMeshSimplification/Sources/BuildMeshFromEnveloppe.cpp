@@ -523,6 +523,7 @@ void	BuildMeshFromEnveloppe::checkCoherency()
 			}
 		}
 	}
+#endif
 }
 
 void	BuildMeshFromEnveloppe::splitQuadFace(u32 fi)
