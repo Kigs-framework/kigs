@@ -4,6 +4,10 @@
 unsigned int adjacent_faces[6][4] = { {8,32,4,16},{8,16,4,32},{2,16,1,32},{2,32,1,16},{8,1,4,2},{8,2,4,1} };
 
 
+//#define WTF __debugbreak();
+#define WTF printf("Mesh Simplification Error\n");
+
+
 bool	BuildMeshFromEnveloppe::computeVerticeFromCell(nodeInfo node, v3f& goodOne)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
@@ -196,7 +200,7 @@ void BuildMeshFromEnveloppe::setUpInternCellEdge(u8 mask, const MSOctreeContent&
 			std::pair<u32, u8>* startP = node.mData->getVertexForFreeFace(1 << i);
 			if (!startP)
 			{
-				printf("WTF");
+				WTF;
 			}
 			for (auto adj : adjacent_faces[i])
 			{
@@ -205,7 +209,7 @@ void BuildMeshFromEnveloppe::setUpInternCellEdge(u8 mask, const MSOctreeContent&
 					std::pair<u32, u8>* endP = node.mData->getVertexForFreeFace(adj);
 					if (!endP)
 					{
-						printf("WTF");
+						WTF;
 					}
 					foundEdges[*startP].insert(endP->first);
 				}
@@ -294,7 +298,7 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node)
 						std::pair<u32, u8>* endP = frontNode->getContentType().mData->getVertexForFreeFace(OctreeNodeBase::mOppositeFace[adj]);
 						if (!endP)
 						{
-							printf("WTF");
+							WTF;
 						}
 						foundEdges[ip].push_back({ endP->first,0 }); // for outter vertice, don't set flag
 					}
@@ -307,13 +311,13 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node)
 							std::pair<u32, u8>* endP = frontNode->getContentType().mData->getVertexForFreeFace(1 << i);
 							if (!endP)
 							{
-								printf("WTF");
+								WTF;
 							}
 							foundEdges[ip].push_back({ endP->first,0 }); // outter vertice => don't set flag
 						}
 						else
 						{
-							printf("WTF");
+							WTF;
 						}
 					}
 				}
@@ -322,7 +326,7 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node)
 					std::pair<u32, u8>* endP = content.mData->getVertexForFreeFace(adj);
 					if (!endP)
 					{
-						printf("WTF");
+						WTF;
 					}
 					if (endP->first == ip.first)
 					{
@@ -441,7 +445,7 @@ void	BuildMeshFromEnveloppe::checkVerticeCoherency()
 
 			if (triangle != nexttriangle)
 			{
-				printf("WTF");
+				WTF;
 			}
 
 		}
@@ -452,15 +456,16 @@ void	BuildMeshFromEnveloppe::checkVerticeCoherency()
 
 void	BuildMeshFromEnveloppe::checkCoherency()
 {
+#ifdef _DEBUG
 	// check coherency
-
 	for (const auto& v : mVertices)
 	{
 		if ( (v.mEdges.size() < 3) && (v.mEdges.size() !=0))
 		{
-			printf("WTF");
+			WTF;
 		}
 	}
+#endif
 
 	// light check
 	//return;
@@ -469,7 +474,7 @@ void	BuildMeshFromEnveloppe::checkCoherency()
 	{
 		if ((f.edges.size() != 3) && (f.edges.size() != 0))
 		{
-			printf("WTF");
+			WTF;
 		}
 		if (f.edges.size())
 		{
@@ -484,12 +489,12 @@ void	BuildMeshFromEnveloppe::checkCoherency()
 					first = mEdges[ei].t[ew];
 					if (first == -1)
 					{
-						printf("WTF");
+						WTF;
 					}
 				}
 				else if (mEdges[ei].t[ew] != first)
 				{
-					printf("WTF");
+					WTF;
 				}
 
 				pointlist.insert(mEdges[ei].v[0]);
@@ -497,22 +502,22 @@ void	BuildMeshFromEnveloppe::checkCoherency()
 
 				if (mFaces[mEdges[ei].t[0]].edges.size() != 3)
 				{
-					printf("WTF");
+					WTF;
 				}
 			}
 			if (pointlist.size() != 3)
 			{
-				printf("WTF");
+				WTF;
 			}
 			for (auto v : pointlist)
 			{
 				if (mVertices[v].mEdges.size() == 0)
 				{
-					printf("WTF");
+					WTF;
 				}
 				if(mVertices[v].mFlag==16)
 				{
-					printf("WTF");
+					WTF;
 				}
 			}
 		}
@@ -595,7 +600,7 @@ void	BuildMeshFromEnveloppe::setEdgesInteriorFace(MSFace& toSet, u32 fi,u32 oldf
 
 		if ((mEdges[ei].t[ew] != -1) && ((mEdges[ei].t[ew] != oldfi)))
 		{
-			printf("WTF");
+			WTF;
 		}
 
 		mEdges[ei].t[ew] = fi;
@@ -689,7 +694,7 @@ void BuildMeshFromEnveloppe::finishTriangleSetup()
 
 		if (NormSquare(f.normal) ==0.0f)
 		{
-			printf("WTF");
+			WTF;
 		}
 
 		f.normal.Normalize();
@@ -868,7 +873,7 @@ void BuildMeshFromEnveloppe::mergeTriangles()
 #ifdef _DEBUG
 					if (mEdges[ei].v[ew] != vindex)
 					{
-						printf("WTF");
+						WTF;
 					}
 #endif
 					mEdges[ei].v[ew] = mergeWith.second;
@@ -950,7 +955,7 @@ void					BuildMeshFromEnveloppe::flattenTriangles(MSFace& t,u32 tIndex, u32 from
 		}
 		else
 		{
-			printf("WTF");
+			WTF;
 		}
 	}
 
@@ -976,7 +981,7 @@ void					BuildMeshFromEnveloppe::flattenTriangles(MSFace& t,u32 tIndex, u32 from
 #ifdef _DEBUG
 	if (fromEStruct.v[fromEW] == fromV)
 	{
-		printf("WTF");
+		WTF;
 	}
 #endif
 
@@ -1281,7 +1286,7 @@ void	BuildMeshFromEnveloppe::setUpFaces()
 
 					if (e->t[ew] != -1)
 					{
-						printf("WTF");
+						WTF;
 					}
 					prevVertice = nextVertice;
 					nextVertice = e->v[1 - ew];
@@ -1289,7 +1294,7 @@ void	BuildMeshFromEnveloppe::setUpFaces()
 					currentEdgeIndexInFace++;
 					if (currentEdgeIndexInFace > 7)
 					{
-						printf("WTF");
+						WTF;
 						break;
 					}
 				}
