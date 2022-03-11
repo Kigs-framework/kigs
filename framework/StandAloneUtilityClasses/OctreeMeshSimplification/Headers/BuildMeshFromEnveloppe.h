@@ -136,6 +136,8 @@ protected:
 	std::vector<nodeInfo*>& mNodeList;
 	const std::vector<MSSurfaceStruct>& mAllSurfaces;
 
+	bool mWTF = false;
+
 	inline v3f		getEdgeVector(u32 e)
 	{
 		u32 ew = (e >> 31);
@@ -259,5 +261,9 @@ public:
 
 	std::vector<std::pair<v3f, v3f>>	getEdges() const;
 	std::vector<MSVertice>					getEnveloppeVertices() const;
+	bool hasError() const
+	{
+		return mWTF;
+	}
 
 };

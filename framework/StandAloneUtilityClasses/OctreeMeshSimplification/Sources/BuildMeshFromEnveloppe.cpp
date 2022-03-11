@@ -5,7 +5,8 @@ unsigned int adjacent_faces[6][4] = { {8,32,4,16},{8,16,4,32},{2,16,1,32},{2,32,
 
 
 //#define WTF __debugbreak();
-#define WTF printf("Mesh Simplification Error\n");
+#define WTF mWTF = true;
+//#define WTF printf("Mesh Simplification Error\n");
 
 
 bool	BuildMeshFromEnveloppe::computeVerticeFromCell(nodeInfo node, v3f& goodOne)

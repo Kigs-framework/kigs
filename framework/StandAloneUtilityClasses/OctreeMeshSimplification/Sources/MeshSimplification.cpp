@@ -369,7 +369,7 @@ void MeshSimplification::rebuildMesh(u32 groupIndex, std::vector<nodeInfo>& enve
 #endif
 
 	meshBuilder->addFinalizedMesh(mFinalVertices, mFinalIndices);
-
+	if (meshBuilder->hasError()) mWTF = true;
 	delete meshBuilder;
 }
 
