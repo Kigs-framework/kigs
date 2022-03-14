@@ -815,6 +815,10 @@ void BuildMeshFromEnveloppe::mergeTriangles()
 		u32 vindex = 0;
 		for (auto& v : mVertices)
 		{
+			if (v.mEdges.size() < 3)
+			{
+				v.mFlag = 2;
+			}
 			if (v.mFlag < 2)
 			{
 				/*if (vindex >= 12233)
@@ -1311,6 +1315,105 @@ void	BuildMeshFromEnveloppe::setUpFaces()
 	}
 }
 
+void	BuildMeshFromEnveloppe::firstClean()
+{
+
+/*	std::vector<MSVertice>		cleanedVertices;
+
+	std::vector<MSFace>			cleanedFaces;
+	
+	for (auto& f : mFaces)
+	{
+
+	}
+	*/
+
+	std::vector<bool>	mergedVertices;
+	mergedVertices.resize(mVertices.size(), false);
+
+	std::vector<bool>	touchedEdges;
+	touchedEdges.resize(mEdges.size(), false);
+
+	// check nodes with multiple points
+	for (const auto n : mNodeList)
+	{
+		MeshSimplificationOctreeNode* currentNode = n->getNode<MeshSimplificationOctreeNode>();
+		const auto& content = currentNode->getContentType();
+
+		const u32 vlistSize = content.mData->mEnvelopeData->mGoodIntersectionPoint.size();
+		
+		if (vlistSize >1)
+		{
+			std::vector<std::pair<u32, u8>> mergedGoodIntersections;
+
+			u32	mergedMask = 0;
+
+			for (size_t vi1 = 0; vi1 < vlistSize; vi1++)
+			{
+				if (!(mergedMask & (1 << vi1)))
+				{
+					auto& v1 = content.mData->mEnvelopeData->mGoodIntersectionPoint[vi1];
+
+					for (size_t vi2 = vi1 + 1; vi2 < vlistSize; vi2++)
+					{
+						if (!(mergedMask & (1 << vi2)))
+						{
+							auto& v2 = content.mData->mEnvelopeData->mGoodIntersectionPoint[vi2];
+							if (DistSquare(mVertices[v1.first].mV, mVertices[v2.first].mV) < 0.001f)
+							{
+								// merge vi2 => vi1
+								mergedMask |= (1 << vi2);
+
+								mergedVertices[v2.first] = true;
+
+								// merge in edges
+								for (auto& ein : mVertices[v2.first].mEdges)
+								{
+									u32 ew = ein >> 31;
+									u32 ei = ein & 0x7fffffff;
+
+									touchedEdges[ei] = true;
+									auto& e = mEdges[ei];
+
+									if (e.v[ew] != v2.first)
+									{
+										printf("Problem Here");
+									}
+									else
+									{
+										e.v[ew] = v1.first;
+									}
+									mVertices[v1.first].mEdges.push_back(ein);
+								}
+
+								v1.second |= v2.second;
+							}
+						}
+					}
+					mergedGoodIntersections.push_back(content.mData->mEnvelopeData->mGoodIntersectionPoint[vi1]);
+				}
+			}
+			content.mData->mEnvelopeData->mGoodIntersectionPoint = mergedGoodIntersections;
+		}
+		
+	}
+}
+
+void	BuildMeshFromEnveloppe::addMultipleVertices(nodeInfo& node, const v3f& goodpoint)
+{
+	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
+	const auto& content = currentNode->getContentType();
+
+	for (u32 i = 0; i < 6; i++)
+	{
+		if (content.mData->mEmptyNeighborsFlag & (1 << i))
+		{
+			content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(goodpoint,node), 1<<i });
+		}
+	}
+
+}
+
 void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
@@ -1339,7 +1442,8 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 		else
 		{
 			checkVertice(node, result);
-			content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(result,node), content.mData->mEmptyNeighborsFlag });
+			addMultipleVertices(node, result);
+			//content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(result,node), content.mData->mEmptyNeighborsFlag });
 		}
 		break;
 	case 3: // 3 free faces => 2 subcases corner or U
@@ -1350,7 +1454,8 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 		else
 		{
 			checkVertice(node, result);
-			content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(result,node), content.mData->mEmptyNeighborsFlag });
+			addMultipleVertices(node, result);
+		//	content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(result,node), content.mData->mEmptyNeighborsFlag });
 		}
 		break;
 	case 4: // 4 free faces => 2 subcases corner or tunnel 
@@ -1363,7 +1468,8 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 		
 		if (testTrivial && checkVerticeTrivialCase(node, result)) // if opposite free faces but trivial case, set only one point
 		{
-			content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(result,node), content.mData->mEmptyNeighborsFlag });
+			addMultipleVertices(node, result);
+			//content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(result,node), content.mData->mEmptyNeighborsFlag });
 		}
 		else
 		{
@@ -1378,7 +1484,8 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 		
 		if (testTrivial && checkVerticeTrivialCase(node, result)) 
 		{
-			content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(result,node), content.mData->mEmptyNeighborsFlag });
+			addMultipleVertices(node, result);
+			//content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(result,node), content.mData->mEmptyNeighborsFlag });
 		}
 		else
 		{
@@ -1391,7 +1498,7 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 		break;
 
 	}
-	validateGoodIntersectionPoint(content, node);
+	//validateGoodIntersectionPoint(content, node);
 
 }
 
@@ -1860,10 +1967,15 @@ void BuildMeshFromEnveloppe::Build()
 #endif
 	}
 	
-	// for each vertice, compute normals using edge list
-	setUpNormals();
 	// setup faces
 	setUpFaces();
+
+	// merge vertices and edges, remove useless faces
+	firstClean();
+
+	// for each vertice, compute normals using edge list
+	setUpNormals();
+
 	checkVerticeCoherency();
 	// do triangulation
 	splitFaces();

@@ -149,10 +149,12 @@ protected:
 		return ew?-edgeDir: edgeDir;
 	}
 
+	void	addMultipleVertices(nodeInfo& node, const v3f& goodpoint);
 	void	setUpVertices(nodeInfo& node);
 	void	setUpEdges(nodeInfo node);
 	void	setUpNormals();
 	void	setUpFaces();
+	void	firstClean();
 	void	splitFaces();
 	// compute triangle normal and setup edge triangle references
 	void	finishTriangleSetup();
