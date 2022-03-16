@@ -154,6 +154,17 @@ protected:
 	void	setUpEdges(nodeInfo node);
 	void	setUpNormals();
 	void	setUpFaces();
+
+	// remove empty vertice with no more edges
+	void removeEmptyVertice(u32 verticeindex, std::vector<u32>& verticelist);
+	// remove face with no more edges
+	void removeEmptyFace(u32 faceindex, std::vector<u32>& facelist);
+	// remove given edge from given vertice
+	void	removeEdgeFromVertice(u32 edgeindex, u32 verticeindex);
+	// remove given edge from given face
+	void	removeEdgeFromFace(u32 edgeindex, u32 faceindex);
+	// remove edge from list after removing it from faces
+	void	removeEdge(u32 edgeindex,std::vector<u32>& edgelist);
 	void	firstClean();
 	void	splitFaces();
 	// compute triangle normal and setup edge triangle references

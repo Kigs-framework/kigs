@@ -4,11 +4,6 @@
 unsigned int adjacent_faces[6][4] = { {8,32,4,16},{8,16,4,32},{2,16,1,32},{2,32,1,16},{8,1,4,2},{8,2,4,1} };
 
 
-//#define WTF __debugbreak();
-#define WTF mWTF = true;
-//#define WTF printf("Mesh Simplification Error\n");
-
-
 bool	BuildMeshFromEnveloppe::computeVerticeFromCell(nodeInfo node, v3f& goodOne)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
@@ -201,7 +196,7 @@ void BuildMeshFromEnveloppe::setUpInternCellEdge(u8 mask, const MSOctreeContent&
 			std::pair<u32, u8>* startP = node.mData->getVertexForFreeFace(1 << i);
 			if (!startP)
 			{
-				WTF;
+				printf("WTF");
 			}
 			for (auto adj : adjacent_faces[i])
 			{
@@ -210,7 +205,7 @@ void BuildMeshFromEnveloppe::setUpInternCellEdge(u8 mask, const MSOctreeContent&
 					std::pair<u32, u8>* endP = node.mData->getVertexForFreeFace(adj);
 					if (!endP)
 					{
-						WTF;
+						printf("WTF");
 					}
 					foundEdges[*startP].insert(endP->first);
 				}
@@ -299,7 +294,7 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node)
 						std::pair<u32, u8>* endP = frontNode->getContentType().mData->getVertexForFreeFace(OctreeNodeBase::mOppositeFace[adj]);
 						if (!endP)
 						{
-							WTF;
+							printf("WTF");
 						}
 						foundEdges[ip].push_back({ endP->first,0 }); // for outter vertice, don't set flag
 					}
@@ -312,13 +307,13 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node)
 							std::pair<u32, u8>* endP = frontNode->getContentType().mData->getVertexForFreeFace(1 << i);
 							if (!endP)
 							{
-								WTF;
+								printf("WTF");
 							}
 							foundEdges[ip].push_back({ endP->first,0 }); // outter vertice => don't set flag
 						}
 						else
 						{
-							WTF;
+							printf("WTF");
 						}
 					}
 				}
@@ -327,7 +322,7 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node)
 					std::pair<u32, u8>* endP = content.mData->getVertexForFreeFace(adj);
 					if (!endP)
 					{
-						WTF;
+						printf("WTF");
 					}
 					if (endP->first == ip.first)
 					{
@@ -446,7 +441,7 @@ void	BuildMeshFromEnveloppe::checkVerticeCoherency()
 
 			if (triangle != nexttriangle)
 			{
-				WTF;
+				printf("WTF");
 			}
 
 		}
@@ -459,14 +454,14 @@ void	BuildMeshFromEnveloppe::checkCoherency()
 {
 #ifdef _DEBUG
 	// check coherency
+
 	for (const auto& v : mVertices)
 	{
-		if ( (v.mEdges.size() < 3) && (v.mEdges.size() !=0))
+		if ((v.mEdges.size() < 3) && (v.mEdges.size() != 0))
 		{
-			WTF;
+			printf("Double sided face");
 		}
 	}
-#endif
 
 	// light check
 	//return;
@@ -475,7 +470,7 @@ void	BuildMeshFromEnveloppe::checkCoherency()
 	{
 		if ((f.edges.size() != 3) && (f.edges.size() != 0))
 		{
-			WTF;
+			printf("WTF");
 		}
 		if (f.edges.size())
 		{
@@ -490,12 +485,12 @@ void	BuildMeshFromEnveloppe::checkCoherency()
 					first = mEdges[ei].t[ew];
 					if (first == -1)
 					{
-						WTF;
+						printf("WTF");
 					}
 				}
 				else if (mEdges[ei].t[ew] != first)
 				{
-					WTF;
+					printf("WTF");
 				}
 
 				pointlist.insert(mEdges[ei].v[0]);
@@ -503,22 +498,22 @@ void	BuildMeshFromEnveloppe::checkCoherency()
 
 				if (mFaces[mEdges[ei].t[0]].edges.size() != 3)
 				{
-					WTF;
+					printf("WTF");
 				}
 			}
 			if (pointlist.size() != 3)
 			{
-				WTF;
+				printf("WTF");
 			}
 			for (auto v : pointlist)
 			{
 				if (mVertices[v].mEdges.size() == 0)
 				{
-					WTF;
+					printf("WTF");
 				}
 				if(mVertices[v].mFlag==16)
 				{
-					WTF;
+					printf("WTF");
 				}
 			}
 		}
@@ -602,7 +597,7 @@ void	BuildMeshFromEnveloppe::setEdgesInteriorFace(MSFace& toSet, u32 fi,u32 oldf
 
 		if ((mEdges[ei].t[ew] != -1) && ((mEdges[ei].t[ew] != oldfi)))
 		{
-			WTF;
+			printf("WTF");
 		}
 
 		mEdges[ei].t[ew] = fi;
@@ -696,7 +691,7 @@ void BuildMeshFromEnveloppe::finishTriangleSetup()
 
 		if (NormSquare(f.normal) ==0.0f)
 		{
-			WTF;
+			printf("WTF");
 		}
 
 		f.normal.Normalize();
@@ -879,7 +874,7 @@ void BuildMeshFromEnveloppe::mergeTriangles()
 #ifdef _DEBUG
 					if (mEdges[ei].v[ew] != vindex)
 					{
-						WTF;
+						printf("WTF");
 					}
 #endif
 					mEdges[ei].v[ew] = mergeWith.second;
@@ -961,7 +956,7 @@ void					BuildMeshFromEnveloppe::flattenTriangles(MSFace& t,u32 tIndex, u32 from
 		}
 		else
 		{
-			WTF;
+			printf("WTF");
 		}
 	}
 
@@ -987,7 +982,7 @@ void					BuildMeshFromEnveloppe::flattenTriangles(MSFace& t,u32 tIndex, u32 from
 #ifdef _DEBUG
 	if (fromEStruct.v[fromEW] == fromV)
 	{
-		WTF;
+		printf("WTF");
 	}
 #endif
 
@@ -1292,7 +1287,7 @@ void	BuildMeshFromEnveloppe::setUpFaces()
 
 					if (e->t[ew] != -1)
 					{
-						WTF;
+						printf("WTF");
 					}
 					prevVertice = nextVertice;
 					nextVertice = e->v[1 - ew];
@@ -1300,7 +1295,7 @@ void	BuildMeshFromEnveloppe::setUpFaces()
 					currentEdgeIndexInFace++;
 					if (currentEdgeIndexInFace > 7)
 					{
-						WTF;
+						printf("WTF");
 						break;
 					}
 				}
@@ -1315,24 +1310,196 @@ void	BuildMeshFromEnveloppe::setUpFaces()
 	}
 }
 
-void	BuildMeshFromEnveloppe::firstClean()
+// remove empty vertice with no more edges
+void BuildMeshFromEnveloppe::removeEmptyVertice(u32 verticeindex, std::vector<u32>& verticelist)
 {
-
-/*	std::vector<MSVertice>		cleanedVertices;
-
-	std::vector<MSFace>			cleanedFaces;
-	
-	for (auto& f : mFaces)
+	// swap this vertice with last vertice
+	u32 lastVerticeIndex = (mVertices.size() - 1);
+	if (verticeindex != lastVerticeIndex)
 	{
+		const auto& last = mVertices.back();
+
+		for (auto ein : last.mEdges)
+		{
+			u32 ew = ein >> 31;
+			u32 ei = ein & 0x7fffffff;
+
+			auto& e = mEdges[ei];
+
+			for (size_t i = 0; i < 2; i++)
+			{
+				if (e.v[i] == lastVerticeIndex)
+				{
+					e.v[i] = verticeindex;
+					break;
+				}
+			}
+		}
+		mVertices[verticeindex] = last;
+
+		// swap in list
+		for (auto& v : verticelist)
+		{
+			if (v == lastVerticeIndex)
+				v = verticeindex;
+		}
 
 	}
-	*/
+	mVertices.pop_back();
+}
 
-	std::vector<bool>	mergedVertices;
-	mergedVertices.resize(mVertices.size(), false);
+// remove face with no more edges
+void BuildMeshFromEnveloppe::removeEmptyFace(u32 faceindex,std::vector<u32>& facelist)
+{
+	// swap this face with last face
+	u32 lastFaceIndex = (mFaces.size() - 1);
+	if (faceindex != lastFaceIndex)
+	{
+		const auto& last = mFaces.back();
 
-	std::vector<bool>	touchedEdges;
-	touchedEdges.resize(mEdges.size(), false);
+		for (auto ein: last.edges)
+		{
+			u32 ew = ein >> 31;
+			u32 ei = ein & 0x7fffffff;
+
+			auto& e = mEdges[ei];
+
+			for (size_t i=0;i<2;i++)
+			{
+				if (e.t[i] == lastFaceIndex)
+				{
+					e.t[i] = faceindex;
+					break;
+				}
+			}
+		}
+		mFaces[faceindex] = last;
+
+		// swap in list
+		for (auto& v : facelist)
+		{
+			if (v == lastFaceIndex)
+				v = faceindex;
+		}
+	}
+	mFaces.pop_back();
+
+}
+
+// remove given edge from given face
+void	BuildMeshFromEnveloppe::removeEdgeFromFace(u32 edgeindex, u32 faceindex)
+{
+	auto& f = mFaces[faceindex];
+	
+	for (auto eit = f.edges.begin(); eit != f.edges.end(); eit++)
+	{
+		u32 ein = *eit;
+		u32 ei = ein & 0x7fffffff;
+		if (ei == edgeindex)
+		{
+			f.edges.erase(eit);
+			break;
+		}
+	}
+	if(f.edges.size()==0)
+	{
+		std::vector<u32>	empty;
+		removeEmptyFace(faceindex, empty);
+	}
+}
+
+// remove given edge from given vertice
+void	BuildMeshFromEnveloppe::removeEdgeFromVertice(u32 edgeindex, u32 verticeindex)
+{
+	auto& v = mVertices[verticeindex];
+
+	for (auto vit = v.mEdges.begin(); vit != v.mEdges.end(); vit++)
+	{
+		u32 ein = *vit;
+		u32 ei = ein & 0x7fffffff;
+		if (ei == edgeindex)
+		{
+			v.mEdges.erase(vit);
+			break;
+		}
+	}
+
+}
+
+// remove edge from list after removing it from faces
+void	BuildMeshFromEnveloppe::removeEdge(u32 edgeindex, std::vector<u32>& edgelist)
+{
+	const auto& currentE = mEdges[edgeindex];
+	// remove edge from faces
+	for (size_t i = 0; i < 2; i++)
+	{
+		u32 fi = currentE.t[i];
+		removeEdgeFromFace(edgeindex, fi);
+	}
+
+	// remove edge from vertices
+	for (size_t i = 0; i < 2; i++)
+	{
+		u32 vi = currentE.v[i];
+		removeEdgeFromVertice(edgeindex, vi);
+	}
+
+	// swap last edge with this edge
+	u32 lastEdgeIndex = (mEdges.size() - 1);
+	if (edgeindex != lastEdgeIndex)
+	{
+		const auto& last = mEdges.back();
+		// swap edge reference in vertices
+		for (size_t i = 0; i < 2; i++)
+		{
+			u32 vi = last.v[i];
+			auto& v = mVertices[vi];
+			for (u32& ein : v.mEdges)
+			{
+				u32 ew = ein >> 31;
+				u32 ei = ein & 0x7fffffff;
+				if (ei == lastEdgeIndex)
+				{
+					ein = (ew << 31) | edgeindex;
+					break;
+				}
+			}
+		}
+		// swap edge reference in faces
+		for (size_t i = 0; i < 2; i++)
+		{
+			u32 fi = last.t[i];
+			auto& f = mFaces[fi];
+			for (u32& ein : f.edges)
+			{
+				u32 ew = ein >> 31;
+				u32 ei = ein & 0x7fffffff;
+				if (ei == lastEdgeIndex)
+				{
+					ein = (ew << 31) | edgeindex;
+					break;
+				}
+			}
+		}
+
+		// swap edge reference in edge list
+		for (auto& ei : edgelist)
+		{
+			if (ei == lastEdgeIndex)
+			{
+				ei = edgeindex;
+			}
+		}
+
+		mEdges[edgeindex] = last;
+	}
+	mEdges.pop_back();
+}
+
+void	BuildMeshFromEnveloppe::firstClean()
+{
+	std::vector<u32>	VerticesToRemove;
+	std::vector<u32>	EdgesToRemove;
 
 	// check nodes with multiple points
 	for (const auto n : mNodeList)
@@ -1347,6 +1514,8 @@ void	BuildMeshFromEnveloppe::firstClean()
 			std::vector<std::pair<u32, u8>> mergedGoodIntersections;
 
 			u32	mergedMask = 0;
+
+			EdgesToRemove.clear();
 
 			for (size_t vi1 = 0; vi1 < vlistSize; vi1++)
 			{
@@ -1364,27 +1533,41 @@ void	BuildMeshFromEnveloppe::firstClean()
 								// merge vi2 => vi1
 								mergedMask |= (1 << vi2);
 
-								mergedVertices[v2.first] = true;
+								u32 nexte = mVertices[v1.first].getEdgeIndexInThisList(v2.first, mEdges);
+								u32 inv2Index = mVertices[v2.first].getEdgeIndexInThisList(v1.first, mEdges);
 
 								// merge in edges
-								for (auto& ein : mVertices[v2.first].mEdges)
+								for (u32 eii = 0;eii < mVertices[v2.first].mEdges.size();eii++)
 								{
+									u32& ein = mVertices[v2.first].mEdges[(eii+ inv2Index)% mVertices[v2.first].mEdges.size()];
 									u32 ew = ein >> 31;
 									u32 ei = ein & 0x7fffffff;
 
-									touchedEdges[ei] = true;
 									auto& e = mEdges[ei];
 
 									if (e.v[ew] != v2.first)
 									{
-										printf("Problem Here");
+										printf("Problem here");
 									}
 									else
 									{
+										if (e.v[1 - ew] == v1.first)
+										{
+											EdgesToRemove.push_back(ei);
+										}
+										else
+										{
+											mVertices[v1.first].insertEdgeBefore(nexte, ein);
+										}
 										e.v[ew] = v1.first;
+										
 									}
-									mVertices[v1.first].mEdges.push_back(ein);
+									
 								}
+
+								mVertices[v2.first].mEdges.clear();
+
+								VerticesToRemove.push_back(v2.first);
 
 								v1.second |= v2.second;
 							}
@@ -1394,9 +1577,96 @@ void	BuildMeshFromEnveloppe::firstClean()
 				}
 			}
 			content.mData->mEnvelopeData->mGoodIntersectionPoint = mergedGoodIntersections;
+
+			while (EdgesToRemove.size())
+			{
+				removeEdge(EdgesToRemove.back(), EdgesToRemove);
+				EdgesToRemove.pop_back();
+			}
 		}
 		
 	}
+
+	while (VerticesToRemove.size())
+	{
+		removeEmptyVertice(VerticesToRemove.back(), VerticesToRemove);
+		VerticesToRemove.pop_back();
+	}
+
+	std::vector<u32>	facesToRemove;
+	// now remove flat faces
+	for (size_t fi =0;fi < mFaces.size();fi++)
+	{
+		if (mFaces[fi].edges.size() < 3)
+		{
+			if (mFaces[fi].edges.size() != 2)
+			{
+				printf("Problem here");
+			}
+			else
+			{
+				u32 ew[2];
+				u32 ei[2];
+
+				// find the two edges of the flat face
+				for (size_t eii=0; eii<2;eii++)
+				{
+					u32 ein = mFaces[fi].edges[eii];
+					ew[eii] = ein >> 31;
+					ei[eii] = ein & 0x7fffffff;
+				}
+
+				auto& e1 = mEdges[ei[0]];
+				auto& e2 = mEdges[ei[1]];
+
+				// replace flat face in edge1 by opposite face in edge2 
+				e1.t[ew[0]] = e2.t[1 - ew[1]];
+				// add edge2 to remove list 
+				EdgesToRemove.push_back(ei[1]);
+
+				// remove edge2 from vertices
+				for (u32 vi : e2.v)
+				{
+					removeEdgeFromVertice(ei[1], vi);
+				}
+
+				// replace edge2 by edge1 in opposite face 
+				auto& f = mFaces[e1.t[ew[0]]];
+
+				for (auto& ein : f.edges)
+				{
+					u32 lew = ein >> 31;
+					u32 lei = ein & 0x7fffffff;
+
+					if (lei == ei[1]) // edge2 was found
+					{
+						if (lew == ew[1]) 
+						{
+							printf("Problem here");
+						}
+						else
+						{
+							ein =(( (lew ^ ew[0]) & 1) << 31) | ei[0];
+						}
+						break;
+					}
+				}
+			}
+			facesToRemove.push_back(fi);
+		}
+	}
+
+	while (EdgesToRemove.size())
+	{
+		removeEdge(EdgesToRemove.back(), EdgesToRemove);
+		EdgesToRemove.pop_back();
+	}
+	while (facesToRemove.size())
+	{
+		removeEmptyFace(facesToRemove.back(), facesToRemove);
+		facesToRemove.pop_back();
+	}
+
 }
 
 void	BuildMeshFromEnveloppe::addMultipleVertices(nodeInfo& node, const v3f& goodpoint)
@@ -1969,7 +2239,7 @@ void BuildMeshFromEnveloppe::Build()
 	
 	// setup faces
 	setUpFaces();
-
+	//return;
 	// merge vertices and edges, remove useless faces
 	firstClean();
 
@@ -1977,6 +2247,8 @@ void BuildMeshFromEnveloppe::Build()
 	setUpNormals();
 
 	checkVerticeCoherency();
+
+	return;
 	// do triangulation
 	splitFaces();
 	// compute per triangle normal
