@@ -194,19 +194,24 @@ void BuildMeshFromEnveloppe::setUpInternCellEdge(u8 mask, const MSOctreeContent&
 		if (mask & (1 << i))
 		{
 			std::pair<u32, u8>* startP = node.mData->getVertexForFreeFace(1 << i);
+#ifdef _DEBUG
 			if (!startP)
 			{
 				printf("WTF");
+
 			}
+#endif
 			for (auto adj : adjacent_faces[i])
 			{
 				if (node.mData->mEmptyNeighborsFlag & adj) // this adjacent face is free
 				{
 					std::pair<u32, u8>* endP = node.mData->getVertexForFreeFace(adj);
+#ifdef _DEBUG
 					if (!endP)
 					{
 						printf("WTF");
 					}
+#endif
 					foundEdges[*startP].insert(endP->first);
 				}
 			}
@@ -292,10 +297,12 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node)
 					{
 						// add edge between currentNode & frontNode
 						std::pair<u32, u8>* endP = frontNode->getContentType().mData->getVertexForFreeFace(OctreeNodeBase::mOppositeFace[adj]);
+#ifdef _DEBUG
 						if (!endP)
 						{
 							printf("WTF");
 						}
+#endif
 						foundEdges[ip].push_back({ endP->first,0 }); // for outter vertice, don't set flag
 					}
 					else
@@ -305,25 +312,31 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node)
 						{
 							// add edge between currentNode & frontNode
 							std::pair<u32, u8>* endP = frontNode->getContentType().mData->getVertexForFreeFace(1 << i);
+#ifdef _DEBUG
 							if (!endP)
 							{
 								printf("WTF");
 							}
+#endif
 							foundEdges[ip].push_back({ endP->first,0 }); // outter vertice => don't set flag
 						}
+#ifdef _DEBUG
 						else
 						{
 							printf("WTF");
 						}
+#endif
 					}
 				}
 				else // free adjacent face, get vertex in current cell
 				{
 					std::pair<u32, u8>* endP = content.mData->getVertexForFreeFace(adj);
+#ifdef _DEBUG
 					if (!endP)
 					{
 						printf("WTF");
 					}
+#endif
 					if (endP->first == ip.first)
 					{
 						needmerge = true;
@@ -441,7 +454,7 @@ void	BuildMeshFromEnveloppe::checkVerticeCoherency()
 
 			if (triangle != nexttriangle)
 			{
-				printf("WTF");
+				printf("changed edge order\n");
 			}
 
 		}
@@ -594,12 +607,12 @@ void	BuildMeshFromEnveloppe::setEdgesInteriorFace(MSFace& toSet, u32 fi,u32 oldf
 	{
 		u32 ei = e & 0x7fffffff;
 		u32 ew = e >> 31;
-
+#ifdef _DEBUG
 		if ((mEdges[ei].t[ew] != -1) && ((mEdges[ei].t[ew] != oldfi)))
 		{
 			printf("WTF");
 		}
-
+#endif
 		mEdges[ei].t[ew] = fi;
 	}
 }
@@ -689,10 +702,12 @@ void BuildMeshFromEnveloppe::finishTriangleSetup()
 		v3f v3 = getEdgeVector(f.edges[2]); // just to setup edge direction
 		f.normal.CrossProduct(-v1, v2);
 
+#ifdef _DEBUG
 		if (NormSquare(f.normal) ==0.0f)
 		{
 			printf("WTF");
 		}
+#endif
 
 		f.normal.Normalize();
 
@@ -954,10 +969,12 @@ void					BuildMeshFromEnveloppe::flattenTriangles(MSFace& t,u32 tIndex, u32 from
 		{
 			toE = tei;
 		}
+#ifdef _DEBUG
 		else
 		{
 			printf("WTF");
 		}
+#endif
 	}
 
 	// manage from t
@@ -1284,18 +1301,21 @@ void	BuildMeshFromEnveloppe::setUpFaces()
 					e = &mEdges[currentEI& 0x7fffffff];
 
 					ew = currentEI >> 31;
-
+#ifdef _DEBUG
 					if (e->t[ew] != -1)
 					{
 						printf("WTF");
 					}
+#endif
 					prevVertice = nextVertice;
 					nextVertice = e->v[1 - ew];
 
 					currentEdgeIndexInFace++;
 					if (currentEdgeIndexInFace > 7)
 					{
+#ifdef _DEBUG
 						printf("WTF");
+#endif
 						break;
 					}
 				}
@@ -1498,8 +1518,14 @@ void	BuildMeshFromEnveloppe::removeEdge(u32 edgeindex, std::vector<u32>& edgelis
 
 void	BuildMeshFromEnveloppe::firstClean()
 {
+
+	std::vector<bool>	touchednodes;
+	touchednodes.resize(mNodeList.size(), false);
+
 	std::vector<u32>	VerticesToRemove;
 	std::vector<u32>	EdgesToRemove;
+
+	u32 nodeIndex = 0;
 
 	// check nodes with multiple points
 	for (const auto n : mNodeList)
@@ -1532,14 +1558,10 @@ void	BuildMeshFromEnveloppe::firstClean()
 							{
 								// merge vi2 => vi1
 								mergedMask |= (1 << vi2);
-
-								u32 nexte = mVertices[v1.first].getEdgeIndexInThisList(v2.first, mEdges);
-								u32 inv2Index = mVertices[v2.first].getEdgeIndexInThisList(v1.first, mEdges);
-
 								// merge in edges
 								for (u32 eii = 0;eii < mVertices[v2.first].mEdges.size();eii++)
 								{
-									u32& ein = mVertices[v2.first].mEdges[(eii+ inv2Index)% mVertices[v2.first].mEdges.size()];
+									u32& ein = mVertices[v2.first].mEdges[eii];
 									u32 ew = ein >> 31;
 									u32 ei = ein & 0x7fffffff;
 
@@ -1557,7 +1579,8 @@ void	BuildMeshFromEnveloppe::firstClean()
 										}
 										else
 										{
-											mVertices[v1.first].insertEdgeBefore(nexte, ein);
+											// edge are reordered at the end of this method
+											mVertices[v1.first].mEdges.push_back(ein);
 										}
 										e.v[ew] = v1.first;
 										
@@ -1576,6 +1599,12 @@ void	BuildMeshFromEnveloppe::firstClean()
 					mergedGoodIntersections.push_back(content.mData->mEnvelopeData->mGoodIntersectionPoint[vi1]);
 				}
 			}
+
+			if (mergedMask)
+			{
+				touchednodes[nodeIndex] = true;
+			}
+
 			content.mData->mEnvelopeData->mGoodIntersectionPoint = mergedGoodIntersections;
 
 			while (EdgesToRemove.size())
@@ -1584,6 +1613,7 @@ void	BuildMeshFromEnveloppe::firstClean()
 				EdgesToRemove.pop_back();
 			}
 		}
+		nodeIndex++;
 		
 	}
 
@@ -1667,6 +1697,49 @@ void	BuildMeshFromEnveloppe::firstClean()
 		facesToRemove.pop_back();
 	}
 
+	reorderEdgesInVertices(touchednodes);
+}
+
+// reorder edges in vertices
+void	BuildMeshFromEnveloppe::reorderEdgesInVertices(const std::vector<bool>& touchednodes)
+{
+	auto getNextEdge= [&](u32 edge)->u32 {
+		u32 ew = edge >> 31;
+		u32 ei = edge & 0x7fffffff;
+
+		auto& currentf=mFaces[mEdges[ei].t[1-ew]];
+		
+		edge ^= (1 << 31);
+
+		u32 inFaceIndex = 0;
+		for (u32 e : currentf.edges)
+		{
+			if (e == edge)
+				break;
+			inFaceIndex++;
+		}
+
+		inFaceIndex ++;
+		inFaceIndex = inFaceIndex % currentf.edges.size();
+
+		return currentf.edges[inFaceIndex];
+	};
+
+	// reorder edges in vertices
+	
+	// for each vertice in node
+	for(auto& v : mVertices)
+	{
+		auto edgeList = std::move(v.mEdges);
+
+		u32 currentEdge = edgeList[0];
+		do
+		{
+			v.mEdges.push_back(currentEdge);
+			currentEdge = getNextEdge(currentEdge);
+
+		} while (currentEdge != edgeList[0]);
+	}
 }
 
 void	BuildMeshFromEnveloppe::addMultipleVertices(nodeInfo& node, const v3f& goodpoint)
@@ -2248,7 +2321,7 @@ void BuildMeshFromEnveloppe::Build()
 
 	checkVerticeCoherency();
 
-	return;
+	//return;
 	// do triangulation
 	splitFaces();
 	// compute per triangle normal

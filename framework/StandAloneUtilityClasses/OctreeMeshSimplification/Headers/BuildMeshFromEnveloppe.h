@@ -165,6 +165,9 @@ protected:
 	void	removeEdgeFromFace(u32 edgeindex, u32 faceindex);
 	// remove edge from list after removing it from faces
 	void	removeEdge(u32 edgeindex,std::vector<u32>& edgelist);
+	// reorder edges in vertices
+	void	reorderEdgesInVertices(const std::vector<bool>&	touchednodes);
+
 	void	firstClean();
 	void	splitFaces();
 	// compute triangle normal and setup edge triangle references
