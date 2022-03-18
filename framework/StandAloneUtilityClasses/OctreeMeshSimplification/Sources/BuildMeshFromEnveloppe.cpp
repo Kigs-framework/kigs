@@ -271,7 +271,7 @@ std::vector<std::pair<v3f, v3f>>	BuildMeshFromEnveloppe::getEdges() const
 	}
 	return edgelist;
 }
-
+#pragma optimize("",off)
 void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
@@ -348,7 +348,7 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node)
 		
 	}
 
-	if (needmerge) // merge separate free faces with unique vertice
+	/*if (needmerge) // merge separate free faces with unique vertice
 	{
 		std::map<std::pair<u32, u8>, std::vector<std::pair<u32, u8>>>	mergedEdges;
 		std::set<std::pair<u32, u8>> treated;
@@ -396,7 +396,7 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node)
 		}
 
 		foundEdges = mergedEdges;
-	}
+	}*/
 	
 	// add edges for each point separately 
 	
@@ -411,6 +411,7 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node)
 		}
 	}
 }
+#pragma optimize("",on)
 
 // split quad faces
 void	BuildMeshFromEnveloppe::splitFaces()
@@ -705,7 +706,7 @@ void BuildMeshFromEnveloppe::finishTriangleSetup()
 #ifdef _DEBUG
 		if (NormSquare(f.normal) ==0.0f)
 		{
-			printf("WTF");
+			printf("flat triangle found");
 		}
 #endif
 
@@ -1260,6 +1261,7 @@ bool	BuildMeshFromEnveloppe::isLinearMergeValid(MSVertice& v, u32 endV, u32 inte
 	return true;
 }
 
+#pragma optimize("",off)
 // for each free face, check if an edge exists with a neighbor not free face
 void	BuildMeshFromEnveloppe::setUpFaces()
 {
@@ -1301,21 +1303,21 @@ void	BuildMeshFromEnveloppe::setUpFaces()
 					e = &mEdges[currentEI& 0x7fffffff];
 
 					ew = currentEI >> 31;
-#ifdef _DEBUG
+//#ifdef _DEBUG
 					if (e->t[ew] != -1)
 					{
 						printf("WTF");
 					}
-#endif
+//#endif
 					prevVertice = nextVertice;
 					nextVertice = e->v[1 - ew];
 
 					currentEdgeIndexInFace++;
 					if (currentEdgeIndexInFace > 7)
 					{
-#ifdef _DEBUG
+//#ifdef _DEBUG
 						printf("WTF");
-#endif
+//#endif
 						break;
 					}
 				}
@@ -1329,6 +1331,7 @@ void	BuildMeshFromEnveloppe::setUpFaces()
 		vindex++;
 	}
 }
+#pragma optimize("",on)
 
 // remove empty vertice with no more edges
 void BuildMeshFromEnveloppe::removeEmptyVertice(u32 verticeindex, std::vector<u32>& verticelist)
@@ -1516,8 +1519,25 @@ void	BuildMeshFromEnveloppe::removeEdge(u32 edgeindex, std::vector<u32>& edgelis
 	mEdges.pop_back();
 }
 
+#pragma optimize("",off)
 void	BuildMeshFromEnveloppe::firstClean()
 {
+
+
+	auto isLink = [&](u32 v1,u32 v2)->bool {
+
+		for (auto& ein : mVertices[v1].mEdges)
+		{
+			u32 ew = ein >> 31;
+			u32 ei = ein & 0x7fffffff;
+
+			if (mEdges[ei].v[1-ew] == v2)
+			{
+				return true;
+			}
+		}
+		return false;
+	};
 
 	std::vector<bool>	touchednodes;
 	touchednodes.resize(mNodeList.size(), false);
@@ -1530,11 +1550,23 @@ void	BuildMeshFromEnveloppe::firstClean()
 	// check nodes with multiple points
 	for (const auto n : mNodeList)
 	{
+		
+		if ( (n->coord == v3f(259, 27, 3)) 
+			|| (n->coord == v3f(125, 27, 3)))
+		{
+			nodeIndex++;
+			continue;
+		}
+
 		MeshSimplificationOctreeNode* currentNode = n->getNode<MeshSimplificationOctreeNode>();
 		const auto& content = currentNode->getContentType();
 
 		const u32 vlistSize = content.mData->mEnvelopeData->mGoodIntersectionPoint.size();
 		
+		if (vlistSize == 5)
+		{
+			printf("");
+		}
 		if (vlistSize >1)
 		{
 			std::vector<std::pair<u32, u8>> mergedGoodIntersections;
@@ -1556,43 +1588,49 @@ void	BuildMeshFromEnveloppe::firstClean()
 							auto& v2 = content.mData->mEnvelopeData->mGoodIntersectionPoint[vi2];
 							if (DistSquare(mVertices[v1.first].mV, mVertices[v2.first].mV) < 0.001f)
 							{
-								// merge vi2 => vi1
-								mergedMask |= (1 << vi2);
-								// merge in edges
-								for (u32 eii = 0;eii < mVertices[v2.first].mEdges.size();eii++)
+								if (isLink(v1.first, v2.first))
 								{
-									u32& ein = mVertices[v2.first].mEdges[eii];
-									u32 ew = ein >> 31;
-									u32 ei = ein & 0x7fffffff;
-
-									auto& e = mEdges[ei];
-
-									if (e.v[ew] != v2.first)
+									
+									// merge vi2 => vi1
+									mergedMask |= (1 << vi2);
+									// merge in edges
+									for (u32 eii = 0; eii < mVertices[v2.first].mEdges.size(); eii++)
 									{
-										printf("Problem here");
-									}
-									else
-									{
-										if (e.v[1 - ew] == v1.first)
+										u32& ein = mVertices[v2.first].mEdges[eii];
+										u32 ew = ein >> 31;
+										u32 ei = ein & 0x7fffffff;
+
+										auto& e = mEdges[ei];
+
+#ifdef _DEBUG
+										if (e.v[ew] != v2.first)
 										{
-											EdgesToRemove.push_back(ei);
+											printf("Problem here");
 										}
 										else
+#endif
 										{
-											// edge are reordered at the end of this method
-											mVertices[v1.first].mEdges.push_back(ein);
+											if (e.v[1 - ew] == v1.first)
+											{
+												EdgesToRemove.push_back(ei);
+											}
+											else
+											{
+												// edge are reordered at the end of this method
+												mVertices[v1.first].mEdges.push_back(ein);
+											}
+											e.v[ew] = v1.first;
+
 										}
-										e.v[ew] = v1.first;
-										
+
 									}
-									
+
+									mVertices[v2.first].mEdges.clear();
+
+									VerticesToRemove.push_back(v2.first);
+
+									v1.second |= v2.second;
 								}
-
-								mVertices[v2.first].mEdges.clear();
-
-								VerticesToRemove.push_back(v2.first);
-
-								v1.second |= v2.second;
 							}
 						}
 					}
@@ -1629,9 +1667,12 @@ void	BuildMeshFromEnveloppe::firstClean()
 	{
 		if (mFaces[fi].edges.size() < 3)
 		{
+
 			if (mFaces[fi].edges.size() != 2)
 			{
+#ifdef _DEBUG
 				printf("Problem here");
+#endif
 			}
 			else
 			{
@@ -1738,9 +1779,19 @@ void	BuildMeshFromEnveloppe::reorderEdgesInVertices(const std::vector<bool>& tou
 			v.mEdges.push_back(currentEdge);
 			currentEdge = getNextEdge(currentEdge);
 
+			if (v.mEdges.size() > edgeList.size())
+			{
+
+				printf("problem here\n");
+
+			}
+
 		} while (currentEdge != edgeList[0]);
 	}
 }
+
+
+#pragma optimize("",on)
 
 void	BuildMeshFromEnveloppe::addMultipleVertices(nodeInfo& node, const v3f& goodpoint)
 {

@@ -316,6 +316,9 @@ MeshSimplification::MeshSimplification(const std::vector<u32>& indices, const st
 
 void MeshSimplification::rebuildMesh(u32 groupIndex, std::vector<nodeInfo>& envelopenodes)
 {
+	if (groupIndex != 6)
+		return;
+
 	groupIndex += 2;
 	groupIndex *= 2;
 
