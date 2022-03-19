@@ -147,7 +147,7 @@ void	MeshSimplification::adjustPrecision(const BBox& bbox, float& precision)
 		poweroftwodecal++;
 	}
 
-	while (poweroftwodecal > 8)
+	while (poweroftwodecal > mMaxOctreeDepth)
 	{
 		poweroftwodecal--;
 		precision *= 2.0f;
@@ -301,7 +301,7 @@ void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::
 }
 
 // for collisions, normals and materials does not matter
-MeshSimplification::MeshSimplification(const std::vector<u32>& indices, const std::vector<v3f>& vertices,float precision )
+MeshSimplification::MeshSimplification(const std::vector<u32>& indices, const std::vector<v3f>& vertices,float precision , u32 maxOctreeDepth) :mMaxOctreeDepth(maxOctreeDepth)
 {
 	initOctree(indices, vertices, precision);
 	
@@ -316,9 +316,6 @@ MeshSimplification::MeshSimplification(const std::vector<u32>& indices, const st
 
 void MeshSimplification::rebuildMesh(u32 groupIndex, std::vector<nodeInfo>& envelopenodes)
 {
-	if (groupIndex != 6)
-		return;
-
 	groupIndex += 2;
 	groupIndex *= 2;
 

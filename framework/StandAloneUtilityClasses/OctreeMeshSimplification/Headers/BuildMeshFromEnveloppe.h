@@ -103,32 +103,34 @@ protected:
 
 	void	separateVertices(const MSOctreeContent& node, const nodeInfo& n);
 
-	u32	addEdge(u32 v1, u32 v2,bool checkExisting=true)
+
+	// add edge without cache
+	u32	addEdge(u32 v1, u32 v2)
 	{
-		const std::vector< u32>& searchExisting = mEdgeMap[v1 ^ v2];
-
-		if (searchExisting.size() && checkExisting)
-		{
-			for (const auto& i : searchExisting)
-			{
-				if ((mEdges[i].v[0] == v1) && (mEdges[i].v[1] == v2)) 
-				{
-					return i;
-				}
-				if ((mEdges[i].v[1] == v1) && (mEdges[i].v[0] == v2))
-				{
-					return i | (1 << 31); 
-				}
-			}
-		}
-
 		mEdges.push_back({ v1,v2 });
-		mEdgeMap[v1 ^ v2].push_back((u32)(mEdges.size() - 1));
 		return (u32)(mEdges.size() - 1);
 	}
 
-	// key = v1^v2 , value = list of index in  mEdges
-	std::map < u32, std::vector< u32>>	mEdgeMap;
+	// add edge searching for duplicates in given cache
+	u32	addEdge(u32 v1, u32 v2, std::map < u32, std::vector<u32>>& edgeMap)
+	{
+		u32 key = (v1 < v2) ? (v1 ^ (v2 >> 3)) : (v2 ^ (v1 >> 3));
+		const std::vector<u32>& searchExisting = edgeMap[key];
+		for (const auto& i : searchExisting)
+		{
+			if ((mEdges[i].v[0] == v1) && (mEdges[i].v[1] == v2)) 
+			{
+				return i;
+			}
+			if ((mEdges[i].v[1] == v1) && (mEdges[i].v[0] == v2))
+			{
+				return i | (1 << 31); 
+			}
+		}
+		edgeMap[key].push_back((u32)(mEdges.size()));
+		mEdges.push_back({ v1,v2 });
+		return (u32)(mEdges.size() - 1);
+	}
 
 	std::vector<MSVertice>		mVertices;
 	std::vector<MSFace>			mFaces;
@@ -151,7 +153,7 @@ protected:
 
 	void	addMultipleVertices(nodeInfo& node, const v3f& goodpoint);
 	void	setUpVertices(nodeInfo& node);
-	void	setUpEdges(nodeInfo node);
+	void	setUpEdges(nodeInfo node, std::map < u32, std::vector<u32>>& edgeMap);
 	void	setUpNormals();
 	void	setUpFaces();
 
@@ -166,9 +168,15 @@ protected:
 	// remove edge from list after removing it from faces
 	void	removeEdge(u32 edgeindex,std::vector<u32>& edgelist);
 	// reorder edges in vertices
-	void	reorderEdgesInVertices(const std::vector<bool>&	touchednodes);
+	void	reorderEdgesInVertices();
+
+	void	removeFlatFaces();
+	void	DetectFlatTriangles(const std::vector<u32>& verticesIndex);
 
 	void	firstClean();
+
+	std::vector<u32>	mFinalMergedVIndex;
+	void	finalClean();
 	void	splitFaces();
 	// compute triangle normal and setup edge triangle references
 	void	finishTriangleSetup();

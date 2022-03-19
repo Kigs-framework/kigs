@@ -28,10 +28,11 @@ protected:
 	std::vector<MSSurfaceStruct>	mAllSurfaces;
 	std::vector<u32>			mTriangleSurfaceIndex;
 	
-	u32							mGroupCount;
-
 	v3f							mOctreeShift;
 	v3f							mObjectShift;
+
+	u32							mGroupCount;
+	u32							mMaxOctreeDepth = 8;
 
 	class surfaceListBuilder
 	{
@@ -148,7 +149,7 @@ public:
 	}
 
 
-	MeshSimplification(const std::vector<u32>&	indices,const std::vector<v3f>& vertices, float precision);
+	MeshSimplification(const std::vector<u32>&	indices,const std::vector<v3f>& vertices, float precision, u32 maxOctreeDepth=8);
 	~MeshSimplification();
 };
 
