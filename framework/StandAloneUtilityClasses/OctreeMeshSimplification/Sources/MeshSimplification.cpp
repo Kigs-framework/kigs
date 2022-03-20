@@ -167,8 +167,9 @@ void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::
 	}
 
 	adjustPrecision(b,precision);
-
+#ifdef _DEBUG
 	printf("adjusted precision : %f\n", precision);
+#endif
 
 	// now compute best switch to apply to avoid segment on octree cutting planes
 	mOctreeShift.Set(0.0f, 0.0f, 0.0f);
