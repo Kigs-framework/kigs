@@ -53,6 +53,24 @@ using namespace winrt::Windows::System::Profile;
 
 #include <Windows.h>
 
+void DEBUG_LOG(const char* txt)
+{
+	static FILE* file = nullptr;
+	if (!file)
+	{
+		auto local_folder = winrt::Windows::Storage::ApplicationData::Current().LocalFolder();
+		auto path = to_utf8(local_folder.Path().c_str());
+		path += "//startup.log";
+		file = fopen(path.c_str(), "ab");
+	}
+	if (!file) return;
+	fwrite(txt, 1, strlen(txt), file);
+	fflush(file);
+	//fclose(file);
+}
+
+#define DEBUG_LOG_LINE DEBUG_LOG(__FUNCTION__ "@" __FILE__ ":" ApplicationName(__LINE__) "\n");
+
 void print_context(const char* iden)
 {
 	APTTYPE type;
@@ -68,6 +86,11 @@ void print_context(const char* iden)
 
 void wupmain()
 {
+	time_t tc = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	char time_output[512];
+	strftime(time_output, 512, "\nStartup on %d/%m/%y %H:%M:%S\n", std::localtime(&tc));
+	DEBUG_LOG(time_output);
+	DEBUG_LOG_LINE;
 	winrt::init_apartment();
 	CoreApplication::Run(winrt::make<App>());
 	winrt::uninit_apartment();
@@ -84,11 +107,13 @@ inline float ConvertDipsToPixels(float dips, float dpi)
 // The first method called when the IFrameworkView is being created.
 void App::Initialize(CoreApplicationView const& applicationView)
 {	
+	DEBUG_LOG_LINE;
 	StorageFileFileAccess::setMainThreadID();
 	using namespace winrt::Windows::ApplicationModel::Activation;
 
 	applicationView.Activated([this](CoreApplicationView const& view, IActivatedEventArgs args)
 	{
+		DEBUG_LOG_LINE;
 		if (args.Kind() == ActivationKind::File)
 		{
 			auto file_args = args.as<FileActivatedEventArgs>();
@@ -120,6 +145,7 @@ void App::Initialize(CoreApplicationView const& applicationView)
 
 void App::OnHolographicDisplayIsAvailableChanged(winrt::Windows::Foundation::IInspectable, winrt::Windows::Foundation::IInspectable)
 {
+	DEBUG_LOG_LINE;
 	HolographicDisplay defaultHolographicDisplay = HolographicDisplay::GetDefault();
 	if (defaultHolographicDisplay)
 	{
@@ -132,24 +158,26 @@ void App::OnHolographicDisplayIsAvailableChanged(winrt::Windows::Foundation::IIn
 		return;
 	}
 
-
+	DEBUG_LOG_LINE;
 	mSpatialLocator.LocatabilityChanged([](SpatialLocator locator, auto object)
 	{
 		auto loca = locator.Locatability();
 		kigsprintf("Locatibility: %d\n", int(loca));
 	});
 	mStationaryReferenceFrame = mSpatialLocator.CreateStationaryFrameOfReferenceAtCurrentLocation();
-	
+	DEBUG_LOG_LINE;
 	auto family = AnalyticsInfo::VersionInfo().DeviceFamily();
 	if (family != L"Windows.Holographic") gIsVR = true;
 }
 
 void App::SetWindow(CoreWindow const& window)
 {
+	DEBUG_LOG_LINE;
 	mWindow = window;
 
 	window.VisibilityChanged([this](CoreWindow const& window, VisibilityChangedEventArgs args)
 	{
+		DEBUG_LOG_LINE;
 		mWindowVisible = args.Visible();
 		if (KigsCore::Instance() && KigsCore::Instance()->GetCoreApplication())
 			KigsCore::Instance()->GetCoreApplication()->EmitSignal("UWP_VisibilityChangedEvent", (bool)mWindowVisible);
@@ -157,6 +185,7 @@ void App::SetWindow(CoreWindow const& window)
 	
 	window.Closed([this](CoreWindow const& window, CoreWindowEventArgs args)
 	{
+		DEBUG_LOG_LINE;
 		mWindowClosed = true;
 	});
 
@@ -191,21 +220,23 @@ void App::SetWindow(CoreWindow const& window)
 
 void App::Load(winrt::hstring const& entryPoint)
 {
+	DEBUG_LOG_LINE;
 }
 
 void App::Run()
 {
+	DEBUG_LOG_LINE;
 	print_context("Run");
 
 	setlocale(LC_NUMERIC, "C");
 	KigsCore::Init();
-
+	DEBUG_LOG_LINE;
 	CoreWindow window = CoreWindow::GetForCurrentThread();
 	CoreDispatcher dispatcher = window.Dispatcher();
 
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(KIGS_APPLICATION_CLASS, ApplicationName(KIGS_APPLICATION_CLASS));
 	SP<CoreBaseApplication> app = KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
-
+	DEBUG_LOG_LINE;
 #ifdef INIT_DEFAULT_MODULES
 #ifdef BASE_DATA_PATH
 	app->InitApp(BASE_DATA_PATH, true);
@@ -217,7 +248,7 @@ void App::Run()
 	app->InitApp(0, false);
 #endif //INIT_DEFAULT_MODULES
 
-
+	DEBUG_LOG_LINE;
 	while (!mWindowClosed && (!app->NeedExit()))
 	{
 		if (mWindowVisible)
@@ -230,15 +261,17 @@ void App::Run()
 			CoreWindow::GetForCurrentThread().Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
 		}
 	}
-
+	DEBUG_LOG_LINE;
 	app->CloseApp();
 	app.reset();
 	KigsCore::Close();
+	DEBUG_LOG_LINE;
 }
 
 void App::Uninitialize()
 {
 	mWindowClosed = true;
+	DEBUG_LOG_LINE;
 }
 
 void App::Swap()
