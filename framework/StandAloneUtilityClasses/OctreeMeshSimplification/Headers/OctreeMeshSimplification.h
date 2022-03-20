@@ -126,7 +126,7 @@ protected:
 
 		~ContentData()
 		{
-			if (!mEnvelopeData)
+			if (mEnvelopeData)
 				delete mEnvelopeData;
 
 			mEnvelopeData = nullptr;
@@ -179,13 +179,22 @@ protected:
 		u8	mEmptyNeighborsFlag = 0;
 		u8	mFreeFaceCount = 0;
 		u8  mOtherFlags = 0;
-		struct additionnalEnvelopeData
+		class additionnalEnvelopeData
 		{
+		public:
 			std::vector<std::pair<u32, MeshSimplificationOctreeNode*>>	mNeighbors;
 			// pair.first = index in BuildMeshFromEnveloppe mVertices  and pair.second is freeface mask
 			std::vector<std::pair<u32, u8>>								mGoodIntersectionPoint;
 			std::map<v3f, std::set<u32>>								mPerVSurfaces;
 			std::set<u32>												mAllSurfaces;
+
+			~additionnalEnvelopeData()
+			{
+				mNeighbors.clear();
+				mGoodIntersectionPoint.clear();
+				mPerVSurfaces.clear();
+				mAllSurfaces.clear();
+			}
 		};
 		additionnalEnvelopeData* mEnvelopeData = nullptr;
 	};
@@ -285,6 +294,11 @@ public:
 
 	DECLARE_CLASS_INFO(MeshSimplificationOctree, OctreeBase<CoreModifiable>, Core);
 	DECLARE_CONSTRUCTOR(MeshSimplificationOctree);
+
+	virtual ~MeshSimplificationOctree()
+	{
+		
+	}
 
 	// set vertex list and transform it in octree coordinate
 	void			setVertexList(const std::vector<v3f>& vlist);

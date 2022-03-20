@@ -38,7 +38,7 @@ public:
 	class MSVertice
 	{
 	public:
-		MSVertice(const v3f& v, nodeInfo d) : mV(v), mOctreeNode(d)
+		MSVertice(const v3f& v, const nodeInfo* d) : mV(v), mOctreeNode(d)
 		{
 			mEdges.clear();
 		}
@@ -89,20 +89,17 @@ public:
 		std::vector<u32>	mEdges;
 		v3f	mV;
 		v3f mN;
-		nodeInfo			mOctreeNode;
+		const nodeInfo*			mOctreeNode;
 		// last step : flag point on plane (all surrounding triangles have the same normal) or point on 2 planes intersection
 		u32 mFlag=0;
 	};
 protected:
 	// add given vertice and return index
-	unsigned int addVertice(const v3f& v, nodeInfo d)
+	unsigned int addVertice(const v3f& v, const nodeInfo* d)
 	{
 		mVertices.push_back({ v,d });
 		return (unsigned int)(mVertices.size() - 1);
 	}
-
-	void	separateVertices(const MSOctreeContent& node, const nodeInfo& n);
-
 
 	// add edge without cache
 	u32	addEdge(u32 v1, u32 v2)
@@ -222,8 +219,6 @@ protected:
 
 	// all cases
 	void manageSeparateFreeFaces(const MSOctreeContent& node, const nodeInfo& n);
-	void validateGoodIntersectionPoint(const MSOctreeContent& node, const nodeInfo& n);
-	void setUpInternCellEdge(u8 mask,const MSOctreeContent& node, std::map<std::pair<u32, u8>, std::set<u32>>& foundEdges);
 
 	u32 getFaceIndex(u32 facemask)
 	{

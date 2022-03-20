@@ -45,7 +45,6 @@ public:
 	}
 
 	virtual void	initChildrenArray() = 0;
-	virtual void	destroyChildrenArray() = 0;
 	virtual bool	isEmpty() const = 0;
 
 	// try to split node ( create 8 children )
@@ -96,7 +95,7 @@ public:
 		// destroy sons
 		if (mChildren)
 		{
-			destroyChildrenArray();
+			delete[] mChildren[0];
 			delete[] mChildren;
 		}
 		mChildren = nullptr;
@@ -229,15 +228,12 @@ public:
 
 	void	initChildrenArray() override
 	{
-		OctreeNode<ContentType>*	children= new OctreeNode<ContentType>[8];
+		OctreeNode<ContentType>* children= new OctreeNode<ContentType>[8]();
+
 		for (int i = 0; i < 8; i++)
 		{
 			mChildren[i] = &(children[i]);
 		}
-	}
-	void	destroyChildrenArray() override
-	{
-		delete[] mChildren[0];
 	}
 
 	virtual bool	isEmpty() const override
@@ -271,7 +267,7 @@ struct nodeInfo
 	}
 
 	template<typename T>
-	T* getNode() const { return static_cast<T*>(node); }
+	inline T* getNode() const { return static_cast<T*>(node); }
 };
 
 // base class for octree with templated inherited class
@@ -290,6 +286,12 @@ public:
 		printf("allocated nodes : %d\n", OctreeNodeBase::getCurrentAllocatedNodeCount());
 	}
 #endif
+
+	virtual ~OctreeBase()
+	{
+		delete mRootNode;
+		mRootNode = nullptr;
+	}
 
 	// return max depth in octree
 	unsigned int getMaxDepth()

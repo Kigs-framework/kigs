@@ -168,6 +168,8 @@ void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::
 
 	adjustPrecision(b,precision);
 
+	printf("adjusted precision : %f\n", precision);
+
 	// now compute best switch to apply to avoid segment on octree cutting planes
 	mOctreeShift.Set(0.0f, 0.0f, 0.0f);
 
@@ -245,15 +247,10 @@ void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::
 		triangleIndex++;
 	}
 
-	// TODO
-	// probably a way here to merge cells (not border cells where all 8 sons contains only 1 unique surface or are empty )
-
-
 	// fill empty cases outside of the object
 	// empty cases will be "flaged" with 2
 	// retrieve envelope cell list
 	mEnvelopenodelist = mOctree->floodFillEmpty(2);
-
 
 	// clear visited neighbor flag on nodes
 	{
@@ -289,6 +286,23 @@ void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::
 		{
 			n.getNode<MeshSimplificationOctreeNode>()->getContentType().mData->mOtherFlags = 1;
 		}
+	}
+
+	// clear useless data if not envelope cell (free some memory)
+	{
+
+		auto clearDataIfNotEnveloppe = [](OctreeNodeBase* currentNode)->void
+		{
+			auto contentdata = static_cast<MeshSimplificationOctreeNode*>(currentNode)->getContentType().mData;
+			if(contentdata)
+			if (contentdata->mOtherFlags != 1)
+			{
+				contentdata->mVertices.clear();
+			}
+			
+		};
+
+		MeshSimplificationOctree::applyOnAllNodes clearData(*mOctree, clearDataIfNotEnveloppe);
 	}
 
 	// check for empty neighbor for each node and set neighbors
