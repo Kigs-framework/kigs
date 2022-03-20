@@ -1718,16 +1718,26 @@ bool CoreModifiable::removeItem(const CMSP& item)
 	auto ref = item; 
 	bool found=false, res=false;
 
+	size_t currentIndex = 0;
 	for (auto it = mItems.begin(); it != mItems.end();)
 	{
 		if (it->mItem == ref)
 		{
-			
-			it = mItems.erase(it);
+			// swap item with last item (for performance issue)
+			size_t lastOne = mItems.size() - 1;
+			if (currentIndex != lastOne)
+			{
+				mItems[currentIndex] = mItems.back();
+			}
+			mItems.pop_back();
+			it = mItems.begin()+ currentIndex;
 			found = true;
 		}
 		else
+		{
+			++currentIndex;
 			++it;
+		}
 	}
 	
 	if (found)
@@ -2998,10 +3008,14 @@ CMSP CoreModifiable::GetFirstSonByName(KigsID cid, const std::string &name, bool
 {
 	GetMutex().lock_shared();
 	kigs_defer{ GetMutex().unlock_shared(); };
+	KigsID nameId(name);
 	for (auto& son : getItems())
 	{
-		if (son.mItem->isSubType(cid) && name == son.mItem->getName())
-			return son.mItem;
+		if (son.mItem->isSubType(cid) && nameId == son.mItem->getNameID())
+		{
+			if(name== son.mItem->getName())
+				return son.mItem;
+		}
 	}
 	if (recursive)
 	{
