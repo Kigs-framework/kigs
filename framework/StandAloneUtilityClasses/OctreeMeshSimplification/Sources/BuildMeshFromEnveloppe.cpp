@@ -243,7 +243,8 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node, std::map< u32, std::vecto
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
 	const auto& content = currentNode->getContentType();
 
-	std::map<std::pair<u32, u8>, std::vector<std::pair<u32, u8>>>	foundEdges;
+	// key = start vertice index, val = end vertice index + inner corner flag
+	std::map<u32, std::vector<std::pair<u32, u8>>>	foundEdges;
 
 	// treat each face separately
 	for (u32 i = 0; i < 6; i++)
@@ -251,8 +252,8 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node, std::map< u32, std::vecto
 		// this face is free and concern current point
 		if (content.mData->mEmptyNeighborsFlag & (1 << i)) // this face is free
 		{
-			std::pair<u32, u8> ip = *(content.mData->getVertexForFreeFace(1 << i));
-			ip.second = 1 << i;
+			u32 ip = (content.mData->getVertexForFreeFace(1 << i))->first;
+
 			for (auto adj : adjacent_faces[i])
 			{
 				if (!(content.mData->mEmptyNeighborsFlag & adj)) // this adjacent face is not free
@@ -268,7 +269,7 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node, std::map< u32, std::vecto
 							printf("WTF");
 						}
 #endif
-						foundEdges[ip].push_back({ endP->first,0 }); // for outter vertice, don't set flag
+						foundEdges[ip].push_back({ endP->first,1 }); // inner corner
 					}
 					else
 					{
@@ -283,7 +284,7 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node, std::map< u32, std::vecto
 								printf("WTF");
 							}
 #endif
-							foundEdges[ip].push_back({ endP->first,0 }); // outter vertice => don't set flag
+							foundEdges[ip].push_back({ endP->first,0 }); // not inner corner
 						}
 #ifdef _DEBUG
 						else
@@ -303,7 +304,7 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node, std::map< u32, std::vecto
 					}
 #endif
 
-					foundEdges[ip].push_back({ endP->first,adj });
+					foundEdges[ip].push_back({ endP->first,0 }); // not inner corner
 				}
 			}
 		}
@@ -316,9 +317,17 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node, std::map< u32, std::vecto
 		for (auto& endp : startp.second)
 		{
 			// add edge to edge list
-			u32 edgeindex = addEdge(startp.first.first, endp.first, edgeMap);
+			u32 edgeindex = addEdge(startp.first, endp.first, edgeMap);
+
+			// flag edge if needed
+			if (endp.second)
+			{
+				mEdges[edgeindex & 0x7fffffff].flags |= 2;
+			}
+
 			// and push it in the right order for later face building
-			mVertices[startp.first.first].mEdges.push_back(edgeindex);
+			mVertices[startp.first].mEdges.push_back(edgeindex);
+			
 		}
 	}
 }
@@ -678,7 +687,7 @@ void	BuildMeshFromEnveloppe::checkVOnCoplanarTriangles(MSVertice& v)
 
 		if (fabsf(Dot(n1, n2) - 1.0f) >= 0.001f) //edge
 		{
-			currentE.FlagAsOnCorner = true;
+			currentE.flags |= 1;
 			sharpEdges.push_back(eii);
 		}
 
@@ -1081,7 +1090,7 @@ std::pair<u32, u32> 	BuildMeshFromEnveloppe::findBestLinearMerge(u32 vindex)
 
 		const MSEdge& currentE = mEdges[ei];
 
-		if (currentE.FlagAsOnCorner==false)
+		if ((currentE.flags&1)==0)
 		{
 			internEdgeIndex++;
 			continue;
@@ -1140,7 +1149,7 @@ bool	BuildMeshFromEnveloppe::isLinearMergeValid(MSVertice& v, u32 endV, u32 inte
 		MSEdge& current = mEdges[ei];
 		v3f edgeDir = mVertices[current.v[1 - ew]].mV - mVertices[endV].mV;
 		newVectors[listIndex].push_back(edgeDir);
-		if (current.FlagAsOnCorner)
+		if (current.flags&1) // corner edge
 		{
 			listIndex++; 
 			if (listIndex > 1) // if more than two edges are on corner, there's a problem here
@@ -1499,6 +1508,156 @@ void	BuildMeshFromEnveloppe::finalClean()
 	
 	DetectFlatTriangles(mFinalMergedVIndex);
 
+}
+
+void	BuildMeshFromEnveloppe::manageInnerCorners()
+{
+	// search inner corner edges
+	u32 edgeindex = 0;
+	for (auto& e : mEdges)
+	{
+		if (e.flags & 2) // this one is a good candidate
+		{
+			// retreive two edges to "link"
+			v3f P[2];
+			v3f	inoutvector[2];
+			const nodeInfo* nodes[2];
+
+			bool notvalid = false;
+
+			for (size_t i = 0; i < 2; i++)
+			{
+				u32 ei=mVertices[e.v[i]].getLocalEdgeIndex(edgeindex);
+
+				P[i] = mVertices[e.v[i]].mV;
+
+				u32 ecount = mVertices[e.v[i]].mEdges.size();
+
+				// can probably search for the "best opposite vector" here 
+				if (mVertices[e.v[i]].mEdges.size() != 4)
+				{
+					notvalid = true;
+					break;
+				}
+				
+				u32 Linkededges = mVertices[e.v[i]].mEdges[(ei+ ecount/2)% ecount];
+				u32 lew = Linkededges >> 31;
+				u32 lei = Linkededges & 0x7fffffff;
+
+				inoutvector[i] = mVertices[mEdges[lei].v[1-lew]].mV - mVertices[e.v[i]].mV;
+				nodes[i] = mVertices[e.v[i]].mOctreeNode;
+			}
+
+			if (notvalid)
+			{
+				edgeindex++;
+				continue;
+			}
+
+			v3f DP(P[0] - P[1]);
+
+			v3f v1(inoutvector[0]);
+			v1.Normalize();
+			v3f v2(inoutvector[1]);
+			v2.Normalize();
+
+			// perp vector
+			v3f perp;
+			perp.CrossProduct(v1, v2);
+
+			float perpn = NormSquare(perp);
+			if (perpn>0.4f) // only if enough angle
+			{
+				// D1 = P[0] + j.V1
+				// D2 = P[1] + k.V2
+				// DP = P[0] - P[1]
+				// Vt = P[0] + j.V1 - P[1] - k.V2 = DP + j.V1 -k.V2
+
+				// we want to find j & k so that Vt.V1 = 0 & Vt.V2 = 0 (perpendicular to both)
+				// DP.V1 + j.V1.V1 - k.V2.V1 = 0
+				// DP.V2 + j.V1.V2 - k.V2.V2 = 0
+				// V1.V1 = V2.V2 =1
+				//  { DP.V1 + j - k.V2.V1 = 0
+				//  { DP.V2 + j.V1.V2 - k = 0
+				//
+				//  multiply first equation with -V1.V2
+				//  { -(DP.V1).(V1.V2) - j.V1.V2 + k.(V2.V1)^2 = 0
+				//  { DP.V2 + j.V1.V2 - k = 0
+				// add the two equations to eliminate j
+				//  DP.V2 - (DP.V1).(V1.V2) + k.(V2.V1)^2 - k = 0
+				// k.((V2.V1)^2 - 1) = (DP.V1).(V1.V2) - DP.V2
+				// k = ((DP.V1).(V1.V2) - DP.V2) / ((V2.V1)^2 - 1)
+
+				float k, j;
+				float dpv1 = Dot(DP, v1);
+				float dpv2 = Dot(DP, v2);
+				float v1v2 = Dot(v1, v2);
+				if (v1v2 != 0.0f)
+				{
+					k = (dpv1 * v1v2 - dpv2)  / (v1v2 * v1v2 - 1.0f);
+					j = (k * v1v2) - dpv1;
+				}
+				else
+				{
+					j = -dpv1;
+					k = dpv2;
+				}
+
+				v3f foundp1(P[0] + v1 * j);
+				v3f foundp2(P[1] + v2 * k);
+
+				if (DistSquare(foundp1, foundp2) < 1.0f) // valid distance
+				{
+					v3f bestP(foundp1 + foundp2);
+					bestP *= 0.5f;
+
+					if ((DistSquare(bestP, mVertices[e.v[0]].mV) < 1.5f) && (DistSquare(bestP, mVertices[e.v[1]].mV) < 1.5f))
+					{
+
+						u32 nodeindex = 0;
+						// move point in "lower" cell
+						if (nodes[1]->coord < nodes[0]->coord)
+						{
+							nodeindex = 1;
+						}
+						// move all points corresponding to this pos
+						for(size_t i=0;i<2;i++)
+						{
+							MeshSimplificationOctreeNode* currentNode = nodes[i]->getNode<MeshSimplificationOctreeNode>();
+							MeshSimplificationOctreeNode* otherNode = nodes[1-i]->getNode<MeshSimplificationOctreeNode>();
+							auto& content = currentNode->getContentType();
+							auto& othercontent = otherNode->getContentType();
+
+							int backindex = content.mData->mEnvelopeData->mGoodIntersectionPoint.size();
+							backindex--;
+							while(backindex>=0)
+							{
+								auto itp = content.mData->mEnvelopeData->mGoodIntersectionPoint.begin();
+								itp += backindex;
+								auto p = content.mData->mEnvelopeData->mGoodIntersectionPoint[backindex];
+								if (mVertices[p.first].mV == P[i])
+								{
+									mVertices[p.first].mV = bestP;
+
+									if (currentNode != otherNode)
+									{
+										if (i != nodeindex)
+										{
+											mVertices[p.first].mOctreeNode = nodes[nodeindex];
+											othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.push_back(p);
+											content.mData->mEnvelopeData->mGoodIntersectionPoint.erase(itp);
+										}
+									}
+								}
+								backindex--;
+							}
+						}
+					}
+				}
+			}
+		}
+		edgeindex++;
+	}
 }
 
 void	BuildMeshFromEnveloppe::firstClean()
@@ -2258,9 +2417,12 @@ void BuildMeshFromEnveloppe::Build()
 	}
 	// setup faces
 	setUpFaces();
-	//return;
+	
 	// merge vertices and edges, remove useless faces
 	firstClean();
+
+	// manage inner corner
+	manageInnerCorners();
 
 	// for each vertice, compute normals using edge list
 	setUpNormals();

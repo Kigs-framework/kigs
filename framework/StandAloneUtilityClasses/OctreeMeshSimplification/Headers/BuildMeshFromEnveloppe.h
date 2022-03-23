@@ -11,12 +11,14 @@ public:
 		v[0] = v1;
 		v[1] = v2;
 		t[0] = t[1] = -1;
-		FlagAsOnCorner = false;
+		flags = 0;
 	}
 
 	u32 v[2]; // indexes on vertex
 	u32 t[2]; // indexes on faces
-	u32	FlagAsOnCorner;
+
+	// flag "corner edge" (1) and "inner corner edge" (2)
+	u32	flags;
 };
 class MSFace
 {
@@ -56,6 +58,20 @@ public:
 					return vindex;
 				}
 				vindex++;
+			}
+			return -1;
+		}
+
+		u32	getLocalEdgeIndex(u32 ei) const
+		{
+			u32 result = 0;
+			for (auto e : mEdges)
+			{
+				if((e & 0x7fffffff)==ei)
+				{
+					return result;
+				}
+				result++;
 			}
 			return -1;
 		}
@@ -170,6 +186,7 @@ protected:
 	void	removeFlatFaces();
 	void	DetectFlatTriangles(const std::vector<u32>& verticesIndex);
 
+	void	manageInnerCorners();
 	void	firstClean();
 
 	std::vector<u32>	mFinalMergedVIndex;
