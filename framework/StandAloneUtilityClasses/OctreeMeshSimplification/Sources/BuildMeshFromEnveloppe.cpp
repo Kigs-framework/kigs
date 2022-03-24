@@ -269,7 +269,21 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node, std::map< u32, std::vecto
 							printf("WTF");
 						}
 #endif
-						foundEdges[ip].push_back({ endP->first,1 }); // inner corner
+						u32 isInnerCorner = 0;
+
+						// check that opposite to adj face is not free
+						if (!(content.mData->mEmptyNeighborsFlag & OctreeNodeBase::mOppositeFace[adj]))
+						{
+							// and that 1<<i face in this node is free
+							MeshSimplificationOctreeNode* opposite = content.mData->getNeighbor(OctreeNodeBase::mOppositeFace[adj]);
+							if (opposite)
+								if (opposite->getContentType().mData->mEmptyNeighborsFlag & (1 << i))
+								{
+									isInnerCorner = 1;
+								}
+						}
+						
+						foundEdges[ip].push_back({ endP->first,isInnerCorner }); // inner corner
 					}
 					else
 					{
@@ -319,10 +333,11 @@ void	BuildMeshFromEnveloppe::setUpEdges(nodeInfo node, std::map< u32, std::vecto
 			// add edge to edge list
 			u32 edgeindex = addEdge(startp.first, endp.first, edgeMap);
 
-			// flag edge if needed
+			// flag edge if needed (inner corner)
 			if (endp.second)
 			{
-				mEdges[edgeindex & 0x7fffffff].flags |= 2;
+				u32 ew = (edgeindex >> 31);
+				mEdges[edgeindex & 0x7fffffff].flags |= 2<< ew;
 			}
 
 			// and push it in the right order for later face building
@@ -612,35 +627,56 @@ void BuildMeshFromEnveloppe::splitMoreThanQuadFace(u32 fi)
 	splitQuadFace(fi);
 }
 
-void BuildMeshFromEnveloppe::finishTriangleSetup()
+#pragma optimize("",off)
+void BuildMeshFromEnveloppe::computeTriangleNormals()
 {
-	u32 fi = 0;
+
+	std::vector<u32>	flatTriangles;
+
+	u32 fi=0;
 	for (auto& f:mFaces)
 	{
 		v3f v1= getEdgeVector(f.edges[0]);
 		v3f v2= getEdgeVector(f.edges[1]);
-		v3f v3 = getEdgeVector(f.edges[2]); // just to setup edge direction
 		f.normal.CrossProduct(-v1, v2);
 
-#ifdef _DEBUG
 		if (NormSquare(f.normal) ==0.0f)
 		{
+			flatTriangles.push_back(fi);
+#ifdef _DEBUG
 			printf("info : flat triangle found\n");
-		}
 #endif
-
-		f.normal.Normalize();
-
-		for (u32 e = 0; e < 3; e++)
-		{
-			u32 ew = (f.edges[e] >> 31);
-			u32 ei = (f.edges[e] & 0x7fffffff);
-
-			mEdges[ei].t[ew] = fi;
 		}
-		++fi;
+		else
+		{
+			f.normal.Normalize();
+		}
+		fi++;
 	}
+
+	// manage flat triangles by setting normal of first not flat neighbor
+
+	for (auto t : flatTriangles)
+	{
+		auto& currentT = mFaces[t];
+
+		for (auto ein : currentT.edges)
+		{
+			u32 ew = (ein >> 31);
+			u32 ei = (ein & 0x7fffffff);
+
+			auto& currentE = mEdges[ei];
+
+			if (NormSquare(mFaces[currentE.t[1 - ew]].normal))
+			{
+				currentT.normal = mFaces[currentE.t[1 - ew]].normal;
+				break;
+			}
+		}
+	}
+
 }
+
 
 void	BuildMeshFromEnveloppe::tagVerticesForSimplification()
 {
@@ -729,7 +765,7 @@ void	BuildMeshFromEnveloppe::checkVOnCoplanarTriangles(MSVertice& v)
 		v.mFlag = 8; 
 }
 
-
+#pragma optimize("",on)
 // do mesh simplification by merging triangles
 void BuildMeshFromEnveloppe::mergeTriangles()
 {
@@ -1489,7 +1525,7 @@ void	BuildMeshFromEnveloppe::finalClean()
 						if (!(mergedMask & (1 << vi2)))
 						{
 							auto& v2 = content.mData->mEnvelopeData->mGoodIntersectionPoint[vi2];
-							if (DistSquare(mVertices[v1.first].mV, mVertices[v2.first].mV) < 0.001f)
+							if (DistSquare(mVertices[v1.first].mV, mVertices[v2.first].mV) < 0.05f)
 							{
 								// merge vi2 => vi1
 								mergedMask |= (1 << vi2);
@@ -1509,49 +1545,83 @@ void	BuildMeshFromEnveloppe::finalClean()
 	DetectFlatTriangles(mFinalMergedVIndex);
 
 }
-
+#pragma optimize("",off)
 void	BuildMeshFromEnveloppe::manageInnerCorners()
 {
+
+	// TODO : manage triangles where all edges are inner corner ( triangle in a corner)
+	for (auto& f : mFaces)
+	{
+		// fast check if face has inner corner
+		u32 innercount = 0;
+		for (auto e : f.edges)
+		{
+			u32 ew = e >> 31;
+			u32 ei = e & 0x7fffffff;
+			auto& currente = mEdges[ei];
+			if ((currente.flags & 6) == 6) // this one is a good candidate
+			{
+				innercount++;
+				break;
+			}
+		}
+		if (innercount)
+		{
+			std::vector<MSEdge*>	innercorners;
+			for (auto e : f.edges)
+			{
+				u32 ew = e >> 31;
+				u32 ei = e & 0x7fffffff;
+				auto& currente = mEdges[ei];
+				if ((currente.flags & 6) == 6) // this one is a good candidate
+				{
+					innercorners.push_back(&currente);
+				}
+				else // test if vector is null
+				{
+					float sqrd = DistSquare(mVertices[currente.v[0]].mV, mVertices[currente.v[1]].mV);
+					if (sqrd > 0.01f)
+					{
+						innercorners.clear();
+						break;
+					}
+				}
+			}
+
+			if (innercorners.size() == 3)
+			{
+				for (auto e : innercorners)
+				{
+					e->flags = 0;
+				}
+			}
+
+		}
+	}
+
+	// now manage single edges
 	// search inner corner edges
 	u32 edgeindex = 0;
 	for (auto& e : mEdges)
 	{
-		if (e.flags & 2) // this one is a good candidate
+		if ((e.flags & 6)==6) // this one is a good candidate
 		{
 			// retreive two edges to "link"
 			v3f P[2];
 			v3f	inoutvector[2];
 			const nodeInfo* nodes[2];
 
-			bool notvalid = false;
-
 			for (size_t i = 0; i < 2; i++)
 			{
 				u32 ei=mVertices[e.v[i]].getLocalEdgeIndex(edgeindex);
-
 				P[i] = mVertices[e.v[i]].mV;
 
-				u32 ecount = mVertices[e.v[i]].mEdges.size();
-
-				// can probably search for the "best opposite vector" here 
-				if (mVertices[e.v[i]].mEdges.size() != 4)
-				{
-					notvalid = true;
-					break;
-				}
-				
-				u32 Linkededges = mVertices[e.v[i]].mEdges[(ei+ ecount/2)% ecount];
+				u32 Linkededges = mVertices[e.v[i]].mEdges[(ei+2)&3];
 				u32 lew = Linkededges >> 31;
 				u32 lei = Linkededges & 0x7fffffff;
 
 				inoutvector[i] = mVertices[mEdges[lei].v[1-lew]].mV - mVertices[e.v[i]].mV;
 				nodes[i] = mVertices[e.v[i]].mOctreeNode;
-			}
-
-			if (notvalid)
-			{
-				edgeindex++;
-				continue;
 			}
 
 			v3f DP(P[0] - P[1]);
@@ -1611,55 +1681,76 @@ void	BuildMeshFromEnveloppe::manageInnerCorners()
 					v3f bestP(foundp1 + foundp2);
 					bestP *= 0.5f;
 
-					if ((DistSquare(bestP, mVertices[e.v[0]].mV) < 1.5f) && (DistSquare(bestP, mVertices[e.v[1]].mV) < 1.5f))
+					if ((DistSquare(bestP, mVertices[e.v[0]].mV) < 4.0f) && (DistSquare(bestP, mVertices[e.v[1]].mV) < 4.0f))
 					{
+
+						// TODO : search duplicate edges, and move all of them
+
 
 						u32 nodeindex = 0;
 						// move point in "lower" cell
-						if (nodes[1]->coord < nodes[0]->coord)
+						if (nodes[1] < nodes[0])
 						{
 							nodeindex = 1;
 						}
 						// move all points corresponding to this pos
-						for(size_t i=0;i<2;i++)
+						
+						MeshSimplificationOctreeNode* currentNode = nodes[nodeindex]->getNode<MeshSimplificationOctreeNode>();
+						MeshSimplificationOctreeNode* otherNode = nodes[1- nodeindex]->getNode<MeshSimplificationOctreeNode>();
+						auto& content = currentNode->getContentType();
+						auto& othercontent = otherNode->getContentType();
+
+						// set both edge vertices point to bestP 
+						mVertices[e.v[0]].mV = bestP;
+						mVertices[e.v[1]].mV = bestP;
+
+						u32 vindextomove=0;
+						if (mVertices[e.v[0]].mOctreeNode == nodes[nodeindex])
 						{
-							MeshSimplificationOctreeNode* currentNode = nodes[i]->getNode<MeshSimplificationOctreeNode>();
-							MeshSimplificationOctreeNode* otherNode = nodes[1-i]->getNode<MeshSimplificationOctreeNode>();
-							auto& content = currentNode->getContentType();
-							auto& othercontent = otherNode->getContentType();
+							mVertices[e.v[1]].mOctreeNode = nodes[nodeindex];
+							vindextomove = 1;
+						}
+						else
+						{
+							mVertices[e.v[0]].mOctreeNode = nodes[nodeindex];
+						}
 
-							int backindex = content.mData->mEnvelopeData->mGoodIntersectionPoint.size();
-							backindex--;
-							while(backindex>=0)
+						content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ e.v[vindextomove],0 });
+
+						int backindex = othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.size();
+						backindex--;
+						while(backindex>=0)
+						{
+							auto itp = othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.begin();
+							itp += backindex;
+							auto p = othercontent.mData->mEnvelopeData->mGoodIntersectionPoint[backindex];
+							if (p.first == e.v[vindextomove])
 							{
-								auto itp = content.mData->mEnvelopeData->mGoodIntersectionPoint.begin();
-								itp += backindex;
-								auto p = content.mData->mEnvelopeData->mGoodIntersectionPoint[backindex];
-								if (mVertices[p.first].mV == P[i])
-								{
-									mVertices[p.first].mV = bestP;
-
-									if (currentNode != otherNode)
-									{
-										if (i != nodeindex)
-										{
-											mVertices[p.first].mOctreeNode = nodes[nodeindex];
-											othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.push_back(p);
-											content.mData->mEnvelopeData->mGoodIntersectionPoint.erase(itp);
-										}
-									}
-								}
-								backindex--;
+								othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.erase(itp);
+								break;
 							}
+							backindex--;
 						}
 					}
+					else
+					{
+						printf("");
+					}
 				}
+				else
+				{
+					printf("");
+				}
+			}
+			else
+			{
+				printf("");
 			}
 		}
 		edgeindex++;
 	}
 }
-
+#pragma optimize("",on)
 void	BuildMeshFromEnveloppe::firstClean()
 {
 
@@ -1714,7 +1805,7 @@ void	BuildMeshFromEnveloppe::firstClean()
 							if (!(mergedMask & (1 << vi2)))
 							{
 								auto& v2 = content.mData->mEnvelopeData->mGoodIntersectionPoint[vi2];
-								if (DistSquare(mVertices[v1.first].mV, mVertices[v2.first].mV) < 0.001f)
+								if (DistSquare(mVertices[v1.first].mV, mVertices[v2.first].mV) < 0.05f)
 								{
 									if (isLink(v1.first, v2.first)) // merge only if edges are connected
 									{
@@ -2417,12 +2508,12 @@ void BuildMeshFromEnveloppe::Build()
 	}
 	// setup faces
 	setUpFaces();
-	
-	// merge vertices and edges, remove useless faces
-	firstClean();
 
 	// manage inner corner
 	manageInnerCorners();
+	
+	// merge vertices and edges, remove useless faces
+	firstClean();
 
 	// for each vertice, compute normals using edge list
 	setUpNormals();
@@ -2431,8 +2522,9 @@ void BuildMeshFromEnveloppe::Build()
 
 	// do triangulation
 	splitFaces();
+
 	// compute per triangle normal
-	finishTriangleSetup();
+	computeTriangleNormals();
 
 	// prepare triangle decimation
 	tagVerticesForSimplification();

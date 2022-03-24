@@ -18,7 +18,7 @@ public:
 	u32 t[2]; // indexes on faces
 
 	// flag "corner edge" (1) and "inner corner edge" (2)
-	u32	flags;
+	u32	flags=0;
 };
 class MSFace
 {
@@ -192,8 +192,8 @@ protected:
 	std::vector<u32>	mFinalMergedVIndex;
 	void	finalClean();
 	void	splitFaces();
-	// compute triangle normal and setup edge triangle references
-	void	finishTriangleSetup();
+	// compute triangle normal
+	void	computeTriangleNormals();
 	void	tagVerticesForSimplification();
 	// return intern edge index (in vertice) & vertice index
 	std::pair<u32, u32>		findBestPlanarMerge(u32 vindex);
