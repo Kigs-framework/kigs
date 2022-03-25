@@ -1548,56 +1548,87 @@ void	BuildMeshFromEnveloppe::finalClean()
 #pragma optimize("",off)
 void	BuildMeshFromEnveloppe::manageInnerCorners()
 {
+	auto getEdgeNormal = [this](auto& e)->v3f {
+		
+		// get first vertice
+		u32 vindex = e.v[0];
+		auto& v = mVertices[e.v[0]];
 
-	// TODO : manage triangles where all edges are inner corner ( triangle in a corner)
-	for (auto& f : mFaces)
-	{
-		// fast check if face has inner corner
-		u32 innercount = 0;
-		for (auto e : f.edges)
+		v3f edge(mVertices[e.v[1]].mV - mVertices[e.v[0]].mV);
+		edge.Normalize();
+
+		MeshSimplificationOctreeNode* currentNode = v.mOctreeNode->getNode<MeshSimplificationOctreeNode>();
+		auto& content = currentNode->getContentType();
+		
+		u32 freefacemask = 0;
+		// find current vertice in node
+		for (const auto& f : content.mData->mEnvelopeData->mGoodIntersectionPoint)
 		{
-			u32 ew = e >> 31;
-			u32 ei = e & 0x7fffffff;
-			auto& currente = mEdges[ei];
-			if ((currente.flags & 6) == 6) // this one is a good candidate
+			if (f.first == vindex)
 			{
-				innercount++;
+				freefacemask = f.second;
 				break;
 			}
 		}
-		if (innercount)
+#ifdef _DEBUG
+		if (!freefacemask)
 		{
-			std::vector<MSEdge*>	innercorners;
-			for (auto e : f.edges)
+			printf("problem here\n");
+		}
+#endif
+
+		v3f right;
+		right.CrossProduct(OctreeNodeBase::mNeightboursDecalVectors[OctreeNodeBase::mSetBitIndex[freefacemask]],edge);
+		right.Normalize();
+		v3f normal;
+		normal.CrossProduct(edge,right );
+	
+		return normal;
+	};
+
+	auto getSameEdges = [this](auto& e)->std::vector<u32>
+	{
+		std::vector<u32> result;
+
+		u32 vindex = e.v[0];
+		auto& v = mVertices[e.v[0]];
+
+		const v3f& edgeend= mVertices[e.v[1]].mV;
+
+		MeshSimplificationOctreeNode* currentNode = v.mOctreeNode->getNode<MeshSimplificationOctreeNode>();
+		auto& content = currentNode->getContentType();
+
+		for (const auto& f : content.mData->mEnvelopeData->mGoodIntersectionPoint)
+		{
+			if (e.v[0] != f.first) // don't test this point
 			{
-				u32 ew = e >> 31;
-				u32 ei = e & 0x7fffffff;
-				auto& currente = mEdges[ei];
-				if ((currente.flags & 6) == 6) // this one is a good candidate
+				const auto& testv = mVertices[f.first];
+				if (v.mV == testv.mV) // but test same pos
 				{
-					innercorners.push_back(&currente);
-				}
-				else // test if vector is null
-				{
-					float sqrd = DistSquare(mVertices[currente.v[0]].mV, mVertices[currente.v[1]].mV);
-					if (sqrd > 0.01f)
+					// look at all edges for this vertice
+					for (auto othere : testv.mEdges)
 					{
-						innercorners.clear();
-						break;
+						u32 ew = othere >> 31;
+						u32 ei = othere & 0x7fffffff;
+
+						const v3f& otherend = mVertices[mEdges[ei].v[1 - ew]].mV;
+						if (otherend == edgeend)
+						{
+							result.push_back(ei);
+						}
 					}
 				}
 			}
-
-			if (innercorners.size() == 3)
-			{
-				for (auto e : innercorners)
-				{
-					e->flags = 0;
-				}
-			}
-
 		}
-	}
+
+		return result;
+	};
+
+	// list of innercorners index
+	std::set<u32>	edgesToMove;
+
+	// key = vertice index, vector of pos + edge index
+	std::map<u32, std::vector<std::pair<v3f, u32>> > verticesToMove;
 
 	// now manage single edges
 	// search inner corner edges
@@ -1606,11 +1637,14 @@ void	BuildMeshFromEnveloppe::manageInnerCorners()
 	{
 		if ((e.flags & 6)==6) // this one is a good candidate
 		{
+			// compute "edge normal"
+			v3f normal = getEdgeNormal(e);
+
 			// retreive two edges to "link"
 			v3f P[2];
 			v3f	inoutvector[2];
-			const nodeInfo* nodes[2];
-
+			
+			bool isGoodEdge = true;
 			for (size_t i = 0; i < 2; i++)
 			{
 				u32 ei=mVertices[e.v[i]].getLocalEdgeIndex(edgeindex);
@@ -1621,7 +1655,20 @@ void	BuildMeshFromEnveloppe::manageInnerCorners()
 				u32 lei = Linkededges & 0x7fffffff;
 
 				inoutvector[i] = mVertices[mEdges[lei].v[1-lew]].mV - mVertices[e.v[i]].mV;
-				nodes[i] = mVertices[e.v[i]].mOctreeNode;
+				
+				float testnormal = Dot(inoutvector[i], normal);
+				if (testnormal <= 0.1f)
+				{
+					isGoodEdge = false;
+					break;
+				}
+			}
+
+
+			if (!isGoodEdge)
+			{
+				edgeindex++;
+				continue;
 			}
 
 			v3f DP(P[0] - P[1]);
@@ -1676,71 +1723,38 @@ void	BuildMeshFromEnveloppe::manageInnerCorners()
 				v3f foundp1(P[0] + v1 * j);
 				v3f foundp2(P[1] + v2 * k);
 
-				if (DistSquare(foundp1, foundp2) < 1.0f) // valid distance
+				//if (DistSquare(foundp1, foundp2) < 1.0f) // valid distance
 				{
 					v3f bestP(foundp1 + foundp2);
 					bestP *= 0.5f;
 
 					if ((DistSquare(bestP, mVertices[e.v[0]].mV) < 4.0f) && (DistSquare(bestP, mVertices[e.v[1]].mV) < 4.0f))
 					{
-
-						// TODO : search duplicate edges, and move all of them
-
-
-						u32 nodeindex = 0;
-						// move point in "lower" cell
-						if (nodes[1] < nodes[0])
+						// search duplicate edges, and move all of them
+						std::vector<u32> edgelist = getSameEdges(e);
+						edgelist.push_back(edgeindex);
+						for (auto edgeinlist : edgelist)
 						{
-							nodeindex = 1;
+							edgesToMove.insert(edgeinlist);
+
+							auto& currente = mEdges[edgeinlist];
+							currente.flags = 0;
+
+							verticesToMove[currente.v[0]].push_back({ bestP, edgeinlist });
+							verticesToMove[currente.v[1]].push_back({ bestP, edgeinlist });
+
 						}
-						// move all points corresponding to this pos
 						
-						MeshSimplificationOctreeNode* currentNode = nodes[nodeindex]->getNode<MeshSimplificationOctreeNode>();
-						MeshSimplificationOctreeNode* otherNode = nodes[1- nodeindex]->getNode<MeshSimplificationOctreeNode>();
-						auto& content = currentNode->getContentType();
-						auto& othercontent = otherNode->getContentType();
-
-						// set both edge vertices point to bestP 
-						mVertices[e.v[0]].mV = bestP;
-						mVertices[e.v[1]].mV = bestP;
-
-						u32 vindextomove=0;
-						if (mVertices[e.v[0]].mOctreeNode == nodes[nodeindex])
-						{
-							mVertices[e.v[1]].mOctreeNode = nodes[nodeindex];
-							vindextomove = 1;
-						}
-						else
-						{
-							mVertices[e.v[0]].mOctreeNode = nodes[nodeindex];
-						}
-
-						content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ e.v[vindextomove],0 });
-
-						int backindex = othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.size();
-						backindex--;
-						while(backindex>=0)
-						{
-							auto itp = othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.begin();
-							itp += backindex;
-							auto p = othercontent.mData->mEnvelopeData->mGoodIntersectionPoint[backindex];
-							if (p.first == e.v[vindextomove])
-							{
-								othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.erase(itp);
-								break;
-							}
-							backindex--;
-						}
 					}
 					else
 					{
 						printf("");
 					}
 				}
-				else
+				/*else
 				{
 					printf("");
-				}
+				}*/
 			}
 			else
 			{
@@ -1749,6 +1763,86 @@ void	BuildMeshFromEnveloppe::manageInnerCorners()
 		}
 		edgeindex++;
 	}
+
+	for (const auto& v : verticesToMove)
+	{
+		const auto& vlist = v.second;
+		v3f finalpos(0.0f, 0.0f, 0.0f);
+
+		for (auto& p : vlist)
+		{
+			finalpos += p.first;
+		}
+		finalpos /= (float)vlist.size();
+		mVertices[v.first].mV = finalpos;
+	}
+	/*for (auto e : edgesToMove)
+	{
+
+		auto& currente = mEdges[e];
+
+		// for now, move only edges with one reference
+
+		u32 v1 = currente.v[0];
+		u32 v2 = currente.v[1];
+
+		if ((verticesToMove[v1].size() == 1) && (verticesToMove[v2].size() == 1))
+		{
+			// set both edge vertices point to bestP 
+		
+			mVertices[v1].mV = verticesToMove[v1].back().first;
+			mVertices[v2].mV = verticesToMove[v1].back().first;
+
+			// don't change nodeinfos
+#ifdef _MOVE_VERTICES_
+			const nodeInfo* nodes[2];
+			nodes[0] = mVertices[currente.v[0]].mOctreeNode;
+			nodes[1] = mVertices[currente.v[1]].mOctreeNode;
+
+			u32 nodeindex = 0;
+			// move point in "lower" cell
+			if (nodes[1] < nodes[0])
+			{
+				nodeindex = 1;
+			}
+
+			MeshSimplificationOctreeNode* currentNode = nodes[nodeindex]->getNode<MeshSimplificationOctreeNode>();
+			MeshSimplificationOctreeNode* otherNode = nodes[1 - nodeindex]->getNode<MeshSimplificationOctreeNode>();
+			auto& content = currentNode->getContentType();
+			auto& othercontent = otherNode->getContentType();
+
+			if (currentNode != otherNode)
+			{
+				u32 vindextomove = 0;
+				if (mVertices[currente.v[0]].mOctreeNode == nodes[nodeindex])
+				{
+					mVertices[currente.v[1]].mOctreeNode = nodes[nodeindex];
+					vindextomove = 1;
+				}
+				else
+				{
+					mVertices[currente.v[0]].mOctreeNode = nodes[nodeindex];
+				}
+
+				int backindex = othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.size();
+				backindex--;
+				while (backindex >= 0)
+				{
+					auto itp = othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.begin();
+					itp += backindex;
+					auto p = othercontent.mData->mEnvelopeData->mGoodIntersectionPoint[backindex];
+					if (p.first == currente.v[vindextomove])
+					{
+						othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.erase(itp);
+						content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back(p);
+						break;
+					}
+					backindex--;
+				}
+			}
+#endif
+		}
+	}*/
 }
 #pragma optimize("",on)
 void	BuildMeshFromEnveloppe::firstClean()
@@ -2522,7 +2616,7 @@ void BuildMeshFromEnveloppe::Build()
 
 	// do triangulation
 	splitFaces();
-
+	
 	// compute per triangle normal
 	computeTriangleNormals();
 
