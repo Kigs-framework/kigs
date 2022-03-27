@@ -2231,6 +2231,84 @@ void	BuildMeshFromEnveloppe::initCellSurfaceList(nodeInfo& node)
 
 	}
 
+
+	// keep only convex hull vertices for each surface
+	 
+	// vertex list per surface
+	std::vector<std::vector<u32> >	perSurfaceVertex;
+	perSurfaceVertex.resize(mCellData.mCellSurfaces.size());
+
+	{
+		u32 vindex = 0;
+		for (auto& v : content.mData->mVertices)
+		{
+			perSurfaceVertex[v.mSurfaceIndex].push_back(vindex);
+			vindex++;
+		}
+	}
+
+	{
+		u32 surfindex = 0;
+		for (const auto& s : perSurfaceVertex)
+		{
+			v3f normal=mCellData.mCellSurfaces[surfindex].mPlane.mNormal;
+			v3f	up(1.0f, 0.0f, 0.0f);
+			if (fabsf(Dot(normal, up)) > 0.9f)
+			{
+				up.Set(0.0f, 1.0f, 0.0f);
+			}
+			v3f right;
+			right.CrossProduct(normal, up);
+			right.Normalize();
+			up.CrossProduct(right, normal);
+
+			std::vector<std::pair<v2f,u32>>	project2D;
+
+			v2f minp, maxp;
+			v2i mini(0,0), maxi(0,0);
+			u32 vindex = 0;
+			for (auto p : s)
+			{
+				v2f toadd(Dot(content.mData->mVertices[p].mVertex, right), Dot(content.mData->mVertices[p].mVertex, up));
+				project2D.push_back({ toadd,p });
+				if (vindex)
+				{
+					if (toadd.x < minp.x)
+					{
+						minp.x = toadd.x;
+						mini.x = vindex;
+					}
+					else if (toadd.x > maxp.x)
+					{
+						maxp.x= toadd.x;
+						maxi.x = vindex;
+					}
+					if (toadd.y < minp.y)
+					{
+						minp.y = toadd.y;
+						mini.y = vindex;
+					}
+					else if (toadd.y > maxp.y)
+					{
+						maxp.y = toadd.y;
+						maxi.y = vindex;
+					}
+				}
+				else
+				{
+					minp = toadd;
+					maxp = toadd;
+				}
+
+				vindex++;
+			}
+
+
+
+			surfindex++;
+		}
+	}
+
 	for (auto& v : content.mData->mVertices)
 	{
 		v.mSurfaceIndex = std::get<0>(trianglelist[v.mTriangleIndex])->mSurfaceIndex;
