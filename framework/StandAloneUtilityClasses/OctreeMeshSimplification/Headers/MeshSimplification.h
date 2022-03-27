@@ -24,46 +24,12 @@ class MeshSimplification
 protected:
 	
 	SP<MeshSimplificationOctree> mOctree;
-
-	std::vector<MSSurfaceStruct>	mAllSurfaces;
-	std::vector<u32>			mTriangleSurfaceIndex;
 	
 	v3f							mOctreeShift;
 	v3f							mObjectShift;
 
 	u32							mGroupCount;
 	u32							mMaxOctreeDepth = 8;
-
-	class surfaceListBuilder
-	{
-	protected:
-		const std::vector<u32>& mIndices;
-		const std::vector<v3f>& mVertices;
-		float					mOneOnPrecision;
-		MeshSimplification&		mParent;
-
-		std::map<int, std::vector<u32>>	mConstructionMap;
-
-		// return surface index in list
-		u32			insertSurface(const MSSurfaceStruct& toadd);
-
-		
-
-	public:
-		surfaceListBuilder(const std::vector<u32>& indices, const std::vector<v3f>& vertices, float	precision, MeshSimplification& parent) :
-			mIndices(indices)
-			, mVertices(vertices)
-			, mOneOnPrecision(8.0f/precision)
-			, mParent(parent)
-		{
-
-		}
-
-		void	build();
-	}; 
-
-	
-	void		computeSurfaceList(const std::vector<u32>& indices, const std::vector<v3f>& vertices, float precision);
 
 #ifdef _DEBUG
 	struct vAndN

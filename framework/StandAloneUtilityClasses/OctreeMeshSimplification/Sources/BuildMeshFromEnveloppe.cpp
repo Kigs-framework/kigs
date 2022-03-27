@@ -62,7 +62,7 @@ bool	BuildMeshFromEnveloppe::checkVerticeEasyCase(nodeInfo node, v3f& goodOne)
 		{
 			v3i idirection = OctreeNodeBase::mNeightboursDecalVectors[OctreeNodeBase::mInvDir[i]];
 			v3f direction(idirection.x, idirection.y, idirection.z);
-			std::vector<std::pair<u32, float>> surf = content.mData->getPrincipalSurfacesForDirection(node, direction, mAllSurfaces);
+			std::vector<std::pair<u32, float>> surf = content.mData->getPrincipalSurfacesForDirection(node, direction, mCellData.mCellSurfaces);
 			if (surf.size())
 			{
 				foundSurfaceCount++;
@@ -82,7 +82,7 @@ bool	BuildMeshFromEnveloppe::checkVerticeEasyCase(nodeInfo node, v3f& goodOne)
 
 	std::vector<std::pair<v3f, float>> bestfoundv;
 	// mark potentially valid vertices with scores
-	for (const auto& v : content.mData->mEnvelopeData->mPerVSurfaces)
+	for (const auto& v : mCellData.mPerVSurfaces)
 	{
 		if (v.second.size() >= foundSurfaceCount)
 		{
@@ -158,7 +158,7 @@ bool	BuildMeshFromEnveloppe::checkVerticeTrivialCase(nodeInfo node, v3f& goodOne
 	const auto& content = currentNode->getContentType();
 
 	// if more surfaces than free face count, then this is a more complex case
-	if (content.mData->mEnvelopeData->mAllSurfaces.size() > content.mData->mFreeFaceCount)
+	if (mCellData.mCellSurfaces.size() > content.mData->mFreeFaceCount)
 	{
 		return false;
 	}
@@ -166,9 +166,9 @@ bool	BuildMeshFromEnveloppe::checkVerticeTrivialCase(nodeInfo node, v3f& goodOne
 	// retreive vertices in all available surfaces
 	goodOne.Set(0.0f, 0.0f, 0.0f);
 	u32 countGoodOnes = 0;
-	for (const auto& v : content.mData->mEnvelopeData->mPerVSurfaces)
+	for (const auto& v : mCellData.mPerVSurfaces)
 	{
-		if (v.second.size() == content.mData->mEnvelopeData->mAllSurfaces.size()) // this vertice belongs to all the surfaces 
+		if (v.second.size() == mCellData.mCellSurfaces.size()) // this vertice belongs to all the surfaces 
 		{
 			goodOne += v.first;
 			countGoodOnes++;
@@ -627,7 +627,7 @@ void BuildMeshFromEnveloppe::splitMoreThanQuadFace(u32 fi)
 	splitQuadFace(fi);
 }
 
-#pragma optimize("",off)
+//#pragma optimize("",off)
 void BuildMeshFromEnveloppe::computeTriangleNormals()
 {
 
@@ -765,7 +765,7 @@ void	BuildMeshFromEnveloppe::checkVOnCoplanarTriangles(MSVertice& v)
 		v.mFlag = 8; 
 }
 
-#pragma optimize("",on)
+//#pragma optimize("",on)
 // do mesh simplification by merging triangles
 void BuildMeshFromEnveloppe::mergeTriangles()
 {
@@ -2152,11 +2152,103 @@ void	BuildMeshFromEnveloppe::addMultipleVertices(nodeInfo& node, const v3f& good
 
 }
 
-void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
+void	BuildMeshFromEnveloppe::initCellSurfaceList(nodeInfo& node)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
 	const auto& content = currentNode->getContentType();
 
+	v3f nodepos = node.coord;
+	nodepos *= 0.5f;
+
+	// construct triangle list, associated with first point found and surface dist 
+	std::map<u32, std::tuple<MSTriangleVertex*,float,v3f>>	trianglelist;
+
+	for (auto& v : content.mData->mVertices)
+	{
+		if (trianglelist.find(v.mTriangleIndex) == trianglelist.end())
+		{
+			v3f inNodeP(v.mVertex - nodepos);
+			v3f normal = mTriangleInfos[v.mTriangleIndex].mNormal;
+			float dist=Dot(normal, inNodeP);
+			
+			if (dist < 0.0f)
+			{
+				dist = -dist;
+				normal = -normal;
+			}
+			trianglelist.insert({ v.mTriangleIndex,std::make_tuple(&v, dist, normal) });
+		}
+	}
+
+	// then compute surface list
+	std::map<int, std::vector<u32>>	constructionMap;
+	
+	for (auto& t : trianglelist)
+	{
+		int mapIndex = (int)(std::get<1>(t.second)*16.0f);
+
+		int indexes[3] = { mapIndex,mapIndex - 1,mapIndex + 1 };
+
+		bool found = false;
+		for (size_t i = 0; i < 3; i++)
+		{
+			if ( (indexes[i] >= 0) && (constructionMap.find(indexes[i]) != constructionMap.end()))
+			{
+				for (auto si : constructionMap[indexes[i]])
+				{
+					auto& s = mCellData.mCellSurfaces[si];
+					if (fabsf(s.mPlane.mDist - std::get<1>(t.second)) < 0.01f)
+					{
+						if (Dot(s.mPlane.mNormal , std::get<2>(t.second))>0.98f)
+						{
+							s.mSurface += mTriangleInfos[t.first].mSurface;
+							found = true;
+							std::get<0>(t.second)->mSurfaceIndex = si;
+							break;
+						}
+					}
+				}
+				if (found)
+					break;
+			}
+		}
+
+		if (!found)
+		{
+			MSSurfaceStruct	toAdd;
+			toAdd.mSurface = mTriangleInfos[t.first].mSurface;
+			toAdd.mPlane.mNormal = std::get<2>(t.second);
+			toAdd.mPlane.mDist = std::get<1>(t.second);
+			toAdd.mInOctreePlaneP0 = std::get<0>(t.second)->mVertex;
+			mCellData.mCellSurfaces.push_back(toAdd);
+
+			u32 newIndex = (u32)(mCellData.mCellSurfaces.size() - 1);
+
+			constructionMap[mapIndex].push_back(newIndex);
+
+			std::get<0>(t.second)->mSurfaceIndex = newIndex;
+		}
+
+	}
+
+	for (auto& v : content.mData->mVertices)
+	{
+		v.mSurfaceIndex = std::get<0>(trianglelist[v.mTriangleIndex])->mSurfaceIndex;
+		mCellData.mPerVSurfaces[v.mVertex].insert(v.mSurfaceIndex);
+	}
+	
+}
+
+
+void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
+{
+
+	mCellData.clear();
+
+	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
+	const auto& content = currentNode->getContentType();
+
+	initCellSurfaceList(node);
 
 #ifdef _DEBUG
 	node.mDebugFlag = 0;
@@ -2232,7 +2324,7 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 		break;
 
 	}
-
+	mCellData.clear();
 }
 
 v3f BuildMeshFromEnveloppe::searchGoodVerticeInCellForDirection(nodeInfo node, const MSOctreeContent& cnode, const v3f& direction, BBox currentBbox)
@@ -2243,7 +2335,7 @@ v3f BuildMeshFromEnveloppe::searchGoodVerticeInCellForDirection(nodeInfo node, c
 	// put vertices in a vector
 	std::vector<std::pair<v3f,u8>> vvector;
 	
-	for (const auto& v : cnode.mData->mEnvelopeData->mPerVSurfaces)
+	for (const auto& v : mCellData.mPerVSurfaces)
 	{
 		v3f toAdd = v.first - nodecoord;
 		currentBbox.Update(toAdd);
@@ -2570,6 +2662,7 @@ void BuildMeshFromEnveloppe::Build()
 #ifdef _DEBUG
 	u32 debug_index=0;
 #endif
+
 	// first setup all vertices in enveloppe nodes
 	for (auto& n : mNodeList)
 	{
@@ -2604,7 +2697,7 @@ void BuildMeshFromEnveloppe::Build()
 	setUpFaces();
 
 	// manage inner corner
-	manageInnerCorners();
+	//manageInnerCorners();
 	
 	// merge vertices and edges, remove useless faces
 	firstClean();

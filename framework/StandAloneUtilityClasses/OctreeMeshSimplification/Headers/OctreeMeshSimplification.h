@@ -24,11 +24,18 @@ struct MSSurfaceStruct
 	v3f			mInOctreePlaneP0;
 };
 
+struct MSTriangleInfo
+{
+	v3f			mNormal;
+	float		mSurface;
+};
+
 // store a vertice and it's associated surface index
 struct MSTriangleVertex
 {
 	v3f		mVertex;
 	u32		mSurfaceIndex;
+	u32		mTriangleIndex;
 };
 
 inline bool operator ==(const MSTriangleVertex& first, const MSTriangleVertex& second)
@@ -50,13 +57,13 @@ public:
 			delete mData;
 	}
 
-	void	setContent(const v3f& p1, u32 surfaceIndex)
+	void	setContent(const v3f& p1, u32 surfaceIndex,u32 triangleindex)
 	{
 		if (!mData)
 		{
 			mData = new ContentData;
 		}
-		mData->mVertices.push_back({ p1, surfaceIndex });
+		mData->mVertices.push_back({ p1, surfaceIndex,triangleindex });
 	}
 
 	const std::vector<MSTriangleVertex>* getContent() const
@@ -185,15 +192,12 @@ protected:
 			std::vector<std::pair<u32, MeshSimplificationOctreeNode*>>	mNeighbors;
 			// pair.first = index in BuildMeshFromEnveloppe mVertices  and pair.second is freeface mask
 			std::vector<std::pair<u32, u8>>								mGoodIntersectionPoint;
-			std::map<v3f, std::set<u32>>								mPerVSurfaces;
-			std::set<u32>												mAllSurfaces;
+			
 
 			~additionnalEnvelopeData()
 			{
 				mNeighbors.clear();
 				mGoodIntersectionPoint.clear();
-				mPerVSurfaces.clear();
-				mAllSurfaces.clear();
 			}
 		};
 		additionnalEnvelopeData* mEnvelopeData = nullptr;
@@ -216,15 +220,15 @@ public:
 
 	}
 
-	MeshSimplificationOctreeNode(const v3f& p1, u32 surfaceIndex) : OctreeNode<MSOctreeContent>()
+	MeshSimplificationOctreeNode(const v3f& p1, u32 surfaceIndex , u32 triangleindex) : OctreeNode<MSOctreeContent>()
 	{
-		setContent(p1, surfaceIndex);
+		setContent(p1, surfaceIndex,triangleindex);
 	}
 
 
-	void	setContent(const v3f& p1, u32 surfaceIndex)
+	void	setContent(const v3f& p1, u32 surfaceIndex, u32 triangleindex)
 	{
-		mContentType.setContent(p1, surfaceIndex);
+		mContentType.setContent(p1, surfaceIndex, triangleindex);
 	}
 
 	const std::vector<MSTriangleVertex>* getVertices() const
@@ -388,8 +392,9 @@ public:
 
 	const std::vector<v3f>& getInOctreeCoordsVertices()
 	{
-		return mInOctreeCoordsVertices;
+		return mIOCVertices;
 	}
+
 protected:
 
 	static void		trianglePlaneIntersection(const v3f& triA, const v3f& triB, const v3f& triC, const MSPlaneStruct& p, std::set<v3f>& outSegTips);
@@ -407,8 +412,12 @@ protected:
 	BBox	mBBox;
 	float	mBBoxCoef;
 
+	u32 computeTriangleInfos(u32 P1, u32 P2, u32 P3);
 
-	std::vector<v3f>	mInOctreeCoordsVertices;
+	std::vector<MSTriangleInfo>		mTriangleInfos;
+	std::vector<v3f>				mIOCVertices;
+
+
 };
 
 template<typename F>

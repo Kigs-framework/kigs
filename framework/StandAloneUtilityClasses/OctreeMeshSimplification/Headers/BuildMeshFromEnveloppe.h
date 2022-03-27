@@ -148,8 +148,23 @@ protected:
 	std::vector<MSVertice>		mVertices;
 	std::vector<MSFace>			mFaces;
 	std::vector<MSEdge>			mEdges;
-	std::vector<nodeInfo*>& mNodeList;
-	const std::vector<MSSurfaceStruct>& mAllSurfaces;
+	std::vector<nodeInfo*>&		mNodeList;
+
+	class CurrentCellData
+	{
+	public:
+		std::vector<MSSurfaceStruct>			mCellSurfaces;
+		std::map<v3f, std::set<u32>>			mPerVSurfaces;
+		void	clear()
+		{
+			mCellSurfaces.clear();
+			mPerVSurfaces.clear();
+		}
+	};
+
+	CurrentCellData	mCellData;
+
+	const std::vector<MSTriangleInfo>&	mTriangleInfos;
 
 	bool mWTF = false;
 
@@ -164,6 +179,8 @@ protected:
 		return ew?-edgeDir: edgeDir;
 	}
 
+
+	void	initCellSurfaceList(nodeInfo& node);
 	void	addMultipleVertices(nodeInfo& node, const v3f& goodpoint);
 	void	setUpVertices(nodeInfo& node);
 	void	setUpEdges(nodeInfo node, std::map < u32, std::vector<u32>>& edgeMap);
@@ -290,7 +307,7 @@ protected:
 
 public:
 
-	BuildMeshFromEnveloppe(std::vector<nodeInfo*>& nodes, const std::vector<MSSurfaceStruct>& surfaces) : mNodeList(nodes), mAllSurfaces(surfaces)
+	BuildMeshFromEnveloppe(std::vector<nodeInfo*>& nodes,const std::vector<MSTriangleInfo>& triinfos) : mNodeList(nodes), mTriangleInfos(triinfos)
 	{}
 	void	Build();
 	void	addFinalizedMesh(std::vector<v3f>& vertices, std::vector<u32>& indices);

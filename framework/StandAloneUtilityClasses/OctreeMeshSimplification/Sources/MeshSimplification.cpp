@@ -40,92 +40,6 @@ bool operator<(const v3i& U, const v3i& V)
 }
 
 
-u32			MeshSimplification::surfaceListBuilder::insertSurface(const MSSurfaceStruct& toadd)
-{
-	int mapIndex = (toadd.mPlane.mDist * mOneOnPrecision);
-
-	int indexes[3] = { mapIndex,mapIndex - 1,mapIndex + 1 };
-
-	for (size_t i = 0; i < 3; i++)
-	{
-		for (auto si : mConstructionMap[indexes[i]])
-		{
-			auto& s = mParent.mAllSurfaces[si];
-			if (fabsf(s.mPlane.mDist - toadd.mPlane.mDist) < 0.001)
-			{
-				if (NormSquare(s.mPlane.mNormal - toadd.mPlane.mNormal) < 0.001)
-				{
-					s.mSurface += toadd.mSurface;
-					return si;
-				}
-			}
-		}
-	}
-
-	mParent.mAllSurfaces.push_back(toadd);
-
-	u32 newIndex = (u32)(mParent.mAllSurfaces.size() - 1);
-
-	mConstructionMap[mapIndex].push_back(newIndex);
-
-	return newIndex;
-	
-}
-
-void	MeshSimplification::surfaceListBuilder::build()
-{
-	// compute all planes in the mesh
-	// surfaces are not in octree coordinate system
-
-	for (int i = 0; i < mIndices.size(); i += 3) // send each triangles
-	{
-		v3f	u(mVertices[mIndices[i + 1]] - mVertices[mIndices[i]]);
-		v3f	v(mVertices[mIndices[i + 2]] - mVertices[mIndices[i]]);
-
-		v3f c;
-		c.CrossProduct(u, v);
-
-		MSSurfaceStruct toAdd;
-		toAdd.mPlane.mNormal = c;
-		float norm = Norm(toAdd.mPlane.mNormal);
-		if (norm == 0.0f)	// bad triangle
-		{
-			mParent.mTriangleSurfaceIndex.push_back(0);
-			continue;
-		}
-		toAdd.mPlane.mNormal /= norm;
-
-		// take object shift into account
-		toAdd.mPlane.mDist = Dot(mVertices[mIndices[i]] + mParent.mObjectShift, toAdd.mPlane.mNormal);
-		toAdd.mSurface = norm * 0.5f;
-
-		mParent.mTriangleSurfaceIndex.push_back(insertSurface(toAdd));
-	}
-	// finish surface setup
-	for (auto& s : mParent.mAllSurfaces)
-	{
-		s.mInOctreePlaneP0 = s.mPlane.mDist * s.mPlane.mNormal;
-		s.mInOctreePlaneP0 -= mParent.mOctree->mBBox.m_Min;
-		s.mInOctreePlaneP0 *= mParent.mOctree->mBBoxCoef;
-	}
-}
-
-
-void		MeshSimplification::computeSurfaceList(const std::vector<u32>& indices, const std::vector<v3f>& vertices, float precision)
-{
-	surfaceListBuilder doIt(indices, vertices, precision,*this);
-	mAllSurfaces.clear();
-
-	// add invalid one at first pos
-	MSSurfaceStruct toAdd;
-	toAdd.mSurface = 0.0;
-	toAdd.mPlane.mNormal.Set(0.0f, 0.0f, 0.0f);
-
-	mAllSurfaces.push_back(toAdd);
-
-	doIt.build();
-}
-
 // if precision gives a too deep octree, then change precision
 void	MeshSimplification::adjustPrecision(const BBox& bbox, float& precision)
 {
@@ -231,19 +145,15 @@ void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::
 	mOctree->setBBox(b);
 	mOctree->Init();
 
-	// compute all surfaces in object
-	computeSurfaceList(indices, vertices,precision);
-	mOctree->setSurfaceList(mAllSurfaces);
-
-
 	mOctree->setVertexList(vertices);
+
 	// then rasterize all triangles in octree
 	u32 triangleIndex = 0;
 	for (int i = 0; i < indices.size(); i += 3) // send each triangles
 	{
-		if (mTriangleSurfaceIndex[triangleIndex] != 0) // only valid triangles
+		//if (mTriangleSurfaceIndex[triangleIndex] != 0) // only valid triangles
 		{
-			mOctree->setVoxelContent(indices[i], indices[i + 1], indices[i + 2], mTriangleSurfaceIndex[triangleIndex]);
+			mOctree->setVoxelContent(indices[i], indices[i + 1], indices[i + 2],0/* mTriangleSurfaceIndex[triangleIndex]*/);
 		}
 		triangleIndex++;
 	}
@@ -352,7 +262,7 @@ void MeshSimplification::rebuildMesh(u32 groupIndex, std::vector<nodeInfo>& enve
 	}
 
 	// ok, let's build a mesh
-	BuildMeshFromEnveloppe* meshBuilder = new BuildMeshFromEnveloppe(thisGroupEnvelopeNodes,mAllSurfaces);
+	BuildMeshFromEnveloppe* meshBuilder = new BuildMeshFromEnveloppe(thisGroupEnvelopeNodes,mOctree->mTriangleInfos);
 	meshBuilder->Build();
 #ifdef _DEBUG
 	enveloppeMesh toAdd;

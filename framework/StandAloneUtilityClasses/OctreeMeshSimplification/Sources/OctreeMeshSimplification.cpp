@@ -8,21 +8,6 @@ void	MSOctreeContent::ContentData::initEnvelopeData()
 	if (mEnvelopeData)
 		return;
 	mEnvelopeData = new additionnalEnvelopeData();
-
-	// precompute some usefull structures
-	for (const auto& v : mVertices)
-	{
-		mEnvelopeData->mAllSurfaces.insert(v.mSurfaceIndex);
-
-		// round vertex pos
-		v3f roundedV = v.mVertex;
-		roundedV *= 1000.0f;
-		roundedV.Set(round(roundedV.x),round(roundedV.y), round(roundedV.z));
-		roundedV /= 1000.0f;
-		
-		mEnvelopeData->mPerVSurfaces[roundedV].insert(v.mSurfaceIndex);
-	}
-
 }
 
 std::vector<std::pair<u32, float>>	MSOctreeContent::ContentData::getPrincipalSurfacesForDirection(const nodeInfo& n, const v3f& dir, const std::vector<MSSurfaceStruct>& Surfaces)
@@ -33,10 +18,9 @@ std::vector<std::pair<u32, float>>	MSOctreeContent::ContentData::getPrincipalSur
 
 	std::vector<std::pair<u32, float>> oksurfs;
 
-	for (auto s : mEnvelopeData->mAllSurfaces)
+	u32 s = 0;
+	for (const auto& surfInfo : Surfaces)
 	{
-		const MSSurfaceStruct& surfInfo = Surfaces[s];
-
 		float dot = (Dot(dir, surfInfo.mPlane.mNormal));
 		float d = fabsf(dot);
 		if (d >= 0.7071f)
@@ -50,6 +34,7 @@ std::vector<std::pair<u32, float>>	MSOctreeContent::ContentData::getPrincipalSur
 			// here I should just reject too low score
 			oksurfs.push_back({ s,d });
 		}
+		s++;
 
 	}
 
@@ -72,8 +57,8 @@ IMPLEMENT_CONSTRUCTOR(MeshSimplificationOctree)
 // set vertex list and transform it in octree coordinate
 void			MeshSimplificationOctree::setVertexList(const std::vector<v3f>& vlist)
 {
-	mInOctreeCoordsVertices = vlist;
-	for (auto& v : mInOctreeCoordsVertices)
+	mIOCVertices = vlist;
+	for (auto& v : mIOCVertices)
 	{
 		TransformInOctreeCoord(v);
 	}
@@ -323,29 +308,53 @@ void MeshSimplificationOctree::segmentPlaneIntersection(const v3f& P1, const v3f
 	outSegTips.insert(out);
 }
 
+u32 MeshSimplificationOctree::computeTriangleInfos(u32 P1, u32 P2, u32 P3)
+{
+	v3f	u(mIOCVertices[P2] - mIOCVertices[P1]);
+	v3f	v(mIOCVertices[P3] - mIOCVertices[P1]);
+
+	v3f c;
+	c.CrossProduct(u, v);
+
+	MSTriangleInfo	toAdd;
+	toAdd.mNormal = c;
+	float norm = Norm(toAdd.mNormal);
+	if (norm == 0.0f)	// bad triangle
+	{
+		return -1;
+	}
+	toAdd.mNormal /= norm;
+	toAdd.mSurface = norm * 0.5f;
+
+	mTriangleInfos.push_back(toAdd);
+
+	return mTriangleInfos.size() - 1;
+}
+
+
+
 // rasterize a triangle and put it in the octree
 void			MeshSimplificationOctree::setVoxelContent(u32 P1, u32 P2, u32 P3, u32 surfaceIndex)
 {
 
-	v3f	octreeCoords[3];
+	v3f*	octreeCoords[3];
 
-	octreeCoords[0] = mInOctreeCoordsVertices[P1];
-	octreeCoords[1] = mInOctreeCoordsVertices[P2];
-	octreeCoords[2] = mInOctreeCoordsVertices[P3];
+	octreeCoords[0] = &mIOCVertices[P1];
+	octreeCoords[1] = &mIOCVertices[P2];
+	octreeCoords[2] = &mIOCVertices[P3];
 
-	BBox	triangleBBox(octreeCoords[0]);
-	triangleBBox.Update(octreeCoords[1]);
-	triangleBBox.Update(octreeCoords[2]);
+	BBox	triangleBBox(mIOCVertices[P1]);
+	triangleBBox.Update(mIOCVertices[P2]);
+	triangleBBox.Update(mIOCVertices[P3]);
 
-	const MSSurfaceStruct& surf = (*mAllSurfacesPtr)[surfaceIndex];
+	u32 triangleindex = computeTriangleInfos(P1,P2,P3);
+	if (triangleindex == -1) // flat triangle
+		return;
+
+	//const MSSurfaceStruct& surf = (*mAllSurfacesPtr)[surfaceIndex];
 	// get triangle normal
-	const v3f& triangleNormal = surf.mPlane.mNormal;
-
-
-	v3f inOctreePlanePos = surf.mPlane.mDist * surf.mPlane.mNormal;
-	inOctreePlanePos -= mBBox.m_Min;
-	inOctreePlanePos *= mBBoxCoef;
-	float inOctreePlanedist = Dot(surf.mPlane.mNormal, inOctreePlanePos);
+	const v3f& triangleNormal = mTriangleInfos[triangleindex].mNormal;
+	float inOctreePlanedist = Dot(triangleNormal, mIOCVertices[P1]);
 
 	// precomputed "radius" for cell/plane intersection test
 	float precompR = (0.5f * (fabsf(triangleNormal.x) + fabsf(triangleNormal.y) + fabsf(triangleNormal.z)));
@@ -383,7 +392,7 @@ void			MeshSimplificationOctree::setVoxelContent(u32 P1, u32 P2, u32 P3, u32 sur
 	// first, add triangle vertices
 	for (int pts = 0; pts < 3; pts++)
 	{
-		intersectionStruct[octreeCoords[pts][proj2DAxis1]][octreeCoords[pts][proj2DAxis2]].insert(octreeCoords[pts]);
+		intersectionStruct[(*(octreeCoords[pts]))[proj2DAxis1]][(*(octreeCoords[pts]))[proj2DAxis2]].insert((*(octreeCoords[pts])));
 	}
 
 	for (int planeIndex = 0; planeIndex < 3; planeIndex++)
@@ -409,7 +418,7 @@ void			MeshSimplificationOctree::setVoxelContent(u32 P1, u32 P2, u32 P3, u32 sur
 			p.mDist = -pos1;
 			std::set<v3f>	segments;
 
-			trianglePlaneIntersection(octreeCoords[0], octreeCoords[1], octreeCoords[2], p, segments);
+			trianglePlaneIntersection(mIOCVertices[P1], mIOCVertices[P2], mIOCVertices[P3], p, segments);
 
 			for (auto& pt : segments)
 			{
@@ -528,7 +537,7 @@ void			MeshSimplificationOctree::setVoxelContent(u32 P1, u32 P2, u32 P3, u32 sur
 					{
 						if ((p[projplaneindex] >= thirdAxisFloat) && (p[projplaneindex] <= (thirdAxisFloat + 1.0f)))
 						{
-							nodeToFill->setContent(p, surfaceIndex);
+							nodeToFill->setContent(p, surfaceIndex,triangleindex);
 						}
 					}
 
