@@ -422,7 +422,7 @@ public:
 		return package;
 	}
 
-	void	AddFile(const std::string& filename, const std::string& filePathInPackage);
+	void	AddFile(const std::string& filename, const std::string& filePathInPackage, SP<CoreRawBuffer> memfile = nullptr);
 	void	AddFolder(const std::string& foldername, const std::string& FolderNameInPackage);
 	void	RemoveFile(const std::string& filename);
 
@@ -476,13 +476,14 @@ private:
 
 		struct fileNames
 		{
-			std::string	mPhysicalName;
-			std::string	mPackageName;
+			std::string			mPhysicalName;
+			std::string			mPackageName;
+			SP<CoreRawBuffer>	mMemfile;
 		};
 
 		struct FileTreeNode
 		{
-			std::string				mName;
+			std::string					mName;
 			fileNames*					mFileNames;	// null for folder
 			std::vector<FileTreeNode>	mSons;
 		};
@@ -496,11 +497,12 @@ private:
 
 		}
 
-		void	AddFile(const std::string& filename, const std::string& filePathInPackage)
+		void	AddFile(const std::string& filename, const std::string& filePathInPackage, SP<CoreRawBuffer> memfile=nullptr)
 		{
 			fileNames	toAdd;
 			toAdd.mPhysicalName = filename;
 			toAdd.mPackageName = filePathInPackage;
+			toAdd.mMemfile = memfile;
 			mFileList.push_back(toAdd);
 		}
 
