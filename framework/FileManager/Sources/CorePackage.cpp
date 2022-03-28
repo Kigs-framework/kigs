@@ -773,6 +773,8 @@ void CorePackage::PackageCreationStruct::ExportFiles(const FileTreeNode& node, S
 				unsigned int	zeros = 0;
 				Platform_fwrite(&zeros, padFileSize, 1, L_File.get());
 			}
+			// free buffer now
+			node.mFileNames->mMemfile = nullptr;
 		}
 		else
 		{
