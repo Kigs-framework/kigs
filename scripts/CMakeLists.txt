@@ -226,6 +226,8 @@ if(WIN32 OR KIGS_ANDROID)
 		target_compile_options(Base INTERFACE /bigobj)
 		target_link_options(Base INTERFACE $<$<CONFIG:StaticReleaseTools>:/INCREMENTAL>)
 		target_link_options(Base INTERFACE $<$<CONFIG:StaticDebug>:/INCREMENTAL>)
+		target_compile_options(Base INTERFACE $<$<CONFIG:StaticRelease>:/Zi>)
+		target_link_options(Base INTERFACE $<$<CONFIG:StaticRelease>:/DEBUG:FULL>)
 	endif()
 elseif(APPLE) #TODO : ios / osX
 	set(KIGS_PLATFORM iOS)

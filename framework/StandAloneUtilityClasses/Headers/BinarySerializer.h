@@ -344,6 +344,34 @@ namespace serializer_detail
 		return true;
 	}
 
+	template <class Variant, std::size_t I = 0>
+	Variant variant_from_index(std::size_t index)
+	{
+		if constexpr (I >= std::variant_size_v<Variant>)
+			throw std::runtime_error{ "Variant index " + std::to_string(I + index) + " out of bounds" };
+		else
+			return index == 0
+			? Variant{ std::in_place_index<I> }
+		: variant_from_index<Variant, I + 1>(index - 1);
+	}
+
+	template<typename PacketStream, typename ... Types>
+	bool serialize(PacketStream& stream, std::variant<Types...>& t)
+	{
+		size_t index = 0;
+		if constexpr (PacketStream::IsWriting)
+			index = t.index();
+		CHECK_SERIALIZE(serialize_object(stream, index));
+
+		if constexpr (!PacketStream::IsWriting)
+			t = variant_from_index<std::variant<Types...>>(index);
+
+		return std::visit([&](auto&& r)
+		{
+			return serialize_object(stream, r);
+		}, t);
+	}
+
 	template<typename PacketStream, typename T1, typename T2>
 	bool serialize(PacketStream& stream, std::pair<T1, T2>& t)
 	{
