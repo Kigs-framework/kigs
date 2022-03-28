@@ -205,14 +205,14 @@ std::string CorePackage::getRootFolderName()
 	
 }
 
-void	CorePackage::AddFile(const kstl::string& filename, const kstl::string& filePathInPackage)
+void	CorePackage::AddFile(const kstl::string& filename, const kstl::string& filePathInPackage,SP<CoreRawBuffer> memfile)
 {
 	if (!mPackageBuilderStruct)
 	{
 		KIGS_ERROR("can't add new file to an existing package",1);
 		return;
 	}
-	mPackageBuilderStruct->AddFile(filename, filePathInPackage);
+	mPackageBuilderStruct->AddFile(filename, filePathInPackage, memfile);
 }
 
 void	CorePackage::RemoveFile(const kstl::string& filename)
@@ -763,41 +763,57 @@ void CorePackage::PackageCreationStruct::ExportFiles(const FileTreeNode& node, S
 {
 	if (node.mFileNames) // this is a file (not a folder)
 	{
-		auto L_ReadFile = mFPM->FindFullName(node.mFileNames->mPhysicalName.c_str());
-		if (L_ReadFile->mStatus&FileHandle::Exist && Platform_fopen(L_ReadFile.get(), "rb"))
+		if (node.mFileNames->mMemfile)
 		{
-			Platform_fseek(L_ReadFile.get(), 0, SEEK_END);
-			u64 filesize = Platform_ftell(L_ReadFile.get());
-			Platform_fseek(L_ReadFile.get(), 0, SEEK_SET);
-			// round file size on 4 bytes
-			u64 padFileSize = (4 - (filesize & 3)) & 3;
-			u64 remaining = filesize;
-			
-			while (remaining)
-			{
-				unsigned int toRead = bufferLen;
-				if (remaining < bufferLen)
-				{
-					toRead = remaining;
-				}
-				Platform_fread(tmpBuffer, 1, toRead, L_ReadFile.get());
-				Platform_fwrite(tmpBuffer, 1, toRead, L_File.get());
-				remaining -= toRead;
-			}
+			Platform_fwrite(node.mFileNames->mMemfile->buffer(), 1, node.mFileNames->mMemfile->length(), L_File.get());
 
+			u64 padFileSize = (4 - (node.mFileNames->mMemfile->length() & 3)) & 3;
 			if (padFileSize)
 			{
 				unsigned int	zeros = 0;
 				Platform_fwrite(&zeros, padFileSize, 1, L_File.get());
 			}
-
-			Platform_fclose(L_ReadFile.get());
-			
+			// free buffer now
+			node.mFileNames->mMemfile = nullptr;
 		}
 		else
 		{
-			STACK_STRING(err, 2048, "Couldn't open file (errno: %d, statusflag: %d): %s", errno, L_ReadFile->mStatus, node.mFileNames->mPhysicalName.c_str());
-			KIGS_ERROR(err, 3);
+			auto L_ReadFile = mFPM->FindFullName(node.mFileNames->mPhysicalName.c_str());
+			if (L_ReadFile->mStatus & FileHandle::Exist && Platform_fopen(L_ReadFile.get(), "rb"))
+			{
+				Platform_fseek(L_ReadFile.get(), 0, SEEK_END);
+				u64 filesize = Platform_ftell(L_ReadFile.get());
+				Platform_fseek(L_ReadFile.get(), 0, SEEK_SET);
+				// round file size on 4 bytes
+				u64 padFileSize = (4 - (filesize & 3)) & 3;
+				u64 remaining = filesize;
+
+				while (remaining)
+				{
+					unsigned int toRead = bufferLen;
+					if (remaining < bufferLen)
+					{
+						toRead = remaining;
+					}
+					Platform_fread(tmpBuffer, 1, toRead, L_ReadFile.get());
+					Platform_fwrite(tmpBuffer, 1, toRead, L_File.get());
+					remaining -= toRead;
+				}
+
+				if (padFileSize)
+				{
+					unsigned int	zeros = 0;
+					Platform_fwrite(&zeros, padFileSize, 1, L_File.get());
+				}
+
+				Platform_fclose(L_ReadFile.get());
+
+			}
+			else
+			{
+				STACK_STRING(err, 2048, "Couldn't open file (errno: %d, statusflag: %d): %s", errno, L_ReadFile->mStatus, node.mFileNames->mPhysicalName.c_str());
+				KIGS_ERROR(err, 3);
+			}
 		}
 	}
 
@@ -822,26 +838,40 @@ void	CorePackage::PackageCreationStruct::FillFATExportedStruct(const FileTreeNod
 
 	if (node.mFileNames) // this is a file (not a folder)
 	{
-		SmartPointer<FileHandle> L_File = mFPM->FindFullName(node.mFileNames->mPhysicalName);
-		if (L_File->mStatus&FileHandle::Exist && Platform_fopen(L_File.get(), "rb"))
+		if (node.mFileNames->mMemfile) // directly a CoreRawBuffer
 		{
-			Platform_fseek(L_File.get(), 0, SEEK_END);
-			u64 filesize= Platform_ftell(L_File.get());
-			Platform_fseek(L_File.get(), 0, SEEK_SET);
-			Platform_fclose(L_File.get());
+			u64 filesize = node.mFileNames->mMemfile->length();
 			CurrentEntry->mFileSize = filesize;
 			CurrentEntry->mFileOffset = currentOffset;
 
 			// round file size on 4 bytes
-
-			u64 padFileSize = (4-(filesize & 3)) & 3;
+			u64 padFileSize = (4 - (filesize & 3)) & 3;
 
 			currentOffset += filesize + padFileSize;
 		}
 		else
 		{
-			std::string err = node.mFileNames->mPhysicalName + " not found when exporting package";
-			kigsprintf(err.c_str());
+			SmartPointer<FileHandle> L_File = mFPM->FindFullName(node.mFileNames->mPhysicalName);
+			if (L_File->mStatus & FileHandle::Exist && Platform_fopen(L_File.get(), "rb"))
+			{
+				Platform_fseek(L_File.get(), 0, SEEK_END);
+				u64 filesize = Platform_ftell(L_File.get());
+				Platform_fseek(L_File.get(), 0, SEEK_SET);
+				Platform_fclose(L_File.get());
+				CurrentEntry->mFileSize = filesize;
+				CurrentEntry->mFileOffset = currentOffset;
+
+				// round file size on 4 bytes
+
+				u64 padFileSize = (4 - (filesize & 3)) & 3;
+
+				currentOffset += filesize + padFileSize;
+			}
+			else
+			{
+				std::string err = node.mFileNames->mPhysicalName + " not found when exporting package";
+				kigsprintf(err.c_str());
+			}
 		}
 	}
 
@@ -892,9 +922,10 @@ CorePackage::PackageCreationStruct::FileTreeNode	CorePackage::PackageCreationStr
 	kstl::vector<fileNames>::iterator	it;
 	for (it = mFileList.begin(); it != mFileList.end(); ++it)
 	{
+		
 		kstl::string fileInPackage = (*it).mPackageName;
 		kstl::string shortfilename = "";
-		kstl::vector<kstl::string> path=RetreivePath(fileInPackage, shortfilename, working_directory);
+		kstl::vector<kstl::string> path = RetreivePath(fileInPackage, shortfilename, working_directory);
 
 		FileTreeNode* currentFileTreeNode = &root;
 
@@ -911,7 +942,7 @@ CorePackage::PackageCreationStruct::FileTreeNode	CorePackage::PackageCreationStr
 					break;
 				}
 			}
-			
+
 			if (!foundFolder)
 			{
 				FileTreeNode	toAdd;
@@ -921,7 +952,7 @@ CorePackage::PackageCreationStruct::FileTreeNode	CorePackage::PackageCreationStr
 				currentFileTreeNode = &currentFileTreeNode->mSons.back();
 			}
 		}
-
+		
 		FileTreeNode	toAdd;
 		toAdd.mFileNames = &(*it);
 		toAdd.mName = shortfilename;
