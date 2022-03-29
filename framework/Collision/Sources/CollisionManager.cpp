@@ -1695,16 +1695,18 @@ void CollisionManager::ExportLeafAABBTrees(const CMSP& node, ExportSettings* set
 				{
 					auto result = MakeRefCounted<CoreRawBuffer>();
 					compressManager->SimpleCall("CompressData", crb.get(), result.get());
-					ModuleFileManager::SaveFile(filepath.c_str(), (u8*)result->data(), result->size());
+					crb = result;
 				}
+				
+				bool inline_export = settings->current_package && settings->export_directly_in_package;
+				if(inline_export)
+					settings->current_package->AddFile(filepath, path, crb);
 				else
 				{
 					ModuleFileManager::SaveFile(filepath.c_str(), (u8*)crb->data(), crb->length());
+					if(settings->current_package)
+						settings->current_package->AddFile(filepath, path);
 				}
-
-				if (settings->current_package)
-					settings->current_package->AddFile(filepath, path);
-
 				settings->external_files_exported.insert(path);
 			}
 		}
