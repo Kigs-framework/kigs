@@ -1983,7 +1983,10 @@ void	CoreModifiable::Export(const std::string &filename,CoreModifiable* toexport
 			if (settings->export_directly_in_package)
 			{
 				write_file = false;
-				auto buffer = xmlfile->WriteBuffer();
+				std::string fileext;
+				size_t extpos = filename.rfind(".") + 1;
+				fileext = filename.substr(extpos, filename.length() - extpos);
+				auto buffer = xmlfile->WriteBuffer(fileext == "kxml");
 				settings->current_package->AddFile(xmlpath, filename, buffer);
 			}
 			else

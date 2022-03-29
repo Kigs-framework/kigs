@@ -18,7 +18,7 @@ void	XMLBase::WriteFile(const std::string& filename)
 	}
 }
 
-SP<CoreRawBuffer> XMLBase::WriteBuffer()
+SP<CoreRawBuffer> XMLBase::WriteBuffer(bool compress)
 {
 	if (useStringRef())
 	{
@@ -26,7 +26,7 @@ SP<CoreRawBuffer> XMLBase::WriteBuffer()
 	}
 	else
 	{
-		return XMLWriterFile::WriteBuffer(*(XML*)this);
+		return XMLWriterFile::WriteBuffer(*(XML*)this, true, compress);
 	}
 	return nullptr;
 }
