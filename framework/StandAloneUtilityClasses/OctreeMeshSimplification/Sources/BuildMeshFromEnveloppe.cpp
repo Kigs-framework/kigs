@@ -1,5 +1,6 @@
 #include "BuildMeshFromEnveloppe.h"
 #include "TecLibs/2D/BBox2D.h"
+#include "TecLibs/Geometrie/ConvexHull2D.h"
 
 unsigned int adjacent_faces[6][4] = { {8,32,4,16},{8,16,4,32},{2,16,1,32},{2,32,1,16},{8,1,4,2},{8,2,4,1} };
 
@@ -765,11 +766,83 @@ void	BuildMeshFromEnveloppe::checkVOnCoplanarTriangles(MSVertice& v)
 		v.mFlag = 8; 
 }
 
+void	BuildMeshFromEnveloppe::doShringEdge(MSVertice& v, const std::pair<u32, u32>& mergeWith,u32 vindex)
+{
+
+	auto removeFromGoodIntersection = [](MSVertice& v, u32 vindex)
+	{
+		MeshSimplificationOctreeNode* currentNode = v.mOctreeNode->getNode<MeshSimplificationOctreeNode>();
+		const auto& content = currentNode->getContentType();
+
+		for (auto it = content.mData->mEnvelopeData->mGoodIntersectionPoint.begin(); it != content.mData->mEnvelopeData->mGoodIntersectionPoint.end(); it++)
+		{
+			if ((*it).first == vindex)
+			{
+				content.mData->mEnvelopeData->mGoodIntersectionPoint.erase(it);
+				break;
+			}
+		}
+
+	};
+
+	std::vector<u32>	InternEdgedToSwitch = findInternEdgesToSwitch(v, mergeWith);
+
+	u32 shrinkEdge = v.mEdges[mergeWith.first];
+
+	// now do merge
+	// the edge to null
+	MSEdge& currentE = mEdges[v.mEdges[mergeWith.first] & 0x7fffffff];
+
+	// flatten both triangles
+	for (u32 ti = 0; ti < 2; ti++)
+	{
+		// for each triangle
+		MSFace& f = mFaces[currentE.t[ti]];
+		flattenTriangles(f, currentE.t[ti], vindex, mergeWith.second, v.mEdges[mergeWith.first] & 0x7fffffff);
+	}
+
+	std::vector<u32>::iterator	iteii;
+	for (iteii = InternEdgedToSwitch.begin(); iteii != InternEdgedToSwitch.end(); iteii++)
+	{
+		u32 eii = *iteii;
+		u32 e = v.mEdges[eii];
+		u32 ew = (e >> 31);
+		u32 ei = (e & 0x7fffffff);
+#ifdef _DEBUG
+		if (mEdges[ei].v[ew] != vindex)
+		{
+			printf("WTF");
+		}
+#endif
+		mEdges[ei].v[ew] = mergeWith.second;
+
+		// add new edge to dest vertice 
+		//mVertices[mergeWith.second].mEdges.push_back(e);
+		mVertices[mergeWith.second].insertEdgeBefore(shrinkEdge & 0x7fffffff, e);
+	}
+
+	// remove edge from dest vertice
+	for (std::vector<u32>::iterator ite = mVertices[mergeWith.second].mEdges.begin(); ite != mVertices[mergeWith.second].mEdges.end(); ite++)
+	{
+		u32 e = *ite;
+
+		if ((e & 0x7fffffff) == (shrinkEdge & 0x7fffffff))
+		{
+			mVertices[mergeWith.second].mEdges.erase(ite);
+			break;
+		}
+	}
+
+	mEdges[shrinkEdge & 0x7fffffff].v[0] = mEdges[shrinkEdge & 0x7fffffff].v[1] = 0;
+
+	removeFromGoodIntersection(v, vindex);
+}
+
 //#pragma optimize("",on)
 // do mesh simplification by merging triangles
 void BuildMeshFromEnveloppe::mergeTriangles()
 {
-	
+
 #ifdef _DEBUG
 	u32 countPass = 0;
 #endif
@@ -799,7 +872,7 @@ void BuildMeshFromEnveloppe::mergeTriangles()
 					checkCoherency();
 				}*/
 				// get best neighbor to merge with
-				// first : edge index in current vertice list
+				// first : edge index in current vertice edge list
 				// second : vertice index 
 				std::pair<u32,u32> mergeWith;
 				if (v.mFlag == 0)
@@ -817,67 +890,19 @@ void BuildMeshFromEnveloppe::mergeTriangles()
 					continue;
 				}
 
-				std::vector<u32>	InternEdgedToSwitch = findInternEdgesToSwitch(v, mergeWith);
-				
-				u32 shrinkEdge = v.mEdges[mergeWith.first];
-				
-
-				// now do merge
-				// the edge to null
-				MSEdge& currentE = mEdges[v.mEdges[mergeWith.first] & 0x7fffffff];
-
-				// flatten both triangles
-				for (u32 ti = 0; ti < 2; ti++)
-				{
-					// for each triangle
-					MSFace& f = mFaces[currentE.t[ti]];
-					flattenTriangles(f, currentE.t[ti], vindex,mergeWith.second, v.mEdges[mergeWith.first] & 0x7fffffff);
-				}
-				
-				std::vector<u32>::iterator	iteii;
-				for (iteii = InternEdgedToSwitch.begin(); iteii != InternEdgedToSwitch.end(); iteii++)
-				{
-					u32 eii = *iteii;
-					u32 e = v.mEdges[eii];
-					u32 ew = (e >> 31);
-					u32 ei = (e & 0x7fffffff);
-#ifdef _DEBUG
-					if (mEdges[ei].v[ew] != vindex)
-					{
-						printf("WTF");
-					}
-#endif
-					mEdges[ei].v[ew] = mergeWith.second;
-					
-					// add new edge to dest vertice 
-					//mVertices[mergeWith.second].mEdges.push_back(e);
-					mVertices[mergeWith.second].insertEdgeBefore(shrinkEdge & 0x7fffffff, e);
-				}
-
-				// remove edge from dest vertice
-				for (std::vector<u32>::iterator ite = mVertices[mergeWith.second].mEdges.begin(); ite != mVertices[mergeWith.second].mEdges.end(); ite++)
-				{
-					u32 e = *ite;
-
-					if ((e & 0x7fffffff) == (shrinkEdge & 0x7fffffff))
-					{
-						mVertices[mergeWith.second].mEdges.erase(ite);
-						break;
-					}
-				}
+				doShringEdge(v, mergeWith,vindex);
 
 				// this vertice is now invalid
 				v.mFlag = 16;
 				v.mEdges.clear();
 
-				mEdges[shrinkEdge & 0x7fffffff].v[0] = mEdges[shrinkEdge & 0x7fffffff].v[1] = 0;
+				
 
 				//if(mergeWith.second < vindex)
 				{
 					// as long as we have found merge, check to do it again
 					doItAgain = true;
 				}
-				
 				
 				//checkCoherency();
 				//checkVerticeCoherency();
@@ -1546,7 +1571,7 @@ void	BuildMeshFromEnveloppe::finalClean()
 
 }
 #pragma optimize("",off)
-void	BuildMeshFromEnveloppe::manageInnerCorners()
+void	BuildMeshFromEnveloppe::setupInnerCorners()
 {
 	auto getEdgeNormal = [this](auto& e)->v3f {
 		
@@ -1586,51 +1611,8 @@ void	BuildMeshFromEnveloppe::manageInnerCorners()
 		return normal;
 	};
 
-	auto getSameEdges = [this](auto& e)->std::vector<u32>
-	{
-		std::vector<u32> result;
+	mInnerCornersList.clear();
 
-		u32 vindex = e.v[0];
-		auto& v = mVertices[e.v[0]];
-
-		const v3f& edgeend= mVertices[e.v[1]].mV;
-
-		MeshSimplificationOctreeNode* currentNode = v.mOctreeNode->getNode<MeshSimplificationOctreeNode>();
-		auto& content = currentNode->getContentType();
-
-		for (const auto& f : content.mData->mEnvelopeData->mGoodIntersectionPoint)
-		{
-			if (e.v[0] != f.first) // don't test this point
-			{
-				const auto& testv = mVertices[f.first];
-				if (v.mV == testv.mV) // but test same pos
-				{
-					// look at all edges for this vertice
-					for (auto othere : testv.mEdges)
-					{
-						u32 ew = othere >> 31;
-						u32 ei = othere & 0x7fffffff;
-
-						const v3f& otherend = mVertices[mEdges[ei].v[1 - ew]].mV;
-						if (otherend == edgeend)
-						{
-							result.push_back(ei);
-						}
-					}
-				}
-			}
-		}
-
-		return result;
-	};
-
-	// list of innercorners index
-	std::set<u32>	edgesToMove;
-
-	// key = vertice index, vector of pos + edge index
-	std::map<u32, std::vector<std::pair<v3f, u32>> > verticesToMove;
-
-	// now manage single edges
 	// search inner corner edges
 	u32 edgeindex = 0;
 	for (auto& e : mEdges)
@@ -1644,6 +1626,7 @@ void	BuildMeshFromEnveloppe::manageInnerCorners()
 			v3f P[2];
 			v3f	inoutvector[2];
 			
+			// check that angle between in/out vector and normal is compatible
 			bool isGoodEdge = true;
 			for (size_t i = 0; i < 2; i++)
 			{
@@ -1664,15 +1647,16 @@ void	BuildMeshFromEnveloppe::manageInnerCorners()
 				}
 			}
 
-
+			// not a good candidate
 			if (!isGoodEdge)
 			{
+				e.flags ^= 6; // remove flag
 				edgeindex++;
 				continue;
 			}
 
+			// search intersection point
 			v3f DP(P[0] - P[1]);
-
 			v3f v1(inoutvector[0]);
 			v1.Normalize();
 			v3f v2(inoutvector[1]);
@@ -1730,120 +1714,144 @@ void	BuildMeshFromEnveloppe::manageInnerCorners()
 
 					if ((DistSquare(bestP, mVertices[e.v[0]].mV) < 4.0f) && (DistSquare(bestP, mVertices[e.v[1]].mV) < 4.0f))
 					{
-						// search duplicate edges, and move all of them
-						std::vector<u32> edgelist = getSameEdges(e);
-						edgelist.push_back(edgeindex);
-						for (auto edgeinlist : edgelist)
-						{
-							edgesToMove.insert(edgeinlist);
+						
+						innerCornerEdge toAdd;
+						toAdd.mFinalPos = bestP;
+						toAdd.mVertices[0] = mVertices[e.v[0]].mV;
+						toAdd.mVertices[1] = mVertices[e.v[1]].mV;
+						toAdd.mOctreeNode[0] = mVertices[e.v[0]].mOctreeNode;
+						toAdd.mOctreeNode[1] = mVertices[e.v[1]].mOctreeNode;
 
-							auto& currente = mEdges[edgeinlist];
-							currente.flags = 0;
-
-							verticesToMove[currente.v[0]].push_back({ bestP, edgeinlist });
-							verticesToMove[currente.v[1]].push_back({ bestP, edgeinlist });
-
-						}
+						mInnerCornersList.push_back(toAdd);
 						
 					}
-					else
+					/*else
 					{
 						printf("");
-					}
+					}*/
 				}
 				/*else
 				{
 					printf("");
 				}*/
 			}
-			else
+			/*else
 			{
 				printf("");
-			}
+			}*/
 		}
 		edgeindex++;
 	}
+}
 
-	for (const auto& v : verticesToMove)
-	{
-		const auto& vlist = v.second;
-		v3f finalpos(0.0f, 0.0f, 0.0f);
 
-		for (auto& p : vlist)
+void	BuildMeshFromEnveloppe::moveInnerCorners()
+{
+	auto isVerticeThere = [this](const v3f& v, const nodeInfo* node)->u32 {
+
+		MeshSimplificationOctreeNode* currentNode = node->getNode<MeshSimplificationOctreeNode>();
+		auto& content = currentNode->getContentType();
+
+		u32 freefacemask = 0;
+		// find current vertice in node
+		for (const auto& f : content.mData->mEnvelopeData->mGoodIntersectionPoint)
 		{
-			finalpos += p.first;
+			if (DistSquare(mVertices[f.first].mV, v)<0.01f) 
+			{
+				return f.first;
+			}
 		}
-		finalpos /= (float)vlist.size();
-		mVertices[v.first].mV = finalpos;
-	}
-	/*for (auto e : edgesToMove)
+		return -1;
+	};
+
+	struct validIC
 	{
+		size_t	index;
+		u32		vertices[2];
+	};
+	std::vector<validIC>	validOnes;
+	size_t index = 0;
 
-		auto& currente = mEdges[e];
+	std::map<u32,std::set<u32>>	linkedVertices;
+	// build list of still valid corners and linked vertices
 
-		// for now, move only edges with one reference
-
-		u32 v1 = currente.v[0];
-		u32 v2 = currente.v[1];
-
-		if ((verticesToMove[v1].size() == 1) && (verticesToMove[v2].size() == 1))
-		{
-			// set both edge vertices point to bestP 
+	for (auto& e : mInnerCornersList)
+	{
+		validIC	current;
 		
-			mVertices[v1].mV = verticesToMove[v1].back().first;
-			mVertices[v2].mV = verticesToMove[v1].back().first;
+		// check if edge still exists
+		for (u32 i = 0; i < 2; i++)
+		{
+			current.vertices[i] = isVerticeThere(e.mVertices[i], e.mOctreeNode[i]);
+		}
 
-			// don't change nodeinfos
-#ifdef _MOVE_VERTICES_
-			const nodeInfo* nodes[2];
-			nodes[0] = mVertices[currente.v[0]].mOctreeNode;
-			nodes[1] = mVertices[currente.v[1]].mOctreeNode;
+		if ((current.vertices[0] != -1) && (current.vertices[1] != -1))
+		{
+			validOnes.push_back(current);
+			linkedVertices[current.vertices[0]].insert(current.vertices[1]);
+			linkedVertices[current.vertices[1]].insert(current.vertices[0]);
+		}
+		
+		++index;
+	}
 
-			u32 nodeindex = 0;
-			// move point in "lower" cell
-			if (nodes[1] < nodes[0])
+	// group vertices
+	std::map<u32, std::vector<u32>>	Groups;
+
+	std::function<void(u32, u32)> recurseInsertInGroup = [this,&Groups, &linkedVertices,&recurseInsertInGroup](u32 group, u32 toInsert)->void
+	{
+		if (group == toInsert)
+			return;
+		for (auto i : Groups[group]) // check if already inserted
+		{
+			if (i == toInsert)
 			{
-				nodeindex = 1;
+				return;
 			}
+		}
 
-			MeshSimplificationOctreeNode* currentNode = nodes[nodeindex]->getNode<MeshSimplificationOctreeNode>();
-			MeshSimplificationOctreeNode* otherNode = nodes[1 - nodeindex]->getNode<MeshSimplificationOctreeNode>();
-			auto& content = currentNode->getContentType();
-			auto& othercontent = otherNode->getContentType();
+		Groups[group].push_back(toInsert);
+		for (auto i : linkedVertices[toInsert])
+		{
+			recurseInsertInGroup(group, i);
+		}
+		linkedVertices[toInsert].clear();
+	};
 
-			if (currentNode != otherNode)
+	std::function<void(u32, std::set<u32>&)> insertInGroup = [&Groups,&linkedVertices,&recurseInsertInGroup](u32 toInsert,std::set<u32>& linkList)->void
+	{
+		if( (Groups.find(toInsert) == Groups.end()) && linkList.size())
+		{
+			Groups[toInsert]; // create entry
+			for (auto link : linkList)
 			{
-				u32 vindextomove = 0;
-				if (mVertices[currente.v[0]].mOctreeNode == nodes[nodeindex])
-				{
-					mVertices[currente.v[1]].mOctreeNode = nodes[nodeindex];
-					vindextomove = 1;
-				}
-				else
-				{
-					mVertices[currente.v[0]].mOctreeNode = nodes[nodeindex];
-				}
-
-				int backindex = othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.size();
-				backindex--;
-				while (backindex >= 0)
-				{
-					auto itp = othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.begin();
-					itp += backindex;
-					auto p = othercontent.mData->mEnvelopeData->mGoodIntersectionPoint[backindex];
-					if (p.first == currente.v[vindextomove])
-					{
-						othercontent.mData->mEnvelopeData->mGoodIntersectionPoint.erase(itp);
-						content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back(p);
-						break;
-					}
-					backindex--;
-				}
+				recurseInsertInGroup(toInsert, link);
 			}
-#endif
+			linkList.clear();
+		}
+	};
+
+	for (auto& v : linkedVertices)
+	{
+		insertInGroup(v.first, v.second);
+	}
+
+	// move simple cases
+	/*for (auto& ve : validOnes)
+	{
+		auto& e = mInnerCornersList[ve.index];
+		
+		u32 edgeToRemove=mVertices[ve.vertices[1]].getEdgeIndexInThisList(ve.vertices[0], mEdges);
+
+		if (edgeToRemove != -1)
+		{
+			// ok, so move vertices here
+			mVertices[ve.vertices[0]].mV = e.mFinalPos;
+			doShringEdge(mVertices[ve.vertices[1]], { edgeToRemove ,ve.vertices[0] }, ve.vertices[1]);
 		}
 	}*/
 }
+
 #pragma optimize("",on)
 void	BuildMeshFromEnveloppe::firstClean()
 {
@@ -2242,12 +2250,15 @@ void	BuildMeshFromEnveloppe::initCellSurfaceList(nodeInfo& node)
 		u32 vindex = 0;
 		for (auto& v : content.mData->mVertices)
 		{
+			v.mSurfaceIndex = std::get<0>(trianglelist[v.mTriangleIndex])->mSurfaceIndex;
 			perSurfaceVertex[v.mSurfaceIndex].push_back(vindex);
 			vindex++;
 		}
 	}
 
 	{
+		std::vector<MSTriangleVertex>	newverticelist;
+
 		u32 surfindex = 0;
 		for (const auto& s : perSurfaceVertex)
 		{
@@ -2262,56 +2273,29 @@ void	BuildMeshFromEnveloppe::initCellSurfaceList(nodeInfo& node)
 			right.Normalize();
 			up.CrossProduct(right, normal);
 
-			std::vector<std::pair<v2f,u32>>	project2D;
+			std::vector<std::tuple<v2f,u32>>	project2D;
 
-			v2f minp, maxp;
-			v2i mini(0,0), maxi(0,0);
-			u32 vindex = 0;
 			for (auto p : s)
 			{
 				v2f toadd(Dot(content.mData->mVertices[p].mVertex, right), Dot(content.mData->mVertices[p].mVertex, up));
 				project2D.push_back({ toadd,p });
-				if (vindex)
-				{
-					if (toadd.x < minp.x)
-					{
-						minp.x = toadd.x;
-						mini.x = vindex;
-					}
-					else if (toadd.x > maxp.x)
-					{
-						maxp.x= toadd.x;
-						maxi.x = vindex;
-					}
-					if (toadd.y < minp.y)
-					{
-						minp.y = toadd.y;
-						mini.y = vindex;
-					}
-					else if (toadd.y > maxp.y)
-					{
-						maxp.y = toadd.y;
-						maxi.y = vindex;
-					}
-				}
-				else
-				{
-					minp = toadd;
-					maxp = toadd;
-				}
-
-				vindex++;
 			}
 
+			ConvexHull2D	computeHull(project2D,0.05); // 20% precision
+			auto hull=computeHull.getHull();
 
+			for (auto h : hull)
+			{
+				newverticelist.push_back(content.mData->mVertices[std::get<1>(project2D[h])]);
+			}
 
 			surfindex++;
 		}
+		content.mData->mVertices = std::move(newverticelist);
 	}
 
 	for (auto& v : content.mData->mVertices)
 	{
-		v.mSurfaceIndex = std::get<0>(trianglelist[v.mTriangleIndex])->mSurfaceIndex;
 		mCellData.mPerVSurfaces[v.mVertex].insert(v.mSurfaceIndex);
 	}
 	
@@ -2320,7 +2304,6 @@ void	BuildMeshFromEnveloppe::initCellSurfaceList(nodeInfo& node)
 
 void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 {
-
 	mCellData.clear();
 
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
@@ -2774,8 +2757,8 @@ void BuildMeshFromEnveloppe::Build()
 	// setup faces
 	setUpFaces();
 
-	// manage inner corner
-	//manageInnerCorners();
+	// setup now, treat later
+	setupInnerCorners();
 	
 	// merge vertices and edges, remove useless faces
 	firstClean();
@@ -2783,6 +2766,7 @@ void BuildMeshFromEnveloppe::Build()
 	// for each vertice, compute normals using edge list
 	setUpNormals();
 
+	// in debug, check everything is fine
 	checkVerticeCoherency();
 
 	// do triangulation
@@ -2796,6 +2780,9 @@ void BuildMeshFromEnveloppe::Build()
 
 	// do mesh simplification by merging triangles
 	mergeTriangles();
+
+	// now move inner corners
+	moveInnerCorners();
 
 	// merge vertices at same position and flat/point triangles
 	finalClean();

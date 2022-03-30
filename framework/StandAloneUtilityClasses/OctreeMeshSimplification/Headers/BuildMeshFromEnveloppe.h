@@ -203,7 +203,19 @@ protected:
 	void	removeFlatFaces();
 	void	DetectFlatTriangles(const std::vector<u32>& verticesIndex);
 
-	void	manageInnerCorners();
+	void	setupInnerCorners();
+
+	class innerCornerEdge
+	{
+	public:
+		v3f					mVertices[2];
+		const nodeInfo*		mOctreeNode[2];
+		v3f					mFinalPos;
+	};
+	std::vector<innerCornerEdge>	mInnerCornersList;
+
+	void	moveInnerCorners();
+
 	void	firstClean();
 
 	std::vector<u32>	mFinalMergedVIndex;
@@ -226,6 +238,7 @@ protected:
 	void	splitQuadFace(u32 fi);
 	void	setEdgesInteriorFace(MSFace& toSet,u32 fi, u32 oldfi);
 	void	splitMoreThanQuadFace(u32 fi);
+	void	doShringEdge(MSVertice& v,const std::pair<u32, u32>& mergeWith, u32 vindex);
 	void	mergeTriangles();
 
 	void	checkCoherency();
