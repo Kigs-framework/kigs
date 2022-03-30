@@ -171,9 +171,9 @@ protected:
 
 	//!	first visible Node in ModuleSceneGraph::mVisiblesNodeList
 	// values are update during TravCull and used during TravDraw
-	unsigned short mFirstVisibleNodeIndex;
+	unsigned int mFirstVisibleNodeIndex;
 	//!	number of visible node
-	unsigned short mVisibleNodeCount;
+	unsigned int mVisibleNodeCount;
 	unsigned int mCullingMask;
 
 	//!	Local transformation matrix (father => this local coordinate system)
