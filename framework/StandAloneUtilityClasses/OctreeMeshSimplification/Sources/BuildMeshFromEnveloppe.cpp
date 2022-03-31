@@ -1772,7 +1772,14 @@ void	BuildMeshFromEnveloppe::moveInnerCorners()
 	std::vector<validIC>	validOnes;
 	size_t index = 0;
 
-	std::map<u32,std::set<u32>>	linkedVertices;
+
+	struct linkedVandE
+	{
+		std::set<u32>		linkedV;
+		std::vector<u32>	linkedE;
+	};
+
+	std::map<u32, linkedVandE>	linkedVertices;
 	// build list of still valid corners and linked vertices
 
 	for (auto& e : mInnerCornersList)
@@ -1787,9 +1794,12 @@ void	BuildMeshFromEnveloppe::moveInnerCorners()
 
 		if ((current.vertices[0] != -1) && (current.vertices[1] != -1))
 		{
+			current.index = index;
 			validOnes.push_back(current);
-			linkedVertices[current.vertices[0]].insert(current.vertices[1]);
-			linkedVertices[current.vertices[1]].insert(current.vertices[0]);
+			linkedVertices[current.vertices[0]].linkedV.insert(current.vertices[1]);
+			linkedVertices[current.vertices[0]].linkedE.push_back(index);
+			linkedVertices[current.vertices[1]].linkedV.insert(current.vertices[0]);
+			linkedVertices[current.vertices[1]].linkedE.push_back(index);
 		}
 		
 		++index;
@@ -1811,11 +1821,11 @@ void	BuildMeshFromEnveloppe::moveInnerCorners()
 		}
 
 		Groups[group].push_back(toInsert);
-		for (auto i : linkedVertices[toInsert])
+		for (auto i : linkedVertices[toInsert].linkedV)
 		{
 			recurseInsertInGroup(group, i);
 		}
-		linkedVertices[toInsert].clear();
+		linkedVertices[toInsert].linkedV.clear();
 	};
 
 	std::function<void(u32, std::set<u32>&)> insertInGroup = [&Groups,&linkedVertices,&recurseInsertInGroup](u32 toInsert,std::set<u32>& linkList)->void
@@ -1833,23 +1843,28 @@ void	BuildMeshFromEnveloppe::moveInnerCorners()
 
 	for (auto& v : linkedVertices)
 	{
-		insertInGroup(v.first, v.second);
+		insertInGroup(v.first, v.second.linkedV);
 	}
 
+
+
 	// move simple cases
-	/*for (auto& ve : validOnes)
+	for (auto& ve : validOnes)
 	{
 		auto& e = mInnerCornersList[ve.index];
-		
-		u32 edgeToRemove=mVertices[ve.vertices[1]].getEdgeIndexInThisList(ve.vertices[0], mEdges);
 
-		if (edgeToRemove != -1)
+		if ((linkedVertices[ve.vertices[0]].linkedE.size() == 1) && (linkedVertices[ve.vertices[1]].linkedE.size() == 1))
 		{
-			// ok, so move vertices here
-			mVertices[ve.vertices[0]].mV = e.mFinalPos;
-			doShringEdge(mVertices[ve.vertices[1]], { edgeToRemove ,ve.vertices[0] }, ve.vertices[1]);
+			u32 edgeToRemove = mVertices[ve.vertices[1]].getEdgeIndexInThisList(ve.vertices[0], mEdges);
+
+			if (edgeToRemove != -1)
+			{
+				// ok, so move vertices here
+				mVertices[ve.vertices[0]].mV = e.mFinalPos;
+				doShringEdge(mVertices[ve.vertices[1]], { edgeToRemove ,ve.vertices[0] }, ve.vertices[1]);
+			}
 		}
-	}*/
+	}
 }
 
 #pragma optimize("",on)
