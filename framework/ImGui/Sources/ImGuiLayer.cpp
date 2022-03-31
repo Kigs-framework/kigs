@@ -688,7 +688,9 @@ void ImGuiLayer::NewFrame(Timer* timer)
 				//RemoveInternalFocus();
 			}
 #endif
-
+			io.KeyCtrl = kb->GetKey(CM_KEY_LCONTROL) || kb->GetKey(CM_KEY_RCONTROL);
+			io.KeyShift = kb->GetKey(CM_KEY_LSHIFT) || kb->GetKey(CM_KEY_RSHIFT);
+			io.KeyAlt = kb->GetKey(CM_KEY_LMENU) || kb->GetKey(CM_KEY_RMENU);
 			std::array<bool, 256> state_changed = {};
 			std::vector<KeyEvent> toReAdd;
 			for (auto& key : mKeyEvents)
@@ -702,27 +704,24 @@ void ImGuiLayer::NewFrame(Timer* timer)
 				if (key.Action == key.ACTION_DOWN)
 				{
 					state_changed[key.KeyCode] = true;
-
 					io.KeysDown[key.KeyCode] = true;
-					if ((key.KeyCode == VK_CONTROL) || (key.KeyCode == VK_LCONTROL) || (key.KeyCode == VK_RCONTROL))
+					/*if ((key.KeyCode == VK_CONTROL) || (key.KeyCode == VK_LCONTROL) || (key.KeyCode == VK_RCONTROL))
 						io.KeyCtrl = true;
 					if ((key.KeyCode == VK_SHIFT) || (key.KeyCode == VK_LSHIFT) || (key.KeyCode == VK_RSHIFT))
 						io.KeyShift = true;
 					if ((key.KeyCode == VK_MENU) || (key.KeyCode == VK_LMENU) || (key.KeyCode == VK_RMENU))
-						io.KeyAlt = true;
+						io.KeyAlt = true;*/
 				}
 				else if (key.Action == key.ACTION_UP)
 				{
 					state_changed[key.KeyCode] = true;
-
 					io.KeysDown[key.KeyCode] = false;
-					if ((key.KeyCode == VK_CONTROL) || (key.KeyCode == VK_LCONTROL) || (key.KeyCode == VK_RCONTROL))
+					/*if ((key.KeyCode == VK_CONTROL) || (key.KeyCode == VK_LCONTROL) || (key.KeyCode == VK_RCONTROL))
 						io.KeyCtrl = false;
 					if ((key.KeyCode == VK_SHIFT) || (key.KeyCode == VK_LSHIFT) || (key.KeyCode == VK_RSHIFT))
 						io.KeyShift = false;
 					if ((key.KeyCode == VK_MENU) || (key.KeyCode == VK_LMENU) || (key.KeyCode == VK_RMENU))
-						io.KeyAlt = false;
-
+						io.KeyAlt = false;*/
 /*#ifndef WUP
 					if (key.Unicode > 0)
 					{
