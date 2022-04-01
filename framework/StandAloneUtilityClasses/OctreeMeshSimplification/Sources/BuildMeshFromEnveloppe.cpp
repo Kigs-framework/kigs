@@ -1768,6 +1768,7 @@ void	BuildMeshFromEnveloppe::moveInnerCorners()
 	{
 		size_t	index;
 		u32		vertices[2];
+		bool	isOK;
 	};
 	std::vector<validIC>	validOnes;
 	size_t index = 0;
@@ -1795,6 +1796,7 @@ void	BuildMeshFromEnveloppe::moveInnerCorners()
 		if ((current.vertices[0] != -1) && (current.vertices[1] != -1))
 		{
 			current.index = index;
+			current.isOK = true;
 			validOnes.push_back(current);
 			linkedVertices[current.vertices[0]].linkedV.insert(current.vertices[1]);
 			linkedVertices[current.vertices[0]].linkedE.push_back(index);
@@ -1805,64 +1807,222 @@ void	BuildMeshFromEnveloppe::moveInnerCorners()
 		++index;
 	}
 
-	// group vertices
-	std::map<u32, std::vector<u32>>	Groups;
-
-	std::function<void(u32, u32)> recurseInsertInGroup = [this,&Groups, &linkedVertices,&recurseInsertInGroup](u32 group, u32 toInsert)->void
+	struct cornerFace
 	{
-		if (group == toInsert)
-			return;
-		for (auto i : Groups[group]) // check if already inserted
+		u32								face;
+		// first edge index in mEdges , second edge index in validOnes
+		std::vector<std::pair<u32,u32>>	edges;
+		// vertices index
+		std::vector<u32>				vertices;
+	};
+
+	// if corner face, return cornerFace structure with list of 3 edges
+	// else return cornerFace with empty vector
+	auto isCornerFace = [this,&validOnes](u32 startei,u32 startew,u32 currentvei)->cornerFace
+	{
+		cornerFace result;
+
+		// get face index
+		u32 face = mEdges[startei].t[startew];
+
+		for (auto e : mFaces[face].edges) 
 		{
-			if (i == toInsert)
+			u32 ei = e & 0x7fffffff;
+			u32 ew = e >>31;
+
+			result.edges.push_back({e,currentvei});
+			result.vertices.push_back(mEdges[ei].v[ew]);
+
+			if (ei != startei)
 			{
-				return;
+				bool found = false;
+				u32 vi=0;
+				for (auto& ve : validOnes) // search this edge in valid ones list
+				{
+					if (ve.isOK)
+					{
+						if ( ( (ve.vertices[0] == mEdges[ei].v[0]) && (ve.vertices[1] == mEdges[ei].v[1])) ||
+							 ( (ve.vertices[1] == mEdges[ei].v[0]) && (ve.vertices[0] == mEdges[ei].v[1])) )
+						{
+							result.edges.back().second = vi;
+							found = true;
+							break;
+						}
+					}
+					vi++;
+				}
+				if (!found)
+				{
+					result.edges.clear();
+					break;
+				}
 			}
 		}
 
-		Groups[group].push_back(toInsert);
-		for (auto i : linkedVertices[toInsert].linkedV)
-		{
-			recurseInsertInGroup(group, i);
-		}
-		linkedVertices[toInsert].linkedV.clear();
+		return result;
 	};
 
-	std::function<void(u32, std::set<u32>&)> insertInGroup = [&Groups,&linkedVertices,&recurseInsertInGroup](u32 toInsert,std::set<u32>& linkList)->void
+	// return cornerFace structure with list of 2 corner edges from the same vertice 
+	auto getTwoCornerEdges = [this, &validOnes](u32 startvi, u32 currentvei)->cornerFace
 	{
-		if( (Groups.find(toInsert) == Groups.end()) && linkList.size())
+		cornerFace result;
+
+		// get face index
+		auto& currentV = mVertices[startvi];
+
+		for (auto e : currentV.mEdges)
 		{
-			Groups[toInsert]; // create entry
-			for (auto link : linkList)
+			u32 ei = e & 0x7fffffff;
+			u32 ew = e >> 31;
+
+			u32 vi = 0;
+			bool found = false;
+			for (auto& ve : validOnes) // search this edge in valid ones list
 			{
-				recurseInsertInGroup(toInsert, link);
+				if (ve.isOK)
+				{
+					if (((ve.vertices[0] == mEdges[ei].v[0]) && (ve.vertices[1] == mEdges[ei].v[1])) ||
+						((ve.vertices[1] == mEdges[ei].v[0]) && (ve.vertices[0] == mEdges[ei].v[1])))
+					{
+						result.edges.push_back({e,vi});
+						found = true;
+						break;
+					}
+				}
+				vi++;
 			}
-			linkList.clear();
+
+			if (found)
+			{
+				result.vertices.push_back(mEdges[ei].v[1-ew]);
+			}
+		}
+
+		return result;
+	};
+
+	auto moveVToFinalPos = [this](u32 vertice, v3f finalpos)->void
+	{
+		MeshSimplificationOctreeNode* currentNode = mVertices[vertice].mOctreeNode->getNode<MeshSimplificationOctreeNode>();
+		auto& content = currentNode->getContentType();
+
+		v3f startpos = mVertices[vertice].mV;
+
+		for (const auto& f : content.mData->mEnvelopeData->mGoodIntersectionPoint)
+		{
+			if (DistSquare(mVertices[f.first].mV, startpos) < 0.01f)
+			{
+				mVertices[f.first].mV = finalpos;
+			}
 		}
 	};
 
-	for (auto& v : linkedVertices)
+	// search corner faces (all three edges are inner corners) or two edges on same vertice
+	
+	index = 0;
+	for (auto& ve : validOnes)
 	{
-		insertInGroup(v.first, v.second.linkedV);
+		if (ve.isOK)
+		{
+			auto& e = mInnerCornersList[ve.index];
+
+			if ((linkedVertices[ve.vertices[0]].linkedE.size() > 1) && (linkedVertices[ve.vertices[1]].linkedE.size() > 1))
+			{
+				u32 startEdgeLI = mVertices[ve.vertices[1]].getEdgeIndexInThisList(ve.vertices[0], mEdges);
+
+				if (startEdgeLI != -1)
+				{
+					u32 startEdge = mVertices[ve.vertices[1]].mEdges[startEdgeLI];
+
+					cornerFace face = isCornerFace(startEdge & 0x7fffffff, startEdge >> 31, index);
+					if (face.edges.size() == 3)
+					{
+						v3f finalpos = mInnerCornersList[validOnes[face.edges[0].second].index].mFinalPos;
+						finalpos += mInnerCornersList[validOnes[face.edges[1].second].index].mFinalPos;
+						finalpos += mInnerCornersList[validOnes[face.edges[2].second].index].mFinalPos;
+						finalpos *= 1.0f / 3.0f;
+
+						moveVToFinalPos(face.vertices[0], finalpos);
+
+						for (size_t i = 1; i < 3; i++)
+						{
+							u32 edgeToRemove = mVertices[face.vertices[i]].getEdgeIndexInThisList(face.vertices[0], mEdges);
+							if (edgeToRemove != -1)
+							{
+								doShringEdge(mVertices[face.vertices[i]], { edgeToRemove ,face.vertices[0] }, face.vertices[i]);
+							}
+						}
+						// set all tree edges to false
+						for (auto& fve : face.edges)
+						{
+							validOnes[fve.second].isOK = false;
+						}
+					}
+				}
+				ve.isOK = false; // corner edge in the middle of two others, don't treat this one
+			}
+			// manage vertice with two corner edges
+			else if ((linkedVertices[ve.vertices[0]].linkedE.size() > 1) || (linkedVertices[ve.vertices[1]].linkedE.size() > 1))
+			{
+				for (size_t i = 0; i < 2; i++)
+				{
+					if (linkedVertices[ve.vertices[i]].linkedE.size() > 1)
+					{
+						cornerFace face = getTwoCornerEdges(ve.vertices[i],index);
+
+						if (face.edges.size() == 2)
+						{
+							v3f finalpos = mInnerCornersList[validOnes[face.edges[0].second].index].mFinalPos;
+							finalpos += mInnerCornersList[validOnes[face.edges[1].second].index].mFinalPos;
+							finalpos *= 0.5f;
+
+							moveVToFinalPos(ve.vertices[i], finalpos);
+
+							for (size_t i1 = 0; i1 < 2; i1++)
+							{
+								u32 edgeToRemove = mVertices[face.vertices[i1]].getEdgeIndexInThisList(ve.vertices[i], mEdges);
+								if (edgeToRemove != -1)
+								{
+									doShringEdge(mVertices[face.vertices[i1]], { edgeToRemove ,ve.vertices[i] }, face.vertices[i1]);
+								}
+							}
+							// set all tree edges to false
+							for (auto& fve : face.edges)
+							{
+								validOnes[fve.second].isOK = false;
+							}
+						}
+						
+						break;
+					}
+				}
+
+				ve.isOK = false;
+			}
+		}
+		index++;
 	}
-
 
 
 	// move simple cases
 	for (auto& ve : validOnes)
 	{
-		auto& e = mInnerCornersList[ve.index];
-
-		if ((linkedVertices[ve.vertices[0]].linkedE.size() == 1) && (linkedVertices[ve.vertices[1]].linkedE.size() == 1))
+		if (ve.isOK)
 		{
+			auto& e = mInnerCornersList[ve.index];
+
 			u32 edgeToRemove = mVertices[ve.vertices[1]].getEdgeIndexInThisList(ve.vertices[0], mEdges);
 
 			if (edgeToRemove != -1)
 			{
 				// ok, so move vertices here
-				mVertices[ve.vertices[0]].mV = e.mFinalPos;
+				moveVToFinalPos(ve.vertices[0], e.mFinalPos);
+
 				doShringEdge(mVertices[ve.vertices[1]], { edgeToRemove ,ve.vertices[0] }, ve.vertices[1]);
 			}
+
+			ve.isOK = false; // done or invalid
+			
 		}
 	}
 }
