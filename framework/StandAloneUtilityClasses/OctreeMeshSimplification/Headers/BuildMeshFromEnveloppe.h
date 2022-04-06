@@ -40,7 +40,7 @@ public:
 	class MSVertice
 	{
 	public:
-		MSVertice(const v3f& v, const nodeInfo* d) : mV(v), mOctreeNode(d)
+		MSVertice(const v3f& v, const nodeInfo* d, u32 grpflag) : mV(v), mOctreeNode(d), mGroupFlag(grpflag)
 		{
 			mEdges.clear();
 		}
@@ -102,18 +102,19 @@ public:
 			}
 		}
 
-		std::vector<u32>	mEdges;
-		v3f	mV;
-		v3f mN;
+		std::vector<u32>		mEdges;
+		v3f						mV;
+		v3f						mN;
 		const nodeInfo*			mOctreeNode;
 		// last step : flag point on plane (all surrounding triangles have the same normal) or point on 2 planes intersection
-		u32 mFlag=0;
+		u32						mFlag=0;
+		u32						mGroupFlag = 0;
 	};
 protected:
 	// add given vertice and return index
-	unsigned int addVertice(const v3f& v, const nodeInfo* d)
+	unsigned int addVertice(const v3f& v, const nodeInfo* d, u32 grpflag)
 	{
-		mVertices.push_back({ v,d });
+		mVertices.push_back({ v,d ,grpflag});
 		return (unsigned int)(mVertices.size() - 1);
 	}
 
@@ -181,7 +182,7 @@ protected:
 
 
 	void	initCellSurfaceList(nodeInfo& node);
-	void	addMultipleVertices(nodeInfo& node, const v3f& goodpoint);
+	void	addMultipleVertices(nodeInfo& node, const v3f& goodpoint,u32 grpflag);
 	void	setUpVertices(nodeInfo& node);
 	void	setUpEdges(nodeInfo node, std::map < u32, std::vector<u32>>& edgeMap);
 	void	setUpNormals();
@@ -244,24 +245,25 @@ protected:
 	void	checkCoherency();
 	void	checkVerticeCoherency();
 
-	void	checkVertice(nodeInfo& node, v3f& goodOne)
+	void	checkVertice(nodeInfo& node, v3f& goodOne,u32& grpflag)
 	{
+		grpflag = 0;
 		// first check trivial case (a point belonging to all present surfaces)
-		if (checkVerticeTrivialCase(node, goodOne))
+		if (checkVerticeTrivialCase(node, goodOne, grpflag))
 			return;
 
 		// then check easy case (a point with a good score in principal present surfaces) 
-		if (checkVerticeEasyCase(node, goodOne))
+		if (checkVerticeEasyCase(node, goodOne, grpflag))
 			return;
 
 		// then compute a vertice according to cell topology
-		computeVerticeFromCell(node, goodOne);
+		computeVerticeFromCell(node, goodOne, grpflag);
 	}
 
 	// different point in cell computation method
-	bool	checkVerticeTrivialCase(nodeInfo node, v3f& goodOne);
-	bool	checkVerticeEasyCase(nodeInfo node, v3f& goodOne);
-	bool	computeVerticeFromCell(nodeInfo node, v3f& goodOne);
+	bool	checkVerticeTrivialCase(nodeInfo node, v3f& goodOne, u32& grpflag);
+	bool	checkVerticeEasyCase(nodeInfo node, v3f& goodOne, u32& grpflag);
+	bool	computeVerticeFromCell(nodeInfo node, v3f& goodOne, u32& grpflag);
 
 
 	// all cases
@@ -316,7 +318,7 @@ protected:
 
 	};
 
-	v3f searchGoodVerticeInCellForDirection(nodeInfo node, const MSOctreeContent& cnode, const v3f& direction,BBox currentBBox);
+	v3f searchGoodVerticeInCellForDirection(nodeInfo node, const MSOctreeContent& cnode, const v3f& direction,BBox currentBBox,u32& grpflag);
 
 public:
 
@@ -325,7 +327,7 @@ public:
 	void	Build();
 	void	addFinalizedMesh(std::vector<v3f>& vertices, std::vector<u32>& indices);
 
-	std::vector<std::pair<v3f, v3f>>	getEdges() const;
+	std::vector<std::pair<std::pair<v3f, v3f>,u32>>	getEdges() const;
 	std::vector<MSVertice>					getEnveloppeVertices() const;
 	bool hasError() const
 	{

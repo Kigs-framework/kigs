@@ -69,31 +69,31 @@ void	MeshSimplification::adjustPrecision(const BBox& bbox, float& precision)
 }
 
 
-void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::vector<v3f>& vertices, float precision)
+void	MeshSimplification::initOctree()
 {
 
 	// compute BBox of object
 	BBox	b;
 	b.SetEmpty();
-	for (const auto& p : vertices)
+	for (const auto& p : mInputVertices)
 	{
 		b.Update(p);
 	}
 
-	adjustPrecision(b,precision);
+	adjustPrecision(b,mPrecision);
 #ifdef _DEBUG
-	printf("adjusted precision : %f\n", precision);
+	printf("adjusted precision : %f\n", mPrecision);
 #endif
 
 	// now compute best switch to apply to avoid segment on octree cutting planes
 	mOctreeShift.Set(0.0f, 0.0f, 0.0f);
 
 	{
-		float oneOnP = 1.0f / precision;
+		float oneOnP = 1.0f / mPrecision;
 		std::vector<float>	switches[3];
 		
 		float dontcare;
-		for (const auto& p : vertices)
+		for (const auto& p : mInputVertices)
 		{
 			v3f p1(p);
 			p1 -= b.m_Min;
@@ -135,27 +135,26 @@ void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::
 		}
 
 		mObjectShift = mOctreeShift;
-		mObjectShift *= precision;
+		mObjectShift *= mPrecision;
 	}
 
 	// create octree with previous precisop, and shift
 	mOctree = KigsCore::GetInstanceOf("localOctree", "MeshSimplificationOctree");
-	mOctree->setValue("Precision", precision);
+	mOctree->setValue("Precision", mPrecision);
 	mOctree->setValue("Translate", mOctreeShift);
 	mOctree->setBBox(b);
 	mOctree->Init();
 
-	mOctree->setVertexList(vertices);
+	mOctree->setVertexList(mInputVertices);
 
-	// then rasterize all triangles in octree
-	u32 triangleIndex = 0;
-	for (int i = 0; i < indices.size(); i += 3) // send each triangles
+	for (u32 grpIndex = 0; grpIndex < mInputIndices.size(); grpIndex++)
 	{
-		//if (mTriangleSurfaceIndex[triangleIndex] != 0) // only valid triangles
+		auto& currentGrp = mInputIndices[grpIndex];
+		// then rasterize all triangles in octree
+		for (int i = 0; i < currentGrp.mIndices.size(); i += 3) // send each triangles
 		{
-			mOctree->setVoxelContent(indices[i], indices[i + 1], indices[i + 2],0/* mTriangleSurfaceIndex[triangleIndex]*/);
+			mOctree->setVoxelContent(currentGrp.mIndices[i], currentGrp.mIndices[i + 1], currentGrp.mIndices[i + 2], grpIndex);
 		}
-		triangleIndex++;
 	}
 
 	// fill empty cases outside of the object
@@ -225,10 +224,36 @@ void	MeshSimplification::initOctree(const std::vector<u32>& indices, const std::
 
 }
 
-// for collisions, normals and materials does not matter
-MeshSimplification::MeshSimplification(const std::vector<u32>& indices, const std::vector<v3f>& vertices,float precision , u32 maxOctreeDepth) :mMaxOctreeDepth(maxOctreeDepth)
+MeshSimplification::MeshSimplification(const std::vector<v3f>& vertices, float precision, u32 maxOctreeDepth):mMaxOctreeDepth(maxOctreeDepth), mInputVertices(vertices), mPrecision(precision)
 {
-	initOctree(indices, vertices, precision);
+
+}
+void	MeshSimplification::addTriangleGroup(const std::vector<u32>& indices, u32 groupIndex)
+{
+	mInputIndices.resize(mInputIndices.size() + 1);
+	mInputIndices.back().mGroupIndex = groupIndex;
+	mInputIndices.back().mIndices = indices;
+}
+
+void	MeshSimplification::doSimplification()
+{
+	initOctree();
+
+	mFinalVertices.clear();
+	mFinalIndices.clear();
+	for (u32 i = 0; i < mGroupCount; i++)
+	{
+		rebuildMesh(i, mEnvelopenodelist);
+	}
+	mOctree->transformBackVertexList(mFinalVertices);
+}
+
+// for collisions, normals and materials does not matter
+MeshSimplification::MeshSimplification(const std::vector<u32>& indices, const std::vector<v3f>& vertices,float precision , u32 maxOctreeDepth) :mMaxOctreeDepth(maxOctreeDepth), mInputVertices(vertices), mPrecision(precision)
+{
+	addTriangleGroup(indices, 0);
+
+	initOctree();
 	
 	mFinalVertices.clear();
 	mFinalIndices.clear();
@@ -277,13 +302,13 @@ void MeshSimplification::rebuildMesh(u32 groupIndex, std::vector<nodeInfo>& enve
 		{
 			for (auto e : v.mEdges)
 			{
-				if (vtoadd.V == toAdd.edges[e & 0x7fffffff].first)
+				if (vtoadd.V == toAdd.edges[e & 0x7fffffff].first.first)
 				{
-					vtoadd.N.push_back(toAdd.edges[e & 0x7fffffff].second);
+					vtoadd.N.push_back(toAdd.edges[e & 0x7fffffff].first.second);
 				}
 				else
 				{
-					vtoadd.N.push_back(toAdd.edges[e & 0x7fffffff].first);
+					vtoadd.N.push_back(toAdd.edges[e & 0x7fffffff].first.first);
 				}
 			}
 		}
@@ -299,9 +324,9 @@ void MeshSimplification::rebuildMesh(u32 groupIndex, std::vector<nodeInfo>& enve
 }
 
 #ifdef _DEBUG
-std::vector<std::pair<v3f, v3f>>	MeshSimplification::getEdges() const
+std::vector<std::pair<std::pair<v3f, v3f>,u32>>	MeshSimplification::getEdges() const
 {
-	std::vector<std::pair<v3f, v3f>> result;
+	std::vector<std::pair<std::pair<v3f, v3f>, u32>> result;
 	for (const auto& m : mMeshes)
 	{
 		result.insert(result.end(), m.edges.begin(), m.edges.end());

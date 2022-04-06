@@ -5,7 +5,7 @@
 unsigned int adjacent_faces[6][4] = { {8,32,4,16},{8,16,4,32},{2,16,1,32},{2,32,1,16},{8,1,4,2},{8,2,4,1} };
 
 
-bool	BuildMeshFromEnveloppe::computeVerticeFromCell(nodeInfo node, v3f& goodOne)
+bool	BuildMeshFromEnveloppe::computeVerticeFromCell(nodeInfo node, v3f& goodOne,u32& grpflag)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
 	const auto& content = currentNode->getContentType();
@@ -36,12 +36,12 @@ bool	BuildMeshFromEnveloppe::computeVerticeFromCell(nodeInfo node, v3f& goodOne)
 	}
 	direction.Normalize();
 
-	goodOne=searchGoodVerticeInCellForDirection(node, content, direction, cellBBox);
+	goodOne=searchGoodVerticeInCellForDirection(node, content, direction, cellBBox, grpflag);
 
 	return true;
 }
 
-bool	BuildMeshFromEnveloppe::checkVerticeEasyCase(nodeInfo node, v3f& goodOne)
+bool	BuildMeshFromEnveloppe::checkVerticeEasyCase(nodeInfo node, v3f& goodOne, u32& grpflag)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
 	const auto& content = currentNode->getContentType();
@@ -141,6 +141,8 @@ bool	BuildMeshFromEnveloppe::checkVerticeEasyCase(nodeInfo node, v3f& goodOne)
 		{
 			goodOne += v.first;
 			countGoodOnes++;
+			// TODO
+			// grpflag|=
 		}
 	}
 
@@ -153,7 +155,7 @@ bool	BuildMeshFromEnveloppe::checkVerticeEasyCase(nodeInfo node, v3f& goodOne)
 	return false;
 }
 
-bool	BuildMeshFromEnveloppe::checkVerticeTrivialCase(nodeInfo node, v3f& goodOne)
+bool	BuildMeshFromEnveloppe::checkVerticeTrivialCase(nodeInfo node, v3f& goodOne,u32& grpflag)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
 	const auto& content = currentNode->getContentType();
@@ -173,6 +175,8 @@ bool	BuildMeshFromEnveloppe::checkVerticeTrivialCase(nodeInfo node, v3f& goodOne
 		{
 			goodOne += v.first;
 			countGoodOnes++;
+			// TODO
+			// grpflag|=
 		}
 	}
 
@@ -228,13 +232,13 @@ std::vector<BuildMeshFromEnveloppe::MSVertice>					BuildMeshFromEnveloppe::getEn
 	return mVertices;
 }
 
-std::vector<std::pair<v3f, v3f>>	BuildMeshFromEnveloppe::getEdges() const
+std::vector<std::pair<std::pair<v3f, v3f>, u32>>	BuildMeshFromEnveloppe::getEdges() const
 {
-	std::vector<std::pair<v3f, v3f>> edgelist;
+	std::vector<std::pair<std::pair<v3f, v3f>, u32>> edgelist;
 
 	for (const auto& e : mEdges)
 	{
-		edgelist.push_back({ mVertices[e.v[0]].mV, mVertices[e.v[1]].mV });
+		edgelist.push_back({ { mVertices[e.v[0]].mV, mVertices[e.v[1]].mV },e.flags });
 	}
 	return edgelist;
 }
@@ -1570,6 +1574,7 @@ void	BuildMeshFromEnveloppe::finalClean()
 	DetectFlatTriangles(mFinalMergedVIndex);
 
 }
+
 #pragma optimize("",off)
 void	BuildMeshFromEnveloppe::setupInnerCorners()
 {
@@ -1651,6 +1656,7 @@ void	BuildMeshFromEnveloppe::setupInnerCorners()
 			if (!isGoodEdge)
 			{
 				e.flags ^= 6; // remove flag
+				e.flags |= 8; // debug
 				edgeindex++;
 				continue;
 			}
@@ -1725,25 +1731,28 @@ void	BuildMeshFromEnveloppe::setupInnerCorners()
 						mInnerCornersList.push_back(toAdd);
 						
 					}
-					/*else
+					else
 					{
-						printf("");
-					}*/
+						e.flags ^= 6; // remove flag
+						e.flags |= 8; // debug
+						//printf("");
+					}
 				}
 				/*else
 				{
 					printf("");
 				}*/
 			}
-			/*else
+			else
 			{
-				printf("");
-			}*/
+				e.flags ^= 6; // remove flag
+				e.flags |= 8; // debug
+				//printf("");
+			}
 		}
 		edgeindex++;
 	}
 }
-
 
 void	BuildMeshFromEnveloppe::moveInnerCorners()
 {
@@ -2320,7 +2329,7 @@ void	BuildMeshFromEnveloppe::reorderEdgesInVertices()
 }
 
 
-void	BuildMeshFromEnveloppe::addMultipleVertices(nodeInfo& node, const v3f& goodpoint)
+void	BuildMeshFromEnveloppe::addMultipleVertices(nodeInfo& node, const v3f& goodpoint,u32 grpflag)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
 	const auto& content = currentNode->getContentType();
@@ -2329,7 +2338,7 @@ void	BuildMeshFromEnveloppe::addMultipleVertices(nodeInfo& node, const v3f& good
 	{
 		if (content.mData->mEmptyNeighborsFlag & (1 << i))
 		{
-			content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(goodpoint,&node), 1<<i });
+			content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(goodpoint,&node,grpflag), 1<<i });
 		}
 	}
 
@@ -2477,6 +2486,8 @@ void	BuildMeshFromEnveloppe::initCellSurfaceList(nodeInfo& node)
 }
 
 
+
+
 void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 {
 	mCellData.clear();
@@ -2490,14 +2501,15 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 	node.mDebugFlag = 0;
 #endif
 	v3f result;
+	u32 grpflag;
 	switch (content.mData->mFreeFaceCount)
 	{
 	case 0:
 		KIGS_ERROR("Can't occur", 1);
 		break;
 	case 1: // easy case with only one free face
-		checkVertice(node, result);
-		content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(result,&node), content.mData->mEmptyNeighborsFlag });
+		checkVertice(node, result, grpflag);
+		content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(result,&node,grpflag), content.mData->mEmptyNeighborsFlag });
 		
 		break;
 	case 2: // 2 free faces => 2 subcases for adjacent free faces or opposites
@@ -2507,8 +2519,8 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 		}
 		else
 		{
-			checkVertice(node, result);
-			addMultipleVertices(node, result);
+			checkVertice(node, result, grpflag);
+			addMultipleVertices(node, result, grpflag);
 		}
 		break;
 	case 3: // 3 free faces => 2 subcases corner or U
@@ -2518,8 +2530,8 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 		}
 		else
 		{
-			checkVertice(node, result);
-			addMultipleVertices(node, result);
+			checkVertice(node, result, grpflag);
+			addMultipleVertices(node, result, grpflag);
 		}
 		break;
 	case 4: // 4 free faces => 2 subcases corner or tunnel 
@@ -2530,9 +2542,9 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 			testTrivial = false;
 		}
 		
-		if (testTrivial && checkVerticeTrivialCase(node, result)) // if opposite free faces but trivial case, set only one point
+		if (testTrivial && checkVerticeTrivialCase(node, result, grpflag)) // if opposite free faces but trivial case, set only one point
 		{
-			addMultipleVertices(node, result);
+			addMultipleVertices(node, result, grpflag);
 		}
 		else
 		{
@@ -2545,9 +2557,9 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 	{
 		bool testTrivial = true;
 		
-		if (testTrivial && checkVerticeTrivialCase(node, result)) 
+		if (testTrivial && checkVerticeTrivialCase(node, result, grpflag))
 		{
-			addMultipleVertices(node, result);
+			addMultipleVertices(node, result, grpflag);
 		}
 		else
 		{
@@ -2563,7 +2575,7 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 	mCellData.clear();
 }
 
-v3f BuildMeshFromEnveloppe::searchGoodVerticeInCellForDirection(nodeInfo node, const MSOctreeContent& cnode, const v3f& direction, BBox currentBbox)
+v3f BuildMeshFromEnveloppe::searchGoodVerticeInCellForDirection(nodeInfo node, const MSOctreeContent& cnode, const v3f& direction, BBox currentBbox, u32& grpflag)
 {
 	v3f nodecoord(node.coord.x, node.coord.y, node.coord.z);
 	nodecoord *= 0.5f;
@@ -2860,8 +2872,9 @@ void BuildMeshFromEnveloppe::manageSeparateFreeFaces(const MSOctreeContent& node
 			v3i idirection = OctreeNodeBase::mNeightboursDecalVectors[OctreeNodeBase::mInvDir[i]];
 			direction = v3f(idirection.x, idirection.y, idirection.z);
 			BBox emptybbox(BBox::PreInit{});
-			v3f pos = searchGoodVerticeInCellForDirection(n,node, direction, emptybbox);
-			node.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(pos,&n),  (1 << i) });
+			u32 grpflag = 0;
+			v3f pos = searchGoodVerticeInCellForDirection(n,node, direction, emptybbox, grpflag);
+			node.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(pos,&n,grpflag),  (1 << i) });
 		}
 	}	
 }
@@ -2923,6 +2936,10 @@ void BuildMeshFromEnveloppe::Build()
 		std::map < u32, std::vector<u32>> edgeMap;
 		for (const auto& n : mNodeList)
 		{
+			if ((n->coord == v3i(73, 45, 9)) || (n->coord == v3i(73, 45, 13)))
+			{
+				printf("");
+			}
 			setUpEdges(*n, edgeMap);
 #ifdef _DEBUG
 			debug_index++;
@@ -2933,7 +2950,7 @@ void BuildMeshFromEnveloppe::Build()
 	setUpFaces();
 
 	// setup now, treat later
-	setupInnerCorners();
+	//setupInnerCorners(); // TODO a better way later (by searching inner corner cells in octree and using them when setting up vertices/edges/faces)
 	
 	// merge vertices and edges, remove useless faces
 	firstClean();
@@ -2957,7 +2974,7 @@ void BuildMeshFromEnveloppe::Build()
 	mergeTriangles();
 
 	// now move inner corners
-	moveInnerCorners();
+	//moveInnerCorners(); // TODO a better way later (by searching inner corner cells in octree and using them when setting up vertices/edges/faces)
 
 	// merge vertices at same position and flat/point triangles
 	finalClean();

@@ -40,9 +40,9 @@ protected:
 
 	struct enveloppeMesh
 	{
-		std::vector<vAndN>					vertices;
-		std::vector<std::pair<v3f, v3f>>	edges;
-		std::vector<u32>	indices;
+		std::vector<vAndN>								vertices;
+		std::vector<std::pair<std::pair<v3f, v3f>,u32>>	edges;
+		std::vector<u32>								indices;
 	};
 
 	std::vector< enveloppeMesh>	mMeshes;
@@ -52,7 +52,7 @@ protected:
 
 	void	rebuildMesh(u32 groupIndex,std::vector<nodeInfo>& envelopenodes);
 
-	void	initOctree(const std::vector<u32>& indices, const std::vector<v3f>& vertices, float precision);
+	void	initOctree();
 
 	// if precision gives a too deep octree, then change precision
 	void	adjustPrecision(const BBox& bbox, float& precision);
@@ -60,6 +60,17 @@ protected:
 	std::vector<u32>	mFinalIndices;
 	std::vector<v3f>	mFinalVertices;
 
+
+	// input data
+	const std::vector<v3f>& mInputVertices;
+	struct triangleGroup
+	{
+		std::vector<u32>	mIndices;
+		u32					mGroupIndex;
+	};
+	std::vector< triangleGroup>		mInputIndices;
+	float							mPrecision;
+	
 public:
 
 	const std::vector<v3f>& getOctreeCoordVertices()
@@ -82,10 +93,8 @@ public:
 	{
 		return 	mEnvelopenodelist[index].mDebugFlag;
 	}
-#endif
 
-#ifdef _DEBUG
-	std::vector<std::pair<v3f, v3f>>	getEdges() const;
+	std::vector<std::pair<std::pair<v3f, v3f>,u32>>	getEdges() const;
 	std::vector<vAndN>					getEnveloppeVertices() const;
 #endif
 
@@ -114,8 +123,11 @@ public:
 		return mOctree->getBoundingBox();
 	}
 
+	MeshSimplification(const std::vector<v3f>& vertices, float precision, u32 maxOctreeDepth = 8);
+	void	addTriangleGroup(const std::vector<u32>& indices, u32 groupIndex);
+	void	doSimplification();
 
-	MeshSimplification(const std::vector<u32>&	indices,const std::vector<v3f>& vertices, float precision, u32 maxOctreeDepth=8);
+	MeshSimplification(const std::vector<u32>& indices,const std::vector<v3f>& vertices, float precision, u32 maxOctreeDepth=8);
 	~MeshSimplification();
 };
 

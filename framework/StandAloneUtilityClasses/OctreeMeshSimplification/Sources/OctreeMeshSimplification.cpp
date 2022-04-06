@@ -334,7 +334,7 @@ u32 MeshSimplificationOctree::computeTriangleInfos(u32 P1, u32 P2, u32 P3)
 
 
 // rasterize a triangle and put it in the octree
-void			MeshSimplificationOctree::setVoxelContent(u32 P1, u32 P2, u32 P3, u32 surfaceIndex)
+void			MeshSimplificationOctree::setVoxelContent(u32 P1, u32 P2, u32 P3, u32 groupIndex)
 {
 
 	v3f*	octreeCoords[3];
@@ -351,7 +351,6 @@ void			MeshSimplificationOctree::setVoxelContent(u32 P1, u32 P2, u32 P3, u32 sur
 	if (triangleindex == -1) // flat triangle
 		return;
 
-	//const MSSurfaceStruct& surf = (*mAllSurfacesPtr)[surfaceIndex];
 	// get triangle normal
 	const v3f& triangleNormal = mTriangleInfos[triangleindex].mNormal;
 	float inOctreePlanedist = Dot(triangleNormal, mIOCVertices[P1]);
@@ -537,7 +536,7 @@ void			MeshSimplificationOctree::setVoxelContent(u32 P1, u32 P2, u32 P3, u32 sur
 					{
 						if ((p[projplaneindex] >= thirdAxisFloat) && (p[projplaneindex] <= (thirdAxisFloat + 1.0f)))
 						{
-							nodeToFill->setContent(p, surfaceIndex,triangleindex);
+							nodeToFill->setContent(p, groupIndex,triangleindex);
 						}
 					}
 

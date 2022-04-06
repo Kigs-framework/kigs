@@ -20,8 +20,8 @@ struct MSPlaneStruct
 struct MSSurfaceStruct
 {
 	MSPlaneStruct	mPlane;
-	float		mSurface;
-	v3f			mInOctreePlaneP0;
+	float			mSurface;
+	v3f				mInOctreePlaneP0;
 };
 
 struct MSTriangleInfo
@@ -34,17 +34,18 @@ struct MSTriangleInfo
 struct MSTriangleVertex
 {
 	v3f		mVertex;
+	u32		mGroupIndex; // flags 1 bit per index => up to 32 possible groups
 	u32		mSurfaceIndex;
 	u32		mTriangleIndex;
 };
 
-inline bool operator ==(const MSTriangleVertex& first, const MSTriangleVertex& second)
+/*inline bool operator ==(const MSTriangleVertex& first, const MSTriangleVertex& second)
 {
 	if (first.mSurfaceIndex != second.mSurfaceIndex)
 		return false;
 
 	return first.mVertex == second.mVertex;
-}
+}*/
 
 // OctreeNode content type for MeshSimplification
 class MSOctreeContent
@@ -57,13 +58,14 @@ public:
 			delete mData;
 	}
 
-	void	setContent(const v3f& p1, u32 surfaceIndex,u32 triangleindex)
+	void	setContent(const v3f& p1, u32 groupIndex,u32 triangleindex)
 	{
 		if (!mData)
 		{
 			mData = new ContentData;
 		}
-		mData->mVertices.push_back({ p1, surfaceIndex,triangleindex });
+		// pos, group, surface,triangle
+		mData->mVertices.push_back({ p1, (1U<<groupIndex),0,triangleindex });
 	}
 
 	const std::vector<MSTriangleVertex>* getContent() const
@@ -220,15 +222,15 @@ public:
 
 	}
 
-	MeshSimplificationOctreeNode(const v3f& p1, u32 surfaceIndex , u32 triangleindex) : OctreeNode<MSOctreeContent>()
+	MeshSimplificationOctreeNode(const v3f& p1, u32 groupIndex , u32 triangleindex) : OctreeNode<MSOctreeContent>()
 	{
-		setContent(p1, surfaceIndex,triangleindex);
+		setContent(p1, groupIndex,triangleindex);
 	}
 
 
-	void	setContent(const v3f& p1, u32 surfaceIndex, u32 triangleindex)
+	void	setContent(const v3f& p1, u32 groupIndex, u32 triangleindex)
 	{
-		mContentType.setContent(p1, surfaceIndex, triangleindex);
+		mContentType.setContent(p1, groupIndex, triangleindex);
 	}
 
 	const std::vector<MSTriangleVertex>* getVertices() const
@@ -252,20 +254,6 @@ public:
 			return mContentType.mData->mEmptyNeighborsFlag;
 
 		return 0;
-	}
-
-	std::set<u32>	getSurfaceIndexes()
-	{
-		std::set<u32> result;
-		const std::vector<MSTriangleVertex>* packed = mContentType.getContent();
-		if (packed)
-		{
-			for (const auto& p : *packed)
-			{
-				result.insert(p.mSurfaceIndex);
-			}
-		}
-		return result;
 	}
 
 	friend class MeshSimplificationOctree;
@@ -309,7 +297,7 @@ public:
 	// transform given list from octree coords to world coords
 	void			transformBackVertexList(std::vector<v3f>& vlist);
 
-	void			setVoxelContent(u32 P1, u32 P2, u32 P3, u32 surfaceIndex);
+	void			setVoxelContent(u32 P1, u32 P2, u32 P3, u32 groupIndex);
 
 	inline void		TransformInOctreeCoord(v3f& p)
 	{
