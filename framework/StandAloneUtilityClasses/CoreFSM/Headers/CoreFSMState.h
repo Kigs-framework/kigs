@@ -155,6 +155,12 @@ class 	CoreFSMState##baseclassname##statename : public Upgrador<baseclassname>,p
 protected: \
 	START_UPGRADOR(CoreFSMState##baseclassname##statename);
 
+#define START_INHERITED_COREFSMSTATE(baseclassname,statename,parentstate) \
+class 	CoreFSMState##baseclassname##statename : public CoreFSMState##baseclassname##parentstate \
+{ \
+protected: \
+	START_UPGRADOR(CoreFSMState##baseclassname##statename);
+
 #define DO_COREFSMSTATE_SUBCLASS_DECLARATION() class UpgradorMethods : public currentBaseClass \
 { \
  public:\

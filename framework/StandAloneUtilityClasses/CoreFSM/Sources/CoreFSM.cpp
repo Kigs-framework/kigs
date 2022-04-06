@@ -332,5 +332,5 @@ void CoreFSM::initStaticCoreFSMInstances()
 }
 void CoreFSM::closeStaticCoreFSMInstances()
 {
-	CoreFSM::mPopTransition == nullptr;
+	CoreFSM::mPopTransition = nullptr;
 }
