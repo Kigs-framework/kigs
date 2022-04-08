@@ -933,7 +933,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 				flags |= ImGuiTreeNodeFlags_Selected;
 
 			if (gKigsTools->HierarchyWindow.ForceExpandAll || std::any_of(gKigsTools->HierarchyWindow.ToExpand.begin(), gKigsTools->HierarchyWindow.ToExpand.end(), [item](auto i) { return i == item.get(); }))
-				ImGui::SetNextTreeNodeOpen(true);
+				ImGui::SetNextItemOpen(true);
 			
 			bool was_open = ImGui::TreeNodeBehaviorIsOpen(ImGui::GetID((void*)item.get()), flags);
 			bool opened = ImGui::TreeNodeAdv((void*)item.get(), tmpStr, flags);
@@ -1435,21 +1435,21 @@ void DecorateAttribute(CoreModifiableAttribute* attr)
 	if (attr->isDynamic())
 	{
 		offset += ImGui::CalcTextSize("D").x;
-		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - offset);
+		ImGui::SameLine(ImGui::GetContentRegionAvail().x - offset);
 		ImGui::Text("D");
 		if (ImGui::IsItemHovered()) ImGui::SetTooltip("Dynamic");
 	}
 	if (attr->isReadOnly())
 	{
 		offset += ImGui::CalcTextSize("R").x;
-		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - offset);
+		ImGui::SameLine(ImGui::GetContentRegionAvail().x - offset);
 		ImGui::Text("R");
 		if (ImGui::IsItemHovered()) ImGui::SetTooltip("Read only");
 	}
 	if (attr->isInitParam())
 	{
 		offset += ImGui::CalcTextSize("I").x;
-		ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - offset);
+		ImGui::SameLine(ImGui::GetContentRegionAvail().x - offset);
 		ImGui::Text("I");
 		if (ImGui::IsItemHovered())ImGui::SetTooltip("Init param");
 	}
@@ -1872,7 +1872,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	kigs::unordered_map<unsigned int, lua_method_ref> lua_methods;
 
 	/// Attributes
-	ImGui::SetNextTreeNodeOpen(gKigsTools->CurrentSettings.AttributesOpen, ImGuiCond_Once);
+	ImGui::SetNextItemOpen(gKigsTools->CurrentSettings.AttributesOpen, ImGuiCond_Once);
 	if ((gKigsTools->CurrentSettings.AttributesOpen = ImGui::CollapsingHeader("Attributes")))
 	{
 		ImGui::Checkbox("Hide attributes not in the XML file", &gKigsTools->CurrentSettings.HideNotInXML);
@@ -2379,7 +2379,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	}
 
 	/// mMethods
-	ImGui::SetNextTreeNodeOpen(gKigsTools->CurrentSettings.MethodsOpen, ImGuiCond_Once);
+	ImGui::SetNextItemOpen(gKigsTools->CurrentSettings.MethodsOpen, ImGuiCond_Once);
 	if ((gKigsTools->CurrentSettings.MethodsOpen = ImGui::CollapsingHeader("Methods")))
 	{
 		for (auto&& pair : item->GetTypeNode()->mMethods)
@@ -2416,7 +2416,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	}
 
 	/// Connections
-	ImGui::SetNextTreeNodeOpen(gKigsTools->CurrentSettings.ConnectionsOpen, ImGuiCond_Once);
+	ImGui::SetNextItemOpen(gKigsTools->CurrentSettings.ConnectionsOpen, ImGuiCond_Once);
 	if ((gKigsTools->CurrentSettings.ConnectionsOpen = ImGui::CollapsingHeader("Connections")))
 	{
 		auto lz = item->GetLazyContentNoCreate();

@@ -46,7 +46,7 @@ namespace ImGui
 
 	void CenterWidget(float widget_width)
 	{
-		auto centered_x = (ImGui::GetContentRegionAvailWidth() - widget_width) / 2;
+		auto centered_x = (ImGui::GetContentRegionAvail().x - widget_width) / 2;
 		ImGui::Dummy(v2f(0, 0)); ImGui::SameLine(centered_x);
 	}
 
@@ -81,16 +81,16 @@ namespace ImGui
 	void ButtonLabel(const std::string& txt, v2f size)
 	{
 		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
-		ImGui::PushDisabled();
+		ImGui::BeginDisabled();
 		ImGui::ButtonEx(txt.c_str(), size);
-		ImGui::PopDisabled();
+		ImGui::EndDisabled();
 		ImGui::PopStyleVar();
 	}
 	bool ButtonWithLabel(const std::string& label, const std::string txt, float label_width, v2f size)
 	{
-		ImGui::PushDisabled();
+		ImGui::BeginDisabled();
 		bool b = ImGui::ButtonEx(label.c_str(), v2f(label_width, size.y));
-		ImGui::PopDisabled();
+		ImGui::EndDisabled();
 		ImGui::SameLine(0, 0);
 		b = ImGui::Button(txt.c_str(), size) || b;
 		return b;
