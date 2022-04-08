@@ -9,6 +9,10 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Numerics.h>
 
+#if defined(KIGS_TOOLS) && !defined(KIGS_HOLOLENS2)
+#include <winrt/Windows.System.Diagnostics.h>
+#endif
+
 inline mat4 Mat4FromFloat4x4(const winrt::Windows::Foundation::Numerics::float4x4& transform)
 {
 	auto mat_row_major = mat4(
@@ -56,6 +60,11 @@ inline concurrency::task<SmartPointer<FileHandle>> MakeHandleFromStorageFile(win
 	SmartPointer<FileHandle> result;
 	auto name = file.Name();
 	
+#if defined(KIGS_TOOLS) && !defined(KIGS_HOLOLENS2)
+	auto wid = to_wchar(std::to_string(winrt::Windows::System::Diagnostics::ProcessDiagnosticInfo::GetForCurrentProcess().ProcessId()));
+	name = wid + L"_" + name;
+#endif
+
 	auto file_copy = co_await file.CopyAsync(winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder(), name, winrt::Windows::Storage::NameCollisionOption::ReplaceExisting);
 	if (file_copy)
 	{
