@@ -57,11 +57,21 @@ public:
 	std::vector<KigsID>	getTransitionList()
 	{
 		std::vector<KigsID> result;
-		for (auto t : mTransitions)
+		for (const auto& t : mTransitions)
 		{
 			result.push_back(t->getNameID());
 		}
 		return result;
+	}
+
+	bool	hasActiveTransition(CoreModifiable* currentParentClass)
+	{
+		for (const auto& t : mTransitions)
+		{
+			if (t->checkTransition(currentParentClass))
+				return true;
+		}
+		return false;
 	}
 
 protected:
