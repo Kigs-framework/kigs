@@ -57,11 +57,21 @@ public:
 	std::vector<KigsID>	getTransitionList()
 	{
 		std::vector<KigsID> result;
-		for (auto t : mTransitions)
+		for (const auto& t : mTransitions)
 		{
 			result.push_back(t->getNameID());
 		}
 		return result;
+	}
+
+	bool	hasActiveTransition(CoreModifiable* currentParentClass)
+	{
+		for (const auto& t : mTransitions)
+		{
+			if (t->checkTransition(currentParentClass))
+				return true;
+		}
+		return false;
 	}
 
 protected:
@@ -151,6 +161,12 @@ DEFINE_UPGRADOR_UPDATE(CoreFSMStateClass(Ghost, Hunted))
 
 #define START_DECLARE_COREFSMSTATE(baseclassname,statename) \
 class 	CoreFSMState##baseclassname##statename : public Upgrador<baseclassname>,public CoreFSMStateBase \
+{ \
+protected: \
+	START_UPGRADOR(CoreFSMState##baseclassname##statename);
+
+#define START_INHERITED_COREFSMSTATE(baseclassname,statename,parentstate) \
+class 	CoreFSMState##baseclassname##statename : public CoreFSMState##baseclassname##parentstate \
 { \
 protected: \
 	START_UPGRADOR(CoreFSMState##baseclassname##statename);

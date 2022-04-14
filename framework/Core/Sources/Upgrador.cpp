@@ -1,9 +1,9 @@
 #include "Upgrador.h"
 #include "CoreModifiable.h"
 
-void UpgradorBase::UpgradeInstance(CoreModifiable* toUpgrade, bool reinit)
+void UpgradorBase::UpgradeInstance(CoreModifiable* toUpgrade, bool reinit, bool attachmethod)
 {
-	if (reinit)
+	if (attachmethod)
 	{
 		std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>> MethodTable;
 		GetMethodTable(MethodTable);
@@ -11,12 +11,15 @@ void UpgradorBase::UpgradeInstance(CoreModifiable* toUpgrade, bool reinit)
 		{
 			toUpgrade->InsertUpgradeMethod(t.first, t.second, this);
 		}
+	}
+	if (reinit || !mIsInit) // if not init, don't take reinit into account
+	{
 		Init(toUpgrade);
 	}
 }
-void UpgradorBase::DowngradeInstance(CoreModifiable* toDowngrade, bool doDestroy)
+void UpgradorBase::DowngradeInstance(CoreModifiable* toDowngrade, bool doDestroy,bool detachmethod)
 {
-	if (doDestroy)
+	if (detachmethod)
 	{
 		std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>> MethodTable;
 		GetMethodTable(MethodTable);
@@ -24,6 +27,9 @@ void UpgradorBase::DowngradeInstance(CoreModifiable* toDowngrade, bool doDestroy
 		{
 			toDowngrade->RemoveMethod(t.first);
 		}
+	}
+	if (doDestroy)
+	{
 		Destroy(toDowngrade);
 	}
 }

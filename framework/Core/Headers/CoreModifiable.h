@@ -1094,8 +1094,8 @@ public:
 	// upgrador management
 	void Upgrade(const std::string& toAdd);
 	// upgrador management
-	void Upgrade(UpgradorBase* toAdd, bool doInit = true);
-	void Downgrade(const KigsID& toRemove,bool doDestroy=true);
+	void Upgrade(UpgradorBase* toAdd, bool doInit = true,bool attachMethods=true);
+	void Downgrade(const KigsID& toRemove,bool doDestroy=true, bool detachMethods = true);
 	// insert forward ptr
 	LazyContentLinkedListItemStruct InsertForwardPtr(StructLinkedListBase* address);
 

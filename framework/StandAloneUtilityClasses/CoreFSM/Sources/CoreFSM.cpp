@@ -140,11 +140,11 @@ void	CoreFSM::changeCurrentState(CoreFSMStateBase* newone)
 		// stop previous state
 		prevone->stop(mAttachedObject,newone);
 		// downgrade object from previous state
-		mAttachedObject->Downgrade(prevone->getID());
+		mAttachedObject->Downgrade(prevone->getID(),false,true);
 		// change state
 		mCurrentState.back() = newone;
 		// upgrade object with new current state
-		mAttachedObject->Upgrade(dynamic_cast<UpgradorBase*>(newone));
+		mAttachedObject->Upgrade(dynamic_cast<UpgradorBase*>(newone),false,true);
 		// start new state
 		newone->start(mAttachedObject,prevone);
 #ifdef DEBUG_COREFSM
@@ -162,8 +162,8 @@ void	CoreFSM::pushCurrentState(CoreFSMStateBase* newone)
 		prevone = mCurrentState.back();
 		// stop previous state
 		prevone->stop(mAttachedObject,newone);
-		// downgrade object from previous state but don't destroy it as we will get back there
-		mAttachedObject->Downgrade(mCurrentState.back()->getID(),false);
+		// downgrade object from previous state but don't destroy it as we will get back there and don't detach methods
+		mAttachedObject->Downgrade(mCurrentState.back()->getID(),false,false);
 	}
 
 #ifdef DEBUG_COREFSM
@@ -172,7 +172,7 @@ void	CoreFSM::pushCurrentState(CoreFSMStateBase* newone)
 	// push state
 	mCurrentState.push_back(newone);
 	// upgrade object with new current state
-	mAttachedObject->Upgrade(dynamic_cast<UpgradorBase*>(newone));
+	mAttachedObject->Upgrade(dynamic_cast<UpgradorBase*>(newone),false,true);
 	// start new state
 	newone->start(mAttachedObject,prevone);
 }
@@ -192,7 +192,7 @@ void	CoreFSM::popCurrentState()
 		// stop previous state
 		prevone->stop(mAttachedObject,newone);
 		// downgrade object from previous state
-		mAttachedObject->Downgrade(mCurrentState.back()->getID());
+		mAttachedObject->Downgrade(mCurrentState.back()->getID(),false,true);
 		// and pop the state
 		mCurrentState.pop_back();
 	}
@@ -204,7 +204,8 @@ void	CoreFSM::popCurrentState()
 	if (newone)
 	{
 		// if stack is not empty upgrade object with new stack back but don't init it again
-		mAttachedObject->Upgrade(dynamic_cast<UpgradorBase*>(newone),false);
+		// reset methods in case previous pop with the same method name occurs
+		mAttachedObject->Upgrade(dynamic_cast<UpgradorBase*>(newone),false,true);
 		// and start upgrador
 		newone->start(mAttachedObject,prevone);
 	}
@@ -332,5 +333,5 @@ void CoreFSM::initStaticCoreFSMInstances()
 }
 void CoreFSM::closeStaticCoreFSMInstances()
 {
-	CoreFSM::mPopTransition == nullptr;
+	CoreFSM::mPopTransition = nullptr;
 }
