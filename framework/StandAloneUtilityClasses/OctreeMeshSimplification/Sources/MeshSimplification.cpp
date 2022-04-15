@@ -241,6 +241,7 @@ void	MeshSimplification::doSimplification()
 
 	mFinalVertices.clear();
 	mFinalIndices.clear();
+	mFinalIndices.resize(mInputIndices.size()); // same group count as input
 	for (u32 i = 0; i < mGroupCount; i++)
 	{
 		rebuildMesh(i, mEnvelopenodelist);
@@ -257,6 +258,7 @@ MeshSimplification::MeshSimplification(const std::vector<u32>& indices, const st
 	
 	mFinalVertices.clear();
 	mFinalIndices.clear();
+	mFinalIndices.resize(mInputIndices.size()); // same group count as input (here only 1 group)
 	for (u32 i = 0; i < mGroupCount; i++)
 	{
 		rebuildMesh(i, mEnvelopenodelist);

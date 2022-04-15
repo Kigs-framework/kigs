@@ -34,18 +34,11 @@ struct MSTriangleInfo
 struct MSTriangleVertex
 {
 	v3f		mVertex;
-	u32		mGroupIndex; // flags 1 bit per index => up to 32 possible groups
 	u32		mSurfaceIndex;
 	u32		mTriangleIndex;
 };
 
-/*inline bool operator ==(const MSTriangleVertex& first, const MSTriangleVertex& second)
-{
-	if (first.mSurfaceIndex != second.mSurfaceIndex)
-		return false;
 
-	return first.mVertex == second.mVertex;
-}*/
 
 // OctreeNode content type for MeshSimplification
 class MSOctreeContent
@@ -64,8 +57,15 @@ public:
 		{
 			mData = new ContentData;
 		}
-		// pos, group, surface,triangle
-		mData->mVertices.push_back({ p1, (1U<<groupIndex),0,triangleindex });
+		
+		if (!(mData->mGroupFlags & (1U << groupIndex)))
+		{
+			mData->mGroupFlags |= (1U << groupIndex);
+			mData->mGroupCount++;
+		}
+
+		// pos, surface,triangle
+		mData->mVertices.push_back({ p1, 0,triangleindex });
 	}
 
 	const std::vector<MSTriangleVertex>* getContent() const
@@ -184,7 +184,10 @@ protected:
 			return result;
 		}
 
-		std::vector<MSTriangleVertex>					mVertices;
+		std::vector<MSTriangleVertex>	mVertices;
+		
+		u32	mGroupFlags = 0;	// all the groups in this cell, 1 bit per index => up to 32 possible groups
+		u8	mGroupCount = 0;
 		u8	mEmptyNeighborsFlag = 0;
 		u8	mFreeFaceCount = 0;
 		u8  mOtherFlags = 0;

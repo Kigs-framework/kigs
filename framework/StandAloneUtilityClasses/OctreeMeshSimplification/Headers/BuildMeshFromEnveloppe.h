@@ -31,6 +31,7 @@ public:
 	// use highest bit to check "edge way"
 	std::vector<u32> edges; // max should be 8 edges for really special cases ?
 	v3f				 normal;
+	u32				 grpFlag;
 };
 
 class BuildMeshFromEnveloppe
@@ -40,7 +41,7 @@ public:
 	class MSVertice
 	{
 	public:
-		MSVertice(const v3f& v, const nodeInfo* d, u32 grpflag) : mV(v), mOctreeNode(d), mGroupFlag(grpflag)
+		MSVertice(const v3f& v, const nodeInfo* d) : mV(v), mOctreeNode(d)
 		{
 			mEdges.clear();
 		}
@@ -108,13 +109,13 @@ public:
 		const nodeInfo*			mOctreeNode;
 		// last step : flag point on plane (all surrounding triangles have the same normal) or point on 2 planes intersection
 		u32						mFlag=0;
-		u32						mGroupFlag = 0;
+		u32						mGrpFlag=0; // or of each face flag
 	};
 protected:
 	// add given vertice and return index
-	unsigned int addVertice(const v3f& v, const nodeInfo* d, u32 grpflag)
+	unsigned int addVertice(const v3f& v, const nodeInfo* d)
 	{
-		mVertices.push_back({ v,d ,grpflag});
+		mVertices.push_back({ v,d });
 		return (unsigned int)(mVertices.size() - 1);
 	}
 
@@ -155,6 +156,7 @@ protected:
 	{
 	public:
 		std::vector<MSSurfaceStruct>			mCellSurfaces;
+
 		std::map<v3f, std::set<u32>>			mPerVSurfaces;
 		void	clear()
 		{
@@ -182,7 +184,7 @@ protected:
 
 
 	void	initCellSurfaceList(nodeInfo& node);
-	void	addMultipleVertices(nodeInfo& node, const v3f& goodpoint,u32 grpflag);
+	void	addMultipleVertices(nodeInfo& node, const v3f& goodpoint);
 	void	setUpVertices(nodeInfo& node);
 	void	setUpEdges(nodeInfo node, std::map < u32, std::vector<u32>>& edgeMap);
 	void	setUpNormals();
@@ -224,6 +226,8 @@ protected:
 	void	splitFaces();
 	// compute triangle normal
 	void	computeTriangleNormals();
+	// compute group of the triangle
+	void	computeTriangleGroup();
 	void	tagVerticesForSimplification();
 	// return intern edge index (in vertice) & vertice index
 	std::pair<u32, u32>		findBestPlanarMerge(u32 vindex);
@@ -245,25 +249,24 @@ protected:
 	void	checkCoherency();
 	void	checkVerticeCoherency();
 
-	void	checkVertice(nodeInfo& node, v3f& goodOne,u32& grpflag)
+	void	checkVertice(nodeInfo& node, v3f& goodOne)
 	{
-		grpflag = 0;
 		// first check trivial case (a point belonging to all present surfaces)
-		if (checkVerticeTrivialCase(node, goodOne, grpflag))
+		if (checkVerticeTrivialCase(node, goodOne))
 			return;
 
 		// then check easy case (a point with a good score in principal present surfaces) 
-		if (checkVerticeEasyCase(node, goodOne, grpflag))
+		if (checkVerticeEasyCase(node, goodOne))
 			return;
 
 		// then compute a vertice according to cell topology
-		computeVerticeFromCell(node, goodOne, grpflag);
+		computeVerticeFromCell(node, goodOne);
 	}
 
 	// different point in cell computation method
-	bool	checkVerticeTrivialCase(nodeInfo node, v3f& goodOne, u32& grpflag);
-	bool	checkVerticeEasyCase(nodeInfo node, v3f& goodOne, u32& grpflag);
-	bool	computeVerticeFromCell(nodeInfo node, v3f& goodOne, u32& grpflag);
+	bool	checkVerticeTrivialCase(nodeInfo node, v3f& goodOne);
+	bool	checkVerticeEasyCase(nodeInfo node, v3f& goodOne);
+	bool	computeVerticeFromCell(nodeInfo node, v3f& goodOne);
 
 
 	// all cases
@@ -318,14 +321,14 @@ protected:
 
 	};
 
-	v3f searchGoodVerticeInCellForDirection(nodeInfo node, const MSOctreeContent& cnode, const v3f& direction,BBox currentBBox,u32& grpflag);
+	v3f searchGoodVerticeInCellForDirection(nodeInfo node, const MSOctreeContent& cnode, const v3f& direction,BBox currentBBox);
 
 public:
 
 	BuildMeshFromEnveloppe(std::vector<nodeInfo*>& nodes,const std::vector<MSTriangleInfo>& triinfos) : mNodeList(nodes), mTriangleInfos(triinfos)
 	{}
 	void	Build();
-	void	addFinalizedMesh(std::vector<v3f>& vertices, std::vector<u32>& indices);
+	void	addFinalizedMesh(std::vector<v3f>& vertices, std::vector<std::vector<u32>>& indices);
 
 	std::vector<std::pair<std::pair<v3f, v3f>,u32>>	getEdges() const;
 	std::vector<MSVertice>					getEnveloppeVertices() const;

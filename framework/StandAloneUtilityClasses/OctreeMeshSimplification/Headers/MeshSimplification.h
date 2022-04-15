@@ -57,8 +57,8 @@ protected:
 	// if precision gives a too deep octree, then change precision
 	void	adjustPrecision(const BBox& bbox, float& precision);
 
-	std::vector<u32>	mFinalIndices;
-	std::vector<v3f>	mFinalVertices;
+	std::vector<std::vector<u32>>	mFinalIndices; // per group triangles
+	std::vector<v3f>				mFinalVertices;
 
 
 	// input data
@@ -98,9 +98,19 @@ public:
 	std::vector<vAndN>					getEnveloppeVertices() const;
 #endif
 
-	u32									getTriangleCount()const
+	u32									getTriangleCount(u32 grp=-1)const
 	{
-		return mFinalIndices.size() / 3;
+		u32 count=0;
+		size_t currentgrpindex = 0;
+		for (const auto& inputgrp : mInputIndices)
+		{
+			if ((grp == -1) || (grp == inputgrp.mGroupIndex))
+			{
+				count += mFinalIndices[currentgrpindex].size()/3;
+			}
+			currentgrpindex++;
+		}
+		return count;
 	}
 
 	u32									getVerticeCount()const
@@ -108,9 +118,19 @@ public:
 		return mFinalVertices.size();
 	}
 
-	const std::vector<u32>& getFinalTriangles()
+	const std::vector<u32>& getFinalTriangles(u32 grp=0)
 	{
-		return mFinalIndices;
+		size_t currentgrpindex = 0;
+		for (const auto& inputgrp : mInputIndices)
+		{
+			if (grp == inputgrp.mGroupIndex)
+			{
+				return mFinalIndices[currentgrpindex];
+			}
+			currentgrpindex++;
+		}
+
+		return mFinalIndices[0];
 	}
 	const std::vector<v3f>& getFinalVertices()
 	{

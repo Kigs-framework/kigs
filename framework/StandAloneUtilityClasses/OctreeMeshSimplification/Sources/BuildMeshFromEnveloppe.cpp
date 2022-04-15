@@ -5,7 +5,7 @@
 unsigned int adjacent_faces[6][4] = { {8,32,4,16},{8,16,4,32},{2,16,1,32},{2,32,1,16},{8,1,4,2},{8,2,4,1} };
 
 
-bool	BuildMeshFromEnveloppe::computeVerticeFromCell(nodeInfo node, v3f& goodOne,u32& grpflag)
+bool	BuildMeshFromEnveloppe::computeVerticeFromCell(nodeInfo node, v3f& goodOne)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
 	const auto& content = currentNode->getContentType();
@@ -36,12 +36,12 @@ bool	BuildMeshFromEnveloppe::computeVerticeFromCell(nodeInfo node, v3f& goodOne,
 	}
 	direction.Normalize();
 
-	goodOne=searchGoodVerticeInCellForDirection(node, content, direction, cellBBox, grpflag);
+	goodOne=searchGoodVerticeInCellForDirection(node, content, direction, cellBBox);
 
 	return true;
 }
 
-bool	BuildMeshFromEnveloppe::checkVerticeEasyCase(nodeInfo node, v3f& goodOne, u32& grpflag)
+bool	BuildMeshFromEnveloppe::checkVerticeEasyCase(nodeInfo node, v3f& goodOne)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
 	const auto& content = currentNode->getContentType();
@@ -141,8 +141,6 @@ bool	BuildMeshFromEnveloppe::checkVerticeEasyCase(nodeInfo node, v3f& goodOne, u
 		{
 			goodOne += v.first;
 			countGoodOnes++;
-			// TODO
-			// grpflag|=
 		}
 	}
 
@@ -155,7 +153,7 @@ bool	BuildMeshFromEnveloppe::checkVerticeEasyCase(nodeInfo node, v3f& goodOne, u
 	return false;
 }
 
-bool	BuildMeshFromEnveloppe::checkVerticeTrivialCase(nodeInfo node, v3f& goodOne,u32& grpflag)
+bool	BuildMeshFromEnveloppe::checkVerticeTrivialCase(nodeInfo node, v3f& goodOne)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
 	const auto& content = currentNode->getContentType();
@@ -169,14 +167,13 @@ bool	BuildMeshFromEnveloppe::checkVerticeTrivialCase(nodeInfo node, v3f& goodOne
 	// retreive vertices in all available surfaces
 	goodOne.Set(0.0f, 0.0f, 0.0f);
 	u32 countGoodOnes = 0;
+
 	for (const auto& v : mCellData.mPerVSurfaces)
 	{
 		if (v.second.size() == mCellData.mCellSurfaces.size()) // this vertice belongs to all the surfaces 
 		{
 			goodOne += v.first;
 			countGoodOnes++;
-			// TODO
-			// grpflag|=
 		}
 	}
 
@@ -632,6 +629,49 @@ void BuildMeshFromEnveloppe::splitMoreThanQuadFace(u32 fi)
 	splitQuadFace(fi);
 }
 
+void BuildMeshFromEnveloppe::computeTriangleGroup()
+{
+	
+	u32 fi = 0;
+	for (auto& f : mFaces)
+	{
+		u32	vflags[3] = {0,0,0};
+		u32	allFlags = 0;
+		size_t i = 0;
+		for (auto ein : f.edges)
+		{
+			u32 ew = (ein >> 31);
+			u32 ei = (ein & 0x7fffffff);
+
+			auto& currentE = mEdges[ei];
+
+			MeshSimplificationOctreeNode* currentNode = mVertices[currentE.v[ew]].mOctreeNode->getNode<MeshSimplificationOctreeNode>();
+			const auto& content = currentNode->getContentType();
+
+			vflags[i] = content.mData->mGroupFlags;
+			allFlags |= vflags[i];
+			i++;
+		}
+
+		i = 0;
+		u32 bestcount = 0;
+		while (allFlags)
+		{
+			u32 count = ((vflags[0] >> i) & 1) + ((vflags[1] >> i) & 1) + ((vflags[2] >> i) & 1);
+
+			if (count > bestcount)
+			{
+				bestcount = count;
+				f.grpFlag = 1 << i;
+			}
+
+			allFlags = allFlags >> 1;
+			i++;
+		}
+
+	}
+}
+
 //#pragma optimize("",off)
 void BuildMeshFromEnveloppe::computeTriangleNormals()
 {
@@ -698,6 +738,15 @@ void	BuildMeshFromEnveloppe::tagVerticesForSimplification()
 		// >= 16 => removed vertice
 		v.mFlag = 8;
 		checkVOnCoplanarTriangles(v);
+
+		// flag group on vertices
+		for (auto& e : v.mEdges)
+		{
+			u32 ew = (e >> 31);
+			u32 ei = (e & 0x7fffffff);
+
+			v.mGrpFlag|= mFaces[mEdges[ei].t[ew]].grpFlag;
+		}
 
 #ifdef _DEBUG
 		vi++;
@@ -1047,6 +1096,7 @@ std::vector<u32>		BuildMeshFromEnveloppe::findInternEdgesToSwitch(MSVertice& v, 
 std::pair<u32, u32>		BuildMeshFromEnveloppe::findBestPlanarMerge(u32 vindex)
 {
 	MSVertice& v = mVertices[vindex];
+	const auto& vcontent = v.mOctreeNode->getNode<MeshSimplificationOctreeNode>()->getContentType();
 
 	u32		bestVFound=0;
 	u32		bestEFound = -1;
@@ -1065,37 +1115,45 @@ std::pair<u32, u32>		BuildMeshFromEnveloppe::findBestPlanarMerge(u32 vindex)
 		u32 endv = currentE.v[1-ew];
 		MSVertice& otherV = mVertices[endv];
 
-		bool isNewBest = false;
+		const auto& endcontent = otherV.mOctreeNode->getNode<MeshSimplificationOctreeNode>()->getContentType();
 
-		if (otherV.mFlag > bestFoundFlag)
+		// check compatible groups
+		if ((vcontent.mData->mGroupFlags & endcontent.mData->mGroupFlags) == vcontent.mData->mGroupFlags)
 		{
-			isNewBest = true;
+			if (vcontent.mData->mGroupFlags == ((mFaces[currentE.t[0]].grpFlag) | (mFaces[currentE.t[1]].grpFlag)))
+			{
+				bool isNewBest = false;
 
-		}
-		else if (otherV.mFlag == bestFoundFlag)
-		{
-			if (bestFoundEdgeCount > otherV.mEdges.size())
-			{
-				isNewBest = true;
-			}
-			else if (bestFoundEdgeCount == otherV.mEdges.size())
-			{
-				if (endv > bestVFound)
+				if (otherV.mFlag > bestFoundFlag)
 				{
 					isNewBest = true;
+
+				}
+				else if (otherV.mFlag == bestFoundFlag)
+				{
+					if (bestFoundEdgeCount > otherV.mEdges.size())
+					{
+						isNewBest = true;
+					}
+					else if (bestFoundEdgeCount == otherV.mEdges.size())
+					{
+						if (endv > bestVFound)
+						{
+							isNewBest = true;
+						}
+					}
+				}
+				if (isNewBest)
+				{
+					if (isMergeValid(v, endv, internEdgeIndex))
+					{
+						bestEFound = internEdgeIndex;
+						bestVFound = endv;
+						bestFoundFlag = otherV.mFlag;
+						bestFoundEdgeCount = otherV.mEdges.size();
+					}
 				}
 			}
-		}
-		if (isNewBest)
-		{
-			if (isMergeValid(v, endv, internEdgeIndex))
-			{
-				bestEFound = internEdgeIndex;
-				bestVFound = endv;
-				bestFoundFlag = otherV.mFlag;
-				bestFoundEdgeCount = otherV.mEdges.size();
-			}
-			
 		}
 		internEdgeIndex++;
 		
@@ -1140,6 +1198,8 @@ bool	BuildMeshFromEnveloppe::isMergeValid(MSVertice& v, u32 endV, u32 internEdge
 std::pair<u32, u32> 	BuildMeshFromEnveloppe::findBestLinearMerge(u32 vindex)
 {
 	MSVertice& v = mVertices[vindex];
+	const auto& vcontent = v.mOctreeNode->getNode<MeshSimplificationOctreeNode>()->getContentType();
+
 
 	u32		bestVFound = 0;
 	u32		bestEFound = -1;
@@ -1163,36 +1223,43 @@ std::pair<u32, u32> 	BuildMeshFromEnveloppe::findBestLinearMerge(u32 vindex)
 
 		u32 endv = currentE.v[1-ew];
 		MSVertice& otherV = mVertices[endv];
-
-		bool isNewBest = false;
-
-		if (otherV.mFlag > bestFoundFlag)
+		const auto& endcontent = otherV.mOctreeNode->getNode<MeshSimplificationOctreeNode>()->getContentType();
+		// check compatible groups
+		if ((vcontent.mData->mGroupFlags & endcontent.mData->mGroupFlags) == vcontent.mData->mGroupFlags)
 		{
-			isNewBest = true;
+			if (vcontent.mData->mGroupFlags == ((mFaces[currentE.t[0]].grpFlag) | (mFaces[currentE.t[1]].grpFlag)))
+			{
+				bool isNewBest = false;
 
-		}
-		else if (otherV.mFlag == bestFoundFlag)
-		{
-			if (bestFoundEdgeCount > otherV.mEdges.size())
-			{
-				isNewBest = true;
-			}
-			else if (bestFoundEdgeCount == otherV.mEdges.size())
-			{
-				if (endv > bestVFound)
+				if (otherV.mFlag > bestFoundFlag)
 				{
 					isNewBest = true;
+
 				}
-			}
-		}
-		if (isNewBest)
-		{
-			if (isLinearMergeValid(v, endv, internEdgeIndex))
-			{
-				bestEFound = internEdgeIndex;
-				bestVFound = endv;
-				bestFoundFlag = otherV.mFlag;
-				bestFoundEdgeCount = otherV.mEdges.size();
+				else if (otherV.mFlag == bestFoundFlag)
+				{
+					if (bestFoundEdgeCount > otherV.mEdges.size())
+					{
+						isNewBest = true;
+					}
+					else if (bestFoundEdgeCount == otherV.mEdges.size())
+					{
+						if (endv > bestVFound)
+						{
+							isNewBest = true;
+						}
+					}
+				}
+				if (isNewBest)
+				{
+					if (isLinearMergeValid(v, endv, internEdgeIndex))
+					{
+						bestEFound = internEdgeIndex;
+						bestVFound = endv;
+						bestFoundFlag = otherV.mFlag;
+						bestFoundEdgeCount = otherV.mEdges.size();
+					}
+				}
 			}
 		}
 		internEdgeIndex++;
@@ -1575,7 +1642,7 @@ void	BuildMeshFromEnveloppe::finalClean()
 
 }
 
-#pragma optimize("",off)
+//#pragma optimize("",off)
 void	BuildMeshFromEnveloppe::setupInnerCorners()
 {
 	auto getEdgeNormal = [this](auto& e)->v3f {
@@ -2036,7 +2103,7 @@ void	BuildMeshFromEnveloppe::moveInnerCorners()
 	}
 }
 
-#pragma optimize("",on)
+//#pragma optimize("",on)
 void	BuildMeshFromEnveloppe::firstClean()
 {
 
@@ -2329,7 +2396,7 @@ void	BuildMeshFromEnveloppe::reorderEdgesInVertices()
 }
 
 
-void	BuildMeshFromEnveloppe::addMultipleVertices(nodeInfo& node, const v3f& goodpoint,u32 grpflag)
+void	BuildMeshFromEnveloppe::addMultipleVertices(nodeInfo& node, const v3f& goodpoint)
 {
 	MeshSimplificationOctreeNode* currentNode = node.getNode<MeshSimplificationOctreeNode>();
 	const auto& content = currentNode->getContentType();
@@ -2338,7 +2405,7 @@ void	BuildMeshFromEnveloppe::addMultipleVertices(nodeInfo& node, const v3f& good
 	{
 		if (content.mData->mEmptyNeighborsFlag & (1 << i))
 		{
-			content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(goodpoint,&node,grpflag), 1<<i });
+			content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(goodpoint,&node), 1<<i });
 		}
 	}
 
@@ -2508,8 +2575,8 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 		KIGS_ERROR("Can't occur", 1);
 		break;
 	case 1: // easy case with only one free face
-		checkVertice(node, result, grpflag);
-		content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(result,&node,grpflag), content.mData->mEmptyNeighborsFlag });
+		checkVertice(node, result);
+		content.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(result,&node), content.mData->mEmptyNeighborsFlag });
 		
 		break;
 	case 2: // 2 free faces => 2 subcases for adjacent free faces or opposites
@@ -2519,8 +2586,8 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 		}
 		else
 		{
-			checkVertice(node, result, grpflag);
-			addMultipleVertices(node, result, grpflag);
+			checkVertice(node, result);
+			addMultipleVertices(node, result);
 		}
 		break;
 	case 3: // 3 free faces => 2 subcases corner or U
@@ -2530,8 +2597,8 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 		}
 		else
 		{
-			checkVertice(node, result, grpflag);
-			addMultipleVertices(node, result, grpflag);
+			checkVertice(node, result);
+			addMultipleVertices(node, result);
 		}
 		break;
 	case 4: // 4 free faces => 2 subcases corner or tunnel 
@@ -2542,9 +2609,9 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 			testTrivial = false;
 		}
 		
-		if (testTrivial && checkVerticeTrivialCase(node, result, grpflag)) // if opposite free faces but trivial case, set only one point
+		if (testTrivial && checkVerticeTrivialCase(node, result)) // if opposite free faces but trivial case, set only one point
 		{
-			addMultipleVertices(node, result, grpflag);
+			addMultipleVertices(node, result);
 		}
 		else
 		{
@@ -2557,9 +2624,9 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 	{
 		bool testTrivial = true;
 		
-		if (testTrivial && checkVerticeTrivialCase(node, result, grpflag))
+		if (testTrivial && checkVerticeTrivialCase(node, result))
 		{
-			addMultipleVertices(node, result, grpflag);
+			addMultipleVertices(node, result);
 		}
 		else
 		{
@@ -2575,7 +2642,7 @@ void		BuildMeshFromEnveloppe::setUpVertices(nodeInfo& node)
 	mCellData.clear();
 }
 
-v3f BuildMeshFromEnveloppe::searchGoodVerticeInCellForDirection(nodeInfo node, const MSOctreeContent& cnode, const v3f& direction, BBox currentBbox, u32& grpflag)
+v3f BuildMeshFromEnveloppe::searchGoodVerticeInCellForDirection(nodeInfo node, const MSOctreeContent& cnode, const v3f& direction, BBox currentBbox)
 {
 	v3f nodecoord(node.coord.x, node.coord.y, node.coord.z);
 	nodecoord *= 0.5f;
@@ -2872,21 +2939,37 @@ void BuildMeshFromEnveloppe::manageSeparateFreeFaces(const MSOctreeContent& node
 			v3i idirection = OctreeNodeBase::mNeightboursDecalVectors[OctreeNodeBase::mInvDir[i]];
 			direction = v3f(idirection.x, idirection.y, idirection.z);
 			BBox emptybbox(BBox::PreInit{});
-			u32 grpflag = 0;
-			v3f pos = searchGoodVerticeInCellForDirection(n,node, direction, emptybbox, grpflag);
-			node.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(pos,&n,grpflag),  (1 << i) });
+			v3f pos = searchGoodVerticeInCellForDirection(n,node, direction, emptybbox);
+			node.mData->mEnvelopeData->mGoodIntersectionPoint.push_back({ addVertice(pos,&n),  (1 << i) });
 		}
 	}	
 }
 
-void	BuildMeshFromEnveloppe::addFinalizedMesh(std::vector<v3f>& vertices, std::vector<u32>& indices)
+void	BuildMeshFromEnveloppe::addFinalizedMesh(std::vector<v3f>& vertices, std::vector<std::vector<u32>>& indices)
 {
 	u32 verticesStartSize = vertices.size();
 	std::vector<u32>	FinalVerticeIndexMatching;
 	FinalVerticeIndexMatching.resize(mVertices.size(),-1);
 
+	auto grpIndexFromFlag = [](u32 flag) {
+	
+		u32 result = 0;
+		while (flag)
+		{
+			if (flag & 1)
+			{
+				return result;
+			}
+			result++;
+			flag = flag >> 1;
+		}
+		return result;
+	};
+
 	for (const auto& f : mFaces)
 	{
+		u32 grpIndex=grpIndexFromFlag(f.grpFlag);
+
 		for (const auto& e : f.edges)
 		{
 			u32 ew = e >> 31;
@@ -2900,7 +2983,7 @@ void	BuildMeshFromEnveloppe::addFinalizedMesh(std::vector<v3f>& vertices, std::v
 				FinalVerticeIndexMatching[vi] = vertices.size();
 				vertices.push_back(mVertices[vi].mV);
 			}
-			indices.push_back(FinalVerticeIndexMatching[vi]);
+			indices[grpIndex].push_back(FinalVerticeIndexMatching[vi]);
 		}
 	}
 }
@@ -2966,6 +3049,8 @@ void BuildMeshFromEnveloppe::Build()
 	
 	// compute per triangle normal
 	computeTriangleNormals();
+
+	computeTriangleGroup();
 
 	// prepare triangle decimation
 	tagVerticesForSimplification();
