@@ -88,13 +88,13 @@ public:
 	std::vector<UTF8Char>	toUTF8();
 
 
-	bool	operator == (const char* str)
+	bool	operator == (const char* str) const
 	{
 		usString usstr(str);
-		return usstr == *this;
+		return *this==usstr;
 	}
 
-	bool	operator == (const usString& other)
+	/*bool	operator == (const usString& other) const
 	{
 		const unsigned short* read_char1 = mString;
 		const unsigned short* read_char2 = other.mString;
@@ -110,7 +110,7 @@ public:
 		}
 
 		return false;
-	}
+	}*/
 
 	inline const unsigned short& operator[](unsigned int i)const
 	{

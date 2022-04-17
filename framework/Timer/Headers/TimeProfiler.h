@@ -40,17 +40,17 @@ public:
 
 	/**
 	 * \brief		start a profiler for the given profile handler
-	 * \fn			static volatile void StartProfiler(int handler);
+	 * \fn			static void StartProfiler(int handler);
 	 * \param		handler : handler of the profiler to start
 	 */
-	static volatile void StartProfiler(int handler);
+	static void StartProfiler(int handler);
 
 	/**
 	 * \brief		stop the profiler for the given profile handler
-	 * \fn			static volatile void StopProfiler(int handler);
+	 * \fn			static void StopProfiler(int handler);
 	 * \param		handler : handler of the profiler to stop
 	 */
-	static volatile void StopProfiler(int handler);
+	static void StopProfiler(int handler);
 
 	//! delete all profilers
 	static void CloseAll();

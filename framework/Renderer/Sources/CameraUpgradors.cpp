@@ -87,9 +87,11 @@ DEFINE_UPGRADOR_METHOD(OrbitCameraUp, ManageDirectTouch)
 
 
 	auto ctrl = false;
+	// TODO with VK keys
+#ifdef WIN32
 	if (auto kb = ModuleInput::Get()->GetKeyboard())
 		ctrl = kb->GetKey(CM_KEY_LCONTROL) | kb->GetKey(CM_KEY_RCONTROL);
-
+#endif
 	if (!GetUpgrador()->mOrbitNeedCtrl)
 		ctrl = true;
 
@@ -183,9 +185,11 @@ DEFINE_UPGRADOR_UPDATE(OrbitCameraUp)
 	GetUpgrador()->mLastTime = time;
 
 	auto shift = false;
+	// TODO with VK keys
+#ifdef WIN32
 	if (auto kb = ModuleInput::Get()->GetKeyboard())
 		shift = kb->GetKey(CM_KEY_LSHIFT) | kb->GetKey(CM_KEY_RSHIFT);
-
+#endif
 	if (shift) delta *= 4;
 
 	if (delta && GetUpgrador()->mHovered)

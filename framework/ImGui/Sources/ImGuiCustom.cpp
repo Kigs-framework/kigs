@@ -198,7 +198,7 @@ namespace ImGui
 		while (text_start < text_end)
 		{
 			auto wrap_pos = draw_list->_Data->Font->CalcWordWrapPositionA(1.0f, text_start, text_end, size.x - ImGui::GetStyle().FramePadding.x * 2);
-			lines.push_back({ text_start, wrap_pos });
+			lines.push_back({ text_start, (size_t)(wrap_pos- text_start) });
 			text_start = wrap_pos + 1;
 		}
 		v2f pos = (v2f)ImGui::GetCursorScreenPos() + size / 2;
