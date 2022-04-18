@@ -10,7 +10,7 @@ extern HTTPRequestModuleJS* gInstanceModuleHTTPRequestJS;
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
 #define MODULEINITFUNC			PlatformHTTPRequestModuleInit
-extern ModuleBase* PlatformHTTPRequestModuleInit(Core* core, const kstl::vector<CoreModifiableAttribute*>* params);
+extern SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
 #else
 #define MODULEINITFUNC			ModuleInit
 #endif
@@ -31,19 +31,20 @@ public:
 
 	//! module constructor 
 	HTTPRequestModuleJS(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	     
+	 	//! destructor
+    virtual ~HTTPRequestModuleJS();    
+    
 	//! module init
-	void Init(Core* core, const kstl::vector<CoreModifiableAttribute*>* params);  
+	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);  
 
 	//! module close
 	void Close();         
 	             
 	//! module update
-	virtual void Update(const Timer& timer);      
+	virtual void Update(const Timer& timer, void* addParam);      
 
 protected:
-	//! destructor
-    virtual ~HTTPRequestModuleJS();    
+
 }; 
 
 #endif //_HTTPREQUESTMODULEJS_H_

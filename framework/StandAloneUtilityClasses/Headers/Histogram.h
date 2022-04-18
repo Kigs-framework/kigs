@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "Teclibs\Tec3D.h"
+#include "TecLibs/Tec3D.h"
 
 // utility class to manage Histograms
 template<typename storageType,bool soft=false>
