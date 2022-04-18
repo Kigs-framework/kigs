@@ -107,7 +107,7 @@ public:
 	}
 
 	void			AddAutoUpdate(CoreModifiable*	toUpdate,double frequency=-1.0);
-	void			RemoveAutoUpdate(CoreModifiable*	toUpdate);
+	void			RemoveAutoUpdate(CoreModifiable* toUpdate);
 
 private:
 	void			PrivateAddAutoUpdate(CoreModifiable* toUpdate, double frequency);

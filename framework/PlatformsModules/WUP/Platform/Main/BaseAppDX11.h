@@ -79,7 +79,7 @@ private:
 extern bool gIsHolographic;
 
 #endif
-//#define NEXTBIM_EXPLORER_STATIC
+#define NEXTBIM_EXPLORER_STATIC
 #ifdef NEXTBIM_EXPLORER_STATIC
 #define DECL_SPEC
 #else

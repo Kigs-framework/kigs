@@ -7,7 +7,7 @@
 # in the COPYING file in the root directory of this source tree).
 # ################################################################
 
-project(libzstd)
+project(libzstd C ASM)
 
 set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 option(ZSTD_BUILD_STATIC "BUILD STATIC LIBRARIES" ON)
@@ -22,30 +22,31 @@ include_directories(${LIBRARY_DIR} ${LIBRARY_DIR}/common)
 
 file(GLOB CommonSources ${LIBRARY_DIR}/common/*.c)
 file(GLOB CompressSources ${LIBRARY_DIR}/compress/*.c)
-file(GLOB DecompressSources ${LIBRARY_DIR}/decompress/*.c)
+if (MSVC)
+    file(GLOB DecompressSources ${LIBRARY_DIR}/decompress/*.c)
+    add_compile_options(-DZSTD_DISABLE_ASM)
+else ()
+    file(GLOB DecompressSources ${LIBRARY_DIR}/decompress/*.c ${LIBRARY_DIR}/decompress/*.S)
+endif ()
 file(GLOB DictBuilderSources ${LIBRARY_DIR}/dictBuilder/*.c)
-file(GLOB DeprecatedSources ${LIBRARY_DIR}/deprecated/*.c)
 
 set(Sources
         ${CommonSources}
         ${CompressSources}
         ${DecompressSources}
-        ${DictBuilderSources}
-        ${DeprecatedSources})
+        ${DictBuilderSources})
 
 file(GLOB CommonHeaders ${LIBRARY_DIR}/common/*.h)
 file(GLOB CompressHeaders ${LIBRARY_DIR}/compress/*.h)
 file(GLOB DecompressHeaders ${LIBRARY_DIR}/decompress/*.h)
 file(GLOB DictBuilderHeaders ${LIBRARY_DIR}/dictBuilder/*.h)
-file(GLOB DeprecatedHeaders ${LIBRARY_DIR}/deprecated/*.h)
 
 set(Headers
         ${LIBRARY_DIR}/zstd.h
         ${CommonHeaders}
         ${CompressHeaders}
         ${DecompressHeaders}
-        ${DictBuilderHeaders}
-        ${DeprecatedHeaders})
+        ${DictBuilderHeaders})
 
 if (ZSTD_LEGACY_SUPPORT)
     set(LIBRARY_LEGACY_DIR ${LIBRARY_DIR}/legacy)
@@ -77,8 +78,10 @@ if (MSVC)
 endif ()
 
 # Split project to static and shared libraries build
+set(library_targets)
 if (ZSTD_BUILD_SHARED)
     add_library(libzstd_shared SHARED ${Sources} ${Headers} ${PlatformDependResources})
+    list(APPEND library_targets libzstd_shared)
     if (ZSTD_MULTITHREAD_SUPPORT)
         set_property(TARGET libzstd_shared APPEND PROPERTY COMPILE_DEFINITIONS "ZSTD_MULTITHREAD")
         if (UNIX)
@@ -88,6 +91,7 @@ if (ZSTD_BUILD_SHARED)
 endif ()
 if (ZSTD_BUILD_STATIC)
     add_library(libzstd_static STATIC ${Sources} ${Headers})
+    list(APPEND library_targets libzstd_static)
     if (ZSTD_MULTITHREAD_SUPPORT)
         set_property(TARGET libzstd_static APPEND PROPERTY COMPILE_DEFINITIONS "ZSTD_MULTITHREAD")
         if (UNIX)
@@ -107,7 +111,7 @@ if (MSVC)
 endif ()
 
 # With MSVC static library needs to be renamed to avoid conflict with import library
-if (MSVC)
+if (MSVC OR (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT MINGW))
     set(STATIC_LIBRARY_BASE_NAME zstd_static)
 else ()
     set(STATIC_LIBRARY_BASE_NAME zstd)
@@ -127,40 +131,50 @@ if (ZSTD_BUILD_STATIC)
     set_target_properties(
             libzstd_static
             PROPERTIES
+            POSITION_INDEPENDENT_CODE On
             OUTPUT_NAME ${STATIC_LIBRARY_BASE_NAME})
 endif ()
 
-if (UNIX)
+if (UNIX OR MINGW)
     # pkg-config
     set(PREFIX "${CMAKE_INSTALL_PREFIX}")
+    set(EXEC_PREFIX "\${prefix}")
     set(LIBDIR "${CMAKE_INSTALL_FULL_LIBDIR}")
-    set(VERSION "${zstd_VERSION_MAJOR}.${zstd_VERSION_MINOR}.${zstd_VERSION_PATCH}")
-    add_custom_target(libzstd.pc ALL
-            ${CMAKE_COMMAND} -DIN="${LIBRARY_DIR}/libzstd.pc.in" -DOUT="libzstd.pc"
-            -DPREFIX="${PREFIX}" -DVERSION="${VERSION}"
-            -P "${CMAKE_CURRENT_SOURCE_DIR}/pkgconfig.cmake"
-            COMMENT "Creating pkg-config file")
+    set(INCLUDEDIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+    set(VERSION "${zstd_VERSION}")
 
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libzstd.pc" DESTINATION "${LIBDIR}/pkgconfig")
+    string(LENGTH "${PREFIX}" PREFIX_LENGTH)
+    string(SUBSTRING "${LIBDIR}" 0 ${PREFIX_LENGTH} LIBDIR_PREFIX)
+    string(SUBSTRING "${LIBDIR}" ${PREFIX_LENGTH} -1 LIBDIR_SUFFIX)
+    string(SUBSTRING "${INCLUDEDIR}" 0 ${PREFIX_LENGTH} INCLUDEDIR_PREFIX)
+    string(SUBSTRING "${INCLUDEDIR}" ${PREFIX_LENGTH} -1 INCLUDEDIR_SUFFIX)
+
+    if ("${INCLUDEDIR_PREFIX}" STREQUAL "${PREFIX}")
+        set(INCLUDEDIR "\${prefix}${INCLUDEDIR_SUFFIX}")
+    endif()
+    if ("${LIBDIR_PREFIX}" STREQUAL "${PREFIX}")
+        set(LIBDIR "\${exec_prefix}${LIBDIR_SUFFIX}")
+    endif()
+
+    configure_file("${LIBRARY_DIR}/libzstd.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/libzstd.pc" @ONLY)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libzstd.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 endif ()
 
 # install target
 install(FILES
-    ${LIBRARY_DIR}/zstd.h
-    ${LIBRARY_DIR}/deprecated/zbuff.h
-    ${LIBRARY_DIR}/dictBuilder/zdict.h
-    ${LIBRARY_DIR}/dictBuilder/cover.h
-    ${LIBRARY_DIR}/common/zstd_errors.h
+    "${LIBRARY_DIR}/zstd.h"
+    "${LIBRARY_DIR}/zdict.h"
+    "${LIBRARY_DIR}/zstd_errors.h"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
-if (ZSTD_BUILD_SHARED)
-    install(TARGETS libzstd_shared RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-                                   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-                                   ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-endif()
-if (ZSTD_BUILD_STATIC)
-    install(TARGETS libzstd_static ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-endif ()
+install(TARGETS ${library_targets}
+    EXPORT zstdExports
+    INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    BUNDLE DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    )
 
 # uninstall target
 if (NOT TARGET uninstall)

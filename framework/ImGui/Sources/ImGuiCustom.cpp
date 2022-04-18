@@ -46,7 +46,7 @@ namespace ImGui
 
 	void CenterWidget(float widget_width)
 	{
-		auto centered_x = (ImGui::GetWindowWidth() - widget_width) / 2;
+		auto centered_x = (ImGui::GetContentRegionAvail().x - widget_width) / 2;
 		ImGui::Dummy(v2f(0, 0)); ImGui::SameLine(centered_x);
 	}
 
@@ -81,16 +81,16 @@ namespace ImGui
 	void ButtonLabel(const std::string& txt, v2f size)
 	{
 		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_WindowBg));
-		ImGui::PushDisabled();
+		ImGui::BeginDisabled();
 		ImGui::ButtonEx(txt.c_str(), size);
-		ImGui::PopDisabled();
+		ImGui::EndDisabled();
 		ImGui::PopStyleVar();
 	}
 	bool ButtonWithLabel(const std::string& label, const std::string txt, float label_width, v2f size)
 	{
-		ImGui::PushDisabled();
+		ImGui::BeginDisabled();
 		bool b = ImGui::ButtonEx(label.c_str(), v2f(label_width, size.y));
-		ImGui::PopDisabled();
+		ImGui::EndDisabled();
 		ImGui::SameLine(0, 0);
 		b = ImGui::Button(txt.c_str(), size) || b;
 		return b;
@@ -115,7 +115,7 @@ namespace ImGui
 		}
 	}
 
-	bool ToggleButton(const char* str_id, bool* v)
+	bool ToggleButton(const char* str_id, bool* v, bool reverse_side)
 	{
 		bool changed = false;
 
@@ -136,11 +136,14 @@ namespace ImGui
 		ImColor circle_color = ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered);
 		ImColor border_color = ImGui::GetStyleColorVec4(ImGuiCol_Separator);
 		
+		bool side = *v;
+		if (reverse_side) side = !side;
+
 		draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), border_color, height * 0.5f);
 		draw_list->AddRectFilled(p + v2f(border_size, border_size), ImVec2(p.x + width - border_size, p.y + height - border_size), ImColor(ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg)), (height - 2 * border_size) * 0.5f);
 		draw_list->AddRectFilled(p + v2f(border_size, border_size), ImVec2(p.x + width - border_size, p.y + height - border_size), col_bg, (height - 2 * border_size) * 0.5f);
-		draw_list->AddCircleFilled(ImVec2(*v ? (p.x + width - radius) : (p.x + radius), p.y + radius), radius - 1.5f, border_color);
-		draw_list->AddCircleFilled(ImVec2(*v ? (p.x + width - radius) : (p.x + radius), p.y + radius), radius - 1.5f - border_size, circle_color);
+		draw_list->AddCircleFilled(ImVec2(side ? (p.x + width - radius) : (p.x + radius), p.y + radius), radius - 1.5f, border_color);
+		draw_list->AddCircleFilled(ImVec2(side ? (p.x + width - radius) : (p.x + radius), p.y + radius), radius - 1.5f - border_size, circle_color);
 		
 		return changed;
 	}
@@ -195,7 +198,7 @@ namespace ImGui
 		while (text_start < text_end)
 		{
 			auto wrap_pos = draw_list->_Data->Font->CalcWordWrapPositionA(1.0f, text_start, text_end, size.x - ImGui::GetStyle().FramePadding.x * 2);
-			lines.push_back({ text_start, wrap_pos });
+			lines.push_back({ text_start, (size_t)(wrap_pos- text_start) });
 			text_start = wrap_pos + 1;
 		}
 		v2f pos = (v2f)ImGui::GetCursorScreenPos() + size / 2;
@@ -225,6 +228,29 @@ namespace ImGui
 		return ret;
 	};
 
+	void PushSaturatedButton(float mult)
+	{
+		auto saturate = [&](v3f color)
+		{
+			auto hsv = RGBtoHSV(color);
+			hsv[1] = std::clamp(hsv[1] * mult, 0.0f, 1.0f);
+			return HSVtoRGB(hsv);
+		};
+		ImGui::PushStyleColor(ImGuiCol_Button, v4f(saturate(v4f(ImGui::GetStyleColorVec4(ImGuiCol_Button)).xyz)));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, v4f(saturate(v4f(ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive)).xyz)));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, v4f(saturate(v4f(ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered)).xyz)));
+	}
+
+	void PopSaturatedButton()
+	{
+		ImGui::PopStyleColor(3);
+	}
+
+	bool IsEnterPressed()
+	{
+		//TODO(antoine) support numpad enter, keycodes / keyboard support in the framework is a mess and not very portable at the moment
+		return ImGui::IsKeyPressed(VK_RETURN);
+	}
 }
 
 std::string CheckButtonText(bool checked, const std::string& txt, bool before)
@@ -241,4 +267,125 @@ std::string SelectedOptionText(bool selected, const std::string& txt, bool befor
 		return selected ? ICON_FK_CHECK" " + txt : " " + txt;
 
 	return selected ? txt + " " ICON_FK_CHECK : txt + " ";
+}
+
+v3f RGBtoHSV(v3f rgb)
+{
+	v3f result;
+	auto& fH = result.x;
+	auto& fS = result.y;
+	auto& fV = result.z;
+
+	auto& fR = rgb.x;
+	auto& fG = rgb.y;
+	auto& fB = rgb.z;
+
+	float fCMax = std::max(std::max(fR, fG), fB);
+	float fCMin = std::min(std::min(fR, fG), fB);
+	float fDelta = fCMax - fCMin;
+
+	if (fDelta > 0)
+	{
+		if (fCMax == fR)
+		{
+			fH = 60 * (fmod(((fG - fB) / fDelta), 6));
+		}
+		else if (fCMax == fG)
+		{
+			fH = 60 * (((fB - fR) / fDelta) + 2);
+		}
+		else if (fCMax == fB)
+		{
+			fH = 60 * (((fR - fG) / fDelta) + 4);
+		}
+
+		if (fCMax > 0)
+		{
+			fS = fDelta / fCMax;
+		}
+		else
+		{
+			fS = 0;
+		}
+
+		fV = fCMax;
+	}
+	else
+	{
+		fH = 0;
+		fS = 0;
+		fV = fCMax;
+	}
+
+	if (fH < 0)
+	{
+		fH = 360 + fH;
+	}
+	return result;
+}
+
+v3f HSVtoRGB(v3f hsv)
+{
+	v3f result;
+	auto& fR = result.x;
+	auto& fG = result.y;
+	auto& fB = result.z;
+
+	auto& fH = hsv.x;
+	auto& fS = hsv.y;
+	auto& fV = hsv.z;
+
+	float fC = fV * fS; // Chroma
+	float fHPrime = fmod(fH / 60.0, 6);
+	float fX = fC * (1 - fabs(fmod(fHPrime, 2) - 1));
+	float fM = fV - fC;
+
+	if (0 <= fHPrime && fHPrime < 1)
+	{
+		fR = fC;
+		fG = fX;
+		fB = 0;
+	}
+	else if (1 <= fHPrime && fHPrime < 2)
+	{
+		fR = fX;
+		fG = fC;
+		fB = 0;
+	}
+	else if (2 <= fHPrime && fHPrime < 3)
+	{
+		fR = 0;
+		fG = fC;
+		fB = fX;
+	}
+	else if (3 <= fHPrime && fHPrime < 4)
+	{
+		fR = 0;
+		fG = fX;
+		fB = fC;
+	}
+	else if (4 <= fHPrime && fHPrime < 5)
+	{
+		fR = fX;
+		fG = 0;
+		fB = fC;
+	}
+	else if (5 <= fHPrime && fHPrime < 6)
+	{
+		fR = fC;
+		fG = 0;
+		fB = fX;
+	}
+	else
+	{
+		fR = 0;
+		fG = 0;
+		fB = 0;
+	}
+
+	fR += fM;
+	fG += fM;
+	fB += fM;
+
+	return result;
 }

@@ -226,6 +226,8 @@ if(WIN32 OR KIGS_ANDROID)
 		target_compile_options(Base INTERFACE /bigobj)
 		target_link_options(Base INTERFACE $<$<CONFIG:StaticReleaseTools>:/INCREMENTAL>)
 		target_link_options(Base INTERFACE $<$<CONFIG:StaticDebug>:/INCREMENTAL>)
+		target_compile_options(Base INTERFACE $<$<CONFIG:StaticRelease>:/Zi>)
+		target_link_options(Base INTERFACE $<$<CONFIG:StaticRelease>:/DEBUG:FULL>)
 	endif()
 elseif(APPLE) #TODO : ios / osX
 	set(KIGS_PLATFORM iOS)
@@ -234,7 +236,7 @@ elseif(JAVASCRIPT)
 	target_compile_definitions(Base INTERFACE JAVASCRIPT GL_ES2)
 	set(KIGS_PLATFORM Javascript)
 
-	set(CMAKE_CXX_FLAGS_STATICRELEASE "${CMAKE_CXX_FLAGS_STATICRELEASE} --closure 1")
+#	set(CMAKE_CXX_FLAGS_STATICRELEASE "${CMAKE_CXX_FLAGS_STATICRELEASE} --closure 1")
 
 	if(${CMAKE_BUILD_TYPE} STREQUAL "StaticDebug")
 	message(STATUS "building static debug config")

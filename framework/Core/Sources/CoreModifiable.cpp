@@ -1974,17 +1974,30 @@ void	CoreModifiable::Export(const std::string &filename,CoreModifiable* toexport
 	if (settings)
 		xmlpath = settings->working_directory + xmlpath;
 
-	xmlfile->WriteFile(xmlpath);
-
+	bool write_file = true;
 	if (settings)
 	{
 #ifdef KIGS_TOOLS
 		if (settings->current_package)
 		{
-			settings->current_package->AddFile(xmlpath, filename);
+			if (settings->export_directly_in_package)
+			{
+				write_file = false;
+				std::string fileext;
+				size_t extpos = filename.rfind(".") + 1;
+				fileext = filename.substr(extpos, filename.length() - extpos);
+				auto buffer = xmlfile->WriteBuffer(fileext == "kxml");
+				settings->current_package->AddFile(xmlpath, filename, buffer);
+			}
+			else
+				settings->current_package->AddFile(xmlpath, filename);
 		}
 #endif
 	}
+
+	if(write_file)
+		xmlfile->WriteFile(xmlpath);
+
 #ifdef KEEP_XML_DOCUMENT
 	toexport->mXMLFiles.push_back(xmlfile);
 	toexport->mXMLNodes[xmlfile.get()] = modifiableNode;
@@ -2320,6 +2333,8 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 					current->getValue((void*&)buffer);
 					if (buffer->size() >= settings->export_buffer_attribute_as_external_file_size_threshold)
 					{
+						SP<CoreRawBuffer> buffer_ref = buffer->shared_from_this();
+
 						CMSP compressManager = KigsCore::GetSingleton("KXMLManager");
 						auto path = unique_id + "_" + current->getLabel()._id_name + (compressManager ? std::string(".kbin") : ".bin");
 						attribute = new XMLAttribute("V", "#" + path);
@@ -2330,14 +2345,15 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 						{
 							auto result = MakeRefCounted<CoreRawBuffer>();
 							compressManager->SimpleCall("CompressData", buffer, result.get());
-							ModuleFileManager::SaveFile(filepath.c_str(), (u8*)result->data(), result->size());
+							buffer_ref = result;
 						}
-						else
-						{
-							ModuleFileManager::SaveFile(filepath.c_str(), (u8*)buffer->data(), buffer->length());
-						}
-						if (settings->current_package)
-							settings->current_package->AddFile(filepath, path);
+						
+						bool export_file = !(settings->current_package && settings->export_directly_in_package);
+						if(settings->current_package)
+							settings->current_package->AddFile(filepath, path, export_file ? nullptr : buffer_ref);
+						
+						if(export_file)
+							ModuleFileManager::SaveFile(filepath.c_str(), (u8*)buffer_ref->data(), buffer_ref->length());
 					}
 				}
 				

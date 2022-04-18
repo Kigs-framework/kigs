@@ -94,7 +94,7 @@ int TimeProfiler::NewProfiler(const kstl::string& name)
 }
 
 
-volatile void TimeProfiler::StartProfiler(int handler)
+void TimeProfiler::StartProfiler(int handler)
 {
 	if(handler != -1)
 	{
@@ -102,7 +102,7 @@ volatile void TimeProfiler::StartProfiler(int handler)
 	}
 }
 
-volatile void TimeProfiler::StopProfiler(int handler)
+void TimeProfiler::StopProfiler(int handler)
 {
 	if(handler != -1)
 	{

@@ -136,3 +136,41 @@ int JSfclose(FileHandle* handle)
 	handle->mStatus=0; // reset 
 	return result;
 }
+
+#include <iostream>
+#include <codecvt>
+#include <locale>
+
+// utility wrapper to adapt locale-bound facets for wstring/wbuffer convert
+template<class Facet>
+struct deletable_facet : Facet
+{
+    template<class ...Args>
+    deletable_facet(Args&& ...args) : Facet(std::forward<Args>(args)...) {}
+    ~deletable_facet() {}
+};
+
+std::string to_utf8(const wchar_t* buffer, int len)
+{
+    std::wstring str(buffer,len);
+    return to_utf8(str);
+}
+
+std::string to_utf8(const std::wstring& str)
+{
+	std::wstring_convert<deletable_facet<std::codecvt<wchar_t, char, std::mbstate_t>>> utf8_conv;
+	return utf8_conv.to_bytes(str);
+}
+
+std::wstring to_wchar(const char* buffer, int len)
+{
+	std::string str(buffer,len);
+    return to_wchar(str);
+}
+
+std::wstring to_wchar(const std::string& str)
+{
+	std::wstring_convert<deletable_facet<std::codecvt<wchar_t, char, std::mbstate_t>>>  wchar_conv;
+	return wchar_conv.from_bytes(str);
+}
+

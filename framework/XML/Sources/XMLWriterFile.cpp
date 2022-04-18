@@ -247,3 +247,43 @@ void XMLWriterFile::WriteString(XML& xml, kstl::string &result, bool header, boo
 		write_ptr += str.size();
 	}
 }
+
+SP<CoreRawBuffer> XMLWriterFile::WriteBuffer(XML& xml, bool header, bool compress)
+{
+	XMLWriterFile  writer;
+
+	XMLNode* node = (XMLNode*)xml.getRoot();
+	auto result = MakeRefCounted<CoreRawBuffer>();
+
+	if (header) writer.writeHeader(xml);
+	writer.writeNode(node, 0);
+
+	if (compress)
+	{
+		auto kxml_manager = KigsCore::GetSingleton("KXMLManager");
+		if (!kxml_manager)
+		{
+			KIGS_ERROR("Need to include KXMLManager in the project", 3);
+		}
+		std::vector<u8> result_compressed;
+		kxml_manager->SimpleCall("CompressKXML", writer.mData, result_compressed);
+		result->resize(result_compressed.size());
+		memcpy(result->data(), result_compressed.data(), result_compressed.size());
+		return result;
+	}
+
+	u64 total_size = 0;
+	for (auto& str : writer.mData)
+		total_size += str.size();
+
+	result->resize(total_size);
+
+	auto write_ptr = result->data();
+	for (auto& str : writer.mData)
+	{
+		memcpy((void*)write_ptr, str.data(), str.size());
+		write_ptr += str.size();
+	}
+
+	return result;
+}

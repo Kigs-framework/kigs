@@ -57,7 +57,6 @@ void	CoreBaseApplication::PrivateRemoveAutoUpdate(CoreModifiable* toUpdate)
 			if (std::get<0>(*itAutoUpdate) == toUpdate)
 			{
 				mAutoUpdateList.erase(itAutoUpdate);
-				toUpdate->unflagAsAutoUpdateRegistered();
 				// no duplicate here, so can exit directly
 				return;
 			}
@@ -83,12 +82,14 @@ void			CoreBaseApplication::ManageDelayedAutoUpdateModification()
 
 void CoreBaseApplication::AddAutoUpdate(CoreModifiable*	toUpdate, double frequency)
 {
+	toUpdate->flagAsAutoUpdateRegistered();
 	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
 	mAutoUpdateToAddRemoveList.push_back(std::make_tuple(toUpdate, frequency, 1)); // add
 }
 
 void CoreBaseApplication::RemoveAutoUpdate(CoreModifiable*	toUpdate)
 {
+	toUpdate->unflagAsAutoUpdateRegistered();
 	std::lock_guard<std::recursive_mutex> lk{mAutoUpdateMutex};
 	mAutoUpdateToAddRemoveList.push_back(std::make_tuple(toUpdate, -1.0, 0)); // remove
 }

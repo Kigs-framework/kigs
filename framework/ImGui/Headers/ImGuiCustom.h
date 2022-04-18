@@ -59,10 +59,25 @@ namespace ImGui
 		return F(str.c_str(), FWD(args)...);
 	}
 
-	bool ToggleButton(const char* str_id, bool* v);
+	bool ToggleButton(const char* str_id, bool* v, bool reverse_side = false);
 
 	void ScrollWhenDragging(const ImVec2& mult, float threshold = 96.0f, ImGuiMouseButton mouse_button = ImGuiMouseButton_Left);
+
+	inline void PushStyleSpacing(v2f spacing)
+	{
+		if (spacing.x < 0.0f) spacing.x = ImGui::GetStyle().ItemSpacing.x;
+		if (spacing.y < 0.0f) spacing.y = ImGui::GetStyle().ItemSpacing.y;
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, spacing);
+	}
+	
+	void PushSaturatedButton(float mult = 1.25f);
+	void PopSaturatedButton();
+
+	bool IsEnterPressed();
 }
 
 std::string CheckButtonText(bool checked, const std::string& txt, bool before = true);
 std::string SelectedOptionText(bool selected, const std::string& txt, bool before = true);
+
+v3f RGBtoHSV(v3f rgb);
+v3f HSVtoRGB(v3f hsv);

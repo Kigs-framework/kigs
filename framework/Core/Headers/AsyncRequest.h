@@ -85,7 +85,7 @@ protected:
 		mProcessingFlag |= 2;
 	}
 
-	volatile unsigned int mProcessingFlag;
+	std::atomic<unsigned int> mProcessingFlag;
 };
 
 #endif //_ASYNCREQUEST_H_

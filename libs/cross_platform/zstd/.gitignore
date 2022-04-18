@@ -22,15 +22,20 @@ zstdmt
 
 # Test artefacts
 tmp*
+*.zst
+*.zstd
 dictionary.
 dictionary
 NUL
 
 # Build artefacts
+contrib/linux-kernel/linux/
 projects/
 bin/
 .buckd/
 buck-out/
+build-*
+*.gcda
 
 # Other files
 .directory
@@ -43,3 +48,8 @@ _zstdbench/
 googletest/
 *.d
 *.vscode
+*.code-workspace
+compile_commands.json
+.clangd
+perf.data
+perf.data.old

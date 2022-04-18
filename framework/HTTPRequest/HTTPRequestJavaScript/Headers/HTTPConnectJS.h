@@ -18,17 +18,17 @@ public:
 
 	//! constructor
     HTTPConnectJS(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-
+	//! destructor
+    virtual ~HTTPConnectJS();
 	virtual void InitModifiable() override;
 
 
-	virtual bool	Open();
-	virtual void	Close();
+	virtual bool	Open() override;
+	virtual void	Close() override;
 
 protected:
 
-	//! destructor
-    virtual ~HTTPConnectJS();
+
 };
 
 #endif //_HTTPCONNECTJS_H_

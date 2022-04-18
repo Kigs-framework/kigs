@@ -870,7 +870,7 @@ void	CorePackage::PackageCreationStruct::FillFATExportedStruct(const FileTreeNod
 			else
 			{
 				std::string err = node.mFileNames->mPhysicalName + " not found when exporting package";
-				kigsprintf(err.c_str());
+				kigsprintf("%s",err.c_str());
 			}
 		}
 	}
