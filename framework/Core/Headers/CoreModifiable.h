@@ -79,6 +79,7 @@ class CorePackage;
 struct ExportSettings
 {
 	CorePackage* current_package = nullptr;
+	bool export_directly_in_package = true;
 	std::set<std::string> external_files_exported;
 	std::string current_xml_file;
 	std::vector<std::string> current_unique_id_path;

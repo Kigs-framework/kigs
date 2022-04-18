@@ -93,6 +93,7 @@ public:
 
 	//! write the current xml hierarchy to a xml file
 	void	WriteFile( const std::string &filename );
+	SP<CoreRawBuffer> WriteBuffer(bool compress);
 
 
 protected:

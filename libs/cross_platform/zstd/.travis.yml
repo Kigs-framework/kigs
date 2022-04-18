@@ -1,7 +1,7 @@
-# Medium Tests: Run on all commits/PRs to dev branch
-
+# Travis CI is used to test platforms that github-actions currently doesn't support
+# without either self-hosting or some finnicky work-around. Also, some tests
+# are troublesome to migrate since GH Actions runs tests not in a tty.
 language: c
-dist: trusty
 
 git:
   depth: 1
@@ -9,6 +9,7 @@ git:
 branches:
   only:
   - dev
+  - release
   - master
   - travisTest
 
@@ -18,187 +19,81 @@ addons:
 
 env:
   global:
-    - FUZZERTEST=-T2mn
-      ZSTREAM_TESTTIME=-T2mn
+    - FUZZERTEST=-T1mn
+      ZSTREAM_TESTTIME=-T1mn
       DECODECORPUS_TESTTIME=-T1mn
-
 
 matrix:
   fast_finish: true
   include:
-    - name: arm64
+    - name: S390X (big endian) + Fuzz test
+      dist: trusty
+      arch: s390x
+      script:
+        - FUZZER_FLAGS=--no-big-tests make -C tests fuzztest
+
+    - name: S390X (big endian) + Fuzz test + no intrinsics
+      dist: trusty
+      arch: s390x
+      script:
+        - MOREFLAGS="-DZSTD_NO_INTRINSICS" FUZZER_FLAGS=--no-big-tests make -C tests fuzztest
+
+    - name: arm64    # ~2.5 mn
       os: linux
       arch: arm64
       script:
         - make check
 
-    - name: Trusty (Test All)
+    - name: arm64fuzz
+      os: linux
+      arch: arm64
       script:
-        - make test
+        - make -C tests fuzztest
 
-    - name: gcc-6 + gcc-7 compilation
-      script:
-        - make gcc6install gcc7install
-        - CC=gcc-6 CFLAGS=-Werror make -j all
-        - make clean
-        - CC=gcc-7 CFLAGS=-Werror make -j all
-
-    - name: gcc-8 + ASan + UBSan + Test Zstd
-      script:
-        - make gcc8install
-        - CC=gcc-8 CFLAGS="-Werror" make -j all
-        - make clean
-        - CC=gcc-8 make -j uasan-test-zstd </dev/null   # test when stdin is not a tty
-
-    - name: gcc-6 + ASan + UBSan + Test Zstd, 32bit mode
-      script:
-        - make gcc6install libc6install
-        - CC=gcc-6 CFLAGS="-Werror -m32" make -j all32
-        - make clean
-        - CC=gcc-6 make -j uasan-test-zstd32   # note : can complain about pointer overflow
-
-    - name: Trusty (clang-3.8 + MSan + Test Zstd)
-      script:
-        - make clang38install
-        # External libraries must be turned off when using MSAN tests,
-        # because they are not msan-instrumented,
-        # so any data coming from these libraries is always considered "uninitialized"
-        - CC=clang-3.8 make clean msan-test-zstd HAVE_ZLIB=0 HAVE_LZ4=0 HAVE_LZMA=0
-
-    - name: Trusty (Minimal Decompressor Macros)
-      script:
-        - make clean
-        - CFLAGS=-Werror make -j all MOREFLAGS="-Werror -DHUF_FORCE_DECOMPRESS_X1 -DZSTD_FORCE_DECOMPRESS_SEQUENCES_SHORT"
-        - make clean
-        - make -j check MOREFLAGS="-Werror -DHUF_FORCE_DECOMPRESS_X1 -DZSTD_FORCE_DECOMPRESS_SEQUENCES_SHORT"
-        - make clean
-        - CFLAGS=-Werror make -j all MOREFLAGS="-Werror -DHUF_FORCE_DECOMPRESS_X2 -DZSTD_FORCE_DECOMPRESS_SEQUENCES_LONG"
-        - make clean
-        - make -j check MOREFLAGS="-Werror -DHUF_FORCE_DECOMPRESS_X2 -DZSTD_FORCE_DECOMPRESS_SEQUENCES_LONG"
-        - make clean
-        - CFLAGS=-Werror make -j all MOREFLAGS="-Werror -DZSTD_NO_INLINE -DZSTD_STRIP_ERROR_STRINGS"
-        - make clean
-        - make -j check MOREFLAGS="-Werror -DZSTD_NO_INLINE -DZSTD_STRIP_ERROR_STRINGS"
-
-    - name: Trusty (CMake)
-      script:
-        - make cmakebuild
-
-    - name: Trusty (Static Analyze)
+    # TODO: migrate to GH Actions once newest clang staticanalyze warnings are fixed
+    - name: static analyzer scanbuild    # ~8mn
+      dist: trusty  # note : it's important to pin down a version of static analyzer, since different versions report different false positives
       script:
         - make staticAnalyze
 
-    - name: Trusty (gcc-8 + ASan + UBSan + Fuzz Test)
+    # GH actions can't run this command on OS-X, non-tty issues
+    - name: OS-X make all lib
+      os: osx
       script:
-        - make gcc8install
-        - CC=gcc-8 make clean uasan-fuzztest
+        - make -C lib all
 
-    - name: Trusty (gcc-6 + ASan + UBSan + Fuzz Test 32bit)
-      script:
-        - make gcc6install libc6install
-        - CC=gcc-6 CFLAGS="-O2 -m32" make uasan-fuzztest   # can complain about pointer overflow
-
-    - name: Trusty (clang-3.8 + MSan + Fuzz Test)
-      script:
-        - make clang38install
-        - CC=clang-3.8 make clean msan-fuzztest
-
-    - name: Trusty (ASan + UBSan + MSan + Regression Test)
-      script:
-        - make -j uasanregressiontest
-        - make clean
-        - make -j msanregressiontest
-
-    - name: Trusty (Valgrind + Fuzz Test Stack Mode)
-      script:
-        - make valgrindinstall
-        - make -C tests clean valgrindTest
-        - make clean
-        - make -C tests test-fuzzer-stackmode
-
-    - name: Trusty (ARM + Fuzz Test)
+    # Introduced to check compat with old toolchains, to prevent e.g. #1872
+    - name: ARM Build Test (on Trusty)
+      dist: trusty
       script:
         - make arminstall
-        - make armfuzz
+        - make armbuild
 
-    - name: Xenial (AARCH64 + Fuzz Test)
-      dist: xenial
-      script:
-        - make arminstall
-        - make aarch64fuzz
-
-    - name: Trusty (PPC + Fuzz Test)
-      script:
-        - make ppcinstall
-        - make ppcfuzz
-
-    - name: Trusty (Versions Compatibility Test)
-      script:
-        - make -C tests versionsTest
-
-    # check release number
+    # check release number (release/new tag only)
     - name: Tag-Specific Test
       if: tag =~ ^v[0-9]\.[0-9]
       script:
         - make -C tests checkTag
         - tests/checkTag "$TRAVIS_BRANCH"
 
-    # tests for master branch and cron job only
-    - name: OS-X
-      if: branch = master
-      os: osx
+    - name: PPC64LE + Fuzz test  # ~13mn
+      arch: ppc64le
+      env:
+        - FUZZER_FLAGS=--no-big-tests
+        - MOREFLAGS="-static"
       script:
-        - make test
+        - cat /proc/cpuinfo
+        - make -C tests fuzztest
 
-    - name: thread sanitizer
-      if: branch = master
+    # This test currently fails on GA specifically, for no obvious reason
+    # (it works fine on travisCI, and on local test platforms).
+    - name: Versions Compatibility Test   # ~6mn
       script:
-        - make clang38install
-        - CC=clang-3.8 make tsan-test-zstream
-        - CC=clang-3.8 make tsan-fuzztest
-
-    - name: C++ and gnu90 compatibility
-      if: branch = master
-      script:
-        - make cxxtest
-        - make clean
-        - make gnu90build
-        - make clean
-        - make travis-install    # just ensures `make install` works
-
-    - name: c99 compatibility
-      if: branch = master
-      script:
-        - make c99build
-        - make -C tests test-zstd
-
-    - name: PPC64
-      if: branch = master
-      script:
-        - make ppcinstall
-        - make ppc64fuzz
-
-    - name: zlib wrapper test
-      if: branch = master
-      script:
-        - make gpp6install valgrindinstall
-        - make -C zlibWrapper test
-        - make -C zlibWrapper valgrindTest
-
-    - name: LZ4, thread pool, and partial libs tests
-      if: branch = master
-      script:
-        - make lz4install
-        - make -C tests test-lz4
-        - make clean
-        - make -C tests test-pool
-        - make clean
-        - bash tests/libzstd_partial_builds.sh
+        - make -C tests versionsTest
 
     # meson dedicated test
-    - name: Xenial (Meson + clang)
-      # env: ALLOW_FAILURES=true
-      dist: xenial
+    - name: Xenial (Meson + clang)    # ~15mn
+      dist: bionic
       language: cpp
       compiler: clang
       install:

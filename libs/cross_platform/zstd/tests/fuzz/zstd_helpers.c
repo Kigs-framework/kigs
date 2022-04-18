@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2016-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under both the BSD-style license (found in the
  * LICENSE file in the root directory of this source tree) and the GPLv2 (found
  * in the COPYING file in the root directory of this source tree).
+ * You may select, at your option, one of the above-listed licenses.
  */
 
 #define ZSTD_STATIC_LINKING_ONLY
@@ -90,11 +91,18 @@ void FUZZ_setRandomParameters(ZSTD_CCtx *cctx, size_t srcSize, FUZZ_dataProducer
     /* Set misc parameters */
     setRand(cctx, ZSTD_c_nbWorkers, 0, 2, producer);
     setRand(cctx, ZSTD_c_rsyncable, 0, 1, producer);
+    setRand(cctx, ZSTD_c_useRowMatchFinder, 0, 2, producer);
+    setRand(cctx, ZSTD_c_enableDedicatedDictSearch, 0, 1, producer);
     setRand(cctx, ZSTD_c_forceMaxWindow, 0, 1, producer);
     setRand(cctx, ZSTD_c_literalCompressionMode, 0, 2, producer);
     setRand(cctx, ZSTD_c_forceAttachDict, 0, 2, producer);
+    setRand(cctx, ZSTD_c_useBlockSplitter, 0, 2, producer);
+    setRand(cctx, ZSTD_c_deterministicRefPrefix, 0, 1, producer);
     if (FUZZ_dataProducer_uint32Range(producer, 0, 1) == 0) {
       setRand(cctx, ZSTD_c_srcSizeHint, ZSTD_SRCSIZEHINT_MIN, 2 * srcSize, producer);
+    }
+    if (FUZZ_dataProducer_uint32Range(producer, 0, 1) == 0) {
+      setRand(cctx, ZSTD_c_targetCBlockSize, ZSTD_TARGETCBLOCKSIZE_MIN, ZSTD_TARGETCBLOCKSIZE_MAX, producer);
     }
 }
 
@@ -102,24 +110,22 @@ FUZZ_dict_t FUZZ_train(void const* src, size_t srcSize, FUZZ_dataProducer_t *pro
 {
     size_t const dictSize = MAX(srcSize / 8, 1024);
     size_t const totalSampleSize = dictSize * 11;
-    FUZZ_dict_t dict = { malloc(dictSize), dictSize };
-    char* const samples = (char*)malloc(totalSampleSize);
+    FUZZ_dict_t dict = { FUZZ_malloc(dictSize), dictSize };
+    char* const samples = (char*)FUZZ_malloc(totalSampleSize);
     unsigned nbSamples = 100;
-    size_t* const samplesSizes = (size_t*)malloc(sizeof(size_t) * nbSamples);
+    size_t* const samplesSizes = (size_t*)FUZZ_malloc(sizeof(size_t) * nbSamples);
     size_t pos = 0;
     size_t sample = 0;
     ZDICT_fastCover_params_t params;
-    FUZZ_ASSERT(dict.buff && samples && samplesSizes);
 
     for (sample = 0; sample < nbSamples; ++sample) {
       size_t const remaining = totalSampleSize - pos;
       size_t const offset = FUZZ_dataProducer_uint32Range(producer, 0, MAX(srcSize, 1) - 1);
       size_t const limit = MIN(srcSize - offset, remaining);
       size_t const toCopy = MIN(limit, remaining / (nbSamples - sample));
-      memcpy(samples + pos, src + offset, toCopy);
+      memcpy(samples + pos, (const char*)src + offset, toCopy);
       pos += toCopy;
       samplesSizes[sample] = toCopy;
-
     }
     memset(samples + pos, 0, totalSampleSize - pos);
 

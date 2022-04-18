@@ -335,4 +335,7 @@ public:
 #define CM_KEY_LSHIFT		   VK_LSHIFT
 #define CM_KEY_RSHIFT		   VK_RSHIFT
 
+#define CM_KEY_LMENU		   VK_LMENU
+#define CM_KEY_RMENU		   VK_RMENU
+
 #endif

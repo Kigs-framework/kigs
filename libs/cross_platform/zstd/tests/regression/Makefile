@@ -1,10 +1,11 @@
 # ################################################################
-# Copyright (c) 2015-present, Facebook, Inc.
+# Copyright (c) Facebook, Inc.
 # All rights reserved.
 #
 # This source code is licensed under both the BSD-style license (found in the
 # LICENSE file in the root directory of this source tree) and the GPLv2 (found
 # in the COPYING file in the root directory of this source tree).
+# You may select, at your option, one of the above-listed licenses.
 # ################################################################
 
 CFLAGS ?= -O3
@@ -14,7 +15,7 @@ CURL_LDFLAGS := $(shell curl-config --libs) -pthread
 
 PROGDIR := ../../programs
 LIBDIR := ../../lib
-ZSTD_CPPFLAGS := -I$(PROGDIR) -I$(LIBDIR) -I$(LIBDIR)/common
+ZSTD_CPPFLAGS := -I$(PROGDIR) -I$(LIBDIR) -I$(LIBDIR)/common -Wno-deprecated-declarations
 
 REGRESSION_CFLAGS = $(CFLAGS) $(CURL_CFLAGS)
 REGRESSION_CPPFLAGS = $(CPPFLAGS) $(ZSTD_CPPFLAGS)
@@ -45,6 +46,7 @@ result.o: result.c result.h
 test.o: test.c data.h config.h method.h
 	$(CC) $(REGRESSION_CFLAGS) $(REGRESSION_CPPFLAGS) $< -c -o $@
 
+.PHONY: libzstd.a
 libzstd.a:
 	$(MAKE) -C $(LIBDIR) libzstd.a-mt
 	cp $(LIBDIR)/libzstd.a .

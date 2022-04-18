@@ -18,6 +18,19 @@ void	XMLBase::WriteFile(const std::string& filename)
 	}
 }
 
+SP<CoreRawBuffer> XMLBase::WriteBuffer(bool compress)
+{
+	if (useStringRef())
+	{
+		KIGS_ERROR("trying to write string_view XML", 2);
+	}
+	else
+	{
+		return XMLWriterFile::WriteBuffer(*(XML*)this, true, compress);
+	}
+	return nullptr;
+}
+
 XMLBase::XMLBase(const SP<CoreRawBuffer>& buffer) : mReadedRawBuffer(buffer)
 {
 	mVersion = "1.0";

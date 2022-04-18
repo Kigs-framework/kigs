@@ -26,13 +26,22 @@ macro(ADD_ZSTD_COMPILATION_FLAGS)
         EnableCompilerFlag("-std=c++11" false true)
         #Set c99 by default
         EnableCompilerFlag("-std=c99" true false)
-        EnableCompilerFlag("-Wall" true true)
+        if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND MSVC)
+            # clang-cl normally maps -Wall to -Weverything.
+            EnableCompilerFlag("/clang:-Wall" true true)
+        else ()
+            EnableCompilerFlag("-Wall" true true)
+        endif ()
         EnableCompilerFlag("-Wextra" true true)
         EnableCompilerFlag("-Wundef" true true)
         EnableCompilerFlag("-Wshadow" true true)
         EnableCompilerFlag("-Wcast-align" true true)
         EnableCompilerFlag("-Wcast-qual" true true)
         EnableCompilerFlag("-Wstrict-prototypes" true false)
+        # Enable asserts in Debug mode
+        if (CMAKE_BUILD_TYPE MATCHES "Debug")
+            EnableCompilerFlag("-DDEBUGLEVEL=1" true true)
+        endif ()
     elseif (MSVC) # Add specific compilation flags for Windows Visual
 
         set(ACTIVATE_MULTITHREADED_COMPILATION "ON" CACHE BOOL "activate multi-threaded compilation (/MP flag)")
@@ -43,6 +52,10 @@ macro(ADD_ZSTD_COMPILATION_FLAGS)
         # UNICODE SUPPORT
         EnableCompilerFlag("/D_UNICODE" true true)
         EnableCompilerFlag("/DUNICODE" true true)
+        # Enable asserts in Debug mode
+        if (CMAKE_BUILD_TYPE MATCHES "Debug")
+            EnableCompilerFlag("/DDEBUGLEVEL=1" true true)
+        endif ()
     endif ()
 
     # Remove duplicates compilation flags
@@ -52,7 +65,6 @@ macro(ADD_ZSTD_COMPILATION_FLAGS)
              CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
         if( ${flag_var} )
             separate_arguments(${flag_var})
-            list(REMOVE_DUPLICATES ${flag_var})
             string(REPLACE ";" " " ${flag_var} "${${flag_var}}")
         endif()
     endforeach ()

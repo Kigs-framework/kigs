@@ -14,15 +14,18 @@ project('zstd',
   default_options : [
     'c_std=gnu99',
     'cpp_std=c++11',
-    'buildtype=release'
+    'buildtype=release',
+    'warning_level=3',
+    # -Wdocumentation does not actually pass, nor do the test binaries,
+    # so this isn't safe
+    #'werror=true'
   ],
   version: 'DUMMY',
-  meson_version: '>=0.47.0')
+  meson_version: '>=0.48.0')
 
 cc = meson.get_compiler('c')
 cxx = meson.get_compiler('cpp')
 pkgconfig = import('pkgconfig')
-python3 = import('python').find_installation()
 windows_mod = import('windows')
 
 host_machine_os = host_machine.system()
@@ -40,8 +43,8 @@ compiler_msvc = 'msvc'
 zstd_version = meson.project_version()
 
 zstd_h_file = join_paths(meson.current_source_dir(), '../../lib/zstd.h')
-GetZstdLibraryVersion_py = files('GetZstdLibraryVersion.py')
-r = run_command(python3, GetZstdLibraryVersion_py, zstd_h_file)
+GetZstdLibraryVersion_py = find_program('GetZstdLibraryVersion.py', native : true)
+r = run_command(GetZstdLibraryVersion_py, zstd_h_file)
 if r.returncode() == 0
   zstd_version = r.stdout().strip()
   message('Project version is now: @0@'.format(zstd_version))
@@ -68,6 +71,7 @@ zstd_docdir = join_paths(zstd_datadir, 'doc', meson.project_name())
 # Built-in options
 use_debug = get_option('debug')
 buildtype = get_option('buildtype')
+default_library_type = get_option('default_library')
 
 # Custom options
 debug_level = get_option('debug_level')
@@ -106,10 +110,8 @@ use_lz4 = lz4_dep.found()
 add_project_arguments('-DXXH_NAMESPACE=ZSTD_', language: ['c'])
 
 if [compiler_gcc, compiler_clang].contains(cc_id)
-  common_warning_flags = [ '-Wextra', '-Wundef', '-Wshadow', '-Wcast-align', '-Wcast-qual' ]
+  common_warning_flags = [ '-Wundef', '-Wshadow', '-Wcast-align', '-Wcast-qual' ]
   if cc_id == compiler_clang
-    # Should use Meson's own --werror build option
-    #common_warning_flags += '-Werror'
     common_warning_flags += ['-Wconversion', '-Wno-sign-conversion', '-Wdocumentation']
   endif
   cc_compile_flags = cc.get_supported_arguments(common_warning_flags + ['-Wstrict-prototypes'])
@@ -121,7 +123,7 @@ elif cc_id == compiler_msvc
   if use_multi_thread
     msvc_compile_flags += '/MP'
   endif
-  if enable_static_runtime
+  if use_static_runtime
     msvc_compile_flags += '/MT'
   endif
   add_project_arguments(msvc_compile_flags, language: ['c', 'cpp'])

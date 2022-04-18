@@ -16,6 +16,17 @@
 #include <iomanip>
 #include <variant>
 
+template <class Variant, std::size_t I = 0>
+Variant variant_from_index(std::size_t index)
+{
+	if constexpr (I >= std::variant_size_v<Variant>)
+		throw std::runtime_error{ "Variant index " + std::to_string(I + index) + " out of bounds" };
+	else
+		return index == 0
+		? Variant{ std::in_place_index<I> }
+	: variant_from_index<Variant, I + 1>(index - 1);
+}
+
 template<typename T>
 std::string ToLuaTable(T&& t, std::string prefix = "");
 
@@ -353,17 +364,6 @@ inline void FromLua(v4f& t, LuaIntf::LuaRef ref)
 		}
 		++i;
 	}
-}
-
-template <class Variant, std::size_t I = 0>
-Variant variant_from_index(std::size_t index)
-{
-	if constexpr (I >= std::variant_size_v<Variant>)
-		throw std::runtime_error{ "Variant index " + std::to_string(I + index) + " out of bounds" };
-	else
-		return index == 0
-		? Variant{ std::in_place_index<I> }
-	: variant_from_index<Variant, I + 1>(index - 1);
 }
 
 template<typename ... Types>

@@ -21,7 +21,7 @@ HTTPRequestModuleJS::~HTTPRequestModuleJS()
 }    
 
 //! module init, register FilePathManager
-void HTTPRequestModuleJS::Init(Core* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void HTTPRequestModuleJS::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"HTTPRequestModuleJS",params);
 
@@ -36,16 +36,18 @@ void HTTPRequestModuleJS::Close()
 }    
 
 //! module update     
-void HTTPRequestModuleJS::Update(const Timer& timer)
+void HTTPRequestModuleJS::Update(const Timer& timer, void* addParam)
 {
-	BaseUpdate(timer);
+	BaseUpdate(timer,addParam);
 }    
 
-ModuleBase* MODULEINITFUNC(Core* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase>  MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
 {
-	Core::ModuleStaticInit(core);
- 
-	gInstanceModuleHTTPRequestJS = new HTTPRequestModuleJS("HTTPRequestModuleJS");
+	KigsCore::ModuleStaticInit(core);
+ 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(HTTPRequestModuleJS,"HTTPRequestModuleJS");
+	auto ptr = MakeRefCounted<HTTPRequestModuleJS>("HTTPRequestModuleJS");
+
+	gInstanceModuleHTTPRequestJS = ptr.get();
 	gInstanceModuleHTTPRequestJS->Init(core, params);
-	return gInstanceModuleHTTPRequestJS;
+	return ptr;
 }    

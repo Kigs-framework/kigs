@@ -21,6 +21,7 @@ public:
 	static bool WriteFile(const kstl::string&,XML& xml);
 	//! write the given xml hierarchy in a memory file (string)
 	static void WriteString(XML& xml, kstl::string &Result, bool header = true, bool compress=false );
+	static SP<CoreRawBuffer> WriteBuffer(XML& xml, bool header = true, bool compress = false);
 
 protected:
 	//! constructor

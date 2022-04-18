@@ -3,6 +3,8 @@
 #include "Core.h"
 #include "NotificationCenter.h"
 #include "AsciiParserUtils.h"
+#include "SmartPointer.h"
+#include "CoreRawBuffer.h"
 
 IMPLEMENT_CLASS_INFO(HTTPAsyncRequestJS)
 
@@ -89,7 +91,7 @@ void HTTPAsyncRequestJS::ParseContent(const char* buffer, int buflen) {
 		printf("%c", buffer[i]);
 
 	printf("\n");*/
-	if (mReceivedRawBuffer)
+	/*if (mReceivedRawBuffer)
 		delete[] mReceivedRawBuffer;
 
 	mReceivedRawBufferSize = buflen;
@@ -97,6 +99,11 @@ void HTTPAsyncRequestJS::ParseContent(const char* buffer, int buflen) {
 
 	memcpy(mReceivedRawBuffer, buffer, buflen);
 
+	setDone();*/
+	
+	auto tmp= MakeRefCounted<CoreRawBuffer>((void*)buffer, (unsigned int)buflen,true);
+	mReceivedBuffer = tmp.get();
+	
 	setDone();
 
 	//delete[] buffer;
@@ -108,17 +115,17 @@ void HTTPAsyncRequestJS::ParseError(const char* error) {
 
 void HTTPAsyncRequestJS::InitModifiable()
 {
-	HTTPAsyncRequest::InitModifiable();
-	if (mConnection)
+	ParentClassType::InitModifiable();
+	if ((CoreModifiable*)mConnection)
 	{
 		bool isSync = false;
-		mConnection->getValue(LABEL_TO_ID(IsSynchronous), isSync);
+		mConnection->getValue("IsSynchronous", isSync);
 
 		kstl::string L_host, L_URL;
-		mConnection->getValue(LABEL_TO_ID(HostName), L_host);
-		L_URL = "http://" + L_host + "/"+ mRequestURL;
+		mConnection->getValue("HostName)", L_host);
+		L_URL = "https://" + L_host + "/" + (std::string)mURL;
 
-		JSSendHTTPRequest(((const kstl::string&)mRequestType).c_str(), L_URL.c_str(), this, !isSync, mPostBuffer, mPostBufferLength);
+		JSSendHTTPRequest(((const kstl::string&)mType).c_str(), L_URL.c_str(), this, !isSync, mPostBuffer, mPostBufferLength);
 	}
 }
 
