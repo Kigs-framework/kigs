@@ -55,7 +55,13 @@ public:
 	void	setStartState(const KigsID& id);
 
 	//! get state given by its name
-	CoreFSMStateBase* getState(const KigsID& id);
+	CoreFSMStateBase* getState(const KigsID& id) const;
+
+	//! get state on current state stack given by its name 
+	CoreFSMStateBase* getStackedState(const KigsID& id) const;
+
+	//! get state on current state stack given by pos : pos = 0 => currentState, pos = 1 => mCurrentState[mCurrentState.size()-2] ...
+	CoreFSMStateBase* getStackedStateAt(size_t pos) const;
 
 	void activateTransition(const KigsID& id);
 
@@ -70,7 +76,6 @@ public:
 
 	static	void initStaticCoreFSMInstances();
 	static	void closeStaticCoreFSMInstances();
-
 
 protected:
 
