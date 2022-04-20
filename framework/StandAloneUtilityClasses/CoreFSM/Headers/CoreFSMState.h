@@ -42,7 +42,7 @@ public:
 	}
 
 	// get a transition from the list given it's id
-	SP<CoreFSMTransition>	getTransition(const KigsID& transitionname)
+	SP<CoreFSMTransition>	getTransition(const KigsID& transitionname) const
 	{
 		for (auto t : mTransitions)
 		{
@@ -54,7 +54,7 @@ public:
 		return nullptr;
 	}
 
-	std::vector<KigsID>	getTransitionList()
+	std::vector<KigsID>	getTransitionList() const
 	{
 		std::vector<KigsID> result;
 		for (const auto& t : mTransitions)
@@ -64,7 +64,7 @@ public:
 		return result;
 	}
 
-	bool	hasActiveTransition(CoreModifiable* currentParentClass)
+	bool	hasActiveTransition(CoreModifiable* currentParentClass) const
 	{
 		for (const auto& t : mTransitions)
 		{
@@ -72,6 +72,12 @@ public:
 				return true;
 		}
 		return false;
+	}
+
+	template<typename T>
+	T* as() 
+	{
+		return static_cast<T*>(this);
 	}
 
 protected:

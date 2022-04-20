@@ -88,13 +88,51 @@ void CoreFSM::Update(const Timer& timer, void* addParam)
 
 }
 //! get state given by its name
-CoreFSMStateBase* CoreFSM::getState(const KigsID& id)
+CoreFSMStateBase* CoreFSM::getState(const KigsID& id) const
 {
 	// if state is in the map
-	if (mPossibleStates.find(id) != mPossibleStates.end())
+	auto f = mPossibleStates.find(id);
+
+	if (f != mPossibleStates.end())
 	{
 		// return it
-		return mPossibleStates[id];
+		return (*f).second;
+	}
+	return nullptr;
+}
+
+
+
+//! get state on current state stack given by its name 
+CoreFSMStateBase* CoreFSM::getStackedState(const KigsID& id) const
+{
+	// if state is in the map
+	auto f = mPossibleStates.find(id);
+
+	if (f != mPossibleStates.end())
+	{
+		size_t count = mCurrentState.size();
+		if (count)
+		{
+			for (size_t i = count; i > 0; i--)
+			{
+				if (mCurrentState[i - 1] == (*f).second)
+					return mCurrentState[i-1];
+			}
+		}
+	}
+	return nullptr;
+}
+
+
+//! get state on current state stack given by pos : pos = 0 => currentState, pos = 1 => mCurrentState[mCurrentState.size()-2] ...
+CoreFSMStateBase* CoreFSM::getStackedStateAt(size_t pos) const
+{
+	size_t count = mCurrentState.size();
+	if (count > pos)
+	{
+		size_t i = count - 1 - pos; 
+		return mCurrentState[i];
 	}
 	return nullptr;
 }
