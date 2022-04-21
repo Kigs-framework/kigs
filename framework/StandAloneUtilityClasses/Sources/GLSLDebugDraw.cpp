@@ -82,16 +82,16 @@ bool DebugDraw::Draw(TravState* state)
 
 dd::GlyphTextureHandle DebugDraw::createGlyphTexture(int width, int height, const void* pixels)
 {
-	/*_glyph_texture = (Texture*)KigsCore::GetInstanceOf("glyph_texture", "Texture");
-	_glyph_texture->Init();
-	_glyph_texture->Destroy();
-	_glyph_texture->CreateFromBuffer((unsigned char*)pixels, width, height, TinyImage::ImageFormat::GREYSCALE);*/
-	return (dd::OpaqueTextureType*)(Texture*)_glyph_texture;
+/*	_glyph_texture = KigsCore::GetInstanceOf("glyph_texture", "Texture");
+	SmartPointer<TinyImage>	img = TinyImage::CreateImage((void*)pixels, width, height, TinyImage::ImageFormat::GREYSCALE);
+	_glyph_texture->CreateFromImage(img);
+	*/
+	return (dd::OpaqueTextureType*)(Texture*)_glyph_texture.get();
 }
 
 void DebugDraw::destroyGlyphTexture(dd::GlyphTextureHandle glyphTex)
 {
-	if((Texture*)glyphTex == _glyph_texture)
+	if((Texture*)glyphTex == _glyph_texture.get())
 	{
 		_glyph_texture = nullptr;
 	}
