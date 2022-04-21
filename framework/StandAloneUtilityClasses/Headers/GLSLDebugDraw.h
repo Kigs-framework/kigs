@@ -724,7 +724,7 @@ protected:
 	ModuleSpecificRenderer* _renderer;
 	const Locations* _locs;
 
-	void* _glyph_texture;
+	SP<Texture> _glyph_texture=nullptr;
 	static TravState* currentState;
 
 	DECLARE_METHOD(ResetContext);
