@@ -43,6 +43,9 @@ CoreFSM::CoreFSM(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable
 #ifdef DEBUG_COREFSM
 	mStateChangeBuffer.init(100);
 #endif
+
+	// at least one block
+	mFSMBlock.push_back({});
 }
 
 void CoreFSM::Update(const Timer& timer, void* addParam) 
@@ -61,7 +64,7 @@ void CoreFSM::Update(const Timer& timer, void* addParam)
 	KigsID stateID("");
 
 	// update current state (check if a transition is needed)
-	bool transit=mCurrentState.back()->update(mAttachedObject, specialOrder, stateID);
+	bool transit= mFSMBlock[mCurrentBlockIndex].mCurrentState.back()->update(mAttachedObject, specialOrder, stateID);
 
 	// a transition is needed
 	if (transit)
@@ -88,15 +91,25 @@ void CoreFSM::Update(const Timer& timer, void* addParam)
 
 }
 //! get state given by its name
-CoreFSMStateBase* CoreFSM::getState(const KigsID& id) const
+CoreFSMStateBase* CoreFSM::getState(const KigsID& id,u32 blockindex) const
 {
+	if (blockindex == (u32)-1)
+	{
+		blockindex = mCurrentBlockIndex;
+	}
 	// if state is in the map
 	auto f = mPossibleStates.find(id);
 
 	if (f != mPossibleStates.end())
 	{
-		// return it
-		return (*f).second;
+		for (const auto& s : (*f).second)
+		{
+			if (s.second == blockindex)
+			{
+				// return it
+				return s.first;
+			}
+		}
 	}
 	return nullptr;
 }
@@ -106,18 +119,19 @@ CoreFSMStateBase* CoreFSM::getState(const KigsID& id) const
 //! get state on current state stack given by its name 
 CoreFSMStateBase* CoreFSM::getStackedState(const KigsID& id) const
 {
-	// if state is in the map
-	auto f = mPossibleStates.find(id);
 
-	if (f != mPossibleStates.end())
+	// if state is in the current block
+	auto f=getState(id);
+	
+	if (f)
 	{
-		size_t count = mCurrentState.size();
+		size_t count = mFSMBlock[mCurrentBlockIndex].mCurrentState.size();
 		if (count)
 		{
 			for (size_t i = count; i > 0; i--)
 			{
-				if (mCurrentState[i - 1] == (*f).second)
-					return mCurrentState[i-1];
+				if (mFSMBlock[mCurrentBlockIndex].mCurrentState[i - 1] == f)
+					return f;
 			}
 		}
 	}
@@ -128,11 +142,11 @@ CoreFSMStateBase* CoreFSM::getStackedState(const KigsID& id) const
 //! get state on current state stack given by pos : pos = 0 => currentState, pos = 1 => mCurrentState[mCurrentState.size()-2] ...
 CoreFSMStateBase* CoreFSM::getStackedStateAt(size_t pos) const
 {
-	size_t count = mCurrentState.size();
+	size_t count = mFSMBlock[mCurrentBlockIndex].mCurrentState.size();
 	if (count > pos)
 	{
 		size_t i = count - 1 - pos; 
-		return mCurrentState[i];
+		return mFSMBlock[mCurrentBlockIndex].mCurrentState[i];
 	}
 	return nullptr;
 }
@@ -172,15 +186,15 @@ void	CoreFSM::dumpLastStates()
 // change the state on the stack by the given state
 void	CoreFSM::changeCurrentState(CoreFSMStateBase* newone)
 {
-	if (mCurrentState.size())
+	if (mFSMBlock[mCurrentBlockIndex].mCurrentState.size())
 	{
-		CoreFSMStateBase* prevone = mCurrentState.back();
+		CoreFSMStateBase* prevone = mFSMBlock[mCurrentBlockIndex].mCurrentState.back();
 		// stop previous state
 		prevone->stop(mAttachedObject,newone);
 		// downgrade object from previous state
 		mAttachedObject->Downgrade(prevone->getID(),false,true);
 		// change state
-		mCurrentState.back() = newone;
+		mFSMBlock[mCurrentBlockIndex].mCurrentState.back() = newone;
 		// upgrade object with new current state
 		mAttachedObject->Upgrade(dynamic_cast<UpgradorBase*>(newone),false,true);
 		// start new state
