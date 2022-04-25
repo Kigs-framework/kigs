@@ -54,8 +54,8 @@ public:
 	//! set FSM start state
 	void	setStartState(const KigsID& id);
 
-	//! get state given by its name
-	CoreFSMStateBase* getState(const KigsID& id) const;
+	//! get state given by its name (by default in current block)
+	CoreFSMStateBase* getState(const KigsID& id, u32 blockindex=-1) const;
 
 	//! get state on current state stack given by its name 
 	CoreFSMStateBase* getStackedState(const KigsID& id) const;
@@ -90,11 +90,18 @@ protected:
 	//! the object the FSM is attached to
 	CoreModifiable*		mAttachedObject = nullptr;
 
-	//! state stack
-	std::vector<CoreFSMStateBase*> mCurrentState;
+	// to make it possible to have sereval time the same state (with a different context) in an FSM, manage list of blocks with their own stack
+	struct FSMBlock
+	{
+		//! state stack
+		std::vector<CoreFSMStateBase*> mCurrentState;
+	};
+
+	std::vector<FSMBlock>	mFSMBlock;
+	u32						mCurrentBlockIndex=0;
 
 	//! map of possible states for this FSM 
-	std::unordered_map<KigsID, CoreFSMStateBase*>	mPossibleStates;
+	std::unordered_map<KigsID,std::vector<std::pair<CoreFSMStateBase*,u32>>>	mPossibleStates;
 
 	friend class CoreFSMStateBase;
 	static SP<CoreFSMTransition> mPopTransition;
