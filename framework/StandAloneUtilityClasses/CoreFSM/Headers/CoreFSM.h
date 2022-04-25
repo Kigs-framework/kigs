@@ -52,7 +52,7 @@ public:
 	void	addState(const KigsID& id, CoreFSMStateBase* base);
 
 	//! set FSM start state
-	void	setStartState(const KigsID& id);
+	void	setStartState(const KigsID& id, u32 blockindex = -1);
 
 	//! get state given by its name (by default in current block)
 	CoreFSMStateBase* getState(const KigsID& id, u32 blockindex=-1) const;
@@ -77,11 +77,16 @@ public:
 	static	void initStaticCoreFSMInstances();
 	static	void closeStaticCoreFSMInstances();
 
+	// return block index
+	u32	addBlock();
+
+	void setCurrentBlock(u32 index);
+
 protected:
 
 	//! state transition management
 	//! push the given state on the stack
-	void	pushCurrentState(CoreFSMStateBase*);
+	void	pushCurrentState(CoreFSMStateBase*,u32 newblockIndex=-1);
 	//! change the current state on the stack
 	void	changeCurrentState(CoreFSMStateBase*);
 	//! pop the state on the stack => current state is the new stack back
@@ -93,8 +98,9 @@ protected:
 	// to make it possible to have sereval time the same state (with a different context) in an FSM, manage list of blocks with their own stack
 	struct FSMBlock
 	{
+		u32								mFromBlock = -1;
 		//! state stack
-		std::vector<CoreFSMStateBase*> mCurrentState;
+		std::vector<CoreFSMStateBase*>	mCurrentState;
 	};
 
 	std::vector<FSMBlock>	mFSMBlock;
