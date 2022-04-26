@@ -22,9 +22,10 @@ class CoreFSMStateBase
 {
 public:
 
-	virtual void	start(CoreModifiable* currentParentClass, CoreFSMStateBase* prevstate);
-	virtual void	stop(CoreModifiable* currentParentClass, CoreFSMStateBase* nextstate);
-	virtual bool	update(CoreModifiable* currentParentClass, u32& specialOrder, KigsID& newstate);
+	virtual void				start(CoreModifiable* currentParentClass, CoreFSMStateBase* prevstate);
+	virtual void				stop(CoreModifiable* currentParentClass, CoreFSMStateBase* nextstate);
+	// if a transition is valid, return it
+	virtual CoreFSMTransition*	update(CoreModifiable* currentParentClass, u32& specialOrder, KigsID& newstate);
 
 	const KigsID&	getID()
 	{

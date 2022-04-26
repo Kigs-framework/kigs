@@ -1,4 +1,5 @@
 #pragma once
+#include <bitset>
 #include "CoreModifiable.h"
 #include "CoreModifiableAttribute.h"
 #include "AttributePacking.h"
@@ -28,9 +29,10 @@ public:
 	friend class CoreFSM;
 	friend class CoreFSMStateBase;
 
-	void	setState(const KigsID& gotoState)
+	void	setState(const KigsID& gotoState,u32 blockIndex=0)
 	{
 		mGotoState = gotoState;
+		mGotoStateBlockIndex = blockIndex & 0xFFFF;
 	}
 	const KigsID& getState() const
 	{
@@ -39,11 +41,16 @@ public:
 
 	virtual void	start()
 	{
-		mIsRunning = true;
+		mIsRunning = 1;
 	}
 	virtual void	stop()
 	{
-		mIsRunning = false;
+		mIsRunning = 0;
+	}
+
+	u32 getStateBlockIndex()
+	{
+		return mGotoStateBlockIndex.to_ulong();
 	}
 
 protected:
@@ -54,9 +61,11 @@ protected:
 
 	KigsID				mGotoState="";
 
-	maEnum<3>			mTransitionBehavior = BASE_ATTRIBUTE(TransitionBehavior, "Normal", "Pop", "Push");
+	maEnum<4>			mTransitionBehavior = BASE_ATTRIBUTE(TransitionBehavior, "Normal", "Pop", "Push","PushBlock");
 
-	bool				mIsRunning = false;
+	std::bitset<1>		mIsRunning = 0;
+	std::bitset<15>		mOtherFlags = 0;
+	std::bitset<16>		mGotoStateBlockIndex = 0;
 };
 
 // ****************************************
@@ -81,7 +90,7 @@ public:
 
 	bool checkTransition(CoreModifiable* currentParentClass) override
 	{
-		if (!mIsRunning)
+		if (mIsRunning == 0)
 		{
 			KIGS_ERROR("check a not started transition", 1);
 		}
@@ -132,7 +141,7 @@ public:
 
 	bool checkTransition(CoreModifiable* currentParentClass) override
 	{
-		if (!mIsRunning)
+		if (mIsRunning == 0)
 		{
 			KIGS_ERROR("check a not started transition", 1);
 		}
