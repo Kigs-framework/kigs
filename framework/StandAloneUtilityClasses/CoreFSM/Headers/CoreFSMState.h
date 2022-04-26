@@ -170,15 +170,17 @@ DEFINE_UPGRADOR_UPDATE(CoreFSMStateClass(Ghost, Hunted))
 class 	CoreFSMState##baseclassname##statename : public Upgrador<baseclassname>,public CoreFSMStateBase \
 { \
 protected: \
+	typedef baseclassname UpgradorMethodParentClass;\
 	START_UPGRADOR(CoreFSMState##baseclassname##statename);
 
 #define START_INHERITED_COREFSMSTATE(baseclassname,statename,parentstate) \
 class 	CoreFSMState##baseclassname##statename : public CoreFSMState##baseclassname##parentstate \
 { \
 protected: \
+	typedef CoreFSMState##baseclassname##parentstate::UpgradorMethods UpgradorMethodParentClass;\
 	START_UPGRADOR(CoreFSMState##baseclassname##statename);
 
-#define DO_COREFSMSTATE_SUBCLASS_DECLARATION() class UpgradorMethods : public currentBaseClass \
+#define DO_COREFSMSTATE_SUBCLASS_DECLARATION() class UpgradorMethods : public UpgradorMethodParentClass \
 { \
  public:\
 	UpgradorType*	GetUpgrador(){return (UpgradorType*)CoreModifiable::GetUpgrador();}\
