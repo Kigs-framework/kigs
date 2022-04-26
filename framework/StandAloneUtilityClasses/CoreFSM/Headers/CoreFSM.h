@@ -40,9 +40,10 @@ public:
 	//! transition can ask to push/pop or just change the state
 	enum class FSMStateSpecialOrder
 	{
-		NORMAL_TRANSITION	= 0,
-		POP_TRANSITION		= 1,
-		PUSH_TRANSITION		= 2
+		NORMAL_TRANSITION		= 0,
+		POP_TRANSITION			= 1,
+		PUSH_TRANSITION			= 2,
+		PUSHBLOCK_TRANSITION	= 3, 
 	};
 
 	DECLARE_CLASS_INFO(CoreFSM, CoreModifiable, CoreFSM);

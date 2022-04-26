@@ -26,10 +26,8 @@
   // add other states
   ...
 
-  // set start state
+  // set start state (setting the start state also init/start the FSM)
   fsm->setStartState("Appear");
-  // init FSM => start FSM
-  fsm->Init();
 
 */
 
@@ -64,7 +62,7 @@ void CoreFSM::Update(const Timer& timer, void* addParam)
 	KigsID stateID("");
 
 	// update current state (check if a transition is needed)
-	bool transit= mFSMBlock[mCurrentBlockIndex].mCurrentState.back()->update(mAttachedObject, specialOrder, stateID);
+	auto transit= mFSMBlock[mCurrentBlockIndex].mCurrentState.back()->update(mAttachedObject, specialOrder, stateID);
 
 	// a transition is needed
 	if (transit)
@@ -77,10 +75,17 @@ void CoreFSM::Update(const Timer& timer, void* addParam)
 		}
 
 		// if transition ask a push
-		if (specialOrder == (u32)FSMStateSpecialOrder::PUSH_TRANSITION)
+		if ( (specialOrder == (u32)FSMStateSpecialOrder::PUSH_TRANSITION) || (specialOrder == (u32)FSMStateSpecialOrder::PUSHBLOCK_TRANSITION) )
 		{
+			u32 newblockindex(-1);
+
+			if (specialOrder == (u32)FSMStateSpecialOrder::PUSHBLOCK_TRANSITION)
+			{
+				newblockindex=transit->getStateBlockIndex();
+			}
+
 			// then push state given it's ID
-			pushCurrentState(getState(stateID));
+			pushCurrentState(getState(stateID, newblockindex), newblockindex);
 		}
 		else
 		{
@@ -91,6 +96,7 @@ void CoreFSM::Update(const Timer& timer, void* addParam)
 
 }
 //! get state given by its name
+/*  search in current block first, and if not found, return in other block if found */
 CoreFSMStateBase* CoreFSM::getState(const KigsID& id,u32 blockindex) const
 {
 	if (blockindex == (u32)-1)
@@ -106,10 +112,11 @@ CoreFSMStateBase* CoreFSM::getState(const KigsID& id,u32 blockindex) const
 		{
 			if (s.second == blockindex)
 			{
-				// return it
+				// return the one in the good block
 				return s.first;
 			}
 		}
+		return (*f).second[0].first; // return first one
 	}
 	return nullptr;
 }
@@ -172,6 +179,9 @@ void	CoreFSM::dumpLastStates()
 				break;
 			case FSMStateSpecialOrder::PUSH_TRANSITION:
 				printf(" was pushed \n");
+				break;
+			case FSMStateSpecialOrder::PUSHBLOCK_TRANSITION:
+				printf(" was pushed in other block\n");
 				break;
 			case FSMStateSpecialOrder::POP_TRANSITION:
 				printf(" was set after previous set was pop \n");
@@ -330,7 +340,7 @@ u32	CoreFSM::addBlock()
 	if (IsInit())
 	{
 		KIGS_ERROR("try to add states on an initialized FSM", 2);
-		return;
+		return -1;
 	}
 	mFSMBlock.push_back({ (u32)-1,{} });
 	return mFSMBlock.size() - 1;
@@ -366,24 +376,25 @@ void	CoreFSM::addState(const KigsID& id, CoreFSMStateBase* base)
 	auto f = mPossibleStates.find(id);
 	if (f != mPossibleStates.end()) // check if already exists
 	{
-
-	}
-	if (  ) // already there ?
-	{
-		if (mPossibleStates[id] != base)
+		for (auto s : (*f).second)
 		{
-			KIGS_ERROR("try to add an already existing state", 2);
+			if (s.second == mCurrentBlockIndex)
+			{
+				KIGS_ERROR("try to add an already existing state", 2);
+				return;
+			}
 		}
-		return;
 	}
-	mPossibleStates[id] = base;
+	
+	mPossibleStates[id].push_back({ base, mCurrentBlockIndex });
+	
 }
 
 void CoreFSM::activateTransition(const KigsID& id)
 {
-	if (mCurrentState.size())
+	if (mFSMBlock[mCurrentBlockIndex].mCurrentState.size())
 	{
-		mCurrentState.back()->activateTransition(id);
+		mFSMBlock[mCurrentBlockIndex].mCurrentState.back()->activateTransition(id);
 	}
 }
 
@@ -397,7 +408,7 @@ void	CoreFSM::InitModifiable()
 	ParentClassType::InitModifiable();
 	if (IsInit())
 	{
-		if (GetParents().size() && (mCurrentState.size()==0)) // can't init without parent and start state
+		if (GetParents().size() && (mFSMBlock[mCurrentBlockIndex].mCurrentState.size()==0)) // can't init without parent and start state
 		{
 			mAttachedObject = GetParents()[0];
 			// auto update only after init is OK
@@ -414,16 +425,18 @@ CoreFSM::~CoreFSM()
 {
 	KigsCore::GetCoreApplication()->RemoveAutoUpdate(this);
 
-	while (mCurrentState.size())
+	while (mFSMBlock[mCurrentBlockIndex].mCurrentState.size())
 	{
 		popCurrentState();
 	}
 
-	for (auto state : mPossibleStates)
+	for (auto statelist : mPossibleStates)
 	{
-		delete state.second;
+		for (auto state : statelist.second)
+		{
+			delete state.first;
+		}
 	}
-
 }
 
 // declare all instanciable classes
