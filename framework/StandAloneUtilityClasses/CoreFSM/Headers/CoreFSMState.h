@@ -246,3 +246,9 @@ virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::Modif
 	FOR_EACH(COREFSM_WRAP_METHOD_PUSH_BACK, __VA_ARGS__)\
 }
 
+#define ENDCOREFSMSTATE_EMPTYWRAPMETHODS() \
+DO_COREFSMSTATE_BASE_METHOD_DEFINITION() \
+virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+{\
+}
+
