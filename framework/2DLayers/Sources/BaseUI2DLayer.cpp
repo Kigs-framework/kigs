@@ -334,7 +334,8 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 
 					if (current_custom_shader)
 					{
-						renderer->popShader(current_custom_shader, state);
+						current_custom_shader->DoPostDraw(state);
+						//renderer->popShader(current_custom_shader, state);
 					}
 
 					int current_clip = 0;
@@ -354,7 +355,8 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 
 					if (current_custom_shader)
 					{
-						renderer->pushShader(current_custom_shader, state);
+						current_custom_shader->DoPreDraw(state);
+						//renderer->pushShader(current_custom_shader, state);
 					}
 				}
 			}
@@ -371,17 +373,26 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 			if (shader != current_custom_shader)
 			{
 				if (current_custom_shader)
-					renderer->popShader(current_custom_shader, state);
+				{
+					current_custom_shader->DoPostDraw(state);
+					//renderer->popShader(current_custom_shader, state);
+				}
 
 				if (shader)
-					renderer->pushShader(shader, state);
+				{
+					shader->DoPreDraw(state);
+					//renderer->pushShader(shader, state);
+				}
 
 				current_custom_shader = shader;
 			}
 			item.node->ProtectedDraw(state);
 		}
 		if (current_custom_shader)
-			renderer->popShader(current_custom_shader, state);
+		{
+			current_custom_shader->DoPostDraw(state);
+			//renderer->popShader(current_custom_shader, state);
+		}
 		renderer->SetStencilTest(false);
 
 

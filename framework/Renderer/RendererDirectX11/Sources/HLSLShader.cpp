@@ -200,7 +200,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	};
 
 	std::string str;
-	mVertexShaderText.getValue(str);
+	mVertexShader.getValue(str);
 
 	std::string name = getName();
 	name.append("vertex");
@@ -222,7 +222,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		return nullptr;
 	}
 
-	mFragmentShaderText.getValue(str);
+	mFragmentShader.getValue(str);
 
 	name = getName();
 	name.append("frag");
@@ -243,7 +243,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		return nullptr;
 	}
 
-	mGeometryShaderText.getValue(str);
+	mGeometryShader.getValue(str);
 	if (str.size())
 	{
 		name = getName();
