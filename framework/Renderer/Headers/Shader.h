@@ -291,9 +291,9 @@ protected:
 
 	// TODO : rename to mIsGeneric ( but CoreModifiableAttribute ID should be renamed too ).
 	maBool			misGeneric;
-	maString		mVertexShaderText;
-	maString		mFragmentShaderText;
-	maString		mGeometryShaderText;
+	maString		mVertexShader;
+	maString		mFragmentShader;
+	maString		mGeometryShader;
 	maReference		mAttachedCamera;
 	// TODO : rename rename to mUseGenericLight (but CoreModifiableAttribute ID should be renamed too ).
 	maBool			museGenericLight;

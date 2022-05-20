@@ -65,7 +65,9 @@ public:
 	bool	isOKToUse() 
 	{ 
 		if(GetCurrentShaderProgram())
-			return GetCurrentShaderProgram()->mID != 0xFFFFFFFF; return false;
+			return GetCurrentShaderProgram()->mID != 0xFFFFFFFF; 
+		
+		return false;
 	}
 protected:
 
