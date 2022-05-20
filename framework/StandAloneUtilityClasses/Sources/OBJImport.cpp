@@ -608,17 +608,20 @@ void	OBJImport::FacetGroup::InitSTTriangle(MeshItemGroup* mig,int startTriangleI
 
 void	OBJImport::StartObj(AsciiParserUtils& line)
 {
-	if(m_ReadVertexIndex)
+	// all objects in .obj are converted into 1 mesh (with several MeshItemGroup)
+	// create previous object
+	/*if (m_ReadVertexIndex)
 	{
 		createObjectFromReadedData();
-	}
+	}*/
 
-	AsciiParserUtils word(line);
+	/*AsciiParserUtils word(line);
 	if(line.GetWord(word))
 	{
 		m_CurrentObjectName=word;
-	}
-	ReinitReadBuffers();
+	}*/
+	// don't reinit buffers as indexes are not reset in obj file
+	//ReinitReadBuffers();
 }
 void	OBJImport::StartGroup(AsciiParserUtils& line)
 {
