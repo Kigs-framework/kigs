@@ -346,7 +346,7 @@ void	MeshConvert::ProtectedInit()
 				mesh->ApplyScaleFactor(myParams.myImportScaleFactor);
 			}
 
-			if ((myParams.myImportFlipAxis[0] != 1) || (myParams.myImportFlipAxis[0] != 2) || (myParams.myImportFlipAxis[0] != 3))
+			if ((myParams.myImportFlipAxis[0] != 1) || (myParams.myImportFlipAxis[1] != 2) || (myParams.myImportFlipAxis[2] != 3))
 			{
 				mesh->FlipAxis(myParams.myImportFlipAxis[0], myParams.myImportFlipAxis[1], myParams.myImportFlipAxis[2]);
 			}
