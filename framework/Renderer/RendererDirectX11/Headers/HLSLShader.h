@@ -84,7 +84,9 @@ protected:
 
 
 	virtual BuildShaderStruct*	Rebuild() override;
-	void	DelayedInit(TravState* state) {};
+	void	DelayedInit(TravState* state);
+
+	void	InitModifiable()  override;
 	
 
 	//virtual void ActiveSampler();
