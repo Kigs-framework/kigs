@@ -202,6 +202,25 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	std::string str;
 	mVertexShader.getValue(str);
 
+	if (str[0] == '!') // load from file
+	{
+		const char* filename = (str.c_str() + 1);
+		auto pathManager = KigsCore::Singleton<FilePathManager>();
+
+		kstl::string fullfilename;
+		if (pathManager)
+		{
+			SmartPointer<FileHandle> file = pathManager->FindFullName(filename);
+			fullfilename = file->mFullFileName;
+		}
+		u64 length;
+		SP<CoreRawBuffer> rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length, 1);
+		if (rawbuffer)
+		{
+			str = (const char*)rawbuffer->buffer();
+		}
+	}
+
 	std::string name = getName();
 	name.append("vertex");
 
@@ -223,6 +242,25 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	}
 
 	mFragmentShader.getValue(str);
+
+	if (str[0] == '!') // load from file
+	{
+		const char* filename = (str.c_str() + 1);
+		auto pathManager = KigsCore::Singleton<FilePathManager>();
+
+		kstl::string fullfilename;
+		if (pathManager)
+		{
+			SmartPointer<FileHandle> file = pathManager->FindFullName(filename);
+			fullfilename = file->mFullFileName;
+		}
+		u64 length;
+		SP<CoreRawBuffer> rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length, 1);
+		if (rawbuffer)
+		{
+			str = (const char*)rawbuffer->buffer();
+		}
+	}
 
 	name = getName();
 	name.append("frag");
@@ -266,7 +304,6 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		}
 	}
 
-		
 	// create shader object from bitcode
 	auto device = ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->getDXInstance();
 
@@ -404,4 +441,56 @@ void API3DShader::PopUniform(CoreModifiable* uni)
 		un->Activate(itfind->second);
 	}
 
+}
+
+void	API3DShader::InitModifiable()
+{
+	if (!IsInit())
+	{
+#ifdef NO_DELAYED_INIT
+		DelayedInit(nullptr);
+#else
+		CoreModifiableAttribute* delayed = getAttribute("DelayedInit");
+		if (delayed) // delayed init already asked
+		{
+			return;
+		}
+
+		// ask for delayed init
+		CoreModifiableAttribute* newAttr = AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "DelayedInit");
+		newAttr->setValue(true);
+#endif
+	}
+}
+
+void	API3DShader::DelayedInit(TravState* state)
+{
+	// only for custom shaders
+	if ((((kstl::string)mVertexShader) != "") && (((kstl::string)mFragmentShader) != ""))
+	{
+		Drawable::InitModifiable();
+
+		auto toAdd = Rebuild();
+		mCurrentShaderKey = 0;
+		insertBuildShader(mCurrentShaderKey, toAdd);
+		setCurrentBuildShader(mCurrentShaderKey);
+		mVertexShader.changeNotificationLevel(Owner);
+		mFragmentShader.changeNotificationLevel(Owner);
+		Active(state);
+
+		// add child unifor as default uniform
+		kstl::vector<CMSP> instances;
+		CoreModifiable::GetSonInstancesByType("API3DUniformBase", instances);
+
+		if (instances.size())
+		{
+			kstl::vector<CMSP>::iterator itr = instances.begin();
+			kstl::vector<CMSP>::iterator end = instances.end();
+			for (; itr != end; ++itr)
+			{
+				PushUniform(static_cast<API3DUniformBase*>((*itr).get()));
+			}
+		}
+		Deactive(state);
+	}
 }
