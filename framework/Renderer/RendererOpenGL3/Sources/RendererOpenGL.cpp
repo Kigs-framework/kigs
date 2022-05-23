@@ -610,6 +610,9 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 
 	mDefaultUIShader = KigsCore::GetInstanceOf("UIShader", "API3DUIShader");
 
+	// ask default ui shader init
+	mDefaultUIShader->Init();
+
 	PlatformInit(core, params);
 }
 

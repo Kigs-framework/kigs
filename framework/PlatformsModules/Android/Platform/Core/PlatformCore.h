@@ -40,4 +40,9 @@ extern SmartPointer<FileHandle> Android_FindFullName(const kstl::string&	filenam
 extern void Android_CheckState(FileHandle* handle);
 extern bool Android_CreateFolderTree(FileHandle* hndl);
 
+std::string to_utf8(const wchar_t* buffer, int len);
+std::string to_utf8(const std::wstring& str);
+std::wstring to_wchar(const char* buffer, int len);
+std::wstring to_wchar(const std::string& str);
+
 #endif //_ANDROID_CORE_H_

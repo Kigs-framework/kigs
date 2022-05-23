@@ -22,9 +22,10 @@ class CoreFSMStateBase
 {
 public:
 
-	virtual void	start(CoreModifiable* currentParentClass, CoreFSMStateBase* prevstate);
-	virtual void	stop(CoreModifiable* currentParentClass, CoreFSMStateBase* nextstate);
-	virtual bool	update(CoreModifiable* currentParentClass, u32& specialOrder, KigsID& newstate);
+	virtual void				start(CoreModifiable* currentParentClass, CoreFSMStateBase* prevstate);
+	virtual void				stop(CoreModifiable* currentParentClass, CoreFSMStateBase* nextstate);
+	// if a transition is valid, return it
+	virtual CoreFSMTransition*	update(CoreModifiable* currentParentClass, u32& specialOrder, KigsID& newstate);
 
 	const KigsID&	getID()
 	{
@@ -42,7 +43,7 @@ public:
 	}
 
 	// get a transition from the list given it's id
-	SP<CoreFSMTransition>	getTransition(const KigsID& transitionname)
+	SP<CoreFSMTransition>	getTransition(const KigsID& transitionname) const
 	{
 		for (auto t : mTransitions)
 		{
@@ -54,7 +55,7 @@ public:
 		return nullptr;
 	}
 
-	std::vector<KigsID>	getTransitionList()
+	std::vector<KigsID>	getTransitionList() const
 	{
 		std::vector<KigsID> result;
 		for (const auto& t : mTransitions)
@@ -64,7 +65,7 @@ public:
 		return result;
 	}
 
-	bool	hasActiveTransition(CoreModifiable* currentParentClass)
+	bool	hasActiveTransition(CoreModifiable* currentParentClass) const
 	{
 		for (const auto& t : mTransitions)
 		{
@@ -72,6 +73,12 @@ public:
 				return true;
 		}
 		return false;
+	}
+
+	template<typename T>
+	T* as() 
+	{
+		return static_cast<T*>(this);
 	}
 
 protected:
@@ -163,15 +170,17 @@ DEFINE_UPGRADOR_UPDATE(CoreFSMStateClass(Ghost, Hunted))
 class 	CoreFSMState##baseclassname##statename : public Upgrador<baseclassname>,public CoreFSMStateBase \
 { \
 protected: \
+	typedef baseclassname UpgradorMethodParentClass;\
 	START_UPGRADOR(CoreFSMState##baseclassname##statename);
 
 #define START_INHERITED_COREFSMSTATE(baseclassname,statename,parentstate) \
 class 	CoreFSMState##baseclassname##statename : public CoreFSMState##baseclassname##parentstate \
 { \
 protected: \
+	typedef CoreFSMState##baseclassname##parentstate::UpgradorMethods UpgradorMethodParentClass;\
 	START_UPGRADOR(CoreFSMState##baseclassname##statename);
 
-#define DO_COREFSMSTATE_SUBCLASS_DECLARATION() class UpgradorMethods : public currentBaseClass \
+#define DO_COREFSMSTATE_SUBCLASS_DECLARATION() class UpgradorMethods : public UpgradorMethodParentClass \
 { \
  public:\
 	UpgradorType*	GetUpgrador(){return (UpgradorType*)CoreModifiable::GetUpgrador();}\
@@ -235,5 +244,11 @@ DO_COREFSMSTATE_BASE_METHOD_DEFINITION() \
 virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
 {\
 	FOR_EACH(COREFSM_WRAP_METHOD_PUSH_BACK, __VA_ARGS__)\
+}
+
+#define ENDCOREFSMSTATE_EMPTYWRAPMETHODS() \
+DO_COREFSMSTATE_BASE_METHOD_DEFINITION() \
+virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+{\
 }
 

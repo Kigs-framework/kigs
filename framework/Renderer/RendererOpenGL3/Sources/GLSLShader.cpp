@@ -51,11 +51,11 @@ API3DShader::~API3DShader()
 
 void API3DShader::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mVertexShaderText.getLabelID()) || (labelid == mFragmentShaderText.getLabelID()))
+	if ((labelid == mVertexShader.getLabelID()) || (labelid == mFragmentShader.getLabelID()))
 	{
 		Dealloc();
 		// rebuild only if both shaders are set
-		if ((((kstl::string)mVertexShaderText) != "") && (((kstl::string)mFragmentShaderText) != ""))
+		if ((((kstl::string)mVertexShader) != "") && (((kstl::string)mFragmentShader) != ""))
 		{
 			Rebuild();
 		}
@@ -158,7 +158,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 {
 
 	kstl::string str;
-	mVertexShaderText.getValue(str);
+	mVertexShader.getValue(str);
 
 	// Compile the shader source
 
@@ -198,7 +198,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	glCompileShader(vshaderName); CHECK_GLERROR;
 	rawbuffer = nullptr;
 
-	mFragmentShaderText.getValue(str);
+	mFragmentShader.getValue(str);
 	if (str[0] == '!') // load from file
 	{
 		const char* filename = (str.c_str() + 1);
@@ -370,13 +370,16 @@ void	API3DShader::InitModifiable()
 void	API3DShader::DelayedInit(TravState* state)
 {
 
-	if ((((kstl::string)mVertexShaderText) != "") && (((kstl::string)mFragmentShaderText) != ""))
+	if ((((kstl::string)mVertexShader) != "") && (((kstl::string)mFragmentShader) != ""))
 	{
 		Drawable::InitModifiable();
 
-		Rebuild();
-		mVertexShaderText.changeNotificationLevel(Owner);
-		mFragmentShaderText.changeNotificationLevel(Owner);
+		auto toAdd=Rebuild();
+		mCurrentShaderKey = 0;
+		insertBuildShader(mCurrentShaderKey, toAdd);
+		setCurrentBuildShader(mCurrentShaderKey);
+		mVertexShader.changeNotificationLevel(Owner);
+		mFragmentShader.changeNotificationLevel(Owner);
 		Active(state);
 
 		// add child unifor as default uniform
@@ -573,9 +576,11 @@ DEFINE_METHOD(API3DShader, Reload)
 {
 	Dealloc();
 	// rebuild only if both shaders are set
-	if ((((kstl::string)mVertexShaderText) != "") && (((kstl::string)mFragmentShaderText) != ""))
+	if ((((kstl::string)mVertexShader) != "") && (((kstl::string)mFragmentShader) != ""))
 	{
-		Rebuild();
+		auto toAdd=Rebuild();
+		insertBuildShader(mCurrentShaderKey, toAdd);
+		setCurrentBuildShader(mCurrentShaderKey);
 	}
 	else
 	{

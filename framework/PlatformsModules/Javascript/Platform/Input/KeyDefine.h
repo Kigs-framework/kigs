@@ -182,7 +182,7 @@ public:
 #define VK_LMENU		  0xA4
 #define VK_RMENU		  0xA5
 
-/*
+
 #define CM_KEY_ESCAPE          0x01
 #define CM_KEY_1               0x02
 #define CM_KEY_2               0x03
@@ -326,6 +326,6 @@ public:
 #define CM_KEY_WEBBACK         0xEA    
 #define CM_KEY_MYCOMPUTER      0xEB    
 #define CM_KEY_MAIL            0xEC    
-#define CM_KEY_MEDIASELECT     0xED    */
+#define CM_KEY_MEDIASELECT     0xED    
 
 #endif

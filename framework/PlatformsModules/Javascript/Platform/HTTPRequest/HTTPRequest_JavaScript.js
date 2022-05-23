@@ -36,7 +36,18 @@ var LibraryJsHTTPRequest  = {
 			myData.set(data_view);
 		}
 		
-		jQuery.ajax({
+		fetch(myurl)
+		.then( (response) => Module.ccall('HTTPAsyncRequestJSParseHeader', // name of C function
+											null, // return type
+											['number','string'], // argument types
+											[a_caller,response])) // arguments)
+		.then(  (data)=> Module.ccall('HTTPAsyncRequestJSParseContent', 
+					null,
+					['number','array','number'],
+					[a_caller, data, data.byteLength]))// output will be the required data
+		.catch( (error) => console.log(error))
+		
+		/*jQuery.ajax({
 			type: mytype,
 			url: myurl,
 			data: myData,
@@ -76,7 +87,7 @@ var LibraryJsHTTPRequest  = {
 				console.log(error + " : " + errorThrown);
 				Module.ccall('HTTPAsyncRequestJSParseError', null, ['number','string'], [a_caller, error]);
 			},
-		})
+		})*/
 	},
 
 };

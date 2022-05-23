@@ -19,16 +19,15 @@ public:
 
 	//! constructor
     HTTPAsyncRequestJS(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-
-	virtual void			InitModifiable() override;
+	//! destructor
+    virtual					~HTTPAsyncRequestJS();
+	
 
 	void					ParseHeader(const char* header);
 	void					ParseContent(const char* buffer, int buflen);
 	void					ParseError(const char* error);
 protected:
-
-	//! destructor
-    virtual					~HTTPAsyncRequestJS();
+	void					InitModifiable() override;
 	
 };
 

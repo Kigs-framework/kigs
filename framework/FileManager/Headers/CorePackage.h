@@ -152,7 +152,7 @@ protected:
 			mState = other.mState;
 		}
 
-		bool operator==(const CorePackageIterator& other)
+		bool operator==(const CorePackageIterator& other) const
 		{
 			if ((mPackage == other.mPackage) && (mState == other.mState) )
 			{
@@ -166,10 +166,10 @@ protected:
 			return false;
 		}
 
-		bool operator!=(const CorePackageIterator& other)
+		/*bool operator!=(const CorePackageIterator& other)
 		{
-			return !(*this == other);
-		}
+			return !(operator ==(other));
+		}*/
 
 		std::string	name()
 		{

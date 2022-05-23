@@ -405,14 +405,14 @@ namespace kigs_impl
 	template <typename F, typename T, typename Tuple, size_t... I>
 	decltype(auto) apply_impl(F&& f, T&& obj, Tuple&& t, index_sequence<I...>)
 	{
-		return (obj->*forward<F>(f))(get<I>(forward<Tuple>(t))...);
+		return (obj->*std::forward<F>(f))(get<I>(std::forward<Tuple>(t))...);
 	}
 
 	template <typename F, typename T, typename Tuple>
 	decltype(auto) apply(F&& f, T&& obj, Tuple&& t)
 	{
 		using Indices = make_index_sequence<tuple_size<decay_t<Tuple>>::value>;
-		return apply_impl(forward<F>(f), forward<T>(obj), forward<Tuple>(t), Indices{});
+		return apply_impl(std::forward<F>(f), std::forward<T>(obj), std::forward<Tuple>(t), Indices{});
 	}
 
 
@@ -420,14 +420,14 @@ namespace kigs_impl
 	template <typename F, typename Tuple, size_t... I>
 	decltype(auto) apply_func_impl(F&& f, Tuple&& t, index_sequence<I...>)
 	{
-		return f(get<I>(forward<Tuple>(t))...);
+		return f(get<I>(std::forward<Tuple>(t))...);
 	}
 
 	template <typename F, typename Tuple>
 	decltype(auto) apply_func(F&& f, Tuple&& t)
 	{
 		using Indices = make_index_sequence<tuple_size<decay_t<Tuple>>::value>;
-		return apply_func_impl(forward<F>(f), forward<Tuple>(t), Indices{});
+		return apply_func_impl(std::forward<F>(f), std::forward<Tuple>(t), Indices{});
 	}
 
 

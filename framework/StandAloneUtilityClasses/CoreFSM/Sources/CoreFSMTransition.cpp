@@ -49,7 +49,7 @@ void	CoreFSMOnSignalTransition::stop()
 
 bool CoreFSMDelayTransition::checkTransition(CoreModifiable* currentParentClass)
 {
-	if (!mIsRunning)
+	if (mIsRunning==0)
 	{
 		KIGS_ERROR("check a not started transition", 1);
 	}
@@ -85,7 +85,7 @@ void	CoreFSMDelayTransition::start()
 
 bool CoreFSMOnValueTransition::checkTransition(CoreModifiable* currentParentClass)
 {
-	if (!mIsRunning)
+	if (mIsRunning == 0)
 	{
 		KIGS_ERROR("check a not started transition", 1);
 	}
@@ -101,7 +101,7 @@ bool CoreFSMOnValueTransition::checkTransition(CoreModifiable* currentParentClas
 
 bool CoreFSMOnMethodTransition::checkTransition(CoreModifiable* currentParentClass)
 {
-	if (!mIsRunning)
+	if (mIsRunning == 0)
 	{
 		KIGS_ERROR("check a not started transition", 1);
 	}
@@ -112,7 +112,7 @@ bool CoreFSMOnMethodTransition::checkTransition(CoreModifiable* currentParentCla
 
 void	CoreFSMOnEventTransition::start()
 {
-	if (mIsRunning)
+	if (mIsRunning != 0)
 		return;
 	ParentClassType::start();
 	KigsCore::GetNotificationCenter()->addObserver(this, "EventReceived", (std::string)mEventName);
@@ -127,7 +127,7 @@ void	CoreFSMOnEventTransition::stop()
 
 bool CoreFSMInternalSetTransition::checkTransition(CoreModifiable* currentParentClass)
 {
-	if (!mIsRunning)
+	if (mIsRunning == 0)
 	{
 		KIGS_ERROR("check a not started transition", 1);
 	}

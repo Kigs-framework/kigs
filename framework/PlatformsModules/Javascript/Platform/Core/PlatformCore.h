@@ -19,4 +19,11 @@ extern int JSfclose( FileHandle* handle);
 extern SmartPointer<FileHandle> JSFindFullName(const kstl::string&	filename);
 extern void JSCheckState(FileHandle* handle);
 extern void JSCreateFolderTree(FileHandle* hndl);
+
+
+std::string to_utf8(const wchar_t* buffer, int len);
+std::string to_utf8(const std::wstring& str);
+std::wstring to_wchar(const char* buffer, int len);
+std::wstring to_wchar(const std::string& str);
+
 #endif //_JAVASCRIPT_CORE_H_

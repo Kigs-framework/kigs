@@ -26,9 +26,9 @@ IMPLEMENT_CLASS_INFO(ShaderBase)
 
 ShaderBase::ShaderBase(const kstl::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)
 , mCurrentShader(nullptr)
-, mVertexShaderText(*this, false, LABEL_AND_ID(VertexShader), "")
-, mFragmentShaderText(*this, false, LABEL_AND_ID(FragmentShader), "")
-, mGeometryShaderText(*this, false, LABEL_AND_ID(GeometryShader), "")
+, mVertexShader(*this, false, LABEL_AND_ID(VertexShader), "")
+, mFragmentShader(*this, false, LABEL_AND_ID(FragmentShader), "")
+, mGeometryShader(*this, false, LABEL_AND_ID(GeometryShader), "")
 , mAttachedCamera(*this, false, LABEL_AND_ID(AttachedCamera), "")
 , museGenericLight(*this, false, LABEL_AND_ID(useGenericLight), false)
 , misGeneric(*this, false, LABEL_AND_ID(isGeneric), false)
@@ -44,14 +44,15 @@ ShaderBase::~ShaderBase()
 
 void ShaderBase::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mVertexShaderText.getLabelID()) || (labelid == mFragmentShaderText.getLabelID()))
+	if ((labelid == mVertexShader.getLabelID()) || (labelid == mFragmentShader.getLabelID()))
 	{
 		Dealloc();
 		// rebuild only if both shaders are set
-		if ((((kstl::string)mVertexShaderText) != "") && (((kstl::string)mFragmentShaderText) != ""))
+		if ((((kstl::string)mVertexShader) != "") && (((kstl::string)mFragmentShader) != ""))
 		{
 			BuildShaderStruct* toAdd=Rebuild();
 			insertBuildShader(mCurrentShaderKey, toAdd);
+			setCurrentBuildShader(mCurrentShaderKey);
 		}
 	}
 

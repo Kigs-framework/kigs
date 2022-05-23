@@ -1897,7 +1897,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			bool is_lua_method = false;
 			if (attr->isDynamic() && attr->getType() == CoreModifiable::ATTRIBUTE_TYPE::STRING)
 			{
-				std::vector<std::string> splitted = SplitStringByCharacter(attr->getLabel()._id_name, '§');
+				std::vector<std::string> splitted = SplitStringByCharacter(attr->getLabel()._id_name, u'§');
 				if (splitted.size() == 3 && splitted[1] == "LUA_CODE")
 				{
 					func_name = splitted[2];

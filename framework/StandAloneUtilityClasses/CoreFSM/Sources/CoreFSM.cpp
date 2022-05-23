@@ -26,10 +26,8 @@
   // add other states
   ...
 
-  // set start state
+  // set start state (setting the start state also init/start the FSM)
   fsm->setStartState("Appear");
-  // init FSM => start FSM
-  fsm->Init();
 
 */
 
@@ -43,6 +41,9 @@ CoreFSM::CoreFSM(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable
 #ifdef DEBUG_COREFSM
 	mStateChangeBuffer.init(100);
 #endif
+
+	// at least one block
+	mFSMBlock.push_back({ (u32)-1,{}});
 }
 
 void CoreFSM::Update(const Timer& timer, void* addParam) 
@@ -61,7 +62,7 @@ void CoreFSM::Update(const Timer& timer, void* addParam)
 	KigsID stateID("");
 
 	// update current state (check if a transition is needed)
-	bool transit=mCurrentState.back()->update(mAttachedObject, specialOrder, stateID);
+	auto transit= mFSMBlock[mCurrentBlockIndex].mCurrentState.back()->update(mAttachedObject, specialOrder, stateID);
 
 	// a transition is needed
 	if (transit)
@@ -74,10 +75,17 @@ void CoreFSM::Update(const Timer& timer, void* addParam)
 		}
 
 		// if transition ask a push
-		if (specialOrder == (u32)FSMStateSpecialOrder::PUSH_TRANSITION)
+		if ( (specialOrder == (u32)FSMStateSpecialOrder::PUSH_TRANSITION) || (specialOrder == (u32)FSMStateSpecialOrder::PUSHBLOCK_TRANSITION) )
 		{
+			u32 newblockindex(-1);
+
+			if (specialOrder == (u32)FSMStateSpecialOrder::PUSHBLOCK_TRANSITION)
+			{
+				newblockindex=transit->getStateBlockIndex();
+			}
+
 			// then push state given it's ID
-			pushCurrentState(getState(stateID));
+			pushCurrentState(getState(stateID, newblockindex), newblockindex);
 		}
 		else
 		{
@@ -88,13 +96,64 @@ void CoreFSM::Update(const Timer& timer, void* addParam)
 
 }
 //! get state given by its name
-CoreFSMStateBase* CoreFSM::getState(const KigsID& id)
+/*  search in current block first, and if not found, return in other block if found */
+CoreFSMStateBase* CoreFSM::getState(const KigsID& id,u32 blockindex) const
 {
-	// if state is in the map
-	if (mPossibleStates.find(id) != mPossibleStates.end())
+	if (blockindex == (u32)-1)
 	{
-		// return it
-		return mPossibleStates[id];
+		blockindex = mCurrentBlockIndex;
+	}
+	// if state is in the map
+	auto f = mPossibleStates.find(id);
+
+	if (f != mPossibleStates.end())
+	{
+		for (const auto& s : (*f).second)
+		{
+			if (s.second == blockindex)
+			{
+				// return the one in the good block
+				return s.first;
+			}
+		}
+		return (*f).second[0].first; // return first one
+	}
+	return nullptr;
+}
+
+
+
+//! get state on current state stack given by its name 
+CoreFSMStateBase* CoreFSM::getStackedState(const KigsID& id) const
+{
+
+	// if state is in the current block
+	auto f=getState(id);
+	
+	if (f)
+	{
+		size_t count = mFSMBlock[mCurrentBlockIndex].mCurrentState.size();
+		if (count)
+		{
+			for (size_t i = count; i > 0; i--)
+			{
+				if (mFSMBlock[mCurrentBlockIndex].mCurrentState[i - 1] == f)
+					return f;
+			}
+		}
+	}
+	return nullptr;
+}
+
+
+//! get state on current state stack given by pos : pos = 0 => currentState, pos = 1 => mCurrentState[mCurrentState.size()-2] ...
+CoreFSMStateBase* CoreFSM::getStackedStateAt(size_t pos) const
+{
+	size_t count = mFSMBlock[mCurrentBlockIndex].mCurrentState.size();
+	if (count > pos)
+	{
+		size_t i = count - 1 - pos; 
+		return mFSMBlock[mCurrentBlockIndex].mCurrentState[i];
 	}
 	return nullptr;
 }
@@ -121,6 +180,9 @@ void	CoreFSM::dumpLastStates()
 			case FSMStateSpecialOrder::PUSH_TRANSITION:
 				printf(" was pushed \n");
 				break;
+			case FSMStateSpecialOrder::PUSHBLOCK_TRANSITION:
+				printf(" was pushed in other block\n");
+				break;
 			case FSMStateSpecialOrder::POP_TRANSITION:
 				printf(" was set after previous set was pop \n");
 				break;
@@ -134,15 +196,15 @@ void	CoreFSM::dumpLastStates()
 // change the state on the stack by the given state
 void	CoreFSM::changeCurrentState(CoreFSMStateBase* newone)
 {
-	if (mCurrentState.size())
+	if (mFSMBlock[mCurrentBlockIndex].mCurrentState.size())
 	{
-		CoreFSMStateBase* prevone = mCurrentState.back();
+		CoreFSMStateBase* prevone = mFSMBlock[mCurrentBlockIndex].mCurrentState.back();
 		// stop previous state
 		prevone->stop(mAttachedObject,newone);
 		// downgrade object from previous state
 		mAttachedObject->Downgrade(prevone->getID(),false,true);
 		// change state
-		mCurrentState.back() = newone;
+		mFSMBlock[mCurrentBlockIndex].mCurrentState.back() = newone;
 		// upgrade object with new current state
 		mAttachedObject->Upgrade(dynamic_cast<UpgradorBase*>(newone),false,true);
 		// start new state
@@ -154,23 +216,30 @@ void	CoreFSM::changeCurrentState(CoreFSMStateBase* newone)
 }
 
 //! push the given state on the stack
-void	CoreFSM::pushCurrentState(CoreFSMStateBase* newone)
+void	CoreFSM::pushCurrentState(CoreFSMStateBase* newone, u32 newblockIndex)
 {
 	CoreFSMStateBase* prevone = nullptr;
-	if (mCurrentState.size())
+	if (mFSMBlock[mCurrentBlockIndex].mCurrentState.size())
 	{
-		prevone = mCurrentState.back();
+		prevone = mFSMBlock[mCurrentBlockIndex].mCurrentState.back();
 		// stop previous state
 		prevone->stop(mAttachedObject,newone);
 		// downgrade object from previous state but don't destroy it as we will get back there and don't detach methods
-		mAttachedObject->Downgrade(mCurrentState.back()->getID(),false,false);
+		mAttachedObject->Downgrade(mFSMBlock[mCurrentBlockIndex].mCurrentState.back()->getID(),false,false);
 	}
 
 #ifdef DEBUG_COREFSM
 	mStateChangeBuffer.push_back({ KigsCore::GetCoreApplication()->GetApplicationTimer()->GetTime(),FSMStateSpecialOrder::PUSH_TRANSITION ,newone });
 #endif
+
+	if ((newblockIndex != (u32)-1) && (mCurrentBlockIndex != newblockIndex)) // change block if asked
+	{
+		mFSMBlock[newblockIndex].mFromBlock = mCurrentBlockIndex;
+		mCurrentBlockIndex = newblockIndex;
+	}
+
 	// push state
-	mCurrentState.push_back(newone);
+	mFSMBlock[mCurrentBlockIndex].mCurrentState.push_back(newone);
 	// upgrade object with new current state
 	mAttachedObject->Upgrade(dynamic_cast<UpgradorBase*>(newone),false,true);
 	// start new state
@@ -181,20 +250,35 @@ void	CoreFSM::popCurrentState()
 	CoreFSMStateBase* prevone = nullptr;
 	CoreFSMStateBase* newone = nullptr;
 
-	if (mCurrentState.size() > 1)
+	u32 changeBlock = mCurrentBlockIndex;
+
+	if (mFSMBlock[mCurrentBlockIndex].mCurrentState.size() > 1)
 	{
 		// retrieve state to be started 
-		newone = mCurrentState[mCurrentState.size() - 2];
+		newone = mFSMBlock[mCurrentBlockIndex].mCurrentState[mFSMBlock[mCurrentBlockIndex].mCurrentState.size() - 2];
 	}
-	if (mCurrentState.size())
+	else
 	{
-		prevone = mCurrentState.back();
+		if (mFSMBlock[mCurrentBlockIndex].mFromBlock != (u32)-1) // go to previous block
+		{
+			changeBlock = mFSMBlock[mCurrentBlockIndex].mFromBlock;
+
+			if (mFSMBlock[changeBlock].mCurrentState.size())
+			{
+				newone = mFSMBlock[changeBlock].mCurrentState.back();
+			}
+			mFSMBlock[mCurrentBlockIndex].mFromBlock = -1;
+		}
+	}
+	if (mFSMBlock[mCurrentBlockIndex].mCurrentState.size())
+	{
+		prevone = mFSMBlock[mCurrentBlockIndex].mCurrentState.back();
 		// stop previous state
 		prevone->stop(mAttachedObject,newone);
 		// downgrade object from previous state
-		mAttachedObject->Downgrade(mCurrentState.back()->getID(),false,true);
+		mAttachedObject->Downgrade(mFSMBlock[mCurrentBlockIndex].mCurrentState.back()->getID(),false,true);
 		// and pop the state
-		mCurrentState.pop_back();
+		mFSMBlock[mCurrentBlockIndex].mCurrentState.pop_back();
 	}
 
 #ifdef DEBUG_COREFSM
@@ -209,31 +293,75 @@ void	CoreFSM::popCurrentState()
 		// and start upgrador
 		newone->start(mAttachedObject,prevone);
 	}
+
+	mCurrentBlockIndex = changeBlock;
 }
 
 //! set FSM start state
-void	CoreFSM::setStartState(const KigsID& id)
+void	CoreFSM::setStartState(const KigsID& id, u32 blockindex)
 {
-	if (mPossibleStates.find(id) != mPossibleStates.end())
+	auto itf = mPossibleStates.find(id);
+	if (itf != mPossibleStates.end())
 	{
-		if (!IsInit()) // if not init, init
+		if (!IsInit()) // if not init, init (so start)
 		{
 			Init();
 		}
-		if (mCurrentState.size() == 0)
+
+		if (blockindex == (u32)-1)
 		{
-			// push state
-			pushCurrentState(mPossibleStates[id]);
+			blockindex = 0;
 		}
-		else
+
+		CoreFSMStateBase* foundstate = getState(id, blockindex);
+		if (foundstate)
 		{
-			KIGS_ERROR("FSM start state already set", 2);
+			mCurrentBlockIndex = blockindex;
+			if (mFSMBlock[mCurrentBlockIndex].mCurrentState.size() == 0)
+			{
+				// push state
+				pushCurrentState(foundstate);
+			}
+			else
+			{
+				KIGS_ERROR("FSM start state already set", 2);
+			}
 		}
 	}
 	else
 	{
 		KIGS_ERROR("FSM State not available", 2);
 	}
+}
+
+// return block index
+u32	CoreFSM::addBlock()
+{
+	if (IsInit())
+	{
+		KIGS_ERROR("try to add states on an initialized FSM", 2);
+		return -1;
+	}
+	mFSMBlock.push_back({ (u32)-1,{} });
+	return mFSMBlock.size() - 1;
+}
+
+void CoreFSM::setCurrentBlock(u32 index)
+{
+	if (IsInit())
+	{
+		KIGS_ERROR("try to add states on an initialized FSM", 2);
+		return;
+	}
+	if (index < mFSMBlock.size())
+	{
+		mCurrentBlockIndex = index;
+	}
+	else
+	{
+		KIGS_ERROR("try to set unknown block state", 2);
+	}
+
 }
 
 //! declare a new possible state to the FSM
@@ -245,22 +373,28 @@ void	CoreFSM::addState(const KigsID& id, CoreFSMStateBase* base)
 		return;
 	}
 
-	if (mPossibleStates.find(id) != mPossibleStates.end()) // already there ?
+	auto f = mPossibleStates.find(id);
+	if (f != mPossibleStates.end()) // check if already exists
 	{
-		if (mPossibleStates[id] != base)
+		for (auto s : (*f).second)
 		{
-			KIGS_ERROR("try to add an already existing state", 2);
+			if (s.second == mCurrentBlockIndex)
+			{
+				KIGS_ERROR("try to add an already existing state", 2);
+				return;
+			}
 		}
-		return;
 	}
-	mPossibleStates[id] = base;
+	
+	mPossibleStates[id].push_back({ base, mCurrentBlockIndex });
+	
 }
 
 void CoreFSM::activateTransition(const KigsID& id)
 {
-	if (mCurrentState.size())
+	if (mFSMBlock[mCurrentBlockIndex].mCurrentState.size())
 	{
-		mCurrentState.back()->activateTransition(id);
+		mFSMBlock[mCurrentBlockIndex].mCurrentState.back()->activateTransition(id);
 	}
 }
 
@@ -274,7 +408,7 @@ void	CoreFSM::InitModifiable()
 	ParentClassType::InitModifiable();
 	if (IsInit())
 	{
-		if (GetParents().size() && (mCurrentState.size()==0)) // can't init without parent and start state
+		if (GetParents().size() && (mFSMBlock[mCurrentBlockIndex].mCurrentState.size()==0)) // can't init without parent and start state
 		{
 			mAttachedObject = GetParents()[0];
 			// auto update only after init is OK
@@ -291,16 +425,18 @@ CoreFSM::~CoreFSM()
 {
 	KigsCore::GetCoreApplication()->RemoveAutoUpdate(this);
 
-	while (mCurrentState.size())
+	while (mFSMBlock[mCurrentBlockIndex].mCurrentState.size())
 	{
 		popCurrentState();
 	}
 
-	for (auto state : mPossibleStates)
+	for (auto statelist : mPossibleStates)
 	{
-		delete state.second;
+		for (auto state : statelist.second)
+		{
+			delete state.first;
+		}
 	}
-
 }
 
 // declare all instanciable classes
