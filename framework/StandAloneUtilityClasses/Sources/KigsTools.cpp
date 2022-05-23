@@ -420,7 +420,7 @@ bool SetupTools()
 	}
 
 	gKigsToolsAvailable = gKigsTools->ImGuiModule;
-	if(gKigsToolsAvailable)
+	if(gKigsToolsAvailable && !gKigsTools->ImGuiLayer)
 		gKigsTools->ImGuiLayer = gKigsTools->ImGuiModule->CreateDebugLayer();
 
 	if (!gKigsTools->InputModule)
@@ -3317,7 +3317,7 @@ void ShowKigsTools(bool show)
 void RegisterWidget(const std::string& id, std::function<void()> draw_function)
 {
 	if (!SetupTools()) return;
-	if (!draw_function) gKigsTools->CustomWidgets.erase(id);
+	if (!draw_function) { gKigsTools->CustomWidgets.erase(id); return; };
 	auto& w = gKigsTools->CustomWidgets[id];
 	w.first = draw_function;
 	w.second = true;

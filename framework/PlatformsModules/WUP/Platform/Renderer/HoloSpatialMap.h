@@ -19,6 +19,7 @@
 #include <winrt/Windows.Perception.Spatial.Surfaces.h>
 
 #include "concurrentqueue.h"
+#include "blockingconcurrentqueue.h"
 
 class CollisionManager;
 
@@ -94,7 +95,7 @@ enum class ShowMeshMode
 class HoloSpatialMap : public CoreModifiable
 {
 public:
-	DECLARE_CLASS_INFO(HoloSpatialMap, CoreModifiable,Renderer)
+	DECLARE_CLASS_INFO(HoloSpatialMap, CoreModifiable, Renderer)
 	DECLARE_CONSTRUCTOR(HoloSpatialMap);
 	virtual ~HoloSpatialMap();
 
@@ -109,13 +110,18 @@ public:
 	void SetShowMeshMode(ShowMeshMode mode);
 	ShowMeshMode GetShowMeshMode() const { return mShowMeshMode; }
 
-	void Export();
+	//void Export();
 
-	winrt::Windows::Foundation::IAsyncAction ExportTimedScan();
+	bool IsRecording() { return mRecordEnabled; }
+	void StartRecording();
+	void StopRecording();
+
+	winrt::Windows::Foundation::IAsyncAction ExportTimedScan(std::string filename = "");
 	winrt::Windows::Foundation::IAsyncAction ResetTimedScan();
 
 	void TransformAllNodes(const mat3x4& mat);
 
+	void ImportTimedScan(const std::string& filename);
 protected:
 	void InitModifiable() override;
 
