@@ -345,6 +345,10 @@ void RendererDX11::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribu
 	PlatformInit(core, params);
 
 	mDefaultUIShader = KigsCore::GetInstanceOf("UIShader", "API3DUIShader");
+
+	// ask default ui shader init
+	mDefaultUIShader->Init();
+
 	mVertexBufferManager = std::make_unique<VertexBufferManager>();
 }
 

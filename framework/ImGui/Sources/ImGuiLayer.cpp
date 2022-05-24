@@ -166,7 +166,8 @@ void ImGuiLayer::SetStyleLightGreen()
 	colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
 	colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
 	colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.86f, 0.86f, 0.86f, 0.0f); // Disabled
+
 	colors[ImGuiCol_DragDropTarget] = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
 	colors[ImGuiCol_NavHighlight] = colors[ImGuiCol_HeaderHovered];
 	colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.70f, 0.70f, 0.70f, 0.70f);

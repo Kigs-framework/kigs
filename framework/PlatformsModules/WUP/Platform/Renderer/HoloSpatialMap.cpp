@@ -285,6 +285,8 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 	u8* buf = inMesh ? GetPointerToPixelData(inMesh.VertexPositions().Data(), &size) : nullptr;
 	auto vertex_buffer = reinterpret_cast<float*>(buf);
 
+	std::vector<u8> local_copy;
+
 	if (record_surface)
 	{
 		if (record_surface->recording)
@@ -294,8 +296,9 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 		}
 		else
 		{
-			buf = record_surface->vertex_data.data();
-			size = record_surface->vertex_data.size();
+			local_copy = record_surface->vertex_data;
+			buf = local_copy.data();
+			size = local_copy.size();
 		}
 	}
 
@@ -417,8 +420,19 @@ void HoloSpatialMap::CreateMesh(winrt::Windows::Perception::Spatial::Surfaces::S
 	}
 }
 
-winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ExportTimedScan()
+void HoloSpatialMap::StartRecording()
 {
+	mRecordEnabled = true;
+}
+
+void HoloSpatialMap::StopRecording()
+{
+	mRecordEnabled = false;
+}
+
+winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ExportTimedScan(std::string filename)
+{
+	bool was_on = mRecordEnabled;
 	mRecordEnabled = false;
 
 	SpatialMapRecording to_save;
@@ -428,7 +442,8 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ExportTimedScan()
 	}
 	std::swap(to_save, gMapRecording);
 	
-	mRecordEnabled = true;
+	if(was_on)
+		mRecordEnabled = true;
 
 	std::vector<u32> data;
 	VectorWriteStream stream{data};
@@ -439,7 +454,7 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ExportTimedScan()
 	using namespace winrt::Windows::Storage;
 	using namespace winrt::Windows::Storage::Pickers;
 	using namespace winrt::Windows::Storage::Streams;
-	auto path = "timed_spatial_map_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + ".bin";
+	auto path = filename.size() ? filename : "timed_spatial_map_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + ".bin";
 	auto file = co_await KnownFolders::PicturesLibrary().CreateFileAsync(to_wchar(path), CreationCollisionOption::ReplaceExisting);
 	if (!file) co_return;
 	auto result = co_await file.OpenAsync(FileAccessMode::ReadWrite);
@@ -452,6 +467,7 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ExportTimedScan()
 winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ReplayRecordedSpatialMap()
 {
 	winrt::apartment_context ctx;
+	mRecordEnabled = false;
 
 	if (gMapRecording.callbacks.empty()) co_return;
 	auto start_time_record = gMapRecording.callbacks.front().callback_time;
@@ -585,13 +601,24 @@ winrt::Windows::Foundation::IAsyncAction HoloSpatialMap::ReplayRecordedSpatialMa
 		}
 	}
 
-	RegisterWidget("Replay", {});
-
-	SpatialMapRecording recording;
-	std::swap(gMapRecording, recording);
 	co_await ctx;
-	co_await ResetTimedScan();
-	std::swap(gMapRecording, recording);
+	RegisterWidget("Replay", {});
+	{
+		std::unique_lock<std::mutex> lk{ mListMtx };
+		CoreModifiable* attach = (CoreModifiable*)mAttachNode;
+		for (auto&& it : mMeshList)
+		{
+			if (it.second.node)
+			{
+				attach->removeItem(it.second.node);
+			}
+			if (it.second.old_node)
+			{
+				attach->removeItem(it.second.old_node);
+			}
+		}
+		mMeshList.clear();
+	}
 	ReplayRecordedSpatialMap();
 }
 
@@ -885,128 +912,23 @@ void HoloSpatialMap::InitModifiable()
 
 #ifdef KIGS_TOOLS
 	mShowMeshMode = ShowMeshMode::Full;
-
-	auto import_scan = [&](const std::string& filename)
-	{
-		auto debugmap = Import(filename, false, false, nullptr, "debugmap");
-		if (debugmap)
-		{
-			mat3x4 ref_matrix = mat3x4::IdentityMatrix();
-			if (debugmap->getArrayValue("ReferenceMatrix", &ref_matrix.e[0][0], 12))
-			{
-				//ref_matrix = Inv(ref_matrix);
-			}
-
-			while (debugmap->getItems().size())
-			{
-				auto item = debugmap->getItems().front().mItem;
-				debugmap->removeItem(item);
-				if (item->isSubType("Node3D"))
-				{
-					auto m = item->as<Node3D>()->GetLocal();
-					m = ref_matrix * m;
-					item->as<Node3D>()->ChangeMatrix(m);
-
-					auto mesh = item->GetFirstSonByType("ModernMesh");
-					mesh->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "BVH", true);
-					mesh->setValue("Show", mShowMeshMode == ShowMeshMode::Full);
-					mesh->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "IsCreatedFromExport", true);
-					mesh->Init();
-					mAttachNode->addItem(item);
-
-					auto collisionBVH = SpacialMeshBVH::BuildFromMesh(mesh->as<ModernMesh>(), item->as<Node3D>()->GetLocalToGlobal(), true);
-					auto collisionAABB = AABBTree::BuildFromMesh(mesh->as<ModernMesh>());
-
-					if (collisionBVH && collisionAABB)
-					{
-						auto vertices = collisionBVH->GetVertices();
-
-						struct vertex
-						{
-							v3f pos;
-							v3f n;
-						};
-
-						char* vertice_data = new char[vertices.size() * sizeof(vertex)];
-
-						auto i = 0;
-						for (auto t = 0; t < vertices.size() / 3; ++t)
-						{
-							auto p1 = vertices[t * 3+0];
-							auto p2 = vertices[t * 3+1];
-							auto p3 = vertices[t * 3+2];
-							auto n = ((p2 - p1) ^ (p3 - p2)).Normalized();
-
-							auto& v1 = reinterpret_cast<vertex*>(vertice_data)[i++];
-							v1.pos = p1;
-							v1.n = n;
-
-							auto& v2 = reinterpret_cast<vertex*>(vertice_data)[i++];
-							v2.pos = p2;
-							v2.n = n;
-
-							auto& v3 = reinterpret_cast<vertex*>(vertice_data)[i++];
-							v3.pos = p3;
-							v3.n = n;
-						}
-
-						SP<DrawVertice> dv = KigsCore::GetInstanceOf("dv", "DrawVertice");
-						dv->setValue("IsStaticBuffer", true);
-						dv->Init();
-						dv->SetVertexArray(vertice_data, vertices.size());
-						dv->SetNormalArray(nullptr, vertices.size(), sizeof(v3f), offsetof(vertex, n));
-						dv->setValue("Show", mShowMeshMode == ShowMeshMode::PlaneOnly);
-						item->addItem(dv);
-
-						mCollisionManager->SetCollisionObject(dv, collisionBVH);
-						mCollisionManager->SetCollisionObject(mesh, collisionAABB);
-					}
-				}
-			}
-			return;
-		}
-	};
-
-	auto import_timed_scan = [&](const std::string& filename)
-	{
-		u64 len;
-		auto crb = ModuleFileManager::Get()->LoadFile(filename.c_str(), len);
-		if (crb)
-		{
-			PacketReadStream stream{ crb->data(), crb->size() };
-			bool success = serialize_object(stream, gMapRecording);
-			if (success)
-			{
-				ReplayRecordedSpatialMap();
-			}
-		}
-	};
-
-	//import_timed_scan("timed_spatial_map_4948626757552.bin");
-	//import_timed_scan("timed_spatial_map_8734318291510.bin");
-	
-
-	//import_timed_scan("spatial_map_kcomk_antoine_cantine.bin");
-	//import_timed_scan("spatial_map_kcomk_antoine_appart.bin");
-
-	//import_timed_scan("spatial_map_kcomk_stephane_cantine.bin");
-	//import_timed_scan("spatial_map_kcomk_stephane_appart.bin");
-	
-	
-	//import_scan("spatial_map_80398810989.xml");
-	///import_scan("spatial_map_1028_n1.xml");
-	//import_scan("spatial_map_1040_n1.xml");
-
-	//import_scan("spacialmap.xml");
-	//import_scan("local_assoria.xml");
-	//import_scan("spatial_map_11156423923300.xml");
-
-	//import_scan("couloir.xml");
-	//import_scan("salle_de_classe.xml");
-	//import_scan("grande_piece_1.xml");
-	//import_scan("grande_piece_2.xml");
-	
+	//ImportTimedScan("timed_spatial_map_280017251145.bin");
 #endif
+}
+
+void HoloSpatialMap::ImportTimedScan(const std::string& filename)
+{
+	u64 len;
+	auto crb = ModuleFileManager::Get()->LoadFile(filename.c_str(), len);
+	if (crb)
+	{
+		PacketReadStream stream{ crb->data(), crb->size() };
+		bool success = serialize_object(stream, gMapRecording);
+		if (success)
+		{
+			ReplayRecordedSpatialMap();
+		}
+	}
 }
 
 void HoloSpatialMap::SetShowMeshMode(ShowMeshMode mode)
@@ -1084,3 +1006,4 @@ void HoloSpatialMap::TransformAllNodes(const mat3x4& mat)
 		n->as<Node3D>()->ChangeMatrix(mat * n->as<Node3D>()->GetLocal());
 	}
 }
+
