@@ -494,3 +494,20 @@ void	API3DShader::DelayedInit(TravState* state)
 		Deactive(state);
 	}
 }
+
+DEFINE_METHOD(API3DShader, Reload)
+{
+	Dealloc();
+	// rebuild only if both shaders are set
+	if ((((kstl::string)mVertexShader) != "") && (((kstl::string)mFragmentShader) != ""))
+	{
+		auto toAdd = Rebuild();
+		insertBuildShader(mCurrentShaderKey, toAdd);
+		setCurrentBuildShader(mCurrentShaderKey);
+	}
+	else
+	{
+		//printf("%s not rebuild\n", getName().c_str());
+	}
+	return false;
+}

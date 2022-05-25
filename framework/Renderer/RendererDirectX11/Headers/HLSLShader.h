@@ -88,12 +88,10 @@ protected:
 
 	void	InitModifiable()  override;
 	
+	//protected callback
+	DECLARE_VIRTUAL_METHOD(Reload);
+	COREMODIFIABLE_METHODS(Reload);
 
-	//virtual void ActiveSampler();
-	//virtual void DeactiveSampler();
-
-	//ID3D11SamplerState* CreateSampler(D3D11_SAMPLER_DESC* desc);
-	//ID3D11SamplerState* m_sampleState = nullptr;
 
 };
 #endif //_HLSLSHADER_H

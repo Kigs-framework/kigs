@@ -588,9 +588,3 @@ DEFINE_METHOD(API3DShader, Reload)
 	}
 	return false;
 }
-
-DEFINE_METHOD(API3DShader, Active)
-{
-	Active(0);
-	return true;
-}

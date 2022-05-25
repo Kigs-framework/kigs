@@ -75,8 +75,7 @@ protected:
 
 	//protected callback
 	DECLARE_VIRTUAL_METHOD(Reload);
-	DECLARE_VIRTUAL_METHOD(Active);
-	COREMODIFIABLE_METHODS(Reload, Active);
+	COREMODIFIABLE_METHODS(Reload);
 
 	void	Active(TravState* state, bool resetUniform=false) override;
 	void	Deactive(TravState* state) override;
