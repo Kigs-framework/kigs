@@ -202,10 +202,7 @@ std::string API3DGenericMeshShader::GetDefaultFragmentShaderMain(const std::stri
 #elif defined(CLIENT_STATE_NORMAL_ARRAY)
 	normalN = normalize(N);
 #endif
-#ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0 
-	diffuseColor *= texel;
-	ambientColor *= texel;
-#endif
+
 )===="+ inject_before_light_calcs +R"====(
 #ifdef NOLIGHT 
 	result = diffuseColor;
@@ -222,7 +219,13 @@ std::string API3DGenericMeshShader::GetDefaultFragmentShaderMain(const std::stri
 	for (int i = 0; i <myPointLightCount; i++)
 		result.xyz += CalcPointLight(pointLights[i], viewDir, normalN, diffuseColor, specularColor, ambientColor, shininess);
 #endif
+
 	result.w = diffuseColor.w;
+
+#ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0 
+	result *= texel;
+#endif
+
 #endif // NOLIGHT 
 #ifdef CLIENT_STATE_ALPHA_TEST_LOW
 	if(result.a < 0.01)

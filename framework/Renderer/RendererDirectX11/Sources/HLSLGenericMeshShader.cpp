@@ -223,10 +223,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 #elif defined(CLIENT_STATE_NORMAL_ARRAY)
 	normalN = normalize(input.Normal);
 #endif
-#ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0 
-	diffuseColor *= texel;
-	ambientColor *= texel;
-#endif
+
 )===="+ inject_before_light_calcs +R"====(
 #ifdef NOLIGHT 
 	result = diffuseColor;
@@ -244,6 +241,11 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 		result.xyz += CalcPointLight(pointLights[i], viewDir, normalN, diffuseColor, specularColor, ambientColor, shininess, input.FragPos);
 #endif
 	result.w = diffuseColor.w;
+
+#ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0 
+	result *= texel;
+#endif
+
 #endif // NOLIGHT 
 #ifdef CLIENT_STATE_ALPHA_TEST_LOW
 	if(result.a < 0.01)
