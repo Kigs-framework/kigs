@@ -45,6 +45,7 @@ namespace Tec3D {
 #include "3D/Vector3D.h"            // To use 3D vector
 #include "3D/Point3DI.h"             // To use 3D point
 #include "3D/v3d.h"             	// To use 3D point
+#include "3D/SIMDv4f.h"
 
 #include "3D/Vector4D.h"            // To use 4D vector (projective geometry)
 #include "3D/Quaternion.h"          // To use quaternion
@@ -70,6 +71,7 @@ namespace Tec3D {
 #include "3D/Matrix4x4.inl.h"
 #include "3D/Basis3D.inl.h"
 #include "3D/Reference3D.inl.h"
+#include "3D/SIMDv4f.inl.h"
 	
 #include "2D/Point2D.inl.h"
 #include "2D/Point2DI.inl.h"
