@@ -149,8 +149,8 @@ struct SIMDv4f
 	// +---------
 	// | Acces Operators
 	// +---------
-	inline const float operator[](Int i) const;
-	inline float operator[](Int i);
+	inline const float& operator[](Int i) const;
+	inline float& operator[](Int i);
 
 	Point2D XZ() const { return Point2D(x, z); }
 	

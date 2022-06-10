@@ -443,13 +443,13 @@ bool operator!=(const SIMDv4f& U, const SIMDv4f& V)
 // +---------
 // | Acces Operators
 // +---------
-const float SIMDv4f::operator[](Int i) const
+const float& SIMDv4f::operator[](Int i) const
 {
     assert(i >= 0 && i < 3);
     return *((&x) + i);
 }
 
-float SIMDv4f::operator[](Int i)
+float& SIMDv4f::operator[](Int i)
 {
     assert(i >= 0 && i < 3);
     return *((&x) + i);
