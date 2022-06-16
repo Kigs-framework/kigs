@@ -46,10 +46,10 @@ void	Scene3D::UninitModifiable()
 {
 	if (IsInit())
 	{
+		Node3D::UninitModifiable();
 		// Notify scenegraph  that I am dead
 		ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
 		scenegraph->removeItem(SharedFromThis());
-		Node3D::UninitModifiable();
 	}
 }
 

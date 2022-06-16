@@ -130,7 +130,9 @@ struct SIMDv4f
 	// | Utilities
 	// +---------
 	inline void Normalize(void);
+	inline void NormalizeBarycentricCoords();
 	inline SIMDv4f Normalized(void) const;
+	inline SIMDv4f NormalizedBarycentricCoords(void) const;
 	inline void ClampMax(const float v);
 	inline void ClampMin(const float v);
 

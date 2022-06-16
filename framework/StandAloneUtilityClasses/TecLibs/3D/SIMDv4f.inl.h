@@ -409,14 +409,27 @@ void SIMDv4f::Normalize(void)
     }
 }
 
+// for barycentric coords, sum of coordinates must be 1
+void SIMDv4f::NormalizeBarycentricCoords(void)
+{
+    float32x2_t r = vadd_f32(vget_high_f32(v), vget_low_f32(v));
+    float tmp = vget_lane_f32(vpadd_f32(r, r), 0);
+    (*this) *= 1.0f / tmp;
+}
+
 inline SIMDv4f SIMDv4f::Normalized(void) const
 {
-    SIMDv4f result = *this;
+    SIMDv4f result(*this);
     result.Normalize();
     return result;
 }
 
-
+inline SIMDv4f SIMDv4f::NormalizedBarycentricCoords(void) const
+{
+    SIMDv4f result(*this);
+    result.NormalizeBarycentricCoords();
+    return result;
+}
 
 inline SIMDv4f Lerp(const SIMDv4f& P, const SIMDv4f& Q, const float t)
 {
