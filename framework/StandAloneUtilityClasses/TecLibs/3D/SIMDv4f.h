@@ -33,6 +33,7 @@ struct SIMDv4f
 	// Set all coordinates to fValue
 	inline SIMDv4f(const float x, const float y, const float z, const float w=0);
 	inline SIMDv4f(const SIMDv4f& P);
+	inline SIMDv4f(const Point3D& P);
 	// Vector A to B = B-A
 	inline SIMDv4f(const SIMDv4f& A, const SIMDv4f& B, const asVector& v);
 

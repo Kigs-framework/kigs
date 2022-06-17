@@ -26,6 +26,11 @@ SIMDv4f::SIMDv4f(const SIMDv4f& P) : v(P.v)
 
 }
 
+SIMDv4f::SIMDv4f(const Point3D& P) : x(P.x),y(P.y),z(P.z),w(0.0f)
+{
+
+}
+
 SIMDv4f::SIMDv4f(const SIMDv4f& A, const SIMDv4f& B, const asVector& asv)
 {
     v = vsubq_f32(B.v, A.v);
