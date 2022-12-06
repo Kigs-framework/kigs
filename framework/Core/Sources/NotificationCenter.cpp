@@ -564,7 +564,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 							
 							// pop params
 							paramscurrent = params.begin();
-							paramsend = params.begin();
+							paramsend = params.end();
 
 							while (paramscurrent != paramsend)
 							{
