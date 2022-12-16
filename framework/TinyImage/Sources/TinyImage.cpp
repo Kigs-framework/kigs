@@ -39,22 +39,10 @@ TinyImage::TinyImage(): GenericRefCountedBaseClass()
 
 TinyImage::~TinyImage()
 {
-	if(mInitIsOK)	
-	{
-		mInitIsOK=false;
-	}
-	if(mPixels)
-	{
-		delete[] mPixels;
-	}
-	if(mPalette)
-	{
-		delete[] mPalette;
-	}
-	if(mPaletteIndex)
-	{
-		delete[] mPaletteIndex;
-	}
+	mInitIsOK=false;
+	delete[] mPixels;
+	delete[] mPalette;
+	delete[] mPaletteIndex;
 }
 
 void		TinyImage::VFlip()

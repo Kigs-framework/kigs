@@ -9,20 +9,13 @@ IMPLEMENT_CLASS_INFO(HTTPAsyncRequest)
 HTTPAsyncRequest::~HTTPAsyncRequest()
 {
 	ClearReceivedBuffer();
-
-	if (mPostBuffer)
-	{
-		delete[] mPostBuffer;
-	}
+	delete[] mPostBuffer;
 	mPostBufferLength = 0;
 }    
 
 void HTTPAsyncRequest::SetPostBufferValue(const char* a_buffer, unsigned int buflen)
 {
-	if (mPostBuffer)
-	{
-		delete[] mPostBuffer;
-	}
+	delete[] mPostBuffer;
 	mPostBufferLength = buflen;
 
 	mPostBuffer = new char[mPostBufferLength];

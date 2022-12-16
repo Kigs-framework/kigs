@@ -136,29 +136,16 @@ public:
 
 	virtual ~BuildShaderStruct()
 	{
-		if (mVertexShader)
-		{
-			delete mVertexShader;
-			mVertexShader = nullptr;
-		}
-		if (mFragmentShader)
-		{
-			delete mFragmentShader;
-			mFragmentShader = nullptr;
-		}
-		if (mGeometryShader)
-		{
-			delete mGeometryShader;
-			mGeometryShader = nullptr;
-		}
-		if (mShaderProgram)
-		{
-			delete mShaderProgram;
-			mShaderProgram = nullptr;
-		}
-
-		if (mLocations)
-			delete mLocations;
+		delete mVertexShader;
+		mVertexShader = nullptr;
+		delete mFragmentShader;
+		mFragmentShader = nullptr;
+		delete mGeometryShader;
+		mGeometryShader = nullptr;
+		delete mShaderProgram;
+		mShaderProgram = nullptr;
+	
+		delete mLocations;
 		mLocations = nullptr;
 
 		if (mUniforms)
