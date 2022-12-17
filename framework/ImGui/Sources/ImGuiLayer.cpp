@@ -278,7 +278,7 @@ void ImGuiLayer::SetStyleHoloLens()
 	ImGui::SetCurrentContext(old_state);
 }
 
-void ImGuiLayer::UpdateKeyboard(kstl::vector<KeyEvent>& keys)
+void ImGuiLayer::UpdateKeyboard(std::vector<KeyEvent>& keys)
 {
 	mKeyEvents.insert(mKeyEvents.end(), keys.begin(), keys.end());
 }
@@ -610,8 +610,8 @@ void ImGuiLayer::NewFrame(Timer* timer)
 #endif
 
 	// Setup display size (every frame to accommodate for window resizing)
-	kfloat w, h;
-	kfloat display_w, display_h;
+	float w, h;
+	float display_w, display_h;
 
 	RenderingScreen* screen = GetRenderingScreen();
 
@@ -630,8 +630,8 @@ void ImGuiLayer::NewFrame(Timer* timer)
 	}
 
 	// Setup time step
-	kdouble current_time = timer->GetTime();
-	kfloat dt = mLastTime > 0.0 ? (float)(current_time - mLastTime) : (float)(1.0f / 60.0f);
+	double current_time = timer->GetTime();
+	float dt = mLastTime > 0.0 ? (float)(current_time - mLastTime) : (float)(1.0f / 60.0f);
 	if (dt <= 0.0f) dt = 0.0166667f;
 	io.DeltaTime = dt;
 	mLastTime = current_time;

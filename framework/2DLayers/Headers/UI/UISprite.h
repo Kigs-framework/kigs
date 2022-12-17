@@ -30,7 +30,7 @@ public:
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	UISprite(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UISprite(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	void				ChangeTexture();
 

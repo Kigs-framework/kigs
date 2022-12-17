@@ -34,11 +34,11 @@ public:
 
 	/**
 	* \brief	constructor
-	* \fn 		TextureHandler(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	* \fn 		TextureHandler(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	TextureHandler(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	TextureHandler(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/**
 	* \brief	destructor
@@ -98,7 +98,7 @@ public:
 			mTexture->GetPow2Size(width, height);
 		}
 	}
-	void GetRatio(kfloat& rX, kfloat& rY) 
+	void GetRatio(float& rX, float& rY) 
 	{
 		if (mTexture)
 		{

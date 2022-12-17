@@ -18,26 +18,26 @@ IMPLEMENT_CLASS_INFO(Mesh)
 /*
  *	Constructor
  */
-Mesh::Mesh(const kstl::string& name,CLASS_NAME_TREE_ARG) : HDrawable(name,PASS_CLASS_NAME_TREE_ARG)
-, mVertexNeedUpdate(*this,false,LABEL_AND_ID(VertexNeedUpdate),false)
-, mColorNeedUpdate(*this,false,LABEL_AND_ID(ColorNeedUpdate),false)
-, mTexCoordNeedUpdate(*this,false,LABEL_AND_ID(TexCoordNeedUpdate),false)
-, mNormalNeedUpdate(*this,false,LABEL_AND_ID(NormalNeedUpdate),false)
-, mShareMaterial(*this,false,LABEL_AND_ID(ShareMaterial),true)
+Mesh::Mesh(const std::string& name,CLASS_NAME_TREE_ARG) : HDrawable(name,PASS_CLASS_NAME_TREE_ARG)
+, mVertexNeedUpdate(*this,false,"VertexNeedUpdate",false)
+, mColorNeedUpdate(*this,false,"ColorNeedUpdate",false)
+, mTexCoordNeedUpdate(*this,false,"TexCoordNeedUpdate",false)
+, mNormalNeedUpdate(*this,false,"NormalNeedUpdate",false)
+, mShareMaterial(*this,false,"ShareMaterial",true)
 #if _DEBUG
-, mShowVertex(*this,false,LABEL_AND_ID(ShowVertex),false)
+, mShowVertex(*this,false,"ShowVertex",false)
 #endif
-, mWireMode(*this,false,LABEL_AND_ID(WireMode),false)
-, mFileName(*this, true, LABEL_AND_ID(FileName))
-, mDynamicInit(*this, false, LABEL_AND_ID(DynamicInit), false)
+, mWireMode(*this,false,"WireMode",false)
+, mFileName(*this, true, "FileName")
+, mDynamicInit(*this, false, "DynamicInit", false)
 {
 	mVertexArray = 0;
 	mNormalArray = 0;
 	mColorArray = 0;
 	mTexArray = 0;
 
-  mBoundingBox.m_Min.Set(KFLOAT_CONST(0.0f),KFLOAT_CONST(0.0f),KFLOAT_CONST(0.0f));
-  mBoundingBox.m_Max.Set(KFLOAT_CONST(-1.0f),KFLOAT_CONST(-1.0f),KFLOAT_CONST(-1.0f));
+  mBoundingBox.m_Min.Set(0.0f,0.0f,0.0f);
+  mBoundingBox.m_Max.Set(-1.0f,-1.0f,-1.0f);
 }
 
 /*
@@ -61,7 +61,7 @@ Mesh::~Mesh()
 }
 
 #ifdef WIN32
-void Mesh::ExportMeshTo(kstl::string _pathDirectory, kstl::string _fileName)
+void Mesh::ExportMeshTo(std::string _pathDirectory, std::string _fileName)
 {
 	BinMeshLoader loader;
 	loader.ExportFile(this,_pathDirectory, _fileName);
@@ -84,12 +84,12 @@ void	Mesh::InitModifiable()
 		{
 			auto pathManager = KigsCore::Singleton<FilePathManager>();
 
-			kstl::string fullfilename;
+			std::string fullfilename;
 			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(mFileName);
 			if (fullfilenamehandle)
 			{
 				fullfilename = fullfilenamehandle->mFullFileName;
-				kstl::string	extension=mFileName;
+				std::string	extension=mFileName;
 
 				extension=extension.substr(extension.rfind("."));
 
@@ -143,7 +143,7 @@ void	Mesh::InitModifiable()
 			}
 			else
 			{
-				KIGS_WARNING("Can not open mesh file :"+(kstl::string&)mFileName,2); 
+				KIGS_WARNING("Can not open mesh file :"+(std::string&)mFileName,2); 
 				UninitModifiable();
 			}
 		}
@@ -180,9 +180,9 @@ void Mesh::Triangle::NormalAngle(const Point3D* VertexArray, Vector3D &Na, Vecto
 
 	n.CrossProduct(u,v);
 	n.Normalize();
-	Na =  (kfloat)acosf(fabsf(Dot(u,w))) * n;
-	Nb =  (kfloat)acosf(fabsf(Dot(v,u))) * n;
-	Nc =  (kfloat)acosf(fabsf(Dot(w,v))) * n;
+	Na =  (float)acosf(fabsf(Dot(u,w))) * n;
+	Nb =  (float)acosf(fabsf(Dot(v,u))) * n;
+	Nc =  (float)acosf(fabsf(Dot(w,v))) * n;
 }
 
 
@@ -233,7 +233,7 @@ int Mesh::getVertexCount()
 int Mesh::getTriangleCount()
 {
 	int Count = 0;
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 
 	for (it=getItems().begin();it!=getItems().end();++it)
 	{
@@ -288,7 +288,7 @@ bool Mesh::getTriangle(int index, int &a, int &b, int &c)
 	//int g = 0;
 	Mesh::Triangle *Tr=0;
 
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 	for (it=getItems().begin();it!=getItems().end();++it)
 	{
 		auto mesh_group = it->mItem->as<MeshItemGroup>();
@@ -340,7 +340,7 @@ bool Mesh::CopyVertexAndTriangle(int &VCount, int &TCount, Point3D *&VArray, int
 
 	k=0;
 
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 	for (it=getItems().begin();it!=getItems().end();++it)
 	{
 		if((*it).mItem->isSubType(MeshItemGroup::mClassID))
@@ -381,12 +381,12 @@ void	Mesh::DoPreDraw(TravState* state)
 	HDrawable::DoPreDraw(state);
 }
 
-bool	Mesh::GetVertexPointer(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams)
+bool	Mesh::GetVertexPointer(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& params,void* privateParams)
 {
 	CoreModifiableAttribute*	result=0;
 	CoreModifiableAttribute*	buffersize=0;
 
-	kstl::vector<CoreModifiableAttribute*>::const_iterator ci;
+	std::vector<CoreModifiableAttribute*>::const_iterator ci;
 	for(ci=params.begin();ci!=params.end();++ci)
 	{
 		CoreModifiableAttribute* current=(*ci);
@@ -413,11 +413,11 @@ bool	Mesh::GetVertexPointer(CoreModifiable* sender,kstl::vector<CoreModifiableAt
 	return false;
 }
 
-bool	Mesh::GetColorPointer(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams)
+bool	Mesh::GetColorPointer(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& params,void* privateParams)
 {
 	CoreModifiableAttribute*	result=0;
 
-	kstl::vector<CoreModifiableAttribute*>::const_iterator ci;
+	std::vector<CoreModifiableAttribute*>::const_iterator ci;
 	for(ci=params.begin();ci!=params.end();++ci)
 	{
 		CoreModifiableAttribute* current=(*ci);
@@ -437,11 +437,11 @@ bool	Mesh::GetColorPointer(CoreModifiable* sender,kstl::vector<CoreModifiableAtt
 	return false;
 }
 
-bool	Mesh::GetNormalPointer(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams)
+bool	Mesh::GetNormalPointer(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& params,void* privateParams)
 {
 	CoreModifiableAttribute*	result=0;
 
-	kstl::vector<CoreModifiableAttribute*>::const_iterator ci;
+	std::vector<CoreModifiableAttribute*>::const_iterator ci;
 	for(ci=params.begin();ci!=params.end();++ci)
 	{
 		CoreModifiableAttribute* current=(*ci);
@@ -461,11 +461,11 @@ bool	Mesh::GetNormalPointer(CoreModifiable* sender,kstl::vector<CoreModifiableAt
 	return false;
 }	
 
-bool	Mesh::GetTexCoordPointer(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams)
+bool	Mesh::GetTexCoordPointer(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& params,void* privateParams)
 {
 	CoreModifiableAttribute*	result=0;
 
-	kstl::vector<CoreModifiableAttribute*>::const_iterator ci;
+	std::vector<CoreModifiableAttribute*>::const_iterator ci;
 	for(ci=params.begin();ci!=params.end();++ci)
 	{
 		CoreModifiableAttribute* current=(*ci);
@@ -500,7 +500,7 @@ void	Mesh::RecomputeNormals()
 	
 	memset(mNormalArray,0,mNormalCount*sizeof(Vector3D));
 	
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 
 	for (it=getItems().begin();it!=getItems().end();++it)
 	{
@@ -560,7 +560,7 @@ void	Mesh::RecomputeNormalsFast()
 	
 	memset(mNormalArray,0,mNormalCount*sizeof(Vector3D));
 	
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 
 	for (it=getItems().begin();it!=getItems().end();++it)
 	{

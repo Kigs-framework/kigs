@@ -8,7 +8,7 @@
     
 IMPLEMENT_CLASS_INFO(HDrawable)
 
-HDrawable::HDrawable(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)
+HDrawable::HDrawable(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)
 {
 }    
     
@@ -27,7 +27,7 @@ void HDrawable::DoDraw(TravState* state)
 	{
 		PreDraw(state); //PreDraw for this
 		// then Draw for sons
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 
 		for (it=getItems().begin();it!=getItems().end();++it)
 		{
@@ -58,7 +58,7 @@ void	HDrawable::UpdateDrawingNeeds()
 		mDrawingNeeds=GetSelfDrawingNeeds();
 		
 		// then ask fathers to update
-		kstl::vector<CoreModifiable*>::const_iterator itfather;
+		std::vector<CoreModifiable*>::const_iterator itfather;
 		
 		for (itfather=GetParents().begin();itfather!=GetParents().end();++itfather)
 		{

@@ -17,7 +17,7 @@ class GyroscopeDevice;
 class CompassDevice;
 
 
-SP<ModuleBase> PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+SP<ModuleBase> PlatformInputModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 
 /*! \defgroup Input Input module
  *  manage keyboards, pad, mouse...
@@ -47,10 +47,10 @@ public:
 		mWindow = w;
 		mButtonCount = 3;
 	
-		mPosX = new kfloat[mButtonCount];
-		mPosY = new kfloat[mButtonCount];
-		mTmpPosX = new kfloat[mButtonCount];
-		mTmpPosY = new kfloat[mButtonCount];
+		mPosX = new float[mButtonCount];
+		mPosY = new float[mButtonCount];
+		mTmpPosX = new float[mButtonCount];
+		mTmpPosY = new float[mButtonCount];
 		
 		for(int i=0; i<mButtonCount; i++)
 		{
@@ -92,12 +92,12 @@ public:
 
 	/**
 	 * \brief	set the position of the click for a given button in the tmpArray
-	 * \fn 		void setPos(int buttonId, kfloat X, kfloat Y)
+	 * \fn 		void setPos(int buttonId, float X, float Y)
 	 * \param	buttonId : id of the given button
 	 * \param	X : position on X axis [0.0, 1.0]
 	 * \param	Y : position on Y axis [0.0, 1.0]
 	 */
-	void setPos(int buttonId, kfloat X, kfloat Y)
+	void setPos(int buttonId, float X, float Y)
 	{
 		mTmpPosX[buttonId] = X;
 		mTmpPosY[buttonId] = Y;
@@ -105,12 +105,12 @@ public:
 
 	/**
 	 * \brief	get the position of the click for a given button
-	 * \fn 		void getPos(int buttonId, kfloat &X, kfloat &Y)
+	 * \fn 		void getPos(int buttonId, float &X, float &Y)
 	 * \param	buttonId : id of the given button
 	 * \param	X : position on X axis [0.0, 1.0] (out param)
 	 * \param	Y : position on Y axis [0.0, 1.0] (out param)
 	 */
-	void getPos(int buttonId, kfloat &X, kfloat &Y)
+	void getPos(int buttonId, float &X, float &Y)
 	{
 		X = mPosX[buttonId];
 		Y = mPosY[buttonId];
@@ -129,13 +129,13 @@ public:
 
 private: 
 	//! array of X position for all button
-	kfloat				*mPosX;
+	float				*mPosX;
 	//! array of Y position for all button
-	kfloat				*mPosY;
+	float				*mPosY;
 	//! array of X position for all button
-	kfloat				*mTmpPosX;
+	float				*mTmpPosX;
 	//! array of Y position for all button
-	kfloat				*mTmpPosY;
+	float				*mTmpPosY;
 
 	//! number of mouse button (default 3)
 	int					mButtonCount;
@@ -161,19 +161,19 @@ public:
 
 	/**
 	 * \brief	constructor
-	 * \fn 		ModuleInput(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		ModuleInput(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	ModuleInput(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	ModuleInput(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/**
 	 * \brief		initialize module 
-	 * \fn			void Init(Core* core, const kstl::vector<CoreModifiableAttribute*>* params);  
+	 * \fn			void Init(Core* core, const std::vector<CoreModifiableAttribute*>* params);  
 	 * \param		core : link to the core, NOT NULL
 	 * \param		params : list of parameters
 	 */
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 	 
 	/**
 	 * \brief		close module 
@@ -243,14 +243,14 @@ public:
 	bool addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
    
    /**
-	 * \fn 		static void WindowClickEvent(CoreModifiable *w, int buttonId, kfloat X, kfloat Y);
+	 * \fn 		static void WindowClickEvent(CoreModifiable *w, int buttonId, float X, float Y);
 	 * \brief	function called when a window get a mouse click
 	 * \param	w : clicked window
 	 * \param	buttonId : Id of the button
 	 * \param	X : position on X axis [0.0, 1.0] 
 	 * \param	Y : position on Y axis [0.0, 1.0] 
 	 */
-	static void WindowClickEvent(CoreModifiable *w, int buttonId, kfloat X, kfloat Y, bool isDown);
+	static void WindowClickEvent(CoreModifiable *w, int buttonId, float X, float Y, bool isDown);
 	
    /**
 	 * \fn 		static void WindowDestroyEvent(CoreModifiable *w);
@@ -260,14 +260,14 @@ public:
 	static void WindowDestroyEvent(CoreModifiable *w);
 
    /**
-	 * \fn 		bool getActiveWindowPos(CoreModifiable *w, int buttonId, kfloat &X, kfloat &Y);
+	 * \fn 		bool getActiveWindowPos(CoreModifiable *w, int buttonId, float &X, float &Y);
 	 * \brief	get the position of a click for a given button on a given window
 	 * \param	w : given window
 	 * \param	buttonId : Id of the button
 	 * \param	X : position on X axis [0.0, 1.0] (out param)
 	 * \param	Y : position on Y axis [0.0, 1.0] (out param)
 	 */
-	bool getActiveWindowPos(CoreModifiable *w, MouseDevice::MOUSE_BUTTONS buttonId, kfloat &X, kfloat &Y);
+	bool getActiveWindowPos(CoreModifiable *w, MouseDevice::MOUSE_BUTTONS buttonId, float &X, float &Y);
 	
    /**
 	 * \fn 		void addWindowClick(WindowClick *w) 
@@ -293,7 +293,7 @@ public:
 		if(mActiveWindows.empty())
 			return 0;
 
-		kstl::list<WindowClick*>::iterator it;
+		std::list<WindowClick*>::iterator it;
 		for(it=mActiveWindows.begin(); it!=mActiveWindows.end(); ++it)
 		{
 			WindowClick* theWC=(WindowClick*)*it;
@@ -304,7 +304,7 @@ public:
 	}
 
 
-	void registerTouchEvent(CoreModifiable* item, const kstl::string& calledMethod,const kstl::string& eventName,unsigned int EmptyFlag);
+	void registerTouchEvent(CoreModifiable* item, const std::string& calledMethod,const std::string& eventName,unsigned int EmptyFlag);
 
 	WRAP_METHODS(registerTouchEvent);
 

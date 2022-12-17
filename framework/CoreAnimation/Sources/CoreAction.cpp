@@ -10,13 +10,13 @@ CoreAction::~CoreAction()
 }
 
 // if paramstring contains -> then extract param name part and return real target (son on current target)
-CMSP CoreAction::checkSubTarget(kstl::string& paramstring)
+CMSP CoreAction::checkSubTarget(std::string& paramstring)
 {
 	size_t found = paramstring.find_last_of("->");
-	if (found != kstl::string::npos)
+	if (found != std::string::npos)
 	{
 		found -= 1;
-		kstl::string CoreModifiablePath = paramstring.substr(0, found);
+		std::string CoreModifiablePath = paramstring.substr(0, found);
 		paramstring = paramstring.substr(found + 2, paramstring.length() - found - 2);
 		auto ptr = mTarget.lock();
 		if (ptr)
@@ -34,7 +34,7 @@ CMSP CoreAction::checkSubTarget(kstl::string& paramstring)
 
 
 // return true if finished
-bool	CoreAction::update(kdouble time)
+bool	CoreAction::update(double time)
 {
 	bool	finished=false;
 	if(mStartTime<0.0)
@@ -78,7 +78,7 @@ void CoreActionWait::init(CoreSequence* sequence,CoreVector* params)
 {
 	mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
-	// kdouble duration,kfloat vStart,kfloat vEnd,unsigned int paramID => 4 params
+	// double duration,float vStart,float vEnd,unsigned int paramID => 4 params
 	if(!(params->size() == 1))
 	{
 		return;

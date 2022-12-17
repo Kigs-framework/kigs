@@ -11,10 +11,10 @@
 IMPLEMENT_CLASS_INFO(ModuleImGui)
 
 
-ImGuiLayer* ModuleImGui::CreateDebugLayer(kfloat bg_opacity)
+ImGuiLayer* ModuleImGui::CreateDebugLayer(float bg_opacity)
 {
 	SP<ImGuiLayer> DEBUG_ImGuiDebugLayer;
-	kstl::vector<CMSP> insts = 	CoreModifiable::GetInstancesByName("ImGuiLayer", "imgui_debug_layer");
+	std::vector<CMSP> insts = 	CoreModifiable::GetInstancesByName("ImGuiLayer", "imgui_debug_layer");
 	if (insts.size())
 		DEBUG_ImGuiDebugLayer = insts[0];
 	else
@@ -37,7 +37,7 @@ ImGuiLayer* ModuleImGui::CreateDebugLayer(kfloat bg_opacity)
 
 void LoadImguiBindings(lua_State*);
 
-void ModuleImGui::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleImGui::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"ImGui",params);
 	DECLARE_FULL_CLASS_INFO(core, ImGuiLayer, ImGuiLayer, ImGui);

@@ -41,11 +41,11 @@ public:
 
 	/**
 	* \brief	constructor
-	* \fn 		KigsBitmap(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	* \fn 		KigsBitmap(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	KigsBitmap(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	KigsBitmap(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	virtual ~KigsBitmap();
 

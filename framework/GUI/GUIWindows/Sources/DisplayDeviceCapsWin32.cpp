@@ -14,7 +14,7 @@ BOOL EnumDisplayMonitorsCallback(HMONITOR monitor, HDC hdc, LPRECT rect, LPARAM 
 	return false;
 }
 
-DisplayDeviceCapsWin32::DisplayDeviceCapsWin32(const kstl::string& name,CLASS_NAME_TREE_ARG) : DisplayDeviceCaps(name,PASS_CLASS_NAME_TREE_ARG)
+DisplayDeviceCapsWin32::DisplayDeviceCapsWin32(const std::string& name,CLASS_NAME_TREE_ARG) : DisplayDeviceCaps(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	// use    EnumDisplaySettings and EnumDisplayDevices
 

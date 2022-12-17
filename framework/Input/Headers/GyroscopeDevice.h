@@ -24,22 +24,22 @@ public:
 	
 	/**
 	 * \brief	constructor
-	 * \fn 		MouseDevice(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		MouseDevice(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	GyroscopeDevice(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	GyroscopeDevice(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 
 	/**
 	 * \brief	retreive current rotation matrix
-	 * \fn 		void			getPos(kfloat* mat )
+	 * \fn 		void			getPos(float* mat )
 	 * \param	posX : position on x axis (in/out param)
 	 * \param	posY : position on y axis (in/out param)
 	 */
-	void			getRotationVelocity(kfloat& X, kfloat& Y, kfloat& Z){ X = mRotationVelocity[0]; Y = mRotationVelocity[1]; Z = mRotationVelocity[2]; }
+	void			getRotationVelocity(float& X, float& Y, float& Z){ X = mRotationVelocity[0]; Y = mRotationVelocity[1]; Z = mRotationVelocity[2]; }
 
-	void			getRotationQuaternion(kfloat& x, kfloat& y, kfloat& z, kfloat& w) {
+	void			getRotationQuaternion(float& x, float& y, float& z, float& w) {
 		x = mRotationQuaternion[0];
 		y = mRotationQuaternion[1];
 		z = mRotationQuaternion[2];

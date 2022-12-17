@@ -20,11 +20,11 @@ public:
 	
 	/**
 	 * \brief	constructor
-	 * \fn 		JoystickDevice(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		JoystickDevice(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	JoystickDevice(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	JoystickDevice(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/**
 	 * \brief	update the joystick
@@ -66,31 +66,31 @@ public:
 
 	/**
 	 * \brief	retreive the x axis state
-	 * \fn 		kfloat				getXAxisState(int index)
+	 * \fn 		float				getXAxisState(int index)
 	 * \param	index : index of the x axis
 	 * \return	state of the x axis
 	 */
-	kfloat				getXAxisState(int index);
+	float				getXAxisState(int index);
 
 	/**
 	 * \brief	retreive the y axis state
-	 * \fn 		kfloat				getYAxisState(int index)
+	 * \fn 		float				getYAxisState(int index)
 	 * \param	index : index of the y axis
 	 * \return	state of the y axis
 	 */
-	kfloat				getYAxisState(int index);
+	float				getYAxisState(int index);
 
 	/**
 	 * \brief	retreive the z axis state
-	 * \fn 		kfloat				getZAxisState(int index)
+	 * \fn 		float				getZAxisState(int index)
 	 * \param	index : index of the z axis
 	 * \return	state of the y axis
 	 */
-	kfloat				getZAxisState(int index);
+	float				getZAxisState(int index);
 
 	/**
 	 * \brief	retreive the POV state
-	 * \fn 		kfloat				getPOVState(int index)
+	 * \fn 		float				getPOVState(int index)
 	 * \param	index : index of POV
 	 * \return	state of POV
 	 */
@@ -101,11 +101,11 @@ public:
 
 	/**
 	 * \brief	retreive the y axis state
-	 * \fn 		kfloat				getYAxisState(int index)
+	 * \fn 		float				getYAxisState(int index)
 	 * \param	index : index of the y axis
 	 * \return	state of the y axis
 	 */
-	kfloat				getRorationState(int index)
+	float				getRorationState(int index)
 	{
 		return GetItemfState(mButtonsCount+mAxisCount+mPovCount+index);
 	}

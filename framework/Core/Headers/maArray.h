@@ -8,9 +8,9 @@
 */
 
 // set array values from braced string like : {1.0,0.0,2.0}
-template<typename T> bool CoreConvertString2Array(const kstl::string &stringValue, T* const arrayValue, u32 arrayNbElements)
+template<typename T> bool CoreConvertString2Array(const std::string &stringValue, T* const arrayValue, u32 arrayNbElements)
 {
-	kstl::string::size_type posToParse = stringValue.find('{', 0);
+	std::string::size_type posToParse = stringValue.find('{', 0);
 	bool hasBraces = (posToParse == 0);
 	if (hasBraces) posToParse++;
 	for (u32 i = 0; i<arrayNbElements; i++)
@@ -20,19 +20,19 @@ template<typename T> bool CoreConvertString2Array(const kstl::string &stringValu
 		if (posToParse >= stringValue.size()) return false;
 
 		// search next separator : ',' or '}'
-		kstl::string::size_type nextPosToParse = 0;
+		std::string::size_type nextPosToParse = 0;
 		nextPosToParse = stringValue.find(',', posToParse);
 
-		if (nextPosToParse == kstl::string::npos)
+		if (nextPosToParse == std::string::npos)
 		{
 			nextPosToParse = stringValue.find('}', posToParse);
 		}
 
-		if (nextPosToParse == kstl::string::npos) // next separator not found, go to the end of the string
+		if (nextPosToParse == std::string::npos) // next separator not found, go to the end of the string
 		{
 			nextPosToParse = stringValue.size();
 		}
-		kstl::string stringToConvert;
+		std::string stringToConvert;
 		stringToConvert.assign(stringValue, posToParse, nextPosToParse - posToParse);
 		if (!CoreConvertString2Value<T>(stringToConvert, arrayValue[i])) return false;
 		posToParse = nextPosToParse + 1;
@@ -40,7 +40,7 @@ template<typename T> bool CoreConvertString2Array(const kstl::string &stringValu
 	return true;
 }
 
-template<typename T> bool CoreConvertArray2String(kstl::string& stringValue, const T* arrayValue, u32 arrayNbElements)
+template<typename T> bool CoreConvertArray2String(std::string& stringValue, const T* arrayValue, u32 arrayNbElements)
 {
 	if (arrayNbElements)
 	{
@@ -48,7 +48,7 @@ template<typename T> bool CoreConvertArray2String(kstl::string& stringValue, con
 		for (u32 i = 0; i<arrayNbElements; i++)
 		{
 			if (i != 0) stringValue += ",";
-			kstl::string value;
+			std::string value;
 			if (!CoreConvertValue2String<T>(value, arrayValue[i])) return false;
 			stringValue += value;
 		}
@@ -66,7 +66,7 @@ template<typename T> void CoreCopyArray(T* const destArray, const T* srcArray, u
 
 // specialization for string
 template<>
-inline void CoreCopyArray<kstl::string>(kstl::string* const destArray, const kstl::string* srcArray, u32 arrayNbElements)
+inline void CoreCopyArray<std::string>(std::string* const destArray, const std::string* srcArray, u32 arrayNbElements)
 {
 	for (u32 i = 0; i<arrayNbElements; i++) destArray[i] = srcArray[i];
 }
@@ -81,10 +81,10 @@ void CoreCopyCastArray(Tdest* const destArray, const Tsrc* srcArray, u32 arrayNb
 
 // specialized
 template<>
-inline void CoreCopyCastArray<bool, kfloat>(bool* const destArray, const kfloat* srcArray, u32 arrayNbElements)
+inline void CoreCopyCastArray<bool, float>(bool* const destArray, const float* srcArray, u32 arrayNbElements)
 {
 	for (u32 elem = 0; elem<arrayNbElements; elem++)
-		destArray[elem] = (srcArray[elem] != (kfloat)0);
+		destArray[elem] = (srcArray[elem] != (float)0);
 
 }
 
@@ -97,10 +97,10 @@ inline void CoreCopyCastArray<bool, s32>(bool* const destArray, const s32* srcAr
 }
 
 template<>
-inline void CoreCopyCastArray<kfloat, bool>(kfloat* const destArray, const bool* srcArray, u32 arrayNbElements)
+inline void CoreCopyCastArray<float, bool>(float* const destArray, const bool* srcArray, u32 arrayNbElements)
 {
 	for (u32 elem = 0; elem<arrayNbElements; elem++)
-		destArray[elem] = (kfloat)(srcArray[elem] ? 1 : 0);
+		destArray[elem] = (float)(srcArray[elem] ? 1 : 0);
 
 }
 
@@ -252,14 +252,14 @@ public:
 	virtual bool getValue(u16& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u16)tmpValue; return true; }
 	virtual bool getValue(u32& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u32)tmpValue; return true; }
 	virtual bool getValue(u64& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u64)tmpValue; return true; }
-	virtual bool getValue(kfloat& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (kfloat)tmpValue; return true; }
-	virtual bool getValue(kdouble& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (kdouble)tmpValue; return true; }
+	virtual bool getValue(float& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (float)tmpValue; return true; }
+	virtual bool getValue(double& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (double)tmpValue; return true; }
 
-	virtual bool getValue(kstl::string& value) const override { return CoreConvertArray2String<T>(value, getConstArrayBuffer(), getNbArrayElements()); }
+	virtual bool getValue(std::string& value) const override { return CoreConvertArray2String<T>(value, getConstArrayBuffer(), getNbArrayElements()); }
 
-	virtual bool getValue(Point2D& value) const override { if (nbColumns < 2) return false; Point2D tmpValue((kfloat)at(0, 0), (kfloat)at(0, 1)); CALL_GETMODIFIER(notificationLevel, tmpValue); value = tmpValue; return true; }
-	virtual bool getValue(Point3D& value) const override { if (nbColumns < 3) return false; Point3D tmpValue((kfloat)at(0, 0), (kfloat)at(0, 1), (kfloat)at(0, 2)); CALL_GETMODIFIER(notificationLevel, tmpValue); value = tmpValue; return true; }
-	virtual bool getValue(Vector4D& value) const override { if (nbColumns < 4) return false; Vector4D tmpValue((kfloat)at(0, 0), (kfloat)at(0, 1), (kfloat)at(0, 2), (kfloat)at(0, 3)); CALL_GETMODIFIER(notificationLevel, tmpValue); value = tmpValue; return true; }
+	virtual bool getValue(Point2D& value) const override { if (nbColumns < 2) return false; Point2D tmpValue((float)at(0, 0), (float)at(0, 1)); CALL_GETMODIFIER(notificationLevel, tmpValue); value = tmpValue; return true; }
+	virtual bool getValue(Point3D& value) const override { if (nbColumns < 3) return false; Point3D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2)); CALL_GETMODIFIER(notificationLevel, tmpValue); value = tmpValue; return true; }
+	virtual bool getValue(Vector4D& value) const override { if (nbColumns < 4) return false; Vector4D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2), (float)at(0, 3)); CALL_GETMODIFIER(notificationLevel, tmpValue); value = tmpValue; return true; }
 
 	using CoreModifiableAttributeData<ArrayType>::setValue;
 
@@ -345,8 +345,8 @@ public:
 
 #undef DECLARE_SET_VALUE_BROADCAST
 
-	virtual bool setValue(const char* value) override { kstl::string localstr(value); return setValue(localstr); }
-	virtual bool setValue(const kstl::string& value) override
+	virtual bool setValue(const char* value) override { std::string localstr(value); return setValue(localstr); }
+	virtual bool setValue(const std::string& value) override
 	{
 		if (isReadOnly()) { return false; }
 		if (CoreConvertString2Array<T>(value, getArrayBuffer(), getNbArrayElements()))
@@ -447,7 +447,7 @@ public:
 		return true;
 	}
 
-	virtual bool setArrayElementValue(const kstl::string &value, u32 line, u32 column) override
+	virtual bool setArrayElementValue(const std::string &value, u32 line, u32 column) override
 	{
 		if (isReadOnly()) { return false; }
 		if (line >= nbLines || column >= nbColumns) return false;
@@ -488,7 +488,7 @@ public:
 		return true;
 	}
 
-	virtual bool getArrayElementValue(kstl::string& value, u32 line, u32 column) const override
+	virtual bool getArrayElementValue(std::string& value, u32 line, u32 column) const override
 	{
 		if (line >= nbLines || column >= nbColumns) return false;
 		return CoreConvertValue2String<T>(value, at(line, column));
@@ -499,13 +499,13 @@ public:
 	
 };
 
-using maMatrix22DF = maArrayHeritage<0, kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2, 2>;
-using maMatrix33DF = maArrayHeritage<0, kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3, 3>;
+using maMatrix22DF = maArrayHeritage<0, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2, 2>;
+using maMatrix33DF = maArrayHeritage<0, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3, 3>;
 
-using maVect2DF = maArrayHeritage<0, kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 2>;
-using maVect3DF = maArrayHeritage<0, kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 3>;
-using maVect4DF = maArrayHeritage<0, kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 4>;
-using maVect16DF = maArrayHeritage<0, kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 16>;
+using maVect2DF = maArrayHeritage<0, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 2>;
+using maVect3DF = maArrayHeritage<0, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 3>;
+using maVect4DF = maArrayHeritage<0, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 4>;
+using maVect16DF = maArrayHeritage<0, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 16>;
 
 using maVect2DI = maArrayHeritage<0, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 2>;
 using maVect3DI = maArrayHeritage<0, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 3>;
@@ -664,10 +664,10 @@ template<typename element_type, CoreModifiable::ATTRIBUTE_TYPE attribute_type, s
 using maVector = maArrayHeritage<0, element_type, attribute_type, 1, nbElements>;
 
 /*
-typedef maVector<kfloat, CoreModifiable::FLOAT, 2, Point2D> maVect2DF;
-typedef maVector<kfloat, CoreModifiable::FLOAT, 3, Point3D> maVect3DF;
-typedef maVector<kfloat, CoreModifiable::FLOAT, 4, Vector4D> maVect4DF;
-typedef maVector<kfloat, CoreModifiable::FLOAT, 16> maVect16DF;
+typedef maVector<float, CoreModifiable::FLOAT, 2, Point2D> maVect2DF;
+typedef maVector<float, CoreModifiable::FLOAT, 3, Point3D> maVect3DF;
+typedef maVector<float, CoreModifiable::FLOAT, 4, Vector4D> maVect4DF;
+typedef maVector<float, CoreModifiable::FLOAT, 16> maVect16DF;
 
 typedef maVector<s32, CoreModifiable::INT, 2> maVect2DI;
 typedef maVector<s32, CoreModifiable::INT, 3> maVect3DI;

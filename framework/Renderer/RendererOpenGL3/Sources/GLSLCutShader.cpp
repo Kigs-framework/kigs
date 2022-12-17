@@ -16,9 +16,9 @@ void API3DCutShader::NotifyUpdate(unsigned int labelid)
 }
 
 
-kstl::string API3DCutShader::GetVertexShader()
+std::string API3DCutShader::GetVertexShader()
 {
-	kstl::string result = API3DGenericMeshShader::GetDefaultVertexShaderAttributes();
+	std::string result = API3DGenericMeshShader::GetDefaultVertexShaderAttributes();
 	result += API3DGenericMeshShader::GetDefaultVertexShaderUniforms();
 	result += API3DGenericMeshShader::GetDefaultVaryings();
 
@@ -62,9 +62,9 @@ FragPos = vec3(model_matrix * vec4(attrib_vertex, 1.0));
 	return result;
 }
 
-kstl::string API3DCutShader::GetFragmentShader()
+std::string API3DCutShader::GetFragmentShader()
 {
-	kstl::string result = API3DGenericMeshShader::GetDefaultVaryings();
+	std::string result = API3DGenericMeshShader::GetDefaultVaryings();
 	result += API3DGenericMeshShader::GetDefaultFragmentShaderUniforms();
 	result += API3DGenericMeshShader::GetDefaultLightingFunctions();
 

@@ -26,11 +26,11 @@ public:
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	UISlider(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UISlider(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~UISlider();
 
 	Texture*		GetTexture();
-	void			ChangeTexture(kstl::string texturename, kstl::string overtexturename = "", kstl::string downtexturename = "");
+	void			ChangeTexture(std::string texturename, std::string overtexturename = "", std::string downtexturename = "");
 	bool			isPressed() const { return mIsDown; }
 	void			ForcedChangeState(bool isdown) { mIsDown = isdown; }
 	void			ForcedRatio(unsigned int value);

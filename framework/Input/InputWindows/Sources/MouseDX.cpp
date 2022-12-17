@@ -32,7 +32,7 @@ BOOL CALLBACK EnumMouseObjectsCallback( const DIDEVICEOBJECTINSTANCEA* instancea
 
 
 
-MouseDX::MouseDX(const kstl::string& name,CLASS_NAME_TREE_ARG) : MouseDevice(name,PASS_CLASS_NAME_TREE_ARG)
+MouseDX::MouseDX(const std::string& name,CLASS_NAME_TREE_ARG) : MouseDevice(name,PASS_CLASS_NAME_TREE_ARG)
 {
     mDirectInputMouse=0;
 }
@@ -86,16 +86,16 @@ void	MouseDX::UpdateDevice()
 	int currentDevice=0;
 
 	// posX and posY
-	mDeviceItems[currentDevice++]->getState()->SetValue((kfloat)dims2.lX);
-	mDeviceItems[currentDevice++]->getState()->SetValue((kfloat)dims2.lY);
+	mDeviceItems[currentDevice++]->getState()->SetValue((float)dims2.lX);
+	mDeviceItems[currentDevice++]->getState()->SetValue((float)dims2.lY);
 	
 	// wheel
 	if(mWheelCount)
 	{
-		mDeviceItems[currentDevice++]->getState()->SetValue((kfloat)dims2.lZ);
+		mDeviceItems[currentDevice++]->getState()->SetValue((float)dims2.lZ);
 		if(mDZ != mPreviousDZ)
 			mPreviousDZ = mDZ;
-		mDZ += (kfloat)dims2.lZ;
+		mDZ += (float)dims2.lZ;
 	}
 
 	// buttons
@@ -111,10 +111,10 @@ void	MouseDX::UpdateDevice()
 	POINT cursorPos;
 	GetCursorPos(&cursorPos);
 
-	mDX = (kfloat)cursorPos.x - mPosX;
-	mDY = (kfloat)cursorPos.y - mPosY;
-	mPosX = (kfloat)cursorPos.x;
-	mPosY = (kfloat)cursorPos.y;
+	mDX = (float)cursorPos.x - mPosX;
+	mDY = (float)cursorPos.y - mPosY;
+	mPosX = (float)cursorPos.x;
+	mPosY = (float)cursorPos.y;
 }
 
 void	MouseDX::DoInputDeviceDescription()
@@ -127,11 +127,11 @@ void	MouseDX::DoInputDeviceDescription()
 	
 	unsigned int currentDevice=0;
 
-	devicearray[currentDevice++]=new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0f)));
-	devicearray[currentDevice++]=new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0f)));
+	devicearray[currentDevice++]=new DeviceItem(DeviceItemState<float>(0.0f));
+	devicearray[currentDevice++]=new DeviceItem(DeviceItemState<float>(0.0f));
 
 	if(mWheelCount)
-		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0f)));
+		devicearray[currentDevice++]=new DeviceItem(DeviceItemState<float>(0.0f));
 
 	int currentButton;
 	for(currentButton=0;currentButton<mButtonsCount;currentButton++)

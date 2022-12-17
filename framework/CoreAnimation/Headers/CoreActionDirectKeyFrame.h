@@ -79,15 +79,15 @@ public:
 	{
 		this->mTarget = sequence->getTarget();
 
-		kstl::string readstring;
+		std::string readstring;
 		(*params)[0]->getValue(readstring);
 		this->mTarget = this->checkSubTarget(readstring);
 
 		this->mParamID = CharToID::GetID(readstring);
 
 		// stock in list before creating the final array
-		kstl::vector<dataType>	L_values;
-		kstl::vector<kdouble>	L_times;
+		std::vector<dataType>	L_values;
+		std::vector<double>	L_times;
 		float readfloat;
 		dataType	readPoint;
 
@@ -110,7 +110,7 @@ public:
 		this->mDuration = L_times[L_times.size() - 1];
 
 		this->mKeyFrameArray = new dataType[L_values.size()];
-		this->mTimeArray = new kdouble[L_values.size()];
+		this->mTimeArray = new double[L_values.size()];
 
 		for (i = 0; i < L_values.size(); i++)
 		{

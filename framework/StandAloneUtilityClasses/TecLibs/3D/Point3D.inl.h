@@ -187,7 +187,7 @@ Point3D& Point3D::operator += (const Float& fValue)
 
 Point3D& Point3D::operator /= ( const Float& fValue )
 {
-	const Float invfValue = KFLOAT_ONE / fValue;
+	const Float invfValue = 1.0f / fValue;
     x *= invfValue;
     y *= invfValue;
     z *= invfValue;
@@ -279,17 +279,17 @@ Float SegmentDist(const Point3D& Pt1, const Point3D& Pt2,const Point3D& Pt3, con
     Float    tc, tN, tD = D;      // tc = tN / tD, default tD = D >= 0
 	
     // compute the line parameters of the two closest points
-    if (D < KFLOAT_CONST(SMALL_NUM)) { // the lines are almost parallel
-        sN = KFLOAT_CONST(0.0f);        // force using point P0 on segment S1
-        sD = KFLOAT_CONST(1.0f);        // to prevent possible division by 0.0 later
+    if (D < SMALL_NUM) { // the lines are almost parallel
+        sN = 0.0f;        // force using point P0 on segment S1
+        sD = 1.0f;        // to prevent possible division by 0.0 later
         tN = e;
         tD = c;
     }
     else {                // get the closest points on the infinite lines
         sN = (b*e - c*d);
         tN = (a*e - b*d);
-        if (sN < KFLOAT_CONST(0.0f)) {       // sc < 0 => the s=0 edge is visible
-            sN = KFLOAT_CONST(0.0f);
+        if (sN < 0.0f) {       // sc < 0 => the s=0 edge is visible
+            sN = 0.0f;
             tN = e;
             tD = c;
         }
@@ -300,11 +300,11 @@ Float SegmentDist(const Point3D& Pt1, const Point3D& Pt2,const Point3D& Pt3, con
         }
     }
 	
-    if (tN < KFLOAT_CONST(0.0f)) {           // tc < 0 => the t=0 edge is visible
-        tN = KFLOAT_CONST(0.0f);
+    if (tN < 0.0f) {           // tc < 0 => the t=0 edge is visible
+        tN = 0.0f;
         // recompute sc for this edge
-        if (-d < KFLOAT_CONST(0.0f))
-            sN = KFLOAT_CONST(0.0f);
+        if (-d < 0.0f)
+            sN = 0.0f;
         else if (-d > a)
             sN = sD;
         else {
@@ -315,8 +315,8 @@ Float SegmentDist(const Point3D& Pt1, const Point3D& Pt2,const Point3D& Pt3, con
     else if (tN > tD) {      // tc > 1 => the t=1 edge is visible
         tN = tD;
         // recompute sc for this edge
-        if ((-d + b) < KFLOAT_CONST(0.0f))
-            sN = KFLOAT_CONST(0.0f);
+        if ((-d + b) < 0.0f)
+            sN = 0.0f;
         else if ((-d + b) > a)
             sN = sD;
         else {
@@ -325,8 +325,8 @@ Float SegmentDist(const Point3D& Pt1, const Point3D& Pt2,const Point3D& Pt3, con
         }
     }
     // finally do the division to get sc and tc
-    sc = (absF(sN) < KFLOAT_CONST(SMALL_NUM) ? KFLOAT_CONST(0.0f) : sN / sD);
-    tc = (absF(tN) < KFLOAT_CONST(SMALL_NUM) ? KFLOAT_CONST(0.0f) : tN / tD);
+    sc = (absF(sN) < SMALL_NUM ? 0.0f : sN / sD);
+    tc = (absF(tN) < SMALL_NUM ? 0.0f : tN / tD);
 	
     // get the difference of the two closest points
     Vector3D   dP = w + (sc * u) - (tc * v);  // = S1(sc) - S2(tc)
@@ -342,7 +342,7 @@ Float PointToSegmentDist(const Point3D& Pt, const Point3D& Pt1,const Point3D& Pt
 	
     Float c1 = Dot(w,v);
 	insideSegment=false;
-    if ( c1 <= KFLOAT_CONST(0.0f) )
+    if ( c1 <= 0.0f )
 	{
 		nearest=Pt1;
         return Dist(Pt, Pt1);
@@ -369,9 +369,9 @@ Float PointToSegmentDist(const Point3D& Pt, const Point3D& Pt1,const Point3D& Pt
 // +---------
 Point3D Mid( const Point3D& P , const Point3D& Q )
 {
-    return Point3D( (P.x + Q.x) * KFLOAT_CONST(0.5f),
-				   (P.y + Q.y) * KFLOAT_CONST(0.5f),
-				   (P.z + Q.z) * KFLOAT_CONST(0.5f) );
+    return Point3D( (P.x + Q.x) * 0.5f,
+				   (P.y + Q.y) * 0.5f,
+				   (P.z + Q.z) * 0.5f );
 }
 
 Point3D Bary( const Float& a , const Point3D& P , const Float& b , const Point3D& Q )
@@ -389,9 +389,9 @@ Point3D Bary( const Float& a , const Point3D& P , const Float& b , const Point3D
 void Point3D::Normalize( void )
 {
     Float tmp = Norm( *this );
-    if (tmp != KFLOAT_CONST(0.0f))
+    if (tmp != 0.0f)
 	{
-		tmp = KFLOAT_CONST(1.0f)/tmp;
+		tmp = 1.0f/tmp;
 		x *= tmp;
 		y *= tmp;
 		z *= tmp;
@@ -409,7 +409,7 @@ inline Point3D Point3D::Normalized( void ) const
 
 inline Point3D Lerp( const Point3D& P , const Point3D& Q, const Float& t )
 {
-	Float s = KFLOAT_CONST(1.0f) - t;
+	Float s = 1.0f - t;
     return Point3D( (s * P.x) + (t * Q.x),
 				   (s * P.y) + (t * Q.y),
 				   (s * P.z) + (t * Q.z) );

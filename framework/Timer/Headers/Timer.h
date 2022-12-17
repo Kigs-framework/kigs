@@ -64,7 +64,7 @@ public:
 	virtual void SetState(State newstate);
 
 	//! get current date as string, using given format
-	void GetDate(kstl::string& a_value, DateFormat a_format) const;
+	void GetDate(std::string& a_value, DateFormat a_format) const;
 	//! get all values for the current date
 	void GetDate(unsigned int& a_year, unsigned int& a_month, unsigned int& a_day, unsigned int& a_hour, unsigned int& a_min, unsigned int& a_sec) const;
 	

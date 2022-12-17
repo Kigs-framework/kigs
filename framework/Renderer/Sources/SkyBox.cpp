@@ -15,9 +15,9 @@ IMPLEMENT_CLASS_INFO(SkyBox)
 // 5 = ZMAX	= TOP
 // 6 = ZMIN = BOTTOM
 
-SkyBox::SkyBox(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
-mSize(*this,false,LABEL_AND_ID(Size),KFLOAT_CONST(5000.0f)),
-mFileName(*this,false,LABEL_AND_ID(FileName),"SkyBox.tga")
+SkyBox::SkyBox(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
+mSize(*this,false,"Size",5000.0f),
+mFileName(*this,false,"FileName","SkyBox.tga")
 , mTexture(nullptr)
 {
 	
@@ -35,10 +35,10 @@ void SkyBox::InitModifiable()
 	auto textureManager = KigsCore::Singleton<TextureFileManager>();
 
 	mTexture = textureManager->GetTexture(mFileName, false);
-	mTexture->setValue(LABEL_TO_ID(ForcePow2),true);
-	mTexture->setValue(LABEL_TO_ID(TextureType),Texture::TEXTURE_CUBE_MAP);
+	mTexture->setValue("ForcePow2",true);
+	mTexture->setValue("TextureType",Texture::TEXTURE_CUBE_MAP);
 	mTexture->Init();
 
-	mBBoxMin.Set(KFLOAT_CONST_MIN, KFLOAT_CONST_MIN, KFLOAT_CONST_MIN); 
-	mBBoxMax.Set(KFLOAT_CONST_MAX, KFLOAT_CONST_MAX, KFLOAT_CONST_MAX);
+	mBBoxMin.Set((-FLT_MAX), (-FLT_MAX), (-FLT_MAX)); 
+	mBBoxMax.Set(FLT_MAX, FLT_MAX, FLT_MAX);
 }

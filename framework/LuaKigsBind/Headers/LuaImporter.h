@@ -34,7 +34,7 @@ public:
 	DECLARE_INLINE_CONSTRUCTOR(LuaImporter) {}
 
 
-	static int Import(const kstl::string& fileName, kstl::vector<CoreModifiable*>& root, CoreModifiable* parent = nullptr);
+	static int Import(const std::string& fileName, std::vector<CoreModifiable*>& root, CoreModifiable* parent = nullptr);
 
 	virtual ~LuaImporter();
 
@@ -45,15 +45,15 @@ protected:
 	struct ConnectParam
 	{
 		CoreModifiable* currentNode;
-		kstl::string signal, slot, sender, receiver;
+		std::string signal, slot, sender, receiver;
 	};
 
 	struct ImportStruct
 	{
-		kstl::vector<CoreModifiable*> rootObj;
-		kstl::vector<CMSP> loaded;
-		kstl::vector<PostImportCallback> CBList;
-		kstl::vector<ConnectParam> connects;
+		std::vector<CoreModifiable*> rootObj;
+		std::vector<CMSP> loaded;
+		std::vector<PostImportCallback> CBList;
+		std::vector<ConnectParam> connects;
 		bool noinit = false;
 	};
 

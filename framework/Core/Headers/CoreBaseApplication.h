@@ -3,7 +3,7 @@
 
 #include "CoreModifiable.h"
 #include "Platform/Core/PlatformBaseApplication.h"
-#include "kstlvector.h"
+#include <vector>
 #include "kstlstring.h"
 #include "Timer.h"
 #include "MiniInstanceFactory.h"

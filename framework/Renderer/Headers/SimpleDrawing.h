@@ -23,7 +23,7 @@ public:
 
 	/**
 	 * \brief	constructor
-	 * \fn 		SimpleDrawing(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		SimpleDrawing(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
@@ -45,11 +45,11 @@ public:
 	
 	/**
 	 * \brief	update the bounding box
-	 * \fn 		virtual bool	BBoxUpdate(kdouble)
-	 * \param	kdouble : world time
+	 * \fn 		virtual bool	BBoxUpdate(double)
+	 * \param	double : world time
 	 * \return	TRUE because has a bounding box
 	 */
-	bool	BBoxUpdate(kdouble/* time */) override {return true;}
+	bool	BBoxUpdate(double/* time */) override {return true;}
 
 	/**
 	 * \brief	retreive the bounding box of the bitmap (point min and point max)
@@ -61,28 +61,28 @@ public:
 
 	/**
 	 * \brief	set the color
-	 * \fn 		void setColor(kfloat R, kfloat G, kfloat B);
+	 * \fn 		void setColor(float R, float G, float B);
 	 * \param	R : red value (0 to 1)
 	 * \param	G : green value (0 to 1)
 	 * \param	B : blue value (0 to 1)
 	 */
-	void setColor(kfloat R, kfloat G, kfloat B);
+	void setColor(float R, float G, float B);
 	/**
 	 * \brief	set the alpha value
-	 * \fn 		void setAlpha(kfloat A);
+	 * \fn 		void setAlpha(float A);
 	 * \param	A : alpha value (0 to 1)
 	 */
-	void setAlpha(kfloat A);
+	void setAlpha(float A);
 
 	/**
 	 * \brief	set the color
-	 * \fn 		void setColor(kfloat R, kfloat G, kfloat B, kfloat A);
+	 * \fn 		void setColor(float R, float G, float B, float A);
 	 * \param	R : red value (0 to 1)
 	 * \param	G : green value (0 to 1)
 	 * \param	B : blue value (0 to 1)
 	 * \param	A : alpha value (0 to 1)
 	 */
-	void setColor(kfloat R, kfloat G, kfloat B, kfloat A);
+	void setColor(float R, float G, float B, float A);
 
 	/**
 	 * \brief	add a vertex in the vertice list at the specified index
@@ -102,7 +102,7 @@ public:
 
 	/**
 	 * \brief	set the SimpleDrawing as a rectangle
-	 * \fn 		void setToRectangle(const kfloat &w, const kfloat &h, bool bWire, char cNormal = 'X');
+	 * \fn 		void setToRectangle(const float &w, const float &h, bool bWire, char cNormal = 'X');
 	 * \param	w : width of the rectangle
 	 * \param	h : height of the rectangle
 	 * \param	bWire : draw in wire or plain mode
@@ -130,21 +130,21 @@ public:
 	 * </li>
 	 * </ul>
 	 */
-	void setToRectangle(const kfloat &w, const kfloat &h, bool bWire, char cNormal = 'X');
+	void setToRectangle(const float &w, const float &h, bool bWire, char cNormal = 'X');
 
 	/**
 	 * \brief	set the SimpleDrawing as a box
-	 * \fn 		void setToBox(const kfloat &w, const kfloat &h, const kfloat &d, bool bWire);
+	 * \fn 		void setToBox(const float &w, const float &h, const float &d, bool bWire);
 	 * \param	w : width of the rectangle
 	 * \param	h : height of the rectangle
 	 * \param	d : depth of the rectangle
 	 * \param	bWire : draw in wire or plain mode
 	 */
-	void setToBox(const kfloat &w, const kfloat &h, const kfloat &d, bool bWire);
+	void setToBox(const float &w, const float &h, const float &d, bool bWire);
 	
 	/**
 	 * \brief	set the SimpleDrawing as a disk (with (0,0,0) as center)
-	 * \fn 		void setToDisk(const kfloat &r, const int &precision, bool bWire,  char cNormal = 'X');
+	 * \fn 		void setToDisk(const float &r, const int &precision, bool bWire,  char cNormal = 'X');
 	 * \param	r : size of the disk
 	 * \param	precision : precision of the disk
 	 * \param	bWire : draw in wire or plain mode
@@ -172,7 +172,7 @@ public:
 	 * </li>
 	 * </ul>
 	 */
-	void setToDisk(const kfloat &r, const int &precision, bool bWire,  char cNormal = 'X');
+	void setToDisk(const float &r, const int &precision, bool bWire,  char cNormal = 'X');
 protected:
 	/**
 	 * \brief	prepare the drawing

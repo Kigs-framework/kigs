@@ -15,10 +15,10 @@
 #endif
 
 #ifdef KEEP_NAME_AS_STRING
-#define DECLARE_GetRuntimeType(currentClass) virtual const kstl::string& GetRuntimeType() const override {return currentClass::mRuntimeType._id_name;} 
-#define DECLARE_getExactType(currentClass) virtual const kstl::string& getExactType() const override {return currentClass::mClassID._id_name;}
-#define DECLARE_GetRuntimeTypeBase(currentClass) virtual const kstl::string& GetRuntimeType() const {return currentClass::mRuntimeType._id_name;} 
-#define DECLARE_getExactTypeBase(currentClass) virtual const kstl::string& getExactType() const {return currentClass::mClassID._id_name;}
+#define DECLARE_GetRuntimeType(currentClass) virtual const std::string& GetRuntimeType() const override {return currentClass::mRuntimeType._id_name;} 
+#define DECLARE_getExactType(currentClass) virtual const std::string& getExactType() const override {return currentClass::mClassID._id_name;}
+#define DECLARE_GetRuntimeTypeBase(currentClass) virtual const std::string& GetRuntimeType() const {return currentClass::mRuntimeType._id_name;} 
+#define DECLARE_getExactTypeBase(currentClass) virtual const std::string& getExactType() const {return currentClass::mClassID._id_name;}
 #else
 #define DECLARE_GetRuntimeType(currentClass) virtual const KigsID& GetRuntimeType() const override {return currentClass::mRuntimeType;} 
 #define DECLARE_getExactType(currentClass) virtual const KigsID& getExactType() const override {return currentClass::mClassID;}
@@ -103,10 +103,10 @@ inline DEFINE_METHOD(DynamicMethod##name,name)
 public:\
 static const KigsID mClassID; \
 static KigsID mRuntimeType; \
-typedef bool (currentClass::*ModifiableMethod)(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>&,void* privateParams); \
+typedef bool (currentClass::*ModifiableMethod)(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>&,void* privateParams); \
 typedef currentClass CurrentClassType; \
 typedef parentClass ParentClassType; \
-bool Call(CoreModifiable::ModifiableMethod method,CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& attr,void* privateParams) override\
+bool Call(CoreModifiable::ModifiableMethod method,CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& attr,void* privateParams) override\
 {\
 	currentClass::ModifiableMethod currentmethod=static_cast<currentClass::ModifiableMethod>(method);\
 	return (this->*(currentmethod))(sender,attr,privateParams);\
@@ -128,9 +128,9 @@ static currentClass* Get(const std::string &name)\
 }\
 public:
 
-//static void GetClassNameTree(kstl::vector<KigsID>& classNameTree) {parentClass::GetClassNameTree(classNameTree); classNameTree.push_back(currentClass::mClassID);}\
+//static void GetClassNameTree(std::vector<KigsID>& classNameTree) {parentClass::GetClassNameTree(classNameTree); classNameTree.push_back(currentClass::mClassID);}\
 
-//virtual void	callConstructor(RefCountedBaseClass* tocall,const kstl::string& instancename) const { ((currentClass*)tocall)->currentClass::currentClass(instancename);	};
+//virtual void	callConstructor(RefCountedBaseClass* tocall,const std::string& instancename) const { ((currentClass*)tocall)->currentClass::currentClass(instancename);	};
 
 //friend class maMethod;
 
@@ -142,7 +142,7 @@ BASE_DECLARE_ABSTRACT_CLASS_INFO(currentClass,parentClass,moduleManagerName)
 
 #define DECLARE_CLASS_INFO(currentClass,parentClass,moduleManagerName) \
 DECLARE_ABSTRACT_CLASS_INFO(currentClass,parentClass,moduleManagerName) \
-static CMSP CreateInstance(const kstl::string& instancename, kstl::vector<CoreModifiableAttribute*>* args=nullptr) \
+static CMSP CreateInstance(const std::string& instancename, std::vector<CoreModifiableAttribute*>* args=nullptr) \
 {   \
 	auto instance = std::make_shared<currentClass>(instancename, args); \
 	instance->RegisterToCore();\
@@ -217,10 +217,10 @@ DECLARE_CLASS_INFO_WITHOUT_FACTORY(currentClass,#returnclassname)
 #define DECLARE_CLASS_ALIAS_AND_UPGRADE(core,alias,baseclass,...) \
 {core->GetInstanceFactory()->addAlias(#alias,{#baseclass FOR_EACH(ADD_ALIAS,__VA_ARGS__)});}
 
-#define DECLARE_CONSTRUCTOR(currentClass) currentClass(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-#define DECLARE_INLINE_CONSTRUCTOR(currentClass) currentClass(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG) : currentClass::ParentClassType(name, PASS_CLASS_NAME_TREE_ARG)
+#define DECLARE_CONSTRUCTOR(currentClass) currentClass(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+#define DECLARE_INLINE_CONSTRUCTOR(currentClass) currentClass(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG) : currentClass::ParentClassType(name, PASS_CLASS_NAME_TREE_ARG)
 
-#define IMPLEMENT_CONSTRUCTOR(currentClass) currentClass::currentClass(const kstl::string& name, CLASS_NAME_TREE_ARG) : currentClass::ParentClassType(name, PASS_CLASS_NAME_TREE_ARG)
+#define IMPLEMENT_CONSTRUCTOR(currentClass) currentClass::currentClass(const std::string& name, CLASS_NAME_TREE_ARG) : currentClass::ParentClassType(name, PASS_CLASS_NAME_TREE_ARG)
 
 #define BASE_ATTRIBUTE(name, ...) {*this, false, #name, __VA_ARGS__ }
 #define INIT_ATTRIBUTE(name, ...) {*this, true, #name, __VA_ARGS__ }

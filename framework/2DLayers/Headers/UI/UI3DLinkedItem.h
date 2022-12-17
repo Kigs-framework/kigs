@@ -27,7 +27,7 @@ public:
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	UI3DLinkedItem(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UI3DLinkedItem(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 protected:
 	void InitModifiable() override;

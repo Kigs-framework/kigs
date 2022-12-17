@@ -154,9 +154,9 @@ public:
 	
 
 	//! retreive attribute label and coremodifiable path in a full path. Format is corepath->attributelabel
-	static void ParseAttributePath(const kstl::string &path, kstl::string & CoreModifiablePath, kstl::string & CoreModifiableAttributeLabel);
-	static kstl::string typeToString(CoreModifiable::ATTRIBUTE_TYPE typ);
-	static CoreModifiable::ATTRIBUTE_TYPE stringToType(const kstl::string_view &typ);
+	static void ParseAttributePath(const std::string &path, std::string & CoreModifiablePath, std::string & CoreModifiableAttributeLabel);
+	static std::string typeToString(CoreModifiable::ATTRIBUTE_TYPE typ);
+	static CoreModifiable::ATTRIBUTE_TYPE stringToType(const std::string_view &typ);
 	
 
 	virtual CoreModifiable::ATTRIBUTE_TYPE getType() const = 0;
@@ -167,7 +167,7 @@ public:
 	virtual u32 getNbArrayLines() const { return 0; }
 	
 
-	virtual kstl::vector<kstl::string> getEnumElements() const { return {}; }
+	virtual std::vector<std::string> getEnumElements() const { return {}; }
 	
 	KigsID getID() const { return mID; };
 
@@ -204,7 +204,7 @@ public:
 #define DECLARE_SET(type)	virtual bool setValue(type value){ return false; }
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET);
 	DECLARE_SET(const char*);
-	DECLARE_SET(const kstl::string&);
+	DECLARE_SET(const std::string&);
 	DECLARE_SET(const unsigned short*);
 	DECLARE_SET(const usString&);
 	DECLARE_SET(CoreItem*);
@@ -217,7 +217,7 @@ public:
 
 #define DECLARE_GET(type) virtual bool getValue(type value) const { return false; }
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET);
-	DECLARE_GET(kstl::string&);
+	DECLARE_GET(std::string&);
 	DECLARE_GET(usString&);
 	DECLARE_GET(CoreItem*&);
 	DECLARE_GET(CoreModifiable*&);
@@ -234,11 +234,11 @@ public:
 	
 #define DECLARE_SETARRAYELEMENTVALUE(type)	virtual bool setArrayElementValue(type /*value*/, u32 /* line */, u32 /* column */){ return false; };
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAYELEMENTVALUE);
-	DECLARE_SETARRAYELEMENTVALUE(const kstl::string&);
+	DECLARE_SETARRAYELEMENTVALUE(const std::string&);
 		
 #define DECLARE_GETARRAYELEMENTVALUE(type) virtual bool getArrayElementValue(type /* value */, u32 /* line */, u32 /* column */) const {return false;};
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GETARRAYELEMENTVALUE);
-	DECLARE_GETARRAYELEMENTVALUE(kstl::string&);
+	DECLARE_GETARRAYELEMENTVALUE(std::string&);
 
 
 #undef DECLARE_SET
@@ -465,9 +465,9 @@ using maRawPtr = maRawPtrHeritage<0>;
 
 // Template specializations defined in CoreModifiable.cpp
 //! \brief methods to convert a string to a value (numeric, boolean...)
-template<typename T> bool CoreConvertString2Value(const kstl::string &stringValue,T& value);
+template<typename T> bool CoreConvertString2Value(const std::string &stringValue,T& value);
 //! \brief methods to convert a value (numeric, boolean...) to a string
-template<typename T> bool CoreConvertValue2String(kstl::string& stringValue,T value);
+template<typename T> bool CoreConvertValue2String(std::string& stringValue,T value);
 
 
 //@REFACTOR: Ideally those includes would be removed and each .cpp only includes the ma****.h that it needs

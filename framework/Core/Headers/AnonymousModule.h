@@ -25,14 +25,14 @@ public:
 	DECLARE_CLASS_INFO(AnonymousModule,ModuleBase,KigsCore)
 
 	/**
-	 * \fn 		AnonymousModule(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		AnonymousModule(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \brief	constructor
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 *
 	 * an anonymous module can be instanciated
 	 */
-	AnonymousModule(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	AnonymousModule(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	/**
 	 * \fn 		~AnonymousModule();
@@ -43,12 +43,12 @@ public:
 	virtual ~AnonymousModule();
 
 	/**
-	 * \fn			void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);  
+	 * \fn			void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);  
 	 * \brief		initialize module 
 	 * \param		core : link to the core, NOT NULL
 	 * \param		params : list of parameters, CAN BE NULL
 	 */
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;  
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;  
 
 	/**
 	 * \fn			void Close();
@@ -87,7 +87,7 @@ public:
 		
 	}
 
-	virtual void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override
+	virtual void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override
 	{
 		ModuleBase::StaticInitCore(core);
 	}

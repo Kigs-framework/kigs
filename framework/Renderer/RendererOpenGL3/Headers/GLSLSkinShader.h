@@ -21,7 +21,7 @@ public:
 	DECLARE_INLINE_CONSTRUCTOR(API3DSkinShader) {}
 
 protected:
-	kstl::string GetVertexShader() override;
+	std::string GetVertexShader() override;
 };
 
 

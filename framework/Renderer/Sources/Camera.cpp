@@ -10,8 +10,8 @@
 #include "TouchInputEventManager.h"
 #include "CoreBaseApplication.h"
 
-#define DEG_TO_RAD    KFLOAT_CONST(3.1415926535897932384626433832795f/180.0f)
-#define DEG_TO_RAD_2  KFLOAT_CONST(3.1415926535897932384626433832795f/360.0f)
+#define DEG_TO_RAD    (3.1415926535897932384626433832795f/180.0f)
+#define DEG_TO_RAD_2  (3.1415926535897932384626433832795f/360.0f)
 
 IMPLEMENT_CLASS_INFO(Camera)
 
@@ -283,20 +283,20 @@ void  Camera::InitCullingObject(CullingObject* obj)
 		obj->RemovePlane(6);
 	}
 	
-	kfloat width , height;
+	float width , height;
 	getRenderingScreen()->GetSize(width , height);
 	
 	
-	kfloat screenRotation;
+	float screenRotation;
 	getRenderingScreen()->GetRotation(screenRotation);
 	
 	
-	kfloat aspect = (width*mViewportSizeX) / (height*mViewportSizeY);
+	float aspect = (width*mViewportSizeX) / (height*mViewportSizeY);
 	if((screenRotation==90.0f)||(screenRotation==270.0f))
 		aspect=1.0f/aspect;
 	
-	kfloat d = 2.0f*tanf(mVerticalFOV*DEG_TO_RAD*0.5f);
-	kfloat hfov = 2.0f*atanf(d*aspect*0.5f);
+	float d = 2.0f*tanf(mVerticalFOV*DEG_TO_RAD*0.5f);
+	float hfov = 2.0f*atanf(d*aspect*0.5f);
 	
 	auto l2g = GetLocalToGlobal();
 
@@ -315,8 +315,8 @@ void  Camera::InitCullingObject(CullingObject* obj)
 	obj->InitPlane(1,n,o);
 	
 	// down plane
-	kfloat s=sinf((kfloat)mVerticalFOV*0.5f*DEG_TO_RAD);
-	kfloat c=cosf((kfloat)mVerticalFOV*0.5f*DEG_TO_RAD);
+	float s=sinf((float)mVerticalFOV*0.5f*DEG_TO_RAD);
+	float c=cosf((float)mVerticalFOV*0.5f*DEG_TO_RAD);
 	
 	n.Set(s,0.0f,c);
 	o.Set(0.0f,0.0f,0.0f);
@@ -330,9 +330,9 @@ void  Camera::InitCullingObject(CullingObject* obj)
 	obj->InitPlane(3,n,o);
 	
 	// left plane
-	//s = sinf((kfloat)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
+	//s = sinf((float)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
 	s = sinf(hfov*0.5f);
-	//c = cosf((kfloat)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
+	//c = cosf((float)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
 	c = cosf(hfov*0.5f);
 	
 	n.Set(s,-c,0.0f);
@@ -352,20 +352,20 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	v3f o;
 	Vector3D n;
 
-	kfloat width, height;
+	float width, height;
 	getRenderingScreen()->GetSize(width, height);
 
 
-	kfloat screenRotation;
+	float screenRotation;
 	getRenderingScreen()->GetRotation(screenRotation);
 
 
-	kfloat aspect = (width*mViewportSizeX) / (height*mViewportSizeY);
+	float aspect = (width*mViewportSizeX) / (height*mViewportSizeY);
 	if ((screenRotation == 90.0f) || (screenRotation == 270.0f))
 		aspect = 1.0f / aspect;
 
-	kfloat d = 2.0f*tanf(mVerticalFOV*DEG_TO_RAD*0.5f);
-	kfloat hfov = 2.0f*atanf(d*aspect*0.5f);
+	float d = 2.0f*tanf(mVerticalFOV*DEG_TO_RAD*0.5f);
+	float hfov = 2.0f*atanf(d*aspect*0.5f);
 
 	auto l2g = GetLocalToGlobal();
 
@@ -387,8 +387,8 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	result.Far.o = o;
 
 	// down plane
-	kfloat s = sinf((kfloat)mVerticalFOV*0.5f*DEG_TO_RAD);
-	kfloat c = cosf((kfloat)mVerticalFOV*0.5f*DEG_TO_RAD);
+	float s = sinf((float)mVerticalFOV*0.5f*DEG_TO_RAD);
+	float c = cosf((float)mVerticalFOV*0.5f*DEG_TO_RAD);
 
 	n.Set(s, 0.0f, c);
 	o.Set(0.0f, 0.0f, 0.0f);
@@ -404,9 +404,9 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	result.Up.o = o;
 
 	// left plane
-	//s = sinf((kfloat)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
+	//s = sinf((float)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
 	s = sinf(hfov*0.5f);
-	//c = cosf((kfloat)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
+	//c = cosf((float)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
 	c = cosf(hfov*0.5f);
 
 	n.Set(s, -c, 0.0f);
@@ -423,7 +423,7 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	return result;
 }
 
-void Camera::getRay(const kfloat &ScreenX, const kfloat &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection)
+void Camera::getRay(const float &ScreenX, const float &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection)
 {
 	SetupNodeIfNeeded();
 	
@@ -448,15 +448,15 @@ void Camera::getRay(const kfloat &ScreenX, const kfloat &ScreenY, Point3D &RayOr
 
 
 // Pt parameter is in global coordinates
-bool Camera::Project(kfloat &ScreenX, kfloat &ScreenY, Point3D Pt)
+bool Camera::Project(float &ScreenX, float &ScreenY, Point3D Pt)
 {
 	
 	SetupNodeIfNeeded();
 	
-	kfloat width, height;
+	float width, height;
 	getRenderingScreen()->GetSize(width, height);
 	
-	kfloat aspect;
+	float aspect;
 	
 	if (mAspectRatio != 0)
 		aspect = mAspectRatio;
@@ -465,12 +465,12 @@ bool Camera::Project(kfloat &ScreenX, kfloat &ScreenY, Point3D Pt)
 	
 	
 	// projection (default is perspective)
-	kfloat frustumHeight = (kfloat)tanf(mVerticalFOV * fPI / 360.0f) * mNearPlane;
-	kfloat frustumWidth = frustumHeight * aspect;
+	float frustumHeight = (float)tanf(mVerticalFOV * fPI / 360.0f) * mNearPlane;
+	float frustumWidth = frustumHeight * aspect;
 	
-	kfloat deltaX = frustumWidth + frustumWidth;
-	kfloat deltaY = frustumHeight + frustumHeight;
-	kfloat deltaZ = mFarPlane - mNearPlane;
+	float deltaX = frustumWidth + frustumWidth;
+	float deltaY = frustumHeight + frustumHeight;
+	float deltaZ = mFarPlane - mNearPlane;
 	Matrix4x4 frust;
 	
 	if ((mNearPlane <= 0.0f) || (mFarPlane <= 0.0f) || (deltaX <= 0.0f) || (deltaY <= 0.0f) || (deltaZ <= 0.0f))
@@ -655,7 +655,7 @@ bool Camera::ManagePinchTouchEvent(PinchEvent& pinch_event)
 		if (pinch_event.state == StateBegan)
 		{
 			currentDataStruct->mState = 2;
-			currentDataStruct->mTargetPointDist = getValue<kfloat>("TargetPointDist");
+			currentDataStruct->mTargetPointDist = getValue<float>("TargetPointDist");
 
 			currentDataStruct->mStartV = ((Point3D)mViewVector);
 			currentDataStruct->mStartV *= currentDataStruct->mTargetPointDist;
@@ -664,7 +664,7 @@ bool Camera::ManagePinchTouchEvent(PinchEvent& pinch_event)
 
 		if (pinch_event.state == StateChanged)
 		{
-			kfloat currentDist = Norm(pinch_event.p1 - pinch_event.p2);
+			float currentDist = Norm(pinch_event.p1 - pinch_event.p2);
 
 			if (currentDist > 1.0f)
 			{
@@ -760,8 +760,8 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 				currentDataStruct->mState = 1; // rotation
 
 				// sphere ray intersection
-				kfloat d2 = (currentDataStruct->mStartPt.x*currentDataStruct->mStartPt.x + currentDataStruct->mStartPt.y*currentDataStruct->mStartPt.y);
-				kfloat thc = 1.0f - d2;
+				float d2 = (currentDataStruct->mStartPt.x*currentDataStruct->mStartPt.x + currentDataStruct->mStartPt.y*currentDataStruct->mStartPt.y);
+				float thc = 1.0f - d2;
 				if (thc > 0.0f)
 				{
 					thc = sqrtf(thc);
@@ -780,7 +780,7 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 				Vector3D	right;
 				right.CrossProduct( (Point3D)mUpVector, (Point3D)mViewVector);
 				currentDataStruct->mStartMatrix.Set((Point3D)mViewVector, right, (Point3D)mUpVector, (Point3D)mPosition);
-				currentDataStruct->mTargetPointDist = getValue<kfloat>("TargetPointDist");
+				currentDataStruct->mTargetPointDist = getValue<float>("TargetPointDist");
 			}
 
 		}
@@ -803,8 +803,8 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 				{
 					currentPos.Normalize();
 				}
-				kfloat d2 = (currentPos.x*currentPos.x + currentPos.y*currentPos.y);
-				kfloat thc = 1.0f - d2;
+				float d2 = (currentPos.x*currentPos.x + currentPos.y*currentPos.y);
+				float thc = 1.0f - d2;
 				if (thc > 0.0f)
 				{
 					thc = sqrtf(thc);

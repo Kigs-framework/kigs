@@ -32,7 +32,7 @@ namespace Intersection
 	test if a ray, in fact a segment (Origin, direction, length) intersect a BBox (min and max points)
 	*/
 	inline bool IntersectionFastRayBBoxTest(const Point3D &RayOrigin,
-		const Vector3D &RayDirection, kfloat MaxDist,
+		const Vector3D &RayDirection, float MaxDist,
 		const Point3D &BBoxMin, const Point3D &BBoxMax)
 	{
 		//! bbox center
@@ -45,12 +45,12 @@ namespace Intersection
 		diag -= BBoxMin;
 		diag *= 0.5f;
 
-		kfloat r = NormSquare(diag);
+		float r = NormSquare(diag);
 
 		Vector3D Q(center);
 		Q -= RayOrigin;
-		kfloat c = NormSquare(Q);
-		kfloat v = Dot(Q, RayDirection);
+		float c = NormSquare(Q);
+		float v = Dot(Q, RayDirection);
 
 		if ((v < 0.0f) && (c > r))
 		{
@@ -61,7 +61,7 @@ namespace Intersection
 			return false;
 		}
 
-		kfloat d = r - (c - v*v);
+		float d = r - (c - v*v);
 		// If there is no intersection, return false
 		if (d < -0.05f) return false;
 		else return true;
@@ -73,15 +73,15 @@ namespace Intersection
 	inline bool IntersectionRaySphere(const Point3D &RayOrigin,
 		const Vector3D &RayDirection,
 		const Point3D &SphereCenter,
-		const kfloat SphereRadius,
-		kfloat &FirstIntersectionDistance)
+		const float SphereRadius,
+		float &FirstIntersectionDistance)
 	{
 		Vector3D Q = SphereCenter - RayOrigin;
 
-		kfloat c = Norm(Q);
-		kfloat v = Dot(Q, RayDirection);
+		float c = Norm(Q);
+		float v = Dot(Q, RayDirection);
 
-		kfloat d = SphereRadius*SphereRadius - (c*c - v*v);
+		float d = SphereRadius*SphereRadius - (c*c - v*v);
 
 		// If there was no intersection, return false
 		if (d < 0.0f) return false;
@@ -98,16 +98,16 @@ namespace Intersection
 	inline bool MultiIntersectionRaySphere(const Point3D &RayOrigin,
 		const Vector3D &RayDirection,
 		const Point3D &SphereCenter,
-		const kfloat SphereRadius,
-		kfloat &FirstIntersectionDistance,
-		kfloat &SecondIntersectionDistance)
+		const float SphereRadius,
+		float &FirstIntersectionDistance,
+		float &SecondIntersectionDistance)
 	{
 
 		Vector3D Q(SphereCenter, RayOrigin, asVector{});
-		kfloat a = NormSquare(RayDirection);
-		kfloat b = Dot(Q, RayDirection);
-		kfloat c = NormSquare(Q) - SphereRadius*SphereRadius;
-		kfloat d = b*b - a*c;
+		float a = NormSquare(RayDirection);
+		float b = Dot(Q, RayDirection);
+		float c = NormSquare(Q) - SphereRadius*SphereRadius;
+		float d = b*b - a*c;
 		if (d < 0.0f) return false;
 		d = sqrtf(d);
 		FirstIntersectionDistance = (-b - d) / a;
@@ -122,7 +122,7 @@ namespace Intersection
 	inline bool IntersectionRayBBox(const Point3D &RayOrigin, const Vector3D &RayDirection,
 		const Point3D &BBoxMin, const Point3D &BBoxMax,
 		Point3D &IntersectionPoint,Point3D& IntersectionNormal,
-		kdouble &IntersectionDistance)
+		double &IntersectionDistance)
 	{
 		enum IRBB_Side
 		{
@@ -134,7 +134,7 @@ namespace Intersection
 
 		IRBB_Side SideX, SideY, SideZ;
 		Point3D candidatePlane;
-		kdouble MinT = 1000.0;
+		double MinT = 1000.0;
 		bool Inside = true;
 		bool IntersectionFound = false;
 		Point3D CandidatePoint;
@@ -366,16 +366,16 @@ namespace Intersection
 	*/
 	inline bool IntersectionRayTriangle(const Point3D &RayOrigin, const Vector3D &RayDirection,
 		const Point3D &A, const Point3D &B, const Point3D &C,
-		kdouble &IntersectionDistance,
-		kfloat &TriangleCoord_u,
-		kfloat &TriangleCoord_v,
+		double &IntersectionDistance,
+		float &TriangleCoord_u,
+		float &TriangleCoord_v,
 		Vector3D& triangle_normal
 	)
 	{
 		Vector3D edge1(A, B, asVector{});
 		Vector3D edge2(A, C, asVector{});
 		Vector3D pvec, qvec;
-		kfloat det, inv_det;
+		float det, inv_det;
 
 		pvec.CrossProduct(RayDirection, edge2);
 		det = Dot(edge1, pvec);
@@ -418,12 +418,12 @@ namespace Intersection
 	*/
 	inline bool IntersectRayPlane(const Point3D &rOrigin, const Vector3D &rVector,
 		const Point3D &pOrigin, const Vector3D &pNormal,
-		kdouble &IntersectionDistance)
+		double &IntersectionDistance)
 	{
 
-		kfloat d = -Dot(pNormal, pOrigin);
-		kfloat numer = Dot(pNormal, rOrigin) + d;
-		kfloat denom = Dot(pNormal, rVector);
+		float d = -Dot(pNormal, pOrigin);
+		float numer = Dot(pNormal, rOrigin) + d;
+		float denom = Dot(pNormal, rVector);
 
 		if (denom == 0.0f)  // normal is orthogonal to vector, cant intersect
 			return false;
@@ -440,10 +440,10 @@ namespace Intersection
 	/*!	test intersection between a Sphere (center, radius) and a BBOX (min and max points)
 	just return true or false
 	*/
-	inline bool IntersectionSphereBBox(const Point3D &SphereCenter, kfloat SphereRadius,
+	inline bool IntersectionSphereBBox(const Point3D &SphereCenter, float SphereRadius,
 		const Point3D& BBoxMin, const Point3D& BBoxMax)
 	{
-		kfloat dmin = 0.0f;
+		float dmin = 0.0f;
 		if (SphereCenter.x < BBoxMin.x)
 		{
 			dmin += (SphereCenter.x - BBoxMin.x)*(SphereCenter.x - BBoxMin.x);
@@ -495,16 +495,16 @@ namespace Intersection
 	*/
 	inline bool IntersectionRayCylinder(const Point3D &RayOrigin,
 		const Vector3D &RayDirection,
-		const kfloat CylinderRadius,
-		kfloat &FirstIntersectionDistance,
-		kfloat &SecondIntersectionDistance)
+		const float CylinderRadius,
+		float &FirstIntersectionDistance,
+		float &SecondIntersectionDistance)
 	{
 		//! project ray on (X,Y) plane and test intersection with a circle centered on origin 
-		kfloat a = RayDirection.x*RayDirection.x + RayDirection.y*RayDirection.y;
-		kfloat b = RayOrigin.x*RayDirection.x + RayOrigin.y*RayDirection.y;
-		kfloat c = RayOrigin.x*RayOrigin.x + RayOrigin.y*RayOrigin.y - CylinderRadius*CylinderRadius;
+		float a = RayDirection.x*RayDirection.x + RayDirection.y*RayDirection.y;
+		float b = RayOrigin.x*RayDirection.x + RayOrigin.y*RayDirection.y;
+		float c = RayOrigin.x*RayOrigin.x + RayOrigin.y*RayOrigin.y - CylinderRadius*CylinderRadius;
 
-		kfloat d = b*b - a*c;
+		float d = b*b - a*c;
 
 		if (d < 0.0f) return false;
 
@@ -529,12 +529,12 @@ namespace Intersection
 	inline bool TestIntersectionRaySphere(const Point3D &RayOrigin,
 		const Vector3D &RayDirection,
 		const Point3D &SphereCenter,
-		const kfloat SphereRadius)
+		const float SphereRadius)
 	{
 		Vector3D Q = SphereCenter - RayOrigin;
-		kfloat c = NormSquare(Q);
-		kfloat v = Dot(Q, RayDirection);
-		kfloat d = SphereRadius*SphereRadius - (c - v*v);
+		float c = NormSquare(Q);
+		float v = Dot(Q, RayDirection);
+		float d = SphereRadius*SphereRadius - (c - v*v);
 		// If there is no intersection, return false
 		if (d < 0.0f) return false;
 		else return true;

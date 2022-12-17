@@ -18,7 +18,7 @@ class OpenGLTexture : public Texture
 {
 public:
 	DECLARE_CLASS_INFO(OpenGLTexture,Texture,Renderer)
-	OpenGLTexture(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	OpenGLTexture(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual	~OpenGLTexture();
 
 	bool	PreDraw(TravState*) override;

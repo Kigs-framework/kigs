@@ -24,10 +24,10 @@ class XMLReaderFile
 public:
  
 	//! read the whole file and return the XML hierarchy as an XML instance
-	static XMLBase* ReadFile(const kstl::string& file ,const char* force_as_format);
+	static XMLBase* ReadFile(const std::string& file ,const char* force_as_format);
 
 	//! parse whole file using the given delegate object 
-	static bool ReadFile(const kstl::string& file,CoreModifiable*	delegateObject ,const char* force_as_format);
+	static bool ReadFile(const std::string& file,CoreModifiable*	delegateObject ,const char* force_as_format);
 
 	//! parse buffer
 	static bool ReadFile(char* Buff,CoreModifiable*	delegateObject,u64 buffsize ,char* encoding=0);
@@ -113,7 +113,7 @@ protected:
 	class MyUserData
 	{
 	public:
-		kstl::vector<XMLNodeBase*>	mNodeHierarchy;
+		std::vector<XMLNodeBase*>	mNodeHierarchy;
 		XMLReaderFile*				mReader;
 		CoreModifiable*				mDelegate;
 	};
@@ -135,7 +135,7 @@ void  XMLReaderFile::StartDescriptionElementStringRef(void* data, StringRef* el,
 {
 	MyUserData* localuserdata = (MyUserData*)data;
 
-	kstl::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->mNodeHierarchy;
+	std::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->mNodeHierarchy;
 
 	XMLNodeTemplate<StringType>* xmlNode = new XMLNodeTemplate<StringType>(XML_NODE_ELEMENT, (const char*)el->mStringStart, (unsigned int)(el->mStringEnd - el->mStringStart));
 	
@@ -179,7 +179,7 @@ void  XMLReaderFile::EndCDataStringRef(void* userdata, const char* s, int len)
 
 	MyUserData* localuserdata = (MyUserData*)userdata;
 
-	kstl::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->mNodeHierarchy;
+	std::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->mNodeHierarchy;
 
 	if (nodeHierarchy.size())
 	{
@@ -210,7 +210,7 @@ void  XMLReaderFile::CharacterHandlerStringRef(void* userdata, const char* s, in
 
 	MyUserData* localuserdata = (MyUserData*)userdata;
 
-	kstl::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->mNodeHierarchy;
+	std::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->mNodeHierarchy;
 
 	if (nodeHierarchy.size())
 	{

@@ -11,7 +11,7 @@
 
 IMPLEMENT_CLASS_INFO(API3DLight)
 
-API3DLight::API3DLight(const kstl::string& name, CLASS_NAME_TREE_ARG)
+API3DLight::API3DLight(const std::string& name, CLASS_NAME_TREE_ARG)
 	: Light(name, PASS_CLASS_NAME_TREE_ARG)
 
 	, mPositionUniform(NULL)
@@ -35,54 +35,54 @@ void	API3DLight::InitModifiable()
 	int lLightType = GetTypeOfLight();
 
 	mPositionUniform = KigsCore::GetInstanceOf(getName() + "PositionUniform", "API3DUniformFloat3");
-	mPositionUniform->setValue(LABEL_TO_ID(Name), "lightPos");
+	mPositionUniform->setValue("Name", "lightPos");
 	mPositionUniform->Init();
 
 	mCamPosUniform = KigsCore::GetInstanceOf(getName() + "CamPosUniform", "API3DUniformFloat3");
-	mCamPosUniform->setValue(LABEL_TO_ID(Name), "camPos");
+	mCamPosUniform->setValue("Name", "camPos");
 	mCamPosUniform->Init();
 
 	mDiffuseUniform = KigsCore::GetInstanceOf(getName() + "DiffuseUniform", "API3DUniformFloat3");
-	mDiffuseUniform->setValue(LABEL_TO_ID(Name), "light_diffuse");
-	mDiffuseUniform->setArrayValue(LABEL_TO_ID(Value), mDiffuseColor[0], mDiffuseColor[1], mDiffuseColor[2]);
+	mDiffuseUniform->setValue("Name", "light_diffuse");
+	mDiffuseUniform->setArrayValue("Value", mDiffuseColor[0], mDiffuseColor[1], mDiffuseColor[2]);
 	mDiffuseUniform->Init();
 
 	mSpecularUniform = KigsCore::GetInstanceOf(getName() + "SpecularUniform", "API3DUniformFloat3");
-	mSpecularUniform->setValue(LABEL_TO_ID(Name), "light_specular");
-	mSpecularUniform->setArrayValue(LABEL_TO_ID(Value), mSpecularColor[0], mSpecularColor[1], mSpecularColor[2]);
+	mSpecularUniform->setValue("Name", "light_specular");
+	mSpecularUniform->setArrayValue("Value", mSpecularColor[0], mSpecularColor[1], mSpecularColor[2]);
 	mSpecularUniform->Init();
 
 	mAmbiantUniform = KigsCore::GetInstanceOf(getName() + "AmbiantUniform", "API3DUniformFloat3");
-	mAmbiantUniform->setValue(LABEL_TO_ID(Name), "light_ambiant");
-	mAmbiantUniform->setArrayValue(LABEL_TO_ID(Value), mAmbientColor[0], mAmbientColor[1], mAmbientColor[2]);
+	mAmbiantUniform->setValue("Name", "light_ambiant");
+	mAmbiantUniform->setArrayValue("Value", mAmbientColor[0], mAmbientColor[1], mAmbientColor[2]);
 	mAmbiantUniform->Init();
 
 	// create shader uniform
 	if (lLightType == SPOT_LIGHT)
 	{
 		mSpotDirUniform = KigsCore::GetInstanceOf(getName() + "SpotDirUniform", "API3DUniformFloat3");
-		mSpotDirUniform->setValue(LABEL_TO_ID(Name), "spotDir");
-		mSpotDirUniform->setArrayValue(LABEL_TO_ID(Value), 0.0f, 0.0f, 0.0f);
-		mSpotDirUniform->setValue(LABEL_TO_ID(Normalize), true);
+		mSpotDirUniform->setValue("Name", "spotDir");
+		mSpotDirUniform->setArrayValue("Value", 0.0f, 0.0f, 0.0f);
+		mSpotDirUniform->setValue("Normalize", true);
 		mSpotDirUniform->Init();
 
 		mSpotCutoffUniform = KigsCore::GetInstanceOf(getName() + "SpotCutoffUniform", "API3DUniformFloat");
-		mSpotCutoffUniform->setValue(LABEL_TO_ID(Name), "spotCutoff");
-		mSpotCutoffUniform->setValue(LABEL_TO_ID(Value), cosf(mSpotCutOff.const_ref())); // send directly the cos, so don't have to do it at each fragment
+		mSpotCutoffUniform->setValue("Name", "spotCutoff");
+		mSpotCutoffUniform->setValue("Value", cosf(mSpotCutOff.const_ref())); // send directly the cos, so don't have to do it at each fragment
 		mSpotCutoffUniform->Init();
 
 
 		mSpotExponentUniform = KigsCore::GetInstanceOf(getName() + "SpotExponentUniform", "API3DUniformFloat");
-		mSpotExponentUniform->setValue(LABEL_TO_ID(Name), "spotExponent");
-		mSpotExponentUniform->setValue(LABEL_TO_ID(Value), mSpotAttenuation);
+		mSpotExponentUniform->setValue("Name", "spotExponent");
+		mSpotExponentUniform->setValue("Value", mSpotAttenuation);
 		mSpotExponentUniform->Init();
 	}
 
 	if (lLightType != DIRECTIONAL_LIGHT)
 	{
 		mAttenuationUniform = KigsCore::GetInstanceOf(getName() + "AttenuationUniform", "API3DUniformFloat3");
-		mAttenuationUniform->setValue(LABEL_TO_ID(Name), "attenuation");
-		mAttenuationUniform->setArrayValue(LABEL_TO_ID(Value), mConstAttenuation, mLinAttenuation, mQuadAttenuation);
+		mAttenuationUniform->setValue("Name", "attenuation");
+		mAttenuationUniform->setArrayValue("Value", mConstAttenuation, mLinAttenuation, mQuadAttenuation);
 		mAttenuationUniform->Init();
 	}
 

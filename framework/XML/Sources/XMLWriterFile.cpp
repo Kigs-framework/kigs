@@ -8,7 +8,7 @@
 #include "AttributePacking.h"
 
 
-void XMLWriterFile::appendString( kstl::string &sAppend, bool isElementText )
+void XMLWriterFile::appendString( std::string &sAppend, bool isElementText )
 {
 	mData.emplace_back();
 	auto& s = mData.back();
@@ -54,7 +54,7 @@ void XMLWriterFile::appendString( kstl::string &sAppend, bool isElementText )
 
 void XMLWriterFile::writeHeader( XML &xml )
 {
-    kstl::string s;
+    std::string s;
     s += "<?xml";
 	
     if ( xml.getVersion( ) != "" )
@@ -83,7 +83,7 @@ void XMLWriterFile::writeNode( XMLNode *node, int tab )
     }
 	
     int i;
-    kstl::string s;
+    std::string s;
 	
     switch ( node->getType( ) )
     {
@@ -167,10 +167,10 @@ void XMLWriterFile::writeNode( XMLNode *node, int tab )
     }
 }
 
-bool XMLWriterFile::WriteFile(const kstl::string& name,XML& xml)
+bool XMLWriterFile::WriteFile(const std::string& name,XML& xml)
 {
     // get file extension to choose XML or BXML ?
-    kstl::string	fileext;
+    std::string	fileext;
     size_t extpos=name.rfind(".")+1;
     fileext=name.substr(extpos,name.length()-extpos);
 	
@@ -212,7 +212,7 @@ bool XMLWriterFile::WriteFile(const kstl::string& name,XML& xml)
     return false;
 }
 
-void XMLWriterFile::WriteString(XML& xml, kstl::string &result, bool header, bool compress)
+void XMLWriterFile::WriteString(XML& xml, std::string &result, bool header, bool compress)
 {
 	XMLWriterFile  writer;
 	

@@ -25,7 +25,7 @@ public:
     DECLARE_CLASS_INFO(WindowWin32,Window,GUI)
 
 	//! constructor
-    WindowWin32(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    WindowWin32(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	//! destructor
 	virtual ~WindowWin32();
 
@@ -43,8 +43,8 @@ public:
 	//! Set parent Window for creation
 	virtual void SetParentWindow(HWND hParent);
 
-	virtual void	GetMousePosInWindow(int posx, int posy, kfloat& wposx, kfloat& wposy);
-	virtual void	GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, kfloat& wposy);
+	virtual void	GetMousePosInWindow(int posx, int posy, float& wposx, float& wposy);
+	virtual void	GetMousePosInDesignWindow(int posx, int posy, float& wposx, float& wposy);
 		
 	static void	AddCallback(msgProcCallBack callback);
 	static void	RemoveCallback(msgProcCallBack callback);

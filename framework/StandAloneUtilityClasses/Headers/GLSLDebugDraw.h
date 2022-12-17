@@ -703,7 +703,7 @@ public:
 	DECLARE_CONSTRUCTOR(DebugDraw);
 
 
-	bool BBoxUpdate(kdouble time) override
+	bool BBoxUpdate(double time) override
 	{
 		return true;
 	};

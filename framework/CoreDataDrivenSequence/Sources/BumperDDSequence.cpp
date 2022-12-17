@@ -4,10 +4,10 @@
 
 IMPLEMENT_CLASS_INFO(BumperDDSequence)
 
-BumperDDSequence::BumperDDSequence(const kstl::string& name, CLASS_NAME_TREE_ARG)
+BumperDDSequence::BumperDDSequence(const std::string& name, CLASS_NAME_TREE_ARG)
 : BaseDDSequence(name, PASS_CLASS_NAME_TREE_ARG)
-,mNextSequence(*this, true, LABEL_AND_ID(NextSequence))
-,mDuration(*this, true, LABEL_AND_ID(Duration), 0.0f)
+,mNextSequence(*this, true, "NextSequence")
+,mDuration(*this, true, "Duration", 0.0f)
 , mStartTime(0)
 {
 }
@@ -22,7 +22,7 @@ void BumperDDSequence::Update(const Timer&  timer, void* addParam)
 	if (mStartTime == -1)
 		return;
 
-	kdouble time = timer.GetTime();
+	double time = timer.GetTime();
 	if (mStartTime == 0)
 		mStartTime = time;
 	 

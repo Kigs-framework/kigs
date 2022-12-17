@@ -14,9 +14,9 @@
 // ****************************************
 
 template<int notificationLevel>
-class maStringHeritage : public CoreModifiableAttributeData<kstl::string>
+class maStringHeritage : public CoreModifiableAttributeData<std::string>
 {	
-	DECLARE_ATTRIBUTE_HERITAGE(maStringHeritage, maStringHeritage, kstl::string, CoreModifiable::ATTRIBUTE_TYPE::STRING);
+	DECLARE_ATTRIBUTE_HERITAGE(maStringHeritage, maStringHeritage, std::string, CoreModifiable::ATTRIBUTE_TYPE::STRING);
 	
 public:
 
@@ -29,16 +29,16 @@ public:
 	size_t MemorySize() const final { return mValue.size(); };
 
 	// getValue overloads
-	virtual bool getValue(kstl::string& value) const override
+	virtual bool getValue(std::string& value) const override
 	{
-		kstl::string tmpValue = this->mValue;
+		std::string tmpValue = this->mValue;
 		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		value = tmpValue;
 		return true;
 	}
 	virtual bool getValue(usString&  value) const override
 	{
-		kstl::string tmpValue = this->mValue;
+		std::string tmpValue = this->mValue;
 		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		value = tmpValue;
 		return true;
@@ -63,18 +63,18 @@ public:
 		if (this->isReadOnly())
 			return false;
 
-		kstl::string tmpValue = value;
+		std::string tmpValue = value;
 		CALL_SETMODIFIER(notificationLevel, tmpValue);
 		this->mValue = tmpValue;
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
-	virtual bool setValue(const kstl::string& value) override
+	virtual bool setValue(const std::string& value) override
 	{
 		if (this->isReadOnly())
 			return false;
 
-		kstl::string tmpValue = value;
+		std::string tmpValue = value;
 		CALL_SETMODIFIER(notificationLevel, tmpValue);
 		this->mValue = tmpValue;
 		DO_NOTIFICATION(notificationLevel);
@@ -85,7 +85,7 @@ public:
 #define DECLARE_SET_NUMERIC(type)	virtual bool setValue(type value) override { \
 	if (this->isReadOnly())\
 		return false; \
-	kstl::string tmpValue = std::to_string(value); \
+	std::string tmpValue = std::to_string(value); \
 	CALL_SETMODIFIER(notificationLevel, tmpValue); \
 	this->mValue = tmpValue; \
 	DO_NOTIFICATION(notificationLevel); \
@@ -97,9 +97,9 @@ public:
 	///
 
 	// operators
-	auto& operator+=(const kstl::string& attribute)
+	auto& operator+=(const std::string& attribute)
 	{
-		kstl::string val;
+		std::string val;
 		getValue(val);
 		val += attribute;
 		setValue(val);
@@ -107,7 +107,7 @@ public:
 	}
 	auto& operator+=(const char* attribute)
 	{
-		*this += kstl::string{ attribute };
+		*this += std::string{ attribute };
 		return *this;
 	}
 	///

@@ -400,7 +400,7 @@ protected:
 
 	static			TinyImageLoaderContext* mLoaderContext;
 
-	static kstl::vector<TinyImageLoaderContext>*	mContextStack;
+	static std::vector<TinyImageLoaderContext>*	mContextStack;
 	
 };
 

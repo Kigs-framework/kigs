@@ -8,69 +8,69 @@
 template<>
 CoreModifiableAttribute* CoreValue<bool>::createAttribute(CoreModifiable* target)
 {
-	return new maBool(*target, false, LABEL_AND_ID(Val), this->mValue);
+	return new maBool(*target, false, "Val", this->mValue);
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<kfloat>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<float>::createAttribute(CoreModifiable* target)
 {
-	return new maFloat(*target, false, LABEL_AND_ID(Val), this->mValue);
+	return new maFloat(*target, false, "Val", this->mValue);
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<kdouble>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<double>::createAttribute(CoreModifiable* target)
 {
-	return new maFloat(*target, false, LABEL_AND_ID(Val), (kfloat)this->mValue);
+	return new maFloat(*target, false, "Val", (float)this->mValue);
 }
 
 template<>
 CoreModifiableAttribute* CoreValue<Point2D>::createAttribute(CoreModifiable* target)
 {
-	return new maVect2DF(*target, false, LABEL_AND_ID(Val), &(this->mValue.x));
+	return new maVect2DF(*target, false, "Val", &(this->mValue.x));
 }
 
 template<>
 CoreModifiableAttribute* CoreValue<Point3D>::createAttribute(CoreModifiable* target)
 {
-	return new maVect3DF(*target, false, LABEL_AND_ID(Val), &(this->mValue.x));
+	return new maVect3DF(*target, false, "Val", &(this->mValue.x));
 }
 
 template<>
 CoreModifiableAttribute* CoreValue<Vector4D>::createAttribute(CoreModifiable* target)
 {
-	return new maVect4DF(*target, false, LABEL_AND_ID(Val), &(this->mValue.x));
+	return new maVect4DF(*target, false, "Val", &(this->mValue.x));
 }
 
 template<>
 CoreModifiableAttribute* CoreValue<int>::createAttribute(CoreModifiable* target)
 {
-	return new maInt(*target, false, LABEL_AND_ID(Val), (this->mValue));
+	return new maInt(*target, false, "Val", (this->mValue));
 }
 template<>
 CoreModifiableAttribute* CoreValue<s64>::createAttribute(CoreModifiable* target)
 {
-	return new maLong(*target, false, LABEL_AND_ID(Val), (this->mValue));
+	return new maLong(*target, false, "Val", (this->mValue));
 }
 template<>
 CoreModifiableAttribute* CoreValue<unsigned int>::createAttribute(CoreModifiable* target)
 {
-	return new maUInt(*target, false, LABEL_AND_ID(Val), (this->mValue));
+	return new maUInt(*target, false, "Val", (this->mValue));
 }
 template<>
 CoreModifiableAttribute* CoreValue<u64>::createAttribute(CoreModifiable* target)
 {
-	return new maULong(*target, false, LABEL_AND_ID(Val), (this->mValue));
+	return new maULong(*target, false, "Val", (this->mValue));
 }
 template<>
-CoreModifiableAttribute* CoreValue<kstl::string>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<std::string>::createAttribute(CoreModifiable* target)
 {
-	return new maString(*target, false, LABEL_AND_ID(Val), (this->mValue));
+	return new maString(*target, false, "Val", (this->mValue));
 }
 
 template<>
 CoreModifiableAttribute* CoreValue<usString>::createAttribute(CoreModifiable* target)
 {
-	return new maUSString(*target, false, LABEL_AND_ID(Val), (this->mValue));
+	return new maUSString(*target, false, "Val", (this->mValue));
 }
 
 

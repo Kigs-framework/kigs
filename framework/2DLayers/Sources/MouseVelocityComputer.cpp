@@ -5,15 +5,15 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(MouseVelocityComputer, MouseVelocityComputer, 2DLayers);
 IMPLEMENT_CLASS_INFO(MouseVelocityComputer)
 
-MouseVelocityComputer::MouseVelocityComputer(const kstl::string& name, CLASS_NAME_TREE_ARG) :
+MouseVelocityComputer::MouseVelocityComputer(const std::string& name, CLASS_NAME_TREE_ARG) :
 CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG),
 mVelocityIndex(0),
 mVelocityCount(0),
 mOldTime(0)
 {
 
-	mVelocityX = new kfloat[cMaxIndex];
-	mVelocityY = new kfloat[cMaxIndex];
+	mVelocityX = new float[cMaxIndex];
+	mVelocityY = new float[cMaxIndex];
 	for (int i = 0; i < cMaxIndex; i++)
 	{
 		mVelocityX[i] = 0.f;
@@ -28,16 +28,16 @@ MouseVelocityComputer::~MouseVelocityComputer()
 }
 
 
-void MouseVelocityComputer::Init(kdouble time)
+void MouseVelocityComputer::Init(double time)
 {
 	mOldTime = time;
 	mVelocityIndex = 0;
 	mVelocityCount = 0;
 }
 
-void MouseVelocityComputer::StoreDisplacement(kfloat dx, kfloat dy,kdouble time)
+void MouseVelocityComputer::StoreDisplacement(float dx, float dy,double time)
 {
-	kdouble dt = time - mOldTime;
+	double dt = time - mOldTime;
 	if (dt > 0)
 	{
 		if (mVelocityCount < cMaxIndex)
@@ -58,7 +58,7 @@ void MouseVelocityComputer::StoreDisplacement(kfloat dx, kfloat dy,kdouble time)
 
 
 
-void MouseVelocityComputer::ComputeVelocity(kfloat &vx, kfloat &vy)
+void MouseVelocityComputer::ComputeVelocity(float &vx, float &vy)
 {
 	vx = 0.f;
 	vy = 0.f;
@@ -69,7 +69,7 @@ void MouseVelocityComputer::ComputeVelocity(kfloat &vx, kfloat &vy)
 			vx += mVelocityX[i];
 			vy += mVelocityY[i];
 		}
-		vx /= (kfloat)mVelocityCount;
-		vy /= (kfloat)mVelocityCount;
+		vx /= (float)mVelocityCount;
+		vy /= (float)mVelocityCount;
 	}
 }

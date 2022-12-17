@@ -59,8 +59,8 @@ bool	CoreSequence::update(const Timer& timer)
 void	CoreSequence::stop()
 {
 	// reset all actions
-	kstl::vector<CoreItemSP>::iterator itAction = mVector.begin();
-	kstl::vector<CoreItemSP>::iterator itActionEnd = mVector.end();
+	std::vector<CoreItemSP>::iterator itAction = mVector.begin();
+	std::vector<CoreItemSP>::iterator itActionEnd = mVector.end();
 
 	while (itAction != itActionEnd)
 	{
@@ -88,7 +88,7 @@ CoreSequence::~CoreSequence()
 	}
 }
 
-void	CoreSequence::protectedStart(kdouble time)
+void	CoreSequence::protectedStart(double time)
 {
 	if (mStartTime < 0.0) // check if not already started
 	{
@@ -101,12 +101,12 @@ void	CoreSequence::protectedStart(kdouble time)
 	}
 }
 
-void	CoreSequence::protectedPause(kdouble time)
+void	CoreSequence::protectedPause(double time)
 {
 	// TODO
 }
 
-void	CoreSequence::protectedUpdate(kdouble time)
+void	CoreSequence::protectedUpdate(double time)
 {
 	bool done = false;
 	if (mCurrentActionIndex == 0xFFFFFFFF) return;
@@ -119,7 +119,7 @@ void	CoreSequence::protectedUpdate(kdouble time)
 			++mCurrentActionIndex;
 			if (mCurrentActionIndex < mVector.size())
 			{
-				kdouble previousend = current->getEndTime();
+				double previousend = current->getEndTime();
 				current = (CoreAction*)mVector[mCurrentActionIndex].get();
 				current->setStartTime(previousend);
 			}

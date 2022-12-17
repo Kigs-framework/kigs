@@ -37,7 +37,7 @@ public:
 	DECLARE_CLASS_INFO(MiniInstanceFactory,CoreModifiable,InstanceFactory)
 
 	//! constructor
-	MiniInstanceFactory(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	MiniInstanceFactory(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	class FactoryCreateStruct
 	{
@@ -63,7 +63,7 @@ public:
 	};
 
 	template<typename T>
-	void	RegisterNewClass(const kstl::string& name)
+	void	RegisterNewClass(const std::string& name)
 	{
 		auto alreadyfound=mFactoryMap.find(name);
 		if(alreadyfound != mFactoryMap.end())
@@ -74,7 +74,7 @@ public:
 		mFactoryMap[name]=new RegisterClass<T>();
 
 	}
-	void*	CreateClassInstance(const kstl::string& name)
+	void*	CreateClassInstance(const std::string& name)
 	{
 		auto alreadyfound=mFactoryMap.find(name);
 		if(alreadyfound == mFactoryMap.end())
@@ -88,7 +88,7 @@ public:
 	virtual ~MiniInstanceFactory();
 
 protected:
-	std::unordered_map<kstl::string, FactoryCreateStruct*>	mFactoryMap;
+	std::unordered_map<std::string, FactoryCreateStruct*>	mFactoryMap;
 };
 
 

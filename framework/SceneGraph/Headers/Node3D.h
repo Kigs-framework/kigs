@@ -127,7 +127,7 @@ public:
 	void NeedLocalToGlobalMatrixUpdate(bool force = false) {}
 	void NeedSceneGraphUpdate(SceneNode* node = 0) {}
 	void ComputeLocalToGlobal() {}
-	void RecursiveUpdateAndBoundingVolume(kdouble time) {}
+	void RecursiveUpdateAndBoundingVolume(double time) {}
 	//
 
 	bool IsScaled() const { return isUserFlagSet(IsScaledFlag); }

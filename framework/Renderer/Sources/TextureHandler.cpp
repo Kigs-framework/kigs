@@ -11,7 +11,7 @@
 IMPLEMENT_CLASS_INFO(TextureHandler)
 
 
-TextureHandler::TextureHandler(const kstl::string& name, CLASS_NAME_TREE_ARG) : ParentClassType(name, PASS_CLASS_NAME_TREE_ARG)
+TextureHandler::TextureHandler(const std::string& name, CLASS_NAME_TREE_ARG) : ParentClassType(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	// we want TextureHandler to be alert on texture change as soon as possible
 	mTextureName.changeNotificationLevel(Owner);

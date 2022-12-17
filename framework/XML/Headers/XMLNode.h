@@ -3,7 +3,7 @@
 
 #include "kTypes.h"
 #include "kstlstring.h"
-#include "kstlvector.h"
+#include <vector>
 #include "PreallocatedClassNew.h"
 #include <type_traits>
 #include "MinimalXML.h"
@@ -200,17 +200,17 @@ public:
 	//! return value as an int
 	virtual int getInt() const = 0;
 
-	//! return value as a kfloat
-	virtual kfloat getFloat() const = 0;
+	//! return value as a float
+	virtual float getFloat() const = 0;
 
 	// return the list of all nodes with the given type in hierarchy
-	kstl::vector<XMLNodeBase*>	getNodes(XMLNodeType type);
+	std::vector<XMLNodeBase*>	getNodes(XMLNodeType type);
 
 	virtual bool nameOneOf(const char* a, const char* b)=0;
 
 protected:
 
-	void getNodes(XMLNodeType type, kstl::vector<XMLNodeBase*>& list);
+	void getNodes(XMLNodeType type, std::vector<XMLNodeBase*>& list);
 
 	virtual void getName(std::string& n) const = 0;
 	virtual void getName(std::string_view& n) const = 0;
@@ -229,10 +229,10 @@ protected:
 #endif // USE_PARENT_AND_SIBLING
 
 	//! node children
-	kstl::vector< XMLNodeBase* > mChildren;
+	std::vector< XMLNodeBase* > mChildren;
 
 	//! node attributes
-	kstl::vector< XMLAttributeBase* > mAttributes;
+	std::vector< XMLAttributeBase* > mAttributes;
 
 };
 
@@ -301,8 +301,8 @@ public:
 	{
 		assert(0); // only with std::string nodes
 	}
-	//! set node value with given kfloat
-	void setFloat(const kfloat value)
+	//! set node value with given float
+	void setFloat(const float value)
 	{
 		assert(0); // only with std::string nodes
 	}
@@ -327,8 +327,8 @@ public:
 
 	//! return node value as an int
 	inline int getInt( ) const override;
-	//! return node value as a kfloat
-	inline kfloat getFloat( ) const override;
+	//! return node value as a float
+	inline float getFloat( ) const override;
 
     
 	//! create a new child with given name and return the corresponding node
@@ -410,7 +410,7 @@ inline void XMLNodeTemplate<std::string>::setInt(const int value)
 }
 
 template<>
-inline void XMLNodeTemplate<std::string>::setFloat(const kfloat value)
+inline void XMLNodeTemplate<std::string>::setFloat(const float value)
 {
 	static char szValue[64];
 	snprintf(szValue, 64, "%f", CastToFloat(value));
@@ -428,7 +428,7 @@ inline int XMLNodeTemplate<StringType>::getInt() const
 }
 
 template<typename StringType>
-inline kfloat XMLNodeTemplate<StringType>::getFloat() const
+inline float XMLNodeTemplate<StringType>::getFloat() const
 {
 	float result = 0.0f;
 	std::from_chars(mValue.data(), mValue.data() + mValue.size(), result);
@@ -443,7 +443,7 @@ inline int XMLNodeTemplate<std::string>::getInt() const
 }
 
 template<>
-inline kfloat XMLNodeTemplate<std::string>::getFloat() const
+inline float XMLNodeTemplate<std::string>::getFloat() const
 {
 	float result = atof(mValue.c_str());
 	return result;
@@ -457,7 +457,7 @@ inline int XMLNodeTemplate<std::string_view>::getInt() const
 }
 
 template<>
-inline kfloat XMLNodeTemplate<std::string_view>::getFloat() const
+inline float XMLNodeTemplate<std::string_view>::getFloat() const
 {
 	std::string to_string(mValue);
 	float result = atof(to_string.c_str());
@@ -549,7 +549,7 @@ XMLNodeTemplate<StringType>* XMLNodeTemplate<StringType>::addChildElementText(co
 template<typename StringType>
 XMLNodeTemplate<StringType>* XMLNodeTemplate<StringType>::addChildElementInteger(const StringType& childName, int integerValue)
 {
-	kstl::string textValue("%d", (unsigned int)integerValue);
+	std::string textValue("%d", (unsigned int)integerValue);
 
 	XMLNodeTemplate* node = new XMLNodeTemplate();
 	node->setType(XML_NODE_ELEMENT);

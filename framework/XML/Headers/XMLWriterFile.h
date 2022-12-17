@@ -18,9 +18,9 @@ class XMLWriterFile
 {
 public:
 	//! write the given xml hierarchy in a file
-	static bool WriteFile(const kstl::string&,XML& xml);
+	static bool WriteFile(const std::string&,XML& xml);
 	//! write the given xml hierarchy in a memory file (string)
-	static void WriteString(XML& xml, kstl::string &Result, bool header = true, bool compress=false );
+	static void WriteString(XML& xml, std::string &Result, bool header = true, bool compress=false );
 	static SP<CoreRawBuffer> WriteBuffer(XML& xml, bool header = true, bool compress = false);
 
 protected:
@@ -28,7 +28,7 @@ protected:
     XMLWriterFile() = default;
 
 	//! utility method
-    void appendString( kstl::string &sAppend, bool isElementText = false );
+    void appendString( std::string &sAppend, bool isElementText = false );
 
 	//! utility method to write the xml file header
 	void writeHeader( XML &xml );

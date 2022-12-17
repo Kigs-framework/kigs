@@ -7,11 +7,11 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UIButtonImage, UIButtonImage, 2DLayers);;
 IMPLEMENT_CLASS_INFO(UIButtonImage)
 
-UIButtonImage::UIButtonImage(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
+UIButtonImage::UIButtonImage(const std::string& name,CLASS_NAME_TREE_ARG) : 
 UIButton(name, PASS_CLASS_NAME_TREE_ARG)
-,mUpTexture(*this,false,LABEL_AND_ID(UpTexture),"")
-,mDownTexture(*this,false,LABEL_AND_ID(DownTexture),"")
-,mOverTexture(*this,false,LABEL_AND_ID(OverTexture),"")
+,mUpTexture(*this,false,"UpTexture","")
+,mDownTexture(*this,false,"DownTexture","")
+,mOverTexture(*this,false,"OverTexture","")
 {
 }
 
@@ -77,7 +77,7 @@ void UIButtonImage::NotifyUpdate(const unsigned int labelid)
 		UITexturedItem::NotifyUpdate(labelid);
 }
 
-void UIButtonImage::ChangeTexture(kstl::string _texturename, kstl::string _overtexturename, kstl::string _downtexturename)
+void UIButtonImage::ChangeTexture(std::string _texturename, std::string _overtexturename, std::string _downtexturename)
 {
 	
 	if(_texturename != "")
@@ -104,8 +104,8 @@ void UIButtonImage::ChangeTexture(kstl::string _texturename, kstl::string _overt
 
 		//Make new Mask
 		mAlphaMask = KigsCore::GetInstanceOf(getName(), "AlphaMask");
-		mAlphaMask->setValue(LABEL_TO_ID(Threshold),0.1);
-		mAlphaMask->setValue(LABEL_TO_ID(TextureName),mUpTexture.c_str());
+		mAlphaMask->setValue("Threshold",0.1);
+		mAlphaMask->setValue("TextureName",mUpTexture.c_str());
 		this->addItem(mAlphaMask);
 		mAlphaMask->Init();
 	}

@@ -857,12 +857,12 @@ public:
 	attribute_type*	AddDynamicAttribute(KigsID ID, const value_type& value);
 	CoreModifiableAttribute*	AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID, s32 defaultval);
 	CoreModifiableAttribute*	AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID, u64 defaultval);
-	CoreModifiableAttribute*	AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID, kfloat defaultval);
+	CoreModifiableAttribute*	AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID, float defaultval);
 	CoreModifiableAttribute*	AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID, bool defaultval);
 	CoreModifiableAttribute*	AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID, const char* defaultval = 0);
 
 	CoreModifiableAttribute*	AddDynamicVectorAttribute(KigsID ID, const int* defaultval, u32 valcount);
-	CoreModifiableAttribute*	AddDynamicVectorAttribute(KigsID ID, const kfloat* defaultval, u32 valcount);
+	CoreModifiableAttribute*	AddDynamicVectorAttribute(KigsID ID, const float* defaultval, u32 valcount);
 
 	void RemoveDynamicAttribute(KigsID id);
 

@@ -16,7 +16,7 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(LocalizationManager, LocalizationManager, StandAlone);
 IMPLEMENT_CLASS_INFO(LocalizationManager)
 
-LocalizationManager::LocalizationManager(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
+LocalizationManager::LocalizationManager(const std::string& name,CLASS_NAME_TREE_ARG) : 
 CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 {
 }
@@ -39,7 +39,7 @@ void LocalizationManager::setLocalizationFilePath(const char* path,bool a_eraseP
 	}
 }
 
-void LocalizationManager::InitWithConfigFile(const kstl::string& filename)
+void LocalizationManager::InitWithConfigFile(const std::string& filename)
 {
 	JSonFileParser L_JsonParser;
 	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionary(filename);
@@ -47,18 +47,18 @@ void LocalizationManager::InitWithConfigFile(const kstl::string& filename)
 	if (L_Dictionary)
 	{
 		// init map
-		kstl::map<kstl::string, kstl::string>	langageMap;
+		std::map<std::string, std::string>	langageMap;
 
 		CoreItemSP pathList = L_Dictionary;
 		int nbpath = (int)pathList->size();
 		int i;
 		for (i = 0; i < nbpath; i += 2)
 		{
-			langageMap[(kstl::string)(CoreItem&)(*pathList)[i]] = (kstl::string)(CoreItem&)(*pathList)[i + 1];;
+			langageMap[(std::string)(CoreItem&)(*pathList)[i]] = (std::string)(CoreItem&)(*pathList)[i + 1];;
 		}
 
-		kstl::string	L_Lang = LocalizationManager::getCurrentUserLanguage();
-		kstl::map<kstl::string, kstl::string>::const_iterator	langFound = langageMap.find(L_Lang);
+		std::string	L_Lang = LocalizationManager::getCurrentUserLanguage();
+		std::map<std::string, std::string>::const_iterator	langFound = langageMap.find(L_Lang);
 		if (langFound != langageMap.end())
 		{
 			setLocalizationFilePath((*langFound).second.c_str());
@@ -84,7 +84,7 @@ void LocalizationManager::InitWithConfigFile(const kstl::string& filename)
 
 void LocalizationManager::addLocalizationFromFileAtPath(const char* path)
 {
-	if(((kstl::string)path) != "")
+	if(((std::string)path) != "")
 	{
 		ParseStringsFile(path);
 	}
@@ -99,9 +99,9 @@ void LocalizationManager::addLocalizationFromBuffer(char* Buffer, unsigned int b
 	}
 }
 
-const std::string& LocalizationManager::getLocalizedStringUTF8(const kstl::string& key)
+const std::string& LocalizationManager::getLocalizedStringUTF8(const std::string& key)
 {
-	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 >::iterator itfound = mLocalizedString.find(key);
+	std::map<const std::string, DoubleLocalizedUTF8UTF16 >::iterator itfound = mLocalizedString.find(key);
 	if (itfound != mLocalizedString.end())
 	{
 		// if no utf8, then create it
@@ -123,9 +123,9 @@ const std::string& LocalizationManager::getLocalizedStringUTF8(const kstl::strin
 }
 
 
-const PLATFORM_WCHAR*	LocalizationManager::getLocalizedString(const kstl::string& key)
+const PLATFORM_WCHAR*	LocalizationManager::getLocalizedString(const std::string& key)
 {
-	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 >::iterator itfound=mLocalizedString.find(key);
+	std::map<const std::string, DoubleLocalizedUTF8UTF16 >::iterator itfound=mLocalizedString.find(key);
 
 	if(itfound != mLocalizedString.end())
 	{
@@ -166,7 +166,7 @@ bool	LocalizationManager::ParseStringsFile(const char* pszFile)
 {
 	auto pathManager=KigsCore::Singleton<FilePathManager>();
 
-	kstl::string fullfilename=pszFile;
+	std::string fullfilename=pszFile;
 	SmartPointer<FileHandle> fullfilenamehandle;
 
 	if (pathManager)
@@ -203,14 +203,14 @@ void LocalizationManager::ParseBuffer(char* _pBuffer, unsigned long size)
 
 	while(!finished)
 	{
-		kstl::string	key="";
+		std::string	key="";
 		
 		charType*	localized=GetNextLocalizedString<charType>(_pBuffer,currentpos,key,size);
 
 		if(localized)
 		{
 			// check if not already allocated
-			kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 >::const_iterator itfound=mLocalizedString.find(key);
+			std::map<const std::string, DoubleLocalizedUTF8UTF16 >::const_iterator itfound=mLocalizedString.find(key);
 			
 			if(itfound != mLocalizedString.end())
 			{
@@ -239,7 +239,7 @@ void LocalizationManager::ParseBuffer(char* _pBuffer, unsigned long size)
 }
 
 template<typename charType>
-charType*	LocalizationManager::GetNextLocalizedString(char* pBuffer,unsigned long& currentpos,kstl::string& key,unsigned long filelen)
+charType*	LocalizationManager::GetNextLocalizedString(char* pBuffer,unsigned long& currentpos,std::string& key,unsigned long filelen)
 {
 
 	std::vector<charType>	retreiveQuoted;
@@ -281,7 +281,7 @@ charType*	LocalizationManager::GetNextLocalizedString(char* pBuffer,unsigned lon
 	retreiveQuoted.clear();
 	// search next quoted 
 	keyStartFound=false;
-	kstl::string localizedstring="";
+	std::string localizedstring="";
 
 	while(!keyStartFound)
 	{
@@ -433,7 +433,7 @@ void	LocalizationManager::GotoCommentEnd(charType*& startchar,unsigned long& cur
 
 void	LocalizationManager::EraseMap()
 {
-	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 >::const_iterator it=mLocalizedString.begin();
+	std::map<const std::string, DoubleLocalizedUTF8UTF16 >::const_iterator it=mLocalizedString.begin();
 	while(it!=mLocalizedString.end())
 	{
 		PLATFORM_WCHAR* currentString=(*it).second.mUTF16;

@@ -32,7 +32,7 @@ public:
 	virtual ~UITextInput();
 	SIGNALS(TextChanged);
 
-	kstl::string			GetReleaseAction() const {return mReleaseAction.c_str();}
+	std::string			GetReleaseAction() const {return mReleaseAction.c_str();}
 	
 	bool			HasFocus() override { return GetNodeFlag(UIItem_HasFocus); }
 	void			LoseFocus() override;
@@ -49,14 +49,14 @@ protected:
 
 	void NotifyUpdate(const unsigned int labelid) override;
 	bool ManageClickTouchEvent(ClickEvent& click_event) final;
-	void UpdateKeyboard(kstl::vector<KeyEvent>& keys);
+	void UpdateKeyboard(std::vector<KeyEvent>& keys);
 
 	bool					mIsCueBanner = false;
 
 	maUSString				mCueBanner = BASE_ATTRIBUTE(CueBanner, usString(""));
 	maString				mReleaseAction = BASE_ATTRIBUTE(ReleaseAction, "");
 
-	kstl::vector<int>		mKeycodeList;
+	std::vector<int>		mKeycodeList;
 };
 
 #endif //_UITEXTINPUT_H_

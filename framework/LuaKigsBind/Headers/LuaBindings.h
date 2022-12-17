@@ -60,7 +60,7 @@ class LuaNotificationHook : public CoreModifiable
 
 namespace LuaIntf
 {
-	LUA_USING_LIST_TYPE(kstl::vector);
+	LUA_USING_LIST_TYPE(std::vector);
 }
 
 
@@ -150,7 +150,7 @@ namespace detail
 
 
 template<typename T>
-T GetLuaGlobal(const kstl::string& name)
+T GetLuaGlobal(const std::string& name)
 {
 	LuaIntf::LuaState L = KigsCore::GetModule<LuaKigsBindModule>()->getLuaState();
 

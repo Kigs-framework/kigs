@@ -38,7 +38,7 @@ protected:
 	void Hide(UIItem* localthis);
 
 	// upgrador member variable
-	kdouble mTimeOpen = 0;
+	double mTimeOpen = 0;
 	bool mOpenPopup = false;
 	CMSP mActivator;
 };

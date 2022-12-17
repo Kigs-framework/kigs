@@ -1,12 +1,11 @@
 #ifndef _H_PRECOMPILED_HEADERS_
 #define _H_PRECOMPILED_HEADERS_
 
-#include "CoreSTLNoException.h"
 
-#include "kstlvector.h"
+#include <vector>
 #include "kstlstring.h"
-#include "kstlmap.h"
-#include "kstlset.h"
+#include <map>
+#include <set>
 
 #include "Core.h"
 #include "CoreModifiable.h"

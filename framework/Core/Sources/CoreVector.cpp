@@ -3,7 +3,7 @@
 
 CoreItemSP CoreVectorIterator::operator*() const
 {
-	kstl::vector<CoreItemSP>&	vectorstruct = *(kstl::vector<CoreItemSP>*)mAttachedCoreItem->getContainerStruct();
+	std::vector<CoreItemSP>&	vectorstruct = *(std::vector<CoreItemSP>*)mAttachedCoreItem->getContainerStruct();
 
 	if (mVectorIterator != vectorstruct.end())
 	{

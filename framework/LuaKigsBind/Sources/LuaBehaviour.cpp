@@ -23,9 +23,9 @@ IMPLEMENT_CLASS_INFO(LuaBehaviour)
 
 IMPLEMENT_CONSTRUCTOR(LuaBehaviour)
 , mLuaModule(nullptr)
-, mScript(*this, true, LABEL_AND_ID(Script), "")
-, mEnabled(*this, false, LABEL_AND_ID(Enabled), true)
-, mInterval(*this, false, LABEL_AND_ID(Interval), 0.0)
+, mScript(*this, true, "Script", "")
+, mEnabled(*this, false, "Enabled", true)
+, mInterval(*this, false, "Interval", 0.0)
 , mLuaNeedInit(false)
 , mHasUpdate(false)
 , mLastTime(-1.0)
@@ -35,7 +35,7 @@ IMPLEMENT_CONSTRUCTOR(LuaBehaviour)
 }
 
 
-void LuaBehaviour::InitLua(kdouble current_time) 
+void LuaBehaviour::InitLua(double current_time) 
 {
 	if(!mL || !mSelf) return;
 	
@@ -78,11 +78,11 @@ void LuaBehaviour::Update(const Timer& timer, void* addParam)
 	// check if lua behaviour is enabled
 	if (!mEnabled) return;
 
-	kdouble now = timer.GetTime();
+	double now = timer.GetTime();
 	if (mLastTime < 0.0)
 		mLastTime = now;
 	
-	kdouble dt = now - mLastTime;
+	double dt = now - mLastTime;
 	if (dt < mInterval) return;
 	mLastTime = now;
 	

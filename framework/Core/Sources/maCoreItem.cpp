@@ -6,13 +6,13 @@
 
 
 
-bool maCoreItemValue::ExportToString(kstl::string& value) const
+bool maCoreItemValue::ExportToString(std::string& value) const
 {
 	JSonFileParser L_JsonParser;
-	return L_JsonParser.ExportToString((CoreMap<kstl::string> *)(CoreItem*)item.get(), value);
+	return L_JsonParser.ExportToString((CoreMap<std::string> *)(CoreItem*)item.get(), value);
 }
 
-void maCoreItemValue::InitWithJSON(const kstl::string& currentval, CoreModifiable* owner)
+void maCoreItemValue::InitWithJSON(const std::string& currentval, CoreModifiable* owner)
 {
 	if(item)
 	{
@@ -33,22 +33,22 @@ void maCoreItemValue::InitWithJSON(const kstl::string& currentval, CoreModifiabl
 			// check if eval float or string
 			if (currentval.substr(4, 3) == "Str")
 			{
-				kstl::string toeval = currentval.substr(7, currentval.length() - 7);
-				item = CoreItemOperator<kstl::string>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+				std::string toeval = currentval.substr(7, currentval.length() - 7);
+				item = CoreItemOperator<std::string>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			}
 			else if(currentval.substr(4, 2) == "2D")
 			{
-				kstl::string toeval = currentval.substr(6, currentval.length() - 6);
+				std::string toeval = currentval.substr(6, currentval.length() - 6);
 				item = CoreItemOperator<Point2D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			}
 			else if (currentval.substr(4, 2) == "3D")
 			{
-				kstl::string toeval = currentval.substr(6, currentval.length() - 6);
+				std::string toeval = currentval.substr(6, currentval.length() - 6);
 				item = CoreItemOperator<Point3D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			}
 			else if (currentval.substr(4, 2) == "4D")
 			{
-				kstl::string toeval = currentval.substr(6, currentval.length() - 6);
+				std::string toeval = currentval.substr(6, currentval.length() - 6);
 				item = CoreItemOperator<Vector4D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			}
 			else
@@ -58,8 +58,8 @@ void maCoreItemValue::InitWithJSON(const kstl::string& currentval, CoreModifiabl
 				{
 					cutpos = 6;
 				}
-				kstl::string toeval = currentval.substr(cutpos, currentval.length() - cutpos);
-				item = CoreItemOperator<kfloat>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+				std::string toeval = currentval.substr(cutpos, currentval.length() - cutpos);
+				item = CoreItemOperator<float>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			}
 		}
 		else

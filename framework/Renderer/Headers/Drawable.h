@@ -89,11 +89,11 @@ public:
 
 	/**
 	 * \brief	update the bounding box
-	 * \fn 		virtual bool	BBoxUpdate(kdouble time)=0;
+	 * \fn 		virtual bool	BBoxUpdate(double time)=0;
 	 * \param	time : world time
 	 * \return	FALSE if object without bounding box, TRUE otherwise
 	 */
-	virtual bool	BBoxUpdate(kdouble time) { return false; }
+	virtual bool	BBoxUpdate(double time) { return false; }
 
 	/**
 	 * \brief	add item in scene tree
@@ -115,13 +115,13 @@ public:
            
 	/**
 	 * \brief	get the global position of the drawable
-	 * \fn 		virtual void GetGlobalPosition(Matrix3x4 *pLocalToGlobal, kfloat &x, kfloat &y, kfloat &z)
+	 * \fn 		virtual void GetGlobalPosition(Matrix3x4 *pLocalToGlobal, float &x, float &y, float &z)
 	 * \param	pLocalToGlobal : conversion matrix
 	 * \param	x : coordinate on x axis (in/out param)
 	 * \param	y : coordinate on y axis (in/out param)
 	 * \param	z : coordinate on z axis (in/out param)
 	 */
-	virtual void GetGlobalPosition(Matrix3x4 *pLocalToGlobal, kfloat &x, kfloat &y, kfloat &z) {x=pLocalToGlobal->e[3][0];y=pLocalToGlobal->e[3][1];z=pLocalToGlobal->e[3][2];}
+	virtual void GetGlobalPosition(Matrix3x4 *pLocalToGlobal, float &x, float &y, float &z) {x=pLocalToGlobal->e[3][0];y=pLocalToGlobal->e[3][1];z=pLocalToGlobal->e[3][2];}
 
 	virtual void		UpdateDrawingNeeds();
 

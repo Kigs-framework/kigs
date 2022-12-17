@@ -6,7 +6,7 @@
 IMPLEMENT_CLASS_INFO(DoNothingObject)
 
 //! constructor
-DoNothingObject::DoNothingObject(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
+DoNothingObject::DoNothingObject(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
 {
-	KIGS_WARNING((((kstl::string)"Do Nothing Object created : ") + name),2); 
+	KIGS_WARNING((((std::string)"Do Nothing Object created : ") + name),2); 
 }     

@@ -9,7 +9,7 @@
 #include "TouchInputEventManager.h"
 #include "Texture.h"
 
-#include "kstlvector.h"
+#include <vector>
 
 class Texture;
 class Window;
@@ -49,32 +49,32 @@ public:
 
 	/**
 	* \brief	get the rotation of the screen
-	* \fn 		void	GetRotation(kfloat& rot)
+	* \fn 		void	GetRotation(float& rot)
 	* \param	rot : rotation of the screen(in/out param)
 	*/
-	void	GetRotation(kfloat& rot)
+	void	GetRotation(float& rot)
 	{
 		rot = mRotation;
 	}
 
 	/**
 	* \brief	get the size of the screen
-	* \fn 		void	GetSize(kfloat& sizeX,kfloat& sizeY)
+	* \fn 		void	GetSize(float& sizeX,float& sizeY)
 	* \param	sizeX : size on the x axis (in/out param)
 	* \param	sizeY : size on the y axis (in/out param)
 	*/
-	void	GetSize(kfloat& sizeX, kfloat& sizeY)
+	void	GetSize(float& sizeX, float& sizeY)
 	{
-		sizeX = (kfloat)mSize[0]; sizeY = (kfloat)mSize[1];
+		sizeX = (float)mSize[0]; sizeY = (float)mSize[1];
 	}
 
 	/**
 	* \brief	get the design size of the screen : the resolution the graphics shown on screen were designed for
-	* \fn 		void	GetDesignSize(kfloat& sizeX,kfloat& sizeY)
+	* \fn 		void	GetDesignSize(float& sizeX,float& sizeY)
 	* \param	dsizeX : design size on the x axis (in/out param)
 	* \param	dsizeY : design size on the y axis (in/out param)
 	*/
-	void	GetDesignSize(kfloat& dsizeX, kfloat& dsizeY) { dsizeX = (kfloat)mDesignSize[0]; dsizeY = (kfloat)mDesignSize[1]; }
+	void	GetDesignSize(float& dsizeX, float& dsizeY) { dsizeX = (float)mDesignSize[0]; dsizeY = (float)mDesignSize[1]; }
 
 
 	/**
@@ -86,11 +86,11 @@ public:
 
 	/**
 	* \brief	resize the screen
-	* \fn 		virtual void	Resize(kfloat sizeX,kfloat sizeY)=0;
+	* \fn 		virtual void	Resize(float sizeX,float sizeY)=0;
 	* \param	sizeX : new size on the x axis
 	* \param	sizeY : new size on the y axis
 	*/
-	virtual void	Resize(kfloat sizeX, kfloat sizeY) = 0;
+	virtual void	Resize(float sizeX, float sizeY) = 0;
 
 	/**
 	* \brief	Set the target window handle of the rendering. If null, the Window name passed through "ParentWindowName" will be used.
@@ -105,7 +105,7 @@ public:
 	*/
 	virtual void*	GetContextHandle() = 0;
 
-	void SetBackDropColor(kfloat r, kfloat g, kfloat b);
+	void SetBackDropColor(float r, float g, float b);
 
 	virtual void FetchPixels(int x, int y, int width, int height, void *pRGBAPixels) = 0;
 	virtual void FetchDepth(int x, int y, int width, int height, float *pDepthPixels) = 0;
@@ -113,11 +113,11 @@ public:
 
 	void NotifyUpdate(const unsigned int  labelid) override;
 
-	void GetMousePosInScreen(int posx, int posy, kfloat& sposx, kfloat& sposy);
-	void GetMouseMoveInScreen(kfloat posx, kfloat posy, kfloat& sposx, kfloat& sposy);
-	void GetMousePosInDesignScreen(int posx, int posy, kfloat& sposx, kfloat& sposy);
-	void GetMouseRatioInScreen(int posx, int posy, kfloat& sposx, kfloat& sposy);
-	void GetMouseRatio(int posx, int posy, kfloat& sposx, kfloat& sposy);
+	void GetMousePosInScreen(int posx, int posy, float& sposx, float& sposy);
+	void GetMouseMoveInScreen(float posx, float posy, float& sposx, float& sposy);
+	void GetMousePosInDesignScreen(int posx, int posy, float& sposx, float& sposy);
+	void GetMouseRatioInScreen(int posx, int posy, float& sposx, float& sposy);
+	void GetMouseRatio(int posx, int posy, float& sposx, float& sposy);
 
 
 	v2f GlobalMousePositionToDesignPosition(v2i pos);

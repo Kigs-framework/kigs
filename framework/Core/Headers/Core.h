@@ -60,7 +60,7 @@ class RegisterDecoratorClass
 {
 public:
 	/**
-	 * \fn 		RegisterDecorator(KigsCore* core,kstl::string decoratorName,decorateMethod method);
+	 * \fn 		RegisterDecorator(KigsCore* core,std::string decoratorName,decorateMethod method);
 	 * \brief	register a decorator in core
 	 * \core : KigsCore instance
 	 * \decoratorName : name of the decorator class
@@ -82,7 +82,7 @@ public:
 	{KigsCore::Instance()->GetUpgradorFactory()->RegisterNewClass<name>(#name);}
 
 
-extern kstl::vector<kstl::string>	SplitStringByCharacter(const kstl::string& a_mstring, char a_value);
+extern std::vector<std::string>	SplitStringByCharacter(const std::string& a_mstring, char a_value);
 
 
 // ****************************************
@@ -174,7 +174,7 @@ public:
 	// remove connection between a signal and a slot 
 	static void		Disconnect(CoreModifiable* a, KigsID asignalID, CoreModifiable* b, KigsID bslotID);
 
-/*	static bool		Emit(CoreModifiable* a, KigsID asignalID, kstl::vector<CoreModifiableAttribute*>& params, void* privateParams);
+/*	static bool		Emit(CoreModifiable* a, KigsID asignalID, std::vector<CoreModifiableAttribute*>& params, void* privateParams);
 
 	template<typename... T>
 	static inline bool		Emit(CoreModifiable* a, KigsID asignalID, T&&... args)
@@ -184,11 +184,11 @@ public:
 	}
 	*/
 	/**
-	* \fn			kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	GetDefaultCoreItemOperatorConstructMap();
+	* \fn			kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	GetDefaultCoreItemOperatorConstructMap();
 	* \brief		return the map for CoreItemOperator creation in general purpose case
-	* \return		kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&
+	* \return		kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&
 	*/
-	kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	GetDefaultCoreItemOperatorConstructMap();
+	kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	GetDefaultCoreItemOperatorConstructMap();
 
 	/**
 	 * \fn			static ModuleBase*		GetModule(const STRINGS_NAME_TYPE& classname);
@@ -205,7 +205,7 @@ public:
 	}
 
 	/**
-	* \fn			static	CMSP GetInstanceOf(const kstl::string& instancename,const STRINGS_NAME_TYPE& classname);
+	* \fn			static	CMSP GetInstanceOf(const std::string& instancename,const STRINGS_NAME_TYPE& classname);
 	* \brief		return an instance of the given class
 	* \param		instancename : name of the instance
 	* \param		classname : name of the class
@@ -214,14 +214,14 @@ public:
 	* get the instance of 'classname' named 'instancename' or call the instance factory if not exist<br>
 	* return a DoNothingObject if the factory failed
 	*/
-	//static	CMSP GetInstanceOf(const kstl::string& instancename, const KigsID& classname);
+	//static	CMSP GetInstanceOf(const std::string& instancename, const KigsID& classname);
 
 
 	template<typename... Args>
-	static CMSP GetInstanceOf(const kstl::string& instancename, const KigsID& classname, Args&&... args);
+	static CMSP GetInstanceOf(const std::string& instancename, const KigsID& classname, Args&&... args);
 
 	template<typename T>
-	static SP<T> CreateInstance(const kstl::string& instancename)
+	static SP<T> CreateInstance(const std::string& instancename)
 	{
 		return GetInstanceOf(instancename, T::mClassID);
 	}
@@ -266,7 +266,7 @@ public:
 	static	CoreTreeNode*	GetRootNode();
 	static	CoreTreeNode*	GetTypeNode(const KigsID& id);
 
-	static CoreTreeNode*	RegisterType(const CoreClassNameTree& type_hierarchy, const kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table);
+	static CoreTreeNode*	RegisterType(const CoreClassNameTree& type_hierarchy, const std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table);
 	
 
 
@@ -296,12 +296,12 @@ public:
 	 * \brief		Load and initialize the given module
 	 * \return		the loaded module
 	 */
-	template<class Module_Type> static SP<Module_Type> LoadKigsModule(const std::string& Module_Type_Name,const kstl::vector<CoreModifiableAttribute*>* params=0)
+	template<class Module_Type> static SP<Module_Type> LoadKigsModule(const std::string& Module_Type_Name,const std::vector<CoreModifiableAttribute*>* params=0)
 	{
 		DECLARE_CLASS_INFO_WITHOUT_FACTORY(Module_Type, Module_Type_Name);
 		SP<Module_Type> Module = GetModule<Module_Type>();
 		if (!Module)
-			Module = SP<Module_Type>(new Module_Type(kstl::string("the")+kstl::string(Module_Type_Name)));
+			Module = SP<Module_Type>(new Module_Type(std::string("the")+std::string(Module_Type_Name)));
 		if (Module)
 			Module->Init(Instance(), params);
 		return Module;
@@ -358,33 +358,33 @@ public:
 	}
 
 	/**
-	 * \fn			static void	AddError(const char*, long,const kstl::string&, int errorLevel=0);
+	 * \fn			static void	AddError(const char*, long,const std::string&, int errorLevel=0);
 	 * \brief		add an error in the error buffer
 	 * \param		char* : file in which the error appears
 	 * \param		long : line number of the error appears
 	 * \param		string : error message
 	 * \param		errorLevel : error level in [0,3] 
 	 */
-	static void	AddError(const char*, long,const kstl::string&, int errorLevel=0);
+	static void	AddError(const char*, long,const std::string&, int errorLevel=0);
 #endif
 #if KIGS_ERROR_LEVEL<=1
 	/**
-	 * \fn			static void	AddWarning(const char*, long,const kstl::string&, int warningLevel=0);
+	 * \fn			static void	AddWarning(const char*, long,const std::string&, int warningLevel=0);
 	 * \brief		add a warning in the error buffer
 	 * \param		char : file in which the warning appears
 	 * \param		long : line number of the warning appears
 	 * \param		string : warning message
 	 * \param		warningLevel : warning level in [0,3]
 	 */
-	static void	AddWarning(const char*, long,const kstl::string&, int warningLevel=0);
+	static void	AddWarning(const char*, long,const std::string&, int warningLevel=0);
 #endif
 #if KIGS_ERROR_LEVEL==0
 	/**
-	 * \fn			static void	AddMessage(const kstl::string&);
+	 * \fn			static void	AddMessage(const std::string&);
 	 * \brief		add a message in the error buffer
 	 * \param		string : message
 	 */
-	static void	AddMessage(const kstl::string&);
+	static void	AddMessage(const std::string&);
 #endif
 
 
@@ -404,7 +404,7 @@ public:
 	static void SetThreadProfiler(CoreModifiable* tp){ mCoreInstance->mThreadProfiler = tp; }
 
 	/**
-	 * \fn			bool	ParseXml(const kstl::string& filename,CoreModifiable*	delegateObject,const char* force_as_format=0)
+	 * \fn			bool	ParseXml(const std::string& filename,CoreModifiable*	delegateObject,const char* force_as_format=0)
 	 * \brief		Parse the given xml file, using delegateObject as delegate
 	 * \param		filename : the name of the file to parse
 	 * \param		delegateObject : the CoreModifiable used as delegate
@@ -422,7 +422,7 @@ public:
 
 
 	 */
-	static	bool	ParseXml(const kstl::string& filename,CoreModifiable*	delegateObject,const char* force_as_format=0);
+	static	bool	ParseXml(const std::string& filename,CoreModifiable*	delegateObject,const char* force_as_format=0);
 
 	static	bool	ParseXml(char* buffer,CoreModifiable*	delegateObject,unsigned long buffsize,char* encoding=0);
 
@@ -479,15 +479,15 @@ protected:
 	CoreBaseApplication* mCoreBaseApplication;
 	NotificationCenter* mNotificationCenter;
 
-	kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	mCoreItemOperatorCreateMethodMap;
+	kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>	mCoreItemOperatorCreateMethodMap;
 
 #if KIGS_ERROR_LEVEL<=2	
 	/**
-	 * \fn			void ProtectedAddError(const kstl::string& Error);
+	 * \fn			void ProtectedAddError(const std::string& Error);
 	 * \brief		add a message in the error buffer
 	 * \param		Error : message
 	 */
-	void ProtectedAddError(const kstl::string& Error);
+	void ProtectedAddError(const std::string& Error);
 	
 	/**
 	 * \fn			void ProtectedDumpMessageBuffer();
@@ -496,7 +496,7 @@ protected:
 	void ProtectedDumpMessageBuffer();
 #endif
 
-	static CoreTreeNode* AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, const kstl::vector<CoreClassNameTree::TwoNames>& branch, const kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& method_table, size_t current_index);
+	static CoreTreeNode* AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, const std::vector<CoreClassNameTree::TwoNames>& branch, const std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& method_table, size_t current_index);
 
 
 	/**
@@ -537,7 +537,7 @@ protected:
 	kigs::unordered_map<KigsID, DecorateMethodPair>*		mDecoratorMap;
 
 	// current pending async requests
-	kstl::vector<SP<AsyncRequest>>*							mAsyncRequestList;
+	std::vector<SP<AsyncRequest>>*							mAsyncRequestList;
 
 	// called by base application update
 	static void ManageAsyncRequests();
@@ -600,7 +600,7 @@ MEMORYMANAGEMENT_END
 #if KIGS_ERROR_LEVEL<=2
 	// construct error list here
 	//! list of error
-	kstl::vector<kstl::string>*	mErrorList;
+	std::vector<std::string>*	mErrorList;
 	/**
 	 * \fn 		int	(*KigsMsgPrintf)(const char *format... );
 	 * \brief	output function for error and warning msb
@@ -667,7 +667,7 @@ MEMORYMANAGEMENT_END
 
 //#include "AttributePacking.h"
 template<>
-inline CMSP KigsCore::GetInstanceOf(const kstl::string& instancename, const KigsID& classname)
+inline CMSP KigsCore::GetInstanceOf(const std::string& instancename, const KigsID& classname)
 {
 	CMSP instance = Instance()->GetInstanceFactory()->GetInstance(instancename, classname);
 	//! if instance factory fail then create a DoNothingObject (and print debug messages)
@@ -695,7 +695,7 @@ inline CMSP KigsCore::GetInstanceOf(const kstl::string& instancename, const Kigs
 
 
 template<typename... Args>
-inline CMSP KigsCore::GetInstanceOf(const kstl::string& instancename, const KigsID& classname, Args&&... args)
+inline CMSP KigsCore::GetInstanceOf(const std::string& instancename, const KigsID& classname, Args&&... args)
 {	 
 	PackCoreModifiableAttributes packer{ nullptr };
 	int expander[]
@@ -703,7 +703,7 @@ inline CMSP KigsCore::GetInstanceOf(const kstl::string& instancename, const Kigs
 		(packer << std::forward<Args>(args), 0)...
 	};
 	(void)expander;
-	CMSP instance = Instance()->GetInstanceFactory()->GetInstance(instancename, classname, &(kstl::vector<CoreModifiableAttribute*>&)packer);
+	CMSP instance = Instance()->GetInstanceFactory()->GetInstance(instancename, classname, &(std::vector<CoreModifiableAttribute*>&)packer);
 		
 	//! if instance factory fail then create a DoNothingObject (and print debug messages)
 	if (!instance)

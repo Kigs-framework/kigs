@@ -157,7 +157,7 @@ void ModuleSceneGraph::DoDefferedAction()
 
 	Scene3D* parent = nullptr;
 
-	kstl::vector<void*> toErase;
+	std::vector<void*> toErase;
 
 	auto itr = mDefferedAction.begin();
 	auto end = mDefferedAction.end();
@@ -221,7 +221,7 @@ void ModuleSceneGraph::DoDefferedAction()
 
 
 
-void ModuleSceneGraph::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleSceneGraph::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	BaseInit(core, "SceneGraph", params);
 
@@ -245,7 +245,7 @@ void ModuleSceneGraph::Init(KigsCore* core, const kstl::vector<CoreModifiableAtt
 
 	// search for the renderer module
 
-	kstl::vector<CMSP>	instances=	CoreModifiable::GetInstances("ModuleSpecificRenderer");
+	std::vector<CMSP>	instances=	CoreModifiable::GetInstances("ModuleSpecificRenderer");
 
 	mTravState = KigsCore::GetInstanceOf("SceneTravState", "TravState");
 
@@ -330,8 +330,8 @@ void	ModuleSceneGraph::SortSceneList()
 	mSceneListNeedsSort = false;
 
 	// copy scenes in a tmp vector
-	kstl::vector<Scene3D*>	tmpList;
-	kstl::set<Scene3D*, Scene3DPriorityCompare>::iterator it;
+	std::vector<Scene3D*>	tmpList;
+	std::set<Scene3D*, Scene3DPriorityCompare>::iterator it;
 
 	for (it = mScenes.begin(); it != mScenes.end(); ++it)
 	{
@@ -342,7 +342,7 @@ void	ModuleSceneGraph::SortSceneList()
 	mScenes.clear();
 
 	// then add scenes to set again
-	kstl::vector<Scene3D*>::iterator	itvector;
+	std::vector<Scene3D*>::iterator	itvector;
 	for (itvector = tmpList.begin(); itvector != tmpList.end(); ++itvector)
 	{
 		mScenes.insert(*itvector);

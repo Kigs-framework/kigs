@@ -3,7 +3,7 @@
 #include "ModuleCoreAnimation.h"
 
 template<>
-inline void CoreActionFunction<kfloat, 1>::init(CoreSequence* sequence, CoreVector* params)
+inline void CoreActionFunction<float, 1>::init(CoreSequence* sequence, CoreVector* params)
 {
 	mTarget = sequence->getTarget();
 	auto ptr = mTarget.lock();
@@ -19,11 +19,11 @@ inline void CoreActionFunction<kfloat, 1>::init(CoreSequence* sequence, CoreVect
 	(*params)[0]->getValue(readfloat);
 	mDuration = readfloat;
 
-	kstl::string readstring;
+	std::string readstring;
 	(*params)[1]->getValue(readstring);
 
 	// eval
-	CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, ptr.get(), ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
+	CoreItemSP eval = CoreItemOperator<float>::Construct(readstring, ptr.get(), ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
 	if (eval)
 	{
 		mFunctions[0] = eval;		
@@ -53,7 +53,7 @@ inline void CoreActionFunction<dataType, dimension>::init(CoreSequence* sequence
 	(*params)[0]->getValue(readfloat);
 	mDuration = readfloat;
 
-	kstl::string readstring;
+	std::string readstring;
 
 	// if (*params)[1] is a vector, create each float CoreItemOperator 
 	if ((*params)[1]->size() >= dimension)
@@ -63,9 +63,9 @@ inline void CoreActionFunction<dataType, dimension>::init(CoreSequence* sequence
 		{
 			auto one = (*params)[1];
 			auto two = (*one)[i];
-			readstring = (kstl::string)*two;
+			readstring = (std::string)*two;
 			// eval
-			CoreItemSP eval = CoreItemOperator<kfloat>::Construct(readstring, ptr.get(), ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
+			CoreItemSP eval = CoreItemOperator<float>::Construct(readstring, ptr.get(), ModuleCoreAnimation::GetCoreItemOperatorConstructMap());
 			if (eval)
 			{
 				mFunctions[i] = eval;
@@ -91,7 +91,7 @@ inline void CoreActionFunction<dataType, dimension>::init(CoreSequence* sequence
 
 }
 
-template class CoreActionFunction<kfloat,1>;
+template class CoreActionFunction<float,1>;
 template class CoreActionFunction<Point2D, 2>;
 template class CoreActionFunction<Point3D, 3>;
 template class CoreActionFunction<Vector4D, 4>;

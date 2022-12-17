@@ -24,14 +24,14 @@ public:
     DECLARE_ABSTRACT_CLASS_INFO(Window,CoreModifiable,GUI)
 
     //! Typedefs for callbacks for the window events. They are not used by other projects at the moment
-	typedef void (*ClickMessageCallbackFn)(CoreModifiable *pWindow, int buttonId, kfloat X, kfloat Y,bool isDown);
+	typedef void (*ClickMessageCallbackFn)(CoreModifiable *pWindow, int buttonId, float X, float Y,bool isDown);
     //! Typedefs for callbacks for the window events. They are not used by other projects at the moment
 	typedef void (*KeyDownCallbackFn)(Window *pWindow, char C, int VirtualKeyCode);
     //! Typedefs for callbacks for the window events. They are not used by other projects at the moment
 	typedef void (*DestroyCallbackFn)(CoreModifiable *pWindow);
 
 	//! constructor
-    Window(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    Window(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/*! pure virtual show. 
 		Must be implemented in platform/os dependant class
@@ -72,8 +72,8 @@ public:
 	Point2DI	GetPos() { return { mPosition[0], mPosition[1] }; }
 	Point2DI    GetSize() { return { mSize[0], mSize[1] }; }
 
-	virtual void	GetMousePosInWindow(int posx,int posy,kfloat& wposx,kfloat& wposy)=0;
-	virtual void	GetMousePosInDesignWindow(int posx,int posy,kfloat& wposx,kfloat& wposy)=0;
+	virtual void	GetMousePosInWindow(int posx,int posy,float& wposx,float& wposy)=0;
+	virtual void	GetMousePosInDesignWindow(int posx,int posy,float& wposx,float& wposy)=0;
 
 	virtual void ChangeWindowText(const char * txt){}
 

@@ -10,7 +10,7 @@ void CoreActionRemoveFromParent::init(CoreSequence* sequence,CoreVector* params)
 	mTarget = sequence->getTarget();
 
 #ifdef _DEBUG // test parameters count
-	// kdouble duration, int paramID => 2 params
+	// double duration, int paramID => 2 params
 	if(!(params->size() == 2))
 	{
 		return;
@@ -21,13 +21,13 @@ void CoreActionRemoveFromParent::init(CoreSequence* sequence,CoreVector* params)
 	(*params)[0]->getValue(readfloat);
 	mDuration=readfloat;
 
-	kstl::string readstring;
+	std::string readstring;
 	(*params)[1]->getValue(readstring);
 
 	mParentTypeID=CharToID::GetID(readstring);
 }
 
-bool	CoreActionRemoveFromParent::protectedUpdate(kdouble time)
+bool	CoreActionRemoveFromParent::protectedUpdate(double time)
 {
 	CoreAction::protectedUpdate(time);
 	// wait the end of the action
@@ -36,14 +36,14 @@ bool	CoreActionRemoveFromParent::protectedUpdate(kdouble time)
 		auto ptr = mTarget.lock();
 		if (ptr)
 		{
-			const kstl::vector<CoreModifiable*>& parents = ptr->GetParents();
+			const std::vector<CoreModifiable*>& parents = ptr->GetParents();
 			if (parents.size())
 			{
 				// search parent
 				if (mParentTypeID != 0xFFFFFFFF)
 				{
-					kstl::vector<CoreModifiable*>::const_iterator itparent = parents.begin();
-					kstl::vector<CoreModifiable*>::const_iterator itparentend = parents.end();
+					std::vector<CoreModifiable*>::const_iterator itparent = parents.begin();
+					std::vector<CoreModifiable*>::const_iterator itparentend = parents.end();
 					while (itparent != itparentend)
 					{
 						if ((*itparent)->isSubType(mParentTypeID))
@@ -72,7 +72,7 @@ void CoreActionSendMessage::init(CoreSequence* sequence,CoreVector* params)
 	mTarget = sequence->getTarget();
 
 #ifdef _DEBUG // test parameters count
-	// kdouble duration, message => 2 params
+	// double duration, message => 2 params
 	if(!(params->size() >= 2))
 	{
 		return;
@@ -91,7 +91,7 @@ void CoreActionSendMessage::init(CoreSequence* sequence,CoreVector* params)
 	}
 }
 
-bool	CoreActionSendMessage::protectedUpdate(kdouble time)
+bool	CoreActionSendMessage::protectedUpdate(double time)
 {
 	CoreAction::protectedUpdate(time);
 	// wait the end of the action
@@ -120,7 +120,7 @@ void CoreActionEmitSignal::init(CoreSequence* sequence, CoreVector* params)
 	mTarget = sequence->getTarget();
 
 #ifdef _DEBUG // test parameters count
-	// kdouble duration, message => 2 params
+	// double duration, message => 2 params
 	if (!(params->size() >= 2))
 	{
 		return;
@@ -139,7 +139,7 @@ void CoreActionEmitSignal::init(CoreSequence* sequence, CoreVector* params)
 	}
 }
 
-bool	CoreActionEmitSignal::protectedUpdate(kdouble time)
+bool	CoreActionEmitSignal::protectedUpdate(double time)
 {
 	CoreAction::protectedUpdate(time);
 	// wait the end of the action
@@ -155,7 +155,7 @@ bool	CoreActionEmitSignal::protectedUpdate(kdouble time)
 }
 
 
-void	CoreActionCombo::setStartTime(kdouble t)
+void	CoreActionCombo::setStartTime(double t)
 {
 	CoreAction::setStartTime(t);
 	auto itaction=mList.begin();
@@ -169,7 +169,7 @@ void	CoreActionCombo::setStartTime(kdouble t)
 	}
 }
 
-bool	CoreActionCombo::protectedUpdate(kdouble time)
+bool	CoreActionCombo::protectedUpdate(double time)
 {
 	CoreAction::protectedUpdate(time);
 	bool alldone=true;
@@ -230,7 +230,7 @@ CoreActionCombo::~CoreActionCombo()
 }
 
 
-void	CoreActionSerie::setStartTime(kdouble t)
+void	CoreActionSerie::setStartTime(double t)
 {
 	CoreAction::setStartTime(t);
 	auto itaction=mList.begin();
@@ -249,7 +249,7 @@ void	CoreActionSerie::setStartTime(kdouble t)
 	mCurrentActionIndex=0;
 }
 
-bool	CoreActionSerie::protectedUpdate(kdouble time)
+bool	CoreActionSerie::protectedUpdate(double time)
 {
 	CoreAction::protectedUpdate(time);
 	bool done=false;
@@ -261,7 +261,7 @@ bool	CoreActionSerie::protectedUpdate(kdouble time)
 			++mCurrentActionIndex;
 			if(mCurrentActionIndex < mList.size())
 			{
-				kdouble previousend=current->getEndTime();
+				double previousend=current->getEndTime();
 				current=(CoreAction*)mList[mCurrentActionIndex].get();
 				current->setStartTime(previousend);
 			}
@@ -322,7 +322,7 @@ CoreActionSerie::~CoreActionSerie()
 
 
 // set son action start time
-void	CoreActionForLoop::setStartTime(kdouble t)
+void	CoreActionForLoop::setStartTime(double t)
 {
 	CoreAction::setStartTime(t);
 	
@@ -335,7 +335,7 @@ void	CoreActionForLoop::setStartTime(kdouble t)
 }
 
 
-bool	CoreActionForLoop::protectedUpdate(kdouble time)
+bool	CoreActionForLoop::protectedUpdate(double time)
 {
 	CoreAction::protectedUpdate(time);
 	bool done=(mActionToLoop==0) || ((mLoopCount>=0)&&(mCurrentLoopIndex>=mLoopCount));
@@ -345,7 +345,7 @@ bool	CoreActionForLoop::protectedUpdate(kdouble time)
 		if(mActionToLoop->update(time)) // action is finished, start it again ?
 		{
 			++mCurrentLoopIndex;
-			kdouble previousend=mActionToLoop->getEndTime();
+			double previousend=mActionToLoop->getEndTime();
 
 			// mLoopCount<0 => infinite loop
 			if((mCurrentLoopIndex<mLoopCount) || (mLoopCount<0)) 
@@ -391,7 +391,7 @@ void CoreActionForLoop::init(CoreSequence* sequence,CoreVector* params)
 
 	if(mActionToLoop)
 	{
-		mDuration=((kdouble)mLoopCount)*mActionToLoop->getDuration();	
+		mDuration=((double)mLoopCount)*mActionToLoop->getDuration();	
 		if(mDuration<0.0)
 		{
 			mDuration=-1.0;
@@ -405,7 +405,7 @@ CoreActionForLoop::~CoreActionForLoop()
 }
 
 // set son action start time
-void	CoreActionDoWhile::setStartTime(kdouble t)
+void	CoreActionDoWhile::setStartTime(double t)
 {
 	CoreAction::setStartTime(t);
 	
@@ -418,7 +418,7 @@ void	CoreActionDoWhile::setStartTime(kdouble t)
 }
 
 
-bool	CoreActionDoWhile::protectedUpdate(kdouble time)
+bool	CoreActionDoWhile::protectedUpdate(double time)
 {
 	CoreAction::protectedUpdate(time);
 	bool	done=(mActionToLoop==0);
@@ -440,7 +440,7 @@ bool	CoreActionDoWhile::protectedUpdate(kdouble time)
 	{
 		if(mActionToLoop->update(time)) // action is finished, start it again 
 		{
-			kdouble previousend=mActionToLoop->getEndTime();
+			double previousend=mActionToLoop->getEndTime();
 			
 			mActionToLoop->reset();
 			mActionToLoop->setStartTime(previousend);
@@ -468,7 +468,7 @@ void CoreActionDoWhile::init(CoreSequence* sequence,CoreVector* params)
 
 	mDuration=-1.0;
 
-	kstl::string readstring;
+	std::string readstring;
 	(*params)[0]->getValue(readstring);
 	mTarget = checkSubTarget(readstring);
 

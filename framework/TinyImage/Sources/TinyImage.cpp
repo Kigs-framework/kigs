@@ -17,7 +17,7 @@
 
 TinyImageLoaderContext* TinyImage::mLoaderContext=&TinyImageLoaderContext::GetDefault();
 
-kstl::vector<TinyImageLoaderContext>*	TinyImage::mContextStack=0;
+std::vector<TinyImageLoaderContext>*	TinyImage::mContextStack=0;
 
 TinyImage::TinyImage(): GenericRefCountedBaseClass()
 ,mInitIsOK(false)
@@ -233,7 +233,7 @@ SP<TinyImage> TinyImage::CreateImage(const char* filename)
 SP<TinyImage> TinyImage::CreateImage(FileHandle* aFile)
 {
 	SP<TinyImage> img;
-	kstl::string upExtension = ToUpperCase(aFile->mExtension);
+	std::string upExtension = ToUpperCase(aFile->mExtension);
 	if(upExtension == ".BMP")		img = std::make_shared<BMPClass>(aFile);
 	else if (upExtension == ".TGA")	img = std::make_shared<TGAClass>(aFile);
 	else if (upExtension == ".PNG")	img = std::make_shared<PNGClass>(aFile);
@@ -262,10 +262,10 @@ void	TinyImage::PushContext(const TinyImageLoaderContext& toPush)
 {
 	if(!mContextStack)
 	{
-		mContextStack=new kstl::vector<TinyImageLoaderContext>;
+		mContextStack=new std::vector<TinyImageLoaderContext>;
 	}
 
-	kstl::vector<TinyImageLoaderContext>& currentStack=*mContextStack;
+	std::vector<TinyImageLoaderContext>& currentStack=*mContextStack;
 	currentStack.push_back(toPush);
 	mLoaderContext=&(currentStack[currentStack.size()-1]);
 
@@ -279,7 +279,7 @@ void	TinyImage::PopContext()
 		return;
 	}
 
-	kstl::vector<TinyImageLoaderContext>& currentStack=*mContextStack;
+	std::vector<TinyImageLoaderContext>& currentStack=*mContextStack;
 	currentStack.pop_back();
 
 	if(currentStack.size())

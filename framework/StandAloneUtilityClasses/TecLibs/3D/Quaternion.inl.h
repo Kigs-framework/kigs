@@ -187,9 +187,9 @@ inline void Quaternion::GetEulerAngles(Vector3D& euler) const
 	Float sqy = V.y*V.y;    
 	Float sqz = V.z*V.z;    
 	
-	euler.x = atan2f(KFLOAT_CONST(2.f) * (V.x*V.y + V.z*w), sqx - sqy - sqz + sqw);    		
-	euler.y = asinf(KFLOAT_CONST(-2.f) * (V.x*V.z - V.y*w));
-	euler.z = atan2f(KFLOAT_CONST(2.f) * (V.y*V.z + V.x*w), -sqx - sqy + sqz + sqw);    
+	euler.x = atan2f(2.0f * (V.x*V.y + V.z*w), sqx - sqy - sqz + sqw);    		
+	euler.y = asinf(-2.0f * (V.x*V.z - V.y*w));
+	euler.z = atan2f(2.0f * (V.y*V.z + V.x*w), -sqx - sqy + sqz + sqw);    
 }
 
 // +---------

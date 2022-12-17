@@ -25,7 +25,7 @@ public:
 	{
 		DECORATE_METHOD(Cull, Node3D, Node3DLodDecorator);
 		cm->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "LodCoef");
-		cm->setValue(LABEL_TO_ID(LodCoef), 1.0);
+		cm->setValue("LodCoef", 1.0);
 		return true;
 	}
 	DECLARE_DECORATOR_UNDECORATE()

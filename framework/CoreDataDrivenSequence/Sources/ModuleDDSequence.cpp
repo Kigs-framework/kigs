@@ -6,13 +6,13 @@
 IMPLEMENT_CLASS_INFO(ModuleDDSequence);
 
 
-ModuleDDSequence::ModuleDDSequence(const kstl::string& name, CLASS_NAME_TREE_ARG)
+ModuleDDSequence::ModuleDDSequence(const std::string& name, CLASS_NAME_TREE_ARG)
 	: ModuleBase(name, PASS_CLASS_NAME_TREE_ARG)
 {
 }
 
 
-void ModuleDDSequence::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleDDSequence::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	BaseInit(core, "ModuleDDSequence", params); 
 

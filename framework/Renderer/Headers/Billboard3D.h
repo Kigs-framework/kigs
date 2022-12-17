@@ -27,11 +27,11 @@ public:
 
 	/**
 	 * \brief	constructor
-	 * \fn 		Billboard3D(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		Billboard3D(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	Billboard3D(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	Billboard3D(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	/**
 	 * \brief	destructor
@@ -55,47 +55,47 @@ public:
 
 	/**
 	 * \brief	set the size
-	 * \fn 		void SetSize(const kfloat &Width, const kfloat &Height);
+	 * \fn 		void SetSize(const float &Width, const float &Height);
 	 * \param	Width : new width
 	 * \param	Height : new height
 	 */
-	void SetSize(const kfloat &Width, const kfloat &Height);
+	void SetSize(const float &Width, const float &Height);
 
 	/**
 	 * \brief	set the texture position
-	 * \fn 		void SetTexCoord(const kfloat &u1, const kfloat &v1, const kfloat &u2, const kfloat &v2);
+	 * \fn 		void SetTexCoord(const float &u1, const float &v1, const float &u2, const float &v2);
 	 * \param	u1 : 
 	 * \param	v1 : 
 	 * \param	u2 : 
 	 * \param	v2 : 
 	 */
-	void SetTexCoord(const kfloat &u1, const kfloat &v1, const kfloat &u2, const kfloat &v2);
+	void SetTexCoord(const float &u1, const float &v1, const float &u2, const float &v2);
 
 	/**
 	 * \brief	set the position and the size
-	 * \fn 		void SetPositionAndSize(const Point3D &Position, const kfloat &Width, const kfloat &Height);
+	 * \fn 		void SetPositionAndSize(const Point3D &Position, const float &Width, const float &Height);
 	 * \param	Position : new position
 	 * \param	Width : new width
 	 * \param	Height : new height
 	 */
-	void SetPositionAndSize(const Point3D &Position, const kfloat &Width, const kfloat &Height);
+	void SetPositionAndSize(const Point3D &Position, const float &Width, const float &Height);
 
 	/**
 	 * \brief	set the color
-	 * \fn 		void SetColor(const kfloat &R, const kfloat &G, const kfloat &B, const kfloat &A);
+	 * \fn 		void SetColor(const float &R, const float &G, const float &B, const float &A);
 	 * \param	R : red value (0 to 1)
 	 * \param	G : green value (0 to 1)
 	 * \param	B : blue value (0 to 1)
 	 * \param	A : alpha value (0 to 1)
 	 */
-	void SetColor(const kfloat &R, const kfloat &G, const kfloat &B, const kfloat &A);
+	void SetColor(const float &R, const float &G, const float &B, const float &A);
 
 	/**
 	 * \brief	set the alpha value
-	 * \fn 		void SetAlpha(const kfloat &A);
+	 * \fn 		void SetAlpha(const float &A);
 	 * \param	A : alpha value (0 to 1)
 	 */
-	void SetAlpha(const kfloat &A);
+	void SetAlpha(const float &A);
 
 	/**
 	 * \brief	set the father node
@@ -106,11 +106,11 @@ public:
 
 	/**
 	 * \brief	getter of the size (width and height)
-	 * \fn 		void GetSize(kfloat &w, kfloat &h)
+	 * \fn 		void GetSize(float &w, float &h)
 	 * \param	w : receive the width
 	 * \param	h : receive the height
 	 */
-	void GetSize(kfloat &w, kfloat &h) {w=mWidth;h=mHeight;}
+	void GetSize(float &w, float &h) {w=mWidth;h=mHeight;}
 
 	/**
 	 * \brief	getter of the position
@@ -177,21 +177,21 @@ protected:
 	//! Size = Width,Height
 	maFloat mHeight;
 	//!Texture coordinate 
-	kfloat mU1;
+	float mU1;
 	//!Texture coordinate 
-	kfloat mV1;
+	float mV1;
 	//!Texture coordinate 
-	kfloat mU2;
+	float mU2;
 	//!Texture coordinate 
-	kfloat mV2;
+	float mV2;
 	//! Color
-	kfloat mColor[4];
+	float mColor[4];
 	//! Used To make the billboard Facing the Camera... Updated with UpdateOrientation
 	Vector3D mHorizontalVector;
 	//! Used To make the billboard Facing the Camera... Updated with UpdateOrientation
 	Vector3D mVerticalVector;
 	//! Used When Billboard Belongs to a BillboardGroup
-	kfloat mDistanceToCamera;
+	float mDistanceToCamera;
 	//! link to the father node
 	Node3D *mFatherNode;
 	//! reference to Camera

@@ -28,7 +28,7 @@ public:
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	UITexture(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UITexture(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	void PreDraw(TravState* state) override;  // recompute all vertices
 

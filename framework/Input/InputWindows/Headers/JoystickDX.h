@@ -22,7 +22,7 @@ class	JoystickDX : public JoystickDevice
 public:
 
     DECLARE_CLASS_INFO(JoystickDX,JoystickDevice,Input)
-    JoystickDX(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    JoystickDX(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~JoystickDX();
 
 	LPDIRECTINPUTDEVICE8& getDirectInputJoystick(){return mDirectInputJoystick;}

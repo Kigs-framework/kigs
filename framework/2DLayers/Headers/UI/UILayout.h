@@ -27,7 +27,7 @@ public:
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	UILayout(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UILayout(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	bool			addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
 	bool			removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME)override;

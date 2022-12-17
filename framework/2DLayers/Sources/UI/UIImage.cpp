@@ -5,7 +5,7 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UIImage, UIImage, 2DLayers);
 IMPLEMENT_CLASS_INFO(UIImage)
 
-UIImage::UIImage(const kstl::string& name, CLASS_NAME_TREE_ARG) :
+UIImage::UIImage(const std::string& name, CLASS_NAME_TREE_ARG) :
 	UITexturedItem(name, PASS_CLASS_NAME_TREE_ARG)
 {
 
@@ -41,7 +41,7 @@ bool UIImage::isAlpha(float X, float Y)
 	//Try to get mask
 	if (!mAlphaMask)
 	{
-		kstl::vector<ModifiableItemStruct> sons = getItems();
+		std::vector<ModifiableItemStruct> sons = getItems();
 
 		for (unsigned int i = 0; i < sons.size(); i++)
 		{

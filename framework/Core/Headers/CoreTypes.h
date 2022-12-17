@@ -2,7 +2,6 @@
 #define _CORETYPES_H_
 
 #include "CoreSTLAllocator.h"
-#include "kTypes.h"
 #include "kstlstring.h"
 #include "robin_hood.h"
 #include <unordered_map>
@@ -17,10 +16,8 @@
 #include <string.h>
 #endif
 
-#ifdef _KIGS_ONLY_STATIC_LIB_
-#include "Platform/Core/PlatformCore.h"
-#endif
 
+#include "Platform/Core/PlatformCore.h"
 
 
 using s8 = int8_t;
@@ -273,23 +270,7 @@ inline unsigned int    fastGetID(const char* a,unsigned int stringSize)
     return fastIDMask((const unsigned char*)a, indexMask) ^ fastIDMem((const unsigned int*)a,stringSize>>2);
 }
 
-#define LABEL_TO_ID(a) KigsID{#a}
 
-// All of this shouldn't be used anymore
-// We keep it for backward compatibility
-#ifdef KEEP_NAME_AS_STRING
-#define LABEL_AND_ID(a)	#a
-#define STRINGS_NAME_TYPE kstl::string
-#define RAW_STRINGS_NAME_TYPE const char*
-#define _KSTLSTRING_2_ID(a) a
-#define _ID_FROM_S(a) CharToID::GetID(a)
-#else
-#define LABEL_AND_ID(a)	#a
-#define RAW_STRINGS_NAME_TYPE const unsigned int
-#define STRINGS_NAME_TYPE unsigned int
-#define _KSTLSTRING_2_ID(a) CharToID::GetID(a.c_str())
-#define _ID_FROM_S(a) a
-#endif
 
 #ifdef KIGS_TOOLS
 #define KIGSID_CHECK_COLLISIONS 0
@@ -341,17 +322,17 @@ public:
 	
 
 	/**
-	 * \fn		static inline unsigned int GetID(const kstl::string& a)
+	 * \fn		static inline unsigned int GetID(const std::string& a)
 	 * \brief	only one static method to convert the given string to an unsigned int, used as an ID 
 	 * \param	a : string to convert to an Id
 	 * \return	the unique Id of the string
 	 */
-	static inline unsigned int GetID(const kstl::string& a)
+	static inline unsigned int GetID(const std::string& a)
 	{ 
 		KIGSID_ADD_NAME;
 		return fastGetID(a.c_str(),(unsigned int)a.length()); 
 	}
-	static inline unsigned int GetID(const kstl::string_view& a)
+	static inline unsigned int GetID(const std::string_view& a)
 	{
 		KIGSID_ADD_NAME;
 		return fastGetID(a.data(), (unsigned int)a.length());
@@ -393,35 +374,35 @@ struct KigsID
 #ifdef KEEP_NAME_AS_STRING
 	template<size_t _Size> KigsID(const char(&aid)[_Size]) : _id_name(aid), _id(CharToID::GetID(aid)) {
 	};
-	KigsID(const kstl::string& aid) : _id_name(aid), _id(CharToID::GetID(aid)) {
+	KigsID(const std::string& aid) : _id_name(aid), _id(CharToID::GetID(aid)) {
 	};
-	KigsID(const kstl::string_view& aid) : _id_name(aid), _id(CharToID::GetID(aid)) {
+	KigsID(const std::string_view& aid) : _id_name(aid), _id(CharToID::GetID(aid)) {
 	};
 
 	KigsID(unsigned int aid) : _id_name("*unknown*"), _id(aid) {
 	};
 
-	KigsID& operator=(const kstl::string& aid) { _id_name = aid; _id = CharToID::GetID(aid); return *this; };
+	KigsID& operator=(const std::string& aid) { _id_name = aid; _id = CharToID::GetID(aid); return *this; };
 	template<size_t _Size> KigsID& operator=(const char(&aid)[_Size]) { _id_name = aid; _id = CharToID::GetID(aid); return *this; };
 
 	KigsID& operator=(unsigned int aid) { _id_name = "*unknown*"; _id = aid; return *this; };
 	
 	// Extra name
 	// Dont set this field manually!
-	kstl::string _id_name;
+	std::string _id_name;
 
 #else
 	template<size_t _Size>
 	KigsID(const char(&aid)[_Size]) : _id(CharToID::GetID<_Size>(aid)) {};
-	KigsID(const kstl::string& aid) : _id(CharToID::GetID(aid)) {};
-	KigsID(const kstl::string_view& aid) : _id(CharToID::GetID(aid)) {};
+	KigsID(const std::string& aid) : _id(CharToID::GetID(aid)) {};
+	KigsID(const std::string_view& aid) : _id(CharToID::GetID(aid)) {};
 	//KigsID(const char*& aid) : mID(CharToID::GetID(aid)) {};
 	KigsID(unsigned int aid) : _id(aid) {};
 
 	template<size_t _Size>
 	KigsID& operator=(const char(&aid)[_Size]) { _id = CharToID::GetID<_Size>(aid); return *this; };
-	KigsID& operator=(const kstl::string& aid) { _id = CharToID::GetID(aid); return *this; };
-	KigsID& operator=(const kstl::string_view& aid) { _id = CharToID::GetID(aid); return *this; };
+	KigsID& operator=(const std::string& aid) { _id = CharToID::GetID(aid); return *this; };
+	KigsID& operator=(const std::string_view& aid) { _id = CharToID::GetID(aid); return *this; };
 	//KigsID& operator=(const char*& aid) { mID = CharToID::GetID(aid); return *this; };
 	KigsID& operator=(unsigned int aid) { _id = aid; return *this; };
 

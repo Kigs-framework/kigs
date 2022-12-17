@@ -39,7 +39,7 @@ GLSLShaderInfo::~GLSLShaderInfo()
 
 IMPLEMENT_CLASS_INFO(API3DShader)
 
-API3DShader::API3DShader(const kstl::string& name, CLASS_NAME_TREE_ARG) : ShaderBase(name, PASS_CLASS_NAME_TREE_ARG)
+API3DShader::API3DShader(const std::string& name, CLASS_NAME_TREE_ARG) : ShaderBase(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	KigsCore::GetNotificationCenter()->addObserver(this, "Reload", "ResetContext");
 }
@@ -55,7 +55,7 @@ void API3DShader::NotifyUpdate(const unsigned int labelid)
 	{
 		Dealloc();
 		// rebuild only if both shaders are set
-		if ((((kstl::string)mVertexShader) != "") && (((kstl::string)mFragmentShader) != ""))
+		if ((((std::string)mVertexShader) != "") && (((std::string)mFragmentShader) != ""))
 		{
 			Rebuild();
 		}
@@ -79,11 +79,11 @@ void	API3DShader::PushUniform(CoreModifiable * a_Uniform)
 #endif
 
 	// get UniformList
-	kstl::map<UNIFORM_NAME_TYPE, UniformList*>::iterator it = (*(mCurrentShader)->mUniforms).find(l_UniformName);
+	std::map<UNIFORM_NAME_TYPE, UniformList*>::iterator it = (*(mCurrentShader)->mUniforms).find(l_UniformName);
 	UniformList * l_ul;
 	if (it == (*(mCurrentShader)->mUniforms).end())
 	{
-		kstl::string lName = static_cast<API3DUniformBase*>(a_Uniform)->Get_Name();
+		std::string lName = static_cast<API3DUniformBase*>(a_Uniform)->Get_Name();
 
 		//auto id = CharToID::GetID(lName);
 
@@ -118,7 +118,7 @@ void	API3DShader::PopUniform(CoreModifiable * a_Uniform)
 	UNIFORM_NAME_TYPE l_UniformName = static_cast<API3DUniformBase*>(a_Uniform)->Get_ID();
 
 #ifdef _DEBUG
-	//if (getAttribute(LABEL_TO_ID(TraceUniform)))
+	//if (getAttribute("TraceUniform"))
 		//printf("pop : %s, on %s\n", static_cast<API3DUniformBase*>(a_Uniform)->Get_Name().c_str(), getName().c_str());
 #endif
 
@@ -157,7 +157,7 @@ void	API3DShader::Dealloc()
 BuildShaderStruct*	API3DShader::Rebuild()
 {
 
-	kstl::string str;
+	std::string str;
 	mVertexShader.getValue(str);
 
 	// Compile the shader source
@@ -170,7 +170,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		const char* filename = (str.c_str() + 1);
 		auto pathManager = KigsCore::Singleton<FilePathManager>();
 
-		kstl::string fullfilename;
+		std::string fullfilename;
 		if (pathManager)
 		{
 			SmartPointer<FileHandle> file = pathManager->FindFullName(filename);
@@ -204,7 +204,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		const char* filename = (str.c_str() + 1);
 		auto pathManager = KigsCore::Singleton<FilePathManager>();
 
-		kstl::string fullfilename;
+		std::string fullfilename;
 		if (pathManager)
 		{
 			SmartPointer<FileHandle> file = pathManager->FindFullName(filename);
@@ -263,7 +263,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		//The maxLength includes the NULL character
 		std::vector<GLchar> infoLog(maxLength);
 		glGetProgramInfoLog(toReturn->mShaderProgram->mID, maxLength, &maxLength, &infoLog[0]); CHECK_GLERROR;
-		kstl::string txt = "";
+		std::string txt = "";
 		txt.reserve(maxLength);
 		std::vector<char>::iterator itr = infoLog.begin();
 		std::vector<char>::iterator end = infoLog.end();
@@ -283,7 +283,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 
 	if (!toReturn->mUniforms)
 	{
-		toReturn->mUniforms = new kstl::map<UNIFORM_NAME_TYPE, UniformList*>();
+		toReturn->mUniforms = new std::map<UNIFORM_NAME_TYPE, UniformList*>();
 	}
 
 	// location is only for generic shaders
@@ -370,7 +370,7 @@ void	API3DShader::InitModifiable()
 void	API3DShader::DelayedInit(TravState* state)
 {
 
-	if ((((kstl::string)mVertexShader) != "") && (((kstl::string)mFragmentShader) != ""))
+	if ((((std::string)mVertexShader) != "") && (((std::string)mFragmentShader) != ""))
 	{
 		Drawable::InitModifiable();
 
@@ -383,13 +383,13 @@ void	API3DShader::DelayedInit(TravState* state)
 		Active(state);
 
 		// add child unifor as default uniform
-		kstl::vector<CMSP> instances;
+		std::vector<CMSP> instances;
 		CoreModifiable::GetSonInstancesByType("API3DUniformBase", instances);
 
 		if (instances.size())
 		{
-			kstl::vector<CMSP>::iterator itr = instances.begin();
-			kstl::vector<CMSP>::iterator end = instances.end();
+			std::vector<CMSP>::iterator itr = instances.begin();
+			std::vector<CMSP>::iterator end = instances.end();
 			for (; itr != end; ++itr)
 			{
 				PushUniform(static_cast<API3DUniformBase*>((*itr).get()));
@@ -414,7 +414,7 @@ void	API3DShader::DoPreDraw(TravState* state)
 
 		state->GetRenderer()->pushShader(this, state);
 		// then PreDraw for sons
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
@@ -433,7 +433,7 @@ void	API3DShader::DoPostDraw(TravState* state)
 	if (PostDraw(state)) // first PostDraw for this
 	{
 		// then PostDraw for sons
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
@@ -539,7 +539,7 @@ void	API3DShader::PrepareExport(ExportSettings* settings)
 		{
 			bool L_bAlreadyAdded = false;
 			auto first_uniform = itr->second->mList.front();
-			kstl::vector<CoreModifiable*> L_parents = first_uniform->GetParents();
+			std::vector<CoreModifiable*> L_parents = first_uniform->GetParents();
 			for (int p = 0; p < first_uniform->GetParentCount(); p++)
 			{
 				if (L_parents[p] == this)
@@ -576,7 +576,7 @@ DEFINE_METHOD(API3DShader, Reload)
 {
 	Dealloc();
 	// rebuild only if both shaders are set
-	if ((((kstl::string)mVertexShader) != "") && (((kstl::string)mFragmentShader) != ""))
+	if ((((std::string)mVertexShader) != "") && (((std::string)mFragmentShader) != ""))
 	{
 		auto toAdd=Rebuild();
 		insertBuildShader(mCurrentShaderKey, toAdd);

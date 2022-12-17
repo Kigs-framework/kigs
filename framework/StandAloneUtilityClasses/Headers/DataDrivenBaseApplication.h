@@ -6,7 +6,7 @@
 #include "AttributePacking.h"
 #include "maReference.h"
 
-typedef	kstl::string	State_t;
+typedef	std::string	State_t;
 const State_t	State_None = "";
 const State_t	State_Empty = "Empty";
 #define MAX_STATE_STACK	10
@@ -39,7 +39,7 @@ public:
 	friend class DataDrivenTransition;
 
 	DECLARE_CLASS_INFO(DataDrivenSequence, CoreModifiable, Core)
-	DataDrivenSequence(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	DataDrivenSequence(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~DataDrivenSequence();
 
 	DataDrivenSequenceManager*	getManager();
@@ -48,8 +48,8 @@ protected:
 	void	InitModifiable() override;
 	void	UninitModifiable() override;
 
-	virtual void	saveParams(kstl::map<unsigned int, kstl::string>& params);
-	virtual void	restoreParams(const kstl::map<unsigned int, kstl::string>& params);
+	virtual void	saveParams(std::map<unsigned int, std::string>& params);
+	virtual void	restoreParams(const std::map<unsigned int, std::string>& params);
 
 	maBool			mKeepParamsOnStateChange;
 	maReference		mSequenceManager;
@@ -72,7 +72,7 @@ public:
 
 	DECLARE_CLASS_INFO(DataDrivenTransition, CoreModifiable, Core)
 
-	DataDrivenTransition(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	DataDrivenTransition(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	//! destructor
 	virtual ~DataDrivenTransition();
@@ -92,8 +92,8 @@ protected:
 
 	bool			mIsFirstUpdate;
 
-	kstl::vector<CMSP>	mPrevLauncherList;
-	kstl::vector<CMSP>	mNextLauncherList;
+	std::vector<CMSP>	mPrevLauncherList;
+	std::vector<CMSP>	mNextLauncherList;
 	maReference						mSequenceManager;
 };
 
@@ -143,8 +143,8 @@ protected:
 	void Update(const Timer&, void*) override;
 	void UninitModifiable() override;
 
-	void ProtectedInitSequence(const kstl::string& sequence);
-	void ProtectedCloseSequence(const kstl::string& sequence);
+	void ProtectedInitSequence(const std::string& sequence);
+	void ProtectedCloseSequence(const std::string& sequence);
 	
 	void setInTransition(bool intransition) { mInTransition = intransition; }
 	void CheckEndTransition();
@@ -156,7 +156,7 @@ protected:
 	// sequence info & methods
 	State_t			mRequestedState;
 
-	kstl::vector<State_t>		mStateStack;
+	std::vector<State_t>		mStateStack;
 
 	DECLARE_VIRTUAL_METHOD(ChangeSequence);
 	DECLARE_VIRTUAL_METHOD(StackSequence);
@@ -182,7 +182,7 @@ protected:
 	
 	//LayerMouseInfo * theMouseInfo = nullptr;
 
-	kstl::map<kstl::string, kstl::map<unsigned int, kstl::string> >	mSequenceParametersMap;
+	std::map<std::string, std::map<unsigned int, std::string> >	mSequenceParametersMap;
 
 };
 
@@ -216,8 +216,8 @@ protected:
 	void	setInTransition(DataDrivenTransition* transition, bool active);
 
 
-	virtual void ProtectedInitSequence(const kstl::string& sequence) {};
-	virtual void ProtectedCloseSequence(const kstl::string& sequence) {};
+	virtual void ProtectedInitSequence(const std::string& sequence) {};
+	virtual void ProtectedCloseSequence(const std::string& sequence) {};
 
 	// Create default modules
 	void ProtectedPreInit() override;

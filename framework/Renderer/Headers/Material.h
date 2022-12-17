@@ -34,11 +34,11 @@ public:
 	
 	/**
 	 * \brief	constructor
-	 * \fn 		Material(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		Material(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-    Material(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    Material(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 
 	/**
@@ -71,13 +71,13 @@ public:
 
 	/**
 	 * \brief	set the ambient color
-	 * \fn 		void	SetAmbientColor(kfloat r,kfloat g,kfloat b,kfloat a=KFLOAT_CONST(1.0f))
+	 * \fn 		void	SetAmbientColor(float r,float g,float b,float a=1.0f)
 	 * \param	r : red color
 	 * \param	g : green color
 	 * \param	b : blue color
 	 * \param	a : alpha value
 	 */
-	void	SetAmbientColor(kfloat r,kfloat g,kfloat b,kfloat a=KFLOAT_CONST(1.0f))
+	void	SetAmbientColor(float r,float g,float b,float a=1.0f)
 	{
 		mAmbientColor[0]=r;
 		mAmbientColor[1]=g;
@@ -87,12 +87,12 @@ public:
 
 	/**
 	 * \brief	get the ambient color
-	 * \fn 		void	GetAmbientColor(kfloat& r,kfloat& g,kfloat& b)
+	 * \fn 		void	GetAmbientColor(float& r,float& g,float& b)
 	 * \param	r : red color (in/out param)
 	 * \param	g : green color (in/out param)
 	 * \param	b : blue color (in/out param)
 	 */
-	void	GetAmbientColor(kfloat& r,kfloat& g,kfloat& b)
+	void	GetAmbientColor(float& r,float& g,float& b)
 	{
 		r=mAmbientColor[0];
 		g=mAmbientColor[1];
@@ -101,15 +101,15 @@ public:
 
 	/**
 	 * \brief	set the diffuse color
-	 * \fn 		void	SetDiffuseColor(kfloat r,kfloat g,kfloat b,kfloat a=KFLOAT_CONST(-1.0f))
+	 * \fn 		void	SetDiffuseColor(float r,float g,float b,float a=-1.0f)
 	 * \param	r : red color
 	 * \param	g : green color
 	 * \param	b : blue color
 	 * \param	a : alpha value
 	 */
-	void	SetDiffuseColor(kfloat r,kfloat g,kfloat b,kfloat a=KFLOAT_CONST(-1.0f))
+	void	SetDiffuseColor(float r,float g,float b,float a=-1.0f)
 	{
-		if(a != KFLOAT_CONST(-1.0))
+		if(a != -1.0)
 		{
 			mTransparency=a;
 		}
@@ -121,12 +121,12 @@ public:
 
 	/**
 	 * \brief	get the diffuse color
-	 * \fn 		void	GetDiffuseColor(kfloat& r,kfloat& g,kfloat& b)
+	 * \fn 		void	GetDiffuseColor(float& r,float& g,float& b)
 	 * \param	r : red color (in/out param)
 	 * \param	g : green color (in/out param)
 	 * \param	b : blue color (in/out param)
 	 */
-	void	GetDiffuseColor(kfloat& r,kfloat& g,kfloat& b)
+	void	GetDiffuseColor(float& r,float& g,float& b)
 	{
 		r=mDiffuseColor[0];
 		g=mDiffuseColor[1];
@@ -135,13 +135,13 @@ public:
 
 	/**
 	 * \brief	set the specular color
-	 * \fn 		void	SetSpecularColor(kfloat r,kfloat g,kfloat b,kfloat a=KFLOAT_CONST(1.0f))
+	 * \fn 		void	SetSpecularColor(float r,float g,float b,float a=1.0f)
 	 * \param	r : red color
 	 * \param	g : green color
 	 * \param	b : blue color
 	 * \param	a : alpha value
 	 */
-  void	SetSpecularColor(kfloat r,kfloat g,kfloat b,kfloat a=KFLOAT_CONST(1.0f))
+  void	SetSpecularColor(float r,float g,float b,float a=1.0f)
 	{
 		mSpecularColor[0]=r;
 		mSpecularColor[1]=g;
@@ -151,12 +151,12 @@ public:
 
 	/**
 	 * \brief	get the specular color
-	 * \fn 		void	GetSpecularColor(kfloat& r,kfloat& g,kfloat& b)
+	 * \fn 		void	GetSpecularColor(float& r,float& g,float& b)
 	 * \param	r : red color (in/out param)
 	 * \param	g : green color (in/out param)
 	 * \param	b : blue color (in/out param)
 	 */
-	void	GetSpecularColor(kfloat& r,kfloat& g,kfloat& b)
+	void	GetSpecularColor(float& r,float& g,float& b)
 	{
 		r=mSpecularColor[0];
 		g=mSpecularColor[1];
@@ -165,13 +165,13 @@ public:
 
 	/**
 	 * \brief	set the emissive color
-	 * \fn 		void	SetEmissionColor(kfloat r,kfloat g,kfloat b,kfloat a=KFLOAT_CONST(1.0f))
+	 * \fn 		void	SetEmissionColor(float r,float g,float b,float a=1.0f)
 	 * \param	r : red color
 	 * \param	g : green color
 	 * \param	b : blue color
 	 * \param	a : alpha value
 	 */
-  void	SetEmissionColor(kfloat r,kfloat g,kfloat b,kfloat a=KFLOAT_CONST(1.0f))
+  void	SetEmissionColor(float r,float g,float b,float a=1.0f)
 	{
 		mEmissionColor[0]=r;
 		mEmissionColor[1]=g;
@@ -181,12 +181,12 @@ public:
 
 	/**
 	 * \brief	get the emissive color
-	 * \fn 		void	GetEmissionColor(kfloat& r,kfloat& g,kfloat& b)
+	 * \fn 		void	GetEmissionColor(float& r,float& g,float& b)
 	 * \param	r : red color (in/out param)
 	 * \param	g : green color (in/out param)
 	 * \param	b : blue color (in/out param)
 	 */
-	void	GetEmissionColor(kfloat& r,kfloat& g,kfloat& b)
+	void	GetEmissionColor(float& r,float& g,float& b)
 	{
 		r=mEmissionColor[0];
 		g=mEmissionColor[1];
@@ -195,10 +195,10 @@ public:
 
 	/**
 	* \brief	get the shininess property
-	* \fn 		void	GetShininess(kfloat& s)(kfloat& r,kfloat& g,kfloat& b)
+	* \fn 		void	GetShininess(float& s)(float& r,float& g,float& b)
 	* \param	s : shininess property (in/out param)
 	*/
-	void GetShininess(kfloat& s)
+	void GetShininess(float& s)
 	{
 		s = mShininess;
 	}

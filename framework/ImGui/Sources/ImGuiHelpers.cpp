@@ -11,7 +11,7 @@ namespace ImGui
 	{
 		bool getter(void *data, int index, const char** item_text) 
 		{
-			auto it = (*(kstl::set<CoreModifiable*>*)data).begin();
+			auto it = (*(std::set<CoreModifiable*>*)data).begin();
 			std::advance(it, index);
 			*item_text = (*it)->getName().c_str();
 			return true;
@@ -20,7 +20,7 @@ namespace ImGui
 	
 	bool CameraCombo(const char* label, int* current_item, CoreModifiable** camera_result)
 	{
-		kstl::vector<CMSP> insts=CoreModifiable::GetInstances("Camera");
+		std::vector<CMSP> insts=CoreModifiable::GetInstances("Camera");
 		
 		if(ImGui::Combo(label, current_item, getter, (void*)&insts, (int)insts.size(), 10))
 		{
@@ -31,7 +31,7 @@ namespace ImGui
 				if(*current_item == -1)
 				{
 					bool b = false;
-					cam->getValue(LABEL_TO_ID(CameraIsEnabled), b);
+					cam->getValue("CameraIsEnabled", b);
 					if(b)
 					{
 						*current_item = i;
@@ -42,7 +42,7 @@ namespace ImGui
 				}
 				else
 				{
-					cam->setValue(LABEL_TO_ID(CameraIsEnabled), i==*current_item);
+					cam->setValue("CameraIsEnabled", i==*current_item);
 				}
 				if(i==*current_item && camera_result)
 					*camera_result = cam;

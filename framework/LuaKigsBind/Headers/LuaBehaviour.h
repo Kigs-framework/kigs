@@ -35,13 +35,13 @@ public:
 	DECLARE_CLASS_INFO(LuaBehaviour, CoreModifiable, LuaBind)
     
 		//! constructor
-	LuaBehaviour(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	LuaBehaviour(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	
     /*! virtual update. 
     */
 	void Update(const Timer& /* timer */,void* addParam) override;
 
-	void InitLua(kdouble current_time);
+	void InitLua(double current_time);
 
 	//! destructor
 	virtual ~LuaBehaviour();
@@ -62,7 +62,7 @@ protected:
 	// if interval is set, do update only if interval elapsed
 	maFloat					mInterval;
 	// last update time ( for interval evaluation)
-	kdouble					mLastTime;
+	double					mLastTime;
 	
 	// check if lua needs init
 	bool				    mLuaNeedInit;

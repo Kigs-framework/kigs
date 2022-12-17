@@ -289,9 +289,9 @@ void Node2D::ComputeRealSize()
 void Node2D::ComputeMatrices()
 {
 	mLocalTransformMatrix.SetIdentity();
-	mLocalTransformMatrix.SetScale((kfloat)mPreScale[0], (kfloat)mPreScale[1], 1.0);
-	mLocalTransformMatrix.PreRotateZ((kfloat)mRotationAngle);
-	mLocalTransformMatrix.PostScale((kfloat)mPostScale[0],(kfloat)mPostScale[1], 1.0);
+	mLocalTransformMatrix.SetScale((float)mPreScale[0], (float)mPreScale[1], 1.0);
+	mLocalTransformMatrix.PreRotateZ((float)mRotationAngle);
+	mLocalTransformMatrix.PostScale((float)mPostScale[0],(float)mPostScale[1], 1.0);
 	
 	ComputeRealSize();
 
@@ -382,8 +382,8 @@ void	Node2D::SetUpNodeIfNeeded()
 
 		// propagate to sons
 		// propagate recalculation
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator it = mSons.begin();
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = mSons.end();
+		std::set<Node2D*, Node2D::PriorityCompare>::iterator it = mSons.begin();
+		std::set<Node2D*, Node2D::PriorityCompare>::iterator end = mSons.end();
 		for (; it != end; ++it)
 		{
 			(*it)->SetNodeFlag(Node2D_NeedUpdatePosition);
@@ -401,7 +401,7 @@ void	Node2D::SetUpNodeIfNeeded()
 	}
 }
 
-void	Node2D::GetGlobalPosition(kfloat &X, kfloat &Y)
+void	Node2D::GetGlobalPosition(float &X, float &Y)
 {
 	// recompute matrix
 	SetUpNodeIfNeeded();
@@ -428,8 +428,8 @@ void Node2D::TravDraw(TravState* state)
 	ProtectedDraw(state);
 
 	// draw sons
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator it = mSons.begin();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = mSons.end();
+	std::set<Node2D*, Node2D::PriorityCompare>::iterator it = mSons.begin();
+	std::set<Node2D*, Node2D::PriorityCompare>::iterator end = mSons.end();
 	while (it != end)
 	{
 		(*it)->TravDraw(state);
@@ -454,12 +454,12 @@ void	Node2D::ResortSons()
 {
 	if (GetNodeFlag(Node2D_SonPriorityChanged))
 	{
-		kstl::set<Node2D*, Node2D::PriorityCompare> resortset = mSons;
+		std::set<Node2D*, Node2D::PriorityCompare> resortset = mSons;
 
 		mSons.clear();
 
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator it = resortset.begin();
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = resortset.end();
+		std::set<Node2D*, Node2D::PriorityCompare>::iterator it = resortset.begin();
+		std::set<Node2D*, Node2D::PriorityCompare>::iterator end = resortset.end();
 
 		for (; it != end; ++it)
 		{
@@ -484,8 +484,8 @@ void	Node2D::PropagateNeedUpdateToFather()
 Node2D* Node2D::getFather() const
 {
 	//! Node2D has only one Node2D father, so search in CoreModifiable parents, and found it 
-	kstl::vector<CoreModifiable*>::const_iterator it;
-	const kstl::vector<CoreModifiable*>& parents = GetParents();
+	std::vector<CoreModifiable*>::const_iterator it;
+	const std::vector<CoreModifiable*>& parents = GetParents();
 	Node2D* father = 0;
 	for (it = parents.begin(); it != parents.end(); ++it)
 	{
@@ -500,8 +500,8 @@ Node2D* Node2D::getFather() const
 
 Abstract2DLayer* Node2D::getLayerFather() const
 {
-	kstl::vector<CoreModifiable*>::const_iterator it;
-	const kstl::vector<CoreModifiable*>& parents = GetParents();
+	std::vector<CoreModifiable*>::const_iterator it;
+	const std::vector<CoreModifiable*>& parents = GetParents();
 	Abstract2DLayer* father = 0;
 	for (it = parents.begin(); it != parents.end(); ++it)
 	{

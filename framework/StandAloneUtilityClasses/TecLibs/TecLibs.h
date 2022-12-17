@@ -142,29 +142,6 @@ using f32 = float;
 using f64 = double;
 
 #endif
-#ifndef KFLOAT_CONST
-#define KFLOAT_CONST(a) (a)
-#endif
-
-#ifndef KFLOAT_ZERO
-#define KFLOAT_ZERO 0.0f
-#endif
-
-#ifndef KFLOAT_ONE
-#define KFLOAT_ONE 1.0f
-#endif
-
-#ifndef KFLOAT_CONST_MIN
-#define KFLOAT_CONST_MIN (-FLT_MAX)
-#endif
-
-#ifndef KFLOAT_CONST_MAX
-#define KFLOAT_CONST_MAX FLT_MAX
-#endif
-
-#ifndef KFLOAT_CONST_PI 
-#define KFLOAT_CONST_PI (3.141592653589f)
-#endif
 
 
 // Sized flags

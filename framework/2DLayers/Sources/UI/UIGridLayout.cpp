@@ -5,16 +5,16 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UIGridLayout, UIGridLayout, 2DLayers);
 IMPLEMENT_CLASS_INFO(UIGridLayout)
 
-UIGridLayout::UIGridLayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
+UIGridLayout::UIGridLayout(const std::string& name, CLASS_NAME_TREE_ARG) :
 	UILayout(name, PASS_CLASS_NAME_TREE_ARG)
-	, mColumns(*this, false, LABEL_AND_ID(Columns), 0)
-	, mRowHeight(*this, false, LABEL_AND_ID(RowHeight), 0)
-	, mColumnWidth(*this, false, LABEL_AND_ID(ColumnWidth), 0)
-	, mHeaderRow(*this, false, LABEL_AND_ID(HeaderRow), false)
-	, mPadding(*this, false, LABEL_AND_ID(Padding), 0, 0)
-	, mSortByPriority(*this, false, LABEL_AND_ID(SortByPriority), false)
-	, mResizeElements(*this, false, LABEL_AND_ID(ResizeElements), false)
-	, mAutoResize(*this, false, LABEL_AND_ID(AutoResize), true)
+	, mColumns(*this, false, "Columns", 0)
+	, mRowHeight(*this, false, "RowHeight", 0)
+	, mColumnWidth(*this, false, "ColumnWidth", 0)
+	, mHeaderRow(*this, false, "HeaderRow", false)
+	, mPadding(*this, false, "Padding", 0, 0)
+	, mSortByPriority(*this, false, "SortByPriority", false)
+	, mResizeElements(*this, false, "ResizeElements", false)
+	, mAutoResize(*this, false, "AutoResize", true)
 {
 	mColumns.changeNotificationLevel(Owner);
 	mPadding.changeNotificationLevel(Owner);
@@ -54,12 +54,12 @@ void UIGridLayout::RecomputeLayout()
 		int padding_y = mPadding[1];
 
 
-		kstl::vector<CoreModifiable*> items;
+		std::vector<CoreModifiable*> items;
 
 		if (!mSortByPriority) {
 			// Get sons ordered by insertion
-			const kstl::vector<ModifiableItemStruct> sons = getItems();
-			kstl::vector<ModifiableItemStruct>::const_iterator itsons;
+			const std::vector<ModifiableItemStruct> sons = getItems();
+			std::vector<ModifiableItemStruct>::const_iterator itsons;
 			for (itsons = sons.begin(); itsons != sons.end(); itsons++)
 			{
 				if ((*itsons).mItem->isSubType(Node2D::mClassID))
@@ -70,9 +70,9 @@ void UIGridLayout::RecomputeLayout()
 		}
 		else {
 			// Get sons ordered by priority
-			kstl::set<Node2D*, Node2D::PriorityCompare> sons = GetSons();
-			kstl::set<Node2D*, Node2D::PriorityCompare>::reverse_iterator itsons = sons.rbegin();
-			kstl::set<Node2D*, Node2D::PriorityCompare>::reverse_iterator itend = sons.rend();
+			std::set<Node2D*, Node2D::PriorityCompare> sons = GetSons();
+			std::set<Node2D*, Node2D::PriorityCompare>::reverse_iterator itsons = sons.rbegin();
+			std::set<Node2D*, Node2D::PriorityCompare>::reverse_iterator itend = sons.rend();
 			while (itsons != itend) {
 				items.push_back(*itsons);
 				itsons++;
@@ -80,8 +80,8 @@ void UIGridLayout::RecomputeLayout()
 		}
 
 
-		kstl::vector<CoreModifiable*>::iterator it = items.begin();
-		kstl::vector<CoreModifiable*>::iterator end = items.end();
+		std::vector<CoreModifiable*>::iterator it = items.begin();
+		std::vector<CoreModifiable*>::iterator end = items.end();
 
 		auto nb_items = items.size();
 

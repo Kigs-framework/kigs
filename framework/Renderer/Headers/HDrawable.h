@@ -28,11 +28,11 @@ public:
 
 	/**
 	 * \brief	constructor
-	 * \fn 		HDrawable(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		HDrawable(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	HDrawable(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	HDrawable(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/**
 	 * \brief	pre draw method

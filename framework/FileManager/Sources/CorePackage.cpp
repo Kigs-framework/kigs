@@ -44,7 +44,7 @@ void CorePackage::RenameFile(const std::string& from, const std::string& to)
 	fat_entry->mFastCheckName = to;
 }
 
-CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
+CorePackage::FATEntry*	CorePackage::find(const std::string& path,bool isFile)
 {
 
 	FATEntryNode* currentEntry = mRootFATEntry;
@@ -57,7 +57,7 @@ CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
 		rfolderPos = 0;
 	}
 
-	kstl::string_view fullfolderName(path.c_str(), rfolderPos);
+	std::string_view fullfolderName(path.c_str(), rfolderPos);
 
 	size_t currentFolderPos = 0;
 	bool	isOK = false;
@@ -80,10 +80,10 @@ CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
 	{
 		isOK = true;
 		size_t folderPos = path.find('/', 0);
-		while (folderPos != kstl::string::npos)
+		while (folderPos != std::string::npos)
 		{
 			isOK = false;
-			kstl::string_view folderName(path.c_str()+currentFolderPos, folderPos - currentFolderPos);
+			std::string_view folderName(path.c_str()+currentFolderPos, folderPos - currentFolderPos);
 			const KigsID testName = folderName;
 			for (auto sonEntry : currentEntry->mSons)
 			{
@@ -103,7 +103,7 @@ CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
 			currentFolderPos = folderPos + 1;
 			folderPos = path.find('/', currentFolderPos);
 		}
-		if (rfolderPos != kstl::string::npos)
+		if (rfolderPos != std::string::npos)
 		{
 			thread_read.mCachedFATEntry = currentEntry;
 			thread_read.mCachedFolder = fullfolderName;
@@ -113,7 +113,7 @@ CorePackage::FATEntry*	CorePackage::find(const kstl::string& path,bool isFile)
 	if (isOK)
 	{
 		isOK = false;
-		kstl::string_view fileName(path.c_str()+currentFolderPos, path.length() - currentFolderPos);
+		std::string_view fileName(path.c_str()+currentFolderPos, path.length() - currentFolderPos);
 		const KigsID testName = fileName;
 		for (auto sonEntry : currentEntry->mSons)
 		{
@@ -205,7 +205,7 @@ std::string CorePackage::getRootFolderName()
 	
 }
 
-void	CorePackage::AddFile(const kstl::string& filename, const kstl::string& filePathInPackage,SP<CoreRawBuffer> memfile)
+void	CorePackage::AddFile(const std::string& filename, const std::string& filePathInPackage,SP<CoreRawBuffer> memfile)
 {
 	if (!mPackageBuilderStruct)
 	{
@@ -215,7 +215,7 @@ void	CorePackage::AddFile(const kstl::string& filename, const kstl::string& file
 	mPackageBuilderStruct->AddFile(filename, filePathInPackage, memfile);
 }
 
-void	CorePackage::RemoveFile(const kstl::string& filename)
+void	CorePackage::RemoveFile(const std::string& filename)
 {
 	if (!mPackageBuilderStruct)
 	{
@@ -250,7 +250,7 @@ void	CorePackage::ImportPackage(CorePackage* to_import)
 
 
 #ifdef WIN32
-void	CorePackage::RecursiveAddFolder(const kstl::string& foldername, const kstl::string& FolderNameInPackage, int cropFilePath)
+void	CorePackage::RecursiveAddFolder(const std::string& foldername, const std::string& FolderNameInPackage, int cropFilePath)
 {
 	HANDLE			hFind;
 
@@ -310,7 +310,7 @@ void	CorePackage::RecursiveAddFolder(const kstl::string& foldername, const kstl:
 #endif
 
 
-void	CorePackage::AddFolder(const kstl::string& foldername, const kstl::string& FolderNameInPackage)
+void	CorePackage::AddFolder(const std::string& foldername, const std::string& FolderNameInPackage)
 {
 
 	if (!mPackageBuilderStruct)
@@ -321,7 +321,7 @@ void	CorePackage::AddFolder(const kstl::string& foldername, const kstl::string& 
 
 #ifdef WIN32// recursive folder search only available on windows at the moment
 
-	kstl::string fullfoldername = foldername+"\\";
+	std::string fullfoldername = foldername+"\\";
 
 	RecursiveAddFolder(fullfoldername, FolderNameInPackage, (int)foldername.length());
 
@@ -329,7 +329,7 @@ void	CorePackage::AddFolder(const kstl::string& foldername, const kstl::string& 
 #endif
 }
 
-void	CorePackage::Export(const kstl::string& filename, const std::string& working_directory)
+void	CorePackage::Export(const std::string& filename, const std::string& working_directory)
 {
 
 	if (!mPackageBuilderStruct)
@@ -383,11 +383,11 @@ void	CorePackage::Export(const kstl::string& filename, const std::string& workin
 }
 
 
-kstl::vector<kstl::string> RetreivePath(kstl::string filename, kstl::string& shortfilename, const std::string& working_directory="")
+std::vector<std::string> RetreivePath(std::string filename, std::string& shortfilename, const std::string& working_directory="")
 {
-	kstl::vector<kstl::string>	folders;
+	std::vector<std::string>	folders;
 	replaceAll(filename, "\\", "/");
-	kstl::string	remaining = filename;
+	std::string	remaining = filename;
 
 	if (working_directory.size())
 	{
@@ -402,14 +402,14 @@ kstl::vector<kstl::string> RetreivePath(kstl::string filename, kstl::string& sho
 	while (!finish)
 	{
 		size_t pos = remaining.find("/");
-		if (pos == kstl::string::npos)
+		if (pos == std::string::npos)
 		{
 			finish = true;
 			shortfilename = remaining;
 			break;
 		}
 
-		kstl::string	current = remaining.substr(0, pos);
+		std::string	current = remaining.substr(0, pos);
 		if (current != "")
 		{
 			folders.push_back(current);
@@ -919,13 +919,13 @@ CorePackage::PackageCreationStruct::FileTreeNode	CorePackage::PackageCreationStr
 
 	replaceAll(working_directory, "\\", "/");
 
-	kstl::vector<fileNames>::iterator	it;
+	std::vector<fileNames>::iterator	it;
 	for (it = mFileList.begin(); it != mFileList.end(); ++it)
 	{
 		
-		kstl::string fileInPackage = (*it).mPackageName;
-		kstl::string shortfilename = "";
-		kstl::vector<kstl::string> path = RetreivePath(fileInPackage, shortfilename, working_directory);
+		std::string fileInPackage = (*it).mPackageName;
+		std::string shortfilename = "";
+		std::vector<std::string> path = RetreivePath(fileInPackage, shortfilename, working_directory);
 
 		FileTreeNode* currentFileTreeNode = &root;
 

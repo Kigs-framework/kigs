@@ -93,12 +93,12 @@ void MultiMesh::RecomputeBoundingBox()
 			CoreModifiable* mesh;
 			CoreModifiable* node;
 		};
-		kstl::vector<MeshNode> meshes;
-		kstl::vector<CMSP> nodes;
+		std::vector<MeshNode> meshes;
+		std::vector<CMSP> nodes;
 		GetSonInstancesByType("Node3D", nodes, true);
 
 
-		kstl::set<CoreModifiable*> already_inserted;
+		std::set<CoreModifiable*> already_inserted;
 		for (auto cm : nodes)
 		{
 			for (auto item : cm->getItems())
@@ -124,7 +124,7 @@ void MultiMesh::RecomputeBoundingBox()
 		for (auto m : meshes)
 		{
 			auto mesh = (ModernMesh*)m.mesh;
-			kstl::vector<ModernMeshItemGroup*> group;
+			std::vector<ModernMeshItemGroup*> group;
 			mesh->GetItemGroup(group);
 
 			for (auto item : group)
@@ -175,7 +175,7 @@ void MultiMesh::RecomputeBoundingBox()
 		for (auto m : meshes)
 		{
 			auto mesh = (ModernMesh*)m.mesh;
-			kstl::vector<ModernMeshItemGroup*> group;
+			std::vector<ModernMeshItemGroup*> group;
 			mesh->GetItemGroup(group);
 
 			Node3D* parent = (Node3D*)m.node;

@@ -46,7 +46,7 @@ public:
 	}
 	void NewFrame(Timer* timer);
 
-	void UpdateKeyboard(kstl::vector<KeyEvent>& keys);
+	void UpdateKeyboard(std::vector<KeyEvent>& keys);
 
 	void SetStyleMSFT();
 	void SetStyleHoloLens();
@@ -79,7 +79,7 @@ protected:
 	ImGuiContext* mImGuiState = nullptr;
 	CoreBaseApplication* mApp = nullptr;
 	ModuleInput* mInput = nullptr;
-	kdouble mLastTime = -1.0;
+	double mLastTime = -1.0;
 
 	bool mHasFrame = false;
 
@@ -103,7 +103,7 @@ protected:
 
 	maString mStyle = BASE_ATTRIBUTE(Style, "Default");
 
-	kstl::vector<KeyEvent> mKeyEvents;
+	std::vector<KeyEvent> mKeyEvents;
 
 	std::vector<SmartPointer<Texture>> mUsedTexturesLastFrame;
 	std::vector<SmartPointer<Texture>> mUsedTexturesThisFrame;

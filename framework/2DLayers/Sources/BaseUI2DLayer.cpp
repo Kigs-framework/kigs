@@ -42,7 +42,7 @@ void BaseUI2DLayer::InitModifiable()
 	Abstract2DLayer::InitModifiable();
 	if (IsInit())
 	{
-		kstl::vector<CMSP>	instances;
+		std::vector<CMSP>	instances;
 		GetSonInstancesByType("UIItem", instances);
 		KIGS_ASSERT(instances.size() < 2); // only one UIItem child
 		if (instances.empty())
@@ -50,7 +50,7 @@ void BaseUI2DLayer::InitModifiable()
 			// add the root UIItem
 			mRootItem = KigsCore::GetInstanceOf(getName(), "UIItem");
 			// set the root size to the screen size
-			kfloat X, Y;
+			float X, Y;
 			GetRenderingScreen()->GetDesignSize(X, Y);
 			mRootItem->setValue("Size", v2f(X,Y));
 			addItem(mRootItem);
@@ -104,9 +104,9 @@ void BaseUI2DLayer::UpdateChildrens(const Timer& a_timer, UIItem* current, void*
 	current->CallUpdate(a_timer, addParam);
 
 	// recursif Call
-	const kstl::set<Node2D*, Node2D::PriorityCompare>& sons = current->GetSons();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::const_reverse_iterator it = sons.rbegin();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::const_reverse_iterator end = sons.rend();
+	const std::set<Node2D*, Node2D::PriorityCompare>& sons = current->GetSons();
+	std::set<Node2D*, Node2D::PriorityCompare>::const_reverse_iterator it = sons.rbegin();
+	std::set<Node2D*, Node2D::PriorityCompare>::const_reverse_iterator end = sons.rend();
 	for (; it != end; ++it)
 	{
 		UpdateChildrens(a_timer, (UIItem*)(*it), addParam);
@@ -126,7 +126,7 @@ bool NodeToDraw::Sorter::operator()(NodeToDraw& a, NodeToDraw& b) const
 
 void BaseUI2DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 {
-	kstl::vector<NodeToDraw> nodes; nodes.reserve(param.toSort.size());
+	std::vector<NodeToDraw> nodes; nodes.reserve(param.toSort.size());
 
 	for (auto cm : param.toSort)
 	{
@@ -158,7 +158,7 @@ void BaseUI2DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 }
 
 
-void BaseUI2DLayer::AccumulateToDraw(TravState* state, kstl::vector<NodeToDraw>& todraw, CoreModifiable* current, int depth, u32 clip_count)
+void BaseUI2DLayer::AccumulateToDraw(TravState* state, std::vector<NodeToDraw>& todraw, CoreModifiable* current, int depth, u32 clip_count)
 {
 	if (current->isSubType(Node2D::mClassID))
 	{
@@ -238,9 +238,9 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 	renderer->SetDepthTestMode(false);
 
 	// get rendering screen size
-	kfloat rendersx, rendersy;
+	float rendersx, rendersy;
 	GetRenderingScreen()->GetSize(rendersx, rendersy);
-	kfloat drendersx, drendersy;
+	float drendersx, drendersy;
 	GetRenderingScreen()->GetDesignSize(drendersx, drendersy);
 
 	// do drawing here
@@ -274,7 +274,7 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 	if (IsRenderable())
 	{
 
-		kstl::vector<NodeToDraw> todraw;
+		std::vector<NodeToDraw> todraw;
 		todraw.push_back(NodeToDraw{ mRootItem.get(), 0 });
 
 		if (mRootItem->Draw(state))
@@ -286,8 +286,8 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 		std::sort(todraw.begin(), todraw.end(), NodeToDraw::Sorter{});
 		renderer->SetStencilTest(true);
 
-		kstl::vector<Node2D*> current_stencil_stack;
-		kstl::vector<Node2D*> cache_stencil_stack;
+		std::vector<Node2D*> current_stencil_stack;
+		std::vector<Node2D*> cache_stencil_stack;
 
 		auto compare_stencil_stacks = [&]()
 		{

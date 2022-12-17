@@ -1,7 +1,7 @@
 #include "GLSLUIShader.h"
 
 
-kstl::string API3DUIShader::GetFragmentShader()
+std::string API3DUIShader::GetFragmentShader()
 {
 
 	std::string result = mBGR ? "#define CLIENT_STATE_BGR_TEXTURE\n" : "";
@@ -52,7 +52,7 @@ void main()
 	return result;
 }
 
-kstl::string API3DUIShader::GetVertexShader()
+std::string API3DUIShader::GetVertexShader()
 {
 	return  R"====(
 uniform mat4 model_matrix;
@@ -97,7 +97,7 @@ void main()
 
 IMPLEMENT_CLASS_INFO(API3DUIShader)
 
-API3DUIShader::API3DUIShader(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DGenericMeshShader(name, PASS_CLASS_NAME_TREE_ARG)
+API3DUIShader::API3DUIShader(const std::string& name, CLASS_NAME_TREE_ARG) : API3DGenericMeshShader(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	museGenericLight = false;
 }

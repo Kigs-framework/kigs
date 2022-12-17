@@ -21,7 +21,7 @@ class BaseDDSequence : public DataDrivenSequence
 {
 public:
 	DECLARE_CLASS_INFO(BaseDDSequence, DataDrivenSequence, CoreDataDrivenSequence)
-	BaseDDSequence(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	BaseDDSequence(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~BaseDDSequence();
 
 protected:

@@ -26,18 +26,18 @@ struct Point2DIBase
     // from float and Point2D
     inline explicit Point2DIBase( const Float& fValue )
     {
-		x=(coordType)(fValue+KFLOAT_CONST(0.5f));
+		x=(coordType)(fValue+0.5f);
 		y=x;    	
     }
     inline Point2DIBase( const Float& fx , const Float& fy  )
 	{
-		x=(coordType)(fx+KFLOAT_CONST(0.5f));
-		y=(coordType)(fy+KFLOAT_CONST(0.5f));    	
+		x=(coordType)(fx+0.5f);
+		y=(coordType)(fy+0.5f);    	
     }
     inline Point2DIBase( const Point2D& P )
 	{
-		x=(coordType)(P.x+KFLOAT_CONST(0.5f));
-		y=(coordType)(P.y+KFLOAT_CONST(0.5f)); 		
+		x=(coordType)(P.x+0.5f);
+		y=(coordType)(P.y+0.5f); 		
 	}
     /*inline Point2DIBase( const Point3DI& P )
  {
@@ -153,8 +153,8 @@ struct Point2DIBase
     // With assignement
     inline const Point2DIBase& operator *= ( const Float& fValue )
 	{
-		x=(coordType)(((Float)x)*fValue+KFLOAT_CONST(0.5f));
-		y=(coordType)(((Float)y)*fValue+KFLOAT_CONST(0.5f));
+		x=(coordType)(((Float)x)*fValue+0.5f);
+		y=(coordType)(((Float)y)*fValue+0.5f);
 		return (*this);				
 	}
     inline const Point2DIBase& operator *= ( const coordType& Value )
@@ -165,8 +165,8 @@ struct Point2DIBase
 	}
     inline const Point2DIBase& operator /= ( const Float& fValue )
 	{
-		x=(coordType)(((Float)x)/fValue+KFLOAT_CONST(0.5f));
-		y=(coordType)(((Float)y)/fValue+KFLOAT_CONST(0.5f));
+		x=(coordType)(((Float)x)/fValue+0.5f);
+		y=(coordType)(((Float)y)/fValue+0.5f);
 		return (*this);				
 	}	
 	

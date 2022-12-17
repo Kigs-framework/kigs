@@ -31,7 +31,7 @@ IMPLEMENT_CLASS_INFO(API3DUniformDataTexture)
 IMPLEMENT_CLASS_INFO(API3DUniformGeneratedTexture)
 IMPLEMENT_CLASS_INFO(API3DUniformMatrixArray)
 
-API3DUniformBase::API3DUniformBase(const kstl::string& name, CLASS_NAME_TREE_ARG) 
+API3DUniformBase::API3DUniformBase(const std::string& name, CLASS_NAME_TREE_ARG) 
 	: Drawable(name, PASS_CLASS_NAME_TREE_ARG)
 , mUniName(*this, false, "Name", "")
 ,mID(-1)
@@ -43,7 +43,7 @@ void	API3DUniformBase::InitModifiable()
 {
 	Drawable::InitModifiable();
 
-	kstl::string strKey;
+	std::string strKey;
 	mUniName.getValue(strKey);
 	mID = CharToID::GetID(strKey);
 
@@ -54,7 +54,7 @@ void	API3DUniformBase::NotifyUpdate(const unsigned int  labelid)
 {
 	if (labelid == mUniName.getLabelID())
 	{
-		kstl::string strKey;
+		std::string strKey;
 		mUniName.getValue(strKey);
 		mID = CharToID::GetID(strKey);
 		//printf("%s >> %u\n", strKey.c_str(), mID);
@@ -104,7 +104,7 @@ bool API3DUniformBase::Pop(TravState* t)
 
 
 //////////////////////////////////// Int ///////////////////////////////////////////
-API3DUniformInt::API3DUniformInt(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
+API3DUniformInt::API3DUniformInt(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
 , mValue(*this, false, "Value", -1)
 {
 	
@@ -126,7 +126,7 @@ void	API3DUniformInt::NotifyUpdate(const unsigned int  labelid)
 
 
 //////////////////////////////////// Float ///////////////////////////////////////////
-API3DUniformFloat::API3DUniformFloat(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
+API3DUniformFloat::API3DUniformFloat(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
 , mValue(*this, false, "Value", -1)
 {
 	
@@ -146,7 +146,7 @@ void	API3DUniformFloat::NotifyUpdate(const unsigned int  labelid)
 }
 
 //////////////////////////////////// Float 2 ///////////////////////////////////////////
-API3DUniformFloat2::API3DUniformFloat2(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
+API3DUniformFloat2::API3DUniformFloat2(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
 , mValue(*this, false, "Value",0.0f,0.0f)
 {
 	
@@ -167,7 +167,7 @@ void	API3DUniformFloat2::NotifyUpdate(const unsigned int  labelid)
 
 
 //////////////////////////////////// Float 3 ///////////////////////////////////////////
-API3DUniformFloat3::API3DUniformFloat3(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
+API3DUniformFloat3::API3DUniformFloat3(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
 , mValue(*this, false, "Value",0.0f,0.0f,0.0f)
 , mNormalize(*this, false, "Normalize", false)
 {
@@ -220,7 +220,7 @@ void	API3DUniformFloat3::Activate(unsigned int a_Location)
 }
 
 //////////////////////////////////// Float 4 ///////////////////////////////////////////
-API3DUniformFloat4::API3DUniformFloat4(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
+API3DUniformFloat4::API3DUniformFloat4(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
 , mValue(*this, false, "Value",0.0f,0.0f,0.0f,0.0f)
 {
 	mValue.changeNotificationLevel(Owner);
@@ -239,7 +239,7 @@ void	API3DUniformFloat4::NotifyUpdate(const unsigned int  labelid)
 	
 }
 
-API3DUniformTexture::API3DUniformTexture(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
+API3DUniformTexture::API3DUniformTexture(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
 , mChannel(*this, false, "Channel", 0)
 , mTextureName(*this, false, "TextureName", "")
 , mAttachedTexture(0)
@@ -332,7 +332,7 @@ API3DUniformTexture::~API3DUniformTexture()
 }
 
 
-API3DUniformDataTexture::API3DUniformDataTexture(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
+API3DUniformDataTexture::API3DUniformDataTexture(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
 , mChannel(*this, false, "Channel", 0)
 , mTextureName(*this, false, "TextureName", "")
 , mTextureGLIndex(-1)
@@ -411,7 +411,7 @@ API3DUniformDataTexture::~API3DUniformDataTexture()
 	
 }
 
-API3DUniformGeneratedTexture::API3DUniformGeneratedTexture(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
+API3DUniformGeneratedTexture::API3DUniformGeneratedTexture(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
 , mChannel(*this, false, "Channel", 0)
 , mSize(*this, true, "Size")
 , mScale(*this, true, "Scale", 0.5f)
@@ -512,7 +512,7 @@ void API3DUniformGeneratedTexture::Generate()
 }
 
 
-API3DUniformMatrixArray::API3DUniformMatrixArray(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
+API3DUniformMatrixArray::API3DUniformMatrixArray(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
 , mArraySize(*this, false, "ArraySize", 16)
 , mMatrixArray(*this, false, "MatrixArray")
 , mMatrixArrayPointer(0)

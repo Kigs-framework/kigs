@@ -383,10 +383,10 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 					attribute->setValue(value.toValue<u64>());
 					break;
 				case ATTRIBUTE_TYPE::FLOAT:
-					attribute->setValue(value.toValue<kfloat>());
+					attribute->setValue(value.toValue<float>());
 					break;
 				case ATTRIBUTE_TYPE::DOUBLE:
-					attribute->setValue(value.toValue<kdouble>());
+					attribute->setValue(value.toValue<double>());
 					break;
 				default:
 					was_eval = false;
@@ -449,10 +449,10 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 							attribute->setArrayElementValue(value[i + 1].value().toValue<u64>(), 0, i);
 							break;
 						case ATTRIBUTE_TYPE::FLOAT:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<kfloat>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<float>(), 0, i);
 							break;
 						case ATTRIBUTE_TYPE::DOUBLE:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<kdouble>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<double>(), 0, i);
 							break;
 						case ATTRIBUTE_TYPE::USSTRING:
 						case ATTRIBUTE_TYPE::STRING:
@@ -519,7 +519,7 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 				}
 				break;
 				case LuaTypeID::NUMBER:
-					attribute = current->AddDynamicAttribute(ATTRIBUTE_TYPE::FLOAT, attr_name, value.toValue<kfloat>());
+					attribute = current->AddDynamicAttribute(ATTRIBUTE_TYPE::FLOAT, attr_name, value.toValue<float>());
 					break;
 				case LuaTypeID::TABLE:
 				{
@@ -530,7 +530,7 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 						KIGS_ASSERT(count <= 16);
 						for (s32 i = 0; i < count; ++i)
 						{
-							elems[i] = value[i + 1].value().toValue<kfloat>();
+							elems[i] = value[i + 1].value().toValue<float>();
 						}
 						attribute = current->AddDynamicVectorAttribute(attr_name, elems.data(), count);
 					}

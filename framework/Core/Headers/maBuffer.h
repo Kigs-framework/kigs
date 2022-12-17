@@ -35,14 +35,14 @@ class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<Aligned
 		}
 	}
 
-	void SetBufferFromString(const kstl::string& value)
+	void SetBufferFromString(const std::string& value)
 	{
 		InitData();
 
 		// detect if value is a filename
 		if (value[0] == '#')
 		{
-			kstl::string filename = value.substr(1, value.length() - 1);
+			std::string filename = value.substr(1, value.length() - 1);
 
 			auto ext = filename.substr(filename.find_last_of('.'));
 			u64 filelength = 0;
@@ -78,7 +78,7 @@ class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<Aligned
 public:
 	
 	//! extra constructor with a string
-	maBufferHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, const kstl::string& value) : BaseType(owner, isInitAttribute, ID)
+	maBufferHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, const std::string& value) : BaseType(owner, isInitAttribute, ID)
 	{
 		SetBufferFromString(value);
 	}
@@ -86,10 +86,10 @@ public:
 	/// setValue overloads
 	virtual bool setValue(const char* value) override
 	{
-		kstl::string str(value); 
+		std::string str(value); 
 		return setValue(str);
 	}
-	virtual bool setValue(const kstl::string& value) override
+	virtual bool setValue(const std::string& value) override
 	{
 		if (this->isReadOnly())
 			return false;
@@ -110,7 +110,7 @@ public:
 
 
 	/// getValue overloads
-	virtual bool getValue(kstl::string& value) const override
+	virtual bool getValue(std::string& value) const override
 	{
 
 		if (mValue)
@@ -124,7 +124,7 @@ public:
 	
 	virtual bool getValue(void*& value) const override { value = (CoreRawBuffer*)mValue.get(); return true; }
 
-	auto& operator=(const kstl::string &value)
+	auto& operator=(const std::string &value)
 	{
 		SetBufferFromString(value);
 		return *this;

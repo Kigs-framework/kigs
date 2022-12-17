@@ -215,7 +215,7 @@ public:
 	bool	GetTrailingPart(AsciiParserUtilsTemplate<charType>& result, bool	removeLeadTrailWhitespace = false);
 
 
-	operator kstl::string() const;
+	operator std::string() const;
 
 	operator usString() const;
 
@@ -228,7 +228,7 @@ public:
 		return *p;
 	}
 
-	kstl::string	subString(int startpos, int len);
+	std::string	subString(int startpos, int len);
 
 	inline const charType& operator[](unsigned int i)const
 	{ 
@@ -244,10 +244,10 @@ public:
 	}
 
 	// convert raw unsigned char buffer memory to string (each byte is converted to two letters from "a" to "p")
-	static kstl::string	BufferToString(unsigned char* zone, unsigned int size);
+	static std::string	BufferToString(unsigned char* zone, unsigned int size);
 
 	// convert string to raw unsigned char buffer (to delete with delete[] buffer)
-	static unsigned char*	StringToBuffer(const kstl::string&, unsigned int& size);
+	static unsigned char*	StringToBuffer(const std::string&, unsigned int& size);
 
 protected:
 

@@ -4,9 +4,9 @@
 
 IMPLEMENT_CLASS_INFO(MouseDevice)
 
-MouseDevice::MouseDevice(const kstl::string& name,CLASS_NAME_TREE_ARG) : InputDevice(name,PASS_CLASS_NAME_TREE_ARG),
-mPosX(*this,false,LABEL_AND_ID(PosX),KFLOAT_CONST(0.0f)),
-mPosY(*this,false,LABEL_AND_ID(PosY),KFLOAT_CONST(0.0f))
+MouseDevice::MouseDevice(const std::string& name,CLASS_NAME_TREE_ARG) : InputDevice(name,PASS_CLASS_NAME_TREE_ARG),
+mPosX(*this,false,"PosX",0.0f),
+mPosY(*this,false,"PosY",0.0f)
 {
 	mWheelCount=mButtonsCount=0;
 	setReadOnly("PosX");

@@ -24,11 +24,11 @@ public:
 	
 	/**
 	 * \brief	constructor
-	 * \fn 		SkyBox(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		SkyBox(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	SkyBox(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	SkyBox(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	/**
 	 * \brief	destructor
@@ -44,27 +44,27 @@ public:
 	 */
 	void	GetNodeBoundingBox(Point3D& pmin,Point3D& pmax) const  override {pmin=mBBoxMin; pmax=mBBoxMax;}
 
-	/*void SetTextures(const kstl::string& ZMax,
-					 const kstl::string& Xmax, 
-					 const kstl::string& ZMin, 
-					 const kstl::string& XMin, 
-					 const kstl::string& Top, 
-					 const kstl::string& Bottom);*/
+	/*void SetTextures(const std::string& ZMax,
+					 const std::string& Xmax, 
+					 const std::string& ZMin, 
+					 const std::string& XMin, 
+					 const std::string& Top, 
+					 const std::string& Bottom);*/
 
 	/**
 	 * \brief	set the size of the SkyBox
-	 * \fn 		void SetSize(const kfloat& Size)
+	 * \fn 		void SetSize(const float& Size)
 	 * \param	Size : size of the SkyBox
 	 */
-	void SetSize(const kfloat& Size) {mSize.setValue(Size);}
+	void SetSize(const float& Size) {mSize.setValue(Size);}
 
 	/**
 	 * \brief	update the bounding box
-	 * \fn 		virtual bool	BBoxUpdate(kdouble)
-	 * \param	kdouble : world time
+	 * \fn 		virtual bool	BBoxUpdate(double)
+	 * \param	double : world time
 	 * \return	TRUE because has a bounding box
 	 */
-	bool	BBoxUpdate(kdouble/* time */) override {return true;}
+	bool	BBoxUpdate(double/* time */) override {return true;}
 
 protected:
 	/**

@@ -8,9 +8,9 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UIScrollingText, UIScrollingText, 2DLayers);
 IMPLEMENT_CLASS_INFO(UIScrollingText)
 
-UIScrollingText::UIScrollingText(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
+UIScrollingText::UIScrollingText(const std::string& name,CLASS_NAME_TREE_ARG) : 
 UIText(name, PASS_CLASS_NAME_TREE_ARG)
-,mCaracterPerSeconde(*this,false,LABEL_AND_ID(CaracterPerSeconde),KFLOAT_ZERO)
+,mCaracterPerSeconde(*this,false,"CaracterPerSeconde",0.0f)
 ,mScrollIndex(1)
 ,mElapsedTime(0)
 {

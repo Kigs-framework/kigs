@@ -244,8 +244,8 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 			int X = GET_X_LPARAM(lParam);
 			int Y = ClientArea.bottom - 1 - GET_Y_LPARAM(lParam);
 
-			kfloat mX = (kfloat)X / pWindow->mSize[0];
-			kfloat mY = (kfloat)Y / pWindow->mSize[1];
+			float mX = (float)X / pWindow->mSize[0];
+			float mY = (float)Y / pWindow->mSize[1];
 			pWindow->mClickCallback(pWindow, buttonId, mX, mY, isDown);
 			return 0;
 		}
@@ -275,7 +275,7 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 				break;
 			}
 
-			pWindow->mDoubleClickCallback(pWindow, buttonId, (kfloat)X, (kfloat)Y, true);
+			pWindow->mDoubleClickCallback(pWindow, buttonId, (float)X, (float)Y, true);
 		}
 		break;
 		//Destroy
@@ -341,7 +341,7 @@ LRESULT WINAPI WindowWin32::MsgProc(HWND hWnd, ::UINT msg, WPARAM wParam, LPARAM
 }
 
 //! constructor
-WindowWin32::WindowWin32(const kstl::string& name, CLASS_NAME_TREE_ARG) : Window(name, PASS_CLASS_NAME_TREE_ARG)
+WindowWin32::WindowWin32(const std::string& name, CLASS_NAME_TREE_ARG) : Window(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	mScreenSaverActive = false;
 	mDirtySize = false;
@@ -415,7 +415,7 @@ void WindowWin32::ProtectedInit()
 		SetCursor(NULL);
 		u32 bpp;
 
-		mScreen->getValue(LABEL_TO_ID(BitsPerPixel), bpp);
+		mScreen->getValue("BitsPerPixel", bpp);
 
 		DEVMODE dmScreenSettings;
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
@@ -539,19 +539,19 @@ void WindowWin32::ProtectedInit()
 
 }
 
-void	WindowWin32::GetMousePosInWindow(int posx, int posy, kfloat& wposx, kfloat& wposy)
+void	WindowWin32::GetMousePosInWindow(int posx, int posy, float& wposx, float& wposy)
 {
 	
 	posx -= (int)mPosition[0];
 	posy -= (int)mPosition[1];
 	
 
-	wposx = (kfloat)posx;
-	wposy = (kfloat)posy;
+	wposx = (float)posx;
+	wposy = (float)posy;
 
 }
 
-void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, kfloat& wposy)
+void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, float& wposx, float& wposy)
 {
 	posx -= (int)mPosition[0];
 	posy -= (int)mPosition[1];
@@ -563,8 +563,8 @@ void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, k
 	}
 	else
 	{
-		wposx = (kfloat)posx;
-		wposy = (kfloat)posy;
+		wposx = (float)posx;
+		wposy = (float)posy;
 	}
 }
 
@@ -597,7 +597,7 @@ void  WindowWin32::Show()
 	}
 	if (mScreen && !mScreen->IsInit())
 	{
-		mScreen->setValue(LABEL_TO_ID(ParentWindowName), getName());
+		mScreen->setValue("ParentWindowName", getName());
 		mScreen->Init();
 	}
 }
@@ -620,7 +620,7 @@ void  WindowWin32::Update(const Timer&  timer, void* addParam)
 		//printf("%s : %d %d :: %d %d\n", getName().c_str(), mPositionX, mPositionY, mySizeX, mySizeY);
 
 		if (mScreen)
-			mScreen->as<RenderingScreen>()->Resize((kfloat)mSize[0], (kfloat)mSize[1]);
+			mScreen->as<RenderingScreen>()->Resize((float)mSize[0], (float)mSize[1]);
 
 		mDirtySize = false;
 

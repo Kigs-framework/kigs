@@ -5,9 +5,9 @@
 
 IMPLEMENT_CLASS_INFO(UIControlBoxForScrollViewUI)
 
-bool UIControlBoxForScrollViewUI::scrollTo(kfloat deltaPos)
+bool UIControlBoxForScrollViewUI::scrollTo(float deltaPos)
 {
-	kfloat x, y;
+	float x, y;
 	GetGlobalPosition(x, y);
 	return ((UIScrollView*)mParent)->scrollTo(deltaPos);
 }
@@ -19,7 +19,7 @@ void UIControlBoxForScrollViewUI::Update(const Timer& a_Timer, void* addParam)
 	case ANIMATIONSTATE_INITIALIZATION:
 	{
 		mStartTime = a_Timer.GetTime();
-		static const kfloat k = 4000.f;
+		static const float k = 4000.f;
 		mConstantAcceleration = -k;
 		mEndTime = fabs(mInitialVelocity) / k;
 		mAnimation = ANIMATIONSTATE_RUNNING;
@@ -27,7 +27,7 @@ void UIControlBoxForScrollViewUI::Update(const Timer& a_Timer, void* addParam)
 	break;
 	case ANIMATIONSTATE_RUNNING:
 	{
-		kdouble t = a_Timer.GetTime() - mStartTime;
+		double t = a_Timer.GetTime() - mStartTime;
 
 		if (t > mEndTime)
 		{

@@ -16,7 +16,7 @@ IMPLEMENT_CLASS_INFO(BaseDllModule)
 
 
 //! constructor just call ModuleBase constructor
-AnonymousModule::AnonymousModule(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+AnonymousModule::AnonymousModule(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	mDynamicModule=0;
 }
@@ -27,7 +27,7 @@ AnonymousModule::~AnonymousModule()
 }
 
 //! init : load associated dll and call the ModuleInit method
-void AnonymousModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void AnonymousModule::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	mCore=core;
 	// don't add anonymous modules to module map
@@ -35,7 +35,7 @@ void AnonymousModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttr
 
 	auto pathManager = KigsCore::Singleton<FilePathManager>();
 
-	kstl::string fullfilename=getName();
+	std::string fullfilename=getName();
 	SP<FileHandle> fullfilenamehandle;
 	if(pathManager)
 	{
@@ -117,7 +117,7 @@ void AnonymousModule::Close()
 
 #ifdef WIN32
 	// free library before calling base class
-	kstl::vector<DynamicModuleHandleAndPointer>::iterator it;
+	std::vector<DynamicModuleHandleAndPointer>::iterator it;
 	for (it = mDynamicModuleList.begin(); it != mDynamicModuleList.end(); ++it)
 	{
 		FreeLibrary((HINSTANCE)(*it).mHandle);

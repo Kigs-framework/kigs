@@ -24,7 +24,7 @@ class ASEMeshLoader
 public:
 	ASEMeshLoader();
 	~ASEMeshLoader();
-	int ImportFile(Mesh *pMesh, const kstl::string &FileName);
+	int ImportFile(Mesh *pMesh, const std::string &FileName);
 	int ReadFile(Mesh *pMesh);
 private:
  
@@ -38,13 +38,13 @@ private:
 
   struct materialStruct : public BaseMaterialStruct
   {
-    kstl::vector<BaseMaterialStruct> subMat;
+    std::vector<BaseMaterialStruct> subMat;
   };
 
-  kstl::vector<materialStruct> mMaterialStructList;
+  std::vector<materialStruct> mMaterialStructList;
 
-	kstl::vector<kstl::string>	mTextureList;
-	kstl::vector<kstl::string>	mMaterialList;
+	std::vector<std::string>	mTextureList;
+	std::vector<std::string>	mMaterialList;
 
 	char *mTextureName;
 	int mMaterialCount;

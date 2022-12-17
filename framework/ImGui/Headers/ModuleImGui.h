@@ -32,7 +32,7 @@ public:
 	DECLARE_INLINE_CONSTRUCTOR(ModuleImGui){}
 
 	//! init module
-    void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 	//! close module
 	void Close() override;
             
@@ -40,7 +40,7 @@ public:
 	void Update(const Timer& timer, void* addParam) override;
 
 	// Quickly create a layer for debug purposes (uses the IMEditor's one if available)
-	ImGuiLayer* CreateDebugLayer(kfloat bg_opacity = -1.0f);
+	ImGuiLayer* CreateDebugLayer(float bg_opacity = -1.0f);
 
 
 	WRAP_METHODS(SetupDebugLayer);

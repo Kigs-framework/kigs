@@ -5,7 +5,7 @@
 #include "maUSString.h"
 
 
-#define DEFINE_MAKE_ATTR_FUNC(type, attr_type) inline CoreModifiableAttribute* MakeAttributeSpec(type value, CoreModifiable* owner, const kstl::string& name = #attr_type)\
+#define DEFINE_MAKE_ATTR_FUNC(type, attr_type) inline CoreModifiableAttribute* MakeAttributeSpec(type value, CoreModifiable* owner, const std::string& name = #attr_type)\
 {\
 	if(owner)\
 		return new attr_type(*owner, false, name, value); \
@@ -13,7 +13,7 @@
 		return new attr_type(name, value);\
 }
 
-#define DEFINE_MAKE_ATTR_FUNC_VECNF(type, attr_type) inline CoreModifiableAttribute* MakeAttributeSpec(type value, CoreModifiable* owner, const kstl::string& name = #attr_type)\
+#define DEFINE_MAKE_ATTR_FUNC_VECNF(type, attr_type) inline CoreModifiableAttribute* MakeAttributeSpec(type value, CoreModifiable* owner, const std::string& name = #attr_type)\
 {\
 	if(owner)\
 		return new attr_type(*owner, false, name, (attr_type::ArrayType::value_type*)&value);\
@@ -46,8 +46,8 @@ DEFINE_MAKE_ATTR_FUNC_VECNF(Vector3D, maVect3DF)
 DEFINE_MAKE_ATTR_FUNC_VECNF(Point3D, maVect3DF)
 DEFINE_MAKE_ATTR_FUNC_VECNF(Vector4D, maVect4DF)
 
-DEFINE_MAKE_ATTR_FUNC(const kstl::string&, maString)
-DEFINE_MAKE_ATTR_FUNC(kstl::string&&, maString)
+DEFINE_MAKE_ATTR_FUNC(const std::string&, maString)
+DEFINE_MAKE_ATTR_FUNC(std::string&&, maString)
 DEFINE_MAKE_ATTR_FUNC(const char*, maString)
 DEFINE_MAKE_ATTR_FUNC(const usString&, maUSString)
 DEFINE_MAKE_ATTR_FUNC(usString&&, maUSString)
@@ -55,7 +55,7 @@ DEFINE_MAKE_ATTR_FUNC(usString&&, maUSString)
 DEFINE_MAKE_ATTR_FUNC(CoreModifiable*, maRawPtr);
 
 template<typename T>
-inline CoreModifiableAttribute* MakeAttributeSpec(SP<T> value, CoreModifiable* owner, const kstl::string& name = "maStrongReference")
+inline CoreModifiableAttribute* MakeAttributeSpec(SP<T> value, CoreModifiable* owner, const std::string& name = "maStrongReference")
 {
 	if (owner)
 		return new maStrongReference(*owner, false, name, maStrongReferenceObject{ value });
@@ -64,7 +64,7 @@ inline CoreModifiableAttribute* MakeAttributeSpec(SP<T> value, CoreModifiable* o
 }
 
 template<typename T, REQUIRES(!std::is_fundamental<std::decay_t<T>>::value)>
-CoreModifiableAttribute* MakeAttributeSpec(T&& value, CoreModifiable* owner, const kstl::string& name = "maRawPtrStruct")
+CoreModifiableAttribute* MakeAttributeSpec(T&& value, CoreModifiable* owner, const std::string& name = "maRawPtrStruct")
 {
 	static_assert(!std::is_same<T,T>::value, "Cannot wrap rvalues of structs");
 	/*if (owner)
@@ -98,7 +98,7 @@ EXPOSE_STRUCT_LUA(class, CoreSequence);
 
 // Custom type exposed by ptr
 template<typename T, REQUIRES(LuaStruct<stripped_type<T>>::exposed)>
-CoreModifiableAttribute* MakeAttribute(T* value, CoreModifiable* owner, const kstl::string& name = LuaStruct<stripped_type<T>>::name())
+CoreModifiableAttribute* MakeAttribute(T* value, CoreModifiable* owner, const std::string& name = LuaStruct<stripped_type<T>>::name())
 {
 	void* ptr = (void*)value;
 	if (owner)
@@ -109,7 +109,7 @@ CoreModifiableAttribute* MakeAttribute(T* value, CoreModifiable* owner, const ks
 
 // Custom type exposed by ref
 template<typename T, REQUIRES(LuaStruct<stripped_type<T>>::exposed)>
-CoreModifiableAttribute* MakeAttribute(T& value, CoreModifiable* owner, const kstl::string& name = LuaStruct<stripped_type<T>>::name())
+CoreModifiableAttribute* MakeAttribute(T& value, CoreModifiable* owner, const std::string& name = LuaStruct<stripped_type<T>>::name())
 {
 	void* ptr = (void*)&value;
 	if (owner)
@@ -121,7 +121,7 @@ CoreModifiableAttribute* MakeAttribute(T& value, CoreModifiable* owner, const ks
 
 // Custom type exposed by rvalue
 template<typename T, REQUIRES(LuaStruct<stripped_type<T>>::exposed)>
-CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const kstl::string& name = LuaStruct<stripped_type<T>>::name())
+CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const std::string& name = LuaStruct<stripped_type<T>>::name())
 {
 	static_assert(!std::is_same<T, T>::value, "Cannot wrap rvalues of structs");
 }
@@ -132,7 +132,7 @@ template<typename T, REQUIRES(	!LuaStruct<stripped_type<T>>::exposed &&
 								!std::is_base_of<CoreModifiable, std::decay_t<T>>::value &&
 								!std::is_same<char, std::decay_t<T>>::value)
 >
-CoreModifiableAttribute* MakeAttribute(T* value, CoreModifiable* owner, const kstl::string& name = "ParamPtr")
+CoreModifiableAttribute* MakeAttribute(T* value, CoreModifiable* owner, const std::string& name = "ParamPtr")
 {
 	void* ptr = (void*)value;
 	if (owner) 
@@ -147,7 +147,7 @@ template<typename T, REQUIRES(	!LuaStruct<stripped_type<T>>::exposed &&
 								!std::is_base_of<CoreModifiable, stripped_type<T>>::value && 
 								!is_detected_v<is_smart_pointer, std::decay_t<T>>)
 >
-CoreModifiableAttribute* MakeAttribute(T& value, CoreModifiable* owner, const kstl::string& name = "ParamRef")
+CoreModifiableAttribute* MakeAttribute(T& value, CoreModifiable* owner, const std::string& name = "ParamRef")
 {
 	void* ptr = (void*)&value;
 	if (owner)
@@ -163,7 +163,7 @@ template<typename T, REQUIRES(!LuaStruct<stripped_type<T>>::exposed &&
 	!std::is_base_of<CoreModifiable, stripped_type<T>>::value &&
     !is_detected_v<is_smart_pointer, std::decay_t<T>>)
 >
-CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const kstl::string& name = "ParamRValue")
+CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const std::string& name = "ParamRValue")
 {
 	return MakeAttributeSpec(FWD(value), owner);
 	/*void* ptr = (void*)&value;
@@ -175,14 +175,14 @@ CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const k
 
 // SmartPointer
 template<typename T>
-CoreModifiableAttribute* MakeAttribute(const SmartPointer<T>& value, CoreModifiable* owner, const kstl::string& name = "ParamSP")
+CoreModifiableAttribute* MakeAttribute(const SmartPointer<T>& value, CoreModifiable* owner, const std::string& name = "ParamSP")
 {
 	return MakeAttributeSpec(value, owner, name);
 }
 
 // r-value reference of a fundamental type. use equivalent CoreModifiableAttribute type
 template<typename T, REQUIRES(std::is_fundamental<std::decay_t<T>>::value)>
-CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const kstl::string& name = "ParamFundamental")
+CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const std::string& name = "ParamFundamental")
 {
 	return MakeAttributeSpec(std::forward<T>(value), owner, name);
 }
@@ -190,31 +190,31 @@ CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const k
 
 // nullptr
 template<>
-inline CoreModifiableAttribute* MakeAttribute(std::nullptr_t&& value, CoreModifiable* owner, const kstl::string& name)
+inline CoreModifiableAttribute* MakeAttribute(std::nullptr_t&& value, CoreModifiable* owner, const std::string& name)
 {
 	return MakeAttribute((void*)value, owner, name);
 }
 
 // c-string. use maString
-inline CoreModifiableAttribute* MakeAttribute(const char* value, CoreModifiable* owner, const kstl::string& name = "ParamCString")
+inline CoreModifiableAttribute* MakeAttribute(const char* value, CoreModifiable* owner, const std::string& name = "ParamCString")
 {
 	return MakeAttributeSpec(value, owner, name);
 }
 
 template<size_t N>
-inline CoreModifiableAttribute* MakeAttribute(char (&value)[N], CoreModifiable* owner, const kstl::string& name = "ParamCString")
+inline CoreModifiableAttribute* MakeAttribute(char (&value)[N], CoreModifiable* owner, const std::string& name = "ParamCString")
 {
 	return MakeAttributeSpec((const char*)value, owner, name);
 }
 
 // CoreModifiable ptr. use maReference
-inline CoreModifiableAttribute* MakeAttribute(CoreModifiable* value, CoreModifiable* owner, const kstl::string& name = "ParamCMPtr")
+inline CoreModifiableAttribute* MakeAttribute(CoreModifiable* value, CoreModifiable* owner, const std::string& name = "ParamCMPtr")
 {
 	return MakeAttributeSpec(value, owner, name);
 }
 
 // CoreModifiable ref. use maReference
-inline CoreModifiableAttribute* MakeAttribute(CoreModifiable& value, CoreModifiable* owner, const kstl::string& name = "ParamCMRef")
+inline CoreModifiableAttribute* MakeAttribute(CoreModifiable& value, CoreModifiable* owner, const std::string& name = "ParamCMRef")
 {
 	return MakeAttributeSpec(&value, owner, name);
 }
@@ -259,7 +259,7 @@ namespace kigs_impl
 	template<bool... bs>
 	using all_true = std::is_same<bool_pack<bs..., true>, bool_pack<true, bs...>>;
 
-	// Utility functions to manipulate kstl::vector<CoreModifiableAttribute*>
+	// Utility functions to manipulate std::vector<CoreModifiableAttribute*>
 	template<int> struct int2type {};
 
 	template<typename T, typename U=decay_t<T>, 
@@ -304,7 +304,7 @@ namespace kigs_impl
 		if (attr->getValue(ptr))
 		{
 			if (attr->getType() == CoreModifiable::ATTRIBUTE_TYPE::STRING)
-				value = ((kstl::string*)ptr)->c_str();
+				value = ((std::string*)ptr)->c_str();
 			else
 				value = (const char*)ptr;
 		}		
@@ -317,20 +317,20 @@ namespace kigs_impl
 
 
 	template<typename T>
-	void UnpackParam(T& into, kstl::vector<CoreModifiableAttribute*>& params, int2type<-1>)
+	void UnpackParam(T& into, std::vector<CoreModifiableAttribute*>& params, int2type<-1>)
 	{
 
 	}
 
 	template<typename T>
-	void UnpackParam(T& into, kstl::vector<CoreModifiableAttribute*>& params, int2type<0>)
+	void UnpackParam(T& into, std::vector<CoreModifiableAttribute*>& params, int2type<0>)
 	{
 		if (0 < params.size())
 			UnpackGetValue(get<0>(into), params[0]);
 	}
 
 	template<int N, typename T>
-	void UnpackParam(T& into, kstl::vector<CoreModifiableAttribute*>& params, int2type<N>)
+	void UnpackParam(T& into, std::vector<CoreModifiableAttribute*>& params, int2type<N>)
 	{
 		if (N < params.size())
 		{
@@ -355,7 +355,7 @@ namespace kigs_impl
 	using type_for_unpack_t = typename type_for_unpack<T>::type;
 
 	template<typename... T>
-	tuple<T...> Unpack(kstl::vector<CoreModifiableAttribute*>& params)
+	tuple<T...> Unpack(std::vector<CoreModifiableAttribute*>& params)
 	{
 		tuple<T...> result = {};
 		UnpackParam(result, params, int2type<((int)sizeof...(T))-1>{});
@@ -376,7 +376,7 @@ namespace kigs_impl
 		typedef typename std::tuple<kigs_impl::type_for_unpack_t<Args>...> tuple_type;
 		static_assert(all_true<(!(is_fundamental<std::decay_t<Args>>::value && is_reference<Args>::value))...>::value, "Cannot wrap reference to fundamental type, use a pointer instead !");
 		static_assert(all_true<(!is_same<std::decay_t<Args>, const char*>::value)...>::value, "Cannot wrap c-string parameter, it is prone to errors");
-		static auto Unpack(kstl::vector<CoreModifiableAttribute*>& params) -> tuple_type
+		static auto Unpack(std::vector<CoreModifiableAttribute*>& params) -> tuple_type
 		{
 			tuple_type result = {};
 			UnpackParam(result, params, int2type<((int)sizeof...(Args)) - 1>{});
@@ -392,7 +392,7 @@ namespace kigs_impl
 		typedef typename std::tuple<kigs_impl::type_for_unpack_t<Args>...> tuple_type;
 		static_assert(all_true<(!(is_fundamental<std::decay_t<Args>>::value && is_reference<Args>::value))...>::value, "Cannot wrap reference to fundamental type, use a pointer instead !");
 		static_assert(all_true<(!is_same<std::decay_t<Args>, const char*>::value)...>::value, "Cannot wrap c-string parameter, it is prone to errors");
-		static auto Unpack(kstl::vector<CoreModifiableAttribute*>& params) -> tuple_type
+		static auto Unpack(std::vector<CoreModifiableAttribute*>& params) -> tuple_type
 		{
 			tuple_type result = {};
 			UnpackParam(result, params, int2type<((int)sizeof...(Args)) - 1>{});
@@ -439,7 +439,7 @@ namespace kigs_impl
 
 
 	template<typename Ret, typename T, typename T2, typename... Args>
-	void UnpackAndCall(Ret(T::*Func)(Args...), T2* obj, CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>& params)
+	void UnpackAndCall(Ret(T::*Func)(Args...), T2* obj, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params)
 	{
 		auto t = Unpack<type_for_unpack_t<Args>...>(params);
 		static_assert(all_true<(!(is_fundamental<std::decay_t<Args>>::value && is_reference<Args>::value))...>::value, "Cannot wrap reference to fundamental type, use a pointer instead !");
@@ -448,7 +448,7 @@ namespace kigs_impl
 	}
 
 	template<typename Ret, typename T, typename T2, typename... Args>
-	void UnpackAndCall(Ret(T::*Func)(Args...) const, const T2* obj, CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>& params)
+	void UnpackAndCall(Ret(T::*Func)(Args...) const, const T2* obj, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params)
 	{
 		auto t = Unpack<type_for_unpack_t<Args>...>(params);
 		static_assert(all_true<(!(is_fundamental<std::decay_t<Args>>::value && is_reference<Args>::value))...>::value, "Cannot wrap reference to fundamental type, use a pointer instead !");
@@ -457,7 +457,7 @@ namespace kigs_impl
 	}
 
 	template<typename T, typename T2, typename... Args>
-	void UnpackAndCall(void(T::*Func)(Args...), T2* obj, CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>& params)
+	void UnpackAndCall(void(T::*Func)(Args...), T2* obj, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params)
 	{
 		auto t = Unpack<type_for_unpack_t<Args>...>(params);
 		static_assert(all_true<(!(is_fundamental<std::decay_t<Args>>::value && is_reference<Args>::value))...>::value, "Cannot wrap reference to fundamental type, use a pointer instead !");
@@ -466,7 +466,7 @@ namespace kigs_impl
 	}
 
 	template<typename T, typename T2, typename... Args>
-	void UnpackAndCall(void(T::*Func)(Args...) const, const T2* obj, CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>& params)
+	void UnpackAndCall(void(T::*Func)(Args...) const, const T2* obj, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params)
 	{
 		auto t = Unpack<type_for_unpack_t<Args>...>(params);
 		static_assert(all_true<(!(is_fundamental<std::decay_t<Args>>::value && is_reference<Args>::value))...>::value, "Cannot wrap reference to fundamental type, use a pointer instead !");
@@ -476,14 +476,14 @@ namespace kigs_impl
 
 
 	template<typename F, typename Unpacker = typename LambdaUnpacker<std::remove_reference_t<F>>::PackerType, REQUIRES(std::is_void<typename Unpacker::ReturnType>::value)>
-	void UnpackAndCall(F&& func, kstl::vector<CoreModifiableAttribute*>& params)
+	void UnpackAndCall(F&& func, std::vector<CoreModifiableAttribute*>& params)
 	{
 		auto t = Unpacker::Unpack(params);
 		apply_func(FWD(func), t);
 	}
 
 	template<typename F, typename Unpacker = typename LambdaUnpacker<std::remove_reference_t<F>>::PackerType, REQUIRES(!std::is_void<typename Unpacker::ReturnType>::value)>
-	void UnpackAndCall(F&& func, kstl::vector<CoreModifiableAttribute*>& params)
+	void UnpackAndCall(F&& func, std::vector<CoreModifiableAttribute*>& params)
 	{
 		auto t = Unpacker::Unpack(params);
 		params.push_back(MakeAttribute((apply_func(FWD(func), t)), nullptr));
@@ -500,7 +500,7 @@ Ret CoreModifiable::SimpleCall(KigsID methodNameID, T&&... params)
 	};
 	(void)expander;
 
-	auto& attr_list = (kstl::vector<CoreModifiableAttribute*>&)attr;
+	auto& attr_list = (std::vector<CoreModifiableAttribute*>&)attr;
 	size_t before = attr_list.size();
 	CallMethod(methodNameID, attr_list);
 	kigs_impl::type_for_unpack_t<Ret> result = {};
@@ -514,7 +514,7 @@ Ret CoreModifiable::SimpleCall(KigsID methodNameID, T&&... params)
 template<typename Ret>
 Ret CoreModifiable::SimpleCall(KigsID methodNameID)
 {
-	kstl::vector<CoreModifiableAttribute*> attr;
+	std::vector<CoreModifiableAttribute*> attr;
 	CallMethod(methodNameID, attr);
 	Ret result = {};
 	if(attr.size())
@@ -541,7 +541,7 @@ bool CoreModifiable::SimpleCall(KigsID methodNameID, T&&... params)
 		(attr << std::forward<T>(params), 0)...
 	};
 	(void)expander;
-	auto& attr_list = (kstl::vector<CoreModifiableAttribute*>&)attr;
+	auto& attr_list = (std::vector<CoreModifiableAttribute*>&)attr;
 	return CallMethod(methodNameID, attr_list);
 }
 
@@ -565,7 +565,7 @@ inline bool CoreModifiable::EmitSignal(const KigsID& SignalID, T&&... params)
 			(attr << std::forward<T>(params), 0)...
 		};
 		(void)expander;
-		auto& attr_list = (kstl::vector<CoreModifiableAttribute*>&)attr;
+		auto& attr_list = (std::vector<CoreModifiableAttribute*>&)attr;
 
 		for (auto& p : copy)
 		{
@@ -593,7 +593,7 @@ template<typename F>
 inline void CoreModifiable::InsertFunction(KigsID labelID, F&& func)
 {
 	auto& methods = GetLazyContent()->mMethods;
-	ModifiableMethodStruct toAdd{ [f = std::move(func)] (CoreModifiable* localthis, CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>& params, void* privateParams) mutable
+	ModifiableMethodStruct toAdd{ [f = std::move(func)] (CoreModifiable* localthis, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params, void* privateParams) mutable
 	{
 		kigs_impl::UnpackAndCall(f, params);
 		return false;
@@ -608,7 +608,7 @@ template<typename F>
 inline void CoreModifiable::InsertFunctionNoUnpack(KigsID labelID, F&& func)
 {
 	auto& methods = GetLazyContent()->mMethods;
-	ModifiableMethodStruct toAdd{ [f = std::move(func)] (CoreModifiable* localthis, CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>& params, void* privateParams) mutable
+	ModifiableMethodStruct toAdd{ [f = std::move(func)] (CoreModifiable* localthis, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params, void* privateParams) mutable
 	{
 		f(params);
 		return false;

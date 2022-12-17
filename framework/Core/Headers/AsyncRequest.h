@@ -25,11 +25,11 @@ public:
 
 	/**
 	* \brief	constructor
-	* \fn 		AsyncRequest(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	* \fn 		AsyncRequest(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	AsyncRequest(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	AsyncRequest(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	/**
 	* \fn 		virtual ~AsyncRequest(){};

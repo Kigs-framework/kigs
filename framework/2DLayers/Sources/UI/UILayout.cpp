@@ -5,7 +5,7 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UILayout, UILayout, 2DLayers);
 IMPLEMENT_CLASS_INFO(UILayout)
 
-UILayout::UILayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
+UILayout::UILayout(const std::string& name, CLASS_NAME_TREE_ARG) :
 	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG)
 	, mNeedRecompute(true)
 {

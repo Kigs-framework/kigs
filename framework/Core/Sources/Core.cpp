@@ -46,10 +46,10 @@ KIGS_PREFIX_MESSAGE
 KigsCore*			KigsCore::mCoreInstance=0;
 
 
-kstl::vector<kstl::string>	SplitStringByCharacter(const kstl::string&  a_mstring, char delim)
+std::vector<std::string>	SplitStringByCharacter(const std::string&  a_mstring, char delim)
 {
-	kstl::vector<kstl::string> elems;
-	kstl::string ss = a_mstring;
+	std::vector<std::string> elems;
+	std::string ss = a_mstring;
 	size_t start = 0;
 	size_t pos = 0;
 	while (!a_mstring.empty())
@@ -123,7 +123,7 @@ void	KigsCore::addAsyncRequest(SP<AsyncRequest> toAdd)
 {
 	if (!mCoreInstance->mAsyncRequestList)
 	{
-		mCoreInstance->mAsyncRequestList = new kstl::vector<SP<AsyncRequest>>;
+		mCoreInstance->mAsyncRequestList = new std::vector<SP<AsyncRequest>>;
 	}
 	mCoreInstance->mAsyncRequestList->push_back(toAdd);
 }
@@ -139,7 +139,7 @@ void KigsCore::ManageAsyncRequests()
 void KigsCore::ProtectedManageAsyncRequests()
 {
 	// copy, so that a process can add new requests
-	kstl::vector<SP<AsyncRequest>> requestlist=*mAsyncRequestList;
+	std::vector<SP<AsyncRequest>> requestlist=*mAsyncRequestList;
 
 	auto itstart = requestlist.begin();
 	auto itend = requestlist.end();
@@ -232,7 +232,7 @@ MEMORYMANAGEMENT_END
 	(*mCoreInstance->mMultiThread)=false;
 #if KIGS_ERROR_LEVEL<=2
 	//! init error management
-	mCoreInstance->mErrorList=new kstl::vector<kstl::string>;
+	mCoreInstance->mErrorList=new std::vector<std::string>;
 #endif
 
 	mCoreInstance->mCoreMainModuleList=new ModuleBase*[8];
@@ -250,20 +250,20 @@ MEMORYMANAGEMENT_END
 	DECLARE_FULL_CLASS_INFO(mCoreInstance, LocalizationManager, LocalizationManager, KigsCore);
 	DECLARE_FULL_CLASS_INFO(mCoreInstance, MiniInstanceFactory, MiniInstanceFactory, KigsCore)
 
-	kstl::vector<SpecificOperator> specificList;
+	std::vector<SpecificOperator> specificList;
 	SpecificOperator toAdd;
 	toAdd.mKeyWord = "CoreItemOperatorModifier";
 	toAdd.mCreateMethod = &CoreItemOperatorModifier::create;
 	specificList.push_back(toAdd);
 
-	CoreItemOperator<kfloat>::ConstructContextMap(mCoreInstance->mCoreItemOperatorCreateMethodMap, &specificList);
+	CoreItemOperator<float>::ConstructContextMap(mCoreInstance->mCoreItemOperatorCreateMethodMap, &specificList);
 
 	CMSP createUpgradorFactory = GetInstanceOf("UpgradorFactory", "MiniInstanceFactory");
 	mCoreInstance->mUpgradorFactory = ((MiniInstanceFactory*)createUpgradorFactory.get())->SharedFromThis();
 }
 
 
-kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	KigsCore::GetDefaultCoreItemOperatorConstructMap()
+kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	KigsCore::GetDefaultCoreItemOperatorConstructMap()
 {
 	return mCoreItemOperatorCreateMethodMap;
 }
@@ -410,7 +410,7 @@ CoreTreeNode* KigsCore::GetTypeNode(const KigsID& id)
 	return it->second;
 }
 
-CoreTreeNode* KigsCore::AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, const kstl::vector<CoreClassNameTree::TwoNames>& branch, const kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& method_table, size_t current_index)
+CoreTreeNode* KigsCore::AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, const std::vector<CoreClassNameTree::TwoNames>& branch, const std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& method_table, size_t current_index)
 {
 	if (!parent)
 	{
@@ -461,7 +461,7 @@ CoreTreeNode* KigsCore::AddToTreeNode(KigsID parent_cid, CoreTreeNode* parent, c
 	return AddToTreeNode(cid, nextNode, branch, method_table, current_index+1);
 }
 
-CoreTreeNode* KigsCore::RegisterType(const CoreClassNameTree& type_hierarchy, const kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table)
+CoreTreeNode* KigsCore::RegisterType(const CoreClassNameTree& type_hierarchy, const std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table)
 {
 	return AddToTreeNode("", KigsCore::GetRootNode(), type_hierarchy.classNames(), table, 0);
 }
@@ -551,7 +551,7 @@ CMSP KigsCore::GetSingleton(const KigsID& classname)
 	}
 
 	//! else create a new instance
-	kstl::string instancename("Singleton_");
+	std::string instancename("Singleton_");
 	#ifdef KEEP_NAME_AS_STRING
 	instancename += classname._id_name;
 	#else
@@ -667,7 +667,7 @@ void KigsCore::ProtectedDumpMessageBuffer()
 	unsigned int i;
 	for(i=0;i<mErrorList->size();i++)
 	{
-		kstl::string errorstring=(*mErrorList)[(unsigned int)i];
+		std::string errorstring=(*mErrorList)[(unsigned int)i];
 		errorstring+="\n";
 #ifdef WUP	
 		kigsprintf(errorstring.c_str());
@@ -679,7 +679,7 @@ void KigsCore::ProtectedDumpMessageBuffer()
 	(*mErrorList).clear();
 }
 
-void	KigsCore::AddError(const char* errfile,long errline,const kstl::string& errorstring,int errorLevel)
+void	KigsCore::AddError(const char* errfile,long errline,const std::string& errorstring,int errorLevel)
 {
 	if(errorLevel>2)
 	{
@@ -691,7 +691,7 @@ void	KigsCore::AddError(const char* errfile,long errline,const kstl::string& err
 	}
 	char	lineToChar[128];
 	sprintf(lineToChar,"%ld",errline);
-	kstl::string Error=KigsPrefixError[errorLevel];
+	std::string Error=KigsPrefixError[errorLevel];
 	Error+=errfile;
 	Error+="(";
 	Error+=lineToChar;
@@ -724,7 +724,7 @@ void	KigsCore::AddError(const char* errfile,long errline,const kstl::string& err
 // message level is 0
 // warning level is from 1 to 4
 // error level is from 5 to 9
-void	KigsCore::ProtectedAddError(const kstl::string& Error)
+void	KigsCore::ProtectedAddError(const std::string& Error)
 {
 	// check size and dump messages if size is critical
 	int total_size=0;
@@ -746,7 +746,7 @@ void	KigsCore::ProtectedAddError(const kstl::string& Error)
 
 #endif
 #if KIGS_ERROR_LEVEL<=1
-void	KigsCore::AddWarning(const char* errfile,long errline,const kstl::string& errorstring,int errorLevel)
+void	KigsCore::AddWarning(const char* errfile,long errline,const std::string& errorstring,int errorLevel)
 {
 	if(errorLevel>2)
 	{
@@ -758,7 +758,7 @@ void	KigsCore::AddWarning(const char* errfile,long errline,const kstl::string& e
 	}
 	char	lineToChar[128];
 	sprintf(lineToChar,"%ld",errline);
-	kstl::string Error=KigsPrefixWarning[errorLevel];
+	std::string Error=KigsPrefixWarning[errorLevel];
 	Error+=errfile;
 	Error+="(";
 	Error+=lineToChar;
@@ -770,9 +770,9 @@ void	KigsCore::AddWarning(const char* errfile,long errline,const kstl::string& e
 #endif
 #if KIGS_ERROR_LEVEL==0
 
-void	KigsCore::AddMessage(const kstl::string& errorstring)
+void	KigsCore::AddMessage(const std::string& errorstring)
 {
-	kstl::string Error=KigsPrefixMessage;
+	std::string Error=KigsPrefixMessage;
 	Error+=errorstring;
 
 	Instance()->ProtectedAddError(Error);
@@ -824,7 +824,7 @@ GlobalProfilerManager* KigsCore::GetProfileManager()
 	return 	mCoreInstance->mProfilerManager;
 }
 
-bool	KigsCore::ParseXml(const kstl::string& filename,CoreModifiable*	delegateObject,const char* force_as_format)
+bool	KigsCore::ParseXml(const std::string& filename,CoreModifiable*	delegateObject,const char* force_as_format)
 {
 	return XML::ReadFile(filename,delegateObject,force_as_format);
 }

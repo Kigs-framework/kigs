@@ -87,7 +87,7 @@ public:
 
 	}
 
-	kstl::vector<CoreItemSP>::iterator	mVectorIterator;
+	std::vector<CoreItemSP>::iterator	mVectorIterator;
 };
 
 // ****************************************
@@ -118,7 +118,7 @@ public:
 	{
 		mVector[key] = toinsert;
 	}
-	virtual void set(const kstl::string& key, const CoreItemSP& toinsert) override
+	virtual void set(const std::string& key, const CoreItemSP& toinsert) override
 	{
 		if (key.size())
 		{
@@ -148,7 +148,7 @@ public:
 		if(it!= mVector.end())
 			mVector.erase(it);
 	}
-	virtual void erase(const kstl::string& key) override
+	virtual void erase(const std::string& key) override
 	{
 		if (key.size())
 		{
@@ -187,7 +187,7 @@ public:
 		CoreItemIterator	toReturn(iter);
 		return toReturn;
 	}
-	
+
 
 	CoreItemIterator end() override
 	{
@@ -297,44 +297,6 @@ public:
 		return CoreItemSP(nullptr);
 	}
 
-	virtual inline CoreItemSP operator[](const kstl::string& key) override
-	{
-		kstl::vector<CoreItemSP>::const_iterator it = mVector.begin();
-
-		while (it != mVector.end())
-		{
-			if ((*it)->GetType()&(unsigned int)CoreItem::CORENAMEDITEMMASK)
-			{
-				if (((CoreNamedItem*)(*it).get())->getName() == key)
-				{
-					return (*it);
-				}
-			}
-			++it;
-		}
-
-		return CoreItemSP(nullptr);
-	}
-
-	virtual inline CoreItemSP operator[](const usString& key) override
-	{
-		kstl::vector<CoreItemSP>::const_iterator it = mVector.begin();
-
-		while (it != mVector.end())
-		{
-			if ((*it)->GetType()&(unsigned int)CoreItem::CORENAMEDITEMMASK)
-			{
-				if (((CoreNamedItem*)(*it).get())->getName() == key.ToString())
-				{
-					return (*it);
-				}
-			}
-			++it;
-		}
-
-		return CoreItemSP(nullptr);
-	}
-
 	virtual void*	getContainerStruct()  override
 	{
 		return &mVector;
@@ -343,7 +305,7 @@ public:
 	virtual operator Point2D() const override
 	{
 		Point2D result;
-	
+
 		mVector[0]->getValue(result.x);
 		mVector[1]->getValue(result.y);
 
@@ -374,37 +336,9 @@ public:
 	}
 
 protected:
-	kstl::vector<CoreItemSP>	mVector;
+	std::vector<CoreItemSP>	mVector;
 };
 
-// ****************************************
-// * CoreNamedVector class
-// * --------------------------------------
-/**
-* \class	CoreNamedVector
-* \file		CoreVector.h
-* \ingroup Core
-* \brief	CoreNamedItem managing a vector of CoreItemSP
-*/
-// ****************************************
-
-class CoreNamedVector : public CoreVectorBase<CoreNamedItem>
-{
-public:
-	CoreNamedVector(const kstl::string& _name) : CoreVectorBase<CoreNamedItem>(CORENAMEDVECTOR)
-	{
-		mName=_name;
-	}
-		
-	CoreNamedVector() : CoreVectorBase<CoreNamedItem>(CORENAMEDVECTOR)
-	{
-		mName="";
-	}
-
-
-protected:
-
-};
 
 // ****************************************
 // * CoreVector class
@@ -424,8 +358,6 @@ public:
 	CoreVectorBase<CoreItem>(COREVECTOR)
 	{
 	}
-
-
 };
 
 #endif // _COREVECTOR_H

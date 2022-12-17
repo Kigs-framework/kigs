@@ -29,7 +29,7 @@ public:
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	UIShapeDelegate(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UIShapeDelegate(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	virtual void SetTexUV(UIItem* item, UIVerticesInfo* aQI)=0;
 	virtual void SetVertexArray(UIItem* item, UIVerticesInfo* aQI)=0;

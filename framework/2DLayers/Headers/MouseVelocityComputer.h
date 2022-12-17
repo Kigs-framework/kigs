@@ -20,19 +20,19 @@ class MouseVelocityComputer : public CoreModifiable
 public:
 	DECLARE_CLASS_INFO(MouseVelocityComputer, CoreModifiable, 2DLayers);
 	~MouseVelocityComputer();
-	MouseVelocityComputer(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	MouseVelocityComputer(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	using CoreModifiable::Init;
-	void Init(kdouble time);
-	void StoreDisplacement(kfloat dx, kfloat dy, kdouble time);
-	void ComputeVelocity(kfloat &vx, kfloat &vy);
+	void Init(double time);
+	void StoreDisplacement(float dx, float dy, double time);
+	void ComputeVelocity(float &vx, float &vy);
 
 private:
-	kfloat	*mVelocityX;
-	kfloat	*mVelocityY;
+	float	*mVelocityX;
+	float	*mVelocityY;
 	int		mVelocityIndex;
 	int		mVelocityCount;
-	kdouble mOldTime;
+	double mOldTime;
 	const static int cMaxIndex = 5;
 };
 

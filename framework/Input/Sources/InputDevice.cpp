@@ -68,7 +68,7 @@ void	InputDevice::InitItems(unsigned int itemCount,DeviceItem** items)
 	}
 }
 
-kfloat	InputDevice::GetItemfState(int itemindex)
+float	InputDevice::GetItemfState(int itemindex)
 {
 	if (itemindex >= (int)mDeviceItemsCount)
 		return 0;

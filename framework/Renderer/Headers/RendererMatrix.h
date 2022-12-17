@@ -24,11 +24,11 @@ public:
 
 	/**
 	 * \brief	constructor
-	 * \fn 		RendererMatrix(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		RendererMatrix(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-    RendererMatrix(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    RendererMatrix(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
     
 	/**
 	 * \brief	initialise pre draw method
@@ -106,7 +106,7 @@ public:
 		return ((unsigned int)Need_Predraw)|((unsigned int)Need_Postdraw);
 	}
 
-	const kfloat*	GetMatrixValues()
+	const float*	GetMatrixValues()
 	{
 		return mMatrix.getConstArrayBuffer();
 	}

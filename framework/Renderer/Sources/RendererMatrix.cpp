@@ -4,8 +4,8 @@
 
 IMPLEMENT_CLASS_INFO(RendererMatrix)
 
-RendererMatrix::RendererMatrix(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
-mMatrix(*this,false,LABEL_AND_ID(Matrix))
+RendererMatrix::RendererMatrix(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
+mMatrix(*this,false,"Matrix")
 {
 	InitToIdentity();
 }    
@@ -32,9 +32,9 @@ void	RendererMatrix::Init(const Matrix3x4& matrix)
 	mMatrix[13]=	matrix.e[3][1];
 	mMatrix[14]=	matrix.e[3][2];
 
-	mMatrix[3]=mMatrix[7]=mMatrix[11]=KFLOAT_CONST(0.0f);
+	mMatrix[3]=mMatrix[7]=mMatrix[11]=0.0f;
 
-	mMatrix[15]=KFLOAT_CONST(1.0f);
+	mMatrix[15]=1.0f;
 }
 
 void	RendererMatrix::Init(const Matrix4x4& matrix)
@@ -62,23 +62,23 @@ void	RendererMatrix::Init(const Matrix4x4& matrix)
 
 void	RendererMatrix::InitToIdentity()
 {
-	mMatrix[0]=	KFLOAT_CONST(1.0f);
-	mMatrix[1]=	KFLOAT_CONST(0.0f);
-	mMatrix[2]=	KFLOAT_CONST(0.0f);
+	mMatrix[0]=	1.0f;
+	mMatrix[1]=	0.0f;
+	mMatrix[2]=	0.0f;
 
-	mMatrix[4]=	KFLOAT_CONST(0.0f);
-	mMatrix[5]=	KFLOAT_CONST(1.0f);
-	mMatrix[6]=	KFLOAT_CONST(0.0f);
+	mMatrix[4]=	0.0f;
+	mMatrix[5]=	1.0f;
+	mMatrix[6]=	0.0f;
 
-	mMatrix[8]=	KFLOAT_CONST(0.0f);
-	mMatrix[9]=	KFLOAT_CONST(0.0f);
-	mMatrix[10]=	KFLOAT_CONST(1.0f);
+	mMatrix[8]=	0.0f;
+	mMatrix[9]=	0.0f;
+	mMatrix[10]=	1.0f;
 
-	mMatrix[12]=	KFLOAT_CONST(0.0f);
-	mMatrix[13]=	KFLOAT_CONST(0.0f);
-	mMatrix[14]=	KFLOAT_CONST(0.0f);
+	mMatrix[12]=	0.0f;
+	mMatrix[13]=	0.0f;
+	mMatrix[14]=	0.0f;
 
-	mMatrix[3]=mMatrix[7]=mMatrix[11]=KFLOAT_CONST(0.0f);
+	mMatrix[3]=mMatrix[7]=mMatrix[11]=0.0f;
 
-	mMatrix[15]=KFLOAT_CONST(1.0f);
+	mMatrix[15]=1.0f;
 }

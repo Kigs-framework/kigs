@@ -17,7 +17,7 @@ class OpenGLRenderingMatrix : public RendererMatrix
 {
 public:        
     DECLARE_CLASS_INFO(OpenGLRenderingMatrix,RendererMatrix,Renderer)    
-    OpenGLRenderingMatrix(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    OpenGLRenderingMatrix(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~OpenGLRenderingMatrix();
 
 	void	PushMatrix(TravState* state) const override;

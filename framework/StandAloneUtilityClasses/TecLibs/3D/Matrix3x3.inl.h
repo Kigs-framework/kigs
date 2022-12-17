@@ -38,8 +38,8 @@ inline Matrix3x3::Matrix3x3(const Quaternion& cr_Quaternion)
 
 inline void Matrix3x3::SetIdentity()
 {
-	e[0][0] = e[1][1] = e[2][2] = KFLOAT_ONE;
-	e[1][0] = e[2][0] = e[0][1] = e[2][1] = e[0][2] = e[1][2] = KFLOAT_ZERO;
+	e[0][0] = e[1][1] = e[2][2] = 1.0f;
+	e[1][0] = e[2][0] = e[0][1] = e[2][1] = e[0][2] = e[1][2] = 0.0f;
 }
 
 inline void Matrix3x3::Set(const Matrix3x3& mat)
@@ -56,17 +56,17 @@ inline void Matrix3x3::Set(const Quaternion& cr_Quaternion)
 	yy = cr_Quaternion.V.y * y2;   yz = cr_Quaternion.V.y * z2;   zz = cr_Quaternion.V.z * z2;
 	wx = cr_Quaternion.w * x2;   wy = cr_Quaternion.w * y2;   wz = cr_Quaternion.w * z2;
 	
-	e[0][0] = KFLOAT_ONE - (yy + zz);
+	e[0][0] = 1.0f - (yy + zz);
 	e[0][1] = xy - wz;
 	e[0][2] = xz + wy;
 	
 	e[1][0] = xy + wz;
-	e[1][1] = KFLOAT_ONE - (xx + zz);
+	e[1][1] = 1.0f - (xx + zz);
 	e[1][2] = yz - wx;
 	
 	e[2][0] = xz - wy;
 	e[2][1] = yz + wx;
-	e[2][2] = KFLOAT_ONE - (xx + yy);
+	e[2][2] = 1.0f - (xx + yy);
 }
 
 inline const Matrix3x3& Matrix3x3::operator=(const Matrix3x3& mat)
@@ -94,7 +94,7 @@ inline Matrix3x3 Inv(const Matrix3x3 & cr_Matrix)
 	Float t10 = cr_Matrix.e[2][0]*cr_Matrix.e[0][1];
 	Float t12 = cr_Matrix.e[1][0]*cr_Matrix.e[0][2];
 	Float t14 = cr_Matrix.e[2][0]*cr_Matrix.e[0][2];
-	Float t17 = KFLOAT_ONE/(t4*cr_Matrix.e[2][2]-t6*cr_Matrix.e[1][2]-t8*cr_Matrix.e[2][2]+t10*cr_Matrix.e[1][2]+t12*cr_Matrix.e[2][1]-t14*cr_Matrix.e[1][1]);
+	Float t17 = 1.0f/(t4*cr_Matrix.e[2][2]-t6*cr_Matrix.e[1][2]-t8*cr_Matrix.e[2][2]+t10*cr_Matrix.e[1][2]+t12*cr_Matrix.e[2][1]-t14*cr_Matrix.e[1][1]);
 	mat.e[0][0] = (cr_Matrix.e[1][1]*cr_Matrix.e[2][2]-cr_Matrix.e[2][1]*cr_Matrix.e[1][2])*t17;
 	mat.e[0][1] = -(cr_Matrix.e[0][1]*cr_Matrix.e[2][2]-cr_Matrix.e[2][1]*cr_Matrix.e[0][2])*t17;
 	mat.e[0][2] = (cr_Matrix.e[0][1]*cr_Matrix.e[1][2]-cr_Matrix.e[1][1]*cr_Matrix.e[0][2])*t17;
@@ -406,9 +406,9 @@ inline void Matrix3x3::SetRotationX(const Float& Angle)
 {
 	Float COS = cosF(Angle);
 	Float SIN = sinF(Angle);
-	e[0][0] = KFLOAT_ONE; e[1][0] = KFLOAT_ZERO; e[2][0] = KFLOAT_ZERO;
-	e[0][1] = KFLOAT_ZERO; e[1][1] = COS; e[2][1] =-SIN;
-	e[0][2] = KFLOAT_ZERO; e[1][2] = SIN; e[2][2] = COS;
+	e[0][0] = 1.0f; e[1][0] = 0.0f; e[2][0] = 0.0f;
+	e[0][1] = 0.0f; e[1][1] = COS; e[2][1] =-SIN;
+	e[0][2] = 0.0f; e[1][2] = SIN; e[2][2] = COS;
 }
 
 
@@ -422,9 +422,9 @@ inline void Matrix3x3::SetRotationY(const Float& Angle)
 {
 	Float COS = cosF(Angle);
 	Float SIN = sinF(Angle);
-	e[0][0] = COS; e[1][0] = KFLOAT_ZERO; e[2][0] = SIN;
-	e[0][1] = KFLOAT_ZERO; e[1][1] = KFLOAT_ONE; e[2][1] = KFLOAT_ZERO;
-	e[0][2] =-SIN; e[1][2] = KFLOAT_ZERO; e[2][2] = COS;
+	e[0][0] = COS; e[1][0] = 0.0f; e[2][0] = SIN;
+	e[0][1] = 0.0f; e[1][1] = 1.0f; e[2][1] = 0.0f;
+	e[0][2] =-SIN; e[1][2] = 0.0f; e[2][2] = COS;
 }
 
 
@@ -438,9 +438,9 @@ inline void Matrix3x3::SetRotationZ(const Float& Angle)
 {
 	Float COS = cosF(Angle);
 	Float SIN = sinF(Angle);
-	e[0][0] = COS; e[1][0] =-SIN; e[2][0] = KFLOAT_ZERO;
-	e[0][1] = SIN; e[1][1] = COS; e[2][1] = KFLOAT_ZERO;
-	e[0][2] = KFLOAT_ZERO; e[1][2] = KFLOAT_ZERO; e[2][2] = KFLOAT_ONE;
+	e[0][0] = COS; e[1][0] =-SIN; e[2][0] = 0.0f;
+	e[0][1] = SIN; e[1][1] = COS; e[2][1] = 0.0f;
+	e[0][2] = 0.0f; e[1][2] = 0.0f; e[2][2] = 1.0f;
 }
 
 
@@ -751,7 +751,7 @@ inline void Matrix3x3::SetScale(const Float& ScaleX, const Float &ScaleY, const 
 	e[0][0] = ScaleX;
 	e[1][1] = ScaleY;
 	e[2][2] = ScaleZ;
-	e[0][1] = e[0][2] = e[1][0] = e[1][2] = e[2][0] = e[2][1] = KFLOAT_ZERO;
+	e[0][1] = e[0][2] = e[1][0] = e[1][2] = e[2][0] = e[2][1] = 0.0f;
 }
 
 
@@ -813,9 +813,9 @@ inline Matrix3x3::operator const Matrix3x4 (void)
 {
  Matrix3x4 m;
  memcpy(m.e,e,9*sizeof(Float));
- m.e[3][0] = KFLOAT_ZERO;
- m.e[3][1] = KFLOAT_ZERO;
- m.e[3][2] = KFLOAT_ZERO;
+ m.e[3][0] = 0.0f;
+ m.e[3][1] = 0.0f;
+ m.e[3][2] = 0.0f;
  return m;
 }
 
@@ -826,19 +826,19 @@ inline Matrix3x3::operator const Matrix4x4 (void)
  result.e[0][0] = e[0][0];
  result.e[0][1] = e[0][1];
  result.e[0][2] = e[0][2];
- result.e[0][3] = KFLOAT_ZERO;
+ result.e[0][3] = 0.0f;
  result.e[1][0] = e[1][0];
  result.e[1][1] = e[1][1];
  result.e[1][2] = e[1][2];
- result.e[1][3] = KFLOAT_ZERO;
+ result.e[1][3] = 0.0f;
  result.e[2][0] = e[2][0];
  result.e[2][1] = e[2][1];
  result.e[2][2] = e[2][2];
- result.e[2][3] = KFLOAT_ZERO;
- result.e[3][0] = KFLOAT_ZERO;
- result.e[3][1] = KFLOAT_ZERO;
- result.e[3][2] = KFLOAT_ZERO;
- result.e[3][3] = KFLOAT_ONE;
+ result.e[2][3] = 0.0f;
+ result.e[3][0] = 0.0f;
+ result.e[3][1] = 0.0f;
+ result.e[3][2] = 0.0f;
+ result.e[3][3] = 1.0f;
  return result;
 }
 */

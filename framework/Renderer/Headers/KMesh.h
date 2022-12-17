@@ -75,13 +75,13 @@ namespace KigsFramework
 
 		/**
 		* \brief	constructor
-		* \fn 		MeshItemGroup(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+		* \fn 		MeshItemGroup(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 		* \param	name : instance name
 		* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 		*/
-		MeshItemGroup(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG) 
+		MeshItemGroup(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG) 
 			: Drawable(name,PASS_CLASS_NAME_TREE_ARG),
-			mCullMode(*this,false,LABEL_AND_ID(CullMode),1)
+			mCullMode(*this,false,"CullMode",1)
 		{
 			mFirstTriangle = 0;
 			mTriangleCount = 0;
@@ -102,11 +102,11 @@ namespace KigsFramework
 
 		/**
 		* \brief	update the bounding box
-		* \fn 		virtual bool	BBoxUpdate(kdouble)
-		* \param	kdouble : world time
+		* \fn 		virtual bool	BBoxUpdate(double)
+		* \param	double : world time
 		* \return	TRUE because has a bounding box
 		*/
-		bool	BBoxUpdate(kdouble /* time*/) override {return true;}
+		bool	BBoxUpdate(double /* time*/) override {return true;}
 
 		//! List of Triangles
 		void*						mFirstTriangle;
@@ -143,11 +143,11 @@ namespace KigsFramework
 
 		/**
 		* \brief	constructor
-		* \fn 		Mesh(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+		* \fn 		Mesh(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 		* \param	name : instance name
 		* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 		*/
-		Mesh(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+		Mesh(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 		/**
 		* \brief	constructor from a mesh
@@ -237,9 +237,9 @@ namespace KigsFramework
 		{
 		public:
 			//! coordinate on x axis
-			kfloat u;
+			float u;
 			//! coordinate on y axis
-			kfloat v;
+			float v;
 
 			/**
 			* \brief	read u and v value in a file
@@ -1431,7 +1431,7 @@ namespace KigsFramework
 		/*	//! link to getVertex method
 		maMethod	myGetVertexPointerMethod;
 		//! getVertex method
-		bool		GetVertexPointer(kstl::vector<CoreModifiableAttribute*>& params);
+		bool		GetVertexPointer(std::vector<CoreModifiableAttribute*>& params);
 		*/
 
 		DECLARE_METHOD(GetVertexPointer);
@@ -1439,7 +1439,7 @@ namespace KigsFramework
 		//! link to getColor method
 		/*maMethod	myGetColorPointerMethod;
 		//! getColor method
-		bool		GetColorPointer(kstl::vector<CoreModifiableAttribute*>& params);
+		bool		GetColorPointer(std::vector<CoreModifiableAttribute*>& params);
 		*/
 		DECLARE_METHOD(GetColorPointer);
 
@@ -1447,14 +1447,14 @@ namespace KigsFramework
 		//! link to getNormal method
 		/*maMethod	myGetNormalPointerMethod;
 		//! getNormal method
-		bool		GetNormalPointer(kstl::vector<CoreModifiableAttribute*>& params);
+		bool		GetNormalPointer(std::vector<CoreModifiableAttribute*>& params);
 		*/
 		DECLARE_METHOD(GetNormalPointer);
 
 		//! link to getTexCoord method
 		/*	maMethod	myGetTexCoordPointerMethod;
 		//! getTexCoord method
-		bool		GetTexCoordPointer(kstl::vector<CoreModifiableAttribute*>& params);
+		bool		GetTexCoordPointer(std::vector<CoreModifiableAttribute*>& params);
 		*/
 
 		DECLARE_METHOD(GetTexCoordPointer);
@@ -1571,7 +1571,7 @@ namespace KigsFramework
 
 		inline unsigned int Get_NormalCount() const {return mNormalCount;}
 #ifdef WIN32
-		void ExportMeshTo(kstl::string _pathDirectory, kstl::string _fileName);
+		void ExportMeshTo(std::string _pathDirectory, std::string _fileName);
 #endif
 
 		void	RecomputeNormals();

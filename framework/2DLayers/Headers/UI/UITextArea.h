@@ -28,12 +28,12 @@ public:
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	UITextArea(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UITextArea(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual		~UITextArea();
 
 	usString		GetText() const { return mText.us_str(); }
-	kstl::string	GetFontName() const { return mFont; }
-	kstl::string	GetReleaseAction() const { return mReleaseAction; }
+	std::string	GetFontName() const { return mFont; }
+	std::string	GetReleaseAction() const { return mReleaseAction; }
 	int				GetFontSize() const { return mFontSize; }
 	int				GetLength() const { return mLength; }
 	void			SetText(const unsigned short* value) { this->ChangeText(value); mIsDefaultText = false; }
@@ -44,7 +44,7 @@ public:
 
 	void			CreateFirstText();
 
-	//void			UpdateText(kstl::vector<int> keycodeList);
+	//void			UpdateText(std::vector<int> keycodeList);
 
 	//bool			TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)override;
 	bool			HasFocus()override { return GetNodeFlag(UIItem_HasFocus); }
@@ -64,7 +64,7 @@ protected:
 	void		ProtectedDraw(TravState* state)override;
 
 	void		ChangeText(const unsigned short* newText = NULL);
-	void		ChangeText(const kstl::string& newText)
+	void		ChangeText(const std::string& newText)
 	{
 		usString toChange(newText);
 		ChangeText(toChange.us_str());

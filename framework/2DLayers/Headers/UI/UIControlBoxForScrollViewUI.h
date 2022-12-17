@@ -30,12 +30,12 @@ public:
 		mPriority = -1;
 	}
 
-	bool scrollTo(kfloat deltaPos);
+	bool scrollTo(float deltaPos);
 
 	//bool TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
 	//bool TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
-	//void TriggerMouseSwipe(int idxButton, kfloat Vx, kfloat Vy) override;
-	void CompensatePosition(kfloat deltaPos, int axis) { mPosition[axis] -= deltaPos; }
+	//void TriggerMouseSwipe(int idxButton, float Vx, float Vy) override;
+	void CompensatePosition(float deltaPos, int axis) { mPosition[axis] -= deltaPos; }
 
 protected:
 
@@ -55,10 +55,10 @@ protected:
 	bool	mMoving;
 	bool	mHasMoved;
 	double	mTimeSinceClick;
-	kfloat	mInitialVelocity;
+	float	mInitialVelocity;
 	eAnimationState	mAnimation;
-	kdouble	mStartTime;
-	kdouble	mEndTime;
-	kfloat	mConstantAcceleration;
+	double	mStartTime;
+	double	mEndTime;
+	float	mConstantAcceleration;
 
 };

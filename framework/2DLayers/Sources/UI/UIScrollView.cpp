@@ -10,7 +10,7 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UIScrollView, UIScrollView, 2DLayers);
 IMPLEMENT_CLASS_INFO(UIScrollView)
 
-UIScrollView::UIScrollView(const kstl::string& name, CLASS_NAME_TREE_ARG) :
+UIScrollView::UIScrollView(const std::string& name, CLASS_NAME_TREE_ARG) :
 	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	mXScroll = 0;
@@ -32,7 +32,7 @@ void UIScrollView::InitModifiable()
 		mVision->Set_Position(posViewPort);
 		mVision->setValue("Size", (v2f)mSize);
 
-		kstl::vector<CMSP>	instances=	GetInstances("ModuleInput");
+		std::vector<CMSP>	instances=	GetInstances("ModuleInput");
 		KIGS_ASSERT(instances.size() == 1);
 		mInput = (ModuleInput*)(instances[0].get());
 
@@ -47,7 +47,7 @@ UIScrollView::~UIScrollView()
 }
 
 
-bool UIScrollView::scrollTo(kfloat deltaPos)
+bool UIScrollView::scrollTo(float deltaPos)
 {
 	bool stopped = false;
 
@@ -66,14 +66,14 @@ bool UIScrollView::scrollTo(kfloat deltaPos)
 		}
 
 
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
+		std::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
+		std::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
 		for (; itS != itE; ++itS)
 		{
 			if ((*itS) == mVision.get())
 				continue;
 
-			kfloat x, y;
+			float x, y;
 			((Node2D*)(*itS))->GetPosition(x, y);
 			((Node2D*)(*itS))->setArrayValue("Position", x, y + deltaPos);
 		}
@@ -93,11 +93,11 @@ bool UIScrollView::scrollTo(kfloat deltaPos)
 			stopped = true;
 
 		}
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
+		std::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
+		std::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
 		while (itS != itE)
 		{
-			kfloat x, y;
+			float x, y;
 			((Node2D*)(*itS))->GetPosition(x, y);
 			((Node2D*)(*itS))->setArrayValue("Position", x + deltaPos, y);
 			itS++;
@@ -118,14 +118,14 @@ void UIScrollView::SetUpNodeIfNeeded()
 bool UIScrollView::Draw(TravState* state)
 {
 	ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer*)state->GetRenderer();
-	kfloat screenW, screenH;
+	float screenW, screenH;
 
-	kfloat positionX, positionY;
+	float positionX, positionY;
 	GetGlobalPosition(positionX, positionY);
 
 	renderer->getFirstRenderingScreen()->GetSize(screenW, screenH);
 
-	UIItem* firstFather = (UIItem*)getFirstParent(LABEL_TO_ID(UIItem));
+	UIItem* firstFather = (UIItem*)getFirstParent("UIItem");
 	v2f fsize = firstFather->GetSize();
 	float ratioH = screenH / fsize.y;
 	float ratioW = screenW / fsize.x;
@@ -138,11 +138,11 @@ void UIScrollView::UpdateContentSize()
 {
 	mMaxY = 0;
 	mMaxX = 0;
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
+	std::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
+	std::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
 	while (itS != itE)
 	{
-		kfloat x, y;
+		float x, y;
 		((Node2D*)(*itS))->GetGlobalPosition(x, y);
 		v2f size = ((Node2D*)(*itS))->GetSize();
 		if (size.y + y > mMaxY)
@@ -160,8 +160,8 @@ void UIScrollView::UpdateContentSize()
 
 void UIScrollView::SendFalseClickUpToChildren()
 {
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
+	std::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
+	std::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
 	while (itS != itE)
 	{
 		if ((*itS)->isSubType(UIButton::mClassID))
@@ -174,8 +174,8 @@ void UIScrollView::SendFalseClickUpToChildren()
 
 void UIScrollView::SendClickDownToChildren(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)
 {
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
-	kstl::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
+	std::set<Node2D*, Node2D::PriorityCompare>::iterator itS = mSons.begin();
+	std::set<Node2D*, Node2D::PriorityCompare>::iterator itE = mSons.end();
 	while (itS != itE)
 	{
 		if (*itS == mVision.get())

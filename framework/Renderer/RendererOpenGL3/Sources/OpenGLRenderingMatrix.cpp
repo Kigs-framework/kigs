@@ -6,7 +6,7 @@
 
 IMPLEMENT_CLASS_INFO(OpenGLRenderingMatrix)
 
-OpenGLRenderingMatrix::OpenGLRenderingMatrix(const kstl::string& name,CLASS_NAME_TREE_ARG) : RendererMatrix(name,PASS_CLASS_NAME_TREE_ARG)
+OpenGLRenderingMatrix::OpenGLRenderingMatrix(const std::string& name,CLASS_NAME_TREE_ARG) : RendererMatrix(name,PASS_CLASS_NAME_TREE_ARG)
 {
   // myMatrix=new GLfloat[16];
 }     

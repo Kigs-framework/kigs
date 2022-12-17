@@ -25,20 +25,20 @@ public:
 	
 	/**
 	 * \brief	constructor
-	 * \fn 		CompassDevice(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		CompassDevice(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	CompassDevice(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	CompassDevice(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 
 	/**
 	 * \brief	retreive current position
-	 * \fn 		void			getPos(kfloat& posX,kfloat& posY)
+	 * \fn 		void			getPos(float& posX,float& posY)
 	 * \param	posX : position on x axis (in/out param)
 	 * \param	posY : position on y axis (in/out param)
 	 */
-	void			getPos(kfloat& posX,kfloat& posY,kfloat& posZ){posX=mCompX; posY=mCompY; posZ=mCompZ;}
+	void			getPos(float& posX,float& posY,float& posZ){posX=mCompX; posY=mCompY; posZ=mCompZ;}
 	
 	
 	/**

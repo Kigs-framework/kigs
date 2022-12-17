@@ -20,13 +20,13 @@ class OpenGLRenderingScreen : public OpenGLPlatformRenderingScreen
 {
 public:
 	DECLARE_CLASS_INFO(OpenGLRenderingScreen, OpenGLPlatformRenderingScreen, Renderer)
-	OpenGLRenderingScreen(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	OpenGLRenderingScreen(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~OpenGLRenderingScreen();
 
 	bool    SetActive(TravState* state) override;
 	void    Release(TravState* state) override;
 
-	void	Resize(kfloat sizeX, kfloat sizeY) override;
+	void	Resize(float sizeX, float sizeY) override;
 
 
 	void	FetchPixels(int x, int y, int width, int height, void *pRGBAPixels)override;

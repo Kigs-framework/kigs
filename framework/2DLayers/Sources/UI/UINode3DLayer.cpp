@@ -26,7 +26,7 @@ void UINode3DLayer::InitModifiable()
 	Node3D::InitModifiable();
 	if (IsInit())
 	{
-		kstl::vector<CMSP>	instances;
+		std::vector<CMSP>	instances;
 		GetSonInstancesByType("UIItem", instances);
 		KIGS_ASSERT(instances.size() < 2); // only one UIItem child
 		// Should we just uninit and wait for a root item before real init ?
@@ -124,7 +124,7 @@ void UINode3DLayer::Update(const Timer& a_Timer, void* addParam)
 // not sure how to connect this with TouchManager
 void UINode3DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 {
-	kstl::vector<NodeToDraw> nodes; nodes.reserve(param.toSort.size());
+	std::vector<NodeToDraw> nodes; nodes.reserve(param.toSort.size());
 	int aze = 0;
 	for (auto cm : param.toSort)
 	{
@@ -287,7 +287,7 @@ void UINode3DLayer::TravDraw(TravState* state)
 	if (IsRenderable())
 	{
 
-		kstl::vector<NodeToDraw> todraw;
+		std::vector<NodeToDraw> todraw;
 		todraw.push_back(NodeToDraw{ mRootItem.get(), 0 });
 
 		if (mRootItem->Draw(state))
@@ -299,8 +299,8 @@ void UINode3DLayer::TravDraw(TravState* state)
 		std::sort(todraw.begin(), todraw.end(), NodeToDraw::Sorter{});
 		renderer->SetStencilTest(true);
 
-		kstl::vector<Node2D*> current_stencil_stack;
-		kstl::vector<Node2D*> cache_stencil_stack;
+		std::vector<Node2D*> current_stencil_stack;
+		std::vector<Node2D*> cache_stencil_stack;
 
 		auto compare_stencil_stacks = [&]()
 		{

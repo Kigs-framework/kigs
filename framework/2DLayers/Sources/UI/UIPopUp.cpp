@@ -40,7 +40,7 @@ void	PopUpUpgrador::Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted
 // HidePopUp slot
 DEFINE_UPGRADOR_METHOD(PopUpUpgrador, HidePopUp)
 {
-	kstl::string tmp = "";
+	std::string tmp = "";
 	if (privateParams != nullptr)
 	{
 		tmp = static_cast<usString*>(privateParams)->ToString();
@@ -72,7 +72,7 @@ DEFINE_UPGRADOR_METHOD(PopUpUpgrador, ShowPopUp)
 {
 	if (!params.empty())
 	{
-		kstl::string tmp;
+		std::string tmp;
 		params[0]->getValue(tmp);
 		
 		if (atoi(tmp.c_str()) == getValue<int>("NumSignal"))
@@ -82,7 +82,7 @@ DEFINE_UPGRADOR_METHOD(PopUpUpgrador, ShowPopUp)
 				GetUpgrador()->Hide(this);
 				return false;
 			}
-			kstl::vector<CoreModifiableAttribute*> sendParams;
+			std::vector<CoreModifiableAttribute*> sendParams;
 			sendParams.push_back(getAttribute("CloseAll"));
 			KigsCore::GetNotificationCenter()->postNotificationName("HidePopUp", sendParams, this);
 
@@ -99,7 +99,7 @@ DEFINE_UPGRADOR_METHOD(PopUpUpgrador, ShowPopUp)
 // update ( hide popup if it was open for too long ) 
 DEFINE_UPGRADOR_UPDATE(PopUpUpgrador)
 {
-	kdouble t = timer.GetTime();
+	double t = timer.GetTime();
 	if (GetUpgrador()->mOpenPopup)
 	{
 		GetUpgrador()->mTimeOpen = t;

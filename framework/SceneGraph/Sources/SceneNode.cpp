@@ -9,7 +9,7 @@
 
 IMPLEMENT_CLASS_INFO(SceneNode)
 
-SceneNode::SceneNode(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
+SceneNode::SceneNode(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
 {
 }
 

@@ -21,7 +21,7 @@
 
 IMPLEMENT_CLASS_INFO(OpenGLRenderingScreen)
 
-OpenGLRenderingScreen::OpenGLRenderingScreen(const kstl::string& name, CLASS_NAME_TREE_ARG) : OpenGLPlatformRenderingScreen(name, PASS_CLASS_NAME_TREE_ARG)
+OpenGLRenderingScreen::OpenGLRenderingScreen(const std::string& name, CLASS_NAME_TREE_ARG) : OpenGLPlatformRenderingScreen(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	
 }
@@ -52,7 +52,7 @@ void OpenGLRenderingScreen::FetchDepth(int x, int y, int width, int height, unsi
 	glReadPixels(x, y, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, pDepthPixels);
 }
 
-void	OpenGLRenderingScreen::Resize(kfloat sizeX, kfloat sizeY)
+void	OpenGLRenderingScreen::Resize(float sizeX, float sizeY)
 {
 	if (mResizeDesignSize)
 	{
@@ -88,7 +88,7 @@ void OpenGLRenderingScreen::InitializeGL(GLsizei width, GLsizei height)
 	RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 
 	mSize = v2f(width,height);
-	kfloat    aspect;
+	float    aspect;
 	
 	renderer->SetClearColorValue(0.8f, 0.8f, 1.0f, 0.0f);
 	renderer->SetDepthValueMode(1.0);

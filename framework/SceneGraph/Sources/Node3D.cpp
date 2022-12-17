@@ -57,7 +57,7 @@ bool Node3D::addItem(const CMSP& item,ItemPosition pos DECLARE_LINK_NAME)
 		{
 			// Support for older xml files
 			RendererMatrix* m = (RendererMatrix*)item.get();
-			const kfloat* values = m->GetMatrixValues();
+			const float* values = m->GetMatrixValues();
 			Matrix3x4 matrix = Matrix3x4::IdentityMatrix();
 			matrix.e[0][0] = values[0];
 			matrix.e[0][1] = values[1];
@@ -231,7 +231,7 @@ DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Node3D, TravState* state, unsigned int c
 	}
 
 	mCullingMask=cullingMask;
-	kstl::vector<ModifiableItemStruct>::const_iterator ittemp;
+	std::vector<ModifiableItemStruct>::const_iterator ittemp;
 
 	//! compute visibility only if we are not in a all visible branch
 	if(!state->IsAllVisible())
@@ -458,8 +458,8 @@ void Node3D::TravDraw(TravState* state)
 				// TODO : find a way to mutualise loop
 				if(state->IsAllVisible())
 				{
-					kstl::vector<ModifiableItemStruct>::const_iterator it=getItems().begin();
-					kstl::vector<ModifiableItemStruct>::const_iterator itend=getItems().end();
+					std::vector<ModifiableItemStruct>::const_iterator it=getItems().begin();
+					std::vector<ModifiableItemStruct>::const_iterator itend=getItems().end();
 					while(it!=itend)
 					{
 						//! if "path" mode, just retreive needed son
@@ -625,9 +625,9 @@ void Node3D::TravCull(TravState* state)
 		cam->GetViewVector(viewVector.x, viewVector.y, viewVector.z);
 
 		// insert nodes in sorted list using dist from camera
-		kstl::set<nodeDistPair>	visibleSet;
+		std::set<nodeDistPair>	visibleSet;
 
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
 			// if node3D, then full process
@@ -651,8 +651,8 @@ void Node3D::TravCull(TravState* state)
 
 		if (visibleSet.size())
 		{
-			kstl::set<nodeDistPair>::iterator	currentN = visibleSet.begin();
-			kstl::set<nodeDistPair>::iterator	endN = visibleSet.end();
+			std::set<nodeDistPair>::iterator	currentN = visibleSet.begin();
+			std::set<nodeDistPair>::iterator	endN = visibleSet.end();
 
 			while (currentN != endN)
 			{
@@ -667,9 +667,9 @@ void Node3D::TravCull(TravState* state)
 	if((front_to_back_sort = (state->mManageFrontToBackStruct && (isUserFlagSet(UserFlagFrontToBackSort) || state->mManageFrontToBackStruct->flag_set_in_parents))))
 	{
 		// insert nodes in sorted list using dist from camera
-		kstl::set<nodeDistPair>	visibleSet;
+		std::set<nodeDistPair>	visibleSet;
 
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
 			// if node3D, then full process
@@ -698,8 +698,8 @@ void Node3D::TravCull(TravState* state)
 
 		if (visibleSet.size())
 		{
-			kstl::set<nodeDistPair>::iterator	currentN = visibleSet.begin();
-			kstl::set<nodeDistPair>::iterator	endN = visibleSet.end();
+			std::set<nodeDistPair>::iterator	currentN = visibleSet.begin();
+			std::set<nodeDistPair>::iterator	endN = visibleSet.end();
 
 			while (currentN != endN)
 			{
@@ -711,7 +711,7 @@ void Node3D::TravCull(TravState* state)
 	}
 	else
 	{
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
 			// if node3D, then full process
@@ -786,9 +786,9 @@ void Node3D::RecomputeLocalToGlobal()
 		nodes[i]->mLocalToGlobal.PostMultiply(father_local_to_global);
 
 		const auto& l2g = nodes[i]->mLocalToGlobal;
-		kfloat sx = 1.0f / (l2g.e[0][0] * l2g.e[0][0] + l2g.e[0][1] * l2g.e[0][1] + l2g.e[0][2] * l2g.e[0][2]);
-		kfloat sy = 1.0f / (l2g.e[1][0] * l2g.e[1][0] + l2g.e[1][1] * l2g.e[1][1] + l2g.e[1][2] * l2g.e[1][2]);
-		kfloat sz = 1.0f / (l2g.e[2][0] * l2g.e[2][0] + l2g.e[2][1] * l2g.e[2][1] + l2g.e[2][2] * l2g.e[2][2]);
+		float sx = 1.0f / (l2g.e[0][0] * l2g.e[0][0] + l2g.e[0][1] * l2g.e[0][1] + l2g.e[0][2] * l2g.e[0][2]);
+		float sy = 1.0f / (l2g.e[1][0] * l2g.e[1][0] + l2g.e[1][1] * l2g.e[1][1] + l2g.e[1][2] * l2g.e[1][2]);
+		float sz = 1.0f / (l2g.e[2][0] * l2g.e[2][0] + l2g.e[2][1] * l2g.e[2][1] + l2g.e[2][2] * l2g.e[2][2]);
 
 		if (NormSquare(v3f{ sx - 1.0f, sy - 1.0f, sz - 1.0f }) > 0.001f)
 			nodes[i]->setUserFlag(IsScaledFlag);
@@ -805,9 +805,9 @@ void Node3D::RecomputeGlobalToLocal()
 	if (isUserFlagSet(LocalToGlobalMatrixIsDirty))
 		RecomputeLocalToGlobal();
 
-	kfloat sx = 1.0f / (mLocalToGlobal.e[0][0] * mLocalToGlobal.e[0][0] + mLocalToGlobal.e[0][1] * mLocalToGlobal.e[0][1] + mLocalToGlobal.e[0][2] * mLocalToGlobal.e[0][2]);
-	kfloat sy = 1.0f / (mLocalToGlobal.e[1][0] * mLocalToGlobal.e[1][0] + mLocalToGlobal.e[1][1] * mLocalToGlobal.e[1][1] + mLocalToGlobal.e[1][2] * mLocalToGlobal.e[1][2]);
-	kfloat sz = 1.0f / (mLocalToGlobal.e[2][0] * mLocalToGlobal.e[2][0] + mLocalToGlobal.e[2][1] * mLocalToGlobal.e[2][1] + mLocalToGlobal.e[2][2] * mLocalToGlobal.e[2][2]);
+	float sx = 1.0f / (mLocalToGlobal.e[0][0] * mLocalToGlobal.e[0][0] + mLocalToGlobal.e[0][1] * mLocalToGlobal.e[0][1] + mLocalToGlobal.e[0][2] * mLocalToGlobal.e[0][2]);
+	float sy = 1.0f / (mLocalToGlobal.e[1][0] * mLocalToGlobal.e[1][0] + mLocalToGlobal.e[1][1] * mLocalToGlobal.e[1][1] + mLocalToGlobal.e[1][2] * mLocalToGlobal.e[1][2]);
+	float sz = 1.0f / (mLocalToGlobal.e[2][0] * mLocalToGlobal.e[2][0] + mLocalToGlobal.e[2][1] * mLocalToGlobal.e[2][1] + mLocalToGlobal.e[2][2] * mLocalToGlobal.e[2][2]);
 
 	//! use 3x3 transpose matrix * invscale
 	mGlobalToLocal.e[0][0] = mLocalToGlobal.e[0][0] * sx;
@@ -851,7 +851,7 @@ void Node3D::RecomputeBoundingBox()
 	Point3D boundingp[2];
 	bool	hasDrawable = false;
 	//! first check drawable sons bounding box 
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 	for (it = getItems().begin(); it != getItems().end(); ++it)
 	{
 		if ((*it).mItem->isSubType(Drawable::mClassID))

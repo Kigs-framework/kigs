@@ -35,13 +35,13 @@ void UIBoxLayout::RecomputeLayout()
 	if (!GetSons().empty())
 	{
 
-		kstl::vector<CoreModifiable*> items;
+		std::vector<CoreModifiable*> items;
 
 		if (!mSortByPriority)
 		{
 			// Get sons ordered by insertion
-			const kstl::vector<ModifiableItemStruct> sons = getItems();
-			kstl::vector<ModifiableItemStruct>::const_iterator itsons;
+			const std::vector<ModifiableItemStruct> sons = getItems();
+			std::vector<ModifiableItemStruct>::const_iterator itsons;
 			for (itsons = sons.begin(); itsons != sons.end(); itsons++)
 			{
 				if ((*itsons).mItem->isSubType(Node2D::mClassID))
@@ -57,9 +57,9 @@ void UIBoxLayout::RecomputeLayout()
 		else
 		{
 			// Get sons ordered by priority
-			kstl::set<Node2D*, Node2D::PriorityCompare> sons = GetSons();
-			kstl::set<Node2D*, Node2D::PriorityCompare>::reverse_iterator itsons = sons.rbegin();
-			kstl::set<Node2D*, Node2D::PriorityCompare>::reverse_iterator itend = sons.rend();
+			std::set<Node2D*, Node2D::PriorityCompare> sons = GetSons();
+			std::set<Node2D*, Node2D::PriorityCompare>::reverse_iterator itsons = sons.rbegin();
+			std::set<Node2D*, Node2D::PriorityCompare>::reverse_iterator itend = sons.rend();
 			while (itsons != itend)
 			{
 				bool is_enabled = false;
@@ -71,8 +71,8 @@ void UIBoxLayout::RecomputeLayout()
 		}
 
 
-		kstl::vector<CoreModifiable*>::iterator it = items.begin();
-		kstl::vector<CoreModifiable*>::iterator end = items.end();
+		std::vector<CoreModifiable*>::iterator it = items.begin();
+		std::vector<CoreModifiable*>::iterator end = items.end();
 
 		//int size = items.size();
 

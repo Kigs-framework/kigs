@@ -24,7 +24,7 @@ public:
 	{
 	}
 
-	virtual void	setStartTime(kdouble t)
+	virtual void	setStartTime(double t)
 	{
 		CoreAction::setStartTime(t);
 		mLastKeyIndex=-1;
@@ -41,14 +41,14 @@ public:
 
 protected:
 
-	virtual bool	protectedUpdate(kdouble time);
+	virtual bool	protectedUpdate(double time);
 
 	virtual void	protectedSetValue(int index)=0;
 
 	unsigned int		mKeyFrameCount;
 	int					mLastKeyIndex;
 
-	kdouble*			mTimeArray;
+	double*			mTimeArray;
 
 };
 
@@ -76,15 +76,15 @@ public:
 	{
 		mTarget = sequence->getTarget();
 
-		kstl::string readstring;
+		std::string readstring;
 		(*params)[0]->getValue(readstring);
 		mTarget = checkSubTarget(readstring);
 
 		mParamID = CharToID::GetID(readstring);
 
 		// stock in list before creating the final array
-		kstl::vector<dataType>	L_values;
-		kstl::vector<kdouble>	L_times;
+		std::vector<dataType>	L_values;
+		std::vector<double>	L_times;
 		float readfloat;
 		dataType	readPoint;
 
@@ -108,7 +108,7 @@ public:
 		mDuration = L_times[L_times.size() - 1];
 
 		mKeyFrameArray = new dataType[L_values.size()];
-		mTimeArray = new kdouble[L_values.size()];
+		mTimeArray = new double[L_values.size()];
 
 		for (i = 0; i < L_values.size(); i++)
 		{

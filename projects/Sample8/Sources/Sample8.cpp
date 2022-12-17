@@ -38,14 +38,14 @@ void	Sample8::ProtectedClose()
 	DataDrivenBaseApplication::ProtectedClose();
 }
 
-void	Sample8::ProtectedInitSequence(const kstl::string& sequence)
+void	Sample8::ProtectedInitSequence(const std::string& sequence)
 {
 	if (sequence == "sequencemain")
 	{
 
 	}
 }
-void	Sample8::ProtectedCloseSequence(const kstl::string& sequence)
+void	Sample8::ProtectedCloseSequence(const std::string& sequence)
 {
 	if (sequence == "sequencemain")
 	{

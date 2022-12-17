@@ -6,7 +6,7 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(KeyToAsciiDX, KeyToAscii, Input);
 IMPLEMENT_CLASS_INFO(KeyToAsciiDX)
 
-KeyToAsciiDX::KeyToAsciiDX(const kstl::string& name,CLASS_NAME_TREE_ARG) : KeyToAscii(name,PASS_CLASS_NAME_TREE_ARG)
+KeyToAsciiDX::KeyToAsciiDX(const std::string& name,CLASS_NAME_TREE_ARG) : KeyToAscii(name,PASS_CLASS_NAME_TREE_ARG)
 {
 }
 

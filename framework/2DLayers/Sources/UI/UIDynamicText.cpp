@@ -46,7 +46,7 @@ IMPLEMENT_CONSTRUCTOR(FontMapManager)
 	KigsCore::GetNotificationCenter()->addObserver(this, "ReloadTextures", "ResetContext");
 }
 
-FontMap* FontMapManager::PrecacheFont(const kstl::string& fontname, float fontsize)
+FontMap* FontMapManager::PrecacheFont(const std::string& fontname, float fontsize)
 {
 	auto tfm = KigsCore::Singleton<TextureFileManager>();
 	SmartPointer<CoreRawBuffer> crb = nullptr;
@@ -144,8 +144,8 @@ void FontMapManager::ReloadTextures()
 {
 	auto tfm = KigsCore::Singleton<TextureFileManager>();
 
-	kstl::vector<u8> bitmap_alpha;
-	kstl::vector<u8> bitmap_AI8;
+	std::vector<u8> bitmap_alpha;
+	std::vector<u8> bitmap_AI8;
 	for (auto& font : mFontMap)
 	{
 		bitmap_alpha.resize(font.second.mFontMapSize*font.second.mFontMapSize);
@@ -835,7 +835,7 @@ void UIDynamicText::BuildVertexArray()
 	}
 }
 
-v4f HexaToV4(const kstl::string& hexa)
+v4f HexaToV4(const std::string& hexa)
 {
 	v4f result(0, 0, 0, 0);
 	for (int i = 0; i < 8; ++i)
@@ -956,13 +956,13 @@ void UIDynamicText::ForceSetupText()
 }
 
 
-usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_tags, kstl::vector<CMSP>* inline_items, CoreModifiable* obj)
+usString TextTagProcessor(const usString& text, std::vector<TextTag>* output_tags, std::vector<CMSP>* inline_items, CoreModifiable* obj)
 {
 	auto current_character = text.us_str();
 	if (text.length() > 0 && text[0] == (unsigned short)'#')
 	{
-		kstl::string reftext = text.ToString();
-		kstl::string key = reftext.substr(1, reftext.length() - 1);
+		std::string reftext = text.ToString();
+		std::string key = reftext.substr(1, reftext.length() - 1);
 		auto theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
 		current_character = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key.c_str());
 
@@ -998,7 +998,7 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 			US16ParserUtils colorcode(block);
 			parser.GetChars(colorcode, 8);
 
-			auto hexacolor = (kstl::string)colorcode;
+			auto hexacolor = (std::string)colorcode;
 			current_tag.color = HexaToV4(hexacolor);
 
 			remove_block = true;
@@ -1120,7 +1120,7 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 			int oldpos = parser.GetPosition();
 			parser.GetPart(reference_parser, item_start, start - item_start);
 
-			kstl::string item_ref = reference_parser;
+			std::string item_ref = reference_parser;
 
 			maReference ref{ "", item_ref };
 			CoreModifiable* cm = ref;
@@ -1149,7 +1149,7 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 			US16ParserUtils reference_parser(parser);
 			int oldpos = parser.GetPosition();
 			parser.GetPart(reference_parser, item_start, start - item_start);
-			kstl::string image_path = reference_parser;
+			std::string image_path = reference_parser;
 
 			if (inline_items)
 			{
@@ -1192,7 +1192,7 @@ usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_ta
 		}
 		else if (blockname.substr(0, 6) == "align ")
 		{
-			kstl::string aligntype = (kstl::string)blockname.substr(6, blockname.length() - 6);
+			std::string aligntype = (std::string)blockname.substr(6, blockname.length() - 6);
 
 			if (aligntype == "baseline/")
 			{

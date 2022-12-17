@@ -30,18 +30,18 @@ public:
     DECLARE_CLASS_INFO(RessourceFileManager,CoreModifiable,Renderer)
 
 	//! constructor
-    RessourceFileManager(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    RessourceFileManager(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/*! return an instance of the type ClassName initialised from the given filename (xml)
 		if the file was already read, and an instance already exist, return a reference on
 		the instance
 	*/
-	CMSP GetRessource(const kstl::string &ClassName, const kstl::string& fileName);
+	CMSP GetRessource(const std::string &ClassName, const std::string& fileName);
 
 	/*! release one reference
 	*/
 	void		UnloadRessource(const CMSP& res);
-	void		UnloadRessource(kstl::string);
+	void		UnloadRessource(std::string);
 
 	//! add item. 
 	bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
@@ -55,7 +55,7 @@ protected:
 	
 
 	//! For each extension, a path list.
-	kstl::map<kstl::string, CMSP>		mRessourceMap;
+	std::map<std::string, CMSP>		mRessourceMap;
 };
 
 #endif //_RessourceFILEMANAGER_H_

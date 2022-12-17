@@ -16,7 +16,7 @@ public:
 	{
 		mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
-		// kdouble duration,kfloat vStart,kfloat vEnd,unsigned int paramID => 4 params
+		// double duration,float vStart,float vEnd,unsigned int paramID => 4 params
 		if ((params->size() < 4))
 		{
 			return;
@@ -35,7 +35,7 @@ public:
 		(*params)[2]->getValue(readPoint);
 		mEnd = readPoint;
 
-		kstl::string readstring;
+		std::string readstring;
 		(*params)[3]->getValue(readstring);
 		mTarget = checkSubTarget(readstring);
 
@@ -66,7 +66,7 @@ public:
 		}
 	}
 
-	virtual void	setStartTime(kdouble t)
+	virtual void	setStartTime(double t)
 	{
 		CoreAction::setStartTime(t);
 		if (IsRelative())
@@ -78,7 +78,7 @@ public:
 
 protected:
 
-	virtual bool	protectedUpdate(kdouble time)
+	virtual bool	protectedUpdate(double time)
 	{
 		CoreAction::protectedUpdate(time);
 		auto ptr = mTarget.lock();
@@ -166,7 +166,7 @@ public:
 		(*params)[4]->getValue(readPoint);
 		p[3] = readPoint;
 
-		kstl::string readstring;
+		std::string readstring;
 		(*params)[5]->getValue(readstring);
 		mTarget = checkSubTarget(readstring);
 
@@ -198,17 +198,17 @@ public:
 	}
 
 
-	inline void coefs(kfloat& a0,kfloat& a1,kfloat& b0,kfloat& b1, kfloat t) // t in [0,1]
+	inline void coefs(float& a0,float& a1,float& b0,float& b1, float t) // t in [0,1]
 	{
-		kfloat t2=t*t;
-		kfloat t3=t2*t;
+		float t2=t*t;
+		float t3=t2*t;
 		a0=2.0f*t3-3.0f*t2+1.0f;
 		a1=-2.0f*t3+3.0f*t2;
 		b0=t3-2.0f*t2+t;
 		b1=t3-t2;
 	}
 
-	virtual void	setStartTime(kdouble t)
+	virtual void	setStartTime(double t)
 	{
 		CoreAction::setStartTime(t);
 		if (IsRelative())
@@ -220,15 +220,15 @@ public:
 
 protected:
 
-	virtual bool	protectedUpdate(kdouble time)
+	virtual bool	protectedUpdate(double time)
 	{
 		CoreAction::protectedUpdate(time);
 
 		auto ptr = mTarget.lock();
 		if (ptr)
 		{
-			kfloat t = (kfloat)((time - mStartTime) / mDuration);
-			kfloat a[4];
+			float t = (float)((time - mStartTime) / mDuration);
+			float a[4];
 			coefs(a[0], a[1], a[2], a[3], t);
 			dataType result = p[0] * a[0] + p[1] * a[1] + p[2] * a[2] + p[3] * a[3];
 			ptr->setValue(mParamID, result);
@@ -287,7 +287,7 @@ public:
 	{
 		mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
-		// kdouble duration,kfloat vSet,unsigned int paramID => 3 params
+		// double duration,float vSet,unsigned int paramID => 3 params
 		if (!(params->size() == 3))
 		{
 			return;
@@ -303,7 +303,7 @@ public:
 		(*params)[1]->getValue(readVal);
 		mSet = readVal;
 
-		kstl::string readstring;
+		std::string readstring;
 		(*params)[2]->getValue(readstring);
 		mTarget = checkSubTarget(readstring);
 
@@ -312,7 +312,7 @@ public:
 
 protected:
 
-	virtual bool	protectedUpdate(kdouble time)
+	virtual bool	protectedUpdate(double time)
 	{
 		CoreAction::protectedUpdate(time);
 		// wait the end of the action

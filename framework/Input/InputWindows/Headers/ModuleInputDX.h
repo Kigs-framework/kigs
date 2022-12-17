@@ -14,7 +14,7 @@ class ModuleInputDX;
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
 #define MODULEINITFUNC			PlatformInputModuleInit
-extern SP<ModuleBase> PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+extern SP<ModuleBase> PlatformInputModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 #else
 #define MODULEINITFUNC			ModuleInit
 #endif
@@ -38,9 +38,9 @@ public:
 
 	DECLARE_CLASS_INFO(ModuleInputDX,ModuleBase,Input)
              
-	ModuleInputDX(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	ModuleInputDX(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
     
-    void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params); 
+    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params); 
     void Close();
 	virtual void Update(const Timer& timer, void* addParam);
 

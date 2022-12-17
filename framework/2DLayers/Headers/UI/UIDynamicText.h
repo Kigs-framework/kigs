@@ -46,11 +46,11 @@ struct FontMap
 {
 	SmartPointer<CoreRawBuffer> mFontBuffer = nullptr;
 	SP<Texture>					mFontTexture = nullptr;
-	kstl::vector<UnicodeRange> mRanges;
+	std::vector<UnicodeRange> mRanges;
 	stbtt_fontinfo mFontInfo = {};
 	int mFontMapSize;
 	float font_size;
-	kstl::string font_id;
+	std::string font_id;
 
 	UnicodeRange* GetRangeForCodePoint(int codepoint)
 	{
@@ -82,7 +82,7 @@ public:
 	DECLARE_CONSTRUCTOR(FontMapManager);
 
 	kigs::unordered_map<KigsID, FontMap> mFontMap;
-	FontMap* PrecacheFont(const kstl::string& fontname, float fontsize);
+	FontMap* PrecacheFont(const std::string& fontname, float fontsize);
 
 private:
 	void OnFontTextureDestroy(CoreModifiable* tex)
@@ -133,7 +133,7 @@ struct TextTag
 	u32 start_index;
 };
 
-usString TextTagProcessor(const usString& text, kstl::vector<TextTag>* output_tags = nullptr, kstl::vector<CMSP>* inline_items = nullptr, CoreModifiable* obj = nullptr);
+usString TextTagProcessor(const usString& text, std::vector<TextTag>* output_tags = nullptr, std::vector<CMSP>* inline_items = nullptr, CoreModifiable* obj = nullptr);
 
 // ****************************************
 // * UIDynamicText class
@@ -251,11 +251,11 @@ private:
 
 	usString mCurrentString;
 
-	kstl::vector<CMSP> mInlineItems;
-	kstl::vector<TextTag> mPreprocessedTags;
+	std::vector<CMSP> mInlineItems;
+	std::vector<TextTag> mPreprocessedTags;
 
 
-	kstl::vector<UnicodeRange> mRanges;
+	std::vector<UnicodeRange> mRanges;
 
 	WRAP_METHODS(ForceSetupText, ManageClickTouchEvent);
 };

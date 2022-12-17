@@ -18,7 +18,7 @@ public:
 
 protected:
 
-	virtual bool	protectedUpdate(kdouble time)
+	virtual bool	protectedUpdate(double time)
 	{
 		CoreAction::protectedUpdate(time);
 		auto ptr = mTarget.lock();
@@ -31,7 +31,7 @@ protected:
 			}
 			if (mPParamID)
 			{
-				dataType result = mStart + (mEnd - mStart)*(kfloat)((time - mStartTime) / mDuration);
+				dataType result = mStart + (mEnd - mStart)*(float)((time - mStartTime) / mDuration);
 				*mPParamID = result;
 			}
 		}
@@ -55,10 +55,10 @@ public:
 
 	virtual void init(CoreSequence* sequence,CoreVector* params){};// empty, raw action can not be directly init with json
 
-	inline void coefs(kfloat& a0,kfloat& a1,kfloat& b0,kfloat& b1, kfloat t) // t in [0,1]
+	inline void coefs(float& a0,float& a1,float& b0,float& b1, float t) // t in [0,1]
 	{
-		kfloat t2=t*t;
-		kfloat t3=t2*t;
+		float t2=t*t;
+		float t3=t2*t;
 		a0=2*t3-3*t2+1;
 		a1=-2*t3+3*t2;
 		b0=t3-2*t2+t;
@@ -67,7 +67,7 @@ public:
 
 protected:
 
-	virtual bool	protectedUpdate(kdouble time)
+	virtual bool	protectedUpdate(double time)
 	{
 		CoreAction::protectedUpdate(time);
 		auto ptr = mTarget.lock();
@@ -80,8 +80,8 @@ protected:
 			}
 			if (mPParamID)
 			{
-				kfloat t = (kfloat)((time - mStartTime) / mDuration);
-				kfloat a[4];
+				float t = (float)((time - mStartTime) / mDuration);
+				float a[4];
 				coefs(a[0], a[1], a[2], a[3], t);
 				dataType result = p[0] * a[0] + p[1] * a[1] + p[2] * a[2] + p[3] * a[3];
 				*mPParamID = result;
@@ -106,7 +106,7 @@ public:
 
 protected:
 
-	virtual bool	protectedUpdate(kdouble time)
+	virtual bool	protectedUpdate(double time)
 	{
 		CoreAction::protectedUpdate(time);
 		auto ptr = mTarget.lock();

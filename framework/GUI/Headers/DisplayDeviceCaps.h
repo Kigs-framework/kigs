@@ -24,7 +24,7 @@ public:
     DECLARE_ABSTRACT_CLASS_INFO(DisplayDeviceCaps,CoreModifiable,GUI)
     
 	//! constructor
-    DisplayDeviceCaps(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    DisplayDeviceCaps(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	//! destructor
 	virtual ~DisplayDeviceCaps();
@@ -49,18 +49,18 @@ public:
 	class	DisplayDevice
 	{
 	public:
-		kstl::string						mName;
-		kstl::vector<DisplayDeviceCapacity>	mCapacityList;		
+		std::string						mName;
+		std::vector<DisplayDeviceCapacity>	mCapacityList;		
 		bool								mMain;
 		float								mScaling = 1.0f;
 	};
 
-	DisplayDeviceCapacity* Get_CurrentDisplay(const kstl::string& a_deviceName)
+	DisplayDeviceCapacity* Get_CurrentDisplay(const std::string& a_deviceName)
 	{
 		if(mDisplayDeviceList.find(a_deviceName)!=mDisplayDeviceList.end())
 		{
-			kstl::vector<DisplayDeviceCapacity>::iterator L_It = mDisplayDeviceList[a_deviceName].mCapacityList.begin();
-			kstl::vector<DisplayDeviceCapacity>::iterator L_ItEnd =  mDisplayDeviceList[a_deviceName].mCapacityList.end();
+			std::vector<DisplayDeviceCapacity>::iterator L_It = mDisplayDeviceList[a_deviceName].mCapacityList.begin();
+			std::vector<DisplayDeviceCapacity>::iterator L_ItEnd =  mDisplayDeviceList[a_deviceName].mCapacityList.end();
 
 			while(L_It != L_ItEnd)
 			{
@@ -79,14 +79,14 @@ public:
 		if(a_index < mDisplayDeviceList.size())
 		{
 			unsigned int i;
-			kstl::map<kstl::string,DisplayDevice>::iterator	it=mDisplayDeviceList.begin();
+			std::map<std::string,DisplayDevice>::iterator	it=mDisplayDeviceList.begin();
 			for(i=0;i<a_index;i++)
 				++it;
 
 			if(it!=mDisplayDeviceList.end())
 			{
-				kstl::vector<DisplayDeviceCapacity>::iterator L_It = (*it).second.mCapacityList.begin();
-				kstl::vector<DisplayDeviceCapacity>::iterator L_ItEnd =  (*it).second.mCapacityList.end();
+				std::vector<DisplayDeviceCapacity>::iterator L_It = (*it).second.mCapacityList.begin();
+				std::vector<DisplayDeviceCapacity>::iterator L_ItEnd =  (*it).second.mCapacityList.end();
 
 				while(L_It != L_ItEnd)
 				{
@@ -105,7 +105,7 @@ public:
 	{
 		{
 			unsigned int i;
-			kstl::map<kstl::string, DisplayDevice>::iterator it = mDisplayDeviceList.begin();
+			std::map<std::string, DisplayDevice>::iterator it = mDisplayDeviceList.begin();
 			for (i = 0; i < a_index; i++)
 			{
 				//get main if -1
@@ -124,7 +124,7 @@ public:
 	}
 	
 	//! retreive all available capacities for given display device
-	const kstl::vector<DisplayDeviceCapacity>*	GetDisplayDeviceCapacityList(const kstl::string&	devicename)
+	const std::vector<DisplayDeviceCapacity>*	GetDisplayDeviceCapacityList(const std::string&	devicename)
 	{
 		if(mDisplayDeviceList.find(devicename)!=mDisplayDeviceList.end())
 		{
@@ -134,12 +134,12 @@ public:
 	}
 
 	//! retreive all available capacities for given display device index
-	const kstl::vector<DisplayDeviceCapacity>*	GetDisplayDeviceCapacityList(unsigned int index)
+	const std::vector<DisplayDeviceCapacity>*	GetDisplayDeviceCapacityList(unsigned int index)
 	{
 		if(index<mDisplayDeviceList.size())
 		{
 			unsigned int i;
-			kstl::map<kstl::string,DisplayDevice>::iterator	it=mDisplayDeviceList.begin();
+			std::map<std::string,DisplayDevice>::iterator	it=mDisplayDeviceList.begin();
 			for(i=0;i<index;i++)
 			{
 				++it;
@@ -155,12 +155,12 @@ public:
 	}
 
 	//! retreive all available capacities for main display device
-	const kstl::vector<DisplayDeviceCapacity>*	GetMainDisplayDeviceCapacityList()
+	const std::vector<DisplayDeviceCapacity>*	GetMainDisplayDeviceCapacityList()
 	{
 		if(mDisplayDeviceList.size())
 		{
 			
-			kstl::map<kstl::string,DisplayDevice>::iterator	it=mDisplayDeviceList.begin();
+			std::map<std::string,DisplayDevice>::iterator	it=mDisplayDeviceList.begin();
 			for(it=mDisplayDeviceList.begin();it!=mDisplayDeviceList.end();it++)
 			{
 				if((*it).second.mMain)
@@ -194,7 +194,7 @@ public:
 	}
 	
 protected:
-	kstl::map<kstl::string,DisplayDevice>		mDisplayDeviceList;
+	std::map<std::string,DisplayDevice>		mDisplayDeviceList;
 
 };    
 

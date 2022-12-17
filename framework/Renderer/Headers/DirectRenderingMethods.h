@@ -25,47 +25,47 @@ public:
     
 	/**
 	 * \brief	constructor
-	 * \fn 		DirectRenderingMethods(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		DirectRenderingMethods(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-    DirectRenderingMethods(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    DirectRenderingMethods(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/**
 	 * \brief	Draw 3D bounding box in wireframe
-	 * \fn 		virtual void DrawBoundingBox(BBox* bbox,kfloat R=KFLOAT_CONST(1.0f),kfloat G=KFLOAT_CONST(0.0f),kfloat B=KFLOAT_CONST(.0f)) const =0;
+	 * \fn 		virtual void DrawBoundingBox(BBox* bbox,float R=1.0f,float G=0.0f,float B=0.0f) const =0;
 	 * \param	bbox : 3D bounding box to draw
 	 * \param	R : red color
 	 * \param	G : green color
 	 * \param	B : blue color
 	 */
-    virtual void DrawBoundingBox(TravState* state,BBox* bbox,kfloat R=KFLOAT_CONST(1.0f),kfloat G=KFLOAT_CONST(0.0f),kfloat B=KFLOAT_CONST(.0f)) const =0;
+    virtual void DrawBoundingBox(TravState* state,BBox* bbox,float R=1.0f,float G=0.0f,float B=0.0f) const =0;
 	
 	/**
 	 * \brief	Draw quad with the currently bound texture. Vertex order  : winded
-	 * \fn 		virtual void DrawTexturedQuad(Point3D Vertices[4], Point3D UV[4] ,kfloat R,kfloat G,kfloat B) const = 0;
+	 * \fn 		virtual void DrawTexturedQuad(Point3D Vertices[4], Point3D UV[4] ,float R,float G,float B) const = 0;
 	 * \param	Vertices : vertice position
 	 * \param	UV : texture position
 	 * \param	R : red color
 	 * \param	G : green color
 	 * \param	B : blue color
 	 */
-	virtual void DrawTexturedQuad(TravState* state,Point3D Vertices[4], Point3D UV[4] ,kfloat R,kfloat G,kfloat B) const = 0;
+	virtual void DrawTexturedQuad(TravState* state,Point3D Vertices[4], Point3D UV[4] ,float R,float G,float B) const = 0;
 
 	/**
 	 * \brief	Draw non-textured quad. Vertex order  : winded
-	 * \fn 		virtual void DrawSolidQuad(Point3D Vertices[4], kfloat R,kfloat G,kfloat B, bool EnableBlend=false) const = 0;
+	 * \fn 		virtual void DrawSolidQuad(Point3D Vertices[4], float R,float G,float B, bool EnableBlend=false) const = 0;
 	 * \param	Vertices : vertice position
 	 * \param	R : red color
 	 * \param	G : green color
 	 * \param	B : blue color
 	 * \param	EnableBlend : should blend
 	 */
-	virtual void DrawSolidQuad(TravState* state,Point3D Vertices[4], kfloat R,kfloat G,kfloat B, bool EnableBlend=false) const = 0;
+	virtual void DrawSolidQuad(TravState* state,Point3D Vertices[4], float R,float G,float B, bool EnableBlend=false) const = 0;
 
 	/**
 	 * \brief	Draw a rounded rectangle
-	 * \fn 		virtual void DrawRoundedRectangle(Point3D Vertices[2], kfloat R,kfloat G,kfloat B,kfloat RBorder,kfloat GBorder,kfloat BBorder,kfloat Radius) const =0;
+	 * \fn 		virtual void DrawRoundedRectangle(Point3D Vertices[2], float R,float G,float B,float RBorder,float GBorder,float BBorder,float Radius) const =0;
 	 * \param	Vertices : vertice position
 	 * \param	R : red color
 	 * \param	G : green color
@@ -75,11 +75,11 @@ public:
 	 * \param	BBorder : blue color of the border
 	 * \param	Radius : corner radius
 	 */
-	virtual void DrawRoundedRectangle(TravState* state,Point3D Vertices[2], kfloat R,kfloat G,kfloat B,kfloat RBorder,kfloat GBorder,kfloat BBorder,kfloat Radius) const =0;
+	virtual void DrawRoundedRectangle(TravState* state,Point3D Vertices[2], float R,float G,float B,float RBorder,float GBorder,float BBorder,float Radius) const =0;
 
-	virtual void drawSphere(ModuleSpecificRenderer* state, kfloat r, int lats, int longs, Point3D* pos, kfloat R, kfloat G, kfloat B) const {} 
+	virtual void drawSphere(ModuleSpecificRenderer* state, float r, int lats, int longs, Point3D* pos, float R, float G, float B) const {} 
 	
-	virtual void DrawLine(ModuleSpecificRenderer* state, Point3D * Vertices, int VerticeCount, kfloat R, kfloat G, kfloat B) const {} 
+	virtual void DrawLine(ModuleSpecificRenderer* state, Point3D * Vertices, int VerticeCount, float R, float G, float B) const {} 
 
 protected:
 	/**

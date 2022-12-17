@@ -30,21 +30,21 @@ public:
 
 	/**
 	 * \brief	constructor
-	 * \fn 		Light(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		Light(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-    Light(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    Light(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/**
 	 * \brief	set the diffuse color
-	 * \fn 		void	SetDiffuseColor(kfloat r,kfloat g,kfloat b,kfloat a)
+	 * \fn 		void	SetDiffuseColor(float r,float g,float b,float a)
 	 * \param	r : red color
 	 * \param	g : green color
 	 * \param	b : blue color
 	 * \param	a : alpha value
 	 */
-	void	SetDiffuseColor(kfloat r,kfloat g,kfloat b)
+	void	SetDiffuseColor(float r,float g,float b)
 	{
 		mDiffuseColor[0]=r;
 		mDiffuseColor[1]=g;
@@ -54,13 +54,13 @@ public:
 
 	/**
 	 * \brief	set the specular color
-	 * \fn 		void	SetSpecularColor(kfloat r,kfloat g,kfloat b,kfloat a)
+	 * \fn 		void	SetSpecularColor(float r,float g,float b,float a)
 	 * \param	r : red color
 	 * \param	g : green color
 	 * \param	b : blue color
 	 * \param	a : alpha value
 	 */
-	void	SetSpecularColor(kfloat r,kfloat g,kfloat b)
+	void	SetSpecularColor(float r,float g,float b)
 	{
 		mSpecularColor[0]=r;
 		mSpecularColor[1]=g;
@@ -70,13 +70,13 @@ public:
 
 	/**
 	 * \brief	set the ambient color
-	 * \fn 		void	SetAmbientColor(kfloat r,kfloat g,kfloat b,kfloat a)
+	 * \fn 		void	SetAmbientColor(float r,float g,float b,float a)
 	 * \param	r : red color
 	 * \param	g : green color
 	 * \param	b : blue color
 	 * \param	a : alpha value
 	 */
-	void	SetAmbientColor(kfloat r,kfloat g,kfloat b)
+	void	SetAmbientColor(float r,float g,float b)
 	{
 		mAmbientColor[0]=r;
 		mAmbientColor[1]=g;

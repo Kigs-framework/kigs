@@ -40,7 +40,7 @@ DEFINE_METHOD(UITextInput, FocusChanged)
 	return false;
 }
 
-void UITextInput::UpdateKeyboard(kstl::vector<KeyEvent>& keys)
+void UITextInput::UpdateKeyboard(std::vector<KeyEvent>& keys)
 {
 	if (!keys.empty() && HasFocus())
 	{

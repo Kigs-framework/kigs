@@ -19,7 +19,7 @@ STLMeshLoader::~STLMeshLoader()
 
 }
 
-int STLMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
+int STLMeshLoader::ImportFile(Mesh *pMesh, const std::string &FileName)
 {
 	int Error;
 
@@ -29,7 +29,7 @@ int STLMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
 		return 1;
 	}
 
-	pMesh->setValue(LABEL_TO_ID(FileName),FileName);
+	pMesh->setValue("FileName",FileName);
 
 	mFile=BufferedFile::Open(FileName.c_str());
 	if(mFile)
@@ -58,7 +58,7 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 	if(fread(&tmpbuf,sizeof(char),5,mFile) == 5)
 	{
 		tmpbuf[5]=0;
-		kstl::string compare=	tmpbuf;
+		std::string compare=	tmpbuf;
 		if(compare == "solid")
 		{
 			fileType=1;
@@ -130,7 +130,7 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 	}
 
 
-	kstl::string objname=pMesh->getName();
+	std::string objname=pMesh->getName();
 	objname+="MeshItemGroup";
 
 	SP<MeshItemGroup> newgroup=KigsCore::GetInstanceOf(objname,"MeshItemGroup");

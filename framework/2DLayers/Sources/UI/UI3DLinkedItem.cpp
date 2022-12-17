@@ -6,12 +6,12 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UI3DLinkedItem, UI3DLinkedItem, 2DLayers);;
 IMPLEMENT_CLASS_INFO(UI3DLinkedItem)
 
-UI3DLinkedItem::UI3DLinkedItem(const kstl::string& name, CLASS_NAME_TREE_ARG)
+UI3DLinkedItem::UI3DLinkedItem(const std::string& name, CLASS_NAME_TREE_ARG)
 	: UIItem(name, PASS_CLASS_NAME_TREE_ARG)
-	, m3DPosition(*this, false, LABEL_AND_ID(3DPosition), 0.0f, 0.0f, 0.0f)
-	, mCamera(*this, false, LABEL_AND_ID(Camera), "")
-	, mNode(*this, false, LABEL_AND_ID(Node), "")
-	, mUseUpOrientation(*this, false, LABEL_AND_ID(UseUpOrientation), false)
+	, m3DPosition(*this, false, "3DPosition", 0.0f, 0.0f, 0.0f)
+	, mCamera(*this, false, "Camera", "")
+	, mNode(*this, false, "Node", "")
+	, mUseUpOrientation(*this, false, "UseUpOrientation", false)
 {
 	
 }
@@ -70,7 +70,7 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 			camObjectVect -=cameraPos;
 			camObjectVect.Normalize();
 
-			kfloat objectinfront = Dot(camObjectVect, cameraView);
+			float objectinfront = Dot(camObjectVect, cameraView);
 			if (objectinfront < 0)
 			{
 				mIsHidden = true;

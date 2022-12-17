@@ -6,9 +6,9 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UISlidersGroup, UISlidersGroup, 2DLayers);
 IMPLEMENT_CLASS_INFO(UISlidersGroup)
 
-UISlidersGroup::UISlidersGroup(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
+UISlidersGroup::UISlidersGroup(const std::string& name,CLASS_NAME_TREE_ARG) : 
 UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-mComunalValue(*this,false,LABEL_AND_ID(ComunalValue),0)
+mComunalValue(*this,false,"ComunalValue",0)
 {
 	mSliderNumber=0;
 }
@@ -24,10 +24,10 @@ bool	UISlidersGroup::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 {
 	if(item->isSubType("UIItem") && !item->getItems().empty()) 
 	{
-		kstl::vector<ModifiableItemStruct> childs = item->getItems();
+		std::vector<ModifiableItemStruct> childs = item->getItems();
 
-		kstl::vector<ModifiableItemStruct>::iterator ITStart = childs.begin();
-		kstl::vector<ModifiableItemStruct>::iterator ITEnd = childs.end();
+		std::vector<ModifiableItemStruct>::iterator ITStart = childs.begin();
+		std::vector<ModifiableItemStruct>::iterator ITEnd = childs.end();
 
 		while(ITStart!=ITEnd)
 		{
@@ -92,10 +92,10 @@ bool	UISlidersGroup::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if(item->isSubType("UIItem") && !item->getItems().empty()) 
 	{
-		kstl::vector<ModifiableItemStruct> childs = item->getItems();
+		std::vector<ModifiableItemStruct> childs = item->getItems();
 
-		kstl::vector<ModifiableItemStruct>::iterator ITStart = childs.begin();
-		kstl::vector<ModifiableItemStruct>::iterator ITEnd = childs.end();
+		std::vector<ModifiableItemStruct>::iterator ITStart = childs.begin();
+		std::vector<ModifiableItemStruct>::iterator ITEnd = childs.end();
 
 		while(ITStart!=ITEnd)
 		{
@@ -109,9 +109,9 @@ bool	UISlidersGroup::removeItem(const CMSP& item DECLARE_LINK_NAME)
 			return false;
 
 		UISlider* temp = (UISlider*)(*ITStart).mItem.get();
-		kstl::vector<UISlider*>::iterator ItStart =		mSliderList.begin();
-		kstl::vector<UISlider*>::iterator ItEnd =		mSliderList.end();
-		kstl::vector<UISlider*>::iterator ItSaved;
+		std::vector<UISlider*>::iterator ItStart =		mSliderList.begin();
+		std::vector<UISlider*>::iterator ItEnd =		mSliderList.end();
+		std::vector<UISlider*>::iterator ItSaved;
 
 		int	Slidercount = 0;
 		while(ItStart!=ItEnd)
@@ -129,7 +129,7 @@ bool	UISlidersGroup::removeItem(const CMSP& item DECLARE_LINK_NAME)
 				v2f sizeS(0,0);
 				int _Position[2];
 				(*ItStart)->GetParents()[0]->getValue("Size", sizeS);
-				(*ItStart)->GetParents()[0]->getArrayValue(LABEL_TO_ID(Position),_Position,2);
+				(*ItStart)->GetParents()[0]->getArrayValue("Position",_Position,2);
 		
 		
 
@@ -185,8 +185,8 @@ void	UISlidersGroup::Reset()
 {
 	mRemainingValue = mComunalValue;
 
-	kstl::vector<UISlider*>::iterator ItStart =		mSliderList.begin();
-	kstl::vector<UISlider*>::iterator ItEnd =		mSliderList.end();
+	std::vector<UISlider*>::iterator ItStart =		mSliderList.begin();
+	std::vector<UISlider*>::iterator ItEnd =		mSliderList.end();
 
 	while(ItStart != ItEnd)
 	{

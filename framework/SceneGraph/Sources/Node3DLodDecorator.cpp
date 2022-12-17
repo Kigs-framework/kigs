@@ -18,8 +18,8 @@ DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Node3DLodDecorator, TravState* state, un
 		if (bbsize == 0.0f)
 			return true;
 
-		kfloat coef = d / bbsize;
-		kfloat lodcoef = 1.0f;
+		float coef = d / bbsize;
+		float lodcoef = 1.0f;
 
 		getValue("LodCoef", lodcoef);
 

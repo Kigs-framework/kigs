@@ -12,7 +12,7 @@
 IMPLEMENT_CLASS_INFO(ModuleFileManager);
 
 //! module init, register FilePathManager
-void ModuleFileManager::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleFileManager::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	BaseInit(core,"FileManager",params);
 

@@ -5,7 +5,7 @@
 #include "TextureHandler.h"
 
 //! default displacement
-#define KIGS_SPRITE_DEFAULT_DISPLACEMENT KFLOAT_CONST(0.002f)
+#define KIGS_SPRITE_DEFAULT_DISPLACEMENT (0.002f)
 
 class Texture;
 
@@ -29,52 +29,52 @@ public:
 	
 	/**
 	 * \brief	constructor
-	 * \fn 		Sprite(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		Sprite(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	Sprite(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	Sprite(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	/**
 	 * \brief	set the position
-	 * \fn 		virtual void setPosition(kfloat x, kfloat y)
+	 * \fn 		virtual void setPosition(float x, float y)
 	 * \param	x : position on x axis
 	 * \param	y : position on y axis
 	 */
-	virtual void setPosition(kfloat x, kfloat y) {mPosition[0]=x; mPosition[1]=y;}
+	virtual void setPosition(float x, float y) {mPosition[0]=x; mPosition[1]=y;}
 
 	/**
 	 * \brief	set the texture
-	 * \fn 		virtual void setTexture(const kfloat &u1,const kfloat &v1,const kfloat &u2,const kfloat &v2) 
+	 * \fn 		virtual void setTexture(const float &u1,const float &v1,const float &u2,const float &v2) 
 	 * \param	u1 : 
 	 * \param	v1 : 
 	 * \param	u2 : 
 	 * \param	v2 : 
 	 */
-	virtual void setTexture(const kfloat &u1,const kfloat &v1,const kfloat &u2,const kfloat &v2) { mTexUV[0]=u1; mTexUV[2]=u2; mTexUV[1]=v1;; mTexUV[3]=v2;}
+	virtual void setTexture(const float &u1,const float &v1,const float &u2,const float &v2) { mTexUV[0]=u1; mTexUV[2]=u2; mTexUV[1]=v1;; mTexUV[3]=v2;}
 	
 	/**
 	 * \brief	set the size
-	 * \fn 		virtual void setSize(const kfloat &s)
+	 * \fn 		virtual void setSize(const float &s)
 	 * \param	s : new size
 	 */
-	virtual void setSize(const kfloat &s) {mSize[0]=mSize[1]=s;}
+	virtual void setSize(const float &s) {mSize[0]=mSize[1]=s;}
 	
 	/**
 	 * \brief	set the size
-	 * \fn 		virtual void setSize(const kfloat &sx, const kfloat &sy)
+	 * \fn 		virtual void setSize(const float &sx, const float &sy)
 	 * \param	sx : size on x axis
 	 * \param	sy : size on y axis
 	 */
-	virtual void setSize(const kfloat &sx, const kfloat &sy) {mSize[0]=sx;mSize[1]=sy;}
+	virtual void setSize(const float &sx, const float &sy) {mSize[0]=sx;mSize[1]=sy;}
 	
 	/**
 	 * \brief	get the size
-	 * \fn 		virtual void getSize(kfloat &sx, kfloat &sy)
+	 * \fn 		virtual void getSize(float &sx, float &sy)
 	 * \param	sx : size on x axis (in/out param)
 	 * \param	sy : size on y axis (in/out param)
 	 */
-	virtual void getSize(kfloat &sx, kfloat &sy) {sx=mSize[0];sy=mSize[1];}
+	virtual void getSize(float &sx, float &sy) {sx=mSize[0];sy=mSize[1];}
 
 
 protected:
@@ -91,7 +91,7 @@ protected:
 	 * \param	pmin : point min of the bounding box (in/out param)
 	 * \param	pmax : point max of the bounding box (in/out param)
 	 */
-	void	GetNodeBoundingBox(Point3D& pmin,Point3D& pmax) const override {pmin.Set((kfloat)mPosition[0],KFLOAT_CONST(0.0f),(kfloat)mPosition[1]); pmax.Set((kfloat)mPosition[0] +(kfloat)mSize[0],(kfloat)mDisplacement,(kfloat)mPosition[1] +(kfloat)mSize[1]);}
+	void	GetNodeBoundingBox(Point3D& pmin,Point3D& pmax) const override {pmin.Set((float)mPosition[0],0.0f,(float)mPosition[1]); pmax.Set((float)mPosition[0] +(float)mSize[0],(float)mDisplacement,(float)mPosition[1] +(float)mSize[1]);}
 
 	//! file name of the used texture
 	//maString mTextureFileName;

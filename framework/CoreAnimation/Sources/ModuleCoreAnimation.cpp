@@ -12,11 +12,11 @@
 #include "CoreSequenceLauncher.h"
 
 
-kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	ModuleCoreAnimation::mCoreItemOperatorCreateMethodMap;
+kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>	ModuleCoreAnimation::mCoreItemOperatorCreateMethodMap;
 
 IMPLEMENT_CLASS_INFO(ModuleCoreAnimation)
 
-ModuleCoreAnimation::ModuleCoreAnimation(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+ModuleCoreAnimation::ModuleCoreAnimation(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	mSequences.clear();
 }
@@ -25,7 +25,7 @@ ModuleCoreAnimation::~ModuleCoreAnimation()
 {
 }    
 
-void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleCoreAnimation::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"CoreAnimation",params);
 	core->RegisterMainModuleList(this,CoreAnimationModuleCoreIndex);
@@ -34,36 +34,36 @@ void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiable
 	mPrivateMiniFactory = KigsCore::GetInstanceOf("myPrivateMiniFactory","MiniInstanceFactory");
 
 	// action using "slow" setValue
-	MiniFactoryRegister(mPrivateMiniFactory,"Linear1D",CoreActionLinear<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Linear1D",CoreActionLinear<float>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Linear2D",CoreActionLinear<Point2D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Linear3D",CoreActionLinear<Point3D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Linear4D",CoreActionLinear<Vector4D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"Hermite1D",CoreActionHermite<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Hermite1D",CoreActionHermite<float>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Hermite2D",CoreActionHermite<Point2D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Hermite3D",CoreActionHermite<Point3D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Hermite4D",CoreActionHermite<Vector4D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"SetValueString", CoreActionSetValue<kstl::string>);
-	MiniFactoryRegister(mPrivateMiniFactory,"SetValue1D",CoreActionSetValue<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"SetValueString", CoreActionSetValue<std::string>);
+	MiniFactoryRegister(mPrivateMiniFactory,"SetValue1D",CoreActionSetValue<float>);
 	MiniFactoryRegister(mPrivateMiniFactory,"SetValue2D",CoreActionSetValue<Point2D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"SetValue3D",CoreActionSetValue<Point3D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"SetValue4D",CoreActionSetValue<Vector4D>);
 
 	// Keyframe
-	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame1D",CoreActionKeyFrame<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame1D",CoreActionKeyFrame<float>);
 	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame2D",CoreActionKeyFrame<Point2D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame3D",CoreActionKeyFrame<Point3D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame4D",CoreActionKeyFrame<Vector4D>);
 
 	// action using "direct" value access
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear1D",CoreActionDirectLinear<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear1D",CoreActionDirectLinear<float>);
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear2D",CoreActionDirectLinear<Point2D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear3D",CoreActionDirectLinear<Point3D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear4D",CoreActionDirectLinear<Vector4D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite1D",CoreActionDirectHermite<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite1D",CoreActionDirectHermite<float>);
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite2D",CoreActionDirectHermite<Point2D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite3D",CoreActionDirectHermite<Point3D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite4D",CoreActionDirectHermite<Vector4D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValueFloat1D",CoreActionDirectSetValue<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValueFloat1D",CoreActionDirectSetValue<float>);
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValueInt1D",CoreActionDirectSetValue<int>);
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValueBool1D",CoreActionDirectSetValue<bool>);
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValue2D",CoreActionDirectSetValue<Point2D>);
@@ -71,7 +71,7 @@ void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiable
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValue4D",CoreActionDirectSetValue<Vector4D>);
 
 	// direct key frame
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrameFloat1D",CoreActionDirectKeyFrame<kfloat>);
+	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrameFloat1D",CoreActionDirectKeyFrame<float>);
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrameInt1D",CoreActionDirectKeyFrame<int>);
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrameBool1D",CoreActionDirectKeyFrame<bool>);
 	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrame2D",CoreActionDirectKeyFrame<Point2D>);
@@ -94,21 +94,21 @@ void ModuleCoreAnimation::Init(KigsCore* core, const kstl::vector<CoreModifiable
 	MiniFactoryRegister(mPrivateMiniFactory, "Function3D", CoreActionFunction3D);
 	MiniFactoryRegister(mPrivateMiniFactory, "Function4D", CoreActionFunction4D);
 
-	kstl::vector<SpecificOperator> specificList;
+	std::vector<SpecificOperator> specificList;
 	SpecificOperator toAdd;
 	toAdd.mKeyWord = "actionTime";
-	toAdd.mCreateMethod = &ActionTimeOperator<kfloat>::create;
+	toAdd.mCreateMethod = &ActionTimeOperator<float>::create;
 	specificList.push_back(toAdd);
 	/*toAdd.mKeyWord = "sequenceTime";
-	toAdd.mCreateMethod = &SequenceTimeOperator<kfloat>::create;
+	toAdd.mCreateMethod = &SequenceTimeOperator<float>::create;
 	specificList.push_back(toAdd);
 	*/
-	CoreItemOperator<kfloat>::ConstructContextMap(mCoreItemOperatorCreateMethodMap,&specificList);
+	CoreItemOperator<float>::ConstructContextMap(mCoreItemOperatorCreateMethodMap,&specificList);
 
 	
 }
 
-kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	ModuleCoreAnimation::GetCoreItemOperatorConstructMap()
+kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	ModuleCoreAnimation::GetCoreItemOperatorConstructMap()
 {
 	return mCoreItemOperatorCreateMethodMap;
 }
@@ -159,7 +159,7 @@ void	ModuleCoreAnimation::addSequence(CoreSequence* sequence)
 
 void	ModuleCoreAnimation::removeAllSequencesOnTarget(CoreModifiable* target)
 {
-	kstl::vector<SP<CoreSequence>>	deadSequences;
+	std::vector<SP<CoreSequence>>	deadSequences;
 
 	auto itMap=mSequences.begin();
 	auto itMapEnd=mSequences.end();
@@ -239,7 +239,7 @@ void	ModuleCoreAnimation::startSequenceAtFirstUpdate(CoreSequence* sequence)
 
 void ModuleCoreAnimation::updateSequences(const Timer& timer)
 {
-	kstl::vector<SP<CoreSequence>>	deadSequences;
+	std::vector<SP<CoreSequence>>	deadSequences;
 
 	auto itMap=mSequences.begin();
 	auto itMapEnd=mSequences.end();
@@ -272,7 +272,7 @@ void ModuleCoreAnimation::updateSequences(const Timer& timer)
 // so we need to find and remove concerned sequences
 DEFINE_METHOD(ModuleCoreAnimation, OnDestroyCallBack)
 {
-	kstl::vector<SP<CoreSequence>>	deadSequences;
+	std::vector<SP<CoreSequence>>	deadSequences;
 	auto itMap = mSequences.begin();
 	auto itMapEnd = mSequences.end();
 	
@@ -302,7 +302,7 @@ DEFINE_METHOD(ModuleCoreAnimation, OnDestroyCallBack)
 	return true;
 }
 
-SP<CoreSequence> ModuleCoreAnimation::createSequenceFromString(CMSP target, const kstl::string& json, Timer* reftimer)
+SP<CoreSequence> ModuleCoreAnimation::createSequenceFromString(CMSP target, const std::string& json, Timer* reftimer)
 {
 	JSonFileParser L_JsonParser;
 	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionaryFromString(json);
@@ -315,7 +315,7 @@ SP<CoreSequence> ModuleCoreAnimation::createSequenceFromString(CMSP target, cons
 	return 0;
 }
 
-SP<CoreSequence> ModuleCoreAnimation::createSequenceFromJSON(CMSP target,const kstl::string& file,Timer* reftimer)
+SP<CoreSequence> ModuleCoreAnimation::createSequenceFromJSON(CMSP target,const std::string& file,Timer* reftimer)
 {
 	
 	JSonFileParser L_JsonParser;
@@ -334,7 +334,7 @@ SP<CoreSequence> ModuleCoreAnimation::createSequenceFromCoreMap(CMSP target, Cor
 {
 	CoreItemIterator iter=L_Dictionary->begin();
 
-	kstl::string	key;
+	std::string	key;
 	iter.getKey(key);
 
 	SP<CoreSequence> result = MakeRefCounted<CoreSequence>(std::move(target), key, reftimer);
@@ -359,7 +359,7 @@ CoreItemSP		ModuleCoreAnimation::createAction(CoreSequence* sequence, CoreItemSP
 {
 	CoreItemIterator firstactiondesc = actiondesc->begin(); // only one
 
-	kstl::string	key;
+	std::string	key;
 	firstactiondesc.getKey(key);
 
 	SP<CoreAction> newaction = CoreItemSP((CoreAction*)mPrivateMiniFactory->CreateClassInstance(key));

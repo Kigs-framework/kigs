@@ -22,7 +22,7 @@ class maUSStringHeritage : public CoreModifiableAttributeData<usString>
 public:
 
 	//! Extra constructors
-	maUSStringHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, const kstl::string& value ) : CoreModifiableAttributeData<usString>(owner, isInitAttribute, ID)
+	maUSStringHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, const std::string& value ) : CoreModifiableAttributeData<usString>(owner, isInitAttribute, ID)
 	{
 		mValue = usString{ value };
 	}
@@ -31,7 +31,7 @@ public:
 	size_t MemorySize() const final { return mValue.length()*sizeof(u16); };
 
 	/// getValue overloads
-	virtual bool getValue(kstl::string& value) const override
+	virtual bool getValue(std::string& value) const override
 	{
 		usString copy(mValue);
 		value = copy.ToString();
@@ -61,7 +61,7 @@ public:
 		
 		return true;
 	}
-	virtual bool setValue(const kstl::string& value) override
+	virtual bool setValue(const std::string& value) override
 	{
 		if (this->isReadOnly())
 			return false;
@@ -127,7 +127,7 @@ public:
 		mValue = attribute;
 		return *this;
 	}	
-	auto& operator=(kstl::string& attribute)
+	auto& operator=(std::string& attribute)
 	{
 		mValue = attribute;
 		return *this;
@@ -178,9 +178,9 @@ public:
 
 	//! return a const unsigned short* pointer on internal value
 	const unsigned short* us_str() const { return mValue.us_str(); }
-	kstl::string ToString() { return mValue.ToString(); }
+	std::string ToString() { return mValue.ToString(); }
 	void strcpywUtoC(char * _Dest, const unsigned short * src) { mValue.strcpywUtoC(_Dest, src); }
-	kstl::vector<usString>	SplitByCharacter(unsigned short value) const { return mValue.SplitByCharacter(value); }
+	std::vector<usString>	SplitByCharacter(unsigned short value) const { return mValue.SplitByCharacter(value); }
 	unsigned int strlen() const { return mValue.strlen(); }
 
 };

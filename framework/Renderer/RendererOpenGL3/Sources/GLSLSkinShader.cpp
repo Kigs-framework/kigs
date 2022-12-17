@@ -1,7 +1,7 @@
 #include "GLSLSkinShader.h"
 
 
-kstl::string API3DSkinShader::GetVertexShader()
+std::string API3DSkinShader::GetVertexShader()
 {
 	std::string result = API3DGenericMeshShader::GetDefaultVertexShaderAttributes();
 	result += R"====(

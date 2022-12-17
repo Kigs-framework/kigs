@@ -22,11 +22,11 @@ public:
 	
 	/**
 	 * \brief	constructor
-	 * \fn 		KeyToAscii(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		KeyToAscii(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	KeyToAscii(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	KeyToAscii(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	/**
 	 * \brief	convert a keyCode to ascii code

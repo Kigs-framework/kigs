@@ -53,7 +53,7 @@ protected:
 
 	maBool mIsClockwise = BASE_ATTRIBUTE(IsClockwise, true);
 
-	kstl::vector<CoreModifiable*> mItemList;
+	std::vector<CoreModifiable*> mItemList;
 	
 	int mRealSlotCount = 0;
 	std::vector<v2f> mSlot;

@@ -21,7 +21,7 @@ void DrawableSorter::AddDrawable(Drawable *pDrawable,TravState* state)
 void	DrawableSorter::ConstructPath(TravPath& path)
 {
 	std::sort(mDrawableList.begin(), mDrawableList.end());
-	kstl::set<DrawableSorterItem>::iterator it;
+	std::set<DrawableSorterItem>::iterator it;
 	for(auto& it : mDrawableList)
 	{
 		path.Push(it.mWay);

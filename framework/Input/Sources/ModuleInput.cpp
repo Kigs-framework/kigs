@@ -25,7 +25,7 @@ IMPLEMENT_CONSTRUCTOR(ModuleInput)
 }
 
 
-void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleInput::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	BaseInit(core, "Input", params);
 
@@ -48,8 +48,8 @@ void ModuleInput::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribut
 #endif
 	// search for mouse, joystick and keyboard
 
-	kstl::vector<CMSP>	instances;
-	kstl::vector<CMSP>::iterator	it;
+	std::vector<CMSP>	instances;
+	std::vector<CMSP>::iterator	it;
 	instances = GetInstances("MouseDevice");
 
 	it = instances.begin();
@@ -138,7 +138,7 @@ void ModuleInput::Update(const Timer& timer, void* addParam)
 {
 	BaseUpdate(timer, addParam);
 
-	kstl::list<WindowClick*>::iterator it;
+	std::list<WindowClick*>::iterator it;
 	for (it = mActiveWindows.begin(); it != mActiveWindows.end(); ++it)
 	{
 		WindowClick* theWC = (WindowClick*)*it;
@@ -153,7 +153,7 @@ JoystickDevice*		ModuleInput::GetJoystick(int index)
 	return mJoysticks[index];
 }
 
-void ModuleInput::WindowClickEvent(CoreModifiable *w, int buttonId, kfloat X, kfloat Y, bool isDown)
+void ModuleInput::WindowClickEvent(CoreModifiable *w, int buttonId, float X, float Y, bool isDown)
 {
 	auto theModuleInput = KigsCore::Instance()->GetModule<ModuleInput>();
 	WindowClick * lClick = theModuleInput->getWindowClick(w);
@@ -175,7 +175,7 @@ void ModuleInput::WindowDestroyEvent(CoreModifiable *w)
 		theModuleInput->removeWindowClick(lClick);
 }
 
-bool ModuleInput::getActiveWindowPos(CoreModifiable *w, MouseDevice::MOUSE_BUTTONS buttonId, kfloat &X, kfloat &Y)
+bool ModuleInput::getActiveWindowPos(CoreModifiable *w, MouseDevice::MOUSE_BUTTONS buttonId, float &X, float &Y)
 {
 	WindowClick *lClick = getWindowClick(w);
 	if (lClick)
@@ -198,7 +198,7 @@ bool ModuleInput::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 	return ModuleBase::addItem(item, pos PASS_LINK_NAME(linkName));
 }
 
-void ModuleInput::registerTouchEvent(CoreModifiable* item, const kstl::string& calledMethod, const kstl::string& eventName, unsigned int EmptyFlag)
+void ModuleInput::registerTouchEvent(CoreModifiable* item, const std::string& calledMethod, const std::string& eventName, unsigned int EmptyFlag)
 {
 	InputEventType	toregister;
 	bool			eventFound = false;

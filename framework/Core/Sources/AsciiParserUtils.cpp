@@ -776,7 +776,7 @@ bool	AsciiParserUtilsTemplate<unsigned short>::ReadString(unsigned short* result
 
 			usString	tmpString(p);
 
-			kstl::string tmpstdstring = tmpString.ToString();
+			std::string tmpstdstring = tmpString.ToString();
 
 			int test = sscanf(tmpstdstring.c_str(), "%s", (char*)result); // copy to result a tmp buffer
 
@@ -1161,10 +1161,10 @@ bool	AsciiParserUtilsTemplate<charType>::GetTrailingPart(AsciiParserUtilsTemplat
 
 // convert raw unsigned char buffer memory to string (hexadecimal)
 template<typename charType>
-kstl::string	AsciiParserUtilsTemplate<charType>::BufferToString(unsigned char* zone, unsigned int size)
+std::string	AsciiParserUtilsTemplate<charType>::BufferToString(unsigned char* zone, unsigned int size)
 {
 	// each unsigned char is coded in two bytes in hexadecimal notation
-	kstl::string result;
+	std::string result;
 	result="";
 	unsigned char* readzone=zone;
 	unsigned int i;
@@ -1182,7 +1182,7 @@ kstl::string	AsciiParserUtilsTemplate<charType>::BufferToString(unsigned char* z
 
 // convert string (hexadecimal) to raw unsigned char buffer (to delete with delete[] buffer)
 template<typename charType>
-unsigned char*	AsciiParserUtilsTemplate<charType>::StringToBuffer(const kstl::string& str, unsigned int& size)
+unsigned char*	AsciiParserUtilsTemplate<charType>::StringToBuffer(const std::string& str, unsigned int& size)
 {
 	// byte size is half string size
 	size=(unsigned int)str.size()/2;
@@ -1208,17 +1208,17 @@ unsigned char*	AsciiParserUtilsTemplate<charType>::StringToBuffer(const kstl::st
 }
 
 template<>
-AsciiParserUtilsTemplate<char>::operator kstl::string() const
+AsciiParserUtilsTemplate<char>::operator std::string() const
 {
-	kstl::string	tmp;
+	std::string	tmp;
 	tmp.assign(mText, mTextLen);
 	return tmp;
 }
 
 template<>
-AsciiParserUtilsTemplate<unsigned short>::operator kstl::string() const
+AsciiParserUtilsTemplate<unsigned short>::operator std::string() const
 {
-	kstl::string	tmp;
+	std::string	tmp;
 	
 	usString	tmpUSString(mText);
 
@@ -1270,9 +1270,9 @@ const unsigned short* AsciiParserUtilsTemplate<unsigned short>::us_str() const
 }
 
 template<>
-kstl::string	AsciiParserUtilsTemplate<char>::subString(int startpos, int len)
+std::string	AsciiParserUtilsTemplate<char>::subString(int startpos, int len)
 {
-	kstl::string	tmp;
+	std::string	tmp;
 	char* p = (char*)mText + startpos;
 
 	tmp.assign(p, len);
@@ -1280,9 +1280,9 @@ kstl::string	AsciiParserUtilsTemplate<char>::subString(int startpos, int len)
 }
 
 template<>
-kstl::string	AsciiParserUtilsTemplate<unsigned short>::subString(int startpos, int len)
+std::string	AsciiParserUtilsTemplate<unsigned short>::subString(int startpos, int len)
 {
-	kstl::string	tmp;
+	std::string	tmp;
 	unsigned short* p = (unsigned short*)mText + startpos;
 
 	usString	tmpUSString(p);

@@ -14,9 +14,9 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UITextArea, UITextArea, 2DLayers);
 IMPLEMENT_CLASS_INFO(UITextArea)
 
-UITextArea::UITextArea(const kstl::string& name, CLASS_NAME_TREE_ARG) :
+UITextArea::UITextArea(const std::string& name, CLASS_NAME_TREE_ARG) :
 	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-	mText(*this, false, "Text", (kstl::string)"DefaultText"),
+	mText(*this, false, "Text", (std::string)"DefaultText"),
 	mFont(*this, false, "Font", ""),
 	mReleaseAction(*this, false, "ReleaseAction", ""),
 	mFontSize(*this, false, "FontSize", 12),
@@ -85,7 +85,7 @@ bool UITextArea::isAlpha(float X, float Y)
 	//Try to get mask
 	if (!mAlphaMask)
 	{
-		kstl::vector<ModifiableItemStruct> sons = getItems();
+		std::vector<ModifiableItemStruct> sons = getItems();
 
 		for (unsigned int i = 0; i < sons.size(); i++)
 		{
@@ -142,7 +142,7 @@ void UITextArea::LoseFocus()
 	theKeyboard->Hide();
 }
 
-/*void UITextArea::UpdateText(kstl::vector<int> _keycodeList)
+/*void UITextArea::UpdateText(std::vector<int> _keycodeList)
 {
 	//Get KeyBoard
 	ModuleInput* theInputModule = (ModuleInput*)CoreGetModule(ModuleInput);
@@ -150,7 +150,7 @@ void UITextArea::LoseFocus()
 
 	char tmptxt[512] = { 0 };
 	strcpywUtoC(tmptxt, (unsigned short*)mText.us_str());
-	kstl::string newString = tmptxt;
+	std::string newString = tmptxt;
 
 	if (newString == "DefaultText" || mHasDefaultText)
 	{
@@ -186,7 +186,7 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 	char tmptxt[512] = { 0 };
 	strcpywUtoC(tmptxt, _newText);
 
-	if (((kstl::string)tmptxt) != "")
+	if (((std::string)tmptxt) != "")
 	{
 
 		auto theLocalizationManager = KigsCore::Singleton<LocalizationManager>();
@@ -195,10 +195,10 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 
 
 		// need localization ?
-		const kstl::string& text = tmptxt;
+		const std::string& text = tmptxt;
 		if (text[0] == '#')
 		{
-			kstl::string key = text.substr(1, text.length() - 1);
+			std::string key = text.substr(1, text.length() - 1);
 
 			const PLATFORM_WCHAR* localized = theLocalizationManager->getLocalizedString(key.c_str());
 			mTexturePointer->CreateFromText(localized, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255,255, 255, 255, TinyImage::RGBA_32_8888);
@@ -243,7 +243,7 @@ void UITextArea::ProtectedDraw(TravState* state)
 	buf[3].setVertex(pt[3].x, pt[3].y);
 
 	// TEXTURE COORD
-	kfloat ratioX, ratioY;
+	float ratioX, ratioY;
 	mTexturePointer->GetRatio(ratioX, ratioY);
 
 	mTextureQI->Flag |= UIVerticesInfo_Texture;
@@ -267,12 +267,12 @@ DEFINE_METHOD(UITextArea, UpdateKeyBoard)
 	if (!GetNodeFlag(UIItem_HasFocus))
 		return false;
 
-	kstl::vector<KeyEvent> * eventList = static_cast<kstl::vector<KeyEvent>*> (privateParams);
+	std::vector<KeyEvent> * eventList = static_cast<std::vector<KeyEvent>*> (privateParams);
 
-	kstl::vector<KeyEvent>::iterator ITStart = eventList->begin();
-	kstl::vector<KeyEvent>::iterator ITEND = eventList->end();
+	std::vector<KeyEvent>::iterator ITStart = eventList->begin();
+	std::vector<KeyEvent>::iterator ITEND = eventList->end();
 
-	kstl::string newString = mText.ToString();
+	std::string newString = mText.ToString();
 
 	bool terminated = false;
 	while (ITStart != ITEND && !terminated)

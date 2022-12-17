@@ -45,7 +45,7 @@ public:
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	Base2DLayer(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	Base2DLayer(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	//! no camera for 2D Layer, throw an error
 	void  addCamera(CoreModifiable* /*camera*/) override { KIGS_ERROR("Trying to add a camera on a 2D Layer",1); }
@@ -56,7 +56,7 @@ public:
 	 * \brief	update the texture from a buffer (used with camera)
 	 * \param	buffer : pixel color buffer
 	 */
-	virtual void updateLayerFromBuffer(unsigned char* buffer, unsigned int width, unsigned int height, kstl::string name,TinyImage::ImageFormat format=TinyImage::ABGR_16_1555_DIRECT_COLOR)=0;
+	virtual void updateLayerFromBuffer(unsigned char* buffer, unsigned int width, unsigned int height, std::string name,TinyImage::ImageFormat format=TinyImage::ABGR_16_1555_DIRECT_COLOR)=0;
 
 	/**
 	 * \brief	call directly CoreModifiable addItem (not Scene3D or Node3D)
@@ -90,9 +90,9 @@ public:
 	 */
 	void TravCull(TravState* state) override =0;
 
-	bool ChangeTexture(kstl::string TextureName);
+	bool ChangeTexture(std::string TextureName);
 
-	void GetSize(kfloat &X, kfloat &Y);
+	void GetSize(float &X, float &Y);
 
 	/**
 	 * \brief	get the tile bank
@@ -146,8 +146,8 @@ public:
 
 	void setScreenPos(int scrX, int scrY);
 
-	void GetPositionOnScreen(kfloat X, kfloat Y, kfloat &PosX, kfloat &PosY);
-	void GetPositionOnLayer(kfloat X, kfloat Y, kfloat &PosX, kfloat &PosY);
+	void GetPositionOnScreen(float X, float Y, float &PosX, float &PosY);
+	void GetPositionOnLayer(float X, float Y, float &PosX, float &PosY);
 
 	// *******************************************************
 	// Direct draw method for bitmap layer only
@@ -161,7 +161,7 @@ public:
 
 	virtual void RemoveDirectDraw(DirectDrawStruct* toRemove);
 
-	virtual void DrawRectangle(kfloat X, kfloat Y, int sizeX, int sizeY, kfloat r, kfloat g, kfloat b)=0;
+	virtual void DrawRectangle(float X, float Y, int sizeX, int sizeY, float r, float g, float b)=0;
 	
 	virtual bool UsePalette(){return false;}
 
@@ -232,6 +232,6 @@ protected:
 
 	bool mSecondTouch;
 	
-	kstl::vector<DirectDrawStruct*> mDirectDrawList;
+	std::vector<DirectDrawStruct*> mDirectDrawList;
 };
 #endif //BASE2DLAYER_H_

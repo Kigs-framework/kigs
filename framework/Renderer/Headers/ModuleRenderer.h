@@ -27,7 +27,7 @@ struct RendererStats
 extern RendererStats gRendererStats;
 #endif
 
-SP<ModuleBase>	PlatformRendererModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+SP<ModuleBase>	PlatformRendererModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 
 class ModuleSpecificRenderer;
 class MaterialStage;
@@ -408,11 +408,11 @@ public:
 
 	/**
 	 * \brief		initialize module
-	 * \fn			void Init(Core* core, const kstl::vector<CoreModifiableAttribute*>* params);
+	 * \fn			void Init(Core* core, const std::vector<CoreModifiableAttribute*>* params);
 	 * \param		core : link to the core, NOT NULL
 	 * \param		params : list of parameters
 	 */
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 
 	/**
 	 * \brief		close module
@@ -791,12 +791,12 @@ public:
 
 	/**
 	 * \brief		initialize module
-	 * \fn			void Init(Core* core, const kstl::vector<CoreModifiableAttribute*>* params);
+	 * \fn			void Init(Core* core, const std::vector<CoreModifiableAttribute*>* params);
 	 * \param		core : link to the core, NOT NULL
 	 * \param		params : list of parameters
 	 */
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
-	virtual void PlatformInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) {}
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
+	virtual void PlatformInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) {}
 
 	/**
 	 * \brief		close module
@@ -1045,10 +1045,10 @@ public:
 	void	FlushLightModelfv();
 	void	FlushLightModeli();
 
-	void			Frustum(int mode, kfloat left, kfloat right, kfloat bottom, kfloat top, kfloat zNear, kfloat zFar);
-	void			Ortho(int mode, kfloat left, kfloat right, kfloat bottom, kfloat top, kfloat zNear, kfloat zFar);
-	void			Perspective(int mode, kfloat fovy, kfloat aspect, kfloat nearZ, kfloat farZ);
-	void			LookAt(int mode, kfloat eyex, kfloat eyey, kfloat eyez, kfloat centerx, kfloat centery, kfloat centerz, kfloat upx, kfloat upy, kfloat upz);
+	void			Frustum(int mode, float left, float right, float bottom, float top, float zNear, float zFar);
+	void			Ortho(int mode, float left, float right, float bottom, float top, float zNear, float zFar);
+	void			Perspective(int mode, float fovy, float aspect, float nearZ, float farZ);
+	void			LookAt(int mode, float eyex, float eyey, float eyez, float centerx, float centery, float centerz, float upx, float upy, float upz);
 
 
 	// matrix
@@ -1073,11 +1073,11 @@ public:
 	
 
 	void			LoadIdentity(int mode);
-	void			LoadMatrix(int mode, const kfloat *newMat);
-	void			Translate(int mode, kfloat x, kfloat y, kfloat z);
-	void			Rotate(int mode, kfloat angle, kfloat x, kfloat y, kfloat z);
-	void			Scale(int mode, kfloat x, kfloat y, kfloat z);
-	void			Multiply(int mode, const kfloat *m)
+	void			LoadMatrix(int mode, const float *newMat);
+	void			Translate(int mode, float x, float y, float z);
+	void			Rotate(int mode, float angle, float x, float y, float z);
+	void			Scale(int mode, float x, float y, float z);
+	void			Multiply(int mode, const float *m)
 	{
 		mDirtyMatrix |= (1 << mode);
 		Matrix4x4& m1 = mMatrixStack[mode].back();
@@ -1086,7 +1086,7 @@ public:
 		m1 *= m2;
 	}
 
-	inline void			PushAndMultMatrix(int mode, const kfloat *m)
+	inline void			PushAndMultMatrix(int mode, const float *m)
 	{
 		mDirtyMatrix |= (1 << mode);
 		Matrix4x4& m1 = mMatrixStack[mode].back();
@@ -1142,7 +1142,7 @@ public:
 		int mPoint;
 		int mDir;
 	};
-	virtual LightCount SetLightsInfo(kstl::set<CoreModifiable*>* lights) { return {}; }
+	virtual LightCount SetLightsInfo(std::set<CoreModifiable*>* lights) { return {}; }
 	virtual void SendLightsInfo(TravState* travstate) {}
 	virtual void ClearLightsInfo(TravState* travstate) {}
 
@@ -1201,7 +1201,7 @@ protected:
 
 	RenderingState*						mCurrentState;
 	RenderingState*						mStateStackTop;
-	kstl::vector<RenderingState*>		mWantedState;
+	std::vector<RenderingState*>		mWantedState;
 
 	virtual RenderingState*	createNewState(RenderingState* toCopy = 0) = 0;
 
@@ -1213,11 +1213,11 @@ protected:
 	int													mCurrentTextureUnit=0;
 	RenderingScreen*									mFirstRenderingScreen;
 
-	kstl::set<CoreModifiable*>	mActivatedScreenList;
+	std::set<CoreModifiable*>	mActivatedScreenList;
 
 	ShaderBase*						mCurrentShader;
 	ShaderInfo*						mCurrentShaderProgram;
-	kstl::vector<ShaderBase*>		mShaderStack;
+	std::vector<ShaderBase*>		mShaderStack;
 	unsigned int					mDirtyShaderMatrix;	// set when shader has changed, so we have to push again matrix
 
 	CMSP	mDefaultUIShader;

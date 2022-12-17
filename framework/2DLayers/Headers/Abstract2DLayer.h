@@ -40,7 +40,7 @@ public:
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	Abstract2DLayer(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	Abstract2DLayer(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	RenderingScreen*	GetRenderingScreen() { return (RenderingScreen*)(CoreModifiable*)mRenderingScreen; }
 

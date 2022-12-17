@@ -162,7 +162,7 @@ public:
 	{
 	public:
 		//! texture name
-		kstl::string	mTexture;
+		std::string	mTexture;
 		//! stage index
 		int				mStageIndex;
 		//! environment of the texture
@@ -243,20 +243,20 @@ public:
 protected:
 	/**
 	 * \brief	read a szString in myFile from the current read position
-	 * \fn 		kstl::string	ReadString(BufferedFile*);
+	 * \fn 		std::string	ReadString(BufferedFile*);
 	 * \param 	BufferedFile : not used (read from the member BufferedFile)
 	 * \return 	the next szString in myFile, "" if no string
 	 */
-	kstl::string	ReadString(BufferedFile*);
+	std::string	ReadString(BufferedFile*);
 	
 	/**
 	 * \brief	read a kFloat array in a buffered file from the current read position
-	 * \fn 		void ReadFloatArray(kfloat* dst,unsigned int count,BufferedFile* file);
+	 * \fn 		void ReadFloatArray(float* dst,unsigned int count,BufferedFile* file);
 	 * \param 	dst : array of kFloat readed (in/out param)
 	 * \param 	count : number of kFloat readed
 	 * \param 	file : link to the file to read
 	 */
-	void			ReadFloatArray(kfloat* dst,unsigned int count,BufferedFile* file);
+	void			ReadFloatArray(float* dst,unsigned int count,BufferedFile* file);
 
 	//! link to the readed file which contain the binMesh
 	BufferedFile*	mFile;

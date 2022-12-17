@@ -27,9 +27,9 @@ public:
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	UIButtonText(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UIButtonText(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	void				ChangeTexture(kstl::string & texturename, kstl::string & overtexturename, kstl::string & downtexturename);
+	void				ChangeTexture(std::string & texturename, std::string & overtexturename, std::string & downtexturename);
 	void				ChangeTextureColor(Vector4D& UpColor, Vector4D& OverColor, Vector4D& DownColor);
 	void				GetUpColor(float& R, float& G, float& B);
 	void				GetOverColor(float& R, float& G, float& B);
@@ -41,7 +41,7 @@ protected:
 	void NotifyUpdate(const unsigned int labelid)override;
 	void ChangeState()override;
 
-	void				ChangeTextTexture(const kstl::string & text, unsigned int texture);
+	void				ChangeTextTexture(const std::string & text, unsigned int texture);
 	void				ChangeTextTexture(const unsigned short* text, unsigned int texture);
 	unsigned short*		CutText(unsigned short* text, bool& flag);
 	char*				CutText(const char* text, bool& flag);

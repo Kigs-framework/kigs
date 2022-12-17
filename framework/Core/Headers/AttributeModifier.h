@@ -14,7 +14,7 @@ public:
 	{
 	}
 
-	virtual void	Init(CoreModifiableAttribute* caller, bool isGetter, const kstl::string& addParam)
+	virtual void	Init(CoreModifiableAttribute* caller, bool isGetter, const std::string& addParam)
 	{
 
 #ifdef   KEEP_NAME_AS_STRING
@@ -69,17 +69,17 @@ public:
 	{
 		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
 	};
-	void	CallModifier(CoreModifiableAttribute* caller, kfloat& value, bool isGetter)
+	void	CallModifier(CoreModifiableAttribute* caller, float& value, bool isGetter)
 	{
 		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
 	};
-	void	CallModifier(CoreModifiableAttribute* caller, kdouble& value, bool isGetter)
+	void	CallModifier(CoreModifiableAttribute* caller, double& value, bool isGetter)
 	{
 		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
 	};
 
 	// strings
-	void	CallModifier(CoreModifiableAttribute* caller, kstl::string& value, bool isGetter)
+	void	CallModifier(CoreModifiableAttribute* caller, std::string& value, bool isGetter)
 	{
 		if (isGetterModifier() == isGetter) { ProtectedCallModifier(caller, value); } if (mNextModifier & 1) { getNext()->CallModifier(caller, value, isGetter); }
 	};
@@ -124,8 +124,8 @@ public:
 	}
 #ifdef   KEEP_NAME_AS_STRING
 	// for export
-	virtual kstl::string	GetModifierType() = 0;
-	kstl::string			GetModifierInitString()
+	virtual std::string	GetModifierType() = 0;
+	std::string			GetModifierInitString()
 	{
 		return mInitString;
 	}
@@ -143,11 +143,11 @@ protected:
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, u16& value) {};
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, u32& value) {};
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, u64& value) {};
-	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, kfloat& value) {};
-	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, kdouble& value) {};
+	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, float& value) {};
+	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, double& value) {};
 
 	// strings
-	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, kstl::string& value) {};
+	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, std::string& value) {};
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, usString& value) {};
 
 	// 2D or 3D points
@@ -159,7 +159,7 @@ protected:
 	bool					mIsGetter;
 
 #ifdef   KEEP_NAME_AS_STRING
-	kstl::string			mInitString;
+	std::string			mInitString;
 #endif
 };
 
@@ -176,7 +176,7 @@ public:
 	{
 	}
 
-	virtual void	Init(CoreModifiableAttribute* caller, bool isGetter, const kstl::string& addParam);
+	virtual void	Init(CoreModifiableAttribute* caller, bool isGetter, const std::string& addParam);
 
 	static std::unique_ptr<CoreVector> create()
 	{
@@ -185,80 +185,80 @@ public:
 
 #ifdef   KEEP_NAME_AS_STRING
 	// for export
-	virtual kstl::string	GetModifierType()
+	virtual std::string	GetModifierType()
 	{
 		return "CoreItemOperatorModifier";
 	}
 #endif
 protected:
 
-	// for numeric only kfloat supported, the other type use kfloat
+	// for numeric only float supported, the other type use float
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, bool& value)
 	{
-		kfloat tmpval = (kfloat)value;
+		float tmpval = (float)value;
 		ProtectedCallModifier(caller, tmpval);
 		value = (tmpval != 0.0f);
 	}
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, s8& value)
 	{
-		kfloat tmpval = (kfloat)value;
+		float tmpval = (float)value;
 		ProtectedCallModifier(caller, tmpval);
 		value = (char)tmpval;
 	}
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, s16& value)
 	{
-		kfloat tmpval = (kfloat)value;
+		float tmpval = (float)value;
 		ProtectedCallModifier(caller, tmpval);
 		value = (s16)tmpval;
 	}
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, s32& value)
 	{
-		kfloat tmpval = (kfloat)value;
+		float tmpval = (float)value;
 		ProtectedCallModifier(caller, tmpval);
 		value = (s32)tmpval;
 	}
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, s64& value)
 	{
-		kfloat tmpval = (kfloat)value;
+		float tmpval = (float)value;
 		ProtectedCallModifier(caller, tmpval);
 		value = (s64)tmpval;
 	}
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, u8& value)
 	{
-		kfloat tmpval = (kfloat)value;
+		float tmpval = (float)value;
 		ProtectedCallModifier(caller, tmpval);
 		value = (u8)tmpval;
 	}
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, u16& value)
 	{
-		kfloat tmpval = (kfloat)value;
+		float tmpval = (float)value;
 		ProtectedCallModifier(caller, tmpval);
 		value = (u16)tmpval;
 	}
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, u32& value)
 	{
-		kfloat tmpval = (kfloat)value;
+		float tmpval = (float)value;
 		ProtectedCallModifier(caller, tmpval);
 		value = (u32)tmpval;
 	}
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, u64& value)
 	{
-		kfloat tmpval = (kfloat)value;
+		float tmpval = (float)value;
 		ProtectedCallModifier(caller, tmpval);
 		value = (u64)tmpval;
 	}
 
-	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, kdouble& value)
+	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, double& value)
 	{
-		kfloat tmpval = (kfloat)value;
+		float tmpval = (float)value;
 		ProtectedCallModifier(caller, tmpval);
-		value = (kdouble)tmpval;
+		value = (double)tmpval;
 	}
 
-	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, kfloat& value);
+	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, float& value);
 
 	// strings
-	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, kstl::string& value);
+	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, std::string& value);
 	virtual void	ProtectedCallModifier(CoreModifiableAttribute* caller, usString& value);
 
 	// 2D or 3D points

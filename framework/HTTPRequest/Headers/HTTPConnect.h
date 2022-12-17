@@ -39,12 +39,12 @@ public:
 	virtual bool	Open()=0;
 	virtual void	Close()=0;
 
-	kstl::string	getHostName()
+	std::string	getHostName()
 	{
-		return (const kstl::string&)mHostName;
+		return (const std::string&)mHostName;
 	}
 
-	kstl::string getHostNameWithProtocol();
+	std::string getHostNameWithProtocol();
 
 	bool IsSync() { return mIsSynchronous; }
 

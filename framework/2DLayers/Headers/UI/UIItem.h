@@ -46,13 +46,13 @@ public:
 	inline bool                                         Get_IsHidden() const { return mIsHidden; }
 
 	/*Setter*/
-	inline void											Set_RotationAngle(kfloat a_radAngle) { mRotationAngle = a_radAngle; SetNodeFlag(Node2D_NeedUpdatePosition); }
-	inline void											Set_Position(kfloat a_x, kfloat a_y) { mPosition[0] = a_x; mPosition[1] = a_y; SetNodeFlag(Node2D_NeedUpdatePosition); 	}
+	inline void											Set_RotationAngle(float a_radAngle) { mRotationAngle = a_radAngle; SetNodeFlag(Node2D_NeedUpdatePosition); }
+	inline void											Set_Position(float a_x, float a_y) { mPosition[0] = a_x; mPosition[1] = a_y; SetNodeFlag(Node2D_NeedUpdatePosition); 	}
 	inline void											Set_Position(Point2D a_pos) { Set_Position(a_pos.x, a_pos.y); }
 	inline void											IsTouchable(bool a_value) { mIsTouchable = a_value; }
 	inline void											Set_Opacity(float a_value) { mOpacity = a_value; SetNodeFlag(Node2D_NeedVerticeInfoUpdate); }
-	inline void											Set_PreScale(kfloat a_valueX, kfloat a_valueY) { mPreScale = v2f(a_valueX,a_valueY); SetNodeFlag(Node2D_NeedUpdatePosition); 	}
-	inline void											Set_PostScale(kfloat a_valueX, kfloat a_valueY) { mPostScale = v2f(a_valueX,a_valueY); SetNodeFlag(Node2D_NeedUpdatePosition); }
+	inline void											Set_PreScale(float a_valueX, float a_valueY) { mPreScale = v2f(a_valueX,a_valueY); SetNodeFlag(Node2D_NeedUpdatePosition); 	}
+	inline void											Set_PostScale(float a_valueX, float a_valueY) { mPostScale = v2f(a_valueX,a_valueY); SetNodeFlag(Node2D_NeedUpdatePosition); }
 	inline void											Set_DisableBlend(bool a_value) { mDisableBlend = a_value; SetNodeFlag(Node2D_NeedVerticeInfoUpdate);}
 	
 	bool												Draw(TravState* state) override;
@@ -62,10 +62,10 @@ public:
 	virtual void										GetFocus() {}
 	virtual bool										isAlpha(float X, float Y) { return false; };
 
-	bool												ContainsPoint(kfloat X, kfloat Y);
+	bool												ContainsPoint(float X, float Y);
 
 	// utility method
-	Point2D												GetCoordsInContainer(kfloat X, kfloat Y);
+	Point2D												GetCoordsInContainer(float X, float Y);
 
 	inline void											TranslateWithOffSet(int a_offsetX, int a_offsetY) { mPosition[0] += a_offsetX; mPosition[1] += a_offsetY; SetNodeFlag(Node2D_NeedUpdatePosition);}
 
@@ -78,7 +78,7 @@ public:
 	virtual void SetTexUV(UIVerticesInfo * aQI) {}
 	virtual void SetVertexArray(UIVerticesInfo * aQI) {}
 	virtual void SetColor(UIVerticesInfo * aQI) {}
-	void GetColor(kfloat& R, kfloat& G, kfloat& B, kfloat& A) { R = mColor[0]; G = mColor[1]; B = mColor[2]; A = GetOpacity(); }
+	void GetColor(float& R, float& G, float& B, float& A) { R = mColor[0]; G = mColor[1]; B = mColor[2]; A = GetOpacity(); }
 
 	virtual UIVerticesInfo * GetVerticesInfo() { return NULL;/* mQI; */ }
 

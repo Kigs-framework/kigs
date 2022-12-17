@@ -28,7 +28,7 @@ public:
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	UISlidersGroup(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UISlidersGroup(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~UISlidersGroup();
 
 	bool addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
@@ -39,14 +39,14 @@ public:
 	inline int				Get_InitialGroupValue()const { return (int)mComunalValue; }
 	void					Reset();
 
-	kstl::vector<UISlider*> GetSliderList() { return mSliderList; }
+	std::vector<UISlider*> GetSliderList() { return mSliderList; }
 
 protected:
 	
 	void InitModifiable()override;
 
 
-	kstl::vector<UISlider*>		mSliderList;
+	std::vector<UISlider*>		mSliderList;
 	maInt						mComunalValue; //value divided between the sliders
 	unsigned int				mSliderNumber;
 	int							mRemainingValue;

@@ -17,7 +17,7 @@ int		MultiTouchDevice::getTouchState(int touchIndex)
 	}
 }
 
-void	MultiTouchDevice::getTouchPos(int touchIndex, kfloat &posX, kfloat &posY)
+void	MultiTouchDevice::getTouchPos(int touchIndex, float &posX, float &posY)
 {
 	if (touchIndex >= 0 && touchIndex < mMaxTouch)
 	{

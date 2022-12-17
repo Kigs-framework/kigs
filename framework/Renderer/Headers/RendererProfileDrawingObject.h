@@ -26,7 +26,7 @@ class RendererProfileDrawingObject : public CoreModifiable
 public:
 
 	DECLARE_CLASS_INFO(RendererProfileDrawingObject,CoreModifiable,Renderer)
-	RendererProfileDrawingObject(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	RendererProfileDrawingObject(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 protected:
 
 	DECLARE_METHOD(DrawProfiles);

@@ -26,7 +26,7 @@ bool	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam
 {\
 	return ((UpgradorMethods*)toUpdate)->UpgradorUpdate(timer, addParam);\
 }\
-virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
 {\
 	FOR_EACH(UPGRADOR_METHOD_PUSH_BACK, __VA_ARGS__)\
 }
@@ -42,7 +42,7 @@ bool	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam
 {\
 	return ((UpgradorMethods*)toUpdate)->UpgradorUpdate(timer, addParam);\
 }\
-virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
 {\
 }
 
@@ -58,7 +58,7 @@ class UpgradorBase : public StructLinkedListBase
 {
 protected:
 	friend class CoreModifiable;
-	virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) = 0;
+	virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) = 0;
 	void UpgradeInstance(CoreModifiable* toUpgrade, bool reinit = true,bool attachmethod=true);
 	void DowngradeInstance(CoreModifiable* toDowngrade, bool dodestroy = true, bool detachmethod = true);
 	// create and init Upgrador if needed, add dynamic attributes, connect things

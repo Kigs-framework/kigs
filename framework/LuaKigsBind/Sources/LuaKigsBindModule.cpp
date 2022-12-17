@@ -72,7 +72,7 @@ IMPLEMENT_CONSTRUCTOR(LuaKigsBindModule)
 // function GetFile(path)
 int LuaKigsBindModule::GetFile(lua_State *L) 
 {
-	kstl::string path = luaL_checkstring(L, 1);
+	std::string path = luaL_checkstring(L, 1);
 	for (unsigned i = 0; i<path.length(); ++i)
 	{
 		if (path[i] == '.') path[i] = '/';
@@ -87,7 +87,7 @@ int LuaKigsBindModule::GetFile(lua_State *L)
 	}
 	else
 	{
-		kstl::string err = "Could not load : ";
+		std::string err = "Could not load : ";
 		err += path;
 		lua_pushstring(L, err.c_str());
 	}
@@ -160,7 +160,7 @@ bool	LuaKigsBindModule::ExecuteString(const char* code)
 	return true;
 }
 
-bool	LuaKigsBindModule::ExecuteString(const kstl::string& funcCode)
+bool	LuaKigsBindModule::ExecuteString(const std::string& funcCode)
 {
 	return ExecuteString(funcCode.c_str());
 }
@@ -213,17 +213,17 @@ bool    LuaKigsBindModule::SafePCall(int nb_args, int nb_ret)
 	return true;
 }
 
-bool	LuaKigsBindModule::CallLuaFunction(const kstl::string& funcName)
+bool	LuaKigsBindModule::CallLuaFunction(const std::string& funcName)
 {
 	lua_getglobal(mLuaState, funcName.c_str());
 	return SafePCall(0, 0);
 }
 
-bool	LuaKigsBindModule::CallCoreModifiableCallback(kstl::vector<CoreModifiableAttribute*>& params, CoreModifiable* localthis)
+bool	LuaKigsBindModule::CallCoreModifiableCallback(std::vector<CoreModifiableAttribute*>& params, CoreModifiable* localthis)
 {
 	if (params.size())
 	{
-		kstl::string funcName = ((maString*)params[0])->const_ref();
+		std::string funcName = ((maString*)params[0])->const_ref();
 		LuaState L = mLuaState;
 		
 		LuaStackAssert protect{ L };
@@ -254,8 +254,8 @@ bool	LuaKigsBindModule::CallCoreModifiableCallback(kstl::vector<CoreModifiableAt
 		int paramCount = 1; // at least one param for this
 		int returnCount = 0;
 		// push params but not result
-		kstl::vector<CoreModifiableAttribute*>::iterator	itparam = params.begin() + 1;
-		kstl::vector<CoreModifiableAttribute*>::iterator	itend = params.end();
+		std::vector<CoreModifiableAttribute*>::iterator	itparam = params.begin() + 1;
+		std::vector<CoreModifiableAttribute*>::iterator	itend = params.end();
 		while (itparam != itend)
 		{
 			if ((*itparam)->getLabelID() == "Result")
@@ -364,7 +364,7 @@ void LuaKigsBindModule::LoadLibraries(lua_State* L)
 	luaL_openlibs(L);
 	
 	setup_bindings(L);
-	kstl::vector<LuaCLibrary>::iterator itlib = mLibraries.begin();
+	std::vector<LuaCLibrary>::iterator itlib = mLibraries.begin();
 	while (itlib != mLibraries.end()) 
 	{
 		(*itlib).registerLibrary(L);
@@ -424,7 +424,7 @@ void LuaKigsBindModule::AddLibrary(void(*func)(lua_State*))
 
 
 //! module init, register CollisionManager and BSphere objects
-void LuaKigsBindModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void LuaKigsBindModule::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"LuaBind",params);
 
@@ -442,8 +442,8 @@ void LuaKigsBindModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAt
 void LuaKigsBindModule::Close()
 {
     BaseClose();
-	kstl::vector<CMSP> instances =	CoreModifiable::GetInstances("LuaBehaviour");
-	kstl::vector<CMSP>::iterator it = instances.begin();
+	std::vector<CMSP> instances =	CoreModifiable::GetInstances("LuaBehaviour");
+	std::vector<CMSP>::iterator it = instances.begin();
 	while (it != instances.end()) {
 		LuaBehaviour* behaviour = (LuaBehaviour*)(*it).get();
 		behaviour->UninitModifiable();
@@ -463,7 +463,7 @@ void LuaKigsBindModule::ReleaseRefs(CoreModifiable* obj)
 
 
 
-void LuaKigsBindModule::AddLuaMethodFromStack(CoreModifiable* obj, const kstl::string& func_name)
+void LuaKigsBindModule::AddLuaMethodFromStack(CoreModifiable* obj, const std::string& func_name)
 {
 	LuaState L = mLuaState;
 	{
@@ -480,7 +480,7 @@ void LuaKigsBindModule::AddLuaMethodFromStack(CoreModifiable* obj, const kstl::s
 	L.pop(); // Pop function on the top of the stack;
 }
 
-void LuaKigsBindModule::AddLuaMethod(CoreModifiable* obj, const kstl::string& func_name, const kstl::string& code)
+void LuaKigsBindModule::AddLuaMethod(CoreModifiable* obj, const std::string& func_name, const std::string& code)
 {
 	if(ExecuteString(code))
 	{
@@ -493,14 +493,14 @@ void LuaKigsBindModule::AddLuaMethod(CoreModifiable* obj, const kstl::string& fu
 	}
 }
 
-void LuaKigsBindModule::ConnectToLua(CoreModifiable* e, const kstl::string& signal, CoreModifiable* r, const kstl::string& code)
+void LuaKigsBindModule::ConnectToLua(CoreModifiable* e, const std::string& signal, CoreModifiable* r, const std::string& code)
 {
 	AddLuaMethod(r, code, code);
 	r->InsertMethod(code, static_cast<CoreModifiable::ModifiableMethod>(&DynamicMethodLuaGlobalCallback::LuaGlobalCallback), code);
 	KigsCore::Connect(e, signal, r, code);
 }
 
-void LuaKigsBindModule::SetValueLua(CoreModifiable* cm, const kstl::string& attrname, const kstl::string& code)
+void LuaKigsBindModule::SetValueLua(CoreModifiable* cm, const std::string& attrname, const std::string& code)
 {
 	LuaState L = mLuaState;
 	LuaStackAssert protect{ L };
@@ -574,7 +574,7 @@ DEFINE_METHOD(LuaKigsBindModule, RegisterLuaMethod)
 
 		if (cbType) // callback type is given, so attach to the good one
 		{
-			kstl::string callbackType = (cbType)->const_ref();
+			std::string callbackType = (cbType)->const_ref();
 
 			if (callbackType == "Global") // not a member method, just global code
 			{

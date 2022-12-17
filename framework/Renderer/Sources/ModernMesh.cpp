@@ -250,7 +250,7 @@ void ModernMesh::StartMeshBuilder()
 
 }
 
-void ModernMesh::StartMeshGroup(CoreVector* description, int hintVertexBufferSize, int hintTriangleBufferSize)
+void ModernMesh::StartMeshGroup(CoreMap<std::string>* description, int hintVertexBufferSize, int hintTriangleBufferSize)
 {
 	if (mCurrentMeshBuilder)
 	{
@@ -733,7 +733,7 @@ void ModernMesh::ComputeNormals()
 }
 
 
-void ModernMesh::ApplyScaleFactor(kfloat scaleFactor)
+void ModernMesh::ApplyScaleFactor(float scaleFactor)
 {
 	// for each itemgroup
 	std::vector<ModifiableItemStruct>::const_iterator	it;
@@ -1303,7 +1303,7 @@ void ModernMeshItemGroup::ComputeNormals()
 }
 
 
-void ModernMeshItemGroup::ApplyScaleFactor(kfloat scaleFactor)
+void ModernMeshItemGroup::ApplyScaleFactor(float scaleFactor)
 {
 	unsigned char* vertexStart = (unsigned char*)mVertexBufferArray.buffer();
 	unsigned int   vsize = mVertexSize;

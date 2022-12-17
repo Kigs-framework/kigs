@@ -28,7 +28,7 @@ protected:
 	void PrepareExport(ExportSettings* settings) override;
 	void EndExport(ExportSettings* settings) override;
 
-	kstl::vector<Node3D*> mSubNodes;
+	std::vector<Node3D*> mSubNodes;
 	SmartPointer<Node3D> mFullMeshNode;
 
 	bool mNeedFullMeshRecompute = false;

@@ -244,13 +244,9 @@ public:
 	enum COREITEM_TYPE
 	{
 		UNKNOWN				= 0,
-		CORENAMEDITEMMASK	= 1,
-		COREVECTOR			= 2,
-		CORENAMEDVECTOR		= 3,
-		COREMAP				= 4,
-		CORENAMEDMAP		= 5,
-		COREVALUE			= 8,
-		CORENAMEDVALUE		= 9
+		COREVECTOR			= 1,
+		COREMAP				= 2,
+		COREVALUE			= 3,
 	};
 
 	virtual void set(int key, const CoreItemSP& toinsert) {};
@@ -287,7 +283,7 @@ public:
 
 	virtual operator bool() const;
 
-	virtual operator kfloat() const;
+	virtual operator float() const;
 
 	virtual operator double() const;
 
@@ -312,11 +308,10 @@ public:
 
 	bool getValue(bool& _value) const {
 		_value = (bool)*this;
-		return true;
-	}
+		return true;}
 
-	bool getValue(kfloat& _value) const {
-		_value = (kfloat)*this;
+	bool getValue(float& _value) const {
+		_value = (float)*this;
 		return true;}
 
 	bool getValue(int& _value) const {
@@ -325,8 +320,7 @@ public:
 
 	bool getValue(s64& _value) const {
 		_value = (s64)*this;
-		return true;
-	}
+		return true; }
 
 	bool getValue(unsigned int& _value) const {
 		_value = (unsigned int)*this;
@@ -334,8 +328,7 @@ public:
 
 	bool getValue(u64& _value) const {
 		_value = (u64)*this;
-		return true;
-	}
+		return true; }
 
 	bool getValue(std::string& _value) const {
 		_value = (std::string)*this;
@@ -355,8 +348,7 @@ public:
 
 	bool getValue(v4f& _value) const {
 		_value = this->operator v4f();
-		return true;
-	}
+		return true; }
 
 	virtual bool operator==(const CoreItem& other) const
 	{
@@ -365,7 +357,7 @@ public:
 
 	// empty assignement with value
 	virtual CoreItem& operator=(const bool& other);
-	virtual CoreItem& operator=(const kfloat& other);
+	virtual CoreItem& operator=(const float& other);
 	virtual CoreItem& operator=(const int& other);
 	virtual CoreItem& operator=(const s64& other);
 	virtual CoreItem& operator=(const unsigned int& other);
@@ -430,64 +422,14 @@ protected:
 	
 	}
 
-
 	COREITEM_TYPE	mType;
 };
 
-
-// ****************************************
-// * CoreNamedItem class
-// * --------------------------------------
-/**
-* \class	CoreNamedItem
-* \file     CoreItem.h
-* \ingroup Core
-* \brief	Base class for CoreItem with a name
-*/
-// ****************************************
-class CoreNamedItem : public CoreItem
-{
-protected:
-	CoreNamedItem(COREITEM_TYPE _type,const std::string& _name) : CoreItem(_type),mName(_name)
-	{
-		
-	}
-
-	CoreNamedItem(COREITEM_TYPE _type) : CoreItem(_type),mName("")
-	{
-		
-	}
-public:
-	virtual std::string getName() const
-	{
-		return mName;
-	}
-
-	void	setName(const std::string& _name)
-	{
-		mName=_name;
-	}
-
-
-	virtual CoreItemSP operator[](const std::string& key);
-
-	virtual CoreItemSP operator[](const usString& key);
-
-
-protected:
-	std::string	mName;
-};
-
-
-#define DECLARE_MAKE_COREVALUE(type) CoreItemSP MakeCoreValue(type value);\
-CoreItemSP MakeCoreNamedValue(type value, const std::string& name);\
+#define DECLARE_MAKE_COREVALUE(type) CoreItemSP MakeCoreValue(type value);
 
 CoreItemSP MakeCoreMap();
-CoreItemSP MakeCoreNamedMap(const std::string& name);
 CoreItemSP MakeCoreMapUS();
-CoreItemSP MakeCoreNamedMapUS(const std::string& name);
 CoreItemSP MakeCoreVector();
-CoreItemSP MakeCoreNamedVector(const std::string& name);
 
 DECLARE_MAKE_COREVALUE(const bool&);
 DECLARE_MAKE_COREVALUE(const s32&);
@@ -552,7 +494,7 @@ inline CoreItemSP CoreItemSP::operator[](const usString& key) const
 
 inline CoreItemSP::operator float() const
 {
-	return get()->operator kfloat();
+	return get()->operator float();
 }
 
 inline CoreItemSP::operator double() const
@@ -598,7 +540,7 @@ inline CoreItemSP::operator v2f() const
 inline CoreItemSP::operator v3f() const
 {
 	return get()->operator v3f();
-} 
+}
 
 inline CoreItemSP::operator v4f() const
 {

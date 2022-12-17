@@ -26,10 +26,10 @@ public:
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	UIButtonImage(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UIButtonImage(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~UIButtonImage();
 
-	void ChangeTexture(kstl::string texturename, kstl::string overtexturename = "", kstl::string downtexturename = "");
+	void ChangeTexture(std::string texturename, std::string overtexturename = "", std::string downtexturename = "");
 
 protected:
 	

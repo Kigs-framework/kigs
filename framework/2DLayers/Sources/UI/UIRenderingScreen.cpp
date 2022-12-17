@@ -46,14 +46,14 @@ void	UIRenderingScreen::InitModifiable()
 			mTexturePointer->refreshTextureInfos();
 			mForceNearest.changeNotificationLevel(Owner);
 
-			kfloat sx, sy;
+			float sx, sy;
 			mTexturePointer->GetSize(sx, sy);
 
-			kfloat ratioX, ratioY;
+			float ratioX, ratioY;
 			mTexturePointer->GetRatio(ratioX, ratioY);
 
-			kfloat dx = 0.5f / sx;
-			kfloat dy = 0.5f / sy;
+			float dx = 0.5f / sx;
+			float dy = 0.5f / sy;
 
 			VInfo2D::Data* buf = static_cast<VInfo2D::Data*>(mVI.Buffer());
 

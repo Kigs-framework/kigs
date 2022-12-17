@@ -40,7 +40,7 @@ IMPLEMENT_CONSTRUCTOR(ModuleRenderer)
 {
 }
 
-void ModuleRenderer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleRenderer::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	BaseInit(core, "Renderer", params);
 
@@ -71,7 +71,7 @@ void ModuleRenderer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 
 	//DECLARE_FULL_CLASS_INFO(core, RendererProfileDrawingObject, ProfileDrawingObject, Renderer)
 
-	kstl::vector<CMSP>	instances=CoreModifiable::GetInstances("ModuleSpecificRenderer");
+	std::vector<CMSP>	instances=CoreModifiable::GetInstances("ModuleSpecificRenderer");
 
 	if (instances.size())
 		mSpecificRenderer = (ModuleSpecificRenderer*)(instances[0].get());
@@ -108,7 +108,7 @@ IMPLEMENT_CONSTRUCTOR(ModuleSpecificRenderer)
 }
 
 // init should be called at the end of specific Init
-void ModuleSpecificRenderer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleSpecificRenderer::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	mWantedState.reserve(4);
 
@@ -162,8 +162,8 @@ void ModuleSpecificRenderer::Close()
 	{
 		delete mCurrentState;
 	}
-	kstl::vector<RenderingState*>::iterator delit = mWantedState.begin();
-	kstl::vector<RenderingState*>::iterator delitend = mWantedState.end();
+	std::vector<RenderingState*>::iterator delit = mWantedState.begin();
+	std::vector<RenderingState*>::iterator delitend = mWantedState.end();
 	while (delit != delitend)
 	{
 		delete (*delit);
@@ -263,14 +263,14 @@ void	ModuleSpecificRenderer::LoadIdentity(int mode)
 		mMatrixStack[mode].back().SetIdentity();
 }
 
-void	ModuleSpecificRenderer::LoadMatrix(int mode, const kfloat *newMat)
+void	ModuleSpecificRenderer::LoadMatrix(int mode, const float *newMat)
 {
 	mDirtyMatrix |= (1 << mode);
 	Matrix4x4 *mat = &mMatrixStack[mode].back();
 	mat->Set(newMat);
 }
 
-void	ModuleSpecificRenderer::Translate(int mode, kfloat tx, kfloat ty, kfloat tz)
+void	ModuleSpecificRenderer::Translate(int mode, float tx, float ty, float tz)
 {
 	Matrix4x4&	result = mMatrixStack[mode].back();
 	result[12] += (result[0] * tx + result[4] * ty + result[8] * tz);
@@ -280,38 +280,38 @@ void	ModuleSpecificRenderer::Translate(int mode, kfloat tx, kfloat ty, kfloat tz
 	mDirtyMatrix |= (1 << mode);
 }
 
-void	ModuleSpecificRenderer::Rotate(int mode, kfloat angle, kfloat x, kfloat y, kfloat z)
+void	ModuleSpecificRenderer::Rotate(int mode, float angle, float x, float y, float z)
 {
 
-	kfloat sinAngle = (kfloat)sinf(angle * fPI / KFLOAT_CONST(180.0f));
-	kfloat cosAngle = (kfloat)cosf(angle * fPI / KFLOAT_CONST(180.0f));
-	kfloat oneMinusCos = KFLOAT_CONST(1.0f) - cosAngle;
-	kfloat mag = sqrtf(x * x + y * y + z * z);
+	float sinAngle = (float)sinf(angle * fPI / 180.0f);
+	float cosAngle = (float)cosf(angle * fPI / 180.0f);
+	float oneMinusCos = 1.0f - cosAngle;
+	float mag = sqrtf(x * x + y * y + z * z);
 
-	if (mag != KFLOAT_CONST(0.0f) && mag != KFLOAT_CONST(1.0f))
+	if (mag != 0.0f && mag != 1.0f)
 	{
-		mag = KFLOAT_CONST(1.0f) / mag;
+		mag = 1.0f / mag;
 		x *= mag;
 		y *= mag;
 		z *= mag;
 	}
 
-	kfloat xx = x * x;
-	kfloat yy = y * y;
-	kfloat zz = z * z;
-	kfloat xy = x * y;
-	kfloat yz = y * z;
-	kfloat zx = z * x;
-	kfloat xs = x * sinAngle;
-	kfloat ys = y * sinAngle;
-	kfloat zs = z * sinAngle;
+	float xx = x * x;
+	float yy = y * y;
+	float zz = z * z;
+	float xy = x * y;
+	float yz = y * z;
+	float zx = z * x;
+	float xs = x * sinAngle;
+	float ys = y * sinAngle;
+	float zs = z * sinAngle;
 
 	Matrix4x4 rotationMatrix;
 
 	rotationMatrix[0] = (oneMinusCos * xx) + cosAngle;
 	rotationMatrix[1] = (oneMinusCos * xy) - zs;
 	rotationMatrix[2] = (oneMinusCos * zx) + ys;
-	rotationMatrix[3] = KFLOAT_ZERO;
+	rotationMatrix[3] = 0.0f;
 
 	rotationMatrix[4] = (oneMinusCos * xy) + zs;
 	rotationMatrix[5] = (oneMinusCos * yy) + cosAngle;
@@ -321,18 +321,18 @@ void	ModuleSpecificRenderer::Rotate(int mode, kfloat angle, kfloat x, kfloat y, 
 	rotationMatrix[8] = (oneMinusCos * zx) - ys;
 	rotationMatrix[9] = (oneMinusCos * yz) + xs;
 	rotationMatrix[10] = (oneMinusCos * zz) + cosAngle;
-	rotationMatrix[11] = KFLOAT_ZERO;
+	rotationMatrix[11] = 0.0f;
 
-	rotationMatrix[12] = KFLOAT_ZERO;
-	rotationMatrix[13] = KFLOAT_ZERO;
-	rotationMatrix[14] = KFLOAT_ZERO;
-	rotationMatrix[15] = KFLOAT_ONE;
+	rotationMatrix[12] = 0.0f;
+	rotationMatrix[13] = 0.0f;
+	rotationMatrix[14] = 0.0f;
+	rotationMatrix[15] = 1.0f;
 
 	Multiply(mode, &(rotationMatrix.e[0][0]));
 
 }
 
-void	ModuleSpecificRenderer::Scale(int mode, kfloat sx, kfloat sy, kfloat sz)
+void	ModuleSpecificRenderer::Scale(int mode, float sx, float sy, float sz)
 {
 	Matrix4x4&	result = mMatrixStack[mode].back();
 	result[0] *= sx;
@@ -352,46 +352,46 @@ void	ModuleSpecificRenderer::Scale(int mode, kfloat sx, kfloat sy, kfloat sz)
 	mDirtyMatrix |= (1 << mode);
 }
 
-void	ModuleSpecificRenderer::Frustum(int mode, kfloat left, kfloat right, kfloat bottom, kfloat top, kfloat nearZ, kfloat farZ)
+void	ModuleSpecificRenderer::Frustum(int mode, float left, float right, float bottom, float top, float nearZ, float farZ)
 {
-	kfloat deltaX = right - left;
-	kfloat deltaY = top - bottom;
-	kfloat deltaZ = farZ - nearZ;
+	float deltaX = right - left;
+	float deltaY = top - bottom;
+	float deltaZ = farZ - nearZ;
 	Matrix4x4 frust;
 
-	if ((nearZ <= KFLOAT_ZERO) || (farZ <= KFLOAT_ZERO) || (deltaX <= KFLOAT_ZERO) || (deltaY <= KFLOAT_ZERO) || (deltaZ <= KFLOAT_ZERO))
+	if ((nearZ <= 0.0f) || (farZ <= 0.0f) || (deltaX <= 0.0f) || (deltaY <= 0.0f) || (deltaZ <= 0.0f))
 	{
 		KIGS_ERROR("Invalid frustrum", 1);
 		return;
 	}
 
-	frust[0] = KFLOAT_CONST(2.0f) * nearZ / deltaX;
-	frust[1] = frust[2] = frust[3] = KFLOAT_ZERO;
+	frust[0] = 2.0f * nearZ / deltaX;
+	frust[1] = frust[2] = frust[3] = 0.0f;
 
-	frust[5] = KFLOAT_CONST(2.0f) * nearZ / deltaY;
-	frust[4] = frust[6] = frust[7] = KFLOAT_ZERO;
+	frust[5] = 2.0f * nearZ / deltaY;
+	frust[4] = frust[6] = frust[7] = 0.0f;
 
 	frust[8] = (right + left) / deltaX;
 	frust[9] = (top + bottom) / deltaY;
 	frust[10] = -(nearZ + farZ) / deltaZ;
-	frust[11] = -KFLOAT_ONE;
+	frust[11] = -1.0f;
 
-	frust[14] = KFLOAT_CONST(-2.0f) * nearZ * farZ / deltaZ;
-	frust[12] = frust[13] = frust[15] = KFLOAT_ZERO;
+	frust[14] = -2.0f * nearZ * farZ / deltaZ;
+	frust[12] = frust[13] = frust[15] = 0.0f;
 
 	Multiply(mode, &(frust.e[0][0]));
 }
 
-void	ModuleSpecificRenderer::Ortho(int mode, kfloat left, kfloat right, kfloat bottom, kfloat top, kfloat nearZ, kfloat farZ)
+void	ModuleSpecificRenderer::Ortho(int mode, float left, float right, float bottom, float top, float nearZ, float farZ)
 {
-	kfloat deltaX = right - left;
-	kfloat deltaY = top - bottom;
-	kfloat deltaZ = farZ - nearZ;
+	float deltaX = right - left;
+	float deltaY = top - bottom;
+	float deltaZ = farZ - nearZ;
 
 	Matrix4x4 ortho;
 	ortho.SetIdentity();
 
-	if ((deltaX == KFLOAT_ZERO) || (deltaY == KFLOAT_ZERO) || (deltaZ == KFLOAT_ZERO))
+	if ((deltaX == 0.0f) || (deltaY == 0.0f) || (deltaZ == 0.0f))
 	{
 		//KIGS_ERROR("Invalid ortho", 1);
 		return;
@@ -413,24 +413,24 @@ void	ModuleSpecificRenderer::Ortho(int mode, kfloat left, kfloat right, kfloat b
 	Multiply(mode, &(ortho.e[0][0]));
 }
 
-void	ModuleSpecificRenderer::Perspective(int mode, kfloat fovy, kfloat aspect, kfloat nearZ, kfloat farZ)
+void	ModuleSpecificRenderer::Perspective(int mode, float fovy, float aspect, float nearZ, float farZ)
 {
-	kfloat frustumHeight = tanf(fovy * fPI / 360.0f) * nearZ;
-	kfloat frustumWidth = frustumHeight * aspect;
+	float frustumHeight = tanf(fovy * fPI / 360.0f) * nearZ;
+	float frustumWidth = frustumHeight * aspect;
 
 	ModuleSpecificRenderer::LoadIdentity(mode);
 	Frustum(mode, -frustumWidth, frustumWidth, -frustumHeight, frustumHeight, nearZ, farZ);
 }
 
-void ModuleSpecificRenderer::LookAt(int mode, kfloat eyex, kfloat eyey, kfloat eyez,
-	kfloat centerx, kfloat centery, kfloat centerz,
-	kfloat upx, kfloat upy, kfloat upz)
+void ModuleSpecificRenderer::LookAt(int mode, float eyex, float eyey, float eyez,
+	float centerx, float centery, float centerz,
+	float upx, float upy, float upz)
 {
 	ModuleSpecificRenderer::LoadIdentity(mode);
 
-	kfloat m[16];
-	kfloat x[3], y[3], z[3];
-	kfloat mag;
+	float m[16];
+	float x[3], y[3], z[3];
+	float mag;
 
 	/* Make rotation matrix */
 

@@ -81,14 +81,14 @@ public:
 
 protected:
 
-	void	protectedStart(kdouble time);
-	void	protectedPause(kdouble time);
-	void	protectedUpdate(kdouble time);
+	void	protectedStart(double time);
+	void	protectedPause(double time);
+	void	protectedUpdate(double time);
 
 	std::weak_ptr<CoreModifiable> mTarget;
 	KigsID				mID;
-	kdouble				mStartTime;
-	kdouble				mPauseTime;
+	double				mStartTime;
+	double				mPauseTime;
 	const Timer*		mRefTimer;
 	unsigned int		mCurrentActionIndex;
 };

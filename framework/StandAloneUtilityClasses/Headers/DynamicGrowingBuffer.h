@@ -177,8 +177,8 @@ public:
 	{
 		if (size() > 0)
 		{
-			typename kstl::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
-			typename kstl::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
+			typename std::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
+			typename std::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
 			for (; itbuf != itbufend; ++itbuf)
 			{
 				bufferType* writer = *itbuf->buffer();
@@ -192,8 +192,8 @@ public:
 	{
 		if (size() > 0)
 		{
-			typename kstl::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
-			typename kstl::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
+			typename std::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
+			typename std::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
 			for (; itbuf != itbufend; ++itbuf)
 			{
 				memset((*itbuf)->buffer(), val, (*itbuf)->size() * sizeof(bufferType));
@@ -212,8 +212,8 @@ public:
 			bufferType* write = result;
 			int	copySize = 0;
 
-			typename kstl::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
-			typename kstl::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
+			typename std::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
+			typename std::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
 			while (itbuf != itbufend)
 			{
 				bufferStruct* current = *itbuf;
@@ -263,8 +263,8 @@ protected:
 			growBuffer(index);
 		}
 
-		typename kstl::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
-		typename kstl::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
+		typename std::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
+		typename std::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
 
 		mCurrentCachedPosMin = 0;
 		mCachedStruct = (*itbuf);
@@ -285,8 +285,8 @@ protected:
 
 	void clearBuffers()
 	{
-		typename kstl::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
-		typename kstl::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
+		typename std::vector<bufferStruct*>::iterator	itbuf = mBufferList.begin();
+		typename std::vector<bufferStruct*>::iterator	itbufend = mBufferList.end();
 
 		while (itbuf != itbufend)
 		{
@@ -297,7 +297,7 @@ protected:
 
 	}
 
-	kstl::vector<bufferStruct*>	mBufferList;
+	std::vector<bufferStruct*>	mBufferList;
 	bufferStruct*				mCachedStruct;
 	unsigned int				mCurrentCachedPosMin;
 	unsigned int				mCurrentCachedPosMax;
@@ -408,7 +408,7 @@ public:
 		other.mStructSize = 0;
 		other.mCurrentSize = -1;
 		other.mCachedStruct = nullptr;
-		other.mBufferList = kstl::vector<abstractBufferStruct>();
+		other.mBufferList = std::vector<abstractBufferStruct>();
 
 		return *this;
 	}
@@ -553,7 +553,7 @@ protected:
 		mBufferList.clear();
 	}
 
-	kstl::vector<abstractBufferStruct>	mBufferList;
+	std::vector<abstractBufferStruct>	mBufferList;
 	abstractBufferStruct*				mCachedStruct;
 	unsigned int						mCurrentCachedPosMin;
 	unsigned int						mCurrentCachedPosMax;

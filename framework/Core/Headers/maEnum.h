@@ -18,7 +18,7 @@ template<unsigned int N>
 struct maEnumValue
 {
 	int current_value = 0;
-	std::array<kstl::string, N> value_list;
+	std::array<std::string, N> value_list;
 };
 
 
@@ -43,7 +43,7 @@ public:
 	
 	
 
-	maEnumHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, kstl::string val0, kstl::string val1, kstl::string val2 = "", kstl::string val3 = "", kstl::string val4 = "", kstl::string val5 = "", kstl::string val6 = "", kstl::string val7 = "", kstl::string val8 = "", kstl::string val9 = "")
+	maEnumHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, std::string val0, std::string val1, std::string val2 = "", std::string val3 = "", std::string val4 = "", std::string val5 = "", std::string val6 = "", std::string val7 = "", std::string val8 = "", std::string val9 = "")
 		: CoreModifiableAttributeData<maEnumValue<nbElements>>(owner, isInitAttribute, ID)
 	{
 		//@TODO variadic template constructor?
@@ -61,7 +61,7 @@ public:
 		mValue.current_value = 0;
 	}
 
-	kstl::vector<kstl::string> getEnumElements() const override { return {mValue.value_list.data(), mValue.value_list.data() + nbElements }; }
+	std::vector<std::string> getEnumElements() const override { return {mValue.value_list.data(), mValue.value_list.data() + nbElements }; }
 
 	virtual bool CopyAttribute(const CoreModifiableAttribute& attribute) override
 	{
@@ -79,13 +79,13 @@ public:
 	}
 
 
-	kstl::string& operator[](unsigned int index) { KIGS_ASSERT(index < nbElements); return mValue.value_list[index]; }
-	const kstl::string& operator[](unsigned int index) const { KIGS_ASSERT(index < nbElements); return mValue.value_list[index]; }
+	std::string& operator[](unsigned int index) { KIGS_ASSERT(index < nbElements); return mValue.value_list[index]; }
+	const std::string& operator[](unsigned int index) const { KIGS_ASSERT(index < nbElements); return mValue.value_list[index]; }
 
 
 
 	operator int() { int val = 0; getValue(val); return val; }
-	operator const kstl::string&() const
+	operator const std::string&() const
 	{
 		int val; getValue(val);
 		return mValue.value_list[val];
@@ -106,7 +106,7 @@ public:
 #undef IMPLEMENT_SET_VALUE_ENUM
 #undef IMPLEMENT_GET_VALUE_ENUM
 
-	virtual bool setValue(const kstl::string& value) override
+	virtual bool setValue(const std::string& value) override
 	{
 		if (this->isReadOnly()) { return false; }
 		unsigned int i;
@@ -127,7 +127,7 @@ public:
 		return false;
 	}
 	
-	virtual bool getValue(kstl::string& value) const override
+	virtual bool getValue(std::string& value) const override
 	{
 		unsigned int tmpValue = mValue.current_value;
 		CALL_GETMODIFIER(notificationLevel, tmpValue);
@@ -140,7 +140,7 @@ public:
 
 	virtual bool setValue(const char* value) override
 	{
-		kstl::string localstr(value);
+		std::string localstr(value);
 		return setValue(localstr);
 	}
 

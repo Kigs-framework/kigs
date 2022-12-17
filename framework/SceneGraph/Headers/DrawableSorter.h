@@ -21,7 +21,7 @@ class DrawableSorterItem
 {
 public:
 	TravPath::Way			mWay;
-	kfloat					mFloatVal;
+	float					mFloatVal;
 
 	inline friend bool operator<(const DrawableSorterItem &Item1,const DrawableSorterItem &Item2);
 };
@@ -93,12 +93,12 @@ public:
 	void	ConstructPath(TravPath& path);
 
 
-	kstl::vector<int>& GetCurrentWay(){return mCurrentPath;}
+	std::vector<int>& GetCurrentWay(){return mCurrentPath;}
 
 protected:
 	//! list of drawable
-	kstl::vector<DrawableSorterItem>	mDrawableList;
+	std::vector<DrawableSorterItem>	mDrawableList;
 	//! current path
-	kstl::vector<int>				mCurrentPath;
+	std::vector<int>				mCurrentPath;
 };
 

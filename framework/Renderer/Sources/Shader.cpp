@@ -24,14 +24,14 @@ void UniformList::Pop()
 
 IMPLEMENT_CLASS_INFO(ShaderBase)
 
-ShaderBase::ShaderBase(const kstl::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)
+ShaderBase::ShaderBase(const std::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)
 , mCurrentShader(nullptr)
-, mVertexShader(*this, false, LABEL_AND_ID(VertexShader), "")
-, mFragmentShader(*this, false, LABEL_AND_ID(FragmentShader), "")
-, mGeometryShader(*this, false, LABEL_AND_ID(GeometryShader), "")
-, mAttachedCamera(*this, false, LABEL_AND_ID(AttachedCamera), "")
-, museGenericLight(*this, false, LABEL_AND_ID(useGenericLight), false)
-, misGeneric(*this, false, LABEL_AND_ID(isGeneric), false)
+, mVertexShader(*this, false, "VertexShader", "")
+, mFragmentShader(*this, false, "FragmentShader", "")
+, mGeometryShader(*this, false, "GeometryShader", "")
+, mAttachedCamera(*this, false, "AttachedCamera", "")
+, museGenericLight(*this, false, "useGenericLight", false)
+, misGeneric(*this, false, "isGeneric", false)
 , mCurrentShaderKey(-1)
 {
 	mRenderPassMask = 0xFFFFFFFF;
@@ -48,7 +48,7 @@ void ShaderBase::NotifyUpdate(const unsigned int labelid)
 	{
 		Dealloc();
 		// rebuild only if both shaders are set
-		if ((((kstl::string)mVertexShader) != "") && (((kstl::string)mFragmentShader) != ""))
+		if ((((std::string)mVertexShader) != "") && (((std::string)mFragmentShader) != ""))
 		{
 			BuildShaderStruct* toAdd=Rebuild();
 			insertBuildShader(mCurrentShaderKey, toAdd);
@@ -61,7 +61,7 @@ void ShaderBase::NotifyUpdate(const unsigned int labelid)
 
 void	ShaderBase::insertBuildShader(unsigned int key, BuildShaderStruct* toAdd)
 {
-	kstl::map<unsigned int, BuildShaderStruct*>::iterator found= mShaderSourceMap.find(key);
+	std::map<unsigned int, BuildShaderStruct*>::iterator found= mShaderSourceMap.find(key);
 	if (found != mShaderSourceMap.end())
 	{
 		delete (*found).second;
@@ -73,7 +73,7 @@ void	ShaderBase::insertBuildShader(unsigned int key, BuildShaderStruct* toAdd)
 
 void	ShaderBase::setCurrentBuildShader(unsigned int key)
 {
-	kstl::map<unsigned int, BuildShaderStruct*>::iterator found = mShaderSourceMap.find(key);
+	std::map<unsigned int, BuildShaderStruct*>::iterator found = mShaderSourceMap.find(key);
 	if (found != mShaderSourceMap.end())
 	{
 		mCurrentShader= (*found).second;

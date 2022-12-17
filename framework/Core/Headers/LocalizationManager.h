@@ -38,29 +38,29 @@ public:
 
 	DECLARE_CLASS_INFO(LocalizationManager,CoreModifiable,LocalizationManager);
 	
-	LocalizationManager(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	LocalizationManager(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	virtual void	setLocalizationFilePath(const char* path,bool a_erasePreviousLoc=false);
 
-	virtual const PLATFORM_WCHAR* getLocalizedString(const kstl::string& key);
-	virtual const std::string& getLocalizedStringUTF8(const kstl::string& key);
+	virtual const PLATFORM_WCHAR* getLocalizedString(const std::string& key);
+	virtual const std::string& getLocalizedStringUTF8(const std::string& key);
 
 	void			addLocalizationFromFileAtPath(const char* path);
 
 	template<typename charType>
 	void			addLocalizationFromBuffer(char* _buffer, unsigned int bufferSize);
-	static kstl::string		getCurrentUserLanguage();
-	inline kstl::string		getLocalizationFilePath(){ return mLocalizationFilePath; }
+	static std::string		getCurrentUserLanguage();
+	inline std::string		getLocalizationFilePath(){ return mLocalizationFilePath; }
 
-	void			InitWithConfigFile(const kstl::string& filename);
+	void			InitWithConfigFile(const std::string& filename);
 
-	void SetLocalizationMap(kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16> new_map)
+	void SetLocalizationMap(std::map<const std::string, DoubleLocalizedUTF8UTF16> new_map)
 	{
 		EraseMap();
 		mLocalizedString = std::move(new_map);
 	}
 
-	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 > getDebugFullMap()
+	std::map<const std::string, DoubleLocalizedUTF8UTF16 > getDebugFullMap()
 	{
 		return mLocalizedString;
 	}
@@ -72,7 +72,7 @@ protected:
 
 	bool				ParseStringsFile(const char*);
 	template<typename charType>
-	charType*			GetNextLocalizedString(char* pBuffer,unsigned long& currentpos,kstl::string& key,unsigned long filelen);
+	charType*			GetNextLocalizedString(char* pBuffer,unsigned long& currentpos,std::string& key,unsigned long filelen);
 	template<typename charType>
 	bool				ExtractQuoted(charType*& startchar, std::vector<charType>& buffer, unsigned long& currentpos, unsigned long filelen);
 	template<typename charType>
@@ -83,10 +83,10 @@ protected:
 	void				GotoCommentEnd(charType*& startchar,unsigned long& currentpos,unsigned long filelen);
 	template<typename charType>
 	void				ParseBuffer(char* _pBuffer, unsigned long size);
-	kstl::string										mLocalizationFilePath;
+	std::string										mLocalizationFilePath;
 
 
-	kstl::map<const kstl::string, DoubleLocalizedUTF8UTF16 >		mLocalizedString;
+	std::map<const std::string, DoubleLocalizedUTF8UTF16 >		mLocalizedString;
 
 	maFloat mLanguageScale = BASE_ATTRIBUTE(LanguageScale, 1.0f);
 };

@@ -4,6 +4,9 @@
 #include "CoreTypes.h"
 #include <string>
 #include <locale>
+#include <vector>
+
+
 
 // ****************************************
 // * usString class
@@ -14,7 +17,6 @@
 // ****************************************
 // Unsigned short String Management
 
-#include "kstlvector.h"
 
 // define sprintf on wchar
 extern "C" int		sprintfw(unsigned short* _Dest, const unsigned short* _format, ...);
@@ -33,7 +35,7 @@ class	usString
 public:
 	usString();
 
-	// set this one as explicit to avoid ambiguity for method with kstl::string or usString parameter called with const char* parameter
+	// set this one as explicit to avoid ambiguity for method with std::string or usString parameter called with const char* parameter
 	explicit usString(const char* str) :
 		mString(0)
 	{
@@ -52,7 +54,7 @@ public:
 		copy(str);
 	}
 	
-	usString(const kstl::string& other) : mString(0) {
+	usString(const std::string& other) : mString(0) {
 		copy(other.c_str());
 	}
 	
@@ -72,7 +74,7 @@ public:
 
 	operator unsigned int() const;
 
-	explicit operator kstl::string() const;
+	explicit operator std::string() const;
 
 	const unsigned short*	us_str() const
 	{
@@ -161,9 +163,9 @@ public:
 		return false;
 	}
 
-	kstl::string		ToString() const
+	std::string		ToString() const
 	{
-		kstl::string ret = "";
+		std::string ret = "";
 		ret.reserve(strlen());
 
 		const unsigned short* read_char = mString;
@@ -179,18 +181,18 @@ public:
 
 	// encode current unsigned short string to a char string :
 	// each unsigned short is print as a integer and each integer is separated by '.'
-	kstl::string encode();
+	std::string encode();
 
 	// decode a serie of integer separated by '.' to a unsigned short string
-	void decode(const kstl::string& todecode);
+	void decode(const std::string& todecode);
 
 
 	// len = -1 remove everything from start to end of the string
 	void removeRange(size_t start, int len);
 
-	kstl::vector<usString>	SplitByCharacter(unsigned short _value) const
+	std::vector<usString>	SplitByCharacter(unsigned short _value) const
 	{
-		kstl::vector<usString> returnedString;
+		std::vector<usString> returnedString;
 
 		unsigned short* read = mString;
 

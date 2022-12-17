@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-void Timer::GetDate(kstl::string& a_value, DateFormat a_format) const
+void Timer::GetDate(std::string& a_value, DateFormat a_format) const
 {
 	time_t     now = time(0);
 	struct tm  tstruct;
@@ -77,7 +77,7 @@ void Timer::GetDate(unsigned int& a_year, unsigned int& a_month, unsigned int& a
 }
 
 #else
-void Timer::GetDate(kstl::string& a_value, DateFormat a_format) const { a_value = "01/01/2010"; }
+void Timer::GetDate(std::string& a_value, DateFormat a_format) const { a_value = "01/01/2010"; }
 
 void Timer::GetDate(unsigned int& a_year, unsigned int& a_month, unsigned int& a_day, unsigned int& a_hour, unsigned int& a_min, unsigned int& a_sec) const {}
 

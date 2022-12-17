@@ -68,11 +68,11 @@ public:
 
 	/**
 	* \brief	constructor
-	* \fn 		Texture(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	* \fn 		Texture(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	Texture(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	Texture(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/**
 	* \brief	set the repeat value
@@ -173,7 +173,7 @@ public:
 	inline void GetSize(float& width, float& height) { width = (float)mWidth; height = (float)mHeight; }
 	inline v2f GetSize() { return { (float)mWidth, (float)mHeight }; }
 	inline void GetPow2Size(unsigned int& width, unsigned int& height) {width=mPow2Width; height=mPow2Height;}
-	inline void GetRatio(kfloat& rX, kfloat& rY) {rX=mRatioX; rY=mRatioY;}
+	inline void GetRatio(float& rX, float& rY) {rX=mRatioX; rY=mRatioY;}
 	inline int GetTransparency() {return mTransparencyType;}
 
 	bool isText()
@@ -207,12 +207,12 @@ protected:
 
 	inline void ComputeRatio()
 	{
-		mRatioX = (kfloat)((kfloat)mWidth / (kfloat)mPow2Width);
-		mRatioY = (kfloat)((kfloat)mHeight / (kfloat)mPow2Height);
+		mRatioX = (float)((float)mWidth / (float)mPow2Width);
+		mRatioY = (float)((float)mHeight / (float)mPow2Height);
 	}
 
-	kfloat mRatioX;
-	kfloat mRatioY;
+	float mRatioX;
+	float mRatioY;
 
 	
 	//! height of the texture

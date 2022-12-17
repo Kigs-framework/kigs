@@ -12,7 +12,7 @@
 
 IMPLEMENT_CLASS_INFO(OpenGLCamera)
 
-OpenGLCamera::OpenGLCamera(const kstl::string& name, CLASS_NAME_TREE_ARG) : Camera(name, PASS_CLASS_NAME_TREE_ARG)
+OpenGLCamera::OpenGLCamera(const std::string& name, CLASS_NAME_TREE_ARG) : Camera(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	//myFilters.clear();
 #ifdef WUP
@@ -40,10 +40,10 @@ bool	OpenGLCamera::ProtectedSetActive(TravState* state)
 			renderer->SetDepthValueMode(1.0);
 			renderer->SetDepthTestMode(true);
 			renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_OFF);
-			kfloat width, height;
+			float width, height;
 			getRenderingScreen()->GetSize(width, height);
 
-			kfloat aspect;
+			float aspect;
 
 			if (mAspectRatio != 0)
 				aspect = mAspectRatio;

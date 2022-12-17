@@ -12,10 +12,10 @@ class maCoreItemValue
 {
 public:
 	CoreItemSP item=nullptr;
-	kstl::string ref_file="";
+	std::string ref_file="";
 
-	void InitWithJSON(const kstl::string& currentval, CoreModifiable* owner);
-	bool ExportToString(kstl::string& value) const;
+	void InitWithJSON(const std::string& currentval, CoreModifiable* owner);
+	bool ExportToString(std::string& value) const;
 
 };
 
@@ -37,8 +37,8 @@ class maCoreItemHeritage : public CoreModifiableAttributeData<maCoreItemValue>
 
 public:
 	
-	//! Extra constructor with kstl::string
-	maCoreItemHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, kstl::string value) : CoreModifiableAttributeData(owner, isInitAttribute, ID ) 
+	//! Extra constructor with std::string
+	maCoreItemHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, std::string value) : CoreModifiableAttributeData(owner, isInitAttribute, ID ) 
 	{
 		if (value != "")
 		{
@@ -51,8 +51,8 @@ public:
 	virtual bool getValue(bool&  value) const override { if (mValue.item) { value = (bool)(*mValue.item.get()); return true; }  return false; }
 	virtual bool getValue(int&  value) const override { if (mValue.item) { value = (int)(*mValue.item.get()); return true; } return false; }
 	virtual bool getValue(unsigned int&  value) const override { if (mValue.item) { value = (unsigned int)(*mValue.item.get()); return true; }  return false; }
-	virtual bool getValue(kfloat&  value) const override { if (mValue.item) { value = (kfloat)(*mValue.item.get()); return true; }  return false; }
-	virtual bool getValue(kstl::string& value) const override
+	virtual bool getValue(float&  value) const override { if (mValue.item) { value = (float)(*mValue.item.get()); return true; }  return false; }
+	virtual bool getValue(std::string& value) const override
 	{
 		if (mValue.item)
 		{
@@ -79,7 +79,7 @@ public:
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
-	virtual bool setValue(const kstl::string& value) override
+	virtual bool setValue(const std::string& value) override
 	{
 		if (this->isReadOnly())
 			return false;
@@ -113,7 +113,7 @@ public:
 	CoreItem& ref() { return (*mValue.item.get()); }
 	//! return a const reference on internal value
 	const CoreItem& const_ref() { return (*mValue.item.get()); }
-	const kstl::string&	getRefFile() { return mValue.ref_file; }
+	const std::string&	getRefFile() { return mValue.ref_file; }
 
 
 };

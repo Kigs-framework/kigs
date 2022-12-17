@@ -7,12 +7,12 @@
 IMPLEMENT_CLASS_INFO(PassiveColoredMask)
 
 //! constructor, init all parameters
-PassiveColoredMask::PassiveColoredMask(const kstl::string& name,CLASS_NAME_TREE_ARG)
+PassiveColoredMask::PassiveColoredMask(const std::string& name,CLASS_NAME_TREE_ARG)
 :UIItem(name,PASS_CLASS_NAME_TREE_ARG)
-,mThreshold(*this,true,LABEL_AND_ID(Threshold),0)
-,mTextureName(*this,false,LABEL_AND_ID(TextureName),"")
-,mMaskName(*this,false,LABEL_AND_ID(MaskName),"")
-,mRay(*this,true,LABEL_AND_ID(Ray),0)
+,mThreshold(*this,true,"Threshold",0)
+,mTextureName(*this,false,"TextureName","")
+,mMaskName(*this,false,"MaskName","")
+,mRay(*this,true,"Ray",0)
 {
 	mIsDown = false;
 	mIsMouseOver = false;

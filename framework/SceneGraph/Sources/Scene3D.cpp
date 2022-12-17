@@ -63,8 +63,8 @@ void Scene3D::NotifyUpdate(const unsigned int  labelid)
 	if (labelid == mPriority.getLabelID())
 	{
 		// search for module scenegraph in parents
-		kstl::vector<CoreModifiable*>::const_iterator itparents = GetParents().begin();
-		kstl::vector<CoreModifiable*>::const_iterator itparentsend = GetParents().end();
+		std::vector<CoreModifiable*>::const_iterator itparents = GetParents().begin();
+		std::vector<CoreModifiable*>::const_iterator itparentsend = GetParents().end();
 		for (; itparents != itparentsend; ++itparents)
 		{
 			if ((*itparents)->isSubType(ModuleSceneGraph::mClassID))
@@ -94,7 +94,7 @@ bool  Scene3D::hasCamera(CoreModifiable* camera)
 
 bool  Scene3D::removeCamera(CoreModifiable* camera)
 {
-	kstl::set<Camera*>::iterator found = mCameras.find(static_cast<Camera*>(camera));
+	std::set<Camera*>::iterator found = mCameras.find(static_cast<Camera*>(camera));
 	if (found != mCameras.end())
 	{
 		mCameras.erase(found);
@@ -312,7 +312,7 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 	v3f cam_pos = cam->GetGlobalPosition();
 	v3f cam_view = cam->GetGlobalViewVector();
 
-	kstl::vector<Hit> hits;
+	std::vector<Hit> hits;
 	collision->SimpleCall("GetAllRayIntersection", param.origin, param.direction, hits, mask);
 	
 	struct Sorter
@@ -323,7 +323,7 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 		int sorting_layer = 0;
 	};
 
-	kstl::vector<Sorter> sorter(param.toSort.size(), Sorter{nullptr, DBL_MAX, nullptr, false });
+	std::vector<Sorter> sorter(param.toSort.size(), Sorter{nullptr, DBL_MAX, nullptr, false });
 	for (auto&& hit : hits)
 	{
 		auto n = hit.HitActor;

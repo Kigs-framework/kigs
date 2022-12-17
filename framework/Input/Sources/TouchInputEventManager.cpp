@@ -45,7 +45,7 @@ TouchEventState*	TouchInputEventManager::registerEvent(CoreModifiable* registere
 	}
 
 	StackedEventStateStruct::EventMapEntry& currentEntry= mStackedEventState.back().mEventMap[registeredObject];
-	kstl::vector<TouchEventState*>& eventlist = currentEntry.mTouchEventStateList;
+	std::vector<TouchEventState*>& eventlist = currentEntry.mTouchEventStateList;
 
 	// search if not already there
 	auto itlist = eventlist.begin();
@@ -488,7 +488,7 @@ bool TouchInputEventManager::unregisterEventOnCurrentState(StackedEventStateStru
 			return false;
 		}
 
-		kstl::vector<TouchEventState*>& eventlist = (*itfound).second.mTouchEventStateList;
+		std::vector<TouchEventState*>& eventlist = (*itfound).second.mTouchEventStateList;
 
 		bool found = false;
 		// search event type in event list
@@ -532,7 +532,7 @@ bool TouchInputEventManager::unregisterObjectOnCurrentState(StackedEventStateStr
 		return false;
 	}
 
-	kstl::vector<TouchEventState*>& eventlist = (*itfound).second.mTouchEventStateList;
+	std::vector<TouchEventState*>& eventlist = (*itfound).second.mTouchEventStateList;
 
 	// disconnect each event
 	auto itlist = eventlist.begin();
@@ -796,7 +796,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 
 
 	// first step : manage a list of item per Scene3D parent
-	kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiable*> > perScene3DMap;
+	kigs::unordered_map<CoreModifiable*, std::vector<CoreModifiable*> > perScene3DMap;
 
 	StackedEventStateStruct& state = mStackedEventState.back();
 
@@ -822,7 +822,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 
 	// second step : associate each rendering screen to a priority sorted list of Scene3D
 
-	kigs::unordered_map<CoreModifiable*, kstl::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >	perRenderingScreenSortedMap;
+	kigs::unordered_map<CoreModifiable*, std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >	perRenderingScreenSortedMap;
 
 	auto itScene = perScene3DMap.begin();
 	auto itSceneE = perScene3DMap.end();
@@ -845,7 +845,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 
 			if (foundts)
 			{
-				kstl::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare >& currentVector = perRenderingScreenSortedMap[renderingScreen];
+				std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare >& currentVector = perRenderingScreenSortedMap[renderingScreen];
 
 				Scene3DAndCamera	toPush;
 				toPush.scene3D = (*itScene).first;
@@ -858,7 +858,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		{
 
 			// UINode3DLayer is a "virtual" rendering screen of sorts
-			kstl::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare >& currentVector = perRenderingScreenSortedMap[(*itScene).first];
+			std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare >& currentVector = perRenderingScreenSortedMap[(*itScene).first];
 
 			Scene3DAndCamera	toPush;
 			toPush.scene3D = (*itScene).first;
@@ -868,7 +868,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		}
 		else // it's a scene 3D, so search each camera 
 		{
-			kstl::vector<CoreModifiable*> cameras;
+			std::vector<CoreModifiable*> cameras;
 			(*itScene).first->SimpleCall("GetCameraVector", cameras);
 
 			if (cameras.size())
@@ -890,7 +890,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 
 						if (foundts)
 						{
-							kstl::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare >& currentVector = perRenderingScreenSortedMap[renderingScreen];
+							std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare >& currentVector = perRenderingScreenSortedMap[renderingScreen];
 
 							Scene3DAndCamera toPush;
 							toPush.scene3D = (*itScene).first;
@@ -907,7 +907,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	}
 
 	// Build the ordered element list for each touch
-	kigs::unordered_map<TouchSourceID, kstl::vector<SortedElementNode>> flat_trees;
+	kigs::unordered_map<TouchSourceID, std::vector<SortedElementNode>> flat_trees;
 	for (auto& t : Touches)
 	{
 		RecursiveFlattenTreeForTouchID(flat_trees[t.first], mCurrentTouchSupportRoot, perRenderingScreenSortedMap, perScene3DMap, transformedInfosMap, t.first);
@@ -924,9 +924,9 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 }
 
 
-void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedElementNode>& flat_tree, touchSupportTreeNode* CurrentTouchSupport,
-	kigs::unordered_map<CoreModifiable*, kstl::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >& perRenderingScreenSortedMap,
-	kigs::unordered_map<CoreModifiable*, kstl::vector<CoreModifiable*> >& perScene3DMap,
+void TouchInputEventManager::RecursiveFlattenTreeForTouchID(std::vector<SortedElementNode>& flat_tree, touchSupportTreeNode* CurrentTouchSupport,
+	kigs::unordered_map<CoreModifiable*, std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >& perRenderingScreenSortedMap,
+	kigs::unordered_map<CoreModifiable*, std::vector<CoreModifiable*> >& perScene3DMap,
 	kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchSourceID touch_id)
 {
 
@@ -1029,7 +1029,7 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(kstl::vector<SortedE
 	}
 }
 
-void	TouchInputEventManager::LinearCallEventUpdate(kstl::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchSourceID touch_id)
+void	TouchInputEventManager::LinearCallEventUpdate(std::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchSourceID touch_id)
 {
 	StackedEventStateStruct& state = mStackedEventState.back();
 	u32 swallowMask = 0;
@@ -1860,7 +1860,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 						cscroll.currenttime = timer.GetTime();
 						if (DistSquare(cscroll.startpos, position) > manager->getTriggerSquaredDist())
 						{
-							//kfloat duration = timer.GetTime() - cscroll.starttime;
+							//float duration = timer.GetTime() - cscroll.starttime;
 							//if (duration > 0.25f)
 							{
 								cscroll.maindir.Set(cscroll.startpos, position);
@@ -1869,7 +1869,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 								// if mScrollForceMainDir is set, check if it's OK
 								if (NormSquare(mScrollForceMainDir) > 0.01f)
 								{
-									kfloat dot = Dot(mScrollForceMainDir, cscroll.maindir);
+									float dot = Dot(mScrollForceMainDir, cscroll.maindir);
 									if (fabsf(dot) < 0.6)
 									{
 										cscroll.isValid = false;
@@ -1910,12 +1910,12 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 
 						Vector3D speed(move / dt);
 
-						kfloat coefInterp = 0.5f + (( dt > 0.5f) ? 0.5f : dt);
+						float coefInterp = 0.5f + (( dt > 0.5f) ? 0.5f : dt);
 
 						cscroll.currentSpeed = cscroll.currentSpeed*(1.0f - coefInterp) + speed*coefInterp;
 
 						Vector3D	offsetV(cscroll.startpos, cscroll.currentpos, asVector());
-						kfloat offset = Dot(cscroll.maindir, offsetV);
+						float offset = Dot(cscroll.maindir, offsetV);
 
 						ev.state = StateChanged;
 						ev.main_direction = cscroll.maindir;
@@ -1946,7 +1946,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 			if ((cscroll.isValid) && (NormSquare(cscroll.maindir) > 0.01f))
 			{
 				Vector3D	offsetV(cscroll.startpos, cscroll.currentpos, asVector());
-				kfloat offset = Dot(cscroll.maindir, offsetV);
+				float offset = Dot(cscroll.maindir, offsetV);
 				// send direction, start position, current speed vector, offset
 
 				ev.state = StateEnded;
@@ -2023,7 +2023,7 @@ void TouchEventStatePinch::Update(TouchInputEventManager* manager, const Timer& 
 	}
 	else if(new_touch)
 	{
-		kstl::vector<std::pair<TouchSourceID, float>> possibles_pinches;
+		std::vector<std::pair<TouchSourceID, float>> possibles_pinches;
 		for (auto& t : mCurrentTouches)
 		{
 			if (t.second.in_use_by_pinch || t.first == touch.ID) continue;

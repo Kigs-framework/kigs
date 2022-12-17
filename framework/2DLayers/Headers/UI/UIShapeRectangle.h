@@ -26,7 +26,7 @@ public:
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	UIShapeRectangle(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UIShapeRectangle(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	void SetTexUV(UIItem* item, UIVerticesInfo* aQI) override;
 	void SetVertexArray(UIItem* item, UIVerticesInfo* aQI) override;

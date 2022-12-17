@@ -6,16 +6,16 @@
 
 IMPLEMENT_CLASS_INFO(TimeProfiler)
 
-TimeProfiler::TimeProfiler(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
+TimeProfiler::TimeProfiler(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
 {  
 	if(!KigsCore::GetProfileManager()->mIsInit)
 	{
 		KigsCore::GetProfileManager()->InitAll();
 	}
-	mStartTime=KDOUBLE_CONST(-1.0);
-	mLastDT=mMaxDT=KDOUBLE_CONST(-1.0);
-	mMinDT=KDOUBLE_CONST(10000.0);
-	mComputedTime=KDOUBLE_CONST(0.0);
+	mStartTime=-1.0;
+	mLastDT=mMaxDT=-1.0;
+	mMinDT=10000.0;
+	mComputedTime=0.0;
 }     
 
 
@@ -31,7 +31,7 @@ void TimeProfiler::Start()
 /*
 	if (!this)
 		return;
-	if( mStartTime != KDOUBLE_CONST(-1.0))
+	if( mStartTime != -1.0)
 	{
 		printf("Timer %s already started\n",getName().c_str());
 		return;
@@ -45,7 +45,7 @@ void TimeProfiler::Stop()
 /*
 	if (!this)
 		return;
-	if(mStartTime == KDOUBLE_CONST(-1.0))
+	if(mStartTime == -1.0)
 	{
 		printf("Timer %s already stopped\n",getName().c_str());
 		return;
@@ -62,12 +62,12 @@ void TimeProfiler::Stop()
 		myMaxDT=myComputedTime;
 	}
 	myComputedTime+=myLastDT;
-	mStartTime=KDOUBLE_CONST(-1.0);
+	mStartTime=-1.0;
 	myWasUpdate=true;
 	*/
 }
 
-int TimeProfiler::NewProfiler(const kstl::string& name)
+int TimeProfiler::NewProfiler(const std::string& name)
 {
 	// search if profile already in free profiler slot
 	int i;
@@ -131,12 +131,12 @@ void TimeProfiler::ShowProfilers()
 	printf("_______________________________________________\n");
 	printf("Profiler's stats : \n\n");
 
-	kdouble max=KDOUBLE_CONST(0.0);
-	kstl::string maxname;
-	kstl::string minname;
+	double max=0.0;
+	std::string maxname;
+	std::string minname;
 
-	kdouble min=KDOUBLE_CONST(10000.0);
-	kdouble sum=KDOUBLE_CONST(0.0);
+	double min=10000.0;
+	double sum=0.0;
 
 	SP<TimeProfiler> GLOBAL(nullptr);
 
@@ -150,7 +150,7 @@ void TimeProfiler::ShowProfilers()
 			{
 				if(	current->getName() != "GLOBAL")
 				{
-					kdouble currenttime=current->GetTime();
+					double currenttime=current->GetTime();
 
 					sum+=currenttime;
 					if(currenttime>max)
@@ -181,10 +181,10 @@ void TimeProfiler::ShowProfilers()
 			{
 				if(	current->getName() != "GLOBAL")
 				{
-					printf("%s : %lf seconds , %lf percent \n",current->getName().c_str(),CastToDouble(current->GetTime()),CastToDouble(current->GetTime()*KDOUBLE_CONST(100.0)/(kdouble)sum));
+					printf("%s : %lf seconds , %lf percent \n",current->getName().c_str(),CastToDouble(current->GetTime()),CastToDouble(current->GetTime()*100.0/(double)sum));
 				}
 				current->mWasUpdate=false;
-				current->mComputedTime=KDOUBLE_CONST(0.0);
+				current->mComputedTime=0.0;
 			}
 		}
 	}
@@ -202,20 +202,20 @@ void TimeProfiler::ShowProfilers()
 
 void TimeProfiler::DumpProfilers()
 {
-/*	kstl::set<CoreModifiable*>	instances;
+/*	std::set<CoreModifiable*>	instances;
 	CoreModifiable::GetInstances("TimeProfiler",instances);
 
 	fprintf(myDump,"_______________________________________________\n");
 	fprintf(myDump,"Profiler's stats N° %d: at time : %lf\n\n",myProfileCount,myGlobalTimer->GetTime());
 
-	kdouble max=KFLOAT_CONST(0.0);
-	kstl::string maxname;
-	kstl::string minname;
+	double max=0.0;
+	std::string maxname;
+	std::string minname;
 
-	kdouble min=KFLOAT_CONST(10000.0);
-	kdouble sum=KFLOAT_CONST(0.0);
+	double min=10000.0;
+	double sum=0.0;
 
-	kstl::set<CoreModifiable*>::iterator	it;
+	std::set<CoreModifiable*>::iterator	it;
 
 	TimeProfiler* GLOBAL=0;
 
@@ -224,7 +224,7 @@ void TimeProfiler::DumpProfilers()
 		TimeProfiler*	current=(TimeProfiler*)(*it);
 		if(	current->getName() != "GLOBAL")
 		{
-			kdouble currenttime=current->GetTime();
+			double currenttime=current->GetTime();
 
 			sum+=currenttime;
 			if(currenttime>max)
@@ -249,8 +249,8 @@ void TimeProfiler::DumpProfilers()
 		TimeProfiler*	current=(TimeProfiler*)(*it);
 		if(	current ->getName() != "GLOBAL")
 		{
-			kdouble currenttime=current->GetTime();
-			fprintf(myDump,"%s : %lf seconds , %lf percent \n",current->getName().c_str(),currenttime,KFLOAT_CONST(100.0)*currenttime/sum);
+			double currenttime=current->GetTime();
+			fprintf(myDump,"%s : %lf seconds , %lf percent \n",current->getName().c_str(),currenttime,100.0*currenttime/sum);
 		}
 	}
 	fprintf(myDump,"_______________________________________________\n");

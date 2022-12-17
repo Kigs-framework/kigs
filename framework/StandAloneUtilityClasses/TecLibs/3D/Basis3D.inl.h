@@ -80,9 +80,9 @@ Basis3D::operator const Matrix3x3& ( void )
 // +---------
 void Basis3D::SetIdentity( void )
 {
-    I = Vector3D(KFLOAT_ONE,KFLOAT_ZERO,KFLOAT_ZERO);
-    J = Vector3D(KFLOAT_ZERO,KFLOAT_ONE,KFLOAT_ZERO);
-    K = Vector3D(KFLOAT_ZERO,KFLOAT_ZERO,KFLOAT_ONE);
+    I = Vector3D(1.0f,0.0f,0.0f);
+    J = Vector3D(0.0f,1.0f,0.0f);
+    K = Vector3D(0.0f,0.0f,1.0f);
 }
 void Basis3D::Normalize( void )
 {

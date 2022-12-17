@@ -7,7 +7,7 @@
 #include "CoreMap.h"
 
 template <typename stringType, typename parserType>
-JSonFileParserBase<stringType,parserType>::JSonFileParserBase(const kstl::string& filename, CoreModifiable*	delegateObject) :
+JSonFileParserBase<stringType,parserType>::JSonFileParserBase(const std::string& filename, CoreModifiable*	delegateObject) :
 	mDelegateObject(delegateObject->SharedFromThis())
 {
 	InitParser(filename);
@@ -83,7 +83,7 @@ void JSonFileParserBase<stringType,parserType>::InitParserFromString(const SP<Co
 }
 
 template <typename stringType, typename parserType>
-void JSonFileParserBase<stringType,parserType>::InitParser(const kstl::string& filename)
+void JSonFileParserBase<stringType,parserType>::InitParser(const std::string& filename)
 {
 	auto pathManager = KigsCore::Singleton<FilePathManager>();
 
@@ -105,7 +105,7 @@ void JSonFileParserBase<stringType,parserType>::InitParser(const kstl::string& f
 
 // specialized
 template <>
-CoreModifiableAttribute* JSonFileParserBase<kstl::string, AsciiParserUtils>::getNewStringAttribute(const kstl::string& attrName,const kstl::string& strObjName)
+CoreModifiableAttribute* JSonFileParserBase<std::string, AsciiParserUtils>::getNewStringAttribute(const std::string& attrName,const std::string& strObjName)
 {
 	return new maString(*mDelegateObject.get(), false, attrName, strObjName);
 }
@@ -113,15 +113,15 @@ CoreModifiableAttribute* JSonFileParserBase<kstl::string, AsciiParserUtils>::get
 template <>
 CoreModifiableAttribute* JSonFileParserBase<usString, US16ParserUtils>::getNewStringAttribute(const usString& attrName,const usString& strObjName)
 {
-	kstl::string name = attrName.ToString();
+	std::string name = attrName.ToString();
 	return new maUSString(*mDelegateObject.get(), false, name, strObjName);
 }
 
 template <>
-void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(const kstl::string& strObjName,const kstl::string& objparamValue)
+void 	JSonFileParserBase<std::string, AsciiParserUtils>::AddValueToParamList(const std::string& strObjName,const std::string& objparamValue)
 {
 	CoreModifiableAttribute* Value;
-	kstl::string	strvalue = objparamValue;
+	std::string	strvalue = objparamValue;
 
 	mParamList.push_back(new maString(*mDelegateObject.get(), false, strObjName, strObjName));
 
@@ -130,7 +130,7 @@ void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(co
 	{
 		// string
 		// remove quotes
-		kstl::string paramValue = objparamValue.substr(1, objparamValue.length() - 2);
+		std::string paramValue = objparamValue.substr(1, objparamValue.length() - 2);
 		Value = new maString(*mDelegateObject.get(), false, strObjName, paramValue);
 	}
 	else if ((strvalue == "true") || (strvalue == "false"))
@@ -144,7 +144,7 @@ void 	JSonFileParserBase<kstl::string, AsciiParserUtils>::AddValueToParamList(co
 		if (strvalue.find('.') != std::string::npos)
 		{
 			// float
-			Value = new maFloat(*mDelegateObject.get(), false, strObjName, KFLOAT_ZERO);
+			Value = new maFloat(*mDelegateObject.get(), false, strObjName, 0.0f);
 		}
 		else
 		{
@@ -189,7 +189,7 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const u
 	CoreModifiableAttribute* Value;
 	usString	strvalue = objparamValue;
 
-	kstl::string name = strObjName.ToString();
+	std::string name = strObjName.ToString();
 
 	mParamList.push_back(new maUSString(*mDelegateObject.get(), false, name, strObjName));
 	// check if string, numeric or boolean
@@ -211,7 +211,7 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const u
 		if (strvalue.find('.') != std::string::npos)
 		{
 			// float
-			Value = new maFloat(*mDelegateObject.get(), false, name, KFLOAT_ZERO);
+			Value = new maFloat(*mDelegateObject.get(), false, name, 0.0f);
 		}
 		else
 		{
@@ -252,7 +252,7 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const u
 
 
 template <typename stringType, typename parserType>
-bool JSonFileParserBase<stringType, parserType>::Export(CoreMap<stringType>* a_value, const kstl::string& a_fileName)
+bool JSonFileParserBase<stringType, parserType>::Export(CoreMap<stringType>* a_value, const std::string& a_fileName)
 {
 	stringType L_Buffer("");
 	RecursiveParseElement(*a_value,L_Buffer);
@@ -358,7 +358,7 @@ void JSonFileParserBase<stringType, parserType>::AddValueToBuffer(CoreItem& a_va
 }
 
 template <typename stringType, typename parserType>
-CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(const kstl::string& filename)
+CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(const std::string& filename)
 {
 	//Create instance of DictionaryFromJson
 	mDictionaryFromJson = CreateDictionnaryFromJSONInstance();
@@ -403,33 +403,33 @@ CoreItemSP	JSonFileParserBase<stringType, parserType>::Get_JsonDictionary(SmartP
 // specialized
 
 template <>
-CMSP			JSonFileParserBase<kstl::string, AsciiParserUtils>::CreateDictionnaryFromJSONInstance()
+CMSP			JSonFileParserBase<std::string, AsciiParserUtils>::CreateDictionnaryFromJSONInstance()
 {
 	return  KigsCore::GetInstanceOf("L_DictionaryFromJson", "DictionaryFromJson");
 }
 
 template <>
-CoreItemSP	JSonFileParserBase< kstl::string, AsciiParserUtils>::getDictionnary()
+CoreItemSP	JSonFileParserBase< std::string, AsciiParserUtils>::getDictionnary()
 {
 	return ((DictionaryFromJson*)mDictionaryFromJson.get())->Get_Dictionary();
 }
 
 
 template <>
-int	JSonFileParserBase<kstl::string, AsciiParserUtils>::GetStringByteSize(const kstl::string& tocheck)
+int	JSonFileParserBase<std::string, AsciiParserUtils>::GetStringByteSize(const std::string& tocheck)
 {
 	// add trailing 0
 	return (int)(tocheck.size()+1);
 }
 
 template <>
-int	JSonFileParserBase<kstl::string, AsciiParserUtils>::GetStringCharSize()
+int	JSonFileParserBase<std::string, AsciiParserUtils>::GetStringCharSize()
 {
 	return 1;
 }
 
 template <>
-const unsigned char*	JSonFileParserBase<kstl::string, AsciiParserUtils>::GetStringByteBuffer(const kstl::string& tocheck)
+const unsigned char*	JSonFileParserBase<std::string, AsciiParserUtils>::GetStringByteBuffer(const std::string& tocheck)
 {
 	return (const unsigned char*)tocheck.c_str();
 }
@@ -523,7 +523,7 @@ bool JSonFileParserBase<stringType, parserType>::ParseBlock(parserType& Block)
 				parserType newarray(Block);
 				if (Block.GetBlockExcludeString(newarray, '[', ']'))
 				{
-					kstl::vector<CoreModifiableAttribute*>	params;
+					std::vector<CoreModifiableAttribute*>	params;
 					CoreModifiableAttribute* arrayname= getNewStringAttribute(stringType("ArrayName"),strObjName);
 					params.push_back(arrayname);
 
@@ -555,7 +555,7 @@ bool JSonFileParserBase<stringType, parserType>::ParseBlock(parserType& Block)
 				parserType newblock(Block);
 				if (Block.GetBlockExcludeString(newblock, '{', '}'))
 				{
-					kstl::vector<CoreModifiableAttribute*>	params;
+					std::vector<CoreModifiableAttribute*>	params;
 					CoreModifiableAttribute* neobjname = getNewStringAttribute(stringType("ObjectName"), strObjName);
 					params.push_back(neobjname);
 
@@ -623,7 +623,7 @@ bool JSonFileParserBase<stringType,parserType>::ParseArray(parserType& Array)
 			parserType newarray(Array);
 			if (Array.GetBlockExcludeString(newarray, '[', ']'))
 			{
-				kstl::vector<CoreModifiableAttribute*>	params;
+				std::vector<CoreModifiableAttribute*>	params;
 				mDelegateObject->CallMethod(mJSonArrayStartID,params);
 
 				if(!ParseArray(newarray))
@@ -649,7 +649,7 @@ bool JSonFileParserBase<stringType,parserType>::ParseArray(parserType& Array)
 			parserType newblock(Array);
 			if (Array.GetBlockExcludeString(newblock, '{', '}'))
 			{
-				kstl::vector<CoreModifiableAttribute*>	params;
+				std::vector<CoreModifiableAttribute*>	params;
 				mDelegateObject->CallMethod(mJSonObjectStartID,params);
 
 				if(!ParseBlock(newblock))
@@ -698,7 +698,7 @@ void	JSonFileParserBase<stringType,parserType>::NotifyDelegateWithParamList()
 {
 	mDelegateObject->CallMethod(mJSonParamListID,mParamList);
 
-	kstl::vector<CoreModifiableAttribute*>::iterator	todelete;
+	std::vector<CoreModifiableAttribute*>::iterator	todelete;
 	for(todelete=mParamList.begin();todelete!=mParamList.end();++todelete)
 	{
 		delete (*todelete);
@@ -713,7 +713,7 @@ void	JSonFileParserBase<stringType,parserType>::NotifyDelegateWithParamList()
 
 IMPLEMENT_CLASS_INFO(DictionaryFromJson);
 
-DictionaryFromJson::DictionaryFromJson(const kstl::string& name,CLASS_NAME_TREE_ARG):
+DictionaryFromJson::DictionaryFromJson(const std::string& name,CLASS_NAME_TREE_ARG):
 CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 ,mCurrentObject(nullptr)
 {
@@ -739,7 +739,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonObjectStart)
 	{
 		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<kstl::string>*)mCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
+			((CoreMap<std::string>*)mCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
 		}
 		else if (mCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
@@ -782,7 +782,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonArrayStart)
 	{
 		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<kstl::string>*)mCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
+			((CoreMap<std::string>*)mCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
 		}
 		else if (mCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
@@ -832,7 +832,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 		int idx = 0;
 		for(unsigned int i = 0; i < params.size(); i+=2)
 		{
-			kstl::string L_Key = (*(maString*)params[i]).const_ref();
+			std::string L_Key = (*(maString*)params[i]).const_ref();
 			idx = i+1;
 
 			auto paramType = params[idx]->getType();
@@ -844,7 +844,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				if(L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
+					((CoreMap<std::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 
 			}
 			else if(paramType == ATTRIBUTE_TYPE::FLOAT)
@@ -854,7 +854,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				if(L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
+					((CoreMap<std::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 				
 			}
 			else if(paramType == ATTRIBUTE_TYPE::INT)
@@ -864,7 +864,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				if(L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
+					((CoreMap<std::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 			
 			}
 			else if (paramType == ATTRIBUTE_TYPE::LONG)
@@ -874,7 +874,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key, L_Value);
+					((CoreMap<std::string>*)mCurrentObject.get())->set(L_Key, L_Value);
 
 			}
 			else if(paramType == ATTRIBUTE_TYPE::BOOL)
@@ -884,7 +884,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				if(L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
+					((CoreMap<std::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 
 			}
 			else if(paramType == ATTRIBUTE_TYPE::UINT)
@@ -894,7 +894,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				if(L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
+					((CoreMap<std::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 				
 			}
 			else if (paramType == ATTRIBUTE_TYPE::ULONG)
@@ -904,7 +904,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key, L_Value);
+					((CoreMap<std::string>*)mCurrentObject.get())->set(L_Key, L_Value);
 
 			}
 			else if(paramType == ATTRIBUTE_TYPE::DOUBLE)
@@ -914,7 +914,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 				if(L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);
 				else
-					((CoreMap<kstl::string>*)mCurrentObject.get())->set(L_Key,L_Value);
+					((CoreMap<std::string>*)mCurrentObject.get())->set(L_Key,L_Value);
 				
 			}
 		}
@@ -925,7 +925,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 
 IMPLEMENT_CLASS_INFO(DictionaryFromJsonUTF16);
 
-DictionaryFromJsonUTF16::DictionaryFromJsonUTF16(const kstl::string& name, CLASS_NAME_TREE_ARG) :
+DictionaryFromJsonUTF16::DictionaryFromJsonUTF16(const std::string& name, CLASS_NAME_TREE_ARG) :
 CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 , mCurrentObject(nullptr)
 {
@@ -1136,7 +1136,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 }
 
 // force method creation
-template class JSonFileParserBase< kstl::string, AsciiParserUtils >;
+template class JSonFileParserBase< std::string, AsciiParserUtils >;
 template class JSonFileParserBase< usString , US16ParserUtils>;
 
 std::string CoreItemToJSon(CoreItemSP map)

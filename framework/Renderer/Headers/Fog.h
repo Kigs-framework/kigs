@@ -30,11 +30,11 @@ public:
 
 	/**
 	 * \brief	constructor
-	 * \fn 		Fog(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		Fog(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	Fog(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	Fog(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 protected:
 	/**

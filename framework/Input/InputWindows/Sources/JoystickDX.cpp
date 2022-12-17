@@ -41,7 +41,7 @@ BOOL CALLBACK EnumJoystickObjectsCallback( const DIDEVICEOBJECTINSTANCEA* instan
 }
 
 
-JoystickDX::JoystickDX(const kstl::string& name,CLASS_NAME_TREE_ARG) : JoystickDevice(name,PASS_CLASS_NAME_TREE_ARG)
+JoystickDX::JoystickDX(const std::string& name,CLASS_NAME_TREE_ARG) : JoystickDevice(name,PASS_CLASS_NAME_TREE_ARG)
 , mDirectInputJoystick(0)
 , mAxisIndex(-1)
 , mRotationIndex(-1)
@@ -108,12 +108,12 @@ void	JoystickDX::UpdateDevice()
 	// axis
 	if(mAxisIndex!=-1)
 	{
-		Point3D p((kfloat)(dijs2.lX-32768)/32768.0f,(kfloat)(dijs2.lY-32768)/32768.0f,(kfloat)(dijs2.lZ-32768)/32768.0f);
+		Point3D p((float)(dijs2.lX-32768)/32768.0f,(float)(dijs2.lY-32768)/32768.0f,(float)(dijs2.lZ-32768)/32768.0f);
 		mDeviceItems[mAxisIndex]->getState()->SetValue(p);
 	}
 	if(mRotationIndex!=-1)
 	{
-		Point3D p((kfloat)(dijs2.lRx-32768)/32768.0f,(kfloat)(dijs2.lRy-32768)/32768.0f,(kfloat)(dijs2.lRz-32768)/32768.0f);
+		Point3D p((float)(dijs2.lRx-32768)/32768.0f,(float)(dijs2.lRy-32768)/32768.0f,(float)(dijs2.lRz-32768)/32768.0f);
 		mDeviceItems[mRotationIndex]->getState()->SetValue(p);
 	}
 	currentDevice+=mAxisCount;

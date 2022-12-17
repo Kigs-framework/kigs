@@ -28,7 +28,7 @@ void Drawable::UpdateDrawingNeeds()
 		mDrawingNeeds=GetSelfDrawingNeeds();
 		
 		// update my flag using son flag
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 
 		for (it=getItems().begin();it!=getItems().end();++it)
 		{
@@ -40,7 +40,7 @@ void Drawable::UpdateDrawingNeeds()
 			}
 		}
 		// then ask fathers to update
-		kstl::vector<CoreModifiable*>::const_iterator itfather;
+		std::vector<CoreModifiable*>::const_iterator itfather;
 		
 		for (itfather=GetParents().begin();itfather!=GetParents().end();++itfather)
 		{
@@ -68,7 +68,7 @@ void Drawable::DoPreDraw(TravState* state)
 		}
 #endif
 		// then PreDraw for sons
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 
 		for (it=getItems().begin();it!=getItems().end();++it)
 		{
@@ -95,7 +95,7 @@ void Drawable::DoDraw(TravState* state)
 		}
 #endif
 		// then Draw for sons
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 
 		for (it=getItems().begin();it!=getItems().end();++it)
 		{
@@ -122,7 +122,7 @@ void Drawable::DoPostDraw(TravState* state)
 		}
 #endif
 		// then PostDraw for sons
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 
 		for (it=getItems().begin();it!=getItems().end();++it)
 		{
@@ -230,9 +230,9 @@ bool Drawable::removeItem(const CMSP& item DECLARE_LINK_NAME)
 
 void Drawable::FatherNode3DNeedBoundingBoxUpdate()
 {
-	kstl::vector<CoreModifiable*>::const_iterator it;
+	std::vector<CoreModifiable*>::const_iterator it;
 
-	const kstl::vector<CoreModifiable*>& parents=GetParents();
+	const std::vector<CoreModifiable*>& parents=GetParents();
 
 	for(it=parents.begin();it!=parents.end();++it)
 	{

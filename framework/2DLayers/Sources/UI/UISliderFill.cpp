@@ -8,13 +8,13 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UISliderFill, UISliderFill, 2DLayers);
 IMPLEMENT_CLASS_INFO(UISliderFill)
 
-UISliderFill::UISliderFill(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
+UISliderFill::UISliderFill(const std::string& name,CLASS_NAME_TREE_ARG) : 
 UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-mVoidTexture(*this,false,LABEL_AND_ID(VoidTexture),""),
-mStartTexture(*this,false,LABEL_AND_ID(StartTexture),""),
-mMiddleTexture(*this,false,LABEL_AND_ID(MiddleTexture),""),
-mEndTexture(*this,false,LABEL_AND_ID(EndTexture),""),
-mDirection(*this,true,LABEL_AND_ID(Direction),"Vertical","Horizontal"),
+mVoidTexture(*this,false,"VoidTexture",""),
+mStartTexture(*this,false,"StartTexture",""),
+mMiddleTexture(*this,false,"MiddleTexture",""),
+mEndTexture(*this,false,"EndTexture",""),
+mDirection(*this,true,"Direction","Vertical","Horizontal"),
 mStartTexturePointer(0),
 mMiddleTexturePointer(0),
 mEndTexturePointer(0),
@@ -86,9 +86,9 @@ void UISliderFill::InitModifiable()
 		//Init childs
 		if(this->GetSons().size()>0)
 		{
-			kstl::set<Node2D*, Node2D::PriorityCompare> sons = this->GetSons();
-			kstl::set<Node2D*, Node2D::PriorityCompare>::iterator it = sons.begin();
-			kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = sons.end();
+			std::set<Node2D*, Node2D::PriorityCompare> sons = this->GetSons();
+			std::set<Node2D*, Node2D::PriorityCompare>::iterator it = sons.begin();
+			std::set<Node2D*, Node2D::PriorityCompare>::iterator end = sons.end();
 			while(it!=end)
 			{
 				if(!(*it)->IsInit())
@@ -102,7 +102,7 @@ void UISliderFill::InitModifiable()
 	}
 }
 
-void UISliderFill::ChangeTexture(kstl::string _voidtexturename,kstl::string _starttexturename, kstl::string _middletexturename, kstl::string _endtexturename)
+void UISliderFill::ChangeTexture(std::string _voidtexturename,std::string _starttexturename, std::string _middletexturename, std::string _endtexturename)
 {
 	if(mIsEnabled) // down and mouse over only when enabled
 	{
@@ -152,7 +152,7 @@ bool UISliderFill::isAlpha(float X, float Y)
 	//Try to get mask
 	if(!mAlphaMask)
 	{
-		kstl::vector<ModifiableItemStruct> sons = getItems();
+		std::vector<ModifiableItemStruct> sons = getItems();
 
 		for(unsigned int i=0; i < sons.size(); i++)
 		{
@@ -180,9 +180,9 @@ void UISliderFill::ComputeInitialElementsPosition()
 	UISlider* child = NULL;
 	if(!this->GetSons().empty())
 	{
-		kstl::set<Node2D*, Node2D::PriorityCompare> sons = this->GetSons();
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator it = sons.begin();
-		kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = sons.end();
+		std::set<Node2D*, Node2D::PriorityCompare> sons = this->GetSons();
+		std::set<Node2D*, Node2D::PriorityCompare>::iterator it = sons.begin();
+		std::set<Node2D*, Node2D::PriorityCompare>::iterator end = sons.end();
 		if(it!=end)
 		{
 			child = (UISlider*)(*it);
@@ -196,7 +196,7 @@ void UISliderFill::ComputeInitialElementsPosition()
 		{
 			unsigned int width,height;
 			mStartTexturePointer->GetSize(width,height);
-			if(((const kstl::string&)mDirection) == "Vertical")
+			if(((const std::string&)mDirection) == "Vertical")
 				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, 0, 0, width, height, mStartPositionX, mStartPositionY);
 			else
 				RecomputeElementsPosition(0.0f,0.0f,0.0f, 1.0f, 0, 0, width, height, mStartPositionX, mStartPositionY);
@@ -221,7 +221,7 @@ void UISliderFill::ComputeInitialElementsPosition()
 			child->getArrayValue("Position",newpos,2);
 			child->getValue("Size", currentS);
 
-			if(((const kstl::string&)mDirection) == "Vertical")
+			if(((const std::string&)mDirection) == "Vertical")
 			{
 				mMiddleSizeX =  newpos[0] - px + (currentS.x/2);
 				mMiddleSizeY = py;
@@ -247,11 +247,11 @@ void UISliderFill::ComputeInitialElementsPosition()
 			v2f size = child->GetSize();
 					
 			int newpos[2] ={0};
-			child->getArrayValue(LABEL_TO_ID(Position),newpos,2);
+			child->getArrayValue("Position",newpos,2);
 
 			unsigned int width,height;
 			mEndTexturePointer->GetSize(width,height);
-			if(((const kstl::string&)mDirection) == "Vertical")
+			if(((const std::string&)mDirection) == "Vertical")
 				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, newpos[0]+(size.x/2), 0, width, height, mEndPositionX, mEndPositionY);
 			else
 				RecomputeElementsPosition(0.0f,0.0f,0.0f, 0.0f, newpos[0], newpos[1] + mRealSize.y -size.y, width, height, mEndPositionX, mEndPositionY);

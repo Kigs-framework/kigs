@@ -9,7 +9,7 @@
 
 #include "ModuleBase.h"
 
-SP<ModuleBase> PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+SP<ModuleBase> PlatformGUIModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 
 // ****************************************
 // * ModuleGUI class
@@ -31,13 +31,13 @@ public:
 	DECLARE_CLASS_INFO(ModuleGUI,ModuleBase,GUI)
 
 	//! constructor
-	ModuleGUI(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	ModuleGUI(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	//! destructor
 	virtual ~ModuleGUI();
 
 	//! init module
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 
 	//! close module
 	void Close() override;

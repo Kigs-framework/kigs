@@ -8,7 +8,7 @@
 
 IMPLEMENT_CLASS_INFO(ModuleTimer)
 
-ModuleTimer::ModuleTimer(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+ModuleTimer::ModuleTimer(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 }
 
@@ -16,7 +16,7 @@ ModuleTimer::~ModuleTimer()
 {
 }    
 
-void ModuleTimer::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleTimer::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"Timer",params);
 

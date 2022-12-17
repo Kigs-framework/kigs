@@ -9,8 +9,8 @@
 
 IMPLEMENT_CLASS_INFO(RendererProfileDrawingObject)
 
-RendererProfileDrawingObject::RendererProfileDrawingObject(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
-, mFps(*this, false, LABEL_AND_ID(Fps), "30.0")
+RendererProfileDrawingObject::RendererProfileDrawingObject(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
+, mFps(*this, false, "Fps", "30.0")
 {
 
 	// global timer is pure Red, don't use this color here
@@ -39,7 +39,7 @@ RendererProfileDrawingObject::RendererProfileDrawingObject(const kstl::string& n
 	int i;
 	for(i=10;i<MAX_PROFILER_COUNT;i++)
 	{
-		mColors[i].Set((kfloat)Platform_rand()/((kfloat)RAND_MAX),(kfloat)Platform_rand()/((kfloat)RAND_MAX),(kfloat)Platform_rand()/((kfloat)RAND_MAX));
+		mColors[i].Set((float)Platform_rand()/((float)RAND_MAX),(float)Platform_rand()/((float)RAND_MAX),(float)Platform_rand()/((float)RAND_MAX));
 	}
 
 	mFirstDraw=true;
@@ -53,7 +53,7 @@ RendererProfileDrawingObject::RendererProfileDrawingObject(const kstl::string& n
 	
 }
 
-bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>&,void* privateParams)
+bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>&,void* privateParams)
 {
 	
 	// retreive ModuleRenderer
@@ -79,9 +79,9 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 
 	renderer->FlushState();
 
-	//kdouble max=KDOUBLE_CONST(0.0);
-	//kdouble min=KDOUBLE_CONST(10000.0);
-	//kdouble sum=KDOUBLE_CONST(0.0);
+	//double max=0.0;
+	//double min=10000.0;
+	//double sum=0.0;
 
 	TimeProfiler* GLOBAL=0;
 
@@ -109,7 +109,7 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 	}
 
 	int frameCount=1;
-	kfloat globalftime= 1.0f/ MAX_FPS;
+	float globalftime= 1.0f/ MAX_FPS;
 
 	// count how many frames for GLOBAL
 	if(GLOBAL)
@@ -121,7 +121,7 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 			globalftime = 0.00001f;
 		}
 		// compute fps
-		kfloat instantfps = 1.0f / globalftime;
+		float instantfps = 1.0f / globalftime;
 
 		static float fps = MAX_FPS;
 		fps = fps*0.8f + instantfps*0.2f;	// smooth
@@ -139,12 +139,12 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 		sprintf(fpsbuffer, "%d fps", (int)fps);
 
 		mFps = fpsbuffer;
-		kstl::vector<CoreModifiableAttribute*> mySendParams;
+		std::vector<CoreModifiableAttribute*> mySendParams;
 		mySendParams.push_back(&mFps);
 		KigsCore::GetNotificationCenter()->postNotificationName("SetFPS", mySendParams, this);
 	}
 
-	kfloat oneOnFrameCount=1.0f/(kfloat)(frameCount);
+	float oneOnFrameCount=1.0f/(float)(frameCount);
 
 	for(i=0;i<MAX_PROFILER_COUNT;i++)
 	{
@@ -155,13 +155,13 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 			{
 				if(current->WasUpdate())
 				{
-					kdouble currenttime=current->GetTime();
+					double currenttime=current->GetTime();
 
 					// compute y of the current profiler
 					float h=((float)index*0.05f);
 					// draw full length for 1/60 second
 				
-					kfloat instantfps = 1.0f / currenttime;
+					float instantfps = 1.0f / currenttime;
 					int lframeCount = ceilf(MAX_FPS / instantfps);
 					if (lframeCount < 1)
 					{
@@ -170,7 +170,7 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 
 					int j;
 
-					kfloat startL=0.0f;
+					float startL=0.0f;
 
 					//renderer->SetColor(mColors[index - 1].x, mColors[index - 1].y, mColors[index - 1].z, 0.5f);
 
@@ -241,14 +241,14 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 			renderer->FlushState();
 			// draw frameCount-1 full "blocks" + final block
 
-			kfloat globalftime = GLOBAL->GetTime();
+			float globalftime = GLOBAL->GetTime();
 			if (globalftime <= 0.0f)
 			{
 				globalftime = 0.00001f;
 			}
 			// compute fps
 
-			kfloat instantfps = 1.0f / globalftime;
+			float instantfps = 1.0f / globalftime;
 			int lframeCount = ceilf(MAX_FPS / instantfps);
 			if (lframeCount < 1)
 			{
@@ -259,7 +259,7 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,kstl::vec
 			UIVerticesInfo mVI = UIVerticesInfo(&vi);
 			VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(mVI.Buffer());
 
-			kfloat startL=0.0f;
+			float startL=0.0f;
 			for(i=1;i<lframeCount;i++)
 			{
 				buf[0].setVertex(startL + 0.01f, 0.01f);

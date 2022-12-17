@@ -7,7 +7,7 @@
 
 IMPLEMENT_CLASS_INFO(Texture)
 
-Texture::Texture(const kstl::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)
+Texture::Texture(const std::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)
 ,mWidth(*this, false, "Width", 0)
 ,mHeight(*this, false, "Height", 0)
 ,mTransparencyType(*this, false, "TransparencyType", -1)

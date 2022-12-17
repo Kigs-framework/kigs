@@ -29,11 +29,11 @@ public:
 	
 	/**
 	 * \brief	constructor
-	 * \fn 		MouseDevice(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		MouseDevice(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	MouseDevice(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	MouseDevice(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	/**
 	 * \brief	button count for this mouse
@@ -54,33 +54,33 @@ public:
 	 * \fn 		int				getWheelRoll()
 	 * \return	the wheel roll (Z axis) for this mouse
 	 */
-	kfloat				getWheelRoll(){return mDZ;}
+	float				getWheelRoll(){return mDZ;}
 
 	/**
 	 * \brief	delta for wheel roll (Z axis) for this mouse
 	 * \fn 		int				getWheelRollDelta()
 	 * \return	delta for the wheel roll (Z axis) for this mouse
 	 */
-	kfloat				getWheelRollDelta(){return mDZ - mPreviousDZ;}
+	float				getWheelRollDelta(){return mDZ - mPreviousDZ;}
 
 	/**
 	 * \brief	retreive current position
-	 * \fn 		void			getPos(kfloat& posX,kfloat& posY)
+	 * \fn 		void			getPos(float& posX,float& posY)
 	 * \param	posX : position on x axis (in/out param)
 	 * \param	posY : position on y axis (in/out param)
 	 */
-	void			getPos(kfloat& posX,kfloat& posY){posX=mPosX; posY=mPosY;}
+	void			getPos(float& posX,float& posY){posX=mPosX; posY=mPosY;}
 
 	v2f				GetPos() const { return v2f{ mPosX, mPosY }; }
 
 	//! retreive movement
 	/**
 	 * \brief	retreive movement
-	 * \fn 		void			getMouvement(kfloat& dX,kfloat& dY)
+	 * \fn 		void			getMouvement(float& dX,float& dY)
 	 * \param	dX : movement on x axis (in/out param)
 	 * \param	dY : movement on y axis (in/out param)
 	 */
-	void			getMouvement(kfloat& dX,kfloat& dY){dX=mDX; dY=mDY;}
+	void			getMouvement(float& dX,float& dY){dX=mDX; dY=mDY;}
 
 	/**
 	 * \brief	compute current position
@@ -119,13 +119,13 @@ protected:
 	maFloat	mPosY;
 
 	//! mouse movement on x axis
-	kfloat	mDX;
+	float	mDX;
 	//! mouse movement on y axis
-	kfloat	mDY;
+	float	mDY;
 	//! wheel movement
-	kfloat	mDZ;
+	float	mDZ;
 	//! delta for wheel movement
-	kfloat	mPreviousDZ;
+	float	mPreviousDZ;
 };
 
 #endif //_MOUSEDEVICE_H_

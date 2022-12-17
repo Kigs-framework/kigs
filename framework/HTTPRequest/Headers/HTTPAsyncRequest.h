@@ -54,7 +54,7 @@ public:
 	virtual u32 GetCurrentProgress() { return 0; }
 
 	virtual bool	GetAnswer(usString& answer);
-	virtual bool	GetAnswer(kstl::string& answer);
+	virtual bool	GetAnswer(std::string& answer);
 	virtual bool	GetAnswer(void** buffer, int& buflen);
 	virtual bool	GetAnswer(SP<CoreRawBuffer>& buffer);
 
@@ -85,7 +85,7 @@ protected:
 
 	ContentEncoding											mContentEncoding = ANSI;
 	ContentEncoding											mFoundCharset = ANSI;
-	kstl::string											mContentType;
+	std::string											mContentType;
 
 	// post
 	char*													mPostBuffer = nullptr;

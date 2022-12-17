@@ -11,7 +11,7 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(TravState, TravState, SceneGraph);
 IMPLEMENT_CLASS_INFO(TravState)
 
-TravState::TravState(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+TravState::TravState(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 , mPath(0)
 , mCurrentMaterial(0)
 , mLights(0)

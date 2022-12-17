@@ -22,12 +22,12 @@ IMPLEMENT_CLASS_INFO(Abstract2DLayer);
 //			Abstract2DLayer
 //
 ///////////////////////////////////////////
-Abstract2DLayer::Abstract2DLayer(const kstl::string& name, CLASS_NAME_TREE_ARG)
+Abstract2DLayer::Abstract2DLayer(const std::string& name, CLASS_NAME_TREE_ARG)
 	: Scene3D(name, PASS_CLASS_NAME_TREE_ARG)
-	, mRenderingScreen(*this, true, LABEL_AND_ID(RenderingScreen))
-	, mManager(*this, true, LABEL_AND_ID(SequenceManager), "DataDrivenSequenceManager:AppSequenceManager") // default is app
-	, mSize(*this, false, LABEL_AND_ID(Size), -1,-1)
-	, mIsInteractive(*this, false, LABEL_AND_ID(IsInteractive), true)
+	, mRenderingScreen(*this, true, "RenderingScreen")
+	, mManager(*this, true, "SequenceManager", "DataDrivenSequenceManager:AppSequenceManager") // default is app
+	, mSize(*this, false, "Size", -1,-1)
+	, mIsInteractive(*this, false, "IsInteractive", true)
 {
 }
 

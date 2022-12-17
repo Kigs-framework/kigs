@@ -334,8 +334,8 @@ protected:
 
 	int											mMinClickCount = 1;
 	int											mMaxClickCount = 1;
-	kfloat										mClickMinDuration = -1.0f;
-	kfloat										mClickMaxDuration = -1.0f;
+	float										mClickMinDuration = -1.0f;
+	float										mClickMaxDuration = -1.0f;
 	float										mSpatialInteractionAutoClickDistance = 0.00f;
 };
 

@@ -74,7 +74,7 @@ CullingObject::CULLING_RESULT CullingObject::SubCull(Node3D* node, unsigned int&
 		return all_out;
 
 	auto& g2l = node->GetGlobalToLocal();
-	kfloat dot1;
+	float dot1;
 
 	while (it != itend)
 	{
@@ -201,7 +201,7 @@ Point3D	CullingObject::getIntersection(const CullPlane& p1, const  CullPlane& p2
 		Vector3D distVector(p1.mOrigin);
 		distVector -= p2.mOrigin;
 
-		kfloat dist = Dot(distVector, p2.mNormal);
+		float dist = Dot(distVector, p2.mNormal);
 
 		Point3D dpoint(p1.mOrigin);
 		dpoint -= p2.mNormal*dist;
@@ -209,11 +209,11 @@ Point3D	CullingObject::getIntersection(const CullPlane& p1, const  CullPlane& p2
 		// then compute intersection of this line with p3
 
 		// check parallel
-		kfloat denom = Dot(p3.mNormal, dnormal);
+		float denom = Dot(p3.mNormal, dnormal);
 
 		if (fabsf(denom) > 0.0001)
 		{
-			kfloat t = Dot((p3.mOrigin - dpoint), p3.mNormal) / denom;
+			float t = Dot((p3.mOrigin - dpoint), p3.mNormal) / denom;
 			result = dpoint + t*dnormal;
 		}
 	}

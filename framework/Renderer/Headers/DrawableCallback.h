@@ -22,11 +22,11 @@ public:
 
 	/**
 	 * \brief	constructor
-	 * \fn 		DrawableCallback(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		DrawableCallback(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	DrawableCallback(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	DrawableCallback(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	//! overloaded 
 	void	DoPreDraw(TravState*) override;

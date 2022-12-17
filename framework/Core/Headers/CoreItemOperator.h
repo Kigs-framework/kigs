@@ -41,16 +41,16 @@ typedef std::unique_ptr<CoreVector> (*CoreItemOperatorCreateMethod)();
 class SpecificOperator
 {
 public:
-	kstl::string	mKeyWord;	// 3 letter keyword
+	std::string	mKeyWord;	// 3 letter keyword
 	CoreItemOperatorCreateMethod	mCreateMethod;
 };
 
 class ConstructContext
 {
 public:
-	kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	mMap;
+	kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>	mMap;
 	CoreModifiable* mTarget;
-	kstl::vector<SpecificOperator>* mSpecificList;	
+	std::vector<SpecificOperator>* mSpecificList;	
 };
 
 
@@ -80,7 +80,7 @@ public:
 		return false;
 	}
 
-	virtual inline operator kfloat() const override
+	virtual inline operator float() const override
 	{
 		KIGS_ERROR("cast operator called on base CoreItem", 2);
 		return 0.0f;
@@ -98,7 +98,7 @@ public:
 		return 0;
 	}
 
-	virtual inline operator kstl::string() const override
+	virtual inline operator std::string() const override
 	{
 		KIGS_ERROR("cast operator called on base CoreItem", 2);
 		return "";
@@ -136,25 +136,25 @@ public:
 		_value = (operandType)0;
 	}
 
-	static CoreItemSP	Construct(const kstl::string& formulae, CoreModifiable* target, kstl::vector<SpecificOperator>* specificList=0);
-	static CoreItemSP	Construct(const kstl::string& formulae, CoreModifiable* target, const kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	lmap);
-	static void	ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	lmap, kstl::vector<SpecificOperator>* specificList = 0);
+	static CoreItemSP	Construct(const std::string& formulae, CoreModifiable* target, std::vector<SpecificOperator>* specificList=0);
+	static CoreItemSP	Construct(const std::string& formulae, CoreModifiable* target, const kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	lmap);
+	static void	ConstructContextMap(kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	lmap, std::vector<SpecificOperator>* specificList = 0);
 	static CoreItemSP	Parse(AsciiParserUtils& formulae, ConstructContext& context);
 
 protected:
 
-	static bool	CheckAffectation(char prevChar, int priority, AsciiParserUtils& block, kstl::vector<CoreItemOperatorStruct>& OperatorList);
+	static bool	CheckAffectation(char prevChar, int priority, AsciiParserUtils& block, std::vector<CoreItemOperatorStruct>& OperatorList);
 
-	static kstl::vector<CoreItemOperatorStruct>	FindFirstLevelOperators(AsciiParserUtils& formulae, ConstructContext& context);
-	static kstl::vector<CoreItemOperatorStruct>	FindFirstLevelSeparator(AsciiParserUtils& formulae, ConstructContext& context);
-	static kstl::vector<kstl::string>	FindFirstLevelParams(AsciiParserUtils& formulae, ConstructContext& context);
-	static SP<CoreItemOperator<operandType>> getOperator(const kstl::string& keyword, ConstructContext& context);
-	static SP<GenericRefCountedBaseClass> getVariable(const kstl::string& keyword);
+	static std::vector<CoreItemOperatorStruct>	FindFirstLevelOperators(AsciiParserUtils& formulae, ConstructContext& context);
+	static std::vector<CoreItemOperatorStruct>	FindFirstLevelSeparator(AsciiParserUtils& formulae, ConstructContext& context);
+	static std::vector<std::string>	FindFirstLevelParams(AsciiParserUtils& formulae, ConstructContext& context);
+	static SP<CoreItemOperator<operandType>> getOperator(const std::string& keyword, ConstructContext& context);
+	static SP<GenericRefCountedBaseClass> getVariable(const std::string& keyword);
 };
 
 
 template<>
-inline CoreItemOperator<bool>::operator kfloat() const
+inline CoreItemOperator<bool>::operator float() const
 {
 	bool result = (bool)*this;
 	return result?1.0f:0.0f;
@@ -175,7 +175,7 @@ inline CoreItemOperator<bool>::operator unsigned int() const
 }
 
 template<>
-inline CoreItemOperator<bool>::operator kstl::string() const
+inline CoreItemOperator<bool>::operator std::string() const
 {
 	bool result = (bool)*this;
 	return result ? "true" : "false";
@@ -190,28 +190,28 @@ inline CoreItemOperator<bool>::operator usString() const
 
 
 template<>
-inline CoreItemOperator<kfloat>::operator bool() const
+inline CoreItemOperator<float>::operator bool() const
 {
-	kfloat result = (kfloat)*this;
+	float result = (float)*this;
 	return result ? true : false;
 }
 
 template<>
-inline CoreItemOperator<kfloat>::operator int() const
+inline CoreItemOperator<float>::operator int() const
 {
-	kfloat result = (kfloat)*this;
+	float result = (float)*this;
 	return (int)result;
 }
 
 template<>
-inline CoreItemOperator<kfloat>::operator unsigned int() const
+inline CoreItemOperator<float>::operator unsigned int() const
 {
-	kfloat result = (kfloat)*this;
+	float result = (float)*this;
 	return (unsigned int)result;
 }
 
 template<>
-inline void	CoreItemOperator<kstl::string>::defaultOperandTypeInit(kstl::string& _value)
+inline void	CoreItemOperator<std::string>::defaultOperandTypeInit(std::string& _value)
 {
 	_value = "";
 }
@@ -244,8 +244,8 @@ public:
 
 	virtual inline operator operandType() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 		operandType	result;
 		while (itOperand != itOperandEnd)
@@ -265,8 +265,8 @@ public:
 
 	virtual inline operator operandType() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 		operandType	result((*itOperand)->operator operandType());
 		++itOperand;
@@ -281,16 +281,16 @@ public:
 };
 
 template <  >
-inline AddOperator<kstl::string>::operator kstl::string() const
+inline AddOperator<std::string>::operator std::string() const
 {
-	kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-	kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+	std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+	std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
-	kstl::string	result("");
+	std::string	result("");
 
 	while (itOperand != itOperandEnd)
 	{
-		result += (kstl::string)(**itOperand);
+		result += (std::string)(**itOperand);
 		++itOperand;
 	}
 	return result;
@@ -303,8 +303,8 @@ public:
 
 	virtual inline operator operandType() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 		operandType	result((*itOperand)->operator operandType());
 		++itOperand;
@@ -319,11 +319,11 @@ public:
 };
 
 template <  >
-inline SubOperator<kstl::string>::operator kstl::string() const
+inline SubOperator<std::string>::operator std::string() const
 {
-	kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+	std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
-	kstl::string	result((kstl::string)(**itOperand));
+	std::string	result((std::string)(**itOperand));
 
 	// no sub on string
 	return result;
@@ -337,8 +337,8 @@ public:
 
 	virtual inline operator operandType() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 		operandType	result((*itOperand)->operator operandType());
 		++itOperand;
@@ -353,11 +353,11 @@ public:
 };
 
 template <  >
-inline MultOperator<kstl::string>::operator kstl::string() const
+inline MultOperator<std::string>::operator std::string() const
 {
-	kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+	std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
-	kstl::string	result((kstl::string)(**itOperand));
+	std::string	result((std::string)(**itOperand));
 
 	// no mult on string
 	return result;
@@ -371,8 +371,8 @@ public:
 
 	virtual inline operator operandType() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 		operandType	result((*itOperand)->operator operandType());
 		++itOperand;
@@ -387,11 +387,11 @@ public:
 };
 
 template <  >
-inline DivOperator<kstl::string>::operator kstl::string() const
+inline DivOperator<std::string>::operator std::string() const
 {
-	kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+	std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
-	kstl::string	result((kstl::string)(**itOperand));
+	std::string	result((std::string)(**itOperand));
 
 	// no div on string
 	return result;
@@ -405,7 +405,7 @@ public:
 
 	virtual inline operator operandType() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 		
 		operandType	result((operandType)(**itOperand));
 
@@ -420,11 +420,11 @@ public:
 };
 
 template <  >
-inline AbsOperator<kstl::string>::operator kstl::string() const
+inline AbsOperator<std::string>::operator std::string() const
 {
-	kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+	std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
-	kstl::string	result((kstl::string)(**itOperand));
+	std::string	result((std::string)(**itOperand));
 
 	// no abs on string
 	return result;
@@ -439,8 +439,8 @@ public:
 	virtual inline operator operandType() const
 	{
 
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 		operandType	result((operandType)(**itOperand));
 		++itOperand;
@@ -461,11 +461,11 @@ public:
 };
 
 template <  >
-inline MaxOperator<kstl::string>::operator kstl::string() const
+inline MaxOperator<std::string>::operator std::string() const
 {
-	kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+	std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
-	kstl::string	result((kstl::string)(**itOperand));
+	std::string	result((std::string)(**itOperand));
 
 	// no max on string
 	return result;
@@ -479,8 +479,8 @@ public:
 	virtual inline operator operandType() const
 	{
 
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 		operandType	result((operandType)(**itOperand));
 		++itOperand;
@@ -501,11 +501,11 @@ public:
 };
 
 template <  >
-inline MinOperator<kstl::string>::operator kstl::string() const
+inline MinOperator<std::string>::operator std::string() const
 {
-	kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+	std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
-	kstl::string	result((kstl::string)(**itOperand));
+	std::string	result((std::string)(**itOperand));
 
 	// no min on string
 	return result;
@@ -520,7 +520,7 @@ public:
 
 	virtual inline operator operandType() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		operandType	result((operandType)(**itOperand));
 
@@ -540,7 +540,7 @@ public:
 
 	virtual inline operator operandType() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		operandType	result((operandType)(**itOperand));
 
@@ -561,7 +561,7 @@ public:
 
 	virtual inline operator operandType() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		operandType	result((operandType)(**itOperand));
 
@@ -583,7 +583,7 @@ public:
 
 	virtual inline operator operandType() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		operandType	result((*itOperand)->operator operandType());
 
@@ -593,11 +593,11 @@ public:
 };
 
 template <  >
-inline NegOperator<kstl::string>::operator kstl::string() const
+inline NegOperator<std::string>::operator std::string() const
 {
-	kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+	std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
-	kstl::string	result((kstl::string)(**itOperand));
+	std::string	result((std::string)(**itOperand));
 
 	// no neg on string
 	return result;
@@ -610,7 +610,7 @@ public:
 
 	virtual inline operator bool() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		bool	result(false);
 
@@ -632,7 +632,7 @@ public:
 
 	virtual inline operator bool() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 		
 		bool	result(false);
 		
@@ -660,7 +660,7 @@ public:
 
 	virtual inline operator bool() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		bool	result(false);
 
@@ -687,7 +687,7 @@ public:
 
 	virtual inline operator bool() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		bool	result(false);
 
@@ -715,7 +715,7 @@ public:
 
 	virtual inline operator bool() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		bool	result(false);
 
@@ -742,15 +742,15 @@ public:
 
 	virtual inline operator bool() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		bool	result(false);
 
 		if (CoreVector::mVector.size() == 2)
 		{
-			kfloat	op1((kfloat)(**itOperand));
+			float	op1((float)(**itOperand));
 			++itOperand;
-			kfloat	op2((kfloat)(**itOperand));
+			float	op2((float)(**itOperand));
 
 			if (op1 > op2)
 			{
@@ -769,15 +769,15 @@ public:
 
 	virtual inline operator bool() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		bool	result(false);
 
 		if (CoreVector::mVector.size() == 2)
 		{
-			kfloat	op1((kfloat)(**itOperand));
+			float	op1((float)(**itOperand));
 			++itOperand;
-			kfloat	op2((kfloat)(**itOperand));
+			float	op2((float)(**itOperand));
 
 			if (op1 >= op2)
 			{
@@ -797,15 +797,15 @@ public:
 
 	virtual inline operator bool() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		bool	result(false);
 
 		if (CoreVector::mVector.size() == 2)
 		{
-			kfloat	op1((kfloat)(**itOperand));
+			float	op1((float)(**itOperand));
 			++itOperand;
-			kfloat	op2((kfloat)(**itOperand));
+			float	op2((float)(**itOperand));
 
 			if (op1 < op2)
 			{
@@ -824,15 +824,15 @@ public:
 
 	virtual inline operator bool() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		bool	result(false);
 
 		if (CoreVector::mVector.size() == 2)
 		{
-			kfloat	op1((kfloat)(**itOperand));
+			float	op1((float)(**itOperand));
 			++itOperand;
-			kfloat	op2((kfloat)(**itOperand));
+			float	op2((float)(**itOperand));
 
 			if (op1 <= op2)
 			{
@@ -853,8 +853,8 @@ public:
 
 	virtual inline operator operandType() const
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 		CoreItem& result=(*(CoreItem*)(*itOperand).get());
 		
@@ -875,7 +875,7 @@ class DynamicVariableOperator : public CoreItemOperator<operandType>
 {
 public:
 
-	DynamicVariableOperator(const kstl::string& varname) : mVarName(varname)
+	DynamicVariableOperator(const std::string& varname) : mVarName(varname)
 	{
 
 	}
@@ -885,7 +885,7 @@ public:
 protected:
 
 	
-	kstl::string	mVarName;
+	std::string	mVarName;
 
 };
 
@@ -896,7 +896,7 @@ class CoreModifiableAttributeOperator : public CoreItemOperator<operandType>
 {
 public:
 
-	CoreModifiableAttributeOperator(const kstl::string& path, CoreModifiable* target) : mAttributePath(path), mTarget(target), mAttribute(0), mArrayAttributeIndex(-1), mIsMethod(0){};
+	CoreModifiableAttributeOperator(const std::string& path, CoreModifiable* target) : mAttributePath(path), mTarget(target), mAttribute(0), mArrayAttributeIndex(-1), mIsMethod(0){};
 
 	// construct from an existing attribute
 	CoreModifiableAttributeOperator(CoreModifiableAttribute* attr) : mTarget(0), mAttribute(attr), mArrayAttributeIndex(-1), mIsMethod(0) 
@@ -908,7 +908,7 @@ public:
 
 	virtual inline bool operator==(const CoreItem& other) const override
 	{
-		return (((kfloat)(*this)) == (kfloat)other);
+		return (((float)(*this)) == (float)other);
 	}
 
 	virtual CoreItem& operator=(const operandType& other) override;
@@ -917,7 +917,7 @@ protected:
 
 	void GetAttribute() const;
 
-	kstl::string				mAttributePath;
+	std::string				mAttributePath;
 	CoreModifiable*				mTarget;
 
 	union
@@ -931,12 +931,12 @@ protected:
 };
 
 template<>
-inline bool CoreModifiableAttributeOperator<kstl::string>::operator == (const CoreItem& other) const
+inline bool CoreModifiableAttributeOperator<std::string>::operator == (const CoreItem& other) const
 {
-	kstl::string	othervalue;
+	std::string	othervalue;
 	other.getValue(othervalue);
 
-	kstl::string	thisvalue;
+	std::string	thisvalue;
 	getValue(thisvalue);
 
 	return (thisvalue == othervalue);
@@ -985,7 +985,7 @@ public:
 
 	virtual inline operator operandType() const override
 	{
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 
 		operandType	result(0);
 

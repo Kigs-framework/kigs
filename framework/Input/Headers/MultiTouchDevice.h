@@ -19,7 +19,7 @@ public:
 	DECLARE_INLINE_CONSTRUCTOR(MultiTouchDevice) {}
 
 	int				getTouchState(int touchIndex);
-	void			getTouchPos(int touchIndex, kfloat &posX, kfloat &posY);
+	void			getTouchPos(int touchIndex, float &posX, float &posY);
 	int getMaxTouch()
 	{
 		return mMaxTouch;

@@ -19,7 +19,7 @@ class OpenGLCamera : public Camera
 {
 public:
     DECLARE_CLASS_INFO(OpenGLCamera,Camera,Renderer)
-    OpenGLCamera(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    OpenGLCamera(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~OpenGLCamera();
 
 protected:

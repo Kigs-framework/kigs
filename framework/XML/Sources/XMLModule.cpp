@@ -3,7 +3,7 @@
 
 IMPLEMENT_CLASS_INFO(XMLModule)
 
-XMLModule::XMLModule(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+XMLModule::XMLModule(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 }
 
@@ -12,7 +12,7 @@ XMLModule::~XMLModule()
 }    
 
 
-void XMLModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void XMLModule::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"XML",params);
 }

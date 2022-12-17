@@ -6,7 +6,7 @@
 
 IMPLEMENT_CLASS_INFO(ModuleGUIWindows)
 
-	ModuleGUIWindows::ModuleGUIWindows(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+	ModuleGUIWindows::ModuleGUIWindows(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 }
 
@@ -15,7 +15,7 @@ ModuleGUIWindows::~ModuleGUIWindows()
 
 }    
 
-void ModuleGUIWindows::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleGUIWindows::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	BaseInit(core,"GUIWindows",params);
 	//! declare WindowWin32 to be the current implementation of Window
@@ -33,7 +33,7 @@ void ModuleGUIWindows::Update(const Timer& timer, void* addParam)
 {
 }
 
-SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(ModuleGUIWindows, "ModuleGUIWindows");

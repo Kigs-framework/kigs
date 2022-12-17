@@ -23,7 +23,7 @@ ModernMeshBuilder::~ModernMeshBuilder()
 	delete[] mOneVertexData;
 }
 
-void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBufferBufferSize, int hintTriangleBufferSize)
+void	ModernMeshBuilder::StartGroup(CoreMap<std::string>* description, int hintVertexBufferBufferSize, int hintTriangleBufferSize)
 {
 	if (mGroupBuilding)
 	{
@@ -50,9 +50,12 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 	
 	while (checkdescit != checkdescitend)
 	{
-		CoreNamedItem& found = (CoreNamedItem&)(CoreItem&)(*checkdescit);
+		CoreItem& found = (CoreItem&)(*checkdescit);
 
-		if (found.getName() == "vertices")
+		std::string key;
+		checkdescit.getKey(key);
+		
+		if (key == "vertices")
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "vertices";
@@ -72,7 +75,7 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 			mVertexArrayMask |= toAdd.mask;
 
 		}
-		else if (found.getName() == "colors")
+		else if (key == "colors")
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "colors";
@@ -90,7 +93,7 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 			vertexElemPos += toAdd.size;
 			mVertexArrayMask |= toAdd.mask;
 		}
-		else if (found.getName() == "texCoords")
+		else if (key == "texCoords")
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "texCoords";
@@ -109,7 +112,7 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 			vertexElemPos += toAdd.size;
 			mVertexArrayMask |= toAdd.mask;
 		}
-		else if (found.getName() == "tangents" || found.getName() == "generate_tangents")
+		else if (key == "tangents" || key == "generate_tangents")
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "tangents";
@@ -117,7 +120,7 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 			toAdd.startpos = vertexElemPos;
 			toAdd.mask = ModuleRenderer::TANGENT_ARRAY_MASK;
 			toAdd.elemCount = 3;
-			toAdd.inSize = found.getName() == "tangents" ? 4 * 3 : 0;
+			toAdd.inSize = key == "tangents" ? 4 * 3 : 0;
 			if (toAdd.inSize == 0)
 				mGenerateTangents = true;
 			mCurrentVertexInSize += toAdd.inSize;
@@ -130,7 +133,7 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 			vertexElemPos += toAdd.size;
 			mVertexArrayMask |= toAdd.mask;
 		}
-		else if (found.getName() == "normals" || found.getName() == "generate_normals")
+		else if (key == "normals" || key == "generate_normals")
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "normals";
@@ -138,7 +141,7 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 			toAdd.startpos = vertexElemPos;
 			toAdd.mask = ModuleRenderer::NORMAL_ARRAY_MASK;
 			toAdd.elemCount = 3;
-			toAdd.inSize = found.getName() == "normals" ? 4 * 3 : 0; 
+			toAdd.inSize = key == "normals" ? 4 * 3 : 0;
 			if (toAdd.inSize == 0)
 				mGenerateNormals = true;
 			mCurrentVertexInSize += toAdd.inSize;
@@ -151,7 +154,7 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 			vertexElemPos += toAdd.size;
 			mVertexArrayMask |= toAdd.mask;
 		}
-		else if (found.getName() == "bone_weights")
+		else if (key == "bone_weights")
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "bone_weights";
@@ -170,7 +173,7 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 			vertexElemPos += toAdd.size;
 			mVertexArrayMask |= toAdd.mask;
 		}
-		else if (found.getName() == "bone_indexes")
+		else if (key == "bone_indexes")
 		{
 			ModernMesh::VertexElem	toAdd;
 			toAdd.name = "bone_indexes";
@@ -189,16 +192,16 @@ void	ModernMeshBuilder::StartGroup(CoreVector* description, int hintVertexBuffer
 			vertexElemPos += toAdd.size;
 			mVertexArrayMask |= toAdd.mask;
 		}
-		else if (found.getName() == "TexCoordsScale")
+		else if (key == "TexCoordsScale")
 		{
 			found.getValue(mTexCoordsScale);
 		}
-		else if (found.getName() == "smooth_normals_angle")
+		else if (key == "smooth_normals_angle")
 		{
 			found.getValue(mSmoothNormalsThreshold);
 			mSmoothNormalsThreshold = cos(mSmoothNormalsThreshold);
 		}
-		else if (found.getName() == "no_merge")
+		else if (key == "no_merge")
 		{
 			mNoMerge = true;
 		}
@@ -482,7 +485,7 @@ SP<ModernMeshItemGroup> ModernMeshBuilder::EndGroup(int vertex_count, v3f* verti
 
 
 	auto write_ptr = interleaved_vertex_buffer;
-	kfloat texcoordscale = mTexCoordsScale;
+	float texcoordscale = mTexCoordsScale;
 	for (int index = 0; index < vertex_count; index++)
 	{
 		v3f pos;
@@ -642,7 +645,7 @@ SP<ModernMeshItemGroup>	ModernMeshBuilder::EndGroup(void * vertex, int vertexCou
 			else if (itr->name == "normals")
 				NormalPos = itr->startpos;
 		}
-		kfloat texcoordscale = mTexCoordsScale;
+		float texcoordscale = mTexCoordsScale;
 		for (int index = 0; index < vertexCount; index++)
 		{
 			// write vertex pos (3 float)

@@ -1317,13 +1317,13 @@ void DrawCreateInstance()
 
 void ResetContext()
 {
-	kstl::vector<CMSP>	instances = 	CoreModifiable::GetInstances("RenderingScreen");
+	std::vector<CMSP>	instances = 	CoreModifiable::GetInstances("RenderingScreen");
 	if (instances.size())
 	{
 		instances[0]->CallMethod("ResetContext", NULL);
 	}
 
-	kstl::vector<CMSP>::iterator itInstances;
+	std::vector<CMSP>::iterator itInstances;
 
 	// then reinit layers
 	instances.clear();
@@ -2851,11 +2851,8 @@ void DrawAnimationCoreItemRec(const std::string& key,const CoreItemSP& current_i
 	switch (current_item->GetType())
 	{
 	case CoreItem::COREVALUE: name = (std::string)*current_item; break;
-	case CoreItem::CORENAMEDVALUE: name = "" + (std::string)*current_item; break;
 	case CoreItem::COREMAP: name = "map"; break;
 	case CoreItem::COREVECTOR: name = "vector"; break;
-	case CoreItem::CORENAMEDMAP: name = "named map"; break;
-	case CoreItem::CORENAMEDVECTOR: name = "named vector"; break;
 	} 
 	if (key.size()) name = key + " : " + name;
 

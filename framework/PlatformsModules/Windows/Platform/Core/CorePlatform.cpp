@@ -49,14 +49,14 @@ bool Win32CreateFolderTree(FileHandle* hndl)
 	return true;
 }
 
-SmartPointer<FileHandle> Win32FindFullName(const kstl::string&	filename)
+SmartPointer<FileHandle> Win32FindFullName(const std::string&	filename)
 {
 	if (filename[0] != '#')
 	{
 		return 0;
 	}
 
-	kstl::string fullFileName = "";
+	std::string fullFileName = "";
 
 	FilePathManager::DeviceID	id = (FilePathManager::DeviceID)(filename[1]);
 

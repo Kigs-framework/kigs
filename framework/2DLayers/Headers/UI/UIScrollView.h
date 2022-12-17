@@ -27,10 +27,10 @@ class UIScrollView : public UIDrawableItem
 public:
 	DECLARE_CLASS_INFO(UIScrollView, UIDrawableItem, Renderer);
 
-	UIScrollView(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UIScrollView(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	~UIScrollView();
 
-	bool scrollTo(kfloat deltaPos);	
+	bool scrollTo(float deltaPos);	
 	bool Draw(TravState* state)override;
 
 	// void NotifyUpdate(unsigned int);
@@ -47,7 +47,7 @@ protected:
 
 private:
 
-	kfloat	mXScroll, mYScroll;
+	float	mXScroll, mYScroll;
 	int mMaxY, mMaxX;
 	SP<UIControlBoxForScrollViewUI> mVision;
 	ModuleInput* mInput;

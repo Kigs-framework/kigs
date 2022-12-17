@@ -21,7 +21,7 @@ public:
 	friend class RendererOpenGL;
 
 	DECLARE_CLASS_INFO(API3DUIShader, API3DGenericMeshShader, Renderer)
-	API3DUIShader(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DUIShader(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~API3DUIShader();
 
 protected:

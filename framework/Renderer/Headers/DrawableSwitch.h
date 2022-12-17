@@ -22,16 +22,16 @@ public:
 
 	/**
 	 * \brief	constructor
-	 * \fn 		DrawableSwitch(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		DrawableSwitch(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	DrawableSwitch(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	DrawableSwitch(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	//! set current drawable by index in children list
 	void	SetCurrentDrawable(int index);
 	//! set current drawable by name in children list
-	void	SetCurrentDrawable(kstl::string drawablename);
+	void	SetCurrentDrawable(std::string drawablename);
 	//! set current drawable by comparison in children list
 	void	SetCurrentDrawable(Drawable* drawable);
 
@@ -44,11 +44,11 @@ public:
 
 	/**
 	 * \brief	update the bounding box
-	 * \fn 		virtual bool	BBoxUpdate(kdouble time)
+	 * \fn 		virtual bool	BBoxUpdate(double time)
 	 * \param	time : world time
 	 * \return	FALSE if object without bounding box, TRUE otherwise
 	 */
-	bool	BBoxUpdate(kdouble time) override 
+	bool	BBoxUpdate(double time) override 
 	{
 		if(mNeedBBoxUpdate)
 		{
@@ -92,10 +92,10 @@ public:
 protected:
 	/**
 	 * \brief	calc the bounding box
-	 * \fn 		void	ComputeLocalBBox(kdouble time);
+	 * \fn 		void	ComputeLocalBBox(double time);
 	 * \param	time : global time
 	 */ 
-	void	ComputeLocalBBox(kdouble time);
+	void	ComputeLocalBBox(double time);
 		
 	//! link to my bounding box
 	BBox		mBoundingBox;

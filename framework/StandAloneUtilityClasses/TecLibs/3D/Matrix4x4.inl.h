@@ -26,15 +26,15 @@ void Matrix4x4::Set(const Matrix3x3& mat)
 	e[0][0] = mat.e[0][0] ; e[1][0] = mat.e[1][0] ; e[2][0] = mat.e[2][0];
     e[0][1] = mat.e[0][1] ; e[1][1] = mat.e[1][1] ; e[2][1] = mat.e[2][1];
     e[0][2] = mat.e[0][2] ; e[1][2] = mat.e[1][2] ; e[2][2] = mat.e[2][2];
-    e[3][0] = e[3][1] = e[3][2] = e[0][3] = e[1][3] = e[2][3] = KFLOAT_ZERO;
-	e[3][3] = KFLOAT_ONE;
+    e[3][0] = e[3][1] = e[3][2] = e[0][3] = e[1][3] = e[2][3] = 0.0f;
+	e[3][3] = 1.0f;
 }
 
 void Matrix4x4::Set(const Quaternion& q, const Vector3D& v)
 {
-	Float dx = KFLOAT_CONST(2.0f) * q.V.x;
-	Float dy = KFLOAT_CONST(2.0f) * q.V.y;
-	Float dz = KFLOAT_CONST(2.0f) * q.V.z;
+	Float dx = 2.0f * q.V.x;
+	Float dy = 2.0f * q.V.y;
+	Float dz = 2.0f * q.V.z;
     Float xx = dx * q.V.x;
 	Float xy = dx * q.V.y;
 	Float xz = dx * q.V.z;
@@ -45,25 +45,25 @@ void Matrix4x4::Set(const Quaternion& q, const Vector3D& v)
 	Float zz = dz * q.V.z;
 	Float zw = dz * q.w;
 	
-	e[0][0]  = KFLOAT_ONE - ( yy + zz );
+	e[0][0]  = 1.0f - ( yy + zz );
 	e[1][0]  =     ( xy - zw );
 	e[2][0]  =     ( xz + yw );
 	
 	e[0][1]  =     ( xy + zw );
-	e[1][1]  = KFLOAT_ONE - ( xx + zz );
+	e[1][1]  = 1.0f - ( xx + zz );
 	e[2][1]  =     ( yz - xw );
 	
 	e[0][2]  =     ( xz - yw );
 	e[1][2]  =     ( yz + xw );
-	e[2][2]  = KFLOAT_ONE - ( xx + yy );	
+	e[2][2]  = 1.0f - ( xx + yy );	
 	
 	e[3][0]  = v.x;
 	e[3][1]  = v.y;
 	e[3][2]  = v.z;
 	
 	e[3][0]  = e[3][1] = e[3][2] =
-		e[0][3]  = e[1][3] = e[2][3] = KFLOAT_ZERO;
-	e[3][3]  = KFLOAT_ONE;
+		e[0][3]  = e[1][3] = e[2][3] = 0.0f;
+	e[3][3]  = 1.0f;
 }
 
 void	Matrix4x4::Set(const Vector4D& v0, const Vector4D& v1, const Vector4D& v2, const Vector4D& v3)

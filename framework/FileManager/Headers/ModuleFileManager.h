@@ -31,7 +31,7 @@ public:
 	DECLARE_INLINE_CONSTRUCTOR(ModuleFileManager){}
 
 	//! module init
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 
 	//! module close
 	void Close() override;

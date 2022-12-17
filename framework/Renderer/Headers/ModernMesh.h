@@ -5,10 +5,10 @@
 #include "TecLibs/3D/3DObject/BBox.h"
 #include "BufferedFile.h"
 #include "maBuffer.h"
+#include "CoreMap.h"
 
 #include <atomic>
 
-class CoreVector;
 class Material;
 class ModernMeshItemGroup;
 class AbstractDynamicGrowingBuffer;
@@ -35,7 +35,7 @@ public:
 
 	SmartPointer<ModernMesh> CreateClonedMesh(const std::string& name, bool reuse_materials);
 
-	bool BBoxUpdate(kdouble/* time */) override { return true; }
+	bool BBoxUpdate(double/* time */) override { return true; }
 
 	void GetNodeBoundingBox(v3f& pmin, v3f& pmax) const override
 	{
@@ -51,7 +51,7 @@ public:
 
 	void ComputeNormals();
 
-	void ApplyScaleFactor(kfloat scaleFactor);
+	void ApplyScaleFactor(float scaleFactor);
 	void FlipAxis(s32 axisX, s32 axisY, s32 axisZ);
 
 	void SetCanFree();
@@ -99,7 +99,7 @@ public:
 
 	
 	void StartMeshBuilder();
-	void StartMeshGroup(CoreVector* description, s32 hs32VertexBufferSize = 256, s32 hs32TriangleBufferSize = 256);
+	void StartMeshGroup(CoreMap<std::string>* description, s32 hs32VertexBufferSize = 256, s32 hs32TriangleBufferSize = 256);
 	void AddTriangle(void* v1, void* v2, void* v3);
 	void PlaceMergeBarrier();
 	SP<ModernMeshItemGroup> EndMeshGroup();
@@ -201,7 +201,7 @@ public:
 	s32 getVertexSize() { return mVertexSize; }
 
 
-	bool	BBoxUpdate(kdouble /* time*/)  override { return true; }
+	bool	BBoxUpdate(double /* time*/)  override { return true; }
 
 	std::atomic_int mCanFreeBuffers = { 0 };
 	//! List of Triangles
@@ -232,7 +232,7 @@ public:
 	std::vector<ModernMesh::VertexElem>	mVertexDesc;
 	void ComputeTangents(bool useTextureCoords);
 	void ComputeNormals();
-	void ApplyScaleFactor(kfloat scaleFactor);
+	void ApplyScaleFactor(float scaleFactor);
 	void FlipAxis(s32 axisX, s32 axisY, s32 axisZ);
 
 	void * GetVertexBuffer(s32 &size) { size = mVertexBufferArray.length(); return mVertexBufferArray.buffer(); }

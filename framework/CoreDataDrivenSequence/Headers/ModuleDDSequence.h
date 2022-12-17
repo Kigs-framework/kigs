@@ -28,10 +28,10 @@ public:
 	DECLARE_CLASS_INFO(ModuleDDSequence, ModuleBase, CoreDataDrivenSequence)
 
 	//! constructor
-	ModuleDDSequence(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	ModuleDDSequence(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
          
 	//! init module
-    void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 	//! close module
     void Close() override;
             

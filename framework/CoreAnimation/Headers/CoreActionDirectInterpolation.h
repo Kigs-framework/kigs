@@ -12,7 +12,7 @@ public:
 	{
 		this->mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
-		// kdouble duration,kfloat vStart,kfloat vEnd,unsigned int paramID => 4 params
+		// double duration,float vStart,float vEnd,unsigned int paramID => 4 params
 		if (!(params->size() == 4))
 		{
 			return;
@@ -30,7 +30,7 @@ public:
 		(*params)[2]->getValue(readPoint);
 		this->mEnd = readPoint;
 
-		kstl::string readstring;
+		std::string readstring;
 		(*params)[3]->getValue(readstring);
 
 		this->mTarget = this->checkSubTarget(readstring);
@@ -79,7 +79,7 @@ public:
 		(*params)[4]->getValue(readPoint);
 		this->p[3] = readPoint;
 
-		kstl::string readstring;
+		std::string readstring;
 		(*params)[5]->getValue(readstring);
 		this->mTarget = this->checkSubTarget(readstring);
 
@@ -99,7 +99,7 @@ public:
 	{
 		this->mTarget = sequence->getTarget();
 #ifdef _DEBUG // test parameters count
-		// kdouble duration,kfloat vSet,unsigned int paramID => 3 params
+		// double duration,float vSet,unsigned int paramID => 3 params
 		if (!(params->size() == 3))
 		{
 			return;
@@ -115,7 +115,7 @@ public:
 		(*params)[1]->getValue(readPoint);
 		this->mSet = readPoint;
 
-		kstl::string readstring;
+		std::string readstring;
 		(*params)[2]->getValue(readstring);
 		this->mTarget = this->checkSubTarget(readstring);
 

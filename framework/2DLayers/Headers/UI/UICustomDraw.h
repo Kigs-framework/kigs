@@ -40,7 +40,7 @@ protected:
 	UICustomDrawDelegate*				mDelegate = nullptr;
 	maString							mClickDownAction = BASE_ATTRIBUTE(ClickDownAction, "");
 	maString							mClickUpAction = BASE_ATTRIBUTE(ClickUpAction, "");
-	maUSString							mParameter = BASE_ATTRIBUTE(Parameter, (kstl::string)"");
+	maUSString							mParameter = BASE_ATTRIBUTE(Parameter, (std::string)"");
 	maBool								mStayPressed = BASE_ATTRIBUTE(StayPressed, false);
 	bool								mIsDown = false;
 	bool								mIsMouseOver = false;

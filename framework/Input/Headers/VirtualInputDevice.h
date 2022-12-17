@@ -12,7 +12,7 @@ public:
     
     VirtualInputDevice(const std::string& name);
 
-	void	update(kdouble time);
+	void	update(double time);
 
 protected:
     virtual ~VirtualInputDevice();           

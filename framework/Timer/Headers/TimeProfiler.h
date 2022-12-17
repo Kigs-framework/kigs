@@ -25,18 +25,18 @@ public:
     DECLARE_CLASS_INFO(TimeProfiler,CoreModifiable,TimeProfiler)
 
 	//! constructor
-    TimeProfiler(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    TimeProfiler(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/**
 	 * \brief		create a profiler
-	 * \fn			static int NewProfiler(const kstl::string& name);
+	 * \fn			static int NewProfiler(const std::string& name);
 	 * \param		name : name of the new profiler, NOT NULL
 	 * \return		the the handler of the new profiler, -1 if the profiler can't be created
 	 * 
 	 * get the handler of the profiler named 'name', if not existe create it. 
 	 * return -1 if there is no slot available.
 	 */
-	static int NewProfiler(const kstl::string& name);
+	static int NewProfiler(const std::string& name);
 
 	/**
 	 * \brief		start a profiler for the given profile handler
@@ -63,23 +63,23 @@ public:
 
 	/**
 	 * \brief		getter to mComputedTime
-	 * \fn			kdouble GetTime()
+	 * \fn			double GetTime()
 	 * \return		the computed time for this profiler
 	 */
-	kdouble GetTime()
+	double GetTime()
 	{
 		return mComputedTime;
 	}
-	kdouble GetPreviousTime()
+	double GetPreviousTime()
 	{
 		return mLastDT;
 	}
 
-	kdouble GetMinDT()
+	double GetMinDT()
 	{
 		return mMinDT;
 	}
-	kdouble GetMaxDT()
+	double GetMaxDT()
 	{
 		return mMaxDT;
 	}
@@ -107,7 +107,7 @@ public:
 	void	ClearUpdate()
 	{
 		mWasUpdate=false;
-		mComputedTime=KDOUBLE_CONST(0.0);
+		mComputedTime=0.0;
 	}
 
 	/**
@@ -130,15 +130,15 @@ protected:
 	void	Stop();
 
 	//! start time of the profiler
-	kdouble mStartTime;
+	double mStartTime;
 	//! computed time of the profiler
-	kdouble	mComputedTime;
+	double	mComputedTime;
 	//! last deltaTime computed
-	kdouble	mLastDT;
+	double	mLastDT;
 	//! max deltaTime seen
-	kdouble	mMaxDT;
+	double	mMaxDT;
 	//! min deltaTime seen
-	kdouble	mMinDT;
+	double	mMinDT;
 	//! TRUE if the profile was updated
 	bool	mWasUpdate=false;
 };
@@ -208,7 +208,7 @@ public:
 	bool			mIsInit;
 
 	//! empty list of params, used to call graphic object method 
-	kstl::vector<CoreModifiableAttribute*>		mEmptyParams;
+	std::vector<CoreModifiableAttribute*>		mEmptyParams;
 	//! draw method ID
 	unsigned int	mMethodID;
 };

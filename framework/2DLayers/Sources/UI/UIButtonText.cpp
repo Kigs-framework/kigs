@@ -118,18 +118,18 @@ void	UIButtonText::ChangeTextTexture(const unsigned short* _text, unsigned int _
 		char tmptxt[1024] = { 0 };
 		strcpywUtoC(tmptxt, _text);
 
-		kstl::string L_text = tmptxt;
+		std::string L_text = tmptxt;
 
 		ChangeTextTexture(L_text, _texture);
 	}
 }
 
-void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _texture)
+void	UIButtonText::ChangeTextTexture(const std::string & a_text, unsigned int _texture)
 {
 	Texture* L_Texture = NULL;
 	
 
-	kstl::string _text = a_text;
+	std::string _text = a_text;
 	if (_text != "")
 	{
 		switch (_texture)
@@ -174,7 +174,7 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 		// need localization ?
 		if (_text[0] == '#')
 		{
-			kstl::string key = _text.substr(1, _text.length() - 1);
+			std::string key = _text.substr(1, _text.length() - 1);
 
 			PLATFORM_WCHAR* localized = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key.c_str());
 
@@ -226,7 +226,7 @@ void	UIButtonText::ChangeTextTexture(const kstl::string & a_text, unsigned int _
 	ChangeState();
 }
 
-void UIButtonText::ChangeTexture(kstl::string & _UpText, kstl::string & _overText, kstl::string & _downText)
+void UIButtonText::ChangeTexture(std::string & _UpText, std::string & _overText, std::string & _downText)
 {
 	ChangeTextTexture(_UpText, 0);
 

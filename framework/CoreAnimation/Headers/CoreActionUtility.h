@@ -25,7 +25,7 @@ public:
 	virtual void init(CoreSequence* sequence,CoreVector* params);
 protected:
 
-	virtual bool	protectedUpdate(kdouble time);
+	virtual bool	protectedUpdate(double time);
 	unsigned int	mParentTypeID;
 };
 
@@ -48,8 +48,8 @@ public:
 	virtual void init(CoreSequence* sequence,CoreVector* params);
 protected:
 
-	virtual bool	protectedUpdate(kdouble time);
-	kstl::string	mMessage;
+	virtual bool	protectedUpdate(double time);
+	std::string	mMessage;
 	usString		mParam;
 };
 
@@ -73,8 +73,8 @@ public:
 	virtual void init(CoreSequence* sequence, CoreVector* params);
 protected:
 
-	virtual bool	protectedUpdate(kdouble time);
-	kstl::string	mSignal;
+	virtual bool	protectedUpdate(double time);
+	std::string	mSignal;
 	usString		mParam;
 };
 
@@ -99,13 +99,13 @@ public:
 
 	virtual void init(CoreSequence* sequence,CoreVector* params);
 
-	virtual void	setStartTime(kdouble t);
+	virtual void	setStartTime(double t);
 
 
 protected:
 
-	virtual bool	protectedUpdate(kdouble time);
-	kstl::vector<SP<CoreAction>>	mList;
+	virtual bool	protectedUpdate(double time);
+	std::vector<SP<CoreAction>>	mList;
 };
 
 // ****************************************
@@ -129,12 +129,12 @@ public:
 
 	virtual void init(CoreSequence* sequence,CoreVector* params);
 
-	virtual void	setStartTime(kdouble t);
+	virtual void	setStartTime(double t);
 
 protected:
 
-	virtual bool				protectedUpdate(kdouble time);
-	kstl::vector<SP<CoreAction>>	mList;
+	virtual bool				protectedUpdate(double time);
+	std::vector<SP<CoreAction>>	mList;
 	unsigned int				mCurrentActionIndex;
 };
 
@@ -156,13 +156,13 @@ public:
 
 	virtual ~CoreActionForLoop();
 
-	virtual void	setStartTime(kdouble t);
+	virtual void	setStartTime(double t);
 
 	virtual void init(CoreSequence* sequence,CoreVector* params);
 
 protected:
 
-	virtual bool				protectedUpdate(kdouble time);
+	virtual bool				protectedUpdate(double time);
 	int							mLoopCount;
 	int							mCurrentLoopIndex;
 	SP<CoreAction>					mActionToLoop;
@@ -186,13 +186,13 @@ public:
 
 	virtual ~CoreActionDoWhile();
 
-	virtual void	setStartTime(kdouble t);
+	virtual void	setStartTime(double t);
 
 	virtual void init(CoreSequence* sequence,CoreVector* params);
 
 protected:
 
-	virtual bool				protectedUpdate(kdouble time);
+	virtual bool				protectedUpdate(double time);
 	SP<CoreAction>				mActionToLoop;
 	bool						mIsZeroDuration;
 };

@@ -30,7 +30,7 @@ public:
 	}
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, IMPLEMENT_GET_VALUE_BOOL);
 
-	virtual bool getValue(kstl::string& value) const override
+	virtual bool getValue(std::string& value) const override
 	{
 		bool tmpValue = mValue;
 		CALL_GETMODIFIER(notificationLevel, tmpValue);
@@ -54,7 +54,7 @@ public:
 	EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SET_VALUE_BOOL);
 
 
-	virtual bool setValue(const kstl::string& value) override
+	virtual bool setValue(const std::string& value) override
 	{
 		if (this->isReadOnly()) { return false; }
 		bool tmpValue = (value == "true" || value == "TRUE");
@@ -63,7 +63,7 @@ public:
 		DO_NOTIFICATION(notificationLevel);  
 		return true;
 	}
-	virtual bool setValue(const char* value) override { if (this->isReadOnly()) { return false; } if (value) { kstl::string localstr(value); return setValue(localstr); } return  setValue(false);}
+	virtual bool setValue(const char* value) override { if (this->isReadOnly()) { return false; } if (value) { std::string localstr(value); return setValue(localstr); } return  setValue(false);}
 	///
 
 };

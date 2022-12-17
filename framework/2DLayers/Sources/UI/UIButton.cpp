@@ -22,7 +22,7 @@ IMPLEMENT_CONSTRUCTOR(UIButton)
 	, mMouseOverAction(*this, false, "MouseOverAction", "")
 	, mMouseOutAction(*this, false, "MouseOutAction", "")
 	, mUnSelectAction(*this, false, "UnSelectAction", "")
-	, mParameter(*this, false, "Parameter", (kstl::string)"")
+	, mParameter(*this, false, "Parameter", (std::string)"")
 	, mStayPressed(*this, false, "StayPressed", false)
 	, mKeepClickOutside(*this, false, "KeepClickOutside", false)
 	, mDefaultPressed(*this, false, "DefaultPressed", false)
@@ -108,9 +108,9 @@ void UIButton::AutoSize()
 	}
 }
 
-static void SendButtonNotifications(const kstl::string& actions, CoreModifiable* sender, kstl::vector<CoreModifiableAttribute*>& params)
+static void SendButtonNotifications(const std::string& actions, CoreModifiable* sender, std::vector<CoreModifiableAttribute*>& params)
 {
-	kstl::vector<kstl::string>	L_ActionVect = SplitStringByCharacter(actions, ':');
+	std::vector<std::string>	L_ActionVect = SplitStringByCharacter(actions, ':');
 	for (unsigned int i = 0; i < L_ActionVect.size(); i++)
 		KigsCore::GetNotificationCenter()->postNotificationName(L_ActionVect[i], params, sender);
 }
@@ -120,7 +120,7 @@ bool UIButton::isAlpha(float X, float Y)
 	//Try to get mask
 	if (!mAlphaMask)
 	{
-		kstl::vector<ModifiableItemStruct> sons = getItems();
+		std::vector<ModifiableItemStruct> sons = getItems();
 		for (unsigned int i = 0; i < sons.size(); i++)
 		{
 			if (sons[i].mItem->isSubType("AlphaMask"))
@@ -168,7 +168,7 @@ bool UIButton::ManageClickTouchEvent(ClickEvent& click_event)
 	{
 		if (!EmitSignal(Signals::ClickUp, this, (usString)mParameter.const_ref())) // if no one connected send classic message
 		{
-			kstl::vector<CoreModifiableAttribute*> sendParams;
+			std::vector<CoreModifiableAttribute*> sendParams;
 			sendParams.push_back(&mParameter);
 			SendButtonNotifications(mClickUpAction, this, sendParams);
 		}
@@ -206,7 +206,7 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 			if (mUseHoverColor) setValue("Color", (v3f)mHoverColor), setValue("Opacity", mHoverColor[3]);
 			if(!EmitSignal(Signals::MouseOver, this, (usString)mParameter.const_ref())) // if no one connected send classic message
 			{
-				kstl::vector<CoreModifiableAttribute*> sendParams;
+				std::vector<CoreModifiableAttribute*> sendParams;
 				sendParams.push_back(&mParameter);
 				SendButtonNotifications(mMouseOverAction, this, sendParams);
 			}
@@ -216,7 +216,7 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 			if (mUseHoverColor)setValue("Color", (v3f)mClickedColor), setValue("Opacity", mClickedColor[3]);
 			if(!EmitSignal(Signals::ClickDown, this, (usString)mParameter.const_ref())) // if no one connected send classic message
 			{
-				kstl::vector<CoreModifiableAttribute*> sendParams;
+				std::vector<CoreModifiableAttribute*> sendParams;
 				sendParams.push_back(&mParameter);
 				SendButtonNotifications(mClickDownAction, this, sendParams);
 			}
@@ -260,7 +260,7 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 			if (mUseHoverColor) setValue("Color", (v3f)mIdleColor), setValue("Opacity", mIdleColor[3]);
 			if(!EmitSignal(Signals::MouseOut, this, (usString)mParameter.const_ref())) // if no one connected send classic message
 			{
-				kstl::vector<CoreModifiableAttribute*> sendParams;
+				std::vector<CoreModifiableAttribute*> sendParams;
 				sendParams.push_back(&mParameter);
 				SendButtonNotifications(mMouseOutAction, this, sendParams);
 			}

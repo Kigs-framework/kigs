@@ -56,9 +56,9 @@ void UIItem::NotifyUpdate(const unsigned int labelid)
 	{
 		if (!GetSons().empty())
 		{
-			kstl::set<Node2D*, Node2D::PriorityCompare> sons = GetSons();
-			kstl::set<Node2D*, Node2D::PriorityCompare>::iterator it = sons.begin();
-			kstl::set<Node2D*, Node2D::PriorityCompare>::iterator end = sons.end();
+			std::set<Node2D*, Node2D::PriorityCompare> sons = GetSons();
+			std::set<Node2D*, Node2D::PriorityCompare>::iterator it = sons.begin();
+			std::set<Node2D*, Node2D::PriorityCompare>::iterator end = sons.end();
 			while (it != end)
 			{
 				(*it)->setValue("IsEnabled", mIsEnabled);
@@ -98,7 +98,7 @@ bool UIItem::Draw(TravState* state)
 	return ParentClassType::Draw(state);
 }
 
-Point2D UIItem::GetCoordsInContainer(kfloat X, kfloat Y)
+Point2D UIItem::GetCoordsInContainer(float X, float Y)
 {
 	Point2D result;
 	// recompute matrix if needed
@@ -118,7 +118,7 @@ Point2D UIItem::GetCoordsInContainer(kfloat X, kfloat Y)
 	return result;
 }
 
-bool UIItem::ContainsPoint(kfloat X, kfloat Y)
+bool UIItem::ContainsPoint(float X, float Y)
 {
 	if (mIsHidden || !mIsTouchable)
 		return false;

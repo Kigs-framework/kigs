@@ -3,17 +3,14 @@
 
 IMPLEMENT_CLASS_INFO(GeolocationDevice)
 
-GeolocationDevice::GeolocationDevice(const kstl::string& name, CLASS_NAME_TREE_ARG) : InputDevice(name, PASS_CLASS_NAME_TREE_ARG)
+GeolocationDevice::GeolocationDevice(const std::string& name, CLASS_NAME_TREE_ARG) : InputDevice(name, PASS_CLASS_NAME_TREE_ARG)
 , mIsActive(false)
-, mLatitude(*this, false, LABEL_AND_ID(Latitude), KDOUBLE_CONST(0.0))
-, mLongitude(*this, false, LABEL_AND_ID(Longitude), KDOUBLE_CONST(0.0))
-, mAltitude(*this, false, LABEL_AND_ID(Altitude), KDOUBLE_CONST(0.0))
-, mAccuracy(*this, false, LABEL_AND_ID(Accuracy), KFLOAT_CONST(0.0f))
-, mRate(*this, false, LABEL_AND_ID(Rate), 1000)
-, mMinDistance(*this, false, LABEL_AND_ID(MinDistance), KFLOAT_CONST(0.0f))
+, mLatitude(*this, false, "Latitude", 0.0)
+, mLongitude(*this, false, "Longitude", 0.0)
+, mAltitude(*this, false, "Altitude", 0.0)
+, mAccuracy(*this, false, "Accuracy", 0.0f)
+, mRate(*this, false, "Rate", 1000)
+, mMinDistance(*this, false, "MinDistance", 0.0f)
 {
-	/*setReadOnly("Latitude");
-	setReadOnly("Longitude");
-	setReadOnly("Altitude");
-	setReadOnly("Accuracy");*/
+
 }

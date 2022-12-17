@@ -9,7 +9,7 @@
 IMPLEMENT_CLASS_INFO(TextureFileManager)
 
 //! constructor
-TextureFileManager::TextureFileManager(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG){}
+TextureFileManager::TextureFileManager(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG){}
 
 //! destructor
 TextureFileManager::~TextureFileManager()
@@ -17,14 +17,14 @@ TextureFileManager::~TextureFileManager()
 	//UnloadAllTexture();
 }
 
-bool TextureFileManager::HasTexture(const kstl::string& fileName)
+bool TextureFileManager::HasTexture(const std::string& fileName)
 {
 	if (mTextureMap.find(fileName) != mTextureMap.end())
 		return true;
 	return false;
 }
 
-void TextureFileManager::AddTexture(const kstl::string& fileName, CoreModifiable* Tex)
+void TextureFileManager::AddTexture(const std::string& fileName, CoreModifiable* Tex)
 {
 	if (!HasTexture(fileName))
 	{
@@ -37,7 +37,7 @@ void TextureFileManager::AddTexture(const kstl::string& fileName, CoreModifiable
 }
 
 
-void TextureFileManager::AddTexture(const kstl::string& fileName, const CMSP& Tex)
+void TextureFileManager::AddTexture(const std::string& fileName, const CMSP& Tex)
 {
 	if (!HasTexture(fileName))
 	{
@@ -49,7 +49,7 @@ void TextureFileManager::AddTexture(const kstl::string& fileName, const CMSP& Te
 	}
 }
 
-CMSP TextureFileManager::CreateTexture(const kstl::string& textureName)
+CMSP TextureFileManager::CreateTexture(const std::string& textureName)
 {
 	SP<Texture> Tex = KigsCore::GetInstanceOf(textureName, "Texture", true);
 	AddTexture(textureName, Tex);
@@ -57,7 +57,7 @@ CMSP TextureFileManager::CreateTexture(const kstl::string& textureName)
 }
 
 
-SP<Texture> TextureFileManager::GetTexture(const kstl::string& fileName, bool doInit)
+SP<Texture> TextureFileManager::GetTexture(const std::string& fileName, bool doInit)
 {
 	SP<Texture> pTex(nullptr);
 
@@ -78,7 +78,7 @@ SP<Texture> TextureFileManager::GetTexture(const kstl::string& fileName, bool do
 }
 
 
-SP<Texture> TextureFileManager::GetTexture(const kstl::string& fileName, const kstl::string& a_textureName, bool doInit)
+SP<Texture> TextureFileManager::GetTexture(const std::string& fileName, const std::string& a_textureName, bool doInit)
 {
 	SP<Texture> pTex;
 
@@ -101,7 +101,7 @@ SP<Texture> TextureFileManager::GetTexture(const kstl::string& fileName, const k
 
 void TextureFileManager::ResetAllTexture()
 {
-	kstl::map<kstl::string, CoreModifiable*>::iterator	it = mTextureMap.begin();
+	std::map<std::string, CoreModifiable*>::iterator	it = mTextureMap.begin();
 	for (; it != mTextureMap.end(); ++it)
 	{
 		if ((*it).second->isSubType(Texture::mClassID))
@@ -120,7 +120,7 @@ void TextureFileManager::UnloadAllTexture()
 void TextureFileManager::UnloadTexture(Texture* Tex)
 {
 	// search this texture
-	kstl::map<kstl::string, CoreModifiable*>::iterator	it;
+	std::map<std::string, CoreModifiable*>::iterator	it;
 	for (it = mTextureMap.begin(); it != mTextureMap.end(); ++it)
 	{
 		if (it->second == Tex)

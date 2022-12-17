@@ -21,7 +21,7 @@ class BumperDDSequence : public BaseDDSequence
 {
 public:
 	DECLARE_CLASS_INFO(BumperDDSequence, BaseDDSequence, CoreDataDrivenSequence)
-	BumperDDSequence(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	BumperDDSequence(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~BumperDDSequence();
 
 protected:
@@ -30,6 +30,6 @@ protected:
 	maUSString mNextSequence;
 	maFloat mDuration;
 
-	kdouble mStartTime;
+	double mStartTime;
 };
 #endif //_BUMPERDDSEQUENCE_H_

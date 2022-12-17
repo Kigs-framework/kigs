@@ -2,10 +2,10 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
-kstl::string		LocalizationManager::getCurrentUserLanguage()
+std::string		LocalizationManager::getCurrentUserLanguage()
 {
 	// current language in 2 letter format
-	kstl::string ret="en";
+	std::string ret="en";
 	LANGID LanguageId = GetUserDefaultUILanguage();
 	LanguageId &= 0xff;
 	switch (LanguageId)

@@ -34,18 +34,18 @@ public:
 	DECLARE_CLASS_INFO(ModuleCoreAnimation,ModuleBase,CoreAnimation)
 
 	//! constructor
-    ModuleCoreAnimation(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    ModuleCoreAnimation(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
          
 	//! init module
-    void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;   
+    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;   
 	//! close module
     void Close() override;
             
 	//! update module
 	void Update(const Timer& timer, void* addParam) override;
 
-	SP<CoreSequence> createSequenceFromString(CMSP target, const kstl::string& json, Timer* reftimer = 0);
-	SP<CoreSequence> createSequenceFromJSON(CMSP target, const kstl::string& file,Timer* reftimer=0);
+	SP<CoreSequence> createSequenceFromString(CMSP target, const std::string& json, Timer* reftimer = 0);
+	SP<CoreSequence> createSequenceFromJSON(CMSP target, const std::string& file,Timer* reftimer=0);
 	SP<CoreSequence> createSequenceFromCoreMap(CMSP target, CoreItemSP& sequenceDesc,Timer* reftimer=0);
 	CoreItemSP		 createAction(CoreSequence* sequence, CoreItemSP& actiondesc);
 
@@ -63,11 +63,11 @@ public:
 	DECLARE_METHOD(OnDestroyCallBack)
 	COREMODIFIABLE_METHODS(OnDestroyCallBack);
 	/**
-	* \fn			kstl::map<kstl::string, CoreItemOperatorCreateMethod>&	GetCoreItemOperatorConstructMap();
+	* \fn			std::map<std::string, CoreItemOperatorCreateMethod>&	GetCoreItemOperatorConstructMap();
 	* \brief		return the specific map for CoreItemOperator creation in animation module
-	* \return		kstl::map<kstl::string, CoreItemOperatorCreateMethod>& 
+	* \return		std::map<std::string, CoreItemOperatorCreateMethod>& 
 	*/
-	static kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	GetCoreItemOperatorConstructMap();
+	static kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	GetCoreItemOperatorConstructMap();
 
 	WRAP_METHODS(addSequence, removeSequence, removeAllSequencesOnTarget, createSequenceFromString, createSequenceFromJSON, startSequence, pauseSequence, stopSequence, startSequenceAtFirstUpdate);
 
@@ -78,12 +78,12 @@ protected:
 	//! sequences manager
 	void updateSequences(const Timer& timer);
 
-	kstl::map<unsigned int,kstl::vector<SP<CoreSequence>> >	mSequences;
+	std::map<unsigned int,std::vector<SP<CoreSequence>> >	mSequences;
 
 	SP<MiniInstanceFactory>	mPrivateMiniFactory;
 
 	// animation specific CoreItemOperator Map
-	static kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>	mCoreItemOperatorCreateMethodMap;
+	static kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>	mCoreItemOperatorCreateMethodMap;
 
 }; 
 

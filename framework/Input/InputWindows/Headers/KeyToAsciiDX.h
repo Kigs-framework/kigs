@@ -18,7 +18,7 @@ class KeyToAsciiDX : public KeyToAscii
 {
 public:
     DECLARE_CLASS_INFO(KeyToAsciiDX,KeyToAscii,Input)
-    KeyToAsciiDX(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    KeyToAsciiDX(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual int Convert(unsigned Code);
 };
 

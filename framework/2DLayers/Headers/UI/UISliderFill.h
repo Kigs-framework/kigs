@@ -26,7 +26,7 @@ public:
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	UISliderFill(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UISliderFill(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	inline SP<Texture>	GetVoidTexture() { return mVoidTexturePointer; }
 	inline SP<Texture>  GetStartTexture() { if (mStartPositionX > -1 && mStartPositionY > -1) return mStartTexturePointer; else return nullptr; }
@@ -39,7 +39,7 @@ public:
 	inline void			Get_EndPosition(int& X, int& Y) { X = mEndPositionX; Y = mEndPositionY; }
 	void				ComputeInitialElementsPosition();
 
-	void				ChangeTexture(kstl::string voidtexturename, kstl::string texturename = "", kstl::string overtexturename = "", kstl::string downtexturename = "");
+	void				ChangeTexture(std::string voidtexturename, std::string texturename = "", std::string overtexturename = "", std::string downtexturename = "");
 
 protected:
 

@@ -62,7 +62,7 @@ bool CoreItemIterator::operator!=(const CoreItemIterator& other) const
 	return (*get()) != *(other.get());
 }
 
-bool CoreItemIterator::getKey(kstl::string& returnedkey)
+bool CoreItemIterator::getKey(std::string& returnedkey)
 {
 	return get()->getKey(returnedkey);
 }
@@ -97,7 +97,7 @@ CoreItemSP CoreItem::operator[](int i)
 	return CoreItemSP(nullptr);
 }
 
-CoreItemSP CoreItem::operator[](const kstl::string& key)
+CoreItemSP CoreItem::operator[](const std::string& key)
 {
 	return CoreItemSP(nullptr);
 }
@@ -107,23 +107,6 @@ CoreItemSP CoreItem::operator[](const usString& key)
 	return CoreItemSP(nullptr);
 }
 
-CoreItemSP CoreNamedItem::operator[](const kstl::string& key)
-{
-	if (key == mName)
-	{
-		return SharedFromThis();
-	}
-	return CoreItemSP(nullptr);
-}
-
-CoreItemSP CoreNamedItem::operator[](const usString& key)
-{
-	if (key.ToString() == mName)
-	{
-		return SharedFromThis();
-	}
-	return CoreItemSP(nullptr);
-}
 
 CoreItem::operator bool() const
 {
@@ -131,7 +114,7 @@ CoreItem::operator bool() const
 	return false;
 }
 
-CoreItem::operator kfloat() const
+CoreItem::operator float() const
 {
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
 	return 0.0f;
@@ -167,7 +150,7 @@ CoreItem::operator u64() const
 	return 0;
 }
 
-CoreItem::operator kstl::string() const
+CoreItem::operator std::string() const
 {
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
 	return "";
@@ -200,10 +183,6 @@ CoreItem::operator Point3D() const
 	return result;
 }
 
-CoreItemSP MakeCoreNamedMap(const std::string& name)
-{
-	return std::make_shared<CoreNamedMap<std::string>>(name);
-}
 CoreItemSP MakeCoreMap()
 {
 	return std::make_shared<CoreMap<std::string>>();
@@ -212,26 +191,15 @@ CoreItemSP MakeCoreMapUS()
 {
 	return std::make_shared<CoreMap<usString>>();
 }
-CoreItemSP MakeCoreNamedMapUS(const std::string& name)
-{
-	return std::make_shared<CoreNamedMap<usString>>(name);
-}
+
 CoreItemSP MakeCoreVector()
 {
 	return std::make_shared<CoreVector>();
-}
-CoreItemSP MakeCoreNamedVector(const std::string& name)
-{
-	return std::make_shared<CoreNamedVector>(name);
 }
 
 #define IMPLEMENT_MAKE_COREVALUE(type) CoreItemSP MakeCoreValue(type value)\
 {\
 	return std::make_shared<CoreValue<std::decay_t<type>>>(value);\
-}\
-CoreItemSP MakeCoreNamedValue(type value, const std::string& name)\
-{\
-	return std::make_shared<CoreNamedValue<std::decay_t<type>>>(value, name);\
 }
 
 IMPLEMENT_MAKE_COREVALUE(const bool&)
@@ -255,11 +223,6 @@ CoreItemSP MakeCoreValue(const char* value, CoreModifiable* owner)
 		return std::make_shared<CoreValue<std::string>>(value);
 }
 
-CoreItemSP MakeCoreNamedValue(const char* value, const std::string& name)
-{
-	return std::make_shared<CoreNamedValue<std::string>>(value, name);
-}
-
 CoreItemSP MakeCoreValue(const std::string& value, CoreModifiable* owner)
 {
 	// check eval
@@ -273,11 +236,6 @@ CoreItemSP MakeCoreValue(const std::string& value, CoreModifiable* owner)
 		return std::make_shared<CoreValue<std::string>>(value);
 }
 
-CoreItemSP MakeCoreNamedValue(const std::string& value, const std::string& name)
-{
-	return std::make_shared<CoreNamedValue<std::string>>(value, name);
-}
-
 CoreItemSP MakeCoreValue(const usString& value, CoreModifiable* owner)
 {
 	if (AttributeNeedEval(value.ToString()))
@@ -288,11 +246,6 @@ CoreItemSP MakeCoreValue(const usString& value, CoreModifiable* owner)
 	}
 	else
 		return std::make_shared<CoreValue<usString>>(value);
-}
-
-CoreItemSP MakeCoreNamedValue(const usString& value, const std::string& name)
-{
-	return std::make_shared<CoreNamedValue<usString>>(value, name);
 }
 
 CoreItemSP MakeCoreValue(const v2f& value)
@@ -329,7 +282,7 @@ CoreItem& CoreItem::operator=(const bool& other)
 	KIGS_WARNING("trying to assign base CoreItem with value", 2);
 	return *this;
 }
-CoreItem& CoreItem::operator=(const kfloat& other)
+CoreItem& CoreItem::operator=(const float& other)
 {
 	KIGS_WARNING("trying to assign base CoreItem with value", 2);
 	return *this;
@@ -354,7 +307,7 @@ CoreItem& CoreItem::operator=(const u64& other)
 	KIGS_WARNING("trying to assign base CoreItem with value", 2);
 	return *this;
 }
-CoreItem& CoreItem::operator=(const kstl::string& other)
+CoreItem& CoreItem::operator=(const std::string& other)
 {
 	KIGS_WARNING("trying to assign base CoreItem with value", 2);
 	return *this;

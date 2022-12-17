@@ -147,9 +147,9 @@ XMLAttributeBase* XMLNodeBase::getAndRemoveAttribute(const std::string_view& a, 
 	return result;
 }
 
-kstl::vector<XMLNodeBase*>	XMLNodeBase::getNodes(XMLNodeType type)
+std::vector<XMLNodeBase*>	XMLNodeBase::getNodes(XMLNodeType type)
 {
-	kstl::vector<XMLNodeBase*> result;
+	std::vector<XMLNodeBase*> result;
 	result.clear();
 
 	getNodes(type, result);
@@ -157,7 +157,7 @@ kstl::vector<XMLNodeBase*>	XMLNodeBase::getNodes(XMLNodeType type)
 	return result;
 }
 
-void XMLNodeBase::getNodes(XMLNodeType type, kstl::vector<XMLNodeBase*>& list)
+void XMLNodeBase::getNodes(XMLNodeType type, std::vector<XMLNodeBase*>& list)
 {
 	if (this->getType() == type)
 	{

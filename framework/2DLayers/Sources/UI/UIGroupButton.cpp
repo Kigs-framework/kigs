@@ -5,12 +5,12 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UIGroupButton, UIGroupButton, 2DLayers);
 IMPLEMENT_CLASS_INFO(UIGroupButton)
 
-UIGroupButton::UIGroupButton(const kstl::string& name, CLASS_NAME_TREE_ARG) :
+UIGroupButton::UIGroupButton(const std::string& name, CLASS_NAME_TREE_ARG) :
 	UIItem(name, PASS_CLASS_NAME_TREE_ARG)
 	, mKeepOnePressed(*this, false, "KeepOnePressed", true)
 	, mOnlyOnePressed(*this, false, "OnlyOnePressed", true)
 	, mNoSelectedAction(*this, false, "NoSelectedAction", "")
-	, mParameter(*this, false, "Parameter", (kstl::string)"")
+	, mParameter(*this, false, "Parameter", (std::string)"")
 {
 	mSize = v2f(0,0);
 	mButtonNumber = 0;
@@ -34,7 +34,7 @@ void	UIGroupButton::computeSize(int _buttonNumber, CoreModifiable* a_item)
 	v2f lsize(0,0);
 	int _Position[2];
 	a_item->getValue("Size",lsize);
-	a_item->getArrayValue(LABEL_TO_ID(Position), _Position, 2);
+	a_item->getArrayValue("Position", _Position, 2);
 
 	v2f tmpS((float)(lsize.x + _Position[0]),(float)(lsize.y + _Position[1]));
 	if (_buttonNumber == 1)
@@ -58,8 +58,8 @@ void	UIGroupButton::computeSize(int _buttonNumber, CoreModifiable* a_item)
 
 void	UIGroupButton::reComputeSize()
 {
-	kstl::vector<UIButton*>::iterator ItStart = mButtonList.begin();
-	kstl::vector<UIButton*>::iterator ItEnd = mButtonList.end();
+	std::vector<UIButton*>::iterator ItStart = mButtonList.begin();
+	std::vector<UIButton*>::iterator ItEnd = mButtonList.end();
 
 	int buttoncount = 0;
 	while (ItStart != ItEnd)
@@ -107,9 +107,9 @@ bool	UIGroupButton::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
 	if (item->isSubType("UIButton"))
 	{
-		kstl::vector<UIButton*>::iterator ItStart = mButtonList.begin();
-		kstl::vector<UIButton*>::iterator ItEnd = mButtonList.end();
-		kstl::vector<UIButton*>::iterator ItSaved;
+		std::vector<UIButton*>::iterator ItStart = mButtonList.begin();
+		std::vector<UIButton*>::iterator ItEnd = mButtonList.end();
+		std::vector<UIButton*>::iterator ItSaved;
 
 		int buttoncount = 0;
 		while (ItStart != ItEnd)

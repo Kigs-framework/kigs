@@ -41,11 +41,11 @@ public:
 
 	/**
 	 * \brief	update the bounding box
-	 * \fn 		virtual bool	BBoxUpdate(kdouble)
-	 * \param	kdouble : world time
+	 * \fn 		virtual bool	BBoxUpdate(double)
+	 * \param	double : world time
 	 * \return	TRUE because has a bounding box
 	 */
-	bool BBoxUpdate(kdouble/* time */) override { return true; }
+	bool BBoxUpdate(double/* time */) override { return true; }
 
 	/**
 	 * \brief	retreive the bounding box of the bitmap (point min and point max)

@@ -49,8 +49,8 @@ public:
 		return mTyped;
 	}
 
-	inline kstl::vector<KeyEvent>&		Get_KeyUpList() { return mKeyUpList; }
-	inline kstl::vector<KeyEvent>&		Get_KeyDownList() { return mKeyDownList; }
+	inline std::vector<KeyEvent>&		Get_KeyUpList() { return mKeyUpList; }
+	inline std::vector<KeyEvent>&		Get_KeyDownList() { return mKeyDownList; }
 
 	inline bool IsKeyPressed(int key_id)
 	{
@@ -65,8 +65,8 @@ public:
 	virtual void Hide() {};
 
 protected:
-	kstl::vector<KeyEvent> mKeyUpList;
-	kstl::vector<KeyEvent> mKeyDownList;
+	std::vector<KeyEvent> mKeyUpList;
+	std::vector<KeyEvent> mKeyDownList;
 
 	mutable std::mutex mMutex;
 	std::u16string mTyped;

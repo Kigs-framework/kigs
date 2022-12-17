@@ -2,7 +2,7 @@
 #include "BufferedFile.h"
 #include <stdio.h>
 
-bool BufferedFile::searchNextWord(const kstl::string& toSearch)
+bool BufferedFile::searchNextWord(const std::string& toSearch)
 {
 	bool	found=false;
 	bool	eofFound=false;
@@ -39,7 +39,7 @@ bool BufferedFile::searchNextWord(const kstl::string& toSearch)
 	return found;
 }
 
-bool	BufferedFile::getNextFloat(kfloat& flt)
+bool	BufferedFile::getNextFloat(float& flt)
 {
 	// go to next non white space
 	bool	found=false;

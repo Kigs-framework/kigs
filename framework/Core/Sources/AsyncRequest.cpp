@@ -6,7 +6,7 @@
 IMPLEMENT_CLASS_INFO(AsyncRequest)
 
 //! constructor
-AsyncRequest::AsyncRequest(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+AsyncRequest::AsyncRequest(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 , mProcessingFlag(0)
 {
 	

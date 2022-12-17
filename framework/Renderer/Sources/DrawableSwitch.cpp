@@ -4,7 +4,7 @@
 
 IMPLEMENT_CLASS_INFO(DrawableSwitch)
 
-DrawableSwitch::DrawableSwitch(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)
+DrawableSwitch::DrawableSwitch(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	mChildrenHaveBbox=false;
 	mCurrentDrawable=0;
@@ -80,12 +80,12 @@ bool	DrawableSwitch::removeItem(const CMSP& item DECLARE_LINK_NAME)
 }
 
 
-void	DrawableSwitch::ComputeLocalBBox(kdouble time)
+void	DrawableSwitch::ComputeLocalBBox(double time)
 {
 	Point3D boundingp[2];
 
 	bool isInit=false;
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 
 	for (it=getItems().begin();it!=getItems().end();++it)
     {
@@ -122,7 +122,7 @@ void	DrawableSwitch::SetCurrentDrawable(int index)
 {
 	mCurrentDrawable=0;
 	int sonindex=0;
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 	for (it=getItems().begin();it!=getItems().end();++it)
     {
 		if((*it).mItem->isSubType(Drawable::mClassID))
@@ -138,10 +138,10 @@ void	DrawableSwitch::SetCurrentDrawable(int index)
 	}
 }
 
-void	DrawableSwitch::SetCurrentDrawable(kstl::string drawablename)
+void	DrawableSwitch::SetCurrentDrawable(std::string drawablename)
 {
 	mCurrentDrawable=0;
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 	for (it=getItems().begin();it!=getItems().end();++it)
     {
 		if((*it).mItem->getName()==drawablename)
@@ -156,7 +156,7 @@ void	DrawableSwitch::SetCurrentDrawable(kstl::string drawablename)
 void	DrawableSwitch::SetCurrentDrawable(Drawable* drawable)
 {
 	mCurrentDrawable=0;
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 	for (it=getItems().begin();it!=getItems().end();++it)
     {
 		if(((*it).mItem)==drawable)

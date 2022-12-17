@@ -14,7 +14,7 @@ TravPath::~TravPath() {}
 
 
 
-TravPath::PathNeed	TravPath::ComputeNeeds(kstl::vector<int>& currentway)
+TravPath::PathNeed	TravPath::ComputeNeeds(std::vector<int>& currentway)
 {
 	if(mNeedPop)
 	{
@@ -48,7 +48,7 @@ TravPath::PathNeed	TravPath::ComputeNeeds(kstl::vector<int>& currentway)
 }
 
 
-bool TravPath::IsNeedSameLevel(const kstl::vector<int>& currentway)
+bool TravPath::IsNeedSameLevel(const std::vector<int>& currentway)
 {
 	if(mNeedPop)
 	{
@@ -67,7 +67,7 @@ bool TravPath::IsNeedSameLevel(const kstl::vector<int>& currentway)
 }
 
 
-void TravPath::PopWay(kstl::vector<int>& currentway)
+void TravPath::PopWay(std::vector<int>& currentway)
 {
 //	mPath.erase(mPath.begin());
 	mCurrentPathIndex++;

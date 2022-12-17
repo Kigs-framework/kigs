@@ -10,6 +10,7 @@
 #include "TextureFileManager.h"
 #include "SceneGraphDefines.h"
 #include "CoreVector.h"
+#include "CoreMap.h"
 #include "FilePathManager.h"
 
 BinMeshLoader::BinMeshLoader() : BinMeshLoaderBase()
@@ -20,7 +21,7 @@ BinMeshLoader::~BinMeshLoader()
 {
 }
 
-int BinMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
+int BinMeshLoader::ImportFile(Mesh *pMesh, const std::string &FileName)
 {
 	int Error;
 
@@ -30,7 +31,7 @@ int BinMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
 		return 1;
 	}
 
-	pMesh->setValue(LABEL_TO_ID(FileName),FileName);
+	pMesh->setValue("FileName",FileName);
 
 	mFile=BufferedFile::Open(FileName.c_str());
 	if(mFile)
@@ -53,7 +54,7 @@ int BinMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
 	return 3;
 }
 
-int BinMeshLoader::ImportFile(ModernMesh *pMesh, const kstl::string &FileName)
+int BinMeshLoader::ImportFile(ModernMesh *pMesh, const std::string &FileName)
 {
 	int Error;
 
@@ -151,7 +152,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 
 		char	index[16];
 		sprintf(index,"%d",i);
-		kstl::string objname=pMesh->getName();
+		std::string objname=pMesh->getName();
 		objname+="MeshItemGroup";
 		objname+=index;
 
@@ -164,11 +165,11 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 		objname+=index;
 
 		SP<Material> newMaterial=KigsCore::GetInstanceOf(objname,"Material");
-		newMaterial->setValue(LABEL_TO_ID(BlendFuncSource),currentmat.mBlendFuncSource);
-		newMaterial->setValue(LABEL_TO_ID(BlendFuncDest),currentmat.mBlendFuncDest);
-		newMaterial->setValue(LABEL_TO_ID(BlendEnabled),currentmat.mBlendEnabled);
+		newMaterial->setValue("BlendFuncSource",currentmat.mBlendFuncSource);
+		newMaterial->setValue("BlendFuncDest",currentmat.mBlendFuncDest);
+		newMaterial->setValue("BlendEnabled",currentmat.mBlendEnabled);
 
-		newMaterial->setValue(LABEL_TO_ID(MaterialColorEnabled),currentmat.mMaterialColorEnabled);
+		newMaterial->setValue("MaterialColorEnabled",currentmat.mMaterialColorEnabled);
 		if(currentmat.mBlendEnabled)
 		{
 			newMaterial->setValue("TransarencyFlag", true);
@@ -180,14 +181,14 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 			currentmat.shininess=128.0f;
 		}
 
-		newMaterial->SetAmbientColor((kfloat)currentmat.ambient[0],(kfloat)currentmat.ambient[1],(kfloat)currentmat.ambient[2]);
-		newMaterial->SetSpecularColor((kfloat)currentmat.specular[0],(kfloat)currentmat.specular[1],(kfloat)currentmat.specular[2]);
-		newMaterial->SetEmissionColor((kfloat)currentmat.emissive[0],(kfloat)currentmat.emissive[1],(kfloat)currentmat.emissive[2]);
-		newMaterial->SetDiffuseColor((kfloat)currentmat.diffuse[0],(kfloat)currentmat.diffuse[1],(kfloat)currentmat.diffuse[2],(kfloat)currentmat.alpha);
-		newMaterial->setValue(LABEL_TO_ID(Shininess),(kfloat)currentmat.shininess);
-		newMaterial->setValue(LABEL_TO_ID(Transparency),(kfloat)currentmat.alpha);
+		newMaterial->SetAmbientColor((float)currentmat.ambient[0],(float)currentmat.ambient[1],(float)currentmat.ambient[2]);
+		newMaterial->SetSpecularColor((float)currentmat.specular[0],(float)currentmat.specular[1],(float)currentmat.specular[2]);
+		newMaterial->SetEmissionColor((float)currentmat.emissive[0],(float)currentmat.emissive[1],(float)currentmat.emissive[2]);
+		newMaterial->SetDiffuseColor((float)currentmat.diffuse[0],(float)currentmat.diffuse[1],(float)currentmat.diffuse[2],(float)currentmat.alpha);
+		newMaterial->setValue("Shininess",(float)currentmat.shininess);
+		newMaterial->setValue("Transparency",(float)currentmat.alpha);
 
-		if((kfloat)currentmat.alpha != KFLOAT_CONST(1.0))
+		if((float)currentmat.alpha != 1.0)
 		{
 			pMesh->setValue("TransarencyFlag", true);
 		}
@@ -218,14 +219,14 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 
 			SP<MaterialStage> MatStage = (KigsCore::GetInstanceOf(objname,"MaterialStage"));
 
-			MatStage->setValue(LABEL_TO_ID(StageIndex),stagedesc.mStageIndex);
-			MatStage->setValue(LABEL_TO_ID(TexEnv),stagedesc.mTexEnv);
+			MatStage->setValue("StageIndex",stagedesc.mStageIndex);
+			MatStage->setValue("TexEnv",stagedesc.mTexEnv);
 
 			if(stagedesc.mTexture != "empty")
 			{
 				auto texfileManager = KigsCore::Singleton<TextureFileManager>();
 				SP<Texture> Tex = texfileManager->GetTexture(stagedesc.mTexture, false);
-				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
+				Tex->setValue("ForcePow2",true);
 				Tex->Init();
 
 				MatStage->addItem(Tex);
@@ -242,7 +243,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 			{
 				TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
 				Texture* Tex=fileManager->GetTexture(stagedesc.mTexture,false);
-				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
+				Tex->setValue("ForcePow2",true);
 				Tex->Init();
 
 				newMaterial->addItem(Tex);
@@ -254,15 +255,15 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 
 		bool	sharedMaterial=true;
 
-		pMesh->getValue(LABEL_TO_ID(ShareMaterial),sharedMaterial);
+		pMesh->getValue("ShareMaterial",sharedMaterial);
 
 		// check existing materials
 		SP<Material> current(nullptr);
 		bool		found=false;
 		if(sharedMaterial)
 		{
-			kstl::vector<CMSP>	instances = CoreModifiable::GetInstances("Material");
-			kstl::vector<CMSP>::iterator	it;
+			std::vector<CMSP>	instances = CoreModifiable::GetInstances("Material");
+			std::vector<CMSP>::iterator	it;
 
 			for(it=instances.begin();it!=instances.end();++it)
 			{
@@ -278,7 +279,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 		else // not shared, add a flag
 		{
 			newMaterial->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL,"IsShared");
-			newMaterial->setValue(LABEL_TO_ID(IsShared),false);
+			newMaterial->setValue("IsShared",false);
 		}
 		if(found)
 		{
@@ -455,7 +456,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 	{
 		pMesh->mVertexArray=new Point3D[pMesh->mVertexCount];
 
-		ReadFloatArray((kfloat*)pMesh->mVertexArray,pMesh->mVertexCount*3,mFile);
+		ReadFloatArray((float*)pMesh->mVertexArray,pMesh->mVertexCount*3,mFile);
 	}
 
 	fread(&(pMesh->mNormalCount),sizeof(unsigned int),1,mFile);
@@ -463,7 +464,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 	{
 		pMesh->mNormalArray=new Vector3D[pMesh->mNormalCount];
 
-		ReadFloatArray((kfloat*)pMesh->mNormalArray,pMesh->mNormalCount*3,mFile);
+		ReadFloatArray((float*)pMesh->mNormalArray,pMesh->mNormalCount*3,mFile);
 	}
 
 	fread(&(pMesh->mTexCoordCount),sizeof(unsigned int),1,mFile);
@@ -471,7 +472,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 	{
 		pMesh->mTexArray=new Mesh::TexCoord[pMesh->mTexCoordCount];
 
-		ReadFloatArray((kfloat*)pMesh->mTexArray,pMesh->mTexCoordCount*2,mFile);
+		ReadFloatArray((float*)pMesh->mTexArray,pMesh->mTexCoordCount*2,mFile);
 	}
 
 	fread(&(pMesh->mColorCount),sizeof(unsigned int),1,mFile);
@@ -479,7 +480,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 	{
 		pMesh->mColorArray=new Vector4D[pMesh->mColorCount];
 
-		ReadFloatArray((kfloat*)pMesh->mColorArray,pMesh->mColorCount*4,mFile);
+		ReadFloatArray((float*)pMesh->mColorArray,pMesh->mColorCount*4,mFile);
 	}
 
 	return 0;
@@ -496,7 +497,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	unsigned int fileVersion=header.GetFileVersion();
 	int nbGroup=(int)header.GetGroupCount();
 
-	kstl::vector<grpStruct>	grpList;
+	std::vector<grpStruct>	grpList;
 
 	int i,j;
 	for(i=0;i<nbGroup;i++)
@@ -555,7 +556,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 		char	index[16];
 		sprintf(index,"%d",i);
-		kstl::string objname=pMesh->getName();
+		std::string objname=pMesh->getName();
 		objname+="MeshItemGroup";
 		objname+=index;
 
@@ -570,11 +571,11 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		objname+=index;
 
 		SP<Material> newMaterial=KigsCore::GetInstanceOf(objname,"Material");
-		newMaterial->setValue(LABEL_TO_ID(BlendFuncSource),currentmat.mBlendFuncSource);
-		newMaterial->setValue(LABEL_TO_ID(BlendFuncDest),currentmat.mBlendFuncDest);
-		newMaterial->setValue(LABEL_TO_ID(BlendEnabled),currentmat.mBlendEnabled);
+		newMaterial->setValue("BlendFuncSource",currentmat.mBlendFuncSource);
+		newMaterial->setValue("BlendFuncDest",currentmat.mBlendFuncDest);
+		newMaterial->setValue("BlendEnabled",currentmat.mBlendEnabled);
 
-		newMaterial->setValue(LABEL_TO_ID(MaterialColorEnabled),currentmat.mMaterialColorEnabled);
+		newMaterial->setValue("MaterialColorEnabled",currentmat.mMaterialColorEnabled);
 		if(currentmat.mBlendEnabled)
 		{
 			newMaterial->setValue("TransarencyFlag", true);
@@ -586,14 +587,14 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 			currentmat.shininess=128.0f;
 		}
 
-		newMaterial->SetAmbientColor((kfloat)currentmat.ambient[0],(kfloat)currentmat.ambient[1],(kfloat)currentmat.ambient[2]);
-		newMaterial->SetSpecularColor((kfloat)currentmat.specular[0],(kfloat)currentmat.specular[1],(kfloat)currentmat.specular[2]);
-		newMaterial->SetEmissionColor((kfloat)currentmat.emissive[0],(kfloat)currentmat.emissive[1],(kfloat)currentmat.emissive[2]);
-		newMaterial->SetDiffuseColor((kfloat)currentmat.diffuse[0],(kfloat)currentmat.diffuse[1],(kfloat)currentmat.diffuse[2],(kfloat)currentmat.alpha);
-		newMaterial->setValue(LABEL_TO_ID(Shininess),(kfloat)currentmat.shininess);
-		newMaterial->setValue(LABEL_TO_ID(Transparency),(kfloat)currentmat.alpha);
+		newMaterial->SetAmbientColor((float)currentmat.ambient[0],(float)currentmat.ambient[1],(float)currentmat.ambient[2]);
+		newMaterial->SetSpecularColor((float)currentmat.specular[0],(float)currentmat.specular[1],(float)currentmat.specular[2]);
+		newMaterial->SetEmissionColor((float)currentmat.emissive[0],(float)currentmat.emissive[1],(float)currentmat.emissive[2]);
+		newMaterial->SetDiffuseColor((float)currentmat.diffuse[0],(float)currentmat.diffuse[1],(float)currentmat.diffuse[2],(float)currentmat.alpha);
+		newMaterial->setValue("Shininess",(float)currentmat.shininess);
+		newMaterial->setValue("Transparency",(float)currentmat.alpha);
 
-		if((kfloat)currentmat.alpha != KFLOAT_CONST(1.0))
+		if((float)currentmat.alpha != 1.0)
 		{
 			pMesh->setValue("TransarencyFlag", true);
 		}
@@ -623,14 +624,14 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 			SP<MaterialStage> MatStage = KigsCore::GetInstanceOf(objname,"MaterialStage");
 
-			MatStage->setValue(LABEL_TO_ID(StageIndex),stagedesc.mStageIndex);
-			MatStage->setValue(LABEL_TO_ID(TexEnv),stagedesc.mTexEnv);
+			MatStage->setValue("StageIndex",stagedesc.mStageIndex);
+			MatStage->setValue("TexEnv",stagedesc.mTexEnv);
 
 			if(stagedesc.mTexture != "empty")
 			{
 				auto texfileManager = KigsCore::Singleton<TextureFileManager>();
 				SP<Texture> Tex = texfileManager->GetTexture(stagedesc.mTexture, false);
-				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
+				Tex->setValue("ForcePow2",true);
 				Tex->Init();
 
 				MatStage->addItem(Tex);
@@ -647,7 +648,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 			{
 				TextureFileManager*	fileManager=(TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
 				Texture* Tex=fileManager->GetTexture(stagedesc.mTexture,false);
-				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
+				Tex->setValue("ForcePow2",true);
 				Tex->Init();
 
 				newMaterial->addItem(Tex);
@@ -659,7 +660,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 
 
 		newMaterial->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL,"IsShared");
-		newMaterial->setValue(LABEL_TO_ID(IsShared),false);
+		newMaterial->setValue("IsShared",false);
 
 		newgroup.mMaterial=newMaterial;
 		//newgroup->addItem(newMaterial);
@@ -840,7 +841,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	{
 		VertexArray=new Point3D[VertexCount];
 
-		ReadFloatArray((kfloat*)VertexArray,VertexCount*3,mFile);
+		ReadFloatArray((float*)VertexArray,VertexCount*3,mFile);
 	}
 
 	unsigned int	NormalCount=0;
@@ -850,7 +851,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	if(NormalCount)
 	{
 		NormalArray=new Vector3D[NormalCount];
-		ReadFloatArray((kfloat*)NormalArray,NormalCount*3,mFile);
+		ReadFloatArray((float*)NormalArray,NormalCount*3,mFile);
 	}
 
 	unsigned int		TexCoordCount=0;
@@ -860,7 +861,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	if(TexCoordCount)
 	{
 		TexArray=new Mesh::TexCoord[TexCoordCount];
-		ReadFloatArray((kfloat*)TexArray,TexCoordCount*2,mFile);
+		ReadFloatArray((float*)TexArray,TexCoordCount*2,mFile);
 	}
 
 	unsigned int		ColorCount=0;
@@ -870,11 +871,11 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	if(ColorCount)
 	{
 		ColorArray=new Vector4D[ColorCount];
-		ReadFloatArray((kfloat*)ColorArray,ColorCount*4,mFile);
+		ReadFloatArray((float*)ColorArray,ColorCount*4,mFile);
 	}
 
 	// manage grps
-	kstl::vector<grpStruct>::iterator	itgrp;
+	std::vector<grpStruct>::iterator	itgrp;
 	for(itgrp=grpList.begin();itgrp!=grpList.end();++itgrp)
 	{
 		grpStruct& currentgrp=(*itgrp);
@@ -882,31 +883,31 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		int structSize=0;
 
 		
-		CoreItemSP description = MakeCoreVector();
-		CoreItemSP vertices = MakeCoreNamedVector("vertices");
-		description->set("",vertices);
+		CoreItemSP description = MakeCoreMap();
+		CoreItemSP vertices = MakeCoreVector();
+		description->set("vertices",vertices);
 
 		structSize+=3*sizeof(float);
 
 		// vertices have a color
 		if(currentgrp.mTriangleType & 6)
 		{
-			CoreItemSP colors = MakeCoreNamedVector("colors");
-			description->set("",colors);
+			CoreItemSP colors = MakeCoreVector();
+			description->set("colors",colors);
 			structSize+=4*sizeof(float);
 		}
 
 		// always have normals in kmesh
 		{
-			CoreItemSP normal = MakeCoreNamedVector("normals");
-			description->set("",normal);
+			CoreItemSP normal = MakeCoreVector();
+			description->set("normals",normal);
 			structSize+=3*sizeof(float);
 		}
 
 		if(currentgrp.mTriangleType & 8)
 		{
-			CoreItemSP texCoords = MakeCoreNamedVector("texCoords");
-			description->set("",texCoords);
+			CoreItemSP texCoords = MakeCoreVector();
+			description->set("texCoords",texCoords);
 			structSize+=2*sizeof(float);
 		}
 
@@ -915,7 +916,7 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 		v[1]=new unsigned char[structSize];
 		v[2]=new unsigned char[structSize];
 
-		pMesh->StartMeshGroup((CoreVector*)description.get());
+		pMesh->StartMeshGroup((CoreMap<std::string>*)description.get());
 		
 		unsigned int tri_index;
 
@@ -1222,18 +1223,18 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 }
 
 #ifdef WIN32
-int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::string _FileName)
+int BinMeshLoader::ExportFile(Mesh *pMesh, std::string _directoryName, std::string _FileName)
 {
 	pMesh->Set_FileName(_FileName.c_str());
 	//------------------------------------------------------------------------------------------------------
 	//--------------------------------Recherche les meshItemGroup et les enregistres------------------------
 	//------------------------------------------------------------------------------------------------------
 	//Releve les meshItemGroup
-	kstl::vector<MeshItemGroup*> GroupList;
+	std::vector<MeshItemGroup*> GroupList;
 	int nombredeGroupe = 0;
 
-	kstl::vector<ModifiableItemStruct> MeshsonsList = pMesh->getItems();
-	kstl::vector<ModifiableItemStruct>::iterator It = MeshsonsList.begin();
+	std::vector<ModifiableItemStruct> MeshsonsList = pMesh->getItems();
+	std::vector<ModifiableItemStruct>::iterator It = MeshsonsList.begin();
 
 	//parcour les fils de mon mesh
 	while(It != MeshsonsList.end())
@@ -1260,7 +1261,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 	header.mGroupCount = nombredeGroupe | (1<<24);
 	unsigned int fileVersion = header.GetFileVersion();
 
-	kstl::string _fullFileName = _directoryName +"\\"+ _FileName;
+	std::string _fullFileName = _directoryName +"\\"+ _FileName;
 
 	FILE* pFile = fopen ( _fullFileName.c_str() , "wb" );
 
@@ -1276,10 +1277,10 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 	GroupDesc grpdesc;
 
 
-	kstl::vector<triangleInfo> triangleList;
-	kstl::vector<StageDesc*> StagedescList;
+	std::vector<triangleInfo> triangleList;
+	std::vector<StageDesc*> StagedescList;
 	//Parcour les meshitemGroup
-	kstl::vector<MeshItemGroup*>::iterator meshitemGroup_It = GroupList.begin();
+	std::vector<MeshItemGroup*>::iterator meshitemGroup_It = GroupList.begin();
 	while ( meshitemGroup_It != GroupList.end())
 	{
 		//Raz de la liste
@@ -1289,8 +1290,8 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 
 		grpdesc.mTriangleType = newgroup->mTriangleType;
 
-		kstl::vector<ModifiableItemStruct> ItemGroupSonsList = newgroup->getItems();
-		kstl::vector<ModifiableItemStruct>::iterator It_ItemGroup = ItemGroupSonsList.begin();
+		std::vector<ModifiableItemStruct> ItemGroupSonsList = newgroup->getItems();
+		std::vector<ModifiableItemStruct>::iterator It_ItemGroup = ItemGroupSonsList.begin();
 
 		//parcour les fils de mon mesh
 		while(It_ItemGroup != ItemGroupSonsList.end())
@@ -1348,8 +1349,8 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 				currentmat.triangleCount = newgroup->mTriangleCount;
 
 				//parcour les enfant du material
-				kstl::vector<ModifiableItemStruct> MaterialSonsList = ((*It_ItemGroup).mItem)->getItems();
-				kstl::vector<ModifiableItemStruct>::iterator It_Material = MaterialSonsList.begin();
+				std::vector<ModifiableItemStruct> MaterialSonsList = ((*It_ItemGroup).mItem)->getItems();
+				std::vector<ModifiableItemStruct>::iterator It_Material = MaterialSonsList.begin();
 				unsigned int number = 0;
 
 				//parcour les fils de mon mesh
@@ -1394,14 +1395,14 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 						stagedesc->mTexEnv = (TexEnvType)valuematstage;
 
 						//parcour les enfant
-						const kstl::vector<ModifiableItemStruct>& MatStageSonsList = MatStage->getItems();
+						const std::vector<ModifiableItemStruct>& MatStageSonsList = MatStage->getItems();
 						if ( MatStageSonsList.empty() )
 						{
 							stagedesc->mTexture = "empty";
 						}
 						else
 						{
-							kstl::vector<ModifiableItemStruct>::const_iterator It_MatStage = MatStageSonsList.begin();
+							std::vector<ModifiableItemStruct>::const_iterator It_MatStage = MatStageSonsList.begin();
 
 							//parcour les fils de mon mesh
 							while(It_MatStage != MatStageSonsList.end())
@@ -1731,7 +1732,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 		BinFileStruct::WriteStruct(&currentmat,pFile);
 
 		//Parcour les stageDesc
-		kstl::vector<BinMeshLoader::StageDesc*>::iterator Stagedesc_It = StagedescList.begin();
+		std::vector<BinMeshLoader::StageDesc*>::iterator Stagedesc_It = StagedescList.begin();
 		while(Stagedesc_It != StagedescList.end())
 		{
 			StageDesc* stagedesc = (*Stagedesc_It);
@@ -1751,7 +1752,7 @@ int BinMeshLoader::ExportFile(Mesh *pMesh, kstl::string _directoryName, kstl::st
 
 		if (!triangleList.empty())
 		{
-			kstl::vector<triangleInfo>::iterator triangleList_It = triangleList.begin();
+			std::vector<triangleInfo>::iterator triangleList_It = triangleList.begin();
 			while (triangleList_It != triangleList.end())
 			{
 				triangleInfo temp = (*triangleList_It);

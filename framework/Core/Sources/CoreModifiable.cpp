@@ -1127,37 +1127,37 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 			break;
 			case 5:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, false, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, false, ID);
 			}
 			break;
 			case 6:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, false, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, false, ID);
 			}
 			break;
 			case 7:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, false, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, false, ID);
 			}
 			break;
 			case 8:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, false, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, false, ID);
 			}
 			break;
 			case 9:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, false, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, false, ID);
 			}
 			break;
 			case 10:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, false, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, false, ID);
 			}
 			break;
 			case 12:
 			{
-				toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, false, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, false, ID);
 			}
 			break;
 			case 16:
@@ -1221,57 +1221,57 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, co
 		break;
 		case 2:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 2>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 2>(*this, false, ID);
 		}
 		break;
 		case 3:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 3>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 3>(*this, false, ID);
 		}
 		break;
 		case 4:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 4>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 4>(*this, false, ID);
 		}
 		break;
 		case 5:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 5>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 5>(*this, false, ID);
 		}
 		break;
 		case 6:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 6>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 6>(*this, false, ID);
 		}
 		break;
 		case 7:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 7>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 7>(*this, false, ID);
 		}
 		break;
 		case 8:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 8>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 8>(*this, false, ID);
 		}
 		break;
 		case 9:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 9>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 9>(*this, false, ID);
 		}
 		break;
 		case 10:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 10>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 10>(*this, false, ID);
 		}
 		break;
 		case 12:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 12>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 12>(*this, false, ID);
 		}
 		break;
 		case 16:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::INT, 16>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 16>(*this, false, ID);
 		}
 		break;
 	}
@@ -1285,7 +1285,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, co
 	return toadd;
 }
 
-CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, const kfloat* defaultval, u32 valcount)
+CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, const float* defaultval, u32 valcount)
 {
 	CoreModifiableAttribute*	toadd = 0;
 	
@@ -1298,57 +1298,57 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, co
 		break;
 		case 2:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2>(*this, false, ID);
 		}
 		break;
 		case 3:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3>(*this, false, ID);
 		}
 		break;
 		case 4:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 4>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 4>(*this, false, ID);
 		}
 		break;
 		case 5:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, false, ID);
 		}
 		break;
 		case 6:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, false, ID);
 		}
 		break;
 		case 7:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, false, ID);
 		}
 		break;
 		case 8:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, false, ID);
 		}
 		break;
 		case 9:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, false, ID);
 		}
 		break;
 		case 10:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, false, ID);
 		}
 		break;
 		case 12:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, false, ID);
 		}
 		break;
 		case 16:
 		{
-			toadd = new maVector<kfloat, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 16>(*this, false, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 16>(*this, false, ID);
 		}
 		break;
 	}
@@ -1362,7 +1362,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, co
 	return toadd;
 }
 
-CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID, kfloat defaultval)
+CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE type, KigsID ID, float defaultval)
 {
 	CoreModifiableAttribute*	toadd = GenericCreateDynamicAttribute(type, ID);
 	
@@ -3104,8 +3104,8 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 	{
 		case ATTRIBUTE_TYPE::BOOL: // use float operator but result string will be "false" if float result is 0.0f, "true" if float result != 0  
 		{
-			ItemToEval = CoreItemOperator<kfloat>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-			kfloat result = *ItemToEval.get();
+			ItemToEval = CoreItemOperator<float>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			float result = *ItemToEval.get();
 			if (result == 0)
 			{
 				attr = "false";
@@ -3162,9 +3162,9 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 		break;
 		default:  // use float operator and return a float "printed" in a string 
 		{
-			ItemToEval = CoreItemOperator<kfloat>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			ItemToEval = CoreItemOperator<float>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 
-			kfloat result((kfloat)*ItemToEval);
+			float result((float)*ItemToEval);
 
 			char resultBuffer[128];
 
@@ -3294,17 +3294,17 @@ template<> bool CoreConvertValue2String<T>(std::string& stringValue,T value) \
 }
 
 
-template<> bool CoreConvertString2Value<kfloat>(const std::string &stringValue,kfloat& value)
+template<> bool CoreConvertString2Value<float>(const std::string &stringValue,float& value)
 {
 	float fvalue;
 	if(sscanf(stringValue.c_str(), "%f", &fvalue)!=1)
 	{
 		return false;
 	}
-	value=(kfloat)fvalue;
+	value=(float)fvalue;
 	return true;
 }
-template<> bool CoreConvertValue2String<kfloat>(std::string& stringValue,kfloat value)
+template<> bool CoreConvertValue2String<float>(std::string& stringValue,float value)
 {
 	char convertBuffer[256];
 	if(sprintf(convertBuffer,"%f",CastToFloat(value))==0) return false;
@@ -3312,17 +3312,17 @@ template<> bool CoreConvertValue2String<kfloat>(std::string& stringValue,kfloat 
 	return true;
 }
 
-template<> bool CoreConvertString2Value<kdouble>(const std::string &stringValue,kdouble& value)
+template<> bool CoreConvertString2Value<double>(const std::string &stringValue,double& value)
 {
 	double dvalue;
 	if(sscanf(stringValue.c_str(), "%lf", &dvalue)!=1)
 	{
 		return false;
 	}
-	value=(kdouble)dvalue;
+	value=(double)dvalue;
 	return true;
 }
-template<> bool CoreConvertValue2String<kdouble>(std::string& stringValue,kdouble value)
+template<> bool CoreConvertValue2String<double>(std::string& stringValue,double value)
 {
 	char convertBuffer[256];
 	if(sprintf(convertBuffer,"%lf",CastToDouble(value))==0) return false;
@@ -3381,8 +3381,8 @@ IMPLEMENT_CONVERT_S2V_ANS_V2S(u8, "%hhu")
 IMPLEMENT_CONVERT_S2V_ANS_V2S(u16, "%hu")
 IMPLEMENT_CONVERT_S2V_ANS_V2S(u32, "%u")
 IMPLEMENT_CONVERT_S2V_ANS_V2S(u64, "%llu")
-//IMPLEMENT_CONVERT_S2V_ANS_V2S(kfloat,"%f")
-//IMPLEMENT_CONVERT_S2V_ANS_V2S(kdouble,"%lf")
+//IMPLEMENT_CONVERT_S2V_ANS_V2S(float,"%f")
+//IMPLEMENT_CONVERT_S2V_ANS_V2S(double,"%lf")
 
 PackCoreModifiableAttributes::~PackCoreModifiableAttributes()
 {

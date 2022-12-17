@@ -32,7 +32,7 @@ public:
 	virtual ~CoreAction();
 	
 	// return true if finished
-	bool	update(kdouble time);	
+	bool	update(double time);	
 
 	virtual void init(CoreSequence* sequence,CoreVector* params)=0;
 
@@ -46,13 +46,13 @@ public:
 		return (((unsigned int)mType)==11);
 	}
 
-	kdouble getEndTime()
+	double getEndTime()
 	{
 		return mStartTime+mDuration;
 	}
 
 	// action is started by sequence
-	virtual void	setStartTime(kdouble t)
+	virtual void	setStartTime(double t)
 	{
 		mStartTime=t;
 	}
@@ -63,7 +63,7 @@ public:
 		mType=(COREITEM_TYPE)(10);
 	}
 
-	inline kdouble	getDuration()
+	inline double	getDuration()
 	{
 		return mDuration;
 	}
@@ -82,7 +82,7 @@ protected:
 	}
 
 	// if paramstring contains -> then extract param name part and return real target (son on current target)
-	CMSP	checkSubTarget(kstl::string& paramstring);
+	CMSP	checkSubTarget(std::string& paramstring);
 
 	inline void CheckDelayTarget()
 	{
@@ -104,18 +104,18 @@ protected:
 	}
 
 	// return true if action asks itself to be closed
-	virtual bool	protectedUpdate(kdouble time)
+	virtual bool	protectedUpdate(double time)
 	{
 		CheckDelayTarget();
 		return false; // no used
 	}
 
 	std::weak_ptr<CoreModifiable> mTarget;
-	kdouble				mStartTime;
-	kdouble				mDuration;
+	double				mStartTime;
+	double				mDuration;
 
 	unsigned int		mActionFlags;
-	kstl::string		mTargetPath;
+	std::string		mTargetPath;
 	unsigned int		mParamID;
 };
 
@@ -141,7 +141,7 @@ public:
 	virtual void init(CoreSequence* sequence,CoreVector* params);
 protected:
 
-	virtual bool	protectedUpdate(kdouble time){ CoreAction::protectedUpdate(time);  return false; };
+	virtual bool	protectedUpdate(double time){ CoreAction::protectedUpdate(time);  return false; };
 };
 
 

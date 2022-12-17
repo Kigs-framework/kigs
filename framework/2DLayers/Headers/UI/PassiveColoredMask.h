@@ -20,7 +20,7 @@ class PassiveColoredMask : public UIItem
 {
 public:
 	DECLARE_CLASS_INFO(PassiveColoredMask,UIItem,2DLayers)
-	PassiveColoredMask(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	PassiveColoredMask(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual					~PassiveColoredMask();
 
 	void					ApplyColorFrom(float X, float Y, int R, int G, int B, bool IsRGBA=true, unsigned int extendedRay=0);

@@ -20,7 +20,7 @@ public:
 	~OpenGLCameraOrtho()override;
 
 	void	InitCullingObject(CullingObject* obj)override;
-	void	getRay(const kfloat &ScreenX, const kfloat &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection)override;
+	void	getRay(const float &ScreenX, const float &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection)override;
 
 
 protected:

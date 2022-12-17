@@ -28,11 +28,11 @@ public:
 
 	/**
 	 * \brief	constructor
-	 * \fn 		StepByStepImporter(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		StepByStepImporter(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	StepByStepImporter(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	StepByStepImporter(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/**
 	 * \fn 		CoreModifiable* Update()
@@ -68,7 +68,7 @@ protected:
 	maFloat								mDeltaTimePerStep;
 
 	XML *								mXmlfile;
-	kstl::vector<CMSP>					mLoadedItems;
+	std::vector<CMSP>					mLoadedItems;
 	XMLNode*							mXMLRootNode;
 
 	CMSP								mImportedRoot;
@@ -83,7 +83,7 @@ protected:
 		CMSP							mCurrentCoreModifiable;
 		CMSP							mCurrent;
 		int								mLinkID;
-		kstl::vector	<ImportTree*>	mSonsImport;
+		std::vector	<ImportTree*>	mSonsImport;
 		bool							mNeedInit;
 		ImportTree*						mFatherImportTreeNode;	
 		ImportTree*						mBrotherImportTreeNode;	

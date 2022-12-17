@@ -4,7 +4,7 @@
 #include "Core.h"
 #include "ModuleBase.h"
 
-#include "kstlset.h"
+#include <set>
 #include "Scene3D.h"
 
 
@@ -75,7 +75,7 @@ public:
 	DECLARE_CONSTRUCTOR(ModuleSceneGraph);
 	virtual ~ModuleSceneGraph();
 
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 	void Close() override;
 	void Update(const Timer& timer, void* addParam) override;
 
@@ -156,7 +156,7 @@ protected:
 	kigs::unordered_map<void*, DefferedAction::ENUM> mDefferedAction;
 
 	//! list of scene
-	kstl::set<Scene3D*, Scene3DPriorityCompare>	mScenes;
+	std::set<Scene3D*, Scene3DPriorityCompare>	mScenes;
 	//! visibles 3D nodes, the liste is setup during the travcull for each nodes
 	Node3D** mVisiblesNodeList = nullptr;
 

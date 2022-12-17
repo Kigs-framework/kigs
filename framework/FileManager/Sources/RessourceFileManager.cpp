@@ -6,7 +6,7 @@
 IMPLEMENT_CLASS_INFO(RessourceFileManager)
 
 //! constructor
-RessourceFileManager::RessourceFileManager(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
+RessourceFileManager::RessourceFileManager(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
 {
    
 }     
@@ -17,7 +17,7 @@ RessourceFileManager::~RessourceFileManager()
 
 }    
 
-CMSP RessourceFileManager::GetRessource(const kstl::string &ClassName, const kstl::string& fileName)
+CMSP RessourceFileManager::GetRessource(const std::string &ClassName, const std::string& fileName)
 {
 	// already loaded ?
 	if(mRessourceMap.find(fileName) != mRessourceMap.end())
@@ -27,7 +27,7 @@ CMSP RessourceFileManager::GetRessource(const kstl::string &ClassName, const kst
 
 	// create a new one
 	CMSP pRessource = KigsCore::GetInstanceOf(ClassName+"["+fileName+"]",ClassName);
-	pRessource->setValue(LABEL_TO_ID(FileName),fileName);
+	pRessource->setValue("FileName",fileName);
 	pRessource->Init();
 	addItem(pRessource);
 
@@ -37,8 +37,8 @@ CMSP RessourceFileManager::GetRessource(const kstl::string &ClassName, const kst
 //! add item. 
 bool	RessourceFileManager::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	kstl::string filename;
-	if(item->getValue(LABEL_TO_ID(FileName),filename))
+	std::string filename;
+	if(item->getValue("FileName",filename))
 	{
 		if(filename!="")
 		{
@@ -55,14 +55,14 @@ bool	RessourceFileManager::addItem(const CMSP& item, ItemPosition pos DECLARE_LI
 //! remove item. 
 bool	RessourceFileManager::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
-	kstl::string filename;
-	if(item->getValue(LABEL_TO_ID(FileName),filename))
+	std::string filename;
+	if(item->getValue("FileName",filename))
 	{
 		if(filename!="")
 		{
 			if(mRessourceMap.find(filename)!=mRessourceMap.end())
 			{
-				kstl::map<kstl::string, CMSP>::iterator	it=mRessourceMap.find(filename);
+				std::map<std::string, CMSP>::iterator	it=mRessourceMap.find(filename);
 				mRessourceMap.erase(it);				
 			}
 		}
@@ -77,11 +77,11 @@ void	RessourceFileManager::UnloadRessource(const CMSP& pRessource)
 	removeItem(pRessource);
 }
 
-void	RessourceFileManager::UnloadRessource(kstl::string ressourcename)
+void	RessourceFileManager::UnloadRessource(std::string ressourcename)
 {
 	if(mRessourceMap.find(ressourcename)!=mRessourceMap.end())
 	{
-		kstl::map<kstl::string, CMSP>::iterator	it=mRessourceMap.find(ressourcename);
+		std::map<std::string, CMSP>::iterator	it=mRessourceMap.find(ressourcename);
 		removeItem((*it).second);
 	}
 }

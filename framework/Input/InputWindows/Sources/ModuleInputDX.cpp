@@ -25,7 +25,7 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
 
 	// create a joystickDX
 
-	kstl::string joystickname("joystick");
+	std::string joystickname("joystick");
 
 	char	countstring[128];
 
@@ -52,7 +52,7 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
     return DIENUM_CONTINUE;
 }
 
-ModuleInputDX::ModuleInputDX(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+ModuleInputDX::ModuleInputDX(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	mDirectInput=0;
 	mJoystickCount=0;
@@ -71,7 +71,7 @@ ModuleInputDX::~ModuleInputDX()
 }    
 
 
-void ModuleInputDX::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleInputDX::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	if(mIsInitOK)
 	{
@@ -159,7 +159,7 @@ void ModuleInputDX::Init(KigsCore* core, const kstl::vector<CoreModifiableAttrib
 
 /*		if(gInstanceModuleInputDX->getJoystickCount() == 0)
 		{
-			kstl::string joystickname("joystick");
+			std::string joystickname("joystick");
 
 			char	countstring[128];
 
@@ -215,7 +215,7 @@ bool ModuleInputDX::addItem(const CMSP& item, ItemPosition pos)
 	return false;
 }
 
-SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(ModuleInputDX, "ModuleInputDX");

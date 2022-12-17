@@ -52,7 +52,7 @@ void  XMLReaderFile::StartDescriptionElementDelegate(void *userdata, const char 
 	pParams[0]=(void*)el;
 	pParams[1]=(void*)attr;
 
-	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLElementStartDescriptionID,(kstl::vector<CoreModifiableAttribute*>&)*((kstl::vector<CoreModifiableAttribute*>*)0),pParams);
+	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLElementStartDescriptionID,(std::vector<CoreModifiableAttribute*>&)*((std::vector<CoreModifiableAttribute*>*)0),pParams);
 }
 
 //! utility method
@@ -60,7 +60,7 @@ void  XMLReaderFile::EndDescriptionElementDelegate(void *userdata, const char *e
 {
 	MyUserData*	localuserdata=(MyUserData*)userdata;
 
-	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLElementEndDescriptionID,(kstl::vector<CoreModifiableAttribute*>&)*((kstl::vector<CoreModifiableAttribute*>*)0),(void*)el);
+	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLElementEndDescriptionID,(std::vector<CoreModifiableAttribute*>&)*((std::vector<CoreModifiableAttribute*>*)0),(void*)el);
 }
 
 //! utility method
@@ -68,7 +68,7 @@ void  XMLReaderFile::StartCDataDelegate(void  *userData)
 {
 	MyUserData*	localuserdata=(MyUserData*)userData;
 
-	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLStartCDataID,(kstl::vector<CoreModifiableAttribute*>&)*((kstl::vector<CoreModifiableAttribute*>*)0));
+	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLStartCDataID,(std::vector<CoreModifiableAttribute*>&)*((std::vector<CoreModifiableAttribute*>*)0));
 }
 
 //! utility method 
@@ -81,7 +81,7 @@ void  XMLReaderFile::EndCDataDelegate(void *userData,const char *s, int len)
 
 	change_s[len]=0;
 
-	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLEndCDataID,(kstl::vector<CoreModifiableAttribute*>&)*((kstl::vector<CoreModifiableAttribute*>*)0),(void*)s);
+	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLEndCDataID,(std::vector<CoreModifiableAttribute*>&)*((std::vector<CoreModifiableAttribute*>*)0),(void*)s);
 	change_s[len]=backup;
 }
 
@@ -95,7 +95,7 @@ void  XMLReaderFile::DeclHandlerDelegate(void  *userdata,   const char  *version
 	pParams[1]=(void*)encoding;
 	pParams[2]=(void*)&standalone;
 
-	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLDeclHandlerID,(kstl::vector<CoreModifiableAttribute*>&)*((kstl::vector<CoreModifiableAttribute*>*)0),pParams);
+	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLDeclHandlerID,(std::vector<CoreModifiableAttribute*>&)*((std::vector<CoreModifiableAttribute*>*)0),pParams);
 }
 
 //! utility method 
@@ -112,7 +112,7 @@ void  XMLReaderFile::CharacterHandlerDelegate(void *userdata,const char *s, int 
 	pParams[0]=(void*)s;
 	pParams[1]=(void*)&len;
 
-	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLCharacterHandlerID,(kstl::vector<CoreModifiableAttribute*>&)*((kstl::vector<CoreModifiableAttribute*>*)0),pParams);
+	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLCharacterHandlerID,(std::vector<CoreModifiableAttribute*>&)*((std::vector<CoreModifiableAttribute*>*)0),pParams);
 
 	change_s[len]=backup;
 }
@@ -121,7 +121,7 @@ void  XMLReaderFile::StartDescriptionElement(void *userdata, const char *el, con
 {
 	MyUserData*	localuserdata=(MyUserData*)userdata;
 
-	kstl::vector<XMLNodeBase*>& nodeHierarchy=localuserdata->mNodeHierarchy;
+	std::vector<XMLNodeBase*>& nodeHierarchy=localuserdata->mNodeHierarchy;
 
 	XMLNode* xmlNode = new XMLNode(XML_NODE_ELEMENT,el);
 
@@ -156,7 +156,7 @@ void  XMLReaderFile::EndDescriptionElement(void *userdata, const char * /*el */)
 {
 	MyUserData*	localuserdata=(MyUserData*)userdata;
 
-	kstl::vector<XMLNodeBase*>& nodeHierarchy=localuserdata->mNodeHierarchy;
+	std::vector<XMLNodeBase*>& nodeHierarchy=localuserdata->mNodeHierarchy;
 	// don't pop last node cause it's the root node
 	if(nodeHierarchy.size() > 1)
 	{
@@ -169,7 +169,7 @@ void  XMLReaderFile::EndDescriptionElementStringRef(void* userdata, StringRef* /
 {
 	MyUserData* localuserdata = (MyUserData*)userdata;
 
-	kstl::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->mNodeHierarchy;
+	std::vector<XMLNodeBase*>& nodeHierarchy = localuserdata->mNodeHierarchy;
 	// don't pop last node cause it's the root node
 	if (nodeHierarchy.size() > 1)
 	{
@@ -205,7 +205,7 @@ void  XMLReaderFile::CharacterHandler(void *userdata,const char *s, int len)
 
 	MyUserData*	localuserdata=(MyUserData*)userdata;
 
-	kstl::vector<XMLNodeBase*>& nodeHierarchy=localuserdata->mNodeHierarchy;
+	std::vector<XMLNodeBase*>& nodeHierarchy=localuserdata->mNodeHierarchy;
 
 	if(nodeHierarchy.size())
 	{
@@ -242,7 +242,7 @@ void  XMLReaderFile::EndCData(void *userdata,const char *s, int len)
 
 	MyUserData*	localuserdata=(MyUserData*)userdata;
 
-	kstl::vector<XMLNodeBase*>& nodeHierarchy=localuserdata->mNodeHierarchy;
+	std::vector<XMLNodeBase*>& nodeHierarchy=localuserdata->mNodeHierarchy;
 
 	if(nodeHierarchy.size())
 	{
@@ -276,9 +276,9 @@ XMLReaderFile::~XMLReaderFile( )
 {
 }
 
-XMLBase* XMLReaderFile::ReadFile(const kstl::string& file,const char* force_as_format )
+XMLBase* XMLReaderFile::ReadFile(const std::string& file,const char* force_as_format )
 {
-	kstl::string forceFormat = "";
+	std::string forceFormat = "";
 	if (force_as_format)
 	{
 		forceFormat = force_as_format;
@@ -338,7 +338,7 @@ bool XMLReaderFile::ReadFile(char* Buff,CoreModifiable*	delegateObject ,u64 buff
 	return result;
 }
 
-bool XMLReaderFile::ReadFile( const kstl::string &file ,CoreModifiable*	delegateObject,const char* force_as_format)
+bool XMLReaderFile::ReadFile( const std::string &file ,CoreModifiable*	delegateObject,const char* force_as_format)
 {
 	bool result=false;
 

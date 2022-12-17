@@ -43,13 +43,13 @@ public:
 		
 	/**
 		* \brief	set the viewport
-		* \fn 		void	SetViewport(kfloat vpminx,kfloat vpminy,kfloat vpsx,kfloat vpsy)
+		* \fn 		void	SetViewport(float vpminx,float vpminy,float vpsx,float vpsy)
 		* \param	vpminx : position in x axis of the viewport
 		* \param	vpminy : position in y axis of the viewport
 		* \param	vpsx : width of the viewport
 		* \param	vpsy : height of the viewport
 		*/
-	void	SetViewport(kfloat vpminx,kfloat vpminy,kfloat vpsx,kfloat vpsy)
+	void	SetViewport(float vpminx,float vpminy,float vpsx,float vpsy)
 	{
 		mViewportMinX=vpminx;
 		mViewportMinY=vpminy;
@@ -57,7 +57,7 @@ public:
 		mViewportSizeY=vpsy;
 	}
 		
-	void	GetViewport(kfloat& vpminx, kfloat& vpminy, kfloat& vpsx, kfloat& vpsy)
+	void	GetViewport(float& vpminx, float& vpminy, float& vpsx, float& vpsy)
 	{
 		vpminx = mViewportMinX;
 		vpminy = mViewportMinY;
@@ -70,12 +70,12 @@ public:
 		
 	/**
 		* \brief	set the position of the camera
-		* \fn 		void	SetPosition(kfloat x,kfloat y,kfloat z)
+		* \fn 		void	SetPosition(float x,float y,float z)
 		* \param	x : position in x axis of the camera
 		* \param	y : position in y axis of the camera
 		* \param	z : position in z axis of the camera
 		*/
-	void	SetPosition(kfloat x,kfloat y,kfloat z)
+	void	SetPosition(float x,float y,float z)
 	{
 		mPosition[0]=x;
 		mPosition[1]=y;
@@ -90,12 +90,12 @@ public:
 		
 	/**
 		* \brief	get the position of the camera
-		* \fn 		void	GetPosition(kfloat& x,kfloat& y,kfloat& z)
+		* \fn 		void	GetPosition(float& x,float& y,float& z)
 		* \param	x : position in x axis of the camera (in/out param)
 		* \param	y : position in y axis of the camera (in/out param)
 		* \param	z : position in z axis of the camera (in/out param)
 		*/
-	void	GetPosition(kfloat& x,kfloat& y,kfloat& z)
+	void	GetPosition(float& x,float& y,float& z)
 	{
 		x=mPosition[0];
 		y=mPosition[1];
@@ -106,12 +106,12 @@ public:
 	Point3D GetGlobalPosition() { return GetLocalToGlobal().Pos; }
 	/**
 		* \brief	set the view factor
-		* \fn 		void	SetViewVector(kfloat x,kfloat y,kfloat z)
+		* \fn 		void	SetViewVector(float x,float y,float z)
 		* \param	x : position in x axis of the view factor
 		* \param	y : position in y axis of the view factor
 		* \param	z : position in z axis of the view factor
 		*/
-	void	SetViewVector(kfloat x,kfloat y,kfloat z)
+	void	SetViewVector(float x,float y,float z)
 	{
 		mViewVector[0]=x;
 		mViewVector[1]=y;
@@ -125,12 +125,12 @@ public:
 		
 	/**
 		* \brief	get the view factor
-		* \fn 		void	GetViewVector(kfloat& x,kfloat& y,kfloat& z )
+		* \fn 		void	GetViewVector(float& x,float& y,float& z )
 		* \param	x : position in x axis of the view factor (in/out param)
 		* \param	y : position in y axis of the view factor (in/out param)
 		* \param	z : position in z axis of the view factor (in/out param)
 		*/
-	void	GetViewVector(kfloat& x,kfloat& y,kfloat& z )
+	void	GetViewVector(float& x,float& y,float& z )
 	{
 		x=mViewVector[0];
 		y=mViewVector[1];
@@ -146,12 +146,12 @@ public:
 
 	/**
 		* \brief	set the position of the up vector
-		* \fn 		void	SetUpVector(kfloat x,kfloat y,kfloat z)
+		* \fn 		void	SetUpVector(float x,float y,float z)
 		* \param	x : position in x axis of the up vector
 		* \param	y : position in y axis of the up vector
 		* \param	z : position in z axis of the up vector
 		*/
-	void	SetUpVector(kfloat x,kfloat y,kfloat z)
+	void	SetUpVector(float x,float y,float z)
 	{
 		mUpVector[0]=x;
 		mUpVector[1]=y;
@@ -166,12 +166,12 @@ public:
 		
 	/**
 		* \brief	get the up vector
-		* \fn 		void	GetUpVector(kfloat& x,kfloat& y,kfloat& z )
+		* \fn 		void	GetUpVector(float& x,float& y,float& z )
 		* \param	x : position in x axis of the up vector (in/out param)
 		* \param	y : position in y axis of the up vector (in/out param)
 		* \param	z : position in z axis of the up vector (in/out param)
 		*/
-	void	GetUpVector(kfloat& x,kfloat& y,kfloat& z )
+	void	GetUpVector(float& x,float& y,float& z )
 	{
 		x=mUpVector[0];
 		y=mUpVector[1];
@@ -189,11 +189,11 @@ public:
 		
 	/**
 		* \brief	set the zNear and zFar values
-		* \fn 		void	SetNearAndFar(kfloat znear,kfloat zfar)
+		* \fn 		void	SetNearAndFar(float znear,float zfar)
 		* \param	znear : zNear value
 		* \param	zfar : zFar value
 		*/
-	void	SetNearAndFar(kfloat znear,kfloat zfar)
+	void	SetNearAndFar(float znear,float zfar)
 	{
 		mNearPlane=znear;
 		mFarPlane=zfar;
@@ -201,12 +201,12 @@ public:
 		
 	/**
 		* \brief	set the clear color
-		* \fn 		void	SetClearColor(kfloat r,kfloat g,kfloat b)
+		* \fn 		void	SetClearColor(float r,float g,float b)
 		* \param	r : red color
 		* \param	g : green color
 		* \param	b : blue color
 		*/
-	void	SetClearColor(kfloat r,kfloat g,kfloat b,kfloat a=1.0f)
+	void	SetClearColor(float r,float g,float b,float a=1.0f)
 	{
 		mClearColor[0]=r;
 		mClearColor[1]=g;
@@ -249,17 +249,17 @@ public:
 		
 	/**
 		* \brief	get the ray from a pixel
-		* \fn 		virtual void getRay(const kfloat &ScreenX, const kfloat &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection);
+		* \fn 		virtual void getRay(const float &ScreenX, const float &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection);
 		* \param	ScreenX : position in x axis of the pixel
 		* \param	ScreenY : position in y axis of the pixel
 		* \param	RayOrigin : origin of the ray (in/out param)
 		* \param	RayDirection : direction of the ray (in/out param)
 		*/ 
-	virtual void getRay(const kfloat &ScreenX, const kfloat &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection);
+	virtual void getRay(const float &ScreenX, const float &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection);
 		
 	//! project given point 3D using camera projection
 	// return true if point is in front of camera, false if behind it
-	virtual bool Project(kfloat &/* ScreenX */, kfloat & /* ScreenY */, Point3D /* Pt */);
+	virtual bool Project(float &/* ScreenX */, float & /* ScreenY */, Point3D /* Pt */);
 		
 	/**
 		* \brief	do a Node3D cull but always return true
@@ -318,12 +318,12 @@ protected:
 	
 	/**
 		* \brief	set the ambient light
-		* \fn 		virtual void SetAmbient(kfloat r,kfloat g,kfloat b)=0;
+		* \fn 		virtual void SetAmbient(float r,float g,float b)=0;
 		* \param	r : reg color
 		* \param	g : green color
 		* \param	b : blue color
 		*/ 
-	//virtual void SetAmbient(kfloat r,kfloat g,kfloat b)=0;
+	//virtual void SetAmbient(float r,float g,float b)=0;
 		
 	/**
 		* \brief	enable the camera protection
@@ -418,8 +418,8 @@ protected:
 	{
 		// data
 		Point2D		mStartPt; // used for rotation
-		kfloat		mOneOnCoef; // used for rotation and zoom
-		kfloat		mTargetPointDist; // used for rotation and zoom
+		float		mOneOnCoef; // used for rotation and zoom
+		float		mTargetPointDist; // used for rotation and zoom
 		Vector3D	mStartV; // used for rotation and zoom
 
 		// store starting camera data

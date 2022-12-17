@@ -21,8 +21,8 @@ public:
 	DECLARE_CONSTRUCTOR(API3DCutShader);
 
 protected:
-	kstl::string GetVertexShader() override;
-	kstl::string GetFragmentShader() override;
+	std::string GetVertexShader() override;
+	std::string GetFragmentShader() override;
 	void NotifyUpdate(unsigned int labelid) override;
 	
 	maInt mPlaneCount = BASE_ATTRIBUTE(PlaneCount, 1);

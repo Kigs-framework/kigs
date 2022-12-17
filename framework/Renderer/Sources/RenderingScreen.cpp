@@ -56,9 +56,9 @@ void RenderingScreen::Update(const Timer&  timer, void* addParam)
 // recompute mDesignCoefX,mDesignCoefY;
 void RenderingScreen::InitModifiable()
 {
-	kstl::vector<CMSP>	instances;
+	std::vector<CMSP>	instances;
 
-    kstl::string parentW=mParentWindowName.const_ref();
+    std::string parentW=mParentWindowName.const_ref();
 
 	if(parentW != "")
 	{
@@ -124,13 +124,13 @@ v2f RenderingScreen::GlobalMousePositionToDesignPosition(v2i pos)
 	return result;
 }
 
-void RenderingScreen::GetMousePosInScreen(int posx,int posy,kfloat& sposx,kfloat& sposy)
+void RenderingScreen::GetMousePosInScreen(int posx,int posy,float& sposx,float& sposy)
 {
 	if(mParentWindow !=0)
 		mParentWindow->GetMousePosInDesignWindow(posx,posy,sposx,sposy);
 }
 
-void RenderingScreen::GetMouseRatioInScreen(int posx,int posy,kfloat& sposx,kfloat& sposy)
+void RenderingScreen::GetMouseRatioInScreen(int posx,int posy,float& sposx,float& sposy)
 {
 	if(mParentWindow !=0)
 	{
@@ -143,7 +143,7 @@ void RenderingScreen::GetMouseRatioInScreen(int posx,int posy,kfloat& sposx,kflo
 	}
 }
 
-void RenderingScreen::GetMouseRatio(int posx,int posy,kfloat& sposx,kfloat& sposy)
+void RenderingScreen::GetMouseRatio(int posx,int posy,float& sposx,float& sposy)
 {
 	if(mParentWindow !=0)
 	{
@@ -171,13 +171,13 @@ bool RenderingScreen::MouseIsInScreen(int posx,int posy)
 	return true;
 }
 
-void RenderingScreen::GetMousePosInDesignScreen(int posx,int posy,kfloat& sposx,kfloat& sposy)
+void RenderingScreen::GetMousePosInDesignScreen(int posx,int posy,float& sposx,float& sposy)
 {
-	sposx=((kfloat)posx)*mDesignCoef[0];
-	sposy=((kfloat)posy)*mDesignCoef[1];
+	sposx=((float)posx)*mDesignCoef[0];
+	sposy=((float)posy)*mDesignCoef[1];
 }
 
-void RenderingScreen::GetMouseMoveInScreen(kfloat posx,kfloat posy,kfloat& sposx,kfloat& sposy)
+void RenderingScreen::GetMouseMoveInScreen(float posx,float posy,float& sposx,float& sposy)
 {
 	sposx=posx*mDesignCoef[0];
 	sposy=posy*mDesignCoef[1];
@@ -217,8 +217,8 @@ bool RenderingScreen::GetDataInTouchSupport(const touchPosInfos& posin, touchPos
 
 	if (mIsOffScreen)
 	{
-		kfloat cx = mDesignSize[0];
-		kfloat cy = mDesignSize[1];
+		float cx = mDesignSize[0];
+		float cy = mDesignSize[1];
 
 		pout.pos.x = posin.pos.x*cx;
 		pout.pos.y = posin.pos.y*cy;

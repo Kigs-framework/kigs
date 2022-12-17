@@ -335,11 +335,11 @@ std::vector<UTF8Char>	usString::toUTF8()
 }
 
 
-kstl::string usString::encode()
+std::string usString::encode()
 {
 	unsigned int len = strlen();
 
-	kstl::string result = "";
+	std::string result = "";
 
 	if (len)
 	{
@@ -356,7 +356,7 @@ kstl::string usString::encode()
 	return result;
 }
 
-void usString::decode(const kstl::string& todecode)
+void usString::decode(const std::string& todecode)
 {
 	// first count '.' numbers to find decoded string len
 	unsigned int len = (unsigned int)todecode.length();
@@ -451,7 +451,7 @@ void usString::copy(const UTF8Char* str)
 
 usString::operator bool() const
 {
-	kstl::string result = ToString();
+	std::string result = ToString();
 	if ((result == "true") || (result == "1"))
 	{
 		return true;
@@ -477,9 +477,9 @@ usString::operator unsigned int() const
 	return result;
 }
 
-usString::operator kstl::string() const
+usString::operator std::string() const
 {
-	kstl::string result = ToString();
+	std::string result = ToString();
 	return result;
 }
 

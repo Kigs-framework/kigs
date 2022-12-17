@@ -24,9 +24,9 @@
 
 IMPLEMENT_CLASS_INFO(DataDrivenSequence)
 
-DataDrivenSequence::DataDrivenSequence(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, mKeepParamsOnStateChange(*this, false, LABEL_AND_ID(KeepParamsOnStateChange), false)
-, mSequenceManager(*this, true, LABEL_AND_ID(SequenceManager),"DataDrivenSequenceManager:AppSequenceManager" ) // default is app
+DataDrivenSequence::DataDrivenSequence(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+, mKeepParamsOnStateChange(*this, false, "KeepParamsOnStateChange", false)
+, mSequenceManager(*this, true, "SequenceManager","DataDrivenSequenceManager:AppSequenceManager" ) // default is app
 {
 }
 
@@ -39,7 +39,7 @@ DataDrivenSequenceManager*	DataDrivenSequence::getManager()
 	return (DataDrivenSequenceManager*)(CoreModifiable*)mSequenceManager;
 }
 
-void DataDrivenSequence::saveParams(kstl::map<unsigned int, kstl::string>& params)
+void DataDrivenSequence::saveParams(std::map<unsigned int, std::string>& params)
 {
 	if (mKeepParamsOnStateChange)
 	{
@@ -50,7 +50,7 @@ void DataDrivenSequence::saveParams(kstl::map<unsigned int, kstl::string>& param
 
 		while (itattribcurrent != itattribend)
 		{
-			kstl::string value;
+			std::string value;
 			if (getValue((*itattribcurrent).first, value))
 			{
 				params[(*itattribcurrent).first.toUInt()] = value;
@@ -60,12 +60,12 @@ void DataDrivenSequence::saveParams(kstl::map<unsigned int, kstl::string>& param
 
 	}
 }
-void DataDrivenSequence::restoreParams(const kstl::map<unsigned int, kstl::string>& params)
+void DataDrivenSequence::restoreParams(const std::map<unsigned int, std::string>& params)
 {
 	if (mKeepParamsOnStateChange)
 	{
-		kstl::map<unsigned int, kstl::string>::const_iterator	itattribcurrent = params.begin();
-		kstl::map<unsigned int, kstl::string>::const_iterator	itattribend = params.end();
+		std::map<unsigned int, std::string>::const_iterator	itattribcurrent = params.begin();
+		std::map<unsigned int, std::string>::const_iterator	itattribend = params.end();
 
 		while (itattribcurrent != itattribend)
 		{
@@ -89,7 +89,7 @@ void DataDrivenSequence::InitModifiable()
 	CMSP currentSequence = currentManager->GetCurrentSequence();
 
 	// first search for a transition
-	kstl::vector<CMSP>	instances;
+	std::vector<CMSP>	instances;
 	GetSonInstancesByType("DataDrivenTransition", instances);
 
 	if (instances.size() == 0) // if no transition, destroy previous scene else everything is managed by transition
@@ -99,7 +99,7 @@ void DataDrivenSequence::InitModifiable()
 			currentManager->ProtectedCloseSequence(currentSequence->getName());
 			if (currentSequence->isSubType(DataDrivenSequence::mClassID))
 			{
-				kstl::map<unsigned int, kstl::string> savedParamsList;
+				std::map<unsigned int, std::string> savedParamsList;
 				currentSequence->as<DataDrivenSequence>()->saveParams(savedParamsList);
 				if (savedParamsList.size())
 				{
@@ -123,8 +123,8 @@ void DataDrivenSequence::InitModifiable()
 
 	ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
 
-	kstl::vector<CMSP>::iterator	it = instances.begin();
-	kstl::vector<CMSP>::iterator	itend = instances.end();
+	std::vector<CMSP>::iterator	it = instances.begin();
+	std::vector<CMSP>::iterator	itend = instances.end();
 
 	for (; it != itend; ++it)
 	{
@@ -135,9 +135,9 @@ void DataDrivenSequence::InitModifiable()
 void DataDrivenSequence::UninitModifiable()
 {
 	// close all sons
-	const kstl::vector<ModifiableItemStruct>& items = getItems();
-	kstl::vector<ModifiableItemStruct>::const_iterator	it = items.begin();
-	kstl::vector<ModifiableItemStruct>::const_iterator	itend = items.end();
+	const std::vector<ModifiableItemStruct>& items = getItems();
+	std::vector<ModifiableItemStruct>::const_iterator	it = items.begin();
+	std::vector<ModifiableItemStruct>::const_iterator	itend = items.end();
 
 	for (; it != itend; ++it)
 	{
@@ -148,12 +148,12 @@ void DataDrivenSequence::UninitModifiable()
 
 IMPLEMENT_CLASS_INFO(DataDrivenTransition)
 
-DataDrivenTransition::DataDrivenTransition(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+DataDrivenTransition::DataDrivenTransition(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 , mPreviousSequence(nullptr)
-, mPreviousAnim(*this, false, LABEL_AND_ID(PreviousAnim))
-, mNextAnim(*this, false, LABEL_AND_ID(NextAnim))
+, mPreviousAnim(*this, false, "PreviousAnim")
+, mNextAnim(*this, false, "NextAnim")
 , mIsFirstUpdate(false)
-, mSequenceManager(*this, true, LABEL_AND_ID(SequenceManager), "DataDrivenSequenceManager:AppSequenceManager") // default is app
+, mSequenceManager(*this, true, "SequenceManager", "DataDrivenSequenceManager:AppSequenceManager") // default is app
 {
 
 }
@@ -221,7 +221,7 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 		mIsFirstUpdate = false;
 
 
-		kstl::vector<CMSP>	instances;
+		std::vector<CMSP>	instances;
 		//CoreModifiable* currentSequence = currentApp->GetCurrentSequence();
 		if (mPreviousSequence)
 		{
@@ -234,8 +234,8 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 				mPreviousSequence->GetSonInstancesByType("Scene3D", instances, true);
 			}
 			// block all layers 
-			kstl::vector<CMSP>::iterator	it = instances.begin();
-			kstl::vector<CMSP>::iterator	itend = instances.end();
+			std::vector<CMSP>::iterator	it = instances.begin();
+			std::vector<CMSP>::iterator	itend = instances.end();
 
 			for (; it != itend; ++it)
 			{
@@ -258,8 +258,8 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 		// search father sequence for layers
 		GetParents()[0]->GetSonInstancesByType("Scene3D", instances);
 
-		kstl::vector<CMSP>::iterator	it = instances.begin();
-		kstl::vector<CMSP>::iterator	itend = instances.end();
+		std::vector<CMSP>::iterator	it = instances.begin();
+		std::vector<CMSP>::iterator	itend = instances.end();
 
 		for (; it != itend; ++it)
 		{
@@ -280,7 +280,7 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 	else
 	{
 		// check if transition is finished
-		kstl::vector<CMSP>::iterator itlauncher;
+		std::vector<CMSP>::iterator itlauncher;
 		bool	isFinished = true;
 		for (itlauncher = mPrevLauncherList.begin(); itlauncher != mPrevLauncherList.end(); ++itlauncher)
 		{
@@ -304,7 +304,7 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 				currentManager->ProtectedCloseSequence(mPreviousSequence->getName());
 				if (mPreviousSequence->isSubType(DataDrivenSequence::mClassID))
 				{
-					kstl::map<unsigned int, kstl::string> savedParamsList;
+					std::map<unsigned int, std::string> savedParamsList;
 					mPreviousSequence->as<DataDrivenSequence>()->saveParams(savedParamsList);
 					if (savedParamsList.size())
 					{
@@ -314,11 +314,11 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 				mPreviousSequence->UnInit();
 				mPreviousSequence = 0;
 			}
-			kstl::vector<CMSP>	instances;
+			std::vector<CMSP>	instances;
 			GetParents()[0]->GetSonInstancesByType("Abstract2DLayer", instances);
 
-			kstl::vector<CMSP>::iterator	it = instances.begin();
-			kstl::vector<CMSP>::iterator	itend = instances.end();
+			std::vector<CMSP>::iterator	it = instances.begin();
+			std::vector<CMSP>::iterator	itend = instances.end();
 
 			for (; it != itend; ++it)
 			{
@@ -342,7 +342,7 @@ IMPLEMENT_CONSTRUCTOR(DataDrivenSequenceManager)
 	mSequenceParametersMap.clear();
 }
 
-void DataDrivenSequenceManager::ProtectedInitSequence(const kstl::string& sequence)
+void DataDrivenSequenceManager::ProtectedInitSequence(const std::string& sequence)
 {
 	// check if app manager
 	//kigsprintf("%s init sequence %s(%p)\n", getName().c_str(), sequence.c_str(), &sequence);
@@ -354,7 +354,7 @@ void DataDrivenSequenceManager::ProtectedInitSequence(const kstl::string& sequen
 
 }
 
-void DataDrivenSequenceManager::ProtectedCloseSequence(const kstl::string& sequence)
+void DataDrivenSequenceManager::ProtectedCloseSequence(const std::string& sequence)
 {
 	//kigsprintf("%s close sequence %s(%p)\n", getName().c_str(), sequence.c_str(), &sequence);
 	DataDrivenBaseApplication* isApp = aggregate_cast<DataDrivenBaseApplication>(this);
@@ -449,7 +449,7 @@ void DataDrivenBaseApplication::ProtectedInit()
 
 	// load an anonymous CoreModifiableInstance containing global params
 	// try to load platform specific config file
-	kstl::string configFileName = "GlobalConfig";
+	std::string configFileName = "GlobalConfig";
 
 	configFileName += getPlatformName();
 	configFileName += ".xml";
@@ -464,7 +464,7 @@ void DataDrivenBaseApplication::ProtectedInit()
 		return;
 
 	
-	kstl::string tmpFilename;
+	std::string tmpFilename;
 	// get dynamic attributes (DataDrivenBaseApplication V1.1)
 	// package file ?
 	if (AppInit->getValue("PackageFileName", tmpFilename))
@@ -495,7 +495,7 @@ void DataDrivenBaseApplication::ProtectedInit()
 	// device display caps to get screen resolution
 	SP<DisplayDeviceCaps>	L_displaycaps = KigsCore::GetInstanceOf("getdisplaycaps", "DisplayDeviceCaps");
 
-	const kstl::vector<DisplayDeviceCaps::DisplayDeviceCapacity>* L_capacitylist = nullptr;
+	const std::vector<DisplayDeviceCaps::DisplayDeviceCapacity>* L_capacitylist = nullptr;
 
 
 	std::string L_DeviceName;
@@ -538,7 +538,7 @@ void DataDrivenBaseApplication::ProtectedInit()
 	if (L_capacitylist)
 	{
 		
-		kstl::vector<DisplayDeviceCaps::DisplayDeviceCapacity>::const_iterator	it = (*L_capacitylist).begin();
+		std::vector<DisplayDeviceCaps::DisplayDeviceCapacity>::const_iterator	it = (*L_capacitylist).begin();
 		while (it != (*L_capacitylist).end())
 		{
 			const DisplayDeviceCaps::DisplayDeviceCapacity& current = (*it);
@@ -595,7 +595,7 @@ void DataDrivenBaseApplication::ProtectedInit()
 	AppInit->setValue("Size", L_ScreenSize);
 
 	// retrieve rendering screen
-	kstl::vector<CMSP>	instances;
+	std::vector<CMSP>	instances;
 	AppInit->GetSonInstancesByType("RenderingScreen", instances);
 	if (instances.size() == 1)
 	{
@@ -773,7 +773,7 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 			ProtectedCloseSequence(mCurrentSequence->getName());
 			if (mCurrentSequence->isSubType("DataDrivenSequence"))
 			{
-				kstl::map<unsigned int, kstl::string> savedParamsList;
+				std::map<unsigned int, std::string> savedParamsList;
 				((DataDrivenSequence*)mCurrentSequence.get())->saveParams(savedParamsList);
 				if (savedParamsList.size())
 				{
@@ -843,7 +843,7 @@ void DataDrivenSequenceManager::SetState(State_t NewState)
 				ProtectedCloseSequence(mCurrentSequence->getName());
 				if (mCurrentSequence->isSubType("DataDrivenSequence"))
 				{
-					kstl::map<unsigned int, kstl::string> savedParamsList;
+					std::map<unsigned int, std::string> savedParamsList;
 					((DataDrivenSequence*)mCurrentSequence.get())->saveParams(savedParamsList);
 					if (savedParamsList.size())
 					{
@@ -925,7 +925,7 @@ CoreModifiable*	DataDrivenSequenceManager::getParentSequence(CoreModifiable* s)
 	{
 		return s;
 	}
-	const kstl::vector<CoreModifiable*>& p=s->GetParents();
+	const std::vector<CoreModifiable*>& p=s->GetParents();
 
 	auto itp = p.begin();
 	auto ite = p.end();
@@ -953,13 +953,13 @@ DEFINE_METHOD(DataDrivenSequenceManager, ChangeSequence)
 	if (privateParams != NULL)
 	{
 		mStateStack.clear();
-		kstl::string L_tmp = static_cast<usString*>(privateParams)->ToString();
+		std::string L_tmp = static_cast<usString*>(privateParams)->ToString();
 		RequestStateChange(L_tmp);
 	}
 	else if (!params.empty())
 	{
 		mStateStack.clear();
-		kstl::string tmp;
+		std::string tmp;
 		// should search for the good param
 		params[0]->getValue(tmp);
 		RequestStateChange(tmp);
@@ -975,12 +975,12 @@ DEFINE_METHOD(DataDrivenSequenceManager, StackSequence)
 
 	if (privateParams != NULL)
 	{
-		kstl::string L_tmp = static_cast<usString*>(privateParams)->ToString();
+		std::string L_tmp = static_cast<usString*>(privateParams)->ToString();
 		RequestStateChange(L_tmp);
 	}
 	else if (!params.empty())
 	{
-		kstl::string tmp;
+		std::string tmp;
 		// should search for the good param
 		params[0]->getValue(tmp);
 		RequestStateChange(tmp);

@@ -5,11 +5,11 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UIFlowLayout, UIFlowLayout, 2DLayers);
 IMPLEMENT_CLASS_INFO(UIFlowLayout)
 
-UIFlowLayout::UIFlowLayout(const kstl::string& name, CLASS_NAME_TREE_ARG) :
+UIFlowLayout::UIFlowLayout(const std::string& name, CLASS_NAME_TREE_ARG) :
 UILayout(name, PASS_CLASS_NAME_TREE_ARG)
-, mPadding(*this, false, LABEL_AND_ID(Padding), 0, 0)
-, mSortByPriority(*this, false, LABEL_AND_ID(SortByPriority), false)
-, mRescaleToFit(*this, false, LABEL_AND_ID(RescaleToFit))
+, mPadding(*this, false, "Padding", 0, 0)
+, mSortByPriority(*this, false, "SortByPriority", false)
+, mRescaleToFit(*this, false, "RescaleToFit")
 {
 	mPadding.changeNotificationLevel(Owner);
 	mSortByPriority.changeNotificationLevel(Owner);
@@ -29,7 +29,7 @@ void UIFlowLayout::RecomputeLayout()
 {
 	if (!GetSons().empty())
 	{
-		kstl::vector<CoreModifiable*> items;
+		std::vector<CoreModifiable*> items;
 		if (!mSortByPriority)
 		{
 			// Get sons ordered by insertion

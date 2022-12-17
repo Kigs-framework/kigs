@@ -107,8 +107,8 @@ public:
 		return ReadCount;
 	}
 
-	bool	searchNextWord(const kstl::string& toSearch);
-	bool	getNextFloat(kfloat& flt);
+	bool	searchNextWord(const std::string& toSearch);
+	bool	getNextFloat(float& flt);
 
 private:
 	//! size of the file

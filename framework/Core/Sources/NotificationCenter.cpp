@@ -14,14 +14,14 @@ NotificationCenter::NotificationCenter()
 	mPostLevel=0;
 
 	// use context to pass variable to coreItemOperator
-	mContext.mVariableList[LABEL_TO_ID(sender).toUInt()];
-	mContext.mVariableList[LABEL_TO_ID(data).toUInt()];
+	mContext.mVariableList[KigsID("sender").toUInt()];
+	mContext.mVariableList[KigsID("data").toUInt()];
 }
 
 NotificationCenter::~NotificationCenter()
 {
-	mContext.mVariableList[LABEL_TO_ID(sender).toUInt()];
-	mContext.mVariableList[LABEL_TO_ID(data).toUInt()];
+	mContext.mVariableList[KigsID("sender").toUInt()];
+	mContext.mVariableList[KigsID("data").toUInt()];
 
 	mObserverMap.clear();
 	mNotificationMap.clear();
@@ -55,7 +55,7 @@ void NotificationCenter::addObserver(CoreModifiable* observer, const std::string
 		{
 			std::string toeval = selector.substr(4, selector.length() - 4);
 
-			CoreItemSP toAdd = CoreItemOperator<kfloat>::Construct(toeval, observer, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+			CoreItemSP toAdd = CoreItemOperator<float>::Construct(toeval, observer, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			newobstruct.mCurrentItem = toAdd;
 		}
 		CoreItemEvaluationContext::ReleaseContext();
@@ -499,7 +499,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 
 			if (notificationIDAttr == 0)
 			{
-				notificationIDAttr = new maUInt(*currentobserver, false, LABEL_AND_ID(NotificationID), notificationID.toUInt());
+				notificationIDAttr = new maUInt(*currentobserver, false, "NotificationID", notificationID.toUInt());
 				params.push_back(notificationIDAttr);
 			}
 
@@ -516,9 +516,9 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 						if (currentobsStruct.mCurrentItem)
 						{
 							CoreItemEvaluationContext::SetContext(&mContext);
-							mContext.mVariableList[LABEL_TO_ID(sender).toUInt()].push_back(sender->shared_from_this());
+							mContext.mVariableList[KigsID("sender").toUInt()].push_back(sender->shared_from_this());
 							// Warning faked cast
-							mContext.mVariableList[LABEL_TO_ID(data).toUInt()].push_back(((GenericRefCountedBaseClass*) data)->shared_from_this());
+							mContext.mVariableList[KigsID("data").toUInt()].push_back(((GenericRefCountedBaseClass*) data)->shared_from_this());
 
 
 							// push params
@@ -544,7 +544,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 									case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
 									case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 									{
-										mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()].push_back(std::make_shared<CoreModifiableAttributeOperator<kfloat>>(*paramscurrent));
+										mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()].push_back(std::make_shared<CoreModifiableAttributeOperator<float>>(*paramscurrent));
 									}
 									break;
 									case CoreModifiable::ATTRIBUTE_TYPE::STRING:
@@ -610,7 +610,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 
 			while (paramscurrent != paramsend)
 			{
-				if ((*paramscurrent)->getLabelID() == LABEL_TO_ID(NotificationID))
+				if ((*paramscurrent)->getLabelID() == "NotificationID")
 				{
 					params.erase(paramscurrent);
 					

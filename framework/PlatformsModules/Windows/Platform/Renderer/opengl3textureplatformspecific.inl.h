@@ -15,22 +15,22 @@ bool	OpenGLTexture::CubeMapGeneration()
 	renderer->FlushState();
 	bool result=true;
 	auto pathManager = KigsCore::Singleton<FilePathManager>();
-	kstl::string fullfilename;
+	std::string fullfilename;
 	char asciiCount[16];
 	asciiCount[0]=0;
 
 	// get extension
-	kstl::string	extension=mFileName;
+	std::string	extension=mFileName;
 	extension=extension.substr(extension.rfind("."));
 	// remove extension
-	kstl::string basefilename=mFileName;
+	std::string basefilename=mFileName;
 	basefilename=basefilename.substr(0,basefilename.length()-extension.length());
 
 	// check if all 6 textures are ok
 	int index;
 	for(index=0;index<6;index++)
 	{
-		kstl::string filename=basefilename;
+		std::string filename=basefilename;
 		filename+="_";
 		sprintf(asciiCount,"%d",(index+1));
 		filename+=asciiCount;
@@ -60,7 +60,7 @@ bool	OpenGLTexture::CubeMapGeneration()
 		int components=3;
 		for(index=0;index<6;index++)
 		{
-			kstl::string filename=basefilename;
+			std::string filename=basefilename;
 			filename+="_";
 			sprintf(asciiCount,"%d",(index+1));
 			filename+=asciiCount;

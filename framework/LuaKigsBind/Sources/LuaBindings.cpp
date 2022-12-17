@@ -126,7 +126,7 @@ void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 		
 		else if (isNumber)
 		{
-			kdouble value;
+			double value;
 			attrib->getValue(value);
 			lua_pushnumber(L, value);
 		}
@@ -151,7 +151,7 @@ void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 		}
 		else
 		{
-			kstl::string val;
+			std::string val;
 			if(attrib->getValue(val))
 				lua_pushstring(L, val.c_str());
 			else
@@ -163,7 +163,7 @@ void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 		int size = attrib->getNbArrayColumns();
 		bool isvec = false;
 		
-		kdouble values[4];
+		double values[4];
 		if (size >= 2 && size <= 4 && (isInt || isUint || isNumber))
 		{
 			isvec = true;
@@ -193,7 +193,7 @@ void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 			}
 			else if (isNumber)
 			{
-				kdouble value;
+				double value;
 				attrib->getArrayElementValue(value, 0, i);
 				if(isvec)
 					values[i] = value;
@@ -202,7 +202,7 @@ void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 			}
 			else
 			{
-				kstl::string val;
+				std::string val;
 				if(attrib->getArrayElementValue(val, 0, i))
 					lua_pushstring(L, val.c_str());
 				else
@@ -225,7 +225,7 @@ void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 }
 
 
-static CMSP factory(const kstl::string& name, const kstl::string& type)
+static CMSP factory(const std::string& name, const std::string& type)
 {
 	return KigsCore::GetInstanceOf(name, type);
 }
@@ -334,7 +334,7 @@ int CoreModifiableSetAttributeLua(lua_State* lua)
 			for (int i = 0; i < size; ++i)
 			{
 				L.getField(value_idx, i + 1);
-				kdouble value = lua_tonumber(L, -1);
+				double value = lua_tonumber(L, -1);
 				was_set = attr->setArrayElementValue(value, 0, i) || was_set;
 				L.pop();
 			}
@@ -415,13 +415,13 @@ CoreModifiableAttribute* MakeAttributeFromLuaStack(lua_State* lua, int idx, Core
 	{
 		LuaRef ref = L.toValue<LuaRef>(idx);
 		auto mt = ref.getMetaTable();
-		kstl::string typestr = "ParamPtr";
+		std::string typestr = "ParamPtr";
 		if (mt)
 		{
 			auto typeref = mt["___type"];
 			if (typeref.value())
 			{
-				typestr = typeref.value().toValue<kstl::string>();
+				typestr = typeref.value().toValue<std::string>();
 				typestr = typestr.substr(6);
 				typestr = typestr.substr(0, typestr.size() - 1);
 			}
@@ -498,7 +498,7 @@ static int CoreModifiableMethodCaller(lua_State* lua)
 	
 	int t = L.top();
 	
-	kstl::vector<CoreModifiableAttribute*> p;
+	std::vector<CoreModifiableAttribute*> p;
 	for (int i = 1; i < t; ++i)
 	{
 		p.push_back(MakeAttributeFromLuaStack(L, i + 1));
@@ -574,7 +574,7 @@ int CoreModifiableAddHook(CoreModifiable* obj, lua_State* lua)
 	}
 	else if(L.isFunction(3))
 	{
-		kstl::vector<CMSP> insts;
+		std::vector<CMSP> insts;
 		obj->GetSonInstancesByType("LuaNotificationHook", insts, false);
 		
 		auto hook_obj = std::find_if(insts.begin() ,insts.end(), [notif](CMSP& o){ return o->getName() == notif;});
@@ -658,12 +658,12 @@ int CoreModifiableAddDynamicAttribute(CoreModifiable* obj, lua_State* lua)
 
 
 
-kstl::vector<CMSP> CoreModifiableByName(const char* name)
+std::vector<CMSP> CoreModifiableByName(const char* name)
 {
 	return	CoreModifiable::GetInstancesByName("CoreModifiable", name);
 }
 
-kstl::vector<CMSP> CoreModifiableByType(const char* type)
+std::vector<CMSP> CoreModifiableByType(const char* type)
 {
 	return CoreModifiable::GetInstances((std::string)type);
 }
@@ -674,26 +674,26 @@ CMSP CoreModifiableGet(const char* name)
 }
 
 
-kstl::vector<CMSP> CoreModifiableGetSonByType(CoreModifiable* obj, const char* type, bool rec)
+std::vector<CMSP> CoreModifiableGetSonByType(CoreModifiable* obj, const char* type, bool rec)
 {
-	kstl::vector<CMSP> insts;
+	std::vector<CMSP> insts;
 	obj->GetSonInstancesByType((std::string)type, insts, rec);
 	return insts;
 }
 
 
-kstl::vector<CMSP> CoreModifiableGetSonByName(CoreModifiable* obj, const char* name, bool rec)
+std::vector<CMSP> CoreModifiableGetSonByName(CoreModifiable* obj, const char* name, bool rec)
 {
-	kstl::vector<CMSP> insts;
+	std::vector<CMSP> insts;
 	obj->GetSonInstancesByName("CoreModifiable", name, insts, rec);
 	return insts;
 }
 
 
 
-kstl::vector<CoreModifiable*> CoreModifiableChildList(CoreModifiable* obj)
+std::vector<CoreModifiable*> CoreModifiableChildList(CoreModifiable* obj)
 {
-	kstl::vector<CoreModifiable*> result; result.reserve(obj->getItems().size());
+	std::vector<CoreModifiable*> result; result.reserve(obj->getItems().size());
 	for(auto mis : obj->getItems())
 	{
 		result.push_back(mis.mItem.get());
@@ -983,9 +983,9 @@ void setup_bindings(lua_State* lua)
    .addStaticFunction("Trace", LUA_FN(float, Trace, const mat3x4&))
    */
 	.addFunction("transformPoint", [](const mat3x4* m, v3f* v) { m->TransformPoint(v); })
-		.addFunction("transformPoints", [](const mat3x4* m, const kstl::vector<v3f*> l) { for (auto v : l) m->TransformPoint(v); })
+		.addFunction("transformPoints", [](const mat3x4* m, const std::vector<v3f*> l) { for (auto v : l) m->TransformPoint(v); })
 		.addFunction("transformVector", [](const mat3x4* m, v3f* v) {m->TransformVector((Vector3D*)v); })
-		.addFunction("transformVectors", [](const mat3x4* m, const kstl::vector<v3f*> l) { for (auto v : l) m->TransformVector((Vector3D*)v); })
+		.addFunction("transformVectors", [](const mat3x4* m, const std::vector<v3f*> l) { for (auto v : l) m->TransformVector((Vector3D*)v); })
 	
 		.addFunction("copy", [](const mat3x4* m) -> mat3x4 { return *m; })
 	
@@ -993,8 +993,8 @@ void setup_bindings(lua_State* lua)
 		.endClass();
 	
 	auto cm = LuaBinding(L).beginClass<CoreModifiable>("CoreModifiable")
-		.addFactory(&factory, LUA_ARGS(kstl::string, kstl::string)) 
-		//.addStaticFunction("Import", LUA_FN(CoreModifiable*, CoreModifiable::Import, const kstl::string&, bool, bool), LUA_ARGS(const kstl::string&, _opt<bool>, _opt<bool>))
+		.addFactory(&factory, LUA_ARGS(std::string, std::string)) 
+		//.addStaticFunction("Import", LUA_FN(CoreModifiable*, CoreModifiable::Import, const std::string&, bool, bool), LUA_ARGS(const std::string&, _opt<bool>, _opt<bool>))
 		.addFunction("name", &CoreModifiable::getName)
 		.addFunction("addItem", &CoreModifiable::addItem, LUA_ARGS(const CMSP&, _def<CoreModifiable::ItemPosition, CoreModifiable::Last>))
 		.addFunction("removeItem", &CoreModifiable::removeItem, LUA_ARGS(const CMSP&))

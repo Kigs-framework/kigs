@@ -19,7 +19,7 @@ public:
     DECLARE_CLASS_INFO(DisplayDeviceCapsWin32,DisplayDeviceCaps,GUI)
 
 	//! constructor
-    DisplayDeviceCapsWin32(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    DisplayDeviceCapsWin32(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	//! destructor
 	virtual ~DisplayDeviceCapsWin32();

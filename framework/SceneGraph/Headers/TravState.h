@@ -89,25 +89,25 @@ public:
 
 	/**
 	* \brief	constructor
-	* \fn 		TravState(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	* \fn 		TravState(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	TravState(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	TravState(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	/**
 	* \brief	set the tavState time
-	* \fn 		void	SetTime(kdouble time)
+	* \fn 		void	SetTime(double time)
 	* \param	time : time to set
 	*/
-	void	SetTime(kdouble time){mTime=time;}
+	void	SetTime(double time){mTime=time;}
 
 	/**
 	* \brief	get the tavState time
-	* \fn 		kdouble	GetTime()
+	* \fn 		double	GetTime()
 	* \return	the tavState time
 	*/
-	kdouble	GetTime(){return mTime;}
+	double	GetTime(){return mTime;}
 
 	/**
 	* \brief	set the camera
@@ -125,17 +125,17 @@ public:
 
 	/**
 	* \brief	set the LOD
-	* \fn 		void	SetLOD(kfloat lod)
+	* \fn 		void	SetLOD(float lod)
 	* \param	lod : LOD to set
 	*/
-	void	SetLOD(kfloat lod){mLOD=lod;}
+	void	SetLOD(float lod){mLOD=lod;}
 
 	/**
 	* \brief	get the tavState LOD
-	* \fn 		kfloat	GetLOD()
+	* \fn 		float	GetLOD()
 	* \return	the tavState LOD
 	*/
-	kfloat	GetLOD(){return mLOD;}
+	float	GetLOD(){return mLOD;}
 
 	/**
 	* \brief	get the culling object
@@ -266,7 +266,7 @@ public:
 	Material*									mCurrentMaterial;
 
 	//! list of current used light
-	kstl::set<CoreModifiable*>*				mLights;
+	std::set<CoreModifiable*>*				mLights;
 
 	void	SetHolographicMode(bool isHolo) { mIsHolographic = isHolo; }
 	bool	GetHolographicMode() { return mIsHolographic; }
@@ -287,9 +287,9 @@ public:
 
 protected:
 	//! time
-	kdouble	mTime;
+	double	mTime;
 	//! LOD value
-	kfloat	mLOD;
+	float	mLOD;
 	//! link to the current camera
 	Camera*	mCamera;
 	//! link to the current renderer
@@ -312,7 +312,7 @@ protected:
 	//! index of the current frame
 	unsigned int mFrame;
 	//! current scale
-	kfloat mCurrentScale;
+	float mCurrentScale;
 
 	unsigned int mRenderDisableMask =0;
 

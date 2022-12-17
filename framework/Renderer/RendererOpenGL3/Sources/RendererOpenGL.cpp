@@ -40,7 +40,7 @@
 
 /*API3DShader*					RendererOpenGL::mCurrentShader = NULL;
 unsigned int				RendererOpenGL::mCurrentShaderProgram=0;
-kstl::vector<API3DShader*>	RendererOpenGL::mShaderStack;
+std::vector<API3DShader*>	RendererOpenGL::mShaderStack;
 unsigned int				RendererOpenGL::mDirtyShaderMatrix = 0;*/
 
 
@@ -56,7 +56,7 @@ extern bool gIsHolographic;
 
 IMPLEMENT_CLASS_INFO(RendererOpenGL)
 
-RendererOpenGL::RendererOpenGL(const kstl::string& name, CLASS_NAME_TREE_ARG) : ModuleSpecificRenderer(name, PASS_CLASS_NAME_TREE_ARG)
+RendererOpenGL::RendererOpenGL(const std::string& name, CLASS_NAME_TREE_ARG) : ModuleSpecificRenderer(name, PASS_CLASS_NAME_TREE_ARG)
 
 , mCurrentOGLMatrixMode(-1)
 
@@ -549,7 +549,7 @@ extern "C"
 }
 #endif
 
-void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void RendererOpenGL::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	BaseInit(core, "RendererOpenGL", params);
 	DECLARE_FULL_CLASS_INFO(core, OpenGLRenderingMatrix, RendererMatrix, Renderer)
@@ -559,7 +559,7 @@ void RendererOpenGL::Init(KigsCore* core, const kstl::vector<CoreModifiableAttri
 	//DECLARE_FULL_CLASS_INFO(core, OpenGLTexture, Texture, Renderer)
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(OpenGLTexture, "Texture");
 	RegisterClassToInstanceFactory( core, "Renderer", "Texture",
-		[](const kstl::string& instancename, kstl::vector<CoreModifiableAttribute*>* args) -> CMSP
+		[](const std::string& instancename, std::vector<CoreModifiableAttribute*>* args) -> CMSP
 	{
 		if (args && args->size())
 		{
@@ -644,7 +644,7 @@ void RendererOpenGL::Update(const Timer& timer, void* addParam)
 	ModuleSpecificRenderer::Update(timer, addParam);
 }
 
-SP<ModuleBase> PlatformRendererModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> PlatformRendererModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(RendererOpenGL, "RendererOpenGL");

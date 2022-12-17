@@ -24,7 +24,7 @@ public:
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	UIGridLayout(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UIGridLayout(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	
 protected:
 	void			NotifyUpdate(const unsigned int labelid)override;

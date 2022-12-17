@@ -28,21 +28,21 @@ public:
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	UIText(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UIText(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 
 	inline void				SetAlignment(unsigned int a) { mTextAlignment = a; }
-	inline void				SetColor(kfloat R, kfloat G, kfloat B, kfloat A) { mColor[0] = R; mColor[1] = G; mColor[2] = B; mOpacity = A; }
+	inline void				SetColor(float R, float G, float B, float A) { mColor[0] = R; mColor[1] = G; mColor[2] = B; mOpacity = A; }
 
 	using					UITexturedItem::SetColor;
-	kstl::string			GetText() { return mText.ToString(); }
-	kstl::string			GetFontName() const { return mFont; }
+	std::string			GetText() { return mText.ToString(); }
+	std::string			GetFontName() const { return mFont; }
 	int						GetFontSize() const { return mFontSize; }
 	int						GetDirection() const { return mDirection; }
 	int						GetLength() const { return mLength; }
 				
 	void Set_FontSize(int size) { size != 0 ? mFontSize = size : mFontSize = 12; }
-	void Set_FontName(const kstl::string& fontName) { fontName != "" ? mFont = fontName : mFont = "arial.ttf"; }
+	void Set_FontName(const std::string& fontName) { fontName != "" ? mFont = fontName : mFont = "arial.ttf"; }
 
 	void			NotifyUpdate(const unsigned int /* labelid */) override;
 	
@@ -53,7 +53,7 @@ protected:
 	//bool			TriggerMouseMove(bool over, float MouseDeltaX, float MouseDeltaY) override;
 	//bool			TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick) override;
 
-	virtual void	ChangeText(const kstl::string& newText);
+	virtual void	ChangeText(const std::string& newText);
 	virtual void	ChangeText(const usString& newText);
 	
 	DECLARE_METHOD(ReloadTexture);

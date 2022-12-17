@@ -21,9 +21,9 @@ class CoreItemAnimationContext : public CoreItemEvaluationContext
 {
 public:
 	// current "global" time
-	kdouble		mTime;
+	double		mTime;
 	// current action start time
-	kdouble		mActionStartTime;
+	double		mActionStartTime;
 };
 
 // ****************************************
@@ -65,7 +65,7 @@ public:
 
 	virtual void init(CoreSequence* sequence, CoreVector* params);
 
-	virtual void	setStartTime(kdouble t)
+	virtual void	setStartTime(double t)
 	{
 		CoreAction::setStartTime(t);
 		if (mContext.mActionStartTime < -1.0)
@@ -76,7 +76,7 @@ public:
 
 protected:
 
-	virtual bool	protectedUpdate(kdouble time)
+	virtual bool	protectedUpdate(double time)
 	{
 		CoreAction::protectedUpdate(time);
 		CoreItemEvaluationContext::SetContext(&mContext);
@@ -118,14 +118,14 @@ protected:
 
 
 template<>
-inline bool	CoreActionFunction<kfloat,1>::protectedUpdate(kdouble time)
+inline bool	CoreActionFunction<float,1>::protectedUpdate(double time)
 {
 	CoreAction::protectedUpdate(time);
 	CoreItemEvaluationContext::SetContext(&mContext);
 	mContext.mTime = time;
 	if (mFunctions[0])
 	{
-		kfloat result = (kfloat)*mFunctions[0];
+		float result = (float)*mFunctions[0];
 		auto ptr = mTarget.lock(); if (ptr) ptr->setValue(mParamID, result);
 	}
 	CoreItemEvaluationContext::ReleaseContext();
@@ -133,7 +133,7 @@ inline bool	CoreActionFunction<kfloat,1>::protectedUpdate(kdouble time)
 }
 
 
-typedef CoreActionFunction < kfloat, 1 > CoreActionFunction1D;
+typedef CoreActionFunction < float, 1 > CoreActionFunction1D;
 typedef CoreActionFunction < Point2D, 2 > CoreActionFunction2D;
 typedef CoreActionFunction < Point3D, 3 > CoreActionFunction3D;
 typedef CoreActionFunction < Vector4D, 4 > CoreActionFunction4D;

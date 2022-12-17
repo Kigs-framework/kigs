@@ -10,7 +10,7 @@ static inline bool IsVecEqual(const maVect4DF &v1, const maVect4DF&v2)
 	return v1[0]==v2[0] && v1[1]==v2[1] && v1[2]==v2[2] && v1[3]==v2[3];
 }
 
-Material::Material(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
+Material::Material(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
 mFacing(*this,false,"Facing",1),
 mBlendFuncSource(*this,false,"BlendFuncSource",4),
 mBlendFuncDest(*this,false,"BlendFuncDest",5),
@@ -56,8 +56,8 @@ bool	Material::Equal(const CoreModifiable& other)
 		IsVecEqual(mDiffuseColor, pOther->mDiffuseColor) &&
 		IsVecEqual(mSpecularColor, pOther->mSpecularColor) &&
 		IsVecEqual(mEmissionColor, pOther->mEmissionColor) &&
-		(kfloat)mShininess==(kfloat)pOther->mShininess &&
-		(kfloat)mTransparency==(kfloat)pOther->mTransparency;
+		(float)mShininess==(float)pOther->mShininess &&
+		(float)mTransparency==(float)pOther->mTransparency;
 	if (!PropsAreEqual)
 		return false;
 	//compare children

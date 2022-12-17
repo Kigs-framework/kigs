@@ -166,7 +166,7 @@ DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Octree, TravState* state, unsigned int c
 
 CullingObject::CULLING_RESULT  Octree::CullSubNodes(CullingObject* cullobj, TravState* state)
 {
-	kstl::vector<OctreeSubNode::PrecomputedCullInfo>::iterator	itprecomp;
+	std::vector<OctreeSubNode::PrecomputedCullInfo>::iterator	itprecomp;
 
 	if (mPrecomputedCull.size() == 0)
 	{
@@ -275,7 +275,7 @@ void  Octree::ReorganiseOctree()
 		RecomputeBoundingBox();
 	}
 
-	kstl::vector<CMSP> toRemove;
+	std::vector<CMSP> toRemove;
 	// add all concerned object to the octree
 	for (auto mis : getItems())
 	{
@@ -315,7 +315,7 @@ IMPLEMENT_CLASS_INFO(OctreeSubNode)
 
 
 
-OctreeSubNode::OctreeSubNode(const kstl::string& name, CLASS_NAME_TREE_ARG) :
+OctreeSubNode::OctreeSubNode(const std::string& name, CLASS_NAME_TREE_ARG) :
 	Node3D(name, PASS_CLASS_NAME_TREE_ARG)
 	, mSonsSubNodes(0)
 	, mFatherSubNode(0)
@@ -456,14 +456,14 @@ void  OctreeSubNode::Divide()
 			{
 				mSonsSubNodes[index]->mFatherSubNode = this;
 
-				mSonsSubNodes[index]->mBBox.m_Min.x = mBBox.m_Min.x + (kfloat)i*size_on_two.x;
-				mSonsSubNodes[index]->mBBox.m_Max.x = mBBox.m_Min.x + (kfloat)(i + 1)*size_on_two.x;
+				mSonsSubNodes[index]->mBBox.m_Min.x = mBBox.m_Min.x + (float)i*size_on_two.x;
+				mSonsSubNodes[index]->mBBox.m_Max.x = mBBox.m_Min.x + (float)(i + 1)*size_on_two.x;
 
-				mSonsSubNodes[index]->mBBox.m_Min.y = mBBox.m_Min.y + (kfloat)j*size_on_two.y;
-				mSonsSubNodes[index]->mBBox.m_Max.y = mBBox.m_Min.y + (kfloat)(j + 1)*size_on_two.y;
+				mSonsSubNodes[index]->mBBox.m_Min.y = mBBox.m_Min.y + (float)j*size_on_two.y;
+				mSonsSubNodes[index]->mBBox.m_Max.y = mBBox.m_Min.y + (float)(j + 1)*size_on_two.y;
 
-				mSonsSubNodes[index]->mBBox.m_Min.z = mBBox.m_Min.z + (kfloat)k*size_on_two.z;
-				mSonsSubNodes[index]->mBBox.m_Max.z = mBBox.m_Min.z + (kfloat)(k + 1)*size_on_two.z;
+				mSonsSubNodes[index]->mBBox.m_Min.z = mBBox.m_Min.z + (float)k*size_on_two.z;
+				mSonsSubNodes[index]->mBBox.m_Max.z = mBBox.m_Min.z + (float)(k + 1)*size_on_two.z;
 
 				mSonsSubNodes[index]->mLocalBBox = mSonsSubNodes[index]->mBBox;
 
@@ -478,7 +478,7 @@ void  OctreeSubNode::Divide()
 	j = (int)mObjectList.size();
 	SceneNode** tmpnodes = new SceneNode*[j];
 
-	kstl::vector<SceneNode*>::iterator it;
+	std::vector<SceneNode*>::iterator it;
 	i = 0;
 
 	for (it = mObjectList.begin(); it != mObjectList.end(); ++it)
@@ -563,7 +563,7 @@ int   OctreeSubNode::FindSubNode(SceneNode* node)
 
 bool  OctreeSubNode::RemoveNode(SceneNode* node)
 {
-	kstl::vector<SceneNode*>::iterator it;
+	std::vector<SceneNode*>::iterator it;
 	bool found = false;
 
 	mFatherOctree->mIsInRemove = true;
@@ -603,7 +603,7 @@ DECLARE_DECORABLE_IMPLEMENT(bool, Cull, OctreeSubNode, TravState* state, unsigne
 	return true;
 }
 
-CullingObject::CULLING_RESULT  OctreeSubNode::RecurseCullSubNodes(const kstl::vector<PrecomputedCullInfo>& precull, TravState* state, unsigned int cullSubMask)
+CullingObject::CULLING_RESULT  OctreeSubNode::RecurseCullSubNodes(const std::vector<PrecomputedCullInfo>& precull, TravState* state, unsigned int cullSubMask)
 {
 	mCullingMask = cullSubMask;
 	UnsetAllSonsVisible();
@@ -616,7 +616,7 @@ CullingObject::CULLING_RESULT  OctreeSubNode::RecurseCullSubNodes(const kstl::ve
 
 	CullingObject::CULLING_RESULT result = (CullingObject::CULLING_RESULT)0;
 
-	kstl::vector<PrecomputedCullInfo>::const_iterator it;
+	std::vector<PrecomputedCullInfo>::const_iterator it;
 
 	Vector3D  toTest1;
 	Vector3D  toTest2;
@@ -641,7 +641,7 @@ CullingObject::CULLING_RESULT  OctreeSubNode::RecurseCullSubNodes(const kstl::ve
 
 			toTest1 -= current.mOrigin;
 
-			if (Dot(toTest1, current.mNormal) < (kfloat)0)
+			if (Dot(toTest1, current.mNormal) < (float)0)
 			{
 				mCullingResult = CullingObject::all_out;
 				mIsVisible = 0;
@@ -649,7 +649,7 @@ CullingObject::CULLING_RESULT  OctreeSubNode::RecurseCullSubNodes(const kstl::ve
 			}
 
 			toTest2 -= current.mOrigin;
-			if (Dot(toTest2, current.mNormal) < (kfloat)0)
+			if (Dot(toTest2, current.mNormal) < (float)0)
 			{
 				localresult = CullingObject::partially_in;
 			}

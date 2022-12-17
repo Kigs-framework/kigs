@@ -29,7 +29,7 @@ public:
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	UITexturedItem(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	UITexturedItem(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	virtual ~UITexturedItem();
 

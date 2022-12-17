@@ -45,7 +45,7 @@ public:
 
 	int getPriority() {return mPriority;}
 
-	const kstl::set<CoreModifiable*>& getLights() const { return mLights; }
+	const std::set<CoreModifiable*>& getLights() const { return mLights; }
 
 	/**
 	* \brief	draw the scene3D
@@ -121,7 +121,7 @@ public:
 	*/
 	virtual bool  hasLight(CoreModifiable* light);
 
-	void GetCameraVector(kstl::vector<CoreModifiable*>& cameras)
+	void GetCameraVector(std::vector<CoreModifiable*>& cameras)
 	{
 		cameras.clear();
 		for (auto caminstance : mCameras)
@@ -153,9 +153,9 @@ protected:
 	void	UninitModifiable() override;
 
 	//! link to the cameras
-	kstl::set<Camera*, sortCamera>	mCameras;
+	std::set<Camera*, sortCamera>	mCameras;
 	//! link to the lights
-	kstl::set<CoreModifiable*>		mLights;
+	std::set<CoreModifiable*>		mLights;
 	bool							mLightsHaveChanged;
 
 	int mSpotLightCount = 0;

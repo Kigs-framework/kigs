@@ -14,7 +14,7 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(GeolocationDX, GeolocationDevice, Input);
 IMPLEMENT_CLASS_INFO(GeolocationDX)
 
-GeolocationDX::GeolocationDX(const kstl::string& name,CLASS_NAME_TREE_ARG) : GeolocationDevice(name,PASS_CLASS_NAME_TREE_ARG)
+GeolocationDX::GeolocationDX(const std::string& name,CLASS_NAME_TREE_ARG) : GeolocationDevice(name,PASS_CLASS_NAME_TREE_ARG)
 {	
 }
 

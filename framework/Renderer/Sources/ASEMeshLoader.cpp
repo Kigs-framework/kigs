@@ -22,7 +22,7 @@ ASEMeshLoader::~ASEMeshLoader()
 {
 }
 
-int ASEMeshLoader::ImportFile(Mesh *pMesh, const kstl::string &FileName)
+int ASEMeshLoader::ImportFile(Mesh *pMesh, const std::string &FileName)
 {
 	int Error;
 
@@ -143,7 +143,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 			mFileParser.ReadFloat(tmpStruct.shininess);
 		}
 
-		kstl::string cutGuillemet1("");
+		std::string cutGuillemet1("");
 		CurrentPosition = mFileParser.GetPosition();
 		if(mFileParser.MoveToString("*MAP_DIFFUSE"))
 		{
@@ -383,7 +383,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 
 				auto texfileManager = KigsCore::Singleton<TextureFileManager>();
 				Tex = texfileManager->GetTexture(mTextureList[realindex], false);
-				Tex->setValue(LABEL_TO_ID(ForcePow2),true);
+				Tex->setValue("ForcePow2",true);
 
 				Tex->Init();
 
@@ -422,7 +422,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 				Mat->SetAmbientColor(currentMat->ambient[0],currentMat->ambient[1],currentMat->ambient[2]);
 				Mat->SetDiffuseColor(currentMat->diffuse[0],currentMat->diffuse[1],currentMat->diffuse[2]);
 				Mat->SetSpecularColor(currentMat->specular[0],currentMat->specular[1],currentMat->specular[2]);
-				Mat->setValue(LABEL_TO_ID(Shininess),currentMat->shininess*KFLOAT_CONST(128.0));
+				Mat->setValue("Shininess",currentMat->shininess*128.0f);
 
 			}
 			else
@@ -431,7 +431,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 				Mat->SetAmbientColor(mMaterialStructList[realindex].ambient[0],mMaterialStructList[realindex].ambient[1],mMaterialStructList[realindex].ambient[2]);
 				Mat->SetDiffuseColor(mMaterialStructList[realindex].diffuse[0],mMaterialStructList[realindex].diffuse[1],mMaterialStructList[realindex].diffuse[2]);
 				Mat->SetSpecularColor(mMaterialStructList[realindex].specular[0],mMaterialStructList[realindex].specular[1],mMaterialStructList[realindex].specular[2]);
-				Mat->setValue(LABEL_TO_ID(Shininess),mMaterialStructList[realindex].shininess*KFLOAT_CONST(128.0));
+				Mat->setValue("Shininess",mMaterialStructList[realindex].shininess*128.0f);
 			}
 
 

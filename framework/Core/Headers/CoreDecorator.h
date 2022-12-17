@@ -415,7 +415,7 @@ typedef DecoratedFuncBase3Param<baseClass,returntype,param1type,param2type,param
 	cm->RemoveMethod(#funcname);
 
 #define IMPLEMENT_DYNAMIC_METHOD(funcname) \
-	bool	funcname(CoreModifiable* sender,kstl::vector<CoreModifiableAttribute*>& params,void* privateParams)
+	bool	funcname(CoreModifiable* sender,std::vector<CoreModifiableAttribute*>& params,void* privateParams)
 
 
 

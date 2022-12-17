@@ -64,13 +64,13 @@ IMPLEMENT_CLASS_INFO(Module2DLayers)
 
 bool	Module2DLayers::mRotate180 = false;
 
-Module2DLayers::Module2DLayers(const kstl::string& name, CLASS_NAME_TREE_ARG) : ModuleBase(name, PASS_CLASS_NAME_TREE_ARG)
+Module2DLayers::Module2DLayers(const std::string& name, CLASS_NAME_TREE_ARG) : ModuleBase(name, PASS_CLASS_NAME_TREE_ARG)
 {}
 
 Module2DLayers::~Module2DLayers()
 {}
 
-void Module2DLayers::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void Module2DLayers::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	BaseInit(core, "2DLayers", params);
 
@@ -149,15 +149,15 @@ void Module2DLayers::Update(const Timer& timer, void* addParam)
 	BaseUpdate(timer,addParam);
 }
 
-kstl::set<CoreModifiable*>	Module2DLayers::GetLayerList()
+std::set<CoreModifiable*>	Module2DLayers::GetLayerList()
 {
 	SP<ModuleSceneGraph> scenegraph = CoreGetModule(ModuleSceneGraph);
-	kstl::set<CoreModifiable*> layerlist;
+	std::set<CoreModifiable*> layerlist;
 	layerlist.clear();
 
-	const kstl::vector<ModifiableItemStruct>& items=scenegraph->getItems();
-	kstl::vector<ModifiableItemStruct>::const_iterator	it = items.begin();
-	kstl::vector<ModifiableItemStruct>::const_iterator	itend = items.end();
+	const std::vector<ModifiableItemStruct>& items=scenegraph->getItems();
+	std::vector<ModifiableItemStruct>::const_iterator	it = items.begin();
+	std::vector<ModifiableItemStruct>::const_iterator	itend = items.end();
 
 	for (; it != itend; ++it)
 	{

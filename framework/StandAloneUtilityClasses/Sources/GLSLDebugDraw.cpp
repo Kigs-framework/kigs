@@ -176,9 +176,9 @@ dd::CameraPoints dd::camera_points(Camera* cam)
 	float aspect = cam->getValue<float>("AspectRatio");
 	if (aspect == 0) aspect = (rs.x*cam->getValue<float>("ViewportSizeX")) / (rs.y*cam->getValue<float>("ViewportSizeY"));
 
-	float frustumHeight = (kfloat)tanf(cam->getValue<float>("VerticalFOV") * fPI / 360.0f) * nearZ;
+	float frustumHeight = (float)tanf(cam->getValue<float>("VerticalFOV") * fPI / 360.0f) * nearZ;
 
-	float farHeight = (kfloat)tanf(cam->getValue<float>("VerticalFOV") * fPI / 360.0f) * farZ;
+	float farHeight = (float)tanf(cam->getValue<float>("VerticalFOV") * fPI / 360.0f) * farZ;
 	float farWidth = farHeight * aspect;
 
 	float frustumWidth = frustumHeight * aspect;

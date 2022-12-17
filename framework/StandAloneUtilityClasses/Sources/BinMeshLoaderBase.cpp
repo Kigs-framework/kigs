@@ -12,9 +12,9 @@ BinMeshLoaderBase::~BinMeshLoaderBase()
 }
 
 
-kstl::string	BinMeshLoaderBase::ReadString(BufferedFile*)
+std::string	BinMeshLoaderBase::ReadString(BufferedFile*)
 {
-	kstl::string result="";
+	std::string result="";
 
 	char	tmpbuf;
 	while(fread(&tmpbuf,sizeof(char),1,mFile) == 1)
@@ -62,7 +62,7 @@ void	BinMeshLoaderBase::BinFileStruct::ReadStruct(BinFileStruct* result, Buffere
 	fread(offset,fullsize,1,file);
 }
 
-void			BinMeshLoaderBase::ReadFloatArray(kfloat* dst,unsigned int count,BufferedFile* file)
+void			BinMeshLoaderBase::ReadFloatArray(float* dst,unsigned int count,BufferedFile* file)
 {
 	// create temporary float array
 	float*	tmpArray=new float[count];
@@ -73,7 +73,7 @@ void			BinMeshLoaderBase::ReadFloatArray(kfloat* dst,unsigned int count,Buffered
 	unsigned int i;	
 	for(i=0;i<count;i++)
 	{
-		*dst++=(kfloat)*readarray++;
+		*dst++=(float)*readarray++;
 	}
 	delete[] tmpArray;
 }

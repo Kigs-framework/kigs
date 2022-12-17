@@ -23,29 +23,29 @@ public:
 	ModuleDescription() = default;
 
 	/**
-	 * \fn		bool    Init(const kstl::string& fileName);
+	 * \fn		bool    Init(const std::string& fileName);
 	 * \brief	read the XML file
 	 * \param	fileName : name of the file to read
 	 * \return	TRUE if the init succeed, FALSE otherwise
 	 */
-    bool    Init(const kstl::string& fileName);
+    bool    Init(const std::string& fileName);
 
 	/**
-	 * \fn		kstl::vector<kstl::string>&    GetDllList();
+	 * \fn		std::vector<std::string>&    GetDllList();
 	 * \brief	return the list of dll associated with this module
 	 * \return	the list of dll
 	 */
-    kstl::vector<kstl::string>&    GetDllList();
+    std::vector<std::string>&    GetDllList();
 
 protected:
 	//! list of dll
-    kstl::vector<kstl::string>  mDllList;
+    std::vector<std::string>  mDllList;
 	//! TRUE if the module has been initialized
     bool                        mIsInitialised = false;
 	//! TRUE if the file is good?
     static bool                 mIsGoodFile;
 	//! name of the module
-    kstl::string                mModuleName;
+    std::string                mModuleName;
 	//! current reading depth
     static int                  mCurrentReadDepth;
 };
@@ -64,7 +64,7 @@ class ModuleBase;
 #ifndef DLLIMPORT
 #define DLLIMPORT __declspec (dllexport)
 #endif
-extern "C"  DLLIMPORT ModuleBase*	 ModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+extern "C"  DLLIMPORT ModuleBase*	 ModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 #endif
 #endif
 
@@ -93,16 +93,16 @@ public:
 
 	// some typedef to point on dll methods
 	//! dll methods init
-	typedef ModuleBase*		(*mDllInitFunc)(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params );
+	typedef ModuleBase*		(*mDllInitFunc)(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params );
 
 	/**
 	 * \brief		pure virtual initialize module 
 	 * 
-	 * \fn			virtual void Init(Core* core, const kstl::vector<CoreModifiableAttribute*>* params)=0;
+	 * \fn			virtual void Init(Core* core, const std::vector<CoreModifiableAttribute*>* params)=0;
 	 * \param		core : link to the core, NOT NULL
 	 * \param		params : list of parameters, CAN BE NULL
 	 */
-    virtual void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)=0;
+    virtual void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)=0;
 	using  CoreModifiable::Init;
 	
 	/**
@@ -127,12 +127,12 @@ public:
 
 protected:
 	/**
-	 * \fn			void    BaseInit(Core* core,const kstl::string& moduleName, const kstl::vector<CoreModifiableAttribute*>* params);
+	 * \fn			void    BaseInit(Core* core,const std::string& moduleName, const std::vector<CoreModifiableAttribute*>* params);
 	 * \brief		protected base init method, should be called by Init/Close and Update methods
 	 * \param		moduleName :name of the module
 	 * \param		params : list of parameters
 	 */
-    void    BaseInit(KigsCore* core,const kstl::string& moduleName, const kstl::vector<CoreModifiableAttribute*>* params);
+    void    BaseInit(KigsCore* core,const std::string& moduleName, const std::vector<CoreModifiableAttribute*>* params);
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
 
@@ -163,7 +163,7 @@ protected:
     KigsCore* mCore = nullptr;
 
 	//! list of dll handles
-    kstl::vector<DynamicModuleHandleAndPointer>    mDynamicModuleList;
+    std::vector<DynamicModuleHandleAndPointer>    mDynamicModuleList;
 
 	// to be called by dynamic modules to set static instance of core
 	void	StaticInitCore(KigsCore* core)

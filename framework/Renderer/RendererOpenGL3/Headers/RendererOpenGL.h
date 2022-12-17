@@ -121,8 +121,8 @@ public:
 	DECLARE_CLASS_INFO(RendererOpenGL, ModuleSpecificRenderer, Renderer);
 	DECLARE_CONSTRUCTOR(RendererOpenGL);
 
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
-	void PlatformInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
+	void PlatformInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 
 	void Close() override;
 	void PlatformClose() override;
@@ -166,7 +166,7 @@ public:
 	void SetUniform1i(unsigned int loc, s32 value);
 	void ActiveTextureChannel(unsigned int channel) override;
 
-	LightCount SetLightsInfo(kstl::set<CoreModifiable*>*lights)  override;
+	LightCount SetLightsInfo(std::set<CoreModifiable*>*lights)  override;
 	void SendLightsInfo(TravState* travstate) override;
 	void ClearLightsInfo(TravState* travstate) override;
 

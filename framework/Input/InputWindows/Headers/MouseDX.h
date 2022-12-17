@@ -20,7 +20,7 @@ class	MouseDX : public MouseDevice
 {
 public:
     DECLARE_CLASS_INFO(MouseDX,MouseDevice,Input)
-    MouseDX(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    MouseDX(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~MouseDX();
 
 	virtual bool	Aquire();

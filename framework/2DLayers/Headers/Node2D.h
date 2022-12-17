@@ -130,7 +130,7 @@ public:
 	bool										addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
 	bool										removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
-	inline const kstl::set<Node2D*, Node2D::PriorityCompare>& GetSons() { ResortSons(); return mSons; }
+	inline const std::set<Node2D*, Node2D::PriorityCompare>& GetSons() { ResortSons(); return mSons; }
 
 	// transform local points to global
 	inline void	TransformPoints(Point2D* totransform, int count) const
@@ -139,13 +139,13 @@ public:
 	}
 
 	v2f GetPosition() const { return mPosition; }
-	void GetPosition(kfloat &X, kfloat &Y) const
+	void GetPosition(float &X, float &Y) const
 	{
-		X = (kfloat)mPosition[0];
-		Y = (kfloat)mPosition[1];
+		X = (float)mPosition[0];
+		Y = (float)mPosition[1];
 	}
 
-	void	GetGlobalPosition(kfloat &X, kfloat &Y);
+	void	GetGlobalPosition(float &X, float &Y);
 
 	inline const Matrix3x3& GetGlobalTransform() const
 	{
@@ -212,7 +212,7 @@ protected:
 	void												ResortSons();
 
 	Node2D*												mParent;
-	kstl::set<Node2D*, Node2D::PriorityCompare>			mSons;
+	std::set<Node2D*, Node2D::PriorityCompare>			mSons;
 
 	v2f													mRealSize{ 0,0 };
 

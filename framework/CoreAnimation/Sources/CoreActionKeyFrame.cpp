@@ -1,7 +1,7 @@
 #include "PrecompiledHeaders.h"
 #include "CoreActionKeyFrame.h"
 
-bool	CoreActionKeyFrameBase::protectedUpdate(kdouble time)
+bool	CoreActionKeyFrameBase::protectedUpdate(double time)
 {
 	CoreAction::protectedUpdate(time);
 	bool done=false;

@@ -66,7 +66,7 @@ int	GetFirstLeftBit(u32 n)
 
 IMPLEMENT_CLASS_INFO(OpenGLTexture)
 
-OpenGLTexture::OpenGLTexture(const kstl::string& name, CLASS_NAME_TREE_ARG)
+OpenGLTexture::OpenGLTexture(const std::string& name, CLASS_NAME_TREE_ARG)
 	: Texture(name, PASS_CLASS_NAME_TREE_ARG)
 	, mTextureGLIndex((u32)-1)
 	, mCanReuseBuffer(false)
@@ -898,7 +898,7 @@ bool	OpenGLTexture::Load()
 	{
 		auto pathManager = KigsCore::Singleton<FilePathManager>();
 
-		kstl::string fileName = mFileName.const_ref();
+		std::string fileName = mFileName.const_ref();
 
 		if (fileName != "")
 		{

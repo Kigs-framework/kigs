@@ -29,9 +29,9 @@ void	CoreItemEvaluationContext::ReleaseContext()
 }
 
 template<typename operandType>
-CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae, CoreModifiable* target, kstl::vector<SpecificOperator>* specificList)
+CoreItemSP	CoreItemOperator<operandType>::Construct(const std::string& formulae, CoreModifiable* target, std::vector<SpecificOperator>* specificList)
 {
-	kstl::string cleanFormulae = formulae;
+	std::string cleanFormulae = formulae;
 	cleanFormulae.erase(std::remove_if(cleanFormulae.begin(), cleanFormulae.end(), RemoveDelimiter()), cleanFormulae.end());
 	AsciiParserUtils	parser((char*)cleanFormulae.c_str(), (int)cleanFormulae.length());
 
@@ -48,9 +48,9 @@ CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae
 }
 
 template<typename operandType>
-CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae, CoreModifiable* target, const kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	lmap)
+CoreItemSP	CoreItemOperator<operandType>::Construct(const std::string& formulae, CoreModifiable* target, const kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	lmap)
 {
-	kstl::string cleanFormulae = formulae;
+	std::string cleanFormulae = formulae;
 	cleanFormulae.erase(std::remove_if(cleanFormulae.begin(), cleanFormulae.end(), RemoveDelimiter()), cleanFormulae.end());
 	AsciiParserUtils	parser((char*)cleanFormulae.c_str(), (int)cleanFormulae.length());
 
@@ -66,7 +66,7 @@ CoreItemSP	CoreItemOperator<operandType>::Construct(const kstl::string& formulae
 }
 
 template<typename operandType>
-void	CoreItemOperator<operandType>::ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>&	lmap, kstl::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<operandType>::ConstructContextMap(kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	lmap, std::vector<SpecificOperator>* specificList)
 {
 	lmap.clear();
 	
@@ -81,8 +81,8 @@ void	CoreItemOperator<operandType>::ConstructContextMap(kigs::unordered_map<kstl
 	// push specific
 	if (specificList)
 	{
-		typename kstl::vector<SpecificOperator>::const_iterator itstart = specificList->begin();
-		typename kstl::vector<SpecificOperator>::const_iterator itend = specificList->end();
+		typename std::vector<SpecificOperator>::const_iterator itstart = specificList->begin();
+		typename std::vector<SpecificOperator>::const_iterator itend = specificList->end();
 		while (itstart != itend)
 		{
 			lmap[(*itstart).mKeyWord] = (*itstart).mCreateMethod;
@@ -92,25 +92,25 @@ void	CoreItemOperator<operandType>::ConstructContextMap(kigs::unordered_map<kstl
 }
 
 template<>
-void	CoreItemOperator<kstl::string>::ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>& lmap, kstl::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<std::string>::ConstructContextMap(kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>& lmap, std::vector<SpecificOperator>* specificList)
 {
 	// nothing here
 }
 
 template<>
-void	CoreItemOperator<v2f>::ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>& lmap, kstl::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<v2f>::ConstructContextMap(kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>& lmap, std::vector<SpecificOperator>* specificList)
 {
 	// nothing here
 }
 
 template<>
-void	CoreItemOperator<v3f>::ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>& lmap, kstl::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<v3f>::ConstructContextMap(kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>& lmap, std::vector<SpecificOperator>* specificList)
 {
 	// nothing here
 }
 
 template<>
-void	CoreItemOperator<v4f>::ConstructContextMap(kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>& lmap, kstl::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<v4f>::ConstructContextMap(kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>& lmap, std::vector<SpecificOperator>* specificList)
 {
 	// nothing here
 }
@@ -166,18 +166,18 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 					AsciiParserUtils leading(formulae);
 					formulae.GetString(leading, '(');
 					// create a method
-					SP<CoreModifiableAttributeOperator<operandType>> opeattribute = MakeRefCounted<CoreModifiableAttributeOperator<operandType>>((const kstl::string&)leading, context.mTarget);
+					SP<CoreModifiableAttributeOperator<operandType>> opeattribute = MakeRefCounted<CoreModifiableAttributeOperator<operandType>>((const std::string&)leading, context.mTarget);
 					if (paramblock.length())
 					{
 						CoreItemSP	op1;
-						kstl::vector<kstl::string>	params = FindFirstLevelParams(paramblock, context);
+						std::vector<std::string>	params = FindFirstLevelParams(paramblock, context);
 
-						kstl::vector<kstl::string>::iterator	itparambegin = params.begin();
-						kstl::vector<kstl::string>::iterator	itparamend = params.end();
+						std::vector<std::string>::iterator	itparambegin = params.begin();
+						std::vector<std::string>::iterator	itparamend = params.end();
 
 						while (itparambegin != itparamend)
 						{
-							kstl::string& currentParam = (*itparambegin);
+							std::string& currentParam = (*itparambegin);
 							char* currentParamC = (char*)currentParam.c_str();
 
 							AsciiParserUtils	param(currentParamC, (int)currentParam.length());
@@ -217,7 +217,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 				{
 
 
-					kstl::vector<kstl::string>	params = FindFirstLevelParams(paramblock, context);
+					std::vector<std::string>	params = FindFirstLevelParams(paramblock, context);
 
 					if (params.size())
 					{
@@ -225,12 +225,12 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 						SP<CoreVector> opeattribute = MakeCoreVector();
 						CoreItemSP	op1;
 
-						kstl::vector<kstl::string>::iterator	itparambegin = params.begin();
-						kstl::vector<kstl::string>::iterator	itparamend = params.end();
+						std::vector<std::string>::iterator	itparambegin = params.begin();
+						std::vector<std::string>::iterator	itparamend = params.end();
 
 						while (itparambegin != itparamend)
 						{
-							kstl::string& currentParam = (*itparambegin);
+							std::string& currentParam = (*itparambegin);
 							char* currentParamC = (char*)currentParam.c_str();
 
 							AsciiParserUtils	param(currentParamC, (int)currentParam.length());
@@ -265,7 +265,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 			{
 				if (block.length() == (formulae.length() - 2))
 				{
-					SP<CoreModifiableAttributeOperator<operandType>> opeattribute = MakeRefCounted<CoreModifiableAttributeOperator<operandType>>((const kstl::string&)block, context.mTarget);
+					SP<CoreModifiableAttributeOperator<operandType>> opeattribute = MakeRefCounted<CoreModifiableAttributeOperator<operandType>>((const std::string&)block, context.mTarget);
 					return opeattribute;
 				}
 			}
@@ -276,7 +276,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 	}
 
 	// first check for instruction separators
-	kstl::vector<CoreItemOperatorStruct>	FirstLevelOperatorList = FindFirstLevelSeparator(formulae, context);
+	std::vector<CoreItemOperatorStruct>	FirstLevelOperatorList = FindFirstLevelSeparator(formulae, context);
 
 	if (FirstLevelOperatorList.size())
 	{
@@ -370,7 +370,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		}
 		
 		// try to match other keyword
-		kstl::string matchkeywork = "";
+		std::string matchkeywork = "";
 		{
 			AsciiParserUtils	word(formulae);
 			formulae.GetWord(word, '(');
@@ -397,14 +397,14 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 					if (paramblock.length())
 					{
 
-						kstl::vector<kstl::string>	params = FindFirstLevelParams(paramblock, context);
+						std::vector<std::string>	params = FindFirstLevelParams(paramblock, context);
 
-						kstl::vector<kstl::string>::iterator	itparambegin = params.begin();
-						kstl::vector<kstl::string>::iterator	itparamend = params.end();
+						std::vector<std::string>::iterator	itparambegin = params.begin();
+						std::vector<std::string>::iterator	itparamend = params.end();
 
 						while (itparambegin != itparamend)
 						{
-							kstl::string& currentParam=(*itparambegin);
+							std::string& currentParam=(*itparambegin);
 							char* currentParamC = (char*)currentParam.c_str();
 
 							AsciiParserUtils	param(currentParamC, (int)currentParam.length());
@@ -427,7 +427,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 				return variable;
 			}
 			/*// just set value as a string
-			CoreValue < kstl::string > &   corevalue = *(new CoreValue< kstl::string>());
+			CoreValue < std::string > &   corevalue = *(new CoreValue< std::string>());
 			corevalue = matchkeywork;
 			return corevalue;
 			*/
@@ -445,9 +445,9 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 			// find higher level
 	
 			int foundpriority = -1;
-			kstl::vector<CoreItemOperatorStruct>::iterator	itfound = FirstLevelOperatorList.end();
-			kstl::vector<CoreItemOperatorStruct>::iterator	itcurrent = FirstLevelOperatorList.begin();
-			kstl::vector<CoreItemOperatorStruct>::iterator	itend = FirstLevelOperatorList.end();
+			std::vector<CoreItemOperatorStruct>::iterator	itfound = FirstLevelOperatorList.end();
+			std::vector<CoreItemOperatorStruct>::iterator	itcurrent = FirstLevelOperatorList.begin();
+			std::vector<CoreItemOperatorStruct>::iterator	itend = FirstLevelOperatorList.end();
 
 			int i = 0;
 			int ifound = 0;
@@ -557,10 +557,10 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 }
 
 template<typename operandType>
-SP<CoreItemOperator<operandType>> CoreItemOperator<operandType>::getOperator(const kstl::string& keyword, ConstructContext& context)
+SP<CoreItemOperator<operandType>> CoreItemOperator<operandType>::getOperator(const std::string& keyword, ConstructContext& context)
 {
 
-	typename kigs::unordered_map<kstl::string, CoreItemOperatorCreateMethod>::const_iterator itfound = context.mMap.find(keyword);
+	typename kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>::const_iterator itfound = context.mMap.find(keyword);
 	while (itfound != context.mMap.end())
 	{
 		return SP<CoreVector>((*itfound).second());
@@ -569,7 +569,7 @@ SP<CoreItemOperator<operandType>> CoreItemOperator<operandType>::getOperator(con
 }
 
 template<typename operandType>
-SP<GenericRefCountedBaseClass> CoreItemOperator<operandType>::getVariable(const kstl::string& keyword)
+SP<GenericRefCountedBaseClass> CoreItemOperator<operandType>::getVariable(const std::string& keyword)
 {
 	if (CoreItemEvaluationContext::GetContext())
 	{
@@ -583,13 +583,13 @@ SP<GenericRefCountedBaseClass> CoreItemOperator<operandType>::getVariable(const 
 }
 
 template<typename operandType>
-kstl::vector<kstl::string>	CoreItemOperator<operandType>::FindFirstLevelParams(AsciiParserUtils& block, ConstructContext& context)
+std::vector<std::string>	CoreItemOperator<operandType>::FindFirstLevelParams(AsciiParserUtils& block, ConstructContext& context)
 {
 	int currentPos = 0;
 	int prevPos = 0;
 	char	currentChar;
 
-	kstl::vector<kstl::string>	paramList;
+	std::vector<std::string>	paramList;
 	paramList.clear();
 
 	int BlockLevel = 0;
@@ -621,7 +621,7 @@ kstl::vector<kstl::string>	CoreItemOperator<operandType>::FindFirstLevelParams(A
 }
 
 template<typename operandType>
-bool	CoreItemOperator<operandType>::CheckAffectation(char prevChar, int priority, AsciiParserUtils& block, kstl::vector<CoreItemOperatorStruct>& OperatorList)
+bool	CoreItemOperator<operandType>::CheckAffectation(char prevChar, int priority, AsciiParserUtils& block, std::vector<CoreItemOperatorStruct>& OperatorList)
 {
 
 	if (prevChar == '=')
@@ -641,11 +641,11 @@ bool	CoreItemOperator<operandType>::CheckAffectation(char prevChar, int priority
 
 // search ; separators to splt block 
 template<typename operandType>
-kstl::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLevelSeparator(AsciiParserUtils& block, ConstructContext& context)
+std::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLevelSeparator(AsciiParserUtils& block, ConstructContext& context)
 {
 	char	currentChar, prevChar;
 
-	kstl::vector<CoreItemOperatorStruct>	OperatorList;
+	std::vector<CoreItemOperatorStruct>	OperatorList;
 	OperatorList.clear();
 
 	int BlockLevel = 0;
@@ -788,11 +788,11 @@ kstl::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLev
 }
 
 template<typename operandType>
-kstl::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLevelOperators(AsciiParserUtils& block, ConstructContext& context)
+std::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLevelOperators(AsciiParserUtils& block, ConstructContext& context)
 {
 	char	currentChar,prevChar;
 
-	kstl::vector<CoreItemOperatorStruct>	OperatorList;
+	std::vector<CoreItemOperatorStruct>	OperatorList;
 	OperatorList.clear();
 
 	int BlockLevel=0;
@@ -1055,8 +1055,8 @@ void CoreModifiableAttributeOperator<T>::GetAttribute() const
 	if (mAttributePath != "")
 	{
 		// search attribute
-		kstl::string modifiablename;
-		kstl::string attributename;
+		std::string modifiablename;
+		std::string attributename;
 
 		CoreModifiableAttribute::ParseAttributePath(mAttributePath, modifiablename, attributename);
 
@@ -1093,7 +1093,7 @@ void CoreModifiableAttributeOperator<T>::GetAttribute() const
 				// look for .x .y .z or .w at the end of attribute name
 				if (attributename[attributename.size() - 2] == '.')
 				{
-					kstl::string extension = attributename.substr(attributename.size() - 2, 2);
+					std::string extension = attributename.substr(attributename.size() - 2, 2);
 					attributename = attributename.substr(0, attributename.size() - 2);
 					switch (extension[1])
 					{
@@ -1144,9 +1144,9 @@ void CoreModifiableAttributeOperator<T>::GetAttribute() const
 
 
 template<>
-CoreModifiableAttributeOperator<kfloat>::operator kfloat() const
+CoreModifiableAttributeOperator<float>::operator float() const
 {
-	kfloat	result = 0.0f;
+	float	result = 0.0f;
 	if ((!mAttribute) && (!mIsMethod))
 	{
 		GetAttribute();
@@ -1168,9 +1168,9 @@ CoreModifiableAttributeOperator<kfloat>::operator kfloat() const
 	else
 	{
 		// push attributes
-		kstl::vector<CoreModifiableAttribute*>	attributes;
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreModifiableAttribute*>	attributes;
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 		
 		while (itOperand != itOperandEnd)
@@ -1179,8 +1179,8 @@ CoreModifiableAttributeOperator<kfloat>::operator kfloat() const
 
 			if (!attribute)
 			{
-				kfloat val = (kfloat)(**itOperand);
-				attribute = new maFloat(*mTarget, false, LABEL_AND_ID(Val), val);
+				float val = (float)(**itOperand);
+				attribute = new maFloat(*mTarget, false, "Val", val);
 			}
 			attributes.push_back(attribute);
 
@@ -1200,8 +1200,8 @@ CoreModifiableAttributeOperator<kfloat>::operator kfloat() const
 			 attributes.back()->getValue(result);
 		}
 
-		kstl::vector<CoreModifiableAttribute*>::iterator itattr = attributes.begin();
-		kstl::vector<CoreModifiableAttribute*>::iterator itattrEnd = attributes.end();
+		std::vector<CoreModifiableAttribute*>::iterator itattr = attributes.begin();
+		std::vector<CoreModifiableAttribute*>::iterator itattrEnd = attributes.end();
 
 		// delete attributes and set result
 		while (itattr != itattrEnd)
@@ -1219,9 +1219,9 @@ CoreModifiableAttributeOperator<kfloat>::operator kfloat() const
 }
 
 template<>
-CoreModifiableAttributeOperator<kstl::string>::operator kstl::string() const
+CoreModifiableAttributeOperator<std::string>::operator std::string() const
 {
-	kstl::string	result = "";
+	std::string	result = "";
 	if ((!mAttribute) && (!mIsMethod))
 	{
 		GetAttribute();
@@ -1243,9 +1243,9 @@ CoreModifiableAttributeOperator<kstl::string>::operator kstl::string() const
 	else
 	{
 		// push attributes
-		kstl::vector<CoreModifiableAttribute*>	attributes;
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreModifiableAttribute*>	attributes;
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 
 		while (itOperand != itOperandEnd)
@@ -1254,8 +1254,8 @@ CoreModifiableAttributeOperator<kstl::string>::operator kstl::string() const
 
 			if (!attribute)
 			{
-				kstl::string val = (kstl::string)(**itOperand);
-				attribute = new maString(*mTarget, false, LABEL_AND_ID(Val), val);
+				std::string val = (std::string)(**itOperand);
+				attribute = new maString(*mTarget, false, "Val", val);
 			}
 			attributes.push_back(attribute);
 
@@ -1276,8 +1276,8 @@ CoreModifiableAttributeOperator<kstl::string>::operator kstl::string() const
 		}
 
 
-		kstl::vector<CoreModifiableAttribute*>::iterator itattr = attributes.begin();
-		kstl::vector<CoreModifiableAttribute*>::iterator itattrEnd = attributes.end();
+		std::vector<CoreModifiableAttribute*>::iterator itattr = attributes.begin();
+		std::vector<CoreModifiableAttribute*>::iterator itattrEnd = attributes.end();
 
 		// delete attributes and set result
 		while (itattr != itattrEnd)
@@ -1320,9 +1320,9 @@ CoreModifiableAttributeOperator<v2f>::operator v2f() const
 	else
 	{
 		// push attributes
-		kstl::vector<CoreModifiableAttribute*>	attributes;
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreModifiableAttribute*>	attributes;
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 
 		while (itOperand != itOperandEnd)
@@ -1333,7 +1333,7 @@ CoreModifiableAttributeOperator<v2f>::operator v2f() const
 			{
 				v2f val((v2f)(**itOperand));
 				((*itOperand).get())->getValue(val);
-				attribute = new maVect2DF(*mTarget, false, LABEL_AND_ID(Val), &(val.x));
+				attribute = new maVect2DF(*mTarget, false, "Val", &(val.x));
 			}
 
 			attributes.push_back(attribute);
@@ -1355,8 +1355,8 @@ CoreModifiableAttributeOperator<v2f>::operator v2f() const
 		}
 
 
-		kstl::vector<CoreModifiableAttribute*>::iterator itattr = attributes.begin();
-		kstl::vector<CoreModifiableAttribute*>::iterator itattrEnd = attributes.end();
+		std::vector<CoreModifiableAttribute*>::iterator itattr = attributes.begin();
+		std::vector<CoreModifiableAttribute*>::iterator itattrEnd = attributes.end();
 
 		// delete attributes and set result
 		while (itattr != itattrEnd)
@@ -1400,9 +1400,9 @@ CoreModifiableAttributeOperator<v3f>::operator v3f() const
 	else
 	{
 		// push attributes
-		kstl::vector<CoreModifiableAttribute*>	attributes;
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreModifiableAttribute*>	attributes;
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 
 		while (itOperand != itOperandEnd)
@@ -1412,7 +1412,7 @@ CoreModifiableAttributeOperator<v3f>::operator v3f() const
 			if (!attribute)
 			{
 				v3f val = (v3f)(**itOperand);
-				attribute = new maVect3DF(*mTarget, false, LABEL_AND_ID(Val), &(val.x));
+				attribute = new maVect3DF(*mTarget, false, "Val", &(val.x));
 			}
 			attributes.push_back(attribute);
 
@@ -1433,8 +1433,8 @@ CoreModifiableAttributeOperator<v3f>::operator v3f() const
 		}
 
 
-		kstl::vector<CoreModifiableAttribute*>::iterator itattr = attributes.begin();
-		kstl::vector<CoreModifiableAttribute*>::iterator itattrEnd = attributes.end();
+		std::vector<CoreModifiableAttribute*>::iterator itattr = attributes.begin();
+		std::vector<CoreModifiableAttribute*>::iterator itattrEnd = attributes.end();
 
 		// delete attributes and set result
 		while (itattr != itattrEnd)
@@ -1477,9 +1477,9 @@ CoreModifiableAttributeOperator<v4f>::operator v4f() const
 	else
 	{
 		// push attributes
-		kstl::vector<CoreModifiableAttribute*>	attributes;
-		kstl::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
-		kstl::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
+		std::vector<CoreModifiableAttribute*>	attributes;
+		std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
+		std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
 
 		while (itOperand != itOperandEnd)
@@ -1489,7 +1489,7 @@ CoreModifiableAttributeOperator<v4f>::operator v4f() const
 			if (!attribute)
 			{
 				v4f val(**itOperand);
-				attribute = new maVect4DF(*mTarget, false, LABEL_AND_ID(Val), &(val.x));
+				attribute = new maVect4DF(*mTarget, false, "Val", &(val.x));
 			}
 			attributes.push_back(attribute);
 
@@ -1510,8 +1510,8 @@ CoreModifiableAttributeOperator<v4f>::operator v4f() const
 		}
 
 
-		kstl::vector<CoreModifiableAttribute*>::iterator itattr = attributes.begin();
-		kstl::vector<CoreModifiableAttribute*>::iterator itattrEnd = attributes.end();
+		std::vector<CoreModifiableAttribute*>::iterator itattr = attributes.begin();
+		std::vector<CoreModifiableAttribute*>::iterator itattrEnd = attributes.end();
 
 		// delete attributes and set result
 		while (itattr != itattrEnd)
@@ -1627,29 +1627,29 @@ CoreItem& CoreModifiableAttributeOperator<v4f>::operator=(const v4f& other)
 
 
 template<>
-DynamicVariableOperator<kstl::string>::operator kstl::string() const
+DynamicVariableOperator<std::string>::operator std::string() const
 {
 	CoreItem* var = (CoreItem*)getVariable(mVarName).get();
 	if (var)
 	{
-		return (kstl::string)(*var);
+		return (std::string)(*var);
 	}
 	return mVarName;
 }
 
 
 template<>
-DynamicVariableOperator<kfloat>::operator kfloat() const
+DynamicVariableOperator<float>::operator float() const
 {
 	CoreItem* var = (CoreItem*)getVariable(mVarName).get();
 	if (var)
 	{
-		return (kfloat)(*var);
+		return (float)(*var);
 	}
 
 	// atof
 
-	return (kfloat)atof(mVarName.c_str());
+	return (float)atof(mVarName.c_str());
 }
 
 template<>
@@ -1687,8 +1687,8 @@ DynamicVariableOperator<v4f>::operator v4f() const
 
 
 //template class CoreItemOperator<int>;
-template class CoreItemOperator<kfloat>;
-template class CoreItemOperator<kstl::string>;
+template class CoreItemOperator<float>;
+template class CoreItemOperator<std::string>;
 template class CoreItemOperator<v2f>;
 template class CoreItemOperator<v3f>;
 template class CoreItemOperator<v4f>;

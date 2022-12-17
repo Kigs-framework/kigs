@@ -11,8 +11,8 @@
 
 IMPLEMENT_CLASS_INFO(KigsBitmap)
 
-KigsBitmap::KigsBitmap(const kstl::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)
-, mSize(*this, true, LABEL_AND_ID(Size),0,0)
+KigsBitmap::KigsBitmap(const std::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)
+, mSize(*this, true, "Size",0,0)
 , mRawPixels(0)
 {
 	mDirtyZone.SetEmpty();
@@ -45,9 +45,9 @@ bool KigsBitmap::PreDraw(TravState* state)
 					{
 						mDirtyZone.m_Max.y = mSize[1]-1;
 					}
-					const kstl::vector<CoreModifiable*>& parents = GetParents();
-					kstl::vector<CoreModifiable*>::const_iterator	parentsBegin = parents.begin();
-					kstl::vector<CoreModifiable*>::const_iterator	parentsEnd = parents.end();
+					const std::vector<CoreModifiable*>& parents = GetParents();
+					std::vector<CoreModifiable*>::const_iterator	parentsBegin = parents.begin();
+					std::vector<CoreModifiable*>::const_iterator	parentsEnd = parents.end();
 
 					while (parentsBegin != parentsEnd)
 					{

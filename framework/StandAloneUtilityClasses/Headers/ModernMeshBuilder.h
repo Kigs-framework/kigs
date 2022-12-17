@@ -22,7 +22,7 @@ public:
 
 	ModernMeshBuilder();
 	~ModernMeshBuilder();
-	void	StartGroup(CoreVector* description, int hintVertexBufferSize, int hintTriangleBufferSize);
+	void	StartGroup(CoreMap<std::string>* description, int hintVertexBufferSize, int hintTriangleBufferSize);
 	SP<ModernMeshItemGroup>	EndGroup(bool optimize = true);
 	SP<ModernMeshItemGroup>	EndGroup(void * vertex, int vertexCount, void * index, int indexCount);
 	SP<ModernMeshItemGroup>	EndGroup(int vertex_count, v3f* vertices, v3f* normals, v4f* colors, v2f* texCoords, int face_count, v3u* faces, v3f offset, SP<ModernMeshItemGroup> reuse_group);
@@ -88,24 +88,24 @@ protected:
 
 
 
-	kstl::vector<int>											mVertexMergeBarriers;
-	kstl::vector<int>											mIndicesMergeBarriers;
-	kstl::vector<BBox>											mSectionsBBox;
-	kigs::unordered_map<unsigned int, kstl::vector<BuildVertexStruct> >	mVertexBuilder;
+	std::vector<int>											mVertexMergeBarriers;
+	std::vector<int>											mIndicesMergeBarriers;
+	std::vector<BBox>											mSectionsBBox;
+	kigs::unordered_map<unsigned int, std::vector<BuildVertexStruct> >	mVertexBuilder;
 	AbstractDynamicGrowingBuffer								mTriangles; 
 	AbstractDynamicGrowingBuffer								mVertexArray;
 	unsigned int												mCurrentVertexSize;
 	unsigned int												mCurrentVertexInSize;
 	unsigned int												mCurrentVertexBuilderSize;
 	unsigned int												mVertexArrayMask;
-	kstl::vector<ModernMesh::VertexElem>						mVertexDesc;
+	std::vector<ModernMesh::VertexElem>						mVertexDesc;
 	bool														mGroupBuilding = false;
 
 	unsigned int												mGroupCount;
 
 	unsigned int												mTriangleChunkSize;
 
-	kfloat														mTexCoordsScale;
+	float														mTexCoordsScale;
 
 	unsigned char*												mOneVertexData = nullptr;
 	bool														mGenerateNormals = false;

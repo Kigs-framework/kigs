@@ -34,13 +34,13 @@ public:
 	DECLARE_CLASS_INFO(DictionaryFromJson,CoreModifiable,Renderer);
 	
 	//! builds an object dictionary by calling the callback of JSonFileParser
-	DictionaryFromJson(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	DictionaryFromJson(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	CoreItemSP Get_Dictionary() const { if (mObjectStack.size()) return mObjectStack[0]; return CoreItemSP(nullptr); }
 	virtual ~DictionaryFromJson();
 
 protected:
-	kstl::vector<CoreItemSP>					mObjectStack;
+	std::vector<CoreItemSP>					mObjectStack;
 	CoreItemSP								mCurrentObject;
 
 	Declare_JSonDelegate;
@@ -65,7 +65,7 @@ public:
 	DECLARE_CLASS_INFO(DictionaryFromJsonUTF16, CoreModifiable, Renderer);
 
 	//! builds an object dictionary by calling the callback of JSonFileParser
-	DictionaryFromJsonUTF16(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	DictionaryFromJsonUTF16(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	CoreItemSP Get_Dictionary() const { if (mObjectStack.size()) return mObjectStack[0]; return CoreItemSP(nullptr); }
 	virtual ~DictionaryFromJsonUTF16();
@@ -73,7 +73,7 @@ public:
 protected:
 	
 
-	kstl::vector<CoreItemSP>					mObjectStack;
+	std::vector<CoreItemSP>					mObjectStack;
 	CoreItemSP								mCurrentObject;
 
 	Declare_JSonDelegate;
@@ -99,17 +99,17 @@ class	JSonFileParserBase
 public:
 	
 	//! parse given JSON file calling given delegate object
-	JSonFileParserBase(const kstl::string& filename, CoreModifiable*	delegateObject);
+	JSonFileParserBase(const std::string& filename, CoreModifiable*	delegateObject);
 
 	//! parse given JSON file and retreive an object dictionary
 	JSonFileParserBase();
 	CoreItemSP	Get_JsonDictionary(SmartPointer<::FileHandle> filehandle);
-	CoreItemSP	Get_JsonDictionary(const kstl::string& filename);
+	CoreItemSP	Get_JsonDictionary(const std::string& filename);
 	CoreItemSP	Get_JsonDictionaryFromString(const stringType& jsonString);
-	bool Export(CoreMap<stringType>* a_value, const kstl::string& a_fileName);
+	bool Export(CoreMap<stringType>* a_value, const std::string& a_fileName);
 	bool ExportToString(CoreMap<stringType>* a_value, stringType& output);
 protected:
-	void InitParser(const kstl::string& filename);
+	void InitParser(const std::string& filename);
 	void InitParserFromString(const SP<CoreRawBuffer>& Buff);
 	bool ParseBlock(parserType& Block);
 	bool ParseArray(parserType& Array);
@@ -138,12 +138,12 @@ protected:
 	CMSP						mDictionaryFromJson=nullptr;
 
 	
-	kstl::vector<CoreModifiableAttribute*>	mParamList;
+	std::vector<CoreModifiableAttribute*>	mParamList;
 
 };
 
 
-typedef JSonFileParserBase< kstl::string, AsciiParserUtils>	JSonFileParser;
+typedef JSonFileParserBase< std::string, AsciiParserUtils>	JSonFileParser;
 typedef JSonFileParserBase< usString, US16ParserUtils >		JSonFileParserUTF16;
 
 std::string CoreItemToJSon(CoreItemSP);

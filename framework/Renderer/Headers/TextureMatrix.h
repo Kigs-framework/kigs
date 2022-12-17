@@ -22,11 +22,11 @@ public:
 
 	/**
 	 * \brief	constructor
-	 * \fn 		TextureMatrix(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		TextureMatrix(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-    TextureMatrix(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    TextureMatrix(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
     
 	/**
 	 * \brief		initialize with a 3x4 matrix

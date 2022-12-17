@@ -19,18 +19,18 @@ public:
 
 	DECLARE_CLASS_INFO(API3DGenericMeshShader, API3DShader, Renderer)
 
-	API3DGenericMeshShader(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DGenericMeshShader(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 
 	void ChooseShader(TravState* state, unsigned int attribFlag) override;
 
-	static kstl::string GetDefaultLightingFunctions();
-	static kstl::string GetDefaultVaryings();
-	static kstl::string GetDefaultFragmentShaderUniforms();
-	static kstl::string GetDefaultVertexShaderUniforms();
-	static kstl::string GetDefaultVertexShaderAttributes();
-	static kstl::string GetDefaultVertexShaderMain();
-	static kstl::string GetDefaultFragmentShaderMain(const kstl::string& inject_before_light_calcs = "");
+	static std::string GetDefaultLightingFunctions();
+	static std::string GetDefaultVaryings();
+	static std::string GetDefaultFragmentShaderUniforms();
+	static std::string GetDefaultVertexShaderUniforms();
+	static std::string GetDefaultVertexShaderAttributes();
+	static std::string GetDefaultVertexShaderMain();
+	static std::string GetDefaultFragmentShaderMain(const std::string& inject_before_light_calcs = "");
 
 protected:
 
@@ -43,8 +43,8 @@ protected:
 		return current_shader_flag;
 	}
 
-	virtual kstl::string GetVertexShader();
-	virtual kstl::string GetFragmentShader();
+	virtual std::string GetVertexShader();
+	virtual std::string GetFragmentShader();
 
 	
 	struct shaderInfo

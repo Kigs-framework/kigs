@@ -24,7 +24,7 @@ public:
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	UIScrollingMultilineText(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	UIScrollingMultilineText(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 
 protected:

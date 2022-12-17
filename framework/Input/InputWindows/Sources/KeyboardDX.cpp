@@ -8,7 +8,7 @@
 IMPLEMENT_CLASS_INFO(KeyboardDX)
 
 
-KeyboardDX::KeyboardDX(const kstl::string& name,CLASS_NAME_TREE_ARG) : KeyboardDevice(name,PASS_CLASS_NAME_TREE_ARG)
+KeyboardDX::KeyboardDX(const std::string& name,CLASS_NAME_TREE_ARG) : KeyboardDevice(name,PASS_CLASS_NAME_TREE_ARG)
 , mDirectInputKeyboard(0)
 {
 	mLayout = GetKeyboardLayout(0);
@@ -50,7 +50,7 @@ void	KeyboardDX::UpdateDevice()
 
 	if (IsOk)
 	{
-		kstl::vector<KeyEvent>	touchVector;
+		std::vector<KeyEvent>	touchVector;
 		for(currentKey=0;currentKey<mDeviceItemsCount;currentKey++)
 		{
 			int PreviousValue = mDeviceItems[currentKey]->getState()->GetTypedValue(int);

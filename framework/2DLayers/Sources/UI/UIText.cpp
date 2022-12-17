@@ -7,9 +7,9 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UIText, UIText, 2DLayers);
 IMPLEMENT_CLASS_INFO(UIText)
 
-UIText::UIText(const kstl::string& name, CLASS_NAME_TREE_ARG) 
+UIText::UIText(const std::string& name, CLASS_NAME_TREE_ARG) 
 	: UITexturedItem(name, PASS_CLASS_NAME_TREE_ARG)
-	, mText(*this, false, "Text", (kstl::string)"")
+	, mText(*this, false, "Text", (std::string)"")
 	, mFont(*this, false, "Font", "arial.ttf")
 	, mFontSize(*this, false, "FontSize", 12)
 	, mDirection(*this, false, "Direction", 0)
@@ -73,7 +73,7 @@ bool UIText::isAlpha(float X, float Y)
 	//Try to get mask
 	if (!mAlphaMask)
 	{
-		kstl::vector<ModifiableItemStruct> sons = getItems();
+		std::vector<ModifiableItemStruct> sons = getItems();
 
 		for (unsigned int i = 0; i < sons.size(); i++)
 		{
@@ -94,7 +94,7 @@ bool UIText::isAlpha(float X, float Y)
 	return false;
 }
 
-void	UIText::ChangeText(const kstl::string& _newText)
+void	UIText::ChangeText(const std::string& _newText)
 {
 	usString toChange(_newText);
 	ChangeText(toChange);
@@ -110,8 +110,8 @@ void	UIText::ChangeText(const usString& _newText)
 	// need localization ?
 	if ((_newText.length()>0) && (_newText.us_str()[0] == ((unsigned short)'#')))
 	{
-		kstl::string text = _newText.ToString();
-		kstl::string key = text.substr(1, text.length() - 1);
+		std::string text = _newText.ToString();
+		std::string key = text.substr(1, text.length() - 1);
 
 		PLATFORM_WCHAR* localized = (PLATFORM_WCHAR*)theLocalizationManager->getLocalizedString(key);
 
@@ -143,8 +143,8 @@ void	UIText::ChangeText(const usString& _newText)
 	}
 
 	int width, height;
-	mTexturePointer->GetEmptyTexture()->getValue(LABEL_TO_ID(Width), width);
-	mTexturePointer->GetEmptyTexture()->getValue(LABEL_TO_ID(Height), height);
+	mTexturePointer->GetEmptyTexture()->getValue("Width", width);
+	mTexturePointer->GetEmptyTexture()->getValue("Height", height);
 
 	if (mSize[0] != width || mSize[1] != height)
 	{

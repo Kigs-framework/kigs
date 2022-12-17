@@ -97,11 +97,11 @@ public:
 
 	/**
 	 * \brief	retreive given item state
-	 * \fn 		kfloat	GetItemfState(int itemindex)
+	 * \fn 		float	GetItemfState(int itemindex)
 	 * \param	itemindex : index of the item
 	 * \return	state of the item in float
 	 */
-	kfloat	GetItemfState(int itemindex);
+	float	GetItemfState(int itemindex);
 	
 	/**
 	 * \brief	retreive given item state

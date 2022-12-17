@@ -8,7 +8,7 @@
 #define _MODULE2DLAYERS_H_
 
 #include "ModuleBase.h"
-#include "kstlvector.h"
+#include <vector>
 
 // ****************************************
 // * Module2DLayers class
@@ -33,7 +33,7 @@ public:
 	* \param	name : instance name
 	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	*/
-	Module2DLayers(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	Module2DLayers(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~Module2DLayers();
 
 	/**
@@ -41,7 +41,7 @@ public:
 	* \param		core : link to the core, NOT NULL
 	* \param		params : list of parameters
 	*/
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 
 	/**
 	* \brief	close module
@@ -59,7 +59,7 @@ public:
 	* \brief		get the layers list
 	* \return		the layers list
 	*/
-	kstl::set<CoreModifiable*> GetLayerList();
+	std::set<CoreModifiable*> GetLayerList();
 
 	static void	setRotate180(bool rotate)
 	{

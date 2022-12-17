@@ -10,9 +10,9 @@
 IMPLEMENT_CLASS_INFO(StepByStepImporter)
 
 //! constructor
-StepByStepImporter::StepByStepImporter(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG),
-mFileName(*this,true,LABEL_AND_ID(FileName)),
-mDeltaTimePerStep(*this,false,LABEL_AND_ID(DeltaTimePerStep),KFLOAT_CONST(0.01f))
+StepByStepImporter::StepByStepImporter(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG),
+mFileName(*this,true,"FileName"),
+mDeltaTimePerStep(*this, false, "DeltaTimePerStep", 0.01f)
 {
 	mImportedRoot=0;
 	mXmlfile=0;
@@ -61,7 +61,7 @@ int StepByStepImporter::UpdateImporter()
 {
 	if(_isInit)
 	{
-		kfloat startTime=(kfloat)mTimer->GetTime();
+		float startTime=(float)mTimer->GetTime();
 		if(!_isInit)
 		{
 			Init();
@@ -71,11 +71,11 @@ int StepByStepImporter::UpdateImporter()
 			}
 		}
 
-		kfloat totalTime=(kfloat)mTimer->GetTime()-startTime;
-		while((mCurrentImportedTreeNode)&&(totalTime<(kfloat)mDeltaTimePerStep))
+		float totalTime=(float)mTimer->GetTime()-startTime;
+		while((mCurrentImportedTreeNode)&&(totalTime<(float)mDeltaTimePerStep))
 		{
 			mCurrentImportedTreeNode=StepImport(mCurrentImportedTreeNode);
-			totalTime=(kfloat)mTimer->GetTime()-startTime;
+			totalTime=(float)mTimer->GetTime()-startTime;
 		}
 
 		// not finished
@@ -115,8 +115,8 @@ StepByStepImporter::ImportTree::ImportTree(XMLNode* xmlnode,CMSP currentCM)
 
 StepByStepImporter::ImportTree::~ImportTree()
 {
-	kstl::vector<ImportTree*>::iterator it = mSonsImport.begin();
-	kstl::vector<ImportTree*>::iterator end = mSonsImport.end();
+	std::vector<ImportTree*>::iterator it = mSonsImport.begin();
+	std::vector<ImportTree*>::iterator end = mSonsImport.end();
 	while(it!=end)
 	{
 		delete (*it);
@@ -154,7 +154,7 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 		{ 
 			XMLAttributeBase *NameAttribute = currentNode->getAttribute("Name");
 
-			kstl::string name;
+			std::string name;
 			if (NameAttribute)
 				name = NameAttribute->getString();
 
@@ -168,10 +168,10 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 				
 				if(currentModifiable)
 				{
-					const kstl::vector<ModifiableItemStruct>& instances=currentModifiable->getItems();
-					//kstl::vector<int>	linklist=currentModifiable->getItemLinkTypes();
-					kstl::vector<ModifiableItemStruct>::const_iterator itson;
-					//kstl::vector<int>::const_iterator	itsonlink=linklist.begin();
+					const std::vector<ModifiableItemStruct>& instances=currentModifiable->getItems();
+					//std::vector<int>	linklist=currentModifiable->getItemLinkTypes();
+					std::vector<ModifiableItemStruct>::const_iterator itson;
+					//std::vector<int>::const_iterator	itsonlink=linklist.begin();
 					for(itson=instances.begin();itson!=instances.end();++itson)
 					{
 						CMSP son=(*itson).mItem;
@@ -247,8 +247,8 @@ StepByStepImporter::ImportTree*		StepByStepImporter::StepImport(StepByStepImport
 		// check if son need add
 		bool sonNeedAdd=true;
 		
-		const kstl::vector<ModifiableItemStruct>& instances=currentModifiable->getItems();
-		kstl::vector<ModifiableItemStruct>::const_iterator itson;
+		const std::vector<ModifiableItemStruct>& instances=currentModifiable->getItems();
+		std::vector<ModifiableItemStruct>::const_iterator itson;
 		for(itson=instances.begin();itson!=instances.end();++itson)
 		{
 			CMSP son=(*itson).mItem;

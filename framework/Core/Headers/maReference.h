@@ -15,12 +15,12 @@ struct maWeakReferenceObject
 		if (lobj)
 			mObj = lobj->SharedFromThis();
 	}
-	maWeakReferenceObject(const kstl::string& nametype)
+	maWeakReferenceObject(const std::string& nametype)
 	{
 		mSearchString = nametype;
 	}
 	std::weak_ptr<CoreModifiable> mObj;
-	kstl::string mSearchString;
+	std::string mSearchString;
 };
 
 struct maStrongReferenceObject
@@ -35,12 +35,12 @@ struct maStrongReferenceObject
 	{
 		mObj = lobj;
 	}
-	maStrongReferenceObject(const kstl::string& nametype)
+	maStrongReferenceObject(const std::string& nametype)
 	{
 		mSearchString = nametype;
 	}
 	SP<GenericRefCountedBaseClass> mObj;
-	kstl::string mSearchString;
+	std::string mSearchString;
 };
 
 // ****************************************
@@ -61,7 +61,7 @@ class maReferenceHeritage : public CoreModifiableAttributeData<maWeakReferenceOb
 
 public:
 
-	maReferenceHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, kstl::string value) : CoreModifiableAttributeData<maWeakReferenceObject>(owner, isInitAttribute, ID)
+	maReferenceHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, std::string value) : CoreModifiableAttributeData<maWeakReferenceObject>(owner, isInitAttribute, ID)
 	{
 		mValue = maWeakReferenceObject{ value };
 		Search();
@@ -115,7 +115,7 @@ public:
 
 
 	/// getValue overloads
-	virtual bool getValue(kstl::string& value) const override
+	virtual bool getValue(std::string& value) const override
 	{
 
 		((maReferenceHeritage*)this)->SearchRef();
@@ -169,7 +169,7 @@ public:
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
-	virtual bool setValue(const kstl::string& value) override
+	virtual bool setValue(const std::string& value) override
 	{
 		if (this->isReadOnly())
 			return false;
@@ -188,7 +188,7 @@ public:
 	}
 
 	/// operators
-	auto& operator=(const kstl::string &value)
+	auto& operator=(const std::string &value)
 	{
 		InitAndSearch(value);
 		DO_NOTIFICATION(notificationLevel);
@@ -211,7 +211,7 @@ protected:
 		mValue.mObj = obj;
 		return obj;
 	}
-	void InitAndSearch(const kstl::string& nametype)
+	void InitAndSearch(const std::string& nametype)
 	{
 		auto old_obj = mValue.mObj;
 		mValue = maWeakReferenceObject{ nametype };
@@ -248,7 +248,7 @@ class maStrongReferenceHeritage : public CoreModifiableAttributeData<maStrongRef
 
 public:
 
-	maStrongReferenceHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, kstl::string value) : CoreModifiableAttributeData<maStrongReferenceObject>(owner, isInitAttribute, ID)
+	maStrongReferenceHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, std::string value) : CoreModifiableAttributeData<maStrongReferenceObject>(owner, isInitAttribute, ID)
 	{
 		mValue = maStrongReferenceObject{ value };
 		Search();
@@ -299,7 +299,7 @@ public:
 	const CoreModifiable& const_ref() { return (*SearchRef()); }
 
 	/// getValue overloads
-	virtual bool getValue(kstl::string& value) const override
+	virtual bool getValue(std::string& value) const override
 	{
 		((maStrongReferenceHeritage*)this)->SearchRef();
 		if (auto ptr = std::dynamic_pointer_cast<CoreModifiable>(mValue.mObj).get())
@@ -350,7 +350,7 @@ public:
 		DO_NOTIFICATION(notificationLevel);
 		return true;
 	}
-	virtual bool setValue(const kstl::string& value) override
+	virtual bool setValue(const std::string& value) override
 	{
 		if (this->isReadOnly())
 			return false;
@@ -369,7 +369,7 @@ public:
 	}
 
 	/// operators
-	auto& operator=(const kstl::string& value)
+	auto& operator=(const std::string& value)
 	{
 		InitAndSearch(value);
 		DO_NOTIFICATION(notificationLevel);
@@ -392,7 +392,7 @@ protected:
 		mValue.mObj = obj;
 		return obj;
 	}
-	void InitAndSearch(const kstl::string& nametype)
+	void InitAndSearch(const std::string& nametype)
 	{
 		auto old_obj = mValue.mObj;
 		mValue = maStrongReferenceObject{ nametype };

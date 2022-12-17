@@ -16,7 +16,7 @@ public:
 	friend class RendererOpenGL;
 
 	DECLARE_CLASS_INFO(API3DDeferred, Node3D, Renderer)
-	API3DDeferred(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DDeferred(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~API3DDeferred();
 
 	int getColorChannel() { return myFboTexture[0]; }
@@ -62,7 +62,7 @@ protected:
 
 	API3DShader *		myRenderShader;
 
-	kstl::set<API3DDeferredFilter*, API3DDeferredFilter::PriorityCompare> myFilters;
+	std::set<API3DDeferredFilter*, API3DDeferredFilter::PriorityCompare> myFilters;
 };
 
 

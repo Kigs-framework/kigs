@@ -8,7 +8,7 @@
 
 IMPLEMENT_CLASS_INFO(Billboard3D)
 
-Billboard3D::Billboard3D(const kstl::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)
+Billboard3D::Billboard3D(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)
 , mPosition(*this, false, "Position", 0.0f, 0.0f, 0.0f)
 , mWidth(*this, false, "Width", 0.5f)
 , mHeight(*this, false, "Height", 0.5f)

@@ -105,7 +105,7 @@ public:
 
 	/**
 	 * \brief	return the plane list 
-	 * \fn 		const kstl::vector<CullPlane*>& GetCullPlaneList()
+	 * \fn 		const std::vector<CullPlane*>& GetCullPlaneList()
 	 * \return	the plane list 
 	 */
 	std::vector<CullPlane>& GetCullPlaneList(){return mCullPlaneList;}
@@ -116,7 +116,7 @@ public:
 protected:
 	
 	//! the vector used to store the list of plane
-	kstl::vector<CullPlane>   mCullPlaneList;
+	std::vector<CullPlane>   mCullPlaneList;
 };
 
 #endif //_CULLINGOBJECT_H_

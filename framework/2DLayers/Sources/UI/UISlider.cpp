@@ -8,16 +8,16 @@
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UISlider, UISlider, 2DLayers);
 IMPLEMENT_CLASS_INFO(UISlider)
 
-UISlider::UISlider(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
+UISlider::UISlider(const std::string& name,CLASS_NAME_TREE_ARG) : 
 UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-mUpTexture(*this,false,LABEL_AND_ID(UpTexture),""),
-mDownTexture(*this,false,LABEL_AND_ID(DownTexture),""),
-mOverTexture(*this,false,LABEL_AND_ID(OverTexture),""),
-mClickUpAction(*this, false, LABEL_AND_ID(ClickUpAction), ""),
-mParameter(*this, false, LABEL_AND_ID(Parameter), kstl::string("")),
-mMoveAction(*this,false,LABEL_AND_ID(MoveAction),""),
-mInitialRatio(*this, true, LABEL_AND_ID(InitialRatio), 0),
-mDirection(*this,true,LABEL_AND_ID(Direction),"Vertical","Horizontal")
+mUpTexture(*this,false,"UpTexture",""),
+mDownTexture(*this,false,"DownTexture",""),
+mOverTexture(*this,false,"OverTexture",""),
+mClickUpAction(*this, false, "ClickUpAction", ""),
+mParameter(*this, false, "Parameter", std::string("")),
+mMoveAction(*this,false,"MoveAction",""),
+mInitialRatio(*this, true, "InitialRatio", 0),
+mDirection(*this,true,"Direction","Vertical","Horizontal")
 {
 	
 }
@@ -73,7 +73,7 @@ void UISlider::InitModifiable()
 
 	if(_isInit)
 	{
-		kstl::vector<CoreModifiable*> parents = GetParents();
+		std::vector<CoreModifiable*> parents = GetParents();
 
 		if(parents.size()>0 )
 		{
@@ -142,7 +142,7 @@ void UISlider::InitModifiable()
 		float Dock[2];
 		int newPos[2] = {mInitialPosX, mInitialPosY};
 		v2f getL;
-		if(((const kstl::string&)mDirection) == "Vertical")
+		if(((const std::string&)mDirection) == "Vertical")
 		{
 			//Set Anchor and dock
 			Dock[0] = 0.5f;
@@ -204,7 +204,7 @@ void	UISlider::ForcedRatio(unsigned int value)
 {
 	//Set slider Data
 	int newPos[2] = {mInitialPosX, mInitialPosY};
-	if(((const kstl::string&)mDirection) == "Vertical")
+	if(((const std::string&)mDirection) == "Vertical")
 	{
 		newPos[1] = mInitialPosY - ((mSlideLength * value) / 100);
 		this->setArrayValue("Position",newPos,2);
@@ -221,7 +221,7 @@ void	UISlider::ForcedRatio(unsigned int value)
 void	UISlider::ResetSlider()
 {
 	int newPos[2] = {mInitialPosX, mInitialPosY};
-	if(((const kstl::string&)mDirection) == "Vertical")
+	if(((const std::string&)mDirection) == "Vertical")
 	{
 		if(mInitialRatio>0)
 		{
@@ -238,7 +238,7 @@ void	UISlider::ResetSlider()
 	this->setArrayValue("Position",newPos,2);
 }
 
-void UISlider::ChangeTexture(kstl::string _texturename, kstl::string _overtexturename, kstl::string _downtexturename)
+void UISlider::ChangeTexture(std::string _texturename, std::string _overtexturename, std::string _downtexturename)
 {
 	if(mIsEnabled) // down and mouse over only when enabled
 	{
@@ -300,7 +300,7 @@ bool UISlider::isAlpha(float X, float Y)
 	//Try to get mask
 	if(!mAlphaMask)
 	{
-		kstl::vector<ModifiableItemStruct> sons = getItems();
+		std::vector<ModifiableItemStruct> sons = getItems();
 
 		for(unsigned int i=0; i < sons.size(); i++)
 		{

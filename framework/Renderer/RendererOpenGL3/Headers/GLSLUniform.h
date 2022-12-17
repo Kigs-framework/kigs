@@ -30,7 +30,7 @@ class API3DUniformBase : public Drawable
 {
 public:
 	DECLARE_ABSTRACT_CLASS_INFO(API3DUniformBase, Drawable, Renderer);
-	API3DUniformBase(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DUniformBase(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	void	NotifyUpdate(const unsigned int  labelid) override;
 
@@ -41,7 +41,7 @@ public:
 	virtual bool	Pop(TravState*);
 
 	UNIFORM_NAME_TYPE   Get_ID() { return mID; }
-	kstl::string		Get_Name() { return mUniName.const_ref(); }
+	std::string		Get_Name() { return mUniName.const_ref(); }
 
 protected:
 	void	InitModifiable() override;
@@ -69,7 +69,7 @@ class API3DUniformInt : public API3DUniformBase
 {
 public:
 	DECLARE_CLASS_INFO(API3DUniformInt, API3DUniformBase, Renderer);
-	API3DUniformInt(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DUniformInt(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	void Activate(unsigned int a_Location) override;
 	void SetValue(int aV) { mValue = aV; }
@@ -96,7 +96,7 @@ class API3DUniformFloat : public API3DUniformBase
 {
 public:
 	DECLARE_CLASS_INFO(API3DUniformFloat, API3DUniformBase, Renderer);
-	API3DUniformFloat(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DUniformFloat(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	void Activate(unsigned int a_Location) override;
 	void SetValue(float aV) { mValue = aV; }
@@ -123,7 +123,7 @@ class API3DUniformFloat2 : public API3DUniformBase
 {
 public:
 	DECLARE_CLASS_INFO(API3DUniformFloat2, API3DUniformBase, Renderer);
-	API3DUniformFloat2(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DUniformFloat2(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	void Activate(unsigned int a_Location) override;
 
@@ -149,7 +149,7 @@ class API3DUniformFloat3 : public API3DUniformBase
 {
 public:
 	DECLARE_CLASS_INFO(API3DUniformFloat3, API3DUniformBase, Renderer);
-	API3DUniformFloat3(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DUniformFloat3(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	void Activate(unsigned int a_Location) override;
 
@@ -186,7 +186,7 @@ class API3DUniformFloat4 : public API3DUniformBase
 {
 public:
 	DECLARE_CLASS_INFO(API3DUniformFloat4, API3DUniformBase, Renderer);
-	API3DUniformFloat4(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DUniformFloat4(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	void Activate(unsigned int a_Location) override;
 
@@ -211,7 +211,7 @@ class API3DUniformTexture : public API3DUniformBase
 {
 public:
 	DECLARE_CLASS_INFO(API3DUniformTexture, API3DUniformBase, Renderer)
-	API3DUniformTexture(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DUniformTexture(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~API3DUniformTexture();
 
 	bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
@@ -245,7 +245,7 @@ class API3DUniformDataTexture : public API3DUniformBase
 {
 public:
 	DECLARE_CLASS_INFO(API3DUniformDataTexture, API3DUniformBase, Renderer)
-	API3DUniformDataTexture(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DUniformDataTexture(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	~API3DUniformDataTexture() override;
 
 protected:
@@ -276,7 +276,7 @@ class API3DUniformGeneratedTexture : public API3DUniformBase
 {
 public:
 	DECLARE_CLASS_INFO(API3DUniformGeneratedTexture, API3DUniformBase, Renderer)
-	API3DUniformGeneratedTexture(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DUniformGeneratedTexture(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~API3DUniformGeneratedTexture();
 
 protected:
@@ -310,7 +310,7 @@ class API3DUniformMatrixArray : public API3DUniformBase
 {
 public:
 	DECLARE_CLASS_INFO(API3DUniformMatrixArray, API3DUniformBase, Renderer)
-	API3DUniformMatrixArray(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DUniformMatrixArray(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~API3DUniformMatrixArray();
 
 protected:

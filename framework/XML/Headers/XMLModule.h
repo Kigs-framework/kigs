@@ -25,10 +25,10 @@ public:
 	DECLARE_CLASS_INFO(XMLModule,ModuleBase,XML)
 
 	//! constructor
-    XMLModule(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    XMLModule(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
          
 	//! init module
-    void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 	//! close module
     void Close() override;
                  

@@ -50,7 +50,7 @@ SmartPointer<FileHandle> FileHandle::MakeCopy()
 }
 
 //! constructor
-FilePathManager::FilePathManager(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+FilePathManager::FilePathManager(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 , mPackageID(0)
 {
 	mBundleList.clear();
@@ -98,9 +98,9 @@ std::string FilePathManager::MakeValidFileName(const std::string& filename)
 /*! add a new path for the given extension
 	if extension is "*", then add the path to all current extension
 */
-void	FilePathManager::AddToPath(const kstl::string& path, kstl::string ext, DeviceID deviceID)
+void	FilePathManager::AddToPath(const std::string& path, std::string ext, DeviceID deviceID)
 {
-	kstl::vector<kstl::string>& localpath = mPath[ext];
+	std::vector<std::string>& localpath = mPath[ext];
 	if (deviceID)
 	{
 		localpath.push_back(GetDevicePathString(deviceID) + path);
@@ -113,10 +113,10 @@ void	FilePathManager::AddToPath(const kstl::string& path, kstl::string ext, Devi
 
 
 //!	remove from path	
-void	FilePathManager::RemoveFromPath(const kstl::string& path, kstl::string ext, DeviceID deviceID)
+void	FilePathManager::RemoveFromPath(const std::string& path, std::string ext, DeviceID deviceID)
 {
 	bool found = true;
-	kstl::string	toMatch;
+	std::string	toMatch;
 	if (deviceID)
 	{
 		toMatch = GetDevicePathString(deviceID) + path;
@@ -130,13 +130,13 @@ void	FilePathManager::RemoveFromPath(const kstl::string& path, kstl::string ext,
 
 	if (mPath.find(ext) != mPath.end())
 	{
-		kstl::vector<kstl::string>& localpath = mPath[ext];
+		std::vector<std::string>& localpath = mPath[ext];
 
 		found = true;
 		while (found)
 		{
 			found = false;
-			kstl::vector<kstl::string>::iterator itstring;
+			std::vector<std::string>::iterator itstring;
 			for (itstring = localpath.begin(); itstring != localpath.end(); itstring++)
 			{
 				if ((*itstring) == toMatch)
@@ -151,7 +151,7 @@ void	FilePathManager::RemoveFromPath(const kstl::string& path, kstl::string ext,
 }
 
 // create a file handle from a filename
-SmartPointer<FileHandle> FilePathManager::CreateFileHandle(const kstl::string& filename)
+SmartPointer<FileHandle> FilePathManager::CreateFileHandle(const std::string& filename)
 {
 	SmartPointer<FileHandle> result = MakeRefCounted<FileHandle>();
 	result->mFileName = filename;
@@ -211,7 +211,7 @@ std::string FilePathManager::GetPackageRootPath(const std::string& filename)
 }
 
 // load a package given it's filename
-bool	FilePathManager::LoadPackage(const kstl::string& filename)
+bool	FilePathManager::LoadPackage(const std::string& filename)
 {
 	// TODO : check if this package was already loaded ?
 	auto L_File =FindFullName(filename);
@@ -233,12 +233,12 @@ bool	FilePathManager::LoadPackage(const kstl::string& filename)
 }
 
 // unload a package given it's filename
-void	FilePathManager::UnloadPackage(const kstl::string& filename)
+void	FilePathManager::UnloadPackage(const std::string& filename)
 {
 	// search package with same filename
 	
-	kstl::map<int, CorePackage*>::iterator	itP = mPackageList.begin();
-	kstl::map<int, CorePackage*>::iterator	itE = mPackageList.end();
+	std::map<int, CorePackage*>::iterator	itP = mPackageList.begin();
+	std::map<int, CorePackage*>::iterator	itE = mPackageList.end();
 
 	while( itP != itE )
 	{
@@ -252,7 +252,7 @@ void	FilePathManager::UnloadPackage(const kstl::string& filename)
 	}
 }
 
-CorePackage* FilePathManager::GetLoadedPackage(const kstl::string& filename)
+CorePackage* FilePathManager::GetLoadedPackage(const std::string& filename)
 {
 	for (auto& pkg : mPackageList)
 	{
@@ -270,7 +270,7 @@ void	FilePathManager::insertPackage(unsigned int packageID)
 		CorePackage::CorePackageIterator it = package->begin();
 		CorePackage::CorePackageIterator ite = package->end();
 
-		kstl::string	packagePath = "#PKG";
+		std::string	packagePath = "#PKG";
 
 		char	packageIDStr[10];
 		sprintf(packageIDStr, "%d", packageID);
@@ -283,7 +283,7 @@ void	FilePathManager::insertPackage(unsigned int packageID)
 		{
 			if (!it.isFolder())
 			{
-				kstl::string key = it.name();
+				std::string key = it.name();
 				mBundleList[key].push_back(packagePath+it.path(false));
 			}
 			++it;
@@ -300,7 +300,7 @@ void	FilePathManager::unloadPackage(unsigned int packageID)
 		CorePackage::CorePackageIterator it = package->begin();
 		CorePackage::CorePackageIterator ite = package->end();
 
-		kstl::string	packagePath = "#PKG";
+		std::string	packagePath = "#PKG";
 
 		char	packageIDStr[10];
 		sprintf(packageIDStr, "%d", packageID);
@@ -313,12 +313,12 @@ void	FilePathManager::unloadPackage(unsigned int packageID)
 		{
 			if (!it.isFolder())
 			{
-				kstl::string key = it.name();
+				std::string key = it.name();
 				
 				if (mBundleList.find(key) != mBundleList.end())
 				{
 					// search good string
-					kstl::vector<kstl::string>::iterator itStr;
+					std::vector<std::string>::iterator itStr;
 					for (itStr=mBundleList[key].begin(); itStr != mBundleList[key].end();++itStr)
 					{
 						if ((*itStr) == packagePath + it.path(false))
@@ -344,7 +344,7 @@ void	FilePathManager::unloadPackage(unsigned int packageID)
 }
 
 // retreive parent directory for the given full path
-kstl::string	FilePathManager::GetParentDirectory(const kstl::string& fullPath)
+std::string	FilePathManager::GetParentDirectory(const std::string& fullPath)
 {
 	int pos = (int)fullPath.rfind("/") + 1;
 	int pos1 = (int)fullPath.rfind("\\") + 1;
@@ -397,7 +397,7 @@ void	FilePathManager::SetFileInfos(FileHandle* handle)
 /*! search the given file in the pathes corresponding to its extension, or in the "all extension" * path
 	and if found return the full filename with path
 */
-SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filename)
+SmartPointer<FileHandle>	FilePathManager::FindFullName(const std::string&	filename)
 {
 	bool isDevice, isPackage;
 	isSpecialDeviceOrPackage(filename, isDevice, isPackage);
@@ -412,7 +412,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 		
 		SmartPointer<FileHandle> result = CreateFileHandle(filename);
 		size_t pos = filename.find('#', 3);
-		if (pos == kstl::string::npos)
+		if (pos == std::string::npos)
 		{
 			// malformed path
 			return result;
@@ -426,8 +426,8 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 	SmartPointer<FileHandle> result = CreateFileHandle(filename);
 
 	// init fullFileName with filename
-	kstl::string fullFileName = result->mFileName;
-	kstl::string	fileext = "";
+	std::string fullFileName = result->mFileName;
+	std::string	fileext = "";
 	if (result->mExtension != "")
 		fileext.append(result->mExtension, 1, result->mExtension.length() - 1);
 
@@ -437,7 +437,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 		auto foundInBundle = mBundleList.find(result->mFileName);
 		if (foundInBundle != mBundleList.end())
 		{
-			const kstl::vector<kstl::string>& bundlePathVector = (*foundInBundle).second;
+			const std::vector<std::string>& bundlePathVector = (*foundInBundle).second;
 			if (bundlePathVector.size() == 0) // bundle root
 			{
 				result->mFullFileName = mBundleRoot + result->mFileName;
@@ -455,7 +455,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 				int bundlePathVectorIndex = 0;
 				if (bundlePathVector.size() > 1) // several pathes available
 				{
-					kstl::vector<kstl::string>* localpath = nullptr;
+					std::vector<std::string>* localpath = nullptr;
 					if (mPath.find(fileext) != mPath.end()) // if this extension is in pathes map 
 					{
 						localpath = &mPath[fileext];
@@ -481,7 +481,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 									}
 									if (pos<=7) // can be a kpkg ?
 									{
-										kstl::string head = bundlePathVector[bundlePathVectorIndex].substr(1, 3);
+										std::string head = bundlePathVector[bundlePathVectorIndex].substr(1, 3);
 										if (head == "PKG")
 										{
 											foundinbundle = true;
@@ -501,7 +501,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 
 				if (bundlePathVector[bundlePathVectorIndex][0] == '#') // check if package
 				{
-					kstl::string head = bundlePathVector[bundlePathVectorIndex].substr(1, 3);
+					std::string head = bundlePathVector[bundlePathVectorIndex].substr(1, 3);
 					if (head == "PKG")
 					{
 						if (initHandleFromPackage(bundlePathVector[bundlePathVectorIndex], result, true))
@@ -535,7 +535,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 
 
 
-	kstl::vector<kstl::string> localpath;
+	std::vector<std::string> localpath;
 	if (mPath.find(fileext) != mPath.end())
 	{
 		localpath = mPath[fileext];
@@ -556,7 +556,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 
 		if (localpath.size())
 		{
-			kstl::vector<kstl::string>::reverse_iterator	it;
+			std::vector<std::string>::reverse_iterator	it;
 
 			// search from last added path to first one
 			for (it = localpath.rbegin(); it != localpath.rend(); ++it)
@@ -578,7 +578,7 @@ SmartPointer<FileHandle>	FilePathManager::FindFullName(const kstl::string&	filen
 				else if (isPackage)
 				{
 					size_t pos = (*it).find('#', 3);
-					if (pos == kstl::string::npos)
+					if (pos == std::string::npos)
 					{
 						// malformed path
 						return result;
@@ -617,9 +617,9 @@ bool	FilePathManager::initHandleFromPackage(const std::string& lpath, SmartPoint
 	// search end # (after package ID)
 	size_t pos = lpath.find('#', 3);
 
-	if (pos != kstl::string::npos)
+	if (pos != std::string::npos)
 	{
-		kstl::string pkgIDStr = lpath.substr(4, pos - 4);
+		std::string pkgIDStr = lpath.substr(4, pos - 4);
 
 		int pkgID = 0;
 		if (sscanf(pkgIDStr.c_str(), "%d", &pkgID))
@@ -652,9 +652,9 @@ bool	FilePathManager::initHandleFromPackage(const std::string& lpath, SmartPoint
 }
 
 // construct the "prefered path" according to filename extension
-kstl::string	FilePathManager::PreferedPath(const kstl::string&	filename)
+std::string	FilePathManager::PreferedPath(const std::string&	filename)
 {
-	kstl::string fullFileName = filename;
+	std::string fullFileName = filename;
 
 	int pos = (int)filename.rfind("/") + 1;
 	int pos1 = (int)filename.rfind("\\") + 1;
@@ -664,7 +664,7 @@ kstl::string	FilePathManager::PreferedPath(const kstl::string&	filename)
 		pos = pos1;
 	}
 
-	kstl::string shortfilename;
+	std::string shortfilename;
 
 	if (pos == 0)
 	{
@@ -675,12 +675,12 @@ kstl::string	FilePathManager::PreferedPath(const kstl::string&	filename)
 		shortfilename = filename.substr((unsigned int)pos, filename.length() - pos);
 	}
 
-	kstl::string	fileext = "";
+	std::string	fileext = "";
 
 	pos = (int)shortfilename.rfind(".") + 1;
 	fileext.append(shortfilename, (unsigned int)pos, shortfilename.length() - pos);
 
-	kstl::vector<kstl::string> localpath;
+	std::vector<std::string> localpath;
 	if (mPath.find(fileext) != mPath.end())
 	{
 		localpath = mPath[fileext];
@@ -693,7 +693,7 @@ kstl::string	FilePathManager::PreferedPath(const kstl::string&	filename)
 	}
 
 
-	kstl::vector<kstl::string>::reverse_iterator	it = localpath.rbegin();
+	std::vector<std::string>::reverse_iterator	it = localpath.rbegin();
 
 	fullFileName = (*it);
 	fullFileName += "/";
@@ -703,7 +703,7 @@ kstl::string	FilePathManager::PreferedPath(const kstl::string&	filename)
 }
 
 // construct path according to device
-kstl::string	FilePathManager::DevicePath(const kstl::string&	filename, DeviceID id)
+std::string	FilePathManager::DevicePath(const std::string&	filename, DeviceID id)
 {
 	return GetDevicePathString(id) + filename;
 }
@@ -713,7 +713,7 @@ void FilePathManager::Clear()
 {
 	for (auto it = mPath.begin(); it != mPath.end(); ++it)
 	{
-		kstl::vector<kstl::string>& list = (*it).second;
+		std::vector<std::string>& list = (*it).second;
 		list.clear();
 	}
 
@@ -729,14 +729,14 @@ void FilePathManager::Clear()
 }
 
 // return the full path, seperate by ";"
-kstl::string	FilePathManager::GetPathString()
+std::string	FilePathManager::GetPathString()
 {
-	kstl::string result = "";
+	std::string result = "";
 	for (auto it = mPath.begin(); it != mPath.end(); ++it)
 	{
-		kstl::vector<kstl::string>& list = (*it).second;
+		std::vector<std::string>& list = (*it).second;
 
-		kstl::vector<kstl::string>::iterator	it1;
+		std::vector<std::string>::iterator	it1;
 		for (it1 = list.begin(); it1 != list.end(); ++it1)
 		{
 			result += (*it1);
@@ -749,11 +749,11 @@ kstl::string	FilePathManager::GetPathString()
 }
 
 //! the returned string will be added at start of the path to be retreived easily by fopen 
-kstl::string FilePathManager::GetDevicePathString(DeviceID id)
+std::string FilePathManager::GetDevicePathString(DeviceID id)
 {
 	if (id)
 	{
-		kstl::string result = "#";
+		std::string result = "#";
 
 		result += (unsigned char)id;
 
@@ -767,7 +767,7 @@ kstl::string FilePathManager::GetDevicePathString(DeviceID id)
 }
 
 // extern & distant path management (TODO / TO TEST)
-bool	FilePathManager::AddExternPath(const kstl::string& path, int externPathIndex)
+bool	FilePathManager::AddExternPath(const std::string& path, int externPathIndex)
 {
 	if ((externPathIndex >= 0) && (externPathIndex <= 3))
 	{
@@ -780,7 +780,7 @@ bool	FilePathManager::AddExternPath(const kstl::string& path, int externPathInde
 
 // extern & distant path management (TODO / TO TEST)
 
-bool	FilePathManager::AddDistantPath(const kstl::string& path, int distantPathIndex)
+bool	FilePathManager::AddDistantPath(const std::string& path, int distantPathIndex)
 {
 	if ((distantPathIndex >= 0) && (distantPathIndex <= 3))
 	{
@@ -791,7 +791,7 @@ bool	FilePathManager::AddDistantPath(const kstl::string& path, int distantPathIn
 }
 
 // extern & distant path management (TODO / TO TEST)
-bool	FilePathManager::GetDistantPath(int a_IndexPath, kstl::string& a_distantUrl)
+bool	FilePathManager::GetDistantPath(int a_IndexPath, std::string& a_distantUrl)
 {
 	if ((a_IndexPath >= 0) && (a_IndexPath <= 3))
 	{
@@ -823,16 +823,16 @@ CoreRawBuffer* FilePathManager::GetDistantFile(const char* filename)
 					L_index = 3;
 
 				FilePathManager* pathManager = static_cast<FilePathManager*>(KigsCore::GetSingleton("FilePathManager"));
-				kstl::string L_hostname = "";
+				std::string L_hostname = "";
 
 				if (pathManager->GetDistantPath(L_index, L_hostname))
 				{
 					HTTPConnect* L_Connection = static_cast<HTTPConnect*>(KigsCore::GetInstanceOf("myConnection", "HTTPConnect"));
-					L_Connection->setValue(LABEL_TO_ID(IsSynchronous), true);
-					L_Connection->setValue(LABEL_TO_ID(HostName), L_hostname);
+					L_Connection->setValue("IsSynchronous", true);
+					L_Connection->setValue("HostName", L_hostname);
 					L_Connection->Init();
 
-					kstl::string L_FileName = "fread:";
+					std::string L_FileName = "fread:";
 					L_FileName += (const char*)(&filename[3]);
 
 					HTTPAsyncRequest* L_reponse = L_Connection->retreiveGetRequest(L_FileName.c_str());
@@ -860,7 +860,7 @@ bool FilePathManager::WriteDistantFile(const char* filename, const void* a_conte
 	if (filename[0] == '#')
 	{
 		usString answer = "";
-		kstl::string nameWithDevicePath = "";
+		std::string nameWithDevicePath = "";
 
 		FilePathManager::DeviceID	id = (FilePathManager::DeviceID)(filename[1]);
 		if (id >= FilePathManager::DISTANT_FOLDER1 && id <= FilePathManager::DISTANT_FOLDER4)
@@ -874,13 +874,13 @@ bool FilePathManager::WriteDistantFile(const char* filename, const void* a_conte
 				L_index = 3;
 
 			FilePathManager* pathManager = static_cast<FilePathManager*>(KigsCore::GetSingleton("FilePathManager"));
-			kstl::string L_hostname = "";
+			std::string L_hostname = "";
 
 			if (pathManager->GetDistantPath(L_index, L_hostname))
 			{
 				HTTPConnect* L_Connection = static_cast<HTTPConnect*>(KigsCore::GetInstanceOf("myConnection", "HTTPConnect"));
-				L_Connection->setValue(LABEL_TO_ID(IsSynchronous), true);
-				L_Connection->setValue(LABEL_TO_ID(HostName), L_hostname);
+				L_Connection->setValue("IsSynchronous", true);
+				L_Connection->setValue("HostName", L_hostname);
 				L_Connection->Init();
 
 				char* L_RequestBuffer = NULL;
@@ -929,7 +929,7 @@ bool FilePathManager::WriteDistantFile(const char* filename, const void* a_conte
 #endif
 
 //! init bundle list
-void	FilePathManager::InitBundleList(const kstl::string& filename)
+void	FilePathManager::InitBundleList(const std::string& filename)
 {
 	//myBundleList.clear();
 
@@ -947,17 +947,17 @@ void	FilePathManager::InitBundleList(const kstl::string& filename)
 			{
 				AsciiParserUtils word(line);
 				// first word is the key
-				kstl::string key = "";
+				std::string key = "";
 				if (line.GetWord(word, ';'))
 				{
 					key = word;
-					kstl::vector<kstl::string> toAdd;
+					std::vector<std::string> toAdd;
 					mBundleList[key] = toAdd;
 
 					// next are the pathes
 					while (line.GetWord(word, ';'))
 					{
-						mBundleList[key].push_back((const kstl::string&)word);
+						mBundleList[key].push_back((const std::string&)word);
 					}
 				}
 			}
@@ -966,7 +966,7 @@ void	FilePathManager::InitBundleList(const kstl::string& filename)
 }
 
 //! init from config json file
-void	FilePathManager::InitWithConfigFile(const kstl::string& filename)
+void	FilePathManager::InitWithConfigFile(const std::string& filename)
 {
 	JSonFileParser L_JsonParser;
 	CoreItemSP L_Dictionary = L_JsonParser.Get_JsonDictionary(filename);
@@ -979,7 +979,7 @@ void	FilePathManager::InitWithConfigFile(const kstl::string& filename)
 		{
 			CoreItemSP currentpathname = (*pathList)[(int)i];
 			CoreItemSP currentpath = (*pathList)[(int)i + 1];
-			AddToPath((kstl::string)*currentpathname.get(), (kstl::string)*currentpath.get());
+			AddToPath((std::string)*currentpathname.get(), (std::string)*currentpath.get());
 		}
 
 	}
@@ -1047,7 +1047,7 @@ SmartPointer<FileHandle> Platform_fopen(const char * filename, const char * mode
 std::set<CMSP> FilePathManager::mHTTPConnections;
 
 // HTTP file management (should use PureVirtualFileAccessDelegate now)
-bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kstl::string& L_hostname)
+bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const std::string& L_hostname)
 {
 
 	// TODO : retreive separated hostname and url
@@ -1055,10 +1055,10 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 
 	CMSP L_Connection = KigsCore::GetInstanceOf("myConnection", "HTTPConnect");
 	// check that HTTP module is OK
-	if (L_Connection->isSubType(LABEL_TO_ID(HTTPConnect)))
+	if (L_Connection->isSubType("HTTPConnect"))
 	{
-		L_Connection->setValue(LABEL_TO_ID(IsSynchronous), true);
-		L_Connection->setValue(LABEL_TO_ID(HostName), L_hostname);
+		L_Connection->setValue("IsSynchronous", true);
+		L_Connection->setValue("HostName", L_hostname);
 		L_Connection->Init();
 
 		// use FILE* pointer to store connection, weird but OK
@@ -1066,24 +1066,24 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const kst
 		mHTTPConnections.insert(L_Connection);
 		// create HTTPASyncRequest
 
-		kstl::string L_FileName = "fopen:";
+		std::string L_FileName = "fopen:";
 		L_FileName += mode;
 		L_FileName += ":";
 
 		L_FileName += handle->mFullFileName;
 
 		CMSP request = (KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest"));
-		request->setValue(LABEL_TO_ID(Type), "GET");
-		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), L_Connection.get());
+		request->setValue("Type", "GET");
+		request->setValue("URL", L_FileName);
+		request->setValue("Connection", L_Connection.get());
 		request->Init();
 
 		void* received=nullptr;
 
-		request->getValue(LABEL_TO_ID(ReceivedBuffer), received);
+		request->getValue("ReceivedBuffer", received);
 		if (received)
 		{
-			kstl::string receivedID = ((CoreRawBuffer*)received)->buffer();
+			std::string receivedID = ((CoreRawBuffer*)received)->buffer();
 			if (receivedID != "")
 			{
 				// store receivedID as a dynamic attribute on L_Connection
@@ -1113,9 +1113,9 @@ long int FilePathManager::HTTPfread(void * ptr, long size, long count, FileHandl
 
 		char params[32];
 		// push parameters
-		kstl::string L_FileName = "fread:";
-		kstl::string receivedID;
-		L_Connection->getValue(LABEL_TO_ID(fileid), receivedID); // retrieve ID
+		std::string L_FileName = "fread:";
+		std::string receivedID;
+		L_Connection->getValue("fileid", receivedID); // retrieve ID
 		L_FileName += receivedID + ":";
 		sprintf(params, "%li", size);
 		L_FileName += params;
@@ -1124,14 +1124,14 @@ long int FilePathManager::HTTPfread(void * ptr, long size, long count, FileHandl
 		L_FileName += params;
 
 		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
-		request->setValue(LABEL_TO_ID(Type), "GET");
-		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), L_Connection);
+		request->setValue("Type", "GET");
+		request->setValue("URL", L_FileName);
+		request->setValue("Connection", L_Connection);
 		request->Init();
 
 		void* received=nullptr;
 
-		request->getValue(LABEL_TO_ID(ReceivedBuffer), received);
+		request->getValue("ReceivedBuffer", received);
 
 		if (received)
 		{
@@ -1163,24 +1163,24 @@ long int FilePathManager::HTTPftell(FileHandle* handle)
 		CoreModifiable* L_Connection = (CoreModifiable*)handle->mFile;
 
 		// push parameters
-		kstl::string L_FileName = "ftell:";
-		kstl::string receivedID;
-		L_Connection->getValue(LABEL_TO_ID(fileid), receivedID); // retrieve ID
+		std::string L_FileName = "ftell:";
+		std::string receivedID;
+		L_Connection->getValue("fileid", receivedID); // retrieve ID
 		L_FileName += receivedID;
 
 		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
-		request->setValue(LABEL_TO_ID(Type), "GET");
-		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), L_Connection);
+		request->setValue("Type", "GET");
+		request->setValue("URL", L_FileName);
+		request->setValue("Connection", L_Connection);
 		request->Init();
 
 		void* received=nullptr;
 
-		request->getValue(LABEL_TO_ID(ReceivedBuffer), received);
+		request->getValue("ReceivedBuffer", received);
 
 		if (received)
 		{
-			kstl::string receivedLenAscii = ((CoreRawBuffer*)received)->buffer();
+			std::string receivedLenAscii = ((CoreRawBuffer*)received)->buffer();
 			if (receivedLenAscii != "")
 			{
 				sscanf(receivedLenAscii.c_str(), "%li", &receivedLen);
@@ -1200,9 +1200,9 @@ int FilePathManager::HTTPfseek(FileHandle* handle, long int offset, int origin)
 		CoreModifiable* L_Connection = (CoreModifiable*)handle->mFile;
 		// push parameters
 		char params[32];
-		kstl::string L_FileName = "fseek:";
-		kstl::string receivedID;
-		L_Connection->getValue(LABEL_TO_ID(fileid), receivedID); // retrieve ID
+		std::string L_FileName = "fseek:";
+		std::string receivedID;
+		L_Connection->getValue("fileid", receivedID); // retrieve ID
 		L_FileName += receivedID + ":";
 		sprintf(params, "%li", offset);
 		L_FileName += params;
@@ -1211,18 +1211,18 @@ int FilePathManager::HTTPfseek(FileHandle* handle, long int offset, int origin)
 		L_FileName += params;
 
 		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
-		request->setValue(LABEL_TO_ID(Type), "GET");
-		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), L_Connection);
+		request->setValue("Type", "GET");
+		request->setValue("URL", L_FileName);
+		request->setValue("Connection", L_Connection);
 		request->Init();
 
 		void* received=nullptr;
 
-		request->getValue(LABEL_TO_ID(ReceivedBuffer), received);
+		request->getValue("ReceivedBuffer", received);
 
 		if (received)
 		{
-			kstl::string receivedLenAscii = ((CoreRawBuffer*)received)->buffer();
+			std::string receivedLenAscii = ((CoreRawBuffer*)received)->buffer();
 			if (receivedLenAscii != "")
 			{
 				sscanf(receivedLenAscii.c_str(), "%li", &receivedLen);
@@ -1240,20 +1240,20 @@ int FilePathManager::HTTPfflush(FileHandle* handle)
 	if (handle->mFile)
 	{
 		CoreModifiable* L_Connection = (CoreModifiable*)handle->mFile;
-		kstl::string L_FileName = "fflush:";
-		kstl::string receivedID;
-		L_Connection->getValue(LABEL_TO_ID(fileid), receivedID); // retrieve ID
+		std::string L_FileName = "fflush:";
+		std::string receivedID;
+		L_Connection->getValue("fileid", receivedID); // retrieve ID
 		L_FileName += receivedID;
 
 		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
-		request->setValue(LABEL_TO_ID(Type), "GET");
-		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), L_Connection);
+		request->setValue("Type", "GET");
+		request->setValue("URL", L_FileName);
+		request->setValue("Connection", L_Connection);
 		request->Init();
 
 		void* received=nullptr;
 
-		request->getValue(LABEL_TO_ID(ReceivedBuffer), received);
+		request->getValue("ReceivedBuffer", received);
 
 		if (received)
 		{
@@ -1271,20 +1271,20 @@ int FilePathManager::HTTPfclose(FileHandle* handle)
 	{
 		CoreModifiable* L_Connection = (CoreModifiable*)handle->mFile;
 
-		kstl::string L_FileName = "fclose:";
-		kstl::string receivedID;
-		L_Connection->getValue(LABEL_TO_ID(fileid), receivedID); // retrieve ID
+		std::string L_FileName = "fclose:";
+		std::string receivedID;
+		L_Connection->getValue("fileid", receivedID); // retrieve ID
 		L_FileName += receivedID;
 
 		CMSP request = KigsCore::GetInstanceOf("HTTPAsyncRequest_file", "HTTPAsyncRequest");
-		request->setValue(LABEL_TO_ID(Type), "GET");
-		request->setValue(LABEL_TO_ID(URL), L_FileName);
-		request->setValue(LABEL_TO_ID(Connection), L_Connection);
+		request->setValue("Type", "GET");
+		request->setValue("URL", L_FileName);
+		request->setValue("Connection", L_Connection);
 		request->Init();
 
 		void* received=nullptr;
 
-		request->getValue(LABEL_TO_ID(ReceivedBuffer), received);
+		request->getValue("ReceivedBuffer", received);
 
 		if (received)
 		{

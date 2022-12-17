@@ -34,12 +34,12 @@ public:
 
 	/**
 	 * \brief	import a mesh from a file
-	 * \fn 		int ImportFile(Mesh *pMesh, const kstl::string &FileName);
+	 * \fn 		int ImportFile(Mesh *pMesh, const std::string &FileName);
 	 * \param 	pMesh : link to the mesh imported
 	 * \param 	FileName : name of the file to read
 	 * \return 	an error code : <ul><li>0 : no error</li><li>1 : param error (a parameter is NULL)</li><li>3 : no file</li><li>10+ : reading error (+10)</li></ul>
 	 */
-	int ImportFile(Mesh *pMesh, const kstl::string &FileName);
+	int ImportFile(Mesh *pMesh, const std::string &FileName);
 
 	/**
 	 * \brief	read a file

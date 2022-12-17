@@ -282,7 +282,7 @@ bool UIRoundHUD::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 
 		if ((CoreModifiable*)mLabel)
 		{
-			kstl::string str="";
+			std::string str="";
 			if ((slot != -1 && slot < mItemList.size()))
 			{
 				if (!mItemList[slot]->getValue("Label", str))

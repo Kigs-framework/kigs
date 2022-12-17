@@ -7,14 +7,14 @@
 IMPLEMENT_CLASS_INFO(Window)
 
 //! constructor, init all parameters
-Window::Window(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG),
-mFullScreen(*this,true,LABEL_AND_ID(FullScreen)),
-mShowMouseCursor(*this, true, LABEL_AND_ID(ShowMouseCursor), false), 
-mIsMainWindow(*this, true, LABEL_AND_ID(IsMainWindow), true),
-mDisplayIndex(*this, true, LABEL_AND_ID(DisplayIndex), 0xFFFFFFFF),
-mDirtySize(*this, false, LABEL_AND_ID(DirtySize), false),
-mPosition(*this,true,LABEL_AND_ID(Position),-1,-1), // -1 => centered on screen
-mSize(*this,true,LABEL_AND_ID(Size)),
+Window::Window(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG),
+mFullScreen(*this,true,"FullScreen"),
+mShowMouseCursor(*this, true, "ShowMouseCursor", false), 
+mIsMainWindow(*this, true, "IsMainWindow", true),
+mDisplayIndex(*this, true, "DisplayIndex", 0xFFFFFFFF),
+mDirtySize(*this, false, "DirtySize", false),
+mPosition(*this,true,"Position",-1,-1), // -1 => centered on screen
+mSize(*this,true,"Size"),
 mClickCallback(NULL), mDoubleClickCallback(NULL), mKeyDownCallback(NULL),mKeyUpCallback(NULL), mDestroyCallback(NULL)
 {
    mScreen = 0;

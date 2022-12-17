@@ -22,8 +22,8 @@ void SimpleDrawing::GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const
 	}
 	else
 	{
-		pmin.Set(KFLOAT_CONST(0.0f));
-		pmax.Set(KFLOAT_CONST(0.0f));
+		pmin.Set(0.0f);
+		pmax.Set(0.0f);
 	}
 }
 
@@ -32,30 +32,30 @@ SimpleDrawing::~SimpleDrawing()
 	delete [] mVertex;
 }
 
-void SimpleDrawing::setColor(kfloat R, kfloat G, kfloat B)
+void SimpleDrawing::setColor(float R, float G, float B)
 {
-	kfloat col[3];
+	float col[3];
 	col[0] = R;
 	col[1] = G;
 	col[2] = B;
-	mColor.setArrayValue((kfloat*)col,3);
+	mColor.setArrayValue((float*)col,3);
 }
 
-void SimpleDrawing::setAlpha(kfloat A)
+void SimpleDrawing::setAlpha(float A)
 {
 	mAlpha = A;
-	//setValue("TransparencyFlag",mAlpha!=KFLOAT_CONST(1.0));
+	//setValue("TransparencyFlag",mAlpha!=1.0f);
 }
 
-void SimpleDrawing::setColor(kfloat R, kfloat G, kfloat B, kfloat A)
+void SimpleDrawing::setColor(float R, float G, float B, float A)
 {
-	kfloat col[3];
+	float col[3];
 	col[0] = R;
 	col[1] = G;
 	col[2] = B;
-	mColor.setArrayValue((kfloat*)col,3);
+	mColor.setArrayValue((float*)col,3);
 	mAlpha = A;
-	//setValue("TransparencyFlag",mAlpha!=KFLOAT_CONST(1.0));
+	//setValue("TransparencyFlag",mAlpha!=1.0f);
 }
 
 
@@ -105,7 +105,7 @@ void SimpleDrawing::setVertexArray(Point3D *Position, int Count)
 	}
 }
 
-void SimpleDrawing::setToRectangle(const kfloat &w, const kfloat &h, bool bWire, char cNormal)
+void SimpleDrawing::setToRectangle(const float &w, const float &h, bool bWire, char cNormal)
 {
 	if (mVertexCount!=4) 
 	{
@@ -116,47 +116,47 @@ void SimpleDrawing::setToRectangle(const kfloat &w, const kfloat &h, bool bWire,
 	switch(cNormal)
 	{
 	case 'X':
-			mVertex[0].Set(KFLOAT_CONST(0.0f),-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f));
-			mVertex[1].Set(KFLOAT_CONST(0.0f), w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f));
-			mVertex[2].Set(KFLOAT_CONST(0.0f), w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f));
-			mVertex[3].Set(KFLOAT_CONST(0.0f),-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f));
+			mVertex[0].Set(0.0f,-w*0.5f,-h*0.5f);
+			mVertex[1].Set(0.0f, w*0.5f,-h*0.5f);
+			mVertex[2].Set(0.0f, w*0.5f, h*0.5f);
+			mVertex[3].Set(0.0f,-w*0.5f, h*0.5f);
 		break;
 	case 'Y':
-			mVertex[0].Set(-h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f),-w*KFLOAT_CONST(0.5f));
-			mVertex[1].Set(-h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f), w*KFLOAT_CONST(0.5f));
-			mVertex[2].Set( h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f), w*KFLOAT_CONST(0.5f));
-			mVertex[3].Set( h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f),-w*KFLOAT_CONST(0.5f));
+			mVertex[0].Set(-h*0.5f,0.0f,-w*0.5f);
+			mVertex[1].Set(-h*0.5f,0.0f, w*0.5f);
+			mVertex[2].Set( h*0.5f,0.0f, w*0.5f);
+			mVertex[3].Set( h*0.5f,0.0f,-w*0.5f);
 		break;
 	case 'Z':
-			mVertex[0].Set(-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f));
-			mVertex[1].Set( w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f));
-			mVertex[2].Set( w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f));
-			mVertex[3].Set(-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f));
+			mVertex[0].Set(-w*0.5f,-h*0.5f,0.0f);
+			mVertex[1].Set( w*0.5f,-h*0.5f,0.0f);
+			mVertex[2].Set( w*0.5f, h*0.5f,0.0f);
+			mVertex[3].Set(-w*0.5f, h*0.5f,0.0f);
 		break;
 	case 'x':
-			mVertex[0].Set(KFLOAT_CONST(0.0f),-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f));
-			mVertex[3].Set(KFLOAT_CONST(0.0f), w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f));
-			mVertex[2].Set(KFLOAT_CONST(0.0f), w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f));
-			mVertex[1].Set(KFLOAT_CONST(0.0f),-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f));
+			mVertex[0].Set(0.0f,-w*0.5f,-h*0.5f);
+			mVertex[3].Set(0.0f, w*0.5f,-h*0.5f);
+			mVertex[2].Set(0.0f, w*0.5f, h*0.5f);
+			mVertex[1].Set(0.0f,-w*0.5f, h*0.5f);
 		break;
 	case 'y':
-			mVertex[0].Set(-h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f),-w*KFLOAT_CONST(0.5f));
-			mVertex[3].Set(-h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f), w*KFLOAT_CONST(0.5f));
-			mVertex[2].Set( h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f), w*KFLOAT_CONST(0.5f));
-			mVertex[1].Set( h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f),-w*KFLOAT_CONST(0.5f));
+			mVertex[0].Set(-h*0.5f,0.0f,-w*0.5f);
+			mVertex[3].Set(-h*0.5f,0.0f, w*0.5f);
+			mVertex[2].Set( h*0.5f,0.0f, w*0.5f);
+			mVertex[1].Set( h*0.5f,0.0f,-w*0.5f);
 		break;
 	case 'z':
-			mVertex[0].Set(-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f));
-			mVertex[3].Set( w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f));
-			mVertex[2].Set( w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f));
-			mVertex[1].Set(-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),KFLOAT_CONST(0.0f));
+			mVertex[0].Set(-w*0.5f,-h*0.5f,0.0f);
+			mVertex[3].Set( w*0.5f,-h*0.5f,0.0f);
+			mVertex[2].Set( w*0.5f, h*0.5f,0.0f);
+			mVertex[1].Set(-w*0.5f, h*0.5f,0.0f);
 		break;
 	}
-	if (bWire) setValue(LABEL_TO_ID(Mode),5);
-	else setValue(LABEL_TO_ID(Mode),2);
+	if (bWire) setValue("Mode",5);
+	else setValue("Mode",2);
 }
 
-void SimpleDrawing::setToBox(const kfloat &w, const kfloat &h, const kfloat &d, bool bWire)
+void SimpleDrawing::setToBox(const float &w, const float &h, const float &d, bool bWire)
 {
 	if (bWire)
 	{
@@ -166,24 +166,24 @@ void SimpleDrawing::setToBox(const kfloat &w, const kfloat &h, const kfloat &d, 
 			mVertex = new Point3D[17];
 			mVertexCount = 17;
 		}
-		setValue(LABEL_TO_ID(Mode),4);
-		mVertex[0].Set(-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-			mVertex[8].Set(-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-			mVertex[14].Set(-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[1].Set( w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-			mVertex[13].Set( w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[2].Set( w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-			mVertex[10].Set( w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[3].Set(-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-			mVertex[9].Set(-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[4].Set(-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-			mVertex[16].Set(-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[5].Set( w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-			mVertex[11].Set( w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[6].Set( w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-			mVertex[12].Set( w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[7].Set(-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-			mVertex[15].Set(-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
+		setValue("Mode",4);
+		mVertex[0].Set(-w*0.5f,-h*0.5f,-d*0.5f);
+			mVertex[8].Set(-w*0.5f,-h*0.5f,-d*0.5f);
+			mVertex[14].Set(-w*0.5f,-h*0.5f,-d*0.5f);
+		mVertex[1].Set( w*0.5f,-h*0.5f,-d*0.5f);
+			mVertex[13].Set( w*0.5f,-h*0.5f,-d*0.5f);
+		mVertex[2].Set( w*0.5f, h*0.5f,-d*0.5f);
+			mVertex[10].Set( w*0.5f, h*0.5f,-d*0.5f);
+		mVertex[3].Set(-w*0.5f, h*0.5f,-d*0.5f);
+			mVertex[9].Set(-w*0.5f, h*0.5f,-d*0.5f);
+		mVertex[4].Set(-w*0.5f, h*0.5f, d*0.5f);
+			mVertex[16].Set(-w*0.5f, h*0.5f, d*0.5f);
+		mVertex[5].Set( w*0.5f, h*0.5f, d*0.5f);
+			mVertex[11].Set( w*0.5f, h*0.5f, d*0.5f);
+		mVertex[6].Set( w*0.5f,-h*0.5f, d*0.5f);
+			mVertex[12].Set( w*0.5f,-h*0.5f, d*0.5f);
+		mVertex[7].Set(-w*0.5f,-h*0.5f, d*0.5f);
+			mVertex[15].Set(-w*0.5f,-h*0.5f, d*0.5f);
 	}
 	else
 	{
@@ -193,32 +193,32 @@ void SimpleDrawing::setToBox(const kfloat &w, const kfloat &h, const kfloat &d, 
 			mVertex = new Point3D[20];
 			mVertexCount = 20;
 		}
-		setValue(LABEL_TO_ID(Mode),1);
-		mVertex[0].Set(-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[1].Set(-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[2].Set( w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[3].Set( w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[4].Set( w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[5].Set( w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[6].Set(-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[7].Set(-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[8].Set(-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[9].Set(-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[10].Set(-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[11].Set(-w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[12].Set( w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[13].Set( w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[14].Set( w*KFLOAT_CONST(0.5f), h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[15].Set( w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[16].Set( w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[17].Set(-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f), d*KFLOAT_CONST(0.5f));
-		mVertex[18].Set( w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
-		mVertex[19].Set(-w*KFLOAT_CONST(0.5f),-h*KFLOAT_CONST(0.5f),-d*KFLOAT_CONST(0.5f));
+		setValue("Mode",1);
+		mVertex[0].Set(-w*0.5f,-h*0.5f,-d*0.5f);
+		mVertex[1].Set(-w*0.5f, h*0.5f,-d*0.5f);
+		mVertex[2].Set( w*0.5f,-h*0.5f,-d*0.5f);
+		mVertex[3].Set( w*0.5f, h*0.5f,-d*0.5f);
+		mVertex[4].Set( w*0.5f,-h*0.5f, d*0.5f);
+		mVertex[5].Set( w*0.5f, h*0.5f, d*0.5f);
+		mVertex[6].Set(-w*0.5f,-h*0.5f, d*0.5f);
+		mVertex[7].Set(-w*0.5f, h*0.5f, d*0.5f);
+		mVertex[8].Set(-w*0.5f,-h*0.5f,-d*0.5f);
+		mVertex[9].Set(-w*0.5f, h*0.5f,-d*0.5f);
+		mVertex[10].Set(-w*0.5f, h*0.5f,-d*0.5f);
+		mVertex[11].Set(-w*0.5f, h*0.5f, d*0.5f);
+		mVertex[12].Set( w*0.5f, h*0.5f,-d*0.5f);
+		mVertex[13].Set( w*0.5f, h*0.5f, d*0.5f);
+		mVertex[14].Set( w*0.5f, h*0.5f, d*0.5f);
+		mVertex[15].Set( w*0.5f,-h*0.5f, d*0.5f);
+		mVertex[16].Set( w*0.5f,-h*0.5f, d*0.5f);
+		mVertex[17].Set(-w*0.5f,-h*0.5f, d*0.5f);
+		mVertex[18].Set( w*0.5f,-h*0.5f,-d*0.5f);
+		mVertex[19].Set(-w*0.5f,-h*0.5f,-d*0.5f);
 	}
 }
 
 
-void SimpleDrawing::setToDisk(const kfloat &r, const int &precision, bool bWire,  char cNormal)
+void SimpleDrawing::setToDisk(const float &r, const int &precision, bool bWire,  char cNormal)
 {
 	int i;
 	Point3D *V = NULL;
@@ -227,7 +227,7 @@ void SimpleDrawing::setToDisk(const kfloat &r, const int &precision, bool bWire,
 	{
 		if (mVertexCount!=precision) 
 		{
-			setValue(LABEL_TO_ID(Mode),5);
+			setValue("Mode",5);
 			delete [] mVertex;
 			mVertex = new Point3D[precision];
 			mVertexCount = precision;
@@ -238,11 +238,11 @@ void SimpleDrawing::setToDisk(const kfloat &r, const int &precision, bool bWire,
 	{
 		if (mVertexCount!=precision) 
 		{
-			setValue(LABEL_TO_ID(Mode),2);
+			setValue("Mode",2);
 			delete [] mVertex;
 			mVertex = new Point3D[precision+2];
 			mVertexCount = precision+2;
-			mVertex[0].Set(KFLOAT_CONST(0.0f),KFLOAT_CONST(0.0f),KFLOAT_CONST(0.0f));
+			mVertex[0].Set(0.0f,0.0f,0.0f);
 			V = &mVertex[1];
 		}
 	}
@@ -251,16 +251,16 @@ void SimpleDrawing::setToDisk(const kfloat &r, const int &precision, bool bWire,
 	{
 	case 'X':
 		for (i=0;i<precision;i++)
-			V[i].Set(KFLOAT_CONST(0.0f),r*cosf((kfloat)i*KFLOAT_CONST(2.0f)*KFLOAT_CONST(3.14156f)/(kfloat)precision),r*sinf((kfloat)i*KFLOAT_CONST(2.0f)*KFLOAT_CONST(3.14156f)/(kfloat)precision));
+			V[i].Set(0.0f,r*cosf((float)i*2.0f*3.14156f/(float)precision),r*sinf((float)i*2.0f*3.14156f/(float)precision));
 		break;
 	case 'Y':
 		for (i=0;i<precision;i++)
-			V[i].Set(r*sinf((kfloat)i*KFLOAT_CONST(2.0f)*KFLOAT_CONST(3.14156f)/(kfloat)precision),KFLOAT_CONST(0.0f),r*cosf((kfloat)i*KFLOAT_CONST(2.0f)*KFLOAT_CONST(3.14156f)/(kfloat)precision));
+			V[i].Set(r*sinf((float)i*2.0f*3.14156f/(float)precision),0.0f,r*cosf((float)i*2.0f*3.14156f/(float)precision));
 		break;
 	case 'Z':
 	default:
 		for (i=0;i<precision;i++)
-			V[i].Set(r*cosf((kfloat)i*KFLOAT_CONST(2.0f)*KFLOAT_CONST(3.14156f)/(kfloat)precision),r*sinf((kfloat)i*KFLOAT_CONST(2.0f)*KFLOAT_CONST(3.14156f)/(kfloat)precision),KFLOAT_CONST(0.0f));
+			V[i].Set(r*cosf((float)i*2.0f*3.14156f/(float)precision),r*sinf((float)i*2.0f*3.14156f/(float)precision),0.0f);
 		break;
 	}
 

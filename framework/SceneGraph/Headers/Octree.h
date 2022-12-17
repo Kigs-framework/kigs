@@ -106,12 +106,12 @@ public:
 
 	/**
 	 * \brief	perform culling recursivelly on sub node
-	 * \fn 		CullingObject::CULLING_RESULT  RecurseCullSubNodes(const kstl::vector<PrecomputedCullInfo>& precull,TravState* state,unsigned int& cullSubMask);
+	 * \fn 		CullingObject::CULLING_RESULT  RecurseCullSubNodes(const std::vector<PrecomputedCullInfo>& precull,TravState* state,unsigned int& cullSubMask);
 	 * \param	precull : precomputed culling
 	 * \param	state : current TravState
 	 * \return	the culling result
 	 */
-	CullingObject::CULLING_RESULT  RecurseCullSubNodes(const kstl::vector<PrecomputedCullInfo>& precull,TravState* state,unsigned int cullSubMask);
+	CullingObject::CULLING_RESULT  RecurseCullSubNodes(const std::vector<PrecomputedCullInfo>& precull,TravState* state,unsigned int cullSubMask);
 
 	/**
 	 * \brief	perform TravCull recursivelly on sub node
@@ -130,10 +130,10 @@ public:
 
 	/**
 	 * \brief	get object list
-	 * \fn 		const kstl::vector<SceneNode*>&   GetObjectList()
+	 * \fn 		const std::vector<SceneNode*>&   GetObjectList()
 	 * \return	the object list
 	 */
-	const kstl::vector<SceneNode*>&   GetObjectList(){return mObjectList;}
+	const std::vector<SceneNode*>&   GetObjectList(){return mObjectList;}
 
 	/**
 	 * \brief	check if the octree has sons
@@ -152,7 +152,7 @@ protected:
 	OctreeSubNode*					mFatherSubNode;
 
 	//! list of object 
-	kstl::vector<SceneNode*>		mObjectList;
+	std::vector<SceneNode*>		mObjectList;
 	//! numer of nodes
 	int								mTotalNodes;
 	//! result of the culling
@@ -252,7 +252,7 @@ protected:
 	bool mIsQuadtree;
 	unsigned int mAxisMask;
 
-	kstl::vector<OctreeSubNode::PrecomputedCullInfo> mPrecomputedCull;
+	std::vector<OctreeSubNode::PrecomputedCullInfo> mPrecomputedCull;
 protected:
 
 	void RecomputeBoundingBox() override;

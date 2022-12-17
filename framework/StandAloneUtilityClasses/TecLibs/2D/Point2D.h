@@ -43,7 +43,7 @@ struct Point2DBase
 	{
 		x=V1.x+V2.x;
 		y=V1.y+V2.y;
-		x*=KFLOAT_CONST(0.5f);	   	y*=KFLOAT_CONST(0.5f);	
+		x*=0.5f;	   	y*=0.5f;	
 	}
 
 	inline Point2DBase(const Point2DBase& V1, const Point2DBase& V2,const asVector& v)
