@@ -213,14 +213,14 @@ virtual void	stop(CoreModifiable* toStop,CoreFSMStateBase* nextstate) override\
 
 #define COREFSMSTATE_WITHOUT_METHODS() DO_COREFSMSTATE_SUBCLASS_DECLARATION() \
 DO_COREFSMSTATE_BASE_METHOD_DEFINITION() \
-virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
 {\
 }
 
 #define COREFSMSTATE_METHODS(...) DO_COREFSMSTATE_SUBCLASS_DECLARATION() \
 FOR_EACH(DECLARE_METHOD, __VA_ARGS__)\
 DO_COREFSMSTATE_BASE_METHOD_DEFINITION() \
-virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
 {\
 	FOR_EACH(UPGRADOR_METHOD_PUSH_BACK, __VA_ARGS__)\
 }
@@ -231,7 +231,7 @@ virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::Modif
 #define COREFSMSTATE_WRAPMETHODS(...) DO_COREFSMSTATE_SUBCLASS_DECLARATION() \
 FOR_EACH(COREFSM_WRAP_METHOD_NO_CTOR, __VA_ARGS__)\
 DO_COREFSMSTATE_BASE_METHOD_DEFINITION() \
-virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
 {\
 	FOR_EACH(COREFSM_WRAP_METHOD_PUSH_BACK, __VA_ARGS__)\
 }
@@ -241,14 +241,14 @@ virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::Modif
 #define ENDCOREFSMSTATE_WRAPMETHODS(...) \
 FOR_EACH(COREFSM_WRAP_METHOD_NO_CTOR, __VA_ARGS__)\
 DO_COREFSMSTATE_BASE_METHOD_DEFINITION() \
-virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
 {\
 	FOR_EACH(COREFSM_WRAP_METHOD_PUSH_BACK, __VA_ARGS__)\
 }
 
 #define ENDCOREFSMSTATE_EMPTYWRAPMETHODS() \
 DO_COREFSMSTATE_BASE_METHOD_DEFINITION() \
-virtual void GetMethodTable(kstl::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
 {\
 }
 

@@ -36,7 +36,7 @@ SP<CoreFSMTransition> CoreFSM::mPopTransition=nullptr;
 IMPLEMENT_CLASS_INFO(CoreFSM)
 
 // constructor ask for autoupdate
-CoreFSM::CoreFSM(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+CoreFSM::CoreFSM(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 {
 #ifdef DEBUG_COREFSM
 	mStateChangeBuffer.init(100);

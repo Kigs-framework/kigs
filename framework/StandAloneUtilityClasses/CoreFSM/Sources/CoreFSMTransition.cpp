@@ -17,7 +17,7 @@ void	CoreFSMTransition::executeTransition(CoreFSMStateBase* from)
 	EmitSignal(Signals::ExecuteTransition, this, from);
 }
 
-CoreFSMTransition::CoreFSMTransition(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+CoreFSMTransition::CoreFSMTransition(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 {
 
 }
