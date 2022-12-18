@@ -12,7 +12,7 @@ extern HTTPRequestModuleWindows* gInstanceModuleHTTPRequestWindows;
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
 #define MODULEINITFUNC			PlatformHTTPRequestModuleInit
-extern SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+extern SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 #else
 #define MODULEINITFUNC			ModuleInit
 #endif
@@ -29,11 +29,11 @@ class HTTPRequestModuleWindows : public ModuleBase
 {
 public:
 	DECLARE_CLASS_INFO(HTTPRequestModuleWindows, ModuleBase, HTTPRequestModule)
-	HTTPRequestModuleWindows(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	HTTPRequestModuleWindows(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~HTTPRequestModuleWindows();
 
 	//! module init
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 
 	//! module close
 	void Close();         

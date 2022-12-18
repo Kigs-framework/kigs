@@ -27,11 +27,11 @@ public:
 	DECLARE_CLASS_INFO(HTTPRequestModule,ModuleBase,HTTPRequestModule)
 
 	//! module constructor 
-	HTTPRequestModule(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	HTTPRequestModule(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~HTTPRequestModule();
 
 	//! module init
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 
 	//! module close
 	void Close() override;

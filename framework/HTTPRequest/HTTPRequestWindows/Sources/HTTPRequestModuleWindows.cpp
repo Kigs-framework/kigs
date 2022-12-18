@@ -16,7 +16,7 @@ HTTPRequestModuleWindows* gInstanceModuleHTTPRequestWindows=0;
 IMPLEMENT_CLASS_INFO(HTTPRequestModuleWindows)
 
 //! constructor
-HTTPRequestModuleWindows::HTTPRequestModuleWindows(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+HTTPRequestModuleWindows::HTTPRequestModuleWindows(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	
 }
@@ -28,7 +28,7 @@ HTTPRequestModuleWindows::~HTTPRequestModuleWindows()
 }    
 
 //! module init, register FilePathManager
-void HTTPRequestModuleWindows::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void HTTPRequestModuleWindows::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"HTTPRequestModuleWindows",params);
 
@@ -49,7 +49,7 @@ void HTTPRequestModuleWindows::Update(const Timer& timer, void* addParam)
 }    
 
 
-SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(HTTPRequestModuleWindows,"HTTPRequestModuleWindows");

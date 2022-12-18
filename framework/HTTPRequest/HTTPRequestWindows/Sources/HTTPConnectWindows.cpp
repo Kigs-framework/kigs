@@ -8,7 +8,7 @@
 IMPLEMENT_CLASS_INFO(HTTPConnectWindows)
 
 //! constructor
-HTTPConnectWindows::HTTPConnectWindows(const kstl::string& name,CLASS_NAME_TREE_ARG) : HTTPConnect(name,PASS_CLASS_NAME_TREE_ARG)
+HTTPConnectWindows::HTTPConnectWindows(const std::string& name,CLASS_NAME_TREE_ARG) : HTTPConnect(name,PASS_CLASS_NAME_TREE_ARG)
 , mConnectionHandle(NULL)
 , mInternetHandle(NULL)
 {

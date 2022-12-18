@@ -2,12 +2,12 @@
 #include "HTTPRequestModule.h"
 #include "ResourceDownloader.h"
 
-SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 
 IMPLEMENT_CLASS_INFO(HTTPRequestModule)
 
 //! constructor
-HTTPRequestModule::HTTPRequestModule(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+HTTPRequestModule::HTTPRequestModule(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	
 }
@@ -19,7 +19,7 @@ HTTPRequestModule::~HTTPRequestModule()
 }    
 
 //! module init, register FilePathManager
-void HTTPRequestModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void HTTPRequestModule::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"HTTPRequestModule",params);
 	DECLARE_FULL_CLASS_INFO(core, ResourceDownloader, ResourceDownloader, HTTPRequestModule);

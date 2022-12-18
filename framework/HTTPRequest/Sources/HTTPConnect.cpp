@@ -99,9 +99,9 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreivePostRequest(const char* a_UR
 	return request;
 }
 
-kstl::string HTTPConnect::getHostNameWithProtocol()
+std::string HTTPConnect::getHostNameWithProtocol()
 {
-	kstl::string hostName;
+	std::string hostName;
 
 	if (mType == 0)
 	{
@@ -112,7 +112,7 @@ kstl::string HTTPConnect::getHostNameWithProtocol()
 		hostName = "https://";
 	}
 
-	hostName += (const kstl::string&)mHostName;
+	hostName += (const std::string&)mHostName;
 
 	return hostName;
 }

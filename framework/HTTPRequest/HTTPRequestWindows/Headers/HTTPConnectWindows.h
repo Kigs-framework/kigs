@@ -20,7 +20,7 @@ public:
 	DECLARE_CLASS_INFO(HTTPConnectWindows, HTTPConnect, HTTPRequestModule)
 
 	//! constructor
-    HTTPConnectWindows(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    HTTPConnectWindows(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~HTTPConnectWindows();
 
 	HINTERNET getHandle()

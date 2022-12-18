@@ -55,7 +55,7 @@ bool HTTPAsyncRequest::GetAnswer(usString& answer)
 	return false;
 }
 
-bool HTTPAsyncRequest::GetAnswer(kstl::string& answer)
+bool HTTPAsyncRequest::GetAnswer(std::string& answer)
 {
 	if (mReceivedBuffer.ref())
 	{
@@ -109,11 +109,11 @@ void HTTPAsyncRequest::protectedProcess()
 {
 	// first check if myCallbackObject is set
 
-	if ((const kstl::string&)mNotification != "")
+	if ((const std::string&)mNotification != "")
 	{
 		if ((CoreModifiable*)mCallbackReceiver)
 		{
-			((CoreModifiable*)mCallbackReceiver)->CallMethod(mNotification.const_ref(), (*(kstl::vector<CoreModifiableAttribute*>*)(0)), this, this);
+			((CoreModifiable*)mCallbackReceiver)->CallMethod(mNotification.const_ref(), (*(std::vector<CoreModifiableAttribute*>*)(0)), this, this);
 		}
 		else // not a call but a notification
 		{

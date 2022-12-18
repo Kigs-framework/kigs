@@ -58,7 +58,7 @@ class HTTPAsyncRequestWindows : public HTTPAsyncRequest
 {
 public:
 	DECLARE_CLASS_INFO(HTTPAsyncRequestWindows, HTTPAsyncRequest, HTTPRequestModule)
-    HTTPAsyncRequestWindows(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    HTTPAsyncRequestWindows(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~HTTPAsyncRequestWindows();
 
 	void protectedProcess() override;

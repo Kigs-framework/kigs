@@ -602,7 +602,7 @@ DWORD HTTPAsyncRequestWindows::RecvHeader(
 			{
 				AsciiParserUtils charset(contenttype);
 				contenttype.GetWord(charset, ';');
-				kstl::string strcharset = (const kstl::string&)charset;
+				std::string strcharset = (const std::string&)charset;
 				if (strcharset == "utf-8")
 				{
 					mFoundCharset = UTF8;
@@ -934,7 +934,7 @@ Error Code for the operation.
 	DWORD Error = ERROR_SUCCESS;
 	
 	DWORD RequestFlags = mFLAGS;
-	kstl::string L_version = (mVersion) ? "HTTP/1.0" : "HTTP/1.1";
+	std::string L_version = (mVersion) ? "HTTP/1.0" : "HTTP/1.1";
 	//
 	// Set the correct server port if using SSL
 	// Also set the flag for HttpOpenRequest 
@@ -984,7 +984,7 @@ Error Code for the operation.
 	
 	// Create a Request handle
 	ReqContext->RequestHandle = HttpOpenRequestA(ReqContext->ConnectHandle,
-		((const kstl::string&)mType).c_str(),                     // GET, POST, PUT, DELETE
+		((const std::string&)mType).c_str(),                     // GET, POST, PUT, DELETE
 		mURL.c_str(),                 // root "/" by default
 		L_version.c_str(),                     // Use default HTTP/1.1 as the version
 		NULL,                     // Do not provide any referrer
