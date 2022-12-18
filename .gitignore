@@ -7,3 +7,5 @@
 /scripts/Doxygen/KigsDocsGenerated/
 /framework/PlatformsModules/Android/Platform/Main/kigsmain/ARM64/
 framework/PlatformsModules/Android/Platform/Main/kigsmain/ARM/StaticRelease/kigs.kigsmain.androidprojAssemblyReference.cache
+**/*.bak
+**/*.*.bak
