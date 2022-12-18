@@ -246,7 +246,7 @@ public:
 		UNKNOWN				= 0,
 		COREVECTOR			= 1,
 		COREMAP				= 2,
-		COREVALUE			= 3,
+		COREVALUE			= 4,
 	};
 
 	virtual void set(int key, const CoreItemSP& toinsert) {};

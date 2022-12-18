@@ -16,8 +16,8 @@ protected:
 	void	ProtectedUpdate() override;
 	void	ProtectedClose() override;
 
-	void	ProtectedInitSequence(const kstl::string& sequence) override;
-	void	ProtectedCloseSequence(const kstl::string& sequence) override;
+	void	ProtectedInitSequence(const std::string& sequence) override;
+	void	ProtectedCloseSequence(const std::string& sequence) override;
 
 	maCoreItem mFunction = BASE_ATTRIBUTE(Function,"eval(12)");
 	maFloat	mTestFloat = BASE_ATTRIBUTE(TestFloat, 50.0f);
