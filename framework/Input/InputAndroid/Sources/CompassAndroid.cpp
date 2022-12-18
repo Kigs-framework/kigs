@@ -6,7 +6,7 @@
 
 IMPLEMENT_CLASS_INFO(CompassAndroid)
 
-CompassAndroid::CompassAndroid(const kstl::string& name, CLASS_NAME_TREE_ARG)
+CompassAndroid::CompassAndroid(const std::string& name, CLASS_NAME_TREE_ARG)
 	: CompassDevice(name, PASS_CLASS_NAME_TREE_ARG)
 	, mIsRunning(false)
 {

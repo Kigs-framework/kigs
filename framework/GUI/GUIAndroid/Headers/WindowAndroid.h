@@ -21,7 +21,7 @@ public:
     DECLARE_CLASS_INFO(WindowAndroid,Window,GUI)
 
 	//! constructor
-    WindowAndroid(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    WindowAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
     
 	//! show method, display the window
     void Show() override;

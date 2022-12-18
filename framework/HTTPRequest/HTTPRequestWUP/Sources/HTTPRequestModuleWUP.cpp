@@ -22,7 +22,7 @@ HTTPRequestModuleWUP::~HTTPRequestModuleWUP()
 {
 }    
 
-void HTTPRequestModuleWUP::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void HTTPRequestModuleWUP::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"HTTPRequestModuleWUP",params);
 
@@ -42,7 +42,7 @@ void HTTPRequestModuleWUP::Update(const Timer& timer, void* addParam)
 	BaseUpdate(timer,addParam);
 }    
 
-SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(HTTPRequestModuleWUP, "HTTPRequestModuleWindows");

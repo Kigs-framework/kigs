@@ -13,7 +13,7 @@ using namespace winrt::Windows::UI::ViewManagement;
 
 IMPLEMENT_CLASS_INFO(KeyboardWUP);
 
-KeyboardWUP::KeyboardWUP(const kstl::string& name,CLASS_NAME_TREE_ARG) : KeyboardDevice(name,PASS_CLASS_NAME_TREE_ARG)
+KeyboardWUP::KeyboardWUP(const std::string& name,CLASS_NAME_TREE_ARG) : KeyboardDevice(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	auto window = App::GetApp()->GetWindow();
 	window.CharacterReceived([this](winrt::Windows::UI::Core::CoreWindow const& window, winrt::Windows::UI::Core::CharacterReceivedEventArgs args)
@@ -49,7 +49,7 @@ void	KeyboardWUP::UpdateDevice()
 	mKeyUpList.clear();
 	mKeyDownList.clear();
 	
-	kstl::vector<KeyEvent>	touchVector;
+	std::vector<KeyEvent>	touchVector;
 	
 	// get down event
 	{

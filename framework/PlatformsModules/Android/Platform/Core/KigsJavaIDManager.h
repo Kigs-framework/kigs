@@ -5,7 +5,7 @@
 #include <pthread.h>
 
 #include "../../Core/Headers/kstlstring.h"
-#include "kstlmap.h"
+#include <map>
 
 class usString;
 
@@ -53,21 +53,21 @@ public:
 	static void close();
 
 	static void convertJstringToUsString(jstring &js, usString &str);
-	static void convertJstringToKstlString(jstring &js, kstl::string &str);
+	static void convertJstringToKstlString(jstring &js, std::string &str);
 
 	static JNIEnv* getEnv(pthread_t thread);
 	static void clearEnvList();
 	static void detachCurrentThread(pthread_t thread);
 	
-	static kstl::map<pthread_t, JNIEnv*> pJNIEnvs;
+	static std::map<pthread_t, JNIEnv*> pJNIEnvs;
 	
 	// methodID managment
-	static kstl::map<unsigned int, jclass> pClass;
+	static std::map<unsigned int, jclass> pClass;
 	static jclass RegisterClass(JNIEnv* env, const char * clsName);
 	static jclass findClass(const char * clsName);
 	
 	
-	static kstl::map<unsigned int, jmethodID> pMethods;
+	static std::map<unsigned int, jmethodID> pMethods;
 
 	static unsigned int RegisterMethod(JNIEnv* env, const char * clsName, const char * mtdName, const char * mtdSig);
 	static jmethodID GetMethod(JNIEnv* env, const char * clsName, const char * mtdName, const char * mtdSig);

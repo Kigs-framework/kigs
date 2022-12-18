@@ -11,7 +11,7 @@
 IMPLEMENT_CLASS_INFO(WindowAndroid)
 
 //! constructor
-WindowAndroid::WindowAndroid(const kstl::string& name,CLASS_NAME_TREE_ARG) : Window(name,PASS_CLASS_NAME_TREE_ARG)
+WindowAndroid::WindowAndroid(const std::string& name,CLASS_NAME_TREE_ARG) : Window(name,PASS_CLASS_NAME_TREE_ARG)
 {
    mScreen=0;
    // on android only one fullscreen window

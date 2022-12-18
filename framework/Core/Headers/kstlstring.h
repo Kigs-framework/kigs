@@ -41,19 +41,5 @@ static inline void str_tolower(std::string& s) {
 	);
 }
 
-#ifdef __ANDROID__
-#include "sstream.h"
-// Workaround for Android NDK builds (version r10e) that does not support std::to_string
-namespace std
-{
-	template <typename T>
-	std::string to_string(T value)
-	{
-		std::ostringstream tmp;
-		tmp << value;
-		return tmp.str();
-	}
-}
-#endif
 
 #endif

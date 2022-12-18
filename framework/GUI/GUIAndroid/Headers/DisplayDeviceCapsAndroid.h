@@ -20,7 +20,7 @@ public:
     DECLARE_CLASS_INFO(DisplayDeviceCapsAndroid,DisplayDeviceCaps,GUI)
 
 	//! constructor
-    DisplayDeviceCapsAndroid(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    DisplayDeviceCapsAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
     
 protected:
     

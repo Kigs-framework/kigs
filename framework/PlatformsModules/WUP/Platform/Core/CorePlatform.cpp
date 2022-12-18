@@ -133,7 +133,7 @@ SmartPointer<::FileHandle>	Win32OpenFilePicker()
 }
 
 
-SmartPointer<::FileHandle>	Win32FindFullName(const kstl::string&	filename)
+SmartPointer<::FileHandle>	Win32FindFullName(const std::string&	filename)
 {
 	
 	if (filename[0] != '#')
@@ -141,7 +141,7 @@ SmartPointer<::FileHandle>	Win32FindFullName(const kstl::string&	filename)
 		return {};
 	}
 	//TODO
-	kstl::string fullFileName = "";
+	std::string fullFileName = "";
 
 	FilePathManager::DeviceID	id = (FilePathManager::DeviceID)(filename[1]);
 

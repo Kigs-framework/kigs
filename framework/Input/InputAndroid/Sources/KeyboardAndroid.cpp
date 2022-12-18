@@ -51,7 +51,7 @@ void	KeyboardAndroid::UpdateDevice()
 {
 	mKeyUpList.clear();
 	mKeyDownList.clear();
-	kstl::vector<KeyEvent>	touchVector;
+	std::vector<KeyEvent>	touchVector;
 
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 

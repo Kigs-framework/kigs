@@ -24,7 +24,7 @@ class	KeyboardWUP : public KeyboardDevice
 {
 public:
 	DECLARE_CLASS_INFO(KeyboardWUP, KeyboardDevice, Input);
-	KeyboardWUP(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	KeyboardWUP(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~KeyboardWUP();
 
 	const DeviceItemBaseState&	getKeyState(int key_id)override {return *mDeviceItems[key_id]->getState();}

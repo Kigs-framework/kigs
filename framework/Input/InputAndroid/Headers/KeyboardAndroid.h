@@ -40,7 +40,7 @@ protected:
 	jmethodID mJGetActions;
 	jmethodID mJClear;
 
-	kstl::vector<KeyEvent> mReceivedEvent;
+	std::vector<KeyEvent> mReceivedEvent;
 
 	DECLARE_METHOD(ReinitCB);
 };

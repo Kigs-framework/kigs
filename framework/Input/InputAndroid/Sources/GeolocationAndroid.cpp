@@ -6,7 +6,7 @@
 
 IMPLEMENT_CLASS_INFO(GeolocationAndroid)
 
-GeolocationAndroid::GeolocationAndroid(const kstl::string& name,CLASS_NAME_TREE_ARG) : GeolocationDevice(name,PASS_CLASS_NAME_TREE_ARG)
+GeolocationAndroid::GeolocationAndroid(const std::string& name,CLASS_NAME_TREE_ARG) : GeolocationDevice(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	mLatitude = 0.0;
 	mLongitude = 0.0;

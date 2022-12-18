@@ -32,7 +32,7 @@ public:
 
     DECLARE_CLASS_INFO(CompassAndroid,CompassDevice,Input)
 	
-    CompassAndroid(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    CompassAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	void	UpdateDevice() override;
 	

@@ -6,7 +6,7 @@
 
 class ModuleGUIAndroid;
 
-ModuleBase* PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+ModuleBase* PlatformGUIModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 
 
 // ****************************************
@@ -27,9 +27,9 @@ public:
 
 	DECLARE_CLASS_INFO(ModuleGUIAndroid,ModuleBase,GUI)
              
-	ModuleGUIAndroid(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	ModuleGUIAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
     
-    void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
     void Close() override;
     void Update(const Timer& timer,void* /*addParam*/) override;
     

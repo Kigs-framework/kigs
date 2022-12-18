@@ -19,7 +19,7 @@ class WindowWin32 : public Window
 {
 public:
     DECLARE_CLASS_INFO(WindowWin32,Window,GUI)
-    WindowWin32(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    WindowWin32(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~WindowWin32();
 
 	//! show method, display the window

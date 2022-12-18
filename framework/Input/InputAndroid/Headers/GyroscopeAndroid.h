@@ -22,7 +22,7 @@ class	GyroscopeAndroid : public GyroscopeDevice
 public:
     DECLARE_CLASS_INFO(GyroscopeAndroid,GyroscopeDevice,Input)
 	
-    GyroscopeAndroid(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    GyroscopeAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	void	UpdateDevice() override;
 	

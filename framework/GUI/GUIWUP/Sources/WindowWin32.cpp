@@ -13,7 +13,7 @@ using namespace winrt::Windows::UI::ViewManagement;
 IMPLEMENT_CLASS_INFO(WindowWin32)
 
 //! constructor
-WindowWin32::WindowWin32(const kstl::string& name, CLASS_NAME_TREE_ARG) : Window(name, PASS_CLASS_NAME_TREE_ARG)
+WindowWin32::WindowWin32(const std::string& name, CLASS_NAME_TREE_ARG) : Window(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	mScreenSaverActive = false;
 	mDirtySize = false; 

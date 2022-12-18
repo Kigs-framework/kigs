@@ -6,7 +6,7 @@
 
 IMPLEMENT_CLASS_INFO(OpenGLPlatformRenderingScreen)
 
-OpenGLPlatformRenderingScreen::OpenGLPlatformRenderingScreen(const kstl::string& name,CLASS_NAME_TREE_ARG) : RenderingScreen(name,PASS_CLASS_NAME_TREE_ARG)
+OpenGLPlatformRenderingScreen::OpenGLPlatformRenderingScreen(const std::string& name,CLASS_NAME_TREE_ARG) : RenderingScreen(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	
 }

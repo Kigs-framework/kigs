@@ -7,7 +7,7 @@
 
 IMPLEMENT_CLASS_INFO(ModuleGUIAndroid)
 
-ModuleGUIAndroid::ModuleGUIAndroid(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+ModuleGUIAndroid::ModuleGUIAndroid(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 
 }
@@ -17,7 +17,7 @@ ModuleGUIAndroid::~ModuleGUIAndroid()
    
 }    
 
-void ModuleGUIAndroid::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleGUIAndroid::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"GUIIAndroid",params);
 	//! declare WindowAndroid to be the current implementation of Window
@@ -37,7 +37,7 @@ void ModuleGUIAndroid::Update(const Timer& timer,void* /*addParam*/)
 
 }    
 
-ModuleBase* PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+ModuleBase* PlatformGUIModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 

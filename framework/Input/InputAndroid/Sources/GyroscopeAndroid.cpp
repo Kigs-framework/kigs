@@ -5,7 +5,7 @@
 
 IMPLEMENT_CLASS_INFO(GyroscopeAndroid)
 
-GyroscopeAndroid::GyroscopeAndroid(const kstl::string& name, CLASS_NAME_TREE_ARG) : GyroscopeDevice(name, PASS_CLASS_NAME_TREE_ARG)
+GyroscopeAndroid::GyroscopeAndroid(const std::string& name, CLASS_NAME_TREE_ARG) : GyroscopeDevice(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 

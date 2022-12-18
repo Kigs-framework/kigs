@@ -12,7 +12,7 @@
 
 IMPLEMENT_CLASS_INFO(MouseWUP);
 
-MouseWUP::MouseWUP(const kstl::string& name, CLASS_NAME_TREE_ARG) : MouseDevice(name, PASS_CLASS_NAME_TREE_ARG)
+MouseWUP::MouseWUP(const std::string& name, CLASS_NAME_TREE_ARG) : MouseDevice(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	auto app = App::GetApp();
 

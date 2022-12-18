@@ -22,10 +22,10 @@ class ModuleInputWUP : public ModuleBase
 public:
 
 	DECLARE_CLASS_INFO(ModuleInputWUP,ModuleBase,Input)
-	ModuleInputWUP(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	ModuleInputWUP(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~ModuleInputWUP();
 
-    void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params); 
+    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params); 
     void Close();
 	virtual void Update(const Timer& timer, void* addParam);
 	    

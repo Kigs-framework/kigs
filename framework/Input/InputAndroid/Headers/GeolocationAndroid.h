@@ -23,7 +23,7 @@ class	GeolocationAndroid : public GeolocationDevice
 public:
 	DECLARE_CLASS_INFO(GeolocationAndroid, GeolocationDevice, Input)
 	
-    GeolocationAndroid(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    GeolocationAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	void	UpdateDevice() override;
 	

@@ -4,7 +4,7 @@
 
 IMPLEMENT_CLASS_INFO(JoystickAndroid)
 
-JoystickAndroid::JoystickAndroid(const kstl::string& name,CLASS_NAME_TREE_ARG) : JoystickDevice(name,PASS_CLASS_NAME_TREE_ARG)
+JoystickAndroid::JoystickAndroid(const std::string& name,CLASS_NAME_TREE_ARG) : JoystickDevice(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	

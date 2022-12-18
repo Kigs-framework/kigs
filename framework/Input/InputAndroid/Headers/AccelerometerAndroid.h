@@ -32,7 +32,7 @@ public:
 
     DECLARE_CLASS_INFO(AccelerometerAndroid,AccelerometerDevice,Input)
 	
-    AccelerometerAndroid(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    AccelerometerAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	
 	void	UpdateDevice() override;
 	

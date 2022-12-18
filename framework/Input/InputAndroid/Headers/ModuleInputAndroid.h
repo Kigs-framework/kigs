@@ -7,7 +7,7 @@
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
 #define MODULEINITFUNC			PlatformInputModuleInit
-extern SP<ModuleBase> PlatformGUIModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+extern SP<ModuleBase> PlatformGUIModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 #else
 #define MODULEINITFUNC			ModuleInit
 #endif
@@ -30,7 +30,7 @@ public:
 	DECLARE_CLASS_INFO(ModuleInputAndroid,ModuleBase,Input)
 	DECLARE_CONSTRUCTOR(ModuleInputAndroid);
 	
-    void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
     void Close() override;
     void Update(const Timer& timer,void* /*addParam*/) override;
 

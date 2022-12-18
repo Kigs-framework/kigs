@@ -27,7 +27,7 @@ void Android_CheckState(FileHandle * hndl)
 {	
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	kstl::string stat;
+	std::string stat;
 	jstring fname=g_env->NewStringUTF(hndl->mFullFileName.c_str());
 	jstring result=(jstring)g_env->CallStaticObjectMethod(KigsJavaIDManager::FileManager_class,  KigsJavaIDManager::CheckFile, fname, hndl->mDeviceID);
 	KigsJavaIDManager::convertJstringToKstlString(result, stat);
@@ -40,7 +40,7 @@ void Android_CheckState(FileHandle * hndl)
 		return;
 	}
 
-	kstl::vector<kstl::string> arr = SplitStringByCharacter(stat, '|');
+	std::vector<std::string> arr = SplitStringByCharacter(stat, '|');
 	
 	hndl->mFullFileName = arr[0];
 
@@ -86,7 +86,7 @@ jmethodID 	KigsJavaIDManager::getBitmapPixels;
 jmethodID 	KigsJavaIDManager::closeBitmap;
 int KigsJavaIDManager::OsVersion = 0;
 
-kstl::map<pthread_t, JNIEnv*>		KigsJavaIDManager::pJNIEnvs;
+std::map<pthread_t, JNIEnv*>		KigsJavaIDManager::pJNIEnvs;
 	
 
 bool KigsJavaIDManager::init(JavaVM* vm)
@@ -140,7 +140,7 @@ bool KigsJavaIDManager::init(JavaVM* vm)
 	CheckConnexion = pEnv->GetStaticMethodID(Main_class, "CheckConnexion", "()Z");
 	GetBackKeyState = pEnv->GetStaticMethodID(Main_class, "GetBackKeyState", "()Z");
 
-	/*kstl::string str;
+	/*std::string str;
 	jmethodID met = pEnv->GetStaticMethodID(Main_class, "osVersion", "()Ljava/lang/String;");
 	if (met)
 	{
@@ -205,11 +205,11 @@ void KigsJavaIDManager::convertJstringToUsString(jstring &js, usString &str)
 	delete[] t;
 }
 
-void KigsJavaIDManager::convertJstringToKstlString(jstring &js, kstl::string &str)
+void KigsJavaIDManager::convertJstringToKstlString(jstring &js, std::string &str)
 {
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	const char *s = g_env->GetStringUTFChars(js, 0);
-	str = kstl::string(s);
+	str = std::string(s);
 	g_env->ReleaseStringUTFChars(js, s);
 }
 
@@ -217,7 +217,7 @@ JNIEnv* KigsJavaIDManager::getEnv(pthread_t thread)
 {
 	JNIEnv* pEnv = 0;
 
-	kstl::map<pthread_t, JNIEnv*>::iterator it = pJNIEnvs.find(thread);
+	std::map<pthread_t, JNIEnv*>::iterator it = pJNIEnvs.find(thread);
 
 	if(it != pJNIEnvs.end())
 	{
@@ -249,7 +249,7 @@ void KigsJavaIDManager::clearEnvList()
 
 void KigsJavaIDManager::detachCurrentThread(pthread_t thread)
 {
-	kstl::map<pthread_t, JNIEnv*>::iterator it = pJNIEnvs.find(thread);
+	std::map<pthread_t, JNIEnv*>::iterator it = pJNIEnvs.find(thread);
 
 	if(it != pJNIEnvs.end())
 	{
@@ -265,7 +265,7 @@ struct ANDROIDFILE
 };
 
 
-SmartPointer<FileHandle> Android_FindFullName(const kstl::string&	filename)
+SmartPointer<FileHandle> Android_FindFullName(const std::string&	filename)
 {
 	if (filename[0] != '#')
 	{
@@ -477,15 +477,15 @@ int Android_fclose ( FileHandle* handle )
 }
 
 // METHOD MANAGMENT
-kstl::map<unsigned int, jmethodID> 	KigsJavaIDManager::pMethods;
-kstl::map<unsigned int, jclass> 	KigsJavaIDManager::pClass;
+std::map<unsigned int, jmethodID> 	KigsJavaIDManager::pMethods;
+std::map<unsigned int, jclass> 	KigsJavaIDManager::pClass;
 
 jclass KigsJavaIDManager::RegisterClass(JNIEnv* env, const char * clsName)
 {
 	unsigned int ID = CharToID::GetID(std::string_view(clsName, strlen(clsName)));
 	
 	// search in map
-	kstl::map<unsigned int, jclass>::iterator found = pClass.find(ID);
+	std::map<unsigned int, jclass>::iterator found = pClass.find(ID);
 	if(found != pClass.end())
 		return found->second;
 	
@@ -500,7 +500,7 @@ jclass KigsJavaIDManager::findClass(const char * clsName)
 	unsigned int ID = CharToID::GetID(std::string_view(clsName, strlen(clsName)));
 	
 	// search in map
-	kstl::map<unsigned int, jclass>::iterator found = pClass.find(ID);
+	std::map<unsigned int, jclass>::iterator found = pClass.find(ID);
 	if(found != pClass.end())
 		return found->second;
 	
@@ -509,7 +509,7 @@ jclass KigsJavaIDManager::findClass(const char * clsName)
 	
 jmethodID KigsJavaIDManager::GetMethod(JNIEnv* env, unsigned int ID)
 {
-	kstl::map<unsigned int, jmethodID>::iterator found = pMethods.find(ID);
+	std::map<unsigned int, jmethodID>::iterator found = pMethods.find(ID);
 	if (found != pMethods.end())
 		return found->second;
 
@@ -525,7 +525,7 @@ jmethodID KigsJavaIDManager::GetMethod(JNIEnv* env, const char * clsName, const 
 	unsigned int ID = CharToID::GetID(label);
 	
 	// search in map
-	kstl::map<unsigned int, jmethodID>::iterator found = pMethods.find(ID);
+	std::map<unsigned int, jmethodID>::iterator found = pMethods.find(ID);
 	if(found != pMethods.end())
 		return found->second;
 	
@@ -558,7 +558,7 @@ jmethodID KigsJavaIDManager::GetStaticMethod(JNIEnv* env, const char * clsName, 
 	unsigned int ID = CharToID::GetID(label);
 	
 	// search in map
-	kstl::map<unsigned int, jmethodID>::iterator found = pMethods.find(ID);
+	std::map<unsigned int, jmethodID>::iterator found = pMethods.find(ID);
 	if(found != pMethods.end())
 		return found->second;
 	

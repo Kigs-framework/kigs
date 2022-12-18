@@ -36,7 +36,7 @@ extern long int Android_ftell (FileHandle* handle );
 extern int Android_fseek ( FileHandle* handle, long int offset, int origin );
 extern int Android_fflush ( FileHandle* handle );
 extern int Android_fclose ( FileHandle* handle );
-extern SmartPointer<FileHandle> Android_FindFullName(const kstl::string&	filename);
+extern SmartPointer<FileHandle> Android_FindFullName(const std::string&	filename);
 extern void Android_CheckState(FileHandle* handle);
 extern bool Android_CreateFolderTree(FileHandle* hndl);
 

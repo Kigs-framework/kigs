@@ -35,10 +35,10 @@ void	PlatformBaseApplication::Resume()
 
 		//RendererOpenGLES::ReinitModuleRenderer();
 
-		kstl::vector<CMSP>	instances = CoreModifiable::GetInstances("RenderingScreen");
+		std::vector<CMSP>	instances = CoreModifiable::GetInstances("RenderingScreen");
 		(*instances.begin())->CallMethod(LABEL_TO_ID(ResetContext), NULL);
 
-		kstl::vector<CMSP>::iterator itInstances;
+		std::vector<CMSP>::iterator itInstances;
 
 		// then reinit layers
 		instances.clear();

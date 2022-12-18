@@ -7,7 +7,7 @@
 
 IMPLEMENT_CLASS_INFO(AccelerometerAndroid)
 
-AccelerometerAndroid::AccelerometerAndroid(const kstl::string& name, CLASS_NAME_TREE_ARG)
+AccelerometerAndroid::AccelerometerAndroid(const std::string& name, CLASS_NAME_TREE_ARG)
 	: AccelerometerDevice(name, PASS_CLASS_NAME_TREE_ARG)
 	, mIsRunning(false)
 {

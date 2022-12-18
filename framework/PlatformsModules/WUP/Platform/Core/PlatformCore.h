@@ -24,7 +24,7 @@ extern int Win32fflush( FileHandle* handle);
 extern int Win32fclose( FileHandle* handle);
 
 extern SmartPointer<FileHandle>	Win32OpenFilePicker();
-extern SmartPointer<FileHandle> Win32FindFullName(const kstl::string&	filename);
+extern SmartPointer<FileHandle> Win32FindFullName(const std::string&	filename);
 extern void Win32CheckState(FileHandle* handle);
 extern bool Win32CreateFolderTree(FileHandle* hndl);
 

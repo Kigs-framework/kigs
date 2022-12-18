@@ -20,7 +20,7 @@ IMPLEMENT_CONSTRUCTOR(ModuleInputAndroid)
 	mIsInitOK = true;
 }
 
-void ModuleInputAndroid::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleInputAndroid::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	if (mIsInitOK)
 	{
@@ -143,7 +143,7 @@ void ModuleInputAndroid::Update(const Timer& /* timer */, void* /*addParam*/)
 {
 	// read info on aquired devices
 
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 
 	for (it = getItems().begin(); it != getItems().end(); ++it)
 	{
@@ -179,7 +179,7 @@ bool	ModuleInputAndroid::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK
 
 }
 
-SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 

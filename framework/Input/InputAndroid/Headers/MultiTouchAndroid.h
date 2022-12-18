@@ -22,7 +22,7 @@ class	MultiTouchAndroid : public MultiTouchDevice
 public:
     DECLARE_CLASS_INFO(MultiTouchAndroid,MultiTouchDevice,Input)
 
-    MultiTouchAndroid(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    MultiTouchAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
 	void	UpdateDevice() override;
 
@@ -33,7 +33,7 @@ protected:
  
 	DECLARE_METHOD(ReinitCB);
 	
-	kstl::vector<jobject> mTouchList;
+	std::vector<jobject> mTouchList;
 	jmethodID 	mGetEventCount;
 	jmethodID 	mGetEvent;
 	jmethodID 	mClearEventList;

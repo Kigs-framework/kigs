@@ -1,6 +1,6 @@
-kstl::string		LocalizationManager::getCurrentUserLanguage()
+std::string		LocalizationManager::getCurrentUserLanguage()
 {
 	// current language in 2 letter format
-	kstl::string ret="en";
+	std::string ret="en";
     return ret;
 }

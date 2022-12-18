@@ -12,7 +12,7 @@ class OpenGLPlatformRenderingScreen : public RenderingScreen
 public:
     DECLARE_ABSTRACT_CLASS_INFO(OpenGLPlatformRenderingScreen,RenderingScreen,Renderer)
 
-	OpenGLPlatformRenderingScreen(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	OpenGLPlatformRenderingScreen(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
      
    
 	void	SetWindowByHandle(void *PtrToHandle) override {	}

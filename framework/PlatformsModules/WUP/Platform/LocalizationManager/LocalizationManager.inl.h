@@ -2,10 +2,10 @@
 
 #include <windows.h>
 
-kstl::string		LocalizationManager::getCurrentUserLanguage()
+std::string		LocalizationManager::getCurrentUserLanguage()
 {
 	// current language in 2 letter format
-	kstl::string ret="en";
+	std::string ret="en";
 
 
 	LANGID LanguageId = /*GetUserDefaultUILanguage();//*/ LANG_ENGLISH;

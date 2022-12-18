@@ -6,7 +6,7 @@
 
 IMPLEMENT_CLASS_INFO(DisplayDeviceCapsAndroid)
 
-DisplayDeviceCapsAndroid::DisplayDeviceCapsAndroid(const kstl::string& name,CLASS_NAME_TREE_ARG) : DisplayDeviceCaps(name,PASS_CLASS_NAME_TREE_ARG)
+DisplayDeviceCapsAndroid::DisplayDeviceCapsAndroid(const std::string& name,CLASS_NAME_TREE_ARG) : DisplayDeviceCaps(name,PASS_CLASS_NAME_TREE_ARG)
 {
 
 	mDisplayDeviceList.clear();

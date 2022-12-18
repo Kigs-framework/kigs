@@ -22,7 +22,7 @@ ModuleInputWUP* gInstanceModuleInputWUP=0;
 
 IMPLEMENT_CLASS_INFO(ModuleInputWUP)
 
-ModuleInputWUP::ModuleInputWUP(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+ModuleInputWUP::ModuleInputWUP(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	mJoystickCount=0;
 	
@@ -34,7 +34,7 @@ ModuleInputWUP::~ModuleInputWUP()
 {
 }    
 
-void ModuleInputWUP::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleInputWUP::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	if (mIsInitOK)
 	{
@@ -98,7 +98,7 @@ void ModuleInputWUP::Update(const Timer& timer, void* addParam)
 {
 	// read info on aquired devices
 	
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 	
 	for (it=getItems().begin();it!=getItems().end();++it)
 	{
@@ -126,7 +126,7 @@ bool	ModuleInputWUP::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 	return false;
 }
 
-SP<ModuleBase> PlatformInputModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> PlatformInputModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	
