@@ -18,7 +18,7 @@ class Semaphore : public CoreModifiable
 public:
 
     DECLARE_CLASS_INFO(Semaphore,CoreModifiable,Thread)
-    Semaphore(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    Semaphore(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~Semaphore();
 
 	auto& GetPrivateMutex() { return mPrivateMutex; }

@@ -106,7 +106,7 @@ template<class map_key,class baseClass>
 class CoreMapBase : public baseClass
 {
 protected:
-	//typedef kstl::pair<map_key, RefCountedBaseClass*> CoreMapPair;
+	//typedef std::pair<map_key, RefCountedBaseClass*> CoreMapPair;
 	virtual ~CoreMapBase()
 	{
 		clear();

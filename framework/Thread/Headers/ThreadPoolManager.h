@@ -23,7 +23,7 @@ class ThreadPoolManager : public CoreModifiable
 public:
 
 	DECLARE_CLASS_INFO(ThreadPoolManager, CoreModifiable, Thread)
-	ThreadPoolManager(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	ThreadPoolManager(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~ThreadPoolManager();
 
 	void	InitModifiable() override;
@@ -62,12 +62,12 @@ protected:
 		{
 			mTaskList.push_back(task);
 		}
-		kstl::vector<MethodCallingStruct*> mTaskList;
+		std::vector<MethodCallingStruct*> mTaskList;
 		virtual ~TaskGroup() {};
 	};
 
 	maInt	mThreadCount;
-	kstl::vector<SP<WorkerThread>>				mThreadList;
+	std::vector<SP<WorkerThread>>				mThreadList;
 
 
 	SP<WorkerThread>	getAvailableThread();
@@ -83,7 +83,7 @@ protected:
 		MethodCallingStruct*			mMethodCallingStruct;
 		SmartPointer<ThreadEvent>		mThreadEvent;
 	};
-	kstl::vector<MethodEventPair>		mQueuedtasks;
+	std::vector<MethodEventPair>		mQueuedtasks;
 
 };
 

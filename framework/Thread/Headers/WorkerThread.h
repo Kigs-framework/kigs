@@ -24,7 +24,7 @@ class WorkerThread : public Thread
 public:
 
 	DECLARE_CLASS_INFO(WorkerThread, Thread, Thread)
-	WorkerThread(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	WorkerThread(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~WorkerThread();
 
 	void	setSemaphore(Semaphore* semaphore)
@@ -71,7 +71,7 @@ protected:
 
 	MethodCallingStruct*	mCurrentTask;
 
-	kstl::vector<CoreModifiableAttribute*>	mEmptyParams;
+	std::vector<CoreModifiableAttribute*>	mEmptyParams;
 
 	bool								mNeedExit;
 

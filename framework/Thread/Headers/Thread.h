@@ -23,7 +23,7 @@ class Thread : public CoreModifiable
 public:
 
     DECLARE_CLASS_INFO(Thread,CoreModifiable,Thread)
-    Thread(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    Thread(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~Thread();
 
 	enum class State
@@ -41,7 +41,7 @@ public:
 
 	virtual void	Start();
 
-	kfloat	GetProgress(){return 	mProgress;}
+	float	GetProgress(){return 	mProgress;}
     inline State GetCurrentState() const {return mCurrentState;}
     
 	void	setMethod(CoreModifiable* localthis, const std::string& method)
@@ -83,7 +83,7 @@ protected:
 
 	CMSP					mKeepAlive;
 	State					mCurrentState;
-	kfloat					mProgress;
+	float					mProgress;
 	std::thread				mCurrentThread;
 
 	maString				mMethod= INIT_ATTRIBUTE(Method, "");

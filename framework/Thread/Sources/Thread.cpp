@@ -5,7 +5,7 @@
 
 IMPLEMENT_CLASS_INFO(Thread)
 
-Thread::Thread(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
+Thread::Thread(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
 {
   mCurrentState= State::UNINITIALISED;
 }     
@@ -45,7 +45,7 @@ void	Thread::Start(T&&... params)
 		(attr << std::forward<T>(params), 0)...
 	};
 	(void)expander;
-	auto& attr_list = (kstl::vector<CoreModifiableAttribute*>&)attr;
+	auto& attr_list = (std::vector<CoreModifiableAttribute*>&)attr;
 
 	mCurrentThread = std::thread([this,&attr_list]()
 		{
@@ -88,7 +88,7 @@ void	Thread::Start()
 			}
 #endif
 			
-			kstl::vector<CoreModifiableAttribute*> attr_list;
+			std::vector<CoreModifiableAttribute*> attr_list;
 			((CoreModifiable*)mCallee)->CallMethod(mMethod.const_ref(), attr_list);
 
 			Done();

@@ -3,8 +3,8 @@
 
 IMPLEMENT_CLASS_INFO(ThreadPoolManager)
 
-ThreadPoolManager::ThreadPoolManager(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, mThreadCount(*this, true, LABEL_AND_ID(ThreadCount),4)
+ThreadPoolManager::ThreadPoolManager(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+, mThreadCount(*this, true, "ThreadCount", 4)
 , mSemaphore(nullptr)
 {
 	mThreadList.clear();
@@ -66,7 +66,7 @@ SmartPointer<ThreadEvent>	ThreadPoolManager::setTask(MethodCallingStruct* task)
 	
 	// getAvailableEvent always returns a valid available event 
 	SmartPointer<ThreadEvent> result = getTaskEndEvent();
-	result->setValue(LABEL_TO_ID(EventCounter), 1);
+	result->setValue("EventCounter", 1);
 	SP<WorkerThread>	wavailable = getAvailableThread();
 	if (wavailable)
 		wavailable->setTask(task, result);
@@ -160,7 +160,7 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 	}
 
 	SmartPointer<ThreadEvent> result = getTaskEndEvent();
-	result->setValue(LABEL_TO_ID(EventCounter), taskgroupsize);
+	result->setValue("EventCounter", taskgroupsize);
 
 	int i;
 	for (i = 0; i < taskgroupsize; i++)

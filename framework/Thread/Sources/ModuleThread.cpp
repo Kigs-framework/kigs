@@ -9,7 +9,7 @@
 
 IMPLEMENT_CLASS_INFO(ModuleThread)
 
-ModuleThread::ModuleThread(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+ModuleThread::ModuleThread(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 }
 
@@ -18,7 +18,7 @@ ModuleThread::~ModuleThread()
 }    
 
 
-void ModuleThread::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleThread::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"Thread",params);
 

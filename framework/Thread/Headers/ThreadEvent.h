@@ -21,7 +21,7 @@ class ThreadEvent : public CoreModifiable
 public:
 
 	DECLARE_CLASS_INFO(ThreadEvent, CoreModifiable, Thread)
-	ThreadEvent(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	ThreadEvent(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~ThreadEvent();
 
 	void	wait();

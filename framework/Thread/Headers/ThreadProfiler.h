@@ -29,7 +29,7 @@ struct TimeEvent
 		name[0] = 0;
 		function_name[0] = 0;
 	}
-	void Set(TimeEventType t, const char* evt_name, const char* func_name, kdouble ti)
+	void Set(TimeEventType t, const char* evt_name, const char* func_name, double ti)
 	{
 		type = t;
 		time = ti;
@@ -41,7 +41,7 @@ struct TimeEvent
 	TimeEventType type;
 	char name[THREAD_PROFILER_STRING_SIZE];
 	char function_name[THREAD_PROFILER_STRING_SIZE];
-	kdouble time;
+	double time;
 };
 
 struct TimeEventCircularBuffer
@@ -78,7 +78,7 @@ public:
 	DECLARE_CLASS_INFO(ThreadProfiler, CoreModifiable, Thread)
 
 	//! constructor
-	ThreadProfiler(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	ThreadProfiler(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	void AddTimeEvent(TimeEventType type, const char* name, const char* function_name)
 	{
@@ -110,13 +110,13 @@ public:
 
 	void RegisterThread(Thread* thread);
 
-	kstl::map<CoreModifiable*, TimeEventCircularBuffer>& GetThreadTimeEventMap(){ return mCircularBufferMap; }
-	kstl::map<CoreModifiable*, unsigned int>& GetThreadIndexesMap(){ return mCircularBufferIndexes; }
+	std::map<CoreModifiable*, TimeEventCircularBuffer>& GetThreadTimeEventMap(){ return mCircularBufferMap; }
+	std::map<CoreModifiable*, unsigned int>& GetThreadIndexesMap(){ return mCircularBufferIndexes; }
 	unsigned int GetThreadCircularBufferIndex(CoreModifiable* thread){ return (mCircularBufferIndexes[thread] + THREAD_PROFILER_BUFFER_SIZE - 1) % THREAD_PROFILER_BUFFER_SIZE; }
 
 	SP<Timer>& GetThreadProfilerTimer(){ return mGlobalTimer; }
 
-	void ExportProfile(const kstl::string path);
+	void ExportProfile(const std::string path);
 
 	//Remotery* rmt;
 
@@ -124,8 +124,8 @@ public:
 
 private:
 	
-	kstl::map<CoreModifiable*, TimeEventCircularBuffer> mCircularBufferMap;
-	kstl::map<CoreModifiable*, unsigned int> mCircularBufferIndexes;
+	std::map<CoreModifiable*, TimeEventCircularBuffer> mCircularBufferMap;
+	std::map<CoreModifiable*, unsigned int> mCircularBufferIndexes;
 	SP<Timer> mGlobalTimer;
 
 	
@@ -161,7 +161,7 @@ private:
 
 
 #else
-/*#define BEGIN_TIMED_BLOCK(name) static Timer* timer_profiler_##name = KigsCore::Instance()->GetCoreApplication()->GetApplicationTimer(); kdouble time_##name = timer_profiler_##name->GetTime();
+/*#define BEGIN_TIMED_BLOCK(name) static Timer* timer_profiler_##name = KigsCore::Instance()->GetCoreApplication()->GetApplicationTimer(); double time_##name = timer_profiler_##name->GetTime();
 #define END_TIMED_BLOCK(name) printf("%s : %.3f ms\n", #name, (timer_profiler_##name->GetTime() - time_##name)*1000.0);
 #define ADD_TIMED_MARK(name)*/
 #define BEGIN_TIMED_BLOCK(name)

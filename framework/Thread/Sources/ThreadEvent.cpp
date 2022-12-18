@@ -3,10 +3,10 @@
 
 IMPLEMENT_CLASS_INFO(ThreadEvent)
 
-ThreadEvent::ThreadEvent(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, mEventCounter(*this, false, LABEL_AND_ID(EventCounter), 1)
+ThreadEvent::ThreadEvent(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+, mEventCounter(*this, false, "EventCounter", 1)
 , mCurrentCount(0)
-, mAutoReset(*this, false, LABEL_AND_ID(AutoReset), false)
+, mAutoReset(*this, false, "AutoReset", false)
 {
 	mCriticalSection = new std::mutex();
 }

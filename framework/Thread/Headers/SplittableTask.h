@@ -37,7 +37,7 @@ class SplittableTask : public CoreModifiable
 {
 public:
 	DECLARE_ABSTRACT_CLASS_INFO(SplittableTask, CoreModifiable, Thread)
-	SplittableTask(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	SplittableTask(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~SplittableTask();
 
 	void	Update(const Timer& timer, void* addParam) override;
@@ -69,7 +69,7 @@ protected:
 	maUInt			mSplitCount;
 	maBool			mWaitFinish;
 
-	kstl::vector<SplitDataStructBase*>	mSplitDataStructList;
+	std::vector<SplitDataStructBase*>	mSplitDataStructList;
 };
 
 #endif //_SPLITTABLETASK_H_

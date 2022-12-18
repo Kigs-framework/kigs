@@ -5,7 +5,7 @@
 
 IMPLEMENT_CLASS_INFO(WorkerThread)
 
-WorkerThread::WorkerThread(const kstl::string& name, CLASS_NAME_TREE_ARG) : Thread(name, PASS_CLASS_NAME_TREE_ARG)
+WorkerThread::WorkerThread(const std::string& name, CLASS_NAME_TREE_ARG) : Thread(name, PASS_CLASS_NAME_TREE_ARG)
 , mCurrentTask(0)
 , mNeedExit(false)
 , mSemaphore(0)
@@ -31,7 +31,7 @@ void WorkerThread::InitModifiable()
 		if (mSemaphore)
 		{
 			mThreadEvent = KigsCore::GetInstanceOf("WorkerThreadEvent","ThreadEvent");
-			mThreadEvent->setValue(LABEL_TO_ID(AutoReset), true);
+			mThreadEvent->setValue("AutoReset", true);
 			mThreadEvent->setSemaphore(mSemaphore);
 
 			// set Callee and Method, else Thread::InitModifiable will not call Start

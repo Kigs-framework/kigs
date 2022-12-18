@@ -7,7 +7,7 @@ thread_local Thread* ThreadProfiler::mCurrentThread=nullptr;
 
 IMPLEMENT_CLASS_INFO(ThreadProfiler)
 
-ThreadProfiler::ThreadProfiler(const kstl::string& name, CLASS_NAME_TREE_ARG): CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+ThreadProfiler::ThreadProfiler(const std::string& name, CLASS_NAME_TREE_ARG): CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	//rmt_CreateGlobalInstance(&rmt);
 	mGlobalTimer = KigsCore::GetInstanceOf("ThreadProfilerTimer", "Timer");
@@ -22,7 +22,7 @@ ThreadProfiler::ThreadProfiler(const kstl::string& name, CLASS_NAME_TREE_ARG): C
 
 void ThreadProfiler::ClearProfiler()
 {
-	for (kstl::map<CoreModifiable*, TimeEventCircularBuffer>::iterator it = mCircularBufferMap.begin(); it != mCircularBufferMap.end(); ++it)
+	for (std::map<CoreModifiable*, TimeEventCircularBuffer>::iterator it = mCircularBufferMap.begin(); it != mCircularBufferMap.end(); ++it)
 	{
 		for (int i = 0; i < THREAD_PROFILER_BUFFER_SIZE; ++i)
 		{
@@ -50,10 +50,10 @@ void ThreadProfiler::RegisterThread(Thread* thread)
 #endif
 }
 
-void ThreadProfiler::ExportProfile(const kstl::string path)
+void ThreadProfiler::ExportProfile(const std::string path)
 {
 	auto pathManager = KigsCore::Singleton<FilePathManager>();
-	kstl::string str = pathManager->DevicePath(path, FilePathManager::DOCUMENT_FOLDER);
+	std::string str = pathManager->DevicePath(path, FilePathManager::DOCUMENT_FOLDER);
 
 	SmartPointer<FileHandle> file = Platform_fopen(str.c_str(), "wb");
 
@@ -62,7 +62,7 @@ void ThreadProfiler::ExportProfile(const kstl::string path)
 		int num_threads = mCircularBufferMap.size();
 		Platform_fwrite(&num_threads, sizeof(int), 1, file.get());
 		
-		for (kstl::map<CoreModifiable*, TimeEventCircularBuffer>::iterator it = mCircularBufferMap.begin(); it != mCircularBufferMap.end(); ++it)
+		for (std::map<CoreModifiable*, TimeEventCircularBuffer>::iterator it = mCircularBufferMap.begin(); it != mCircularBufferMap.end(); ++it)
 		{
 			Platform_fwrite(&it->second, sizeof(TimeEventCircularBuffer), 1, file.get());
 			Platform_fwrite(&mCircularBufferIndexes[it->first], sizeof(int), 1, file.get());

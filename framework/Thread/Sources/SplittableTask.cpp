@@ -4,11 +4,11 @@
 
 IMPLEMENT_CLASS_INFO(SplittableTask)
 
-SplittableTask::SplittableTask(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, mThreadPoolManager(*this, true, LABEL_AND_ID(ThreadPoolManager))
-, mIsSplittable(*this, true, LABEL_AND_ID(IsSplittable),false)
-, mSplitCount(*this, true, LABEL_AND_ID(SplitCount), 0)
-, mWaitFinish(*this, false, LABEL_AND_ID(WaitFinish), true)
+SplittableTask::SplittableTask(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+, mThreadPoolManager(*this, true, "ThreadPoolManager")
+, mIsSplittable(*this, true, "IsSplittable", false)
+, mSplitCount(*this, true, "SplitCount", 0)
+, mWaitFinish(*this, false, "WaitFinish", true)
 {
 	mSplitDataStructList.clear();
 }

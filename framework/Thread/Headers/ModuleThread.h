@@ -24,10 +24,10 @@ class ModuleThread : public ModuleBase
 public:
 
 	DECLARE_CLASS_INFO(ModuleThread,ModuleBase,Thread)
-    ModuleThread(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    ModuleThread(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~ModuleThread();
 	//! init module
-    void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 	//! close module
 	void Close() override;
             
