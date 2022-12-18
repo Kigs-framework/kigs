@@ -9,7 +9,7 @@
 
 IMPLEMENT_CLASS_INFO(API3DLight)
 
-API3DLight::API3DLight(const kstl::string& name, CLASS_NAME_TREE_ARG)
+API3DLight::API3DLight(const std::string& name, CLASS_NAME_TREE_ARG)
 	: Light(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	

@@ -32,7 +32,7 @@ public:
 	bool SetActive(TravState* state) override;
 	void Release(TravState* state) override;
 
-	void Resize(kfloat sizeX, kfloat sizeY) override;
+	void Resize(float sizeX, float sizeY) override;
 
 
 	void FetchPixels(int x, int y, int width, int height, void *pRGBAPixels) override;

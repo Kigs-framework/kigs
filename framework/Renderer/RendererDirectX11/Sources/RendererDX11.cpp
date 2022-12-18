@@ -46,7 +46,7 @@
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
 #define MODULEINITFUNC			PlatformRendererModuleInit
-extern SP<ModuleBase>			MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+extern SP<ModuleBase>			MODULEINITFUNC(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 #else
 #define MODULEINITFUNC			ModuleInit
 #endif
@@ -61,7 +61,7 @@ IMPLEMENT_CONSTRUCTOR(RendererDX11)
 {
 }
 
-ModuleSpecificRenderer::LightCount RendererDX11::SetLightsInfo(kstl::set<CoreModifiable*>*lights)
+ModuleSpecificRenderer::LightCount RendererDX11::SetLightsInfo(std::set<CoreModifiable*>*lights)
 {
 	int newNumberOfDirectLights = 0;
 	int newNumberOfPointLights = 0;
@@ -295,14 +295,14 @@ DX11RenderingState::~DX11RenderingState()
 
 }
 
-void RendererDX11::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void RendererDX11::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	BaseInit(core, "RendererDX11", params);
 	DECLARE_FULL_CLASS_INFO(core, DX11RenderingScreen, RenderingScreen, Renderer)
 
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(DX11Texture, "Texture");
 	RegisterClassToInstanceFactory(core, "Renderer", "Texture",
-	 [](const kstl::string& instancename, kstl::vector<CoreModifiableAttribute*>* args) -> CMSP
+	 [](const std::string& instancename, std::vector<CoreModifiableAttribute*>* args) -> CMSP
 	{
 		if (args && args->size())
 		{
@@ -538,7 +538,7 @@ void RendererDX11::Update(const Timer& timer, void* addParam)
 
 }
 
-SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(RendererDX11, "RendererDX11");

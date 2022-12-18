@@ -20,7 +20,7 @@ class DX11Camera : public Camera
 {
 public:
     DECLARE_CLASS_INFO(DX11Camera,Camera,Renderer)
-    DX11Camera(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    DX11Camera(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~DX11Camera();
 
 	std::array<mat4, 2> GetStereoViewProjections() override { return mCurrentStereoViewproj; }

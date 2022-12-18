@@ -25,7 +25,7 @@ HLSLProgramInfo::~HLSLProgramInfo()
 
 IMPLEMENT_CLASS_INFO(API3DShader)
 
-API3DShader::API3DShader(const kstl::string& name, CLASS_NAME_TREE_ARG) : ShaderBase(name, PASS_CLASS_NAME_TREE_ARG)
+API3DShader::API3DShader(const std::string& name, CLASS_NAME_TREE_ARG) : ShaderBase(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	
 }
@@ -96,7 +96,7 @@ void API3DShader::DoPreDraw(TravState* state)
 		state->GetRenderer()->pushShader(this, state);
 
 		// then PreDraw for sons
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
@@ -114,7 +114,7 @@ void API3DShader::DoPostDraw(TravState* state)
 	if (PostDraw(state)) // first PostDraw for this
 	{
 		// then PostDraw for sons
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
@@ -207,7 +207,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		const char* filename = (str.c_str() + 1);
 		auto pathManager = KigsCore::Singleton<FilePathManager>();
 
-		kstl::string fullfilename;
+		std::string fullfilename;
 		if (pathManager)
 		{
 			SmartPointer<FileHandle> file = pathManager->FindFullName(filename);
@@ -248,7 +248,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		const char* filename = (str.c_str() + 1);
 		auto pathManager = KigsCore::Singleton<FilePathManager>();
 
-		kstl::string fullfilename;
+		std::string fullfilename;
 		if (pathManager)
 		{
 			SmartPointer<FileHandle> file = pathManager->FindFullName(filename);
@@ -343,7 +343,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	
 	if (!toReturn->mUniforms)
 	{
-		toReturn->mUniforms = new kstl::map<UNIFORM_NAME_TYPE, UniformList*>();
+		toReturn->mUniforms = new std::map<UNIFORM_NAME_TYPE, UniformList*>();
 	}
 
 	return toReturn;
@@ -466,7 +466,7 @@ void	API3DShader::InitModifiable()
 void	API3DShader::DelayedInit(TravState* state)
 {
 	// only for custom shaders
-	if ((((kstl::string)mVertexShader) != "") && (((kstl::string)mFragmentShader) != ""))
+	if ((((std::string)mVertexShader) != "") && (((std::string)mFragmentShader) != ""))
 	{
 		Drawable::InitModifiable();
 
@@ -479,13 +479,13 @@ void	API3DShader::DelayedInit(TravState* state)
 		Active(state);
 
 		// add child unifor as default uniform
-		kstl::vector<CMSP> instances;
+		std::vector<CMSP> instances;
 		CoreModifiable::GetSonInstancesByType("API3DUniformBase", instances);
 
 		if (instances.size())
 		{
-			kstl::vector<CMSP>::iterator itr = instances.begin();
-			kstl::vector<CMSP>::iterator end = instances.end();
+			std::vector<CMSP>::iterator itr = instances.begin();
+			std::vector<CMSP>::iterator end = instances.end();
 			for (; itr != end; ++itr)
 			{
 				PushUniform(static_cast<API3DUniformBase*>((*itr).get()));
@@ -499,7 +499,7 @@ DEFINE_METHOD(API3DShader, Reload)
 {
 	Dealloc();
 	// rebuild only if both shaders are set
-	if ((((kstl::string)mVertexShader) != "") && (((kstl::string)mFragmentShader) != ""))
+	if ((((std::string)mVertexShader) != "") && (((std::string)mFragmentShader) != ""))
 	{
 		auto toAdd = Rebuild();
 		insertBuildShader(mCurrentShaderKey, toAdd);

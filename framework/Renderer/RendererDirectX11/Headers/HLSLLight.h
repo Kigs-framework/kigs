@@ -29,7 +29,7 @@ public:
 	friend class RendererDX11;
 
 	DECLARE_CLASS_INFO(API3DLight, Light, Renderer)
-	API3DLight(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	API3DLight(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~API3DLight();
 
 	virtual bool PreRendering(RendererDX11 * renderer, Camera * cam, Point3D & camPos);

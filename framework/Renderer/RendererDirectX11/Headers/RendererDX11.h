@@ -290,8 +290,8 @@ public:
 	DECLARE_CLASS_INFO(RendererDX11, ModuleSpecificRenderer, Renderer)
 	DECLARE_CONSTRUCTOR(RendererDX11);
 
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
-	void PlatformInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
+	void PlatformInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 
 	void Close() override;
 	void PlatformClose();
@@ -340,7 +340,7 @@ public:
 
 	u32 GetActiveTextureChannel() const { return mCurrentTextureChannel; }
 
-	ModuleSpecificRenderer::LightCount SetLightsInfo(kstl::set<CoreModifiable*>*lights) override;
+	ModuleSpecificRenderer::LightCount SetLightsInfo(std::set<CoreModifiable*>*lights) override;
 	void SendLightsInfo(TravState* travstate) override;
 	void ClearLightsInfo(TravState* travstate) override;
 

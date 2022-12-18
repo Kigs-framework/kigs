@@ -1,7 +1,7 @@
 
 #include "RendererDX11.h"
 
-void RendererDX11::PlatformInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void RendererDX11::PlatformInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 }
 

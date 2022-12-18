@@ -3,7 +3,7 @@
 
 
 
-kstl::string API3DUIShader::GetFragmentShader()
+std::string API3DUIShader::GetFragmentShader()
 {
 	return  R"====(
 #ifdef CLIENT_STATE_TEXTURE_COORD_ARRAY0
@@ -59,7 +59,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 )====";
 }
 
-kstl::string API3DUIShader::GetVertexShader()
+std::string API3DUIShader::GetVertexShader()
 {
 	return  R"====(
 cbuffer MatrixBuffer : register(b0)
@@ -133,7 +133,7 @@ VS_OUTPUT main(VS_INPUT input)
 
 IMPLEMENT_CLASS_INFO(API3DUIShader)
 
-API3DUIShader::API3DUIShader(const kstl::string& name, CLASS_NAME_TREE_ARG) : API3DGenericMeshShader(name, PASS_CLASS_NAME_TREE_ARG)
+API3DUIShader::API3DUIShader(const std::string& name, CLASS_NAME_TREE_ARG) : API3DGenericMeshShader(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	museGenericLight = false;
 }

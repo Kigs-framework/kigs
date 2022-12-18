@@ -31,17 +31,17 @@ void  DX11CameraOrtho::InitCullingObject(CullingObject* obj)
 		obj->RemovePlane(6);
 	}
 
-	kfloat width , height;
+	float width , height;
 
 	getRenderingScreen()->GetSize(width , height); 
 
-	kfloat aspect;
+	float aspect;
 	if (mAspectRatio!=0)
 		aspect = mAspectRatio;
 	else
 		aspect = (width*mViewportSizeX) / (height*mViewportSizeY); 
 
-	kfloat size2 = mSize;
+	float size2 = mSize;
 
 	auto l2g = GetLocalToGlobal();
 	// near plane
@@ -87,12 +87,12 @@ void  DX11CameraOrtho::InitCullingObject(CullingObject* obj)
 	obj->InitPlane(5,n,o);
 }
 
-void DX11CameraOrtho::getRay(const kfloat &ScreenX, const kfloat &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection)
+void DX11CameraOrtho::getRay(const float &ScreenX, const float &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection)
 {
-	kfloat width , height;
+	float width , height;
 	getRenderingScreen()->GetSize(width , height); 
 
-	kfloat aspect;
+	float aspect;
 	if (mAspectRatio!=0)
 		aspect = mAspectRatio;
 	else
@@ -100,7 +100,7 @@ void DX11CameraOrtho::getRay(const kfloat &ScreenX, const kfloat &ScreenY, Point
 
 
 	SetupNodeIfNeeded();
-	RayOrigin.x = KFLOAT_CONST(0.0f);
+	RayOrigin.x = 0.0f;
 	RayOrigin.y = (ScreenX-0.5f)* mSize*aspect;
 	RayOrigin.z = (ScreenY-0.5f)* mSize;
 	auto l2g = GetLocalToGlobal();
@@ -121,10 +121,10 @@ bool	DX11CameraOrtho::ProtectedSetActive(TravState* state)
 			renderer->SetDepthValueMode(1.0);
 			renderer->SetDepthTestMode(true);
 			renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_OFF);
-			kfloat width, height;
+			float width, height;
 			getRenderingScreen()->GetSize(width, height);
 
-			kfloat aspect;
+			float aspect;
 
 			if (mAspectRatio != 0)
 				aspect = mAspectRatio;
@@ -134,7 +134,7 @@ bool	DX11CameraOrtho::ProtectedSetActive(TravState* state)
 			renderer->Viewport((int)(mViewportMinX*width), (int)(height - (mViewportSizeY + mViewportMinY)*height), (int)(mViewportSizeX*width), (int)(mViewportSizeY*height));
 			renderer->SetScissorValue((int)(mViewportMinX*width), (int)(height - (mViewportSizeY + mViewportMinY)*height), (int)(mViewportSizeX*width), (int)(mViewportSizeY*height));
 
-			kfloat size2=mSize*0.5f;
+			float size2=mSize*0.5f;
 			renderer->Ortho(MATRIX_MODE_PROJECTION,- size2*aspect, size2*aspect, -size2, size2, mNearPlane, mFarPlane);
 			
 			auto l2g = GetLocalToGlobal();

@@ -22,7 +22,7 @@ class DX11Texture : public Texture
 {
 public:
 	DECLARE_CLASS_INFO(DX11Texture,Texture,Renderer)
-	DX11Texture(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	DX11Texture(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~DX11Texture();
 
 	bool	PreDraw(TravState*) override;

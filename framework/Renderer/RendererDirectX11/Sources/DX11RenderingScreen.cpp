@@ -76,7 +76,7 @@ void DX11RenderingScreen::FetchDepth(int x, int y, int width, int height, unsign
 {
 }
 
-void DX11RenderingScreen::Resize(kfloat sizeX, kfloat sizeY)
+void DX11RenderingScreen::Resize(float sizeX, float sizeY)
 {
 	if (mResizeDesignSize)
 	{

@@ -9,7 +9,7 @@
 
 IMPLEMENT_CLASS_INFO(DX11Camera)
 
-DX11Camera::DX11Camera(const kstl::string& name, CLASS_NAME_TREE_ARG) : Camera(name, PASS_CLASS_NAME_TREE_ARG)
+DX11Camera::DX11Camera(const std::string& name, CLASS_NAME_TREE_ARG) : Camera(name, PASS_CLASS_NAME_TREE_ARG)
 {
 }
 
@@ -31,10 +31,10 @@ bool	DX11Camera::ProtectedSetActive(TravState* state)
 			renderer->SetDepthValueMode(1.0);
 			renderer->SetDepthTestMode(true);
 			renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_OFF);
-			kfloat width, height;
+			float width, height;
 			getRenderingScreen()->GetSize(width, height);
 
-			kfloat aspect;
+			float aspect;
 
 			if (mAspectRatio != 0)
 				aspect = mAspectRatio;
