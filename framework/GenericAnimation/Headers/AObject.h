@@ -423,9 +423,9 @@ public:
 	
  protected:
 	SP<CoreModifiable>									mObject;
-	kstl::unordered_map<KigsID,ALinks*>				    mALinksTable;
-	kstl::vector<ALinearInterp*>						mFadeList;
-    kstl::set<SP<ABaseSystem>, sortSystems>				mSystemSet;
+	std::unordered_map<KigsID,ALinks*>				    mALinksTable;
+	std::vector<ALinearInterp*>						mFadeList;
+    std::set<SP<ABaseSystem>, sortSystems>				mSystemSet;
 	
     // ******************************
     // * System management

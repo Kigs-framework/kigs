@@ -21,10 +21,10 @@
 
 /* +---------
 // | Time description :
-// | ATimeValue is an kfloat so it should be seconds
+// | ATimeValue is an float so it should be seconds
 // +--------*/
 
-typedef kfloat ATimeValue;
+typedef float ATimeValue;
 
 
 #endif  //__AMDEFINES_H__

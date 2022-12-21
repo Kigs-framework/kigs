@@ -6,35 +6,35 @@
 	compute distance from a point (P) to a triangle (A,B,C)
 	seperate plane in parts
 */
-kfloat Distance::PointTriangle(const Point3D &P, const Point3D &A, const Point3D &B, const Point3D &C)
+float Distance::PointTriangle(const Point3D &P, const Point3D &A, const Point3D &B, const Point3D &C)
 {
     Vector3D kDiff(P,A, asVector{});
     Vector3D kEdge0(A,B, asVector{});
     Vector3D kEdge1(A,C, asVector{});
-    kfloat fA00 = NormSquare(kEdge0);
-    kfloat fA01 = Dot(kEdge0,kEdge1);
-    kfloat fA11 = NormSquare(kEdge1);
-    kfloat fB0 = Dot(kDiff,kEdge0);
-    kfloat fB1 = Dot(kDiff,kEdge1);
-    kfloat fC = NormSquare(kDiff);
-    kfloat fDet = fabsf(fA00*fA11-fA01*fA01);
-    kfloat fS = fA01*fB1-fA11*fB0;
-    kfloat fT = fA01*fB0-fA00*fB1;
-    kfloat fSqrDistance;
+    float fA00 = NormSquare(kEdge0);
+    float fA01 = Dot(kEdge0,kEdge1);
+    float fA11 = NormSquare(kEdge1);
+    float fB0 = Dot(kDiff,kEdge0);
+    float fB1 = Dot(kDiff,kEdge1);
+    float fC = NormSquare(kDiff);
+    float fDet = fabsf(fA00*fA11-fA01*fA01);
+    float fS = fA01*fB1-fA11*fB0;
+    float fT = fA01*fB0-fA00*fB1;
+    float fSqrDistance;
 
     if (fS + fT <= fDet)
     {
-        if (fS < KFLOAT_CONST(0.0f))
+        if (fS < 0.0f)
         {
-            if (fT < KFLOAT_CONST(0.0f))  // region 4
+            if (fT < 0.0f)  // region 4
             {
-                if (fB0 < KFLOAT_CONST(0.0f))
+                if (fB0 < 0.0f)
                 {
-                    fT = KFLOAT_CONST(0.0f);
+                    fT = 0.0f;
                     if (-fB0 >= fA00)
                     {
-                        fS = KFLOAT_CONST(1.0f);
-                        fSqrDistance = fA00+KFLOAT_CONST(2.0f)*fB0+fC;
+                        fS = 1.0f;
+                        fSqrDistance = fA00+2.0f*fB0+fC;
                     }
                     else
                     {
@@ -44,16 +44,16 @@ kfloat Distance::PointTriangle(const Point3D &P, const Point3D &A, const Point3D
                 }
                 else
                 {
-                    fS = KFLOAT_CONST(0.0f);
-                    if (fB1 >= KFLOAT_CONST(0.0f))
+                    fS = 0.0f;
+                    if (fB1 >= 0.0f)
                     {
-                        fT = KFLOAT_CONST(0.0f);
+                        fT = 0.0f;
                         fSqrDistance = fC;
                     }
                     else if (-fB1 >= fA11)
                     {
-                        fT = KFLOAT_CONST(1.0f);
-                        fSqrDistance = fA11+KFLOAT_CONST(2.0f)*fB1+fC;
+                        fT = 1.0f;
+                        fSqrDistance = fA11+2.0f*fB1+fC;
                     }
                     else
                     {
@@ -64,16 +64,16 @@ kfloat Distance::PointTriangle(const Point3D &P, const Point3D &A, const Point3D
             }
             else  // region 3
             {
-                fS = KFLOAT_CONST(0.0f);
-                if (fB1 >= KFLOAT_CONST(0.0f))
+                fS = 0.0f;
+                if (fB1 >= 0.0f)
                 {
-                    fT = KFLOAT_CONST(0.0f);
+                    fT = 0.0f;
                     fSqrDistance = fC;
                 }
                 else if (-fB1 >= fA11)
                 {
-                    fT = KFLOAT_CONST(1.0f);
-                    fSqrDistance = fA11+KFLOAT_CONST(2.0f)*fB1+fC;
+                    fT = 1.0f;
+                    fSqrDistance = fA11+2.0f*fB1+fC;
                 }
                 else
                 {
@@ -82,18 +82,18 @@ kfloat Distance::PointTriangle(const Point3D &P, const Point3D &A, const Point3D
                 }
             }
         }
-        else if (fT < KFLOAT_CONST(0.0f))  // region 5
+        else if (fT < 0.0f)  // region 5
         {
-            fT = KFLOAT_CONST(0.0f);
-            if (fB0 >= KFLOAT_CONST(0.0f))
+            fT = 0.0f;
+            if (fB0 >= 0.0f)
             {
-                fS = KFLOAT_CONST(0.0f);
+                fS = 0.0f;
                 fSqrDistance = fC;
             }
             else if (-fB0 >= fA00)
             {
-                fS = KFLOAT_CONST(1.0f);
-                fSqrDistance = fA00+KFLOAT_CONST(2.0f)*fB0+fC;
+                fS = 1.0f;
+                fSqrDistance = fA00+2.0f*fB0+fC;
             }
             else
             {
@@ -103,50 +103,50 @@ kfloat Distance::PointTriangle(const Point3D &P, const Point3D &A, const Point3D
         }
         else  // region 0
         {
-            kfloat fInvDet = KFLOAT_CONST(1.0f)/fDet;
+            float fInvDet = 1.0f/fDet;
             fS *= fInvDet;
             fT *= fInvDet;
-            fSqrDistance = fS*(fA00*fS+fA01*fT+KFLOAT_CONST(2.0f)*fB0) +
-                fT*(fA01*fS+fA11*fT+KFLOAT_CONST(2.0f)*fB1)+fC;
+            fSqrDistance = fS*(fA00*fS+fA01*fT+2.0f*fB0) +
+                fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
         }
     }
     else
     {
-        kfloat fTmp0, fTmp1, fNumer, fDenom;
+        float fTmp0, fTmp1, fNumer, fDenom;
 
-        if (fS < KFLOAT_CONST(0.0f))  // region 2
+        if (fS < 0.0f)  // region 2
         {
             fTmp0 = fA01 + fB0;
             fTmp1 = fA11 + fB1;
             if (fTmp1 > fTmp0)
             {
                 fNumer = fTmp1 - fTmp0;
-                fDenom = fA00-KFLOAT_CONST(2.0f)*fA01+fA11;
+                fDenom = fA00-2.0f*fA01+fA11;
                 if (fNumer >= fDenom)
                 {
-                    fS = KFLOAT_CONST(1.0f);
-                    fT = KFLOAT_CONST(0.0f);
-                    fSqrDistance = fA00+KFLOAT_CONST(2.0f)*fB0+fC;
+                    fS = 1.0f;
+                    fT = 0.0f;
+                    fSqrDistance = fA00+2.0f*fB0+fC;
                 }
                 else
                 {
                     fS = fNumer/fDenom;
-                    fT = KFLOAT_CONST(1.0f) - fS;
-                    fSqrDistance = fS*(fA00*fS+fA01*fT+KFLOAT_CONST(2.0f)*fB0) +
-                        fT*(fA01*fS+fA11*fT+KFLOAT_CONST(2.0f)*fB1)+fC;
+                    fT = 1.0f - fS;
+                    fSqrDistance = fS*(fA00*fS+fA01*fT+2.0f*fB0) +
+                        fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
                 }
             }
             else
             {
-                fS = KFLOAT_CONST(0.0f);
-                if (fTmp1 <= KFLOAT_CONST(0.0f))
+                fS = 0.0f;
+                if (fTmp1 <= 0.0f)
                 {
-                    fT = KFLOAT_CONST(1.0f);
-                    fSqrDistance = fA11+KFLOAT_CONST(2.0f)*fB1+fC;
+                    fT = 1.0f;
+                    fSqrDistance = fA11+2.0f*fB1+fC;
                 }
-                else if (fB1 >= KFLOAT_CONST(0.0f))
+                else if (fB1 >= 0.0f)
                 {
-                    fT = KFLOAT_CONST(0.0f);
+                    fT = 0.0f;
                     fSqrDistance = fC;
                 }
                 else
@@ -156,39 +156,39 @@ kfloat Distance::PointTriangle(const Point3D &P, const Point3D &A, const Point3D
                 }
             }
         }
-        else if (fT < KFLOAT_CONST(0.0f))  // region 6
+        else if (fT < 0.0f)  // region 6
         {
             fTmp0 = fA01 + fB1;
             fTmp1 = fA00 + fB0;
             if (fTmp1 > fTmp0)
             {
                 fNumer = fTmp1 - fTmp0;
-                fDenom = fA00-KFLOAT_CONST(2.0f)*fA01+fA11;
+                fDenom = fA00-2.0f*fA01+fA11;
                 if (fNumer >= fDenom)
                 {
-                    fT = KFLOAT_CONST(1.0f);
-                    fS = KFLOAT_CONST(0.0f);
-                    fSqrDistance = fA11+KFLOAT_CONST(2.0f)*fB1+fC;
+                    fT = 1.0f;
+                    fS = 0.0f;
+                    fSqrDistance = fA11+2.0f*fB1+fC;
                 }
                 else
                 {
                     fT = fNumer/fDenom;
-                    fS = KFLOAT_CONST(1.0f) - fT;
-                    fSqrDistance = fS*(fA00*fS+fA01*fT+KFLOAT_CONST(2.0f)*fB0) +
-                        fT*(fA01*fS+fA11*fT+KFLOAT_CONST(2.0f)*fB1)+fC;
+                    fS = 1.0f - fT;
+                    fSqrDistance = fS*(fA00*fS+fA01*fT+2.0f*fB0) +
+                        fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
                 }
             }
             else
             {
-                fT = KFLOAT_CONST(0.0f);
-                if (fTmp1 <= KFLOAT_CONST(0.0f))
+                fT = 0.0f;
+                if (fTmp1 <= 0.0f)
                 {
-                    fS = KFLOAT_CONST(1.0f);
-                    fSqrDistance = fA00+KFLOAT_CONST(2.0f)*fB0+fC;
+                    fS = 1.0f;
+                    fSqrDistance = fA00+2.0f*fB0+fC;
                 }
-                else if (fB0 >= KFLOAT_CONST(0.0f))
+                else if (fB0 >= 0.0f)
                 {
-                    fS = KFLOAT_CONST(0.0f);
+                    fS = 0.0f;
                     fSqrDistance = fC;
                 }
                 else
@@ -201,36 +201,36 @@ kfloat Distance::PointTriangle(const Point3D &P, const Point3D &A, const Point3D
         else  // region 1
         {
             fNumer = fA11 + fB1 - fA01 - fB0;
-            if (fNumer <= KFLOAT_CONST(0.0f))
+            if (fNumer <= 0.0f)
             {
-                fS = KFLOAT_CONST(0.0f);
-                fT = KFLOAT_CONST(1.0f);
-                fSqrDistance = fA11+KFLOAT_CONST(2.0f)*fB1+fC;
+                fS = 0.0f;
+                fT = 1.0f;
+                fSqrDistance = fA11+2.0f*fB1+fC;
             }
             else
             {
-                fDenom = fA00-KFLOAT_CONST(2.0f)*fA01+fA11;
+                fDenom = fA00-2.0f*fA01+fA11;
                 if (fNumer >= fDenom)
                 {
-                    fS = KFLOAT_CONST(1.0f);
-                    fT = KFLOAT_CONST(0.0f);
-                    fSqrDistance = fA00+KFLOAT_CONST(2.0f)*fB0+fC;
+                    fS = 1.0f;
+                    fT = 0.0f;
+                    fSqrDistance = fA00+2.0f*fB0+fC;
                 }
                 else
                 {
                     fS = fNumer/fDenom;
-                    fT = KFLOAT_CONST(1.0f) - fS;
-                    fSqrDistance = fS*(fA00*fS+fA01*fT+KFLOAT_CONST(2.0f)*fB0) +
-                        fT*(fA01*fS+fA11*fT+KFLOAT_CONST(2.0f)*fB1)+fC;
+                    fT = 1.0f - fS;
+                    fSqrDistance = fS*(fA00*fS+fA01*fT+2.0f*fB0) +
+                        fT*(fA01*fS+fA11*fT+2.0f*fB1)+fC;
                 }
             }
         }
     }
 
     // account for numerical round-off error
-    if (fSqrDistance < KFLOAT_CONST(0.0f))
+    if (fSqrDistance < 0.0f)
     {
-        fSqrDistance = KFLOAT_CONST(0.0f);
+        fSqrDistance = 0.0f;
     }
 
     return sqrtf(fSqrDistance);
@@ -240,13 +240,13 @@ kfloat Distance::PointTriangle(const Point3D &P, const Point3D &A, const Point3D
 	compute distance from a point (P) to a mesh
 	also return the nearest triangle
 */
-kfloat Distance::PointMesh(const Point3D &P, const Mesh *pMesh, Mesh::Triangle* &TrianglePtr)
+float Distance::PointMesh(const Point3D &P, const Mesh *pMesh, Mesh::Triangle* &TrianglePtr)
 {
 	int i=0,j;
-	kfloat dmin=KFLOAT_CONST(1000.0f);
-	kfloat d;
+	float dmin=1000.0f;
+	float d;
 	TrianglePtr = NULL;
-	kstl::vector<ModifiableItemStruct>::const_iterator	it;
+	std::vector<ModifiableItemStruct>::const_iterator	it;
 
 	for (it=pMesh->getItems().begin();it!=pMesh->getItems().end();++it)
 	{
@@ -291,10 +291,10 @@ kfloat Distance::PointMesh(const Point3D &P, const Mesh *pMesh, Mesh::Triangle* 
 	compute distance from a point (P) to a BBOX centered at origin (half diagonal)
 	also return the nearest point on the BBox
 */
-kfloat Distance::PointAABBAtOrigin(const Point3D &P, const Vector3D &BoxSize, Point3D &MinDistPoint)
+float Distance::PointAABBAtOrigin(const Point3D &P, const Vector3D &BoxSize, Point3D &MinDistPoint)
 {
-	kfloat Dist = KFLOAT_CONST(0.0f);
-	kfloat d;
+	float Dist = 0.0f;
+	float d;
 	//! first check on x axis
 	if (P.x<-BoxSize.x)
 	{
@@ -364,10 +364,10 @@ kfloat Distance::PointAABBAtOrigin(const Point3D &P, const Vector3D &BoxSize, Po
 	compute distance from a point (P) to a BBOX (min and max poins)
 	also return the nearest point on the BBox
 */
-kfloat Distance::PointAABB(const Point3D &P, const Point3D &BMin,const Point3D &BMax, Point3D &MinDistPoint)
+float Distance::PointAABB(const Point3D &P, const Point3D &BMin,const Point3D &BMax, Point3D &MinDistPoint)
 {
-	kfloat Dist = KFLOAT_CONST(0.0f);
-	kfloat d;
+	float Dist = 0.0f;
+	float d;
 	//! first check on x axis
 	if (P.x<BMin.x)
 	{
@@ -438,7 +438,7 @@ kfloat Distance::PointAABB(const Point3D &P, const Point3D &BMin,const Point3D &
 	compute distance from a point (P) to an oriented BOX (half diagonal in local coordinate system, and transform matrix)
 	also return the nearest point on the BBox
 */
-kfloat Distance::PointOBB(const Point3D &P, const Matrix3x4 &OrientationMatrix, Vector3D &BoxSize, Point3D &MinDistPoint)
+float Distance::PointOBB(const Point3D &P, const Matrix3x4 &OrientationMatrix, Vector3D &BoxSize, Point3D &MinDistPoint)
 {
 	//! first compute point coordinate in local Box coordinate system
 	Point3D Q;
@@ -447,7 +447,7 @@ kfloat Distance::PointOBB(const Point3D &P, const Matrix3x4 &OrientationMatrix, 
 	Q.z = OrientationMatrix.e[2][0]*P.x + OrientationMatrix.e[2][1]*P.y + OrientationMatrix.e[2][2]*P.z - OrientationMatrix.e[3][2];
 	
 	//! then use PointAABBAtOrigin method
-	kfloat d = PointAABBAtOrigin(Q,BoxSize,MinDistPoint);
+	float d = PointAABBAtOrigin(Q,BoxSize,MinDistPoint);
 	//! and transform intersection point back again in global space
 	OrientationMatrix.TransformPoints(&MinDistPoint,1);
 
@@ -458,7 +458,7 @@ kfloat Distance::PointOBB(const Point3D &P, const Matrix3x4 &OrientationMatrix, 
 /*!
 	compute distance from a point (P) to an plane (Origin and Normal)
 */
-kfloat Distance::PointPlane(const Point3D &P, const Vector3D &PlaneNormal, const Point3D &PlaneOrigin)
+float Distance::PointPlane(const Point3D &P, const Vector3D &PlaneNormal, const Point3D &PlaneOrigin)
 {
 	Vector3D u(PlaneOrigin,P, asVector{});
 	return fabsf(Dot(PlaneNormal,u));

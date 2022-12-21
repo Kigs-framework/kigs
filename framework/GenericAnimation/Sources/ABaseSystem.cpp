@@ -17,9 +17,9 @@
 
 
 IMPLEMENT_CLASS_INFO(ABaseSystem)
-ABaseSystem::ABaseSystem(const kstl::string& name, CLASS_NAME_TREE_ARG)
+ABaseSystem::ABaseSystem(const std::string& name, CLASS_NAME_TREE_ARG)
 	: CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-	, mPriority(*this, true, LABEL_AND_ID(Priority), 100)
+	, mPriority(*this, true, "Priority", 100)
 {
 	mLinksCount = 0;
 	mRecurseAnimate = true;
@@ -50,7 +50,7 @@ void    ABaseSystem::SetHierarchy(SP<AObjectSkeletonResource> hierarchy)
     // | construct channel tree
     // +---------
 
-	kstl::string ClassName = GetChannelType();
+	std::string ClassName = GetChannelType();
 	 
     if(ClassName != "")
     {
@@ -70,7 +70,7 @@ void    ABaseSystem::SetHierarchy(SP<AObjectSkeletonResource> hierarchy)
 			char	charindex[10];
 			sprintf(charindex,"%d",i);
 
-			kstl::string channelName=getName();
+			std::string channelName=getName();
 			channelName+="_AnimationChannel_";
 			channelName+=charindex;
 
@@ -103,7 +103,7 @@ void    ABaseSystem::SetHierarchyFromSystem(SP<ABaseSystem> sys)
     // | construct channel tree
     // +---------
 
-	kstl::string ClassName= GetChannelType();
+	std::string ClassName= GetChannelType();
 	 
     if(ClassName != "")
     {
@@ -119,7 +119,7 @@ void    ABaseSystem::SetHierarchyFromSystem(SP<ABaseSystem> sys)
 			char	charindex[10];
 			sprintf(charindex,"%d",i);
 
-			kstl::string channelName=getName();
+			std::string channelName=getName();
 			channelName+="_AnimationChannel_";
 			channelName+=charindex;
 

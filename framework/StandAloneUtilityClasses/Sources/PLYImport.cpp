@@ -12,8 +12,8 @@ IMPLEMENT_CLASS_INFO(PLYImport)
 /*
 *	Constructor
 */
-PLYImport::PLYImport(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, m_FileName(*this, true, LABEL_AND_ID(FileName))
+PLYImport::PLYImport(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
+, m_FileName(*this, true, "FileName")
 , m_isASCII(false)
 {
 
@@ -50,7 +50,7 @@ void	PLYImport::InitModifiable()
 				// check first line is "ply"
 				if (FileParser.GetLine(line, true))
 				{
-					kstl::string	content = line;
+					std::string	content = line;
 					if (content != "ply")
 					{
 						goto init_error;
@@ -61,7 +61,7 @@ void	PLYImport::InitModifiable()
 					AsciiParserUtils word(line);
 					line.GetWord(word);
 					
-					kstl::string	strWord= word;
+					std::string	strWord= word;
 
 
 					if (strWord =="comment")
@@ -181,7 +181,7 @@ void	PLYImport::elementDesc::addProperty(AsciiParserUtils& line)
 {
 	AsciiParserUtils word(line);
 	line.GetWord(word);
-	kstl::string	strWord = word;
+	std::string	strWord = word;
 
 	propertyDesc	toSet;
 	toSet.m_type = toSet.m_ListIndexSize = toSet.m_ListIndexType = propertyUnknown;
@@ -237,10 +237,10 @@ SP<ModernMeshItemGroup>	PLYImport::readBinData(unsigned char* bindata,ModernMesh
 
 	// check structure type
 	int structSize = 0;
-	CoreItemSP	description = MakeCoreVector();
+	CoreItemSP	description = MakeCoreMap();
 	// always have vertices
-	CoreItemSP	vertices = MakeCoreNamedVector("vertices");
-	description->set("",vertices);
+	CoreItemSP	vertices = MakeCoreVector();
+	description->set("vertices",vertices);
 
 	structSize += 3 * sizeof(float);
 
@@ -250,15 +250,15 @@ SP<ModernMeshItemGroup>	PLYImport::readBinData(unsigned char* bindata,ModernMesh
 	// vertices have a color, so  
 	if (l_hasColor != -1)
 	{
-		CoreItemSP	colors = MakeCoreNamedVector("colors");
-		description->set("", colors);
+		CoreItemSP	colors = MakeCoreVector();
+		description->set("colors", colors);
 		structSize += 4 * sizeof(float);
 	}
 
 	if (l_hasNormal != -1)
 	{
-		CoreItemSP	normal = MakeCoreNamedVector("normals");
-		description->set("", normal);
+		CoreItemSP	normal = MakeCoreVector();
+		description->set("normals", normal);
 		structSize += 3 * sizeof(float);
 	}
 
@@ -267,14 +267,14 @@ SP<ModernMeshItemGroup>	PLYImport::readBinData(unsigned char* bindata,ModernMesh
 	v[1] = new unsigned char[structSize];
 	v[2] = new unsigned char[structSize];
 
-	currentMesh->StartMeshGroup((CoreVector*)description.get());
+	currentMesh->StartMeshGroup((CoreMap<std::string>*)description.get());
 
 	// build triangles
 
 	unsigned int face_index;
 	unsigned char* currrentReadInFace = facedata;
 
-	kstl::vector<unsigned int>	indices;
+	std::vector<unsigned int>	indices;
 	indices.reserve(4);
 
 	for (face_index = 0; face_index<m_ElementDescriptors[1].m_count; face_index++)

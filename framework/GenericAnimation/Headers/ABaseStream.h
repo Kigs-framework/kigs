@@ -33,8 +33,8 @@ public:
 		mPriority = priority;
 		mWeight = weight;
 		mSpeed = speed;
-		mStartTime = KFLOAT_ZERO;
-		mLocalTime = KFLOAT_ZERO;
+		mStartTime = 0.0f;
+		mLocalTime = 0.0f;
 		mChannel = channel;
 		mLoop = loop;
 	};
@@ -134,7 +134,7 @@ public:
 	*/
 	// ******************************
 
-	virtual kstl::string    GetSystemType() = 0;
+	virtual std::string    GetSystemType() = 0;
 
 
 	// ******************************
@@ -501,9 +501,9 @@ protected:
 	{
 		// here we need to patch starttime so that the animation is still correct
 
-		if (speed != KFLOAT_CONST(0.0))
+		if (speed != 0.0f)
 		{
-			if (mSpeed != KFLOAT_CONST(0.0))
+			if (mSpeed != 0.0f)
 			{
 				mStartTime += (ATimeValue)((Float)mLocalTime / mSpeed - (Float)mLocalTime / speed);
 			}

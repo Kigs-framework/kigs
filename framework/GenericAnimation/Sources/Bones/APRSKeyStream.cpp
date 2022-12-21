@@ -19,12 +19,12 @@
 // * - 
 // ******************************
 
-#define COS_EPSILON KFLOAT_CONST(0.000001)
-#define HALFPI KFLOAT_CONST(1.570796326794895)
+#define COS_EPSILON 0.000001f
+#define HALFPI 1.570796326794895f
 
 IMPLEMENT_CLASS_INFO(APRSKeyStream)
 
-APRSKeyStream::APRSKeyStream(const kstl::string& name,CLASS_NAME_TREE_ARG) : APRSStream(name,PASS_CLASS_NAME_TREE_ARG)
+APRSKeyStream::APRSKeyStream(const std::string& name,CLASS_NAME_TREE_ARG) : APRSStream(name,PASS_CLASS_NAME_TREE_ARG)
 {
 }
 
@@ -252,7 +252,7 @@ void    APRSKeyStream::InitFromResource(AnimationResourceInfo* info,IntU32 strea
 	AStreamResourceInfo* ressourceInfo=info->GetStreamResourceInfo(streamIndex);
 
 	m_pPRSInfo=(PRSInfo *)( ((char*)ressourceInfo)+sizeof(AStreamResourceInfo) );
-	m_Length = ((ATimeValue)m_pPRSInfo->m_Length)/KFLOAT_CONST(1000.0f);
+	m_Length = ((ATimeValue)m_pPRSInfo->m_Length)/1000.0f;
 
 
 };

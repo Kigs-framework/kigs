@@ -139,7 +139,7 @@ void progression(double a)
 
 IMPLEMENT_CLASS_INFO(ETC1TextureCompress)
 
-ETC1TextureCompress::ETC1TextureCompress(const kstl::string& name, CLASS_NAME_TREE_ARG) : CoreBaseApplication(name, PASS_CLASS_NAME_TREE_ARG)
+ETC1TextureCompress::ETC1TextureCompress(const std::string& name, CLASS_NAME_TREE_ARG) : CoreBaseApplication(name, PASS_CLASS_NAME_TREE_ARG)
 , m_platform(-1)
 , m_SizeOptimize(false)
 , m_ZipExport(false)
@@ -639,7 +639,7 @@ void ETC1TextureCompress::packInBlock(unsigned int* rgbaread,unsigned int* inBlo
 
 }
 
-void	ETC1TextureCompress::RetreiveShortNameAndExt(const kstl::string& filename,kstl::string& shortname,kstl::string& fileext)
+void	ETC1TextureCompress::RetreiveShortNameAndExt(const std::string& filename,std::string& shortname,std::string& fileext)
 {
 	int pos=(int)filename.rfind("/")+1;
 	int pos1=(int)filename.rfind("\\")+1;
@@ -673,7 +673,7 @@ void	ETC1TextureCompress::RetreiveShortNameAndExt(const kstl::string& filename,k
 void	ETC1TextureCompress::ProtectedInit()
 {
 	// retreive args
-	kstl::vector<kstl::string>::iterator itArgs=mArgs.begin();
+	std::vector<std::string>::iterator itArgs=mArgs.begin();
 	// skip app name
 	itArgs++;
 
@@ -687,8 +687,8 @@ void	ETC1TextureCompress::ProtectedInit()
 
 	int recognizeArgCount=0;
 
-	kstl::string fileNameIn="";
-	kstl::string fileNameOut="";
+	std::string fileNameIn="";
+	std::string fileNameOut="";
 
 	int	compress=-1;
 
@@ -701,7 +701,7 @@ void	ETC1TextureCompress::ProtectedInit()
 
 	for(;itArgs!=mArgs.end();itArgs++)
 	{
-		kstl::string& current=(*itArgs);
+		std::string& current=(*itArgs);
 
 		if(current[0] == '-')
 		{
@@ -711,7 +711,7 @@ void	ETC1TextureCompress::ProtectedInit()
 				case 'q':
 				{
 					itArgs++;
-					kstl::string askedq=(*itArgs);
+					std::string askedq=(*itArgs);
 					
 					quality=atoi(askedq.c_str());
 
@@ -721,7 +721,7 @@ void	ETC1TextureCompress::ProtectedInit()
 				case 'p':
 				{
 					itArgs++;
-					kstl::string askedp=(*itArgs);
+					std::string askedp=(*itArgs);
 					
 					perceptual=atoi(askedp.c_str());
 
@@ -757,7 +757,7 @@ void	ETC1TextureCompress::ProtectedInit()
 			case 'c':
 				{
 					itArgs++;
-					kstl::string askedcompress=(*itArgs);
+					std::string askedcompress=(*itArgs);
 					if(askedcompress == "ETC1")
 					{
 						compress=(int)ETC1;
@@ -797,7 +797,7 @@ void	ETC1TextureCompress::ProtectedInit()
 			case 'd':
 				{
 					itArgs++;
-					kstl::string askedcompress=(*itArgs);
+					std::string askedcompress=(*itArgs);
 					if(askedcompress == "ANDROID")
 					{
 						m_platform=PLATFORM_ANDROID;
@@ -817,7 +817,7 @@ void	ETC1TextureCompress::ProtectedInit()
 			case 'r': // resize policy
 			{
 				itArgs++;
-				kstl::string askedresizeP = (*itArgs);
+				std::string askedresizeP = (*itArgs);
 				if (askedresizeP == "p2")
 				{
 					m_resizePolicy = -1;
@@ -896,7 +896,7 @@ void	ETC1TextureCompress::ProtectedInit()
 		progressMultiplicateur=10.0f;
 	}
 
-	kstl::string shortname,ext;
+	std::string shortname,ext;
 	if(fileNameOut == "")
 	{
 		RetreiveShortNameAndExt(fileNameIn,shortname,ext);
@@ -1446,7 +1446,7 @@ const unsigned int FCC_DXT1=*(unsigned int*)"DXT1";
 const unsigned int FCC_DXT3=*(unsigned int*)"DXT3";
 const unsigned int FCC_DXT5=*(unsigned int*)"DXT5";
 
-bool	ETC1TextureCompress::exportDDS(SP<TinyImage> toexport,const kstl::string& outfile,int quality,int perceptual)
+bool	ETC1TextureCompress::exportDDS(SP<TinyImage> toexport,const std::string& outfile,int quality,int perceptual)
 {
 	int width,height,dstFormat;
 				

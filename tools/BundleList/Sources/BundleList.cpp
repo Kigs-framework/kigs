@@ -32,13 +32,13 @@ void	BundleList::ProtectedInit()
 
 
 	// retreive args
-	kstl::vector<kstl::string>::iterator itArgs = mArgs.begin();
+	std::vector<std::string>::iterator itArgs = mArgs.begin();
 	// skip app name
 	itArgs++;
 
 	for (; itArgs != mArgs.end(); itArgs++)
 	{
-		kstl::string& current = (*itArgs);
+		std::string& current = (*itArgs);
 
 		if (current.at(0) == '-')
 		{

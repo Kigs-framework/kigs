@@ -19,7 +19,7 @@
 
 IMPLEMENT_CLASS_INFO(ABoneChannel)
 
-ABoneChannel::ABoneChannel(const kstl::string& name,CLASS_NAME_TREE_ARG) : AChannel<PRSKey>(name,PASS_CLASS_NAME_TREE_ARG)
+ABoneChannel::ABoneChannel(const std::string& name,CLASS_NAME_TREE_ARG) : AChannel<PRSKey>(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	m_CurrentPRS.SetIdentity();
 }
@@ -42,7 +42,7 @@ void    ABoneChannel::SetStandStreamData()
 	maInt restype(*this,false,"type",Resource_Bone_Information);
 	maInt result(*this,false,"result",0);
 	
-	kstl::vector<CoreModifiableAttribute*> params;
+	std::vector<CoreModifiableAttribute*> params;
 	params.push_back(&copythis);
 	params.push_back(&restype);
 	params.push_back(&result);

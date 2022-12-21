@@ -13,7 +13,7 @@
 
 IMPLEMENT_CLASS_INFO(APRSBezierKeyStream)
 
-APRSBezierKeyStream::APRSBezierKeyStream(const kstl::string& name,CLASS_NAME_TREE_ARG) : APRSKeyStream(name,PASS_CLASS_NAME_TREE_ARG)
+APRSBezierKeyStream::APRSBezierKeyStream(const std::string& name,CLASS_NAME_TREE_ARG) : APRSKeyStream(name,PASS_CLASS_NAME_TREE_ARG)
 {
 
 }
@@ -25,8 +25,8 @@ APRSBezierKeyStream::~APRSBezierKeyStream()
 
 
 
-#define COS_EPSILON KFLOAT_CONST(0.000001)
-#define HALFPI KFLOAT_CONST(1.570796326794895)
+#define COS_EPSILON 0.000001f
+#define HALFPI 1.570796326794895f
 
 // 
 //	Interpolate between p1 and p2 and use p0 and p3 to get tangent
@@ -35,7 +35,7 @@ APRSBezierKeyStream::~APRSBezierKeyStream()
 void	APRSBezierKeyStream::BezierInterp(const AMPoint3* p0,const AMPoint3* p1,const AMPoint3* p2,const AMPoint3* p3,AMPoint3& result,const Float& t)
 {
 	AMPoint3 t1,t2;	// tangent
-	kfloat	onmt=KFLOAT_CONST(1.0f)-t;	// 1-t
+	float	onmt=1.0f-t;	// 1-t
 
 	// check if p0 exist
 	if(p0)
@@ -43,7 +43,7 @@ void	APRSBezierKeyStream::BezierInterp(const AMPoint3* p0,const AMPoint3* p1,con
 		// use vector p0p2 as tangent 
 		t1=*p2;
 		t1-=*p0;
-		t1*=(KFLOAT_CONST(0.5f))*onmt*onmt*t;	// pre-multiply the vector by the right coef for the final cubic interpolation
+		t1*=(0.5f)*onmt*onmt*t;	// pre-multiply the vector by the right coef for the final cubic interpolation
 	}
 	else // if p0 is NULL, then use vector p1p2 as starting tangent
 	{
@@ -58,7 +58,7 @@ void	APRSBezierKeyStream::BezierInterp(const AMPoint3* p0,const AMPoint3* p1,con
 		// use vector p3p1 as tangent 
 		t2=*p1;
 		t2-=*p3;
-		t2*=KFLOAT_CONST(0.5f)*onmt*t*t;
+		t2*=0.5f*onmt*t*t;
 	}
 	else // if p3 is NULL, use p2p1 as tangent
 	{
@@ -69,10 +69,10 @@ void	APRSBezierKeyStream::BezierInterp(const AMPoint3* p0,const AMPoint3* p1,con
 
 	// cubic interpolation
 
-	result = *p1*(onmt*onmt*(onmt+(KFLOAT_CONST(3.0f))*t));
+	result = *p1*(onmt*onmt*(onmt+(3.0f)*t));
 	result+= t1;
 	result+= t2;
-	result+= *p2*(t*t*(t+(KFLOAT_CONST(3.0f))*onmt));
+	result+= *p2*(t*t*(t+(3.0f)*onmt));
 };
 
 // 
@@ -91,14 +91,14 @@ void	APRSBezierKeyStream::BezierInterp(const AMQuat* q0,const AMQuat* q1,const A
 	{
 		t1=*q2;
 		t1-=*q0;
-		t1*=KFLOAT_CONST(0.5f)*KFLOAT_CONST(1.0f)/KFLOAT_CONST(3.0f);
+		t1*=0.5f*1.0f/3.0f;
 		t1+=*q1;
 	}
 	else
 	{
 		t1=*q2;
 		t1-=*q1;
-		t1*=KFLOAT_CONST(1.0f)/KFLOAT_CONST(3.0f);
+		t1*=1.0f/3.0f;
 		t1+=*q1;
 	}
 
@@ -107,14 +107,14 @@ void	APRSBezierKeyStream::BezierInterp(const AMQuat* q0,const AMQuat* q1,const A
 	{
 		t2=*q3;
 		t2-=*q1;
-		t2*=KFLOAT_CONST(-0.5f)*KFLOAT_CONST(1.0f)/KFLOAT_CONST(3.0f);
+		t2*=-0.5f*1.0f/3.0f;
 		t2+=*q2;
 	}
 	else
 	{
 		t2=*q1;
 		t2-=*q2;
-		t2*=KFLOAT_CONST(1.0f)/KFLOAT_CONST(3.0f);
+		t2*=1.0f/3.0f;
 		t2+=*q2;
 	}
 

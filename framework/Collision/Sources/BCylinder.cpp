@@ -4,9 +4,9 @@
 IMPLEMENT_CLASS_INFO(BCylinder)
 
 IMPLEMENT_CONSTRUCTOR(BCylinder)
-, mRadius(*this, false, LABEL_AND_ID(Radius), KFLOAT_CONST(0.0))
-,mHeight(*this, false, LABEL_AND_ID(Height), KFLOAT_CONST(0.0))
-, mAxle(*this, false, LABEL_AND_ID(Axle), "X", "Y", "Z")
+, mRadius(*this, false, "Radius", 0.0f)
+,mHeight(*this, false, "Height", 0.0f)
+, mAxle(*this, false, "Axle", "X", "Y", "Z")
 {
 }
 

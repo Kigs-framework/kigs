@@ -15,7 +15,7 @@
 
 IMPLEMENT_CLASS_INFO(APRSStream)
 
-APRSStream::APRSStream(const kstl::string& name,CLASS_NAME_TREE_ARG) : AStream<PRSKey>(name,PASS_CLASS_NAME_TREE_ARG)
+APRSStream::APRSStream(const std::string& name,CLASS_NAME_TREE_ARG) : AStream<PRSKey>(name,PASS_CLASS_NAME_TREE_ARG)
 {
 }
 
@@ -154,11 +154,11 @@ void	APRSStream::LERPData(LocalToGlobalBaseType* data, Float t)
 	PRSKey *				prsKey = (PRSKey *)data;
 
 	// Calculate new position
-	prsKey->m_PositionKey *= (KFLOAT_CONST(1.0f)) - t;
+	prsKey->m_PositionKey *= (1.0f) - t;
 	prsKey->m_PositionKey += m_CurrentPRSKey.m_PositionKey * t;
 #ifndef NO_SCALE
 	// Calculate new scale
-	prsKey->m_ScaleKey *= (KFLOAT_CONST(1.0f)) - t;
+	prsKey->m_ScaleKey *= (1.0f) - t;
 	prsKey->m_ScaleKey += m_CurrentPRSKey.m_ScaleKey * t;
 #endif
 	// Calculate new rotation
@@ -184,7 +184,7 @@ ATimeValue    APRSStream::GetStreamLength()
 // * - from AStream
 // ******************************
 
-kstl::string    APRSStream::GetSystemType()
+std::string    APRSStream::GetSystemType()
 {
 	return "ABoneSystem";
 };
@@ -205,12 +205,12 @@ void APRSStream::IdentityData(LocalToGlobalBaseType* data)
 {
 	PRSKey *				prsKey = (PRSKey *)data;
 
-	prsKey->m_PositionKey.x = prsKey->m_PositionKey.y = prsKey->m_PositionKey.z = KFLOAT_CONST(0.0f);
+	prsKey->m_PositionKey.x = prsKey->m_PositionKey.y = prsKey->m_PositionKey.z = 0.0f;
 
 	prsKey->m_RotationKey.SetIdentity();
 
 #ifndef NO_SCALE
-	prsKey->m_ScaleKey.x = prsKey->m_ScaleKey.y = prsKey->m_ScaleKey.z = KFLOAT_CONST(1.0f);
+	prsKey->m_ScaleKey.x = prsKey->m_ScaleKey.y = prsKey->m_ScaleKey.z = 1.0f;
 #endif
 };
 

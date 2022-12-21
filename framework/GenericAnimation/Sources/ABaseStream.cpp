@@ -15,7 +15,7 @@
 #include "ABaseChannel.h"
 
 IMPLEMENT_CLASS_INFO(ABaseStream)
-ABaseStream::ABaseStream(const kstl::string& name, CLASS_NAME_TREE_ARG)
+ABaseStream::ABaseStream(const std::string& name, CLASS_NAME_TREE_ARG)
 	: CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 
 {}
@@ -32,7 +32,7 @@ void    ABaseStream::SetTime(ATimeValue t)
 		ATimeValue delta = (ATimeValue)((Float)end_time / mSpeed);
 		mHasLoop = false;
 		// Catch Up
-		while(new_time < KFLOAT_ZERO)
+		while(new_time < 0.0f)
         {
             if(mRepeatCount != 1)
             {
@@ -46,7 +46,7 @@ void    ABaseStream::SetTime(ATimeValue t)
 			else
             {
                 mEndReached=true;
-                new_time = KFLOAT_ZERO;
+                new_time = 0.0f;
             }
         }
 
@@ -94,9 +94,9 @@ void    ABaseStream::SetTimeWithoutLoop(ATimeValue t)
 		ATimeValue  new_time=(ATimeValue)((Float)(t-mStartTime)*mSpeed);
         mOutsideAnimFlag=false;
 
-        if(new_time < KFLOAT_ZERO)
+        if(new_time < 0.0f)
         {
-            new_time = KFLOAT_ZERO;
+            new_time = 0.0f;
             mOutsideAnimFlag=true;
         }
         if(new_time > end_time)
@@ -130,14 +130,14 @@ void    ABaseStream::SetTimeWithStartLoop(ATimeValue t)
 		ATimeValue  new_time=(ATimeValue)((Float)(t-mStartTime)*mSpeed);
         mOutsideAnimFlag=false;
 
-        if(new_time < KFLOAT_ZERO)
+        if(new_time < 0.0f)
         {
             new_time = end_time;
 			mOutsideAnimFlag=true;
         }
         if(new_time > end_time)
         {
-            new_time = KFLOAT_ZERO;
+            new_time = 0.0f;
 			mOutsideAnimFlag=true;
         }
 		

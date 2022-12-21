@@ -68,7 +68,7 @@ public:
 	*/
 	// ******************************
 	
-	kstl::string    GetChannelType() override
+	std::string    GetChannelType() override
 	{
 		return "ABoneChannel";
 	}

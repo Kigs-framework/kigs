@@ -21,9 +21,9 @@ public:
 	DECLARE_CLASS_INFO(STLImport,CoreModifiable,Renderer);
 	
 	//! builds an list of kmesh
-	STLImport(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	STLImport(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
-	kstl::vector<CMSP>&	GetMeshes()
+	std::vector<CMSP>&	GetMeshes()
 	{
 		return m_MeshList;
 	}
@@ -47,7 +47,7 @@ protected:
 	
 	maString								m_FileName;
 
-	kstl::vector<CMSP>			m_MeshList;
+	std::vector<CMSP>			m_MeshList;
 
 	void	ReinitReadBuffers();
 
@@ -55,6 +55,6 @@ protected:
 	unsigned int							m_ReadTriangleIndex;
 
 
-	kstl::string							m_CurrentObjectName;
+	std::string							m_CurrentObjectName;
 };
 #endif //_STLIMPORT_H_

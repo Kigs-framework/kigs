@@ -21,8 +21,8 @@ IMPLEMENT_CLASS_INFO(STLImport)
 /*
  *	Constructor
  */
-STLImport::STLImport(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
-,m_FileName(*this,true,LABEL_AND_ID(FileName))
+STLImport::STLImport(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
+,m_FileName(*this,true,"FileName")
 ,m_ReadTriangleBuffer(nullptr)
 {
 	
@@ -41,7 +41,7 @@ void	STLImport::InitModifiable()
 	{
 		SP<FilePathManager>	pathManager=KigsCore::GetSingleton("FilePathManager");
 
-		kstl::string fullfilename;
+		std::string fullfilename;
 
 		SmartPointer<FileHandle> fullfilenamehandle;
 		fullfilenamehandle = pathManager->FindFullName(m_FileName);
@@ -67,15 +67,15 @@ void	STLImport::InitModifiable()
 					AsciiParserUtils word(line);
 					line.GetWord(word); // solid
 					line.GetWord(word); // solid name
-					m_CurrentObjectName = (kstl::string)(word);
+					m_CurrentObjectName = (std::string)(word);
 
 					FileParser.GetLine(line, true);
 					line.GetWord(word); // facet
-					while ((kstl::string)word == "facet")
+					while ((std::string)word == "facet")
 					{
 						readFacet& current = (*m_ReadTriangleBuffer)[m_ReadTriangleIndex];
 						line.GetWord(word); // normal
-						if ((kstl::string)word == "normal")
+						if ((std::string)word == "normal")
 						{
 							line.ReadFloat(current.mNormal.x);
 							line.ReadFloat(current.mNormal.y);
@@ -88,7 +88,7 @@ void	STLImport::InitModifiable()
 						{
 							FileParser.GetLine(line, true); // vertex vi
 							line.GetWord(word); // normal
-							if ((kstl::string)word == "vertex")
+							if ((std::string)word == "vertex")
 							{
 								line.ReadFloat(current.mVertex[vi].x);
 								line.ReadFloat(current.mVertex[vi].y);
@@ -145,11 +145,11 @@ bool	STLImport::CheckAscii(unsigned char* buffer, unsigned int l)
 	AsciiParserUtils word(line);
 	if (line.GetChars(word, 6))
 	{
-		if ((kstl::string)word == "solid ")
+		if ((std::string)word == "solid ")
 		{
 			FileParser.GetLine(line, true); // get next line
 			line.GetWord(word);
-			if (((kstl::string)word == "endsolid") || ((kstl::string)word == "facet"))
+			if (((std::string)word == "endsolid") || ((std::string)word == "facet"))
 			{
 				return true;
 			}
@@ -191,9 +191,9 @@ void	STLImport::createObjectFromReadedData()
 		
 	int structSize=0;
 
-	CoreItemSP	description = MakeCoreVector();
-	CoreItemSP	vertices = MakeCoreNamedVector("vertices");
-	description->set("", vertices);
+	CoreItemSP	description = MakeCoreMap();
+	CoreItemSP	vertices = MakeCoreVector();
+	description->set("vertices", vertices);
 
 	structSize += 3 * sizeof(float);
 
@@ -209,7 +209,7 @@ void	STLImport::createObjectFromReadedData()
 	v[1]=new unsigned char[structSize];
 	v[2]=new unsigned char[structSize];
 
-	newmesh->StartMeshGroup((CoreVector*)description.get(), m_ReadTriangleIndex);
+	newmesh->StartMeshGroup((CoreMap<std::string>*)description.get(), m_ReadTriangleIndex);
 	
 		// build triangles
 

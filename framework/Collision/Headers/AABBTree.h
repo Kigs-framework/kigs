@@ -149,7 +149,7 @@ protected:
 	template<typename t>
 	void Build2(AABBTree* root,BuildTriangle<t>* TrArray, BuildTriangle<t>* TmpTrArray, unsigned int TrCount, Point3D* VertexArray,const int leafSize,int lastSortMode,BBox currentbbox);
 
-	void RescursiveSearchMesh(Node3D *root, kstl::vector<ModernMesh*>	&list);
+	void RescursiveSearchMesh(Node3D *root, std::vector<ModernMesh*>	&list);
 	
 	/*! \brief triangle count in this BBox
 	*/
@@ -235,11 +235,11 @@ public:
 
 	unsigned int GetVertexCount() const { return mVertexCount; }
 
-	kstl::vector<unsigned int>&	GetIndexlist1()
+	std::vector<unsigned int>&	GetIndexlist1()
 	{
 		return *mIndexlist1;
 	}
-	kstl::vector<unsigned int>&	GetIndexlist2()
+	std::vector<unsigned int>&	GetIndexlist2()
 	{
 		return *mIndexlist2;
 	}
@@ -277,8 +277,8 @@ protected:
 	}
 
 	// temporary construction buffer
-	kstl::vector<unsigned int>* mIndexlist1 = nullptr;
-	kstl::vector<unsigned int>* mIndexlist2 = nullptr;
+	std::vector<unsigned int>* mIndexlist1 = nullptr;
+	std::vector<unsigned int>* mIndexlist2 = nullptr;
 
 	virtual bool CallLocalRayIntersection(Hit& hit, const Point3D& start, const Vector3D& dir)  const override;
 	virtual bool CallLocalRayIntersection(std::vector<Hit>& hit, const Point3D& start, const Vector3D& dir)  const override;

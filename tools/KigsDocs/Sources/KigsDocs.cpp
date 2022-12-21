@@ -106,15 +106,15 @@ void	KigsDocs::ProtectedInit()
 
 	// parse arguments
 	// retreive args
-	kstl::vector<kstl::string>::iterator itArgs = mArgs.begin();
+	std::vector<std::string>::iterator itArgs = mArgs.begin();
 	// skip app name
 	itArgs++;
 
-	kstl::string outpath = "";
+	std::string outpath = "";
 
 	for (; itArgs != mArgs.end(); itArgs++)
 	{
-		kstl::string& current = (*itArgs);
+		std::string& current = (*itArgs);
 
 		if (current.at(0) == '-')
 		{
@@ -330,7 +330,7 @@ void	KigsDocs::ExportDetailedAttribute(std::ofstream& DocFile, const std::pair<s
 	// type specific details
 	if (currentAttr->getType() == ATTRIBUTE_TYPE::ENUM)
 	{
-		kstl::vector<kstl::string> values = currentAttr->getEnumElements();
+		std::vector<std::string> values = currentAttr->getEnumElements();
 		DocFile << " { \"";
 		bool first = true;
 		for (const auto& str : values)

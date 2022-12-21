@@ -68,7 +68,7 @@ struct ChannelData
 	std::vector<RotationKey>	rotationKeys;
 	std::vector<ScaleKey>		scaleKeys;
 	std::string				channelTarget;
-	kfloat length;
+	float length;
 };
 
 struct AnimationData

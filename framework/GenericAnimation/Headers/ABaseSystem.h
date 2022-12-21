@@ -80,7 +80,7 @@ public:
 	*/
 	// ******************************
 	
-	virtual kstl::string    GetChannelType() = 0;
+	virtual std::string    GetChannelType() = 0;
 	
 	// ******************************
 	// * Animate

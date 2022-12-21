@@ -26,11 +26,11 @@ class CollisionModule : public ModuleBase
 public:
 
 	DECLARE_CLASS_INFO(CollisionModule,ModuleBase,Collision)
-    CollisionModule(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+    CollisionModule(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	~CollisionModule() override;
 
 	//! module init
-    void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 	
 	//! module close
     void Close() override;         

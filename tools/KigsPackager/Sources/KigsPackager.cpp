@@ -31,7 +31,7 @@ IMPLEMENT_CLASS_INFO(KigsPackager)
 //-------------------------------------------------------------------------
 //Constructor
 
-KigsPackager::KigsPackager(const kstl::string& name, CLASS_NAME_TREE_ARG):
+KigsPackager::KigsPackager(const std::string& name, CLASS_NAME_TREE_ARG):
 CoreBaseApplication(name, PASS_CLASS_NAME_TREE_ARG)
 {
 
@@ -42,7 +42,7 @@ KigsPackager::~KigsPackager()
 	
 }
 
-void	KigsPackager::RetreiveShortNameAndExt(const kstl::string& filename,kstl::string& shortname,kstl::string& fileext)
+void	KigsPackager::RetreiveShortNameAndExt(const std::string& filename,std::string& shortname,std::string& fileext)
 {
 	int pos=static_cast<int>(filename.rfind("/"))+1;
 	int pos1=static_cast<int>(filename.rfind("\\"))+1;
@@ -87,7 +87,7 @@ void	KigsPackager::ProtectedInit()
 	InitExternClasses();
 
 	// retreive args
-	kstl::vector<kstl::string>::iterator itArgs=mArgs.begin();
+	std::vector<std::string>::iterator itArgs=mArgs.begin();
 	// skip app name
 	itArgs++;
 
@@ -99,13 +99,13 @@ void	KigsPackager::ProtectedInit()
 		exit(-1);
 	}
 
-	kstl::string fileNameIn="";
-	kstl::string fileNameOut="";
-	kstl::string packageRootName = "";
+	std::string fileNameIn="";
+	std::string fileNameOut="";
+	std::string packageRootName = "";
 
 	for(;itArgs!=mArgs.end();itArgs++)
 	{
-		kstl::string& current=(*itArgs);
+		std::string& current=(*itArgs);
 
 		if(current.at(0) == '-')
 		{

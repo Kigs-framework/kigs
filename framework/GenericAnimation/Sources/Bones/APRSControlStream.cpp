@@ -20,7 +20,7 @@
 
 IMPLEMENT_CLASS_INFO(APRSControlStream)
 
-APRSControlStream::APRSControlStream(const kstl::string& name,CLASS_NAME_TREE_ARG) : APRSStream(name,PASS_CLASS_NAME_TREE_ARG)
+APRSControlStream::APRSControlStream(const std::string& name,CLASS_NAME_TREE_ARG) : APRSStream(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	m_pPRSInfo = NULL;
     mPriority = 50;
@@ -128,7 +128,7 @@ AnimationResourceInfo* APRSControlStream::CreateAnimationResourceInfo(IntU32 gro
 
 AnimationResourceInfo* APRSControlStream::CreateAnimationResourceInfo(IntU32 group_id_count,IntU32* group_id_list)
 {
-	kstl::string	currentType = "APRSControlStream";
+	std::string	currentType = "APRSControlStream";
     // create the AnimationResourceInfo instance
 	// first compute size
     IntU32  total_size=sizeof(AResourceFileHeader); // header

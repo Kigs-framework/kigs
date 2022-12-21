@@ -54,13 +54,13 @@ public:
 	struct SegmentList
 	{
 		Node3D*					mParentNode;
-		kstl::vector<Segment3D>	mSegmentList;
+		std::vector<Segment3D>	mSegmentList;
 	};
 
 	struct PlaneIntersectionInfoStruct
 	{
 		// per flag map
-		kstl::map<unsigned int, kstl::vector < SegmentList > > mFoundIntersection;
+		std::map<unsigned int, std::vector < SegmentList > > mFoundIntersection;
 	};
 
 	DECLARE_CLASS_INFO(CollisionManager, CoreModifiable, Collision)
@@ -96,11 +96,11 @@ public:
 
 	/*! \brief intersect a sphere with all objects in the collision manager
 	*/
-	CoreModifiable* GetSphereIntersection(const Point3D& start, const Vector3D& dir, const kfloat Radius, kdouble &Distance, Vector3D& normal, Point3D& intersectP, unsigned int a_itemCategory = ALL);
+	CoreModifiable* GetSphereIntersection(const Point3D& start, const Vector3D& dir, const float Radius, double &Distance, Vector3D& normal, Point3D& intersectP, unsigned int a_itemCategory = ALL);
 
 	/*! \brief return altitude for the current point
 	*/
-	bool GetAltitude(kfloat x, kfloat y, kfloat z, kfloat &alt);
+	bool GetAltitude(float x, float y, float z, float &alt);
 
 	/*! \brief set collision mask for a specific mItem
 	*/
@@ -179,9 +179,9 @@ protected:
 
 	/*! \brief recursive internal method
 	*/
-	bool GetLocalSphereIntersection(Hit &hit, const Point3D& start, const Vector3D& dir, const kfloat &Radius, CollisionBaseObject* pCollisionObject);
+	bool GetLocalSphereIntersection(Hit &hit, const Point3D& start, const Vector3D& dir, const float &Radius, CollisionBaseObject* pCollisionObject);
 
-	bool GetLocalCylinderIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const Vector3D& CDir, const kfloat &CHeight, const kfloat& CRadius, CollisionBaseObject* pCollisionObject, unsigned int a_itemCategory = ALL);
+	bool GetLocalCylinderIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const Vector3D& CDir, const float &CHeight, const float& CRadius, CollisionBaseObject* pCollisionObject, unsigned int a_itemCategory = ALL);
 
 	/*! \brief recursive internal method
 	*/
@@ -196,15 +196,15 @@ protected:
 
 	/*! \brief recursive internal method
 	*/
-	bool RecursiveSearchSphereIntersection(Hit &hit, CoreModifiable *currentitem, const Point3D& start, const Vector3D& dir, const kfloat &Radius, unsigned int a_itemCategory = ALL);
+	bool RecursiveSearchSphereIntersection(Hit &hit, CoreModifiable *currentitem, const Point3D& start, const Vector3D& dir, const float &Radius, unsigned int a_itemCategory = ALL);
 
 	/*! \brief recursive internal method
 	*/
-	CoreModifiable*	RecursiveSearchSphereIntersection(OctreeSubNode* currentNode, const Point3D& start, const Vector3D& dir, const kfloat &Radius, const Point3D& lstart, const Vector3D& ldir, const kfloat &lRadius, kdouble &Distance, Vector3D& normal, Point3D& intersectP, bool recurse = true, unsigned int a_itemCategory = ALL);
+	CoreModifiable*	RecursiveSearchSphereIntersection(OctreeSubNode* currentNode, const Point3D& start, const Vector3D& dir, const float &Radius, const Point3D& lstart, const Vector3D& ldir, const float &lRadius, double &Distance, Vector3D& normal, Point3D& intersectP, bool recurse = true, unsigned int a_itemCategory = ALL);
 
 	/*! \brief recursive internal method
 	*/
-	bool GetLocalSphereIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const kfloat &Radius, CollisionBaseObject* pCollisionObject, unsigned int a_itemCategory = ALL);
+	bool GetLocalSphereIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const float &Radius, CollisionBaseObject* pCollisionObject, unsigned int a_itemCategory = ALL);
 
 	bool GetLocalPlaneIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const Point3D& planePos, const Vector3D& planeNorm, CollisionBaseObject* pCollisionObject);
 

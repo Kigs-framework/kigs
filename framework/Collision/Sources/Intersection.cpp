@@ -11,14 +11,14 @@ namespace Intersection
 
 bool IntersectRayPlane(const Point3D &rOrigin, const Vector3D &rVector,
 	const Point3D &pOrigin, const Vector3D &pNormal,
-	kdouble &IntersectionDistance,
+	double &IntersectionDistance,
 	CollisionBaseObject* pCollisionObject)
 {
-	kfloat d = -Dot(pNormal, pOrigin);
-	kfloat numer = Dot(pNormal, rOrigin) + d;
-	kfloat denom = Dot(pNormal, rVector);
+	float d = -Dot(pNormal, pOrigin);
+	float numer = Dot(pNormal, rOrigin) + d;
+	float denom = Dot(pNormal, rVector);
 
-	if (denom == KFLOAT_ZERO)  // normal is orthogonal to vector, cant intersect
+	if (denom == 0.0f)  // normal is orthogonal to vector, cant intersect
 		return false;
 
 	double dist = -(numer / denom);
@@ -30,17 +30,17 @@ bool IntersectRayPlane(const Point3D &rOrigin, const Vector3D &rVector,
 }
 
 bool IntersectRayPlane(const Point3D &rOrigin, const Vector3D &rVector,
-	Plane * plane, kdouble &IntersectionDistance)
+	Plane * plane, double &IntersectionDistance)
 {
 	Point3D ori;
 	Vector3D normal;
 	plane->GetPlane(ori, normal);
 
-	kfloat d = -Dot(normal, ori);
-	kfloat numer = Dot(normal, rOrigin) + d;
-	kfloat denom = Dot(normal, rVector);
+	float d = -Dot(normal, ori);
+	float numer = Dot(normal, rOrigin) + d;
+	float denom = Dot(normal, rVector);
 
-	if (denom == KFLOAT_ZERO)  // normal is orthogonal to vector, cant intersect
+	if (denom == 0.0f)  // normal is orthogonal to vector, cant intersect
 		return false;
 
 	double dist = -(numer / denom);
@@ -52,7 +52,7 @@ bool IntersectRayPlane(const Point3D &rOrigin, const Vector3D &rVector,
 }
 
 
-bool IntersectionPlaneAABBTree(const Point3D* vertex_list, const Point3D& o, const Vector3D& n, const AABBTreeNode &pAABB, kstl::vector< Segment3D >& result, const kstl::vector< u8 >& side)
+bool IntersectionPlaneAABBTree(const Point3D* vertex_list, const Point3D& o, const Vector3D& n, const AABBTreeNode &pAABB, std::vector< Segment3D >& result, const std::vector< u8 >& side)
 {
 	bool bresult = false;
 
@@ -172,7 +172,7 @@ bool IntersectionPlaneAABBTree(const Point3D* vertex_list, const Point3D& o, con
 
 }
 
-bool IntersectionPlaneAABBTree(const Point3D& o, const Vector3D& n, const AABBTree &pAABB, kstl::vector< Segment3D >& result)
+bool IntersectionPlaneAABBTree(const Point3D& o, const Vector3D& n, const AABBTree &pAABB, std::vector< Segment3D >& result)
 {
 	// check if plane intersect aabb bbox
 	
@@ -204,7 +204,7 @@ bool IntersectionPlaneAABBTree(const Point3D& o, const Vector3D& n, const AABBTr
 	const Point3D* vertex_list = pAABB.GetVertexList();
 	unsigned int vertex_count = pAABB.GetVertexCount();
 
-	kstl::vector< u8 > sides;
+	std::vector< u8 > sides;
 	sides.resize(vertex_count, 0);
 
 	for (unsigned int i = 0; i < vertex_count; i++)
@@ -232,11 +232,11 @@ bool IntersectionPlaneAABBTree(const Point3D& o, const Vector3D& n, const AABBTr
 	this method is recursive
 */
 bool IntersectionRayAABBTree(const Point3D* vertex_list, const Point3D &RayOrigin, const Vector3D &RayDirection,
-	const AABBTreeNode &pAABB, kdouble &outDistance, Vector3D &outNormal, kfloat &outCoordU, kfloat &outCoordV, s32* outTriangleIndices)
+	const AABBTreeNode &pAABB, double &outDistance, Vector3D &outNormal, float &outCoordU, float &outCoordV, s32* outTriangleIndices)
 {
 	bool found = false;
-	kdouble TempDist = outDistance;
-	kfloat Tempu, Tempv;
+	double TempDist = outDistance;
+	float Tempu, Tempv;
 
 	
 	// check hit on BBox
@@ -307,10 +307,10 @@ bool IntersectionRayAABBTree(const Point3D* vertex_list, const Point3D &RayOrigi
 
 
 bool IntersectionRayAABBTree(const Point3D* vertex_list, const Point3D &RayOrigin, const Vector3D &RayDirection,
-	const AABBTreeNode &pAABB, kstl::vector<Hit>& hits)
+	const AABBTreeNode &pAABB, std::vector<Hit>& hits)
 {
 	bool found = false;
-	kfloat Tempu, Tempv;
+	float Tempu, Tempv;
 	double dist = DBL_MAX;
 	// check hit on BBox
 	if (IntersectionRayBBox(RayOrigin, RayDirection, pAABB.GetBBox().m_Min, pAABB.GetBBox().m_Max))
@@ -364,7 +364,7 @@ bool IntersectionRayAABBTree(const Point3D* vertex_list, const Point3D &RayOrigi
 	}
 
 /*
-void IntersectionAxisAABBTree(kstl::vector<Point2D>& coordinates, Point3D &RayOrigin, const int axisType, AABBTreeNode &pAABB, Point3D* VertexArray)
+void IntersectionAxisAABBTree(std::vector<Point2D>& coordinates, Point3D &RayOrigin, const int axisType, AABBTreeNode &pAABB, Point3D* VertexArray)
 {
 	switch (axisType)
 	{
@@ -383,7 +383,7 @@ void IntersectionAxisAABBTree(kstl::vector<Point2D>& coordinates, Point3D &RayOr
 }
 */
 /*
-void IntersectionXAxisAABBTree(kstl::vector<Point2D>& coordinates, Point3D &RayOrigin, AABBTreeNode &pAABB, Point3D* VertexArray)
+void IntersectionXAxisAABBTree(std::vector<Point2D>& coordinates, Point3D &RayOrigin, AABBTreeNode &pAABB, Point3D* VertexArray)
 {
 
 	// check bbox first
@@ -397,8 +397,8 @@ void IntersectionXAxisAABBTree(kstl::vector<Point2D>& coordinates, Point3D &RayO
 
 			for (i = 0; i < pAABB.TriangleCount; i++)
 			{
-				kfloat x;
-				kfloat dir;
+				float x;
+				float dir;
 				if (IntersectionXAxisTriangle(RayOrigin,
 					VertexArray[pAABB.TriangleArray[i].m_Original->a],
 					VertexArray[pAABB.TriangleArray[i].m_Original->b],
@@ -421,20 +421,20 @@ void IntersectionXAxisAABBTree(kstl::vector<Point2D>& coordinates, Point3D &RayO
 }
 */
 
-bool IntersectionXAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point3D &B, const Point3D &C, kfloat& x, kfloat& dir)
+bool IntersectionXAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point3D &B, const Point3D &C, float& x, float& dir)
 {
 	Vector3D edge1(A, B, asVector{});
 	Vector3D edge2(A, C, asVector{});
 
 	Vector3D n;
 	n.CrossProduct(edge1, edge2);
-	if (n.x > KFLOAT_CONST(0.0001f))
+	if (n.x > 0.0001f)
 	{
-		dir = KFLOAT_CONST(1.0f);
+		dir = 1.0f;
 	}
-	else if (n.x < KFLOAT_CONST(-0.0001f))
+	else if (n.x < -0.0001f)
 	{
-		dir = KFLOAT_CONST(-1.0f);
+		dir = -1.0f;
 	}
 	else
 	{
@@ -443,22 +443,22 @@ bool IntersectionXAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point
 
 	// to optimise (a lot)
 
-	RayOrigin.x = KFLOAT_CONST(-10000.0f);
+	RayOrigin.x =-10000.0f;
 	Vector3D	RayDirection;
-	RayDirection.Set(KFLOAT_CONST(1.0f), KFLOAT_CONST(0.0f), KFLOAT_CONST(0.0f));
+	RayDirection.Set(1.0f, 0.0f, 0.0f);
 
-	kdouble	intersectionDistance;
-	kfloat	u, v;
+	double	intersectionDistance;
+	float	u, v;
 	Vector3D triangle_normal;
 	if (IntersectionRayTriangle(RayOrigin, RayDirection, A, B, C, intersectionDistance, u, v, triangle_normal))
 	{
-		x = intersectionDistance - KFLOAT_CONST(10000.0f);
+		x = intersectionDistance - 10000.0f;
 		return true;
 	}
 	return false;
 }
 
-/*void IntersectionYAxisAABBTree(kstl::vector<Point2D>& coordinates, Point3D &RayOrigin, AABBTreeNode &pAABB, Point3D* VertexArray)
+/*void IntersectionYAxisAABBTree(std::vector<Point2D>& coordinates, Point3D &RayOrigin, AABBTreeNode &pAABB, Point3D* VertexArray)
 {
 	// check bbox first
 	if ((RayOrigin.x >= pAABB.mBBox.m_Min.x) && (RayOrigin.z >= pAABB.mBBox.m_Min.z) &&
@@ -471,8 +471,8 @@ bool IntersectionXAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point
 
 			for (i = 0; i < pAABB.TriangleCount; i++)
 			{
-				kfloat y;
-				kfloat dir;
+				float y;
+				float dir;
 				if (IntersectionYAxisTriangle(RayOrigin,
 					VertexArray[pAABB.TriangleArray[i].m_Original->a],
 					VertexArray[pAABB.TriangleArray[i].m_Original->b],
@@ -494,20 +494,20 @@ bool IntersectionXAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point
 	return;
 }*/
 
-bool IntersectionYAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point3D &B, const Point3D &C, kfloat& y, kfloat& dir)
+bool IntersectionYAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point3D &B, const Point3D &C, float& y, float& dir)
 {
 	Vector3D edge1(A, B, asVector{});
 	Vector3D edge2(A, C, asVector{});
 
 	Vector3D n;
 	n.CrossProduct(edge1, edge2);
-	if (n.y > KFLOAT_CONST(0.0001f))
+	if (n.y > 0.0001f)
 	{
-		dir = KFLOAT_CONST(1.0f);
+		dir = 1.0f;
 	}
-	else if (n.y < KFLOAT_CONST(-0.0001f))
+	else if (n.y <-0.0001f)
 	{
-		dir = KFLOAT_CONST(-1.0f);
+		dir = -1.0f;
 	}
 	else
 	{
@@ -517,23 +517,23 @@ bool IntersectionYAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point
 
 	// to optimise (a lot)
 
-	RayOrigin.y = KFLOAT_CONST(-10000.0f);
+	RayOrigin.y = -10000.0f;
 	Vector3D	RayDirection;
-	RayDirection.Set(KFLOAT_CONST(0.0f), KFLOAT_CONST(1.0f), KFLOAT_CONST(0.0f));
+	RayDirection.Set(0.0f, 1.0f, 0.0f);
 
-	kdouble	intersectionDistance;
-	kfloat	u, v;
+	double	intersectionDistance;
+	float	u, v;
 	Vector3D triangle_normal;
 	if (IntersectionRayTriangle(RayOrigin, RayDirection, A, B, C, intersectionDistance, u, v, triangle_normal))
 	{
-		y = intersectionDistance - KFLOAT_CONST(10000.0f);
+		y = intersectionDistance - 10000.0f;
 		return true;
 	}
 	return false;
 
 }
 
-/*void IntersectionZAxisAABBTree(kstl::vector<Point2D>& coordinates, Point3D &RayOrigin, AABBTreeNode &pAABB, Point3D* VertexArray)
+/*void IntersectionZAxisAABBTree(std::vector<Point2D>& coordinates, Point3D &RayOrigin, AABBTreeNode &pAABB, Point3D* VertexArray)
 {
 	// check bbox first
 	if ((RayOrigin.x >= pAABB.mBBox.m_Min.x) && (RayOrigin.y >= pAABB.mBBox.m_Min.y) &&
@@ -546,8 +546,8 @@ bool IntersectionYAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point
 
 			for (i = 0; i < pAABB.TriangleCount; i++)
 			{
-				kfloat z;
-				kfloat dir;
+				float z;
+				float dir;
 				if (IntersectionZAxisTriangle(RayOrigin,
 					VertexArray[pAABB.TriangleArray[i].m_Original->a],
 					VertexArray[pAABB.TriangleArray[i].m_Original->b],
@@ -575,20 +575,20 @@ bool IntersectionYAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point
 	return;
 }*/
 
-bool IntersectionZAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point3D &B, const Point3D &C, kfloat& z, kfloat& dir)
+bool IntersectionZAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point3D &B, const Point3D &C, float& z, float& dir)
 {
 	Vector3D edge1(A, B, asVector{});
 	Vector3D edge2(A, C, asVector{});
 
 	Vector3D n;
 	n.CrossProduct(edge1, edge2);
-	if (n.z > KFLOAT_CONST(0.0001f))
+	if (n.z > 0.0001f)
 	{
-		dir = KFLOAT_CONST(1.0f);
+		dir = 1.0f;
 	}
-	else if (n.z < KFLOAT_CONST(-0.0001f))
+	else if (n.z < -0.0001f)
 	{
-		dir = KFLOAT_CONST(-1.0f);
+		dir = -1.0f;
 	}
 	else
 	{
@@ -598,16 +598,16 @@ bool IntersectionZAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point
 
 	// to optimise (a lot)
 
-	RayOrigin.z = KFLOAT_CONST(-10000.0f);
+	RayOrigin.z =-10000.0f;
 	Vector3D	RayDirection;
-	RayDirection.Set(KFLOAT_CONST(0.0f), KFLOAT_CONST(0.0f), KFLOAT_CONST(1.0f));
+	RayDirection.Set(0.0f, 0.0f, 1.0f);
 
-	kdouble	intersectionDistance;
-	kfloat	u, v;
+	double	intersectionDistance;
+	float	u, v;
 	Vector3D triangle_normal;
 	if (IntersectionRayTriangle(RayOrigin, RayDirection, A, B, C, intersectionDistance, u, v, triangle_normal))
 	{
-		z = intersectionDistance - KFLOAT_CONST(10000.0f);
+		z = intersectionDistance - 10000.0f;
 		return true;
 	}
 	return false;
@@ -617,7 +617,7 @@ bool IntersectionZAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point
 
 //TODO
 /*
-bool	IntersectTriangleMovingSphere(const Point3D &spherePos1,const Point3D &spherePos2,const kfloat& sphereRadius,const Interval& interval,const Triangle& triangle,kfloat& result)
+bool	IntersectTriangleMovingSphere(const Point3D &spherePos1,const Point3D &spherePos2,const float& sphereRadius,const Interval& interval,const Triangle& triangle,float& result)
 {
 	// first get triangle normal
 	Vector3D	normal;
@@ -629,8 +629,8 @@ bool	IntersectTriangleMovingSphere(const Point3D &spherePos1,const Point3D &sphe
 
 	// find "oriented distance" at time interval.myStart and at time interval.myEnd
 
-	kfloat	odiststart=Dot(normal,Vector3D(triangle.P1,spherePos1));
-	kfloat	odistend=Dot(normal,Vector3D(triangle.P1,spherePos2));
+	float	odiststart=Dot(normal,Vector3D(triangle.P1,spherePos1));
+	float	odistend=Dot(normal,Vector3D(triangle.P1,spherePos2));
 
 	// if sphere never intersect plane during interval, return false directly
 

@@ -56,8 +56,8 @@ void AABBTree::BuildFromTriangleList(Point3D* vertexList, int vertexCount, void*
 	mVertexCount = vertexCount;
 	mTriangleCount = triangleCount;
 
-	kstl::vector<unsigned int>	indexlist1;
-	kstl::vector<unsigned int>	indexlist2;
+	std::vector<unsigned int>	indexlist1;
+	std::vector<unsigned int>	indexlist2;
 	indexlist1.reserve(triangleCount);
 	indexlist2.reserve(triangleCount);
 
@@ -229,15 +229,15 @@ void AABBTreeNode::Build2(AABBTree* root, AABBTreeNode::BuildTriangle<t> * TrArr
 	BBox	bbox1;
 	bbox1.Init(TrArray[0].mBBox);
 	BoxLen = bbox1.m_Max - bbox1.m_Min;
-	kfloat size1 = NormSquare(BoxLen);
+	float size1 = NormSquare(BoxLen);
 	BBox	bbox2;
 	bbox2.Init(TrArray[TrCount - 1].mBBox);
 	BoxLen = bbox2.m_Max - bbox2.m_Min;
-	kfloat size2 = NormSquare(BoxLen);
+	float size2 = NormSquare(BoxLen);
 
-	kstl::vector<unsigned int>&	indexlist1 = root->GetIndexlist1();
+	std::vector<unsigned int>&	indexlist1 = root->GetIndexlist1();
 	indexlist1.clear();
-	kstl::vector<unsigned int>&	indexlist2 = root->GetIndexlist2();
+	std::vector<unsigned int>&	indexlist2 = root->GetIndexlist2();
 	indexlist2.clear();
 	unsigned int titerator;
 	for (titerator = 1; titerator < (TrCount - 1); titerator++)
@@ -256,14 +256,14 @@ void AABBTreeNode::Build2(AABBTree* root, AABBTreeNode::BuildTriangle<t> * TrArr
 		BBox compare1(bbox1);
 		compare1.Update(TrArray[tindex].mBBox);
 		BoxLen = compare1.m_Max - compare1.m_Min;
-		kfloat newSize1 = NormSquare(BoxLen);
-		kfloat ds1 = (newSize1 - size1);
+		float newSize1 = NormSquare(BoxLen);
+		float ds1 = (newSize1 - size1);
 
 		BBox compare2(bbox2);
 		compare2.Update(TrArray[tindex].mBBox);
 		BoxLen = compare2.m_Max - compare2.m_Min;
-		kfloat newSize2 = NormSquare(BoxLen);
-		kfloat ds2 = (newSize2 - size2);
+		float newSize2 = NormSquare(BoxLen);
+		float ds2 = (newSize2 - size2);
 
 		if (ds1 < ds2)
 		{
@@ -342,7 +342,7 @@ void AABBTreeNode::Build2(AABBTree* root, AABBTreeNode::BuildTriangle<t> * TrArr
 	}
 }
 
-void AABBTreeNode::RescursiveSearchMesh(Node3D *root, kstl::vector<ModernMesh*>	&list)
+void AABBTreeNode::RescursiveSearchMesh(Node3D *root, std::vector<ModernMesh*>	&list)
 {
 	for (auto item : root->getItems())
 	{
@@ -378,7 +378,7 @@ void AABBTree::InitDynamicBuffer(int trCount)
 
 bool AABBTree::CallLocalRayIntersection(Hit &hit, const Point3D& start, const Vector3D& dir) const
 {
-	kfloat u, v;
+	float u, v;
 	bool found = Intersection::IntersectionRayAABBTree(GetVertexList(), start, dir, *this, hit.HitDistance, hit.HitNormal, u, v, hit.HitTriangleVertexIndices);
 	if (found && mFaceCount != 0)
 		hit.HitFaceIndex = mFaceIndex;

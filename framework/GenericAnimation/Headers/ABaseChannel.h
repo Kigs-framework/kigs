@@ -92,7 +92,7 @@ public:
 	{
 		result[count++] = GetGroupID();
 		
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 		
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{

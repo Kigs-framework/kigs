@@ -24,22 +24,22 @@ namespace Intersection
 {
 	bool IntersectRayPlane(const Point3D &rOrigin, const Vector3D &rVector,
 		const Point3D &pOrigin, const Vector3D &pNormal,
-		kdouble &IntersectionDistance, CollisionBaseObject* pCollisionObject);
+		double &IntersectionDistance, CollisionBaseObject* pCollisionObject);
 
 	bool IntersectRayPlane(const Point3D &rOrigin, const Vector3D &rVector,
-		Plane * plane,	kdouble &IntersectionDistance);
+		Plane * plane,	double &IntersectionDistance);
 
 	/*!   \brief return true if ray intersect mesh
 		the intersected triangle, distance and uv on triangle are returned
 	*/
 	bool IntersectionRayAABBTree(const Point3D* vertex_list,const Point3D &RayOrigin, const Vector3D &RayDirection,
-		const AABBTreeNode &pAABB, kdouble &IntersectionDistance, Vector3D &IntersectionNormal, kfloat &CoordTri_u, kfloat &CoordTri_v, s32* outTriangleIndices=nullptr);
+		const AABBTreeNode &pAABB, double &IntersectionDistance, Vector3D &IntersectionNormal, float &CoordTri_u, float &CoordTri_v, s32* outTriangleIndices=nullptr);
 
 	bool IntersectionRayAABBTree(const Point3D* vertex_list, const Point3D &RayOrigin, const Vector3D &RayDirection,
-		const AABBTreeNode &pAABB, kstl::vector<Hit>&);
+		const AABBTreeNode &pAABB, std::vector<Hit>&);
 
 	template<int plane>
-	bool IntersectionAxisAlignedPlaneAABBTree(const Point3D* vertex_list, float planeCoordinate,  const AABBTreeNode &pAABB, kstl::vector< Segment3D >& result, const kstl::vector< u8 >& side)
+	bool IntersectionAxisAlignedPlaneAABBTree(const Point3D* vertex_list, float planeCoordinate,  const AABBTreeNode &pAABB, std::vector< Segment3D >& result, const std::vector< u8 >& side)
 	{
 		bool bresult = false;
 
@@ -145,7 +145,7 @@ namespace Intersection
 	}
 
 	template<int plane>
-	bool IntersectionAxisAlignedPlaneAABBTree(float planeCoordinate, const AABBTree &pAABB, kstl::vector< Segment3D >& result)
+	bool IntersectionAxisAlignedPlaneAABBTree(float planeCoordinate, const AABBTree &pAABB, std::vector< Segment3D >& result)
 	{
 		// check if plane intersect aabb bbox
 		if ((pAABB.GetBBox().m_Min[plane] > planeCoordinate) || (pAABB.GetBBox().m_Max[plane] < planeCoordinate))
@@ -158,7 +158,7 @@ namespace Intersection
 		const Point3D* vertex_list = pAABB.GetVertexList();
 		unsigned int vertex_count = pAABB.GetVertexCount();
 
-		kstl::vector< u8 > sides;
+		std::vector< u8 > sides;
 		sides.resize(vertex_count, 0);
 
 		for (unsigned int i = 0; i < vertex_count; i++)
@@ -177,20 +177,20 @@ namespace Intersection
 		return IntersectionAxisAlignedPlaneAABBTree<plane>(vertex_list, planeCoordinate, pAABB, result, sides);
 	}
 
-	bool IntersectionPlaneAABBTree(const Point3D* vertex_list, const Point3D& o, const Vector3D& n, const AABBTreeNode &pAABB, kstl::vector< Segment3D >& result, const kstl::vector< u8 >& side);
+	bool IntersectionPlaneAABBTree(const Point3D* vertex_list, const Point3D& o, const Vector3D& n, const AABBTreeNode &pAABB, std::vector< Segment3D >& result, const std::vector< u8 >& side);
 
-	bool IntersectionPlaneAABBTree(const Point3D& o,const Vector3D& n, const AABBTree &pAABB, kstl::vector< Segment3D >& result);
+	bool IntersectionPlaneAABBTree(const Point3D& o,const Vector3D& n, const AABBTree &pAABB, std::vector< Segment3D >& result);
 
 
 	/*!   \brief return list of intersection between AABBTree and segment // to an axis (x, y or z)
 			for each intersection, return a Point2D containing coordinate of the intersection and direction (+ or -)
 	*/
-	void IntersectionAxisAABBTree(kstl::vector<Point2D>& coordinates, Point3D &RayOrigin, const int axisType, AABBTreeNode &pAABB, Point3D* VertexArray);
+	void IntersectionAxisAABBTree(std::vector<Point2D>& coordinates, Point3D &RayOrigin, const int axisType, AABBTreeNode &pAABB, Point3D* VertexArray);
 
 
-	bool IntersectionXAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point3D &B, const Point3D &C, kfloat& x, kfloat &dir);
-	bool IntersectionYAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point3D &B, const Point3D &C, kfloat& y, kfloat &dir);
-	bool IntersectionZAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point3D &B, const Point3D &C, kfloat& z, kfloat &dir);
+	bool IntersectionXAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point3D &B, const Point3D &C, float& x, float &dir);
+	bool IntersectionYAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point3D &B, const Point3D &C, float& y, float &dir);
+	bool IntersectionZAxisTriangle(Point3D &RayOrigin, const Point3D &A, const Point3D &B, const Point3D &C, float& z, float &dir);
 
 	inline bool SortAxisIntersection(const Point2D& p1, const Point2D& p2)
 	{

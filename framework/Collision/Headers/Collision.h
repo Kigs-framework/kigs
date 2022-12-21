@@ -35,11 +35,11 @@ public:
 	*/
 	static bool CollideSphereSphere(const Point3D &Sphere1Center, 
 							   const Vector3D &Sphere1Velocity, 
-							   const kfloat Sphere1Radius, 
+							   const float Sphere1Radius, 
 							   const Point3D &Sphere2Center, 
 							   const Vector3D &Sphere2Velocity, 
-							   const kfloat Sphere2Radius, 
-							   kfloat &IntersectionTime);
+							   const float Sphere2Radius, 
+							   float &IntersectionTime);
 
 	/*! \brief compute collision between a moving sphere and a single triangle
 		given the sphere origin, radius and velocity, and 3 points, return if there is 
@@ -48,11 +48,11 @@ public:
 	*/
 	static bool CollideSphereTriangle(const Point3D &SphereOrigin,
 							const Vector3D &SphereVelocity,
-							const kfloat SphereRadius,
+							const float SphereRadius,
 							const Point3D &P1,
 							const Point3D &P2,
 							const Point3D &P3,
-							kdouble &IntersectionDistance,
+							double &IntersectionDistance,
 							Vector3D &InteresectionNormal,Point3D &IntersectionPoint);
 
 	/*! \brief compute collision between a moving sphere and a mesh using an already existing AABBTree 
@@ -62,9 +62,9 @@ public:
 	*/
 	static bool CollideSphereAABBTreeNode(const Point3D &SphereOrigin,
 									const Vector3D &SphereVelocity,
-									const kfloat &SphereRadius,
+									const float &SphereRadius,
 									AABBTreeNode &pAABB, Mesh* pMesh,
-									kdouble &IntersectionDistance,
+									double &IntersectionDistance,
 									Vector3D &InteresectionNormal,Point3D &IntersectionPoint);
 
 	/*! \brief compute collision between a ray and a sphere given the ray origin, ray direction in sphere local coords, and sphere radius
@@ -74,8 +74,8 @@ public:
 	static bool CollideRaySphere(
 							const Point3D &RayStartingPoint, 
 							const Vector3D &Raydirection,
-							const kfloat &SphereRadius,
-							kdouble &IntersectionDistance,
+							const float &SphereRadius,
+							double &IntersectionDistance,
 							Vector3D &IntersectionNormal);
 
 	static bool CollideRayPlane(
@@ -83,23 +83,23 @@ public:
 		const Vector3D &Raydirection,
 		const Point3D &PlanePos,
 		const Vector3D &PlaneNorm,
-		kdouble &IntersectionDistance,
+		double &IntersectionDistance,
 		Vector3D &IntersectionNormal);
 
 	static bool CollideRayPlane(
 		const Point3D &RayStartingPoint,
 		const Vector3D &Raydirection,
 		Plane *Plane,
-		kdouble &IntersectionDistance,
+		double &IntersectionDistance,
 		Vector3D &IntersectionNormal);
 
 	static bool CollideRayCylinder(
 		const Point3D &RayStartingPoint,
 		const Vector3D &RayDirection,
 		const Vector3D &CylinderDirection,
-		const kfloat &CylinderHeight,
-		const kfloat &CylinderRadius,
-		kdouble &IntersectionDistance,
+		const float &CylinderHeight,
+		const float &CylinderRadius,
+		double &IntersectionDistance,
 		Vector3D &IntersectionNormal);
 
 #ifdef COUNTCOLLISION
@@ -123,10 +123,10 @@ protected:
 	*/
 	static bool CollideSphereAABBTreeNode(const Point3D &SphereOrigin,
 									const Vector3D &SphereVelocity,
-									const kfloat &SphereRadius,
+									const float &SphereRadius,
 									AABBTreeNode &pAABB, Mesh* pMesh,
 									const BBox& MovingSphereBBox,
-									kdouble &IntersectionDistance,
+									double &IntersectionDistance,
 									Vector3D &InteresectionNormal,Point3D &IntersectionPoint);
 
 };
@@ -164,12 +164,12 @@ public:
 	eSideOfPlane Side(const Point3D &P)
 	{
 		 Vector3D dir = mOrigin - P;
-		 kfloat d = Dot(dir, mNormal);
+		 float d = Dot(dir, mNormal);
  
-		 if (d<KFLOAT_CONST(-0.001f))
+		 if (d<-0.001f)
 		  return FRONT;	
 		 else
-		 if (d>KFLOAT_CONST(0.001f))
+		 if (d>0.001f)
 		  return BACK;	
 
 		return ON;

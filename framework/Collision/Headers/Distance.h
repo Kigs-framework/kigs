@@ -23,32 +23,32 @@ public:
 	/*!   \brief return distance from point to triangle
 		  triangle is given by points A,B,C
 	*/	  
-	static kfloat PointTriangle(const Point3D &P, const Point3D &A, const Point3D &B, const Point3D &C); 
+	static float PointTriangle(const Point3D &P, const Point3D &A, const Point3D &B, const Point3D &C); 
 
 	/*!   \brief return distance from point to mesh
 		  the triangle from the mesh, where the distance is shortest is returned 
 	*/
-	static kfloat PointMesh(const Point3D &P, const Mesh* pMesh, Mesh::Triangle* &TrianglePtr); 
+	static float PointMesh(const Point3D &P, const Mesh* pMesh, Mesh::Triangle* &TrianglePtr); 
 
 	/*!   \brief return distance from point to axis aligned box
 		  the box is defined by a vector (diagonal), and centered on the origin point (0,0,0)
 	*/
-	static kfloat PointAABBAtOrigin(const Point3D &P, const Vector3D &BoxSize, Point3D &MinDistPoint);
+	static float PointAABBAtOrigin(const Point3D &P, const Vector3D &BoxSize, Point3D &MinDistPoint);
 
 	/*!   \brief return distance from point to axis aligned box
 		  the box is defined by min and max points
 	*/
-	static kfloat PointAABB(const Point3D &P, const Point3D &BMin,const Point3D &BMax, Point3D &MinDistPoint);
+	static float PointAABB(const Point3D &P, const Point3D &BMin,const Point3D &BMax, Point3D &MinDistPoint);
 
 	/*!   \brief return distance from point to oriented box
 		  the box is defined a size (diagonal vector) and a transform matrix (rotation/scale and position)
 	*/
-	static kfloat PointOBB(const Point3D &P, const Matrix3x4 &OrientationMatrix, Vector3D &BoxSize, Point3D &MinDistPoint);
+	static float PointOBB(const Point3D &P, const Matrix3x4 &OrientationMatrix, Vector3D &BoxSize, Point3D &MinDistPoint);
 
 	/*!   \brief return distance from point to plane
 		  plane is given by point PlaneOrigin and normal PlaneNormal
 	*/
-	static kfloat PointPlane(const Point3D &P, const Vector3D &PlaneNormal, const Point3D &PlaneOrigin);
+	static float PointPlane(const Point3D &P, const Vector3D &PlaneNormal, const Point3D &PlaneOrigin);
 };
 
 

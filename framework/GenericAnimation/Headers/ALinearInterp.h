@@ -39,7 +39,7 @@ public:
     ALinearInterp(Float start,Float end,ATimeValue start_t,ATimeValue l_t, const KigsID& data) :
 		  m_StartingValue(start)
 		, m_EndingMinusStartingValue(end - start)
-		, m_TimeCoef(KFLOAT_CONST(1.0f) / (Float)l_t)
+		, m_TimeCoef(1.0f / (Float)l_t)
 		, m_StartingTime(start_t)
 		, m_Data(data)
     {
@@ -68,18 +68,18 @@ public:
 
     Float  GetFade(ATimeValue t,bool& finished)
     {
-        // get coef between KFLOAT_CONST(0.0) and KFLOAT_CONST(1.0)
+        // get coef between 0.0f and 1.0f
 
         finished=false;
         Float coef=(Float)(t-m_StartingTime)*m_TimeCoef;
 
-        if(coef < KFLOAT_CONST(0.0f))
+        if(coef < 0.0f)
         {
-            coef = KFLOAT_CONST(0.0f);
+            coef = 0.0f;
         }
-        if(coef >= KFLOAT_CONST(1.0f))
+        if(coef >= 1.0f)
         {
-            coef = KFLOAT_CONST(1.0f);
+            coef = 1.0f;
             finished=true;
         }
 

@@ -51,8 +51,8 @@ IMPLEMENT_CONSTRUCTOR(AObject)
 void    AObject::AttachSystem(SP<ABaseSystem> system)
 {
 	
-	kstl::set<SP<ABaseSystem>>::iterator itbegin = mSystemSet.begin();
-	kstl::set<SP<ABaseSystem>>::iterator itend = mSystemSet.end();
+	std::set<SP<ABaseSystem>>::iterator itbegin = mSystemSet.begin();
+	std::set<SP<ABaseSystem>>::iterator itend = mSystemSet.end();
 	
 	while (itbegin != itend)
 	{
@@ -100,7 +100,7 @@ void    AObject::Animate(ATimeValue t)
 	IntU32   fade_count=mFadeList.size();
 	if (fade_count)
 	{
-		kstl::vector<ALinearInterp*>::iterator it=mFadeList.begin();
+		std::vector<ALinearInterp*>::iterator it=mFadeList.begin();
 		
 		while(fade_count--)
 		{
@@ -113,7 +113,7 @@ void    AObject::Animate(ATimeValue t)
 			// this animation has reached a 0 weight
 			if(finished == true)
 			{
-				if(coef <= KFLOAT_CONST(0.0f))
+				if(coef <= 0.0f)
 				{
 					StopAnimation(info1);
 				}
@@ -181,8 +181,8 @@ void    AObject::AddAnimation(const std::string& fname)
 	
 	mALinksTable[fname]=tmp_links;
 	
-	kstl::string ClassName;
-	kstl::string StreamClassName;
+	std::string ClassName;
+	std::string StreamClassName;
 
 	StreamClassName = info->getStreamType();
 	
@@ -194,13 +194,13 @@ void    AObject::AddAnimation(const std::string& fname)
 		return; 
 	}
 	
-	kstl::string streamName=getName();
+	std::string streamName=getName();
 	streamName += "_AnimationStream";
-	//streamName += "_" + kstl::to_string(GetAnimCount());
+	//streamName += "_" + std::to_string(GetAnimCount());
 	
 	SP<ABaseStream> stream=KigsCore::GetInstanceOf(streamName,StreamClassName);
 	
-	kstl::string system_type=stream->GetSystemType();
+	std::string system_type=stream->GetSystemType();
 	
 	// +---------
 	// | search for a system handling this streams 
@@ -223,7 +223,7 @@ void    AObject::AddAnimation(const std::string& fname)
 		// | create a new system to handle this animation
 		// +---------
 		
-		kstl::string systemName=getName();
+		std::string systemName=getName();
 		systemName += "_AnimationSystem";
 		
 		system=KigsCore::GetInstanceOf(systemName, system_type);
@@ -301,7 +301,7 @@ void    AObject::AddAnimation(const std::string& fname)
 		
 		streamName = getName();
 		streamName += "_AnimationStream";
-		//streamName += "_" + kstl::to_string(GetAnimCount());
+		//streamName += "_" + std::to_string(GetAnimCount());
 		
 		stream=KigsCore::GetInstanceOf(streamName, StreamClassName);
 		
@@ -764,7 +764,7 @@ void    AObject::FadeAnimationTo(const KigsID& info1, const KigsID& info2,ATimeV
 	// animations can not be faded twice at the same time, so stop 
 	// other fades 
 	
-	kstl::vector<ALinearInterp*>::iterator it=mFadeList.begin();
+	std::vector<ALinearInterp*>::iterator it=mFadeList.begin();
 	
 	while (it != mFadeList.end())
 	{
@@ -783,14 +783,14 @@ void    AObject::FadeAnimationTo(const KigsID& info1, const KigsID& info2,ATimeV
 	
 	// add fade for first animation
 	
-	ALinearInterp* fade=new ALinearInterp(w,KFLOAT_CONST(0.0f),t,fade_length,info1);
+	ALinearInterp* fade=new ALinearInterp(w,0.0f,t,fade_length,info1);
 	mFadeList.push_back(fade);
 	
-	SetAnimationWeight(info2,KFLOAT_CONST(0.0f));
+	SetAnimationWeight(info2,0.0f);
 	
 	// add fade for second animation
 	
-	fade=new ALinearInterp(KFLOAT_CONST(0.0),KFLOAT_CONST(1.0f),t,fade_length,info2);
+	fade=new ALinearInterp(0.0f,1.0f,t,fade_length,info2);
 	mFadeList.push_back(fade);
 };
 
@@ -836,13 +836,13 @@ void    AObject::SynchroniseAnimations(const KigsID& info1, const KigsID& info2,
 	SP<ABaseStream> stream1=(links1->GetStreamArray())[0];
 	SP<ABaseStream> stream2=(links2->GetStreamArray())[0];
 	
-	if(stream1->mSpeed == KFLOAT_CONST(0.0f))
+	if(stream1->mSpeed == 0.0f)
 	{
-		SetAnimationSpeed(info1,KFLOAT_CONST(1.0f));
+		SetAnimationSpeed(info1,1.0f);
 	}
 	
 	Float coef=(Float)synchro1+((Float)(stream1->mStartTime-stream2->mStartTime)*stream1->mSpeed);
-	if(coef != KFLOAT_CONST(0.0f))
+	if(coef != 0.0f)
 	{
 		SetAnimationSpeed(info2,(Float)synchro2*stream1->mSpeed/coef);
 	}

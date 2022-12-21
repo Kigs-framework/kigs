@@ -19,7 +19,7 @@
 
 IMPLEMENT_CLASS_INFO(ABoneSystem)
 
-ABoneSystem::ABoneSystem(const kstl::string& name,CLASS_NAME_TREE_ARG) : ASystem(name,PASS_CLASS_NAME_TREE_ARG)
+ABoneSystem::ABoneSystem(const std::string& name,CLASS_NAME_TREE_ARG) : ASystem(name,PASS_CLASS_NAME_TREE_ARG)
 , mParentNode3D(0)
 , mBoneMatrixArray(0)
 , mSkeleton(0)
@@ -108,8 +108,8 @@ void	ABoneSystem::SearchParentNode3D()
 			// add matrices to shader
 			CMSP uniformMatrixArray = KigsCore::GetInstanceOf(getName() + "SkinShaderMatrix", "API3DUniformMatrixArray");
 			
-			uniformMatrixArray->setValue(LABEL_TO_ID(ArraySize), 66);
-			uniformMatrixArray->setValue(LABEL_TO_ID(Name), "bone_matrix");
+			uniformMatrixArray->setValue("ArraySize", 66);
+			uniformMatrixArray->setValue("Name", "bone_matrix");
 			uniformMatrixArray->Init();
 			shader->addItem(uniformMatrixArray);
 			shader->Init();
@@ -117,7 +117,7 @@ void	ABoneSystem::SearchParentNode3D()
 			
 			// retreive matrix buffer
 			void* buffer = nullptr;
-			uniformMatrixArray->getValue(LABEL_TO_ID(MatrixArray), buffer);
+			uniformMatrixArray->getValue("MatrixArray", buffer);
 			mBoneMatrixArray =(Matrix4x4*)((AlignedCoreRawBuffer<16,char>*)buffer)->buffer();
 		}
 	}

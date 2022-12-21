@@ -7,8 +7,8 @@ IMPLEMENT_CLASS_INFO(Panel)
 
 
 IMPLEMENT_CONSTRUCTOR(Plane)
-, mPosition(*this, false, LABEL_AND_ID(Position), 0, 0, 0)
-, mNormal(*this, false, LABEL_AND_ID(Normal), 0, 0, 1)
+, mPosition(*this, false, "Position", 0, 0, 0)
+, mNormal(*this, false, "Normal", 0, 0, 1)
 {
 	mIsDynamic = false;
 }
@@ -104,9 +104,9 @@ void Panel::DrawDebug(const Hit& h, const Matrix3x4& mat)
 #endif
 
 IMPLEMENT_CONSTRUCTOR(Panel)
-, mSize(*this, false, LABEL_AND_ID(Size), 0, 0)
-, mHitPos(*this, false, LABEL_AND_ID(HitPos), -1, -1)
-, mUp(*this, false, LABEL_AND_ID(Up), 0, 1, 0)
+, mSize(*this, false, "Size", 0, 0)
+, mHitPos(*this, false, "HitPos", -1, -1)
+, mUp(*this, false, "Up", 0, 1, 0)
 {
 }
 

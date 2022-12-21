@@ -23,28 +23,28 @@ unsigned int	Collision::mCollisionTestCount;
 */
 bool Collision::CollideSphereSphere(const Point3D &Sphere1Center,
 	const Vector3D &Sphere1Velocity,
-	const kfloat Sphere1Radius,
+	const float Sphere1Radius,
 	const Point3D &Sphere2Center,
 	const Vector3D &Sphere2Velocity,
-	const kfloat Sphere2Radius,
-	kfloat &IntersectionTime)
+	const float Sphere2Radius,
+	float &IntersectionTime)
 {
 	//! first compute sphere1 to sphere 2 vector
 	Vector3D diffC = Sphere2Center - Sphere1Center;
 	//! then compute sphere2 relative velocity to sphere1   
 	Vector3D diffV = Sphere2Velocity - Sphere1Velocity;
 	//! distance equation between sphere1 and sphere2 
-	kfloat a = Dot(diffV, diffV);
-	kfloat b = Dot(diffC, diffV);
-	kfloat c = Sphere1Radius + Sphere2Radius;
+	float a = Dot(diffV, diffV);
+	float b = Dot(diffC, diffV);
+	float c = Sphere1Radius + Sphere2Radius;
 	c = Dot(diffC, diffC) - c*c;
-	kfloat delta = b*b - a*c;
-	if (delta < KFLOAT_ZERO) return false;
+	float delta = b*b - a*c;
+	if (delta < 0.0f) return false;
 	delta = sqrtf(delta);
 
 	IntersectionTime = (-b - delta) / a;
 	//! return true if collision occur in the next second (or between start and end position)
-	if (IntersectionTime >= KFLOAT_CONST(0.0f) && IntersectionTime <= KFLOAT_CONST(1.0f)) return true;
+	if (IntersectionTime >= 0.0f && IntersectionTime <= 1.0f) return true;
 
 	return false;
 }
@@ -72,22 +72,22 @@ bool Collision::CheckPointInTriangle(const Point3D& point, const Point3D& A, con
 	Vector3D	cross1;
 	cross1.CrossProduct(AB,Vector3D(A,point));
 
-	kfloat sign1=Dot(cross1,referenceV);
+	float sign1=Dot(cross1,referenceV);
 
 	cross1.CrossProduct(BC,Vector3D(B,point));
 
-	kfloat sign2=Dot(cross1,referenceV);
+	float sign2=Dot(cross1,referenceV);
 
 	cross1.CrossProduct(CA,Vector3D(C,point));
 
-	kfloat sign3=Dot(cross1,referenceV);
+	float sign3=Dot(cross1,referenceV);
 
-	if((sign1<=KFLOAT_ZERO)&&(sign2<=KFLOAT_ZERO)&&(sign3<=KFLOAT_ZERO))
+	if((sign1<=0.0f)&&(sign2<=0.0f)&&(sign3<=0.0f))
 	{
 		return true;
 	}
 
-	if((sign1>=KFLOAT_ZERO)&&(sign2>=KFLOAT_ZERO)&&(sign3>=KFLOAT_ZERO))
+	if((sign1>=0.0f)&&(sign2>=0.0f)&&(sign3>=0.0f))
 	{
 		return true;
 	}
@@ -102,20 +102,20 @@ bool Collision::CheckPointInTriangle(const Point3D& point, const Point3D& A, con
 	Vector3D v2(A, point, asVector{});
 
 	// Compute dot products
-	kfloat dot00 = Dot(v0, v0);
-	kfloat dot01 = Dot(v0, v1);
-	kfloat dot02 = Dot(v0, v2);
-	kfloat dot11 = Dot(v1, v1);
-	kfloat dot12 = Dot(v1, v2);
+	float dot00 = Dot(v0, v0);
+	float dot01 = Dot(v0, v1);
+	float dot02 = Dot(v0, v2);
+	float dot11 = Dot(v1, v1);
+	float dot12 = Dot(v1, v2);
 
 	// Compute barycentric coordinates
 	//invDenom = 1 / (dot00 * dot11 - dot01 * dot01)
-	kfloat u = (dot11 * dot02 - dot01 * dot12)/* * invDenom*/;
-	kfloat v = (dot00 * dot12 - dot01 * dot02)/* * invDenom*/;
+	float u = (dot11 * dot02 - dot01 * dot12)/* * invDenom*/;
+	float v = (dot00 * dot12 - dot01 * dot02)/* * invDenom*/;
 
-	kfloat denom = (dot00 * dot11 - dot01 * dot01);
+	float denom = (dot00 * dot11 - dot01 * dot01);
 	// Check if point is in triangle
-	return (u >= KFLOAT_ZERO) && (v >= KFLOAT_ZERO) && ((u + v) <= denom);
+	return (u >= 0.0f) && (v >= 0.0f) && ((u + v) <= denom);
 
 }
 
@@ -123,23 +123,23 @@ bool Collision::CheckPointInTriangle(const Point3D& point, const Point3D& A, con
 	search for the lowest positive root of the a*t*t + b*t + c = 0 function
 	return true if one positive root is found, t parameter is used to return the founded root
 */
-bool LowestPositiveRoot_SimplifiedQuadratic(const kfloat &a, const kfloat &b, const kfloat &c, kdouble &t)
+bool LowestPositiveRoot_SimplifiedQuadratic(const float &a, const float &b, const float &c, double &t)
 {
-	kfloat delta = b*b - a*c;
-	if (delta >= KFLOAT_CONST(0.0f))
+	float delta = b*b - a*c;
+	if (delta >= 0.0f)
 	{
 		delta = sqrtf(delta);
 		t = (-b - delta) / a;
-		if (t >= KFLOAT_CONST(0.0f))
+		if (t >= 0.0f)
 		{
-			kfloat t2 = (-b + delta) / a;
-			if (t2 >= KFLOAT_CONST(0.0f) && t2 < t) t = t2;
+			float t2 = (-b + delta) / a;
+			if (t2 >= 0.0f && t2 < t) t = t2;
 			return true;
 		}
 		else
 		{
 			t = (-b + delta) / a;
-			return t >= KFLOAT_CONST(0.0f);
+			return t >= 0.0f;
 		}
 	}
 	return false;
@@ -152,34 +152,34 @@ bool LowestPositiveRoot_SimplifiedQuadratic(const kfloat &a, const kfloat &b, co
 
 bool Collision::CollideSphereTriangle(const Point3D &SphereOrigin,
 	const Vector3D &SphereVelocity,
-	const kfloat SphereRadius,
+	const float SphereRadius,
 	const Point3D &P1,
 	const Point3D &P2,
 	const Point3D &P3,
-	kdouble &IntersectionTime,
+	double &IntersectionTime,
 	Vector3D &Normal,
 	Point3D &IntersectionPoint)
 {
 #ifdef COUNTCOLLISION
 	mCollisionTestCount++;
 #endif
-	kfloat t0, t1;
-	kfloat a;
+	float t0, t1;
+	float a;
 
 	//Normal.CrossProduct(Vector3D(P1,P2),Vector3D(P1,P3));
 //	Normal.Normalize();	
 	//! compute the "normal velocity", ie the velocity of the sphere on the plane's normal axis
-	kfloat nv = Dot(Normal, SphereVelocity);
+	float nv = Dot(Normal, SphereVelocity);
 
-	//! first return false if sphere is moving far away from the triangle (nv>KFLOAT_CONST(0.0)) 
-	if (nv > KFLOAT_CONST(0.0f))
+	//! first return false if sphere is moving far away from the triangle (nv>0.0f) 
+	if (nv > 0.0f)
 	{
 		return false;		// moving away
 	}
 
 	//! compute distance from sphere origin to plane 
-	kfloat dnAO = Dot(Normal, Vector3D(P1, SphereOrigin, asVector{}));	// distance to plane
-	if (nv == KFLOAT_CONST(0.0f))	// mouvement dans le plan du triangle
+	float dnAO = Dot(Normal, Vector3D(P1, SphereOrigin, asVector{}));	// distance to plane
+	if (nv == 0.0f)	// mouvement dans le plan du triangle
 	{
 		return false;
 	}
@@ -190,7 +190,7 @@ bool Collision::CollideSphereTriangle(const Point3D &SphereOrigin,
 	// swap so t0 is min, t1 is max
 	if (t0 > t1)
 	{
-		kfloat temp = t1;
+		float temp = t1;
 		t1 = t0;
 		t0 = temp;
 	}
@@ -198,15 +198,15 @@ bool Collision::CollideSphereTriangle(const Point3D &SphereOrigin,
 	/*! if collision has already occured or there's no collision between sphere start/end pos
 		then return false
 	*/
-	if (t0 > KFLOAT_CONST(1.0f) || t1 < KFLOAT_CONST(0.0f))
+	if (t0 > 1.0f || t1 < 0.0f)
 	{
 		return false;
 	}
 
-	if (t0 < KFLOAT_CONST(0.0)) t0 = KFLOAT_CONST(0.0);
-	if (t1 < KFLOAT_CONST(0.0)) t1 = KFLOAT_CONST(0.0);
-	if (t0 > KFLOAT_CONST(1.0)) t0 = KFLOAT_CONST(1.0);
-	if (t1 > KFLOAT_CONST(1.0)) t1 = KFLOAT_CONST(1.0);
+	if (t0 < 0.0f) t0 = 0.0f;
+	if (t1 < 0.0f) t1 = 0.0f;
+	if (t0 > 1.0f) t0 = 1.0f;
+	if (t1 > 1.0f) t1 = 1.0f;
 
 
 	IntersectionTime = t0;
@@ -232,15 +232,15 @@ bool Collision::CollideSphereTriangle(const Point3D &SphereOrigin,
 	*/
 	IntersectionTime = 1000.0;
 	bool Found = false;
-	kdouble t;
+	double t;
 	Vector3D P1O(P1, SphereOrigin, asVector{});
 	Vector3D P2O(P2, SphereOrigin, asVector{});
 	Vector3D P3O(P3, SphereOrigin, asVector{});
-	kfloat SquareRadius = SphereRadius*SphereRadius;
-	kfloat SquareVelocity = NormSquare(SphereVelocity);
+	float SquareRadius = SphereRadius*SphereRadius;
+	float SquareVelocity = NormSquare(SphereVelocity);
 
-	kfloat b = Dot(P1O, SphereVelocity);
-	kfloat c = NormSquare(P1O) - SquareRadius;
+	float b = Dot(P1O, SphereVelocity);
+	float c = NormSquare(P1O) - SquareRadius;
 	if (LowestPositiveRoot_SimplifiedQuadratic(SquareVelocity, b, c, IntersectionTime))
 	{
 		IntersectionPoint = P1;
@@ -273,9 +273,9 @@ bool Collision::CollideSphereTriangle(const Point3D &SphereOrigin,
 		nearest edge (P1,P2), (P2,P3), (P3,P1)
 	*/
 	Vector3D e(P1, P2, asVector{});
-	kfloat SquareEdge = NormSquare(e);
-	kfloat ev = Dot(e, SphereVelocity);
-	kfloat ePO = Dot(e, P1O);
+	float SquareEdge = NormSquare(e);
+	float ev = Dot(e, SphereVelocity);
+	float ePO = Dot(e, P1O);
 	a = SquareEdge*-SquareVelocity + ev*ev;
 	b = -SquareEdge*Dot(P1O, SphereVelocity) + ev*ePO;
 	c = SquareEdge*(SquareRadius - NormSquare(P1O)) + ePO*ePO;
@@ -283,8 +283,8 @@ bool Collision::CollideSphereTriangle(const Point3D &SphereOrigin,
 	{
 		if (t < IntersectionTime)
 		{
-			kfloat f0 = (ev*(kfloat)t + Dot(e, P1O)) / SquareEdge;
-			if (f0 >= KFLOAT_CONST(0.0f) && f0 <= KFLOAT_CONST(1.0f))
+			float f0 = (ev*(float)t + Dot(e, P1O)) / SquareEdge;
+			if (f0 >= 0.0f && f0 <= 1.0f)
 			{
 				IntersectionTime = t;
 				IntersectionPoint = P1 + (Point3D)e*f0;
@@ -304,8 +304,8 @@ bool Collision::CollideSphereTriangle(const Point3D &SphereOrigin,
 	{
 		if (t < IntersectionTime)
 		{
-			kfloat f0 = (ev*(kfloat)t + Dot(e, P2O)) / SquareEdge;
-			if (f0 >= KFLOAT_CONST(0.0f) && f0 <= KFLOAT_CONST(1.0f))
+			float f0 = (ev*(float)t + Dot(e, P2O)) / SquareEdge;
+			if (f0 >= 0.0f && f0 <= 1.0f)
 			{
 				IntersectionTime = t;
 				IntersectionPoint = P2 + (Point3D)e*f0;
@@ -325,8 +325,8 @@ bool Collision::CollideSphereTriangle(const Point3D &SphereOrigin,
 	{
 		if (t < IntersectionTime)
 		{
-			kfloat f0 = (ev*(kfloat)t + Dot(e, P3O)) / SquareEdge;
-			if (f0 >= KFLOAT_CONST(0.0f) && f0 <= KFLOAT_CONST(1.0f))
+			float f0 = (ev*(float)t + Dot(e, P3O)) / SquareEdge;
+			if (f0 >= 0.0f && f0 <= 1.0f)
 			{
 				IntersectionTime = t;
 				IntersectionPoint = P3 + (Point3D)e*f0;
@@ -339,7 +339,7 @@ bool Collision::CollideSphereTriangle(const Point3D &SphereOrigin,
 	*/
 	if (Found)
 	{
-		Normal = (SphereOrigin + (Point3D)SphereVelocity*(kfloat)IntersectionTime) - IntersectionPoint;
+		Normal = (SphereOrigin + (Point3D)SphereVelocity*(float)IntersectionTime) - IntersectionPoint;
 		Normal.Normalize();
 		return true;
 	}
@@ -354,9 +354,9 @@ bool Collision::CollideSphereTriangle(const Point3D &SphereOrigin,
 bool Collision::CollideSphereAABBTreeNode(
 	const Point3D &SphereOrigin,
 	const Vector3D &SphereVelocity,
-	const kfloat &SphereRadius,
+	const float &SphereRadius,
 	AABBTreeNode &pAABB, Mesh* pMesh,
-	kdouble &IntersectionDistance,
+	double &IntersectionDistance,
 	Vector3D &IntersectionNormal, Point3D &IntersectionPoint)
 {
 
@@ -365,7 +365,7 @@ bool Collision::CollideSphereAABBTreeNode(
 	//! first compute the bounding box for the sphere along its trajectory
 	BBox	MovingSphereBBox;
 
-	if (SphereVelocity.x >= KFLOAT_CONST(0.0f))
+	if (SphereVelocity.x >= 0.0f)
 	{
 		MovingSphereBBox.m_Max.x = SphereOrigin.x + SphereVelocity.x + SphereRadius;
 		MovingSphereBBox.m_Min.x = SphereOrigin.x - SphereRadius;
@@ -376,7 +376,7 @@ bool Collision::CollideSphereAABBTreeNode(
 		MovingSphereBBox.m_Min.x = SphereOrigin.x + SphereVelocity.x - SphereRadius;
 	}
 
-	if (SphereVelocity.y >= KFLOAT_CONST(0.0f))
+	if (SphereVelocity.y >= 0.0f)
 	{
 		MovingSphereBBox.m_Max.y = SphereOrigin.y + SphereVelocity.y + SphereRadius;
 		MovingSphereBBox.m_Min.y = SphereOrigin.y - SphereRadius;
@@ -386,7 +386,7 @@ bool Collision::CollideSphereAABBTreeNode(
 		MovingSphereBBox.m_Max.y = SphereOrigin.y + SphereRadius;
 		MovingSphereBBox.m_Min.y = SphereOrigin.y + SphereVelocity.y - SphereRadius;
 	}
-	if (SphereVelocity.z >= KFLOAT_CONST(0.0f))
+	if (SphereVelocity.z >= 0.0f)
 	{
 		MovingSphereBBox.m_Max.z = SphereOrigin.z + SphereVelocity.z + SphereRadius;
 		MovingSphereBBox.m_Min.z = SphereOrigin.z - SphereRadius;
@@ -409,14 +409,14 @@ bool Collision::CollideSphereAABBTreeNode(
 */
 bool Collision::CollideSphereAABBTreeNode(const Point3D &SphereOrigin,
 	const Vector3D &SphereVelocity,
-	const kfloat &SphereRadius,
+	const float &SphereRadius,
 	AABBTreeNode &pAABB, Mesh* pMesh,
 	const BBox& MovingSphereBBox,
-	kdouble &IntersectionDistance,
+	double &IntersectionDistance,
 	Vector3D &IntersectionNormal, Point3D &IntersectionPoint)
 {
-	//kfloat LocalDistance;
-	kdouble TempDist = IntersectionDistance;
+	//float LocalDistance;
+	double TempDist = IntersectionDistance;
 	Vector3D TempNormal;
 	Point3D  tempPoint;
 
@@ -482,9 +482,9 @@ bool Collision::CollideRayCylinder(
 	const Point3D &RayStartingPoint,
 	const Vector3D &RayDirection,
 	const Vector3D &CylinderDirection,
-	const kfloat &CylinderHeight,
-	const kfloat &CylinderRadius,
-	kdouble &IntersectionDistance,
+	const float &CylinderHeight,
+	const float &CylinderRadius,
+	double &IntersectionDistance,
 	Vector3D &IntersectionNormal)
 {
 	/*auto dist3D_Line_to_Line =[](Point3D p0, Vector3D v0, Point3D p1, Vector3D v1, Point3D & out0, Point3D & out1)
@@ -763,8 +763,8 @@ bool Collision::CollideRayCylinder(
 bool Collision::CollideRaySphere(
 	const Point3D &RayStartingPoint,
 	const Vector3D &Raydirection,
-	const kfloat &SphereRadius,
-	kdouble &IntersectionDistance,
+	const float &SphereRadius,
+	double &IntersectionDistance,
 	Vector3D &IntersectionNormal)
 {
 	Vector3D L_AB_Vector = Vector3D(RayStartingPoint);
@@ -821,7 +821,7 @@ bool Collision::CollideRaySphere(
 			}
 #endif
 			IntersectionDistance = t1;
-			IntersectionNormal = RayStartingPoint + (kfloat)IntersectionDistance*Raydirection;
+			IntersectionNormal = RayStartingPoint + (float)IntersectionDistance*Raydirection;
 			return true;
 		}
 		// else the intersection point is at t0
@@ -837,7 +837,7 @@ bool Collision::CollideRaySphere(
 #endif
 
 			IntersectionDistance = t0;
-			IntersectionNormal = RayStartingPoint + (kfloat)IntersectionDistance*Raydirection;
+			IntersectionNormal = RayStartingPoint + (float)IntersectionDistance*Raydirection;
 			return true;
 		}
 	}
@@ -850,7 +850,7 @@ bool Collision::CollideRayPlane(
 	const Vector3D &Raydirection,
 	const Point3D &PlanePos,
 	const Vector3D &PlaneNorm,
-	kdouble &IntersectionDistance,
+	double &IntersectionDistance,
 	Vector3D &IntersectionNormal)
 { 
 
@@ -877,7 +877,7 @@ bool Collision::CollideRayPlane(
 	const Point3D &RayStartingPoint,
 	const Vector3D &Raydirection,
 	Plane *plane,
-	kdouble &IntersectionDistance,
+	double &IntersectionDistance,
 	Vector3D &IntersectionNormal)
 {
 	Point3D pos;

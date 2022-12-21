@@ -21,11 +21,11 @@ IMPLEMENT_CLASS_INFO(OBJImport)
 /*
  *	Constructor
  */
-OBJImport::OBJImport(const kstl::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
-,m_FileName(*this,true,LABEL_AND_ID(FileName))
-,m_FirstMesh(*this,false,LABEL_AND_ID(FirstMesh),"") // used only to get value
-,m_ModernMesh(*this,true,LABEL_AND_ID(ModernMesh),false)
-,m_ExportPath(*this, false, LABEL_AND_ID(ExportPath), "")
+OBJImport::OBJImport(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
+,m_FileName(*this,true,"FileName")
+,m_FirstMesh(*this,false,"FirstMesh","") // used only to get value
+,m_ModernMesh(*this,true,"ModernMesh",false)
+,m_ExportPath(*this, false, "ExportPath", "")
 ,m_ReadVertexBuffer(nullptr)
 ,m_ReadTextCoordsBuffer(nullptr)
 ,m_ReadNormalBuffer(nullptr)
@@ -67,7 +67,7 @@ void	OBJImport::InitModifiable()
 		m_currentMatRead=&m_materialList["emptyMat"];
 		m_currentMatRead->name="emptyMat";
 
-		kstl::string fullfilename;
+		std::string fullfilename;
 
 		SmartPointer<FileHandle> fullfilenamehandle;
 		fullfilenamehandle = pathManager->FindFullName(m_FileName);
@@ -129,14 +129,14 @@ void	OBJImport::InitModifiable()
 						
 						case 'm':
 							{
-								if(static_cast<kstl::string>(word)=="mtllib")
+								if(static_cast<std::string>(word)=="mtllib")
 								{
 									AsciiParserUtils fname(line);
 									if(line.GetTrailingPart(fname))
 									{
-										if(static_cast<kstl::string>(fname) != "")
+										if(static_cast<std::string>(fname) != "")
 										{
-											MTLImport(static_cast<kstl::string>(fname));
+											MTLImport(static_cast<std::string>(fname));
 										}
 									}
 								}
@@ -144,7 +144,7 @@ void	OBJImport::InitModifiable()
 							break;
 						case 'u':
 							{
-								if(static_cast<kstl::string>(word)=="usemtl")
+								if(static_cast<std::string>(word)=="usemtl")
 								{
 									// retrieve mat name
 									AsciiParserUtils matname(line);
@@ -215,8 +215,8 @@ void	OBJImport::createObjectFromReadedData()
 {
 	// init all materials
 
-	kstl::map<kstl::string,ReadMaterial>::iterator itmat=m_materialList.begin();
-	kstl::map<kstl::string,ReadMaterial>::iterator itmatend=m_materialList.end();
+	std::map<std::string,ReadMaterial>::iterator itmat=m_materialList.begin();
+	std::map<std::string,ReadMaterial>::iterator itmatend=m_materialList.end();
 
 	while(itmat != itmatend)
 	{
@@ -229,8 +229,8 @@ void	OBJImport::createObjectFromReadedData()
 		SP<ModernMesh> newmesh=KigsCore::GetInstanceOf(m_CurrentObjectName,"ModernMesh");
 		newmesh->setValue("Optimize", true);
 		// create each group
-		kstl::map<kstl::string,FacetGroup>::iterator itgroup=m_FacetGroupList.begin();
-		kstl::map<kstl::string,FacetGroup>::iterator itgroupend=m_FacetGroupList.end();
+		std::map<std::string,FacetGroup>::iterator itgroup=m_FacetGroupList.begin();
+		std::map<std::string,FacetGroup>::iterator itgroupend=m_FacetGroupList.end();
 		
 		newmesh->StartMeshBuilder();	
 
@@ -245,31 +245,31 @@ void	OBJImport::createObjectFromReadedData()
 				{
 					int structSize=0;
 
-					CoreItemSP	description= MakeCoreVector();
-					CoreItemSP	vertices= MakeCoreNamedVector("vertices");
-					description->set("",vertices);
+					CoreItemSP	description= MakeCoreMap();
+					CoreItemSP	vertices= MakeCoreVector();
+					description->set("vertices",vertices);
 
 					structSize+=3*sizeof(float);
 
 					// vertices have a color, so  
 					if(m_ReadColorIndex)
 					{
-						CoreItemSP	colors	= MakeCoreNamedVector("colors");
-						description->set("", colors);
+						CoreItemSP	colors	= MakeCoreVector();
+						description->set("colors", colors);
 						structSize+=4*sizeof(float);
 					}
 
 					if(current.m_HasNormal)
 					{
-						CoreItemSP	normal	= MakeCoreNamedVector("normals");
-						description->set("", normal);
+						CoreItemSP	normal	= MakeCoreVector();
+						description->set("normals", normal);
 						structSize+=3*sizeof(float);
 					}
 
 					if(current.m_HasTextCoords)
 					{
-						CoreItemSP	texCoords	= MakeCoreNamedVector("texCoords");
-						description->set("", texCoords);
+						CoreItemSP	texCoords	= MakeCoreVector();
+						description->set("texCoords", texCoords);
 						structSize+=2*sizeof(float);
 					}
 					
@@ -278,7 +278,7 @@ void	OBJImport::createObjectFromReadedData()
 					v[1]=new unsigned char[structSize];
 					v[2]=new unsigned char[structSize];
 
-					newmesh->StartMeshGroup((CoreVector*)description.get());
+					newmesh->StartMeshGroup((CoreMap<std::string>*)description.get());
 				
 					// build triangles
 
@@ -391,8 +391,8 @@ void	OBJImport::createObjectFromReadedData()
 		{
 			// compute total triangle count
 			unsigned int total_triangle=0;
-			kstl::map<kstl::string,FacetGroup>::iterator itgroup=m_FacetGroupList.begin();
-			kstl::map<kstl::string,FacetGroup>::iterator itgroupend=m_FacetGroupList.end();
+			std::map<std::string,FacetGroup>::iterator itgroup=m_FacetGroupList.begin();
+			std::map<std::string,FacetGroup>::iterator itgroupend=m_FacetGroupList.end();
 			while(itgroup != itgroupend)
 			{
 				FacetGroup& current=(*itgroup).second;
@@ -422,8 +422,8 @@ void	OBJImport::createObjectFromReadedData()
 		}
 
 		// create each group
-		kstl::map<kstl::string,FacetGroup>::iterator itgroup=m_FacetGroupList.begin();
-		kstl::map<kstl::string,FacetGroup>::iterator itgroupend=m_FacetGroupList.end();
+		std::map<std::string,FacetGroup>::iterator itgroup=m_FacetGroupList.begin();
+		std::map<std::string,FacetGroup>::iterator itgroupend=m_FacetGroupList.end();
 		int triangle_index=0;
 		while(itgroup != itgroupend)
 		{
@@ -466,7 +466,7 @@ void	OBJImport::createObjectFromReadedData()
 
 					if(m_ReadColorIndex)
 					{
-						(*itmat).second.m_Material->setValue(LABEL_TO_ID(MaterialColorEnabled),true);
+						(*itmat).second.m_Material->setValue("MaterialColorEnabled", true);
 					}
 					newgroup->addItem((CMSP&)(*itmat).second.m_Material);
 
@@ -483,9 +483,9 @@ void	OBJImport::createObjectFromReadedData()
 			newmesh->RecomputeNormalsFast();
 		}
 
-		newmesh->setValue(LABEL_TO_ID(DynamicInit), true);
+		newmesh->setValue("DynamicInit", true);
 		newmesh->Init();
-		newmesh->setValue(LABEL_TO_ID(DynamicInit), false);
+		newmesh->setValue("DynamicInit", false);
 
 		if(m_MeshList.size()==0)
 		{
@@ -664,7 +664,7 @@ void	OBJImport::ParseVertex(AsciiParserUtils& line)
 
 void	OBJImport::ParseFacet(AsciiParserUtils& line)
 {
-	kstl::vector<IndexTrio>	indexlist;
+	std::vector<IndexTrio>	indexlist;
 
 	int indexv;
 	bool	found=true;
@@ -738,11 +738,11 @@ void	OBJImport::ParseNormal(AsciiParserUtils& line)
 }
 
 
-void	OBJImport::MTLImport(const kstl::string& name)
+void	OBJImport::MTLImport(const std::string& name)
 {
 	SP<FilePathManager>	pathManager=KigsCore::GetSingleton("FilePathManager");
 
-	kstl::string fullfilename;
+	std::string fullfilename;
 	SmartPointer<FileHandle> fullfilenamehandle;
 
 
@@ -754,7 +754,7 @@ void	OBJImport::MTLImport(const kstl::string& name)
 		SP<CoreRawBuffer> rawbuffer=ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(),filelen,1);
 		if (!rawbuffer)
 		{
-			kstl::string shortname, ext, path;
+			std::string shortname, ext, path;
 			RetreiveShortNameAndExt(m_FileName.const_ref(), shortname, ext, path);
 			fullfilenamehandle = pathManager->FindFullName(path + name);
 			rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilenamehandle.get(), filelen,1);
@@ -773,7 +773,7 @@ void	OBJImport::MTLImport(const kstl::string& name)
 				{
 					if(word[0] != '#')
 					{
-						kstl::string key=word;
+						std::string key=word;
 						if(key == "newmtl")
 						{
 							AsciiParserUtils matname(line);
@@ -819,7 +819,7 @@ void	OBJImport::MTLImport(const kstl::string& name)
 							AsciiParserUtils textureName(line);
 							if (line.GetTrailingPart(textureName))
 							{
-								if (m_currentMatRead != nullptr && static_cast<kstl::string>(textureName) != "")
+								if (m_currentMatRead != nullptr && static_cast<std::string>(textureName) != "")
 								{
 									m_currentMatRead->textureName = textureName;
 									m_TextureList.push_back(textureName);
@@ -864,8 +864,8 @@ void	OBJImport::ReadMaterial::Init()
 		{
 			SP<TextureFileManager>	fileManager=KigsCore::GetSingleton("TextureFileManager");
 			SP<Texture> Tex=fileManager->GetTexture(textureName,false);
-			Tex->setValue(LABEL_TO_ID(ForcePow2),true);
-			Tex->setValue(LABEL_TO_ID(HasMipmap), true);
+			Tex->setValue("ForcePow2", true);
+			Tex->setValue("HasMipmap", true);
 			Tex->Init();
 
 			MatStage->addItem((CMSP&)Tex);
@@ -880,7 +880,7 @@ void	OBJImport::ReadMaterial::Init()
 		{
 			TextureFileManager*	fileManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
 			Texture* Tex = fileManager->GetTexture(textureName, false);
-			Tex->setValue(LABEL_TO_ID(ForcePow2), true);
+			Tex->setValue("ForcePow2", true);
 			Tex->Init();
 
 			m_Material->addItem(Tex);
@@ -892,8 +892,8 @@ void	OBJImport::ReadMaterial::Init()
 		m_Material->SetAmbientColor(Ka[0],Ka[1],Ka[2]);
 		m_Material->SetDiffuseColor(Kd[0],Kd[1],Kd[2]);
 		m_Material->SetSpecularColor(Ks[0],Ks[1],Ks[2]);
-		m_Material->setValue(LABEL_TO_ID(Shininess),Ns);
-		m_Material->setValue(LABEL_TO_ID(Transparency),d);
+		m_Material->setValue("Shininess", Ns);
+		m_Material->setValue("Transparency", d);
 		
 		m_Material->Init();
 	}
@@ -902,7 +902,7 @@ void	OBJImport::ReadMaterial::Init()
 #ifdef WIN32
 void OBJImport::ExportResult()
 {
-	kstl::string shortname, ext, path;
+	std::string shortname, ext, path;
 	RetreiveShortNameAndExt(m_FileName, shortname, ext, path);
 
 	SP<ModernMesh> bigMesh = KigsCore::GetInstanceOf(shortname, "ModernMesh");
@@ -911,7 +911,7 @@ void OBJImport::ExportResult()
 		bigMesh->addItem((CMSP&)*it);
 	}
 	Export(m_ExportPath.const_ref() + shortname + ".xml", bigMesh.get(), true);
-	for (kstl::list<kstl::string>::iterator it = m_TextureList.begin(); it != m_TextureList.end(); it++)
+	for (std::list<std::string>::iterator it = m_TextureList.begin(); it != m_TextureList.end(); it++)
 	{
 		std::string exportp = (m_ExportPath.const_ref() + (*it)).c_str();
 		std::ofstream outfile(exportp, std::ios_base::binary);
@@ -938,7 +938,7 @@ void OBJImport::ExportResult()
 }
 #endif //WIN32
 
-void	OBJImport::RetreiveShortNameAndExt(const kstl::string& filename, kstl::string& shortname, kstl::string& fileext, kstl::string& filepath)
+void	OBJImport::RetreiveShortNameAndExt(const std::string& filename, std::string& shortname, std::string& fileext, std::string& filepath)
 {
 	int pos = static_cast<int>(filename.rfind("/")) + 1;
 	int pos1 = static_cast<int>(filename.rfind("\\")) + 1;

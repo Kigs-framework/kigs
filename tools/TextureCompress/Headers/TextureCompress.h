@@ -50,7 +50,7 @@ class ETC1TextureCompress : public CoreBaseApplication
 public:
 	DECLARE_CLASS_INFO(ETC1TextureCompress, CoreBaseApplication, Core)
 
-	ETC1TextureCompress(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	ETC1TextureCompress(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual ~ETC1TextureCompress()
 	{
 		// Nothing to do here
@@ -93,13 +93,13 @@ protected:
 	virtual void	ProtectedUpdate();
 	virtual void	ProtectedClose();
 
-	void	RetreiveShortNameAndExt(const kstl::string& filename,kstl::string& shortname,kstl::string& fileext);
+	void	RetreiveShortNameAndExt(const std::string& filename,std::string& shortname,std::string& fileext);
 
 	// check only if alpha is needed or not
 	int	checkIfNeedsAlpha(SP<TinyImage>);
 	int	checkBestMatchingAlpha(SP<TinyImage> toCheck);
 
-	bool	exportDDS(SP<TinyImage>,const kstl::string& outfile,int quality,int perceptual);
+	bool	exportDDS(SP<TinyImage>,const std::string& outfile,int quality,int perceptual);
 
 	void packInBlock(unsigned int* rgbaread,unsigned int* inBlock,unsigned int width);
 	void packInBlockKeepAlpha(unsigned int* rgbaread,unsigned int* inBlock,unsigned int width);

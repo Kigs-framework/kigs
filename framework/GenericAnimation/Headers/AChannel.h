@@ -151,7 +151,7 @@ IMPLEMENT_TEMPLATE_CLASS_INFO(LocalToGlobalType, AChannel)
 
 
 template<typename LocalToGlobalType>
-AChannel<LocalToGlobalType>::AChannel(const kstl::string& name, CLASS_NAME_TREE_ARG) : ABaseChannel(name, PASS_CLASS_NAME_TREE_ARG)
+AChannel<LocalToGlobalType>::AChannel(const std::string& name, CLASS_NAME_TREE_ARG) : ABaseChannel(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	//! init members
 	
@@ -195,7 +195,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, SP<ABaseSystem> _
 		}
 	}
 	
-	Float       mWeight = KFLOAT_CONST(0.0f);
+	Float       mWeight = 0.0f;
 	Float       mCoefT;
 	
 	//! first test if we use the animation local to global data
@@ -212,7 +212,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, SP<ABaseSystem> _
 			//+-----
 			bool   offset_init = false;
 			
-			kstl::vector<ATimeValue>	StoredTimes;
+			std::vector<ATimeValue>	StoredTimes;
 			StoredTimes.reserve(10);
 			// find the first playing stream, and init the working data with it
 			// in the same time check if the local time is outside the anim time ( offset_init == true )
@@ -252,7 +252,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, SP<ABaseSystem> _
 					
 					if (mWeight)
 					{
-						mCoefT = read->GetWeight()*(KFLOAT_CONST(1.0f) / mWeight);
+						mCoefT = read->GetWeight()*(1.0f / mWeight);
 						read->LERPData(&mWorkingStreamData, mCoefT);
 					}
 				}
@@ -269,7 +269,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, SP<ABaseSystem> _
 				// +-----
 				// | then get the offset 
 				// +-----
-				mWeight = KFLOAT_CONST(0.0);
+				mWeight = 0.0f;
 				read = mFirstStream;
 				offset_init = false;
 				
@@ -303,7 +303,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, SP<ABaseSystem> _
 						}
 						if (mWeight)
 						{
-							mCoefT = read->GetWeight()*(KFLOAT_CONST(1.0f) / mWeight);
+							mCoefT = read->GetWeight()*(1.0f / mWeight);
 							read->LERPData(&mWorkingStreamData, mCoefT);
 						}
 						
@@ -358,7 +358,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, SP<ABaseSystem> _
 						read->SetTime(t);
 						if (mWeight)
 						{
-							mCoefT = read->GetWeight()*(KFLOAT_CONST(1.0f) / mWeight);
+							mCoefT = read->GetWeight()*(1.0f / mWeight);
 							read->LERPData(&mWorkingStreamData, mCoefT);
 						}
 					}
@@ -371,7 +371,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, SP<ABaseSystem> _
 			{
 				// if animation has not loop and no stream are playing, just copy
 				// stand data to the working data
-				if (mWeight == KFLOAT_CONST(0.0f))
+				if (mWeight == 0.0f)
 				{
 					valid_stream->CopyData(&mWorkingStreamData, &mStandStreamData);
 				}
@@ -402,14 +402,14 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, SP<ABaseSystem> _
 					read->SetTime(t);
 					if (mWeight)
 					{
-						mCoefT = read->GetWeight()*(KFLOAT_CONST(1.0f) / mWeight);
+						mCoefT = read->GetWeight()*(1.0f / mWeight);
 						read->LERPData(&mWorkingStreamData, mCoefT);
 					}
 				}
 				read = read->GetNextStream();
 			}
 			
-			if (mWeight == KFLOAT_CONST(0.0f))
+			if (mWeight == 0.0f)
 			{
 				valid_stream->CopyData(&mWorkingStreamData, &mStandStreamData);
 			}
@@ -441,7 +441,7 @@ void    AChannel<LocalToGlobalType>::AnimateRoot(ATimeValue t, SP<ABaseSystem> _
 		{
 			param = SharedFromThis();
 		}
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 			
 		for (const auto& i : getItems())
 		{
@@ -506,13 +506,13 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, SP<AChannel> othercha
 				read->SetTime(t);
 				if (weight)
 				{
-					coef_t = read->GetWeight()*(KFLOAT_CONST(1.0f) / weight);
+					coef_t = read->GetWeight()*(1.0f / weight);
 					read->LERPData(&mWorkingStreamData, coef_t);
 				}
 			}
 			read = read->GetNextStream();
 		}
-		if (weight == KFLOAT_CONST(0.0f))
+		if (weight == 0.0f)
 		{
 			SP<ABaseStream>     valid_stream = mSystem->GetValidStream();
 			if (valid_stream)
@@ -547,7 +547,7 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, SP<AChannel> othercha
 	{
 		if (otherchannel && (mSystem->mOnlyLocalSkeletonUpdate == false))
 		{
-			kstl::vector<ModifiableItemStruct>::const_iterator it;
+			std::vector<ModifiableItemStruct>::const_iterator it;
 			
 			for (it = getItems().begin(); it != getItems().end(); ++it)
 			{
@@ -559,7 +559,7 @@ void    AChannel<LocalToGlobalType>::Animate(ATimeValue t, SP<AChannel> othercha
 		}
 		else
 		{
-			kstl::vector<ModifiableItemStruct>::const_iterator it;
+			std::vector<ModifiableItemStruct>::const_iterator it;
 			
 			for (it = getItems().begin(); it != getItems().end(); ++it)
 			{
@@ -619,7 +619,7 @@ void    AChannel<LocalToGlobalType>::ResetLocalToGlobalAfterChange(LocalToGlobal
 	SP<ASystem<LocalToGlobalType>> sys = GetSystem();
 	if (sys->GetUseAnimationLocalToGlobal() == true)
 	{
-		Float  weight = KFLOAT_CONST(0.0f);
+		Float  weight = 0.0f;
 		Float  coef_t;
 		SP<ABaseStream> read = mFirstStream;
 		while (read != nullptr)
@@ -646,7 +646,7 @@ void    AChannel<LocalToGlobalType>::ResetLocalToGlobalAfterChange(LocalToGlobal
 				read->UpdateData(GetStandData());
 				
 				weight += read->GetWeight();
-				coef_t = read->GetWeight()*(KFLOAT_CONST(1.0f) / weight);
+				coef_t = read->GetWeight()*(1.0f / weight);
 				read->LERPData(&mWorkingStreamData, coef_t);
 			}
 			read = read->GetNextStream();

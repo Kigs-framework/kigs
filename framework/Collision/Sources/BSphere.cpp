@@ -5,7 +5,7 @@
 IMPLEMENT_CLASS_INFO(BSphere)
 
 IMPLEMENT_CONSTRUCTOR(BSphere)
-, mRadius(*this, false, LABEL_AND_ID(Radius), KFLOAT_CONST(0.0))
+, mRadius(*this, false, "Radius", 0.0f)
 {
 }
 

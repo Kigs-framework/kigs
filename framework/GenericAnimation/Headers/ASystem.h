@@ -104,7 +104,7 @@ public:
 IMPLEMENT_TEMPLATE_CLASS_INFO(LocalToGlobalType, ASystem)
 
 template<typename LocalToGlobalType>
-ASystem<LocalToGlobalType>::ASystem(const kstl::string& name, CLASS_NAME_TREE_ARG)
+ASystem<LocalToGlobalType>::ASystem(const std::string& name, CLASS_NAME_TREE_ARG)
 : ABaseSystem(name, PASS_CLASS_NAME_TREE_ARG)
 , m_LinkedChannel(0)
 {
@@ -149,7 +149,7 @@ void   ASystem<LocalToGlobalType>::UseAnimationLocalToGlobalData(bool b)
 		maInt restype(*this, false, "type", Local_To_Global_Data);
 		maInt result(*this, false, "result", 0);
 		
-		kstl::vector<CoreModifiableAttribute*> params;
+		std::vector<CoreModifiableAttribute*> params;
 		params.push_back(&copythis);
 		params.push_back(&restype);
 		params.push_back(&result);

@@ -10,7 +10,7 @@
 IMPLEMENT_CLASS_INFO(CollisionModule);
 
 //! constructor
-CollisionModule::CollisionModule(const kstl::string& name, CLASS_NAME_TREE_ARG) : ModuleBase(name, PASS_CLASS_NAME_TREE_ARG)
+CollisionModule::CollisionModule(const std::string& name, CLASS_NAME_TREE_ARG) : ModuleBase(name, PASS_CLASS_NAME_TREE_ARG)
 {
 }
 
@@ -21,7 +21,7 @@ CollisionModule::~CollisionModule()
 }
 
 //! module init, register CollisionManager and BSphere objects
-void CollisionModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void CollisionModule::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	BaseInit(core, "Collision", params);
 

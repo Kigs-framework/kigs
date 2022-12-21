@@ -128,7 +128,7 @@ public:
     */
     // ******************************
 
-    kstl::string    GetSystemType() override;
+    std::string    GetSystemType() override;
 
 
 	// ******************************

@@ -30,7 +30,7 @@ ColladaParser::ColladaParser(const std::string& name, CLASS_NAME_TREE_ARG) : Bas
 , myRoot(0)
 , myXMLFile(0)
 , myScene(0)
-, m_FileName(*this, true, LABEL_AND_ID(FileName))
+, m_FileName(*this, true, "FileName")
 {
 }
 void	ColladaParser::InitModifiable()
@@ -324,9 +324,9 @@ CMSP ColladaParser::ParseCamera(XMLNodeBase* cameranode)
 										XMLNodeBase* sonNode = currentTechniqueCommon->getChildElement(0);
 										if (sonNode->getName() == "perspective")
 										{
-											kfloat znear = sonNode->getChildElement("znear")->getChildElement(0)->getFloat();
+											float znear = sonNode->getChildElement("znear")->getChildElement(0)->getFloat();
 											
-											kfloat zfar = sonNode->getChildElement("zfar")->getChildElement(0)->getFloat();
+											float zfar = sonNode->getChildElement("zfar")->getChildElement(0)->getFloat();
 											
 											
 											toAdd->SetNearAndFar(znear, zfar);
@@ -335,20 +335,20 @@ CMSP ColladaParser::ParseCamera(XMLNodeBase* cameranode)
 											{
 												float ar = sonNode->getChildElement("aspect_ratio")->getChildElement(0)->getFloat();
 
-												toAdd->setValue(LABEL_TO_ID(AspectRatio), ar);
+												toAdd->setValue("AspectRatio", ar);
 												if (sonNode->getChildElement("yfov") != nullptr)
 												{
-													toAdd->setValue(LABEL_TO_ID(VerticalFOV), sonNode->getChildElement("yfov")->getChildElement(0)->getFloat());
+													toAdd->setValue("VerticalFOV", sonNode->getChildElement("yfov")->getChildElement(0)->getFloat());
 												}
 												else if (sonNode->getChildElement("xfov") != nullptr)
 												{
-													toAdd->setValue(LABEL_TO_ID(VerticalFOV), sonNode->getChildElement("xfov")->getChildElement(0)->getFloat() / ar);
+													toAdd->setValue("VerticalFOV", sonNode->getChildElement("xfov")->getChildElement(0)->getFloat() / ar);
 												}
 											}
 											else if (sonNode->getChildElement("yfov") != nullptr && sonNode->getChildElement("xfov") != nullptr)
 											{
-												toAdd->setValue(LABEL_TO_ID(AspectRatio), sonNode->getChildElement("xfov")->getChildElement(0)->getFloat() / sonNode->getChildElement("yfov")->getChildElement(0)->getFloat());
-												toAdd->setValue(LABEL_TO_ID(VerticalFOV), sonNode->getChildElement("yfov")->getChildElement(0)->getFloat());
+												toAdd->setValue("AspectRatio", sonNode->getChildElement("xfov")->getChildElement(0)->getFloat() / sonNode->getChildElement("yfov")->getChildElement(0)->getFloat());
+												toAdd->setValue("VerticalFOV", sonNode->getChildElement("yfov")->getChildElement(0)->getFloat());
 											}
 											else
 											{
@@ -1166,43 +1166,43 @@ CMSP ColladaParser::CreateMeshFromMeshCollada(Controller* controller)
 		{
 			int structSize = 0;
 			
-			CoreItemSP	description = MakeCoreVector();
-			CoreItemSP	vertices = MakeCoreNamedVector("vertices");
-			description->set("",vertices);
+			CoreItemSP	description = MakeCoreMap();
+			CoreItemSP	vertices = MakeCoreVector();
+			description->set("vertices",vertices);
 		
 			structSize += 3 * sizeof(float);
 			
 			// vertices have a color, so
 			if (current->m_HasColor)
 			{
-				CoreItemSP	colors = MakeCoreNamedVector("colors");
-				description->set("", colors);
+				CoreItemSP	colors = MakeCoreVector();
+				description->set("colors", colors);
 				structSize += 4 * sizeof(float);
 			}
 			
 			if (current->m_HasNormal)
 			{
-				CoreItemSP	normal = MakeCoreNamedVector("normals");
-				description->set("", normal);
+				CoreItemSP	normal = MakeCoreVector();
+				description->set("normals", normal);
 				structSize += 3 * sizeof(float);
 				hasNormal = true;
 			}
 			
 			if (current->m_HasTextCoords && hasTexture)
 			{
-				CoreItemSP	texCoords = MakeCoreNamedVector("texCoords");
-				description->set("", texCoords);
+				CoreItemSP	texCoords = MakeCoreVector();
+				description->set("texCoords", texCoords);
 				structSize += 2 * sizeof(float);
 			}
 			
 			if (has_weights)
 			{
-				CoreItemSP	boneWeights = MakeCoreNamedVector("bone_weights");
-				description->set("", boneWeights);
+				CoreItemSP	boneWeights = MakeCoreVector();
+				description->set("bone_weights", boneWeights);
 				structSize += 4 * sizeof(unsigned char);
 				
-				CoreItemSP	boneIndexes = MakeCoreNamedVector("bone_indexes");
-				description->set("", boneIndexes);
+				CoreItemSP	boneIndexes = MakeCoreVector();
+				description->set("bone_indexes", boneIndexes);
 				structSize += 4 * sizeof(unsigned char);
 			}
 			
@@ -1213,7 +1213,7 @@ CMSP ColladaParser::CreateMeshFromMeshCollada(Controller* controller)
 			v[1] = new unsigned char[structSize];
 			v[2] = new unsigned char[structSize];
 			
-			newmesh->StartMeshGroup((CoreVector*)description.get());
+			newmesh->StartMeshGroup((CoreMap<std::string>*)description.get());
 
 			// build triangles
 			
@@ -2892,8 +2892,8 @@ void	ColladaParser::ReadMaterial::Init()
 			{
 				SP<TextureFileManager>	fileManager = KigsCore::GetSingleton("TextureFileManager");
 				SP<Texture> Tex = fileManager->GetTexture(texturesName.at(i), false);
-				Tex->setValue(LABEL_TO_ID(ForcePow2), true);
-				Tex->setValue(LABEL_TO_ID(HasMipmap), true);
+				Tex->setValue("ForcePow2", true);
+				Tex->setValue("HasMipmap", true);
 				Tex->Init();
 				MatStage->addItem((CMSP&)Tex);
 				
@@ -2911,11 +2911,11 @@ void	ColladaParser::ReadMaterial::Init()
 			{
 				SP<TextureFileManager>	fileManager = KigsCore::GetSingleton("TextureFileManager");
 				SP<Texture> Tex = fileManager->GetTexture(NormalMapName.at(i), false);
-				Tex->setValue(LABEL_TO_ID(ForcePow2), true);
-				Tex->setValue(LABEL_TO_ID(HasMipmap), true);
+				Tex->setValue("ForcePow2", true);
+				Tex->setValue("HasMipmap", true);
 				Tex->Init();
 				MatStage->addItem((CMSP&)Tex);
-				MatStage->setValue(LABEL_TO_ID(TextureChannel), 1);
+				MatStage->setValue("TextureChannel", 1);
 			}
 			MatStage->Init();
 			
@@ -2927,7 +2927,7 @@ void	ColladaParser::ReadMaterial::Init()
 		{
 			TextureFileManager*	fileManager = (TextureFileManager*)KigsCore::GetSingleton("TextureFileManager");
 			Texture* Tex = fileManager->GetTexture(textureName, false);
-			Tex->setValue(LABEL_TO_ID(ForcePow2), true);
+			Tex->setValue("ForcePow2", true);
 			Tex->Init();
 			
 			m_Material->addItem(Tex);
@@ -2940,8 +2940,8 @@ void	ColladaParser::ReadMaterial::Init()
 		m_Material->SetDiffuseColor(diffuseColor[0], diffuseColor[1], diffuseColor[2]);
 		m_Material->SetSpecularColor(specularColor[0], specularColor[1], specularColor[2]);
 		m_Material->SetEmissionColor(emissionColor[0], emissionColor[1], emissionColor[2]);
-		m_Material->setValue(LABEL_TO_ID(Shininess), shininess);
-		m_Material->setValue(LABEL_TO_ID(Transparency), transparency);
+		m_Material->setValue("Shininess", shininess);
+		m_Material->setValue("Transparency", transparency);
 		
 		//m_Material->Init();
 	}

@@ -209,13 +209,13 @@ class   AnimationResourceInfo
         return (tmp->m_StreamGroupID);
     };
 	
-	kstl::string	getStreamType()
+	std::string	getStreamType()
 	{
-		kstl::string result { ((char*)this) + sizeof(AResourceFileHeader) };
+		std::string result { ((char*)this) + sizeof(AResourceFileHeader) };
 		return result;
 	}
 	
-	void setStreamType(const kstl::string& strtype)
+	void setStreamType(const std::string& strtype)
 	{
 		//m_head.m_StreamTypeNameSize = strtype.length()+1;
 		IntU8*   tmp = ((IntU8*)this) // start at this

@@ -758,7 +758,7 @@ bool CollisionManager::RecursiveSearchRayIntersection(CoreModifiable* lastCollid
 		else if (item->isSubType(BSphere::mClassID))
 		{
 			BSphere * sphere = static_cast<BSphere*>(item);
-			kfloat L_Radius = sphere->GetRadius();
+			float L_Radius = sphere->GetRadius();
 
 			if (GetLocalSphereIntersectionWithRay(hit, lstart, ldir, L_Radius, collision_object))
 			{
@@ -769,7 +769,7 @@ bool CollisionManager::RecursiveSearchRayIntersection(CoreModifiable* lastCollid
 		else if (item->isSubType(BCylinder::mClassID))
 		{
 			BCylinder * sphere = static_cast<BCylinder*>(item);
-			kfloat L_Radius = sphere->GetRadius();
+			float L_Radius = sphere->GetRadius();
 
 			if (GetLocalSphereIntersectionWithRay(hit, lstart, ldir, L_Radius, collision_object))
 			{
@@ -927,8 +927,8 @@ void CollisionManager::RecursiveSearchAllRayIntersection(CoreModifiable* lastCol
 		else if (item->isSubType("BCylinder"))
 		{
 			BCylinder * cylinder = static_cast<BCylinder*>(item);
-			kfloat L_Radius = cylinder->GetRadius();
-			kfloat L_Height = cylinder->GetHeight();
+			float L_Radius = cylinder->GetRadius();
+			float L_Height = cylinder->GetHeight();
 			Vector3D Cdir;
 			cylinder->GetAxle(Cdir);
 
@@ -944,7 +944,7 @@ void CollisionManager::RecursiveSearchAllRayIntersection(CoreModifiable* lastCol
 		else if (item->isSubType("BSphere"))
 		{
 			BSphere * sphere = static_cast<BSphere*>(item);
-			kfloat L_Radius = sphere->GetRadius();
+			float L_Radius = sphere->GetRadius();
 
 			Hit hit;
 			//hit.HitFlag = lastNodeCategory;
@@ -1083,7 +1083,7 @@ void CollisionManager::RecursiveSearchPlaneIntersection(Node3D* lastNode, CoreMo
 		if (item->isSubType("ModernMesh")
 			|| item->isSubType("DrawVertice"))
 		{
-			kstl::vector<Segment3D>	tmpResult;
+			std::vector<Segment3D>	tmpResult;
 
 			bool found = false;
 
@@ -1151,7 +1151,7 @@ void CollisionManager::RecursiveSearchPlaneIntersection(Node3D* lastNode, CoreMo
 /*!
 compute "altitude" = vertical distance from the given point to any object in the collision manager
 */
-bool CollisionManager::GetAltitude(kfloat x, kfloat y, kfloat z, kfloat &alt)
+bool CollisionManager::GetAltitude(float x, float y, float z, float &alt)
 {
 	Point3D start(x, y, z);
 	Vector3D dir(0, 0, -1.0f);
@@ -1212,7 +1212,7 @@ DEFINE_METHOD(CollisionManager, GetAltitude)
 		return false;
 	}
 
-	kfloat x, y, z;
+	float x, y, z;
 
 	xparam->getValue(x);
 	yparam->getValue(y);
@@ -1260,7 +1260,7 @@ DEFINE_METHOD(CollisionManager, GetIntersection)
 compute intersection between a moving sphere and all the objects in the collision manager
 return the nearest intersection if at least one is found
 */
-CoreModifiable* CollisionManager::GetSphereIntersection(const Point3D& start, const Vector3D& dir, const kfloat Radius, kdouble &Distance, Vector3D& normal, Point3D& intersectP, unsigned int a_itemCategory)
+CoreModifiable* CollisionManager::GetSphereIntersection(const Point3D& start, const Vector3D& dir, const float Radius, double &Distance, Vector3D& normal, Point3D& intersectP, unsigned int a_itemCategory)
 {
 	Distance = 1000.0f;
 
@@ -1270,7 +1270,7 @@ CoreModifiable* CollisionManager::GetSphereIntersection(const Point3D& start, co
 	Vector3D ldir(dir);
 	Point3D	 lstart(start);
 	Vector3D radiusV(Radius, 0, 0);
-	kfloat lradius;
+	float lradius;
 
 	//! ensure the node is up to date (matrix, bbox...)
 #ifdef REWORKING
@@ -1320,7 +1320,7 @@ CoreModifiable* CollisionManager::GetSphereIntersection(const Point3D& start, co
 	bool found = true;
 	OctreeSubNode* search = mRootSubNode;
 
-	kdouble ldist = 1000.0;
+	double ldist = 1000.0;
 	Vector3D lnormal;
 	Point3D lpoint;
 	CoreModifiable* foundone = NULL;
@@ -1372,7 +1372,7 @@ CoreModifiable* CollisionManager::GetSphereIntersection(const Point3D& start, co
 /*!
 Recursive method to search for intersection of a moving sphere in an octree
 */
-CoreModifiable*	CollisionManager::RecursiveSearchSphereIntersection(OctreeSubNode* currentNode, const Point3D& start, const Vector3D& dir, const kfloat &Radius, const Point3D& lstart, const Vector3D& ldir, const kfloat &lRadius, kdouble &Distance, Vector3D& normal, Point3D& intersectP, bool recurse, unsigned int a_itemCategory)
+CoreModifiable*	CollisionManager::RecursiveSearchSphereIntersection(OctreeSubNode* currentNode, const Point3D& start, const Vector3D& dir, const float &Radius, const Point3D& lstart, const Vector3D& ldir, const float &lRadius, double &Distance, Vector3D& normal, Point3D& intersectP, bool recurse, unsigned int a_itemCategory)
 {
 #ifdef REWORKING
 	std::vector<SceneNode*>::const_iterator it;
@@ -1441,7 +1441,7 @@ CoreModifiable*	CollisionManager::RecursiveSearchSphereIntersection(OctreeSubNod
 			int i;
 			for (i = 0; i < 8; i++)
 			{
-				kdouble ldist = 1000.0;
+				double ldist = 1000.0;
 				Vector3D lnormal;
 				Point3D lpoint;
 
@@ -1466,7 +1466,7 @@ CoreModifiable*	CollisionManager::RecursiveSearchSphereIntersection(OctreeSubNod
 /*!
 Recursive method to search for intersection of a moving sphere in an Node3D
 */
-bool CollisionManager::RecursiveSearchSphereIntersection(Hit &hit, CoreModifiable *currentitem, const Point3D& start, const Vector3D& dir, const kfloat &Radius, unsigned int a_itemCategory)
+bool CollisionManager::RecursiveSearchSphereIntersection(Hit &hit, CoreModifiable *currentitem, const Point3D& start, const Vector3D& dir, const float &Radius, unsigned int a_itemCategory)
 {
 	assert(0);
 	return false;
@@ -1483,7 +1483,7 @@ bool CollisionManager::RecursiveSearchSphereIntersection(Hit &hit, CoreModifiabl
 		Vector3D ldir(mDir);
 		Point3D	 lstart(start);
 		Vector3D radiusV(Radius, 0, 0);
-		kfloat lradius;
+		float lradius;
 
 		std::vector<ModifiableItemStruct>::const_iterator it;
 		for (it = currentitem->getItems().begin(); it != currentitem->getItems().end(); ++it)
@@ -1547,7 +1547,7 @@ bool CollisionManager::RecursiveSearchSphereIntersection(Hit &hit, CoreModifiabl
 /*!
 Utility method used by recursive intersection search
 */
-bool CollisionManager::GetLocalSphereIntersection(Hit &hit, const Point3D& start, const Vector3D& dir, const kfloat &Radius, CollisionBaseObject* pCollisionObject)
+bool CollisionManager::GetLocalSphereIntersection(Hit &hit, const Point3D& start, const Vector3D& dir, const float &Radius, CollisionBaseObject* pCollisionObject)
 {
 	assert(0); // kmesh is deprecated
 	//return Collision::CollideSphereAABBTreeNode(start, dir, Radius, *(AABBTreeNode*)pCollisionObject, (Mesh*)pObject, lDist, lNormal, lpoint);
@@ -1569,13 +1569,13 @@ int CollisionManager::GetAllLocalRayIntersection(std::vector<Hit> &hit, const Po
 	return hit.size();
 }
 
-bool CollisionManager::GetLocalSphereIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const kfloat &Radius, CollisionBaseObject* pCollisionObject, unsigned int a_itemCategory)
+bool CollisionManager::GetLocalSphereIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const float &Radius, CollisionBaseObject* pCollisionObject, unsigned int a_itemCategory)
 {
 	// call the Intersection class test on Sphere
 	return Collision::CollideRaySphere(start, dir, Radius, hit.HitDistance, hit.HitNormal);
 }
 
-bool CollisionManager::GetLocalCylinderIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const Vector3D& CDir, const kfloat &CHeight, const kfloat& CRadius, CollisionBaseObject* pCollisionObject, unsigned int a_itemCategory)
+bool CollisionManager::GetLocalCylinderIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const Vector3D& CDir, const float &CHeight, const float& CRadius, CollisionBaseObject* pCollisionObject, unsigned int a_itemCategory)
 {
 	// call the Intersection class test on Cylinder
 	return Collision::CollideRayCylinder(start, dir, CDir, CHeight, CRadius, hit.HitDistance, hit.HitNormal);

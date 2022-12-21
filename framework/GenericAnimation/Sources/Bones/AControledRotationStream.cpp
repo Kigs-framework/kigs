@@ -20,7 +20,7 @@
 
 IMPLEMENT_CLASS_INFO(AControledRotationStream)
 
-AControledRotationStream::AControledRotationStream(const kstl::string& name,CLASS_NAME_TREE_ARG) : APRSStream(name,PASS_CLASS_NAME_TREE_ARG)
+AControledRotationStream::AControledRotationStream(const std::string& name,CLASS_NAME_TREE_ARG) : APRSStream(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	mPriority = 50;
 	m_RotationStruct=NULL;
@@ -42,14 +42,14 @@ void    AControledRotationStream::UpdateData(LocalToGlobalBaseType* standdata)
 {
     PRSKey*             standprs=(PRSKey*)standdata;
 
-	if(m_RotationStruct->m_LastTime==KFLOAT_CONST(-1.0f))
+	if(m_RotationStruct->m_LastTime==-1.0f)
 	{
 		m_RotationStruct->m_LastTime=mLocalTime;
 	}
 	Float delta_t=(Float)(mLocalTime-m_RotationStruct->m_LastTime);
 	m_RotationStruct->m_LastTime=mLocalTime;
 
-	m_RotationStruct->m_Angle+=m_RotationStruct->m_AngularSpeed*delta_t/KFLOAT_CONST(1000.0f);
+	m_RotationStruct->m_Angle+=m_RotationStruct->m_AngularSpeed*delta_t/1000.0f;
 
 	if(m_RotationStruct->m_UseMinMax)
 	{
@@ -69,8 +69,8 @@ void    AControledRotationStream::UpdateData(LocalToGlobalBaseType* standdata)
 	Quaternion tmpq;
 
 	Float s,c;
-	s=sinF((Float)(m_RotationStruct->m_Angle/KFLOAT_CONST(2.)));
-	c=cosF((Float)(m_RotationStruct->m_Angle/KFLOAT_CONST(2.)));
+	s=sinF((Float)(m_RotationStruct->m_Angle/2.0f));
+	c=cosF((Float)(m_RotationStruct->m_Angle/2.0f));
 
 	tmpq.V.x=m_RotationStruct->m_Axis[0] * s;
 	tmpq.V.y=m_RotationStruct->m_Axis[1] * s;

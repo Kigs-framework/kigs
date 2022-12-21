@@ -52,7 +52,7 @@ IMPLEMENT_CLASS_INFO(MeshConvert)
 //-------------------------------------------------------------------------
 //Constructor
 
-MeshConvert::MeshConvert(const kstl::string& name, CLASS_NAME_TREE_ARG):
+MeshConvert::MeshConvert(const std::string& name, CLASS_NAME_TREE_ARG):
 CoreBaseApplication(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	myObjectsToDestroy.clear();
@@ -63,7 +63,7 @@ MeshConvert::~MeshConvert()
 	myObjectsToDestroy.clear();
 }
 
-void	MeshConvert::RetreiveShortNameAndExt(const kstl::string& filename,kstl::string& shortname,kstl::string& fileext)
+void	MeshConvert::RetreiveShortNameAndExt(const std::string& filename,std::string& shortname,std::string& fileext)
 {
 	int pos=static_cast<int>(filename.rfind("/"))+1;
 	int pos1=static_cast<int>(filename.rfind("\\"))+1;
@@ -117,7 +117,7 @@ void	MeshConvert::ProtectedInit()
 	do // pseudo loop for exit management
 	{
 		// retreive args
-		kstl::vector<kstl::string>::iterator itArgs = mArgs.begin();
+		std::vector<std::string>::iterator itArgs = mArgs.begin();
 		// skip app name
 		itArgs++;
 
@@ -129,14 +129,14 @@ void	MeshConvert::ProtectedInit()
 			continue; // exit
 		}
 
-		kstl::string fileNameIn = "";
-		kstl::string fileNameOut = "";
+		std::string fileNameIn = "";
+		std::string fileNameOut = "";
 
 		bool wholeScene=false;
 
 		for (; itArgs != mArgs.end(); itArgs++)
 		{
-			kstl::string& current = (*itArgs);
+			std::string& current = (*itArgs);
 
 			if (current.at(0) == '-')
 			{
@@ -196,7 +196,7 @@ void	MeshConvert::ProtectedInit()
 				case 'f':
 				{
 					itArgs++;
-					kstl::string flipAxis = (*itArgs);
+					std::string flipAxis = (*itArgs);
 					int fa[3];
 					int test = sscanf(flipAxis.c_str(), "(%d,%d,%d)", &fa[0], &fa[1], &fa[2]);
 					if (test == 3)
@@ -218,8 +218,8 @@ void	MeshConvert::ProtectedInit()
 				case 's':
 				{
 					itArgs++;
-					kstl::string scaleFactor = (*itArgs);
-					kfloat readSF;
+					std::string scaleFactor = (*itArgs);
+					float readSF;
 					int test = sscanf(scaleFactor.c_str(), "%f", &readSF);
 					if (test == 1)
 					{
@@ -246,7 +246,7 @@ void	MeshConvert::ProtectedInit()
 			}
 		}
 
-		kstl::string shortname, ext = "";
+		std::string shortname, ext = "";
 		if (fileNameOut == "")
 		{
 			RetreiveShortNameAndExt(fileNameIn, shortname, ext);
@@ -267,17 +267,17 @@ void	MeshConvert::ProtectedInit()
 		// needed to have a valid GL context
 
 		CMSP theRenderingScreen = KigsCore::GetInstanceOf("theRenderingScreen", "RenderingScreen");
-		theRenderingScreen->setValue(LABEL_TO_ID(DesignSizeX), 640);
-		theRenderingScreen->setValue(LABEL_TO_ID(DesignSizeY), 480);
-		theRenderingScreen->setValue(LABEL_TO_ID(BitsPerZ), 16);
+		theRenderingScreen->setValue("DesignSizeX", 640);
+		theRenderingScreen->setValue("DesignSizeY", 480);
+		theRenderingScreen->setValue("BitsPerZ", 16);
 
 		CMSP theWindow = KigsCore::GetInstanceOf("theWindow", "Window");
-		theWindow->setValue(LABEL_TO_ID(PositionX), 0);
-		theWindow->setValue(LABEL_TO_ID(PositionY), 0);
-		theWindow->setValue(LABEL_TO_ID(SizeX), 640);
-		theWindow->setValue(LABEL_TO_ID(SizeY), 480);
-		theWindow->setValue(LABEL_TO_ID(FullScreen), false);
-		theWindow->setValue(LABEL_TO_ID(Mouse Cursor), true);
+		theWindow->setValue("PositionX", 0);
+		theWindow->setValue("PositionY", 0);
+		theWindow->setValue("SizeX", 640);
+		theWindow->setValue("SizeY", 480);
+		theWindow->setValue("FullScreen", false);
+		theWindow->setValue("Mouse Cursor", true);
 
 		// add screen before init
 		theWindow->addItem(theRenderingScreen);
@@ -296,7 +296,7 @@ void	MeshConvert::ProtectedInit()
 			SP<ModernMesh> mesh;
 
 			mesh = KigsCore::GetInstanceOf("mesh", "ModernMesh");
-			mesh->setValue(LABEL_TO_ID(FileName), fileNameIn);
+			mesh->setValue("FileName", fileNameIn);
 
 			if (myParams.myImportScaleFactor != 1.0f)
 			{
@@ -336,8 +336,8 @@ void	MeshConvert::ProtectedInit()
 			SP<ModernMesh> mesh;
 
 			SP<OBJImport>	myObjImport = KigsCore::GetInstanceOf("objfile", "OBJImport");
-			myObjImport->setValue(LABEL_TO_ID(FileName), fileNameIn);
-			myObjImport->setValue(LABEL_TO_ID(ModernMesh), true);
+			myObjImport->setValue("FileName", fileNameIn);
+			myObjImport->setValue("ModernMesh", true);
 			myObjImport->Init();
 			mesh = *myObjImport->GetMeshes().begin();
 
@@ -372,7 +372,7 @@ void	MeshConvert::ProtectedInit()
 			SP<ModernMesh> mesh;
 
 			SP<PLYImport>	myObjImport = KigsCore::GetInstanceOf("objfile", "PLYImport");
-			myObjImport->setValue(LABEL_TO_ID(FileName), fileNameIn);
+			myObjImport->setValue("FileName", fileNameIn);
 			myObjImport->Init();
 			mesh = *myObjImport->GetMeshes().begin();
 
@@ -406,7 +406,7 @@ void	MeshConvert::ProtectedInit()
 			SP<ModernMesh> mesh;
 
 			SP<STLImport>	myObjImport = KigsCore::GetInstanceOf("objfile", "STLImport");
-			myObjImport->setValue(LABEL_TO_ID(FileName), fileNameIn);
+			myObjImport->setValue("FileName", fileNameIn);
 			myObjImport->Init();
 			mesh = *myObjImport->GetMeshes().begin();
 
@@ -439,7 +439,7 @@ void	MeshConvert::ProtectedInit()
 		else if (ext == "fbx")
 		{
 			SP<FBXImport>	parser = KigsCore::GetInstanceOf("FBXFile", "FBXImport");
-			parser->setValue(LABEL_TO_ID(FileName), fileNameIn);
+			parser->setValue("FileName", fileNameIn);
 
 			parser->setParams(myParams);
 
@@ -468,20 +468,20 @@ void	MeshConvert::ProtectedInit()
 				rootNode = toset;
 			}
 
-			kstl::vector<CMSP> instances;
+			std::vector<CMSP> instances;
 			SP<Camera> SceneCamera = nullptr;
 			Scene->GetSonInstancesByType("Camera", instances, true);
 			if (instances.size() == 0)
 			{
 				SceneCamera = KigsCore::GetInstanceOf("FakeCamera", "Camera");
-				SceneCamera->setValue(LABEL_TO_ID(RenderingScreen), "RenderingScreen:theRenderingScreen");
+				SceneCamera->setValue("RenderingScreen", "RenderingScreen:theRenderingScreen");
 				Scene->addItem((CMSP&)SceneCamera);
 				SceneCamera->Init();
 			}
 			else
 			{
 				SceneCamera = instances[0];
-				SceneCamera->setValue(LABEL_TO_ID(RenderingScreen), "RenderingScreen:theRenderingScreen");
+				SceneCamera->setValue("RenderingScreen", "RenderingScreen:theRenderingScreen");
 			}
 
 			Scene->GetRef();
@@ -506,7 +506,7 @@ void	MeshConvert::ProtectedInit()
 		else if (ext == "dae")
 		{
 			SP<ColladaParser>	parser = KigsCore::GetInstanceOf("colladaFile", "ColladaParser");
-			parser->setValue(LABEL_TO_ID(FileName), fileNameIn);
+			parser->setValue("FileName", fileNameIn);
 			parser->setParams(myParams);
 			parser->Init();
 
@@ -530,21 +530,21 @@ void	MeshConvert::ProtectedInit()
 
 			rootNode->ChangeMatrix(flipped);
 
-			kstl::vector<CMSP> instances;
+			std::vector<CMSP> instances;
 			SP<Camera> SceneCamera = nullptr;
 
 			Scene->GetSonInstancesByType("Camera", instances, true);
 			if (instances.size() == 0)
 			{
 				SceneCamera = KigsCore::GetInstanceOf("FakeCamera", "Camera");
-				SceneCamera->setValue(LABEL_TO_ID(RenderingScreen), "RenderingScreen:theRenderingScreen");
+				SceneCamera->setValue("RenderingScreen", "RenderingScreen:theRenderingScreen");
 				Scene->addItem((CMSP&)SceneCamera);
 				SceneCamera->Init();
 			}
 			else
 			{
 				SceneCamera = instances[0];
-				SceneCamera->setValue(LABEL_TO_ID(RenderingScreen), "RenderingScreen:theRenderingScreen");
+				SceneCamera->setValue("RenderingScreen", "RenderingScreen:theRenderingScreen");
 			}
 
 			theSceneGraph->addItem(Scene);

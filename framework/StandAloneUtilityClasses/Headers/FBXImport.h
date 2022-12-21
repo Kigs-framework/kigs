@@ -36,7 +36,7 @@ public:
 	DECLARE_CLASS_INFO(FBXImport, Base3DImporter, Renderer);
 
 	//! builds an list of kmesh
-	FBXImport(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	FBXImport(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 	//Entire scene, with lights and everything
 	CMSP getScene(){return myScene;}
@@ -59,8 +59,8 @@ protected:
 	CMSP ParseCamera(FbxCamera* fbxcamera);
 	CMSP ParseLight(FbxLight* fbxlight);
 	void ParseMaterial(FbxSurfaceMaterial* material);
-	FbxDouble3 ParseMaterialProperty(const FbxSurfaceMaterial * pMaterial, const char * pPropertyName, const char * pFactorPropertyName, kstl::string & pTextureName);
-	void ImportTexture(Material* material, kstl::string textureName, int texture_channel=0);
+	FbxDouble3 ParseMaterialProperty(const FbxSurfaceMaterial * pMaterial, const char * pPropertyName, const char * pFactorPropertyName, std::string & pTextureName);
+	void ImportTexture(Material* material, std::string textureName, int texture_channel=0);
 
 	struct vertex_weights
 	{
@@ -82,7 +82,7 @@ protected:
 	void ExportResult();
 
 	//Tools
-	void	RetreiveShortNameAndExt(const kstl::string& filename, kstl::string& shortname, kstl::string& fileext, kstl::string& filepath);
+	void	RetreiveShortNameAndExt(const std::string& filename, std::string& shortname, std::string& fileext, std::string& filepath);
 
 	bool	hasNormalMap(Material*);
 
@@ -97,7 +97,7 @@ protected:
 		FbxColor color;
 		FbxVector2 posTexture;
 	};
-	kstl::map<FbxMesh*, CoreModifiable*> meshParsed;
+	std::map<FbxMesh*, CoreModifiable*> meshParsed;
 	std::map<CoreModifiable*,Material*> materialOfMesh;
 	std::multimap<Material*, ModernMesh*> sortedMeshes;
 
@@ -108,8 +108,8 @@ protected:
 	//Objects Created
 	SP<Scene3D> myScene;
 
-	kstl::list<CMSP>			m_MeshList;
-	kstl::list<kstl::string> m_TextureList;
+	std::list<CMSP>			m_MeshList;
+	std::list<std::string> m_TextureList;
 
 	struct MaterialStruct
 	{
@@ -117,7 +117,7 @@ protected:
 		bool		hasNormalMap;
 	};
 
-	kstl::map<kstl::string, MaterialStruct>	m_materialList;
+	std::map<std::string, MaterialStruct>	m_materialList;
 	SP<Node3D>			RootNode;
 
 	FbxScene*		m_Scene;

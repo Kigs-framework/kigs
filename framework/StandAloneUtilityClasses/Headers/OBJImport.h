@@ -24,9 +24,9 @@ public:
 	DECLARE_CLASS_INFO(OBJImport,CoreModifiable,Renderer);
 	
 	//! builds an list of kmesh
-	OBJImport(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	OBJImport(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
-	kstl::vector<CMSP>&	GetMeshes()
+	std::vector<CMSP>&	GetMeshes()
 	{
 		return m_MeshList;
 	}
@@ -43,9 +43,9 @@ protected:
 		~ReadMaterial();
 		void	Init();
 		float	Ka[3],Kd[3],Ks[3],d,Ns;
-		kstl::string	name;
+		std::string	name;
 		int	illum;
-		kstl::string	textureName;
+		std::string	textureName;
 		SP<Material>		m_Material;
 	};
 
@@ -86,7 +86,7 @@ protected:
 		void	InitTTriangle(MeshItemGroup* mig,int startTriangleIndex);
 		void	InitSTTriangle(MeshItemGroup* mig,int startTriangleIndex);
 
-		kstl::string							matName;
+		std::string							matName;
 		DynamicGrowingBuffer<Triangle>*			m_ReadFacetBuffer;
 		unsigned int							m_ReadFacetCount;
 		bool									m_HasNormal;
@@ -94,10 +94,10 @@ protected:
 		
 	};
 
-	kstl::map<kstl::string,ReadMaterial>	m_materialList;
+	std::map<std::string,ReadMaterial>	m_materialList;
 	ReadMaterial*							m_currentMatRead;
 
-	void	MTLImport(const kstl::string& name);
+	void	MTLImport(const std::string& name);
 
 	// parse specific line
 	void	StartObj(AsciiParserUtils& line);
@@ -107,7 +107,7 @@ protected:
 	void	ParseNormal(AsciiParserUtils& line);
 	void	ParseFacet(AsciiParserUtils& line);
 
-	void	RetreiveShortNameAndExt(const kstl::string& filename, kstl::string& shortname, kstl::string& fileext, kstl::string& filepath);
+	void	RetreiveShortNameAndExt(const std::string& filename, std::string& shortname, std::string& fileext, std::string& filepath);
 
 	void	createObjectFromReadedData();
 
@@ -117,11 +117,11 @@ protected:
 	maReference								m_FirstMesh;
 	maBool									m_ModernMesh;
 
-	kstl::vector<CMSP>			m_MeshList;
+	std::vector<CMSP>			m_MeshList;
 
 	void	ReinitReadBuffers();
 
-	kstl::map<kstl::string,FacetGroup>		m_FacetGroupList;
+	std::map<std::string,FacetGroup>		m_FacetGroupList;
 	FacetGroup*								m_CurrentFacetGroup;
 	DynamicGrowingBuffer<Point3D>*			m_ReadVertexBuffer;
 	unsigned int							m_ReadVertexIndex;
@@ -133,9 +133,9 @@ protected:
 	unsigned int							m_ReadColorIndex;
 
 
-	kstl::list<kstl::string> m_TextureList;
+	std::list<std::string> m_TextureList;
 	maString								m_ExportPath;
 
-	kstl::string							m_CurrentObjectName;
+	std::string							m_CurrentObjectName;
 };
 #endif //_OBJIMPORT_H_

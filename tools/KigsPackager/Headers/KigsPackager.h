@@ -10,12 +10,12 @@ public:
 
 	DECLARE_CLASS_INFO(KigsPackager, CoreBaseApplication, Core)
 
-	KigsPackager(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	KigsPackager(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual		~KigsPackager();
 
 protected:
 
-	void	RetreiveShortNameAndExt(const kstl::string& filename,kstl::string& shortname,kstl::string& fileext);
+	void	RetreiveShortNameAndExt(const std::string& filename,std::string& shortname,std::string& fileext);
 
 	void	InitExternClasses();
 

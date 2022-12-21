@@ -18,7 +18,7 @@ struct MeshConvertParams
 	}
 	int								myAddVertexTangent;
 	bool							myAddVertexNormal;
-	kfloat							myImportScaleFactor;
+	float							myImportScaleFactor;
 	int								myImportFlipAxis[3];
 
 	Matrix3x3	getFlipMatrix()

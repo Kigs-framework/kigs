@@ -17,12 +17,12 @@ public:
 
 	DECLARE_CLASS_INFO(MeshConvert, CoreBaseApplication, Core)
 
-	MeshConvert(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	MeshConvert(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 	virtual		~MeshConvert();
 
 protected:
 
-	void	RetreiveShortNameAndExt(const kstl::string& filename,kstl::string& shortname,kstl::string& fileext);
+	void	RetreiveShortNameAndExt(const std::string& filename,std::string& shortname,std::string& fileext);
 
 	void	InitExternClasses();
 
@@ -40,7 +40,7 @@ protected:
 
 	MeshConvertParams		myParams;
 
-	kstl::vector<CMSP>	myObjectsToDestroy;
+	std::vector<CMSP>	myObjectsToDestroy;
 };
 
 

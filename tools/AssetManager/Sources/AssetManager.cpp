@@ -26,7 +26,7 @@ void	AssetManager::ProtectedInit()
 	CoreCreateModule(ModuleThread, nullptr);
 
 	// retreive args
-	kstl::vector<kstl::string>::iterator itArgs = mArgs.begin();
+	std::vector<std::string>::iterator itArgs = mArgs.begin();
 	// skip app name
 	itArgs++;
 
@@ -40,7 +40,7 @@ void	AssetManager::ProtectedInit()
 
 	for (; itArgs != mArgs.end(); itArgs++)
 	{
-		kstl::string& current = (*itArgs);
+		std::string& current = (*itArgs);
 
 		if (current.at(0) == '-')
 		{

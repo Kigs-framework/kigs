@@ -17,7 +17,7 @@ GenericAnimationModule* gGenericAnimationModule = nullptr;
 IMPLEMENT_CLASS_INFO(GenericAnimationModule)
 
 //! constructor
-GenericAnimationModule::GenericAnimationModule(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+GenericAnimationModule::GenericAnimationModule(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 
 	mResourceInfoMap.clear();
@@ -35,7 +35,7 @@ GenericAnimationModule::~GenericAnimationModule()
 }    
 
 //! module init, register FilePathManager
-void GenericAnimationModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void GenericAnimationModule::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"Animation",params);  
 	
@@ -65,7 +65,7 @@ void GenericAnimationModule::Update(const Timer& timer, void* addParam)
 }    
 
 
-AnimationResourceInfo*	GenericAnimationModule::LoadAnimation(const kstl::string& fileName)
+AnimationResourceInfo*	GenericAnimationModule::LoadAnimation(const std::string& fileName)
 {
 	if(mResourceInfoMap.find(fileName) != mResourceInfoMap.end())
 	{
@@ -98,7 +98,7 @@ AnimationResourceInfo*	GenericAnimationModule::LoadAnimation(const kstl::string&
 
 
 
-void	GenericAnimationModule::UnLoad(const kstl::string& fileName)
+void	GenericAnimationModule::UnLoad(const std::string& fileName)
 {
 	if(mResourceInfoMap.find(fileName) == mResourceInfoMap.end())
 	{
@@ -111,7 +111,7 @@ void	GenericAnimationModule::UnLoad(const kstl::string& fileName)
 
 void	GenericAnimationModule::UnLoad(AnimationResourceInfo* info)
 {
-	kstl::map<kstl::string, SP<CoreRawBuffer>>::iterator it;
+	std::map<std::string, SP<CoreRawBuffer>>::iterator it;
 
 	CoreRawBuffer* result =0;
 	for(it=mResourceInfoMap.begin();it!=mResourceInfoMap.end();++it)

@@ -25,9 +25,9 @@ public:
 	DECLARE_CLASS_INFO(PLYImport, CoreModifiable, Renderer);
 
 	//! builds an list of kmesh
-	PLYImport(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	PLYImport(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	kstl::vector<CMSP>&	GetMeshes()
+	std::vector<CMSP>&	GetMeshes()
 	{
 		return m_MeshList;
 	}
@@ -50,21 +50,21 @@ protected:
 	struct propertyDesc
 	{
 		propertyType	m_type;
-		kstl::string	m_propertyname;
+		std::string	m_propertyname;
 		propertyType	m_ListIndexSize; // only for list desc
 		propertyType	m_ListIndexType; // only for list desc
 	};
 
 	struct elementDesc
 	{
-		kstl::string							m_typename;
-		kstl::vector<propertyDesc>				m_properties;
+		std::string							m_typename;
+		std::vector<propertyDesc>				m_properties;
 		unsigned int							m_count;
 
 		void	addProperty(AsciiParserUtils& line);
 	};
 
-	kstl::vector<elementDesc>					m_ElementDescriptors;
+	std::vector<elementDesc>					m_ElementDescriptors;
 
 	SP<ModernMeshItemGroup>	readBinData(unsigned char* binData,ModernMesh*);
 	SP<ModernMeshItemGroup>	readAsciiData(AsciiParserUtils& asciiData, ModernMesh*);
@@ -81,7 +81,7 @@ protected:
 		unsigned int	a, b, c;
 	};
 
-	static propertyType getTypeFromString(const kstl::string w)
+	static propertyType getTypeFromString(const std::string w)
 	{
 		if ((w == "float") || (w == "float32"))
 		{
@@ -134,12 +134,12 @@ protected:
 	}
 
 	// return pos (in byte) of given property or -1 if not found
-	static int getPropertyPos(const elementDesc& desc, const kstl::string& pname)
+	static int getPropertyPos(const elementDesc& desc, const std::string& pname)
 	{
 		int returnedPos = 0;
 
-		kstl::vector<propertyDesc>::const_iterator	itpc = desc.m_properties.begin();
-		kstl::vector<propertyDesc>::const_iterator	itpe = desc.m_properties.end();
+		std::vector<propertyDesc>::const_iterator	itpc = desc.m_properties.begin();
+		std::vector<propertyDesc>::const_iterator	itpe = desc.m_properties.end();
 
 		while (itpc != itpe)
 		{
@@ -162,8 +162,8 @@ protected:
 	{
 		int returnedSize = 0;
 
-		kstl::vector<propertyDesc>::const_iterator	itpc = desc.m_properties.begin();
-		kstl::vector<propertyDesc>::const_iterator	itpe = desc.m_properties.end();
+		std::vector<propertyDesc>::const_iterator	itpc = desc.m_properties.begin();
+		std::vector<propertyDesc>::const_iterator	itpe = desc.m_properties.end();
 
 		while (itpc != itpe)
 		{
@@ -176,7 +176,7 @@ protected:
 
 	bool						m_isASCII;
 
-	kstl::vector<CMSP>			m_MeshList;
-	kstl::string							m_CurrentObjectName;
+	std::vector<CMSP>			m_MeshList;
+	std::string							m_CurrentObjectName;
 };
 #endif //_PLYIMPORT_H_

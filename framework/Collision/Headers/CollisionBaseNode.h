@@ -26,7 +26,7 @@ public:
 	*/
 	DECLARE_CONSTRUCTOR(CollisionBaseNode);
 
-	bool BBoxUpdate(kdouble time) override { return true; }
+	bool BBoxUpdate(double time) override { return true; }
 	void	GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override { pmin = mBoundingBox.m_Min; pmax = mBoundingBox.m_Max; }
 
 protected:

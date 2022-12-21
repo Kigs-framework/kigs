@@ -87,10 +87,10 @@ IMPLEMENT_TEMPLATE_CLASS_INFO(LocalToGlobalType, AStream)
 
 
 template<typename LocalToGlobalType>
-AStream<LocalToGlobalType>::AStream(const kstl::string& name, CLASS_NAME_TREE_ARG) : ABaseStream(name, PASS_CLASS_NAME_TREE_ARG)
+AStream<LocalToGlobalType>::AStream(const std::string& name, CLASS_NAME_TREE_ARG) : ABaseStream(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	mNextStream = nullptr;
-	InitStream(nullptr, 100, KFLOAT_CONST(1.0f), KFLOAT_CONST(1.0f), true);
+	InitStream(nullptr, 100, 1.0f, 1.0f, true);
 	mIsPlaying = false;
 	mOutsideAnimFlag = false;
 	mHasLoop = 0;

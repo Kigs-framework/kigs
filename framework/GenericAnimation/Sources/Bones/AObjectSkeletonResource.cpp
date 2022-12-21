@@ -4,9 +4,9 @@
 
 IMPLEMENT_CLASS_INFO(AObjectSkeletonResource)
 
-AObjectSkeletonResource::AObjectSkeletonResource(const kstl::string& name, CLASS_NAME_TREE_ARG)
+AObjectSkeletonResource::AObjectSkeletonResource(const std::string& name, CLASS_NAME_TREE_ARG)
 	: AObjectResource(name, PASS_CLASS_NAME_TREE_ARG)
-	, mSkeletonFileName(*this, true, LABEL_AND_ID(SkeletonFileName), "")
+	, mSkeletonFileName(*this, true, "SkeletonFileName", "")
 	, mBoneCount(0)
 	, mBoneDataSize(0)
 	, mBoneTreeNodeList(0)

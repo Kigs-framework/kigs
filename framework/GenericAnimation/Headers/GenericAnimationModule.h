@@ -17,7 +17,7 @@
 */
 // ****************************************
 
-#include "kstlmap.h"
+#include <map>
 #include "kstlstring.h"
 #include "AnimationResourceInfo.h"
 
@@ -36,7 +36,7 @@ public:
     DECLARE_CONSTRUCTOR(GenericAnimationModule);
 	
 	//! module init
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params) override;
+	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 	
 	//! module close
 	void Close() override;
@@ -49,10 +49,10 @@ public:
 	WRAP_METHODS(LoadAnimation);
 
 
-	AnimationResourceInfo*	LoadAnimation(const kstl::string& fileName);
+	AnimationResourceInfo*	LoadAnimation(const std::string& fileName);
 	
 	
-	void	UnLoad(const kstl::string& fileName);
+	void	UnLoad(const std::string& fileName);
 	void	UnLoad(AnimationResourceInfo* info);
 	
 	void	addShader(SP<CoreModifiable> parent, SP<CoreModifiable> shader)
@@ -64,12 +64,12 @@ public:
 	protected:
 	
 	
-	kstl::map<kstl::string, SP<CoreRawBuffer>>	mResourceInfoMap;
+	std::map<std::string, SP<CoreRawBuffer>>	mResourceInfoMap;
 	
 	void ManagePostAdd()
 	{
-		kstl::vector<std::pair<SP<CoreModifiable>, SP<CoreModifiable>> >::iterator	itc = mPostAddShaderList.begin();
-		kstl::vector<std::pair<SP<CoreModifiable>, SP<CoreModifiable>> >::iterator	ite = mPostAddShaderList.end();
+		std::vector<std::pair<SP<CoreModifiable>, SP<CoreModifiable>> >::iterator	itc = mPostAddShaderList.begin();
+		std::vector<std::pair<SP<CoreModifiable>, SP<CoreModifiable>> >::iterator	ite = mPostAddShaderList.end();
 		
 		while (itc != ite)
 		{
@@ -78,7 +78,7 @@ public:
 		}
 		mPostAddShaderList.clear();
 	}
-	kstl::vector<std::pair<SP<CoreModifiable>, SP<CoreModifiable>> >	mPostAddShaderList;
+	std::vector<std::pair<SP<CoreModifiable>, SP<CoreModifiable>> >	mPostAddShaderList;
 	
 
 }; 
