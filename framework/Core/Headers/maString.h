@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreModifiableAttribute.h"
-#include "AttributeModifier.h"
+
 
 // ****************************************
 // * maStringHeritage class
@@ -32,14 +32,12 @@ public:
 	virtual bool getValue(std::string& value) const override
 	{
 		std::string tmpValue = this->mValue;
-		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		value = tmpValue;
 		return true;
 	}
 	virtual bool getValue(usString&  value) const override
 	{
 		std::string tmpValue = this->mValue;
-		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		value = tmpValue;
 		return true;
 	}
@@ -64,7 +62,6 @@ public:
 			return false;
 
 		std::string tmpValue = value;
-		CALL_SETMODIFIER(notificationLevel, tmpValue);
 		this->mValue = tmpValue;
 		DO_NOTIFICATION(notificationLevel);
 		return true;
@@ -75,7 +72,6 @@ public:
 			return false;
 
 		std::string tmpValue = value;
-		CALL_SETMODIFIER(notificationLevel, tmpValue);
 		this->mValue = tmpValue;
 		DO_NOTIFICATION(notificationLevel);
 		return true;
@@ -86,7 +82,6 @@ public:
 	if (this->isReadOnly())\
 		return false; \
 	std::string tmpValue = std::to_string(value); \
-	CALL_SETMODIFIER(notificationLevel, tmpValue); \
 	this->mValue = tmpValue; \
 	DO_NOTIFICATION(notificationLevel); \
 	return true; \

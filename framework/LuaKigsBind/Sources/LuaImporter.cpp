@@ -309,23 +309,8 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 	{
 		std::string attr_name = it.key().toValue<std::string>();
 		TestPrintf("\t attr %s", attr_name.c_str());
-		bool addModifier = it.value().isTable() && it.value().has("_modifier");
-		LuaRef modifier;
-
+	
 		LuaRef value = it.value();
-		if (addModifier)
-		{
-			TestPrintf(" (modifier)");
-			modifier = it.value()["_modifier"].value();
-			for (auto& itmod : it.value())
-			{
-				if (!itmod.value().isIdenticalTo(modifier))
-				{
-					value = itmod.value();
-					break;
-				}
-			}
-		}
 
 		CoreModifiableAttribute* attribute = current->getAttribute(attr_name);
 
@@ -548,40 +533,6 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 		}
 
 		TestPrintf("\n");
-		if (addModifier)
-		{
-			std::unique_ptr<AttachedModifierBase> toAdd ;
-			std::string modifiertype = modifier["type"].value().toValue<std::string>();
-
-			auto& instancemap = KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap();
-
-			auto itfound = instancemap.find(modifiertype);
-
-			if (itfound != instancemap.end())
-			{
-				toAdd = static_unique_pointer_cast<AttachedModifierBase>(itfound->second());
-			}
-
-			if (toAdd != nullptr)
-			{
-				bool isGetter = true;
-				if (modifier.has("isGetter") && !modifier["isGetter"].value().toValue<bool>())
-				{
-					isGetter = false;
-				}
-
-				std::string modvalue = "";
-
-				if (modifier.has("value"))
-				{
-					modvalue = modifier["value"].value().toValue<std::string>();
-				}
-
-				toAdd->Init(attribute, isGetter, modvalue);
-				attribute->attachModifier(std::move(toAdd));
-			}
-
-		}
 
 	}
 

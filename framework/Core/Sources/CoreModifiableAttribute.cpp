@@ -10,8 +10,6 @@
 
 #include <algorithm>
 
-#include "AttributeModifier.h"
-
 //! convert enum to readable string
 std::string CoreModifiableAttribute::typeToString(CoreModifiable::ATTRIBUTE_TYPE typ)
 {
@@ -140,65 +138,7 @@ void CoreModifiableAttribute::changeNotificationLevel(AttributeNotificationLevel
 
 CoreModifiable* CoreModifiableAttribute::getOwner() const
 {
-	uintptr_t firstp = mOwnerAndModifiers;
-	while (firstp & 1) // this is a modifier
-	{
-		AttachedModifierBase* realaddress = (AttachedModifierBase*)(firstp & (((uintptr_t)-1) ^ (uintptr_t)3));
-		firstp = realaddress->getNextObject();
-	}
-
-	return (CoreModifiable*)firstp;
-}
-
-void	CoreModifiableAttribute::attachModifier(std::unique_ptr<AttachedModifierBase> toAttachSP)
-{
-	if (!toAttachSP) return;
-	auto toAttach = toAttachSP.release();
-	AttachedModifierBase* modifier = getFirstAttachedModifier();
-	toAttach->setNextObject(mOwnerAndModifiers);
-	mOwnerAndModifiers = (uintptr_t)toAttach;
-	mOwnerAndModifiers |= 1;
-	if (!modifier) // first one
-	{
-		this->mFlags |= (unsigned int)haveAttachedModifier;
-		changeInheritance();
-	}
-}
-
-void	CoreModifiableAttribute::detachModifier(AttachedModifierBase* toDetach)
-{
-	AttachedModifierBase* modifier = getFirstAttachedModifier();
-	if (!modifier)
-		return;
-
-	AttachedModifierBase* prev = nullptr;
-	AttachedModifierBase* current = modifier;
-	while (current)
-	{
-		if (current == toDetach)
-		{
-			if (prev)
-			{
-				prev->setNextObject(current->getNextObject());
-			}
-			else
-			{
-				mOwnerAndModifiers = current->getNextObject();
-			}
-			toDetach->setNextObject(0);
-			break;
-		}
-		prev = current;
-		current = current->getNext();
-	}
-
-	modifier = getFirstAttachedModifier();
-	// no more attached modifier
-	if (!modifier)
-	{
-		this->mFlags &= ~((unsigned int)haveAttachedModifier);
-		changeInheritance();
-	}
+	return mOwner;
 }
 
 CoreModifiableAttribute::~CoreModifiableAttribute()
@@ -212,7 +152,6 @@ CoreModifiableAttribute::~CoreModifiableAttribute()
 			owner->mAttributes.erase(it);
 		}
 	}
-	delete getFirstAttachedModifier();
 };
 
 
@@ -345,115 +284,4 @@ void CoreModifiableAttribute::ParseAttributePath(const std::string &path, std::s
 		CoreModifiablePath = path.substr(0, posPoint);
 		CoreModifiableAttributeLabel = path.substr(posPoint + 2, path.length() - posPoint - 2);
 	}
-}
-
-
-
-void	CoreItemOperatorModifier::Init(CoreModifiableAttribute* caller, bool isGetter, const std::string& addParam)
-{
-	AttachedModifierBase::Init(caller, isGetter, addParam);
-
-	CoreItemEvaluationContext::SetContext(&mContext);
-
-	CoreModifiable::ATTRIBUTE_TYPE type = caller->getType();
-
-	switch (type)
-	{
-	case CoreModifiable::ATTRIBUTE_TYPE::BOOL:
-	case CoreModifiable::ATTRIBUTE_TYPE::CHAR:
-	case CoreModifiable::ATTRIBUTE_TYPE::SHORT:
-	case CoreModifiable::ATTRIBUTE_TYPE::INT:
-	case CoreModifiable::ATTRIBUTE_TYPE::LONG:
-	case CoreModifiable::ATTRIBUTE_TYPE::UCHAR:
-	case CoreModifiable::ATTRIBUTE_TYPE::USHORT:
-	case CoreModifiable::ATTRIBUTE_TYPE::UINT:
-	case CoreModifiable::ATTRIBUTE_TYPE::ULONG:
-	case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
-	case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
-	{
-		mContext.mVariableList[KigsID("input").toUInt()].push_back(MakeCoreValue(0.0f));
-		mCurrentItem = CoreItemOperator<float>::Construct(addParam, caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-	}
-	break;
-	case CoreModifiable::ATTRIBUTE_TYPE::STRING:
-	case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
-	{
-		mContext.mVariableList[KigsID("input").toUInt()].push_back(MakeCoreValue(std::string()));
-		mCurrentItem = CoreItemOperator<std::string>::Construct(addParam, caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-	}
-	break;
-	case CoreModifiable::ATTRIBUTE_TYPE::ARRAY:
-	{
-		// only Point2D & Point3D
-		unsigned int asize = caller->getNbArrayElements();
-		if (asize == 2)
-		{
-			mContext.mVariableList[KigsID("input").toUInt()].push_back(MakeCoreValue(v2f{0,0}));
-			mCurrentItem = CoreItemOperator<Point2D>::Construct(addParam, caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-		}
-		else if (asize == 3)
-		{
-			mContext.mVariableList[KigsID("input").toUInt()].push_back(MakeCoreValue(v3f{0,0,0}));
-			mCurrentItem = CoreItemOperator<Point3D>::Construct(addParam, caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-		}
-		else if (asize == 4)
-		{
-			mContext.mVariableList[KigsID("input").toUInt()].push_back(MakeCoreValue(v4f{0,0,0,0}));
-			mCurrentItem = CoreItemOperator<Vector4D>::Construct(addParam, caller->getOwner(), KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-
-		}
-	}
-	break;
-	default:
-		break;
-	}
-
-	CoreItemEvaluationContext::ReleaseContext();
-}
-
-void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, float& value)
-{
-	CoreItemEvaluationContext::SetContext(&mContext);
-	*((CoreValue<float>*)mContext.mVariableList[KigsID("input").toUInt()].back().get()) = value;
-	value = *mCurrentItem.get();
-	CoreItemEvaluationContext::ReleaseContext();
-};
-
-// strings
-void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, std::string& value)
-{
-	CoreItemEvaluationContext::SetContext(&mContext);
-	*((CoreValue<std::string>*)mContext.mVariableList[KigsID("input").toUInt()].back().get()) = value;
-	mCurrentItem->getValue(value);
-	CoreItemEvaluationContext::ReleaseContext();
-}
-void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, usString& value)
-{
-	CoreItemEvaluationContext::SetContext(&mContext);
-	*((CoreValue<usString>*)mContext.mVariableList[KigsID("input").toUInt()].back().get()) = value;
-	mCurrentItem->getValue(value);
-	CoreItemEvaluationContext::ReleaseContext();
-}
-
-// 2D or 3D points
-void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, Point2D& value)
-{
-	CoreItemEvaluationContext::SetContext(&mContext);
-	*((CoreValue<Point2D>*)mContext.mVariableList[KigsID("input").toUInt()].back().get()) = value;
-	mCurrentItem->getValue(value);
-	CoreItemEvaluationContext::ReleaseContext();
-}
-void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, Point3D& value)
-{
-	CoreItemEvaluationContext::SetContext(&mContext);
-	*((CoreValue<Point3D>*)mContext.mVariableList[KigsID("input").toUInt()].back().get()) = value;
-	mCurrentItem->getValue(value);
-	CoreItemEvaluationContext::ReleaseContext();
-}
-void	CoreItemOperatorModifier::ProtectedCallModifier(CoreModifiableAttribute* caller, Vector4D& value)
-{
-	CoreItemEvaluationContext::SetContext(&mContext);
-	*((CoreValue<Vector4D>*)mContext.mVariableList[KigsID("input").toUInt()].back().get()) = value;
-	mCurrentItem->getValue(value);
-	CoreItemEvaluationContext::ReleaseContext();
 }

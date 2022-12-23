@@ -3,7 +3,6 @@
 
 #include "CoreModifiableAttribute.h"
 #include "usString.h"
-#include "AttributeModifier.h"
 
 // ****************************************
 // * maUSStringHeritage class
@@ -109,7 +108,6 @@ public:
 	if (this->isReadOnly())\
 		return false; \
 	usString tmpValue = std::to_string(value); \
-	CALL_SETMODIFIER(notificationLevel, tmpValue); \
 	this->mValue = tmpValue; \
 	DO_NOTIFICATION(notificationLevel); \
 	return true; \

@@ -7,7 +7,6 @@
 // - attribute declaration
 // - dynamic attribute
 // - set / get attribute values
-// - attribute getter / setter modifier
 
 IMPLEMENT_CLASS_INFO(Sample3);
 
@@ -92,26 +91,6 @@ void	Sample3::ProtectedInit()
 	instance1->getArrayElementValue("Vector", arrayv[0], 0,2);
 	std::cout << "vector values : {" << arrayv[0] << "," << arrayv[1] << "," << arrayv[2] << "," << arrayv[3] << "}" << std::endl;
 
-
-	std::cout << "Int Value without modifier : " << instance1->getValue<int>("IntValue") << std::endl;
-
-	// manualy add modifier 
-	auto& instanceMap = KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap();
-	auto itfound = instanceMap.find("CoreItemOperatorModifier");
-	if (itfound != instanceMap.end())
-	{
-		auto toAdd = static_unique_pointer_cast<AttachedModifierBase>((*itfound).second());
-		CoreModifiableAttribute* attr = instance1->getAttribute("IntValue");
-		if (toAdd && attr)
-		{
-			// define getter modifier multiplying by two the value retreive with getValue
-			toAdd->Init(attr, true, "input*2");
-			attr->attachModifier(std::move(toAdd));
-		}
-	}
-
-	// getValue now returns 2 * the stored value
-	std::cout << "Int Value with modifier : " << instance1->getValue<int>("IntValue") << std::endl;
 
 	// IntValue is set like this in the XML file :
 	// <Attr N="IntValue" V="eval(32*4)"/>

@@ -3,6 +3,8 @@
 #include "XML.h"
 #include "XMLNode.h"
 #include "XMLAttribute.h"
+#include "Core.h"
+#include "CoreRawBuffer.h"
 
 #include "FilePathManager.h"
 #include "AttributePacking.h"

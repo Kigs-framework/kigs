@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreModifiableAttribute.h"
-#include "AttributeModifier.h"
+#include "Core.h"
 
 /*
 	Conversions
@@ -243,23 +243,23 @@ public:
 
 	virtual bool getValue(void*& value) const override { value = (void*)mValue.data(); return true; }
 
-	virtual bool getValue(bool& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (tmpValue != (T)0); return true; }
-	virtual bool getValue(s8& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s8)tmpValue; return true; }
-	virtual bool getValue(s16& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s16)tmpValue; return true; }
-	virtual bool getValue(s32& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s32)tmpValue; return true; }
-	virtual bool getValue(s64& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (s64)tmpValue; return true; }
-	virtual bool getValue(u8& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u8)tmpValue; return true; }
-	virtual bool getValue(u16& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u16)tmpValue; return true; }
-	virtual bool getValue(u32& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u32)tmpValue; return true; }
-	virtual bool getValue(u64& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (u64)tmpValue; return true; }
-	virtual bool getValue(float& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (float)tmpValue; return true; }
-	virtual bool getValue(double& value) const override { T tmpValue = at(0, 0); CALL_GETMODIFIER(notificationLevel, tmpValue); value = (double)tmpValue; return true; }
+	virtual bool getValue(bool& value) const override { T tmpValue = at(0, 0);  value = (tmpValue != (T)0); return true; }
+	virtual bool getValue(s8& value) const override { T tmpValue = at(0, 0);  value = (s8)tmpValue; return true; }
+	virtual bool getValue(s16& value) const override { T tmpValue = at(0, 0);  value = (s16)tmpValue; return true; }
+	virtual bool getValue(s32& value) const override { T tmpValue = at(0, 0);  value = (s32)tmpValue; return true; }
+	virtual bool getValue(s64& value) const override { T tmpValue = at(0, 0);  value = (s64)tmpValue; return true; }
+	virtual bool getValue(u8& value) const override { T tmpValue = at(0, 0);  value = (u8)tmpValue; return true; }
+	virtual bool getValue(u16& value) const override { T tmpValue = at(0, 0);  value = (u16)tmpValue; return true; }
+	virtual bool getValue(u32& value) const override { T tmpValue = at(0, 0);  value = (u32)tmpValue; return true; }
+	virtual bool getValue(u64& value) const override { T tmpValue = at(0, 0);  value = (u64)tmpValue; return true; }
+	virtual bool getValue(float& value) const override { T tmpValue = at(0, 0);  value = (float)tmpValue; return true; }
+	virtual bool getValue(double& value) const override { T tmpValue = at(0, 0);  value = (double)tmpValue; return true; }
 
 	virtual bool getValue(std::string& value) const override { return CoreConvertArray2String<T>(value, getConstArrayBuffer(), getNbArrayElements()); }
 
-	virtual bool getValue(Point2D& value) const override { if (nbColumns < 2) return false; Point2D tmpValue((float)at(0, 0), (float)at(0, 1)); CALL_GETMODIFIER(notificationLevel, tmpValue); value = tmpValue; return true; }
-	virtual bool getValue(Point3D& value) const override { if (nbColumns < 3) return false; Point3D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2)); CALL_GETMODIFIER(notificationLevel, tmpValue); value = tmpValue; return true; }
-	virtual bool getValue(Vector4D& value) const override { if (nbColumns < 4) return false; Vector4D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2), (float)at(0, 3)); CALL_GETMODIFIER(notificationLevel, tmpValue); value = tmpValue; return true; }
+	virtual bool getValue(Point2D& value) const override { if (nbColumns < 2) return false; Point2D tmpValue((float)at(0, 0), (float)at(0, 1));  value = tmpValue; return true; }
+	virtual bool getValue(Point3D& value) const override { if (nbColumns < 3) return false; Point3D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2));  value = tmpValue; return true; }
+	virtual bool getValue(Vector4D& value) const override { if (nbColumns < 4) return false; Vector4D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2), (float)at(0, 3));  value = tmpValue; return true; }
 
 	using CoreModifiableAttributeData<ArrayType>::setValue;
 

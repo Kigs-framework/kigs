@@ -16,7 +16,6 @@
 #include "LocalizationManager.h"
 #include "CoreItemOperator.h"
 
-#include "AttributeModifier.h"
 #include "MiniInstanceFactory.h"
 
 #ifdef _KIGS_ONLY_STATIC_LIB_
@@ -251,11 +250,6 @@ MEMORYMANAGEMENT_END
 	DECLARE_FULL_CLASS_INFO(mCoreInstance, MiniInstanceFactory, MiniInstanceFactory, KigsCore)
 
 	std::vector<SpecificOperator> specificList;
-	SpecificOperator toAdd;
-	toAdd.mKeyWord = "CoreItemOperatorModifier";
-	toAdd.mCreateMethod = &CoreItemOperatorModifier::create;
-	specificList.push_back(toAdd);
-
 	CoreItemOperator<float>::ConstructContextMap(mCoreInstance->mCoreItemOperatorCreateMethodMap, &specificList);
 
 	CMSP createUpgradorFactory = GetInstanceOf("UpgradorFactory", "MiniInstanceFactory");

@@ -21,7 +21,6 @@
 #include "CoreModifiableTemplateImport.h"
 
 #include "AttributePacking.h"
-#include "AttributeModifier.h"
 #include "JSonFileParser.h"
 
 #include "Upgrador.h"
@@ -2377,30 +2376,6 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 				
 			}
 			
-			// export modifier
-			AttachedModifierBase* exportedModifier = current->getFirstAttachedModifier();
-			while (exportedModifier)
-			{
-				XMLNode*	modifierNode = new XMLNode();
-				modifierNode->setType(XML_NODE_ELEMENT);
-				modifierNode->setName("Mod");
-				XMLAttribute*	modifierType = new XMLAttribute((std::string)"T", (std::string)exportedModifier->GetModifierType());
-				modifierNode->addAttribute(modifierType);
-				XMLAttribute*	modifierV = new XMLAttribute((std::string)"V", (std::string)exportedModifier->GetModifierInitString());
-				modifierNode->addAttribute(modifierV);
-				
-				if (!exportedModifier->isGetterModifier())
-				{
-					XMLAttribute* setter = new XMLAttribute((std::string)"Setter", (std::string)"yes");
-					modifierNode->addAttribute(setter);
-				}
-#ifdef USE_PARENT_AND_SIBLING				
-				modifierNode->setParent(modifierNode);
-#endif //USE_PARENT_AND_SIBLING
-				modifiableAttrNode->addChild(modifierNode);
-				exportedModifier = exportedModifier->getNext();
-			}
-			
 		}
 #ifdef USE_PARENT_AND_SIBLING	
 		modifiableAttrNode->setParent(currentNode);
@@ -2667,71 +2642,6 @@ void	CoreModifiable::InitLuaScript(XMLNodeBase* currentNode, CoreModifiable* cur
 
 	luamodule->CallMethod("RegisterLuaMethod", params);
 }
-
-AttachedModifierBase* CoreModifiable::InitAttributeModifier(XMLNodeBase* currentNode, CoreModifiableAttribute* attr)
-{
-	XMLAttributeBase* attrtype = currentNode->getAttribute("T", "Type");
-
-	std::unique_ptr<AttachedModifierBase> toAdd;
-	AttachedModifierBase* return_value = nullptr;
-	if (attrtype)
-	{
-		std::string modifiertype = attrtype->getString();
-		if (modifiertype != "")
-		{
-			auto& instanceMap = KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap();
-			auto itfound = instanceMap.find(modifiertype);
-			if (itfound != instanceMap.end())
-			{
-				toAdd = static_unique_pointer_cast<AttachedModifierBase>((*itfound).second());
-			}
-		}
-
-		if (toAdd)
-		{
-			// is setter ?
-			bool isSetter = false;
-			XMLAttributeBase* attrsetter = currentNode->getAttribute("Setter", "isSetter");
-
-			if (attrsetter)
-			{
-				if ((attrsetter->getRefString() == "true") || (attrsetter->getRefString() == "yes"))
-				{
-					isSetter = true;
-				}
-			}
-
-			// search value
-			std::string value = "";
-			XMLAttributeBase* attrvalue = currentNode->getAttribute("V", "Value");
-
-			if (attrvalue)
-			{
-				value = attrvalue->getString();
-			}
-
-			// check for direct string
-			if (value == "")
-			{
-				for (s32 i = 0; i < currentNode->getChildCount(); i++)
-				{
-					XMLNodeBase* sonXML = currentNode->getChildElement(i);
-					if ((sonXML->getType() == XML_NODE_TEXT_NO_CHECK) || (sonXML->getType() == XML_NODE_TEXT))
-					{
-						value = sonXML->getString();
-						break;
-					}
-				}
-			}
-
-			toAdd->Init(attr, !isSetter, value);
-			return_value = toAdd.get();
-			attr->attachModifier(std::move(toAdd));
-		}
-	}
-	return return_value;
-}
-
 
 void	CoreModifiable::ReleaseLoadedItems(std::vector<CMSP> &loadedItems)
 {

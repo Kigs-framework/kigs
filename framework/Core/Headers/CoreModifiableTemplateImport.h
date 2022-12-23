@@ -811,22 +811,6 @@ void	CoreModifiable::InitAttribute(XMLNodeTemplate<StringType>* currentNode, Cor
 		}
 	}
 
-	// add attribute modifier if any
-	if (attr)
-	{
-		for (s32 i = 0; i < currentNode->getChildCount(); i++)
-		{
-			XMLNodeBase* sonXML = currentNode->getChildElement(i);
-			if (sonXML->getType() == XML_NODE_ELEMENT)
-			{
-				if (sonXML->nameOneOf("Modifier", "Mod"))
-				{
-					InitAttributeModifier(sonXML, attr);
-				}
-			}
-		}
-	}
-
 #ifndef KEEP_XML_DOCUMENT
 	if (pathAttribute) delete pathAttribute;
 	if (attrname) delete attrname;

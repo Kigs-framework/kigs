@@ -3,7 +3,6 @@
 
 #include "CoreModifiableAttribute.h"
 #include "CoreItem.h"
-#include "AttributeModifier.h"
 #include "SmartPointer.h"
 
 

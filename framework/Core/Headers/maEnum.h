@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CoreModifiableAttribute.h"
-#include "AttributeModifier.h"
 #include <array>
 
 // ****************************************
@@ -93,12 +92,12 @@ public:
 
 
 #define IMPLEMENT_SET_VALUE_ENUM(type)\
-	virtual bool setValue(type value) override { if (this->isReadOnly()) { return false; }  unsigned int tmpValue = (unsigned int)value; CALL_SETMODIFIER(notificationLevel, tmpValue); if (tmpValue < nbElements) { mValue.current_value = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; } return false; }
+	virtual bool setValue(type value) override { if (this->isReadOnly()) { return false; }  unsigned int tmpValue = (unsigned int)value; if (tmpValue < nbElements) { mValue.current_value = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; } return false; }
 
 	EXPAND_MACRO_FOR_NUMERIC_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SET_VALUE_ENUM);
 
 #define IMPLEMENT_GET_VALUE_ENUM(type)\
-	virtual bool getValue(type value) const override {  unsigned int tmpValue=mValue.current_value; CALL_GETMODIFIER(notificationLevel, tmpValue); if(tmpValue<nbElements){ value = (type)tmpValue; return true;} return false;  }
+	virtual bool getValue(type value) const override {  unsigned int tmpValue=mValue.current_value; if(tmpValue<nbElements){ value = (type)tmpValue; return true;} return false;  }
 
 	EXPAND_MACRO_FOR_NUMERIC_TYPES(NOQUALIFIER, &, IMPLEMENT_GET_VALUE_ENUM);
 
@@ -114,7 +113,6 @@ public:
 		{
 			if (mValue.value_list[i] == value)
 			{
-				CALL_SETMODIFIER(notificationLevel, i);
 				if (i < nbElements)
 				{
 					mValue.current_value = i;
@@ -130,7 +128,6 @@ public:
 	virtual bool getValue(std::string& value) const override
 	{
 		unsigned int tmpValue = mValue.current_value;
-		CALL_GETMODIFIER(notificationLevel, tmpValue);
 		if (tmpValue < nbElements)
 		{
 			value = mValue.value_list[tmpValue];

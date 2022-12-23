@@ -2,7 +2,6 @@
 #define _MAREFERENCE_H
 
 #include "CoreModifiableAttribute.h"
-#include "AttributeModifier.h"
 
 
 

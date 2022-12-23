@@ -5,6 +5,7 @@
 #include "CoreModifiableAttribute.h"
 #include "maUSString.h"
 #include "CoreMap.h"
+#include "CoreVector.h"
 
 template <typename stringType, typename parserType>
 JSonFileParserBase<stringType,parserType>::JSonFileParserBase(const std::string& filename, CoreModifiable*	delegateObject) :

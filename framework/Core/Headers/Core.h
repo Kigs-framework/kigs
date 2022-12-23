@@ -191,7 +191,7 @@ public:
 	kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	GetDefaultCoreItemOperatorConstructMap();
 
 	/**
-	 * \fn			static ModuleBase*		GetModule(const STRINGS_NAME_TYPE& classname);
+		 * \fn			static ModuleBase*		GetModule(const KigsID& classname);
 	 * \brief		Get a module from its name
 	 * \param		classname : name of the module to retreive
 	 * \return		the asked module or NULL if not exist

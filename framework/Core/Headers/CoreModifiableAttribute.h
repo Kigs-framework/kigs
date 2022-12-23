@@ -130,7 +130,7 @@ protected:
 	explicit CoreModifiableAttribute(InheritanceSwitch tag) {}
 
 
-	CoreModifiableAttribute(CoreModifiable* owner, bool isInitParam, KigsID ID) : mOwnerAndModifiers((uintptr_t)owner), mID(ID), mFlags(0)
+	CoreModifiableAttribute(CoreModifiable* owner, bool isInitParam, KigsID ID) : mOwner(owner), mID(ID), mFlags(0)
 	{
 		setIsInitParam(isInitParam);
 		if(owner)
@@ -184,18 +184,6 @@ public:
 		notifyOwnerFlag = 8,
 		haveAttachedModifier = 16
 	};
-
-	AttachedModifierBase* getFirstAttachedModifier() const
-	{
-		if (mOwnerAndModifiers & 1)
-		{
-			AttachedModifierBase* realaddress = (AttachedModifierBase*)(mOwnerAndModifiers & (((uintptr_t)-1) ^ (uintptr_t)3));
-			return realaddress;
-		}
-		return nullptr;
-	}
-	void	attachModifier(std::unique_ptr<AttachedModifierBase> toAttach);
-	void	detachModifier(AttachedModifierBase* toDetach);
 	
 
 	virtual void changeNotificationLevel(AttributeNotificationLevel level);
@@ -303,7 +291,7 @@ public:
 	virtual bool	CopyAttribute(const CoreModifiableAttribute& other) = 0;
 
 protected:
-	uintptr_t				mOwnerAndModifiers;
+	CoreModifiable*			mOwner;
 	KigsID					mID;
 	u8						mFlags;
 };
@@ -372,14 +360,14 @@ protected:
 		mID.~KigsID();
 		T old_value = mValue;
 		mValue.~T();
-		uintptr_t modifier = mOwnerAndModifiers;
+		CoreModifiable* owner = mOwner;
 		u32 old_flags = mFlags;
 		u32 inheritlevel = (mFlags >> INHERIT_LEVEL_SHIFT) & INHERIT_LEVEL_MOD;
 		doPlacementNew(inheritlevel);
 		mID = old_id;
 		mValue = old_value;
 		mFlags = old_flags;
-		mOwnerAndModifiers = modifier;
+		mOwner = owner;
 	}
 	
 
@@ -414,9 +402,6 @@ protected:
 	}
 };
 
-
-#define CALL_GETMODIFIER(level,value) if(level&2){this->getFirstAttachedModifier()->CallModifier((CoreModifiableAttribute *)this,value,true);}
-#define CALL_SETMODIFIER(level,value) if(level&2){this->getFirstAttachedModifier()->CallModifier((CoreModifiableAttribute *)this,value,false);}
 
 #define DO_NOTIFICATION(level)	if(level&1){this->getOwner()->NotifyUpdate(CoreModifiableAttribute::getLabel().toUInt());}
 

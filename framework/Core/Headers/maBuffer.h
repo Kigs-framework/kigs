@@ -3,7 +3,6 @@
 
 #include "CoreModifiableAttribute.h"
 #include "AsciiParserUtils.h"
-#include "AttributeModifier.h"
 #include "ModuleFileManager.h"
 
 // ****************************************
