@@ -8,6 +8,9 @@
 // - dynamic attribute
 // - set / get attribute values
 
+using namespace Kigs;
+using namespace Kigs::Core;
+
 IMPLEMENT_CLASS_INFO(Sample3);
 
 IMPLEMENT_CONSTRUCTOR(Sample3)

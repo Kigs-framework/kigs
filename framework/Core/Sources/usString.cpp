@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-
+using namespace Kigs::Core;
 // ************************************************************
 //
 // Utilities to print formatted wchar strings

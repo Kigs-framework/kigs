@@ -1,6 +1,9 @@
 #include "PrecompiledHeaders.h"
 #include "AsciiParserUtils.h"
 
+
+using namespace Kigs::Core;
+
 template<typename charType>
 const charType	AsciiParserUtilsTemplate<charType>::mZeroChar = 0;
 

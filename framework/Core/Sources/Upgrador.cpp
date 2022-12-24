@@ -1,6 +1,8 @@
 #include "Upgrador.h"
 #include "CoreModifiable.h"
 
+using namespace Kigs::Core;
+
 void UpgradorBase::UpgradeInstance(CoreModifiable* toUpgrade, bool reinit, bool attachmethod)
 {
 	if (attachmethod)

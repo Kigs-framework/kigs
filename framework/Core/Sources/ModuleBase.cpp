@@ -6,6 +6,9 @@
 #include "ModuleFileManager.h"
 #include "Timer.h"
 
+using namespace Kigs::Core;
+using namespace Kigs::Xml;
+
 #if __has_include("Platform/Core/ModuleBase.inl")
 #include "Platform/Core/ModuleBase.inl"
 #else

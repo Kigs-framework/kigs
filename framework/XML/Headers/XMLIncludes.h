@@ -1,9 +1,7 @@
-#ifndef _XMLINCLUDES_H_
-#define _XMLINCLUDES_H_
+#pragma once
 
 #include "XML.h"
 #include "XMLNode.h"
 #include "XMLModule.h"
 #include "XMLAttribute.h"
 
-#endif //_XMLINCLUDES_H_

@@ -8,6 +8,10 @@
 
 //#define PRINT_REFTRACING
 
+using namespace Kigs::Core;
+using namespace Kigs::File;
+
+
 IMPLEMENT_CLASS_INFO(CoreBaseApplication)
 
 // 

@@ -1,5 +1,4 @@
-#ifndef _H_PRECOMPILED_HEADERS_
-#define _H_PRECOMPILED_HEADERS_
+#pragma once
 
 
 #include <vector>
@@ -11,4 +10,3 @@
 #include "CoreModifiable.h"
 #include "CoreModifiableAttribute.h"
 #include "ModuleBase.h"
-#endif

@@ -9,6 +9,7 @@
 #include <algorithm>
 #endif
 
+using namespace Kigs::File;
 
 std::shared_mutex	CorePackageFileAccess::mMutex;
 

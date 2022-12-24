@@ -6,6 +6,8 @@
 #include "Ticker.h"
 #include "DelayedFunc.h"
 
+using namespace Kigs::Time;
+
 IMPLEMENT_CLASS_INFO(ModuleTimer)
 
 ModuleTimer::ModuleTimer(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)

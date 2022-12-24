@@ -1,6 +1,8 @@
 #include "Ticker.h"
 #include "CoreBaseApplication.h"
 
+using namespace Kigs::Time;
+
 // connect to events and create attributes
 void	TickerUpgrador::Init(CoreModifiable* toUpgrade)
 {

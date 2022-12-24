@@ -1,6 +1,10 @@
 #include "PrecompiledHeaders.h"
 #include "XMLModule.h"
 
+using namespace Kigs::Xml;
+using namespace Kigs::Core;
+
+
 IMPLEMENT_CLASS_INFO(XMLModule)
 
 XMLModule::XMLModule(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)

@@ -37,6 +37,9 @@
 
 #include "CorePackage.h"
 
+using namespace Kigs::Core;
+using namespace Kigs::File;
+
 std::atomic<unsigned int> CoreModifiable::mUIDCounter{ 0 };
 
 //! auto implement static members
@@ -186,7 +189,7 @@ CoreModifiable*	CoreModifiable::getAggregateRoot() const
 	return (CoreModifiable*)returnedVal;
 }
 
-const kigs::unordered_map<KigsID, ModifiableMethodStruct>* CoreModifiable::GetMethods() 
+const unordered_map<KigsID, ModifiableMethodStruct>* CoreModifiable::GetMethods() 
 { 
 	if (!mLazyContent) return nullptr; return &GetLazyContent()->mMethods; 
 }
@@ -2238,7 +2241,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 	//! save all attributes
 	XMLAttribute *attribute = new XMLAttribute("T", GetRuntimeType());
 	currentNode->addAttribute(attribute);
-	const kigs::unordered_map<KigsID, CoreModifiableAttribute*>* defaultAttributeMap = 0;
+	const unordered_map<KigsID, CoreModifiableAttribute*>* defaultAttributeMap = 0;
 	
 	CMSP defaultCopy = nullptr;
 	defaultCopy = KigsCore::GetInstanceOf("defaultAttributeClone", GetRuntimeType());
@@ -3182,7 +3185,7 @@ void CoreModifiable::Destroy()
 
 //! some utility MACROS for string to value and value to string conversion
 #define IMPLEMENT_CONVERT_S2V_ANS_V2S(T,format) \
-template<> bool CoreConvertString2Value<T>(const std::string &stringValue,T& value) \
+template<> bool Kigs::Core::CoreConvertString2Value<T>(const std::string &stringValue,T& value) \
 { \
 	if(sscanf(stringValue.c_str(), format, &value)!=1) { \
 		bool b; \
@@ -3195,7 +3198,7 @@ template<> bool CoreConvertString2Value<T>(const std::string &stringValue,T& val
 	}\
 	return true; \
 } \
-template<> bool CoreConvertValue2String<T>(std::string& stringValue,T value) \
+template<> bool Kigs::Core::CoreConvertValue2String<T>(std::string& stringValue,T value) \
 { \
 	char convertBuffer[256]; \
 	if(snprintf(convertBuffer, 256, format,value)==0) return false; \
@@ -3204,7 +3207,7 @@ template<> bool CoreConvertValue2String<T>(std::string& stringValue,T value) \
 }
 
 
-template<> bool CoreConvertString2Value<float>(const std::string &stringValue,float& value)
+template<> bool Kigs::Core::CoreConvertString2Value<float>(const std::string &stringValue,float& value)
 {
 	float fvalue;
 	if(sscanf(stringValue.c_str(), "%f", &fvalue)!=1)
@@ -3214,7 +3217,7 @@ template<> bool CoreConvertString2Value<float>(const std::string &stringValue,fl
 	value=(float)fvalue;
 	return true;
 }
-template<> bool CoreConvertValue2String<float>(std::string& stringValue,float value)
+template<> bool Kigs::Core::CoreConvertValue2String<float>(std::string& stringValue,float value)
 {
 	char convertBuffer[256];
 	if(sprintf(convertBuffer,"%f",CastToFloat(value))==0) return false;
@@ -3222,7 +3225,7 @@ template<> bool CoreConvertValue2String<float>(std::string& stringValue,float va
 	return true;
 }
 
-template<> bool CoreConvertString2Value<double>(const std::string &stringValue,double& value)
+template<> bool Kigs::Core::CoreConvertString2Value<double>(const std::string &stringValue,double& value)
 {
 	double dvalue;
 	if(sscanf(stringValue.c_str(), "%lf", &dvalue)!=1)
@@ -3232,7 +3235,7 @@ template<> bool CoreConvertString2Value<double>(const std::string &stringValue,d
 	value=(double)dvalue;
 	return true;
 }
-template<> bool CoreConvertValue2String<double>(std::string& stringValue,double value)
+template<> bool Kigs::Core::CoreConvertValue2String<double>(std::string& stringValue,double value)
 {
 	char convertBuffer[256];
 	if(sprintf(convertBuffer,"%lf",CastToDouble(value))==0) return false;
@@ -3240,7 +3243,7 @@ template<> bool CoreConvertValue2String<double>(std::string& stringValue,double 
 	return true;
 }
 
-template<> bool CoreConvertString2Value<bool>(const std::string &stringValue,bool& value)
+template<> bool Kigs::Core::CoreConvertString2Value<bool>(const std::string &stringValue,bool& value)
 {
 	if(stringValue=="false" || stringValue=="FALSE" || stringValue=="0")
 	{
@@ -3267,17 +3270,17 @@ template<> bool CoreConvertString2Value<bool>(const std::string &stringValue,boo
 	
 	return false;
 }
-template<> bool CoreConvertValue2String<bool>(std::string& stringValue,bool value)
+template<> bool Kigs::Core::CoreConvertValue2String<bool>(std::string& stringValue,bool value)
 {
 	stringValue=(value?"true":"false");
 	return true;
 }
-template<> bool CoreConvertString2Value<std::string>(const std::string &stringValue,std::string& value)
+template<> bool Kigs::Core::CoreConvertString2Value<std::string>(const std::string &stringValue,std::string& value)
 {
 	value=stringValue;
 	return true;
 }
-template<> bool CoreConvertValue2String<std::string>(std::string& stringValue,std::string value)
+template<> bool Kigs::Core::CoreConvertValue2String<std::string>(std::string& stringValue,std::string value)
 {
 	stringValue=value;
 	return true;
@@ -3311,7 +3314,7 @@ LazyContent::~LazyContent()
 	}*/
 }
 
-void RegisterClassToInstanceFactory(KigsCore* core, const std::string& moduleName, KigsID classID, createMethod method)
+void Kigs::Core::RegisterClassToInstanceFactory(KigsCore* core, const std::string& moduleName, KigsID classID, createMethod method)
 {
 	core->GetInstanceFactory()->RegisterClass(method, classID, moduleName);
 }

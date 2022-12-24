@@ -1,5 +1,4 @@
-#ifndef _CORETYPES_H_
-#define _CORETYPES_H_
+#pragma once
 
 #include "CoreSTLAllocator.h"
 #include "kstlstring.h"
@@ -19,50 +18,53 @@
 
 #include "Platform/Core/PlatformCore.h"
 
-
-using s8 = int8_t;
-using u8 = uint8_t;
-using s16 = int16_t;
-using u16 = uint16_t;
-using s32 = int32_t;
-using u32 = uint32_t;
-using s64 = int64_t;
-using u64 = uint64_t;
-
-using f32 = float;
-using f64 = double;
-
-using uptr = uintptr_t;
-using sptr = intptr_t;
-
-namespace kigs
+namespace Kigs
 {
+	
+	using s8 = int8_t;
+	using u8 = uint8_t;
+	using s16 = int16_t;
+	using u16 = uint16_t;
+	using s32 = int32_t;
+	using u32 = uint32_t;
+	using s64 = int64_t;
+	using u64 = uint64_t;
+
+	using f32 = float;
+	using f64 = double;
+
+	using uptr = uintptr_t;
+	using sptr = intptr_t;
+
+	namespace Core
+	{
+
 #if defined(_DEBUG) 
-	template <typename Key, typename T, typename Hash = std::hash<Key>>
-	using unordered_map = std::unordered_map<Key, T, Hash>;
+		template <typename Key, typename T, typename Hash = std::hash<Key>>
+		using unordered_map = std::unordered_map<Key, T, Hash>;
 #else
 #if (defined(WIN32) || defined(WUP))
-	// std::unordered_map seems more efficient on Windows platform
-	template <typename Key, typename T, typename Hash = std::hash<Key>>
-	using unordered_map = std::unordered_map<Key, T, Hash>;
+		// std::unordered_map seems more efficient on Windows platform
+		template <typename Key, typename T, typename Hash = std::hash<Key>>
+		using unordered_map = std::unordered_map<Key, T, Hash>;
 #else
-	template <typename Key, typename T, typename Hash = robin_hood::hash<Key>>
-	using unordered_map = robin_hood::unordered_map<Key, T, Hash>;
+		template <typename Key, typename T, typename Hash = robin_hood::hash<Key>>
+		using unordered_map = robin_hood::unordered_map<Key, T, Hash>;
 #endif
 #endif
-}
+
 
 #if defined(_DEBUG) || defined(KIGS_TOOLS)
-	#ifndef KEEP_NAME_AS_STRING
-		#define KEEP_NAME_AS_STRING
-	#endif
+#ifndef KEEP_NAME_AS_STRING
+#define KEEP_NAME_AS_STRING
+#endif
 #endif
 
-///////////////////////////////////////////////////////////////////////
-////EDITOR IS BUILD WITH KEEPNAME AS STRING
+		///////////////////////////////////////////////////////////////////////
+		////EDITOR IS BUILD WITH KEEPNAME AS STRING
 #ifdef WIN32
 #if defined(_KIGS_ID_RELEASE_)
-	#define KEEP_NAME_AS_STRING
+#define KEEP_NAME_AS_STRING
 #endif
 #endif
 ///////////////////////////////////////////////////////////////////////
@@ -71,206 +73,207 @@ namespace kigs
 
 #ifdef JAVASCRIPT
 
-inline unsigned int readInt32(const unsigned int* i)
-{
-    unsigned char* a=(unsigned char*)i;
-    unsigned int result = 0;
-    if(CC_HOST_IS_BIG_ENDIAN == true)
-    {
-        result=((unsigned int)(*a))<<24;
-        result|=((unsigned int)(*(a+1)))<<16;
-        result|=((unsigned int)(*(a+2)))<<8;
-        result|=((unsigned int)(*(a+3)));
-    }
-    else
-    {
-        result=((unsigned int)(*a));
-        result|=((unsigned int)(*(a+1)))<<8;
-        result|=((unsigned int)(*(a+2)))<<16;
-        result|=((unsigned int)(*(a+3)))<<24;
-    }
+		inline unsigned int readInt32(const unsigned int* i)
+		{
+			unsigned char* a = (unsigned char*)i;
+			unsigned int result = 0;
+			if (CC_HOST_IS_BIG_ENDIAN == true)
+			{
+				result = ((unsigned int)(*a)) << 24;
+				result |= ((unsigned int)(*(a + 1))) << 16;
+				result |= ((unsigned int)(*(a + 2))) << 8;
+				result |= ((unsigned int)(*(a + 3)));
+			}
+			else
+			{
+				result = ((unsigned int)(*a));
+				result |= ((unsigned int)(*(a + 1))) << 8;
+				result |= ((unsigned int)(*(a + 2))) << 16;
+				result |= ((unsigned int)(*(a + 3))) << 24;
+			}
 
-    return result;
-}
+			return result;
+		}
 
 #else
-inline unsigned int readInt32(const unsigned int* i)
-{
-    return *i;
-}
+		inline unsigned int readInt32(const unsigned int* i)
+		{
+			return *i;
+		}
 
 #endif
 
-inline unsigned int rotl(unsigned int value, unsigned int shift) {
-    return (value << shift) | (value >> (sizeof(value) * 8 - shift));
-}
+		inline unsigned int rotl(unsigned int value, unsigned int shift) {
+			return (value << shift) | (value >> (sizeof(value) * 8 - shift));
+		}
 
-// fast meta coded (at compile time) ID creation
-template<int unsignedICount>
-inline unsigned int    fastIDMem(const unsigned int* a)
-{
-	constexpr bool impair = unsignedICount & 1;
+		// fast meta coded (at compile time) ID creation
+		template<int unsignedICount>
+		inline unsigned int    fastIDMem(const unsigned int* a)
+		{
+			constexpr bool impair = unsignedICount & 1;
 
-    int index=unsignedICount>>1;
-    unsigned int ID=0;
-    while(index--)
-    {
-        ID^=readInt32(--a);
-        ID=rotl(ID,6);
-		ID^= readInt32(--a);
-		ID= rotl(ID, 6);
+			int index = unsignedICount >> 1;
+			unsigned int ID = 0;
+			while (index--)
+			{
+				ID ^= readInt32(--a);
+				ID = rotl(ID, 6);
+				ID ^= readInt32(--a);
+				ID = rotl(ID, 6);
+			}
+			if (impair)
+			{
+				ID ^= readInt32(--a);
+				ID = rotl(ID, 6);
+			}
+
+			return ID;
+		}
+
+		inline unsigned int    fastIDMem(const unsigned int* a, unsigned int unsignedICount)
+		{
+			bool impair = unsignedICount & 1;
+			int index = unsignedICount >> 1;
+			unsigned int ID = 0;
+			while (index--)
+			{
+				ID ^= readInt32(--a);
+				ID = rotl(ID, 6);
+				ID ^= readInt32(--a);
+				ID = rotl(ID, 6);
+			}
+			if (impair)
+			{
+				ID ^= readInt32(--a);
+				ID = rotl(ID, 6);
+			}
+			return ID;
+		}
+
+
+		template<>
+		inline unsigned int    fastIDMem<0>(const unsigned int* a)
+		{
+			return 0;
+		}
+
+		template<>
+		inline unsigned int    fastIDMem<1>(const unsigned int* a)
+		{
+			unsigned int ID = readInt32(--a);
+			ID = rotl(ID, 6);
+			return ID;
+		}
+
+		template<>
+		inline unsigned int    fastIDMem<2>(const unsigned int* a)
+		{
+			unsigned int ID = readInt32(--a);
+			ID = rotl(ID, 6);
+			ID ^= readInt32(--a);
+			ID = rotl(ID, 6);
+			return ID;
+		}
+
+		template<>
+		inline unsigned int    fastIDMem<3>(const unsigned int* a)
+		{
+			unsigned int ID = readInt32(--a);
+			ID = rotl(ID, 6);
+			ID ^= readInt32(--a);
+			ID = rotl(ID, 6);
+			ID ^= readInt32(--a);
+			ID = rotl(ID, 6);
+			return ID;
+		}
+
+		template<>
+		inline unsigned int    fastIDMem<4>(const unsigned int* a)
+		{
+			unsigned int ID = readInt32(--a);
+			ID = rotl(ID, 6);
+			ID ^= readInt32(--a);
+			ID = rotl(ID, 6);
+			ID ^= readInt32(--a);
+			ID = rotl(ID, 6);
+			ID ^= readInt32(--a);
+			ID = rotl(ID, 6);
+			return ID;
+		}
+
+		template<unsigned int mask>
+		inline unsigned int    fastIDMask(const unsigned char* a)
+		{
+			printf("can not be in not specialized func here\n");
+			return 0;
+		}
+
+		template<>
+		inline unsigned int    fastIDMask<0>(const unsigned char* a)
+		{
+			return 0;
+		}
+
+		template<>
+		inline unsigned int    fastIDMask<1>(const unsigned char* a)
+		{
+			return (unsigned int)(a[0]);
+		}
+
+		template<>
+		inline unsigned int    fastIDMask<2>(const unsigned char* a)
+		{
+			unsigned int a1 = (unsigned int)(a[1]);
+			return (a1 << 8) | (unsigned int)(a[0]);
+		}
+
+		template<>
+		inline unsigned int    fastIDMask<3>(const unsigned char* a)
+		{
+			unsigned int a2 = (unsigned int)(a[2]);
+			unsigned int a1 = (unsigned int)(a[1]);
+			return (a2 << 16) | (a1 << 8) | (unsigned int)(a[0]);
+		}
+
+		inline unsigned int    fastIDMask(const unsigned char* a, unsigned int mask)
+		{
+			switch (mask)
+			{
+			case 1:
+				return fastIDMask<1>(a);
+				break;
+			case 2:
+				return fastIDMask<2>(a);
+				break;
+			case 3:
+				return fastIDMask<3>(a);
+				break;
+			default:
+				return fastIDMask<0>(a);
+				break;
+			}
+		}
+
+		template<unsigned int stringSize>
+		inline unsigned int    fastGetID(const char* a)
+		{
+			const int indexMask = stringSize & 3;
+			a += stringSize - indexMask;
+
+			return fastIDMask<indexMask>((const unsigned char*)a) ^ fastIDMem<stringSize / 4 >((const unsigned int*)a);
+		}
+
+		inline unsigned int    fastGetID(const char* a, unsigned int stringSize)
+		{
+			int indexMask = stringSize & 3;
+			a += stringSize - indexMask;
+
+			return fastIDMask((const unsigned char*)a, indexMask) ^ fastIDMem((const unsigned int*)a, stringSize >> 2);
+		}
+
 	}
-	if (impair)
-	{
-		ID ^= readInt32(--a);
-		ID = rotl(ID, 6);
-	}
-
-    return ID;
 }
-
-inline unsigned int    fastIDMem(const unsigned int* a,unsigned int unsignedICount)
-{
-	bool impair = unsignedICount & 1;
-    int index=unsignedICount>>1;
-    unsigned int ID=0;
-    while(index--)
-    {
-		ID ^= readInt32(--a);
-		ID = rotl(ID, 6);
-		ID ^= readInt32(--a);
-		ID = rotl(ID, 6);
-	}
-	if (impair)
-	{
-		ID ^= readInt32(--a);
-		ID = rotl(ID, 6);
-	}
-    return ID;
-}
-
-
-template<>
-inline unsigned int    fastIDMem<0>(const unsigned int* a)
-{
-    return 0;
-}
-
-template<>
-inline unsigned int    fastIDMem<1>(const unsigned int* a)
-{
-    unsigned int ID=readInt32(--a);
-    ID=rotl(ID,6);
-    return ID;
-}
-
-template<>
-inline unsigned int    fastIDMem<2>(const unsigned int* a)
-{
-    unsigned int ID=readInt32(--a);
-    ID=rotl(ID,6);
-    ID^=readInt32(--a);
-    ID=rotl(ID,6);
-    return ID;
-}
-
-template<>
-inline unsigned int    fastIDMem<3>(const unsigned int* a)
-{
-    unsigned int ID=readInt32(--a);
-    ID=rotl(ID,6);
-    ID^=readInt32(--a);
-    ID=rotl(ID,6);
-    ID^=readInt32(--a);
-    ID=rotl(ID,6);
-    return ID;
-}
-
-template<>
-inline unsigned int    fastIDMem<4>(const unsigned int* a)
-{
-	unsigned int ID = readInt32(--a);
-	ID = rotl(ID, 6);
-	ID ^= readInt32(--a);
-	ID = rotl(ID, 6);
-	ID ^= readInt32(--a);
-	ID = rotl(ID, 6);
-	ID ^= readInt32(--a);
-	ID = rotl(ID, 6);
-	return ID;
-}
-
-template<unsigned int mask>
-inline unsigned int    fastIDMask(const unsigned char* a)
-{
-	printf("can not be in not specialized func here\n");
-	return 0;
-}
-
-template<>
-inline unsigned int    fastIDMask<0>(const unsigned char* a)
-{
-	return 0;
-}
-
-template<>
-inline unsigned int    fastIDMask<1>(const unsigned char* a)
-{
-	return (unsigned int)(a[0]);
-}
-
-template<>
-inline unsigned int    fastIDMask<2>(const unsigned char* a)
-{
-	unsigned int a1 = (unsigned int)(a[1]);
-	return (a1 << 8) | (unsigned int)(a[0]);
-}
-
-template<>
-inline unsigned int    fastIDMask<3>(const unsigned char* a)
-{
-	unsigned int a2 = (unsigned int)(a[2]);
-	unsigned int a1 = (unsigned int)(a[1]);
-	return (a2 << 16) | (a1 << 8) | (unsigned int)(a[0]);
-}
-
-inline unsigned int    fastIDMask(const unsigned char* a,unsigned int mask)
-{
-    switch(mask)
-    {
-    case 1:
-        return fastIDMask<1>(a);
-        break;
-    case 2:
-        return fastIDMask<2>(a);
-        break;
-    case 3:
-        return fastIDMask<3>(a);
-        break;
-    default:
-        return fastIDMask<0>(a);
-        break;
-    }
-}
-
-template<unsigned int stringSize>
-inline unsigned int    fastGetID(const char* a)
-{
-    const int indexMask=stringSize&3;
-    a+=stringSize-indexMask;
-
-    return fastIDMask<indexMask>((const unsigned char*)a) ^ fastIDMem<stringSize/4 >((const unsigned int*)a) ;
-}
-
-inline unsigned int    fastGetID(const char* a,unsigned int stringSize)
-{
-    int indexMask=stringSize&3;
-    a+=stringSize-indexMask;
-
-    return fastIDMask((const unsigned char*)a, indexMask) ^ fastIDMem((const unsigned int*)a,stringSize>>2);
-}
-
-
 
 #ifdef KIGS_TOOLS
 #define KIGSID_CHECK_COLLISIONS 0
@@ -278,164 +281,176 @@ inline unsigned int    fastGetID(const char* a,unsigned int stringSize)
 
 #if KIGSID_CHECK_COLLISIONS
 #include <set>
-inline std::set<std::string>& GetKigsIDCollisionStrings()
+namespace Kigs
 {
-	static std::set<std::string> value;
-	return value;
+	namespace Core
+	{
+		inline std::set<std::string>& GetKigsIDCollisionStrings()
+		{
+			static std::set<std::string> value;
+			return value;
+		}
+	}
 }
 #define KIGSID_ADD_NAME GetKigsIDCollisionStrings().insert(a);
 #else
 #define KIGSID_ADD_NAME
 #endif
 
-// ****************************************
-// * CharToID class
-// * --------------------------------------
-/**
- * \file	CoreType.h
- * \class	CharToID
- * \ingroup Core
- * \brief	CharToID utility class, convert a string to an int ID  
- * \author	ukn
- * \version ukn
- * \date	ukn
- *
- * We use the size of the character array (including the terminating 0) as a template argument
- * The goal is to have a loop with a repeating count which is easily computable by the optimizer.
- */
-// ****************************************
-class CharToID
+namespace Kigs
 {
-public:
-	/**
-	 * \fn		template<size_t _Size> static inline unsigned int GetID(const char (&a)[_Size])
-	 * \brief	only one static method to convert the given string to an unsigned int, used as an ID 
-	 * \param	a : char array to convert to an Id
-	 * \return	the unique Id of the char array
-	 */
-
-	template<size_t _Size> static inline unsigned int GetID(const char (&a)[_Size])
-	{ 
-		KIGSID_ADD_NAME;
-		return fastGetID<_Size-1>(a); // remove useless 0 
-	}
-	
-
-	/**
-	 * \fn		static inline unsigned int GetID(const std::string& a)
-	 * \brief	only one static method to convert the given string to an unsigned int, used as an ID 
-	 * \param	a : string to convert to an Id
-	 * \return	the unique Id of the string
-	 */
-	static inline unsigned int GetID(const std::string& a)
-	{ 
-		KIGSID_ADD_NAME;
-		return fastGetID(a.c_str(),(unsigned int)a.length()); 
-	}
-	static inline unsigned int GetID(const std::string_view& a)
+	namespace Core
 	{
-		KIGSID_ADD_NAME;
-		return fastGetID(a.data(), (unsigned int)a.length());
-	}
-};
+		// ****************************************
+		// * CharToID class
+		// * --------------------------------------
+		/**
+		 * \file	CoreType.h
+		 * \class	CharToID
+		 * \ingroup Core
+		 * \brief	CharToID utility class, convert a string to an int ID
+		 * \author	ukn
+		 * \version ukn
+		 * \date	ukn
+		 *
+		 * We use the size of the character array (including the terminating 0) as a template argument
+		 * The goal is to have a loop with a repeating count which is easily computable by the optimizer.
+		 */
+		 // ****************************************
+		class CharToID
+		{
+		public:
+			/**
+			 * \fn		template<size_t _Size> static inline unsigned int GetID(const char (&a)[_Size])
+			 * \brief	only one static method to convert the given string to an unsigned int, used as an ID
+			 * \param	a : char array to convert to an Id
+			 * \return	the unique Id of the char array
+			 */
+
+			template<size_t _Size> static inline unsigned int GetID(const char(&a)[_Size])
+			{
+				KIGSID_ADD_NAME;
+				return fastGetID<_Size - 1>(a); // remove useless 0 
+			}
+
+
+			/**
+			 * \fn		static inline unsigned int GetID(const std::string& a)
+			 * \brief	only one static method to convert the given string to an unsigned int, used as an ID
+			 * \param	a : string to convert to an Id
+			 * \return	the unique Id of the string
+			 */
+			static inline unsigned int GetID(const std::string& a)
+			{
+				KIGSID_ADD_NAME;
+				return fastGetID(a.c_str(), (unsigned int)a.length());
+			}
+			static inline unsigned int GetID(const std::string_view& a)
+			{
+				KIGSID_ADD_NAME;
+				return fastGetID(a.data(), (unsigned int)a.length());
+			}
+		};
 
 
 
-struct KigsID
-{
-	KigsID() = default;
-	KigsID(const KigsID& other) = default;
-	KigsID(KigsID&& other) = default;
+		struct KigsID
+		{
+			KigsID() = default;
+			KigsID(const KigsID& other) = default;
+			KigsID(KigsID&& other) = default;
 
-	KigsID& operator=(const KigsID& other) = default;
-	KigsID& operator=(KigsID&& other) = default;
+			KigsID& operator=(const KigsID& other) = default;
+			KigsID& operator=(KigsID&& other) = default;
 
-	bool operator==(const KigsID& other) const
-	{
-		return (_id == other._id);
-	}
+			bool operator==(const KigsID& other) const
+			{
+				return (_id == other._id);
+			}
 
-	bool operator<(const KigsID& other) const
-	{
-		return _id < other._id; 
-	}
-	unsigned int toUInt() const { return _id; }
+			bool operator<(const KigsID& other) const
+			{
+				return _id < other._id;
+			}
+			unsigned int toUInt() const { return _id; }
 
-	std::string toString() const
-	{
+			std::string toString() const
+			{
 #ifdef KEEP_NAME_AS_STRING
-		return _id_name.size() ? _id_name : std::to_string(_id);
+				return _id_name.size() ? _id_name : std::to_string(_id);
 #else
-		return std::to_string(_id);
+				return std::to_string(_id);
 #endif
-	}
+			}
 
 
 #ifdef KEEP_NAME_AS_STRING
-	template<size_t _Size> KigsID(const char(&aid)[_Size]) : _id_name(aid), _id(CharToID::GetID(aid)) {
-	};
-	KigsID(const std::string& aid) : _id_name(aid), _id(CharToID::GetID(aid)) {
-	};
-	KigsID(const std::string_view& aid) : _id_name(aid), _id(CharToID::GetID(aid)) {
-	};
+			template<size_t _Size> KigsID(const char(&aid)[_Size]) : _id_name(aid), _id(CharToID::GetID(aid)) {
+			};
+			KigsID(const std::string& aid) : _id_name(aid), _id(CharToID::GetID(aid)) {
+			};
+			KigsID(const std::string_view& aid) : _id_name(aid), _id(CharToID::GetID(aid)) {
+			};
 
-	KigsID(unsigned int aid) : _id_name("*unknown*"), _id(aid) {
-	};
+			KigsID(unsigned int aid) : _id_name("*unknown*"), _id(aid) {
+			};
 
-	KigsID& operator=(const std::string& aid) { _id_name = aid; _id = CharToID::GetID(aid); return *this; };
-	template<size_t _Size> KigsID& operator=(const char(&aid)[_Size]) { _id_name = aid; _id = CharToID::GetID(aid); return *this; };
+			KigsID& operator=(const std::string& aid) { _id_name = aid; _id = CharToID::GetID(aid); return *this; };
+			template<size_t _Size> KigsID& operator=(const char(&aid)[_Size]) { _id_name = aid; _id = CharToID::GetID(aid); return *this; };
 
-	KigsID& operator=(unsigned int aid) { _id_name = "*unknown*"; _id = aid; return *this; };
-	
-	// Extra name
-	// Dont set this field manually!
-	std::string _id_name;
+			KigsID& operator=(unsigned int aid) { _id_name = "*unknown*"; _id = aid; return *this; };
+
+			// Extra name
+			// Dont set this field manually!
+			std::string _id_name;
 
 #else
-	template<size_t _Size>
-	KigsID(const char(&aid)[_Size]) : _id(CharToID::GetID<_Size>(aid)) {};
-	KigsID(const std::string& aid) : _id(CharToID::GetID(aid)) {};
-	KigsID(const std::string_view& aid) : _id(CharToID::GetID(aid)) {};
-	//KigsID(const char*& aid) : mID(CharToID::GetID(aid)) {};
-	KigsID(unsigned int aid) : _id(aid) {};
+			template<size_t _Size>
+			KigsID(const char(&aid)[_Size]) : _id(CharToID::GetID<_Size>(aid)) {};
+			KigsID(const std::string& aid) : _id(CharToID::GetID(aid)) {};
+			KigsID(const std::string_view& aid) : _id(CharToID::GetID(aid)) {};
+			//KigsID(const char*& aid) : mID(CharToID::GetID(aid)) {};
+			KigsID(unsigned int aid) : _id(aid) {};
 
-	template<size_t _Size>
-	KigsID& operator=(const char(&aid)[_Size]) { _id = CharToID::GetID<_Size>(aid); return *this; };
-	KigsID& operator=(const std::string& aid) { _id = CharToID::GetID(aid); return *this; };
-	KigsID& operator=(const std::string_view& aid) { _id = CharToID::GetID(aid); return *this; };
-	//KigsID& operator=(const char*& aid) { mID = CharToID::GetID(aid); return *this; };
-	KigsID& operator=(unsigned int aid) { _id = aid; return *this; };
+			template<size_t _Size>
+			KigsID& operator=(const char(&aid)[_Size]) { _id = CharToID::GetID<_Size>(aid); return *this; };
+			KigsID& operator=(const std::string& aid) { _id = CharToID::GetID(aid); return *this; };
+			KigsID& operator=(const std::string_view& aid) { _id = CharToID::GetID(aid); return *this; };
+			//KigsID& operator=(const char*& aid) { mID = CharToID::GetID(aid); return *this; };
+			KigsID& operator=(unsigned int aid) { _id = aid; return *this; };
 
 #endif
 
-	// Dont set this field manually!
-	unsigned int _id;
-};
+			// Dont set this field manually!
+			unsigned int _id;
+		};
 
-//inline bool operator==(const KigsID& a, const KigsID& b) { return a.mID == b.mID; }
-inline bool operator==(const KigsID& a, unsigned int id) { return a._id == id; }
-inline bool operator==(unsigned int id, const KigsID& a) { return a._id == id; }
+		//inline bool operator==(const KigsID& a, const KigsID& b) { return a.mID == b.mID; }
+		inline bool operator==(const KigsID& a, unsigned int id) { return a._id == id; }
+		inline bool operator==(unsigned int id, const KigsID& a) { return a._id == id; }
 
-inline bool operator!=(const KigsID& a, const KigsID& b) { return a._id != b._id; }
-inline bool operator!=(const KigsID& a, unsigned int id) { return a._id != id; }
-inline bool operator!=(unsigned int id, const KigsID& a) { return a._id != id; }
+		inline bool operator!=(const KigsID& a, const KigsID& b) { return a._id != b._id; }
+		inline bool operator!=(const KigsID& a, unsigned int id) { return a._id != id; }
+		inline bool operator!=(unsigned int id, const KigsID& a) { return a._id != id; }
 
 
-struct KigsIDHash
-{
-	std::size_t operator()(const KigsID& k) const
-	{
-		return k._id;
+		struct KigsIDHash
+		{
+			std::size_t operator()(const KigsID& k) const
+			{
+				return k._id;
+			}
+		};
 	}
-};
+}
 
 // Hash for usage in maps
 #include <functional>
 namespace std
 {
-	template<> struct hash<KigsID>
+	template<> struct hash<Kigs::Core::KigsID>
 	{
-		typedef KigsID argument_type;
+		typedef Kigs::Core::KigsID argument_type;
 		typedef std::size_t result_type;
 		result_type operator()(argument_type const& s) const
 		{
@@ -502,9 +517,3 @@ namespace std
 #define KIGS_TOOLS_ONLY(a) 
 #endif
 
-
-
-
-
-
-#endif

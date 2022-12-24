@@ -1,43 +1,47 @@
-#ifndef __XML_WRITER_FILE_H__
-#define __XML_WRITER_FILE_H__
+#pragma once
 
 #include "XML.h"
 #include "kstlstring.h"
 
-// ****************************************
-// * XMLWriterFile class
-// * --------------------------------------
-/**
- * \file	XMLWriterFile.h
- * \class	XMLWriterFile
- * \ingroup ModuleXML
- * \brief	Write an XML file from an XML structure.
- */
- // ****************************************
-class XMLWriterFile 
+namespace Kigs
 {
-public:
-	//! write the given xml hierarchy in a file
-	static bool WriteFile(const std::string&,XML& xml);
-	//! write the given xml hierarchy in a memory file (string)
-	static void WriteString(XML& xml, std::string &Result, bool header = true, bool compress=false );
-	static SP<CoreRawBuffer> WriteBuffer(XML& xml, bool header = true, bool compress = false);
 
-protected:
-	//! constructor
-    XMLWriterFile() = default;
+	namespace Xml
+	{
+		// ****************************************
+		// * XMLWriterFile class
+		// * --------------------------------------
+		/**
+		 * \file	XMLWriterFile.h
+		 * \class	XMLWriterFile
+		 * \ingroup ModuleXML
+		 * \brief	Write an XML file from an XML structure.
+		 */
+		 // ****************************************
+		class XMLWriterFile
+		{
+		public:
+			//! write the given xml hierarchy in a file
+			static bool WriteFile(const std::string&, XML& xml);
+			//! write the given xml hierarchy in a memory file (string)
+			static void WriteString(XML& xml, std::string& Result, bool header = true, bool compress = false);
+			static SP<CoreRawBuffer> WriteBuffer(XML& xml, bool header = true, bool compress = false);
 
-	//! utility method
-    void appendString( std::string &sAppend, bool isElementText = false );
+		protected:
+			//! constructor
+			XMLWriterFile() = default;
 
-	//! utility method to write the xml file header
-	void writeHeader( XML &xml );
+			//! utility method
+			void appendString(std::string& sAppend, bool isElementText = false);
 
-	//! utility to write the given node (recursive)
-    void writeNode( XMLNode *node, int tab );
+			//! utility method to write the xml file header
+			void writeHeader(XML& xml);
+
+			//! utility to write the given node (recursive)
+			void writeNode(XMLNode* node, int tab);
 
 
-	std::vector<std::string> mData;
-};
-
-#endif 
+			std::vector<std::string> mData;
+		};
+	}
+}

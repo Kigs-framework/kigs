@@ -5,6 +5,8 @@
 #include "XMLWriterFile.h"
 #include "CoreRawBuffer.h"
 
+using namespace Kigs::Xml;
+using namespace Kigs::Core;
 
 void	XMLBase::WriteFile(const std::string& filename)
 {

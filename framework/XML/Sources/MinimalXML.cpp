@@ -2,6 +2,8 @@
 #include "MinimalXML.h"
 #include "Core.h"
 
+using namespace Kigs::Xml;
+using namespace Kigs::Core;
 
 // mask : 1 => space or tab
 // 2 => strict alpha num

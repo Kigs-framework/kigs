@@ -5,6 +5,9 @@
 
 #include <algorithm>
 
+using namespace Kigs::Xml;
+using namespace Kigs::Core;
+
 
 XMLNodeBase* XMLNodeBase::getChildElement(unsigned int index)
 {

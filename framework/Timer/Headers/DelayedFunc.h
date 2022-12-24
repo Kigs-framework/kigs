@@ -1,31 +1,40 @@
 #pragma once
 
 #include "CoreModifiable.h"
+#include "maNumeric.h"
 #include "Upgrador.h"
 #include "Timer.h"
 
-class DelayedFuncUpgrador : public Upgrador<CoreModifiable>
+namespace Kigs
 {
-public:
+	namespace Time
+	{
+		using namespace Kigs::Core;
 
-	// create and init Upgrador if needed and add dynamic attributes
-	virtual void	Init(CoreModifiable* toUpgrade) override;
+		class DelayedFuncUpgrador : public Upgrador<CoreModifiable>
+		{
+		public:
 
-	// destroy UpgradorData and remove dynamic attributes 
-	virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
+			// create and init Upgrador if needed and add dynamic attributes
+			virtual void	Init(CoreModifiable* toUpgrade) override;
 
-	START_UPGRADOR(DelayedFuncUpgrador);
+			// destroy UpgradorData and remove dynamic attributes 
+			virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
 
-	UPGRADOR_WITHOUT_METHODS();
+			START_UPGRADOR(DelayedFuncUpgrador);
 
-protected:
-	bool	Update(const Timer& _timer, CoreModifiable* parent);
-	
+			UPGRADOR_WITHOUT_METHODS();
 
-	maFloat* mDelay = nullptr;
-	maString* mDelayedFunction = nullptr;
+		protected:
+			bool	Update(const Timer& _timer, CoreModifiable* parent);
 
-	double		mInitTime = -1.0;
 
-	bool		mWasdAutoUpdate = false;
-};
+			maFloat* mDelay = nullptr;
+			maString* mDelayedFunction = nullptr;
+
+			double		mInitTime = -1.0;
+
+			bool		mWasdAutoUpdate = false;
+		};
+	}
+}

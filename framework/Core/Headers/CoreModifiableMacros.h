@@ -29,9 +29,9 @@
 
 #ifdef KIGS_TOOLS
 #include "XMLNode.h"
-#define CONNECT_FIELD XMLNodeBase* xmlattr=nullptr;
-#define CONNECT_PARAM_DEFAULT ,XMLNodeBase* xmlattr=nullptr
-#define CONNECT_PARAM ,XMLNodeBase* xmlattr
+#define CONNECT_FIELD Kigs::Xml::XMLNodeBase* xmlattr=nullptr;
+#define CONNECT_PARAM_DEFAULT ,Kigs::Xml::XMLNodeBase* xmlattr=nullptr
+#define CONNECT_PARAM ,Kigs::Xml::XMLNodeBase* xmlattr
 #define CONNECT_PASS_PARAM ,xmlattr
 #define CONNECT_PASS_MANAGED(a) ,a.xmlattr
 #else

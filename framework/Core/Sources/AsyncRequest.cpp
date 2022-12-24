@@ -2,6 +2,8 @@
 #include "AsyncRequest.h"
 #include "Core.h"
 
+using namespace Kigs::Core;
+
 //! a do nothing object is just an instance of CoreModifiable with empty methods
 IMPLEMENT_CLASS_INFO(AsyncRequest)
 

@@ -41,11 +41,12 @@ KIGS_PREFIX_MESSAGE
 #include <stdio.h>
 #include <algorithm>
 
+using namespace Kigs::Core;
 //! core unique instance, used also in all dll
 KigsCore*			KigsCore::mCoreInstance=0;
 
 
-std::vector<std::string>	SplitStringByCharacter(const std::string&  a_mstring, char delim)
+std::vector<std::string>	Kigs::Core::SplitStringByCharacter(const std::string&  a_mstring, char delim)
 {
 	std::vector<std::string> elems;
 	std::string ss = a_mstring;
@@ -74,7 +75,7 @@ void	KigsCore::RegisterDecorator(DecorateMethod method, DecorateMethod undecorat
 {
 	if(mDecoratorMap == 0)
 	{
-		mDecoratorMap=new kigs::unordered_map<KigsID, DecorateMethodPair>;
+		mDecoratorMap=new unordered_map<KigsID, DecorateMethodPair>;
 	}
 
 	DecorateMethodPair toadd;
@@ -222,10 +223,10 @@ MEMORYMANAGEMENT_END
 	mCoreInstance->mInstanceFactory = new InstanceFactory(mCoreInstance);
 
 	//! map for all initialised modules
-	mCoreInstance->mModuleBaseInstanceMap = new kigs::unordered_map<KigsID,SP<ModuleBase>>;
+	mCoreInstance->mModuleBaseInstanceMap = new unordered_map<KigsID,SP<ModuleBase>>;
 
 	//! map for all singleton
-	mCoreInstance->mSingletonMap = new kigs::unordered_map<KigsID,CMSP>;
+	mCoreInstance->mSingletonMap = new unordered_map<KigsID,CMSP>;
 
 	mCoreInstance->mMultiThread=new bool;
 	(*mCoreInstance->mMultiThread)=false;
@@ -257,7 +258,7 @@ MEMORYMANAGEMENT_END
 }
 
 
-kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	KigsCore::GetDefaultCoreItemOperatorConstructMap()
+unordered_map<std::string, CoreItemOperatorCreateMethod>&	KigsCore::GetDefaultCoreItemOperatorConstructMap()
 {
 	return mCoreItemOperatorCreateMethodMap;
 }
@@ -341,7 +342,7 @@ void KigsCore::Close(bool closeMemoryManager)
 
 
 #if KIGSID_CHECK_COLLISIONS
-		kigs::unordered_map<u32, std::string> test;
+		unordered_map<u32, std::string> test;
 		for (auto& s : GetKigsIDCollisionStrings())
 		{
 			auto id = fastGetID(s.c_str(), (unsigned int)s.length());
@@ -813,19 +814,19 @@ MEMORYMANAGEMENT_END
 	}
 }
 
-GlobalProfilerManager* KigsCore::GetProfileManager()
+Kigs::Time::GlobalProfilerManager* KigsCore::GetProfileManager()
 {
 	return 	mCoreInstance->mProfilerManager;
 }
 
 bool	KigsCore::ParseXml(const std::string& filename,CoreModifiable*	delegateObject,const char* force_as_format)
 {
-	return XML::ReadFile(filename,delegateObject,force_as_format);
+	return Kigs::Xml::XML::ReadFile(filename,delegateObject,force_as_format);
 }
 
 bool	KigsCore::ParseXml(char* buffer,CoreModifiable*	delegateObject,unsigned long buffsize,char* encoding)
 {
-	return XMLReaderFile::ReadFile(buffer,delegateObject,buffsize,encoding);
+	return Kigs::Xml::XMLReaderFile::ReadFile(buffer,delegateObject,buffsize,encoding);
 }
 
 //! manage post destruction
@@ -856,7 +857,7 @@ void KigsCore::RemoveFromPostDestroy(CMSP obj)
 }
 
 // utility func
-void replaceAll(std::string& source, const std::string& from, const std::string& to)
+void Kigs::Core::replaceAll(std::string& source, const std::string& from, const std::string& to)
 {
 	std::string newString;
 	newString.reserve(source.length());  // avoids a few memory allocations

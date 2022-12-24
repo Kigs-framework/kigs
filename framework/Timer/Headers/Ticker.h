@@ -3,27 +3,35 @@
 #include "Upgrador.h"
 #include "Timer.h"
 
-class TickerUpgrador : public Upgrador<CoreModifiable>
+namespace Kigs
 {
-public:
+	namespace Time
+	{
+		using namespace Kigs::Core;
 
-	// create and init Upgrador if needed and add dynamic attributes
-	virtual void	Init(CoreModifiable* toUpgrade) override;
+		class TickerUpgrador : public Upgrador<CoreModifiable>
+		{
+		public:
 
-	// destroy UpgradorData and remove dynamic attributes 
-	virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
+			// create and init Upgrador if needed and add dynamic attributes
+			virtual void	Init(CoreModifiable* toUpgrade) override;
 
-	START_UPGRADOR(TickerUpgrador);
+			// destroy UpgradorData and remove dynamic attributes 
+			virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
 
-	UPGRADOR_METHODS(TickerNotifyUpdate);
-protected:
-	void	Update(const Timer& _timer, CoreModifiable* parent);
-	void	NotifyUpdate(const unsigned int /* labelid */, CoreModifiable* parent);
+			START_UPGRADOR(TickerUpgrador);
 
-	maFloat*	mTickerFrequency = nullptr;
-	maString*	mTickerFunction = nullptr;
-	
-	double		mLastUpdate=-1.0;
+			UPGRADOR_METHODS(TickerNotifyUpdate);
+		protected:
+			void	Update(const Timer& _timer, CoreModifiable* parent);
+			void	NotifyUpdate(const unsigned int /* labelid */, CoreModifiable* parent);
 
-	bool		mWasdAutoUpdate = false;
-};
+			maFloat* mTickerFrequency = nullptr;
+			maString* mTickerFunction = nullptr;
+
+			double		mLastUpdate = -1.0;
+
+			bool		mWasdAutoUpdate = false;
+		};
+	}
+}

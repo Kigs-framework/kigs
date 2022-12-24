@@ -1,10 +1,18 @@
 #pragma once
 
+#include "CoreTypes.h"
 #include "CoreModifiable.h"
 
-
-class CoreModifiable;
-class Timer;
+namespace Kigs
+{
+	namespace Time
+	{
+		class Timer;
+	}
+	namespace Core
+	{
+		using namespace Kigs::Time;
+		class CoreModifiable;
 
 #define DEFINE_UPGRADOR_METHOD(upgrador,name) DEFINE_METHOD(upgrador::UpgradorMethods,name)
 
@@ -13,7 +21,7 @@ class Timer;
 
 #define UPGRADOR_METHOD_PUSH_BACK(name) table.push_back({ #name, static_cast<CoreModifiable::ModifiableMethod>(&UpgradorMethods::name) });
 
-// Need #include "AttributePacking.h"
+		// Need #include "AttributePacking.h"
 #define UPGRADOR_METHODS(...) class UpgradorMethods : public currentBaseClass \
 { \
  public:\
@@ -54,46 +62,46 @@ virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::Modifi
 #define DEFINE_UPGRADOR_UPDATE(upgrador) bool upgrador::UpgradorMethods::UpgradorUpdate(const Timer& timer, void* addParam) 
 
 
-class UpgradorBase : public StructLinkedListBase
-{
-protected:
-	friend class CoreModifiable;
-	virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) = 0;
-	void UpgradeInstance(CoreModifiable* toUpgrade, bool reinit = true,bool attachmethod=true);
-	void DowngradeInstance(CoreModifiable* toDowngrade, bool dodestroy = true, bool detachmethod = true);
-	// create and init Upgrador if needed, add dynamic attributes, connect things
-	virtual void	Init(CoreModifiable* toUpgrade) { mIsInit=true; }
-
-	// destroy Upgrador and remove dynamic attributes, disconnect things 
-	virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted=false) { mIsInit = false;}
-
-public:
-	virtual ~UpgradorBase()
-	{
-		// should be managed by CoreModifiable
-		/*if (mNextItem)
+		class UpgradorBase : public StructLinkedListBase
 		{
-			delete mNextItem;
-			mNextItem = nullptr;
-		}*/
+		protected:
+			friend class CoreModifiable;
+			virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) = 0;
+			void UpgradeInstance(CoreModifiable* toUpgrade, bool reinit = true, bool attachmethod = true);
+			void DowngradeInstance(CoreModifiable* toDowngrade, bool dodestroy = true, bool detachmethod = true);
+			// create and init Upgrador if needed, add dynamic attributes, connect things
+			virtual void	Init(CoreModifiable* toUpgrade) { mIsInit = true; }
+
+			// destroy Upgrador and remove dynamic attributes, disconnect things 
+			virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted = false) { mIsInit = false; }
+
+		public:
+			virtual ~UpgradorBase()
+			{
+				// should be managed by CoreModifiable
+				/*if (mNextItem)
+				{
+					delete mNextItem;
+					mNextItem = nullptr;
+				}*/
+			}
+			virtual bool	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) = 0;
+
+			virtual const KigsID& getID() const = 0;
+
+			bool	mIsInit = false;
+		};
+
+		template<typename baseclass>
+		class Upgrador : public UpgradorBase
+		{
+		protected:
+
+			typedef baseclass currentBaseClass;
+
+		public:
+
+		};
+
 	}
-	virtual bool	UpgradorUpdate(CoreModifiable* toUpdate, const Timer& timer, void* addParam) = 0;
-
-	virtual const KigsID& getID() const = 0;
-
-	bool	mIsInit=false;
-}; 
-
-template<typename baseclass>
-class Upgrador : public UpgradorBase
-{
-protected:
-
-	typedef baseclass currentBaseClass;
-
-public:
-
-
-	
-
-};
+}

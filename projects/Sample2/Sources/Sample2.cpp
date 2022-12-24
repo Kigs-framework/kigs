@@ -15,6 +15,8 @@
 // - Reference counting
 // - search instances by type, name, path...
 
+using namespace Kigs;
+using namespace Kigs::Core;
 
 IMPLEMENT_CLASS_INFO(Sample2);
 

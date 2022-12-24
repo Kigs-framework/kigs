@@ -8,6 +8,8 @@
 
 #include <iostream>
 
+using namespace Kigs::Time;
+
 void Timer::GetDate(std::string& a_value, DateFormat a_format) const
 {
 	time_t     now = time(0);

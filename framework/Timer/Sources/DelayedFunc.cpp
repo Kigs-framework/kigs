@@ -1,6 +1,8 @@
 #include "DelayedFunc.h"
 #include "CoreBaseApplication.h"
 
+using namespace Kigs::Time;
+
 // connect to events and create attributes
 void	DelayedFuncUpgrador::Init(CoreModifiable* toUpgrade)
 {

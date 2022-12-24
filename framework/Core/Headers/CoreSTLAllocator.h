@@ -1,8 +1,6 @@
-#ifndef __CORESTLALLOCATOR_H__
-#define __CORESTLALLOCATOR_H__
+#pragma once
 
 #include "Platform/Core/CorePlatformDefines.h"
-
 
 #include <new>
 #include <assert.h>
@@ -22,4 +20,3 @@ MEMORYMANAGEMENT_END
 #endif
 
 
-#endif

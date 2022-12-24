@@ -4,6 +4,7 @@
 #include "CoreBaseApplication.h"
 #include "CoreItemOperator.h"
 
+using namespace Kigs::Core;
 //! constructor, init all parameters
 NotificationCenter::NotificationCenter()
 {

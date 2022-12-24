@@ -1,37 +1,44 @@
 #pragma once
 
 #include "Timer.h"
-// ****************************************
-// * ControlledTimer class
-// * --------------------------------------
-/**
- * \class	ControlledTimer
- * \file	ControlledTimer.h
- * \ingroup TimerModule
- * \brief	A "fake" timer where time is given by the user.
- */
- // ****************************************
-class ControlledTimer : public Timer
+
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(ControlledTimer,Timer, Timer)
-
-	DECLARE_INLINE_CONSTRUCTOR(ControlledTimer)
+	namespace Time
 	{
-		mCurrentTime = 0;
-	}
-	
-	double	GetTime() const override
-	{
-		return mCurrentTime;
-	}
+		// ****************************************
+		// * ControlledTimer class
+		// * --------------------------------------
+		/**
+		 * \class	ControlledTimer
+		 * \file	ControlledTimer.h
+		 * \ingroup TimerModule
+		 * \brief	A "fake" timer where time is given by the user.
+		 */
+		 // ****************************************
+		class ControlledTimer : public Timer
+		{
+		public:
+			DECLARE_CLASS_INFO(ControlledTimer, Timer, Timer)
 
-	void SetTime(double t) override
-	{
-		mCurrentTime = t;
+				DECLARE_INLINE_CONSTRUCTOR(ControlledTimer)
+			{
+				mCurrentTime = 0;
+			}
+
+			double	GetTime() const override
+			{
+				return mCurrentTime;
+			}
+
+			void SetTime(double t) override
+			{
+				mCurrentTime = t;
+			}
+
+		protected:
+			double mCurrentTime;
+		};
+
 	}
-
-protected:
-	double mCurrentTime;
-};
-
+}

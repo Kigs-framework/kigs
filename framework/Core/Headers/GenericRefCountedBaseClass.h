@@ -1,18 +1,22 @@
-#ifndef _GENERICREFCOUNTEDBASECLASS_H_
-#define _GENERICREFCOUNTEDBASECLASS_H_
-
+#pragma once
 
 #include <atomic>
 #include <vector>
 #include <memory>
 
-class CoreModifiable;
-class CoreModifiableAttribute;
-
-template<typename To, typename From>
-inline std::unique_ptr<To> static_unique_pointer_cast(std::unique_ptr<From>&& old)
+namespace Kigs
 {
-	return std::unique_ptr<To>{static_cast<To*>(old.release())};
+	namespace Core
+	{
+		class CoreModifiable;
+		class CoreModifiableAttribute;
+
+		template<typename To, typename From>
+		inline std::unique_ptr<To> static_unique_pointer_cast(std::unique_ptr<From>&& old)
+		{
+			return std::unique_ptr<To>{static_cast<To*>(old.release())};
+		}
+	}
 }
 
 // ****************************************
@@ -33,30 +37,41 @@ inline std::unique_ptr<To> static_unique_pointer_cast(std::unique_ptr<From>&& ol
 #ifdef GenericRefCountedBaseClassLeakCheck
 #include <unordered_set>
 #include <shared_mutex>
-class GenericRefCountedBaseClass;
-inline std::shared_mutex AllObjectsMutex;
-inline std::unordered_set<GenericRefCountedBaseClass*> AllObjects;
-#endif
-
-class GenericRefCountedBaseClass : public std::enable_shared_from_this<GenericRefCountedBaseClass>
+namespace Kigs
 {
-public:
-	typedef bool (GenericRefCountedBaseClass::* ModifiableMethod)(CoreModifiable* sender, std::vector<CoreModifiableAttribute*>&, void* privateParams);
-	GenericRefCountedBaseClass() 
+	namespace Core
 	{
-#ifdef GenericRefCountedBaseClassLeakCheck
-		std::lock_guard<std::shared_mutex> lk{ AllObjectsMutex };
-		AllObjects.insert(this);
-#endif
+		class GenericRefCountedBaseClass;
+		inline std::shared_mutex AllObjectsMutex;
+		inline std::unordered_set<GenericRefCountedBaseClass*> AllObjects;
 	}
-
-	virtual ~GenericRefCountedBaseClass() 
-	{
-#ifdef GenericRefCountedBaseClassLeakCheck
-		std::lock_guard<std::shared_mutex> lk{ AllObjectsMutex };
-		AllObjects.erase(this);
+}
 #endif
-	};
-};
 
-#endif //_GENERICREFCOUNTEDBASECLASS_H_
+namespace Kigs
+{
+	namespace Core
+	{
+		class GenericRefCountedBaseClass : public std::enable_shared_from_this<GenericRefCountedBaseClass>
+		{
+		public:
+			typedef bool (GenericRefCountedBaseClass::* ModifiableMethod)(CoreModifiable* sender, std::vector<CoreModifiableAttribute*>&, void* privateParams);
+			GenericRefCountedBaseClass()
+			{
+#ifdef GenericRefCountedBaseClassLeakCheck
+				std::lock_guard<std::shared_mutex> lk{ AllObjectsMutex };
+				AllObjects.insert(this);
+#endif
+			}
+
+			virtual ~GenericRefCountedBaseClass()
+			{
+#ifdef GenericRefCountedBaseClassLeakCheck
+				std::lock_guard<std::shared_mutex> lk{ AllObjectsMutex };
+				AllObjects.erase(this);
+#endif
+			};
+		};
+
+	}
+}

@@ -1,6 +1,10 @@
 #include "SimpleSampleClass.h"
 #include "AttributePacking.h"
 
+using namespace Kigs;
+using namespace Kigs::Core;
+
+
 IMPLEMENT_CLASS_INFO(SimpleSampleClass)
 
 void SimpleSampleClass::InitModifiable()

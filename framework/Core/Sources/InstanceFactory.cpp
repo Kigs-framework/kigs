@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+using namespace Kigs::Core;
 //! constructor
 InstanceFactory::InstanceFactory(KigsCore* core) 
 {

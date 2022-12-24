@@ -4,6 +4,7 @@
 
 #include <algorithm>
 
+using namespace Kigs::Core;
 
 struct RemoveDelimiter
 {
@@ -48,7 +49,7 @@ CoreItemSP	CoreItemOperator<operandType>::Construct(const std::string& formulae,
 }
 
 template<typename operandType>
-CoreItemSP	CoreItemOperator<operandType>::Construct(const std::string& formulae, CoreModifiable* target, const kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	lmap)
+CoreItemSP	CoreItemOperator<operandType>::Construct(const std::string& formulae, CoreModifiable* target, const unordered_map<std::string, CoreItemOperatorCreateMethod>&	lmap)
 {
 	std::string cleanFormulae = formulae;
 	cleanFormulae.erase(std::remove_if(cleanFormulae.begin(), cleanFormulae.end(), RemoveDelimiter()), cleanFormulae.end());
@@ -66,7 +67,7 @@ CoreItemSP	CoreItemOperator<operandType>::Construct(const std::string& formulae,
 }
 
 template<typename operandType>
-void	CoreItemOperator<operandType>::ConstructContextMap(kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	lmap, std::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<operandType>::ConstructContextMap(unordered_map<std::string, CoreItemOperatorCreateMethod>&	lmap, std::vector<SpecificOperator>* specificList)
 {
 	lmap.clear();
 	
@@ -92,25 +93,25 @@ void	CoreItemOperator<operandType>::ConstructContextMap(kigs::unordered_map<std:
 }
 
 template<>
-void	CoreItemOperator<std::string>::ConstructContextMap(kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>& lmap, std::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<std::string>::ConstructContextMap(unordered_map<std::string, CoreItemOperatorCreateMethod>& lmap, std::vector<SpecificOperator>* specificList)
 {
 	// nothing here
 }
 
 template<>
-void	CoreItemOperator<v2f>::ConstructContextMap(kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>& lmap, std::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<v2f>::ConstructContextMap(unordered_map<std::string, CoreItemOperatorCreateMethod>& lmap, std::vector<SpecificOperator>* specificList)
 {
 	// nothing here
 }
 
 template<>
-void	CoreItemOperator<v3f>::ConstructContextMap(kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>& lmap, std::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<v3f>::ConstructContextMap(unordered_map<std::string, CoreItemOperatorCreateMethod>& lmap, std::vector<SpecificOperator>* specificList)
 {
 	// nothing here
 }
 
 template<>
-void	CoreItemOperator<v4f>::ConstructContextMap(kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>& lmap, std::vector<SpecificOperator>* specificList)
+void	CoreItemOperator<v4f>::ConstructContextMap(unordered_map<std::string, CoreItemOperatorCreateMethod>& lmap, std::vector<SpecificOperator>* specificList)
 {
 	// nothing here
 }
@@ -560,7 +561,7 @@ template<typename operandType>
 SP<CoreItemOperator<operandType>> CoreItemOperator<operandType>::getOperator(const std::string& keyword, ConstructContext& context)
 {
 
-	typename kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>::const_iterator itfound = context.mMap.find(keyword);
+	typename unordered_map<std::string, CoreItemOperatorCreateMethod>::const_iterator itfound = context.mMap.find(keyword);
 	while (itfound != context.mMap.end())
 	{
 		return SP<CoreVector>((*itfound).second());

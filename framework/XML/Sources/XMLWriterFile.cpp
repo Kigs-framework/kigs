@@ -9,6 +9,9 @@
 #include "FilePathManager.h"
 #include "AttributePacking.h"
 
+using namespace Kigs::Xml;
+using namespace Kigs::Core;
+using namespace Kigs::File;
 
 void XMLWriterFile::appendString( std::string &sAppend, bool isElementText )
 {

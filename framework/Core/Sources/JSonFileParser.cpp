@@ -7,6 +7,9 @@
 #include "CoreMap.h"
 #include "CoreVector.h"
 
+using namespace Kigs::Core;
+using namespace Kigs::File;
+
 template <typename stringType, typename parserType>
 JSonFileParserBase<stringType,parserType>::JSonFileParserBase(const std::string& filename, CoreModifiable*	delegateObject) :
 	mDelegateObject(delegateObject->SharedFromThis())

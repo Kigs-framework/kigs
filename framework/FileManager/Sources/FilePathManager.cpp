@@ -14,6 +14,8 @@
 #include "HTTPConnect.h"
 #endif
 
+using namespace Kigs::File;
+
 IMPLEMENT_CLASS_INFO(FilePathManager)
 
 FileHandle::~FileHandle()
@@ -1002,7 +1004,7 @@ void	FilePathManager::isSpecialDeviceOrPackage(const std::string& fname,bool& Sp
 	}
 }
 
-bool		Platform_remove(FileHandle* handle)
+bool		Kigs::File::Platform_remove(FileHandle* handle)
 {
 	// use virtual file access ?
 	if (handle->mUseVirtualFileAccess)
@@ -1013,7 +1015,7 @@ bool		Platform_remove(FileHandle* handle)
 	return remove(handle->mFullFileName.c_str()) != 0;
 }
 
-SmartPointer<FileHandle> Platform_fopen(const char * filename, const char * mode)
+SmartPointer<FileHandle> Kigs::File::Platform_fopen(const char * filename, const char * mode)
 {
 	SmartPointer<FileHandle> fullfilenamehandle;
 
@@ -1297,7 +1299,7 @@ int FilePathManager::HTTPfclose(FileHandle* handle)
 }
 
 // Method wrapper to use classic Platform_fopen or VirtualFileAccess delegate
-bool		Platform_fopen(FileHandle* handle, const char * mode)
+bool		Kigs::File::Platform_fopen(FileHandle* handle, const char * mode)
 {
 	// use virtual file access ?
 	if (handle->mUseVirtualFileAccess)
@@ -1310,7 +1312,7 @@ bool		Platform_fopen(FileHandle* handle, const char * mode)
 }
 
 // Method wrapper to use classic Platform_fopen or VirtualFileAccess delegate
-long int	Platform_fread(void * ptr, long size, long count, FileHandle* handle)
+long int	Kigs::File::Platform_fread(void * ptr, long size, long count, FileHandle* handle)
 {
 	// use virtual file access ?
 	if (handle->mUseVirtualFileAccess)
@@ -1322,7 +1324,7 @@ long int	Platform_fread(void * ptr, long size, long count, FileHandle* handle)
 }
 
 // Method wrapper to use classic Platform_fopen or VirtualFileAccess delegate
-long int	Platform_fwrite(const void * ptr, long size, long count, FileHandle* handle)
+long int	Kigs::File::Platform_fwrite(const void * ptr, long size, long count, FileHandle* handle)
 {
 	// use virtual file access ?
 	if (handle->mUseVirtualFileAccess)
@@ -1336,7 +1338,7 @@ long int	Platform_fwrite(const void * ptr, long size, long count, FileHandle* ha
 }
 
 // Method wrapper to use classic Platform_fopen or VirtualFileAccess delegate
-long int	Platform_ftell(FileHandle* handle)
+long int	Kigs::File::Platform_ftell(FileHandle* handle)
 {
 	// use virtual file access ?
 	if (handle->mUseVirtualFileAccess)
@@ -1350,7 +1352,7 @@ long int	Platform_ftell(FileHandle* handle)
 }
 
 // Method wrapper to use classic Platform_fopen or VirtualFileAccess delegate
-int			Platform_fseek(FileHandle* handle, long int offset, int origin)
+int			Kigs::File::Platform_fseek(FileHandle* handle, long int offset, int origin)
 {
 	// use virtual file access ?
 	if (handle->mUseVirtualFileAccess)
@@ -1364,7 +1366,7 @@ int			Platform_fseek(FileHandle* handle, long int offset, int origin)
 }
 
 // Method wrapper to use classic Platform_fopen or VirtualFileAccess delegate
-int			Platform_fflush(FileHandle* handle)
+int			Kigs::File::Platform_fflush(FileHandle* handle)
 {
 	// use virtual file access ?
 	if (handle->mUseVirtualFileAccess)
@@ -1377,7 +1379,7 @@ int			Platform_fflush(FileHandle* handle)
 }
 
 // Method wrapper to use classic Platform_fopen or VirtualFileAccess delegate
-int			Platform_fclose(FileHandle* handle)
+int			Kigs::File::Platform_fclose(FileHandle* handle)
 {
 	// use virtual file access ?
 	if (handle->mUseVirtualFileAccess)

@@ -1,7 +1,8 @@
 #include "SimpleSampleBaseClass.h"
 #include "CoreModifiableAttribute.h"
 
-
+using namespace Kigs;
+using namespace Kigs::Core;
 IMPLEMENT_CLASS_INFO(SimpleSampleBaseClass)
 
 void SimpleSampleBaseClass::InitModifiable()
@@ -30,7 +31,7 @@ void SimpleSampleBaseClass::InitModifiable()
 	}
 }
 
-void  SimpleSampleBaseClass::Update(const Timer& timer, void* addParam)
+void  SimpleSampleBaseClass::Update(const Time::Timer& timer, void* addParam)
 {
 	// Update code
  	std::cout << "SimpleSampleBaseClass Update " << getName() << std::endl;

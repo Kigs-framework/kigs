@@ -16,6 +16,10 @@
 // - CoreModifiable methods
 // - serialization
 
+using namespace Kigs;
+using namespace Kigs::Core;
+using namespace Kigs::Time;
+
 IMPLEMENT_CLASS_INFO(Sample1);
 
 IMPLEMENT_CONSTRUCTOR(Sample1)

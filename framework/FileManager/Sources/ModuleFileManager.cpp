@@ -9,6 +9,8 @@
 #include "Platform/FileManager/FileManager.h"
 #endif
 
+using namespace Kigs::File;
+
 IMPLEMENT_CLASS_INFO(ModuleFileManager);
 
 //! module init, register FilePathManager

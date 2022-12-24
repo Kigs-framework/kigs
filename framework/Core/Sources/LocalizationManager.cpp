@@ -6,6 +6,8 @@
 #include "utf8.h"
 #include "utf8_decode.h"
 
+using namespace Kigs::Core;
+using namespace Kigs::File;
 
 // ************************************************************
 //

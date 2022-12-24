@@ -84,12 +84,12 @@ public:
 	std::optional<SourceState> GetInteractionState(u32 ID) const;
 	std::shared_ptr<Interaction> GetInteraction(u32 ID) const;
 	
-	kigs::unordered_map<int, std::shared_ptr<Interaction>>& GetInteractions() { return mInteractions; }
-	const kigs::unordered_map<int, v2f>& GetAllThumbstick() const { return mThumbstickList; }
+	unordered_map<int, std::shared_ptr<Interaction>>& GetInteractions() { return mInteractions; }
+	const unordered_map<int, v2f>& GetAllThumbstick() const { return mThumbstickList; }
 
 protected:
-	kigs::unordered_map<int, std::shared_ptr<Interaction>> mInteractions;
-	kigs::unordered_map<int, v2f> mThumbstickList;
+	unordered_map<int, std::shared_ptr<Interaction>> mInteractions;
+	unordered_map<int, v2f> mThumbstickList;
 
 	maReference mGazeCamera = BASE_ATTRIBUTE(GazeCamera, "Camera:camera");
 };

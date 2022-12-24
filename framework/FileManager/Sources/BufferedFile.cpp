@@ -2,6 +2,8 @@
 #include "BufferedFile.h"
 #include <stdio.h>
 
+using namespace Kigs::File;
+
 bool BufferedFile::searchNextWord(const std::string& toSearch)
 {
 	bool	found=false;

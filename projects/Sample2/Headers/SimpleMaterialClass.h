@@ -4,16 +4,21 @@
 #include "Core.h"
 #include "AttributePacking.h"
 
-class SimpleMaterialClass : public CoreModifiable
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(SimpleMaterialClass, CoreModifiable, Application);
-	DECLARE_INLINE_CONSTRUCTOR(SimpleMaterialClass) { std::cout << "SimpleMaterialClass constructor" << std::endl; }
+	using namespace Kigs::Core;
 
-protected:
+	class SimpleMaterialClass : public CoreModifiable
+	{
+	public:
+		DECLARE_CLASS_INFO(SimpleMaterialClass, CoreModifiable, Application);
+		DECLARE_INLINE_CONSTRUCTOR(SimpleMaterialClass) { std::cout << "SimpleMaterialClass constructor" << std::endl; }
 
-	// RGB color 
-	maVect3DF	mColor = BASE_ATTRIBUTE(Color,1.0,0.0,0.0);
-	// shininess 
-	maFloat		mShininess = BASE_ATTRIBUTE(Shininess, 0.5);
-};
+	protected:
+
+		// RGB color 
+		maVect3DF	mColor = BASE_ATTRIBUTE(Color, 1.0, 0.0, 0.0);
+		// shininess 
+		maFloat		mShininess = BASE_ATTRIBUTE(Shininess, 0.5);
+	};
+}

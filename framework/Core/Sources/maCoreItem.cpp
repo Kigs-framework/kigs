@@ -4,7 +4,7 @@
 #include "CoreItemOperator.h"
 
 
-
+using namespace Kigs::Core;
 
 bool maCoreItemValue::ExportToString(std::string& value) const
 {

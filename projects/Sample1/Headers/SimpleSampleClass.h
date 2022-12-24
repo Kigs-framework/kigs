@@ -2,21 +2,26 @@
 #include "CoreModifiable.h"
 #include "maNumeric.h"
 
-class SimpleSampleClass : public CoreModifiable
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(SimpleSampleClass, CoreModifiable, Application);
-	DECLARE_INLINE_CONSTRUCTOR(SimpleSampleClass) {}
+	using namespace Kigs::Core;
 
-protected:
-	void InitModifiable() override;
+	class SimpleSampleClass : public CoreModifiable
+	{
+	public:
+		DECLARE_CLASS_INFO(SimpleSampleClass, CoreModifiable, Application);
+		DECLARE_INLINE_CONSTRUCTOR(SimpleSampleClass) {}
 
-	// add an int attribute named "Sample1Value" with value 6
-	maInt	mTestValue = BASE_ATTRIBUTE(Sample1Value, 6);
+	protected:
+		void InitModifiable() override;
 
-	// add given params to mTestValue
-	DECLARE_METHOD(AddValue);
+		// add an int attribute named "Sample1Value" with value 6
+		maInt	mTestValue = BASE_ATTRIBUTE(Sample1Value, 6);
 
-	// list CoreModifiable methods
-	COREMODIFIABLE_METHODS(AddValue);
-};
+		// add given params to mTestValue
+		DECLARE_METHOD(AddValue);
+
+		// list CoreModifiable methods
+		COREMODIFIABLE_METHODS(AddValue);
+	};
+}

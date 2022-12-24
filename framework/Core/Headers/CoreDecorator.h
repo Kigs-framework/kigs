@@ -1,371 +1,374 @@
-#ifndef _COREDECORATOR_H
-#define _COREDECORATOR_H
+#pragma once
 
 #include "CoreModifiable.h"
 
-// ****************************************
-// * CoreDecorator class
-// * --------------------------------------
-/**
- * \file	CoreDecorator.h
- * \class	CoreDecorator
- * \ingroup Core
- * \brief	 base class for decorator class 
- * 
- * Only used for Node3D Culling at the moment.
- * 
- */
-// ****************************************
-
-template<typename DecoratedType,typename returnType>
-class	DecoratedFuncBase
+namespace Kigs
 {
-public:
-	
-	typedef returnType (DecoratedType::*MF)();
-
-	typedef typename std::vector<MF>	mfVector;
-	typedef typename mfVector::iterator mfVectorIt;
-
-	DecoratedFuncBase(DecoratedType* localthis,MF mf)
-		: mLocalThis(localthis)
-		, mCurrentCallPos(0)
+	namespace Core
 	{
-		mStack.clear();
-		push_back(mf);
-	}
+		// ****************************************
+		// * CoreDecorator class
+		// * --------------------------------------
+		/**
+		 * \file	CoreDecorator.h
+		 * \class	CoreDecorator
+		 * \ingroup Core
+		 * \brief	 base class for decorator class
+		 *
+		 * Only used for Node3D Culling at the moment.
+		 *
+		 */
+		 // ****************************************
 
-	returnType operator ()()
-	{
-	
-		mCurrentCallPos=mStack.size()-1;
-		if(mCurrentCallPos>=0)
+		template<typename DecoratedType, typename returnType>
+		class	DecoratedFuncBase
 		{
-			(mLocalThis->*mStack[mCurrentCallPos])();
-		}
-	}
-	
-	returnType	father()
-	{
-		mCurrentCallPos--;
-		if(mCurrentCallPos>=0)
-		{
-			(mLocalThis->*mStack[mCurrentCallPos])();
-		}
-	}
+		public:
 
-	~DecoratedFuncBase()
-	{
-	}
-	
-	void	push_back(MF to_add)
-	{
-		mStack.push_back(to_add);
-	}
+			typedef returnType(DecoratedType::* MF)();
 
-	void	replace(MF to_replace, MF to_add)
-	{
-		if (mStack.size())
-		{
-			mfVectorIt itbegin = mStack.begin();
-			mfVectorIt itend = mStack.end();
-			while (itbegin != itend)
+			typedef typename std::vector<MF>	mfVector;
+			typedef typename mfVector::iterator mfVectorIt;
+
+			DecoratedFuncBase(DecoratedType* localthis, MF mf)
+				: mLocalThis(localthis)
+				, mCurrentCallPos(0)
 			{
-				if ((*itbegin) == to_replace)
+				mStack.clear();
+				push_back(mf);
+			}
+
+			returnType operator ()()
+			{
+
+				mCurrentCallPos = mStack.size() - 1;
+				if (mCurrentCallPos >= 0)
 				{
-					*itbegin = to_add;
-					break;
+					(mLocalThis->*mStack[mCurrentCallPos])();
 				}
-				++itbegin;
 			}
-		}
-	}
 
-	void	remove(MF to_remove)
-	{
-		mfVectorIt itbegin=mStack.begin();
-		mfVectorIt itend=mStack.end();
-		while(itbegin != itend)
-		{
-			if((*itbegin) == to_remove)
+			returnType	father()
 			{
-				mStack.erase(itbegin);
-				break;
-			}
-			++itbegin;
-		}
-	}
-
-protected:
-	
-	int									mCurrentCallPos;
-	mfVector							mStack;
-	DecoratedType*						mLocalThis;
-};
-
-//! weird, do not use base class ??
-template<typename DecoratedType,typename returnType,typename P1>
-class	DecoratedFuncBase1Param
-{
-public:
-	
-	typedef returnType (DecoratedType::*MF)(P1 param);
-	typedef typename std::vector<MF>	mfVector;
-	typedef typename mfVector::iterator mfVectorIt;
-
-	DecoratedFuncBase1Param(DecoratedType* localthis,MF mf)
-		: mLocalThis(localthis)
-		, mCurrentCallPos(0)
-	{
-		mStack.clear();
-		push_back(mf);
-	}
-
-	returnType operator ()(P1 param)
-	{
-	
-		mCurrentCallPos=mStack.size()-1;
-		if(mCurrentCallPos>=0)
-		{
-			(mLocalThis->*mStack[mCurrentCallPos])(param);
-		}
-	}
-	
-	returnType	father(P1 param)
-	{
-		mCurrentCallPos--;
-		if(mCurrentCallPos>=0)
-		{
-			(mLocalThis->*mStack[mCurrentCallPos])(param);
-		}
-	}
-
-	~DecoratedFuncBase1Param()
-	{
-	}
-	
-	void	push_back(MF to_add)
-	{
-		mStack.push_back(to_add);
-	}
-
-
-	void	replace(MF to_replace, MF to_add)
-	{
-		if (mStack.size())
-		{
-			mfVectorIt itbegin = mStack.begin();
-			mfVectorIt itend = mStack.end();
-			while (itbegin != itend)
-			{
-				if ((*itbegin) == to_replace)
+				mCurrentCallPos--;
+				if (mCurrentCallPos >= 0)
 				{
-					*itbegin = to_add;
-					break;
+					(mLocalThis->*mStack[mCurrentCallPos])();
 				}
-				++itbegin;
 			}
-		}
-	}
 
-	void	remove(MF to_remove)
-	{
-		mfVectorIt itbegin=mStack.begin();
-		mfVectorIt itend=mStack.end();
-		while(itbegin != itend)
-		{
-			if((*itbegin) == to_remove)
+			~DecoratedFuncBase()
 			{
-				mStack.erase(itbegin);
-				break;
 			}
-			++itbegin;
-		}
-	}
 
-protected:
-	
-	int									mCurrentCallPos;
-	mfVector							mStack;
-	DecoratedType*						mLocalThis;
-};
-
-//! weird, do not use base class ??
-template<typename DecoratedType,typename returnType,typename P1,typename P2>
-class	DecoratedFuncBase2Param
-{
-public:
-	
-	typedef returnType (DecoratedType::*MF)(P1 param1,P2 param2);
-	typedef typename std::vector<MF>	mfVector;
-	typedef typename mfVector::iterator mfVectorIt;
-
-	DecoratedFuncBase2Param(DecoratedType* localthis,MF mf): 
-		  mCurrentCallPos(0)
-		, mLocalThis(localthis)
-	{
-		mStack.clear();
-		push_back(mf);
-	}
-
-	returnType operator ()(P1 param1,P2 param2)
-	{
-	
-		mCurrentCallPos=(int)mStack.size()-1;
-		if(mCurrentCallPos>=0)
-		{
-			return (mLocalThis->*mStack[mCurrentCallPos])(param1,param2);
-		}
-        
-        return 0;
-	}
-	
-	returnType	father(P1 param1,P2 param2)
-	{
-		mCurrentCallPos--;
-		if(mCurrentCallPos>=0)
-		{
-			return (mLocalThis->*mStack[mCurrentCallPos])(param1,param2);
-		}
-        
-        return 0;
-	}
-
-	~DecoratedFuncBase2Param()
-	{
-	}
-	
-	void	push_back(MF to_add)
-	{
-		mStack.push_back(to_add);
-	}
-
-
-	void	replace(MF to_replace, MF to_add)
-	{
-		if (mStack.size())
-		{
-			mfVectorIt itbegin = mStack.begin();
-			mfVectorIt itend = mStack.end();
-			while (itbegin != itend)
+			void	push_back(MF to_add)
 			{
-				if ((*itbegin) == to_replace)
+				mStack.push_back(to_add);
+			}
+
+			void	replace(MF to_replace, MF to_add)
+			{
+				if (mStack.size())
 				{
-					*itbegin = to_add;
-					break;
+					mfVectorIt itbegin = mStack.begin();
+					mfVectorIt itend = mStack.end();
+					while (itbegin != itend)
+					{
+						if ((*itbegin) == to_replace)
+						{
+							*itbegin = to_add;
+							break;
+						}
+						++itbegin;
+					}
 				}
-				++itbegin;
 			}
-		}
-	}
 
-	void	remove(MF to_remove)
-	{
-		mfVectorIt itbegin=mStack.begin();
-		mfVectorIt itend=mStack.end();
-		while(itbegin != itend)
-		{
-			if((*itbegin) == to_remove)
+			void	remove(MF to_remove)
 			{
-				mStack.erase(itbegin);
-				break;
-			}
-			++itbegin;
-		}
-	}
-
-protected:
-	
-	int									mCurrentCallPos;
-	mfVector							mStack;
-	DecoratedType*						mLocalThis;
-};
-
-//! weird, do not use base class ??
-template<typename DecoratedType,typename returnType,typename P1,typename P2,typename P3>
-class	DecoratedFuncBase3Param
-{
-public:
-	
-	typedef returnType (DecoratedType::*MF)(P1 param1,P2 param2,P3 param3);
-	typedef typename std::vector<MF>	mfVector;
-	typedef typename mfVector::iterator mfVectorIt;
-
-	DecoratedFuncBase3Param(DecoratedType* localthis,MF mf)
-		: mLocalThis(localthis)
-		, mCurrentCallPos(0)
-	{
-		mStack.clear();
-		push_back(mf);
-	}
-
-	returnType operator ()(P1 param1,P2 param2,P3 param3)
-	{
-	
-		mCurrentCallPos=mStack.size()-1;
-		if(mCurrentCallPos>=0)
-		{
-			(mLocalThis->*mStack[mCurrentCallPos])(param1,param2,param3);
-		}
-	}
-	
-	returnType	father(P1 param1,P2 param2,P3 param3)
-	{
-		mCurrentCallPos--;
-		if(mCurrentCallPos>=0)
-		{
-			(mLocalThis->*mStack[mCurrentCallPos])(param1,param2,param3);
-		}
-	}
-
-	~DecoratedFuncBase3Param()
-	{
-	}
-	
-	void	push_back(MF to_add)
-	{
-		mStack.push_back(to_add);
-	}
-
-	void	replace(MF to_replace, MF to_add)
-	{
-		if (mStack.size())
-		{
-			mfVectorIt itbegin = mStack.begin();
-			mfVectorIt itend = mStack.end();
-			while (itbegin != itend)
-			{
-				if ((*itbegin) == to_replace)
+				mfVectorIt itbegin = mStack.begin();
+				mfVectorIt itend = mStack.end();
+				while (itbegin != itend)
 				{
-					*itbegin = to_add;
-					break;
+					if ((*itbegin) == to_remove)
+					{
+						mStack.erase(itbegin);
+						break;
+					}
+					++itbegin;
 				}
-				++itbegin;
 			}
-		}
-	}
 
-	void	remove(MF to_remove)
-	{
-		mfVectorIt itbegin=mStack.begin();
-		mfVectorIt itend=mStack.end();
-		while(itbegin != itend)
+		protected:
+
+			int									mCurrentCallPos;
+			mfVector							mStack;
+			DecoratedType* mLocalThis;
+		};
+
+		//! weird, do not use base class ??
+		template<typename DecoratedType, typename returnType, typename P1>
+		class	DecoratedFuncBase1Param
 		{
-			if((*itbegin) == to_remove)
-			{
-				mStack.erase(itbegin);
-				break;
-			}
-			++itbegin;
-		}
-	}
+		public:
 
-protected:
-	
-	int									mCurrentCallPos;
-	mfVector							mStack;
-	DecoratedType*						mLocalThis;
-};
+			typedef returnType(DecoratedType::* MF)(P1 param);
+			typedef typename std::vector<MF>	mfVector;
+			typedef typename mfVector::iterator mfVectorIt;
+
+			DecoratedFuncBase1Param(DecoratedType* localthis, MF mf)
+				: mLocalThis(localthis)
+				, mCurrentCallPos(0)
+			{
+				mStack.clear();
+				push_back(mf);
+			}
+
+			returnType operator ()(P1 param)
+			{
+
+				mCurrentCallPos = mStack.size() - 1;
+				if (mCurrentCallPos >= 0)
+				{
+					(mLocalThis->*mStack[mCurrentCallPos])(param);
+				}
+			}
+
+			returnType	father(P1 param)
+			{
+				mCurrentCallPos--;
+				if (mCurrentCallPos >= 0)
+				{
+					(mLocalThis->*mStack[mCurrentCallPos])(param);
+				}
+			}
+
+			~DecoratedFuncBase1Param()
+			{
+			}
+
+			void	push_back(MF to_add)
+			{
+				mStack.push_back(to_add);
+			}
+
+
+			void	replace(MF to_replace, MF to_add)
+			{
+				if (mStack.size())
+				{
+					mfVectorIt itbegin = mStack.begin();
+					mfVectorIt itend = mStack.end();
+					while (itbegin != itend)
+					{
+						if ((*itbegin) == to_replace)
+						{
+							*itbegin = to_add;
+							break;
+						}
+						++itbegin;
+					}
+				}
+			}
+
+			void	remove(MF to_remove)
+			{
+				mfVectorIt itbegin = mStack.begin();
+				mfVectorIt itend = mStack.end();
+				while (itbegin != itend)
+				{
+					if ((*itbegin) == to_remove)
+					{
+						mStack.erase(itbegin);
+						break;
+					}
+					++itbegin;
+				}
+			}
+
+		protected:
+
+			int									mCurrentCallPos;
+			mfVector							mStack;
+			DecoratedType* mLocalThis;
+		};
+
+		//! weird, do not use base class ??
+		template<typename DecoratedType, typename returnType, typename P1, typename P2>
+		class	DecoratedFuncBase2Param
+		{
+		public:
+
+			typedef returnType(DecoratedType::* MF)(P1 param1, P2 param2);
+			typedef typename std::vector<MF>	mfVector;
+			typedef typename mfVector::iterator mfVectorIt;
+
+			DecoratedFuncBase2Param(DecoratedType* localthis, MF mf) :
+				mCurrentCallPos(0)
+				, mLocalThis(localthis)
+			{
+				mStack.clear();
+				push_back(mf);
+			}
+
+			returnType operator ()(P1 param1, P2 param2)
+			{
+
+				mCurrentCallPos = (int)mStack.size() - 1;
+				if (mCurrentCallPos >= 0)
+				{
+					return (mLocalThis->*mStack[mCurrentCallPos])(param1, param2);
+				}
+
+				return 0;
+			}
+
+			returnType	father(P1 param1, P2 param2)
+			{
+				mCurrentCallPos--;
+				if (mCurrentCallPos >= 0)
+				{
+					return (mLocalThis->*mStack[mCurrentCallPos])(param1, param2);
+				}
+
+				return 0;
+			}
+
+			~DecoratedFuncBase2Param()
+			{
+			}
+
+			void	push_back(MF to_add)
+			{
+				mStack.push_back(to_add);
+			}
+
+
+			void	replace(MF to_replace, MF to_add)
+			{
+				if (mStack.size())
+				{
+					mfVectorIt itbegin = mStack.begin();
+					mfVectorIt itend = mStack.end();
+					while (itbegin != itend)
+					{
+						if ((*itbegin) == to_replace)
+						{
+							*itbegin = to_add;
+							break;
+						}
+						++itbegin;
+					}
+				}
+			}
+
+			void	remove(MF to_remove)
+			{
+				mfVectorIt itbegin = mStack.begin();
+				mfVectorIt itend = mStack.end();
+				while (itbegin != itend)
+				{
+					if ((*itbegin) == to_remove)
+					{
+						mStack.erase(itbegin);
+						break;
+					}
+					++itbegin;
+				}
+			}
+
+		protected:
+
+			int									mCurrentCallPos;
+			mfVector							mStack;
+			DecoratedType* mLocalThis;
+		};
+
+		//! weird, do not use base class ??
+		template<typename DecoratedType, typename returnType, typename P1, typename P2, typename P3>
+		class	DecoratedFuncBase3Param
+		{
+		public:
+
+			typedef returnType(DecoratedType::* MF)(P1 param1, P2 param2, P3 param3);
+			typedef typename std::vector<MF>	mfVector;
+			typedef typename mfVector::iterator mfVectorIt;
+
+			DecoratedFuncBase3Param(DecoratedType* localthis, MF mf)
+				: mLocalThis(localthis)
+				, mCurrentCallPos(0)
+			{
+				mStack.clear();
+				push_back(mf);
+			}
+
+			returnType operator ()(P1 param1, P2 param2, P3 param3)
+			{
+
+				mCurrentCallPos = mStack.size() - 1;
+				if (mCurrentCallPos >= 0)
+				{
+					(mLocalThis->*mStack[mCurrentCallPos])(param1, param2, param3);
+				}
+			}
+
+			returnType	father(P1 param1, P2 param2, P3 param3)
+			{
+				mCurrentCallPos--;
+				if (mCurrentCallPos >= 0)
+				{
+					(mLocalThis->*mStack[mCurrentCallPos])(param1, param2, param3);
+				}
+			}
+
+			~DecoratedFuncBase3Param()
+			{
+			}
+
+			void	push_back(MF to_add)
+			{
+				mStack.push_back(to_add);
+			}
+
+			void	replace(MF to_replace, MF to_add)
+			{
+				if (mStack.size())
+				{
+					mfVectorIt itbegin = mStack.begin();
+					mfVectorIt itend = mStack.end();
+					while (itbegin != itend)
+					{
+						if ((*itbegin) == to_replace)
+						{
+							*itbegin = to_add;
+							break;
+						}
+						++itbegin;
+					}
+				}
+			}
+
+			void	remove(MF to_remove)
+			{
+				mfVectorIt itbegin = mStack.begin();
+				mfVectorIt itend = mStack.end();
+				while (itbegin != itend)
+				{
+					if ((*itbegin) == to_remove)
+					{
+						mStack.erase(itbegin);
+						break;
+					}
+					++itbegin;
+				}
+			}
+
+		protected:
+
+			int									mCurrentCallPos;
+			mfVector							mStack;
+			DecoratedType* mLocalThis;
+		};
 
 
 #define DECLARE_DECORABLE(returntype,funcname,baseClass) \
@@ -419,5 +422,5 @@ typedef DecoratedFuncBase3Param<baseClass,returntype,param1type,param2type,param
 
 
 
-
-#endif // _COREDECORATOR_H
+	}
+}

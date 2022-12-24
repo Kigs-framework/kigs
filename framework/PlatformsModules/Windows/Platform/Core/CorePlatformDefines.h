@@ -1,5 +1,4 @@
-#ifndef _CORE_PLATFORM_DEFINES_H
-#define _CORE_PLATFORM_DEFINES_H
+#pragma once
 
 //#define DOPROFILE
 
@@ -124,5 +123,3 @@ typedef	void ThreadReturnType;
 //#ifdef KIGS_TOOLS
 //#define NO_DELAYED_INIT
 //#endif
-
-# endif //_CORE_PLATFORM_DEFINES_H

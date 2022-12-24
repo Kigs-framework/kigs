@@ -29,6 +29,9 @@ void signal_handler(int sig)
 	quit = 1;
 }
 
+using namespace Kigs;
+using namespace Kigs::Core;
+
 int main(int argc, char *argv[])
 {
 	

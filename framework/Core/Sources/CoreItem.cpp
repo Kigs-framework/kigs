@@ -6,6 +6,8 @@
 
 #include <type_traits>
 
+using namespace Kigs::Core;
+
 CoreItemSP CoreItemIteratorBase::operator*() const
 {
 	if (mPos == 0)
@@ -183,21 +185,21 @@ CoreItem::operator Point3D() const
 	return result;
 }
 
-CoreItemSP MakeCoreMap()
+CoreItemSP Kigs::Core::MakeCoreMap()
 {
 	return std::make_shared<CoreMap<std::string>>();
 }
-CoreItemSP MakeCoreMapUS()
+CoreItemSP Kigs::Core::MakeCoreMapUS()
 {
 	return std::make_shared<CoreMap<usString>>();
 }
 
-CoreItemSP MakeCoreVector()
+CoreItemSP Kigs::Core::MakeCoreVector()
 {
 	return std::make_shared<CoreVector>();
 }
 
-#define IMPLEMENT_MAKE_COREVALUE(type) CoreItemSP MakeCoreValue(type value)\
+#define IMPLEMENT_MAKE_COREVALUE(type) CoreItemSP Kigs::Core::MakeCoreValue(type value)\
 {\
 	return std::make_shared<CoreValue<std::decay_t<type>>>(value);\
 }
@@ -210,7 +212,7 @@ IMPLEMENT_MAKE_COREVALUE(const u64&)
 IMPLEMENT_MAKE_COREVALUE(const float&)
 IMPLEMENT_MAKE_COREVALUE(const double&)
 
-CoreItemSP MakeCoreValue(const char* value, CoreModifiable* owner)
+CoreItemSP Kigs::Core::MakeCoreValue(const char* value, CoreModifiable* owner)
 {
 	// check eval
 	if (AttributeNeedEval(value))
@@ -223,7 +225,7 @@ CoreItemSP MakeCoreValue(const char* value, CoreModifiable* owner)
 		return std::make_shared<CoreValue<std::string>>(value);
 }
 
-CoreItemSP MakeCoreValue(const std::string& value, CoreModifiable* owner)
+CoreItemSP Kigs::Core::MakeCoreValue(const std::string& value, CoreModifiable* owner)
 {
 	// check eval
 	if (AttributeNeedEval(value))
@@ -236,7 +238,7 @@ CoreItemSP MakeCoreValue(const std::string& value, CoreModifiable* owner)
 		return std::make_shared<CoreValue<std::string>>(value);
 }
 
-CoreItemSP MakeCoreValue(const usString& value, CoreModifiable* owner)
+CoreItemSP Kigs::Core::MakeCoreValue(const usString& value, CoreModifiable* owner)
 {
 	if (AttributeNeedEval(value.ToString()))
 	{
@@ -248,7 +250,7 @@ CoreItemSP MakeCoreValue(const usString& value, CoreModifiable* owner)
 		return std::make_shared<CoreValue<usString>>(value);
 }
 
-CoreItemSP MakeCoreValue(const v2f& value)
+CoreItemSP Kigs::Core::MakeCoreValue(const v2f& value)
 {
 	auto vector = MakeCoreVector();
 	vector->set("", MakeCoreValue(value.x));
@@ -256,7 +258,7 @@ CoreItemSP MakeCoreValue(const v2f& value)
 	return vector;
 }
 
-CoreItemSP MakeCoreValue(const v3f& value)
+CoreItemSP Kigs::Core::MakeCoreValue(const v3f& value)
 {
 	auto vector = MakeCoreVector();
 	vector->set("", MakeCoreValue(value.x));
@@ -265,7 +267,7 @@ CoreItemSP MakeCoreValue(const v3f& value)
 	return vector;
 }
 
-CoreItemSP MakeCoreValue(const v4f& value)
+CoreItemSP Kigs::Core::MakeCoreValue(const v4f& value)
 {
 	auto vector = MakeCoreVector();
 	vector->set("", MakeCoreValue(value.x));

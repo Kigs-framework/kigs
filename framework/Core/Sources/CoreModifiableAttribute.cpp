@@ -10,6 +10,8 @@
 
 #include <algorithm>
 
+using namespace Kigs::Core;
+
 //! convert enum to readable string
 std::string CoreModifiableAttribute::typeToString(CoreModifiable::ATTRIBUTE_TYPE typ)
 {
@@ -146,7 +148,7 @@ CoreModifiableAttribute::~CoreModifiableAttribute()
 	CoreModifiable* owner = getOwner();
 	if (owner)
 	{
-		kigs::unordered_map<KigsID, CoreModifiableAttribute*>::const_iterator it = owner->mAttributes.find(mID);
+		unordered_map<KigsID, CoreModifiableAttribute*>::const_iterator it = owner->mAttributes.find(mID);
 		if (it != owner->mAttributes.end())
 		{
 			owner->mAttributes.erase(it);

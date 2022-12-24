@@ -1,5 +1,6 @@
 #include "CoreTreeNode.h"
 
+using namespace Kigs::Core;
 
 //! destructor
 CoreTreeNode::~CoreTreeNode()

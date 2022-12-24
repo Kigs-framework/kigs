@@ -6,6 +6,8 @@
 #include "TimerIncludes.h"
 #include "Core.h"
 
+using namespace Kigs::Core;
+using namespace Kigs::Xml;
 //! a do nothing object is just an instance of CoreModifiable with empty methods
 IMPLEMENT_CLASS_INFO(StepByStepImporter)
 

@@ -15,8 +15,11 @@
 #include <Shlwapi.h>
 #include <direct.h>
 
+using namespace Kigs::Core;
+using namespace Kigs::File;
+
 // check if file exist and if it's a file or directory
-void Win32CheckState(FileHandle * hndl)
+void Kigs::Core::Win32CheckState(FileHandle * hndl)
 {
 	std::wstring wfilename = to_wchar(hndl->mFullFileName);
 	int attr = GetFileAttributesW(wfilename.c_str());
@@ -32,7 +35,7 @@ void Win32CheckState(FileHandle * hndl)
 
 }
 
-bool Win32CreateFolderTree(FileHandle* hndl)
+bool Kigs::Core::Win32CreateFolderTree(FileHandle* hndl)
 {
 	if ((hndl->mStatus&FileHandle::Exist) == 0)
 	{
@@ -49,7 +52,7 @@ bool Win32CreateFolderTree(FileHandle* hndl)
 	return true;
 }
 
-SmartPointer<FileHandle> Win32FindFullName(const std::string&	filename)
+SmartPointer<FileHandle> Kigs::Core::Win32FindFullName(const std::string&	filename)
 {
 	if (filename[0] != '#')
 	{
@@ -116,7 +119,7 @@ SmartPointer<FileHandle> Win32FindFullName(const std::string&	filename)
 	return result;
 }
 
-bool Win32fopen(FileHandle* handle, const char * mode)
+bool Kigs::Core::Win32fopen(FileHandle* handle, const char * mode)
 {
 	unsigned int flagmode = FileHandle::OpeningFlags(mode);
 
@@ -159,37 +162,37 @@ bool Win32fopen(FileHandle* handle, const char * mode)
 	return false;
 }
 
-long int Win32fread(void * ptr, long size, long count, FileHandle* handle)
+long int Kigs::Core::Win32fread(void * ptr, long size, long count, FileHandle* handle)
 {
 	return (long int)fread(ptr, size, count, handle->mFile);
 }
 
-long int Win32fwrite(const void * ptr, long size, long count, FileHandle* handle)
+long int Kigs::Core::Win32fwrite(const void * ptr, long size, long count, FileHandle* handle)
 {
 	return (long int)fwrite(ptr, size, count, handle->mFile);
 }
 
-long int Win32ftell(FileHandle* handle)
+long int Kigs::Core::Win32ftell(FileHandle* handle)
 {
 	return ftell(handle->mFile);
 }
 
-int Win32fseek(FileHandle* handle, long int offset, int origin)
+int Kigs::Core::Win32fseek(FileHandle* handle, long int offset, int origin)
 {
 	return fseek(handle->mFile, offset, origin);
 }
-int Win32fflush(FileHandle* handle)
+int Kigs::Core::Win32fflush(FileHandle* handle)
 {
 	return fflush(handle->mFile);
 }
-int Win32fclose(FileHandle* handle)
+int Kigs::Core::Win32fclose(FileHandle* handle)
 {
 	int result = fclose(handle->mFile);
 	handle->resetStatus(); // reset 
 	return result;
 }
 
-std::string to_utf8(const wchar_t* buffer, int len)
+std::string  Kigs::Core::to_utf8(const wchar_t* buffer, int len)
 {
 	int nChars = ::WideCharToMultiByte(
 		CP_UTF8,
@@ -217,12 +220,12 @@ std::string to_utf8(const wchar_t* buffer, int len)
 	return newbuffer;
 }
 
-std::string to_utf8(const std::wstring& str)
+std::string Kigs::Core::to_utf8(const std::wstring& str)
 {
 	return to_utf8(str.c_str(), (int)str.size());
 }
 
-std::wstring to_wchar(const char* buffer, int len)
+std::wstring Kigs::Core::to_wchar(const char* buffer, int len)
 {
 	int nChars = ::MultiByteToWideChar(
 		CP_UTF8,
@@ -247,7 +250,7 @@ std::wstring to_wchar(const char* buffer, int len)
 	return newbuffer;
 }
 
-std::wstring to_wchar(const std::string& str)
+std::wstring Kigs::Core::to_wchar(const std::string& str)
 {
 	return to_wchar(str.c_str(), (int)str.size());
 }

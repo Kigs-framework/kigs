@@ -10,6 +10,9 @@
 #include <windows.h>
 #endif
 
+using namespace Kigs::Core;
+using namespace Kigs::File;
+
 //! macro to auto implement static members
 IMPLEMENT_CLASS_INFO(AnonymousModule)
 IMPLEMENT_CLASS_INFO(BaseDllModule)

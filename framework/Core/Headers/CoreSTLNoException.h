@@ -1,7 +1,4 @@
-#ifndef __CORESTLNOEXCEPTION_H__
-#define __CORESTLNOEXCEPTION_H__
+#pragma once
 
 #include "Platform/Core/CorePlatformDefines.h"
 
-
-#endif

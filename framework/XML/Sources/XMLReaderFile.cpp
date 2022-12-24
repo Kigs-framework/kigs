@@ -15,6 +15,11 @@
 #include "Platform/Core/PlatformCore.h"
 #endif
 
+using namespace Kigs::Xml;
+using namespace Kigs::Core;
+using namespace Kigs::File;
+
+
 void  XMLReaderFile::DeclHandler(void  *userdata,   const char  *version,  const char  *encoding,  int standalone)
 {
 	MyUserData*	localuserdata=(MyUserData*)userdata;

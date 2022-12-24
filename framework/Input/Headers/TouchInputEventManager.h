@@ -327,8 +327,8 @@ protected:
 		//float		 min_dist;
 	};
 
-	kigs::unordered_map<TouchSourceID, PotentialClick> mCurrentClickStart;
-	kigs::unordered_map<TouchSourceID, PotentialClick> mCurrentClickEnd;
+	unordered_map<TouchSourceID, PotentialClick> mCurrentClickStart;
+	unordered_map<TouchSourceID, PotentialClick> mCurrentClickEnd;
 
 	double mNearTouchLastAboveTime = 0.0;
 
@@ -568,7 +568,7 @@ protected:
 		mCurrentPinches.clear();
 	}
 
-	kigs::unordered_map<TouchSourceID, CurrentTouch> mCurrentTouches;
+	unordered_map<TouchSourceID, CurrentTouch> mCurrentTouches;
 	std::vector<CurrentPinch> mCurrentPinches;
 	
 	float  mPinchMaxStartDistSquared = 9999999;
@@ -672,7 +672,7 @@ public:
 	void SetDefaultMinClickDuration(float duration) { mDefaultMinClickDuration = duration; }
 	void SetDefaultMaxClickDuration(float duration) { mDefaultMaxClickDuration = duration; }
 
-	const kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>& GetFrameTouches() { return mLastFrameTouches; }
+	const unordered_map<TouchSourceID, TouchEventState::TouchInfos>& GetFrameTouches() { return mLastFrameTouches; }
 
 	std::unordered_set<CoreModifiable*>& GetNearInteractionActiveItems(Handedness handedness) 
 	{ 
@@ -693,7 +693,7 @@ protected:
 
 	maBool mUseGazeAsTouchDevice = BASE_ATTRIBUTE(UseGazeAsTouchDevice, false);
 
-	kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> mLastFrameTouches;
+	unordered_map<TouchSourceID, TouchEventState::TouchInfos> mLastFrameTouches;
 
 	std::unordered_set<CoreModifiable*> mNearInteractionActiveItemsLeft;
 	std::unordered_set<CoreModifiable*> mNearInteractionActiveItemsRight;
@@ -739,7 +739,7 @@ protected:
 			CoreModifiable*					mRootScene3D;
 		};
 
-		kigs::unordered_map<CoreModifiable*, EventMapEntry>	mEventMap;
+		unordered_map<CoreModifiable*, EventMapEntry>	mEventMap;
 	};
 
 	bool	unregisterEventOnCurrentState(StackedEventStateStruct& state,CoreModifiable* registeredObject, InputEventType type);
@@ -839,11 +839,11 @@ protected:
 
 
 	void RecursiveFlattenTreeForTouchID(std::vector<SortedElementNode>& flat_tree, touchSupportTreeNode* CurrentTouchSupport, 
-		kigs::unordered_map<CoreModifiable*, std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >& perRenderingScreenSortedMap,
-		kigs::unordered_map<CoreModifiable*, std::vector<CoreModifiable*> >& perScene3DMap,
-		kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchSourceID touch_id);
+		unordered_map<CoreModifiable*, std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >& perRenderingScreenSortedMap,
+		unordered_map<CoreModifiable*, std::vector<CoreModifiable*> >& perScene3DMap,
+		unordered_map<CoreModifiable*, unordered_map<TouchSourceID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchSourceID touch_id);
 
-	void	LinearCallEventUpdate(std::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchSourceID touch_id);
+	void	LinearCallEventUpdate(std::vector<SortedElementNode>& flat_tree, const Timer& timer, unordered_map<CoreModifiable*, unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchSourceID touch_id);
 
 	// touch support tree list (more than one root for multiple windows)
 	std::vector<touchSupportTreeNode>					mTouchSupportTreeRootList;
@@ -869,7 +869,7 @@ protected:
 
 	bool mForceClick = false;
 
-	void	transformTouchesInTouchSupportHierarchy(touchSupportTreeNode* current, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& resultmap, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>& Touches);
+	void	transformTouchesInTouchSupportHierarchy(touchSupportTreeNode* current, unordered_map<CoreModifiable*, unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& resultmap, unordered_map<TouchSourceID, TouchEventState::TouchInfos>& Touches);
 };
 
 // Helper struct to track a state across multiple touch sources. 

@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "Core.h"
 
+using namespace Kigs::File;
+
 IMPLEMENT_CLASS_INFO(RessourceFileManager)
 
 //! constructor

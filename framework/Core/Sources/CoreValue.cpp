@@ -4,6 +4,7 @@
 #include "CoreModifiableAttribute.h"
 #include "maUSString.h"
 
+using namespace Kigs::Core;
 
 template<>
 CoreModifiableAttribute* CoreValue<bool>::createAttribute(CoreModifiable* target)
