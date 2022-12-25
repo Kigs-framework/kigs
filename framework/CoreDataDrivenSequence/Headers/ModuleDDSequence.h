@@ -1,43 +1,49 @@
-#ifndef _MODULEDDSEQUENCE_H_
-#define _MODULEDDSEQUENCE_H_
+#pragma once
 
 #include "ModuleBase.h"
 #include "CoreMap.h"
 
-/*! \defgroup DataDrivenApplication
- *
-*/
-
-// ****************************************
-// * ModuleDDSequence class
-// * --------------------------------------
-/**
- * \file	ModuleDDSequence.h
- * \class	ModuleDDSequence
- * \ingroup DataDrivenApplication
- * \ingroup Module
- * \brief	Manage Data Driven Sequences for Data Driven Application.
- */
- // ****************************************
-
-
-class ModuleDDSequence : public ModuleBase
+namespace Kigs
 {
-public:
+	namespace DDriven
+	{
+		using namespace Core;
+		using namespace Time;
+		/*! \defgroup DataDrivenApplication
+		 *
+		*/
 
-	DECLARE_CLASS_INFO(ModuleDDSequence, ModuleBase, CoreDataDrivenSequence)
+		// ****************************************
+		// * ModuleDDSequence class
+		// * --------------------------------------
+		/**
+		 * \file	ModuleDDSequence.h
+		 * \class	ModuleDDSequence
+		 * \ingroup DataDrivenApplication
+		 * \ingroup Module
+		 * \brief	Manage Data Driven Sequences for Data Driven Application.
+		 */
+		 // ****************************************
 
-	//! constructor
-	ModuleDDSequence(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-         
-	//! init module
-    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
-	//! close module
-    void Close() override;
-            
-	//! update module
-	void Update(const Timer& timer, void* addParam) override;
 
-}; 
+		class ModuleDDSequence : public ModuleBase
+		{
+		public:
 
-#endif //_MODULEDDSEQUENCE_H_
+			DECLARE_CLASS_INFO(ModuleDDSequence, ModuleBase, CoreDataDrivenSequence)
+
+				//! constructor
+				ModuleDDSequence(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+
+			//! init module
+			void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
+			//! close module
+			void Close() override;
+
+			//! update module
+			void Update(const Timer& timer, void* addParam) override;
+
+		};
+
+	}
+}

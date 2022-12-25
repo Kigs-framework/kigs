@@ -1,6 +1,8 @@
 #include "PrecompiledHeaders.h"
 #include "CoreActionKeyFrame.h"
 
+using namespace Kigs::Action;
+
 bool	CoreActionKeyFrameBase::protectedUpdate(double time)
 {
 	CoreAction::protectedUpdate(time);

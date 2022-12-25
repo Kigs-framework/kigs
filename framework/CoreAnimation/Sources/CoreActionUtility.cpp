@@ -4,6 +4,7 @@
 #include "ModuleCoreAnimation.h"
 #include "NotificationCenter.h"
 
+using namespace Kigs::Action;
 
 void CoreActionRemoveFromParent::init(CoreSequence* sequence,CoreVector* params)
 {

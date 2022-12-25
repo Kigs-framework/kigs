@@ -1,6 +1,7 @@
 #include "PrecompiledHeaders.h"
 #include "Window.h"
 
+using namespace Kigs::Gui;
 #ifdef _MSC_VER
 #pragma warning( disable : 4355 )
 #endif

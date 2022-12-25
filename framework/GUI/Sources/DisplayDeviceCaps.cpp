@@ -1,6 +1,7 @@
 #include "PrecompiledHeaders.h"
 #include "DisplayDeviceCaps.h"
 
+using namespace Kigs::Gui;
 
 IMPLEMENT_CLASS_INFO(DisplayDeviceCaps)
 

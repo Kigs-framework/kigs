@@ -2,6 +2,7 @@
 #include "BaseDDSequence.h"
 #include "BumperDDSequence.h"
 
+using namespace Kigs::DDriven;
 
 IMPLEMENT_CLASS_INFO(ModuleDDSequence);
 

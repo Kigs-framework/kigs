@@ -7,6 +7,9 @@
 
 #include <iostream>
 
+using namespace Kigs;
+using namespace Kigs::Core;
+
 // Kigs framework Sample4 project
 // detailed CoreModifiable method features :
 // - declare / define method 

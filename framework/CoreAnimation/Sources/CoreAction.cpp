@@ -4,6 +4,9 @@
 
 #include "ModuleCoreAnimation.h"
 
+using namespace Kigs::Core;
+using namespace Kigs::Action;
+
 
 CoreAction::~CoreAction()
 {

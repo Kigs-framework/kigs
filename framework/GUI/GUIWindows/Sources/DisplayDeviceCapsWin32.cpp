@@ -6,6 +6,8 @@
 
 #pragma comment(lib, "Shcore.lib")
 
+using namespace Kigs::Gui;
+
 IMPLEMENT_CLASS_INFO(DisplayDeviceCapsWin32)
 
 BOOL EnumDisplayMonitorsCallback(HMONITOR monitor, HDC hdc, LPRECT rect, LPARAM result_ptr)

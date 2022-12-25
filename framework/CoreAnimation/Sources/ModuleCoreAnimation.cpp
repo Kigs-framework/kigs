@@ -11,8 +11,9 @@
 #include "JSonFileParser.h"
 #include "CoreSequenceLauncher.h"
 
+using namespace Kigs::Action;
 
-kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>	ModuleCoreAnimation::mCoreItemOperatorCreateMethodMap;
+unordered_map<std::string, CoreItemOperatorCreateMethod>	ModuleCoreAnimation::mCoreItemOperatorCreateMethodMap;
 
 IMPLEMENT_CLASS_INFO(ModuleCoreAnimation)
 
@@ -108,7 +109,7 @@ void ModuleCoreAnimation::Init(KigsCore* core, const std::vector<CoreModifiableA
 	
 }
 
-kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	ModuleCoreAnimation::GetCoreItemOperatorConstructMap()
+unordered_map<std::string, CoreItemOperatorCreateMethod>&	ModuleCoreAnimation::GetCoreItemOperatorConstructMap()
 {
 	return mCoreItemOperatorCreateMethodMap;
 }

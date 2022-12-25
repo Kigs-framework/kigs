@@ -1,16 +1,20 @@
 #pragma once
 #include "CoreModifiable.h"
 
-class SimpleClass : public CoreModifiable
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(SimpleClass, CoreModifiable, Application);
-	DECLARE_CONSTRUCTOR(SimpleClass);
+	using namespace Kigs::Core;
+	class SimpleClass : public CoreModifiable
+	{
+	public:
+		DECLARE_CLASS_INFO(SimpleClass, CoreModifiable, Application);
+		DECLARE_CONSTRUCTOR(SimpleClass);
 
-protected:
+	protected:
 
-	DECLARE_METHOD(GiveInfos);
-	// list all CoreModifiable methods
-	COREMODIFIABLE_METHODS(GiveInfos);
-};
+		DECLARE_METHOD(GiveInfos);
+		// list all CoreModifiable methods
+		COREMODIFIABLE_METHODS(GiveInfos);
+	};
 
+}

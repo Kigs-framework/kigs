@@ -1,33 +1,37 @@
-#ifndef _DISPLAYDEVICECAPSWIN32_H_
-#define _DISPLAYDEVICECAPSWIN32_H_
+#pragma once
 
 #include "DisplayDeviceCaps.h"
 
-// ****************************************
-// * DisplayDeviceCapsWin32 class
-// * --------------------------------------
-/**
-* \file	DisplayDeviceCapsWin32.h
-* \class	DisplayDeviceCapsWin32
-* \ingroup GUIModule
-* \brief	Specific Win32 DisplayDeviceCaps, used to get display device list and capacities.
-*/
-// ****************************************
-class DisplayDeviceCapsWin32 : public DisplayDeviceCaps
+namespace Kigs
 {
-public:
-    DECLARE_CLASS_INFO(DisplayDeviceCapsWin32,DisplayDeviceCaps,GUI)
-
-	//! constructor
-    DisplayDeviceCapsWin32(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-
-	//! destructor
-	virtual ~DisplayDeviceCapsWin32();
-
-	bool SupportWindowedMode() override
+	namespace Gui
 	{
-		return true; // enable creation of several windows on Win32
-	}
-};    
+		// ****************************************
+		// * DisplayDeviceCapsWin32 class
+		// * --------------------------------------
+		/**
+		* \file	DisplayDeviceCapsWin32.h
+		* \class	DisplayDeviceCapsWin32
+		* \ingroup GUIModule
+		* \brief	Specific Win32 DisplayDeviceCaps, used to get display device list and capacities.
+		*/
+		// ****************************************
+		class DisplayDeviceCapsWin32 : public DisplayDeviceCaps
+		{
+		public:
+			DECLARE_CLASS_INFO(DisplayDeviceCapsWin32, DisplayDeviceCaps, GUI)
 
-#endif //_DISPLAYDEVICECAPSWIN32_H_
+				//! constructor
+				DisplayDeviceCapsWin32(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+
+			//! destructor
+			virtual ~DisplayDeviceCapsWin32();
+
+			bool SupportWindowedMode() override
+			{
+				return true; // enable creation of several windows on Win32
+			}
+		};
+
+	}
+}

@@ -1,5 +1,6 @@
 #include "BaseDDSequence.h"
 
+using namespace Kigs::DDriven;
 
 IMPLEMENT_CLASS_INFO(BaseDDSequence)
 

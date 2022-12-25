@@ -1,35 +1,40 @@
-#ifndef _BUMPERDDSEQUENCE_H_
-#define _BUMPERDDSEQUENCE_H_
-
+#pragma once
 #include "BaseDDSequence.h"
 #include "maUSString.h"
 
-// ****************************************
-// * BumperDDSequence class
-// * --------------------------------------
-/**
- * \file	BumperDDSequence.h
- * \class	BumperDDSequence
- * \ingroup DataDrivenApplication
- * \brief	Splash screen
- *
- * ?? Obsolete ??
- */
- // ****************************************
-
-class BumperDDSequence : public BaseDDSequence
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(BumperDDSequence, BaseDDSequence, CoreDataDrivenSequence)
-	BumperDDSequence(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	virtual ~BumperDDSequence();
+	namespace DDriven
+	{
+		using namespace Core;
+		using namespace Time;
+		// ****************************************
+		// * BumperDDSequence class
+		// * --------------------------------------
+		/**
+		 * \file	BumperDDSequence.h
+		 * \class	BumperDDSequence
+		 * \ingroup DataDrivenApplication
+		 * \brief	Splash screen
+		 *
+		 * ?? Obsolete ??
+		 */
+		 // ****************************************
 
-protected:
-	void Update(const Timer&  timer, void* /*addParam*/) override;
+		class BumperDDSequence : public BaseDDSequence
+		{
+		public:
+			DECLARE_CLASS_INFO(BumperDDSequence, BaseDDSequence, CoreDataDrivenSequence)
+				BumperDDSequence(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual ~BumperDDSequence();
 
-	maUSString mNextSequence;
-	maFloat mDuration;
+		protected:
+			void Update(const Timer& timer, void* /*addParam*/) override;
 
-	double mStartTime;
-};
-#endif //_BUMPERDDSEQUENCE_H_
+			maUSString mNextSequence;
+			maFloat mDuration;
+
+			double mStartTime;
+		};
+	}
+}

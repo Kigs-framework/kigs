@@ -1,5 +1,4 @@
-#ifndef _MODULECOREANIMATION_H_
-#define _MODULECOREANIMATION_H_
+#pragma once
 
 #include "ModuleBase.h"
 #include "CoreSequence.h"
@@ -9,82 +8,92 @@
 
 #include "AttributePacking.h"
 
-class	MiniInstanceFactory;
 
-/*! \defgroup CoreAnimation
- *  
-*/
 
-// ****************************************
-// * ModuleCoreAnimation class
-// * --------------------------------------
-/**
- * \file	ModuleCoreAnimation.h
- * \class	ModuleCoreAnimation
- * \ingroup CoreAnimation
- * \ingroup Module
- * \brief	manage animated values 
- */
-// ****************************************
-
-class ModuleCoreAnimation : public ModuleBase
+namespace Kigs
 {
-public:
+	namespace Core
+	{
+		class	MiniInstanceFactory;
+	}
+	namespace Action
+	{
+		using namespace Kigs::Core;
+		/*! \defgroup CoreAnimation
+		 *
+		*/
 
-	DECLARE_CLASS_INFO(ModuleCoreAnimation,ModuleBase,CoreAnimation)
+		// ****************************************
+		// * ModuleCoreAnimation class
+		// * --------------------------------------
+		/**
+		 * \file	ModuleCoreAnimation.h
+		 * \class	ModuleCoreAnimation
+		 * \ingroup CoreAnimation
+		 * \ingroup Module
+		 * \brief	manage animated values
+		 */
+		 // ****************************************
 
-	//! constructor
-    ModuleCoreAnimation(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-         
-	//! init module
-    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;   
-	//! close module
-    void Close() override;
-            
-	//! update module
-	void Update(const Timer& timer, void* addParam) override;
+		class ModuleCoreAnimation : public ModuleBase
+		{
+		public:
 
-	SP<CoreSequence> createSequenceFromString(CMSP target, const std::string& json, Timer* reftimer = 0);
-	SP<CoreSequence> createSequenceFromJSON(CMSP target, const std::string& file,Timer* reftimer=0);
-	SP<CoreSequence> createSequenceFromCoreMap(CMSP target, CoreItemSP& sequenceDesc,Timer* reftimer=0);
-	CoreItemSP		 createAction(CoreSequence* sequence, CoreItemSP& actiondesc);
+			DECLARE_CLASS_INFO(ModuleCoreAnimation, ModuleBase, CoreAnimation)
 
-	void	addSequence(CoreSequence* sequence);
-    void	removeSequence(CoreSequence* sequence);
+				//! constructor
+				ModuleCoreAnimation(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	void	startSequence(CoreSequence* sequence, Timer* t = 0);
-	void	pauseSequence(CoreSequence* sequence, Timer* t = 0);
-	void	stopSequence(CoreSequence* sequence, Timer* t = 0);
-	void	startSequenceAtFirstUpdate(CoreSequence* sequence);
+			//! init module
+			void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
+			//! close module
+			void Close() override;
 
-	void	removeAllSequencesOnTarget(CoreModifiable* target);
+			//! update module
+			void Update(const Timer& timer, void* addParam) override;
 
-	// callback on animated objects
-	DECLARE_METHOD(OnDestroyCallBack)
-	COREMODIFIABLE_METHODS(OnDestroyCallBack);
-	/**
-	* \fn			std::map<std::string, CoreItemOperatorCreateMethod>&	GetCoreItemOperatorConstructMap();
-	* \brief		return the specific map for CoreItemOperator creation in animation module
-	* \return		std::map<std::string, CoreItemOperatorCreateMethod>& 
-	*/
-	static kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>&	GetCoreItemOperatorConstructMap();
+			SP<CoreSequence> createSequenceFromString(CMSP target, const std::string& json, Timer* reftimer = 0);
+			SP<CoreSequence> createSequenceFromJSON(CMSP target, const std::string& file, Timer* reftimer = 0);
+			SP<CoreSequence> createSequenceFromCoreMap(CMSP target, CoreItemSP& sequenceDesc, Timer* reftimer = 0);
+			CoreItemSP		 createAction(CoreSequence* sequence, CoreItemSP& actiondesc);
 
-	WRAP_METHODS(addSequence, removeSequence, removeAllSequencesOnTarget, createSequenceFromString, createSequenceFromJSON, startSequence, pauseSequence, stopSequence, startSequenceAtFirstUpdate);
+			void	addSequence(CoreSequence* sequence);
+			void	removeSequence(CoreSequence* sequence);
 
-	//! destructor
-	virtual ~ModuleCoreAnimation();
+			void	startSequence(CoreSequence* sequence, Timer* t = 0);
+			void	pauseSequence(CoreSequence* sequence, Timer* t = 0);
+			void	stopSequence(CoreSequence* sequence, Timer* t = 0);
+			void	startSequenceAtFirstUpdate(CoreSequence* sequence);
 
-protected:
-	//! sequences manager
-	void updateSequences(const Timer& timer);
+			void	removeAllSequencesOnTarget(CoreModifiable* target);
 
-	std::map<unsigned int,std::vector<SP<CoreSequence>> >	mSequences;
+			// callback on animated objects
+			DECLARE_METHOD(OnDestroyCallBack)
+				COREMODIFIABLE_METHODS(OnDestroyCallBack);
+			/**
+			* \fn			std::map<std::string, CoreItemOperatorCreateMethod>&	GetCoreItemOperatorConstructMap();
+			* \brief		return the specific map for CoreItemOperator creation in animation module
+			* \return		std::map<std::string, CoreItemOperatorCreateMethod>&
+			*/
+			static unordered_map<std::string, CoreItemOperatorCreateMethod>& GetCoreItemOperatorConstructMap();
 
-	SP<MiniInstanceFactory>	mPrivateMiniFactory;
+			WRAP_METHODS(addSequence, removeSequence, removeAllSequencesOnTarget, createSequenceFromString, createSequenceFromJSON, startSequence, pauseSequence, stopSequence, startSequenceAtFirstUpdate);
 
-	// animation specific CoreItemOperator Map
-	static kigs::unordered_map<std::string, CoreItemOperatorCreateMethod>	mCoreItemOperatorCreateMethodMap;
+			//! destructor
+			virtual ~ModuleCoreAnimation();
 
-}; 
+		protected:
+			//! sequences manager
+			void updateSequences(const Timer& timer);
 
-#endif //_MODULECOREANIMATION_H_
+			std::map<unsigned int, std::vector<SP<CoreSequence>> >	mSequences;
+
+			SP<MiniInstanceFactory>	mPrivateMiniFactory;
+
+			// animation specific CoreItemOperator Map
+			static unordered_map<std::string, CoreItemOperatorCreateMethod>	mCoreItemOperatorCreateMethodMap;
+
+		};
+
+	}
+}

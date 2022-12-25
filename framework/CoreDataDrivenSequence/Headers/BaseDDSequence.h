@@ -1,31 +1,35 @@
-#ifndef _BASEDDSEQUENCE_H_
-#define _BASEDDSEQUENCE_H_
-
+#pragma once
 #include "DataDrivenBaseApplication.h"
 
-class CoreSequence;
-// ****************************************
-// * BaseDDSequence class
-// * --------------------------------------
-/**
- * \file	BaseDDSequence.h
- * \class	BaseDDSequence
- * \ingroup DataDrivenApplication
- * \brief	A data driven sequence.
- * 
- * ?? Obsolete ?? just a DataDrivenSequence ? 
- */
- // ****************************************
-
-class BaseDDSequence : public DataDrivenSequence
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(BaseDDSequence, DataDrivenSequence, CoreDataDrivenSequence)
-	BaseDDSequence(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	virtual ~BaseDDSequence();
+	namespace DDriven
+	{
+		using namespace Core;
 
-protected:
-	maString mTransitionData;
-};
+		// ****************************************
+		// * BaseDDSequence class
+		// * --------------------------------------
+		/**
+		 * \file	BaseDDSequence.h
+		 * \class	BaseDDSequence
+		 * \ingroup DataDrivenApplication
+		 * \brief	A data driven sequence.
+		 *
+		 * ?? Obsolete ?? just a DataDrivenSequence ?
+		 */
+		 // ****************************************
 
-#endif //_BASEDDSEQUENCE_H_
+		class BaseDDSequence : public DataDrivenSequence
+		{
+		public:
+			DECLARE_CLASS_INFO(BaseDDSequence, DataDrivenSequence, CoreDataDrivenSequence)
+				BaseDDSequence(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual ~BaseDDSequence();
+
+		protected:
+			maString mTransitionData;
+		};
+
+	}
+}

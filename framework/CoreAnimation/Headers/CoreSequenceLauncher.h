@@ -1,5 +1,4 @@
-#ifndef _CORESEQUENCELAUNCHER_H_
-#define _CORESEQUENCELAUNCHER_H_
+#pragma once
 
 #include "CoreModifiable.h"
 #include "CoreModifiableAttribute.h"
@@ -9,44 +8,50 @@
 
 #include "AttributePacking.h"
 
-// ****************************************
-// * CoreSequenceLauncher class
-// * --------------------------------------
-/**
-* \class	CoreSequenceLauncher
-* \file		CoreSequenceLauncher.h
-* \ingroup CoreAnimation
-* \brief	CoreModifiable owning a sequence.
-* 
-* The sequence is played on the parent of this CoreModifiable.
-*
-*/
-// ****************************************
-
-class CoreSequenceLauncher : public CoreModifiable
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(CoreSequenceLauncher, CoreModifiable, CoreAnimation);
-	DECLARE_INLINE_CONSTRUCTOR(CoreSequenceLauncher){}
-	WRAP_METHODS(Start, Stop, IsFinished);
+	namespace Action
+	{
+		using namespace Kigs::Core;
+		// ****************************************
+		// * CoreSequenceLauncher class
+		// * --------------------------------------
+		/**
+		* \class	CoreSequenceLauncher
+		* \file		CoreSequenceLauncher.h
+		* \ingroup CoreAnimation
+		* \brief	CoreModifiable owning a sequence.
+		*
+		* The sequence is played on the parent of this CoreModifiable.
+		*
+		*/
+		// ****************************************
 
-protected:
-	void	InitModifiable() override;
+		class CoreSequenceLauncher : public CoreModifiable
+		{
+		public:
+			DECLARE_CLASS_INFO(CoreSequenceLauncher, CoreModifiable, CoreAnimation);
+			DECLARE_INLINE_CONSTRUCTOR(CoreSequenceLauncher) {}
+			WRAP_METHODS(Start, Stop, IsFinished);
 
-	void	checkDeadSequences();
-	void	addSequencesToParents();
+		protected:
+			void	InitModifiable() override;
 
-	//! parameter for fullscreen window
-	maBool			mStartOnFirstUpdate = BASE_ATTRIBUTE(StartOnFirstUpdate, false);
-	maCoreItem		mSequence = BASE_ATTRIBUTE(Sequence);
-	maString		mStartMessage = BASE_ATTRIBUTE(StartMessage, "");
-	maBool			mOnce = BASE_ATTRIBUTE(Once, false);
+			void	checkDeadSequences();
+			void	addSequencesToParents();
 
-	kigs::unordered_map<CoreModifiable*, std::weak_ptr<CoreSequence>> mSequenceMap;
+			//! parameter for fullscreen window
+			maBool			mStartOnFirstUpdate = BASE_ATTRIBUTE(StartOnFirstUpdate, false);
+			maCoreItem		mSequence = BASE_ATTRIBUTE(Sequence);
+			maString		mStartMessage = BASE_ATTRIBUTE(StartMessage, "");
+			maBool			mOnce = BASE_ATTRIBUTE(Once, false);
 
-	void Start();
-	void Stop();
-	bool IsFinished();
-};
+			unordered_map<CoreModifiable*, std::weak_ptr<CoreSequence>> mSequenceMap;
 
-#endif //_CORESEQUENCELAUNCHER_H_
+			void Start();
+			void Stop();
+			bool IsFinished();
+		};
+
+	}
+}

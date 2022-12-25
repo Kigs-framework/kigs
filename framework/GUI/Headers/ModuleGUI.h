@@ -1,54 +1,59 @@
+#pragma once
 // Doxygen group defines
 
 /*! \defgroup GUIModule GUI base module
 *  GUIModule Classes
 */
 
-#ifndef _MODULEGUI_H_
-#define _MODULEGUI_H_
 
 #include "ModuleBase.h"
 
-SP<ModuleBase> PlatformGUIModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
-
-// ****************************************
-// * ModuleGUI class
-// * --------------------------------------
-/**
-* \file	ModuleGUI.h
-* \class	ModuleGUI
-* \ingroup GUIModule
-* \ingroup Module
-* \brief Generic Module for GUI classes ( Windows management )
-*
-*/
-// ****************************************
-
-class ModuleGUI : public ModuleBase
+namespace Kigs
 {
-public:
+	namespace Gui
+	{
+		using namespace Core;
+		SP<ModuleBase> PlatformGUIModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 
-	DECLARE_CLASS_INFO(ModuleGUI,ModuleBase,GUI)
+		// ****************************************
+		// * ModuleGUI class
+		// * --------------------------------------
+		/**
+		* \file	ModuleGUI.h
+		* \class	ModuleGUI
+		* \ingroup GUIModule
+		* \ingroup Module
+		* \brief Generic Module for GUI classes ( Windows management )
+		*
+		*/
+		// ****************************************
 
-	//! constructor
-	ModuleGUI(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+		class ModuleGUI : public ModuleBase
+		{
+		public:
 
-	//! destructor
-	virtual ~ModuleGUI();
+			DECLARE_CLASS_INFO(ModuleGUI, ModuleBase, GUI)
 
-	//! init module
-	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
+				//! constructor
+				ModuleGUI(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	//! close module
-	void Close() override;
+			//! destructor
+			virtual ~ModuleGUI();
 
-	//! update module
-	void Update(const Timer& timer, void* addParam) override;
+			//! init module
+			void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 
-protected:
+			//! close module
+			void Close() override;
 
-	
+			//! update module
+			void Update(const Timer& timer, void* addParam) override;
 
-}; 
+		protected:
 
-#endif //_MODULEGUI_H_
+
+
+		};
+
+	}
+}

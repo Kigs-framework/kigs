@@ -1,131 +1,141 @@
-#ifndef _WINDOW_H_
-#define _WINDOW_H_
+#pragma once
 
 #include "CoreModifiable.h"
 #include "CoreModifiableAttribute.h"
 #include "Timer.h"
-class   RenderingScreen;
 
-
-// ****************************************
-// * Window class
-// * --------------------------------------
-/**
-* \file	Window.h
-* \class	Window
-* \ingroup GUIModule
-* \brief	Base class for Window (rendering window).
-*/
-// ****************************************
-class Window : public CoreModifiable
+namespace Kigs
 {
-public:
-    
-    DECLARE_ABSTRACT_CLASS_INFO(Window,CoreModifiable,GUI)
+	namespace Draw
+	{
+		class   RenderingScreen;
+	}
+	namespace Gui
+	{
+		using namespace Core;
 
-    //! Typedefs for callbacks for the window events. They are not used by other projects at the moment
-	typedef void (*ClickMessageCallbackFn)(CoreModifiable *pWindow, int buttonId, float X, float Y,bool isDown);
-    //! Typedefs for callbacks for the window events. They are not used by other projects at the moment
-	typedef void (*KeyDownCallbackFn)(Window *pWindow, char C, int VirtualKeyCode);
-    //! Typedefs for callbacks for the window events. They are not used by other projects at the moment
-	typedef void (*DestroyCallbackFn)(CoreModifiable *pWindow);
 
-	//! constructor
-    Window(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
-	/*! pure virtual show. 
-		Must be implemented in platform/os dependant class
-	*/
-    virtual void  Show()=0;
-   
-	/*! pure virtual showmouse. 
-		Must be implemented in platform/os dependant class
-	*/
-	virtual void ShowMouse(bool bOn)=0;
+		// ****************************************
+		// * Window class
+		// * --------------------------------------
+		/**
+		* \file	Window.h
+		* \class	Window
+		* \ingroup GUIModule
+		* \brief	Base class for Window (rendering window).
+		*/
+		// ****************************************
+		class Window : public CoreModifiable
+		{
+		public:
 
-	virtual void ShowBorder(bool show) {}
+			DECLARE_ABSTRACT_CLASS_INFO(Window, CoreModifiable, GUI)
 
-	virtual void SetWindowPosition(v2i pos, v2i size, bool force_topmost = false) {}
+				//! Typedefs for callbacks for the window events. They are not used by other projects at the moment
+				typedef void (*ClickMessageCallbackFn)(CoreModifiable* pWindow, int buttonId, float X, float Y, bool isDown);
+			//! Typedefs for callbacks for the window events. They are not used by other projects at the moment
+			typedef void (*KeyDownCallbackFn)(Window* pWindow, char C, int VirtualKeyCode);
+			//! Typedefs for callbacks for the window events. They are not used by other projects at the moment
+			typedef void (*DestroyCallbackFn)(CoreModifiable* pWindow);
 
-	//! return the rendering screen associated with this window
-	RenderingScreen*	GetRenderingScreen(){ return (RenderingScreen*)mScreen.get(); }
+			//! constructor
+			Window(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	//!Set the callback which is called when the user types the given character
-	void SetKeyDownCallback(KeyDownCallbackFn Callback) {mKeyDownCallback = Callback;}
-	//!Set the callback which is called when the user types the given character (key up)
-	void SetKeyUpCallback(KeyDownCallbackFn Callback) {mKeyUpCallback = Callback;}
-	//!Set the callback which is called when the window is destroyed
-	void SetDestroyCallback(DestroyCallbackFn Callback) {mDestroyCallback = Callback;}
-	//!Set the callback when clicking in the window (X,Y) range in pixels (from left to right, bottom to up)
-	void SetClickCallback(ClickMessageCallbackFn Callback) {mClickCallback = Callback;}
-	//!Set the callback when double clicking in the window (X,Y) range in pixels (from left to right, bottom to up)
-	void SetDoubleClickCallback(ClickMessageCallbackFn Callback) {mDoubleClickCallback = Callback;}
+			/*! pure virtual show.
+				Must be implemented in platform/os dependant class
+			*/
+			virtual void  Show() = 0;
 
-	//! add item. Manage rendering screen
-	bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
-	//! remove item. Manage rendering screen
-	bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
+			/*! pure virtual showmouse.
+				Must be implemented in platform/os dependant class
+			*/
+			virtual void ShowMouse(bool bOn) = 0;
 
-	//! return the window handle
-	void*	GetHandle(){return mHandle;}
+			virtual void ShowBorder(bool show) {}
 
-	Point2DI	GetPos() { return { mPosition[0], mPosition[1] }; }
-	Point2DI    GetSize() { return { mSize[0], mSize[1] }; }
+			virtual void SetWindowPosition(v2i pos, v2i size, bool force_topmost = false) {}
 
-	virtual void	GetMousePosInWindow(int posx,int posy,float& wposx,float& wposy)=0;
-	virtual void	GetMousePosInDesignWindow(int posx,int posy,float& wposx,float& wposy)=0;
+			//! return the rendering screen associated with this window
+			Draw::RenderingScreen* GetRenderingScreen() { return (Draw::RenderingScreen*)mScreen.get(); }
 
-	virtual void ChangeWindowText(const char * txt){}
+			//!Set the callback which is called when the user types the given character
+			void SetKeyDownCallback(KeyDownCallbackFn Callback) { mKeyDownCallback = Callback; }
+			//!Set the callback which is called when the user types the given character (key up)
+			void SetKeyUpCallback(KeyDownCallbackFn Callback) { mKeyUpCallback = Callback; }
+			//!Set the callback which is called when the window is destroyed
+			void SetDestroyCallback(DestroyCallbackFn Callback) { mDestroyCallback = Callback; }
+			//!Set the callback when clicking in the window (X,Y) range in pixels (from left to right, bottom to up)
+			void SetClickCallback(ClickMessageCallbackFn Callback) { mClickCallback = Callback; }
+			//!Set the callback when double clicking in the window (X,Y) range in pixels (from left to right, bottom to up)
+			void SetDoubleClickCallback(ClickMessageCallbackFn Callback) { mDoubleClickCallback = Callback; }
 
-	virtual bool IsPlatformClipboardSupported() { return false; }
-	virtual const std::string& GetClipboardText() { return mClipboard; };
-	virtual void SetClipboardText(const std::string& txt) { mClipboard = txt; };
+			//! add item. Manage rendering screen
+			bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+			//! remove item. Manage rendering screen
+			bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
 
-	virtual void SetCurrentCursor(const char* cursorName) {};
+			//! return the window handle
+			void* GetHandle() { return mHandle; }
 
-protected:
-	//! destructor
-    virtual ~Window();
-    
-	/*! \brief pure virtual protected init
-		called by the InitModifiable method, must be implemented in platform/os dependant classes
-	*/
-	virtual void  ProtectedInit()=0;  
+			Point2DI	GetPos() { return { mPosition[0], mPosition[1] }; }
+			Point2DI    GetSize() { return { mSize[0], mSize[1] }; }
 
-	//! init method
-	void	InitModifiable() override;
+			virtual void	GetMousePosInWindow(int posx, int posy, float& wposx, float& wposy) = 0;
+			virtual void	GetMousePosInDesignWindow(int posx, int posy, float& wposx, float& wposy) = 0;
 
-	//! parameter for fullscreen window
-	maBool	mFullScreen;
-	//! flag to show/hide the mouse
-	maBool	mShowMouseCursor;
+			virtual void ChangeWindowText(const char* txt) {}
 
-	//! flag to decide if the window is the main window. If you close the main window, the application should be terminated
-	maBool mIsMainWindow;
-	maUInt mDisplayIndex;
+			virtual bool IsPlatformClipboardSupported() { return false; }
+			virtual const std::string& GetClipboardText() { return mClipboard; };
+			virtual void SetClipboardText(const std::string& txt) { mClipboard = txt; };
 
-	maBool mDirtySize;
+			virtual void SetCurrentCursor(const char* cursorName) {};
 
-	maBool mShow = BASE_ATTRIBUTE(Show, true);
+		protected:
+			//! destructor
+			virtual ~Window();
 
-	//! window size and position on screen (size is also used if fullscreen)
-	maVect2DF		mPosition;
-	maVect2DF		mSize;
+			/*! \brief pure virtual protected init
+				called by the InitModifiable method, must be implemented in platform/os dependant classes
+			*/
+			virtual void  ProtectedInit() = 0;
 
-	//!	platform independant handle
-    void*   mHandle; 
+			//! init method
+			void	InitModifiable() override;
 
-	//! windows rendering screen
-	CMSP mScreen;
+			//! parameter for fullscreen window
+			maBool	mFullScreen;
+			//! flag to show/hide the mouse
+			maBool	mShowMouseCursor;
 
-	//! mouse callbacks
-	ClickMessageCallbackFn mClickCallback, mDoubleClickCallback;
-	//! key callback
-	KeyDownCallbackFn mKeyDownCallback,mKeyUpCallback;
-	//! destroy callback
-	DestroyCallbackFn mDestroyCallback;
+			//! flag to decide if the window is the main window. If you close the main window, the application should be terminated
+			maBool mIsMainWindow;
+			maUInt mDisplayIndex;
 
-	std::string mClipboard;
-};    
+			maBool mDirtySize;
 
-#endif
+			maBool mShow = BASE_ATTRIBUTE(Show, true);
+
+			//! window size and position on screen (size is also used if fullscreen)
+			maVect2DF		mPosition;
+			maVect2DF		mSize;
+
+			//!	platform independant handle
+			void* mHandle;
+
+			//! windows rendering screen
+			CMSP mScreen;
+
+			//! mouse callbacks
+			ClickMessageCallbackFn mClickCallback, mDoubleClickCallback;
+			//! key callback
+			KeyDownCallbackFn mKeyDownCallback, mKeyUpCallback;
+			//! destroy callback
+			DestroyCallbackFn mDestroyCallback;
+
+			std::string mClipboard;
+		};
+
+	}
+}

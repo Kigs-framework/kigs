@@ -5,6 +5,8 @@
 #include "ModuleGUI.h"
 #include "Core.h"
 
+using namespace Kigs::Gui;
+
 IMPLEMENT_CLASS_INFO(ModuleGUI)
 
 ModuleGUI::ModuleGUI(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)

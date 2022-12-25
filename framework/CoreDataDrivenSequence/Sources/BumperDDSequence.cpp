@@ -2,6 +2,8 @@
 #include "Timer.h"
 #include "NotificationCenter.h"
 
+using namespace Kigs::DDriven;
+
 IMPLEMENT_CLASS_INFO(BumperDDSequence)
 
 BumperDDSequence::BumperDDSequence(const std::string& name, CLASS_NAME_TREE_ARG)

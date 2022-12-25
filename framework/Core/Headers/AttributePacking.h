@@ -6,8 +6,13 @@
 
 namespace Kigs
 {
+	namespace Action
+	{
+		class CoreSequence;
+	}
 	namespace Core
 	{
+
 #define DEFINE_MAKE_ATTR_FUNC(type, attr_type) inline CoreModifiableAttribute* MakeAttributeSpec(type value, CoreModifiable* owner, const std::string& name = #attr_type)\
 {\
 	if(owner)\
@@ -93,11 +98,8 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 
 
 		EXPOSE_STRUCT_LUA(struct, ClickEvent);
-		EXPOSE_STRUCT_LUA(class, CoreSequence);
-
-
-
-
+		template<>
+		struct LuaStruct<Action::CoreSequence> { static constexpr bool exposed = true; constexpr static const char* name() { return "CoreSequence"; } };
 
 		// Custom type exposed by ptr
 		template<typename T, REQUIRES(LuaStruct<stripped_type<T>>::exposed)>

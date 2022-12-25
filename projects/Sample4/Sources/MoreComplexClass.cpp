@@ -3,6 +3,9 @@
 #include "AttributePacking.h"
 #include <iostream>
 
+using namespace Kigs;
+using namespace Kigs::Core;
+
 IMPLEMENT_CLASS_INFO(MoreComplexClass)
 
 IMPLEMENT_CONSTRUCTOR(MoreComplexClass)

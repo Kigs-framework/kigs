@@ -5,6 +5,7 @@
 #include "CoreSequence.h"
 #include "Core.h"
 
+using namespace Kigs::Action;
 /* Sample xml code :
 
 // sequence readed from json file and launched on parent instance when receiving "StartEnterAnim" notification

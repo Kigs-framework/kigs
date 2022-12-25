@@ -1,201 +1,204 @@
-#ifndef _DISPLAYDEVICECAPS_H_
-#define _DISPLAYDEVICECAPS_H_
-
+#pragma once
 #include "CoreModifiable.h"
 #include "CoreModifiableAttribute.h"
 
 #include <map>
 
-
-// ****************************************
-// * DisplayDeviceCaps class
-// * --------------------------------------
-/**
-* \file	DisplayDeviceCaps.h
-* \class	DisplayDeviceCaps
-* \ingroup GUIModule
-* \brief	Base class to determine display device capacities ( resolution, screen count ...).
-*/
-// ****************************************
-class DisplayDeviceCaps : public CoreModifiable
+namespace Kigs
 {
-public:
-    
-    DECLARE_ABSTRACT_CLASS_INFO(DisplayDeviceCaps,CoreModifiable,GUI)
-    
-	//! constructor
-    DisplayDeviceCaps(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	
-	//! destructor
-	virtual ~DisplayDeviceCaps();
-
-	//! get the display device count 
-	unsigned int	GetDisplayDeviceCount()
+	namespace Gui
 	{
-		return (unsigned int)mDisplayDeviceList.size();
-	}
-
-	//! structure storing one available display device capacity 
-	class	DisplayDeviceCapacity
-	{
-	public:
-		int		mWidth;
-		int		mHeight;
-		int		mBitPerPixel;
-		bool	mIsCurrent;
-	};
-
-	//! structure storing one display device information
-	class	DisplayDevice
-	{
-	public:
-		std::string						mName;
-		std::vector<DisplayDeviceCapacity>	mCapacityList;		
-		bool								mMain;
-		float								mScaling = 1.0f;
-	};
-
-	DisplayDeviceCapacity* Get_CurrentDisplay(const std::string& a_deviceName)
-	{
-		if(mDisplayDeviceList.find(a_deviceName)!=mDisplayDeviceList.end())
+		using namespace Core;
+		// ****************************************
+		// * DisplayDeviceCaps class
+		// * --------------------------------------
+		/**
+		* \file	DisplayDeviceCaps.h
+		* \class	DisplayDeviceCaps
+		* \ingroup GUIModule
+		* \brief	Base class to determine display device capacities ( resolution, screen count ...).
+		*/
+		// ****************************************
+		class DisplayDeviceCaps : public CoreModifiable
 		{
-			std::vector<DisplayDeviceCapacity>::iterator L_It = mDisplayDeviceList[a_deviceName].mCapacityList.begin();
-			std::vector<DisplayDeviceCapacity>::iterator L_ItEnd =  mDisplayDeviceList[a_deviceName].mCapacityList.end();
+		public:
 
-			while(L_It != L_ItEnd)
+			DECLARE_ABSTRACT_CLASS_INFO(DisplayDeviceCaps, CoreModifiable, GUI)
+
+				//! constructor
+				DisplayDeviceCaps(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+
+			//! destructor
+			virtual ~DisplayDeviceCaps();
+
+			//! get the display device count 
+			unsigned int	GetDisplayDeviceCount()
 			{
-				if((*L_It).mIsCurrent)
-					return &(*L_It);
-
-				L_It++;
+				return (unsigned int)mDisplayDeviceList.size();
 			}
-		}
 
-		return NULL;
-	}
-
-	DisplayDeviceCapacity* Get_CurrentDisplay(unsigned int a_index)
-	{
-		if(a_index < mDisplayDeviceList.size())
-		{
-			unsigned int i;
-			std::map<std::string,DisplayDevice>::iterator	it=mDisplayDeviceList.begin();
-			for(i=0;i<a_index;i++)
-				++it;
-
-			if(it!=mDisplayDeviceList.end())
+			//! structure storing one available display device capacity 
+			class	DisplayDeviceCapacity
 			{
-				std::vector<DisplayDeviceCapacity>::iterator L_It = (*it).second.mCapacityList.begin();
-				std::vector<DisplayDeviceCapacity>::iterator L_ItEnd =  (*it).second.mCapacityList.end();
+			public:
+				int		mWidth;
+				int		mHeight;
+				int		mBitPerPixel;
+				bool	mIsCurrent;
+			};
 
-				while(L_It != L_ItEnd)
+			//! structure storing one display device information
+			class	DisplayDevice
+			{
+			public:
+				std::string						mName;
+				std::vector<DisplayDeviceCapacity>	mCapacityList;
+				bool								mMain;
+				float								mScaling = 1.0f;
+			};
+
+			DisplayDeviceCapacity* Get_CurrentDisplay(const std::string& a_deviceName)
+			{
+				if (mDisplayDeviceList.find(a_deviceName) != mDisplayDeviceList.end())
 				{
-					if((*L_It).mIsCurrent)
-						return &(*L_It);
+					std::vector<DisplayDeviceCapacity>::iterator L_It = mDisplayDeviceList[a_deviceName].mCapacityList.begin();
+					std::vector<DisplayDeviceCapacity>::iterator L_ItEnd = mDisplayDeviceList[a_deviceName].mCapacityList.end();
 
-					L_It++;
+					while (L_It != L_ItEnd)
+					{
+						if ((*L_It).mIsCurrent)
+							return &(*L_It);
+
+						L_It++;
+					}
 				}
+
+				return NULL;
 			}
-		}
 
-		return NULL;
-	}
-
-	DisplayDevice* Get_DisplayDevice(unsigned int a_index)
-	{
-		{
-			unsigned int i;
-			std::map<std::string, DisplayDevice>::iterator it = mDisplayDeviceList.begin();
-			for (i = 0; i < a_index; i++)
+			DisplayDeviceCapacity* Get_CurrentDisplay(unsigned int a_index)
 			{
-				//get main if -1
-				if (a_index == 0xFFFFFFFF)
+				if (a_index < mDisplayDeviceList.size())
 				{
-					if(it->second.mMain)
-						return  &(it->second);
+					unsigned int i;
+					std::map<std::string, DisplayDevice>::iterator	it = mDisplayDeviceList.begin();
+					for (i = 0; i < a_index; i++)
+						++it;
+
+					if (it != mDisplayDeviceList.end())
+					{
+						std::vector<DisplayDeviceCapacity>::iterator L_It = (*it).second.mCapacityList.begin();
+						std::vector<DisplayDeviceCapacity>::iterator L_ItEnd = (*it).second.mCapacityList.end();
+
+						while (L_It != L_ItEnd)
+						{
+							if ((*L_It).mIsCurrent)
+								return &(*L_It);
+
+							L_It++;
+						}
+					}
 				}
-				++it;
+
+				return NULL;
 			}
 
-			return &(it->second);
-		}
-
-		return NULL;
-	}
-	
-	//! retreive all available capacities for given display device
-	const std::vector<DisplayDeviceCapacity>*	GetDisplayDeviceCapacityList(const std::string&	devicename)
-	{
-		if(mDisplayDeviceList.find(devicename)!=mDisplayDeviceList.end())
-		{
-			return &mDisplayDeviceList[devicename].mCapacityList;
-		}
-		return 0;
-	}
-
-	//! retreive all available capacities for given display device index
-	const std::vector<DisplayDeviceCapacity>*	GetDisplayDeviceCapacityList(unsigned int index)
-	{
-		if(index<mDisplayDeviceList.size())
-		{
-			unsigned int i;
-			std::map<std::string,DisplayDevice>::iterator	it=mDisplayDeviceList.begin();
-			for(i=0;i<index;i++)
+			DisplayDevice* Get_DisplayDevice(unsigned int a_index)
 			{
-				++it;
-			}
-
-			if(it!=mDisplayDeviceList.end())
-			{
-				return &((*it).second.mCapacityList);
-			}
-		}
-
-		return 0;
-	}
-
-	//! retreive all available capacities for main display device
-	const std::vector<DisplayDeviceCapacity>*	GetMainDisplayDeviceCapacityList()
-	{
-		if(mDisplayDeviceList.size())
-		{
-			
-			std::map<std::string,DisplayDevice>::iterator	it=mDisplayDeviceList.begin();
-			for(it=mDisplayDeviceList.begin();it!=mDisplayDeviceList.end();it++)
-			{
-				if((*it).second.mMain)
 				{
-					return &((*it).second.mCapacityList);
+					unsigned int i;
+					std::map<std::string, DisplayDevice>::iterator it = mDisplayDeviceList.begin();
+					for (i = 0; i < a_index; i++)
+					{
+						//get main if -1
+						if (a_index == 0xFFFFFFFF)
+						{
+							if (it->second.mMain)
+								return  &(it->second);
+						}
+						++it;
+					}
+
+					return &(it->second);
 				}
+
+				return NULL;
 			}
-		}
 
-		return 0;
-	}
-
-	float GetMainDisplayDeviceScaling() const
-	{
-		if (mDisplayDeviceList.size())
-		{
-			for (auto it = mDisplayDeviceList.cbegin(); it != mDisplayDeviceList.cend(); it++)
+			//! retreive all available capacities for given display device
+			const std::vector<DisplayDeviceCapacity>* GetDisplayDeviceCapacityList(const std::string& devicename)
 			{
-				if ((*it).second.mMain)
+				if (mDisplayDeviceList.find(devicename) != mDisplayDeviceList.end())
 				{
-					return (*it).second.mScaling;
+					return &mDisplayDeviceList[devicename].mCapacityList;
 				}
+				return 0;
 			}
-		}
-		return 1.0f;
+
+			//! retreive all available capacities for given display device index
+			const std::vector<DisplayDeviceCapacity>* GetDisplayDeviceCapacityList(unsigned int index)
+			{
+				if (index < mDisplayDeviceList.size())
+				{
+					unsigned int i;
+					std::map<std::string, DisplayDevice>::iterator	it = mDisplayDeviceList.begin();
+					for (i = 0; i < index; i++)
+					{
+						++it;
+					}
+
+					if (it != mDisplayDeviceList.end())
+					{
+						return &((*it).second.mCapacityList);
+					}
+				}
+
+				return 0;
+			}
+
+			//! retreive all available capacities for main display device
+			const std::vector<DisplayDeviceCapacity>* GetMainDisplayDeviceCapacityList()
+			{
+				if (mDisplayDeviceList.size())
+				{
+
+					std::map<std::string, DisplayDevice>::iterator	it = mDisplayDeviceList.begin();
+					for (it = mDisplayDeviceList.begin(); it != mDisplayDeviceList.end(); it++)
+					{
+						if ((*it).second.mMain)
+						{
+							return &((*it).second.mCapacityList);
+						}
+					}
+				}
+
+				return 0;
+			}
+
+			float GetMainDisplayDeviceScaling() const
+			{
+				if (mDisplayDeviceList.size())
+				{
+					for (auto it = mDisplayDeviceList.cbegin(); it != mDisplayDeviceList.cend(); it++)
+					{
+						if ((*it).second.mMain)
+						{
+							return (*it).second.mScaling;
+						}
+					}
+				}
+				return 1.0f;
+			}
+
+			virtual bool SupportWindowedMode()
+			{
+				return false; // false by default, will be true on Windows / MacOS / Javascript ?
+			}
+
+		protected:
+			std::map<std::string, DisplayDevice>		mDisplayDeviceList;
+
+		};
+
 	}
-
-	virtual bool SupportWindowedMode()
-	{
-		return false; // false by default, will be true on Windows / MacOS / Javascript ?
-	}
-	
-protected:
-	std::map<std::string,DisplayDevice>		mDisplayDeviceList;
-
-};    
-
-#endif //_DISPLAYDEVICECAPS_H_
+}

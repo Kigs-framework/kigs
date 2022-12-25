@@ -8,6 +8,8 @@
 #include "MouseDevice.h"
 #include "DisplayDeviceCaps.h"
 
+
+
 // before everything else
 HRESULT SetTouchDisableProperty(HWND hwnd, BOOL fDisableTouch)
 {
@@ -38,6 +40,8 @@ HRESULT SetTouchDisableProperty(HWND hwnd, BOOL fDisableTouch)
 #include "Core.h"
 #include "CoreBaseApplication.h"
 #include <windowsx.h>
+
+using namespace Kigs::Gui;
 
 IMPLEMENT_CLASS_INFO(WindowWin32)
 

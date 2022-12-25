@@ -2,6 +2,8 @@
 #include "CoreActionFunction.h"
 #include "ModuleCoreAnimation.h"
 
+using namespace Kigs::Action;
+
 template<>
 inline void CoreActionFunction<float, 1>::init(CoreSequence* sequence, CoreVector* params)
 {

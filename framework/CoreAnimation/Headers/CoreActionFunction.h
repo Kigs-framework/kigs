@@ -1,177 +1,182 @@
-#ifndef _COREACTIONFUNCTION_H_
-#define _COREACTIONFUNCTION_H_
+#pragma once
 
 #include "CoreAction.h"
 #include "CoreValue.h"
 #include "CoreItemOperator.h"
 
-// ****************************************
-// * CoreItemAnimationContext class
-// * --------------------------------------
-/**
-* \file	CoreActionFunction.h
-* \class	CoreItemAnimationContext
-* \ingroup CoreAnimation
-* \brief	Special evaluation context for animations
-*
-*/
-// ****************************************
-
-class CoreItemAnimationContext : public CoreItemEvaluationContext
+namespace Kigs
 {
-public:
-	// current "global" time
-	double		mTime;
-	// current action start time
-	double		mActionStartTime;
-};
-
-// ****************************************
-// * CoreActionFunction class
-// * --------------------------------------
-/**
-* \file	CoreActionFunction.h
-* \class	CoreActionFunction
-* \ingroup CoreAnimation
-* \brief	Manage a CoreItemOperator kind of computation.
-*
-*/
-// ****************************************
-
-template<typename dataType, int dimension>
-class CoreActionFunction : public CoreAction
-{
-public:
-
-	CoreActionFunction() : CoreAction()
+	namespace Action
 	{
-		int i;
-		for (i = 0; i < dimension; i++)
+		using namespace Kigs::Core;
+		// ****************************************
+		// * CoreItemAnimationContext class
+		// * --------------------------------------
+		/**
+		* \file	CoreActionFunction.h
+		* \class	CoreItemAnimationContext
+		* \ingroup CoreAnimation
+		* \brief	Special evaluation context for animations
+		*
+		*/
+		// ****************************************
+
+		class CoreItemAnimationContext : public CoreItemEvaluationContext
 		{
-			mFunctions[i] = nullptr;
-		}
-		mContext.mTime = mContext.mActionStartTime = -1.0;
-	}
+		public:
+			// current "global" time
+			double		mTime;
+			// current action start time
+			double		mActionStartTime;
+		};
 
-	virtual ~CoreActionFunction()
-	{
-		int i;
-		for (i = 0; i < dimension; i++)
+		// ****************************************
+		// * CoreActionFunction class
+		// * --------------------------------------
+		/**
+		* \file	CoreActionFunction.h
+		* \class	CoreActionFunction
+		* \ingroup CoreAnimation
+		* \brief	Manage a CoreItemOperator kind of computation.
+		*
+		*/
+		// ****************************************
+
+		template<typename dataType, int dimension>
+		class CoreActionFunction : public CoreAction
 		{
-			mFunctions[i] = nullptr;
-		}
+		public:
 
-	}
-
-	virtual void init(CoreSequence* sequence, CoreVector* params);
-
-	virtual void	setStartTime(double t)
-	{
-		CoreAction::setStartTime(t);
-		if (mContext.mActionStartTime < -1.0)
-		{
-			mContext.mActionStartTime = t;
-		}
-	}
-
-protected:
-
-	virtual bool	protectedUpdate(double time)
-	{
-		CoreAction::protectedUpdate(time);
-		CoreItemEvaluationContext::SetContext(&mContext);
-		mContext.mTime = time;
-		dataType result;
-
-		auto ptr = mTarget.lock();
-
-		if (ptr && ptr->getValue(mParamID, result))
-		{
-
-			if (mHasUniqueMultidimensionnalFunc)
-			{
-				result = mFunctions[0]->operator dataType();
-			}
-			else
+			CoreActionFunction() : CoreAction()
 			{
 				int i;
 				for (i = 0; i < dimension; i++)
 				{
-					if (mFunctions[i])
-					{
-						result[i] = (float)*mFunctions[i];
-					}
+					mFunctions[i] = nullptr;
+				}
+				mContext.mTime = mContext.mActionStartTime = -1.0;
+			}
+
+			virtual ~CoreActionFunction()
+			{
+				int i;
+				for (i = 0; i < dimension; i++)
+				{
+					mFunctions[i] = nullptr;
+				}
+
+			}
+
+			virtual void init(CoreSequence* sequence, CoreVector* params);
+
+			virtual void	setStartTime(double t)
+			{
+				CoreAction::setStartTime(t);
+				if (mContext.mActionStartTime < -1.0)
+				{
+					mContext.mActionStartTime = t;
 				}
 			}
-			ptr->setValue(mParamID, result);
-		}
-		CoreItemEvaluationContext::ReleaseContext();
-		return false;
-	}
 
-	CoreItemSP	mFunctions[dimension];
+		protected:
 
-	bool		mHasUniqueMultidimensionnalFunc=false;
+			virtual bool	protectedUpdate(double time)
+			{
+				CoreAction::protectedUpdate(time);
+				CoreItemEvaluationContext::SetContext(&mContext);
+				mContext.mTime = time;
+				dataType result;
 
-	CoreItemAnimationContext	mContext;
-};
+				auto ptr = mTarget.lock();
+
+				if (ptr && ptr->getValue(mParamID, result))
+				{
+
+					if (mHasUniqueMultidimensionnalFunc)
+					{
+						result = mFunctions[0]->operator dataType();
+					}
+					else
+					{
+						int i;
+						for (i = 0; i < dimension; i++)
+						{
+							if (mFunctions[i])
+							{
+								result[i] = (float)*mFunctions[i];
+							}
+						}
+					}
+					ptr->setValue(mParamID, result);
+				}
+				CoreItemEvaluationContext::ReleaseContext();
+				return false;
+			}
+
+			CoreItemSP	mFunctions[dimension];
+
+			bool		mHasUniqueMultidimensionnalFunc = false;
+
+			CoreItemAnimationContext	mContext;
+		};
 
 
-template<>
-inline bool	CoreActionFunction<float,1>::protectedUpdate(double time)
-{
-	CoreAction::protectedUpdate(time);
-	CoreItemEvaluationContext::SetContext(&mContext);
-	mContext.mTime = time;
-	if (mFunctions[0])
-	{
-		float result = (float)*mFunctions[0];
-		auto ptr = mTarget.lock(); if (ptr) ptr->setValue(mParamID, result);
-	}
-	CoreItemEvaluationContext::ReleaseContext();
-	return false;
-}
-
-
-typedef CoreActionFunction < float, 1 > CoreActionFunction1D;
-typedef CoreActionFunction < Point2D, 2 > CoreActionFunction2D;
-typedef CoreActionFunction < Point3D, 3 > CoreActionFunction3D;
-typedef CoreActionFunction < Vector4D, 4 > CoreActionFunction4D;
-
-
-// ****************************************
-// * ActionTimeOperator class
-// * --------------------------------------
-/**
-* \file	CoreActionFunction.h
-* \class	ActionTimeOperator
-* \ingroup CoreAnimation
-* \brief	Return current context time if available
-*
-*/
-// ****************************************
-
-template<typename operandType>
-class ActionTimeOperator : public CoreItemOperator<operandType>
-{
-public:
-
-	virtual inline operator operandType() const
-	{
-		if (CoreItemEvaluationContext::GetContext())
+		template<>
+		inline bool	CoreActionFunction<float, 1>::protectedUpdate(double time)
 		{
-			CoreItemAnimationContext& currentContext = *((CoreItemAnimationContext*)CoreItemEvaluationContext::GetContext());
-
-			return (operandType)(currentContext.mTime-currentContext.mActionStartTime);
+			CoreAction::protectedUpdate(time);
+			CoreItemEvaluationContext::SetContext(&mContext);
+			mContext.mTime = time;
+			if (mFunctions[0])
+			{
+				float result = (float)*mFunctions[0];
+				auto ptr = mTarget.lock(); if (ptr) ptr->setValue(mParamID, result);
+			}
+			CoreItemEvaluationContext::ReleaseContext();
+			return false;
 		}
-		return ((operandType)0);
-	}
-	static std::unique_ptr<CoreVector> create()
-	{
-		return std::unique_ptr<CoreVector>(new ActionTimeOperator<operandType>());
-	}
 
-protected:
-};
 
-#endif //_COREACTIONFUNCTION_H_
+		typedef CoreActionFunction < float, 1 > CoreActionFunction1D;
+		typedef CoreActionFunction < Point2D, 2 > CoreActionFunction2D;
+		typedef CoreActionFunction < Point3D, 3 > CoreActionFunction3D;
+		typedef CoreActionFunction < Vector4D, 4 > CoreActionFunction4D;
+
+
+		// ****************************************
+		// * ActionTimeOperator class
+		// * --------------------------------------
+		/**
+		* \file	CoreActionFunction.h
+		* \class	ActionTimeOperator
+		* \ingroup CoreAnimation
+		* \brief	Return current context time if available
+		*
+		*/
+		// ****************************************
+
+		template<typename operandType>
+		class ActionTimeOperator : public CoreItemOperator<operandType>
+		{
+		public:
+
+			virtual inline operator operandType() const
+			{
+				if (CoreItemEvaluationContext::GetContext())
+				{
+					CoreItemAnimationContext& currentContext = *((CoreItemAnimationContext*)CoreItemEvaluationContext::GetContext());
+
+					return (operandType)(currentContext.mTime - currentContext.mActionStartTime);
+				}
+				return ((operandType)0);
+			}
+			static std::unique_ptr<CoreVector> create()
+			{
+				return std::unique_ptr<CoreVector>(new ActionTimeOperator<operandType>());
+			}
+
+		protected:
+		};
+
+	}
+}

@@ -4,6 +4,8 @@
 #include "Core.h"
 #include "ModuleCoreAnimation.h"
 
+using namespace Kigs::Time;
+using namespace Kigs::Action;
 
 CoreSequence::CoreSequence(CMSP target, KigsID nameID, Timer* reftimer) :
 	mTarget(target)

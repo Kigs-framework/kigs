@@ -4,6 +4,8 @@
 #include "WindowWin32.h"
 #include "DisplayDeviceCapsWin32.h"
 
+using namespace Kigs::Gui;
+
 IMPLEMENT_CLASS_INFO(ModuleGUIWindows)
 
 	ModuleGUIWindows::ModuleGUIWindows(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
