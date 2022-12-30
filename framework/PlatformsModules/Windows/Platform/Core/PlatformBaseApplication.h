@@ -1,48 +1,54 @@
-#ifndef _WINDOWS_PLATFORMBASEAPPLICATION_H_
-#define _WINDOWS_PLATFORMBASEAPPLICATION_H_
+#pragma once
 
-class KeyboardDevice;
-
-//! This class must not be virtual because there's a double inheritance
-
-class PlatformBaseApplication
+namespace Kigs
 {
-public:
-	//! constructor
-	PlatformBaseApplication(){ mKeyboard=0; }
+	namespace Input
+	{
+		class KeyboardDevice;
+	}
 
-	//! destructor
-	//! no virtual here
-	~PlatformBaseApplication(){ ; }
+	namespace Core
+	{
+		//! This class must not be virtual because there's a double inheritance
+
+		class PlatformBaseApplication
+		{
+		public:
+			//! constructor
+			PlatformBaseApplication() { mKeyboard = 0; }
+
+			//! destructor
+			//! no virtual here
+			~PlatformBaseApplication() { ; }
 
 
-	void	Init(){ ; }
-	void	Update(){ ; }
-	void	Close(){ ; }
-	void	Sleep(){ ; }
-	void	Resume(){ ; }
-	void	Message(int /* mtype */, int /* Params */){ ; }
-	void	OpenLink(const char* a_link);
-	void	OpenLink(const unsigned short* a_link, unsigned int a_length);
-	bool	CheckConnexion();
+			void	Init() { ; }
+			void	Update() { ; }
+			void	Close() { ; }
+			void	Sleep() { ; }
+			void	Resume() { ; }
+			void	Message(int /* mtype */, int /* Params */) { ; }
+			void	OpenLink(const char* a_link);
+			void	OpenLink(const unsigned short* a_link, unsigned int a_length);
+			bool	CheckConnexion();
 
-	// check esc key state
-	bool	CheckBackKeyPressed();
-	
-	bool	IsHolographic() {return false;} // no holographic mode
-	
-	// get number of core / processor
-	static unsigned int getProcessorCount();
+			// check esc key state
+			bool	CheckBackKeyPressed();
 
-	static int		getCpuId();
+			bool	IsHolographic() { return false; } // no holographic mode
 
-	static void		setCurrentThreadAffinityMask(int mask);
-	static void		setThreadAffinityMask(void*,int mask);
+			// get number of core / processor
+			static unsigned int getProcessorCount();
 
-	static const char* getPlatformName();
+			static int		getCpuId();
 
-	// for back key check
-	KeyboardDevice* mKeyboard;
-};
+			static void		setCurrentThreadAffinityMask(int mask);
+			static void		setThreadAffinityMask(void*, int mask);
 
-#endif //_WINDOWS_PLATFORMBASEAPPLICATION_H_
+			static const char* getPlatformName();
+
+			// for back key check
+			Input::KeyboardDevice* mKeyboard;
+		};
+	}
+}

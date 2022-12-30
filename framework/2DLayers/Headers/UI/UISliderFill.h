@@ -1,74 +1,82 @@
-#ifndef _UISLIDERFILL_H_
-#define _UISLIDERFILL_H_
+#pragma once
 
 #include "UIDrawableItem.h"
 
-class Texture;
-
-// ****************************************
-// * UISliderFill class
-// * --------------------------------------
-/**
-* \file	UISliderFill.h
-* \class	UISliderFill
-* \ingroup 2DLayers
-* \brief	TODO. Manage a slider.
-*/
-// ****************************************
-
-class UISliderFill : public UIDrawableItem
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(UISliderFill, UIDrawableItem, 2DLayers);
+	namespace Draw
+	{
+		class Texture;
+	}
+	namespace Draw2D
+	{
 
-	/**
-	 * \brief	constructor
-	 * \param	name : instance name
-	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
-	 */
-	UISliderFill(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+		// ****************************************
+		// * UISliderFill class
+		// * --------------------------------------
+		/**
+		* \file	UISliderFill.h
+		* \class	UISliderFill
+		* \ingroup 2DLayers
+		* \brief	TODO. Manage a slider.
+		*/
+		// ****************************************
 
-	inline SP<Texture>	GetVoidTexture() { return mVoidTexturePointer; }
-	inline SP<Texture>  GetStartTexture() { if (mStartPositionX > -1 && mStartPositionY > -1) return mStartTexturePointer; else return nullptr; }
-	inline SP<Texture>  GetMiddleTexture() { if (mMiddlePositionX > -1 && mMiddlePositionY > -1) return mMiddleTexturePointer; else return nullptr; }
-	inline SP<Texture>  GetEndTexture() { if (mEndPositionX > -1 && mEndPositionY > -1) return mEndTexturePointer; else return nullptr; }
+		class UISliderFill : public UIDrawableItem
+		{
+		public:
+			DECLARE_CLASS_INFO(UISliderFill, UIDrawableItem, 2DLayers);
 
-	inline void			Get_StartPosition(int& X, int& Y) { X = mStartPositionX; Y = mStartPositionY; }
-	inline void			Get_MiddlePosition(int& X, int& Y) { X = mMiddlePositionX; Y = mMiddlePositionY; }
-	inline void			Get_MiddleSize(int& X, int& Y) { X = mMiddleSizeX; Y = mMiddleSizeY; }
-	inline void			Get_EndPosition(int& X, int& Y) { X = mEndPositionX; Y = mEndPositionY; }
-	void				ComputeInitialElementsPosition();
+			/**
+			 * \brief	constructor
+			 * \param	name : instance name
+			 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
+			 */
+			UISliderFill(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	void				ChangeTexture(std::string voidtexturename, std::string texturename = "", std::string overtexturename = "", std::string downtexturename = "");
+			inline SP<Draw::Texture>	GetVoidTexture() { return mVoidTexturePointer; }
+			inline SP<Draw::Texture>  GetStartTexture() { if (mStartPositionX > -1 && mStartPositionY > -1) return mStartTexturePointer; else return nullptr; }
+			inline SP<Draw::Texture>  GetMiddleTexture() { if (mMiddlePositionX > -1 && mMiddlePositionY > -1) return mMiddleTexturePointer; else return nullptr; }
+			inline SP<Draw::Texture>  GetEndTexture() { if (mEndPositionX > -1 && mEndPositionY > -1) return mEndTexturePointer; else return nullptr; }
 
-protected:
+			inline void			Get_StartPosition(int& X, int& Y) { X = mStartPositionX; Y = mStartPositionY; }
+			inline void			Get_MiddlePosition(int& X, int& Y) { X = mMiddlePositionX; Y = mMiddlePositionY; }
+			inline void			Get_MiddleSize(int& X, int& Y) { X = mMiddleSizeX; Y = mMiddleSizeY; }
+			inline void			Get_EndPosition(int& X, int& Y) { X = mEndPositionX; Y = mEndPositionY; }
+			void				ComputeInitialElementsPosition();
 
-	void		InitModifiable()override;
-	void		NotifyUpdate(const unsigned int /* labelid */)override;
-	bool		isAlpha(float X, float Y)override;
+			void				ChangeTexture(std::string voidtexturename, std::string texturename = "", std::string overtexturename = "", std::string downtexturename = "");
 
-	void		RecomputeElementsPosition(float dockX, float dockY, float AnchorX, float AnchorY, int posx, int posy, unsigned int sizeX, unsigned int sizeY, int& Xresult, int& Yresult);
-	
-	maString			mVoidTexture;
-	maString			mStartTexture;
-	maString			mMiddleTexture;
-	maString			mEndTexture;
+		protected:
 
-	//! Direction of Slider "Vertical" or "Horizontal")
-	maEnum<2>			mDirection;
+			void		InitModifiable()override;
+			void		NotifyUpdate(const unsigned int /* labelid */)override;
+			bool		isAlpha(float X, float Y)override;
 
-	SP<Texture>			mStartTexturePointer;
-	SP<Texture>			mMiddleTexturePointer;
-	SP<Texture>			mEndTexturePointer;
-	SP<Texture>			mVoidTexturePointer;
+			void		RecomputeElementsPosition(float dockX, float dockY, float AnchorX, float AnchorY, int posx, int posy, unsigned int sizeX, unsigned int sizeY, int& Xresult, int& Yresult);
 
-	int					mStartPositionX;
-	int					mStartPositionY;
-	int					mMiddlePositionX;
-	int					mMiddlePositionY;
-	int					mMiddleSizeX;
-	int					mMiddleSizeY;
-	int					mEndPositionX;
-	int					mEndPositionY;
-};
-#endif //_UISLIDERFILL_H_
+			maString			mVoidTexture;
+			maString			mStartTexture;
+			maString			mMiddleTexture;
+			maString			mEndTexture;
+
+			//! Direction of Slider "Vertical" or "Horizontal")
+			maEnum<2>			mDirection;
+
+			SP<Draw::Texture>			mStartTexturePointer;
+			SP<Draw::Texture>			mMiddleTexturePointer;
+			SP<Draw::Texture>			mEndTexturePointer;
+			SP<Draw::Texture>			mVoidTexturePointer;
+
+			int					mStartPositionX;
+			int					mStartPositionY;
+			int					mMiddlePositionX;
+			int					mMiddlePositionY;
+			int					mMiddleSizeX;
+			int					mMiddleSizeY;
+			int					mEndPositionX;
+			int					mEndPositionY;
+		};
+
+	}
+}

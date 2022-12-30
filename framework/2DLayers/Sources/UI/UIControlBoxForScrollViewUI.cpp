@@ -2,6 +2,7 @@
 #include "Timer.h"
 #include "Base2DLayer.h"
 
+using namespace Kigs::Draw2D;
 
 IMPLEMENT_CLASS_INFO(UIControlBoxForScrollViewUI)
 

@@ -7,6 +7,7 @@
 #include "Texture.h"
 #include "UI/UITexturedItem.h"
 
+using namespace Kigs::Draw2D;
 //#//////////////////////////////
 //#		UIShapeRectangle
 //#//////////////////////////////

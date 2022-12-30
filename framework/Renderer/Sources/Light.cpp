@@ -5,6 +5,8 @@
 #include "Node3D.h"
 #include "Camera.h"
 
+using namespace Kigs::Draw;
+
 
 IMPLEMENT_CLASS_INFO(Light)
 

@@ -1,5 +1,4 @@
-#ifndef IMGUILAYER_H_
-#define IMGUILAYER_H_
+#pragma once
 
 #include "Abstract2DLayer.h"
 
@@ -11,139 +10,147 @@
 
 #include "Texture.h"
 
-// ****************************************
-// * ImGuiLayer class
-// * --------------------------------------
-/**
-* \file	ImGuiLayer.h
-* \class	ImGuiLayer
-* \ingroup ImGUIModule
-* \brief Specialized 2D layer for ImGui display
-*
-*/
-// ****************************************
-class ImGuiLayer : public Abstract2DLayer
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(ImGuiLayer, Abstract2DLayer, ImGui);
-	DECLARE_CONSTRUCTOR(ImGuiLayer);
-	SIGNALS(OnClickDown, OnClickUp);
-	WRAP_METHODS(UpdateKeyboard, ManageTouch, PanelValidHit, GetDataInTouchSupport);
-	
-	virtual ~ImGuiLayer();
-	
-	void TravDraw(TravState* state) override;
-
-	/*
-	* Set this layer as active
-	* returns previous active layer
-	*/
-	ImGuiContext* SetActiveImGuiLayer()
+	namespace Gui
 	{
-		ImGuiContext* state = ImGui::GetCurrentContext();
-		ImGui::SetCurrentContext(mImGuiState);
-		return state;
-	}
-	void NewFrame(Timer* timer);
+		using namespace Draw2D;
+		using namespace Draw;
+		using namespace Input;
+		// ****************************************
+		// * ImGuiLayer class
+		// * --------------------------------------
+		/**
+		* \file	ImGuiLayer.h
+		* \class	ImGuiLayer
+		* \ingroup ImGUIModule
+		* \brief Specialized 2D layer for ImGui display
+		*
+		*/
+		// ****************************************
+		class ImGuiLayer : public Abstract2DLayer
+		{
+		public:
+			DECLARE_CLASS_INFO(ImGuiLayer, Abstract2DLayer, ImGui);
+			DECLARE_CONSTRUCTOR(ImGuiLayer);
+			SIGNALS(OnClickDown, OnClickUp);
+			WRAP_METHODS(UpdateKeyboard, ManageTouch, PanelValidHit, GetDataInTouchSupport);
 
-	void UpdateKeyboard(std::vector<KeyEvent>& keys);
+			virtual ~ImGuiLayer();
 
-	void SetStyleMSFT();
-	void SetStyleHoloLens();
-	void SetStyleLightGreen();
+			void TravDraw(TravState* state) override;
 
-	void RegisterTouch();
+			/*
+			* Set this layer as active
+			* returns previous active layer
+			*/
+			ImGuiContext* SetActiveImGuiLayer()
+			{
+				ImGuiContext* state = ImGui::GetCurrentContext();
+				ImGui::SetCurrentContext(mImGuiState);
+				return state;
+			}
+			void NewFrame(Timer* timer);
 
-	bool WantMouse() { return mWantMouse; }
+			void UpdateKeyboard(std::vector<KeyEvent>& keys);
 
-	bool PanelValidHit(v2f hit_pos) { return WantMouse(); }
+			void SetStyleMSFT();
+			void SetStyleHoloLens();
+			void SetStyleLightGreen();
 
-	Texture* GetTexture(const std::string& name);
+			void RegisterTouch();
 
-	ImFont* GetBoldFont() { return mBoldFont; }
+			bool WantMouse() { return mWantMouse; }
 
-protected:
-	DECLARE_METHOD(ResetContext);
-	COREMODIFIABLE_METHODS(ResetContext);
+			bool PanelValidHit(v2f hit_pos) { return WantMouse(); }
 
-	void InitModifiable() override;
+			Draw::Texture* GetTexture(const std::string& name);
 
-	//bool ManageTouch(DirectAccessEvent& ev);
-	bool ManageTouch(DirectTouchEvent& ev);
+			ImFont* GetBoldFont() { return mBoldFont; }
 
-	void SortItemsFrontToBack(SortItemsFrontToBackParam& param) override;
-	bool GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout);
+		protected:
+			DECLARE_METHOD(ResetContext);
+			COREMODIFIABLE_METHODS(ResetContext);
 
-	void ApplyScaling();
+			void InitModifiable() override;
 
-	ImGuiContext* mImGuiState = nullptr;
-	CoreBaseApplication* mApp = nullptr;
-	ModuleInput* mInput = nullptr;
-	double mLastTime = -1.0;
+			//bool ManageTouch(DirectAccessEvent& ev);
+			bool ManageTouch(DirectTouchEvent& ev);
 
-	bool mHasFrame = false;
+			void SortItemsFrontToBack(SortItemsFrontToBackParam& param) override;
+			bool GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout);
 
-	maBool mRemote = BASE_ATTRIBUTE(Remote, false);
-	maString mRemoteBindAddress = BASE_ATTRIBUTE(RemoteBindAddress, "0.0.0.0");
-	maInt mRemotePort = BASE_ATTRIBUTE(RemotePort, 7002);
+			void ApplyScaling();
+
+			ImGuiContext* mImGuiState = nullptr;
+			CoreBaseApplication* mApp = nullptr;
+			ModuleInput* mInput = nullptr;
+			double mLastTime = -1.0;
+
+			bool mHasFrame = false;
+
+			maBool mRemote = BASE_ATTRIBUTE(Remote, false);
+			maString mRemoteBindAddress = BASE_ATTRIBUTE(RemoteBindAddress, "0.0.0.0");
+			maInt mRemotePort = BASE_ATTRIBUTE(RemotePort, 7002);
 
 #ifdef WUP
-	maBool mUseOldWUPKeyboard = BASE_ATTRIBUTE(UseOldWUPKeyboard, false);
+			maBool mUseOldWUPKeyboard = BASE_ATTRIBUTE(UseOldWUPKeyboard, false);
 #endif
 
-	maBool mInputsEnabled = BASE_ATTRIBUTE(InputsEnabled, true);
+			maBool mInputsEnabled = BASE_ATTRIBUTE(InputsEnabled, true);
 
-	maBool mResetInputsWhenNoWindows = BASE_ATTRIBUTE(ResetInputsWhenNoWindows, false);
-
-
-	maString mFontName = BASE_ATTRIBUTE(FontName, "");
-	maString mBoldFontName = BASE_ATTRIBUTE(BoldFontName, "");
-	maFloat mFontSize = BASE_ATTRIBUTE(FontSize, 13.0f);
-	maFloat mScaling = BASE_ATTRIBUTE(Scaling, 1.0f);
-
-	maString mStyle = BASE_ATTRIBUTE(Style, "Default");
-
-	std::vector<KeyEvent> mKeyEvents;
-
-	std::vector<SmartPointer<Texture>> mUsedTexturesLastFrame;
-	std::vector<SmartPointer<Texture>> mUsedTexturesThisFrame;
-
-	ImFontAtlas mFontAtlas;
-	ImFont* mBoldFont = nullptr;
-
-	TouchSourceID mPosSource = TouchSourceID::Invalid;
-	TouchSourceID mClickSource = TouchSourceID::Invalid;
-	v2f mCurrentPos = {0.0f,0.0f};
-
-	v2f mStartTouchPos;
-	v3f mStartGazePos;
-
-	v3f mStartGazeUp;
-	v3f mStartGazeRight;
-
-	bool mIsDown = false;
-	bool mHasKeyboardFocus = false;
-	bool mWantMouse = false;
-	bool mNeedClearClicks = false;
+			maBool mResetInputsWhenNoWindows = BASE_ATTRIBUTE(ResetInputsWhenNoWindows, false);
 
 
+			maString mFontName = BASE_ATTRIBUTE(FontName, "");
+			maString mBoldFontName = BASE_ATTRIBUTE(BoldFontName, "");
+			maFloat mFontSize = BASE_ATTRIBUTE(FontSize, 13.0f);
+			maFloat mScaling = BASE_ATTRIBUTE(Scaling, 1.0f);
 
-	SP<Texture> mFontTexture = nullptr;
-	unsigned char* mPixelData = nullptr;
-	int mPixelDataWidth = 0;
-	int mPixelDataHeight = 0;
+			maString mStyle = BASE_ATTRIBUTE(Style, "Default");
 
-};
+			std::vector<KeyEvent> mKeyEvents;
 
-class ImGuiLayerScoped
-{
-public:
-	ImGuiLayerScoped(ImGuiLayer* layer) : mOld{ layer->SetActiveImGuiLayer() } {}
-	~ImGuiLayerScoped()
-	{
-		ImGui::SetCurrentContext(mOld);
+			std::vector<SmartPointer<Draw::Texture>> mUsedTexturesLastFrame;
+			std::vector<SmartPointer<Draw::Texture>> mUsedTexturesThisFrame;
+
+			ImFontAtlas mFontAtlas;
+			ImFont* mBoldFont = nullptr;
+
+			TouchSourceID mPosSource = TouchSourceID::Invalid;
+			TouchSourceID mClickSource = TouchSourceID::Invalid;
+			v2f mCurrentPos = { 0.0f,0.0f };
+
+			v2f mStartTouchPos;
+			v3f mStartGazePos;
+
+			v3f mStartGazeUp;
+			v3f mStartGazeRight;
+
+			bool mIsDown = false;
+			bool mHasKeyboardFocus = false;
+			bool mWantMouse = false;
+			bool mNeedClearClicks = false;
+
+
+
+			SP<Draw::Texture> mFontTexture = nullptr;
+			unsigned char* mPixelData = nullptr;
+			int mPixelDataWidth = 0;
+			int mPixelDataHeight = 0;
+
+		};
+
+		class ImGuiLayerScoped
+		{
+		public:
+			ImGuiLayerScoped(ImGuiLayer* layer) : mOld{ layer->SetActiveImGuiLayer() } {}
+			~ImGuiLayerScoped()
+			{
+				ImGui::SetCurrentContext(mOld);
+			}
+			ImGuiContext* mOld = nullptr;
+		};
 	}
-	ImGuiContext* mOld = nullptr;
-};
 
-#endif
+}

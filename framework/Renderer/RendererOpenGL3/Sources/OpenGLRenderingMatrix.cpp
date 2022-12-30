@@ -4,6 +4,8 @@
 #include "ModuleRenderer.h"
 #include "TravState.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(OpenGLRenderingMatrix)
 
 OpenGLRenderingMatrix::OpenGLRenderingMatrix(const std::string& name,CLASS_NAME_TREE_ARG) : RendererMatrix(name,PASS_CLASS_NAME_TREE_ARG)

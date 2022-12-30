@@ -8,10 +8,12 @@
 #include "Scene3D.h"
 #include "Camera.h"
 
+using namespace Kigs::Draw;
+
+
 #ifdef WUP
 extern bool gIsHolographic;
 #endif
-
 
 
 std::string API3DGenericMeshShader::GetDefaultLightingFunctions()

@@ -2,7 +2,7 @@
 
 #include "Material.h"
 
-
+using namespace Kigs::Draw;
 IMPLEMENT_CLASS_INFO(Material)
 
 static inline bool IsVecEqual(const maVect4DF &v1, const maVect4DF&v2)

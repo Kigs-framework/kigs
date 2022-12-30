@@ -4,6 +4,7 @@
 #include "DeviceItem.h"
 #include "Window.h"
 
+using namespace Kigs::Input;
 
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(MouseDX, MouseDevice, Input);
 IMPLEMENT_CLASS_INFO(MouseDX)

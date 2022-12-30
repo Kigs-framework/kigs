@@ -4,49 +4,56 @@
 #include "maReference.h"
 #include "SmartPointer.h"
 
-// ****************************************
-// * UIStream class
-// * --------------------------------------
-/**
-* \file	UIStream.h
-* \class	UIStream
-* \ingroup 2DLayers
-* \brief	Display a video.
-*/
-// ****************************************
-
-class UIStream : public UITexturedItem
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(UIStream, UITexturedItem, 2DLayers);
-	DECLARE_CONSTRUCTOR(UIStream);
-	virtual ~UIStream() {}
+	namespace Draw2D
+	{
+		// ****************************************
+		// * UIStream class
+		// * --------------------------------------
+		/**
+		* \file	UIStream.h
+		* \class	UIStream
+		* \ingroup 2DLayers
+		* \brief	Display a video.
+		*/
+		// ****************************************
 
-	virtual void InitModifiable() override;
-	virtual void Update(const Timer&, void*) override;
+		class UIStream : public UITexturedItem
+		{
+		public:
+			DECLARE_CLASS_INFO(UIStream, UITexturedItem, 2DLayers);
+			DECLARE_CONSTRUCTOR(UIStream);
+			virtual ~UIStream() {}
 
-	virtual bool addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
-	virtual bool removeItem(const CMSP& item  DECLARE_DEFAULT_LINK_NAME) override;
+			virtual void InitModifiable() override;
+			virtual void Update(const Timer&, void*) override;
 
-protected:
+			virtual bool addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+			virtual bool removeItem(const CMSP& item  DECLARE_DEFAULT_LINK_NAME) override;
 
-	
-	virtual void NotifyUpdate(const unsigned int labelid) override;
+		protected:
 
-	SmartPointer<CoreModifiable> mFrameBufferStream;
 
-	maString mVideoFile;
-	maReference mFrameBuffer;
-	maBool mAutoplay;
-	maBool mLoop;
-	maBool mAutoSize;
-	maString mNotificationStart;
-	maString mNotificationEnd;
+			virtual void NotifyUpdate(const unsigned int labelid) override;
 
-	maFloat mVolume = BASE_ATTRIBUTE(Volume, 1.0f);
+			SmartPointer<CoreModifiable> mFrameBufferStream;
 
-	bool mIsPlaying;
+			maString mVideoFile;
+			maReference mFrameBuffer;
+			maBool mAutoplay;
+			maBool mLoop;
+			maBool mAutoSize;
+			maString mNotificationStart;
+			maString mNotificationEnd;
 
-	DECLARE_METHOD(StartVideo);
-	COREMODIFIABLE_METHODS(StartVideo);
-};
+			maFloat mVolume = BASE_ATTRIBUTE(Volume, 1.0f);
+
+			bool mIsPlaying;
+
+			DECLARE_METHOD(StartVideo);
+			COREMODIFIABLE_METHODS(StartVideo);
+		};
+
+	}
+}

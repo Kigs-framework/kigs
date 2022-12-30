@@ -5,7 +5,8 @@
 #include "Core.h"
 #include "Drawable.h"
 
-
+using namespace Kigs::Scene;
+using namespace Kigs::Draw;
 
 IMPLEMENT_CLASS_INFO(SceneNode)
 

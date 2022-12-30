@@ -1,18 +1,19 @@
-#ifndef _KDMESH_H_
-#define _KDMESH_H_
+#pragma once
 
 #include "TecLibs/Tec3D.h"
 #include "HDrawable.h"
 #include "TecLibs/3D/3DObject/BBox.h"
 #include "BufferedFile.h"
 
+namespace Kigs
+{
+
+	namespace Draw
+	{
 
 class Material;
 
-#ifdef _3DSMAX
-namespace KigsFramework
-{
-#endif
+
 
 	/**
 	* \brief	triangle type
@@ -246,7 +247,7 @@ namespace KigsFramework
 			* \fn 		void	Load(BufferedFile* currentfile);
 			* \param	currentfile : BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile);
+			void	Load(File::BufferedFile* currentfile);
 		};
 
 
@@ -365,7 +366,7 @@ namespace KigsFramework
 			* \fn 		void	Load(BufferedFile* currentfile);
 			* \param	currentfile : BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile);
+			void	Load(File::BufferedFile* currentfile);
 
 			/**
 			* \brief	get the size of the triangle
@@ -474,10 +475,10 @@ namespace KigsFramework
 			}
 			/**
 			* \brief	read Ta, Tb and Tc value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				int i;
 				for(i=0;i<textureCount;i++)
@@ -529,10 +530,10 @@ namespace KigsFramework
 
 			/**
 			* \brief	read Ca, Cb and Cc value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile);
+			void	Load(File::BufferedFile* currentfile);
 		};
 
 		// ****************************************
@@ -569,10 +570,10 @@ namespace KigsFramework
 
 			/**
 			* \brief	read C value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile);
+			void	Load(File::BufferedFile* currentfile);
 		};
 
 		// ****************************************
@@ -615,10 +616,10 @@ namespace KigsFramework
 
 			/**
 			* \brief	read Na, Nb and Nc value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile);
+			void	Load(File::BufferedFile* currentfile);
 		};
 
 		// ****************************************
@@ -655,10 +656,10 @@ namespace KigsFramework
 
 			/**
 			* \brief	read N value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile);
+			void	Load(File::BufferedFile* currentfile);
 		};
 
 	
@@ -698,10 +699,10 @@ namespace KigsFramework
 
 			/**
 			* \brief	read a C-riangle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				Triangle::Load(currentfile);
 				OneColorTriangleStruct::Load(currentfile);
@@ -744,10 +745,10 @@ namespace KigsFramework
 			using ThreeColorTriangleStruct::CopyTo;
 			/**
 			* \brief	read a G_Triangle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				Triangle::Load(currentfile);
 				ThreeColorTriangleStruct::Load(currentfile);
@@ -792,10 +793,10 @@ namespace KigsFramework
 
 			/**
 			* \brief	read F_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				Triangle::Load(currentfile);
 				OneNormalTriangleStruct::Load(currentfile);
@@ -840,10 +841,10 @@ namespace KigsFramework
 			using OneColorTriangleStruct::CopyTo;
 			/**
 			* \brief	read FC_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				F_Triangle::Load(currentfile);
 				OneColorTriangleStruct::Load(currentfile);
@@ -885,10 +886,10 @@ namespace KigsFramework
 			using ThreeColorTriangleStruct::CopyTo;
 			/**
 			* \brief	read FG_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				F_Triangle::Load(currentfile);
 				ThreeColorTriangleStruct::Load(currentfile);
@@ -931,10 +932,10 @@ namespace KigsFramework
 			using ThreeNormalTriangleStruct::CopyTo;
 			/**
 			* \brief	read S_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				Triangle::Load(currentfile);
 				ThreeNormalTriangleStruct::Load(currentfile);
@@ -978,10 +979,10 @@ namespace KigsFramework
 			using OneColorTriangleStruct::CopyTo;
 			/**
 			* \brief	read SC_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				S_Triangle::Load(currentfile);
 				OneColorTriangleStruct::Load(currentfile);
@@ -1024,10 +1025,10 @@ namespace KigsFramework
 			using ThreeColorTriangleStruct::CopyTo;
 			/**
 			* \brief	read SG_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				S_Triangle::Load(currentfile);
 				ThreeColorTriangleStruct::Load(currentfile);
@@ -1071,10 +1072,10 @@ namespace KigsFramework
 			using TexturedTriangleStruct<textureCount>::CopyTo;
 			/**
 			* \brief	read T_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				Triangle::Load(currentfile);
 				TexturedTriangleStruct<textureCount>::Load(currentfile);
@@ -1118,10 +1119,10 @@ namespace KigsFramework
 			using TexturedTriangleStruct<textureCount>::CopyTo;
 			/**
 			* \brief	read TF_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				F_Triangle::Load(currentfile);
 				TexturedTriangleStruct<textureCount>::Load(currentfile);
@@ -1165,10 +1166,10 @@ namespace KigsFramework
 			using TexturedTriangleStruct<textureCount>::CopyTo;
 			/**
 			* \brief	read TFC_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				FC_Triangle::Load(currentfile);
 				TexturedTriangleStruct<textureCount>::Load(currentfile);
@@ -1212,10 +1213,10 @@ namespace KigsFramework
 			using TexturedTriangleStruct<textureCount>::CopyTo;
 			/**
 			* \brief	read TFG_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				FG_Triangle::Load(currentfile);
 				TexturedTriangleStruct<textureCount>::Load(currentfile);
@@ -1259,10 +1260,10 @@ namespace KigsFramework
 			using TexturedTriangleStruct<textureCount>::CopyTo;
 			/**
 			* \brief	read TS_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				S_Triangle::Load(currentfile);
 				TexturedTriangleStruct<textureCount>::Load(currentfile);
@@ -1306,10 +1307,10 @@ namespace KigsFramework
 			using TexturedTriangleStruct<textureCount>::CopyTo;
 			/**
 			* \brief	read TSC_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				SC_Triangle::Load(currentfile);
 				TexturedTriangleStruct<textureCount>::Load(currentfile);
@@ -1353,10 +1354,10 @@ namespace KigsFramework
 			using TexturedTriangleStruct<textureCount>::CopyTo;
 			/**
 			* \brief	read TSG_Traingle value in a file
-			* \fn 		void	Load(BufferedFile* currentfile)
-			* \param	currentfile : BufferedFile to read
+			* \fn 		void	Load(File::BufferedFile* currentfile)
+			* \param	currentfile : File::BufferedFile to read
 			*/	
-			void	Load(BufferedFile* currentfile)
+			void	Load(File::BufferedFile* currentfile)
 			{
 				SG_Triangle::Load(currentfile);
 				TexturedTriangleStruct<textureCount>::Load(currentfile);
@@ -1578,10 +1579,5 @@ namespace KigsFramework
 		void	RecomputeNormalsFast();
 	};
 
-#ifdef _3DSMAX
-
-} // namespace KigsFramework
-
-#endif
-
-#endif // _KDMESH_H_
+	}
+}

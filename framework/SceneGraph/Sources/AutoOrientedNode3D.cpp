@@ -4,6 +4,7 @@
 #include "TecLibs/Tec3D.h"
 #include "CoreBaseApplication.h"
 
+using namespace Kigs::Scene;
 
 // connect to events and create attributes
 void	AutoOrientedNode3DUp::Init(CoreModifiable* toUpgrade)

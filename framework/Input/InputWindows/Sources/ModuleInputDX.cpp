@@ -10,6 +10,8 @@
 #include "ModuleInput.h"
 #include "GeolocationDX.h"
 
+using namespace Kigs::Input;
+
 ModuleInputDX* gInstanceModuleInputDX=0;
 
 IMPLEMENT_CLASS_INFO(ModuleInputDX);
@@ -215,7 +217,7 @@ bool ModuleInputDX::addItem(const CMSP& item, ItemPosition pos)
 	return false;
 }
 
-SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> Kigs::Input::PlatformInputModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(ModuleInputDX, "ModuleInputDX");

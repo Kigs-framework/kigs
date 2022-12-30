@@ -6,6 +6,7 @@
 
 #include "TouchInputEventManager.h"
 
+using namespace Kigs::Draw2D;
 
 IMPLEMENT_CLASS_INFO(UINode3DLayer);
 
@@ -55,7 +56,7 @@ void UINode3DLayer::InitModifiable()
 		mSize.changeNotificationLevel(Owner);
 		mDesignSize.changeNotificationLevel(Owner);
 
-		auto input = KigsCore::GetModule<ModuleInput>();
+		auto input = KigsCore::GetModule<Input::ModuleInput>();
 		input->getTouchManager()->addTouchSupport(this, mCamera);
 
 		std::vector<CMSP> colliders;
@@ -122,7 +123,7 @@ void UINode3DLayer::Update(const Timer& a_Timer, void* addParam)
 }
 
 // not sure how to connect this with TouchManager
-void UINode3DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
+void UINode3DLayer::SortItemsFrontToBack(Input::SortItemsFrontToBackParam& param)
 {
 	std::vector<NodeToDraw> nodes; nodes.reserve(param.toSort.size());
 	int aze = 0;
@@ -151,12 +152,12 @@ void UINode3DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 	param.sorted.resize(param.toSort.size());
 	for (u32 i = 0; i < nodes.size(); ++i)
 	{
-		param.sorted[i] = std::make_tuple(nodes[nodes.size() - 1 - i].root, Hit{});
+		param.sorted[i] = std::make_tuple(nodes[nodes.size() - 1 - i].root, Maths::Hit{});
 	}
 }
 
 
-bool UINode3DLayer::GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout)
+bool UINode3DLayer::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::touchPosInfos& pout)
 {
 	if (!(IsRenderable() && IsCollidable()))
 	{
@@ -177,7 +178,7 @@ bool UINode3DLayer::GetDataInTouchSupport(const touchPosInfos& posin, touchPosIn
 	inverseMatrix.TransformPoint(&pos);
 	inverseMatrix.TransformVector(&dir);
 
-	if (Intersection::IntersectRayPlane(pos, dir, planePos, planeNorm, dist))
+	if (Maths::IntersectRayPlane(pos, dir, planePos, planeNorm, dist))
 	{
 		auto hit_pos = pos + ((float)dist * dir);
 
@@ -211,7 +212,7 @@ bool UINode3DLayer::GetDataInTouchSupport(const touchPosInfos& posin, touchPosIn
 	return false;
 }
 
-void UINode3DLayer::GetDistanceForInputSort(GetDistanceForInputSortParam& params)
+void UINode3DLayer::GetDistanceForInputSort(Input::GetDistanceForInputSortParam& params)
 {
 	params.inout_sorting_layer = mInputSortingLayer;
 }

@@ -2,6 +2,8 @@
 #include "TravState.h"
 #include "ModuleRenderer.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(StencilMask);
 
 bool StencilMask::PreDraw(TravState* state)

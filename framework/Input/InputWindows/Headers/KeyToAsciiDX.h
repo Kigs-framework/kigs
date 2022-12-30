@@ -1,25 +1,29 @@
-#ifndef _KEY_TO_ASCII_DX_H_
-#define _KEY_TO_ASCII_DX_H_
+#pragma once
 
 #include "KeyToAscii.h"
 
-// ****************************************
-// * KeyToAsciiDX class
-// * --------------------------------------
-/**
-* \file	KeyToAsciiDX.h
-* \class	KeyToAsciiDX
-* \ingroup Input
-* \brief Specific DirectX KeyToAscii utility class
-*
-*/
-// ****************************************
-class KeyToAsciiDX : public KeyToAscii
+namespace Kigs
 {
-public:
-    DECLARE_CLASS_INFO(KeyToAsciiDX,KeyToAscii,Input)
-    KeyToAsciiDX(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	virtual int Convert(unsigned Code);
-};
+	namespace Input
+	{
+		// ****************************************
+		// * KeyToAsciiDX class
+		// * --------------------------------------
+		/**
+		* \file	KeyToAsciiDX.h
+		* \class	KeyToAsciiDX
+		* \ingroup Input
+		* \brief Specific DirectX KeyToAscii utility class
+		*
+		*/
+		// ****************************************
+		class KeyToAsciiDX : public KeyToAscii
+		{
+		public:
+			DECLARE_CLASS_INFO(KeyToAsciiDX, KeyToAscii, Input)
+				KeyToAsciiDX(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual int Convert(unsigned Code);
+		};
 
-#endif
+	}
+}

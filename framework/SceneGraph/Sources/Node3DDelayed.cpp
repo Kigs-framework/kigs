@@ -9,14 +9,15 @@
 
 #include "blockingconcurrentqueue.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(Node3DDelayed, Node3DDelayed, SceneGraph);
-IMPLEMENT_CLASS_INFO(Node3DDelayed)
-
-
 #ifdef KIGS_TOOLS
 #include "KigsTools.h"
 #include "imgui.h"
 #endif
+
+using namespace Kigs::Scene;
+//IMPLEMENT_AND_REGISTER_CLASS_INFO(Node3DDelayed, Node3DDelayed, SceneGraph);
+IMPLEMENT_CLASS_INFO(Node3DDelayed)
+
 
 using Job = std::pair<SP<CoreModifiable>, std::function<void()>>;
 static std::atomic_bool sNode3DThreadStarted = { false };
@@ -111,7 +112,7 @@ bool Node3DDelayed::Draw(TravState* state)
 	{
 		mLastFrameNumber = frame_number;
 		auto gbb = GetGlobalBoundingBox();
-		if (Intersection::IntersectionAABBAABB(sAllowedBBox.m_Min, sAllowedBBox.m_Max, gbb.m_Min, gbb.m_Max))
+		if (Kigs::Maths::IntersectionAABBAABB(sAllowedBBox.m_Min, sAllowedBBox.m_Max, gbb.m_Min, gbb.m_Max))
 		{
 			mDrawCounter++;
 		}
@@ -122,7 +123,7 @@ bool Node3DDelayed::Draw(TravState* state)
 		&& !gFreezeNode3DDelayed)
 	{
 		auto gbb = GetGlobalBoundingBox();
-		if (Intersection::IntersectionAABBAABB(sAllowedBBox.m_Min, sAllowedBBox.m_Max, gbb.m_Min, gbb.m_Max))
+		if (Kigs::Maths::IntersectionAABBAABB(sAllowedBBox.m_Min, sAllowedBBox.m_Max, gbb.m_Min, gbb.m_Max))
 		{
 			SetShowContent(true);
 		}

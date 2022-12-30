@@ -4,6 +4,8 @@
 #include "SkyBox.h"
 #include "TextureFileManager.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(SkyBox)
 
 // the texture base name is used to find all the six textures

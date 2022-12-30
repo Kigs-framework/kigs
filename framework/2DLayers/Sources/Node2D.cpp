@@ -15,7 +15,9 @@
 #include "Base2DLayer.h"
 #include "UI/UILayout.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(Node2D, Node2D, 2DLayers);
+using namespace Kigs::Draw2D;
+using namespace Kigs::Scene;
+
 IMPLEMENT_CLASS_INFO(Node2D)
 
 IMPLEMENT_CONSTRUCTOR(Node2D)
@@ -171,7 +173,7 @@ bool Node2D::removeItem(const CMSP& item DECLARE_LINK_NAME)
 }
 
 
-bool Node2D::Draw(TravState* state)
+bool Node2D::Draw(Scene::TravState* state)
 {
 	// TODO : can fast check bbox here ?
 	return true;
@@ -411,7 +413,7 @@ void	Node2D::GetGlobalPosition(float &X, float &Y)
 
 }
 
-void Node2D::TravDraw(TravState* state)
+void Node2D::TravDraw(Scene::TravState* state)
 {
 	//! if this node was flagged as not visible, do nothing (return)
 	if (!Draw(state))

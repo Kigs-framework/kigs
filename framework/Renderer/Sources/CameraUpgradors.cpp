@@ -4,6 +4,8 @@
 #include "ModuleInput.h"
 #include "KeyboardDevice.h"
 
+using namespace Kigs::Draw;
+
 // connect to events and create attributes
 void	OrbitCameraUp::Init(CoreModifiable* toUpgrade)
 {
@@ -19,7 +21,7 @@ void	OrbitCameraUp::Init(CoreModifiable* toUpgrade)
 	mEnabled = (maBool*)toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "Enabled", true);
 	mOrbitNeedCtrl = (maBool*)toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "OrbitNeedCtrl", true); 
 
-	ModuleInput::Get()->registerTouchEvent(toUpgrade, "ManageDirectTouch", "DirectTouch", EmptyFlag);
+	Input::ModuleInput::Get()->registerTouchEvent(toUpgrade, "ManageDirectTouch", "DirectTouch", Input::EmptyFlag);
 
 	Camera* camera = (Camera*)toUpgrade;
 
@@ -83,21 +85,21 @@ DEFINE_UPGRADOR_METHOD(OrbitCameraUp, ManageDirectTouch)
 	void* evp=nullptr;
 	params[0]->getValue(evp);
 
-	DirectTouchEvent& ev = *(DirectTouchEvent*)evp;
+	Input::DirectTouchEvent& ev = *(Input::DirectTouchEvent*)evp;
 
 
 	auto ctrl = false;
 	// TODO with VK keys
 #ifdef WIN32
-	if (auto kb = ModuleInput::Get()->GetKeyboard())
+	if (auto kb = Input::ModuleInput::Get()->GetKeyboard())
 		ctrl = kb->GetKey(CM_KEY_LCONTROL) | kb->GetKey(CM_KEY_RCONTROL);
 #endif
 	if (!GetUpgrador()->mOrbitNeedCtrl)
 		ctrl = true;
 
-	if (ev.state == GestureRecognizerState::StateBegan)
+	if (ev.state == Input::GestureRecognizerState::StateBegan)
 	{
-		if (ev.touch_state == DirectTouchEvent::TouchDown)
+		if (ev.touch_state == Input::DirectTouchEvent::TouchDown)
 		{
 			if (ev.button_state == 1 && ctrl)
 			{
@@ -114,12 +116,12 @@ DEFINE_UPGRADOR_METHOD(OrbitCameraUp, ManageDirectTouch)
 			GetUpgrador()->mOperationStartOrbitView = *GetUpgrador()->mOrbitDirection;
 			GetUpgrador()->mOperationStartOrbitUp = *GetUpgrador()->mOrbitUp;
 		}
-		else if (ev.touch_state == DirectTouchEvent::TouchUp)
+		else if (ev.touch_state == Input::DirectTouchEvent::TouchUp)
 		{
 			GetUpgrador()->mCurrentOperation = Operation::None;
 		}
 	}
-	else if (ev.state == GestureRecognizerState::StateChanged)
+	else if (ev.state == Input::GestureRecognizerState::StateChanged)
 	{
 		auto dt = ev.position - GetUpgrador()->mOperationStartInputPosition;
 		GetUpgrador()->mHovered = true;
@@ -177,7 +179,7 @@ DEFINE_UPGRADOR_UPDATE(OrbitCameraUp)
 	if (!*GetUpgrador()->mEnabled) return false;
 
 	float delta = 0.0f;
-	if (auto mouse = ModuleInput::Get()->GetMouse())
+	if (auto mouse = Input::ModuleInput::Get()->GetMouse())
 		delta = mouse->getWheelRollDelta() * 5;
 
 	auto time = timer.GetTime();
@@ -187,7 +189,7 @@ DEFINE_UPGRADOR_UPDATE(OrbitCameraUp)
 	auto shift = false;
 	// TODO with VK keys
 #ifdef WIN32
-	if (auto kb = ModuleInput::Get()->GetKeyboard())
+	if (auto kb = Input::ModuleInput::Get()->GetKeyboard())
 		shift = kb->GetKey(CM_KEY_LSHIFT) | kb->GetKey(CM_KEY_RSHIFT);
 #endif
 	if (shift) delta *= 4;

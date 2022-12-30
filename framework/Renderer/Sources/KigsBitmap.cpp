@@ -7,6 +7,8 @@
 #include "ModuleFileManager.h"
 #include "FilePathManager.h"
 
+using namespace Kigs::Draw;
+
 #define FREETYPE_SIZE_COEFF	0.65f
 
 IMPLEMENT_CLASS_INFO(KigsBitmap)
@@ -119,7 +121,7 @@ void	KigsBitmap::InitModifiable()
 			{
 				if ((parentTexture->getValue<int>("Width") == 0) && (parentTexture->getValue<int>("Height") == 0))
 				{
-					SmartPointer<TinyImage>	img = TinyImage::CreateImage(mRawPixels, mSize[0], mSize[1], TinyImage::ImageFormat::RGBA_32_8888);
+					SmartPointer<Pict::TinyImage>	img = Pict::TinyImage::CreateImage(mRawPixels, mSize[0], mSize[1], Pict::TinyImage::ImageFormat::RGBA_32_8888);
 					parentTexture->CreateFromImage(img);
 				}
 			}
@@ -213,18 +215,18 @@ void	KigsBitmap::Print(const std::string& txt, int posx, int posy, unsigned int 
 
 		if (!ModuleSpecificRenderer::mDrawer->IsInCache(fontName.c_str()))
 		{
-			auto pathManager = KigsCore::Singleton<FilePathManager>();
-			SmartPointer<FileHandle> fullfilenamehandle;
+			auto pathManager = KigsCore::Singleton<File::FilePathManager>();
+			SmartPointer<File::FileHandle> fullfilenamehandle;
 
 			if (pathManager)
 			{
 				fullfilenamehandle = pathManager->FindFullName(fontName);
 			}
-			if ((fullfilenamehandle->mStatus & FileHandle::Exist) == 0)
+			if ((fullfilenamehandle->mStatus & File::FileHandle::Exist) == 0)
 				break;
 
 			u64 size;
-			auto L_Buffer = ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
+			auto L_Buffer = File::ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
 			if (L_Buffer)
 			{
 				unsigned char* pBuffer = (unsigned char*)L_Buffer->CopyBuffer();
@@ -238,7 +240,7 @@ void	KigsBitmap::Print(const std::string& txt, int posx, int posy, unsigned int 
 			ModuleSpecificRenderer::mDrawer->SetFont(fontName.c_str(), 0, 0, fontSize);
 		}
 
-		pImageData = ModuleSpecificRenderer::mDrawer->DrawTextToImage(txt.c_str(), textSize, L_Width, L_Height, (TextAlignment)a_Alignment, false, _maxLineNumber, maxSize, -1, (unsigned char)color.R, (unsigned char)color.G, (unsigned char)color.B);
+		pImageData = ModuleSpecificRenderer::mDrawer->DrawTextToImage(txt.c_str(), textSize, L_Width, L_Height, (Utils::TextAlignment)a_Alignment, false, _maxLineNumber, maxSize, -1, (unsigned char)color.R, (unsigned char)color.G, (unsigned char)color.B);
 
 		if (!pImageData)
 			break;
@@ -252,14 +254,14 @@ void	KigsBitmap::Print(const std::string& txt, int posx, int posy, unsigned int 
 
 		switch (a_Alignment)
 		{
-		case TextAlignmentLeft:
-		case TextAlignmentJustified:
+		case Utils::TextAlignmentLeft:
+		case Utils::TextAlignmentJustified:
 			// nothing to change
 			break;
-		case TextAlignmentCenter:
+		case Utils::TextAlignmentCenter:
 			posx -= L_Width / 2;
 			break;
-		case TextAlignmentRight:
+		case Utils::TextAlignmentRight:
 			posx -= L_Width;
 			break;
 		}

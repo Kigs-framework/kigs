@@ -4,6 +4,9 @@
 #include "LocalizationManager.h"
 #include "NotificationCenter.h"
 
+using namespace Kigs::Draw2D;
+using namespace Kigs::Draw;
+
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UIText, UIText, 2DLayers);
 IMPLEMENT_CLASS_INFO(UIText)
 
@@ -121,7 +124,7 @@ void	UIText::ChangeText(const usString& _newText)
 
 		if (localized)
 		{
-			mTexturePointer->GetEmptyTexture()->CreateFromText(localized, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255, 255, TinyImage::RGBA_32_8888);
+			mTexturePointer->GetEmptyTexture()->CreateFromText(localized, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255, 255, Pict::TinyImage::RGBA_32_8888);
 			mTexturePointer->refreshTextureInfos();
 		}
 		if (modified)
@@ -136,7 +139,7 @@ void	UIText::ChangeText(const usString& _newText)
 		else
 			L_returneValue = const_cast<unsigned short*>(_newText.us_str());
 
-		mTexturePointer->GetEmptyTexture()->CreateFromText(L_returneValue, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255,255, TinyImage::RGBA_32_8888);
+		mTexturePointer->GetEmptyTexture()->CreateFromText(L_returneValue, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255,255, Pict::TinyImage::RGBA_32_8888);
 		mTexturePointer->refreshTextureInfos();
 		if (modified)
 			free(L_returneValue);

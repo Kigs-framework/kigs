@@ -1,53 +1,56 @@
-#ifndef _JOYSTICKDX_H_
-#define _JOYSTICKDX_H_
+#pragma once
 
 #include "JoystickDevice.h"
 #include "ModuleInputDX.h"
 
-
-// ****************************************
-// * JoystickDX class
-// * --------------------------------------
-/**
-* \file	JoystickDX.h
-* \class	JoystickDX
-* \ingroup Input
-* \brief Specific DirectX joystick device.
-*
-*/
-// ****************************************
-
-class	JoystickDX : public JoystickDevice
+namespace Kigs
 {
-public:
+	namespace Input
+	{
+		// ****************************************
+		// * JoystickDX class
+		// * --------------------------------------
+		/**
+		* \file	JoystickDX.h
+		* \class	JoystickDX
+		* \ingroup Input
+		* \brief Specific DirectX joystick device.
+		*
+		*/
+		// ****************************************
 
-    DECLARE_CLASS_INFO(JoystickDX,JoystickDevice,Input)
-    JoystickDX(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	virtual ~JoystickDX();
+		class	JoystickDX : public JoystickDevice
+		{
+		public:
 
-	LPDIRECTINPUTDEVICE8& getDirectInputJoystick(){return mDirectInputJoystick;}
-    
-	virtual void	UpdateDevice();
+			DECLARE_CLASS_INFO(JoystickDX, JoystickDevice, Input)
+				JoystickDX(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual ~JoystickDX();
 
-	virtual bool	Aquire();
-	virtual bool	Release();
+			LPDIRECTINPUTDEVICE8& getDirectInputJoystick() { return mDirectInputJoystick; }
 
-	void	DoInputDeviceDescription();
+			virtual void	UpdateDevice();
 
-	void	IncButtonCount() {mButtonsCount++;}
-	void	IncAxisCount()   {mAxisCount++;}
-	void	IncPOVCount()    {mPovCount++;}
+			virtual bool	Aquire();
+			virtual bool	Release();
 
-	void UseAxis() { mAxisIndex=1; }
-	void UseRotation() { mRotationIndex=1; }
+			void	DoInputDeviceDescription();
+
+			void	IncButtonCount() { mButtonsCount++; }
+			void	IncAxisCount() { mAxisCount++; }
+			void	IncPOVCount() { mPovCount++; }
+
+			void UseAxis() { mAxisIndex = 1; }
+			void UseRotation() { mRotationIndex = 1; }
 
 
-protected:
-	LPDIRECTINPUTDEVICE8 mDirectInputJoystick;
+		protected:
+			LPDIRECTINPUTDEVICE8 mDirectInputJoystick;
 
-	int mAxisIndex;
-	int mRotationIndex;
-  
-};    
+			int mAxisIndex;
+			int mRotationIndex;
 
-#endif //_JOYSTICKDX_H_
+		};
+
+	}
+}

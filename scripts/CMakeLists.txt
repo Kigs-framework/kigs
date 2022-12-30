@@ -429,7 +429,7 @@ if(${KIGS_PLATFORM} STREQUAL "Windows")
 			
 	add_library(DataDrivenDllApplication INTERFACE)
 	target_sources(DataDrivenDllApplication INTERFACE "${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/DataDrivenBaseApplication.cpp")
-	target_link_libraries(DataDrivenDllApplication INTERFACE BaseDLL 2DLayers Renderer ImGui LuaKigsBind CoreDataDrivenSequence CoreAnimation)
+	target_link_libraries(DataDrivenDllApplication INTERFACE BaseDLL 2DLayers Renderer ImGui LuaKigsBind CoreAnimation)
 	
 endif()
 
@@ -438,7 +438,7 @@ target_link_libraries(BaseApplication INTERFACE BaseExecutable Core FileManager 
 
 add_library(DataDrivenApplication INTERFACE)
 target_sources(DataDrivenApplication INTERFACE "${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/DataDrivenBaseApplication.cpp")
-target_link_libraries(DataDrivenApplication INTERFACE BaseExecutable 2DLayers Renderer LuaKigsBind CoreDataDrivenSequence CoreAnimation ImGui)
+target_link_libraries(DataDrivenApplication INTERFACE BaseExecutable 2DLayers Renderer LuaKigsBind CoreAnimation ImGui)
 
 IF(EXISTS ${KIGS_ROOT}/kigs)
 	message(STATUS "CMake enter kigs")

@@ -2,6 +2,7 @@
 
 #include "TravPath.h"
 
+using namespace Kigs::Scene;
 
 TravPath::TravPath()
 {

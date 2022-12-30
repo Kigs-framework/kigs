@@ -10,6 +10,10 @@ namespace Kigs
 	{
 		class CoreSequence;
 	}
+	namespace Input
+	{
+		struct ClickEvent;
+	}
 	namespace Core
 	{
 
@@ -97,7 +101,8 @@ template<>\
 struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static const char* name(){ return luaname; }};
 
 
-		EXPOSE_STRUCT_LUA(struct, ClickEvent);
+		template<>
+		struct LuaStruct<Input::ClickEvent> { static constexpr bool exposed = true; constexpr static const char* name() { return "ClickEvent"; } };
 		template<>
 		struct LuaStruct<Action::CoreSequence> { static constexpr bool exposed = true; constexpr static const char* name() { return "CoreSequence"; } };
 

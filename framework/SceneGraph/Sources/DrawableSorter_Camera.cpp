@@ -4,6 +4,9 @@
 #include "TravState.h"
 #include "Camera.h"
 
+using namespace Kigs::Scene;
+using namespace Kigs::Draw;
+
 void DrawableSorter_Camera::SetCamera(Camera *pCam)
 {
 	mCameraPosition = pCam->GetGlobalPosition();

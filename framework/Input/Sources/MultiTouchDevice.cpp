@@ -2,6 +2,8 @@
 #include "DeviceItem.h"
 #include "MultiTouchDevice.h"
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(MultiTouchDevice)
 
 

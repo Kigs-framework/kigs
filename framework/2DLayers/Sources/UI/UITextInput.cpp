@@ -5,7 +5,8 @@
 #include "KeyboardDevice.h"
 #include "Platform/Input/KeyDefine.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UITextInput, UITextInput, 2DLayers);
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UITextInput)
 
 void UITextInput::NotifyUpdate(const unsigned int labelid)
@@ -27,7 +28,7 @@ void UITextInput::InitModifiable()
 	ParentClassType::InitModifiable();
 	if (IsInit())
 	{
-		mEventState->flags() |= IgnoreSwallow;
+		mEventState->flags() |= Input::IgnoreSwallow;
 		KigsCore::GetNotificationCenter()->addObserver(this, "FocusChanged", "GetFocus");
 	}
 }
@@ -110,8 +111,8 @@ UITextInput::~UITextInput()
 void UITextInput::GetFocus()
 {
 	//Get KeyBoard
-	auto theInputModule = KigsCore::GetModule<ModuleInput>();
-	KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
+	auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
+	Input::KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
 	KigsCore::Connect(theKeyboard, "KeyboardEvent", this, "UpdateKeyboard");
 	SetNodeFlag(UIItem_HasFocus);
 	KigsCore::GetNotificationCenter()->postNotificationName("GetFocus", this);
@@ -122,8 +123,8 @@ void UITextInput::GetFocus()
 void UITextInput::LoseFocus()
 {
 	//Get KeyBoard
-	auto theInputModule= KigsCore::GetModule<ModuleInput>();
-	KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
+	auto theInputModule= KigsCore::GetModule<Input::ModuleInput>();
+	Input::KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
 	KigsCore::Disconnect(theKeyboard, "KeyboardEvent", this, "UpdateKeyboard");
 
 	ClearNodeFlag(UIItem_HasFocus);
@@ -137,7 +138,7 @@ void UITextInput::LoseFocus()
 	setValue("ShowCursor", false);
 }
 
-bool UITextInput::ManageClickTouchEvent(ClickEvent& click_event)
+bool UITextInput::ManageClickTouchEvent(Input::ClickEvent& click_event)
 {
 	bool swallow = (*click_event.swallow_mask & (1 << click_event.type)) != 0;
 	
@@ -145,14 +146,14 @@ bool UITextInput::ManageClickTouchEvent(ClickEvent& click_event)
 	if(!swallow)
 		result = ParentClassType::ManageClickTouchEvent(click_event);
 
-	if (click_event.state == StatePossible && !CanInteract(click_event.position.xy))
+	if (click_event.state == Input::StatePossible && !CanInteract(click_event.position.xy))
 	{
 		LoseFocus();
 	}
 
-	if (click_event.state == StateRecognized && !swallow)
+	if (click_event.state == Input::StateRecognized && !swallow)
 	{
-		if (!GetNodeFlag(UIItem_HasFocus) && (click_event.button_state_mask & ClickEvent::LeftButton) == ClickEvent::LeftButton)
+		if (!GetNodeFlag(UIItem_HasFocus) && (click_event.button_state_mask & Input::ClickEvent::LeftButton) == Input::ClickEvent::LeftButton)
 		{	
 			GetFocus();
 		}

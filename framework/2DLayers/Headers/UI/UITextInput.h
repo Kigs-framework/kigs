@@ -1,5 +1,4 @@
-#ifndef _UITEXTINPUT_H_
-#define _UITEXTINPUT_H_
+#pragma once
 
 #include "UIDynamicText.h"
 #include "maUSString.h"
@@ -8,55 +7,63 @@
 
 #include "AttributePacking.h"
 
-class Texture;
-
-// ****************************************
-// * UITextInput class
-// * --------------------------------------
-/**
-* \file	UITextInput.h
-* \class	UITextInput
-* \ingroup 2DLayers
-* \brief	Text input UI item.
-* 
-*  Use UIDynamicText where UITextArea uses UIDrawableItem directly
-* 
-*/
-// ****************************************
-
-class UITextInput : public UIDynamicText
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(UITextInput, UIDynamicText, 2DLayers);
-	DECLARE_INLINE_CONSTRUCTOR(UITextInput) {}
-	virtual ~UITextInput();
-	SIGNALS(TextChanged);
+	namespace Draw
+	{
+		class Texture;
+	}
+	namespace Draw2D
+	{
 
-	std::string			GetReleaseAction() const {return mReleaseAction.c_str();}
-	
-	bool			HasFocus() override { return GetNodeFlag(UIItem_HasFocus); }
-	void			LoseFocus() override;
-	void			GetFocus() override;
+		// ****************************************
+		// * UITextInput class
+		// * --------------------------------------
+		/**
+		* \file	UITextInput.h
+		* \class	UITextInput
+		* \ingroup 2DLayers
+		* \brief	Text input UI item.
+		*
+		*  Use UIDynamicText where UITextArea uses UIDrawableItem directly
+		*
+		*/
+		// ****************************************
 
-protected:
-	
-	void InitModifiable() override;
-	
+		class UITextInput : public UIDynamicText
+		{
+		public:
+			DECLARE_CLASS_INFO(UITextInput, UIDynamicText, 2DLayers);
+			DECLARE_INLINE_CONSTRUCTOR(UITextInput) {}
+			virtual ~UITextInput();
+			SIGNALS(TextChanged);
 
-	DECLARE_METHOD(FocusChanged);
-	COREMODIFIABLE_METHODS(FocusChanged);
-	WRAP_METHODS(UpdateKeyboard)
+			std::string			GetReleaseAction() const { return mReleaseAction.c_str(); }
 
-	void NotifyUpdate(const unsigned int labelid) override;
-	bool ManageClickTouchEvent(ClickEvent& click_event) final;
-	void UpdateKeyboard(std::vector<KeyEvent>& keys);
+			bool			HasFocus() override { return GetNodeFlag(UIItem_HasFocus); }
+			void			LoseFocus() override;
+			void			GetFocus() override;
 
-	bool					mIsCueBanner = false;
+		protected:
 
-	maUSString				mCueBanner = BASE_ATTRIBUTE(CueBanner, usString(""));
-	maString				mReleaseAction = BASE_ATTRIBUTE(ReleaseAction, "");
+			void InitModifiable() override;
 
-	std::vector<int>		mKeycodeList;
-};
 
-#endif //_UITEXTINPUT_H_
+			DECLARE_METHOD(FocusChanged);
+			COREMODIFIABLE_METHODS(FocusChanged);
+			WRAP_METHODS(UpdateKeyboard)
+
+				void NotifyUpdate(const unsigned int labelid) override;
+			bool ManageClickTouchEvent(Input::ClickEvent& click_event) final;
+			void UpdateKeyboard(std::vector<KeyEvent>& keys);
+
+			bool					mIsCueBanner = false;
+
+			maUSString				mCueBanner = BASE_ATTRIBUTE(CueBanner, usString(""));
+			maString				mReleaseAction = BASE_ATTRIBUTE(ReleaseAction, "");
+
+			std::vector<int>		mKeycodeList;
+		};
+
+	}
+}

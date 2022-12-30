@@ -9,9 +9,11 @@
 #include "Headers/GLSLDebugDraw.h"
 #include <functional>
 bool gCullingDrawBBox;
-std::function<bool(Node3D*)> gDrawBBoxForNode;
+std::function<bool(Kigs::Scene::Node3D*)> gDrawBBoxForNode;
 #endif
 int gCullingTests;
+
+using namespace Kigs::Scene;
 
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(CullingObject, CullingObject, SceneGraph);
 IMPLEMENT_CLASS_INFO(CullingObject)
@@ -41,8 +43,6 @@ void  CullingObject::RemovePlane(int i)
 {
 	mCullPlaneList.erase(mCullPlaneList.begin() + i);
 }
-
-kigs::unordered_map<Node3D*, bool> show_bbox;
 
 template<bool isScaled>
 CullingObject::CULLING_RESULT CullingObject::SubCull(Node3D* node, unsigned int& cullingMask)

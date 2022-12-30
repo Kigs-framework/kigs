@@ -7,6 +7,9 @@
 
 #include <algorithm>
 
+using namespace Kigs::Scene;
+using namespace Kigs::Draw;
+
 void DrawableSorter::AddDrawable(Drawable *pDrawable,TravState* state)
 {
 	DrawableSorterItem newItem;

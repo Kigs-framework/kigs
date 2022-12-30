@@ -2,6 +2,8 @@
 #include "AlphaMask.h"
 #include "TinyImage.h"
 
+using namespace Kigs::Draw2D;
+
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(AlphaMask, AlphaMask, 2DLayers);
 IMPLEMENT_CLASS_INFO(AlphaMask)
 
@@ -11,7 +13,7 @@ void AlphaMask::InitModifiable()
 	ParentClassType::InitModifiable();
 	if(IsInit())
 	{
-		auto img = TinyImage::CreateImage(mTextureName.c_str());
+		auto img = Pict::TinyImage::CreateImage(mTextureName.c_str());
 		auto pixel_size = img->GetPixelValueSize(img->GetFormat());
 		
 		mSize.x = img->GetUsedWidth();

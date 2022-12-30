@@ -10,6 +10,8 @@
 #ifdef DRAW_DEBUG
 #include "GLSLDebugDraw.h"
 #endif
+
+using namespace Kigs::Draw;
     
 IMPLEMENT_CLASS_INFO(Drawable)
 

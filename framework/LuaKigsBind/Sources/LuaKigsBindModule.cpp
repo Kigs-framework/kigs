@@ -19,8 +19,8 @@
 
 #include <algorithm>
 
-
 using namespace LuaIntf;
+using namespace Kigs::Lua;
 
 bool gLuaImGuiProtected = false;
 
@@ -80,7 +80,7 @@ int LuaKigsBindModule::GetFile(lua_State *L)
 	path += ".lua";
 	
 	u64 len;
-	auto buffer = ModuleFileManager::LoadFileAsCharString(path.c_str(), len,1);
+	auto buffer = File::ModuleFileManager::LoadFileAsCharString(path.c_str(), len,1);
 	if (buffer) 
 	{
 		luaL_loadstring(L, buffer->buffer());
@@ -98,7 +98,7 @@ int KigsLoadFile(lua_State *L)
 {
 	std::string path = luaL_checkstring(L, 1);
 	u64 len;
-	auto buffer = ModuleFileManager::LoadFileAsCharString(path.c_str(), len,1);
+	auto buffer = Kigs::File::ModuleFileManager::LoadFileAsCharString(path.c_str(), len,1);
 	if (buffer)
 	{
 		if (luaL_loadstring(L, buffer->buffer()) != 0)
@@ -168,14 +168,14 @@ bool	LuaKigsBindModule::ExecuteString(const std::string& funcCode)
 
 bool LuaKigsBindModule::ExecuteLuaFile(const char* filename, const char* prepend)
 {
-	auto pathManager = KigsCore::Singleton<FilePathManager>();
-	SmartPointer<FileHandle> lFile = pathManager->FindFullName(filename);
+	auto pathManager = KigsCore::Singleton<File::FilePathManager>();
+	SmartPointer<File::FileHandle> lFile = pathManager->FindFullName(filename);
 
-	if ((lFile->mStatus&FileHandle::Exist)==0)
+	if ((lFile->mStatus& File::FileHandle::Exist)==0)
 		return false;
 
 	u64 length;
-	auto buffer = ModuleFileManager::LoadFileAsCharString(filename, length,1);
+	auto buffer = File::ModuleFileManager::LoadFileAsCharString(filename, length,1);
 	if (buffer)
 	{
 		std::string str = (char*)buffer->buffer();
@@ -560,13 +560,13 @@ DEFINE_METHOD(LuaKigsBindModule, RegisterLuaMethod)
 
 		
 #ifdef KIGS_TOOLS
-		XMLNodeBase* xmlattr = nullptr;
+		Xml::XMLNodeBase* xmlattr = nullptr;
 		maRawPtr* xml = (maRawPtr*)getParameter(params, "pXML");
 		if (xml)
 		{
 			void* val = nullptr;
 			xml->getValue(val);
-			xmlattr = (XMLNodeBase*)val;
+			xmlattr = (Xml::XMLNodeBase*)val;
 		}
 #endif
 		maString* cbType = ((maString*)getParameter(params, "cbType"));

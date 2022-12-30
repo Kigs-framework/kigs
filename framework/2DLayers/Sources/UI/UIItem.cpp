@@ -5,7 +5,8 @@
 #include "NotificationCenter.h"
 #include "AttributePacking.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIItem, UIItem, 2DLayers);
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UIItem)
 
 IMPLEMENT_CONSTRUCTOR(UIItem)
@@ -45,11 +46,11 @@ void UIItem::NotifyUpdate(const unsigned int labelid)
 	{
 		if (mSwallowInputs)
 		{
-			KigsCore::GetModule<ModuleInput>()->getTouchManager()->registerEvent(this, "ManageInputSwallowEvent", InputSwallow, EmptyFlag);
+			KigsCore::GetModule<Input::ModuleInput>()->getTouchManager()->registerEvent(this, "ManageInputSwallowEvent", Input::InputSwallow, Input::EmptyFlag);
 		}
 		else
 		{
-			KigsCore::GetModule<ModuleInput>()->getTouchManager()->unregisterEvent(this, InputSwallow);
+			KigsCore::GetModule<Input::ModuleInput>()->getTouchManager()->unregisterEvent(this, Input::InputSwallow);
 		}
 	}
 	else if (labelid == mIsEnabled.getLabelID())
@@ -162,7 +163,7 @@ bool UIItem::CanInteract(v2f pos, bool must_contain)
 }*/
 
 
-bool UIItem::ManageInputSwallowEvent(InputEvent& ev)
+bool UIItem::ManageInputSwallowEvent(Input::InputEvent& ev)
 {
 	bool b = CanInteract(ev.position.xy);
 	if (b) *ev.swallow_mask = 0xFFFFFFFF;

@@ -1,84 +1,87 @@
-#ifndef _ACCELEROMETERDEVICE_H_
-#define _ACCELEROMETERDEVICE_H_
-
+#pragma once
 #include "InputDevice.h"
 
-// ****************************************
-// * AccelerometerDevice class
-// * --------------------------------------
-/**
-* \file	AccelerometerDevice.h
-* \class	AccelerometerDevice
-* \ingroup Input
-* \brief Base class for accelerometer
-*
-*/
-// ****************************************
-
-class AccelerometerDevice : public InputDevice
+namespace Kigs
 {
-public:
-	//! buttons list
-	
-	
-	DECLARE_ABSTRACT_CLASS_INFO(AccelerometerDevice,InputDevice,Input)
-	
-	/**
-	 * \brief	constructor
-	 * \fn 		MouseDevice(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	 * \param	name : instance name
-	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
-	 */
-	AccelerometerDevice(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	
+	namespace Input
+	{
+		// ****************************************
+		// * AccelerometerDevice class
+		// * --------------------------------------
+		/**
+		* \file	AccelerometerDevice.h
+		* \class	AccelerometerDevice
+		* \ingroup Input
+		* \brief Base class for accelerometer
+		*
+		*/
+		// ****************************************
 
-	/**
-	 * \brief	retreive current position
-	 * \fn 		void			getPos(float& posX,float& posY)
-	 * \param	posX : position on x axis (in/out param)
-	 * \param	posY : position on y axis (in/out param)
-	 */
-	void			getPos(float& posX,float& posY,float& posZ){posX=mAccX; posY=mAccY; posZ=mAccZ;}
-	
-	
-	/**
-	 * \brief	compute current position
-	 * \fn 		virtual void	Update();
-	 */
-	void	UpdateDevice() override;
-	
-protected:
-	/**
-	 * \brief	destructor
-	 * \fn 		~MouseDevice();
-	 */
-	virtual ~AccelerometerDevice(); 
-	
-	virtual void	Start() = 0;
-	virtual void	Stop() = 0;
+		class AccelerometerDevice : public InputDevice
+		{
+		public:
+			//! buttons list
 
-	// world coordinate acceleration
-	maFloat	mAccX;
-	maFloat	mAccY;
-	maFloat	mAccZ;
 
-	// device coordinate acceleration
-	maFloat	mRawAccX;
-	maFloat	mRawAccY;
-	maFloat	mRawAccZ;
-	
-	// world coordinate integrated velocity
-	maFloat	mVelX;
-	maFloat	mVelY;
-	maFloat	mVelZ;
+			DECLARE_ABSTRACT_CLASS_INFO(AccelerometerDevice, InputDevice, Input)
 
-	// world coordinate integrated position
-	maFloat	mPosX;
-	maFloat	mPosY;
-	maFloat	mPosZ;
+				/**
+				 * \brief	constructor
+				 * \fn 		MouseDevice(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+				 * \param	name : instance name
+				 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
+				 */
+				AccelerometerDevice(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	maInt	mRate;
 
-};
+			/**
+			 * \brief	retreive current position
+			 * \fn 		void			getPos(float& posX,float& posY)
+			 * \param	posX : position on x axis (in/out param)
+			 * \param	posY : position on y axis (in/out param)
+			 */
+			void			getPos(float& posX, float& posY, float& posZ) { posX = mAccX; posY = mAccY; posZ = mAccZ; }
 
-#endif //_ACCELEROMETERDEVICE_H_
+
+			/**
+			 * \brief	compute current position
+			 * \fn 		virtual void	Update();
+			 */
+			void	UpdateDevice() override;
+
+		protected:
+			/**
+			 * \brief	destructor
+			 * \fn 		~MouseDevice();
+			 */
+			virtual ~AccelerometerDevice();
+
+			virtual void	Start() = 0;
+			virtual void	Stop() = 0;
+
+			// world coordinate acceleration
+			maFloat	mAccX;
+			maFloat	mAccY;
+			maFloat	mAccZ;
+
+			// device coordinate acceleration
+			maFloat	mRawAccX;
+			maFloat	mRawAccY;
+			maFloat	mRawAccZ;
+
+			// world coordinate integrated velocity
+			maFloat	mVelX;
+			maFloat	mVelY;
+			maFloat	mVelZ;
+
+			// world coordinate integrated position
+			maFloat	mPosX;
+			maFloat	mPosY;
+			maFloat	mPosZ;
+
+			maInt	mRate;
+
+		};
+
+	}
+}

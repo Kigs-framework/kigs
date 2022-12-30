@@ -5,7 +5,8 @@
 #include "AlphaMask.h"
 #include "LocalizationManager.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIButtonText, UIButtonText, 2DLayers);;
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UIButtonText)
 
 IMPLEMENT_CONSTRUCTOR(UIButtonText)
@@ -126,7 +127,7 @@ void	UIButtonText::ChangeTextTexture(const unsigned short* _text, unsigned int _
 
 void	UIButtonText::ChangeTextTexture(const std::string & a_text, unsigned int _texture)
 {
-	Texture* L_Texture = NULL;
+	Draw::Texture* L_Texture = NULL;
 	
 
 	std::string _text = a_text;
@@ -291,19 +292,19 @@ DEFINE_METHOD(UIButtonText, ReloadTexture)
 {
 	if (mUpTexturePointer)
 	{
-		mTexturePointer->setUserFlag(Texture::isDirtyContext);
+		mTexturePointer->setUserFlag(Draw::Texture::isDirtyContext);
 		mTexturePointer->ReInit();
 		ChangeTextTexture(mUpText.c_str(), 0);
 	}
 	if (mOverTexturePointer)
 	{
-		mOverTexturePointer->setUserFlag(Texture::isDirtyContext);
+		mOverTexturePointer->setUserFlag(Draw::Texture::isDirtyContext);
 		mOverTexturePointer->ReInit();
 		ChangeTextTexture(mOverText.c_str(), 1);
 	}
 	if (mDownTexturePointer)
 	{
-		mDownTexturePointer->setUserFlag(Texture::isDirtyContext);
+		mDownTexturePointer->setUserFlag(Draw::Texture::isDirtyContext);
 		mDownTexturePointer->ReInit();
 		ChangeTextTexture(mDownText.c_str(), 2);
 	}

@@ -11,7 +11,9 @@
 #include "TravState.h"
 #include "UIVerticesInfo.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UITextArea, UITextArea, 2DLayers);
+using namespace Kigs::Draw2D;
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(UITextArea)
 
 UITextArea::UITextArea(const std::string& name, CLASS_NAME_TREE_ARG) :
@@ -111,8 +113,8 @@ void UITextArea::GetFocus()
 	SetNodeFlag(UIItem_HasFocus);
 
 	//Get KeyBoard
-	auto theInputModule = KigsCore::GetModule<ModuleInput>();
-	KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
+	auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
+	Input::KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
 	if (theKeyboard == NULL)
 		return;
 
@@ -133,8 +135,8 @@ void UITextArea::LoseFocus()
 
 
 	//Get KeyBoard
-	auto theInputModule = KigsCore::GetModule<ModuleInput>();
-	KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
+	auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
+	Input::KeyboardDevice* theKeyboard = theInputModule->GetKeyboard();
 	if (theKeyboard == NULL)
 		return;
 
@@ -201,11 +203,11 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 			std::string key = text.substr(1, text.length() - 1);
 
 			const PLATFORM_WCHAR* localized = theLocalizationManager->getLocalizedString(key.c_str());
-			mTexturePointer->CreateFromText(localized, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255,255, 255, 255, TinyImage::RGBA_32_8888);
+			mTexturePointer->CreateFromText(localized, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255,255, 255, 255, Pict::TinyImage::RGBA_32_8888);
 		}
 		else
 		{
-			mTexturePointer->CreateFromText(mText.us_str(), (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255, 255, TinyImage::RGBA_32_8888);
+			mTexturePointer->CreateFromText(mText.us_str(), (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255, 255, Pict::TinyImage::RGBA_32_8888);
 		}
 	}
 }

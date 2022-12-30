@@ -3,6 +3,8 @@
 #include "CoreModifiable.h"
 #include <math.h>
 
+using namespace Kigs::Draw2D;
+
 MultiTouchPinch::MultiTouchPinch() :
 mDx(0.f)
 , mDy(0.f)

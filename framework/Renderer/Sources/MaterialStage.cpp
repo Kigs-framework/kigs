@@ -7,6 +7,7 @@
 #include "TravState.h"
 #include "NotificationCenter.h"
 
+using namespace Kigs::Draw;
 
 #ifndef NO_MULTISTAGE_RENDERING
 

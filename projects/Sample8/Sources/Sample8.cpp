@@ -4,6 +4,8 @@
 
 #include "UI/UIItem.h"
 
+using namespace Kigs;
+
 IMPLEMENT_CLASS_INFO(Sample8);
 
 IMPLEMENT_CONSTRUCTOR(Sample8)
@@ -17,12 +19,8 @@ void	Sample8::ProtectedInit()
 	// lets say that the update will sleep 1ms
 	SetUpdateSleepTime(1);
 
-	SP<FilePathManager> pathManager = KigsCore::Singleton<FilePathManager>();
+	SP<File::FilePathManager> pathManager = KigsCore::Singleton<File::FilePathManager>();
 	pathManager->AddToPath(".", "xml");
-	
-	
-	const auto uiitem = sizeof(UIItem);
-	const auto node2D = sizeof(Node2D);
 	
 	// Load AppInit, GlobalConfig then launch first sequence
 	DataDrivenBaseApplication::ProtectedInit();

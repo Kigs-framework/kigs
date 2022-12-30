@@ -1,6 +1,7 @@
 #include "UI/UIImageHighlight.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIImageHighlight, UIImageHighlight, 2DLayers);
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UIImageHighlight)
 
 void UIImageHighlight::InitModifiable()

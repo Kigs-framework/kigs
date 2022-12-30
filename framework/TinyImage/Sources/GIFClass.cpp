@@ -3,14 +3,14 @@
 #include "TinyImageLoaderContext.h"
 #include "ModuleFileManager.h"
 
+using namespace Kigs::Pict;
 
-
-GIFClass::GIFClass(FileHandle* fileName) :TinyImage()
+GIFClass::GIFClass(File::FileHandle* fileName) :TinyImage()
 {
 	mInitIsOK = Load(fileName);
 }
 
-GIFClass::GIFClass(CoreRawBuffer* rawbuffer) : TinyImage()
+GIFClass::GIFClass(Core::CoreRawBuffer* rawbuffer) : TinyImage()
 {
 	mInitIsOK = Load(rawbuffer);
 }
@@ -119,7 +119,7 @@ bool GIFClass::Load(CoreRawBuffer* rawbuffer)
 	return result;
 }
 
-bool GIFClass::Load(FileHandle* fileName)
+bool GIFClass::Load(File::FileHandle* fileName)
 {
 	bool result = false;
 
@@ -139,7 +139,7 @@ bool GIFClass::Load(FileHandle* fileName)
 	}
 
 	u64 nDatalen;
-	auto rawbuffer = ModuleFileManager::LoadFile(fileName, nDatalen);
+	auto rawbuffer = File::ModuleFileManager::LoadFile(fileName, nDatalen);
 	if (rawbuffer)
 	{
 		result = Load(rawbuffer.get());
@@ -157,12 +157,12 @@ void	GIFClass::Export(const char* filename)
 
 
 
-bool GIFClass::Load(CoreRawBuffer* rawbuffer)
+bool GIFClass::Load(Core::CoreRawBuffer* rawbuffer)
 {
 	return false;
 }
 
-bool GIFClass::Load(FileHandle* fileName)
+bool GIFClass::Load(File::FileHandle* fileName)
 {
 	return false;
 }

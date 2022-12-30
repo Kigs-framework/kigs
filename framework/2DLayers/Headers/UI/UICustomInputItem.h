@@ -3,29 +3,34 @@
 #include "UI/UIItem.h"
 #include "AttributePacking.h"
 
-// ****************************************
-// * UICustomInputItem class
-// * --------------------------------------
-/**
-* \file	UICustomInputItem.h
-* \class	UICustomInputItem
-* \ingroup 2DLayers
-* \brief	???
-*
-*/
-// ****************************************
-
-class UICustomInputItem : public UIItem
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(UICustomInputItem, UIItem, 2DLayers);
-	DECLARE_INLINE_CONSTRUCTOR(UICustomInputItem){}
+	namespace Draw2D
+	{
+		// ****************************************
+		// * UICustomInputItem class
+		// * --------------------------------------
+		/**
+		* \file	UICustomInputItem.h
+		* \class	UICustomInputItem
+		* \ingroup 2DLayers
+		* \brief	???
+		*
+		*/
+		// ****************************************
 
-protected:
-	void InitModifiable() override;
+		class UICustomInputItem : public UIItem
+		{
+		public:
+			DECLARE_CLASS_INFO(UICustomInputItem, UIItem, 2DLayers);
+			DECLARE_INLINE_CONSTRUCTOR(UICustomInputItem) {}
 
-	maFloat mAutoTouchDistance = BASE_ATTRIBUTE(AutoTouchDistance, 0.0f);
+		protected:
+			void InitModifiable() override;
 
-};
+			maFloat mAutoTouchDistance = BASE_ATTRIBUTE(AutoTouchDistance, 0.0f);
 
+		};
 
+	}
+}

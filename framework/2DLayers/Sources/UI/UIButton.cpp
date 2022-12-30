@@ -12,8 +12,10 @@
 
 #include "TecLibs/Math/Algorithm.h"
 
+using namespace Kigs::Draw2D;
+using namespace Kigs::Core;
+using namespace Kigs::Input;
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIButton, UIButton, 2DLayers);
 IMPLEMENT_CLASS_INFO(UIButton)
 
 IMPLEMENT_CONSTRUCTOR(UIButton)
@@ -70,14 +72,14 @@ void UIButton::InitModifiable()
 		mIsEnabled.changeNotificationLevel(Owner);
 		mSize.changeNotificationLevel(Owner);
 
-		auto theInputModule = KigsCore::GetModule<ModuleInput>();
+		auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 		// retreive click for activation
 		// theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, emptyFlag);
 		// retreive direct touch for visual hover / push ...
 		if (theInputModule)
 		{
-			static_cast<TouchEventStateDirectTouch*>(theInputModule->getTouchManager()->registerEvent(this, "ManageDirectTouchEvent", DirectTouch, EmptyFlag))->setAutoTouchDownDistance(0.05f);
-			static_cast<TouchEventStateClick*>(theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, EmptyFlag))->setAutoClickDistance(0.05f);
+			static_cast<Input::TouchEventStateDirectTouch*>(theInputModule->getTouchManager()->registerEvent(this, "ManageDirectTouchEvent", Input::DirectTouch, Input::EmptyFlag))->setAutoTouchDownDistance(0.05f);
+			static_cast<Input::TouchEventStateClick*>(theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Input::Click, Input::EmptyFlag))->setAutoClickDistance(0.05f);
 		}
 	}
 }
@@ -141,7 +143,7 @@ bool UIButton::isAlpha(float X, float Y)
 }
 
 
-bool UIButton::ManageClickTouchEvent(ClickEvent& click_event)
+bool UIButton::ManageClickTouchEvent(Input::ClickEvent& click_event)
 {
 	bool allow = CanInteract(click_event.position.xy);
 	

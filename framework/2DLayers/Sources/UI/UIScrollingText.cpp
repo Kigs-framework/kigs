@@ -5,7 +5,8 @@
 #include "LocalizationManager.h"
 #include "Timer.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIScrollingText, UIScrollingText, 2DLayers);
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UIScrollingText)
 
 UIScrollingText::UIScrollingText(const std::string& name,CLASS_NAME_TREE_ARG) : 

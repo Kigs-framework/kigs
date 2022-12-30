@@ -4,8 +4,9 @@
 #include "TinyImageLoaderContext.h"
 #include "ModuleFileManager.h"
 
+using namespace Kigs::Pict;
 
-PNGClass::PNGClass(FileHandle* fileName) :TinyImage()
+PNGClass::PNGClass(File::FileHandle* fileName) :TinyImage()
 {
 	mInitIsOK = Load(fileName);
 }
@@ -168,7 +169,7 @@ bool PNGClass::Load(CoreRawBuffer* rawbuffer)
 	return result;
 }
 
-bool PNGClass::Load(FileHandle* fileName)
+bool PNGClass::Load(File::FileHandle* fileName)
 {
 	bool result = false;
 
@@ -188,7 +189,7 @@ bool PNGClass::Load(FileHandle* fileName)
 	}
 
 	u64 nDatalen;
-	auto rawbuffer = ModuleFileManager::LoadFile(fileName, nDatalen);
+	auto rawbuffer = File::ModuleFileManager::LoadFile(fileName, nDatalen);
 	if (rawbuffer)
 	{
 		result = Load(rawbuffer.get());
@@ -205,7 +206,7 @@ void	PNGClass::Export(const char* filename)
 	png_infop info_ptr = NULL;
 	png_bytep row = NULL;
 	
-	SmartPointer<FileHandle> L_File = Platform_fopen(filename, "wb");
+	SmartPointer<File::FileHandle> L_File = File::Platform_fopen(filename, "wb");
 	fp = L_File->mFile;
 	int mode, lineSize;
 	// Initialize write structure

@@ -1,28 +1,33 @@
 #pragma once
 
-#include <DataDrivenBaseApplication.h>
+#include "DataDrivenBaseApplication.h"
 
-class Sample5 : public DataDrivenBaseApplication
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(Sample5, DataDrivenBaseApplication, Core);
-	DECLARE_CONSTRUCTOR(Sample5);
+	using namespace Kigs::DDriven;
 
-protected:
+	class Sample5 : public DataDrivenBaseApplication
+	{
+	public:
+		DECLARE_CLASS_INFO(Sample5, DataDrivenBaseApplication, Core);
+		DECLARE_CONSTRUCTOR(Sample5);
 
-	WRAP_METHODS(randomNumber);
+	protected:
 
-	void	ProtectedInit() override;
-	void	ProtectedUpdate() override;
-	void	ProtectedClose() override;
+		WRAP_METHODS(randomNumber);
 
-	void	ProtectedInitSequence(const std::string& sequence) override;
-	void	ProtectedCloseSequence(const std::string& sequence) override;
+		void	ProtectedInit() override;
+		void	ProtectedUpdate() override;
+		void	ProtectedClose() override;
 
-	maCoreItem mFunction = BASE_ATTRIBUTE(Function,"eval(12)");
-	maFloat	mTestFloat = BASE_ATTRIBUTE(TestFloat, 50.0f);
+		void	ProtectedInitSequence(const std::string& sequence) override;
+		void	ProtectedCloseSequence(const std::string& sequence) override;
 
-	maVect2DF mEvalResult = BASE_ATTRIBUTE(EvalResult, 0,0);
+		maCoreItem mFunction = BASE_ATTRIBUTE(Function, "eval(12)");
+		maFloat	mTestFloat = BASE_ATTRIBUTE(TestFloat, 50.0f);
 
-	float	randomNumber(float min, float max);
-};
+		maVect2DF mEvalResult = BASE_ATTRIBUTE(EvalResult, 0, 0);
+
+		float	randomNumber(float min, float max);
+	};
+}

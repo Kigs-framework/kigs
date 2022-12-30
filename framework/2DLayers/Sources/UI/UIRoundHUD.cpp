@@ -2,7 +2,8 @@
 #include "UIVerticesInfo.h"
 #include "ModuleInput.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIRoundHUD, UIRoundHUD, 2DLayers);
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UIRoundHUD)
 
 IMPLEMENT_CONSTRUCTOR(UIRoundHUD)
@@ -30,12 +31,12 @@ void UIRoundHUD::InitModifiable()
 	mVoidZone = (mRadius + mRadiusOffset) *0.2f;
 	mVoidZone *= mVoidZone;
 
-	auto theInputModule = KigsCore::GetModule<ModuleInput>();
-	theInputModule->getTouchManager()->registerEvent(this, "ManageDirectTouchEvent", DirectTouch, EmptyFlag);
+	auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
+	theInputModule->getTouchManager()->registerEvent(this, "ManageDirectTouchEvent", Input::DirectTouch, Input::EmptyFlag);
 }
 
 
-void UIRoundHUD::ProtectedDraw(TravState* state)
+void UIRoundHUD::ProtectedDraw(Scene::TravState* state)
 {
 	v2f p = mRealSize*0.5f;
 	TransformPoints(&p, 1);
@@ -198,7 +199,7 @@ void UIRoundHUD::UpdateSlots()
 	}
 }
 
-bool UIRoundHUD::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
+bool UIRoundHUD::ManageDirectTouchEvent(Input::DirectTouchEvent& direct_touch)
 {
 	bool ret = false;
 	int slot = mSelectedSlot;
@@ -207,7 +208,7 @@ bool UIRoundHUD::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 	bool can_interact = mIsEnabled && mIsTouchable && !mIsHidden && !IsHiddenFlag() && IsInClip(direct_touch.position.xy);
 	float allowedRadius = (mRadius + mRadiusOffset) * (mRadius + mRadiusOffset);
 	// touch is possible in the radius or when isDown
-	if (direct_touch.state == StatePossible) // check for hover
+	if (direct_touch.state == Input::StatePossible) // check for hover
 	{
 		return (can_interact && dist<allowedRadius) || mIsDown;
 	}
@@ -216,9 +217,9 @@ bool UIRoundHUD::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 		*direct_touch.swallow_mask |= 0xFFFFFFFF;
 
 	
-	if (direct_touch.state == StateBegan)
+	if (direct_touch.state == Input::StateBegan)
 	{
-		if (direct_touch.touch_state == DirectTouchEvent::TouchUp)
+		if (direct_touch.touch_state == Input::DirectTouchEvent::TouchUp)
 		{
 			// emit signal if a slot is selected
 			if (mSelectedSlot != -1 && mSelectedSlot < mItemList.size() && can_interact && mIsDown)
@@ -261,9 +262,9 @@ bool UIRoundHUD::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 		}
 	}
 
-	if (direct_touch.touch_state == DirectTouchEvent::TouchDown)
+	if (direct_touch.touch_state == Input::DirectTouchEvent::TouchDown)
 		mIsDown = true;
-	else if (direct_touch.touch_state == DirectTouchEvent::TouchUp)
+	else if (direct_touch.touch_state == Input::DirectTouchEvent::TouchUp)
 		mIsDown = false;
 
 

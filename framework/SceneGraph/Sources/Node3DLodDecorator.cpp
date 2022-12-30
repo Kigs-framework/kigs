@@ -3,6 +3,7 @@
 #include "TravState.h"
 #include "Camera.h"
 
+using namespace Kigs::Scene;
 int gCulledByLODDecorator = 0;
 
 DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Node3DLodDecorator, TravState* state, unsigned int cullingMask)

@@ -6,6 +6,8 @@
 #include "Texture.h"
 #include "AttributePacking.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(TextureFileManager)
 
 //! constructor

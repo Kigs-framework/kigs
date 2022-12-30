@@ -4,6 +4,8 @@
 #include "DeviceItem.h"
 #include "Window.h"
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(InputDevice)
 
 IMPLEMENT_CONSTRUCTOR(InputDevice)
@@ -28,7 +30,7 @@ InputDevice::~InputDevice()
 
 bool InputDevice::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	if(item->isSubType(Window::mClassID))
+	if(item->isSubType(Gui::Window::mClassID))
 	{
 		if (mInputWindow)
 		{
@@ -42,9 +44,9 @@ bool InputDevice::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 
 bool InputDevice::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
-	if(item->isSubType(Window::mClassID))
+	if(item->isSubType(Gui::Window::mClassID))
 	{
-		if (mInputWindow.get() == (Window*)item.get())
+		if (mInputWindow.get() == (Gui::Window*)item.get())
 			mInputWindow = nullptr;		
 	}
 

@@ -1,9 +1,13 @@
 #pragma once
 
-class CoreModifiable;
-
-namespace ImGui
+namespace Kigs
 {
-	bool CameraCombo(const char* label, int* current_item, CoreModifiable** camera_result = nullptr);
-};
-
+	namespace Core
+	{
+		class CoreModifiable;
+	}
+	namespace Gui
+	{
+		bool CameraCombo(const char* label, int* current_item, Core::CoreModifiable** camera_result = nullptr);
+	};
+}

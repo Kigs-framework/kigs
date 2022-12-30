@@ -1,5 +1,5 @@
 #include "GLSLSkinShader.h"
-
+using namespace Kigs::Draw;
 
 std::string API3DSkinShader::GetVertexShader()
 {

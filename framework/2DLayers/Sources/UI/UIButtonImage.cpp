@@ -4,7 +4,8 @@
 #include "NotificationCenter.h"
 #include "AlphaMask.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIButtonImage, UIButtonImage, 2DLayers);;
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UIButtonImage)
 
 UIButtonImage::UIButtonImage(const std::string& name,CLASS_NAME_TREE_ARG) : 

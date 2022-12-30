@@ -2,15 +2,21 @@
 
 #include "GlobalPrecompiledHeaders.h"
 
-class UIInputEvent
+namespace Kigs
 {
-public:
-	enum ENUM
+	namespace Draw2D
 	{
-		NONE = 0,
-		LEFT = 1,
-		MIDDLE = 2,
-		RIGHT = 4,
-		PINCH = 8
-	};
-};
+		class UIInputEvent
+		{
+		public:
+			enum ENUM
+			{
+				NONE = 0,
+				LEFT = 1,
+				MIDDLE = 2,
+				RIGHT = 4,
+				PINCH = 8
+			};
+		};
+	}
+}

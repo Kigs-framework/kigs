@@ -21,6 +21,9 @@
 
 #include <algorithm>
 
+using namespace Kigs::Draw2D;
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(BaseUI2DLayer);
 
 #include "Platform/2DLayers/BaseUI2DLayer.inl.h"
@@ -65,7 +68,7 @@ void BaseUI2DLayer::InitModifiable()
 		instances = GetInstances("ModuleInput");
 	//	KIGS_ASSERT(instances.size() == 1);
 		if(instances.size()==1)
-			mInput = (ModuleInput*)(instances[0].get());
+			mInput = (Input::ModuleInput*)(instances[0].get());
 
 		ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer*)((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 		if (renderer->getDefaultUiShader())
@@ -153,7 +156,7 @@ void BaseUI2DLayer::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 	param.sorted.resize(param.toSort.size());
 	for (u32 i = 0; i < nodes.size(); ++i)
 	{
-		param.sorted[i] = std::make_tuple(nodes[nodes.size() - 1 - i].root, Hit{});
+		param.sorted[i] = std::make_tuple(nodes[nodes.size() - 1 - i].root, Maths::Hit{});
 	}
 }
 

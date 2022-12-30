@@ -1,42 +1,45 @@
-#ifndef _MOUSEDX_H_
-#define _MOUSEDX_H_
+#pragma once
 
 #include "MouseDevice.h"
 #include "ModuleInputDX.h"
 
-// ****************************************
-// * MouseDX class
-// * --------------------------------------
-/**
-* \file	MouseDX.h
-* \class	MouseDX
-* \ingroup Input
-* \brief Specific DirectX Mouse device.
-*
-*/
-// ****************************************
-
-class	MouseDX : public MouseDevice
+namespace Kigs
 {
-public:
-    DECLARE_CLASS_INFO(MouseDX,MouseDevice,Input)
-    MouseDX(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	virtual ~MouseDX();
+	namespace Input
+	{
+		// ****************************************
+		// * MouseDX class
+		// * --------------------------------------
+		/**
+		* \file	MouseDX.h
+		* \class	MouseDX
+		* \ingroup Input
+		* \brief Specific DirectX Mouse device.
+		*
+		*/
+		// ****************************************
 
-	virtual bool	Aquire();
-	virtual bool	Release();
+		class	MouseDX : public MouseDevice
+		{
+		public:
+			DECLARE_CLASS_INFO(MouseDX, MouseDevice, Input)
+				MouseDX(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual ~MouseDX();
 
-	void	UpdateDevice();
+			virtual bool	Aquire();
+			virtual bool	Release();
 
-	LPDIRECTINPUTDEVICE8& getDirectInputMouse(){return mDirectInputMouse;}
+			void	UpdateDevice();
 
-	void	DoInputDeviceDescription();
+			LPDIRECTINPUTDEVICE8& getDirectInputMouse() { return mDirectInputMouse; }
 
-	void	IncWheelCount(){mWheelCount++;}
-	void	IncButtonCount(){mButtonsCount++;}
-    
-protected:
-	LPDIRECTINPUTDEVICE8 mDirectInputMouse;  
-};    
+			void	DoInputDeviceDescription();
 
-#endif //_MOUSEDX_H_
+			void	IncWheelCount() { mWheelCount++; }
+			void	IncButtonCount() { mButtonsCount++; }
+
+		protected:
+			LPDIRECTINPUTDEVICE8 mDirectInputMouse;
+		};
+	}
+}

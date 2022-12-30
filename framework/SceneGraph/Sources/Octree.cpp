@@ -9,6 +9,8 @@
 #include "Drawable.h"
 #include "CullingObject.h"
 
+using namespace Kigs::Scene;
+
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(Octree, Octree, SceneGraph);
 IMPLEMENT_CLASS_INFO(Octree)
 

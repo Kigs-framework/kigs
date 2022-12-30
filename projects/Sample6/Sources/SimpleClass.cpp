@@ -3,6 +3,9 @@
 #include "NotificationCenter.h"
 #include <iostream>
 
+using namespace Kigs;
+
+
 IMPLEMENT_CLASS_INFO(SimpleClass)
 
 IMPLEMENT_CONSTRUCTOR(SimpleClass)

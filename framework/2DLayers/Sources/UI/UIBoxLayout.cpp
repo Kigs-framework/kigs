@@ -2,7 +2,8 @@
 #include "Base2DLayer.h"
 #include "RenderingScreen.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIBoxLayout, UIBoxLayout, 2DLayers);;
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UIBoxLayout)
 
 IMPLEMENT_CONSTRUCTOR(UIBoxLayout)

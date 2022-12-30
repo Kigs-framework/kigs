@@ -1,45 +1,46 @@
-#ifndef _NODE3DLODDECORATOR_H_
-#define _NODE3DLODDECORATOR_H_
+#pragma once
 
 #include "Node3D.h"
 
-// ****************************************
-// * Node3DLodDecorator class
-// * --------------------------------------
-/**
- * \file	Node3DLodDecorator.h
- * \class	Node3DLodDecorator
- * \ingroup SceneGraph
- * \brief	Decorate Cull method to accep LOD.
- * 
- * ?? Obsolete ??
- *
- */
- // ****************************************
-
-class	Node3DLodDecorator : public Node3D
+namespace Kigs
 {
-public:
-
-	DECLARE_DECORATOR_DECORATE()
+	namespace Scene
 	{
-		DECORATE_METHOD(Cull, Node3D, Node3DLodDecorator);
-		cm->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "LodCoef");
-		cm->setValue("LodCoef", 1.0);
-		return true;
+		// ****************************************
+		// * Node3DLodDecorator class
+		// * --------------------------------------
+		/**
+		 * \file	Node3DLodDecorator.h
+		 * \class	Node3DLodDecorator
+		 * \ingroup SceneGraph
+		 * \brief	Decorate Cull method to accep LOD.
+		 *
+		 * ?? Obsolete ??
+		 *
+		 */
+		 // ****************************************
+
+		class	Node3DLodDecorator : public Node3D
+		{
+		public:
+
+			DECLARE_DECORATOR_DECORATE()
+			{
+				DECORATE_METHOD(Cull, Node3D, Node3DLodDecorator);
+				cm->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "LodCoef");
+				cm->setValue("LodCoef", 1.0);
+				return true;
+			}
+			DECLARE_DECORATOR_UNDECORATE()
+			{
+				cm->RemoveDynamicAttribute("LodCoef");
+				UNDECORATE_METHOD(Cull, Node3D, Node3DLodDecorator);
+				return true;
+			}
+
+		protected:
+			DECLARE_DECORABLE_DEFINITION(bool, Cull, TravState* state, unsigned int cullingMask);
+		};
+
 	}
-	DECLARE_DECORATOR_UNDECORATE()
-	{
-		cm->RemoveDynamicAttribute("LodCoef");
-		UNDECORATE_METHOD(Cull, Node3D, Node3DLodDecorator);
-		return true;
-	}
-
-protected:
-	DECLARE_DECORABLE_DEFINITION(bool, Cull, TravState* state, unsigned int cullingMask);
-};
-
-
-
-
-#endif //_NODE3DLODDECORATOR_H_
+}

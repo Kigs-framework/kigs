@@ -12,13 +12,6 @@ namespace Kigs
 
 		class ModuleGUIWindows;
 
-#ifdef _KIGS_ONLY_STATIC_LIB_
-#define MODULEINITFUNC			PlatformGUIModuleInit
-		extern SP<ModuleBase> PlatformGUIModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
-#else
-#define MODULEINITFUNC			ModuleInit
-#endif
-
 		// ****************************************
 		// * ModuleGUIWindows class
 		// * --------------------------------------

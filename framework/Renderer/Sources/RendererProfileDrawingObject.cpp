@@ -5,6 +5,10 @@
 #include "UIVerticesInfo.h"
 #include "NotificationCenter.h"
 
+
+using namespace Kigs::Draw;
+using namespace Kigs::Draw2D;
+
 #define MAX_FPS	(60.0f)
 
 IMPLEMENT_CLASS_INFO(RendererProfileDrawingObject)

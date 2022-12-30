@@ -8,6 +8,8 @@
 #include <ImGuiLayer.h>
 
 
+using namespace Kigs::Gui;
+
 IMPLEMENT_CLASS_INFO(ModuleImGui)
 
 

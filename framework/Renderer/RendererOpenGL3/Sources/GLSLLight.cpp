@@ -8,6 +8,7 @@
 #include "TravState.h"
 #include "ModuleRenderer.h"
 
+using namespace Kigs::Draw;
 
 IMPLEMENT_CLASS_INFO(API3DLight)
 

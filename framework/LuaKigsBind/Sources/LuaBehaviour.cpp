@@ -16,7 +16,7 @@
 
 using namespace LuaIntf;
 
-
+using namespace Kigs::Lua;
 
 IMPLEMENT_CLASS_INFO(LuaBehaviour)
 

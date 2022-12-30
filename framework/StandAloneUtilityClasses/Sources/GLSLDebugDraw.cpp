@@ -9,6 +9,10 @@
 
 #include "NotificationCenter.h"
 
+using namespace Kigs::Utils;
+using namespace Kigs::Scene;
+using namespace Kigs::Draw;
+
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(DebugDraw, DebugDraw, StandAlone);
 IMPLEMENT_CLASS_INFO(DebugDraw)
 
@@ -123,7 +127,7 @@ void DebugDraw::addUser(CoreModifiable* parent)
 {
 	if (parent->isSubType("UICustomDraw"))
 	{
-		auto cd = static_cast<UICustomDraw*>(parent);
+		auto cd = static_cast<Draw2D::UICustomDraw*>(parent);
 		cd->SetDelegate(this);
 	}
 	ParentClassType::addUser(parent);
@@ -132,7 +136,7 @@ void DebugDraw::removeUser(CoreModifiable* parent)
 {
 	if (parent->isSubType("UICustomDraw"))
 	{
-		auto cd = static_cast<UICustomDraw*>(parent);
+		auto cd = static_cast<Draw2D::UICustomDraw*>(parent);
 		if(cd->GetDelegate() == this)
 			cd->SetDelegate(nullptr);
 	}

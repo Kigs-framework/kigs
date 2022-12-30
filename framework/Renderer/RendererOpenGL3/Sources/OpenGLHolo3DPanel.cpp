@@ -5,6 +5,9 @@
 
 #include "TravState.h"
 
+using namespace Kigs::Draw;
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(OpenGLHolo3DPanel);
 
 ///////////////////////////////////////////

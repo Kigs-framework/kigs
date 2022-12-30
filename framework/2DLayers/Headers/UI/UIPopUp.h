@@ -3,43 +3,49 @@
 
 #include "Upgrador.h"
 
-
-// ****************************************
-// * UIPopUp Upgrador
-// * --------------------------------------
-/**
-* \file	UIPopUp.h
-* \class	UIPopUp
-* \ingroup 2DLayers
-* \brief	This is the upgrador class for a pop-up
-*
-* A pop up appear when there is a notification "ShowPopUp" with numSignalPopUp as parameter and disapear when there is a notification "HidePopUp",
-* or when the time in TimeStayOpen is over.
-*
-*/
-// ****************************************
-
-class PopUpUpgrador : public Upgrador<UIItem>
+namespace Kigs
 {
-public:
 
-	// create and init Upgrador if needed and add dynamic attributes
-	virtual void	Init(CoreModifiable* toUpgrade) override;
+	namespace Draw2D
+	{
+		// ****************************************
+		// * UIPopUp Upgrador
+		// * --------------------------------------
+		/**
+		* \file	UIPopUp.h
+		* \class	UIPopUp
+		* \ingroup 2DLayers
+		* \brief	This is the upgrador class for a pop-up
+		*
+		* A pop up appear when there is a notification "ShowPopUp" with numSignalPopUp as parameter and disapear when there is a notification "HidePopUp",
+		* or when the time in TimeStayOpen is over.
+		*
+		*/
+		// ****************************************
 
-	// destroy UpgradorData and remove dynamic attributes 
-	virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
+		class PopUpUpgrador : public Upgrador<UIItem>
+		{
+		public:
 
-	START_UPGRADOR(PopUpUpgrador);
-	UPGRADOR_METHODS(HidePopUp, ShowPopUp);
+			// create and init Upgrador if needed and add dynamic attributes
+			virtual void	Init(CoreModifiable* toUpgrade) override;
 
-protected:	
+			// destroy UpgradorData and remove dynamic attributes 
+			virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
 
-	void Show(UIItem* localthis,CoreModifiable* aActivator);
-	void Hide(UIItem* localthis);
+			START_UPGRADOR(PopUpUpgrador);
+			UPGRADOR_METHODS(HidePopUp, ShowPopUp);
 
-	// upgrador member variable
-	double mTimeOpen = 0;
-	bool mOpenPopup = false;
-	CMSP mActivator;
-};
+		protected:
 
+			void Show(UIItem* localthis, CoreModifiable* aActivator);
+			void Hide(UIItem* localthis);
+
+			// upgrador member variable
+			double mTimeOpen = 0;
+			bool mOpenPopup = false;
+			CMSP mActivator;
+		};
+
+	}
+}

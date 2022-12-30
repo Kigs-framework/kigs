@@ -10,6 +10,8 @@
 #include "ModuleSceneGraph.h"
 #include "TravState.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(DrawVertice);
 
 IMPLEMENT_CONSTRUCTOR(DrawVertice)

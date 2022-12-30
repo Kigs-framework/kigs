@@ -5,7 +5,8 @@
 
 #include <cmath>
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIScrollable, UIScrollable, 2DLayers);
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UIScrollable)
 
 void UIScrollable::InitModifiable()
@@ -13,7 +14,7 @@ void UIScrollable::InitModifiable()
 	ParentClassType::InitModifiable();
 	if (IsInit())
 	{
-		auto ev = (TouchEventStateScroll*)KigsCore::GetModule<ModuleInput>()->getTouchManager()->registerEvent(this, "ManageScrollEvent", Scroll, EmptyFlag);
+		auto ev = (Input::TouchEventStateScroll*)KigsCore::GetModule<Input::ModuleInput>()->getTouchManager()->registerEvent(this, "ManageScrollEvent", Input::Scroll, Input::EmptyFlag);
 		(void)ev;
 	}
 }
@@ -115,9 +116,9 @@ void UIScrollable::SetScroll(v2f to)
 	}
 }
 
-bool UIScrollable::ManageScrollEvent(ScrollEvent& scroll_event)
+bool UIScrollable::ManageScrollEvent(Input::ScrollEvent& scroll_event)
 {
-	if (scroll_event.state == StatePossible)
+	if (scroll_event.state == Input::StatePossible)
 	{
 		if (CanInteract(scroll_event.position.xy))
 		{
@@ -127,7 +128,7 @@ bool UIScrollable::ManageScrollEvent(ScrollEvent& scroll_event)
 		return false;
 	}
 
-	if (scroll_event.state == StateBegan)
+	if (scroll_event.state == Input::StateBegan)
 	{
 		mLastOffset = { 0, 0 };
 		mThrowSpeed = { 0, 0 };
@@ -135,7 +136,7 @@ bool UIScrollable::ManageScrollEvent(ScrollEvent& scroll_event)
 		scroll_event.capture_inputs = true;
 	}
 
-	if (scroll_event.state == StateChanged)
+	if (scroll_event.state == Input::StateChanged)
 	{
 		//v2f currentOffset = maindir.xy*offset;
 		v2f currentOffset = scroll_event.delta.xy / (scroll_event.interaction ? 8.0f : 1.0f);
@@ -153,7 +154,7 @@ bool UIScrollable::ManageScrollEvent(ScrollEvent& scroll_event)
 		scroll_event.capture_inputs = true;
 	}
 
-	if (scroll_event.state == StateEnded)
+	if (scroll_event.state == Input::StateEnded)
 	{
 		mThrowSpeed = mThrowSpeedMult*scroll_event.speed.xy;
 		if (!mVerticalScroll)

@@ -13,6 +13,8 @@
 #include "CoreMap.h"
 #include "FilePathManager.h"
 
+using namespace Kigs::Draw;
+
 BinMeshLoader::BinMeshLoader() : BinMeshLoaderBase()
 {
 }
@@ -33,7 +35,7 @@ int BinMeshLoader::ImportFile(Mesh *pMesh, const std::string &FileName)
 
 	pMesh->setValue("FileName",FileName);
 
-	mFile=BufferedFile::Open(FileName.c_str());
+	mFile=File::BufferedFile::Open(FileName.c_str());
 	if(mFile)
 	{
 		pMesh->EmptyItemList();
@@ -64,7 +66,7 @@ int BinMeshLoader::ImportFile(ModernMesh *pMesh, const std::string &FileName)
 		return 1;
 	}
 
-	mFile=BufferedFile::Open(FileName.c_str());
+	mFile=File::BufferedFile::Open(FileName.c_str());
 	if(mFile)
 	{
 		pMesh->EmptyItemList();

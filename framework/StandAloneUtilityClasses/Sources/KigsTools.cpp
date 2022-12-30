@@ -51,17 +51,6 @@ bool gKigsToolsAvailable = false;
 using namespace winrt::Windows::Storage;
 #endif
 
-extern bool gCullingDrawBBox;
-extern std::function<bool(Node3D*)> gDrawBBoxForNode;
-
-#if KIGS_COLLISION_AVAILABLE
-extern int gCollisionDrawLevel;
-#endif
-
-#if !KIGS_COREDATADRIVENSEQUENCE_AVAILABLE
-class DataDrivenSequenceManager;
-#endif
-
 #if KIGS_COREANIMATION_AVAILABLE
 #include "ModuleCoreAnimation.h"
 #endif
@@ -70,9 +59,36 @@ class DataDrivenSequenceManager;
 #include "ModuleRenderer.h"
 #endif
 
+
+
+extern bool gCullingDrawBBox;
+extern std::function<bool(Kigs::Scene::Node3D*)> gDrawBBoxForNode;
+
+#if KIGS_COLLISION_AVAILABLE
+extern int gCollisionDrawLevel;
+#endif
+
+#if !KIGS_COREDATADRIVENSEQUENCE_AVAILABLE
+namespace Kigs
+{
+	namespace DDriven
+	{
+		class DataDrivenSequenceManager;
+	}
+}
+#endif
+
 extern bool gFreezeNode3DDelayed;
 
-
+namespace Kigs
+{
+	namespace Tools
+	{
+		using namespace Kigs::Core;
+		using namespace Kigs::Draw;
+		using namespace Kigs::Gui;
+		using namespace Kigs::Xml;
+		using namespace Kigs::File;
 enum EditorFlags
 {
 	EditorFlag_AddedToXML = 1,
@@ -119,9 +135,9 @@ struct KigsToolsState
 
 	maReference CurrentSequenceManager{ 0u, maWeakReferenceObject{"DataDrivenSequenceManager:AppSequenceManager"} };
 
-	kigs::unordered_map<std::string, std::pair<std::function<void()>, bool>> CustomWidgets;
+	unordered_map<std::string, std::pair<std::function<void()>, bool>> CustomWidgets;
 
-	kigs::unordered_map<Timer*, std::pair<Timer::State, SP<Timer>>> TimerStates;
+	unordered_map<Timer*, std::pair<Timer::State, SP<Timer>>> TimerStates;
 	struct
 	{
 		bool MenuBar = false;
@@ -228,7 +244,7 @@ struct KigsToolsState
 	{
 		std::unordered_set<std::shared_ptr<XMLBase>> FileChanged;
 	};
-	kigs::unordered_map<CoreModifiable*, XMLChange> XMLChanged;
+	unordered_map<CoreModifiable*, XMLChange> XMLChanged;
 
 	maReference ActiveXMLItem;
 	std::shared_ptr<XMLBase> ActiveXMLFile;
@@ -472,20 +488,6 @@ void PushToScope(CoreModifiable* item)
 	gKigsTools->HierarchyWindow.Scope.push_back(item);
 	KigsCore::Connect(item, "Destroy", gKigsTools->Application, "KigsToolsOnDestroy");
 }
-
-/*
-CoreModifiable* FindRootXMLFile(CoreModifiable* item)
-{
-	auto& parents = item->GetParents();
-	for (auto it = parents.begin(); it != parents.end(); ++it)
-	{
-		CoreModifiable* found = FindRootXMLFile(*it);
-		if (found) return found;
-	}
-	if (item->GetXMLFile()) return item;
-	return nullptr;
-}
-*/
 
 void DragSourceItem(CoreModifiable* item, CoreModifiable* parent = nullptr)
 {
@@ -1552,7 +1554,7 @@ void CustomAttributeEditor(CoreModifiable* item)
 
 	if (item->isSubType("Texture"))
 	{
-		auto tex = item->as<Texture>();
+		auto tex = item->as<Draw::Texture>();
 		f32 w, h;
 		tex->GetSize(w, h);
 		v2f uv;
@@ -1705,7 +1707,7 @@ void CustomAttributeEditor(CoreModifiable* item)
 				double dist = FLT_MAX;
 				v3f intersection;
 				v3f normal;
-				if (Intersection::IntersectionRayBBox(origin_local, direction_local, bbox.m_Min, bbox.m_Max, intersection, normal,dist))
+				if (Maths::IntersectionRayBBox(origin_local, direction_local, bbox.m_Min, bbox.m_Max, intersection, normal,dist))
 				{
 					hit.push_back({ NormSquare(n->as<Node3D>()->GetLocalToGlobal() * intersection - origin_global), n->as<Node3D>() });
 				}
@@ -1869,7 +1871,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 		XMLNode* node;
 	};
 
-	kigs::unordered_map<unsigned int, lua_method_ref> lua_methods;
+	unordered_map<unsigned int, lua_method_ref> lua_methods;
 
 	/// Attributes
 	ImGui::SetNextItemOpen(gKigsTools->CurrentSettings.AttributesOpen, ImGuiCond_Once);
@@ -3014,7 +3016,7 @@ void DrawEditor()
 							{
 								saving = false;
 							};
-							kigs::unordered_map<CoreModifiable*, KigsToolsState::XMLChange> ToReAdd;
+							unordered_map<CoreModifiable*, KigsToolsState::XMLChange> ToReAdd;
 							for (auto& el : gKigsTools->XMLChanged)
 							{
 								for (auto& xml : el.second.FileChanged)
@@ -3142,7 +3144,7 @@ void DrawEditor()
 		}
 	}
 #else
-	gKigsTools->CurrentSettings.SequenceEditor=false
+	gKigsTools->CurrentSettings.SequenceEditor = false;
 #endif
 
 	//ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -3325,11 +3327,20 @@ void SelectObjectKigsTools(CoreModifiable* obj)
 	OpenInHierarchy(obj);
 	gKigsTools->HierarchyWindow.SelectedItem = obj;
 }
-
+}
+}
 #else
-void SelectObjectKigsTools(CoreModifiable* obj){}
-bool UpdateKigsTools() { return false; }
-void DestroyKigsTools(){}
-void ShowKigsTools(bool show) { (void)show; }
-void RegisterWidget(const std::string& id, std::function<void()> draw_function) { (void)id; (void)draw_function; }
+namespace Kigs
+{
+	namespace Tools
+	{
+		using namespace Kigs::Core;
+
+		void SelectObjectKigsTools(CoreModifiable* obj) {}
+		bool UpdateKigsTools() { return false; }
+		void DestroyKigsTools() {}
+		void ShowKigsTools(bool show) { (void)show; }
+		void RegisterWidget(const std::string& id, std::function<void()> draw_function) { (void)id; (void)draw_function; }
+	}
+}
 #endif

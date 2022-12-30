@@ -4,6 +4,9 @@
 #include "TecLibs/Math/Algorithm.h"
 #include <algorithm>
 
+using namespace Kigs::Utils;
+using namespace Kigs::Draw;
+
 template<typename T>
 static T* GetVertexComp(void* v, unsigned int offset)
 {

@@ -3,6 +3,8 @@
 #include "KeyToAsciiDX.h"
 #include "KeyboardDX.h"
 
+using namespace Kigs::Input;
+
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(KeyToAsciiDX, KeyToAscii, Input);
 IMPLEMENT_CLASS_INFO(KeyToAsciiDX)
 

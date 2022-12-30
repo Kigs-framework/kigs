@@ -1,19 +1,25 @@
 #pragma once
 
-#include <DataDrivenBaseApplication.h>
+#include "DataDrivenBaseApplication.h"
 
-class Sample8 : public DataDrivenBaseApplication
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(Sample8, DataDrivenBaseApplication, Core);
-	DECLARE_CONSTRUCTOR(Sample8);
+	using namespace Core;
+	using namespace DDriven;
 
-protected:
-	void	ProtectedInit() override;
-	void	ProtectedUpdate() override;
-	void	ProtectedClose() override;
+	class Sample8 : public DataDrivenBaseApplication
+	{
+	public:
+		DECLARE_CLASS_INFO(Sample8, DataDrivenBaseApplication, Core);
+		DECLARE_CONSTRUCTOR(Sample8);
 
-	
-	void	ProtectedInitSequence(const std::string& sequence) override;
-	void	ProtectedCloseSequence(const std::string& sequence) override;
-};
+	protected:
+		void	ProtectedInit() override;
+		void	ProtectedUpdate() override;
+		void	ProtectedClose() override;
+
+
+		void	ProtectedInitSequence(const std::string& sequence) override;
+		void	ProtectedCloseSequence(const std::string& sequence) override;
+	};
+}

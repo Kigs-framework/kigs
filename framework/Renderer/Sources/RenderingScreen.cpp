@@ -8,6 +8,9 @@
 #include "TravState.h"
 #include "Texture.h"
 
+using namespace Kigs::Draw;
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(RenderingScreen)
 IMPLEMENT_CONSTRUCTOR(RenderingScreen)
 	, mBitsPerPixel(*this, true, "BitsPerPixel", 32)
@@ -64,7 +67,7 @@ void RenderingScreen::InitModifiable()
 	{
 		instances=CoreModifiable::GetInstancesByName("Window",parentW);
 		if(instances.size())
-			mParentWindow=(Window*)(instances[0].get());
+			mParentWindow=(Gui::Window*)(instances[0].get());
 	}
 
 	// I want to be notified on brightness change
@@ -211,7 +214,7 @@ DEFINE_METHOD(RenderingScreen, ResetContext)
 	return true;
 }
 
-bool RenderingScreen::GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout)
+bool RenderingScreen::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::touchPosInfos& pout)
 {
 	pout.pos.z = 0;
 

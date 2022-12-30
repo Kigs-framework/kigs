@@ -11,6 +11,8 @@
 
 #include <algorithm>
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(TouchInputEventManager)
 
 IMPLEMENT_CONSTRUCTOR(TouchInputEventManager)
@@ -562,14 +564,14 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	}
 
 	auto spatial_interaction_device = mTheInputModule->GetSpatialInteraction();
-	auto camera = spatial_interaction_device ? (Camera*)spatial_interaction_device->getValue<CoreModifiable*>("GazeCamera") : nullptr;
+	auto camera = spatial_interaction_device ? (Draw::Camera*)spatial_interaction_device->getValue<CoreModifiable*>("GazeCamera") : nullptr;
 
 	u16 any_touch_state = 0;
 	if (force_click) any_touch_state = 1;
 	v3f any_pos;
 
 	// TODO ask module input for current touch device(s) (multitouch, mouse, hololens gesture...)
-	kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>	Touches;
+	unordered_map<TouchSourceID, TouchEventState::TouchInfos>	Touches;
 	
 	MultiTouchDevice* mtDevice = mTheInputModule->GetMultiTouch();
 	if (mTheInputModule->GetMouse() && !mtDevice)
@@ -626,7 +628,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 			//dd::line(itr.second.Position, itr.second.Position + itr.second.Forward, itr.second.pressed ? v3f{ 0,1,0 } : v3f{ 1,1,1 }, 0.02f);
 			//dd::arrow(itr.second.Position, itr.second.Position + itr.second.Up*0.05f, v3f{ 0,0,1 }, 0.02f);
 			auto& interaction = *itr.second;
-			interaction.current_near_interaction_hit = Hit{};
+			interaction.current_near_interaction_hit = Maths::Hit{};
 
 			if(interaction.allowed)
 			{
@@ -791,12 +793,12 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	//kigsprintf("touch before transform : %f %f \n", (*Touches.begin()).posInfos.pos.x, (*Touches.begin()).posInfos.pos.y);
 
 	// now do transformation hierarchy for mCurrentTouchSupportRoot
-	kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>>	transformedInfosMap;
+	unordered_map<CoreModifiable*, unordered_map<TouchSourceID, TouchEventState::TouchInfos>>	transformedInfosMap;
 	transformTouchesInTouchSupportHierarchy(mCurrentTouchSupportRoot, transformedInfosMap, Touches);
 
 
 	// first step : manage a list of item per Scene3D parent
-	kigs::unordered_map<CoreModifiable*, std::vector<CoreModifiable*> > perScene3DMap;
+	unordered_map<CoreModifiable*, std::vector<CoreModifiable*> > perScene3DMap;
 
 	StackedEventStateStruct& state = mStackedEventState.back();
 
@@ -822,7 +824,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 
 	// second step : associate each rendering screen to a priority sorted list of Scene3D
 
-	kigs::unordered_map<CoreModifiable*, std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >	perRenderingScreenSortedMap;
+	unordered_map<CoreModifiable*, std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >	perRenderingScreenSortedMap;
 
 	auto itScene = perScene3DMap.begin();
 	auto itSceneE = perScene3DMap.end();
@@ -907,7 +909,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	}
 
 	// Build the ordered element list for each touch
-	kigs::unordered_map<TouchSourceID, std::vector<SortedElementNode>> flat_trees;
+	unordered_map<TouchSourceID, std::vector<SortedElementNode>> flat_trees;
 	for (auto& t : Touches)
 	{
 		RecursiveFlattenTreeForTouchID(flat_trees[t.first], mCurrentTouchSupportRoot, perRenderingScreenSortedMap, perScene3DMap, transformedInfosMap, t.first);
@@ -925,9 +927,9 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 
 
 void TouchInputEventManager::RecursiveFlattenTreeForTouchID(std::vector<SortedElementNode>& flat_tree, touchSupportTreeNode* CurrentTouchSupport,
-	kigs::unordered_map<CoreModifiable*, std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >& perRenderingScreenSortedMap,
-	kigs::unordered_map<CoreModifiable*, std::vector<CoreModifiable*> >& perScene3DMap,
-	kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchSourceID touch_id)
+	unordered_map<CoreModifiable*, std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare > >& perRenderingScreenSortedMap,
+	unordered_map<CoreModifiable*, std::vector<CoreModifiable*> >& perScene3DMap,
+	unordered_map<CoreModifiable*, unordered_map<TouchSourceID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchSourceID touch_id)
 {
 
 	if (perRenderingScreenSortedMap.find(CurrentTouchSupport->mCurrentNode) != perRenderingScreenSortedMap.end())
@@ -948,7 +950,7 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(std::vector<SortedEl
 				touchSupportTreeNode*	tsn;
 				bool					currentNodeCatchEvent;
 			};
-			kigs::unordered_map<CoreModifiable*, SonStruct>	sonTouchSupport;
+			unordered_map<CoreModifiable*, SonStruct>	sonTouchSupport;
 			for (auto& SonSupportTouch : cameraOrRenderingScreen->mSons)
 			{
 				SonStruct toInsert{ &SonSupportTouch, false};
@@ -983,7 +985,7 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(std::vector<SortedEl
 				SortedElementNode	sonItemToAdd;
 				
 				auto item = std::get<0>(item_tuple);
-				Hit hit = std::get<1>(item_tuple);
+				Maths::Hit hit = std::get<1>(item_tuple);
 				
 				//if (!hit.HitNode) 
 				//	hit = it->second.posInfos.hit;
@@ -1029,7 +1031,7 @@ void TouchInputEventManager::RecursiveFlattenTreeForTouchID(std::vector<SortedEl
 	}
 }
 
-void	TouchInputEventManager::LinearCallEventUpdate(std::vector<SortedElementNode>& flat_tree, const Timer& timer, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchSourceID touch_id)
+void	TouchInputEventManager::LinearCallEventUpdate(std::vector<SortedElementNode>& flat_tree, const Timer& timer, unordered_map<CoreModifiable*, unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchSourceID touch_id)
 {
 	StackedEventStateStruct& state = mStackedEventState.back();
 	u32 swallowMask = 0;
@@ -1067,7 +1069,7 @@ void	TouchInputEventManager::LinearCallEventUpdate(std::vector<SortedElementNode
 	}
 }
 
-void	TouchInputEventManager::transformTouchesInTouchSupportHierarchy(touchSupportTreeNode* current, kigs::unordered_map<CoreModifiable*, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>>& resultmap, kigs::unordered_map<TouchSourceID, TouchEventState::TouchInfos>& Touches)
+void	TouchInputEventManager::transformTouchesInTouchSupportHierarchy(touchSupportTreeNode* current, unordered_map<CoreModifiable*, unordered_map<TouchSourceID, TouchEventState::TouchInfos>>& resultmap, unordered_map<TouchSourceID, TouchEventState::TouchInfos>& Touches)
 {
 	auto itTouches = Touches.begin();
 	auto itTouchesE = Touches.end();
@@ -1164,10 +1166,11 @@ DEFINE_METHOD(TouchInputEventManager, OnDestroyTouchSupportCallback)
 	return false;
 }
 
-bool	operator<(const TouchEventState::TouchInfos& first, const TouchEventState::TouchInfos& other)
+/*
+bool	Kigs::Input::operator<(const Kigs::Input::TouchEventState::TouchInfos& first, const Kigs::Input::TouchEventState::TouchInfos& other)
 {
 	return first.ID < other.ID;
-}
+}*/
 
 // event updates
 void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& timer,CoreModifiable* target, const TouchInfos& touch, u32& swallowMask)

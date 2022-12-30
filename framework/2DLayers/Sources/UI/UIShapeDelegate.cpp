@@ -6,10 +6,11 @@
 #include "ModuleRenderer.h"
 #include "Texture.h"
 
+using namespace Kigs::Draw2D;
 //#//////////////////////////////
 //#		UIShapeDelegate
 //#//////////////////////////////
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIShapeDelegate, UIShapeDelegate, 2DLayers);
+
 IMPLEMENT_CLASS_INFO(UIShapeDelegate)
 
 IMPLEMENT_CONSTRUCTOR(UIShapeDelegate)

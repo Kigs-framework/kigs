@@ -11,6 +11,8 @@
 #include "Core.h"
 #include "Material.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(MeshItemGroup)
 
 IMPLEMENT_CLASS_INFO(Mesh)
@@ -82,10 +84,10 @@ void	Mesh::InitModifiable()
 	{
 		if (!mDynamicInit)
 		{
-			auto pathManager = KigsCore::Singleton<FilePathManager>();
+			auto pathManager = KigsCore::Singleton<File::FilePathManager>();
 
 			std::string fullfilename;
-			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(mFileName);
+			SmartPointer<File::FileHandle> fullfilenamehandle = pathManager->FindFullName(mFileName);
 			if (fullfilenamehandle)
 			{
 				fullfilename = fullfilenamehandle->mFullFileName;
@@ -186,13 +188,13 @@ void Mesh::Triangle::NormalAngle(const Point3D* VertexArray, Vector3D &Na, Vecto
 }
 
 
-void Mesh::TexCoord::Load(BufferedFile* currentfile)
+void Mesh::TexCoord::Load(File::BufferedFile* currentfile)
 {
 	fread(&u,sizeof(u),1,currentfile);
 	fread(&v,sizeof(v),1,currentfile);
 }
 
-void Mesh::Triangle::Load(BufferedFile* currentfile)
+void Mesh::Triangle::Load(File::BufferedFile* currentfile)
 {
 	fread(&a,sizeof(a),1,currentfile);
 	fread(&b,sizeof(b),1,currentfile);
@@ -200,26 +202,26 @@ void Mesh::Triangle::Load(BufferedFile* currentfile)
 }
 
 
-void Mesh::ThreeColorTriangleStruct::Load(BufferedFile* currentfile)
+void Mesh::ThreeColorTriangleStruct::Load(File::BufferedFile* currentfile)
 {
 	fread(&Ca,sizeof(Ca),1,currentfile);
 	fread(&Cb,sizeof(Cb),1,currentfile);
 	fread(&Cc,sizeof(Cc),1,currentfile);
 }
 
-void Mesh::OneColorTriangleStruct::Load(BufferedFile* currentfile)
+void Mesh::OneColorTriangleStruct::Load(File::BufferedFile* currentfile)
 {
 	fread(&C,sizeof(C),1,currentfile);
 }
 
-void Mesh::ThreeNormalTriangleStruct::Load(BufferedFile* currentfile)
+void Mesh::ThreeNormalTriangleStruct::Load(File::BufferedFile* currentfile)
 {
 	fread(&Na,sizeof(Na),1,currentfile);
 	fread(&Nb,sizeof(Nb),1,currentfile);
 	fread(&Nc,sizeof(Nc),1,currentfile);
 }
 
-void Mesh::OneNormalTriangleStruct::Load(BufferedFile* currentfile)
+void Mesh::OneNormalTriangleStruct::Load(File::BufferedFile* currentfile)
 {
 	fread(&N,sizeof(N),1,currentfile);
 }

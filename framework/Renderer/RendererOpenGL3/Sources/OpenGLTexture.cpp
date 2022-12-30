@@ -25,11 +25,8 @@
 
 #include "ModuleSceneGraph.h"
 
+using namespace Kigs::Draw;
 
-/*#ifdef JAVASCRIPT
-extern "C" void		JSDrawMultilineTextUTF16(const unsigned short* TextToWrite, int maxLineNumber, int maxWidth, u32 FontSize, const char* FontName, u32 a_Alignment, u32 jumpedLines, int R, int G, int B, int A, int& width, int& height);
-extern "C" void		JSInitImageData(void* pixels, int width, int height);
-#endif*/
 
 #define FREETYPE_SIZE_COEFF	0.65f
 
@@ -351,14 +348,14 @@ bool OpenGLTexture::ManagePow2Buffer(u32 aWidth, u32 aHeight, u32 aPixSize)
 	return false;
 }
 
-bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool directInit)
+bool	OpenGLTexture::CreateFromImage(const SmartPointer<Pict::TinyImage>& image, bool directInit)
 {
 	if (!image)
 		return false;
 
 	unsigned char * data;
 
-	TinyImage::ImageFormat format = image->GetFormat();
+	Pict::TinyImage::ImageFormat format = image->GetFormat();
 
 	RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);
 	bool needRealloc = false;
@@ -368,7 +365,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 	{
 		mTextureType = TEXTURE_2D;
 
-		u32 pixSize = TinyImage::GetPixelValueSize(image->GetFormat());
+		u32 pixSize = Pict::TinyImage::GetPixelValueSize(image->GetFormat());
 
 
 		if (pixSize > 0)
@@ -477,7 +474,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 	{
 		switch (image->GetFormat())
 		{
-		case TinyImage::AI88:
+		case Pict::TinyImage::AI88:
 		{
 			if (mCanReuseBuffer)
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data);
@@ -486,7 +483,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 			mTransparencyType = 2;
 			break;
 		}
-		case TinyImage::ABGR_16_1555_DIRECT_COLOR:
+		case Pict::TinyImage::ABGR_16_1555_DIRECT_COLOR:
 		{
 			// create tmp RGBA buffer and convert
 
@@ -519,7 +516,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 		}
 		break;
 
-		case TinyImage::PALETTE16_256_COLOR:
+		case Pict::TinyImage::PALETTE16_256_COLOR:
 		{
 			unsigned short*	newdata = new unsigned short[mWidth*mHeight];
 			unsigned short* palette = (unsigned short*)image->GetPaletteData();
@@ -541,7 +538,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 
 		}
 		break;
-		case TinyImage::PALETTE16_16_COLOR:
+		case Pict::TinyImage::PALETTE16_16_COLOR:
 		{
 			unsigned short*	newdata = new unsigned short[mWidth*mHeight];
 			unsigned short* palette = (unsigned short*)image->GetPaletteData();
@@ -571,21 +568,21 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 		}
 		break;
 
-		case TinyImage::RGB_16_565:
+		case Pict::TinyImage::RGB_16_565:
 			if (mCanReuseBuffer)
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, data);
 			else
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mPow2Width, mPow2Height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, data);
 			mTransparencyType = 0;
 			break;
-		case TinyImage::RGBA_16_5551:
+		case Pict::TinyImage::RGBA_16_5551:
 			if (mCanReuseBuffer)
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, data);
 			else
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mPow2Width, mPow2Height, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, data);
 			mTransparencyType = 1;
 			break;
-		case TinyImage::RGBA_32_8888:
+		case Pict::TinyImage::RGBA_32_8888:
 			if (mCanReuseBuffer)
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			else
@@ -597,7 +594,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 				mTransparencyType = 2;
 			}
 			break;
-		case TinyImage::RGB_24_888:
+		case Pict::TinyImage::RGB_24_888:
 			if (mCanReuseBuffer)
 			{
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -607,14 +604,14 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mPow2Width, mPow2Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 			mTransparencyType = 0;
 			break;
-		case TinyImage::GREYSCALE:
+		case Pict::TinyImage::GREYSCALE:
 			if (mCanReuseBuffer)
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
 			else
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, mPow2Width, mPow2Height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
 			mTransparencyType = 0;
 			break;
-		case TinyImage::ALPHA_8:
+		case Pict::TinyImage::ALPHA_8:
 			if (mCanReuseBuffer)
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_ALPHA, GL_UNSIGNED_BYTE, data);
 			else
@@ -623,7 +620,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 			break;
 		
 #ifdef SUPPORT_ETC_TEXTURE
-		case TinyImage::ETC1:
+		case Pict::TinyImage::ETC1:
 		{
 #ifndef WIN32
 			u32 L_TotalSize = (mPow2Width*mPow2Height) / 2;
@@ -634,7 +631,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 #endif
 			break;
 		}
-		case TinyImage::ETC1A8:
+		case Pict::TinyImage::ETC1A8:
 		{
 #ifndef WIN32
 
@@ -667,19 +664,19 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 #endif
 			break;
 		}
-		case TinyImage::ETC1A4:
+		case Pict::TinyImage::ETC1A4:
 		{
 			//TODO
 			break;
 		}
-		case TinyImage::ETC2:
+		case Pict::TinyImage::ETC2:
 		{
 			u32 L_TotalSize = (mPow2Width*mPow2Height) / 2;
 			glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB8_ETC2, (GLsizei)mPow2Width, (GLsizei)mPow2Height, 0, L_TotalSize, data);
 			mTransparencyType = 0;
 			break;
 		}
-		case TinyImage::ETC2A8:
+		case Pict::TinyImage::ETC2A8:
 		{
 			u32 L_TotalSize = (mPow2Width*mPow2Height);
 			glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA8_ETC2_EAC, (GLsizei)mPow2Width, (GLsizei)mPow2Height, 0, L_TotalSize, data);
@@ -690,25 +687,25 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 
 #endif
 #ifdef SUPPORT_S3TC_TEXTURE
-		case TinyImage::BC1:
-		case TinyImage::BC2:
-		case TinyImage::BC3:
+		case Pict::TinyImage::BC1:
+		case Pict::TinyImage::BC2:
+		case Pict::TinyImage::BC3:
 
 		{
 			int openGLFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 
 			mTransparencyType = 0;
 
-			if (format == TinyImage::BC1)
+			if (format == Pict::TinyImage::BC1)
 			{
 				openGLFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 			}
-			else if (format == TinyImage::BC2)
+			else if (format == Pict::TinyImage::BC2)
 			{
 				openGLFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 				mTransparencyType = 2;
 			}
-			else if (format == TinyImage::BC3)
+			else if (format == Pict::TinyImage::BC3)
 			{
 				openGLFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 				mTransparencyType = 2;
@@ -754,7 +751,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 					}
 
 					mipsize = mipsizex*mipsizey;
-					if (image->GetFormat() == TinyImage::BC1)
+					if (image->GetFormat() == Pict::TinyImage::BC1)
 					{
 						mipsize /= 2;
 						if (mipsize < 8)
@@ -800,12 +797,12 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<TinyImage>& image, bool d
 
 }
 
-bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 fontSize, const char* fontName, u32 a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, int a_drawingLimit)
+bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 fontSize, const char* fontName, u32 a_Alignment, float R, float G, float B, float A, Pict::TinyImage::ImageFormat format, int a_drawingLimit)
 {
 	return CreateFromText(text, 0, 0, fontSize, fontName, a_Alignment, R, G, B, A, format,  a_drawingLimit);
 }
 
-bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumber, u32 maxSize, u32 fontSize, const char* fontName, u32 a_Alignment, float R, float G, float B, float A, TinyImage::ImageFormat format, int a_drawingLimit)
+bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumber, u32 maxSize, u32 fontSize, const char* fontName, u32 a_Alignment, float R, float G, float B, float A, Pict::TinyImage::ImageFormat format, int a_drawingLimit)
 {
 	mIsText = true;
 	bool bRet = false;
@@ -827,18 +824,18 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumbe
 
 		if (!ModuleSpecificRenderer::mDrawer->IsInCache(fontName))
 		{
-			auto pathManager = KigsCore::Singleton<FilePathManager>();
-			SmartPointer<FileHandle> fullfilenamehandle;
+			auto pathManager = KigsCore::Singleton<File::FilePathManager>();
+			SmartPointer<File::FileHandle> fullfilenamehandle;
 
 			if (pathManager)
 			{
 				fullfilenamehandle = pathManager->FindFullName(fontName);
 			}
-			if ((fullfilenamehandle->mStatus&FileHandle::Exist) == 0)
+			if ((fullfilenamehandle->mStatus& File::FileHandle::Exist) == 0)
 				return false;
 
 			u64 size;
-			auto L_Buffer = ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
+			auto L_Buffer = File::ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
 			if (L_Buffer)
 			{
 				unsigned char* pBuffer = (unsigned char*)L_Buffer->CopyBuffer();
@@ -854,7 +851,7 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumbe
 
 		int L_Width = 0;
 		int L_Height = 0;
-		pImageData = ModuleSpecificRenderer::mDrawer->DrawTextToImage(text, textSize, L_Width, L_Height, (TextAlignment)a_Alignment, false, _maxLineNumber, maxSize, a_drawingLimit, (unsigned char)R, (unsigned char)G, (unsigned char)B);
+		pImageData = ModuleSpecificRenderer::mDrawer->DrawTextToImage(text, textSize, L_Width, L_Height, (Utils::TextAlignment)a_Alignment, false, _maxLineNumber, maxSize, a_drawingLimit, (unsigned char)R, (unsigned char)G, (unsigned char)B);
 
 		if (!pImageData)
 			break;
@@ -873,7 +870,7 @@ bool OpenGLTexture::CreateFromText(const unsigned short* text, u32 _maxLineNumbe
 
 #endif*/
 
-		SmartPointer<TinyImage>	img = TinyImage::CreateImage(pImageData, L_Width, L_Height, TinyImage::RGBA_32_8888);
+		SmartPointer<Pict::TinyImage>	img = Pict::TinyImage::CreateImage(pImageData, L_Width, L_Height, Pict::TinyImage::RGBA_32_8888);
 
 		if (!CreateFromImage(img))
 			break;
@@ -896,17 +893,17 @@ bool	OpenGLTexture::Load()
 	}
 	else
 	{
-		auto pathManager = KigsCore::Singleton<FilePathManager>();
+		auto pathManager = KigsCore::Singleton<File::FilePathManager>();
 
 		std::string fileName = mFileName.const_ref();
 
 		if (fileName != "")
 		{
-			SmartPointer<FileHandle> lFile = pathManager->FindFullName(fileName);
+			SmartPointer<File::FileHandle> lFile = pathManager->FindFullName(fileName);
 			if (!lFile)
 				return false;
 
-			SmartPointer<TinyImage> toload = TinyImage::CreateImage(lFile.get());
+			SmartPointer<Pict::TinyImage> toload = Pict::TinyImage::CreateImage(lFile.get());
 			if (toload)
 			{
 				bool result = false;

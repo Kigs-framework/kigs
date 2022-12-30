@@ -1,5 +1,6 @@
 #include "GLSLCutShader.h"
 
+using namespace Kigs::Draw;
 
 IMPLEMENT_CONSTRUCTOR(API3DCutShader)
 {

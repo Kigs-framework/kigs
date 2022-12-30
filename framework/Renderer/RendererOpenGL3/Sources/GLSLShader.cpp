@@ -13,7 +13,7 @@
 #include "OpenGLMaterial.h"
 #include "Platform/Renderer/OpenGLInclude.h"
 
-
+using namespace Kigs::Draw;
 
 GLSLShaderInfo::~GLSLShaderInfo()
 {
@@ -168,16 +168,16 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	if (str[0] == '!') // load from file
 	{
 		const char* filename = (str.c_str() + 1);
-		auto pathManager = KigsCore::Singleton<FilePathManager>();
+		auto pathManager = KigsCore::Singleton<File::FilePathManager>();
 
 		std::string fullfilename;
 		if (pathManager)
 		{
-			SmartPointer<FileHandle> file = pathManager->FindFullName(filename);
+			SmartPointer<File::FileHandle> file = pathManager->FindFullName(filename);
 			fullfilename = file->mFullFileName;
 		}
 		u64 length;
-		rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length,1);
+		rawbuffer = File::ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length,1);
 		if (rawbuffer)
 		{
 			SrcTxt = (const char*)rawbuffer->buffer();
@@ -202,16 +202,16 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	if (str[0] == '!') // load from file
 	{
 		const char* filename = (str.c_str() + 1);
-		auto pathManager = KigsCore::Singleton<FilePathManager>();
+		auto pathManager = KigsCore::Singleton<File::FilePathManager>();
 
 		std::string fullfilename;
 		if (pathManager)
 		{
-			SmartPointer<FileHandle> file = pathManager->FindFullName(filename);
+			SmartPointer<File::FileHandle> file = pathManager->FindFullName(filename);
 			fullfilename = file->mFullFileName;
 		}
 		u64 length;
-		rawbuffer = ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length,1);
+		rawbuffer = File::ModuleFileManager::LoadFileAsCharString(fullfilename.c_str(), length,1);
 		if (rawbuffer)
 		{
 			SrcTxt = (const char*)rawbuffer->buffer();

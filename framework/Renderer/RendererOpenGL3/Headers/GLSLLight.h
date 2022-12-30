@@ -1,65 +1,70 @@
-#ifndef _GLSLLIGHT_H
-#define _GLSLLIGHT_H
+#pragma once
 
 
 #include "Light.h"
 #include "Scene3D.h"
-//#define USE_ATTFUNCTION
 
-
-class CoreModifiable;
-class Camera;
-class RendererOpenGL;
-
-// ****************************************
-// * API3DLight class
-// * --------------------------------------
-/**
- * \file	GLSLLight.h
- * \class	API3DLight
- * \ingroup Renderer
- * \brief	OpenGL implementation of Light.
- */
- // ****************************************
-
-class API3DLight : public Light
+namespace Kigs
 {
-public:
-	friend class RendererOpenGL;
+	namespace Core
+	{
+		class CoreModifiable;
+	}
+	namespace Draw
+	{
 
-	DECLARE_CLASS_INFO(API3DLight, Light, Renderer)
-	API3DLight(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	virtual ~API3DLight();
+		class Camera;
+		class RendererOpenGL;
 
-	virtual bool PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D & camPos);
+		// ****************************************
+		// * API3DLight class
+		// * --------------------------------------
+		/**
+		 * \file	GLSLLight.h
+		 * \class	API3DLight
+		 * \ingroup Renderer
+		 * \brief	OpenGL implementation of Light.
+		 */
+		 // ****************************************
 
-	bool	Draw(TravState* state) override;
+		class API3DLight : public Light
+		{
+		public:
+			friend class RendererOpenGL;
 
-	virtual void	DrawLight(TravState*);
-	void PostDrawLight(TravState*);
+			DECLARE_CLASS_INFO(API3DLight, Light, Renderer)
+				API3DLight(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual ~API3DLight();
 
-	void SetUniformLocation(int uniform, const char* location);
+			virtual bool PreRendering(RendererOpenGL* renderer, Camera* cam, Point3D& camPos);
 
-	int GetTypeOfLight();
-	//inline int		GetPriority() const { return (int)((unsigned int)mPriority); }
-	void NotifyUpdate(const unsigned int  labelid) override;
+			bool	Draw(TravState* state) override;
 
-protected:
-	void	InitModifiable() override;
+			virtual void	DrawLight(TravState*);
+			void PostDrawLight(TravState*);
 
-	CMSP		mPositionUniform;
-	CMSP		mCamPosUniform;
+			void SetUniformLocation(int uniform, const char* location);
 
-	CMSP		mDiffuseUniform;
-	CMSP		mSpecularUniform;
-	CMSP		mAmbiantUniform;
+			int GetTypeOfLight();
+			//inline int		GetPriority() const { return (int)((unsigned int)mPriority); }
+			void NotifyUpdate(const unsigned int  labelid) override;
 
-	CMSP		mAttenuationUniform;
-	CMSP		mSpotDirUniform;
-	CMSP		mSpotCutoffUniform;
-	CMSP		mSpotExponentUniform;
-	
-};
+		protected:
+			void	InitModifiable() override;
+
+			CMSP		mPositionUniform;
+			CMSP		mCamPosUniform;
+
+			CMSP		mDiffuseUniform;
+			CMSP		mSpecularUniform;
+			CMSP		mAmbiantUniform;
+
+			CMSP		mAttenuationUniform;
+			CMSP		mSpotDirUniform;
+			CMSP		mSpotCutoffUniform;
+			CMSP		mSpotExponentUniform;
+
+		};
 
 
 #define POINT_LIGHT 0
@@ -79,4 +84,5 @@ protected:
 #define AMBIANT_COLOR 8
 
 
-#endif //_GLSLLIGHT_H
+	}
+}

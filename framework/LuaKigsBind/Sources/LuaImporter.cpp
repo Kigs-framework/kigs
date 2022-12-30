@@ -13,7 +13,7 @@
 #else
 #define TestPrintf(...)
 #endif
-
+using namespace Kigs::Lua;
 IMPLEMENT_CLASS_INFO(LuaImporter)
 
 using namespace LuaIntf;
@@ -220,7 +220,7 @@ s32 LuaImporter::InternalImport(CoreModifiable* parent, LuaIntf::LuaRef table, I
 		else if (infos.has("lua"))
 		{
 			u64 length;
-			auto buffer = ModuleFileManager::LoadFileAsCharString(infos["lua"].value().toValue<std::string>().c_str(), length,1);
+			auto buffer = File::ModuleFileManager::LoadFileAsCharString(infos["lua"].value().toValue<std::string>().c_str(), length,1);
 			if (buffer)
 			{
 				SP<LuaKigsBindModule> _luamodule = KigsCore::GetModule("LuaKigsBindModule");

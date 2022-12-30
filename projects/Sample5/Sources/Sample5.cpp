@@ -1,6 +1,6 @@
-#include <Sample5.h>
-#include <FilePathManager.h>
-#include <NotificationCenter.h>
+#include "Sample5.h"
+#include "FilePathManager.h"
+#include "NotificationCenter.h"
 #include "CoreItem.h"
 #include "CoreVector.h"
 #include "JSonFileParser.h"
@@ -12,6 +12,8 @@
 // - create/evaluate mathematical expression
 // - animate values (UIItem / XML files) 
 
+using namespace Kigs;
+using namespace Kigs::Core;
 
 IMPLEMENT_CLASS_INFO(Sample5);
 
@@ -36,7 +38,7 @@ void	Sample5::ProtectedInit()
 	// lets say that the update will sleep 1ms
 	SetUpdateSleepTime(1);
 
-	SP<FilePathManager> pathManager = KigsCore::GetSingleton("FilePathManager");
+	SP < File::FilePathManager > pathManager = KigsCore::GetSingleton("FilePathManager");
 	pathManager->AddToPath(".", "xml");
 
 	// CoreItem can be used to manage JSon slyle objects

@@ -1,27 +1,32 @@
 #pragma once
 
-#include <CoreBaseApplication.h>
+#include "CoreBaseApplication.h"
 
-class Sample6 : public CoreBaseApplication
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(Sample6, CoreBaseApplication, Core);
-	DECLARE_CONSTRUCTOR(Sample6);
+	using namespace Core;
 
-protected:
+	class Sample6 : public CoreBaseApplication
+	{
+	public:
+		DECLARE_CLASS_INFO(Sample6, CoreBaseApplication, Core);
+		DECLARE_CONSTRUCTOR(Sample6);
 
-	// Wrapped methods
-	void	MethodWithParams(float p1, float p2);
-	void    OnSimpleClassPreInit();
+	protected:
 
-	WRAP_METHODS(MethodWithParams, OnSimpleClassPreInit);
+		// Wrapped methods
+		void	MethodWithParams(float p1, float p2);
+		void    OnSimpleClassPreInit();
 
-	// Fixed prototype 
-	DECLARE_METHOD(CatchNotifMethod);
-	COREMODIFIABLE_METHODS(CatchNotifMethod);
+		WRAP_METHODS(MethodWithParams, OnSimpleClassPreInit);
 
-	void	ProtectedInit() override;
-	void	ProtectedUpdate() override;
-	void	ProtectedClose() override;
+		// Fixed prototype 
+		DECLARE_METHOD(CatchNotifMethod);
+		COREMODIFIABLE_METHODS(CatchNotifMethod);
 
-};
+		void	ProtectedInit() override;
+		void	ProtectedUpdate() override;
+		void	ProtectedClose() override;
+
+	};
+}

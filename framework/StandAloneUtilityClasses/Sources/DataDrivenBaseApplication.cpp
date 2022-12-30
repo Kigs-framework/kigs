@@ -22,6 +22,26 @@
 
 #include "Sources/KigsTools.cpp"
 
+using namespace Kigs::DDriven;
+using namespace Kigs::Action;
+using namespace Kigs::Lua;
+using namespace Kigs::Gui;
+using namespace Kigs::Input;
+using namespace Kigs::Draw;
+using namespace Kigs::Draw2D;
+
+namespace Kigs
+{
+	namespace DDriven
+	{
+		double GlobalAppDT = 0;
+	}
+}
+
+#ifdef KIGS_TOOLS
+using namespace Kigs::Tools;
+#endif
+
 IMPLEMENT_CLASS_INFO(DataDrivenSequence)
 
 DataDrivenSequence::DataDrivenSequence(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
@@ -121,7 +141,7 @@ void DataDrivenSequence::InitModifiable()
 	instances.clear();
 	GetSonInstancesByType("Scene3D", instances);
 
-	ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
+	Scene::ModuleSceneGraph* scenegraph = (Scene::ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
 
 	std::vector<CMSP>::iterator	it = instances.begin();
 	std::vector<CMSP>::iterator	itend = instances.end();
@@ -400,7 +420,6 @@ void DataDrivenSequenceManager::UninitModifiable()
 	}
 }
 
-double GlobalAppDT = 0;
 
 IMPLEMENT_CLASS_INFO(DataDrivenBaseApplication)
 IMPLEMENT_CONSTRUCTOR(DataDrivenBaseApplication)
@@ -437,14 +456,14 @@ void DataDrivenBaseApplication::ProtectedPreInit()
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), DataDrivenSequence, DataDrivenSequence, Core)
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), DataDrivenSequenceManager, DataDrivenSequenceManager, Core)
 	
-	auto pathManager = KigsCore::Singleton<FilePathManager>();
+	auto pathManager = KigsCore::Singleton<File::FilePathManager>();
 	pathManager->LoadPackage(APP_KIGS_PACKAGE_NAME);
 }
 
 
 void DataDrivenBaseApplication::ProtectedInit()
 {
-	auto pathManager = KigsCore::Singleton<FilePathManager>();
+	auto pathManager = KigsCore::Singleton<File::FilePathManager>();
 	bool has_kpkg = pathManager->GetLoadedPackage(APP_KIGS_PACKAGE_NAME);
 
 	// load an anonymous CoreModifiableInstance containing global params

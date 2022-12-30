@@ -6,11 +6,12 @@
 #include "ModuleRenderer.h"
 #include "Texture.h"
 
+using namespace Kigs::Draw2D;
 
 //#//////////////////////////////
 //#		UITexturedItem
 //#//////////////////////////////
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UITexturedItem, UITexturedItem, 2DLayers);
+
 IMPLEMENT_CLASS_INFO(UITexturedItem)
 
 IMPLEMENT_CONSTRUCTOR(UITexturedItem)
@@ -119,13 +120,13 @@ UITexturedItem::~UITexturedItem()
 	mTexturePointer = NULL;
 }
 
-void UITexturedItem::PreDraw(TravState* state)
+void UITexturedItem::PreDraw(Scene::TravState* state)
 {
 	if (mTexturePointer)
 		mTexturePointer->DoPreDraw(state);
 }
 
-void UITexturedItem::PostDraw(TravState* state)
+void UITexturedItem::PostDraw(Scene::TravState* state)
 {
 	if (mTexturePointer)
 		mTexturePointer->DoPostDraw(state);
@@ -141,7 +142,7 @@ int UITexturedItem::GetTransparencyType()
 
 bool UITexturedItem::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
-	if (item->isSubType(Texture::mClassID))
+	if (item->isSubType(Draw::Texture::mClassID))
 	{
 		mTexturePointer->setTexture(item);
 		mTexturePointer->refreshTextureInfos();
@@ -157,7 +158,7 @@ bool UITexturedItem::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 
 bool UITexturedItem::removeItem(const CMSP& item DECLARE_LINK_NAME)
 {
-	if (item->isSubType(Texture::mClassID))
+	if (item->isSubType(Draw::Texture::mClassID))
 	{
 		if (item.get() == mTexturePointer->getTexture().get())
 		{

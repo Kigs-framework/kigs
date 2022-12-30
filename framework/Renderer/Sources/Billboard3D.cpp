@@ -6,6 +6,8 @@
 #include "CoreBaseApplication.h"
 #include "Timer.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(Billboard3D)
 
 Billboard3D::Billboard3D(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)

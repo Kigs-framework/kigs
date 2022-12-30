@@ -2,8 +2,9 @@
 #include "KeyboardDevice.h"
 #include "DeviceItem.h"
 
-IMPLEMENT_CLASS_INFO(KeyboardDevice)
+using namespace Kigs::Input;
 
+IMPLEMENT_CLASS_INFO(KeyboardDevice)
 
 int KeyboardDevice::GetKey(int key_id)
 {

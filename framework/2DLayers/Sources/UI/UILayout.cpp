@@ -2,7 +2,8 @@
 #include "Base2DLayer.h"
 #include "RenderingScreen.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UILayout, UILayout, 2DLayers);
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UILayout)
 
 UILayout::UILayout(const std::string& name, CLASS_NAME_TREE_ARG) :
@@ -32,7 +33,7 @@ void UILayout::NotifyUpdate(const unsigned int labelid)
 	UIDrawableItem::NotifyUpdate(labelid);
 }
 
-void UILayout::Update(const Timer& timer, void*)
+void UILayout::Update(const Time::Timer& timer, void*)
 {
 	if (mNeedRecompute)
 	{
@@ -41,7 +42,7 @@ void UILayout::Update(const Timer& timer, void*)
 	}
 }
 
-void UILayout::ProtectedDraw(TravState* state)
+void UILayout::ProtectedDraw(Scene::TravState* state)
 {
 	if (mNeedRecompute)
 	{

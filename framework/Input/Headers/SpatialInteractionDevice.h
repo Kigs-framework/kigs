@@ -61,7 +61,7 @@ namespace Kigs
 			std::optional<Joint> palm;
 			std::optional<Joint> index_tip;
 			std::optional<Joint> middle_tip;
-			Hit current_near_interaction_hit;
+			Maths::Hit current_near_interaction_hit;
 
 			v3f SmoothPosition{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
 			Vector3D SmoothDirection{ -FLT_MAX, -FLT_MAX, -FLT_MAX };

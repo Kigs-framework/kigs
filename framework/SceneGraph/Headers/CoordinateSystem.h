@@ -1,72 +1,77 @@
-#ifndef _COORDINATESYSTEM_H_
-#define _COORDINATESYSTEM_H_
+#pragma once
 
 #include "Node3D.h"
 #include "Upgrador.h"
 
-// ****************************************
-// * CoordinateSystemUp class
-// * --------------------------------------
-/**
- * \file	CoordinateSystem.h
- * \class	CoordinateSystemUp
- * \ingroup SceneGraph
- * \brief	Node3D updragor to have access to node translation / rotation utilities.
- */
- // ****************************************
-class CoordinateSystemUp : public Upgrador<Node3D>
+namespace Kigs
 {
-	// create and init Upgrador if needed and add dynamic attributes
-	virtual void	Init(CoreModifiable* toUpgrade) override;
 
-	// destroy UpgradorData and remove dynamic attributes 
-	virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
+	namespace Scene
+	{
+		// ****************************************
+		// * CoordinateSystemUp class
+		// * --------------------------------------
+		/**
+		 * \file	CoordinateSystem.h
+		 * \class	CoordinateSystemUp
+		 * \ingroup SceneGraph
+		 * \brief	Node3D updragor to have access to node translation / rotation utilities.
+		 */
+		 // ****************************************
+		class CoordinateSystemUp : public Upgrador<Node3D>
+		{
+			// create and init Upgrador if needed and add dynamic attributes
+			virtual void	Init(CoreModifiable* toUpgrade) override;
 
-	START_UPGRADOR(CoordinateSystemUp);
-	UPGRADOR_METHODS(CoordinateSystemNotifyUpdate,AngAxisRotate,globalMoveNode,localMoveNode);
+			// destroy UpgradorData and remove dynamic attributes 
+			virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
 
-	static void toEuler(float x, float y, float z, float angle, float& heading, float& attitude, float& bank);
+			START_UPGRADOR(CoordinateSystemUp);
+			UPGRADOR_METHODS(CoordinateSystemNotifyUpdate, AngAxisRotate, globalMoveNode, localMoveNode);
 
-	CoreModifiableAttribute* mScale;
-	CoreModifiableAttribute* mRot;
-	CoreModifiableAttribute* mPos;
+			static void toEuler(float x, float y, float z, float angle, float& heading, float& attitude, float& bank);
 
-	bool					mWasChanged=false;
-	bool					mWasdAutoUpdate = false;
-}; 
+			CoreModifiableAttribute* mScale;
+			CoreModifiableAttribute* mRot;
+			CoreModifiableAttribute* mPos;
+
+			bool					mWasChanged = false;
+			bool					mWasdAutoUpdate = false;
+		};
 
 
-// ****************************************
-// * PivotUp class
-// * --------------------------------------
-/**
- * \file	CoordinateSystem.h
- * \class	PivotUp
- * \ingroup SceneGraph
- * \brief	Node3D updragor to manipulate node like an pivot ( angle+axis rotation ).
- */
- // ****************************************
+		// ****************************************
+		// * PivotUp class
+		// * --------------------------------------
+		/**
+		 * \file	CoordinateSystem.h
+		 * \class	PivotUp
+		 * \ingroup SceneGraph
+		 * \brief	Node3D updragor to manipulate node like an pivot ( angle+axis rotation ).
+		 */
+		 // ****************************************
 
-class PivotUp : public Upgrador<Node3D>
-{
-	// create and init Upgrador if needed and add dynamic attributes
-	virtual void	Init(CoreModifiable* toUpgrade) override;
+		class PivotUp : public Upgrador<Node3D>
+		{
+			// create and init Upgrador if needed and add dynamic attributes
+			virtual void	Init(CoreModifiable* toUpgrade) override;
 
-	// destroy UpgradorData and remove dynamic attributes 
-	virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
+			// destroy UpgradorData and remove dynamic attributes 
+			virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted) override;
 
-	START_UPGRADOR(PivotUp);
-	UPGRADOR_METHODS(PivotNotifyUpdate);
+			START_UPGRADOR(PivotUp);
+			UPGRADOR_METHODS(PivotNotifyUpdate);
 
-	CoreModifiableAttribute* mPivotPosition;
-	CoreModifiableAttribute* mPivotAxis;
-	CoreModifiableAttribute* mAngle;
-	CoreModifiableAttribute* mIsGlobal;
+			CoreModifiableAttribute* mPivotPosition;
+			CoreModifiableAttribute* mPivotAxis;
+			CoreModifiableAttribute* mAngle;
+			CoreModifiableAttribute* mIsGlobal;
 
-	Matrix3x4				mInitMatrix;
+			Matrix3x4				mInitMatrix;
 
-	bool					mWasChanged = false;
-	bool					mWasdAutoUpdate = false;
-};
+			bool					mWasChanged = false;
+			bool					mWasdAutoUpdate = false;
+		};
 
-#endif //_COORDINATESYSTEM_H_
+	}
+}

@@ -37,12 +37,8 @@
 #include "algorithm"
 
 
-
-/*API3DShader*					RendererOpenGL::mCurrentShader = NULL;
-unsigned int				RendererOpenGL::mCurrentShaderProgram=0;
-std::vector<API3DShader*>	RendererOpenGL::mShaderStack;
-unsigned int				RendererOpenGL::mDirtyShaderMatrix = 0;*/
-
+using namespace Kigs::Draw;
+using namespace Kigs::Draw2D;
 
 #define mCurrentArrayBound mCurrentBoundBuffer[0]
 #define mCurrentElemBound mCurrentBoundBuffer[1]
@@ -549,6 +545,8 @@ extern "C"
 }
 #endif
 
+using namespace Kigs::Utils;
+
 void RendererOpenGL::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	BaseInit(core, "RendererOpenGL", params);
@@ -644,7 +642,7 @@ void RendererOpenGL::Update(const Timer& timer, void* addParam)
 	ModuleSpecificRenderer::Update(timer, addParam);
 }
 
-SP<ModuleBase> PlatformRendererModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> Kigs::Draw::PlatformRendererModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(RendererOpenGL, "RendererOpenGL");

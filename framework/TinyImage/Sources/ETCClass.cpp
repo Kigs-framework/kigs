@@ -8,7 +8,9 @@
 #include "zlib.h"
 #endif
 
-ETCClass::ETCClass(FileHandle* fileName) :TinyImage()
+using namespace Kigs::Pict;
+
+ETCClass::ETCClass(File::FileHandle* fileName) :TinyImage()
 {
 	mIsVFlipped = false;
 	mInitIsOK = Load(fileName);
@@ -19,7 +21,7 @@ ETCClass::~ETCClass()
 {
 }
 
-bool	ETCClass::Load(FileHandle* fileName)
+bool	ETCClass::Load(File::FileHandle* fileName)
 {
 	bool result = false;
 	u64 filelength;
@@ -39,7 +41,7 @@ bool	ETCClass::Load(FileHandle* fileName)
 		}
 	}
 
-	auto rawbuffer = ModuleFileManager::LoadFile(fileName, filelength);
+	auto rawbuffer = File::ModuleFileManager::LoadFile(fileName, filelength);
 	if (rawbuffer)
 	{
 

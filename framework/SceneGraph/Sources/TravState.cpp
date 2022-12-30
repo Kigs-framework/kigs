@@ -7,6 +7,7 @@
 #include "ModernMesh.h"
 #include "ModuleRenderer.h"
 
+using namespace Kigs::Scene;
 
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(TravState, TravState, SceneGraph);
 IMPLEMENT_CLASS_INFO(TravState)

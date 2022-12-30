@@ -11,6 +11,8 @@ namespace Kigs
 	{
 		using namespace Core;
 
+		extern double GlobalAppDT;
+
 		typedef	std::string	State_t;
 		const State_t	State_None = "";
 		const State_t	State_Empty = "Empty";
@@ -190,9 +192,6 @@ namespace Kigs
 			std::map<std::string, std::map<unsigned int, std::string> >	mSequenceParametersMap;
 
 		};
-
-		extern double GlobalAppDT;
-
 
 		// ****************************************
 		// * DataDrivenBaseApplication class

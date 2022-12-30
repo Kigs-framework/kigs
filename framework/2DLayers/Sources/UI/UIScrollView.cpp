@@ -7,7 +7,8 @@
 #include "UI/UIButton.h"
 #include "Base2DLayer.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIScrollView, UIScrollView, 2DLayers);
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UIScrollView)
 
 UIScrollView::UIScrollView(const std::string& name, CLASS_NAME_TREE_ARG) :
@@ -34,7 +35,7 @@ void UIScrollView::InitModifiable()
 
 		std::vector<CMSP>	instances=	GetInstances("ModuleInput");
 		KIGS_ASSERT(instances.size() == 1);
-		mInput = (ModuleInput*)(instances[0].get());
+		mInput = (Input::ModuleInput*)(instances[0].get());
 
 		return;
 	}
@@ -115,7 +116,7 @@ void UIScrollView::SetUpNodeIfNeeded()
 	UpdateContentSize();
 }
 
-bool UIScrollView::Draw(TravState* state)
+bool UIScrollView::Draw(Scene::TravState* state)
 {
 	ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer*)state->GetRenderer();
 	float screenW, screenH;

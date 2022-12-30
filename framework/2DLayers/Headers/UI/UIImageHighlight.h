@@ -1,40 +1,44 @@
-#ifndef _UIImageHighlight_H_
-#define _UIImageHighlight_H_
+#pragma once
 
 #include "UIImage.h"
 #include "TextureFileManager.h"
 #include "AttributePacking.h"
 
-// ****************************************
-// * UIImageHighlight class
-// * --------------------------------------
-/**
-* \file	UIImageHighlight.h
-* \class	UIImageHighlight
-* \ingroup 2DLayers
-* \brief	???
-*/
-// ****************************************
-
-class UIImageHighlight : public UIImage
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(UIImageHighlight, UIImage, 2DLayers);
-	DECLARE_INLINE_CONSTRUCTOR(UIImageHighlight) {}
+	namespace Draw2D
+	{
+		// ****************************************
+		// * UIImageHighlight class
+		// * --------------------------------------
+		/**
+		* \file	UIImageHighlight.h
+		* \class	UIImageHighlight
+		* \ingroup 2DLayers
+		* \brief	???
+		*/
+		// ****************************************
 
-	void ChangeTexture() override;
-	void Highlight(bool b);
+		class UIImageHighlight : public UIImage
+		{
+		public:
+			DECLARE_CLASS_INFO(UIImageHighlight, UIImage, 2DLayers);
+			DECLARE_INLINE_CONSTRUCTOR(UIImageHighlight) {}
 
-	void InitModifiable() override;
-	virtual void NotifyUpdate(const unsigned int /* labelid */)override;
+			void ChangeTexture() override;
+			void Highlight(bool b);
 
-protected:
-	WRAP_METHODS(Highlight);
+			void InitModifiable() override;
+			virtual void NotifyUpdate(const unsigned int /* labelid */)override;
 
-	SmartPointer<TextureHandler>				mPLTexturePointer;
-	SmartPointer<TextureHandler>				mHLTexturePointer;
+		protected:
+			WRAP_METHODS(Highlight);
 
-	maString	mHLTexture = BASE_ATTRIBUTE(HLTexture);
-};
+			SmartPointer<Draw::TextureHandler>				mPLTexturePointer;
+			SmartPointer<Draw::TextureHandler>				mHLTexturePointer;
 
-#endif //_UIImageHighlight_H_
+			maString	mHLTexture = BASE_ATTRIBUTE(HLTexture);
+		};
+
+	}
+}

@@ -10,6 +10,8 @@
 #include "FilePathManager.h"
 #include "ModuleSceneGraph.h"
 
+using namespace Kigs::Draw;
+
 //#define PRINF_GLCALL
 #ifdef PRINF_GLCALL
 #define GLPRINT(...) kigsprintf(__VA_ARGS__)
@@ -346,11 +348,11 @@ void	API3DUniformDataTexture::InitModifiable()
 	{
 		if ((mTextureName.const_ref()) != "")
 		{
-			auto pathManager = KigsCore::Singleton<FilePathManager>();
-			SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(mTextureName.const_ref());
+			auto pathManager = KigsCore::Singleton<File::FilePathManager>();
+			SmartPointer<File::FileHandle> fullfilenamehandle = pathManager->FindFullName(mTextureName.const_ref());
 			if (fullfilenamehandle)
 			{
-				SP<TinyImage> image = TinyImage::CreateImage(fullfilenamehandle.get());
+				SP<Pict::TinyImage> image = Pict::TinyImage::CreateImage(fullfilenamehandle.get());
 				RendererOpenGL* renderer = static_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer);  // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 				renderer->CreateTexture(1, &mTextureGLIndex);
 				//glBindTexture(GL_TEXTURE_3D, mTextureGLIndex);

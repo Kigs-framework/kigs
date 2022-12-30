@@ -3,6 +3,7 @@
 #include "NotificationCenter.h"
 #include "TravState.h"
 
+using namespace Kigs::Draw;
 
 void UniformList::Push(API3DUniformBase * u)
 {

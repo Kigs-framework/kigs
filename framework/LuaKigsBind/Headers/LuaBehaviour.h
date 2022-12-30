@@ -1,5 +1,4 @@
-#ifndef _LUABEHAVIOUR_H_
-#define _LUABEHAVIOUR_H_
+#pragma once
 
 #include "CoreModifiable.h"
 #include "CoreModifiableAttribute.h"
@@ -8,79 +7,84 @@
 
 #include "AttributePacking.h"
 
-class LuaKigsBindModule;
-
-
 struct lua_State;
 
-
-// ****************************************
-// * LuaBehaviour class
-// * --------------------------------------
-/**
- * \class	LuaBehaviour
- * \file	LuaBehaviour.h
- * \ingroup LuaBind
- * \brief	Add LUA methods to a CoreModifiable instance.
- */
- // ****************************************
-class LuaBehaviour : public CoreModifiable
+namespace Kigs
 {
-	
-public:
-	
-	friend class LuaKigsBindModule;
+	using namespace ::LuaIntf;
+	namespace Lua
+	{
+		using namespace Kigs::Core;
 
-	
-	DECLARE_CLASS_INFO(LuaBehaviour, CoreModifiable, LuaBind)
-    
-		//! constructor
-	LuaBehaviour(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	
-    /*! virtual update. 
-    */
-	void Update(const Timer& /* timer */,void* addParam) override;
+		class LuaKigsBindModule;
 
-	void InitLua(double current_time);
+		// ****************************************
+		// * LuaBehaviour class
+		// * --------------------------------------
+		/**
+		 * \class	LuaBehaviour
+		 * \file	LuaBehaviour.h
+		 * \ingroup LuaBind
+		 * \brief	Add LUA methods to a CoreModifiable instance.
+		 */
+		 // ****************************************
+		class LuaBehaviour : public CoreModifiable
+		{
 
-	//! destructor
-	virtual ~LuaBehaviour();
+		public:
 
-protected:
-	//! init method
-	void	InitModifiable() override;
-	void	UninitModifiable() override;
-	
-	LuaKigsBindModule*		mLuaModule;
-	
-	// Lua script or reference on script file
-	maString				mScript;
+			friend class LuaKigsBindModule;
 
-	// enable / disable lua scripting
-	maBool					mEnabled;
 
-	// if interval is set, do update only if interval elapsed
-	maFloat					mInterval;
-	// last update time ( for interval evaluation)
-	double					mLastTime;
-	
-	// check if lua needs init
-	bool				    mLuaNeedInit;
+			DECLARE_CLASS_INFO(LuaBehaviour, CoreModifiable, LuaBind)
 
-	// check if we need to call lua update method
-	bool				    mHasUpdate;
+				//! constructor
+				LuaBehaviour(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	CoreModifiable*			mTarget;
-	LuaIntf::LuaState       mL;
-	LuaIntf::LuaRef         mSelf;
-	
-	void OnAddItemCallback(CoreModifiable* localthis, CoreModifiable* item);
-	void OnRemoveItemCallback(CoreModifiable* localthis, CoreModifiable* item);
+			/*! virtual update.
+			*/
+			void Update(const Time::Timer& /* timer */, void* addParam) override;
 
-	WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback);
+			void InitLua(double current_time);
 
-	DECLARE_METHOD(ReloadScript);
-	COREMODIFIABLE_METHODS(ReloadScript);
-};    
+			//! destructor
+			virtual ~LuaBehaviour();
 
-#endif //_LUABEHAVIOUR_H_
+		protected:
+			//! init method
+			void	InitModifiable() override;
+			void	UninitModifiable() override;
+
+			LuaKigsBindModule* mLuaModule;
+
+			// Lua script or reference on script file
+			maString				mScript;
+
+			// enable / disable lua scripting
+			maBool					mEnabled;
+
+			// if interval is set, do update only if interval elapsed
+			maFloat					mInterval;
+			// last update time ( for interval evaluation)
+			double					mLastTime;
+
+			// check if lua needs init
+			bool				    mLuaNeedInit;
+
+			// check if we need to call lua update method
+			bool				    mHasUpdate;
+
+			CoreModifiable* mTarget;
+			LuaIntf::LuaState       mL;
+			LuaIntf::LuaRef         mSelf;
+
+			void OnAddItemCallback(CoreModifiable* localthis, CoreModifiable* item);
+			void OnRemoveItemCallback(CoreModifiable* localthis, CoreModifiable* item);
+
+			WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback);
+
+			DECLARE_METHOD(ReloadScript);
+			COREMODIFIABLE_METHODS(ReloadScript);
+		};
+	}
+}

@@ -1,43 +1,47 @@
-#ifndef _UIIMAGE_H_
-#define _UIIMAGE_H_
+#pragma once
 
 #include "UITexturedItem.h"
 #include "TextureFileManager.h"
 
-// ****************************************
-// * UIImage class
-// * --------------------------------------
-/**
-* \file	UIImage.h
-* \class	UIImage
-* \ingroup 2DLayers
-* \brief	Just display an image ( texture ) with different modes.
-*/
-// ****************************************
-
-class UIImage : public UITexturedItem
+namespace Kigs
 {
-public:
+	namespace Draw2D
+	{
+		// ****************************************
+		// * UIImage class
+		// * --------------------------------------
+		/**
+		* \file	UIImage.h
+		* \class	UIImage
+		* \ingroup 2DLayers
+		* \brief	Just display an image ( texture ) with different modes.
+		*/
+		// ****************************************
 
-	DECLARE_CLASS_INFO(UIImage, UITexturedItem, 2DLayers);
+		class UIImage : public UITexturedItem
+		{
+		public:
 
-	/**
-	 * \brief	constructor
-	 * \param	name : instance name
-	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
-	 */
-	UIImage(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			DECLARE_CLASS_INFO(UIImage, UITexturedItem, 2DLayers);
 
-	virtual void ChangeTexture();
+			/**
+			 * \brief	constructor
+			 * \param	name : instance name
+			 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
+			 */
+			UIImage(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-protected:
+			virtual void ChangeTexture();
+
+		protected:
 
 
 
-	void InitModifiable() override;
-	//virtual void NotifyUpdate(const unsigned int /* labelid */)override;
-	bool isAlpha(float X, float Y) override;
+			void InitModifiable() override;
+			//virtual void NotifyUpdate(const unsigned int /* labelid */)override;
+			bool isAlpha(float X, float Y) override;
 
-};
+		};
 
-#endif //_UIIMAGE_H_
+	}
+}

@@ -9,6 +9,8 @@
 #include "TravState.h"
 #include "Node3DLodDecorator.h"
 
+using namespace Kigs::Scene;
+
 IMPLEMENT_CLASS_INFO(ModuleSceneGraph);
 
 IMPLEMENT_CONSTRUCTOR(ModuleSceneGraph)

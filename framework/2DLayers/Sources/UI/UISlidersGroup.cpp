@@ -3,7 +3,8 @@
 #include "NotificationCenter.h"
 #include <cstdlib>
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UISlidersGroup, UISlidersGroup, 2DLayers);
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UISlidersGroup)
 
 UISlidersGroup::UISlidersGroup(const std::string& name,CLASS_NAME_TREE_ARG) : 

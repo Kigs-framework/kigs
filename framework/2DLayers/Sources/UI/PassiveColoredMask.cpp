@@ -3,6 +3,9 @@
 #include "Texture.h"
 #include <stdlib.h>
 
+using namespace Kigs::Draw2D;
+using namespace Kigs::Draw;
+
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(PassiveColoredMask, PassiveColoredMask, 2DLayers);
 IMPLEMENT_CLASS_INFO(PassiveColoredMask)
 

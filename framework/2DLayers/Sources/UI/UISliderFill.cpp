@@ -5,7 +5,7 @@
 #include "NotificationCenter.h"
 #include "AlphaMask.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UISliderFill, UISliderFill, 2DLayers);
+using namespace Kigs::Draw2D;
 IMPLEMENT_CLASS_INFO(UISliderFill)
 
 UISliderFill::UISliderFill(const std::string& name,CLASS_NAME_TREE_ARG) : 
@@ -51,7 +51,7 @@ void UISliderFill::InitModifiable()
 	if(_isInit)
 	{
 		// load texture
-		auto textureManager = KigsCore::Singleton<TextureFileManager>();
+		auto textureManager = KigsCore::Singleton<Draw::TextureFileManager>();
 		mVoidTexturePointer = textureManager->GetTexture(mVoidTexture);
 
 		// auto size button
@@ -106,7 +106,7 @@ void UISliderFill::ChangeTexture(std::string _voidtexturename,std::string _start
 {
 	if(mIsEnabled) // down and mouse over only when enabled
 	{
-		auto textureManager = KigsCore::Singleton<TextureFileManager>();
+		auto textureManager = KigsCore::Singleton<Draw::TextureFileManager>();
 
 		mVoidTexture = _voidtexturename;
 		mVoidTexturePointer = textureManager->GetTexture(mVoidTexture);

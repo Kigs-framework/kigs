@@ -1,5 +1,4 @@
-#ifndef _FEUILLETONGROUP_H_
-#define _FEUILLETONGROUP_H_
+#pragma once
 
 #include "UI/UIControlBoxForScrollViewUI.h"
 #include "UIDrawableItem.h"
@@ -10,48 +9,54 @@
 #include "RenderingScreen.h"
 #include "ModuleInput.h"
 
-// ****************************************
-// * UIScrollView class
-// * --------------------------------------
-/**
-* \file	UIScrollView.h
-* \class	UIScrollView
-* \ingroup 2DLayers
-* \brief	?? Obsolete ??
-*/
-// ****************************************
-
-class UIScrollView : public UIDrawableItem
+namespace Kigs
 {
 
-public:
-	DECLARE_CLASS_INFO(UIScrollView, UIDrawableItem, Renderer);
+	namespace Draw2D
+	{
+		// ****************************************
+		// * UIScrollView class
+		// * --------------------------------------
+		/**
+		* \file	UIScrollView.h
+		* \class	UIScrollView
+		* \ingroup 2DLayers
+		* \brief	?? Obsolete ??
+		*/
+		// ****************************************
 
-	UIScrollView(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	~UIScrollView();
+		class UIScrollView : public UIDrawableItem
+		{
 
-	bool scrollTo(float deltaPos);	
-	bool Draw(TravState* state)override;
+		public:
+			DECLARE_CLASS_INFO(UIScrollView, UIDrawableItem, Renderer);
 
-	// void NotifyUpdate(unsigned int);
-	bool isVertical;
-	void SendClickUpToChildren(int buttonState, int buttonEvent, int X, int Y, bool & catchClick);
-	void SendClickDownToChildren(int buttonState, int buttonEvent, int X, int Y, bool & catchClick);
-	void SendFalseClickUpToChildren();
-	//void SendMouseMoveToChildren(bool over,float MouseDeltaX, float MouseDeltaY);
+			UIScrollView(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			~UIScrollView();
 
-protected:
-	void InitModifiable()override;
-	void SetUpNodeIfNeeded()override;
-	void UpdateContentSize();
+			bool scrollTo(float deltaPos);
+			bool Draw(Scene::TravState* state)override;
 
-private:
+			// void NotifyUpdate(unsigned int);
+			bool isVertical;
+			void SendClickUpToChildren(int buttonState, int buttonEvent, int X, int Y, bool& catchClick);
+			void SendClickDownToChildren(int buttonState, int buttonEvent, int X, int Y, bool& catchClick);
+			void SendFalseClickUpToChildren();
+			//void SendMouseMoveToChildren(bool over,float MouseDeltaX, float MouseDeltaY);
 
-	float	mXScroll, mYScroll;
-	int mMaxY, mMaxX;
-	SP<UIControlBoxForScrollViewUI> mVision;
-	ModuleInput* mInput;
+		protected:
+			void InitModifiable()override;
+			void SetUpNodeIfNeeded()override;
+			void UpdateContentSize();
 
-};
+		private:
 
-#endif // _FEUILLETONGROUP_H_
+			float	mXScroll, mYScroll;
+			int mMaxY, mMaxX;
+			SP<UIControlBoxForScrollViewUI> mVision;
+			Input::ModuleInput* mInput;
+
+		};
+
+	}
+}

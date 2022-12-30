@@ -34,6 +34,8 @@
 
 #include "utf8.h"
 
+using namespace Kigs::Draw2D;
+
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UIDynamicText, UIDynamicText, 2DLayers);
 IMPLEMENT_CLASS_INFO(UIDynamicText)
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(FontMapManager, FontMapManager, 2DLayers);
@@ -61,7 +63,7 @@ FontMap* FontMapManager::PrecacheFont(const std::string& fontname, float fontsiz
 
 	font->font_id = str;
 	u64 len = 0;
-	font->mFontBuffer = ModuleFileManager::LoadFile(fontname.c_str(), len);
+	font->mFontBuffer = File::ModuleFileManager::LoadFile(fontname.c_str(), len);
 
 	if (font->mFontBuffer == nullptr)
 	{
@@ -129,7 +131,7 @@ FontMap* FontMapManager::PrecacheFont(const std::string& fontname, float fontsiz
 	}
 	font->mFontTexture->Init();
 
-	SmartPointer<TinyImage>	img = TinyImage::CreateImage(bitmap_AI8, font->mFontMapSize, font->mFontMapSize, TinyImage::ImageFormat::AI88);
+	SmartPointer<Pict::TinyImage>	img = Pict::TinyImage::CreateImage(bitmap_AI8, font->mFontMapSize, font->mFontMapSize, Pict::TinyImage::ImageFormat::AI88);
 	font->mFontTexture->CreateFromImage(img);
 
 	delete[] bitmap_AI8;
@@ -166,7 +168,7 @@ void FontMapManager::ReloadTextures()
 			*(bitmap_AI8.data() + (2 * i + 1)) = *(bitmap_alpha.data() + i);
 		}
 		
-		SmartPointer<TinyImage>	img = TinyImage::CreateImage(bitmap_AI8.data(), font.second.mFontMapSize, font.second.mFontMapSize, TinyImage::ImageFormat::AI88);
+		SmartPointer < Pict::TinyImage > img = Pict::TinyImage::CreateImage(bitmap_AI8.data(), font.second.mFontMapSize, font.second.mFontMapSize, Pict::TinyImage::ImageFormat::AI88);
 
 		SP<Texture> tex = tfm->GetTexture(font.second.font_id, false);
 		tex->CreateFromImage(img);
@@ -202,21 +204,21 @@ void UIDynamicText::InitModifiable()
 	ParentClassType::InitModifiable();
 	if (IsInit())
 	{
-		auto theInputModule = KigsCore::GetModule<ModuleInput>();
+		auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 		if(mPickable)
-			if(theInputModule) mEventState = theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, EmptyFlag);
+			if(theInputModule) mEventState = theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Input::Click, Input::EmptyFlag);
 		if (theInputModule)
 			mPickable.changeNotificationLevel(Owner);
 	}
 }
 
 
-bool UIDynamicText::ManageClickTouchEvent(ClickEvent& click_event)
+bool UIDynamicText::ManageClickTouchEvent(Input::ClickEvent& click_event)
 {
-	if (click_event.state == StateRecognized)
+	if (click_event.state == Input::StateRecognized)
 	{
 		// Left click only
-		if (click_event.button_state_mask & ClickEvent::LeftButton)
+		if (click_event.button_state_mask & Input::ClickEvent::LeftButton)
 		{
 			auto result = PickCharacter(click_event.position.xy);
 			if (result.current_clickable_tag)
@@ -920,11 +922,11 @@ void UIDynamicText::NotifyUpdate(const unsigned int labelID)
 	}
 	else if (labelID == mPickable.getID())
 	{
-		auto theInputModule = KigsCore::GetModule<ModuleInput>();
+		auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 		if (mPickable)
-			mEventState = theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Click, EmptyFlag);
+			mEventState = theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Input::Click, Input::EmptyFlag);
 		else
-			theInputModule->getTouchManager()->unregisterEvent(this, Click);
+			theInputModule->getTouchManager()->unregisterEvent(this, Input::Click);
 	}
 	UITexturedItem::NotifyUpdate(labelID);
 }
@@ -956,7 +958,7 @@ void UIDynamicText::ForceSetupText()
 }
 
 
-usString TextTagProcessor(const usString& text, std::vector<TextTag>* output_tags, std::vector<CMSP>* inline_items, CoreModifiable* obj)
+usString Kigs::Draw2D::TextTagProcessor(const usString& text, std::vector<TextTag>* output_tags, std::vector<CMSP>* inline_items, CoreModifiable* obj)
 {
 	auto current_character = text.us_str();
 	if (text.length() > 0 && text[0] == (unsigned short)'#')

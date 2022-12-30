@@ -1,56 +1,58 @@
-#ifndef _ASEMESHLOADER_H_
-#define _ASEMESHLOADER_H_
+#pragma once
 
 
 #include "KMesh.h"
 #include "CoreRawBuffer.h"
 #include "AsciiParserUtils.h"
 
-
-// ****************************************
-// * ASEMeshLoader class
-// * --------------------------------------
-/**
- * \file	ASEMeshLoader.h
- * \class	ASEMeshLoader
- * \ingroup Renderer
- * \brief	Load mesh in ASE format.
- * 
- * Obsolete
- */
- // ****************************************
-class ASEMeshLoader 
+namespace Kigs
 {
-public:
-	ASEMeshLoader();
-	~ASEMeshLoader();
-	int ImportFile(Mesh *pMesh, const std::string &FileName);
-	int ReadFile(Mesh *pMesh);
-private:
- 
-  struct BaseMaterialStruct
-  {
-    float ambient[3];
-    float specular[3];
-    float diffuse[3];
-    float shininess;
-  };
+	namespace Draw
+	{
+		// ****************************************
+		// * ASEMeshLoader class
+		// * --------------------------------------
+		/**
+		 * \file	ASEMeshLoader.h
+		 * \class	ASEMeshLoader
+		 * \ingroup Renderer
+		 * \brief	Load mesh in ASE format.
+		 *
+		 * Obsolete
+		 */
+		 // ****************************************
+		class ASEMeshLoader
+		{
+		public:
+			ASEMeshLoader();
+			~ASEMeshLoader();
+			int ImportFile(Mesh* pMesh, const std::string& FileName);
+			int ReadFile(Mesh* pMesh);
+		private:
 
-  struct materialStruct : public BaseMaterialStruct
-  {
-    std::vector<BaseMaterialStruct> subMat;
-  };
+			struct BaseMaterialStruct
+			{
+				float ambient[3];
+				float specular[3];
+				float diffuse[3];
+				float shininess;
+			};
 
-  std::vector<materialStruct> mMaterialStructList;
+			struct materialStruct : public BaseMaterialStruct
+			{
+				std::vector<BaseMaterialStruct> subMat;
+			};
 
-	std::vector<std::string>	mTextureList;
-	std::vector<std::string>	mMaterialList;
+			std::vector<materialStruct> mMaterialStructList;
 
-	char *mTextureName;
-	int mMaterialCount;
-	int *mMatIdArray;	
-	SmartPointer<CoreRawBuffer>			mData;
-	AsciiParserUtils					mFileParser;
-};
+			std::vector<std::string>	mTextureList;
+			std::vector<std::string>	mMaterialList;
 
-#endif // _ASEMESHLOADER_H_
+			char* mTextureName;
+			int mMaterialCount;
+			int* mMatIdArray;
+			SmartPointer<CoreRawBuffer>			mData;
+			AsciiParserUtils					mFileParser;
+		};
+	}
+}

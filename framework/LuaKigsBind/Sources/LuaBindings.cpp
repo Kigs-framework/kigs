@@ -1,27 +1,26 @@
 #include "LuaBindings.h"
-
 #include "LuaKigsBindModule.h"
-
 #include "NotificationCenter.h"
-
-
-#include <algorithm>
-#include <tuple>
-
-
 #include "KeyboardDevice.h"
 #include "DeviceItem.h"
 #include "MouseDevice.h"
 #include "Node3D.h"
 #include "ModuleCoreAnimation.h"
-
 #include "AttributePacking.h"
-
 #include "CoreBaseApplication.h"
-
 #include "TouchInputEventManager.h"
+#include "Node2D.h"
+
+#include <algorithm>
+#include <tuple>
 
 using namespace LuaIntf;
+using namespace Kigs::Lua;
+using namespace Kigs::Core;
+using namespace Kigs::Input;
+using namespace Kigs::Draw;
+using namespace Kigs::Draw2D;
+using namespace Kigs::Action;
 
 template<int notificationLevel>
 class maLuaRefHeritage : public CoreModifiableAttributeData<LuaRef>
@@ -37,7 +36,7 @@ public:
 using maLuaRef = maLuaRefHeritage<0>;
 
 
-kigs::unordered_map<KigsID, const char*> gLuaTypeMap;
+unordered_map<KigsID, const char*> gLuaTypeMap;
 
 IMPLEMENT_CLASS_INFO(LuaNotificationHook);
 
@@ -61,7 +60,7 @@ DEFINE_METHOD(LuaNotificationHook, CallLuaFunc)
 	return false;
 }
 
-void PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
+void Kigs::Lua::PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 {
 	CoreModifiable::ATTRIBUTE_TYPE type = attrib->getType();
 	
@@ -230,7 +229,7 @@ static CMSP factory(const std::string& name, const std::string& type)
 	return KigsCore::GetInstanceOf(name, type);
 }
 
-int CoreModifiableSetAttributeLua(lua_State* lua)
+int Kigs::Lua::CoreModifiableSetAttributeLua(lua_State* lua)
 {
 	//LuaStack
 	// Modifiable
@@ -279,19 +278,19 @@ int CoreModifiableSetAttributeLua(lua_State* lua)
 			v4f* pt4 = nullptr;
 			CoreModifiable* obj = nullptr;
 			char str[128];
-			if ((pt2 = Lua::objectCast<v2f>(ref)))
+			if ((pt2 = ::Lua::objectCast<v2f>(ref)))
 			{
 				snprintf(str, 128, "{%f,%f}", pt2->x, pt2->y);
 			}
-			else if((pt3 = Lua::objectCast<v3f>(ref)))
+			else if((pt3 = ::Lua::objectCast<v3f>(ref)))
 			{
 				snprintf(str, 128, "{%f,%f,%f}", pt3->x, pt3->y, pt3->z);
 			}
-			else if ((pt4 = Lua::objectCast<v4f>(ref)))
+			else if ((pt4 = ::Lua::objectCast<v4f>(ref)))
 			{
 				snprintf(str, 128, "{%f,%f,%f,%f}", pt4->x, pt4->y, pt4->z, pt4->w);
 			}
-			else if((obj = Lua::objectCast<CoreModifiable>(ref)))
+			else if((obj = ::Lua::objectCast<CoreModifiable>(ref)))
 			{
 				attr->setValue(obj);
 				return 0;
@@ -397,7 +396,7 @@ int CoreModifiableSetAttributeLua(lua_State* lua)
 }
 
 
-CoreModifiableAttribute* MakeAttributeFromLuaStack(lua_State* lua, int idx, CoreModifiable* owner, const std::string& name)
+CoreModifiableAttribute* Kigs::Lua::MakeAttributeFromLuaStack(lua_State* lua, int idx, CoreModifiable* owner, const std::string& name)
 {
 	LuaState L = lua;
 	switch (L.type(idx))
@@ -439,19 +438,19 @@ CoreModifiableAttribute* MakeAttributeFromLuaStack(lua_State* lua, int idx, Core
 			v4f* pt4 = nullptr;
 			CoreModifiable* obj = nullptr;
 
-			if ((pt2 = Lua::objectCast<v2f>(ref)))
+			if ((pt2 = ::Lua::objectCast<v2f>(ref)))
 			{
 				return MakeAttribute(std::move(*pt2), owner, name);
 			}
-			else if ((pt3 = Lua::objectCast<v3f>(ref)))
+			else if ((pt3 = ::Lua::objectCast<v3f>(ref)))
 			{
 				return MakeAttribute(std::move(*pt3), owner, name);
 			}
-			else if ((pt4 = Lua::objectCast<v4f>(ref)))
+			else if ((pt4 = ::Lua::objectCast<v4f>(ref)))
 			{
 				return MakeAttribute(std::move(*pt4), owner, name);
 			}
-			else if ((obj = Lua::objectCast<CoreModifiable>(ref)))
+			else if ((obj = ::Lua::objectCast<CoreModifiable>(ref)))
 			{
 				return MakeAttribute(obj, owner, name);
 			}
@@ -725,7 +724,7 @@ DEFINE_DYNAMIC_METHOD(CoreModifiable, LuaReleaseCallbacks)
 	return false;
 }
 
-LuaRef GetModifiableLuaData(lua_State* lua, CoreModifiable* obj)
+LuaRef Kigs::Lua::GetModifiableLuaData(lua_State* lua, CoreModifiable* obj)
 {
 	LuaState L = lua;
 	LuaStackAssert protect{ lua };
@@ -751,7 +750,7 @@ LuaRef GetModifiableLuaData(lua_State* lua, CoreModifiable* obj)
 }
 
 
-void QuickAnim(ModuleCoreAnimation* m, CoreModifiable* target, const char* str)
+void QuickAnim(Kigs::Action::ModuleCoreAnimation* m, Kigs::Core::CoreModifiable* target, const char* str)
 {
 	auto seq = m->createSequenceFromString(target->SharedFromThis(), str);
 	m->addSequence(seq.get());
@@ -847,7 +846,7 @@ int LuaMatrix3x4Mult(lua_State* lua)
 
 #include "GLSLDebugDraw.h"
 
-void setup_bindings(lua_State* lua)
+void Kigs::Lua::setup_bindings(lua_State* lua)
 {
 	LuaState L = lua;
 	

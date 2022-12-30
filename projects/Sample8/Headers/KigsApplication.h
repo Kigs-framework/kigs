@@ -1,5 +1,4 @@
-#ifndef _KIGSAPPLICATION_H_
-#define _KIGSAPPLICATION_H_
+#pragma once
 
 //! include the real application class file
 #include "Sample8.h"
@@ -19,7 +18,3 @@
 
 #define ADP_APPLICATIONID ADP_DEBUG_APPLICATIONID
 
-
-
-
-#endif //_KIGSAPPLICATION_H_

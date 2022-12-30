@@ -1,7 +1,10 @@
-#include <Sample7.h>
-#include <FilePathManager.h>
-#include <NotificationCenter.h>
+#include "Sample7.h"
+#include "FilePathManager.h"
+#include "NotificationCenter.h"
 #include <iostream>
+
+using namespace Kigs;
+using namespace Kigs::File;
 
 // Kigs framework Sample7 project
 // Lua Binding features :

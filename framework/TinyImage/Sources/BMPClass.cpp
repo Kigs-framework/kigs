@@ -5,7 +5,9 @@
 #include "TinyImageLoaderContext.h"
 #include "Core.h"
 
-BMPClass::BMPClass(FileHandle* fileName):TinyImage()
+using namespace Kigs::Pict;
+
+BMPClass::BMPClass(File::FileHandle* fileName):TinyImage()
 {
 	mIsVFlipped=false;
 	mInitIsOK =Load(fileName);
@@ -77,7 +79,7 @@ void	BMPClass::Export(const char* filename)
 
 
 
-	SmartPointer<FileHandle> L_File = Platform_fopen(filename, "wb");
+	SmartPointer<File::FileHandle> L_File = File::Platform_fopen(filename, "wb");
 	if (L_File->mFile)
 	{
 		Platform_fwrite("BM", 2, 1, L_File.get());
@@ -99,7 +101,7 @@ void	BMPClass::Export(const char* filename)
 
 //#endif
 
-bool	BMPClass::Load(FileHandle* fileName)
+bool	BMPClass::Load(File::FileHandle* fileName)
 {
 	bool result=false;
 	u64 filelength;
@@ -118,7 +120,7 @@ bool	BMPClass::Load(FileHandle* fileName)
 	}
 
 	// warning ! jump two first bytes of the file, so offset are wrongs
-	auto rawbuffer = ModuleFileManager::LoadFile(fileName, filelength,2);
+	auto rawbuffer = File::ModuleFileManager::LoadFile(fileName, filelength,2);
 	if(rawbuffer)
 	{
 		u8* memfile=(u8*)rawbuffer->buffer();

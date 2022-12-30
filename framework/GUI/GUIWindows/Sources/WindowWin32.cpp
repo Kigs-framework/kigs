@@ -8,7 +8,8 @@
 #include "MouseDevice.h"
 #include "DisplayDeviceCaps.h"
 
-
+using namespace Kigs::Gui;
+using namespace Kigs::Input;
 
 // before everything else
 HRESULT SetTouchDisableProperty(HWND hwnd, BOOL fDisableTouch)
@@ -563,7 +564,7 @@ void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, float& wposx, fl
 
 	if (mScreen)
 	{
-		mScreen->as<RenderingScreen>()->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
+		mScreen->as<Draw::RenderingScreen>()->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
 	}
 	else
 	{
@@ -624,7 +625,7 @@ void  WindowWin32::Update(const Timer&  timer, void* addParam)
 		//printf("%s : %d %d :: %d %d\n", getName().c_str(), mPositionX, mPositionY, mySizeX, mySizeY);
 
 		if (mScreen)
-			mScreen->as<RenderingScreen>()->Resize((float)mSize[0], (float)mSize[1]);
+			mScreen->as<Draw::RenderingScreen>()->Resize((float)mSize[0], (float)mSize[1]);
 
 		mDirtySize = false;
 

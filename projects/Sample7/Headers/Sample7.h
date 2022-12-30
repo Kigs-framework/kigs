@@ -1,24 +1,30 @@
 #pragma once
 
-#include <DataDrivenBaseApplication.h>
+#include "DataDrivenBaseApplication.h"
 
-class Sample7 : public DataDrivenBaseApplication
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(Sample7, DataDrivenBaseApplication, Core);
-	DECLARE_CONSTRUCTOR(Sample7);
+	using namespace Core;
+	using namespace DDriven;
 
-protected:
-	void	ProtectedInit() override;
-	void	ProtectedUpdate() override;
-	void	ProtectedClose() override;
+	class Sample7 : public DataDrivenBaseApplication
+	{
+	public:
+		DECLARE_CLASS_INFO(Sample7, DataDrivenBaseApplication, Core);
+		DECLARE_CONSTRUCTOR(Sample7);
 
-	
-	void	ProtectedInitSequence(const std::string& sequence) override;
-	void	ProtectedCloseSequence(const std::string& sequence) override;
+	protected:
+		void	ProtectedInit() override;
+		void	ProtectedUpdate() override;
+		void	ProtectedClose() override;
 
-	// method called from Lua script
-	void	HelloFromLua();
-	WRAP_METHODS(HelloFromLua)
 
-};
+		void	ProtectedInitSequence(const std::string& sequence) override;
+		void	ProtectedCloseSequence(const std::string& sequence) override;
+
+		// method called from Lua script
+		void	HelloFromLua();
+		WRAP_METHODS(HelloFromLua)
+
+	};
+}

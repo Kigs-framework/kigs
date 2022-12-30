@@ -25,12 +25,21 @@
 #include "FreeType_TextDrawer.h"
 #include "CameraUpgradors.h"
 
+using namespace Kigs::Draw;
+using namespace Kigs::Draw2D;
+
 #ifdef KIGS_TOOLS
-RendererStats gRendererStats;
+namespace Kigs
+{
+	namespace Draw
+	{
+		RendererStats gRendererStats;
+	}
+}
 #endif
 
 
-FreeType_TextDrawer* ModuleSpecificRenderer::mDrawer = NULL;
+Kigs::Utils::FreeType_TextDrawer* ModuleSpecificRenderer::mDrawer = NULL;
 ModuleSpecificRenderer * ModuleRenderer::mTheGlobalRenderer = nullptr;
 
 IMPLEMENT_CLASS_INFO(ModuleRenderer);
@@ -129,7 +138,7 @@ void ModuleSpecificRenderer::Init(KigsCore* core, const std::vector<CoreModifiab
 	// create the freetype drawer
 	if (!mDrawer)
 	{
-		mDrawer = new FreeType_TextDrawer();
+		mDrawer = new Kigs::Utils::FreeType_TextDrawer();
 		mDrawer->startBuildFonts();
 	}
 

@@ -4,59 +4,66 @@
 #include "AttributePacking.h"
 #include "TouchInputEventManager.h"
 
-// ****************************************
-// * UIScrollable class
-// * --------------------------------------
-/**
-* \file	UIScrollable.h
-* \class	UIScrollable
-* \ingroup 2DLayers
-* \brief	Base class for scrollable UI.
-*/
-// ****************************************
-
-class UIScrollable : public UIDrawableItem
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(UIScrollable, UIDrawableItem, 2DLayers);
-	DECLARE_INLINE_CONSTRUCTOR(UIScrollable) {}
-	
-	bool addItem(const CMSP& item, ItemPosition pos) override;
-	bool removeItem(const CMSP& item) override;
 
-	void SetScroll(v2f to);
-	v2f GetCurrentScroll() const { return mCurrentScroll; }
+	namespace Draw2D
+	{
+		// ****************************************
+		// * UIScrollable class
+		// * --------------------------------------
+		/**
+		* \file	UIScrollable.h
+		* \class	UIScrollable
+		* \ingroup 2DLayers
+		* \brief	Base class for scrollable UI.
+		*/
+		// ****************************************
 
-private:
-	
-	void InitModifiable() final;
-	void Update(const Timer&, void*) override;
+		class UIScrollable : public UIDrawableItem
+		{
+		public:
+			DECLARE_CLASS_INFO(UIScrollable, UIDrawableItem, 2DLayers);
+			DECLARE_INLINE_CONSTRUCTOR(UIScrollable) {}
 
-	bool ManageScrollEvent(ScrollEvent& scroll_event);
+			bool addItem(const CMSP& item, ItemPosition pos) override;
+			bool removeItem(const CMSP& item) override;
 
-	maBool mVerticalScroll = BASE_ATTRIBUTE(VerticalScroll, true);
-	maBool mHorizontalScroll = BASE_ATTRIBUTE(HorizontalScroll, false);
-	maBool mAdjustOnAddItem = BASE_ATTRIBUTE(AdjustOnAddItem, true);
-	maBool mAdjustOnRemoveItem = BASE_ATTRIBUTE(AdjustOnRemoveItem, true);
-	
-	maFloat mThrowSpeedMult = BASE_ATTRIBUTE(ThrowSpeedMult, 1.0f);
-	maFloat mThrowFriction = BASE_ATTRIBUTE(ThrowFriction, 0.01f);
+			void SetScroll(v2f to);
+			v2f GetCurrentScroll() const { return mCurrentScroll; }
 
-	maVect2DF mMinScroll = BASE_ATTRIBUTE(MinScroll, 0, 0);
-	maVect2DF mMaxScroll = BASE_ATTRIBUTE(MaxScroll, 0, 0);
+		private:
 
-	maEnum<4> mMinScrollModeX = BASE_ATTRIBUTE(MinScrollModeX, "NotUsed", "Default", "Multiply", "Add");
-	maEnum<4> mMaxScrollModeX = BASE_ATTRIBUTE(MaxScrollModeX, "NotUsed", "Default", "Multiply", "Add");
+			void InitModifiable() final;
+			void Update(const Time::Timer&, void*) override;
 
-	maEnum<4> mMinScrollModeY = BASE_ATTRIBUTE(MinScrollModeY, "NotUsed", "Default", "Multiply", "Add");
-	maEnum<4> mMaxScrollModeY = BASE_ATTRIBUTE(MaxScrollModeY, "NotUsed", "Default", "Multiply", "Add");
+			bool ManageScrollEvent(Input::ScrollEvent& scroll_event);
+
+			maBool mVerticalScroll = BASE_ATTRIBUTE(VerticalScroll, true);
+			maBool mHorizontalScroll = BASE_ATTRIBUTE(HorizontalScroll, false);
+			maBool mAdjustOnAddItem = BASE_ATTRIBUTE(AdjustOnAddItem, true);
+			maBool mAdjustOnRemoveItem = BASE_ATTRIBUTE(AdjustOnRemoveItem, true);
+
+			maFloat mThrowSpeedMult = BASE_ATTRIBUTE(ThrowSpeedMult, 1.0f);
+			maFloat mThrowFriction = BASE_ATTRIBUTE(ThrowFriction, 0.01f);
+
+			maVect2DF mMinScroll = BASE_ATTRIBUTE(MinScroll, 0, 0);
+			maVect2DF mMaxScroll = BASE_ATTRIBUTE(MaxScroll, 0, 0);
+
+			maEnum<4> mMinScrollModeX = BASE_ATTRIBUTE(MinScrollModeX, "NotUsed", "Default", "Multiply", "Add");
+			maEnum<4> mMaxScrollModeX = BASE_ATTRIBUTE(MaxScrollModeX, "NotUsed", "Default", "Multiply", "Add");
+
+			maEnum<4> mMinScrollModeY = BASE_ATTRIBUTE(MinScrollModeY, "NotUsed", "Default", "Multiply", "Add");
+			maEnum<4> mMaxScrollModeY = BASE_ATTRIBUTE(MaxScrollModeY, "NotUsed", "Default", "Multiply", "Add");
 
 
-	v2f mCurrentScroll = { 0,0 };
-	v2f mLastOffset = { 0,0 };
-	v2f mThrowSpeed = { 0, 0 };
+			v2f mCurrentScroll = { 0,0 };
+			v2f mLastOffset = { 0,0 };
+			v2f mThrowSpeed = { 0, 0 };
 
-	double mLastTime = 0.0;
+			double mLastTime = 0.0;
 
-	WRAP_METHODS(ManageScrollEvent, SetScroll);
-};
+			WRAP_METHODS(ManageScrollEvent, SetScroll);
+		};
+	}
+}

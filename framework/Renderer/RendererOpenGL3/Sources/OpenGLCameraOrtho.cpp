@@ -8,6 +8,8 @@
 // include after all other kigs include (for iOS)
 #include "Platform/Renderer/OpenGLInclude.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(OpenGLCameraOrtho);
 
 OpenGLCameraOrtho::~OpenGLCameraOrtho()

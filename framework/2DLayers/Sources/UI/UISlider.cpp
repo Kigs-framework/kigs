@@ -5,7 +5,9 @@
 #include "NotificationCenter.h"
 #include "AlphaMask.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UISlider, UISlider, 2DLayers);
+using namespace Kigs::Draw2D;
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(UISlider)
 
 UISlider::UISlider(const std::string& name,CLASS_NAME_TREE_ARG) : 
@@ -111,7 +113,7 @@ void UISlider::InitModifiable()
 		mIsMouseOver = false;
 
 		// load texture
-		auto textureManager = KigsCore::Singleton<TextureFileManager>();
+		auto textureManager = KigsCore::Singleton<Draw::TextureFileManager>();
 		if(mUpTexturePointer)
 			mUpTexturePointer=0;
 		
@@ -242,7 +244,7 @@ void UISlider::ChangeTexture(std::string _texturename, std::string _overtexturen
 {
 	if(mIsEnabled) // down and mouse over only when enabled
 	{
-		auto textureManager = KigsCore::Singleton<TextureFileManager>();
+		auto textureManager = KigsCore::Singleton<Draw::TextureFileManager>();
 		if(mUpTexturePointer)
 			mUpTexturePointer=0;
 

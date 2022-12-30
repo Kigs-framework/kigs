@@ -16,6 +16,8 @@
 
 #include "winInet.h"
 
+using namespace Kigs::Core;
+
 void	PlatformBaseApplication::OpenLink(const char* a_link)
 {
 	ShellExecuteA(0, "open", a_link, 0, 0, SW_SHOW);

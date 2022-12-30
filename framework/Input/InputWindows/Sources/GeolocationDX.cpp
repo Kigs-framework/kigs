@@ -1,15 +1,14 @@
 /*
  *  GeolocationDX.cpp
- *  AndroidInputAndroid
- *
- *  Created by Antoine on 22/01/15.
- *  Copyright 2011 __MyCompanyName__. All rights reserved.
  *
  */
 
 #include "GeolocationDX.h"
 #include "Core.h"
 #include "DeviceItem.h"
+
+
+using namespace Kigs::Input;
 
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(GeolocationDX, GeolocationDevice, Input);
 IMPLEMENT_CLASS_INFO(GeolocationDX)

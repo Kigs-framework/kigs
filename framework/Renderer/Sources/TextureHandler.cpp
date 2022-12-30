@@ -7,6 +7,7 @@
 #include "MiniInstanceFactory.h"
 #include "CoreBaseApplication.h"
 
+using namespace Kigs::Draw;
 
 IMPLEMENT_CLASS_INFO(TextureHandler)
 

@@ -4,6 +4,7 @@
 #include "CoreBaseApplication.h"
 #include "TecLibs/Tec3D.h"
 
+using namespace Kigs::Scene;
 
 // connect to events and create attributes
 void	CoordinateSystemUp::Init(CoreModifiable* toUpgrade)

@@ -2,7 +2,9 @@
 #include "Base2DLayer.h"
 #include "RenderingScreen.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIFlowLayout, UIFlowLayout, 2DLayers);
+using namespace Kigs::Draw2D;
+using namespace Kigs::Core;
+
 IMPLEMENT_CLASS_INFO(UIFlowLayout)
 
 UIFlowLayout::UIFlowLayout(const std::string& name, CLASS_NAME_TREE_ARG) :

@@ -5,6 +5,8 @@
 #include "JSonFileParser.h"
 #include "Core.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(Texture)
 
 Texture::Texture(const std::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)

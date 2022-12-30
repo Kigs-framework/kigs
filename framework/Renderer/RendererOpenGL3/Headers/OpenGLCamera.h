@@ -1,38 +1,41 @@
-#ifndef _OPENGLCAMERA_H
-#define _OPENGLCAMERA_H
+#pragma once
 
 #include "Camera.h"
 
-// ****************************************
-// * OpenGLCamera class
-// * --------------------------------------
-/**
- * \file	OpenGLCamera.h
- * \class	OpenGLCamera
- * \ingroup Renderer
- * \brief	OpenGL implementation of Camera.
- */
- // ****************************************
-
-
-class OpenGLCamera : public Camera
+namespace Kigs
 {
-public:
-    DECLARE_CLASS_INFO(OpenGLCamera,Camera,Renderer)
-    OpenGLCamera(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	virtual ~OpenGLCamera();
+	namespace Draw
+	{
+		// ****************************************
+		// * OpenGLCamera class
+		// * --------------------------------------
+		/**
+		 * \file	OpenGLCamera.h
+		 * \class	OpenGLCamera
+		 * \ingroup Renderer
+		 * \brief	OpenGL implementation of Camera.
+		 */
+		 // ****************************************
 
-protected:
-	bool ProtectedSetActive(TravState* state) override;
-	virtual void PlatformProtectedSetActive(TravState* state);
 
-	void ProtectedRelease(TravState* state) override;
-	virtual void PlatformProtectedRelease(TravState* state);
+		class OpenGLCamera : public Camera
+		{
+		public:
+			DECLARE_CLASS_INFO(OpenGLCamera, Camera, Renderer)
+				OpenGLCamera(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual ~OpenGLCamera();
+
+		protected:
+			bool ProtectedSetActive(TravState* state) override;
+			virtual void PlatformProtectedSetActive(TravState* state);
+
+			void ProtectedRelease(TravState* state) override;
+			virtual void PlatformProtectedRelease(TravState* state);
 
 #ifdef WUP
-	bool mNeedNearFarUpdate = true;
-	void NotifyUpdate(unsigned int labelid) override;
+			bool mNeedNearFarUpdate = true;
+			void NotifyUpdate(unsigned int labelid) override;
 #endif
-};    
-
-#endif //_OPENGLCAMERA_H
+		};
+	}
+}

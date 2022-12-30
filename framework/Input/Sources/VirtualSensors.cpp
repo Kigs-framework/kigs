@@ -1,5 +1,7 @@
 #include "VirtualSensors.h"
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(VirtualGyroscope);
 IMPLEMENT_CLASS_INFO(VirtualAccelerometer);
 

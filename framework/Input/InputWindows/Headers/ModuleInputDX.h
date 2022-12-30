@@ -1,5 +1,4 @@
-#ifndef _MODULEINPUTDX_H_
-#define _MODULEINPUTDX_H_
+#pragma once
 
 #include "ModuleBase.h"
 
@@ -10,56 +9,55 @@
 #include <basetsd.h>
 #include <dinput.h>
 
-class ModuleInputDX;
-
-#ifdef _KIGS_ONLY_STATIC_LIB_
-#define MODULEINITFUNC			PlatformInputModuleInit
-extern SP<ModuleBase> PlatformInputModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
-#else
-#define MODULEINITFUNC			ModuleInit
-#endif
-
-
-// ****************************************
-// * ModuleInputDX class
-// * --------------------------------------
-/**
-* \file	ModuleInputDX.h
-* \class	ModuleInputDX
-* \ingroup Input
-* \ingroup Module
-* \brief Specific Input Module for DirectX API.
-*
-*/
-// ****************************************
-class ModuleInputDX : public ModuleBase
+namespace Kigs
 {
-public:
+	namespace Input
+	{
+		using namespace Kigs::Core;
+		class ModuleInputDX;
 
-	DECLARE_CLASS_INFO(ModuleInputDX,ModuleBase,Input)
-             
-	ModuleInputDX(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-    
-    void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params); 
-    void Close();
-	virtual void Update(const Timer& timer, void* addParam);
 
-	LPDIRECTINPUT8	getDirectInput(){return mDirectInput;}
-    
-	bool	isInit(){return mIsInitOK;}
+		// ****************************************
+		// * ModuleInputDX class
+		// * --------------------------------------
+		/**
+		* \file	ModuleInputDX.h
+		* \class	ModuleInputDX
+		* \ingroup Input
+		* \ingroup Module
+		* \brief Specific Input Module for DirectX API.
+		*
+		*/
+		// ****************************************
+		class ModuleInputDX : public ModuleBase
+		{
+		public:
 
-	unsigned int	getJoystickCount(){return mJoystickCount;}
+			DECLARE_CLASS_INFO(ModuleInputDX, ModuleBase, Input)
 
-	bool	addItem(const CMSP& item, ItemPosition pos=Last DECLARE_DEFAULT_LINK_NAME) override;
+				ModuleInputDX(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	virtual ~ModuleInputDX();
-protected:
-    
+			void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
+			void Close();
+			virtual void Update(const Timer& timer, void* addParam);
 
-	LPDIRECTINPUT8			mDirectInput;   
-	bool					mIsInitOK;
-	unsigned int			mJoystickCount;
+			LPDIRECTINPUT8	getDirectInput() { return mDirectInput; }
 
-}; 
+			bool	isInit() { return mIsInitOK; }
 
-#endif //_MODULEINPUTDX_H_
+			unsigned int	getJoystickCount() { return mJoystickCount; }
+
+			bool	addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME) override;
+
+			virtual ~ModuleInputDX();
+		protected:
+
+
+			LPDIRECTINPUT8			mDirectInput;
+			bool					mIsInitOK;
+			unsigned int			mJoystickCount;
+
+		};
+
+	}
+}

@@ -59,8 +59,9 @@
 #include "UI/UIShapeDisc.h"
 #include "UI/UIShapePolygon.h"
 
-IMPLEMENT_CLASS_INFO(Module2DLayers)
+using namespace Kigs::Draw2D;
 
+IMPLEMENT_CLASS_INFO(Module2DLayers)
 
 bool	Module2DLayers::mRotate180 = false;
 
@@ -151,7 +152,7 @@ void Module2DLayers::Update(const Timer& timer, void* addParam)
 
 std::set<CoreModifiable*>	Module2DLayers::GetLayerList()
 {
-	SP<ModuleSceneGraph> scenegraph = CoreGetModule(ModuleSceneGraph);
+	SP<Scene::ModuleSceneGraph> scenegraph = CoreGetModule(ModuleSceneGraph);
 	std::set<CoreModifiable*> layerlist;
 	layerlist.clear();
 

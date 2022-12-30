@@ -3,8 +3,9 @@
 #include "TinyImageLoaderContext.h"
 #include "ModuleFileManager.h"
 
+using namespace Kigs::Pict;
 
-TGAClass::TGAClass(FileHandle* fileName):TinyImage()
+TGAClass::TGAClass(File::FileHandle* fileName):TinyImage()
 {
 	mInitIsOK =Load(fileName);
 }
@@ -68,7 +69,7 @@ void	TGAClass::Export(const char* filename)
 		}
 	}
 
-	SmartPointer<FileHandle> L_File = Platform_fopen(filename, "wb");
+	SmartPointer < File::FileHandle > L_File = File::Platform_fopen(filename, "wb");
 
 	if(L_File->mFile)
 	{
@@ -99,7 +100,7 @@ void	TGAClass::Export(const char* filename)
 }
 
 
-bool	TGAClass::Load(FileHandle* fileName)
+bool	TGAClass::Load(File::FileHandle* fileName)
 {
 	bool result = false;
 	u64 filelength;
@@ -120,7 +121,7 @@ bool	TGAClass::Load(FileHandle* fileName)
 		}
 	}
 
-	auto rawbuffer=ModuleFileManager::LoadFile(fileName, filelength);
+	auto rawbuffer=File::ModuleFileManager::LoadFile(fileName, filelength);
 	
 	if(rawbuffer)
 	{

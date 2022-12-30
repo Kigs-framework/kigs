@@ -1,7 +1,9 @@
 #include "UI/UICursor.h"
 #include "ModuleInput.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UICursor, UICursor, 2DLayers);
+using namespace Kigs::Draw2D;
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(UICursor)
 
 IMPLEMENT_CONSTRUCTOR(UICursor)

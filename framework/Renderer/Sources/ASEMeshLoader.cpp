@@ -9,6 +9,7 @@
 #include "AsciiParserUtils.h"
 #include "ModuleFileManager.h"
 
+using namespace Kigs::Draw;
 
 ASEMeshLoader::ASEMeshLoader()
 {
@@ -37,7 +38,7 @@ int ASEMeshLoader::ImportFile(Mesh *pMesh, const std::string &FileName)
 
 	// first load txt file
 	u64 filelen;
-	mData = ModuleFileManager::LoadFileAsCharString(FileName.c_str(),filelen,1);
+	mData = File::ModuleFileManager::LoadFileAsCharString(FileName.c_str(),filelen,1);
 	if (mData)
 	{
 		mFileParser = AsciiParserUtils(mData);

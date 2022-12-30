@@ -1,7 +1,8 @@
 #include "UI/UICustomDraw.h"
 #include "NotificationCenter.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UICustomDraw, UICustomDraw, 2DLayers);
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UICustomDraw)
 
 
@@ -14,7 +15,7 @@ bool UICustomDraw::isAlpha(float X, float Y)
 }
 
 
-void UICustomDraw::ProtectedDraw(TravState* state)
+void UICustomDraw::ProtectedDraw(Scene::TravState* state)
 {
 	if (mDelegate)
 		mDelegate->Drawfunc(state, this);

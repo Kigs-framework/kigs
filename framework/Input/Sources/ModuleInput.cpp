@@ -18,6 +18,8 @@
 #include "VirtualSensors.h"
 #endif
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(ModuleInput)
 
 IMPLEMENT_CONSTRUCTOR(ModuleInput)
@@ -190,7 +192,7 @@ bool ModuleInput::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 {
 	if (item->isSubType("Window"))
 	{
-		Window* lwindow = ((Window*)item.get());
+		Gui::Window* lwindow = ((Gui::Window*)item.get());
 		lwindow->SetClickCallback(ModuleInput::WindowClickEvent);
 		lwindow->SetDestroyCallback(ModuleInput::WindowDestroyEvent);
 	}

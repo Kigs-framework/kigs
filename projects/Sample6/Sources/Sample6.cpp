@@ -4,6 +4,8 @@
 #include "SimpleClass.h"
 #include <iostream>
 
+using namespace Kigs;
+
 // Kigs framework Sample6 project
 // Signal / Slot / Notifications features :
 // - declare signals

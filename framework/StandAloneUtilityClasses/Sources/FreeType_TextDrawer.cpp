@@ -1,6 +1,8 @@
 #include "PrecompiledHeaders.h"
 #include "FreeType_TextDrawer.h"
 
+using namespace Kigs::Utils;
+
 const unsigned short	wSpace=(unsigned short)(' ');
 const unsigned short* WhiteSpace=&wSpace;
 

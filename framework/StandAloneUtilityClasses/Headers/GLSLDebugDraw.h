@@ -652,8 +652,14 @@ namespace dd
 
 
 
+namespace Kigs
+{
+	namespace Draw
+	{
+		class Camera;
+	}
 
-class Camera;
+}
 
 namespace dd
 {
@@ -672,67 +678,78 @@ namespace dd
 		CameraFlag_NoFarCross = 1 << 0,
 	};
 
-	void camera(Camera* cam, ddVec3Param color, u32 flags = 0, int duration = 0);
+	void camera(Kigs::Draw::Camera* cam, ddVec3Param color, u32 flags = 0, int duration = 0);
 	void camera(const CameraPoints& pts, ddVec3Param color, u32 flags = 0, int duration = 0);
 
 	void local_bbox(const Matrix3x4& local_to_global, BBox bbox, ddVec3Param color, int duration = 0, bool depth_enabled = true);
 
-	CameraPoints camera_points(Camera* cam);
+	CameraPoints camera_points(Kigs::Draw::Camera* cam);
 }
 
-
-class ModuleSpecificRenderer;
-class Texture;
-class TravState;
-struct Locations;
-
-class DebugDraw : public Drawable, public dd::RenderInterface, public UICustomDrawDelegate
+namespace Kigs
 {
-public:
-
-	void beginDraw() override {};
-	void endDraw() override {};
-	dd::GlyphTextureHandle createGlyphTexture(int width, int height, const void* pixels) override;
-	void destroyGlyphTexture(dd::GlyphTextureHandle glyphTex) override;
-
-	void drawPointList(const dd::DrawVertex* points, int count, bool depthEnabled) override;
-	void drawLineList(const dd::DrawVertex* lines, int count, bool depthEnabled) override;
-	void drawGlyphList(const dd::DrawVertex* glyphs, int count, dd::GlyphTextureHandle glyphTex) override {};
-
-	DECLARE_CLASS_INFO(DebugDraw, Drawable, Renderer);
-	DECLARE_CONSTRUCTOR(DebugDraw);
-
-
-	bool BBoxUpdate(double time) override
+	namespace Scene
 	{
-		return true;
-	};
+		class TravState;
+	}
 
-	void GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override;
+	namespace Draw
+	{
+		struct Locations;
+		class ModuleSpecificRenderer;
+		class Texture;
+	}
+	namespace Utils
+	{
+		using namespace Kigs::Core;
+		class DebugDraw : public Kigs::Draw::Drawable, public dd::RenderInterface, public Kigs::Draw2D::UICustomDrawDelegate
+		{
+		public:
 
-	void Drawfunc(TravState* trav, UIItem*) override { Draw(trav); };
-	virtual ~DebugDraw();
+			void beginDraw() override {};
+			void endDraw() override {};
+			dd::GlyphTextureHandle createGlyphTexture(int width, int height, const void* pixels) override;
+			void destroyGlyphTexture(dd::GlyphTextureHandle glyphTex) override;
 
-protected:
+			void drawPointList(const dd::DrawVertex* points, int count, bool depthEnabled) override;
+			void drawLineList(const dd::DrawVertex* lines, int count, bool depthEnabled) override;
+			void drawGlyphList(const dd::DrawVertex* glyphs, int count, dd::GlyphTextureHandle glyphTex) override {};
 
-	void addUser(CoreModifiable* parent) override;
-	void removeUser(CoreModifiable* parent) override;
-
-	bool Draw(TravState*) override;
-
-
-	ModuleSpecificRenderer* _renderer;
-	const Locations* _locs;
-
-	SP<Texture> _glyph_texture=nullptr;
-	static TravState* currentState;
-
-	DECLARE_METHOD(ResetContext);
-
-	COREMODIFIABLE_METHODS(ResetContext);
-};
+			DECLARE_CLASS_INFO(DebugDraw, Drawable, Renderer);
+			DECLARE_CONSTRUCTOR(DebugDraw);
 
 
+			bool BBoxUpdate(double time) override
+			{
+				return true;
+			};
+
+			void GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override;
+
+			void Drawfunc(Scene::TravState* trav, Draw2D::UIItem*) override { Draw(trav); };
+			virtual ~DebugDraw();
+
+		protected:
+
+			void addUser(CoreModifiable* parent) override;
+			void removeUser(CoreModifiable* parent) override;
+
+			bool Draw(Scene::TravState*) override;
+
+
+			Draw::ModuleSpecificRenderer* _renderer;
+			const Draw::Locations* _locs;
+
+			SP<Draw::Texture> _glyph_texture = nullptr;
+			static Scene::TravState* currentState;
+
+			DECLARE_METHOD(ResetContext);
+
+			COREMODIFIABLE_METHODS(ResetContext);
+		};
+
+	}
+}
 
 
 

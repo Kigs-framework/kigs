@@ -14,6 +14,9 @@
 
 #include <algorithm>
 
+using namespace Kigs::Scene;
+using namespace Kigs::Draw;
+
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(Scene3D, Scene3D, SceneGraph);
 IMPLEMENT_CLASS_INFO(Scene3D)
 
@@ -294,7 +297,7 @@ void     Scene3D::TravCull(TravState* /* state */)
 }
 
 
-void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
+void Scene3D::SortItemsFrontToBack(Input::SortItemsFrontToBackParam& param)
 {
 	unsigned int mask = 0;
 	auto collision = GetFirstInstance("CollisionManager");
@@ -302,7 +305,7 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 	{
 		std::transform(param.toSort.begin(), param.toSort.end(), std::back_inserter(param.sorted), [](CoreModifiable* cm)
 		{
-			return std::make_tuple(cm, Hit{});
+			return std::make_tuple(cm, Maths::Hit{});
 		});
 		return;
 	}
@@ -312,14 +315,14 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 	v3f cam_pos = cam->GetGlobalPosition();
 	v3f cam_view = cam->GetGlobalViewVector();
 
-	std::vector<Hit> hits;
+	std::vector<Maths::Hit> hits;
 	collision->SimpleCall("GetAllRayIntersection", param.origin, param.direction, hits, mask);
 	
 	struct Sorter
 	{
 		CoreModifiable* cm = nullptr;
 		double dist = DBL_MAX;
-		Hit* hit = nullptr;
+		Maths::Hit* hit = nullptr;
 		int sorting_layer = 0;
 	};
 
@@ -352,7 +355,7 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 
 		if (param.toSort[i]->HasMethod("GetDistanceForInputSort"))
 		{
-			GetDistanceForInputSortParam params;
+			Input::GetDistanceForInputSortParam params;
 			params.camera = param.camera;
 			params.position = param.position;
 			params.origin = param.origin;
@@ -391,7 +394,7 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 				v3f normal;
 				v3f dir;
 
-				if (Intersection::IntersectionRayBBox(origin_local, direction_local, bbox_local.m_Min, bbox_local.m_Max, intersection, normal,distance))
+				if (Maths::IntersectionRayBBox(origin_local, direction_local, bbox_local.m_Min, bbox_local.m_Max, intersection, normal,distance))
 				{
 					dir = param.toSort[i]->as<Node3D>()->GetLocalToGlobal()*intersection - cam_pos;
 				}
@@ -414,6 +417,6 @@ void Scene3D::SortItemsFrontToBack(SortItemsFrontToBackParam& param)
 	param.sorted.resize(param.toSort.size());
 	for (u32 i = 0; i < sorter.size(); ++i)
 	{
-		param.sorted[i] = std::make_tuple(sorter[i].cm, sorter[i].hit ? *sorter[i].hit : Hit{});
+		param.sorted[i] = std::make_tuple(sorter[i].cm, sorter[i].hit ? *sorter[i].hit : Maths::Hit{});
 	}
 }

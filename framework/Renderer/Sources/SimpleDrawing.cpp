@@ -2,6 +2,8 @@
 
 #include "SimpleDrawing.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(SimpleDrawing)
 
 void SimpleDrawing::GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const

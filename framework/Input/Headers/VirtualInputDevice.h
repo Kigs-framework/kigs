@@ -1,21 +1,25 @@
-#ifndef _VIRTUALINPUTDEVICE_H_
-#define _VIRTUALINPUTDEVICE_H_
+#pragma once
 
 #include "CoreModifiable.h"
-//#include "InputDevice.h"
 
-class VirtualInputDevice : public CoreModifiable
+namespace Kigs
 {
-public:
-    
-    DECLARE_ABSTRACT_CLASS_INFO(VirtualInputDevice,CoreModifiable,Input)
-    
-    VirtualInputDevice(const std::string& name);
+    namespace Input
+    {
 
-	void	update(double time);
+        class VirtualInputDevice : public CoreModifiable
+        {
+        public:
 
-protected:
-    virtual ~VirtualInputDevice();           
-};    
+            DECLARE_ABSTRACT_CLASS_INFO(VirtualInputDevice, CoreModifiable, Input)
 
-#endif //_VIRTUALINPUTDEVICE_H_
+                VirtualInputDevice(const std::string& name);
+
+            void	update(double time);
+
+        protected:
+            virtual ~VirtualInputDevice();
+        };
+
+    }
+}

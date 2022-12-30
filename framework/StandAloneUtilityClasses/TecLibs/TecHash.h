@@ -11,7 +11,7 @@ namespace std
 		size_t operator()(const v2f& pt)
 		{
 			size_t hash = 0;
-			hash_combine(hash, pt.x, pt.y);
+			Kigs::Core::hash_combine(hash, pt.x, pt.y);
 			return hash;
 		}
 	};
@@ -22,7 +22,7 @@ namespace std
 		size_t operator()(const v3f& pt)
 		{
 			size_t hash = 0;
-			hash_combine(hash, pt.x, pt.y, pt.z);
+			Kigs::Core::hash_combine(hash, pt.x, pt.y, pt.z);
 			return hash;
 		}
 	};
@@ -33,7 +33,7 @@ namespace std
 		size_t operator()(const v4f& pt)
 		{
 			size_t hash = 0;
-			hash_combine(hash, pt.x, pt.y, pt.z, pt.w);
+			Kigs::Core::hash_combine(hash, pt.x, pt.y, pt.z, pt.w);
 			return hash;
 		}
 	};

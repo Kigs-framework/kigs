@@ -2,7 +2,8 @@
 #include "UI/UIButton.h"
 #include "NotificationCenter.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIGroupButton, UIGroupButton, 2DLayers);
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(UIGroupButton)
 
 UIGroupButton::UIGroupButton(const std::string& name, CLASS_NAME_TREE_ARG) :

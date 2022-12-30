@@ -2,7 +2,10 @@
 
 #include "ModuleInput.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UICustomInputItem, UICustomInputItem, 2DLayers);
+using namespace Kigs::Draw2D;
+using namespace Kigs::Input;
+using namespace Kigs::Core;
+
 IMPLEMENT_CLASS_INFO(UICustomInputItem)
 
 void UICustomInputItem::InitModifiable()

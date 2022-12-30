@@ -4,7 +4,9 @@
 #include "TinyImageLoaderContext.h"
 #include "Core.h"
 
-DDSClass::DDSClass(FileHandle* fileName) :TinyImage()
+using namespace Kigs::Pict;
+
+DDSClass::DDSClass(File::FileHandle* fileName) :TinyImage()
 , mMipmapCount(0)
 {
 	mIsVFlipped = false;
@@ -22,7 +24,7 @@ const unsigned int FCC_DXT3 = *(unsigned int*)"DXT3";
 const unsigned int FCC_DXT4 = *(unsigned int*)"DXT4";
 const unsigned int FCC_DXT5 = *(unsigned int*)"DXT5";
 
-bool	DDSClass::Load(FileHandle* fileName)
+bool	DDSClass::Load(File::FileHandle* fileName)
 {
 	bool result = false;
 	u64 filelength;
@@ -42,7 +44,7 @@ bool	DDSClass::Load(FileHandle* fileName)
 		}
 	}
 
-	auto rawbuffer = ModuleFileManager::LoadFile(fileName, filelength);
+	auto rawbuffer = File::ModuleFileManager::LoadFile(fileName, filelength);
 	if (rawbuffer)
 	{
 		u8* memfile = (u8*)rawbuffer->buffer();

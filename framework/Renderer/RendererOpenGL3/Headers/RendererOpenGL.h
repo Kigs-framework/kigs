@@ -1,14 +1,26 @@
-#ifndef _MODULE3DENGINEOPENGL_H_
-#define _MODULE3DENGINEOPENGL_H_
+#pragma once
 
 #include "ModuleBase.h"
 #include "ModuleRenderer.h"
 #include "GLSLUniform.h"
 
-class RendererOpenGL;
-class TravState;
+namespace Kigs
+{
+	namespace Scene
+	{
+		class TravState;
+	}
+	namespace Utils
+	{
+		class FreeType_TextDrawer;
+	}
 
-//#define ENABLE_CHECKERROR
+	namespace Draw
+	{
+		class RendererOpenGL;
+
+
+		//#define ENABLE_CHECKERROR
 #ifdef ENABLE_CHECKERROR
 #define CHECK_GLERROR RendererOpenGL::CheckError(__FILE__,__LINE__);
 #else 
@@ -16,185 +28,184 @@ class TravState;
 #endif
 
 
-class FreeType_TextDrawer;
-class VertexBufferManager;
-class API3DShader;
+		class VertexBufferManager;
+		class API3DShader;
 
 
 #define PREALLOCATED_VBO_COUNT 64
 
-class OpenGLRenderingState : public RenderingState
-{
-public:
-	OpenGLRenderingState() :RenderingState() {}
+		class OpenGLRenderingState : public RenderingState
+		{
+		public:
+			OpenGLRenderingState() :RenderingState() {}
 
-	void FlushState(RenderingState* currentState, bool force = false) override;
+			void FlushState(RenderingState* currentState, bool force = false) override;
 
-	void ClearView(RendererClearMode clearMode) override;
+			void ClearView(RendererClearMode clearMode) override;
 
-	void FlushLightModelfv(RenderingState* currentState) override { assert(0); }
-	void FlushLightModeli(RenderingState* currentState)  override { assert(0); }
+			void FlushLightModelfv(RenderingState* currentState) override { assert(0); }
+			void FlushLightModeli(RenderingState* currentState)  override { assert(0); }
 
-	void Viewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) override;
-	
-	void ProtectedInitHardwareState() override;
-};
+			void Viewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) override;
 
-// ****************************************
-// * VertexBufferManager class
-// * --------------------------------------
-/**
- * \file	RendererOpenGL.h
- * \class	VertexBufferManager
- * \ingroup Renderer
- * \brief	Manage vertex buffer for OpenGL API.
- */
- // ****************************************
+			void ProtectedInitHardwareState() override;
+		};
+
+		// ****************************************
+		// * VertexBufferManager class
+		// * --------------------------------------
+		/**
+		 * \file	RendererOpenGL.h
+		 * \class	VertexBufferManager
+		 * \ingroup Renderer
+		 * \brief	Manage vertex buffer for OpenGL API.
+		 */
+		 // ****************************************
 
 
-class VertexBufferManager : public VertexBufferManagerBase
-{
-public:
-	VertexBufferManager();
+		class VertexBufferManager : public VertexBufferManagerBase
+		{
+		public:
+			VertexBufferManager();
 
-	void GenBuffer(int count, unsigned int * id) override;
-	void DelBuffer(int count, unsigned int * id) override;
-	void DelBufferLater(int count, unsigned int * id) override;
+			void GenBuffer(int count, unsigned int* id) override;
+			void DelBuffer(int count, unsigned int* id) override;
+			void DelBufferLater(int count, unsigned int* id) override;
 
-	void BufferData(unsigned int bufferName, unsigned int bufftype, int size, void* data, unsigned int usage) override;
+			void BufferData(unsigned int bufferName, unsigned int bufftype, int size, void* data, unsigned int usage) override;
 
-	void UnbindBuffer(unsigned int bufferName, int target = 0) override;
-	void FlushBindBuffer(int target = 0, bool force = false) override;
-	void Clear(bool push = false) override;
+			void UnbindBuffer(unsigned int bufferName, int target = 0) override;
+			void FlushBindBuffer(int target = 0, bool force = false) override;
+			void Clear(bool push = false) override;
 
-	void SetArrayBuffer(unsigned int bufferName, int slot_unused = 0) override;
-	void SetElementBuffer(unsigned int bufferName) override;
-	void SetVertexAttrib(unsigned int bufferName, unsigned int attribID, int size, unsigned int type, bool normalized, unsigned int stride, void * offset, const Locations* locs = nullptr) override;
+			void SetArrayBuffer(unsigned int bufferName, int slot_unused = 0) override;
+			void SetElementBuffer(unsigned int bufferName) override;
+			void SetVertexAttrib(unsigned int bufferName, unsigned int attribID, int size, unsigned int type, bool normalized, unsigned int stride, void* offset, const Locations* locs = nullptr) override;
 
-	void DoDelayedAction() override;
+			void DoDelayedAction() override;
 
-	// called at the end of drawElements or DrawArray to mark already used vertex array
-	virtual void MarkVertexAttrib() override;
+			// called at the end of drawElements or DrawArray to mark already used vertex array
+			virtual void MarkVertexAttrib() override;
 
-	// called in drawElements or DrawArray to disable unused attributes
-	virtual void FlushUnusedVertexAttrib()  override;
+			// called in drawElements or DrawArray to disable unused attributes
+			virtual void FlushUnusedVertexAttrib()  override;
 
-private:
-	void internalBindBuffer(unsigned int bufferName, unsigned int bufftype);
+		private:
+			void internalBindBuffer(unsigned int bufferName, unsigned int bufftype);
 
-	// store the current buffer bound
-	unsigned int mCurrentBoundBuffer[2];
-	unsigned int mAskedBoundBuffer[2];
+			// store the current buffer bound
+			unsigned int mCurrentBoundBuffer[2];
+			unsigned int mAskedBoundBuffer[2];
 
-	struct VAStruct
-	{
-		u32	mBufferName = 0;
-		s32	mUsed = -1;
-	};
+			struct VAStruct
+			{
+				u32	mBufferName = 0;
+				s32	mUsed = -1;
+			};
 
-	// store enabled vertex attrib with currentBuffer name
-	std::unordered_map<u32,VAStruct>	mEnableVertexAttrib;
-	std::vector<u32>					mToDeleteBuffer;
-};
+			// store enabled vertex attrib with currentBuffer name
+			std::unordered_map<u32, VAStruct>	mEnableVertexAttrib;
+			std::vector<u32>					mToDeleteBuffer;
+		};
 
-// ****************************************
-// * RendererOpenGL class
-// * --------------------------------------
-/**
- * \file	RendererOpenGL.h
- * \class	RendererOpenGL
- * \ingroup Renderer
- * \ingroup Module
- * \brief	OpenGL implementation of ModuleSpecificRenderer.
- */
- // ****************************************
-class RendererOpenGL : public ModuleSpecificRenderer
-{
-public:
-	struct HoloMatrix
-	{
-		u32 mRenderTargetArrayIndices;
-		u32 mRenderTargetArrayIndicesCount;
-		float			mHoloMatrix[16 * 2];
-	};
+		// ****************************************
+		// * RendererOpenGL class
+		// * --------------------------------------
+		/**
+		 * \file	RendererOpenGL.h
+		 * \class	RendererOpenGL
+		 * \ingroup Renderer
+		 * \ingroup Module
+		 * \brief	OpenGL implementation of ModuleSpecificRenderer.
+		 */
+		 // ****************************************
+		class RendererOpenGL : public ModuleSpecificRenderer
+		{
+		public:
+			struct HoloMatrix
+			{
+				u32 mRenderTargetArrayIndices;
+				u32 mRenderTargetArrayIndicesCount;
+				float			mHoloMatrix[16 * 2];
+			};
 
-	DECLARE_CLASS_INFO(RendererOpenGL, ModuleSpecificRenderer, Renderer);
-	DECLARE_CONSTRUCTOR(RendererOpenGL);
+			DECLARE_CLASS_INFO(RendererOpenGL, ModuleSpecificRenderer, Renderer);
+			DECLARE_CONSTRUCTOR(RendererOpenGL);
 
-	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
-	void PlatformInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
+			void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
+			void PlatformInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params) override;
 
-	void Close() override;
-	void PlatformClose() override;
+			void Close() override;
+			void PlatformClose() override;
 
-	void Update(const Timer& timer, void* addParam) override;
-	void PlatformUpdate(const Timer& timer, void* addParam) override;
+			void Update(const Timer& timer, void* addParam) override;
+			void PlatformUpdate(const Timer& timer, void* addParam) override;
 
-	static void CheckError(const char* filename,int line);
+			static void CheckError(const char* filename, int line);
 
-	void FlushState(bool force = false) override;
-	
-	// Direct rendering method for UI
-	void DrawUIQuad(TravState * state, const UIVerticesInfo * qi) override;
-	void DrawUITriangles(TravState * state, const UIVerticesInfo * qi) override;
+			void FlushState(bool force = false) override;
 
-	virtual void	setCurrentShaderProgram(ShaderInfo* p) override;
+			// Direct rendering method for UI
+			void DrawUIQuad(TravState* state, const Draw2D::UIVerticesInfo* qi) override;
+			void DrawUITriangles(TravState* state, const Draw2D::UIVerticesInfo* qi) override;
 
-	void DrawPendingInstances(TravState* state) override;
+			virtual void	setCurrentShaderProgram(ShaderInfo* p) override;
 
-	void ProtectedFlushMatrix(TravState* state) override;
+			void DrawPendingInstances(TravState* state) override;
 
-	void DrawArrays(TravState* state, unsigned int mode, int first, int count) override;
-	void DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices = 0) override;
-	void DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount) override;
+			void ProtectedFlushMatrix(TravState* state) override;
 
-	void BindArrayBuffer(unsigned int id);
-	void BindElementBuffer(unsigned int id);
+			void DrawArrays(TravState* state, unsigned int mode, int first, int count) override;
+			void DrawElements(TravState* state, unsigned int mode, int count, unsigned int type, void* indices = 0) override;
+			void DrawElementsInstanced(TravState* state, unsigned int mode, int count, unsigned int type, void* indices, int primcount) override;
 
-	void SetVertexAttribDivisor(TravState* state, unsigned int bufferName, int attribute_location, int divisor) override;
-	
-	void InitTextureInfo() ;
-	void CreateTexture(int count, unsigned int * id) override;
-	void DeleteTexture(int count, unsigned int * id) override;
-	void EnableTexture() override;
-	void DisableTexture() override;
-	void BindTexture(RendererTextureType type, unsigned int ID) override;
-	void UnbindTexture(RendererTextureType type, unsigned int ID) override;
+			void BindArrayBuffer(unsigned int id);
+			void BindElementBuffer(unsigned int id);
 
-	void TextureParameteri(RendererTextureType type, RendererTexParameter1 name, RendererTexParameter2 param) override;
-	
-	void SetUniform1i(unsigned int loc, s32 value);
-	void ActiveTextureChannel(unsigned int channel) override;
+			void SetVertexAttribDivisor(TravState* state, unsigned int bufferName, int attribute_location, int divisor) override;
 
-	LightCount SetLightsInfo(std::set<CoreModifiable*>*lights)  override;
-	void SendLightsInfo(TravState* travstate) override;
-	void ClearLightsInfo(TravState* travstate) override;
+			void InitTextureInfo();
+			void CreateTexture(int count, unsigned int* id) override;
+			void DeleteTexture(int count, unsigned int* id) override;
+			void EnableTexture() override;
+			void DisableTexture() override;
+			void BindTexture(RendererTextureType type, unsigned int ID) override;
+			void UnbindTexture(RendererTextureType type, unsigned int ID) override;
 
-protected:
-	
-	// Texture Unit
-	int MAX_TEXTURE_UNIT;
-	struct TextureUnitInfo
-	{
-		unsigned int mBindedTextureID;
-		unsigned int mBindedTextureType;
-	};
-	std::vector<TextureUnitInfo>	mTextureUnit;
+			void TextureParameteri(RendererTextureType type, RendererTexParameter1 name, RendererTexParameter2 param) override;
 
-	RenderingState*	createNewState(RenderingState* toCopy = 0)  override
-	{
-		OpenGLRenderingState* newstate = new OpenGLRenderingState();
+			void SetUniform1i(unsigned int loc, s32 value);
+			void ActiveTextureChannel(unsigned int channel) override;
 
-		if (toCopy)
-			*newstate = *static_cast<OpenGLRenderingState*>(toCopy);
+			LightCount SetLightsInfo(std::set<CoreModifiable*>* lights)  override;
+			void SendLightsInfo(TravState* travstate) override;
+			void ClearLightsInfo(TravState* travstate) override;
 
-		return newstate;
+		protected:
+
+			// Texture Unit
+			int MAX_TEXTURE_UNIT;
+			struct TextureUnitInfo
+			{
+				unsigned int mBindedTextureID;
+				unsigned int mBindedTextureType;
+			};
+			std::vector<TextureUnitInfo>	mTextureUnit;
+
+			RenderingState* createNewState(RenderingState* toCopy = 0)  override
+			{
+				OpenGLRenderingState* newstate = new OpenGLRenderingState();
+
+				if (toCopy)
+					*newstate = *static_cast<OpenGLRenderingState*>(toCopy);
+
+				return newstate;
+			}
+
+			unsigned int			mCurrentOGLMatrixMode;
+
+			HoloMatrix* mHoloMatrix = nullptr;
+		};
+
 	}
-
-	unsigned int			mCurrentOGLMatrixMode;
-
-	HoloMatrix * mHoloMatrix = nullptr;
-};
-
-
-#endif //_MODULE3DENGINEOPENGL_H_
+}

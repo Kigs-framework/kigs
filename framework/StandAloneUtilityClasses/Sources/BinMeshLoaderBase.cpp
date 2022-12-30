@@ -3,6 +3,9 @@
 #include "Core.h"
 #include "BinMeshLoaderBase.h"
 
+using namespace Kigs::Utils;
+using namespace Kigs::File;
+
 BinMeshLoaderBase::BinMeshLoaderBase() : mFile(0)
 {
 }

@@ -9,6 +9,8 @@
 #include "ModuleRenderer.h"
 #include "DrawableSorter.h"
 
+using namespace Kigs::Scene;
+
 #ifdef KIGS_TOOLS
 extern bool gCullingDrawBBox; 
 #endif

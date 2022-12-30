@@ -2,6 +2,8 @@
 #include "MouseVelocityComputer.h"
 #include "Core.h"
 
+using namespace Kigs::Draw2D;
+
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(MouseVelocityComputer, MouseVelocityComputer, 2DLayers);
 IMPLEMENT_CLASS_INFO(MouseVelocityComputer)
 

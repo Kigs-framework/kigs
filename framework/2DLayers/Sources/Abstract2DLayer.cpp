@@ -15,6 +15,9 @@
 
 #include "TimeProfiler.h"
 
+using namespace Kigs::Draw2D;
+using namespace Kigs::Scene;
+
 IMPLEMENT_CLASS_INFO(Abstract2DLayer);
 
 ///////////////////////////////////////////
@@ -57,7 +60,7 @@ void Abstract2DLayer::InitModifiable()
 }
 
 //! set rendering screen active
-bool Abstract2DLayer::StartDrawing(TravState* state)
+bool Abstract2DLayer::StartDrawing(Scene::TravState* state)
 {
 	KIGS_ASSERT(GetRenderingScreen());
 	return GetRenderingScreen()->SetActive(state);
@@ -65,7 +68,7 @@ bool Abstract2DLayer::StartDrawing(TravState* state)
 }
 
 //! close rendering screen
-void Abstract2DLayer::EndDrawing(TravState* state)
+void Abstract2DLayer::EndDrawing(Scene::TravState* state)
 {
 	KIGS_ASSERT(GetRenderingScreen());
 	GetRenderingScreen()->Release(state);

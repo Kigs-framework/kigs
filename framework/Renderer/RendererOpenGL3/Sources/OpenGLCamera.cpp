@@ -10,6 +10,8 @@
 #include "Platform/Renderer/OpenGLInclude.h"
 #include "Platform/Renderer/OpenGL3Camera.inl.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(OpenGLCamera)
 
 OpenGLCamera::OpenGLCamera(const std::string& name, CLASS_NAME_TREE_ARG) : Camera(name, PASS_CLASS_NAME_TREE_ARG)

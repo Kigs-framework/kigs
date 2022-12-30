@@ -4,6 +4,7 @@
 #include "Core.h"
 #include "Window.h"
 
+using namespace Kigs::Input;
 
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(JoystickDX, JoystickDevice, Input);
 IMPLEMENT_CLASS_INFO(JoystickDX)

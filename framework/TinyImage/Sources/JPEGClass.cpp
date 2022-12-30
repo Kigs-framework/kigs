@@ -4,12 +4,14 @@
 #include "TinyImageLoaderContext.h"
 #include "ModuleFileManager.h"
 
-JPEGClass::JPEGClass(FileHandle* fileName) :TinyImage()
+using namespace Kigs::Pict;
+
+JPEGClass::JPEGClass(File::FileHandle* fileName) :TinyImage()
 {
 	mInitIsOK = Load(fileName);
 }
 
-JPEGClass::JPEGClass(CoreRawBuffer* rawbuffer) : TinyImage()
+JPEGClass::JPEGClass(Core::CoreRawBuffer* rawbuffer) : TinyImage()
 {
 	mInitIsOK = Load(rawbuffer);
 }
@@ -177,7 +179,7 @@ bool JPEGClass::Load(CoreRawBuffer* rawbuffer)
 	return result;
 }
 
-bool JPEGClass::Load(FileHandle* fileName)
+bool JPEGClass::Load(File::FileHandle* fileName)
 {
 	bool result = false;
 
@@ -197,7 +199,7 @@ bool JPEGClass::Load(FileHandle* fileName)
 	}
 
 	u64 nDatalen;
-	auto rawbuffer = ModuleFileManager::LoadFile(fileName, nDatalen);
+	auto rawbuffer = File::ModuleFileManager::LoadFile(fileName, nDatalen);
 	result = Load(rawbuffer.get());
 
 	return result;

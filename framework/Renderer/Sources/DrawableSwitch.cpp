@@ -2,6 +2,8 @@
 
 #include "DrawableSwitch.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(DrawableSwitch)
 
 DrawableSwitch::DrawableSwitch(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)

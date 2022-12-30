@@ -1,34 +1,39 @@
-#ifndef _MULTITOUCHDEVICE_H_
-#define _MULTITOUCHDEVICE_H_
+#pragma once
 
 #include "InputDevice.h"
-// ****************************************
-// * MultiTouchDevice class
-// * --------------------------------------
-/**
- * \class	MultiTouchDevice
- * \file	MultiTouchDevice.h
- * \ingroup Input
- * \brief	Base class to manage generic multiple touch device.
- */
- // ****************************************
-class MultiTouchDevice : public InputDevice
+
+namespace Kigs
 {
-public:	
-	DECLARE_ABSTRACT_CLASS_INFO(MultiTouchDevice, InputDevice, Input)
-	DECLARE_INLINE_CONSTRUCTOR(MultiTouchDevice) {}
-
-	int				getTouchState(int touchIndex);
-	void			getTouchPos(int touchIndex, float &posX, float &posY);
-	int getMaxTouch()
+	namespace Input
 	{
-		return mMaxTouch;
+		// ****************************************
+		// * MultiTouchDevice class
+		// * --------------------------------------
+		/**
+		 * \class	MultiTouchDevice
+		 * \file	MultiTouchDevice.h
+		 * \ingroup Input
+		 * \brief	Base class to manage generic multiple touch device.
+		 */
+		 // ****************************************
+		class MultiTouchDevice : public InputDevice
+		{
+		public:
+			DECLARE_ABSTRACT_CLASS_INFO(MultiTouchDevice, InputDevice, Input)
+				DECLARE_INLINE_CONSTRUCTOR(MultiTouchDevice) {}
+
+			int				getTouchState(int touchIndex);
+			void			getTouchPos(int touchIndex, float& posX, float& posY);
+			int getMaxTouch()
+			{
+				return mMaxTouch;
+			}
+
+			void UpdateDevice() override {};
+
+		protected:
+			int		mMaxTouch = 0;
+		};
+
 	}
-
-	void UpdateDevice() override {};
-
-protected:
-	int		mMaxTouch = 0;
-};
-
-#endif //_MULTITOUCHDEVICE_H_
+}

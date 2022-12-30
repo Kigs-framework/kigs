@@ -10,6 +10,8 @@
 #include "TouchInputEventManager.h"
 #include "CoreBaseApplication.h"
 
+using namespace Kigs::Draw;
+
 #define DEG_TO_RAD    (3.1415926535897932384626433832795f/180.0f)
 #define DEG_TO_RAD_2  (3.1415926535897932384626433832795f/360.0f)
 
@@ -87,7 +89,7 @@ Camera::~Camera()
 	ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
 	scenegraph->NotifyDefferedItemDeath(this);
 
-	auto theInputModule = KigsCore::GetModule<ModuleInput>();
+	auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 	if(theInputModule)
 		theInputModule->getTouchManager()->removeTouchSupport(this);
 }
@@ -174,7 +176,7 @@ void Camera::InitModifiable()
 			mTouchControlled.changeNotificationLevel(Owner);
 
 			// declare as a touch support potential target with rendering screen as parent
-			auto theInputModule = KigsCore::GetModule<ModuleInput>();
+			auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 			if(theInputModule)
 				theInputModule->getTouchManager()->addTouchSupport(this,mRenderingScreen);	
 			
@@ -203,7 +205,7 @@ bool Camera::ManageClickTouchEvent(v3f pos, int type, int state, int clickCount)
 }
 */
 // for 3D view, pos is eye pos and move is view vector
-bool Camera::GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout)
+bool Camera::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::touchPosInfos& pout)
 {
 	// TODO : probably not enough as we can have several camera in a scene and not all attached to holographic view 
 	if (mRenderingScreen->as<RenderingScreen>()->IsHolographic())
@@ -563,7 +565,7 @@ bool	Camera::Draw(TravState* state)
 
 void	Camera::activeTouchControlledCamera(bool active)
 {
-	auto theInputModule = KigsCore::GetModule<ModuleInput>();
+	auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 
 	if (theInputModule == 0)
 	{
@@ -572,8 +574,8 @@ void	Camera::activeTouchControlledCamera(bool active)
 
 	if (active)
 	{
-		theInputModule->getTouchManager()->registerEvent(this, "ManageScrollTouchEvent", Scroll, EmptyFlag);
-		theInputModule->getTouchManager()->registerEvent(this, "ManagePinchTouchEvent", Pinch, EmptyFlag);
+		theInputModule->getTouchManager()->registerEvent(this, "ManageScrollTouchEvent", Input::Scroll, Input::EmptyFlag);
+		theInputModule->getTouchManager()->registerEvent(this, "ManagePinchTouchEvent", Input::Pinch, Input::EmptyFlag);
 		
 		// add dynamic attribute with touch controlled data
 		// first check if not already there
@@ -592,8 +594,8 @@ void	Camera::activeTouchControlledCamera(bool active)
 	}
 	else
 	{
-		theInputModule->getTouchManager()->unregisterEvent(this, Scroll);
-		theInputModule->getTouchManager()->unregisterEvent(this, Pinch);
+		theInputModule->getTouchManager()->unregisterEvent(this, Input::Scroll);
+		theInputModule->getTouchManager()->unregisterEvent(this, Input::Pinch);
 		// remove dynamic attribute 
 		// first delete data struct if already set
 		void* datastruct;
@@ -609,7 +611,7 @@ void	Camera::activeTouchControlledCamera(bool active)
 	}
 }
 
-bool Camera::ManagePinchTouchEvent(PinchEvent& pinch_event)
+bool Camera::ManagePinchTouchEvent(Input::PinchEvent& pinch_event)
 {
 	touchControlledDataStruct*	currentDataStruct = 0;
 
@@ -635,7 +637,7 @@ bool Camera::ManagePinchTouchEvent(PinchEvent& pinch_event)
 
 		
 
-		if (pinch_event.state == StatePossible)
+		if (pinch_event.state == Input::StatePossible)
 		{
 			Point2D currentPos = pinch_event.p1_start.xy;
 			currentPos += pinch_event.p2_start.xy;
@@ -652,7 +654,7 @@ bool Camera::ManagePinchTouchEvent(PinchEvent& pinch_event)
 
 			return false;
 		}
-		if (pinch_event.state == StateBegan)
+		if (pinch_event.state == Input::StateBegan)
 		{
 			currentDataStruct->mState = 2;
 			currentDataStruct->mTargetPointDist = getValue<float>("TargetPointDist");
@@ -662,7 +664,7 @@ bool Camera::ManagePinchTouchEvent(PinchEvent& pinch_event)
 			currentDataStruct->mStartV += (Point3D)mPosition;
 		}
 
-		if (pinch_event.state == StateChanged)
+		if (pinch_event.state == Input::StateChanged)
 		{
 			float currentDist = Norm(pinch_event.p1 - pinch_event.p2);
 
@@ -680,7 +682,7 @@ bool Camera::ManagePinchTouchEvent(PinchEvent& pinch_event)
 			NotifyUpdate(mPosition.getID().toUInt());
 		}
 
-		if (pinch_event.state == StateEnded)
+		if (pinch_event.state == Input::StateEnded)
 		{
 			currentDataStruct->mState = 0;
 
@@ -694,7 +696,7 @@ bool Camera::ManagePinchTouchEvent(PinchEvent& pinch_event)
 }
 
 
-bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
+bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 {
 	touchControlledDataStruct*	currentDataStruct = 0;
 
@@ -721,7 +723,7 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 		currentPos.x /= dwidth;
 		currentPos.y /= dheight;
 
-		if (scroll_event.state == StatePossible)
+		if (scroll_event.state == Input::StatePossible)
 		{
 			if((currentPos.x>=0.0f) && (currentPos.x <mViewportSizeX))
 				if ((currentPos.y >= 0.0f) && (currentPos.y < mViewportSizeY))
@@ -734,7 +736,7 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 		}		
 
 
-		if (scroll_event.state == StateBegan)
+		if (scroll_event.state == Input::StateBegan)
 		{
 
 			if (dwidth > dheight)
@@ -785,7 +787,7 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 
 		}
 
-		if (scroll_event.state == StateChanged)
+		if (scroll_event.state == Input::StateChanged)
 		{
 			if (currentDataStruct->mState == 1) // rotation
 			{
@@ -864,7 +866,7 @@ bool Camera::ManageScrollTouchEvent(ScrollEvent& scroll_event)
 			}
 		}
 
-		if (scroll_event.state == StateEnded)
+		if (scroll_event.state == Input::StateEnded)
 		{
 			currentDataStruct->mState = 0;
 		}

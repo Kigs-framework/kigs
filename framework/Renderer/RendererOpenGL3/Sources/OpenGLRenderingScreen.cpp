@@ -19,6 +19,9 @@
 // rendering screen is too much platform specific
 #include "Platform/Renderer/OpenGL3RenderingScreen.inl.h"
 
+using namespace Kigs::Draw;
+using namespace Kigs::Draw2D;
+
 IMPLEMENT_CLASS_INFO(OpenGLRenderingScreen)
 
 OpenGLRenderingScreen::OpenGLRenderingScreen(const std::string& name, CLASS_NAME_TREE_ARG) : OpenGLPlatformRenderingScreen(name, PASS_CLASS_NAME_TREE_ARG)

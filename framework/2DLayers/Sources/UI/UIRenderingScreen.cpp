@@ -5,7 +5,9 @@
 
 #include "BaseUI2DLayer.h"
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UIRenderingScreen, UIRenderingScreen, 2DLayers);
+using namespace Kigs::Draw2D;
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(UIRenderingScreen)
 
 IMPLEMENT_CONSTRUCTOR(UIRenderingScreen)
@@ -81,7 +83,7 @@ void	UIRenderingScreen::InitModifiable()
 				CoreModifiable* layerRenderingScreen;
 				parent2DLayer->getValue("RenderingScreen", layerRenderingScreen);
 
-				auto theInputModule = KigsCore::GetModule<ModuleInput>();
+				auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 				theInputModule->getTouchManager()->addTouchSupport(this, layerRenderingScreen);
 
 				// add offscreen rendering screen as touch support with this as parent
@@ -96,7 +98,7 @@ void UIRenderingScreen::NotifyUpdate(unsigned int labelid)
 	ParentClassType::NotifyUpdate(labelid);
 	if (labelid == mIsTouchable.getID())
 	{
-		auto theInputModule = KigsCore::GetModule<ModuleInput>();
+		auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 		if (!mIsTouchable)
 		{
 			theInputModule->getTouchManager()->removeTouchSupport(this);
@@ -122,7 +124,7 @@ void UIRenderingScreen::NotifyUpdate(unsigned int labelid)
 }
 
 
-bool	UIRenderingScreen::GetDataInTouchSupport(const touchPosInfos& posin, touchPosInfos& pout)
+bool	UIRenderingScreen::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::touchPosInfos& pout)
 {
 	SetUpNodeIfNeeded();
 

@@ -13,7 +13,7 @@
 #include "FilePathManager.h"
 
 
-
+using namespace Kigs::Pict;
 
 TinyImageLoaderContext* TinyImage::mLoaderContext=&TinyImageLoaderContext::GetDefault();
 
@@ -225,12 +225,12 @@ TinyImage::TinyImage(void* data, int sx,int sy,TinyImage::ImageFormat internalfm
 	
 SP<TinyImage> TinyImage::CreateImage(const char* filename)
 {
-	auto pathManager = KigsCore::Singleton<FilePathManager>();
+	auto pathManager = KigsCore::Singleton<File::FilePathManager>();
 	auto hdl = pathManager->FindFullName(filename);
 	return CreateImage(hdl.get());
 }
 
-SP<TinyImage> TinyImage::CreateImage(FileHandle* aFile)
+SP<TinyImage> TinyImage::CreateImage(File::FileHandle* aFile)
 {
 	SP<TinyImage> img;
 	std::string upExtension = ToUpperCase(aFile->mExtension);

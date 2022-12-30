@@ -2,6 +2,8 @@
 
 #include "GLSLDeferredFilter.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(API3DDeferredFilter)
 
 //# CONSTRUCTOR

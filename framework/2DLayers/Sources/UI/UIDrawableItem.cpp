@@ -9,7 +9,9 @@
 #include "TravState.h"
 #include "UI/UIShapeDelegate.h"
 
-class TravState;
+using namespace Kigs::Draw2D;
+using namespace Kigs::Scene;
+
 
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(UIDrawableItem, UIDrawableItem, 2DLayers);
 IMPLEMENT_CLASS_INFO(UIDrawableItem)
@@ -142,8 +144,8 @@ void UIDrawableItem::ProtectedDraw(TravState* state)
 	if (lQI == nullptr)
 		return;
 
-	ModuleSpecificRenderer* renderer = (ModuleSpecificRenderer*)state->GetRenderer();
-	unsigned int shader_flag = ModuleRenderer::VERTEX_ARRAY_MASK | ModuleRenderer::NO_LIGHT_MASK;
+	Draw::ModuleSpecificRenderer* renderer = (Draw::ModuleSpecificRenderer*)state->GetRenderer();
+	unsigned int shader_flag = Draw::ModuleRenderer::VERTEX_ARRAY_MASK | Draw::ModuleRenderer::NO_LIGHT_MASK;
 
 	PreDraw(state); // activate texture if any
 	//lQI->resetFlag();
@@ -172,18 +174,18 @@ void UIDrawableItem::ProtectedDraw(TravState* state)
 
 
 	if ((lQI->Flag & UIVerticesInfo_Color) != 0)
-		shader_flag |= ModuleRenderer::COLOR_ARRAY_MASK;
+		shader_flag |= Draw::ModuleRenderer::COLOR_ARRAY_MASK;
 	if ((lQI->Flag & UIVerticesInfo_Texture) != 0)
-		shader_flag |= ModuleRenderer::TEXCOORD_ARRAY_MASK;
+		shader_flag |= Draw::ModuleRenderer::TEXCOORD_ARRAY_MASK;
 	if ((lQI->Flag & UIVerticesInfo_BGRTexture) != 0)
-		shader_flag |= ModuleRenderer::SHADER_FLAGS_USER1;
+		shader_flag |= Draw::ModuleRenderer::SHADER_FLAGS_USER1;
 
 	if ((lQI->Flag & UIVerticesInfo_UseModelMatrix) != 0)
 	{
 		Matrix3x3 m = GetGlobalTransform();
 		Matrix4x4 m4 = (Matrix4x4)m;
 		//renderer->PushMatrix(MATRIX_MODE_MODEL);
-		renderer->PushAndMultMatrix(MATRIX_MODE_MODEL, &m4.e[0][0]);
+		renderer->PushAndMultMatrix(Draw::MATRIX_MODE_MODEL, &m4.e[0][0]);
 	}
 
 	// ** Manage Transparency (after texture init) **
@@ -193,21 +195,21 @@ void UIDrawableItem::ProtectedDraw(TravState* state)
 	case 2:
 		//renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_ON);
 		//renderer->SetAlphaMode(RENDERER_ALPHA_GREATER, 0.01f);
-		shader_flag |= ModuleRenderer::ALPHA_TEST_LOW;
-		renderer->SetBlendMode(RENDERER_BLEND_ON);
-		renderer->SetBlendFuncMode(RENDERER_BLEND_SRC_ALPHA, RENDERER_BLEND_ONE_MINUS_SRC_ALPHA);
+		shader_flag |= Draw::ModuleRenderer::ALPHA_TEST_LOW;
+		renderer->SetBlendMode(Draw::RENDERER_BLEND_ON);
+		renderer->SetBlendFuncMode(Draw::RENDERER_BLEND_SRC_ALPHA, Draw::RENDERER_BLEND_ONE_MINUS_SRC_ALPHA);
 		break;
 	case 1:
 		//renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_ON);
 		//renderer->SetAlphaMode(RENDERER_ALPHA_GREATER, 0.95f);
 
-		shader_flag |= ModuleRenderer::ALPHA_TEST_HIGH;
-		renderer->SetBlendMode(RENDERER_BLEND_OFF);
+		shader_flag |= Draw::ModuleRenderer::ALPHA_TEST_HIGH;
+		renderer->SetBlendMode(Draw::RENDERER_BLEND_OFF);
 
 		break;
 	default:
 		//renderer->SetAlphaTestMode(RENDERER_ALPHA_TEST_OFF);
-		renderer->SetBlendMode(RENDERER_BLEND_OFF);
+		renderer->SetBlendMode(Draw::RENDERER_BLEND_OFF);
 		break;
 	}
 
@@ -221,7 +223,7 @@ void UIDrawableItem::ProtectedDraw(TravState* state)
 	PostDraw(state); // deactivate texture if any
 
 	if ((lQI->Flag & UIVerticesInfo_UseModelMatrix) != 0)
-		renderer->PopMatrix(MATRIX_MODE_MODEL);
+		renderer->PopMatrix(Draw::MATRIX_MODE_MODEL);
 
 }
 

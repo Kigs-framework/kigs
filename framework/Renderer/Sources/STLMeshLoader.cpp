@@ -9,6 +9,8 @@
 #include "TextureFileManager.h"
 #include "SceneGraphDefines.h"
 
+using namespace Kigs::Draw;
+
 STLMeshLoader::STLMeshLoader()
 {
 
@@ -31,7 +33,7 @@ int STLMeshLoader::ImportFile(Mesh *pMesh, const std::string &FileName)
 
 	pMesh->setValue("FileName",FileName);
 
-	mFile=BufferedFile::Open(FileName.c_str());
+	mFile=File::BufferedFile::Open(FileName.c_str());
 	if(mFile)
 	{
 		Error = ReadFile(pMesh);

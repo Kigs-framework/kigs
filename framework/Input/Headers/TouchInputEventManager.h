@@ -72,7 +72,7 @@ namespace Kigs
 		{
 			CoreModifiable* camera;
 			std::vector<CoreModifiable*> toSort;
-			std::vector<std::tuple<CoreModifiable*, Hit>> sorted;
+			std::vector<std::tuple<CoreModifiable*, Maths::Hit>> sorted;
 
 			v3f position;
 			v3f origin;
@@ -91,12 +91,12 @@ namespace Kigs
 			v3f origin;
 			v3f direction;
 			v3f position;
-			std::vector<Hit>* hits = nullptr;
+			std::vector<Maths::Hit>* hits = nullptr;
 			double min_distance;
 			double max_distance;
 
 			double inout_distance;
-			Hit* inout_hit = nullptr;
+			Maths::Hit* inout_hit = nullptr;
 			// Each element is sorted within its layer by inout_distance. Layers go from front (INT_MIN) to back (INT_MAX)
 			int inout_sorting_layer = 0;
 		};
@@ -155,7 +155,7 @@ namespace Kigs
 			v3f				origin;							// 3D origin if available
 			v3f				pos;							// 3D position (z is 0 for 2d mouse or touch)
 			unsigned int	flag;
-			Hit				hit = {};
+			Maths::Hit		hit = {};
 			double			min_distance = -DBL_MAX;
 			double			max_distance = DBL_MAX;
 
@@ -196,6 +196,8 @@ namespace Kigs
 
 			u32& flags() { return mFlag; }
 
+			
+
 		protected:
 
 			virtual ~TouchEventState() = default;
@@ -213,16 +215,18 @@ namespace Kigs
 				bool touch_ended = false;
 				bool has_position = false;
 
-				Hit* object_hit = nullptr;
+				Maths::Hit* object_hit = nullptr;
 				std::shared_ptr<Interaction> interaction;
 				CoreModifiable* starting_touch_support = nullptr;
 				bool need_starting_touch_support_transform = true;
+				
 			};
-			friend bool	operator<(const TouchInfos& first, const TouchInfos& other);
-			friend bool	operator<(const TouchInfos& first, unsigned int other);
+
+			//friend bool	operator<(const TouchEventState::TouchInfos& first, const TouchEventState::TouchInfos& other);
+			//friend bool	operator<(const TouchInfos& first, unsigned int other);
 
 			// return value is swallow mask, bit n° eventType is set to 1 when swallowed
-			virtual void Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) = 0;
+			virtual void Update(TouchInputEventManager* manager, const Time::Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) = 0;
 
 			virtual void Reset() = 0;
 
@@ -246,7 +250,7 @@ namespace Kigs
 			TouchEventStateInputSwallow(KigsID methodnameID, InputEventManagementFlag flag/*, CoreModifiable* touchsupport*/, InputEventType type) : TouchEventState(methodnameID, flag/*, touchsupport*/, type)
 			{
 			};
-			void Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
+			void Update(TouchInputEventManager* manager, const Time::Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
 
 		protected:
 			virtual void Reset() override
@@ -266,7 +270,7 @@ namespace Kigs
 			v3f origin;
 			v3f direction;
 
-			Hit hit;
+			Maths::Hit hit;
 			std::shared_ptr<Interaction> interaction;
 
 			// Bitfield of InputEventType
@@ -303,7 +307,7 @@ namespace Kigs
 		public:
 			TouchEventStateClick(KigsID methodnameID, InputEventManagementFlag flag/*, CoreModifiable* touchsupport*/, InputEventType type) : TouchEventState(methodnameID, flag/*, touchsupport*/, type)
 			{};
-			void Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
+			void Update(TouchInputEventManager* manager, const Time::Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
 
 			void SetMinClickDuration(float min_duration) { mClickMinDuration = min_duration; }
 			void SetMaxClickDuration(float max_duration) { mClickMaxDuration = max_duration; }
@@ -386,7 +390,7 @@ namespace Kigs
 		public:
 			TouchEventStateDirectTouch(KigsID methodnameID, InputEventManagementFlag flag, /*CoreModifiable* touchsupport,*/ InputEventType type) : TouchEventState(methodnameID, flag, /*touchsupport, */type)
 			{};
-			void Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
+			void Update(TouchInputEventManager* manager, const Time::Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
 			void setAutoTouchDownDistance(float distance)
 			{
 				mSpatialInteractionAutoTouchDownDistance = distance;
@@ -436,7 +440,7 @@ namespace Kigs
 			TouchEventStateDirectAccess(KigsID methodnameID, InputEventManagementFlag flag, /*CoreModifiable* touchsupport,*/ InputEventType type) : TouchEventState(methodnameID, flag, /*touchsupport, */type)
 			{
 			};
-			void Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
+			void Update(TouchInputEventManager* manager, const Time::Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
 
 		protected:
 
@@ -476,7 +480,7 @@ namespace Kigs
 				, mSwipeMinDuration(0.01)
 				, mSwipeMaxDuration(0.6)
 			{};
-			void Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
+			void Update(TouchInputEventManager* manager, const Time::Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
 		protected:
 
 			struct TimedTouch
@@ -527,7 +531,7 @@ namespace Kigs
 			TouchEventStateScroll(KigsID methodnameID, InputEventManagementFlag flag, /*CoreModifiable* touchsupport, */InputEventType type) : TouchEventState(methodnameID, flag,/* touchsupport,*/ type)
 				, mScrollForceMainDir(0, 0, 0)
 			{};
-			void Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
+			void Update(TouchInputEventManager* manager, const Time::Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
 
 			void	forceMainDir(Vector3D maindir)
 			{
@@ -562,7 +566,7 @@ namespace Kigs
 		{
 		public:
 			TouchEventStatePinch(KigsID methodnameID, InputEventManagementFlag flag, InputEventType type) : TouchEventState(methodnameID, flag, type) {}
-			void Update(TouchInputEventManager* manager, const Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask) override;
+			void Update(TouchInputEventManager* manager, const Time::Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallowMask) override;
 
 		protected:
 
@@ -633,7 +637,7 @@ namespace Kigs
 
 			bool isRegisteredOnCurrentState(CoreModifiable* obj);
 
-			void Update(const Timer& timer, void* addParam) override;
+			void Update(const Time::Timer& timer, void* addParam) override;
 
 			void ForceClick() { mForceClick = true; }
 
@@ -804,7 +808,7 @@ namespace Kigs
 			{
 				CoreModifiable* element;
 				CoreModifiable* touchSupport;
-				Hit hit;
+				Maths::Hit		hit;
 			};
 
 			class SortedElementTreeNode
@@ -861,7 +865,7 @@ namespace Kigs
 				unordered_map<CoreModifiable*, std::vector<CoreModifiable*> >& perScene3DMap,
 				unordered_map<CoreModifiable*, unordered_map<TouchSourceID, TouchEventState::TouchInfos>>& transformedInfosMap, TouchSourceID touch_id);
 
-			void	LinearCallEventUpdate(std::vector<SortedElementNode>& flat_tree, const Timer& timer, unordered_map<CoreModifiable*, unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchSourceID touch_id);
+			void	LinearCallEventUpdate(std::vector<SortedElementNode>& flat_tree, const Time::Timer& timer, unordered_map<CoreModifiable*, unordered_map<TouchSourceID, TouchEventState::TouchInfos> >& transformedInfosMap, TouchSourceID touch_id);
 
 			// touch support tree list (more than one root for multiple windows)
 			std::vector<touchSupportTreeNode>					mTouchSupportTreeRootList;
@@ -869,7 +873,7 @@ namespace Kigs
 			std::map<CoreModifiable*, touchSupportTreeNode*>	mTouchSupportMap;
 			bool												mInUpdate = false;
 			std::set<CoreModifiable*>							mDestroyedThisFrame;
-			TimePoint											mLastTimeNearInteraction;
+			Time::TimePoint										mLastTimeNearInteraction;
 
 
 			void	manageTemporaryUnmappedTouchSupport(CoreModifiable* ts, CoreModifiable* parent);

@@ -1,48 +1,51 @@
-#ifndef _UILayout_H_
-#define _UILayout_H_
+#pragma once
 
 #include "UIDrawableItem.h"
 
 #include "AttributePacking.h"
 
-
-// ****************************************
-// * UILayout class
-// * --------------------------------------
-/**
-* \file	UILayout.h
-* \class	UILayout
-* \ingroup 2DLayers
-* \brief	Adjust the position of all children according to a layout algorithm
-*/
-// ****************************************
-
-class UILayout : public UIDrawableItem
+namespace Kigs
 {
-public:
-	DECLARE_ABSTRACT_CLASS_INFO(UILayout, UIDrawableItem, 2DLayers);
 
-	/**
-	* \brief	constructor
-	* \param	name : instance name
-	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
-	*/
-	UILayout(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+	namespace Draw2D
+	{
+		// ****************************************
+		// * UILayout class
+		// * --------------------------------------
+		/**
+		* \file	UILayout.h
+		* \class	UILayout
+		* \ingroup 2DLayers
+		* \brief	Adjust the position of all children according to a layout algorithm
+		*/
+		// ****************************************
 
-	bool			addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
-	bool			removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
+		class UILayout : public UIDrawableItem
+		{
+		public:
+			DECLARE_ABSTRACT_CLASS_INFO(UILayout, UIDrawableItem, 2DLayers);
 
-	inline void		NeedRecomputeLayout() { mNeedRecompute = true; }
+			/**
+			* \brief	constructor
+			* \param	name : instance name
+			* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
+			*/
+			UILayout(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	WRAP_METHODS(NeedRecomputeLayout);
-protected:
-	void			NotifyUpdate(const unsigned int labelid) override;
+			bool			addItem(const CMSP& item, ItemPosition pos = Last DECLARE_DEFAULT_LINK_NAME)override;
+			bool			removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME)override;
 
-	void			Update(const Timer& timer, void*) override;
-	void			ProtectedDraw(TravState*) override;
-	virtual void	RecomputeLayout() {};
-	
-	bool			mNeedRecompute;
-};
+			inline void		NeedRecomputeLayout() { mNeedRecompute = true; }
 
-#endif //_UILayout_H_
+			WRAP_METHODS(NeedRecomputeLayout);
+		protected:
+			void			NotifyUpdate(const unsigned int labelid) override;
+
+			void			Update(const Time::Timer& timer, void*) override;
+			void			ProtectedDraw(Scene::TravState*) override;
+			virtual void	RecomputeLayout() {};
+
+			bool			mNeedRecompute;
+		};
+	}
+}

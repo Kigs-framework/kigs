@@ -1,5 +1,3 @@
-#ifndef _H_PRECOMPILED_HEADERS_
-#define _H_PRECOMPILED_HEADERS_
+#pragma once
 
 #include <GlobalPrecompiledHeaders.h>
-#endif

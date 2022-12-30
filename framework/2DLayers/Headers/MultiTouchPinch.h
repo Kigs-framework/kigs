@@ -1,38 +1,42 @@
-#ifndef _MULTITOUCHPINCH_H_
-#define _MULTITOUCHPINCH_H_
+#pragma once
 
-// ****************************************
-// * MultiTouchPinch class
-// * --------------------------------------
-/**
-* \file	MultiTouchPinch.h
-* \class	MultiTouchPinch
-* \ingroup 2DLayers
-* \brief	Manage pinch with two touches.
-*
-*  Obsolete ?
-*/
-// ****************************************
-
-class MultiTouchPinch
+namespace Kigs
 {
-public:
-	MultiTouchPinch();
-	void init(int index, float x, float y);
-	void set(int index, float x, float y);
-	void release(int index);
-	bool update();
+	namespace Draw2D
+	{
+		// ****************************************
+		// * MultiTouchPinch class
+		// * --------------------------------------
+		/**
+		* \file	MultiTouchPinch.h
+		* \class	MultiTouchPinch
+		* \ingroup 2DLayers
+		* \brief	Manage pinch with two touches.
+		*
+		*  Obsolete ?
+		*/
+		// ****************************************
 
-private:
-	float mOx[2];
-	float mOy[2];
-	float mX[2];
-	float mY[2];
+		class MultiTouchPinch
+		{
+		public:
+			MultiTouchPinch();
+			void init(int index, float x, float y);
+			void set(int index, float x, float y);
+			void release(int index);
+			bool update();
 
-public:
-	float mDx, mDy, mDZ;
-	bool mB[2];
-	bool mNeedUpdate;
-};
+		private:
+			float mOx[2];
+			float mOy[2];
+			float mX[2];
+			float mY[2];
 
-#endif
+		public:
+			float mDx, mDy, mDZ;
+			bool mB[2];
+			bool mNeedUpdate;
+		};
+
+	}
+}

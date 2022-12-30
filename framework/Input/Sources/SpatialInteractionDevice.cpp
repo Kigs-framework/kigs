@@ -1,5 +1,7 @@
 #include "SpatialInteractionDevice.h"
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(SpatialInteractionDevice);
 
 std::optional<v3f> SpatialInteractionDevice::GetInteractionPosition(u32 ID)const

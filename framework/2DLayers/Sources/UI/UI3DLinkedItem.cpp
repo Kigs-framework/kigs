@@ -2,8 +2,10 @@
 #include "Camera.h"
 #include "RenderingScreen.h"
 
+using namespace Kigs::Draw2D;
+using namespace Kigs::Draw;
 
-//IMPLEMENT_AND_REGISTER_CLASS_INFO(UI3DLinkedItem, UI3DLinkedItem, 2DLayers);;
+
 IMPLEMENT_CLASS_INFO(UI3DLinkedItem)
 
 UI3DLinkedItem::UI3DLinkedItem(const std::string& name, CLASS_NAME_TREE_ARG)

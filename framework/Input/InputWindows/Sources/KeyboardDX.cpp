@@ -3,6 +3,7 @@
 #include "Core.h"
 #include "Window.h"
 
+using namespace Kigs::Input;
 
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(KeyboardDX, KeyboardDevice, Input);
 IMPLEMENT_CLASS_INFO(KeyboardDX)

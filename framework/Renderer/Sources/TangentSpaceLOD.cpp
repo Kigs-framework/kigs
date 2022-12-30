@@ -3,6 +3,8 @@
 #include "Camera.h"
 #include "ModuleRenderer.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(TangentSpaceLOD);
 
 bool TangentSpaceLOD::PreDraw(TravState* state)

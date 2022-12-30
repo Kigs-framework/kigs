@@ -1,50 +1,56 @@
-#ifndef _UIRATIOKEEPER_H_
-#define _UIRATIOKEEPER_H_
+#pragma once
 
 #include "UIItem.h"
 #include "UIDrawableItem.h"
 #include "AttributePacking.h"
 
-
-class RenderingScreen;
-
-
-// ****************************************
-// * UIRatioKeeper class
-// * --------------------------------------
-/**
-* \file	UIRatioKeeper.h
-* \class	UIRatioKeeper
-* \ingroup 2DLayers
-* \brief	Create a zone in screen where design size ratio is kept.
-* 
-* UIRatioKeeper instance must be added to root uiitem.
-*/
-// ****************************************
-
-class UIRatioKeeper : public UIDrawableItem
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(UIRatioKeeper, UIDrawableItem, 2DLayers);
-	DECLARE_CONSTRUCTOR(UIRatioKeeper);
-
-	void ForceRecomputeRatio()
+	namespace Draw
 	{
-		mRatioIsOK = false;
+		class RenderingScreen;
 	}
+	
+	namespace Draw2D
+	{
 
-protected:
+		// ****************************************
+		// * UIRatioKeeper class
+		// * --------------------------------------
+		/**
+		* \file	UIRatioKeeper.h
+		* \class	UIRatioKeeper
+		* \ingroup 2DLayers
+		* \brief	Create a zone in screen where design size ratio is kept.
+		*
+		* UIRatioKeeper instance must be added to root uiitem.
+		*/
+		// ****************************************
 
-	void NotifyUpdate(const unsigned int /* labelid */) override;
-	void Update(const Timer& a_Timer, void* addParam) override;
+		class UIRatioKeeper : public UIDrawableItem
+		{
+		public:
+			DECLARE_CLASS_INFO(UIRatioKeeper, UIDrawableItem, 2DLayers);
+			DECLARE_CONSTRUCTOR(UIRatioKeeper);
 
-	void RecomputeRatio();
+			void ForceRecomputeRatio()
+			{
+				mRatioIsOK = false;
+			}
 
-	bool mRatioIsOK;
+		protected:
 
-	WRAP_METHODS(ForceRecomputeRatio);
+			void NotifyUpdate(const unsigned int /* labelid */) override;
+			void Update(const Time::Timer& a_Timer, void* addParam) override;
 
-	RenderingScreen* mCurrentScreen = nullptr;
-};
+			void RecomputeRatio();
 
-#endif //_UIRATIOKEEPER_H_
+			bool mRatioIsOK;
+
+			WRAP_METHODS(ForceRecomputeRatio);
+
+			Draw::RenderingScreen* mCurrentScreen = nullptr;
+		};
+
+	}
+}

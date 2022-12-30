@@ -2,8 +2,8 @@
 #include "NotificationCenter.h"
 #include "Timer.h"
 
+using namespace Kigs::Draw2D;
 
-// connect pop up to events and create attributes
 void	PopUpUpgrador::Init(CoreModifiable* toUpgrade)
 {
 	KigsCore::GetNotificationCenter()->addObserver(toUpgrade, "HidePopUp", "HidePopUp");

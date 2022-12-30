@@ -36,6 +36,8 @@
 #endif
 #endif
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(ModernMeshItemGroup);
 IMPLEMENT_CLASS_INFO(ModernMesh);
 
@@ -127,7 +129,7 @@ void ModernMesh::InitModifiable()
 		}
 		else if ((!mWasBuild) && (mFileName.const_ref() != ""))
 		{
-			auto pathManager = KigsCore::Singleton<FilePathManager>();
+			auto pathManager = KigsCore::Singleton<File::FilePathManager>();
 			auto filename = mFileName.const_ref();
 
 			/*if (filename.substr(filename.size() - 4) == ".xml" || filename.substr(filename.size() - 5) == ".kxml")
@@ -141,7 +143,7 @@ void ModernMesh::InitModifiable()
 			else*/
 			{
 				std::string fullfilename;
-				SmartPointer<FileHandle> fullfilenamehandle = pathManager->FindFullName(mFileName.const_ref());
+				SmartPointer<File::FileHandle> fullfilenamehandle = pathManager->FindFullName(mFileName.const_ref());
 				if (fullfilenamehandle)
 				{
 					fullfilename = fullfilenamehandle->mFullFileName;
@@ -246,7 +248,7 @@ void ModernMesh::StartMeshBuilder()
 		KIGS_ERROR("StartMeshBuilder called but already mesh builder already existing\n", 1);
 		return;
 	}
-	mCurrentMeshBuilder = new ModernMeshBuilder();
+	mCurrentMeshBuilder = new Utils::ModernMeshBuilder();
 
 }
 
@@ -406,7 +408,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 						settings->current_package->AddFile(filepath, path, crb);
 					else
 					{
-						ModuleFileManager::SaveFile(filepath.c_str(), (u8*)crb->data(), crb->length());
+						File::ModuleFileManager::SaveFile(filepath.c_str(), (u8*)crb->data(), crb->length());
 						if (settings->current_package)
 							settings->current_package->AddFile(filepath, path);
 					}
