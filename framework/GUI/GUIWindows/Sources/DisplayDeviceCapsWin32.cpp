@@ -31,7 +31,7 @@ DisplayDeviceCapsWin32::DisplayDeviceCapsWin32(const std::string& name,CLASS_NAM
 	testrect.left = 0;
 	testrect.right = 1;
 	HMONITOR result=nullptr;
-	EnumDisplayMonitors(NULL, &testrect, EnumDisplayMonitorsCallback, (LPARAM)&result);
+	EnumDisplayMonitors(NULL, &testrect,(MONITORENUMPROC) EnumDisplayMonitorsCallback, (LPARAM)&result);
 	float scaling = 1.0f;
 	if (result)
 	{

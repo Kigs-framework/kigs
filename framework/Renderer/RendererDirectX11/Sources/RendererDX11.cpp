@@ -44,12 +44,10 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-#ifdef _KIGS_ONLY_STATIC_LIB_
-#define MODULEINITFUNC			PlatformRendererModuleInit
-extern SP<ModuleBase>			MODULEINITFUNC(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
-#else
-#define MODULEINITFUNC			ModuleInit
-#endif
+
+using namespace Kigs::Draw;
+using namespace Kigs::Utils;
+
 
 // ## Static object initialization
 
@@ -538,7 +536,7 @@ void RendererDX11::Update(const Timer& timer, void* addParam)
 
 }
 
-SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> Kigs::Draw::PlatformRendererModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(RendererDX11, "RendererDX11");
@@ -1445,7 +1443,7 @@ VertexBufferManager::~VertexBufferManager()
 	mBufferList.clear();
 }
 
-void RendererDX11::DrawUIQuad(TravState * state, const UIVerticesInfo * qi)
+void RendererDX11::DrawUIQuad(TravState * state, const Draw2D::UIVerticesInfo * qi)
 {
 	unsigned int bufferName = getUIVBO();
 
@@ -1461,7 +1459,7 @@ void RendererDX11::DrawUIQuad(TravState * state, const UIVerticesInfo * qi)
 	DrawArrays(state, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, 0, qi->vertexCount);
 }
 
-void RendererDX11::DrawUITriangles(TravState * state, const UIVerticesInfo * qi)
+void RendererDX11::DrawUITriangles(TravState * state, const Draw2D::UIVerticesInfo * qi)
 {
 	unsigned int bufferName = getUIVBO();
 	

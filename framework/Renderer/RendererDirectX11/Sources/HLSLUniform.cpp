@@ -10,6 +10,7 @@
 #include "FilePathManager.h"
 #include "ModuleSceneGraph.h"
 
+using namespace Kigs::Draw;
 
 IMPLEMENT_CLASS_INFO(API3DUniformBase)
 IMPLEMENT_CLASS_INFO(API3DUniformInt)

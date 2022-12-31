@@ -1,6 +1,7 @@
 #include "HLSLUIShader.h"
 #include "RendererDX11.h"
 
+using namespace Kigs::Draw;
 
 
 std::string API3DUIShader::GetFragmentShader()

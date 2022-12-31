@@ -59,6 +59,10 @@ int	GetFirstLeftBit(u32 n)
 	return result;
 };
 
+using namespace Kigs::Draw;
+using namespace Kigs::Pict;
+using namespace Kigs::File;
+
 IMPLEMENT_CLASS_INFO(DX11Texture)
 
 DX11Texture::DX11Texture(const std::string& name, CLASS_NAME_TREE_ARG)
@@ -605,7 +609,7 @@ bool DX11Texture::CreateFromText(const unsigned short* text, unsigned int _maxLi
 
 		int L_Width = 0;
 		int L_Height = 0;
-		pImageData = ModuleSpecificRenderer::mDrawer->DrawTextToImage(text, textSize, L_Width, L_Height, (TextAlignment)a_Alignment, false, _maxLineNumber, maxSize, a_drawingLimit, (unsigned char)R, (unsigned char)G, (unsigned char)B);
+		pImageData = ModuleSpecificRenderer::mDrawer->DrawTextToImage(text, textSize, L_Width, L_Height, (Utils::TextAlignment)a_Alignment, false, _maxLineNumber, maxSize, a_drawingLimit, (unsigned char)R, (unsigned char)G, (unsigned char)B);
 
 		if (!pImageData)
 			break;

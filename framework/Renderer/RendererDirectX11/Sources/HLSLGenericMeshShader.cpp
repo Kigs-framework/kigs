@@ -8,6 +8,8 @@
 
 #include <d3d11.h>
 
+using namespace Kigs::Draw;
+
 #ifdef WUP
 extern bool gIsHolographic;
 #endif

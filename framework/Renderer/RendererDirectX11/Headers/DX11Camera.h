@@ -1,43 +1,46 @@
-#ifndef _DX11CAMERA_H
-#define _DX11CAMERA_H
-
+#pragma once
 #include "Camera.h"
 #include "Timer.h"
 
-// ****************************************
-// * DX11Camera class
-// * --------------------------------------
-/**
- * \file	DX11Camera.h
- * \class	DX11Camera
- * \ingroup Renderer
- * \brief	DX11 implementation of Camera.
- *
- */
- // ****************************************
-
-class DX11Camera : public Camera
+namespace Kigs
 {
-public:
-    DECLARE_CLASS_INFO(DX11Camera,Camera,Renderer)
-    DX11Camera(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	virtual ~DX11Camera();
+	namespace Draw
+	{
+		// ****************************************
+		// * DX11Camera class
+		// * --------------------------------------
+		/**
+		 * \file	DX11Camera.h
+		 * \class	DX11Camera
+		 * \ingroup Renderer
+		 * \brief	DX11 implementation of Camera.
+		 *
+		 */
+		 // ****************************************
 
-	std::array<mat4, 2> GetStereoViewProjections() override { return mCurrentStereoViewproj; }
+		class DX11Camera : public Camera
+		{
+		public:
+			DECLARE_CLASS_INFO(DX11Camera, Camera, Renderer)
+				DX11Camera(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual ~DX11Camera();
 
-protected:
-	bool ProtectedSetActive(TravState* state) override;
-	virtual void PlatformProtectedSetActive(TravState* state);
+			std::array<mat4, 2> GetStereoViewProjections() override { return mCurrentStereoViewproj; }
 
-	void ProtectedRelease(TravState* state) override;
-	virtual void PlatformProtectedRelease(TravState* state);
+		protected:
+			bool ProtectedSetActive(TravState* state) override;
+			virtual void PlatformProtectedSetActive(TravState* state);
+
+			void ProtectedRelease(TravState* state) override;
+			virtual void PlatformProtectedRelease(TravState* state);
 
 #if defined(WUP) && defined(GL_ES2)
-	bool mNeedNearFarUpdate = true;
-	void NotifyUpdate(unsigned int labelid) override;
+			bool mNeedNearFarUpdate = true;
+			void NotifyUpdate(unsigned int labelid) override;
 #endif
 
-	std::array<mat4, 2> mCurrentStereoViewproj;
-};    
+			std::array<mat4, 2> mCurrentStereoViewproj;
+		};
 
-#endif //_DX11CAMERA_H
+	}
+}

@@ -3,7 +3,7 @@
 SET myDir=%~dp0
 
 SET cmakeCmd=cmake
-SET targetName=Visual Studio 16 2019
+SET targetName=Visual Studio 17 2022
 
 ECHO selected target : %targetName%
 ECHO current dir     : %myDir%

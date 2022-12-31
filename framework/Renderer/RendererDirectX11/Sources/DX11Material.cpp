@@ -12,6 +12,8 @@
 
 #include "math.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(DX11Material)
 
 

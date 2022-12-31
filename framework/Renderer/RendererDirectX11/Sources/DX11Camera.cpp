@@ -7,6 +7,8 @@
 // include after all other kigs include (for iOS)
 #include "Platform/Renderer/DX11Camera.inl.h"
 
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(DX11Camera)
 
 DX11Camera::DX11Camera(const std::string& name, CLASS_NAME_TREE_ARG) : Camera(name, PASS_CLASS_NAME_TREE_ARG)

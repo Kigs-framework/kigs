@@ -11,85 +11,91 @@
 #else
 #include <wrl/client.h>
 #endif
-
-// ****************************************
-// * DX11RenderingScreen class
-// * --------------------------------------
-/**
- * \file	DX11RenderingScreen.h
- * \class	DX11RenderingScreen
- * \ingroup Renderer
- * \brief	DX11 implementation of RenderingScreen.
- *
- */
- // ****************************************
-class DX11RenderingScreen : public RenderingScreen
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(DX11RenderingScreen, RenderingScreen, Renderer);
-	DECLARE_INLINE_CONSTRUCTOR(DX11RenderingScreen){}
-	
-	bool SetActive(TravState* state) override;
-	void Release(TravState* state) override;
 
-	void Resize(float sizeX, float sizeY) override;
+	namespace Draw
+	{
+		// ****************************************
+		// * DX11RenderingScreen class
+		// * --------------------------------------
+		/**
+		 * \file	DX11RenderingScreen.h
+		 * \class	DX11RenderingScreen
+		 * \ingroup Renderer
+		 * \brief	DX11 implementation of RenderingScreen.
+		 *
+		 */
+		 // ****************************************
+		class DX11RenderingScreen : public RenderingScreen
+		{
+		public:
+			DECLARE_CLASS_INFO(DX11RenderingScreen, RenderingScreen, Renderer);
+			DECLARE_INLINE_CONSTRUCTOR(DX11RenderingScreen) {}
+
+			bool SetActive(TravState* state) override;
+			void Release(TravState* state) override;
+
+			void Resize(float sizeX, float sizeY) override;
 
 
-	void FetchPixels(int x, int y, int width, int height, void *pRGBAPixels) override;
-	void FetchDepth(int x, int y, int width, int height, float *pDepthPixels) override;
-	void FetchDepth(int x, int y, int width, int height, unsigned int *pDepthPixels) override;
+			void FetchPixels(int x, int y, int width, int height, void* pRGBAPixels) override;
+			void FetchDepth(int x, int y, int width, int height, float* pDepthPixels) override;
+			void FetchDepth(int x, int y, int width, int height, unsigned int* pDepthPixels) override;
 
-	void ScreenShot(char * filename);
+			void ScreenShot(char* filename);
 
-	virtual void SetWindowByHandle(void* PtrToHandle) override {}
-	virtual void* GetContextHandle() override { return nullptr; }
+			virtual void SetWindowByHandle(void* PtrToHandle) override {}
+			virtual void* GetContextHandle() override { return nullptr; }
 
-	bool CreateResources();
+			bool CreateResources();
 
-	bool IsMainRenderingScreen() { return !mUseFBO && !mIsOffScreen; }
+			bool IsMainRenderingScreen() { return !mUseFBO && !mIsOffScreen; }
 
 #ifdef WUP
-	void SetRenderingParameters(winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters params) { mRenderingParameters = params; }
+			void SetRenderingParameters(winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters params) { mRenderingParameters = params; }
 #endif
-protected:
-	DECLARE_METHOD(Snapshot);
-	COREMODIFIABLE_METHODS(Snapshot);
+		protected:
+			DECLARE_METHOD(Snapshot);
+			COREMODIFIABLE_METHODS(Snapshot);
 
-	void DelayedInit();
-	void ReleaseResources();
+			void DelayedInit();
+			void ReleaseResources();
 
-	void Update(const Timer&  timer, void* /*addParam*/) override;
+			void Update(const Timer& timer, void* /*addParam*/) override;
 
-	void InitModifiable() override;
-	void UninitModifiable() override;
-	
-	void setCurrentContext() override;
+			void InitModifiable() override;
+			void UninitModifiable() override;
 
-	HDC   mhDC = NULL;
-	HGLRC mHRC = NULL;
-	HWND  mHWnd = NULL;
+			void setCurrentContext() override;
 
-	maInt mDepthBufferCount = BASE_ATTRIBUTE(DepthBufferCount, 1);
-	maInt mActiveDepthBuffer = BASE_ATTRIBUTE(ActiveDepthBuffer, 0);
+			HDC   mhDC = NULL;
+			HGLRC mHRC = NULL;
+			HWND  mHWnd = NULL;
+
+			maInt mDepthBufferCount = BASE_ATTRIBUTE(DepthBufferCount, 1);
+			maInt mActiveDepthBuffer = BASE_ATTRIBUTE(ActiveDepthBuffer, 0);
 
 #ifdef WUP
 
-	maInt mHoloCommittedDepthBuffer = BASE_ATTRIBUTE(HoloCommittedDepthBuffer, 0);
+			maInt mHoloCommittedDepthBuffer = BASE_ATTRIBUTE(HoloCommittedDepthBuffer, 0);
 
-	winrt::com_ptr<ID3D11Texture2D>			mRenderTargetBuffer;
-	winrt::com_ptr<ID3D11RenderTargetView>	mRenderTargetView;
+			winrt::com_ptr<ID3D11Texture2D>			mRenderTargetBuffer;
+			winrt::com_ptr<ID3D11RenderTargetView>	mRenderTargetView;
 
-	std::vector<winrt::com_ptr<ID3D11Texture2D>>			mDepthStencilBuffers;
-	std::vector<winrt::com_ptr<ID3D11DepthStencilView>>		mDepthStencilViews;
+			std::vector<winrt::com_ptr<ID3D11Texture2D>>			mDepthStencilBuffers;
+			std::vector<winrt::com_ptr<ID3D11DepthStencilView>>		mDepthStencilViews;
 #else
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>			mRenderTargetBuffer;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	mRenderTargetView;
-	std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>		mDepthStencilBuffers;
-	std::vector<Microsoft::WRL::ComPtr<ID3D11DepthStencilView>>	mDepthStencilViews;
+			Microsoft::WRL::ComPtr<ID3D11Texture2D>			mRenderTargetBuffer;
+			Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	mRenderTargetView;
+			std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>		mDepthStencilBuffers;
+			std::vector<Microsoft::WRL::ComPtr<ID3D11DepthStencilView>>	mDepthStencilViews;
 #endif
-	unsigned int mCurrentFrameNumber = -1;
+			unsigned int mCurrentFrameNumber = -1;
 #ifdef WUP
-	winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters mRenderingParameters = nullptr;
+			winrt::Windows::Graphics::Holographic::HolographicCameraRenderingParameters mRenderingParameters = nullptr;
 #endif
-};
+		};
 
+	}
+}

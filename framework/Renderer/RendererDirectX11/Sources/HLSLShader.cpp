@@ -6,6 +6,8 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+using namespace Kigs::Draw;
+using namespace Kigs::File;
 
 HLSLShaderInfo::~HLSLShaderInfo()
 {

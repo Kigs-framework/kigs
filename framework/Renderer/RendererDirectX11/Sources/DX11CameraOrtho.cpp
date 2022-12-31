@@ -1,10 +1,8 @@
-//#include "PrecompiledHeaders.h"
-
-//#include "math.h"
 #include "DX11CameraOrtho.h"
 #include "CullingObject.h"
 #include "RendererDX11.h"
-//#include "TravState.h"
+
+using namespace Kigs::Draw;
 
 IMPLEMENT_CLASS_INFO(DX11CameraOrtho);
 

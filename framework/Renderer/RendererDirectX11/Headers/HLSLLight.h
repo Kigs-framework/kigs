@@ -1,55 +1,62 @@
-#ifndef _HLSLLIGHT_H
-#define _HLSLLIGHT_H
+#pragma once
 
 #include "Drawable.h"
 #include "Light.h"
 #include "Scene3D.h"
 //#define USE_ATTFUNCTION
 
-class Node3D;
-class CoreModifiable;
-class Camera;
-class RendererDX11;
-struct LightStruct;
 
-// ****************************************
-// * API3DLight class
-// * --------------------------------------
-/**
- * \file	HLSLLight.h
- * \class	API3DLight
- * \ingroup Renderer
- * \brief	DX11 Light.
- */
- // ****************************************
 
-class API3DLight : public Light
+namespace Kigs
 {
-public:
-	friend class RendererDX11;
+	namespace Scene
+	{
+		class Node3D;
+	}
+	namespace Draw
+	{
+		class Camera;
+		class RendererDX11;
+		struct LightStruct;
 
-	DECLARE_CLASS_INFO(API3DLight, Light, Renderer)
-	API3DLight(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	virtual ~API3DLight();
+		// ****************************************
+		// * API3DLight class
+		// * --------------------------------------
+		/**
+		 * \file	HLSLLight.h
+		 * \class	API3DLight
+		 * \ingroup Renderer
+		 * \brief	DX11 Light.
+		 */
+		 // ****************************************
 
-	virtual bool PreRendering(RendererDX11 * renderer, Camera * cam, Point3D & camPos);
+		class API3DLight : public Light
+		{
+		public:
+			friend class RendererDX11;
 
-	void PrepareLightInfo(LightStruct& light_data, Camera* cam);
+			DECLARE_CLASS_INFO(API3DLight, Light, Renderer)
+				API3DLight(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual ~API3DLight();
 
-	bool	Draw(TravState* state) override;
+			virtual bool PreRendering(RendererDX11* renderer, Camera* cam, Point3D& camPos);
 
-	virtual void	DrawLight(TravState*);
-	void PostDrawLight(TravState*);
+			void PrepareLightInfo(LightStruct& light_data, Camera* cam);
 
-	void SetUniformLocation(int uniform, const char* location);
+			bool	Draw(TravState* state) override;
 
-	int GetTypeOfLight();
-	void NotifyUpdate(const unsigned int  labelid) override;
+			virtual void	DrawLight(TravState*);
+			void PostDrawLight(TravState*);
 
-protected:
-	void	InitModifiable() override;
-	
-};
+			void SetUniformLocation(int uniform, const char* location);
+
+			int GetTypeOfLight();
+			void NotifyUpdate(const unsigned int  labelid) override;
+
+		protected:
+			void	InitModifiable() override;
+
+		};
 
 #define POINT_LIGHT 0
 #define DIRECTIONAL_LIGHT 1
@@ -67,4 +74,5 @@ protected:
 #define SPOT_DIRECTION 7
 #define AMBIANT_COLOR 8
 
-#endif //_HLSLLIGHT_H
+	}
+}

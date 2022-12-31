@@ -56,6 +56,7 @@ inline winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DSurface CreateDep
 #endif
 
 using Microsoft::WRL::ComPtr;
+using namespace Kigs::Draw;
 
 // rendering screen is too much platform specific
 //#include "Platform/Renderer/DX11RenderingScreen.inl.h"
@@ -160,9 +161,9 @@ void DX11RenderingScreen::Release(TravState* state)
 			renderer->SetScissorValue(0, 0, mSize[0], mSize[1]);
 			renderer->Viewport(0, 0, mSize[0], mSize[1]);
 
-			VInfo2D vi;
-			UIVerticesInfo mVI = UIVerticesInfo(&vi);
-			VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(mVI.Buffer());
+			Draw2D::VInfo2D vi;
+			Draw2D::UIVerticesInfo mVI = Draw2D::UIVerticesInfo(&vi);
+			Draw2D::VInfo2D::Data* buf = reinterpret_cast<Draw2D::VInfo2D::Data*>(mVI.Buffer());
 
 			buf[0].setVertex(0.0f, 0.0f);
 			buf[1].setVertex(0.0, (float)mSize[1]);
