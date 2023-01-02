@@ -1,5 +1,6 @@
 #include "CoreFSMState.h"
 #include "CoreFSM.h"
+using namespace Kigs::Fsm;
 
 // state update check all transitions and return true if need transition
 // when true is returned, specialOrder and stateID parameters are correctly set

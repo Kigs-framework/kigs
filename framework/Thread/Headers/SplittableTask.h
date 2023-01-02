@@ -1,75 +1,79 @@
-#ifndef _SPLITTABLETASK_H_
-#define _SPLITTABLETASK_H_
+#pragma once
 
 #include "Thread.h"
 #include "Semaphore.h"
 #include "ThreadEvent.h"
 #include "maReference.h"
 
-// ****************************************
-// * SplitDataStructBase class
-// * --------------------------------------
-/**
- * \file	SplittableTask.h
- * \class	SplitDataStructBase
- * \ingroup Thread
- * \brief	Structure used to pass data to splittable task.
- */
- // ****************************************
-class SplitDataStructBase
+namespace Kigs
 {
-public:
-	const Timer*	mCurrentTimer;
-};
-
-
-// ****************************************
-// * SplittableTask class
-// * --------------------------------------
-/**
- * \file	SplittableTask.h
- * \class	SplittableTask
- * \ingroup Thread
- * \brief	Abstract class to manage splittable tasks.
- */
- // ****************************************
-class SplittableTask : public CoreModifiable
-{
-public:
-	DECLARE_ABSTRACT_CLASS_INFO(SplittableTask, CoreModifiable, Thread)
-	SplittableTask(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	virtual ~SplittableTask();
-
-	void	Update(const Timer& timer, void* addParam) override;
-
-protected:
-
-	void	clear();
-
-	virtual SplitDataStructBase*	createSplitDataStruct(int index, const Timer&)
+	namespace Thread
 	{
-		// base class can't split
-		return 0;
-	};
-	virtual SplitDataStructBase*	updateSplitDataStruct(SplitDataStructBase*, int index, const Timer&)
-	{
-		// base class can't split
-		return 0;
+		// ****************************************
+		// * SplitDataStructBase class
+		// * --------------------------------------
+		/**
+		 * \file	SplittableTask.h
+		 * \class	SplitDataStructBase
+		 * \ingroup Thread
+		 * \brief	Structure used to pass data to splittable task.
+		 */
+		 // ****************************************
+		class SplitDataStructBase
+		{
+		public:
+			const Time::Timer* mCurrentTimer;
+		};
+
+
+		// ****************************************
+		// * SplittableTask class
+		// * --------------------------------------
+		/**
+		 * \file	SplittableTask.h
+		 * \class	SplittableTask
+		 * \ingroup Thread
+		 * \brief	Abstract class to manage splittable tasks.
+		 */
+		 // ****************************************
+		class SplittableTask : public CoreModifiable
+		{
+		public:
+			DECLARE_ABSTRACT_CLASS_INFO(SplittableTask, CoreModifiable, Thread)
+				SplittableTask(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual ~SplittableTask();
+
+			void	Update(const Time::Timer& timer, void* addParam) override;
+
+		protected:
+
+			void	clear();
+
+			virtual SplitDataStructBase* createSplitDataStruct(int index, const Time::Timer&)
+			{
+				// base class can't split
+				return 0;
+			};
+			virtual SplitDataStructBase* updateSplitDataStruct(SplitDataStructBase*, int index, const Time::Timer&)
+			{
+				// base class can't split
+				return 0;
+			}
+
+			// to be overloaded, default do nothing
+			virtual	void	protectedSplitUpdate(SplitDataStructBase*) {};
+
+			DECLARE_METHOD(SplittedUpdate);
+			COREMODIFIABLE_METHODS(SplittedUpdate);
+
+			maReference		mThreadPoolManager;
+
+			maBool			mIsSplittable;
+			maUInt			mSplitCount;
+			maBool			mWaitFinish;
+
+			std::vector<SplitDataStructBase*>	mSplitDataStructList;
+		};
+
 	}
-
-	// to be overloaded, default do nothing
-	virtual	void	protectedSplitUpdate(SplitDataStructBase*){};
-
-	DECLARE_METHOD(SplittedUpdate);
-	COREMODIFIABLE_METHODS(SplittedUpdate);
-
-	maReference		mThreadPoolManager;
-
-	maBool			mIsSplittable;
-	maUInt			mSplitCount;
-	maBool			mWaitFinish;
-
-	std::vector<SplitDataStructBase*>	mSplitDataStructList;
-};
-
-#endif //_SPLITTABLETASK_H_
+}

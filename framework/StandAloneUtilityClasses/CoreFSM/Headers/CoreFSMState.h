@@ -3,159 +3,163 @@
 #include "Upgrador.h"
 #include "CoreFSMTransition.h"
 
-class CoreFSM;
-
-// ****************************************
-// * CoreFSMStateBase class
-// * --------------------------------------
-/**
- * \class	CoreFSMStateBase
- * \file	CoreFSMState.h
- * \ingroup CoreFSM
- * \brief	FSM state base class.
- *
- */
- // ****************************************
-
-// base class for state, multiple inheritance
-class CoreFSMStateBase
+namespace Kigs
 {
-public:
-
-	virtual void				start(CoreModifiable* currentParentClass, CoreFSMStateBase* prevstate);
-	virtual void				stop(CoreModifiable* currentParentClass, CoreFSMStateBase* nextstate);
-	// if a transition is valid, return it
-	virtual CoreFSMTransition*	update(CoreModifiable* currentParentClass, u32& specialOrder, KigsID& newstate);
-
-	const KigsID&	getID()
+	namespace Fsm
 	{
-		return dynamic_cast<UpgradorBase*>(this)->getID();
-	}
+		class CoreFSM;
 
-	void	addTransition(SP<CoreFSMTransition> t)
-	{
-		mTransitions.push_back(t);
-	}
+		// ****************************************
+		// * CoreFSMStateBase class
+		// * --------------------------------------
+		/**
+		 * \class	CoreFSMStateBase
+		 * \file	CoreFSMState.h
+		 * \ingroup CoreFSM
+		 * \brief	FSM state base class.
+		 *
+		 */
+		 // ****************************************
 
-	virtual ~CoreFSMStateBase()
-	{
-		mTransitions.clear();
-	}
-
-	// get a transition from the list given it's id
-	SP<CoreFSMTransition>	getTransition(const KigsID& transitionname) const
-	{
-		for (auto t : mTransitions)
+		// base class for state, multiple inheritance
+		class CoreFSMStateBase
 		{
-			if (t->getNameID() == transitionname)
+		public:
+
+			virtual void				start(CoreModifiable* currentParentClass, CoreFSMStateBase* prevstate);
+			virtual void				stop(CoreModifiable* currentParentClass, CoreFSMStateBase* nextstate);
+			// if a transition is valid, return it
+			virtual CoreFSMTransition* update(CoreModifiable* currentParentClass, u32& specialOrder, KigsID& newstate);
+
+			const KigsID& getID()
 			{
-				return t;
+				return dynamic_cast<UpgradorBase*>(this)->getID();
 			}
-		}
-		return nullptr;
-	}
 
-	std::vector<KigsID>	getTransitionList() const
-	{
-		std::vector<KigsID> result;
-		for (const auto& t : mTransitions)
-		{
-			result.push_back(t->getNameID());
-		}
-		return result;
-	}
+			void	addTransition(SP<CoreFSMTransition> t)
+			{
+				mTransitions.push_back(t);
+			}
 
-	bool	hasActiveTransition(CoreModifiable* currentParentClass) const
-	{
-		for (const auto& t : mTransitions)
-		{
-			if (t->checkTransition(currentParentClass))
-				return true;
-		}
-		return false;
-	}
+			virtual ~CoreFSMStateBase()
+			{
+				mTransitions.clear();
+			}
 
-	template<typename T>
-	T* as() 
-	{
-		return static_cast<T*>(this);
-	}
+			// get a transition from the list given it's id
+			SP<CoreFSMTransition>	getTransition(const KigsID& transitionname) const
+			{
+				for (auto t : mTransitions)
+				{
+					if (t->getNameID() == transitionname)
+					{
+						return t;
+					}
+				}
+				return nullptr;
+			}
 
-protected:
+			std::vector<KigsID>	getTransitionList() const
+			{
+				std::vector<KigsID> result;
+				for (const auto& t : mTransitions)
+				{
+					result.push_back(t->getNameID());
+				}
+				return result;
+			}
 
-	friend class CoreFSM;
-	// transition list for this state
-	std::vector<SP<CoreFSMTransition>> mTransitions;
+			bool	hasActiveTransition(CoreModifiable* currentParentClass) const
+			{
+				for (const auto& t : mTransitions)
+				{
+					if (t->checkTransition(currentParentClass))
+						return true;
+				}
+				return false;
+			}
 
-	// a state can activate one of its transition
-	bool activateTransition(const KigsID& transitionname);
+			template<typename T>
+			T* as()
+			{
+				return static_cast<T*>(this);
+			}
 
-	// a state can also ask itself to pop 
-	void popState();
+		protected:
 
-	CoreFSMTransition*	mActiveTransition = nullptr;
-};
+			friend class CoreFSM;
+			// transition list for this state
+			std::vector<SP<CoreFSMTransition>> mTransitions;
+
+			// a state can activate one of its transition
+			bool activateTransition(const KigsID& transitionname);
+
+			// a state can also ask itself to pop 
+			void popState();
+
+			CoreFSMTransition* mActiveTransition = nullptr;
+		};
 
 #define StringifyClassName(a) #a
 
-// Utility macro to declare states
-// a state declaration with no additionnal method will look like 
+		// Utility macro to declare states
+		// a state declaration with no additionnal method will look like 
 
-/*
+		/*
 
-  START_DECLARE_COREFSMSTATE(Ghost, Appear)  // state for the Ghost class named Appear
-  COREFSMSTATE_WITHOUT_METHODS()			 // this state has no specific method
-  END_DECLARE_COREFSMSTATE()				 // end of state declaration
-  
-*/
+		  START_DECLARE_COREFSMSTATE(Ghost, Appear)  // state for the Ghost class named Appear
+		  COREFSMSTATE_WITHOUT_METHODS()			 // this state has no specific method
+		  END_DECLARE_COREFSMSTATE()				 // end of state declaration
 
-// a state declaration with an additionnal checkDead method and a variable member will look like 
+		*/
 
-/*
+		// a state declaration with an additionnal checkDead method and a variable member will look like 
 
-   START_DECLARE_COREFSMSTATE(Ghost, Hunted) // state for the Ghost class named Hunted
-   v2i	mPacmanSeenPos;
-   COREFSMSTATE_METHODS(checkDead)
-   END_DECLARE_COREFSMSTATE()
+		/*
 
-*/
+		   START_DECLARE_COREFSMSTATE(Ghost, Hunted) // state for the Ghost class named Hunted
+		   v2i	mPacmanSeenPos;
+		   COREFSMSTATE_METHODS(checkDead)
+		   END_DECLARE_COREFSMSTATE()
 
-// then state Hunted definition will look like
+		*/
 
-/*
-void	CoreFSMStartMethod(Ghost, Hunted)
-{
-	// start state code here
-	// this is an instance of Ghost here
-	...
-}
-void	CoreFSMStopMethod(Ghost, Hunted)
-{
-	// stop state code here
-	// this is an instance of Ghost here
-	...
-}
+		// then state Hunted definition will look like
 
-// checkDead method
-DEFINE_UPGRADOR_METHOD(CoreFSMStateClass(Ghost, Hunted), checkDead)
-{
-	// this is an instance of Ghost here
-	if(mIsDead)
-		return true;
+		/*
+		void	CoreFSMStartMethod(Ghost, Hunted)
+		{
+			// start state code here
+			// this is an instance of Ghost here
+			...
+		}
+		void	CoreFSMStopMethod(Ghost, Hunted)
+		{
+			// stop state code here
+			// this is an instance of Ghost here
+			...
+		}
 
-	return false;
-}
+		// checkDead method
+		DEFINE_UPGRADOR_METHOD(CoreFSMStateClass(Ghost, Hunted), checkDead)
+		{
+			// this is an instance of Ghost here
+			if(mIsDead)
+				return true;
 
-DEFINE_UPGRADOR_UPDATE(CoreFSMStateClass(Ghost, Hunted))
-{
-	// this is an instance of Ghost here
+			return false;
+		}
 
-	// retrieve variable in current state : 
-	v2i pacmanLastPos=GetUpgrador()->mPacmanSeenPos;
-	...
-}
+		DEFINE_UPGRADOR_UPDATE(CoreFSMStateClass(Ghost, Hunted))
+		{
+			// this is an instance of Ghost here
 
-*/
+			// retrieve variable in current state :
+			v2i pacmanLastPos=GetUpgrador()->mPacmanSeenPos;
+			...
+		}
+
+		*/
 
 #define CoreFSMStateClass(baseclassname,statename)  CoreFSMState##baseclassname##statename
 #define CoreFSMStateClassMethods(baseclassname,statename)  CoreFSMState##baseclassname##statename::UpgradorMethods
@@ -252,3 +256,5 @@ virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::Modifi
 {\
 }
 
+		}
+	}

@@ -1,133 +1,139 @@
 #pragma once
 #include "CoreModifiable.h"
 
-// to be called first
-// declare FSM classes to instance factory
-void	initCoreFSM();
-
-// should be called to clear static instances 
-void	closeCoreFSM();
-
-
 #ifdef _DEBUG
 // keep track of state changes
 #define DEBUG_COREFSM	 
 #endif
-
 #ifdef DEBUG_COREFSM
 #include "CoreRawBuffer.h"
 #endif
 
-class CoreFSMStateBase;
-class CoreFSMTransition;
-
-
-// ****************************************
-// * CoreFSM class
-// * --------------------------------------
-/**
- * \class	CoreFSM
- * \file	CoreFSM.h
- * \ingroup CoreFSM
- * \brief	manage a finite state machine attached to an object.
- *
- */
- // ****************************************
-class CoreFSM : public CoreModifiable
+namespace Kigs
 {
-public:
-
-	//! transition can ask to push/pop or just change the state
-	enum class FSMStateSpecialOrder
+	namespace Fsm
 	{
-		NORMAL_TRANSITION		= 0,
-		POP_TRANSITION			= 1,
-		PUSH_TRANSITION			= 2,
-		PUSHBLOCK_TRANSITION	= 3, 
-	};
+		using namespace Kigs::Core;
+		// to be called first
+		// declare FSM classes to instance factory
+		void	initCoreFSM();
 
-	DECLARE_CLASS_INFO(CoreFSM, CoreModifiable, CoreFSM);
-	DECLARE_CONSTRUCTOR(CoreFSM);
+		// should be called to clear static instances 
+		void	closeCoreFSM();
 
-	//! declare a new possible state to the FSM
-	void	addState(const KigsID& id, CoreFSMStateBase* base);
 
-	//! set FSM start state
-	void	setStartState(const KigsID& id, u32 blockindex = -1);
+		class CoreFSMStateBase;
+		class CoreFSMTransition;
 
-	//! get state given by its name (by default in current block)
-	CoreFSMStateBase* getState(const KigsID& id, u32 blockindex=-1) const;
 
-	//! get state on current state stack given by its name 
-	CoreFSMStateBase* getStackedState(const KigsID& id) const;
+		// ****************************************
+		// * CoreFSM class
+		// * --------------------------------------
+		/**
+		 * \class	CoreFSM
+		 * \file	CoreFSM.h
+		 * \ingroup CoreFSM
+		 * \brief	manage a finite state machine attached to an object.
+		 *
+		 */
+		 // ****************************************
+		class CoreFSM : public CoreModifiable
+		{
+		public:
 
-	//! get state on current state stack given by pos : pos = 0 => currentState, pos = 1 => mCurrentState[mCurrentState.size()-2] ...
-	CoreFSMStateBase* getStackedStateAt(size_t pos) const;
+			//! transition can ask to push/pop or just change the state
+			enum class FSMStateSpecialOrder
+			{
+				NORMAL_TRANSITION = 0,
+				POP_TRANSITION = 1,
+				PUSH_TRANSITION = 2,
+				PUSHBLOCK_TRANSITION = 3,
+			};
 
-	void activateTransition(const KigsID& id);
+			DECLARE_CLASS_INFO(CoreFSM, CoreModifiable, CoreFSM);
+			DECLARE_CONSTRUCTOR(CoreFSM);
 
-	//! init method
-	void	InitModifiable()override;
+			//! declare a new possible state to the FSM
+			void	addState(const KigsID& id, CoreFSMStateBase* base);
 
-	//! update method
-	void Update(const Timer& timer, void* addParam) override;
+			//! set FSM start state
+			void	setStartState(const KigsID& id, u32 blockindex = -1);
 
-	//! destructor
-	virtual ~CoreFSM();
+			//! get state given by its name (by default in current block)
+			CoreFSMStateBase* getState(const KigsID& id, u32 blockindex = -1) const;
 
-	static	void initStaticCoreFSMInstances();
-	static	void closeStaticCoreFSMInstances();
+			//! get state on current state stack given by its name 
+			CoreFSMStateBase* getStackedState(const KigsID& id) const;
 
-	// return block index
-	u32	addBlock();
+			//! get state on current state stack given by pos : pos = 0 => currentState, pos = 1 => mCurrentState[mCurrentState.size()-2] ...
+			CoreFSMStateBase* getStackedStateAt(size_t pos) const;
 
-	void setCurrentBlock(u32 index);
+			void activateTransition(const KigsID& id);
 
-protected:
+			//! init method
+			void	InitModifiable()override;
 
-	//! state transition management
-	//! push the given state on the stack
-	void	pushCurrentState(CoreFSMStateBase*,u32 newblockIndex=-1);
-	//! change the current state on the stack
-	void	changeCurrentState(CoreFSMStateBase*);
-	//! pop the state on the stack => current state is the new stack back
-	void	popCurrentState();
+			//! update method
+			void Update(const Time::Timer& timer, void* addParam) override;
 
-	//! the object the FSM is attached to
-	CoreModifiable*		mAttachedObject = nullptr;
+			//! destructor
+			virtual ~CoreFSM();
 
-	// to make it possible to have sereval time the same state (with a different context) in an FSM, manage list of blocks with their own stack
-	struct FSMBlock
-	{
-		u32								mFromBlock = -1;
-		//! state stack
-		std::vector<CoreFSMStateBase*>	mCurrentState;
-	};
+			static	void initStaticCoreFSMInstances();
+			static	void closeStaticCoreFSMInstances();
 
-	std::vector<FSMBlock>	mFSMBlock;
-	u32						mCurrentBlockIndex=0;
+			// return block index
+			u32	addBlock();
 
-	//! map of possible states for this FSM 
-	std::unordered_map<KigsID,std::vector<std::pair<CoreFSMStateBase*,u32>>>	mPossibleStates;
+			void setCurrentBlock(u32 index);
 
-	friend class CoreFSMStateBase;
-	static SP<CoreFSMTransition> mPopTransition;
+		protected:
+
+			//! state transition management
+			//! push the given state on the stack
+			void	pushCurrentState(CoreFSMStateBase*, u32 newblockIndex = -1);
+			//! change the current state on the stack
+			void	changeCurrentState(CoreFSMStateBase*);
+			//! pop the state on the stack => current state is the new stack back
+			void	popCurrentState();
+
+			//! the object the FSM is attached to
+			CoreModifiable* mAttachedObject = nullptr;
+
+			// to make it possible to have sereval time the same state (with a different context) in an FSM, manage list of blocks with their own stack
+			struct FSMBlock
+			{
+				u32								mFromBlock = -1;
+				//! state stack
+				std::vector<CoreFSMStateBase*>	mCurrentState;
+			};
+
+			std::vector<FSMBlock>	mFSMBlock;
+			u32						mCurrentBlockIndex = 0;
+
+			//! map of possible states for this FSM 
+			std::unordered_map<KigsID, std::vector<std::pair<CoreFSMStateBase*, u32>>>	mPossibleStates;
+
+			friend class CoreFSMStateBase;
+			static SP<CoreFSMTransition> mPopTransition;
 
 #ifdef DEBUG_COREFSM
 
-	struct trackStateChange
-	{
-		double					mTime;
-		FSMStateSpecialOrder	mCause;
-		CoreFSMStateBase*		mState;
-	};
+			struct trackStateChange
+			{
+				double					mTime;
+				FSMStateSpecialOrder	mCause;
+				CoreFSMStateBase* mState;
+			};
 
-	CircularBuffer<trackStateChange>	mStateChangeBuffer;
+			CircularBuffer<trackStateChange>	mStateChangeBuffer;
 
-public:
-	void	dumpLastStates();
+		public:
+			void	dumpLastStates();
 
 #endif
-};
+		};
 
 #define getFSMState(fsm,baseclass,state) (CoreFSMStateClass(baseclass, state)*)fsm->getState(#state);
+	}
+}

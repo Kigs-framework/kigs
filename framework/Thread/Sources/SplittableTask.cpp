@@ -2,6 +2,8 @@
 #include "SplittableTask.h"
 #include "ThreadPoolManager.h"
 
+using namespace Kigs::Thread;
+
 IMPLEMENT_CLASS_INFO(SplittableTask)
 
 SplittableTask::SplittableTask(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
@@ -31,7 +33,7 @@ void	SplittableTask::clear()
 }
 
 
-void	SplittableTask::Update(const Timer& timer, void* addParam)
+void	SplittableTask::Update(const Time::Timer& timer, void* addParam)
 {
 	if ((mIsSplittable) && (mSplitCount>1) && ((CoreModifiable*)mThreadPoolManager))
 	{

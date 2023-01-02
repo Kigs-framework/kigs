@@ -1,6 +1,4 @@
-#ifndef ThreadProfiler_H
-#define ThreadProfiler_H
-
+#pragma once
 
 #include <CoreModifiable.h>
 #include "Thread.h"
@@ -11,131 +9,134 @@
 #define THREAD_PROFILER_BUFFER_SIZE 4096
 #define THREAD_PROFILER_STRING_SIZE 64
 
-//#define DO_THREAD_PROFILING
-
-enum class TimeEventType : unsigned int
+namespace Kigs
 {
-	Start,
-	End,
-	Mark,
-	UnInit
-};
-struct TimeEvent
-{
-	TimeEvent()
+	namespace Thread
 	{
-		type = TimeEventType::UnInit;
-		time = DBL_MAX;
-		name[0] = 0;
-		function_name[0] = 0;
-	}
-	void Set(TimeEventType t, const char* evt_name, const char* func_name, double ti)
-	{
-		type = t;
-		time = ti;
-		memcpy(name, evt_name, MAX(strlen(evt_name), THREAD_PROFILER_STRING_SIZE));
-		name[THREAD_PROFILER_STRING_SIZE-1] = 0;
-		memcpy(function_name, func_name, MAX(strlen(evt_name), THREAD_PROFILER_STRING_SIZE));
-		function_name[THREAD_PROFILER_STRING_SIZE-1] = 0;
-	}
-	TimeEventType type;
-	char name[THREAD_PROFILER_STRING_SIZE];
-	char function_name[THREAD_PROFILER_STRING_SIZE];
-	double time;
-};
-
-struct TimeEventCircularBuffer
-{
-	TimeEventCircularBuffer()
-	{
-		for (int i = 0; i < THREAD_PROFILER_BUFFER_SIZE; ++i)
+		enum class TimeEventType : unsigned int
 		{
-			buffer[i].type = TimeEventType::UnInit;
-		}
+			Start,
+			End,
+			Mark,
+			UnInit
+		};
+		struct TimeEvent
+		{
+			TimeEvent()
+			{
+				type = TimeEventType::UnInit;
+				time = DBL_MAX;
+				name[0] = 0;
+				function_name[0] = 0;
+			}
+			void Set(TimeEventType t, const char* evt_name, const char* func_name, double ti)
+			{
+				type = t;
+				time = ti;
+				memcpy(name, evt_name, MAX(strlen(evt_name), THREAD_PROFILER_STRING_SIZE));
+				name[THREAD_PROFILER_STRING_SIZE - 1] = 0;
+				memcpy(function_name, func_name, MAX(strlen(evt_name), THREAD_PROFILER_STRING_SIZE));
+				function_name[THREAD_PROFILER_STRING_SIZE - 1] = 0;
+			}
+			TimeEventType type;
+			char name[THREAD_PROFILER_STRING_SIZE];
+			char function_name[THREAD_PROFILER_STRING_SIZE];
+			double time;
+		};
+
+		struct TimeEventCircularBuffer
+		{
+			TimeEventCircularBuffer()
+			{
+				for (int i = 0; i < THREAD_PROFILER_BUFFER_SIZE; ++i)
+				{
+					buffer[i].type = TimeEventType::UnInit;
+				}
+			}
+			TimeEvent buffer[THREAD_PROFILER_BUFFER_SIZE];
+		};
+
+
+
+		// ****************************************
+		// * ThreadProfiler class
+		// * --------------------------------------
+		/**
+		 * \file	ThreadProfiler.h
+		 * \class	ThreadProfiler
+		 * \ingroup Thread
+		 * \brief	Helper class to profile threads.
+		 */
+		 // ****************************************
+
+		class Semaphore;
+
+		class ThreadProfiler : public CoreModifiable
+		{
+		public:
+
+			DECLARE_CLASS_INFO(ThreadProfiler, CoreModifiable, Thread)
+
+				//! constructor
+				ThreadProfiler(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+
+			void AddTimeEvent(TimeEventType type, const char* name, const char* function_name)
+			{
+				if (!mAllowNewEvents) return;
+				CoreModifiable* thread = mCurrentThread;
+				int index = mCircularBufferIndexes[thread];
+				mCircularBufferIndexes[thread] = (mCircularBufferIndexes[thread] + 1) % THREAD_PROFILER_BUFFER_SIZE;
+				mCircularBufferMap[thread].buffer[index].Set(type, name, function_name, mGlobalTimer->GetTime());
+			}
+
+			void Stop()
+			{
+				mAllowNewEvents = false;
+			}
+
+			void Start()
+			{
+				mAllowNewEvents = true;
+			}
+
+			bool IsRunning()
+			{
+				return mAllowNewEvents;
+			}
+
+			void ClearProfiler();
+
+			void RemoveThread(Thread* thread);
+
+			void RegisterThread(Thread* thread);
+
+			std::map<CoreModifiable*, TimeEventCircularBuffer>& GetThreadTimeEventMap() { return mCircularBufferMap; }
+			std::map<CoreModifiable*, unsigned int>& GetThreadIndexesMap() { return mCircularBufferIndexes; }
+			unsigned int GetThreadCircularBufferIndex(CoreModifiable* thread) { return (mCircularBufferIndexes[thread] + THREAD_PROFILER_BUFFER_SIZE - 1) % THREAD_PROFILER_BUFFER_SIZE; }
+
+			SP<Time::Timer>& GetThreadProfilerTimer() { return mGlobalTimer; }
+
+			void ExportProfile(const std::string path);
+
+			//Remotery* rmt;
+
+			static thread_local Thread* mCurrentThread;
+
+		private:
+
+			std::map<CoreModifiable*, TimeEventCircularBuffer> mCircularBufferMap;
+			std::map<CoreModifiable*, unsigned int> mCircularBufferIndexes;
+			SP<Time::Timer> mGlobalTimer;
+
+
+
+			bool mAllowNewEvents;
+			std::mutex mMutex;
+		};
+
+
 	}
-	TimeEvent buffer[THREAD_PROFILER_BUFFER_SIZE];
-};
-
-
-
-// ****************************************
-// * ThreadProfiler class
-// * --------------------------------------
-/**
- * \file	ThreadProfiler.h
- * \class	ThreadProfiler
- * \ingroup Thread
- * \brief	Helper class to profile threads.
- */
- // ****************************************
-
-class Semaphore;
-
-class ThreadProfiler : public CoreModifiable
-{
-public:
-
-	DECLARE_CLASS_INFO(ThreadProfiler, CoreModifiable, Thread)
-
-	//! constructor
-	ThreadProfiler(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-
-	void AddTimeEvent(TimeEventType type, const char* name, const char* function_name)
-	{
-		if (!mAllowNewEvents) return;
-		CoreModifiable* thread = mCurrentThread;
-		int index = mCircularBufferIndexes[thread];
-		mCircularBufferIndexes[thread] = (mCircularBufferIndexes[thread] + 1) % THREAD_PROFILER_BUFFER_SIZE;
-		mCircularBufferMap[thread].buffer[index].Set(type, name, function_name, mGlobalTimer->GetTime());
-	}
-
-	void Stop()
-	{
-		mAllowNewEvents = false;
-	}
-
-	void Start()
-	{
-		mAllowNewEvents = true;
-	}
-
-	bool IsRunning()
-	{
-		return mAllowNewEvents;
-	}
-
-	void ClearProfiler();
-
-	void RemoveThread(Thread* thread);
-
-	void RegisterThread(Thread* thread);
-
-	std::map<CoreModifiable*, TimeEventCircularBuffer>& GetThreadTimeEventMap(){ return mCircularBufferMap; }
-	std::map<CoreModifiable*, unsigned int>& GetThreadIndexesMap(){ return mCircularBufferIndexes; }
-	unsigned int GetThreadCircularBufferIndex(CoreModifiable* thread){ return (mCircularBufferIndexes[thread] + THREAD_PROFILER_BUFFER_SIZE - 1) % THREAD_PROFILER_BUFFER_SIZE; }
-
-	SP<Timer>& GetThreadProfilerTimer(){ return mGlobalTimer; }
-
-	void ExportProfile(const std::string path);
-
-	//Remotery* rmt;
-
-	static thread_local Thread* mCurrentThread;
-
-private:
-	
-	std::map<CoreModifiable*, TimeEventCircularBuffer> mCircularBufferMap;
-	std::map<CoreModifiable*, unsigned int> mCircularBufferIndexes;
-	SP<Timer> mGlobalTimer;
-
-	
-
-	bool mAllowNewEvents;
-	std::mutex mMutex;
-};
-
-
-#endif // ThreadProfiler_H
+}
 
 
 

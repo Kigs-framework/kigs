@@ -31,6 +31,8 @@
 
 */
 
+using namespace Kigs::Fsm;
+
 SP<CoreFSMTransition> CoreFSM::mPopTransition=nullptr;
 
 IMPLEMENT_CLASS_INFO(CoreFSM)
@@ -440,7 +442,7 @@ CoreFSM::~CoreFSM()
 }
 
 // declare all instanciable classes
-void	initCoreFSM()
+void	Kigs::Fsm::initCoreFSM()
 {
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreFSM, CoreFSM, CoreFSM);
 	DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), CoreFSMOnSignalTransition, CoreFSMOnSignalTransition, CoreFSM);
@@ -453,7 +455,7 @@ void	initCoreFSM()
 	CoreFSM::initStaticCoreFSMInstances();
 }
 
-void	closeCoreFSM()
+void	Kigs::Fsm::closeCoreFSM()
 {
 	CoreFSM::closeStaticCoreFSMInstances();
 }

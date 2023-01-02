@@ -1,5 +1,4 @@
-#ifndef _THREAD_H_
-#define _THREAD_H_
+#pragma once
 
 #include "CoreModifiableAttribute.h"
 #include "CoreModifiable.h"
@@ -8,87 +7,93 @@
 #include "AttributePacking.h"
 #include <thread>
 
-// ****************************************
-// * Thread class
-// * --------------------------------------
-/**
- * \file	Thread.h
- * \class	Thread
- * \ingroup Thread
- * \brief	Manage a thread.
- */
- // ****************************************
-class Thread : public CoreModifiable
+namespace Kigs
 {
-public:
-
-    DECLARE_CLASS_INFO(Thread,CoreModifiable,Thread)
-    Thread(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	virtual ~Thread();
-
-	enum class State
+	namespace Thread
 	{
-		UNINITIALISED=0,
-		RUNNING,
-		FINISHED
-	};
-
-	//! return current state (uninitialised, normal or paused)
-	State	GetState(){return mCurrentState;}
-	
-	template<typename... T>
-	void	Start(T&&... params);
-
-	virtual void	Start();
-
-	float	GetProgress(){return 	mProgress;}
-    inline State GetCurrentState() const {return mCurrentState;}
-    
-	void	setMethod(CoreModifiable* localthis, const std::string& method)
-	{
-		if (mFunctionWasInserted)
+		using namespace Kigs::Core;
+		// ****************************************
+		// * Thread class
+		// * --------------------------------------
+		/**
+		 * \file	Thread.h
+		 * \class	Thread
+		 * \ingroup Thread
+		 * \brief	Manage a thread.
+		 */
+		 // ****************************************
+		class Thread : public CoreModifiable
 		{
-			mCallee->RemoveMethod(mMethod.const_ref());
-			mFunctionWasInserted = false;
-		}
+		public:
 
-		mCallee = localthis;
-		mMethod = method;
+			DECLARE_CLASS_INFO(Thread, CoreModifiable, Thread)
+				Thread(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual ~Thread();
+
+			enum class State
+			{
+				UNINITIALISED = 0,
+				RUNNING,
+				FINISHED
+			};
+
+			//! return current state (uninitialised, normal or paused)
+			State	GetState() { return mCurrentState; }
+
+			template<typename... T>
+			void	Start(T&&... params);
+
+			virtual void	Start();
+
+			float	GetProgress() { return 	mProgress; }
+			inline State GetCurrentState() const { return mCurrentState; }
+
+			void	setMethod(CoreModifiable* localthis, const std::string& method)
+			{
+				if (mFunctionWasInserted)
+				{
+					mCallee->RemoveMethod(mMethod.const_ref());
+					mFunctionWasInserted = false;
+				}
+
+				mCallee = localthis;
+				mMethod = method;
+			}
+			template<typename F>
+			void	setMethod(CoreModifiable* localthis, const std::string& method, F&& func)
+			{
+				if (mFunctionWasInserted)
+				{
+					mCallee->RemoveMethod(mMethod.const_ref());
+					mFunctionWasInserted = false;
+				}
+
+				mCallee = localthis;
+				mMethod = method;
+
+				mCallee->InsertFunction(method, func);
+				mFunctionWasInserted = true;
+			}
+
+			void	Kill();
+
+		protected:
+
+			// Init start thread if Method && Callee parameters are set
+			virtual void InitModifiable() override;
+
+			// reset all states
+			void	Done();
+
+			CMSP					mKeepAlive;
+			State					mCurrentState;
+			float					mProgress;
+			std::thread				mCurrentThread;
+
+			maString				mMethod = INIT_ATTRIBUTE(Method, "");
+			maReference				mCallee = INIT_ATTRIBUTE(Callee, "");
+			bool					mFunctionWasInserted = false;
+		};
+
 	}
-	template<typename F>
-	void	setMethod(CoreModifiable* localthis, const std::string& method, F&& func)
-	{
-		if (mFunctionWasInserted)
-		{
-			mCallee->RemoveMethod(mMethod.const_ref());
-			mFunctionWasInserted = false;
-		}
-
-		mCallee = localthis;
-		mMethod = method;
-
-		mCallee->InsertFunction(method, func);
-		mFunctionWasInserted = true;
-	}
-
-	void	Kill();
-
-protected:
-
-	// Init start thread if Method && Callee parameters are set
-	virtual void InitModifiable() override;
-
-	// reset all states
-	void	Done();
-
-	CMSP					mKeepAlive;
-	State					mCurrentState;
-	float					mProgress;
-	std::thread				mCurrentThread;
-
-	maString				mMethod= INIT_ATTRIBUTE(Method, "");
-	maReference				mCallee= INIT_ATTRIBUTE(Callee,"");
-	bool					mFunctionWasInserted = false;
-};
-
-#endif //_THREAD_H_
+}

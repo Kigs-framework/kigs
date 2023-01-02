@@ -1,6 +1,8 @@
 #include "PrecompiledHeaders.h"
 #include "ThreadEvent.h"
 
+using namespace Kigs::Thread;
+
 IMPLEMENT_CLASS_INFO(ThreadEvent)
 
 ThreadEvent::ThreadEvent(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)

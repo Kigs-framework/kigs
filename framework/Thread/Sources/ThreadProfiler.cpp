@@ -2,6 +2,9 @@
 #include <ThreadProfiler.h>
 #include <FilePathManager.h>
 
+using namespace Kigs::Thread;
+using namespace Kigs::File;
+
 thread_local Thread* ThreadProfiler::mCurrentThread=nullptr;
 
 

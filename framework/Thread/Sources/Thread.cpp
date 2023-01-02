@@ -1,7 +1,9 @@
 #include "PrecompiledHeaders.h"
 #include "Thread.h"
 #include "Core.h"
-#include <ThreadProfiler.h>
+#include "ThreadProfiler.h"
+
+using namespace Kigs::Thread;
 
 IMPLEMENT_CLASS_INFO(Thread)
 

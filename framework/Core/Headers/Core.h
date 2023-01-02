@@ -27,6 +27,10 @@ GitHub project : https://github.com/Kigs-framework/kigs
 
 namespace Kigs
 {
+	namespace Thread
+	{
+		class ModuleThread;
+	}
 	namespace Time
 	{
 		class GlobalProfilerManager;
@@ -581,7 +585,7 @@ namespace Kigs
 
 			//! list of semaphore
 			CMSP			mSemaphore;
-			friend class	ModuleThread;
+			friend class	Thread::ModuleThread;
 
 
 			ModuleBase** mCoreMainModuleList;

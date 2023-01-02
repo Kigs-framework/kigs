@@ -5,6 +5,8 @@
 #include "TecLibs/2D/BBox2D.h"
 #include "BuildMeshFromEnveloppe.h"
 
+using namespace Kigs::Utils;
+
 // local operator for std::set
 bool operator<(const v3f& U, const v3f& V)
 {

@@ -3,6 +3,8 @@
 #include "NotificationCenter.h"
 #include "CoreFSMState.h"
 
+using namespace Kigs::Fsm;
+
 IMPLEMENT_CLASS_INFO(CoreFSMTransition)
 IMPLEMENT_CLASS_INFO(CoreFSMOnSignalTransition)
 IMPLEMENT_CLASS_INFO(CoreFSMOnEventTransition)

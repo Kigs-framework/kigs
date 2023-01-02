@@ -6,6 +6,7 @@
 #include "ThreadPoolManager.h"
 #include "ThreadProfiler.h"
 
+using namespace Kigs::Thread;
 
 IMPLEMENT_CLASS_INFO(ModuleThread)
 

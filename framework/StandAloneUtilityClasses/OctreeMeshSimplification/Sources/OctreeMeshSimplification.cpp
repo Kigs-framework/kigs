@@ -1,6 +1,8 @@
 #include "OctreeMeshSimplification.h"
 #include "MeshSimplification.h"
 
+using namespace Kigs::Utils;
+
 v3f	MSPlaneStruct::mAxisNormal[3] = { {1.0f,0.0f,0.0f},{0.0f,1.0f,0.0f},{0.0f,0.0f,1.0f} };
 
 void	MSOctreeContent::ContentData::initEnvelopeData()

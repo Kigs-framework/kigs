@@ -1,6 +1,8 @@
 #include "PrecompiledHeaders.h"
 #include "ThreadPoolManager.h"
 
+using namespace Kigs::Thread;
+
 IMPLEMENT_CLASS_INFO(ThreadPoolManager)
 
 ThreadPoolManager::ThreadPoolManager(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)

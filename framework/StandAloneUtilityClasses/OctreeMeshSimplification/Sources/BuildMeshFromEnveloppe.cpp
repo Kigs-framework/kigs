@@ -1,6 +1,9 @@
 #include "BuildMeshFromEnveloppe.h"
 #include "TecLibs/2D/BBox2D.h"
 
+
+using namespace Kigs::Utils;
+
 unsigned int adjacent_faces[6][4] = { {8,32,4,16},{8,16,4,32},{2,16,1,32},{2,32,1,16},{8,1,4,2},{8,2,4,1} };
 
 

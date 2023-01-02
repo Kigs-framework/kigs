@@ -3,6 +3,8 @@
 #include "ThreadPoolManager.h"
 #include <Remotery.h>
 
+using namespace Kigs::Thread;
+
 IMPLEMENT_CLASS_INFO(WorkerThread)
 
 WorkerThread::WorkerThread(const std::string& name, CLASS_NAME_TREE_ARG) : Thread(name, PASS_CLASS_NAME_TREE_ARG)
