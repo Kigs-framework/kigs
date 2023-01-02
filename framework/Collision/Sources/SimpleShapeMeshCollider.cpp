@@ -6,6 +6,8 @@
 #include "GLSLDebugDraw.h"
 #endif
 
+using namespace Kigs::Collide;
+
 SimpleShapeBase* SimpleShapeBase::createFromDesc(CoreItemSP desc)
 {
 
@@ -219,7 +221,7 @@ template <typename T> int sgn(T val) {
 }
 bool AABBoxSimpleShape::CallLocalRayIntersection(Hit& hit, const Point3D& start, const Vector3D& dir)  const
 {
-	if (Intersection::IntersectionRayBBox(start, dir, mBBox.m_Min, mBBox.m_Max, hit.HitPosition, hit.HitNormal, hit.HitDistance))
+	if (IntersectionRayBBox(start, dir, mBBox.m_Min, mBBox.m_Max, hit.HitPosition, hit.HitNormal, hit.HitDistance))
 	{
 		hit.HitFaceIndex = mFaceIndex;
 		return true;

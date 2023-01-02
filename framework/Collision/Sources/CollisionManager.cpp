@@ -22,8 +22,11 @@
 extern int gCollisionDrawLevel;
 #include "GLSLDebugDraw.h"
 #include "CoreBaseApplication.h"
-const Matrix3x4 * currentNodeMatrix = nullptr;
+const Kigs::Maths::Matrix3x4 * currentNodeMatrix = nullptr;
 #endif
+
+using namespace Kigs::Collide;
+using namespace Kigs::Draw;
 
 IMPLEMENT_CLASS_INFO(CollisionManager);
 IMPLEMENT_CONSTRUCTOR(CollisionManager)
@@ -655,7 +658,7 @@ bool CollisionManager::RecursiveSearchRayIntersection(CoreModifiable* lastCollid
 		lastNode->GetGlobalBoundingBox(box.m_Min, box.m_Max);
 		//printf("%s [%0.1f %0.1f %0.1f][%0.1f %0.1f %0.1f]\n", lastNode->getName().c_str(), min.x, min.y, min.z, max.x, max.y, max.z);
 
-		if (!item->getItems().empty() && Intersection::IntersectionRayBBox(start, dir, box.m_Min, box.m_Max))
+		if (!item->getItems().empty() && IntersectionRayBBox(start, dir, box.m_Min, box.m_Max))
 		{
 			hasCat = item->getValue("CollideMask", mask);
 			if (hasCat)
@@ -826,7 +829,7 @@ void CollisionManager::RecursiveSearchAllRayIntersection(CoreModifiable* lastCol
 
 		BBox box;
 		lastNode->GetGlobalBoundingBox(box.m_Min, box.m_Max);
-		if (!item->getItems().empty() && Intersection::IntersectionRayBBox(start, dir, box.m_Min, box.m_Max))
+		if (!item->getItems().empty() && IntersectionRayBBox(start, dir, box.m_Min, box.m_Max))
 		{
 			hasCat = item->getValue("CollideMask", mask);
 			if (hasCat)
@@ -1006,7 +1009,7 @@ void CollisionManager::RecursiveSearchPlaneIntersection(Node3D* lastNode, CoreMo
 			}
 		}
 		
-		if (!item->getItems().empty() && Intersection::IntersectionPlaneBBox(o, n, box))
+		if (!item->getItems().empty() && IntersectionPlaneBBox(o, n, box))
 		{
 			hasCat = item->getValue("CollideMask", mask);
 
@@ -1091,21 +1094,21 @@ void CollisionManager::RecursiveSearchPlaneIntersection(Node3D* lastNode, CoreMo
 			{
 			case 0:
 			{
-				found = Intersection::IntersectionAxisAlignedPlaneAABBTree<0>(lorig.x, *static_cast<const AABBTree*>(collision_object), tmpResult);
+				found = IntersectionAxisAlignedPlaneAABBTree<0>(lorig.x, *static_cast<const AABBTree*>(collision_object), tmpResult);
 			}
 			break;
 			case 1:
 			{
-				found = Intersection::IntersectionAxisAlignedPlaneAABBTree<1>(lorig.y, *static_cast<const AABBTree*>(collision_object), tmpResult);
+				found = IntersectionAxisAlignedPlaneAABBTree<1>(lorig.y, *static_cast<const AABBTree*>(collision_object), tmpResult);
 			}
 			break;
 			case 2:
 			{
-				found = Intersection::IntersectionAxisAlignedPlaneAABBTree<2>(lorig.z, *static_cast<const AABBTree*>(collision_object), tmpResult);
+				found = IntersectionAxisAlignedPlaneAABBTree<2>(lorig.z, *static_cast<const AABBTree*>(collision_object), tmpResult);
 			}
 			break;
 			default:
-				found = Intersection::IntersectionPlaneAABBTree(lorig,lnorm, *static_cast<const AABBTree*>(collision_object), tmpResult);
+				found = IntersectionPlaneAABBTree(lorig,lnorm, *static_cast<const AABBTree*>(collision_object), tmpResult);
 			}
 			if(found && tmpResult.size())
 			{
@@ -1584,7 +1587,7 @@ bool CollisionManager::GetLocalCylinderIntersectionWithRay(Hit &hit, const Point
 bool CollisionManager::GetLocalPlaneIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const Point3D& planePos, const Vector3D& planeNorm, CollisionBaseObject* pCollisionObject)
 {
 	// call the Intersection class test on Sphere
-	return Intersection::IntersectRayPlane(start, dir, planePos, planeNorm, hit.HitDistance, pCollisionObject);
+	return IntersectRayPlane(start, dir, planePos, planeNorm, hit.HitDistance, pCollisionObject);
 }
 
 static void compare_tree(AABBTreeNode* a, AABBTreeNode* b)
@@ -1703,7 +1706,7 @@ void CollisionManager::ExportLeafAABBTrees(const CMSP& node, ExportSettings* set
 					settings->current_package->AddFile(filepath, path, crb);
 				else
 				{
-					ModuleFileManager::SaveFile(filepath.c_str(), (u8*)crb->data(), crb->length());
+					File::ModuleFileManager::SaveFile(filepath.c_str(), (u8*)crb->data(), crb->length());
 					if(settings->current_package)
 						settings->current_package->AddFile(filepath, path);
 				}

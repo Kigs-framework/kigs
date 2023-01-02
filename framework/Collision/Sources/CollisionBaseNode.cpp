@@ -1,5 +1,7 @@
-#include <CollisionBaseNode.h>
-#include <CoreModifiable.h>
+#include "CollisionBaseNode.h"
+#include "CoreModifiable.h"
+
+using namespace Kigs::Collide;
 
 IMPLEMENT_CLASS_INFO(CollisionBaseNode)
 

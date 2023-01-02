@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreBaseApplication.h"
+#include "CoreItem.h"
 #include "AMRule.h"
 
 #include <windows.h>
@@ -25,52 +26,57 @@ inline ULARGE_INTEGER	getLargeInteger(FILETIME* t)
 	return result;
 }
 
-class AssetManager : public CoreBaseApplication
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(AssetManager, CoreBaseApplication, Core);
-	DECLARE_CONSTRUCTOR(AssetManager);
+	using namespace Kigs::Core;
 
-protected:
+	class AssetManager : public CoreBaseApplication
+	{
+	public:
+		DECLARE_CLASS_INFO(AssetManager, CoreBaseApplication, Core);
+		DECLARE_CONSTRUCTOR(AssetManager);
 
-	void	ProtectedInit() override;
-	void	ProtectedUpdate() override;
-	void	ProtectedClose() override;
+	protected:
 
-	void	doTheJob();
+		void	ProtectedInit() override;
+		void	ProtectedUpdate() override;
+		void	ProtectedClose() override;
 
-	void	usage();
+		void	doTheJob();
 
-	bool	initRules(CoreItemSP rules);
-	void	runRules(CoreItemSP fileInfos);
+		void	usage();
 
-	CoreItemSP	getCorrespondingItem(CoreItemSP fileInfos, FileStruct& str);
+		bool	initRules(CoreItemSP rules);
+		void	runRules(CoreItemSP fileInfos);
 
-	// return date and some UID
-	std::pair<u64,u64>	recursiveSearchFiles(std::string	startDirectory, std::vector<std::string>& currentDirectoryList);
+		CoreItemSP	getCorrespondingItem(CoreItemSP fileInfos, FileStruct& str);
 
-	FileStruct*		getFileStructFromName(const std::string& name);
-	FileStruct*		getCurrentFileStructure(const std::vector<std::string>& currentDirectoryList, const std::string& name);
+		// return date and some UID
+		std::pair<u64, u64>	recursiveSearchFiles(std::string	startDirectory, std::vector<std::string>& currentDirectoryList);
 
-	void			removeFileStructFromlist(const std::string& name);
-	void			removeFileStructFromlistUsingPattern(const std::string& pattern);
-	void			matchAllDir(FileStruct&);
+		FileStruct* getFileStructFromName(const std::string& name);
+		FileStruct* getCurrentFileStructure(const std::vector<std::string>& currentDirectoryList, const std::string& name);
 
-	CoreItemSP		createJSONFromFileList();
+		void			removeFileStructFromlist(const std::string& name);
+		void			removeFileStructFromlistUsingPattern(const std::string& pattern);
+		void			matchAllDir(FileStruct&);
 
-	CMSP							mThread;
-	std::string						mFolderIn = "";
-	std::string						mFolderOut = "";
-	std::string						mFolderInterm = "";
-	std::string						mPlatform = "";
-	std::vector<FileStruct>			mFileList;
-	bool							mJobIsDone = false;
-	bool							mResetAll = false;
-	bool							mVerbose = false;
+		CoreItemSP		createJSONFromFileList();
 
-	std::vector<AMRule>				mRules;
+		CMSP							mThread;
+		std::string						mFolderIn = "";
+		std::string						mFolderOut = "";
+		std::string						mFolderInterm = "";
+		std::string						mPlatform = "";
+		std::vector<FileStruct>			mFileList;
+		bool							mJobIsDone = false;
+		bool							mResetAll = false;
+		bool							mVerbose = false;
 
-	CoreItemSP						mFileHierarchy;
+		std::vector<AMRule>				mRules;
 
-	WRAP_METHODS(doTheJob);
-};
+		CoreItemSP						mFileHierarchy;
+
+		WRAP_METHODS(doTheJob);
+	};
+}

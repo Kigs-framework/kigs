@@ -8,107 +8,111 @@
 // * DATES     : 24/05/2000
 // **********************************************************************
 
-#ifndef __ABONESYSTEM_H__
-#define __ABONESYSTEM_H__
+#pragma once
 
 #include "ASystem.h"
 #include "ABonesDefines.h"
 #include "Bones/APRSStream.h"
-
-/*! \defgroup BoneAnimation Bone Animation submodule 
- *  \ingroup Animation
- *  Bone animation submodule
- */
-
-class  Node3D;
-
-// ****************************************
-// * ABoneSystem  class
-// * --------------------------------------
-/*!
-    System managing bone animation 
-    \ingroup BoneAnimation
-*/ 
-// ****************************************
-
-
-class ABoneSystem : public ASystem<PRSKey>
+namespace Kigs
 {
-	DECLARE_CLASS_INFO(ABoneSystem, ASystem<PRSKey>, Animation);
-public:
-	
-	DECLARE_CONSTRUCTOR(ABoneSystem);
-	
-	void InitSystem() override {};
-
-	// ******************************
-	// * Animate
-	// *-----------------------------
-	/*!  call the root channel animate
-	*/
-	// ******************************
-	
-	void    Animate(ATimeValue t) override;
-	
-	// ******************************
-	// * SetupDraw
-	// *-----------------------------
-	/*!  call the root channel animate
-	*/
-	// ******************************
-	void    SetupDraw() override;
-	
-	void DrawSkeletonRec(int current_index, const Matrix3x4& parent_transform, const Matrix3x4& root, bool need_draw);
-	
-	
-	// ******************************
-	// * GetChannelType
-	// *-----------------------------
-	/*!  return a classID for the default channel type
-	*/
-	// ******************************
-	
-	std::string    GetChannelType() override
+	namespace Scene
 	{
-		return "ABoneChannel";
+		class  Node3D;
 	}
-	
-	
-	
-	// *******************
-	// * UseOwnHierarchy
-	// * -----------------
-	/*!  return true
-	*/
-	// *******************
-	
-	bool    UseOwnHierarchy() override
+	namespace Anim
 	{
-		return true;
-	};
-	
-	void		InitLocalToGlobalData() override;
-	
-	void		ApplyLocalToGlobalData() override;
-	
-	
-	void				UpdateBoneMatrices(SP<AObjectSkeletonResource> skeleton);
-	virtual				~ABoneSystem();
-
-	protected:
-	
-	
-	// for animation localToGlobalManagement
-	
-	void				SearchParentNode3D();
-	
-	SP<Node3D>					mParentNode3D;
-	Matrix4x4*					mBoneMatrixArray;
-	SP<AObjectSkeletonResource> mSkeleton;
-	
-};
+		/*! \defgroup BoneAnimation Bone Animation submodule
+		 *  \ingroup Animation
+		 *  Bone animation submodule
+		 */
 
 
-#endif //__ABONESYSTEM_H__
+		 // ****************************************
+		 // * ABoneSystem  class
+		 // * --------------------------------------
+		 /*!
+			 System managing bone animation
+			 \ingroup BoneAnimation
+		 */
+		 // ****************************************
 
+
+		class ABoneSystem : public ASystem<PRSKey>
+		{
+			DECLARE_CLASS_INFO(ABoneSystem, ASystem<PRSKey>, Animation);
+		public:
+
+			DECLARE_CONSTRUCTOR(ABoneSystem);
+
+			void InitSystem() override {};
+
+			// ******************************
+			// * Animate
+			// *-----------------------------
+			/*!  call the root channel animate
+			*/
+			// ******************************
+
+			void    Animate(ATimeValue t) override;
+
+			// ******************************
+			// * SetupDraw
+			// *-----------------------------
+			/*!  call the root channel animate
+			*/
+			// ******************************
+			void    SetupDraw() override;
+
+			void DrawSkeletonRec(int current_index, const Matrix3x4& parent_transform, const Matrix3x4& root, bool need_draw);
+
+
+			// ******************************
+			// * GetChannelType
+			// *-----------------------------
+			/*!  return a classID for the default channel type
+			*/
+			// ******************************
+
+			std::string    GetChannelType() override
+			{
+				return "ABoneChannel";
+			}
+
+
+
+			// *******************
+			// * UseOwnHierarchy
+			// * -----------------
+			/*!  return true
+			*/
+			// *******************
+
+			bool    UseOwnHierarchy() override
+			{
+				return true;
+			};
+
+			void		InitLocalToGlobalData() override;
+
+			void		ApplyLocalToGlobalData() override;
+
+
+			void				UpdateBoneMatrices(SP<AObjectSkeletonResource> skeleton);
+			virtual				~ABoneSystem();
+
+		protected:
+
+
+			// for animation localToGlobalManagement
+
+			void				SearchParentNode3D();
+
+			SP<Scene::Node3D>					mParentNode3D;
+			Matrix4x4* mBoneMatrixArray;
+			SP<AObjectSkeletonResource> mSkeleton;
+
+		};
+
+	}
+}
 

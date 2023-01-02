@@ -19,6 +19,8 @@
 // * - 
 // ******************************
 
+using namespace Kigs::Anim;
+
 #define COS_EPSILON 0.000001f
 #define HALFPI 1.570796326794895f
 

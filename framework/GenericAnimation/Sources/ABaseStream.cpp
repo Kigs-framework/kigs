@@ -14,6 +14,7 @@
 #include "ABaseStream.h"
 #include "ABaseChannel.h"
 
+using namespace Kigs::Anim;
 IMPLEMENT_CLASS_INFO(ABaseStream)
 ABaseStream::ABaseStream(const std::string& name, CLASS_NAME_TREE_ARG)
 	: CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)

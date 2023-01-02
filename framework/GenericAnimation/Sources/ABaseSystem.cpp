@@ -15,6 +15,7 @@
 #include "Bones/AObjectSkeletonResource.h"
 #include "ABaseStream.h"
 
+using namespace Kigs::Anim;
 
 IMPLEMENT_CLASS_INFO(ABaseSystem)
 ABaseSystem::ABaseSystem(const std::string& name, CLASS_NAME_TREE_ARG)

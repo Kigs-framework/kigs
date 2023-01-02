@@ -6,216 +6,217 @@
 // *---------------------------------------------------------------------
 // **********************************************************************
 
-
-
-// ----------------------------------------------------------------------
-// +---------
-// | Life-cycle
-// +---------
-// Constructors
-template<typename floatType>
-Point2DBase<floatType>::Point2DBase()
+namespace Kigs
 {
-    ;
-}
-
-template<typename floatType>
-Point2DBase<floatType>::Point2DBase( const floatType& x , const floatType& y )
-:x(x),y(y)
-{
-    ;
-}
-
-template<typename floatType>
-Point2DBase<floatType>::Point2DBase( const Point2DBase<floatType>& P )
-:x(P.x),y(P.y)
-{
-    ;
-}
-
-// Set (constructors-like)
-template<typename floatType>
-void Point2DBase<floatType>::Set( const floatType& fValue )
-{
-    x = y =  fValue;
-}
-
-template<typename floatType>
-void Point2DBase<floatType>::Set( const floatType& x , const floatType& y )
-{
-    this->x = x;
-    this->y = y;
-}
-
-template<typename floatType>
-void Point2DBase<floatType>::Set( const Point2DBase<floatType>& P )
-{
-    x = P.x;
-    y = P.y;
-}
-
-template<typename floatType>
-void Point2DBase<floatType>::Set(const Vector3D& P)
-{
-	x = P.x;
-	y = P.y;
-}
-
-// Assignement
-template<typename floatType>
-const Point2DBase<floatType>& Point2DBase<floatType>::operator =( const Point2DBase<floatType>& V )
-{
-    x = V.x;
-    y = V.y;
-
-    return *this;
-}
-// Assignement
-template<typename floatType>
-const Point2DBase<floatType>& Point2DBase<floatType>::operator =( const floatType& V )
-{
-    x = V;
-    y = V;
-
-    return *this;
-}
-
-
-// ----------------------------------------------------------------------
-// +---------
-// | Addition/Substraction
-// +---------
-// With another vector (Internal laws)
-
-// With assignement
-template<typename floatType>
-const Point2DBase<floatType>& Point2DBase<floatType>::operator += ( const Point2DBase<floatType>& V )
-{
-    x += V.x;
-    y += V.y;
-
-    return *this;
-}
-template<typename floatType>
-const Point2DBase<floatType>& Point2DBase<floatType>::operator -= ( const Point2DBase<floatType>& V )
-{
-    x -= V.x;
-    y -= V.y;
-
-    return *this;
-}
-
-
-
-// With another Point2DBase
-
-template<typename floatType>
-Point2DBase<floatType> Point2DBase<floatType>::operator - ( const Point2DBase<floatType>& V ) const
-{
-	return Point2DBase(x-V.x, y-V.y);
-}
-
-template<typename floatType>
-Point2DBase<floatType> Point2DBase<floatType>::operator + ( const Point2DBase<floatType>& V ) const
-{
-	return Point2DBase(x+V.x, y+V.y);
-}
-
-
-
-// With assignement
-template<typename floatType>
-const Point2DBase<floatType>& Point2DBase<floatType>::operator *= ( const floatType& fValue )
-{
-    x *= fValue;
-    y *= fValue;
-
-    return *this;
-}
-
-template<typename floatType>
-const Point2DBase<floatType>& Point2DBase<floatType>::operator /= ( const floatType& fValue )
-{
-	const floatType invfValue = floatType(1.0) / fValue;
-    x *= invfValue;
-    y *= invfValue;
-
-    return *this;
-}
-
-template<typename floatType>
-const Point2DBase<floatType>& Point2DBase<floatType>::operator *= ( const Point2DBase<floatType>& p )
-{
-    x *= p.x;
-    y *= p.y;
-
-    return *this;
-}
-
-template<typename floatType>
-const Point2DBase<floatType>& Point2DBase<floatType>::operator /= ( const Point2DBase<floatType>& p )
-{
-    x /= p.x;
-    y /= p.y;
-
-    return *this;
-}
-
-template<typename floatType>
-void Point2DBase<floatType>::Normalize(void)
-{
-	floatType tmp = Norm(*this);
-	if (tmp != floatType(0.0))
+	namespace Maths
 	{
-		tmp = floatType(1.0) / tmp;
-		x *= tmp;
-		y *= tmp;
-	}
-}
 
-template<typename floatType>
-Point2DBase<floatType> Point2DBase<floatType>::Normalized(void) const
-{
-	Point2DBase<floatType> result = *this;
-	result.Normalize();
-	return result;
-}
+		// ----------------------------------------------------------------------
+		// +---------
+		// | Life-cycle
+		// +---------
+		// Constructors
+		template<typename floatType>
+		Point2DBase<floatType>::Point2DBase()
+		{
+			;
+		}
+
+		template<typename floatType>
+		Point2DBase<floatType>::Point2DBase(const floatType& x, const floatType& y)
+			:x(x), y(y)
+		{
+			;
+		}
+
+		template<typename floatType>
+		Point2DBase<floatType>::Point2DBase(const Point2DBase<floatType>& P)
+			:x(P.x), y(P.y)
+		{
+			;
+		}
+
+		// Set (constructors-like)
+		template<typename floatType>
+		void Point2DBase<floatType>::Set(const floatType& fValue)
+		{
+			x = y = fValue;
+		}
+
+		template<typename floatType>
+		void Point2DBase<floatType>::Set(const floatType& x, const floatType& y)
+		{
+			this->x = x;
+			this->y = y;
+		}
+
+		template<typename floatType>
+		void Point2DBase<floatType>::Set(const Point2DBase<floatType>& P)
+		{
+			x = P.x;
+			y = P.y;
+		}
+
+		template<typename floatType>
+		void Point2DBase<floatType>::Set(const Vector3D& P)
+		{
+			x = P.x;
+			y = P.y;
+		}
+
+		// Assignement
+		template<typename floatType>
+		const Point2DBase<floatType>& Point2DBase<floatType>::operator =(const Point2DBase<floatType>& V)
+		{
+			x = V.x;
+			y = V.y;
+
+			return *this;
+		}
+		// Assignement
+		template<typename floatType>
+		const Point2DBase<floatType>& Point2DBase<floatType>::operator =(const floatType& V)
+		{
+			x = V;
+			y = V;
+
+			return *this;
+		}
 
 
-// +---------
-// | Acces Operators
-// +---------
-template<typename floatType>
-const floatType& Point2DBase<floatType>::operator[](Int i) const
-{
-	assert(i >= 0 && i<2);
-	return *((&x) + i);
-}
-template<typename floatType>
-floatType& Point2DBase<floatType>::operator[](Int i)
-{
-	assert(i >= 0 && i<2);
-	return *((&x) + i);
-}
+		// ----------------------------------------------------------------------
+		// +---------
+		// | Addition/Substraction
+		// +---------
+		// With another vector (Internal laws)
 
-template<typename floatType>
-void Point2DBase<floatType>::ClampMax(const floatType v)
-{
-	if (x>v)
-		x = v;
-	if (y>v)
-		y = v;
-}
-template<typename floatType>
-void Point2DBase<floatType>::ClampMin(const floatType v)
-{
-	if (x<v)
-		x = v;
-	if (y<v)
-		y = v;
-}
+		// With assignement
+		template<typename floatType>
+		const Point2DBase<floatType>& Point2DBase<floatType>::operator += (const Point2DBase<floatType>& V)
+		{
+			x += V.x;
+			y += V.y;
 
-#define SMALL_NUM  0.001f
+			return *this;
+		}
+		template<typename floatType>
+		const Point2DBase<floatType>& Point2DBase<floatType>::operator -= (const Point2DBase<floatType>& V)
+		{
+			x -= V.x;
+			y -= V.y;
+
+			return *this;
+		}
+
+
+
+		// With another Point2DBase
+
+		template<typename floatType>
+		Point2DBase<floatType> Point2DBase<floatType>::operator - (const Point2DBase<floatType>& V) const
+		{
+			return Point2DBase(x - V.x, y - V.y);
+		}
+
+		template<typename floatType>
+		Point2DBase<floatType> Point2DBase<floatType>::operator + (const Point2DBase<floatType>& V) const
+		{
+			return Point2DBase(x + V.x, y + V.y);
+		}
+
+
+
+		// With assignement
+		template<typename floatType>
+		const Point2DBase<floatType>& Point2DBase<floatType>::operator *= (const floatType& fValue)
+		{
+			x *= fValue;
+			y *= fValue;
+
+			return *this;
+		}
+
+		template<typename floatType>
+		const Point2DBase<floatType>& Point2DBase<floatType>::operator /= (const floatType& fValue)
+		{
+			const floatType invfValue = floatType(1.0) / fValue;
+			x *= invfValue;
+			y *= invfValue;
+
+			return *this;
+		}
+
+		template<typename floatType>
+		const Point2DBase<floatType>& Point2DBase<floatType>::operator *= (const Point2DBase<floatType>& p)
+		{
+			x *= p.x;
+			y *= p.y;
+
+			return *this;
+		}
+
+		template<typename floatType>
+		const Point2DBase<floatType>& Point2DBase<floatType>::operator /= (const Point2DBase<floatType>& p)
+		{
+			x /= p.x;
+			y /= p.y;
+
+			return *this;
+		}
+
+		template<typename floatType>
+		void Point2DBase<floatType>::Normalize(void)
+		{
+			floatType tmp = Norm(*this);
+			if (tmp != floatType(0.0))
+			{
+				tmp = floatType(1.0) / tmp;
+				x *= tmp;
+				y *= tmp;
+			}
+		}
+
+		template<typename floatType>
+		Point2DBase<floatType> Point2DBase<floatType>::Normalized(void) const
+		{
+			Point2DBase<floatType> result = *this;
+			result.Normalize();
+			return result;
+		}
+
+
+		// +---------
+		// | Acces Operators
+		// +---------
+		template<typename floatType>
+		const floatType& Point2DBase<floatType>::operator[](Int i) const
+		{
+			assert(i >= 0 && i < 2);
+			return *((&x) + i);
+		}
+		template<typename floatType>
+		floatType& Point2DBase<floatType>::operator[](Int i)
+		{
+			assert(i >= 0 && i < 2);
+			return *((&x) + i);
+		}
+
+		template<typename floatType>
+		void Point2DBase<floatType>::ClampMax(const floatType v)
+		{
+			if (x > v)
+				x = v;
+			if (y > v)
+				y = v;
+		}
+		template<typename floatType>
+		void Point2DBase<floatType>::ClampMin(const floatType v)
+		{
+			if (x < v)
+				x = v;
+			if (y < v)
+				y = v;
+		}
 
 #define POINT2D_FRIEND_DECLARATION(ptype,ftype) \
 ptype operator - (const ptype& V)\
@@ -380,5 +381,8 @@ inline ptype Lerp( const ptype& P , const ptype& Q, const ftype& t )\
 
 
 
-POINT2D_FRIEND_DECLARATION(Point2D,float)
-POINT2D_FRIEND_DECLARATION(Point2D_d, double)
+		POINT2D_FRIEND_DECLARATION(Point2D, float)
+			POINT2D_FRIEND_DECLARATION(Point2D_d, double)
+
+	}
+}

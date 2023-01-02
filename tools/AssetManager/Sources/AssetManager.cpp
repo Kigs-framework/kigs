@@ -9,6 +9,9 @@
 #include "RulesContext.h"
 #include <filesystem>
 
+using namespace Kigs;
+using namespace Kigs::Thread;
+using namespace Kigs::File;
 
 IMPLEMENT_CLASS_INFO(AssetManager);
 
@@ -138,7 +141,7 @@ void	AssetManager::ProtectedInit()
 	{
 		if (initRules(initP))
 		{
-			SP<Thread> workthread = KigsCore::GetInstanceOf("workthread", "Thread");
+			SP < Thread::Thread > workthread = KigsCore::GetInstanceOf("workthread", "Thread");
 			mThread = workthread;
 			workthread->setMethod(this, "doTheJob");
 			workthread->Init();

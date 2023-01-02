@@ -2,6 +2,8 @@
 #include "Plane.h"
 #include <stdlib.h>
 
+using namespace Kigs::Collide;
+
 IMPLEMENT_CLASS_INFO(Plane)
 IMPLEMENT_CLASS_INFO(Panel)
 
@@ -26,7 +28,7 @@ void Plane::InitModifiable()
 
 bool Plane::TestHit(Hit& hit, v3f local_origin, v3f local_direction)
 {
-	if (Intersection::IntersectRayPlane(local_origin, local_direction, (v3f)mPosition, (v3f)mNormal, hit.HitDistance))
+	if (IntersectRayPlane(local_origin, local_direction, (v3f)mPosition, (v3f)mNormal, hit.HitDistance))
 	{
 		hit.HitNormal = -(v3f)mNormal;
 		return true;
@@ -36,13 +38,13 @@ bool Plane::TestHit(Hit& hit, v3f local_origin, v3f local_direction)
 
 
 #ifdef KIGS_TOOLS
-#include <GLSLDebugDraw.h>
-#include <Timer.h>
+#include "GLSLDebugDraw.h"
+#include "Timer.h"
 void Plane::DrawDebug(const Hit& h, const Matrix3x4& mat)
 {
 	Vector3D n(mNormal[0], mNormal[1], mNormal[2]);
 	
-	auto t = TimePoint::clock::now();
+	auto t = Time::TimePoint::clock::now();
 	auto d = t.time_since_epoch().count() / 1'000'000'000.0;
 	d = d - (s64)d;
 
@@ -59,7 +61,7 @@ void Panel::DrawDebug(const Hit& h, const Matrix3x4& mat)
 {
 	Point3D p[5];
 
-	auto t = TimePoint::clock::now();
+	auto t = Time::TimePoint::clock::now();
 	auto d = t.time_since_epoch().count() / 1'000'000'000.0;
 	d = d - (s64)d;
 

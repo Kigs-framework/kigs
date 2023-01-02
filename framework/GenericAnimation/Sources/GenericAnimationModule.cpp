@@ -12,7 +12,9 @@
 #include "Bones/APRSControlStream.h"
 #include "Bones/AObjectSkeletonResource.h"
 
-GenericAnimationModule* gGenericAnimationModule = nullptr;
+using namespace Kigs::Anim;
+
+GenericAnimationModule* Kigs::Anim::gGenericAnimationModule = nullptr;
 
 IMPLEMENT_CLASS_INFO(GenericAnimationModule)
 
@@ -74,9 +76,9 @@ AnimationResourceInfo*	GenericAnimationModule::LoadAnimation(const std::string& 
 
 	SP<CoreRawBuffer> result=0;
 
-	SP<FilePathManager>	pathManager=KigsCore::GetSingleton("FilePathManager");
+	SP<File::FilePathManager>	pathManager=KigsCore::GetSingleton("FilePathManager");
 
-	SmartPointer<FileHandle> fullfilenamehandle;
+	SmartPointer<File::FileHandle> fullfilenamehandle;
 
 	if (pathManager)
 	{
@@ -86,7 +88,7 @@ AnimationResourceInfo*	GenericAnimationModule::LoadAnimation(const std::string& 
 	if(fullfilenamehandle)
 	{
 		u64 size;
-		result =ModuleFileManager::LoadFile(fullfilenamehandle.get(),size);
+		result = File::ModuleFileManager::LoadFile(fullfilenamehandle.get(),size);
 
 		if(result)
 		{

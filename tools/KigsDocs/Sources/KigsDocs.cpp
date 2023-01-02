@@ -14,6 +14,22 @@
 #include <iostream>
 #include <fstream>
 
+// need all modules
+using namespace Kigs;
+using namespace Kigs::Core;
+using namespace Kigs::Gui;
+using namespace Kigs::Input;
+using namespace Kigs::Scene;
+using namespace Kigs::Draw;
+using namespace Kigs::Draw2D;
+using namespace Kigs::Action;
+using namespace Kigs::Lua;
+using namespace Kigs::Http;
+using namespace Kigs::Thread;
+using namespace Kigs::Collide;
+using namespace Kigs::Anim;
+
+
 void	KigsDocs::usage()
 {
 	printf("Usage : \n");

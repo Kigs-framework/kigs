@@ -2,6 +2,8 @@
 #include "BSphere.h"
 #include "Collision.h"
 
+using namespace Kigs::Collide;
+
 IMPLEMENT_CLASS_INFO(BSphere)
 
 IMPLEMENT_CONSTRUCTOR(BSphere)

@@ -33,6 +33,7 @@ namespace Kigs
 	}
 	namespace Core
 	{
+		using namespace Kigs::Maths;
 		#define NOQUALIFIER
 
 		#define EXPAND_MACRO_FOR_NUMERIC_TYPES(CVQUALIFIER, REFQUALIFIER, FUNC)\

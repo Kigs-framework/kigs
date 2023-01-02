@@ -8,8 +8,16 @@
 namespace Kigs
 {
 
+	namespace Collide
+	{
+		class AABBTreeNode;
+		class Collision;
+		class Distance;
+	}
 	namespace Draw
 	{
+
+
 
 class Material;
 
@@ -1541,9 +1549,9 @@ class Material;
 //#ifdef WIN32
 		friend class STLMeshLoader;
 //#endif
-		friend class AABBTreeNode;
-		friend class Collision;
-		friend class Distance;
+		friend class Collide::AABBTreeNode;
+		friend class Collide::Collision;
+		friend class Collide::Distance;
 
 		//Setters
 		//! Set number of vertice

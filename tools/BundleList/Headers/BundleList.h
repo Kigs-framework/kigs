@@ -6,30 +6,35 @@
 
 #include <CoreBaseApplication.h>
 
-class BundleList : public CoreBaseApplication
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(BundleList, CoreBaseApplication, Core);
-	DECLARE_CONSTRUCTOR(BundleList);
+	using namespace Kigs::Core;
 
-protected:
-	void	ProtectedInit() override;
-	void	ProtectedUpdate() override;
-	void	ProtectedClose() override;
+	class BundleList : public CoreBaseApplication
+	{
+	public:
+		DECLARE_CLASS_INFO(BundleList, CoreBaseApplication, Core);
+		DECLARE_CONSTRUCTOR(BundleList);
 
-	void	usage();
+	protected:
+		void	ProtectedInit() override;
+		void	ProtectedUpdate() override;
+		void	ProtectedClose() override;
 
-	std::map<std::string, std::vector<std::string> >	mBundle;
-	std::string											mStartPath = "./";
-	std::string											mFilename = "files.bundle";
+		void	usage();
 
-	bool												mBundleIsDone = false;
+		std::map<std::string, std::vector<std::string> >	mBundle;
+		std::string											mStartPath = "./";
+		std::string											mFilename = "files.bundle";
 
-	void	CreateBundle();
-	void	RecursiveInitFileList(std::string	startDirectory, int cropFilePath);
-	void	WriteBundleList();
+		bool												mBundleIsDone = false;
 
-	CMSP	mThread;
+		void	CreateBundle();
+		void	RecursiveInitFileList(std::string	startDirectory, int cropFilePath);
+		void	WriteBundleList();
 
-	WRAP_METHODS(CreateBundle);
-};
+		CMSP	mThread;
+
+		WRAP_METHODS(CreateBundle);
+	};
+}

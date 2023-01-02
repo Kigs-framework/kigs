@@ -4,6 +4,8 @@
 
 #include "TecLibs/Math/Algorithm.h"
 
+using namespace Kigs::Collide;
+
 IMPLEMENT_CLASS_INFO(BoxCollider)
 
 IMPLEMENT_CONSTRUCTOR(BoxCollider)
@@ -60,14 +62,14 @@ namespace
 	}
 }
 
-bool BoxCollider::TestHit(Hit& hit, v3f local_origin, v3f local_direction)
+bool BoxCollider::TestHit(Maths::Hit& hit, v3f local_origin, v3f local_direction)
 {
-	return Intersection::IntersectionRayBBox(local_origin, local_direction, mBoundingBox.m_Min, mBoundingBox.m_Max, hit.HitPosition, hit.HitNormal, hit.HitDistance);
+	return IntersectionRayBBox(local_origin, local_direction, mBoundingBox.m_Min, mBoundingBox.m_Max, hit.HitPosition, hit.HitNormal, hit.HitDistance);
 }
 
 #ifdef KIGS_TOOLS
 #include <GLSLDebugDraw.h>
-void BoxCollider::DrawDebug(const Hit& h, const Matrix3x4& mat)
+void BoxCollider::DrawDebug(const Maths::Hit& h, const Maths::Matrix3x4& mat)
 {
 	dd::local_bbox(mat, mBoundingBox, mDebugColor);
 }

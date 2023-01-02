@@ -9,7 +9,7 @@ if(${KIGS_PLATFORM} STREQUAL "Windows")
 	set(CMAKE_SHARED_LINKER_FLAGS_STATICRELEASETOOLS "${CMAKE_SHARED_LINKER_FLAGS_STATICRELEASETOOLS} /SUBSYSTEM:CONSOLE /DEBUG:FULL /SAFESEH:NO")
 endif()
 
-target_link_libraries(KigsDocs PRIVATE BaseApplication 2DLayers Renderer LuaKigsBind CoreDataDrivenSequence CoreAnimation Collision HTTPRequest Thread GenericAnimation)
+target_link_libraries(KigsDocs PRIVATE BaseApplication 2DLayers Renderer LuaKigsBind CoreAnimation Collision HTTPRequest Thread GenericAnimation)
 target_include_directories(KigsDocs PRIVATE "Headers")
 
 file(GLOB_RECURSE all_sources "Sources/*.cpp")

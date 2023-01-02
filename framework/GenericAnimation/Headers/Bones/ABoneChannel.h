@@ -8,83 +8,87 @@
 // * DATES     : 24/05/2000
 // **********************************************************************
 
-#ifndef __ABONECHANNEL_H__
-#define __ABONECHANNEL_H__
+#pragma once
 
 #include "AChannel.h"
 #include "ABonesDefines.h"
 #include "Bones/APRSStream.h"
 
-
-
-// ----------------------------------------------------------------------------
-
-// ****************************************
-// * ABoneChannel  class
-// * --------------------------------------
-/*!
-    Bone channel class, used by ABoneSystem class 
-    \ingroup BoneAnimation
-*/ 
-// ****************************************
-
-class ABoneChannel : public AChannel<PRSKey>
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(ABoneChannel, AChannel<PRSKey>, Animation);
-	DECLARE_CONSTRUCTOR(ABoneChannel);
+    namespace Anim
+    {
+        using namespace Core;
 
-    // ******************************
-    // * UpdateTransformParameters
-    // *-----------------------------
-    /*! after the flux mix is done, the parameters for the transformation must be set
-    */ 
-    // ******************************
+        // ----------------------------------------------------------------------------
 
-    void    UpdateTransformParameters() override;
+        // ****************************************
+        // * ABoneChannel  class
+        // * --------------------------------------
+        /*!
+            Bone channel class, used by ABoneSystem class
+            \ingroup BoneAnimation
+        */
+        // ****************************************
 
-    // ******************************
-    // * GetCurrentPRSMatrix
-    // *-----------------------------
-    /*! return the PRS matrix 
-    */
-    // ******************************
+        class ABoneChannel : public AChannel<PRSKey>
+        {
+        public:
+            DECLARE_CLASS_INFO(ABoneChannel, AChannel<PRSKey>, Animation);
+            DECLARE_CONSTRUCTOR(ABoneChannel);
 
-	inline const AMMatrix& GetCurrentPRSMatrix();
+            // ******************************
+            // * UpdateTransformParameters
+            // *-----------------------------
+            /*! after the flux mix is done, the parameters for the transformation must be set
+            */
+            // ******************************
 
-    // ******************************
-    // * SetStandStreamData
-    // *-----------------------------
-    /*! set the stand stream data for this channel
-    */
-    // ******************************
+            void    UpdateTransformParameters() override;
 
-    void            SetStandStreamData() override;
-    virtual	~ABoneChannel();
+            // ******************************
+            // * GetCurrentPRSMatrix
+            // *-----------------------------
+            /*! return the PRS matrix
+            */
+            // ******************************
 
-protected:
+            inline const AMMatrix& GetCurrentPRSMatrix();
 
+            // ******************************
+            // * SetStandStreamData
+            // *-----------------------------
+            /*! set the stand stream data for this channel
+            */
+            // ******************************
 
-    // +---------
-    // | protected members
-    // +---------
+            void            SetStandStreamData() override;
+            virtual	~ABoneChannel();
 
-	// Position, rotation and scale of the bone at the current time
-	AMMatrix							m_CurrentPRS;
-
-
-};
-
-//  +-------------
-//  | ABoneChannel methods      ------------------------------------------------------------------------------
-//  +-------------
+        protected:
 
 
-const AMMatrix& ABoneChannel::GetCurrentPRSMatrix()
-{
-	return m_CurrentPRS;
+            // +---------
+            // | protected members
+            // +---------
+
+            // Position, rotation and scale of the bone at the current time
+            AMMatrix							m_CurrentPRS;
+
+
+        };
+
+        //  +-------------
+        //  | ABoneChannel methods      ------------------------------------------------------------------------------
+        //  +-------------
+
+
+        const AMMatrix& ABoneChannel::GetCurrentPRSMatrix()
+        {
+            return m_CurrentPRS;
+        }
+
+    }
 }
-
-#endif //__ABONECHANNEL_H__
 
 

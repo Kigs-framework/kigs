@@ -1,6 +1,8 @@
 #include "PrecompiledHeaders.h"
 #include "BCylinder.h"
 
+using namespace Kigs::Collide;
+
 IMPLEMENT_CLASS_INFO(BCylinder)
 
 IMPLEMENT_CONSTRUCTOR(BCylinder)
@@ -79,7 +81,7 @@ void BCylinder::DrawDebug(const Hit& h, const Matrix3x4& mat)
 	dd::circle(p[0] - (p[1] * (mHeight*0.5f)), p[1], mDebugColor, mRadius, 100);
 }
 
-void BCylinder::Update(const Timer&  timer, void* addParam)
+void BCylinder::Update(const Time::Timer&  timer, void* addParam)
 {
 	CollisionBaseNode::Update(timer, addParam);
 

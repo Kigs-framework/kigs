@@ -2,6 +2,9 @@
 #include "ModernMesh.h"
 #include "GLSLDebugDraw.h"
 
+using namespace Kigs::Collide;
+using namespace Kigs::Draw;
+
 SpacialMeshBVH::SpacialMeshBVH(const Matrix3x4& LtoGMatrix) : CollisionBaseObject(), mLtoGMatrix(LtoGMatrix), mBBox3D(BBox::PreInit())
 {
 }

@@ -12,6 +12,7 @@
 using namespace Kigs::Utils;
 using namespace Kigs::Scene;
 using namespace Kigs::Draw;
+using namespace Kigs::Maths;
 
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(DebugDraw, DebugDraw, StandAlone);
 IMPLEMENT_CLASS_INFO(DebugDraw)

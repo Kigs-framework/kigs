@@ -9,142 +9,143 @@
 // * RELEASE: 
 // ****************************************************************************
 
-#ifndef __AGROUPINDEXLIST_H__
-#define __AGROUPINDEXLIST_H__
+#pragma once
 
 #include "AMDefines.h"
 #include "AIndexInterval.h"
 
-// ----------------------------------------------------------------------------
-
-// ****************************************
-// * AGroupIndexList class
-// * --------------------------------------
-/*!  Class used to store indexes of values for each groups in an AEntitySet
-     \ingroup Animation
-*/ 
-// ****************************************
-
-class   AGroupIndexList
+namespace Kigs
 {
-public:
-
-    // ******************************
-    // * Structors
-    // *-----------------------------
-    /*! Constructor 
-    */ 
-    // ******************************
-
-    AGroupIndexList()
-    { 
-        m_pFirstGroup=NULL;
-    };
-
-    // ******************************
-    // * Structors
-    // *-----------------------------
-    /*! Destructor
-    */ 
-    // ******************************
-
-    ~AGroupIndexList()
+    namespace Anim
     {
-        while(m_pFirstGroup != NULL)
+        // ----------------------------------------------------------------------------
+
+        // ****************************************
+        // * AGroupIndexList class
+        // * --------------------------------------
+        /*!  Class used to store indexes of values for each groups in an AEntitySet
+             \ingroup Animation
+        */
+        // ****************************************
+
+        class   AGroupIndexList
         {
-            IntU8* tmp=(IntU8*)m_pFirstGroup;
-            m_pFirstGroup=m_pFirstGroup->m_pNext;
-            delete[] tmp;
-        }
-    };
+        public:
 
-    // ****************************************
-    // * AGroupInfo class
-    // * --------------------------------------
-    /*! Class used by AGroupIndexList to store group id and corresponding intervals 
-        \ingroup Animation
-    */ 
-    // ****************************************
-    class   AGroupInfo
-    {
-    public:
-        IntU32          m_GID;
-        AGroupInfo*     m_pNext;
-        IntU32          m_IntervalCount;
-        IntU32          m_UseCount;
-    };
+            // ******************************
+            // * Structors
+            // *-----------------------------
+            /*! Constructor
+            */
+            // ******************************
 
-    // ******************************
-    // * AddGroup
-    // *-----------------------------
-    /*! Add a group in the list, with the given id and interval count
-    */ 
-    // ******************************
+            AGroupIndexList()
+            {
+                m_pFirstGroup = NULL;
+            };
 
-    void    AddGroup(IntU32 id,IntU32   intervalcount);
+            // ******************************
+            // * Structors
+            // *-----------------------------
+            /*! Destructor
+            */
+            // ******************************
 
-    // ******************************
-    // * RemoveGroup
-    // *-----------------------------
-    /*! Remove the group with given group id
-    */ 
-    // ******************************
+            ~AGroupIndexList()
+            {
+                while (m_pFirstGroup != NULL)
+                {
+                    IntU8* tmp = (IntU8*)m_pFirstGroup;
+                    m_pFirstGroup = m_pFirstGroup->m_pNext;
+                    delete[] tmp;
+                }
+            };
 
-    void    RemoveGroup(IntU32 id);
+            // ****************************************
+            // * AGroupInfo class
+            // * --------------------------------------
+            /*! Class used by AGroupIndexList to store group id and corresponding intervals
+                \ingroup Animation
+            */
+            // ****************************************
+            class   AGroupInfo
+            {
+            public:
+                IntU32          m_GID;
+                AGroupInfo* m_pNext;
+                IntU32          m_IntervalCount;
+                IntU32          m_UseCount;
+            };
 
-    // ******************************
-    // * SetGroupInterval
-    // *-----------------------------
-    /*! set the given interval for the given group
-    */ 
-    // ******************************
+            // ******************************
+            // * AddGroup
+            // *-----------------------------
+            /*! Add a group in the list, with the given id and interval count
+            */
+            // ******************************
 
-    void                SetGroupInterval(IntU32 g_id,IntU32 index,IntU32 min,IntU32 max);
+            void    AddGroup(IntU32 id, IntU32   intervalcount);
 
-    // ******************************
-    // * GetGroupIntervals
-    // *-----------------------------
-    /*! return a pointer on first interval
-    */ 
-    // ******************************
+            // ******************************
+            // * RemoveGroup
+            // *-----------------------------
+            /*! Remove the group with given group id
+            */
+            // ******************************
 
-    AIndexInterval*     GetGroupIntervals(IntU32 g_id);
+            void    RemoveGroup(IntU32 id);
 
-    // ******************************
-    // * GetGroupIntervalCount
-    // *-----------------------------
-    /*! return the interval count for the given group
-    */ 
-    // ******************************
+            // ******************************
+            // * SetGroupInterval
+            // *-----------------------------
+            /*! set the given interval for the given group
+            */
+            // ******************************
 
-    IntU32    GetGroupIntervalCount(IntU32 g_id);
+            void                SetGroupInterval(IntU32 g_id, IntU32 index, IntU32 min, IntU32 max);
 
-   
-protected:
+            // ******************************
+            // * GetGroupIntervals
+            // *-----------------------------
+            /*! return a pointer on first interval
+            */
+            // ******************************
 
-    // ******************************
-    // * GetGroupInfo
-    // *-----------------------------
-    /*! return a pointer on the group info with given id
-    */ 
-    // ******************************
+            AIndexInterval* GetGroupIntervals(IntU32 g_id);
 
-    AGroupInfo*  GetGroupInfo(IntU32 g_id);
+            // ******************************
+            // * GetGroupIntervalCount
+            // *-----------------------------
+            /*! return the interval count for the given group
+            */
+            // ******************************
 
-    // ******************************
-    // * AddGroup
-    // *-----------------------------
-    /*! add the given groupinfo in the list, the list is sorted by id
-    */ 
-    // ******************************
-
-    void    AddGroupInfo(AGroupInfo* to_add);
-
-    AGroupInfo*         m_pFirstGroup;
-
-};
+            IntU32    GetGroupIntervalCount(IntU32 g_id);
 
 
-#endif //__AGROUPINDEXLIST_H__
+        protected:
 
+            // ******************************
+            // * GetGroupInfo
+            // *-----------------------------
+            /*! return a pointer on the group info with given id
+            */
+            // ******************************
+
+            AGroupInfo* GetGroupInfo(IntU32 g_id);
+
+            // ******************************
+            // * AddGroup
+            // *-----------------------------
+            /*! add the given groupinfo in the list, the list is sorted by id
+            */
+            // ******************************
+
+            void    AddGroupInfo(AGroupInfo* to_add);
+
+            AGroupInfo* m_pFirstGroup;
+
+        };
+    }
+}
 

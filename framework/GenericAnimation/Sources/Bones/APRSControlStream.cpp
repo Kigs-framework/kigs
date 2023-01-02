@@ -11,6 +11,8 @@
 #include "Bones/APRSControlStream.h"
 #include "Bones/ABoneChannel.h"
 
+using namespace Kigs::Anim;
+
 // ******************************
 // * APRSControlStream
 // *-----------------------------

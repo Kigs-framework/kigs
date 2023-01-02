@@ -56,7 +56,7 @@ void			RulesContext::setBasicReplacements()
 	protectedSetBasicReplacements();
 	for (auto& pathes : mReplacements)
 	{
-		replaceAll(pathes.second, "/", "\\");
+		Kigs::Core::replaceAll(pathes.second, "/", "\\");
 	}
 }
 
@@ -86,7 +86,7 @@ void			RulesContext::setCurrentFile(const FileStruct& file)
 
 	for (auto& pathes : mReplacements)
 	{
-		replaceAll(pathes.second, "/", "\\");
+		Kigs::Core::replaceAll(pathes.second, "/", "\\");
 	}
 }
 std::string		RulesContext::parse(const std::string& txt) const
@@ -94,7 +94,7 @@ std::string		RulesContext::parse(const std::string& txt) const
 	std::string result = txt;
 	for (const auto& r : mReplacements)
 	{
-		replaceAll(result, r.first, r.second);
+		Kigs::Core::replaceAll(result, r.first, r.second);
 	}
 	return result;
 }

@@ -7,6 +7,8 @@
 #include "Plane.h"
 #include "Timer.h"
 
+using namespace Kigs::Collide;
+
 IMPLEMENT_CLASS_INFO(CollisionModule);
 
 //! constructor

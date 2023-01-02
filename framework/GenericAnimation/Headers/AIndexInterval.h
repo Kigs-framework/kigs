@@ -9,136 +9,138 @@
 // * RELEASE: 
 // ****************************************************************************
 
-#ifndef __AINDEXINTERVAL_H__
-#define __AINDEXINTERVAL_H__
+#pragma once
 
 #include "AMDefines.h"
 
-
-// ----------------------------------------------------------------------------
-
-// ****************************************
-// * AIndexInterval class
-// * --------------------------------------
-/*! Class used to store a min and a max index
-    \ingroup Animation
-*/ 
-// ****************************************
-
-class   AIndexInterval
+namespace Kigs
 {
-public:
-
-    // ******************************
-    // * Structors
-    // *-----------------------------
-    /*! Constructor from a min and a max index
-    */ 
-    // ******************************
-
-    AIndexInterval(IntU32    min,IntU32    max)
+    namespace Anim
     {
-        m_Min=min;
-        m_Max=max;
-    };
+        // ----------------------------------------------------------------------------
 
-    // ******************************
-    // * Structors
-    // *-----------------------------
-    /*! Destructor
-    */ 
-    // ******************************
+        // ****************************************
+        // * AIndexInterval class
+        // * --------------------------------------
+        /*! Class used to store a min and a max index
+            \ingroup Animation
+        */
+        // ****************************************
 
-    ~AIndexInterval();
+        class   AIndexInterval
+        {
+        public:
 
-    // ******************************
-    // * Get/Set methods
-    // *-----------------------------
-    // * - 
-    // * - 
-    // ******************************
+            // ******************************
+            // * Structors
+            // *-----------------------------
+            /*! Constructor from a min and a max index
+            */
+            // ******************************
 
-    // ******************************
-    // * GetMin
-    // *-----------------------------
-    /*! return the min index
-    */ 
-    // ******************************
+            AIndexInterval(IntU32    min, IntU32    max)
+            {
+                m_Min = min;
+                m_Max = max;
+            };
 
-    IntU32    GetMin() const
-    {
-        return m_Min;
-    };
+            // ******************************
+            // * Structors
+            // *-----------------------------
+            /*! Destructor
+            */
+            // ******************************
 
-    // ******************************
-    // * SetMin
-    // *-----------------------------
-    /*! set the min index
-    */ 
-    // ******************************
+            ~AIndexInterval();
 
-    void    SetMin(IntU32 min)
-    {
-        m_Min=min;
-    };
+            // ******************************
+            // * Get/Set methods
+            // *-----------------------------
+            // * - 
+            // * - 
+            // ******************************
 
-    // ******************************
-    // * GetMax
-    // *-----------------------------
-    /*! return the max index
-    */ 
-    // ******************************
+            // ******************************
+            // * GetMin
+            // *-----------------------------
+            /*! return the min index
+            */
+            // ******************************
 
-    IntU32    GetMax() const
-    {
-        return m_Max;
-    };
+            IntU32    GetMin() const
+            {
+                return m_Min;
+            };
 
-    // ******************************
-    // * SetMax
-    // *-----------------------------
-    /*! set the max index
-    */ 
-    // ******************************
+            // ******************************
+            // * SetMin
+            // *-----------------------------
+            /*! set the min index
+            */
+            // ******************************
 
-    void    SetMax(IntU32 max)
-    {
-        m_Max=max;
-    };
+            void    SetMin(IntU32 min)
+            {
+                m_Min = min;
+            };
 
-    // ******************************
-    // * GetInterval
-    // *-----------------------------
-    /*!  set min and max values in the parameters
-    */ 
-    // ******************************
+            // ******************************
+            // * GetMax
+            // *-----------------------------
+            /*! return the max index
+            */
+            // ******************************
 
-    void    GetInterval(IntU32& min,IntU32& max) const
-    {
-        min=m_Min;
-        max=m_Max;
-    };
+            IntU32    GetMax() const
+            {
+                return m_Max;
+            };
 
-    // ******************************
-    // * SetInterval
-    // *-----------------------------
-    /*!  set min and max values from the parameters
-    */ 
-    // ******************************
+            // ******************************
+            // * SetMax
+            // *-----------------------------
+            /*! set the max index
+            */
+            // ******************************
 
-    void    SetInterval(IntU32 min,IntU32 max)
-    {
-        m_Min=min;
-        m_Max=max;
-    };
+            void    SetMax(IntU32 max)
+            {
+                m_Max = max;
+            };
+
+            // ******************************
+            // * GetInterval
+            // *-----------------------------
+            /*!  set min and max values in the parameters
+            */
+            // ******************************
+
+            void    GetInterval(IntU32& min, IntU32& max) const
+            {
+                min = m_Min;
+                max = m_Max;
+            };
+
+            // ******************************
+            // * SetInterval
+            // *-----------------------------
+            /*!  set min and max values from the parameters
+            */
+            // ******************************
+
+            void    SetInterval(IntU32 min, IntU32 max)
+            {
+                m_Min = min;
+                m_Max = max;
+            };
 
 
-protected:
+        protected:
 
-    IntU32    m_Min;
-    IntU32    m_Max;
-};
-
-#endif //__AINDEXINTERVAL_H__
+            IntU32    m_Min;
+            IntU32    m_Max;
+        };
+    }
+}
 
 

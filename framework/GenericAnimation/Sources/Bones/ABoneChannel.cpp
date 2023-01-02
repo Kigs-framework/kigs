@@ -14,7 +14,7 @@
 #include "Bones/ABoneSystem.h"
 
 
-
+using namespace Kigs::Anim;
 //template class AChannel<PRSKey>;
 
 IMPLEMENT_CLASS_INFO(ABoneChannel)

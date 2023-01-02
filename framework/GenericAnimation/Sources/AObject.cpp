@@ -24,6 +24,8 @@
 #include "TravState.h"
 #include "Timer.h"
 
+using namespace Kigs::Anim;
+
 bool sortSystems::operator() (const SP<ABaseSystem>& lhs, const SP<ABaseSystem>& rhs) const
 {
 	if (lhs->getPriority() == rhs->getPriority())

@@ -18,6 +18,8 @@
 // * - 
 // ******************************
 
+using namespace Kigs::Anim;
+
 IMPLEMENT_CLASS_INFO(AControledRotationStream)
 
 AControledRotationStream::AControledRotationStream(const std::string& name,CLASS_NAME_TREE_ARG) : APRSStream(name,PASS_CLASS_NAME_TREE_ARG)

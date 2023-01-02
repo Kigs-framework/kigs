@@ -11,6 +11,8 @@
 #include "Bones/APRSBezierKeyStream.h"
 #include "Bones/ABoneChannel.h"
 
+using namespace Kigs::Anim;
+
 IMPLEMENT_CLASS_INFO(APRSBezierKeyStream)
 
 APRSBezierKeyStream::APRSBezierKeyStream(const std::string& name,CLASS_NAME_TREE_ARG) : APRSKeyStream(name,PASS_CLASS_NAME_TREE_ARG)

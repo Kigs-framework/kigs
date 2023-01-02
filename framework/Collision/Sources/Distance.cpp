@@ -2,6 +2,8 @@
 #include "Distance.h"
 #include "KMesh.h"
 
+using namespace Kigs::Collide;
+using namespace Kigs::Draw;
 /*!
 	compute distance from a point (P) to a triangle (A,B,C)
 	seperate plane in parts

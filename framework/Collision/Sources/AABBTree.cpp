@@ -9,6 +9,10 @@
 
 #include <stdlib.h>
 
+using namespace Kigs::Utils;
+using namespace Kigs::Collide;
+using namespace Kigs::Draw;
+
 AABBTreeNode::AABBTreeNode() 
 {
 	//! call base class constructor (CollisionBaseObject) and init members
@@ -379,7 +383,7 @@ void AABBTree::InitDynamicBuffer(int trCount)
 bool AABBTree::CallLocalRayIntersection(Hit &hit, const Point3D& start, const Vector3D& dir) const
 {
 	float u, v;
-	bool found = Intersection::IntersectionRayAABBTree(GetVertexList(), start, dir, *this, hit.HitDistance, hit.HitNormal, u, v, hit.HitTriangleVertexIndices);
+	bool found = IntersectionRayAABBTree(GetVertexList(), start, dir, *this, hit.HitDistance, hit.HitNormal, u, v, hit.HitTriangleVertexIndices);
 	if (found && mFaceCount != 0)
 		hit.HitFaceIndex = mFaceIndex;
 	return found;
@@ -388,7 +392,7 @@ bool AABBTree::CallLocalRayIntersection(Hit &hit, const Point3D& start, const Ve
 bool AABBTree::CallLocalRayIntersection(std::vector<Hit> &hit, const Point3D& start, const Vector3D& dir) const
 {
 	int count_before = hit.size();
-	if (Intersection::IntersectionRayAABBTree(GetVertexList(), start, dir, *this, hit))
+	if (IntersectionRayAABBTree(GetVertexList(), start, dir, *this, hit))
 	{
 		if (mFaceCount != 0)
 		{
@@ -418,7 +422,7 @@ void AABBTree::LoadFromFile(const std::string& filename)
 	mFileName = filename;
 	u64 len;
 
-	auto crb = ModuleFileManager::Get()->LoadFile(filename.c_str(), len);
+	auto crb = File::ModuleFileManager::Get()->LoadFile(filename.c_str(), len);
 	auto result = crb;
 
 	if (crb && filename.substr(filename.find_last_of('.')) == ".kaabb")

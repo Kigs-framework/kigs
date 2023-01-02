@@ -13,23 +13,26 @@ namespace Kigs
 	{
 		class Node3D;
 	}
+	namespace Collide
+	{
+		class CollisionBaseObject;
+	}
 
 	namespace Maths
 	{
-		class CollisionBaseObject;
-
+	
 		struct Hit
 		{
-			double					HitDistance = DBL_MAX;
-			Point3D					HitPosition;
-			Vector3D				HitNormal;
-			Core::CoreModifiable*	HitActor = nullptr;
-			Scene::Node3D*			HitNode = nullptr;
-			Core::CoreModifiable*	HitFlagNode = nullptr;
-			unsigned int			HitFlag = 0u;
-			CollisionBaseObject*	HitCollisionObject = nullptr;
-			s32						HitTriangleVertexIndices[3] = { -1,-1,-1 };
-			s32						HitFaceIndex = -1;
+			double							HitDistance = DBL_MAX;
+			Point3D							HitPosition;
+			Vector3D						HitNormal;
+			Core::CoreModifiable*			HitActor = nullptr;
+			Scene::Node3D*					HitNode = nullptr;
+			Core::CoreModifiable*			HitFlagNode = nullptr;
+			unsigned int					HitFlag = 0u;
+			Collide::CollisionBaseObject*	HitCollisionObject = nullptr;
+			s32								HitTriangleVertexIndices[3] = { -1,-1,-1 };
+			s32								HitFaceIndex = -1;
 			void Clear()
 			{
 				*this = Hit{};

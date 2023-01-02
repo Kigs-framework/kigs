@@ -1,5 +1,7 @@
-#include <CollisionBaseObject.h>
-#include <CoreModifiable.h>
+#include "CollisionBaseObject.h"
+#include "CoreModifiable.h"
+
+using namespace Kigs::Collide;
 
 CollisionBaseObject::CollisionBaseObject()
 {

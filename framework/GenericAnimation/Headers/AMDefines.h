@@ -8,9 +8,7 @@
 // * --------------------------------------------------------------------------
 // * RELEASE: 
 // ****************************************************************************
-
-#ifndef __AMDEFINES_H__
-#define __AMDEFINES_H__
+#pragma once
 
 // +---------
 // | Include types
@@ -18,15 +16,17 @@
 #include "kTypes.h"
 #include "TecLibs/TecLibs.h"
 
+namespace Kigs
+{
+	namespace Anim
+	{
+		/* +---------
+		// | Time description :
+		// | ATimeValue is an float so it should be seconds
+		// +--------*/
 
-/* +---------
-// | Time description :
-// | ATimeValue is an float so it should be seconds
-// +--------*/
+		typedef float ATimeValue;
 
-typedef float ATimeValue;
-
-
-#endif  //__AMDEFINES_H__
-
+	}
+}
 

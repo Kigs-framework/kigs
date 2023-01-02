@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <fstream>
 
+using namespace Kigs;
+using namespace Kigs::Thread;
+
 void	BundleList::usage()
 {
 	std::cout << "Usage :" << std::endl;
@@ -87,7 +90,7 @@ void	BundleList::ProtectedInit()
 	}
 	else
 	{
-		SP<Thread> bundlethread = KigsCore::GetInstanceOf("bundleThread", "Thread");
+		SP<Thread::Thread> bundlethread = KigsCore::GetInstanceOf("bundleThread", "Thread");
 		mThread = bundlethread;
 		bundlethread->setMethod(this, "CreateBundle");
 		bundlethread->Init();

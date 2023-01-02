@@ -9,9 +9,7 @@
 // * RELEASE:
 // ****************************************************************************
 
-
-#ifndef __ASYSTEM_H__
-#define __ASYSTEM_H__
+#pragma once
 
 #include "AMDefines.h"
 #include "ABaseChannel.h"
@@ -20,175 +18,175 @@
 
 #include "CoreModifiableAttribute.h"
 
-// +---------
-// | Declare some usefull classes
-// +---------
-
-class   AObjectSkeletonResource;
-class   AObject;
-//class	ABaseChannel;
-
-template<typename LocalToGlobalType>
-class   ASystem : public ABaseSystem
+namespace Kigs
 {
-	DECLARE_ABSTRACT_CLASS_INFO(ASystem, ABaseSystem, Animation)
-public:
-	DECLARE_CONSTRUCTOR(ASystem);
-	
-    // ----------------------------------------------------------------------------
-	// ******************************
-	// * Local to Global management
-	// *-----------------------------
-	/*!  called by AObject to set the object local to global data
-	*/
-	// ******************************
-	void    SetLocalToGlobalData(LocalToGlobalBaseType* new_data);
-	
-	// ******************************
-	// * Local to Global management
-	// *-----------------------------
-	/*!  return a pointer on the instant local to global data
-	*/
-	// ******************************
-	
-	LocalToGlobalBaseType*   GetLocalToGlobalData()
+	namespace Anim
 	{
-		return &m_pInstantLocalToGlobalData;
-	};
-	
-	
-	// *******************
-	// * LinkTo
-	// * -----------------
-	/*!  use the given data as the local to global data
-	*/
-	// *******************
-	
-	void LinkTo(SP<ABaseChannel> data) override;
-	
-	// *******************
-	// * UnLink
-	// * -----------------
-	/*!  stop using the link data
-	*/
-	// *******************
-	
-	void UnLink() override;
-	
-	
-	//protected:
-	
-	virtual ~ASystem()
-	{
-        DeleteChannelTree();
-		mChannelTab.clear();
+		// +---------
+		// | Declare some usefull classes
+		// +---------
+
+		class   AObjectSkeletonResource;
+		class   AObject;
+		//class	ABaseChannel;
+
+		template<typename LocalToGlobalType>
+		class   ASystem : public ABaseSystem
+		{
+			DECLARE_ABSTRACT_CLASS_INFO(ASystem, ABaseSystem, Animation)
+		public:
+			DECLARE_CONSTRUCTOR(ASystem);
+
+			// ----------------------------------------------------------------------------
+			// ******************************
+			// * Local to Global management
+			// *-----------------------------
+			/*!  called by AObject to set the object local to global data
+			*/
+			// ******************************
+			void    SetLocalToGlobalData(LocalToGlobalBaseType* new_data);
+
+			// ******************************
+			// * Local to Global management
+			// *-----------------------------
+			/*!  return a pointer on the instant local to global data
+			*/
+			// ******************************
+
+			LocalToGlobalBaseType* GetLocalToGlobalData()
+			{
+				return &m_pInstantLocalToGlobalData;
+			};
+
+
+			// *******************
+			// * LinkTo
+			// * -----------------
+			/*!  use the given data as the local to global data
+			*/
+			// *******************
+
+			void LinkTo(SP<ABaseChannel> data) override;
+
+			// *******************
+			// * UnLink
+			// * -----------------
+			/*!  stop using the link data
+			*/
+			// *******************
+
+			void UnLink() override;
+
+
+			//protected:
+
+			virtual ~ASystem()
+			{
+				DeleteChannelTree();
+				mChannelTab.clear();
+			}
+
+			void    UseAnimationLocalToGlobalData(bool b) override;
+
+
+
+			// ******************************
+			// * LocalToGlobal data management
+			// *-----------------------------
+			// * - protected members
+			// * - 
+			// ******************************
+
+			LocalToGlobalType			m_pInstantLocalToGlobalData;		// current computed local to global
+			LocalToGlobalType			m_pStartingLocalToGlobalData;	   // local to global at init
+			SP<ABaseChannel>	     	m_LinkedChannel;
+
+		};
+
+		IMPLEMENT_TEMPLATE_CLASS_INFO(LocalToGlobalType, ASystem)
+
+			template<typename LocalToGlobalType>
+		ASystem<LocalToGlobalType>::ASystem(const std::string& name, CLASS_NAME_TREE_ARG)
+			: ABaseSystem(name, PASS_CLASS_NAME_TREE_ARG)
+			, m_LinkedChannel(0)
+		{
+
+
+		}
+
+		// ******************************
+		// * Local to Global management
+		// *-----------------------------
+		// * - 
+		// * - 
+		// ******************************
+		template<typename LocalToGlobalType>
+		void    ASystem<LocalToGlobalType>::SetLocalToGlobalData(LocalToGlobalBaseType* new_data)
+		{
+			SP<ABaseStream> tmp_stream = GetValidStream();
+			if (tmp_stream)
+			{
+				if (mUseAnimationLocalToGlobal == false)
+				{
+					// just copy data 
+					tmp_stream->CopyData(&m_pInstantLocalToGlobalData, new_data);
+				}
+				else
+				{
+					tmp_stream->SetAndModifyData(&m_pInstantLocalToGlobalData, new_data, &m_pStartingLocalToGlobalData);
+				}
+			}
+		};
+
+		template<typename LocalToGlobalType>
+		void   ASystem<LocalToGlobalType>::UseAnimationLocalToGlobalData(bool b)
+		{
+			mUseAnimationLocalToGlobal = b;
+			if (b == false)
+			{
+
+				// TODO
+				/*
+				maInt copythis(*this, false, "this", (int)this);
+				maInt restype(*this, false, "type", Local_To_Global_Data);
+				maInt result(*this, false, "result", 0);
+
+				std::vector<CoreModifiableAttribute*> params;
+				params.push_back(&copythis);
+				params.push_back(&restype);
+				params.push_back(&result);
+
+				GetAObject()->GetObject()->CallMethod("GetResource", params);
+
+				m_pInstantLocalToGlobalData = (void*)((int)result);
+				*/
+			}
+		};
+
+
+		// ----------------------------------------------------------------------------
+
+		// *******************
+		// * LinkTo
+		// * -----------------
+		// *    use the given data as the local to global data
+		// * 
+		// *******************
+		template<typename LocalToGlobalType>
+		void    ASystem<LocalToGlobalType>::LinkTo(SP<ABaseChannel> data)
+		{
+
+			m_LinkedChannel = data;
+			mUseAnimationLocalToGlobal = false;
+			mUpdateLocalToGlobalWhenLoop = false;
+
+		};
+
+		template<typename LocalToGlobalType>
+		void ASystem<LocalToGlobalType>::UnLink()
+		{
+			m_LinkedChannel = NULL;
+		};
+
 	}
-	
-	void    UseAnimationLocalToGlobalData(bool b) override;
-	
-	
-	
-	// ******************************
-	// * LocalToGlobal data management
-	// *-----------------------------
-	// * - protected members
-	// * - 
-	// ******************************
-	
-	LocalToGlobalType			m_pInstantLocalToGlobalData;		// current computed local to global
-	LocalToGlobalType			m_pStartingLocalToGlobalData;	   // local to global at init
-	SP<ABaseChannel>	     	m_LinkedChannel;
-	
-};
-
-IMPLEMENT_TEMPLATE_CLASS_INFO(LocalToGlobalType, ASystem)
-
-template<typename LocalToGlobalType>
-ASystem<LocalToGlobalType>::ASystem(const std::string& name, CLASS_NAME_TREE_ARG)
-: ABaseSystem(name, PASS_CLASS_NAME_TREE_ARG)
-, m_LinkedChannel(0)
-{
-	
-	
 }
-
-// ******************************
-// * Local to Global management
-// *-----------------------------
-// * - 
-// * - 
-// ******************************
-template<typename LocalToGlobalType>
-void    ASystem<LocalToGlobalType>::SetLocalToGlobalData(LocalToGlobalBaseType* new_data)
-{
-	SP<ABaseStream> tmp_stream = GetValidStream();
-	if (tmp_stream)
-	{
-		if (mUseAnimationLocalToGlobal == false)
-		{
-			// just copy data 
-			tmp_stream->CopyData(&m_pInstantLocalToGlobalData, new_data);
-		}
-		else
-		{
-			tmp_stream->SetAndModifyData(&m_pInstantLocalToGlobalData, new_data, &m_pStartingLocalToGlobalData);
-		}
-	}
-};
-
-template<typename LocalToGlobalType>
-void   ASystem<LocalToGlobalType>::UseAnimationLocalToGlobalData(bool b)
-{
-	mUseAnimationLocalToGlobal = b;
-	if (b == false)
-	{
-		
-		// TODO
-		/*
-		maInt copythis(*this, false, "this", (int)this);
-		maInt restype(*this, false, "type", Local_To_Global_Data);
-		maInt result(*this, false, "result", 0);
-		
-		std::vector<CoreModifiableAttribute*> params;
-		params.push_back(&copythis);
-		params.push_back(&restype);
-		params.push_back(&result);
-		
-		GetAObject()->GetObject()->CallMethod("GetResource", params);
-		
-		m_pInstantLocalToGlobalData = (void*)((int)result);
-		*/
-	}
-};
-
-
-// ----------------------------------------------------------------------------
-
-// *******************
-// * LinkTo
-// * -----------------
-// *    use the given data as the local to global data
-// * 
-// *******************
-template<typename LocalToGlobalType>
-void    ASystem<LocalToGlobalType>::LinkTo(SP<ABaseChannel> data)
-{
-	
-	m_LinkedChannel = data;
-	mUseAnimationLocalToGlobal = false;
-	mUpdateLocalToGlobalWhenLoop = false;
-	
-};
-
-template<typename LocalToGlobalType>
-void ASystem<LocalToGlobalType>::UnLink()
-{
-	m_LinkedChannel = NULL;
-};
-
-
-
-
-#endif //__ASYSTEM_H__
-
-

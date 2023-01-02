@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+
 class RulesContext;
 class FileStruct;
 

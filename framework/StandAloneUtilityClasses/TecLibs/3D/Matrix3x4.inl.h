@@ -1,4 +1,7 @@
-
+namespace Kigs
+{
+	namespace Maths
+	{
 
 inline Matrix3x4::Matrix3x4(const Float& e00, const Float& e01, const Float& e02,
 							const Float& e10, const Float& e11, const Float& e12,
@@ -1077,3 +1080,5 @@ inline Point3D *Matrix3x4::Y() { return (Point3D*)e[1]; }
 inline Point3D *Matrix3x4::Z() { return (Point3D*)e[2]; }
 inline Point3D *Matrix3x4::P() { return (Point3D*)e[3]; }
 */
+}
+}

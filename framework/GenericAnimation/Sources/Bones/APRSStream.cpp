@@ -11,7 +11,7 @@
 #include "Bones/APRSStream.h"
 #include "Bones/ABoneChannel.h"
 
-//template class AStream<PRSKey>;
+using namespace Kigs::Anim;
 
 IMPLEMENT_CLASS_INFO(APRSStream)
 

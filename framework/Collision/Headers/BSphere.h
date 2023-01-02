@@ -1,53 +1,57 @@
-#ifndef _BSPHERE_H_
-#define _BSPHERE_H_
+#pragma once
 
 #include "CollisionBaseNode.h"
 
-// ****************************************
-// * BSphere class
-// * --------------------------------------
-/**
-* \file	BSphere.h
-* \class	BSphere
-* \ingroup Collision
-* \brief Sphere structure used for collision calculation.
-*/
-// ****************************************
-
-class BSphere : public CollisionBaseNode
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(BSphere, CollisionBaseNode, Collision)
-
-	/*! \brief constructor
-	*/
-	DECLARE_CONSTRUCTOR(BSphere)
-
-	float GetRadius() const { return mRadius.const_ref(); }
-
-	bool TestHit(Hit& hit, v3f local_origin, v3f local_direction) override;
-
-protected:
-
-	virtual bool CallLocalRayIntersection(Hit &hit, const Point3D& start, const Vector3D& dir) const override
+	namespace Collide
 	{
-		// TODO
-		return false;
-	}
-	virtual bool CallLocalRayIntersection(std::vector<Hit> &hit, const Point3D& start, const Vector3D& dir) const override
-	{
-		// TODO
-		return false;
-	}
-	void	InitModifiable() override;
-	
-	/*! \brief the sphere radius
-	*/
-	maFloat mRadius;
+		// ****************************************
+		// * BSphere class
+		// * --------------------------------------
+		/**
+		* \file	BSphere.h
+		* \class	BSphere
+		* \ingroup Collision
+		* \brief Sphere structure used for collision calculation.
+		*/
+		// ****************************************
+
+		class BSphere : public CollisionBaseNode
+		{
+		public:
+			DECLARE_CLASS_INFO(BSphere, CollisionBaseNode, Collision)
+
+				/*! \brief constructor
+				*/
+				DECLARE_CONSTRUCTOR(BSphere)
+
+				float GetRadius() const { return mRadius.const_ref(); }
+
+			bool TestHit(Maths::Hit& hit, v3f local_origin, v3f local_direction) override;
+
+		protected:
+
+			virtual bool CallLocalRayIntersection(Maths::Hit& hit, const Point3D& start, const Vector3D& dir) const override
+			{
+				// TODO
+				return false;
+			}
+			virtual bool CallLocalRayIntersection(std::vector<Maths::Hit>& hit, const Point3D& start, const Vector3D& dir) const override
+			{
+				// TODO
+				return false;
+			}
+			void	InitModifiable() override;
+
+			/*! \brief the sphere radius
+			*/
+			maFloat mRadius;
 
 #ifdef KIGS_TOOLS
-	void DrawDebug(const Hit& h, const Matrix3x4& mat) override;
+			void DrawDebug(const Maths::Hit& h, const Matrix3x4& mat) override;
 #endif
-};
+		};
 
-#endif //_BSPHERE_H_
+	}
+}

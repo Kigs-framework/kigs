@@ -37,7 +37,7 @@ namespace Kigs
 
 			DECL_VP_TypeValue(float);
 			DECL_VP_TypeValue(int);
-			DECL_VP_TypeValue(Point3D);
+			DECL_VP_TypeValue(v3f);
 
 			/**
 			 * \brief	destructor
@@ -99,7 +99,7 @@ namespace Kigs
 
 			DECL_TypeValue(float);
 			DECL_TypeValue(int);
-			DECL_TypeValue(Point3D);
+			DECL_TypeValue(v3f);
 
 		protected:
 			//! state of the device
@@ -125,9 +125,9 @@ namespace Kigs
 		inline void  DeviceItemState<int>::SetValue(int v) { mValue = v; }
 
 		template<>
-		inline Point3D DeviceItemState<Point3D>::getValueMethod(Point3D*)  const { return mValue; }
+		inline v3f DeviceItemState<v3f>::getValueMethod(v3f*)  const { return mValue; }
 		template<>
-		inline void  DeviceItemState<Point3D>::SetValue(Point3D v) { mValue = v; }
+		inline void  DeviceItemState<v3f>::SetValue(v3f v) { mValue = v; }
 
 		// ****************************************
 		// * DeviceItem class

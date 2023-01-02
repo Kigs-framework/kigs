@@ -1,12 +1,12 @@
-#ifndef _COLLISIONMANAGER_H_
-#define _COLLISIONMANAGER_H_
+#pragma once
 
 #include "CollisionHit.h"
 #include "CoreModifiable.h"
 #include "TecLibs\Tec3D.h"
 #include "maReference.h"
-//#include "AABBTree.h"
 #include "AttributePacking.h"
+#include "CoreItem.h"
+#include "CoreRawBuffer.h"
 
 #include <mutex>
 #include <functional>
@@ -16,217 +16,229 @@
 
 #include "blockingconcurrentqueue.h"
 
-class Plane;
-class BBox;
-class Node3D;
-class BSphere;
-class OctreeSubNode;
-class CollisionBaseObject;
-
-// ****************************************
-// * CollisionManager class
-// * --------------------------------------
-/**
-* \file	CollisionManager.h
-* \class	CollisionManager
-* \ingroup Collision
-* \brief  Manager class to manage collision.
-*/
-// ****************************************
-
-class CollisionManager : public CoreModifiable
+namespace Kigs
 {
-public:
-	/*! \class MeshCollisionInfo
-	utility class for the collision map
-	*/
-	struct MeshCollisionInfo
+	namespace Maths
 	{
-		std::shared_ptr<CollisionBaseObject> mOwnedCollisionObject;
-		std::atomic<CollisionBaseObject*> mNodeCollisionObject;
-
-		u32 mUID = 0;
-		unsigned int			mCollisionMask = 0;
-		bool mNeedRebuild = false;
-		CoreModifiable* mItem = nullptr;
-	};
-
-	struct SegmentList
+		class BBox;
+	}
+	namespace Scene
 	{
-		Node3D*					mParentNode;
-		std::vector<Segment3D>	mSegmentList;
-	};
-
-	struct PlaneIntersectionInfoStruct
+		class Node3D;
+	}
+	namespace Collide
 	{
-		// per flag map
-		std::map<unsigned int, std::vector < SegmentList > > mFoundIntersection;
-	};
+		using namespace Kigs::Core;
+		class Plane;
+		class BSphere;
+		class OctreeSubNode;
+		class CollisionBaseObject;
 
-	DECLARE_CLASS_INFO(CollisionManager, CoreModifiable, Collision)
-	DECLARE_CONSTRUCTOR(CollisionManager);
-	~CollisionManager() override;
+		// ****************************************
+		// * CollisionManager class
+		// * --------------------------------------
+		/**
+		* \file	CollisionManager.h
+		* \class	CollisionManager
+		* \ingroup Collision
+		* \brief  Manager class to manage collision.
+		*/
+		// ****************************************
 
-	WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback, OnDeleteCallBack, GetAllRayIntersection, SerializeAABBTree, DeserializeAABBTree, SetAABBTreeFromFile, ExportLeafAABBTrees, AddSimpleShapeFromDescription);
+		class CollisionManager : public CoreModifiable
+		{
+		public:
+			/*! \class MeshCollisionInfo
+			utility class for the collision map
+			*/
+			struct MeshCollisionInfo
+			{
+				std::shared_ptr<CollisionBaseObject> mOwnedCollisionObject;
+				std::atomic<CollisionBaseObject*> mNodeCollisionObject;
 
-	bool SerializeAABBTree(CoreRawBuffer* buffer, const CMSP& node);
-	bool DeserializeAABBTree(CoreRawBuffer* buffer, const CMSP& node);
-	void SetAABBTreeFromFile(const std::string& filename, const CMSP& node);
-	void ExportLeafAABBTrees(const CMSP& node, ExportSettings* settings);
+				u32 mUID = 0;
+				unsigned int			mCollisionMask = 0;
+				bool mNeedRebuild = false;
+				CoreModifiable* mItem = nullptr;
+			};
 
-	void AddSimpleShapeFromDescription(CoreItem* desc, const CMSP& node);
+			struct SegmentList
+			{
+				Scene::Node3D* mParentNode;
+				std::vector<Maths::Segment3D>	mSegmentList;
+			};
 
-	enum Categories
-	{
-		NONE = 0,
-		ALL = 0xffffffff
-	};
+			struct PlaneIntersectionInfoStruct
+			{
+				// per flag map
+				std::map<unsigned int, std::vector < SegmentList > > mFoundIntersection;
+			};
 
-	/*! \brief intersect a ray with all objects in the collision manager
-	*/
-	bool GetRayIntersection(Hit &hit, const Point3D &start, const Vector3D &dir, unsigned int a_itemCategory = ALL, bool ignore_is_collidable = false);
+			DECLARE_CLASS_INFO(CollisionManager, CoreModifiable, Collision)
+				DECLARE_CONSTRUCTOR(CollisionManager);
+			~CollisionManager() override;
 
-	/*! \brief intersect a ray with all objects in the collision manager
-	*/
-	void GetAllRayIntersection(const Point3D &start, const Vector3D &dir, std::vector<Hit>& hits, unsigned int a_itemCategory = ALL, bool ignore_is_collidable = false);
+			WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback, OnDeleteCallBack, GetAllRayIntersection, SerializeAABBTree, DeserializeAABBTree, SetAABBTreeFromFile, ExportLeafAABBTrees, AddSimpleShapeFromDescription);
 
-	/*! \brief intersect a plane with all (triangles) objects in the collision manager
-	*/
-	void GetPlaneIntersection(const Point3D& o, const Vector3D& n, PlaneIntersectionInfoStruct& result, unsigned int a_itemCategory = ALL, const BBox* Zone = nullptr);
+			bool SerializeAABBTree(CoreRawBuffer* buffer, const CMSP& node);
+			bool DeserializeAABBTree(CoreRawBuffer* buffer, const CMSP& node);
+			void SetAABBTreeFromFile(const std::string& filename, const CMSP& node);
+			void ExportLeafAABBTrees(const CMSP& node, ExportSettings* settings);
 
-	/*! \brief intersect a sphere with all objects in the collision manager
-	*/
-	CoreModifiable* GetSphereIntersection(const Point3D& start, const Vector3D& dir, const float Radius, double &Distance, Vector3D& normal, Point3D& intersectP, unsigned int a_itemCategory = ALL);
+			void AddSimpleShapeFromDescription(CoreItem* desc, const CMSP& node);
 
-	/*! \brief return altitude for the current point
-	*/
-	bool GetAltitude(float x, float y, float z, float &alt);
+			enum Categories
+			{
+				NONE = 0,
+				ALL = 0xffffffff
+			};
 
-	/*! \brief set collision mask for a specific mItem
-	*/
-	void	setCollisionCategories(CoreModifiable* a_Item, unsigned int a_Category = 0);
+			/*! \brief intersect a ray with all objects in the collision manager
+			*/
+			bool GetRayIntersection(Maths::Hit& hit, const v3f& start, const Vector3D& dir, unsigned int a_itemCategory = ALL, bool ignore_is_collidable = false);
 
-	/*! \brief set collision mask for all the next items that will be added to the collision manager (should be reset to NONE(0) when we have finish).
-	*/
-	inline void	setActiveMask(unsigned int a_mask) { mActiveCollisionMask = a_mask; }
+			/*! \brief intersect a ray with all objects in the collision manager
+			*/
+			void GetAllRayIntersection(const v3f& start, const Vector3D& dir, std::vector<Maths::Hit>& hits, unsigned int a_itemCategory = ALL, bool ignore_is_collidable = false);
 
-	// recursive check on coremodifiable
-	void RecursiveCheck(CoreModifiable* item, u32 branchMask, bool maskWasTest);
+			/*! \brief intersect a plane with all (triangles) objects in the collision manager
+			*/
+			void GetPlaneIntersection(const v3f& o, const Vector3D& n, PlaneIntersectionInfoStruct& result, unsigned int a_itemCategory = ALL, const Maths::BBox* Zone = nullptr);
 
-	void SetCanProcessAddedObjects(bool can_process) { mCanProcessAddedObjects = can_process; }
+			/*! \brief intersect a sphere with all objects in the collision manager
+			*/
+			CoreModifiable* GetSphereIntersection(const v3f& start, const Vector3D& dir, const float Radius, double& Distance, Vector3D& normal, v3f& intersectP, unsigned int a_itemCategory = ALL);
 
-	MeshCollisionInfo* GetCollisionInfoForObject(CoreModifiable* Object);
+			/*! \brief return altitude for the current point
+			*/
+			bool GetAltitude(float x, float y, float z, float& alt);
 
-	// Will take ownership of collider if collider->mIsCoreModifiable is false
-	void SetCollisionObject(const CMSP& item, CollisionBaseObject* collider);
-	void SetCollisionObject(const CMSP& item, std::shared_ptr<CollisionBaseObject> collider);
+			/*! \brief set collision mask for a specific mItem
+			*/
+			void	setCollisionCategories(CoreModifiable* a_Item, unsigned int a_Category = 0);
 
-	//const std::unordered_map<WeakRef, std::shared_ptr<MeshCollisionInfo>>& GetCollisionMap() { ProcessPendingItems(); return mCollisionObjectMap; }
-	const std::unordered_map<u32, std::shared_ptr<MeshCollisionInfo>>& GetCollisionMap() { ProcessPendingItems(); return mCollisionObjectMap; }
+			/*! \brief set collision mask for all the next items that will be added to the collision manager (should be reset to NONE(0) when we have finish).
+			*/
+			inline void	setActiveMask(unsigned int a_mask) { mActiveCollisionMask = a_mask; }
 
-protected:
-	void InitModifiable() override;
-	void Update(const Timer&  timer, void* addParam) override;
+			// recursive check on coremodifiable
+			void RecursiveCheck(CoreModifiable* item, u32 branchMask, bool maskWasTest);
 
-	void ProcessPendingItems();
+			void SetCanProcessAddedObjects(bool can_process) { mCanProcessAddedObjects = can_process; }
 
-	bool CheckType(CoreModifiable* item);
-	void CreateCollisionObject(CoreModifiable* item, unsigned int ColMask);
+			MeshCollisionInfo* GetCollisionInfoForObject(CoreModifiable* Object);
 
+			// Will take ownership of collider if collider->mIsCoreModifiable is false
+			void SetCollisionObject(const CMSP& item, CollisionBaseObject* collider);
+			void SetCollisionObject(const CMSP& item, std::shared_ptr<CollisionBaseObject> collider);
 
-	std::atomic<bool> mCanProcessAddedObjects{ true };
+			//const std::unordered_map<WeakRef, std::shared_ptr<MeshCollisionInfo>>& GetCollisionMap() { ProcessPendingItems(); return mCollisionObjectMap; }
+			const std::unordered_map<u32, std::shared_ptr<MeshCollisionInfo>>& GetCollisionMap() { ProcessPendingItems(); return mCollisionObjectMap; }
 
-	maReference mScene;
+		protected:
+			void InitModifiable() override;
+			void Update(const Time::Timer& timer, void* addParam) override;
 
-	void NotifyUpdate(const unsigned int /* labelid */) override;
+			void ProcessPendingItems();
 
-	// Object add / remove management
-	void	DoFirstInit();
-	void	OnAddItemCallback(CoreModifiable* localthis, CoreModifiable* item);
-	void	OnRemoveItemCallback(CoreModifiable* localthis, CoreModifiable* item);
-	void	OnDeleteCallBack(CoreModifiable* item);
-
-	void	RegisterNewObject(CoreModifiable* father, CoreModifiable* newitem);
-	void	UnRegisterObject(CoreModifiable* father, CoreModifiable* removeditem);
-
-	std::atomic_bool mNeedRecursiveCheck;
-
-	std::atomic_bool mContinueWork;
-	std::thread mWorkThread;
-
-	struct Work
-	{
-		std::weak_ptr<CoreModifiable> mItem;
-		u32 mUID;
-		std::shared_ptr<MeshCollisionInfo> mInfo;
-		std::function<CollisionBaseObject*()> mFunc;
-	};
-
-	moodycamel::BlockingConcurrentQueue<Work> mWork;
-	moodycamel::BlockingConcurrentQueue<Work> mHighPrioWork;
-
-	bool		mSceneWasSet;
-
-	DECLARE_METHOD(GetIntersection);
-	DECLARE_METHOD(GetAltitude);
-	COREMODIFIABLE_METHODS(GetIntersection, GetAltitude);
-
-	/*! \brief recursive internal method
-	* return true if itersection found
-	*/
-	bool GetLocalRayIntersection(Hit &hit, const Point3D& start, const Vector3D& dir, const CollisionBaseObject* pCollisionObject);
-	int  GetAllLocalRayIntersection(std::vector<Hit> &hit, const Point3D& start, const Vector3D& dir, const CollisionBaseObject* pCollisionObject);
-
-	/*! \brief recursive internal method
-	*/
-	bool GetLocalSphereIntersection(Hit &hit, const Point3D& start, const Vector3D& dir, const float &Radius, CollisionBaseObject* pCollisionObject);
-
-	bool GetLocalCylinderIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const Vector3D& CDir, const float &CHeight, const float& CRadius, CollisionBaseObject* pCollisionObject, unsigned int a_itemCategory = ALL);
-
-	/*! \brief recursive internal method
-	*/
-	// void	RescursiveSearchMesh(CoreModifiable *currentitem, std::vector<CoreModifiable*>& list);
-
-	/*! \brief recursive internal method
-	*/
-	bool	RecursiveSearchRayIntersection(CoreModifiable* lastCollideNode, Node3D* lastNode, CoreModifiable *currentitem, Point3D start, Vector3D dir, Hit &hit, unsigned int lastNodeCategory, unsigned int a_itemCategory = ALL, bool ignore_is_collidable = false);
-	void	RecursiveSearchAllRayIntersection(CoreModifiable* lastCollideNode, Node3D* lastNode, CoreModifiable *currentitem, const Point3D &start, const Vector3D &dir, std::vector<Hit> & hits, unsigned int lastNodeCategory, unsigned int a_itemCategory = ALL, bool ignore_is_collidable = false);
-	void	RecursiveSearchPlaneIntersection( Node3D* lastNode, CoreModifiable *currentitem, const Point3D &o, const Vector3D &n, const BBox* Zone, PlaneIntersectionInfoStruct& result, unsigned int lastNodeCategory, unsigned int a_itemCategory = ALL);
+			bool CheckType(CoreModifiable* item);
+			void CreateCollisionObject(CoreModifiable* item, unsigned int ColMask);
 
 
-	/*! \brief recursive internal method
-	*/
-	bool RecursiveSearchSphereIntersection(Hit &hit, CoreModifiable *currentitem, const Point3D& start, const Vector3D& dir, const float &Radius, unsigned int a_itemCategory = ALL);
+			std::atomic<bool> mCanProcessAddedObjects{ true };
 
-	/*! \brief recursive internal method
-	*/
-	CoreModifiable*	RecursiveSearchSphereIntersection(OctreeSubNode* currentNode, const Point3D& start, const Vector3D& dir, const float &Radius, const Point3D& lstart, const Vector3D& ldir, const float &lRadius, double &Distance, Vector3D& normal, Point3D& intersectP, bool recurse = true, unsigned int a_itemCategory = ALL);
+			maReference mScene;
 
-	/*! \brief recursive internal method
-	*/
-	bool GetLocalSphereIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const float &Radius, CollisionBaseObject* pCollisionObject, unsigned int a_itemCategory = ALL);
+			void NotifyUpdate(const unsigned int /* labelid */) override;
 
-	bool GetLocalPlaneIntersectionWithRay(Hit &hit, const Point3D& start, const Vector3D& dir, const Point3D& planePos, const Vector3D& planeNorm, CollisionBaseObject* pCollisionObject);
+			// Object add / remove management
+			void	DoFirstInit();
+			void	OnAddItemCallback(CoreModifiable* localthis, CoreModifiable* item);
+			void	OnRemoveItemCallback(CoreModifiable* localthis, CoreModifiable* item);
+			void	OnDeleteCallBack(CoreModifiable* item);
 
-	//std::unordered_map<WeakRef, std::shared_ptr<MeshCollisionInfo>> mCollisionObjectMap;
-	std::unordered_map<u32, std::shared_ptr<MeshCollisionInfo>> mCollisionObjectMap;
+			void	RegisterNewObject(CoreModifiable* father, CoreModifiable* newitem);
+			void	UnRegisterObject(CoreModifiable* father, CoreModifiable* removeditem);
 
-	std::mutex mToDeleteMutex;
-	std::mutex mToAddMutex;
+			std::atomic_bool mNeedRecursiveCheck;
 
-	using RawOrSharedPtr = std::variant<CollisionBaseObject*, std::shared_ptr<CollisionBaseObject>>;
-	std::vector<std::pair<SmartPointer<CoreModifiable>, RawOrSharedPtr>> mToAdd;
-	
-	struct ToDelete
-	{
-		CoreModifiable* mPtr = nullptr;
-		u32 mUID = 0;
-		std::string mName;
-	};
-	std::vector<ToDelete> mToDelete;
-	//std::atomic_bool mHasDeadRefs{ false };
+			std::atomic_bool mContinueWork;
+			std::thread mWorkThread;
 
-	unsigned int				mActiveCollisionMask;
-};
+			struct Work
+			{
+				std::weak_ptr<CoreModifiable> mItem;
+				u32 mUID;
+				std::shared_ptr<MeshCollisionInfo> mInfo;
+				std::function<CollisionBaseObject* ()> mFunc;
+			};
 
-#endif //_COLLISIONMANAGER_H_
+			moodycamel::BlockingConcurrentQueue<Work> mWork;
+			moodycamel::BlockingConcurrentQueue<Work> mHighPrioWork;
+
+			bool		mSceneWasSet;
+
+			DECLARE_METHOD(GetIntersection);
+			DECLARE_METHOD(GetAltitude);
+			COREMODIFIABLE_METHODS(GetIntersection, GetAltitude);
+
+			/*! \brief recursive internal method
+			* return true if itersection found
+			*/
+			bool GetLocalRayIntersection(Maths::Hit& hit, const v3f& start, const Vector3D& dir, const CollisionBaseObject* pCollisionObject);
+			int  GetAllLocalRayIntersection(std::vector<Maths::Hit>& hit, const v3f& start, const Vector3D& dir, const CollisionBaseObject* pCollisionObject);
+
+			/*! \brief recursive internal method
+			*/
+			bool GetLocalSphereIntersection(Maths::Hit& hit, const v3f& start, const Vector3D& dir, const float& Radius, CollisionBaseObject* pCollisionObject);
+
+			bool GetLocalCylinderIntersectionWithRay(Maths::Hit& hit, const v3f& start, const Vector3D& dir, const Vector3D& CDir, const float& CHeight, const float& CRadius, CollisionBaseObject* pCollisionObject, unsigned int a_itemCategory = ALL);
+
+			/*! \brief recursive internal method
+			*/
+			// void	RescursiveSearchMesh(CoreModifiable *currentitem, std::vector<CoreModifiable*>& list);
+
+			/*! \brief recursive internal method
+			*/
+			bool	RecursiveSearchRayIntersection(CoreModifiable* lastCollideNode, Scene::Node3D* lastNode, CoreModifiable* currentitem, v3f start, Vector3D dir, Maths::Hit& hit, unsigned int lastNodeCategory, unsigned int a_itemCategory = ALL, bool ignore_is_collidable = false);
+			void	RecursiveSearchAllRayIntersection(CoreModifiable* lastCollideNode, Scene::Node3D* lastNode, CoreModifiable* currentitem, const v3f& start, const Vector3D& dir, std::vector<Maths::Hit>& hits, unsigned int lastNodeCategory, unsigned int a_itemCategory = ALL, bool ignore_is_collidable = false);
+			void	RecursiveSearchPlaneIntersection(Scene::Node3D* lastNode, CoreModifiable* currentitem, const v3f& o, const Vector3D& n, const Maths::BBox* Zone, PlaneIntersectionInfoStruct& result, unsigned int lastNodeCategory, unsigned int a_itemCategory = ALL);
+
+
+			/*! \brief recursive internal method
+			*/
+			bool RecursiveSearchSphereIntersection(Maths::Hit& hit, CoreModifiable* currentitem, const v3f& start, const Vector3D& dir, const float& Radius, unsigned int a_itemCategory = ALL);
+
+			/*! \brief recursive internal method
+			*/
+			CoreModifiable* RecursiveSearchSphereIntersection(OctreeSubNode* currentNode, const v3f& start, const Vector3D& dir, const float& Radius, const v3f& lstart, const Vector3D& ldir, const float& lRadius, double& Distance, Vector3D& normal, v3f& intersectP, bool recurse = true, unsigned int a_itemCategory = ALL);
+
+			/*! \brief recursive internal method
+			*/
+			bool GetLocalSphereIntersectionWithRay(Maths::Hit& hit, const v3f& start, const Vector3D& dir, const float& Radius, CollisionBaseObject* pCollisionObject, unsigned int a_itemCategory = ALL);
+
+			bool GetLocalPlaneIntersectionWithRay(Maths::Hit& hit, const v3f& start, const Vector3D& dir, const v3f& planePos, const Vector3D& planeNorm, CollisionBaseObject* pCollisionObject);
+
+			//std::unordered_map<WeakRef, std::shared_ptr<MeshCollisionInfo>> mCollisionObjectMap;
+			std::unordered_map<u32, std::shared_ptr<MeshCollisionInfo>> mCollisionObjectMap;
+
+			std::mutex mToDeleteMutex;
+			std::mutex mToAddMutex;
+
+			using RawOrSharedPtr = std::variant<CollisionBaseObject*, std::shared_ptr<CollisionBaseObject>>;
+			std::vector<std::pair<SmartPointer<CoreModifiable>, RawOrSharedPtr>> mToAdd;
+
+			struct ToDelete
+			{
+				CoreModifiable* mPtr = nullptr;
+				u32 mUID = 0;
+				std::string mName;
+			};
+			std::vector<ToDelete> mToDelete;
+			//std::atomic_bool mHasDeadRefs{ false };
+
+			unsigned int				mActiveCollisionMask;
+		};
+
+	}
+}

@@ -1,6 +1,4 @@
-#ifndef _KIGSAPPLICATION_H_
-#define _KIGSAPPLICATION_H_
-
+#pragma once
 //! include the real application class file
 #include "AssetManager.h"
 
@@ -15,11 +13,3 @@
 //! then define it as the application class 
 #define KIGS_APPLICATION_CLASS AssetManager
 
-//! for Intel Appup version
-
-#define ADP_APPLICATIONID ADP_DEBUG_APPLICATIONID
-
-
-
-
-#endif //_KIGSAPPLICATION_H_

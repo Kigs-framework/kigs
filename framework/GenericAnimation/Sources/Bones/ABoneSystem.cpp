@@ -14,8 +14,12 @@
 #include "AObject.h"
 #include "Node3D.h"
 #include "Drawable.h"
+#include "CoreRawBuffer.h"
 #include "GenericAnimationModule.h"
 #include "Bones/AObjectSkeletonResource.h"
+
+using namespace Kigs::Anim;
+using namespace Kigs::Scene;
 
 IMPLEMENT_CLASS_INFO(ABoneSystem)
 
@@ -118,7 +122,7 @@ void	ABoneSystem::SearchParentNode3D()
 			// retreive matrix buffer
 			void* buffer = nullptr;
 			uniformMatrixArray->getValue("MatrixArray", buffer);
-			mBoneMatrixArray =(Matrix4x4*)((AlignedCoreRawBuffer<16,char>*)buffer)->buffer();
+			mBoneMatrixArray = (Matrix4x4*)((AlignedCoreRawBuffer<16, char>*)buffer)->buffer();
 		}
 	}
 }

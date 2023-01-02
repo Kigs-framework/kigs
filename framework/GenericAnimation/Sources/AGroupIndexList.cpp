@@ -12,6 +12,7 @@
 
 #include "AGroupIndexList.h"
 
+using namespace Kigs::Anim;
 
 // ******************************
 // * AddGroup

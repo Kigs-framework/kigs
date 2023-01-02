@@ -2,6 +2,8 @@
 #include "FilePathManager.h"
 #include "ModuleFileManager.h"
 
+using namespace Kigs::Anim;
+
 IMPLEMENT_CLASS_INFO(AObjectSkeletonResource)
 
 AObjectSkeletonResource::AObjectSkeletonResource(const std::string& name, CLASS_NAME_TREE_ARG)
@@ -29,21 +31,21 @@ void	AObjectSkeletonResource::InitModifiable()
 		return;
 	}
 
-	SP<FilePathManager>	pathManager = KigsCore::GetSingleton("FilePathManager");
+	SP < File::FilePathManager > pathManager = KigsCore::GetSingleton("FilePathManager");
 
-	SmartPointer<FileHandle> fullfilenamehandle = 0;
+	SmartPointer<File::FileHandle> fullfilenamehandle = 0;
 
 	if (pathManager)
 	{
 		fullfilenamehandle = pathManager->FindFullName(mSkeletonFileName.const_ref());
 	}
 
-	if (!((fullfilenamehandle->mStatus&FileHandle::Exist) == 0))
+	if (!((fullfilenamehandle->mStatus& File::FileHandle::Exist) == 0))
 	{
 
 		u64 size;
 
-		SmartPointer<CoreRawBuffer> rawbuffer = ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
+		SmartPointer<CoreRawBuffer> rawbuffer = File::ModuleFileManager::LoadFile(fullfilenamehandle.get(), size);
 
 		if (rawbuffer)
 		{
@@ -112,7 +114,7 @@ void	AObjectSkeletonResource::Export()
 		return;
 	}
 
-	SmartPointer<FileHandle> file = Platform_fopen(mSkeletonFileName.const_ref().c_str(), "wb");
+	SmartPointer<File::FileHandle> file = File::Platform_fopen(mSkeletonFileName.const_ref().c_str(), "wb");
 
 	if (file->mFile)
 	{

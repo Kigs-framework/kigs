@@ -7,9 +7,9 @@
 int gCollisionDrawLevel=0;
 #ifdef KIGS_TOOLS
 #include<GLSLDebugDraw.h>
-extern const Matrix3x4 * currentNodeMatrix;
+extern const Kigs::Maths::Matrix3x4 * currentNodeMatrix;
 #endif
-
+using namespace Kigs::Collide;
 #ifdef COUNTCOLLISION
 unsigned int	Collision::mCollisionTestCount;
 #endif
@@ -421,7 +421,7 @@ bool Collision::CollideSphereAABBTreeNode(const Point3D &SphereOrigin,
 	Point3D  tempPoint;
 
 	//! first test current node bounding box against moving sphere bounding box
-	if (Intersection::IntersectionAABBAABB(pAABB.mBBox.m_Min, pAABB.mBBox.m_Max, MovingSphereBBox.m_Min, MovingSphereBBox.m_Max))
+	if (IntersectionAABBAABB(pAABB.mBBox.m_Min, pAABB.mBBox.m_Max, MovingSphereBBox.m_Min, MovingSphereBBox.m_Max))
 	{
 		//! if the bounding box are intersecting
 		if (pAABB.mSon1 == NULL && pAABB.mSon2 == NULL)

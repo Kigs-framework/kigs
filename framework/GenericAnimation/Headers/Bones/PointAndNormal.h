@@ -1,18 +1,17 @@
-
-
-#ifndef __POINTANDNORMAL__H
-#define __POINTANDNORMAL__H
-
+#pragma once
 
 #include "TecLibs/Tec3D.h"
 
-class PointAndNormal
+namespace Kigs
 {
-public:
-    Point3D  m_Point;
-    Vector3D m_Normal;
-};
-
-#endif //__POINTANDNORMAL__H
-
+	namespace Anim
+	{
+		class PointAndNormal
+		{
+		public:
+			Maths::Point3D  m_Point;
+			Maths::Vector3D m_Normal;
+		};
+	}
+}
 
