@@ -4,6 +4,8 @@
 #include "NotificationCenter.h"
 #include "CoreRawBuffer.h"
 
+using namespace Kigs::Http;
+
 IMPLEMENT_CLASS_INFO(HTTPAsyncRequest)
 
 HTTPAsyncRequest::~HTTPAsyncRequest()

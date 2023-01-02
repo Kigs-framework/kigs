@@ -29,6 +29,7 @@ using namespace Kigs::Gui;
 using namespace Kigs::Input;
 using namespace Kigs::Draw;
 using namespace Kigs::Draw2D;
+using namespace Kigs::Scene;
 
 namespace Kigs
 {
@@ -141,7 +142,7 @@ void DataDrivenSequence::InitModifiable()
 	instances.clear();
 	GetSonInstancesByType("Scene3D", instances);
 
-	Scene::ModuleSceneGraph* scenegraph = (Scene::ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
+	ModuleSceneGraph* scenegraph = (ModuleSceneGraph*)KigsCore::Instance()->GetMainModuleInList(SceneGraphModuleCoreIndex);
 
 	std::vector<CMSP>::iterator	it = instances.begin();
 	std::vector<CMSP>::iterator	itend = instances.end();

@@ -3,15 +3,14 @@
 #include "HTTPAsyncRequestWindows.h"
 #include "HTTPConnectWindows.h"
 
+using namespace Kigs::Http;
+
 //#define USE_DEBUG_PRINT
 #ifdef USE_DEBUG_PRINT
 #define DEBUG_PRINT(...) fprintf(stderr,__VA_ARGS__)
 #else
 #define DEBUG_PRINT(...) 
 #endif
-
-
-HTTPRequestModuleWindows* gInstanceModuleHTTPRequestWindows=0;
 
 IMPLEMENT_CLASS_INFO(HTTPRequestModuleWindows)
 
@@ -49,13 +48,12 @@ void HTTPRequestModuleWindows::Update(const Timer& timer, void* addParam)
 }    
 
 
-SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> Kigs::Http::PlatformHTTPRequestModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(HTTPRequestModuleWindows,"HTTPRequestModuleWindows");
 	auto ptr = MakeRefCounted<HTTPRequestModuleWindows>("HTTPRequestModuleWindows");
-	gInstanceModuleHTTPRequestWindows = ptr.get();
-	gInstanceModuleHTTPRequestWindows->Init(core, params);
+	ptr->Init(core, params);
 	return ptr;
 }    
 

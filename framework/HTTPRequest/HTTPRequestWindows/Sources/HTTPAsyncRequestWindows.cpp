@@ -5,6 +5,7 @@
 #include "NotificationCenter.h"
 #include "AsciiParserUtils.h"
 
+using namespace Kigs::Http;
 
 IMPLEMENT_CLASS_INFO(HTTPAsyncRequestWindows)
 

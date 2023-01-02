@@ -2,6 +2,7 @@
 #include "HTTPConnect.h"
 #include "Core.h"
 
+using namespace Kigs::Http;
 
 IMPLEMENT_CLASS_INFO(HTTPConnect)
 

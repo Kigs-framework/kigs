@@ -4,6 +4,7 @@
 #include "HTTPAsyncRequestWindows.h"
 #include "HTTPRequestModuleWindows.h"
 
+using namespace Kigs::Http;
 
 IMPLEMENT_CLASS_INFO(HTTPConnectWindows)
 

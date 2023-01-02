@@ -2,7 +2,8 @@
 #include "HTTPRequestModule.h"
 #include "ResourceDownloader.h"
 
-SP<ModuleBase> PlatformHTTPRequestModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
+using namespace Kigs::Http;
+
 
 IMPLEMENT_CLASS_INFO(HTTPRequestModule)
 

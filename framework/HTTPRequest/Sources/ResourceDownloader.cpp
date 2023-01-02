@@ -1,5 +1,7 @@
 #include "ResourceDownloader.h"
 
+using namespace Kigs::Http;
+
 IMPLEMENT_CLASS_INFO(ResourceDownloader)
 
 void ResourceDownloader::InitModifiable()

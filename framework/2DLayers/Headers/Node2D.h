@@ -16,6 +16,7 @@ namespace Kigs
 	namespace Scene
 	{
 		class TravState;
+		class ModuleSceneGraph;
 	}
 	namespace Draw2D
 	{
@@ -50,7 +51,7 @@ namespace Kigs
 				KEEP_RATIO = 6				// compute size x according to size y or size y according to size x. ! Both mode can't be KEEP_RATION ! 
 			};
 
-			friend class ModuleSceneGraph;
+			friend class Scene::ModuleSceneGraph;
 
 			struct PriorityCompare
 			{
