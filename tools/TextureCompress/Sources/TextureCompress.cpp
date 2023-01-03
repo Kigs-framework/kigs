@@ -18,6 +18,10 @@
 #include "Etc.h"
 #include "EtcColorFloatRGBA.h"
 
+using namespace Kigs;
+using namespace Kigs::Pict;
+using namespace Kigs::File;
+
 // utility:
 unsigned long getNextPOT(unsigned long x)
 {

@@ -16,6 +16,10 @@
 #include "Texture.h"
 #include "MaterialStage.h"
 
+using namespace Kigs::Utils;
+using namespace Kigs::File;
+using namespace Kigs::Draw;
+
 IMPLEMENT_CLASS_INFO(STLImport)
 
 /*

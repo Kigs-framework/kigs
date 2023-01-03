@@ -20,6 +20,12 @@
 #include "PLYImport.h"
 #include <algorithm>
 
+using namespace Kigs;
+using namespace Kigs::Utils;
+using namespace Kigs::Collide;
+using namespace Kigs::Gui;
+using namespace Kigs::Draw;
+
 void	usage()
 {
 	printf("Usage : \n");

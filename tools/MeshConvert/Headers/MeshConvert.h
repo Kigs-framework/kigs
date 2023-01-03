@@ -1,47 +1,58 @@
-#ifndef _MESHCONVERT_H_
-#define _MESHCONVERT_H_
+#pragma once
 
 #include "CoreBaseApplication.h"
 // for MeshConvertParams
 #include "ModernMesh.h"
 #include "Base3DImporter.h"
 
-class	ModuleSceneGraph;
-class	ModuleRenderer;
-class	ModuleGUI;
 
-
-class MeshConvert : public CoreBaseApplication
+namespace Kigs
 {
-public:
+	namespace Scene
+	{
+		class	ModuleSceneGraph;
+	}
+	namespace Draw
+	{
+		class	ModuleRenderer;
+	}
+	namespace Gui
+	{
+		class	ModuleGUI;
+	}
+	using namespace Kigs::Core;
 
-	DECLARE_CLASS_INFO(MeshConvert, CoreBaseApplication, Core)
+	class MeshConvert : public CoreBaseApplication
+	{
+	public:
 
-	MeshConvert(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	virtual		~MeshConvert();
+		DECLARE_CLASS_INFO(MeshConvert, CoreBaseApplication, Core)
 
-protected:
+			MeshConvert(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+		virtual		~MeshConvert();
 
-	void	RetreiveShortNameAndExt(const std::string& filename,std::string& shortname,std::string& fileext);
+	protected:
 
-	void	InitExternClasses();
+		void	RetreiveShortNameAndExt(const std::string& filename, std::string& shortname, std::string& fileext);
 
-
-	//Virtual methods
-	virtual void									ProtectedInit();
-	virtual void									ProtectedUpdate();
-	virtual void									ProtectedClose();
-	virtual bool									ProtectedExternAskExit();
-	float											myStartTime;
-
-	SP<ModuleSceneGraph>		theSceneGraph;
-	SP<ModuleRenderer>			theRenderer;
-	SP<ModuleGUI>				theGUI;
-
-	MeshConvertParams		myParams;
-
-	std::vector<CMSP>	myObjectsToDestroy;
-};
+		void	InitExternClasses();
 
 
-#endif //_MESHCONVERT_H_
+		//Virtual methods
+		virtual void									ProtectedInit();
+		virtual void									ProtectedUpdate();
+		virtual void									ProtectedClose();
+		virtual bool									ProtectedExternAskExit();
+		float											myStartTime;
+
+		SP<Scene::ModuleSceneGraph>		theSceneGraph;
+		SP<Draw::ModuleRenderer>		theRenderer;
+		SP<Gui::ModuleGUI>				theGUI;
+
+		Utils::MeshConvertParams		myParams;
+
+		std::vector<CMSP>	myObjectsToDestroy;
+	};
+
+
+}

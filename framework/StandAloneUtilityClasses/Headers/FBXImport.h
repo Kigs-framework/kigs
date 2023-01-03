@@ -1,5 +1,4 @@
-#ifndef __FBX_IMPORT_H__
-#define __FBX_IMPORT_H__
+#pragma once
 
 #ifdef USE_FBXSDK
 
@@ -15,6 +14,14 @@
 #include <map>
 #include "Base3DImporter.h"
 
+namespace Kigs
+{
+	namespace Utils
+	{
+		using namespace Kigs::Scene;
+		using namespace Kigs::Draw;
+		using namespace Kigs::Xml;
+		using namespace Kigs::Anim;
 // ****************************************
 // * FBXImport class
 // * --------------------------------------
@@ -129,5 +136,7 @@ protected:
 	int nbrVertex;
 	int nbrTriangle;
 };
+}
+}
 #endif // USE_FBXSDK
-#endif //__FBX_IMPORT_H__
+

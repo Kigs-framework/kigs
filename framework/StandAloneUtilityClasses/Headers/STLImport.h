@@ -1,60 +1,68 @@
-#ifndef _STLIMPORT_H_
-#define _STLIMPORT_H_
-
+#pragma once
 
 #include "CoreModifiable.h"
 #include "CoreModifiableAttribute.h"
 #include "maReference.h"
 #include "AsciiParserUtils.h"
 #include "DynamicGrowingBuffer.h"
-/**
-		Parse an obj file
-*/
 
-class Mesh;
-class Material;
-class MeshItemGroup;
 
-class STLImport : public CoreModifiable
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(STLImport,CoreModifiable,Renderer);
-	
-	//! builds an list of kmesh
-	STLImport(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-
-	std::vector<CMSP>&	GetMeshes()
+	namespace Draw
 	{
-		return m_MeshList;
+		class Material;
+		class Mesh;
+		class MeshItemGroup;
 	}
-#ifdef WIN32
-	void ExportResult(); // used by edit
-#endif //WIN32
-	virtual ~STLImport();
-protected:
-
-	struct readFacet
+	namespace Utils
 	{
-		Vector3D	mNormal;
-		Point3D		mVertex[3];
-	};
+		using namespace Kigs::Core;
+		/**
+				Parse an obj file
+		*/
 
-	bool	CheckAscii(unsigned char* buffer, unsigned int l);
+		class STLImport : public CoreModifiable
+		{
+		public:
+			DECLARE_CLASS_INFO(STLImport, CoreModifiable, Renderer);
 
-	void	createObjectFromReadedData();
+			//! builds an list of kmesh
+			STLImport(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	virtual void	InitModifiable();
-	
-	maString								m_FileName;
+			std::vector<CMSP>& GetMeshes()
+			{
+				return m_MeshList;
+			}
+#ifdef WIN32
+			void ExportResult(); // used by edit
+#endif //WIN32
+			virtual ~STLImport();
+		protected:
 
-	std::vector<CMSP>			m_MeshList;
+			struct readFacet
+			{
+				Vector3D	mNormal;
+				Point3D		mVertex[3];
+			};
 
-	void	ReinitReadBuffers();
+			bool	CheckAscii(unsigned char* buffer, unsigned int l);
 
-	DynamicGrowingBuffer<readFacet>*		m_ReadTriangleBuffer;
-	unsigned int							m_ReadTriangleIndex;
+			void	createObjectFromReadedData();
+
+			virtual void	InitModifiable();
+
+			maString								m_FileName;
+
+			std::vector<CMSP>			m_MeshList;
+
+			void	ReinitReadBuffers();
+
+			DynamicGrowingBuffer<readFacet>*	m_ReadTriangleBuffer;
+			unsigned int						m_ReadTriangleIndex;
 
 
-	std::string							m_CurrentObjectName;
-};
-#endif //_STLIMPORT_H_
+			std::string							m_CurrentObjectName;
+		};
+	}
+}

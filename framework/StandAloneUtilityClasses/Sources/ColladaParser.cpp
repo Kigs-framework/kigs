@@ -24,6 +24,9 @@
 #include <queue>
 #include <numeric>
 
+using namespace Kigs::Utils;
+using namespace Kigs::File;
+
 IMPLEMENT_CLASS_INFO(ColladaParser)
 
 ColladaParser::ColladaParser(const std::string& name, CLASS_NAME_TREE_ARG) : Base3DImporter(name, PASS_CLASS_NAME_TREE_ARG)

@@ -11,6 +11,9 @@
 
 #include <algorithm>
 
+using namespace Kigs;
+using namespace Kigs::File;
+
 void	usage()
 {
 	printf("Usage : \n");

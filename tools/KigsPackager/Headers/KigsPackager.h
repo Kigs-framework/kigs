@@ -1,33 +1,35 @@
-#ifndef _KIGS_PACKAGER_H_
-#define _KIGS_PACKAGER_H_
+#pragma once
 
 #include "CoreBaseApplication.h"
 
-
-class KigsPackager : public CoreBaseApplication
+namespace Kigs
 {
-public:
+	using namespace Kigs::Core;
 
-	DECLARE_CLASS_INFO(KigsPackager, CoreBaseApplication, Core)
+	class KigsPackager : public CoreBaseApplication
+	{
+	public:
 
-	KigsPackager(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	virtual		~KigsPackager();
+		DECLARE_CLASS_INFO(KigsPackager, CoreBaseApplication, Core)
 
-protected:
+			KigsPackager(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+		virtual		~KigsPackager();
 
-	void	RetreiveShortNameAndExt(const std::string& filename,std::string& shortname,std::string& fileext);
+	protected:
 
-	void	InitExternClasses();
+		void	RetreiveShortNameAndExt(const std::string& filename, std::string& shortname, std::string& fileext);
 
-
-	//Virtual methods
-	virtual void									ProtectedInit();
-	virtual void									ProtectedUpdate();
-	virtual void									ProtectedClose();
-	virtual bool									ProtectedExternAskExit();
-	float											myStartTime;
-
-};
+		void	InitExternClasses();
 
 
-#endif //_KIGS_PACKAGER_H_
+		//Virtual methods
+		virtual void									ProtectedInit();
+		virtual void									ProtectedUpdate();
+		virtual void									ProtectedClose();
+		virtual bool									ProtectedExternAskExit();
+		float											myStartTime;
+
+	};
+
+
+}

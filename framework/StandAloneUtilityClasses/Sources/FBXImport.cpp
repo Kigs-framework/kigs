@@ -12,6 +12,8 @@
 #include <queue>
 #include <fstream>
 
+using namespace Kigs::Utils;
+
 IMPLEMENT_CLASS_INFO(FBXImport)
 
 FBXImport::FBXImport(const std::string& name, CLASS_NAME_TREE_ARG) : Base3DImporter(name, PASS_CLASS_NAME_TREE_ARG)
