@@ -9,4 +9,3 @@
 #include "ETCClass.cpp"
 #include "TinyImage.cpp"
 #include "TinyImageLoaderContext.cpp"
-#include "TinyImageUtils.cpp"

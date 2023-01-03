@@ -11,6 +11,10 @@
 
 namespace Kigs
 {
+	namespace Scene
+	{
+		class TravState;
+	}
 	namespace Draw
 	{
 		class RenderingScreen;
@@ -27,7 +31,7 @@ namespace Kigs
 		class UIItem;
 		class MouseVelocityComputer;
 		class MultiTouchPinch;
-		class TravState;
+
 
 		// ****************************************
 		// * Base2DLayer class

@@ -58,7 +58,7 @@ namespace Kigs
 			void Update(const Time::Timer& a_timer, void* addParam) override;
 
 			//! Do drawing here if any
-			void TravDraw(TravState* state) override;
+			void TravDraw(Scene::TravState* state) override;
 
 			SP<UIItem> GetRootItem() { return mRootItem; }
 

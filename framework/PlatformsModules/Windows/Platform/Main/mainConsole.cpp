@@ -6,7 +6,7 @@
 //! this file must define KIGS_APPLICATION_CLASS with the name of your application class
 #include "KigsApplication.h"
 
-#include <Core.h>
+#include "Core.h"
 #include "Timer.h"
 
 #include <locale.h>
