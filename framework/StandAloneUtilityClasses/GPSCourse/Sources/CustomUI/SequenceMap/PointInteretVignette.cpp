@@ -4,28 +4,32 @@
 #include "Core.h"
 #include "UI\UIText.h"
 #include "UI\UIButtonImage.h"
-#include "UI\UIVideo.h"
 #include "NotificationCenter.h"
-#include "2DLayersIncludes.h"
 
+
+#ifdef TODO
+#include "UI\UIVideo.h"
+#endif
+
+using namespace Kigs::Gps;
 
 IMPLEMENT_CLASS_INFO(PointInteretVignette);
 
-PointInteretVignette::PointInteretVignette(const kstl::string & name, CLASS_NAME_TREE_ARG) :
+PointInteretVignette::PointInteretVignette(const std::string & name, CLASS_NAME_TREE_ARG) :
 	UIImage(name, PASS_CLASS_NAME_TREE_ARG)
-	, mFontTitleName(*this, false, LABEL_AND_ID(FontTitleName), "arial.ttf")
-	, mTitleFontSize(*this, false, LABEL_AND_ID(TitleFontSize), 40)
-	, mFontDescriptionName(*this, false, LABEL_AND_ID(FontDescriptionName), "arial.ttf")
-	, mDescriptionFontSize(*this, false, LABEL_AND_ID(DescriptionFontSize), 30)
-	, mDescriptionAlignment(*this, false, LABEL_AND_ID(DescriptionAlignment), 1)
-	, mDescriptionPositionY(*this, false, LABEL_AND_ID(DescriptionPositionY), 60)
-	, mDescriptionMaxSizeX(*this, false, LABEL_AND_ID(DescriptionMaxSizeX), 300)
-	, mPositionOnWindow(*this, false, LABEL_AND_ID(PositionOnWindow), "Center")
-	, mExitButtonTextureUp(*this, false, LABEL_AND_ID(ExitButtonTextureUp), "croix.png")
-	, mExitButtonTextureOver(*this, false, LABEL_AND_ID(ExitButtonTextureOver), "")
-	, mExitButtonTextureDown(*this, false, LABEL_AND_ID(ExitButtonTextureDown), "")
-	, mTitleColor(*this, false, LABEL_AND_ID(TitleColor), KFLOAT_ONE, KFLOAT_ONE, KFLOAT_ONE, KFLOAT_ZERO)
-	, mDescriptionColor(*this, false, LABEL_AND_ID(DescriptionColor), KFLOAT_ONE, KFLOAT_ONE, KFLOAT_ONE, KFLOAT_ZERO)
+	, mFontTitleName(*this, false, "FontTitleName", "arial.ttf")
+	, mTitleFontSize(*this, false, "TitleFontSize", 40)
+	, mFontDescriptionName(*this, false, "FontDescriptionName", "arial.ttf")
+	, mDescriptionFontSize(*this, false, "DescriptionFontSize", 30)
+	, mDescriptionAlignment(*this, false, "DescriptionAlignment", 1)
+	, mDescriptionPositionY(*this, false, "DescriptionPositionY", 60)
+	, mDescriptionMaxSizeX(*this, false, "DescriptionMaxSizeX", 300)
+	, mPositionOnWindow(*this, false, "PositionOnWindow", "Center")
+	, mExitButtonTextureUp(*this, false, "ExitButtonTextureUp", "croix.png")
+	, mExitButtonTextureOver(*this, false, "ExitButtonTextureOver", "")
+	, mExitButtonTextureDown(*this, false, "ExitButtonTextureDown", "")
+	, mTitleColor(*this, false, "TitleColor", 1.0f, 1.0f, 1.0f, 0.0f)
+	, mDescriptionColor(*this, false, "DescriptionColor", 1.0f, 1.0f, 1.0f, 0.0f)
 	, mPointOfInterest(0)
 {
 	mSize.changeNotificationLevel(Owner);
@@ -53,7 +57,7 @@ PointInteretVignette::PointInteretVignette(const kstl::string & name, CLASS_NAME
 
 }
 
-void PointInteretVignette::SetVignetteTexts(kstl::string _Name, kstl::string _Description)
+void PointInteretVignette::SetVignetteTexts(std::string _Name, std::string _Description)
 {
 	mNameOfInterestPoint = _Name;
 	mDescriptionOfInterestPoint = _Description;
@@ -68,20 +72,20 @@ void PointInteretVignette::PositionVignette()
 	}
 	else if (mPositionOnWindow.const_ref() == "Vignette")
 	{
-		kfloat xPI, yPI;
+		float xPI, yPI;
 		v2f size = mPointOfInterest->GetSize();
 		mPointOfInterest->GetPosition(xPI, yPI);
 		Set_Position(size.x + xPI, size.y + yPI);
 	}
 }
 
-void PointInteretVignette::SetParameters(kstl::string params)
+void PointInteretVignette::SetParameters(std::string params)
 {
-	kstl::vector<kstl::string> VecStr;
+	std::vector<std::string> VecStr;
 
-	kstl::string::size_type stTemp = params.find(',');
+	std::string::size_type stTemp = params.find(',');
 
-	while (stTemp != kstl::string::npos)
+	while (stTemp != std::string::npos)
 	{
 		VecStr.push_back(params.substr(0, stTemp));
 		params = params.substr(stTemp + 1);
@@ -92,26 +96,26 @@ void PointInteretVignette::SetParameters(kstl::string params)
 
 	for (int i = 0; i < VecStr.size(); i++)
 	{
-		kstl::string::size_type stTemp = VecStr[i].find(':');
-		kstl::string nameOfItem = VecStr[i].substr(0, stTemp);
-		kstl::string valueOfItem = VecStr[i].substr(stTemp + 1, std::string::npos);
+		std::string::size_type stTemp = VecStr[i].find(':');
+		std::string nameOfItem = VecStr[i].substr(0, stTemp);
+		std::string valueOfItem = VecStr[i].substr(stTemp + 1, std::string::npos);
 
-		kstl::vector<ModifiableItemStruct>::const_iterator it;
+		std::vector<ModifiableItemStruct>::const_iterator it;
 		for (it = getItems().begin(); it != getItems().end(); ++it)
 		{
 
 			UIItem* vignetteSon = (UIItem*)(*it).mItem.get();
 			if (vignetteSon->getName() == nameOfItem)
 			{
-				if (vignetteSon->isSubType(LABEL_TO_ID(UIImage)))
+				if (vignetteSon->isSubType("UIImage"))
 				{
-					((UIImage *)vignetteSon)->setValue(LABEL_TO_ID(TextureName), valueOfItem);
+					((UIImage *)vignetteSon)->setValue("TextureName", valueOfItem);
 				}
-				else if (vignetteSon->isSubType(LABEL_TO_ID(UIText)))
+				else if (vignetteSon->isSubType("UIText"))
 				{
 					((UIText *)vignetteSon)->setValue("Text", valueOfItem);
 				}
-				else if (vignetteSon->isSubType(LABEL_TO_ID(UIVideo)))
+				else if (vignetteSon->isSubType("UIVideo"))
 				{
 					//VIDEO NOT AVAILABLE YET
 				}
@@ -158,7 +162,7 @@ void PointInteretVignette::NotifyUpdate(const unsigned int 	labelid)
 	{
 		mNamePointInteretTextShow->Set_FontSize(mTitleFontSize);
 		mNamePointInteretTextShow->Set_FontName(mFontTitleName);
-		if (!mNamePointInteretTextShow.isNil())
+		if (mNamePointInteretTextShow)
 		{
 			float R, G, B, A;
 			R = mTitleColor[0];
@@ -177,7 +181,7 @@ void PointInteretVignette::NotifyUpdate(const unsigned int 	labelid)
 		mDescriptionPointInteretTextShow->Set_FontSize(mDescriptionFontSize);
 		mDescriptionPointInteretTextShow->SetAlignment(mDescriptionAlignment);
 		mDescriptionPointInteretTextShow->Set_FontName(mFontDescriptionName);
-		if (!mDescriptionPointInteretTextShow.isNil())
+		if (mDescriptionPointInteretTextShow)
 		{
 			float R, G, B, A;
 			R = mDescriptionColor[0];

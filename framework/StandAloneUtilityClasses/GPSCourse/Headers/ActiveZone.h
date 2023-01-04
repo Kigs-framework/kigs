@@ -1,23 +1,29 @@
-#ifndef _ACTIVEZONE_H_
-#define _ACTIVEZONE_H_
+#pragma once
 
 #include "CoreModifiable.h"
 
-class ActiveZone : public CoreModifiable
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(ActiveZone, CoreModifiable, Core)
+	namespace Gps
+	{
+		using namespace Kigs::Core;
 
-	/**
-	* \brief	constructor
-	* \fn 		EphebeApp(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	* \param	name : instance name
-	* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
-	*/
-	ActiveZone(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	virtual											~ActiveZone(){}
+		class ActiveZone : public CoreModifiable
+		{
+		public:
+			DECLARE_CLASS_INFO(ActiveZone, CoreModifiable, Core)
 
-protected:
-};
+				/**
+				* \brief	constructor
+				* \fn 		EphebeApp(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+				* \param	name : instance name
+				* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
+				*/
+				ActiveZone(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual											~ActiveZone() {}
 
-#endif //_DataDrivenAppEditor_H_
+		protected:
+		};
+
+	}
+}

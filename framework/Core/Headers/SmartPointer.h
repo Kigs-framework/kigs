@@ -7,7 +7,9 @@ namespace Kigs
 	namespace Core
 	{
 #ifdef _DEBUG
+#ifdef WIN32
 #define SmartPointerDebugCheck
+#endif
 #endif
 #ifdef SmartPointerDebugCheck
 		template<typename To, typename From>

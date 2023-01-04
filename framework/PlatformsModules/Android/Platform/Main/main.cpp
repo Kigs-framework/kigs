@@ -11,6 +11,10 @@
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 
+using namespace Kigs;
+using namespace Kigs::Core;
+
+
 SP<CoreBaseApplication>	myApp=nullptr;
 bool					gResumeReloadTexture=false;
 

@@ -21,12 +21,12 @@
 
 #include <algorithm>
 
+#include "Platform/2DLayers/BaseUI2DLayer.inl.h"
+
 using namespace Kigs::Draw2D;
 using namespace Kigs::Input;
 
 IMPLEMENT_CLASS_INFO(BaseUI2DLayer);
-
-#include "Platform/2DLayers/BaseUI2DLayer.inl.h"
 
 ///////////////////////////////////////////
 //

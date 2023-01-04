@@ -171,6 +171,5 @@ void	GIFClass::Export(const char* filename)
 {
 }
 
-//#include "Platform/TinyImage/GIFClassLoader.inl.h"
 
 #endif 

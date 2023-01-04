@@ -151,7 +151,7 @@ void KigsCore::Init()
 	mCoreInstance->mSemaphore=0;
 
 	// profilers
-	mCoreInstance->mProfilerManager=new GlobalProfilerManager();
+	mCoreInstance->mProfilerManager=new Time::GlobalProfilerManager();
 
 	mCoreInstance->SetNotificationCenter(new NotificationCenter());
 
@@ -271,11 +271,17 @@ void KigsCore::Close(bool closeMemoryManager)
 		{
 #ifdef WIN32			
 			__debugbreak(); 
-#endif	
 			for (auto obj : AllObjects)
 			{
 				kigsprintf("leaked %s\n", typeid(obj).name());
 			}
+#else
+			for (auto obj : AllObjects)
+			{
+				kigsprintf("leaked %p\n", obj);
+			}
+#endif	
+
 		}
 #endif
 

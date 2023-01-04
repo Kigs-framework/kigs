@@ -1,5 +1,4 @@
-#ifndef _BASEPIXELBUFFERSTRUCT_H_
-#define _BASEPIXELBUFFERSTRUCT_H_
+#pragma once
 
 #include "TecLibs\Tec3D.h"
 #include "CoreRawBuffer.h"
@@ -8,6 +7,12 @@
 #include <memory>
 #include <algorithm>
 
+namespace Kigs
+{
+	namespace Utils
+	{
+		using namespace Kigs::Maths;
+		using namespace Kigs::Pict;
 #pragma pack(push, 1)
 struct Pixel24
 {
@@ -39,17 +44,17 @@ struct Pixel24
 		return Pixel24(255 - r, 255 - g, 255 - b);
 	}
 	
-	kfloat getHue() const
+	float getHue() const
 	{
-		kfloat hue;
+		float hue;
 		
-		kfloat R = r / 255.0f;
-		kfloat G = g / 255.0f;
-		kfloat B = b / 255.0f;
+		float R = r / 255.0f;
+		float G = g / 255.0f;
+		float B = b / 255.0f;
 		
 		
-		kfloat maxi = MAX(R, MAX(G, B));
-		kfloat mini = MIN(R, MIN(G, B));
+		float maxi = MAX(R, MAX(G, B));
+		float mini = MIN(R, MIN(G, B));
 		
 		if (mini == maxi) return 0.0f;
 		
@@ -999,7 +1004,7 @@ class BasePixelBufferStruct final : public PixelBuffer
 		return result;
 	}
 	
-	void exportToImage(const kstl::string& filename, TinyImage::ImageFileFormat format, bool flip=true)
+	void exportToImage(const std::string& filename, TinyImage::ImageFileFormat format, bool flip=true)
 	{
 		if (componentSize == 1)
 		{
@@ -1029,7 +1034,6 @@ class BasePixelBufferStruct final : public PixelBuffer
 	{
 		if (myPixelRawBuffer)
 		{
-			myPixelRawBuffer->Destroy();
 			myPixelRawBuffer = 0;
 			mySize.Set(0, 0);
 		}
@@ -1173,4 +1177,5 @@ namespace ptr
 	
 }
 
-#endif
+}
+}

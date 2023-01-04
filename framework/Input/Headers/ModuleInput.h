@@ -190,7 +190,7 @@ namespace Kigs
 			 * \fn			virtual void Update(const Timer& timer, void* addParam);
 			 * \param		timer : timer global
 			 */
-			void Update(const Timer& timer, void* addParam) override;
+			void Update(const Time::Timer& timer, void* addParam) override;
 
 			//! return mouse if any	
 			/**

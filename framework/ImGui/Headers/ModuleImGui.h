@@ -40,7 +40,7 @@ namespace Kigs
 			void Close() override;
 
 			//! update module
-			void Update(const Timer& timer, void* addParam) override;
+			void Update(const Time::Timer& timer, void* addParam) override;
 
 			// Quickly create a layer for debug purposes (uses the IMEditor's one if available)
 			ImGuiLayer* CreateDebugLayer(float bg_opacity = -1.0f);

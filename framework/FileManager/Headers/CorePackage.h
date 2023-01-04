@@ -335,7 +335,7 @@ namespace Kigs
 				CorePackageIterator it = begin();
 				CorePackageIterator ite = end();
 
-				while (it != ite)
+				while (!(it == ite))
 				{
 					for (auto s : (*it)->mSons)
 					{
@@ -358,7 +358,7 @@ namespace Kigs
 				CorePackageIterator it = begin();
 				CorePackageIterator ite = end();
 
-				while (it != ite)
+				while (!(it == ite))
 				{
 					std::vector<CorePackage::FATEntryNode*>::iterator s;
 					for (s = (*it)->mSons.begin(); s != (*it)->mSons.end(); s++)

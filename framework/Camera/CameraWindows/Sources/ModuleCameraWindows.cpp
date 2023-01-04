@@ -5,12 +5,14 @@
 //#include "BodyTracking.h"
 //#include "DrawBody.h"
 
-ModuleCameraWindows* gInstanceModuleCameraWindows=0;
+using namespace Kigs::Camera;
+
+ModuleCameraWindows* Kigs::Camera::gInstanceModuleCameraWindows=0;
 
 IMPLEMENT_CLASS_INFO(ModuleCameraWindows)
 
 //! constructor
-ModuleCameraWindows::ModuleCameraWindows(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+ModuleCameraWindows::ModuleCameraWindows(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	
 }
@@ -22,7 +24,7 @@ ModuleCameraWindows::~ModuleCameraWindows()
 }    
 
 //! module init, register FilePathManager
-void ModuleCameraWindows::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleCameraWindows::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"ModuleCameraWindows",params);
 	 
@@ -49,19 +51,20 @@ void ModuleCameraWindows::Close()
 }    
 
 //! module update     
-void ModuleCameraWindows::Update(const Timer& timer, void* addParam)
+void ModuleCameraWindows::Update(const Time::Timer& timer, void* addParam)
 {
 
 	BaseUpdate(timer,addParam);
 }    
 
 
-ModuleBase* PlatformCameraModuleInit(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> Kigs::Camera::PlatformCameraModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
  
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(ModuleCameraWindows,"ModuleCameraWindows");
-	gInstanceModuleCameraWindows=new ModuleCameraWindows("ModuleCameraWindows");
+	auto ptr=MakeRefCounted<ModuleCameraWindows>("ModuleCameraWindows");
+	gInstanceModuleCameraWindows= ptr.get();
 	gInstanceModuleCameraWindows->Init(core,params);
-	return gInstanceModuleCameraWindows;
+	return ptr;
 }    

@@ -4,6 +4,8 @@
 #include "NotificationCenter.h"
 #include "MultiTouchDevice.h"
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(MouseAndroid)
 
 IMPLEMENT_CONSTRUCTOR(MouseAndroid)

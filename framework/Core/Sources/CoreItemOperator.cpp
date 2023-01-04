@@ -1686,10 +1686,15 @@ DynamicVariableOperator<v4f>::operator v4f() const
 	return v4f(0, 0, 0,0);
 }
 
-
-//template class CoreItemOperator<int>;
-template class CoreItemOperator<float>;
-template class CoreItemOperator<std::string>;
-template class CoreItemOperator<v2f>;
-template class CoreItemOperator<v3f>;
-template class CoreItemOperator<v4f>;
+namespace Kigs
+{
+	namespace Core
+	{
+		//template class CoreItemOperator<int>;
+		template class CoreItemOperator<float>;
+		template class CoreItemOperator<std::string>;
+		template class CoreItemOperator<v2f>;
+		template class CoreItemOperator<v3f>;
+		template class CoreItemOperator<v4f>;
+	}
+}

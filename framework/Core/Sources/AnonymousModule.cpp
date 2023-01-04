@@ -131,7 +131,7 @@ void AnonymousModule::Close()
 }
 
 //! update module
-void AnonymousModule::Update(const Timer& timer, void* addParam)
+void AnonymousModule::Update(const Time::Timer& timer, void* addParam)
 {
 	BaseUpdate(timer,addParam);
 }

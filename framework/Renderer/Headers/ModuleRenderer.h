@@ -445,7 +445,7 @@ namespace Kigs
 			 * \fn			virtual void Update(const Timer& timer, void* addParam);
 			 * \param		timer : timer global
 			 */
-			void Update(const Timer& timer, void* addParam) override;
+			void Update(const Time::Timer& timer, void* addParam) override;
 
 			ModuleSpecificRenderer* GetSpecificRenderer()
 			{
@@ -830,8 +830,8 @@ namespace Kigs
 			 * \fn			virtual void Update(const Timer& timer, void* addParam);
 			 * \param		timer : timer global
 			 */
-			void Update(const Timer& timer, void* addParam) override;
-			virtual void PlatformUpdate(const Timer& timer, void* addParam) {}
+			void Update(const Time::Timer& timer, void* addParam) override;
+			virtual void PlatformUpdate(const Time::Timer& timer, void* addParam) {}
 
 			void	pushShader(ShaderBase*, TravState* state);
 			void	popShader(ShaderBase*, TravState* state);

@@ -281,7 +281,7 @@ void	FilePathManager::insertPackage(unsigned int packageID)
 		packagePath += "#";
 
 		// retreive all entries
-		while (it != ite)
+		while (!(it == ite))
 		{
 			if (!it.isFolder())
 			{
@@ -311,7 +311,7 @@ void	FilePathManager::unloadPackage(unsigned int packageID)
 		packagePath += "#";
 
 		// retreive all entries
-		while (it != ite)
+		while (!(it == ite))
 		{
 			if (!it.isFolder())
 			{

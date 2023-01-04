@@ -2,6 +2,8 @@
 #include "DeviceItem.h"
 #include "Core.h"
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(JoystickAndroid)
 
 JoystickAndroid::JoystickAndroid(const std::string& name,CLASS_NAME_TREE_ARG) : JoystickDevice(name,PASS_CLASS_NAME_TREE_ARG)

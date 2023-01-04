@@ -166,7 +166,7 @@ bool UIScrollable::ManageScrollEvent(Input::ScrollEvent& scroll_event)
 	return true;
 }
 
-void UIScrollable::Update(const Timer& timer, void* addParam)
+void UIScrollable::Update(const Time::Timer& timer, void* addParam)
 {
 	ParentClassType::Update(timer, addParam);
 

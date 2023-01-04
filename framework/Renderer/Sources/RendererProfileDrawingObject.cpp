@@ -8,6 +8,7 @@
 
 using namespace Kigs::Draw;
 using namespace Kigs::Draw2D;
+using namespace Kigs::Time;
 
 #define MAX_FPS	(60.0f)
 

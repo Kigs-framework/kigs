@@ -579,7 +579,7 @@ void CorePackage::insertWrittenFile(SmartPointer<FileHandle> tmpWrittenFile, con
 		// first root entry
 		int exporedFatSize = mRootFATEntry->exportInFAT(tmpFile);
 
-		while (it != ite)
+		while (!(it == ite))
 		{
 			// modify entry if needed
 			FATEntryNode* current = (*it);
@@ -681,7 +681,7 @@ bool CorePackage::removeFile(const CorePackageFileAccess* asker, FileHandle* toB
 			// first root entry
 			int exporedFatSize = mRootFATEntry->exportInFAT(tmpFile);
 
-			while (it != ite)
+			while (!(it == ite))
 			{
 				if ((*it) != asker->mFileEntry)
 				{

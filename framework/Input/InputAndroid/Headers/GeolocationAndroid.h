@@ -1,55 +1,57 @@
-#ifndef _GEOLOCATIONANDROID_H_
-#define _GEOLOCATIONANDROID_H_
-
+#pragma once
 #include "GeolocationDevice.h"
 #include "ModuleInputAndroid.h"
 
 #include <jni.h>
 
-// ****************************************
-// * GeolocationAndroid class
-// * --------------------------------------
-/**
-* \file	GeolocationAndroid.h
-* \class	GeolocationAndroid
-* \ingroup Input
-* \brief Android GPS management.
-*
-*/
-// ****************************************
-
-class	GeolocationAndroid : public GeolocationDevice
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(GeolocationAndroid, GeolocationDevice, Input)
-	
-    GeolocationAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	
-	void	UpdateDevice() override;
-	
-	bool	Aquire() override;
-	bool	Release() override;
-	
-	void	DoInputDeviceDescription() override;
+	namespace Input
+	{
+		// ****************************************
+		// * GeolocationAndroid class
+		// * --------------------------------------
+		/**
+		* \file	GeolocationAndroid.h
+		* \class	GeolocationAndroid
+		* \ingroup Input
+		* \brief Android GPS management.
+		*
+		*/
+		// ****************************************
 
-//	virtual void Activate(bool active, int minTime=10000, float minDistance=0.0f);
-	
-   	virtual ~GeolocationAndroid();  
- 
-protected:
+		class	GeolocationAndroid : public GeolocationDevice
+		{
+		public:
+			DECLARE_CLASS_INFO(GeolocationAndroid, GeolocationDevice, Input)
 
-	void	Start() override;
-	void	Stop() override;
+				GeolocationAndroid(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	 
-	jmethodID 	mGetLatitude;
-	jmethodID 	mGetLongitude;
-	jmethodID 	mGetAltitude;
-	jmethodID 	mGetAccuracy;
-	jmethodID	mGetActive;
-	jmethodID	mSetActive;
-	jclass		mKigsGeolocation;
-	
-};    
+			void	UpdateDevice() override;
 
-#endif //_GEOLOCATIONANDROID_H_
+			bool	Aquire() override;
+			bool	Release() override;
+
+			void	DoInputDeviceDescription() override;
+
+			//	virtual void Activate(bool active, int minTime=10000, float minDistance=0.0f);
+
+			virtual ~GeolocationAndroid();
+
+		protected:
+
+			void	Start() override;
+			void	Stop() override;
+
+
+			jmethodID 	mGetLatitude;
+			jmethodID 	mGetLongitude;
+			jmethodID 	mGetAltitude;
+			jmethodID 	mGetAccuracy;
+			jmethodID	mGetActive;
+			jmethodID	mSetActive;
+			jclass		mKigsGeolocation;
+
+		};
+	}
+}

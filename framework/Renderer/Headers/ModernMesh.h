@@ -1,7 +1,8 @@
 #pragma once
 
-#include "TecLibs/Tec3D.h"
+
 #include "HDrawable.h"
+#include "TecLibs/Tec3D.h"
 #include "TecLibs/3D/3DObject/BBox.h"
 #include "BufferedFile.h"
 #include "maBuffer.h"

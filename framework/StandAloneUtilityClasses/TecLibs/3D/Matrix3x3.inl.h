@@ -1,3 +1,5 @@
+#include <string>
+
 namespace Kigs
 {
 	namespace Maths
@@ -16,7 +18,7 @@ namespace Kigs
 		// * Copy constructor
 		// *-----------------------------
 		// ******************************
-#include <string.h>
+
 
 // ******************************
 // * Constructors

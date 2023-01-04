@@ -1,8 +1,8 @@
-
 #include "CompassAndroid.h"
 #include "Core.h"
 #include "DeviceItem.h"
 
+using namespace Kigs::Input;
 
 IMPLEMENT_CLASS_INFO(CompassAndroid)
 

@@ -211,7 +211,7 @@ typedef void* EGLClientBuffer;
 class AndroidGraphicBuffer : public AndroidGraphicBufferBase
 {
 public:
-	AndroidGraphicBuffer(uint32_t width, uint32_t height, uint32_t usage, TinyImage::ImageFormat format) : AndroidGraphicBufferBase(width, height, usage, format) {	}
+	AndroidGraphicBuffer(uint32_t width, uint32_t height, uint32_t usage, Kigs::Pict::TinyImage::ImageFormat format) : AndroidGraphicBufferBase(width, height, usage, format) {	}
 	~AndroidGraphicBuffer() override { DestroyBuffer(); }
 
 
@@ -236,7 +236,7 @@ public:
 
 		return sGLFunctions.fGraphicBufferUnlock(mHandle);
 	}
-	bool Reallocate(uint32_t aWidth, uint32_t aHeight, TinyImage::ImageFormat aFormat) override
+	bool Reallocate(uint32_t aWidth, uint32_t aHeight, Kigs::Pict::TinyImage::ImageFormat aFormat) override
 	{
 		if (!EnsureInitialized())
 			return false;
@@ -357,14 +357,14 @@ private:
 
 	  return flags;
   }
-  uint32_t GetAndroidFormat(TinyImage::ImageFormat aFormat)
+  uint32_t GetAndroidFormat(Kigs::Pict::TinyImage::ImageFormat aFormat)
   {
 	  switch (aFormat) {
-	  case TinyImage::ImageFormat::RGBA_32_8888:
+	  case Kigs::Pict::TinyImage::ImageFormat::RGBA_32_8888:
 		  return HAL_PIXEL_FORMAT_RGBA_8888;
-	  case TinyImage::ImageFormat::RGB_24_888:
+	  case Kigs::Pict::TinyImage::ImageFormat::RGB_24_888:
 		  return HAL_PIXEL_FORMAT_RGB_888;
-	  case TinyImage::ImageFormat::RGB_16_565:
+	  case Kigs::Pict::TinyImage::ImageFormat::RGB_16_565:
 		  return HAL_PIXEL_FORMAT_RGB_565;
 	  default:
 		  return 0;

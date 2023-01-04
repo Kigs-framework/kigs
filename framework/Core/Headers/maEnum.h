@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core.h"
 #include "CoreModifiableAttribute.h"
 #include <array>
 

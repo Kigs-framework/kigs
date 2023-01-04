@@ -1,43 +1,48 @@
-#ifndef _SHRINKERWINDOWS_H_
-#define _SHRINKERWINDOWS_H_
+#pragma once
 
 #include "CoreModifiable.h"
 #include "GenericShrinker.h"
 
-// ****************************************
-// * ShrinkerWindows class
-// * --------------------------------------
-/*!  \class ShrinkerWindows
-     reduce camera frame size
-*/
-// ****************************************
-
-
-class ShrinkerWindows : public GenericShrinker
+namespace Kigs
 {
-public:
+
+	namespace Camera
+	{
+		// ****************************************
+		// * ShrinkerWindows class
+		// * --------------------------------------
+		/*!  \class ShrinkerWindows
+			 reduce camera frame size
+		*/
+		// ****************************************
 
 
-    DECLARE_CLASS_INFO(ShrinkerWindows,GenericShrinker,CameraModule)
+		class ShrinkerWindows : public GenericShrinker
+		{
+		public:
 
-	//! constructor
-    ShrinkerWindows(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 
-	virtual void	Process();
-	
-protected:
+			DECLARE_CLASS_INFO(ShrinkerWindows, GenericShrinker, CameraModule)
 
-	//! destructor
-    virtual ~ShrinkerWindows();
+				//! constructor
+				ShrinkerWindows(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	virtual	void AllocateFrameBuffers();
-	virtual	void FreeFrameBuffers();
+			virtual void	Process();
+			//! destructor
+			virtual ~ShrinkerWindows();
 
-	virtual	void	InitModifiable();
+		protected:
 
-	void	RGBShrink();
-	void	YUVShrink();
 
-};
+			virtual	void AllocateFrameBuffers();
+			virtual	void FreeFrameBuffers();
 
-#endif //_SHRINKERWINDOWS_H_
+			virtual	void	InitModifiable();
+
+			void	RGBShrink();
+			void	YUVShrink();
+
+		};
+
+	}
+}

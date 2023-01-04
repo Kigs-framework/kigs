@@ -3,6 +3,8 @@
 #include "DeviceItem.h"
 #include "NotificationCenter.h"
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(MultiTouchAndroid)
 
 IMPLEMENT_CONSTRUCTOR(MultiTouchAndroid)

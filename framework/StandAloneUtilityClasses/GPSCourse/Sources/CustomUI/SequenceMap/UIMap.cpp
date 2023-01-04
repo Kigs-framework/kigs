@@ -8,19 +8,22 @@
 #include "GeolocationDevice.h"
 #include "CoreBaseApplication.h"
 
+using namespace Kigs::Gps;
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(UIMap);
 
-UIMap::UIMap(const kstl::string& name, CLASS_NAME_TREE_ARG) :
+UIMap::UIMap(const std::string& name, CLASS_NAME_TREE_ARG) :
 	UIImage(name, PASS_CLASS_NAME_TREE_ARG)
-	, mCoordGPSTopLeftPoint_Lat(*this, false, LABEL_AND_ID(GPSTopLeftPoint_Lat), 0)
-	, mCoordGPSTopLeftPoint_Long(*this, false, LABEL_AND_ID(GPSTopLeftPoint_Long), 0)
-	, mCoordGPSBottomRightPoint_Lat(*this, false, LABEL_AND_ID(GPSBottomRightPoint_Lat), 0)
-	, mCoordGPSBottomRightPoint_Long(*this, false, LABEL_AND_ID(GPSBottomRightPoint_Long), 0)
-	, mUserGPS_Lat(*this, false, LABEL_AND_ID(GPSUser_Lat), 0)
-	, mUserGPS_Long(*this, false, LABEL_AND_ID(GPSUser_Long), 0)
-	, mClickControl(*this, false, LABEL_AND_ID(ClickControl), true)
+	, mCoordGPSTopLeftPoint_Lat(*this, false, "GPSTopLeftPoint_Lat", 0)
+	, mCoordGPSTopLeftPoint_Long(*this, false, "GPSTopLeftPoint_Long", 0)
+	, mCoordGPSBottomRightPoint_Lat(*this, false, "GPSBottomRightPoint_Lat", 0)
+	, mCoordGPSBottomRightPoint_Long(*this, false, "GPSBottomRightPoint_Long", 0)
+	, mUserGPS_Lat(*this, false, "GPSUser_Lat", 0)
+	, mUserGPS_Long(*this, false, "GPSUser_Long", 0)
+	, mClickControl(*this, false, "ClickControl", true)
 	, mUser(nullptr)
-	, mUserImage(*this, false, LABEL_AND_ID(User),"")
+	, mUserImage(*this, false, "User","")
 	, mGPS(NULL)
 	, mCompas(NULL)
 	, mHasClick(false)
@@ -43,7 +46,7 @@ void UIMap::Update(const Timer& a_Timer, void* addParam)
 			view = q*view;
 			Vector3D view_proj = ProjectOnPlane(view, Point3D(0, 0, 0), Vector3D(0, 0, 1));
 			view_proj.Normalize();
-			kfloat angle = acos(Dot(Vector3D(1,0,0), view_proj));
+			float angle = acos(Dot(Vector3D(1,0,0), view_proj));
 			Vector3D side_vector;
 			side_vector.CrossProduct(Vector3D(1, 0, 0), view_proj);
 			if (Dot(Vector3D(0, 0, 1), side_vector) < 0) angle = -angle;
@@ -70,13 +73,13 @@ void UIMap::NotifyUpdate(const unsigned int 	labelid)
 	}
 	else if (labelid == mUserImage.getLabelID())
 	{
-		mUser->setValue(LABEL_TO_ID(User), mUserImage);
+		mUser->setValue("User", mUserImage);
 	}
 	else if (labelid == mClickControl.getLabelID())
 	{
 		if( mGPS == nullptr )
 		{
-			ModuleInput* input = (ModuleInput*)KigsCore::GetModule("ModuleInput");
+			auto input = KigsCore::GetModule<Input::ModuleInput>();
 			mGPS = input->GetGeolocation();
 		}
 
@@ -89,8 +92,8 @@ void UIMap::NotifyUpdate(const unsigned int 	labelid)
 		{
 			if (mGPS)
 			{
-				mGPS->setValue(LABEL_TO_ID(Rate), 1000);
-				mGPS->setValue(LABEL_TO_ID(MinDistance), 1.0f);
+				mGPS->setValue("Rate", 1000);
+				mGPS->setValue("MinDistance", 1.0f);
 				mGPS->Aquire();
 			}
 		}
@@ -112,8 +115,8 @@ void UIMap::InitModifiable()
 	}
 
 	mUser = KigsCore::GetInstanceOf(getName() + "_myUser", "UserPositionGPS");
-	mUser->setValue(LABEL_TO_ID(Map), getName());
-	mUser->setValue(LABEL_TO_ID(User), mUserImage);
+	mUser->setValue("Map", getName());
+	mUser->setValue("User", mUserImage);
 	addItem((CMSP&)mUser);
 	
 
@@ -124,18 +127,18 @@ void UIMap::InitModifiable()
 
 	mPointsOfInterest.clear();
 
-	ModuleInput* input = (ModuleInput*)KigsCore::GetModule("ModuleInput");
+	auto input = KigsCore::GetModule<Input::ModuleInput>();
 	mGPS = input->GetGeolocation();
 	mCompas = input->GetGyroscope();
 	if (mCompas)
 	{
-		mCompas->setValue(LABEL_TO_ID(Rate), 0);
+		mCompas->setValue("Rate", 0);
 		mCompas->Aquire();
 	}
 	if (mGPS)
 	{
-		mGPS->setValue(LABEL_TO_ID(Rate), 100);
-		mGPS->setValue(LABEL_TO_ID(MinDistance), 0.5f);
+		mGPS->setValue("Rate", 100);
+		mGPS->setValue("MinDistance", 0.5f);
 		mGPS->Aquire();	
 	}
 

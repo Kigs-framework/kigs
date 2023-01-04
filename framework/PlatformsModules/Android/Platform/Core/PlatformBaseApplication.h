@@ -1,40 +1,43 @@
-#ifndef _ANDROID_PLATFORMBASEAPPLICATION_H_
-#define _ANDROID_PLATFORMBASEAPPLICATION_H_
+#pragma once
 
-//! This class must not be virtual because there's a double inheritance
-class PlatformBaseApplication
+namespace Kigs
 {
-public:
-	//! constructor
-	PlatformBaseApplication(){;}
+	namespace Core
+	{
+		//! This class must not be virtual because there's a double inheritance
+		class PlatformBaseApplication
+		{
+		public:
+			//! constructor
+			PlatformBaseApplication() { ; }
 
-	//! destructor
-	//! no virtual here
-	~PlatformBaseApplication(){;}
-	
-	bool	IsHolographic() {return false;} // no holographic mode
-	
-	void	Init(){;}
-	void	Update(){;}
-	void	Close(){;}
-	void	Sleep();
-	void	Resume();
-	void	Message(int /* mtype */,int /* Params */);
-	void	OpenLink(const char* a_link);
-	void	OpenLink(const unsigned short* a_link, const unsigned int a_length);
-	
-	bool	CheckConnexion();
-	bool	CheckBackKeyPressed();
-		
-	// get number of core / processor
-	static unsigned int getProcessorCount();
+			//! destructor
+			//! no virtual here
+			~PlatformBaseApplication() { ; }
 
-	static int		getCpuId();
+			bool	IsHolographic() { return false; } // no holographic mode
 
-	static void		setCurrentThreadAffinityMask(int mask);
-	static void		setThreadAffinityMask(void*,int mask);
-	
-	static const char* getPlatformName();
-};
+			void	Init() { ; }
+			void	Update() { ; }
+			void	Close() { ; }
+			void	Sleep();
+			void	Resume();
+			void	Message(int /* mtype */, int /* Params */);
+			void	OpenLink(const char* a_link);
+			void	OpenLink(const unsigned short* a_link, const unsigned int a_length);
 
-#endif //_ANDROID_PLATFORMBASEAPPLICATION_H_
+			bool	CheckConnexion();
+			bool	CheckBackKeyPressed();
+
+			// get number of core / processor
+			static unsigned int getProcessorCount();
+
+			static int		getCpuId();
+
+			static void		setCurrentThreadAffinityMask(int mask);
+			static void		setThreadAffinityMask(void*, int mask);
+
+			static const char* getPlatformName();
+		};
+	}
+}

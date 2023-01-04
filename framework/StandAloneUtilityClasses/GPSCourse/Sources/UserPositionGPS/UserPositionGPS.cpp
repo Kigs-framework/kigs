@@ -4,14 +4,16 @@
 #include "UI\UIText.h"
 #include "ModuleInput.h"
 
+using namespace Kigs::Gps;
+
 IMPLEMENT_CLASS_INFO(UserPositionGPS);
 
-UserPositionGPS::UserPositionGPS(const kstl::string & name, CLASS_NAME_TREE_ARG) :
+UserPositionGPS::UserPositionGPS(const std::string & name, CLASS_NAME_TREE_ARG) :
 	CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG),
 	mCoordGPS_Lat(0),
 	mCoordGPS_Long(0),
-	mUser(*this, false, LABEL_AND_ID(User)),
-	mMap(*this, false, LABEL_AND_ID(Map))
+	mUser(*this, false, "User"),
+	mMap(*this, false, "Map")
 {
 }
 
@@ -31,7 +33,7 @@ void UserPositionGPS::InitModifiable()
 	}
 }
 
-bool UserPositionGPS::SetCoordGPS(kdouble _Lat, kdouble _Long)
+bool UserPositionGPS::SetCoordGPS(double _Lat, double _Long)
 { 
 	if (_Lat == mCoordGPS_Lat && _Long == mCoordGPS_Long)
 		return false;

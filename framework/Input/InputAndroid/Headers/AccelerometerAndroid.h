@@ -1,65 +1,68 @@
-#ifndef _ACCELEROMETERANDROID_H_
-#define _ACCELEROMETERANDROID_H_
+#pragma once
 
 #include "AccelerometerDevice.h"
 #include "ModuleInputAndroid.h"
 
 #include <jni.h>
 
-// ****************************************
-// * AccelerometerAndroid class
-// * --------------------------------------
-/**
-* \file	AccelerometerAndroid.h
-* \class	AccelerometerAndroid
-* \ingroup Input
-* \brief Android Accelerometer management
-*
-*/
-// ****************************************
-
-class	AccelerometerAndroid : public AccelerometerDevice
+namespace Kigs
 {
-public:
-	/** get sensor data as fast as possible */
-	const static int SENSOR_DELAY_FASTEST = 0;
-	/** rate suitable for games */
-	const static int SENSOR_DELAY_GAME = 1;
-	/** rate suitable for the user interface  */
-	const static int SENSOR_DELAY_UI = 2;
-	/** rate (default) suitable for screen orientation changes */
-	const static int SENSOR_DELAY_NORMAL = 3;
+	namespace Input
+	{
+		// ****************************************
+		// * AccelerometerAndroid class
+		// * --------------------------------------
+		/**
+		* \file	AccelerometerAndroid.h
+		* \class	AccelerometerAndroid
+		* \ingroup Input
+		* \brief Android Accelerometer management
+		*
+		*/
+		// ****************************************
 
-    DECLARE_CLASS_INFO(AccelerometerAndroid,AccelerometerDevice,Input)
-	
-    AccelerometerAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	
-	void	UpdateDevice() override;
-	
-	bool	Aquire() override;
-	bool	Release() override;
+		class	AccelerometerAndroid : public AccelerometerDevice
+		{
+		public:
+			/** get sensor data as fast as possible */
+			const static int SENSOR_DELAY_FASTEST = 0;
+			/** rate suitable for games */
+			const static int SENSOR_DELAY_GAME = 1;
+			/** rate suitable for the user interface  */
+			const static int SENSOR_DELAY_UI = 2;
+			/** rate (default) suitable for screen orientation changes */
+			const static int SENSOR_DELAY_NORMAL = 3;
 
-	
-	void	DoInputDeviceDescription() override;
-	virtual ~AccelerometerAndroid();  
-	
-    
-protected:
+			DECLARE_CLASS_INFO(AccelerometerAndroid, AccelerometerDevice, Input)
 
-	bool mIsAvailable;
-	bool mIsWCAvailable;
-	bool mIsRunning;
+				AccelerometerAndroid(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	void	Start() override;
-	void	Stop() override;
+			void	UpdateDevice() override;
+
+			bool	Aquire() override;
+			bool	Release() override;
 
 
-	jmethodID 	mStopMethod;
-	jmethodID 	mStartMethod;
-	jmethodID 	mGetValue;
+			void	DoInputDeviceDescription() override;
+			virtual ~AccelerometerAndroid();
 
-	jclass		mKigsAccelerometer;
-	
-};    
 
-#endif //_ACCELEROMETERANDROID_H_
+		protected:
+
+			bool mIsAvailable;
+			bool mIsWCAvailable;
+			bool mIsRunning;
+
+			void	Start() override;
+			void	Stop() override;
+
+
+			jmethodID 	mStopMethod;
+			jmethodID 	mStartMethod;
+			jmethodID 	mGetValue;
+
+			jclass		mKigsAccelerometer;
+
+		};
+	}
+}

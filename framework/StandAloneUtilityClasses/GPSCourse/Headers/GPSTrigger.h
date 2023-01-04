@@ -1,43 +1,51 @@
 #pragma once
 #include "GeolocationDevice.h"
 
-// ****************************************
-// * GPSTrigger class
-// * --------------------------------------
-/**
-* \file	GPSTrigger.h
-* \class	GPSTrigger
-* \ingroup Geoloc
-* \brief	 Used to go back of a sequence if user go to far from the interest point
-* \author	König Jolan
-* \version ukn
-* \date	26/07/16
-*
-*/
-// ****************************************
-
-class GPSTrigger :
-	public CoreModifiable
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(GPSTrigger, CoreModifiable, GeoLoc);
+	namespace Gps
+	{
+		using namespace Kigs::Core;
+
+		// ****************************************
+		// * GPSTrigger class
+		// * --------------------------------------
+		/**
+		* \file	GPSTrigger.h
+		* \class	GPSTrigger
+		* \ingroup Geoloc
+		* \brief	 Used to go back of a sequence if user go to far from the interest point
+		* \author	König Jolan
+		* \version ukn
+		* \date	26/07/16
+		*
+		*/
+		// ****************************************
+
+		class GPSTrigger :
+			public CoreModifiable
+		{
+		public:
+			DECLARE_CLASS_INFO(GPSTrigger, CoreModifiable, GeoLoc);
 
 
-	GPSTrigger(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	bool SetCoordGPS(kdouble _Lat, kdouble _Long);
+			GPSTrigger(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			bool SetCoordGPS(double _Lat, double _Long);
 
-protected:
-	void InitModifiable()override;
-	void ProtectedDestroy()override;
-	void Update(const Timer& a_Timer, void* addParam)override;
-	void CheckDistance(kdouble _lat, kdouble _long);
 
-	GeolocationDevice* mGPS;
+		protected:
+			void InitModifiable()override;
+			void Update(const Time::Timer& a_Timer, void* addParam)override;
+			void CheckDistance(double _lat, double _long);
 
-	maDouble mCoordonateInitial_Lat;
-	maDouble mCoordonateInitial_Long;
-	maDouble mDistMax;
+			Input::GeolocationDevice* mGPS;
 
-	kdouble mCoordGPS_Lat;
-	kdouble mCoordGPS_Long;	
-};
+			maDouble mCoordonateInitial_Lat;
+			maDouble mCoordonateInitial_Long;
+			maDouble mDistMax;
+
+			double mCoordGPS_Lat;
+			double mCoordGPS_Long;
+		};
+	}
+}

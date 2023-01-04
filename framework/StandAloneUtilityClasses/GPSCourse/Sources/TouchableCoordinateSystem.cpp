@@ -5,9 +5,14 @@
 #include "RendererMatrix.h"
 #include "CoreBaseApplication.h"
 #include "ModuleInput.h"
+
+#ifdef TODO
+
+using namespace Kigs::Gps;
+
 IMPLEMENT_CLASS_INFO(TouchableCoordinateSystem)
 
-TouchableCoordinateSystem::TouchableCoordinateSystem(const kstl::string& name,CLASS_NAME_TREE_ARG) : Node3D(name,PASS_CLASS_NAME_TREE_ARG)
+TouchableCoordinateSystem::TouchableCoordinateSystem(const std::string& name,CLASS_NAME_TREE_ARG) : Node3D(name,PASS_CLASS_NAME_TREE_ARG)
 , leftClicked(false)
 {
 }     
@@ -63,3 +68,4 @@ TouchableCoordinateSystem::~TouchableCoordinateSystem()
 	}
 }    
 
+#endif

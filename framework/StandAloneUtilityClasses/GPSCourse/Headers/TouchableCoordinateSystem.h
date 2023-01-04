@@ -1,9 +1,9 @@
-#ifndef _TOUCHABLECOORDINATESYSTEM_H_
-#define _TOUCHABLECOORDINATESYSTEM_H_
+#pragma once
+
+#ifdef TODO
+#include "CoordinateSystem.h"
 
 class MouseDevice;
-
-#include "CoordinateSystem.h"
 
 // ****************************************
 // * TouchableCoordinateSystem class
@@ -51,11 +51,11 @@ public:
 
 	/**
 	 * \brief	constructor
-	 * \fn 		CoordinateSystem(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	 * \fn 		CoordinateSystem(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	 * \param	name : instance name
 	 * \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 	 */
-	TouchableCoordinateSystem(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+	TouchableCoordinateSystem(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
 	void Update(const Timer& timer, void* addParam) override;
 	void	InitModifiable() override;
 
@@ -67,4 +67,4 @@ protected:
 
 }; 
 
-#endif //_TOUCHABLECOORDINATESYSTEM_H_
+#endif //TODO

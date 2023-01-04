@@ -12,6 +12,7 @@
 #include "GyroscopeAndroid.h"
 #include "CompassAndroid.h"
 
+using namespace Kigs::Input;
 
 IMPLEMENT_CLASS_INFO(ModuleInputAndroid)
 IMPLEMENT_CONSTRUCTOR(ModuleInputAndroid)
@@ -139,7 +140,7 @@ void ModuleInputAndroid::Close()
 	BaseClose();
 }
 
-void ModuleInputAndroid::Update(const Timer& /* timer */, void* /*addParam*/)
+void ModuleInputAndroid::Update(const Time::Timer& /* timer */, void* /*addParam*/)
 {
 	// read info on aquired devices
 

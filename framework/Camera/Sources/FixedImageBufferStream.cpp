@@ -5,6 +5,9 @@
 #include "TinyImage.h"
 #include "TinyImageLoaderContext.h"
 
+using namespace Kigs::Camera;
+using namespace Kigs::Pict;
+
 IMPLEMENT_CLASS_INFO(FixedImageBufferStream)
 
 // I would like to have RGB_24 in every case
@@ -32,9 +35,9 @@ TinyImage::RGB_24_888								//PALETTE24_256_COLOR
 } };
 
 //! constructor
-FixedImageBufferStream::FixedImageBufferStream(const kstl::string& name, CLASS_NAME_TREE_ARG) : FrameBufferStream(name, PASS_CLASS_NAME_TREE_ARG)
-, mFilename(*this, false, LABEL_AND_ID(FileName), "")
-, mNoConvert(*this, false, LABEL_AND_ID(NoConvert), false)
+FixedImageBufferStream::FixedImageBufferStream(const std::string& name, CLASS_NAME_TREE_ARG) : FrameBufferStream(name, PASS_CLASS_NAME_TREE_ARG)
+, mFilename(*this, false, "FileName", "")
+, mNoConvert(*this, false, "NoConvert", false)
 , mImageData(0)
 {
 	
@@ -69,14 +72,14 @@ void	FixedImageBufferStream::InitModifiable()
 	if (mFilename.const_ref() != "")
 	{
 		
-		SP<FileHandle> fullfilenamehandle;
-		auto& pathManager = KigsCore::Singleton<FilePathManager>();
+		SP<File::FileHandle> fullfilenamehandle;
+		auto pathManager = KigsCore::Singleton<File::FilePathManager>();
 		fullfilenamehandle = pathManager->FindFullName(mFilename.const_ref());
 
 		if (fullfilenamehandle)
 		{
 			TinyImage::PushContext(gImageContext);
-			TinyImage* image = TinyImage::CreateImage(fullfilenamehandle.get());
+			auto image = TinyImage::CreateImage(fullfilenamehandle.get());
 			if (image)
 			{
 				FrameBufferStream::InitModifiable();
@@ -125,8 +128,6 @@ void	FixedImageBufferStream::InitModifiable()
 							KIGS_ERROR("Unsupported format", 0);
 					}
 				}
-
-				delete image;
 			}
 			TinyImage::PopContext();
 			if (mFrameBuffers[0])
@@ -142,9 +143,9 @@ void FixedImageBufferStream::AllocateFrameBuffers()
 	if (mWidth && mHeight)
 	{
 		unsigned int frameSize = mWidth*mHeight*mPixelSize;
-		mFrameBuffers[0] = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<16, unsigned char>(frameSize, false));
-		mFrameBuffers[1] = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<16, unsigned char>(frameSize, false));
-		mFrameBuffers[2] = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<16, unsigned char>(frameSize, false));
+		mFrameBuffers[0] = std::make_shared<AlignedCoreRawBuffer<16, unsigned char>>(frameSize, false); 
+		mFrameBuffers[1] = std::make_shared<AlignedCoreRawBuffer<16, unsigned char>>(frameSize, false);
+		mFrameBuffers[2] = std::make_shared<AlignedCoreRawBuffer<16, unsigned char>>(frameSize, false);
 	}
 }
 

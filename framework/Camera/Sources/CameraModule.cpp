@@ -3,10 +3,12 @@
 
 #include "FixedImageBufferStream.h"
 
+using namespace Kigs::Camera;
+
 IMPLEMENT_CLASS_INFO(CameraModule)
 
 //! constructor
-CameraModule::CameraModule(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+CameraModule::CameraModule(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	
 }
@@ -18,7 +20,7 @@ CameraModule::~CameraModule()
 }    
 
 //! module init, register FilePathManager
-void CameraModule::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void CameraModule::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
     BaseInit(core,"Camera",params);
 	RegisterDynamic(PlatformCameraModuleInit(core,params));
@@ -32,7 +34,7 @@ void CameraModule::Close()
 }    
 
 //! module update     
-void CameraModule::Update(const Timer& timer, void* addParam)
+void CameraModule::Update(const Time::Timer& timer, void* addParam)
 {
 	BaseUpdate(timer,addParam);
 }    

@@ -72,7 +72,6 @@ namespace Kigs
 #include "3D/Basis3D.inl.h"
 #include "3D/Reference3D.inl.h"
 
-
 #include "2D/Point2D.inl.h"
 #include "2D/Point2DI.inl.h"
 #include "2D/AffineTransform2D.inl.h"

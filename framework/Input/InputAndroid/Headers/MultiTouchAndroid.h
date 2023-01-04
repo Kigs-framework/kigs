@@ -1,47 +1,53 @@
-#ifndef _MULTITOUCHANDROID_H_
-#define _MULTITOUCHANDROID_H_
+#pragma once
 
 #include "MultiTouchDevice.h"
 #include "ModuleInputAndroid.h"
 
 
 #include <jni.h>
-// ****************************************
-// * MultiTouchAndroid class
-// * --------------------------------------
-/**
-* \file	MultiTouchAndroid.h
-* \class	MultiTouchAndroid
-* \ingroup Input
-* \brief Android multitouch management.
-*
-*/
-// ****************************************
-class	MultiTouchAndroid : public MultiTouchDevice
+
+namespace Kigs
 {
-public:
-    DECLARE_CLASS_INFO(MultiTouchAndroid,MultiTouchDevice,Input)
+	namespace Input
+	{
 
-    MultiTouchAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+		// ****************************************
+		// * MultiTouchAndroid class
+		// * --------------------------------------
+		/**
+		* \file	MultiTouchAndroid.h
+		* \class	MultiTouchAndroid
+		* \ingroup Input
+		* \brief Android multitouch management.
+		*
+		*/
+		// ****************************************
+		class	MultiTouchAndroid : public MultiTouchDevice
+		{
+		public:
+			DECLARE_CLASS_INFO(MultiTouchAndroid, MultiTouchDevice, Input)
 
-	void	UpdateDevice() override;
+				MultiTouchAndroid(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	void	DoInputDeviceDescription() override;
-   	virtual ~MultiTouchAndroid();
-   
-protected:
- 
-	DECLARE_METHOD(ReinitCB);
-	
-	std::vector<jobject> mTouchList;
-	jmethodID 	mGetEventCount;
-	jmethodID 	mGetEvent;
-	jmethodID 	mClearEventList;
-   
-	jmethodID mEventGetX;
-	jmethodID mEventGetY;
-	jmethodID mEventGetAction;
-  
-};    
+			void	UpdateDevice() override;
 
-#endif //_MULTITOUCHANDROID_H_
+			void	DoInputDeviceDescription() override;
+			virtual ~MultiTouchAndroid();
+
+		protected:
+
+			DECLARE_METHOD(ReinitCB);
+
+			std::vector<jobject> mTouchList;
+			jmethodID 	mGetEventCount;
+			jmethodID 	mGetEvent;
+			jmethodID 	mClearEventList;
+
+			jmethodID mEventGetX;
+			jmethodID mEventGetY;
+			jmethodID mEventGetAction;
+
+		};
+
+	}
+}

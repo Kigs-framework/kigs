@@ -2,6 +2,8 @@
 #include "GenericCamera.h"
 #include "Core.h"
 
+using namespace Kigs::Camera;
+
 IMPLEMENT_CLASS_INFO(GenericCamera)
 
 void GenericCamera::InitModifiable()

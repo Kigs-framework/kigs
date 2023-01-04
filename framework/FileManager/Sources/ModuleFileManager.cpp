@@ -39,7 +39,7 @@ void ModuleFileManager::Close()
 }
 
 //! module update
-void ModuleFileManager::Update(const Timer& timer, void* addParam)
+void ModuleFileManager::Update(const Time::Timer& timer, void* addParam)
 {
 	BaseUpdate(timer,addParam);
 #ifdef _KIGS_ONLY_STATIC_LIB_

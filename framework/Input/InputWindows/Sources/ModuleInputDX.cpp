@@ -183,7 +183,7 @@ void ModuleInputDX::Close()
     BaseClose();
 }    
 
-void ModuleInputDX::Update(const Timer& timer, void* addParam)
+void ModuleInputDX::Update(const Time::Timer& timer, void* addParam)
 {
 	// read info on aquired devices
 	for(auto item : getItems())

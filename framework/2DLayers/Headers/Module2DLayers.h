@@ -13,6 +13,7 @@ namespace Kigs
 {
 	namespace Draw2D
 	{
+		using namespace Kigs::Core;
 		// ****************************************
 		// * Module2DLayers class
 		// * --------------------------------------

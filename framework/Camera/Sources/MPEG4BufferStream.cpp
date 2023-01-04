@@ -4,13 +4,13 @@
 
 
 
-
+using namespace Kigs::Camera;
 
 IMPLEMENT_CLASS_INFO(MPEG4BufferStream)
 
 //! constructor
-MPEG4BufferStream::MPEG4BufferStream(const kstl::string& name, CLASS_NAME_TREE_ARG) : FrameBufferStream(name, PASS_CLASS_NAME_TREE_ARG)
-, mFileName(*this, false, LABEL_AND_ID(FileName), "")
+MPEG4BufferStream::MPEG4BufferStream(const std::string& name, CLASS_NAME_TREE_ARG) : FrameBufferStream(name, PASS_CLASS_NAME_TREE_ARG)
+, mFileName(*this, false, "FileName", "")
 , mBuffers(NULL)
 , mIsAllocated(false)
 {
@@ -57,9 +57,9 @@ void MPEG4BufferStream::Stop()
 
 
 
-void MPEG4BufferStream::SetTime(kdouble t)
+void MPEG4BufferStream::SetTime(double t)
 {
-	kdouble current_time = mTimer->GetTime();
+	double current_time = mTimer->GetTime();
 	mStartTime = current_time - t; 
 	mCurrentTime = current_time;
 	mPauseTime = current_time;
@@ -69,9 +69,9 @@ void MPEG4BufferStream::SetTime(kdouble t)
 
 void MPEG4BufferStream::AllocateFrameBuffers()
 {
-	mFrameBuffers[0] = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<16, unsigned char>(mFrameSize , false));
-	mFrameBuffers[1] = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<16, unsigned char>(mFrameSize , false));
-	mFrameBuffers[2] = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<16, unsigned char>(mFrameSize , false));
+	mFrameBuffers[0] = std::make_shared<AlignedCoreRawBuffer<16, unsigned char>>(mFrameSize, false); 
+	mFrameBuffers[1] = std::make_shared<AlignedCoreRawBuffer<16, unsigned char>>(mFrameSize, false);
+	mFrameBuffers[2] = std::make_shared<AlignedCoreRawBuffer<16, unsigned char>>(mFrameSize, false);
 }
 
 void MPEG4BufferStream::FreeFrameBuffers()

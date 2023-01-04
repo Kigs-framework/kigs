@@ -1,83 +1,87 @@
-#ifndef _MPEG4BufferStream_H_
-#define _MPEG4BufferStream_H_
+#pragma once
 
 #include "FrameBufferStream.h"
 
-
-// ****************************************
-// * MPEG4BufferStream class
-// * --------------------------------------
-/**
-* \file	MPEG4BufferStream.h
-* \class	MPEG4BufferStream
-* \ingroup Camera
-* \brief   Base class for MP4 video stream playing
-*/
-// ****************************************
-
-class MPEG4BufferStream : public FrameBufferStream
+namespace Kigs
 {
-public:
-
-	enum MPEG4State
+	namespace Camera
 	{
-		Running,
-		Paused,
-		Stopped
-	};
 
-	DECLARE_ABSTRACT_CLASS_INFO(MPEG4BufferStream, FrameBufferStream, CameraModule)
+		// ****************************************
+		// * MPEG4BufferStream class
+		// * --------------------------------------
+		/**
+		* \file	MPEG4BufferStream.h
+		* \class	MPEG4BufferStream
+		* \ingroup Camera
+		* \brief   Base class for MP4 video stream playing
+		*/
+		// ****************************************
 
-	//! constructor
-	MPEG4BufferStream(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+		class MPEG4BufferStream : public FrameBufferStream
+		{
+		public:
 
-	virtual void Start();
-	virtual void Pause();
-	virtual void Stop();
-	virtual void NextFrame() = 0;
-	virtual void SetTime(kdouble t) = 0;
+			enum MPEG4State
+			{
+				Running,
+				Paused,
+				Stopped
+			};
 
-	MPEG4State GetState() { return mState; }
+			DECLARE_ABSTRACT_CLASS_INFO(MPEG4BufferStream, FrameBufferStream, CameraModule)
 
-	kdouble GetDuration() { return mDuration;  }
-	kdouble GetTime() { return mCurrentTime; }
-	kdouble GetFps() { return mFps; }
+				//! constructor
+				MPEG4BufferStream(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-protected:
+			virtual void Start();
+			virtual void Pause();
+			virtual void Stop();
+			virtual void NextFrame() = 0;
+			virtual void SetTime(double t) = 0;
 
-	MPEG4State mState;
+			MPEG4State GetState() { return mState; }
 
-	
-	void AllocateFrameBuffers() override;
-	void FreeFrameBuffers() override;
+			double GetDuration() { return mDuration; }
+			double GetTime() { return mCurrentTime; }
+			double GetFps() { return mFps; }
 
+		protected:
 
-	maString mFileName;
-
-	bool mHasReachEnd;
-
-	kdouble mStartTime;
-	kdouble mPauseTime;
-	kdouble mLastTime;
-	kdouble mDuration;
-
-	unsigned char** mBuffers;
-
-	int mFrameSize;
+			MPEG4State mState;
 
 
-	kdouble mFps;
+			void AllocateFrameBuffers() override;
+			void FreeFrameBuffers() override;
 
-	bool mIsAllocated;
 
-	kdouble mCurrentTime;
+			maString mFileName;
 
-	DECLARE_METHOD(Play);
-	DECLARE_METHOD(Pause);
-	DECLARE_METHOD(Stop);
-	DECLARE_METHOD(NextFrame);
-	DECLARE_METHOD(HasReachEnd);
-	COREMODIFIABLE_METHODS(Play, Pause, Stop, NextFrame, HasReachEnd);
-};
+			bool mHasReachEnd;
 
-#endif //_MPEG4BufferStream_H_
+			double mStartTime;
+			double mPauseTime;
+			double mLastTime;
+			double mDuration;
+
+			unsigned char** mBuffers;
+
+			int mFrameSize;
+
+
+			double mFps;
+
+			bool mIsAllocated;
+
+			double mCurrentTime;
+
+			DECLARE_METHOD(Play);
+			DECLARE_METHOD(Pause);
+			DECLARE_METHOD(Stop);
+			DECLARE_METHOD(NextFrame);
+			DECLARE_METHOD(HasReachEnd);
+			COREMODIFIABLE_METHODS(Play, Pause, Stop, NextFrame, HasReachEnd);
+		};
+
+	}
+}

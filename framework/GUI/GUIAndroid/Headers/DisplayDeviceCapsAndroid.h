@@ -1,32 +1,35 @@
-#ifndef _DISPLAYDEVICECAPSANDROID_H_
-#define _DISPLAYDEVICECAPSANDROID_H_
+#pragma once
 
 #include "DisplayDeviceCaps.h"
 
-// ****************************************
-// * DisplayDeviceCapsAndroid class
-// * --------------------------------------
-/**
-* \file	DisplayDeviceCapsAndroid.h
-* \class	DisplayDeviceCapsAndroid
-* \ingroup GUIModule
-* \brief Specific DisplayDeviceCaps for Android platform.
-*
-*/
-// ****************************************
-class DisplayDeviceCapsAndroid : public DisplayDeviceCaps
+namespace Kigs
 {
-public:
-    DECLARE_CLASS_INFO(DisplayDeviceCapsAndroid,DisplayDeviceCaps,GUI)
+    namespace Gui
+    {
+        // ****************************************
+        // * DisplayDeviceCapsAndroid class
+        // * --------------------------------------
+        /**
+        * \file	DisplayDeviceCapsAndroid.h
+        * \class	DisplayDeviceCapsAndroid
+        * \ingroup GUIModule
+        * \brief Specific DisplayDeviceCaps for Android platform.
+        *
+        */
+        // ****************************************
+        class DisplayDeviceCapsAndroid : public DisplayDeviceCaps
+        {
+        public:
+            DECLARE_CLASS_INFO(DisplayDeviceCapsAndroid, DisplayDeviceCaps, GUI)
 
-	//! constructor
-    DisplayDeviceCapsAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-    
-protected:
-    
-	//! destructor
-	virtual ~DisplayDeviceCapsAndroid();
- 
-};    
+                //! constructor
+                DisplayDeviceCapsAndroid(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-#endif //_DISPLAYDEVICECAPSANDROID_H_
+                //! destructor
+                virtual ~DisplayDeviceCapsAndroid();
+        protected:
+
+        };
+
+    }
+}

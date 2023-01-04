@@ -31,7 +31,7 @@ public:
     Usage2D = 1 << 4
   };
 
-	AndroidGraphicBufferBase(uint32_t width, uint32_t height, uint32_t usage, TinyImage::ImageFormat format) 
+	AndroidGraphicBufferBase(uint32_t width, uint32_t height, uint32_t usage, Kigs::Pict::TinyImage::ImageFormat format) 
 	{
 		mWidth = width;
 		mHeight = height;
@@ -47,7 +47,7 @@ public:
 	virtual int Lock(uint32_t usage, unsigned char **bits) { return 0; }
 	virtual int Lock(uint32_t usage, const ARect& rect, unsigned char **bits) { return 0; }
 	virtual int Unlock() { return 0; }
-	virtual bool Reallocate(uint32_t aWidth, uint32_t aHeight, TinyImage::ImageFormat aFormat) { return false; }
+	virtual bool Reallocate(uint32_t aWidth, uint32_t aHeight, Kigs::Pict::TinyImage::ImageFormat aFormat) { return false; }
 	
 	virtual bool Bind() { return false; }
 	virtual ANativeWindow_Buffer * getNativeWindowsHandle() { return myNativeWindowBuffer; }
@@ -56,7 +56,7 @@ protected:
 	uint32_t mWidth;
 	uint32_t mHeight;
 	uint32_t mUsage;
-	TinyImage::ImageFormat mFormat;
+	Kigs::Pict::TinyImage::ImageFormat mFormat;
 
 	ANativeWindow_Buffer * myNativeWindowBuffer;
 	ANativeWindow * myNativeWindow;

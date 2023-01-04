@@ -4,7 +4,7 @@
 #include "WindowAndroid.h"
 #include "DisplayDeviceCapsAndroid.h"
 
-
+using namespace Kigs::Gui;
 IMPLEMENT_CLASS_INFO(ModuleGUIAndroid)
 
 ModuleGUIAndroid::ModuleGUIAndroid(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
@@ -32,7 +32,7 @@ void ModuleGUIAndroid::Close()
     BaseClose();
 }    
 
-void ModuleGUIAndroid::Update(const Timer& timer,void* /*addParam*/)
+void ModuleGUIAndroid::Update(const Time::Timer& timer,void* /*addParam*/)
 {
 
 }    

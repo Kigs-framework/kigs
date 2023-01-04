@@ -2,11 +2,12 @@
 #include "ShrinkerWindows.h"
 #include "Core.h"
 
+using namespace Kigs::Camera;
 
 IMPLEMENT_CLASS_INFO(ShrinkerWindows)
 
 //! constructor
-ShrinkerWindows::ShrinkerWindows(const kstl::string& name,CLASS_NAME_TREE_ARG) : GenericShrinker(name,PASS_CLASS_NAME_TREE_ARG)
+ShrinkerWindows::ShrinkerWindows(const std::string& name,CLASS_NAME_TREE_ARG) : GenericShrinker(name,PASS_CLASS_NAME_TREE_ARG)
 {
    
 }     
@@ -23,9 +24,9 @@ ShrinkerWindows::~ShrinkerWindows()
 void ShrinkerWindows::AllocateFrameBuffers()
 {
 	int buffersize=mResizeX*mResizeY;
-	mFrameBuffers[0] = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<16, unsigned char>(buffersize*mPixelSize, false));
-	mFrameBuffers[1] = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<16, unsigned char>(buffersize*mPixelSize, false));
-	mFrameBuffers[2] = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<16, unsigned char>(buffersize*mPixelSize, false));
+	mFrameBuffers[0] = std::make_shared<AlignedCoreRawBuffer<16, unsigned char>>(buffersize * mPixelSize, false);
+	mFrameBuffers[1] = std::make_shared<AlignedCoreRawBuffer<16, unsigned char>>(buffersize * mPixelSize, false);
+	mFrameBuffers[2] = std::make_shared<AlignedCoreRawBuffer<16, unsigned char>>(buffersize * mPixelSize, false);
 }
 
 void ShrinkerWindows::FreeFrameBuffers()
@@ -70,9 +71,9 @@ void	ShrinkerWindows::RGBShrink()
 
 	int i,j;
 
-	kfloat	coordY=KFLOAT_CONST(0.0f);
-	kfloat	coefY=(kfloat)Height/(kfloat)mResizeY;
-	kfloat	coefX=(kfloat)Width/(kfloat)mResizeX;
+	float	coordY=0.0f;
+	float	coefY=(float)Height/(float)mResizeY;
+	float	coefX=(float)Width/(float)mResizeX;
 
 	int		icoefx=(int)(coefX);
 	int		icoefy=(int)(coefY);
@@ -80,7 +81,7 @@ void	ShrinkerWindows::RGBShrink()
 
 	for(j=0;j<mResizeY;j++)
 	{
-		kfloat	coordX=KFLOAT_CONST(0.0f);
+		float	coordX=0.0f;
 		unsigned short*	currentRow=pInput+Width*((int)coordY);
 		for(i=0;i<mResizeX;i++)
 		{
@@ -161,16 +162,16 @@ void	ShrinkerWindows::YUVShrink()
 
 	int i,j;
 
-	kfloat	coordY=KFLOAT_CONST(0.0f);
-	kfloat	coefY=(kfloat)Height/(kfloat)mResizeY;
-	kfloat	coefX=(kfloat)Width/(kfloat)mResizeX;
+	float	coordY=0.0f;
+	float	coefY=(float)Height/(float)mResizeY;
+	float	coefX=(float)Width/(float)mResizeX;
 
 	int		icoefx=(int)(coefX);
 	int		icoefy=(int)(coefY);
 
 	for(j=0;j<mResizeY;j++)
 	{
-		kfloat	coordX=KFLOAT_CONST(0.0f);
+		float	coordX=0.0f;
 		unsigned int*	currentRow=(unsigned int*)(pInput+Width*((int)coordY));
 		for(i=0;i<mResizeX;i++)
 		{

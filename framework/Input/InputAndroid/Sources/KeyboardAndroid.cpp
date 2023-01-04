@@ -3,6 +3,8 @@
 #include "DeviceItem.h"
 #include "NotificationCenter.h"
 
+using namespace Kigs::Input;
+
 KeyboardAndroid*	CurrentKeyboard = 0;
 
 // only those function are visibles from outside of the dll

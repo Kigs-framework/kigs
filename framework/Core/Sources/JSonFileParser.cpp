@@ -1139,21 +1139,27 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 
 }
 
-// force method creation
-template class JSonFileParserBase< std::string, AsciiParserUtils >;
-template class JSonFileParserBase< usString , US16ParserUtils>;
-
-std::string CoreItemToJSon(CoreItemSP map)
+namespace Kigs
 {
-	KIGS_ASSERT(map->GetType() == CoreItem::COREMAP);
-	std::string result;
-	JSonFileParser parser;
-	parser.ExportToString((CoreMap<std::string>*)map.get(), result);
-	return result;
-}
+	namespace Core
+	{
+		// force method creation
+		template class JSonFileParserBase< std::string, AsciiParserUtils >;
+		template class JSonFileParserBase< usString, US16ParserUtils>;
 
-CoreItemSP JSonToCoreItem(const std::string& str)
-{
-	JSonFileParser parser;
-	return parser.Get_JsonDictionaryFromString(str);
+		std::string CoreItemToJSon(CoreItemSP map)
+		{
+			KIGS_ASSERT(map->GetType() == CoreItem::COREMAP);
+			std::string result;
+			JSonFileParser parser;
+			parser.ExportToString((CoreMap<std::string>*)map.get(), result);
+			return result;
+		}
+
+		CoreItemSP JSonToCoreItem(const std::string& str)
+		{
+			JSonFileParser parser;
+			return parser.Get_JsonDictionaryFromString(str);
+		}
+	}
 }

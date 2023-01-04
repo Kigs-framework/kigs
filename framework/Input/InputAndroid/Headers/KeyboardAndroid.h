@@ -1,48 +1,51 @@
-#ifndef _KeyboardANDROID_H_
-#define _KeyboardANDROID_H_
-
+#pragma once
 #include "KeyboardDevice.h"
 #include "ModuleInputAndroid.h"
 #include "DeviceItem.h"
 #include <jni.h>
 
-// ****************************************
-// * KeyboardAndroid class
-// * --------------------------------------
-/**
-* \file	KeyboardAndroid.h
-* \class	KeyboardAndroid
-* \ingroup Input
-* \brief Android keyboard management.
-*
-*/
-// ****************************************
-
-class KeyboardAndroid : public KeyboardDevice
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(KeyboardAndroid, KeyboardDevice, Input)
-	DECLARE_CONSTRUCTOR(KeyboardAndroid);
+	namespace Input
+	{
+		// ****************************************
+		// * KeyboardAndroid class
+		// * --------------------------------------
+		/**
+		* \file	KeyboardAndroid.h
+		* \class	KeyboardAndroid
+		* \ingroup Input
+		* \brief Android keyboard management.
+		*
+		*/
+		// ****************************************
 
-	void	UpdateDevice() override;
+		class KeyboardAndroid : public KeyboardDevice
+		{
+		public:
+			DECLARE_CLASS_INFO(KeyboardAndroid, KeyboardDevice, Input)
+				DECLARE_CONSTRUCTOR(KeyboardAndroid);
 
-	const DeviceItemBaseState&	getKeyState(int key_id) override { return *mDeviceItems[key_id]->getState(); }
-	void	DoInputDeviceDescription() override;
+			void	UpdateDevice() override;
 
-	void Show() override;
-	void Hide() override;
+			const DeviceItemBaseState& getKeyState(int key_id) override { return *mDeviceItems[key_id]->getState(); }
+			void	DoInputDeviceDescription() override;
 
-	void PushEvent(void*, int);
+			void Show() override;
+			void Hide() override;
 
-protected:
+			void PushEvent(void*, int);
 
-	jclass mJKeyboard;
-	jmethodID mJGetActions;
-	jmethodID mJClear;
+		protected:
 
-	std::vector<KeyEvent> mReceivedEvent;
+			jclass mJKeyboard;
+			jmethodID mJGetActions;
+			jmethodID mJClear;
 
-	DECLARE_METHOD(ReinitCB);
-};
+			std::vector<KeyEvent> mReceivedEvent;
 
-#endif //_KeyboardANDROID_H_
+			DECLARE_METHOD(ReinitCB);
+		};
+
+	}
+}

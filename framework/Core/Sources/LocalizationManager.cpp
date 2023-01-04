@@ -5,6 +5,7 @@
 #include "JSonFileParser.h"
 #include "utf8.h"
 #include "utf8_decode.h"
+#include "Platform/LocalizationManager/LocalizationManager.inl.h"
 
 using namespace Kigs::Core;
 using namespace Kigs::File;
@@ -453,4 +454,3 @@ void	LocalizationManager::EraseMap()
 	mLocalizedString.clear();
 }
 
-#include "Platform/LocalizationManager/LocalizationManager.inl.h"

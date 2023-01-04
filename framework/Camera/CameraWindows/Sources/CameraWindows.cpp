@@ -17,6 +17,8 @@ extern "C"
 }
 #endif
 
+using namespace Kigs::Camera;
+
 volatile bool   inCallback = false;
 
 // missing in general header file ?
@@ -58,7 +60,7 @@ inline unsigned int SAFE_RELEASE(IUnknown** x)
 IMPLEMENT_CLASS_INFO(CameraWindows)
 
 //! constructor
-CameraWindows::CameraWindows(const kstl::string& name, CLASS_NAME_TREE_ARG)
+CameraWindows::CameraWindows(const std::string& name, CLASS_NAME_TREE_ARG)
 	: GenericCamera(name, PASS_CLASS_NAME_TREE_ARG)
 	, myVW(0)
 	, myMC(0)
@@ -405,7 +407,7 @@ void CameraWindows::InitModifiable()
 				if (myYUVFormat)
 				{
 					bool localConfigFound = false;
-					if (((kstl::string)mFormat) == "YUV422")
+					if (((std::string)mFormat) == "YUV422")
 					{
 						if (pmt->subtype == MEDIASUBTYPE_I420)
 						{
@@ -503,7 +505,7 @@ void CameraWindows::InitModifiable()
 				else // rgb 24 or 555
 				{
 					bool localConfigFound = false;
-					if (((kstl::string)mFormat) == "RGB24")
+					if (((std::string)mFormat) == "RGB24")
 					{
 						if (pmt->subtype == MEDIASUBTYPE_RGB24)
 						{
@@ -523,7 +525,7 @@ void CameraWindows::InitModifiable()
 							myFrameCropMethod = &CropBuffer_BGR555;
 						}
 					}
-					else if (((kstl::string)mFormat) == "RGB555")
+					else if (((std::string)mFormat) == "RGB555")
 					{
 						if (pmt->subtype == MEDIASUBTYPE_RGB24)
 						{
@@ -543,7 +545,7 @@ void CameraWindows::InitModifiable()
 							myFrameCropMethod = &CropBuffer_BGR555;
 						}
 					}
-					else if (((kstl::string)mFormat) == "RGB32")
+					else if (((std::string)mFormat) == "RGB32")
 					{
 						if (pmt->subtype == MEDIASUBTYPE_RGB32)
 						{
@@ -856,29 +858,29 @@ HRESULT CameraWindows::GetInterfaces()
 	ZeroMemory(&myAmMediaType, sizeof(myAmMediaType));
 	myAmMediaType.majortype = MEDIATYPE_Video;
 
-	if (((kstl::string)mFormat) == "RGB555")
+	if (((std::string)mFormat) == "RGB555")
 	{
 		myAmMediaType.subtype = MEDIASUBTYPE_RGB555;
 	}
-	else if (((kstl::string)mFormat) == "YUV422") //MEDIASUBTYPE_UYVY
+	else if (((std::string)mFormat) == "YUV422") //MEDIASUBTYPE_UYVY
 	{
 		myAmMediaType.subtype = MEDIASUBTYPE_I420;
 		myYUVFormat = true; // check know yuv : MEDIASUBTYPE_UYVY , MEDIASUBTYPE_I420, MEDIASUBTYPE_YUY2
 	}
-	else if (((kstl::string)mFormat) == "YUV24") //MEDIASUBTYPE_AYUV
+	else if (((std::string)mFormat) == "YUV24") //MEDIASUBTYPE_AYUV
 	{
 		myAmMediaType.subtype = MEDIASUBTYPE_AYUV;
 		myYUVFormat = true; // check know yuv : MEDIASUBTYPE_UYVY , MEDIASUBTYPE_I420, MEDIASUBTYPE_YUY2
 	}
-	else if (((kstl::string)mFormat) == "RGB24")
+	else if (((std::string)mFormat) == "RGB24")
 	{
 		myAmMediaType.subtype = MEDIASUBTYPE_RGB24;
 	}
-	else if (((kstl::string)mFormat) == "RGB32")
+	else if (((std::string)mFormat) == "RGB32")
 	{
 		myAmMediaType.subtype = MEDIASUBTYPE_RGB32;
 	}
-	else if (((kstl::string)mFormat) == "RGB565")
+	else if (((std::string)mFormat) == "RGB565")
 	{
 		myAmMediaType.subtype = MEDIASUBTYPE_RGB565;
 	}
@@ -905,7 +907,7 @@ void CameraWindows::AllocateFrameBuffers()
 	int buffersize = mWidth*mHeight;
 
 	for (int i = 0; i < BUFFER_COUNT; i++)
-		mFrameBuffers[i] = OwningRawPtrToSmartPtr(new AlignedCoreRawBuffer<16, unsigned char>(buffersize * mPixelSize, false));
+		mFrameBuffers[i] = std::make_shared<AlignedCoreRawBuffer<16, unsigned char>>(buffersize * mPixelSize, false);
 }
 
 void CameraWindows::FreeFrameBuffers()
@@ -1144,7 +1146,7 @@ void CameraWindows::CloseEncoder()
 
 
 
-bool CameraWindows::StartRecording(kstl::string & name)
+bool CameraWindows::StartRecording(std::string & name)
 {
 
 	SmartPointer<FileHandle> file = Platform_FindFullName(name);

@@ -26,7 +26,7 @@ void XMLModule::Close()
     BaseClose();
 }    
 
-void XMLModule::Update(const Timer& timer, void* addParam)
+void XMLModule::Update(const Time::Timer& timer, void* addParam)
 {
 	BaseUpdate(timer,addParam);
 }    

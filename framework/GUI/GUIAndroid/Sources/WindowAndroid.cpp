@@ -8,6 +8,8 @@
 
 #include "Core.h"
 
+using namespace Kigs::Gui;
+
 IMPLEMENT_CLASS_INFO(WindowAndroid)
 
 //! constructor
@@ -22,9 +24,7 @@ WindowAndroid::WindowAndroid(const std::string& name,CLASS_NAME_TREE_ARG) : Wind
 //! destructor
 WindowAndroid::~WindowAndroid()
 {  
-	//! destroy rendering screen
-	if(mScreen)
-		mScreen->Destroy();
+
 
 }    
 
@@ -79,7 +79,7 @@ void	WindowAndroid::GetMousePosInDesignWindow(int posx,int posy,kfloat& wposx,kf
 
 	if(mScreen)
 	{
-		mScreen->GetMousePosInDesignScreen(posx,posy,wposx,wposy);
+		mScreen->as<Draw::RenderingScreen>()->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
 	}
 	else
 	{

@@ -6,6 +6,9 @@
 #ifdef STB_IMAGE_RESIZE_IMPLEMENTATION
 #include <stb_image_resize.h>
 #endif
+
+using namespace Kigs::Utils;
+
 void PixelBuffer::rescale(PixelBuffer& target)
 {
 #ifdef STB_IMAGE_RESIZE_IMPLEMENTATION

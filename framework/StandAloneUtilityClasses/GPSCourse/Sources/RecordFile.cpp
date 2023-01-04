@@ -5,6 +5,10 @@
 #include "JSonFileParser.h"
 #include "FilePathManager.h"
 
+#ifdef TODO
+
+using namespace Kigs::Gps;
+
 // #RecordFileWriter
 RecordFileWriter::RecordFileWriter()
 	: mFD(NULL)
@@ -34,7 +38,7 @@ void RecordFileWriter::Flush(const char * aFileName)
 	SmartPointer<FileHandle> file = Platform_FindFullName(aFileName);
 	Platform_fopen(file.get(), "wb");
 
-	kstl::string desc = mFD->Serialize();
+	std::string desc = mFD->Serialize();
 	int lDescSize = desc.length();
 	int lHeaderSize = lDescSize + sizeof(RecordHeader) - sizeof(void*);
 	int lDataSize = mFD->GetFrameSize()*mCurrentFrame;
@@ -141,21 +145,21 @@ FileDescriptor::FileDescriptor()
 FileDescriptor::~FileDescriptor()
 {
 
-	kstl::map<kstl::string, RecordFieldBase*>::iterator itr = mFields.begin();
-	kstl::map<kstl::string, RecordFieldBase*>::iterator end = mFields.end();
+	std::map<std::string, RecordFieldBase*>::iterator itr = mFields.begin();
+	std::map<std::string, RecordFieldBase*>::iterator end = mFields.end();
 	for (; itr != end; ++itr)
 	{
 		delete itr->second;
 	}
 }
 
-kstl::string FileDescriptor::Serialize()
+std::string FileDescriptor::Serialize()
 {
 	CoreItemSP	roottmp = CoreItemSP::getCoreMap();
 	mRoot->set("Fields", roottmp);
 	
-	kstl::map<kstl::string, RecordFieldBase*>::iterator itr = mFields.begin();
-	kstl::map<kstl::string, RecordFieldBase*>::iterator end = mFields.end();
+	std::map<std::string, RecordFieldBase*>::iterator itr = mFields.begin();
+	std::map<std::string, RecordFieldBase*>::iterator end = mFields.end();
 	for (; itr != end; ++itr)
 	{
 		CoreItemSP tmp = CoreItemSP::getCoreMap();
@@ -166,9 +170,9 @@ kstl::string FileDescriptor::Serialize()
 		tmp->set("Count", CoreItemSP::getCoreValue((int)itr->second->GetCount()));
 	}
 
-	kstl::string out;
+	std::string out;
 	JSonFileParser jfp;
-	jfp.ExportToString((CoreMap<kstl::string>*)(mRoot.get()), out);
+	jfp.ExportToString((CoreMap<std::string>*)(mRoot.get()), out);
 	return out;
 }
 
@@ -190,7 +194,7 @@ void FileDescriptor::Unserialize(const char * data)
 		int lOffset = lVals["Offset"];
 		int lCount = lVals["Count"];
 		
-		kstl::string key;
+		std::string key;
 		itr.getKey(key);
 
 		switch (lType)
@@ -229,3 +233,4 @@ void FileDescriptor::Unserialize(const char * data)
 
 	}
 }
+#endif

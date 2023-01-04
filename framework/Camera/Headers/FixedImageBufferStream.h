@@ -1,46 +1,49 @@
-#ifndef _FIXEDIMAGEBUFFERSTREAM_H_
-#define _FIXEDIMAGEBUFFERSTREAM_H_
+#pragma once
 
 #include "FrameBufferStream.h"
 
-
-// ****************************************
-// * FixedImageBufferStream class
-// * --------------------------------------
-/**
-* \file	FixedImageBufferStream.h
-* \class	FixedImageBufferStream
-* \ingroup Camera
-* \brief Utility class to use a fixed image as a buffer stream 
-*/
-// ****************************************
-
-class FixedImageBufferStream : public FrameBufferStream
+namespace Kigs
 {
-public:
+	namespace Camera
+	{
+		// ****************************************
+		// * FixedImageBufferStream class
+		// * --------------------------------------
+		/**
+		* \file	FixedImageBufferStream.h
+		* \class	FixedImageBufferStream
+		* \ingroup Camera
+		* \brief Utility class to use a fixed image as a buffer stream
+		*/
+		// ****************************************
 
-	DECLARE_CLASS_INFO(FixedImageBufferStream, FrameBufferStream, CameraModule)
+		class FixedImageBufferStream : public FrameBufferStream
+		{
+		public:
 
-	//! constructor
-	FixedImageBufferStream(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			DECLARE_CLASS_INFO(FixedImageBufferStream, FrameBufferStream, CameraModule)
+
+				//! constructor
+				FixedImageBufferStream(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 
-	void	Process() override;
+			void	Process() override;
 
-	void	InitModifiable() override;
+			void	InitModifiable() override;
+
+			virtual ~FixedImageBufferStream();
+
+		protected:
 
 
-protected:
+			void AllocateFrameBuffers() override;
+			void FreeFrameBuffers() override;
 
-	virtual ~FixedImageBufferStream();
+			maString	mFilename;
+			maBool		mNoConvert;
+			unsigned char* mImageData;
 
-	void AllocateFrameBuffers() override;
-	void FreeFrameBuffers() override;
+		};
 
-	maString	mFilename;
-	maBool		mNoConvert;
-	unsigned char*	mImageData;
-
-};
-
-#endif //_MPEG4BufferStream_H_
+	}
+}

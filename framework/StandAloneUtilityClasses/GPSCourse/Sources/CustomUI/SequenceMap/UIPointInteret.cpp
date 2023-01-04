@@ -5,31 +5,32 @@
 #include "InstanceFactory.h"
 #include "UI\UIText.h"
 #include "NotificationCenter.h"
-#include "2DLayersIncludes.h"
 #include "NotificationCenter.h"
+
+using namespace Kigs::Gps;
 
 IMPLEMENT_CLASS_INFO(UIPointInteret);
 
-UIPointInteret::UIPointInteret(const kstl::string & name, CLASS_NAME_TREE_ARG) :
+UIPointInteret::UIPointInteret(const std::string & name, CLASS_NAME_TREE_ARG) :
 	UIButtonImage(name, PASS_CLASS_NAME_TREE_ARG)
-	, mCoordGPS_Lat(*this, false, LABEL_AND_ID(GPSCoord_Lat), 0)
-	, mCoordGPS_Long(*this, false, LABEL_AND_ID(GPSCoord_Long), 0)
-	, mNameOfInterestPoint(*this, false, LABEL_AND_ID(NameOfInterestPoint), "")
-	, mDescriptionOfInterestPoint(*this, false, LABEL_AND_ID(DescriptionOfInterestPoint), "")
-	, mConditionOfActivation(*this, false, LABEL_AND_ID(ConditionOfActivation), "Distance")
-	, mDistanceOfActivation(*this, false, LABEL_AND_ID(DistanceOfActivation), 20)
-	, mActionOfActivation(*this, false, LABEL_AND_ID(ActionOfActivation), "")
-	, mActionOfDeactivation(*this, false, LABEL_AND_ID(ActionOfDeactivation), "")
-	, mParameterOfActivation(*this, false, LABEL_AND_ID(ParameterOfActivation), (kstl::string)"")
-	, mParameterOfDesactivation(*this, false, LABEL_AND_ID(ParameterOfDesactivation), (kstl::string) "")
-	, mTitleColor(*this, false, LABEL_AND_ID(TitleColor), KFLOAT_ONE, KFLOAT_ONE, KFLOAT_ONE, KFLOAT_ZERO)
-	, mTitleFontName(*this, false, LABEL_AND_ID(TitleFontName), "arial.ttf")
-	, mTitleFontSize(*this, false, LABEL_AND_ID(TitleFontSize), 30)
-	, mShowTitle(*this, false, LABEL_AND_ID(ShowTitle), true)
+	, mCoordGPS_Lat(*this, false, "GPSCoord_Lat", 0)
+	, mCoordGPS_Long(*this, false, "GPSCoord_Long", 0)
+	, mNameOfInterestPoint(*this, false, "NameOfInterestPoint", "")
+	, mDescriptionOfInterestPoint(*this, false, "DescriptionOfInterestPoint", "")
+	, mConditionOfActivation(*this, false, "ConditionOfActivation", "Distance")
+	, mDistanceOfActivation(*this, false, "DistanceOfActivation", 20)
+	, mActionOfActivation(*this, false, "ActionOfActivation", "")
+	, mActionOfDeactivation(*this, false, "ActionOfDeactivation", "")
+	, mParameterOfActivation(*this, false, "ParameterOfActivation", (std::string)"")
+	, mParameterOfDesactivation(*this, false, "ParameterOfDesactivation", (std::string) "")
+	, mTitleColor(*this, false, "TitleColor", 1.0f, 1.0f, 1.0f, 0.0f)
+	, mTitleFontName(*this, false, "TitleFontName", "arial.ttf")
+	, mTitleFontSize(*this, false, "TitleFontSize", 30)
+	, mShowTitle(*this, false, "ShowTitle", true)
 	, mNameText(nullptr)
 	, mVignette(nullptr)
-	, mVignetteParameters(*this, false, LABEL_AND_ID(VignetteParameters), "")
-	, mFeedbackOnActivation(*this, false, LABEL_AND_ID(FeedbackOnActivation), false)
+	, mVignetteParameters(*this, false, "VignetteParameters", "")
+	, mFeedbackOnActivation(*this, false, "FeedbackOnActivation", false)
 	, mInactivate(false)
 	, mIsTitleShown(false)
 	, mCanBeActivatedByClick(false)
@@ -39,8 +40,8 @@ UIPointInteret::UIPointInteret(const kstl::string & name, CLASS_NAME_TREE_ARG) :
 	mDescriptionOfInterestPoint.changeNotificationLevel(Owner);
 
 
-	mNameText = KigsCore::GetInstanceOf(getName() + "_" + (kstl::string)mNameOfInterestPoint + "_NamePI", "UIText");
-	mNameText->setValue(LABEL_TO_ID(IsTouchable), false);
+	mNameText = KigsCore::GetInstanceOf(getName() + "_" + (std::string)mNameOfInterestPoint + "_NamePI", "UIText");
+	mNameText->setValue("IsTouchable", false);
 
 	mAnchor.setValue("{0.5,0.5}");
 
@@ -83,8 +84,8 @@ void UIPointInteret::InitModifiable()
 			mNameText->setValue("Text", mNameOfInterestPoint);
 
 			mNameText->SetAlignment(1);
-			mNameText->setArrayValue(LABEL_TO_ID(Dock), 0.5, 0.5);
-			mNameText->setArrayValue(LABEL_TO_ID(Anchor), 0.5, 0.5);
+			mNameText->setArrayValue("Dock", 0.5, 0.5);
+			mNameText->setArrayValue("Anchor", 0.5, 0.5);
 
 			addItem((CMSP&)mNameText);
 			mIsTitleShown = true;
@@ -102,23 +103,17 @@ void UIPointInteret::InitModifiable()
 	}
 }
 
-void    UIPointInteret::ProtectedDestroy()
+double UIPointInteret::DistanceToUser(double _lat, double _long)
 {
-	mNameText = nullptr;
-	UIButtonImage::ProtectedDestroy();
-}
+	double rlat1 = PI_180 * mCoordGPS_Lat;
+	double rlat2 = PI_180 * _lat;
+	double rlon1 = PI_180 * mCoordGPS_Long;
+	double rlon2 = PI_180 * _long;
 
-kdouble UIPointInteret::DistanceToUser(kdouble _lat, kdouble _long)
-{
-	kdouble rlat1 = PI_180 * mCoordGPS_Lat;
-	kdouble rlat2 = PI_180 * _lat;
-	kdouble rlon1 = PI_180 * mCoordGPS_Long;
-	kdouble rlon2 = PI_180 * _long;
+	double theta = mCoordGPS_Long - _long;
+	double rtheta = PI_180 * theta;
 
-	kdouble theta = mCoordGPS_Long - _long;
-	kdouble rtheta = PI_180 * theta;
-
-	kdouble dist = sin(rlat1) * sin(rlat2) + cos(rlat1) * cos(rlat2) * cos(rtheta);
+	double dist = sin(rlat1) * sin(rlat2) + cos(rlat1) * cos(rlat2) * cos(rtheta);
 	dist = acos(dist);
 	dist = dist * 180 / PI;
 	dist = dist * 60 * 1.1515;
@@ -194,7 +189,7 @@ void UIPointInteret::SetParent(CoreModifiable* value)
 			return b;
 	}
 
-	kstl::string condition;
+	std::string condition;
 	mConditionOfActivation.getValue(condition);
 	if (myIsDown && !down && condition == "Click" && mCanBeActivatedByClick)
 	{
@@ -247,8 +242,8 @@ void UIPointInteret::ActivePoint(bool active)
 	}
 	else if ((mActionOfActivation.const_ref() == "StackSequence" || mActionOfActivation.const_ref() == "ChangeSequence" || mActionOfActivation.const_ref() == "ShowPopUp") && active)
 	{
-		kstl::vector<kstl::string>	L_ActionVect = SplitStringByCharacter(mActionOfActivation.const_ref(), ':');
-		kstl::vector<CoreModifiableAttribute*> mySendParams;
+		std::vector<std::string>	L_ActionVect = SplitStringByCharacter(mActionOfActivation.const_ref(), ':');
+		std::vector<CoreModifiableAttribute*> mySendParams;
 		mySendParams.push_back(&mParameterOfActivation);
 		for (unsigned int i = 0; i < L_ActionVect.size(); i++)
 		{
@@ -262,8 +257,8 @@ void UIPointInteret::ActivePoint(bool active)
 	}
 	else if (mActionOfActivation.const_ref() == "ShowPopUp" && !active)
 	{
-		kstl::vector<kstl::string>	L_ActionVect = SplitStringByCharacter("HidePopUp:", ':');
-		kstl::vector<CoreModifiableAttribute*> mySendParams;
+		std::vector<std::string>	L_ActionVect = SplitStringByCharacter("HidePopUp:", ':');
+		std::vector<CoreModifiableAttribute*> mySendParams;
 		mySendParams.push_back(&mParameterOfActivation);
 		for (unsigned int i = 0; i < L_ActionVect.size(); i++)
 		{
@@ -272,8 +267,8 @@ void UIPointInteret::ActivePoint(bool active)
 	}
 	else if (active)
 	{
-		kstl::vector<kstl::string>	L_ActionVect = SplitStringByCharacter(mActionOfActivation.const_ref(), ':');
-		kstl::vector<CoreModifiableAttribute*> mySendParams;
+		std::vector<std::string>	L_ActionVect = SplitStringByCharacter(mActionOfActivation.const_ref(), ':');
+		std::vector<CoreModifiableAttribute*> mySendParams;
 		mySendParams.push_back(&mParameterOfActivation);
 		for (unsigned int i = 0; i < L_ActionVect.size(); i++)
 		{
@@ -298,9 +293,9 @@ DEFINE_METHOD(UIPointInteret, HideVignette)
 	return false;
 }
 
-void UIPointInteret::ActivePoint(kdouble coordUserLat, kdouble coordUserLong)
+void UIPointInteret::ActivePoint(double coordUserLat, double coordUserLong)
 {
-	kstl::string condition;
+	std::string condition;
 	mConditionOfActivation.getValue(condition);
 	if (condition == "Distance")
 	{

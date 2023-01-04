@@ -1,46 +1,50 @@
-#ifndef _JOYSTICKANDROID_H_
-#define _JOYSTICKANDROID_H_
+#pragma once
 
 #include "JoystickDevice.h"
 #include "ModuleInputAndroid.h"
 #include <jni.h>
 
-// ****************************************
-// * JoystickAndroid class
-// * --------------------------------------
-/**
-* \file	JoystickAndroid.h
-* \class	JoystickAndroid
-* \ingroup Input
-* \brief Android Joystick management.
-*
-*/
-// ****************************************
-
-class	JoystickAndroid : public JoystickDevice
+namespace Kigs
 {
-public:
+	namespace Input
+	{
+		// ****************************************
+		// * JoystickAndroid class
+		// * --------------------------------------
+		/**
+		* \file	JoystickAndroid.h
+		* \class	JoystickAndroid
+		* \ingroup Input
+		* \brief Android Joystick management.
+		*
+		*/
+		// ****************************************
 
-    DECLARE_CLASS_INFO(JoystickAndroid,JoystickDevice,Input)
+		class	JoystickAndroid : public JoystickDevice
+		{
+		public:
 
-    JoystickAndroid(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-   
-	void	UpdateDevice() override;
+			DECLARE_CLASS_INFO(JoystickAndroid, JoystickDevice, Input)
 
-	void	DoInputDeviceDescription() override;
+				JoystickAndroid(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-	void	IncButtonCount(){mButtonsCount++;}
-	void	IncAxisCount(){mAxisCount++;}
-	void	IncPOVCount(){mPovCount++;}
- virtual ~JoystickAndroid();
- 
+			void	UpdateDevice() override;
 
-protected:
-  
-   jclass		mActivityClass;
-   jmethodID 	mGetBackKey;
-   jmethodID 	mGetMenuKey;
- 
-};    
+			void	DoInputDeviceDescription() override;
 
-#endif //_JOYSTICKANDROID_H_
+			void	IncButtonCount() { mButtonsCount++; }
+			void	IncAxisCount() { mAxisCount++; }
+			void	IncPOVCount() { mPovCount++; }
+			virtual ~JoystickAndroid();
+
+
+		protected:
+
+			jclass		mActivityClass;
+			jmethodID 	mGetBackKey;
+			jmethodID 	mGetMenuKey;
+
+		};
+
+	}
+}

@@ -68,7 +68,7 @@ namespace Kigs
 			 *
 			 * call BaseUpdate(timer);
 			 */
-			void Update(const Timer& timer, void* addParam) override;
+			void Update(const Time::Timer& timer, void* addParam) override;
 
 
 			CoreModifiable* operator->() const {

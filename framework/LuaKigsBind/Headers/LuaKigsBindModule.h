@@ -106,7 +106,7 @@ namespace Kigs
 			virtual ~LuaKigsBindModule();
 		protected:
 
-			void Update(const Timer& timer, void* addParam) override
+			void Update(const Time::Timer& timer, void* addParam) override
 			{
 				// nothing to do
 			}

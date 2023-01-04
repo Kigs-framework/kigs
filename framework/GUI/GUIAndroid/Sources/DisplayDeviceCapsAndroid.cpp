@@ -2,7 +2,7 @@
 #include "DisplayDeviceCapsAndroid.h"
 #include "Core.h"
 
-
+using namespace Kigs::Gui;
 
 IMPLEMENT_CLASS_INFO(DisplayDeviceCapsAndroid)
 

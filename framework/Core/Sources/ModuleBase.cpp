@@ -165,7 +165,7 @@ void    ModuleBase::BaseClose()
 }
 
 //! call all dll "ModuleUpdate" method
-void    ModuleBase::BaseUpdate(const Timer& timer, void* addParam)
+void    ModuleBase::BaseUpdate(const Time::Timer& timer, void* addParam)
 {
 	for(auto m : mDynamicModuleList)
 	{

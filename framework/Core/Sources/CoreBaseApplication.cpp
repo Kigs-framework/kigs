@@ -10,7 +10,7 @@
 
 using namespace Kigs::Core;
 using namespace Kigs::File;
-
+using namespace Kigs::Time;
 
 IMPLEMENT_CLASS_INFO(CoreBaseApplication)
 

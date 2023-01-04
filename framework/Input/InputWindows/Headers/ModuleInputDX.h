@@ -39,7 +39,7 @@ namespace Kigs
 
 			void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 			void Close();
-			virtual void Update(const Timer& timer, void* addParam);
+			virtual void Update(const Time::Timer& timer, void* addParam);
 
 			LPDIRECTINPUT8	getDirectInput() { return mDirectInput; }
 

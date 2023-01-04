@@ -1297,5 +1297,12 @@ std::string	AsciiParserUtilsTemplate<unsigned short>::subString(int startpos, in
 	return tmp;
 }
 
-template class AsciiParserUtilsTemplate<char>;
-template class AsciiParserUtilsTemplate<unsigned short>;
+namespace Kigs
+{
+
+	namespace Core
+	{
+		template class AsciiParserUtilsTemplate<char>;
+		template class AsciiParserUtilsTemplate<unsigned short>;
+	}
+}

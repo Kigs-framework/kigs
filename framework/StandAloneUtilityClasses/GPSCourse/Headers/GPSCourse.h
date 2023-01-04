@@ -9,12 +9,19 @@
 
 //#include "RecordFilePlayer.h"
 
-inline void InitGPSCourseClasses(KigsCore* core)
+namespace Kigs
 {
-	DECLARE_FULL_CLASS_INFO(core, UIMap, UIMap, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, UserPositionGPS, UserPositionGPS, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, UIPointInteret, UIPointInteret, 2DLayers);
-	DECLARE_FULL_CLASS_INFO(core, PointInteretVignette, PointInteretVignette, 2DLayers);
+	namespace Gps
+	{
+		using namespace Kigs::Core;
+		inline void InitGPSCourseClasses(KigsCore* core)
+		{
+			DECLARE_FULL_CLASS_INFO(core, UIMap, UIMap, 2DLayers);
+			DECLARE_FULL_CLASS_INFO(core, UserPositionGPS, UserPositionGPS, 2DLayers);
+			DECLARE_FULL_CLASS_INFO(core, UIPointInteret, UIPointInteret, 2DLayers);
+			DECLARE_FULL_CLASS_INFO(core, PointInteretVignette, PointInteretVignette, 2DLayers);
 
-	//DECLARE_FULL_CLASS_INFO(core, RecordFilePlayer, RecordFilePlayer, ArenesBezier);
+			//DECLARE_FULL_CLASS_INFO(core, RecordFilePlayer, RecordFilePlayer, ArenesBezier);
+		}
+	}
 }

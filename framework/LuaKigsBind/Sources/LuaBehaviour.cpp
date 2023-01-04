@@ -70,7 +70,7 @@ LuaBehaviour::~LuaBehaviour()
 	}
 }    
 
-void LuaBehaviour::Update(const Timer& timer, void* addParam)
+void LuaBehaviour::Update(const Time::Timer& timer, void* addParam)
 {
 	// if no update method in lua, just return
 	if (!mHasUpdate) return;

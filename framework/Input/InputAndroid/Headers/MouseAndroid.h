@@ -1,5 +1,4 @@
-#ifndef _MOUSEANDROID_H_
-#define _MOUSEANDROID_H_
+#pragma once
 
 #include "MouseDevice.h"
 #include "ModuleInputAndroid.h"
@@ -8,54 +7,59 @@
 
 #include <jni.h>
 
-class MultiTouchDevice;
-
-// ****************************************
-// * MouseAndroid class
-// * --------------------------------------
-/**
-* \file	MouseAndroid.h
-* \class	MouseAndroid
-* \ingroup Input
-* \brief Android mouse management (touch).
-*
-*/
-// ****************************************
-
-class	MouseAndroid : public MouseDevice
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(MouseAndroid, MouseDevice, Input)
-	DECLARE_CONSTRUCTOR(MouseAndroid);
+	namespace Input
+	{
+		class MultiTouchDevice;
 
-	bool	Aquire() override;
-	bool	Release() override;
+		// ****************************************
+		// * MouseAndroid class
+		// * --------------------------------------
+		/**
+		* \file	MouseAndroid.h
+		* \class	MouseAndroid
+		* \ingroup Input
+		* \brief Android mouse management (touch).
+		*
+		*/
+		// ****************************************
 
-	void	UpdateDevice() override;
+		class	MouseAndroid : public MouseDevice
+		{
+		public:
+			DECLARE_CLASS_INFO(MouseAndroid, MouseDevice, Input)
+				DECLARE_CONSTRUCTOR(MouseAndroid);
 
-	void	DoInputDeviceDescription() override;
+			bool	Aquire() override;
+			bool	Release() override;
 
-	void	IncWheelCount() { mWheelCount++; }
-	void	IncButtonCount() { mButtonsCount++; }
-	virtual ~MouseAndroid();
+			void	UpdateDevice() override;
 
-protected:
+			void	DoInputDeviceDescription() override;
 
-	DECLARE_METHOD(ReinitCB);
+			void	IncWheelCount() { mWheelCount++; }
+			void	IncButtonCount() { mButtonsCount++; }
+			virtual ~MouseAndroid();
 
-	jobject		mTouchList;
-	jmethodID 	mGetEventCount;
-	jmethodID 	mGetEvent;
-	jmethodID 	mClearEventList;
+		protected:
 
-	jmethodID mEventGetX;
-	jmethodID mEventGetY;
-	jmethodID mEventGetAction;
+			DECLARE_METHOD(ReinitCB);
 
-	maReference mMultiTouch = BASE_ATTRIBUTE(MultiTouch, "");
-	MultiTouchDevice* mMultiTouchPointer = nullptr;
+			jobject		mTouchList;
+			jmethodID 	mGetEventCount;
+			jmethodID 	mGetEvent;
+			jmethodID 	mClearEventList;
 
-	int mFrameCountSinceLastValidTouched;
-};
+			jmethodID mEventGetX;
+			jmethodID mEventGetY;
+			jmethodID mEventGetAction;
 
-#endif //_MOUSEANDROID_H_
+			maReference mMultiTouch = BASE_ATTRIBUTE(MultiTouch, "");
+			MultiTouchDevice* mMultiTouchPointer = nullptr;
+
+			int mFrameCountSinceLastValidTouched;
+		};
+
+	}
+}

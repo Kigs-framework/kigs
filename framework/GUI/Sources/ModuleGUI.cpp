@@ -34,7 +34,7 @@ void ModuleGUI::Close()
 }    
 
 //! update all windows
-void ModuleGUI::Update(const Timer& timer, void* addParam)
+void ModuleGUI::Update(const Time::Timer& timer, void* addParam)
 {
 	BaseUpdate(timer,addParam);
 

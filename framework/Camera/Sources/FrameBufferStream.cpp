@@ -4,6 +4,8 @@
 
 #include "Remotery.h"
 
+using namespace Kigs::Camera;
+
 IMPLEMENT_CLASS_INFO(FrameBufferStream)
 
 IMPLEMENT_CONSTRUCTOR(FrameBufferStream)
@@ -13,7 +15,7 @@ IMPLEMENT_CONSTRUCTOR(FrameBufferStream)
 	mStateTime[0] = mStateTime[1] = mStateTime[2] = 0.0;
 }
 
-void FrameBufferStream::Update(const Timer& timer, void* addParam)
+void FrameBufferStream::Update(const Time::Timer& timer, void* addParam)
 {
 	if (mFrameBufferStream)
 		mFrameBufferStream->CallUpdate(timer, addParam);
@@ -56,7 +58,7 @@ bool FrameBufferStream::addItem(const CMSP& item, ItemPosition pos)
 	}
 	else if (item->isSubType("Timer"))
 	{
-		mTimer = (Timer*)item.get();
+		mTimer = (Time::Timer*)item.get();
 	}
 
 	return CoreModifiable::addItem(item, pos);
@@ -87,7 +89,7 @@ bool FrameBufferStream::removeItem(const CMSP& item)
 
 }
 
-unsigned char*	FrameBufferStream::GetConvertedBuffer(int index, unsigned char* buf, const kstl::string& targetFormat)
+unsigned char*	FrameBufferStream::GetConvertedBuffer(int index, unsigned char* buf, const std::string& targetFormat)
 {
 	if (index != -1)
 	{
@@ -98,7 +100,7 @@ unsigned char*	FrameBufferStream::GetConvertedBuffer(int index, unsigned char* b
 			std::unique_lock<std::recursive_mutex> lk(mBuffersMutex);
 			unsigned char* newbuffer = buf;
 			//"RGB555", "RGB565", "YUV422", "RGB24", "RGB32", "YUV24", "NV12"
-			kstl::string format = (kstl::string)mFormat;
+			std::string format = (std::string)mFormat;
 			if (targetFormat == "RGB24")
 			{
 				if (buf == NULL)
@@ -164,7 +166,7 @@ unsigned char* FrameBufferStream::GetRGB24Buffer(int index, unsigned char* buf)
 			else
 				newbuffer = buf;
 
-			kstl::string format = (kstl::string)mFormat;
+			std::string format = (std::string)mFormat;
 
 			if (format == "RGB24")
 			{

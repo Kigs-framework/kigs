@@ -1423,25 +1423,7 @@ namespace Kigs
 			~LazyContent();
 		};
 
-		// return first upgrador of the given type
-		template<typename T>
-		T* CoreModifiable::GetUpgrador()
-		{
-			if (auto lz = mLazyContent.load())
-			{
-				auto current = lz->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
-				while (current)
-				{
-					T* goodOne = dynamic_cast<T*>(static_cast<UpgradorBase*>(current));
-					if (goodOne)
-					{
-						return goodOne;
-					}
-					current = current->getNext(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
-				}
-			}
-			return nullptr;
-		}
+
 
 
 		// specialize some 

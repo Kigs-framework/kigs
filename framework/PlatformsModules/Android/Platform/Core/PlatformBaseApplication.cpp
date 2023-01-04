@@ -8,12 +8,14 @@
 #include "Timer.h"
 #include <unistd.h>
 
+using namespace Kigs::Core;
+
 extern bool	gResumeReloadTexture;
 
 void	PlatformBaseApplication::Sleep()
 {
-	SP<Timer> myAppTimer = ((CoreBaseApplication*)this)->GetApplicationTimer();
-	myAppTimer->SetState(Timer::PAUSED);
+	SP<Time::Timer> myAppTimer = ((CoreBaseApplication*)this)->GetApplicationTimer();
+	myAppTimer->SetState(Time::Timer::PAUSED);
 }
 
 
@@ -36,7 +38,7 @@ void	PlatformBaseApplication::Resume()
 		//RendererOpenGLES::ReinitModuleRenderer();
 
 		std::vector<CMSP>	instances = CoreModifiable::GetInstances("RenderingScreen");
-		(*instances.begin())->CallMethod(LABEL_TO_ID(ResetContext), NULL);
+		(*instances.begin())->CallMethod("ResetContext", NULL);
 
 		std::vector<CMSP>::iterator itInstances;
 
@@ -70,8 +72,8 @@ void	PlatformBaseApplication::Resume()
 		}
 	}
 	
-	SP<Timer> myAppTimer = ((CoreBaseApplication*)this)->GetApplicationTimer();
-	myAppTimer->SetState(Timer::NORMAL);
+	SP<Time::Timer> myAppTimer = ((CoreBaseApplication*)this)->GetApplicationTimer();
+	myAppTimer->SetState(Time::Timer::NORMAL);
 }
 
 

@@ -695,9 +695,11 @@ namespace Kigs
 						//RemoveInternalFocus();
 					}
 #endif
+#ifdef WIN32
 					io.KeyCtrl = kb->GetKey(CM_KEY_LCONTROL) || kb->GetKey(CM_KEY_RCONTROL);
 					io.KeyShift = kb->GetKey(CM_KEY_LSHIFT) || kb->GetKey(CM_KEY_RSHIFT);
 					io.KeyAlt = kb->GetKey(CM_KEY_LMENU) || kb->GetKey(CM_KEY_RMENU);
+#endif
 					std::array<bool, 256> state_changed = {};
 					std::vector<KeyEvent> toReAdd;
 					for (auto& key : mKeyEvents)

@@ -1,17 +1,18 @@
 #include "MPEG4Encoder.h"
 
+using namespace Kigs::Camera;
 
 IMPLEMENT_CLASS_INFO(MPEG4Encoder);
 
 IMPLEMENT_CONSTRUCTOR(MPEG4Encoder)
-, mSourceWidth(*this, false, LABEL_AND_ID(SourceWidth), 800)
-, mSourceHeight(*this, false, LABEL_AND_ID(SourceHeight), 600)
-, mTargetWidth(*this, false, LABEL_AND_ID(TargetWidth), 800)
-, mTargetHeight(*this, false, LABEL_AND_ID(TargetHeight), 600)
-, mFileName(*this, false, LABEL_AND_ID(FileName), "")
-, mVFlip(*this, false, LABEL_AND_ID(VFlip), false)
-, mSourceFormat(*this, false, LABEL_AND_ID(SourceFormat), "RGB24", "RGBA32", "YUV420P")
-, mTargetFormat(*this, false, LABEL_AND_ID(TargetFormat), "RGB24", "RGBA32", "YUV420P")
+, mSourceWidth(*this, false, "SourceWidth", 800)
+, mSourceHeight(*this, false, "SourceHeight", 600)
+, mTargetWidth(*this, false, "TargetWidth", 800)
+, mTargetHeight(*this, false, "TargetHeight", 600)
+, mFileName(*this, false, "FileName", "")
+, mVFlip(*this, false, "VFlip", false)
+, mSourceFormat(*this, false, "SourceFormat", "RGB24", "RGBA32", "YUV420P")
+, mTargetFormat(*this, false, "TargetFormat", "RGB24", "RGBA32", "YUV420P")
 {
 }
 

@@ -3,83 +3,89 @@
 #include "UI\UIText.h"
 #include <math.h>
 
-// ****************************************
-// * UIPointInteret class
-// * --------------------------------------
-/**
-* \file	UIPointInteret.h
-* \class	UIPointInteret
-* \ingroup Geoloc
-* \brief	 An UIPointInteret is placed on the map to mark an point of interest
-* \author	König Jolan
-* \version ukn
-* \date	14/02/16
-*
-* The point is placed with GPS coordonates, it is represented by an image. You can choose the condition of activation (distance with user or click on the point),
-* and the actions (stack the sequence, show pop up, or show vignette).
-* 
-*/
-// ****************************************
-
-class PointInteretVignette;
-
-class UIPointInteret :
-	public UIButtonImage
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(UIPointInteret, UIButtonImage, 2DLayers);
+
+	namespace Gps
+	{
+		// ****************************************
+		// * UIPointInteret class
+		// * --------------------------------------
+		/**
+		* \file	UIPointInteret.h
+		* \class	UIPointInteret
+		* \ingroup Geoloc
+		* \brief	 An UIPointInteret is placed on the map to mark an point of interest
+		* \author	König Jolan
+		* \version ukn
+		* \date	14/02/16
+		*
+		* The point is placed with GPS coordonates, it is represented by an image. You can choose the condition of activation (distance with user or click on the point),
+		* and the actions (stack the sequence, show pop up, or show vignette).
+		*
+		*/
+		// ****************************************
+
+		class PointInteretVignette;
+
+		class UIPointInteret :
+			public UIButtonImage
+		{
+		public:
+			DECLARE_CLASS_INFO(UIPointInteret, UIButtonImage, 2DLayers);
 
 
-	UIPointInteret(const kstl::string& name, DECLARE_CLASS_NAME_TREE_ARG);
-	void ActivePoint(bool);
-	void ActivePoint(kdouble, kdouble);
-	bool Get_VignetteIsHidden();
-	kdouble DistanceToUser(kdouble _lat, kdouble _long);
-	void Get_TitleAndDescription(kstl::string &title, kstl::string &Desc) { title = mNameOfInterestPoint; Desc = mDescriptionOfInterestPoint; }
+			UIPointInteret(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			void ActivePoint(bool);
+			void ActivePoint(double, double);
+			bool Get_VignetteIsHidden();
+			double DistanceToUser(double _lat, double _long);
+			void Get_TitleAndDescription(std::string& title, std::string& Desc) { title = mNameOfInterestPoint; Desc = mDescriptionOfInterestPoint; }
 
 
-	bool ClickAction(CoreModifiable* sender, usString param);
-	WRAP_METHODS(ClickAction);
+			bool ClickAction(CoreModifiable* sender, usString param);
+			WRAP_METHODS(ClickAction);
 
-protected:
-	void    ProtectedDestroy()override;
-	void NotifyUpdate(const unsigned int /* labelid */)override;
-	void InitModifiable()override;
-	//bool TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)override;
-	DECLARE_VIRTUAL_METHOD(HideVignette);
-	COREMODIFIABLE_METHODS(HideVignette);
-	virtual  void SetParent(CoreModifiable* value);
+		protected:
 
-	SP<UIText> mNameText;
+			void NotifyUpdate(const unsigned int /* labelid */)override;
+			void InitModifiable()override;
+			//bool TriggerMouseClick(int buttonState, int buttonEvent, int X, int Y, bool & catchClick)override;
+			DECLARE_VIRTUAL_METHOD(HideVignette);
+			COREMODIFIABLE_METHODS(HideVignette);
+			virtual  void SetParent(CoreModifiable* value);
 
-	SP<PointInteretVignette> mVignette;
-	maString mVignetteParameters;
+			SP<UIText> mNameText;
 
-	void RecalculatePosition();
+			SP<PointInteretVignette> mVignette;
+			maString mVignetteParameters;
 
-	maDouble mCoordGPS_Lat;
-	maDouble mCoordGPS_Long;
+			void RecalculatePosition();
 
-	maString mNameOfInterestPoint;
-	maString mDescriptionOfInterestPoint;
+			maDouble mCoordGPS_Lat;
+			maDouble mCoordGPS_Long;
 
-	maString mConditionOfActivation;
-	maInt mDistanceOfActivation;
+			maString mNameOfInterestPoint;
+			maString mDescriptionOfInterestPoint;
 
-	maString mActionOfActivation;
-	maString mActionOfDeactivation;
-	maUSString mParameterOfActivation;
-	maUSString mParameterOfDesactivation;
+			maString mConditionOfActivation;
+			maInt mDistanceOfActivation;
 
-	maBool mShowTitle;
-	maVect4DF mTitleColor;
-	maString mTitleFontName;
-	maInt mTitleFontSize;
+			maString mActionOfActivation;
+			maString mActionOfDeactivation;
+			maUSString mParameterOfActivation;
+			maUSString mParameterOfDesactivation;
 
-	maBool mFeedbackOnActivation;
+			maBool mShowTitle;
+			maVect4DF mTitleColor;
+			maString mTitleFontName;
+			maInt mTitleFontSize;
 
-	bool mCanBeActivatedByClick;
-	bool mIsTitleShown;
-	bool mInactivate;
-};
+			maBool mFeedbackOnActivation;
 
+			bool mCanBeActivatedByClick;
+			bool mIsTitleShown;
+			bool mInactivate;
+		};
+	}
+}

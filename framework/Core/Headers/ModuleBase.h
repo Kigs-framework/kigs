@@ -9,9 +9,10 @@
 
 namespace Kigs
 {
-	using namespace Time;
-	class Time::Timer;
-
+	namespace Time
+	{
+		class Timer;
+	}
 	namespace Core
 	{
 		class KigsCore;
@@ -163,7 +164,7 @@ namespace Kigs
 			 * \brief		protected base update method, should be called by Init/Close and Update methods
 			 * \param		timer : global timer
 			 */
-			void    BaseUpdate(const Timer& timer, void* addParam);
+			void    BaseUpdate(const Time::Timer& timer, void* addParam);
 
 
 

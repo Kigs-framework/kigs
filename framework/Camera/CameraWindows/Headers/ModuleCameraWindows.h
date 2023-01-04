@@ -1,42 +1,46 @@
-#ifndef _MODULECAMERAWINDOWS_H_
-#define _MODULECAMERAWINDOWS_H_
+#pragma once
 
 #include "ModuleBase.h"
 #include "Core.h"
 #include "CameraModule.h"
 
-class ModuleCameraWindows;
-extern ModuleCameraWindows* gInstanceModuleCameraWindows;
-
-// ****************************************
-// * ModuleCameraWindows class
-// * --------------------------------------
-/*!  \class ModuleCameraWindows
-     this class is the module manager class. 
-*/
-// ****************************************
-
-class ModuleCameraWindows : public ModuleBase
+namespace Kigs
 {
-public:
+	namespace Camera
+	{
+		class ModuleCameraWindows;
+		extern ModuleCameraWindows* gInstanceModuleCameraWindows;
 
-	DECLARE_CLASS_INFO(ModuleCameraWindows,ModuleBase,ModuleCameraWindows)
+		// ****************************************
+		// * ModuleCameraWindows class
+		// * --------------------------------------
+		/*!  \class ModuleCameraWindows
+			 this class is the module manager class.
+		*/
+		// ****************************************
 
-	//! module constructor 
-	ModuleCameraWindows(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	     
-	//! module init
-	void Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params);
+		class ModuleCameraWindows : public ModuleBase
+		{
+		public:
 
-	//! module close
-	void Close();         
-	             
-	//! module update
-	virtual void Update(const Timer& timer, void* addParam);
+			DECLARE_CLASS_INFO(ModuleCameraWindows, ModuleBase, ModuleCameraWindows)
 
-protected:
-	//! destructor
-    virtual ~ModuleCameraWindows();    
-}; 
+				//! module constructor 
+				ModuleCameraWindows(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
-#endif //_MODULECAMERAWINDOWS_H_
+			//! module init
+			void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
+
+			//! module close
+			void Close();
+
+			//! module update
+			virtual void Update(const Time::Timer& timer, void* addParam);
+			//! destructor
+			virtual ~ModuleCameraWindows();
+		protected:
+
+		};
+
+	}
+}

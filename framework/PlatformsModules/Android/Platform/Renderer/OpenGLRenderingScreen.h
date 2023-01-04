@@ -1,31 +1,32 @@
-#ifndef _ANDROIDOPENGLRENDERINGSCREEN_H
-#define _ANDROIDOPENGLRENDERINGSCREEN_H
-
-class OpenGLTexture;
-
+#pragma once
 
 #include "Platform/Renderer/OpenGLInclude.h"
 
-
-class OpenGLPlatformRenderingScreen : public RenderingScreen
+namespace Kigs
 {
-public:
-    DECLARE_ABSTRACT_CLASS_INFO(OpenGLPlatformRenderingScreen,RenderingScreen,Renderer)
-
-	OpenGLPlatformRenderingScreen(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-     
-   
-	void	SetWindowByHandle(void *PtrToHandle) override {	}
-	void*	GetContextHandle() override { return 0; }
-	
-
-protected:
-	virtual ~OpenGLPlatformRenderingScreen();
-	virtual void	InitModifiable() override;
-	virtual void InitializeGL(GLsizei width, GLsizei height) = 0;
-	void setCurrentContext() override
+	namespace Draw
 	{
-	}
-};    
+		class OpenGLTexture;
 
-#endif //_ANDROIDOPENGLRENDERINGSCREEN_H
+		class OpenGLPlatformRenderingScreen : public RenderingScreen
+		{
+		public:
+			DECLARE_ABSTRACT_CLASS_INFO(OpenGLPlatformRenderingScreen, RenderingScreen, Renderer)
+
+				OpenGLPlatformRenderingScreen(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+
+
+			void	SetWindowByHandle(void* PtrToHandle) override {	}
+			void* GetContextHandle() override { return 0; }
+
+
+		protected:
+			virtual ~OpenGLPlatformRenderingScreen();
+			virtual void	InitModifiable() override;
+			virtual void InitializeGL(GLsizei width, GLsizei height) = 0;
+			void setCurrentContext() override
+			{
+			}
+		};
+	}
+}

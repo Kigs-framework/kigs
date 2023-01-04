@@ -136,7 +136,7 @@ void ModuleInput::Close()
 	BaseClose();
 }
 
-void ModuleInput::Update(const Timer& timer, void* addParam)
+void ModuleInput::Update(const Time::Timer& timer, void* addParam)
 {
 	BaseUpdate(timer, addParam);
 
