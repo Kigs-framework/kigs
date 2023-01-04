@@ -64,60 +64,6 @@ std::vector<std::string>	Kigs::Core::SplitStringByCharacter(const std::string&  
 	return elems;
 }
 
-// decorators
-//! class used to register a decorator
-RegisterDecoratorClass::RegisterDecoratorClass(KigsCore* core, KigsID decoratorName, DecorateMethod method, DecorateMethod undecoratemethod)
-{
-	core->RegisterDecorator(method,undecoratemethod,decoratorName); 
-}
-
-void	KigsCore::RegisterDecorator(DecorateMethod method, DecorateMethod undecoratemethod, KigsID decoratorName)
-{
-	if(mDecoratorMap == 0)
-	{
-		mDecoratorMap=new unordered_map<KigsID, DecorateMethodPair>;
-	}
-
-	DecorateMethodPair toadd;
-	toadd.mDecorate=method;
-	toadd.mUndecorate=undecoratemethod;
-
-	(*mDecoratorMap)[decoratorName]=toadd;
-}
-
-bool	KigsCore::DecorateInstance(CoreModifiable* cm, KigsID decoratorName)
-{
-	if(mCoreInstance->mDecoratorMap)
-	{
-#ifdef KEEP_NAME_AS_STRING
-		cm->RegisterDecorator(decoratorName._id_name);
-#endif
-		auto itfound=(*mCoreInstance->mDecoratorMap).find(decoratorName);
-		if( itfound != (*mCoreInstance->mDecoratorMap).end())
-		{
-			return ((*itfound).second.mDecorate)(cm);
-		}
-
-	}
-	return false;
-}
-
-bool	KigsCore::UnDecorateInstance(CoreModifiable* cm, KigsID decoratorName)
-{
-	if(mCoreInstance->mDecoratorMap)
-	{
-#ifdef KEEP_NAME_AS_STRING
-		cm->UnRegisterDecorator(decoratorName._id_name);
-#endif
-		auto itfound=(*mCoreInstance->mDecoratorMap).find(decoratorName);
-		if( itfound != (*mCoreInstance->mDecoratorMap).end())
-		{
-			return ((*itfound).second.mUndecorate)(cm);
-		}
-
-	}
-	return false;
-}
 
 void	KigsCore::addAsyncRequest(SP<AsyncRequest> toAdd)
 {
@@ -299,13 +245,6 @@ void KigsCore::Close(bool closeMemoryManager)
 		delete mCoreInstance->mErrorList;
 #endif
 		delete [] mCoreInstance->mCoreMainModuleList;
-
-
-		if(mCoreInstance->mDecoratorMap)
-		{
-			delete mCoreInstance->mDecoratorMap;
-			mCoreInstance->mDecoratorMap=0;
-		}
 
 		if (mCoreInstance->mAsyncRequestList)
 		{

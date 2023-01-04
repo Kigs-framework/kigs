@@ -2,7 +2,6 @@
 #include "AsyncRequest.cpp"
 #include "Core.cpp"
 #include "CoreBaseApplication.cpp"
-#include "CoreDecorator.cpp"
 #include "CoreItem.cpp"
 #include "CoreItemOperator.cpp"
 #include "CoreMap.cpp"

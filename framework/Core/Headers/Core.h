@@ -65,29 +65,6 @@ namespace Kigs
 			Layer2DModuleCoreIndex = 7
 		};
 
-		// decorator management
-		typedef     bool (*DecorateMethod)(CoreModifiable* toDecorate);
-		class RegisterDecoratorClass
-		{
-		public:
-			/**
-			 * \fn 		RegisterDecorator(KigsCore* core,std::string decoratorName,decorateMethod method);
-			 * \brief	register a decorator in core
-			 * \core : KigsCore instance
-			 * \decoratorName : name of the decorator class
-			 * \method : static decorator method
-			 */
-			RegisterDecoratorClass(KigsCore* core, KigsID decoratorName, DecorateMethod method, DecorateMethod undecoratemethod);
-
-			/**
-			 * \brief	destructor
-			 * \fn 		~RegisterDecorator();
-			 */
-			~RegisterDecoratorClass() {}
-		};
-
-#define DECLARE_FULL_DECORATOR_INFO(core,decoratorClass) \
-    RegisterDecoratorClass RegisterDecorator##decoratorClass(core, #decoratorClass, &decoratorClass::Decorate,&decoratorClass::UnDecorate); 
 
 #define REGISTER_UPGRADOR(name) \
 	{KigsCore::Instance()->GetUpgradorFactory()->RegisterNewClass<name>(#name);}
@@ -444,11 +421,6 @@ namespace Kigs
 				return mCoreMainModuleList[(unsigned int)index];
 			}
 
-			void	RegisterDecorator(DecorateMethod method, DecorateMethod undecoratemethod, KigsID decoratorName);
-
-			static  bool	DecorateInstance(CoreModifiable* cm, KigsID decoratorName);
-			static  bool	UnDecorateInstance(CoreModifiable* cm, KigsID decoratorName);
-
 
 			// asynchronous request management
 			// only add is available, and must be called in main thread
@@ -519,8 +491,6 @@ namespace Kigs
 				mCoreBaseApplication = NULL;
 				mCoreMainModuleList = NULL;
 
-				mDecoratorMap = NULL;
-
 				mAsyncRequestList = NULL;
 
 				mProfilerManager = NULL;
@@ -539,14 +509,6 @@ namespace Kigs
 			//! pointer to initialised modules
 			unordered_map<KigsID, SP<ModuleBase>>* mModuleBaseInstanceMap;
 
-			//! decorator map
-			struct DecorateMethodPair
-			{
-				DecorateMethod	mDecorate;
-				DecorateMethod	mUndecorate;
-			};
-			unordered_map<KigsID, DecorateMethodPair>* mDecoratorMap;
-
 			// current pending async requests
 			std::vector<SP<AsyncRequest>>* mAsyncRequestList;
 
@@ -563,7 +525,6 @@ namespace Kigs
 			//! manage post destruction
 			std::mutex								mPostDestructionListMutex;
 			std::unordered_map<CoreModifiable*, SP<CoreModifiable>>			mPostDestructionList;
-
 
 			friend class ModuleBase;
 			//! static pointer to the KigsCore singleton

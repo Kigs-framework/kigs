@@ -8,7 +8,7 @@
 
 #pragma once
 
-#ifdef WIN32
+#ifdef USE_SIMD
 #include "NEON_2_SSE.h"
 
 namespace Kigs

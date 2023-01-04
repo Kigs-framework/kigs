@@ -37,6 +37,9 @@ using namespace winrt::Windows::Graphics::Holographic;
 using namespace winrt::Windows::Perception::Spatial;
 using namespace winrt::Windows::Storage;
 
+using namespace Kigs;
+using namespace Kigs::Core;
+
 App* App::sApp=nullptr;
 bool gIsHolographic = true;
 bool gIsVR = false;
@@ -108,7 +111,7 @@ inline float ConvertDipsToPixels(float dips, float dpi)
 void App::Initialize(CoreApplicationView const& applicationView)
 {	
 	DEBUG_LOG_LINE;
-	StorageFileFileAccess::setMainThreadID();
+	Kigs::File::StorageFileFileAccess::setMainThreadID();
 	using namespace winrt::Windows::ApplicationModel::Activation;
 
 	applicationView.Activated([this](CoreApplicationView const& view, IActivatedEventArgs args)

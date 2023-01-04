@@ -514,11 +514,6 @@ namespace Kigs
 						// init attribute
 						InitAttribute(static_cast<XMLNodeTemplate<StringType>*>(sonXML), currentModifiable, importState);
 					}
-					else if (sonXML->nameOneOf("CoreDecorator", "Deco"))
-					{
-						XMLAttributeBase* attr = sonXML->getAttribute("N", "Name");
-						KigsCore::DecorateInstance(currentModifiable, attr->getRefString());
-					}
 					else if (sonXML->nameOneOf("Lua", "LuaScript") || sonXML->nameOneOf("LUAScript", "LUA"))
 					{
 						// init attribute

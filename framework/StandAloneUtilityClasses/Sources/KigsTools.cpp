@@ -89,6 +89,7 @@ namespace Kigs
 		using namespace Kigs::Gui;
 		using namespace Kigs::Xml;
 		using namespace Kigs::File;
+		using namespace Kigs::Utils;
 enum EditorFlags
 {
 	EditorFlag_AddedToXML = 1,

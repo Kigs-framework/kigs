@@ -28,6 +28,9 @@ using namespace concurrency;
 #include "winrt/Windows.Storage.FileProperties.h"
 #include "winrt/Windows.Foundation.Collections.h"
 
+using namespace Kigs::Core;
+using namespace Kigs::File;
+
 void WUPprintf(const char* fmt, ...)
 {
 	char str[4096];
@@ -89,7 +92,7 @@ HRESULT GetTempFolderPath()
 }*/
 
 // check if file exist and if it's a file or directory
-void Win32CheckState(::FileHandle * hndl)
+void Kigs::Core::Win32CheckState(FileHandle * hndl)
 {
 	WIN32_FILE_ATTRIBUTE_DATA InfoFile;
 	BOOL ret = ::GetFileAttributesExA(hndl->mFullFileName.c_str(), GetFileExInfoStandard, &InfoFile);
@@ -103,17 +106,17 @@ void Win32CheckState(::FileHandle * hndl)
 		hndl->resetStatus();
 		return;
 	}
-	hndl->mStatus |= ::FileHandle::Exist;
+	hndl->mStatus |= FileHandle::Exist;
 	if ((InfoFile.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) != 0)
-		hndl->mStatus |= ::FileHandle::IsDIr;
+		hndl->mStatus |= FileHandle::IsDIr;
 }
 
-bool Win32CreateFolderTree(::FileHandle* hndl)
+bool Kigs::Core::Win32CreateFolderTree(FileHandle* hndl)
 {
 	//TODO
-/*	if ((hndl->mStatus&::FileHandle::Exist) == 0)
+/*	if ((hndl->mStatus&FileHandle::Exist) == 0)
 	{
-		SmartPointer<::FileHandle> parent = FilePathManager::Create::FileHandle(FilePathManager::GetParentDirectory(hndl->mFullFileName));
+		SmartPointer<FileHandle> parent = FilePathManager::CreateFileHandle(FilePathManager::GetParentDirectory(hndl->mFullFileName));
 		if (parent->mFullFileName != "")
 		{
 			Win32CheckState(parent);
@@ -127,13 +130,13 @@ bool Win32CreateFolderTree(::FileHandle* hndl)
 }
 
 
-SmartPointer<::FileHandle>	Win32OpenFilePicker()
+SmartPointer<FileHandle>	Kigs::Core::Win32OpenFilePicker()
 {
 	return {};
 }
 
 
-SmartPointer<::FileHandle>	Win32FindFullName(const std::string&	filename)
+SmartPointer<FileHandle>	 Kigs::Core::Win32FindFullName(const std::string&	filename)
 {
 	
 	if (filename[0] != '#')
@@ -196,7 +199,7 @@ SmartPointer<::FileHandle>	Win32FindFullName(const std::string&	filename)
 	}
 	fullFileName += (const char*)(&(filename.c_str()[3]));
 
-	SmartPointer<::FileHandle> result = FilePathManager::CreateFileHandle((const char*)(&(filename.c_str()[3])));
+	SmartPointer<FileHandle> result = FilePathManager::CreateFileHandle((const char*)(&(filename.c_str()[3])));
 
 	result->mDeviceID = id;
 	result->mFullFileName = fullFileName;
@@ -207,11 +210,11 @@ SmartPointer<::FileHandle>	Win32FindFullName(const std::string&	filename)
 	return result;
 }
 
-bool Win32fopen(::FileHandle* handle, const char * mode)
+bool  Kigs::Core::Win32fopen(FileHandle* handle, const char * mode)
 {
-	unsigned int flagmode = ::FileHandle::OpeningFlags(mode);
+	unsigned int flagmode = FileHandle::OpeningFlags(mode);
 
-	if (handle->mStatus&::FileHandle::Open) // already opened ? return true
+	if (handle->mStatus&FileHandle::Open) // already opened ? return true
 	{
 		// check if open mode is the same
 		if (flagmode == handle->getOpeningFlags())
@@ -225,7 +228,7 @@ bool Win32fopen(::FileHandle* handle, const char * mode)
 	}
 
 	// create parent if in write mode
-	if (flagmode & ::FileHandle::Write)
+	if (flagmode & FileHandle::Write)
 	{
 		Win32CreateFolderTree(handle);
 	}
@@ -234,8 +237,8 @@ bool Win32fopen(::FileHandle* handle, const char * mode)
 	
 	if (handle->mFile)
 	{
-		handle->mStatus |= ::FileHandle::Open;
-		handle->mStatus |= ::FileHandle::Exist;
+		handle->mStatus |= FileHandle::Open;
+		handle->mStatus |= FileHandle::Exist;
 		handle->setOpeningFlags(flagmode);
 		return true;
 	}
@@ -243,39 +246,39 @@ bool Win32fopen(::FileHandle* handle, const char * mode)
 	return false;
 }
 
-long int Win32fread(void * ptr, long size, long count, ::FileHandle* handle)
+long int  Kigs::Core::Win32fread(void * ptr, long size, long count, FileHandle* handle)
 {
 	return fread(ptr, size, count, handle->mFile);
 }
 
-long int Win32fwrite(const void * ptr, long size, long count, ::FileHandle* handle)
+long int  Kigs::Core::Win32fwrite(const void * ptr, long size, long count, FileHandle* handle)
 {
 	return fwrite(ptr, size, count, handle->mFile);
 }
 
-long int Win32ftell(::FileHandle* handle)
+long int  Kigs::Core::Win32ftell(FileHandle* handle)
 {
 	return ftell(handle->mFile);
 }
 
-int Win32fseek(::FileHandle* handle, long int offset, int origin)
+int  Kigs::Core::Win32fseek(FileHandle* handle, long int offset, int origin)
 {
 	return fseek(handle->mFile, offset, origin);
 }
-int Win32fflush(::FileHandle* handle)
+int  Kigs::Core::Win32fflush(FileHandle* handle)
 {
 	return fflush(handle->mFile);
 }
-int Win32fclose(::FileHandle* handle)
+int  Kigs::Core::Win32fclose(FileHandle* handle)
 {
 	int result = fclose(handle->mFile);
 	handle->resetStatus(); // reset 
 	return result;
 }
 
-SmartPointer<::FileHandle> Platform_fopen(winrt::Windows::Storage::StorageFile file, const char * mode)
+SmartPointer<FileHandle>  Kigs::File::Platform_fopen(winrt::Windows::Storage::StorageFile file, const char * mode)
 {
-	SmartPointer<::FileHandle> fullfilenamehandle;
+	SmartPointer<FileHandle> fullfilenamehandle;
 	usString str = (u16*)file.Name().data();
 
 	fullfilenamehandle = FilePathManager::CreateFileHandle(str.ToString());
@@ -363,12 +366,12 @@ inline bool WaitForAsyncAction(winrt::Windows::Foundation::IAsyncAction op)
 }
 
 
-bool		StorageFileFileAccess::Platform_fopen(::FileHandle* handle, const char * mode)
+bool		StorageFileFileAccess::Platform_fopen(FileHandle* handle, const char * mode)
 {
-	unsigned int flags = ::FileHandle::OpeningFlags(mode);
+	unsigned int flags = FileHandle::OpeningFlags(mode);
 
 
-	if (handle->mDeviceID != FilePathManager::APPLICATION_STORAGE && flags&::FileHandle::Write)
+	if (handle->mDeviceID != FilePathManager::APPLICATION_STORAGE && flags&FileHandle::Write)
 		return false;
 
 	if (!mFile)
@@ -384,7 +387,7 @@ bool		StorageFileFileAccess::Platform_fopen(::FileHandle* handle, const char * m
 		auto item = get_item.GetResults();
 		mFile = item.as<winrt::Windows::Storage::StorageFile>(); 
 
-		if (!mFile && flags&::FileHandle::Read)
+		if (!mFile && flags&FileHandle::Read)
 			return false;
 
 		if (!mFile)
@@ -401,7 +404,7 @@ bool		StorageFileFileAccess::Platform_fopen(::FileHandle* handle, const char * m
 	if (!WaitForAsyncOperation(properties)) return false;
 
 	//auto readAccess = mFile->OpenReadAsync();
-	auto openasync = mFile.OpenAsync(flags&::FileHandle::Write ? winrt::Windows::Storage::FileAccessMode::ReadWrite : winrt::Windows::Storage::FileAccessMode::Read);
+	auto openasync = mFile.OpenAsync(flags&FileHandle::Write ? winrt::Windows::Storage::FileAccessMode::ReadWrite : winrt::Windows::Storage::FileAccessMode::Read);
 	if (!WaitForAsyncOperation(openasync)) return false;
 	mFileSize = properties.GetResults().Size();
 	mAccessStream = openasync.GetResults();
@@ -418,7 +421,7 @@ void		StorageFileFileAccess::setMainThreadID()
 std::thread::id		StorageFileFileAccess::mMainThreadID;
 
 
-long int	StorageFileFileAccess::Platform_fread(void * ptr, long size, long count, ::FileHandle* handle)
+long int	StorageFileFileAccess::Platform_fread(void * ptr, long size, long count, FileHandle* handle)
 {
 	if (mAccessStream)
 	{
@@ -472,7 +475,7 @@ long int	StorageFileFileAccess::Platform_fread(void * ptr, long size, long count
 	return -1;
 }
 
-long int	StorageFileFileAccess::Platform_fwrite(const void * ptr, long size, long count, ::FileHandle* handle)
+long int	StorageFileFileAccess::Platform_fwrite(const void * ptr, long size, long count, FileHandle* handle)
 {
 	if (mAccessStream)
 	{
@@ -488,7 +491,7 @@ long int	StorageFileFileAccess::Platform_fwrite(const void * ptr, long size, lon
 	return 0;
 }
 
-long int	StorageFileFileAccess::Platform_ftell(::FileHandle* handle)
+long int	StorageFileFileAccess::Platform_ftell(FileHandle* handle)
 {
 	if (mAccessStream)
 	{
@@ -497,7 +500,7 @@ long int	StorageFileFileAccess::Platform_ftell(::FileHandle* handle)
 	return -1L;
 }
 
-int			StorageFileFileAccess::Platform_fseek(::FileHandle* handle, long int offset, int origin)
+int			StorageFileFileAccess::Platform_fseek(FileHandle* handle, long int offset, int origin)
 {
 	if (mAccessStream)
 	{
@@ -531,7 +534,7 @@ int			StorageFileFileAccess::Platform_fseek(::FileHandle* handle, long int offse
 	return -1;
 }
 
-int			StorageFileFileAccess::Platform_fflush(::FileHandle* handle)
+int			StorageFileFileAccess::Platform_fflush(FileHandle* handle)
 {
 	if (mAccessStream)
 	{
@@ -543,7 +546,7 @@ int			StorageFileFileAccess::Platform_fflush(::FileHandle* handle)
 	return -1;
 }
 
-int			StorageFileFileAccess::Platform_fclose(::FileHandle* handle)
+int			StorageFileFileAccess::Platform_fclose(FileHandle* handle)
 {
 	if (mAccessStream)
 	{
@@ -576,7 +579,7 @@ PureVirtualFileAccessDelegate* StorageFileFileAccess::MakeCopy()
 	return result;
 }
 
-std::string to_utf8(const wchar_t* buffer, int len)
+std::string Kigs::Core::to_utf8(const wchar_t* buffer, int len)
 {
 	int nChars = ::WideCharToMultiByte(
 		CP_UTF8,
@@ -604,12 +607,12 @@ std::string to_utf8(const wchar_t* buffer, int len)
 	return newbuffer;
 }
 
-std::string to_utf8(const std::wstring& str)
+std::string Kigs::Core::to_utf8(const std::wstring& str)
 {
 	return to_utf8(str.c_str(), (int)str.size());
 }
 
-std::wstring to_wchar(const char* buffer, int len)
+std::wstring Kigs::Core::to_wchar(const char* buffer, int len)
 {
 	int nChars = ::MultiByteToWideChar(
 		CP_UTF8,
@@ -634,7 +637,7 @@ std::wstring to_wchar(const char* buffer, int len)
 	return newbuffer;
 }
 
-std::wstring to_wchar(const std::string& str)
+std::wstring Kigs::Core::to_wchar(const std::string& str)
 {
 	return to_wchar(str.c_str(), (int)str.size());
 }

@@ -273,10 +273,7 @@ namespace Kigs
 				* \param	state : state of the node
 				* \return	TRUE
 				*/
-				//virtual bool    Cull(TravState* state,unsigned int cullingMask);
-			DECLARE_DECORABLE_DEFINITION(bool, Cull, TravState* state, unsigned int CullingMask);
-
-
+		bool    Cull(TravState* state,unsigned int cullingMask) override;
 
 			inline bool IsEnabled()const { return mCameraIsEnabled; }
 			inline void setIsEnabled(bool a_value)

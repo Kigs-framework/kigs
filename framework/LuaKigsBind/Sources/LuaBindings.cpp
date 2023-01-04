@@ -1084,8 +1084,8 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.endClass();
 
 
-	LuaBinding(L).beginExtendClass<KeyboardDevice, CoreModifiable>("KeyboardDevice")
-		.addFunction("getKey", [](KeyboardDevice* kb, int key) -> bool { return kb->getKeyState(key).GetTypedValue(int);  })
+	LuaBinding(L).beginExtendClass<Input::KeyboardDevice, CoreModifiable>("KeyboardDevice")
+		.addFunction("getKey", [](Input::KeyboardDevice* kb, int key) -> bool { return kb->getKeyState(key).GetTypedValue(int);  })
 		.endClass();
 	
 	

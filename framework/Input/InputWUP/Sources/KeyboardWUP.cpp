@@ -11,6 +11,8 @@
 using namespace winrt::Windows::UI::Text::Core;
 using namespace winrt::Windows::UI::ViewManagement;
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(KeyboardWUP);
 
 KeyboardWUP::KeyboardWUP(const std::string& name,CLASS_NAME_TREE_ARG) : KeyboardDevice(name,PASS_CLASS_NAME_TREE_ARG)

@@ -1,35 +1,36 @@
-
-#ifndef _MODULEGUIWINDOWS_H_
-#define _MODULEGUIWINDOWS_H_
+#pragma once
 
 #include "ModuleBase.h"
 #include "ModuleGUI.h"
 
-class ModuleGUIWindows;
-
-// ****************************************
-// * ModuleGUIWindows class
-// * --------------------------------------
-/**
-* \file	ModuleGUIWindows.h
-* \class	ModuleGUIWindows
-* \ingroup GUIModule
-* \ingroup Module
-* \brief Specific Win32 UWP GUI module
-*
-*/
-// ****************************************
-
-class ModuleGUIWindows : public ModuleBase
+namespace Kigs
 {
-public:
-	DECLARE_CLASS_INFO(ModuleGUIWindows,ModuleBase,GUI)
-	ModuleGUIWindows(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-	virtual ~ModuleGUIWindows();
+	namespace Gui
+	{
+		// ****************************************
+		// * ModuleGUIWindows class
+		// * --------------------------------------
+		/**
+		* \file	ModuleGUIWindows.h
+		* \class	ModuleGUIWindows
+		* \ingroup GUIModule
+		* \ingroup Module
+		* \brief Specific Win32 UWP GUI module
+		*
+		*/
+		// ****************************************
 
-	void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params); 
-	void Close();
-	virtual void Update(const Timer& timer, void* addParam);
-};
+		class ModuleGUIWindows : public ModuleBase
+		{
+		public:
+			DECLARE_CLASS_INFO(ModuleGUIWindows, ModuleBase, GUI)
+				ModuleGUIWindows(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			virtual ~ModuleGUIWindows();
 
-#endif //_MODULEGUIWINDOWS_H_
+			void Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
+			void Close();
+			virtual void Update(const Timer& timer, void* addParam);
+		};
+
+	}
+}

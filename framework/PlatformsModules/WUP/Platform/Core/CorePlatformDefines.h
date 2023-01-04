@@ -1,5 +1,4 @@
-#ifndef _CORE_PLATFORM_DEFINES_H
-#define _CORE_PLATFORM_DEFINES_H
+#pragma once
 
 //#define DOPROFILE
 
@@ -118,7 +117,3 @@ typedef	void ThreadReturnType;
 
 void WUPprintf(const char* fmt, ...);
 #define kigsprintf(...) WUPprintf(__VA_ARGS__)
-
-
-
-#endif //_CORE_PLATFORM_DEFINES_H

@@ -62,9 +62,7 @@ namespace Kigs
 			 */
 			bool  RemoveNode(SceneNode* node);
 
-			//bool  Cull(TravState* state,unsigned int cullingMask);
-			DECLARE_DECORABLE_DEFINITION(bool, Cull, TravState* state, unsigned int CullingMask);
-
+			bool  Cull(TravState* state,unsigned int cullingMask) override;
 
 			/**
 			 * \brief	divide
@@ -186,13 +184,9 @@ namespace Kigs
 			DECLARE_CLASS_INFO(Octree, Node3D, SceneGraph)
 				DECLARE_CONSTRUCTOR(Octree);
 
-			DECLARE_DECORABLE_DEFINITION(bool, Cull, TravState* state, unsigned int CullingMask);
-
-
+			bool Cull(TravState* state, unsigned int CullingMask) override;
 
 			bool	removeItem(const CMSP& item DECLARE_DEFAULT_LINK_NAME) override;
-
-
 
 			/**
 			 * \brief	add a node to the map

@@ -33,8 +33,6 @@ IMPLEMENT_CONSTRUCTOR(Octree)
 	mRootSubNode->Init();
 	mIsInReorganise = false;
 	mFirstReorganiseWasDone = false;
-
-	OVERLOAD_DECORABLE(Cull, Node3D, Octree);
 }
 
 void	Octree::InitModifiable()
@@ -127,7 +125,7 @@ void Octree::RecomputeBoundingBox()
 	unsetUserFlag(BoundingBoxIsDirty);
 }
 
-DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Octree, TravState* state, unsigned int cullingMask)
+bool Octree::Cull(TravState* state, unsigned int cullingMask)
 {
 	mCullingMask = cullingMask;
 	if (!IsRenderable())
@@ -326,7 +324,6 @@ OctreeSubNode::OctreeSubNode(const std::string& name, CLASS_NAME_TREE_ARG) :
 {
 	setUserFlag(UserFlagCameraSort);
 	mObjectList.clear();
-	OVERLOAD_DECORABLE(Cull, Node3D, OctreeSubNode);
 }
 
 OctreeSubNode::~OctreeSubNode()
@@ -594,7 +591,7 @@ bool  OctreeSubNode::RemoveNode(SceneNode* node)
 	return found;
 }
 
-DECLARE_DECORABLE_IMPLEMENT(bool, Cull, OctreeSubNode, TravState* state, unsigned int cullingMask)
+bool  OctreeSubNode::Cull(TravState* state, unsigned int cullingMask)
 {
 	// just return precomputed cull result
 	if (mCullingResult == CullingObject::all_out)

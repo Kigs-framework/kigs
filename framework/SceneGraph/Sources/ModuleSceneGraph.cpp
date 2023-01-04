@@ -4,10 +4,10 @@
 #include "SceneGraphIncludes.h"
 #include "ModuleRenderer.h"
 #include "Timer.h"
-#include "CoreDecorator.h"
 #include "Core.h"
 #include "TravState.h"
-#include "Node3DLodDecorator.h"
+#include "Node3DCullLodUpgrador.h"
+
 
 using namespace Kigs::Scene;
 
@@ -242,8 +242,7 @@ void ModuleSceneGraph::Init(KigsCore* core, const std::vector<CoreModifiableAttr
 	REGISTER_UPGRADOR(CoordinateSystemUp);
 	DECLARE_CLASS_ALIAS_AND_UPGRADE(core, CoordinateSystem, Node3D, CoordinateSystemUp);
 	REGISTER_UPGRADOR(PivotUp);
-
-	DECLARE_FULL_DECORATOR_INFO(KigsCore::Instance(), Node3DLodDecorator);
+	REGISTER_UPGRADOR(Node3DCullLodUpgrador);
 
 	// search for the renderer module
 

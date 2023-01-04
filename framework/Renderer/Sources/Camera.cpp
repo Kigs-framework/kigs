@@ -57,8 +57,6 @@ IMPLEMENT_CONSTRUCTOR(Camera)
 	transparent_pass.allow_instancing = false;
 	transparent_pass.name = "Transparent Pass";
 	mRenderPasses.push_back(transparent_pass);
-
-	OVERLOAD_DECORABLE(Cull, Node3D, Camera);
 }
 
 void Camera::UninitModifiable()
@@ -526,10 +524,9 @@ bool Camera::Project(float &ScreenX, float &ScreenY, Point3D Pt)
 
 
 // always visible
-DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Camera, TravState* state, unsigned int cullingMask)
-//bool    Camera::Cull(TravState* state,unsigned int cullingMask)
+bool Camera::Cull( TravState* state, unsigned int cullingMask)
 {
-	if(!Node3D::Implement_Cull(state,cullingMask))
+	if(!Node3D::Cull(state,cullingMask))
 	{
 		mIsVisible=state->GetVisibilityFrame();
 	}

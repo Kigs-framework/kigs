@@ -9,6 +9,7 @@
 using namespace winrt::Windows::UI::Core;
 using namespace winrt::Windows::UI::ViewManagement;
 
+using namespace Kigs::Gui;
 
 IMPLEMENT_CLASS_INFO(WindowWin32)
 
@@ -106,7 +107,7 @@ void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, k
 
 	if (mScreen)
 	{
-		mScreen->as<RenderingScreen>()->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
+		mScreen->as<Draw::RenderingScreen>()->GetMousePosInDesignScreen(posx, posy, wposx, wposy);
 	}
 	else
 	{
@@ -137,7 +138,7 @@ void  WindowWin32::Update(const Timer&  timer, void* addParam)
 		//printf("size : %d %d\n", (int)mySizeX, (int)mySizeY);
 
 		if (mScreen)
-			mScreen->as<RenderingScreen>()->Resize(mSize[0], mSize[1]);
+			mScreen->as<Draw::RenderingScreen>()->Resize(mSize[0], mSize[1]);
 	}
 
 	// update position and size

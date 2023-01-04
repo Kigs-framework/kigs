@@ -1,14 +1,25 @@
-#include "PrecompiledHeaders.h"
-#include "Node3DLodDecorator.h"
+#include "Node3DCullLodUpgrador.h"
 #include "TravState.h"
 #include "Camera.h"
 
-using namespace Kigs::Scene;
-int gCulledByLODDecorator = 0;
 
-DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Node3DLodDecorator, TravState* state, unsigned int cullingMask)
+using namespace Kigs::Scene;
+
+void	Node3DCullLodUpgrador::Init(CoreModifiable* toUpgrade)
 {
-	if (Cull.father(state, cullingMask))
+	mLodCoef = (maFloat *)toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT,"LodCoef",1.0f);
+}
+
+//  remove dynamic attributes
+void	Node3DCullLodUpgrador::Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted)
+{
+	toDowngrade->RemoveDynamicAttribute("LodCoef");
+}
+
+
+DEFINE_CULL_UPGRADOR_METHOD(Node3DCullLodUpgrador)
+{
+	if (Node3D::Cull(state, CullingMask))
 	{
 		// retreive bbox
 		BBox gbb;
@@ -26,7 +37,6 @@ DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Node3DLodDecorator, TravState* state, un
 
 		if (coef > lodcoef)
 		{
-			++gCulledByLODDecorator;
 			return false;
 		}
 

@@ -3,8 +3,8 @@
 #include "TecLibs/Tec3D.h"
 #include "TecLibs/3D/3DObject/BBox.h"
 #include "SceneNode.h"
-#include "CoreDecorator.h"
 #include "RendererMatrix.h"
+#include "Upgrador.h"
 
 namespace Kigs
 {
@@ -42,8 +42,7 @@ namespace Kigs
 			* set node up to date, and compute visibility. Return FALSE when node is totally outside of the culling volume.
 			* TRUE if this node is visible or we are in a "all visible" branch of the scenegraph
 			*/
-			DECLARE_DECORABLE_2_PARAMS(bool, Cull, Node3D, TravState*, unsigned int);
-			DECLARE_DECORABLE_DEFINITION(bool, Cull, TravState* state, unsigned int CullingMask);
+			virtual bool Cull(TravState* state, unsigned int CullingMask);
 
 			virtual void TravDraw(TravState* state);
 			virtual void TravCull(TravState* state);
@@ -217,6 +216,42 @@ namespace Kigs
 		};
 
 		mat3x4 GetLocalLookAtPoint(Node3D* node, v3f global_point, bool force_up = false, v3f up_axis = v3f(0, 1, 0));
+
+
+		// base class for specific culling functions using upgrador
+		class CullUpgrador : public Upgrador<Node3D>
+		{
+		public:
+			virtual bool Cull(CoreModifiable* toUpdate, TravState* state, unsigned int CullingMask) = 0;
+
+		};
+
+
+#define START_CULL_UPGRADOR(name) \
+	static inline const KigsID	m_ID = #name;\
+	const KigsID& getID() const override {return m_ID; };\
+	typedef name UpgradorType; 
+
+#define DECLARE_CULL_UPGRADOR() class UpgradorMethods : public currentBaseClass \
+	{ \
+	 public:\
+		UpgradorType* GetUpgrador(){return (UpgradorType*)CoreModifiable::GetUpgrador();}\
+		bool Cull(TravState* state, unsigned int CullingMask);\
+	};\
+	public:\
+	bool	UpgradorUpdate(CoreModifiable* toUpdate, const Time::Timer& timer, void* addParam) override\
+	{\
+		return false;\
+	}\
+	virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
+	{\
+	}\
+	bool Cull(CoreModifiable* toUpdate, TravState* state, unsigned int CullingMask) override\
+	{\
+		return ((UpgradorMethods*)toUpdate)->Cull(state, CullingMask);\
+	}
+
+#define DEFINE_CULL_UPGRADOR_METHOD(upgrador) bool upgrador::UpgradorMethods::Cull(TravState* state, unsigned int CullingMask)
 
 	}
 }

@@ -19,7 +19,6 @@ extern bool gCullingDrawBBox;
 IMPLEMENT_CLASS_INFO(Node3D)
 
 IMPLEMENT_CONSTRUCTOR(Node3D)
-, CONSTRUCT_DECORABLE(Cull, Node3D)
 , mFatherNode(nullptr)
 {
 	setUserFlag(UserFlagNode3D);
@@ -223,8 +222,13 @@ void Node3D::PropagateDirtyFlags(SceneNode* source)
 	PropagateDirtyFlagsToParents(source);
 }
 
-DECLARE_DECORABLE_IMPLEMENT(bool, Cull, Node3D, TravState* state, unsigned int cullingMask)
+bool Node3D::Cull(TravState* state, unsigned int cullingMask)
 {
+	auto tst = GetUpgrador<CullUpgrador>();
+	if (tst)
+	{
+		return tst->Cull(this, state, cullingMask);
+	}
 	//! no culling if not shown
 	if(!IsRenderable())
 	{

@@ -1,12 +1,19 @@
-#ifndef _PLATFORM_FILEMANAGER_H
-#define _PLATFORM_FILEMANAGER_H
+#pragma once
 
-// no specific Windows Filemanager
-class KigsCore;
+namespace Kigs
+{
+	namespace Core
+	{
+		class KigsCore;
+	}
 
-void 	PlatformFileManagerModuleInit(KigsCore* /*core*/, const std::vector<CoreModifiableAttribute*>* /*params*/){;}
-void 	PlatformFileManagerModuleClose(KigsCore* /*core*/){;}
-void 	PlatformFileManagerModuleUpdate(const Timer* /*timer*/){;}
-void	PlatformFileManagerGetModuleInstance(ModuleBase** /*instance*/){;}
+	namespace File
+	{
+		// no specific Windows Filemanager
 
-#endif //_PLATFORM_FILEMANAGER_H 
+		void 	PlatformFileManagerModuleInit(Core::KigsCore* /*core*/, const std::vector<Core::CoreModifiableAttribute*>* /*params*/) { ; }
+		void 	PlatformFileManagerModuleClose(Core::KigsCore* /*core*/) { ; }
+		void 	PlatformFileManagerModuleUpdate(const Time::Timer* /*timer*/) { ; }
+		void	PlatformFileManagerGetModuleInstance(Core::ModuleBase** /*instance*/) { ; }
+	}
+}

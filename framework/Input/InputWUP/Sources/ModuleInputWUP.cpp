@@ -15,6 +15,8 @@
 #include <winrt/Windows.Devices.Input.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
+using namespace Kigs::Input;
+
 using namespace winrt::Windows::Devices;
 
 ModuleInputWUP* gInstanceModuleInputWUP=0;
@@ -56,7 +58,7 @@ void ModuleInputWUP::Init(KigsCore* core, const std::vector<CoreModifiableAttrib
 			}
 			else
 			{
-				auto pointerDevices = Input::PointerDevice::GetPointerDevices();
+				auto pointerDevices = winrt::Windows::Devices::Input::PointerDevice::GetPointerDevices();
 				if (pointerDevices.Size())
 				{
 					SP<MouseWUP> localmouse = core->GetInstanceOf("mouse", "MouseDevice");
@@ -71,7 +73,7 @@ void ModuleInputWUP::Init(KigsCore* core, const std::vector<CoreModifiableAttrib
 			SP<KeyboardWUP> localkeyboard = core->GetInstanceOf("keyboard", "KeyboardDevice");
 
 			// Obtain an interface to the system mouse device.
-			auto capabilities = Input::KeyboardCapabilities();
+			auto capabilities = winrt::Windows::Devices::Input::KeyboardCapabilities();
 
 			/*if (capabilities.KeyboardPresent() == 0)
 			{
@@ -126,7 +128,7 @@ bool	ModuleInputWUP::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAM
 	return false;
 }
 
-SP<ModuleBase> PlatformInputModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> Kigs::Input::PlatformInputModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	
