@@ -222,6 +222,10 @@ namespace Kigs
 		class CullUpgrador : public Upgrador<Node3D>
 		{
 		public:
+			CullUpgrador()
+			{
+				mFlags = 1;
+			}
 			virtual bool Cull(CoreModifiable* toUpdate, TravState* state, unsigned int CullingMask) = 0;
 
 		};

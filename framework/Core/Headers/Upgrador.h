@@ -69,10 +69,19 @@ virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::Modifi
 			void UpgradeInstance(CoreModifiable* toUpgrade, bool reinit = true, bool attachmethod = true);
 			void DowngradeInstance(CoreModifiable* toDowngrade, bool dodestroy = true, bool detachmethod = true);
 			// create and init Upgrador if needed, add dynamic attributes, connect things
-			virtual void	Init(CoreModifiable* toUpgrade) { mIsInit = true; }
+			virtual void	Init(CoreModifiable* toUpgrade) { mIsInit = 1; }
 
 			// destroy Upgrador and remove dynamic attributes, disconnect things 
-			virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted = false) { mIsInit = false; }
+			virtual void	Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted = false) { mIsInit = 0; }
+
+			bool	matchFlag(const u32 flags)
+			{
+				if ((flags & mFlags) == flags)
+				{
+					return true;
+				}
+				return false;
+			}
 
 		public:
 			virtual ~UpgradorBase()
@@ -88,7 +97,8 @@ virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::Modifi
 
 			virtual const KigsID& getID() const = 0;
 
-			bool	mIsInit = false;
+			u32	mIsInit : 1 = 0;
+			u32	mFlags : 31 = 0;
 		};
 
 		template<typename baseclass>
@@ -101,26 +111,6 @@ virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::Modifi
 		public:
 
 		};
-
-		// return first upgrador of the given type
-		template<typename T>
-		T* CoreModifiable::GetUpgrador()
-		{
-			if (auto lz = mLazyContent.load())
-			{
-				auto current = lz->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
-				while (current)
-				{
-					T* goodOne = dynamic_cast<T*>(static_cast<UpgradorBase*>(current));
-					if (goodOne)
-					{
-						return goodOne;
-					}
-					current = current->getNext(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
-				}
-			}
-			return nullptr;
-		}
 
 	}
 }

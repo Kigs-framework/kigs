@@ -1266,9 +1266,8 @@ namespace Kigs
 
 			UpgradorBase* GetUpgrador(const KigsID& ID="");
 
-			// return first upgrador of the given type
-			template<typename T>
-			inline T* GetUpgrador();
+			// return first upgrador matching flag
+			UpgradorBase* GetUpgradorMatchingFlag(u32 flags);
 
 		#ifdef KEEP_XML_DOCUMENT
 		public:

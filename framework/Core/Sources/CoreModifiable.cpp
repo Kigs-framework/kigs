@@ -274,6 +274,23 @@ UpgradorBase* CoreModifiable::GetUpgrador(const KigsID& ID)
 	return nullptr;
 }
 
+UpgradorBase* CoreModifiable::GetUpgradorMatchingFlag(u32 flags)
+{
+	if (auto lz = mLazyContent.load())
+	{
+		UpgradorBase* current = (UpgradorBase*)lz->GetLinkedListItem(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+		while (current)
+		{
+			if (current->matchFlag(flags))
+			{
+				return current;
+			}
+			current = (UpgradorBase*)current->getNext(LazyContentLinkedListItemStruct::ItemType::UpgradorType);
+		}
+	}
+	return nullptr;
+}
+
 void CoreModifiable::debugPrintfFullTree(s32 maxindent)
 {
 	CoreModifiable::debugPrintfClassList("CoreModifiable", maxindent, true);

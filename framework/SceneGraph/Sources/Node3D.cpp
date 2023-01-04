@@ -224,10 +224,10 @@ void Node3D::PropagateDirtyFlags(SceneNode* source)
 
 bool Node3D::Cull(TravState* state, unsigned int cullingMask)
 {
-	auto tst = GetUpgrador<CullUpgrador>();
+	auto tst = GetUpgradorMatchingFlag(1);
 	if (tst)
 	{
-		return tst->Cull(this, state, cullingMask);
+		return static_cast<CullUpgrador*>(tst)->Cull(this, state, cullingMask);
 	}
 	//! no culling if not shown
 	if(!IsRenderable())
