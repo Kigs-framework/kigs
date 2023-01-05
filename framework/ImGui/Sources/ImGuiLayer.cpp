@@ -714,23 +714,27 @@ namespace Kigs
 						{
 							state_changed[key.KeyCode] = true;
 							io.KeysDown[key.KeyCode] = true;
-							/*if ((key.KeyCode == VK_CONTROL) || (key.KeyCode == VK_LCONTROL) || (key.KeyCode == VK_RCONTROL))
+#ifndef WIN32
+							if ((key.KeyCode == VK_CONTROL) || (key.KeyCode == VK_LCONTROL) || (key.KeyCode == VK_RCONTROL))
 								io.KeyCtrl = true;
 							if ((key.KeyCode == VK_SHIFT) || (key.KeyCode == VK_LSHIFT) || (key.KeyCode == VK_RSHIFT))
 								io.KeyShift = true;
 							if ((key.KeyCode == VK_MENU) || (key.KeyCode == VK_LMENU) || (key.KeyCode == VK_RMENU))
-								io.KeyAlt = true;*/
+								io.KeyAlt = true;
+#endif
 						}
 						else if (key.Action == key.ACTION_UP)
 						{
 							state_changed[key.KeyCode] = true;
 							io.KeysDown[key.KeyCode] = false;
-							/*if ((key.KeyCode == VK_CONTROL) || (key.KeyCode == VK_LCONTROL) || (key.KeyCode == VK_RCONTROL))
+#ifndef WIN32
+							if ((key.KeyCode == VK_CONTROL) || (key.KeyCode == VK_LCONTROL) || (key.KeyCode == VK_RCONTROL))
 								io.KeyCtrl = false;
 							if ((key.KeyCode == VK_SHIFT) || (key.KeyCode == VK_LSHIFT) || (key.KeyCode == VK_RSHIFT))
 								io.KeyShift = false;
 							if ((key.KeyCode == VK_MENU) || (key.KeyCode == VK_LMENU) || (key.KeyCode == VK_RMENU))
-								io.KeyAlt = false;*/
+								io.KeyAlt = false;
+#endif
 								/*#ifndef WUP
 													if (key.Unicode > 0)
 													{
