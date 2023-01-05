@@ -2,19 +2,9 @@
 
 #include "CoreSTLAllocator.h"
 #include "kstlstring.h"
-#include "robin_hood.h"
+//#include "robin_hood.h"
+#include "ankerl/unordered_dense.h"
 #include <unordered_map>
-
-#ifdef RIM
-#include <stdio.h>
-#include <string.h>
-#endif
-
-#ifdef _NINTENDO_3DS_
-#include <stdio.h>
-#include <string.h>
-#endif
-
 
 #include "Platform/Core/PlatformCore.h"
 
@@ -38,8 +28,9 @@ namespace Kigs
 
 	namespace Core
 	{
-
-#if defined(_DEBUG) 
+		template <typename Key, typename T>
+		using unordered_map = ankerl::unordered_dense::map<Key, T>;
+/*#if defined(_DEBUG) 
 		template <typename Key, typename T, typename Hash = std::hash<Key>>
 		using unordered_map = std::unordered_map<Key, T, Hash>;
 #else
@@ -48,10 +39,10 @@ namespace Kigs
 		template <typename Key, typename T, typename Hash = std::hash<Key>>
 		using unordered_map = std::unordered_map<Key, T, Hash>;
 #else
-		template <typename Key, typename T, typename Hash = robin_hood::hash<Key>>
-		using unordered_map = robin_hood::unordered_map<Key, T, Hash>;
+		template <typename Key, typename T>
+		using unordered_map = ankerl::unordered_dense::map<Key, T>;
 #endif
-#endif
+#endif*/
 
 
 #if defined(_DEBUG) || defined(KIGS_TOOLS)
