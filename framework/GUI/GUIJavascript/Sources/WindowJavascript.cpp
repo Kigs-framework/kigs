@@ -1,5 +1,4 @@
 #include "WindowJavascript.h"
-//#include "RendererIncludes.h"
 #include "RenderingScreen.h"
 #include "ModuleGUIJavascript.h"
 #include <stdio.h>
@@ -9,6 +8,8 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #include "CoreModifiable.h"
+
+using namespace Kigs::Gui;
 
 IMPLEMENT_CLASS_INFO(WindowJavascript)
 
@@ -24,7 +25,7 @@ extern "C" void SetAbsolutePos(const char* window,int abs);
 WindowJavascript*	WindowJavascript::mFirstWindow=0;
 
 //! constructor
-WindowJavascript::WindowJavascript(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
+WindowJavascript::WindowJavascript(const std::string& name,CLASS_NAME_TREE_ARG) : 
 Window(name,PASS_CLASS_NAME_TREE_ARG)
 {
    mScreen=0;
@@ -83,14 +84,14 @@ void  WindowJavascript::Show()
 {
 	if(mScreen && !mScreen->IsInit())
 	{
-		mScreen->setValue(LABEL_TO_ID(ParentWindowName),getName());
+		mScreen->setValue("ParentWindowName",getName());
 		mScreen->Init();
 	}
 
 }    
 
 //! update window
-void  WindowJavascript::Update(const Timer&  timer, void* addParam)
+void  WindowJavascript::Update(const Time::Timer&  timer, void* addParam)
 {
 	//! call screen update
 	if(mScreen)
@@ -105,7 +106,7 @@ void  WindowJavascript::Update(const Timer&  timer, void* addParam)
 				mSize[0] = screenSize.x;
 				mSize[1] = screenSize.y;
 				SetCanvasSize(getName().c_str(),screenSize.x, screenSize.y);
-				mScreen->as<RenderingScreen>()->Resize((int)mSize[0], (int)mSize[1]);
+				mScreen->as<Draw::RenderingScreen>()->Resize((int)mSize[0], (int)mSize[1]);
 			}
 		}
 
@@ -118,7 +119,7 @@ void  WindowJavascript::Update(const Timer&  timer, void* addParam)
 }    
 
 
-void	WindowJavascript::GetMousePosInWindow(int posx,int posy,kfloat& wposx,kfloat& wposy)
+void	WindowJavascript::GetMousePosInWindow(int posx,int posy,float& wposx,float& wposy)
 {
 	posx -= (int)mPosition[0];
 	if(posx >= (int)mSize[0])
@@ -138,13 +139,13 @@ void	WindowJavascript::GetMousePosInWindow(int posx,int posy,kfloat& wposx,kfloa
 	}
 	else
 	{*/
-		wposx=(kfloat)posx;
-		wposy=(kfloat)posy;
+		wposx=(float)posx;
+		wposy=(float)posy;
 //	}
 
 }
 
-void	WindowJavascript::GetMousePosInDesignWindow(int posx,int posy,kfloat& wposx,kfloat& wposy)
+void	WindowJavascript::GetMousePosInDesignWindow(int posx,int posy,float& wposx,float& wposy)
 {
 	posx -= (int)mPosition[0];
 	/*if(posx >= (int)mSizeX)
@@ -160,12 +161,12 @@ void	WindowJavascript::GetMousePosInDesignWindow(int posx,int posy,kfloat& wposx
 
 	if(mScreen)
 	{
-		mScreen->as<RenderingScreen>()->GetMousePosInDesignScreen(posx,posy,wposx,wposy);
+		mScreen->as<Draw::RenderingScreen>()->GetMousePosInDesignScreen(posx,posy,wposx,wposy);
 	}
 	else
 	{
-		wposx=(kfloat)posx;
-		wposy=(kfloat)posy;
+		wposx=(float)posx;
+		wposy=(float)posy;
 	}
 }
 

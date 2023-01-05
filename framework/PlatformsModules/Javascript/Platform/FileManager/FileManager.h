@@ -1,11 +1,16 @@
-#ifndef _PLATFORM_FILEMANAGER_H
-#define _PLATFORM_FILEMANAGER_H
+#pragma once
 
-// no specific Windows Filemanager
+namespace Kigs
+{
+	namespace File
+	{
+		using namespace Kigs::Core;
+		// no specific Javascript Filemanager
 
-void 	PlatformFileManagerModuleInit(KigsCore* /*core*/, const kstl::vector<CoreModifiableAttribute*>* /*params*/){;}
-void 	PlatformFileManagerModuleClose(KigsCore* /*core*/){;}
-void 	PlatformFileManagerModuleUpdate(const Timer* /*timer*/){;}
-void	PlatformFileManagerGetModuleInstance(ModuleBase** /*instance*/){;}
+		void 	PlatformFileManagerModuleInit(KigsCore* /*core*/, const std::vector<CoreModifiableAttribute*>* /*params*/){;}
+		void 	PlatformFileManagerModuleClose(KigsCore* /*core*/){;}
+		void 	PlatformFileManagerModuleUpdate(const Time::Timer* /*timer*/){;}
+		void	PlatformFileManagerGetModuleInstance(ModuleBase** /*instance*/){;}
 
-#endif //_PLATFORM_FILEMANAGER_H 
+	}
+}

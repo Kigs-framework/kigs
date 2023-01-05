@@ -4,6 +4,8 @@
 
 #include <emscripten.h>
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(MouseJavascript)
 
 /*
@@ -27,7 +29,7 @@ extern "C" int		Get_MousePosY(int index);
 extern "C" void		ClearMouseList();
 
 
-MouseJavascript::MouseJavascript(const kstl::string& name,CLASS_NAME_TREE_ARG) : 
+MouseJavascript::MouseJavascript(const std::string& name,CLASS_NAME_TREE_ARG) : 
 MouseDevice(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	AddListenerToMouse();
@@ -78,8 +80,8 @@ void	MouseJavascript::UpdateDevice()
 		if(i == value-1)
 		{
 			// posX and posY
-			mDeviceItems[currentDevice++]->getState()->SetValue(PosX-(int)(kfloat)mPosX);
-			mDeviceItems[currentDevice++]->getState()->SetValue(PosY-(int)(kfloat)mPosY);
+			mDeviceItems[currentDevice++]->getState()->SetValue(PosX-(int)(float)mPosX);
+			mDeviceItems[currentDevice++]->getState()->SetValue(PosY-(int)(float)mPosY);
 		}
 		
 		if(ButtonType == 1) // left
@@ -125,8 +127,8 @@ void	MouseJavascript::DoInputDeviceDescription()
 	
 	int currentDevice=0;
 	
-	devicearray[currentDevice++]=new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0)));
-	devicearray[currentDevice++]=new DeviceItem(DeviceItemState<kfloat>(KFLOAT_CONST(0.0)));
+	devicearray[currentDevice++]=new DeviceItem(DeviceItemState<float>(0.0f));
+	devicearray[currentDevice++]=new DeviceItem(DeviceItemState<float>(0.0f));
 	
 	int currentButton;
 	for(currentButton=0;currentButton<mButtonsCount;currentButton++)

@@ -1,6 +1,8 @@
 #include "DisplayDeviceCapsJavascript.h"
 #include "Core.h"
 
+using namespace Kigs::Gui;
+
 extern "C" int	GetHTMLBodySizeX();
 extern "C" int	GetHTMLBodySizeY();
 extern "C" int	GetHTMLParentSizeX();
@@ -8,7 +10,7 @@ extern "C" int	GetHTMLParentSizeY();
 
 IMPLEMENT_CLASS_INFO(DisplayDeviceCapsJavascript)
 
-DisplayDeviceCapsJavascript::DisplayDeviceCapsJavascript(const kstl::string& name,CLASS_NAME_TREE_ARG) : DisplayDeviceCaps(name,PASS_CLASS_NAME_TREE_ARG)
+DisplayDeviceCapsJavascript::DisplayDeviceCapsJavascript(const std::string& name,CLASS_NAME_TREE_ARG) : DisplayDeviceCaps(name,PASS_CLASS_NAME_TREE_ARG)
 {
 
 	mDisplayDeviceList.clear();

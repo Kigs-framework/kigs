@@ -12,6 +12,9 @@
 #define ApplicationName(a) Stringify(a)
 #define Stringify(a) #a
 
+using namespace Kigs;
+using namespace Kigs::Core;
+
 SP<CoreBaseApplication>	myApp=nullptr;
 
 void	MainLoop()

@@ -8,13 +8,12 @@
 #include "InputDevice.h"
 #include "JoystickDevice.h"
 
-ModuleInputJavascript* gInstanceModuleInputJavascript=0;
 
-
+using namespace Kigs::Input;
 
 IMPLEMENT_CLASS_INFO(ModuleInputJavascript)
 
-ModuleInputJavascript::ModuleInputJavascript(const kstl::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
+ModuleInputJavascript::ModuleInputJavascript(const std::string& name,CLASS_NAME_TREE_ARG) : ModuleBase(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	mJoystickCount=0;
 	mIsInitOK=true;
@@ -27,13 +26,13 @@ ModuleInputJavascript::~ModuleInputJavascript()
 }    
 
 
-void ModuleInputJavascript::Init(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+void ModuleInputJavascript::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	if(mIsInitOK)
 	{
 		BaseInit(core,"InputJavascript",params);
 		DECLARE_FULL_CLASS_INFO(core,MouseJavascript,Mouse,Input)
-			DECLARE_FULL_CLASS_INFO(core,KeyboardJavascript,Keyboard,Input)
+		DECLARE_FULL_CLASS_INFO(core,KeyboardJavascript,Keyboard,Input)
 	}
 	
 	
@@ -61,11 +60,11 @@ void ModuleInputJavascript::Close()
     BaseClose();
 }    
 
-void ModuleInputJavascript::Update(const Timer& /* timer */, void* addParam)
+void ModuleInputJavascript::Update(const Time::Timer& /* timer */, void* addParam)
 {
 	// read info on aquired devices
 	
-	kstl::vector<ModifiableItemStruct>::const_iterator it;
+	std::vector<ModifiableItemStruct>::const_iterator it;
 	
     for (it=getItems().begin();it!=getItems().end();++it)
     {
@@ -101,12 +100,11 @@ bool	ModuleInputJavascript::addItem(const CMSP& item, ItemPosition pos DECLARE_L
 	
 }
 
-SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const kstl::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> Kigs::Input::PlatformInputModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(ModuleInputJavascript, "ModuleInputJavascript");
 	auto ptr = MakeRefCounted<ModuleInputJavascript>("ModuleInputJavascript");
-	gInstanceModuleInputJavascript=ptr.get();
-    gInstanceModuleInputJavascript->Init(core,params);
+    ptr->Init(core,params);
     return ptr;
 }    

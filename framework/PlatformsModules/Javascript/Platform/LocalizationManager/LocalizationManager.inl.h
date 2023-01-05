@@ -3,19 +3,24 @@ extern "C" void JSGetLanguage(char* _var);
 #include <stdlib.h>
 #include <stdarg.h>
 
-kstl::string		LocalizationManager::getCurrentUserLanguage()
+namespace Kigs
 {
-	char* language = (char*)malloc(3*sizeof(char));
-	
-	JSGetLanguage(language);
-	language[2]=0;
+	namespace Core
+	{
 
-	
-	// current language in 2 letter format
-	kstl::string ret=language;
-	
-	// TODO 
-	// get langage in javascript / browser
+		std::string		LocalizationManager::getCurrentUserLanguage()
+		{
+			char* language = (char*)malloc(3*sizeof(char));
+			
+			JSGetLanguage(language);
+			language[2]=0;
 
-    return ret;
+			
+			// current language in 2 letter format
+			std::string ret=language;
+			
+
+			return ret;
+		}
+	}
 }

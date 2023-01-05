@@ -5,6 +5,9 @@
 #include "PlatformBaseApplication.h"
 #include <sys/stat.h>
 
+using namespace Kigs::Core;
+using namespace Kigs::File;
+
 bool	PlatformBaseApplication::CheckBackKeyPressed()
 {
 	// TODO check if esc key is pressed here ?
@@ -20,7 +23,7 @@ unsigned int PlatformBaseApplication::getProcessorCount()
 }
 
 // check if file exist and if it's a file or directory
-void JSCheckState(FileHandle * hndl)
+void Kigs::File::JSCheckState(FileHandle * hndl)
 {
 	struct stat info;
 
@@ -35,7 +38,7 @@ void JSCheckState(FileHandle * hndl)
 
 }
 
-void JSCreateFolderTree(FileHandle* hndl)
+void Kigs::File::JSCreateFolderTree(FileHandle* hndl)
 {
 	if ((hndl->mStatus&FileHandle::Exist) == 0)
 	{
@@ -53,7 +56,7 @@ void JSCreateFolderTree(FileHandle* hndl)
 
 
 
-SmartPointer<FileHandle> JSFindFullName(const kstl::string&	filename)
+SmartPointer<FileHandle> Kigs::File::JSFindFullName(const std::string&	filename)
 {
 	// TODO
 	SmartPointer<FileHandle> result;
@@ -71,7 +74,7 @@ SmartPointer<FileHandle> JSFindFullName(const kstl::string&	filename)
 
 
 
-bool JSfopen(FileHandle* handle, const char * mode)
+bool Kigs::File::JSfopen(FileHandle* handle, const char * mode)
 {
 	unsigned int flagmode = FileHandle::OpeningFlags(mode);
 
@@ -107,30 +110,30 @@ bool JSfopen(FileHandle* handle, const char * mode)
 }
 
 
-long int JSfread(void * ptr, long size, long count, FileHandle* handle)
+long int Kigs::File::JSfread(void * ptr, long size, long count, FileHandle* handle)
 {
 	return fread(ptr, size, count, handle->mFile);
 }
 
-long int JSfwrite(const void * ptr, long size, long count, FileHandle* handle)
+long int Kigs::File::JSfwrite(const void * ptr, long size, long count, FileHandle* handle)
 {
 	return fwrite(ptr, size, count, handle->mFile);
 }
 
-long int JSftell(FileHandle* handle)
+long int Kigs::File::JSftell(FileHandle* handle)
 {
 	return ftell(handle->mFile);
 }
 
-int JSfseek(FileHandle* handle, long int offset, int origin)
+int Kigs::File::JSfseek(FileHandle* handle, long int offset, int origin)
 {
 	return fseek(handle->mFile,offset,origin);
 }
-int JSfflush(FileHandle* handle)
+int Kigs::File::JSfflush(FileHandle* handle)
 {
 	return fflush(handle->mFile);
 }
-int JSfclose(FileHandle* handle)
+int Kigs::File::JSfclose(FileHandle* handle)
 {
 	int result=fclose(handle->mFile);
 	handle->mStatus=0; // reset 
@@ -150,25 +153,25 @@ struct deletable_facet : Facet
     ~deletable_facet() {}
 };
 
-std::string to_utf8(const wchar_t* buffer, int len)
+std::string Kigs::Core::to_utf8(const wchar_t* buffer, int len)
 {
     std::wstring str(buffer,len);
     return to_utf8(str);
 }
 
-std::string to_utf8(const std::wstring& str)
+std::string Kigs::Core::to_utf8(const std::wstring& str)
 {
 	std::wstring_convert<deletable_facet<std::codecvt<wchar_t, char, std::mbstate_t>>> utf8_conv;
 	return utf8_conv.to_bytes(str);
 }
 
-std::wstring to_wchar(const char* buffer, int len)
+std::wstring Kigs::Core::to_wchar(const char* buffer, int len)
 {
 	std::string str(buffer,len);
     return to_wchar(str);
 }
 
-std::wstring to_wchar(const std::string& str)
+std::wstring Kigs::Core::to_wchar(const std::string& str)
 {
 	std::wstring_convert<deletable_facet<std::codecvt<wchar_t, char, std::mbstate_t>>>  wchar_conv;
 	return wchar_conv.from_bytes(str);

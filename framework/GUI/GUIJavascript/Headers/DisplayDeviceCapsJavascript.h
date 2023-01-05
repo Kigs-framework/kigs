@@ -1,38 +1,42 @@
-#ifndef _DISPLAYDEVICECAPSJAVASCRIPT_H_
-#define _DISPLAYDEVICECAPSJAVASCRIPT_H_
+#pragma once
 
 #include "DisplayDeviceCaps.h"
 
-
-// ****************************************
-// * DisplayDeviceCapsJavascript class
-// * --------------------------------------
-/**
-* \file	DisplayDeviceCapsJavascript.h
-* \class	DisplayDeviceCapsJavascript
-* \ingroup GUIModule
-* \brief	Javascript display device capacities.
-*/
-// ****************************************
-
-class DisplayDeviceCapsJavascript : public DisplayDeviceCaps
+namespace Kigs
 {
-public:
-    DECLARE_CLASS_INFO(DisplayDeviceCapsJavascript,DisplayDeviceCaps,GUI)
-
-	//! constructor
-    DisplayDeviceCapsJavascript(const kstl::string& name,DECLARE_CLASS_NAME_TREE_ARG);
-
-	bool SupportWindowedMode() override
+	namespace Gui
 	{
-		return true; // enable creation of several windows in browser ?
+
+		// ****************************************
+		// * DisplayDeviceCapsJavascript class
+		// * --------------------------------------
+		/**
+		* \file	DisplayDeviceCapsJavascript.h
+		* \class	DisplayDeviceCapsJavascript
+		* \ingroup GUIModule
+		* \brief	Javascript display device capacities.
+		*/
+		// ****************************************
+
+		class DisplayDeviceCapsJavascript : public DisplayDeviceCaps
+		{
+			public:
+			DECLARE_CLASS_INFO(DisplayDeviceCapsJavascript,DisplayDeviceCaps,GUI)
+
+			//! constructor
+			DisplayDeviceCapsJavascript(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG);
+
+			bool SupportWindowedMode() override
+			{
+				return true; // enable creation of several windows in browser ?
+			}
+				//! destructor
+			virtual ~DisplayDeviceCapsJavascript();
+
+			protected:
+
+
+		};    
+
 	}
-    	//! destructor
-	virtual ~DisplayDeviceCapsJavascript();
- 
-protected:
-    
-
-};    
-
-#endif //_DISPLAYDEVICECAPSJAVASCRIPT_H_
+}

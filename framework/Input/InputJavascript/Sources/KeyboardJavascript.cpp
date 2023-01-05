@@ -7,6 +7,7 @@
 #include <iostream>
 #include <wctype.h>
 
+using namespace Kigs::Input;
 
 IMPLEMENT_CLASS_INFO(KeyboardJavascript)
 
@@ -23,7 +24,7 @@ extern "C" int		Get_KeyBoardEventCount();
 // clear event list
 extern "C" void		ClearKeyBoardList();
 
-KeyboardJavascript::KeyboardJavascript(const kstl::string& name,CLASS_NAME_TREE_ARG) :
+KeyboardJavascript::KeyboardJavascript(const std::string& name,CLASS_NAME_TREE_ARG) :
 KeyboardDevice(name,PASS_CLASS_NAME_TREE_ARG)
 {
 	AddListenerToKeyBoard();
@@ -48,7 +49,7 @@ void	KeyboardJavascript::UpdateDevice()
 	
 	int eventCount = Get_KeyBoardEventCount();
 	
-	kstl::vector<KeyEvent>	touchVector;
+	std::vector<KeyEvent>	touchVector;
 	unsigned int currentKey;
 	for(int i =0; i < eventCount; i++)
 	{
