@@ -5,7 +5,6 @@
 #include "ModuleBase.h"
 #include "TimeProfiler.h"
 #include "DoNothingObject.h"
-#include "StepByStepImporter.h"
 
 #include "CoreBaseApplication.h"
 #include "XML.h"
@@ -190,7 +189,6 @@ MEMORYMANAGEMENT_END
 
 	//! declare DoNothingObject (created when unknown object is asked to InstanceFactory)
 	DECLARE_FULL_CLASS_INFO(mCoreInstance,DoNothingObject,DoNothingObject,KigsCore)
-	DECLARE_FULL_CLASS_INFO(mCoreInstance,StepByStepImporter,StepByStepImporter,KigsCore)
 	DECLARE_FULL_CLASS_INFO(mCoreInstance, DictionaryFromJson, DictionaryFromJson, KigsCore)
 	DECLARE_FULL_CLASS_INFO(mCoreInstance, DictionaryFromJsonUTF16, DictionaryFromJsonUTF16, KigsCore)
 	DECLARE_FULL_CLASS_INFO(mCoreInstance, LocalizationManager, LocalizationManager, KigsCore);

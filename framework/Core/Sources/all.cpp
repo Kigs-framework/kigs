@@ -16,7 +16,6 @@
 #include "InstanceFactory.cpp"
 #include "JSonFileParser.cpp"
 #include "NotificationCenter.cpp"
-#include "StepByStepImporter.cpp"
 #include "maBuffer.cpp"
 #include "maCoreItem.cpp"
 #include "maReference.cpp"
