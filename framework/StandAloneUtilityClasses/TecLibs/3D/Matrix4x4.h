@@ -85,8 +85,6 @@ namespace Kigs
 			inline Matrix4x4& operator=(const Matrix3x4& m) { Set(m); return *this; }
 			inline Matrix4x4& operator=(const Matrix3x3& m) { Set(m); return *this; }
 
-			inline Float& operator[](unsigned int index) { return ((Float*)e)[index]; }
-			inline const Float& operator[](unsigned int index) const { return ((Float*)e)[index]; }
 
 			// +---------
 			// | Pure Matrix Operations [ Matrix operator???(Matrix) ]
@@ -109,8 +107,6 @@ namespace Kigs
 			// +---------
 			// | Inner operators
 			// +---------
-			//inline Matrix4x4& operator+=(const Matrix4x4& crMatrix); //@Unimplemented
-			//inline Matrix4x4& operator-=(const Matrix4x4& crMatrix); //@Unimplemented
 
 			inline Matrix4x4& operator*=(const Matrix4x4& crMatrix);
 			inline Matrix4x4& operator*=(const Float& crFloat);
@@ -135,35 +131,17 @@ namespace Kigs
 			inline friend Matrix4x4 operator*(Matrix4x4 m, const Float& f);
 			inline friend Matrix4x4 operator*(const Float& f, Matrix4x4 m);
 
-			// +---------
-			// | Operators specific to transformation matrices
-			// +---------
-			/*
-			//@Unimplemented //@Unimplemented //@Unimplemented
-			inline void SetRotationX(const Float& Angle);
-			inline void SetRotationY(const Float& Angle);
-			inline void SetRotationZ(const Float& Angle);
-			inline void PreRotateX(const Float& Angle);
-			inline void PreRotateY(const Float& Angle);
-			inline void PreRotateZ(const Float& Angle);
-			inline void PostRotateX(const Float& Angle);
-			inline void PostRotateY(const Float& Angle);
-			inline void PostRotateZ(const Float& Angle);
-			inline void SetRotationXYZ(const Float& AngleX,const Float& AngleY,const Float& AngleZ);
-			inline void SetRotationZYX(const Float& AngleX,const Float& AngleY,const Float& AngleZ);
-			inline void PreRotateXYZ(const Float& AngleX,const Float& AngleY,const Float& AngleZ);
-			inline void PreRotateZYX(const Float& AngleX,const Float& AngleY,const Float& AngleZ);
-			inline void PostRotateXYZ(const Float& AngleX,const Float& AngleY,const Float& AngleZ);
-			inline void PostRotateZYX(const Float& AngleX,const Float& AngleY,const Float& AngleZ);
-			inline void SetScale(const Float& ScaleX, const Float &ScaleY, const Float ScaleZ);
-			inline void PreScale(const Float& ScaleX, const Float &ScaleY, const Float ScaleZ);
-			inline void PostScale(const Float& ScaleX, const Float &ScaleY, const Float ScaleZ);
-			inline void SetTranslation(const Vector3D& Translation);
-			inline void AddTranslation(const Vector3D& Translation);
-			*/
-
-
 			inline void Mult(const Matrix4x4& m1, const Matrix4x4& m2);
+
+			Vector4D& operator[](size_t index)
+			{
+				return Axis[index];
+			}
+	
+			const Vector4D& operator[](size_t index) const
+			{
+				return Axis[index];
+			}
 		};
 
 		inline Matrix4x4 Transpose(const Matrix4x4& cr_Matrix)

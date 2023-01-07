@@ -282,10 +282,17 @@ void	ModuleSpecificRenderer::LoadMatrix(int mode, const float *newMat)
 void	ModuleSpecificRenderer::Translate(int mode, float tx, float ty, float tz)
 {
 	Matrix4x4&	result = mMatrixStack[mode].back();
+	/*
 	result[12] += (result[0] * tx + result[4] * ty + result[8] * tz);
 	result[13] += (result[1] * tx + result[5] * ty + result[9] * tz);
 	result[14] += (result[2] * tx + result[6] * ty + result[10] * tz);
 	result[15] += (result[3] * tx + result[7] * ty + result[11] * tz);
+	*/
+	result[3][0] += (result[0][0] * tx + result[1][0] * ty + result[2][0] * tz);
+	result[3][1] += (result[0][1] * tx + result[1][1] * ty + result[2][1] * tz);
+	result[3][2] += (result[0][2] * tx + result[1][2] * ty + result[2][2] * tz);
+	result[3][3] += (result[0][3] * tx + result[1][3] * ty + result[2][3] * tz);
+
 	mDirtyMatrix |= (1 << mode);
 }
 
@@ -317,6 +324,7 @@ void	ModuleSpecificRenderer::Rotate(int mode, float angle, float x, float y, flo
 
 	Matrix4x4 rotationMatrix;
 
+	/*
 	rotationMatrix[0] = (oneMinusCos * xx) + cosAngle;
 	rotationMatrix[1] = (oneMinusCos * xy) - zs;
 	rotationMatrix[2] = (oneMinusCos * zx) + ys;
@@ -336,6 +344,27 @@ void	ModuleSpecificRenderer::Rotate(int mode, float angle, float x, float y, flo
 	rotationMatrix[13] = 0.0f;
 	rotationMatrix[14] = 0.0f;
 	rotationMatrix[15] = 1.0f;
+	*/
+
+	rotationMatrix[0][0] = (oneMinusCos * xx) + cosAngle;
+	rotationMatrix[0][1] = (oneMinusCos * xy) - zs;
+	rotationMatrix[0][2] = (oneMinusCos * zx) + ys;
+	rotationMatrix[0][3] = 0.0f;
+
+	rotationMatrix[1][0] = (oneMinusCos * xy) + zs;
+	rotationMatrix[1][1] = (oneMinusCos * yy) + cosAngle;
+	rotationMatrix[1][2] = (oneMinusCos * yz) - xs;
+	rotationMatrix[1][3] = 0.0f;
+
+	rotationMatrix[2][0] = (oneMinusCos * zx) - ys;
+	rotationMatrix[2][1] = (oneMinusCos * yz) + xs;
+	rotationMatrix[2][2] = (oneMinusCos * zz) + cosAngle;
+	rotationMatrix[2][3] = 0.0f;
+
+	rotationMatrix[3][0] = 0.0f;
+	rotationMatrix[3][1] = 0.0f;
+	rotationMatrix[3][2] = 0.0f;
+	rotationMatrix[3][3] = 1.0f;
 
 	Multiply(mode, &(rotationMatrix.e[0][0]));
 
@@ -344,6 +373,8 @@ void	ModuleSpecificRenderer::Rotate(int mode, float angle, float x, float y, flo
 void	ModuleSpecificRenderer::Scale(int mode, float sx, float sy, float sz)
 {
 	Matrix4x4&	result = mMatrixStack[mode].back();
+
+	/*	
 	result[0] *= sx;
 	result[1] *= sx;
 	result[2] *= sx;
@@ -358,6 +389,22 @@ void	ModuleSpecificRenderer::Scale(int mode, float sx, float sy, float sz)
 	result[9] *= sz;
 	result[10] *= sz;
 	result[11] *= sz;
+	*/
+
+	result[0][0] *= sx;
+	result[0][1] *= sx;
+	result[0][2] *= sx;
+	result[0][3] *= sx;
+
+	result[1][0] *= sy;
+	result[1][1] *= sy;
+	result[1][2] *= sy;
+	result[1][3] *= sy;
+
+	result[2][0] *= sz;
+	result[2][1] *= sz;
+	result[2][2] *= sz;
+	result[2][3] *= sz;
 	mDirtyMatrix |= (1 << mode);
 }
 
@@ -374,6 +421,7 @@ void	ModuleSpecificRenderer::Frustum(int mode, float left, float right, float bo
 		return;
 	}
 
+	/*
 	frust[0] = 2.0f * nearZ / deltaX;
 	frust[1] = frust[2] = frust[3] = 0.0f;
 
@@ -387,6 +435,21 @@ void	ModuleSpecificRenderer::Frustum(int mode, float left, float right, float bo
 
 	frust[14] = -2.0f * nearZ * farZ / deltaZ;
 	frust[12] = frust[13] = frust[15] = 0.0f;
+	*/
+
+	frust[0][0] = 2.0f * nearZ / deltaX;
+	frust[0][1] = frust[0][2] = frust[0][3] = 0.0f;
+
+	frust[1][1] = 2.0f * nearZ / deltaY;
+	frust[1][0] = frust[1][2] = frust[1][3] = 0.0f;
+
+	frust[2][0] = (right + left) / deltaX;
+	frust[2][1] = (top + bottom) / deltaY;
+	frust[2][2] = -(nearZ + farZ) / deltaZ;
+	frust[2][3] = -1.0f;
+
+	frust[3][2] = -2.0f * nearZ * farZ / deltaZ;
+	frust[3][0] = frust[3][1] = frust[3][3] = 0.0f;
 
 	Multiply(mode, &(frust.e[0][0]));
 }
@@ -405,7 +468,7 @@ void	ModuleSpecificRenderer::Ortho(int mode, float left, float right, float bott
 		//KIGS_ERROR("Invalid ortho", 1);
 		return;
 	}
-
+	/*
 	ortho[0] = 2.0f / deltaX;
 	ortho[12] = -(right + left) / deltaX;
 	ortho[5] = 2.0f / deltaY;
@@ -416,6 +479,17 @@ void	ModuleSpecificRenderer::Ortho(int mode, float left, float right, float bott
 #else
 	ortho[10] = -2.0f / deltaZ;
 	ortho[14] = -(nearZ + farZ) / deltaZ;
+#endif*/
+	ortho[0][0] = 2.0f / deltaX;
+	ortho[3][0] = -(right + left) / deltaX;
+	ortho[1][1] = 2.0f / deltaY;
+	ortho[3][1] = -(top + bottom) / deltaY;
+#if USE_D3D
+	ortho[2][2] = 1.0f / deltaZ;
+	ortho[3][2] = nearZ / deltaZ;
+#else
+	ortho[2][2] = -2.0f / deltaZ;
+	ortho[3][2] = -(nearZ + farZ) / deltaZ;
 #endif
 	
 	ModuleSpecificRenderer::LoadIdentity(mode);

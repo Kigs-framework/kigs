@@ -8,8 +8,7 @@ namespace Kigs
 {
 	namespace Core
 	{
-		template<class BaseClass>
-		class CoreVectorBase;
+		class CoreVector;
 
 		// ****************************************
 		// * CoreVectorIterator class
@@ -94,28 +93,25 @@ namespace Kigs
 		};
 
 		// ****************************************
-		// * CoreVectorBase class
+		// * CoreVector class
 		// * --------------------------------------
 		/**
-		* \class	CoreVectorBase
+		* \class	CoreVector
 		* \file		CoreVector.h
 		* \ingroup Core
-		* \brief	Base class for CoreVector
+		* \brief	CoreItem managing a vector of CoreItemSP
 		*/
 		// ****************************************
 
-		template<class BaseClass>
-		class CoreVectorBase : public BaseClass
+		class CoreVector : public CoreItem
 		{
-		protected:
 
-			CoreVectorBase(CoreItem::COREITEM_TYPE _type) :
-				BaseClass(_type)
+		public:
+			CoreVector() :
+				CoreItem(COREVECTOR)
 			{
 				mVector.clear();
 			}
-
-		public:
 
 			virtual void set(int key, const CoreItemSP& toinsert) override
 			{
@@ -175,7 +171,7 @@ namespace Kigs
 			}
 
 
-			virtual ~CoreVectorBase()
+			virtual ~CoreVector()
 			{
 				clear();
 			}
@@ -281,13 +277,10 @@ namespace Kigs
 				mVector[position] = toinsert;
 			}
 
-			CoreVectorBase& operator= (const CoreVectorBase& x)
+			CoreVector& operator= (const CoreVector& x)
 			{
-				mVector.clear();
-				for (auto& el : x)
-				{
-					mVector.push_back(el);
-				}
+				mVector = x.mVector;
+				
 				return *this;
 			}
 
@@ -340,27 +333,6 @@ namespace Kigs
 
 		protected:
 			std::vector<CoreItemSP>	mVector;
-		};
-
-
-		// ****************************************
-		// * CoreVector class
-		// * --------------------------------------
-		/**
-		* \class	CoreVector
-		* \file		CoreVector.h
-		* \ingroup Core
-		* \brief	CoreItem managing a vector of CoreItemSP
-		*/
-		// ****************************************
-
-		class CoreVector : public CoreVectorBase<CoreItem>
-		{
-		public:
-			CoreVector() :
-				CoreVectorBase<CoreItem>(COREVECTOR)
-			{
-			}
 		};
 
 	}

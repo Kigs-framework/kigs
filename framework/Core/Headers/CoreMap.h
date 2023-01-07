@@ -21,8 +21,8 @@ namespace Kigs
 		*/
 		// ****************************************
 
-		template<class map_key, class baseClass>
-		class CoreMapBase;
+		template<class map_key>
+		class CoreMap;
 
 		template<class map_key>
 		class CoreMapIterator : public CoreItemIteratorBase
@@ -105,61 +105,24 @@ namespace Kigs
 
 
 
-		template<class map_key, class baseClass>
-		class CoreMapBase : public baseClass
+		template<class map_key>
+		class CoreMap : public CoreItem
 		{
 		protected:
-			//typedef std::pair<map_key, RefCountedBaseClass*> CoreMapPair;
-			virtual ~CoreMapBase()
+
+			typedef std::map<map_key, CoreItemSP>	CoreMapMap;
+
+		public:
+			virtual ~CoreMap()
 			{
 				clear();
 			}
 
-			explicit CoreMapBase() :
-				baseClass(CoreItem::COREMAP)
+			explicit CoreMap() :
+				CoreItem(CoreItem::COREMAP)
 			{
 				mMap.clear();
 			}
-
-			// protected, only son classes can access it
-			CoreMapBase(CoreItem::COREITEM_TYPE _type) :
-				baseClass(_type)
-			{
-				mMap.clear();
-			}
-
-
-			typedef std::map<map_key, CoreItemSP>	CoreMapMap;
-
-			virtual void set(int key, const CoreItemSP& toinsert) override
-			{
-				KIGS_ERROR("set called on CoreMapBase", 2);
-			}
-			virtual void set(const std::string& key, const CoreItemSP& toinsert) override
-			{
-				KIGS_ERROR("set called on CoreMapBase", 2);
-			}
-			virtual void set(const usString& key, const CoreItemSP& toinsert) override
-			{
-				KIGS_ERROR("set called on CoreMapBase", 2);
-			}
-
-			virtual void erase(int key) override
-			{
-				KIGS_ERROR("erase called on CoreMapBase", 2);
-			}
-			virtual void erase(const std::string& key) override
-			{
-				KIGS_ERROR("erase called on CoreMapBase", 2);
-			}
-			virtual void erase(const usString& key) override
-			{
-				KIGS_ERROR("erase called on CoreMapBase", 2);
-			}
-
-
-		public:
-
 			CoreItemSP GetItem(map_key aKey)
 			{
 				typename std::map<map_key, CoreItemSP>::iterator it = mMap.find(aKey);
@@ -228,7 +191,6 @@ namespace Kigs
 				return mMap.at(n);
 			}
 
-
 			CoreItemIterator erase(CoreItemIterator position)
 			{
 				CoreMapIterator<map_key>& pos = *(CoreMapIterator<map_key>*)position.get();
@@ -251,9 +213,7 @@ namespace Kigs
 				mMap.clear();
 			}
 
-
-
-			CoreMapBase& operator= (const CoreMapBase& x)
+			CoreMap& operator= (const CoreMap& x)
 			{
 				mMap.clear();
 				for (auto& el : x)
@@ -268,27 +228,6 @@ namespace Kigs
 				return &mMap;
 			}
 
-		protected:
-			CoreMapMap mMap;
-		};
-
-		template<class map_key>
-		class CoreMap : public CoreMapBase<map_key, CoreItem>
-		{
-		public:
-			CoreMap() :
-				CoreMapBase<map_key, CoreItem>(CoreItem::COREMAP)
-			{
-			}
-			inline CoreItemSP operator[](const char* key) const
-			{
-				return CoreItem::operator[](key);
-			}
-			// Specialised
-			virtual inline CoreItemSP operator[](int i) override;
-			virtual inline CoreItemSP operator[](const std::string& key) override;
-			virtual inline CoreItemSP operator[](const usString& key) override;
-
 			virtual inline void set(int key, const CoreItemSP& toinsert) override;
 
 			virtual inline void set(const std::string& key, const CoreItemSP& toinsert) override;
@@ -300,6 +239,18 @@ namespace Kigs
 			virtual inline void erase(const std::string& key) override;
 
 			virtual inline void erase(const usString& key) override;
+
+			inline CoreItemSP operator[](const char* key) const
+			{
+				return CoreItem::operator[](key);
+			}
+			// Specialised
+			virtual inline CoreItemSP operator[](int i) override;
+			virtual inline CoreItemSP operator[](const std::string& key) override;
+			virtual inline CoreItemSP operator[](const usString& key) override;
+
+		protected:
+			CoreMapMap mMap;
 		};
 
 		// specialized std::string

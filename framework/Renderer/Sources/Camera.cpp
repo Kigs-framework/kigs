@@ -479,7 +479,7 @@ bool Camera::Project(float &ScreenX, float &ScreenY, Point3D Pt)
 		return false;
 	}
 	
-	// can be optimized a lot
+	/*
 	frust[0] = 2.0f * mNearPlane / deltaX;
 	frust[4] = frust[8] = frust[12] = 0.0f;
 	
@@ -493,6 +493,22 @@ bool Camera::Project(float &ScreenX, float &ScreenY, Point3D Pt)
 	
 	frust[11] = -2.0f * mNearPlane * mFarPlane / deltaZ;
 	frust[3] = frust[7] = frust[15] = 0.0f;
+	*/
+
+	// can be optimized a lot
+	frust[0][0] = 2.0f * mNearPlane / deltaX;
+	frust[1][0] = frust[2][0] = frust[3][0] = 0.0f;
+
+	frust[1][1] = 2.0f * mNearPlane / deltaY;
+	frust[0][1] = frust[2][1] = frust[3][1] = 0.0f;
+
+	frust[0][2] = 0.0f;
+	frust[1][2] = 0.0f;
+	frust[2][2] = -(mNearPlane + mFarPlane) / deltaZ;
+	frust[3][2] = -1.0f;
+
+	frust[2][3] = -2.0f * mNearPlane * mFarPlane / deltaZ;
+	frust[0][3] = frust[1][3] = frust[3][3] = 0.0f;
 	
 	
 	// view vector is on x axis in local camera coordinates
@@ -502,10 +518,18 @@ bool Camera::Project(float &ScreenX, float &ScreenY, Point3D Pt)
 	GetGlobalToLocal().TransformPoint(&Pt, &localPt);
 
 	Vector4D result;
+
+	/*
 	result.x = frust[0] * localPt.y + frust[1] * localPt.z + frust[2] * localPt.x + frust[3];
 	result.y = frust[4] * localPt.y + frust[5] * localPt.z + frust[6] * localPt.x + frust[7];
 	result.z = frust[8] * localPt.y + frust[9] * localPt.z + frust[10] * localPt.x + frust[11];
 	result.w = frust[12] * localPt.y + frust[13] * localPt.z + frust[14] * localPt.x + frust[15];
+	*/
+
+	result.x = frust[0][0] * localPt.y + frust[0][1] * localPt.z + frust[0][2] * localPt.x + frust[0][3];
+	result.y = frust[1][0] * localPt.y + frust[1][1] * localPt.z + frust[1][2] * localPt.x + frust[1][3];
+	result.z = frust[2][0] * localPt.y + frust[2][1] * localPt.z + frust[2][2] * localPt.x + frust[2][3];
+	result.w = frust[3][0] * localPt.y + frust[3][1] * localPt.z + frust[3][2] * localPt.x + frust[3][3];
 	
 	if (result.w)
 		result.w = 1.0f / result.w;

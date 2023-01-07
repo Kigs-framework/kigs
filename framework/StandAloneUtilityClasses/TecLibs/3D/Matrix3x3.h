@@ -69,8 +69,6 @@ namespace Kigs
 			inline const Matrix3x3& operator=(const Matrix3x3& crMatrix);
 			inline const Matrix3x3& operator=(const Quaternion& crQuaternion);
 
-			inline Float& operator[](const unsigned int index) { return ((Float*)e)[index]; }
-
 			// +---------
 			// | Pure Matrix Operations [ Matrix operator???(Matrix) ]
 			// +---------
@@ -157,15 +155,16 @@ namespace Kigs
 			//inline explicit operator const Quaternion (void);
 			inline Quaternion ToQuaternion() const;
 
-			// +---------
-			// | Cast To Matrix3x4
-			// +---------
-			// inline explicit operator const Matrix3x4 (void);
 
-			// +---------
-			// | Cast To Matrix4x4
-			// +---------
-			// inline explicit operator const Matrix4x4 (void);
+			Vector3D& operator[](size_t index)
+			{
+				return Axis[index];
+			}
+	
+			const Vector3D& operator[](size_t index) const
+			{
+				return Axis[index];
+			}
 		};
 
 	}

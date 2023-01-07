@@ -40,7 +40,7 @@ namespace Kigs
 						Vector3D Pos;
 					};
 				};
-				Float e[4][3];
+				Float e[4][3]; // column first matrix
 			};
 
 
@@ -99,7 +99,6 @@ namespace Kigs
 
 			inline void operator=(const Matrix3x4& crMatrix);
 
-			inline Float& operator[](const unsigned int index) { return ((Float*)e)[index]; }
 			// +---------
 			// | Inner operators
 			// +---------
@@ -169,14 +168,17 @@ namespace Kigs
 
 			inline void	GetPRS(Point3D& pos, Point3D& rot, float& scale) const;
 
-			/*
-			inline Point3D *X();
-			inline Point3D *Y();
-			inline Point3D *Z();
-			inline Point3D *P();
-			*/
-
 			inline bool IsIdentity() const;
+			
+			Vector3D& operator[](size_t index)
+			{
+				return Axis[index];
+			}
+	
+			const Vector3D& operator[](size_t index) const
+			{
+				return Axis[index];
+			}
 		};
 
 	}
