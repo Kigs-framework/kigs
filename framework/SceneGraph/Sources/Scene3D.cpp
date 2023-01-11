@@ -211,7 +211,7 @@ void Scene3D::TravDraw(TravState* state)
 			Node3D::TravCull(state);
 		}
 
-		auto rs = cam->getValue<CoreModifiable*>("RenderingScreen");
+		auto rs = cam->getValue<CMSP>("RenderingScreen");
 
 		for (auto& pass : passes)
 		{

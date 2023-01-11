@@ -32,6 +32,9 @@ namespace Kigs
 	}
 	namespace Core
 	{
+
+
+
 		using namespace Kigs::Maths;
 		#define NOQUALIFIER
 
@@ -56,8 +59,8 @@ namespace Kigs
 		FUNC(CVQUALIFIER usString REFQUALIFIER)
 
 		#define EXPAND_MACRO_FOR_EXTRA_TYPES(CVQUALIFIER, REFQUALIFIER, FUNC)\
-		FUNC(CVQUALIFIER CoreItem* REFQUALIFIER)\
-		FUNC(CVQUALIFIER CoreModifiable* REFQUALIFIER)\
+		FUNC(CVQUALIFIER CoreItemSP REFQUALIFIER)\
+		FUNC(CVQUALIFIER CMSP REFQUALIFIER)\
 		FUNC(CVQUALIFIER void* REFQUALIFIER)
 
 		class CoreModifiableAttribute;
@@ -210,6 +213,7 @@ namespace Kigs
 			CMSP(std::shared_ptr<U>&& other) : SmartPointer<CoreModifiable>(debug_checked_pointer_cast<CoreModifiable>(other))
 			{
 			}
+			CMSP(CoreModifiable* other);
 			/*template<typename U>
 			CMSP& operator=(const std::shared_ptr<U>& other)
 			{
@@ -1370,6 +1374,11 @@ namespace Kigs
 		};
 
 		// CMSP methods
+
+		inline CMSP::CMSP(CoreModifiable* other) : SmartPointer<CoreModifiable>(other->SharedFromThis())
+		{
+		}
+
 		inline CMSP CMSP::operator [](const std::string& son) const
 		{
 			if (get())
@@ -1384,7 +1393,6 @@ namespace Kigs
 				return get()->GetFirstSonByName("CoreModifiable", son);
 			return nullptr;
 		}
-
 
 		inline CMSP::AttributeHolder CMSP::operator()(const std::string& attr) const
 		{
@@ -1434,9 +1442,9 @@ namespace Kigs
 		}
 
 		template<>
-		inline CoreModifiable* CoreModifiable::getValue(const KigsID id) const
+		inline CMSP CoreModifiable::getValue(const KigsID id) const
 		{
-			CoreModifiable* val = nullptr;
+			CMSP val = nullptr;
 			getValue(id, val);
 			return val;
 		}

@@ -148,7 +148,7 @@ void MultiMesh::RecomputeBoundingBox()
 						full_mesh_item->addItem(mat);
 				}
 
-				int vertex_buffer_size;
+				size_t vertex_buffer_size;
 				item->GetVertexBuffer(vertex_buffer_size);
 
 				total_vertex_count += item->getVertexCount();
@@ -193,7 +193,7 @@ void MultiMesh::RecomputeBoundingBox()
 
 			for (auto item : group)
 			{
-				int vertex_buffer_size;
+				size_t vertex_buffer_size;
 				void * vbuffer = item->GetVertexBuffer(vertex_buffer_size);
 				memcpy(vertex_buffer_write, vbuffer, vertex_buffer_size);
 				if (need_vertex_update)
@@ -259,7 +259,7 @@ void MultiMesh::RecomputeBoundingBox()
 				vertex_buffer_write += vertex_buffer_size;
 				
 
-				int index_buffer_size;
+				size_t index_buffer_size;
 				void * ibuffer = item->GetIndexBuffer(index_buffer_size);
 
 				const bool is_item_u16 = item->getVertexCount() < 65536;

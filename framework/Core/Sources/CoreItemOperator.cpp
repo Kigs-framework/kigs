@@ -128,7 +128,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		if (formulae[formulae.length() - 1] == ')')
 		{
 			AsciiParserUtils	block(formulae);
-			int oldpos = formulae.GetPosition();
+			size_t oldpos = formulae.GetPosition();
 			if (formulae.GetBlock(block, '(', ')'))
 			{
 				if (block.length() == (formulae.length() - 2))
@@ -152,7 +152,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		{
 
 			AsciiParserUtils	block(formulae);
-			int oldpos = formulae.GetPosition();
+			size_t oldpos = formulae.GetPosition();
 			formulae.SetPosition(0);
 
 			if (formulae.GetBlock(block, '[', ']'))
@@ -206,7 +206,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		if (formulae[formulae.length() - 1] == '}')
 		{
 			AsciiParserUtils	block(formulae);
-			int oldpos = formulae.GetPosition();
+			size_t oldpos = formulae.GetPosition();
 			formulae.SetPosition(0);
 
 			if (formulae.GetBlock(block, '{', '}'))
@@ -259,7 +259,7 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 		{
 		
 			AsciiParserUtils	block(formulae);
-			int oldpos = formulae.GetPosition();
+			size_t oldpos = formulae.GetPosition();
 			formulae.SetPosition(1);
 		
 			if (formulae.GetString(block, '#'))
@@ -285,9 +285,9 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 
 		// push each separated instruction 
 		AsciiParserUtils	remaining(formulae);
-		int starting = 0;
-		int i;
-		for (i = 0; i < (int)FirstLevelOperatorList.size(); i++)
+		size_t starting = 0;
+		size_t i;
+		for (i = 0; i < FirstLevelOperatorList.size(); i++)
 		{
 			AsciiParserUtils	operand(remaining);
 			remaining.SetPosition(FirstLevelOperatorList[i].mPos - 1 - starting);
@@ -1018,9 +1018,9 @@ std::vector<CoreItemOperatorStruct>	CoreItemOperator<operandType>::FindFirstLeve
 	if (OperatorList.size())
 	{
 		AsciiParserUtils	remaining(block);
-		int starting = 0;
-		int i;
-		for (i = 0; i < (int)OperatorList.size(); i++)
+		size_t starting = 0;
+		size_t i;
+		for (i = 0; i < OperatorList.size(); i++)
 		{
 			AsciiParserUtils	operand(remaining);
 			remaining.SetPosition(OperatorList[i].mPos - 1-starting);

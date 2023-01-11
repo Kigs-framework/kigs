@@ -147,7 +147,7 @@ void KigsCore::Init()
 
 	KIGS_SET_MESSAGES_PRINTF(printf);
 
-	mCoreInstance->mSemaphore=0;
+	mCoreInstance->mSemaphore=nullptr;
 
 	// profilers
 	mCoreInstance->mProfilerManager=new Time::GlobalProfilerManager();

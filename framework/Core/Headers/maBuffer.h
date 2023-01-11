@@ -70,7 +70,7 @@ namespace Kigs
 				}
 				else
 				{
-					unsigned int readSize;
+					size_t readSize;
 					unsigned char* rawbuf = AsciiParserUtils::StringToBuffer(value, readSize);
 					mValue->SetBuffer(rawbuf, readSize);
 				}
@@ -142,11 +142,11 @@ namespace Kigs
 			{
 				return !mValue ? nullptr : mValue->buffer();
 			}
-			unsigned int	length() const
+			size_t	length() const
 			{
 				return !mValue ? 0u : mValue->length();
 			}
-			void	SetBuffer(void* buffer, unsigned int length, bool manageMemory = true)
+			void	SetBuffer(void* buffer, size_t length, bool manageMemory = true)
 			{
 				InitData();
 				mValue->SetBuffer(buffer, length, manageMemory);

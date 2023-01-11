@@ -24,7 +24,7 @@ AsciiParserUtilsTemplate<charType>::AsciiParserUtilsTemplate(charType* buffer, i
 
 
 template<typename charType>
-void	AsciiParserUtilsTemplate<charType>::Set(charType* txt, int txtl)
+void	AsciiParserUtilsTemplate<charType>::Set(charType* txt, size_t txtl)
 {
 	if(mBufferedEnd)
 	{
@@ -566,7 +566,7 @@ bool	AsciiParserUtilsTemplate<char>::ReadDouble(double& result)
 }
 
 template<>
-bool	AsciiParserUtilsTemplate<char>::ReadString(char* result, const int MAX_STRING_L)
+bool	AsciiParserUtilsTemplate<char>::ReadString(char* result, const size_t MAX_STRING_L)
 {
 	// search int start
 	bool	found=false;
@@ -603,12 +603,12 @@ bool	AsciiParserUtilsTemplate<char>::ReadString(char* result, const int MAX_STRI
 }
 
 template<typename charType>
-void	AsciiParserUtilsTemplate<charType>::copyUSToCharBuffer(unsigned char* tobuffer, unsigned short* frombuffer, int sizeMax)
+void	AsciiParserUtilsTemplate<charType>::copyUSToCharBuffer(unsigned char* tobuffer, unsigned short* frombuffer, size_t sizeMax)
 {
 	unsigned char* writechar = tobuffer;
 	unsigned short* readUS = frombuffer;
 
-	int currentSize = 0;
+	size_t currentSize = 0;
 	while ((*readUS != 0) && (currentSize<(sizeMax-1)))
 	{
 		*writechar = (unsigned char)(*readUS);
@@ -756,7 +756,7 @@ bool	AsciiParserUtilsTemplate<unsigned short>::ReadDouble(double& result)
 }
 
 template<>
-bool	AsciiParserUtilsTemplate<unsigned short>::ReadString(unsigned short* result, const int MAX_STRING_L)
+bool	AsciiParserUtilsTemplate<unsigned short>::ReadString(unsigned short* result, const size_t MAX_STRING_L)
 {
 	// search int start
 	bool	found = false;
@@ -983,9 +983,9 @@ bool	AsciiParserUtilsTemplate<charType>::GoToNextNonWhitespace()
 
 // search for given char starting at startpos and return found pos or -1 if not found
 template<typename charType>
-unsigned int		AsciiParserUtilsTemplate<charType>::FindNext(charType toFind, unsigned int startpos)
+size_t		AsciiParserUtilsTemplate<charType>::FindNext(charType toFind, size_t startpos)
 {
-	unsigned int currentPos = startpos;
+	size_t currentPos = startpos;
 	charType *p = ((charType*)mText) + currentPos;
 
 	while ((*p != (charType)toFind) && p < mTextEnd)
@@ -1002,13 +1002,13 @@ unsigned int		AsciiParserUtilsTemplate<charType>::FindNext(charType toFind, unsi
 
 // search for given word starting at startpos and return found pos or -1 if not found
 template<typename charType>
-unsigned int		AsciiParserUtilsTemplate<charType>::FindNext(const charType* toFind, unsigned int startpos)
+size_t		AsciiParserUtilsTemplate<charType>::FindNext(const charType* toFind, size_t startpos)
 {
-	unsigned int currentPos = startpos;
+	size_t currentPos = startpos;
 	charType *p = ((charType*)mText) + currentPos;
 
 	// search toFind Len
-	unsigned int toFindLen = 0;
+	size_t toFindLen = 0;
 	while (toFind[toFindLen] != 0)
 	{
 		toFindLen++;
@@ -1164,7 +1164,7 @@ bool	AsciiParserUtilsTemplate<charType>::GetTrailingPart(AsciiParserUtilsTemplat
 
 // convert raw unsigned char buffer memory to string (hexadecimal)
 template<typename charType>
-std::string	AsciiParserUtilsTemplate<charType>::BufferToString(unsigned char* zone, unsigned int size)
+std::string	AsciiParserUtilsTemplate<charType>::BufferToString(unsigned char* zone, size_t size)
 {
 	// each unsigned char is coded in two bytes in hexadecimal notation
 	std::string result;
@@ -1185,10 +1185,10 @@ std::string	AsciiParserUtilsTemplate<charType>::BufferToString(unsigned char* zo
 
 // convert string (hexadecimal) to raw unsigned char buffer (to delete with delete[] buffer)
 template<typename charType>
-unsigned char*	AsciiParserUtilsTemplate<charType>::StringToBuffer(const std::string& str, unsigned int& size)
+unsigned char*	AsciiParserUtilsTemplate<charType>::StringToBuffer(const std::string& str, size_t& size)
 {
 	// byte size is half string size
-	size=(unsigned int)str.size()/2;
+	size=str.size()/2;
 	unsigned char* result=0;
 	unsigned char*	readzone=(unsigned char*)str.c_str();	
 	if(size)

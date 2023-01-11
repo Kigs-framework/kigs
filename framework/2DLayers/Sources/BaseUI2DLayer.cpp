@@ -371,7 +371,7 @@ void BaseUI2DLayer::TravDraw(TravState* state)
 			ShaderBase* shader = nullptr;
 			if (item.node->GetNodeFlag(Node2D::Node2D_UseCustomShader))
 			{
-				shader = item.node->getValue<CoreModifiable*>("CustomShader")->as<ShaderBase>();
+				shader = item.node->getValue<CMSP>("CustomShader")->as<ShaderBase>();
 			}
 			if (shader != current_custom_shader)
 			{

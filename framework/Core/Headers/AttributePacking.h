@@ -303,9 +303,15 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 			template<typename T>
 			auto UnpackGetValue(ptr_to_ref<T>& value, CoreModifiableAttribute* attr) -> enable_if_t<is_base_of<CoreModifiable, T>::value>
 			{
-				CoreModifiable* cm = nullptr;
-				if (attr->getValue(cm) && cm && cm->isSubType(T::mClassID))
-					value = (T*)cm;
+				void* vcm = nullptr;
+				if (attr->getValue(vcm) && vcm)
+				{
+					CoreModifiable* cm = static_cast<CoreModifiable*>(vcm);
+					if (cm->isSubType(T::mClassID))
+					{
+						value = static_cast<T*>(cm);
+					}
+				}
 			}
 
 			inline void UnpackGetValue(ptr_to_ref<const char>& value, CoreModifiableAttribute* attr)

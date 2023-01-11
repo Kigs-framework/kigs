@@ -16,10 +16,10 @@ mDisplayIndex(*this, true, "DisplayIndex", 0xFFFFFFFF),
 mDirtySize(*this, false, "DirtySize", false),
 mPosition(*this,true,"Position",-1,-1), // -1 => centered on screen
 mSize(*this,true,"Size"),
-mClickCallback(NULL), mDoubleClickCallback(NULL), mKeyDownCallback(NULL),mKeyUpCallback(NULL), mDestroyCallback(NULL)
+mClickCallback(nullptr), mDoubleClickCallback(nullptr), mKeyDownCallback(nullptr),mKeyUpCallback(nullptr), mDestroyCallback(nullptr)
 {
-   mScreen = 0;
-   mHandle = 0;
+   mScreen = nullptr;
+   mHandle = nullptr;
 }     
 
 Window::~Window()

@@ -61,9 +61,9 @@ namespace Kigs
 				}
 				return false;
 			}
-			virtual bool getValue(CoreItem*& value) const override
+			virtual bool getValue(CoreItemSP& value) const override
 			{
-				value = (CoreItem*)mValue.item.get();
+				value = mValue.item;
 				return true;
 			}
 			virtual bool getValue(void*& value) const override { value = (void*)mValue.item.get(); return true; }
@@ -89,14 +89,14 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(CoreItem* value) override
+			virtual bool setValue(CoreItemSP value) override
 			{
 				if (this->isReadOnly())
 					return false;
 
-				if (mValue.item.get() != value)
+				if (mValue.item != value)
 				{
-					mValue.item = value->SharedFromThis();
+					mValue.item = value;
 					mValue.ref_file = "";
 					DO_NOTIFICATION(notificationLevel);
 				}

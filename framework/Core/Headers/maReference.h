@@ -147,9 +147,9 @@ namespace Kigs
 			}
 
 			// Thread unsafe, need to add getValue method with CMSP
-			virtual bool getValue(CoreModifiable*& value) const override
+			virtual bool getValue(CMSP& value) const override
 			{
-				value = (CoreModifiable*) const_cast<maReferenceHeritage*>(this)->SearchRef().get();
+				value = const_cast<maReferenceHeritage*>(this)->SearchRef();
 				return true;
 			}
 
@@ -179,11 +179,11 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(CoreModifiable* value) override
+			virtual bool setValue(CMSP value) override
 			{
 				if (this->isReadOnly())
 					return false;
-				mValue.mObj = value ? value->SharedFromThis() : nullptr;
+				mValue.mObj = value ? value : nullptr;
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
@@ -195,7 +195,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return *this;
 			}
-			auto& operator=(CoreModifiable* value)
+			auto& operator=(CMSP value)
 			{
 				setValue(value);
 				return *this;
@@ -329,9 +329,9 @@ namespace Kigs
 				return false;
 			}
 
-			virtual bool getValue(CoreModifiable*& value) const override
+			virtual bool getValue(CMSP& value) const override
 			{
-				value = (CoreModifiable*) const_cast<maStrongReferenceHeritage*>(this)->SearchRef().get();
+				value =  const_cast<maStrongReferenceHeritage*>(this)->SearchRef();
 				return true;
 			}
 
@@ -360,11 +360,11 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(CoreModifiable* value) override
+			virtual bool setValue(CMSP value) override
 			{
 				if (this->isReadOnly())
 					return false;
-				mValue.mObj = value->SharedFromThis();
+				mValue.mObj = value;
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}

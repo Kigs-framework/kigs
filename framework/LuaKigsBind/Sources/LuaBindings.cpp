@@ -99,9 +99,9 @@ void Kigs::Lua::PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 		if (type == CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE || type == CoreModifiable::ATTRIBUTE_TYPE::STRONG_REFERENCE)
 		{
 			//NOTE(antoine) thread unsafe in weak_reference's case
-			CoreModifiable*	ModifiableRef=nullptr;
+			CMSP	ModifiableRef=nullptr;
 			attrib->getValue(ModifiableRef);
-			L.push(ModifiableRef);
+			L.push(ModifiableRef.get());
 		}
 		else if (type == CoreModifiable::ATTRIBUTE_TYPE::BOOL)
 		{

@@ -193,7 +193,7 @@ DataDrivenTransition::~DataDrivenTransition()
 	if (mPreviousSequence)
 	{
 		mPreviousSequence->UnInit();
-		mPreviousSequence = 0;
+		mPreviousSequence = nullptr;
 	}
 }
 
@@ -333,7 +333,7 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 					}
 				}
 				mPreviousSequence->UnInit();
-				mPreviousSequence = 0;
+				mPreviousSequence = nullptr;
 			}
 			std::vector<CMSP>	instances;
 			GetParents()[0]->GetSonInstancesByType("Abstract2DLayer", instances);
@@ -354,7 +354,7 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 
 IMPLEMENT_CLASS_INFO(DataDrivenSequenceManager)
 IMPLEMENT_CONSTRUCTOR(DataDrivenSequenceManager)
-, mCurrentSequence(0)
+, mCurrentSequence(nullptr)
 , mInTransition(false)
 , mSceneGraph(0)
 {
@@ -417,7 +417,7 @@ void DataDrivenSequenceManager::UninitModifiable()
 	{
 		ProtectedCloseSequence(mCurrentSequence->getName());
 		mCurrentSequence->UnInit();
-		mCurrentSequence = 0;
+		mCurrentSequence = nullptr;
 	}
 }
 

@@ -130,7 +130,7 @@ namespace Kigs
 		{
 		public:
 			CoreRawBuffer() = default;
-			CoreRawBuffer(void* buffer, unsigned int length, bool manageMemory = true) : mBuffer(buffer)
+			CoreRawBuffer(void* buffer, size_t length, bool manageMemory = true) : mBuffer(buffer)
 				, mBufferLen(length)
 				, mBufferCapacity(length)
 				, mManagedMemory(manageMemory)
@@ -142,7 +142,7 @@ namespace Kigs
 				ProtectedDestroy();
 			}
 
-			void SetBuffer(void* buffer, unsigned int length, bool manageMemory = true)
+			void SetBuffer(void* buffer, size_t length, bool manageMemory = true)
 			{
 				InternalSetBuffer(buffer, length, manageMemory);
 			}
@@ -184,19 +184,19 @@ namespace Kigs
 
 				if (size <= mBufferCapacity)
 				{
-					mBufferLen = (u32)size;
+					mBufferLen = size;
 					return;
 				}
 
 				auto buffer = mBuffer;
 				auto old_size = mBufferLen;
 				mBuffer = nullptr;
-				SetBuffer(nullptr, (unsigned int)size);
+				SetBuffer(nullptr, size);
 				if (buffer) memcpy(data(), buffer, old_size);
 				delete[](char*)buffer;
 			}
 
-			u32 size() const
+			size_t size() const
 			{
 				return mBufferLen;
 			}
@@ -208,11 +208,11 @@ namespace Kigs
 				return ret;
 			}
 
-			u32	length() const
+			size_t	length() const
 			{
 				return mBufferLen;
 			}
-			u32	capacity() const
+			size_t	capacity() const
 			{
 				return mBufferCapacity;
 			}
@@ -221,12 +221,12 @@ namespace Kigs
 
 			void* mBuffer = nullptr;
 			uintptr_t		mOffset = 0;
-			u32				mBufferLen = 0;
-			u32				mBufferCapacity = 0;
+			size_t			mBufferLen = 0;
+			size_t			mBufferCapacity = 0;
 			bool			mManagedMemory = true;
 
 
-			virtual void InternalSetBuffer(void* buffer, unsigned int length, bool manageMemory = true)
+			virtual void InternalSetBuffer(void* buffer, size_t length, bool manageMemory = true)
 			{
 				ProtectedDestroy();
 				if (!buffer)
@@ -289,7 +289,7 @@ namespace Kigs
 
 			AlignedCoreRawBuffer() = default;
 
-			AlignedCoreRawBuffer(unsigned int elemCount, bool construct_items = false) : CoreRawBuffer(nullptr, 0)
+			AlignedCoreRawBuffer(size_t elemCount, bool construct_items = false) : CoreRawBuffer(nullptr, 0)
 			{
 				InternalSetBufferAligned(nullptr, elemCount * sizeof(allocatedType));
 				if (construct_items)
@@ -298,7 +298,7 @@ namespace Kigs
 				}
 			}
 
-			AlignedCoreRawBuffer(void* buffer, unsigned int length, bool manageMemory = true) : CoreRawBuffer(nullptr, 0, manageMemory)
+			AlignedCoreRawBuffer(void* buffer, size_t length, bool manageMemory = true) : CoreRawBuffer(nullptr, 0, manageMemory)
 			{
 				SetBuffer(buffer, length, manageMemory);
 			}
@@ -315,7 +315,7 @@ namespace Kigs
 			}
 
 		protected:
-			void InternalSetBufferAligned(void* buffer, u32 size)
+			void InternalSetBufferAligned(void* buffer, size_t size)
 			{
 				mBufferCapacity = mBufferLen = size;
 				mBuffer = new char[size + alignement];
@@ -326,7 +326,7 @@ namespace Kigs
 				mManagedMemory = true;
 			}
 
-			virtual void InternalSetBuffer(void* buffer, unsigned int length, bool manageMemory = true) override
+			virtual void InternalSetBuffer(void* buffer, size_t length, bool manageMemory = true) override
 			{
 				ProtectedDestroy();
 				mManagedMemory = manageMemory;

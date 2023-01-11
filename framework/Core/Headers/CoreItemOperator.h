@@ -11,12 +11,12 @@ namespace Kigs
 
 		struct CoreItemOperatorStruct
 		{
-			char	mOp;
-			int		mPos;
-			int		mSize;
-			CoreItemSP mOp1 = CoreItemSP(nullptr);
-			CoreItemSP mOp2 = CoreItemSP(nullptr);
-			int		mPriority;
+			char		mOp;
+			size_t		mPos;
+			size_t		mSize;
+			CoreItemSP	mOp1 = CoreItemSP(nullptr);
+			CoreItemSP	mOp2 = CoreItemSP(nullptr);
+			int			mPriority;
 		};
 
 		class CoreItemEvaluationContext

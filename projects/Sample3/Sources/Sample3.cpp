@@ -68,7 +68,7 @@ void	Sample3::ProtectedInit()
 	// remove "DynamicAttribute" from this
 	RemoveDynamicAttribute("DynamicAttribute");
 
-	CoreModifiable* retrieveInstance;
+	CMSP retrieveInstance;
 	instance1->getValue("Reference", retrieveInstance);
 	if (retrieveInstance)
 	{

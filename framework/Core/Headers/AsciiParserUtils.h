@@ -185,21 +185,21 @@ namespace Kigs
 			bool	ReadFloat(float&);
 			bool	ReadDouble(double&);
 			bool    ReadChar(charType&);
-			bool	ReadString(charType*, const int MAX_STRING_L = 512);
+			bool	ReadString(charType*, const size_t MAX_STRING_L = 512);
 			bool	GetQuotationWord(AsciiParserUtilsTemplate<charType>& result);
 
 			// search for given char starting at startpos and return found pos or -1 if not found
-			unsigned int		FindNext(charType toFind, unsigned int startpos);
+			size_t		FindNext(charType toFind, size_t startpos);
 
 			// search for given word starting at startpos and return found pos or -1 if not found
-			unsigned int		FindNext(const charType* toFind, unsigned int startpos);
+			size_t		FindNext(const charType* toFind, size_t startpos);
 
-			unsigned int		GetPosition()
+			size_t		GetPosition()
 			{
 				return mCurrentReadPos;
 			}
 
-			void		SetPosition(unsigned int pos)
+			void		SetPosition(size_t pos)
 			{
 				mCurrentReadPos = pos;
 			}
@@ -232,7 +232,7 @@ namespace Kigs
 
 			std::string	subString(int startpos, int len);
 
-			inline const charType& operator[](unsigned int i)const
+			inline const charType& operator[](size_t i)const
 			{
 				if (i < mTextLen)
 					return mText[i];
@@ -240,28 +240,28 @@ namespace Kigs
 				return mZeroChar;
 			}
 
-			inline unsigned int	length()
+			inline size_t	length()
 			{
 				return mTextLen;
 			}
 
 			// convert raw unsigned char buffer memory to string (each byte is converted to two letters from "a" to "p")
-			static std::string	BufferToString(unsigned char* zone, unsigned int size);
+			static std::string	BufferToString(unsigned char* zone, size_t size);
 
 			// convert string to raw unsigned char buffer (to delete with delete[] buffer)
-			static unsigned char* StringToBuffer(const std::string&, unsigned int& size);
+			static unsigned char* StringToBuffer(const std::string&, size_t& size);
 
 		protected:
 
-			static void	copyUSToCharBuffer(unsigned char*, unsigned short*, int sizeMax);
+			static void	copyUSToCharBuffer(unsigned char*, unsigned short*, size_t sizeMax);
 
-			void	Set(charType* txt, int txtl = -1);
+			void	Set(charType* txt, size_t txtl = -1);
 
 			SmartPointer<CoreRawBuffer>	mRawBuffer;
-			charType* mText = nullptr;
-			charType* mTextEnd = nullptr;
-			unsigned int			mTextLen = 0;
-			unsigned int			mCurrentReadPos = 0;
+			charType*		mText = nullptr;
+			charType*		mTextEnd = nullptr;
+			size_t			mTextLen = 0;
+			size_t			mCurrentReadPos = 0;
 			static const charType	mZeroChar;
 			charType				mBufferedEnd = 0;
 		};

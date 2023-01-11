@@ -47,7 +47,8 @@ IMPLEMENT_CLASS_INFO(CoreModifiable);
 
 CoreModifiable::~CoreModifiable()
 {
-	ProtectedDestroy();
+	// done by custom allocator now (so it is called on inherited class)
+	//ProtectedDestroy();
 
 	if (isFlagAsNotificationCenterRegistered())
 	{
@@ -2653,7 +2654,7 @@ void	CoreModifiable::InitLuaScript(XMLNodeBase* currentNode, CoreModifiable* cur
 	params.push_back(&pXML);
 
 	maReference localthis("pThis", { "" });
-	localthis = currentModifiable;
+	localthis = CMSP(currentModifiable);
 	params.push_back(&localthis);
 
 	maString cbType("cbType", attrtype ? attrtype->getString() : "");

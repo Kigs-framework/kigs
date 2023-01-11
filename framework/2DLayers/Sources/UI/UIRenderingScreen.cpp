@@ -80,11 +80,11 @@ void	UIRenderingScreen::InitModifiable()
 			// Inputs
 			if (mIsTouchable)
 			{
-				CoreModifiable* layerRenderingScreen;
+				CMSP layerRenderingScreen;
 				parent2DLayer->getValue("RenderingScreen", layerRenderingScreen);
 
 				auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
-				theInputModule->getTouchManager()->addTouchSupport(this, layerRenderingScreen);
+				theInputModule->getTouchManager()->addTouchSupport(this, layerRenderingScreen.get());
 
 				// add offscreen rendering screen as touch support with this as parent
 				theInputModule->getTouchManager()->addTouchSupport(mRenderingScreen, this);
@@ -109,9 +109,9 @@ void UIRenderingScreen::NotifyUpdate(unsigned int labelid)
 
 			if (parent2DLayer)
 			{
-				CoreModifiable* layerRenderingScreen;
+				CMSP layerRenderingScreen;
 				parent2DLayer->getValue("RenderingScreen", layerRenderingScreen);
-				theInputModule->getTouchManager()->addTouchSupport(this, layerRenderingScreen);
+				theInputModule->getTouchManager()->addTouchSupport(this, layerRenderingScreen.get());
 				// add offscreen rendering screen as touch support with this as parent
 				theInputModule->getTouchManager()->addTouchSupport(mRenderingScreen, this);
 			}

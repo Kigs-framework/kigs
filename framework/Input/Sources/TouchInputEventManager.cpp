@@ -564,7 +564,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 	}
 
 	auto spatial_interaction_device = mTheInputModule->GetSpatialInteraction();
-	auto camera = spatial_interaction_device ? (Draw::Camera*)spatial_interaction_device->getValue<CoreModifiable*>("GazeCamera") : nullptr;
+	auto camera = spatial_interaction_device ? (SP<Draw::Camera>)spatial_interaction_device->getValue<CMSP>("GazeCamera") : nullptr;
 
 	u16 any_touch_state = 0;
 	if (force_click) any_touch_state = 1;
@@ -636,7 +636,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 				
 				interaction_infos.has_position = false;
 				interaction_infos.posInfos.flag = 0;
-				interaction_infos.starting_touch_support = camera;
+				interaction_infos.starting_touch_support = camera.get();
 				interaction_infos.need_starting_touch_support_transform = false;
 				interaction_infos.posInfos.setHas3DInfos(true);
 				interaction_infos.interaction = itr.second;
@@ -732,7 +732,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		if (main_interaction)
 		{
 			gazeTouch.posInfos.pos = main_interaction->Position;
-			gazeTouch.starting_touch_support = camera;
+			gazeTouch.starting_touch_support = camera.get();
 			gazeTouch.posInfos.setHas3DInfos(true);
 		}
 		else
@@ -837,17 +837,15 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 		if ((*itScene).first->isSubType("Abstract2DLayer"))
 		{
 			// get associated rendering screen
-			CoreModifiable*	getScreen=nullptr;
-			(*itScene).first->getValue("RenderingScreen", getScreen);
-
-			CoreModifiable* renderingScreen = (CoreModifiable*)getScreen;
+			CMSP	renderingScreen =nullptr;
+			(*itScene).first->getValue("RenderingScreen", renderingScreen);
 
 			// check that rendering screen is in active touch support list
-			touchSupportTreeNode * foundts=mCurrentTouchSupportRoot->searchNode(renderingScreen);
+			touchSupportTreeNode * foundts=mCurrentTouchSupportRoot->searchNode(renderingScreen.get());
 
 			if (foundts)
 			{
-				std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare >& currentVector = perRenderingScreenSortedMap[renderingScreen];
+				std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare >& currentVector = perRenderingScreenSortedMap[renderingScreen.get()];
 
 				Scene3DAndCamera	toPush;
 				toPush.scene3D = (*itScene).first;
@@ -882,17 +880,15 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 					if (foundcamera)
 					{
 						// get associated rendering screen
-						CoreModifiable*	getScreen=nullptr;
-						foreachinstance->getValue("RenderingScreen", getScreen);
-
-						CoreModifiable* renderingScreen = (CoreModifiable*)getScreen;
+						CMSP renderingScreen =nullptr;
+						foreachinstance->getValue("RenderingScreen", renderingScreen);
 
 						// check that rendering screen is in active touch support list
-						touchSupportTreeNode * foundts = mCurrentTouchSupportRoot->searchNode(renderingScreen);
+						touchSupportTreeNode * foundts = mCurrentTouchSupportRoot->searchNode(renderingScreen.get());
 
 						if (foundts)
 						{
-							std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare >& currentVector = perRenderingScreenSortedMap[renderingScreen];
+							std::set< Scene3DAndCamera, Scene3DAndCamera::PriorityCompare >& currentVector = perRenderingScreenSortedMap[renderingScreen.get()];
 
 							Scene3DAndCamera toPush;
 							toPush.scene3D = (*itScene).first;

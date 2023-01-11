@@ -15,17 +15,17 @@ IMPLEMENT_CLASS_INFO(API3DLight)
 API3DLight::API3DLight(const std::string& name, CLASS_NAME_TREE_ARG)
 	: Light(name, PASS_CLASS_NAME_TREE_ARG)
 
-	, mPositionUniform(NULL)
-	, mCamPosUniform(NULL)
+	, mPositionUniform(nullptr)
+	, mCamPosUniform(nullptr)
 
-	, mDiffuseUniform(NULL)
-	, mSpecularUniform(NULL)
-	, mAmbiantUniform(NULL)
+	, mDiffuseUniform(nullptr)
+	, mSpecularUniform(nullptr)
+	, mAmbiantUniform(nullptr)
 
-	, mAttenuationUniform(NULL)
-	, mSpotDirUniform(NULL)
-	, mSpotCutoffUniform(NULL)
-	, mSpotExponentUniform(NULL)
+	, mAttenuationUniform(nullptr)
+	, mSpotDirUniform(nullptr)
+	, mSpotCutoffUniform(nullptr)
+	, mSpotExponentUniform(nullptr)
 {
 
 }

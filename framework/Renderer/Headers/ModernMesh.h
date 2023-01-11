@@ -247,8 +247,8 @@ namespace Kigs
 			void ApplyScaleFactor(float scaleFactor);
 			void FlipAxis(s32 axisX, s32 axisY, s32 axisZ);
 
-			void* GetVertexBuffer(s32& size) { size = mVertexBufferArray.length(); return mVertexBufferArray.buffer(); }
-			void* GetIndexBuffer(s32& size) { size = mTriangleBuffer.length(); return mTriangleBuffer.buffer(); }
+			void* GetVertexBuffer(size_t& size) { size = mVertexBufferArray.length(); return mVertexBufferArray.buffer(); }
+			void* GetIndexBuffer(size_t& size) { size = mTriangleBuffer.length(); return mTriangleBuffer.buffer(); }
 
 
 

@@ -175,7 +175,7 @@ namespace Kigs
 				{
 					mProfilers[i] = 0;
 				}
-				mProfileDrawingObject = 0;
+				mProfileDrawingObject = nullptr;
 				mIsInit = false;
 				mMethodID = CharToID::GetID("DrawProfiles");
 			}

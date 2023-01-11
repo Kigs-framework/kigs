@@ -144,7 +144,8 @@ BASE_DECLARE_ABSTRACT_CLASS_INFO(currentClass,parentClass,moduleManagerName)
 DECLARE_ABSTRACT_CLASS_INFO(currentClass,parentClass,moduleManagerName) \
 static CMSP CreateInstance(const std::string& instancename, std::vector<CoreModifiableAttribute*>* args=nullptr) \
 {   \
-	auto instance = std::make_shared<currentClass>(instancename, args); \
+	CMallocator<currentClass> cmalloc;\
+	auto instance = std::allocate_shared<currentClass>(cmalloc,instancename, args); \
 	instance->RegisterToCore();\
 	return instance; \
 };

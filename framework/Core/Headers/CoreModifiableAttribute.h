@@ -5,6 +5,7 @@
 #endif
 
 #include "CoreModifiable.h"
+#include "CoreItem.h"
 #include "usString.h"
 #include <any>
 
@@ -13,7 +14,6 @@ namespace Kigs
 	namespace Core
 	{
 		class AttachedModifierBase;
-		class CoreItem;
 
 		// ****************************************
 		// * AttributeNotificationLevel enum
@@ -198,8 +198,8 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_SET(const std::string&);
 			DECLARE_SET(const unsigned short*);
 			DECLARE_SET(const usString&);
-			DECLARE_SET(CoreItem*);
-			DECLARE_SET(CoreModifiable*);
+			DECLARE_SET(CoreItemSP);
+			DECLARE_SET(CMSP);
 			DECLARE_SET(void*);
 			DECLARE_SET(const UTF8Char*); // Only for usstring
 			DECLARE_SET(const Point2D&);
@@ -210,8 +210,8 @@ auto& operator=(const CurrentAttributeType& value)\
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET);
 			DECLARE_GET(std::string&);
 			DECLARE_GET(usString&);
-			DECLARE_GET(CoreItem*&);
-			DECLARE_GET(CoreModifiable*&);
+			DECLARE_GET(CoreItemSP&);
+			DECLARE_GET(CMSP&);
 			DECLARE_GET(void*&);
 			DECLARE_GET(Point2D&);
 			DECLARE_GET(Point3D&);
@@ -426,9 +426,9 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maRawPtrHeritage, maRawPtrHeritage, void*, CoreModifiable::ATTRIBUTE_TYPE::RAWPTR);
 		public:
 
-			bool getValue(CoreModifiable*& value) const override
+			bool getValue(CMSP& value) const override
 			{
-				value = static_cast<CoreModifiable*>(mValue);
+				value = CMSP(static_cast<CoreModifiable*>(mValue));
 				return true;
 			}
 			bool getValue(void*& value) const override { value = mValue; return true; }
@@ -439,10 +439,10 @@ auto& operator=(const CurrentAttributeType& value)\
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			bool setValue(CoreModifiable* value) override
+			bool setValue(CMSP value) override
 			{
 				if (isReadOnly()) return false;
-				mValue = static_cast<void*>(value);
+				mValue = static_cast<void*>(value.get());
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}

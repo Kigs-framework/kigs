@@ -773,7 +773,7 @@ void CoreModifiableContextMenu(CoreModifiable* item, CoreModifiable* parent=null
 			STACK_STRING(str, 2048, "Set %s as active XML file", path.c_str());
 			if (ImGui::MenuItem(str))
 			{
-				gKigsTools->ActiveXMLItem = item;
+				gKigsTools->ActiveXMLItem = CMSP(item);
 				gKigsTools->ActiveXMLFile = xmlfile;
 			}
 		}
@@ -947,7 +947,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 			{
 				if (ImGui::IsKeyPressed(VK_C, false) && ImGui::GetIO().KeyCtrl)
 				{
-					gKigsTools->mClipboardItem = item.get();
+					gKigsTools->mClipboardItem = item;
 				}
 				if (ImGui::IsKeyPressed(VK_V, false) && ImGui::GetIO().KeyCtrl)
 				{
@@ -966,7 +966,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 					if (new_item)
 					{
 						item->addItem(new_item);
-						state.SelectedItem = new_item.get();
+						state.SelectedItem = new_item;
 						state.ToExpand.push_back(item.get());
 					}
 				}
@@ -1016,7 +1016,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 
 			if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0) && was_open == opened)
 			{
-				state.SelectedItem = item.get();
+				state.SelectedItem = item;
 			}
 			CoreModifiableContextMenu(item.get(), parent);
 			if (!item->IsInit())
@@ -1723,7 +1723,7 @@ void CustomAttributeEditor(CoreModifiable* item)
 				if (ImGui::Button(str))
 				{
 					OpenInHierarchy(pair.second);
-					gKigsTools->HierarchyWindow.SelectedItem.setValue(pair.second);
+					gKigsTools->HierarchyWindow.SelectedItem.setValue(CMSP(pair.second));
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -2478,7 +2478,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			if (auto pl = ImGui::AcceptDragDropPayload("DND_KIGS_ITEM"))
 			{
 				DragItemPayload data = *(DragItemPayload*)pl->Data;
-				connect_to = data.item;
+				connect_to = CMSP(data.item);
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -3326,7 +3326,7 @@ void RegisterWidget(const std::string& id, std::function<void()> draw_function)
 void SelectObjectKigsTools(CoreModifiable* obj)
 {
 	OpenInHierarchy(obj);
-	gKigsTools->HierarchyWindow.SelectedItem = obj;
+	gKigsTools->HierarchyWindow.SelectedItem = CMSP(obj);
 }
 }
 }

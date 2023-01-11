@@ -449,14 +449,14 @@ void ModernMeshItemGroup::ImportFromCData(const std::string& imported)
 	if (head == "vert")
 	{
 		std::string	buff = imported.substr(4, imported.size() - 4);
-		unsigned int readSize;
+		size_t readSize;
 		unsigned char* rawbuf = AsciiParserUtils::StringToBuffer(buff, readSize);
 		mVertexBufferArray.SetBuffer(rawbuf, readSize);
 	}
 	else if (head == "tris")
 	{
 		std::string	buff = imported.substr(4, imported.size() - 4);
-		unsigned int readSize;
+		size_t readSize;
 		unsigned char* rawbuf = AsciiParserUtils::StringToBuffer(buff, readSize);
 		mTriangleBuffer.SetBuffer(rawbuf, readSize);
 	}
@@ -523,7 +523,7 @@ void ModernMeshItemGroup::InitModifiable()
 {
 	Drawable::InitModifiable();
 
-	CoreItem* item = nullptr;
+	CoreItemSP item = nullptr;
 	if (getValue("IndexBoundaries", item))
 	{
 		mBoundaries.clear();
@@ -553,10 +553,10 @@ void ModernMeshItemGroup::InitModifiable()
 		}
 	}
 
-	CoreItem*	itdesc = 0;
-	if (getValue("VertexDescription", (CoreItem*&)itdesc))
+	CoreItemSP	itdesc = 0;
+	if (getValue("VertexDescription", itdesc))
 	{
-		CoreMap<std::string>*	desc = (CoreMap<std::string>*)itdesc;
+		CoreMap<std::string>*	desc = (CoreMap<std::string>*)itdesc.get();
 		mVertexDesc.clear();
 		CoreItemSP val = desc->GetItem("TriangleCount");
 		if (val)

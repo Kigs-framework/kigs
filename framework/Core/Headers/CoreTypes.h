@@ -29,6 +29,7 @@ namespace Kigs
 	namespace Core
 	{
 		template <typename Key, typename T>
+		//using unordered_map = std::unordered_map<Key, T>;
 		using unordered_map = ankerl::unordered_dense::map<Key, T>;
 /*#if defined(_DEBUG) 
 		template <typename Key, typename T, typename Hash = std::hash<Key>>

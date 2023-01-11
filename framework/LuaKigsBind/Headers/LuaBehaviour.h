@@ -79,6 +79,8 @@ namespace Kigs
 			LuaIntf::LuaRef         mSelf;
 
 			void OnAddItemCallback(CoreModifiable* localthis, CoreModifiable* item);
+			// use void* as first parameter because localthis object can be already destroyed when called (by destructor)
+			// and CoreModifiable * parameters are packed/unpacked as CMSP (probably to be changed)
 			void OnRemoveItemCallback(CoreModifiable* localthis, CoreModifiable* item);
 
 			WRAP_METHODS(OnAddItemCallback, OnRemoveItemCallback);
