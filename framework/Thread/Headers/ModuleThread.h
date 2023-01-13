@@ -36,7 +36,7 @@ namespace Kigs
 			void Close() override;
 
 			//! update module
-			void Update(const Timer& timer, void* addParam) override;
+			void Update(const Time::Timer& timer, void* addParam) override;
 		};
 	}
 }

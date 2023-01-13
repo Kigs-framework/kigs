@@ -34,7 +34,7 @@ namespace Kigs
 			void Close();
 
 			//! module update
-			virtual void Update(const Timer& timer, void* addParam);
+			virtual void Update(const Time::Timer& timer, void* addParam);
 
 			static HINTERNET	getInternetHandle();
 

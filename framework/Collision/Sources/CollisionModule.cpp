@@ -43,7 +43,7 @@ void CollisionModule::Close()
 }
 
 //! module update
-void CollisionModule::Update(const Timer& timer, void* addParam)
+void CollisionModule::Update(const Time::Timer& timer, void* addParam)
 {
 	BaseUpdate(timer, addParam);
 }

@@ -1194,7 +1194,7 @@ bool	AObject::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 
 
 
-void AObject::Update(const Timer& timer, void* addParam)
+void AObject::Update(const Time::Timer& timer, void* addParam)
 {
 	for(auto s: mSystemSet)
 	{

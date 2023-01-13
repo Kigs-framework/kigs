@@ -60,7 +60,7 @@ void GenericAnimationModule::Close()
 }    
 
 //! module update
-void GenericAnimationModule::Update(const Timer& timer, void* addParam)
+void GenericAnimationModule::Update(const Time::Timer& timer, void* addParam)
 {
 	ManagePostAdd();
 	BaseUpdate(timer, addParam);

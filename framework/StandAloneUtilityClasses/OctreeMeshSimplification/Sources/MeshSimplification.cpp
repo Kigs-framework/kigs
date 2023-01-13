@@ -8,7 +8,7 @@
 using namespace Kigs::Utils;
 
 // local operator for std::set
-bool operator<(const v3f& U, const v3f& V)
+bool Kigs::Maths::operator<(const v3f& U, const v3f& V)
 {
 	if (U.x == V.x)
 	{
@@ -24,7 +24,7 @@ bool operator<(const v3f& U, const v3f& V)
 	}
 	return U.x < V.x;
 }
-bool operator<(const v3i& U, const v3i& V)
+bool Kigs::Maths::operator<(const v3i& U, const v3i& V)
 {
 	if (U.x == V.x)
 	{

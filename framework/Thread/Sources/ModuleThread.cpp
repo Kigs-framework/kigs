@@ -46,7 +46,7 @@ void ModuleThread::Close()
 	BaseClose();
 }    
 
-void ModuleThread::Update(const Timer& timer, void* addParam)
+void ModuleThread::Update(const Time::Timer& timer, void* addParam)
 {
 	BaseUpdate(timer,addParam);
 }    

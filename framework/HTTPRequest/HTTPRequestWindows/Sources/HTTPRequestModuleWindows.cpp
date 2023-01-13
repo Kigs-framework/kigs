@@ -42,7 +42,7 @@ void HTTPRequestModuleWindows::Close()
 }    
 
 //! module update     
-void HTTPRequestModuleWindows::Update(const Timer& timer, void* addParam)
+void HTTPRequestModuleWindows::Update(const Time::Timer& timer, void* addParam)
 {
 	BaseUpdate(timer,addParam);
 }    

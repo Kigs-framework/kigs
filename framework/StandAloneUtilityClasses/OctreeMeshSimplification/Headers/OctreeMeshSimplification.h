@@ -6,13 +6,19 @@
 #include "TecLibs/3D/3DObject/BBox.h"
 #include "OctreeBase.h"
 
-extern bool operator<(const v3f& U, const v3f& V);
-extern bool operator<(const v3i& U, const v3i& V);
+
 
 namespace Kigs
 {
+	namespace Maths
+	{
+		extern bool operator<(const v3f& U, const v3f& V);
+		extern bool operator<(const v3i& U, const v3i& V);
+	}
 	namespace Utils
 	{
+
+
 		class MeshSimplificationOctree;
 		class MeshSimplification;
 

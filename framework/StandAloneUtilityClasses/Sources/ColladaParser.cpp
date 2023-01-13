@@ -30,9 +30,9 @@ using namespace Kigs::File;
 IMPLEMENT_CLASS_INFO(ColladaParser)
 
 ColladaParser::ColladaParser(const std::string& name, CLASS_NAME_TREE_ARG) : Base3DImporter(name, PASS_CLASS_NAME_TREE_ARG)
-, myRoot(0)
-, myXMLFile(0)
-, myScene(0)
+, myRoot(nullptr)
+, myXMLFile(nullptr)
+, myScene(nullptr)
 , m_FileName(*this, true, "FileName")
 {
 }
@@ -1367,10 +1367,10 @@ CMSP ColladaParser::CreateMeshFromMeshCollada(Controller* controller)
 	}
 	else
 	{
-		m_MeshList[m_CurrentObjectName] = 0;
+		m_MeshList[m_CurrentObjectName] = nullptr;
 		newmesh=nullptr;
 	}
-	return 0;
+	return nullptr;
 }
 
 

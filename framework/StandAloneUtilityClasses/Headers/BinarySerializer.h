@@ -935,7 +935,7 @@ namespace Kigs
 	template<typename T>
 	bool LoadFromString(T&& thing, const std::string& str, void* user_data = nullptr)
 	{
-		unsigned int size = 0;
+		size_t size = 0;
 		auto data = AsciiParserUtils::StringToBuffer(str, size);
 		kigs_defer{ delete[] data; };
 		PacketReadStream stream{ data, size };

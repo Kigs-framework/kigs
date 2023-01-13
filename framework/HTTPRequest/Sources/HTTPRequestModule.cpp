@@ -35,7 +35,7 @@ void HTTPRequestModule::Close()
 }    
 
 //! module update     
-void HTTPRequestModule::Update(const Timer& timer, void* addParam)
+void HTTPRequestModule::Update(const Time::Timer& timer, void* addParam)
 {
 	BaseUpdate(timer,addParam);
 }    
