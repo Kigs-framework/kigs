@@ -7,6 +7,8 @@
 #include "../../../../Core/Headers/CoreBaseApplication.h"
 #include "Platform/Input/KeyDefine.h"
 
+using namespace Kigs::Core;
+
 void	PlatformBaseApplication::OpenLink(const char* a_link)
 {
 	//TODO

@@ -30,7 +30,7 @@ void ModuleGUIWindows::Close()
 	BaseClose();
 }
 
-void ModuleGUIWindows::Update(const Timer& timer, void* addParam)
+void ModuleGUIWindows::Update(const Time::Timer& timer, void* addParam)
 {
 }
 

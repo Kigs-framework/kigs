@@ -28,7 +28,7 @@ namespace Kigs
 			virtual void  Show() {};
 
 			//! update method, call rendering screen update and manage messages
-			virtual void Update(const Timer& timer, void* /*addParam*/);
+			virtual void Update(const Time::Timer& timer, void* /*addParam*/);
 
 			//! show or hide system mouse
 			void ShowMouse(bool bOn);

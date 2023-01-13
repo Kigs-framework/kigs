@@ -17,6 +17,8 @@
 using namespace winrt::Windows::UI::Input::Spatial;
 using namespace winrt::Windows::Perception::People;
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(SpatialInteractionDeviceWUP);
 
 IMPLEMENT_CONSTRUCTOR(SpatialInteractionDeviceWUP)

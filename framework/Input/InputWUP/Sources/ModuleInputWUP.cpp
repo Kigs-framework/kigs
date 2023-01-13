@@ -96,7 +96,7 @@ void ModuleInputWUP::Close()
 	BaseClose();
 }    
 
-void ModuleInputWUP::Update(const Timer& timer, void* addParam)
+void ModuleInputWUP::Update(const Time::Timer& timer, void* addParam)
 {
 	// read info on aquired devices
 	

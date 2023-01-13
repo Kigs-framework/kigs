@@ -10,6 +10,8 @@
 #include "winrt/Windows.UI.Input.h"
 #include "winrt/Windows.Devices.Input.h"
 
+using namespace Kigs::Input;
+
 IMPLEMENT_CLASS_INFO(MouseWUP);
 
 MouseWUP::MouseWUP(const std::string& name, CLASS_NAME_TREE_ARG) : MouseDevice(name, PASS_CLASS_NAME_TREE_ARG)

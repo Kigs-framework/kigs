@@ -117,7 +117,7 @@ void	WindowWin32::GetMousePosInDesignWindow(int posx, int posy, kfloat& wposx, k
 }
 
 //! update window
-void  WindowWin32::Update(const Timer&  timer, void* addParam)
+void  WindowWin32::Update(const Time::Timer&  timer, void* addParam)
 {
 	if (mRetryResize)
 	{
