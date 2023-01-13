@@ -8,7 +8,7 @@ namespace Kigs
 		{
 		}
 
-		void RendererDX11::PlatformUpdate(const Timer& timer, void* addParam)
+		void RendererDX11::PlatformUpdate(const Time::Timer& timer, void* addParam)
 		{
 		}
 

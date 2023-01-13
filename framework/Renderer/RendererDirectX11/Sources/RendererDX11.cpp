@@ -516,7 +516,7 @@ void RendererDX11::Close()
 	BaseClose();
 }
 
-void RendererDX11::Update(const Timer& timer, void* addParam)
+void RendererDX11::Update(const Time::Timer& timer, void* addParam)
 {
 	ModuleSpecificRenderer::Update(timer, addParam);
 

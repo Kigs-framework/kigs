@@ -303,8 +303,8 @@ namespace Kigs
 			void Close() override;
 			void PlatformClose();
 
-			void Update(const Timer& timer, void* addParam) override;
-			void PlatformUpdate(const Timer& timer, void* addParam);
+			void Update(const Time::Timer& timer, void* addParam) override;
+			void PlatformUpdate(const Time::Timer& timer, void* addParam);
 
 			void FlushState(bool force = false) override;
 
