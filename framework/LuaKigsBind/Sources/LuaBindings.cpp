@@ -60,7 +60,7 @@ DEFINE_METHOD(LuaNotificationHook, CallLuaFunc)
 	return false;
 }
 
-void Kigs::Lua::PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
+void Kigs::Lua::PushAttribute(LuaState L, CoreModifiableAttribute* attrib, CoreModifiable* owner)
 {
 	CoreModifiable::ATTRIBUTE_TYPE type = attrib->getType();
 	
@@ -100,40 +100,40 @@ void Kigs::Lua::PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 		{
 			//NOTE(antoine) thread unsafe in weak_reference's case
 			CMSP	ModifiableRef=nullptr;
-			attrib->getValue(ModifiableRef);
+			attrib->getValue(ModifiableRef, owner);
 			L.push(ModifiableRef.get());
 		}
 		else if (type == CoreModifiable::ATTRIBUTE_TYPE::BOOL)
 		{
 			bool b;
-			attrib->getValue(b);
+			attrib->getValue(b, owner);
 			lua_pushboolean(L, b);
 		}
 		else if (isInt)
 		{
 			s64 value;
-			attrib->getValue(value);
+			attrib->getValue(value, owner);
 			lua_pushinteger(L, value);
 		}
 		
 		else if (isUint)
 		{
 			u64 value;
-			attrib->getValue(value);
+			attrib->getValue(value, owner);
 			lua_pushinteger(L, value);
 		}
 		
 		else if (isNumber)
 		{
 			double value;
-			attrib->getValue(value);
+			attrib->getValue(value, owner);
 			lua_pushnumber(L, value);
 		}
 		else if (type == CoreModifiable::ATTRIBUTE_TYPE::RAWPTR)
 		{
 			auto it = gLuaTypeMap.find(attrib->getID());
 			void* ptr;
-			attrib->getValue(ptr);
+			attrib->getValue(ptr, owner);
 
 			if (it != gLuaTypeMap.end())
 			{
@@ -151,7 +151,7 @@ void Kigs::Lua::PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 		else
 		{
 			std::string val;
-			if(attrib->getValue(val))
+			if(attrib->getValue(val, owner))
 				lua_pushstring(L, val.c_str());
 			else
 				L.push(nullptr);
@@ -175,7 +175,7 @@ void Kigs::Lua::PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 			if (isInt)
 			{
 				s64 value;
-				attrib->getArrayElementValue(value, 0, i);
+				attrib->getArrayElementValue(value, owner, 0, i);
 				if(isvec)
 					values[i] = value;
 				else
@@ -184,7 +184,7 @@ void Kigs::Lua::PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 			else if (isUint)
 			{
 				u64 value;
-				attrib->getArrayElementValue(value, 0, i);
+				attrib->getArrayElementValue(value, owner, 0, i);
 				if(isvec)
 					values[i] = value;
 				else
@@ -193,7 +193,7 @@ void Kigs::Lua::PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 			else if (isNumber)
 			{
 				double value;
-				attrib->getArrayElementValue(value, 0, i);
+				attrib->getArrayElementValue(value, owner, 0, i);
 				if(isvec)
 					values[i] = value;
 				else
@@ -202,7 +202,7 @@ void Kigs::Lua::PushAttribute(LuaState L, CoreModifiableAttribute* attrib)
 			else
 			{
 				std::string val;
-				if(attrib->getArrayElementValue(val, 0, i))
+				if(attrib->getArrayElementValue(val, owner, 0, i))
 					lua_pushstring(L, val.c_str());
 				else
 					L.push(nullptr);
@@ -292,7 +292,7 @@ int Kigs::Lua::CoreModifiableSetAttributeLua(lua_State* lua)
 			}
 			else if((obj = ::Lua::objectCast<CoreModifiable>(ref)))
 			{
-				attr->setValue(obj);
+				attr->setValue(obj, cm);
 				return 0;
 			}
 			else
@@ -301,7 +301,7 @@ int Kigs::Lua::CoreModifiableSetAttributeLua(lua_State* lua)
 				return 1;
 			}
 			
-			attr->setValue(str);
+			attr->setValue(str, cm);
 			return 0;
 		}
 		else if (type == LUA_TTABLE)
@@ -334,7 +334,7 @@ int Kigs::Lua::CoreModifiableSetAttributeLua(lua_State* lua)
 			{
 				L.getField(value_idx, i + 1);
 				double value = lua_tonumber(L, -1);
-				was_set = attr->setArrayElementValue(value, 0, i) || was_set;
+				was_set = attr->setArrayElementValue(value, cm, 0, i) || was_set;
 				L.pop();
 			}
 			
@@ -362,13 +362,13 @@ int Kigs::Lua::CoreModifiableSetAttributeLua(lua_State* lua)
 		else if (type == LUA_TFUNCTION)
 		{
 			auto func = L.toValue<LuaRef>(value_idx);
-			cm->InsertFunctionNoUnpack(name, [func, L](std::vector<CoreModifiableAttribute*>& params)
+			cm->InsertFunctionNoUnpack(name, [func, L, cm](std::vector<CoreModifiableAttribute*>& params)
 			{
 				auto top = L.top();
 				func.pushToStack();
 				for (auto attr : params)
 				{
-					PushAttribute(L, attr);
+					PushAttribute(L, attr, cm);
 				}
 				if (L.pcall((int)params.size(), LUA_MULTRET, 0) != 0)
 				{
@@ -512,7 +512,7 @@ static int CoreModifiableMethodCaller(lua_State* lua)
 	int nb_result = 1;
 	for(int i=args; i<p.size(); ++i)
 	{
-		PushAttribute(L, p[i]);
+		PushAttribute(L, p[i],cm);
 		nb_result++;
 	}
 	
@@ -534,7 +534,7 @@ static int CoreModifiableGetAttributeLua(lua_State* lua)
 	CoreModifiableAttribute* attrib = cm->getAttribute(name);
 	if (attrib)
 	{
-		PushAttribute(L, attrib);
+		PushAttribute(L, attrib,cm);
 	}
 	else if(cm->HasMethod(name))
 	{
@@ -715,7 +715,7 @@ DEFINE_DYNAMIC_METHOD(CoreModifiable, LuaReleaseCallbacks)
 		{
 			LuaState L = lua->getLuaState();
 			int ref;
-			if (attr->getValue(ref))
+			if (attr->getValue(ref,this))
 			{
 				L.unref(ref);
 			}

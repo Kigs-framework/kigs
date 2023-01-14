@@ -48,7 +48,7 @@ DEFINE_UPGRADOR_METHOD(PopUpUpgrador, HidePopUp)
 	else if (!params.empty())
 	{
 		// should search for the good param
-		params[0]->getValue(tmp);
+		params[0]->getValue(tmp, this);
 	}
 
 	if (atoi(tmp.c_str()) == getValue<int>("NumSignal"))
@@ -73,7 +73,7 @@ DEFINE_UPGRADOR_METHOD(PopUpUpgrador, ShowPopUp)
 	if (!params.empty())
 	{
 		std::string tmp;
-		params[0]->getValue(tmp);
+		params[0]->getValue(tmp, this);
 		
 		if (atoi(tmp.c_str()) == getValue<int>("NumSignal"))
 		{

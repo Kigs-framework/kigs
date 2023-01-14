@@ -326,14 +326,14 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 				if (AttributeNeedEval(tmpvalue))
 				{
 					CoreModifiable::EvalAttribute(tmpvalue, current, attribute);
-					attribute->setValue(tmpvalue);
+					attribute->setValue(tmpvalue, current);
 					was_eval = true;
 				}
 			}
 			else if (value_type == LuaTypeID::BOOLEAN)
 			{
 				was_eval = true;
-				attribute->setValue(value.toValue<bool>());
+				attribute->setValue(value.toValue<bool>(), current);
 			}
 			else if (value_type == LuaTypeID::NUMBER)
 			{
@@ -341,37 +341,37 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 				switch (attr_type)
 				{
 				case ATTRIBUTE_TYPE::BOOL:
-					attribute->setValue(value.toValue<bool>());
+					attribute->setValue(value.toValue<bool>(), current);
 					break;
 				case ATTRIBUTE_TYPE::CHAR:
-					attribute->setValue(value.toValue<char>());
+					attribute->setValue(value.toValue<char>(), current);
 					break;
 				case ATTRIBUTE_TYPE::SHORT:
-					attribute->setValue(value.toValue<s16>());
+					attribute->setValue(value.toValue<s16>(), current);
 					break;
 				case ATTRIBUTE_TYPE::INT:
-					attribute->setValue(value.toValue<s32>());
+					attribute->setValue(value.toValue<s32>(), current);
 					break;
 				case ATTRIBUTE_TYPE::LONG:
-					attribute->setValue(value.toValue<s64>());
+					attribute->setValue(value.toValue<s64>(), current);
 					break;
 				case ATTRIBUTE_TYPE::UCHAR:
-					attribute->setValue(value.toValue<u8>());
+					attribute->setValue(value.toValue<u8>(), current);
 					break;
 				case ATTRIBUTE_TYPE::USHORT:
-					attribute->setValue(value.toValue<u16>());
+					attribute->setValue(value.toValue<u16>(), current);
 					break;
 				case ATTRIBUTE_TYPE::UINT:
-					attribute->setValue(value.toValue<u32>());
+					attribute->setValue(value.toValue<u32>(), current);
 					break;
 				case ATTRIBUTE_TYPE::ULONG:
-					attribute->setValue(value.toValue<u64>());
+					attribute->setValue(value.toValue<u64>(), current);
 					break;
 				case ATTRIBUTE_TYPE::FLOAT:
-					attribute->setValue(value.toValue<float>());
+					attribute->setValue(value.toValue<float>(), current);
 					break;
 				case ATTRIBUTE_TYPE::DOUBLE:
-					attribute->setValue(value.toValue<double>());
+					attribute->setValue(value.toValue<double>(), current);
 					break;
 				default:
 					was_eval = false;
@@ -387,14 +387,14 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 				case ATTRIBUTE_TYPE::STRONG_REFERENCE:
 				case ATTRIBUTE_TYPE::USSTRING:
 				case ATTRIBUTE_TYPE::STRING:
-					attribute->setValue(value.toValue<std::string>());
+					attribute->setValue(value.toValue<std::string>(), current);
 					break;
 
 				case ATTRIBUTE_TYPE::ENUM:
 					if (value.type() == LuaTypeID::STRING)
-						attribute->setValue(value.toValue<std::string>());
+						attribute->setValue(value.toValue<std::string>(), current);
 					else
-						attribute->setValue(value.toValue<s32>());
+						attribute->setValue(value.toValue<s32>(), current);
 					break;
 
 				case ATTRIBUTE_TYPE::ARRAY:
@@ -407,41 +407,41 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 						switch (array_type)
 						{
 						case ATTRIBUTE_TYPE::BOOL:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<bool>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<bool>(), current, 0, i);
 							break;
 						case ATTRIBUTE_TYPE::CHAR:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<s8>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<s8>(), current, 0, i);
 							break;
 						case ATTRIBUTE_TYPE::SHORT:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<s16>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<s16>(), current, 0, i);
 							break;
 						case ATTRIBUTE_TYPE::INT:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<s32>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<s32>(), current, 0, i);
 							break;
 						case ATTRIBUTE_TYPE::LONG:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<s64>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<s64>(), current, 0, i);
 							break;
 						case ATTRIBUTE_TYPE::UCHAR:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<u8>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<u8>(), current, 0, i);
 							break;
 						case ATTRIBUTE_TYPE::USHORT:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<u16>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<u16>(), current, 0, i);
 							break;
 						case ATTRIBUTE_TYPE::UINT:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<u32>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<u32>(), current, 0, i);
 							break;
 						case ATTRIBUTE_TYPE::ULONG:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<u64>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<u64>(), current, 0, i);
 							break;
 						case ATTRIBUTE_TYPE::FLOAT:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<float>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<float>(), current, 0, i);
 							break;
 						case ATTRIBUTE_TYPE::DOUBLE:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<double>(), 0, i);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<double>(), current, 0, i);
 							break;
 						case ATTRIBUTE_TYPE::USSTRING:
 						case ATTRIBUTE_TYPE::STRING:
-							attribute->setArrayElementValue(value[i + 1].value().toValue<std::string>(), 0, 1);
+							attribute->setArrayElementValue(value[i + 1].value().toValue<std::string>(), current, 0, 1);
 							break;
 						default:
 							break;
@@ -451,7 +451,7 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 					break;
 				}
 				case ATTRIBUTE_TYPE::COREITEM:
-					attribute->setValue(value.toValue<std::string>());
+					attribute->setValue(value.toValue<std::string>(), current);
 					break;
 				case ATTRIBUTE_TYPE::UNKNOWN: break;
 				default: break;
@@ -500,7 +500,7 @@ void LuaImporter::ParseAttributes(CoreModifiable* current, LuaRef table)
 					{
 						CoreModifiable::EvalAttribute(tmpvalue, current, attribute);
 					}
-					attribute->setValue(tmpvalue);
+					attribute->setValue(tmpvalue, current);
 				}
 				break;
 				case LuaTypeID::NUMBER:

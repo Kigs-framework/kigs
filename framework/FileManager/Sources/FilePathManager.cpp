@@ -1108,7 +1108,7 @@ bool FilePathManager::HTTPfopen(FileHandle* handle, const char * mode, const std
 // HTTP file management (should use PureVirtualFileAccessDelegate now)
 long int FilePathManager::HTTPfread(void * ptr, long size, long count, FileHandle* handle)
 {
-	long int receivedLen = 0;
+	size_t receivedLen = 0;
 	if (handle->mFile)
 	{
 		CoreModifiable* L_Connection = (CoreModifiable*)handle->mFile;
@@ -1144,7 +1144,7 @@ long int FilePathManager::HTTPfread(void * ptr, long size, long count, FileHandl
 		}
 
 	}
-	return receivedLen;
+	return (long int)receivedLen;
 }
 // HTTP file management (should use PureVirtualFileAccessDelegate now)
 long int FilePathManager::HTTPfwrite(const void * ptr, long size, long count, FileHandle* handle)

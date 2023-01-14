@@ -191,7 +191,7 @@ void	LuaBehaviour::InitModifiable()
 
 							for (auto attr : params)
 							{
-								PushAttribute(mL, attr);
+								PushAttribute(mL, attr, mTarget);
 							}
 
 							if (mL.pcall((int)params.size()+1, LUA_MULTRET, 0) != 0)

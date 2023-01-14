@@ -95,7 +95,7 @@ DEFINE_UPGRADOR_METHOD(TickerUpgrador, TickerNotifyUpdate)
 	if (!params.empty())
 	{
 		u32 labelID;
-		params[1]->getValue(labelID);
+		params[1]->getValue(labelID,this);
 		TickerUpgrador* currentTicker = static_cast<TickerUpgrador*>(GetUpgrador());
 		currentTicker->NotifyUpdate(labelID, this);
 	}

@@ -61,7 +61,7 @@ namespace Kigs
 							  * \fn 		void SetSize(const float& Size)
 							  * \param	Size : size of the SkyBox
 							  */
-			void SetSize(const float& Size) { mSize.setValue(Size); }
+			void SetSize(const float& Size) { mSize.setValue(Size,this); }
 
 			/**
 			 * \brief	update the bounding box

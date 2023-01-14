@@ -179,7 +179,7 @@ void ModernMesh::InitModifiable()
 			if (tree->getType() == ATTRIBUTE_TYPE::STRING)
 			{
 				std::string path;
-				tree->getValue(path);
+				tree->getValue(path,this);
 				cm->SimpleCall("SetAABBTreeFromFile", path, SharedFromThis());
 			}
 			else

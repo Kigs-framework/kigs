@@ -196,10 +196,10 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return *this;
 			}
+			// TODO
 			auto& operator=(CMSP value)
 			{
-				// TODO
-				//setValue(value);
+				mValue.mObj = value;
 				return *this;
 			}
 

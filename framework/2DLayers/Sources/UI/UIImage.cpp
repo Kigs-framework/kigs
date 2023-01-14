@@ -19,12 +19,12 @@ void UIImage::InitModifiable()
 	{
 		if ((mSizeModeX == DEFAULT) && (mSize[0] == 0))
 		{
-			mSizeModeX.setValue(CONTENT);
+			mSizeModeX.setValue(CONTENT,this);
 		}
 
 		if ((mSizeModeY == DEFAULT) && (mSize[1] == 0))
 		{
-			mSizeModeY.setValue(CONTENT);
+			mSizeModeY.setValue(CONTENT, this);
 		}
 	}
 }

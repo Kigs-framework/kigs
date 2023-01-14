@@ -1158,11 +1158,11 @@ CoreModifiableAttributeOperator<float>::operator float() const
 		{
 			if (mArrayAttributeIndex >= 0)
 			{
-				mAttribute->getArrayElementValue(result, 0, mArrayAttributeIndex);
+				mAttribute->getArrayElementValue(result, mTarget,0, mArrayAttributeIndex);
 			}
 			else
 			{
-				mAttribute->getValue(result);
+				mAttribute->getValue(result, mTarget);
 			}
 		}
 	}
@@ -1198,7 +1198,7 @@ CoreModifiableAttributeOperator<float>::operator float() const
 	
 		if (attributes.size() > attrCount)
 		{
-			 attributes.back()->getValue(result);
+			 attributes.back()->getValue(result,mTarget);
 		}
 
 		std::vector<CoreModifiableAttribute*>::iterator itattr = attributes.begin();
@@ -1233,11 +1233,11 @@ CoreModifiableAttributeOperator<std::string>::operator std::string() const
 		{
 			if (mArrayAttributeIndex >= 0)
 			{
-				mAttribute->getArrayElementValue(result, 0, mArrayAttributeIndex);
+				mAttribute->getArrayElementValue(result, mTarget, 0, mArrayAttributeIndex);
 			}
 			else
 			{
-				mAttribute->getValue(result);
+				mAttribute->getValue(result, mTarget);
 			}
 		}
 	}
@@ -1273,7 +1273,7 @@ CoreModifiableAttributeOperator<std::string>::operator std::string() const
 
 		if (attributes.size() > attrCount)
 		{
-			attributes.back()->getValue(result);
+			attributes.back()->getValue(result, mTarget);
 		}
 
 
@@ -1310,11 +1310,11 @@ CoreModifiableAttributeOperator<v2f>::operator v2f() const
 		{
 			if (mArrayAttributeIndex >= 0)
 			{
-				mAttribute->getArrayElementValue(result[mArrayAttributeIndex], 0, mArrayAttributeIndex);
+				mAttribute->getArrayElementValue(result[mArrayAttributeIndex], mTarget, 0, mArrayAttributeIndex);
 			}
 			else
 			{
-				mAttribute->getValue(result);
+				mAttribute->getValue(result, mTarget);
 			}
 		}
 	}
@@ -1352,7 +1352,7 @@ CoreModifiableAttributeOperator<v2f>::operator v2f() const
 
 		if (attributes.size() > attrCount)
 		{
-			attributes.back()->getValue(result);
+			attributes.back()->getValue(result, mTarget);
 		}
 
 
@@ -1390,11 +1390,11 @@ CoreModifiableAttributeOperator<v3f>::operator v3f() const
 		{
 			if (mArrayAttributeIndex >= 0)
 			{
-				mAttribute->getArrayElementValue(result[mArrayAttributeIndex], 0, mArrayAttributeIndex);
+				mAttribute->getArrayElementValue(result[mArrayAttributeIndex], mTarget, 0, mArrayAttributeIndex);
 			}
 			else
 			{
-				mAttribute->getValue(result);
+				mAttribute->getValue(result, mTarget);
 			}
 		}
 	}
@@ -1430,7 +1430,7 @@ CoreModifiableAttributeOperator<v3f>::operator v3f() const
 
 		if (attributes.size() > attrCount)
 		{
-			attributes.back()->getValue(result);
+			attributes.back()->getValue(result, mTarget);
 		}
 
 
@@ -1467,11 +1467,11 @@ CoreModifiableAttributeOperator<v4f>::operator v4f() const
 		{
 			if (mArrayAttributeIndex >= 0)
 			{
-				mAttribute->getArrayElementValue(result[mArrayAttributeIndex], 0, mArrayAttributeIndex);
+				mAttribute->getArrayElementValue(result[mArrayAttributeIndex], mTarget, 0, mArrayAttributeIndex);
 			}
 			else
 			{
-				mAttribute->getValue(result);
+				mAttribute->getValue(result, mTarget);
 			}
 		}
 	}
@@ -1507,7 +1507,7 @@ CoreModifiableAttributeOperator<v4f>::operator v4f() const
 
 		if (attributes.size() > attrCount)
 		{
-			attributes.back()->getValue(result);
+			attributes.back()->getValue(result, mTarget);
 		}
 
 
@@ -1542,12 +1542,12 @@ CoreItem& CoreModifiableAttributeOperator<operandType>::operator=(const operandT
 		{
 			if (mArrayAttributeIndex >= 0)
 			{
-				mAttribute->setArrayElementValue(other, 0, mArrayAttributeIndex);
+				mAttribute->setArrayElementValue(other, mTarget, 0, mArrayAttributeIndex);
 			}
 			else
 			{
 				// set value
-				mAttribute->setValue(other);
+				mAttribute->setValue(other, mTarget);
 			}
 		}
 	}
@@ -1567,11 +1567,11 @@ CoreItem& CoreModifiableAttributeOperator<v2f>::operator=(const v2f& other)
 		{
 			if (mArrayAttributeIndex >= 0)
 			{
-				mAttribute->setArrayElementValue(other[mArrayAttributeIndex], 0, mArrayAttributeIndex);
+				mAttribute->setArrayElementValue(other[mArrayAttributeIndex], mTarget, 0, mArrayAttributeIndex);
 			}
 			else
 			{
-				mAttribute->setValue(other);
+				mAttribute->setValue(other, mTarget);
 			}
 		}
 	}
@@ -1591,11 +1591,11 @@ CoreItem& CoreModifiableAttributeOperator<v3f>::operator=(const v3f& other)
 		{
 			if (mArrayAttributeIndex >= 0)
 			{
-				mAttribute->setArrayElementValue(other[mArrayAttributeIndex], 0, mArrayAttributeIndex);
+				mAttribute->setArrayElementValue(other[mArrayAttributeIndex], mTarget, 0, mArrayAttributeIndex);
 			}
 			else
 			{
-				mAttribute->setValue(other);
+				mAttribute->setValue(other, mTarget);
 			}
 		}
 	}
@@ -1615,11 +1615,11 @@ CoreItem& CoreModifiableAttributeOperator<v4f>::operator=(const v4f& other)
 		{
 			if (mArrayAttributeIndex >= 0)
 			{
-				mAttribute->setArrayElementValue(other[mArrayAttributeIndex], 0, mArrayAttributeIndex);
+				mAttribute->setArrayElementValue(other[mArrayAttributeIndex], mTarget, 0, mArrayAttributeIndex);
 			}
 			else
 			{
-				mAttribute->setValue(other);
+				mAttribute->setValue(other, mTarget);
 			}
 		}
 	}

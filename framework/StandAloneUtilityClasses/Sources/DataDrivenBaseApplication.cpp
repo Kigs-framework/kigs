@@ -981,7 +981,7 @@ DEFINE_METHOD(DataDrivenSequenceManager, ChangeSequence)
 		mStateStack.clear();
 		std::string tmp;
 		// should search for the good param
-		params[0]->getValue(tmp);
+		params[0]->getValue(tmp,this);
 		RequestStateChange(tmp);
 	}
 
@@ -1002,7 +1002,7 @@ DEFINE_METHOD(DataDrivenSequenceManager, StackSequence)
 	{
 		std::string tmp;
 		// should search for the good param
-		params[0]->getValue(tmp);
+		params[0]->getValue(tmp,this);
 		RequestStateChange(tmp);
 	}
 

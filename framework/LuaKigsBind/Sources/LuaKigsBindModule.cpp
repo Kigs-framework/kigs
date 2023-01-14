@@ -265,7 +265,7 @@ bool	LuaKigsBindModule::CallCoreModifiableCallback(std::vector<CoreModifiableAtt
 			}
 			else
 			{
-				PushAttribute(mLuaState, *itparam);
+				PushAttribute(mLuaState, *itparam, localthis);
 				paramCount++;
 			}
 			++itparam;
@@ -291,11 +291,11 @@ bool	LuaKigsBindModule::CallCoreModifiableCallback(std::vector<CoreModifiableAtt
 					{
 						if (!L.isNumber(-1)) // should be number or string
 						{
-							result->setValue(L.toString(-1));
+							result->setValue(L.toString(-1), localthis);
 						}
 						else
 						{
-							result->setValue(L.toNumber(-1));
+							result->setValue(L.toNumber(-1), localthis);
 						}
 					}
 					else if (L.isBool(-1))
@@ -558,19 +558,19 @@ DEFINE_METHOD(LuaKigsBindModule, RegisterLuaMethod)
 			return false;
 		}
 
-		
+		CoreModifiable* coreModifiableTarget = (CoreModifiable*)&(target->const_ref());
+
 #ifdef KIGS_TOOLS
 		Xml::XMLNodeBase* xmlattr = nullptr;
 		maRawPtr* xml = (maRawPtr*)getParameter(params, "pXML");
 		if (xml)
 		{
 			void* val = nullptr;
-			xml->getValue(val);
+			xml->getValue(val, coreModifiableTarget);
 			xmlattr = (Xml::XMLNodeBase*)val;
 		}
 #endif
 		maString* cbType = ((maString*)getParameter(params, "cbType"));
-		CoreModifiable* coreModifiableTarget = (CoreModifiable*) &(target->const_ref());
 
 		if (cbType) // callback type is given, so attach to the good one
 		{

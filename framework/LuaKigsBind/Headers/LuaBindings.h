@@ -18,7 +18,7 @@ namespace Kigs
 	{
 		void setup_bindings(lua_State* L);
 
-		void PushAttribute(LuaState L, CoreModifiableAttribute* attrib);
+		void PushAttribute(LuaState L, CoreModifiableAttribute* attrib, CoreModifiable* owner);
 		int CoreModifiableSetAttributeLua(lua_State* lua);
 		CoreModifiableAttribute* MakeAttributeFromLuaStack(lua_State* lua, int idx, CoreModifiable* owner = nullptr, const std::string& name = "ParamLuaRef");
 
