@@ -48,7 +48,7 @@ DEFINE_UPGRADOR_METHOD(AutoOrientedNode3DUp, AutoOrientedNotifyUpdate)
 	if (!params.empty())
 	{
 		u32 labelID;
-		params[1]->getValue(labelID);
+		params[1]->getValue(labelID, this);
 
 		if (GetUpgrador()->mTarget->getLabelID() == labelID)
 		{
@@ -86,14 +86,14 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 
 	// check that target axis & up axis are OK ( orthogonal, normalized and X, Y or Z axis colinear )
 	v3f axis1,axis2,axis3;
-	GetUpgrador()->mOrientedAxis->getValue(axis1);
+	GetUpgrador()->mOrientedAxis->getValue(axis1, this);
 	if(!isValidAxis(axis1))
 	{
 		KIGS_WARNING("AutoOrientedNode bad OrientedAxis", 1);
 		return false;
 	}
 	
-	GetUpgrador()->mPseudoConstantAxis->getValue(axis2);
+	GetUpgrador()->mPseudoConstantAxis->getValue(axis2, this);
 	if (!isValidAxis(axis2))
 	{
 		KIGS_WARNING("AutoOrientedNode bad PseudoConstantAxis", 1);
@@ -131,7 +131,7 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	targetAxis1.Normalize();
 
 	// get global targetAxis2
-	GetUpgrador()->mPseudoConstantAxisDir->getValue(targetAxis2);
+	GetUpgrador()->mPseudoConstantAxisDir->getValue(targetAxis2, this);
 	// and transform it to father local coordinates
 	getFather()->GetGlobalToLocal().TransformVector(&targetAxis2);
 	targetAxis2.Normalize();

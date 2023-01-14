@@ -276,10 +276,10 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 				typename Enable = enable_if_t<is_fundamental<U>::value, U>>
 				void UnpackGetValue(T& value, CoreModifiableAttribute* attr)
 			{
-				if (!attr->getValue(value))
+				if (!attr->getValue(value,nullptr))
 				{
 					void* ptr = nullptr;
-					if (attr->getValue(ptr))
+					if (attr->getValue(ptr,nullptr))
 						value = *(T*)ptr;
 				}
 			}
@@ -288,7 +288,7 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 			auto UnpackGetValue(SP<T>& value, CoreModifiableAttribute* attr)
 			{
 				void* ptr;
-				if (attr->getValue(ptr))
+				if (attr->getValue(ptr, nullptr))
 					value = ((T*)ptr)->SharedFromThis();
 			}
 
@@ -296,7 +296,7 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 			auto UnpackGetValue(ptr_to_ref<T>& value, CoreModifiableAttribute* attr) -> enable_if_t<!is_base_of<CoreModifiable, T>::value>
 			{
 				void* ptr;
-				if (attr->getValue(ptr))
+				if (attr->getValue(ptr, nullptr))
 					value = (T*)ptr;
 			}
 
@@ -304,7 +304,7 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 			auto UnpackGetValue(ptr_to_ref<T>& value, CoreModifiableAttribute* attr) -> enable_if_t<is_base_of<CoreModifiable, T>::value>
 			{
 				void* vcm = nullptr;
-				if (attr->getValue(vcm) && vcm)
+				if (attr->getValue(vcm,nullptr) && vcm)
 				{
 					CoreModifiable* cm = static_cast<CoreModifiable*>(vcm);
 					if (cm->isSubType(T::mClassID))
@@ -317,7 +317,7 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 			inline void UnpackGetValue(ptr_to_ref<const char>& value, CoreModifiableAttribute* attr)
 			{
 				void* ptr;
-				if (attr->getValue(ptr))
+				if (attr->getValue(ptr, nullptr))
 				{
 					if (attr->getType() == CoreModifiable::ATTRIBUTE_TYPE::STRING)
 						value = ((std::string*)ptr)->c_str();
@@ -328,7 +328,7 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 
 			inline void UnpackGetValue(void*& value, CoreModifiableAttribute* attr)
 			{
-				attr->getValue(value);
+				attr->getValue(value, nullptr);
 			}
 
 
@@ -535,7 +535,7 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 			Ret result = {};
 			if (attr.size())
 			{
-				attr.back()->getValue(result);
+				attr.back()->getValue(result,nullptr);
 
 				// destroy attributes
 				while (attr.size())

@@ -884,16 +884,16 @@ u32 CoreModifiable::getNbArrayElements(KigsID attributeID) const
 #define IMPLEMENT_ACCESS_VALUE_BODY_BY_ID(accessValue) \
 { \
 	CoreModifiableAttribute* attribute=findAttribute(attributeID);  \
-	if(attribute) return attribute->accessValue(value); \
+	if(attribute) return attribute->accessValue(value,this); \
 	return false; \
 }
 
 //! implement a get
-#define IMPLEMENT_GET_VALUE(T) bool CoreModifiable::getValue(const KigsID attributeID, T value) const \
+#define IMPLEMENT_GET_VALUE(T) bool CoreModifiable::getValue(const KigsID& attributeID, T value) const \
 IMPLEMENT_ACCESS_VALUE_BODY_BY_ID(getValue)
 
 //! implement a set
-#define IMPLEMENT_SET_VALUE(T) bool CoreModifiable::setValue(KigsID attributeID, T value) \
+#define IMPLEMENT_SET_VALUE(T) bool CoreModifiable::setValue(const KigsID& attributeID, T value) \
 IMPLEMENT_ACCESS_VALUE_BODY_BY_ID(setValue)
 
 
@@ -928,7 +928,7 @@ EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SET_VALUE);
 #define IMPLEMENT_ACCESS_ARRAY_VALUE_BODY_BY_ID(accessValue) \
 { \
 	CoreModifiableAttribute* attribute=findAttribute(attributeID); \
-	if(attribute) return attribute->accessValue(value, nbElements); \
+	if(attribute) return attribute->accessValue(value,this, nbElements); \
 	return false; \
 }
 
@@ -936,23 +936,23 @@ EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SET_VALUE);
 #define IMPLEMENT_ACCESS_ARRAY_ELEMENT_VALUE_BODY_BY_ID(accessValue) \
 { \
 	CoreModifiableAttribute* attribute=findAttribute(attributeID); \
-	if(attribute) return attribute->accessValue(value, line, column); \
+	if(attribute) return attribute->accessValue(value,this, line, column); \
 	return false; \
 }
 
 //! macro implementing get for array
 
-#define IMPLEMENT_GET_ARRAY_VALUE(T) bool CoreModifiable::getArrayValue(KigsID attributeID, T value, u32 nbElements) const \
+#define IMPLEMENT_GET_ARRAY_VALUE(T) bool CoreModifiable::getArrayValue(const KigsID& attributeID, T value, u32 nbElements) const \
 IMPLEMENT_ACCESS_ARRAY_VALUE_BODY_BY_ID(getArrayValue)
 
-#define IMPLEMENT_GET_ARRAY_ELEMENT(T) bool CoreModifiable::getArrayElementValue(KigsID attributeID, T value, u32 line, u32 column) const \
+#define IMPLEMENT_GET_ARRAY_ELEMENT(T) bool CoreModifiable::getArrayElementValue(const KigsID& attributeID, T value, u32 line, u32 column) const \
 IMPLEMENT_ACCESS_ARRAY_ELEMENT_VALUE_BODY_BY_ID(getArrayElementValue)
 
 //! macro implementing set for array
-#define IMPLEMENT_SET_ARRAY_VALUE(T) bool CoreModifiable::setArrayValue(KigsID attributeID, T value, u32 nbElements) \
+#define IMPLEMENT_SET_ARRAY_VALUE(T) bool CoreModifiable::setArrayValue(const KigsID& attributeID, T value, u32 nbElements) \
 IMPLEMENT_ACCESS_ARRAY_VALUE_BODY_BY_ID(setArrayValue) 
 
-#define IMPLEMENT_SET_ARRAY_ELEMENT(T) bool CoreModifiable::setArrayElementValue(KigsID attributeID, T value, u32 line, u32 column) \
+#define IMPLEMENT_SET_ARRAY_ELEMENT(T) bool CoreModifiable::setArrayElementValue(const KigsID& attributeID, T value, u32 line, u32 column) \
 IMPLEMENT_ACCESS_ARRAY_ELEMENT_VALUE_BODY_BY_ID(setArrayElementValue)
 
 //! macro implementing all set and get for all array element type
@@ -969,14 +969,14 @@ IMPLEMENT_SET_ARRAY_ELEMENT(const std::string&);
 
 
 
-#define IMPLEMENT_SETARRAY_VALUE2(valuetype) bool CoreModifiable::setArrayValue(KigsID attributeID, valuetype value1,valuetype value2) \
+#define IMPLEMENT_SETARRAY_VALUE2(valuetype) bool CoreModifiable::setArrayValue(const KigsID& attributeID, valuetype value1,valuetype value2) \
 {\
 	CoreModifiableAttribute* attribute = findAttribute(attributeID); \
 	if (attribute) \
 	{ \
 		bool result=true; \
-		result |= attribute->setArrayElementValue(value1, 0, 0); \
-		result |= attribute->setArrayElementValue(value2, 0, 1); \
+		result |= attribute->setArrayElementValue(value1,this, 0, 0); \
+		result |= attribute->setArrayElementValue(value2,this, 0, 1); \
 		return result;\
 	} \
 	return false; \
@@ -986,15 +986,15 @@ EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SETARRAY_VALUE2)
 
 #undef IMPLEMENT_SETARRAY_VALUE2
 
-#define IMPLEMENT_SETARRAY_VALUE3(valuetype) bool CoreModifiable::setArrayValue(KigsID attributeID, valuetype value1,valuetype value2,valuetype value3) \
+#define IMPLEMENT_SETARRAY_VALUE3(valuetype) bool CoreModifiable::setArrayValue(const KigsID& attributeID, valuetype value1,valuetype value2,valuetype value3) \
 {\
 	CoreModifiableAttribute* attribute = findAttribute(attributeID); \
 	if (attribute) \
 	{ \
 		bool result=true; \
-		result |= attribute->setArrayElementValue(value1, 0, 0); \
-		result |= attribute->setArrayElementValue(value2, 0, 1); \
-		result |= attribute->setArrayElementValue(value3, 0, 2); \
+		result |= attribute->setArrayElementValue(value1,this, 0, 0); \
+		result |= attribute->setArrayElementValue(value2,this, 0, 1); \
+		result |= attribute->setArrayElementValue(value3,this, 0, 2); \
 		return result;\
 	} \
 	return false; \
@@ -1004,16 +1004,16 @@ EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SETARRAY_VALUE3)
 
 #undef IMPLEMENT_SETARRAY_VALUE3
 
-#define IMPLEMENT_SETARRAY_VALUE4(valuetype) bool CoreModifiable::setArrayValue(KigsID attributeID, valuetype value1,valuetype value2,valuetype value3,valuetype value4) \
+#define IMPLEMENT_SETARRAY_VALUE4(valuetype) bool CoreModifiable::setArrayValue(const KigsID& attributeID, valuetype value1,valuetype value2,valuetype value3,valuetype value4) \
 {\
 	CoreModifiableAttribute* attribute = findAttribute(attributeID); \
 	if (attribute) \
 	{ \
 		bool result=true; \
-		result |= attribute->setArrayElementValue(value1, 0, 0); \
-		result |= attribute->setArrayElementValue(value2, 0, 1); \
-		result |= attribute->setArrayElementValue(value3, 0, 2); \
-		result |= attribute->setArrayElementValue(value4, 0, 3); \
+		result |= attribute->setArrayElementValue(value1,this, 0, 0); \
+		result |= attribute->setArrayElementValue(value2,this, 0, 1); \
+		result |= attribute->setArrayElementValue(value3,this, 0, 2); \
+		result |= attribute->setArrayElementValue(value4,this, 0, 3); \
 		return result;\
 	} \
 	return false; \
@@ -1113,7 +1113,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 	toadd = getAttribute(ID);
 	if (toadd!=nullptr)
 	{
-		toadd->setValue(defaultval);
+		toadd->setValue(defaultval,this);
 		return toadd;
 	}
 	
@@ -1197,7 +1197,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 	
 	if (toadd && defaultval)
 	{
-		toadd->setValue(defaultval);
+		toadd->setValue(defaultval, this);
 	}
 	
 	return toadd;
@@ -1209,7 +1209,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 	
 	if (toadd && defaultval)
 	{
-		toadd->setValue(defaultval);
+		toadd->setValue(defaultval, this);
 	}
 	
 	return toadd;
@@ -1221,7 +1221,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 
 	if (toadd && defaultval)
 	{
-		toadd->setValue((u64)defaultval);
+		toadd->setValue((u64)defaultval, this);
 	}
 
 	return toadd;
@@ -1299,7 +1299,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, co
 	if (toadd)
 	{
 		toadd->setDynamic(true);
-		toadd->setArrayValue(defaultval, valcount);
+		toadd->setArrayValue(defaultval, this, valcount);
 	}
 	
 	return toadd;
@@ -1376,7 +1376,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, co
 	if (toadd)
 	{
 		toadd->setDynamic(true);
-		toadd->setArrayValue(defaultval, valcount);
+		toadd->setArrayValue(defaultval, this, valcount);
 	}
 	
 	return toadd;
@@ -1388,7 +1388,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 	
 	if (toadd && defaultval)
 	{
-		toadd->setValue(defaultval);
+		toadd->setValue(defaultval, this);
 	}
 	
 	return toadd;
@@ -1400,7 +1400,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 	
 	if (toadd && defaultval)
 	{
-		toadd->setValue(defaultval);
+		toadd->setValue(defaultval, this);
 	}
 	
 	return toadd;
@@ -1682,7 +1682,7 @@ void CoreModifiable::InitParametersFromList(const std::vector<CoreModifiableAttr
 		{
 			const CoreModifiableAttribute*	current=(*it);
 			std::string	value;
-			if(current->getValue(value))
+			if(current->getValue(value, this))
 			{
 				setValue(current->getLabel(), value);
 			}
@@ -1855,17 +1855,15 @@ CoreModifiableAttribute* CoreModifiable::getAttribute(KigsID attributeID) const
 	return findAttribute(attributeID);
 }
 
-bool CoreModifiable::setReadOnly(KigsID id,bool val)
+void CoreModifiable::setReadOnly(const KigsID& id,bool val)
 {
 	auto it =mAttributes.find(id);
-	if(it ==mAttributes.end()) return false;
+	if(it ==mAttributes.end()) return;
 	CoreModifiableAttribute* attribute=(*it).second;
 	if(attribute)
 	{
-		attribute->setReadOnly(val);
-		return true;
+		attribute->setReadOnly(val);	
 	}
-	return false;
 }
 
 bool	CoreModifiable::Equal(const CoreModifiable& other)
@@ -1897,8 +1895,8 @@ bool	CoreModifiable::Equal(const CoreModifiable& other)
 	std::string	param2str;
 	for(;itparams!=endparams;++itparams)
 	{
-		((*itparams).second)->getValue(param1str);
-		((*otheritparams).second)->getValue(param2str);
+		((*itparams).second)->getValue(param1str, this);
+		((*otheritparams).second)->getValue(param2str, this);
 		
 		if(param1str != param2str)
 		{
@@ -2282,7 +2280,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 				XMLNode* luanode = new XMLNode(XML_NODE_ELEMENT, "LUA");
 				XMLAttribute* attr = new XMLAttribute("N", func_name);
 				std::string code;
-				current->getValue(code);
+				current->getValue(code, this);
 				luanode->setString("<![CDATA[" + code + "]]>");
 				luanode->addAttribute(attr);
 				currentNode->addChild(luanode);
@@ -2292,14 +2290,14 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 
 
 		std::string value;
-		current->getValue(value);
+		current->getValue(value, this);
 		if (defaultAttributeMap)
 		{
 			auto itfounddefault = defaultAttributeMap->find((*i).first);
 			if (itfounddefault != defaultAttributeMap->end())
 			{
 				std::string defaultvalue;
-				(*itfounddefault).second->getValue(defaultvalue);
+				(*itfounddefault).second->getValue(defaultvalue, this);
 				
 				if (defaultvalue == value)
 					continue;
@@ -2350,7 +2348,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 				if (unique_id.size())
 				{
 					CoreRawBuffer* buffer = nullptr;
-					current->getValue((void*&)buffer);
+					current->getValue((void*&)buffer, this);
 					if (buffer->size() >= settings->export_buffer_attribute_as_external_file_size_threshold)
 					{
 						SP<CoreRawBuffer> buffer_ref = buffer->shared_from_this();
@@ -2379,7 +2377,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 				
 				if(export_inline)
 				{
-					current->getValue(value);
+					current->getValue(value, this);
 					attribute = new XMLAttribute("V", value);
 					modifiableAttrNode->addAttribute(attribute);
 				}

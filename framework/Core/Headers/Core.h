@@ -488,12 +488,10 @@ namespace Kigs
 			 */
 			KigsCore()
 			{
-				mCoreBaseApplication = NULL;
-				mCoreMainModuleList = NULL;
-
-				mAsyncRequestList = NULL;
-
-				mProfilerManager = NULL;
+				mCoreBaseApplication = nullptr;
+				mCoreMainModuleList = nullptr;
+				mAsyncRequestList = nullptr;
+				mProfilerManager = nullptr;
 			}
 
 			/**
@@ -503,11 +501,11 @@ namespace Kigs
 			~KigsCore() {};
 
 			//! pointer to instance factory singleton
-			InstanceFactory* mInstanceFactory;
+			InstanceFactory* mInstanceFactory=nullptr;
 			SP<MiniInstanceFactory>	mUpgradorFactory;
 
 			//! pointer to initialised modules
-			unordered_map<KigsID, SP<ModuleBase>>* mModuleBaseInstanceMap;
+			unordered_map<KigsID, SP<ModuleBase>>* mModuleBaseInstanceMap=nullptr;
 
 			// current pending async requests
 			std::vector<SP<AsyncRequest>>* mAsyncRequestList;
@@ -566,18 +564,18 @@ namespace Kigs
 			static void		CloseMultiThread();
 
 			//! TRUE if the KigsCore is multiThread
-			bool* mMultiThread;
+			bool* mMultiThread=nullptr;
 
 
 #if KIGS_ERROR_LEVEL<=2
 			// construct error list here
 			//! list of error
-			std::vector<std::string>* mErrorList;
+			std::vector<std::string>* mErrorList=nullptr;
 			/**
 			 * \fn 		int	(*KigsMsgPrintf)(const char *format... );
 			 * \brief	output function for error and warning msb
 			 */
-			int	(*KigsMsgPrintf)(const char* format...);
+			int	(*KigsMsgPrintf)(const char* format...) = nullptr;
 #endif
 			//! Profilers management
 			Kigs::Time::GlobalProfilerManager* mProfilerManager;

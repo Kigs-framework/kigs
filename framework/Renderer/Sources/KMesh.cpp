@@ -406,9 +406,9 @@ bool	Mesh::GetVertexPointer(CoreModifiable* sender,std::vector<CoreModifiableAtt
 	{
 		if(buffersize)
 		{
-			buffersize->setValue((int)mVertexCount);
+			buffersize->setValue((int)mVertexCount,nullptr);
 		}
-		result->setValue((u64)mVertexArray);
+		result->setValue((u64)mVertexArray, nullptr);
 		return true;
 	}
 
@@ -432,7 +432,7 @@ bool	Mesh::GetColorPointer(CoreModifiable* sender,std::vector<CoreModifiableAttr
 
 	if(result)
 	{
-		result->setValue((u64)mColorArray);
+		result->setValue((u64)mColorArray, nullptr);
 		return true;
 	}
 
@@ -456,7 +456,7 @@ bool	Mesh::GetNormalPointer(CoreModifiable* sender,std::vector<CoreModifiableAtt
 
 	if(result)
 	{
-		result->setValue((u64)mNormalArray);
+		result->setValue((u64)mNormalArray, nullptr);
 		return true;
 	}
 
@@ -480,7 +480,7 @@ bool	Mesh::GetTexCoordPointer(CoreModifiable* sender,std::vector<CoreModifiableA
 
 	if(result)
 	{
-		result->setValue((u64)mTexArray);
+		result->setValue((u64)mTexArray, nullptr);
 		return true;
 	}
 

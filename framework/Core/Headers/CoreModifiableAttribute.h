@@ -13,7 +13,6 @@ namespace Kigs
 {
 	namespace Core
 	{
-		class AttachedModifierBase;
 
 		// ****************************************
 		// * AttributeNotificationLevel enum
@@ -192,7 +191,7 @@ auto& operator=(const CurrentAttributeType& value)\
 			virtual void changeNotificationLevel(AttributeNotificationLevel level);
 
 
-#define DECLARE_SET(type)	virtual bool setValue(type value){ return false; }
+#define DECLARE_SET(type)	virtual bool setValue(type value,CoreModifiable* owner){ return false; }
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET);
 			DECLARE_SET(const char*);
 			DECLARE_SET(const std::string&);
@@ -206,7 +205,7 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_SET(const Point3D&);
 			DECLARE_SET(const Vector4D&);
 
-#define DECLARE_GET(type) virtual bool getValue(type value) const { return false; }
+#define DECLARE_GET(type) virtual bool getValue(type value,const CoreModifiable* owner) const { return false; }
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET);
 			DECLARE_GET(std::string&);
 			DECLARE_GET(usString&);
@@ -217,17 +216,17 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_GET(Point3D&);
 			DECLARE_GET(Vector4D&);
 
-#define DECLARE_SETARRAYVALUE(type)	virtual bool setArrayValue(type /*value*/, u32 /* nbElements */){return false;};
+#define DECLARE_SETARRAYVALUE(type)	virtual bool setArrayValue(type /*value*/,CoreModifiable* owner, u32 /* nbElements */){return false;};
 			EXPAND_MACRO_FOR_BASE_TYPES(const, *, DECLARE_SETARRAYVALUE);
 
-#define DECLARE_GETARRAYVALUE(type) virtual bool getArrayValue(type * const /* value */ , u32 /* nbElements */) const {return false;};
+#define DECLARE_GETARRAYVALUE(type) virtual bool getArrayValue(type * const /* value */ ,const CoreModifiable* owner, u32 /* nbElements */) const {return false;};
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_GETARRAYVALUE);
 
-#define DECLARE_SETARRAYELEMENTVALUE(type)	virtual bool setArrayElementValue(type /*value*/, u32 /* line */, u32 /* column */){ return false; };
+#define DECLARE_SETARRAYELEMENTVALUE(type)	virtual bool setArrayElementValue(type /*value*/,CoreModifiable* owner, u32 /* line */, u32 /* column */){ return false; };
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAYELEMENTVALUE);
 			DECLARE_SETARRAYELEMENTVALUE(const std::string&);
 
-#define DECLARE_GETARRAYELEMENTVALUE(type) virtual bool getArrayElementValue(type /* value */, u32 /* line */, u32 /* column */) const {return false;};
+#define DECLARE_GETARRAYELEMENTVALUE(type) virtual bool getArrayElementValue(type /* value */,const CoreModifiable* owner, u32 /* line */, u32 /* column */) const {return false;};
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GETARRAYELEMENTVALUE);
 			DECLARE_GETARRAYELEMENTVALUE(std::string&);
 
@@ -426,20 +425,20 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maRawPtrHeritage, maRawPtrHeritage, void*, CoreModifiable::ATTRIBUTE_TYPE::RAWPTR);
 		public:
 
-			bool getValue(CMSP& value) const override
+			bool getValue(CMSP& value, const CoreModifiable* owner) const override
 			{
 				value = CMSP(static_cast<CoreModifiable*>(mValue));
 				return true;
 			}
-			bool getValue(void*& value) const override { value = mValue; return true; }
-			bool setValue(void* value) override
+			bool getValue(void*& value, const CoreModifiable* owner) const override { value = mValue; return true; }
+			bool setValue(void* value, CoreModifiable* owner) override
 			{
 				if (isReadOnly()) return false;
 				mValue = value;
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			bool setValue(CMSP value) override
+			bool setValue(CMSP value, CoreModifiable* owner) override
 			{
 				if (isReadOnly()) return false;
 				mValue = static_cast<void*>(value.get());

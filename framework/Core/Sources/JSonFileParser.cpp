@@ -141,7 +141,7 @@ void 	JSonFileParserBase<std::string, AsciiParserUtils>::AddValueToParamList(con
 	{
 		// boolean
 		Value = new maBool(*mDelegateObject.get(), false, strObjName, false);
-		Value->setValue(strvalue);
+		Value->setValue(strvalue, mDelegateObject.get());
 	}
 	else
 	{
@@ -181,7 +181,7 @@ void 	JSonFileParserBase<std::string, AsciiParserUtils>::AddValueToParamList(con
 			}
 		}
 
-		Value->setValue(strvalue);
+		Value->setValue(strvalue, mDelegateObject.get());
 	}
 
 	mParamList.push_back(Value);
@@ -208,7 +208,7 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const u
 	{
 		// boolean
 		Value = new maBool(*mDelegateObject.get(), false, name, false);
-		Value->setValue(strvalue);
+		Value->setValue(strvalue, mDelegateObject.get());
 	}
 	else
 	{
@@ -247,7 +247,7 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const u
 				}
 			}
 		}
-		Value->setValue(strvalue);
+		Value->setValue(strvalue, mDelegateObject.get());
 	}
 
 	mParamList.push_back(Value);

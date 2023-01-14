@@ -83,7 +83,7 @@ OpenGLTexture::~OpenGLTexture()
 	if (delayed) // delay init
 	{
 		void* datastruct;
-		if (delayed->getValue(datastruct))
+		if (delayed->getValue(datastruct,this))
 		{
 			TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
 			delete delayedStruct;
@@ -145,7 +145,7 @@ void	OpenGLTexture::UninitModifiable()
 	if (delayed) // delay init
 	{
 		void* datastruct;
-		if (delayed->getValue(datastruct))
+		if (delayed->getValue(datastruct,this))
 		{
 			TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
 			delete delayedStruct;
@@ -170,7 +170,7 @@ bool	OpenGLTexture::PreDraw(TravState* travstate)
 	if (delayed) // delay init
 	{
 		void* datastruct;
-		if (delayed->getValue(datastruct))
+		if (delayed->getValue(datastruct,this))
 		{
 			TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
 			CreateFromImage(delayedStruct->delayedimage, true);
@@ -411,7 +411,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<Pict::TinyImage>& image, 
 		if (delayed) // if already exist, remove it
 		{
 			void* datastruct;
-			if (delayed->getValue(datastruct))
+			if (delayed->getValue(datastruct,this))
 			{
 				TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
 				delete delayedStruct;
@@ -426,7 +426,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<Pict::TinyImage>& image, 
 		delayedStruct->delayedimage = image;
 		delayedStruct->needRealloc = needRealloc;
 		CoreModifiableAttribute* newAttr = AddDynamicAttribute(ATTRIBUTE_TYPE::RAWPTR, "DelayedInit");
-		newAttr->setValue(delayedStruct);
+		newAttr->setValue(delayedStruct,this);
 		return true;
 #endif
 	}
@@ -437,7 +437,7 @@ bool	OpenGLTexture::CreateFromImage(const SmartPointer<Pict::TinyImage>& image, 
 		if (delayed) // delay init
 		{
 			void* datastruct;
-			if (delayed->getValue(datastruct))
+			if (delayed->getValue(datastruct,this))
 			{
 				TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
 				needRealloc = delayedStruct->needRealloc;

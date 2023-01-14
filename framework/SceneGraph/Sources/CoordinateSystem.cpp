@@ -55,15 +55,15 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, CoordinateSystemNotifyUpdate)
 	if (!params.empty())
 	{
 		u32 labelID;
-		params[1]->getValue(labelID);
+		params[1]->getValue(labelID,this);
 		
 		if (GetUpgrador()->mScale->getLabelID() == labelID
 			|| GetUpgrador()->mRot->getLabelID() == labelID
 			|| GetUpgrador()->mPos->getLabelID() == labelID)
 		{
-			Point3D	rot; GetUpgrador()->mRot->getValue(rot);
-			Point3D pos; GetUpgrador()->mPos->getValue(pos);
-			float scale; GetUpgrador()->mScale->getValue(scale);
+			Point3D	rot; GetUpgrador()->mRot->getValue(rot, this);
+			Point3D pos; GetUpgrador()->mPos->getValue(pos, this);
+			float scale; GetUpgrador()->mScale->getValue(scale, this);
 
 			Matrix3x4 matrix;
 			matrix.SetRotationXYZ(rot.x, rot.y, rot.z);
@@ -82,9 +82,9 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 	if (!params.empty())
 	{
 		float angle;
-		params[0]->getValue(angle);
+		params[0]->getValue(angle, this);
 		Point3D axis;
-		params[1]->getValue(axis);
+		params[1]->getValue(axis, this);
 
 		Quaternion q;
 		q.SetAngAxis(axis, angle);
@@ -120,7 +120,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, localMoveNode)
 	if (!params.empty())
 	{
 		Point3D move;
-		params[0]->getValue(move);
+		params[0]->getValue(move, this);
 
 		localMove(move);
 	}
@@ -132,7 +132,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, globalMoveNode)
 	if (!params.empty())
 	{
 		Point3D move;
-		params[0]->getValue(move);
+		params[0]->getValue(move, this);
 
 		globalMove(move);
 	}
@@ -290,7 +290,7 @@ DEFINE_UPGRADOR_METHOD(PivotUp, PivotNotifyUpdate)
 	if (!params.empty())
 	{
 		u32 labelID;
-		params[1]->getValue(labelID);
+		params[1]->getValue(labelID, this);
 
 		if (GetUpgrador()->mAngle->getLabelID() == labelID)
 		{

@@ -64,7 +64,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 
 	unsigned int i = 0;
 	int			fake;
-	unsigned	FilePos;
+	size_t		FilePos;
 	int			TriangleCount;
 	bool		HasTexture;
 	bool		HasNormal;
@@ -91,10 +91,10 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 		mFileParser.MoveToString("*MATERIAL_NAME");
 	    int subMatCount=0;
 
-		unsigned CurrentPosition = mFileParser.GetPosition();
+		auto CurrentPosition = mFileParser.GetPosition();
 		if(mFileParser.MoveToString("*NUMSUBMTLS"))
 		{
-			unsigned submtlpos=mFileParser.GetPosition();
+			auto submtlpos=mFileParser.GetPosition();
 
 			mFileParser.ReadInt(subMatCount);
 
@@ -280,7 +280,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 
 	if (mFileParser.MoveToString("*MESH_NORMALS"))
 	{
-		unsigned CurrentPosition = mFileParser.GetPosition();
+		auto CurrentPosition = mFileParser.GetPosition();
 		HasNormal = true;
 
 		// Retrieve the Normal Count as the max index

@@ -96,10 +96,11 @@ namespace Kigs
 			template<typename T>
 			operator T* () { return static_cast<T*>(SearchRef().get()); }
 
+			// TODO
 			std::string RefString() const
 			{
 				std::string result;
-				getValue(result);
+				getValue(result,nullptr);
 				return result;
 			}
 
@@ -116,7 +117,7 @@ namespace Kigs
 
 
 			/// getValue overloads
-			virtual bool getValue(std::string& value) const override
+			virtual bool getValue(std::string& value,const CoreModifiable* owner) const override
 			{
 
 				((maReferenceHeritage*)this)->SearchRef();
@@ -140,28 +141,28 @@ namespace Kigs
 
 				return false;
 			}
-			virtual bool getValue(usString& value) const override
+			virtual bool getValue(usString& value, const CoreModifiable* owner) const override
 			{
 				// TODO ?
 				return false;
 			}
 
 			// Thread unsafe, need to add getValue method with CMSP
-			virtual bool getValue(CMSP& value) const override
+			virtual bool getValue(CMSP& value, const CoreModifiable* owner) const override
 			{
 				value = const_cast<maReferenceHeritage*>(this)->SearchRef();
 				return true;
 			}
 
 			// Thread unsafe, this one is really bad...
-			virtual bool getValue(void*& value) const override
+			virtual bool getValue(void*& value, const CoreModifiable* owner) const override
 			{
 				value = (void*) const_cast<maReferenceHeritage*>(this)->SearchRef().get();
 				return true;
 			}
 
 			/// setValue overloads
-			virtual bool setValue(const char* value) override
+			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -170,7 +171,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(const std::string& value) override
+			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -179,7 +180,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(CMSP value) override
+			virtual bool setValue(CMSP value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -197,7 +198,8 @@ namespace Kigs
 			}
 			auto& operator=(CMSP value)
 			{
-				setValue(value);
+				// TODO
+				//setValue(value);
 				return *this;
 			}
 
@@ -300,7 +302,7 @@ namespace Kigs
 			const CoreModifiable& const_ref() { return (*SearchRef()); }
 
 			/// getValue overloads
-			virtual bool getValue(std::string& value) const override
+			virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
 			{
 				((maStrongReferenceHeritage*)this)->SearchRef();
 				if (auto ptr = std::dynamic_pointer_cast<CoreModifiable>(mValue.mObj).get())
@@ -323,26 +325,26 @@ namespace Kigs
 
 				return false;
 			}
-			virtual bool getValue(usString& value) const override
+			virtual bool getValue(usString& value, const CoreModifiable* owner) const override
 			{
 				// TODO ?
 				return false;
 			}
 
-			virtual bool getValue(CMSP& value) const override
+			virtual bool getValue(CMSP& value, const CoreModifiable* owner) const override
 			{
 				value =  const_cast<maStrongReferenceHeritage*>(this)->SearchRef();
 				return true;
 			}
 
-			virtual bool getValue(void*& value) const override
+			virtual bool getValue(void*& value, const CoreModifiable* owner) const override
 			{
 				value = (void*) const_cast<maStrongReferenceHeritage*>(this)->SearchRef().get();
 				return true;
 			}
 
 			/// setValue overloads
-			virtual bool setValue(const char* value) override
+			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -351,7 +353,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(const std::string& value) override
+			virtual bool setValue(const std::string& value,  CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -360,7 +362,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(CMSP value) override
+			virtual bool setValue(CMSP value,  CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;

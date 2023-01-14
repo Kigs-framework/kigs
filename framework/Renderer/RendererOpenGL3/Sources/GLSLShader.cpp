@@ -158,7 +158,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 {
 
 	std::string str;
-	mVertexShader.getValue(str);
+	mVertexShader.getValue(str,this);
 
 	// Compile the shader source
 
@@ -198,7 +198,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	glCompileShader(vshaderName); CHECK_GLERROR;
 	rawbuffer = nullptr;
 
-	mFragmentShader.getValue(str);
+	mFragmentShader.getValue(str,this);
 	if (str[0] == '!') // load from file
 	{
 		const char* filename = (str.c_str() + 1);
@@ -362,7 +362,7 @@ void	API3DShader::InitModifiable()
 
 		// ask for delayed init
 		CoreModifiableAttribute* newAttr = AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "DelayedInit");
-		newAttr->setValue(true);
+		newAttr->setValue(true,this);
 #endif
 	}
 }

@@ -682,11 +682,11 @@ namespace Kigs
 					// for usstring, manage UTF-8
 					if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 					{
-						attr->setValue((const UTF8Char*)tempvalue.c_str());
+						attr->setValue((const UTF8Char*)tempvalue.c_str(), currentModifiable);
 					}
 					else
 					{
-						attr->setValue(tempvalue);
+						attr->setValue(tempvalue, currentModifiable);
 					}
 				}
 				else
@@ -715,11 +715,11 @@ namespace Kigs
 
 								if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 								{
-									attr->setValue((const UTF8Char*)tempvalue.c_str());
+									attr->setValue((const UTF8Char*)tempvalue.c_str(), currentModifiable);
 								}
 								else
 								{
-									attr->setValue(tempvalue);
+									attr->setValue(tempvalue, currentModifiable);
 								}
 								break;
 							}
@@ -758,11 +758,11 @@ namespace Kigs
 
 										if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 										{
-											attr->setValue((const UTF8Char*)tempvalue.c_str());
+											attr->setValue((const UTF8Char*)tempvalue.c_str(), currentModifiable);
 										}
 										else
 										{
-											attr->setValue(tempvalue);
+											attr->setValue(tempvalue, currentModifiable);
 										}
 
 									}
@@ -791,11 +791,11 @@ namespace Kigs
 										}
 										if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 										{
-											attr->setValue((const UTF8Char*)tempvalue.c_str());
+											attr->setValue((const UTF8Char*)tempvalue.c_str(), currentModifiable);
 										}
 										else
 										{
-											attr->setValue(tempvalue);
+											attr->setValue(tempvalue, currentModifiable);
 										}
 									}
 									else

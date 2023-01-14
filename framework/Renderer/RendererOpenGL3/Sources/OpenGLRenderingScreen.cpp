@@ -76,7 +76,7 @@ void	OpenGLRenderingScreen::Resize(float sizeX, float sizeY)
 		}
 		// ask for delayed init
 		CoreModifiableAttribute* newAttr = AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "DelayedInit");
-		newAttr->setValue(true);
+		newAttr->setValue(true,this);
 #endif
 	}
 
@@ -318,7 +318,7 @@ void    OpenGLRenderingScreen::InitModifiable()
 	}
 	// ask for delayed init
 	CoreModifiableAttribute* newAttr = AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "DelayedInit");
-	newAttr->setValue(true);
+	newAttr->setValue(true,this);
 #endif
 }
 

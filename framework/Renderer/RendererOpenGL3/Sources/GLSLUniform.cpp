@@ -46,7 +46,7 @@ void	API3DUniformBase::InitModifiable()
 	Drawable::InitModifiable();
 
 	std::string strKey;
-	mUniName.getValue(strKey);
+	mUniName.getValue(strKey,this);
 	mID = CharToID::GetID(strKey);
 
 	mUniName.changeNotificationLevel(Owner);
@@ -57,7 +57,7 @@ void	API3DUniformBase::NotifyUpdate(const unsigned int  labelid)
 	if (labelid == mUniName.getLabelID())
 	{
 		std::string strKey;
-		mUniName.getValue(strKey);
+		mUniName.getValue(strKey,this);
 		mID = CharToID::GetID(strKey);
 		//printf("%s >> %u\n", strKey.c_str(), mID);
 	}

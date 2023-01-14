@@ -58,7 +58,7 @@ bool PNGClass::Load(CoreRawBuffer* rawbuffer)
 	if (rawbuffer)
 	{
 		u8* pData = (u8*)rawbuffer->buffer();
-		u32 nDatalen = rawbuffer->size();
+		auto nDatalen = rawbuffer->size();
 
 		png_byte        header[8] = { 0 };
 		png_structp     png_ptr = 0;

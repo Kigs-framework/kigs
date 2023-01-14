@@ -83,7 +83,7 @@ DEFINE_UPGRADOR_METHOD(OrbitCameraUp, ManageDirectTouch)
 		return false;
 	}
 	void* evp=nullptr;
-	params[0]->getValue(evp);
+	params[0]->getValue(evp,this);
 
 	Input::DirectTouchEvent& ev = *(Input::DirectTouchEvent*)evp;
 

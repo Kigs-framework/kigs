@@ -32,25 +32,25 @@ namespace Kigs
 			size_t MemorySize() const final { return mValue.size(); };
 
 			// getValue overloads
-			virtual bool getValue(std::string& value) const override
+			virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
 			{
 				std::string tmpValue = this->mValue;
 				value = tmpValue;
 				return true;
 			}
-			virtual bool getValue(usString& value) const override
+			virtual bool getValue(usString& value, const CoreModifiable* owner) const override
 			{
 				std::string tmpValue = this->mValue;
 				value = tmpValue;
 				return true;
 			}
-			virtual bool getValue(void*& value) const override
+			virtual bool getValue(void*& value, const  CoreModifiable* owner) const override
 			{
 				value = (void*)&mValue;
 				return true;
 			}
 
-			virtual bool getValue(float& value) const override
+			virtual bool getValue(float& value, const  CoreModifiable* owner) const override
 			{
 				value = (float)atof(mValue.c_str());
 				return true;
@@ -59,7 +59,7 @@ namespace Kigs
 			///
 
 			// setValue overloads
-			virtual bool setValue(const char* value) override
+			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -69,7 +69,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(const std::string& value) override
+			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -81,7 +81,7 @@ namespace Kigs
 			}
 
 #undef DECLARE_SET_NUMERIC
-#define DECLARE_SET_NUMERIC(type)	virtual bool setValue(type value) override { \
+#define DECLARE_SET_NUMERIC(type)	virtual bool setValue(type value, CoreModifiable* owner) override { \
 	if (this->isReadOnly())\
 		return false; \
 	std::string tmpValue = std::to_string(value); \

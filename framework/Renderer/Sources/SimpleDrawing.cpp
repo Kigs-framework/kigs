@@ -40,7 +40,7 @@ void SimpleDrawing::setColor(float R, float G, float B)
 	col[0] = R;
 	col[1] = G;
 	col[2] = B;
-	mColor.setArrayValue((float*)col,3);
+	mColor.setArrayValue((float*)col,this,3);
 }
 
 void SimpleDrawing::setAlpha(float A)
@@ -55,7 +55,7 @@ void SimpleDrawing::setColor(float R, float G, float B, float A)
 	col[0] = R;
 	col[1] = G;
 	col[2] = B;
-	mColor.setArrayValue((float*)col,3);
+	mColor.setArrayValue((float*)col,this,3);
 	mAlpha = A;
 	//setValue("TransparencyFlag",mAlpha!=1.0f);
 }

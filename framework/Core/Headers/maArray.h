@@ -158,7 +158,7 @@ namespace Kigs
 			maArrayHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID  ID, T* vals)
 				: CoreModifiableAttributeData<ArrayType>(owner, isInitAttribute, ID)
 			{
-				setArrayValue(vals, nbLines * nbColumns);
+				setArrayValue(vals,&owner, nbLines * nbColumns);
 			}
 
 			maArrayHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID  ID, T val0, T val1)
@@ -192,7 +192,7 @@ namespace Kigs
 				if (CoreModifiableAttributeData<ArrayType>::CopyAttribute(attribute)) return true;
 				if ((attribute.getNbArrayElements() == getNbArrayElements()) && (attribute.getArrayElementType() == getArrayElementType()))
 				{
-					attribute.getArrayValue(getArrayBuffer(), getNbArrayElements());
+					attribute.getArrayValue(getArrayBuffer(),attribute.getOwner(), getNbArrayElements());
 					return true;
 				}
 				return false;
@@ -245,29 +245,29 @@ namespace Kigs
 
 			virtual s32	size() const override { return nbLines * nbColumns; };
 
-			virtual bool getValue(void*& value) const override { value = (void*)mValue.data(); return true; }
+			virtual bool getValue(void*& value, const CoreModifiable* owner) const override { value = (void*)mValue.data(); return true; }
 
-			virtual bool getValue(bool& value) const override { T tmpValue = at(0, 0);  value = (tmpValue != (T)0); return true; }
-			virtual bool getValue(s8& value) const override { T tmpValue = at(0, 0);  value = (s8)tmpValue; return true; }
-			virtual bool getValue(s16& value) const override { T tmpValue = at(0, 0);  value = (s16)tmpValue; return true; }
-			virtual bool getValue(s32& value) const override { T tmpValue = at(0, 0);  value = (s32)tmpValue; return true; }
-			virtual bool getValue(s64& value) const override { T tmpValue = at(0, 0);  value = (s64)tmpValue; return true; }
-			virtual bool getValue(u8& value) const override { T tmpValue = at(0, 0);  value = (u8)tmpValue; return true; }
-			virtual bool getValue(u16& value) const override { T tmpValue = at(0, 0);  value = (u16)tmpValue; return true; }
-			virtual bool getValue(u32& value) const override { T tmpValue = at(0, 0);  value = (u32)tmpValue; return true; }
-			virtual bool getValue(u64& value) const override { T tmpValue = at(0, 0);  value = (u64)tmpValue; return true; }
-			virtual bool getValue(float& value) const override { T tmpValue = at(0, 0);  value = (float)tmpValue; return true; }
-			virtual bool getValue(double& value) const override { T tmpValue = at(0, 0);  value = (double)tmpValue; return true; }
+			virtual bool getValue(bool& value, const CoreModifiable* owner) const override { T tmpValue = at(0, 0);  value = (tmpValue != (T)0); return true; }
+			virtual bool getValue(s8& value, const CoreModifiable* owner) const override { T tmpValue = at(0, 0);  value = (s8)tmpValue; return true; }
+			virtual bool getValue(s16& value, const CoreModifiable* owner) const override { T tmpValue = at(0, 0);  value = (s16)tmpValue; return true; }
+			virtual bool getValue(s32& value, const CoreModifiable* owner) const override { T tmpValue = at(0, 0);  value = (s32)tmpValue; return true; }
+			virtual bool getValue(s64& value, const CoreModifiable* owner) const override { T tmpValue = at(0, 0);  value = (s64)tmpValue; return true; }
+			virtual bool getValue(u8& value, const CoreModifiable* owner) const override { T tmpValue = at(0, 0);  value = (u8)tmpValue; return true; }
+			virtual bool getValue(u16& value, const CoreModifiable* owner) const override { T tmpValue = at(0, 0);  value = (u16)tmpValue; return true; }
+			virtual bool getValue(u32& value, const CoreModifiable* owner) const override { T tmpValue = at(0, 0);  value = (u32)tmpValue; return true; }
+			virtual bool getValue(u64& value, const CoreModifiable* owner) const override { T tmpValue = at(0, 0);  value = (u64)tmpValue; return true; }
+			virtual bool getValue(float& value, const CoreModifiable* owner) const override { T tmpValue = at(0, 0);  value = (float)tmpValue; return true; }
+			virtual bool getValue(double& value, const CoreModifiable* owner) const override { T tmpValue = at(0, 0);  value = (double)tmpValue; return true; }
 
-			virtual bool getValue(std::string& value) const override { return CoreConvertArray2String<T>(value, getConstArrayBuffer(), getNbArrayElements()); }
+			virtual bool getValue(std::string& value, const CoreModifiable* owner) const override { return CoreConvertArray2String<T>(value, getConstArrayBuffer(), getNbArrayElements()); }
 
-			virtual bool getValue(Point2D& value) const override { if (nbColumns < 2) return false; Point2D tmpValue((float)at(0, 0), (float)at(0, 1));  value = tmpValue; return true; }
-			virtual bool getValue(Point3D& value) const override { if (nbColumns < 3) return false; Point3D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2));  value = tmpValue; return true; }
-			virtual bool getValue(Vector4D& value) const override { if (nbColumns < 4) return false; Vector4D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2), (float)at(0, 3));  value = tmpValue; return true; }
+			virtual bool getValue(Point2D& value, const CoreModifiable* owner) const override { if (nbColumns < 2) return false; Point2D tmpValue((float)at(0, 0), (float)at(0, 1));  value = tmpValue; return true; }
+			virtual bool getValue(Point3D& value, const CoreModifiable* owner) const override { if (nbColumns < 3) return false; Point3D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2));  value = tmpValue; return true; }
+			virtual bool getValue(Vector4D& value, const CoreModifiable* owner) const override { if (nbColumns < 4) return false; Vector4D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2), (float)at(0, 3));  value = tmpValue; return true; }
 
 			using CoreModifiableAttributeData<ArrayType>::setValue;
 
-			bool setValue(const Point2D& pt) override
+			bool setValue(const Point2D& pt, CoreModifiable* owner) override
 			{
 				if (nbColumns < 2) return false;
 				at(0, 0) = (T)pt.x;
@@ -275,7 +275,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			bool setValue(const Point3D& pt) override
+			bool setValue(const Point3D& pt, CoreModifiable* owner) override
 			{
 				if (nbColumns < 3) return false;
 				at(0, 0) = (T)pt.x;
@@ -284,7 +284,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			bool setValue(const Vector4D& pt) override
+			bool setValue(const Vector4D& pt, CoreModifiable* owner) override
 			{
 				if (nbColumns < 4) return false;
 				at(0, 0) = (T)pt.x;
@@ -294,7 +294,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			bool setValue(Point2DI pt)
+			bool setValue(Point2DI pt, CoreModifiable* owner)
 			{
 				if (nbColumns < 2) return false;
 				at(0, 0) = (T)pt.x;
@@ -302,7 +302,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			bool setValue(Point3DI pt)
+			bool setValue(Point3DI pt, CoreModifiable* owner)
 			{
 				if (nbColumns < 3) return false;
 				at(0, 0) = (T)pt.x;
@@ -338,19 +338,22 @@ namespace Kigs
 				return *this;
 			}
 
-			auto& operator=(Point2DI pt) { setValue(pt); return *this; }
-			auto& operator=(Point3DI pt) { setValue(pt); return *this; }
+			// TODO
+			auto& operator=(const Point2DI& pt) { setValue(pt,nullptr); return *this; }
+			
+			// TODO
+			auto& operator=(const Point3DI& pt) { setValue(pt, nullptr); return *this; }
 
 
 
-#define DECLARE_SET_VALUE_BROADCAST(type) virtual bool setValue(type value) override { if (isReadOnly()) { return false; } this->broadcastValue((T)value); DO_NOTIFICATION(notificationLevel); return true; }
+#define DECLARE_SET_VALUE_BROADCAST(type) virtual bool setValue(type value, CoreModifiable* owner) override { if (isReadOnly()) { return false; } this->broadcastValue((T)value); DO_NOTIFICATION(notificationLevel); return true; }
 
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET_VALUE_BROADCAST);
 
 #undef DECLARE_SET_VALUE_BROADCAST
 
-			virtual bool setValue(const char* value) override { std::string localstr(value); return setValue(localstr); }
-			virtual bool setValue(const std::string& value) override
+			virtual bool setValue(const char* value, CoreModifiable* owner) override { std::string localstr(value); return setValue(localstr,owner); }
+			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
 				if (isReadOnly()) { return false; }
 				if (CoreConvertString2Array<T>(value, getArrayBuffer(), getNbArrayElements()))
@@ -421,7 +424,7 @@ namespace Kigs
 			}
 
 
-#define DECLARE_SETARRAYVALUE( b )	virtual bool setArrayValue(const b *value, u32 nbElements ) override {if(isReadOnly()){ return false; }\
+#define DECLARE_SETARRAYVALUE( b )	virtual bool setArrayValue(const b *value, CoreModifiable* owner, u32 nbElements ) override {if(isReadOnly()){ return false; }\
 		if(nbElements>getNbArrayElements()){ return false;} \
 		CoreCopyCastArray<T,b>(getArrayBuffer(), value, nbElements); \
 		DO_NOTIFICATION(notificationLevel);\
@@ -430,7 +433,7 @@ namespace Kigs
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAYVALUE);
 
 
-#define DECLARE_SETARRAYELEMENTVALUE( b )	virtual bool setArrayElementValue(b value, u32 line, u32 column ) override {if(isReadOnly()){ return false; }\
+#define DECLARE_SETARRAYELEMENTVALUE( b )	virtual bool setArrayElementValue(b value, CoreModifiable* owner, u32 line, u32 column ) override {if(isReadOnly()){ return false; }\
 		if(line>=nbLines || column>=nbColumns){ return false;} \
 		at(line,column)=(T)value; \
 		DO_NOTIFICATION(notificationLevel); \
@@ -442,7 +445,7 @@ namespace Kigs
 #undef DECLARE_SETARRAYVALUE
 #undef DECLARE_SETARRAYELEMENTVALUE
 
-			virtual bool setArrayElementValue(bool value, u32 line, u32 column) override
+			virtual bool setArrayElementValue(bool value, CoreModifiable* owner, u32 line, u32 column) override
 			{
 				if (isReadOnly()) { return false; }
 				if (line >= nbLines || column >= nbColumns) { return false; }
@@ -451,7 +454,7 @@ namespace Kigs
 				return true;
 			}
 
-			virtual bool setArrayElementValue(const std::string& value, u32 line, u32 column) override
+			virtual bool setArrayElementValue(const std::string& value, CoreModifiable* owner, u32 line, u32 column) override
 			{
 				if (isReadOnly()) { return false; }
 				if (line >= nbLines || column >= nbColumns) return false;
@@ -467,7 +470,7 @@ namespace Kigs
 
 
 
-#define DECLARE_GETARRAYVALUE( b )	virtual bool getArrayValue(b * const value, u32 nbElements ) const override {if(nbElements>getNbArrayElements()){ return false;} \
+#define DECLARE_GETARRAYVALUE( b )	virtual bool getArrayValue(b * const value, const CoreModifiable* owner, u32 nbElements ) const override {if(nbElements>getNbArrayElements()){ return false;} \
 		CoreCopyCastArray<b,T>(value,getConstArrayBuffer(),nbElements); return true;}
 
 
@@ -477,7 +480,7 @@ namespace Kigs
 #undef DECLARE_GETARRAYVALUE
 
 
-#define DECLARE_GETARRAYELEMENTVALUE( b )	virtual bool getArrayElementValue(b& value, u32 line, u32 column ) const override { if(line>=nbLines || column>=nbColumns){ return false;} \
+#define DECLARE_GETARRAYELEMENTVALUE( b )	virtual bool getArrayElementValue(b& value, const CoreModifiable* owner, u32 line, u32 column ) const override { if(line>=nbLines || column>=nbColumns){ return false;} \
 		value=(b)at(line,column); return true;}
 
 			EXPAND_MACRO_FOR_NUMERIC_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_GETARRAYELEMENTVALUE);
@@ -485,14 +488,14 @@ namespace Kigs
 
 #undef DECLARE_GETARRAYELEMENTVALUE
 
-			virtual bool getArrayElementValue(bool& value, u32 line, u32 column) const override
+			virtual bool getArrayElementValue(bool& value, const CoreModifiable* owner, u32 line, u32 column) const override
 			{
 				if (line >= nbLines || column >= nbColumns) return false;
 				value = (at(line, column) != (T)0);
 				return true;
 			}
 
-			virtual bool getArrayElementValue(std::string& value, u32 line, u32 column) const override
+			virtual bool getArrayElementValue(std::string& value, const CoreModifiable* owner, u32 line, u32 column) const override
 			{
 				if (line >= nbLines || column >= nbColumns) return false;
 				return CoreConvertValue2String<T>(value, at(line, column));

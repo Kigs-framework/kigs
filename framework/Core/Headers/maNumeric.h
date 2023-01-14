@@ -65,16 +65,16 @@ namespace Kigs
 
 			//@REFACTOR: use expand macro
 
-			virtual bool setValue(bool value) override { if (this->isReadOnly()) { return false; } T tmpValue = value ? std::numeric_limits<T>::max() : 0;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel); return true; }
-			virtual bool setValue(s8 value) override { if (this->isReadOnly()) { return false; }  T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(s16 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(s32 value) override { if (this->isReadOnly()) { return false; }     T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(s64 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(u8 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(u16 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(u32 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(u64 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(float value) override
+			virtual bool setValue(bool value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = value ? std::numeric_limits<T>::max() : 0;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel); return true; }
+			virtual bool setValue(s8 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; }  T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(s16 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(s32 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; }     T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(s64 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(u8 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(u16 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(u32 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(u64 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(float value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 				{
@@ -86,10 +86,10 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(double value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(const char* value) override { std::string localstr(value); return setValue(localstr); }
-			virtual bool setValue(const usString& value) override { std::string localstr(value); return setValue(localstr); }
-			virtual bool setValue(const std::string& value) override
+			virtual bool setValue(double value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->mValue = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(const char* value, CoreModifiable* owner) override { std::string localstr(value); return setValue(localstr,owner); }
+			virtual bool setValue(const usString& value, CoreModifiable* owner) override { std::string localstr(value); return setValue(localstr, owner); }
+			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly()) { return false; }
 
@@ -101,24 +101,24 @@ namespace Kigs
 				return false;
 			}
 
-			virtual bool getValue(bool& value) const override { T tmpValue = this->mValue;  value = (tmpValue != (T)0); return true; }
-			virtual bool getValue(s8& value) const override { T tmpValue = this->mValue;  value = (s8)tmpValue; return true; }
-			virtual bool getValue(s16& value) const override { T tmpValue = this->mValue;  value = (s16)tmpValue; return true; }
-			virtual bool getValue(s32& value) const override { T tmpValue = this->mValue;  value = (s32)tmpValue; return true; }
-			virtual bool getValue(s64& value) const override { T tmpValue = this->mValue;  value = (s64)tmpValue; return true; }
-			virtual bool getValue(u8& value) const override { T tmpValue = this->mValue;  value = (u8)tmpValue; return true; }
-			virtual bool getValue(u16& value) const override { T tmpValue = this->mValue;  value = (u16)tmpValue; return true; }
-			virtual bool getValue(u32& value) const override { T tmpValue = this->mValue;  value = (u32)tmpValue; return true; }
-			virtual bool getValue(u64& value) const override { T tmpValue = this->mValue;  value = (u64)tmpValue; return true; }
-			virtual bool getValue(float& value) const override { T tmpValue = this->mValue;   value = (float)tmpValue; return true; }
-			virtual bool getValue(double& value) const override { T tmpValue = this->mValue;   value = (double)tmpValue; return true; }
-			virtual bool getValue(std::string& value) const override
+			virtual bool getValue(bool& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (tmpValue != (T)0); return true; }
+			virtual bool getValue(s8& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (s8)tmpValue; return true; }
+			virtual bool getValue(s16& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (s16)tmpValue; return true; }
+			virtual bool getValue(s32& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (s32)tmpValue; return true; }
+			virtual bool getValue(s64& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (s64)tmpValue; return true; }
+			virtual bool getValue(u8& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (u8)tmpValue; return true; }
+			virtual bool getValue(u16& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (u16)tmpValue; return true; }
+			virtual bool getValue(u32& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (u32)tmpValue; return true; }
+			virtual bool getValue(u64& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (u64)tmpValue; return true; }
+			virtual bool getValue(float& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;   value = (float)tmpValue; return true; }
+			virtual bool getValue(double& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;   value = (double)tmpValue; return true; }
+			virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
 			{
 				T tmpValue = this->mValue;
 
 				return CoreConvertValue2String<T>(value, tmpValue);
 			}
-			virtual bool getValue(usString& value) const override
+			virtual bool getValue(usString& value, const CoreModifiable* owner) const override
 			{
 				std::string tmp;
 				T tmpValue = this->mValue;
@@ -254,16 +254,16 @@ namespace Kigs
 			}
 
 
-			virtual bool setValue(bool value) override { if (this->isReadOnly()) { return false; } T tmpValue = value ? std::numeric_limits<T>::max() : 0;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel); return true; }
-			virtual bool setValue(s8 value) override { if (this->isReadOnly()) { return false; }  T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(s16 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(s32 value) override { if (this->isReadOnly()) { return false; }     T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(s64 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  if (mSetter != "")  this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(u8 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(u16 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(u32 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(u64 value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(float value) override
+			virtual bool setValue(bool value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = value ? std::numeric_limits<T>::max() : 0;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel); return true; }
+			virtual bool setValue(s8 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; }  T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(s16 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(s32 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; }     T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(s64 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  if (mSetter != "")  this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(u8 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(u16 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(u32 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(u64 value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  if (mSetter != "") this->getOwner()->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(float value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 				{
@@ -275,10 +275,10 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(double value) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->getOwner()->SimpleCall(mSetter, tmpValue);  DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(const char* value) override { std::string localstr(value); return setValue(localstr); }
-			virtual bool setValue(const usString& value) override { std::string localstr(value); return setValue(localstr); }
-			virtual bool setValue(const std::string& value) override
+			virtual bool setValue(double value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } T tmpValue = (T)value;  this->getOwner()->SimpleCall(mSetter, tmpValue);  DO_NOTIFICATION(notificationLevel);  return true; }
+			virtual bool setValue(const char* value, CoreModifiable* owner) override { std::string localstr(value); return setValue(localstr,owner); }
+			virtual bool setValue(const usString& value, CoreModifiable* owner) override { std::string localstr(value); return setValue(localstr,owner); }
+			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly()) { return false; }
 
@@ -291,24 +291,24 @@ namespace Kigs
 				return false;
 			}
 
-			virtual bool getValue(bool& value) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (tmpValue != (T)0); return true; }
-			virtual bool getValue(s8& value) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (s8)tmpValue; return true; }
-			virtual bool getValue(s16& value) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (s16)tmpValue; return true; }
-			virtual bool getValue(s32& value) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (s32)tmpValue; return true; }
-			virtual bool getValue(s64& value) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (s64)tmpValue; return true; }
-			virtual bool getValue(u8& value) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (u8)tmpValue; return true; }
-			virtual bool getValue(u16& value) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (u16)tmpValue; return true; }
-			virtual bool getValue(u32& value) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (u32)tmpValue; return true; }
-			virtual bool getValue(u64& value) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (u64)tmpValue; return true; }
-			virtual bool getValue(float& value) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);   value = (float)tmpValue; return true; }
-			virtual bool getValue(double& value) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);   value = (double)tmpValue; return true; }
-			virtual bool getValue(std::string& value) const override
+			virtual bool getValue(bool& value, const CoreModifiable* owner) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (tmpValue != (T)0); return true; }
+			virtual bool getValue(s8& value, const CoreModifiable* owner) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (s8)tmpValue; return true; }
+			virtual bool getValue(s16& value, const CoreModifiable* owner) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (s16)tmpValue; return true; }
+			virtual bool getValue(s32& value, const CoreModifiable* owner) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (s32)tmpValue; return true; }
+			virtual bool getValue(s64& value, const CoreModifiable* owner) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (s64)tmpValue; return true; }
+			virtual bool getValue(u8& value, const CoreModifiable* owner) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (u8)tmpValue; return true; }
+			virtual bool getValue(u16& value, const CoreModifiable* owner) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (u16)tmpValue; return true; }
+			virtual bool getValue(u32& value, const CoreModifiable* owner) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (u32)tmpValue; return true; }
+			virtual bool getValue(u64& value, const CoreModifiable* owner) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);  value = (u64)tmpValue; return true; }
+			virtual bool getValue(float& value, const CoreModifiable* owner) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);   value = (float)tmpValue; return true; }
+			virtual bool getValue(double& value, const CoreModifiable* owner) const override { T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);   value = (double)tmpValue; return true; }
+			virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
 			{
 				T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);
 
 				return CoreConvertValue2String<T>(value, tmpValue);
 			}
-			virtual bool getValue(usString& value) const override
+			virtual bool getValue(usString& value, const CoreModifiable* owner) const override
 			{
 				std::string tmp;
 				T tmpValue = this->getOwner()->template SimpleCall<T>(mGetter);

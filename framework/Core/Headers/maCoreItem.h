@@ -49,11 +49,11 @@ namespace Kigs
 
 			// getValue overloads
 
-			virtual bool getValue(bool& value) const override { if (mValue.item) { value = (bool)(*mValue.item.get()); return true; }  return false; }
-			virtual bool getValue(int& value) const override { if (mValue.item) { value = (int)(*mValue.item.get()); return true; } return false; }
-			virtual bool getValue(unsigned int& value) const override { if (mValue.item) { value = (unsigned int)(*mValue.item.get()); return true; }  return false; }
-			virtual bool getValue(float& value) const override { if (mValue.item) { value = (float)(*mValue.item.get()); return true; }  return false; }
-			virtual bool getValue(std::string& value) const override
+			virtual bool getValue(bool& value, const CoreModifiable* owner) const override { if (mValue.item) { value = (bool)(*mValue.item.get()); return true; }  return false; }
+			virtual bool getValue(int& value, const CoreModifiable* owner) const override { if (mValue.item) { value = (int)(*mValue.item.get()); return true; } return false; }
+			virtual bool getValue(unsigned int& value, const CoreModifiable* owner) const override { if (mValue.item) { value = (unsigned int)(*mValue.item.get()); return true; }  return false; }
+			virtual bool getValue(float& value, const CoreModifiable* owner) const override { if (mValue.item) { value = (float)(*mValue.item.get()); return true; }  return false; }
+			virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
 			{
 				if (mValue.item)
 				{
@@ -61,17 +61,17 @@ namespace Kigs
 				}
 				return false;
 			}
-			virtual bool getValue(CoreItemSP& value) const override
+			virtual bool getValue(CoreItemSP& value, const CoreModifiable* owner) const override
 			{
 				value = mValue.item;
 				return true;
 			}
-			virtual bool getValue(void*& value) const override { value = (void*)mValue.item.get(); return true; }
+			virtual bool getValue(void*& value, const CoreModifiable* owner) const override { value = (void*)mValue.item.get(); return true; }
 
 			///
 
 			// setValue overloads
-			virtual bool setValue(const char* value) override
+			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -80,7 +80,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(const std::string& value) override
+			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -89,7 +89,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(CoreItemSP value) override
+			virtual bool setValue(CoreItemSP value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;

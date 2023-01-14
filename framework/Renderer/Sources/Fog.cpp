@@ -18,6 +18,6 @@ mMode(*this,false,"Mode","EXP","EXP2","LINEAR")
 	mColor[2]=0.1f;
 	mColor[3]=1.0f;
 
-	mMode.setValue("LINEAR");
+	mMode.setValue("LINEAR",this);
 }    
 

@@ -47,7 +47,7 @@ namespace Kigs
 
 
 		template<typename T>
-		T* CoreModifiable::getAny(const KigsID id)
+		T* CoreModifiable::getAny(const KigsID& id)
 		{
 			auto attr = getAttribute(id);
 			if (!attr)

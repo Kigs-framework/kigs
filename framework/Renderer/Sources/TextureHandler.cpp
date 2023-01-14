@@ -350,7 +350,7 @@ DEFINE_UPGRADOR_METHOD(AnimationUpgrador, Play)
 	if (!params.empty())
 	{
 		u32 labelID;
-		params[1]->getValue(labelID);
+		params[1]->getValue(labelID,this);
 
 		/*if (GetUpgrador()->mTarget->getLabelID() == labelID)
 		{
@@ -383,7 +383,7 @@ DEFINE_UPGRADOR_METHOD(AnimationUpgrador, AnimationNotifyUpdate)
 	if (!params.empty())
 	{
 		u32 labelID;
-		params[1]->getValue(labelID);
+		params[1]->getValue(labelID,this);
 		AnimationUpgrador* currentAnim = static_cast<AnimationUpgrador*>(GetUpgrador());
 		currentAnim->NotifyUpdate(labelID,this);
 	}

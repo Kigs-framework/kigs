@@ -33,18 +33,18 @@ namespace Kigs
 			size_t MemorySize() const final { return mValue.length() * sizeof(u16); };
 
 			/// getValue overloads
-			virtual bool getValue(std::string& value) const override
+			virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
 			{
 				usString copy(mValue);
 				value = copy.ToString();
 				return true;
 			}
-			virtual bool getValue(usString& value) const override
+			virtual bool getValue(usString& value, const CoreModifiable* owner) const override
 			{
 				value = mValue;
 				return true;
 			}
-			virtual bool getValue(void*& value) const override
+			virtual bool getValue(void*& value, const CoreModifiable* owner) const override
 			{
 				value = (void*)&mValue;
 				return true;
@@ -52,7 +52,7 @@ namespace Kigs
 			///
 
 			/// setValue overloads
-			virtual bool setValue(const char* value) override
+			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -63,7 +63,7 @@ namespace Kigs
 
 				return true;
 			}
-			virtual bool setValue(const std::string& value) override
+			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -74,7 +74,7 @@ namespace Kigs
 
 				return false;
 			}
-			virtual bool setValue(const unsigned short* value) override
+			virtual bool setValue(const unsigned short* value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -84,7 +84,7 @@ namespace Kigs
 
 				return true;
 			}
-			virtual bool setValue(const usString& value) override
+			virtual bool setValue(const usString& value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -94,7 +94,7 @@ namespace Kigs
 				return true;
 			}
 
-			virtual bool setValue(const UTF8Char* value) override
+			virtual bool setValue(const UTF8Char* value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -107,7 +107,7 @@ namespace Kigs
 			}
 
 #undef DECLARE_SET_NUMERIC
-#define DECLARE_SET_NUMERIC(type)	virtual bool setValue(type value) override { \
+#define DECLARE_SET_NUMERIC(type)	virtual bool setValue(type value, CoreModifiable* owner) override { \
 	if (this->isReadOnly())\
 		return false; \
 	usString tmpValue = std::to_string(value); \

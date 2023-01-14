@@ -5,6 +5,8 @@
 #include "usString.h"
 #include "TecLibs/Tec3D.h"
 #include "SmartPointer.h"
+#include "LazyContent.h"
+#include "SignalsMacro.h"
 
 #include <mutex>
 #include <memory>
@@ -119,85 +121,6 @@ namespace Kigs
 		struct LazyContent;
 		struct ModifiableMethodStruct;
 		class UpgradorBase;
-		class StructLinkedListBase;
-
-		struct LazyContentLinkedListItemStruct
-		{
-		protected:
-
-			// hack use first two unused bits of address (aligned on 4 bytes at least)
-			// to give a type
-			enum class ItemType
-			{
-				UpgradorType = 0,
-				ForwardSmartPtrType = 1,
-				// available for future usage = 2,
-				// available for future usage = 3
-			};
-
-			LazyContentLinkedListItemStruct(uintptr_t init) :mAddressAndType(init)
-			{
-
-			}
-
-			static LazyContentLinkedListItemStruct	FromAddressAndType(StructLinkedListBase* realaddress, const LazyContentLinkedListItemStruct::ItemType settype)
-			{
-				LazyContentLinkedListItemStruct	result((uintptr_t)realaddress);
-				result.mAddressAndType |= (uintptr_t)settype;
-				return result;
-			}
-
-
-			friend class CoreModifiable;
-			friend class StructLinkedListBase;
-			friend struct LazyContent;
-			uintptr_t	mAddressAndType;
-
-		public:
-			operator StructLinkedListBase* () const
-			{
-				StructLinkedListBase* realaddress = (StructLinkedListBase*)(mAddressAndType & (((uintptr_t)-1) ^ (uintptr_t)3));
-				return realaddress;
-			}
-			operator uintptr_t () const
-			{
-				return mAddressAndType;
-			}
-
-			LazyContentLinkedListItemStruct::ItemType	getType() const
-			{
-				return (LazyContentLinkedListItemStruct::ItemType)(mAddressAndType & 3);
-			}
-		};
-
-		class StructLinkedListBase
-		{
-		protected:
-
-			LazyContentLinkedListItemStruct mNextItem = 0; // store address + type 
-		public:
-			StructLinkedListBase* getNext(const LazyContentLinkedListItemStruct::ItemType searchtype) const
-			{
-				LazyContentLinkedListItemStruct next = mNextItem;
-				while ((uintptr_t)next)
-				{
-					StructLinkedListBase* realaddress = (StructLinkedListBase*)next;
-					if ((next & 3) == (u32)searchtype)
-					{
-						return realaddress;
-					}
-					next = realaddress->mNextItem;
-				}
-				return nullptr;
-			}
-
-			LazyContentLinkedListItemStruct getNext() const
-			{
-				return mNextItem;
-			}
-
-		};
-
 
 		class CMSP : public SmartPointer<CoreModifiable>
 		{
@@ -214,23 +137,7 @@ namespace Kigs
 			{
 			}
 			CMSP(CoreModifiable* other);
-			/*template<typename U>
-			CMSP& operator=(const std::shared_ptr<U>& other)
-			{
-				std::shared_ptr<CoreModifiable>::operator=(debug_checked_pointer_cast<CoreModifiable>(other));
-				return *this;
-			}
-			template<typename U>
-			CMSP& operator=(std::shared_ptr<U>&& other)
-			{
-				std::shared_ptr<CoreModifiable>::operator=(debug_checked_pointer_cast<CoreModifiable>(other));
-				return *this;
-			}*/
-			/*template<typename U>
-			operator SmartPointer<U>()
-			{
-				return debug_checked_pointer_cast<U>(*this);
-			}*/
+			
 			template<typename U>
 			bool operator==(const U* other) const
 			{
@@ -352,66 +259,19 @@ namespace Kigs
 
 
 		// generic flag
-		#define InitFlag							(1U)
-		//#define PostDestroyFlag					(2U) // Free slot, feel free to use for something else
-		#define RecursiveUpdateFlag					(4U)
-		#define NotificationCenterRegistered		(8U)
-		//#define ReferenceRegistered				(16U) // Free slot, feel free to use for something else
-		#define AutoUpdateRegistered				(32U)
-		#define AggregateParentRegistered			(64U)
-		#define AggregateSonRegistered				(128U)
-		//#define AllowChanges						(256U) // Free slot, feel free to use for something else
-		#define AutoCreateAttributes				(512U) // when loading from xml, add not found CoreModifiableAttributes even when not tagget as dynamic 
+		constexpr u32	InitFlag =						(1U);
+		constexpr u32	RecursiveUpdateFlag =			(2U);
+		constexpr u32	NotificationCenterRegistered =	(4U);
+		constexpr u32	AutoUpdateRegistered =			(8U);
+		constexpr u32	AggregateParentRegistered =		(16U);
+		constexpr u32	AggregateSonRegistered =		(32U);
+		constexpr u32	AutoCreateAttributes =			(64U);
 
 		// more generic UserFlags
-		constexpr u32 UserFlagsBitSize = 16;
+		constexpr u32 UserFlagsBitSize = 16U;
 		constexpr u32 UserFlagsShift = (32 - UserFlagsBitSize);
 		// user flag is set at 0xFFFF0000
 		constexpr u32 UserFlagsMask = 0xFFFFFFFF<< UserFlagsShift;
-
-		#define SIGNAL_ARRAY_CONTENT(a) #a, 
-		#define SIGNAL_ENUM_CONTENT(a) a, 
-		#define SIGNAL_PUSH_BACK(a) signals.push_back(#a);
-
-		#define SIGNAL_CASE(a) case Signals::a: return CoreModifiable::EmitSignal(#a, std::forward<T>(params)...); break;
-
-		#define SIGNALS(...)\
-		enum class Signals : u32\
-		{\
-			FOR_EACH(SIGNAL_ENUM_CONTENT, __VA_ARGS__)\
-		};\
-		template<typename... T>\
-		inline bool EmitSignal(Signals signal,  T&&... params){\
-		switch(signal){\
-		FOR_EACH(SIGNAL_CASE, __VA_ARGS__)\
-		default: break;} return false;\
-		}\
-		virtual std::vector<KigsID> GetSignalList() override\
-		{\
-			auto signals = ParentClassType::GetSignalList();\
-			FOR_EACH(SIGNAL_PUSH_BACK, __VA_ARGS__)\
-			return signals;\
-		}
-
-		#define SIGNALS_BASE(...)\
-		enum class Signals : u32\
-		{\
-			FOR_EACH(SIGNAL_ENUM_CONTENT, __VA_ARGS__)\
-		};\
-		template<typename... T>\
-		inline bool EmitSignal(Signals signal,  T&&... params){\
-		switch(signal){\
-		FOR_EACH(SIGNAL_CASE, __VA_ARGS__)\
-		default: break;} return false;\
-		}\
-		virtual std::vector<KigsID> GetSignalList()\
-		{\
-			std::vector<KigsID> signals;\
-			FOR_EACH(SIGNAL_PUSH_BACK, __VA_ARGS__)\
-			return signals;\
-		}
-
-
 
 		#pragma pack(4)
 		struct ModifiableMethodStruct
@@ -478,7 +338,6 @@ namespace Kigs
 			static_assert(sizeof(CMSP) == sizeof(SmartPointer<CoreModifiable>));
 			static_assert(sizeof(std::shared_ptr<CoreModifiable>) == sizeof(SmartPointer<CoreModifiable>));
 		public:
-			//DECLARE_ABSTRACT_CLASS_INFO(CoreModifiable, RefCountedClass, KigsCore);
 			static const KigsID mClassID;
 			static KigsID mRuntimeType;
 
@@ -505,7 +364,7 @@ namespace Kigs
 			DECLARE_GetRuntimeTypeBase(CoreModifiable);
 			DECLARE_getExactTypeBase(CoreModifiable);
 
-			virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) { classNameTree.addClassName("CoreModifiable", "CoreModifiable"); }
+			//virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) { classNameTree.addClassName("CoreModifiable", "CoreModifiable"); }
 	
 			CMSP SharedFromThis() 
 			{
@@ -553,6 +412,10 @@ namespace Kigs
 			// Don't call this manually!
 			void RegisterToCore();
 			virtual ~CoreModifiable();
+
+			void	setOwnerNotification(const KigsID& id, bool isSet);
+			void	setInitParameter(const KigsID& id, bool isSet);
+			void	setReadOnly(const KigsID& id, bool val = true);
 
 		protected:
 			explicit CoreModifiable(std::string name, DECLARE_CLASS_NAME_TREE_ARG) : GenericRefCountedBaseClass() 
@@ -762,12 +625,10 @@ namespace Kigs
 			// Get an attribute by id
 			CoreModifiableAttribute* getAttribute(KigsID labelid) const;
 
-			bool setReadOnly(KigsID id, bool val = true);
-
 			// Return array element count for an attribute
 			u32 getNbArrayElements(KigsID attributeLabel) const;
 
-			#define DECLARE_SET_VALUE(type) bool setValue(KigsID attributeLabel, type value);
+			#define DECLARE_SET_VALUE(type) bool setValue(const KigsID& attributeLabel, type value);
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET_VALUE);
 			EXPAND_MACRO_FOR_STRING_TYPES(const, &, DECLARE_SET_VALUE);
 			EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET_VALUE);
@@ -778,7 +639,7 @@ namespace Kigs
 			DECLARE_SET_VALUE(const v3f&);
 			DECLARE_SET_VALUE(const v4f&);
 
-			#define DECLARE_GET_VALUE(type) bool getValue(const KigsID attributeLabel, type value) const;
+			#define DECLARE_GET_VALUE(type) bool getValue(const KigsID& attributeLabel, type value) const;
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
 			EXPAND_MACRO_FOR_STRING_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
 			EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, &, DECLARE_GET_VALUE);
@@ -787,21 +648,21 @@ namespace Kigs
 			DECLARE_GET_VALUE(v3f&);
 			DECLARE_GET_VALUE(v4f&);
 
-			#define DECLARE_SETARRAY_VALUE2(valuetype) bool setArrayValue(KigsID attributeLabel, valuetype value1, valuetype value2);
+			#define DECLARE_SETARRAY_VALUE2(valuetype) bool setArrayValue(const KigsID& attributeLabel, valuetype value1, valuetype value2);
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAY_VALUE2);
 
-			#define DECLARE_SETARRAY_VALUE3(valuetype) bool setArrayValue(KigsID attributeLabel, valuetype value1,valuetype value2,valuetype value3);
+			#define DECLARE_SETARRAY_VALUE3(valuetype) bool setArrayValue(const KigsID& attributeLabel, valuetype value1,valuetype value2,valuetype value3);
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAY_VALUE3);
 
-			#define DECLARE_SETARRAY_VALUE4(valuetype) bool setArrayValue(KigsID attributeLabel, valuetype value1,valuetype value2,valuetype value3,valuetype value4);
+			#define DECLARE_SETARRAY_VALUE4(valuetype) bool setArrayValue(const KigsID& attributeLabel, valuetype value1,valuetype value2,valuetype value3,valuetype value4);
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAY_VALUE4);
 
 
-			#define DECLARE_SET_ARRAY_VALUE(type) bool setArrayValue(KigsID attributeLabel, type value, u32 nbElements);
-			#define DECLARE_GET_ARRAY_VALUE(type) bool getArrayValue(const KigsID labelid, type value, u32 nbElements) const;
+			#define DECLARE_SET_ARRAY_VALUE(type) bool setArrayValue(const KigsID& attributeLabel, type value, u32 nbElements);
+			#define DECLARE_GET_ARRAY_VALUE(type) bool getArrayValue(const KigsID& labelid, type value, u32 nbElements) const;
 
-			#define DECLARE_SET_ARRAY_ELEMENT(type) bool setArrayElementValue(KigsID, type value, u32 line, u32 column);
-			#define DECLARE_GET_ARRAY_ELEMENT(type) bool getArrayElementValue(const KigsID, type value, u32 line, u32 column) const;
+			#define DECLARE_SET_ARRAY_ELEMENT(type) bool setArrayElementValue(const KigsID&, type value, u32 line, u32 column);
+			#define DECLARE_GET_ARRAY_ELEMENT(type) bool getArrayElementValue(const KigsID&, type value, u32 line, u32 column) const;
 
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, *, DECLARE_GET_ARRAY_VALUE);
 			EXPAND_MACRO_FOR_BASE_TYPES(const, *, DECLARE_SET_ARRAY_VALUE);
@@ -812,8 +673,8 @@ namespace Kigs
 			DECLARE_GET_ARRAY_ELEMENT(std::string&);
 			DECLARE_SET_ARRAY_ELEMENT(const std::string&);
 
-		#define DECLARE_SET_VALUE_VECTOR(type, nb) bool setValue(KigsID attributeLabel, type vec){ return setArrayValue(attributeLabel, &vec[0], nb); }
-		#define DECLARE_GET_VALUE_VECTOR(type, nb) bool getValue(const KigsID attributeLabel, type& vec) const { return getArrayValue(attributeLabel, &vec[0], nb); }
+		#define DECLARE_SET_VALUE_VECTOR(type, nb) bool setValue(const KigsID& attributeLabel, type vec){ return setArrayValue(attributeLabel, &vec[0], nb); }
+		#define DECLARE_GET_VALUE_VECTOR(type, nb) bool getValue(const KigsID& attributeLabel, type& vec) const { return getArrayValue(attributeLabel, &vec[0], nb); }
 		#define DECLARE_GET_SET_VALUE_VECTOR(type, nb) DECLARE_SET_VALUE_VECTOR(type, nb) DECLARE_GET_VALUE_VECTOR(type, nb)
 
 
@@ -824,7 +685,7 @@ namespace Kigs
 	
 
 			template<typename T>
-			T getValue(const KigsID id) const
+			T getValue(const KigsID& id) const
 			{
 				T val;
 				getValue(id, val);
@@ -832,10 +693,10 @@ namespace Kigs
 			}
 
 			template<typename T>
-			T* getAny(const KigsID id);
+			T* getAny(const KigsID& id);
 
 			template<typename T>
-			void setValueRecursively(KigsID id, T&& value)
+			void setValueRecursively(const KigsID& id, T&& value)
 			{
 				setValue(id, value);
 				for (auto& it : getItems()) 
@@ -843,7 +704,7 @@ namespace Kigs
 			}
 
 			template<typename T, typename Pred>
-			void setValueRecursively(KigsID id, T&& value, Pred&& predicate)
+			void setValueRecursively(const KigsID& id, T&& value, Pred&& predicate)
 			{
 				if(predicate(this))
 					setValue(id, value);
@@ -1434,7 +1295,7 @@ namespace Kigs
 
 		// specialize some 
 		template<>
-		inline bool CoreModifiable::getValue(const KigsID id) const
+		inline bool CoreModifiable::getValue(const KigsID& id) const
 		{
 			bool val=false;
 			getValue(id, val);
@@ -1442,7 +1303,7 @@ namespace Kigs
 		}
 
 		template<>
-		inline CMSP CoreModifiable::getValue(const KigsID id) const
+		inline CMSP CoreModifiable::getValue(const KigsID& id) const
 		{
 			CMSP val = nullptr;
 			getValue(id, val);

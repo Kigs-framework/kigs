@@ -30,9 +30,9 @@ GIFClass::~GIFClass()
 
 struct memoryGifRead
 {
-	char *			mBuffer;
-	int				mCurrentReadPos;
-	int				mTotalSize;
+	char *				mBuffer;
+	size_t				mCurrentReadPos;
+	size_t				mTotalSize;
 };
 
 int GifInputFunc(GifFileType* head, GifByteType* dest, int readsize)

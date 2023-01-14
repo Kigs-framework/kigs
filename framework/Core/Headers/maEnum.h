@@ -67,11 +67,12 @@ namespace Kigs
 
 			std::vector<std::string> getEnumElements() const override { return { mValue.value_list.data(), mValue.value_list.data() + nbElements }; }
 
+			// TODO
 			virtual bool CopyAttribute(const CoreModifiableAttribute& attribute) override
 			{
 				if (CoreModifiableAttributeData<maEnumValue<nbElements>>::CopyAttribute(attribute)) return true;
 				int val;
-				if (attribute.getValue(val))
+				if (attribute.getValue(val,nullptr))
 				{
 					if (val >= 0 && val < nbElements)
 					{
@@ -87,22 +88,23 @@ namespace Kigs
 			const std::string& operator[](unsigned int index) const { KIGS_ASSERT(index < nbElements); return mValue.value_list[index]; }
 
 
-
-			operator int() { int val = 0; getValue(val); return val; }
+			// TODO
+			operator int() { int val = 0; getValue(val,nullptr); return val; }
+			// TODO
 			operator const std::string& () const
 			{
-				int val; getValue(val);
+				int val; getValue(val, nullptr);
 				return mValue.value_list[val];
 			}
 
 
 #define IMPLEMENT_SET_VALUE_ENUM(type)\
-	virtual bool setValue(type value) override { if (this->isReadOnly()) { return false; }  unsigned int tmpValue = (unsigned int)value; if (tmpValue < nbElements) { mValue.current_value = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; } return false; }
+	virtual bool setValue(type value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; }  unsigned int tmpValue = (unsigned int)value; if (tmpValue < nbElements) { mValue.current_value = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; } return false; }
 
 			EXPAND_MACRO_FOR_NUMERIC_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SET_VALUE_ENUM);
 
 #define IMPLEMENT_GET_VALUE_ENUM(type)\
-	virtual bool getValue(type value) const override {  unsigned int tmpValue=mValue.current_value; if(tmpValue<nbElements){ value = (type)tmpValue; return true;} return false;  }
+	virtual bool getValue(type value, const CoreModifiable* owner) const override {  unsigned int tmpValue=mValue.current_value; if(tmpValue<nbElements){ value = (type)tmpValue; return true;} return false;  }
 
 			EXPAND_MACRO_FOR_NUMERIC_TYPES(NOQUALIFIER, &, IMPLEMENT_GET_VALUE_ENUM);
 
@@ -110,7 +112,7 @@ namespace Kigs
 #undef IMPLEMENT_SET_VALUE_ENUM
 #undef IMPLEMENT_GET_VALUE_ENUM
 
-			virtual bool setValue(const std::string& value) override
+			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly()) { return false; }
 				unsigned int i;
@@ -130,7 +132,7 @@ namespace Kigs
 				return false;
 			}
 
-			virtual bool getValue(std::string& value) const override
+			virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
 			{
 				unsigned int tmpValue = mValue.current_value;
 				if (tmpValue < nbElements)
@@ -140,10 +142,10 @@ namespace Kigs
 				return false;
 			}
 
-			virtual bool setValue(const char* value) override
+			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
 				std::string localstr(value);
-				return setValue(localstr);
+				return setValue(localstr,owner);
 			}
 
 		};

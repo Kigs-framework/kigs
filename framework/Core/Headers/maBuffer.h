@@ -86,12 +86,12 @@ namespace Kigs
 			}
 
 			/// setValue overloads
-			virtual bool setValue(const char* value) override
+			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
 				std::string str(value);
-				return setValue(str);
+				return setValue(str,owner);
 			}
-			virtual bool setValue(const std::string& value) override
+			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -100,7 +100,7 @@ namespace Kigs
 				return true;
 			}
 
-			virtual bool setValue(void* value) override
+			virtual bool setValue(void* value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly())
 					return false;
@@ -112,7 +112,7 @@ namespace Kigs
 
 
 			/// getValue overloads
-			virtual bool getValue(std::string& value) const override
+			virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
 			{
 
 				if (mValue)
@@ -124,7 +124,7 @@ namespace Kigs
 				return true;
 			}
 
-			virtual bool getValue(void*& value) const override { value = (CoreRawBuffer*)mValue.get(); return true; }
+			virtual bool getValue(void*& value, const CoreModifiable* owner) const override { value = (CoreRawBuffer*)mValue.get(); return true; }
 
 			auto& operator=(const std::string& value)
 			{

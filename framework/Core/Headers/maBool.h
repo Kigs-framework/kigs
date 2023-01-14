@@ -24,7 +24,7 @@ namespace Kigs
 
 			// getValue overloads
 #define IMPLEMENT_GET_VALUE_BOOL(type)\
-	virtual bool getValue(type value) const override \
+	virtual bool getValue(type value, const CoreModifiable* owner) const override \
 	{\
 		bool tmpValue = mValue;\
 		value = (type)tmpValue;\
@@ -32,7 +32,7 @@ namespace Kigs
 	}
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, IMPLEMENT_GET_VALUE_BOOL);
 
-			virtual bool getValue(std::string& value) const override
+			virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
 			{
 				bool tmpValue = mValue;
 				value = tmpValue ? "true" : "false";
@@ -42,7 +42,7 @@ namespace Kigs
 
 			// setValue overloads
 #define IMPLEMENT_SET_VALUE_BOOL(type)\
-	virtual bool setValue(type value) override\
+	virtual bool setValue(type value, CoreModifiable* owner) override\
 	{\
 		if (isReadOnly()) { return false; }\
 		bool tmpValue = (value != (type)0);\
@@ -54,7 +54,7 @@ namespace Kigs
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SET_VALUE_BOOL);
 
 
-			virtual bool setValue(const std::string& value) override
+			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
 				if (this->isReadOnly()) { return false; }
 				bool tmpValue = (value == "true" || value == "TRUE");
@@ -62,7 +62,7 @@ namespace Kigs
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
-			virtual bool setValue(const char* value) override { if (this->isReadOnly()) { return false; } if (value) { std::string localstr(value); return setValue(localstr); } return  setValue(false); }
+			virtual bool setValue(const char* value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; } if (value) { std::string localstr(value); return setValue(localstr,owner); } return  setValue(false,owner); }
 			///
 
 		};
