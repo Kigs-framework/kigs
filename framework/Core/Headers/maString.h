@@ -16,8 +16,8 @@ namespace Kigs
 		*/
 		// ****************************************
 
-		template<int notificationLevel>
-		class maStringHeritage : public CoreModifiableAttributeData<std::string>
+		template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
+		class maStringHeritage : public CoreModifiableAttributeData<std::string, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE(maStringHeritage, maStringHeritage, std::string, CoreModifiable::ATTRIBUTE_TYPE::STRING);
 
@@ -28,7 +28,7 @@ namespace Kigs
 			//! Doesn't call modifiers!
 			const char* c_str() const { return mValue.c_str(); }
 
-			void* getRawValue() final { return (void*)mValue.data(); }
+			void* getRawValue(CoreModifiable* owner) final { return (void*)mValue.data(); }
 			size_t MemorySize() const final { return mValue.size(); };
 
 			// getValue overloads
@@ -61,8 +61,7 @@ namespace Kigs
 			// setValue overloads
 			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly())
-					return false;
+			RETURN_ON_READONLY(isReadOnlyT);
 
 				std::string tmpValue = value;
 				this->mValue = tmpValue;
@@ -71,8 +70,7 @@ namespace Kigs
 			}
 			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly())
-					return false;
+			RETURN_ON_READONLY(isReadOnlyT);
 
 				std::string tmpValue = value;
 				this->mValue = tmpValue;
@@ -82,8 +80,7 @@ namespace Kigs
 
 #undef DECLARE_SET_NUMERIC
 #define DECLARE_SET_NUMERIC(type)	virtual bool setValue(type value, CoreModifiable* owner) override { \
-	if (this->isReadOnly())\
-		return false; \
+	RETURN_ON_READONLY(isReadOnlyT);\
 	std::string tmpValue = std::to_string(value); \
 	this->mValue = tmpValue; \
 	DO_NOTIFICATION(notificationLevel); \
@@ -95,14 +92,14 @@ namespace Kigs
 			///
 
 			// operators
-			auto& operator+=(const std::string& attribute)
+	/*	auto& operator+=(const string& attribute)
 			{
 				std::string val;
 				getValue(val);
 				val += attribute;
 				setValue(val);
 				return *this;
-			}
+		}*/
 			auto& operator+=(const char* attribute)
 			{
 				*this += std::string{ attribute };
@@ -118,7 +115,9 @@ namespace Kigs
 		STATIC_ASSERT_NOTIF_LEVEL_SIZES(maStringHeritage);
 
 
-		using maString = maStringHeritage<0>;
+		using maString = maStringHeritage<false,false,false,false,false>;
+		using maStringOrphan = maStringHeritage<false, false, false, false, true>;
+		using maStringInit = maStringHeritage<false, true>;
 
 	}
 }

@@ -12,12 +12,12 @@ namespace Kigs
 		*/
 
 		// set array values from braced string like : {1.0,0.0,2.0}
-		template<typename T> bool CoreConvertString2Array(const std::string& stringValue, T* const arrayValue, u32 arrayNbElements)
+		template<typename T> bool CoreConvertString2Array(const std::string& stringValue, T* const arrayValue, size_t arrayNbElements)
 		{
 			std::string::size_type posToParse = stringValue.find('{', 0);
 			bool hasBraces = (posToParse == 0);
 			if (hasBraces) posToParse++;
-			for (u32 i = 0; i < arrayNbElements; i++)
+			for (size_t i = 0; i < arrayNbElements; i++)
 			{
 				if (!hasBraces) posToParse = 0;
 				// End of string, return
@@ -44,12 +44,12 @@ namespace Kigs
 			return true;
 		}
 
-		template<typename T> bool CoreConvertArray2String(std::string& stringValue, const T* arrayValue, u32 arrayNbElements)
+		template<typename T> bool CoreConvertArray2String(std::string& stringValue, const T* arrayValue, size_t arrayNbElements)
 		{
 			if (arrayNbElements)
 			{
 				stringValue = "{";
-				for (u32 i = 0; i < arrayNbElements; i++)
+			for (size_t i = 0; i < arrayNbElements; i++)
 				{
 					if (i != 0) stringValue += ",";
 					std::string value;
@@ -63,55 +63,55 @@ namespace Kigs
 		}
 
 
-		template<typename T> void CoreCopyArray(T* const destArray, const T* srcArray, u32 arrayNbElements)
+	template<typename T> void CoreCopyArray(T* const destArray, const T* srcArray, size_t arrayNbElements)
 		{
 			memcpy(destArray, srcArray, arrayNbElements * sizeof(T));
 		}
 
 		// specialization for string
 		template<>
-		inline void CoreCopyArray<std::string>(std::string* const destArray, const std::string* srcArray, u32 arrayNbElements)
+		inline void CoreCopyArray<std::string>(std::string* const destArray, const std::string* srcArray, size_t arrayNbElements)
 		{
-			for (u32 i = 0; i < arrayNbElements; i++) destArray[i] = srcArray[i];
+			for (size_t i = 0; i < arrayNbElements; i++) destArray[i] = srcArray[i];
 		}
 
 		template<typename Tdest, typename Tsrc>
-		void CoreCopyCastArray(Tdest* const destArray, const Tsrc* srcArray, u32 arrayNbElements)
+		void CoreCopyCastArray(Tdest* const destArray, const Tsrc* srcArray, size_t arrayNbElements)
 		{
-			for (u32 elem = 0; elem < arrayNbElements; elem++)
+			for (size_t elem = 0; elem < arrayNbElements; elem++)
 				destArray[elem] = (Tdest)srcArray[elem];
 
 		}
 
 		// specialized
 		template<>
-		inline void CoreCopyCastArray<bool, float>(bool* const destArray, const float* srcArray, u32 arrayNbElements)
+		inline void CoreCopyCastArray<bool, float>(bool* const destArray, const float* srcArray, size_t arrayNbElements)
 		{
-			for (u32 elem = 0; elem < arrayNbElements; elem++)
+			for (size_t elem = 0; elem < arrayNbElements; elem++)
 				destArray[elem] = (srcArray[elem] != (float)0);
 
 		}
 
 		template<>
-		inline void CoreCopyCastArray<bool, s32>(bool* const destArray, const s32* srcArray, u32 arrayNbElements)
+		inline void CoreCopyCastArray<bool, s32>(bool* const destArray, const s32* srcArray, size_t arrayNbElements)
 		{
-			for (u32 elem = 0; elem < arrayNbElements; elem++)
+			for (size_t elem = 0; elem < arrayNbElements; elem++)
 				destArray[elem] = (srcArray[elem] != (s32)0);
 
 		}
 
 		template<>
-		inline void CoreCopyCastArray<float, bool>(float* const destArray, const bool* srcArray, u32 arrayNbElements)
+		inline void CoreCopyCastArray<float, bool>(float* const destArray, const bool* srcArray, size_t arrayNbElements)
 		{
-			for (u32 elem = 0; elem < arrayNbElements; elem++)
+			for (size_t elem = 0; elem < arrayNbElements; elem++)
 				destArray[elem] = (float)(srcArray[elem] ? 1 : 0);
 
 		}
 
 		template<>
-		inline void CoreCopyCastArray<s32, bool>(s32* const destArray, const bool* srcArray, u32 arrayNbElements)
+		inline void CoreCopyCastArray<s32, bool>(s32* const destArray, const bool* srcArray, size_t arrayNbElements)
 		{
-			for (u32 elem = 0; elem < arrayNbElements; elem++)
+			for (size_t elem = 0; elem < arrayNbElements; elem++)
 				destArray[elem] = (s32)(srcArray[elem] ? 1 : 0);
 
 		}
@@ -142,10 +142,11 @@ namespace Kigs
 */
 // ****************************************
 
-		template<s32 notificationLevel, typename T, CoreModifiable::ATTRIBUTE_TYPE attributeElementType, u32 nbLines, u32 nbColumns>  class maArrayHeritage : public CoreModifiableAttributeData<std::array<T, nbLines* nbColumns>>
+	template<bool notificationLevel, typename T, CoreModifiable::ATTRIBUTE_TYPE attributeElementType, size_t nbLines, size_t nbColumns, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
+	class maArrayHeritage : public CoreModifiableAttributeData<std::array<T, nbLines* nbColumns>, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
 		{
-			template<s32 notiflevel>
-			using TemplateForPlacementNew = maArrayHeritage<notiflevel, T, attributeElementType, nbLines, nbColumns>;
+		template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isDynamicTe, bool isOrphanTe>
+		using TemplateForPlacementNew = maArrayHeritage<notiflevel, T, attributeElementType, nbLines, nbColumns, isInitTe, isReadOnlyTe, isDynamicTe, isOrphanTe>;
 
 		public:
 			using ArrayType = std::array<T, nbLines* nbColumns>;
@@ -155,31 +156,32 @@ namespace Kigs
 
 		public:
 
-			maArrayHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID  ID, T* vals)
-				: CoreModifiableAttributeData<ArrayType>(owner, isInitAttribute, ID)
+		maArrayHeritage(CoreModifiable& owner, KigsID  ID, T* vals)
+			: CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
 			{
-				setArrayValue(vals,&owner, nbLines * nbColumns);
+			// Should not use serarrayvalue here
+			setArrayValue(vals, &owner, nbLines * nbColumns);
 			}
 
-			maArrayHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID  ID, T val0, T val1)
-				: CoreModifiableAttributeData<ArrayType>(owner, isInitAttribute, ID)
+		maArrayHeritage(CoreModifiable& owner, KigsID  ID, T val0, T val1)
+			: CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
 			{
-				KIGS_ASSERT(nbColumns >= 2);
+			assert(nbColumns >= 2);
 				this->at(0, 0) = val0;
 				this->at(0, 1) = val1;
 			}
-			maArrayHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID  ID, T val0, T val1, T val2)
-				: CoreModifiableAttributeData<ArrayType>(owner, isInitAttribute, ID)
+		maArrayHeritage(CoreModifiable& owner, KigsID  ID, T val0, T val1, T val2)
+			: CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
 			{
-				KIGS_ASSERT(nbColumns >= 3);
+			assert(nbColumns >= 3);
 				this->at(0, 0) = val0;
 				this->at(0, 1) = val1;
 				this->at(0, 2) = val2;
 			}
-			maArrayHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID  ID, T val0, T val1, T val2, T val3)
-				: CoreModifiableAttributeData<ArrayType>(owner, isInitAttribute, ID)
+		maArrayHeritage(CoreModifiable& owner, KigsID  ID, T val0, T val1, T val2, T val3)
+			: CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
 			{
-				KIGS_ASSERT(nbColumns >= 4);
+			assert(nbColumns >= 4);
 				this->at(0, 0) = val0;
 				this->at(0, 1) = val1;
 				this->at(0, 2) = val2;
@@ -189,10 +191,11 @@ namespace Kigs
 
 			virtual bool CopyAttribute(const CoreModifiableAttribute& attribute) override
 			{
-				if (CoreModifiableAttributeData<ArrayType>::CopyAttribute(attribute)) return true;
+			if (CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>::CopyAttribute(attribute)) return true;
 				if ((attribute.getNbArrayElements() == getNbArrayElements()) && (attribute.getArrayElementType() == getArrayElementType()))
 				{
-					attribute.getArrayValue(getArrayBuffer(),attribute.getOwner(), getNbArrayElements());
+				// TODO : don't use getArrayValue here
+				//attribute.getArrayValue(getArrayBuffer(), getNbArrayElements());
 					return true;
 				}
 				return false;
@@ -200,10 +203,10 @@ namespace Kigs
 
 
 
-			T& operator[](u32 index) { return this->getElement(0, index); }
-			const T& operator[](u32 index) const { return this->getConstElement(0, index); }
+		T& operator[](size_t index) { return this->getElement(0, index); }
+		const T& operator[](size_t index) const { return this->getConstElement(0, index); }
 
-			u32 getNbElements() const { return this->getNbArrayElements(); }
+		size_t getNbElements() const { return this->getNbArrayElements(); }
 
 			T* getVector() { return mValue.data(); }
 			const T* getConstVector() const { return mValue.data(); }
@@ -212,9 +215,9 @@ namespace Kigs
 			const T& at(size_t line, size_t column) const { return mValue[line * nbColumns + column]; }
 			T& at(size_t line, size_t column) { return mValue[line * nbColumns + column]; }
 
-			virtual u32 getNbArrayElements() const override { return nbLines * nbColumns; }
-			virtual u32 getNbArrayColumns() const override { return nbColumns; }
-			virtual u32 getNbArrayLines() const override { return nbLines; }
+		virtual size_t getNbArrayElements() const override { return nbLines * nbColumns; }
+		virtual size_t getNbArrayColumns() const override { return nbColumns; }
+		virtual size_t getNbArrayLines() const override { return nbLines; }
 
 			//@Refactor identical
 			T* getArrayBuffer() { return  mValue.data(); }
@@ -224,8 +227,8 @@ namespace Kigs
 			const T* getConstArrayBuffer() const { return  mValue.data(); }
 			const T* getConstArray() const { return mValue.data(); }
 
-			T& getElement(u32 line, u32 column) { return at(line, column); }
-			const T& getConstElement(u32 line, u32 column) const { return at(line, column); }
+		T& getElement(size_t line, size_t column) { return at(line, column); }
+		const T& getConstElement(size_t line, size_t column) const { return at(line, column); }
 
 			//@Issue this is wrong, is return the line not column like the method name implies
 			/*
@@ -265,7 +268,7 @@ namespace Kigs
 			virtual bool getValue(Point3D& value, const CoreModifiable* owner) const override { if (nbColumns < 3) return false; Point3D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2));  value = tmpValue; return true; }
 			virtual bool getValue(Vector4D& value, const CoreModifiable* owner) const override { if (nbColumns < 4) return false; Vector4D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2), (float)at(0, 3));  value = tmpValue; return true; }
 
-			using CoreModifiableAttributeData<ArrayType>::setValue;
+		using CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>::setValue;
 
 			bool setValue(const Point2D& pt, CoreModifiable* owner) override
 			{
@@ -338,15 +341,12 @@ namespace Kigs
 				return *this;
 			}
 
-			// TODO
-			auto& operator=(const Point2DI& pt) { setValue(pt,nullptr); return *this; }
+		/*auto& operator=(Point2DI pt) { setValue(pt); return *this; }
+		auto& operator=(Point3DI pt) { setValue(pt); return *this; }*/
 			
-			// TODO
-			auto& operator=(const Point3DI& pt) { setValue(pt, nullptr); return *this; }
 
 
-
-#define DECLARE_SET_VALUE_BROADCAST(type) virtual bool setValue(type value, CoreModifiable* owner) override { if (isReadOnly()) { return false; } this->broadcastValue((T)value); DO_NOTIFICATION(notificationLevel); return true; }
+#define DECLARE_SET_VALUE_BROADCAST(type) virtual bool setValue(type value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT) this->broadcastValue((T)value); DO_NOTIFICATION(notificationLevel); return true; }
 
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET_VALUE_BROADCAST);
 
@@ -355,7 +355,7 @@ namespace Kigs
 			virtual bool setValue(const char* value, CoreModifiable* owner) override { std::string localstr(value); return setValue(localstr,owner); }
 			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
-				if (isReadOnly()) { return false; }
+			RETURN_ON_READONLY(isReadOnlyT);
 				if (CoreConvertString2Array<T>(value, getArrayBuffer(), getNbArrayElements()))
 				{
 					DO_NOTIFICATION(notificationLevel);
@@ -424,7 +424,7 @@ namespace Kigs
 			}
 
 
-#define DECLARE_SETARRAYVALUE( b )	virtual bool setArrayValue(const b *value, CoreModifiable* owner, u32 nbElements ) override {if(isReadOnly()){ return false; }\
+#define DECLARE_SETARRAYVALUE( b )	virtual bool setArrayValue(const b *value,CoreModifiable* owner, size_t nbElements ) override {RETURN_ON_READONLY(isReadOnlyT);\
 		if(nbElements>getNbArrayElements()){ return false;} \
 		CoreCopyCastArray<T,b>(getArrayBuffer(), value, nbElements); \
 		DO_NOTIFICATION(notificationLevel);\
@@ -433,7 +433,7 @@ namespace Kigs
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAYVALUE);
 
 
-#define DECLARE_SETARRAYELEMENTVALUE( b )	virtual bool setArrayElementValue(b value, CoreModifiable* owner, u32 line, u32 column ) override {if(isReadOnly()){ return false; }\
+#define DECLARE_SETARRAYELEMENTVALUE( b )	virtual bool setArrayElementValue(b value,CoreModifiable* owner, size_t line, size_t column ) override {RETURN_ON_READONLY(isReadOnlyT);\
 		if(line>=nbLines || column>=nbColumns){ return false;} \
 		at(line,column)=(T)value; \
 		DO_NOTIFICATION(notificationLevel); \
@@ -445,18 +445,18 @@ namespace Kigs
 #undef DECLARE_SETARRAYVALUE
 #undef DECLARE_SETARRAYELEMENTVALUE
 
-			virtual bool setArrayElementValue(bool value, CoreModifiable* owner, u32 line, u32 column) override
+		virtual bool setArrayElementValue(bool value, CoreModifiable* owner, size_t line, size_t column) override
 			{
-				if (isReadOnly()) { return false; }
+			RETURN_ON_READONLY(isReadOnlyT);
 				if (line >= nbLines || column >= nbColumns) { return false; }
 				at(line, column) = (T)(value ? 1 : 0);
 				DO_NOTIFICATION(notificationLevel);;
 				return true;
 			}
 
-			virtual bool setArrayElementValue(const std::string& value, CoreModifiable* owner, u32 line, u32 column) override
+			virtual bool setArrayElementValue(const std::string& value, CoreModifiable* owner, size_t line, size_t column) override
 			{
-				if (isReadOnly()) { return false; }
+			RETURN_ON_READONLY(isReadOnlyT);
 				if (line >= nbLines || column >= nbColumns) return false;
 				if (CoreConvertString2Value<T>(value, this->at(line, column)))
 				{
@@ -470,7 +470,7 @@ namespace Kigs
 
 
 
-#define DECLARE_GETARRAYVALUE( b )	virtual bool getArrayValue(b * const value, const CoreModifiable* owner, u32 nbElements ) const override {if(nbElements>getNbArrayElements()){ return false;} \
+#define DECLARE_GETARRAYVALUE( b )	virtual bool getArrayValue(b * const value, const CoreModifiable* owner, size_t nbElements ) const override {if(nbElements>getNbArrayElements()){ return false;} \
 		CoreCopyCastArray<b,T>(value,getConstArrayBuffer(),nbElements); return true;}
 
 
@@ -480,7 +480,7 @@ namespace Kigs
 #undef DECLARE_GETARRAYVALUE
 
 
-#define DECLARE_GETARRAYELEMENTVALUE( b )	virtual bool getArrayElementValue(b& value, const CoreModifiable* owner, u32 line, u32 column ) const override { if(line>=nbLines || column>=nbColumns){ return false;} \
+#define DECLARE_GETARRAYELEMENTVALUE( b )	virtual bool getArrayElementValue(b& value, const CoreModifiable* owner, size_t line, size_t column ) const override { if(line>=nbLines || column>=nbColumns){ return false;} \
 		value=(b)at(line,column); return true;}
 
 			EXPAND_MACRO_FOR_NUMERIC_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_GETARRAYELEMENTVALUE);
@@ -488,14 +488,14 @@ namespace Kigs
 
 #undef DECLARE_GETARRAYELEMENTVALUE
 
-			virtual bool getArrayElementValue(bool& value, const CoreModifiable* owner, u32 line, u32 column) const override
+			virtual bool getArrayElementValue(bool& value, const CoreModifiable* owner, size_t line, size_t column) const override
 			{
 				if (line >= nbLines || column >= nbColumns) return false;
 				value = (at(line, column) != (T)0);
 				return true;
 			}
 
-			virtual bool getArrayElementValue(std::string& value, const CoreModifiable* owner, u32 line, u32 column) const override
+			virtual bool getArrayElementValue(std::string& value, const CoreModifiable* owner, size_t line, size_t column) const override
 			{
 				if (line >= nbLines || column >= nbColumns) return false;
 				return CoreConvertValue2String<T>(value, at(line, column));
@@ -506,21 +506,35 @@ namespace Kigs
 
 		};
 
-		using maMatrix22DF = maArrayHeritage<0, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2, 2>;
-		using maMatrix33DF = maArrayHeritage<0, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3, 3>;
+		using maMatrix22DF = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2, 2,false,false,false,false>;
+		using maMatrix22DFOrphan = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2, 2, false, false, false, true>;
+		using maMatrix22DFInit = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2, 2,true>;
+		using maMatrix33DF = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3, 3,false,false,false,false>;
+		using maMatrix33DFOrphan = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3, 3, false, false, false, true>;
+		using maMatrix33DFInit = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3, 3, true>;
 
-		using maVect2DF = maArrayHeritage<0, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 2>;
-		using maVect3DF = maArrayHeritage<0, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 3>;
-		using maVect4DF = maArrayHeritage<0, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 4>;
-		using maVect16DF = maArrayHeritage<0, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 16>;
+		using maVect2DF = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 2,false,false,false,false>;
+		using maVect2DFOrphan = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 2, false, false, false, true>;
+		using maVect2DFInit = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 2, true>;
+		using maVect3DF = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 3,false,false,false,false>;
+		using maVect3DFOrphan = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 3, false, false, false, true>;
+		using maVect3DFInit = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 3, true>;
+		using maVect4DF = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 4,false,false,false,false>;
+		using maVect4DFOrphan = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 4, false, false, false, true>;
+		using maVect4DFInit = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 4, true>;
+		using maVect16DF = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 16,false,false,false,false>;
 
-		using maVect2DI = maArrayHeritage<0, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 2>;
-		using maVect3DI = maArrayHeritage<0, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 3>;
+		using maVect2DI = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 2,false,false,false,false>;
+		using maVect2DIOrphan = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 2, false, false, false, true>;
+		using maVect2DIInit = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 2, true>;
+		using maVect3DI = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 3,false,false,false,false>;
+		using maVect3DIOrphan = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 3, false, false, false, true>;
+		using maVect3DIInit = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 3, true>;
 
 
 
 		template<typename element_type, CoreModifiable::ATTRIBUTE_TYPE attribute_type, s32 nbElements>
-		using maVector = maArrayHeritage<0, element_type, attribute_type, 1, nbElements>;
+		using maVector = maArrayHeritage<false, element_type, attribute_type, 1, nbElements,false,false,false,false>;
 
 	}
 }

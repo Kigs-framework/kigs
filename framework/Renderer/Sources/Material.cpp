@@ -11,17 +11,17 @@ static inline bool IsVecEqual(const maVect4DF &v1, const maVect4DF&v2)
 }
 
 Material::Material(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
-mFacing(*this,false,"Facing",1),
-mBlendFuncSource(*this,false,"BlendFuncSource",4),
-mBlendFuncDest(*this,false,"BlendFuncDest",5),
-mBlendEnabled(*this,false,"BlendEnabled",false),
-mMaterialColorEnabled(*this,false,"MaterialColorEnabled",false),
-mAmbientColor(*this,false,"AmbientColor"),
-mDiffuseColor(*this,false,"DiffuseColor"),
-mSpecularColor(*this,false,"SpecularColor"),
-mEmissionColor(*this,false,"EmissionColor"),
-mShininess(*this,false,"Shininess",120.0f),
-mTransparency(*this,false,"Transparency",1.0f)
+mFacing(*this,"Facing",1),
+mBlendFuncSource(*this,"BlendFuncSource",4),
+mBlendFuncDest(*this,"BlendFuncDest",5),
+mBlendEnabled(*this,"BlendEnabled",false),
+mMaterialColorEnabled(*this,"MaterialColorEnabled",false),
+mAmbientColor(*this,"AmbientColor"),
+mDiffuseColor(*this,"DiffuseColor"),
+mSpecularColor(*this,"SpecularColor"),
+mEmissionColor(*this,"EmissionColor"),
+mShininess(*this,"Shininess",120.0f),
+mTransparency(*this,"Transparency",1.0f)
 {
   SetAmbientColor(0.2f, 0.2f, 0.2f);
   SetDiffuseColor(0.3f, 0.3f, 0.3f);

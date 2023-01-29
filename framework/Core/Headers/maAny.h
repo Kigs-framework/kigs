@@ -10,8 +10,8 @@ namespace Kigs
 	namespace Core
 	{
 
-		template<int notificationLevel>
-		class maAnyHeritage : public CoreModifiableAttributeData<std::any>
+	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
+	class maAnyHeritage : public CoreModifiableAttributeData<std::any, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maAnyHeritage, maAnyHeritage, std::any, CoreModifiable::ATTRIBUTE_TYPE::ANY);
 		public:
@@ -43,7 +43,7 @@ namespace Kigs
 
 		};
 
-		using maAny = maAnyHeritage<0>;
+		using maAny = maAnyHeritage<false,false,false,false,false>;
 
 
 		template<typename T>

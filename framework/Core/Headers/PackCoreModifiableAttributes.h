@@ -6,34 +6,38 @@
 
 namespace Kigs
 {
-
-	using ::std::string;
-	using ::std::vector;
-
-	class CoreModifiable;
-
-	class PackCoreModifiableAttributes
+	namespace Core
 	{
-	public:
-		PackCoreModifiableAttributes(CoreModifiable* owner) :mOwner(owner)
+
+		class CoreModifiable;
+
+		class PackCoreModifiableAttributes
 		{
-			mAttributeList.clear();
-		}
+		public:
+			PackCoreModifiableAttributes(CoreModifiable* owner) :mOwner(owner)
+			{
+				mAttributeList.clear();
+			}
 
-		template<typename T>
-		PackCoreModifiableAttributes& operator<<(T&& V);
+			template<typename T>
+			PackCoreModifiableAttributes& operator<<(T&& V);
 
-		void AddAttribute(CoreModifiableAttribute* attr) { mAttributeList.push_back(attr); }
+			void AddAttribute(CoreModifiableAttribute* attr) { mAttributeList.push_back(attr); }
 
-		operator vector<CoreModifiableAttribute*>& ()
-		{
-			return mAttributeList;
-		}
+			operator std::vector<CoreModifiableAttribute*>& ()
+			{
+				return mAttributeList;
+			}
 
-		~PackCoreModifiableAttributes();
+			~PackCoreModifiableAttributes()
+			{
+				for (auto attr : mAttributeList)
+					delete attr;
+			}
 
-	protected:
-		vector<CoreModifiableAttribute*>	mAttributeList;
-		CoreModifiable* mOwner;
-	};
+		protected:
+			std::vector<CoreModifiableAttribute*>	mAttributeList;
+			CoreModifiable* mOwner;
+		};
+	}
 }

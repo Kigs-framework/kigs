@@ -509,9 +509,54 @@ namespace Kigs
 
 			// Get the item list
 			const std::vector<ModifiableItemStruct>& getItems() const { return mItems; }
+			void	setDynamicAttributeFlag(bool dynamic, const KigsID& ID)
+			{
+				auto found = mAttributes.find(ID);
+				if (found != mAttributes.end())
+				{
+					(*found).second.setDynamic(dynamic);
+				}
+			}
+			void	addAttribute(CoreModifiableAttribute* attr, const KigsID& ID, bool dynamic, bool mapped=false)
+			{
+				mAttributes[ID] = { attr,dynamic,mapped };
+			}
 
+			class FlaggedCoreModifiableAttribute
+			{
+			protected:
+				uintptr_t	mFlaggedAdress;
+			public:
+		
+				FlaggedCoreModifiableAttribute() : mFlaggedAdress((uintptr_t)nullptr)
+				{
+				
+				}
+		
+				FlaggedCoreModifiableAttribute(const CoreModifiableAttribute* addr, bool dynamic, bool ismapped=false) : mFlaggedAdress((uintptr_t)addr)
+				{
+					setDynamic(dynamic);
+					setMapped(ismapped);
+				}
+		
+				operator CoreModifiableAttribute*() const { return (CoreModifiableAttribute * )(mFlaggedAdress&((uintptr_t)~0x3)); }
+				FlaggedCoreModifiableAttribute& operator=(const CoreModifiableAttribute* addr) { mFlaggedAdress = (uintptr_t)addr; return *this; };
+		
+				FlaggedCoreModifiableAttribute& operator=(const FlaggedCoreModifiableAttribute& other) { mFlaggedAdress = other.mFlaggedAdress; return *this; };
+		
+				CoreModifiableAttribute* operator->() { return (CoreModifiableAttribute*)(mFlaggedAdress & ((uintptr_t)~0x3)); }
+		
+				const CoreModifiableAttribute* operator->() const { return (CoreModifiableAttribute*)(mFlaggedAdress & ((uintptr_t)~0x3)); }
+		
+				bool	isDynamic() const { return mFlaggedAdress & 1; }
+				void	setDynamic(bool dyn) { dyn?(mFlaggedAdress |= 1): (mFlaggedAdress &= ~1); }
+		
+				bool	isMapped() const { return mFlaggedAdress & 2; }
+				void	setMapped(bool dyn) { dyn ? (mFlaggedAdress |= 2) : (mFlaggedAdress &= ~2); }
+		
+			};
 			// Get the attribute list
-			const unordered_map<KigsID, CoreModifiableAttribute*>& getAttributes() const { return mAttributes; }
+	const unordered_map<KigsID, FlaggedCoreModifiableAttribute>& getAttributes() const { return mAttributes; }
 	
 			// Number of attributes
 			size_t getAttributeCount() const { return mAttributes.size(); }
@@ -928,12 +973,7 @@ namespace Kigs
 			// Get the first name in a path (IWantThis/The/Remaining/Path). Return "/" if the path starts a the root
 			static  std::string GetFirstNameInPath(const std::string &path, std::string & remainingpath);
 
-			/// Editor
 
-		#ifdef KEEP_NAME_AS_STRING
-			void RegisterDecorator(const std::string& name);
-			void UnRegisterDecorator(const std::string& name);
-		#endif
 		#ifdef KEEP_XML_DOCUMENT
 			Xml::XMLNodeBase* GetXMLNodeForFile(Xml::XMLBase* for_file)
 			{ 
@@ -1165,7 +1205,7 @@ namespace Kigs
 			std::string	mName;
 	
 			// attribute map
-			unordered_map<KigsID, CoreModifiableAttribute*> mAttributes;
+	unordered_map<KigsID, FlaggedCoreModifiableAttribute> mAttributes;
 			// sons vector
 			std::vector<ModifiableItemStruct>				mItems;
 			// parent vector
@@ -1173,14 +1213,6 @@ namespace Kigs
 
 
 			LazyContent* GetLazyContent() const;
-
-
-
-		#ifdef KEEP_NAME_AS_STRING
-			// keep track of Decorators only on win32 to be able to export them
-			std::vector<std::string>*	mDecorators = nullptr;
-		#endif
-
 
 		};
 
@@ -1207,32 +1239,6 @@ namespace Kigs
 		DECLARE_METHOD(XMLCharacterHandler);
 
 		#define XMLDelegateMethods		JSonObjectStart,JSonObjectEnd,JSonArrayStart,JSonArrayEnd,JSonParamList
-
-
-		class PackCoreModifiableAttributes
-		{
-		public:
-			PackCoreModifiableAttributes(CoreModifiable* owner) :mOwner(owner)
-			{
-				mAttributeList.clear();
-			}
-
-			template<typename T>
-			PackCoreModifiableAttributes& operator<<(T&& V);
-
-			void AddAttribute(CoreModifiableAttribute* attr) { mAttributeList.push_back(attr); }
-
-			operator std::vector<CoreModifiableAttribute*>&()
-			{
-				return mAttributeList;
-			}
-
-			~PackCoreModifiableAttributes();
-
-		protected:
-			std::vector<CoreModifiableAttribute*>	mAttributeList;
-			CoreModifiable*							mOwner;
-		};
 
 		// CMSP methods
 

@@ -13,7 +13,7 @@ void	AutoOrientedNode3DUp::Init(CoreModifiable* toUpgrade)
 	KigsCore::Connect(toUpgrade, "NotifyUpdate", toUpgrade, "AutoOrientedNotifyUpdate");
 
 	mTarget = toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE, "Target", "");
-	mTarget->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("Target", true);
 	mCurrentTarget = nullptr;
 	v3f axis(0.0f, 0.0f, 1.0f);
 	mOrientedAxis = toUpgrade->AddDynamicVectorAttribute("OrientedAxis", (float*)&axis.x, 3);
@@ -50,7 +50,7 @@ DEFINE_UPGRADOR_METHOD(AutoOrientedNode3DUp, AutoOrientedNotifyUpdate)
 		u32 labelID;
 		params[1]->getValue(labelID, this);
 
-		if (GetUpgrador()->mTarget->getLabelID() == labelID)
+		if (KigsID("Target") == labelID)
 		{
 			GetUpgrador()->mCurrentTarget = (Node3D*)(CoreModifiable*)(*(maReference*)(GetUpgrador()->mTarget));
 		}

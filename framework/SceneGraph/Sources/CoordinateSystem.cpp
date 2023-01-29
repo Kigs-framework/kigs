@@ -19,11 +19,11 @@ void	CoordinateSystemUp::Init(CoreModifiable* toUpgrade)
 	current.GetPRS(pos, rot, scale);
 
 	mScale =toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "Scale", 1.0f);
-	mScale->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("Scale",true);
 	mPos = toUpgrade->AddDynamicVectorAttribute("Position", (float*)&pos.x, 3);
-	mPos->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("Position", true);
 	mRot = toUpgrade->AddDynamicVectorAttribute("Rotation", (float*)&rot.x, 3);
-	mRot->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("Rotation", true);
 
 	// check if already in auto update mode
 	/*
@@ -57,9 +57,9 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, CoordinateSystemNotifyUpdate)
 		u32 labelID;
 		params[1]->getValue(labelID,this);
 		
-		if (GetUpgrador()->mScale->getLabelID() == labelID
-			|| GetUpgrador()->mRot->getLabelID() == labelID
-			|| GetUpgrador()->mPos->getLabelID() == labelID)
+		if (KigsID("Scale") == labelID
+			|| KigsID("Position") == labelID
+			|| KigsID("Rotation") == labelID)
 		{
 			Point3D	rot; GetUpgrador()->mRot->getValue(rot, this);
 			Point3D pos; GetUpgrador()->mPos->getValue(pos, this);
@@ -206,14 +206,14 @@ void	PivotUp::Init(CoreModifiable* toUpgrade)
 	
 	Point3D PivotPosition(0, 0, 0);
 	mAngle = toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "Angle", 0.0f);
-	mAngle->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("Angle", true);
 	mPivotPosition = toUpgrade->AddDynamicVectorAttribute("PivotPosition", (float*)&PivotPosition.x, 3);
-	mPivotPosition->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("PivotPosition", true);
 	PivotPosition.Set(0, 1, 0);
 	mPivotAxis = toUpgrade->AddDynamicVectorAttribute("PivotAxis", (float*)&PivotPosition.x, 3);
-	mPivotAxis->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("PivotAxis", true);
 	mIsGlobal = toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "IsGlobal", false);
-	mIsGlobal->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("IsGlobal", true);
 
 	// check if already in auto update mode
 	if (toUpgrade->isFlagAsAutoUpdateRegistered())
@@ -292,21 +292,21 @@ DEFINE_UPGRADOR_METHOD(PivotUp, PivotNotifyUpdate)
 		u32 labelID;
 		params[1]->getValue(labelID, this);
 
-		if (GetUpgrador()->mAngle->getLabelID() == labelID)
+		if (KigsID("Angle") == labelID)
 		{
 			GetUpgrador()->mWasChanged = true;
 		}
-		if (GetUpgrador()->mPivotPosition->getLabelID() == labelID)
-		{
-			// should the transform matrix be reset if pivot position or axis changes ?
-			GetUpgrador()->mWasChanged = true;
-		}
-		if (GetUpgrador()->mPivotAxis->getLabelID() == labelID)
+		if (KigsID("PivotPosition") == labelID)
 		{
 			// should the transform matrix be reset if pivot position or axis changes ?
 			GetUpgrador()->mWasChanged = true;
 		}
-		if (GetUpgrador()->mIsGlobal->getLabelID() == labelID)
+		if (KigsID("PivotAxis") == labelID)
+		{
+			// should the transform matrix be reset if pivot position or axis changes ?
+			GetUpgrador()->mWasChanged = true;
+		}
+		if (KigsID("IsGlobal") == labelID)
 		{
 			GetUpgrador()->mWasChanged = true;
 		}

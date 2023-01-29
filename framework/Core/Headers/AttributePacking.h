@@ -3,6 +3,13 @@
 #include "CoreSTL.h"
 #include "maReference.h"
 #include "maUSString.h"
+#include "maString.h"
+#include "maNumeric.h"
+#include "maBool.h"
+#include "maAny.h"
+#include "maBuffer.h"
+#include "maArray.h"
+#include "PackCoreModifiableAttributes.h"
 
 namespace Kigs
 {
@@ -20,19 +27,19 @@ namespace Kigs
 #define DEFINE_MAKE_ATTR_FUNC(type, attr_type) inline CoreModifiableAttribute* MakeAttributeSpec(type value, CoreModifiable* owner, const std::string& name = #attr_type)\
 {\
 	if(owner)\
-		return new attr_type(*owner, false, name, value); \
+		return new attr_type(*owner, name, value); \
 	else\
-		return new attr_type(name, value);\
+		return new attr_type##Orphan(name, value);\
 }
 
 #define DEFINE_MAKE_ATTR_FUNC_VECNF(type, attr_type) inline CoreModifiableAttribute* MakeAttributeSpec(type value, CoreModifiable* owner, const std::string& name = #attr_type)\
 {\
 	if(owner)\
-		return new attr_type(*owner, false, name, (attr_type::ArrayType::value_type*)&value);\
+		return new attr_type(*owner, name, (attr_type::ArrayType::value_type*)&value);\
 	else {\
 		attr_type::ArrayType val;\
 		memcpy(val.data(), &value, val.size() * sizeof(attr_type::ArrayType::value_type));\
-		return new attr_type(name, val);\
+		return new attr_type##Orphan(name, val);\
 	}\
 }
 
@@ -70,19 +77,15 @@ namespace Kigs
 		inline CoreModifiableAttribute* MakeAttributeSpec(SP<T> value, CoreModifiable* owner, const std::string& name = "maStrongReference")
 		{
 			if (owner)
-				return new maStrongReference(*owner, false, name, maStrongReferenceObject{ value });
+				return new maStrongReference(*owner, name, maStrongReferenceObject{ value });
 			else
-				return new maStrongReference(name, maStrongReferenceObject{ value });
+				return new maStrongReferenceOrphan(name, maStrongReferenceObject{ value });
 		}
 
 		template<typename T, REQUIRES(!std::is_fundamental<std::decay_t<T>>::value)>
 		CoreModifiableAttribute* MakeAttributeSpec(T&& value, CoreModifiable* owner, const std::string& name = "maRawPtrStruct")
 		{
 			static_assert(!std::is_same<T, T>::value, "Cannot wrap rvalues of structs");
-			/*if (owner)
-				return new maRawPtr(*owner, false, name, (void*)&value);
-			else
-				return new maRawPtr(name, (void*)&value);*/
 		}
 
 		template<typename T>
@@ -112,9 +115,9 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 		{
 			void* ptr = (void*)value;
 			if (owner)
-				return new maRawPtr(*owner, false, name, ptr);
+				return new maRawPtr(*owner, name, ptr);
 			else
-				return new maRawPtr(name, ptr);
+				return new maRawPtrOrphan(name, ptr);
 		}
 
 		// Custom type exposed by ref
@@ -123,9 +126,9 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 		{
 			void* ptr = (void*)&value;
 			if (owner)
-				return new maRawPtr(*owner, false, name, ptr);
+				return new maRawPtr(*owner, name, ptr);
 			else
-				return new maRawPtr(name, ptr);
+				return new maRawPtrOrphan(name, ptr);
 		}
 
 
@@ -146,9 +149,9 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 		{
 			void* ptr = (void*)value;
 			if (owner)
-				return new maRawPtr(*owner, false, name, ptr);
+				return new maRawPtr(*owner, name, ptr);
 			else
-				return new maRawPtr(name, ptr);
+				return new maRawPtrOrphan(name, ptr);
 		}
 
 		// Non exposed, non coremodifiable, non fundamental type by reference
@@ -161,9 +164,9 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 		{
 			void* ptr = (void*)&value;
 			if (owner)
-				return new maRawPtr(*owner, false, name, ptr);
+				return new maRawPtr(*owner, name, ptr);
 			else
-				return new maRawPtr(name, ptr);
+				return new maRawPtrOrphan(name, ptr);
 		}
 
 		// Non exposed, non coremodifiable, non fundamental type by rvalue
@@ -176,11 +179,6 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 		CoreModifiableAttribute* MakeAttribute(T&& value, CoreModifiable* owner, const std::string& name = "ParamRValue")
 		{
 			return MakeAttributeSpec(FWD(value), owner);
-			/*void* ptr = (void*)&value;
-			if (owner)
-				return new maRawPtr(*owner, false, name, ptr);
-			else
-				return new maRawPtr(name, ptr);*/
 		}
 
 		// SmartPointer

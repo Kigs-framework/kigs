@@ -10,7 +10,7 @@ void	TickerUpgrador::Init(CoreModifiable* toUpgrade)
 	KigsCore::Connect(toUpgrade, "NotifyUpdate", toUpgrade, "TickerNotifyUpdate");
 
 	mTickerFunction = (maString*)toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::STRING, "TickerFunction", "");
-	mTickerFunction->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("TickerFunction", true);
 	mTickerFrequency = (maFloat*)toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "TickerFrequency", 1.0f);
 
 	// check if already in auto update mode
@@ -44,7 +44,7 @@ void	TickerUpgrador::Destroy(CoreModifiable* toDowngrade, bool toDowngradeDelete
 
 void	TickerUpgrador::NotifyUpdate(const unsigned int  labelid , CoreModifiable* parent)
 {
-	if (labelid == mTickerFunction->getLabelID())
+	if (labelid == KigsID("TickerFunction"))
 	{
 		std::string func = (*mTickerFunction);
 		if (func.length())
@@ -95,7 +95,7 @@ DEFINE_UPGRADOR_METHOD(TickerUpgrador, TickerNotifyUpdate)
 	if (!params.empty())
 	{
 		u32 labelID;
-		params[1]->getValue(labelID,this);
+		params[1]->getValue(labelID,sender);
 		TickerUpgrador* currentTicker = static_cast<TickerUpgrador*>(GetUpgrador());
 		currentTicker->NotifyUpdate(labelID, this);
 	}

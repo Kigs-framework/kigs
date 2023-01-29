@@ -501,11 +501,11 @@ namespace Kigs
 			~KigsCore() {};
 
 			//! pointer to instance factory singleton
-			InstanceFactory* mInstanceFactory=nullptr;
+			InstanceFactory* mInstanceFactory = nullptr;
 			SP<MiniInstanceFactory>	mUpgradorFactory;
 
 			//! pointer to initialised modules
-			unordered_map<KigsID, SP<ModuleBase>>* mModuleBaseInstanceMap=nullptr;
+			unordered_map<KigsID, SP<ModuleBase>>* mModuleBaseInstanceMap = nullptr;
 
 			// current pending async requests
 			std::vector<SP<AsyncRequest>>* mAsyncRequestList;
@@ -564,13 +564,13 @@ namespace Kigs
 			static void		CloseMultiThread();
 
 			//! TRUE if the KigsCore is multiThread
-			bool* mMultiThread=nullptr;
+			bool* mMultiThread = nullptr;
 
 
 #if KIGS_ERROR_LEVEL<=2
 			// construct error list here
 			//! list of error
-			std::vector<std::string>* mErrorList=nullptr;
+			std::vector<std::string>* mErrorList = nullptr;
 			/**
 			 * \fn 		int	(*KigsMsgPrintf)(const char *format... );
 			 * \brief	output function for error and warning msb
@@ -634,8 +634,15 @@ namespace Kigs
 #define KIGS_ASSERT(a)	
 #endif
 
+	}
+}
 
-//#include "AttributePacking.h"
+#include "PackCoreModifiableAttributes.h"
+
+namespace Kigs
+{
+	namespace Core
+	{
 		template<>
 		inline CMSP KigsCore::GetInstanceOf(const std::string& instancename, const KigsID& classname)
 		{

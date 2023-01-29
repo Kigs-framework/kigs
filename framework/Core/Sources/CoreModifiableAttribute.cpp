@@ -123,37 +123,9 @@ std::string CoreModifiableAttribute::typeToString(CoreModifiable::ATTRIBUTE_TYPE
 }
 
 
-void CoreModifiableAttribute::changeNotificationLevel(AttributeNotificationLevel level)
-{
-	// Clear bit
-	mFlags &= ~((u32)notifyOwnerFlag);
-	switch (level)
-	{
-	case None:
-
-		break;
-	case Owner:
-		this->mFlags |= (u32)notifyOwnerFlag;
-		break;
-	}
-}
-
-CoreModifiable* CoreModifiableAttribute::getOwner() const
-{
-	return mOwner;
-}
-
 CoreModifiableAttribute::~CoreModifiableAttribute()
 {
-	CoreModifiable* owner = getOwner();
-	if (owner)
-	{
-		unordered_map<KigsID, CoreModifiableAttribute*>::const_iterator it = owner->mAttributes.find(mID);
-		if (it != owner->mAttributes.end())
-		{
-			owner->mAttributes.erase(it);
-		}
-	}
+	
 };
 
 

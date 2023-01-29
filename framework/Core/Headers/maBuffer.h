@@ -17,14 +17,14 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData of reference with different notification level
 		*/
 		// ****************************************
-		template<unsigned int alignement, typename allocatedType, int notificationLevel>
-		class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<AlignedCoreRawBuffer<alignement, allocatedType>>>
+	template<unsigned int alignement, typename allocatedType, bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
+	class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<AlignedCoreRawBuffer<alignement, allocatedType>>, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
 		{
-			template<int notiflevel>
-			using TemplateForPlacementNew = maBufferHeritage<alignement, allocatedType, notiflevel>;
+		template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isDynamicTe, bool isOrphanTe>
+		using TemplateForPlacementNew = maBufferHeritage<alignement, allocatedType, notiflevel, isInitTe, isReadOnlyTe, isDynamicTe, isOrphanTe>;
 			using UnderlyingType = SmartPointer<AlignedCoreRawBuffer<alignement, allocatedType>>;
 
-			using BaseType = CoreModifiableAttributeData<SmartPointer<AlignedCoreRawBuffer<alignement, allocatedType>>>;
+		using BaseType = CoreModifiableAttributeData<SmartPointer<AlignedCoreRawBuffer<alignement, allocatedType>>, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>;
 
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maBufferHeritage, TemplateForPlacementNew, UnderlyingType, CoreModifiable::ATTRIBUTE_TYPE::COREBUFFER);
 
@@ -80,7 +80,7 @@ namespace Kigs
 		public:
 
 			//! extra constructor with a string
-			maBufferHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, const std::string& value) : BaseType(owner, isInitAttribute, ID)
+		maBufferHeritage(CoreModifiable& owner, KigsID ID, const std::string& value) : BaseType(owner, ID)
 			{
 				SetBufferFromString(value);
 			}
@@ -93,8 +93,7 @@ namespace Kigs
 			}
 			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly())
-					return false;
+			RETURN_ON_READONLY(isReadOnlyT);
 				SetBufferFromString(value);
 				DO_NOTIFICATION(notificationLevel);
 				return true;
@@ -102,9 +101,7 @@ namespace Kigs
 
 			virtual bool setValue(void* value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly())
-					return false;
-
+			RETURN_ON_READONLY(isReadOnlyT);
 				mValue = ((CoreRawBuffer*)value)->shared_from_this();
 				DO_NOTIFICATION(notificationLevel);
 				return true;
@@ -153,7 +150,7 @@ namespace Kigs
 			}
 			operator const CoreRawBuffer* () const { return mValue.get(); }
 
-			void* getRawValue() final { return (void*)buffer(); }
+		void* getRawValue(CoreModifiable* owner) final { return (void*)buffer(); }
 			size_t MemorySize() const final { return length(); };
 
 		};
@@ -169,7 +166,7 @@ namespace Kigs
 		*/
 		// ****************************************
 
-		using maBuffer = maBufferHeritage<16, char, 0>;
+		using maBuffer = maBufferHeritage<16, char, false>;
 
 
 	}

@@ -2130,42 +2130,6 @@ void CoreModifiable::Export(std::string &XMLString,const std::list<CoreModifiabl
 	XMLWriterFile::WriteString(*xmlfile, XMLString);
 }
 
-#ifdef KEEP_NAME_AS_STRING
-void CoreModifiable::RegisterDecorator(const std::string& name)
-{
-	if(!mDecorators)
-	{
-		mDecorators=new std::vector<std::string>();
-	}
-	mDecorators->push_back(name);
-}
-void CoreModifiable::UnRegisterDecorator(const std::string& name)
-{
-	if(!mDecorators)
-	{
-		return;
-	}
-	std::vector<std::string>::iterator itDecorStart=mDecorators->begin();
-	std::vector<std::string>::iterator itDecorEnd=mDecorators->end();
-	
-	while(itDecorStart != itDecorEnd)
-	{
-		if((*itDecorStart) == name)
-		{
-			mDecorators->erase(itDecorStart);
-			break;
-		}
-		
-		itDecorStart++;
-	}
-	
-	if(mDecorators->size() == 0)
-	{
-		delete mDecorators;
-		mDecorators=0;
-	}
-}
-#endif
 
 //! recursive method to export "this" to an XML file.
 void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * currentNode, bool recursive, ExportSettings* settings)
@@ -2423,28 +2387,6 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 #endif //USE_PARENT_AND_SIBLING
 			currentNode->addChild(CDataNode);
 		}
-	}
-	
-	// export decorators
-	if (mDecorators)
-	{
-		std::vector<std::string>::iterator itDecorStart = mDecorators->begin();
-		std::vector<std::string>::iterator itDecorEnd = mDecorators->end();
-		
-		while (itDecorStart != itDecorEnd)
-		{
-			XMLNode*	modifiableAttrNode = new XMLNode();
-			modifiableAttrNode->setType(XML_NODE_ELEMENT);
-			modifiableAttrNode->setName("Deco");
-			XMLAttribute *DecoratorAttribute = new XMLAttribute("N", (*itDecorStart));
-			modifiableAttrNode->addAttribute(DecoratorAttribute);
-#ifdef USE_PARENT_AND_SIBLING
-			modifiableAttrNode->setParent(currentNode);
-#endif //USE_PARENT_AND_SIBLING 
-			currentNode->addChild(modifiableAttrNode);
-			itDecorStart++;
-		}
-		
 	}
 
 	// export Upgrador
@@ -3312,12 +3254,6 @@ IMPLEMENT_CONVERT_S2V_ANS_V2S(u32, "%u")
 IMPLEMENT_CONVERT_S2V_ANS_V2S(u64, "%llu")
 //IMPLEMENT_CONVERT_S2V_ANS_V2S(float,"%f")
 //IMPLEMENT_CONVERT_S2V_ANS_V2S(double,"%lf")
-
-PackCoreModifiableAttributes::~PackCoreModifiableAttributes()
-{
-	for (auto attr : mAttributeList)
-		delete attr;
-}
 
 
 LazyContent::~LazyContent()

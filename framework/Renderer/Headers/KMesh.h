@@ -90,7 +90,7 @@ class Material;
 		*/
 		MeshItemGroup(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG) 
 			: Drawable(name,PASS_CLASS_NAME_TREE_ARG),
-			mCullMode(*this,false,"CullMode",1)
+			mCullMode(*this,"CullMode",1)
 		{
 			mFirstTriangle = 0;
 			mTriangleCount = 0;

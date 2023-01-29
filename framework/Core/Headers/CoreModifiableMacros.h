@@ -158,38 +158,14 @@ static CMSP CreateInstance(const std::string& instancename, std::vector<CoreModi
 const KigsID currentClass::mClassID = #currentClass; \
 KigsID currentClass::mRuntimeType = "";
 
-// auto registring does not work when not in "unity" mode 
-/*#define REGISTER_CLASS_INFO(currentClass, returnClassName, group)\
-struct AutoRegisterType##returnClassName { \
-	AutoRegisterType##returnClassName()\
-	{\
-		AddToAutoRegister([]\
-		{\
-			DECLARE_FULL_CLASS_INFO(KigsCore::Instance(), currentClass, returnClassName, group);\
-		}, #group);\
-	}\
-}; \
-AutoRegisterType##returnClassName AutoRegisterVar##returnClassName;
-*/
-
-
-/*
-
-#define IMPLEMENT_AND_REGISTER_CLASS_INFO(currentClass, returnClassName, group)\
-IMPLEMENT_CLASS_INFO(currentClass)\
-REGISTER_CLASS_INFO(currentClass, returnClassName, group)
-*/
-
 
 #define  IMPLEMENT_TEMPLATE_CLASS_INFO(templatetype,currentClass) \
 template<typename templatetype> \
 const KigsID currentClass<templatetype>::mClassID = #currentClass; \
 template<typename templatetype> \
 KigsID currentClass<templatetype>::mRuntimeType = "";
-/*
-#define IMPLEMENT_AND_REGISTER_TEMPLATE_CLASS_INFO(templatetype, currentClass, returnClassName, group)\
-IMPLEMENT_TEMPLATE_CLASS_INFO(templatetype, currentClass)\
-REGISTER_CLASS_INFO(currentClass<templatetype>, returnClassName, group)*/
+
+
 
 /*! macro used to register the class so that the class can be instanciated by the instanceFactory
  generally set in the associated module Init method
@@ -222,5 +198,5 @@ DECLARE_CLASS_INFO_WITHOUT_FACTORY(currentClass,#returnclassname)
 
 #define IMPLEMENT_CONSTRUCTOR(currentClass) currentClass::currentClass(const std::string& name, CLASS_NAME_TREE_ARG) : currentClass::ParentClassType(name, PASS_CLASS_NAME_TREE_ARG)
 
-#define BASE_ATTRIBUTE(name, ...) {*this, false, #name, __VA_ARGS__ }
+#define BASE_ATTRIBUTE(name, ...) {*this, #name, __VA_ARGS__ }
 #define INIT_ATTRIBUTE(name, ...) {*this, true, #name, __VA_ARGS__ }

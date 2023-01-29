@@ -35,11 +35,11 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData for an enum with different level of notification
 		*/
 		// ****************************************
-		template<int notificationLevel, unsigned int nbElements>
-		class maEnumHeritage : public CoreModifiableAttributeData<maEnumValue<nbElements>>
+	template<bool notificationLevel, unsigned int nbElements, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
+	class maEnumHeritage : public CoreModifiableAttributeData<maEnumValue<nbElements>, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
 		{
-			template<int notiflevel>
-			using TemplateForPlacementNew = maEnumHeritage<notiflevel, nbElements>;
+		template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isDynamicTe, bool isOrphanTe>
+		using TemplateForPlacementNew = maEnumHeritage<notiflevel, nbElements, isInitTe, isReadOnlyTe, isDynamicTe, isOrphanTe>;
 
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maEnumHeritage, TemplateForPlacementNew, maEnumValue<nbElements>, CoreModifiable::ATTRIBUTE_TYPE::ENUM);
 
@@ -47,8 +47,8 @@ namespace Kigs
 
 
 
-			maEnumHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, std::string val0, std::string val1, std::string val2 = "", std::string val3 = "", std::string val4 = "", std::string val5 = "", std::string val6 = "", std::string val7 = "", std::string val8 = "", std::string val9 = "")
-				: CoreModifiableAttributeData<maEnumValue<nbElements>>(owner, isInitAttribute, ID)
+			maEnumHeritage(CoreModifiable& owner, KigsID ID, std::string val0, std::string val1, std::string val2 = "", std::string val3 = "", std::string val4 = "", std::string val5 = "", std::string val6 = "", std::string val7 = "", std::string val8 = "", std::string val9 = "")
+				: CoreModifiableAttributeData<maEnumValue<nbElements>, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
 			{
 				//@TODO variadic template constructor?
 				// Copy and move idiom
@@ -70,7 +70,7 @@ namespace Kigs
 			// TODO
 			virtual bool CopyAttribute(const CoreModifiableAttribute& attribute) override
 			{
-				if (CoreModifiableAttributeData<maEnumValue<nbElements>>::CopyAttribute(attribute)) return true;
+				if (CoreModifiableAttributeData<maEnumValue<nbElements>, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>::CopyAttribute(attribute)) return true;
 				int val;
 				if (attribute.getValue(val,nullptr))
 				{
@@ -99,7 +99,7 @@ namespace Kigs
 
 
 #define IMPLEMENT_SET_VALUE_ENUM(type)\
-	virtual bool setValue(type value, CoreModifiable* owner) override { if (this->isReadOnly()) { return false; }  unsigned int tmpValue = (unsigned int)value; if (tmpValue < nbElements) { mValue.current_value = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; } return false; }
+	virtual bool setValue(type value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT);  unsigned int tmpValue = (unsigned int)value; if (tmpValue < nbElements) { mValue.current_value = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; } return false; }
 
 			EXPAND_MACRO_FOR_NUMERIC_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SET_VALUE_ENUM);
 
@@ -114,7 +114,7 @@ namespace Kigs
 
 			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly()) { return false; }
+			RETURN_ON_READONLY(isReadOnlyT);
 				unsigned int i;
 				for (i = 0; i < nbElements; i++)
 				{
@@ -153,7 +153,7 @@ namespace Kigs
 
 
 		template<unsigned int nbElements>
-		using maEnum = maEnumHeritage<0, nbElements>;
+		using maEnum = maEnumHeritage<false, nbElements,false,false,false,false>;
 
 	}
 }

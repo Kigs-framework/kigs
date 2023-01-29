@@ -36,7 +36,7 @@ namespace Kigs
 		public:
 			DECLARE_CLASS_INFO(Timer, CoreModifiable, Timer);
 			DECLARE_INLINE_CONSTRUCTOR(Timer)
-				, mTime(*this, true, "Time", "GetTime", "")
+				, mTime(*this, "Time", "GetTime", "")
 			{}
 			WRAP_METHODS(GetTime);
 
@@ -106,7 +106,7 @@ namespace Kigs
 			std::unordered_map<CoreModifiable*, double> mTimerDelayMap;
 
 			//! Time coremodifiable attribute
-			maComputedNumeric<double>	mTime;
+			maComputedNumericInit<double>	mTime;
 		};
 
 

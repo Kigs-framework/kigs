@@ -16,20 +16,20 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData of usstring with different level of notification
 		*/
 		// ****************************************
-		template<int notificationLevel>
-		class maUSStringHeritage : public CoreModifiableAttributeData<usString>
+	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
+	class maUSStringHeritage : public CoreModifiableAttributeData<usString, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE(maUSStringHeritage, maUSStringHeritage, usString, CoreModifiable::ATTRIBUTE_TYPE::USSTRING);
 
 		public:
 
 			//! Extra constructors
-			maUSStringHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, const std::string& value) : CoreModifiableAttributeData<usString>(owner, isInitAttribute, ID)
+		maUSStringHeritage(CoreModifiable& owner, KigsID ID, const std::string& value) : CoreModifiableAttributeData<usString, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
 			{
 				mValue = usString{ value };
 			}
 
-			void* getRawValue() final { return (void*)mValue.us_str(); }
+		void* getRawValue(CoreModifiable* owner) final { return (void*)mValue.us_str(); }
 			size_t MemorySize() const final { return mValue.length() * sizeof(u16); };
 
 			/// getValue overloads
@@ -54,8 +54,7 @@ namespace Kigs
 			/// setValue overloads
 			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly())
-					return false;
+			RETURN_ON_READONLY(isReadOnlyT);
 
 				mValue = usString(value);
 
@@ -65,8 +64,7 @@ namespace Kigs
 			}
 			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly())
-					return false;
+			RETURN_ON_READONLY(isReadOnlyT);
 
 				mValue = value;
 
@@ -76,8 +74,7 @@ namespace Kigs
 			}
 			virtual bool setValue(const unsigned short* value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly())
-					return false;
+			RETURN_ON_READONLY(isReadOnlyT);
 
 				mValue = value;
 				DO_NOTIFICATION(notificationLevel);
@@ -86,8 +83,7 @@ namespace Kigs
 			}
 			virtual bool setValue(const usString& value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly())
-					return false;
+			RETURN_ON_READONLY(isReadOnlyT);
 
 				mValue = value;
 				DO_NOTIFICATION(notificationLevel);
@@ -96,8 +92,7 @@ namespace Kigs
 
 			virtual bool setValue(const UTF8Char* value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly())
-					return false;
+			RETURN_ON_READONLY(isReadOnlyT);
 
 				mValue = value;
 
@@ -108,8 +103,7 @@ namespace Kigs
 
 #undef DECLARE_SET_NUMERIC
 #define DECLARE_SET_NUMERIC(type)	virtual bool setValue(type value, CoreModifiable* owner) override { \
-	if (this->isReadOnly())\
-		return false; \
+	RETURN_ON_READONLY(isReadOnlyT);\
 	usString tmpValue = std::to_string(value); \
 	this->mValue = tmpValue; \
 	DO_NOTIFICATION(notificationLevel); \
@@ -187,7 +181,8 @@ namespace Kigs
 		};
 
 
-		using maUSString = maUSStringHeritage<0>;
-
+		using maUSString = maUSStringHeritage<false,false,false,false,false>;
+		using maUSStringOrphan = maUSStringHeritage<false, false, false, false, true>;
+		using maUSStringInit = maUSStringHeritage<false, true>;
 	}
 }

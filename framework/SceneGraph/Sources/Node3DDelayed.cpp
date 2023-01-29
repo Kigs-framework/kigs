@@ -79,15 +79,15 @@ void Node3DDelayed::InitModifiable()
 {
 	ParentClassType::InitModifiable();
 	KigsCore::GetCoreApplication()->AddAutoUpdate(this);
-	mBBoxMin.changeNotificationLevel(Owner);
-	mBBoxMax.changeNotificationLevel(Owner);
+	setOwnerNotification("BBoxMin",true);
+	setOwnerNotification("BBoxMax", true);
 	flagAsPostDestroy();
 }
 
 void Node3DDelayed::NotifyUpdate(const unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
-	if (labelid == mBBoxMin.getID() || labelid == mBBoxMax.getID())
+	if (labelid == KigsID("BBoxMin") || labelid == KigsID("BBoxMax"))
 	{
 		setUserFlag(LocalToGlobalMatrixIsDirty);
 		setUserFlag(GlobalToLocalMatrixIsDirty);
