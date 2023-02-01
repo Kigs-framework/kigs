@@ -9,18 +9,19 @@ IMPLEMENT_CLASS_INFO(UIFlowLayout)
 
 UIFlowLayout::UIFlowLayout(const std::string& name, CLASS_NAME_TREE_ARG) :
 UILayout(name, PASS_CLASS_NAME_TREE_ARG)
-, mPadding(*this, false, "Padding", 0, 0)
-, mSortByPriority(*this, false, "SortByPriority", false)
-, mRescaleToFit(*this, false, "RescaleToFit")
+, mPadding(*this,  "Padding", 0, 0)
+, mSortByPriority(*this, "SortByPriority", false)
+, mRescaleToFit(*this,  "RescaleToFit")
 {
-	mPadding.changeNotificationLevel(Owner);
-	mSortByPriority.changeNotificationLevel(Owner);
+	setOwnerNotification("Padding", true);
+	setOwnerNotification("SortByPriority", true);
+
 }
 
 void UIFlowLayout::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mSortByPriority.getLabelID()) ||
-		(labelid == mPadding.getLabelID()))
+	if ((labelid == KigsID("SortByPriority")._id ) ||
+		(labelid == KigsID("Padding")._id))
 	{
 		mNeedRecompute = true;
 	}

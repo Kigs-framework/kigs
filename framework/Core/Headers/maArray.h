@@ -163,6 +163,13 @@ namespace Kigs
 			setArrayValue(vals, &owner, nbLines * nbColumns);
 			}
 
+		maArrayHeritage(KigsID  ID, T* vals)
+			: CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(ID, {})
+		{
+			// Should not use serarrayvalue here
+			setArrayValue(vals, nullptr, nbLines * nbColumns);
+		}
+
 		maArrayHeritage(CoreModifiable& owner, KigsID  ID, T val0, T val1)
 			: CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
 			{
@@ -509,32 +516,45 @@ namespace Kigs
 		using maMatrix22DF = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2, 2,false,false,false,false>;
 		using maMatrix22DFOrphan = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2, 2, false, false, false, true>;
 		using maMatrix22DFInit = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2, 2,true>;
+		using maMatrix22DFDynamic = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2, 2, false,false,true>;
 		using maMatrix33DF = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3, 3,false,false,false,false>;
 		using maMatrix33DFOrphan = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3, 3, false, false, false, true>;
 		using maMatrix33DFInit = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3, 3, true>;
+		using maMatrix33DFDynamic = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3, 3, false, false, true>;
 
 		using maVect2DF = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 2,false,false,false,false>;
 		using maVect2DFOrphan = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 2, false, false, false, true>;
 		using maVect2DFInit = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 2, true>;
+		using maVect2DFDynamic = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 2, false, false, true>;
 		using maVect3DF = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 3,false,false,false,false>;
 		using maVect3DFOrphan = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 3, false, false, false, true>;
 		using maVect3DFInit = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 3, true>;
+		using maVect3DFDynamic = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 3, false,false,true>;
 		using maVect4DF = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 4,false,false,false,false>;
 		using maVect4DFOrphan = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 4, false, false, false, true>;
 		using maVect4DFInit = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 4, true>;
+		using maVect4DFDynamic = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 4, false,false,true>;
 		using maVect16DF = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 16,false,false,false,false>;
+		using maVect16DFDynamic = maArrayHeritage<false, float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 1, 16, false, false, true, false>;
 
 		using maVect2DI = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 2,false,false,false,false>;
 		using maVect2DIOrphan = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 2, false, false, false, true>;
 		using maVect2DIInit = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 2, true>;
+		using maVect2DIDynamic = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 2, false,false,true>;
 		using maVect3DI = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 3,false,false,false,false>;
 		using maVect3DIOrphan = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 3, false, false, false, true>;
 		using maVect3DIInit = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 3, true>;
+		using maVect3DIDynamic = maArrayHeritage<false, s32, CoreModifiable::ATTRIBUTE_TYPE::INT, 1, 3, false,false,true>;
 
 
 
 		template<typename element_type, CoreModifiable::ATTRIBUTE_TYPE attribute_type, s32 nbElements>
 		using maVector = maArrayHeritage<false, element_type, attribute_type, 1, nbElements,false,false,false,false>;
+
+		template<typename element_type, CoreModifiable::ATTRIBUTE_TYPE attribute_type, s32 nbElements>
+		using maVectorDynamic = maArrayHeritage<false, element_type, attribute_type, 1, nbElements, false, false,true, false>;
+
+
 
 	}
 }

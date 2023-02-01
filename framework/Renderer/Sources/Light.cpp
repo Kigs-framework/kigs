@@ -11,16 +11,16 @@ using namespace Kigs::Draw;
 IMPLEMENT_CLASS_INFO(Light)
 
 Light::Light(const std::string& name,CLASS_NAME_TREE_ARG) : Node3D(name,PASS_CLASS_NAME_TREE_ARG)
-,mSpecularColor(*this,false,"SpecularColor",1,1,1)
-,mAmbientColor(*this,false,"AmbientColor",0,0,0)
-,mDiffuseColor(*this,false,"DiffuseColor",1,1,1)
-,mSpotAttenuation(*this,false,"SpotAttenuation",0.0f)
-,mSpotCutOff(*this,false,"SpotCutOff",1.0f)
-,mConstAttenuation(*this,false,"ConstAttenuation",1.0f)
-,mLinAttenuation(*this,false,"LinAttenuation",0.01f)
-,mQuadAttenuation(*this,false,"QuadAttenuation",0.0001f)
-,mIsOn(*this,false,"IsOn",true)
-,mLightType(*this, true, "LightType", "POINT", "DIRECTIONAL", "SPOT") 	//0 for point, 1 for directional, 2 for spot
+,mSpecularColor(*this,"SpecularColor",1,1,1)
+,mAmbientColor(*this,"AmbientColor",0,0,0)
+,mDiffuseColor(*this,"DiffuseColor",1,1,1)
+,mSpotAttenuation(*this,"SpotAttenuation",0.0f)
+,mSpotCutOff(*this,"SpotCutOff",1.0f)
+,mConstAttenuation(*this,"ConstAttenuation",1.0f)
+,mLinAttenuation(*this,"LinAttenuation",0.01f)
+,mQuadAttenuation(*this,"QuadAttenuation",0.0001f)
+,mIsOn(*this,"IsOn",true)
+,mLightType(*this,"LightType", "POINT", "DIRECTIONAL", "SPOT") 	//0 for point, 1 for directional, 2 for spot
 {
 	
 }    

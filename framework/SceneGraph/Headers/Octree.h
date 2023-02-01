@@ -234,15 +234,15 @@ namespace Kigs
 			SP<OctreeSubNode> mRootSubNode;
 
 			//! min point of the bounding box
-			maVect3DF mBoundingBoxMin;
+			maVect3DFInit mBoundingBoxMin;
 			//! max point of the bounding box
-			maVect3DF mBoundingBoxMax;
+			maVect3DFInit mBoundingBoxMax;
 			//! subdivide level
-			maInt mSubdivideLevel;
+			maIntInit mSubdivideLevel;
 			//! max recursive level
-			maInt mMaxRecursiveLevel;
+			maIntInit mMaxRecursiveLevel;
 			//! if we only want a quadtree
-			maEnum<4> mQuadTreeAxis;
+			maEnumInit<4> mQuadTreeAxis;
 
 			//! map of scene node
 			unordered_map<SceneNode*, OctreeSubNode*>  mObjectNodeAssociation;

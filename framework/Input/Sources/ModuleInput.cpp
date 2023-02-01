@@ -35,9 +35,7 @@ void ModuleInput::Init(KigsCore* core, const std::vector<CoreModifiableAttribute
 
 	core->RegisterMainModuleList(this, InputModuleCoreIndex);
 
-#ifdef _KIGS_ONLY_STATIC_LIB_
- 	RegisterDynamic(PlatformInputModuleInit(core, params));
-#endif
+ 	RegisterPlatformSpecific(PlatformInputModuleInit(core, params));
 
 #if USE_VIRTUAL_SENSORS
 	DECLARE_FULL_CLASS_INFO(core, VirtualGyroscope, GyroscopeDevice, ModuleInput);

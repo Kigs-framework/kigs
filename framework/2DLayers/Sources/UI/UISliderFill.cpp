@@ -10,11 +10,11 @@ IMPLEMENT_CLASS_INFO(UISliderFill)
 
 UISliderFill::UISliderFill(const std::string& name,CLASS_NAME_TREE_ARG) : 
 UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-mVoidTexture(*this,false,"VoidTexture",""),
-mStartTexture(*this,false,"StartTexture",""),
-mMiddleTexture(*this,false,"MiddleTexture",""),
-mEndTexture(*this,false,"EndTexture",""),
-mDirection(*this,true,"Direction","Vertical","Horizontal"),
+mVoidTexture(*this,"VoidTexture",""),
+mStartTexture(*this,"StartTexture",""),
+mMiddleTexture(*this,"MiddleTexture",""),
+mEndTexture(*this,"EndTexture",""),
+mDirection(*this,"Direction","Vertical","Horizontal"),
 mStartTexturePointer(0),
 mMiddleTexturePointer(0),
 mEndTexturePointer(0),
@@ -34,7 +34,7 @@ mVoidTexturePointer(0)
 
 void UISliderFill::NotifyUpdate(const unsigned int labelid )
 {
-	if(labelid==mIsEnabled.getLabelID()) 
+	if(labelid== KigsID("IsEnabled")._id)
 	{
 		if(mIsEnabled == false)
 		{
@@ -98,7 +98,7 @@ void UISliderFill::InitModifiable()
 				it++;
 			}
 		}
-		mIsEnabled.changeNotificationLevel(Owner);
+		setOwnerNotification("IsEnabled", true);
 	}
 }
 

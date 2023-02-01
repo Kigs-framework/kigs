@@ -118,6 +118,7 @@ namespace Kigs
 		using maString = maStringHeritage<false,false,false,false,false>;
 		using maStringOrphan = maStringHeritage<false, false, false, false, true>;
 		using maStringInit = maStringHeritage<false, true>;
+		using maStringDynamic = maStringHeritage<false, false,false,true>;
 
 	}
 }

@@ -46,7 +46,7 @@ void	UIRenderingScreen::InitModifiable()
 			mTexturePointer->setValue("TransparencyType",2);
 			mTexturePointer->setValue("ForceNearest", (bool)mForceNearest);
 			mTexturePointer->refreshTextureInfos();
-			mForceNearest.changeNotificationLevel(Owner);
+			setOwnerNotification("ForceNearest", true);
 
 			float sx, sy;
 			mTexturePointer->GetSize(sx, sy);
@@ -75,7 +75,7 @@ void	UIRenderingScreen::InitModifiable()
 			// declare as a touch support potential target 
 			// search parent rendering screen
 		
-			mIsTouchable.changeNotificationLevel(Owner);
+			setOwnerNotification("IsTouchable", true);
 
 			// Inputs
 			if (mIsTouchable)
@@ -96,7 +96,7 @@ void	UIRenderingScreen::InitModifiable()
 void UIRenderingScreen::NotifyUpdate(unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
-	if (labelid == mIsTouchable.getID())
+	if (labelid == KigsID("IsTouchable")._id)
 	{
 		auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 		if (!mIsTouchable)
@@ -117,7 +117,7 @@ void UIRenderingScreen::NotifyUpdate(unsigned int labelid)
 			}
 		}
 	}
-	else if (labelid == mForceNearest.getID())
+	else if (labelid == KigsID("ForceNearest")._id)
 	{
 		mTexturePointer->setValue("ForceNearest", (bool)mForceNearest);
 	}

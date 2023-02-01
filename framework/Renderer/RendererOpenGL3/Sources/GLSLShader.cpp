@@ -51,7 +51,7 @@ API3DShader::~API3DShader()
 
 void API3DShader::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mVertexShader.getLabelID()) || (labelid == mFragmentShader.getLabelID()))
+	if ((labelid == KigsID("VertexShader")._id) || (labelid == KigsID("FragmentShader")._id))
 	{
 		Dealloc();
 		// rebuild only if both shaders are set
@@ -378,8 +378,10 @@ void	API3DShader::DelayedInit(TravState* state)
 		mCurrentShaderKey = 0;
 		insertBuildShader(mCurrentShaderKey, toAdd);
 		setCurrentBuildShader(mCurrentShaderKey);
-		mVertexShader.changeNotificationLevel(Owner);
-		mFragmentShader.changeNotificationLevel(Owner);
+
+		setOwnerNotification("VertexShader", true);
+		setOwnerNotification("FragmentShader", true);
+
 		Active(state);
 
 		// add child unifor as default uniform

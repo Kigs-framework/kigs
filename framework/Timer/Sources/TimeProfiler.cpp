@@ -183,7 +183,7 @@ void TimeProfiler::ShowProfilers()
 			{
 				if(	current->getName() != "GLOBAL")
 				{
-					printf("%s : %lf seconds , %lf percent \n",current->getName().c_str(),CastToDouble(current->GetTime()),CastToDouble(current->GetTime()*100.0/(double)sum));
+					printf("%s : %lf seconds , %lf percent \n",current->getName().c_str(),current->GetTime(),current->GetTime()*100.0/(double)sum);
 				}
 				current->mWasUpdate=false;
 				current->mComputedTime=0.0;
@@ -193,11 +193,11 @@ void TimeProfiler::ShowProfilers()
 	printf("_______________________________________________\n");
 	if(0!=GLOBAL)
 	{
-		printf("Global loop profiled time : %lf \n",CastToDouble(GLOBAL->GetTime()));
+		printf("Global loop profiled time : %lf \n",GLOBAL->GetTime());
 	}
-	printf("Total profiled time : %lf \n",CastToDouble(sum));
-	printf("Min dt : %lf %s\n",CastToDouble(min),minname.c_str());
-	printf("Max dt : %lf %s\n",CastToDouble(max),maxname.c_str());
+	printf("Total profiled time : %lf \n",sum);
+	printf("Min dt : %lf %s\n",min,minname.c_str());
+	printf("Max dt : %lf %s\n",max,maxname.c_str());
 	printf("_______________________________________________\n\n\n");
 }
 

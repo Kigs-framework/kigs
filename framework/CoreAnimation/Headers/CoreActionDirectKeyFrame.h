@@ -46,7 +46,7 @@ namespace Kigs
 					if (mPParamID == 0)
 					{
 						CoreModifiableAttribute* attr = ptr->getAttribute(mParamID);
-						mPParamID = (dataType*)attr->getRawValue();
+						mPParamID = (dataType*)attr->getRawValue(ptr.get());
 					}
 					if (mPParamID)
 					{

@@ -9,7 +9,7 @@ IMPLEMENT_CLASS_INFO(UISlidersGroup)
 
 UISlidersGroup::UISlidersGroup(const std::string& name,CLASS_NAME_TREE_ARG) : 
 UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-mComunalValue(*this,false,"ComunalValue",0)
+mComunalValue(*this,"ComunalValue",0)
 {
 	mSliderNumber=0;
 }

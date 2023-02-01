@@ -1504,7 +1504,7 @@ class Material;
 		void	InitModifiable() override;
 
 		//! name of the file to read in load method
-		maString	mFileName;
+		maStringInit	mFileName;
 
 		//! number of vertice
 		unsigned int		mVertexCount;

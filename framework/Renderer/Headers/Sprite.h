@@ -100,7 +100,7 @@ namespace Kigs
 			//! file name of the used texture
 			//maString mTextureFileName;
 			//! displacement
-			maFloat mDisplacement;
+			maFloatInit mDisplacement;
 			//! position
 			maVect2DF mPosition;
 			//! size 

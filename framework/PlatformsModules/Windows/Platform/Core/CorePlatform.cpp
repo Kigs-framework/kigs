@@ -192,7 +192,7 @@ int Kigs::Core::Win32fclose(FileHandle* handle)
 	return result;
 }
 
-std::string  Kigs::Core::to_utf8(const wchar_t* buffer, int len)
+std::string  Kigs::Core::to_utf8(const wchar_t* buffer, size_t len)
 {
 	int nChars = ::WideCharToMultiByte(
 		CP_UTF8,
@@ -225,7 +225,7 @@ std::string Kigs::Core::to_utf8(const std::wstring& str)
 	return to_utf8(str.c_str(), (int)str.size());
 }
 
-std::wstring Kigs::Core::to_wchar(const char* buffer, int len)
+std::wstring Kigs::Core::to_wchar(const char* buffer, size_t len)
 {
 	int nChars = ::MultiByteToWideChar(
 		CP_UTF8,

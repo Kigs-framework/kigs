@@ -21,17 +21,17 @@ IMPLEMENT_CLASS_INFO(Mesh)
  *	Constructor
  */
 Mesh::Mesh(const std::string& name,CLASS_NAME_TREE_ARG) : HDrawable(name,PASS_CLASS_NAME_TREE_ARG)
-, mVertexNeedUpdate(*this,false,"VertexNeedUpdate",false)
-, mColorNeedUpdate(*this,false,"ColorNeedUpdate",false)
-, mTexCoordNeedUpdate(*this,false,"TexCoordNeedUpdate",false)
-, mNormalNeedUpdate(*this,false,"NormalNeedUpdate",false)
-, mShareMaterial(*this,false,"ShareMaterial",true)
+, mVertexNeedUpdate(*this,"VertexNeedUpdate",false)
+, mColorNeedUpdate(*this,"ColorNeedUpdate",false)
+, mTexCoordNeedUpdate(*this,"TexCoordNeedUpdate",false)
+, mNormalNeedUpdate(*this,"NormalNeedUpdate",false)
+, mShareMaterial(*this,"ShareMaterial",true)
 #if _DEBUG
-, mShowVertex(*this,false,"ShowVertex",false)
+, mShowVertex(*this,"ShowVertex",false)
 #endif
-, mWireMode(*this,false,"WireMode",false)
-, mFileName(*this, true, "FileName")
-, mDynamicInit(*this, false, "DynamicInit", false)
+, mWireMode(*this,"WireMode",false)
+, mFileName(*this, "FileName")
+, mDynamicInit(*this, "DynamicInit", false)
 {
 	mVertexArray = 0;
 	mNormalArray = 0;
@@ -392,11 +392,11 @@ bool	Mesh::GetVertexPointer(CoreModifiable* sender,std::vector<CoreModifiableAtt
 	for(ci=params.begin();ci!=params.end();++ci)
 	{
 		CoreModifiableAttribute* current=(*ci);
-		if (current->getLabel() == "result")
+		if (current->id() == KigsID("result")._id)
 		{
 			result=current;
 		}
-		if (current->getLabel() == "buffersize")
+		if (current->id() == KigsID("buffersize")._id)
 		{
 			buffersize=current;
 		}
@@ -423,7 +423,7 @@ bool	Mesh::GetColorPointer(CoreModifiable* sender,std::vector<CoreModifiableAttr
 	for(ci=params.begin();ci!=params.end();++ci)
 	{
 		CoreModifiableAttribute* current=(*ci);
-		if (current->getLabel() == "result")
+		if (current->id() == KigsID("result")._id)
 		{
 			result=current;
 			break;
@@ -447,7 +447,7 @@ bool	Mesh::GetNormalPointer(CoreModifiable* sender,std::vector<CoreModifiableAtt
 	for(ci=params.begin();ci!=params.end();++ci)
 	{
 		CoreModifiableAttribute* current=(*ci);
-		if (current->getLabel() == "result")
+		if (current->id() == KigsID("result")._id)
 		{
 			result=current;
 			break;
@@ -471,7 +471,7 @@ bool	Mesh::GetTexCoordPointer(CoreModifiable* sender,std::vector<CoreModifiableA
 	for(ci=params.begin();ci!=params.end();++ci)
 	{
 		CoreModifiableAttribute* current=(*ci);
-		if (current->getLabel() == "result")
+		if (current->id() == KigsID("result")._id)
 		{
 			result=current;
 			break;

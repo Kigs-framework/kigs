@@ -2,17 +2,10 @@
 
 #include "CoreTypes.h"
 
-#define USE_CLASS_NAME_TREE 0
 
-#if USE_CLASS_NAME_TREE
-#define CLASS_NAME_TREE_ARG CoreClassNameTree* classNameTree
-#define DECLARE_CLASS_NAME_TREE_ARG CLASS_NAME_TREE_ARG=0
-#define PASS_CLASS_NAME_TREE_ARG EnrichClassNameTree(classNameTree, mClassID, mRuntimeType)
-#else
-#define CLASS_NAME_TREE_ARG std::vector<CoreModifiableAttribute*>* args
-#define DECLARE_CLASS_NAME_TREE_ARG CLASS_NAME_TREE_ARG=0
-#define PASS_CLASS_NAME_TREE_ARG args
-#endif
+#define CLASS_NAME_TREE_ARG std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* mappedAttr, std::vector<CoreModifiableAttribute*>* args
+#define DECLARE_CLASS_NAME_TREE_ARG std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* mappedAttr=nullptr, std::vector<CoreModifiableAttribute*>* args=0
+#define PASS_CLASS_NAME_TREE_ARG addAllMappedAttributes<true>(this,mappedAttr),args
 
 #ifdef KEEP_NAME_AS_STRING
 #define DECLARE_GetRuntimeType(currentClass) virtual const std::string& GetRuntimeType() const override {return currentClass::mRuntimeType._id_name;} 
@@ -125,13 +118,13 @@ static currentClass* Get(const std::string &name)\
 {\
 	return parentClass::GetFirstInstanceByName(#currentClass, name, false)->as<currentClass>();\
 }\
+template<bool T>\
+static std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* addAllMappedAttributes(CurrentClassType* localthis,std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* parent=nullptr)\
+{\
+	return parent; \
+}\
 public:
 
-//static void GetClassNameTree(std::vector<KigsID>& classNameTree) {parentClass::GetClassNameTree(classNameTree); classNameTree.push_back(currentClass::mClassID);}\
-
-//virtual void	callConstructor(RefCountedBaseClass* tocall,const std::string& instancename) const { ((currentClass*)tocall)->currentClass::currentClass(instancename);	};
-
-//friend class maMethod;
 
 /*! macro used to define a instanciable class
  to be set in the class definition
@@ -144,7 +137,7 @@ DECLARE_ABSTRACT_CLASS_INFO(currentClass,parentClass,moduleManagerName) \
 static CMSP CreateInstance(const std::string& instancename, std::vector<CoreModifiableAttribute*>* args=nullptr) \
 {   \
 	CMallocator<currentClass> cmalloc;\
-	auto instance = std::allocate_shared<currentClass>(cmalloc,instancename, args); \
+	auto instance = std::allocate_shared<currentClass>(cmalloc, instancename, nullptr, args); \
 	instance->RegisterToCore();\
 	return instance; \
 };
@@ -199,4 +192,22 @@ DECLARE_CLASS_INFO_WITHOUT_FACTORY(currentClass,#returnclassname)
 #define IMPLEMENT_CONSTRUCTOR(currentClass) currentClass::currentClass(const std::string& name, CLASS_NAME_TREE_ARG) : currentClass::ParentClassType(name, PASS_CLASS_NAME_TREE_ARG)
 
 #define BASE_ATTRIBUTE(name, ...) {*this, #name, __VA_ARGS__ }
-#define INIT_ATTRIBUTE(name, ...) {*this, true, #name, __VA_ARGS__ }
+
+#define CREATE_LOCAL_ATTRIBUTE(name)  uintptr_t name##WrapAttr[(sizeof(CoreModifiableAttributeMap<decltype(name),0>)+sizeof(uintptr_t)-1)/sizeof(uintptr_t)];
+#define ADD_MAPPED_ATTRIBUTE(name) localthis->addMappedAttribute<decltype(localthis->name)>(offsetof(CurrentClassType,name),#name,parent,(CoreModifiableAttribute*)(localthis->name##WrapAttr));
+
+// WRAP_ATTRIBUTES uses uintptr_t placeholders for CoreModifiableAttributeMap
+#define WRAP_ATTRIBUTES(...) \
+protected:\
+FOR_EACH(CREATE_LOCAL_ATTRIBUTE, __VA_ARGS__)\
+public:\
+template<>\
+static vector<std::pair<KigsID,CoreModifiableAttribute*>>* addAllMappedAttributes<true>(CurrentClassType* localthis,vector<std::pair<KigsID,CoreModifiableAttribute*>>* parent)\
+{\
+	if(!parent) {parent=new vector<std::pair<KigsID,CoreModifiableAttribute*>>();} \
+	FOR_EACH(ADD_MAPPED_ATTRIBUTE, __VA_ARGS__)\
+	return parent; \
+}
+
+// This one is to be used only inside the owner class code
+#define AS_WRAPPED(name)	((CoreModifiableAttribute*)(name##WrapAttr))

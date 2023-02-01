@@ -97,13 +97,13 @@ void	UIShapeDisc::InitModifiable()
 	if (!IsInit())
 	{
 		ParentClassType::InitModifiable();
-		mSliceCount.changeNotificationLevel(Owner);
+		setOwnerNotification("SliceCount", true);
 	}
 }
 
 void UIShapeDisc::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == mSliceCount.getLabelID())
+	if (labelid == KigsID("SliceCount")._id)
 	{
 		for (auto p : GetParents())
 		{

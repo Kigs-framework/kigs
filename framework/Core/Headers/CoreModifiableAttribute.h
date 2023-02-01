@@ -7,6 +7,8 @@
 #include "CoreModifiable.h"
 #include "CoreItem.h"
 #include "usString.h"
+#include "CoreAttributeTypeTemplateConverter.h"
+#include "TecLibs/Tec3D.h"
 #include <any>
 
 namespace Kigs
@@ -104,6 +106,8 @@ auto& operator=(const CurrentAttributeType& value)\
 * \brief	 Base class for all CoreModifiableAttribute . This class is just composed of virtual methods
 */
 // ****************************************
+
+
 		class CoreModifiableAttribute
 		{
 			CoreModifiableAttribute(const CoreModifiableAttribute& attribute) = delete;
@@ -484,6 +488,7 @@ auto& operator=(const CurrentAttributeType& value)\
 
 	using maRawPtr = maRawPtrHeritage<false, false, false, false, false>;
 	using maRawPtrOrphan = maRawPtrHeritage<false, false, false, false, true>;
+	using maRawPtrDynamic = maRawPtrHeritage<false, false, false, true, false>;
 
 
 		// Template specializations defined in CoreModifiable.cpp
@@ -544,3 +549,5 @@ namespace Kigs
 
 	}
 }
+
+#include "CoreModifiableAttributeMap.h"

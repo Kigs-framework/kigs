@@ -9,35 +9,36 @@ IMPLEMENT_CLASS_INFO(UIGridLayout)
 
 UIGridLayout::UIGridLayout(const std::string& name, CLASS_NAME_TREE_ARG) :
 	UILayout(name, PASS_CLASS_NAME_TREE_ARG)
-	, mColumns(*this, false, "Columns", 0)
-	, mRowHeight(*this, false, "RowHeight", 0)
-	, mColumnWidth(*this, false, "ColumnWidth", 0)
-	, mHeaderRow(*this, false, "HeaderRow", false)
-	, mPadding(*this, false, "Padding", 0, 0)
-	, mSortByPriority(*this, false, "SortByPriority", false)
-	, mResizeElements(*this, false, "ResizeElements", false)
-	, mAutoResize(*this, false, "AutoResize", true)
+	, mColumns(*this, "Columns", 0)
+	, mRowHeight(*this, "RowHeight", 0)
+	, mColumnWidth(*this, "ColumnWidth", 0)
+	, mHeaderRow(*this, "HeaderRow", false)
+	, mPadding(*this, "Padding", 0, 0)
+	, mSortByPriority(*this, "SortByPriority", false)
+	, mResizeElements(*this, "ResizeElements", false)
+	, mAutoResize(*this, "AutoResize", true)
 {
-	mColumns.changeNotificationLevel(Owner);
-	mPadding.changeNotificationLevel(Owner);
-	mHeaderRow.changeNotificationLevel(Owner);
-	mRowHeight.changeNotificationLevel(Owner);
-	mColumnWidth.changeNotificationLevel(Owner);
-	mSortByPriority.changeNotificationLevel(Owner);
-	mResizeElements.changeNotificationLevel(Owner);
-	mAutoResize.changeNotificationLevel(Owner);
+	setOwnerNotification("Columns", true);
+	setOwnerNotification("Padding", true);
+	setOwnerNotification("HeaderRow", true);
+	setOwnerNotification("RowHeight", true);
+	setOwnerNotification("ColumnWidth", true);
+	setOwnerNotification("SortByPriority", true);
+	setOwnerNotification("ResizeElements", true);
+	setOwnerNotification("AutoResize", true);
+
 }
 
 void UIGridLayout::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mColumns.getLabelID()) ||
-		(labelid == mHeaderRow.getLabelID()) ||
-		(labelid == mRowHeight.getLabelID()) ||
-		(labelid == mColumnWidth.getLabelID()) ||
-		(labelid == mSortByPriority.getLabelID()) ||
-		(labelid == mResizeElements.getLabelID()) ||
-		(labelid == mAutoResize.getLabelID()) ||
-		(labelid == mPadding.getLabelID()))
+	if ((labelid == KigsID("Columns")._id ) ||
+		(labelid == KigsID("HeaderRow")._id ) ||
+		(labelid == KigsID("RowHeight")._id ) ||
+		(labelid == KigsID("ColumnWidth")._id ) ||
+		(labelid == KigsID("SortByPriority")._id ) ||
+		(labelid == KigsID("ResizeElements")._id ) ||
+		(labelid == KigsID("AutoResize")._id ) ||
+		(labelid == KigsID("Padding")._id ))
 	{
 		mNeedRecompute = true;
 	}

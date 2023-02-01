@@ -8,22 +8,22 @@ IMPLEMENT_CLASS_INFO(UIBoxLayout)
 
 IMPLEMENT_CONSTRUCTOR(UIBoxLayout)
 {
-	mPadding.changeNotificationLevel(Owner);
-	mSortByPriority.changeNotificationLevel(Owner);
-	mVertical.changeNotificationLevel(Owner);
-	mAlignment.changeNotificationLevel(Owner);
-	mResizeLayoutX.changeNotificationLevel(Owner);
-	mResizeLayoutY.changeNotificationLevel(Owner);
+	setOwnerNotification("Padding", true);
+	setOwnerNotification("SortByPriority", true);
+	setOwnerNotification("Vertical", true);
+	setOwnerNotification("Alignment", true);
+	setOwnerNotification("ResizeLayoutX", true);
+	setOwnerNotification("ResizeLayoutY", true);
 }
 
 void UIBoxLayout::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mSortByPriority.getLabelID()) ||
-		(labelid == mVertical.getLabelID()) ||
-		(labelid == mAlignment.getLabelID()) ||
-		(labelid == mPadding.getLabelID()) ||
-		(labelid == mResizeLayoutX.getLabelID()) ||
-		(labelid == mResizeLayoutY.getLabelID()))
+	if ((labelid == KigsID("SortByPriority")._id ) ||
+		(labelid == KigsID("Vertical")._id ) ||
+		(labelid == KigsID("Alignment")._id) ||
+		(labelid == KigsID("Padding")._id ) ||
+		(labelid == KigsID("ResizeLayoutX")._id) ||
+		(labelid == KigsID("ResizeLayoutY")._id))
 	{
 		mNeedRecompute = true;
 	}

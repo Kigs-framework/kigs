@@ -903,7 +903,7 @@ namespace Kigs
 			CoreModifiableAttributeOperator(const std::string& path, CoreModifiable* target) : mAttributePath(path), mTarget(target), mAttribute(0), mArrayAttributeIndex(-1), mIsMethod(0){};
 
 			// construct from an existing attribute
-			CoreModifiableAttributeOperator(CoreModifiableAttribute* attr) : mTarget(0), mAttribute(attr), mArrayAttributeIndex(-1), mIsMethod(0) 
+			CoreModifiableAttributeOperator(CoreModifiableAttribute* attr, CoreModifiable* target, const KigsID& id) : mTarget(target), mID(id), mAttribute(attr), mArrayAttributeIndex(-1), mIsMethod(0) 
 			{
 				mAttributePath = "";
 			};
@@ -923,6 +923,7 @@ namespace Kigs
 
 			std::string				mAttributePath;
 			CoreModifiable*				mTarget;
+		KigsID						mID;
 
 			union
 			{

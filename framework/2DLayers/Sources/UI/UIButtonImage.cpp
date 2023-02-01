@@ -10,9 +10,9 @@ IMPLEMENT_CLASS_INFO(UIButtonImage)
 
 UIButtonImage::UIButtonImage(const std::string& name,CLASS_NAME_TREE_ARG) : 
 UIButton(name, PASS_CLASS_NAME_TREE_ARG)
-,mUpTexture(*this,false,"UpTexture","")
-,mDownTexture(*this,false,"DownTexture","")
-,mOverTexture(*this,false,"OverTexture","")
+,mUpTexture(*this,"UpTexture","")
+,mDownTexture(*this,"DownTexture","")
+,mOverTexture(*this,"OverTexture","")
 {
 }
 
@@ -58,19 +58,18 @@ void UIButtonImage::InitModifiable()
 
 		AutoSize();
 
-
-		mUpTexture.changeNotificationLevel(Owner);
-		mDownTexture.changeNotificationLevel(Owner);
-		mOverTexture.changeNotificationLevel(Owner);
+		setOwnerNotification("UpTexture", true);
+		setOwnerNotification("DownTexture", true);
+		setOwnerNotification("OverTexture", true);
 	}
 
 }
 
 void UIButtonImage::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == mUpTexture.getLabelID() ||
-		labelid == mDownTexture.getLabelID() ||
-		labelid == mOverTexture.getLabelID())
+	if (labelid == KigsID("UpTexture")._id  ||
+		labelid == KigsID("DownTexture")._id ||
+		labelid == KigsID("OverTexture")._id)
 	{
 		ChangeTexture(mUpTexture.const_ref(), mOverTexture.const_ref(), mDownTexture.const_ref());
 	}

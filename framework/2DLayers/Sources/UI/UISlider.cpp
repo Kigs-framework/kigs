@@ -12,14 +12,14 @@ IMPLEMENT_CLASS_INFO(UISlider)
 
 UISlider::UISlider(const std::string& name,CLASS_NAME_TREE_ARG) : 
 UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-mUpTexture(*this,false,"UpTexture",""),
-mDownTexture(*this,false,"DownTexture",""),
-mOverTexture(*this,false,"OverTexture",""),
-mClickUpAction(*this, false, "ClickUpAction", ""),
-mParameter(*this, false, "Parameter", std::string("")),
-mMoveAction(*this,false,"MoveAction",""),
-mInitialRatio(*this, true, "InitialRatio", 0),
-mDirection(*this,true,"Direction","Vertical","Horizontal")
+mUpTexture(*this,"UpTexture",""),
+mDownTexture(*this,"DownTexture",""),
+mOverTexture(*this,"OverTexture",""),
+mClickUpAction(*this,"ClickUpAction", ""),
+mParameter(*this,"Parameter", std::string("")),
+mMoveAction(*this,"MoveAction",""),
+mInitialRatio(*this, "InitialRatio", 0),
+mDirection(*this,"Direction","Vertical","Horizontal")
 {
 	
 }
@@ -57,7 +57,7 @@ void	UISlider::ReloadTexture()
 
 void UISlider::NotifyUpdate(const unsigned int labelid )
 {
-	if(labelid==mIsEnabled.getLabelID()) 
+	if(labelid == KigsID("IsEnabled")._id )
 	{
 		// if disabled "reset" button state
 		if(mIsEnabled == false)
@@ -197,8 +197,7 @@ void UISlider::InitModifiable()
 			}
 		}
 
-		mIsEnabled.changeNotificationLevel(Owner);
-
+		setOwnerNotification("IsEnabled", true);
 	}
 }
 

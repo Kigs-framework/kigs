@@ -129,36 +129,49 @@ namespace Kigs
 		template<typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType = TypeToEnum<T>::value>
 		using maNumericInit = maNumericHeritage<false, T, attributeType, true>;
 
+		template<typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType = TypeToEnum<T>::value>
+		using maNumericDynamic = maNumericHeritage<false, T, attributeType, false,false,true>;
+
 		using maChar = maNumeric<s8>;
 		using maCharOrphan = maNumericOrphan<s8>;
 		using maCharInit = maNumericInit<s8>;
+		using maCharDynamic = maNumericDynamic<s8>;
 		using maShort = maNumeric<s16>;
 		using maShortOrphan = maNumericOrphan<s16>;
 		using maShortInit = maNumericInit<s16>;
+		using maShortDynamic = maNumericDynamic<s16>;
 		using maInt = maNumeric<s32>;
 		using maIntOrphan = maNumericOrphan<s32>;
 		using maIntInit = maNumericInit<s32>;
+		using maIntDynamic = maNumericDynamic<s32>;
 		using maLong = maNumeric<s64>;
 		using maLongOrphan = maNumericOrphan<s64>;
 		using maLongInit = maNumericInit<s64>;
+		using maLongDynamic = maNumericDynamic<s64>;
 		using maUChar = maNumeric<u8>;
 		using maUCharOrphan = maNumericOrphan<u8>;
 		using maUCharInit = maNumericInit<u8>;
+		using maUCharDynamic = maNumericDynamic<u8>;
 		using maUShort = maNumeric<u16>;
 		using maUShortOrphan = maNumericOrphan<u16>;
 		using maUShortInit = maNumericInit<u16>;
+		using maUShortDynamic = maNumericDynamic<u16>;
 		using maUInt = maNumeric<u32>;
 		using maUIntOrphan = maNumericOrphan<u32>;
 		using maUIntInit = maNumericInit<u32>;
+		using maUIntDynamic = maNumericDynamic<u32>;
 		using maULong = maNumeric<u64>;
 		using maULongOrphan = maNumericOrphan<u64>;
 		using maULongInit = maNumericInit<u64>;
+		using maULongDynamic = maNumericDynamic<u64>;
 		using maFloat = maNumeric<float>;
 		using maFloatOrphan = maNumericOrphan<float>;
 		using maFloatInit = maNumericInit<float>;
+		using maFloatDynamic = maNumericDynamic<float>;
 		using maDouble = maNumeric<double>;
 		using maDoubleOrphan = maNumericOrphan<double>;
 		using maDoubleInit = maNumericInit<double>;
+		using maDoubleDynamic = maNumericDynamic<double>;
 
 		// ****************************************
 		// * maComputedNumericHeritage class

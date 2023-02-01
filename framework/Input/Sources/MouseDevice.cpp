@@ -7,8 +7,8 @@ using namespace Kigs::Input;
 IMPLEMENT_CLASS_INFO(MouseDevice)
 
 MouseDevice::MouseDevice(const std::string& name,CLASS_NAME_TREE_ARG) : InputDevice(name,PASS_CLASS_NAME_TREE_ARG),
-mPosX(*this,false,"PosX",0.0f),
-mPosY(*this,false,"PosY",0.0f)
+mPosX(*this,"PosX",0.0f),
+mPosY(*this,"PosY",0.0f)
 {
 	mWheelCount=mButtonsCount=0;
 	setReadOnly("PosX");

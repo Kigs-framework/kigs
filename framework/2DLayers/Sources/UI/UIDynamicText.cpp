@@ -208,7 +208,7 @@ void UIDynamicText::InitModifiable()
 		if(mPickable)
 			if(theInputModule) mEventState = theInputModule->getTouchManager()->registerEvent(this, "ManageClickTouchEvent", Input::Click, Input::EmptyFlag);
 		if (theInputModule)
-			mPickable.changeNotificationLevel(Owner);
+			setOwnerNotification("Pickable", true);
 	}
 }
 
@@ -896,31 +896,31 @@ void UIDynamicText::SetUpNodeIfNeeded()
 
 void UIDynamicText::NotifyUpdate(const unsigned int labelID)
 {
-	if (labelID == mText.getID() || labelID == mIgnoreTags.getID())
+	if (labelID == mText.id() || labelID == mIgnoreTags.id())
 	{
 		mTextChanged = true;
 	}
-	else if (labelID == mSize.getID()
-		|| labelID == mTextAlign.getID()
-		|| labelID == mMaxWidth.getID()
-		|| labelID == mFontScaleFactor.getID()
-		|| labelID == mSizeModeX.getID()
-		|| labelID == mSizeModeY.getID()
-		|| labelID == mSelectedCharacter.getID()
-		|| labelID == mShowCursor.getID()
-		|| labelID == mIgnoreColorTags.getID()
-		|| labelID == mExtraLineSpacing.getID()
-		|| labelID == mOpacity.getID()
-		|| labelID == mColor.getID()
+	else if (labelID == mSize.id()
+		|| labelID == mTextAlign.id()
+		|| labelID == mMaxWidth.id()
+		|| labelID == mFontScaleFactor.id()
+		|| labelID == mSizeModeX.id()
+		|| labelID == mSizeModeY.id()
+		|| labelID == mSelectedCharacter.id()
+		|| labelID == mShowCursor.id()
+		|| labelID == mIgnoreColorTags.id()
+		|| labelID == mExtraLineSpacing.id()
+		|| labelID == mOpacity.id()
+		|| labelID == mColor.id()
 		)
 	{
 		mChanged = true;
 	}
-	else if (labelID == mFont.getID() || labelID == mFontSize.getID())
+	else if (labelID == mFont.id() || labelID == mFontSize.id())
 	{
 		mFontChanged = true;
 	}
-	else if (labelID == mPickable.getID())
+	else if (labelID == mPickable.id())
 	{
 		auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 		if (mPickable)
@@ -1030,7 +1030,7 @@ usString Kigs::Draw2D::TextTagProcessor(const usString& text, std::vector<TextTa
 			auto vec = item_ref.SplitByCharacter('@');
 			if (vec.size() >= 2)
 			{
-				maReference ref{ "", vec[0].ToString() };
+				maReferenceOrphan ref{ "", vec[0].ToString() };
 				CoreModifiable* cm = ref;
 				KIGS_ASSERT(cm != nullptr);
 				if (cm)
@@ -1082,7 +1082,7 @@ usString Kigs::Draw2D::TextTagProcessor(const usString& text, std::vector<TextTa
 			auto vec = item_ref.SplitByCharacter('@');
 			if (vec.size() >= 2)
 			{
-				maReference ref{ "", vec[0].ToString() };
+				maReferenceOrphan ref{ "", vec[0].ToString() };
 				CoreModifiable* cm = ref;
 				KIGS_ASSERT(cm != nullptr);
 				if (cm)
@@ -1124,7 +1124,7 @@ usString Kigs::Draw2D::TextTagProcessor(const usString& text, std::vector<TextTa
 
 			std::string item_ref = reference_parser;
 
-			maReference ref{ "", item_ref };
+			maReferenceOrphan ref{ "", item_ref };
 			CoreModifiable* cm = ref;
 			if (obj && cm && cm->isSubType("UIItem") && cm->getFirstParent("UIItem") == obj)
 			{

@@ -58,7 +58,7 @@ namespace Kigs
 			LuaKigsBindModule* mLuaModule;
 
 			// Lua script or reference on script file
-			maString				mScript;
+			maStringInit			mScript;
 
 			// enable / disable lua scripting
 			maBool					mEnabled;

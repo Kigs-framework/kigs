@@ -27,12 +27,12 @@ IMPLEMENT_CLASS_INFO(ShaderBase)
 
 ShaderBase::ShaderBase(const std::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)
 , mCurrentShader(nullptr)
-, mVertexShader(*this, false, "VertexShader", "")
-, mFragmentShader(*this, false, "FragmentShader", "")
-, mGeometryShader(*this, false, "GeometryShader", "")
-, mAttachedCamera(*this, false, "AttachedCamera", "")
-, museGenericLight(*this, false, "useGenericLight", false)
-, misGeneric(*this, false, "isGeneric", false)
+, mVertexShader(*this, "VertexShader", "")
+, mFragmentShader(*this, "FragmentShader", "")
+, mGeometryShader(*this, "GeometryShader", "")
+, mAttachedCamera(*this, "AttachedCamera", "")
+, museGenericLight(*this, "useGenericLight", false)
+, misGeneric(*this, "isGeneric", false)
 , mCurrentShaderKey(-1)
 {
 	mRenderPassMask = 0xFFFFFFFF;
@@ -45,7 +45,7 @@ ShaderBase::~ShaderBase()
 
 void ShaderBase::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mVertexShader.getLabelID()) || (labelid == mFragmentShader.getLabelID()))
+	if ((labelid == KigsID("VertexShader")._id) || (labelid == KigsID("FragmentShader")._id))
 	{
 		Dealloc();
 		// rebuild only if both shaders are set

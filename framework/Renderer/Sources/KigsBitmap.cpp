@@ -14,7 +14,7 @@ using namespace Kigs::Draw;
 IMPLEMENT_CLASS_INFO(KigsBitmap)
 
 KigsBitmap::KigsBitmap(const std::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)
-, mSize(*this, true, "Size",0,0)
+, mSize(*this, "Size",0,0)
 , mRawPixels(0)
 {
 	mDirtyZone.SetEmpty();

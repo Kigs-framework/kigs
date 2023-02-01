@@ -766,7 +766,7 @@ void CorePackage::PackageCreationStruct::ExportFiles(const FileTreeNode& node, S
 	{
 		if (node.mFileNames->mMemfile)
 		{
-			Platform_fwrite(node.mFileNames->mMemfile->buffer(), 1, node.mFileNames->mMemfile->length(), L_File.get());
+			Platform_fwrite(node.mFileNames->mMemfile->buffer(), 1,(long) node.mFileNames->mMemfile->length(), L_File.get());
 
 			u64 padFileSize = (4 - (node.mFileNames->mMemfile->length() & 3)) & 3;
 			if (padFileSize)

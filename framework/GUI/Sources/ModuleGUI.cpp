@@ -24,7 +24,7 @@ void ModuleGUI::Init(KigsCore* core, const std::vector<CoreModifiableAttribute*>
 
 	core->RegisterMainModuleList(this,GUIModuleCoreIndex);
 
-	RegisterDynamic(PlatformGUIModuleInit(core,params));
+	RegisterPlatformSpecific(PlatformGUIModuleInit(core,params));
 }
 
 void ModuleGUI::Close()

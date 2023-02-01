@@ -39,7 +39,7 @@ namespace Kigs
 
 			SmartPointer<CoreModifiable> mFrameBufferStream;
 
-			maString mVideoFile;
+			maStringInit mVideoFile;
 			maReference mFrameBuffer;
 			maBool mAutoplay;
 			maBool mLoop;

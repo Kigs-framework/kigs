@@ -155,5 +155,7 @@ namespace Kigs
 		template<unsigned int nbElements>
 		using maEnum = maEnumHeritage<false, nbElements,false,false,false,false>;
 
+		template<unsigned int nbElements>
+		using maEnumInit = maEnumHeritage<false, nbElements, true, false, false, false>;
 	}
 }

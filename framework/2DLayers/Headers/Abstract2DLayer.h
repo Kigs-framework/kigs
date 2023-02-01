@@ -66,8 +66,8 @@ namespace Kigs
 			void	EndDrawing(Scene::TravState* state);
 
 			//! pointer to the renderingSreen
-			maReference mRenderingScreen;
-			maReference mManager;
+			maReferenceInit mRenderingScreen;
+			maReferenceInit mManager;
 
 			//! size
 			maVect2DF    mSize;

@@ -10,10 +10,10 @@ IMPLEMENT_CLASS_INFO(UI3DLinkedItem)
 
 UI3DLinkedItem::UI3DLinkedItem(const std::string& name, CLASS_NAME_TREE_ARG)
 	: UIItem(name, PASS_CLASS_NAME_TREE_ARG)
-	, m3DPosition(*this, false, "3DPosition", 0.0f, 0.0f, 0.0f)
-	, mCamera(*this, false, "Camera", "")
-	, mNode(*this, false, "Node", "")
-	, mUseUpOrientation(*this, false, "UseUpOrientation", false)
+	, m3DPosition(*this, "3DPosition", 0.0f, 0.0f, 0.0f)
+	, mCamera(*this, "Camera", "")
+	, mNode(*this, "Node", "")
+	, mUseUpOrientation(*this, "UseUpOrientation", false)
 {
 	
 }
@@ -23,14 +23,14 @@ void	UI3DLinkedItem::InitModifiable()
 	UIItem::InitModifiable();
 	if (_isInit)
 	{
-		mNode.changeNotificationLevel(Owner);
-		mCamera.changeNotificationLevel(Owner);
+		setOwnerNotification("Node", true);
+		setOwnerNotification("Camera", true);
 	}
 }
 
 void UI3DLinkedItem::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == mNode.getLabelID() || labelid == mCamera.getLabelID())
+	if (labelid == KigsID("Node")._id || labelid == KigsID("Camera")._id)
 	{
 		if((CoreModifiable*)mCamera==NULL|| (CoreModifiable*)mNode ==NULL)
 		{

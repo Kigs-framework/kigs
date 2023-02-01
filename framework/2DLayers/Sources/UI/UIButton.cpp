@@ -19,16 +19,16 @@ using namespace Kigs::Input;
 IMPLEMENT_CLASS_INFO(UIButton)
 
 IMPLEMENT_CONSTRUCTOR(UIButton)
-	, mClickDownAction(*this, false, "ClickDownAction", "")
-	, mClickUpAction(*this, false, "ClickUpAction", "")
-	, mMouseOverAction(*this, false, "MouseOverAction", "")
-	, mMouseOutAction(*this, false, "MouseOutAction", "")
-	, mUnSelectAction(*this, false, "UnSelectAction", "")
-	, mParameter(*this, false, "Parameter", (std::string)"")
-	, mStayPressed(*this, false, "StayPressed", false)
-	, mKeepClickOutside(*this, false, "KeepClickOutside", false)
-	, mDefaultPressed(*this, false, "DefaultPressed", false)
-	, mAutoResize(*this, false, "AutoResize", true)
+	, mClickDownAction(*this, "ClickDownAction", "")
+	, mClickUpAction(*this, "ClickUpAction", "")
+	, mMouseOverAction(*this, "MouseOverAction", "")
+	, mMouseOutAction(*this, "MouseOutAction", "")
+	, mUnSelectAction(*this, "UnSelectAction", "")
+	, mParameter(*this, "Parameter", (std::string)"")
+	, mStayPressed(*this, "StayPressed", false)
+	, mKeepClickOutside(*this, "KeepClickOutside", false)
+	, mDefaultPressed(*this, "DefaultPressed", false)
+	, mAutoResize(*this, "AutoResize", true)
 	, mInside(false)
 	, mIsDown(false)
 	, mIsMouseOver(false)
@@ -37,7 +37,7 @@ IMPLEMENT_CONSTRUCTOR(UIButton)
 
 void UIButton::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == mIsEnabled.getLabelID())
+	if (labelid == KigsID("IsEnabled")._id )
 	{
 		// if disabled "reset" button state
 		if (mIsEnabled == false)
@@ -46,7 +46,7 @@ void UIButton::NotifyUpdate(const unsigned int labelid)
 			mIsMouseOver = false;
 		}
 	}
-	else if (labelid == mSize.getLabelID())
+	else if (labelid == KigsID("Size")._id )
 	{
 		if (mParent && mParent->isSubType("UIGroupButton"))
 			((UIGroupButton*)mParent)->reComputeSize();
@@ -69,8 +69,8 @@ void UIButton::InitModifiable()
 		if (mDefaultPressed && mStayPressed)
 			mIsDown = true;
 
-		mIsEnabled.changeNotificationLevel(Owner);
-		mSize.changeNotificationLevel(Owner);
+		setOwnerNotification("IsEnabled", true);
+		setOwnerNotification("Size", true);
 
 		auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 		// retreive click for activation

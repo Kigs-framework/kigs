@@ -34,10 +34,10 @@ void	OrbitCameraUp::Init(CoreModifiable* toUpgrade)
 	*mOrbitPoint = pos + view * (*mOrbitDistance);
 	*mOrbitUp = camera->GetUpVector();
 
-	mOrbitDirection->changeNotificationLevel(Owner);
-	mOrbitPoint->changeNotificationLevel(Owner);
-	mOrbitUp->changeNotificationLevel(Owner);
-	mOrbitDistance->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("OrbitDirection", true);
+	toUpgrade->setOwnerNotification("OrbitPoint", true);
+	toUpgrade->setOwnerNotification("OrbitUp", true);
+	toUpgrade->setOwnerNotification("OrbitDistance", true);
 
 	KigsCore::Instance()->GetCoreApplication()->AddAutoUpdate(toUpgrade);
 }

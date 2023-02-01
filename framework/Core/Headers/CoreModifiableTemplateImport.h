@@ -665,9 +665,9 @@ namespace Kigs
 
 			KigsID id(attrname->getRefString());
 
-			CoreModifiableAttribute* attr = currentModifiable->findAttributeOnThisOnly(id);
+		auto attr = currentModifiable->findAttributeOnThisOnly(id);
 			bool attrfound = false;
-			if (attr)
+		if (attr.first)
 			{
 				XMLAttributeBase* attrvalue = currentNode->getAttribute("V", "Value");
 
@@ -676,17 +676,17 @@ namespace Kigs
 					std::string tempvalue = attrvalue->getString();
 					if (AttributeNeedEval(tempvalue))
 					{
-						EvalAttribute(tempvalue, currentModifiable, attr);
+						EvalAttribute(tempvalue, currentModifiable, attr.first);
 					}
 
 					// for usstring, manage UTF-8
-					if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
+					if ((attr.first->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 					{
-						attr->setValue((const UTF8Char*)tempvalue.c_str(), currentModifiable);
+						attr.first->setValue((const UTF8Char*)tempvalue.c_str(), (CoreModifiable*)attr.second);
 					}
 					else
 					{
-						attr->setValue(tempvalue, currentModifiable);
+						attr.first->setValue(tempvalue, (CoreModifiable*)attr.second);
 					}
 				}
 				else
@@ -710,16 +710,16 @@ namespace Kigs
 								std::string tempvalue = sonXML->getString();
 								if (AttributeNeedEval(tempvalue))
 								{
-									EvalAttribute(tempvalue, currentModifiable, attr);
+									EvalAttribute(tempvalue, currentModifiable, attr.first);
 								}
 
-								if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
+								if ((attr.first->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 								{
-									attr->setValue((const UTF8Char*)tempvalue.c_str(), currentModifiable);
+									attr.first->setValue((const UTF8Char*)tempvalue.c_str(), (CoreModifiable*)attr.second);
 								}
 								else
 								{
-									attr->setValue(tempvalue, currentModifiable);
+									attr.first->setValue(tempvalue, (CoreModifiable*)attr.second);
 								}
 								break;
 							}
@@ -731,6 +731,7 @@ namespace Kigs
 
 			if (!attrfound)
 			{
+			CoreModifiableAttribute* dynattr = nullptr;
 				// if attribute is dynamic or currentModifiable is tagget as autocreateattributes
 				XMLAttributeBase* attrdynamic = currentNode->getAttribute("Dyn", "Dynamic");
 
@@ -749,26 +750,26 @@ namespace Kigs
 								{
 									if ((atype != ATTRIBUTE_TYPE::ARRAY) && (atype != ATTRIBUTE_TYPE::WEAK_REFERENCE) && (atype != ATTRIBUTE_TYPE::STRONG_REFERENCE))
 									{
-										attr = currentModifiable->AddDynamicAttribute(atype, attrname->getRefString());
+										dynattr = currentModifiable->AddDynamicAttribute(atype, attrname->getRefString());
 										std::string tempvalue = attrvalue->getString();
 										if (AttributeNeedEval(tempvalue))
 										{
-											EvalAttribute(tempvalue, currentModifiable, attr);
+											EvalAttribute(tempvalue, currentModifiable, dynattr);
 										}
 
-										if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
+										if ((dynattr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 										{
-											attr->setValue((const UTF8Char*)tempvalue.c_str(), currentModifiable);
+											dynattr->setValue((const UTF8Char*)tempvalue.c_str(), currentModifiable);
 										}
 										else
 										{
-											attr->setValue(tempvalue, currentModifiable);
+											dynattr->setValue(tempvalue, currentModifiable);
 										}
 
 									}
 									else
 									{
-										attr = currentModifiable->AddDynamicAttribute(atype, attrname->getRefString(), attrvalue->getString().c_str());
+										dynattr = currentModifiable->AddDynamicAttribute(atype, attrname->getRefString(), attrvalue->getString().c_str());
 									}
 								}
 							}
@@ -783,24 +784,24 @@ namespace Kigs
 									ATTRIBUTE_TYPE atype = CoreModifiableAttribute::stringToType(attrtype->getRefString());
 									if ((atype != ATTRIBUTE_TYPE::ARRAY) && (atype != ATTRIBUTE_TYPE::WEAK_REFERENCE) && (atype != ATTRIBUTE_TYPE::STRONG_REFERENCE))
 									{
-										attr = currentModifiable->AddDynamicAttribute(atype, attrname->getRefString());
+										dynattr = currentModifiable->AddDynamicAttribute(atype, attrname->getRefString());
 										std::string tempvalue = sonXML->getString();
 										if (AttributeNeedEval(tempvalue))
 										{
-											EvalAttribute(tempvalue, currentModifiable, attr);
+											EvalAttribute(tempvalue, currentModifiable, dynattr);
 										}
-										if ((attr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
+										if ((dynattr->getType() == ATTRIBUTE_TYPE::USSTRING) && (importState.UTF8Enc))
 										{
-											attr->setValue((const UTF8Char*)tempvalue.c_str(), currentModifiable);
+											dynattr->setValue((const UTF8Char*)tempvalue.c_str(), currentModifiable);
 										}
 										else
 										{
-											attr->setValue(tempvalue, currentModifiable);
+											dynattr->setValue(tempvalue, currentModifiable);
 										}
 									}
 									else
 									{
-										attr = currentModifiable->AddDynamicAttribute(atype, attrname->getRefString(), sonXML->getString().c_str());
+										dynattr = currentModifiable->AddDynamicAttribute(atype, attrname->getRefString(), sonXML->getString().c_str());
 									}
 									break;
 								}

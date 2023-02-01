@@ -22,8 +22,8 @@ using namespace Kigs::Draw;
 using namespace Kigs::Draw2D;
 using namespace Kigs::Action;
 
-template<int notificationLevel>
-class maLuaRefHeritage : public CoreModifiableAttributeData<LuaRef>
+template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
+class maLuaRefHeritage : public CoreModifiableAttributeData<LuaRef, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
 {
 	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maLuaRefHeritage, maLuaRefHeritage, LuaRef, CoreModifiable::ATTRIBUTE_TYPE::LUAREF);
 	auto& operator=(const CurrentAttributeType& value)
@@ -33,8 +33,8 @@ class maLuaRefHeritage : public CoreModifiableAttributeData<LuaRef>
 	}
 public:
 };
-using maLuaRef = maLuaRefHeritage<0>;
-
+using maLuaRef = maLuaRefHeritage<false,false,false,false,false>;
+using maLuaRefOrphan = maLuaRefHeritage<false, false, false, false, true>;
 
 unordered_map<KigsID, const char*> gLuaTypeMap;
 
@@ -131,7 +131,7 @@ void Kigs::Lua::PushAttribute(LuaState L, CoreModifiableAttribute* attrib, CoreM
 		}
 		else if (type == CoreModifiable::ATTRIBUTE_TYPE::RAWPTR)
 		{
-			auto it = gLuaTypeMap.find(attrib->getID());
+			auto it = gLuaTypeMap.find(attrib->id());
 			void* ptr;
 			attrib->getValue(ptr, owner);
 
@@ -159,7 +159,7 @@ void Kigs::Lua::PushAttribute(LuaState L, CoreModifiableAttribute* attrib, CoreM
 	}
 	else
 	{
-		int size = attrib->getNbArrayColumns();
+		size_t size = attrib->getNbArrayColumns();
 		bool isvec = false;
 		
 		double values[4];
@@ -306,7 +306,7 @@ int Kigs::Lua::CoreModifiableSetAttributeLua(lua_State* lua)
 		}
 		else if (type == LUA_TTABLE)
 		{
-			int size = attr->getNbArrayColumns();
+			size_t size = attr->getNbArrayColumns();
 			L.getTableLen(value_idx);
 			int table_len = L.popValue<int>();
 			
@@ -378,7 +378,7 @@ int Kigs::Lua::CoreModifiableSetAttributeLua(lua_State* lua)
 				int nb_results = L.top() - top;
 				for (int i = 1; i <= nb_results; ++i)
 				{
-					params.push_back(MakeAttributeFromLuaStack(L, top + i));
+					params.push_back(MakeAttributeFromLuaStack(L, top + i,cm));
 				}
 
 			});
@@ -466,8 +466,8 @@ CoreModifiableAttribute* Kigs::Lua::MakeAttributeFromLuaStack(lua_State* lua, in
 		}
 	}
 	LuaRef ref = L.toValue<LuaRef>(idx);
-	if (owner) return new maLuaRef(*owner, false, name, ref);
-	else return new maLuaRef("ParamLuaRef", ref);
+	if (owner) return new maLuaRef(*owner, name, ref);
+	else return new maLuaRefOrphan("ParamLuaRef", ref);
 	//return MakeAttribute(nullptr, nullptr);
 }
 
@@ -711,7 +711,7 @@ DEFINE_DYNAMIC_METHOD(CoreModifiable, LuaReleaseCallbacks)
 	{
 		CoreModifiableAttribute* attr = pair.second;
 
-		if (attr->getID() == "LUA_REF")
+		if (pair.first == "LUA_REF")
 		{
 			LuaState L = lua->getLuaState();
 			int ref;

@@ -10,39 +10,39 @@ using namespace Kigs::Draw2D;
 IMPLEMENT_CLASS_INFO(UIItem)
 
 IMPLEMENT_CONSTRUCTOR(UIItem)
-, mIsHidden(*this, false, "IsHidden", false)
-, mIsTouchable(*this, false, "IsTouchable", true)
-, mDisableBlend(*this, false, "DisableBlend", true)
-, mIsEnabled(*this, false, "IsEnabled", true)
-, mColor(*this, false, "Color", 1.0f, 1.0f, 1.0f)
-, mOpacity(*this, false, "Opacity", 1.0f)
+, mIsHidden(*this, "IsHidden", false)
+, mIsTouchable(*this, "IsTouchable", true)
+, mDisableBlend(*this, "DisableBlend", true)
+, mIsEnabled(*this, "IsEnabled", true)
+, mColor(*this, "Color", 1.0f, 1.0f, 1.0f)
+, mOpacity(*this, "Opacity", 1.0f)
 , mAlphaMask(nullptr)
-, mSwallowInputs(*this, false, "SwallowInputs", false)
+, mSwallowInputs(*this, "SwallowInputs", false)
 {
 }
 
 void	UIItem::InitModifiable()
 {
 	ParentClassType::InitModifiable();
-	mColor.changeNotificationLevel(Owner);
-	mOpacity.changeNotificationLevel(Owner);
+	setOwnerNotification("Color", true);
+	setOwnerNotification("Opacity", true);
 }
 
 void UIItem::NotifyUpdate(const unsigned int labelid)
 {
-	if ( labelid == mColor.getID())
+	if ( labelid == KigsID("Color")._id)
 	{
 		SetNodeFlag(Node2D_NeedVerticeInfoUpdate);
 	}
-	else if (labelid == mOpacity.getID())
+	else if (labelid == KigsID("Opacity")._id)
 	{
 		propagateOpacityChange();
 	}
-	else if (labelid == mIsHidden.getID())
+	else if (labelid == KigsID("IsHidden")._id)
 	{
 		PropagateNodeFlags();
 	}
-	else if(labelid == mSwallowInputs.getID())
+	else if(labelid == KigsID("SwallowInputs")._id)
 	{
 		if (mSwallowInputs)
 		{
@@ -53,7 +53,7 @@ void UIItem::NotifyUpdate(const unsigned int labelid)
 			KigsCore::GetModule<Input::ModuleInput>()->getTouchManager()->unregisterEvent(this, Input::InputSwallow);
 		}
 	}
-	else if (labelid == mIsEnabled.getLabelID())
+	else if (labelid == KigsID("IsEnabled")._id)
 	{
 		if (!GetSons().empty())
 		{

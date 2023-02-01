@@ -11,7 +11,7 @@ IMPLEMENT_CLASS_INFO(UITextInput)
 
 void UITextInput::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == mText.getLabelID())
+	if (labelid == KigsID("Text")._id)
 	{
 		//mIsCueBanner = (mText.const_ref().length() == 0);
 		//if (mIsCueBanner)

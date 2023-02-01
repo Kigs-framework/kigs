@@ -168,11 +168,11 @@ namespace Kigs
 			bool mIsInit;
 
 			//! size of a pixel in bit
-			maInt mBitsPerPixel;
+			maIntInit	mBitsPerPixel;
 			//! size of the Z value in bit
-			maInt mBitsPerZ;
+			maIntInit	mBitsPerZ;
 
-			maInt mBitsForStencil;
+			maIntInit	mBitsForStencil;
 
 			//!  size of the screen 
 			maVect2DF mSize;
@@ -180,11 +180,11 @@ namespace Kigs
 			maVect2DF mDesignSize;
 
 			//! ?
-			maBool mIsOffScreen;
+			maBoolInit mIsOffScreen;
 			//! name of the parent windows
-			maString mParentWindowName;
+			maStringInit mParentWindowName;
 			//! TRUE if I wait for the VSync
-			maBool mVSync;
+			maBoolInit mVSync;
 			//! brightness : between -16 (black) and 16 (white)
 			maFloat mBrightness;
 			float mOldBrightness;
@@ -209,7 +209,7 @@ namespace Kigs
 
 			bool				mWasActivated;
 
-			maBool				mUseFBO;
+			maBoolInit			mUseFBO;
 
 			SP<Texture>			mFBOTexture;
 

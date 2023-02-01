@@ -6,6 +6,12 @@ namespace Kigs
 {
 	namespace Core
 	{
+		struct DynamicModuleHandleAndPointer
+		{
+			void* mHandle = nullptr;
+			SP<ModuleBase>		mInstance = nullptr;
+		};
+
 		// ****************************************
 		// * AnonymousModule class
 		// * --------------------------------------
@@ -78,6 +84,7 @@ namespace Kigs
 		protected:
 
 			CoreModifiable* mDynamicModule;
+			std::vector<DynamicModuleHandleAndPointer>	mDynamicModuleList;
 		};
 
 		// use this base class for Dll modules instead of ModuleBase

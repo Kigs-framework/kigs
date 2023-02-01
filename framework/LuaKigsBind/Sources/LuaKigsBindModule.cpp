@@ -258,7 +258,7 @@ bool	LuaKigsBindModule::CallCoreModifiableCallback(std::vector<CoreModifiableAtt
 		std::vector<CoreModifiableAttribute*>::iterator	itend = params.end();
 		while (itparam != itend)
 		{
-			if ((*itparam)->getLabelID() == "Result")
+			if ((*itparam)->id() == KigsID("Result")._id)
 			{
 				result = (*itparam);
 				returnCount++;

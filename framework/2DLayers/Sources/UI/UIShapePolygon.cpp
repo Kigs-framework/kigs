@@ -22,14 +22,14 @@ IMPLEMENT_CONSTRUCTOR(UIShapePolygon)
 void UIShapePolygon::InitModifiable()
 {
 	ParentClassType::InitModifiable();
-	mVertices.changeNotificationLevel(Owner);
+	setOwnerNotification("Vertices", true);
 	triangulatePolygon();
 }
 
 
 void UIShapePolygon::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == mVertices.getID())
+	if (labelid == KigsID("Vertices")._id )
 	{
 		triangulatePolygon();
 		for (auto p : GetParents())

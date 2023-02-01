@@ -11,13 +11,13 @@ using namespace Kigs::Draw;
 IMPLEMENT_CLASS_INFO(Billboard3D)
 
 Billboard3D::Billboard3D(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)
-, mPosition(*this, false, "Position", 0.0f, 0.0f, 0.0f)
-, mWidth(*this, false, "Width", 0.5f)
-, mHeight(*this, false, "Height", 0.5f)
+, mPosition(*this,  "Position", 0.0f, 0.0f, 0.0f)
+, mWidth(*this,  "Width", 0.5f)
+, mHeight(*this,  "Height", 0.5f)
 , mCamera(nullptr)
-, mAnchor(*this, false, "Anchor", 0.0f, 0.0f)
-, mIsEnabled(*this, false, "IsEnabled", true)
-, mRatio(*this, false, "Ratio", 0.01f)
+, mAnchor(*this,  "Anchor", 0.0f, 0.0f)
+, mIsEnabled(*this,  "IsEnabled", true)
+, mRatio(*this,  "Ratio", 0.01f)
 
 {
 	mColor[0] = 1.0f;

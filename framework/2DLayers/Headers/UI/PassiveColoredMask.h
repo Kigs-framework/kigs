@@ -44,12 +44,12 @@ namespace Kigs
 
 
 			//! Alpha threshold
-			maFloat					mThreshold;
+			maFloatInit				mThreshold;
 
 			//! Texture Name
 			maString				mTextureName;
 			maString				mMaskName;
-			maUInt					mRay;
+			maUIntInit				mRay;
 			SmartPointer<Draw::Texture>	mTexture;
 
 			int						mWidth;

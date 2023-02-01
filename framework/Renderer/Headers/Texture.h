@@ -236,9 +236,9 @@ namespace Kigs
 			//! TRUE if I repeat the texture on the v axis
 			maBool		mRepeat_V;
 			//! TRUE if we want the texture be directly accessed from memory (platform dependant)
-			maBool		mIsDynamic;
+			maBoolInit	mIsDynamic;
 			//! TRUE if we want the texture to be resized to a power of two at loading (done on the specific part !)
-			maBool		mForcePow2;
+			maBoolInit	mForcePow2;
 
 			unsigned int mPow2Width;
 			unsigned int mPow2Height;

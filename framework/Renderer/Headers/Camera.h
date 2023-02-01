@@ -382,7 +382,7 @@ namespace Kigs
 
 
 			//! reference on the rendering screen
-			maReference			mRenderingScreen;
+			maReferenceInit		mRenderingScreen;
 
 			//! vertical FOV of the camera
 			maFloat				mVerticalFOV;

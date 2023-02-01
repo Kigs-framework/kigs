@@ -269,7 +269,7 @@ namespace Kigs
 		inline XMLAttributeTemplate<std::string>::XMLAttributeTemplate(const std::string& name, float value) : mName(name)
 		{
 			static char szValue[64];
-			snprintf(szValue, 64, "%f", CastToFloat(value));
+			snprintf(szValue, 64, "%f", value);
 			mValue = szValue;
 		}
 
@@ -285,7 +285,7 @@ namespace Kigs
 		inline void XMLAttributeTemplate<std::string>::setFloat(const float value)
 		{
 			static char szValue[64];
-			snprintf(szValue, 64, "%f", CastToFloat(value));
+			snprintf(szValue, 64, "%f", value);
 			mValue = szValue;
 		}
 

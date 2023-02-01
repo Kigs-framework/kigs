@@ -31,15 +31,15 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData of core item with different notification level
 		*/
 		// ****************************************
-		template<int notificationLevel>
-		class maCoreItemHeritage : public CoreModifiableAttributeData<maCoreItemValue>
+	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
+	class maCoreItemHeritage : public CoreModifiableAttributeData<maCoreItemValue, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maCoreItemHeritage, maCoreItemHeritage, maCoreItemValue, CoreModifiable::ATTRIBUTE_TYPE::COREITEM);
 
 		public:
 
 			//! Extra constructor with std::string
-			maCoreItemHeritage(CoreModifiable& owner, bool isInitAttribute, KigsID ID, std::string value) : CoreModifiableAttributeData(owner, isInitAttribute, ID)
+			maCoreItemHeritage(CoreModifiable& owner, KigsID ID, std::string value) : CoreModifiableAttributeData<maCoreItemValue, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
 			{
 				if (value != "")
 				{
@@ -73,28 +73,25 @@ namespace Kigs
 			// setValue overloads
 			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly())
-					return false;
-
-				mValue.InitWithJSON(value, this->getOwner());
+			RETURN_ON_READONLY(isReadOnlyT);
+			
+				mValue.InitWithJSON(value, owner);
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
 			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly())
-					return false;
+			RETURN_ON_READONLY(isReadOnlyT);
 
-				mValue.InitWithJSON(value, this->getOwner());
+			mValue.InitWithJSON(value, owner);
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
 			virtual bool setValue(CoreItemSP value, CoreModifiable* owner) override
 			{
-				if (this->isReadOnly())
-					return false;
+			RETURN_ON_READONLY(isReadOnlyT);
 
-				if (mValue.item != value)
+			if (mValue.item.get() != value.get())
 				{
 					mValue.item = value;
 					mValue.ref_file = "";
@@ -130,7 +127,8 @@ namespace Kigs
 		*/
 		// ****************************************
 
-		using maCoreItem = maCoreItemHeritage<0>;
+		using maCoreItem = maCoreItemHeritage<false>;
+		using maCoreItemDynamic = maCoreItemHeritage<false,false,false,true>;
 
 	}
 }

@@ -46,8 +46,8 @@ using namespace Kigs::Tools;
 IMPLEMENT_CLASS_INFO(DataDrivenSequence)
 
 DataDrivenSequence::DataDrivenSequence(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, mKeepParamsOnStateChange(*this, false, "KeepParamsOnStateChange", false)
-, mSequenceManager(*this, true, "SequenceManager","DataDrivenSequenceManager:AppSequenceManager" ) // default is app
+, mKeepParamsOnStateChange(*this, "KeepParamsOnStateChange", false)
+, mSequenceManager(*this,  "SequenceManager","DataDrivenSequenceManager:AppSequenceManager" ) // default is app
 {
 }
 
@@ -171,10 +171,10 @@ IMPLEMENT_CLASS_INFO(DataDrivenTransition)
 
 DataDrivenTransition::DataDrivenTransition(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
 , mPreviousSequence(nullptr)
-, mPreviousAnim(*this, false, "PreviousAnim")
-, mNextAnim(*this, false, "NextAnim")
+, mPreviousAnim(*this,  "PreviousAnim")
+, mNextAnim(*this,  "NextAnim")
 , mIsFirstUpdate(false)
-, mSequenceManager(*this, true, "SequenceManager", "DataDrivenSequenceManager:AppSequenceManager") // default is app
+, mSequenceManager(*this, "SequenceManager", "DataDrivenSequenceManager:AppSequenceManager") // default is app
 {
 
 }

@@ -10,10 +10,7 @@
 #include "Core.h"
 #include "AttributePacking.h"
 
-
-#ifdef _KIGS_ONLY_STATIC_LIB_
 #include "Platform/Core/PlatformCore.h"
-#endif
 
 using namespace Kigs::Xml;
 using namespace Kigs::Core;

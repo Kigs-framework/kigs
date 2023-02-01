@@ -29,8 +29,8 @@ bool sortCamera::operator() (const Camera* lhs, const Camera* rhs) const{
 
 IMPLEMENT_CONSTRUCTOR(Scene3D)
 	, mLightsHaveChanged(true)
-	, mPriority(*this, false, "Priority", 0)
-	, mSort3DNodesFrontToBack(*this, false, "Sort3DNodesFrontToBack", false)
+	, mPriority(*this, "Priority", 0)
+	, mSort3DNodesFrontToBack(*this, "Sort3DNodesFrontToBack", false)
 {
 }
 
@@ -40,7 +40,7 @@ void	Scene3D::InitModifiable()
 	if (IsInit())
 	{
 		// I want to be notified when Priority is changed
-		mPriority.changeNotificationLevel(Owner);
+		setOwnerNotification("Priority", true);
 		mLightsHaveChanged = true;
 	}
 }
@@ -63,7 +63,7 @@ Scene3D::~Scene3D()
 
 void Scene3D::NotifyUpdate(const unsigned int  labelid)
 {
-	if (labelid == mPriority.getLabelID())
+	if (labelid == KigsID("Priority"))
 	{
 		// search for module scenegraph in parents
 		std::vector<CoreModifiable*>::const_iterator itparents = GetParents().begin();

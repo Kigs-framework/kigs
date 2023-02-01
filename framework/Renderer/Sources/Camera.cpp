@@ -18,27 +18,27 @@ using namespace Kigs::Draw;
 IMPLEMENT_CLASS_INFO(Camera)
 
 IMPLEMENT_CONSTRUCTOR(Camera)
-, mViewportMinX(*this, false, "ViewportMinX", 0.0f)
-, mViewportMinY(*this, false, "ViewportMinY", 0.0f)
-, mViewportSizeX(*this, false, "ViewportSizeX", 1.0f)
-, mViewportSizeY(*this, false, "ViewportSizeY", 1.0f)
-, mNearPlane(*this, false, "NearPlane", 0.1f)
-, mFarPlane(*this, false, "FarPlane", 40.0f)
-, mPosition(*this, false, "Position")
-, mUpVector(*this, false, "UpVector")
-, mViewVector(*this, false, "ViewVector")
-, mClearColor(*this, false, "ClearColor")
+, mViewportMinX(*this,  "ViewportMinX", 0.0f)
+, mViewportMinY(*this,  "ViewportMinY", 0.0f)
+, mViewportSizeX(*this,  "ViewportSizeX", 1.0f)
+, mViewportSizeY(*this,  "ViewportSizeY", 1.0f)
+, mNearPlane(*this,  "NearPlane", 0.1f)
+, mFarPlane(*this,  "FarPlane", 40.0f)
+, mPosition(*this,  "Position")
+, mUpVector(*this,  "UpVector")
+, mViewVector(*this,  "ViewVector")
+, mClearColor(*this,  "ClearColor")
 , mRenderingScreen(*this, true, "RenderingScreen")
-, mVerticalFOV(*this, false, "VerticalFOV", 45.0f)
-, mAspectRatio(*this, false, "AspectRatio", 0.0f)
-, mClearZBuffer(*this, false, "ClearZBuffer", true)
-, mClearColorBuffer(*this, false, "ClearColorBuffer", true)
-, mClearStencilBuffer(*this, false, "ClearStencilBuffer", false)
-, mCameraIsEnabled(*this, false, "CameraIsEnabled", true)
-, mPriority(*this, false, "Priority", 0)
-, mBrightness(*this, false, "Brightness", 0)
-, mAllVisible(*this, false, "AllVisible", false)
-, mTouchControlled(*this, false, "TouchControlled", false)
+, mVerticalFOV(*this,  "VerticalFOV", 45.0f)
+, mAspectRatio(*this,  "AspectRatio", 0.0f)
+, mClearZBuffer(*this,  "ClearZBuffer", true)
+, mClearColorBuffer(*this,  "ClearColorBuffer", true)
+, mClearStencilBuffer(*this,  "ClearStencilBuffer", false)
+, mCameraIsEnabled(*this,  "CameraIsEnabled", true)
+, mPriority(*this,  "Priority", 0)
+, mBrightness(*this,  "Brightness", 0)
+, mAllVisible(*this,  "AllVisible", false)
+, mTouchControlled(*this,  "TouchControlled", false)
 , mIsActive(false)
 {
 	SetPosition(0.0f, 0.0f, 0.0f);
@@ -95,7 +95,7 @@ Camera::~Camera()
 void Camera::NotifyUpdate(const unsigned int  labelid)
 {
 	Node3D::NotifyUpdate(labelid);
-	if (labelid == mTouchControlled.getID())
+	if (labelid == KigsID("TouchControlled")._id)
 	{
 		activeTouchControlledCamera(mTouchControlled);
 	}
@@ -166,12 +166,13 @@ void Camera::InitModifiable()
 		{
 			RecomputeMatrix();
 			//! notification on matrix change
-			mPosition.changeNotificationLevel(Owner);
-			mUpVector.changeNotificationLevel(Owner);
-			mViewVector.changeNotificationLevel(Owner);
-			mViewportSizeX.changeNotificationLevel(Owner);
-			mViewportSizeY.changeNotificationLevel(Owner);
-			mTouchControlled.changeNotificationLevel(Owner);
+
+			setOwnerNotification("Position", true);
+			setOwnerNotification("UpVector", true);
+			setOwnerNotification("ViewVector", true);
+			setOwnerNotification("ViewportSizeX", true);
+			setOwnerNotification("ViewportSizeY", true);
+			setOwnerNotification("TouchControlled", true);
 
 			// declare as a touch support potential target with rendering screen as parent
 			auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
@@ -700,7 +701,7 @@ bool Camera::ManagePinchTouchEvent(Input::PinchEvent& pinch_event)
 
 			mPosition = newPosition;
 
-			NotifyUpdate(mPosition.getID().toUInt());
+			NotifyUpdate(KigsID("Position")._id);
 		}
 
 		if (pinch_event.state == Input::StateEnded)
@@ -882,7 +883,7 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 
 				mPosition = posRotation;
 
-				NotifyUpdate(mUpVector.getID().toUInt());
+				NotifyUpdate(KigsID("UpVector")._id);
 				
 			}
 		}

@@ -119,9 +119,9 @@ void MultiMesh::RecomputeBoundingBox()
 		auto full_mesh = KigsCore::GetInstanceOf("full_mesh", "ModernMesh");
 		SmartPointer<ModernMeshItemGroup> full_mesh_item = KigsCore::GetInstanceOf("group_0", "ModernMeshItemGroup");
 
-		unsigned int total_vertex_buffer_size = 0;
-		unsigned int total_index_count = 0;
-		unsigned int total_vertex_count = 0;
+		size_t total_vertex_buffer_size = 0;
+		size_t total_index_count = 0;
+		size_t total_vertex_count = 0;
 
 		for (auto m : meshes)
 		{

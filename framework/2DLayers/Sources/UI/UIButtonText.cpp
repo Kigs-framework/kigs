@@ -10,16 +10,16 @@ using namespace Kigs::Draw2D;
 IMPLEMENT_CLASS_INFO(UIButtonText)
 
 IMPLEMENT_CONSTRUCTOR(UIButtonText)
-	, mUpText(*this, false, "UpText", "")
-	, mDownText(*this, false, "DownText", "")
-	, mOverText(*this, false, "OverText", "")
-	, mUpColor(*this, false, "UpColor", 0, 0, 0, 0)
-	, mOverColor(*this, false, "OverColor", 0, 0, 0, 0)
-	, mDownColor(*this, false, "DownColor", 0, 0, 0, 0)
-	, mFont(*this, false, "Font", "arial.ttf")
-	, mFontSize(*this, false, "FontSize", 12)
-	, mLength(*this, false, "Length", 0)
-	, mTextAlignment(*this, false, "TextAlignment", 1)
+	, mUpText(*this, "UpText", "")
+	, mDownText(*this, "DownText", "")
+	, mOverText(*this, "OverText", "")
+	, mUpColor(*this, "UpColor", 0, 0, 0, 0)
+	, mOverColor(*this, "OverColor", 0, 0, 0, 0)
+	, mDownColor(*this, "DownColor", 0, 0, 0, 0)
+	, mFont(*this, "Font", "arial.ttf")
+	, mFontSize(*this, "FontSize", 12)
+	, mLength(*this, "Length", 0)
+	, mTextAlignment(*this, "TextAlignment", 1)
 {
 	KigsCore::GetNotificationCenter()->addObserver(this, "ReloadTexture", "ResetContext");
 }
@@ -40,12 +40,11 @@ void UIButtonText::InitModifiable()
 
 		ChangeState();
 
-
-		mUpText.changeNotificationLevel(Owner);
-		mDownText.changeNotificationLevel(Owner);
-		mOverText.changeNotificationLevel(Owner);
-		mFont.changeNotificationLevel(Owner);
-		mFontSize.changeNotificationLevel(Owner);
+		setOwnerNotification("UpText", true);
+		setOwnerNotification("DownText", true);
+		setOwnerNotification("OverText", true);
+		setOwnerNotification("Font", true);
+		setOwnerNotification("FontSize", true);
 	}
 }
 
@@ -53,15 +52,15 @@ void UIButtonText::NotifyUpdate(const unsigned int labelid)
 {
 	UIButton::NotifyUpdate(labelid);
 
-	if (labelid == mUpText.getLabelID())
+	if (labelid == KigsID("UpText")._id )
 		ChangeTextTexture(mUpText.c_str(), 0);
-	if (labelid == mDownText.getLabelID())
+	if (labelid == KigsID("DownText")._id  )
 		ChangeTextTexture(mDownText.c_str(), 2);
-	if (labelid == mOverText.getLabelID())
+	if (labelid == KigsID("OverText")._id )
 		ChangeTextTexture(mOverText.c_str(), 1);
 
-	if (labelid == mFont.getLabelID() ||
-		labelid == mFontSize.getLabelID())
+	if (labelid == KigsID("Font")._id ||
+		labelid == KigsID("FontSize")._id )
 	{
 		if (mUpText.const_ref() != "")
 			ChangeTextTexture(mUpText.const_ref(), 0);

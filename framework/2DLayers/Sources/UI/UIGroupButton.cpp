@@ -8,10 +8,10 @@ IMPLEMENT_CLASS_INFO(UIGroupButton)
 
 UIGroupButton::UIGroupButton(const std::string& name, CLASS_NAME_TREE_ARG) :
 	UIItem(name, PASS_CLASS_NAME_TREE_ARG)
-	, mKeepOnePressed(*this, false, "KeepOnePressed", true)
-	, mOnlyOnePressed(*this, false, "OnlyOnePressed", true)
-	, mNoSelectedAction(*this, false, "NoSelectedAction", "")
-	, mParameter(*this, false, "Parameter", (std::string)"")
+	, mKeepOnePressed(*this, "KeepOnePressed", true)
+	, mOnlyOnePressed(*this, "OnlyOnePressed", true)
+	, mNoSelectedAction(*this, "NoSelectedAction", "")
+	, mParameter(*this, "Parameter", (std::string)"")
 {
 	mSize = v2f(0,0);
 	mButtonNumber = 0;

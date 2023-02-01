@@ -125,6 +125,7 @@ void AnonymousModule::Close()
 	{
 		FreeLibrary((HINSTANCE)(*it).mHandle);
 	}
+	mDynamicModuleList.clear();
 #endif
 
     
@@ -133,5 +134,9 @@ void AnonymousModule::Close()
 //! update module
 void AnonymousModule::Update(const Time::Timer& timer, void* addParam)
 {
+	for (auto it = mDynamicModuleList.begin(); it != mDynamicModuleList.end(); ++it)
+	{
+		(*it).mInstance->Update(timer,addParam);
+	}
 	BaseUpdate(timer,addParam);
 }

@@ -24,25 +24,25 @@ void OpenGLMaterial::InitModifiable()
 	if (IsInit())
 	{
 		mUniDiffuseColor = KigsCore::GetInstanceOf("uniformColor", "API3DUniformFloat4");
-		mUniDiffuseColor->setValue("Name", "MaterialDiffuseColor");
+		mUniDiffuseColor->setValue("UniformName", "MaterialDiffuseColor");
 		mUniDiffuseColor->setArrayValue("Value", mDiffuseColor[0], mDiffuseColor[1], mDiffuseColor[2], mDiffuseColor[3]);
 		mUniDiffuseColor->Init();
 		addItem(mUniDiffuseColor);
 
 		mUniSpecularColor = KigsCore::GetInstanceOf("uniSpecularColor", "API3DUniformFloat4");
-		mUniSpecularColor->setValue("Name", "MaterialSpecularColor");
+		mUniSpecularColor->setValue("UniformName", "MaterialSpecularColor");
 		mUniSpecularColor->setArrayValue("Value", mSpecularColor[0], mSpecularColor[1], mSpecularColor[2], mSpecularColor[3]);
 		mUniSpecularColor->Init();
 		addItem(mUniSpecularColor);
 
 		mUniShininess = KigsCore::GetInstanceOf("shininessUniform", "API3DUniformFloat");
-		mUniShininess->setValue("Name", "MaterialShininess");
+		mUniShininess->setValue("UniformName", "MaterialShininess");
 		mUniShininess->setValue("Value", mShininess);
 		mUniShininess->Init();
 		addItem(mUniShininess);
 
 		mUniAmbiantColor = KigsCore::GetInstanceOf("uniAmbiantColor", "API3DUniformFloat4");
-		mUniAmbiantColor->setValue("Name", "MaterialAmbiantColor");
+		mUniAmbiantColor->setValue("UniformName", "MaterialAmbiantColor");
 		mUniAmbiantColor->setArrayValue("Value", mAmbientColor[0], mAmbientColor[1], mAmbientColor[2], mAmbientColor[3]);
 		mUniAmbiantColor->Init();
 		addItem(mUniAmbiantColor);
@@ -54,29 +54,29 @@ void OpenGLMaterial::InitModifiable()
 		mUniAmbiantColor->AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "NoExport", true);
 #endif
 
-		mDiffuseColor.changeNotificationLevel(Owner);
-		mAmbientColor.changeNotificationLevel(Owner);
-		mShininess.changeNotificationLevel(Owner);
-		mSpecularColor.changeNotificationLevel(Owner);
+		setOwnerNotification("DiffuseColor", true);
+		setOwnerNotification("AmbientColor", true);
+		setOwnerNotification("Shininess", true);
+		setOwnerNotification("SpecularColor", true);
 	}
 }
 
 void OpenGLMaterial::NotifyUpdate(unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
-	if (labelid == mDiffuseColor.getID())
+	if (labelid == KigsID("DiffuseColor")._id)
 	{
 		mUniDiffuseColor->setArrayValue("Value", mDiffuseColor[0], mDiffuseColor[1], mDiffuseColor[2], mDiffuseColor[3]);
 	}
-	else if (labelid == mAmbientColor.getID())
+	else if (labelid == KigsID("AmbientColor")._id)
 	{
 		mUniAmbiantColor->setArrayValue("Value", mAmbientColor[0], mAmbientColor[1], mAmbientColor[2], mAmbientColor[3]);
 	}
-	else if (labelid == mShininess.getID())
+	else if (labelid == KigsID("Shininess")._id)
 	{
 		mUniShininess->setValue("Value", mShininess);
 	}
-	else if (labelid == mSpecularColor.getID())
+	else if (labelid == KigsID("SpecularColor")._id)
 	{
 		mUniSpecularColor->setArrayValue("Value", mSpecularColor[0], mSpecularColor[1], mSpecularColor[2], mSpecularColor[3]);
 	}

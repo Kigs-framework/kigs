@@ -61,7 +61,7 @@ namespace Kigs
 			maString			mEndTexture;
 
 			//! Direction of Slider "Vertical" or "Horizontal")
-			maEnum<2>			mDirection;
+			maEnumInit<2>			mDirection;
 
 			SP<Draw::Texture>			mStartTexturePointer;
 			SP<Draw::Texture>			mMiddleTexturePointer;

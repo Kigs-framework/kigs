@@ -27,10 +27,10 @@ IMPLEMENT_CLASS_INFO(Abstract2DLayer);
 ///////////////////////////////////////////
 Abstract2DLayer::Abstract2DLayer(const std::string& name, CLASS_NAME_TREE_ARG)
 	: Scene3D(name, PASS_CLASS_NAME_TREE_ARG)
-	, mRenderingScreen(*this, true, "RenderingScreen")
-	, mManager(*this, true, "SequenceManager", "DataDrivenSequenceManager:AppSequenceManager") // default is app
-	, mSize(*this, false, "Size", -1,-1)
-	, mIsInteractive(*this, false, "IsInteractive", true)
+	, mRenderingScreen(*this, "RenderingScreen")
+	, mManager(*this, "SequenceManager", "DataDrivenSequenceManager:AppSequenceManager") // default is app
+	, mSize(*this, "Size", -1,-1)
+	, mIsInteractive(*this, "IsInteractive", true)
 {
 }
 

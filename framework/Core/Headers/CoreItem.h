@@ -395,7 +395,7 @@ namespace Kigs
 
 			virtual bool isString() const { return false; }
 
-			virtual CoreModifiableAttribute* createAttribute(CoreModifiable*)
+			virtual CoreModifiableAttribute* createAttribute()
 			{
 				return 0;
 			}

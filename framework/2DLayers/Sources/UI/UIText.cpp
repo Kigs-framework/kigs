@@ -12,14 +12,14 @@ IMPLEMENT_CLASS_INFO(UIText)
 
 UIText::UIText(const std::string& name, CLASS_NAME_TREE_ARG) 
 	: UITexturedItem(name, PASS_CLASS_NAME_TREE_ARG)
-	, mText(*this, false, "Text", (std::string)"")
-	, mFont(*this, false, "Font", "arial.ttf")
-	, mFontSize(*this, false, "FontSize", 12)
-	, mDirection(*this, false, "Direction", 0)
-	, mLength(*this, false, "Length", 0)
-	, mTextAlignment(*this, false, "TextAlignment", 1)
-	, mMaxWidth(*this, false, "MaxWidth", 128)
-	, mMaxLines(*this, false, "MaxLines", 0)
+	, mText(*this, "Text", (std::string)"")
+	, mFont(*this, "Font", "arial.ttf")
+	, mFontSize(*this, "FontSize", 12)
+	, mDirection(*this, "Direction", 0)
+	, mLength(*this, "Length", 0)
+	, mTextAlignment(*this, "TextAlignment", 1)
+	, mMaxWidth(*this, "MaxWidth", 128)
+	, mMaxLines(*this, "MaxLines", 0)
 {
 	// text don't have color array
 	//unsetUserFlag(UserFlagUseColorArray);
@@ -29,12 +29,12 @@ UIText::UIText(const std::string& name, CLASS_NAME_TREE_ARG)
 
 void UIText::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mText.getLabelID())||
-		(labelid == mFontSize.getLabelID()) ||
-		(labelid == mFont.getLabelID()) ||
-		(labelid == mMaxWidth.getLabelID()) ||
-		(labelid == mTextAlignment.getLabelID()) ||
-		(labelid == mLength.getLabelID()))
+	if ((labelid == KigsID("Text")._id)||
+		(labelid == KigsID("FontSize")._id ) ||
+		(labelid == KigsID("Font")._id ) ||
+		(labelid == KigsID("MaxWidth")._id ) ||
+		(labelid == KigsID("TextAlignment")._id ) ||
+		(labelid == KigsID("Length")._id ))
 	{
 		ChangeText(mText.const_ref());
 	}
@@ -46,13 +46,13 @@ void UIText::InitModifiable()
 	UITexturedItem::InitModifiable();
 	if (IsInit())
 	{
-		mText.changeNotificationLevel(Owner);
-		mFontSize.changeNotificationLevel(Owner);
-		mFont.changeNotificationLevel(Owner);
-		mLength.changeNotificationLevel(Owner);
-		mOpacity.changeNotificationLevel(Owner);
-		mMaxWidth.changeNotificationLevel(Owner);
-		mTextAlignment.changeNotificationLevel(Owner);
+		setOwnerNotification("Text", true);
+		setOwnerNotification("FontSize", true);
+		setOwnerNotification("Font", true);
+		setOwnerNotification("Length", true);
+		setOwnerNotification("Opacity", true);
+		setOwnerNotification("MaxWidth", true);
+		setOwnerNotification("TextAlignment", true);
 
 		char	nameBuffer[256];
 		std::string name = getName();

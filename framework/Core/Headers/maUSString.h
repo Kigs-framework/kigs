@@ -184,5 +184,6 @@ namespace Kigs
 		using maUSString = maUSStringHeritage<false,false,false,false,false>;
 		using maUSStringOrphan = maUSStringHeritage<false, false, false, false, true>;
 		using maUSStringInit = maUSStringHeritage<false, true>;
+		using maUSStringDynamic = maUSStringHeritage<false, false,false,true>;
 	}
 }

@@ -7,71 +7,71 @@
 using namespace Kigs::Core;
 
 template<>
-CoreModifiableAttribute* CoreValue<bool>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<bool>::createAttribute()
 {
-	return new maBool(*target, false, "Val", this->mValue);
+	return new maBoolOrphan("Val", this->mValue);
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<float>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<float>::createAttribute()
 {
-	return new maFloat(*target, false, "Val", this->mValue);
+	return new maFloatOrphan("Val", this->mValue);
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<double>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<double>::createAttribute()
 {
-	return new maFloat(*target, false, "Val", (float)this->mValue);
+	return new maFloatOrphan("Val", (float)this->mValue);
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<Point2D>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<Point2D>::createAttribute()
 {
-	return new maVect2DF(*target, false, "Val", &(this->mValue.x));
+	return new maVect2DFOrphan("Val", &(this->mValue.x));
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<Point3D>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<Point3D>::createAttribute()
 {
-	return new maVect3DF(*target, false, "Val", &(this->mValue.x));
+	return new maVect3DFOrphan("Val", &(this->mValue.x));
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<Vector4D>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<Vector4D>::createAttribute()
 {
-	return new maVect4DF(*target, false, "Val", &(this->mValue.x));
+	return new maVect4DFOrphan("Val", &(this->mValue.x));
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<int>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<int>::createAttribute()
 {
-	return new maInt(*target, false, "Val", (this->mValue));
+	return new maIntOrphan("Val", (this->mValue));
 }
 template<>
-CoreModifiableAttribute* CoreValue<s64>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<s64>::createAttribute()
 {
-	return new maLong(*target, false, "Val", (this->mValue));
+	return new maLongOrphan("Val", (this->mValue));
 }
 template<>
-CoreModifiableAttribute* CoreValue<unsigned int>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<unsigned int>::createAttribute()
 {
-	return new maUInt(*target, false, "Val", (this->mValue));
+	return new maUIntOrphan("Val", (this->mValue));
 }
 template<>
-CoreModifiableAttribute* CoreValue<u64>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<u64>::createAttribute()
 {
-	return new maULong(*target, false, "Val", (this->mValue));
+	return new maULongOrphan("Val", (this->mValue));
 }
 template<>
-CoreModifiableAttribute* CoreValue<std::string>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<std::string>::createAttribute()
 {
-	return new maString(*target, false, "Val", (this->mValue));
+	return new maStringOrphan("Val", (this->mValue));
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<usString>::createAttribute(CoreModifiable* target)
+CoreModifiableAttribute* CoreValue<usString>::createAttribute()
 {
-	return new maUSString(*target, false, "Val", (this->mValue));
+	return new maUSStringOrphan("Val", (this->mValue));
 }
 
 

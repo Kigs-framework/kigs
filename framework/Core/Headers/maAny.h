@@ -44,7 +44,7 @@ namespace Kigs
 		};
 
 		using maAny = maAnyHeritage<false,false,false,false,false>;
-
+		using maAnyDynamic = maAnyHeritage<false, false, false, true, false>;
 
 		template<typename T>
 		T* CoreModifiable::getAny(const KigsID& id)

@@ -156,19 +156,19 @@ namespace Kigs
 			DECLARE_CLASS_INFO(UIDynamicText, UITexturedItem, ModuleName);
 			DECLARE_INLINE_CONSTRUCTOR(UIDynamicText)
 			{
-				mText.changeNotificationLevel(Owner);
-				mFontSize.changeNotificationLevel(Owner);
-				mFont.changeNotificationLevel(Owner);
-				mTextAlign.changeNotificationLevel(Owner);
-				mSelectedCharacter.changeNotificationLevel(Owner);
-				mMaxWidth.changeNotificationLevel(Owner);
-				mFontScaleFactor.changeNotificationLevel(Owner);
-				mIgnoreTags.changeNotificationLevel(Owner);
-				mIgnoreColorTags.changeNotificationLevel(Owner);
-				mShowCursor.changeNotificationLevel(Owner);
-				mExtraLineSpacing.changeNotificationLevel(Owner);
-				mOpacity.changeNotificationLevel(Owner);
-				mColor.changeNotificationLevel(Owner);
+				setOwnerNotification("Text", true);
+				setOwnerNotification("FontSize", true);
+				setOwnerNotification("Font", true);
+				setOwnerNotification("TextAlign", true);
+				setOwnerNotification("SelectedCharacter", true);
+				setOwnerNotification("MaxWidth", true);
+				setOwnerNotification("FontScaleFactor", true);
+				setOwnerNotification("IgnoreTags", true);
+				setOwnerNotification("IgnoreColorTags", true);
+				setOwnerNotification("ShowCursor", true);
+				setOwnerNotification("ExtraLineSpacing", true);
+				setOwnerNotification("Opacity", true);
+				setOwnerNotification("Color", true);
 			}
 			SIGNALS(TextRebuilt);
 

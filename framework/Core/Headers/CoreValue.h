@@ -598,7 +598,7 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 			{
 			}
 
-			virtual CoreModifiableAttribute* createAttribute(CoreModifiable*);
+			virtual CoreModifiableAttribute* createAttribute();
 
 			/*template<typename valType>
 			CoreValue& operator= (const valType& mValue)

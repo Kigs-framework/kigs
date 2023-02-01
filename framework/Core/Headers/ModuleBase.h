@@ -17,71 +17,11 @@ namespace Kigs
 	{
 		class KigsCore;
 
-		// ****************************************
-		// * ModuleDescription class
-		// * --------------------------------------
-		/**
-		 * \class	ModuleDescription
-		 * \ingroup Core
-		 * \brief	read a module description in a XML file
-		 */
-		 // ****************************************
-		class ModuleDescription
-		{
-		public:
-			ModuleDescription() = default;
-
-			/**
-			 * \fn		bool    Init(const std::string& fileName);
-			 * \brief	read the XML file
-			 * \param	fileName : name of the file to read
-			 * \return	TRUE if the init succeed, FALSE otherwise
-			 */
-			bool    Init(const std::string& fileName);
-
-			/**
-			 * \fn		std::vector<std::string>&    GetDllList();
-			 * \brief	return the list of dll associated with this module
-			 * \return	the list of dll
-			 */
-			std::vector<std::string>& GetDllList();
-
-		protected:
-			//! list of dll
-			std::vector<std::string>  mDllList;
-			//! TRUE if the module has been initialized
-			bool                        mIsInitialised = false;
-			//! TRUE if the file is good?
-			static bool                 mIsGoodFile;
-			//! name of the module
-			std::string                mModuleName;
-			//! current reading depth
-			static int                  mCurrentReadDepth;
-		};
-
-		class ModuleBase;
 
 		/*
 			methods declaration to init / close / update modules in dll
 			and get the instance of ModuleBase class in the dll
 		 */
-
-		class ModuleBase;
-
-#if !defined(_KIGS_ONLY_STATIC_LIB_)
-#if BUILDING_DLL
-#ifndef DLLIMPORT
-#define DLLIMPORT __declspec (dllexport)
-#endif
-		extern "C"  DLLIMPORT ModuleBase * ModuleInit(KigsCore * core, const std::vector<CoreModifiableAttribute*>*params);
-#endif
-#endif
-
-		struct DynamicModuleHandleAndPointer
-		{
-			void* mHandle = nullptr;
-			SP<ModuleBase>		mInstance = nullptr;
-		};
 
 		// ****************************************
 		// * ModuleBase class
@@ -135,7 +75,16 @@ namespace Kigs
 			KigsCore* getCore() { return mCore; }
 
 		protected:
+
 			/**
+		 * \fn			void    RegisterPlatformSpecific(ModuleBase* platform);
+		 * \brief		register specific modules
+		 * \param		moduleName :name of the module
+		 * \param		params : list of parameters
+		 */
+		void    RegisterPlatformSpecific(SP<ModuleBase> platform);
+
+		/**
 			 * \fn			void    BaseInit(Core* core,const std::string& moduleName, const std::vector<CoreModifiableAttribute*>* params);
 			 * \brief		protected base init method, should be called by Init/Close and Update methods
 			 * \param		moduleName :name of the module
@@ -143,16 +92,6 @@ namespace Kigs
 			 */
 			void    BaseInit(KigsCore* core, const std::string& moduleName, const std::vector<CoreModifiableAttribute*>* params);
 
-#ifdef _KIGS_ONLY_STATIC_LIB_
-
-			/**
-			 * \fn			void    RegisterDynamic(ModuleBase* dynamic);
-			 * \brief		in static mode only register specific modules
-			 * \param		moduleName :name of the module
-			 * \param		params : list of parameters
-			 */
-			void    RegisterDynamic(SP<ModuleBase> dynamic);
-#endif
 			/**
 			 * \fn			void    BaseClose();
 			 * \brief		protected base close method, should be called by Init/Close and Update methods
@@ -171,14 +110,13 @@ namespace Kigs
 			//! pointer to the Core instance
 			KigsCore* mCore = nullptr;
 
-			//! list of dll handles
-			std::vector<DynamicModuleHandleAndPointer>    mDynamicModuleList;
-
 			// to be called by dynamic modules to set static instance of core
 			void	StaticInitCore(KigsCore* core)
 			{
 				KigsCore::mCoreInstance = core;
 			}
+			
+			std::vector<SP<ModuleBase>>    mPlatformModuleList;
 		};
 
 	}

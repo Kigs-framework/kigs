@@ -417,7 +417,7 @@ namespace Kigs
 		inline void XMLNodeTemplate<std::string>::setFloat(const float value)
 		{
 			static char szValue[64];
-			snprintf(szValue, 64, "%f", CastToFloat(value));
+			snprintf(szValue, 64, "%f", value);
 			mValue = szValue;
 		}
 	}

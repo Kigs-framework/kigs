@@ -17,9 +17,7 @@
 
 #include "MiniInstanceFactory.h"
 
-#ifdef _KIGS_ONLY_STATIC_LIB_
 #include "Platform/Core/PlatformCore.h"
-#endif
 
 #ifndef MEMSIZE_FOR_MEMORY_MANAGER
 static void * MM_base_adress;

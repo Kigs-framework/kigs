@@ -5,9 +5,7 @@
 #include "Platform/Core/PlatformCore.h"
 #include "SmartPointer.h"
 
-#ifdef _KIGS_ONLY_STATIC_LIB_
 #include "Platform/FileManager/FileManager.h"
-#endif
 
 using namespace Kigs::File;
 
@@ -23,18 +21,14 @@ void ModuleFileManager::Init(KigsCore* core, const std::vector<CoreModifiableAtt
 	DECLARE_FULL_CLASS_INFO(core,FilePathManager,FilePathManager,FileManager)
 	DECLARE_FULL_CLASS_INFO(core,RessourceFileManager,RessourceFileManager,FileManager)
 
-#ifdef _KIGS_ONLY_STATIC_LIB_
 	PlatformFileManagerModuleInit(core,params);
-#endif
 }
 
 //! module close
 void ModuleFileManager::Close()
 {
 	KigsCore::ReleaseSingleton("FilePathManager");
-#ifdef _KIGS_ONLY_STATIC_LIB_
 	PlatformFileManagerModuleClose(KigsCore::Instance());
-#endif
 	BaseClose();
 }
 
@@ -42,9 +36,7 @@ void ModuleFileManager::Close()
 void ModuleFileManager::Update(const Time::Timer& timer, void* addParam)
 {
 	BaseUpdate(timer,addParam);
-#ifdef _KIGS_ONLY_STATIC_LIB_
 	PlatformFileManagerModuleUpdate(&timer);
-#endif
 }    
 
 

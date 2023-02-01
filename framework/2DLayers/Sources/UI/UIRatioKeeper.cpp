@@ -14,12 +14,12 @@ IMPLEMENT_CONSTRUCTOR(UIRatioKeeper)
 
 void UIRatioKeeper::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mSize.getLabelID()) ||
-		(labelid == mAnchor.getLabelID()) ||
-		(labelid == mPosition.getLabelID()) ||
-		(labelid == mDock.getLabelID()) ||
-		(labelid == mPreScale.getLabelID()) ||
-		(labelid == mPostScale.getLabelID()))
+	if ((labelid == KigsID("Size")._id) ||
+		(labelid == KigsID("Anchor")._id) ||
+		(labelid == KigsID("Position")._id) ||
+		(labelid == KigsID("Dock")._id) ||
+		(labelid == KigsID("PreScale")._id) ||
+		(labelid == KigsID("PostScale")._id))
 		
 	{
 		// I don't want this values to be changed, so reset them

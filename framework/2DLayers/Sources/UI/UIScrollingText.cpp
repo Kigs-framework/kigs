@@ -11,7 +11,7 @@ IMPLEMENT_CLASS_INFO(UIScrollingText)
 
 UIScrollingText::UIScrollingText(const std::string& name,CLASS_NAME_TREE_ARG) : 
 UIText(name, PASS_CLASS_NAME_TREE_ARG)
-,mCaracterPerSeconde(*this,false,"CaracterPerSeconde",0.0f)
+,mCaracterPerSeconde(*this,"CaracterPerSeconde",0.0f)
 ,mScrollIndex(1)
 ,mElapsedTime(0)
 {
@@ -21,7 +21,7 @@ UIText(name, PASS_CLASS_NAME_TREE_ARG)
 
 void UIScrollingText::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == mText.getLabelID())
+	if (labelid == KigsID("Text")._id)
 	{
 		mScrollIndex = 1;
 	}

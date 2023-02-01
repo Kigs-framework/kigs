@@ -167,6 +167,7 @@ namespace Kigs
 		// ****************************************
 
 		using maBuffer = maBufferHeritage<16, char, false>;
+		using maBufferDynamic = maBufferHeritage<16, char, false,false,false,true>;
 
 
 	}

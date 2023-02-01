@@ -136,7 +136,6 @@ namespace Kigs
 			CMSP(std::shared_ptr<U>&& other) : SmartPointer<CoreModifiable>(debug_checked_pointer_cast<CoreModifiable>(other))
 			{
 			}
-			CMSP(CoreModifiable* other);
 			
 			template<typename U>
 			bool operator==(const U* other) const
@@ -160,11 +159,13 @@ namespace Kigs
 
 			protected:
 				CoreModifiableAttribute* mAttr = nullptr;
+				CoreModifiable*			 mOwner = nullptr;
+				KigsID					 mID;
 			public:
 
 				AttributeHolder() : mAttr(nullptr) {};
-				AttributeHolder(CoreModifiableAttribute* attr) : mAttr(attr) {};
-				AttributeHolder(const AttributeHolder& other) : mAttr(other.mAttr) {};
+		AttributeHolder(CoreModifiableAttribute* attr, CoreModifiable* owner,const KigsID& id) : mAttr(attr), mOwner(owner), mID(id) {};
+		AttributeHolder(const AttributeHolder& other) : mAttr(other.mAttr), mOwner(other.mOwner), mID(other.mID) {};
 
 				template<typename T>
 				inline operator T() const;
@@ -364,8 +365,6 @@ namespace Kigs
 			DECLARE_GetRuntimeTypeBase(CoreModifiable);
 			DECLARE_getExactTypeBase(CoreModifiable);
 
-			//virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) { classNameTree.addClassName("CoreModifiable", "CoreModifiable"); }
-	
 			CMSP SharedFromThis() 
 			{
 		#ifdef _DEBUG
@@ -418,15 +417,11 @@ namespace Kigs
 			void	setReadOnly(const KigsID& id, bool val = true);
 
 		protected:
-			explicit CoreModifiable(std::string name, DECLARE_CLASS_NAME_TREE_ARG) : GenericRefCountedBaseClass() 
-			{
-				mUID = mUIDCounter.fetch_add(1);
-				if (name.empty())
-					name = "nobody" + std::to_string(mUID);
-				mName = name;
-				mNameID = name;
-			}
-	
+			explicit CoreModifiable(std::string name, DECLARE_CLASS_NAME_TREE_ARG);
+			
+			template<typename valT>
+			inline void	addMappedAttribute(uintptr_t offset, const std::string& c, std::vector<std::pair<KigsID, CoreModifiableAttribute*>>* parent, CoreModifiableAttribute* toAdd);
+			
 			struct ImportState;
 		public:	
 			SIGNALS_BASE(PreInit,
@@ -517,6 +512,7 @@ namespace Kigs
 					(*found).second.setDynamic(dynamic);
 				}
 			}
+
 			void	addAttribute(CoreModifiableAttribute* attr, const KigsID& ID, bool dynamic, bool mapped=false)
 			{
 				mAttributes[ID] = { attr,dynamic,mapped };
@@ -671,7 +667,7 @@ namespace Kigs
 			CoreModifiableAttribute* getAttribute(KigsID labelid) const;
 
 			// Return array element count for an attribute
-			u32 getNbArrayElements(KigsID attributeLabel) const;
+			size_t getNbArrayElements(KigsID attributeLabel) const;
 
 			#define DECLARE_SET_VALUE(type) bool setValue(const KigsID& attributeLabel, type value);
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET_VALUE);
@@ -703,11 +699,11 @@ namespace Kigs
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAY_VALUE4);
 
 
-			#define DECLARE_SET_ARRAY_VALUE(type) bool setArrayValue(const KigsID& attributeLabel, type value, u32 nbElements);
-			#define DECLARE_GET_ARRAY_VALUE(type) bool getArrayValue(const KigsID& labelid, type value, u32 nbElements) const;
-
-			#define DECLARE_SET_ARRAY_ELEMENT(type) bool setArrayElementValue(const KigsID&, type value, u32 line, u32 column);
-			#define DECLARE_GET_ARRAY_ELEMENT(type) bool getArrayElementValue(const KigsID&, type value, u32 line, u32 column) const;
+			#define DECLARE_SET_ARRAY_VALUE(type) bool setArrayValue(const KigsID& attributeLabel, type value, size_t nbElements);
+			#define DECLARE_GET_ARRAY_VALUE(type) bool getArrayValue(const KigsID& labelid, type value, size_t nbElements) const;
+		
+			#define DECLARE_SET_ARRAY_ELEMENT(type) bool setArrayElementValue(const KigsID&, type value, size_t line, size_t column);
+			#define DECLARE_GET_ARRAY_ELEMENT(type) bool getArrayElementValue(const KigsID&, type value, size_t line, size_t column) const;
 
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, *, DECLARE_GET_ARRAY_VALUE);
 			EXPAND_MACRO_FOR_BASE_TYPES(const, *, DECLARE_SET_ARRAY_VALUE);
@@ -889,11 +885,7 @@ namespace Kigs
 				return SharedFromThis();
 			}
 
-
-
 			/// Utility
-			//@TODO check for usage
-			void InitParametersFromList(const std::vector<CoreModifiableAttribute*>* params);
 			// cast operator, returns the attribute list 
 			operator std::vector<CoreModifiableAttribute*>();
 			//@TODO check for usage
@@ -945,7 +937,7 @@ namespace Kigs
 			virtual void ImportFromCData(const std::string&/* imported*/) {}
 	
 			// Search an attribute list for a specific attribute
-			static CoreModifiableAttribute*	getParameter(const std::vector<CoreModifiableAttribute*>& params, KigsID ID);
+			static CoreModifiableAttribute*	getParameter(const std::vector<CoreModifiableAttribute*>& params, const KigsID& ID);
 			static void Append(std::string &XMLString, const std::list<CoreModifiable*> &toexport, bool recursive, ExportSettings* settings = nullptr);
 	
 			static void	Export(const std::string &filename, CoreModifiable* toexport, bool recursive = false, ExportSettings* settings = nullptr);
@@ -1020,12 +1012,12 @@ namespace Kigs
 
 			/// Internals
 			void UpdateAggregates(const Time::Timer&  timer, void* addParam);
-			const ModifiableMethodStruct* findMethodOnThisOnly(const KigsID& id, const CoreModifiable*& localthis) const;
-			const ModifiableMethodStruct* findMethod(const KigsID& id, const CoreModifiable*& localthis) const;
-			const ModifiableMethodStruct* recursivefindMethod(const KigsID& id, const CoreModifiable*& localthis) const;
-			CoreModifiableAttribute* findAttributeOnThisOnly(const KigsID& id) const;
-			CoreModifiableAttribute* findAttribute(const KigsID& id) const;
-			CoreModifiableAttribute* recursivefindAttribute(const KigsID& id) const;
+			std::pair < const ModifiableMethodStruct*, const CoreModifiable*> findMethodOnThisOnly(const KigsID& id, const CoreModifiable*& localthis) const;
+			std::pair < const ModifiableMethodStruct*, const CoreModifiable*> findMethod(const KigsID& id, const CoreModifiable*& localthis) const;
+			std::pair < const ModifiableMethodStruct*, const CoreModifiable*> recursivefindMethod(const KigsID& id, const CoreModifiable*& localthis) const;
+			std::pair<CoreModifiableAttribute*, const CoreModifiable*> findAttributeOnThisOnly(const KigsID& id) const;
+			std::pair < CoreModifiableAttribute*, const CoreModifiable*> findAttribute(const KigsID& id) const;
+			std::pair < CoreModifiableAttribute*, const CoreModifiable*> recursivefindAttribute(const KigsID& id) const;
 	
 			CoreModifiable* recursiveGetRootParentByType(const KigsID& ParentClassID, int currentlevel,int &foundLevel) const;
 
@@ -1227,8 +1219,8 @@ namespace Kigs
 				*(attribute_type*)toadd = value;
 				return toadd;
 			}
-			toadd = new attribute_type(*this, false, ID, value);
-			toadd->setDynamic(true);
+			toadd = new attribute_type(*this, ID, value);
+			toadd->setDynamic(true,this,ID);
 			return toadd;
 		}
 
@@ -1242,9 +1234,6 @@ namespace Kigs
 
 		// CMSP methods
 
-		inline CMSP::CMSP(CoreModifiable* other) : SmartPointer<CoreModifiable>(other->SharedFromThis())
-		{
-		}
 
 		inline CMSP CMSP::operator [](const std::string& son) const
 		{
@@ -1265,10 +1254,11 @@ namespace Kigs
 		{
 			if (get())
 			{
-				CoreModifiableAttribute* attrib = get()->getAttribute(attr);
-				return AttributeHolder(attrib);
+		KigsID	attrid(attr);
+		CoreModifiableAttribute* attrib = get()->getAttribute(attrid);
+		return AttributeHolder(attrib, get(), attrid);
 			}
-			return AttributeHolder(nullptr);
+	return AttributeHolder();
 		}
 
 		struct LazyContent
@@ -1355,30 +1345,36 @@ namespace Kigs
 		template<typename type>
 		struct TypeToEnum {};
 
-
 		template<>
 		struct TypeToEnum<bool> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::BOOL> {};
-
+		//Numeric
 		template<>
 		struct TypeToEnum<s8> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::CHAR> {};
+
 		template<>
 		struct TypeToEnum<s16> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::SHORT> {};
+
 		template<>
 		struct TypeToEnum<s32> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::INT> {};
+
 		template<>
 		struct TypeToEnum<s64> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::LONG> {};
 
 		template<>
 		struct TypeToEnum<u8> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::UCHAR> {};
+
 		template<>
 		struct TypeToEnum<u16> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::USHORT> {};
+
 		template<>
 		struct TypeToEnum<u32> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::UINT> {};
+
 		template<>
 		struct TypeToEnum<u64> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ULONG> {};
 
 		template<>
 		struct TypeToEnum<float> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::FLOAT> {};
+
 		template<>
 		struct TypeToEnum<double> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::DOUBLE> {};
 
@@ -1386,9 +1382,66 @@ namespace Kigs
 		struct TypeToEnum<std::string> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::STRING> {};
 		template<>
 		struct TypeToEnum<usString> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::USSTRING> {};
-
-
-
+		
+		// arrays
+		template<>
+		struct TypeToEnum<v2f> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<>
+		struct TypeToEnum<v3f> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<>
+		struct TypeToEnum<v4f> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<>
+		struct TypeToEnum<quat> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<>
+		struct TypeToEnum<v2i> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<>
+		struct TypeToEnum<v3i> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<>
+		struct TypeToEnum<v2u> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<>
+		struct TypeToEnum<v3u> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<>
+		struct TypeToEnum<Matrix3x3> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<>
+		struct TypeToEnum<Matrix3x4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<>
+		struct TypeToEnum<Matrix4x4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		
+		
+		template<typename Type,size_t count>
+		struct TypeToEnum<std::array<Type,count>> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<typename Type>
+		struct TypeToEnum<::std::weak_ptr<Type>> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE> {};
+		template<typename Type>
+		struct TypeToEnum<SP<Type>> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::STRONG_REFERENCE> {};
+		
+		
+		template<typename type>
+		struct AraryTypeToEnum : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::BOOL> {};
+		
+		template<>
+		struct AraryTypeToEnum<v2f> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::FLOAT> {};
+		template<>
+		struct AraryTypeToEnum<v3f> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::FLOAT> {};
+		template<>
+		struct AraryTypeToEnum<v4f> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::FLOAT> {};
+		template<>
+		struct AraryTypeToEnum<quat> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::FLOAT> {};
+		template<>
+		struct AraryTypeToEnum<v2i> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::INT> {};
+		template<>
+		struct AraryTypeToEnum<v3i> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::INT> {};
+		template<>
+		struct AraryTypeToEnum<v2u> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::UINT> {};
+		template<>
+		struct AraryTypeToEnum<v3u> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::UINT> {};
+		template<>
+		struct AraryTypeToEnum<Matrix3x3> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<>
+		struct AraryTypeToEnum<Matrix3x4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		template<>
+		struct AraryTypeToEnum<Matrix4x4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		
 		template<typename TypeOut, typename TypeIn>
 		TypeOut* KigsDynamicCast(TypeIn* obj)
 		{

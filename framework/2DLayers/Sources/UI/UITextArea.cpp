@@ -18,15 +18,15 @@ IMPLEMENT_CLASS_INFO(UITextArea)
 
 UITextArea::UITextArea(const std::string& name, CLASS_NAME_TREE_ARG) :
 	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-	mText(*this, false, "Text", (std::string)"DefaultText"),
-	mFont(*this, false, "Font", ""),
-	mReleaseAction(*this, false, "ReleaseAction", ""),
-	mFontSize(*this, false, "FontSize", 12),
-	mLength(*this, false, "Length", 0),
-	mRow(*this, false, "Row", 1),
-	mCol(*this, false, "Col", 1),
-	mHasDefaultText(*this, false, "HasDefaultText", true),
-	mTextAlignment(*this, false, "TextAlignment", 1)
+	mText(*this, "Text", (std::string)"DefaultText"),
+	mFont(*this, "Font", ""),
+	mReleaseAction(*this, "ReleaseAction", ""),
+	mFontSize(*this, "FontSize", 12),
+	mLength(*this, "Length", 0),
+	mRow(*this, "Row", 1),
+	mCol(*this, "Col", 1),
+	mHasDefaultText(*this, "HasDefaultText", true),
+	mTextAlignment(*this, "TextAlignment", 1)
 {
 
 	//unsetUserFlag(UserFlagUseColorArray);
@@ -49,7 +49,7 @@ void	UITextArea::InitModifiable()
 
 void UITextArea::NotifyUpdate(const unsigned int labelid)
 {
-	if ((labelid == mText.getLabelID()))
+	if ((labelid == KigsID("Text")._id))
 	{
 		ChangeText(NULL);
 		KigsCore::GetNotificationCenter()->postNotificationName("TextChanged", this);
@@ -77,7 +77,7 @@ UITextArea::~UITextArea()
 
 void UITextArea::CreateFirstText()
 {
-	mText.changeNotificationLevel(Owner);
+	setOwnerNotification("Text", true);
 
 	ChangeText(NULL);
 }

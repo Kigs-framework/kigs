@@ -17,15 +17,14 @@ void UIImageHighlight::InitModifiable()
 			mHLTexturePointer->setValue("TextureName", mHLTexture);
 			mHLTexturePointer->Init();
 		}
-
-		mHLTexture.changeNotificationLevel(Owner);
+		setOwnerNotification("HLTexture", true);
 	}
 }
 
 
 void UIImageHighlight::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == mHLTexture.getLabelID())
+	if (labelid == KigsID("HLTexture")._id)
 	{
 		ChangeTexture();
 	}

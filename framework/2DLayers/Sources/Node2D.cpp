@@ -22,15 +22,15 @@ IMPLEMENT_CLASS_INFO(Node2D)
 
 IMPLEMENT_CONSTRUCTOR(Node2D)
 , mParent(nullptr)
-, mPriority(*this, false, "Priority", 0)
-, mSize(*this, false, "Size", 0,0)
-, mDock(*this, false, "Dock", 0, 0)
-, mAnchor(*this, false, "Anchor", 0, 0)
-, mPosition(*this, false, "Position", 0, 0)
-, mRotationAngle(*this, false, "RotationAngle", 0)
-, mPreScale(*this, false, "PreScale", 1,1)
-, mPostScale(*this, false, "PostScale", 1,1)
-, mClipSons(*this, false, "ClipSons", false)
+, mPriority(*this, "Priority", 0)
+, mSize(*this, "Size", 0,0)
+, mDock(*this, "Dock", 0, 0)
+, mAnchor(*this, "Anchor", 0, 0)
+, mPosition(*this, "Position", 0, 0)
+, mRotationAngle(*this, "RotationAngle", 0)
+, mPreScale(*this, "PreScale", 1,1)
+, mPostScale(*this, "PostScale", 1,1)
+, mClipSons(*this, "ClipSons", false)
 {
 	SetNodeFlag(Node2D_NeedUpdatePosition);
 	SetNodeFlag(Node2D_SizeChanged);
@@ -60,29 +60,29 @@ bool Node2D::IsInClip(v2f pos) const
 
 void Node2D::NotifyUpdate(const unsigned int labelid)
 {
-	if (labelid == mClipSons.getID())
+	if (labelid == KigsID("ClipSons"))
 	{
 		ChangeNodeFlag(Node2D_ClipSons,mClipSons);
 		PropagateNodeFlags();
 	}
 	
-	bool sizechanged = (labelid == mSize.getLabelID()) ||
-		(labelid == mSizeModeX.getLabelID()) ||
-		(labelid == mSizeModeY.getLabelID());
+	bool sizechanged = (labelid == KigsID("Size")) ||
+		(labelid == KigsID("SizeModeX")) ||
+		(labelid == KigsID("SizeModeY"));
 	
 	if (sizechanged)
 		SetNodeFlag(Node2D_SizeChanged);
 
-	if (sizechanged || (labelid == mAnchor.getLabelID()) ||
-		(labelid == mPosition.getLabelID()) ||
-		(labelid == mDock.getLabelID()) ||
-		(labelid == mPreScale.getLabelID()) ||
-		(labelid == mPostScale.getLabelID()) ||
-		(labelid == mRotationAngle.getLabelID()))
+	if (sizechanged || (labelid == KigsID("Anchor")) ||
+		(labelid == KigsID("Position")) ||
+		(labelid == KigsID("Dock")) ||
+		(labelid == KigsID("PreScale")) ||
+		(labelid == KigsID("PostScale")) ||
+		(labelid == KigsID("RotationAngle")))
 	{
 		SetNodeFlag(Node2D_NeedUpdatePosition);
 	}
-	else if (labelid == mPriority.getLabelID())
+	else if (labelid == KigsID("Priority"))
 	{
 		if (mParent)
 		{
@@ -91,7 +91,7 @@ void Node2D::NotifyUpdate(const unsigned int labelid)
 				static_cast<UILayout*>(mParent)->NeedRecomputeLayout();
 		}
 	}
-	else if (labelid == mCustomShader.getLabelID())
+	else if (labelid == KigsID("CustomShader"))
 	{
 		ChangeNodeFlag(Node2D_UseCustomShader, (mCustomShader.RefString() != ""));
 	}
@@ -340,22 +340,20 @@ void	Node2D::InitModifiable()
 	// check if son rendering matrix is init and this is not init
 	if (!IsInit() && !GetParents().empty()/* && ( getFather() || (getLayerFather()))*/)
 	{
-		mAnchor.changeNotificationLevel(Owner);
-		mDock.changeNotificationLevel(Owner);
-		mPosition.changeNotificationLevel(Owner);
-		mSizeModeX.changeNotificationLevel(Owner);
-		mSizeModeY.changeNotificationLevel(Owner);
-		mSize.changeNotificationLevel(Owner);
-		mPreScale.changeNotificationLevel(Owner);
-		mPostScale.changeNotificationLevel(Owner);
-		mPriority.changeNotificationLevel(Owner);
-		mRotationAngle.changeNotificationLevel(Owner);
-		mClipSons.changeNotificationLevel(Owner);
+		setOwnerNotification("Anchor", true);
+		setOwnerNotification("Dock", true);
+		setOwnerNotification("Position", true);
+		setOwnerNotification("SizeModeX", true);
+		setOwnerNotification("SizeModeY", true);
+		setOwnerNotification("Size", true);
+		setOwnerNotification("PreScale", true);
+		setOwnerNotification("PostScale", true);
+		setOwnerNotification("Priority", true);
+		setOwnerNotification("RotationAngle", true);
+		setOwnerNotification("ClipSons", true);
+		setOwnerNotification("CustomShader", true);
 
 		ChangeNodeFlag(Node2D_ClipSons, mClipSons);
-
-		// call me if custom shader is set
-		mCustomShader.changeNotificationLevel(Owner);
 		
 		ChangeNodeFlag(Node2D_UseCustomShader, (mCustomShader.RefString() != ""));
 		if (mParent)

@@ -69,7 +69,9 @@ virtual bool getValue(type value, const CoreModifiable* owner) const override \
 		};
 
 		using maBool = maBoolHeritage<false,false,false,false,false>;
+		using maBoolInit = maBoolHeritage<false, true, false, false, false>;
 		using maBoolOrphan = maBoolHeritage<false, false, false, false, true>;
+		using maBoolDynamic = maBoolHeritage<false,false,false,true>;
 
 
 #undef IMPLEMENT_SET_VALUE_BOOL

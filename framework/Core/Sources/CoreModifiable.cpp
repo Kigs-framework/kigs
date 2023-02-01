@@ -24,14 +24,14 @@
 #include "JSonFileParser.h"
 
 #include "Upgrador.h"
+#include "CoreModifiableAttribute.h"
 
 #include <algorithm>
 
 #include <stdio.h>
 
-#ifdef _KIGS_ONLY_STATIC_LIB_
+
 #include "Platform/Core/PlatformCore.h"
-#endif
 
 #define XML_MULTIPLE_EXPORT_ROOT "Root_node"
 
@@ -44,6 +44,26 @@ std::atomic<unsigned int> CoreModifiable::mUIDCounter{ 0 };
 
 //! auto implement static members
 IMPLEMENT_CLASS_INFO(CoreModifiable);
+
+
+CoreModifiable::CoreModifiable(std::string name, CLASS_NAME_TREE_ARG) : GenericRefCountedBaseClass()
+{
+	mUID = mUIDCounter.fetch_add(1);
+	if (name.empty())
+		name = "nobody" + ::std::to_string(mUID);
+	mName = name;
+	mNameID = name;
+
+	// add mapped attributes owner
+	if (mappedAttr)
+	{
+		for (const auto& attr : *mappedAttr)
+		{
+			addAttribute(attr.second, attr.first, false, true);
+		}
+		delete mappedAttr;
+	}
+}
 
 CoreModifiable::~CoreModifiable()
 {
@@ -71,8 +91,6 @@ CoreModifiable::~CoreModifiable()
 	
 	mAttributes.clear();
 	mUsers.clear();
-
-
 
 #ifdef KEEP_XML_DOCUMENT
 	DeleteXMLFiles();
@@ -198,7 +216,7 @@ const unordered_map<KigsID, ModifiableMethodStruct>* CoreModifiable::GetMethods(
 bool CoreModifiable::HasMethod(const KigsID& methodNameID) const
 {
 	const CoreModifiable* lthis;
-	if (findMethod(methodNameID, lthis) != 0)
+	if (findMethod(methodNameID, lthis).first != 0)
 	{
 		return true;
 	}
@@ -428,7 +446,7 @@ void CoreModifiable::RecursiveInit(bool a_childInFirst)
 	}
 	
 }
-const ModifiableMethodStruct* CoreModifiable::findMethodOnThisOnly(const KigsID& id, const CoreModifiable*& localthis) const
+std::pair<const ModifiableMethodStruct*,const CoreModifiable*> CoreModifiable::findMethodOnThisOnly(const KigsID& id, const CoreModifiable*& localthis) const
 {
 	
 	// first check on this
@@ -439,7 +457,7 @@ const ModifiableMethodStruct* CoreModifiable::findMethodOnThisOnly(const KigsID&
 		if (it != methods.end())
 		{
 			localthis = this;
-			return &(*it).second;
+			return { &(*it).second,this };
 		}
 	}
 
@@ -449,7 +467,7 @@ const ModifiableMethodStruct* CoreModifiable::findMethodOnThisOnly(const KigsID&
 		if (it != mTypeNode->mMethods.end())
 		{
 			localthis = this;
-			return &it->second;
+			return { &it->second,this };
 		}
 	}
 	// if not found, check on forward ptr
@@ -459,20 +477,20 @@ const ModifiableMethodStruct* CoreModifiable::findMethodOnThisOnly(const KigsID&
 		while (found)
 		{
 			ForwardSP<CoreModifiable> f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
-			const ModifiableMethodStruct* search = f->findMethodOnThisOnly(id, localthis);
-			if (search)
+			std::pair<const ModifiableMethodStruct*, const CoreModifiable*> search = f->findMethodOnThisOnly(id, localthis);
+			if (search.first)
 			{
 				return search;
 			}
 			found = found->getNext(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
 		}
 	}
-	return nullptr;
+	return { nullptr,nullptr };
 }
-const ModifiableMethodStruct* CoreModifiable::findMethod(const KigsID& id, const CoreModifiable*& localthis) const
+std::pair<const ModifiableMethodStruct*, const CoreModifiable*> CoreModifiable::findMethod(const KigsID& id, const CoreModifiable*& localthis) const
 {
-	const ModifiableMethodStruct* found = findMethodOnThisOnly(id, localthis);
-	if (found)
+	std::pair<const ModifiableMethodStruct*, const CoreModifiable*> found = findMethodOnThisOnly(id, localthis);
+	if (found.first)
 	{
 		return found;
 	}
@@ -486,11 +504,11 @@ const ModifiableMethodStruct* CoreModifiable::findMethod(const KigsID& id, const
 	return search->recursivefindMethod(id, localthis);
 }
 
-const ModifiableMethodStruct* CoreModifiable::recursivefindMethod(const KigsID& id, const CoreModifiable*& localthis) const
+std::pair<const ModifiableMethodStruct*, const CoreModifiable*> CoreModifiable::recursivefindMethod(const KigsID& id, const CoreModifiable*& localthis) const
 {
-	const ModifiableMethodStruct* foundonthis = findMethodOnThisOnly(id, localthis);
+	std::pair<const ModifiableMethodStruct*, const CoreModifiable*> foundonthis = findMethodOnThisOnly(id, localthis);
 
-	if (foundonthis)
+	if (foundonthis.first)
 	{
 		return foundonthis;
 	}
@@ -505,7 +523,7 @@ const ModifiableMethodStruct* CoreModifiable::recursivefindMethod(const KigsID& 
 			if ((*itc).isAggregate())
 			{
 				auto found = (*itc).mItem->recursivefindMethod(id, localthis);
-				if (found != 0)
+				if (found.first != nullptr)
 				{
 					return found;
 				}
@@ -513,7 +531,7 @@ const ModifiableMethodStruct* CoreModifiable::recursivefindMethod(const KigsID& 
 			++itc;
 		}
 	}
-	return nullptr;
+	return { nullptr,nullptr };
 }
 
 bool CoreModifiable::aggregateWith(const CMSP& item, ItemPosition pos)
@@ -590,13 +608,13 @@ void CoreModifiable::UpdateAggregates(const Timer&  timer, void* addParam)
 	}
 }
 
-CoreModifiableAttribute* CoreModifiable::findAttributeOnThisOnly(const KigsID& id) const
+std::pair<CoreModifiableAttribute*, const CoreModifiable*> CoreModifiable::findAttributeOnThisOnly(const KigsID& id) const
 {
 	// first check on this
 	const auto i = mAttributes.find(id);
 	if (i != mAttributes.end())
 	{
-		return (*i).second;
+		return { ((CoreModifiableAttribute*)(*i).second),this };
 	}
 	// if not found, check on forward ptr
 	if (auto lz = mLazyContent.load())
@@ -607,8 +625,8 @@ CoreModifiableAttribute* CoreModifiable::findAttributeOnThisOnly(const KigsID& i
 			ForwardSP<CoreModifiable>& f = *(static_cast<ForwardSP<CoreModifiable>*>(found));
 			if (f)
 			{
-				CoreModifiableAttribute* search = f->findAttributeOnThisOnly(id);
-				if (search)
+				std::pair<CoreModifiableAttribute*, const CoreModifiable*> search = f->findAttributeOnThisOnly(id);
+				if (search.first)
 				{
 					return search;
 				}
@@ -616,13 +634,13 @@ CoreModifiableAttribute* CoreModifiable::findAttributeOnThisOnly(const KigsID& i
 			found = found->getNext(LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
 		}
 	}
-	return nullptr;
+	return { nullptr,nullptr };
 }
 
-CoreModifiableAttribute* CoreModifiable::findAttribute(const KigsID& id) const
+std::pair<CoreModifiableAttribute*, const CoreModifiable*> CoreModifiable::findAttribute(const KigsID& id) const
 {
 	auto foundOnThis = findAttributeOnThisOnly(id);
-	if (foundOnThis)
+	if (foundOnThis.first)
 	{
 		return foundOnThis;
 	}
@@ -636,10 +654,10 @@ CoreModifiableAttribute* CoreModifiable::findAttribute(const KigsID& id) const
 	return search->recursivefindAttribute(id);
 }
 
-CoreModifiableAttribute* CoreModifiable::recursivefindAttribute(const KigsID& id) const
+std::pair<CoreModifiableAttribute*, const CoreModifiable*> CoreModifiable::recursivefindAttribute(const KigsID& id) const
 {
 	auto foundOnThis = findAttributeOnThisOnly(id);
-	if (foundOnThis)
+	if (foundOnThis.first)
 	{
 		return foundOnThis;
 	}
@@ -653,8 +671,8 @@ CoreModifiableAttribute* CoreModifiable::recursivefindAttribute(const KigsID& id
 		{
 			if ((*itc).isAggregate())
 			{
-				CoreModifiableAttribute* found = (*itc).mItem->recursivefindAttribute(id);
-				if (found)
+				std::pair<CoreModifiableAttribute*, const CoreModifiable*> found = (*itc).mItem->recursivefindAttribute(id);
+				if (found.first)
 				{
 					return found;
 				}
@@ -662,23 +680,23 @@ CoreModifiableAttribute* CoreModifiable::recursivefindAttribute(const KigsID& id
 			++itc;
 		}
 	}
-	return 0;
+	return { nullptr,nullptr };
 	
 }
 
 bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAttribute*>& params,void* privateParams,CoreModifiable* sender)
 {
 	const CoreModifiable* getlocalthis;
-	const ModifiableMethodStruct* methodFound = findMethod(methodNameID, getlocalthis);
+	auto methodFound = findMethod(methodNameID, getlocalthis);
 
-	if(methodFound == 0) // method was not found ? try to find maCoreItem with the same name to evaluate
+	if(methodFound.first == nullptr) // method was not found ? try to find maCoreItem with the same name to evaluate
 	{
-		CoreModifiableAttribute* foundattrib = findAttribute(methodNameID);
-		if (foundattrib)
+		auto foundattrib = findAttribute(methodNameID);
+		if (foundattrib.first)
 		{
-			if (foundattrib->getType() == ATTRIBUTE_TYPE::COREITEM)
+			if (foundattrib.first->getType() == ATTRIBUTE_TYPE::COREITEM)
 			{
-				CoreItem& ItemToEval = (*(maCoreItem*)foundattrib);
+				CoreItem& ItemToEval = (*(maCoreItem*)foundattrib.first);
 				
 				bool result = ItemToEval;
 
@@ -696,16 +714,16 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 	bool result = false;
 
 
-	if (!methodFound->IsMethod())
+	if (!methodFound.first->IsMethod())
 	{
-		result = methodFound->GetFunction()(this, sender, params, privateParams);
+		result = methodFound.first->GetFunction()((CoreModifiable*)methodFound.second, sender, params, privateParams);
 	}
 	else
 	{
-		auto& method = methodFound->GetMethod();
+		auto& method = methodFound.first->GetMethod();
 		if (method.mName != "")
 		{
-			maString methodName{ "methodName" , method.mName };
+			maStringOrphan methodName{ "methodName" , method.mName };
 			params.insert(params.begin(), &methodName);
 			result = (localthis->*method.mMethod)(sender, params, privateParams);
 			params.erase(params.begin());
@@ -741,7 +759,7 @@ bool CoreModifiable::SimpleCallWithCoreItemParams(KigsID methodNameID, const Cor
 	{
 		if (p->GetType() & CoreItem::COREITEM_TYPE::COREVALUE)
 		{
-			attr.AddAttribute(p->createAttribute(nullptr));
+			attr.AddAttribute(p->createAttribute());
 		}
 		else if (p->GetType() & CoreItem::COREITEM_TYPE::COREVECTOR)
 		{
@@ -873,18 +891,18 @@ CoreModifiable::operator std::vector<CoreModifiableAttribute*> ()
 }
 
 //! return element count for an array type attribute
-u32 CoreModifiable::getNbArrayElements(KigsID attributeID) const
+size_t CoreModifiable::getNbArrayElements(KigsID attributeID) const
 {
-	CoreModifiableAttribute* attribute = findAttribute(attributeID);
-	if (attribute) return attribute->getNbArrayElements();
+	auto attribute = findAttribute(attributeID);
+	if (attribute.first) return attribute.first->getNbArrayElements();
 	return 0;
 }
 
 //! macro fast implementing access to an attribute
 #define IMPLEMENT_ACCESS_VALUE_BODY_BY_ID(accessValue) \
 { \
-	CoreModifiableAttribute* attribute=findAttribute(attributeID);  \
-	if(attribute) return attribute->accessValue(value,this); \
+	auto attribute=findAttribute(attributeID);  \
+	if(attribute.first) return attribute.first->accessValue(value,(CoreModifiable*)attribute.second); \
 	return false; \
 }
 
@@ -927,32 +945,32 @@ EXPAND_MACRO_FOR_EXTRA_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SET_VALUE);
 //! macro implementing body of get/set values for array
 #define IMPLEMENT_ACCESS_ARRAY_VALUE_BODY_BY_ID(accessValue) \
 { \
-	CoreModifiableAttribute* attribute=findAttribute(attributeID); \
-	if(attribute) return attribute->accessValue(value,this, nbElements); \
+	auto attribute=findAttribute(attributeID); \
+	if(attribute.first) return attribute.first->accessValue(value,(CoreModifiable*)attribute.second, nbElements); \
 	return false; \
 }
 
 //! macro implementing body of get/set values for array by element
 #define IMPLEMENT_ACCESS_ARRAY_ELEMENT_VALUE_BODY_BY_ID(accessValue) \
 { \
-	CoreModifiableAttribute* attribute=findAttribute(attributeID); \
-	if(attribute) return attribute->accessValue(value,this, line, column); \
+	auto attribute=findAttribute(attributeID); \
+	if(attribute.first) return attribute.first->accessValue(value, (CoreModifiable*)attribute.second,line, column); \
 	return false; \
 }
 
 //! macro implementing get for array
 
-#define IMPLEMENT_GET_ARRAY_VALUE(T) bool CoreModifiable::getArrayValue(const KigsID& attributeID, T value, u32 nbElements) const \
+#define IMPLEMENT_GET_ARRAY_VALUE(T) bool CoreModifiable::getArrayValue(const KigsID& attributeID, T value, size_t nbElements) const \
 IMPLEMENT_ACCESS_ARRAY_VALUE_BODY_BY_ID(getArrayValue)
 
-#define IMPLEMENT_GET_ARRAY_ELEMENT(T) bool CoreModifiable::getArrayElementValue(const KigsID& attributeID, T value, u32 line, u32 column) const \
+#define IMPLEMENT_GET_ARRAY_ELEMENT(T) bool CoreModifiable::getArrayElementValue(const KigsID&  attributeID, T value, size_t line, size_t column) const \
 IMPLEMENT_ACCESS_ARRAY_ELEMENT_VALUE_BODY_BY_ID(getArrayElementValue)
 
 //! macro implementing set for array
-#define IMPLEMENT_SET_ARRAY_VALUE(T) bool CoreModifiable::setArrayValue(const KigsID& attributeID, T value, u32 nbElements) \
+#define IMPLEMENT_SET_ARRAY_VALUE(T) bool CoreModifiable::setArrayValue(const KigsID&  attributeID, T value, size_t nbElements) \
 IMPLEMENT_ACCESS_ARRAY_VALUE_BODY_BY_ID(setArrayValue) 
 
-#define IMPLEMENT_SET_ARRAY_ELEMENT(T) bool CoreModifiable::setArrayElementValue(const KigsID& attributeID, T value, u32 line, u32 column) \
+#define IMPLEMENT_SET_ARRAY_ELEMENT(T) bool CoreModifiable::setArrayElementValue(const KigsID&  attributeID, T value, size_t line, size_t column) \
 IMPLEMENT_ACCESS_ARRAY_ELEMENT_VALUE_BODY_BY_ID(setArrayElementValue)
 
 //! macro implementing all set and get for all array element type
@@ -971,12 +989,12 @@ IMPLEMENT_SET_ARRAY_ELEMENT(const std::string&);
 
 #define IMPLEMENT_SETARRAY_VALUE2(valuetype) bool CoreModifiable::setArrayValue(const KigsID& attributeID, valuetype value1,valuetype value2) \
 {\
-	CoreModifiableAttribute* attribute = findAttribute(attributeID); \
-	if (attribute) \
+	auto attribute = findAttribute(attributeID); \
+	if (attribute.first) \
 	{ \
 		bool result=true; \
-		result |= attribute->setArrayElementValue(value1,this, 0, 0); \
-		result |= attribute->setArrayElementValue(value2,this, 0, 1); \
+		result |= attribute.first->setArrayElementValue(value1,(CoreModifiable*)attribute.second, 0, 0); \
+		result |= attribute.first->setArrayElementValue(value2,(CoreModifiable*)attribute.second, 0, 1); \
 		return result;\
 	} \
 	return false; \
@@ -988,13 +1006,13 @@ EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SETARRAY_VALUE2)
 
 #define IMPLEMENT_SETARRAY_VALUE3(valuetype) bool CoreModifiable::setArrayValue(const KigsID& attributeID, valuetype value1,valuetype value2,valuetype value3) \
 {\
-	CoreModifiableAttribute* attribute = findAttribute(attributeID); \
-	if (attribute) \
+	auto attribute = findAttribute(attributeID); \
+	if (attribute.first) \
 	{ \
 		bool result=true; \
-		result |= attribute->setArrayElementValue(value1,this, 0, 0); \
-		result |= attribute->setArrayElementValue(value2,this, 0, 1); \
-		result |= attribute->setArrayElementValue(value3,this, 0, 2); \
+		result |= attribute.first->setArrayElementValue(value1,(CoreModifiable*)attribute.second, 0, 0); \
+		result |= attribute.first->setArrayElementValue(value2,(CoreModifiable*)attribute.second, 0, 1); \
+		result |= attribute.first->setArrayElementValue(value3,(CoreModifiable*)attribute.second, 0, 2); \
 		return result;\
 	} \
 	return false; \
@@ -1006,14 +1024,14 @@ EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, IMPLEMENT_SETARRAY_VALUE3)
 
 #define IMPLEMENT_SETARRAY_VALUE4(valuetype) bool CoreModifiable::setArrayValue(const KigsID& attributeID, valuetype value1,valuetype value2,valuetype value3,valuetype value4) \
 {\
-	CoreModifiableAttribute* attribute = findAttribute(attributeID); \
-	if (attribute) \
+	auto attribute = findAttribute(attributeID); \
+	if (attribute.first) \
 	{ \
 		bool result=true; \
-		result |= attribute->setArrayElementValue(value1,this, 0, 0); \
-		result |= attribute->setArrayElementValue(value2,this, 0, 1); \
-		result |= attribute->setArrayElementValue(value3,this, 0, 2); \
-		result |= attribute->setArrayElementValue(value4,this, 0, 3); \
+		result |= attribute.first->setArrayElementValue(value1,(CoreModifiable*)attribute.second, 0, 0); \
+		result |= attribute.first->setArrayElementValue(value2,(CoreModifiable*)attribute.second, 0, 1); \
+		result |= attribute.first->setArrayElementValue(value3,(CoreModifiable*)attribute.second, 0, 2); \
+		result |= attribute.first->setArrayElementValue(value4,(CoreModifiable*)attribute.second, 0, 3); \
 		return result;\
 	} \
 	return false; \
@@ -1031,7 +1049,7 @@ void CoreModifiable::UpdateAttributes(const CoreModifiable& tocopy)
 		auto foundattr = mAttributes.find(it->first);
 		if (foundattr != mAttributes.end())
 		{
-			*foundattr->second = *it->second;
+			(*foundattr).second = (*it).second;
 		}
 	}
 }
@@ -1053,15 +1071,28 @@ void CoreModifiable::unregisterFromAutoUpdate()
 
 void	CoreModifiable::DeleteDynamicAttributes()
 {
+	unordered_map<KigsID, FlaggedCoreModifiableAttribute> keepedAttributes;
+
 	std::vector<CoreModifiableAttribute*> todelete;
 	for (auto it : mAttributes) 
 	{
-		if (it.second->isDynamic())
+		if (it.second.isDynamic())
 		{
 			todelete.push_back(it.second);	
 		}
+		else if (it.second.isMapped())
+		{
+			CoreModifiableAttribute* callDestructor=it.second;
+			callDestructor->~CoreModifiableAttribute();
+		}
+		else
+		{			
+			keepedAttributes.insert(it);
+		}
 	}
-	// CoreModifiableAttribute destructor erases itself from mAttributes
+
+	mAttributes = std::move(keepedAttributes);
+
 	for (auto attr : todelete)
 		delete attr;
 }
@@ -1127,68 +1158,66 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 		{
 			case 1:
 			{
-				toadd = new maFloat(*this, false, ID);
+				toadd = new maFloatDynamic(*this, ID);
 			}
 			break;
 			case 2:
 			{
-				toadd = new maVect2DF(*this, false, ID);
+				toadd = new maVect2DFDynamic(*this, ID);
 			}
 			break;
 			case 3:
 			{
-				toadd = new maVect3DF(*this, false, ID);
+				toadd = new maVect3DFDynamic(*this, ID);
 			}
 			break;
 			case 4:
 			{
-				toadd = new maVect4DF(*this, false, ID);
+				toadd = new maVect4DFDynamic(*this, ID);
 			}
 			break;
 			case 5:
 			{
-				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, false, ID);
+				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, ID);
 			}
 			break;
 			case 6:
 			{
-				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, false, ID);
+				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, ID);
 			}
 			break;
 			case 7:
 			{
-				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, false, ID);
+				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, ID);
 			}
 			break;
 			case 8:
 			{
-				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, false, ID);
+				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, ID);
 			}
 			break;
 			case 9:
 			{
-				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, false, ID);
+				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, ID);
 			}
 			break;
 			case 10:
 			{
-				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, false, ID);
+				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, ID);
 			}
 			break;
 			case 12:
 			{
-				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, false, ID);
+				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, ID);
 			}
 			break;
 			case 16:
 			{
-				toadd = new maVect16DF(*this, false, ID);
+				toadd = new maVect16DFDynamic(*this, ID);
 			}
 			break;
 		}
 		
-		if (toadd)
-			toadd->setDynamic(true);
 	}
 	else
 	{
@@ -1236,69 +1265,68 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, co
 	{
 		case 1:
 		{
-			toadd = new maInt(*this, false, ID);
+			toadd = new maIntDynamic(*this, ID);
 		}
 		break;
 		case 2:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 2>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 2>(*this, ID);
 		}
 		break;
 		case 3:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 3>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 3>(*this, ID);
 		}
 		break;
 		case 4:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 4>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 4>(*this, ID);
 		}
 		break;
 		case 5:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 5>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 5>(*this, ID);
 		}
 		break;
 		case 6:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 6>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 6>(*this, ID);
 		}
 		break;
 		case 7:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 7>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 7>(*this, ID);
 		}
 		break;
 		case 8:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 8>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 8>(*this, ID);
 		}
 		break;
 		case 9:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 9>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 9>(*this, ID);
 		}
 		break;
 		case 10:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 10>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 10>(*this, ID);
 		}
 		break;
 		case 12:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 12>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 12>(*this, ID);
 		}
 		break;
 		case 16:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 16>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 16>(*this, ID);
 		}
 		break;
 	}
 	
 	if (toadd)
 	{
-		toadd->setDynamic(true);
 		toadd->setArrayValue(defaultval, this, valcount);
 	}
 	
@@ -1313,69 +1341,68 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, co
 	{
 		case 1:
 		{
-			toadd = new maFloat(*this, false, ID);
+			toadd = new maFloatDynamic(*this, ID);
 		}
 		break;
 		case 2:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2>(*this, ID);
 		}
 		break;
 		case 3:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3>(*this, ID);
 		}
 		break;
 		case 4:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 4>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 4>(*this, ID);
 		}
 		break;
 		case 5:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, ID);
 		}
 		break;
 		case 6:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, ID);
 		}
 		break;
 		case 7:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, ID);
 		}
 		break;
 		case 8:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, ID);
 		}
 		break;
 		case 9:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, ID);
 		}
 		break;
 		case 10:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, ID);
 		}
 		break;
 		case 12:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, ID);
 		}
 		break;
 		case 16:
 		{
-			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 16>(*this, false, ID);
+			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 16>(*this, ID);
 		}
 		break;
 	}
 	
 	if (toadd)
 	{
-		toadd->setDynamic(true);
 		toadd->setArrayValue(defaultval, this, valcount);
 	}
 	
@@ -1413,96 +1440,96 @@ CoreModifiableAttribute*	CoreModifiable::GenericCreateDynamicAttribute(CoreModif
 	{
 		case CoreModifiable::ATTRIBUTE_TYPE::BOOL:
 		{
-			toadd = new maBool(*this, false, ID);
+			toadd = new maBoolDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::CHAR:
 		{
-			toadd = new maChar(*this, false, ID);
+			toadd = new maCharDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::SHORT:
 		{
-			toadd = new maShort(*this, false, ID);
+			toadd = new maShortDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::INT:
 		{
-			toadd = new maInt(*this, false, ID);
+			toadd = new maIntDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::LONG:
 		{
-			toadd = new maLong(*this, false, ID);
+			toadd = new maLongDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::UCHAR:
 		{
-			toadd = new maUChar(*this, false, ID);
+			toadd = new maUCharDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::USHORT:
 		{
-			toadd = new maUShort(*this, false, ID);
+			toadd = new maUShortDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::UINT:
 		{
-			toadd = new maUInt(*this, false, ID);
+			toadd = new maUIntDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::ULONG:
 		{
-			toadd = new maULong(*this, false, ID);
+			toadd = new maULongDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
 		{
-			toadd = new maFloat(*this, false, ID);
+			toadd = new maFloatDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 		{
-			toadd = new maDouble(*this, false, ID);
+			toadd = new maDoubleDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::STRING:
 		{
-			toadd = new maString(*this, false, ID);
+			toadd = new maStringDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE:
 		{
-			toadd = new maReference(*this, false, ID);
+			toadd = new maReferenceDynamic(*this, ID);
 		}
 		case CoreModifiable::ATTRIBUTE_TYPE::STRONG_REFERENCE:
 		{
-			toadd = new maStrongReference(*this, false, ID);
+			toadd = new maStrongReferenceDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::COREITEM:
 		{
-			toadd = new maCoreItem(*this, false, ID);
+			toadd = new maCoreItemDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 		{
-			toadd = new maUSString(*this, false, ID);
+			toadd = new maUSStringDynamic(*this, ID);
 		}
 		break;
 		case  CoreModifiable::ATTRIBUTE_TYPE::COREBUFFER:
 		{
-			toadd = new maBuffer(*this, false, ID);
+			toadd = new maBufferDynamic(*this, ID);
 		}
 		break;
 		case  CoreModifiable::ATTRIBUTE_TYPE::RAWPTR:
 		{
-			toadd = new maRawPtr(*this, false, ID);
+			toadd = new maRawPtrDynamic(*this, ID);
 		}
 		break;
 		case  CoreModifiable::ATTRIBUTE_TYPE::ANY:
 		{
-			toadd = new maAny(*this, false, ID);
+			toadd = new maAnyDynamic(*this, ID);
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::ARRAY:
@@ -1515,10 +1542,6 @@ CoreModifiableAttribute*	CoreModifiable::GenericCreateDynamicAttribute(CoreModif
 		break;
 	}
 	
-	if (toadd)
-	{
-		toadd->setDynamic(true);
-	}
 	return toadd;
 }
 
@@ -1526,10 +1549,10 @@ CoreModifiableAttribute*	CoreModifiable::GenericCreateDynamicAttribute(CoreModif
 void CoreModifiable::RemoveDynamicAttribute(KigsID id)
 {
 	auto it=mAttributes.find(id);
-	if(it != mAttributes.end() && it->second->isDynamic())
+	if(it != mAttributes.end() && it->second.isDynamic())
 	{
-		// attribute is removed from map by the attribute destructor
 		delete ((*it).second);
+		mAttributes.erase(it);
 	}
 }
 
@@ -1637,58 +1660,8 @@ void CoreModifiable::ProtectedDestroy()
 
 	// delete dynamic attributes
 	DeleteDynamicAttributes();
-	if (mLazyContent)
-	{
-		// Notify connected items
-		/*
-		for (auto& signal : GetLazyContent()->mConnectedTo)
-		{
-			for (auto& p : signal.second)
-			{
-				std::lock_guard<std::recursive_mutex> lock_other{ p.second->GetMutex() };
-				p.second->GetLazyContent()->mConnectedToMe[this].erase(std::make_pair(signal.first, p.first));
-			}
-		}
-
-		for (auto& to : GetLazyContent()->mConnectedToMe)
-		{
-			for (auto id : to.second)
-			{
-				std::lock_guard<std::recursive_mutex> lock_other{ to.first->GetMutex() };
-				auto& vec = to.first->GetLazyContent()->mConnectedTo[id.first];
-				for (auto it = vec.begin(); it != vec.end();)
-				{
-					if (it->second == this && it->first == id.second)
-					{
-						it = vec.erase(it);
-					}
-					else
-						++it;
-				}
-			}
-		}
-		*/
-	}
 }
 
-//!	utility method : init CoreModifiable parameters from given parameter list
-void CoreModifiable::InitParametersFromList(const std::vector<CoreModifiableAttribute*>* params)
-{
-	if(params)	// check if params is not null
-	{
-		const std::vector<CoreModifiableAttribute*>& paramlist=(*params);
-		std::vector<CoreModifiableAttribute*>::const_iterator it;
-		for(it=paramlist.begin();it!=paramlist.end();++it)
-		{
-			const CoreModifiableAttribute*	current=(*it);
-			std::string	value;
-			if(current->getValue(value, this))
-			{
-				setValue(current->getLabel(), value);
-			}
-		}
-	}
-}
 
 void CoreModifiable::CallUpdate(const Timer& timer, void* addParam)
 {
@@ -1852,7 +1825,7 @@ CoreModifiable* CoreModifiable::getFirstParent(KigsID ParentClassID) const
 
 CoreModifiableAttribute* CoreModifiable::getAttribute(KigsID attributeID) const
 {
-	return findAttribute(attributeID);
+	return findAttribute(attributeID).first;
 }
 
 void CoreModifiable::setReadOnly(const KigsID& id,bool val)
@@ -1863,6 +1836,17 @@ void CoreModifiable::setReadOnly(const KigsID& id,bool val)
 	if(attribute)
 	{
 		attribute->setReadOnly(val);	
+	}
+}
+
+void	CoreModifiable::setInitParameter(const KigsID& id, bool isSet)
+{
+	auto it = mAttributes.find(id);
+	if (it == mAttributes.end()) return;
+	CoreModifiableAttribute* attribute = (*it).second;
+	if (attribute)
+	{
+		attribute->setInitParam(isSet);
 	}
 }
 
@@ -2130,7 +2114,6 @@ void CoreModifiable::Export(std::string &XMLString,const std::list<CoreModifiabl
 	XMLWriterFile::WriteString(*xmlfile, XMLString);
 }
 
-
 //! recursive method to export "this" to an XML file.
 void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * currentNode, bool recursive, ExportSettings* settings)
 {
@@ -2221,7 +2204,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 	//! save all attributes
 	XMLAttribute *attribute = new XMLAttribute("T", GetRuntimeType());
 	currentNode->addAttribute(attribute);
-	const unordered_map<KigsID, CoreModifiableAttribute*>* defaultAttributeMap = 0;
+	const unordered_map<KigsID, FlaggedCoreModifiableAttribute>* defaultAttributeMap = 0;
 	
 	CMSP defaultCopy = nullptr;
 	defaultCopy = KigsCore::GetInstanceOf("defaultAttributeClone", GetRuntimeType());
@@ -2229,6 +2212,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 	
 	for (auto i = mAttributes.begin(); i != mAttributes.end(); ++i)
 	{
+		const KigsID&	currentID = (*i).first;
 		CoreModifiableAttribute* current = (*i).second;
 		auto type = current->getType();
 
@@ -2237,7 +2221,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 
 		if (current->isDynamic() && type == ATTRIBUTE_TYPE::STRING)
 		{
-			std::vector<std::string> splitted = SplitStringByCharacter(current->getLabel()._id_name, '$');
+			std::vector<std::string> splitted = SplitStringByCharacter(currentID._id_name, '$');
 			if (splitted.size() == 3 && splitted[1] == "LUA_CODE")
 			{
 				std::string func_name = splitted[2];
@@ -2278,7 +2262,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 				attribute = new XMLAttribute("T", CoreModifiableAttribute::typeToString(type));
 				modifiableAttrNode->addAttribute(attribute);
 			}
-			attribute = new XMLAttribute("N", current->getLabel()._id_name);
+			attribute = new XMLAttribute("N", currentID._id_name);
 			modifiableAttrNode->addAttribute(attribute);
 			// CoreItem special case
 			if (type == CoreModifiable::ATTRIBUTE_TYPE::COREITEM)
@@ -2318,7 +2302,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 						SP<CoreRawBuffer> buffer_ref = buffer->shared_from_this();
 
 						CMSP compressManager = KigsCore::GetSingleton("KXMLManager");
-						auto path = unique_id + "_" + current->getLabel()._id_name + (compressManager ? std::string(".kbin") : ".bin");
+						auto path = unique_id + "_" + currentID._id_name + (compressManager ? std::string(".kbin") : ".bin");
 						attribute = new XMLAttribute("V", "#" + path);
 						modifiableAttrNode->addAttribute(attribute);
 						export_inline = false;
@@ -2585,19 +2569,19 @@ void	CoreModifiable::InitLuaScript(XMLNodeBase* currentNode, CoreModifiable* cur
 
 
 	std::vector<CoreModifiableAttribute*> params;
-	maString pName("pName", (std::string)attrname->getString());
-	maString pCode("pCode", code);
-	maRawPtr pXML("pXML", currentNode);
+	maStringOrphan pName("pName", (std::string)attrname->getString());
+	maStringOrphan pCode("pCode", code);
+	maRawPtrOrphan pXML("pXML", currentNode);
 
 	params.push_back(&pName);
 	params.push_back(&pCode);
 	params.push_back(&pXML);
 
-	maReference localthis("pThis", { "" });
-	localthis = CMSP(currentModifiable);
+	maReferenceOrphan localthis("pThis", { "" });
+	localthis.setValue(currentModifiable->shared_from_this(), nullptr);
 	params.push_back(&localthis);
 
-	maString cbType("cbType", attrtype ? attrtype->getString() : "");
+	maStringOrphan cbType("cbType", attrtype ? attrtype->getString() : "");
 	if (attrtype)
 		params.push_back(&cbType);
 
@@ -3003,7 +2987,7 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 		case ATTRIBUTE_TYPE::ARRAY:
 		{
 			// check for 2D / 3D vectors
-			int arraySize = destattr->getNbArrayElements();
+			size_t arraySize = destattr->getNbArrayElements();
 			if (arraySize == 2)
 			{
 				ItemToEval = CoreItemOperator<Point2D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
@@ -3045,9 +3029,10 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 	}	
 }
 
-CoreModifiableAttribute* CoreModifiable::getParameter(const std::vector<CoreModifiableAttribute*>& params, KigsID ID)
+
+CoreModifiableAttribute* CoreModifiable::getParameter(const std::vector<CoreModifiableAttribute*>& params, const KigsID& ID)
 {
-	auto it = std::find_if(params.begin(), params.end(), [&](CoreModifiableAttribute* attr) { return attr->getLabel() == ID; });
+	auto it = std::find_if(params.begin(), params.end(), [&](const CoreModifiableAttribute* attr) { return attr->id() == ID; });
 	if (it == params.end()) return nullptr;
 	return *it;
 }
@@ -3178,7 +3163,7 @@ template<> bool Kigs::Core::CoreConvertString2Value<float>(const std::string &st
 template<> bool Kigs::Core::CoreConvertValue2String<float>(std::string& stringValue,float value)
 {
 	char convertBuffer[256];
-	if(sprintf(convertBuffer,"%f",CastToFloat(value))==0) return false;
+	if(sprintf(convertBuffer,"%f",value)==0) return false;
 	stringValue=convertBuffer;
 	return true;
 }
@@ -3196,7 +3181,7 @@ template<> bool Kigs::Core::CoreConvertString2Value<double>(const std::string &s
 template<> bool Kigs::Core::CoreConvertValue2String<double>(std::string& stringValue,double value)
 {
 	char convertBuffer[256];
-	if(sprintf(convertBuffer,"%lf",CastToDouble(value))==0) return false;
+	if(sprintf(convertBuffer,"%lf",value)==0) return false;
 	stringValue=convertBuffer;
 	return true;
 }
@@ -3258,12 +3243,7 @@ IMPLEMENT_CONVERT_S2V_ANS_V2S(u64, "%llu")
 
 LazyContent::~LazyContent()
 {
-	// linked list so delete only the first one
-/*	if (mUpgradors)
-	{
-		delete mUpgradors;
-		mUpgradors = nullptr;
-	}*/
+	
 }
 
 void Kigs::Core::RegisterClassToInstanceFactory(KigsCore* core, const std::string& moduleName, KigsID classID, createMethod method)
@@ -3326,4 +3306,13 @@ LazyContentLinkedListItemStruct CoreModifiable::InsertForwardPtr(StructLinkedLis
 	LazyContentLinkedListItemStruct result = GetLazyContent()->mLinkedListItem;
 	GetLazyContent()->mLinkedListItem = LazyContentLinkedListItemStruct::FromAddressAndType(address, LazyContentLinkedListItemStruct::ItemType::ForwardSmartPtrType);
 	return result;
+}
+
+void	CoreModifiable::setOwnerNotification(const KigsID& id, bool isSet)
+{
+	CoreModifiableAttribute* attr = getAttribute(id);
+	if (attr)
+	{
+		attr->setNotifyOwner(isSet);
+	}
 }

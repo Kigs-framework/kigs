@@ -13,21 +13,21 @@ using namespace Kigs::Draw2D;
 
 IMPLEMENT_CLASS_INFO(RenderingScreen)
 IMPLEMENT_CONSTRUCTOR(RenderingScreen)
-	, mBitsPerPixel(*this, true, "BitsPerPixel", 32)
-	, mBitsPerZ(*this, true, "BitsPerZ", 16)
-	, mBitsForStencil(*this, true, "BitsForStencil", 0)
-	, mSize(*this, false, "Size", 256,256)
-	, mDesignSize(*this, false, "DesignSize", 256,256)
-	, mIsOffScreen(*this, true, "IsOffScreen", false)
-	, mParentWindowName(*this, true, "ParentWindowName", "")
-	, mVSync(*this, true, "VSync", false)
-	, mBrightness(*this, false, "Brightness", 0)
-	, mBackDropColor(*this, false, "BackDropColor", 0.0, 0.0, 0.0)
-	, mRotation(*this, false, "Rotation", 0.0f)
-	, mDontClear(*this, false, "DontClear", false)
-	, mNeedDoubleBuffer(*this, false, "NeedDoubleBuffer", true)
+	, mBitsPerPixel(*this, "BitsPerPixel", 32)
+	, mBitsPerZ(*this, "BitsPerZ", 16)
+	, mBitsForStencil(*this, "BitsForStencil", 0)
+	, mSize(*this,  "Size", 256,256)
+	, mDesignSize(*this,  "DesignSize", 256,256)
+	, mIsOffScreen(*this, "IsOffScreen", false)
+	, mParentWindowName(*this, "ParentWindowName", "")
+	, mVSync(*this, "VSync", false)
+	, mBrightness(*this,  "Brightness", 0)
+	, mBackDropColor(*this,  "BackDropColor", 0.0, 0.0, 0.0)
+	, mRotation(*this,  "Rotation", 0.0f)
+	, mDontClear(*this,  "DontClear", false)
+	, mNeedDoubleBuffer(*this,  "NeedDoubleBuffer", true)
 	, mWasActivated(false)
-	, mUseFBO(*this, true, "UseFBO", false)
+	, mUseFBO(*this, "UseFBO", false)
 	, mFBOTexture(0)
 {
 	// retreive renderer
@@ -71,7 +71,7 @@ void RenderingScreen::InitModifiable()
 	}
 
 	// I want to be notified on brightness change
-	mBrightness.changeNotificationLevel(Owner);
+	setOwnerNotification("Brightness", true);
 
 	if (mDesignSize[0] == 0 && mDesignSize[1] == 0)
 	{
@@ -90,8 +90,8 @@ void RenderingScreen::InitModifiable()
 	}
 
 	// recompute mDesignCoefX,mDesignCoefY;
-	mSize.changeNotificationLevel(Owner);
-	mDesignSize.changeNotificationLevel(Owner);
+	setOwnerNotification("Size", true);
+	setOwnerNotification("DesignSize", true);
 
 	RecomputeDesignCoef();
 	CoreModifiable::InitModifiable();
@@ -99,8 +99,8 @@ void RenderingScreen::InitModifiable()
 
 void RenderingScreen::NotifyUpdate(const unsigned int  labelid )
 {
-	if(	(labelid==mSize.getLabelID()) ||
-		(labelid==mDesignSize.getLabelID()))
+	if(	(labelid==KigsID("Size")._id ) ||
+		(labelid== KigsID("DesignSize")._id ))
 	{
 		RecomputeDesignCoef();
 	}

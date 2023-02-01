@@ -12,10 +12,10 @@ IMPLEMENT_CLASS_INFO(PassiveColoredMask)
 //! constructor, init all parameters
 PassiveColoredMask::PassiveColoredMask(const std::string& name,CLASS_NAME_TREE_ARG)
 :UIItem(name,PASS_CLASS_NAME_TREE_ARG)
-,mThreshold(*this,true,"Threshold",0)
-,mTextureName(*this,false,"TextureName","")
-,mMaskName(*this,false,"MaskName","")
-,mRay(*this,true,"Ray",0)
+,mThreshold(*this,"Threshold",0)
+,mTextureName(*this,"TextureName","")
+,mMaskName(*this,"MaskName","")
+,mRay(*this,"Ray",0)
 {
 	mIsDown = false;
 	mIsMouseOver = false;

@@ -15,7 +15,7 @@ IMPLEMENT_CLASS_INFO(TextureHandler)
 TextureHandler::TextureHandler(const std::string& name, CLASS_NAME_TREE_ARG) : ParentClassType(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	// we want TextureHandler to be alert on texture change as soon as possible
-	mTextureName.changeNotificationLevel(Owner);
+	setOwnerNotification("TextureName", true);
 }
 
 TextureHandler::~TextureHandler()
@@ -41,7 +41,7 @@ void	TextureHandler::InitModifiable()
 		{
 			setUserFlag(pushUVMatrix);
 		}
-		mPushUVMatrix.changeNotificationLevel(Owner);
+		setOwnerNotification("PushUVMatrix", true);
 	}
 }
 
@@ -173,11 +173,11 @@ void	TextureHandler::textureWasInit()
 
 void TextureHandler::NotifyUpdate(const unsigned int  labelid)
 {
-	if (labelid == mTextureName.getID())
+	if (labelid == KigsID("TextureName")._id)
 	{
 		changeTexture();
 	}
-	else if (labelid == mPushUVMatrix.getID())
+	else if (labelid == KigsID("PushUVMatrix")._id)
 	{
 		changeUserFlag(pushUVMatrix, mPushUVMatrix);
 	}
@@ -187,7 +187,7 @@ void TextureHandler::NotifyUpdate(const unsigned int  labelid)
 
 void TextureHandler::TextureNotifyUpdate(CoreModifiable* sender, const unsigned int  labelid )
 {
-	if (labelid == mTexture->mForceNearest.getID())
+	if (labelid == KigsID("ForceNearest")._id )
 	{
 		refreshSizeAndUVs(mCurrentFrame);
 		NotifyUpdate(labelid); // launch notify update signal
@@ -316,11 +316,11 @@ void	AnimationUpgrador::Init(CoreModifiable* toUpgrade)
 	KigsCore::Connect(toUpgrade, "NotifyUpdate", toUpgrade, "AnimationNotifyUpdate");
 
 	mCurrentAnimation = (maString*)toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::STRING, "CurrentAnimation", "");
-	mCurrentAnimation->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("CurrentAnimation", true);
 	mFramePerSecond = (maUInt*)toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::UINT, "FramePerSecond", 24);
-	mFramePerSecond->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("FramePerSecond", true);
 	mLoop = (maBool*)toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "Loop", false);
-	mLoop->changeNotificationLevel(Owner);
+	toUpgrade->setOwnerNotification("Loop", true);
 
 	// check if already in auto update mode
 	if (toUpgrade->isFlagAsAutoUpdateRegistered())
@@ -363,7 +363,7 @@ DEFINE_UPGRADOR_METHOD(AnimationUpgrador, Play)
 
 void	AnimationUpgrador::NotifyUpdate(const unsigned int  labelid, TextureHandler* parent)
 {
-	if (labelid == mCurrentAnimation->getLabelID())
+	if (labelid == KigsID("CurrentAnimation")._id )
 	{
 		mCurrentFrame = 0;
 		mElpasedTime = 0.0;

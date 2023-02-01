@@ -128,12 +128,13 @@ DrawVertice::~DrawVertice()
 
 void DrawVertice::InitModifiable()
 {
-	mPreset.changeNotificationLevel(Owner);
-	mPresetColor.changeNotificationLevel(Owner);
-	mTextureFileName.changeNotificationLevel(Owner);
-	mPresetOffset.changeNotificationLevel(Owner);
-	mPresetSize.changeNotificationLevel(Owner);
-	mPresetUVSize.changeNotificationLevel(Owner);
+
+	setOwnerNotification("Preset", true);
+	setOwnerNotification("PresetColor", true);
+	setOwnerNotification("TextureFileName", true);
+	setOwnerNotification("PresetOffset", true);
+	setOwnerNotification("PresetSize", true);
+	setOwnerNotification("PresetUVSize", true);
 
 	clearArrays();
 	Drawable::InitModifiable();
@@ -152,7 +153,7 @@ void DrawVertice::InitModifiable()
 void DrawVertice::NotifyUpdate(const u32 labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
-	if (labelid == mTextureFileName.getID())
+	if (labelid == KigsID("TextureFileName")._id )
 	{
 		auto old_tex = mTexture;
 		mTexture = nullptr;
@@ -163,12 +164,12 @@ void DrawVertice::NotifyUpdate(const u32 labelid)
 			SetDataFromPreset();
 		}
 	}
-	else if (labelid == mPreset.getID()
-		|| labelid == mPresetColor.getID()
-		|| labelid == mPresetOffset.getID()
-		|| labelid == mPresetSize.getID()
-		|| labelid == mPresetUVSize.getID()
-		|| labelid == mPresetUVOffset.getID())
+	else if (labelid == KigsID("Preset")._id 
+		|| labelid == KigsID("PresetColor")._id 
+		|| labelid == KigsID("PresetOffset")._id 
+		|| labelid == KigsID("PresetSize")._id
+		|| labelid == KigsID("PresetUVSize")._id 
+		|| labelid == KigsID("PresetUVOffset")._id)
 	{
 		SetDataFromPreset();
 	}

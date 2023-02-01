@@ -53,8 +53,8 @@ void UINode3DLayer::InitModifiable()
 		}
 
 		// ( recompute BBox and update collider size)
-		mSize.changeNotificationLevel(Owner);
-		mDesignSize.changeNotificationLevel(Owner);
+		setOwnerNotification("Size", true);
+		setOwnerNotification("DesignSize", true);
 
 		auto input = KigsCore::GetModule<Input::ModuleInput>();
 		input->getTouchManager()->addTouchSupport(this, mCamera);
@@ -92,7 +92,7 @@ void UINode3DLayer::InitModifiable()
 void UINode3DLayer::NotifyUpdate(const unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
-	if ((labelid == mSize.getLabelID()) || (labelid == mDesignSize.getLabelID()))
+	if ((labelid == KigsID("Size")._id) || (labelid == KigsID("DesignSize")._id))
 	{
 		setUserFlag(BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
 		if(mCollider) mCollider->setValue("Size", (v2f)mSize);

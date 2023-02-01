@@ -121,7 +121,7 @@ namespace Kigs
 			*/
 			bool PreDraw(TravState*)  override;
 
-			maVect2DI			mSize;
+			maVect2DIInit			mSize;
 
 			// manage a RGBA8888 array of pixel and update it's father texture if needed 
 			unsigned char* mRawPixels;

@@ -239,7 +239,8 @@ namespace Kigs
 			}
 			CMSP SearchRef()
 			{
-				if (auto ptr = mValue.mObj.lock())
+				auto ptr = mValue.mObj.lock();
+				if (ptr)
 					return ptr;
 				return Search();
 			}
@@ -260,7 +261,8 @@ namespace Kigs
 
 		using maReference = maReferenceHeritage<false,false,false,false,false>;
 		using maReferenceOrphan = maReferenceHeritage<false, false, false, false, true>;
-
+		using maReferenceInit = maReferenceHeritage<false, true, false, false, false>;
+		using maReferenceDynamic = maReferenceHeritage<false, false, false, true, false>;
 
 
 	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
@@ -453,6 +455,7 @@ namespace Kigs
 
 		using maStrongReference = maStrongReferenceHeritage<false,false,false,false,false>;
 		using maStrongReferenceOrphan = maStrongReferenceHeritage<false, false, false, false, true>;
+		using maStrongReferenceDynamic = maStrongReferenceHeritage<false, false, false, true, false>;
 
 	}
 }

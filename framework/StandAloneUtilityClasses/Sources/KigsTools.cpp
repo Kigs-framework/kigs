@@ -97,9 +97,9 @@ enum EditorFlags
 	
 struct AttributeNameSorter
 {
-	bool operator()(CoreModifiableAttribute* a, CoreModifiableAttribute* b) const
+	bool operator()(const std::pair<KigsID, CoreModifiable::FlaggedCoreModifiableAttribute>& a, const std::pair < KigsID, CoreModifiable::FlaggedCoreModifiableAttribute>& b) const
 	{
-		return a->getID()._id_name < b->getID()._id_name;
+		return a.first._id_name < b.first._id_name;
 	}
 };
 
@@ -132,9 +132,9 @@ struct KigsToolsState
 
 	std::vector<EnterStringPopup> EnterStringPopups;
 
-	maReference mClipboardItem;
+	maReferenceOrphan mClipboardItem;
 
-	maReference CurrentSequenceManager{ 0u, maWeakReferenceObject{"DataDrivenSequenceManager:AppSequenceManager"} };
+	maReferenceOrphan CurrentSequenceManager{ 0u, maWeakReferenceObject{"DataDrivenSequenceManager:AppSequenceManager"} };
 
 	unordered_map<std::string, std::pair<std::function<void()>, bool>> CustomWidgets;
 
@@ -247,14 +247,14 @@ struct KigsToolsState
 	};
 	unordered_map<CoreModifiable*, XMLChange> XMLChanged;
 
-	maReference ActiveXMLItem;
+	maReferenceOrphan ActiveXMLItem;
 	std::shared_ptr<XMLBase> ActiveXMLFile;
 
 	struct HierarchyWindowState
 	{
 		ImGuiTextFilter Filter;
 		bool ClearFilter = false;
-		maReference SelectedItem{ "SelectedItem", {} };
+		maReferenceOrphan SelectedItem{ "SelectedItem", {} };
 
 		std::vector<CoreModifiable*> ToExpand;
 		bool ForceExpandAll = false;
@@ -773,7 +773,7 @@ void CoreModifiableContextMenu(CoreModifiable* item, CoreModifiable* parent=null
 			STACK_STRING(str, 2048, "Set %s as active XML file", path.c_str());
 			if (ImGui::MenuItem(str))
 			{
-				gKigsTools->ActiveXMLItem = CMSP(item);
+				gKigsTools->ActiveXMLItem.setValue(CMSP(item),nullptr);
 				gKigsTools->ActiveXMLFile = xmlfile;
 			}
 		}
@@ -947,7 +947,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 			{
 				if (ImGui::IsKeyPressed(VK_C, false) && ImGui::GetIO().KeyCtrl)
 				{
-					gKigsTools->mClipboardItem = item;
+					gKigsTools->mClipboardItem.setValue(item,nullptr);
 				}
 				if (ImGui::IsKeyPressed(VK_V, false) && ImGui::GetIO().KeyCtrl)
 				{
@@ -966,7 +966,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 					if (new_item)
 					{
 						item->addItem(new_item);
-						state.SelectedItem = new_item;
+						state.SelectedItem.setValue(new_item,nullptr);
 						state.ToExpand.push_back(item.get());
 					}
 				}
@@ -1016,7 +1016,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 
 			if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0) && was_open == opened)
 			{
-				state.SelectedItem = item;
+				state.SelectedItem.setValue(item,nullptr);
 			}
 			CoreModifiableContextMenu(item.get(), parent);
 			if (!item->IsInit())
@@ -1066,10 +1066,10 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 	}
 }
 	
-void OpenInHierarchy(CoreModifiable* item)
+void OpenInHierarchy(CMSP item)
 {
 	gKigsTools->HierarchyWindow.ToExpand.clear();
-	auto parent = item;
+	auto parent = item.get();
 	while (parent)
 	{
 		gKigsTools->HierarchyWindow.ToExpand.push_back(parent);
@@ -1386,7 +1386,7 @@ AttributeChange CheckAttributeChange(XMLNode* attr_xml, CoreModifiableAttribute*
 				if (CoreConvertString2Array<type>(result.old_value, values, size))\
 					CoreConvertArray2String<type>(result.old_value, values, size);
 
-			int array_size = attr->getNbArrayElements();
+			size_t array_size = attr->getNbArrayElements();
 			if (attr->getArrayElementType() == CoreModifiable::ATTRIBUTE_TYPE::FLOAT)
 			{
 				float values[16];
@@ -1722,8 +1722,8 @@ void CustomAttributeEditor(CoreModifiable* item)
 				STACK_STRING(str, 1024, "%s", pair.second->getName().c_str());
 				if (ImGui::Button(str))
 				{
-					OpenInHierarchy(pair.second);
-					gKigsTools->HierarchyWindow.SelectedItem.setValue(CMSP(pair.second),nullptr);
+					OpenInHierarchy(pair.second->shared_from_this());
+					gKigsTools->HierarchyWindow.SelectedItem.setValue(pair.second->shared_from_this(),nullptr);
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -1858,13 +1858,11 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	CustomAttributeEditor(item);
 
 	auto attrs_map = item->getAttributes();
-	std::set<CoreModifiableAttribute*, AttributeNameSorter> attrs;
+	std::set<std::pair<KigsID,CoreModifiable::FlaggedCoreModifiableAttribute>, AttributeNameSorter> attrs;
 	for (auto&& pair : attrs_map)
 	{
-		attrs.insert(pair.second);
+		attrs.insert(pair);
 	}
-
-	
 
 	struct lua_method_ref
 	{
@@ -1890,17 +1888,17 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 
 		for (auto attr : attrs)
 		{
-			KigsID id = attr->getID();
+			KigsID id = attr.first;
 
 
-			CoreModifiable::ATTRIBUTE_TYPE type = attr->getType();
-			snprintf(tmpStr, 2048, "%s##%p", attr->getLabel()._id_name.c_str(), attr);
+			CoreModifiable::ATTRIBUTE_TYPE type = attr.second->getType();
+			snprintf(tmpStr, 2048, "%s##%p", attr.first._id_name.c_str(), (CoreModifiableAttribute*) attr.second);
 
 			std::string func_name;
 			bool is_lua_method = false;
-			if (attr->isDynamic() && attr->getType() == CoreModifiable::ATTRIBUTE_TYPE::STRING)
+			if (attr.second->isDynamic() && attr.second->getType() == CoreModifiable::ATTRIBUTE_TYPE::STRING)
 			{
-				std::vector<std::string> splitted = SplitStringByCharacter(attr->getLabel()._id_name, u'§');
+				std::vector<std::string> splitted = SplitStringByCharacter(attr.first._id_name, u'§');
 				if (splitted.size() == 3 && splitted[1] == "LUA_CODE")
 				{
 					func_name = splitted[2];
@@ -1919,7 +1917,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 					if (child->nameOneOf("CoreModifiableAttribute", "Attr"))
 					{
 						auto name = child->getAttribute("Name", "N");
-						if (name && KigsID(name->getString()) == attr->getLabel())
+						if (name && KigsID(name->getString()) == attr.first._id)
 						{
 							attr_xml = child;
 							break;
@@ -1931,7 +1929,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 						if (name && name->getString() == func_name)
 						{
 							attr_xml = child;
-							lua_methods[CharToID::GetID(func_name)] = { attr, child };
+							lua_methods[CharToID::GetID(func_name)] = { attr.second, child };
 							break;
 						}
 					}
@@ -1981,7 +1979,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			if(can_add)
 			{
 				std::string value = "";
-				attr->getValue(value, item);
+				attr.second->getValue(value, item);
 
 				if (ImGui::Button(ICON_FK_PLUS))
 				{
@@ -2006,15 +2004,15 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			case CoreModifiable::ATTRIBUTE_TYPE::BOOL:
 			{
 				bool value;
-				attr->getValue(value, item);
+				attr.second->getValue(value, item);
 
 				ImGui::Dummy(ImGui::CalcItemSize(ImVec2{ -200 - ImGui::GetTextLineHeight() * 2, 0 }, 0, 0)); ImGui::SameLine();
 				if (ImGui::Checkbox(tmpStr, &value))
 				{
-					attr->setValue(value, item);
+					attr.second->setValue(value, item);
 					changed = true;
 				}
-				DecorateAttribute(attr);
+				DecorateAttribute(attr.second);
 				break;
 
 			}
@@ -2026,13 +2024,13 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			case CoreModifiable::ATTRIBUTE_TYPE::LONG:
 			{
 				int value;
-				attr->getValue(value, item);
+				attr.second->getValue(value, item);
 				if (ImGui::InputInt(tmpStr, &value))
 				{
-					attr->setValue(value, item);
+					attr.second->setValue(value, item);
 					changed = true;
 				}
-				DecorateAttribute(attr);
+				DecorateAttribute(attr.second);
 				break;
 			}
 			case CoreModifiable::ATTRIBUTE_TYPE::UCHAR:
@@ -2041,14 +2039,14 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			case CoreModifiable::ATTRIBUTE_TYPE::ULONG:
 			{
 				int value;
-				attr->getValue(value, item);
+				attr.second->getValue(value, item);
 				if (ImGui::InputInt(tmpStr, &value))
 				{
 					if (value < 0) value = 0;
-					attr->setValue(value, item);
+					attr.second->setValue(value, item);
 					changed = true;
 				}
-				DecorateAttribute(attr);
+				DecorateAttribute(attr.second);
 				break;
 			}
 
@@ -2057,21 +2055,21 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 			{
 				float value;
-				attr->getValue(value, item);
+				attr.second->getValue(value, item);
 				if (ImGui::InputFloat(tmpStr, &value, 0.01f, 0.1f))
 				{
-					attr->setValue(value, item);
+					attr.second->setValue(value, item);
 					changed = true;
 				}
-				DecorateAttribute(attr);
+				DecorateAttribute(attr.second);
 				break;
 			}
 
 
 			case CoreModifiable::ATTRIBUTE_TYPE::ARRAY:
 			{
-				int size = attr->getNbArrayColumns();
-				CoreModifiable::ATTRIBUTE_TYPE array_type = attr->getArrayElementType();
+				size_t size = attr.second->getNbArrayColumns();
+				CoreModifiable::ATTRIBUTE_TYPE array_type = attr.second->getArrayElementType();
 
 #define ImGuiInputArray(size, type, label, var) ImGui::Input##type##size(label, var)
 
@@ -2083,7 +2081,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 					if (size == 2)
 					{
 						float arr[2] = {};
-						attr->getArrayValue(arr, item, 2);
+						attr.second->getArrayValue(arr, item, 2);
 						changed = ImGuiInputArray(2, Float, tmpStr, arr);
 
 						if (id == "Dock" || id == "Anchor")
@@ -2099,30 +2097,30 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 								ImGui::EndPopup();
 							}
 						}
-						if(changed) attr->setArrayValue(arr, item, 2);
+						if(changed) attr.second->setArrayValue(arr, item, 2);
 					}
 					else if (size == 3)
 					{
 						float arr[3] = {};
-						attr->getArrayValue(arr, item, 3);
+						attr.second->getArrayValue(arr, item, 3);
 						if (is_color)
 							changed = ImGui::ColorEdit3(tmpStr, arr);
 						else
 							changed = ImGuiInputArray(3, Float, tmpStr, arr);
-						if(changed) attr->setArrayValue(arr, item, 3);
+						if(changed) attr.second->setArrayValue(arr, item, 3);
 
 					}
 					else if (size == 4)
 					{
 						float arr[4] = {};
-						attr->getArrayValue(arr, item, 4);
+						attr.second->getArrayValue(arr, item, 4);
 
 						if (is_color)
 							changed = ImGui::ColorEdit4(tmpStr, arr);
 						else
 							changed = ImGuiInputArray(4, Float, tmpStr, arr);
 						
-						if(changed) attr->setArrayValue(arr, item, 4);
+						if(changed) attr.second->setArrayValue(arr, item, 4);
 					}
 				}
 				else
@@ -2130,53 +2128,53 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 					if (size == 2)
 					{
 						int arr[2] = {};
-						attr->getArrayValue(arr, item, 2);
+						attr.second->getArrayValue(arr, item, 2);
 						if (ImGuiInputArray(2, Int, tmpStr, arr))
 						{
-							attr->setArrayValue(arr, item, 2);
+							attr.second->setArrayValue(arr, item, 2);
 							changed = true;
 						}
 					}
 					else if (size == 3)
 					{
 						int arr[3] = {};
-						attr->getArrayValue(arr, item, 3);
+						attr.second->getArrayValue(arr, item, 3);
 						if (ImGuiInputArray(3, Int, tmpStr, arr))
 						{
-							attr->setArrayValue(arr, item, 3);
+							attr.second->setArrayValue(arr, item, 3);
 							changed = true;
 						}
 					}
 					else if (size == 4)
 					{
 						int arr[4] = {};
-						attr->getArrayValue(arr, item, 4);
+						attr.second->getArrayValue(arr, item, 4);
 						if (ImGuiInputArray(4, Int, tmpStr, arr))
 						{
-							attr->setArrayValue(arr, item, 4);
+							attr.second->setArrayValue(arr, item, 4);
 							changed = true;
 						}
 					}
 				}
 
 
-				DecorateAttribute(attr);
+				DecorateAttribute(attr.second);
 				break;
 			}
 
 
 			case CoreModifiable::ATTRIBUTE_TYPE::ENUM:
 			{
-				auto enumElements = attr->getEnumElements();
+				auto enumElements = attr.second->getEnumElements();
 
 				int current_item = 0;
-				attr->getValue(current_item, item);
+				attr.second->getValue(current_item, item);
 				if (ImGui::Combo(tmpStr, &current_item, enumElements))
 				{
-					attr->setValue(current_item, item);
+					attr.second->setValue(current_item, item);
 					changed = true;
 				}
-				DecorateAttribute(attr);
+				DecorateAttribute(attr.second);
 				break;
 			}
 
@@ -2188,7 +2186,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 				if (!is_lua_method)
 				{
 
-					std::string str; attr->getValue(str, item);
+					std::string str; attr.second->getValue(str, item);
 					if (str.size() >= 1024)
 					{
 						ImGui::Text("Text too long to edit");
@@ -2200,7 +2198,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 
 						if (ImGui::InputText(tmpStr, txt, 1024))
 						{
-							attr->setValue(txt, item);
+							attr.second->setValue(txt, item);
 							changed = true;
 						}
 
@@ -2210,20 +2208,20 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 							{
 								//@TODO(antoine) relative path instead of global search if possible
 								DragItemPayload data = *(DragItemPayload*)pl->Data;
-								attr->setValue(data.item->getExactType() + ":" + data.item->getName(), item);
+								attr.second->setValue(data.item->getExactType() + ":" + data.item->getName(), item);
 								changed = true;
 							}
 
 							if (auto pl = ImGui::AcceptDragDropPayload("DND_KIGS_STRING"))
 							{
-								attr->setValue((const char*)pl->Data, item);
+								attr.second->setValue((const char*)pl->Data, item);
 								changed = true;
 							}
 
 							ImGui::EndDragDropTarget();
 						}
 					}
-					DecorateAttribute(attr);
+					DecorateAttribute(attr.second);
 				}
 				break;
 			}
@@ -2249,7 +2247,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			if (add_to_xml)
 			{
 				std::string value = "";
-				attr->getValue(value, item);
+				attr.second->getValue(value, item);
 
 				if (!xml_node)
 				{
@@ -2284,12 +2282,12 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 				}
 
 				XMLNode* new_node = new XMLNode(XML_NODE_ELEMENT, "Attr");
-				new_node->addAttribute(new XMLAttribute("N", attr->getLabel()._id_name));
-				if (attr->isDynamic())
-					new_node->addAttribute(new XMLAttribute("T", CoreModifiableAttribute::typeToString(attr->getType())));
+				new_node->addAttribute(new XMLAttribute("N", attr.first._id_name));
+				if (attr.second->isDynamic())
+					new_node->addAttribute(new XMLAttribute("T", CoreModifiableAttribute::typeToString(attr.second->getType())));
 
 				new_node->addAttribute(new XMLAttribute("V", value));
-				if (attr->isDynamic())
+				if (attr.second->isDynamic())
 					new_node->addAttribute(new XMLAttribute("Dyn", "true"));
 				xml_node->addChild(new_node);
 				new_node->setParent(xml_node); //@NOTE(antoine) it is really to have to do this
@@ -2305,7 +2303,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			{
 				if (attr_xml->getAttribute("Value", "V"))
 				{
-					attr_change = CheckAttributeChange(attr_xml, attr, item);
+					attr_change = CheckAttributeChange(attr_xml, attr.second,item);
 				}
 				else
 					lua_initializer = attr_xml->getAttribute("LUA", "L");
@@ -2469,7 +2467,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 
 		ImGui::NextColumn();
 
-		static maReference connect_to;
+		static maReferenceOrphan connect_to;
 		CoreModifiable* connect_to_item = connect_to;
 		ImGui::Text(connect_to_item ? connect_to_item->getName().c_str() : "DRAG RECEIVER HERE");
 
@@ -2478,7 +2476,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 			if (auto pl = ImGui::AcceptDragDropPayload("DND_KIGS_ITEM"))
 			{
 				DragItemPayload data = *(DragItemPayload*)pl->Data;
-				connect_to = CMSP(data.item);
+				connect_to.setValue(CMSP(data.item), item);
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -3138,7 +3136,7 @@ void DrawEditor()
 				//gKigsTools->HierarchyWindow.ForceExpandAll = true;
 				if (seq->mXMLFiles.size())
 				{
-					gKigsTools->ActiveXMLItem = seq.get();
+					gKigsTools->ActiveXMLItem.setValue(seq,nullptr);
 					gKigsTools->ActiveXMLFile = seq->mXMLFiles.back();
 				}
 			}
@@ -3323,10 +3321,11 @@ void RegisterWidget(const std::string& id, std::function<void()> draw_function)
 	w.second = true;
 }
 
-void SelectObjectKigsTools(CoreModifiable* obj)
+void SelectObjectKigsTools(CMSP obj)
 {
 	OpenInHierarchy(obj);
-	gKigsTools->HierarchyWindow.SelectedItem = CMSP(obj);
+	gKigsTools->HierarchyWindow.SelectedItem.setValue(obj,nullptr);
+
 }
 }
 }
@@ -3337,7 +3336,7 @@ namespace Kigs
 	{
 		using namespace Kigs::Core;
 
-		void SelectObjectKigsTools(CoreModifiable* obj) {}
+		void SelectObjectKigsTools(CMSP obj) {}
 		bool UpdateKigsTools() { return false; }
 		void DestroyKigsTools() {}
 		void ShowKigsTools(bool show) { (void)show; }

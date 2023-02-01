@@ -35,7 +35,7 @@ IMPLEMENT_CLASS_INFO(API3DUniformMatrixArray)
 
 API3DUniformBase::API3DUniformBase(const std::string& name, CLASS_NAME_TREE_ARG) 
 	: Drawable(name, PASS_CLASS_NAME_TREE_ARG)
-, mUniName(*this, false, "Name", "")
+, mUniformName(*this, "UniformName", "")
 ,mID(-1)
 {
 	mRenderPassMask = 0xFFFFFFFF;
@@ -46,18 +46,18 @@ void	API3DUniformBase::InitModifiable()
 	Drawable::InitModifiable();
 
 	std::string strKey;
-	mUniName.getValue(strKey,this);
+	mUniformName.getValue(strKey,this);
 	mID = CharToID::GetID(strKey);
 
-	mUniName.changeNotificationLevel(Owner);
+	setOwnerNotification("UniformName", true);
 }
 
 void	API3DUniformBase::NotifyUpdate(const unsigned int  labelid)
 {
-	if (labelid == mUniName.getLabelID())
+	if (labelid == KigsID("UniformName")._id)
 	{
 		std::string strKey;
-		mUniName.getValue(strKey,this);
+		mUniformName.getValue(strKey,this);
 		mID = CharToID::GetID(strKey);
 		//printf("%s >> %u\n", strKey.c_str(), mID);
 	}
@@ -107,7 +107,7 @@ bool API3DUniformBase::Pop(TravState* t)
 
 //////////////////////////////////// Int ///////////////////////////////////////////
 API3DUniformInt::API3DUniformInt(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mValue(*this, false, "Value", -1)
+, mValue(*this, "Value", -1)
 {
 	
 }
@@ -129,7 +129,7 @@ void	API3DUniformInt::NotifyUpdate(const unsigned int  labelid)
 
 //////////////////////////////////// Float ///////////////////////////////////////////
 API3DUniformFloat::API3DUniformFloat(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mValue(*this, false, "Value", -1)
+, mValue(*this, "Value", -1)
 {
 	
 }
@@ -149,7 +149,7 @@ void	API3DUniformFloat::NotifyUpdate(const unsigned int  labelid)
 
 //////////////////////////////////// Float 2 ///////////////////////////////////////////
 API3DUniformFloat2::API3DUniformFloat2(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mValue(*this, false, "Value",0.0f,0.0f)
+, mValue(*this, "Value",0.0f,0.0f)
 {
 	
 }
@@ -170,8 +170,8 @@ void	API3DUniformFloat2::NotifyUpdate(const unsigned int  labelid)
 
 //////////////////////////////////// Float 3 ///////////////////////////////////////////
 API3DUniformFloat3::API3DUniformFloat3(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mValue(*this, false, "Value",0.0f,0.0f,0.0f)
-, mNormalize(*this, false, "Normalize", false)
+, mValue(*this, "Value",0.0f,0.0f,0.0f)
+, mNormalize(*this, "Normalize", false)
 {
 
 }
@@ -182,8 +182,7 @@ void API3DUniformFloat3::InitModifiable()
 
 	if (mNormalize)
 		Normalize();
-
-	mNormalize.changeNotificationLevel(Owner);
+	setOwnerNotification("Normalize", true);
 }
 
 void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
@@ -191,12 +190,12 @@ void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
 	if (!IsInit())
 		return;
 
-	if (labelid == mNormalize.getLabelID())
+	if (labelid == KigsID("Normalize")._id)
 	{
 		if (mNormalize)
 			Normalize();
 	}
-	else if (labelid == mValue.getLabelID())
+	else if (labelid == KigsID("Value")._id)
 	{
 		if (mNormalize)
 			Normalize();
@@ -223,9 +222,9 @@ void	API3DUniformFloat3::Activate(unsigned int a_Location)
 
 //////////////////////////////////// Float 4 ///////////////////////////////////////////
 API3DUniformFloat4::API3DUniformFloat4(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mValue(*this, false, "Value",0.0f,0.0f,0.0f,0.0f)
+, mValue(*this, "Value",0.0f,0.0f,0.0f,0.0f)
 {
-	mValue.changeNotificationLevel(Owner);
+	setOwnerNotification("Value", true);
 }
 
 void	API3DUniformFloat4::Activate(unsigned int a_Location)
@@ -242,11 +241,11 @@ void	API3DUniformFloat4::NotifyUpdate(const unsigned int  labelid)
 }
 
 API3DUniformTexture::API3DUniformTexture(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mChannel(*this, false, "Channel", 0)
-, mTextureName(*this, false, "TextureName", "")
+, mChannel(*this, "Channel", 0)
+, mTextureName(*this, "TextureName", "")
 , mAttachedTexture(0)
 {
-	mChannel.changeNotificationLevel(Owner);
+	setOwnerNotification("Channel", true);
 }
 
 void	API3DUniformTexture::InitModifiable()
@@ -335,11 +334,11 @@ API3DUniformTexture::~API3DUniformTexture()
 
 
 API3DUniformDataTexture::API3DUniformDataTexture(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mChannel(*this, false, "Channel", 0)
-, mTextureName(*this, false, "TextureName", "")
+, mChannel(*this, "Channel", 0)
+, mTextureName(*this, "TextureName", "")
 , mTextureGLIndex(-1)
 {
-	mChannel.changeNotificationLevel(Owner);
+	setOwnerNotification("Channel", true);
 }
 
 void	API3DUniformDataTexture::InitModifiable()
@@ -414,14 +413,14 @@ API3DUniformDataTexture::~API3DUniformDataTexture()
 }
 
 API3DUniformGeneratedTexture::API3DUniformGeneratedTexture(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mChannel(*this, false, "Channel", 0)
-, mSize(*this, true, "Size")
-, mScale(*this, true, "Scale", 0.5f)
-, mPersistence(*this, true, "Persistence", 0.5f)
-, mOctaveCount(*this, true, "OctaveCount", 3)
+, mChannel(*this, "Channel", 0)
+, mSize(*this, "Size")
+, mScale(*this, "Scale", 0.5f)
+, mPersistence(*this, "Persistence", 0.5f)
+, mOctaveCount(*this, "OctaveCount", 3)
 , mTextureGLIndex((unsigned int)-1)
 {
-	mChannel.changeNotificationLevel(Owner);
+	setOwnerNotification("Channel", true);
 }
 
 void API3DUniformGeneratedTexture::Activate(unsigned int a_Location)
@@ -515,22 +514,20 @@ void API3DUniformGeneratedTexture::Generate()
 
 
 API3DUniformMatrixArray::API3DUniformMatrixArray(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mArraySize(*this, false, "ArraySize", 16)
-, mMatrixArray(*this, false, "MatrixArray")
+, mArraySize(*this, "ArraySize", 16)
+, mMatrixArray(*this, "MatrixArray")
 , mMatrixArrayPointer(0)
 {
-	NotifyUpdate(mArraySize.getLabelID().toUInt());
+	NotifyUpdate(KigsID("ArraySize")._id);
 
-	mArraySize.changeNotificationLevel(Owner);
-
-	
+	setOwnerNotification("ArraySize", true);
 }
 
 void	API3DUniformMatrixArray::NotifyUpdate(const unsigned int  labelid)
 {
 	API3DUniformBase::NotifyUpdate(labelid);
 
-	if(labelid == mArraySize.getLabelID())
+	if(labelid == KigsID("ArraySize")._id)
 	{
 		if (mMatrixArrayPointer)
 		{

@@ -59,7 +59,7 @@ namespace Kigs
 			virtual void	restoreParams(const std::map<unsigned int, std::string>& params);
 
 			maBool			mKeepParamsOnStateChange;
-			maReference		mSequenceManager;
+			maReferenceInit	mSequenceManager;
 		};
 
 		// ****************************************
@@ -101,7 +101,7 @@ namespace Kigs
 
 			std::vector<CMSP>	mPrevLauncherList;
 			std::vector<CMSP>	mNextLauncherList;
-			maReference						mSequenceManager;
+			maReferenceInit		mSequenceManager;
 		};
 
 		// ****************************************

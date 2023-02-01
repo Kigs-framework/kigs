@@ -15,7 +15,7 @@ using namespace Kigs::Time;
 IMPLEMENT_CLASS_INFO(RendererProfileDrawingObject)
 
 RendererProfileDrawingObject::RendererProfileDrawingObject(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
-, mFps(*this, false, "Fps", "30.0")
+, mFps(*this, "Fps", "30.0")
 {
 
 	// global timer is pure Red, don't use this color here

@@ -15,14 +15,14 @@ NotificationCenter::NotificationCenter()
 	mPostLevel=0;
 
 	// use context to pass variable to coreItemOperator
-	mContext.mVariableList[KigsID("sender").toUInt()];
-	mContext.mVariableList[KigsID("data").toUInt()];
+	mContext.mVariableList[KigsID("sender")._id];
+	mContext.mVariableList[KigsID("data")._id];
 }
 
 NotificationCenter::~NotificationCenter()
 {
-	mContext.mVariableList[KigsID("sender").toUInt()];
-	mContext.mVariableList[KigsID("data").toUInt()];
+	mContext.mVariableList[KigsID("sender")._id];
+	mContext.mVariableList[KigsID("data")._id];
 
 	mObserverMap.clear();
 	mNotificationMap.clear();
@@ -484,7 +484,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 	if(mNotificationMap.find(notificationID.toUInt()) != mNotificationMap.end())
 	{
 		// add notificationID to params
-		CoreModifiableAttribute* notificationIDAttr = 0;
+		CoreModifiableAttribute* notificationIDAttr=nullptr;
 		
 
 		unsigned int j;
@@ -498,9 +498,10 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 			NotificationCenter::ObserverStructVector& currentObsStructV=mNotificationMap[notificationID.toUInt()][j];
 			CoreModifiable* currentobserver = currentObsStructV.mObserver;
 
-			if (notificationIDAttr == 0)
+			if (notificationIDAttr == nullptr)
 			{
-				notificationIDAttr = new maUInt(*currentobserver, false, "NotificationID", notificationID.toUInt());
+				// orphan parameter
+				notificationIDAttr = new maUIntOrphan("NotificationID", notificationID.toUInt());
 				params.push_back(notificationIDAttr);
 			}
 
@@ -517,9 +518,9 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 						if (currentobsStruct.mCurrentItem)
 						{
 							CoreItemEvaluationContext::SetContext(&mContext);
-							mContext.mVariableList[KigsID("sender").toUInt()].push_back(sender->shared_from_this());
+							mContext.mVariableList[KigsID("sender")._id].push_back(sender->shared_from_this());
 							// Warning faked cast
-							mContext.mVariableList[KigsID("data").toUInt()].push_back(((GenericRefCountedBaseClass*) data)->shared_from_this());
+							mContext.mVariableList[KigsID("data")._id].push_back(((GenericRefCountedBaseClass*) data)->shared_from_this());
 
 
 							// push params
@@ -545,13 +546,13 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 									case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
 									case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 									{
-										mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()].push_back(std::make_shared<CoreModifiableAttributeOperator<float>>(*paramscurrent));
+										mContext.mVariableList[(*paramscurrent)->id()].push_back(std::make_shared<CoreModifiableAttributeOperator<float>>((*paramscurrent), currentobserver, (*paramscurrent)->id()));
 									}
 									break;
 									case CoreModifiable::ATTRIBUTE_TYPE::STRING:
 									case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 									{
-										mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()].push_back(std::make_shared<CoreModifiableAttributeOperator<std::string>>(*paramscurrent));
+										mContext.mVariableList[(*paramscurrent)->id()].push_back(std::make_shared<CoreModifiableAttributeOperator<std::string>>((*paramscurrent), currentobserver, (*paramscurrent)->id()));
 									}
 									break;
 									default:
@@ -569,7 +570,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 
 							while (paramscurrent != paramsend)
 							{
-								mContext.mVariableList[(*paramscurrent)->getLabelID().toUInt()].pop_back();
+								mContext.mVariableList[(*paramscurrent)->id()].pop_back();
 								++paramscurrent;
 							}
 
@@ -611,7 +612,7 @@ void NotificationCenter::postNotificationName(const KigsID& notificationID,std::
 
 			while (paramscurrent != paramsend)
 			{
-				if ((*paramscurrent)->getLabelID() == "NotificationID")
+				if ((*paramscurrent)->id() == KigsID("NotificationID")._id)
 				{
 					params.erase(paramscurrent);
 					

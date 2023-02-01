@@ -67,10 +67,10 @@ namespace Kigs
 			maString			mClickUpAction;
 			maUSString			mParameter;
 			maString			mMoveAction;
-			maInt				mInitialRatio;
+			maIntInit			mInitialRatio;
 
 			//! Direction of Slider "Vertical" or "Horizontal")
-			maEnum<2>			mDirection;
+			maEnumInit<2>		mDirection;
 			int					mInitialPosX;
 			int					mInitialPosY;
 			int					mSlideLength;

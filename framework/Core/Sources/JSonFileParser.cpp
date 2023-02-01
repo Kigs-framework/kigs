@@ -111,14 +111,14 @@ void JSonFileParserBase<stringType,parserType>::InitParser(const std::string& fi
 template <>
 CoreModifiableAttribute* JSonFileParserBase<std::string, AsciiParserUtils>::getNewStringAttribute(const std::string& attrName,const std::string& strObjName)
 {
-	return new maString(*mDelegateObject.get(), false, attrName, strObjName);
+	return new maString(*mDelegateObject.get(), attrName, strObjName);
 }
 
 template <>
 CoreModifiableAttribute* JSonFileParserBase<usString, US16ParserUtils>::getNewStringAttribute(const usString& attrName,const usString& strObjName)
 {
 	std::string name = attrName.ToString();
-	return new maUSString(*mDelegateObject.get(), false, name, strObjName);
+	return new maUSString(*mDelegateObject.get(), name, strObjName);
 }
 
 template <>
@@ -127,7 +127,7 @@ void 	JSonFileParserBase<std::string, AsciiParserUtils>::AddValueToParamList(con
 	CoreModifiableAttribute* Value;
 	std::string	strvalue = objparamValue;
 
-	mParamList.push_back(new maString(*mDelegateObject.get(), false, strObjName, strObjName));
+	mParamList.push_back(new maString(*mDelegateObject.get(), strObjName, strObjName));
 
 	// check if string, numeric or boolean
 	if (strvalue[0] == '"')
@@ -135,12 +135,12 @@ void 	JSonFileParserBase<std::string, AsciiParserUtils>::AddValueToParamList(con
 		// string
 		// remove quotes
 		std::string paramValue = objparamValue.substr(1, objparamValue.length() - 2);
-		Value = new maString(*mDelegateObject.get(), false, strObjName, paramValue);
+		Value = new maString(*mDelegateObject.get(), strObjName, paramValue);
 	}
 	else if ((strvalue == "true") || (strvalue == "false"))
 	{
 		// boolean
-		Value = new maBool(*mDelegateObject.get(), false, strObjName, false);
+		Value = new maBool(*mDelegateObject.get(), strObjName, false);
 		Value->setValue(strvalue, mDelegateObject.get());
 	}
 	else
@@ -148,7 +148,7 @@ void 	JSonFileParserBase<std::string, AsciiParserUtils>::AddValueToParamList(con
 		if (strvalue.find('.') != std::string::npos)
 		{
 			// float
-			Value = new maFloat(*mDelegateObject.get(), false, strObjName, 0.0f);
+			Value = new maFloat(*mDelegateObject.get(), strObjName, 0.0f);
 		}
 		else
 		{
@@ -159,11 +159,11 @@ void 	JSonFileParserBase<std::string, AsciiParserUtils>::AddValueToParamList(con
 				// check negative
 				if (strvalue.find('-') != std::string::npos)
 				{
-					Value = new maInt(*mDelegateObject.get(), false, strObjName, 0);
+					Value = new maInt(*mDelegateObject.get(), strObjName, 0);
 				}
 				else
 				{
-					Value = new maUInt(*mDelegateObject.get(), false, strObjName, 0);
+					Value = new maUInt(*mDelegateObject.get(), strObjName, 0);
 				}
 			}
 			else
@@ -172,11 +172,11 @@ void 	JSonFileParserBase<std::string, AsciiParserUtils>::AddValueToParamList(con
 				// check negative
 				if (strvalue.find('-') != std::string::npos)
 				{
-					Value = new maLong(*mDelegateObject.get(), false, strObjName, 0);
+					Value = new maLong(*mDelegateObject.get(), strObjName, 0);
 				}
 				else
 				{
-					Value = new maULong(*mDelegateObject.get(), false, strObjName, 0);
+					Value = new maULong(*mDelegateObject.get(), strObjName, 0);
 				}
 			}
 		}
@@ -195,19 +195,19 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const u
 
 	std::string name = strObjName.ToString();
 
-	mParamList.push_back(new maUSString(*mDelegateObject.get(), false, name, strObjName));
+	mParamList.push_back(new maUSString(*mDelegateObject.get(), name, strObjName));
 	// check if string, numeric or boolean
 	if (strvalue[0] == '"')
 	{
 		// string
 		// remove quotes
 		usString paramValue = objparamValue.substr(1, objparamValue.length() - 2);
-		Value = new maUSString(*mDelegateObject.get(), false, name, paramValue);
+		Value = new maUSString(*mDelegateObject.get(), name, paramValue);
 	}
 	else if ((strvalue == "true") || (strvalue == "false"))
 	{
 		// boolean
-		Value = new maBool(*mDelegateObject.get(), false, name, false);
+		Value = new maBool(*mDelegateObject.get(), name, false);
 		Value->setValue(strvalue, mDelegateObject.get());
 	}
 	else
@@ -215,7 +215,7 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const u
 		if (strvalue.find('.') != std::string::npos)
 		{
 			// float
-			Value = new maFloat(*mDelegateObject.get(), false, name, 0.0f);
+			Value = new maFloat(*mDelegateObject.get(), name, 0.0f);
 		}
 		else
 		{
@@ -226,11 +226,11 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const u
 				// check negative
 				if (strvalue.find('-') != std::string::npos)
 				{
-					Value = new maInt(*mDelegateObject.get(), false, name, 0);
+					Value = new maInt(*mDelegateObject.get(), name, 0);
 				}
 				else
 				{
-					Value = new maUInt(*mDelegateObject.get(), false, name, 0);
+					Value = new maUInt(*mDelegateObject.get(), name, 0);
 				}
 			}
 			else
@@ -239,11 +239,11 @@ void 	JSonFileParserBase<usString, US16ParserUtils>::AddValueToParamList(const u
 				// check negative
 				if (strvalue.find('-') != std::string::npos)
 				{
-					Value = new maLong(*mDelegateObject.get(), false, name, 0);
+					Value = new maLong(*mDelegateObject.get(), name, 0);
 				}
 				else
 				{
-					Value = new maULong(*mDelegateObject.get(), false, name, 0);
+					Value = new maULong(*mDelegateObject.get(), name, 0);
 				}
 			}
 		}
@@ -505,7 +505,7 @@ bool JSonFileParserBase<stringType, parserType>::ParseBlock(parserType& Block)
 		if((objName[0]=='"')&&(objName[objName.length()-1]=='"'))
 		{
 			// remove quotes
-			stringType strObjName = objName.subString(1, objName.length() - 2);
+			stringType strObjName = objName.subString(1, (int)objName.length() - 2);
 			// remove object name so it doesn't interact with Block anymore
 			objName.Clear();
 			Block.GoToNextNonWhitespace();

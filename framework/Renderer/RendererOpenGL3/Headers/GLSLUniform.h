@@ -47,7 +47,7 @@ namespace Kigs
 			virtual bool	Pop(TravState*);
 
 			UNIFORM_NAME_TYPE   Get_ID() { return mID; }
-			std::string		Get_Name() { return mUniName.const_ref(); }
+			std::string		Get_Name() { return mUniformName.const_ref(); }
 
 		protected:
 			void	InitModifiable() override;
@@ -55,7 +55,7 @@ namespace Kigs
 			bool	PostDraw(TravState*) override;
 
 
-			maString			mUniName;
+			maString			mUniformName;
 			UNIFORM_NAME_TYPE	mID;
 		};
 
@@ -293,10 +293,10 @@ namespace Kigs
 			bool Deactivate(unsigned int a_Location) override;
 
 			maInt			mChannel;
-			maVect3DF		mSize;
-			maFloat			mScale;
-			maFloat			mPersistence;
-			maInt			mOctaveCount;
+			maVect3DFInit	mSize;
+			maFloatInit		mScale;
+			maFloatInit		mPersistence;
+			maIntInit		mOctaveCount;
 
 			unsigned int	mTextureGLIndex;
 		};

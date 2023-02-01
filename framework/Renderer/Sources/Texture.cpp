@@ -10,17 +10,17 @@ using namespace Kigs::Draw;
 IMPLEMENT_CLASS_INFO(Texture)
 
 Texture::Texture(const std::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)
-,mWidth(*this, false, "Width", 0)
-,mHeight(*this, false, "Height", 0)
-,mTransparencyType(*this, false, "TransparencyType", -1)
-,mHasMipmap(*this, false, "HasMipmap", false)
-,mForceNearest(*this, false, "ForceNearest", false)
-,mFileName(*this, false, "FileName", "")
-,mTextureType(*this, false, "TextureType", TEXTURE_2D)
-,mRepeat_U(*this, false, "Repeat_U", true)
-,mRepeat_V(*this, false, "Repeat_V", true)
-,mIsDynamic(*this, true, "IsDynamic", false)
-,mForcePow2(*this, true, "ForcePow2", false)
+,mWidth(*this,  "Width", 0)
+,mHeight(*this,  "Height", 0)
+,mTransparencyType(*this,  "TransparencyType", -1)
+,mHasMipmap(*this,  "HasMipmap", false)
+,mForceNearest(*this,  "ForceNearest", false)
+,mFileName(*this,  "FileName", "")
+,mTextureType(*this,  "TextureType", TEXTURE_2D)
+,mRepeat_U(*this,  "Repeat_U", true)
+,mRepeat_V(*this,  "Repeat_V", true)
+,mIsDynamic(*this, "IsDynamic", false)
+,mForcePow2(*this, "ForcePow2", false)
 ,mPow2Width(1)
 ,mPow2Height(1)
 ,mPixelSize(0)
@@ -47,7 +47,7 @@ void	Texture::InitForFBO()
 
 void Texture::NotifyUpdate(const unsigned int  labelid )
 {
-	if (labelid == mForceNearest.getLabelID())
+	if (labelid == KigsID("ForceNearest")._id)
 	{
 		changeUserFlag(hasNearestPixelSet, mForceNearest);
 	}
@@ -95,7 +95,7 @@ void	Texture::InitModifiable()
 		}
 
 		changeUserFlag(hasNearestPixelSet, mForceNearest);
-		mForceNearest.changeNotificationLevel(Owner);
+		setOwnerNotification("ForceNearest", true);
 	}
 }
 

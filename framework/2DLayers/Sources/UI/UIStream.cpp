@@ -10,13 +10,13 @@ IMPLEMENT_CLASS_INFO(UIStream)
 
 
 IMPLEMENT_CONSTRUCTOR(UIStream)
-, mVideoFile(*this, true, "VideoFile", "")
-, mFrameBuffer(*this, false, "FrameBuffer", "")
-, mAutoplay(*this, false, "Autoplay", true)
-, mLoop(*this, false, "Loop", true)
-, mAutoSize(*this, false, "AutoSize", false)
-, mNotificationStart(*this, false, "NotificationStart", "")
-, mNotificationEnd(*this, false, "NotificationEnd", "")
+, mVideoFile(*this, "VideoFile", "")
+, mFrameBuffer(*this, "FrameBuffer", "")
+, mAutoplay(*this, "Autoplay", true)
+, mLoop(*this, "Loop", true)
+, mAutoSize(*this, "AutoSize", false)
+, mNotificationStart(*this, "NotificationStart", "")
+, mNotificationEnd(*this, "NotificationEnd", "")
 , mIsPlaying(false)
 {
 }
@@ -25,8 +25,7 @@ void UIStream::InitModifiable()
 {
 	UITexturedItem::InitModifiable();
 
-	mVolume.changeNotificationLevel(Owner);
-
+	setOwnerNotification("Volume", true);
 	if(IsInit())
 	{
 		if(!mVideoFile.const_ref().empty())
@@ -165,17 +164,17 @@ void UIStream::NotifyUpdate(const unsigned int labelid)
 {
 	ParentClassType::NotifyUpdate(labelid);
 
-	if(labelid == mVideoFile.getLabelID() || labelid == mFrameBuffer.getLabelID())
+	if(labelid == KigsID("VideoFile")._id  || labelid == KigsID("FrameBuffer")._id )
 	{
 		Init();
 	}
-	else if(labelid == mNotificationStart.getLabelID())
+	else if(labelid == KigsID("NotificationStart")._id )
 	{
 		KigsCore::GetNotificationCenter()->removeObserver(this);
 		if (!mNotificationEnd.const_ref().empty())
 			KigsCore::GetNotificationCenter()->postNotificationName(mNotificationEnd.const_ref(), this);
 	}
-	else if (labelid == mVolume.getID())
+	else if (labelid == KigsID("Volume")._id)
 	{
 		if (mFrameBufferStream) mFrameBufferStream->setValue("Volume", (float)mVolume);
 	}

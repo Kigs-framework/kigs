@@ -1133,10 +1133,10 @@ void CoreModifiableAttributeOperator<T>::GetAttribute() const
 					unsigned int id = CharToID::GetID(attributename);
 					other->mIsMethod = 1;
 					other->mMethodID = id;
-
-					// for method, change target
-					other->mTarget = Owner;
 				}
+
+				// change target if needed
+				other->mTarget = Owner;
 			}
 		}
 	}
@@ -1176,12 +1176,12 @@ CoreModifiableAttributeOperator<float>::operator float() const
 		
 		while (itOperand != itOperandEnd)
 		{
-			CoreModifiableAttribute* attribute = ((CoreItem*)(*itOperand).get())->createAttribute(mTarget);
+			CoreModifiableAttribute* attribute = ((CoreItem*)(*itOperand).get())->createAttribute();
 
 			if (!attribute)
 			{
 				float val = (float)(**itOperand);
-				attribute = new maFloat(*mTarget, false, "Val", val);
+				attribute = new maFloatOrphan("Val", val);
 			}
 			attributes.push_back(attribute);
 
@@ -1251,12 +1251,12 @@ CoreModifiableAttributeOperator<std::string>::operator std::string() const
 
 		while (itOperand != itOperandEnd)
 		{
-			CoreModifiableAttribute* attribute = ((CoreItem*)(*itOperand).get())->createAttribute(mTarget);
+			CoreModifiableAttribute* attribute = ((CoreItem*)(*itOperand).get())->createAttribute();
 
 			if (!attribute)
 			{
 				std::string val = (std::string)(**itOperand);
-				attribute = new maString(*mTarget, false, "Val", val);
+				attribute = new maStringOrphan("Val", val);
 			}
 			attributes.push_back(attribute);
 
@@ -1328,13 +1328,13 @@ CoreModifiableAttributeOperator<v2f>::operator v2f() const
 
 		while (itOperand != itOperandEnd)
 		{
-			CoreModifiableAttribute* attribute = ((CoreItem*)(*itOperand).get())->createAttribute(mTarget);
+			CoreModifiableAttribute* attribute = ((CoreItem*)(*itOperand).get())->createAttribute();
 			
 			if (!attribute)
 			{
 				v2f val((v2f)(**itOperand));
 				((*itOperand).get())->getValue(val);
-				attribute = new maVect2DF(*mTarget, false, "Val", &(val.x));
+				attribute = new maVect2DFOrphan("Val", &(val.x));
 			}
 
 			attributes.push_back(attribute);
@@ -1408,12 +1408,12 @@ CoreModifiableAttributeOperator<v3f>::operator v3f() const
 
 		while (itOperand != itOperandEnd)
 		{
-			CoreModifiableAttribute* attribute = ((CoreItem*)(*itOperand).get())->createAttribute(mTarget);
+			CoreModifiableAttribute* attribute = ((CoreItem*)(*itOperand).get())->createAttribute();
 
 			if (!attribute)
 			{
 				v3f val = (v3f)(**itOperand);
-				attribute = new maVect3DF(*mTarget, false, "Val", &(val.x));
+				attribute = new maVect3DFOrphan("Val", &(val.x));
 			}
 			attributes.push_back(attribute);
 
@@ -1485,12 +1485,12 @@ CoreModifiableAttributeOperator<v4f>::operator v4f() const
 
 		while (itOperand != itOperandEnd)
 		{
-			CoreModifiableAttribute* attribute = ((CoreItem*)(*itOperand).get())->createAttribute(mTarget);
+			CoreModifiableAttribute* attribute = ((CoreItem*)(*itOperand).get())->createAttribute();
 
 			if (!attribute)
 			{
 				v4f val(**itOperand);
-				attribute = new maVect4DF(*mTarget, false, "Val", &(val.x));
+				attribute = new maVect4DFOrphan("Val", &(val.x));
 			}
 			attributes.push_back(attribute);
 

@@ -18,15 +18,15 @@ void UIRoundHUD::InitModifiable()
 {
 	ParentClassType::InitModifiable();
 
-	mColor.changeNotificationLevel(Owner);
-	mOpacity.changeNotificationLevel(Owner);
+	setOwnerNotification("Color", true);
+	setOwnerNotification("Opacity", true);
 
-	mAngleStart.changeNotificationLevel(Owner);
-	mAngleWide.changeNotificationLevel(Owner);
-	mSlotCount.changeNotificationLevel(Owner);
-	mIsClockwise.changeNotificationLevel(Owner);
-	mRadius.changeNotificationLevel(Owner);
-	mRadiusOffset.changeNotificationLevel(Owner);
+	setOwnerNotification("AngleStart", true);
+	setOwnerNotification("AngleWide", true);
+	setOwnerNotification("SlotCount", true);
+	setOwnerNotification("IsClockwise", true);
+	setOwnerNotification("Radius", true);
+	setOwnerNotification("RadiusOffset", true);
 
 	mVoidZone = (mRadius + mRadiusOffset) *0.2f;
 	mVoidZone *= mVoidZone;
@@ -74,15 +74,15 @@ void UIRoundHUD::NotifyUpdate(const unsigned int labelid)
 	ParentClassType::NotifyUpdate(labelid);
 
 	if (
-		labelid == mColor.getLabelID() ||
-		labelid == mOpacity.getLabelID() ||
-		labelid == mRotationAngle.getLabelID() ||
-		labelid == mAngleStart.getLabelID() ||
-		labelid == mAngleWide.getLabelID() ||
-		labelid == mSlotCount.getLabelID() ||
-		labelid == mIsClockwise.getLabelID() ||
-		labelid == mRadiusOffset.getLabelID() ||
-		labelid == mRadius.getLabelID())
+		labelid == KigsID("Color")._id  ||
+		labelid == KigsID("Opacity")._id  ||
+		labelid == KigsID("RotationAngle")._id ||
+		labelid == KigsID("AngleStart")._id  ||
+		labelid == KigsID("AngleWide")._id  ||
+		labelid == KigsID("SlotCount")._id  ||
+		labelid == KigsID("IsClockwise")._id  ||
+		labelid == KigsID("RadiusOffset")._id  ||
+		labelid == KigsID("Radius")._id )
 		mNeedUpdateSlots = true;
 }
 

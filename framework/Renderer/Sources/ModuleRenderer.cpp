@@ -55,7 +55,7 @@ void ModuleRenderer::Init(KigsCore* core, const std::vector<CoreModifiableAttrib
 
 	core->RegisterMainModuleList(this, RendererModuleCoreIndex);
 
-	RegisterDynamic(PlatformRendererModuleInit(core, params));
+	RegisterPlatformSpecific(PlatformRendererModuleInit(core, params));
 
 	REGISTER_UPGRADOR(SpriteSheetData); 
 	REGISTER_UPGRADOR(AnimationUpgrador);

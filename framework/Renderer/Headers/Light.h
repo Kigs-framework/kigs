@@ -47,7 +47,7 @@ namespace Kigs
 				mDiffuseColor[0] = r;
 				mDiffuseColor[1] = g;
 				mDiffuseColor[2] = b;
-				NotifyUpdate(mDiffuseColor.getLabelID()._id);
+				NotifyUpdate(KigsID("DiffuseColor")._id);
 			}
 
 			/**
@@ -63,7 +63,7 @@ namespace Kigs
 				mSpecularColor[0] = r;
 				mSpecularColor[1] = g;
 				mSpecularColor[2] = b;
-				NotifyUpdate(mSpecularColor.getLabelID()._id);
+				NotifyUpdate(KigsID("SpecularColor")._id);
 			}
 
 			/**
@@ -79,7 +79,7 @@ namespace Kigs
 				mAmbientColor[0] = r;
 				mAmbientColor[1] = g;
 				mAmbientColor[2] = b;
-				NotifyUpdate(mAmbientColor.getLabelID()._id);
+				NotifyUpdate(KigsID("AmbientColor")._id);
 			}
 
 			inline void setIsOn(bool a_value) { mIsOn = a_value; }
@@ -116,7 +116,7 @@ namespace Kigs
 			maBool		mIsOn;
 
 			//0 for point, 1 for directional, 2 for spot
-			maEnum<3>	mLightType;
+			maEnumInit<3>	mLightType;
 
 		};
 
