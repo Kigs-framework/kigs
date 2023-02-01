@@ -23,13 +23,13 @@ DEFINE_METHOD(MoreComplexClass, GiveInfos)
 	for (auto p : params)
 	{
 		std::string v;
-		if (p->getValue(v))
+		if (p->getValue(v,nullptr))
 		{
-			std::cout << "-- parameter : " << p->getID().toString() << " value is : " << v << std::endl;
+			std::cout << "-- parameter : " << p->id() << " value is : " << v << std::endl;
 		}
 		else
 		{
-			std::cout << "-- parameter : " << p->getID().toString() << " value cannot be evaluated as string" << std::endl;
+			std::cout << "-- parameter : " << p->id() << " value cannot be evaluated as string" << std::endl;
 		}
 	}
 

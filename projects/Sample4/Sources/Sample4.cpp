@@ -34,7 +34,7 @@ DEFINE_DYNAMIC_METHOD(CoreModifiable, addValues)
 	for (auto p : params)
 	{
 		float v;
-		if (p->getValue(v))
+		if (p->getValue(v,nullptr))
 		{
 			result += v;
 		}
@@ -60,7 +60,7 @@ void	Sample4::ProtectedInit()
 
 	// create CoreModifiableAttribute without owner
 
-	CoreModifiableAttribute* intParam = new maInt("IntParam", 15);
+	CoreModifiableAttribute* intParam = new maIntOrphan("IntParam", 15);
 
 	// create a parameter vector
 	std::vector<CoreModifiableAttribute*> params;
@@ -82,7 +82,7 @@ void	Sample4::ProtectedInit()
 		while(paramsCount<params.size())
 		{
 			std::string v;
-			if(params.back()->getValue(v))
+			if(params.back()->getValue(v,nullptr))
 				std::cout << "GiveInfos returned value = " << v << std::endl;
 
 			delete params.back();

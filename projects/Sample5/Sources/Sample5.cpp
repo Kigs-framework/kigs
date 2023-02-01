@@ -114,7 +114,7 @@ void	Sample5::ProtectedInit()
 	std::cout << "Expression : 12.0*sin(4.0) = " << (float)tsteval << std::endl;
 
 	// for maCoreItem, or using absolute path, you can use CoreModifiable attributes in more complex expressions
-	mFunction.setValue("eval(12.0*sin(#TestFloat#+#/Timer:ApplicationTimer->Time#))");
+	mFunction.setValue("eval(12.0*sin(#TestFloat#+#/Timer:ApplicationTimer->Time#))",this);
 	std::cout << "Expression : eval(12.0*sin(#TestFloat#+#/Timer:ApplicationTimer->Time#)) = " << (float)(CoreItem&)mFunction << std::endl;
 	// expression is evaluated again at each cast to float
 	std::cout << "Expression : eval(12.0*sin(#TestFloat#+#/Timer:ApplicationTimer->Time#)) = " << (float)(CoreItem&)mFunction << std::endl;

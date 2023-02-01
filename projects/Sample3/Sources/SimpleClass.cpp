@@ -8,17 +8,17 @@ IMPLEMENT_CLASS_INFO(SimpleClass)
 
 IMPLEMENT_CONSTRUCTOR(SimpleClass)
 // attribute is set as init attribute : it will be set as readonly after instance was initialized
-, mIntValue(*this,true,"IntValue",5)					
+, mIntValue(*this,"IntValue",5)					
 // attribute is not set as init attribute : it will be read/write enabled
-, mStringValue(* this, false, "StringValue")
+, mStringValue(* this, "StringValue")
 {
 	// this will be notified when StringValue is changed
-	mStringValue.changeNotificationLevel(Owner);
+	setOwnerNotification("StringValue", true);
 }
 
 void SimpleClass::NotifyUpdate(const u32 labelid)
 {
-	if (labelid == mStringValue.getID())
+	if (labelid == KigsID("StringValue")._id)
 	{
 		std::cout << "StringValue new value is : " <<  mStringValue.const_ref() << std::endl;
 	}

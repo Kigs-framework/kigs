@@ -19,14 +19,14 @@ DEFINE_METHOD(SimpleSampleClass,AddValue)
 	CoreModifiableAttribute* presult=nullptr;
 	for (auto p : params)
 	{
-		if (p->getLabelID() == KigsID("Result"))
+		if (p->id() == KigsID("Result")._id)
 		{
 			presult = p;
 		}
 		else
 		{
 			float val=0.f;
-			p->getValue(val);
+			p->getValue(val,nullptr);
 			total += val;
 		}
 	}
@@ -37,7 +37,7 @@ DEFINE_METHOD(SimpleSampleClass,AddValue)
 	}
 	else
 	{
-		presult->setValue(total);
+		presult->setValue(total,nullptr);
 	}
 
 	return true;

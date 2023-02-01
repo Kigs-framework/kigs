@@ -18,7 +18,7 @@ namespace Kigs
 
 		virtual void NotifyUpdate(const u32 labelid) override;
 
-		maInt			mIntValue;
+		maIntInit		mIntValue;
 		maString		mStringValue;
 		maReference		mRef = BASE_ATTRIBUTE(Reference, "");
 
