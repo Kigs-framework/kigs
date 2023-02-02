@@ -7,128 +7,18 @@ namespace Kigs
 	namespace Core
 	{
 
-		// ****************************************
-		// * maNumericHeritage class
-		// * --------------------------------------
-		/**
-		* \class	maNumericHeritage
-		* \ingroup CoreModifiableAttibute
-		* \brief	CoreModifiableAttributeData for numeric without different level of notification
-		*/
-		// ****************************************
-		template<bool notificationLevel, typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false> 
-		class maNumericHeritage : public CoreModifiableAttributeData<T, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
-		{
-			template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isOrphanTe>
-			using TemplateForPlacementNew = maNumericHeritage<notiflevel, T, attributeType, isInitTe, isReadOnlyTe, isOrphanTe>;
-
-			DECLARE_ATTRIBUTE_HERITAGE(maNumericHeritage, TemplateForPlacementNew, T, attributeType);
-
-		public:
-
-			// Shouldn't they return *this instead ?
-			T operator+=(T value)
-			{
-				mValue += value;
-				return operator T();
-			}
-			T operator-=(T value)
-			{
-				mValue -= value;
-				return operator T();
-			}
-			T operator*=(T value)
-			{
-				mValue *= value;
-				return operator T();
-			}
-			T operator/=(T value)
-			{
-				mValue /= value;
-				return operator T();
-			}
-			T operator|=(T value)
-			{
-				mValue |= value;
-				return operator T();
-			}
-			T operator^=(T value)
-			{
-				mValue ^= value;
-				return operator T();
-			}
-			T operator&=(T value)
-			{
-				mValue &= value;
-				return operator T();
-			}
-
-
-			//@REFACTOR: use expand macro
-
-			virtual bool setValue(bool value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = value ? ::std::numeric_limits<T>::max() : 0;   this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel); return true; }
-			virtual bool setValue(s8 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT);  T tmpValue = (T)value;   this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(s16 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(s32 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT);     T tmpValue = (T)value;   this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(s64 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(u8 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(u16 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(u32 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(u64 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(float value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;  this->mValue = tmpValue; DO_NOTIFICATION(notificationLevel); return true; }		
-			virtual bool setValue(double value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   this->mValue = tmpValue;  DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(const char* value, CoreModifiable* owner) override { std::string localstr(value); return setValue(localstr, owner); }
-			virtual bool setValue(const usString& value, CoreModifiable* owner) override { std::string localstr(value); return setValue(localstr, owner); }
-			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
-				{
-			RETURN_ON_READONLY(isReadOnlyT);
-			if (CoreConvertString2Value<T>(value, this->mValue)) {
-					T tmpValue = this->mValue;  this->mValue = tmpValue;
-					DO_NOTIFICATION(notificationLevel); return true;
-				}
-				return false;
-			}
-
-			virtual bool getValue(bool& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (tmpValue != (T)0); return true; }
-			virtual bool getValue(s8& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (s8)tmpValue; return true; }
-			virtual bool getValue(s16& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (s16)tmpValue; return true; }
-			virtual bool getValue(s32& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (s32)tmpValue; return true; }
-			virtual bool getValue(s64& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (s64)tmpValue; return true; }
-			virtual bool getValue(u8& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (u8)tmpValue; return true; }
-			virtual bool getValue(u16& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (u16)tmpValue; return true; }
-			virtual bool getValue(u32& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (u32)tmpValue; return true; }
-			virtual bool getValue(u64& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;  value = (u64)tmpValue; return true; }
-			virtual bool getValue(float& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;   value = (float)tmpValue; return true; }
-			virtual bool getValue(double& value, const CoreModifiable* owner) const override { T tmpValue = this->mValue;   value = (double)tmpValue; return true; }
-			virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
-			{
-				T tmpValue = this->mValue;
-
-				return CoreConvertValue2String<T>(value, tmpValue);
-			}
-			virtual bool getValue(usString& value, const CoreModifiable* owner) const override
-			{
-				std::string tmp;
-				T tmpValue = this->mValue;
-
-				if (CoreConvertValue2String<T>(tmp, tmpValue))
-				{
-					value = tmp; return true;
-				}
-				return false;
-			}
-
-		};
+		template<typename T>
+		using maNumeric = CoreModifiableAttributeData<T,false, false, false, false>;
 
 		template<typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType = TypeToEnum<T>::value>
-		using maNumeric = maNumericHeritage<false, T, attributeType,false,false,false>;
+		using maNumericOrphan = CoreModifiableAttributeData<T,false, false, false, true>;
 
 		template<typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType = TypeToEnum<T>::value>
-		using maNumericOrphan = maNumericHeritage<false, T, attributeType, false, false, true>;
+		using maNumericInit = CoreModifiableAttributeData<T, false, true>;
 
-		template<typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType = TypeToEnum<T>::value>
-		using maNumericInit = maNumericHeritage<false, T, attributeType, true>;
-
+		using maBool = maNumeric<bool>;
+		using maBoolInit = maNumericInit<bool>;
+		using maBoolOrphan = maNumericOrphan<bool>;
 
 		using maChar = maNumeric<s8>;
 		using maCharOrphan = maNumericOrphan<s8>;
@@ -170,42 +60,41 @@ namespace Kigs
 		* \brief	numeric calling onwer get / set method to compute value
 		*/
 		// ****************************************
-		template<bool notificationLevel, typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
-		class maComputedNumericHeritage : public CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isOrphanT>
+		template<bool notifOwnerT, typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+		class maComputedNumericHeritage : public CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT>
 		{
-		template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isOrphanTe>
-		using TemplateForPlacementNew = maComputedNumericHeritage<notiflevel, T, attributeType, isInitTe, isReadOnlyTe, isOrphanTe>;
+			template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isOrphanTe>
+			using TemplateForPlacementNew = maComputedNumericHeritage<notiflevel, T, attributeType, isInitTe, isReadOnlyTe, isOrphanTe>;
 
 
 		private:
 
-		maComputedNumericHeritage(CoreModifiable& owner, KigsID ID, const T& value) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isOrphanT>(&owner, ID)
+			maComputedNumericHeritage(CoreModifiable& owner, KigsID ID, const T& value) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT>(&owner, ID)
 			{
 
 			}
-		maComputedNumericHeritage(CoreModifiable& owner, KigsID ID) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isOrphanT>(&owner, ID)
+			maComputedNumericHeritage(CoreModifiable& owner, KigsID ID) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT>(&owner, ID)
 			{
 
 			}
-		maComputedNumericHeritage(KigsID ID, const T& value) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isOrphanT>(nullptr, false, ID)
+			maComputedNumericHeritage(KigsID ID, const T& value) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT>(nullptr, false, ID)
 			{
 			}
 
 		public:
 
-		explicit maComputedNumericHeritage(InheritanceSwitch tag) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isOrphanT>(tag) {}
+			explicit maComputedNumericHeritage(InheritanceSwitch tag) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT>(tag) {}
 
-		maComputedNumericHeritage(CoreModifiable& owner, KigsID ID, KigsID g, KigsID s) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isOrphanT>(&owner, ID), mGetter(g), mSetter(s)
+			maComputedNumericHeritage(CoreModifiable& owner, KigsID ID, KigsID g, KigsID s) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT>(&owner, ID), mGetter(g), mSetter(s)
 			{
 
 			}
 
 			typedef maComputedNumericHeritage CurrentAttributeClass;
 			typedef T CurrentAttributeType;
-			static constexpr CoreModifiable::ATTRIBUTE_TYPE type = attributeType;
 			CoreModifiable::ATTRIBUTE_TYPE getType() const override { return attributeType; }
 
-		auto& operator=(const TemplateForPlacementNew<notificationLevel, isInitT, isReadOnlyT, isOrphanT>& attribute)
+			auto& operator=(const TemplateForPlacementNew<notifOwnerT, isInitT, isReadOnlyT, isOrphanT>& attribute)
 			{
 				this->CopyData(attribute);
 				return *this;
@@ -219,16 +108,16 @@ namespace Kigs
 			{
 				switch (mask)
 				{
-			case 0: new (this) TemplateForPlacementNew<false, false, false, false>(InheritanceSwitch{}); break;
-			case 1: new (this) TemplateForPlacementNew<true, false, false, false>(InheritanceSwitch{}); break;
-			case 2: new (this) TemplateForPlacementNew<false, true, false, false>(InheritanceSwitch{}); break;
-			case 3: new (this) TemplateForPlacementNew<true, true, false, false>(InheritanceSwitch{}); break;
-			case 4: new (this) TemplateForPlacementNew<false, false, true, false>(InheritanceSwitch{}); break;
-			case 5: new (this) TemplateForPlacementNew<true, false, true, false>(InheritanceSwitch{}); break;
-			case 6: new (this) TemplateForPlacementNew<false, true, true, false>(InheritanceSwitch{}); break;
-			case 7: new (this) TemplateForPlacementNew<true, true, true, false>(InheritanceSwitch{}); break;
-			case 16: new (this) TemplateForPlacementNew<false, false, false, true>(InheritanceSwitch{}); break;
-			case 20: new (this) TemplateForPlacementNew<false, false, true, true>(InheritanceSwitch{}); break;
+				case 0: new (this) TemplateForPlacementNew<false, false, false, false>(InheritanceSwitch{}); break;
+				case 1: new (this) TemplateForPlacementNew<true, false, false, false>(InheritanceSwitch{}); break;
+				case 2: new (this) TemplateForPlacementNew<false, true, false, false>(InheritanceSwitch{}); break;
+				case 3: new (this) TemplateForPlacementNew<true, true, false, false>(InheritanceSwitch{}); break;
+				case 4: new (this) TemplateForPlacementNew<false, false, true, false>(InheritanceSwitch{}); break;
+				case 5: new (this) TemplateForPlacementNew<true, false, true, false>(InheritanceSwitch{}); break;
+				case 6: new (this) TemplateForPlacementNew<false, true, true, false>(InheritanceSwitch{}); break;
+				case 7: new (this) TemplateForPlacementNew<true, true, true, false>(InheritanceSwitch{}); break;
+				case 16: new (this) TemplateForPlacementNew<false, false, false, true>(InheritanceSwitch{}); break;
+				case 20: new (this) TemplateForPlacementNew<false, false, true, true>(InheritanceSwitch{}); break;
 				default: assert(false); break;
 				}
 			}
@@ -244,93 +133,111 @@ namespace Kigs
 			}
 
 		public:
-		// TODO ?
-		/*virtual operator CurrentAttributeType() const
-			{
-				CurrentAttributeType tmpValue = getOwner()->template SimpleCall<T>(mGetter);
 
-
-				return tmpValue;
-			};
-			auto& operator=(const CurrentAttributeType& value)
-			{
-			if (mSetter != "") getOwner()->SimpleCall(mSetter,value);
-				return *this;
-			}
-		*/
-		public:
-
-		virtual void* getRawValue(CoreModifiable* owner) final { return nullptr; }
+			virtual void* getRawValue(CoreModifiable* owner) final { return nullptr; }
 			bool CopyAttribute(const CoreModifiableAttribute& other) override
 			{
-
-				return false;
-
-			}
-
-
-		virtual bool setValue(bool value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = value ? std::numeric_limits<T>::max() : 0;   if (mSetter != "")owner->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel); return true; }
-		virtual bool setValue(s8 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT);  T tmpValue = (T)value;   if (mSetter != "")owner->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-		virtual bool setValue(s16 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   if (mSetter != "")owner->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-		virtual bool setValue(s32 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT);   T tmpValue = (T)value;   if (mSetter != "")owner->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-		virtual bool setValue(s64 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   if (mSetter != "") owner->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-		virtual bool setValue(u8 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   if (mSetter != "")owner->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-		virtual bool setValue(u16 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   if (mSetter != "")owner->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-		virtual bool setValue(u32 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   if (mSetter != "")owner->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-		virtual bool setValue(u64 value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   if (mSetter != "")owner->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notificationLevel);  return true; }
-			virtual bool setValue(float value, CoreModifiable* owner) override
-			{
-			RETURN_ON_READONLY(isReadOnlyT);
-				T tmpValue = (T)value;
-			if (mSetter != "")owner->SimpleCall(mSetter, tmpValue);
-				DO_NOTIFICATION(notificationLevel);
-				return true;
-			}
-		virtual bool setValue(double value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue = (T)value;   owner->SimpleCall(mSetter, tmpValue);  DO_NOTIFICATION(notificationLevel);  return true; }
-		virtual bool setValue(const char* value, CoreModifiable* owner) override { std::string localstr(value); return setValue(localstr, owner); }
-		virtual bool setValue(const usString& value, CoreModifiable* owner) override { std::string localstr(value); return setValue(localstr, owner); }
-		virtual bool setValue(const std::string& value, CoreModifiable* owner) override
-			{
-			RETURN_ON_READONLY(isReadOnlyT);
-
-				T tmpValue;
-				if (CoreConvertString2Value<T>(value, tmpValue))
-				{
-					if (mSetter != "") owner->SimpleCall(mSetter, tmpValue);
-					DO_NOTIFICATION(notificationLevel); return true;
-				}
 				return false;
 			}
 
-		virtual bool getValue(bool& value, const CoreModifiable* owner) const override { T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);   value = (tmpValue != (T)0); return true; }
-		virtual bool getValue(s8& value, const CoreModifiable* owner) const override { T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);   value = (s8)tmpValue; return true; }
-		virtual bool getValue(s16& value, const CoreModifiable* owner) const override { T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);   value = (s16)tmpValue; return true; }
-		virtual bool getValue(s32& value, const CoreModifiable* owner) const override { T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);   value = (s32)tmpValue; return true; }
-		virtual bool getValue(s64& value, const CoreModifiable* owner) const override { T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);   value = (s64)tmpValue; return true; }
-		virtual bool getValue(u8& value, const CoreModifiable* owner) const override { T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);   value = (u8)tmpValue; return true; }
-		virtual bool getValue(u16& value, const CoreModifiable* owner) const override { T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);   value = (u16)tmpValue; return true; }
-		virtual bool getValue(u32& value, const CoreModifiable* owner) const override { T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);   value = (u32)tmpValue; return true; }
-		virtual bool getValue(u64& value, const CoreModifiable* owner) const override { T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);   value = (u64)tmpValue; return true; }
-		virtual bool getValue(float& value, const CoreModifiable* owner) const override { T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);    value = (float)tmpValue; return true; }
-		virtual bool getValue(double& value, const CoreModifiable* owner) const override { T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);    value = (double)tmpValue; return true; }
-		virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
-			{
-			T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);
+#define DECLARE_SET(type)	bool setValue(type val,CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); T tmpValue; if( CoreConvertValue(val,tmpValue) ) { if (mSetter != "")owner->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notifOwnerT); return true;} return false;  }
 
-				return CoreConvertValue2String<T>(value, tmpValue);
-			}
-		virtual bool getValue(usString& value, const CoreModifiable* owner) const override
-			{
-			std::string tmp;
-			
-			T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);
+			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET);
+			DECLARE_SET(const char*);
+			DECLARE_SET(const std::string&);
+			DECLARE_SET(const unsigned short*);
+			DECLARE_SET(const usString&);
+			DECLARE_SET(const UTF8Char*);
+			DECLARE_SET(const v2f&);
+			DECLARE_SET(const v3f&);
+			DECLARE_SET(const v4f&);
 
-				if (CoreConvertValue2String<T>(tmp, tmpValue))
-				{
-					value = tmp; return true;
-				}
-				return false;
-			}
+#define DECLARE_GET(type)	bool getValue(type val,const CoreModifiable* owner) const override { if(mGetter!=""){ T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);  return CoreConvertValue(tmpValue,val);} return false; }
+
+			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET);
+			DECLARE_GET(std::string&);
+			DECLARE_GET(usString&);
+			DECLARE_GET(v2f&);
+			DECLARE_GET(v3f&);
+			DECLARE_GET(v4f&);
+
+
+#define DECLARE_SETARRAYVALUE(type)	bool setArrayValue(type val,CoreModifiable* owner, size_t nbElements ) override {RETURN_ON_READONLY(isReadOnlyT);\
+		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
+			size_t currentColumnIndex=0, currentLineIndex=0; T tmpValue;\
+			for (size_t i = 0; i < nbElements; i++){\
+				if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
+					if (!CoreConvertValue(val[i], tmpValue[currentColumnIndex][currentLineIndex])) { return false; }\
+				}else {\
+					if (!CoreConvertValue(val[i], tmpValue[currentColumnIndex])) { return false; }\
+				}\
+				currentLineIndex++;\
+				if (currentLineIndex >= impl::arrayLineCount<std::remove_cv_t<T>>()){\
+					currentColumnIndex++; currentLineIndex=0;\
+					if (impl::arrayColumnCount<std::remove_cv_t<T>>() <= currentColumnIndex){break;}\
+				}}\
+			if (mSetter != ""){owner->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notifOwnerT); return true;} }\
+		return false; }
+
+			EXPAND_MACRO_FOR_BASE_TYPES(const, *, DECLARE_SETARRAYVALUE);
+
+#define DECLARE_GETARRAYVALUE(type) bool getArrayValue(type * const  val  ,const CoreModifiable* owner, size_t  nbElements ) const override {\
+		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
+			if(mGetter!=""){ T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter); \
+			size_t currentColumnIndex=0, currentLineIndex=0;\
+			for (size_t i = 0; i < nbElements; i++){\
+				if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
+					if (!CoreConvertValue(tmpValue[currentColumnIndex][currentLineIndex],val[i])) { return false; }\
+				}else {\
+					if (!CoreConvertValue(tmpValue[currentColumnIndex],val[i])) { return false; }\
+				}\
+				currentLineIndex++;\
+				if (currentLineIndex >= impl::arrayLineCount<std::remove_cv_t<T>>()){\
+					currentColumnIndex++; currentLineIndex=0;\
+					if (impl::arrayColumnCount<std::remove_cv_t<T>>() <= currentColumnIndex){break;}\
+				}}\
+			 return true;}}\
+		return false; }
+
+			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_GETARRAYVALUE);
+
+#define DECLARE_SETARRAYELEMENTVALUE(type)	bool setArrayElementValue(type val,CoreModifiable* owner, size_t  line , size_t  column ) override {RETURN_ON_READONLY(isReadOnlyT);\
+		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
+			if( (line >= impl::arrayLineCount<std::remove_cv_t<T>>()) || (column >= impl::arrayColumnCount<std::remove_cv_t<T>>())) {return false;}\
+			if(mGetter==""){return false;}\
+			T tmpValue = (owner)->template SimpleCall<T>(mGetter);\
+			if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
+				if (!CoreConvertValue(val, tmpValue(owner)[column][line])) { return false; }\
+			}else{\
+				if (!CoreConvertValue(val, tmpValue(owner)[column])) { return false; }\
+			}\
+			if (mSetter != ""){owner->SimpleCall(mSetter, tmpValue); DO_NOTIFICATION(notifOwnerT); return true;}}\
+			return false;}
+
+			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAYELEMENTVALUE);
+			DECLARE_SETARRAYELEMENTVALUE(const std::string&);
+
+#define DECLARE_GETARRAYELEMENTVALUE(type)	bool getArrayElementValue(type  val , const CoreModifiable* owner, size_t  line , size_t  column ) const override{\
+		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
+			if(mGetter!=""){ T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter); \
+			if( (line >= impl::arrayLineCount<std::remove_cv_t<T>>()) || (column >= impl::arrayColumnCount<std::remove_cv_t<T>>())) {return false;}\
+			if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
+				if (!CoreConvertValue(tmpValue[column][line],val)) {return false;}\
+			}else{\
+				if (!CoreConvertValue(tmpValue[column],val)) {return false;}\
+			}\
+			return true;}}\
+		return false; }
+
+			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GETARRAYELEMENTVALUE);
+			DECLARE_GETARRAYELEMENTVALUE(std::string&);
+
+#undef DECLARE_SET
+#undef DECLARE_GET
+#undef DECLARE_SETARRAYVALUE
+#undef DECLARE_GETARRAYVALUE
+#undef DECLARE_SETARRAYELEMENTVALUE
+#undef DECLARE_GETARRAYELEMENTVALUE
 
 		};
 

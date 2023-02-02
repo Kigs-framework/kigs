@@ -198,8 +198,8 @@ namespace Kigs
 			// +---------
 			// | Acces Operators
 			// +---------
-			inline const coordType& operator[](Int i) const;
-			inline coordType& operator[](Int i);
+			inline const coordType& operator[](size_t i) const;
+			inline coordType& operator[](size_t i);
 
 			// +---------
 			// | Coordinates

@@ -240,7 +240,7 @@ namespace Kigs
 			maVect2DF											mPostScale;
 			maEnum<7>											mSizeModeX = BASE_ATTRIBUTE(SizeModeX, "Default", "Multiply", "Add", "Content", "ContentMult", "ContentAdd", "KeepRatio");
 			maEnum<7>											mSizeModeY = BASE_ATTRIBUTE(SizeModeY, "Default", "Multiply", "Add", "Content", "ContentMult", "ContentAdd", "KeepRatio");
-			maBoolHeritage<1>									mClipSons;
+			maBool												mClipSons;
 
 			maReference											mCustomShader = BASE_ATTRIBUTE(CustomShader, "");
 

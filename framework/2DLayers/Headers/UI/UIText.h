@@ -38,7 +38,7 @@ namespace Kigs
 			inline void				SetColor(float R, float G, float B, float A) { mColor[0] = R; mColor[1] = G; mColor[2] = B; mOpacity = A; }
 
 			using					UITexturedItem::SetColor;
-			std::string			GetText() { return mText.ToString(); }
+			std::string			GetText() { return ((usString)mText).ToString(); }
 			std::string			GetFontName() const { return mFont; }
 			int						GetFontSize() const { return mFontSize; }
 			int						GetDirection() const { return mDirection; }

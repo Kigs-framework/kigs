@@ -64,7 +64,7 @@ void	UITextArea::ReloadTexture()
 {
 	if (mTexturePointer && mText.const_ref().length())
 	{
-		ChangeText(mText.us_str());
+		ChangeText(((usString)mText).us_str());
 	}
 }
 
@@ -183,7 +183,7 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 	if (_newText)
 		mText = _newText;
 	else
-		_newText = (unsigned short*)mText.us_str();
+		_newText = (unsigned short*)((usString)mText).us_str();
 
 	char tmptxt[512] = { 0 };
 	strcpywUtoC(tmptxt, _newText);
@@ -207,7 +207,7 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 		}
 		else
 		{
-			mTexturePointer->CreateFromText(mText.us_str(), (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255, 255, Pict::TinyImage::RGBA_32_8888);
+			mTexturePointer->CreateFromText(((usString)mText).us_str(), (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255, 255, Pict::TinyImage::RGBA_32_8888);
 		}
 	}
 }
@@ -274,7 +274,7 @@ DEFINE_METHOD(UITextArea, UpdateKeyBoard)
 	std::vector<KeyEvent>::iterator ITStart = eventList->begin();
 	std::vector<KeyEvent>::iterator ITEND = eventList->end();
 
-	std::string newString = mText.ToString();
+	std::string newString = ((usString)mText).ToString();
 
 	bool terminated = false;
 	while (ITStart != ITEND && !terminated)
@@ -307,7 +307,7 @@ DEFINE_METHOD(UITextArea, UpdateKeyBoard)
 		}
 	}
 
-	if (mText.ToString() != newString)
+	if (((usString)mText).ToString() != newString)
 	{
 		ChangeText(newString);
 		mText = newString;

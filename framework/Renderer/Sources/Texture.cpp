@@ -69,7 +69,7 @@ void	Texture::InitModifiable()
 			if (!mIsText && !Load()) // text can be load
 			{
 #ifdef _DEBUG		
-				printf("%s not loaded !!!\n", mFileName.c_str());
+				printf("%s not loaded !!!\n", ((std::string)mFileName).c_str());
 #endif
 				UninitModifiable();
 			}

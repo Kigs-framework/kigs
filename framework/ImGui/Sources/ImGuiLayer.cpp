@@ -372,7 +372,7 @@ namespace Kigs
 				if (mFontName.const_ref().size())
 				{
 					u64 len;
-					crb = ModuleFileManager::Get()->LoadFile(mFontName.c_str(), len);
+					crb = ModuleFileManager::Get()->LoadFile(((std::string)mFontName).c_str(), len);
 					if (crb)
 					{
 						font = io.Fonts->AddFontFromMemoryTTF(crb->buffer(), crb->size(), mFontSize, &config, io.Fonts->GetGlyphRangesDefault());
@@ -389,7 +389,7 @@ namespace Kigs
 				{
 					SmartPointer<CoreRawBuffer> crb_bold;
 					u64 len;
-					crb_bold = ModuleFileManager::Get()->LoadFile(mBoldFontName.c_str(), len);
+					crb_bold = ModuleFileManager::Get()->LoadFile(((std::string)mBoldFontName).c_str(), len);
 					if (crb_bold)
 					{
 						config.MergeMode = false;

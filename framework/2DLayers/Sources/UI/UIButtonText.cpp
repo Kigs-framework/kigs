@@ -53,11 +53,11 @@ void UIButtonText::NotifyUpdate(const unsigned int labelid)
 	UIButton::NotifyUpdate(labelid);
 
 	if (labelid == KigsID("UpText")._id )
-		ChangeTextTexture(mUpText.c_str(), 0);
+		ChangeTextTexture(mUpText, 0);
 	if (labelid == KigsID("DownText")._id  )
-		ChangeTextTexture(mDownText.c_str(), 2);
+		ChangeTextTexture(mDownText, 2);
 	if (labelid == KigsID("OverText")._id )
-		ChangeTextTexture(mOverText.c_str(), 1);
+		ChangeTextTexture(mOverText, 1);
 
 	if (labelid == KigsID("Font")._id ||
 		labelid == KigsID("FontSize")._id )
@@ -183,7 +183,7 @@ void	UIButtonText::ChangeTextTexture(const std::string & a_text, unsigned int _t
 				localized = CutText(localized, modified);
 
 			if (localized)
-				L_Texture->CreateFromText(localized, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), mFont.c_str(), mTextAlignment, 255.0f, 255.0f, 255.0f);
+				L_Texture->CreateFromText(localized, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), ((std::string)mFont).c_str(), mTextAlignment, 255.0f, 255.0f, 255.0f);
 			if (modified)
 				free(localized);
 		}
@@ -293,19 +293,19 @@ DEFINE_METHOD(UIButtonText, ReloadTexture)
 	{
 		mTexturePointer->setUserFlag(Draw::Texture::isDirtyContext);
 		mTexturePointer->ReInit();
-		ChangeTextTexture(mUpText.c_str(), 0);
+		ChangeTextTexture(mUpText, 0);
 	}
 	if (mOverTexturePointer)
 	{
 		mOverTexturePointer->setUserFlag(Draw::Texture::isDirtyContext);
 		mOverTexturePointer->ReInit();
-		ChangeTextTexture(mOverText.c_str(), 1);
+		ChangeTextTexture(mOverText, 1);
 	}
 	if (mDownTexturePointer)
 	{
 		mDownTexturePointer->setUserFlag(Draw::Texture::isDirtyContext);
 		mDownTexturePointer->ReInit();
-		ChangeTextTexture(mDownText.c_str(), 2);
+		ChangeTextTexture(mDownText, 2);
 	}
 
 	return false;

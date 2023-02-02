@@ -19,6 +19,8 @@ IMPLEMENT_CONSTRUCTOR(UIItem)
 , mAlphaMask(nullptr)
 , mSwallowInputs(*this, "SwallowInputs", false)
 {
+	setOwnerNotification("IsHidden", true);
+	setOwnerNotification("SwallowInputs", true);
 }
 
 void	UIItem::InitModifiable()

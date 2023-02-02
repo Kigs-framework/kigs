@@ -38,7 +38,7 @@ namespace Kigs
 			virtual ~UITextInput();
 			SIGNALS(TextChanged);
 
-			std::string			GetReleaseAction() const { return mReleaseAction.c_str(); }
+			std::string			GetReleaseAction() const { return (std::string)mReleaseAction; }
 
 			bool			HasFocus() override { return GetNodeFlag(UIItem_HasFocus); }
 			void			LoseFocus() override;

@@ -40,7 +40,7 @@ int GifInputFunc(GifFileType* head, GifByteType* dest, int readsize)
 	memoryGifRead& kigsGIFStruct = *(memoryGifRead*)head->UserData;
 	if ((readsize + kigsGIFStruct.mCurrentReadPos) > kigsGIFStruct.mTotalSize)
 	{
-		readsize = kigsGIFStruct.mTotalSize - kigsGIFStruct.mCurrentReadPos;
+		readsize = (int)(kigsGIFStruct.mTotalSize - kigsGIFStruct.mCurrentReadPos);
 	}
 
 	memcpy(dest, kigsGIFStruct.mBuffer + kigsGIFStruct.mCurrentReadPos, readsize);

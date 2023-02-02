@@ -170,8 +170,8 @@ namespace Kigs
 			// +---------
 			// | Acces Operators
 			// +---------
-			inline const floatType& operator[](Int i) const;
-			inline floatType& operator[](Int i);
+			inline const floatType& operator[](size_t i) const;
+			inline floatType& operator[](size_t i);
 
 			// +---------
 			// | Coordinates

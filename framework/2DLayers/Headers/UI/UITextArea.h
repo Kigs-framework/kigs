@@ -38,7 +38,7 @@ namespace Kigs
 			UITextArea(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 			virtual		~UITextArea();
 
-			usString		GetText() const { return mText.us_str(); }
+			usString		GetText() const { return ((usString)mText); }
 			std::string	GetFontName() const { return mFont; }
 			std::string	GetReleaseAction() const { return mReleaseAction; }
 			int				GetFontSize() const { return mFontSize; }

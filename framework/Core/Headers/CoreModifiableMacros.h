@@ -202,9 +202,9 @@ protected:\
 FOR_EACH(CREATE_LOCAL_ATTRIBUTE, __VA_ARGS__)\
 public:\
 template<>\
-static vector<std::pair<KigsID,CoreModifiableAttribute*>>* addAllMappedAttributes<true>(CurrentClassType* localthis,vector<std::pair<KigsID,CoreModifiableAttribute*>>* parent)\
+static std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* addAllMappedAttributes<true>(CurrentClassType* localthis,std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* parent)\
 {\
-	if(!parent) {parent=new vector<std::pair<KigsID,CoreModifiableAttribute*>>();} \
+	if(!parent) {parent=new std::vector<std::pair<KigsID,CoreModifiableAttribute*>>();} \
 	FOR_EACH(ADD_MAPPED_ATTRIBUTE, __VA_ARGS__)\
 	return parent; \
 }

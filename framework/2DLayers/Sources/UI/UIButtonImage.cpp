@@ -105,7 +105,7 @@ void UIButtonImage::ChangeTexture(std::string _texturename, std::string _overtex
 		//Make new Mask
 		mAlphaMask = KigsCore::GetInstanceOf(getName(), "AlphaMask");
 		mAlphaMask->setValue("Threshold",0.1);
-		mAlphaMask->setValue("TextureName",mUpTexture.c_str());
+		mAlphaMask->setValue("TextureName",mUpTexture);
 		this->addItem(mAlphaMask);
 		mAlphaMask->Init();
 	}

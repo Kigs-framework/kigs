@@ -1,5 +1,7 @@
 #pragma once
+#include "maNumeric.h"
 
+#ifdef MABOOL
 #include "CoreModifiableAttribute.h"
 
 namespace Kigs
@@ -15,31 +17,31 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData for bool with different level of notification
 		*/
 		// ****************************************
-	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
-	class maBoolHeritage : public CoreModifiableAttributeData<bool, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
+		template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+		class maBoolHeritage : public CoreModifiableAttributeData<bool, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE(maBoolHeritage, maBoolHeritage, bool, CoreModifiable::ATTRIBUTE_TYPE::BOOL);
 
 		public:
 
 			// getValue overloads
-#define IMPLEMENT_GET_VALUE_BOOL(type)\
-virtual bool getValue(type value, const CoreModifiable* owner) const override \
-{\
-	bool tmpValue = mValue;\
-	value = (type)tmpValue;\
-	return true;\
-}
-
-			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, IMPLEMENT_GET_VALUE_BOOL);
-
-			virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
-			{
-				bool tmpValue = mValue;
-				value = tmpValue ? "true" : "false";
-				return true;
+			/*#define IMPLEMENT_GET_VALUE_BOOL(type)\
+			virtual bool getValue(type value, const CoreModifiable* owner) const override \
+			{\
+				bool tmpValue = mValue;\
+				value = (type)tmpValue;\
+				return true;\
 			}
-			///
+
+						EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, IMPLEMENT_GET_VALUE_BOOL);
+
+						virtual bool getValue(std::string& value, const CoreModifiable* owner) const override
+						{
+							bool tmpValue = mValue;
+							value = tmpValue ? "true" : "false";
+							return true;
+						}
+						///
 
 			// setValue overloads
 #define IMPLEMENT_SET_VALUE_BOOL(type)\
@@ -65,7 +67,7 @@ virtual bool getValue(type value, const CoreModifiable* owner) const override \
 			}
 		virtual bool setValue(const char* value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); if (value) { std::string localstr(value); return setValue(localstr, owner); } return  setValue(false, owner); }
 			///
-
+		*/
 		};
 
 		using maBool = maBoolHeritage<false,false,false,false>;
@@ -77,3 +79,4 @@ virtual bool getValue(type value, const CoreModifiable* owner) const override \
 #undef IMPLEMENT_GET_VALUE_BOOL
 	}
 }
+#endif

@@ -165,7 +165,21 @@ namespace Kigs
 			template<typename T, typename strT> bool CoreConvertString2Array_impl(const strT& stringValue, T* arrayValue, size_t arrayNbElements);
 			template<typename T, typename strT> bool CoreConvertArray2String_impl(strT& stringValue, T* arrayValue, size_t arrayNbElements);
 
-			template<typename fromT, typename toT, typename std::enable_if<std::is_arithmetic<fromT>::value&& std::is_arithmetic<toT>::value && !std::is_same<fromT, toT>::value>::type* = nullptr>
+			template<typename fromT, typename toT, typename std::enable_if<std::is_same<fromT,bool>::value&& std::is_arithmetic<toT>::value && !std::is_same<fromT, toT>::value>::type* = nullptr>
+			inline bool CoreConvertValue_impl(const fromT& fromval, toT& toval, int)
+			{
+				toval = fromval ? ::std::numeric_limits<toT>::max() : 0;
+				return true;
+			}
+
+			template<typename fromT, typename toT, typename std::enable_if<std::is_arithmetic<fromT>::value&& std::is_same<toT,bool>::value && !std::is_same<fromT, toT>::value>::type* = nullptr>
+			inline bool CoreConvertValue_impl(const fromT& fromval, toT& toval, int)
+			{
+				toval = (fromval!=((fromT)0));
+				return true;
+			}
+
+			template<typename fromT, typename toT, typename std::enable_if<!std::is_same<toT, bool>::value && !std::is_same<fromT, bool>::value&& std::is_arithmetic<fromT>::value&& std::is_arithmetic<toT>::value && !std::is_same<fromT, toT>::value>::type* = nullptr>
 			inline bool CoreConvertValue_impl(const fromT& fromval, toT& toval, int)
 			{
 				toval = (toT)fromval;

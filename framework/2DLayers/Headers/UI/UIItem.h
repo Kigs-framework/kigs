@@ -134,14 +134,14 @@ namespace Kigs
 
 
 
-			maBoolHeritage<1>									mIsHidden;
+			maBool												mIsHidden;
 			maBool												mIsTouchable;
 			maBool												mDisableBlend;
 			maBool												mIsEnabled;
 			maVect3DF											mColor;  // USE [0,1] RANGE
 			maFloat												mOpacity;
 			SP<AlphaMask>										mAlphaMask;
-			maBoolHeritage<1>									mSwallowInputs;
+			maBool												mSwallowInputs;
 
 			WRAP_METHODS(ContainsPoint, ManageInputSwallowEvent);
 		};

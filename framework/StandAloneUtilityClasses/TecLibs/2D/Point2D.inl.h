@@ -189,13 +189,13 @@ namespace Kigs
 		// | Acces Operators
 		// +---------
 		template<typename floatType>
-		const floatType& Point2DBase<floatType>::operator[](Int i) const
+		const floatType& Point2DBase<floatType>::operator[](size_t i) const
 		{
 			assert(i >= 0 && i < 2);
 			return *((&x) + i);
 		}
 		template<typename floatType>
-		floatType& Point2DBase<floatType>::operator[](Int i)
+		floatType& Point2DBase<floatType>::operator[](size_t i)
 		{
 			assert(i >= 0 && i < 2);
 			return *((&x) + i);

@@ -478,13 +478,13 @@ namespace Kigs
 		// +---------
 		// | Acces Operators
 		// +---------
-		inline const Float& Quaternion::operator[](Int i) const
+		inline const Float& Quaternion::operator[](size_t i) const
 		{
 			assert(i >= 0 && i < 3);
 			return *((&(V.x)) + i);
 		}
 
-		inline Float& Quaternion::operator[](Int i)
+		inline Float& Quaternion::operator[](size_t i)
 		{
 			assert(i >= 0 && i < 3);
 			return *((&(V.x)) + i);

@@ -428,13 +428,13 @@ namespace Kigs
         // +---------
         // | Acces Operators
         // +---------
-        const double& v3d::operator[](Int i) const
+        const double& v3d::operator[](size_t i) const
         {
             assert(i >= 0 && i < 3);
             return *((&x) + i);
         }
 
-        double& v3d::operator[](Int i)
+        double& v3d::operator[](size_t i)
         {
             assert(i >= 0 && i < 3);
             return *((&x) + i);

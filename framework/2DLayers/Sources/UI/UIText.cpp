@@ -208,7 +208,7 @@ DEFINE_METHOD(UIText, ReloadTexture)
 	{
 		mTexturePointer->setUserFlag(Texture::isDirtyContext);
 		mTexturePointer->ReInit();
-		ChangeText(mText.us_str());
+		ChangeText(mText);
 	}
 
 	return false;

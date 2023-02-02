@@ -462,13 +462,13 @@ namespace Kigs
         // +---------
         // | Acces Operators
         // +---------
-        const Float& Point3D::operator[](Int i) const
+        const Float& Point3D::operator[](size_t i) const
         {
             assert(i >= 0 && i < 3);
             return *((&x) + i);
         }
 
-        Float& Point3D::operator[](Int i)
+        Float& Point3D::operator[](size_t i)
         {
             assert(i >= 0 && i < 3);
             return *((&x) + i);

@@ -83,7 +83,7 @@ namespace Kigs
 			DECLARE_SET(const v3f&);
 			DECLARE_SET(const v4f&);
 
-#define DECLARE_GET(type)	bool getValue(type val,CoreModifiable* owner) const override { return CoreConvertValue(value(owner),val); }
+#define DECLARE_GET(type)	bool getValue(type val,const CoreModifiable* owner) const override { return CoreConvertValue(value(owner),val); }
 
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET);
 			DECLARE_GET(std::string&);
@@ -112,7 +112,7 @@ namespace Kigs
 
 			EXPAND_MACRO_FOR_BASE_TYPES(const, *, DECLARE_SETARRAYVALUE);
 
-#define DECLARE_GETARRAYVALUE(type) bool getArrayValue(type * const  val  ,CoreModifiable* owner, size_t  nbElements ) const override {\
+#define DECLARE_GETARRAYVALUE(type) bool getArrayValue(type * const  val  ,const CoreModifiable* owner, size_t  nbElements ) const override {\
 		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
 			size_t currentColumnIndex=0, currentLineIndex=0;\
 			for (size_t i = 0; i < nbElements; i++){\
@@ -126,7 +126,7 @@ namespace Kigs
 					currentColumnIndex++; currentLineIndex=0;\
 					if (impl::arrayColumnCount<std::remove_cv_t<T>>() <= currentColumnIndex){break;}\
 				}}\
-			DO_NOTIFICATION(notifOwnerT); return true;}\
+			 return true;}\
 		return false; }
 
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_GETARRAYVALUE);
@@ -146,7 +146,7 @@ namespace Kigs
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAYELEMENTVALUE);
 			DECLARE_SETARRAYELEMENTVALUE(const std::string&);
 
-#define DECLARE_GETARRAYELEMENTVALUE(type)	bool getArrayElementValue(type  val ,CoreModifiable* owner, size_t  line , size_t  column ) const override{\
+#define DECLARE_GETARRAYELEMENTVALUE(type)	bool getArrayElementValue(type  val , const CoreModifiable* owner, size_t  line , size_t  column ) const override{\
 		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
 			if( (line >= impl::arrayLineCount<std::remove_cv_t<T>>()) || (column >= impl::arrayColumnCount<std::remove_cv_t<T>>())) {return false;}\
 			if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
@@ -172,14 +172,14 @@ namespace Kigs
 
 
 
-			T& value(void* instance)
+			T& value(const void* instance)
 			{
 				uintptr_t pos((uintptr_t)instance);
 				pos += mPlaceHolderForSonClasses;
 				return *((T*)pos);
 			}
 
-			const T& value(void* instance) const
+			const T& value(const void* instance) const
 			{
 				uintptr_t pos((uintptr_t)instance);
 				pos += mPlaceHolderForSonClasses;

@@ -13,7 +13,7 @@ void AlphaMask::InitModifiable()
 	ParentClassType::InitModifiable();
 	if(IsInit())
 	{
-		auto img = Pict::TinyImage::CreateImage(mTextureName.c_str());
+		auto img = Pict::TinyImage::CreateImage(((std::string)mTextureName).c_str());
 		auto pixel_size = img->GetPixelValueSize(img->GetFormat());
 		
 		mSize.x = img->GetUsedWidth();

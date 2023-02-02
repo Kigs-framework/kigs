@@ -127,26 +127,22 @@ namespace Kigs
 		*/
 		// ****************************************
 
-#ifndef COMMA
-#define COMMA ,
-#endif
 
+		// ****************************************
+		// * maArrayHeritage class
+		// * --------------------------------------
+		/**
+		* \class	maArrayHeritage
+		* \ingroup CoreModifiableAttibute
+		* \brief	CoreModifiableAttributeData for array with different level of notification
+		*/
+		// ****************************************
 
-// ****************************************
-// * maArrayHeritage class
-// * --------------------------------------
-/**
-* \class	maArrayHeritage
-* \ingroup CoreModifiableAttibute
-* \brief	CoreModifiableAttributeData for array with different level of notification
-*/
-// ****************************************
-
-	template<bool notificationLevel, typename T, CoreModifiable::ATTRIBUTE_TYPE attributeElementType, size_t nbLines, size_t nbColumns, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
-	class maArrayHeritage : public CoreModifiableAttributeData<std::array<T, nbLines* nbColumns>, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
+		template<bool notificationLevel, typename T, CoreModifiable::ATTRIBUTE_TYPE attributeElementType, size_t nbLines, size_t nbColumns, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+		class maArrayHeritage : public CoreModifiableAttributeData<std::array<T, nbLines* nbColumns>, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
-		template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isOrphanTe>
-		using TemplateForPlacementNew = maArrayHeritage<notiflevel, T, attributeElementType, nbLines, nbColumns, isInitTe, isReadOnlyTe, isOrphanTe>;
+			template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isOrphanTe>
+			using TemplateForPlacementNew = maArrayHeritage<notiflevel, T, attributeElementType, nbLines, nbColumns, isInitTe, isReadOnlyTe, isOrphanTe>;
 
 		public:
 			using ArrayType = std::array<T, nbLines* nbColumns>;
@@ -156,39 +152,39 @@ namespace Kigs
 
 		public:
 
-		maArrayHeritage(CoreModifiable& owner, KigsID  ID, T* vals)
+			maArrayHeritage(CoreModifiable& owner, KigsID  ID, T* vals)
 			: CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
 			{
-			// Should not use serarrayvalue here
-			setArrayValue(vals, &owner, nbLines * nbColumns);
+				// Should not use serarrayvalue here
+				setArrayValue(vals, &owner, nbLines * nbColumns);
 			}
 
-		maArrayHeritage(KigsID  ID, T* vals)
+			maArrayHeritage(KigsID  ID, T* vals)
 			: CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(ID, {})
-		{
-			// Should not use serarrayvalue here
-			setArrayValue(vals, nullptr, nbLines * nbColumns);
-		}
+			{
+				// Should not use serarrayvalue here
+				setArrayValue(vals, nullptr, nbLines * nbColumns);
+			}
 
-		maArrayHeritage(CoreModifiable& owner, KigsID  ID, T val0, T val1)
+			maArrayHeritage(CoreModifiable& owner, KigsID  ID, T val0, T val1)
 			: CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
 			{
-			assert(nbColumns >= 2);
+				assert(nbColumns >= 2);
 				this->at(0, 0) = val0;
 				this->at(0, 1) = val1;
 			}
-		maArrayHeritage(CoreModifiable& owner, KigsID  ID, T val0, T val1, T val2)
+			maArrayHeritage(CoreModifiable& owner, KigsID  ID, T val0, T val1, T val2)
 			: CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
 			{
-			assert(nbColumns >= 3);
+				assert(nbColumns >= 3);
 				this->at(0, 0) = val0;
 				this->at(0, 1) = val1;
 				this->at(0, 2) = val2;
 			}
-		maArrayHeritage(CoreModifiable& owner, KigsID  ID, T val0, T val1, T val2, T val3)
+			maArrayHeritage(CoreModifiable& owner, KigsID  ID, T val0, T val1, T val2, T val3)
 			: CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
 			{
-			assert(nbColumns >= 4);
+				assert(nbColumns >= 4);
 				this->at(0, 0) = val0;
 				this->at(0, 1) = val1;
 				this->at(0, 2) = val2;
@@ -198,11 +194,11 @@ namespace Kigs
 
 			virtual bool CopyAttribute(const CoreModifiableAttribute& attribute) override
 			{
-			if (CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isOrphanT>::CopyAttribute(attribute)) return true;
+				if (CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isOrphanT>::CopyAttribute(attribute)) return true;
 				if ((attribute.getNbArrayElements() == getNbArrayElements()) && (attribute.getArrayElementType() == getArrayElementType()))
 				{
-				// TODO : don't use getArrayValue here
-				//attribute.getArrayValue(getArrayBuffer(), getNbArrayElements());
+					// TODO : don't use getArrayValue here
+					//attribute.getArrayValue(getArrayBuffer(), getNbArrayElements());
 					return true;
 				}
 				return false;
@@ -210,10 +206,10 @@ namespace Kigs
 
 
 
-		T& operator[](size_t index) { return this->getElement(0, index); }
-		const T& operator[](size_t index) const { return this->getConstElement(0, index); }
+			T& operator[](size_t index) { return this->getElement(0, index); }
+			const T& operator[](size_t index) const { return this->getConstElement(0, index); }
 
-		size_t getNbElements() const { return this->getNbArrayElements(); }
+			size_t getNbElements() const { return this->getNbArrayElements(); }
 
 			T* getVector() { return mValue.data(); }
 			const T* getConstVector() const { return mValue.data(); }
@@ -222,9 +218,9 @@ namespace Kigs
 			const T& at(size_t line, size_t column) const { return mValue[line * nbColumns + column]; }
 			T& at(size_t line, size_t column) { return mValue[line * nbColumns + column]; }
 
-		virtual size_t getNbArrayElements() const override { return nbLines * nbColumns; }
-		virtual size_t getNbArrayColumns() const override { return nbColumns; }
-		virtual size_t getNbArrayLines() const override { return nbLines; }
+			virtual size_t getNbArrayElements() const override { return nbLines * nbColumns; }
+			virtual size_t getNbArrayColumns() const override { return nbColumns; }
+			virtual size_t getNbArrayLines() const override { return nbLines; }
 
 			//@Refactor identical
 			T* getArrayBuffer() { return  mValue.data(); }
@@ -234,14 +230,8 @@ namespace Kigs
 			const T* getConstArrayBuffer() const { return  mValue.data(); }
 			const T* getConstArray() const { return mValue.data(); }
 
-		T& getElement(size_t line, size_t column) { return at(line, column); }
-		const T& getConstElement(size_t line, size_t column) const { return at(line, column); }
-
-			//@Issue this is wrong, is return the line not column like the method name implies
-			/*
-			const T* getConstColumn(u32 line) const { return mValue[line]; }
-			T* getColumn(u32 line) { return mValue[line]; }
-			*/
+			T& getElement(size_t line, size_t column) { return at(line, column); }
+			const T& getConstElement(size_t line, size_t column) const { return at(line, column); }
 
 			virtual CoreModifiable::ATTRIBUTE_TYPE getArrayElementType() const override { return attributeElementType; }
 
@@ -275,7 +265,7 @@ namespace Kigs
 			virtual bool getValue(Point3D& value, const CoreModifiable* owner) const override { if (nbColumns < 3) return false; Point3D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2));  value = tmpValue; return true; }
 			virtual bool getValue(Vector4D& value, const CoreModifiable* owner) const override { if (nbColumns < 4) return false; Vector4D tmpValue((float)at(0, 0), (float)at(0, 1), (float)at(0, 2), (float)at(0, 3));  value = tmpValue; return true; }
 
-		using CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isOrphanT>::setValue;
+			using CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isOrphanT>::setValue;
 
 			bool setValue(const Point2D& pt, CoreModifiable* owner) override
 			{
@@ -346,11 +336,7 @@ namespace Kigs
 				at(0, 2) = (T)pt.z;
 				at(0, 3) = (T)pt.w;
 				return *this;
-			}
-
-		/*auto& operator=(Point2DI pt) { setValue(pt); return *this; }
-		auto& operator=(Point3DI pt) { setValue(pt); return *this; }*/
-			
+			}			
 
 
 #define DECLARE_SET_VALUE_BROADCAST(type) virtual bool setValue(type value, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT) this->broadcastValue((T)value); DO_NOTIFICATION(notificationLevel); return true; }
@@ -362,7 +348,7 @@ namespace Kigs
 			virtual bool setValue(const char* value, CoreModifiable* owner) override { std::string localstr(value); return setValue(localstr,owner); }
 			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
-			RETURN_ON_READONLY(isReadOnlyT);
+				RETURN_ON_READONLY(isReadOnlyT);
 				if (CoreConvertString2Array<T>(value, getArrayBuffer(), getNbArrayElements()))
 				{
 					DO_NOTIFICATION(notificationLevel);
@@ -507,9 +493,6 @@ namespace Kigs
 				if (line >= nbLines || column >= nbColumns) return false;
 				return CoreConvertValue2String<T>(value, at(line, column));
 			}
-
-
-
 
 		};
 

@@ -10,6 +10,7 @@
 #include "CoreAttributeTypeTemplateConverter.h"
 #include "TecLibs/Tec3D.h"
 #include <any>
+#include <type_traits>
 
 namespace Kigs
 {
@@ -116,7 +117,7 @@ auto& operator=(const CurrentAttributeType& value)\
 
 			}
 
-		friend class CoreModifiable;
+			friend class CoreModifiable;
 
 			template<bool notifOwnerTe, bool isInitParamTe, bool isReadOnlyTe, bool isOrphanTe>
 			static u8 getMask()
@@ -125,18 +126,18 @@ auto& operator=(const CurrentAttributeType& value)\
 				return mask;
 			}
 
-		//virtual void setDynamic(bool val, CoreModifiable* owner, const KigsID& ID) = 0;
-		virtual void setNotifyOwner(bool val) = 0;
+			//virtual void setDynamic(bool val, CoreModifiable* owner, const KigsID& ID) = 0;
+			virtual void setNotifyOwner(bool val) = 0;
 
-		u32		mID = 0; // only the u32 part of the KigsID
-		u32		mPlaceHolderForSonClasses = 0;	// used to set flags/offsets... in inherited classes
+			u32		mID = 0; // only the u32 part of the KigsID
+			u32		mPlaceHolderForSonClasses = 0;	// used to set flags/offsets... in inherited classes
 
-		public:
+			public:
 
-		u32		id() const
-		{
-			return mID;
-		}
+			u32		id() const
+			{
+				return mID;
+			}
 			virtual std::vector<std::string> getEnumElements() const { return { }; }
 			virtual ~CoreModifiableAttribute();
 
@@ -155,13 +156,9 @@ auto& operator=(const CurrentAttributeType& value)\
 			virtual CoreModifiable::ATTRIBUTE_TYPE getType() const = 0;
 			virtual CoreModifiable::ATTRIBUTE_TYPE getArrayElementType() const { return CoreModifiable::ATTRIBUTE_TYPE::UNKNOWN; }
 
-		virtual size_t getNbArrayElements() const { return 0; }
-		virtual size_t getNbArrayColumns() const { return 0; }
-		virtual size_t getNbArrayLines() const { return 0; }
-
-
-			//virtual void changeNotificationLevel(AttributeNotificationLevel level);
-
+			virtual size_t getNbArrayElements() const { return 0; }
+			virtual size_t getNbArrayColumns() const { return 0; }
+			virtual size_t getNbArrayLines() const { return 0; }
 
 #define DECLARE_SET(type)	virtual bool setValue(type value,CoreModifiable* owner){ return false; }
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET);
@@ -211,14 +208,14 @@ auto& operator=(const CurrentAttributeType& value)\
 #undef DECLARE_GETARRAYELEMENTVALUE
 
 			//! Read only attributes cannot be modified with setValue
-		virtual bool isReadOnly() const = 0;
+			virtual bool isReadOnly() const = 0;
 			//! \brief  return true if attribute is an init attribute (necessary for the CoreModifiable Init to be done)
-		virtual bool isInitParam() const = 0;
-		virtual bool isOrphan() const = 0;
-		virtual void setReadOnly(bool val) = 0;
-		virtual void setInitParam(bool val) = 0;
+			virtual bool isInitParam() const = 0;
+			virtual bool isOrphan() const = 0;
+			virtual void setReadOnly(bool val) = 0;
+			virtual void setInitParam(bool val) = 0;
 
-		virtual void* getRawValue(CoreModifiable* owner) = 0;
+			virtual void* getRawValue(CoreModifiable* owner) = 0;
 
 			// return element number for array or one for other attributes
 			virtual int		size() const { return 1; };
@@ -267,30 +264,6 @@ auto& operator=(const CurrentAttributeType& value)\
 			}
 
 			friend class CoreModifiable;
-
-			// is dynamic can be changed by CoreModifiable
-/*			virtual void setDynamic(bool val, CoreModifiable* owner, const KigsID& ID) override
-			{
-				if (val != isDynamicT)
-				{
-					if (val)
-					{
-						if (owner)
-							owner->setDynamicAttributeFlag(true, ID);
-
-						changeInheritance(getMask<notifOwnerT, isInitParamT, isReadOnlyT, true, isOrphanT>());
-					}
-					else
-					{
-
-						if (owner)
-							owner->setDynamicAttributeFlag(false, ID);
-
-
-						changeInheritance(getMask<notifOwnerT, isInitParamT, isReadOnlyT, false, isOrphanT>());
-					}
-				}
-			}*/
 
 			virtual void setNotifyOwner(bool val) final
 			{
@@ -350,6 +323,8 @@ auto& operator=(const CurrentAttributeType& value)\
 			}
 		};
 
+#define DO_NOTIFICATION(level)				if constexpr(level){owner->NotifyUpdate(CoreModifiableAttribute::mID);}
+#define RETURN_ON_READONLY(readonly)		if constexpr(readonly) {return false;}
 
 		// ****************************************
 		// * CoreModifiableAttributeData class
@@ -392,7 +367,6 @@ auto& operator=(const CurrentAttributeType& value)\
 
 			friend class CoreModifiable;
 
-
 			size_t MemorySize() const override { return sizeof(T); };
 
 			CoreModifiableAttributeData<T>& operator=(const CoreModifiableAttributeData<T>& other)
@@ -401,7 +375,234 @@ auto& operator=(const CurrentAttributeType& value)\
 				return *this;
 			}
 
+			size_t getNbArrayElements() const override {
+				if constexpr (impl::is_array<std::remove_cv_t<T>>::value)
+				{
+					return impl::arraySize<T>();
+				}
+				return 0;
+			}
+			size_t getNbArrayColumns() const override {
+				if constexpr (impl::is_array<std::remove_cv_t<T>>::value)
+				{
+					return impl::arrayColumnCount<T>();
+				}
+				return 0;
+			}
+			size_t getNbArrayLines() const override {
+				if constexpr (impl::is_array<std::remove_cv_t<T>>::value)
+				{
+					return impl::arrayLineCount<T>();
+				}
+				return 0;
+			}
+
+#define DECLARE_SET(type)	bool setValue(type val,CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); if( CoreConvertValue(val,value(owner)) ) { DO_NOTIFICATION(notifOwnerT); return true;} return false;  }
+
+			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET);
+			DECLARE_SET(const char*);
+			DECLARE_SET(const std::string&);
+			DECLARE_SET(const unsigned short*);
+			DECLARE_SET(const usString&);
+			DECLARE_SET(const UTF8Char*);
+			DECLARE_SET(const v2f&);
+			DECLARE_SET(const v3f&);
+			DECLARE_SET(const v4f&);
+
+#define DECLARE_GET(type)	bool getValue(type val,const CoreModifiable* owner) const override { return CoreConvertValue(value(owner),val); }
+
+			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET);
+			DECLARE_GET(std::string&);
+			DECLARE_GET(usString&);
+			DECLARE_GET(v2f&);
+			DECLARE_GET(v3f&);
+			DECLARE_GET(v4f&);
+
+
+#define DECLARE_SETARRAYVALUE(type)	bool setArrayValue(type val,CoreModifiable* owner, size_t nbElements ) override {RETURN_ON_READONLY(isReadOnlyT);\
+		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
+			size_t currentColumnIndex=0, currentLineIndex=0;\
+			for (size_t i = 0; i < nbElements; i++){\
+				if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
+					if (!CoreConvertValue(val[i], value(owner)[currentColumnIndex][currentLineIndex])) { return false; }\
+				}else {\
+					if (!CoreConvertValue(val[i], value(owner)[currentColumnIndex])) { return false; }\
+				}\
+				currentLineIndex++;\
+				if (currentLineIndex >= impl::arrayLineCount<std::remove_cv_t<T>>()){\
+					currentColumnIndex++; currentLineIndex=0;\
+					if (impl::arrayColumnCount<std::remove_cv_t<T>>() <= currentColumnIndex){break;}\
+				}}\
+			DO_NOTIFICATION(notifOwnerT); return true;}\
+		return false; }
+
+			EXPAND_MACRO_FOR_BASE_TYPES(const, *, DECLARE_SETARRAYVALUE);
+
+#define DECLARE_GETARRAYVALUE(type) bool getArrayValue(type * const  val  ,const CoreModifiable* owner, size_t  nbElements ) const override {\
+		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
+			size_t currentColumnIndex=0, currentLineIndex=0;\
+			for (size_t i = 0; i < nbElements; i++){\
+				if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
+					if (!CoreConvertValue(value(owner)[currentColumnIndex][currentLineIndex],val[i])) { return false; }\
+				}else {\
+					if (!CoreConvertValue(value(owner)[currentColumnIndex],val[i])) { return false; }\
+				}\
+				currentLineIndex++;\
+				if (currentLineIndex >= impl::arrayLineCount<std::remove_cv_t<T>>()){\
+					currentColumnIndex++; currentLineIndex=0;\
+					if (impl::arrayColumnCount<std::remove_cv_t<T>>() <= currentColumnIndex){break;}\
+				}}\
+			 return true;}\
+		return false; }
+
+			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_GETARRAYVALUE);
+
+#define DECLARE_SETARRAYELEMENTVALUE(type)	bool setArrayElementValue(type val,CoreModifiable* owner, size_t  line , size_t  column ) override {RETURN_ON_READONLY(isReadOnlyT);\
+		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
+			if( (line >= impl::arrayLineCount<std::remove_cv_t<T>>()) || (column >= impl::arrayColumnCount<std::remove_cv_t<T>>())) {return false;}\
+			if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
+				if (!CoreConvertValue(val, value(owner)[column][line])) { return false; }\
+			}else{\
+				if (!CoreConvertValue(val, value(owner)[column])) { return false; }\
+			}\
+			DO_NOTIFICATION(notifOwnerT);\
+			return true;}\
+		return false; }
+
+			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAYELEMENTVALUE);
+			DECLARE_SETARRAYELEMENTVALUE(const std::string&);
+
+#define DECLARE_GETARRAYELEMENTVALUE(type)	bool getArrayElementValue(type  val , const CoreModifiable* owner, size_t  line , size_t  column ) const override{\
+		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
+			if( (line >= impl::arrayLineCount<std::remove_cv_t<T>>()) || (column >= impl::arrayColumnCount<std::remove_cv_t<T>>())) {return false;}\
+			if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
+				if (!CoreConvertValue(value(owner)[column][line],val)) {return false;}\
+			}else{\
+				if (!CoreConvertValue(value(owner)[column],val)) {return false;}\
+			}\
+			return true;}\
+		return false; }
+
+			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GETARRAYELEMENTVALUE);
+			DECLARE_GETARRAYELEMENTVALUE(std::string&);
+
+#undef DECLARE_SET
+#undef DECLARE_GET
+#undef DECLARE_SETARRAYVALUE
+#undef DECLARE_GETARRAYVALUE
+#undef DECLARE_SETARRAYELEMENTVALUE
+#undef DECLARE_GETARRAYELEMENTVALUE
+
+			template<typename U>
+			T operator+=(U value)
+			{
+				if constexpr(std::is_arithmetic<U>::value && std::is_arithmetic<T>::value)
+				{
+					mValue += (T)value;
+				}
+				else if constexpr ((std::is_same<U, std::string>::value || std::is_same<U, usString>::value || std::is_same<U, const char*>::value) && (std::is_same<T, std::string>::value || std::is_same<T, usString>::value))
+				{
+					mValue += (T)value;
+				}
+				return mValue;
+			}
+			template<typename U>
+			T operator-=(U value)
+			{
+				if constexpr (std::is_arithmetic<U>::value && std::is_arithmetic<T>::value)
+				{
+					mValue -= (T)value;
+				}
+				return mValue;
+			}
+			template<typename U>
+			T operator*=(U value)
+			{
+				if constexpr (std::is_arithmetic<U>::value && std::is_arithmetic<T>::value)
+				{
+					mValue *= (T)value;
+				}
+				return mValue;
+			}
+			template<typename U>
+			T operator/=(U value)
+			{
+				if constexpr (std::is_arithmetic<U>::value && std::is_arithmetic<T>::value)
+				{
+					mValue /= (T)value;
+				}
+				return mValue;
+			}
+			template<typename U>
+			T operator|=(U value)
+			{
+				if constexpr (std::is_integral<U>::value && std::is_integral<T>::value)
+				{
+					mValue |= (T)value;
+				}
+				return mValue;
+			}
+			template<typename U>
+			T operator^=(U value)
+			{
+				if constexpr (std::is_integral<U>::value && std::is_integral<T>::value)
+				{
+					mValue ^= (T)value;
+				}
+				return mValue;
+			}
+			template<typename U>
+			T operator&=(U value)
+			{
+				if constexpr (std::is_integral<U>::value && std::is_integral<T>::value)
+				{
+					mValue &= (T)value;
+				}
+				return mValue;
+			}
+
+			virtual operator T() const
+			{
+				return mValue; 
+			}; 
+				
+			auto& operator=(const T& value)
+			{
+				mValue = value; 
+				return *this; 
+			}
+
+			CoreModifiable::ATTRIBUTE_TYPE getType() const override { return TypeToEnum<T>::value; }
+			CoreModifiable::ATTRIBUTE_TYPE getArrayElementType() const override { return AraryTypeToEnum<T>::value; }
+
 		protected:
+			void doPlacementNew(u8 mask) override
+			{
+				switch (mask)
+				{
+				case 0: new (this) CoreModifiableAttributeData<T, false, false, false, false>(InheritanceSwitch{}); break;
+				case 1: new (this) CoreModifiableAttributeData<T, true, false, false, false>(InheritanceSwitch{}); break;
+				case 2: new (this) CoreModifiableAttributeData<T, false, true, false, false>(InheritanceSwitch{}); break;
+				case 3: new (this) CoreModifiableAttributeData<T, true, true, false, false>(InheritanceSwitch{}); break;
+				case 4: new (this) CoreModifiableAttributeData<T, false, false, true, false>(InheritanceSwitch{}); break;
+				case 5: new (this) CoreModifiableAttributeData<T, true, false, true, false>(InheritanceSwitch{}); break;
+				case 6: new (this) CoreModifiableAttributeData<T, false, true, true, false>(InheritanceSwitch{}); break;
+				case 7: new (this) CoreModifiableAttributeData<T, true, true, true, false>(InheritanceSwitch{}); break;
+				case 16: new (this) CoreModifiableAttributeData<T, false, false, false, true>(InheritanceSwitch{}); break;
+				case 20: new (this) CoreModifiableAttributeData<T, false, false, true, true>(InheritanceSwitch{}); break;
+				default: assert(false); break; 
+				}
+			}
+
+			T& value(const void* instance)
+			{
+				return mValue;
+			}
+
+			const T& value(const void* instance) const
+			{
+				return mValue;
+			}
 
 			explicit CoreModifiableAttributeData(CoreModifiable& owner, KigsID ID, DynamicSwitch tag) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT >(&owner, ID, tag)
 			{
@@ -456,11 +657,6 @@ auto& operator=(const CurrentAttributeType& value)\
 				mValue = ((const CoreModifiableAttributeData<T, notifOwnerT, isInitT, isReadOnlyT, isOrphanT>*)(&other))->mValue;
 			}
 		};
-
-#define DO_NOTIFICATION(level)				if constexpr(level){owner->NotifyUpdate(CoreModifiableAttribute::mID);}
-#define RETURN_ON_READONLY(readonly)		if constexpr(readonly) {return false;}
-
-
 
 		// ****************************************
 		// * maRawPtrHeritage class

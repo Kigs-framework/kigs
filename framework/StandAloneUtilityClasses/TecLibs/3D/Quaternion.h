@@ -114,8 +114,8 @@ namespace Kigs
 			inline friend Point3D operator*(const Quaternion& q, const Point3D& v);
 
 
-			inline const Float& operator[](Int i) const;
-			inline Float& operator[](Int i);
+			inline const Float& operator[](size_t i) const;
+			inline Float& operator[](size_t i);
 			// +---------
 			// | External operators
 			// +---------

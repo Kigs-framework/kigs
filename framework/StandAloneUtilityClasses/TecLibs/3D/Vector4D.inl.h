@@ -114,13 +114,13 @@ namespace Kigs
         // +---------
         // | Acces Operators
         // +---------
-        const Float& Vector4D::operator[](Int i) const
+        const Float& Vector4D::operator[](size_t i) const
         {
             assert(i >= 0 && i < 4);
             return *((&x) + i);
         }
 
-        Float& Vector4D::operator[](Int i)
+        Float& Vector4D::operator[](size_t i)
         {
             assert(i >= 0 && i < 4);
             return *((&x) + i);

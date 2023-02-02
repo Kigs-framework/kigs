@@ -7,13 +7,13 @@ namespace Kigs
 		// | Acces Operators
 		// +---------
 		template<typename coordType>
-		const coordType& Point2DIBase<coordType>::operator[](Int i) const
+		const coordType& Point2DIBase<coordType>::operator[](size_t i) const
 		{
 			assert(i >= 0 && i < 2);
 			return *((&x) + i);
 		}
 		template<typename coordType>
-		coordType& Point2DIBase<coordType>::operator[](Int i)
+		coordType& Point2DIBase<coordType>::operator[](size_t i)
 		{
 			assert(i >= 0 && i < 2);
 			return *((&x) + i);

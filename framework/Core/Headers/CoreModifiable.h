@@ -1345,7 +1345,7 @@ namespace Kigs
 
 
 		template<typename type>
-		struct TypeToEnum {};
+		struct TypeToEnum : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::UNKNOWN> {};
 
 		template<>
 		struct TypeToEnum<bool> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::BOOL> {};
@@ -1408,7 +1408,11 @@ namespace Kigs
 		struct TypeToEnum<Matrix3x4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
 		template<>
 		struct TypeToEnum<Matrix4x4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
-		
+		template<>
+		struct TypeToEnum<std::any> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ANY> {};
+		template<>
+		struct TypeToEnum<void*> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::RAWPTR> {};
+
 		
 		template<typename Type,size_t count>
 		struct TypeToEnum<std::array<Type,count>> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
@@ -1419,7 +1423,10 @@ namespace Kigs
 		
 		
 		template<typename type>
-		struct AraryTypeToEnum : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::BOOL> {};
+		struct AraryTypeToEnum : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::UNKNOWN> {};
+
+		template<typename T, std::size_t N>
+		struct AraryTypeToEnum<std::array<T,N>> : TypeToEnum<T> {};
 		
 		template<>
 		struct AraryTypeToEnum<v2f> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::FLOAT> {};

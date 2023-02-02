@@ -138,8 +138,8 @@ namespace Kigs
 			// +---------
 			// | Acces Operators
 			// +---------
-			inline const double& operator[](int i) const;
-			inline double& operator[](int i);
+			inline const double& operator[](size_t i) const;
+			inline double& operator[](size_t i);
 
 			// +---------
 			// | Coordinates

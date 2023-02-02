@@ -15,8 +15,13 @@ namespace Kigs
 	protected:
 		void InitModifiable() override;
 
+
+		int mSample1Value = 6;
+
 		// add an int attribute named "Sample1Value" with value 6
-		maInt	mTestValue = BASE_ATTRIBUTE(Sample1Value, 6);
+		//maInt	mTestValue = BASE_ATTRIBUTE(Sample1Value, 6);
+
+		WRAP_ATTRIBUTES(mSample1Value);
 
 		// add given params to mTestValue
 		DECLARE_METHOD(AddValue);

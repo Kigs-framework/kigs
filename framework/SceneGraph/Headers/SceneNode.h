@@ -50,16 +50,16 @@ namespace Kigs
 
 			bool IsInScene() const;
 
-			inline void SetIsRenderable(bool b) { if (b) mShow |= SceneNode_Render; else mShow &= ~SceneNode_Render; }
+			inline void SetIsRenderable(bool b) { if (b) mShow |= SceneNodeShow::SceneNode_Render; else mShow &= ~SceneNodeShow::SceneNode_Render; }
 			inline bool IsRenderable() {
-				return (u32)mShow & SceneNode_Render;
+				return (u32)mShow & SceneNodeShow::SceneNode_Render;
 			}
 
 
-			inline void SetIsCollidable(bool b) { if (b) mShow |= SceneNode_Collide; else mShow &= ~SceneNode_Collide; }
+			inline void SetIsCollidable(bool b) { if (b) mShow |= SceneNodeShow::SceneNode_Collide; else mShow &= ~SceneNodeShow::SceneNode_Collide; }
 			inline bool IsCollidable()
 			{
-				return (u32)mShow & SceneNode_Collide;
+				return ((u32)mShow) & SceneNodeShow::SceneNode_Collide;
 			}
 
 			bool IsVisibleInScene();

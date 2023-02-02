@@ -36,6 +36,9 @@ IMPLEMENT_CONSTRUCTOR(Node2D)
 	SetNodeFlag(Node2D_SizeChanged);
 	mLocalTransformMatrix.SetIdentity();
 	mGlobalTransformMatrix.SetIdentity();
+
+	setOwnerNotification("ClipSons", true);
+
 }
 
 bool Node2D::IsInClip(v2f pos) const
