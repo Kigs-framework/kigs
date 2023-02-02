@@ -18,26 +18,27 @@ namespace Kigs
 
 		// Tag type for inheritance switch constructor
 		struct InheritanceSwitch {};
-
+		// Tag type for dynamic switch constructor
+		struct DynamicSwitch {};
 
 #define STATIC_ASSERT_NOTIF_LEVEL_SIZES(classname) static_assert(sizeof(classname<false>) == sizeof(classname<true>), "Size mismatch between notification levels");
 
 
 #define DECLARE_ATTRIBUTE_USINGS(underlying_type)\
 protected:\
-	using CoreModifiableAttributeData<underlying_type,notificationLevel,isInitT,isReadOnlyT,isDynamicT,isOrphanT>::mValue;\
+	using CoreModifiableAttributeData<underlying_type,notificationLevel,isInitT,isReadOnlyT,isOrphanT>::mValue;\
 public:\
-	using CoreModifiableAttributeData<underlying_type,notificationLevel,isInitT,isReadOnlyT,isDynamicT,isOrphanT>::isReadOnly;
+	using CoreModifiableAttributeData<underlying_type,notificationLevel,isInitT,isReadOnlyT,isOrphanT>::isReadOnly;
 
 #define DECLARE_ATTRIBUTE_HERITAGE_IMPL(name, template_name, underlying_type, enum_type)\
 public:\
-using CoreModifiableAttributeData<underlying_type,notificationLevel,isInitT,isReadOnlyT,isDynamicT,isOrphanT>::CoreModifiableAttributeData;\
+using CoreModifiableAttributeData<underlying_type,notificationLevel,isInitT,isReadOnlyT,isOrphanT>::CoreModifiableAttributeData;\
 typedef name CurrentAttributeClass;\
 typedef underlying_type CurrentAttributeType;\
 static constexpr CoreModifiable::ATTRIBUTE_TYPE type = enum_type;\
 CoreModifiable::ATTRIBUTE_TYPE getType() const override { return enum_type; }\
 DECLARE_ATTRIBUTE_USINGS(underlying_type)\
-auto& operator=(const template_name<notificationLevel,isInitT,isReadOnlyT,isDynamicT,isOrphanT>& attribute)\
+auto& operator=(const template_name<notificationLevel,isInitT,isReadOnlyT,isOrphanT>& attribute)\
 {\
 	this->CopyData(attribute);\
 	return *this; \
@@ -47,20 +48,16 @@ void doPlacementNew(u8 mask) override\
 {\
 	switch (mask)\
 	{\
-		case 0: new (this) template_name<false,false,false,false,false>(InheritanceSwitch{}); break; \
-		case 1: new (this) template_name<true,false,false,false,false>(InheritanceSwitch{}); break; \
-		case 2: new (this) template_name<false,true,false,false,false>(InheritanceSwitch{}); break; \
-		case 3: new (this) template_name<true,true,false,false,false>(InheritanceSwitch{}); break; \
-		case 4: new (this) template_name<false,false,true,false,false>(InheritanceSwitch{}); break; \
-		case 5: new (this) template_name<true,false,true,false,false>(InheritanceSwitch{}); break; \
-		case 6: new (this) template_name<false,true,true,false,false>(InheritanceSwitch{}); break; \
-		case 7: new (this) template_name<true,true,true,false,false>(InheritanceSwitch{}); break; \
-		case 8: new (this) template_name<false,false,false,true,false>(InheritanceSwitch{}); break; \
-		case 9: new (this) template_name<true,false,false,true,false>(InheritanceSwitch{}); break; \
-		case 12: new (this) template_name<false,false,true,true,false>(InheritanceSwitch{}); break; \
-		case 13: new (this) template_name<true,false,true,true,false>(InheritanceSwitch{}); break; \
-		case 16: new (this) template_name<false,false,false,false,true>(InheritanceSwitch{}); break; \
-		case 20: new (this) template_name<false,false,true,false,true>(InheritanceSwitch{}); break; \
+		case 0: new (this) template_name<false,false,false,false>(InheritanceSwitch{}); break; \
+		case 1: new (this) template_name<true,false,false,false>(InheritanceSwitch{}); break; \
+		case 2: new (this) template_name<false,true,false,false>(InheritanceSwitch{}); break; \
+		case 3: new (this) template_name<true,true,false,false>(InheritanceSwitch{}); break; \
+		case 4: new (this) template_name<false,false,true,false>(InheritanceSwitch{}); break; \
+		case 5: new (this) template_name<true,false,true,false>(InheritanceSwitch{}); break; \
+		case 6: new (this) template_name<false,true,true,false>(InheritanceSwitch{}); break; \
+		case 7: new (this) template_name<true,true,true,false>(InheritanceSwitch{}); break; \
+		case 16: new (this) template_name<false,false,false,true>(InheritanceSwitch{}); break; \
+		case 20: new (this) template_name<false,false,true,true>(InheritanceSwitch{}); break; \
 		default: assert(false); break; \
 	}\
 }
@@ -114,21 +111,21 @@ auto& operator=(const CurrentAttributeType& value)\
 
 		protected:
 			explicit CoreModifiableAttribute(InheritanceSwitch tag) {}
-		CoreModifiableAttribute(CoreModifiable* owner, KigsID ID) : mID(ID._id)
+			CoreModifiableAttribute(CoreModifiable* owner, KigsID ID) : mID(ID._id)
 			{
 
 			}
 
 		friend class CoreModifiable;
 
-			template<bool notifOwnerTe, bool isInitParamTe, bool isReadOnlyTe, bool isDynamicTe, bool isOrphanTe>
+			template<bool notifOwnerTe, bool isInitParamTe, bool isReadOnlyTe, bool isOrphanTe>
 			static u8 getMask()
 			{
-				u8 mask = (notifOwnerTe ? 1 : 0) | (isInitParamTe ? 2 : 0) | (isReadOnlyTe ? 4 : 0) | (isDynamicTe ? 8 : 0) | (isOrphanTe ? 16 : 0);
+				u8 mask = (notifOwnerTe ? 1 : 0) | (isInitParamTe ? 2 : 0) | (isReadOnlyTe ? 4 : 0) | (isOrphanTe ? 8 : 0);
 				return mask;
 			}
 
-		virtual void setDynamic(bool val, CoreModifiable* owner, const KigsID& ID) = 0;
+		//virtual void setDynamic(bool val, CoreModifiable* owner, const KigsID& ID) = 0;
 		virtual void setNotifyOwner(bool val) = 0;
 
 		u32		mID = 0; // only the u32 part of the KigsID
@@ -217,7 +214,6 @@ auto& operator=(const CurrentAttributeType& value)\
 		virtual bool isReadOnly() const = 0;
 			//! \brief  return true if attribute is an init attribute (necessary for the CoreModifiable Init to be done)
 		virtual bool isInitParam() const = 0;
-		virtual bool isDynamic() const = 0;
 		virtual bool isOrphan() const = 0;
 		virtual void setReadOnly(bool val) = 0;
 		virtual void setInitParam(bool val) = 0;
@@ -246,7 +242,7 @@ auto& operator=(const CurrentAttributeType& value)\
 		* \brief	 Base class with templated flags attributes
 		*/
 		// ****************************************
-		template<bool notifOwnerT = false, bool isInitParamT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
+		template<bool notifOwnerT = false, bool isInitParamT = false, bool isReadOnlyT = false, bool isOrphanT = false>
 		class CoreModifiableAttributeTemplated : public CoreModifiableAttribute
 		{
 
@@ -255,19 +251,25 @@ auto& operator=(const CurrentAttributeType& value)\
 			CoreModifiableAttributeTemplated(CoreModifiable* owner, KigsID ID) : CoreModifiableAttribute(owner, ID)
 			{
 				if (owner)
-					owner->addAttribute(this, ID, isDynamicT);
+					owner->addAttribute(this, ID, false);
+			}
+
+			explicit CoreModifiableAttributeTemplated(CoreModifiable* owner, KigsID ID, DynamicSwitch tag) : CoreModifiableAttribute(owner, ID)
+			{
+				if (owner)
+					owner->addAttribute(this, ID, true);
 			}
 
 			u8 getCurrentMask()
 			{
-				u8 mask = (notifOwnerT ? 1 : 0) | (isInitParamT ? 2 : 0) | (isReadOnlyT ? 4 : 0) | (isDynamicT ? 8 : 0) | (isOrphanT ? 16 : 0);
+				u8 mask = (notifOwnerT ? 1 : 0) | (isInitParamT ? 2 : 0) | (isReadOnlyT ? 4 : 0) | (isOrphanT ? 8 : 0);
 				return mask;
 			}
 
 			friend class CoreModifiable;
 
 			// is dynamic can be changed by CoreModifiable
-			virtual void setDynamic(bool val, CoreModifiable* owner, const KigsID& ID) override
+/*			virtual void setDynamic(bool val, CoreModifiable* owner, const KigsID& ID) override
 			{
 				if (val != isDynamicT)
 				{
@@ -288,7 +290,7 @@ auto& operator=(const CurrentAttributeType& value)\
 						changeInheritance(getMask<notifOwnerT, isInitParamT, isReadOnlyT, false, isOrphanT>());
 					}
 				}
-			}
+			}*/
 
 			virtual void setNotifyOwner(bool val) final
 			{
@@ -296,11 +298,11 @@ auto& operator=(const CurrentAttributeType& value)\
 				{
 					if (val)
 					{
-						changeInheritance(CoreModifiableAttribute::getMask<true, isInitParamT, isReadOnlyT, isDynamicT, isOrphanT>());
+						changeInheritance(CoreModifiableAttribute::getMask<true, isInitParamT, isReadOnlyT, isOrphanT>());
 					}
 					else
 					{
-						changeInheritance(CoreModifiableAttribute::getMask<false, isInitParamT, isReadOnlyT, isDynamicT, isOrphanT>());
+						changeInheritance(CoreModifiableAttribute::getMask<false, isInitParamT, isReadOnlyT, isOrphanT>());
 					}
 				}
 			}
@@ -313,7 +315,6 @@ auto& operator=(const CurrentAttributeType& value)\
 			virtual bool isReadOnly() const override { return isReadOnlyT; }
 			//! \brief  return true if attribute is an init attribute (necessary for the CoreModifiable Init to be done)
 			virtual bool isInitParam() const override { return isInitParamT; }
-			virtual bool isDynamic() const override { return isDynamicT; }
 			virtual bool isOrphan() const override { return isOrphanT; }
 
 			// only readOnly & notif level can be changed
@@ -323,11 +324,11 @@ auto& operator=(const CurrentAttributeType& value)\
 				{
 					if (val)
 					{
-						changeInheritance(getMask<notifOwnerT, isInitParamT, true, isDynamicT, isOrphanT>());
+						changeInheritance(getMask<notifOwnerT, isInitParamT, true, isOrphanT>());
 					}
 					else
 					{
-						changeInheritance(getMask<notifOwnerT, isInitParamT, false, isDynamicT, isOrphanT>());
+						changeInheritance(getMask<notifOwnerT, isInitParamT, false, isOrphanT>());
 					}
 				}
 			}
@@ -339,11 +340,11 @@ auto& operator=(const CurrentAttributeType& value)\
 				{
 					if (val)
 					{
-						changeInheritance(getMask<notifOwnerT, true, isReadOnlyT, isDynamicT, isOrphanT>());
+						changeInheritance(getMask<notifOwnerT, true, isReadOnlyT, isOrphanT>());
 					}
 					else
 					{
-						changeInheritance(getMask<notifOwnerT, false, isReadOnlyT, isDynamicT, isOrphanT>());
+						changeInheritance(getMask<notifOwnerT, false, isReadOnlyT, isOrphanT>());
 					}
 				}
 			}
@@ -361,33 +362,33 @@ auto& operator=(const CurrentAttributeType& value)\
 		*/
 		// ****************************************
 
-	template<typename T, bool notifOwnerT = false, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
-	class CoreModifiableAttributeData : public CoreModifiableAttributeTemplated< notifOwnerT, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+		template<typename T, bool notifOwnerT = false, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+		class CoreModifiableAttributeData : public CoreModifiableAttributeTemplated< notifOwnerT, isInitT, isReadOnlyT, isOrphanT>
 		{
-		using CoreModifiableAttribute::mID;
-		using CoreModifiableAttribute::mPlaceHolderForSonClasses;
+			using CoreModifiableAttribute::mID;
+			using CoreModifiableAttribute::mPlaceHolderForSonClasses;
 
 		public:
-		CoreModifiableAttributeData(CoreModifiable& owner, KigsID ID, const T& value) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isDynamicT, isOrphanT >(&owner, ID), mValue(value)
+			CoreModifiableAttributeData(CoreModifiable& owner, KigsID ID, const T& value) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT >(&owner, ID), mValue(value)
 			{
 
 			}
-		CoreModifiableAttributeData(CoreModifiable& owner, KigsID ID) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(&owner, ID), mValue{}
+			CoreModifiableAttributeData(CoreModifiable& owner, KigsID ID) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT>(&owner, ID), mValue{}
 			{
 
 			}
-		CoreModifiableAttributeData(KigsID ID, const T& value) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(nullptr, ID), mValue{ value }
+			CoreModifiableAttributeData(KigsID ID, const T& value) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT>(nullptr, ID), mValue{ value }
 			{
-			static_assert(isOrphanT == true,"CoreModifiableAttribute with no owner must be constructed with isOrphanT == true");
+				static_assert(isOrphanT == true,"CoreModifiableAttribute with no owner must be constructed with isOrphanT == true");
 			}
 
-		explicit CoreModifiableAttributeData(InheritanceSwitch tag) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(tag) {}
+			explicit CoreModifiableAttributeData(InheritanceSwitch tag) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT>(tag) {}
 
 
 			inline T& ref() { return mValue; }
 			inline const T& const_ref() const { return mValue; }
 
-		void* getRawValue(CoreModifiable* owner) override { return static_cast<void*>(&mValue); }
+			void* getRawValue(CoreModifiable* owner) override { return static_cast<void*>(&mValue); }
 
 			friend class CoreModifiable;
 
@@ -402,21 +403,25 @@ auto& operator=(const CurrentAttributeType& value)\
 
 		protected:
 
+			explicit CoreModifiableAttributeData(CoreModifiable& owner, KigsID ID, DynamicSwitch tag) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT >(&owner, ID, tag)
+			{
+			}
+
 			//! Underlying value
 			T mValue;
 
-		virtual void changeInheritance(u8 mask) override
+			virtual void changeInheritance(u8 mask) override
 			{
-			u32	keepID = mID;
-			u32 keepPlaceHolder = mPlaceHolderForSonClasses;
+				u32	keepID = mID;
+				u32 keepPlaceHolder = mPlaceHolderForSonClasses;
 
-				T old_value = mValue;
-				mValue.~T();
-			this->doPlacementNew(mask);
-				mValue = old_value;
+					T old_value = mValue;
+					mValue.~T();
+				this->doPlacementNew(mask);
+					mValue = old_value;
 
-			mID= keepID;
-			mPlaceHolderForSonClasses =keepPlaceHolder;
+				mID= keepID;
+				mPlaceHolderForSonClasses =keepPlaceHolder;
 
 			}
 
@@ -434,7 +439,7 @@ auto& operator=(const CurrentAttributeType& value)\
 				}
 				return false;
 #else
-			if (this->getType() == other.getType() &&
+				if (this->getType() == other.getType() &&
 				this->getArrayElementType() == other.getArrayElementType() &&
 				this->getNbArrayColumns() == other.getNbArrayColumns() &&
 				this->getNbArrayLines() == other.getNbArrayLines())
@@ -448,7 +453,7 @@ auto& operator=(const CurrentAttributeType& value)\
 
 			virtual void CopyData(const CoreModifiableAttributeData<T>& other)
 			{
-			mValue = ((const CoreModifiableAttributeData<T, notifOwnerT, isInitT, isReadOnlyT, isDynamicT, isOrphanT>*)(&other))->mValue;
+				mValue = ((const CoreModifiableAttributeData<T, notifOwnerT, isInitT, isReadOnlyT, isOrphanT>*)(&other))->mValue;
 			}
 		};
 
@@ -468,8 +473,8 @@ auto& operator=(const CurrentAttributeType& value)\
 		*/
 		// ****************************************
 
-	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
-	class maRawPtrHeritage : public CoreModifiableAttributeData<void*, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+	class maRawPtrHeritage : public CoreModifiableAttributeData<void*, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maRawPtrHeritage, maRawPtrHeritage, void*, CoreModifiable::ATTRIBUTE_TYPE::RAWPTR);
 		public:
@@ -486,10 +491,8 @@ auto& operator=(const CurrentAttributeType& value)\
 		};
 
 
-	using maRawPtr = maRawPtrHeritage<false, false, false, false, false>;
-	using maRawPtrOrphan = maRawPtrHeritage<false, false, false, false, true>;
-	using maRawPtrDynamic = maRawPtrHeritage<false, false, false, true, false>;
-
+	using maRawPtr = maRawPtrHeritage<false, false, false, false>;
+	using maRawPtrOrphan = maRawPtrHeritage<false, false, false, true>;
 
 		// Template specializations defined in CoreModifiable.cpp
 		//! \brief methods to convert a string to a value (numeric, boolean...)

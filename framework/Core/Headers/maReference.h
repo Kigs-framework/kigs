@@ -54,15 +54,15 @@ namespace Kigs
 		*/
 		// ****************************************
 
-	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
-	class maReferenceHeritage : public CoreModifiableAttributeData<maWeakReferenceObject, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+	class maReferenceHeritage : public CoreModifiableAttributeData<maWeakReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maReferenceHeritage, maReferenceHeritage, maWeakReferenceObject, CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE);
 
 
 		public:
 
-		maReferenceHeritage(CoreModifiable& owner, KigsID ID, std::string value) : CoreModifiableAttributeData<maWeakReferenceObject, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
+		maReferenceHeritage(CoreModifiable& owner, KigsID ID, std::string value) : CoreModifiableAttributeData<maWeakReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
 			, mOwner(&owner)
 			, mID(ID)
 			{
@@ -70,7 +70,7 @@ namespace Kigs
 				Search();
 			}
 
-		maReferenceHeritage() : CoreModifiableAttributeData<maWeakReferenceObject, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(KigsID{ 0u }, maWeakReferenceObject{}) {}
+		maReferenceHeritage() : CoreModifiableAttributeData<maWeakReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(KigsID{ 0u }, maWeakReferenceObject{}) {}
 
 			virtual ~maReferenceHeritage()
 			{
@@ -259,21 +259,20 @@ namespace Kigs
 		*/
 		// ****************************************
 
-		using maReference = maReferenceHeritage<false,false,false,false,false>;
-		using maReferenceOrphan = maReferenceHeritage<false, false, false, false, true>;
-		using maReferenceInit = maReferenceHeritage<false, true, false, false, false>;
-		using maReferenceDynamic = maReferenceHeritage<false, false, false, true, false>;
+		using maReference = maReferenceHeritage<false,false,false,false>;
+		using maReferenceOrphan = maReferenceHeritage<false, false, false, true>;
+		using maReferenceInit = maReferenceHeritage<false, true, false, false>;
 
 
-	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
-	class maStrongReferenceHeritage : public CoreModifiableAttributeData<maStrongReferenceObject, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+	class maStrongReferenceHeritage : public CoreModifiableAttributeData<maStrongReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maStrongReferenceHeritage, maStrongReferenceHeritage, maStrongReferenceObject, CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE);
 
 
 		public:
 
-		maStrongReferenceHeritage(CoreModifiable& owner, KigsID ID, std::string value) : CoreModifiableAttributeData<maStrongReferenceObject, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
+		maStrongReferenceHeritage(CoreModifiable& owner, KigsID ID, std::string value) : CoreModifiableAttributeData<maStrongReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
 			, mOwner(&owner)
 			, mID(ID)
 			{
@@ -281,7 +280,7 @@ namespace Kigs
 				Search();
 			}
 
-		maStrongReferenceHeritage() : CoreModifiableAttributeData<maStrongReferenceObject, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(KigsID{ 0u }, maStrongReferenceObject{}) {}
+		maStrongReferenceHeritage() : CoreModifiableAttributeData<maStrongReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(KigsID{ 0u }, maStrongReferenceObject{}) {}
 
 			virtual ~maStrongReferenceHeritage()
 			{
@@ -453,9 +452,8 @@ namespace Kigs
 
 
 
-		using maStrongReference = maStrongReferenceHeritage<false,false,false,false,false>;
-		using maStrongReferenceOrphan = maStrongReferenceHeritage<false, false, false, false, true>;
-		using maStrongReferenceDynamic = maStrongReferenceHeritage<false, false, false, true, false>;
+		using maStrongReference = maStrongReferenceHeritage<false,false,false,false>;
+		using maStrongReferenceOrphan = maStrongReferenceHeritage<false, false, false, true>;
 
 	}
 }

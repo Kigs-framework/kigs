@@ -1430,12 +1430,12 @@ AttributeChange CheckAttributeChange(XMLNode* attr_xml, CoreModifiableAttribute*
 }
 
 	
-void DecorateAttribute(CoreModifiableAttribute* attr)
+void DecorateAttribute(CoreModifiable::FlaggedCoreModifiableAttribute attr)
 {
 	return;
 	float offset = 0.0f;
 
-	if (attr->isDynamic())
+	if (attr.isDynamic())
 	{
 		offset += ImGui::CalcTextSize("D").x;
 		ImGui::SameLine(ImGui::GetContentRegionAvail().x - offset);
@@ -1896,7 +1896,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 
 			std::string func_name;
 			bool is_lua_method = false;
-			if (attr.second->isDynamic() && attr.second->getType() == CoreModifiable::ATTRIBUTE_TYPE::STRING)
+			if (attr.second.isDynamic() && attr.second->getType() == CoreModifiable::ATTRIBUTE_TYPE::STRING)
 			{
 				std::vector<std::string> splitted = SplitStringByCharacter(attr.first._id_name, u'§');
 				if (splitted.size() == 3 && splitted[1] == "LUA_CODE")
@@ -2283,11 +2283,11 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 
 				XMLNode* new_node = new XMLNode(XML_NODE_ELEMENT, "Attr");
 				new_node->addAttribute(new XMLAttribute("N", attr.first._id_name));
-				if (attr.second->isDynamic())
+				if (attr.second.isDynamic())
 					new_node->addAttribute(new XMLAttribute("T", CoreModifiableAttribute::typeToString(attr.second->getType())));
 
 				new_node->addAttribute(new XMLAttribute("V", value));
-				if (attr.second->isDynamic())
+				if (attr.second.isDynamic())
 					new_node->addAttribute(new XMLAttribute("Dyn", "true"));
 				xml_node->addChild(new_node);
 				new_node->setParent(xml_node); //@NOTE(antoine) it is really to have to do this

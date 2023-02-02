@@ -1158,62 +1158,62 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 		{
 			case 1:
 			{
-				toadd = new maFloatDynamic(*this, ID);
+				toadd = new maFloat(*this, ID, DynamicSwitch{});
 			}
 			break;
 			case 2:
 			{
-				toadd = new maVect2DFDynamic(*this, ID);
+				toadd = new maVect2DF(*this, ID, DynamicSwitch{});
 			}
 			break;
 			case 3:
 			{
-				toadd = new maVect3DFDynamic(*this, ID);
+				toadd = new maVect3DF(*this, ID, DynamicSwitch{});
 			}
 			break;
 			case 4:
 			{
-				toadd = new maVect4DFDynamic(*this, ID);
+				toadd = new maVect4DF(*this, ID, DynamicSwitch{});
 			}
 			break;
 			case 5:
 			{
-				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, ID, DynamicSwitch{});
 			}
 			break;
 			case 6:
 			{
-				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, ID, DynamicSwitch{});
 			}
 			break;
 			case 7:
 			{
-				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, ID, DynamicSwitch{});
 			}
 			break;
 			case 8:
 			{
-				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, ID, DynamicSwitch{});
 			}
 			break;
 			case 9:
 			{
-				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, ID, DynamicSwitch{});
 			}
 			break;
 			case 10:
 			{
-				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, ID, DynamicSwitch{});
 			}
 			break;
 			case 12:
 			{
-				toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, ID);
+				toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, ID, DynamicSwitch{});
 			}
 			break;
 			case 16:
 			{
-				toadd = new maVect16DFDynamic(*this, ID);
+				toadd = new maVect16DF(*this, ID, DynamicSwitch{});
 			}
 			break;
 		}
@@ -1265,62 +1265,62 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, co
 	{
 		case 1:
 		{
-			toadd = new maIntDynamic(*this, ID);
+			toadd = new maInt(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 2:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 2>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 2>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 3:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 3>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 3>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 4:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 4>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 4>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 5:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 5>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 5>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 6:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 6>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 6>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 7:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 7>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 7>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 8:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 8>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 8>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 9:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 9>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 9>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 10:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 10>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 10>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 12:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 12>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 12>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 16:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 16>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::INT, 16>(*this, ID, DynamicSwitch{});
 		}
 		break;
 	}
@@ -1341,62 +1341,62 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicVectorAttribute(KigsID ID, co
 	{
 		case 1:
 		{
-			toadd = new maFloatDynamic(*this, ID);
+			toadd = new maFloat(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 2:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 2>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 3:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 3>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 4:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 4>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 4>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 5:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 5>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 6:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 6>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 7:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 7>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 8:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 8>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 9:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 9>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 10:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 10>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 12:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 12>(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case 16:
 		{
-			toadd = new maVectorDynamic<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 16>(*this, ID);
+			toadd = new maVector<float, CoreModifiable::ATTRIBUTE_TYPE::FLOAT, 16>(*this, ID, DynamicSwitch{});
 		}
 		break;
 	}
@@ -1440,96 +1440,96 @@ CoreModifiableAttribute*	CoreModifiable::GenericCreateDynamicAttribute(CoreModif
 	{
 		case CoreModifiable::ATTRIBUTE_TYPE::BOOL:
 		{
-			toadd = new maBoolDynamic(*this, ID);
+			toadd = new maBool(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::CHAR:
 		{
-			toadd = new maCharDynamic(*this, ID);
+			toadd = new maChar(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::SHORT:
 		{
-			toadd = new maShortDynamic(*this, ID);
+			toadd = new maShort(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::INT:
 		{
-			toadd = new maIntDynamic(*this, ID);
+			toadd = new maInt(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::LONG:
 		{
-			toadd = new maLongDynamic(*this, ID);
+			toadd = new maLong(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::UCHAR:
 		{
-			toadd = new maUCharDynamic(*this, ID);
+			toadd = new maUChar(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::USHORT:
 		{
-			toadd = new maUShortDynamic(*this, ID);
+			toadd = new maUShort(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::UINT:
 		{
-			toadd = new maUIntDynamic(*this, ID);
+			toadd = new maUInt(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::ULONG:
 		{
-			toadd = new maULongDynamic(*this, ID);
+			toadd = new maULong(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::FLOAT:
 		{
-			toadd = new maFloatDynamic(*this, ID);
+			toadd = new maFloat(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::DOUBLE:
 		{
-			toadd = new maDoubleDynamic(*this, ID);
+			toadd = new maDouble(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::STRING:
 		{
-			toadd = new maStringDynamic(*this, ID);
+			toadd = new maString(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE:
 		{
-			toadd = new maReferenceDynamic(*this, ID);
+			toadd = new maReference(*this, ID, DynamicSwitch{});
 		}
 		case CoreModifiable::ATTRIBUTE_TYPE::STRONG_REFERENCE:
 		{
-			toadd = new maStrongReferenceDynamic(*this, ID);
+			toadd = new maStrongReference(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::COREITEM:
 		{
-			toadd = new maCoreItemDynamic(*this, ID);
+			toadd = new maCoreItem(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::USSTRING:
 		{
-			toadd = new maUSStringDynamic(*this, ID);
+			toadd = new maUSString(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case  CoreModifiable::ATTRIBUTE_TYPE::COREBUFFER:
 		{
-			toadd = new maBufferDynamic(*this, ID);
+			toadd = new maBuffer(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case  CoreModifiable::ATTRIBUTE_TYPE::RAWPTR:
 		{
-			toadd = new maRawPtrDynamic(*this, ID);
+			toadd = new maRawPtr(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case  CoreModifiable::ATTRIBUTE_TYPE::ANY:
 		{
-			toadd = new maAnyDynamic(*this, ID);
+			toadd = new maAny(*this, ID, DynamicSwitch{});
 		}
 		break;
 		case CoreModifiable::ATTRIBUTE_TYPE::ARRAY:
@@ -2219,7 +2219,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 		if (type == CoreModifiable::ATTRIBUTE_TYPE::RAWPTR)
 			continue;
 
-		if (current->isDynamic() && type == ATTRIBUTE_TYPE::STRING)
+		if ((*i).second.isDynamic() && type == ATTRIBUTE_TYPE::STRING)
 		{
 			std::vector<std::string> splitted = SplitStringByCharacter(currentID._id_name, '$');
 			if (splitted.size() == 3 && splitted[1] == "LUA_CODE")
@@ -2257,7 +2257,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 		modifiableAttrNode->setType(XML_NODE_ELEMENT);
 		modifiableAttrNode->setName("Attr");
 		{
-			if (current->isDynamic())
+			if ((*i).second.isDynamic())
 			{
 				attribute = new XMLAttribute("T", CoreModifiableAttribute::typeToString(type));
 				modifiableAttrNode->addAttribute(attribute);
@@ -2336,7 +2336,7 @@ void	CoreModifiable::Export(std::vector<CoreModifiable*>& savedList, XMLNode * c
 				modifiableAttrNode->addAttribute(attribute);
 			}
 
-			if (current->isDynamic())
+			if ((*i).second.isDynamic())
 			{
 				attribute = new XMLAttribute((std::string)"Dyn", (std::string)"yes");
 				modifiableAttrNode->addAttribute(attribute);

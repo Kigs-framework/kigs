@@ -15,8 +15,8 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData for bool with different level of notification
 		*/
 		// ****************************************
-	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
-	class maBoolHeritage : public CoreModifiableAttributeData<bool, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+	class maBoolHeritage : public CoreModifiableAttributeData<bool, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE(maBoolHeritage, maBoolHeritage, bool, CoreModifiable::ATTRIBUTE_TYPE::BOOL);
 
@@ -68,10 +68,9 @@ virtual bool getValue(type value, const CoreModifiable* owner) const override \
 
 		};
 
-		using maBool = maBoolHeritage<false,false,false,false,false>;
-		using maBoolInit = maBoolHeritage<false, true, false, false, false>;
-		using maBoolOrphan = maBoolHeritage<false, false, false, false, true>;
-		using maBoolDynamic = maBoolHeritage<false,false,false,true>;
+		using maBool = maBoolHeritage<false,false,false,false>;
+		using maBoolInit = maBoolHeritage<false, true, false,  false>;
+		using maBoolOrphan = maBoolHeritage<false, false, false,  true>;
 
 
 #undef IMPLEMENT_SET_VALUE_BOOL

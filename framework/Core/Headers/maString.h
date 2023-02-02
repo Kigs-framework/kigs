@@ -16,8 +16,8 @@ namespace Kigs
 		*/
 		// ****************************************
 
-		template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
-		class maStringHeritage : public CoreModifiableAttributeData<std::string, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+		template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+		class maStringHeritage : public CoreModifiableAttributeData<std::string, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE(maStringHeritage, maStringHeritage, std::string, CoreModifiable::ATTRIBUTE_TYPE::STRING);
 
@@ -115,10 +115,9 @@ namespace Kigs
 		STATIC_ASSERT_NOTIF_LEVEL_SIZES(maStringHeritage);
 
 
-		using maString = maStringHeritage<false,false,false,false,false>;
-		using maStringOrphan = maStringHeritage<false, false, false, false, true>;
+		using maString = maStringHeritage<false,false,false,false>;
+		using maStringOrphan = maStringHeritage<false, false, false, true>;
 		using maStringInit = maStringHeritage<false, true>;
-		using maStringDynamic = maStringHeritage<false, false,false,true>;
 
 	}
 }

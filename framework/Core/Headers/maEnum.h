@@ -35,11 +35,11 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData for an enum with different level of notification
 		*/
 		// ****************************************
-	template<bool notificationLevel, unsigned int nbElements, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
-	class maEnumHeritage : public CoreModifiableAttributeData<maEnumValue<nbElements>, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+	template<bool notificationLevel, unsigned int nbElements, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+	class maEnumHeritage : public CoreModifiableAttributeData<maEnumValue<nbElements>, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
-		template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isDynamicTe, bool isOrphanTe>
-		using TemplateForPlacementNew = maEnumHeritage<notiflevel, nbElements, isInitTe, isReadOnlyTe, isDynamicTe, isOrphanTe>;
+		template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isOrphanTe>
+		using TemplateForPlacementNew = maEnumHeritage<notiflevel, nbElements, isInitTe, isReadOnlyTe, isOrphanTe>;
 
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maEnumHeritage, TemplateForPlacementNew, maEnumValue<nbElements>, CoreModifiable::ATTRIBUTE_TYPE::ENUM);
 
@@ -48,7 +48,7 @@ namespace Kigs
 
 
 			maEnumHeritage(CoreModifiable& owner, KigsID ID, std::string val0, std::string val1, std::string val2 = "", std::string val3 = "", std::string val4 = "", std::string val5 = "", std::string val6 = "", std::string val7 = "", std::string val8 = "", std::string val9 = "")
-				: CoreModifiableAttributeData<maEnumValue<nbElements>, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
+				: CoreModifiableAttributeData<maEnumValue<nbElements>, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
 			{
 				//@TODO variadic template constructor?
 				// Copy and move idiom
@@ -70,7 +70,7 @@ namespace Kigs
 			// TODO
 			virtual bool CopyAttribute(const CoreModifiableAttribute& attribute) override
 			{
-				if (CoreModifiableAttributeData<maEnumValue<nbElements>, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>::CopyAttribute(attribute)) return true;
+				if (CoreModifiableAttributeData<maEnumValue<nbElements>, notificationLevel, isInitT, isReadOnlyT, isOrphanT>::CopyAttribute(attribute)) return true;
 				int val;
 				if (attribute.getValue(val,nullptr))
 				{
@@ -153,9 +153,9 @@ namespace Kigs
 
 
 		template<unsigned int nbElements>
-		using maEnum = maEnumHeritage<false, nbElements,false,false,false,false>;
+		using maEnum = maEnumHeritage<false, nbElements,false,false,false>;
 
 		template<unsigned int nbElements>
-		using maEnumInit = maEnumHeritage<false, nbElements, true, false, false, false>;
+		using maEnumInit = maEnumHeritage<false, nbElements, true, false, false>;
 	}
 }

@@ -1208,6 +1208,8 @@ namespace Kigs
 
 		};
 
+		struct DynamicSwitch;
+
 		template<typename attribute_type, typename value_type>
 		attribute_type*	CoreModifiable::AddDynamicAttribute(KigsID ID, const value_type& value)
 		{
@@ -1216,11 +1218,11 @@ namespace Kigs
 			if (toadd != nullptr)
 			{
 				if (toadd->getType() != attribute_type::type) return nullptr;
-				*(attribute_type*)toadd = value;
+				toadd->setValue(value, this);
 				return toadd;
 			}
-			toadd = new attribute_type(*this, ID, value);
-			toadd->setDynamic(true,this,ID);
+			toadd = new attribute_type(*this, ID, DynamicSwitch{});
+			toadd->setValue(value,this);
 			return toadd;
 		}
 

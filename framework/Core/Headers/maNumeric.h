@@ -16,11 +16,11 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData for numeric without different level of notification
 		*/
 		// ****************************************
-		template<bool notificationLevel, typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false> 
-		class maNumericHeritage : public CoreModifiableAttributeData<T, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+		template<bool notificationLevel, typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false> 
+		class maNumericHeritage : public CoreModifiableAttributeData<T, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
-			template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isDynamicTe, bool isOrphanTe>
-			using TemplateForPlacementNew = maNumericHeritage<notiflevel, T, attributeType, isInitTe, isReadOnlyTe, isDynamicTe, isOrphanTe>;
+			template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isOrphanTe>
+			using TemplateForPlacementNew = maNumericHeritage<notiflevel, T, attributeType, isInitTe, isReadOnlyTe, isOrphanTe>;
 
 			DECLARE_ATTRIBUTE_HERITAGE(maNumericHeritage, TemplateForPlacementNew, T, attributeType);
 
@@ -121,57 +121,45 @@ namespace Kigs
 		};
 
 		template<typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType = TypeToEnum<T>::value>
-		using maNumeric = maNumericHeritage<false, T, attributeType,false,false,false,false>;
+		using maNumeric = maNumericHeritage<false, T, attributeType,false,false,false>;
 
 		template<typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType = TypeToEnum<T>::value>
-		using maNumericOrphan = maNumericHeritage<false, T, attributeType, false, false, false, true>;
+		using maNumericOrphan = maNumericHeritage<false, T, attributeType, false, false, true>;
 
 		template<typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType = TypeToEnum<T>::value>
 		using maNumericInit = maNumericHeritage<false, T, attributeType, true>;
 
-		template<typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType = TypeToEnum<T>::value>
-		using maNumericDynamic = maNumericHeritage<false, T, attributeType, false,false,true>;
 
 		using maChar = maNumeric<s8>;
 		using maCharOrphan = maNumericOrphan<s8>;
 		using maCharInit = maNumericInit<s8>;
-		using maCharDynamic = maNumericDynamic<s8>;
 		using maShort = maNumeric<s16>;
 		using maShortOrphan = maNumericOrphan<s16>;
 		using maShortInit = maNumericInit<s16>;
-		using maShortDynamic = maNumericDynamic<s16>;
 		using maInt = maNumeric<s32>;
 		using maIntOrphan = maNumericOrphan<s32>;
 		using maIntInit = maNumericInit<s32>;
-		using maIntDynamic = maNumericDynamic<s32>;
 		using maLong = maNumeric<s64>;
 		using maLongOrphan = maNumericOrphan<s64>;
 		using maLongInit = maNumericInit<s64>;
-		using maLongDynamic = maNumericDynamic<s64>;
 		using maUChar = maNumeric<u8>;
 		using maUCharOrphan = maNumericOrphan<u8>;
 		using maUCharInit = maNumericInit<u8>;
-		using maUCharDynamic = maNumericDynamic<u8>;
 		using maUShort = maNumeric<u16>;
 		using maUShortOrphan = maNumericOrphan<u16>;
 		using maUShortInit = maNumericInit<u16>;
-		using maUShortDynamic = maNumericDynamic<u16>;
 		using maUInt = maNumeric<u32>;
 		using maUIntOrphan = maNumericOrphan<u32>;
 		using maUIntInit = maNumericInit<u32>;
-		using maUIntDynamic = maNumericDynamic<u32>;
 		using maULong = maNumeric<u64>;
 		using maULongOrphan = maNumericOrphan<u64>;
 		using maULongInit = maNumericInit<u64>;
-		using maULongDynamic = maNumericDynamic<u64>;
 		using maFloat = maNumeric<float>;
 		using maFloatOrphan = maNumericOrphan<float>;
 		using maFloatInit = maNumericInit<float>;
-		using maFloatDynamic = maNumericDynamic<float>;
 		using maDouble = maNumeric<double>;
 		using maDoubleOrphan = maNumericOrphan<double>;
 		using maDoubleInit = maNumericInit<double>;
-		using maDoubleDynamic = maNumericDynamic<double>;
 
 		// ****************************************
 		// * maComputedNumericHeritage class
@@ -182,32 +170,32 @@ namespace Kigs
 		* \brief	numeric calling onwer get / set method to compute value
 		*/
 		// ****************************************
-		template<bool notificationLevel, typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
-		class maComputedNumericHeritage : public CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+		template<bool notificationLevel, typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+		class maComputedNumericHeritage : public CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
-		template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isDynamicTe, bool isOrphanTe>
-		using TemplateForPlacementNew = maComputedNumericHeritage<notiflevel, T, attributeType, isInitTe, isReadOnlyTe, isDynamicTe, isOrphanTe>;
+		template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isOrphanTe>
+		using TemplateForPlacementNew = maComputedNumericHeritage<notiflevel, T, attributeType, isInitTe, isReadOnlyTe, isOrphanTe>;
 
 
 		private:
 
-		maComputedNumericHeritage(CoreModifiable& owner, KigsID ID, const T& value) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(&owner, ID)
+		maComputedNumericHeritage(CoreModifiable& owner, KigsID ID, const T& value) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isOrphanT>(&owner, ID)
 			{
 
 			}
-		maComputedNumericHeritage(CoreModifiable& owner, KigsID ID) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(&owner, ID)
+		maComputedNumericHeritage(CoreModifiable& owner, KigsID ID) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isOrphanT>(&owner, ID)
 			{
 
 			}
-		maComputedNumericHeritage(KigsID ID, const T& value) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(nullptr, false, ID)
+		maComputedNumericHeritage(KigsID ID, const T& value) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isOrphanT>(nullptr, false, ID)
 			{
 			}
 
 		public:
 
-		explicit maComputedNumericHeritage(InheritanceSwitch tag) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(tag) {}
+		explicit maComputedNumericHeritage(InheritanceSwitch tag) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isOrphanT>(tag) {}
 
-		maComputedNumericHeritage(CoreModifiable& owner, KigsID ID, KigsID g, KigsID s) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(&owner, ID), mGetter(g), mSetter(s)
+		maComputedNumericHeritage(CoreModifiable& owner, KigsID ID, KigsID g, KigsID s) : CoreModifiableAttributeTemplated<notificationLevel, isInitT, isReadOnlyT, isOrphanT>(&owner, ID), mGetter(g), mSetter(s)
 			{
 
 			}
@@ -217,7 +205,7 @@ namespace Kigs
 			static constexpr CoreModifiable::ATTRIBUTE_TYPE type = attributeType;
 			CoreModifiable::ATTRIBUTE_TYPE getType() const override { return attributeType; }
 
-		auto& operator=(const TemplateForPlacementNew<notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>& attribute)
+		auto& operator=(const TemplateForPlacementNew<notificationLevel, isInitT, isReadOnlyT, isOrphanT>& attribute)
 			{
 				this->CopyData(attribute);
 				return *this;
@@ -231,20 +219,16 @@ namespace Kigs
 			{
 				switch (mask)
 				{
-			case 0: new (this) TemplateForPlacementNew<false, false, false, false, false>(InheritanceSwitch{}); break;
-			case 1: new (this) TemplateForPlacementNew<true, false, false, false, false>(InheritanceSwitch{}); break;
-			case 2: new (this) TemplateForPlacementNew<false, true, false, false, false>(InheritanceSwitch{}); break;
-			case 3: new (this) TemplateForPlacementNew<true, true, false, false, false>(InheritanceSwitch{}); break;
-			case 4: new (this) TemplateForPlacementNew<false, false, true, false, false>(InheritanceSwitch{}); break;
-			case 5: new (this) TemplateForPlacementNew<true, false, true, false, false>(InheritanceSwitch{}); break;
-			case 6: new (this) TemplateForPlacementNew<false, true, true, false, false>(InheritanceSwitch{}); break;
-			case 7: new (this) TemplateForPlacementNew<true, true, true, false, false>(InheritanceSwitch{}); break;
-			case 8: new (this) TemplateForPlacementNew<false, false, false, true, false>(InheritanceSwitch{}); break;
-			case 9: new (this) TemplateForPlacementNew<true, false, false, true, false>(InheritanceSwitch{}); break;
-			case 12: new (this) TemplateForPlacementNew<false, false, true, true, false>(InheritanceSwitch{}); break;
-			case 13: new (this) TemplateForPlacementNew<true, false, true, true, false>(InheritanceSwitch{}); break;
-			case 16: new (this) TemplateForPlacementNew<false, false, false, false, true>(InheritanceSwitch{}); break;
-			case 20: new (this) TemplateForPlacementNew<false, false, true, false, true>(InheritanceSwitch{}); break;
+			case 0: new (this) TemplateForPlacementNew<false, false, false, false>(InheritanceSwitch{}); break;
+			case 1: new (this) TemplateForPlacementNew<true, false, false, false>(InheritanceSwitch{}); break;
+			case 2: new (this) TemplateForPlacementNew<false, true, false, false>(InheritanceSwitch{}); break;
+			case 3: new (this) TemplateForPlacementNew<true, true, false, false>(InheritanceSwitch{}); break;
+			case 4: new (this) TemplateForPlacementNew<false, false, true, false>(InheritanceSwitch{}); break;
+			case 5: new (this) TemplateForPlacementNew<true, false, true, false>(InheritanceSwitch{}); break;
+			case 6: new (this) TemplateForPlacementNew<false, true, true, false>(InheritanceSwitch{}); break;
+			case 7: new (this) TemplateForPlacementNew<true, true, true, false>(InheritanceSwitch{}); break;
+			case 16: new (this) TemplateForPlacementNew<false, false, false, true>(InheritanceSwitch{}); break;
+			case 20: new (this) TemplateForPlacementNew<false, false, true, true>(InheritanceSwitch{}); break;
 				default: assert(false); break;
 				}
 			}
@@ -351,7 +335,7 @@ namespace Kigs
 		};
 
 		template<typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType = TypeToEnum<T>::value>
-		using maComputedNumeric = maComputedNumericHeritage<false, T, attributeType,false,false,false,false>;
+		using maComputedNumeric = maComputedNumericHeritage<false, T, attributeType,false,false,false>;
 
 		template<typename T, CoreModifiable::ATTRIBUTE_TYPE attributeType = TypeToEnum<T>::value>
 		using maComputedNumericInit = maComputedNumericHeritage<false, T, attributeType, true>;

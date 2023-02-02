@@ -16,15 +16,15 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData of usstring with different level of notification
 		*/
 		// ****************************************
-	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
-	class maUSStringHeritage : public CoreModifiableAttributeData<usString, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+	class maUSStringHeritage : public CoreModifiableAttributeData<usString, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE(maUSStringHeritage, maUSStringHeritage, usString, CoreModifiable::ATTRIBUTE_TYPE::USSTRING);
 
 		public:
 
 			//! Extra constructors
-		maUSStringHeritage(CoreModifiable& owner, KigsID ID, const std::string& value) : CoreModifiableAttributeData<usString, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
+		maUSStringHeritage(CoreModifiable& owner, KigsID ID, const std::string& value) : CoreModifiableAttributeData<usString, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
 			{
 				mValue = usString{ value };
 			}
@@ -181,9 +181,8 @@ namespace Kigs
 		};
 
 
-		using maUSString = maUSStringHeritage<false,false,false,false,false>;
-		using maUSStringOrphan = maUSStringHeritage<false, false, false, false, true>;
+		using maUSString = maUSStringHeritage<false,false,false,false>;
+		using maUSStringOrphan = maUSStringHeritage<false, false, false, true>;
 		using maUSStringInit = maUSStringHeritage<false, true>;
-		using maUSStringDynamic = maUSStringHeritage<false, false,false,true>;
 	}
 }

@@ -22,8 +22,8 @@ using namespace Kigs::Draw;
 using namespace Kigs::Draw2D;
 using namespace Kigs::Action;
 
-template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
-class maLuaRefHeritage : public CoreModifiableAttributeData<LuaRef, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+class maLuaRefHeritage : public CoreModifiableAttributeData<LuaRef, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 {
 	DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maLuaRefHeritage, maLuaRefHeritage, LuaRef, CoreModifiable::ATTRIBUTE_TYPE::LUAREF);
 	auto& operator=(const CurrentAttributeType& value)
@@ -33,8 +33,8 @@ class maLuaRefHeritage : public CoreModifiableAttributeData<LuaRef, notification
 	}
 public:
 };
-using maLuaRef = maLuaRefHeritage<false,false,false,false,false>;
-using maLuaRefOrphan = maLuaRefHeritage<false, false, false, false, true>;
+using maLuaRef = maLuaRefHeritage<false,false,false,false>;
+using maLuaRefOrphan = maLuaRefHeritage<false, false, false, true>;
 
 unordered_map<KigsID, const char*> gLuaTypeMap;
 

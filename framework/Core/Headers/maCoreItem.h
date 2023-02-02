@@ -31,15 +31,15 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData of core item with different notification level
 		*/
 		// ****************************************
-	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
-	class maCoreItemHeritage : public CoreModifiableAttributeData<maCoreItemValue, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+	class maCoreItemHeritage : public CoreModifiableAttributeData<maCoreItemValue, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maCoreItemHeritage, maCoreItemHeritage, maCoreItemValue, CoreModifiable::ATTRIBUTE_TYPE::COREITEM);
 
 		public:
 
 			//! Extra constructor with std::string
-			maCoreItemHeritage(CoreModifiable& owner, KigsID ID, std::string value) : CoreModifiableAttributeData<maCoreItemValue, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>(owner, ID)
+			maCoreItemHeritage(CoreModifiable& owner, KigsID ID, std::string value) : CoreModifiableAttributeData<maCoreItemValue, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
 			{
 				if (value != "")
 				{
@@ -128,7 +128,6 @@ namespace Kigs
 		// ****************************************
 
 		using maCoreItem = maCoreItemHeritage<false>;
-		using maCoreItemDynamic = maCoreItemHeritage<false,false,false,true>;
 
 	}
 }

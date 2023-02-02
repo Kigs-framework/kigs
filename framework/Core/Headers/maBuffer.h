@@ -17,14 +17,14 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData of reference with different notification level
 		*/
 		// ****************************************
-	template<unsigned int alignement, typename allocatedType, bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isDynamicT = false, bool isOrphanT = false>
-	class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<AlignedCoreRawBuffer<alignement, allocatedType>>, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>
+	template<unsigned int alignement, typename allocatedType, bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+	class maBufferHeritage : public CoreModifiableAttributeData<SmartPointer<AlignedCoreRawBuffer<alignement, allocatedType>>, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
-		template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isDynamicTe, bool isOrphanTe>
-		using TemplateForPlacementNew = maBufferHeritage<alignement, allocatedType, notiflevel, isInitTe, isReadOnlyTe, isDynamicTe, isOrphanTe>;
+		template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isOrphanTe>
+		using TemplateForPlacementNew = maBufferHeritage<alignement, allocatedType, notiflevel, isInitTe, isReadOnlyTe, isOrphanTe>;
 			using UnderlyingType = SmartPointer<AlignedCoreRawBuffer<alignement, allocatedType>>;
 
-		using BaseType = CoreModifiableAttributeData<SmartPointer<AlignedCoreRawBuffer<alignement, allocatedType>>, notificationLevel, isInitT, isReadOnlyT, isDynamicT, isOrphanT>;
+		using BaseType = CoreModifiableAttributeData<SmartPointer<AlignedCoreRawBuffer<alignement, allocatedType>>, notificationLevel, isInitT, isReadOnlyT, isOrphanT>;
 
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maBufferHeritage, TemplateForPlacementNew, UnderlyingType, CoreModifiable::ATTRIBUTE_TYPE::COREBUFFER);
 
@@ -167,8 +167,6 @@ namespace Kigs
 		// ****************************************
 
 		using maBuffer = maBufferHeritage<16, char, false>;
-		using maBufferDynamic = maBufferHeritage<16, char, false,false,false,true>;
-
 
 	}
 }

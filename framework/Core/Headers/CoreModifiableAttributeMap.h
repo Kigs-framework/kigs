@@ -18,7 +18,7 @@ namespace Kigs
 
 		// CoreModifiableAttributeMapBase are never dynamic or orphan
 		template<typename T, bool notifOwnerT = false, bool isInitT = false, bool isReadOnlyT = false>
-		class CoreModifiableAttributeMapBase : public CoreModifiableAttributeTemplated< notifOwnerT, isInitT, isReadOnlyT, false, false>
+		class CoreModifiableAttributeMapBase : public CoreModifiableAttributeTemplated< notifOwnerT, isInitT, isReadOnlyT, false>
 		{
 			using CoreModifiableAttribute::mID;
 			using CoreModifiableAttribute::mPlaceHolderForSonClasses;
@@ -29,13 +29,13 @@ namespace Kigs
 		protected:
 			friend CoreModifiable;
 			// special constructor, the owner will be set afterward
-			CoreModifiableAttributeMapBase(uintptr_t offsetOnValue, const KigsID& ID) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, false, false >(nullptr, ID)
+			CoreModifiableAttributeMapBase(uintptr_t offsetOnValue, const KigsID& ID) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, false >(nullptr, ID)
 			{
 				mPlaceHolderForSonClasses = (u32)offsetOnValue;
 			}
 		public:
 
-			explicit CoreModifiableAttributeMapBase(InheritanceSwitch tag) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, false, false>(tag) {}
+			explicit CoreModifiableAttributeMapBase(InheritanceSwitch tag) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, false>(tag) {}
 
 			friend class CoreModifiable;
 			size_t MemorySize() const override { return sizeof(T); };
