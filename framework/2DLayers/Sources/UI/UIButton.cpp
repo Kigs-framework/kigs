@@ -19,16 +19,6 @@ using namespace Kigs::Input;
 IMPLEMENT_CLASS_INFO(UIButton)
 
 IMPLEMENT_CONSTRUCTOR(UIButton)
-	, mClickDownAction(*this, "ClickDownAction", "")
-	, mClickUpAction(*this, "ClickUpAction", "")
-	, mMouseOverAction(*this, "MouseOverAction", "")
-	, mMouseOutAction(*this, "MouseOutAction", "")
-	, mUnSelectAction(*this, "UnSelectAction", "")
-	, mParameter(*this, "Parameter", (std::string)"")
-	, mStayPressed(*this, "StayPressed", false)
-	, mKeepClickOutside(*this, "KeepClickOutside", false)
-	, mDefaultPressed(*this, "DefaultPressed", false)
-	, mAutoResize(*this, "AutoResize", true)
 	, mInside(false)
 	, mIsDown(false)
 	, mIsMouseOver(false)
@@ -168,10 +158,10 @@ bool UIButton::ManageClickTouchEvent(Input::ClickEvent& click_event)
 	}
 	else if (click_event.state == StateRecognized)
 	{
-		if (!EmitSignal(Signals::ClickUp, this, (usString)mParameter.const_ref())) // if no one connected send classic message
+		if (!EmitSignal(Signals::ClickUp, this, mParameter)) // if no one connected send classic message
 		{
 			std::vector<CoreModifiableAttribute*> sendParams;
-			sendParams.push_back(&mParameter);
+			sendParams.push_back(getAttribute("Parameter"));
 			SendButtonNotifications(mClickUpAction, this, sendParams);
 		}
 		*click_event.swallow_mask |= (1 << InputEventType::Click);
@@ -206,27 +196,27 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 		{
 		case DirectTouchEvent::TouchHover:
 			if (mUseHoverColor) setValue("Color", (v3f)mHoverColor), setValue("Opacity", mHoverColor[3]);
-			if(!EmitSignal(Signals::MouseOver, this, (usString)mParameter.const_ref())) // if no one connected send classic message
+			if(!EmitSignal(Signals::MouseOver, this, mParameter)) // if no one connected send classic message
 			{
 				std::vector<CoreModifiableAttribute*> sendParams;
-				sendParams.push_back(&mParameter);
+				sendParams.push_back(getAttribute("Parameter"));
 				SendButtonNotifications(mMouseOverAction, this, sendParams);
 			}
 			mIsMouseOver = true;
 			break;
 		case DirectTouchEvent::TouchDown:
 			if (mUseHoverColor)setValue("Color", (v3f)mClickedColor), setValue("Opacity", mClickedColor[3]);
-			if(!EmitSignal(Signals::ClickDown, this, (usString)mParameter.const_ref())) // if no one connected send classic message
+			if(!EmitSignal(Signals::ClickDown, this, mParameter)) // if no one connected send classic message
 			{
 				std::vector<CoreModifiableAttribute*> sendParams;
-				sendParams.push_back(&mParameter);
+				sendParams.push_back(getAttribute("Parameter"));
 				SendButtonNotifications(mClickDownAction, this, sendParams);
 			}
 			mIsDown = true;
 			break;
 		case DirectTouchEvent::TouchUp:
 			if (mUseHoverColor) setValue("Color", mIsMouseOver ? (v3f)mHoverColor : (v3f)mIdleColor), setValue("Opacity", mIsMouseOver ? mHoverColor[3] : mIdleColor[3]);
-			EmitSignal(Signals::TouchUp, this, (usString)mParameter.const_ref());
+			EmitSignal(Signals::TouchUp, this, mParameter);
 			break;
 		}
 	}
@@ -260,10 +250,10 @@ bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 		{
 			// hover ended
 			if (mUseHoverColor) setValue("Color", (v3f)mIdleColor), setValue("Opacity", mIdleColor[3]);
-			if(!EmitSignal(Signals::MouseOut, this, (usString)mParameter.const_ref())) // if no one connected send classic message
+			if(!EmitSignal(Signals::MouseOut, this, mParameter)) // if no one connected send classic message
 			{
 				std::vector<CoreModifiableAttribute*> sendParams;
-				sendParams.push_back(&mParameter);
+				sendParams.push_back(getAttribute("Parameter"));
 				SendButtonNotifications(mMouseOutAction, this, sendParams);
 			}
 		}

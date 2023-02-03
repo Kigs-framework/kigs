@@ -69,7 +69,7 @@ void	API3DLight::InitModifiable()
 
 		mSpotCutoffUniform = KigsCore::GetInstanceOf(getName() + "SpotCutoffUniform", "API3DUniformFloat");
 		mSpotCutoffUniform->setValue("UniformName", "spotCutoff");
-		mSpotCutoffUniform->setValue("Value", cosf(mSpotCutOff.const_ref())); // send directly the cos, so don't have to do it at each fragment
+		mSpotCutoffUniform->setValue("Value", cosf(mSpotCutOff)); // send directly the cos, so don't have to do it at each fragment
 		mSpotCutoffUniform->Init();
 
 
@@ -131,7 +131,7 @@ void API3DLight::NotifyUpdate(const unsigned int  labelid)
 	else if (labelid == KigsID("SpotCutOff")._id)
 	{
 		if (mSpotCutoffUniform)
-			mSpotCutoffUniform->setValue("Value", cosf(mSpotCutOff.const_ref())); // send directly the cos, so don't have to do it at each fragment
+			mSpotCutoffUniform->setValue("Value", cosf(mSpotCutOff)); // send directly the cos, so don't have to do it at each fragment
 	}
 	else if (labelid == KigsID("SpotAttenuation")._id)
 	{

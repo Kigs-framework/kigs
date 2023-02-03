@@ -49,7 +49,7 @@ void ShaderBase::NotifyUpdate(const unsigned int labelid)
 	{
 		Dealloc();
 		// rebuild only if both shaders are set
-		if ((((std::string)mVertexShader) != "") && (((std::string)mFragmentShader) != ""))
+		if ((mVertexShader != "") && (mFragmentShader != ""))
 		{
 			BuildShaderStruct* toAdd=Rebuild();
 			insertBuildShader(mCurrentShaderKey, toAdd);

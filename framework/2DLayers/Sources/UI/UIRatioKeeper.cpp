@@ -1,6 +1,6 @@
 #include "UI/UIRatioKeeper.h"
-#include "Base2DLayer.h"
 #include "RenderingScreen.h"
+#include "Abstract2DLayer.h"
 
 using namespace Kigs::Draw2D;
 

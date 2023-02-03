@@ -1,6 +1,6 @@
 #pragma once
 #include "CoreModifiable.h"
-#include "maNumeric.h"
+#include "CoreModifiableAttribute.h"
 
 namespace Kigs
 {

@@ -115,10 +115,10 @@ void	LuaBehaviour::InitModifiable()
 	
 	if(_isInit)
 	{
-		if(mScript.const_ref() != "")
+		if(mScript != "")
 		{
 			bool ok = false;
-			const char * buf = ((std::string)mScript).c_str();
+			const char * buf = mScript.c_str();
 			if (*buf == '#') 
 			{
 				buf++;
@@ -126,7 +126,7 @@ void	LuaBehaviour::InitModifiable()
 			}
 			else
 			{
-				ok = mLuaModule->ExecuteString(((std::string)mScript).c_str());
+				ok = mLuaModule->ExecuteString(mScript.c_str());
 			}
 			
 			
@@ -254,7 +254,7 @@ DEFINE_METHOD(LuaBehaviour, ReloadScript)
 	}
 	
 	bool ok = false;
-	const char * buf = ((std::string)mScript).c_str();
+	const char * buf = mScript.c_str();
 
 	if (*buf == '#')
 	{
@@ -263,7 +263,7 @@ DEFINE_METHOD(LuaBehaviour, ReloadScript)
 	}
 	else
 	{
-		ok = mLuaModule->ExecuteString(((std::string)mScript).c_str());
+		ok = mLuaModule->ExecuteString(mScript.c_str());
 	}
 	if (!ok) return false;
 

@@ -116,13 +116,13 @@ namespace Kigs
 				return false;
 			}*/
 
-			inline const unsigned short& operator[](unsigned int i)const
+			inline const unsigned short& operator[](size_t i)const
 			{
 				// warning, no check for out of bound
 				return mString[i];
 			}
 
-			inline unsigned short& operator[](unsigned int i)
+			inline unsigned short& operator[](size_t i)
 			{
 				// warning, no check for out of bound
 				return mString[i];
@@ -369,6 +369,18 @@ namespace Kigs
 				copy(toCopy);
 
 				return *this;
+			}
+
+			usString& operator=(const unsigned short* _value)
+			{
+				usString tmp(_value);
+				return this->operator=(tmp);
+			}
+
+			usString& operator=(const std::string& _value)
+			{
+				usString tmp(_value);
+				return this->operator=(tmp);
 			}
 
 			bool operator==(const usString& _value) const

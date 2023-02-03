@@ -895,7 +895,7 @@ bool	OpenGLTexture::Load()
 	{
 		auto pathManager = KigsCore::Singleton<File::FilePathManager>();
 
-		std::string fileName = mFileName.const_ref();
+		std::string fileName = mFileName;
 
 		if (fileName != "")
 		{

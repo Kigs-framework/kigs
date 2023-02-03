@@ -229,18 +229,22 @@ namespace Kigs
 
 			Matrix3x3											mLocalTransformMatrix;
 			Matrix3x3											mGlobalTransformMatrix;
-
-			maInt												mPriority;
-			maFloat												mRotationAngle;
-			maVect2DF											mSize;
-			maVect2DF											mDock;
-			maVect2DF											mAnchor;
-			maVect2DF											mPosition;
-			maVect2DF											mPreScale;
-			maVect2DF											mPostScale;
 			maEnum<7>											mSizeModeX = BASE_ATTRIBUTE(SizeModeX, "Default", "Multiply", "Add", "Content", "ContentMult", "ContentAdd", "KeepRatio");
 			maEnum<7>											mSizeModeY = BASE_ATTRIBUTE(SizeModeY, "Default", "Multiply", "Add", "Content", "ContentMult", "ContentAdd", "KeepRatio");
-			maBool												mClipSons;
+
+
+			int													mPriority = 0;
+			float												mRotationAngle = 0.0f;			
+			bool												mClipSons = false;
+			v2f													mSize = {0.0f,0.0f};
+			v2f													mDock = { 0.0f,0.0f };
+			v2f													mAnchor = { 0.0f,0.0f };
+			v2f													mPosition = { 0.0f,0.0f };
+			v2f													mPreScale = { 1.0f,1.0f };
+			v2f													mPostScale = { 1.0f,1.0f };
+
+
+			WRAP_ATTRIBUTES(mPriority, mRotationAngle, mSize, mDock, mAnchor, mPosition, mPreScale, mPostScale, mClipSons);
 
 			maReference											mCustomShader = BASE_ATTRIBUTE(CustomShader, "");
 

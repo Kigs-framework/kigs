@@ -55,7 +55,7 @@ void API3DShader::NotifyUpdate(const unsigned int labelid)
 	{
 		Dealloc();
 		// rebuild only if both shaders are set
-		if ((((std::string)mVertexShader) != "") && (((std::string)mFragmentShader) != ""))
+		if ((mVertexShader != "") && (mFragmentShader != ""))
 		{
 			Rebuild();
 		}
@@ -370,7 +370,7 @@ void	API3DShader::InitModifiable()
 void	API3DShader::DelayedInit(TravState* state)
 {
 
-	if ((((std::string)mVertexShader) != "") && (((std::string)mFragmentShader) != ""))
+	if ((mVertexShader != "") && (mFragmentShader != ""))
 	{
 		Drawable::InitModifiable();
 
@@ -578,7 +578,7 @@ DEFINE_METHOD(API3DShader, Reload)
 {
 	Dealloc();
 	// rebuild only if both shaders are set
-	if ((((std::string)mVertexShader) != "") && (((std::string)mFragmentShader) != ""))
+	if ((mVertexShader != "") && (mFragmentShader != ""))
 	{
 		auto toAdd=Rebuild();
 		insertBuildShader(mCurrentShaderKey, toAdd);

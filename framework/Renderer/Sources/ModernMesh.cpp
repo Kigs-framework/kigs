@@ -127,10 +127,10 @@ void ModernMesh::InitModifiable()
 		{
 			RemoveDynamicAttribute("IsCreatedFromExport");
 		}
-		else if ((!mWasBuild) && (mFileName.const_ref() != ""))
+		else if ((!mWasBuild) && (mFileName != ""))
 		{
 			auto pathManager = KigsCore::Singleton<File::FilePathManager>();
-			auto filename = mFileName.const_ref();
+			std::string filename = mFileName;
 
 			/*if (filename.substr(filename.size() - 4) == ".xml" || filename.substr(filename.size() - 5) == ".kxml")
 			{
@@ -143,7 +143,7 @@ void ModernMesh::InitModifiable()
 			else*/
 			{
 				std::string fullfilename;
-				SmartPointer<File::FileHandle> fullfilenamehandle = pathManager->FindFullName(mFileName.const_ref());
+				SmartPointer<File::FileHandle> fullfilenamehandle = pathManager->FindFullName(mFileName);
 				if (fullfilenamehandle)
 				{
 					fullfilename = fullfilenamehandle->mFullFileName;
@@ -340,7 +340,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 {
 #ifdef WIN32
 	HDrawable::PrepareExport(settings);
-	if (mFileName.const_ref().empty())
+	if (mFileName.empty())
 	{
 		AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "IsCreatedFromExport");
 		setValue("IsCreatedFromExport", true);
@@ -434,7 +434,7 @@ void ModernMesh::PrepareExport(ExportSettings* settings)
 // called after the object was exported (remove dynamics added before export)
 void ModernMesh::EndExport(ExportSettings* settings)
 {
-	if (mFileName.const_ref().empty())
+	if (mFileName.empty())
 	{
 		RemoveDynamicAttribute("IsCreatedFromExport");
 	}

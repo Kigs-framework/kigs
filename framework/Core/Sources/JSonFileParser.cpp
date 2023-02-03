@@ -743,7 +743,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonObjectStart)
 	{
 		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<std::string>*)mCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
+			((CoreMap<std::string>*)mCurrentObject.get())->set(*((maString*)params[0]), toAdd);
 		}
 		else if (mCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
@@ -786,7 +786,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonArrayStart)
 	{
 		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<std::string>*)mCurrentObject.get())->set(((maString*)params[0])->const_ref(), toAdd);
+			((CoreMap<std::string>*)mCurrentObject.get())->set(*((maString*)params[0]), toAdd);
 		}
 		else if (mCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
@@ -836,7 +836,7 @@ DEFINE_METHOD(DictionaryFromJson,JSonParamList)
 		int idx = 0;
 		for(unsigned int i = 0; i < params.size(); i+=2)
 		{
-			std::string L_Key = (*(maString*)params[i]).const_ref();
+			std::string L_Key = (*(maString*)params[i]);
 			idx = i+1;
 
 			auto paramType = params[idx]->getType();
@@ -955,7 +955,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonObjectStart)
 	{
 		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<usString>*)mCurrentObject.get())->set(((maUSString*)params[0])->const_ref(), toAdd);
+			((CoreMap<usString>*)mCurrentObject.get())->set(*((maUSString*)params[0]), toAdd);
 		}
 		else if (mCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
@@ -998,7 +998,7 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonArrayStart)
 	{
 		if (mCurrentObject->GetType() == CoreItem::COREMAP)
 		{
-			((CoreMap<usString>*)mCurrentObject.get())->set(((maUSString*)params[0])->const_ref(), toAdd);
+			((CoreMap<usString>*)mCurrentObject.get())->set(*((maUSString*)params[0]), toAdd);
 		}
 		else if (mCurrentObject->GetType() == CoreItem::COREVECTOR)
 		{
@@ -1047,14 +1047,14 @@ DEFINE_METHOD(DictionaryFromJsonUTF16, JSonParamList)
 		int idx = 0;
 		for (unsigned int i = 0; i < params.size(); i += 2)
 		{
-			usString L_Key = ((maUSString*)params[i])->const_ref();
+			usString L_Key = *((maUSString*)params[i]);
 			idx = i + 1;
 
 			auto paramType = params[idx]->getType();
 
 			if ((paramType == ATTRIBUTE_TYPE::STRING) || (paramType == ATTRIBUTE_TYPE::USSTRING))
 			{
-				CoreItemSP L_Value = MakeCoreValue(((maUSString*)params[idx])->const_ref());
+				CoreItemSP L_Value = MakeCoreValue(*((maUSString*)params[idx]));
 
 				if (L_IsVector)
 					((CoreVector*)mCurrentObject.get())->push_back(L_Value);

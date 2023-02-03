@@ -883,7 +883,7 @@ void UIDynamicText::PreprocessTags()
 		mCurrentString = mText;
 		return;
 	}
-	mCurrentString = TextTagProcessor(mText.const_ref(), &mPreprocessedTags, &mInlineItems, this);
+	mCurrentString = TextTagProcessor(mText, &mPreprocessedTags, &mInlineItems, this);
 }
 
 void UIDynamicText::SetUpNodeIfNeeded()
@@ -896,31 +896,31 @@ void UIDynamicText::SetUpNodeIfNeeded()
 
 void UIDynamicText::NotifyUpdate(const unsigned int labelID)
 {
-	if (labelID == mText.id() || labelID == mIgnoreTags.id())
+	if (labelID == KigsID("Text")._id || labelID == KigsID("IgnoreTags")._id)
 	{
 		mTextChanged = true;
 	}
-	else if (labelID == mSize.id()
-		|| labelID == mTextAlign.id()
-		|| labelID == mMaxWidth.id()
-		|| labelID == mFontScaleFactor.id()
-		|| labelID == mSizeModeX.id()
-		|| labelID == mSizeModeY.id()
-		|| labelID == mSelectedCharacter.id()
-		|| labelID == mShowCursor.id()
-		|| labelID == mIgnoreColorTags.id()
-		|| labelID == mExtraLineSpacing.id()
-		|| labelID == mOpacity.id()
-		|| labelID == mColor.id()
+	else if (labelID == KigsID("Size")._id
+		|| labelID == KigsID("TextAlign")._id
+		|| labelID == KigsID("MaxWidth")._id
+		|| labelID == KigsID("FontScaleFactor")._id
+		|| labelID == KigsID("SizeModeX")._id
+		|| labelID == KigsID("SizeModeY")._id
+		|| labelID == KigsID("SelectedCharacter")._id
+		|| labelID == KigsID("ShowCursor")._id
+		|| labelID == KigsID("IgnoreColorTags")._id
+		|| labelID == KigsID("ExtraLineSpacing")._id
+		|| labelID == KigsID("Opacity")._id
+		|| labelID == KigsID("Color")._id
 		)
 	{
 		mChanged = true;
 	}
-	else if (labelID == mFont.id() || labelID == mFontSize.id())
+	else if (labelID == KigsID("Font")._id || labelID == KigsID("FontSize")._id)
 	{
 		mFontChanged = true;
 	}
-	else if (labelID == mPickable.id())
+	else if (labelID == KigsID("Pickable")._id)
 	{
 		auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 		if (mPickable)

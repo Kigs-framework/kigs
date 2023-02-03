@@ -198,7 +198,7 @@ std::string  Kigs::Core::to_utf8(const wchar_t* buffer, size_t len)
 		CP_UTF8,
 		0,
 		buffer,
-		len,
+		(int)len,
 		NULL,
 		0,
 		NULL,
@@ -211,7 +211,7 @@ std::string  Kigs::Core::to_utf8(const wchar_t* buffer, size_t len)
 		CP_UTF8,
 		0,
 		buffer,
-		len,
+		(int)len,
 		const_cast<char*>(newbuffer.c_str()),
 		nChars,
 		NULL,
@@ -231,7 +231,7 @@ std::wstring Kigs::Core::to_wchar(const char* buffer, size_t len)
 		CP_UTF8,
 		0,
 		buffer,
-		len,
+		(int)len,
 		NULL,
 		0);
 
@@ -243,7 +243,7 @@ std::wstring Kigs::Core::to_wchar(const char* buffer, size_t len)
 		CP_UTF8,
 		0,
 		buffer,
-		len,
+		(int)len,
 		const_cast<wchar_t*>(newbuffer.c_str()),
 		nChars);
 

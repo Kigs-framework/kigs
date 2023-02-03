@@ -36,6 +36,6 @@ void	UIScrollingText::Update(const Timer& a_timer, void* addParam)
 		mElapsedTime = 0;
 		mScrollIndex++;
 		mLength = mScrollIndex;
-		ChangeText(mText.const_ref());
+		ChangeText(mText);
 	}
 }

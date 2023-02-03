@@ -286,7 +286,7 @@ void Node3DDelayed::PrepareExport(ExportSettings *settings)
 		mContentAdded = false;
 	}
 
-	if (mFileName.const_ref().empty())
+	if (mFileName.empty())
 	{
 		mFileName = getName() + "_content.xml";
 	}

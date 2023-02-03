@@ -16,174 +16,45 @@ namespace Kigs
 		*/
 		// ****************************************
 
-		// CoreModifiableAttributeMapBase are never dynamic or orphan
-		template<typename T, bool notifOwnerT = false, bool isInitT = false, bool isReadOnlyT = false>
-		class CoreModifiableAttributeMapBase : public CoreModifiableAttributeTemplated< notifOwnerT, isInitT, isReadOnlyT, false>
+		template<typename T, bool notifOwnerT = false, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+		class CoreModifiableAttributeMap : public CoreModifiableAttributeDataInterface<2, T, notifOwnerT, isInitT, isReadOnlyT, isOrphanT>
 		{
 			using CoreModifiableAttribute::mID;
 			using CoreModifiableAttribute::mPlaceHolderForSonClasses;
+
 		private:
-			CoreModifiableAttributeMapBase(CoreModifiable& owner, KigsID ID, const T& value) = delete;
-			CoreModifiableAttributeMapBase(CoreModifiable& owner, KigsID ID) = delete;
+			CoreModifiableAttributeMap(CoreModifiable& owner, KigsID ID, const T& value) = delete;
+			CoreModifiableAttributeMap(CoreModifiable& owner, KigsID ID) = delete;
 
 		protected:
 			friend CoreModifiable;
 			// special constructor, the owner will be set afterward
-			CoreModifiableAttributeMapBase(uintptr_t offsetOnValue, const KigsID& ID) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, false >(nullptr, ID)
+			CoreModifiableAttributeMap(uintptr_t offsetOnValue, const KigsID& ID) : CoreModifiableAttributeDataInterface<2,T,notifOwnerT, isInitT, isReadOnlyT, false >(nullptr, ID)
 			{
 				mPlaceHolderForSonClasses = (u32)offsetOnValue;
 			}
 		public:
 
-			explicit CoreModifiableAttributeMapBase(InheritanceSwitch tag) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, false>(tag) {}
+			explicit CoreModifiableAttributeMap(InheritanceSwitch tag) : CoreModifiableAttributeDataInterface<2,T,notifOwnerT, isInitT, isReadOnlyT, false>(tag) {}
 
 			friend class CoreModifiable;
-			size_t MemorySize() const override { return sizeof(T); };
-
-			CoreModifiable::ATTRIBUTE_TYPE getType() const override { return TypeToEnum<T>::value; }
-			CoreModifiable::ATTRIBUTE_TYPE getArrayElementType() const override { return AraryTypeToEnum<T>::value; }
-
-			size_t getNbArrayElements() const override {
-				if constexpr (impl::is_array<std::remove_cv_t<T>>::value)
-				{
-					return impl::arraySize<T>();
-				}
-				return 0;
-			}
-			size_t getNbArrayColumns() const override {
-				if constexpr (impl::is_array<std::remove_cv_t<T>>::value)
-				{
-					return impl::arrayColumnCount<T>();
-				}
-				return 0;
-			}
-			size_t getNbArrayLines() const override {
-				if constexpr (impl::is_array<std::remove_cv_t<T>>::value)
-				{
-					return impl::arrayLineCount<T>();
-				}
-				return 0;
-			}
-
-			void* getRawValue(CoreModifiable* owner) override { return &value(owner); };
-
-			// TODO Return true if the copy was done correctly
-			bool	CopyAttribute(const CoreModifiableAttribute& other) { return false; }
-
-
-#define DECLARE_SET(type)	bool setValue(type val,CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); if( CoreConvertValue(val,value(owner)) ) { DO_NOTIFICATION(notifOwnerT); return true;} return false;  }
-
-			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET);
-			DECLARE_SET(const char*);
-			DECLARE_SET(const std::string&);
-			DECLARE_SET(const unsigned short*);
-			DECLARE_SET(const usString&);
-			DECLARE_SET(const UTF8Char*);
-			DECLARE_SET(const v2f&);
-			DECLARE_SET(const v3f&);
-			DECLARE_SET(const v4f&);
-
-#define DECLARE_GET(type)	bool getValue(type val,const CoreModifiable* owner) const override { return CoreConvertValue(value(owner),val); }
-
-			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET);
-			DECLARE_GET(std::string&);
-			DECLARE_GET(usString&);
-			DECLARE_GET(v2f&);
-			DECLARE_GET(v3f&);
-			DECLARE_GET(v4f&);
-
-
-#define DECLARE_SETARRAYVALUE(type)	bool setArrayValue(type val,CoreModifiable* owner, size_t nbElements ) override {RETURN_ON_READONLY(isReadOnlyT);\
-		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
-			size_t currentColumnIndex=0, currentLineIndex=0;\
-			for (size_t i = 0; i < nbElements; i++){\
-				if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
-					if (!CoreConvertValue(val[i], value(owner)[currentColumnIndex][currentLineIndex])) { return false; }\
-				}else {\
-					if (!CoreConvertValue(val[i], value(owner)[currentColumnIndex])) { return false; }\
-				}\
-				currentLineIndex++;\
-				if (currentLineIndex >= impl::arrayLineCount<std::remove_cv_t<T>>()){\
-					currentColumnIndex++; currentLineIndex=0;\
-					if (impl::arrayColumnCount<std::remove_cv_t<T>>() <= currentColumnIndex){break;}\
-				}}\
-			DO_NOTIFICATION(notifOwnerT); return true;}\
-		return false; }
-
-			EXPAND_MACRO_FOR_BASE_TYPES(const, *, DECLARE_SETARRAYVALUE);
-
-#define DECLARE_GETARRAYVALUE(type) bool getArrayValue(type * const  val  ,const CoreModifiable* owner, size_t  nbElements ) const override {\
-		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
-			size_t currentColumnIndex=0, currentLineIndex=0;\
-			for (size_t i = 0; i < nbElements; i++){\
-				if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
-					if (!CoreConvertValue(value(owner)[currentColumnIndex][currentLineIndex],val[i])) { return false; }\
-				}else {\
-					if (!CoreConvertValue(value(owner)[currentColumnIndex],val[i])) { return false; }\
-				}\
-				currentLineIndex++;\
-				if (currentLineIndex >= impl::arrayLineCount<std::remove_cv_t<T>>()){\
-					currentColumnIndex++; currentLineIndex=0;\
-					if (impl::arrayColumnCount<std::remove_cv_t<T>>() <= currentColumnIndex){break;}\
-				}}\
-			 return true;}\
-		return false; }
-
-			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_GETARRAYVALUE);
-
-#define DECLARE_SETARRAYELEMENTVALUE(type)	bool setArrayElementValue(type val,CoreModifiable* owner, size_t  line , size_t  column ) override {RETURN_ON_READONLY(isReadOnlyT);\
-		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
-			if( (line >= impl::arrayLineCount<std::remove_cv_t<T>>()) || (column >= impl::arrayColumnCount<std::remove_cv_t<T>>())) {return false;}\
-			if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
-				if (!CoreConvertValue(val, value(owner)[column][line])) { return false; }\
-			}else{\
-				if (!CoreConvertValue(val, value(owner)[column])) { return false; }\
-			}\
-			DO_NOTIFICATION(notifOwnerT);\
-			return true;}\
-		return false; }
-
-			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAYELEMENTVALUE);
-			DECLARE_SETARRAYELEMENTVALUE(const std::string&);
-
-#define DECLARE_GETARRAYELEMENTVALUE(type)	bool getArrayElementValue(type  val , const CoreModifiable* owner, size_t  line , size_t  column ) const override{\
-		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
-			if( (line >= impl::arrayLineCount<std::remove_cv_t<T>>()) || (column >= impl::arrayColumnCount<std::remove_cv_t<T>>())) {return false;}\
-			if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
-				if (!CoreConvertValue(value(owner)[column][line],val)) {return false;}\
-			}else{\
-				if (!CoreConvertValue(value(owner)[column],val)) {return false;}\
-			}\
-			return true;}\
-		return false; }
-
-			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GETARRAYELEMENTVALUE);
-			DECLARE_GETARRAYELEMENTVALUE(std::string&);
-
-#undef DECLARE_SET
-#undef DECLARE_GET
-#undef DECLARE_SETARRAYVALUE
-#undef DECLARE_GETARRAYVALUE
-#undef DECLARE_SETARRAYELEMENTVALUE
-#undef DECLARE_GETARRAYELEMENTVALUE
-
 
 		protected:
 
-
-
-			T& value(const void* instance)
+			void doPlacementNew(u8 mask) override
 			{
-				uintptr_t pos((uintptr_t)instance);
-				pos += mPlaceHolderForSonClasses;
-				return *((T*)pos);
-			}
-
-			const T& value(const void* instance) const
-			{
-				uintptr_t pos((uintptr_t)instance);
-				pos += mPlaceHolderForSonClasses;
-				return *((const T*)pos);
+				switch (mask)
+				{
+					case 0: new (this) CoreModifiableAttributeMap<T, false, false, false>(InheritanceSwitch{}); break;
+					case 1: new (this) CoreModifiableAttributeMap<T, true, false, false>(InheritanceSwitch{}); break;
+					case 2: new (this) CoreModifiableAttributeMap<T, false, true, false>(InheritanceSwitch{}); break;
+					case 3: new (this) CoreModifiableAttributeMap<T, true, true, false>(InheritanceSwitch{}); break;
+					case 4: new (this) CoreModifiableAttributeMap<T, false, false, true>(InheritanceSwitch{}); break;
+					case 5: new (this) CoreModifiableAttributeMap<T, true, false, true>(InheritanceSwitch{}); break;
+					case 6: new (this) CoreModifiableAttributeMap<T, false, true, true>(InheritanceSwitch{}); break;
+					case 7: new (this) CoreModifiableAttributeMap<T, true, true, true>(InheritanceSwitch{}); break;
+					default: assert(false); break;
+				}
 			}
 
 			void changeInheritance(u8 mask) override
@@ -194,30 +65,11 @@ namespace Kigs
 				mID = keepID;
 				mPlaceHolderForSonClasses = keepPlaceHolder;
 			}
-		};
 
-		template<typename T, bool notifOwnerT = false, bool isInitT = false, bool isReadOnlyT = false>
-		class CoreModifiableAttributeMap : public CoreModifiableAttributeMapBase<T, notifOwnerT, isInitT, isReadOnlyT>
-		{
-			using CoreModifiableAttributeMapBase<T, notifOwnerT, isInitT, isReadOnlyT>::CoreModifiableAttributeMapBase;
-
-		protected:
-
-			void doPlacementNew(u8 mask) override
+			void CopyData(const CoreModifiableAttribute& other) override
 			{
-				switch (mask)
-				{
-				case 0: new (this) CoreModifiableAttributeMap<T, false, false, false>(InheritanceSwitch{}); break;
-				case 1: new (this) CoreModifiableAttributeMap<T, true, false, false>(InheritanceSwitch{}); break;
-				case 2: new (this) CoreModifiableAttributeMap<T, false, true, false>(InheritanceSwitch{}); break;
-				case 3: new (this) CoreModifiableAttributeMap<T, true, true, false>(InheritanceSwitch{}); break;
-				case 4: new (this) CoreModifiableAttributeMap<T, false, false, true>(InheritanceSwitch{}); break;
-				case 5: new (this) CoreModifiableAttributeMap<T, true, false, true>(InheritanceSwitch{}); break;
-				case 6: new (this) CoreModifiableAttributeMap<T, false, true, true>(InheritanceSwitch{}); break;
-				case 7: new (this) CoreModifiableAttributeMap<T, true, true, true>(InheritanceSwitch{}); break;
-
-				default: assert(false); break;
-				}
+				// should not be there
+				assert(false);
 			}
 
 		};
@@ -225,19 +77,19 @@ namespace Kigs
 		// specialized
 
 		template<typename pointed, bool notifOwnerT, bool isInitT, bool isReadOnlyT>
-		class CoreModifiableAttributeMap<std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT> : public CoreModifiableAttributeMapBase<std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>
+		class CoreModifiableAttributeMap<std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT> : public CoreModifiableAttributeDataInterface<2, std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>
 		{
-			using CoreModifiableAttributeMapBase<::std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>::CoreModifiableAttributeMapBase;
-			using CoreModifiableAttributeMapBase<::std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>::value;
+			using CoreModifiableAttributeDataInterface<2, ::std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>::CoreModifiableAttributeDataInterface;
+			using CoreModifiableAttributeDataInterface<2, ::std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>::valueProtectedAccess;
 		public:
 
 			bool setValue(const std::string& val, CoreModifiable* owner) override
 			{
 				RETURN_ON_READONLY(isReadOnlyT);
 				mSearchString = val;
-				::std::weak_ptr<pointed> prev = value(owner);
+				::std::weak_ptr<pointed> prev = valueProtectedAccess(owner);
 				Search(owner);
-				::std::weak_ptr<pointed> newone = value(owner);
+				::std::weak_ptr<pointed> newone = valueProtectedAccess(owner);
 				if (prev.lock() != newone.lock())
 				{
 					DO_NOTIFICATION(notifOwnerT);
@@ -249,8 +101,8 @@ namespace Kigs
 			{
 				RETURN_ON_READONLY(isReadOnlyT);
 				mSearchString.clear();
-				::std::weak_ptr<pointed> prev = value(owner);
-				value(owner) = val;
+				::std::weak_ptr<pointed> prev = valueProtectedAccess(owner);
+				valueProtectedAccess(owner) = val;
 				if (prev.lock() != val)
 				{
 					DO_NOTIFICATION(notifOwnerT);
@@ -282,7 +134,7 @@ namespace Kigs
 			virtual bool getValue(std::string& val, CoreModifiable* owner) const override
 			{
 				const_cast<CoreModifiableAttributeMap<::std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>*>(this)->Search(owner);
-				if (auto ptr = value(owner).lock())
+				if (auto ptr = valueProtectedAccess(owner).lock())
 				{
 #ifdef KEEP_NAME_AS_STRING
 					val = ptr->GetRuntimeType();
@@ -316,7 +168,7 @@ namespace Kigs
 			virtual bool getValue(CMSP& val, CoreModifiable* owner) const override
 			{
 				const_cast<CoreModifiableAttributeMap<::std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>*>(this)->Search(owner);
-				val = value(owner).lock();
+				val = valueProtectedAccess(owner).lock();
 				return true;
 			}
 
@@ -326,7 +178,7 @@ namespace Kigs
 			{
 				if (!mSearchString.empty())
 				{
-					::std::weak_ptr<pointed>& val = value(instance);
+					::std::weak_ptr<pointed>& val = valueProtectedAccess(instance);
 
 					val = CoreModifiable::SearchInstance(mSearchString, (CoreModifiable*)instance);
 
@@ -372,19 +224,19 @@ namespace Kigs
 		};
 
 		template<typename pointed, bool notifOwnerT, bool isInitT, bool isReadOnlyT>
-		class CoreModifiableAttributeMap<::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT> : public CoreModifiableAttributeMapBase<::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>
+		class CoreModifiableAttributeMap<::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT> : public CoreModifiableAttributeDataInterface<2, ::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>
 		{
-			using CoreModifiableAttributeMapBase<::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>::CoreModifiableAttributeMapBase;
-			using CoreModifiableAttributeMapBase<::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>::value;
+			using CoreModifiableAttributeDataInterface<2, ::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>::CoreModifiableAttributeDataInterface;
+			using CoreModifiableAttributeDataInterface<2, ::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>::valueProtectedAccess;
 		public:
 
 			bool setValue(const std::string& val, CoreModifiable* owner) override
 			{
 				RETURN_ON_READONLY(isReadOnlyT);
 				mSearchString = val;
-				::std::shared_ptr<pointed> prev = value(owner);
+				::std::shared_ptr<pointed> prev = valueProtectedAccess(owner);
 				Search(owner);
-				::std::shared_ptr<pointed> newone = value(owner);
+				::std::shared_ptr<pointed> newone = valueProtectedAccess(owner);
 				if (prev != newone)
 				{
 					DO_NOTIFICATION(notifOwnerT);
@@ -396,8 +248,8 @@ namespace Kigs
 			{
 				RETURN_ON_READONLY(isReadOnlyT);
 				mSearchString.clear();
-				::std::shared_ptr<pointed> prev = value(owner);
-				value(owner) = val;
+				::std::shared_ptr<pointed> prev = valueProtectedAccess(owner);
+				valueProtectedAccess(owner) = val;
 				if (prev != val)
 				{
 					DO_NOTIFICATION(notifOwnerT);
@@ -429,7 +281,7 @@ namespace Kigs
 			virtual bool getValue(std::string& val, CoreModifiable* owner) const override
 			{
 				const_cast<CoreModifiableAttributeMap<::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>*>(this)->Search(owner);
-				if (auto ptr = value(owner))
+				if (auto ptr = valueProtectedAccess(owner))
 				{
 #ifdef KEEP_NAME_AS_STRING
 					val = ptr->GetRuntimeType();
@@ -463,7 +315,7 @@ namespace Kigs
 			virtual bool getValue(CMSP& val, CoreModifiable* owner) const override
 			{
 				const_cast<CoreModifiableAttributeMap<::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>*>(this)->Search(owner);
-				val = value(owner);
+				val = valueProtectedAccess(owner);
 				return true;
 			}
 
@@ -473,7 +325,7 @@ namespace Kigs
 			{
 				if (!mSearchString.empty())
 				{
-					::std::shared_ptr<pointed>& val = value(instance);
+					::std::shared_ptr<pointed>& val = valueProtectedAccess(instance);
 
 					val = CoreModifiable::SearchInstance(mSearchString, (CoreModifiable*)instance);
 
@@ -519,17 +371,5 @@ namespace Kigs
 
 			std::string	mSearchString;
 		};
-
-
-		// 
-		template<typename valT>
-		void	CoreModifiable::addMappedAttribute(uintptr_t offset, const std::string& c, std::vector<std::pair<KigsID, CoreModifiableAttribute*>>* parent, CoreModifiableAttribute* toAdd)
-		{
-			// remove m
-			std::string attrname = c.substr(1);
-			// do placement new 
-			new (toAdd) CoreModifiableAttributeMap<valT>(offset, attrname);
-			parent->push_back({ attrname, toAdd });
-		}
 	}
 }

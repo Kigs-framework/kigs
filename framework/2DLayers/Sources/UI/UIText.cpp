@@ -36,7 +36,7 @@ void UIText::NotifyUpdate(const unsigned int labelid)
 		(labelid == KigsID("TextAlignment")._id ) ||
 		(labelid == KigsID("Length")._id ))
 	{
-		ChangeText(mText.const_ref());
+		ChangeText(mText);
 	}
 	UITexturedItem::NotifyUpdate(labelid);
 }
@@ -67,7 +67,7 @@ void UIText::InitModifiable()
 		mTexturePointer->Init();
 		mTexturePointer->GetEmptyTexture(nameBuffer);
 		mTexturePointer->SetRepeatUV(false, false);
-		ChangeText(mText.const_ref());
+		ChangeText(mText);
 	}
 }
 
@@ -124,7 +124,7 @@ void	UIText::ChangeText(const usString& _newText)
 
 		if (localized)
 		{
-			mTexturePointer->GetEmptyTexture()->CreateFromText(localized, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255, 255, Pict::TinyImage::RGBA_32_8888);
+			mTexturePointer->GetEmptyTexture()->CreateFromText(localized, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), mFont.c_str(), mTextAlignment, 255, 255, 255, 255, Pict::TinyImage::RGBA_32_8888);
 			mTexturePointer->refreshTextureInfos();
 		}
 		if (modified)
@@ -139,7 +139,7 @@ void	UIText::ChangeText(const usString& _newText)
 		else
 			L_returneValue = const_cast<unsigned short*>(_newText.us_str());
 
-		mTexturePointer->GetEmptyTexture()->CreateFromText(L_returneValue, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255,255, Pict::TinyImage::RGBA_32_8888);
+		mTexturePointer->GetEmptyTexture()->CreateFromText(L_returneValue, mMaxLines, mMaxWidth, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), mFont.c_str(), mTextAlignment, 255, 255, 255,255, Pict::TinyImage::RGBA_32_8888);
 		mTexturePointer->refreshTextureInfos();
 		if (modified)
 			free(L_returneValue);

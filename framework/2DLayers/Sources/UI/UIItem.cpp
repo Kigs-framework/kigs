@@ -10,14 +10,8 @@ using namespace Kigs::Draw2D;
 IMPLEMENT_CLASS_INFO(UIItem)
 
 IMPLEMENT_CONSTRUCTOR(UIItem)
-, mIsHidden(*this, "IsHidden", false)
-, mIsTouchable(*this, "IsTouchable", true)
-, mDisableBlend(*this, "DisableBlend", true)
-, mIsEnabled(*this, "IsEnabled", true)
-, mColor(*this, "Color", 1.0f, 1.0f, 1.0f)
-, mOpacity(*this, "Opacity", 1.0f)
 , mAlphaMask(nullptr)
-, mSwallowInputs(*this, "SwallowInputs", false)
+
 {
 	setOwnerNotification("IsHidden", true);
 	setOwnerNotification("SwallowInputs", true);

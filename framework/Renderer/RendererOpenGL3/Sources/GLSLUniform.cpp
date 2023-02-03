@@ -252,10 +252,10 @@ void	API3DUniformTexture::InitModifiable()
 {
 	if (!IsInit())
 	{
-		if ((mTextureName.const_ref()) != "")
+		if (mTextureName != "")
 		{
 			auto textureManager = KigsCore::Singleton<TextureFileManager>();
-			mAttachedTexture = textureManager->GetTexture(mTextureName.const_ref(), false);
+			mAttachedTexture = textureManager->GetTexture(mTextureName, false);
 			if (mAttachedTexture)
 				if (!mAttachedTexture->IsInit())
 				{
@@ -345,10 +345,10 @@ void	API3DUniformDataTexture::InitModifiable()
 {
 	if (!IsInit())
 	{
-		if ((mTextureName.const_ref()) != "")
+		if (mTextureName != "")
 		{
 			auto pathManager = KigsCore::Singleton<File::FilePathManager>();
-			SmartPointer<File::FileHandle> fullfilenamehandle = pathManager->FindFullName(mTextureName.const_ref());
+			SmartPointer<File::FileHandle> fullfilenamehandle = pathManager->FindFullName(mTextureName);
 			if (fullfilenamehandle)
 			{
 				SP<Pict::TinyImage> image = Pict::TinyImage::CreateImage(fullfilenamehandle.get());

@@ -40,7 +40,7 @@ namespace Kigs
 		// * BaseUI2DLayer class
 		// * --------------------------------------
 		/**
-		* \file	Base2DLayer.h
+		* \file	BaseUI2DLayer.h
 		* \class	BaseUI2DLayer
 		* \ingroup 2DLayers
 		* \brief	UI rendering support

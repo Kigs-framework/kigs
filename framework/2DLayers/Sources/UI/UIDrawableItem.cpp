@@ -109,9 +109,9 @@ void UIDrawableItem::SetVertexArray(UIVerticesInfo * aQI)
 
 void UIDrawableItem::SetColor(UIVerticesInfo * aQI)
 {
-	unsigned char r = (unsigned char)(mColor.getArrayBuffer()[0] * 255.0f);
-	unsigned char g = (unsigned char)(mColor.getArrayBuffer()[1] * 255.0f);
-	unsigned char b = (unsigned char)(mColor.getArrayBuffer()[2] * 255.0f);
+	unsigned char r = (unsigned char)(mColor[0] * 255.0f);
+	unsigned char g = (unsigned char)(mColor[1] * 255.0f);
+	unsigned char b = (unsigned char)(mColor[2] * 255.0f);
 	unsigned char a = (unsigned char)(GetOpacity() *255.0f);
 
 	VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());

@@ -29,12 +29,12 @@ void UIButtonText::InitModifiable()
 	UIButton::InitModifiable();
 	if (_isInit)
 	{
-		if (mUpText.const_ref() != "")
-			ChangeTextTexture(mUpText.const_ref(), 0);
-		if (mOverText.const_ref() != "")
-			ChangeTextTexture(mOverText.const_ref(), 1);
-		if (mDownText.const_ref() != "")
-			ChangeTextTexture(mDownText.const_ref(), 2);
+		if (mUpText != "")
+			ChangeTextTexture(mUpText, 0);
+		if (mOverText != "")
+			ChangeTextTexture(mOverText, 1);
+		if (mDownText != "")
+			ChangeTextTexture(mDownText, 2);
 
 		AutoSize();
 
@@ -62,12 +62,12 @@ void UIButtonText::NotifyUpdate(const unsigned int labelid)
 	if (labelid == KigsID("Font")._id ||
 		labelid == KigsID("FontSize")._id )
 	{
-		if (mUpText.const_ref() != "")
-			ChangeTextTexture(mUpText.const_ref(), 0);
-		if (mOverText.const_ref() != "")
-			ChangeTextTexture(mOverText.const_ref(), 1);
-		if (mDownText.const_ref() != "")
-			ChangeTextTexture(mDownText.const_ref(), 2);
+		if (mUpText != "")
+			ChangeTextTexture(mUpText, 0);
+		if (mOverText != "")
+			ChangeTextTexture(mOverText, 1);
+		if (mDownText != "")
+			ChangeTextTexture(mDownText, 2);
 	}
 }
 void UIButtonText::ChangeTextureColor(Vector4D& UpColor, Vector4D& OverColor, Vector4D& DownColor)
@@ -183,7 +183,7 @@ void	UIButtonText::ChangeTextTexture(const std::string & a_text, unsigned int _t
 				localized = CutText(localized, modified);
 
 			if (localized)
-				L_Texture->CreateFromText(localized, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), ((std::string)mFont).c_str(), mTextAlignment, 255.0f, 255.0f, 255.0f);
+				L_Texture->CreateFromText(localized, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), mFont.c_str(), mTextAlignment, 255.0f, 255.0f, 255.0f);
 			if (modified)
 				free(localized);
 		}
@@ -193,7 +193,7 @@ void	UIButtonText::ChangeTextTexture(const std::string & a_text, unsigned int _t
 			if (mLength > 0)
 				_text = CutText(_text.c_str(), modified);
 
-			L_Texture->CreateFromText(_text.c_str(), (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), mFont.const_ref().c_str(), mTextAlignment, 255.0f, 255.0f, 255.0f);
+			L_Texture->CreateFromText(_text.c_str(), (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), mFont.c_str(), mTextAlignment, 255.0f, 255.0f, 255.0f);
 		}
 
 		float width, height;

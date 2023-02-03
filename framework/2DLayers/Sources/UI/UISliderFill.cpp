@@ -67,20 +67,20 @@ void UISliderFill::InitModifiable()
 		}
 
 		
-		if(mStartTexture.const_ref() !="")
+		if(mStartTexture !="")
 		{
-			mStartTexturePointer = textureManager->GetTexture(mStartTexture.const_ref());
+			mStartTexturePointer = textureManager->GetTexture(mStartTexture);
 		}
 
 		
-		if(mMiddleTexture.const_ref() !="")
+		if(mMiddleTexture !="")
 		{
-			mMiddleTexturePointer = textureManager->GetTexture(mMiddleTexture.const_ref());
+			mMiddleTexturePointer = textureManager->GetTexture(mMiddleTexture);
 		}
 
-		if(mEndTexture.const_ref() !="")
+		if(mEndTexture !="")
 		{
-			mEndTexturePointer = textureManager->GetTexture(mEndTexture.const_ref());
+			mEndTexturePointer = textureManager->GetTexture(mEndTexture);
 		}
 
 		//Init childs

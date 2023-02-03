@@ -158,11 +158,11 @@ void MultiMesh::RecomputeBoundingBox()
 			}
 		}
 
-		full_mesh_item->mTriangleCount = total_index_count / 3;
-		full_mesh_item->mVertexCount = total_vertex_count;
+		full_mesh_item->mTriangleCount = (s32)total_index_count / 3;
+		full_mesh_item->mVertexCount = (s32)total_vertex_count;
 
 		char* vertex_buffer = new char[total_vertex_buffer_size];
-		int total_index_buffer_size = total_vertex_count < 65536 ? total_index_count * sizeof(u16) : total_index_count * sizeof(u32);
+		int total_index_buffer_size =(int)( total_vertex_count < 65536 ? total_index_count * sizeof(u16) : total_index_count * sizeof(u32) );
 		char* index_buffer = new char[total_index_buffer_size];
 
 		unsigned int current_index = 0;

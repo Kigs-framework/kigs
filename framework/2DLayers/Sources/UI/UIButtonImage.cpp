@@ -33,24 +33,24 @@ void UIButtonImage::InitModifiable()
 		mOverTexturePointer = 0;
 		mDownTexturePointer = 0;
 		
-		if(mUpTexture.const_ref() !="")
+		if(mUpTexture !="")
 		{
-			mUpTexturePointer = KigsCore::GetInstanceOf(mUpTexture.const_ref(),"TextureHandler");
-			mUpTexturePointer->setValue("TextureName", mUpTexture.const_ref());
+			mUpTexturePointer = KigsCore::GetInstanceOf(mUpTexture,"TextureHandler");
+			mUpTexturePointer->setValue("TextureName", mUpTexture);
 			mUpTexturePointer->Init();
 		}
 
-		if (mOverTexture.const_ref() != "")
+		if (mOverTexture != "")
 		{
-			mOverTexturePointer = KigsCore::GetInstanceOf(mOverTexture.const_ref(), "TextureHandler");
-			mOverTexturePointer->setValue("TextureName", mOverTexture.const_ref());
+			mOverTexturePointer = KigsCore::GetInstanceOf(mOverTexture, "TextureHandler");
+			mOverTexturePointer->setValue("TextureName", mOverTexture);
 			mOverTexturePointer->Init();
 		}
 
-		if (mDownTexture.const_ref() != "")
+		if (mDownTexture != "")
 		{
-			mDownTexturePointer = KigsCore::GetInstanceOf(mDownTexture.const_ref(), "TextureHandler");
-			mDownTexturePointer->setValue("TextureName", mDownTexture.const_ref());
+			mDownTexturePointer = KigsCore::GetInstanceOf(mDownTexture, "TextureHandler");
+			mDownTexturePointer->setValue("TextureName", mDownTexture);
 			mDownTexturePointer->Init();
 		}
 
@@ -71,7 +71,7 @@ void UIButtonImage::NotifyUpdate(const unsigned int labelid)
 		labelid == KigsID("DownTexture")._id ||
 		labelid == KigsID("OverTexture")._id)
 	{
-		ChangeTexture(mUpTexture.const_ref(), mOverTexture.const_ref(), mDownTexture.const_ref());
+		ChangeTexture(mUpTexture, mOverTexture, mDownTexture);
 	}
 	else
 		UITexturedItem::NotifyUpdate(labelid);

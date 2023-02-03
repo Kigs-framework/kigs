@@ -70,15 +70,14 @@ namespace Kigs
 			maReferenceInit mManager;
 
 			//! size
-			maVect2DF    mSize;
-
-			maBool		mClearZBuffer = BASE_ATTRIBUTE(ClearZBuffer, false);
-			maBool		mClearColorBuffer = BASE_ATTRIBUTE(ClearColorBuffer, false);
+			v2f			mSize = {-1,-1};
+			bool		mClearZBuffer = false;
+			bool		mClearColorBuffer = false;
 			// if not interactive, don't do update (but still draw)
-			maBool		mIsInteractive;
-			maVect4DF	mClearColor = BASE_ATTRIBUTE(ClearColor, 0.0f, 0.0f, 0.0f, 1.0f);
+			bool		mIsInteractive = true;
+			v4f			mClearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-
+			WRAP_ATTRIBUTES(mSize, mClearZBuffer, mClearColorBuffer, mIsInteractive, mClearColor);
 
 		};
 	}

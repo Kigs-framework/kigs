@@ -162,16 +162,19 @@ namespace Kigs
 
 			void DoAutoUpdate();
 
-			maBool			mNeedExit = BASE_ATTRIBUTE(NeedExit, false);
+			bool			mNeedExit = false;
+
 			bool			mHasFocus;
 
 			volatile bool	mAlreadyInUpdate;
 
 			bool			mInitBaseModules;
 
-			SP<Time::Timer>			mApplicationTimer;
-
 			unsigned int	mUpdateSleepTime;
+
+			WRAP_ATTRIBUTES(mNeedExit);
+
+			SP<Time::Timer>			mApplicationTimer;
 
 			std::vector<std::string>			mArgs;
 			// list of auto updated elements + update frequency and last update time

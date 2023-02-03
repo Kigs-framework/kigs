@@ -140,7 +140,7 @@ void DrawVertice::InitModifiable()
 	Drawable::InitModifiable();
 	if (IsInit())
 	{
-		if (mTextureFileName.const_ref().size())
+		if (mTextureFileName.length())
 		{
 			auto textureManager = KigsCore::Singleton<TextureFileManager>();
 			mTexture = textureManager->GetTexture(mTextureFileName);
@@ -157,7 +157,7 @@ void DrawVertice::NotifyUpdate(const u32 labelid)
 	{
 		auto old_tex = mTexture;
 		mTexture = nullptr;
-		if (mTextureFileName.const_ref().size())
+		if (mTextureFileName.length())
 		{
 			auto textureManager = KigsCore::Singleton<TextureFileManager>();
 			mTexture = textureManager->GetTexture(mTextureFileName);

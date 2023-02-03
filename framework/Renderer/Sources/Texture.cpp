@@ -64,32 +64,32 @@ void	Texture::InitModifiable()
 	Drawable::InitModifiable();
 	if (_isInit)
 	{
-		if (mFileName.const_ref() != "")
+		if (mFileName != "")
 		{
 			if (!mIsText && !Load()) // text can be load
 			{
 #ifdef _DEBUG		
-				printf("%s not loaded !!!\n", ((std::string)mFileName).c_str());
+				printf("%s not loaded !!!\n", mFileName.c_str());
 #endif
 				UninitModifiable();
 			}
 
 			auto textureManager = KigsCore::Singleton<TextureFileManager>();
 
-			if (textureManager->HasTexture(mFileName.const_ref()))
+			if (textureManager->HasTexture(mFileName))
 			{
 #ifdef _DEBUG		
-				SP<Texture> registered=textureManager->GetTexture(mFileName.const_ref());
+				SP<Texture> registered=textureManager->GetTexture(mFileName);
 				if (registered.get() != this)
 				{
 				//	KIGS_ERROR("texture with same name already in cache", 1);
-					printf("texture with same name (%s) already in cache \n", mFileName.const_ref().c_str());
+					printf("texture with same name (%s) already in cache \n", mFileName.c_str());
 				}
 #endif
 			}
 			else
 			{
-				textureManager->AddTexture(mFileName.const_ref(), this);
+				textureManager->AddTexture(mFileName, this);
 			}
 			ComputeRatio();
 		}
@@ -105,9 +105,9 @@ CMSP Texture::getSharedInstance()
 {
 	auto textureManager = KigsCore::Singleton<TextureFileManager>();
 
-	if (textureManager->HasTexture(mFileName.const_ref()))
+	if (textureManager->HasTexture(mFileName))
 	{
-		SP<Texture> shared = textureManager->GetTexture(mFileName.const_ref());
+		SP<Texture> shared = textureManager->GetTexture(mFileName);
 		
 		return shared;
 	}

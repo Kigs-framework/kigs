@@ -223,7 +223,7 @@ bool	LuaKigsBindModule::CallCoreModifiableCallback(std::vector<CoreModifiableAtt
 {
 	if (params.size())
 	{
-		std::string funcName = ((maString*)params[0])->const_ref();
+		std::string funcName = *((maString*)params[0]);
 		LuaState L = mLuaState;
 		
 		LuaStackAssert protect{ L };
@@ -574,7 +574,7 @@ DEFINE_METHOD(LuaKigsBindModule, RegisterLuaMethod)
 
 		if (cbType) // callback type is given, so attach to the good one
 		{
-			std::string callbackType = (cbType)->const_ref();
+			std::string callbackType = *(cbType);
 
 			if (callbackType == "Global") // not a member method, just global code
 			{
@@ -582,18 +582,18 @@ DEFINE_METHOD(LuaKigsBindModule, RegisterLuaMethod)
 			}
 			else
 			{
-				KigsCore::Connect(coreModifiableTarget, callbackType, coreModifiableTarget, privateName->const_ref() CONNECT_PASS_PARAM);
+				KigsCore::Connect(coreModifiableTarget, callbackType, coreModifiableTarget, *privateName CONNECT_PASS_PARAM);
 			}
 		}
 
 
 		if (!isGlobal)
 		{
-			coreModifiableTarget->InsertMethod(privateName->const_ref(), static_cast<CoreModifiable::ModifiableMethod>(&DynamicMethodLuaGlobalCallback::LuaGlobalCallback), privateName->const_ref() CONNECT_PASS_PARAM);
+			coreModifiableTarget->InsertMethod(*privateName, static_cast<CoreModifiable::ModifiableMethod>(&DynamicMethodLuaGlobalCallback::LuaGlobalCallback), *privateName CONNECT_PASS_PARAM);
 			// if code is empty, suppose it was previously defined, don't create new code
-			if (privateCode->const_ref() != "")
+			if (*privateCode != "")
 			{
-				AddLuaMethod(coreModifiableTarget, privateName->const_ref(), privateCode->const_ref());
+				AddLuaMethod(coreModifiableTarget, *privateName, *privateCode);
 			}
 		}
 		else // global code
@@ -601,7 +601,7 @@ DEFINE_METHOD(LuaKigsBindModule, RegisterLuaMethod)
 			LuaState L = mLuaState;
 			LuaStackAssert protect{ L };
 			int top = L.top();
-			if (ExecuteString(privateCode->const_ref()))
+			if (ExecuteString(*privateCode))
 			{
 				int nb_returns = L.top() - top;
 				if (nb_returns)

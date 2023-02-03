@@ -369,13 +369,13 @@ namespace Kigs
 
 				ImFont* font = nullptr;
 				SmartPointer<CoreRawBuffer> crb;
-				if (mFontName.const_ref().size())
+				if (mFontName.length())
 				{
 					u64 len;
-					crb = ModuleFileManager::Get()->LoadFile(((std::string)mFontName).c_str(), len);
+					crb = ModuleFileManager::Get()->LoadFile(mFontName.c_str(), len);
 					if (crb)
 					{
-						font = io.Fonts->AddFontFromMemoryTTF(crb->buffer(), crb->size(), mFontSize, &config, io.Fonts->GetGlyphRangesDefault());
+						font = io.Fonts->AddFontFromMemoryTTF(crb->buffer(),(int) crb->size(), mFontSize, &config, io.Fonts->GetGlyphRangesDefault());
 					}
 				}
 				if (font) io.FontDefault = font;
@@ -385,15 +385,15 @@ namespace Kigs
 				const ImWchar icon_ranges[] = { ICON_MIN_FK, ICON_MAX_FK, 0 };
 				io.Fonts->AddFontFromMemoryTTF((void*)g_forkawesome, sizeof(g_forkawesome) - 1, font ? mFontSize : 13.0f, &config, icon_ranges);
 
-				if (mBoldFontName.const_ref().size())
+				if (mBoldFontName.length())
 				{
 					SmartPointer<CoreRawBuffer> crb_bold;
 					u64 len;
-					crb_bold = ModuleFileManager::Get()->LoadFile(((std::string)mBoldFontName).c_str(), len);
+					crb_bold = ModuleFileManager::Get()->LoadFile(mBoldFontName.c_str(), len);
 					if (crb_bold)
 					{
 						config.MergeMode = false;
-						mBoldFont = io.Fonts->AddFontFromMemoryTTF(crb_bold->buffer(), crb_bold->size(), mFontSize, &config, io.Fonts->GetGlyphRangesDefault());
+						mBoldFont = io.Fonts->AddFontFromMemoryTTF(crb_bold->buffer(),(int) crb_bold->size(), mFontSize, &config, io.Fonts->GetGlyphRangesDefault());
 						config.MergeMode = true;
 						io.Fonts->AddFontFromMemoryTTF((void*)g_forkawesome, sizeof(g_forkawesome) - 1, font ? mFontSize : 13.0f, &config, icon_ranges);
 					}
@@ -401,7 +401,7 @@ namespace Kigs
 
 				io.Fonts->Build();
 
-				auto& style = mStyle.const_ref();
+				auto& style = mStyle;
 				if (style == "MSFT")
 					SetStyleMSFT();
 				else if (style == "HoloLens")

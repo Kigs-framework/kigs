@@ -2,7 +2,7 @@
 
 #include "CoreModifiable.h"
 #include "SmartPointer.h"
-#include "maBool.h"
+#include "maNumeric.h"
 
 #include <map>
 

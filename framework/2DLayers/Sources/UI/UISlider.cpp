@@ -122,17 +122,17 @@ void UISlider::InitModifiable()
 		if(mOverTexturePointer)
 			mOverTexturePointer=0;
 
-		if(mOverTexture.const_ref() !="")
+		if(mOverTexture !="")
 		{
-			mOverTexturePointer = textureManager->GetTexture(mOverTexture.const_ref());
+			mOverTexturePointer = textureManager->GetTexture(mOverTexture);
 		}
 
 		if(mDownTexturePointer)
 			mDownTexturePointer=0;
 
-		if(mDownTexture.const_ref() !="")
+		if(mDownTexture !="")
 		{
-			mDownTexturePointer = textureManager->GetTexture(mDownTexture.const_ref());
+			mDownTexturePointer = textureManager->GetTexture(mDownTexture);
 		}
 
 

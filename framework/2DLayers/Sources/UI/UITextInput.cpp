@@ -13,7 +13,7 @@ void UITextInput::NotifyUpdate(const unsigned int labelid)
 {
 	if (labelid == KigsID("Text")._id)
 	{
-		//mIsCueBanner = (mText.const_ref().length() == 0);
+		//mIsCueBanner = (mText.length() == 0);
 		//if (mIsCueBanner)
 		//	mText = mCueBanner;
 	}
@@ -45,7 +45,7 @@ void UITextInput::UpdateKeyboard(std::vector<KeyEvent>& keys)
 {
 	if (!keys.empty() && HasFocus())
 	{
-		usString newString = mIsCueBanner ? usString("") : mText.const_ref();
+		usString newString = mIsCueBanner ? usString("") : mText;
 		newString.reserve((int)(newString.length() + mKeycodeList.size()));
 
 		for (auto& key : keys)
@@ -130,9 +130,9 @@ void UITextInput::LoseFocus()
 	ClearNodeFlag(UIItem_HasFocus);
 	KigsCore::GetNotificationCenter()->removeObserver(this,"UpdateTextInput");
 
-	if(mReleaseAction.const_ref() != "")
+	if(mReleaseAction != "")
 	{
-		KigsCore::GetNotificationCenter()->postNotificationName(mReleaseAction.const_ref(),this);
+		KigsCore::GetNotificationCenter()->postNotificationName(mReleaseAction,this);
 	}
 	theKeyboard->Hide();
 	setValue("ShowCursor", false);

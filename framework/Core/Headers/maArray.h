@@ -243,7 +243,7 @@ namespace Kigs
 				}
 			}
 
-			virtual s32	size() const override { return nbLines * nbColumns; };
+			virtual size_t	size() const { return nbLines * nbColumns; };
 
 			virtual bool getValue(void*& value, const CoreModifiable* owner) const override { value = (void*)mValue.data(); return true; }
 

@@ -403,7 +403,7 @@ void DataDrivenSequenceManager::InitModifiable()
 		currentApp->AddAutoUpdate(this);
 	}
 
-	if (mStartingSequence.const_ref() != "")
+	if (mStartingSequence != "")
 	{
 		RequestStateChange(mStartingSequence);
 	}
@@ -981,7 +981,7 @@ DEFINE_METHOD(DataDrivenSequenceManager, ChangeSequence)
 		mStateStack.clear();
 		std::string tmp;
 		// should search for the good param
-		params[0]->getValue(tmp,this);
+		params[0]->getValue(tmp, sender);
 		RequestStateChange(tmp);
 	}
 

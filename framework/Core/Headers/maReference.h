@@ -54,52 +54,44 @@ namespace Kigs
 		*/
 		// ****************************************
 
-	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
-	class maReferenceHeritage : public CoreModifiableAttributeData<maWeakReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
+		template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+		class maReferenceHeritage : public CoreModifiableAttributeData<maWeakReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maReferenceHeritage, maReferenceHeritage, maWeakReferenceObject, CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE);
 
-
+			using CoreModifiableAttribute::mID;
 		public:
 
-		maReferenceHeritage(CoreModifiable& owner, KigsID ID, std::string value) : CoreModifiableAttributeData<maWeakReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
+			maReferenceHeritage(CoreModifiable& owner, KigsID ID, std::string value) : CoreModifiableAttributeData<maWeakReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
 			, mOwner(&owner)
-			, mID(ID)
 			{
 				mValue = maWeakReferenceObject{ value };
 				Search();
 			}
 
-		maReferenceHeritage() : CoreModifiableAttributeData<maWeakReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(KigsID{ 0u }, maWeakReferenceObject{}) {}
+			maReferenceHeritage() : CoreModifiableAttributeData<maWeakReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(KigsID{ 0u }, maWeakReferenceObject{}) {}
 
 			virtual ~maReferenceHeritage()
 			{
 			}
 
-		virtual void changeInheritance(u8 mask) final
-		{
-			CoreModifiable* prevOwner(mOwner);
-			KigsID			prevID(mID);
+			virtual void changeInheritance(u8 mask) final
+			{
+				CoreModifiable* prevOwner(mOwner);
+				u32	prevID=mID;
+				maWeakReferenceObject old_value = mValue;
+				mValue.~maWeakReferenceObject();
+				this->doPlacementNew(mask);
+				mValue = old_value;
 
-			mID.~KigsID();
-			maWeakReferenceObject old_value = mValue;
-			mValue.~maWeakReferenceObject();
-			this->doPlacementNew(mask);
-			mValue = old_value;
-
-			mID = prevID;
-			mOwner = prevOwner;
-		}
+				mID = prevID;
+				mOwner = prevOwner;
+			}
 
 			// Sets the internal pointer to null, forcing to search again next time we query the reference
 			void	ResetFoundModifiable()
 			{
 				mValue.mObj.reset();
-			}
-			virtual void CopyData(const CoreModifiableAttributeData<maWeakReferenceObject>& toCopy) override
-			{
-				const auto& toCopyValue = toCopy.const_ref();
-				mValue = toCopyValue;
 			}
 
 			operator CMSP() { return SearchRef(); }
@@ -181,24 +173,22 @@ namespace Kigs
 			/// setValue overloads
 			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
-			RETURN_ON_READONLY(isReadOnlyT);
-
+				RETURN_ON_READONLY(isReadOnlyT);
 				InitAndSearch(value);
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
 			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
-			RETURN_ON_READONLY(isReadOnlyT);
-
+				RETURN_ON_READONLY(isReadOnlyT);
 				InitAndSearch(value);
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
 			virtual bool setValue(CMSP value, CoreModifiable* owner) override
 			{
-			RETURN_ON_READONLY(isReadOnlyT);
-			mValue.mObj = value;
+				RETURN_ON_READONLY(isReadOnlyT);
+				mValue.mObj = value;
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
@@ -207,8 +197,7 @@ namespace Kigs
 			auto& operator=(const std::string& value)
 			{
 				InitAndSearch(value);
-			CoreModifiable* owner = mOwner;
-			KigsID& id = mID;
+				CoreModifiable* owner = mOwner;
 				DO_NOTIFICATION(notificationLevel);
 				return *this;
 			}
@@ -225,7 +214,7 @@ namespace Kigs
 				CMSP obj;
 				if (!mValue.mSearchString.empty())
 				{
-				obj = CoreModifiable::SearchInstance(mValue.mSearchString, mOwner);
+					obj = CoreModifiable::SearchInstance(mValue.mSearchString, mOwner);
 				}
 				mValue.mObj = obj;
 				return obj;
@@ -245,8 +234,7 @@ namespace Kigs
 				return Search();
 			}
 
-		CoreModifiable* mOwner = nullptr;
-		KigsID			mID;
+			CoreModifiable* mOwner = nullptr;
 		};
 
 		// ****************************************
@@ -264,52 +252,45 @@ namespace Kigs
 		using maReferenceInit = maReferenceHeritage<false, true, false, false>;
 
 
-	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
-	class maStrongReferenceHeritage : public CoreModifiableAttributeData<maStrongReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
+		template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+		class maStrongReferenceHeritage : public CoreModifiableAttributeData<maStrongReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maStrongReferenceHeritage, maStrongReferenceHeritage, maStrongReferenceObject, CoreModifiable::ATTRIBUTE_TYPE::WEAK_REFERENCE);
 
-
+			using CoreModifiableAttribute::mID;
 		public:
 
-		maStrongReferenceHeritage(CoreModifiable& owner, KigsID ID, std::string value) : CoreModifiableAttributeData<maStrongReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
+			maStrongReferenceHeritage(CoreModifiable& owner, KigsID ID, std::string value) : CoreModifiableAttributeData<maStrongReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
 			, mOwner(&owner)
-			, mID(ID)
 			{
 				mValue = maStrongReferenceObject{ value };
 				Search();
 			}
 
-		maStrongReferenceHeritage() : CoreModifiableAttributeData<maStrongReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(KigsID{ 0u }, maStrongReferenceObject{}) {}
+			maStrongReferenceHeritage() : CoreModifiableAttributeData<maStrongReferenceObject, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(KigsID{ 0u }, maStrongReferenceObject{}) {}
 
 			virtual ~maStrongReferenceHeritage()
 			{
 			}
 
-		virtual void changeInheritance(u8 mask) final
-		{
-			CoreModifiable* prevOwner(mOwner);
-			KigsID			prevID(mID);
+			virtual void changeInheritance(u8 mask) final
+			{
+				CoreModifiable* prevOwner(mOwner);
+				u32		prevID = mID;
 
-			mID.~KigsID();
-			maStrongReferenceObject old_value = mValue;
-			mValue.~maStrongReferenceObject();
-			this->doPlacementNew(mask);
-			mValue = old_value;
+				maStrongReferenceObject old_value = mValue;
+				mValue.~maStrongReferenceObject();
+				this->doPlacementNew(mask);
+				mValue = old_value;
 
-			mID = prevID;
-			mOwner = prevOwner;
-		}
+				mID = prevID;
+				mOwner = prevOwner;
+			}
 
 			// Sets the internal pointer to null, forcing to search again next time we query the reference
 			void	ResetFoundModifiable()
 			{
 				mValue.mObj.reset();
-			}
-			virtual void CopyData(const CoreModifiableAttributeData<maStrongReferenceObject>& toCopy) override
-			{
-				const auto& toCopyValue = toCopy.const_ref();
-				mValue = toCopyValue;
 			}
 
 			operator CMSP() { return SearchRef(); }
@@ -384,7 +365,7 @@ namespace Kigs
 			/// setValue overloads
 			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
-			RETURN_ON_READONLY(isReadOnlyT);
+				RETURN_ON_READONLY(isReadOnlyT);
 
 				InitAndSearch(value);
 				DO_NOTIFICATION(notificationLevel);
@@ -392,7 +373,7 @@ namespace Kigs
 			}
 			virtual bool setValue(const std::string& value,  CoreModifiable* owner) override
 			{
-			RETURN_ON_READONLY(isReadOnlyT);
+				RETURN_ON_READONLY(isReadOnlyT);
 
 				InitAndSearch(value);
 				DO_NOTIFICATION(notificationLevel);
@@ -400,7 +381,7 @@ namespace Kigs
 			}
 			virtual bool setValue(CMSP value,  CoreModifiable* owner) override
 			{
-			RETURN_ON_READONLY(isReadOnlyT);
+				RETURN_ON_READONLY(isReadOnlyT);
 				mValue.mObj = value;
 				DO_NOTIFICATION(notificationLevel);
 				return true;
@@ -410,14 +391,13 @@ namespace Kigs
 			auto& operator=(const std::string& value)
 			{
 				InitAndSearch(value);
-			CoreModifiable* owner = mOwner;
-			KigsID& id = mID;
+				CoreModifiable* owner = mOwner;
 				DO_NOTIFICATION(notificationLevel);
 				return *this;
 			}
 			auto& operator=(CoreModifiable* value)
 			{
-			setValue(value, mOwner, mID);
+				setValue(value, mOwner);
 				return *this;
 			}
 
@@ -427,7 +407,7 @@ namespace Kigs
 				CMSP obj;
 				if (!mValue.mSearchString.empty())
 				{
-				obj = CoreModifiable::SearchInstance(mValue.mSearchString, mOwner);
+					obj = CoreModifiable::SearchInstance(mValue.mSearchString, mOwner);
 				}
 				mValue.mObj = obj;
 				return obj;
@@ -446,8 +426,7 @@ namespace Kigs
 				return Search();
 			}
 
-		CoreModifiable* mOwner = nullptr;
-		KigsID			mID;
+			CoreModifiable* mOwner = nullptr;
 		};
 
 

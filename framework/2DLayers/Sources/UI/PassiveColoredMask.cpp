@@ -77,7 +77,7 @@ void	PassiveColoredMask::InitModifiable()
             width = height = pow2width = pow2height = 0;
             
 			SmartPointer<Texture>	MaskTexture;
-			if(mMaskName.const_ref() != "")
+			if(mMaskName != "")
 			{
 				MaskTexture = textureManager->GetTexture(mMaskName);
 				MaskTexture->getValue("Width",width);

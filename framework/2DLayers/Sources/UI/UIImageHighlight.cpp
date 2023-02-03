@@ -11,7 +11,7 @@ void UIImageHighlight::InitModifiable()
 	{
 		mPLTexturePointer = mTexturePointer;
 
-		if (mHLTexture.const_ref() != "")
+		if (mHLTexture != "")
 		{
 			mHLTexturePointer = KigsCore::GetInstanceOf(mHLTexture, "TextureHandler");
 			mHLTexturePointer->setValue("TextureName", mHLTexture);

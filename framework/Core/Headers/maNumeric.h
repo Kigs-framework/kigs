@@ -6,7 +6,6 @@ namespace Kigs
 {
 	namespace Core
 	{
-
 		template<typename T>
 		using maNumeric = CoreModifiableAttributeData<T,false, false, false, false>;
 

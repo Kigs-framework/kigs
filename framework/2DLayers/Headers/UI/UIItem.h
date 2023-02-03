@@ -132,16 +132,17 @@ namespace Kigs
 			// real drawing
 			void										ProtectedDraw(Scene::TravState* state)  override {}
 
+			bool												mIsHidden = false;
+			bool												mIsTouchable = true;
+			bool												mDisableBlend = true;
+			bool												mIsEnabled = true;
+			bool												mSwallowInputs = false;
+			float												mOpacity = 1.0f;
+			v3f													mColor = { 1.0f, 1.0f, 1.0f };  // USE [0,1] RANGE
 
+			WRAP_ATTRIBUTES(mIsHidden, mIsTouchable, mDisableBlend, mIsEnabled, mSwallowInputs, mOpacity, mColor);
 
-			maBool												mIsHidden;
-			maBool												mIsTouchable;
-			maBool												mDisableBlend;
-			maBool												mIsEnabled;
-			maVect3DF											mColor;  // USE [0,1] RANGE
-			maFloat												mOpacity;
 			SP<AlphaMask>										mAlphaMask;
-			maBool												mSwallowInputs;
 
 			WRAP_METHODS(ContainsPoint, ManageInputSwallowEvent);
 		};

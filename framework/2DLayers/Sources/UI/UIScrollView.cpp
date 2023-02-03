@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "ModuleRenderer.h"
 #include "UI/UIButton.h"
-#include "Base2DLayer.h"
+#include "Abstract2DLayer.h"
 
 using namespace Kigs::Draw2D;
 

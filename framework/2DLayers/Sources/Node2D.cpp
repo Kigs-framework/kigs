@@ -12,8 +12,8 @@
 #include "Camera.h"
 #include "Core.h"
 #include "NotificationCenter.h"
-#include "Base2DLayer.h"
 #include "UI/UILayout.h"
+#include "Abstract2DLayer.h"
 
 using namespace Kigs::Draw2D;
 using namespace Kigs::Scene;
@@ -22,15 +22,6 @@ IMPLEMENT_CLASS_INFO(Node2D)
 
 IMPLEMENT_CONSTRUCTOR(Node2D)
 , mParent(nullptr)
-, mPriority(*this, "Priority", 0)
-, mSize(*this, "Size", 0,0)
-, mDock(*this, "Dock", 0, 0)
-, mAnchor(*this, "Anchor", 0, 0)
-, mPosition(*this, "Position", 0, 0)
-, mRotationAngle(*this, "RotationAngle", 0)
-, mPreScale(*this, "PreScale", 1,1)
-, mPostScale(*this, "PostScale", 1,1)
-, mClipSons(*this, "ClipSons", false)
 {
 	SetNodeFlag(Node2D_NeedUpdatePosition);
 	SetNodeFlag(Node2D_SizeChanged);

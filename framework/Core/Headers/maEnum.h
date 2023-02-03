@@ -35,17 +35,15 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData for an enum with different level of notification
 		*/
 		// ****************************************
-	template<bool notificationLevel, unsigned int nbElements, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
-	class maEnumHeritage : public CoreModifiableAttributeData<maEnumValue<nbElements>, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
+		template<bool notificationLevel, unsigned int nbElements, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+		class maEnumHeritage : public CoreModifiableAttributeData<maEnumValue<nbElements>, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
-		template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isOrphanTe>
-		using TemplateForPlacementNew = maEnumHeritage<notiflevel, nbElements, isInitTe, isReadOnlyTe, isOrphanTe>;
+			template<bool notiflevel, bool isInitTe, bool isReadOnlyTe, bool isOrphanTe>
+			using TemplateForPlacementNew = maEnumHeritage<notiflevel, nbElements, isInitTe, isReadOnlyTe, isOrphanTe>;
 
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maEnumHeritage, TemplateForPlacementNew, maEnumValue<nbElements>, CoreModifiable::ATTRIBUTE_TYPE::ENUM);
 
 		public:
-
-
 
 			maEnumHeritage(CoreModifiable& owner, KigsID ID, std::string val0, std::string val1, std::string val2 = "", std::string val3 = "", std::string val4 = "", std::string val5 = "", std::string val6 = "", std::string val7 = "", std::string val8 = "", std::string val9 = "")
 				: CoreModifiableAttributeData<maEnumValue<nbElements>, notificationLevel, isInitT, isReadOnlyT, isOrphanT>(owner, ID)
@@ -84,8 +82,8 @@ namespace Kigs
 			}
 
 
-			std::string& operator[](unsigned int index) { KIGS_ASSERT(index < nbElements); return mValue.value_list[index]; }
-			const std::string& operator[](unsigned int index) const { KIGS_ASSERT(index < nbElements); return mValue.value_list[index]; }
+			std::string& operator[](size_t index) { KIGS_ASSERT(index < nbElements); return mValue.value_list[index]; }
+			const std::string& operator[](size_t index) const { KIGS_ASSERT(index < nbElements); return mValue.value_list[index]; }
 
 
 			// TODO

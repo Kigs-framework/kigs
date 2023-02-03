@@ -46,23 +46,24 @@ namespace Kigs
 
 			void								AutoSize();
 
-			maString							mClickDownAction;
-			maString							mClickUpAction;
-			maString							mMouseOverAction;
-			maString							mMouseOutAction;
-			maString							mUnSelectAction;
-			maUSString							mParameter;
-			maBool								mStayPressed;
-			maBool								mKeepClickOutside;
-			maBool								mDefaultPressed;
-			maBool								mAutoResize;
+			std::string							mClickDownAction = "";
+			std::string							mClickUpAction = "";
+			std::string							mMouseOverAction = "";
+			std::string							mMouseOutAction = "";
+			std::string							mUnSelectAction = "";
+			usString							mParameter = std::string("");
+			bool								mStayPressed = false;
+			bool								mKeepClickOutside = false;
+			bool								mDefaultPressed = false;
+			bool								mAutoResize = true;
+			bool								mSwallowEvents = false;
+			bool								mUseHoverColor = false;
+			v4f									mHoverColor = { 0.8f, 0.8f, 0.8f, 1.0f };
+			v4f									mIdleColor = { 1, 1, 1, 1 };
+			v4f									mClickedColor = { 0.5f, 0.5f, 0.5f, 1.0f };
 
-			maBool								mUseHoverColor = BASE_ATTRIBUTE(UseHoverColor, false);
-			maVect4DF							mHoverColor = BASE_ATTRIBUTE(HoverColor, 0.8f, 0.8f, 0.8f, 1.0f);
-			maVect4DF							mIdleColor = BASE_ATTRIBUTE(IdleColor, 1, 1, 1, 1);
-			maVect4DF							mClickedColor = BASE_ATTRIBUTE(ClickedColor, 0.5f, 0.5f, 0.5f, 1.0f);
-
-			maBool								mSwallowEvents = BASE_ATTRIBUTE(SwallowEvents, false);
+			WRAP_ATTRIBUTES(mClickDownAction, mClickUpAction, mMouseOverAction, mMouseOutAction, mUnSelectAction, mParameter, mStayPressed, mKeepClickOutside,
+				mDefaultPressed, mAutoResize, mSwallowEvents, mUseHoverColor, mHoverColor, mIdleColor, mClickedColor);
 
 			bool								mInside;
 			bool								mIsDown;

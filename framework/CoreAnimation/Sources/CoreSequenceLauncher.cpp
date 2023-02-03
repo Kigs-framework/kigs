@@ -86,7 +86,7 @@ void	CoreSequenceLauncher::InitModifiable()
 
 	addSequencesToParents();
 
-	if (mStartMessage.const_ref().size())
+	if (mStartMessage.length())
 	{
 		KigsCore::GetNotificationCenter()->addObserver(this, "Start", mStartMessage);
 	}

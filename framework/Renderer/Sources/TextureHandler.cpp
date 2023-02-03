@@ -33,7 +33,7 @@ void	TextureHandler::InitModifiable()
 	ParentClassType::InitModifiable();
 	if (_isInit)
 	{
-		if (((std::string)mTextureName) != "")
+		if (mTextureName != "")
 		{
 			changeTexture();
 		}

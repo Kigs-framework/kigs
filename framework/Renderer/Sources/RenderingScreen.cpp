@@ -61,7 +61,7 @@ void RenderingScreen::InitModifiable()
 {
 	std::vector<CMSP>	instances;
 
-    std::string parentW=mParentWindowName.const_ref();
+    std::string parentW=mParentWindowName;
 
 	if(parentW != "")
 	{

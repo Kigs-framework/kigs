@@ -62,9 +62,9 @@ void UITextArea::NotifyUpdate(const unsigned int labelid)
 
 void	UITextArea::ReloadTexture()
 {
-	if (mTexturePointer && mText.const_ref().length())
+	if (mTexturePointer && mText.length())
 	{
-		ChangeText(((usString)mText).us_str());
+		ChangeText(mText.us_str());
 	}
 }
 
@@ -130,8 +130,8 @@ void UITextArea::LoseFocus()
 
 	KigsCore::GetNotificationCenter()->removeObserver(this, "UpdateTextArea");
 
-	if (mReleaseAction.const_ref() != "")
-		KigsCore::GetNotificationCenter()->postNotificationName(mReleaseAction.const_ref(), this);
+	if (mReleaseAction != "")
+		KigsCore::GetNotificationCenter()->postNotificationName(mReleaseAction, this);
 
 
 	//Get KeyBoard
@@ -183,7 +183,7 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 	if (_newText)
 		mText = _newText;
 	else
-		_newText = (unsigned short*)((usString)mText).us_str();
+		_newText = (unsigned short*)mText.us_str();
 
 	char tmptxt[512] = { 0 };
 	strcpywUtoC(tmptxt, _newText);
@@ -203,11 +203,11 @@ void	UITextArea::ChangeText(const unsigned short* _newText)
 			std::string key = text.substr(1, text.length() - 1);
 
 			const PLATFORM_WCHAR* localized = theLocalizationManager->getLocalizedString(key.c_str());
-			mTexturePointer->CreateFromText(localized, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255,255, 255, 255, Pict::TinyImage::RGBA_32_8888);
+			mTexturePointer->CreateFromText(localized, (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), mFont.c_str(), mTextAlignment, 255,255, 255, 255, Pict::TinyImage::RGBA_32_8888);
 		}
 		else
 		{
-			mTexturePointer->CreateFromText(((usString)mText).us_str(), (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), (mFont.const_ref()).c_str(), mTextAlignment, 255, 255, 255, 255, Pict::TinyImage::RGBA_32_8888);
+			mTexturePointer->CreateFromText(mText.us_str(), (unsigned int)((float)((unsigned int)mFontSize) * LanguageScale), mFont.c_str(), mTextAlignment, 255, 255, 255, 255, Pict::TinyImage::RGBA_32_8888);
 		}
 	}
 }
@@ -274,7 +274,7 @@ DEFINE_METHOD(UITextArea, UpdateKeyBoard)
 	std::vector<KeyEvent>::iterator ITStart = eventList->begin();
 	std::vector<KeyEvent>::iterator ITEND = eventList->end();
 
-	std::string newString = ((usString)mText).ToString();
+	std::string newString = mText.ToString();
 
 	bool terminated = false;
 	while (ITStart != ITEND && !terminated)
@@ -307,7 +307,7 @@ DEFINE_METHOD(UITextArea, UpdateKeyBoard)
 		}
 	}
 
-	if (((usString)mText).ToString() != newString)
+	if (mText.ToString() != newString)
 	{
 		ChangeText(newString);
 		mText = newString;

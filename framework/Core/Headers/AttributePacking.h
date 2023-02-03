@@ -5,7 +5,6 @@
 #include "maUSString.h"
 #include "maString.h"
 #include "maNumeric.h"
-#include "maBool.h"
 #include "maAny.h"
 #include "maBuffer.h"
 #include "maArray.h"

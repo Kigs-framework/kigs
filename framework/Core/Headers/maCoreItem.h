@@ -31,8 +31,8 @@ namespace Kigs
 		* \brief	CoreModifiableAttributeData of core item with different notification level
 		*/
 		// ****************************************
-	template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
-	class maCoreItemHeritage : public CoreModifiableAttributeData<maCoreItemValue, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
+		template<bool notificationLevel, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
+		class maCoreItemHeritage : public CoreModifiableAttributeData<maCoreItemValue, notificationLevel, isInitT, isReadOnlyT, isOrphanT>
 		{
 			DECLARE_ATTRIBUTE_HERITAGE_NO_ASSIGN(maCoreItemHeritage, maCoreItemHeritage, maCoreItemValue, CoreModifiable::ATTRIBUTE_TYPE::COREITEM);
 
@@ -73,7 +73,7 @@ namespace Kigs
 			// setValue overloads
 			virtual bool setValue(const char* value, CoreModifiable* owner) override
 			{
-			RETURN_ON_READONLY(isReadOnlyT);
+				RETURN_ON_READONLY(isReadOnlyT);
 			
 				mValue.InitWithJSON(value, owner);
 				DO_NOTIFICATION(notificationLevel);
@@ -81,17 +81,17 @@ namespace Kigs
 			}
 			virtual bool setValue(const std::string& value, CoreModifiable* owner) override
 			{
-			RETURN_ON_READONLY(isReadOnlyT);
+				RETURN_ON_READONLY(isReadOnlyT);
 
-			mValue.InitWithJSON(value, owner);
+				mValue.InitWithJSON(value, owner);
 				DO_NOTIFICATION(notificationLevel);
 				return true;
 			}
 			virtual bool setValue(CoreItemSP value, CoreModifiable* owner) override
 			{
-			RETURN_ON_READONLY(isReadOnlyT);
+				RETURN_ON_READONLY(isReadOnlyT);
 
-			if (mValue.item.get() != value.get())
+				if (mValue.item.get() != value.get())
 				{
 					mValue.item = value;
 					mValue.ref_file = "";

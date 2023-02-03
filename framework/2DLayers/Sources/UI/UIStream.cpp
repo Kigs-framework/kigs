@@ -28,7 +28,7 @@ void UIStream::InitModifiable()
 	setOwnerNotification("Volume", true);
 	if(IsInit())
 	{
-		if(!mVideoFile.const_ref().empty())
+		if(!mVideoFile.empty())
 		{
 			mFrameBufferStream = KigsCore::GetInstanceOf(getName() + "_stream", "MPEG4BufferStream");
 			CMSP timer = KigsCore::GetCoreApplication()->GetApplicationTimer();
@@ -76,7 +76,7 @@ void UIStream::InitModifiable()
 	texture->Init();
 	mTexturePointer->setTexture(texture);
 
-	KigsCore::GetNotificationCenter()->addObserver(this, "StartVideo", mNotificationStart.const_ref());
+	KigsCore::GetNotificationCenter()->addObserver(this, "StartVideo", mNotificationStart);
 }
 
 void UIStream::Update(const Timer& timer, void* v)
@@ -126,8 +126,8 @@ void UIStream::Update(const Timer& timer, void* v)
 				else
 					mIsPlaying = false;
 
-				if (!mNotificationEnd.const_ref().empty())
-					KigsCore::GetNotificationCenter()->postNotificationName(mNotificationEnd.const_ref(), this);
+				if (!mNotificationEnd.empty())
+					KigsCore::GetNotificationCenter()->postNotificationName(mNotificationEnd, this);
 			}
 		}
 	}
@@ -171,8 +171,8 @@ void UIStream::NotifyUpdate(const unsigned int labelid)
 	else if(labelid == KigsID("NotificationStart")._id )
 	{
 		KigsCore::GetNotificationCenter()->removeObserver(this);
-		if (!mNotificationEnd.const_ref().empty())
-			KigsCore::GetNotificationCenter()->postNotificationName(mNotificationEnd.const_ref(), this);
+		if (!mNotificationEnd.empty())
+			KigsCore::GetNotificationCenter()->postNotificationName(mNotificationEnd, this);
 	}
 	else if (labelid == KigsID("Volume")._id)
 	{
