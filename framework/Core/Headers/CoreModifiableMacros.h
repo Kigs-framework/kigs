@@ -109,6 +109,7 @@ DECLARE_getExactType(currentClass);\
 KigsID getExactTypeID() const override {return currentClass::mClassID;} \
 bool isSubType(const KigsID& cid) const override {if(currentClass::mClassID==cid)return true;  return parentClass::isSubType(cid);} \
 static void GetClassNameTree(CoreClassNameTree& classNameTree) {parentClass::GetClassNameTree(classNameTree); classNameTree.addClassName(currentClass::mClassID, currentClass::mRuntimeType);}\
+virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) override {parentClass::ConstructClassNameTree(classNameTree); classNameTree.addClassName(currentClass::mClassID, currentClass::mRuntimeType);}\
 SP<currentClass> SharedFromThis() { return debug_checked_pointer_cast<currentClass>(this->shared_from_this()); }\
 static currentClass* Get()\
 {\

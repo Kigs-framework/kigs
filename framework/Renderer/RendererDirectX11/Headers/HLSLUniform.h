@@ -46,7 +46,7 @@ namespace Kigs
 			virtual bool	Pop(TravState*);
 
 			UNIFORM_NAME_TYPE   Get_ID() { return mID; }
-			std::string		Get_Name() { return mUniName.const_ref(); }
+			std::string		Get_Name() { return mUniformName; }
 
 		protected:
 			void	InitModifiable() override;
@@ -55,7 +55,7 @@ namespace Kigs
 
 			void CreateBufferIfNeeded();
 
-			maString			mUniName;
+			maString			mUniformName;
 			UNIFORM_NAME_TYPE	mID;
 
 			size_t				mCBBufferNeededSize = 0;

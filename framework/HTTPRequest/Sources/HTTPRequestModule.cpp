@@ -25,7 +25,7 @@ void HTTPRequestModule::Init(KigsCore* core, const std::vector<CoreModifiableAtt
     BaseInit(core,"HTTPRequestModule",params);
 	DECLARE_FULL_CLASS_INFO(core, ResourceDownloader, ResourceDownloader, HTTPRequestModule);
 
-	RegisterDynamic(PlatformHTTPRequestModuleInit(core,params)); 	    
+	RegisterPlatformSpecific(PlatformHTTPRequestModuleInit(core,params)); 	    
 }
 
 //! module close

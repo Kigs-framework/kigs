@@ -1,6 +1,5 @@
 #include "PrecompiledHeaders.h"
 #include "PlatformBaseApplication.h"
-#include "CoreIncludes.h"
 #include <Shellapi.h>
 #include "../../../../Input/Headers/ModuleInput.h"
 #include "../../../../Input/Headers/KeyboardDevice.h"

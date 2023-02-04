@@ -7,7 +7,7 @@ using namespace Kigs::Collide;
 IMPLEMENT_CLASS_INFO(BSphere)
 
 IMPLEMENT_CONSTRUCTOR(BSphere)
-, mRadius(*this, false, "Radius", 0.0f)
+, mRadius(*this, "Radius", 0.0f)
 {
 }
 

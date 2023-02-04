@@ -66,11 +66,11 @@ namespace Kigs
 			DECLARE_METHOD(SplittedUpdate);
 			COREMODIFIABLE_METHODS(SplittedUpdate);
 
-			maReference		mThreadPoolManager;
+			maReferenceInit			mThreadPoolManager;
 
-			maBool			mIsSplittable;
-			maUInt			mSplitCount;
-			maBool			mWaitFinish;
+			maBoolInit				mIsSplittable;
+			maUIntInit				mSplitCount;
+			maBool					mWaitFinish;
 
 			std::vector<SplitDataStructBase*>	mSplitDataStructList;
 		};

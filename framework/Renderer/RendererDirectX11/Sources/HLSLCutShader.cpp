@@ -4,12 +4,12 @@ using namespace Kigs::Draw;
 
 IMPLEMENT_CONSTRUCTOR(API3DCutShader)
 {
-	mPlaneCount.changeNotificationLevel(Owner);
+	setOwnerNotification("PlaneCount", true);
 }
 
 void API3DCutShader::NotifyUpdate(unsigned int labelid)
 {
-	if (labelid == mPlaneCount.getID())
+	if (labelid == KigsID("PlaneCount")._id)
 	{
 		Dealloc();
 	}

@@ -38,9 +38,9 @@ void    ABoneChannel::UpdateTransformParameters()
 
 void    ABoneChannel::SetStandStreamData()
 {
-	maInt copythis(*this,false,"this",(int)mGroupID);
-	maInt restype(*this,false,"type",Resource_Bone_Information);
-	maInt result(*this,false,"result",0);
+	maIntOrphan copythis("this",(int)mGroupID);
+	maIntOrphan restype("type",Resource_Bone_Information);
+	maIntOrphan result("result",0);
 	
 	std::vector<CoreModifiableAttribute*> params;
 	params.push_back(&copythis);

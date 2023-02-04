@@ -122,7 +122,7 @@ const std::string& LocalizationManager::getLocalizedStringUTF8(const std::string
 #ifdef _DEBUG
 	kigsprintf("Localization not found for key : %s\n", key.c_str());
 #endif
-	return "";
+	return key;
 }
 
 

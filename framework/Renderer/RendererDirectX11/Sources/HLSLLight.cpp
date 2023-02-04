@@ -22,14 +22,15 @@ void	API3DLight::InitModifiable()
 	
 	Light::InitModifiable();
 
-	mSpecularColor.changeNotificationLevel(Owner);
-	mDiffuseColor.changeNotificationLevel(Owner);
-	mAmbientColor.changeNotificationLevel(Owner);
-	mSpotAttenuation.changeNotificationLevel(Owner);
-	mSpotCutOff.changeNotificationLevel(Owner);
-	mConstAttenuation.changeNotificationLevel(Owner);
-	mLinAttenuation.changeNotificationLevel(Owner);
-	mQuadAttenuation.changeNotificationLevel(Owner);
+	setOwnerNotification("SpecularColor", true);
+	setOwnerNotification("DiffuseColor", true);
+	setOwnerNotification("AmbientColor", true);
+	setOwnerNotification("SpotAttenuation", true);
+	setOwnerNotification("SpotCutOff", true);
+	setOwnerNotification("ConstAttenuation", true);
+	setOwnerNotification("LinAttenuation", true);
+	setOwnerNotification("QuadAttenuation", true);
+
 }
 
 

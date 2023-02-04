@@ -329,7 +329,7 @@ namespace Kigs
 
 			SP<ABaseChannel>			mRoot;
 
-			maInt						mPriority;
+			maIntInit					mPriority;
 
 			bool						mUseAnimationLocalToGlobal;
 			bool						mUpdateLocalToGlobalWhenLoop;

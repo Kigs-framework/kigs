@@ -48,7 +48,7 @@ namespace Kigs
 			float	GetProgress() { return 	mProgress; }
 			inline State GetCurrentState() const { return mCurrentState; }
 
-			void	setMethod(CoreModifiable* localthis, const std::string& method)
+			void	setMethod(CMSP localthis, const std::string& method)
 			{
 				if (mFunctionWasInserted)
 				{
@@ -56,11 +56,11 @@ namespace Kigs
 					mFunctionWasInserted = false;
 				}
 
-				mCallee = localthis;
+				mCallee.setValue(localthis,this);
 				mMethod = method;
 			}
 			template<typename F>
-			void	setMethod(CoreModifiable* localthis, const std::string& method, F&& func)
+			void	setMethod(CMSP localthis, const std::string& method, F&& func)
 			{
 				if (mFunctionWasInserted)
 				{
@@ -90,8 +90,8 @@ namespace Kigs
 			float					mProgress;
 			std::thread				mCurrentThread;
 
-			maString				mMethod = INIT_ATTRIBUTE(Method, "");
-			maReference				mCallee = INIT_ATTRIBUTE(Callee, "");
+			maStringInit			mMethod = BASE_ATTRIBUTE(Method, "");
+			maReferenceInit			mCallee = BASE_ATTRIBUTE(Callee, "");
 			bool					mFunctionWasInserted = false;
 		};
 

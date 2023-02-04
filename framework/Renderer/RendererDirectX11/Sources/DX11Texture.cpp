@@ -80,7 +80,7 @@ DX11Texture::~DX11Texture()
 	if (delayed) // delay init
 	{
 		void* datastruct;
-		if (delayed->getValue(datastruct))
+		if (delayed->getValue(datastruct,this))
 		{
 			TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
 			delete delayedStruct;
@@ -122,7 +122,7 @@ void DX11Texture::UninitModifiable()
 	if (delayed) // delay init
 	{
 		void* datastruct;
-		if (delayed->getValue(datastruct))
+		if (delayed->getValue(datastruct,this))
 		{
 			TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
 			delete delayedStruct;
@@ -139,7 +139,7 @@ void DX11Texture::LoadtoGPUIfNeeded()
 	if (delayed) // delay init
 	{
 		void* datastruct;
-		if (delayed->getValue(datastruct))
+		if (delayed->getValue(datastruct,this))
 		{
 			TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
 			CreateFromImage(delayedStruct->delayedimage, true);
@@ -290,7 +290,7 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 		if (delayed) // if already exist, remove it
 		{
 			void* datastruct;
-			if (delayed->getValue(datastruct))
+			if (delayed->getValue(datastruct,this))
 			{
 				TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
 				delete delayedStruct;
@@ -304,7 +304,7 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 		delayedStruct->delayedimage = image;
 		delayedStruct->needRealloc = needRealloc;
 		CoreModifiableAttribute* newAttr = AddDynamicAttribute(ATTRIBUTE_TYPE::RAWPTR, "DelayedInit");
-		newAttr->setValue(delayedStruct);
+		newAttr->setValue(delayedStruct,this);
 		return true;
 #endif
 	}
@@ -315,7 +315,7 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 		if (delayed) // delay init
 		{
 			void* datastruct;
-			if (delayed->getValue(datastruct))
+			if (delayed->getValue(datastruct,this))
 			{
 				TextureDelayedInitData* delayedStruct = (TextureDelayedInitData*)datastruct;
 				needRealloc = delayedStruct->needRealloc;

@@ -376,7 +376,7 @@ void	KigsDocs::ExportDetailedAttribute(std::ofstream& DocFile, const std::pair<s
 
 	// default value
 	std::string defaultvalue = "";
-	currentAttr->getValue(defaultvalue);
+	currentAttr->getValue(defaultvalue, i.second.mInstance.get());
 	if (defaultvalue != "")
 	{
 		DocFile << "- Default Value : " << defaultvalue << std::endl;

@@ -99,7 +99,7 @@ void    AObject::Animate(ATimeValue t)
 	// | fading management
 	// +-----
 	
-	IntU32   fade_count=mFadeList.size();
+	auto   fade_count=mFadeList.size();
 	if (fade_count)
 	{
 		std::vector<ALinearInterp*>::iterator it=mFadeList.begin();

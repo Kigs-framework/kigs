@@ -5,9 +5,6 @@
 // * PURPOSE : PRS Keyframe animation for one bone
 // * COMMENT : PC version
 // *---------------------------------------------------------------------
-// * DATES     : 24/05/2000
-// * AUTHORS   : Stéphane Capo (scapo@fr.infogrames.com)
-// * COPYRIGHT : (c) Infogrames/TecLab 2000
 // **********************************************************************
 
 #pragma once

@@ -20,7 +20,7 @@ using namespace Kigs::Anim;
 IMPLEMENT_CLASS_INFO(ABaseSystem)
 ABaseSystem::ABaseSystem(const std::string& name, CLASS_NAME_TREE_ARG)
 	: CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-	, mPriority(*this, true, "Priority", 100)
+	, mPriority(*this, "Priority", 100)
 {
 	mLinksCount = 0;
 	mRecurseAnimate = true;

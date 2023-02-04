@@ -37,7 +37,7 @@ void WorkerThread::InitModifiable()
 			mThreadEvent->setSemaphore(mSemaphore);
 
 			// set Callee and Method, else Thread::InitModifiable will not call Start
-			mCallee = this;
+			mCallee.setValue(this->shared_from_this(), this);
 			mMethod = "WorkerThread";
 			Thread::InitModifiable();
 		}

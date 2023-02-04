@@ -46,6 +46,7 @@ bool gKigsToolsAvailable = false;
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.Storage.Pickers.h>
 #include <winrt/Windows.Storage.AccessCache.h>
+#include <winrt/Windows.Foundation.Collections.h>
 
 #include <winrt_helpers.h>
 using namespace winrt::Windows::Storage;

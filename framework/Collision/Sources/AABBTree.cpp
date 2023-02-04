@@ -391,12 +391,12 @@ bool AABBTree::CallLocalRayIntersection(Hit &hit, const Point3D& start, const Ve
 
 bool AABBTree::CallLocalRayIntersection(std::vector<Hit> &hit, const Point3D& start, const Vector3D& dir) const
 {
-	int count_before = hit.size();
+	auto count_before = hit.size();
 	if (IntersectionRayAABBTree(GetVertexList(), start, dir, *this, hit))
 	{
 		if (mFaceCount != 0)
 		{
-			for (int i = count_before; i < hit.size(); ++i)
+			for (auto i = count_before; i < hit.size(); ++i)
 			{
 				hit[i].HitFaceIndex = mFaceIndex;
 			}

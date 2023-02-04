@@ -62,7 +62,7 @@ void ThreadProfiler::ExportProfile(const std::string path)
 
 	if (file)
 	{
-		int num_threads = mCircularBufferMap.size();
+		int num_threads = (int)mCircularBufferMap.size();
 		Platform_fwrite(&num_threads, sizeof(int), 1, file.get());
 		
 		for (std::map<CoreModifiable*, TimeEventCircularBuffer>::iterator it = mCircularBufferMap.begin(); it != mCircularBufferMap.end(); ++it)

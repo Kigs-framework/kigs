@@ -33,9 +33,9 @@ namespace Kigs
 		extern void Win32CheckState(File::FileHandle* handle);
 		extern bool Win32CreateFolderTree(File::FileHandle* hndl);
 
-		std::string to_utf8(const wchar_t* buffer, int len);
+		std::string to_utf8(const wchar_t* buffer, size_t len);
 		std::string to_utf8(const std::wstring& str);
-		std::wstring to_wchar(const char* buffer, int len);
+		std::wstring to_wchar(const char* buffer, size_t len);
 		std::wstring to_wchar(const std::string& str);
 
 	}

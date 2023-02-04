@@ -44,7 +44,7 @@ namespace Kigs
 			TaskGroupHandle* createTaskGroup(MethodCallingStruct* [], int size);
 			SmartPointer<ThreadEvent>		LaunchTaskGroup(TaskGroupHandle* tgh);
 
-			unsigned int	getRunningTaskCount();
+			size_t	getRunningTaskCount();
 
 		protected:
 
@@ -68,8 +68,8 @@ namespace Kigs
 				virtual ~TaskGroup() {};
 			};
 
-			maInt	mThreadCount;
-			std::vector<SP<WorkerThread>>				mThreadList;
+			maIntInit								mThreadCount;
+			std::vector<SP<WorkerThread>>			mThreadList;
 
 
 			SP<WorkerThread>	getAvailableThread();

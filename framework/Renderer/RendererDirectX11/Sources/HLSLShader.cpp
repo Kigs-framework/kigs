@@ -202,7 +202,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	};
 
 	std::string str;
-	mVertexShader.getValue(str);
+	mVertexShader.getValue(str,this);
 
 	if (str[0] == '!') // load from file
 	{
@@ -243,7 +243,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		return nullptr;
 	}
 
-	mFragmentShader.getValue(str);
+	mFragmentShader.getValue(str,this);
 
 	if (str[0] == '!') // load from file
 	{
@@ -283,7 +283,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		return nullptr;
 	}
 
-	mGeometryShader.getValue(str);
+	mGeometryShader.getValue(str,this);
 	if (str.size())
 	{
 		name = getName();
@@ -460,7 +460,7 @@ void	API3DShader::InitModifiable()
 
 		// ask for delayed init
 		CoreModifiableAttribute* newAttr = AddDynamicAttribute(ATTRIBUTE_TYPE::BOOL, "DelayedInit");
-		newAttr->setValue(true);
+		newAttr->setValue(true,this);
 #endif
 	}
 }
@@ -476,8 +476,9 @@ void	API3DShader::DelayedInit(TravState* state)
 		mCurrentShaderKey = 0;
 		insertBuildShader(mCurrentShaderKey, toAdd);
 		setCurrentBuildShader(mCurrentShaderKey);
-		mVertexShader.changeNotificationLevel(Owner);
-		mFragmentShader.changeNotificationLevel(Owner);
+		setOwnerNotification("VertexShader", true);
+		setOwnerNotification("FragmentShader", true);
+
 		Active(state);
 
 		// add child unifor as default uniform

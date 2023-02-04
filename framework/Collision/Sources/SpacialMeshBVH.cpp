@@ -92,7 +92,7 @@ void SpacialMeshBVH::ReorderVerticesOnAxis(std::vector<v3f>& vertices, std::vect
 int	SpacialMeshBVH::CreateVirtualIndicesList(std::vector<int>& virtualIndices, const std::vector<v3f>& vertices)
 {
 	virtualIndices.resize(vertices.size());
-	int wi = 0;
+	size_t wi = 0;
 	int virtualIndice = 0;
 
 	for (size_t i = 0; i < vertices.size(); ++i)

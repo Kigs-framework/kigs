@@ -365,6 +365,8 @@ namespace Kigs
 			DECLARE_GetRuntimeTypeBase(CoreModifiable);
 			DECLARE_getExactTypeBase(CoreModifiable);
 
+			virtual void ConstructClassNameTree(CoreClassNameTree& classNameTree) { classNameTree.addClassName("CoreModifiable", "CoreModifiable"); }
+
 			CMSP SharedFromThis() 
 			{
 		#ifdef _DEBUG

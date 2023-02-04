@@ -45,7 +45,7 @@ namespace Kigs
 				mPosition[1] = pos.y;
 				mPosition[2] = pos.z;
 
-				mNormal.setValue(norm);
+				mNormal.setValue(norm,this);
 			}
 
 			void GetPlane(Point3D& pos, Vector3D& norm)

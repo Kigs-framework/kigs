@@ -8,7 +8,7 @@ IMPLEMENT_CLASS_INFO(AObjectSkeletonResource)
 
 AObjectSkeletonResource::AObjectSkeletonResource(const std::string& name, CLASS_NAME_TREE_ARG)
 	: AObjectResource(name, PASS_CLASS_NAME_TREE_ARG)
-	, mSkeletonFileName(*this, true, "SkeletonFileName", "")
+	, mSkeletonFileName(*this, "SkeletonFileName", "")
 	, mBoneCount(0)
 	, mBoneDataSize(0)
 	, mBoneTreeNodeList(0)

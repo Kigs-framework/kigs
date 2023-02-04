@@ -133,10 +133,10 @@ AnimationResourceInfo* APRSControlStream::CreateAnimationResourceInfo(IntU32 gro
 	std::string	currentType = "APRSControlStream";
     // create the AnimationResourceInfo instance
 	// first compute size
-    IntU32  total_size=sizeof(AResourceFileHeader); // header
+    auto total_size=sizeof(AResourceFileHeader); // header
 	total_size += currentType.length(); // string name length
-	total_size += group_id_count * sizeof(IntU32) * 2; // group count * (sizeof(offset) + sizeof(size))
-    total_size += (sizeof(AStreamResourceInfo)+ sizeof(PRSControllerKey)) * group_id_count; // data * group count
+	total_size += (size_t)group_id_count * sizeof(IntU32) * 2; // group count * (sizeof(offset) + sizeof(size))
+    total_size += (sizeof(AStreamResourceInfo)+ sizeof(PRSControllerKey)) * (size_t)group_id_count; // data * group count
 
     AnimationResourceInfo*      resource=(AnimationResourceInfo *)(new char[total_size]);
 

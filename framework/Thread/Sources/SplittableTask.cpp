@@ -7,10 +7,10 @@ using namespace Kigs::Thread;
 IMPLEMENT_CLASS_INFO(SplittableTask)
 
 SplittableTask::SplittableTask(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, mThreadPoolManager(*this, true, "ThreadPoolManager")
-, mIsSplittable(*this, true, "IsSplittable", false)
-, mSplitCount(*this, true, "SplitCount", 0)
-, mWaitFinish(*this, false, "WaitFinish", true)
+, mThreadPoolManager(*this, "ThreadPoolManager")
+, mIsSplittable(*this, "IsSplittable", false)
+, mSplitCount(*this, "SplitCount", 0)
+, mWaitFinish(*this, "WaitFinish", true)
 {
 	mSplitDataStructList.clear();
 }

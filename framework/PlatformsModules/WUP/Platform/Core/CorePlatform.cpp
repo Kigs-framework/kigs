@@ -579,13 +579,13 @@ PureVirtualFileAccessDelegate* StorageFileFileAccess::MakeCopy()
 	return result;
 }
 
-std::string Kigs::Core::to_utf8(const wchar_t* buffer, int len)
+std::string Kigs::Core::to_utf8(const wchar_t* buffer, size_t len)
 {
 	int nChars = ::WideCharToMultiByte(
 		CP_UTF8,
 		0,
 		buffer,
-		len,
+		(int)len,
 		NULL,
 		0,
 		NULL,
@@ -598,7 +598,7 @@ std::string Kigs::Core::to_utf8(const wchar_t* buffer, int len)
 		CP_UTF8,
 		0,
 		buffer,
-		len,
+		(int)len,
 		const_cast<char*>(newbuffer.c_str()),
 		nChars,
 		NULL,
@@ -609,16 +609,16 @@ std::string Kigs::Core::to_utf8(const wchar_t* buffer, int len)
 
 std::string Kigs::Core::to_utf8(const std::wstring& str)
 {
-	return to_utf8(str.c_str(), (int)str.size());
+	return to_utf8(str.c_str(), str.size());
 }
 
-std::wstring Kigs::Core::to_wchar(const char* buffer, int len)
+std::wstring Kigs::Core::to_wchar(const char* buffer, size_t len)
 {
 	int nChars = ::MultiByteToWideChar(
 		CP_UTF8,
 		0,
 		buffer,
-		len,
+		(int)len,
 		NULL,
 		0);
 
@@ -630,7 +630,7 @@ std::wstring Kigs::Core::to_wchar(const char* buffer, int len)
 		CP_UTF8,
 		0,
 		buffer,
-		len,
+		(int)len,
 		const_cast<wchar_t*>(newbuffer.c_str()),
 		nChars);
 
@@ -639,6 +639,6 @@ std::wstring Kigs::Core::to_wchar(const char* buffer, int len)
 
 std::wstring Kigs::Core::to_wchar(const std::string& str)
 {
-	return to_wchar(str.c_str(), (int)str.size());
+	return to_wchar(str.c_str(), str.size());
 }
 

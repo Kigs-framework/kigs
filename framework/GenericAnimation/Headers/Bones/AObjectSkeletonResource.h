@@ -124,7 +124,7 @@ namespace Kigs
 			}
 
 
-			maString					mSkeletonFileName;
+			maStringInit				mSkeletonFileName;
 
 			unsigned int				mBoneCount;
 

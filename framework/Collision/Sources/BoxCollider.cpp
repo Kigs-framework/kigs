@@ -18,8 +18,9 @@ void BoxCollider::InitModifiable()
 	mBoundingBox.Update(v3f(mOffset) - (v3f)mSize / 2);
 	mBoundingBox.Update(v3f(mOffset) + (v3f)mSize / 2);
 
-	mOffset.changeNotificationLevel(Owner);
-	mSize.changeNotificationLevel(Owner);
+	setOwnerNotification("Offset", true);
+	setOwnerNotification("Size", true);
+
 }
 
 void BoxCollider::NotifyUpdate(const u32 labelid)

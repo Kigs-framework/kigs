@@ -54,7 +54,7 @@ namespace Kigs
 
 			}
 
-			unsigned int	getStableTriangleListSize() const
+			size_t	getStableTriangleListSize() const
 			{
 				return mStableTriangles.size();
 			}

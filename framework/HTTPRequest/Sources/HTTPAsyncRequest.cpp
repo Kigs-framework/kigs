@@ -94,7 +94,7 @@ bool HTTPAsyncRequest::GetAnswer(void** buffer, int& buflen)
 	if (mReceivedBuffer.ref())
 	{
 		*buffer = mReceivedBuffer.const_ref()->buffer();
-		buflen = mReceivedBuffer.const_ref()->length();
+		buflen = (int)mReceivedBuffer.const_ref()->length();
 
 		return true;
 	}

@@ -6,7 +6,7 @@ using namespace Kigs::Thread;
 IMPLEMENT_CLASS_INFO(ThreadPoolManager)
 
 ThreadPoolManager::ThreadPoolManager(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, mThreadCount(*this, true, "ThreadCount", 4)
+, mThreadCount(*this, "ThreadCount", 4)
 , mSemaphore(nullptr)
 {
 	mThreadList.clear();
@@ -90,10 +90,10 @@ void ThreadPoolManager::addTaskToQueue(MethodCallingStruct* task,SmartPointer<Th
 
 }
 
-unsigned int	ThreadPoolManager::getRunningTaskCount()
+size_t	ThreadPoolManager::getRunningTaskCount()
 {
-	unsigned int i;
-	unsigned int count= mThreadList.size();
+	size_t i;
+	auto count= mThreadList.size();
 	for (i = 0; i < mThreadList.size(); i++)
 	{
 		if (mThreadList[i]->isAvailable())
@@ -153,7 +153,7 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 	TaskGroup* taskgroup = (TaskGroup*)tgh;
 	// lock 
 	std::lock_guard<std::mutex> lk(mSemaphore->GetPrivateMutex());
-	int taskgroupsize = taskgroup->mTaskList.size();
+	size_t taskgroupsize = taskgroup->mTaskList.size();
 	if (taskgroupsize == 0)
 	{
 		// unlock
@@ -164,7 +164,7 @@ SmartPointer<ThreadEvent> ThreadPoolManager::LaunchTaskGroup(ThreadPoolManager::
 	SmartPointer<ThreadEvent> result = getTaskEndEvent();
 	result->setValue("EventCounter", taskgroupsize);
 
-	int i;
+	size_t i;
 	for (i = 0; i < taskgroupsize; i++)
 	{
 		SP<WorkerThread>	wavailable = getAvailableThread();

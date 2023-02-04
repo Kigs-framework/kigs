@@ -316,7 +316,7 @@ Error code for the operation.
 	{
 		for (auto& h : mHeaders)
 		{
-			if (!HttpAddRequestHeaders(ReqContext->RequestHandle, h.data(), h.size(), HTTP_ADDREQ_FLAG_ADD_IF_NEW))
+			if (!HttpAddRequestHeaders(ReqContext->RequestHandle, h.data(),(DWORD) h.size(), HTTP_ADDREQ_FLAG_ADD_IF_NEW))
 			{
 				Error = GetLastError();
 				ReleaseRequestHandle(ReqContext);

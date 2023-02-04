@@ -58,7 +58,7 @@ void CollisionManager::InitModifiable()
 		}
 		else
 		{
-			mScene.changeNotificationLevel(Owner);
+			setOwnerNotification("Scene",true);
 		}
 
 		// add a callback on Node3D addItem method
@@ -132,7 +132,7 @@ void CollisionManager::DoFirstInit()
 			RecursiveCheck(((CoreModifiable*)mScene), 0,false);
 
 			mScene.setReadOnly(true); // the scene can not be changed after this
-			mScene.changeNotificationLevel(None);
+			setOwnerNotification("Scene", false);
 			mSceneWasSet = true;
 		}
 	}
@@ -177,7 +177,7 @@ void CollisionManager::UnRegisterObject(CoreModifiable* father, CoreModifiable* 
 
 void CollisionManager::NotifyUpdate(const unsigned int  labelid)
 {
-	if (labelid == mScene.getLabelID())
+	if (labelid == KigsID("Scene")._id)
 	{
 		if (((CoreModifiable*)mScene) != nullptr) // the scene is now OK ?
 		{
@@ -1187,23 +1187,23 @@ DEFINE_METHOD(CollisionManager, GetAltitude)
 	for (ci = params.begin(); ci != params.end(); ++ci)
 	{
 		CoreModifiableAttribute* current = (*ci);
-		if (current->getLabel() == "x")
+		if (current->id() == KigsID("x")._id)
 		{
 			xparam = current;
 		}
-		else if (current->getLabel() == "y")
+		else if (current->id() == KigsID("y")._id)
 		{
 			yparam = current;
 		}
-		else if (current->getLabel() == "z")
+		else if (current->id() == KigsID("z")._id)
 		{
 			zparam = current;
 		}
-		else if (current->getLabel() == "alt")
+		else if (current->id() == KigsID("alt")._id)
 		{
 			altparam = current;
 		}
-		else if (current->getLabel() == "normal")
+		else if (current->id() == KigsID("normal")._id)
 		{
 			normalparam = current;
 		}
@@ -1217,13 +1217,13 @@ DEFINE_METHOD(CollisionManager, GetAltitude)
 
 	float x, y, z;
 
-	xparam->getValue(x);
-	yparam->getValue(y);
+	xparam->getValue(x,sender);
+	yparam->getValue(y, sender);
 
 	//! if no "z" param is given, then set z to 1000
 	if (zparam)
 	{
-		zparam->getValue(z);
+		zparam->getValue(z, sender);
 	}
 	else
 	{
@@ -1237,14 +1237,14 @@ DEFINE_METHOD(CollisionManager, GetAltitude)
 
 	if (GetRayIntersection(hit, start, dir))
 	{
-		altparam->setValue(z - hit.HitPosition.z);
+		altparam->setValue(z - hit.HitPosition.z, sender);
 
 		//! if a "normal" param is given, then set normal values
 		if (normalparam)
 		{
-			normalparam->setArrayElementValue(hit.HitNormal.x, 0, 0);
-			normalparam->setArrayElementValue(hit.HitNormal.y, 0, 1);
-			normalparam->setArrayElementValue(hit.HitNormal.z, 0, 2);
+			normalparam->setArrayElementValue(hit.HitNormal.x, sender, 0, 0);
+			normalparam->setArrayElementValue(hit.HitNormal.y, sender, 0, 1);
+			normalparam->setArrayElementValue(hit.HitNormal.z, sender, 0, 2);
 		}
 
 		return true;
