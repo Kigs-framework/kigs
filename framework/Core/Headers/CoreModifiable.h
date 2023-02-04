@@ -1219,7 +1219,7 @@ namespace Kigs
 			toadd = (attribute_type*)getAttribute(ID);
 			if (toadd != nullptr)
 			{
-				if (toadd->getType() != attribute_type::type) return nullptr;
+				if (toadd->getType() != TypeToEnum<value_type>::value) return nullptr;
 				toadd->setValue(value, this);
 				return toadd;
 			}

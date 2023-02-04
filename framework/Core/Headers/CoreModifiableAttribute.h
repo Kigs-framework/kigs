@@ -815,7 +815,7 @@ namespace Kigs
 			T	tmp{};
 			if (mAttr)
 			{
-				mAttr->getValue(tmp);
+				mAttr->getValue(tmp, mOwner);
 			}
 			return tmp;
 		}
@@ -824,7 +824,7 @@ namespace Kigs
 		inline const CMSP::AttributeHolder& CMSP::AttributeHolder::operator =(T toset) const {
 			if (mAttr)
 			{
-				mAttr->setValue(toset);
+				mAttr->setValue(toset, mOwner);
 			}
 			return *this;
 		}
@@ -834,7 +834,7 @@ namespace Kigs
 			if (mAttr)
 			{
 				T	tmp{};
-				if (mAttr->getValue(tmp))
+				if (mAttr->getValue(tmp, mOwner))
 				{
 					return tmp == totest;
 				}

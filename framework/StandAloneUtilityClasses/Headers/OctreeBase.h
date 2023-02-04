@@ -470,7 +470,7 @@ namespace Kigs
 
 
 			// default depth max is 8 => 256x256x256 cubes = 512 x 512 x 512 units
-			maInt		mMaxDepth = INIT_ATTRIBUTE(MaxDepth, 8);
+			maIntInit		mMaxDepth = BASE_ATTRIBUTE(MaxDepth, 8);
 
 			OctreeNodeBase* mRootNode = nullptr;
 
