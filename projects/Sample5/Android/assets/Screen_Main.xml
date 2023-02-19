@@ -24,24 +24,24 @@
 		</Attr>
 	</Inst>
 	<Inst N="UILayer" T="UI2DLayer">
-		<Attr N="Size" V="{1280,800}"/>
+		<Attr N="Size" V="[1280,800]"/>
 		<Attr N="Priority" V="1"/>
 		<Attr N="GlobalPriority" V="true" />
 		<Attr N="RenderingScreen" V="RenderingScreen:theRenderingScreen"/>
 		<Inst N="Interface" T="UIItem">
-			<Attr N="Size" V="{1280,800}"/>
+			<Attr N="Size" V="[1280,800]"/>
 			<Inst N="background" T="UIPanel">
-				<Attr N="Size" V="{1280,800}"/>
+				<Attr N="Size" V="[1280,800]"/>
 				<Attr N="Priority" V="5"/>
-				<Attr N="Anchor" V="{0.500000,0.500000}"/>
-				<Attr N="Dock" V="{0.500000,0.500000}"/>
-				<Attr N="Color" V="{0.0, 0.2, 0.4, 1.0}"/>
+				<Attr N="Anchor" V="[0.500000,0.500000]"/>
+				<Attr N="Dock" V="[0.500000,0.500000]"/>
+				<Attr N="Color" V="[0.0, 0.2, 0.4, 1.0]"/>
 			</Inst>
 			<Inst N="Logo" T="UIImage">
 				<Attr N="TextureName" V="KigsHD.png" />
 				<Attr N="Priority" V="8" />
-				<Attr N="Dock" V="{0.5,0.5}" />
-				<Attr N="Anchor" V="{0.5,0.5}" />
+				<Attr N="Dock" V="[0.5,0.5]" />
+				<Attr N="Anchor" V="[0.5,0.5]" />
 				<Inst Name="animateLogo" Type="CoreSequenceLauncher">
 					<Attr Type="coreitem" Name="Sequence"><![CDATA[
 {"animateLogo":[
@@ -50,7 +50,7 @@
 		{"Combo": [
 			{"Hermite2D":[4,[0.5,0.0],[0.5,1.0],[-1.0,0.0],[1.0,0.0],"Dock"]},
 			{"Linear1D":[4,0.0,3.14,"RotationAngle"]}]},
-		{ "Function2D": [6,"{0.5+0.4*sin(actionTime()),0.5+0.4*cos(actionTime())}","Dock"] },
+		{ "Function2D": [6,"[0.5+0.4*sin(actionTime()),0.5+0.4*cos(actionTime())]","Dock"] },
 		{"SetValue1D":[1,1,"/Sample5->NeedExit"]}
 ]}
 ]]>

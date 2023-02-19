@@ -94,7 +94,7 @@ void	Sample4::ProtectedInit()
 
 	// call GiveInfos on instance1 with this instance (Sample4) as parameter, no private params and no sender 
 	// so the received parameter vector will be all the CoreModifiable attributes owned by this
-	result = instance1->CallMethod("GiveInfos", this, nullptr, nullptr);
+	result = instance1->CallMethod("GiveInfos", this, nullptr, this);
 	std::cout << "GiveInfos returns " << (result ? "true" : "false") << std::endl << std::endl;
 
 	// or with "SimpleCall" :

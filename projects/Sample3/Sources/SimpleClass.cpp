@@ -7,11 +7,10 @@ using namespace Kigs::Core;
 IMPLEMENT_CLASS_INFO(SimpleClass)
 
 IMPLEMENT_CONSTRUCTOR(SimpleClass)
-// attribute is set as init attribute : it will be set as readonly after instance was initialized
-, mIntValue(*this,"IntValue",5)					
-// attribute is not set as init attribute : it will be read/write enabled
-, mStringValue(* this, "StringValue")
 {
+	// attribute is set as init attribute : it will be set as readonly after instance was initialized
+	setInitParameter("IntValue", true);
+	// attribute is not set as init attribute : it will be read/write enabled
 	// this will be notified when StringValue is changed
 	setOwnerNotification("StringValue", true);
 }
@@ -20,15 +19,15 @@ void SimpleClass::NotifyUpdate(const u32 labelid)
 {
 	if (labelid == KigsID("StringValue")._id)
 	{
-		std::cout << "StringValue new value is : " <<  mStringValue.const_ref() << std::endl;
+		std::cout << "StringValue new value is : " <<  mStringValue << std::endl;
 	}
 }
 
 void	SimpleClass::DoSomethingFun()
 {
-	if ((CoreModifiable*)mRef) // check that m_Ref point to an existing instance
+	if (!mReference.expired()) // check that m_Ref point to an existing instance
 	{
-		CoreModifiable* other = (CoreModifiable*)mRef;
+		CMSP other = mReference.lock();
 		if (other->isSubType(SimpleClass::mClassID)) // if other is also a SimpleClass instance
 		{
 			std::cout << "referenced instance IntValue = " << other->getValue<int>("IntValue") << std::endl;

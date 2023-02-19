@@ -120,7 +120,7 @@ void	Sample5::ProtectedInit()
 	std::cout << "Expression : eval(12.0*sin(#TestFloat#+#/Timer:ApplicationTimer->Time#)) = " << (float)(CoreItem&)mFunction << std::endl;
 
 	// it's also possible to call CoreModifiable methods, set CoreModifiable attributes and make some tests
-	tsteval = std::string("eval(if(([/Sample5->randomNumber(0.0,2.0)]>1.0),#/Sample5->EvalResult.x#=(#/Sample5->EvalResult.x#+1);1,#/Sample5->EvalResult.y#=(#/Sample5->EvalResult.y#+1);2))");
+	tsteval = std::string("eval(if(({/Sample5->randomNumber(0.0,2.0)}>1.0),#/Sample5->EvalResult.x#=(#/Sample5->EvalResult.x#+1);1,#/Sample5->EvalResult.y#=(#/Sample5->EvalResult.y#+1);2))");
 
 	std::cout << "tsteval result = " << (float)tsteval << std::endl;
 	std::cout << "EvalResult = [ " << mEvalResult[0] << "," << mEvalResult[1] << " ]" << std::endl;
@@ -134,7 +134,7 @@ void	Sample5::ProtectedInit()
 	std::cout << "EvalResult = [ " << mEvalResult[0] << "," << mEvalResult[1] << " ]" << std::endl;
 
 	// It's also possible to compute 2D or 3D expressions
-	tsteval = std::string("eval2D(#/Sample5->EvalResult#+{1.0,#/Sample5->EvalResult.x#})");
+	tsteval = std::string("eval2D(#/Sample5->EvalResult#+[1.0,#/Sample5->EvalResult.x#])");
 	Point2D checkresult = *tsteval;
 	std::cout << "checkresult = [ " << checkresult[0] << "," << checkresult[1] << " ]" << std::endl;
 

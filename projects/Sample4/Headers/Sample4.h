@@ -18,6 +18,9 @@ namespace Kigs
 		void	ProtectedClose() override;
 
 		// add a string attribute
-		maString mStringParam = BASE_ATTRIBUTE("StringParam", "Sample4 string attribute");
+		std::string		mStringParam = "Sample4 string attribute";
+
+		WRAP_ATTRIBUTES(mStringParam);
+
 	};
 }

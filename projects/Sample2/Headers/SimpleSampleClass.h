@@ -24,6 +24,8 @@ namespace Kigs
 		virtual bool addItem(const CMSP& item, ItemPosition pos = Last) override;
 
 		// int CoreModifiable attribute named CountWhenAdded
-		maInt	mCountWhenAdded = BASE_ATTRIBUTE(CountWhenAdded, 0);
+		int		mCountWhenAdded = 0;
+
+		WRAP_ATTRIBUTES(mCountWhenAdded);
 	};
 }

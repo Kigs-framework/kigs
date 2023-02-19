@@ -18,11 +18,12 @@ namespace Kigs
 
 		virtual void NotifyUpdate(const u32 labelid) override;
 
-		maIntInit		mIntValue;
-		maString		mStringValue;
-		maReference		mRef = BASE_ATTRIBUTE(Reference, "");
+		int								mIntValue = 5;
+		std::string						mStringValue = "StringValue";
+		v4f								mVector = { 0.0, 0.0, 1.0, 2.0 };
+		std::weak_ptr<CoreModifiable>	mReference;
 
-		maVect4DF		mVector4D = BASE_ATTRIBUTE(Vector, 0.0, 0.0, 1.0, 2.0);
+		WRAP_ATTRIBUTES(mIntValue, mStringValue, mVector, mReference);
 	};
 
 }

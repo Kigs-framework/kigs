@@ -78,21 +78,21 @@ void	Sample3::ProtectedInit()
 	// accessing vector
 	v4f vect;
 	instance1->getValue("Vector", vect);
-	std::cout << "vector values : {" << vect.x << "," << vect.y << "," << vect.z << "," << vect.w << "}" << std::endl;
+	std::cout << "vector values : [" << vect.x << "," << vect.y << "," << vect.z << "," << vect.w << "]" << std::endl;
 	// set value with string
-	instance1->setValue("Vector", "{2.0,1.0,0.0,-1.0}");
+	instance1->setValue("Vector", "[2.0,1.0,0.0,-1.0]");
 	instance1->getValue("Vector", vect);
-	std::cout << "vector values : {" << vect.x << "," << vect.y << "," << vect.z << "," << vect.w << "}" << std::endl;
+	std::cout << "vector values : [" << vect.x << "," << vect.y << "," << vect.z << "," << vect.w << "]" << std::endl;
 	// access with array of values
 	float arrayv[4];
 	instance1->getArrayValue("Vector", arrayv, 4);
-	std::cout << "vector values : {" << arrayv[0] << "," << arrayv[1] << "," << arrayv[2] << "," << arrayv[3] << "}" << std::endl;
+	std::cout << "vector values : [" << arrayv[0] << "," << arrayv[1] << "," << arrayv[2] << "," << arrayv[3] << "]" << std::endl;
 	arrayv[2] = 10.0f;
 	instance1->setArrayValue("Vector", arrayv,4);
 	
 	// or by element 
 	instance1->getArrayElementValue("Vector", arrayv[0], 0,2);
-	std::cout << "vector values : {" << arrayv[0] << "," << arrayv[1] << "," << arrayv[2] << "," << arrayv[3] << "}" << std::endl;
+	std::cout << "vector values : [" << arrayv[0] << "," << arrayv[1] << "," << arrayv[2] << "," << arrayv[3] << "]" << std::endl;
 
 
 	// IntValue is set like this in the XML file :

@@ -17,8 +17,11 @@ namespace Kigs
 	protected:
 
 		// RGB color 
-		maVect3DF	mColor = BASE_ATTRIBUTE(Color, 1.0, 0.0, 0.0);
+		v3f			mColor = { 1.0, 0.0, 0.0 };
 		// shininess 
-		maFloat		mShininess = BASE_ATTRIBUTE(Shininess, 0.5);
+		float		mShininess = 0.5f;
+
+		WRAP_ATTRIBUTES(mColor, mShininess);
+
 	};
 }

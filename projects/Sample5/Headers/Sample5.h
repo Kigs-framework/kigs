@@ -24,9 +24,11 @@ namespace Kigs
 		void	ProtectedCloseSequence(const std::string& sequence) override;
 
 		maCoreItem mFunction = BASE_ATTRIBUTE(Function, "eval(12)");
-		maFloat	mTestFloat = BASE_ATTRIBUTE(TestFloat, 50.0f);
 
-		maVect2DF mEvalResult = BASE_ATTRIBUTE(EvalResult, 0, 0);
+		float	mTestFloat = 50.0f;
+		v2f		mEvalResult = { 0.0f,0.0f };
+
+		WRAP_ATTRIBUTES(mTestFloat, mEvalResult);
 
 		float	randomNumber(float min, float max);
 	};

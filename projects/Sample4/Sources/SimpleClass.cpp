@@ -24,7 +24,7 @@ DEFINE_METHOD(SimpleClass, GiveInfos)
 	for (auto p : params)
 	{
 		std::string v;
-		if (p->getValue(v,nullptr))
+		if (p->getValue(v,sender))
 		{
 			std::cout << "-- parameter : " << p->id() << " value is : " << v << std::endl;
 		}
