@@ -316,6 +316,25 @@ namespace Kigs
 			}
 
 			template<typename fromT, typename toT, typename std::enable_if<
+				(!is_array<std::remove_cv_t<fromT>>::value)
+				&& (is_array<toT>::value)
+				&& !(
+					std::is_same<std::remove_cv_t<fromT>, std::string>::value
+					|| std::is_same<std::remove_cv_t<fromT>, usString>::value
+					)
+			>::type* = nullptr>
+			inline bool CoreConvertValue_impl(const fromT& fromval, toT& toval, int)
+			{
+				constexpr size_t broadcastSize = arraySize<toT>();
+				for (size_t i = 0; i < broadcastSize; i++)
+				{
+					if (!CoreConvertValue_impl(fromval, toval[i], int{})) return false;
+				}
+				return true;
+			}
+
+
+			template<typename fromT, typename toT, typename std::enable_if<
 				(std::is_same<std::remove_cv_t<fromT>, std::string>::value)
 				&& (std::is_same<std::remove_cv_t<toT>, usString>::value)
 			>::type* = nullptr>

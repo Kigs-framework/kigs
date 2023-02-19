@@ -40,6 +40,8 @@ bool gKigsToolsAvailable = false;
 #include <regex>
 #include <unordered_set>
 
+#include "CoreAttributeTypeTemplateConverter.h"
+
 #ifdef WUP
 #include <utf8.h>
 #include <winrt/Windows.Storage.h>
@@ -1384,8 +1386,8 @@ AttributeChange CheckAttributeChange(XMLNode* attr_xml, CoreModifiableAttribute*
 		else if (type == CoreModifiable::ATTRIBUTE_TYPE::ARRAY)
 		{
 #define NORMALIZE_STRING(size, type) if (array_size == size)\
-				if (CoreConvertString2Array<type>(result.old_value, values, size))\
-					CoreConvertArray2String<type>(result.old_value, values, size);
+				Kigs::Core::impl::CoreConvertString2Array_impl<type,std::string>(result.old_value,values,size);
+				
 
 			size_t array_size = attr->getNbArrayElements();
 			if (attr->getArrayElementType() == CoreModifiable::ATTRIBUTE_TYPE::FLOAT)

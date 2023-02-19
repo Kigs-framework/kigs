@@ -712,7 +712,10 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 	}
 	CoreModifiable* localthis=(CoreModifiable*)getlocalthis;
 	bool result = false;
-
+	if (sender == nullptr)
+	{
+		sender = localthis;
+	}
 
 	if (!methodFound.first->IsMethod())
 	{

@@ -895,7 +895,7 @@ namespace Kigs
 			// remove m
 			std::string attrname = c.substr(1);
 			// do placement new 
-			new (toAdd) CoreModifiableAttributeMap<valT>(offset, attrname);
+			new (toAdd) CoreModifiableAttributeMap<valT,false,false,false>(offset, attrname);
 			parent->push_back({ attrname, toAdd });
 		}
 	}

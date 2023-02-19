@@ -16,8 +16,8 @@ namespace Kigs
 		*/
 		// ****************************************
 
-		template<typename T, bool notifOwnerT = false, bool isInitT = false, bool isReadOnlyT = false, bool isOrphanT = false>
-		class CoreModifiableAttributeMap : public CoreModifiableAttributeDataInterface<2, T, notifOwnerT, isInitT, isReadOnlyT, isOrphanT>
+		template<typename T, bool notifOwnerT = false, bool isInitT = false, bool isReadOnlyT = false>
+		class CoreModifiableAttributeMap : public CoreModifiableAttributeDataInterface<2, T, notifOwnerT, isInitT, isReadOnlyT, false>
 		{
 			using CoreModifiableAttribute::mID;
 			using CoreModifiableAttribute::mPlaceHolderForSonClasses;
@@ -77,10 +77,30 @@ namespace Kigs
 		// specialized
 
 		template<typename pointed, bool notifOwnerT, bool isInitT, bool isReadOnlyT>
-		class CoreModifiableAttributeMap<std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT> : public CoreModifiableAttributeDataInterface<2, std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>
+		class CoreModifiableAttributeMap<std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT> : public CoreModifiableAttributeDataInterface<2, std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT,false>
 		{
-			using CoreModifiableAttributeDataInterface<2, ::std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>::CoreModifiableAttributeDataInterface;
-			using CoreModifiableAttributeDataInterface<2, ::std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>::valueProtectedAccess;
+			using CoreModifiableAttribute::mID;
+			using CoreModifiableAttribute::mPlaceHolderForSonClasses;
+
+			using CoreModifiableAttributeDataInterface<2, std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT, false >::valueProtectedAccess;
+
+		private:
+			CoreModifiableAttributeMap<std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>(CoreModifiable& owner, KigsID ID, const std::weak_ptr<pointed>& value) = delete;
+			CoreModifiableAttributeMap<std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>(CoreModifiable& owner, KigsID ID) = delete;
+
+		protected:
+			friend CoreModifiable;
+			// special constructor, the owner will be set afterward
+			CoreModifiableAttributeMap<std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>(uintptr_t offsetOnValue, const KigsID& ID) : CoreModifiableAttributeDataInterface<2, std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT, false >(nullptr, ID)
+			{
+				mPlaceHolderForSonClasses = (u32)offsetOnValue;
+			}
+		public:
+
+			explicit CoreModifiableAttributeMap<std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>(InheritanceSwitch tag) : CoreModifiableAttributeDataInterface<2, std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT, false>(tag) {}
+
+			friend class CoreModifiable;
+
 		public:
 
 			bool setValue(const std::string& val, CoreModifiable* owner) override
@@ -131,7 +151,7 @@ namespace Kigs
 				return setValue(usString(val), owner);
 			}
 
-			virtual bool getValue(std::string& val, CoreModifiable* owner) const override
+			virtual bool getValue(std::string& val, const CoreModifiable* owner) const override
 			{
 				const_cast<CoreModifiableAttributeMap<::std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>*>(this)->Search(owner);
 				if (auto ptr = valueProtectedAccess(owner).lock())
@@ -154,7 +174,7 @@ namespace Kigs
 
 				return false;
 			}
-			virtual bool getValue(usString& value, CoreModifiable* owner) const override
+			virtual bool getValue(usString& value, const CoreModifiable* owner) const override
 			{
 				std::string result;
 				if (getValue(result, owner))
@@ -165,22 +185,23 @@ namespace Kigs
 				return false;
 			}
 
-			virtual bool getValue(CMSP& val, CoreModifiable* owner) const override
+			virtual bool getValue(CMSP& val, const CoreModifiable* owner) const override
 			{
-				const_cast<CoreModifiableAttributeMap<::std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>*>(this)->Search(owner);
+				auto localthis = const_cast<CoreModifiableAttributeMap<::std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>*>(this);
+				localthis->Search(owner);
 				val = valueProtectedAccess(owner).lock();
 				return true;
 			}
 
 		protected:
 
-			void Search(void* instance)
+			void Search(const CoreModifiable* instance)
 			{
 				if (!mSearchString.empty())
 				{
 					::std::weak_ptr<pointed>& val = valueProtectedAccess(instance);
 
-					val = CoreModifiable::SearchInstance(mSearchString, (CoreModifiable*)instance);
+					val = CoreModifiable::SearchInstance(mSearchString, const_cast<CoreModifiable*>(instance));
 
 					if (!val.expired())
 					{
@@ -221,13 +242,38 @@ namespace Kigs
 			}
 
 			std::string	mSearchString;
+			void CopyData(const CoreModifiableAttribute& other) override
+			{
+				// should not be there
+				assert(false);
+			}
 		};
 
 		template<typename pointed, bool notifOwnerT, bool isInitT, bool isReadOnlyT>
-		class CoreModifiableAttributeMap<::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT> : public CoreModifiableAttributeDataInterface<2, ::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>
+		class CoreModifiableAttributeMap<std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT> : public CoreModifiableAttributeDataInterface<2, std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>
 		{
-			using CoreModifiableAttributeDataInterface<2, ::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>::CoreModifiableAttributeDataInterface;
-			using CoreModifiableAttributeDataInterface<2, ::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>::valueProtectedAccess;
+			using CoreModifiableAttribute::mID;
+			using CoreModifiableAttribute::mPlaceHolderForSonClasses;
+			using CoreModifiableAttributeDataInterface<2, std::weak_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT, false >::valueProtectedAccess;
+
+
+		private:
+			CoreModifiableAttributeMap<std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>(CoreModifiable& owner, KigsID ID, const std::shared_ptr<pointed>& value) = delete;
+			CoreModifiableAttributeMap<std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>(CoreModifiable& owner, KigsID ID) = delete;
+
+		protected:
+			friend CoreModifiable;
+			// special constructor, the owner will be set afterward
+			CoreModifiableAttributeMap<std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>(uintptr_t offsetOnValue, const KigsID& ID) : CoreModifiableAttributeDataInterface<2, std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT, false >(nullptr, ID)
+			{
+				mPlaceHolderForSonClasses = (u32)offsetOnValue;
+			}
+		public:
+
+			explicit CoreModifiableAttributeMap<std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>(InheritanceSwitch tag) : CoreModifiableAttributeDataInterface<2, std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT, false>(tag) {}
+
+			friend class CoreModifiable;
+
 		public:
 
 			bool setValue(const std::string& val, CoreModifiable* owner) override
@@ -278,7 +324,7 @@ namespace Kigs
 				return setValue(usString(val), owner);
 			}
 
-			virtual bool getValue(std::string& val, CoreModifiable* owner) const override
+			virtual bool getValue(std::string& val, const CoreModifiable* owner) const override
 			{
 				const_cast<CoreModifiableAttributeMap<::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>*>(this)->Search(owner);
 				if (auto ptr = valueProtectedAccess(owner))
@@ -301,7 +347,7 @@ namespace Kigs
 
 				return false;
 			}
-			virtual bool getValue(usString& value, CoreModifiable* owner) const override
+			virtual bool getValue(usString& value, const CoreModifiable* owner) const override
 			{
 				std::string result;
 				if (getValue(result, owner))
@@ -312,7 +358,7 @@ namespace Kigs
 				return false;
 			}
 
-			virtual bool getValue(CMSP& val, CoreModifiable* owner) const override
+			virtual bool getValue(CMSP& val, const CoreModifiable* owner) const override
 			{
 				const_cast<CoreModifiableAttributeMap<::std::shared_ptr<pointed>, notifOwnerT, isInitT, isReadOnlyT>*>(this)->Search(owner);
 				val = valueProtectedAccess(owner);
@@ -321,13 +367,13 @@ namespace Kigs
 
 		protected:
 
-			void Search(void* instance)
+			void Search(const CoreModifiable* instance)
 			{
 				if (!mSearchString.empty())
 				{
 					::std::shared_ptr<pointed>& val = valueProtectedAccess(instance);
 
-					val = CoreModifiable::SearchInstance(mSearchString, (CoreModifiable*)instance);
+					val = CoreModifiable::SearchInstance(mSearchString, const_cast<CoreModifiable*>(instance));
 
 					if (val)
 					{
@@ -367,6 +413,11 @@ namespace Kigs
 
 				default: assert(false); break;
 				}
+			}
+			void CopyData(const CoreModifiableAttribute& other) override
+			{
+				// should not be there
+				assert(false);
 			}
 
 			std::string	mSearchString;
