@@ -162,7 +162,7 @@ namespace Kigs
 			}
 
 			// declaration
-			template<typename T, typename strT> bool CoreConvertString2Array_impl(const strT& stringValue, T* arrayValue, size_t arrayNbElements);
+			template<typename T, typename strT> size_t CoreConvertString2Array_impl(const strT& stringValue, T* arrayValue, size_t arrayNbElements);
 			template<typename T, typename strT> bool CoreConvertArray2String_impl(strT& stringValue, T* arrayValue, size_t arrayNbElements);
 
 			template<typename fromT, typename toT, typename std::enable_if<std::is_same<fromT,bool>::value&& std::is_arithmetic<toT>::value && !std::is_same<fromT, toT>::value>::type* = nullptr>
@@ -312,8 +312,7 @@ namespace Kigs
 			>::type* = nullptr>
 			inline bool CoreConvertValue_impl(const fromT& fromval, toT& toval, int)
 			{
-				CoreConvertString2Array_impl(fromval, &toval[0], arraySize<toT>());
-				return true;
+				return CoreConvertString2Array_impl(fromval, &toval[0], arraySize<toT>())!=0;
 			}
 
 			template<typename fromT, typename toT, typename std::enable_if<
@@ -337,37 +336,44 @@ namespace Kigs
 			}
 
 
-			// set array values from braced string like : {1.0,0.0,2.0}
-			template<typename T, typename strT> bool CoreConvertString2Array_impl(const strT& stringValue, T* arrayValue, size_t arrayNbElements)
+			// set array values from square brackets string like : [1.0,0.0,2.0]
+			template<typename T, typename strT> size_t CoreConvertString2Array_impl(const strT& stringValue, T* arrayValue, size_t arrayNbElements)
 			{
 				std::string stringToParse = (std::string)stringValue;
+				std::string::size_type posToParse = stringToParse.find('[', 0);
 
-				std::string::size_type posToParse = stringToParse.find('{', 0);
-				if (posToParse == std::string::npos) return false;
-				posToParse++;
+				bool hasBracket = (posToParse == 0);
+				if (hasBracket)
+				{
+					posToParse++;
+				}
+				else
+				{
+					posToParse = 0;
+				}
 
 				for (size_t i = 0; i < arrayNbElements; i++)
 				{
 					// End of string, return
-					if (posToParse >= stringToParse.size()) return false;
+					if (posToParse >= stringToParse.size()) return 0; // something went wrong here
 
 					// T is itself an array, recurse
 					std::string::size_type	nextPosToParse = 0;
-					std::string			stringToConvert;
 					if constexpr (is_array<std::remove_cv_t<T> >::value)
 					{
-						nextPosToParse = stringToParse.find('}', posToParse);
-						stringToConvert.assign(stringToParse, posToParse, nextPosToParse - posToParse);
-						if (!CoreConvertString2Array_impl(stringToConvert, &(arrayValue[i][0]), arraySize<std::remove_cv_t<T> >())) return false;
-						posToParse = nextPosToParse + 1;
+						std::string subString = stringToParse.substr(posToParse);
+						nextPosToParse = CoreConvertString2Array_impl(subString, &(arrayValue[i][0]), arraySize<std::remove_cv_t<T> >());
+						if (!nextPosToParse) return 0;
+						posToParse += nextPosToParse;
 					}
 
-					// search next separator : ',' or '}'
-					nextPosToParse = stringToParse.find(',', posToParse);
-
-					if (nextPosToParse == std::string::npos)
+					if (hasBracket && (arrayNbElements == (i + 1))) // has bracket and last elem ? then search closing bracket
 					{
-						nextPosToParse = stringToParse.find('}', posToParse);
+						nextPosToParse = stringToParse.find(']', posToParse);
+					}
+					else // only search comma separator
+					{
+						nextPosToParse = stringToParse.find(',', posToParse);
 					}
 					if (nextPosToParse == std::string::npos) // next separator not found, go to the end of the string
 					{
@@ -375,37 +381,45 @@ namespace Kigs
 					}
 					if constexpr (!is_array<std::remove_cv_t<T> >::value)
 					{
+						std::string stringToConvert;
 						stringToConvert.assign(stringToParse, posToParse, nextPosToParse - posToParse);
 						if (!CoreConvertValue_impl(stringToConvert, arrayValue[i], int{})) return false;
 					}
-					posToParse = nextPosToParse + 1;
+					if (!hasBracket && (arrayNbElements == (i + 1))) // not has bracket and last elem ?
+					{
+						posToParse = nextPosToParse; // then keep found separator for parent array if needed
+					}
+					else
+					{
+						posToParse = nextPosToParse + 1;
+					}
 
 				}
-				return true;
+				return posToParse;
 			}
 
-			// create a string using braces like this : {val1,val2...} from an array
+			// create a string using square bracket like this : [val1,val2...] from an array
 			template<typename T, typename strT> bool CoreConvertArray2String_impl(strT& stringValue, T* arrayValue, size_t arrayNbElements)
 			{
 				if (arrayNbElements)
 				{
 					// work with std::string
-					std::string returnedValue = "{";
+					std::string returnedValue = "[";
 					for (size_t i = 0; i < arrayNbElements; i++)
 					{
 						if (i != 0) returnedValue += ",";
 						std::string val;
-						/*if constexpr (is_array<std::remove_cv_t<T>>::value)
+						if constexpr (is_array<std::remove_cv_t<T>>::value)
 						{
 							if (!CoreConvertArray2String_impl(val, &(arrayValue[i][0]), arraySize<std::remove_cv_t<T>>())) return false;
 						}
 						else
-						{*/
-						if (!CoreConvertValue_impl(arrayValue[i], val, int{})) return false;
-						//}
+						{
+							if (!CoreConvertValue_impl(arrayValue[i], val, int{})) return false;
+						}
 						returnedValue += val;
 					}
-					returnedValue += "}";
+					returnedValue += "]";
 					stringValue = strT(returnedValue);
 					return true;
 				}

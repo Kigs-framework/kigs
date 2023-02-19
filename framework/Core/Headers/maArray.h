@@ -11,10 +11,10 @@ namespace Kigs
 			Conversions
 		*/
 
-		// set array values from braced string like : {1.0,0.0,2.0}
+		// set array values from square bracket string like : [1.0,0.0,2.0]
 		template<typename T> bool CoreConvertString2Array(const std::string& stringValue, T* const arrayValue, size_t arrayNbElements)
 		{
-			std::string::size_type posToParse = stringValue.find('{', 0);
+			std::string::size_type posToParse = stringValue.find('[', 0);
 			bool hasBraces = (posToParse == 0);
 			if (hasBraces) posToParse++;
 			for (size_t i = 0; i < arrayNbElements; i++)
@@ -29,7 +29,7 @@ namespace Kigs
 
 				if (nextPosToParse == std::string::npos)
 				{
-					nextPosToParse = stringValue.find('}', posToParse);
+					nextPosToParse = stringValue.find(']', posToParse);
 				}
 
 				if (nextPosToParse == std::string::npos) // next separator not found, go to the end of the string
@@ -48,7 +48,7 @@ namespace Kigs
 		{
 			if (arrayNbElements)
 			{
-				stringValue = "{";
+				stringValue = "[";
 			for (size_t i = 0; i < arrayNbElements; i++)
 				{
 					if (i != 0) stringValue += ",";
@@ -56,7 +56,7 @@ namespace Kigs
 					if (!CoreConvertValue2String<T>(value, arrayValue[i])) return false;
 					stringValue += value;
 				}
-				stringValue += "}";
+				stringValue += "]";
 				return true;
 			}
 			return false;

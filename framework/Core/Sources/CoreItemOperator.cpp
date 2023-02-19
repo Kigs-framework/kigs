@@ -146,16 +146,16 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 
 
 
-	if (formulae[0] == '[') // is this a modifiable method ?
+	if (formulae[0] == '{') // is this a modifiable method ?
 	{
-		if (formulae[formulae.length() - 1] == ']')
+		if (formulae[formulae.length() - 1] == '}')
 		{
 
 			AsciiParserUtils	block(formulae);
 			size_t oldpos = formulae.GetPosition();
 			formulae.SetPosition(0);
 
-			if (formulae.GetBlock(block, '[', ']'))
+			if (formulae.GetBlock(block, '{', '}'))
 			{
 
 				// test method
@@ -201,15 +201,15 @@ CoreItemSP	CoreItemOperator<operandType>::Parse(AsciiParserUtils& formulae, Cons
 	}
 
 
-	if (formulae[0] == '{') // is this a vector
+	if (formulae[0] == '[') // is this a vector
 	{
-		if (formulae[formulae.length() - 1] == '}')
+		if (formulae[formulae.length() - 1] == ']')
 		{
 			AsciiParserUtils	block(formulae);
 			size_t oldpos = formulae.GetPosition();
 			formulae.SetPosition(0);
 
-			if (formulae.GetBlock(block, '{', '}'))
+			if (formulae.GetBlock(block, '[', ']'))
 			{
 
 				// test method
