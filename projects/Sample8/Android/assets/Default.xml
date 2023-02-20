@@ -21,9 +21,9 @@
 					</Attr>
 					<Inst N="MaterialCube" T="Material">
 						<Attr N="BlendEnabled" V="true"/>
-						<Attr N="AmbientColor" V="{0.000000,0.000000,0.000000,1.000000}"/>
-						<Attr N="DiffuseColor" V="{0.800000,0.800000,0.800000,1.000000}"/>
-						<Attr N="SpecularColor" V="{0.200000,0.200000,0.200000,1.000000}"/>
+						<Attr N="AmbientColor" V="[0.000000,0.000000,0.000000,1.000000]"/>
+						<Attr N="DiffuseColor" V="[0.800000,0.800000,0.800000,1.000000]"/>
+						<Attr N="SpecularColor" V="[0.200000,0.200000,0.200000,1.000000]"/>
 						<Attr N="Shininess" V="36.000000"/>
 						<Attr N="Transparency" V="0.000000"/>
 						<Inst N="MaterialCube_MatStage1" T="MaterialStage">
@@ -65,9 +65,9 @@
 					</Attr>
 					<Inst N="Material" T="Material">
 						<Attr N="BlendEnabled" V="true"/>
-						<Attr N="AmbientColor" V="{0.000000,0.000000,0.000000,1.000000}"/>
-						<Attr N="DiffuseColor" V="{0.800000,0.800000,0.800000,1.000000}"/>
-						<Attr N="SpecularColor" V="{0.200000,0.200000,0.200000,1.000000}"/>
+						<Attr N="AmbientColor" V="[0.000000,0.000000,0.000000,1.000000]"/>
+						<Attr N="DiffuseColor" V="[0.800000,0.800000,0.800000,1.000000]"/>
+						<Attr N="SpecularColor" V="[0.200000,0.200000,0.200000,1.000000]"/>
 						<Attr N="Shininess" V="25.000000"/>
 						<Attr N="Transparency" V="0.000000"/>
 						<Inst N="Material_MatStage1" T="MaterialStage">
@@ -78,39 +78,39 @@
 			</Inst>
 		</Inst>
 		<Inst N="Light" T="Node3D">
-			<Attr T="array" N="LocalMatrix" V="{0.145546,0.916476,0.372676,-0.555358,-0.236060,0.797404,0.818776,-0.323027,0.474615,9.366245,-4.244546,5.443862}" Dyn="yes"/>
+			<Attr T="array" N="LocalMatrix" V="[0.145546,0.916476,0.372676,-0.555358,-0.236060,0.797404,0.818776,-0.323027,0.474615,9.366245,-4.244546,5.443862]" Dyn="yes"/>
 			<Inst N="Light" T="Light">
-				<Attr N="SpecularColor" V="{0.336828,0.577147,1.000000}"/>
-				<Attr N="DiffuseColor" V="{0.336828,0.577147,1.000000}"/>
+				<Attr N="SpecularColor" V="[0.336828,0.577147,1.000000]"/>
+				<Attr N="DiffuseColor" V="[0.336828,0.577147,1.000000]"/>
 				<Attr N="SpotCutOff" V="0.128282"/>
 				<Attr N="LightType" V="SPOT"/>
 			</Inst>
 		</Inst>
 		<Inst N="Camera" T="Node3D">
-			<Attr T="array" N="LocalMatrix" V="{0.685921,0.727676,0.000000,-0.324013,0.305421,0.895396,0.651558,-0.614171,0.445271,7.358891,-6.925791,4.958309}" Dyn="yes"/>
+			<Attr T="array" N="LocalMatrix" V="[0.685921,0.727676,0.000000,-0.324013,0.305421,0.895396,0.651558,-0.614171,0.445271,7.358891,-6.925791,4.958309]" Dyn="yes"/>
 			<Inst N="Camera" T="Camera">
 				<Attr N="VerticalFOV" V="26.991467"/>
 				<Attr N="FarPlane" V="99.999992"/>
-				<Attr N="UpVector" V="{0.000000,1.000000,0.000000}"/>
-				<Attr N="ViewVector" V="{0.000000,0.000000,-1.000000}"/>
+				<Attr N="UpVector" V="[0.000000,1.000000,0.000000]"/>
+				<Attr N="ViewVector" V="[0.000000,0.000000,-1.000000]"/>
 				<Attr N="RenderingScreen" V="RenderingScreen:theRenderingScreen"/>
-				<Attr T="array" N="LocalMatrix" V="{0.000000,0.000000,-1.000000,-1.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000}" Dyn="yes"/>
+				<Attr T="array" N="LocalMatrix" V="[0.000000,0.000000,-1.000000,-1.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,0.000000]" Dyn="yes"/>
 			</Inst>
 		</Inst>
 		<Inst N="Light2" T="Node3D">
-			<Attr T="array" N="LocalMatrix" V="{-0.263565,0.964632,0.004190,-0.764277,-0.211469,0.609231,0.588570,0.157370,0.792982,4.076245,1.005454,5.903862}" Dyn="yes"/>
+			<Attr T="array" N="LocalMatrix" V="[-0.263565,0.964632,0.004190,-0.764277,-0.211469,0.609231,0.588570,0.157370,0.792982,4.076245,1.005454,5.903862]" Dyn="yes"/>
 			<Inst N="Light.001" T="Light">
-				<Attr N="SpecularColor" V="{0.969218,1.000000,0.540594}"/>
-				<Attr N="DiffuseColor" V="{0.969218,1.000000,0.540594}"/>
+				<Attr N="SpecularColor" V="[0.969218,1.000000,0.540594]"/>
+				<Attr N="DiffuseColor" V="[0.969218,1.000000,0.540594]"/>
 				<Attr N="SpotCutOff" V="0.128282"/>
 				<Attr N="LightType" V="SPOT"/>
 			</Inst>
 		</Inst>
 		<Inst N="Light3" T="Node3D">
-			<Attr T="array" N="LocalMatrix" V="{0.145546,0.916476,0.372676,-0.555358,-0.236060,0.797404,0.818776,-0.323027,0.474615,5.596245,-4.244546,8.113862}" Dyn="yes"/>
+			<Attr T="array" N="LocalMatrix" V="[0.145546,0.916476,0.372676,-0.555358,-0.236060,0.797404,0.818776,-0.323027,0.474615,5.596245,-4.244546,8.113862]" Dyn="yes"/>
 			<Inst N="Light.002" T="Light">
-				<Attr N="SpecularColor" V="{0.515362,0.483524,0.517334}"/>
-				<Attr N="DiffuseColor" V="{0.515362,0.483524,0.517334}"/>
+				<Attr N="SpecularColor" V="[0.515362,0.483524,0.517334]"/>
+				<Attr N="DiffuseColor" V="[0.515362,0.483524,0.517334]"/>
 			</Inst>
 		</Inst>
 	</Inst>

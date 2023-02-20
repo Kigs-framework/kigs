@@ -24,28 +24,28 @@
 		</Attr>
 	</Inst>
 	<Inst N="UILayer" T="UI2DLayer">
-		<Attr N="Size" V="{1280,800}"/>
+		<Attr N="Size" V="[1280,800]"/>
 		<Attr N="Priority" V="10"/>
 		<Attr N="GlobalPriority" V="true" />
 		<Attr N="RenderingScreen" V="RenderingScreen:theRenderingScreen"/>
 		<!-- root UIItem for 2D IHM -->
 		<Inst N="Interface" T="UIItem">
-			<Attr N="Size" V="{1280,800}"/>
+			<Attr N="Size" V="[1280,800]"/>
 			<Inst N="background" T="UIPanel">
-				<Attr N="Size" V="{1280,800}"/>
+				<Attr N="Size" V="[1280,800]"/>
 				<Attr N="Priority" V="5"/>
-				<Attr N="Anchor" V="{0.500000,0.500000}"/>
-				<Attr N="Dock" V="{0.500000,0.500000}"/>
-				<Attr N="Color" V="{0.8, 0.8, 0.9, 1.0}"/>
+				<Attr N="Anchor" V="[0.500000,0.500000]"/>
+				<Attr N="Dock" V="[0.500000,0.500000]"/>
+				<Attr N="Color" V="[0.8, 0.8, 0.9, 1.0]"/>
 			</Inst>
 			<!-- localized animated text -->
 			<Inst N="loc_txt" T="UIText">
 				<Attr N="Priority" V="11"/>
 				<Attr N="Text" V="#atext"/>
-				<Attr N="Anchor" V="{0.500000,0.500000}"/>
-				<Attr N="Dock" V="{0.50,0.50}"/>
-				<Attr N="Color" V="{0.0, 0.0, 0.0}"/>
-				<Attr N="Size" V="{-1,-1}"/>
+				<Attr N="Anchor" V="[0.500000,0.500000]"/>
+				<Attr N="Dock" V="[0.50,0.50]"/>
+				<Attr N="Color" V="[0.0, 0.0, 0.0]"/>
+				<Attr N="Size" V="[-1,-1]"/>
 				<Attr N="Font" V="Calibri.ttf"/>
 				<Attr N="FontSize" V="32"/>
 				<Attr N="MaxWidth" V="256"/>
@@ -81,10 +81,10 @@
 			<Inst N="back_txt" T="UIText">
 				<Attr N="Priority" V="11"/>
 				<Attr N="Text" V="#Back"/>
-				<Attr N="Anchor" V="{0.500000,0.500000}"/>
-				<Attr N="Dock" V="{0.050,0.50}"/>
-				<Attr N="Color" V="{0.0, 0.0, 0.4}"/>
-				<Attr N="Size" V="{-1,-1}"/>
+				<Attr N="Anchor" V="[0.500000,0.500000]"/>
+				<Attr N="Dock" V="[0.050,0.50]"/>
+				<Attr N="Color" V="[0.0, 0.0, 0.4]"/>
+				<Attr N="Size" V="[-1,-1]"/>
 				<Attr N="Font" V="Calibri.ttf"/>
 				<Attr N="FontSize" V="24"/>
 				<Attr N="MaxWidth" V="128"/>
@@ -92,12 +92,12 @@
 					<Attr N="Priority" V="10"/>
 					<Attr N="UpTexture" V="Up.png"/>	
 					<Attr N="DownTexture" V="Down.png"/>
-					<Attr N="Sliced" V="{5.0,5.0}"/>
+					<Attr N="Sliced" V="[5.0,5.0]"/>
 					<Attr N="SizeModeX" V="Add"/>
 					<Attr N="SizeModeY" V="Add"/>
-					<Attr N="Anchor" V="{0.5,0.5}"/>
-					<Attr N="Dock" V="{0.5,0.5}"/>
-					<Attr N="Size" V="{16,16}"/>
+					<Attr N="Anchor" V="[0.5,0.5]"/>
+					<Attr N="Dock" V="[0.5,0.5]"/>
+					<Attr N="Size" V="[16,16]"/>
 					<Attr N="Parameter" V="Screen_Main.xml"/>	
 					<Attr N="ClickUpAction" V="ChangeSequence"/>
 				</Inst>

@@ -35,7 +35,7 @@
 			<!-- the pivot is set in global coordinates --> 
 			<Attr N="IsGlobal" V="true"/>
 			<!-- around z axis --> 
-			<Attr N="PivotAxis" V="{0.000000,0.000000,1.000000}"/>
+			<Attr N="PivotAxis" V="[0.000000,0.000000,1.000000]"/>
 			<!-- animate pivot angle with an infinite loop --> 
 			<Inst Name="animateLightPos" Type="CoreSequenceLauncher">
 				<Attr N="Sequence"><![CDATA[
@@ -69,13 +69,13 @@
 		</Ref>
 	</Inst>
 	<Inst N="UILayer" T="UI2DLayer">
-		<Attr N="Size" V="{1280,800}"/>
+		<Attr N="Size" V="[1280,800]"/>
 		<Attr N="Priority" V="10"/>
 		<Attr N="GlobalPriority" V="true" />
 		<Attr N="RenderingScreen" V="RenderingScreen:theRenderingScreen"/>
 		<!-- root UIItem for 2D IHM -->
 		<Inst N="Interface" T="UIItem">
-			<Attr N="Size" V="{1280,800}"/>
+			<Attr N="Size" V="[1280,800]"/>
 			<!-- create buttons in LuaImporter  -->
 			<Inst N="buttonLua" T="LuaImporter">
 				<Attr N="Script" V="button.lua"/>
