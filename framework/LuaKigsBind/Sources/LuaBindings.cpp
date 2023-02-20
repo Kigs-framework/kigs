@@ -280,15 +280,15 @@ int Kigs::Lua::CoreModifiableSetAttributeLua(lua_State* lua)
 			char str[128];
 			if ((pt2 = ::Lua::objectCast<v2f>(ref)))
 			{
-				snprintf(str, 128, "{%f,%f}", pt2->x, pt2->y);
+				snprintf(str, 128, "[%f,%f]", pt2->x, pt2->y);
 			}
 			else if((pt3 = ::Lua::objectCast<v3f>(ref)))
 			{
-				snprintf(str, 128, "{%f,%f,%f}", pt3->x, pt3->y, pt3->z);
+				snprintf(str, 128, "[%f,%f,%f]", pt3->x, pt3->y, pt3->z);
 			}
 			else if ((pt4 = ::Lua::objectCast<v4f>(ref)))
 			{
-				snprintf(str, 128, "{%f,%f,%f,%f}", pt4->x, pt4->y, pt4->z, pt4->w);
+				snprintf(str, 128, "[%f,%f,%f,%f]", pt4->x, pt4->y, pt4->z, pt4->w);
 			}
 			else if((obj = ::Lua::objectCast<CoreModifiable>(ref)))
 			{
@@ -632,15 +632,15 @@ int CoreModifiableAddDynamicAttribute(CoreModifiable* obj, lua_State* lua)
 			char str[128];
 			if ((pt2 = Lua::objectCast<v2f>(ref)))
 			{
-				snprintf(str, 128, "{%f,%f}", pt2->x, pt2->y);
+				snprintf(str, 128, "[%f,%f]", pt2->x, pt2->y);
 			}
 			else if((pt3 = Lua::objectCast<v3f>(ref)))
 			{
-				snprintf(str, 128, "{%f,%f,%f}", pt3->x, pt3->y, pt3->z);
+				snprintf(str, 128, "[%f,%f,%f]", pt3->x, pt3->y, pt3->z);
 			}
 			else if ((pt4 = Lua::objectCast<v4f>(ref)))
 			{
-				snprintf(str, 128, "{%f,%f,%f,%f}", pt4->x, pt4->y, pt4->z, pt4->w);
+				snprintf(str, 128, "[%f,%f,%f,%f]", pt4->x, pt4->y, pt4->z, pt4->w);
 			}
 			else
 				break;

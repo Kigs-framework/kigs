@@ -1130,8 +1130,8 @@ usString Kigs::Draw2D::TextTagProcessor(const usString& text, std::vector<TextTa
 			{
 				current_tag.item = static_cast<UIItem*>(cm);
 				current_tag.align = current_align_mode;
-				cm->setValue("Dock", "{0,0}");
-				cm->setValue("Position", "{0,0}");
+				cm->setValue("Dock", "[0,0]");
+				cm->setValue("Position", "[0,0]");
 				if (output_tags)
 					output_tags->push_back(current_tag);
 			}

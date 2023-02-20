@@ -2997,7 +2997,7 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 
 				Point2D result((Point2D)*ItemToEval);
 				char resultBuffer[128];
-				sprintf(resultBuffer, "{%f,%f}", result.x,result.y);
+				sprintf(resultBuffer, "[%f,%f]", result.x, result.y);
 				attr = resultBuffer;
 			}
 			else if (arraySize == 3)
@@ -3005,7 +3005,7 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 				ItemToEval = CoreItemOperator<Point3D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 				Point3D result((Point3D)*ItemToEval);
 				char resultBuffer[128];
-				sprintf(resultBuffer, "{%f,%f,%f}", result.x, result.y,result.z);
+				sprintf(resultBuffer, "[%f,%f,%f]", result.x, result.y,result.z);
 				attr = resultBuffer;
 			}
 			else if (arraySize == 4)
@@ -3013,7 +3013,7 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 				ItemToEval = CoreItemOperator<Vector4D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 				Vector4D result(ItemToEval->operator Vector4D());
 				char resultBuffer[200];
-				sprintf(resultBuffer, "{%f,%f,%f,%f}", result.x, result.y, result.z,result.w);
+				sprintf(resultBuffer, "[%f,%f,%f,%f]", result.x, result.y, result.z,result.w);
 				attr = resultBuffer;
 			}
 		}
