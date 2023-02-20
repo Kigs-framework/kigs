@@ -143,7 +143,7 @@ void	AssetManager::ProtectedInit()
 		{
 			SP < Thread::Thread > workthread = KigsCore::GetInstanceOf("workthread", "Thread");
 			mThread = workthread;
-			workthread->setMethod(this, "doTheJob");
+			workthread->setMethod(shared_from_this(), "doTheJob");
 			workthread->Init();
 		}
 	}

@@ -1,8 +1,5 @@
 #include "KigsPackager.h"
 
-//Modules
-#include "CoreIncludes.h"
-
 #include "CorePackage.h"
 
 #include "TimerIncludes.h"

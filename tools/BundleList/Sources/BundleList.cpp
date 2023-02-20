@@ -92,7 +92,7 @@ void	BundleList::ProtectedInit()
 	{
 		SP<Thread::Thread> bundlethread = KigsCore::GetInstanceOf("bundleThread", "Thread");
 		mThread = bundlethread;
-		bundlethread->setMethod(this, "CreateBundle");
+		bundlethread->setMethod(shared_from_this(), "CreateBundle");
 		bundlethread->Init();
 	}
 }

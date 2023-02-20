@@ -26,10 +26,10 @@ IMPLEMENT_CLASS_INFO(OBJImport)
  *	Constructor
  */
 OBJImport::OBJImport(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
-,m_FileName(*this,true,"FileName")
-,m_FirstMesh(*this,false,"FirstMesh","") // used only to get value
-,m_ModernMesh(*this,true,"ModernMesh",false)
-,m_ExportPath(*this, false, "ExportPath", "")
+,m_FileName(*this,"FileName")
+,m_FirstMesh(*this,"FirstMesh","") // used only to get value
+,m_ModernMesh(*this,"ModernMesh",false)
+,m_ExportPath(*this, "ExportPath", "")
 ,m_ReadVertexBuffer(nullptr)
 ,m_ReadTextCoordsBuffer(nullptr)
 ,m_ReadNormalBuffer(nullptr)
@@ -347,7 +347,7 @@ void	OBJImport::createObjectFromReadedData()
 
 		if(m_MeshList.size()==0)
 		{
-			m_FirstMesh=newmesh.get();
+			m_FirstMesh=newmesh;
 		}
 		m_MeshList.push_back(newmesh);
 	}
@@ -493,7 +493,7 @@ void	OBJImport::createObjectFromReadedData()
 
 		if(m_MeshList.size()==0)
 		{
-			m_FirstMesh=newmesh.get();
+			m_FirstMesh=newmesh;
 		}
 
 		m_MeshList.push_back(newmesh);

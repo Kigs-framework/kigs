@@ -1239,7 +1239,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 {
 	CoreModifiableAttribute*	toadd = GenericCreateDynamicAttribute(type, ID);
 	
-	if (toadd && defaultval)
+	if (toadd)
 	{
 		toadd->setValue(defaultval, this);
 	}
@@ -1251,7 +1251,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 {
 	CoreModifiableAttribute*	toadd = GenericCreateDynamicAttribute(type, ID);
 
-	if (toadd && defaultval)
+	if (toadd)
 	{
 		toadd->setValue((u64)defaultval, this);
 	}
@@ -1416,7 +1416,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 {
 	CoreModifiableAttribute*	toadd = GenericCreateDynamicAttribute(type, ID);
 	
-	if (toadd && defaultval)
+	if (toadd)
 	{
 		toadd->setValue(defaultval, this);
 	}
@@ -1428,7 +1428,7 @@ CoreModifiableAttribute*	CoreModifiable::AddDynamicAttribute(CoreModifiable::ATT
 {
 	CoreModifiableAttribute*	toadd = GenericCreateDynamicAttribute(type, ID);
 	
-	if (toadd && defaultval)
+	if (toadd)
 	{
 		toadd->setValue(defaultval, this);
 	}

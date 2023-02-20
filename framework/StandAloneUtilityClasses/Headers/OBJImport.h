@@ -123,9 +123,9 @@ namespace Kigs
 
 			virtual void	InitModifiable();
 
-			maString								m_FileName;
+			maStringInit							m_FileName;
 			maReference								m_FirstMesh;
-			maBool									m_ModernMesh;
+			maBoolInit								m_ModernMesh;
 
 			std::vector<CMSP>			m_MeshList;
 

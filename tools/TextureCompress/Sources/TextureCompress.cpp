@@ -1,5 +1,4 @@
 #include "TextureCompress.h"
-#include "CoreIncludes.h"
 #include "TimerIncludes.h"
 #include "FilePathManager.h"
 
