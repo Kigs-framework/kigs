@@ -46,16 +46,18 @@ namespace Kigs
 			WRAP_METHODS(ManageDirectTouchEvent);
 
 
-			maReference mLabel = BASE_ATTRIBUTE(Label);
+			bool							mIsClockwise = true;
+			s32								mSlotCount = -1; // -1 for dynamic
 
-			maFloat mRadius = BASE_ATTRIBUTE(Radius, 0.0f);
-			maFloat mRadiusOffset = BASE_ATTRIBUTE(RadiusOffset, 0.0f);
-			maFloat mActivationRadiusSqr = BASE_ATTRIBUTE(ActivationRadiusSqr, 100.0f);
-			maFloat mAngleStart = BASE_ATTRIBUTE(AngleStart, 0.0f);
-			maFloat mAngleWide = BASE_ATTRIBUTE(AngleWide, 360.0f);
-			maInt mSlotCount = BASE_ATTRIBUTE(SlotCount, -1); // -1 for dynamic
+			float							mRadius = 0.0f;
+			float							mRadiusOffset = 0.0f;
+			float							mActivationRadiusSqr = 100.0f;
+			float							mAngleStart = 0.0f;
+			float							mAngleWide = 360.0f;
 
-			maBool mIsClockwise = BASE_ATTRIBUTE(IsClockwise, true);
+			std::weak_ptr<CoreModifiable>	mLabel;
+
+			WRAP_ATTRIBUTES(mIsClockwise, mSlotCount, mRadius, mRadiusOffset, mActivationRadiusSqr, mAngleStart, mAngleWide, mLabel);
 
 			std::vector<CoreModifiable*> mItemList;
 

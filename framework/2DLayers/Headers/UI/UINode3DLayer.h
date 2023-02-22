@@ -49,15 +49,17 @@ namespace Kigs
 
 			SP<UIItem> mRootItem;
 			// if not interactive, don't do update (but still draw)
-			maBool	mIsInteractive = BASE_ATTRIBUTE(IsInteractive, true);
+			bool	mIsInteractive = true;
+			u32		mRenderPassMask = 0xffffffff;
+			s32		mInputSortingLayer = 0;
 
-			maVect2DF	mSize = BASE_ATTRIBUTE(Size, 0.8f, 0.6f);
-			maVect2DF	mDesignSize = BASE_ATTRIBUTE(DesignSize, 800.0f, 600.0f);
+			v2f		mSize = { 0.8f, 0.6f };
+			v2f		mDesignSize = { 800.0f, 600.0f };
 
 			// Camera used for touch inputs
-			maReference mCamera = BASE_ATTRIBUTE(Camera, "Camera:camera");
-			maUInt mRenderPassMask = BASE_ATTRIBUTE(RenderPassMask, 0xffffffff);
-			maInt mInputSortingLayer = BASE_ATTRIBUTE(InputSortingLayer, 0);
+			std::weak_ptr<CoreModifiable> mCamera;
+
+			WRAP_ATTRIBUTES(mIsInteractive, mRenderPassMask, mInputSortingLayer, mSize, mDesignSize, mCamera);
 
 			CMSP		mCollider;
 		};

@@ -39,15 +39,16 @@ namespace Kigs
 
 			SmartPointer<CoreModifiable> mFrameBufferStream;
 
-			maStringInit mVideoFile;
-			maReference mFrameBuffer;
-			maBool mAutoplay;
-			maBool mLoop;
-			maBool mAutoSize;
-			maString mNotificationStart;
-			maString mNotificationEnd;
+			bool								mAutoplay = true;
+			bool								mLoop = true;
+			bool								mAutoSize = false;
+			float								mVolume = 1.0f;
+			std::string							mNotificationStart = "";
+			std::string							mNotificationEnd = "";
+			std::string							mVideoFile="";
+			std::weak_ptr<CoreModifiable>		mFrameBuffer;
 
-			maFloat mVolume = BASE_ATTRIBUTE(Volume, 1.0f);
+			WRAP_ATTRIBUTES(mAutoplay, mLoop, mAutoSize, mVolume, mNotificationStart, mNotificationEnd, mVideoFile, mFrameBuffer);
 
 			bool mIsPlaying;
 

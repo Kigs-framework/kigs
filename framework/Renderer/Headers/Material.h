@@ -249,29 +249,31 @@ namespace Kigs
 			 */
 			virtual ~Material();
 
-			//! 1 front, 2 back, 3 both
-			maInt			mFacing;
-			//! blend function source
-			maInt			mBlendFuncSource;
-			//! blend function destination
-			maInt			mBlendFuncDest;
 			//! TRUE if the blend is enabled
-			maBool			mBlendEnabled;
+			bool			mBlendEnabled = false;
 			//! TRUE if the material color is enabled
-			maBool			mMaterialColorEnabled;
-			//! ambient color
-			maVect4DF		mAmbientColor;
-			//! diffuse color
-			maVect4DF		mDiffuseColor;
-			//! specular color
-			maVect4DF		mSpecularColor;
-			//! emission color
-			maVect4DF		mEmissionColor;
+			bool			mMaterialColorEnabled = false;
 			//! shininess
-			maFloat			mShininess;
+			float			mShininess = 120.0f;
 			//! transparency
-			maFloat			mTransparency;
+			float			mTransparency = 1.0f;
+			//! 1 front, 2 back, 3 both
+			s32				mFacing = 1;
+			//! blend function source
+			s32				mBlendFuncSource = 4;
+			//! blend function destination
+			s32				mBlendFuncDest = 5;
+			//! ambient color
+			v4f				mAmbientColor = { 0.2f, 0.2f, 0.2f, 1.0f };
+			//! diffuse color
+			v4f				mDiffuseColor = { 0.3f, 0.3f, 0.3f, 1.0f };
+			//! specular color
+			v4f				mSpecularColor = { 0.1f, 0.1f, 0.1f, 1.0f };
+			//! emission color
+			v4f				mEmissionColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 
+			WRAP_ATTRIBUTES(mBlendEnabled, mMaterialColorEnabled, mShininess, mTransparency, mFacing, mBlendFuncSource,
+				mBlendFuncDest, mAmbientColor, mDiffuseColor, mSpecularColor, mEmissionColor);
 		};
 
 	}

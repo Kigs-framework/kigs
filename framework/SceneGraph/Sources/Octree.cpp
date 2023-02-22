@@ -17,14 +17,14 @@ IMPLEMENT_CLASS_INFO(Octree)
 IMPLEMENT_CONSTRUCTOR(Octree)
 , mIsInRemove(false)
 , mRootSubNode(nullptr)
-, mBoundingBoxMin(*this, "BoundingBoxMin")
-, mBoundingBoxMax(*this, "BoundingBoxMax")
-, mSubdivideLevel(*this, "SubdivideLevel", 10)
-, mMaxRecursiveLevel(*this, "MaxRecursiveLevel", 5)
 , mQuadTreeAxis(*this,  "QuadTreeAxis", "None", "X", "Y", "Z")
 , mIsQuadtree(false)
-
 {
+	setInitParameter("SubdivideLevel", true);
+	setInitParameter("MaxRecursiveLevel", true);
+	setInitParameter("BoundingBoxMin", true);
+	setInitParameter("BoundingBoxMax", true);
+
 	mPrecomputedCull.clear();
 	mRootSubNode = KigsCore::GetInstanceOf("myRootSubNode", "OctreeSubNode");
 	addItem(mRootSubNode);
@@ -39,8 +39,8 @@ void	Octree::InitModifiable()
 {
 	Node3D::InitModifiable();
 
-	mLocalBBox.m_Min.Set(mBoundingBoxMin[0], mBoundingBoxMin[1], mBoundingBoxMin[2]);
-	mLocalBBox.m_Max.Set(mBoundingBoxMax[0], mBoundingBoxMax[1], mBoundingBoxMax[2]);
+	mLocalBBox.m_Min = mBoundingBoxMin;
+	mLocalBBox.m_Max = mBoundingBoxMax;
 	mBBox = mLocalBBox;
 	ComputeGlobalBBox();
 
@@ -83,8 +83,8 @@ void Octree::RecomputeBoundingBox()
 		return;
 	}
 
-	mLocalBBox.m_Min.Set(mBoundingBoxMin[0], mBoundingBoxMin[1], mBoundingBoxMin[2]);
-	mLocalBBox.m_Max.Set(mBoundingBoxMax[0], mBoundingBoxMax[1], mBoundingBoxMax[2]);
+	mLocalBBox.m_Min = mBoundingBoxMin;
+	mLocalBBox.m_Max = mBoundingBoxMax;
 
 	Matrix3x4		BBoxTransformMatrix(mTransform);
 

@@ -36,28 +36,18 @@ SimpleDrawing::~SimpleDrawing()
 
 void SimpleDrawing::setColor(float R, float G, float B)
 {
-	float col[3];
-	col[0] = R;
-	col[1] = G;
-	col[2] = B;
-	mColor.setArrayValue((float*)col,this,3);
+	mColor.Set(R,G,B);
 }
 
 void SimpleDrawing::setAlpha(float A)
 {
 	mAlpha = A;
-	//setValue("TransparencyFlag",mAlpha!=1.0f);
 }
 
 void SimpleDrawing::setColor(float R, float G, float B, float A)
 {
-	float col[3];
-	col[0] = R;
-	col[1] = G;
-	col[2] = B;
-	mColor.setArrayValue((float*)col,this,3);
+	mColor.Set(R, G, B);
 	mAlpha = A;
-	//setValue("TransparencyFlag",mAlpha!=1.0f);
 }
 
 

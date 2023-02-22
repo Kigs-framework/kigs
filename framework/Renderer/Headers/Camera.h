@@ -294,7 +294,7 @@ namespace Kigs
 			//! link to the rendering screen
 			RenderingScreen* getRenderingScreen()
 			{
-				return (RenderingScreen*)((CoreModifiable*)mRenderingScreen);
+				return mRenderingScreen.lock().get();
 			}
 
 			virtual bool	GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::touchPosInfos& pout);
@@ -357,62 +357,68 @@ namespace Kigs
 			void	RecomputeMatrix();
 
 			void	activeTouchControlledCamera(bool active);
-			//! coordinate on x axis of the min point of the viewport
-			maFloat				mViewportMinX;
-			//! coordinate on y axis of the min point of the viewport
-			maFloat				mViewportMinY;
-			//! width of the viewport
-			maFloat				mViewportSizeX;
-			//! height of the viewport
-			maFloat				mViewportSizeY;
-
-			//! zNear value
-			maFloat				mNearPlane;
-			//! zFar value
-			maFloat				mFarPlane;
-
-			//! position of the camera
-			maVect3DF			mPosition;
-			//! up vector of the camera
-			maVect3DF			mUpVector;
-			//! direction of the camera
-			maVect3DF			mViewVector;
-			//! clear color of the camera
-			maVect4DF			mClearColor;
-
-
-			//! reference on the rendering screen
-			maReferenceInit		mRenderingScreen;
-
-			//! vertical FOV of the camera
-			maFloat				mVerticalFOV;
-			//! aspect ration of the camera
-			maFloat				mAspectRatio;
 
 			//! should clear zBuffer
-			maBool				mClearZBuffer;
+			bool				mClearZBuffer = true;
 			//! should clear color buffer
-			maBool				mClearColorBuffer;
+			bool				mClearColorBuffer = true;
 			//! should clear stencil buffer
-			maBool				mClearStencilBuffer;
-
+			bool				mClearStencilBuffer = false;
 			//! Disable or Enable camera
-			maBool				mCameraIsEnabled;
-
-			//! Camera priority
-			maUInt				mPriority;
-
-			//! Camera brightness, change rendering screen brightness
-			maFloat		mBrightness;
+			bool				mCameraIsEnabled = true;
 
 			//! Camera all visible(no cull)
-			maBool				mAllVisible;
+			bool				mAllVisible = false;
 
-			maBool				mTouchControlled;
+			bool				mTouchControlled = false;
 
-			maBool mUseFog = BASE_ATTRIBUTE(UseFog, false);
-			maVect4DF mFogColor = BASE_ATTRIBUTE(FogColor, 0, 0, 0, 1);
-			maFloat mFogScale = BASE_ATTRIBUTE(FogScale, 10.0f);
+			bool				mUseFog = false;
+
+			//! coordinate on x axis of the min point of the viewport
+			float				mViewportMinX = 0.0f;
+			//! coordinate on y axis of the min point of the viewport
+			float				mViewportMinY = 0.0f;
+			//! width of the viewport
+			float				mViewportSizeX = 1.0f;
+			//! height of the viewport
+			float				mViewportSizeY = 1.0f;
+
+			//! zNear value
+			float				mNearPlane = 0.1f;
+			//! zFar value
+			float				mFarPlane = 40.0f;
+
+			//! vertical FOV of the camera
+			float				mVerticalFOV = 45.0f;
+			//! aspect ration of the camera
+			float				mAspectRatio = 0.0f;
+			//! Camera brightness, change rendering screen brightness
+			float				mBrightness = 0.0f;
+			//! fog scale
+			float				mFogScale = 10.0f;
+
+			//! Camera priority
+			u32					mPriority = 0.0f;
+
+			//! position of the camera
+			v3f					mPosition;
+			//! up vector of the camera
+			v3f					mUpVector;
+			//! direction of the camera
+			v3f					mViewVector;
+			//! clear color of the camera
+			v4f					mClearColor;
+			//! fog color
+			v4f					mFogColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+			//! reference on the rendering screen
+			std::weak_ptr<RenderingScreen>	mRenderingScreen;
+			//maReferenceInit		mRenderingScreen;
+
+			WRAP_ATTRIBUTES(mClearZBuffer,mClearColorBuffer, mClearStencilBuffer, mCameraIsEnabled, mAllVisible, mTouchControlled, mUseFog,
+							mViewportMinX,mViewportMinY,mViewportSizeX,mViewportSizeY,mNearPlane,mFarPlane,
+							mVerticalFOV, mAspectRatio, mBrightness, mFogScale, mPriority, mPosition,mUpVector,mViewVector,mClearColor, mFogColor,
+							mRenderingScreen);
 
 			//! TRUE when the camera is active
 			bool				mIsActive;

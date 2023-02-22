@@ -112,7 +112,7 @@ void LuaImporter::InitModifiable()
 		}
 
 		SP<LuaKigsBindModule> _luamodule = KigsCore::GetModule("LuaKigsBindModule");
-		if (_luamodule->ExecuteLuaFile(Script.c_str()))
+		if (_luamodule->ExecuteLuaFile(mScript.c_str()))
 		{
 			LuaState L = _luamodule->getLuaState();
 

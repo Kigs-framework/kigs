@@ -41,13 +41,13 @@ namespace Kigs
 				return mCurrentOperation;
 			}
 
-			maVect3DF* mOrbitPoint;
-			maVect3DF* mOrbitDirection;
-			maVect3DF* mOrbitUp;
-			maFloat* mOrbitDistance;
+			maVect3DF*	mOrbitPoint;
+			maVect3DF*	mOrbitDirection;
+			maVect3DF*	mOrbitUp;
+			maFloat*	mOrbitDistance;
 
-			maBool* mEnabled;
-			maBool* mOrbitNeedCtrl;
+			maBool*		mEnabled;
+			maBool*		mOrbitNeedCtrl;
 
 			Operation mCurrentOperation = Operation::None;
 

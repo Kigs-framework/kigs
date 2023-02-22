@@ -1210,23 +1210,8 @@ namespace Kigs
 
 		};
 
-		struct DynamicSwitch;
-
-		template<typename attribute_type, typename value_type>
-		attribute_type*	CoreModifiable::AddDynamicAttribute(KigsID ID, const value_type& value)
-		{
-			attribute_type*	toadd = 0;
-			toadd = (attribute_type*)getAttribute(ID);
-			if (toadd != nullptr)
-			{
-				if (toadd->getType() != TypeToEnum<value_type>::value) return nullptr;
-				toadd->setValue(value, this);
-				return toadd;
-			}
-			toadd = new attribute_type(*this, ID, DynamicSwitch{});
-			toadd->setValue(value,this);
-			return toadd;
-		}
+		// Tag type for dynamic switch constructor
+		struct DynamicSwitch {};
 
 		//! Utility Macro to define methods for XML Parser Delegate
 		#define Declare_XMLDelegate 	DECLARE_METHOD(XMLElementStartDescription); \
@@ -1460,6 +1445,24 @@ namespace Kigs
 				return static_cast<TypeOut*>(obj);
 			return nullptr;
 		}
+
+
+		template<typename attribute_type, typename value_type>
+		attribute_type* CoreModifiable::AddDynamicAttribute(KigsID ID, const value_type& value)
+		{
+			attribute_type* toadd = 0;
+			toadd = (attribute_type*)getAttribute(ID);
+			if (toadd != nullptr)
+			{
+				if (toadd->getType() != TypeToEnum<value_type>::value) return nullptr;
+				toadd->setValue(value, this);
+				return toadd;
+			}
+			toadd = new attribute_type(*this, ID, DynamicSwitch{});
+			toadd->setValue(value, this);
+			return toadd;
+		}
+
 
 		typedef CMSP (*createMethod)(const std::string& instancename, std::vector<CoreModifiableAttribute*>* args);
 		void RegisterClassToInstanceFactory(KigsCore* core, const std::string& moduleName, KigsID classID, createMethod method);

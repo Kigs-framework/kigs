@@ -215,29 +215,26 @@ namespace Kigs
 
 			float MeasureWord(const unsigned short* str);
 
+			bool							mResizeToMaxWidth = true;
+			bool							mIgnoreTags = false;
+			bool							mIgnoreColorTags = false;
+			bool							mShowCursor = false;
+			bool							mPickable = false;
+			s32								mSelectedCharacter = -1;
+			s32								mTextAlignment = TextAlign_Left;
+			s32								mMaxLines = 0;
+			float							mFontSize = 36;
+			float							mMaxWidth = 0.0f;
+			float							mFontScaleFactor = 1.0f;
+			float							mExtraLineSpacing = 0.0f;
+			usString						mText;
+			std::string						mFont = "PT-serif.ttf";
 
-			maUSString	mText = BASE_ATTRIBUTE(Text);
-			maString	mFont = BASE_ATTRIBUTE(Font, "PT-serif.ttf");
-			maFloat		mFontSize = BASE_ATTRIBUTE(FontSize, 36);
-			maInt		mSelectedCharacter = BASE_ATTRIBUTE(SelectedCharacter, -1);
-			maInt		mTextAlign = BASE_ATTRIBUTE(TextAlignment, TextAlign_Left);
-			maFloat		mMaxWidth = BASE_ATTRIBUTE(MaxWidth, 0.0f);
-			maBool      mResizeToMaxWidth = BASE_ATTRIBUTE(ResizeToMaxWidth, true);
-			maInt		mMaxLines = BASE_ATTRIBUTE(MaxLines, 0);
-			maFloat		mFontScaleFactor = BASE_ATTRIBUTE(FontScaleFactor, 1.0f);
-
-			maFloat		mExtraLineSpacing = BASE_ATTRIBUTE(ExtraLineSpacing, 0.0f);
-
-			maBool		mIgnoreTags = BASE_ATTRIBUTE(IgnoreTags, false);
-			maBool		mIgnoreColorTags = BASE_ATTRIBUTE(IgnoreColorTags, false);
-
-			maBool		mShowCursor = BASE_ATTRIBUTE(ShowCursor, false);
-			maBool		mPickable = BASE_ATTRIBUTE(Pickable, false);
+			WRAP_ATTRIBUTES(	mResizeToMaxWidth, mIgnoreTags, mIgnoreColorTags, mShowCursor, mPickable, mSelectedCharacter, mTextAlignment, mMaxLines,
+								mFontSize, mMaxWidth, mFontScaleFactor, mExtraLineSpacing, mText, mFont);
 
 			FontMap* mFontMap = nullptr;
 			int mLastMaxIndex = -1;
-
-
 
 			bool mTextChanged = true;
 			bool mFontChanged = true;

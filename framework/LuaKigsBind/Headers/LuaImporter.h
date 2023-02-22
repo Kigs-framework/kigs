@@ -68,7 +68,9 @@ namespace Kigs
 			static void ParseAttributes(CoreModifiable* current, LuaIntf::LuaRef table);
 			static void FinalizeImport(LuaIntf::LuaState L, ImportStruct& import);
 
-			maString Script = BASE_ATTRIBUTE(Script, "");
+			std::string mScript = "";
+
+			WRAP_ATTRIBUTES(mScript);
 		};
 
 	}

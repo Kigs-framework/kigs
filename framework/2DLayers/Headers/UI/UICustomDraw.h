@@ -40,11 +40,15 @@ namespace Kigs
 
 			void								ProtectedDraw(Scene::TravState* state) override;
 
-			UICustomDrawDelegate* mDelegate = nullptr;
-			maString							mClickDownAction = BASE_ATTRIBUTE(ClickDownAction, "");
-			maString							mClickUpAction = BASE_ATTRIBUTE(ClickUpAction, "");
-			maUSString							mParameter = BASE_ATTRIBUTE(Parameter, (std::string)"");
-			maBool								mStayPressed = BASE_ATTRIBUTE(StayPressed, false);
+			UICustomDrawDelegate*				mDelegate = nullptr;
+
+			bool								mStayPressed = false;
+			std::string							mClickDownAction = "";
+			std::string							mClickUpAction = "";
+			usString							mParameter = (std::string)"";
+
+			WRAP_ATTRIBUTES(mStayPressed, mClickDownAction, mClickUpAction, mParameter);
+
 			bool								mIsDown = false;
 			bool								mIsMouseOver = false;
 			bool								mInside = false;

@@ -30,6 +30,7 @@ namespace Kigs
 			inline explicit Vector4D(const Float& fValue);
 			// Set all coordinates to fValue
 			inline Vector4D(const Float& x, const Float& y, const Float& z, const Float& w);
+			inline Vector4D(const Vector3D & xyz, const Float& w);
 			inline Vector4D(const Vector4D& V);
 			inline explicit Vector4D(const Vector3D& V);
 			inline explicit Vector4D(const Point3D& P);

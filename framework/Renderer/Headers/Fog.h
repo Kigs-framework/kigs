@@ -38,14 +38,17 @@ namespace Kigs
 			 */
 			virtual ~Fog() { ; }
 
-			//! fog color
-			maVect4DF	mColor;
 			//! start distance
-			maFloat		mStartDistance;
+			float		mStartDistance = 1.0f;
 			//! end distance
-			maFloat		mEndDistance;
+			float		mEndDistance = 100.0f;
 			//! fog density
-			maFloat		mDensity;
+			float		mDensity = 1.0f;
+			//! fog color
+			v4f			mColor = { 0.1f, 0.1f, 0.1f, 1.0f };
+
+			WRAP_ATTRIBUTES(mStartDistance, mEndDistance, mDensity, mColor);
+
 			//! rendering mode
 			maEnum<3>	mMode;
 		};

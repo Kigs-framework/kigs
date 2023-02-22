@@ -10,15 +10,9 @@ IMPLEMENT_CLASS_INFO(UIStream)
 
 
 IMPLEMENT_CONSTRUCTOR(UIStream)
-, mVideoFile(*this, "VideoFile", "")
-, mFrameBuffer(*this, "FrameBuffer", "")
-, mAutoplay(*this, "Autoplay", true)
-, mLoop(*this, "Loop", true)
-, mAutoSize(*this, "AutoSize", false)
-, mNotificationStart(*this, "NotificationStart", "")
-, mNotificationEnd(*this, "NotificationEnd", "")
 , mIsPlaying(false)
 {
+	setInitParameter("VideoFile", true);
 }
 
 void UIStream::InitModifiable()
@@ -60,9 +54,9 @@ void UIStream::InitModifiable()
 		}
 		else
 		{
-			CoreModifiable* fb = mFrameBuffer;
-			if (fb)
-				mFrameBufferStream = fb->SharedFromThis();
+			CMSP currentFB=getValue<CMSP>("FrameBuffer");
+			if (currentFB)
+				mFrameBufferStream = currentFB;
 			else
 			{
 				return;

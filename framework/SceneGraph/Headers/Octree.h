@@ -233,14 +233,16 @@ namespace Kigs
 			//! root of the octree
 			SP<OctreeSubNode> mRootSubNode;
 
-			//! min point of the bounding box
-			maVect3DFInit mBoundingBoxMin;
-			//! max point of the bounding box
-			maVect3DFInit mBoundingBoxMax;
 			//! subdivide level
-			maIntInit mSubdivideLevel;
+			s32			mSubdivideLevel = 10;
 			//! max recursive level
-			maIntInit mMaxRecursiveLevel;
+			s32			mMaxRecursiveLevel = 5;
+			//! min point of the bounding box
+			v3f			mBoundingBoxMin;
+			//! max point of the bounding box
+			v3f			mBoundingBoxMax;
+
+			WRAP_ATTRIBUTES(mSubdivideLevel, mMaxRecursiveLevel, mBoundingBoxMin, mBoundingBoxMax);
 			//! if we only want a quadtree
 			maEnumInit<4> mQuadTreeAxis;
 

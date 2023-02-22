@@ -9,17 +9,17 @@ IMPLEMENT_CLASS_INFO(Window)
 
 //! constructor, init all parameters
 Window::Window(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG),
-mFullScreen(*this,"FullScreen"),
-mShowMouseCursor(*this, "ShowMouseCursor", false), 
-mIsMainWindow(*this, "IsMainWindow", true),
-mDisplayIndex(*this, "DisplayIndex", 0xFFFFFFFF),
-mDirtySize(*this, "DirtySize", false),
-mPosition(*this,"Position",-1,-1), // -1 => centered on screen
-mSize(*this,"Size"),
 mClickCallback(nullptr), mDoubleClickCallback(nullptr), mKeyDownCallback(nullptr),mKeyUpCallback(nullptr), mDestroyCallback(nullptr)
 {
-   mScreen = nullptr;
-   mHandle = nullptr;
+	setInitParameter("Size", true);
+	setInitParameter("Position", true);
+	setInitParameter("DisplayIndex", true);
+	setInitParameter("IsMainWindow", true);
+	setInitParameter("FullScreen", true);
+	setInitParameter("ShowMouseCursor", true);
+
+	mScreen = nullptr;
+	mHandle = nullptr;
 }     
 
 Window::~Window()

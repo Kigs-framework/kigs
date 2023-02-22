@@ -41,10 +41,13 @@ namespace Kigs
 			void	addSequencesToParents();
 
 			//! parameter for fullscreen window
-			maBool			mStartOnFirstUpdate = BASE_ATTRIBUTE(StartOnFirstUpdate, false);
+			bool			mStartOnFirstUpdate = false;
+			bool			mOnce = false;
+			std::string		mStartMessage = "";
+
+			WRAP_ATTRIBUTES(mStartOnFirstUpdate, mOnce, mStartMessage);
+
 			maCoreItem		mSequence = BASE_ATTRIBUTE(Sequence);
-			maString		mStartMessage = BASE_ATTRIBUTE(StartMessage, "");
-			maBool			mOnce = BASE_ATTRIBUTE(Once, false);
 
 			unordered_map<CoreModifiable*, std::weak_ptr<CoreSequence>> mSequenceMap;
 

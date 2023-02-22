@@ -39,16 +39,18 @@ namespace Kigs
 
 			bool ManageScrollEvent(Input::ScrollEvent& scroll_event);
 
-			maBool mVerticalScroll = BASE_ATTRIBUTE(VerticalScroll, true);
-			maBool mHorizontalScroll = BASE_ATTRIBUTE(HorizontalScroll, false);
-			maBool mAdjustOnAddItem = BASE_ATTRIBUTE(AdjustOnAddItem, true);
-			maBool mAdjustOnRemoveItem = BASE_ATTRIBUTE(AdjustOnRemoveItem, true);
+			bool			mVerticalScroll = true;
+			bool			mHorizontalScroll = false;
+			bool			mAdjustOnAddItem = true;
+			bool			mAdjustOnRemoveItem = true;
 
-			maFloat mThrowSpeedMult = BASE_ATTRIBUTE(ThrowSpeedMult, 1.0f);
-			maFloat mThrowFriction = BASE_ATTRIBUTE(ThrowFriction, 0.01f);
+			float			mThrowSpeedMult = 1.0f;
+			float			mThrowFriction = 0.01f;
 
-			maVect2DF mMinScroll = BASE_ATTRIBUTE(MinScroll, 0, 0);
-			maVect2DF mMaxScroll = BASE_ATTRIBUTE(MaxScroll, 0, 0);
+			v2f				mMinScroll = { 0.0f, 0.0f };
+			v2f				mMaxScroll = { 0.0f, 0.0f };
+
+			WRAP_ATTRIBUTES(mVerticalScroll, mHorizontalScroll, mAdjustOnAddItem, mAdjustOnRemoveItem, mThrowSpeedMult, mThrowFriction, mMinScroll, mMaxScroll);
 
 			maEnum<4> mMinScrollModeX = BASE_ATTRIBUTE(MinScrollModeX, "NotUsed", "Default", "Multiply", "Add");
 			maEnum<4> mMaxScrollModeX = BASE_ATTRIBUTE(MaxScrollModeX, "NotUsed", "Default", "Multiply", "Add");

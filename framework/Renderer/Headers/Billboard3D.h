@@ -169,17 +169,7 @@ namespace Kigs
 			 */
 			bool Draw(TravState*) override;
 
-			//! file name of the texture
-			//maString mTextureFileName;
-			//! Pointer to a Texture... If ==NULL, Billboard should belong to a Billboard Group
-			//SP<Texture> mTex;
 			INSERT_FORWARDSP(TextureHandler, mTexturePointer);
-			//! Center of BillBoard
-			maVect3DF mPosition;
-			//! Size = Width,Height
-			maFloat mWidth;
-			//! Size = Width,Height
-			maFloat mHeight;
 			//!Texture coordinate 
 			float mU1;
 			//!Texture coordinate 
@@ -200,14 +190,23 @@ namespace Kigs
 			Node3D* mFatherNode;
 			//! reference to Camera
 			Camera* mCamera;
-			//! BillBoard Anchor point
-			maVect2DF			mAnchor;
 
 			//! item is enable?
-			maBool		mIsEnabled;
+			bool				mIsEnabled = true;
 
+			//! Size = Width,Height
+			float				mWidth = 0.5f;
+			//! Size = Width,Height
+			float				mHeight = 0.5f;
 			//! ratio between scene unit and pixel unit
-			maFloat				mRatio;
+			float				mRatio = 0.01f;
+
+			//! BillBoard Anchor point
+			v2f					mAnchor = {0.0f , 0.0f};
+			//! Center of BillBoard
+			v3f					mPosition = { 0.0f , 0.0f , 0.0f };
+
+			WRAP_ATTRIBUTES(mIsEnabled, mWidth, mHeight, mRatio, mAnchor, mPosition)
 
 		};
 

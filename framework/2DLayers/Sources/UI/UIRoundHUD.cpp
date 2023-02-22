@@ -281,7 +281,8 @@ bool UIRoundHUD::ManageDirectTouchEvent(Input::DirectTouchEvent& direct_touch)
 		if (mSelectedSlot != -1)
 			mItemList[mSelectedSlot]->SimpleCall("Highlight", true);
 
-		if ((CoreModifiable*)mLabel)
+		CMSP currentLabel = getValue<CMSP>("Label");
+		if (currentLabel)
 		{
 			std::string str="";
 			if ((slot != -1 && slot < mItemList.size()))
@@ -290,7 +291,7 @@ bool UIRoundHUD::ManageDirectTouchEvent(Input::DirectTouchEvent& direct_touch)
 					str = mItemList[slot]->getName();
 			}
 
-			((CoreModifiable*)mLabel)->setValue("Text", str.c_str());
+			currentLabel->setValue("Text", str.c_str());
 		}
 
 		mSelectedSlot = slot;

@@ -34,9 +34,10 @@ namespace Kigs
 			void								NotifyUpdate(unsigned int labelid) override;
 			void								SetTexUV(UIVerticesInfo* aQI) override;
 
-			maReference							mRenderingScreen = BASE_ATTRIBUTE(RenderingScreen);
-			maBool								mForceNearest = BASE_ATTRIBUTE(ForceNearest, false);
-
+			bool								mForceNearest = false;
+			std::weak_ptr<CoreModifiable>		mRenderingScreen;
+	
+			WRAP_ATTRIBUTES(mForceNearest, mRenderingScreen);
 		};
 
 	}

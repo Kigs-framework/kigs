@@ -12,14 +12,6 @@ IMPLEMENT_CLASS_INFO(UIText)
 
 UIText::UIText(const std::string& name, CLASS_NAME_TREE_ARG) 
 	: UITexturedItem(name, PASS_CLASS_NAME_TREE_ARG)
-	, mText(*this, "Text", (std::string)"")
-	, mFont(*this, "Font", "arial.ttf")
-	, mFontSize(*this, "FontSize", 12)
-	, mDirection(*this, "Direction", 0)
-	, mLength(*this, "Length", 0)
-	, mTextAlignment(*this, "TextAlignment", 1)
-	, mMaxWidth(*this, "MaxWidth", 128)
-	, mMaxLines(*this, "MaxLines", 0)
 {
 	// text don't have color array
 	//unsetUserFlag(UserFlagUseColorArray);

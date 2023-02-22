@@ -10,9 +10,6 @@ IMPLEMENT_CLASS_INFO(UIButtonImage)
 
 UIButtonImage::UIButtonImage(const std::string& name,CLASS_NAME_TREE_ARG) : 
 UIButton(name, PASS_CLASS_NAME_TREE_ARG)
-,mUpTexture(*this,"UpTexture","")
-,mDownTexture(*this,"DownTexture","")
-,mOverTexture(*this,"OverTexture","")
 {
 }
 

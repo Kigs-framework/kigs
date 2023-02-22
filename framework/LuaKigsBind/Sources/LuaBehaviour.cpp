@@ -23,15 +23,12 @@ IMPLEMENT_CLASS_INFO(LuaBehaviour)
 
 IMPLEMENT_CONSTRUCTOR(LuaBehaviour)
 , mLuaModule(nullptr)
-, mScript(*this,"Script", "")
-, mEnabled(*this, "Enabled", true)
-, mInterval(*this, "Interval", 0.0)
 , mLuaNeedInit(false)
 , mHasUpdate(false)
 , mLastTime(-1.0)
 , mTarget(nullptr)
 {
-	
+	setInitParameter("Script", true);
 }
 
 

@@ -17,9 +17,7 @@ IMPLEMENT_CLASS_INFO(SkyBox)
 // 5 = ZMAX	= TOP
 // 6 = ZMIN = BOTTOM
 
-SkyBox::SkyBox(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
-mSize(*this,"Size",5000.0f),
-mFileName(*this,"FileName","SkyBox.tga")
+SkyBox::SkyBox(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)
 , mTexture(nullptr)
 {
 	

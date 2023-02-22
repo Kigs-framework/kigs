@@ -122,7 +122,7 @@ namespace Kigs
 				RETURN_ON_READONLY(isReadOnlyT);
 				mSearchString.clear();
 				::std::weak_ptr<pointed> prev = valueProtectedAccess(owner);
-				valueProtectedAccess(owner) = val;
+				valueProtectedAccess(owner) = (SP<pointed>)val;
 				if (prev.lock() != val)
 				{
 					DO_NOTIFICATION(notifOwnerT);
@@ -201,7 +201,7 @@ namespace Kigs
 				{
 					::std::weak_ptr<pointed>& val = valueProtectedAccess(instance);
 
-					val = CoreModifiable::SearchInstance(mSearchString, const_cast<CoreModifiable*>(instance));
+					val = (SP<pointed>)CoreModifiable::SearchInstance(mSearchString, const_cast<CoreModifiable*>(instance));
 
 					if (!val.expired())
 					{

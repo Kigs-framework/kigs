@@ -29,8 +29,6 @@ bool sortCamera::operator() (const Camera* lhs, const Camera* rhs) const{
 
 IMPLEMENT_CONSTRUCTOR(Scene3D)
 	, mLightsHaveChanged(true)
-	, mPriority(*this, "Priority", 0)
-	, mSort3DNodesFrontToBack(*this, "Sort3DNodesFrontToBack", false)
 {
 }
 

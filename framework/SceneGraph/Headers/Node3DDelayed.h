@@ -77,14 +77,21 @@ namespace Kigs
 
             void NotifyUpdate(const unsigned int labelid) override;
 
-            maString mFileName = BASE_ATTRIBUTE(FileName, "");
-            maVect3DF mBBoxMin = BASE_ATTRIBUTE(BBoxMin, 0, 0, 0);
-            maVect3DF mBBoxMax = BASE_ATTRIBUTE(BBoxMax, 0, 0, 0);
+            bool                mHighPriority = false;
+            float               mLoadDistance = 7.5f;
+            float               mUnloadDistance = 10.0f;
+            double              mFreeContentTime = 1.0;
 
-            maVect3DF mDistanceMultiplier = BASE_ATTRIBUTE(DistanceMultiplier, 1, 1, 1);
+            v3f                 mBBoxMin = { 0.0f, 0.0f, 0.0f };
+            v3f                 mBBoxMax = { 0.0f, 0.0f, 0.0f };
 
-            maFloat mLoadDistance = BASE_ATTRIBUTE(LoadDistance, 7.5f);
-            maFloat mUnloadDistance = BASE_ATTRIBUTE(UnloadDistance, 10.0f);
+            v3f                 mDistanceMultiplier = { 1.0f, 1.0f, 1.0f };
+
+            std::string         mFileName = "";
+
+            std::weak_ptr<CoreModifiable> mReferenceObject;
+
+            WRAP_ATTRIBUTES(mHighPriority, mLoadDistance, mUnloadDistance, mFreeContentTime, mBBoxMin, mBBoxMax, mDistanceMultiplier, mFileName, mReferenceObject);
 
             enum class UpdateMode
             {
@@ -93,11 +100,6 @@ namespace Kigs
             };
 
             maEnum<2> mUpdateMode = BASE_ATTRIBUTE(UpdateMode, "Camera", "Manual");
-            maReference mReferenceObject = BASE_ATTRIBUTE(ReferenceObject, "Camera:camera");
-
-            maBool mHighPrio = BASE_ATTRIBUTE(HighPriority, false);
-
-            //std::atomic<LoadedState> mLoadedState { LoadedState::Unloaded };
 
             std::atomic<LoadState> mLoadState{ LoadState::NotLoaded };
             std::atomic<DisplayState> mDisplayState{ DisplayState::Hidden };
@@ -109,7 +111,6 @@ namespace Kigs
 
             bool mContentAdded = false;
 
-            maDouble mFreeContentTime = BASE_ATTRIBUTE(FreeContentTime, 1.0);
             std::chrono::time_point<std::chrono::steady_clock> mHideTime;
 
             int mDrawCounter = INT_MIN;

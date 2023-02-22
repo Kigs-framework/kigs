@@ -36,11 +36,14 @@ namespace Kigs
 			virtual bool PreDraw(TravState*) override;
 			virtual bool PostDraw(TravState*) override;
 
-			maEnum<3> MaskUsage = BASE_ATTRIBUTE(MaskUsage, "Build", "Use", "Ignore");
-			maInt ReferenceValue = BASE_ATTRIBUTE(ReferenceValue, 1);
-			maUInt Mask = BASE_ATTRIBUTE(Mask, 0xFFFFFFFF);
-			maEnum<2> MaskMode = BASE_ATTRIBUTE(MaskMode, "IncrWrap", "Replace");
-			maBool IgnoreDepthTest = BASE_ATTRIBUTE(IgnoreDepthTest, false);
+			bool	mIgnoreDepthTest = false;
+			s32		mReferenceValue =  1;
+			u32		mMask = 0xFFFFFFFF;
+
+			WRAP_ATTRIBUTES(mIgnoreDepthTest, mReferenceValue,mMask);
+
+			maEnum<3> mMaskUsage = BASE_ATTRIBUTE(MaskUsage, "Build", "Use", "Ignore");
+			maEnum<2> mMaskMode = BASE_ATTRIBUTE(MaskMode, "IncrWrap", "Replace");
 		};
 	}
 }

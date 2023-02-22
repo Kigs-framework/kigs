@@ -13,23 +13,17 @@ using namespace Kigs::Draw2D;
 
 IMPLEMENT_CLASS_INFO(RenderingScreen)
 IMPLEMENT_CONSTRUCTOR(RenderingScreen)
-	, mBitsPerPixel(*this, "BitsPerPixel", 32)
-	, mBitsPerZ(*this, "BitsPerZ", 16)
-	, mBitsForStencil(*this, "BitsForStencil", 0)
-	, mSize(*this,  "Size", 256,256)
-	, mDesignSize(*this,  "DesignSize", 256,256)
-	, mIsOffScreen(*this, "IsOffScreen", false)
-	, mParentWindowName(*this, "ParentWindowName", "")
-	, mVSync(*this, "VSync", false)
-	, mBrightness(*this,  "Brightness", 0)
-	, mBackDropColor(*this,  "BackDropColor", 0.0, 0.0, 0.0)
-	, mRotation(*this,  "Rotation", 0.0f)
-	, mDontClear(*this,  "DontClear", false)
-	, mNeedDoubleBuffer(*this,  "NeedDoubleBuffer", true)
 	, mWasActivated(false)
-	, mUseFBO(*this, "UseFBO", false)
 	, mFBOTexture(0)
 {
+	setInitParameter("ParentWindowName", true);
+	setInitParameter("BitsForStencil", true);
+	setInitParameter("BitsPerZ", true);
+	setInitParameter("BitsPerPixel", true);
+	setInitParameter("UseFBO", true);
+	setInitParameter("VSync", true);
+	setInitParameter("IsOffScreen", true);
+
 	// retreive renderer
 	ModuleSpecificRenderer* renderer =  ((ModuleRenderer*)KigsCore::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 	renderer->RegisterRenderingScreen(this);

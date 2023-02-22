@@ -109,9 +109,9 @@ namespace Kigs
 				return ((unsigned int)Need_Predraw) | ((unsigned int)Need_Postdraw);
 			}
 
-			const float* GetMatrixValues()
+			const float* GetMatrixValues() const
 			{
-				return mMatrix.getConstArrayBuffer();
+				return &mMatrix.e[0][0];
 			}
 
 		protected:
@@ -122,7 +122,9 @@ namespace Kigs
 			virtual ~RendererMatrix();
 
 			//! used matrix
-			maVect16DF	mMatrix;
+			Matrix4x4	mMatrix;
+
+			WRAP_ATTRIBUTES(mMatrix);
 		};
 
 	}

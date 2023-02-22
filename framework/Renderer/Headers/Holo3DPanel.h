@@ -50,27 +50,29 @@ namespace Kigs
 
 			Draw2D::UIVerticesInfo mVI;
 
+			bool				mTwoSided = false;
+			s32					mCullMode = 1;
 
-			maVect2DF mOffset = BASE_ATTRIBUTE(Offset, 0, 0);
+			v2f					mOffset = { 0.0f, 0.0f };
 			/*
 				Size:
 					For a plane, SizeX, SizeY
 					For a circle Radius, NumberOfPoints
 			*/
-			maVect2DF mSize = BASE_ATTRIBUTE(Size, 0, 0);
+			v2f					mSize = { 0.0f, 0.0f };
 
-			maVect2DF mUVStart = BASE_ATTRIBUTE(UVStart, 0, 0);
-			maVect2DF mUVEnd = BASE_ATTRIBUTE(UVEnd, 1, 1);
+			v2f					mUVStart = { 0.0f, 0.0f };
+			v2f					mUVEnd = { 1.0f, 1.0f };
 
-			maVect3DF mUp = BASE_ATTRIBUTE(Up, 0, 1, 0);
-			maVect3DF mNormal = BASE_ATTRIBUTE(Normal, 0, 0, 1);
+			v3f					mUp = { 0.0f, 1.0f, 0.0f };
+			v3f					mNormal = { 0.0f, 0.0f, 1.0f };
 
-			maBool mTwoSided = BASE_ATTRIBUTE(TwoSided, false);
+			WRAP_ATTRIBUTES(mTwoSided, mCullMode, mOffset, mSize, mUVStart, mUVEnd, mUp, mNormal);
+
 			maEnum<3> mDepthTest = BASE_ATTRIBUTE(DepthTest, "NoChange", "Enabled", "Disabled");
 			maEnum<3> mDepthWrite = BASE_ATTRIBUTE(DepthWrite, "NoChange", "Enabled", "Disabled");
 			maEnum<2> mShape = BASE_ATTRIBUTE(Shape, "Plane", "Circle");
 
-			maInt mCullMode = BASE_ATTRIBUTE(CullMode, 1);
 		};
 
 	}

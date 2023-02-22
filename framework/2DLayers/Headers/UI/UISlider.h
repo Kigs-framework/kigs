@@ -61,13 +61,13 @@ namespace Kigs
 			SmartPointer<Draw::Texture>	mDownTexturePointer;
 			SmartPointer<Draw::Texture>	mOverTexturePointer;
 
+			maIntInit			mInitialRatio;
 			maString			mUpTexture;
 			maString			mDownTexture;
 			maString			mOverTexture;
 			maString			mClickUpAction;
 			maUSString			mParameter;
 			maString			mMoveAction;
-			maIntInit			mInitialRatio;
 
 			//! Direction of Slider "Vertical" or "Horizontal")
 			maEnumInit<2>		mDirection;

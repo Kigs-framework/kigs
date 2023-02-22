@@ -59,7 +59,9 @@ namespace Kigs
 
 			UIVerticesInfo mVI;
 
-			maVect2DI mSliced = BASE_ATTRIBUTE(Sliced, 0, 0);
+			v2i		mSliced = { 0, 0 };
+
+			WRAP_ATTRIBUTES(mSliced);
 
 			// override SetVertexArray SetColor and SetTexUV to draw UI as a Shape
 			SP<UIShapeDelegate> mShape;

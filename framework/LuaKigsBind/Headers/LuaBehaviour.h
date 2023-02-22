@@ -38,8 +38,8 @@ namespace Kigs
 
 			DECLARE_CLASS_INFO(LuaBehaviour, CoreModifiable, LuaBind)
 
-				//! constructor
-				LuaBehaviour(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			//! constructor
+			LuaBehaviour(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 			/*! virtual update.
 			*/
@@ -57,14 +57,15 @@ namespace Kigs
 
 			LuaKigsBindModule* mLuaModule;
 
-			// Lua script or reference on script file
-			maStringInit			mScript;
-
 			// enable / disable lua scripting
-			maBool					mEnabled;
-
+			bool					mEnabled = true;
 			// if interval is set, do update only if interval elapsed
-			maFloat					mInterval;
+			float					mInterval = 0.0f;
+			// Lua script or reference on script file
+			std::string				mScript = "";
+
+			WRAP_ATTRIBUTES(mEnabled, mInterval, mScript);
+			
 			// last update time ( for interval evaluation)
 			double					mLastTime;
 

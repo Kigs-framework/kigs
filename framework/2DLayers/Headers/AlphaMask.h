@@ -37,9 +37,10 @@ namespace Kigs
 
 			void CreateMask(u8* pixelData, int stride, int pixel_size);
 
-			maFloat					mThreshold = BASE_ATTRIBUTE(Threshold, 0.0f);
-			maString				mTextureName = BASE_ATTRIBUTE(TextureName, "");
+			float					mThreshold = 0.0f;
+			std::string				mTextureName = "";
 
+			WRAP_ATTRIBUTES(mThreshold, mTextureName)
 
 			std::vector<u8> mTab;
 

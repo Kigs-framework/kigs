@@ -15,7 +15,6 @@ IMPLEMENT_CLASS_INFO(ModuleSceneGraph);
 
 IMPLEMENT_CONSTRUCTOR(ModuleSceneGraph)
 , mTravState(nullptr)
-, mSceneListNeedsSort(*this, "SceneListNeedsSort", false)
 {
 	mVisiblesNodeList = new Node3D*[1 << 16];
 }

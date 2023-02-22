@@ -197,7 +197,7 @@ namespace Kigs
 			//! AABounding box in global "world" coordinate system
 			BBox mGlobalBBox;
 
-			maBool mIgnoreBBox = BASE_ATTRIBUTE(IgnoreBBox, false);
+			bool mIgnoreBBox = false;
 
 			void RecomputeLocalToGlobal();
 			void RecomputeGlobalToLocal();
@@ -213,6 +213,8 @@ namespace Kigs
 			int			mDrawPriority;
 			void		PropagateNodePriorityDirtyToParents();
 			int			ComputeNodePriority();
+
+			WRAP_ATTRIBUTES(mIgnoreBBox);
 		};
 
 		mat3x4 GetLocalLookAtPoint(Node3D* node, v3f global_point, bool force_up = false, v3f up_axis = v3f(0, 1, 0));

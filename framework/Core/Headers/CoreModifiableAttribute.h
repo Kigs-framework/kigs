@@ -19,8 +19,7 @@ namespace Kigs
 
 		// Tag type for inheritance switch constructor
 		struct InheritanceSwitch {};
-		// Tag type for dynamic switch constructor
-		struct DynamicSwitch {};
+
 
 #define STATIC_ASSERT_NOTIF_LEVEL_SIZES(classname) static_assert(sizeof(classname<false>) == sizeof(classname<true>), "Size mismatch between notification levels");
 
@@ -395,7 +394,7 @@ auto& operator=(const CurrentAttributeType& value)\
 				return 0;
 			}
 
-#define DECLARE_SET(type)	bool setValue(type val,CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); if( CoreConvertValue(val,valueProtectedAccess(owner)) ) { DO_NOTIFICATION(notifOwnerT); return true;} return false;  }
+#define DECLARE_SET(type)	virtual bool setValue(type val,CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); if( CoreConvertValue(val,valueProtectedAccess(owner)) ) { DO_NOTIFICATION(notifOwnerT); return true;} return false;  }
 
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SET);
 			DECLARE_SET(const char*);
@@ -407,7 +406,7 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_SET(const v3f&);
 			DECLARE_SET(const v4f&);
 
-#define DECLARE_GET(type)	bool getValue(type val,const CoreModifiable* owner) const override { return CoreConvertValue(valueProtectedAccess(owner),val); }
+#define DECLARE_GET(type)	virtual bool getValue(type val,const CoreModifiable* owner) const override { return CoreConvertValue(valueProtectedAccess(owner),val); }
 
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET);
 			DECLARE_GET(std::string&);
@@ -417,7 +416,7 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_GET(v4f&);
 
 
-#define DECLARE_SETARRAYVALUE(type)	bool setArrayValue(type val,CoreModifiable* owner, size_t nbElements ) override {RETURN_ON_READONLY(isReadOnlyT);\
+#define DECLARE_SETARRAYVALUE(type)	virtual bool setArrayValue(type val,CoreModifiable* owner, size_t nbElements ) override {RETURN_ON_READONLY(isReadOnlyT);\
 		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
 			size_t currentColumnIndex=0, currentLineIndex=0;\
 			for (size_t i = 0; i < nbElements; i++){\
@@ -436,7 +435,7 @@ auto& operator=(const CurrentAttributeType& value)\
 
 			EXPAND_MACRO_FOR_BASE_TYPES(const, *, DECLARE_SETARRAYVALUE);
 
-#define DECLARE_GETARRAYVALUE(type) bool getArrayValue(type * const  val  ,const CoreModifiable* owner, size_t  nbElements ) const override {\
+#define DECLARE_GETARRAYVALUE(type) virtual bool getArrayValue(type * const  val  ,const CoreModifiable* owner, size_t  nbElements ) const override {\
 		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
 			size_t currentColumnIndex=0, currentLineIndex=0;\
 			for (size_t i = 0; i < nbElements; i++){\
@@ -455,7 +454,7 @@ auto& operator=(const CurrentAttributeType& value)\
 
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_GETARRAYVALUE);
 
-#define DECLARE_SETARRAYELEMENTVALUE(type)	bool setArrayElementValue(type val,CoreModifiable* owner, size_t  line , size_t  column ) override {RETURN_ON_READONLY(isReadOnlyT);\
+#define DECLARE_SETARRAYELEMENTVALUE(type)	virtual bool setArrayElementValue(type val,CoreModifiable* owner, size_t  line , size_t  column ) override {RETURN_ON_READONLY(isReadOnlyT);\
 		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
 			if( (line >= impl::arrayLineCount<std::remove_cv_t<T>>()) || (column >= impl::arrayColumnCount<std::remove_cv_t<T>>())) {return false;}\
 			if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\
@@ -470,7 +469,7 @@ auto& operator=(const CurrentAttributeType& value)\
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAYELEMENTVALUE);
 			DECLARE_SETARRAYELEMENTVALUE(const std::string&);
 
-#define DECLARE_GETARRAYELEMENTVALUE(type)	bool getArrayElementValue(type  val , const CoreModifiable* owner, size_t  line , size_t  column ) const override{\
+#define DECLARE_GETARRAYELEMENTVALUE(type)	virtual bool getArrayElementValue(type  val , const CoreModifiable* owner, size_t  line , size_t  column ) const override{\
 		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
 			if( (line >= impl::arrayLineCount<std::remove_cv_t<T>>()) || (column >= impl::arrayColumnCount<std::remove_cv_t<T>>())) {return false;}\
 			if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\

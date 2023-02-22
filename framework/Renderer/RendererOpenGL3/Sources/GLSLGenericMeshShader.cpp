@@ -375,8 +375,8 @@ IMPLEMENT_CLASS_INFO(API3DGenericMeshShader)
 
 API3DGenericMeshShader::API3DGenericMeshShader(const std::string& name, CLASS_NAME_TREE_ARG) : API3DShader(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	misGeneric = true;
-	museGenericLight = true;
+	mIsGeneric = true;
+	mUseGenericLight = true;
 }
 
 void	API3DGenericMeshShader::InitModifiable()

@@ -34,9 +34,12 @@ namespace Kigs
 			void		NotifyUpdate(const unsigned int labelid)override;
 			void		RecomputeLayout()override;
 
-			maVect2DI	mPadding;
-			maBool		mSortByPriority;
-			maBool		mRescaleToFit;
+			bool		mSortByPriority = false;
+			bool		mRescaleToFit = false;
+			v2i			mPadding = {0,0};
+
+			WRAP_ATTRIBUTES(mSortByPriority, mRescaleToFit, mPadding);
+
 		};
 	}
 }

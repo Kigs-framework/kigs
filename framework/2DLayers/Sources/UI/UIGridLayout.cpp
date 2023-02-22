@@ -8,14 +8,6 @@ IMPLEMENT_CLASS_INFO(UIGridLayout)
 
 UIGridLayout::UIGridLayout(const std::string& name, CLASS_NAME_TREE_ARG) :
 	UILayout(name, PASS_CLASS_NAME_TREE_ARG)
-	, mColumns(*this, "Columns", 0)
-	, mRowHeight(*this, "RowHeight", 0)
-	, mColumnWidth(*this, "ColumnWidth", 0)
-	, mHeaderRow(*this, "HeaderRow", false)
-	, mPadding(*this, "Padding", 0, 0)
-	, mSortByPriority(*this, "SortByPriority", false)
-	, mResizeElements(*this, "ResizeElements", false)
-	, mAutoResize(*this, "AutoResize", true)
 {
 	setOwnerNotification("Columns", true);
 	setOwnerNotification("Padding", true);

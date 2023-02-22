@@ -77,19 +77,21 @@ namespace Kigs
 				ChangeText(toChange.us_str());
 			}
 
-			maUSString				mText;
-			maString				mFont;
-			maString				mReleaseAction;
-			maUInt					mFontSize;
-			maUInt					mLength;
-			maUInt					mRow;
-			maUInt					mCol;
 			bool					mIsDown;
 			bool					mStayPressed;
-			maBool					mHasDefaultText;
+			bool					mHasDefaultText = true;
 			bool					mIsDefaultText;
+			u32						mFontSize = 12;
+			u32						mLength = 0;
+			u32						mRow = 1;
+			u32						mCol = 1;
+			u32						mTextAlignment = 1;
 
-			maUInt					mTextAlignment;
+			usString				mText = (std::string)"DefaultText";
+			std::string				mFont = "";
+			std::string				mReleaseAction = "";
+
+			WRAP_ATTRIBUTES(mHasDefaultText, mFontSize, mLength, mRow, mCol, mTextAlignment,mText, mFont, mReleaseAction);
 
 			SmartPointer<Draw::Texture>	mTexturePointer;
 			UIVerticesInfo* mTextureQI; // draw BG quad

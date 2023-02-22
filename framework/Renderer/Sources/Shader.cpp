@@ -27,12 +27,6 @@ IMPLEMENT_CLASS_INFO(ShaderBase)
 
 ShaderBase::ShaderBase(const std::string& name, CLASS_NAME_TREE_ARG) : Drawable(name, PASS_CLASS_NAME_TREE_ARG)
 , mCurrentShader(nullptr)
-, mVertexShader(*this, "VertexShader", "")
-, mFragmentShader(*this, "FragmentShader", "")
-, mGeometryShader(*this, "GeometryShader", "")
-, mAttachedCamera(*this, "AttachedCamera", "")
-, museGenericLight(*this, "useGenericLight", false)
-, misGeneric(*this, "isGeneric", false)
 , mCurrentShaderKey(-1)
 {
 	mRenderPassMask = 0xFFFFFFFF;

@@ -37,7 +37,9 @@ namespace Kigs
 			SmartPointer<Draw::TextureHandler>				mPLTexturePointer;
 			SmartPointer<Draw::TextureHandler>				mHLTexturePointer;
 
-			maString	mHLTexture = BASE_ATTRIBUTE(HLTexture);
+
+			std::string	mHLTexture = "";
+			WRAP_ATTRIBUTES(mHLTexture);
 		};
 
 	}

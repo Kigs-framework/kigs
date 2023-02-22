@@ -33,14 +33,16 @@ namespace Kigs
 			void			NotifyUpdate(const unsigned int labelid)override;
 			void			RecomputeLayout()override;
 
-			maUInt					mColumns;
-			maUInt					mRowHeight;
-			maUInt					mColumnWidth;
-			maBool					mHeaderRow;
-			maVect2DI				mPadding;
-			maBool					mSortByPriority;
-			maBool					mResizeElements;
-			maBool					mAutoResize;
+			bool					mSortByPriority = false;
+			bool					mResizeElements = false;
+			bool					mAutoResize = true;
+			bool					mHeaderRow = false;
+			u32						mColumns = 0;
+			u32						mRowHeight = 0;
+			u32						mColumnWidth = 0;
+			v2i						mPadding = {0,0};
+
+			WRAP_ATTRIBUTES(mSortByPriority	,mResizeElements,mAutoResize,mHeaderRow	,mColumns,mRowHeight,mColumnWidth,mPadding);
 		};
 
 	}

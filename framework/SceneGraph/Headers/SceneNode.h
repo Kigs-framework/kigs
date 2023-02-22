@@ -82,7 +82,10 @@ namespace Kigs
 			inline void	UnsetAllSonsVisible() { unsetUserFlag(AllSonsVisible); }
 
 		private:
-			maUInt mShow = BASE_ATTRIBUTE(Show, UINT_MAX);
+			u32		mShow = UINT_MAX;
+
+			WRAP_ATTRIBUTES(mShow);
+
 		};
 
 	}

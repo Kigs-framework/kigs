@@ -163,30 +163,31 @@ namespace Kigs
 			int									mTexCoordFormat = KIGS_FLOAT;
 
 
-			mutable BBox								mBBox;
-			mutable bool mNeedRecomputeBBox = true;
+			mutable BBox						mBBox;
+			mutable bool						mNeedRecomputeBBox = true;
 
 			bool needReloadData = false;
 
 			SmartPointer<Texture>				mTexture = nullptr;
 
-			maString							mTextureFileName = BASE_ATTRIBUTE(TextureFileName, "");
+			bool								mIsStaticBuffer = false;
+			s32									mDrawMode = KIGS_DRAW_MODE_TRIANGLES;
 
-			maBool								mIsStaticBuffer = BASE_ATTRIBUTE(IsStaticBuffer, false);
-			maInt								mDrawMode = BASE_ATTRIBUTE(DrawMode, KIGS_DRAW_MODE_TRIANGLES);
+			s32									mCullMode = 0;
+			//! 0 = no transparency, 1 = billboard (binary transparency), 2 = need blend, -1 = use texture transparency type if available otherwise no transparency
+			s32									mTransparencyType = -1;
 
-			maInt								mCullMode = BASE_ATTRIBUTE(CullMode, 0);
+			v2f									mPresetUVSize = { 1.0f, 1.0f };
+			v2f									mPresetUVOffset = { 0, 0 };
+			v3f									mPresetSize = { 1.0f, 1.0f, 1.0f };
+			v3f									mPresetOffset = { 0, 0, 0 };
+			v4f									mPresetColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+			std::string							mTextureFileName = "";
+
+			WRAP_ATTRIBUTES(mIsStaticBuffer, mDrawMode, mCullMode, mTransparencyType, mPresetUVSize, mPresetUVOffset, mPresetSize, mPresetOffset, mPresetColor, mTextureFileName);
 
 			// preset should be done with an upgrador ?
 			maEnum<5>							mPreset = BASE_ATTRIBUTE(Preset, "None", "TexturedQuad", "Quad", "TexturedBox", "Box");
-			maVect3DF							mPresetSize = BASE_ATTRIBUTE(PresetSize, 1, 1, 1);
-			maVect4DF							mPresetColor = BASE_ATTRIBUTE(PresetColor, 1, 1, 1, 1);
-			maVect3DF							mPresetOffset = BASE_ATTRIBUTE(PresetOffset, 0, 0, 0);
-			maVect2DF							mPresetUVSize = BASE_ATTRIBUTE(PresetUVSize, 1, 1);
-			maVect2DF							mPresetUVOffset = BASE_ATTRIBUTE(PresetUVOffset, 0, 0);
-
-			//! 0 = no transparency, 1 = billboard (binary transparency), 2 = need blend, -1 = use texture transparency type if available otherwise no transparency
-			maInt								mTransparencyType = BASE_ATTRIBUTE(TransparencyType, -1);;
 
 #ifdef KIGS_TOOLS
 			maBool mDrawNormals = BASE_ATTRIBUTE(DrawNormals, false);

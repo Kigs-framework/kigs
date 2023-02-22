@@ -21,18 +21,11 @@ IMPLEMENT_CLASS_INFO(Mesh)
  *	Constructor
  */
 Mesh::Mesh(const std::string& name,CLASS_NAME_TREE_ARG) : HDrawable(name,PASS_CLASS_NAME_TREE_ARG)
-, mVertexNeedUpdate(*this,"VertexNeedUpdate",false)
-, mColorNeedUpdate(*this,"ColorNeedUpdate",false)
-, mTexCoordNeedUpdate(*this,"TexCoordNeedUpdate",false)
-, mNormalNeedUpdate(*this,"NormalNeedUpdate",false)
-, mShareMaterial(*this,"ShareMaterial",true)
 #if _DEBUG
 , mShowVertex(*this,"ShowVertex",false)
 #endif
-, mWireMode(*this,"WireMode",false)
-, mFileName(*this, "FileName")
-, mDynamicInit(*this, "DynamicInit", false)
 {
+	setInitParameter("FileName", true);
 	mVertexArray = 0;
 	mNormalArray = 0;
 	mColorArray = 0;
@@ -119,7 +112,7 @@ void	Mesh::InitModifiable()
 
 					if(loader.ImportFile(this,fullfilename)!=0)
 					{
-						KIGS_WARNING("Can not open mesh file :"+mFileName.const_ref(),2);
+						KIGS_WARNING("Can not open mesh file :"+mFileName,2);
 						UninitModifiable();
 					}
 					else
@@ -133,7 +126,7 @@ void	Mesh::InitModifiable()
 					STLMeshLoader	loader;
 					if(loader.ImportFile(this,fullfilename)!=0)
 					{
-						KIGS_WARNING("Can not open mesh file :"+mFileName.const_ref(),2);
+						KIGS_WARNING("Can not open mesh file :"+mFileName,2);
 						UninitModifiable();
 					}
 					else
@@ -145,7 +138,7 @@ void	Mesh::InitModifiable()
 			}
 			else
 			{
-				KIGS_WARNING("Can not open mesh file :"+(std::string&)mFileName,2); 
+				KIGS_WARNING("Can not open mesh file :"+mFileName,2); 
 				UninitModifiable();
 			}
 		}

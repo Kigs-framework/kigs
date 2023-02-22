@@ -156,8 +156,10 @@ namespace Kigs
 			};
 
 		protected:
-			maUInt mRenderPassMask = BASE_ATTRIBUTE(RenderPassMask, 0xffffffff);
-			maBool mSortable = BASE_ATTRIBUTE(Sortable, false);
+			u32		mRenderPassMask = 0xffffffff;
+			bool	mSortable = false;
+
+			WRAP_ATTRIBUTES(mRenderPassMask, mSortable);
 
 			//! init the modifiable and set the _isInit flag to true if OK
 			void	InitModifiable() override;

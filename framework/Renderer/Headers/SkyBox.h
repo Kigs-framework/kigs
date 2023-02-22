@@ -49,19 +49,13 @@ namespace Kigs
 			 */
 			void	GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const  override { pmin = mBBoxMin; pmax = mBBoxMax; }
 
-			/*void SetTextures(const std::string& ZMax,
-							 const std::string& Xmax,
-							 const std::string& ZMin,
-							 const std::string& XMin,
-							 const std::string& Top,
-							 const std::string& Bottom);*/
 
-							 /**
-							  * \brief	set the size of the SkyBox
-							  * \fn 		void SetSize(const float& Size)
-							  * \param	Size : size of the SkyBox
-							  */
-			void SetSize(const float& Size) { mSize.setValue(Size,this); }
+			/**
+			* \brief	set the size of the SkyBox
+			* \fn 		void SetSize(const float& Size)
+			* \param	Size : size of the SkyBox
+			*/
+			void SetSize(const float& Size) { setValue("Size",Size); }
 
 			/**
 			 * \brief	update the bounding box
@@ -78,17 +72,21 @@ namespace Kigs
 			 */
 			void InitModifiable() override;
 
-			//! used texture
-			SP<Texture>	mTexture;
-			//! size of the SkyBox
-			maFloat		mSize;
-			//! name of the file
-			maString	mFileName;
 
 			//! point min of the bounding box
 			Point3D		mBBoxMin;
 			//! point max of the bounding box
 			Point3D		mBBoxMax;
+
+			//! size of the SkyBox
+			float			mSize = 5000.0f;
+			//! name of the file
+			std::string		mFileName = "SkyBox.tga";
+
+			WRAP_ATTRIBUTES(mSize, mFileName);
+			//! used texture
+			SP<Texture>	mTexture;
+
 		};
 
 	}

@@ -713,7 +713,6 @@ namespace Kigs
 
 			virtual ~TouchInputEventManager();
 
-			maBool mUseGazeAsTouchDevice = BASE_ATTRIBUTE(UseGazeAsTouchDevice, false);
 
 			unordered_map<TouchSourceID, TouchEventState::TouchInfos> mLastFrameTouches;
 
@@ -725,6 +724,8 @@ namespace Kigs
 
 			float mDefaultMinClickDuration = 0.0f;
 			float mDefaultMaxClickDuration = 0.6f;
+			bool mUseGazeAsTouchDevice = false;
+			WRAP_ATTRIBUTES(mUseGazeAsTouchDevice);
 
 			// states can be pushed on a stack, so that when creating a pop up or a fullscreen IHM in front of another, we can temporary mask previous registered events
 			// and go back to them after that

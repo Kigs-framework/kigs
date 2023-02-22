@@ -352,7 +352,9 @@ namespace Kigs
 			static std::set<CMSP> mHTTPConnections;
 
 			// if a path is given, FindFullName search only with the current path 
-			maBool	mStrictPath = BASE_ATTRIBUTE(StrictPath, false);
+			bool	mStrictPath = false;
+
+			WRAP_ATTRIBUTES(mStrictPath);
 		};
 	}
 

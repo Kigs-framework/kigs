@@ -65,11 +65,12 @@ namespace Kigs
 			virtual void	Start() = 0;
 			virtual void	Stop() = 0;
 
+			s32			mRate = 0;
+			v3f			mRotationVelocity = { 0.0f, 0.0f, 0.0f };
+			Quaternion  mRotationQuaternion = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-			maVect3DF	mRotationVelocity;
-			maVect4DF   mRotationQuaternion;
-
-			maInt		mRate;
+	
+			WRAP_ATTRIBUTES(mRate, mRotationVelocity, mRotationQuaternion);
 
 		};
 

@@ -28,17 +28,18 @@ namespace Kigs
 			void	NotifyUpdate(const unsigned int labelid)override;
 			void	RecomputeLayout()override;
 
-			maVect2DI				mPadding = BASE_ATTRIBUTE(Padding, 0, 0);
-			maBool					mSortByPriority = BASE_ATTRIBUTE(SortByPriority, false);
-			maBool					mVertical = BASE_ATTRIBUTE(Vertical, false);
+			bool					mSortByPriority = false;
+			bool					mVertical = false;
 
+			bool					mResizeLayoutX = false;
+			bool					mResizeLayoutY = false;
 			/**
 			* 0 = Left/Top, 1 = Center, 2 = Right/Bottom
 			*/
-			maInt					mAlignment = BASE_ATTRIBUTE(Alignment, false);
-			maBool					mResizeLayoutX = BASE_ATTRIBUTE(ResizeLayoutX, false);
-			maBool					mResizeLayoutY = BASE_ATTRIBUTE(ResizeLayoutY, false);
+			s32						mAlignment = 0;
+			v2i						mPadding = { 0, 0 };
 
+			WRAP_ATTRIBUTES(mSortByPriority, mVertical, mResizeLayoutX, mResizeLayoutY, mAlignment, mPadding);
 		};
 
 	}

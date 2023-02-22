@@ -15,7 +15,6 @@ using namespace Kigs::Time;
 IMPLEMENT_CLASS_INFO(RendererProfileDrawingObject)
 
 RendererProfileDrawingObject::RendererProfileDrawingObject(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
-, mFps(*this, "Fps", "30.0")
 {
 
 	// global timer is pure Red, don't use this color here
@@ -145,7 +144,7 @@ bool	RendererProfileDrawingObject::DrawProfiles(CoreModifiable* sender,std::vect
 
 		mFps = fpsbuffer;
 		std::vector<CoreModifiableAttribute*> mySendParams;
-		mySendParams.push_back(&mFps);
+		mySendParams.push_back(getAttribute("Fps"));
 		KigsCore::GetNotificationCenter()->postNotificationName("SetFPS", mySendParams, this);
 	}
 

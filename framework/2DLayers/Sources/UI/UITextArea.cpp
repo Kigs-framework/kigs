@@ -17,20 +17,8 @@ using namespace Kigs::Draw;
 IMPLEMENT_CLASS_INFO(UITextArea)
 
 UITextArea::UITextArea(const std::string& name, CLASS_NAME_TREE_ARG) :
-	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-	mText(*this, "Text", (std::string)"DefaultText"),
-	mFont(*this, "Font", ""),
-	mReleaseAction(*this, "ReleaseAction", ""),
-	mFontSize(*this, "FontSize", 12),
-	mLength(*this, "Length", 0),
-	mRow(*this, "Row", 1),
-	mCol(*this, "Col", 1),
-	mHasDefaultText(*this, "HasDefaultText", true),
-	mTextAlignment(*this, "TextAlignment", 1)
+	UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG)
 {
-
-	//unsetUserFlag(UserFlagUseColorArray);
-
 	mStayPressed = true;
 	mIsDown = false;
 	mIsDefaultText = true;

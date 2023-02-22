@@ -36,10 +36,12 @@ namespace Kigs
 			void NotifyUpdate(const unsigned int /* labelid */) override;
 			void Update(const Time::Timer& timer, void* /*addParam*/) override;
 
-			maVect3DF				m3DPosition;
-			maReference				mCamera;
-			maReference				mNode;
-			maBool					mUseUpOrientation;
+			bool							mUseUpOrientation = false;
+			v3f								m3DPosition = { 0.0f, 0.0f, 0.0f };
+			std::weak_ptr<CoreModifiable>	mCamera;
+			std::weak_ptr<CoreModifiable>	mNode;
+
+			WRAP_ATTRIBUTES(mUseUpOrientation, m3DPosition, mCamera, mNode);
 		};
 
 	}

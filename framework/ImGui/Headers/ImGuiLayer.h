@@ -89,26 +89,22 @@ namespace Kigs
 
 			bool mHasFrame = false;
 
-			maBool mRemote = BASE_ATTRIBUTE(Remote, false);
-			maString mRemoteBindAddress = BASE_ATTRIBUTE(RemoteBindAddress, "0.0.0.0");
-			maInt mRemotePort = BASE_ATTRIBUTE(RemotePort, 7002);
+			bool			mRemote = false;
+			bool			mInputsEnabled = true;
+			bool			mResetInputsWhenNoWindows = false;
+			s32				mRemotePort = 7002;
+			float			mFontSize = 13.0f;
+			float			mScaling = 1.0f;
+			std::string		mRemoteBindAddress = "0.0.0.0";
+			std::string		mFontName = "";
+			std::string		mBoldFontName = "";
+			std::string		mStyle = "Default";
+
+			WRAP_ATTRIBUTES(mRemote, mInputsEnabled, mResetInputsWhenNoWindows, mRemotePort, mFontSize, mScaling, mRemoteBindAddress, mFontName, mBoldFontName, mStyle);
 
 #ifdef WUP
 			maBool mUseOldWUPKeyboard = BASE_ATTRIBUTE(UseOldWUPKeyboard, false);
 #endif
-
-			maBool mInputsEnabled = BASE_ATTRIBUTE(InputsEnabled, true);
-
-			maBool mResetInputsWhenNoWindows = BASE_ATTRIBUTE(ResetInputsWhenNoWindows, false);
-
-
-			maString mFontName = BASE_ATTRIBUTE(FontName, "");
-			maString mBoldFontName = BASE_ATTRIBUTE(BoldFontName, "");
-			maFloat mFontSize = BASE_ATTRIBUTE(FontSize, 13.0f);
-			maFloat mScaling = BASE_ATTRIBUTE(Scaling, 1.0f);
-
-			maString mStyle = BASE_ATTRIBUTE(Style, "Default");
-
 			std::vector<KeyEvent> mKeyEvents;
 
 			std::vector<SmartPointer<Draw::Texture>> mUsedTexturesLastFrame;
@@ -131,8 +127,6 @@ namespace Kigs
 			bool mHasKeyboardFocus = false;
 			bool mWantMouse = false;
 			bool mNeedClearClicks = false;
-
-
 
 			SP<Draw::Texture> mFontTexture = nullptr;
 			unsigned char* mPixelData = nullptr;

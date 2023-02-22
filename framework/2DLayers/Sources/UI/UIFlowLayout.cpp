@@ -8,9 +8,6 @@ IMPLEMENT_CLASS_INFO(UIFlowLayout)
 
 UIFlowLayout::UIFlowLayout(const std::string& name, CLASS_NAME_TREE_ARG) :
 UILayout(name, PASS_CLASS_NAME_TREE_ARG)
-, mPadding(*this,  "Padding", 0, 0)
-, mSortByPriority(*this, "SortByPriority", false)
-, mRescaleToFit(*this,  "RescaleToFit")
 {
 	setOwnerNotification("Padding", true);
 	setOwnerNotification("SortByPriority", true);

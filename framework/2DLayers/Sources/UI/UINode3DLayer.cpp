@@ -18,7 +18,7 @@ IMPLEMENT_CLASS_INFO(UINode3DLayer);
 IMPLEMENT_CONSTRUCTOR(UINode3DLayer)
 , mRootItem(0)
 {
-
+	setValue("Camera","Camera:camera");
 }
 
 // behavior inspired by BaseUI2DLayer
@@ -57,7 +57,11 @@ void UINode3DLayer::InitModifiable()
 		setOwnerNotification("DesignSize", true);
 
 		auto input = KigsCore::GetModule<Input::ModuleInput>();
-		input->getTouchManager()->addTouchSupport(this, mCamera);
+
+		CMSP	currentCamera;
+		getValue("Camera", currentCamera);
+
+		input->getTouchManager()->addTouchSupport(this, currentCamera.get());
 
 		std::vector<CMSP> colliders;
 		GetSonInstancesByType("CollisionBaseNode", colliders);

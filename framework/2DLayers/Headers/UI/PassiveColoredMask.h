@@ -43,13 +43,16 @@ namespace Kigs
 			bool					mIsMouseOver;
 
 
+			u32				mRay=0;
 			//! Alpha threshold
-			maFloatInit				mThreshold;
+			float			mThreshold = 0.0f;
 
 			//! Texture Name
-			maString				mTextureName;
-			maString				mMaskName;
-			maUIntInit				mRay;
+			std::string		mTextureName = "";
+			std::string		mMaskName = "";
+			
+			WRAP_ATTRIBUTES(mRay, mThreshold, mTextureName, mMaskName);
+
 			SmartPointer<Draw::Texture>	mTexture;
 
 			int						mWidth;

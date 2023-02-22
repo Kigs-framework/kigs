@@ -63,7 +63,7 @@ namespace Kigs
 			DECLARE_ABSTRACT_CLASS_INFO(Texture, Drawable, Renderer)
 
 
-				static constexpr unsigned int isDirtyContext = 1 << ParentClassType::usedUserFlags;
+			static constexpr unsigned int isDirtyContext = 1 << ParentClassType::usedUserFlags;
 			static constexpr unsigned int hasNearestPixelSet = 1 << (ParentClassType::usedUserFlags + 1);
 			static constexpr unsigned int usedUserFlags = ParentClassType::usedUserFlags + 2;
 
@@ -217,28 +217,31 @@ namespace Kigs
 			float mRatioX;
 			float mRatioY;
 
+			//! TRUE if the texture has mipmap
+			bool			mHasMipmap = false;
+			//! pixel perfect mode
+			bool			mForceNearest = false;
+			//! TRUE if I repeat the texture on the u axis
+			bool			mRepeat_U = true;
+			//! TRUE if I repeat the texture on the v axis
+			bool			mRepeat_V = true;
+			//! TRUE if we want the texture be directly accessed from memory (platform dependant)
+			bool			mIsDynamic = false;
+			//! TRUE if we want the texture to be resized to a power of two at loading (done on the specific part !)
+			bool			mForcePow2 = false;
 
 			//! height of the texture
-			maUInt		mWidth;
+			u32				mWidth = 0;
 			//! width of the texture
-			maUInt		mHeight;
+			u32				mHeight = 0;
 			//! 0 = no transparency, 1 = billboard (binary transparency), 2 = need blend, -1 = to test on file loading
-			maInt		mTransparencyType;
-			//! TRUE if the texture has mipmap
-			maBool		mHasMipmap;
-			maBool		mForceNearest;
-			//! file name of the used texture
-			maString	mFileName;
+			s32				mTransparencyType = -1;
 			//! type of the used texture
-			maInt		mTextureType;
-			//! TRUE if I repeat the texture on the u axis
-			maBool		mRepeat_U;
-			//! TRUE if I repeat the texture on the v axis
-			maBool		mRepeat_V;
-			//! TRUE if we want the texture be directly accessed from memory (platform dependant)
-			maBoolInit	mIsDynamic;
-			//! TRUE if we want the texture to be resized to a power of two at loading (done on the specific part !)
-			maBoolInit	mForcePow2;
+			s32				mTextureType = TEXTURE_2D;
+			//! file name of the used texture
+			std::string		mFileName = "";
+
+			WRAP_ATTRIBUTES(mHasMipmap, mForceNearest, mRepeat_U, mRepeat_V, mIsDynamic, mForcePow2, mWidth, mHeight, mTransparencyType, mTextureType, mFileName);
 
 			unsigned int mPow2Width;
 			unsigned int mPow2Height;

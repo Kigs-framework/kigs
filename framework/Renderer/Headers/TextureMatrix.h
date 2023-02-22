@@ -60,7 +60,8 @@ namespace Kigs
 			virtual ~TextureMatrix();
 
 			//! link to the used matrix
-			maVect16DF	mMatrix;
+			Matrix4x4		mMatrix;
+			WRAP_ATTRIBUTES(mMatrix);
 		};
 
 	}

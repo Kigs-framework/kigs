@@ -28,6 +28,11 @@ namespace Kigs
         {
             ;
         }
+        Vector4D::Vector4D(const Vector3D& xyz, const Float& w)
+            :x(xyz.x), y(xyz.y), z(xyz.z), w(w)
+        {
+            ;
+        }
         Vector4D::Vector4D(const Vector4D& V)
             :x(V.x), y(V.y), z(V.z), w(V.w)
         {

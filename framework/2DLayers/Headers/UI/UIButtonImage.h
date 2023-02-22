@@ -47,9 +47,11 @@ namespace Kigs
 			SmartPointer<Draw::TextureHandler>				mDownTexturePointer;
 			SmartPointer<Draw::TextureHandler>				mOverTexturePointer;
 
-			maString	mUpTexture;
-			maString	mDownTexture;
-			maString	mOverTexture;
+			std::string										mUpTexture="";
+			std::string										mDownTexture="";
+			std::string										mOverTexture="";
+
+			WRAP_ATTRIBUTES(mUpTexture, mDownTexture, mOverTexture);
 		};
 
 	}

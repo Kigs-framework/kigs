@@ -105,21 +105,23 @@ namespace Kigs
 			void	InitModifiable() override;
 
 			//! parameter for fullscreen window
-			maBoolInit	mFullScreen;
+			bool				mFullScreen = false;
 			//! flag to show/hide the mouse
-			maBoolInit	mShowMouseCursor;
+			bool				mShowMouseCursor = false;
+			bool				mDirtySize = false;
+			bool				mShow = true;
 
 			//! flag to decide if the window is the main window. If you close the main window, the application should be terminated
-			maBoolInit mIsMainWindow;
-			maUIntInit mDisplayIndex;
+			bool				mIsMainWindow = true;
 
-			maBool mDirtySize;
+			u32					mDisplayIndex = 0xFFFFFFFF;
 
-			maBool mShow = BASE_ATTRIBUTE(Show, true);
 
 			//! window size and position on screen (size is also used if fullscreen)
-			maVect2DFInit		mPosition;
-			maVect2DFInit		mSize;
+			v2f					mPosition = {-1.0f,-1.0f};
+			v2f					mSize;
+
+			WRAP_ATTRIBUTES(mFullScreen,mShowMouseCursor,mDirtySize,mShow, mIsMainWindow, mDisplayIndex, mPosition , mSize);
 
 			//!	platform independant handle
 			void* mHandle;

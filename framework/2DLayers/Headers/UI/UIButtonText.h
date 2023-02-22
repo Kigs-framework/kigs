@@ -56,18 +56,20 @@ namespace Kigs
 			SmartPointer<Draw::Texture>			mDownTexturePointer;
 			SmartPointer<Draw::Texture>			mOverTexturePointer;
 
-			maString			mUpText;
-			maString			mDownText;
-			maString			mOverText;
+			u32					mFontSize = 12;
+			u32					mLength = 0;
+			u32					mTextAlignment = 1;
 
-			maVect4DF			mUpColor;
-			maVect4DF			mOverColor;
-			maVect4DF			mDownColor;
+			v4f					mUpColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+			v4f					mOverColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+			v4f					mDownColor = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-			maString			mFont;
-			maUInt				mFontSize;
-			maUInt				mLength;
-			maUInt				mTextAlignment;
+			std::string			mFont = "arial.ttf";
+			std::string			mUpText = "";
+			std::string			mDownText = "";
+			std::string			mOverText = "";
+		
+			WRAP_ATTRIBUTES(mFontSize, mLength, mTextAlignment, mUpColor, mOverColor,mDownColor,mFont,mUpText,mDownText,mOverText);
 		};
 
 	}

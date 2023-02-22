@@ -386,19 +386,19 @@ void UIDynamicText::IterateCharacters(std::function<bool(IterationState&)> func,
 			nb_spaces = 0;
 			if (max_width != 0.0f)
 			{
-				if (mTextAlign == UIDynamicText::TextAlign_Right)
+				if (mTextAlignment == UIDynamicText::TextAlign_Right)
 				{
 					float remaining = max_width - position.x;
 					position = line_position;
 					position.x += remaining;
 				}
-				else if (mTextAlign == UIDynamicText::TextAlign_Center)
+				else if (mTextAlignment == UIDynamicText::TextAlign_Center)
 				{
 					float remaining = max_width - position.x;
 					position = line_position;
 					position.x += remaining / 2.0f;
 				}
-				else if (mTextAlign == UIDynamicText::TextAlign_Justify && !new_line_character)
+				else if (mTextAlignment == UIDynamicText::TextAlign_Justify && !new_line_character)
 				{
 					float remaining = max_width - position.x;
 					extra_w_per_space = remaining / test_spaces;

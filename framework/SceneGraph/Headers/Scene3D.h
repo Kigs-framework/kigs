@@ -173,10 +173,10 @@ namespace Kigs
 			int mDirLightCount = 0;
 
 			//! priority
-			maInt			 		        mPriority;
-			maBool							mSort3DNodesFrontToBack;
+			s32			mPriority = 0;
+			bool		mSort3DNodesFrontToBack = false;
 
-
+			WRAP_ATTRIBUTES(mPriority, mSort3DNodesFrontToBack);
 		};
 
 	}

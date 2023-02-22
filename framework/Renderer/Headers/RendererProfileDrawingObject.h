@@ -42,7 +42,6 @@ namespace Kigs
 			bool			mFirstDraw;
 			unsigned int 	mProfilerCount;
 
-			maString mFps;
 
 			void			setGlobalFrameCount(int c)
 			{
@@ -70,6 +69,8 @@ namespace Kigs
 
 			int				mMaxGlobalFrameCount[16];
 			int				mCurrentGlobalFrameCountIndex;
+			std::string		mFps = "30.0";
+			WRAP_ATTRIBUTES(mFps);
 		};
 
 	}

@@ -167,39 +167,44 @@ namespace Kigs
 			//! TRUE if the screen has been initialized
 			bool mIsInit;
 
-			//! size of a pixel in bit
-			maIntInit	mBitsPerPixel;
-			//! size of the Z value in bit
-			maIntInit	mBitsPerZ;
+			//! ?
+			bool			mIsOffScreen = false;
+			//! TRUE if I wait for the VSync
+			bool			mVSync = false;
+			//! indicate the screen don't need clear (camera should still clear their part of screen)
+			bool			mDontClear = false;
+			//! double buffer on/off
+			bool			mNeedDoubleBuffer = true;
 
-			maIntInit	mBitsForStencil;
+			bool			mIsStereo = false;
+
+			bool			mResizeDesignSize = false;
+			bool			mUseFBO = false;
+
+			//! size of a pixel in bit
+			s32				mBitsPerPixel = 32;
+			//! size of the Z value in bit
+			s32				mBitsPerZ = 16;
+
+			s32				mBitsForStencil = 0;
+
+			//! brightness : between -16 (black) and 16 (white)
+			float			mBrightness = 0.0f;
+			float			mOldBrightness;
+			//! screen orientation (for handheld devices)
+			float			mRotation = 0.0f;
 
 			//!  size of the screen 
-			maVect2DF mSize;
+			v2f				mSize = { 256.0f , 256.0f };
 			//!  design size of the screen  
-			maVect2DF mDesignSize;
-
-			//! ?
-			maBoolInit mIsOffScreen;
-			//! name of the parent windows
-			maStringInit mParentWindowName;
-			//! TRUE if I wait for the VSync
-			maBoolInit mVSync;
-			//! brightness : between -16 (black) and 16 (white)
-			maFloat mBrightness;
-			float mOldBrightness;
+			v2f				mDesignSize = { 256.0f , 256.0f };
 			//! back drop color
-			maVect3DF mBackDropColor;
-			//! screen orientation (for handheld devices)
-			maFloat mRotation;
-			//! indicate the screen don't need clear (camera should still clear their part of screen)
-			maBool mDontClear;
-			//! double buffer on/off
-			maBool mNeedDoubleBuffer;
+			v3f				mBackDropColor = { 0.0f , 0.0f , 0.0f };
 
-			maBool mIsStereo = BASE_ATTRIBUTE(IsStereo, false);
+			//! name of the parent windows
+			std::string		mParentWindowName = "";
 
-			maBool mResizeDesignSize = BASE_ATTRIBUTE(ResizeDesignSize, false);
+			WRAP_ATTRIBUTES(mIsOffScreen, mVSync, mDontClear, mNeedDoubleBuffer, mIsStereo, mResizeDesignSize, mUseFBO, mBitsPerPixel, mBitsPerZ, mBitsForStencil, mBrightness, mRotation, mSize, mDesignSize, mBackDropColor, mParentWindowName)
 
 			Gui::Window*		mParentWindow;
 
@@ -208,8 +213,6 @@ namespace Kigs
 			v2f					mDesignCoef;
 
 			bool				mWasActivated;
-
-			maBoolInit			mUseFBO;
 
 			SP<Texture>			mFBOTexture;
 

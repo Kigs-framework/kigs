@@ -205,7 +205,7 @@ namespace Kigs
 			virtual void	Active(TravState* state, bool resetUniform = false) = 0;
 			virtual void	Deactive(TravState* state) = 0;
 
-			bool isGeneric() { return misGeneric; }
+			bool isGeneric() { return mIsGeneric; }
 
 			template<typename castType = ShaderInfo>
 			inline castType* GetCurrentShaderProgram() const { if (mCurrentShader) return (castType*)mCurrentShader->mShaderProgram; return nullptr; }
@@ -280,14 +280,14 @@ namespace Kigs
 			BuildShaderStruct* mCurrentShader;
 			unsigned int		mCurrentShaderKey;
 
-			// TODO : rename to mIsGeneric ( but CoreModifiableAttribute ID should be renamed too ).
-			maBool			misGeneric;
-			maString		mVertexShader;
-			maString		mFragmentShader;
-			maString		mGeometryShader;
-			maReference		mAttachedCamera;
-			// TODO : rename rename to mUseGenericLight (but CoreModifiableAttribute ID should be renamed too ).
-			maBool			museGenericLight;
+			bool								mUseGenericLight = false;
+			bool								mIsGeneric = false;
+			std::string							mVertexShader = "";
+			std::string							mFragmentShader = "";
+			std::string							mGeometryShader = "";
+			std::weak_ptr<CoreModifiable>		mAttachedCamera;
+
+			WRAP_ATTRIBUTES(mUseGenericLight, mIsGeneric, mVertexShader, mFragmentShader, mGeometryShader, mAttachedCamera);
 
 			std::map<unsigned int, BuildShaderStruct*> mShaderSourceMap;
 		};

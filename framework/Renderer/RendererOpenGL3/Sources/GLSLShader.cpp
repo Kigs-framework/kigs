@@ -157,9 +157,7 @@ void	API3DShader::Dealloc()
 BuildShaderStruct*	API3DShader::Rebuild()
 {
 
-	std::string str;
-	mVertexShader.getValue(str,this);
-
+	std::string str= mVertexShader;
 	// Compile the shader source
 
 	const char* SrcTxt = 0;
@@ -198,7 +196,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	glCompileShader(vshaderName); CHECK_GLERROR;
 	rawbuffer = nullptr;
 
-	mFragmentShader.getValue(str,this);
+	str=mFragmentShader;
 	if (str[0] == '!') // load from file
 	{
 		const char* filename = (str.c_str() + 1);
@@ -456,9 +454,11 @@ bool	API3DShader::PreDraw(TravState* travstate)
 
 	if (Drawable::PreDraw(travstate))
 	{
-		if ((CoreModifiable*)mAttachedCamera)
+		// TODO : should be fully check only when AttachedCamera attribute is changed then just use weak_ptr here
+		CMSP currentCamera = getValue<CMSP>("AttachedCamera");
+		if (currentCamera)
 		{
-			if ((CoreModifiable*)mAttachedCamera != (CoreModifiable*)travstate->GetCurrentCamera())
+			if (currentCamera != (CoreModifiable*)travstate->GetCurrentCamera())
 			{
 				return false;
 			}
@@ -473,9 +473,12 @@ bool	API3DShader::PostDraw(TravState* travstate)
 {
 	if (Drawable::PostDraw(travstate))
 	{
-		if ((CoreModifiable*)mAttachedCamera)
+		// TODO : should be fully check only when AttachedCamera attribute is changed then just use weak_ptr here
+		CMSP currentCamera = getValue<CMSP>("AttachedCamera");
+
+		if (currentCamera)
 		{
-			if ((CoreModifiable*)mAttachedCamera != (CoreModifiable*)travstate->GetCurrentCamera())
+			if (currentCamera != (CoreModifiable*)travstate->GetCurrentCamera())
 			{
 				return false;
 			}
@@ -507,7 +510,7 @@ void	API3DShader::Active(TravState* state, bool resetUniform)
 					itr->second->Back()->Activate(itr->second->mLocation);
 			}
 		}
-		if (museGenericLight && state)
+		if (mUseGenericLight && state)
 		{
 			RendererOpenGL* renderer = (RendererOpenGL*)state->GetRenderer();
 			renderer->SendLightsInfo(state);
@@ -519,7 +522,7 @@ void	API3DShader::Deactive(TravState* state)
 {
 	if (isOKToUse())
 	{
-		if (museGenericLight && state)
+		if (mUseGenericLight && state)
 		{
 			RendererOpenGL* renderer = (RendererOpenGL*)state->GetRenderer();
 			renderer->ClearLightsInfo(state);

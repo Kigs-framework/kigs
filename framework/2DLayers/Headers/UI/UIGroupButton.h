@@ -42,12 +42,17 @@ namespace Kigs
 			void	computeSize(int _buttonNumber, CoreModifiable* a_item);
 
 
-			std::vector<UIButton*>		mButtonList;
-			maBool						mKeepOnePressed;
-			maBool						mOnlyOnePressed;
-			maString					mNoSelectedAction;
-			maUSString					mParameter;
 			unsigned int				mButtonNumber;
+
+			bool						mKeepOnePressed = true;
+			bool						mOnlyOnePressed = true;
+			std::string					mNoSelectedAction = "";
+			usString					mParameter = (std::string)"";
+
+			WRAP_ATTRIBUTES(mKeepOnePressed, mOnlyOnePressed, mNoSelectedAction, mParameter);
+
+			std::vector<UIButton*>		mButtonList;
+
 		};
 
 	}

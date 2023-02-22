@@ -480,13 +480,13 @@ namespace Kigs
 		// +---------
 		inline const Float& Quaternion::operator[](size_t i) const
 		{
-			assert(i >= 0 && i < 3);
+			assert(i >= 0 && i <= 3);
 			return *((&(V.x)) + i);
 		}
 
 		inline Float& Quaternion::operator[](size_t i)
 		{
-			assert(i >= 0 && i < 3);
+			assert(i >= 0 && i <= 3);
 			return *((&(V.x)) + i);
 		}
 

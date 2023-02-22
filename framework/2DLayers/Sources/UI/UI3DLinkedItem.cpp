@@ -10,10 +10,6 @@ IMPLEMENT_CLASS_INFO(UI3DLinkedItem)
 
 UI3DLinkedItem::UI3DLinkedItem(const std::string& name, CLASS_NAME_TREE_ARG)
 	: UIItem(name, PASS_CLASS_NAME_TREE_ARG)
-	, m3DPosition(*this, "3DPosition", 0.0f, 0.0f, 0.0f)
-	, mCamera(*this, "Camera", "")
-	, mNode(*this, "Node", "")
-	, mUseUpOrientation(*this, "UseUpOrientation", false)
 {
 	
 }
@@ -32,7 +28,11 @@ void UI3DLinkedItem::NotifyUpdate(const unsigned int labelid)
 {
 	if (labelid == KigsID("Node")._id || labelid == KigsID("Camera")._id)
 	{
-		if((CoreModifiable*)mCamera==NULL|| (CoreModifiable*)mNode ==NULL)
+		CMSP checkcurrentCamera;
+		getValue("Camera", checkcurrentCamera);
+		CMSP checkcurrentnode;
+		getValue("Node", checkcurrentnode);
+		if(checkcurrentCamera == nullptr || checkcurrentnode == nullptr)
 		{
 			mIsHidden = false;
 			mDock[0] = 0.5f;
@@ -47,18 +47,23 @@ void UI3DLinkedItem::NotifyUpdate(const unsigned int labelid)
 
 void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 {
-	Camera*	currentCamera = (Camera*)mCamera;
-	if (currentCamera)
+	CMSP checkcurrentCamera;
+	getValue("Camera", checkcurrentCamera);
+	if (checkcurrentCamera)
 	{
 		Point3D currentPos(m3DPosition[0], m3DPosition[1], m3DPosition[2]);
 
+		CMSP checkcurrentnode;
+		getValue("Node", checkcurrentnode);
+
 		// if a node3D is attached, then 3DPosition is a local position in node space
-		Node3D*	currentnode = (Node3D*)(CoreModifiable*)mNode;
-		if (currentnode)
+		if (checkcurrentnode)
 		{
+			SP<Node3D>	currentnode = checkcurrentnode;
 			Point3D toTransform(currentPos);
 			currentnode->GetLocalToGlobal().TransformPoint(&toTransform, &currentPos);
 		}
+		SP<Camera>	currentCamera = checkcurrentCamera;
 
 		Point2D result;
 		if (currentCamera->Project(result.x, result.y, currentPos))

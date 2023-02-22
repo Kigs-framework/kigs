@@ -132,11 +132,7 @@ namespace Kigs
 			void EndExport(ExportSettings* settings) override;
 #endif
 
-
-
 			void InitModifiable() override;
-
-
 
 			virtual void  InitBoundingBox();
 
@@ -144,17 +140,21 @@ namespace Kigs
 			BBox mBoundingBox = BBox{ v3f(0.0f, 0.0f, 0.0f), v3f(-1.0f, -1.0f, -1.0f) };
 			bool mWasBuild = false;
 
-			//! name of the file to read in load method
-			maString mFileName = BASE_ATTRIBUTE(FileName, "");
 
 #ifdef _DEBUG
 			maBool mShowVertex = BASE_ATTRIBUTE(ShowVertex, false);
-			maBool mOptimize = BASE_ATTRIBUTE(Optimize, true);
+			bool	mOptimize = true;
 #else
-			maBool mOptimize = BASE_ATTRIBUTE(Optimize, true);
+			bool	mOptimize = true;
 #endif
 
-			maBool mWireMode = BASE_ATTRIBUTE(WireMode, false);
+			bool mWireMode = false;
+
+			//! name of the file to read in load method
+			std::string		mFileName = "";
+
+			WRAP_ATTRIBUTES(mFileName, mWireMode, mOptimize);
+
 #ifdef KIGS_TOOLS
 			maBool mDrawNormals = BASE_ATTRIBUTE(DrawNormals, false);
 			maBool mDrawUVs = BASE_ATTRIBUTE(DrawUVs, false);
@@ -178,7 +178,7 @@ namespace Kigs
 		public:
 			friend class ModernMesh;
 			DECLARE_CLASS_INFO(ModernMeshItemGroup, Drawable, Renderer)
-				DECLARE_CONSTRUCTOR(ModernMeshItemGroup);
+			DECLARE_CONSTRUCTOR(ModernMeshItemGroup);
 			virtual ~ModernMeshItemGroup();
 
 			bool Draw(TravState* travstate) override;
@@ -200,9 +200,6 @@ namespace Kigs
 			std::vector<s32> mBoundaries;
 			std::vector<s32> mColliderBoundaries;
 
-			maULong mBoundariesMask = BASE_ATTRIBUTE(BoundariesMask, UINT64_MAX);
-
-
 			u32 GetSelfDrawingNeeds()  override
 			{
 				return ((u32)Need_Postdraw) | ((u32)Need_Predraw) | ((u32)Need_Draw);
@@ -211,7 +208,6 @@ namespace Kigs
 			s32 getTriangleCount() { return mTriangleCount; }
 			s32 getVertexCount() { return mVertexCount; }
 			s32 getVertexSize() { return mVertexSize; }
-
 
 			bool	BBoxUpdate(double /* time*/)  override { return true; }
 
@@ -229,13 +225,15 @@ namespace Kigs
 			u32 mIndexBuffer = 0xFFFFFFFF;
 			u32 mIndexType;
 
-			maInt						mCullMode = BASE_ATTRIBUTE(CullMode, 1);
-			maFloat						mTexCoordsScale = BASE_ATTRIBUTE(TexCoordsScale, 0.01f);;
-			maBool						mInstanced = BASE_ATTRIBUTE(Instanced, false);
-			maBool						mNoLight = BASE_ATTRIBUTE(NoLight, false);
+			bool						mInstanced = false;
+			bool						mNoLight = false;
+			bool						mTestOcclusion = false;
+			s32							mCullMode = 1;
+			float						mTexCoordsScale = 0.01f;
+			u64							mBoundariesMask = UINT64_MAX;
 
+			WRAP_ATTRIBUTES(mInstanced, mNoLight, mTestOcclusion, mCullMode, mTexCoordsScale, mBoundariesMask);
 
-			maBool mTestOcclusion = BASE_ATTRIBUTE(TestOcclusion, false);
 			u64 mOcclusionQueryId = -1;
 			u64 mLastOcclusionResult = 1;
 			int mLastFrameOcclusionTested = 0;

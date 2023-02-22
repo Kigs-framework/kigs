@@ -95,25 +95,28 @@ namespace Kigs
 			 */
 			virtual ~Light();
 
-			//! specular color
-			maVect3DF	mSpecularColor;
-			//! ambient color
-			maVect3DF	mAmbientColor;
-			//! diffuse color
-			maVect3DF	mDiffuseColor;
-			//! spot attenuation
-			maFloat		mSpotAttenuation;
-			//! spot cut off
-			maFloat		mSpotCutOff;
-			//! attenuation constante
-			maFloat		mConstAttenuation;
-			//! attenuation linear
-			maFloat		mLinAttenuation;
-			//! attenuation quad
-			maFloat		mQuadAttenuation;
-
 			//! TRUE if the light is on
-			maBool		mIsOn;
+			bool			mIsOn = true;
+
+			//! spot attenuation
+			float			mSpotAttenuation = 0.0f;
+			//! spot cut off
+			float			mSpotCutOff = 1.0f;
+			//! attenuation constante
+			float			mConstAttenuation = 1.0f;
+			//! attenuation linear
+			float			mLinAttenuation = 0.01f;
+			//! attenuation quad
+			float			mQuadAttenuation = 0.0001f;
+
+			//! specular color
+			v3f				mSpecularColor = { 1.0f ,1.0f ,1.0f };
+			//! ambient color
+			v3f				mAmbientColor = { 0.0f ,0.0f ,0.0f };
+			//! diffuse color
+			v3f				mDiffuseColor = { 1.0f ,1.0f ,1.0f };
+
+			WRAP_ATTRIBUTES(mIsOn, mSpotAttenuation, mSpotCutOff, mConstAttenuation, mLinAttenuation, mQuadAttenuation, mSpecularColor, mAmbientColor, mDiffuseColor);
 
 			//0 for point, 1 for directional, 2 for spot
 			maEnumInit<3>	mLightType;

@@ -185,17 +185,19 @@ namespace Kigs
 			virtual void PrepareDrawing() = 0;
 
 			//! list of vertice
-			Point3D* mVertex = nullptr;
+			Point3D*	mVertex = nullptr;
 			//! number of vertice
 			int			mVertexCount = 0;
 			//! drawing mode
-			maInt		mMode = BASE_ATTRIBUTE(Mode, 0);
+			s32			mMode = 0;
 			//! width
-			maFloat		mWidth = BASE_ATTRIBUTE(Width, 1);
+			float		mWidth = 1.0f;
 			//! alpha value
-			maFloat		mAlpha = BASE_ATTRIBUTE(Alpha, 1);
+			float		mAlpha = 1.0f;
 			//! color value
-			maVect3DF	mColor = BASE_ATTRIBUTE(Color, 1, 1, 1);
+			v3f			mColor = { 1.0f, 1.0f, 1.0f };
+
+			WRAP_ATTRIBUTES(mMode, mWidth, mAlpha, mColor);
 		};
 
 	}

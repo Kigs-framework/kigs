@@ -178,12 +178,12 @@ namespace Kigs
 			*/
 			void NotifyUpdate(const unsigned int /* labelid */) override;
 
-
-
 			INSERT_FORWARDSP(Texture, mTexture);
 
-			maString	mTextureName = BASE_ATTRIBUTE(TextureName, "");
-			maBool		mPushUVMatrix = BASE_ATTRIBUTE(PushUVMatrix, false);
+			bool			mPushUVMatrix = false;
+			std::string		mTextureName = "";
+
+			WRAP_ATTRIBUTES(mPushUVMatrix, mTextureName);
 
 			void	refreshSizeAndUVs(const SpriteSheetFrameData* ssf);
 

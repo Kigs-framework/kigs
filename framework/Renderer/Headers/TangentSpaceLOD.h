@@ -38,7 +38,9 @@ namespace Kigs
 			unsigned int mLastRenderDisableMask = 0;
 			float mLastTangentSpaceLOD = -1.0f;
 
-			maBool mForceNoTangents = BASE_ATTRIBUTE(ForceNoTangents, false);
+			bool mForceNoTangents = false;
+
+			WRAP_ATTRIBUTES(mForceNoTangents);
 		};
 	}
 }

@@ -89,8 +89,7 @@ class Material;
 		* \param	DECLARE_CLASS_NAME_TREE_ARG : list of arguments
 		*/
 		MeshItemGroup(const std::string& name,DECLARE_CLASS_NAME_TREE_ARG) 
-			: Drawable(name,PASS_CLASS_NAME_TREE_ARG),
-			mCullMode(*this,"CullMode",1)
+			: Drawable(name,PASS_CLASS_NAME_TREE_ARG)
 		{
 			mFirstTriangle = 0;
 			mTriangleCount = 0;
@@ -126,7 +125,9 @@ class Material;
 		//! type of triangle
 		TriangleType				mTriangleType;
 
-		maInt						mCullMode;
+		s32							mCullMode=1;
+
+		WRAP_ATTRIBUTES(mCullMode);
 	};
 
 
@@ -1477,20 +1478,26 @@ class Material;
 		virtual void	UpdateMesh(){;}
 
 		//! TRUE if myVertex need to be updated
-		maBool	mVertexNeedUpdate;
+		bool			mVertexNeedUpdate = false;
 		//! TRUE if mColor need to be updated
-		maBool	mColorNeedUpdate;
+		bool			mColorNeedUpdate = false;
 		//! TRUE if myTexCoord need to be updated
-		maBool	mTexCoordNeedUpdate;
+		bool			mTexCoordNeedUpdate = false;
 		//! TRUE if myNormal need to be updated
-		maBool	mNormalNeedUpdate;
+		bool			mNormalNeedUpdate = false;
 		//! ?
-		maBool	mShareMaterial;
+		bool			mShareMaterial = true;
+		bool			mDynamicInit = false;
+		bool			mWireMode = false;
+
+		//! name of the file to read in load method
+		std::string		mFileName = "";
+
+		WRAP_ATTRIBUTES(mVertexNeedUpdate, mColorNeedUpdate, mTexCoordNeedUpdate, mNormalNeedUpdate, mShareMaterial, mDynamicInit, mWireMode, mFileName);
 
 #ifdef _DEBUG
 		maBool mShowVertex;
 #endif
-		maBool mWireMode;
 		/**
 		* \brief	protected initialization modifiable
 		* \fn 		virtual void ProtectedInit()=0;
@@ -1502,9 +1509,6 @@ class Material;
 		* \fn 		void InitModifiable() override
 		*/ 
 		void	InitModifiable() override;
-
-		//! name of the file to read in load method
-		maStringInit	mFileName;
 
 		//! number of vertice
 		unsigned int		mVertexCount;
@@ -1526,7 +1530,6 @@ class Material;
 		//! List of All colors
 		Vector4D*			mColorArray;
 
-		maBool				mDynamicInit;
 
 		/**
 		* \brief	destructor

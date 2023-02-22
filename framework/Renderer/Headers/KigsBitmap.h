@@ -121,12 +121,11 @@ namespace Kigs
 			*/
 			bool PreDraw(TravState*)  override;
 
-			maVect2DIInit			mSize;
+			v2i					mSize = {0,0};
+			WRAP_ATTRIBUTES(mSize);
 
 			// manage a RGBA8888 array of pixel and update it's father texture if needed 
 			unsigned char* mRawPixels;
-
-
 
 			BBox2DI	mDirtyZone;
 

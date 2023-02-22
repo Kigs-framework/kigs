@@ -63,14 +63,17 @@ namespace Kigs
 			COREMODIFIABLE_METHODS(ReloadTexture);
 			unsigned short* CutText(const unsigned short* text, bool& flag);
 
-			maUSString				mText;
-			maString				mFont;
-			maUInt					mFontSize;
-			maUInt					mDirection;
-			maUInt					mLength;
-			maUInt					mTextAlignment;
-			maUInt					mMaxWidth;
-			maUInt					mMaxLines;
+			u32						mFontSize = 12;
+			u32						mDirection = 0;
+			u32						mLength = 0;
+			u32						mTextAlignment = 1;
+			u32						mMaxWidth = 128;
+			u32						mMaxLines = 0;
+
+			usString				mText = (std::string)"";
+			std::string				mFont = "arial.ttf";
+
+			WRAP_ATTRIBUTES(mFontSize, mDirection, mLength, mTextAlignment, mMaxWidth, mMaxLines, mText, mFont);
 		};
 
 	}

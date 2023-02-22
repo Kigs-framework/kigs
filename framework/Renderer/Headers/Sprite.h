@@ -97,18 +97,18 @@ namespace Kigs
 			 */
 			void	GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override { pmin.Set((float)mPosition[0], 0.0f, (float)mPosition[1]); pmax.Set((float)mPosition[0] + (float)mSize[0], (float)mDisplacement, (float)mPosition[1] + (float)mSize[1]); }
 
-			//! file name of the used texture
-			//maString mTextureFileName;
 			//! displacement
-			maFloatInit mDisplacement;
+			float			mDisplacement = KIGS_SPRITE_DEFAULT_DISPLACEMENT;
 			//! position
-			maVect2DF mPosition;
+			v2f				mPosition = { -0.5f, -0.5f };
 			//! size 
-			maVect2DF mSize;
+			v2f				mSize = { 1.5f, 1.5f };
 			//! coord texture u1,v1,u2,v2
-			maVect4DF mTexUV;
+			v4f				mTexUV = { 0.0f,0.0f,1.0f,1.0f };
 			//! color
-			maVect4DF	mColor;
+			v4f				mColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+			WRAP_ATTRIBUTES(mDisplacement, mPosition, mSize, mTexUV, mColor);
 
 			//! link to the texture
 			//SP<Texture>	mTexture;

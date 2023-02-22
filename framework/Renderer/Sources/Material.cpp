@@ -5,28 +5,10 @@
 using namespace Kigs::Draw;
 IMPLEMENT_CLASS_INFO(Material)
 
-static inline bool IsVecEqual(const maVect4DF &v1, const maVect4DF&v2)
-{
-	return v1[0]==v2[0] && v1[1]==v2[1] && v1[2]==v2[2] && v1[3]==v2[3];
-}
 
-Material::Material(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG),
-mFacing(*this,"Facing",1),
-mBlendFuncSource(*this,"BlendFuncSource",4),
-mBlendFuncDest(*this,"BlendFuncDest",5),
-mBlendEnabled(*this,"BlendEnabled",false),
-mMaterialColorEnabled(*this,"MaterialColorEnabled",false),
-mAmbientColor(*this,"AmbientColor"),
-mDiffuseColor(*this,"DiffuseColor"),
-mSpecularColor(*this,"SpecularColor"),
-mEmissionColor(*this,"EmissionColor"),
-mShininess(*this,"Shininess",120.0f),
-mTransparency(*this,"Transparency",1.0f)
+Material::Material(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)
 {
-  SetAmbientColor(0.2f, 0.2f, 0.2f);
-  SetDiffuseColor(0.3f, 0.3f, 0.3f);
-  SetSpecularColor(0.1f, 0.1f, 0.1f);
-  SetEmissionColor(0.0f, 0.0f, 0.0f);
+
 }    
 
     
@@ -47,17 +29,17 @@ bool	Material::Equal(const CoreModifiable& other)
 	}
 
 	Material *pOther = (Material*)&other;
-	bool PropsAreEqual = (int)mFacing==(int)pOther->mFacing &&
-		(int)mBlendFuncSource==(int)pOther->mBlendFuncSource &&
-		(int)mBlendFuncDest==(int)pOther->mBlendFuncDest &&
-		(bool)mBlendEnabled==(bool)pOther->mBlendEnabled &&
-		(bool)mMaterialColorEnabled==(bool)pOther->mMaterialColorEnabled &&
-		IsVecEqual(mAmbientColor, pOther->mAmbientColor) &&
-		IsVecEqual(mDiffuseColor, pOther->mDiffuseColor) &&
-		IsVecEqual(mSpecularColor, pOther->mSpecularColor) &&
-		IsVecEqual(mEmissionColor, pOther->mEmissionColor) &&
-		(float)mShininess==(float)pOther->mShininess &&
-		(float)mTransparency==(float)pOther->mTransparency;
+	bool PropsAreEqual = mFacing==pOther->mFacing &&
+		mBlendFuncSource==pOther->mBlendFuncSource &&
+		mBlendFuncDest==pOther->mBlendFuncDest &&
+		mBlendEnabled==pOther->mBlendEnabled &&
+		mMaterialColorEnabled==pOther->mMaterialColorEnabled &&
+		mAmbientColor == pOther->mAmbientColor &&
+		mDiffuseColor == pOther->mDiffuseColor &&
+		mSpecularColor == pOther->mSpecularColor &&
+		mEmissionColor == pOther->mEmissionColor &&
+		mShininess==pOther->mShininess &&
+		mTransparency==pOther->mTransparency;
 	if (!PropsAreEqual)
 		return false;
 	//compare children

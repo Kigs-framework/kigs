@@ -10,16 +10,6 @@ using namespace Kigs::Draw2D;
 IMPLEMENT_CLASS_INFO(UIButtonText)
 
 IMPLEMENT_CONSTRUCTOR(UIButtonText)
-	, mUpText(*this, "UpText", "")
-	, mDownText(*this, "DownText", "")
-	, mOverText(*this, "OverText", "")
-	, mUpColor(*this, "UpColor", 0, 0, 0, 0)
-	, mOverColor(*this, "OverColor", 0, 0, 0, 0)
-	, mDownColor(*this, "DownColor", 0, 0, 0, 0)
-	, mFont(*this, "Font", "arial.ttf")
-	, mFontSize(*this, "FontSize", 12)
-	, mLength(*this, "Length", 0)
-	, mTextAlignment(*this, "TextAlignment", 1)
 {
 	KigsCore::GetNotificationCenter()->addObserver(this, "ReloadTexture", "ResetContext");
 }
@@ -72,20 +62,9 @@ void UIButtonText::NotifyUpdate(const unsigned int labelid)
 }
 void UIButtonText::ChangeTextureColor(Vector4D& UpColor, Vector4D& OverColor, Vector4D& DownColor)
 {
-	mUpColor[0] = UpColor.x;
-	mUpColor[1] = UpColor.y;
-	mUpColor[2] = UpColor.z;
-	mUpColor[3] = UpColor.w;
-
-	mOverColor[0] = OverColor.x;
-	mOverColor[1] = OverColor.y;
-	mOverColor[2] = OverColor.z;
-	mOverColor[3] = OverColor.w;
-
-	mDownColor[0] = DownColor.x;
-	mDownColor[1] = DownColor.y;
-	mDownColor[2] = DownColor.z;
-	mDownColor[3] = DownColor.w;
+	mUpColor = UpColor;
+	mOverColor = OverColor;
+	mDownColor = DownColor;
 
 	ChangeState();
 }

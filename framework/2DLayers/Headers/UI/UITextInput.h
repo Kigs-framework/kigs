@@ -53,14 +53,16 @@ namespace Kigs
 			COREMODIFIABLE_METHODS(FocusChanged);
 			WRAP_METHODS(UpdateKeyboard)
 
-				void NotifyUpdate(const unsigned int labelid) override;
+			void NotifyUpdate(const unsigned int labelid) override;
 			bool ManageClickTouchEvent(Input::ClickEvent& click_event) final;
 			void UpdateKeyboard(std::vector<KeyEvent>& keys);
 
 			bool					mIsCueBanner = false;
 
-			maUSString				mCueBanner = BASE_ATTRIBUTE(CueBanner, usString(""));
-			maString				mReleaseAction = BASE_ATTRIBUTE(ReleaseAction, "");
+			usString				mCueBanner = (std::string)"";
+			std::string				mReleaseAction = "";
+
+			WRAP_ATTRIBUTES(mCueBanner, mReleaseAction);
 
 			std::vector<int>		mKeycodeList;
 		};

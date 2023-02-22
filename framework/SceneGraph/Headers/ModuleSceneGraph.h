@@ -169,7 +169,9 @@ namespace Kigs
 			unsigned int		mCurrentVisibleNodeIndex;
 
 			//! TRUE if scene list need to be sorted
-			maBool				mSceneListNeedsSort;
+			bool				mSceneListNeedsSort = false;
+
+			WRAP_ATTRIBUTES(mSceneListNeedsSort);
 
 			std::recursive_mutex mMutex;
 		};

@@ -43,6 +43,8 @@ BBox Node3DDelayed::sAllowedBBox = BBox{v3f(-FLT_MAX, -FLT_MAX, -FLT_MAX), v3f(F
 
 IMPLEMENT_CONSTRUCTOR(Node3DDelayed)
 {
+	setValue("ReferenceObject", "Camera:camera");
+
 	auto before = sNode3DThreadStarted.exchange(true);
 	if (!before)
 	{
@@ -165,7 +167,7 @@ void Node3DDelayed::LoadContent(bool no_async)
 
 		if (!no_async)
 		{
-			if (mHighPrio)
+			if (mHighPriority)
 				sHighPriorityWorkQueue.enqueue(std::move(job));
 			else
 				sLowPriorityWorkQueue.enqueue(std::move(job));

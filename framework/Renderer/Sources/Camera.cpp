@@ -18,29 +18,9 @@ using namespace Kigs::Draw;
 IMPLEMENT_CLASS_INFO(Camera)
 
 IMPLEMENT_CONSTRUCTOR(Camera)
-, mViewportMinX(*this,  "ViewportMinX", 0.0f)
-, mViewportMinY(*this,  "ViewportMinY", 0.0f)
-, mViewportSizeX(*this,  "ViewportSizeX", 1.0f)
-, mViewportSizeY(*this,  "ViewportSizeY", 1.0f)
-, mNearPlane(*this,  "NearPlane", 0.1f)
-, mFarPlane(*this,  "FarPlane", 40.0f)
-, mPosition(*this,  "Position")
-, mUpVector(*this,  "UpVector")
-, mViewVector(*this,  "ViewVector")
-, mClearColor(*this,  "ClearColor")
-, mRenderingScreen(*this, "RenderingScreen")
-, mVerticalFOV(*this,  "VerticalFOV", 45.0f)
-, mAspectRatio(*this,  "AspectRatio", 0.0f)
-, mClearZBuffer(*this,  "ClearZBuffer", true)
-, mClearColorBuffer(*this,  "ClearColorBuffer", true)
-, mClearStencilBuffer(*this,  "ClearStencilBuffer", false)
-, mCameraIsEnabled(*this,  "CameraIsEnabled", true)
-, mPriority(*this,  "Priority", 0)
-, mBrightness(*this,  "Brightness", 0)
-, mAllVisible(*this,  "AllVisible", false)
-, mTouchControlled(*this,  "TouchControlled", false)
 , mIsActive(false)
 {
+	setInitParameter("RenderingScreen", true);
 	SetPosition(0.0f, 0.0f, 0.0f);
 	SetViewVector(1.0f, 0.0f, 0.0f);
 	SetUpVector(0.0f, 0.0f, 1.0f);
@@ -161,7 +141,8 @@ void Camera::InitModifiable()
 	Node3D::InitModifiable();
 	if(IsInit())
 	{
-		RenderingScreen* screen=getRenderingScreen();
+		CMSP	screen;
+		getValue("RenderingScreen", screen);
 		if(screen)
 		{
 			RecomputeMatrix();
@@ -177,7 +158,7 @@ void Camera::InitModifiable()
 			// declare as a touch support potential target with rendering screen as parent
 			auto theInputModule = KigsCore::GetModule<Input::ModuleInput>();
 			if(theInputModule)
-				theInputModule->getTouchManager()->addTouchSupport(this,mRenderingScreen);	
+				theInputModule->getTouchManager()->addTouchSupport(this, getRenderingScreen());
 			
 
 			activeTouchControlledCamera(mTouchControlled);
@@ -207,7 +188,7 @@ bool Camera::ManageClickTouchEvent(v3f pos, int type, int state, int clickCount)
 bool Camera::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::touchPosInfos& pout)
 {
 	// TODO : probably not enough as we can have several camera in a scene and not all attached to holographic view 
-	if (mRenderingScreen->as<RenderingScreen>()->IsHolographic())
+	if (getRenderingScreen()->IsHolographic())
 	{
 		pout.origin = GetGlobalPosition();
 		pout.dir = GetGlobalViewVector();
