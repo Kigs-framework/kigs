@@ -26,8 +26,8 @@ namespace Kigs
 				*/
 				DECLARE_CONSTRUCTOR(BCylinder)
 
-				float GetRadius() const { return mRadius.const_ref(); }
-			float GetHeight() const { return mHeight.const_ref(); }
+			float GetRadius() const { return mRadius; }
+			float GetHeight() const { return mHeight; }
 			void GetAxle(Point3D& Axle);
 
 		protected:
@@ -47,9 +47,12 @@ namespace Kigs
 			}
 
 			//! \brief cylinder radius
-			maFloat mRadius;
+			float	mRadius = 0.0f;
 			//! \brief cylinder height
-			maFloat mHeight;
+			float	mHeight = 0.0f;
+
+			WRAP_ATTRIBUTES(mRadius, mHeight);
+
 			//! \brief cylinder alignement axis
 			maEnum<3> mAxle;
 

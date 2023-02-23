@@ -47,12 +47,14 @@ namespace Kigs
 			friend class WorkerThread;
 			friend class ThreadPoolManager;
 
-			maInt			mEventCounter;
-			int				mCurrentCount;
-			maBool			mAutoReset;
-
-			std::mutex* mCriticalSection = nullptr;
 			bool						mOwnCriticalSection = true;
+			bool						mAutoReset = false;
+			s32							mCurrentCount = 0;
+			s32							mEventCounter = 1;
+
+			WRAP_ATTRIBUTES(mAutoReset, mEventCounter);
+
+			std::mutex*					mCriticalSection = nullptr;
 			std::condition_variable		mConditionVariable;
 		};
 

@@ -62,13 +62,9 @@ namespace Kigs
 
 			void DoInputDeviceDescription() override {}
 
-
-
-			void setAcceleration(Vector3D a)
+			void setAcceleration(const Vector3D& a)
 			{
-				mAccX = a.x;
-				mAccY = a.y;
-				mAccZ = a.z;
+				mAcceleration = a;
 			}
 		protected:
 			void Start() override {}

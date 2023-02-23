@@ -117,9 +117,9 @@ namespace Kigs
 			int		mButtonsCount;
 
 			//! mouse cursor current position on x axis
-			maFloat	mPosX;
+			float	mPosX = 0.0f;
 			//! mouse cursor current position on y axis
-			maFloat	mPosY;
+			float	mPosY = 0.0f;
 
 			//! mouse movement on x axis
 			float	mDX;
@@ -129,6 +129,8 @@ namespace Kigs
 			float	mDZ;
 			//! delta for wheel movement
 			float	mPreviousDZ;
+
+			WRAP_ATTRIBUTES(mPosX, mPosY);
 		};
 
 	}

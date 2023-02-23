@@ -37,11 +37,11 @@ namespace Kigs
 		protected:
 			void	InitModifiable() override;
 
-
 			//! link to the bounding box
 			BBox        mBoundingBox;
 
-			maBool		mHit;
+			bool			mHit = false;
+			WRAP_ATTRIBUTES(mHit);
 		};
 
 	}

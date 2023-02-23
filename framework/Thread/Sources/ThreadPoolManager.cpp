@@ -6,9 +6,9 @@ using namespace Kigs::Thread;
 IMPLEMENT_CLASS_INFO(ThreadPoolManager)
 
 ThreadPoolManager::ThreadPoolManager(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, mThreadCount(*this, "ThreadCount", 4)
 , mSemaphore(nullptr)
 {
+	setInitParameter("ThreadCount", true);
 	mThreadList.clear();
 	mQueuedtasks.clear();
 	

@@ -53,11 +53,13 @@ namespace Kigs
 			bool IsSync() { return mIsSynchronous; }
 
 		protected:
-			maString	mHostName = BASE_ATTRIBUTE(HostName, "");
-			maInt		mPort = BASE_ATTRIBUTE(Port, 80);
-			maBool		mIsSynchronous = BASE_ATTRIBUTE(IsSynchronous, false);
+			bool			mIsOpen = false;
+			bool			mIsSynchronous = false;
+			s32				mPort = 80;
+			std::string		mHostName = "";
+
+			WRAP_ATTRIBUTES(mIsSynchronous, mPort, mHostName);
 			maEnum<2>	mType = BASE_ATTRIBUTE(Type, "HTTP", "HTTPS");
-			bool		mIsOpen = false;
 
 		};
 	}

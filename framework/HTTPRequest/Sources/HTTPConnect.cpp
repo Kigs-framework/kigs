@@ -8,7 +8,7 @@ IMPLEMENT_CLASS_INFO(HTTPConnect)
 
 void HTTPConnect::InitModifiable()
 {
-	if (mHostName.const_ref() != "")
+	if (mHostName != "")
 	{
 		CoreModifiable::InitModifiable();
 	}

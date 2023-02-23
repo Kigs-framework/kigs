@@ -175,8 +175,8 @@ namespace Kigs
 			bool	GetWord(AsciiParserUtilsTemplate<charType>& result, charType	separator = ' ', bool	removeLeadTrailWhitespace = false);
 			bool	GetWord(AsciiParserUtilsTemplate<charType>& result, const ValidCharArray<charType>& validCharArray);
 			bool	GetString(AsciiParserUtilsTemplate<charType>& result, charType	separator = ' ', bool uniqueSeparator = false);
-			bool	GetChars(AsciiParserUtilsTemplate<charType>& result, int charCount);
-			bool	GetPart(AsciiParserUtilsTemplate<charType>& result, int startPos, int charCount);
+			bool	GetChars(AsciiParserUtilsTemplate<charType>& result, size_t charCount);
+			bool	GetPart(AsciiParserUtilsTemplate<charType>& result, size_t startPos, size_t charCount);
 			bool	GoAfterNextSeparator(charType	separator);
 			bool	GoToNextNonWhitespace();
 			bool	GoToNextValid(const ValidCharArray<charType>& validCharArray);

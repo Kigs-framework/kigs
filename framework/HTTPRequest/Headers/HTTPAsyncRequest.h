@@ -78,35 +78,35 @@ namespace Kigs
 			std::atomic<s32> mDownloadProgress{ 0 };
 
 			void	protectedProcess() override;
+			void	ClearReceivedBuffer();
 
-			maReference												mConnection = BASE_ATTRIBUTE(Connection, "");
-			maEnum<4>												mType = BASE_ATTRIBUTE(Type, "GET", "POST", "PUT", "DELETE");
-			maUInt													mFLAGS = BASE_ATTRIBUTE(FLAGS, 0);
-			maString												mURL = BASE_ATTRIBUTE(URL, "");
-			maUInt													mVersion = BASE_ATTRIBUTE(Version, 0);
+			bool													mReceiveFullAnswer = true;
+			u32														mFLAGS = 0;
+			// size of "cache" buffer when receiving file part
+			s32														mReceiveBufferSize = 4096;
+			u32														mVersion = 0;
 
+			std::string												mURL = "";
 			// Old mode - use OnResponse signal instead
-			maString												mNotification = BASE_ATTRIBUTE(Notification, "");
-			maReference												mCallbackReceiver = BASE_ATTRIBUTE(CallbackReceiver, "");
-			maBuffer												mReceivedBuffer = BASE_ATTRIBUTE(ReceivedBuffer, "");
+			std::string												mNotification = "";
+			std::weak_ptr<CoreModifiable>							mCallbackReceiver;
+			std::weak_ptr<CoreModifiable>							mConnection;
+
+			WRAP_ATTRIBUTES(mReceiveFullAnswer, mFLAGS, mReceiveBufferSize, mVersion, mURL, mNotification, mCallbackReceiver, mConnection);
 			//
 
 			ContentEncoding											mContentEncoding = ANSI;
 			ContentEncoding											mFoundCharset = ANSI;
-			std::string											mContentType;
+			std::string												mContentType;
 
 			// post
-			char* mPostBuffer = nullptr;
+			char*													mPostBuffer = nullptr;
 			u32														mPostBufferLength = 0u;
 
 			std::vector<std::string>								mHeaders;
 
-			void	ClearReceivedBuffer();
-
-			// size of "cache" buffer when receiving file part
-			maInt						mReceiveBufferSize = BASE_ATTRIBUTE(ReceiveBufferSize, 4096);
-
-			maBool						mReceiveFullAnswer = BASE_ATTRIBUTE(ReceiveFullAnswer, true);
+			maEnum<4>												mType = BASE_ATTRIBUTE(Type, "GET", "POST", "PUT", "DELETE");
+			maBuffer												mReceivedBuffer = BASE_ATTRIBUTE(ReceivedBuffer, "");
 		};
 
 	}

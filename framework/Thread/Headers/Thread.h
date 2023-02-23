@@ -2,10 +2,9 @@
 
 #include "CoreModifiableAttribute.h"
 #include "CoreModifiable.h"
-#include "maReference.h"
-#include "maString.h"
 #include "AttributePacking.h"
 #include <thread>
+#include <string>
 
 namespace Kigs
 {
@@ -52,11 +51,11 @@ namespace Kigs
 			{
 				if (mFunctionWasInserted)
 				{
-					mCallee->RemoveMethod(mMethod.const_ref());
+					mCallee.lock()->RemoveMethod(mMethod);
 					mFunctionWasInserted = false;
 				}
 
-				mCallee.setValue(localthis,this);
+				setValue("Callee",localthis);
 				mMethod = method;
 			}
 			template<typename F>
@@ -64,7 +63,7 @@ namespace Kigs
 			{
 				if (mFunctionWasInserted)
 				{
-					mCallee->RemoveMethod(mMethod.const_ref());
+					mCallee->RemoveMethod(mMethod);
 					mFunctionWasInserted = false;
 				}
 
@@ -90,9 +89,13 @@ namespace Kigs
 			float					mProgress;
 			std::thread				mCurrentThread;
 
-			maStringInit			mMethod = BASE_ATTRIBUTE(Method, "");
-			maReferenceInit			mCallee = BASE_ATTRIBUTE(Callee, "");
+
 			bool					mFunctionWasInserted = false;
+
+			std::string						mMethod = "";
+			std::weak_ptr<CoreModifiable>	mCallee;
+
+			WRAP_ATTRIBUTES(mMethod, mCallee);
 		};
 
 	}

@@ -51,7 +51,9 @@ namespace Kigs
 
 
 			std::vector<UISlider*>		mSliderList;
-			maInt						mComunalValue; //value divided between the sliders
+			s32							mComunalValue = 0; //value divided between the sliders
+
+			WRAP_ATTRIBUTES(mComunalValue);
 			unsigned int				mSliderNumber;
 			int							mRemainingValue;
 		};

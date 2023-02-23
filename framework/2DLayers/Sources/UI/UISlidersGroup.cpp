@@ -8,8 +8,7 @@ using namespace Kigs::Draw2D;
 IMPLEMENT_CLASS_INFO(UISlidersGroup)
 
 UISlidersGroup::UISlidersGroup(const std::string& name,CLASS_NAME_TREE_ARG) : 
-UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-mComunalValue(*this,"ComunalValue",0)
+UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG)
 {
 	mSliderNumber=0;
 }

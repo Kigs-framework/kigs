@@ -12,16 +12,9 @@ IMPLEMENT_CLASS_INFO(UISlider)
 
 UISlider::UISlider(const std::string& name,CLASS_NAME_TREE_ARG) : 
 UIDrawableItem(name, PASS_CLASS_NAME_TREE_ARG),
-mUpTexture(*this,"UpTexture",""),
-mDownTexture(*this,"DownTexture",""),
-mOverTexture(*this,"OverTexture",""),
-mClickUpAction(*this,"ClickUpAction", ""),
-mParameter(*this,"Parameter", std::string("")),
-mMoveAction(*this,"MoveAction",""),
-mInitialRatio(*this, "InitialRatio", 0),
 mDirection(*this,"Direction","Vertical","Horizontal")
 {
-	
+	setInitParameter("InitialRatio", true);
 }
 
 UISlider::~UISlider()

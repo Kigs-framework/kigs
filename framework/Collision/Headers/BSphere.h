@@ -24,9 +24,9 @@ namespace Kigs
 
 				/*! \brief constructor
 				*/
-				DECLARE_CONSTRUCTOR(BSphere)
+			DECLARE_CONSTRUCTOR(BSphere)
 
-				float GetRadius() const { return mRadius.const_ref(); }
+			float GetRadius() const { return mRadius; }
 
 			bool TestHit(Maths::Hit& hit, v3f local_origin, v3f local_direction) override;
 
@@ -46,8 +46,8 @@ namespace Kigs
 
 			/*! \brief the sphere radius
 			*/
-			maFloat mRadius;
-
+			float	 mRadius = 0.0f;
+			WRAP_ATTRIBUTES(mRadius);
 #ifdef KIGS_TOOLS
 			void DrawDebug(const Maths::Hit& h, const Matrix3x4& mat) override;
 #endif

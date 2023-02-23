@@ -281,11 +281,11 @@ bool	AsciiParserUtilsTemplate<charType>::GetQuotationWord(AsciiParserUtilsTempla
 
 // read charCount chars
 template<typename charType>
-bool	AsciiParserUtilsTemplate<charType>::GetChars(AsciiParserUtilsTemplate<charType>& result, int charCount)
+bool	AsciiParserUtilsTemplate<charType>::GetChars(AsciiParserUtilsTemplate<charType>& result, size_t charCount)
 {
 	
 	charType *p = ((charType*)mText) + mCurrentReadPos;
-	int currentCount = 0;
+	size_t currentCount = 0;
 	charType *pWordStart = p;
 
 	// search word end
@@ -297,14 +297,14 @@ bool	AsciiParserUtilsTemplate<charType>::GetChars(AsciiParserUtilsTemplate<charT
 		
 	charType *pWordEnd = p;
 
-	int lsize = ((int)((unsigned char*)pWordEnd - (unsigned char*)pWordStart)) / sizeof(charType);
+	size_t lsize = ((uintptr_t)pWordEnd - (uintptr_t)pWordStart) / sizeof(charType);
 
 	if (lsize>0)
 	{
 		result.Set(pWordStart, lsize);
 	}
 
-	mCurrentReadPos = ((int)((unsigned char*)p - (unsigned char*)mText)) / sizeof(charType);
+	mCurrentReadPos = ((uintptr_t)p - (uintptr_t)mText) / sizeof(charType);
 
 	if (p == mTextEnd)
 	{
@@ -315,7 +315,7 @@ bool	AsciiParserUtilsTemplate<charType>::GetChars(AsciiParserUtilsTemplate<charT
 }
 
 template<typename charType>
-bool	AsciiParserUtilsTemplate<charType>::GetPart(AsciiParserUtilsTemplate<charType>& result, int startPos, int charCount)
+bool	AsciiParserUtilsTemplate<charType>::GetPart(AsciiParserUtilsTemplate<charType>& result, size_t startPos, size_t charCount)
 {
 	charType *p = ((charType*)mText) + startPos;
 	int currentCount = 0;

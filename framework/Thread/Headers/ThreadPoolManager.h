@@ -68,14 +68,8 @@ namespace Kigs
 				virtual ~TaskGroup() {};
 			};
 
-			maIntInit								mThreadCount;
-			std::vector<SP<WorkerThread>>			mThreadList;
-
-
 			SP<WorkerThread>	getAvailableThread();
 			SmartPointer<ThreadEvent>	getTaskEndEvent();
-
-			SP<Semaphore>	mSemaphore;
 
 			// queue
 			void	addTaskToQueue(MethodCallingStruct* task, SmartPointer<ThreadEvent>& endevent);
@@ -85,7 +79,13 @@ namespace Kigs
 				MethodCallingStruct* mMethodCallingStruct;
 				SmartPointer<ThreadEvent>		mThreadEvent;
 			};
-			std::vector<MethodEventPair>		mQueuedtasks;
+
+			s32										mThreadCount = 4;
+			SP<Semaphore>							mSemaphore;
+			std::vector<SP<WorkerThread>>			mThreadList;
+			std::vector<MethodEventPair>			mQueuedtasks;
+
+			WRAP_ATTRIBUTES(mThreadCount);
 
 		};
 

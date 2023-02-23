@@ -46,8 +46,10 @@ namespace Kigs
 
 			COREMODIFIABLE_METHODS(ResetContext);
 
-			maInt			mTexEnv = BASE_ATTRIBUTE(TexEnv, 0);
-			maUInt			mChannel = BASE_ATTRIBUTE(TextureChannel, 0);
+			s32				mTexEnv =  0;
+			u32				mTextureChannel = 0;
+
+			WRAP_ATTRIBUTES(mTexEnv, mTextureChannel);
 		};
 
 	}

@@ -9,7 +9,9 @@ IMPLEMENT_CLASS_INFO(Thread)
 
 Thread::Thread(const std::string& name,CLASS_NAME_TREE_ARG) : CoreModifiable(name,PASS_CLASS_NAME_TREE_ARG)
 {
-  mCurrentState= State::UNINITIALISED;
+	setInitParameter("Method",true);
+	setInitParameter("Callee", true);
+	mCurrentState= State::UNINITIALISED;
 }     
 
 Thread::~Thread()
@@ -35,7 +37,8 @@ void	Thread::Kill()
 template<typename... T>
 void	Thread::Start(T&&... params)
 {
-	if ((mCurrentState == State::RUNNING) || (((CoreModifiable*)mCallee) == nullptr) || (mMethod.const_ref()==""))
+	CMSP	currentCallee = getValue<CMSP>("Callee");
+	if ((mCurrentState == State::RUNNING) || (currentCallee == nullptr) || (mMethod==""))
 	{
 		return;
 	}
@@ -61,7 +64,7 @@ void	Thread::Start(T&&... params)
 			}
 #endif
 
-			((CoreModifiable*)mCallee)->CallMethod(mMethod.const_ref(), attr_list);
+			((CoreModifiable*)mCallee)->CallMethod(mMethod, attr_list);
 
 			Done();
 		}
@@ -71,7 +74,8 @@ void	Thread::Start(T&&... params)
 
 void	Thread::Start()
 {
-	if ((mCurrentState == State::RUNNING) || (((CoreModifiable*)mCallee) == nullptr) || (mMethod.const_ref() == ""))
+	CMSP	currentCallee = getValue<CMSP>("Callee");
+	if ((mCurrentState == State::RUNNING) || (currentCallee == nullptr) || (mMethod == ""))
 	{
 		return;
 	}
@@ -91,7 +95,8 @@ void	Thread::Start()
 #endif
 			
 			std::vector<CoreModifiableAttribute*> attr_list;
-			((CoreModifiable*)mCallee)->CallMethod(mMethod.const_ref(), attr_list);
+			CMSP	currentCallee = getValue<CMSP>("Callee");
+			currentCallee->CallMethod(mMethod, attr_list);
 
 			Done();
 		}
@@ -103,7 +108,9 @@ void Thread::InitModifiable()
 {
 	if (!IsInit())
 	{
-		if ((((CoreModifiable*)mCallee) == nullptr) || (mMethod.const_ref() == ""))
+		CMSP	currentCallee = getValue<CMSP>("Callee");
+
+		if ((currentCallee == nullptr) || (mMethod == ""))
 		{
 			return;
 		}
@@ -120,7 +127,7 @@ void	Thread::Done()
 {
 	if (mFunctionWasInserted)
 	{
-		mCallee->RemoveMethod(mMethod.const_ref());
+		mCallee.lock()->RemoveMethod(mMethod);
 		mFunctionWasInserted = false;
 	}
 

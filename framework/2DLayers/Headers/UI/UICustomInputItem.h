@@ -28,7 +28,9 @@ namespace Kigs
 		protected:
 			void InitModifiable() override;
 
-			maFloat mAutoTouchDistance = BASE_ATTRIBUTE(AutoTouchDistance, 0.0f);
+			float mAutoTouchDistance = 0.0f;
+
+			WRAP_ATTRIBUTES(mAutoTouchDistance);
 
 		};
 

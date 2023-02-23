@@ -6,9 +6,6 @@ using namespace Kigs::Thread;
 IMPLEMENT_CLASS_INFO(ThreadEvent)
 
 ThreadEvent::ThreadEvent(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, mEventCounter(*this, "EventCounter", 1)
-, mCurrentCount(0)
-, mAutoReset(*this, "AutoReset", false)
 {
 	mCriticalSection = new std::mutex();
 }

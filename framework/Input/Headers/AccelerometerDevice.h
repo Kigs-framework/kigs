@@ -40,7 +40,7 @@ namespace Kigs
 			 * \param	posX : position on x axis (in/out param)
 			 * \param	posY : position on y axis (in/out param)
 			 */
-			void			getPos(float& posX, float& posY, float& posZ) { posX = mAccX; posY = mAccY; posZ = mAccZ; }
+			void			getPos(float& posX, float& posY, float& posZ) { posX = mAcceleration[0]; posY = mAcceleration[1]; posZ = mAcceleration[2]; }
 
 
 			/**
@@ -60,26 +60,20 @@ namespace Kigs
 			virtual void	Stop() = 0;
 
 			// world coordinate acceleration
-			maFloat	mAccX;
-			maFloat	mAccY;
-			maFloat	mAccZ;
+			v3f		mAcceleration = { 0.0f, 0.0f, 0.0f };
 
 			// device coordinate acceleration
-			maFloat	mRawAccX;
-			maFloat	mRawAccY;
-			maFloat	mRawAccZ;
+			v3f		mRawAcceleration = { 0.0f, 0.0f, 0.0f };
 
 			// world coordinate integrated velocity
-			maFloat	mVelX;
-			maFloat	mVelY;
-			maFloat	mVelZ;
+			v3f		mVelocity = { 0.0f, 0.0f, 0.0f };
 
 			// world coordinate integrated position
-			maFloat	mPosX;
-			maFloat	mPosY;
-			maFloat	mPosZ;
+			v3f		mPosition = { 0.0f, 0.0f, 0.0f };;
 
-			maInt	mRate;
+			s32		mRate = 0;
+
+			WRAP_ATTRIBUTES(mAcceleration,mRawAcceleration,mVelocity,mPosition,mRate);
 
 		};
 

@@ -35,10 +35,10 @@ namespace Kigs
 			void NotifyUpdate(const unsigned int labelid) override;
 			void			Update(const Timer& a_timer, void* addParam) override;
 
-			maFloat					mCaracterPerSeconde;
+			float					mCharacterPerSecond = 0.0f;
 			unsigned int			mScrollIndex;
 			double					mElapsedTime;
-
+			WRAP_ATTRIBUTES(mCharacterPerSecond)
 		};
 
 	}

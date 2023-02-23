@@ -59,12 +59,14 @@ namespace Kigs
 
 
 			bool		mIsActive;
-			maDouble	mLatitude;
-			maDouble	mLongitude;
-			maDouble	mAltitude;
-			maFloat		mAccuracy;
-			maInt		mRate;
-			maFloat		mMinDistance;
+			float		mAccuracy = 0.0f;
+			float		mMinDistance = 0.0f;
+			s32			mRate = 1000;
+			double		mLatitude = 0.0;
+			double		mLongitude = 0.0;
+			double		mAltitude = 0.0;
+
+			WRAP_ATTRIBUTES(mAccuracy, mMinDistance, mRate, mLatitude, mLongitude, mAltitude);
 		};
 
 

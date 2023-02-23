@@ -35,15 +35,17 @@ namespace Kigs
 			virtual bool PreDraw(TravState*) override;
 			virtual bool PostDraw(TravState*) override;
 
-			maInt mOverrideCullMode = BASE_ATTRIBUTE(OverrideCullMode, -1);
-			maInt mOverrideDepthTest = BASE_ATTRIBUTE(OverrideDepthTest, -1);
-			maInt mOverrideDepthWrite = BASE_ATTRIBUTE(OverrideDepthWrite, -1);
-
 
 			int mLastCullMode = -1;
 			int mLastDepthTest = -1;
 
 			bool mNeedPop = false;
+
+			s32		mOverrideCullMode = -1;
+			s32		mOverrideDepthTest = -1;
+			s32		mOverrideDepthWrite = -1;
+
+			WRAP_ATTRIBUTES(mOverrideCullMode, mOverrideDepthTest, mOverrideDepthWrite);
 
 			void SaveState(TravState* state);
 			void RestoreState(TravState* state);

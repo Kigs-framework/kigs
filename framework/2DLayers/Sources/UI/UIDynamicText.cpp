@@ -981,17 +981,17 @@ usString Kigs::Draw2D::TextTagProcessor(const usString& text, std::vector<TextTa
 	US16ParserUtils block(parser);
 	TextTag current_tag;
 
-	int removed_chars = 0;
-	int item_start = 0;
+	size_t removed_chars = 0;
+	size_t item_start = 0;
 	TextTag::ItemAlign current_align_mode = TextTag::ItemAlign::CenteredAroundHalfChar;
 
-	int start_count = 0;
+	size_t start_count = 0;
 
 	while (parser.GetBlock(block, (u16)'<', (u16)'>'))
 	{
 		usString blockname = block;
 		auto end = parser.GetPosition();
-		auto start = end - block.length() - 2;
+		auto start = end - block.length() - 2ULL;
 		bool remove_block = false;
 		if (blockname == "color")
 		{
@@ -1023,7 +1023,7 @@ usString Kigs::Draw2D::TextTagProcessor(const usString& text, std::vector<TextTa
 		else if (blockname == "/link")
 		{
 			US16ParserUtils reference_parser(parser);
-			int oldpos = parser.GetPosition();
+			size_t oldpos = parser.GetPosition();
 			parser.GetPart(reference_parser, item_start, start - item_start);
 
 			usString item_ref = reference_parser;
@@ -1075,7 +1075,7 @@ usString Kigs::Draw2D::TextTagProcessor(const usString& text, std::vector<TextTa
 		else if (blockname == "/marker")
 		{
 			US16ParserUtils reference_parser(parser);
-			int oldpos = parser.GetPosition();
+			size_t oldpos = parser.GetPosition();
 			parser.GetPart(reference_parser, item_start, start - item_start);
 
 			usString item_ref = reference_parser;
@@ -1119,7 +1119,7 @@ usString Kigs::Draw2D::TextTagProcessor(const usString& text, std::vector<TextTa
 		else if (blockname == "/item")
 		{
 			US16ParserUtils reference_parser(parser);
-			int oldpos = parser.GetPosition();
+			size_t oldpos = parser.GetPosition();
 			parser.GetPart(reference_parser, item_start, start - item_start);
 
 			std::string item_ref = reference_parser;
@@ -1149,7 +1149,7 @@ usString Kigs::Draw2D::TextTagProcessor(const usString& text, std::vector<TextTa
 		else if (blockname == "/image")
 		{
 			US16ParserUtils reference_parser(parser);
-			int oldpos = parser.GetPosition();
+			size_t oldpos = parser.GetPosition();
 			parser.GetPart(reference_parser, item_start, start - item_start);
 			std::string image_path = reference_parser;
 

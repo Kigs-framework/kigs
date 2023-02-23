@@ -33,16 +33,17 @@ HTTPAsyncRequestWindows::~HTTPAsyncRequestWindows()
 void HTTPAsyncRequestWindows::InitModifiable()
 {
 	ParentClassType::InitModifiable();
-	if ((CoreModifiable*)mConnection)
+	CMSP	currentConnection = getValue<CMSP>("Connection");
+	if (currentConnection)
 	{
 		mProcessingFlag = 0;
-		AllocateAndInitializeRequestContext(((HTTPConnectWindows*)(CoreModifiable*)mConnection)->getHandle(), &mRequestContext);
+		AllocateAndInitializeRequestContext(currentConnection->as<HTTPConnectWindows>()->getHandle(), &mRequestContext);
 		
 		ProcessRequest(mRequestContext, ERROR_SUCCESS);
 
 		bool isSync = false;
 
-		mConnection->getValue("IsSynchronous", isSync);
+		currentConnection->getValue("IsSynchronous", isSync);
 
 		if (isSync)
 		{
@@ -269,7 +270,7 @@ None.
 	}
 	else
 	{		
-		if (static_cast<HTTPConnectWindows*>(static_cast<CoreModifiable*>(mConnection))->IsSync())
+		if (mConnection.lock()->as<HTTPConnectWindows>()->IsSync())
 			setTimedOut();
 	}
 
@@ -875,7 +876,7 @@ Error Code for the operation.
 	}
 
 
-	((CoreModifiable*)mConnection)->getValue("Type", connecttype);
+	mConnection.lock()->getValue("Type", connecttype);
 
 	if (connecttype == 1)
 	{
@@ -947,7 +948,7 @@ Error Code for the operation.
 	}
 
 	// Create Connection handle and provide context for async operations
-	ReqContext->ConnectHandle = ((HTTPConnectWindows*)(CoreModifiable*)mConnection)->getHandle();
+	ReqContext->ConnectHandle = mConnection.lock()->as<HTTPConnectWindows>()->getHandle();
 	LPTSTR AcceptTypes[2] = { (LPTSTR)TEXT("*/*"), NULL };
 
 	// used during the callbacks

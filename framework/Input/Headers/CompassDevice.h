@@ -40,7 +40,7 @@ namespace Kigs
 			 * \param	posX : position on x axis (in/out param)
 			 * \param	posY : position on y axis (in/out param)
 			 */
-			void			getPos(float& posX, float& posY, float& posZ) { posX = mCompX; posY = mCompY; posZ = mCompZ; }
+			void			getPos(float& posX, float& posY, float& posZ) { posX = mCompasCoords[0]; posY = mCompasCoords[1]; posZ = mCompasCoords[2]; }
 
 
 			/**
@@ -61,11 +61,10 @@ namespace Kigs
 			virtual void	Start() = 0;
 			virtual void	Stop() = 0;
 
-			maFloat	mCompX;
-			maFloat	mCompY;
-			maFloat	mCompZ;
+			v3f		mCompasCoords = { 0.0f, 0.0f, 0.0f };
+			s32		mRate = 0;
 
-			maInt	mRate;
+			WRAP_ATTRIBUTES(mCompasCoords, mRate);
 
 		};
 

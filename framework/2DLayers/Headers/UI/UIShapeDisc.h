@@ -44,8 +44,8 @@ namespace Kigs
 
 			void NotifyUpdate(const unsigned int labelid) override;
 
-
-			maInt	mSliceCount = BASE_ATTRIBUTE(SliceCount, 16);
+			s32	mSliceCount = 16;
+			WRAP_ATTRIBUTES(mSliceCount);
 
 		};
 

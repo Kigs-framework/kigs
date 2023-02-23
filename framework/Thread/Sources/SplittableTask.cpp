@@ -7,11 +7,9 @@ using namespace Kigs::Thread;
 IMPLEMENT_CLASS_INFO(SplittableTask)
 
 SplittableTask::SplittableTask(const std::string& name, CLASS_NAME_TREE_ARG) : CoreModifiable(name, PASS_CLASS_NAME_TREE_ARG)
-, mThreadPoolManager(*this, "ThreadPoolManager")
-, mIsSplittable(*this, "IsSplittable", false)
-, mSplitCount(*this, "SplitCount", 0)
-, mWaitFinish(*this, "WaitFinish", true)
 {
+	setInitParameter("IsSplittable",true);
+	setInitParameter("SplitCount", true);
 	mSplitDataStructList.clear();
 }
 
@@ -35,11 +33,12 @@ void	SplittableTask::clear()
 
 void	SplittableTask::Update(const Time::Timer& timer, void* addParam)
 {
-	if ((mIsSplittable) && (mSplitCount>1) && ((CoreModifiable*)mThreadPoolManager))
+	CMSP	poolManager = getValue<CMSP>("ThreadPoolManager");
+	if ((mIsSplittable) && (mSplitCount>1) && poolManager)
 	{
 		unsigned int i;
 
-		ThreadPoolManager::TaskGroupHandle* grouphandle=((ThreadPoolManager*)((CoreModifiable*)mThreadPoolManager))->createTaskGroup();
+		ThreadPoolManager::TaskGroupHandle* grouphandle= poolManager->as<ThreadPoolManager>()->createTaskGroup();
 
 		for (i = 0; i < mSplitCount; i++)
 		{
@@ -57,7 +56,7 @@ void	SplittableTask::Update(const Time::Timer& timer, void* addParam)
 			grouphandle->addTask(toadd);
 		}
 
-		SmartPointer<ThreadEvent> testendwait = ((ThreadPoolManager*)((CoreModifiable*)mThreadPoolManager))->LaunchTaskGroup(grouphandle);
+		SmartPointer<ThreadEvent> testendwait = poolManager->as<ThreadPoolManager>()->LaunchTaskGroup(grouphandle);
 		
 		if (mWaitFinish && testendwait)
 			testendwait->wait();

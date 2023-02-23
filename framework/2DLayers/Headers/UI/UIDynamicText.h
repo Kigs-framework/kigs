@@ -135,7 +135,7 @@ namespace Kigs
 			KigsID clickID;
 			usString clickParam;
 
-			u32 start_index;
+			size_t	start_index;
 		};
 
 		usString TextTagProcessor(const usString& text, std::vector<TextTag>* output_tags = nullptr, std::vector<CMSP>* inline_items = nullptr, CoreModifiable* obj = nullptr);

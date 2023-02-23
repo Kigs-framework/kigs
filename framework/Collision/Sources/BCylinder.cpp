@@ -6,8 +6,6 @@ using namespace Kigs::Collide;
 IMPLEMENT_CLASS_INFO(BCylinder)
 
 IMPLEMENT_CONSTRUCTOR(BCylinder)
-, mRadius(*this, "Radius", 0.0f)
-,mHeight(*this, "Height", 0.0f)
 , mAxle(*this, "Axle", "X", "Y", "Z")
 {
 }

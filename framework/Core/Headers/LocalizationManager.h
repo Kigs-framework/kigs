@@ -91,7 +91,9 @@ namespace Kigs
 
 			std::map<const std::string, DoubleLocalizedUTF8UTF16 >		mLocalizedString;
 
-			maFloat mLanguageScale = BASE_ATTRIBUTE(LanguageScale, 1.0f);
+			float	mLanguageScale = 1.0f;
+
+			WRAP_ATTRIBUTES(mLanguageScale);
 		};
 
 

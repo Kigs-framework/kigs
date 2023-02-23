@@ -111,15 +111,17 @@ void HTTPAsyncRequest::protectedProcess()
 {
 	// first check if myCallbackObject is set
 
-	if ((const std::string&)mNotification != "")
+	if (mNotification != "")
 	{
-		if ((CoreModifiable*)mCallbackReceiver)
+		CMSP	currentCallbackReceiver = getValue<CMSP>("CallbackReceiver");
+		if (currentCallbackReceiver)
 		{
-			((CoreModifiable*)mCallbackReceiver)->CallMethod(mNotification.const_ref(), (*(std::vector<CoreModifiableAttribute*>*)(0)), this, this);
+			std::vector<CoreModifiableAttribute*> empty;
+			currentCallbackReceiver->CallMethod(mNotification, empty, this, this);
 		}
 		else // not a call but a notification
 		{
-			KigsCore::GetNotificationCenter()->postNotificationName(mNotification.const_ref(), this, mReceivedBuffer.const_ref()->buffer());
+			KigsCore::GetNotificationCenter()->postNotificationName(mNotification, this, mReceivedBuffer.const_ref()->buffer());
 		}
 	}
 	else
