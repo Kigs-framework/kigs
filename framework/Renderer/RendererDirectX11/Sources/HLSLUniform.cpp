@@ -29,8 +29,7 @@ IMPLEMENT_CLASS_INFO(API3DUniformBuffer)
 
 API3DUniformBase::API3DUniformBase(const std::string& name, CLASS_NAME_TREE_ARG) 
 	: Drawable(name, PASS_CLASS_NAME_TREE_ARG)
-	, mUniformName(*this, "UniformName", "")
-,mID(-1)
+	,mID(-1)
 {
 	mRenderPassMask = 0xFFFFFFFF;
 }
@@ -39,9 +38,7 @@ void API3DUniformBase::InitModifiable()
 {
 	Drawable::InitModifiable();
 
-	std::string strKey;
-	mUniformName.getValue(strKey,this);
-	mID = CharToID::GetID(strKey);
+	mID = CharToID::GetID(mUniformName);
 
 	setOwnerNotification("UniformName", true);
 }
@@ -50,10 +47,7 @@ void API3DUniformBase::NotifyUpdate(const unsigned int  labelid)
 {
 	if (labelid == KigsID("UniformName")._id)
 	{
-		std::string strKey;
-		mUniformName.getValue(strKey,this);
-		mID = CharToID::GetID(strKey);
-		//printf("%s >> %u\n", strKey.c_str(), mID);
+		mID = CharToID::GetID(mUniformName);
 	}
 	else
 	{
@@ -132,7 +126,6 @@ bool API3DUniformBase::Pop(TravState* t)
 
 //////////////////////////////////// Int ///////////////////////////////////////////
 API3DUniformInt::API3DUniformInt(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mValue(*this, "Value", -1)
 {
 	mCBBufferNeededSize = sizeof(int);
 }
@@ -164,7 +157,6 @@ void	API3DUniformInt::NotifyUpdate(const unsigned int  labelid)
 
 //////////////////////////////////// Float ///////////////////////////////////////////
 API3DUniformFloat::API3DUniformFloat(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mValue(*this, "Value", -1)
 {
 	mCBBufferNeededSize = sizeof(float);
 }
@@ -197,7 +189,6 @@ void	API3DUniformFloat::NotifyUpdate(const unsigned int  labelid)
 
 //////////////////////////////////// Float 2 ///////////////////////////////////////////
 API3DUniformFloat2::API3DUniformFloat2(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mValue(*this, "Value",0.0f,0.0f)
 {
 	mCBBufferNeededSize = sizeof(v2f);
 }
@@ -211,7 +202,7 @@ void	API3DUniformFloat2::Activate(UniformList* ul)
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 	device->mDeviceContext->Map(mCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, mValue.getVector(), 2 * sizeof(float));
+	memcpy(mappedResource.pData, &mValue, 2 * sizeof(float));
 	device->mDeviceContext->Unmap(mCBuffer, 0);
 
 	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
@@ -229,8 +220,6 @@ void	API3DUniformFloat2::NotifyUpdate(const unsigned int  labelid)
 
 //////////////////////////////////// Float 3 ///////////////////////////////////////////
 API3DUniformFloat3::API3DUniformFloat3(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mValue(*this, "Value",0.0f,0.0f,0.0f)
-, mNormalize(*this, "Normalize", false)
 {
 	setOwnerNotification("Value", true);
 	mCBBufferNeededSize = sizeof(v3f);
@@ -267,12 +256,7 @@ void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
 
 void API3DUniformFloat3::Normalize()
 {
-	Vector3D v(mValue[0], mValue[1], mValue[2]);
-	v.Normalize();
-
-	mValue[0] = v.x;
-	mValue[1] = v.y;
-	mValue[2] = v.z;
+	mValue.Normalize();
 }
 
 void	API3DUniformFloat3::Activate(UniformList* ul)
@@ -284,7 +268,7 @@ void	API3DUniformFloat3::Activate(UniformList* ul)
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	
 	device->mDeviceContext->Map(mCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, mValue.getVector(), 3 * sizeof(float));
+	memcpy(mappedResource.pData, &mValue, 3 * sizeof(float));
 	device->mDeviceContext->Unmap(mCBuffer, 0);
 
 	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
@@ -294,7 +278,6 @@ void	API3DUniformFloat3::Activate(UniformList* ul)
 
 //////////////////////////////////// Float 4 ///////////////////////////////////////////
 API3DUniformFloat4::API3DUniformFloat4(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mValue(*this, "Value",0.0f,0.0f,0.0f,0.0f)
 {
 	mCBBufferNeededSize = sizeof(v4f);
 }
@@ -308,7 +291,7 @@ void	API3DUniformFloat4::Activate(UniformList* ul)
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 	device->mDeviceContext->Map(mCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, mValue.getVector(), 4 * sizeof(float));
+	memcpy(mappedResource.pData, &mValue, 4 * sizeof(float));
 	device->mDeviceContext->Unmap(mCBuffer, 0);
 
 	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);
@@ -324,8 +307,6 @@ void	API3DUniformFloat4::NotifyUpdate(const unsigned int  labelid)
 }
 
 API3DUniformTexture::API3DUniformTexture(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mChannel(*this, "Channel", 0)
-, mTextureName(*this, "TextureName", "")
 , mAttachedTexture(0)
 {
 	setOwnerNotification("Channel", true);
@@ -335,10 +316,10 @@ void	API3DUniformTexture::InitModifiable()
 {
 	if (!IsInit())
 	{
-		if ((mTextureName.const_ref()) != "")
+		if (mTextureName != "")
 		{
 			SP<TextureFileManager>	fileManager = KigsCore::GetSingleton("TextureFileManager");
-			mAttachedTexture = fileManager->GetTexture(mTextureName.const_ref(), false);
+			mAttachedTexture = fileManager->GetTexture(mTextureName, false);
 			if (mAttachedTexture)
 				if (!mAttachedTexture->IsInit())
 				{
@@ -614,7 +595,6 @@ void API3DUniformGeneratedTexture::Generate()
 #endif // DX11
 
 API3DUniformMatrixArray::API3DUniformMatrixArray(const std::string& name, CLASS_NAME_TREE_ARG) : API3DUniformBase(name, PASS_CLASS_NAME_TREE_ARG)
-, mArraySize(*this, "ArraySize", 16)
 , mMatrixArray(*this, "MatrixArray")
 , mMatrixArrayPointer(0)
 {

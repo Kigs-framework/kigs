@@ -158,7 +158,7 @@ void API3DShader::Active(TravState* state, bool resetUniform)
 		device->mDeviceContext->GSSetShader((ID3D11GeometryShader*)(GetCurrentGeometryShaderInfo<HLSLShaderInfo>()->mInternalShaderStruct), nullptr, 0);
 
 		//ActiveSampler();
-		if (museGenericLight && state)
+		if (mUseGenericLight && state)
 		{
 			ModuleRenderer::mTheGlobalRenderer->as<RendererDX11>()->SendLightsInfo(state);
 		}
@@ -202,7 +202,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 	};
 
 	std::string str;
-	mVertexShader.getValue(str,this);
+	str=mVertexShader;
 
 	if (str[0] == '!') // load from file
 	{
@@ -243,7 +243,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		return nullptr;
 	}
 
-	mFragmentShader.getValue(str,this);
+	str=mFragmentShader;
 
 	if (str[0] == '!') // load from file
 	{
@@ -283,7 +283,7 @@ BuildShaderStruct*	API3DShader::Rebuild()
 		return nullptr;
 	}
 
-	mGeometryShader.getValue(str,this);
+	str=mGeometryShader;
 	if (str.size())
 	{
 		name = getName();

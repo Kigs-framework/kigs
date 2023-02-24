@@ -32,7 +32,9 @@ namespace Kigs
 			bool ProtectedSetActive(TravState* state)override;
 			void ProtectedRelease(TravState* state) override;
 
-			maFloat mSize = BASE_ATTRIBUTE(Size, 100);
+			float mSize = 100;
+
+			WRAP_ATTRIBUTES(mSize);
 		};
 
 	}

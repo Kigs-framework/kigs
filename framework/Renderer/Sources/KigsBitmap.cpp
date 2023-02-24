@@ -59,7 +59,7 @@ bool KigsBitmap::PreDraw(TravState* state)
 
 							unsigned char*	startPixel = GetPixelAddress(mDirtyZone.m_Min.x, mDirtyZone.m_Min.y);
 
-							parentToUpdate->UpdateBufferZone(startPixel, mDirtyZone, Point2DI(mSize[0], mSize[1]));
+							parentToUpdate->UpdateBufferZone(startPixel, mDirtyZone, mSize);
 
 
 							break;
@@ -93,6 +93,8 @@ void	KigsBitmap::InitModifiable()
 		{
 			return;
 		}
+
+		parentTexture->setValue("IsDynamic", true);
 
 		// if no size, check if parent texture has a size
 		if ((mSize[0] <= 0) || (mSize[1] <= 0))

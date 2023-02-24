@@ -337,9 +337,9 @@ bool DX11Texture::CreateFromImage(const SmartPointer<TinyImage>& image, bool dir
 	desc.MipLevels = 1;// mHasMipmap ? 0 : 1;
 	desc.SampleDesc.Quality = 0;
 	desc.SampleDesc.Count = 1;
-	desc.Usage = D3D11_USAGE_IMMUTABLE;
+	desc.Usage = mIsDynamic?D3D11_USAGE_DYNAMIC:D3D11_USAGE_IMMUTABLE;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	desc.CPUAccessFlags = 0;
+	desc.CPUAccessFlags = mIsDynamic? D3D11_CPU_ACCESS_WRITE:0;
 	desc.MiscFlags = 0;
 
 	unsigned char* converteddata = nullptr;
@@ -638,7 +638,7 @@ bool DX11Texture::Load()
 	{
 		SP<FilePathManager>	pathManager = KigsCore::GetSingleton("FilePathManager");
 
-		std::string fileName = mFileName.const_ref();
+		std::string fileName = mFileName;
 		auto extdot = fileName.rfind('.');
 		if (extdot != std::string::npos)
 		{

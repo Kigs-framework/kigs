@@ -55,12 +55,15 @@ namespace Kigs
 
 			void CreateBufferIfNeeded();
 
-			maString			mUniformName;
+			std::string			mUniformName;
+
+			WRAP_ATTRIBUTES(mUniformName);
+
 			UNIFORM_NAME_TYPE	mID;
 
 			size_t				mCBBufferNeededSize = 0;
 			size_t				mCBBufferCurrentSize = 0;
-			ID3D11Buffer* mCBuffer = nullptr;
+			ID3D11Buffer*		mCBuffer = nullptr;
 		};
 
 		// ****************************************
@@ -87,7 +90,9 @@ namespace Kigs
 		protected:
 			void	NotifyUpdate(const unsigned int  labelid) override;
 
-			maInt			mValue;
+			s32			mValue=-1;
+
+			WRAP_ATTRIBUTES(mValue);
 		};
 
 		// ****************************************
@@ -114,7 +119,8 @@ namespace Kigs
 		protected:
 			void	NotifyUpdate(const unsigned int  labelid) override;
 
-			maFloat			mValue;
+			float			mValue = -1.0f;
+			WRAP_ATTRIBUTES(mValue);
 		};
 
 		// ****************************************
@@ -140,7 +146,8 @@ namespace Kigs
 		protected:
 			void	NotifyUpdate(const unsigned int  labelid) override;
 
-			maVect2DF			mValue;
+			v2f			mValue = {0.0f,0.0f};
+			WRAP_ATTRIBUTES(mValue);
 		};
 
 		// ****************************************
@@ -175,8 +182,10 @@ namespace Kigs
 
 			void Normalize();
 
-			maVect3DF			mValue;
-			maBool				mNormalize;
+			v3f			mValue = { 0.0f,0.0f,0.0f };
+			bool		mNormalize = false;
+
+			WRAP_ATTRIBUTES(mValue, mNormalize);
 		};
 
 		// ****************************************
@@ -202,7 +211,8 @@ namespace Kigs
 		protected:
 			void NotifyUpdate(const unsigned int  labelid) override;
 
-			maVect4DF			mValue;
+			v4f			mValue = { 0.0f,0.0f,0.0f,0.0f };
+			WRAP_ATTRIBUTES(mValue);
 		};
 
 		// ****************************************
@@ -234,8 +244,11 @@ namespace Kigs
 			void Activate(UniformList* ul) override;
 			bool Deactivate(UniformList* ul) override;
 
-			maInt		mChannel;
-			maString	mTextureName;
+						
+			s32				mChannel = 0;
+			std::string		mTextureName = "";
+
+			WRAP_ATTRIBUTES(mChannel, mTextureName);
 
 			SP<Texture>	mAttachedTexture;
 		};
@@ -300,16 +313,17 @@ namespace Kigs
 		{
 		public:
 			DECLARE_CLASS_INFO(API3DUniformMatrixArray, API3DUniformBase, Renderer)
-				API3DUniformMatrixArray(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			API3DUniformMatrixArray(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 			virtual ~API3DUniformMatrixArray();
 
 		protected:
 			void NotifyUpdate(const unsigned int  labelid) override;
 			void Activate(UniformList* ul) override;
 
-			maInt			mArraySize;
+			s32				mArraySize=16;
+			WRAP_ATTRIBUTES(mArraySize);
 			maBuffer		mMatrixArray;
-			Matrix4x4* mMatrixArrayPointer;
+			Matrix4x4*		mMatrixArrayPointer;
 		};
 
 		// ****************************************
