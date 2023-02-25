@@ -30,6 +30,7 @@ void	Sample7::ProtectedInit()
 
 	SP<FilePathManager> pathManager = KigsCore::Singleton<FilePathManager>();
 	pathManager->AddToPath(".", "xml");
+	pathManager->AddToPath(".", "lua");
 
 	// Load AppInit, GlobalConfig then launch first sequence
 	DataDrivenBaseApplication::ProtectedInit();
@@ -39,7 +40,6 @@ void	Sample7::ProtectedInit()
 	behaviour->setValue("Script", "#ScriptOnApp.lua");
 	aggregateWith(behaviour);
 	behaviour->Init();
-
 }
 
 void	Sample7::ProtectedUpdate()

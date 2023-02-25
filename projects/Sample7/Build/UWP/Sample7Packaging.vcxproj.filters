@@ -175,10 +175,26 @@
     <Image Include="Assets\Generated\StoreLogo.scale-400.png">
       <Filter>Assets\Generated</Filter>
     </Image>
+    <Image Include="..\..\Android\assets\Down.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="..\..\Android\assets\KigsHD.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="..\..\Android\assets\Up.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Sample7Packaging_TemporaryKey.pfx">
-      <Filter>Packaging</Filter>
+    <None Include="Packaging_TemporaryKey.pfx" />
+    <None Include="..\..\Android\assets\button.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="..\..\Android\assets\ScriptOnApp.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="..\..\Android\assets\test.lua">
+      <Filter>Assets</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
