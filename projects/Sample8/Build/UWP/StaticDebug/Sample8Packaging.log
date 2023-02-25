@@ -1,2 +1,0 @@
-﻿  Sample8Packaging.vcxproj -> C:\Users\steph\Documents\GitHub\Build\solutionWUPD3DCMake\kigs\projects\Sample8\StaticDebug\Sample8Packaging\Sample8Packaging.exe
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VisualStudio\v17.0\AppxPackage\Microsoft.AppXPackage.Targets(2771,5): warning APPX0108:  Le certificat spécifié a expiré. Pour plus d'informations sur le renouvellement des certificats, consultez http://go.microsoft.com/fwlink/?LinkID=241478.

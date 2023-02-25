@@ -30,6 +30,9 @@
     <Xml Include="..\..\Android\assets\Screen_Main.xml">
       <Filter>Assets</Filter>
     </Xml>
+    <Xml Include="..\..\Android\assets\testCoreItemExport.xml">
+      <Filter>Assets</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Font Include="..\..\Android\assets\Calibri.ttf">
@@ -175,11 +178,12 @@
     <Image Include="Assets\Generated\StoreLogo.scale-400.png">
       <Filter>Assets\Generated</Filter>
     </Image>
+    <Image Include="..\..\Android\assets\KigsHD.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Sample5Packaging_TemporaryKey.pfx">
-      <Filter>Packaging</Filter>
-    </None>
+    <None Include="Packaging_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

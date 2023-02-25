@@ -1,4 +1,7 @@
 **/Android/ARM/
+**/Build/UWP/StaticDebug/
+**/Build/UWP/StaticRelease/
+**/Build/UWP/StaticReleaseTools/
 /libs/win32/fbxsdk/include/
 /libs/win32/fbxsdk/lib/
 /libs/cross_platform/tiff/html/

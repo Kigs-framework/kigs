@@ -1,8 +1,10 @@
 #ifndef _KIGSAPPLICATION_H_
 #define _KIGSAPPLICATION_H_
 
+#ifndef BASE_APP_IMPORT
 //! include the real application class file
 #include "Sample5.h"
+#endif
 
 //! yes I want Timer and FileManager to be auto initialized
 #define INIT_DEFAULT_MODULES
