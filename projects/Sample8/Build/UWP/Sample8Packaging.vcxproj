@@ -7,8 +7,8 @@
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
-    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.17763.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
+    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.22621.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
     <ProjectName>Sample8Packaging</ProjectName>
   </PropertyGroup>
@@ -18,7 +18,7 @@
       <Configuration>StaticDebug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-	<ProjectConfiguration Include="StaticReleaseTools|Win32">
+    <ProjectConfiguration Include="StaticReleaseTools|Win32">
       <Configuration>StaticReleaseTools</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
@@ -30,20 +30,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StaticDebug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StaticReleaseTools|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StaticRelease|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -71,8 +71,8 @@
     <ClCompile>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;KIGS_TOOLS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../Headers/;$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;KIGS_TOOLS;BASE_APP_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -113,18 +113,43 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="..\..\Android\assets\button.lua">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\Android\assets\de.loc">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\Android\assets\en.loc">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\Android\assets\fr.loc">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\Android\assets\imgui.ini" />
+    <None Include="..\..\Android\assets\InitLoc.json">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\Android\assets\sp.loc">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Packaging_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Android\assets\AppInit.xml" />
+    <Xml Include="..\..\Android\assets\Default.xml" />
     <Xml Include="..\..\Android\assets\LaunchScreen.xml" />
     <Xml Include="..\..\Android\assets\Screen_Main.xml" />
+    <Xml Include="..\..\Android\assets\SecondSequence.xml" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="..\..\Android\assets\Calibri.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\Android\assets\Down.png" />
     <Image Include="..\..\Android\assets\Logo.png" />
+    <Image Include="..\..\Android\assets\NormalMap.png" />
+    <Image Include="..\..\Android\assets\Texture.png" />
+    <Image Include="..\..\Android\assets\Up.png" />
     <Image Include="Assets\Generated\LargeTile.scale-100.png" />
     <Image Include="Assets\Generated\LargeTile.scale-125.png" />
     <Image Include="Assets\Generated\LargeTile.scale-150.png" />

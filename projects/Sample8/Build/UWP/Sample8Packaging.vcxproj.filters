@@ -30,6 +30,12 @@
     <Xml Include="..\..\Android\assets\Screen_Main.xml">
       <Filter>Assets</Filter>
     </Xml>
+    <Xml Include="..\..\Android\assets\Default.xml">
+      <Filter>Assets</Filter>
+    </Xml>
+    <Xml Include="..\..\Android\assets\SecondSequence.xml">
+      <Filter>Assets</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Font Include="..\..\Android\assets\Calibri.ttf">
@@ -175,10 +181,41 @@
     <Image Include="Assets\Generated\StoreLogo.scale-400.png">
       <Filter>Assets\Generated</Filter>
     </Image>
+    <Image Include="..\..\Android\assets\Down.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="..\..\Android\assets\NormalMap.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="..\..\Android\assets\Texture.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="..\..\Android\assets\Up.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Sample8Packaging_TemporaryKey.pfx">
-      <Filter>Packaging</Filter>
+    <None Include="Packaging_TemporaryKey.pfx" />
+    <None Include="..\..\Android\assets\button.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="..\..\Android\assets\de.loc">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="..\..\Android\assets\en.loc">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="..\..\Android\assets\fr.loc">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="..\..\Android\assets\imgui.ini">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="..\..\Android\assets\InitLoc.json">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="..\..\Android\assets\sp.loc">
+      <Filter>Assets</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
