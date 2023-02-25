@@ -52,7 +52,7 @@ namespace Kigs
 			static const char* getPlatformName();
 
 		protected:
-			bool mIsHolographic;
+			bool mIsHolographic = false;
 		};
 
 	}

@@ -87,7 +87,17 @@ void print_context(const char* iden)
 	kigsprintf("[%s] thread:%d apartment:%s\n", iden, GetCurrentThreadId(), appart);
 }
 
-void wupmain()
+#ifdef UWP_STATIC_LIB
+#define DECL_SPEC
+#else
+#ifdef BASE_APP_IMPORT
+#define DECL_SPEC __declspec(dllimport)
+#else
+#define DECL_SPEC __declspec(dllexport)
+#endif
+#endif
+
+void DECL_SPEC wupmain()
 {
 	time_t tc = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	char time_output[512];
@@ -310,3 +320,4 @@ std::optional<mat3x4> App::CreateNewFrameOfReference()
 	}
 	return {};
 }
+

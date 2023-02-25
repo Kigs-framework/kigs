@@ -5,8 +5,9 @@
 
 #include "utf8.h"
 
-#include "winrt/Windows.UI.Text.Core.h"
-#include "winrt/Windows.UI.ViewManagement.h"
+#include <winrt/Windows.UI.Text.Core.h>
+#include <winrt/Windows.UI.ViewManagement.h>
+#include <winrt/Windows.Foundation.h>
 
 using namespace winrt::Windows::UI::Text::Core;
 using namespace winrt::Windows::UI::ViewManagement;

@@ -22,7 +22,7 @@ namespace Kigs
 		{
 		public:
 			DECLARE_CLASS_INFO(MouseWUP, MouseDevice, Input)
-				MouseWUP(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
+			MouseWUP(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 			virtual ~MouseWUP();
 
 			virtual bool	Aquire();

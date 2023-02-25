@@ -3,8 +3,8 @@
 // *   THIS FILE IS A GENERIC FILE COMMON TO SEVERAL APPLICATION                *
 // ******************************************************************************
 #pragma once
-#define NEXTBIM_EXPLORER_STATIC
-#ifdef NEXTBIM_EXPLORER_STATIC
+#include "KigsApplication.h"
+#ifdef UWP_STATIC_LIB
 void wupmain();
 #else
 __declspec(dllimport) void wupmain();

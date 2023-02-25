@@ -7,8 +7,9 @@
 #include "Platform/Main/BaseApp.h"
 
 
-#include "winrt/Windows.UI.Input.h"
-#include "winrt/Windows.Devices.Input.h"
+#include <winrt/Windows.UI.Input.h>
+#include <winrt/Windows.Devices.Input.h>
+#include <winrt/Windows.Foundation.h>
 
 using namespace Kigs::Input;
 
