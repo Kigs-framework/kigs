@@ -1118,11 +1118,11 @@ void CoreModifiableAttributeOperator<T>::GetAttribute() const
 				if (mAttribute)
 				{
 
-					if ((mAttribute->size() > 1) && (attrindex >= 0))
+					if ((mAttribute->getNbArrayElements() > 1) && (attrindex >= 0))
 					{
-						if (attrindex > (mAttribute->size() - 1))
+						if (attrindex > (mAttribute->getNbArrayElements() - 1))
 						{
-							attrindex = (int)mAttribute->size() - 1;
+							attrindex = (int)mAttribute->getNbArrayElements() - 1;
 						}
 						other->mArrayAttributeIndex = attrindex;
 					}

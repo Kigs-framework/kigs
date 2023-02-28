@@ -1326,7 +1326,8 @@ void ResetContext()
 	std::vector<CMSP>	instances = 	CoreModifiable::GetInstances("RenderingScreen");
 	if (instances.size())
 	{
-		instances[0]->CallMethod("ResetContext", NULL);
+		std::vector<CoreModifiableAttribute*>	empty;
+		instances[0]->CallMethod("ResetContext", empty);
 	}
 
 	std::vector<CMSP>::iterator itInstances;

@@ -26,7 +26,7 @@ DEFINE_METHOD(SimpleSampleClass,AddValue)
 		else
 		{
 			float val=0.f;
-			p->getValue(val,nullptr);
+			p->getValue(val,this);
 			total += val;
 		}
 	}
@@ -37,7 +37,7 @@ DEFINE_METHOD(SimpleSampleClass,AddValue)
 	}
 	else
 	{
-		presult->setValue(total,nullptr);
+		presult->setValue(total,this);
 	}
 
 	return true;

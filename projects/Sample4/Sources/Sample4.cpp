@@ -69,16 +69,16 @@ void	Sample4::ProtectedInit()
 	// push intParam
 	params.push_back(intParam);
 	
-	// call GiveInfos on instance1 with params vector, no private parameter and sender is this  
-	bool result = instance1->CallMethod("GiveInfos", params, nullptr, this);
+	// call GiveInfos on instance1 with params vector, private parameter and sender are nullptr  
+	bool result = instance1->CallMethod("GiveInfos", params, nullptr, nullptr);
 	std::cout << "GiveInfos returns " << (result?"true":"false") << std::endl << std::endl;
 
-	// call GiveInfos on instance2 with params vector, no private parameter and sender is this  
+	// call GiveInfos on instance2 with params vector, private parameter and sender are nullptr  
 	int paramsCount = params.size();
-	result = instance2->CallMethod("GiveInfos", params, nullptr, this);
+	result = instance2->CallMethod("GiveInfos", params, nullptr, nullptr);
 	if (params.size() > paramsCount)
 	{
-		// return values added
+		// a return value was added
 		while(paramsCount<params.size())
 		{
 			std::string v;
@@ -89,12 +89,6 @@ void	Sample4::ProtectedInit()
 			params.pop_back();
 		}
 	}
-	std::cout << "GiveInfos returns " << (result ? "true" : "false") << std::endl << std::endl;
-
-
-	// call GiveInfos on instance1 with this instance (Sample4) as parameter, no private params and no sender 
-	// so the received parameter vector will be all the CoreModifiable attributes owned by this
-	result = instance1->CallMethod("GiveInfos", this, nullptr, this);
 	std::cout << "GiveInfos returns " << (result ? "true" : "false") << std::endl << std::endl;
 
 	// or with "SimpleCall" :

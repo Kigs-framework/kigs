@@ -553,9 +553,12 @@ namespace Kigs
 				void	setMapped(bool dyn) { dyn ? (mFlaggedAdress |= 2) : (mFlaggedAdress &= ~2); }
 		
 			};
-			// Get the attribute list
-	const unordered_map<KigsID, FlaggedCoreModifiableAttribute>& getAttributes() const { return mAttributes; }
-	
+			// Get the attribute map
+			const unordered_map<KigsID, FlaggedCoreModifiableAttribute>& getAttributes() const { return mAttributes; }
+
+			// Get all this attribute pointers in a vector
+			const std::vector<CoreModifiableAttribute*> getAttributeVector() const;
+
 			// Number of attributes
 			size_t getAttributeCount() const { return mAttributes.size(); }
 	
@@ -643,22 +646,7 @@ namespace Kigs
 
 			// Avoid using ! call a method, with a list of CoreModifiableAttribute as parameters
 			bool CallMethod(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0, CoreModifiable* sender = 0);
-			// Avoid using ! call a meethod with the list of CoreModifiableAttribute of the given CoreModifiable as parameter
-			bool CallMethod(KigsID methodNameID, CoreModifiable * params, void* privateParams = 0, CoreModifiable * sender = 0) {
-
-				std::vector<CoreModifiableAttribute*> p;
-				if (params)
-				{
-					p = (std::vector<CoreModifiableAttribute*>) (*params);
-				}
-
-				return CallMethod(methodNameID, p, privateParams, sender);
-			}
-			// Avoid using ! call a method, with the list of CoreModifiableAttribute of the given CoreModifiable as parameter
-			bool CallMethod(KigsID methodNameID, CoreModifiable& params, void* privateParams = 0, CoreModifiable* sender = 0) {
-				std::vector<CoreModifiableAttribute*> p = (std::vector<CoreModifiableAttribute*>) params;
-				return CallMethod(methodNameID, p, privateParams, sender); }
-
+			
 			/// ID
 			// RuntimeID is name:runtimeType:pointer:UID
 			std::string	GetRuntimeID() const;

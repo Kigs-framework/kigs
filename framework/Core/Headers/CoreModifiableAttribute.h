@@ -216,7 +216,7 @@ auto& operator=(const CurrentAttributeType& value)\
 
 			virtual void* getRawValue(CoreModifiable* owner) = 0;
 
-			virtual size_t	size() const { return 1; };
+			//virtual size_t	size() const { return 1; };
 			virtual size_t 	MemorySize() const { return 0; };
 
 			virtual void	changeInheritance(u8 mask) = 0;
@@ -379,6 +379,7 @@ auto& operator=(const CurrentAttributeType& value)\
 				}
 				return 0;
 			}
+
 			size_t getNbArrayColumns() const override {
 				if constexpr (impl::is_array<std::remove_cv_t<T>>::value)
 				{

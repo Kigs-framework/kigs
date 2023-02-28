@@ -4,10 +4,8 @@
 #include "MiniInstanceFactory.h"
 #include "CoreAction.h"
 #include "CoreActionInterpolation.h"
-#include "CoreActionDirectInterpolation.h"
 #include "CoreActionUtility.h"
 #include "CoreActionKeyFrame.h"
-#include "CoreActionDirectKeyFrame.h"
 #include "JSonFileParser.h"
 #include "CoreSequenceLauncher.h"
 
@@ -54,30 +52,6 @@ void ModuleCoreAnimation::Init(KigsCore* core, const std::vector<CoreModifiableA
 	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame2D",CoreActionKeyFrame<Point2D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame3D",CoreActionKeyFrame<Point3D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame4D",CoreActionKeyFrame<Vector4D>);
-
-	// action using "direct" value access
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear1D",CoreActionDirectLinear<float>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear2D",CoreActionDirectLinear<Point2D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear3D",CoreActionDirectLinear<Point3D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectLinear4D",CoreActionDirectLinear<Vector4D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite1D",CoreActionDirectHermite<float>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite2D",CoreActionDirectHermite<Point2D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite3D",CoreActionDirectHermite<Point3D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectHermite4D",CoreActionDirectHermite<Vector4D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValueFloat1D",CoreActionDirectSetValue<float>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValueInt1D",CoreActionDirectSetValue<int>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValueBool1D",CoreActionDirectSetValue<bool>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValue2D",CoreActionDirectSetValue<Point2D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValue3D",CoreActionDirectSetValue<Point3D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectSetValue4D",CoreActionDirectSetValue<Vector4D>);
-
-	// direct key frame
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrameFloat1D",CoreActionDirectKeyFrame<float>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrameInt1D",CoreActionDirectKeyFrame<int>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrameBool1D",CoreActionDirectKeyFrame<bool>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrame2D",CoreActionDirectKeyFrame<Point2D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrame3D",CoreActionDirectKeyFrame<Point3D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"DirectKeyFrame4D",CoreActionDirectKeyFrame<Vector4D>);
 
 	MiniFactoryRegister(mPrivateMiniFactory,"RemoveFromParent",CoreActionRemoveFromParent);
 	MiniFactoryRegister(mPrivateMiniFactory,"Notification",CoreActionSendMessage);

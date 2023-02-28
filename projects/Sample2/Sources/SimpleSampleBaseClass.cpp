@@ -41,10 +41,10 @@ DEFINE_METHOD(SimpleSampleBaseClass, incrementParam)
 {
 	float val=0;
 	// access first param (we could check for param name here)
-	if (params[0]->getValue(val,sender)) // if first param value can be get as float
+	if (params[0]->getValue(val,this)) // if first param value can be get as float
 	{
 		// increment value
-		params[0]->setValue(val + 1.0f, sender);
+		params[0]->setValue(val + 1.0f, this);
 	}
 
 	return true;

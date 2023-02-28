@@ -90,7 +90,7 @@ void	Sample1::ProtectedUpdate()
 
 	// call SimpleSampleClass AddValue method directly on CoreModifiable
 	float result = simpleclass->SimpleCall<float>("AddValue", 10, 12.0f);
-	printf("result of calling AddValue = %f\n", result);
+	printf("result of calling AddValue with 10 and 12.0f = %f\n", result);
 	
 	// search son with given name
 	Timer* localtimer= simpleclass->GetFirstSonByName("Timer", "localtimer")->as<Timer>();

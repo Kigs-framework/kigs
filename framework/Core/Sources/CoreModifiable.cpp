@@ -1603,6 +1603,18 @@ void CoreModifiable::removeUser(CoreModifiable* user)
 	}), mUsers.end());
 }
 
+const std::vector<CoreModifiableAttribute*> Kigs::Core::CoreModifiable::getAttributeVector() const
+{
+	std::vector<CoreModifiableAttribute*> result;
+
+	for (auto attr : mAttributes)
+	{
+		result.push_back(attr.second);
+	}
+
+	return result;
+}
+
 void CoreModifiable::RemoveFromAllParents()
 {
 	std::vector<CoreModifiable*> users;
