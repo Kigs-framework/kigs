@@ -22,11 +22,11 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreiveGetAsyncRequest(const char* 
 	SP<HTTPAsyncRequest> request = KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest");
 	request->setValue("Type", "GET");
 	request->setValue("URL", a_URLRequest);
-	request->setValue("Connection", this);
+	request->setValue("Connection", this->SharedFromThis());
 	if (a_NotificationName)
 		request->setValue("Notification", a_NotificationName);
 	if (a_CallbackObject)
-		request->setValue("CallbackReceiver", a_CallbackObject);
+		request->setValue("CallbackReceiver", a_CallbackObject->SharedFromThis());
 
 	KigsCore::addAsyncRequest(request);
 
@@ -51,11 +51,11 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreivePostAsyncRequest(const char*
 	request->setValue("Type", "POST");
 	request->setValue("URL", a_URLRequest);
 	request->SetPostBufferValue(buffer, a_requestSize);
-	request->setValue("Connection", this);
+	request->setValue("Connection", this->SharedFromThis());
 	if (a_NotificationName)
 		request->setValue("Notification", a_NotificationName);
 	if (a_CallbackObject)
-		request->setValue("CallbackReceiver", a_CallbackObject);
+		request->setValue("CallbackReceiver", a_CallbackObject->SharedFromThis());
 
 	
 	KigsCore::addAsyncRequest(request);
@@ -80,7 +80,7 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreiveGetRequest(const char* a_URL
 	SP<HTTPAsyncRequest> request = KigsCore::GetInstanceOf("HTTPAsyncRequest_" + getName(), "HTTPAsyncRequest");
 	request->setValue("Type", "GET");
 	request->setValue("URL", a_URLRequest);
-	request->setValue("Connection", this);
+	request->setValue("Connection", this->SharedFromThis());
 	
 	
 	return request;
@@ -95,7 +95,7 @@ SmartPointer<HTTPAsyncRequest> HTTPConnect::retreivePostRequest(const char* a_UR
 	request->setValue("Type", "POST");
 	request->setValue("URL", a_URLRequest);
 	request->SetPostBufferValue(buffer, a_requestSize);
-	request->setValue("Connection", this);
+	request->setValue("Connection", this->SharedFromThis());
 
 	return request;
 }

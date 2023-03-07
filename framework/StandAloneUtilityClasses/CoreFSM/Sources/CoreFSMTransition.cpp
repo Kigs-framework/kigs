@@ -107,9 +107,7 @@ bool CoreFSMOnMethodTransition::checkTransition(CoreModifiable* currentParentCla
 	{
 		KIGS_ERROR("check a not started transition", 1);
 	}
-
-	// don't call SimpleCall with return template here, just get CallMethod result 
-	return currentParentClass->SimpleCall((std::string)mMethodName);
+	return currentParentClass->SimpleCall<bool>((std::string)mMethodName);
 
 }
 

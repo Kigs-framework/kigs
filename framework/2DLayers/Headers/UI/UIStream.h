@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UI/UITexturedItem.h"
-#include "maReference.h"
+#include "maString.h"
 #include "SmartPointer.h"
 
 namespace Kigs
@@ -37,18 +37,17 @@ namespace Kigs
 
 			virtual void NotifyUpdate(const unsigned int labelid) override;
 
-			SmartPointer<CoreModifiable> mFrameBufferStream;
+			SmartPointer<CoreModifiable>		mFrameBufferStream;
 
-			bool								mAutoplay = true;
-			bool								mLoop = true;
-			bool								mAutoSize = false;
-			float								mVolume = 1.0f;
-			std::string							mNotificationStart = "";
-			std::string							mNotificationEnd = "";
-			std::string							mVideoFile="";
-			std::weak_ptr<CoreModifiable>		mFrameBuffer;
-
-			WRAP_ATTRIBUTES(mAutoplay, mLoop, mAutoSize, mVolume, mNotificationStart, mNotificationEnd, mVideoFile, mFrameBuffer);
+			// don't use mapped attributes as they will be sent as parameter to CoreMethods
+			maBool								mAutoplay = BASE_ATTRIBUTE(Autoplay,true);
+			maBool								mLoop = BASE_ATTRIBUTE(Loop, true);
+			maBool								mAutoSize = BASE_ATTRIBUTE(AutoSize, false);
+			maFloat								mVolume = BASE_ATTRIBUTE(Volume, 1.0f);
+			maString							mNotificationStart = BASE_ATTRIBUTE(NotificationStart, "");
+			maString							mNotificationEnd = BASE_ATTRIBUTE(NotificationEnd, "");
+			maString							mVideoFile = BASE_ATTRIBUTE(VideoFile, "");
+			//std::weak_ptr<CoreModifiable>		mFrameBuffer;
 
 			bool mIsPlaying;
 

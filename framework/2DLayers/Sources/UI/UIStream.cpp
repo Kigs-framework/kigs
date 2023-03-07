@@ -49,7 +49,8 @@ void UIStream::InitModifiable()
 			if (mAutoplay)
 			{
 				mIsPlaying = true;
-				mFrameBufferStream->CallMethod("Play", this);
+				std::vector<CoreModifiableAttribute*> params = getAttributeVector();
+				mFrameBufferStream->CallMethod("Play", params);
 			}
 		}
 		else
@@ -77,9 +78,11 @@ void UIStream::Update(const Timer& timer, void* v)
 {
 	if(mIsPlaying &&mFrameBufferStream)
 	{
+		std::vector<CoreModifiableAttribute*> params = getAttributeVector();
+
 		mFrameBufferStream->CallUpdate(timer, 0);
 		bool is_ready=false;
-		mFrameBufferStream->CallMethod("HasReadyBuffer", this, &is_ready);
+		mFrameBufferStream->CallMethod("HasReadyBuffer", params, &is_ready);
 		if(is_ready)
 		{
 			Point2DI size;
@@ -88,7 +91,7 @@ void UIStream::Update(const Timer& timer, void* v)
 			//_temp.resize(size.x*size.y*4);
 
 			unsigned char * data = 0;
-			mFrameBufferStream->CallMethod("GetNewestReadyBuffer", this, (void*)&data);
+			mFrameBufferStream->CallMethod("GetNewestReadyBuffer", params, (void*)&data);
 
 			if(mAutoSize)
 			{
@@ -104,18 +107,18 @@ void UIStream::Update(const Timer& timer, void* v)
 
 			mTexturePointer->getTexture()->CreateFromImage(img);
 			
-			mFrameBufferStream->CallMethod("FreeBuffers", this);
+			mFrameBufferStream->CallMethod("FreeBuffers", params);
 		}
 		else
 		{
 			bool is_ended = false;
-			mFrameBufferStream->CallMethod("HasReachEnd", this, &is_ended);
+			mFrameBufferStream->CallMethod("HasReachEnd", params, &is_ended);
 			if(is_ended)
 			{
 				if (mLoop)
 				{
-					mFrameBufferStream->CallMethod("Stop", this);
-					mFrameBufferStream->CallMethod("Play", this);
+					mFrameBufferStream->CallMethod("Stop", params);
+					mFrameBufferStream->CallMethod("Play", params);
 				}
 				else
 					mIsPlaying = false;
@@ -135,7 +138,8 @@ bool UIStream::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK_NAME)
 		if (mAutoplay)
 		{
 			mIsPlaying = true;
-			mFrameBufferStream->CallMethod("Play", this);
+			std::vector<CoreModifiableAttribute*> params = getAttributeVector();
+			mFrameBufferStream->CallMethod("Play", params);
 		}
 		return true;
 	}
@@ -179,7 +183,8 @@ DEFINE_METHOD(UIStream, StartVideo)
 	if (mFrameBufferStream)
 	{
 		mIsPlaying = true;
-		mFrameBufferStream->CallMethod("Play", this);
+		std::vector<CoreModifiableAttribute*> params= getAttributeVector();
+		mFrameBufferStream->CallMethod("Play", params);
 	}
 	return false;
 }

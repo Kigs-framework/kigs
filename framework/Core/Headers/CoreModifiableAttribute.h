@@ -216,7 +216,7 @@ auto& operator=(const CurrentAttributeType& value)\
 
 			virtual void* getRawValue(CoreModifiable* owner) = 0;
 
-			virtual size_t	size() const { return 1; };
+			//virtual size_t	size() const { return 1; };
 			virtual size_t 	MemorySize() const { return 0; };
 
 			virtual void	changeInheritance(u8 mask) = 0;
@@ -379,6 +379,7 @@ auto& operator=(const CurrentAttributeType& value)\
 				}
 				return 0;
 			}
+
 			size_t getNbArrayColumns() const override {
 				if constexpr (impl::is_array<std::remove_cv_t<T>>::value)
 				{
@@ -812,28 +813,28 @@ namespace Kigs
 		template<typename T>
 		inline CMSP::AttributeHolder::operator T() const {
 			T	tmp{};
-			if (mAttr)
+			if (mOwner)
 			{
-				mAttr->getValue(tmp, mOwner);
+				mOwner->getValue(mID,tmp);
 			}
 			return tmp;
 		}
 
 		template<typename T>
 		inline const CMSP::AttributeHolder& CMSP::AttributeHolder::operator =(T toset) const {
-			if (mAttr)
+			if (mOwner)
 			{
-				mAttr->setValue(toset, mOwner);
+				mOwner->setValue(mID,toset);
 			}
 			return *this;
 		}
 
 		template<typename T>
 		inline const bool CMSP::AttributeHolder::operator ==(T totest) const {
-			if (mAttr)
+			if (mOwner)
 			{
 				T	tmp{};
-				if (mAttr->getValue(tmp, mOwner))
+				if (mOwner->getValue(mID, tmp))
 				{
 					return tmp == totest;
 				}

@@ -125,7 +125,7 @@ namespace Kigs
 
 			virtual CoreModifiable::ATTRIBUTE_TYPE getArrayElementType() const override { return attributeElementType; }
 
-			virtual size_t	size() const { return nbLines * nbColumns; };
+			//irtual size_t	size() const override { return nbLines * nbColumns; };
 
 			using CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isOrphanT>::setValue;
 

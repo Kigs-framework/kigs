@@ -158,14 +158,13 @@ namespace Kigs
 			{
 
 			protected:
-				CoreModifiableAttribute* mAttr = nullptr;
 				CoreModifiable*			 mOwner = nullptr;
 				KigsID					 mID;
 			public:
 
-				AttributeHolder() : mAttr(nullptr) {};
-		AttributeHolder(CoreModifiableAttribute* attr, CoreModifiable* owner,const KigsID& id) : mAttr(attr), mOwner(owner), mID(id) {};
-		AttributeHolder(const AttributeHolder& other) : mAttr(other.mAttr), mOwner(other.mOwner), mID(other.mID) {};
+				AttributeHolder() {};
+				AttributeHolder(CoreModifiable* owner,const KigsID& id) : mOwner(owner), mID(id) {};
+				AttributeHolder(const AttributeHolder& other) : mOwner(other.mOwner), mID(other.mID) {};
 
 				template<typename T>
 				inline operator T() const;
@@ -553,9 +552,12 @@ namespace Kigs
 				void	setMapped(bool dyn) { dyn ? (mFlaggedAdress |= 2) : (mFlaggedAdress &= ~2); }
 		
 			};
-			// Get the attribute list
-	const unordered_map<KigsID, FlaggedCoreModifiableAttribute>& getAttributes() const { return mAttributes; }
-	
+			// Get the attribute map
+			const unordered_map<KigsID, FlaggedCoreModifiableAttribute>& getAttributes() const { return mAttributes; }
+
+			// Get all this attribute pointers in a vector
+			const std::vector<CoreModifiableAttribute*> getAttributeVector() const;
+
 			// Number of attributes
 			size_t getAttributeCount() const { return mAttributes.size(); }
 	
@@ -615,7 +617,7 @@ namespace Kigs
 			// Update attributes with another modifiable attributes
 			void UpdateAttributes(const CoreModifiable& tocopy);
 
-			// Call a method.
+			// Call a method. Here the return value is the value returned by the CallMethod call (not a return value of the called method itself)
 			bool SimpleCall(KigsID methodNameID);
 			// Call a method with a set of arguement. Need to include AttributePacking.h
 			template<typename Ret, typename... T>
@@ -643,22 +645,7 @@ namespace Kigs
 
 			// Avoid using ! call a method, with a list of CoreModifiableAttribute as parameters
 			bool CallMethod(KigsID methodNameID, std::vector<CoreModifiableAttribute*>& params, void* privateParams = 0, CoreModifiable* sender = 0);
-			// Avoid using ! call a meethod with the list of CoreModifiableAttribute of the given CoreModifiable as parameter
-			bool CallMethod(KigsID methodNameID, CoreModifiable * params, void* privateParams = 0, CoreModifiable * sender = 0) {
-
-				std::vector<CoreModifiableAttribute*> p;
-				if (params)
-				{
-					p = (std::vector<CoreModifiableAttribute*>) (*params);
-				}
-
-				return CallMethod(methodNameID, p, privateParams, sender);
-			}
-			// Avoid using ! call a method, with the list of CoreModifiableAttribute of the given CoreModifiable as parameter
-			bool CallMethod(KigsID methodNameID, CoreModifiable& params, void* privateParams = 0, CoreModifiable* sender = 0) {
-				std::vector<CoreModifiableAttribute*> p = (std::vector<CoreModifiableAttribute*>) params;
-				return CallMethod(methodNameID, p, privateParams, sender); }
-
+			
 			/// ID
 			// RuntimeID is name:runtimeType:pointer:UID
 			std::string	GetRuntimeID() const;
@@ -1243,11 +1230,9 @@ namespace Kigs
 		{
 			if (get())
 			{
-		KigsID	attrid(attr);
-		CoreModifiableAttribute* attrib = get()->getAttribute(attrid);
-		return AttributeHolder(attrib, get(), attrid);
+				return AttributeHolder(get(), attr);
 			}
-	return AttributeHolder();
+			return AttributeHolder();
 		}
 
 		struct LazyContent
