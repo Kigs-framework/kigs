@@ -617,7 +617,7 @@ namespace Kigs
 			// Update attributes with another modifiable attributes
 			void UpdateAttributes(const CoreModifiable& tocopy);
 
-			// Call a method.
+			// Call a method. Here the return value is the value returned by the CallMethod call (not a return value of the called method itself)
 			bool SimpleCall(KigsID methodNameID);
 			// Call a method with a set of arguement. Need to include AttributePacking.h
 			template<typename Ret, typename... T>
