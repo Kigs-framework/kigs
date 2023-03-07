@@ -158,14 +158,13 @@ namespace Kigs
 			{
 
 			protected:
-				CoreModifiableAttribute* mAttr = nullptr;
 				CoreModifiable*			 mOwner = nullptr;
 				KigsID					 mID;
 			public:
 
-				AttributeHolder() : mAttr(nullptr) {};
-		AttributeHolder(CoreModifiableAttribute* attr, CoreModifiable* owner,const KigsID& id) : mAttr(attr), mOwner(owner), mID(id) {};
-		AttributeHolder(const AttributeHolder& other) : mAttr(other.mAttr), mOwner(other.mOwner), mID(other.mID) {};
+				AttributeHolder() {};
+				AttributeHolder(CoreModifiable* owner,const KigsID& id) : mOwner(owner), mID(id) {};
+				AttributeHolder(const AttributeHolder& other) : mOwner(other.mOwner), mID(other.mID) {};
 
 				template<typename T>
 				inline operator T() const;
@@ -1231,11 +1230,9 @@ namespace Kigs
 		{
 			if (get())
 			{
-		KigsID	attrid(attr);
-		CoreModifiableAttribute* attrib = get()->getAttribute(attrid);
-		return AttributeHolder(attrib, get(), attrid);
+				return AttributeHolder(get(), attr);
 			}
-	return AttributeHolder();
+			return AttributeHolder();
 		}
 
 		struct LazyContent

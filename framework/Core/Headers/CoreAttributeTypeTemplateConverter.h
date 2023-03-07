@@ -484,6 +484,13 @@ namespace Kigs
 		}
 
 		template<>
+		inline bool CoreConvertValue(const bool& fromval, usString& toval)
+		{
+			fromval ? (toval = "true") : (toval = "false");
+			return true;
+		}
+
+		template<>
 		inline bool CoreConvertValue(const std::string& fromval, bool& toval)
 		{
 			toval = ((fromval == "true") || (fromval == "TRUE"));
@@ -493,6 +500,13 @@ namespace Kigs
 		inline bool CoreConvertValue(const char* fromval, bool& toval)
 		{
 			return CoreConvertValue<std::string, bool>(fromval, toval);
+		}
+
+
+		template<>
+		inline bool CoreConvertValue(const usString& fromval, bool& toval)
+		{
+			return CoreConvertValue<std::string, bool>(fromval.ToString(), toval);
 		}
 
 	}
