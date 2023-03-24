@@ -416,6 +416,11 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_GET(v3f&);
 			DECLARE_GET(v4f&);
 
+			// special case for void*
+			virtual bool setValue(void* val, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); valueProtectedAccess(owner) = (*)static_cast<T*>(val); DO_NOTIFICATION(notifOwnerT); return true; }
+			virtual bool getValue(void*& val, const CoreModifiable* owner) const override { val = &valueProtectedAccess(owner); return true; }
+
+
 
 #define DECLARE_SETARRAYVALUE(type)	virtual bool setArrayValue(type val,CoreModifiable* owner, size_t nbElements ) override {RETURN_ON_READONLY(isReadOnlyT);\
 		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\

@@ -23,24 +23,24 @@ namespace Kigs
 	namespace Core
 	{
 
-#define DEFINE_MAKE_ATTR_FUNC(type, attr_type) inline CoreModifiableAttribute* MakeAttributeSpec(type value, CoreModifiable* owner, const std::string& name = #attr_type)\
-{\
-	if(owner)\
-		return new attr_type(*owner, name, value); \
-	else\
-		return new attr_type##Orphan(name, value);\
-}
+		#define DEFINE_MAKE_ATTR_FUNC(type, attr_type) inline CoreModifiableAttribute* MakeAttributeSpec(type value, CoreModifiable* owner, const std::string& name = #attr_type)\
+		{\
+			if(owner)\
+				return new attr_type(*owner, name, value); \
+			else\
+				return new attr_type##Orphan(name, value);\
+		}
 
-#define DEFINE_MAKE_ATTR_FUNC_VECNF(type, attr_type) inline CoreModifiableAttribute* MakeAttributeSpec(type value, CoreModifiable* owner, const std::string& name = #attr_type)\
-{\
-	if(owner)\
-		return new attr_type(*owner, name, (attr_type::ArrayType::value_type*)&value);\
-	else {\
-		attr_type::ArrayType val;\
-		memcpy(val.data(), &value, val.size() * sizeof(attr_type::ArrayType::value_type));\
-		return new attr_type##Orphan(name, val);\
-	}\
-}
+		#define DEFINE_MAKE_ATTR_FUNC_VECNF(type, attr_type) inline CoreModifiableAttribute* MakeAttributeSpec(type value, CoreModifiable* owner, const std::string& name = #attr_type)\
+		{\
+			if(owner)\
+				return new attr_type(*owner, name, (attr_type::ArrayType::value_type*)&value);\
+			else {\
+				attr_type::ArrayType val;\
+				memcpy(val.data(), &value, val.size() * sizeof(attr_type::ArrayType::value_type));\
+				return new attr_type##Orphan(name, val);\
+			}\
+		}
 
 		template<typename T>
 		struct Returns
@@ -49,28 +49,28 @@ namespace Kigs
 		};
 
 		DEFINE_MAKE_ATTR_FUNC(s32, maInt)
-			DEFINE_MAKE_ATTR_FUNC(u32, maUInt)
-			DEFINE_MAKE_ATTR_FUNC(s64, maLong)
-			DEFINE_MAKE_ATTR_FUNC(u64, maULong)
-			DEFINE_MAKE_ATTR_FUNC(float, maFloat)
-			DEFINE_MAKE_ATTR_FUNC(double, maDouble)
-			DEFINE_MAKE_ATTR_FUNC(bool, maBool)
+		DEFINE_MAKE_ATTR_FUNC(u32, maUInt)
+		DEFINE_MAKE_ATTR_FUNC(s64, maLong)
+		DEFINE_MAKE_ATTR_FUNC(u64, maULong)
+		DEFINE_MAKE_ATTR_FUNC(float, maFloat)
+		DEFINE_MAKE_ATTR_FUNC(double, maDouble)
+		DEFINE_MAKE_ATTR_FUNC(bool, maBool)
 
-			DEFINE_MAKE_ATTR_FUNC_VECNF(Point2DI, maVect2DI)
-			DEFINE_MAKE_ATTR_FUNC_VECNF(Point3DI, maVect3DI)
+		DEFINE_MAKE_ATTR_FUNC_VECNF(Point2DI, maVect2DI)
+		DEFINE_MAKE_ATTR_FUNC_VECNF(Point3DI, maVect3DI)
 
-			DEFINE_MAKE_ATTR_FUNC_VECNF(Point2D, maVect2DF)
-			DEFINE_MAKE_ATTR_FUNC_VECNF(Vector3D, maVect3DF)
-			DEFINE_MAKE_ATTR_FUNC_VECNF(Point3D, maVect3DF)
-			DEFINE_MAKE_ATTR_FUNC_VECNF(Vector4D, maVect4DF)
+		DEFINE_MAKE_ATTR_FUNC_VECNF(Point2D, maVect2DF)
+		DEFINE_MAKE_ATTR_FUNC_VECNF(Vector3D, maVect3DF)
+		DEFINE_MAKE_ATTR_FUNC_VECNF(Point3D, maVect3DF)
+		DEFINE_MAKE_ATTR_FUNC_VECNF(Vector4D, maVect4DF)
 
-			DEFINE_MAKE_ATTR_FUNC(const std::string&, maString)
-			DEFINE_MAKE_ATTR_FUNC(std::string&&, maString)
-			DEFINE_MAKE_ATTR_FUNC(const char*, maString)
-			DEFINE_MAKE_ATTR_FUNC(const usString&, maUSString)
-			DEFINE_MAKE_ATTR_FUNC(usString&&, maUSString)
+		DEFINE_MAKE_ATTR_FUNC(const std::string&, maString)
+		DEFINE_MAKE_ATTR_FUNC(std::string&&, maString)
+		DEFINE_MAKE_ATTR_FUNC(const char*, maString)
+		DEFINE_MAKE_ATTR_FUNC(const usString&, maUSString)
+		DEFINE_MAKE_ATTR_FUNC(usString&&, maUSString)
 
-			DEFINE_MAKE_ATTR_FUNC(CoreModifiable*, maRawPtr);
+		DEFINE_MAKE_ATTR_FUNC(CoreModifiable*, maRawPtr);
 
 		template<typename T>
 		inline CoreModifiableAttribute* MakeAttributeSpec(SP<T> value, CoreModifiable* owner, const std::string& name = "maStrongReference")
@@ -94,14 +94,13 @@ namespace Kigs
 			constexpr static const char* name() { return nullptr; }
 		};
 
-#define EXPOSE_STRUCT_LUA(structclass, type) structclass type;\
-template<>\
-struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static const char* name(){ return #type; }};
+		#define EXPOSE_STRUCT_LUA(structclass, type) structclass type;\
+		template<>\
+		struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static const char* name(){ return #type; }};
 
-#define EXPOSE_TYPE_LUA(structclass, type, luaname)  structclass type;\
-template<>\
-struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static const char* name(){ return luaname; }};
-
+		#define EXPOSE_TYPE_LUA(structclass, type, luaname)  structclass type;\
+		template<>\
+		struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static const char* name(){ return luaname; }};
 
 		template<>
 		struct LuaStruct<Input::ClickEvent> { static constexpr bool exposed = true; constexpr static const char* name() { return "ClickEvent"; } };
@@ -228,7 +227,7 @@ struct LuaStruct<type>{ static constexpr bool exposed = true; constexpr static c
 
 
 
-#define PUSH_RETURN_VALUE(val) params.push_back(MakeAttribute((std::move(val)), nullptr, "Result"))
+		#define PUSH_RETURN_VALUE(val) params.push_back(MakeAttribute((std::move(val)), nullptr, "Result"))
 
 
 		template<typename T>
