@@ -860,7 +860,7 @@ namespace Kigs
 				std::vector<CoreItemSP>::const_iterator itOperand = CoreVector::mVector.begin();
 				std::vector<CoreItemSP>::const_iterator itOperandEnd = CoreVector::mVector.end();
 
-				CoreItem& result=(*(CoreItem*)(*itOperand).get());
+				CoreItemSP result=(*itOperand);
 		
 				++itOperand;
 				if (itOperand != itOperandEnd)

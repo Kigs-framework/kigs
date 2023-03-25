@@ -262,11 +262,11 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 			{
 				(*it)->setValue("IsInteractive", false);
 
-				if (((CoreItem*)mPreviousAnim) && (skip_mode&SkipTransition_Prev) == 0)
+				if ( ((CoreItemSP)mPreviousAnim) && (skip_mode&SkipTransition_Prev) == 0)
 				{
 					// add prev sequence animation
 					CMSP	prevsequencelauncher = KigsCore::GetInstanceOf("prevsequencelauncher", "CoreSequenceLauncher");
-					prevsequencelauncher->setValue("Sequence", ((CoreItem*)mPreviousAnim));
+					prevsequencelauncher->setValue("Sequence", (CoreItemSP)mPreviousAnim);
 					prevsequencelauncher->setValue("StartOnFirstUpdate", true);
 					(*it)->addItem(prevsequencelauncher);
 					prevsequencelauncher->Init();
@@ -286,11 +286,11 @@ void DataDrivenTransition::Update(const Timer&  timer, void* addParam)
 		{
 			// block layer during transition
 			(*it)->setValue("IsInteractive", false);
-			if (((CoreItem*)mNextAnim) && (skip_mode&SkipTransition_Next) == 0)
+			if (((CoreItemSP)mNextAnim) && (skip_mode&SkipTransition_Next) == 0)
 			{
 				// add prev sequence animation
 				CMSP nextsequencelauncher = KigsCore::GetInstanceOf("nextsequencelauncher", "CoreSequenceLauncher");
-				nextsequencelauncher->setValue("Sequence", ((CoreItem*)mNextAnim));
+				nextsequencelauncher->setValue("Sequence", ((CoreItemSP)mNextAnim));
 				nextsequencelauncher->setValue("StartOnFirstUpdate", true);
 				(*it)->addItem(nextsequencelauncher);
 				nextsequencelauncher->Init();

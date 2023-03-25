@@ -417,8 +417,8 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_GET(v4f&);
 
 			// special case for void*
-			virtual bool setValue(void* val, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); valueProtectedAccess(owner) = (*)static_cast<T*>(val); DO_NOTIFICATION(notifOwnerT); return true; }
-			virtual bool getValue(void*& val, const CoreModifiable* owner) const override { val = &valueProtectedAccess(owner); return true; }
+			virtual bool setValue(void* val, CoreModifiable* owner) override { RETURN_ON_READONLY(isReadOnlyT); valueProtectedAccess(owner) = *(static_cast<T*>(val)); DO_NOTIFICATION(notifOwnerT); return true; }
+			virtual bool getValue(void*& val, const CoreModifiable* owner) const override { val = &const_cast<T&>(valueProtectedAccess(owner)); return true; }
 
 
 

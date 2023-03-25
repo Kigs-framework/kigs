@@ -696,9 +696,9 @@ bool CoreModifiable::CallMethod(KigsID methodNameID,std::vector<CoreModifiableAt
 		{
 			if (foundattrib.first->getType() == ATTRIBUTE_TYPE::COREITEM)
 			{
-				CoreItem& ItemToEval = (*(maCoreItem*)foundattrib.first);
+				CoreItemSP ItemToEval = (*(maCoreItem*)foundattrib.first);
 				
-				bool result = ItemToEval;
+				bool result = (bool)ItemToEval;
 
 				return result;
 
