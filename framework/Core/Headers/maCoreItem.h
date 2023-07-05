@@ -100,11 +100,6 @@ namespace Kigs
 				return true;
 			}
 
-			//! cast to CoreModifiable* operator
-			operator CoreItem* () { return mValue.item.get(); }
-			//! cast to CoreModifiable& operator
-			operator CoreItem& () { return (*mValue.item.get()); }
-
 			operator CoreItemSP() { return mValue.item; }
 
 			//! return a reference on internal value
@@ -112,7 +107,6 @@ namespace Kigs
 			//! return a const reference on internal value
 			const CoreItem& const_ref() { return (*mValue.item.get()); }
 			const std::string& getRefFile() { return mValue.ref_file; }
-
 
 		};
 

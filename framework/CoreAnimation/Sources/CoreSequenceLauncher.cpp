@@ -63,9 +63,9 @@ void	CoreSequenceLauncher::addSequencesToParents()
 				already_added = false;
 			}
 		}
-		if (!already_added && (CoreItem*)mSequence)
+		if (!already_added && ((CoreItemSP)mSequence))
 		{
-			CoreItemSP sequence = ((CoreItem*)mSequence)->SharedFromThis();
+			CoreItemSP sequence = ((CoreItemSP)mSequence);
 			auto L_Sequence = L_CoreAnimation->createSequenceFromCoreMap(parent->SharedFromThis(), sequence);
 			L_CoreAnimation->addSequence(L_Sequence.get());
 			if (mStartOnFirstUpdate)
