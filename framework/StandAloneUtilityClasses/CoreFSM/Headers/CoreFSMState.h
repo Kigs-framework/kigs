@@ -232,14 +232,6 @@ virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::Modifi
 #define END_DECLARE_COREFSMSTATE() \
 };
 
-#define COREFSMSTATE_WRAPMETHODS(...) DO_COREFSMSTATE_SUBCLASS_DECLARATION() \
-FOR_EACH(COREFSM_WRAP_METHOD_NO_CTOR, __VA_ARGS__)\
-DO_COREFSMSTATE_BASE_METHOD_DEFINITION() \
-virtual void GetMethodTable(std::vector<std::pair<KigsID, CoreModifiable::ModifiableMethod>>& table) override\
-{\
-	FOR_EACH(COREFSM_WRAP_METHOD_PUSH_BACK, __VA_ARGS__)\
-}
-
 #define STARTCOREFSMSTATE_WRAPMETHODS() DO_COREFSMSTATE_SUBCLASS_DECLARATION() 
 
 #define ENDCOREFSMSTATE_WRAPMETHODS(...) \
