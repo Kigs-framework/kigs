@@ -38,7 +38,8 @@ void	PlatformBaseApplication::Resume()
 		//RendererOpenGLES::ReinitModuleRenderer();
 
 		std::vector<CMSP>	instances = CoreModifiable::GetInstances("RenderingScreen");
-		(*instances.begin())->CallMethod("ResetContext", NULL);
+		std::vector<CoreModifiableAttribute*> attr;
+		(*instances.begin())->CallMethod("ResetContext", attr);
 
 		std::vector<CMSP>::iterator itInstances;
 

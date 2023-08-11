@@ -95,21 +95,21 @@ void	AccelerometerAndroid::UpdateDevice()
 	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(mKigsAccelerometer, mGetValue);
 	jbyte *body = g_env->GetByteArrayElements(arr, 0);
 	float* val = (float*)body;
-	mRawAccX = val[0];
-	mRawAccY = val[1];
-	mRawAccZ = val[2];
+	mRawAcceleration[0] = val[0];
+	mRawAcceleration[1] = val[1];
+	mRawAcceleration[2] = val[2];
 
-	mAccX = val[3];
-	mAccY = val[4];
-	mAccZ = val[5];
+	mAcceleration[0] = val[3];
+	mAcceleration[1] = val[4];
+	mAcceleration[2] = val[5];
 
-	mVelX = val[6];
-	mVelY = val[7];
-	mVelZ = val[8];
+	mVelocity[0] = val[6];
+	mVelocity[1] = val[7];
+	mVelocity[2] = val[8];
 
-	mPosX = val[9];
-	mPosY = val[10];
-	mPosZ = val[11];
+	mPosition[0] = val[9];
+	mPosition[1] = val[10];
+	mPosition[2] = val[11];
 
 	g_env->ReleaseByteArrayElements(arr, body, 0);
 

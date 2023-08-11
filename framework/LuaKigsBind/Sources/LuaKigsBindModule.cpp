@@ -353,7 +353,7 @@ static int CustomLuaPrint(lua_State *L)
 	}
 	*ptr++ = '\n';
 	*ptr = 0;
-	printf(CustomLuaPrintBuffer);
+	printf("%s",CustomLuaPrintBuffer);
 
 	return 0;
 }

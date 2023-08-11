@@ -8,22 +8,6 @@
 namespace Kigs
 {
 
-	//#ifdef _DEBUG
-	// a printf replacement using android log
-	int myPrintfLogger(const char* fmt, ...)
-	{
-		int n;
-		va_list ap;
-
-		va_start(ap, fmt);
-		n = __android_log_vprint(ANDROID_LOG_INFO, LOG_TAG, fmt, ap);
-		va_end(ap);
-
-
-		return n;
-	}
-	//#endif
-
 	namespace File
 	{
 
@@ -580,4 +564,41 @@ namespace Kigs
 			return mID;
 		}
 	}
+}
+
+#include <iostream>
+#include <codecvt>
+#include <locale>
+
+// utility wrapper to adapt locale-bound facets for wstring/wbuffer convert
+template<class Facet>
+struct deletable_facet : Facet
+{
+    template<class ...Args>
+    deletable_facet(Args&& ...args) : Facet(std::forward<Args>(args)...) {}
+    ~deletable_facet() {}
+};
+
+std::string Kigs::Core::to_utf8(const wchar_t* buffer, int len)
+{
+    std::wstring str(buffer,len);
+    return to_utf8(str);
+}
+
+std::string Kigs::Core::to_utf8(const std::wstring& str)
+{
+	std::wstring_convert<deletable_facet<std::codecvt<wchar_t, char, std::mbstate_t>>> utf8_conv;
+	return utf8_conv.to_bytes(str);
+}
+
+std::wstring Kigs::Core::to_wchar(const char* buffer, int len)
+{
+	std::string str(buffer,len);
+    return to_wchar(str);
+}
+
+std::wstring Kigs::Core::to_wchar(const std::string& str)
+{
+	std::wstring_convert<deletable_facet<std::codecvt<wchar_t, char, std::mbstate_t>>>  wchar_conv;
+	return wchar_conv.from_bytes(str);
 }

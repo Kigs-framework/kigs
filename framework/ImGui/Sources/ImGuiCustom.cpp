@@ -56,8 +56,8 @@ namespace Kigs
 		{
 			const float wrap_width = wrapped ? ImGui::CalcWrapWidthForPos(ImGui::GetCursorScreenPos(), 0.0f) : -1.0f;
 			CenterWidget(ImGui::CalcTextSize(txt.c_str(), 0, false, wrap_width).x);
-			if (!wrapped) ImGui::Text(txt.c_str());
-			else ImGui::TextWrapped(txt.c_str());
+			if (!wrapped) ImGui::Text("%s", txt.c_str());
+			else ImGui::TextWrapped("%s", txt.c_str());
 		}
 		float SameLineAlignRight(float sum_of_elements_width, u32 nb_of_elements)
 		{

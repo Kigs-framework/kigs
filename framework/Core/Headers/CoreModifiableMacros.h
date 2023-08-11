@@ -120,7 +120,7 @@ static currentClass* Get(const std::string &name)\
 	return parentClass::GetFirstInstanceByName(#currentClass, name, false)->as<currentClass>();\
 }\
 template<bool T>\
-static std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* addAllMappedAttributes(CurrentClassType* localthis,std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* parent=nullptr)\
+std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* addAllMappedAttributes(CurrentClassType* localthis,std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* parent=nullptr)\
 {\
 	return parent; \
 }\
@@ -160,6 +160,11 @@ template<typename templatetype> \
 KigsID currentClass<templatetype>::mRuntimeType = "";
 
 
+template <class T1, typename T2>
+inline constexpr uintptr_t myoffset_of(T1* localthis, T2* member) {
+	return uintptr_t(intptr_t(member) - intptr_t(localthis));
+}
+
 
 /*! macro used to register the class so that the class can be instanciated by the instanceFactory
  generally set in the associated module Init method
@@ -195,7 +200,7 @@ DECLARE_CLASS_INFO_WITHOUT_FACTORY(currentClass,#returnclassname)
 #define BASE_ATTRIBUTE(name, ...) {*this, #name, __VA_ARGS__ }
 
 #define CREATE_LOCAL_ATTRIBUTE(name)  uintptr_t name##WrapAttr[(sizeof(CoreModifiableAttributeMap<decltype(name),0>)+sizeof(uintptr_t)-1)/sizeof(uintptr_t)];
-#define ADD_MAPPED_ATTRIBUTE(name) localthis->addMappedAttribute<decltype(localthis->name)>(offsetof(CurrentClassType,name),#name,parent,(CoreModifiableAttribute*)(localthis->name##WrapAttr));
+#define ADD_MAPPED_ATTRIBUTE(name) localthis->addMappedAttribute<decltype(localthis->name)>(myoffset_of(localthis,&localthis->name),#name,parent,(CoreModifiableAttribute*)(localthis->name##WrapAttr));
 
 // WRAP_ATTRIBUTES uses uintptr_t placeholders for CoreModifiableAttributeMap
 #define WRAP_ATTRIBUTES(...) \
@@ -203,7 +208,7 @@ protected:\
 FOR_EACH(CREATE_LOCAL_ATTRIBUTE, __VA_ARGS__)\
 public:\
 template<>\
-static std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* addAllMappedAttributes<true>(CurrentClassType* localthis,std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* parent)\
+std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* addAllMappedAttributes<true>(CurrentClassType* localthis,std::vector<std::pair<KigsID,CoreModifiableAttribute*>>* parent)\
 {\
 	if(!parent) {parent=new std::vector<std::pair<KigsID,CoreModifiableAttribute*>>();} \
 	FOR_EACH(ADD_MAPPED_ATTRIBUTE, __VA_ARGS__)\

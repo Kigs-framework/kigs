@@ -7,10 +7,6 @@
 #include <android/log.h>
 #define  LOG_TAG    "kigsPrintf"
 
-extern int myPrintfLogger(const char *fmt,...);
-
-// utilise le log a la place du printf
-#define printf		myPrintfLogger
 
 //#else // no debug
 //#define printf(...)
@@ -22,6 +18,7 @@ extern int myPrintfLogger(const char *fmt,...);
 
 namespace Kigs
 {
+
 	namespace Core
 	{
 		template<typename smartPointOn>

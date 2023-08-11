@@ -41,12 +41,12 @@ namespace Kigs
 
 		inline void TextSTD(const std::string& text)
 		{
-			ImGui::Text(text.c_str());
+			ImGui::Text("%s", text.c_str());
 		}
 
 		inline void SetTooltipSTD(const std::string& text)
 		{
-			ImGui::SetTooltip(text.c_str());
+			ImGui::SetTooltip("%s", text.c_str());
 		}
 
 		template<auto F, typename ... Args>

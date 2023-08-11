@@ -10,9 +10,9 @@ CompassAndroid::CompassAndroid(const std::string& name, CLASS_NAME_TREE_ARG)
 	: CompassDevice(name, PASS_CLASS_NAME_TREE_ARG)
 	, mIsRunning(false)
 {
-	mCompX = 0.0f;
-	mCompY = 0.0f;
-	mCompZ = 0.0f;
+	mCompasCoords[0] = 0.0f;
+	mCompasCoords[1] = 0.0f;
+	mCompasCoords[2] = 0.0f;
 
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
@@ -96,12 +96,9 @@ void	CompassAndroid::UpdateDevice()
 	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(mKigsCompass, mGetValue);
 	jbyte *body = g_env->GetByteArrayElements(arr, 0);
 	float* val = (float*)body;
-	float x = val[0];
-	float y = val[1];
-	float z = val[2];
-	mCompX = x;
-	mCompY = y;
-	mCompZ = z;
+	mCompasCoords[0] = val[0];
+	mCompasCoords[1] = val[1];
+	mCompasCoords[2] = val[2];
 
 	g_env->ReleaseByteArrayElements(arr, body, 0);
 

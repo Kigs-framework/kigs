@@ -86,13 +86,13 @@ void	GyroscopeAndroid::UpdateDevice()
 	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(mKigsGyroscope, mGetVelocity);
 	jbyte *body = g_env->GetByteArrayElements(arr, 0);
 
-	mRotationVelocity = *reinterpret_cast<Point3D*>(body);
+	mRotationVelocity = *reinterpret_cast<v3f*>(body);
 	g_env->ReleaseByteArrayElements(arr, body, 0);
 
 	arr = (jbyteArray)g_env->CallStaticObjectMethod(mKigsGyroscope, mGetQuat);
 	body = g_env->GetByteArrayElements(arr, 0);
 	
-	mRotationQuaternion = *reinterpret_cast<Vector4D*>(body);
+	mRotationQuaternion = *reinterpret_cast<Quaternion*>(body);
 
 	g_env->ReleaseByteArrayElements(arr, body, 0);
 }

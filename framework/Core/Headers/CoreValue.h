@@ -376,7 +376,7 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		inline CoreValueBase<s64, CoreItem>::operator std::string() const
 		{
 			char L_Buffer[64] = { 0 };
-			snprintf(L_Buffer, 64, "%lli", (s64)mValue);
+			snprintf(L_Buffer, 64, "%lli", (long long)mValue);
 			return L_Buffer;
 		}
 
@@ -385,7 +385,7 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		inline CoreValueBase<s64, CoreItem>::operator usString() const
 		{
 			char L_Buffer[64] = { 0 };
-			snprintf(L_Buffer, 64, "%lli", (s64)mValue);
+			snprintf(L_Buffer, 64, "%lli", (long long)mValue);
 			return usString(L_Buffer);
 		}
 
@@ -438,7 +438,7 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		inline CoreValueBase<u64, CoreItem>::operator std::string() const
 		{
 			char L_Buffer[64] = { 0 };
-			snprintf(L_Buffer, 64, "%llu", (u64)mValue);
+			snprintf(L_Buffer, 64, "%llu", (unsigned long long)mValue);
 			return L_Buffer;
 		}
 
@@ -446,7 +446,7 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		inline CoreValueBase<u64, CoreItem>::operator usString() const
 		{
 			char L_Buffer[64] = { 0 };
-			snprintf(L_Buffer, 64, "%llu", (u64)mValue);
+			snprintf(L_Buffer, 64, "%llu", (unsigned long long)mValue);
 			return usString(L_Buffer);
 		}
 
@@ -524,9 +524,9 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		template<>
 		inline CoreValueBase<std::string, CoreItem>::operator u64() const
 		{
-			u64 v;
+			unsigned long long v;
 			sscanf(mValue.c_str(), "%llu", &v);
-			return v;
+			return (u64)v;
 		}
 
 		template<>
@@ -560,9 +560,9 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		template<>
 		inline CoreValueBase<usString, CoreItem>::operator u64() const
 		{
-			u64 v;
+			unsigned long long v;
 			sscanf(mValue.ToString().c_str(), "%llu", &v);
-			return v;
+			return (u64)v;
 		}
 
 		template<>
@@ -714,7 +714,7 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		inline CoreItem& CoreValue<std::string>::operator= (const s64& _value)
 		{
 			char L_Buffer[64] = { 0 };
-			snprintf(L_Buffer, 64, "%lli", _value);
+			snprintf(L_Buffer, 64, "%lli", (long long)_value);
 			this->mValue = L_Buffer;
 			return *this;
 		}
@@ -723,7 +723,7 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		inline CoreItem& CoreValue<usString>::operator= (const s64& _value)
 		{
 			char L_Buffer[64] = { 0 };
-			snprintf(L_Buffer, 64, "%lli", _value);
+			snprintf(L_Buffer, 64, "%lli", (long long)_value);
 			this->mValue = usString(L_Buffer);
 			return *this;
 		}
@@ -750,7 +750,7 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		inline CoreItem& CoreValue<std::string>::operator= (const u64& _value)
 		{
 			char L_Buffer[64] = { 0 };
-			snprintf(L_Buffer, 64, "%llu", _value);
+			snprintf(L_Buffer, 64, "%llu", (unsigned long long)_value);
 			this->mValue = L_Buffer;
 			return *this;
 		}
@@ -759,7 +759,7 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		inline CoreItem& CoreValue<usString>::operator= (const u64& _value)
 		{
 			char L_Buffer[64] = { 0 };
-			snprintf(L_Buffer, 64, "%llu", _value);
+			snprintf(L_Buffer, 64, "%llu", (unsigned long long)_value);
 			this->mValue = usString(L_Buffer);
 			return *this;
 		}
