@@ -1,14 +1,20 @@
-add_library(fsm INTERFACE)
+if(NOT "${KIGS_PLATFORM}" STREQUAL "Android")
 
-add_subdirectory(GPSCourse)
+	add_library(fsm INTERFACE)
 
-add_subdirectory(XMLArchive)
+	add_subdirectory(GPSCourse)
 
-add_subdirectory(CoreFSM)
+	add_subdirectory(XMLArchive)
 
-add_subdirectory(OctreeMeshSimplification)
 
-target_sources(fsm INTERFACE 
+
+	add_subdirectory(OctreeMeshSimplification)
+
+	target_sources(fsm INTERFACE 
 		"${CMAKE_CURRENT_SOURCE_DIR}/Sources/FSM/FSM.cpp"
 		"${CMAKE_CURRENT_SOURCE_DIR}/Sources/FSM/FSM_State.cpp"
 		"${CMAKE_CURRENT_SOURCE_DIR}/Sources/FSM/FSM_StateStruct.cpp")
+
+endif()
+		
+add_subdirectory(CoreFSM)

@@ -6,7 +6,9 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 cmake_policy(SET CMP0076 NEW)
 
-set(KIGS_ROOT "${CMAKE_SOURCE_DIR}/../../")
+if(NOT DEFINED KIGS_ROOT)
+	set(KIGS_ROOT "${CMAKE_SOURCE_DIR}/../../")
+endif()	
 set(KIGS_FRAMEWORK "${KIGS_ROOT}/kigs/framework/")
 set(KIGS_PRIVATE_FRAMEWORK "${KIGS_ROOT}/private/framework/")
 set(KIGS_EXTERN_LIBS "${KIGS_ROOT}/kigs/libs/")
@@ -63,28 +65,34 @@ function(add_executable)
 endfunction()
 
 function(set_kigsPlatform)
-	set(KIGS_PLATFORM Windows PARENT_SCOPE)
+
+	message(STATUS "set kigs platform")
+
+	set(KIGS_PLATFORM Windows CACHE INTERNAL "")
 	if(WIN32)
 		if(${CMAKE_SYSTEM_NAME} MATCHES WindowsStore)
-			set(KIGS_PLATFORM WUP PARENT_SCOPE)
+			set(KIGS_PLATFORM WUP CACHE INTERNAL "")
 		elseif(JAVASCRIPT)
-			set(KIGS_PLATFORM Javascript PARENT_SCOPE)
+			set(KIGS_PLATFORM Javascript CACHE INTERNAL "")
 		elseif(KIGS_ANDROID)
-			set(KIGS_PLATFORM Android PARENT_SCOPE)
+			set(KIGS_PLATFORM Android CACHE INTERNAL "")
 		elseif(KIGS_SWITCH)
-			set(KIGS_PLATFORM Switch PARENT_SCOPE)
+			set(KIGS_PLATFORM Switch CACHE INTERNAL "")
 		else()
-			set(KIGS_PLATFORM Windows PARENT_SCOPE)
+			set(KIGS_PLATFORM Windows CACHE INTERNAL "")
 		endif()
 
 	elseif(APPLE) #TODO : ios / osX
-		set(KIGS_PLATFORM iOS PARENT_SCOPE)
+		set(KIGS_PLATFORM iOS CACHE INTERNAL "")
 	
 	elseif(JAVASCRIPT)
-		set(KIGS_PLATFORM Javascript PARENT_SCOPE)
+		set(KIGS_PLATFORM Javascript CACHE INTERNAL "")
 
+	elseif(KIGS_ANDROID) #TODO
+		set(KIGS_PLATFORM Android CACHE INTERNAL "")
+	
 	elseif(UNIX) #TODO
-		set(KIGS_PLATFORM Linux PARENT_SCOPE)
+		set(KIGS_PLATFORM Linux CACHE INTERNAL "")	
 	endif()
 
 endfunction(set_kigsPlatform)

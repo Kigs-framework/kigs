@@ -1,3 +1,4 @@
+
 add_library(HTTPRequest STATIC "")
 
 target_link_libraries(HTTPRequest PUBLIC Core XML)

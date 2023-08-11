@@ -1,3 +1,4 @@
+
 add_library(Camera STATIC "")
 
 target_link_libraries(Camera PUBLIC BaseFramework Core TinyImage Input)
@@ -7,7 +8,7 @@ target_include_directories(Camera PUBLIC "Headers")
 set(PLATFORM_MODULE "Camera${KIGS_PLATFORM}")
 
 target_include_directories(Camera PRIVATE "${PLATFORM_MODULE}/Headers"
-                                          "${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Headers")
+										  "${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Headers")
 
 
 if(UNITY_BUILD)

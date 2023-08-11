@@ -1,6 +1,10 @@
 project(Sample1)
 
+if(NOT ${KIGS_PLATFORM} STREQUAL "Android")
 add_executable(Sample1 "")
+else()
+add_library(Sample1 SHARED)
+endif()
 set(Sample1_GUID_CMAKE "C5EA9399-3DEF-4D64-B130-F82441E3B3A9" CACHE INTERNAL "Sample1 GUID")
 
 if(${KIGS_PLATFORM} STREQUAL "Windows")
