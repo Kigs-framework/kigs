@@ -180,7 +180,7 @@ bool	ModuleInputAndroid::addItem(const CMSP& item, ItemPosition pos DECLARE_LINK
 
 }
 
-SP<ModuleBase> MODULEINITFUNC(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> Kigs::Input::PlatformInputModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 

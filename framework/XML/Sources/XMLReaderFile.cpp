@@ -54,23 +54,25 @@ void  XMLReaderFile::StartDescriptionElementDelegate(void *userdata, const char 
 	pParams[0]=(void*)el;
 	pParams[1]=(void*)attr;
 
-	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLElementStartDescriptionID,(std::vector<CoreModifiableAttribute*>&)*((std::vector<CoreModifiableAttribute*>*)0),pParams);
+    std::vector<CoreModifiableAttribute*> empty;
+
+	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLElementStartDescriptionID,empty,pParams);
 }
 
 //! utility method
 void  XMLReaderFile::EndDescriptionElementDelegate(void *userdata, const char *el)
 {
 	MyUserData*	localuserdata=(MyUserData*)userdata;
-
-	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLElementEndDescriptionID,(std::vector<CoreModifiableAttribute*>&)*((std::vector<CoreModifiableAttribute*>*)0),(void*)el);
+    std::vector<CoreModifiableAttribute*> empty;
+	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLElementEndDescriptionID,empty,(void*)el);
 }
 
 //! utility method
 void  XMLReaderFile::StartCDataDelegate(void  *userData)
 {
 	MyUserData*	localuserdata=(MyUserData*)userData;
-
-	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLStartCDataID,(std::vector<CoreModifiableAttribute*>&)*((std::vector<CoreModifiableAttribute*>*)0));
+    std::vector<CoreModifiableAttribute*> empty;
+	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLStartCDataID,empty);
 }
 
 //! utility method 
@@ -82,8 +84,8 @@ void  XMLReaderFile::EndCDataDelegate(void *userData,const char *s, int len)
 	char*	change_s=(char*)s;
 
 	change_s[len]=0;
-
-	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLEndCDataID,(std::vector<CoreModifiableAttribute*>&)*((std::vector<CoreModifiableAttribute*>*)0),(void*)s);
+    std::vector<CoreModifiableAttribute*> empty;
+	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLEndCDataID,empty,(void*)s);
 	change_s[len]=backup;
 }
 
@@ -96,8 +98,8 @@ void  XMLReaderFile::DeclHandlerDelegate(void  *userdata,   const char  *version
 	pParams[0]=(void*)version;
 	pParams[1]=(void*)encoding;
 	pParams[2]=(void*)&standalone;
-
-	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLDeclHandlerID,(std::vector<CoreModifiableAttribute*>&)*((std::vector<CoreModifiableAttribute*>*)0),pParams);
+    std::vector<CoreModifiableAttribute*> empty;
+	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLDeclHandlerID,empty,pParams);
 }
 
 //! utility method 
@@ -113,8 +115,8 @@ void  XMLReaderFile::CharacterHandlerDelegate(void *userdata,const char *s, int 
 	void*	pParams[2];
 	pParams[0]=(void*)s;
 	pParams[1]=(void*)&len;
-
-	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLCharacterHandlerID,(std::vector<CoreModifiableAttribute*>&)*((std::vector<CoreModifiableAttribute*>*)0),pParams);
+    std::vector<CoreModifiableAttribute*> empty;
+	localuserdata->mDelegate->CallMethod(localuserdata->mReader->mXMLCharacterHandlerID,empty,pParams);
 
 	change_s[len]=backup;
 }

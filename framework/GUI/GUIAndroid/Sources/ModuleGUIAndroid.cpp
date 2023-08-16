@@ -37,13 +37,13 @@ void ModuleGUIAndroid::Update(const Time::Timer& timer,void* /*addParam*/)
 
 }    
 
-ModuleBase* PlatformGUIModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
+SP<ModuleBase> Kigs::Gui::PlatformGUIModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params)
 {
 	KigsCore::ModuleStaticInit(core);
 
 	DECLARE_CLASS_INFO_WITHOUT_FACTORY(ModuleGUIAndroid, "ModuleGUIAndroid");
-    ModuleBase* gInstanceModuleGUIAndroid=new ModuleGUIAndroid("ModuleGUIAndroid");
+	
+    auto gInstanceModuleGUIAndroid=MakeRefCounted<ModuleGUIAndroid>("ModuleGUIAndroid");
     gInstanceModuleGUIAndroid->Init(core,params);
-    
 	return     gInstanceModuleGUIAndroid;
 }    

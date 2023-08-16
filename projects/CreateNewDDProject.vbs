@@ -2,7 +2,7 @@
 
 Option Explicit
 
-' Dim logFile
+'Dim logFile
 Const TristateFalse = 0 ' the value for ASCII
 Const Overwrite = True
 
@@ -10,11 +10,12 @@ Sub ReplaceNames(Filename, OldText, NewText)
 
 	Dim f
 	f=FileSystem.GetExtensionName(Filename)
-	If f = "data" Or f = "js" Or f = "mem" Or f = "png" Or f = "ttf" Then 
+	If f = "data" Or f = "js" Or f = "mem" Or f = "png" Or f = "ttf" Or f = "webp" Or f = "jar" Then 
 		Exit Sub
 	End If
 
-
+	'logFile.WriteLine "ReplaceNames " + Filename
+	
 	Const TemporaryFolder = 2
 
 	Dim OriginalFile, TempFile, Line
@@ -113,12 +114,14 @@ Function CreateGUID
   CreateGUID = Mid(TypeLib.Guid, 2, 36)
 End Function
 
-dim startFolder,OldText,NewText
+
+
+dim startFolder,OldText,NewText,lowerOldText,lowerNexText
 
 Dim FileSystem
 Set FileSystem = CreateObject("Scripting.FileSystemObject")
 
-' Set logFile = FileSystem.CreateTextFile("CreateProjectLog.txt", Overwrite, TristateFalse)
+'Set logFile = FileSystem.CreateTextFile("CreateProjectLog.txt", Overwrite, TristateFalse)
 
 Dim strAnswer
 strAnswer = InputBox("Please enter the new project name:", "New Kigs Data Driven Project")
@@ -152,8 +155,14 @@ NewText = strAnswer
 
 ' first change all folder names
 RenameAllFolders startFolder, OldText, NewText 
-
 ChangeAllFiles startFolder, OldText, NewText 
+
+' for android do it also in lower caps
+lowerOldText =  Lcase(OldText)
+lowerNexText = Lcase(NewText)
+RenameAllFolders startFolder, lowerOldText, lowerNexText 
+ChangeAllFiles startFolder, lowerOldText, lowerNexText 
+
 
 ' change Guid
 ChangeAllFiles startFolder, "B1EEDF0E-DA7E-4E8E-9AAA-7E33F37F6A31", CreateGUID
@@ -169,5 +178,7 @@ ChangeAllFiles startFolder, "e01d4331-70cf-481d-8639-f0e749ded9d1", CreateGUID
 
 ' cmake app project guid
 ChangeAllFiles startFolder, "E40B7E25-3BB8-48B2-8CFF-E12BEE76CFEB", CreateGUID
+
+'logFile.Close
 
 Wscript.Quit

@@ -10,7 +10,7 @@ namespace Kigs
         using namespace Kigs::Core;
         class ModuleGUIAndroid;
 
-        ModuleBase* PlatformGUIModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
+        SP<ModuleBase>  PlatformGUIModuleInit(KigsCore* core, const std::vector<CoreModifiableAttribute*>* params);
 
 
         // ****************************************
