@@ -14,7 +14,7 @@ CompassAndroid::CompassAndroid(const std::string& name, CLASS_NAME_TREE_ARG)
 	mCompasCoords[1] = 0.0f;
 	mCompasCoords[2] = 0.0f;
 
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+/*	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	jclass pMaClasse = g_env->FindClass("com/kigs/input/KigsCompass");
 	mKigsCompass = (jclass)g_env->NewGlobalRef(pMaClasse);
@@ -29,34 +29,34 @@ CompassAndroid::CompassAndroid(const std::string& name, CLASS_NAME_TREE_ARG)
 		mStartMethod = g_env->GetStaticMethodID(mKigsCompass, "startListening", "(I)V");
 
 		mGetValue = g_env->GetStaticMethodID(mKigsCompass, "getValue", "()[B");
-	}
+	}*/
 }
 
 CompassAndroid::~CompassAndroid()
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	g_env->DeleteGlobalRef(mKigsCompass);
+	g_env->DeleteGlobalRef(mKigsCompass);*/
 	mKigsCompass = 0;
 }
 
 bool	CompassAndroid::Aquire()
 {
-	if (CompassDevice::Aquire())
+	/*if (CompassDevice::Aquire())
 	{
 		Start();
 		return true;
-	}
+	}*/
 	return false;
 }
 
 bool	CompassAndroid::Release()
 {
-	if (CompassDevice::Release())
+	/*if (CompassDevice::Release())
 	{
 		Stop();
 		return true;
-	}
+	}*/
 	return false;
 }
 
@@ -65,9 +65,9 @@ void	CompassAndroid::Start()
 {
 	if (mIsAvailable)
 	{
-		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 		g_env->CallStaticVoidMethod(mKigsCompass, mStartMethod, (int)mRate);
-		mIsRunning = true;
+		mIsRunning = true;*/
 	}
 }
 
@@ -75,9 +75,9 @@ void	CompassAndroid::Stop()
 {
 	if (mIsAvailable)
 	{
-		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 		g_env->CallStaticVoidMethod(mKigsCompass, mStopMethod, false);
-		mIsRunning = false;
+		mIsRunning = false;*/
 	}
 }
 
@@ -90,7 +90,7 @@ void	CompassAndroid::UpdateDevice()
 		return;
 
 
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 
 	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(mKigsCompass, mGetValue);
@@ -101,7 +101,7 @@ void	CompassAndroid::UpdateDevice()
 	mCompasCoords[2] = val[2];
 
 	g_env->ReleaseByteArrayElements(arr, body, 0);
-
+*/
 }
 
 void	CompassAndroid::DoInputDeviceDescription()

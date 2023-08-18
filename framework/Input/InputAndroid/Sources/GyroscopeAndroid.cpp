@@ -8,7 +8,7 @@ IMPLEMENT_CLASS_INFO(GyroscopeAndroid)
 
 GyroscopeAndroid::GyroscopeAndroid(const std::string& name, CLASS_NAME_TREE_ARG) : GyroscopeDevice(name, PASS_CLASS_NAME_TREE_ARG)
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	jclass pMaClasse = g_env->FindClass("com/kigs/input/KigsGyroscope");
 	mKigsGyroscope = (jclass)g_env->NewGlobalRef(pMaClasse);
@@ -24,34 +24,34 @@ GyroscopeAndroid::GyroscopeAndroid(const std::string& name, CLASS_NAME_TREE_ARG)
 
 		mGetVelocity = g_env->GetStaticMethodID(mKigsGyroscope, "getVelocity", "()[B");
 		mGetQuat = g_env->GetStaticMethodID(mKigsGyroscope, "getQuaternion", "()[B");
-	}
+	}*/
 }
 
 GyroscopeAndroid::~GyroscopeAndroid()
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	g_env->DeleteGlobalRef(mKigsGyroscope);
+	g_env->DeleteGlobalRef(mKigsGyroscope);*/
 	mKigsGyroscope = 0;
 }
 
 bool	GyroscopeAndroid::Aquire()
 {
-	if (GyroscopeDevice::Aquire())
+	/*if (GyroscopeDevice::Aquire())
 	{
 		Start();
 		return true;
-	}
+	}*/
 	return false;
 }
 
 bool	GyroscopeAndroid::Release()
 {
-	if (GyroscopeDevice::Release())
+	/*if (GyroscopeDevice::Release())
 	{
 		Stop();
 		return true;
-	}
+	}*/
 	return false;
 }
 
@@ -59,9 +59,9 @@ void	GyroscopeAndroid::Start()
 {
 	if (mIsAvailable)
 	{
-		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 		g_env->CallStaticVoidMethod(mKigsGyroscope, mStartMethod, (int)mRate);
-		mIsRunning = true;
+		mIsRunning = true;*/
 	}
 }
 
@@ -69,9 +69,9 @@ void	GyroscopeAndroid::Stop()
 {
 	if (mIsAvailable)
 	{
-		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+		/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 		g_env->CallStaticVoidMethod(mKigsGyroscope, mStopMethod, false);
-		mIsRunning = false;
+		mIsRunning = false;*/
 	}
 }
 void	GyroscopeAndroid::UpdateDevice()
@@ -81,7 +81,7 @@ void	GyroscopeAndroid::UpdateDevice()
 	if (!mIsRunning)
 		return;
 
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+/*	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(mKigsGyroscope, mGetVelocity);
 	jbyte *body = g_env->GetByteArrayElements(arr, 0);
@@ -94,7 +94,7 @@ void	GyroscopeAndroid::UpdateDevice()
 	
 	mRotationQuaternion = *reinterpret_cast<Quaternion*>(body);
 
-	g_env->ReleaseByteArrayElements(arr, body, 0);
+	g_env->ReleaseByteArrayElements(arr, body, 0);*/
 }
 
 void	GyroscopeAndroid::DoInputDeviceDescription()

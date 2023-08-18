@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Platform/Core/KigsJavaIDManager.h"
 
 //#ifdef _DEBUG
 

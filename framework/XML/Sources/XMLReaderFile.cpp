@@ -329,7 +329,8 @@ XMLBase* XMLReaderFile::ReadFile(const std::string& file,const char* force_as_fo
 		XMLReaderFile reader;
 		xml = reader.ProtectedReadFile(lFileHandle.get());
 	}
-	xml->setPath(file);
+	if(xml)
+		xml->setPath(file);
 	return xml;
 }
 

@@ -176,7 +176,11 @@ if(WIN32 OR KIGS_ANDROID)
 		#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 		target_compile_options(Base INTERFACE -frtti)
 		target_compile_definitions(Base INTERFACE _M_ARM=7 GL_ES2 ANDROID)
-		target_link_libraries(Base INTERFACE EGL GLESv3 jnigraphics android log)
+		
+		# Searches for a package provided by the game activity dependency
+		find_package(game-activity REQUIRED CONFIG)
+		
+		target_link_libraries(Base INTERFACE game-activity::game-activity EGL GLESv3 jnigraphics android log)
 		set(KIGS_PLATFORM Android)
 		if(NOT ANDROID_ABI)
 	     	set(ANDROID_ABI armeabi-v7a)

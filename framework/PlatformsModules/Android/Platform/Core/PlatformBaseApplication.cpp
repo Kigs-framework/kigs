@@ -28,7 +28,7 @@ const char* PlatformBaseApplication::getPlatformName()
 
 void	PlatformBaseApplication::Resume()
 {
-	KigsJavaIDManager::clearEnvList();
+	//KigsJavaIDManager::clearEnvList();
 	
 	// reload all textures and sprites
 	// Not needed with setPreserveEGLContextOnPause(true);
@@ -116,42 +116,43 @@ void	 PlatformBaseApplication::setThreadAffinityMask(void* vpid,int mask)
 
 void	PlatformBaseApplication::Message(int  mtype, int  Params)
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	g_env->CallStaticVoidMethod(KigsJavaIDManager::Main_class, KigsJavaIDManager::SendMessage, mtype, Params);
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	g_env->CallStaticVoidMethod(KigsJavaIDManager::Main_class, KigsJavaIDManager::SendMessage, mtype, Params);*/
 }
 
 void	PlatformBaseApplication::OpenLink(const char* a_link)
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	jstring L_Link = g_env->NewStringUTF(a_link);
 	g_env->CallStaticVoidMethod(KigsJavaIDManager::Main_class, KigsJavaIDManager::OpenLink, L_Link);
-	g_env->DeleteLocalRef(L_Link);
+	g_env->DeleteLocalRef(L_Link);*/
 }
 
 void	PlatformBaseApplication::OpenLink(const unsigned short* al_ink, const unsigned int a_length)
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	jstring L_Link = g_env->NewString(al_ink, a_length);
 	g_env->CallStaticVoidMethod(KigsJavaIDManager::Main_class, KigsJavaIDManager::OpenLink, L_Link);
-	g_env->DeleteLocalRef(L_Link);
+	g_env->DeleteLocalRef(L_Link);*/
 }
 
 bool	PlatformBaseApplication::CheckBackKeyPressed()
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	jboolean backkey = g_env->CallStaticBooleanMethod(KigsJavaIDManager::Main_class, KigsJavaIDManager::GetBackKeyState);
 
 	if (backkey == JNI_TRUE)
 	{
 		return true;
-	}
+	}*/
 	return false;
 }
 
 bool	PlatformBaseApplication::CheckConnexion()
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	jboolean L_result = g_env->CallStaticBooleanMethod(KigsJavaIDManager::Main_class, KigsJavaIDManager::CheckConnexion);
-	return (L_result == JNI_TRUE) ? true : false;
+	return (L_result == JNI_TRUE) ? true : false;*/
+	return false;
 }

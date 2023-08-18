@@ -54,7 +54,7 @@ void ModuleInputAndroid::Init(KigsCore* core, const std::vector<CoreModifiableAt
 		if (localmouse)
 		{
 			if(multitouch)
-				localmouse->setValue("MultiTouch", multitouch.get());
+				localmouse->setValue("MultiTouch", multitouch);
 
 			localmouse->DoInputDeviceDescription();
 			addItem((CMSP&)localmouse);

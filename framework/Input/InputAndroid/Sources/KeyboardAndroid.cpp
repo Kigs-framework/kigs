@@ -29,12 +29,12 @@ IMPLEMENT_CLASS_INFO(KeyboardAndroid)
 
 IMPLEMENT_CONSTRUCTOR(KeyboardAndroid)
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	mJKeyboard = KigsJavaIDManager::RegisterClass(g_env, "com/kigs/input/KigsKeyboard");
 
 	mJGetActions = g_env->GetStaticMethodID(mJKeyboard, "GetKeyActions", "()[B");
 	mJClear = g_env->GetStaticMethodID(mJKeyboard, "Clear", "()V");
-
+*/
 	CurrentKeyboard = this;
 }
 
@@ -55,20 +55,12 @@ void	KeyboardAndroid::UpdateDevice()
 	mKeyDownList.clear();
 	std::vector<KeyEvent>	touchVector;
 
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	// get up event 
 	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(mJKeyboard, mJGetActions);
 	//jsize len = g_env->GetArrayLength(arr);
 	jbyte *body = g_env->GetByteArrayElements(arr, 0);
-	/*for (int i = 0; i<len; i++)
-	{
-		int keycode = body[i];
-		m_KeyUpList.push_back(keycode);
-
-		maInt* value = new maInt(*this, false, LABEL_AND_ID(KeyCode), -keycode);
-		touchVector.push_back(value);
-	}*/
 
 	unsigned char eventCount = ((unsigned char*)body)[0];
 
@@ -103,7 +95,7 @@ void	KeyboardAndroid::UpdateDevice()
 		EmitSignal(Signals::KeyboardEvent, touchVector);
 	}
 
-	g_env->CallStaticVoidMethod(mJKeyboard, mJClear);
+	g_env->CallStaticVoidMethod(mJKeyboard, mJClear);*/
 }
 
 void	KeyboardAndroid::DoInputDeviceDescription()
@@ -132,24 +124,24 @@ void	KeyboardAndroid::DoInputDeviceDescription()
 
 void KeyboardAndroid::Show()
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	jclass lMaClasse = g_env->FindClass("com/kigs/input/KigsKeyboard");
 
 	jmethodID ShowMethod = g_env->GetStaticMethodID(lMaClasse, "ShowKeyboard", "(Z)V");
 	g_env->CallStaticVoidMethod(lMaClasse, ShowMethod, true);
 
-	g_env->DeleteLocalRef(lMaClasse);
+	g_env->DeleteLocalRef(lMaClasse);*/
 };
 
 void KeyboardAndroid::Hide()
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	jclass lMaClasse = g_env->FindClass("com/kigs/input/KigsKeyboard");
 
 	jmethodID ShowMethod = g_env->GetStaticMethodID(lMaClasse, "ShowKeyboard", "(Z)V");
 	g_env->CallStaticVoidMethod(lMaClasse, ShowMethod, false);
 
-	g_env->DeleteLocalRef(lMaClasse);
+	g_env->DeleteLocalRef(lMaClasse);*/
 };
 
 DEFINE_METHOD(KeyboardAndroid, ReinitCB)

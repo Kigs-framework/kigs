@@ -9,7 +9,7 @@ IMPLEMENT_CLASS_INFO(MultiTouchAndroid)
 
 IMPLEMENT_CONSTRUCTOR(MultiTouchAndroid)
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	jclass  pMaClasse =g_env->FindClass("com/kigs/kigsmain/KigsGLSurfaceView");
 
@@ -35,20 +35,20 @@ IMPLEMENT_CONSTRUCTOR(MultiTouchAndroid)
 	mEventGetX = g_env->GetMethodID(pMaClasse, "getX", "()F");
 	mEventGetY = g_env->GetMethodID(pMaClasse, "getY", "()F");
 	mEventGetAction = g_env->GetMethodID(pMaClasse, "getAction", "()I");
-	
+	*/
 	KigsCore::GetNotificationCenter()->addObserver(this, "ReinitCB", "ResetContext");
 }
 
 MultiTouchAndroid::~MultiTouchAndroid()
 {  
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	for (int i=0;i<mMaxTouch;i++) g_env->DeleteGlobalRef(mTouchList[i]);
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	for (int i=0;i<mMaxTouch;i++) g_env->DeleteGlobalRef(mTouchList[i]);*/
 }    
 
 
 void	MultiTouchAndroid::UpdateDevice()
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	int currentDevice = 0;
 
 	for (int touch = 0; touch < mMaxTouch; touch++)
@@ -85,14 +85,9 @@ void	MultiTouchAndroid::UpdateDevice()
 
 			g_env->CallVoidMethod(mTouchList[touch], mClearEventList);
 		}
-	/*	else // no event = no move
-		{
-			mDeviceItems[currentDevice++]->getState()->SetValue((float)0);
-			mDeviceItems[currentDevice++]->getState()->SetValue((float)0);
-			currentDevice++;
-		}*/
+
 	}
-	
+	*/
 	// call father update
 	ParentClassType::UpdateDevice();
 }
@@ -128,7 +123,7 @@ DEFINE_METHOD(MultiTouchAndroid, ReinitCB)
 {
 	printf("reinit MultiTouchAndroid\n");
 	
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	for (int i=0;i<mMaxTouch;i++) 
 		g_env->DeleteGlobalRef(mTouchList[i]);
 	
@@ -143,7 +138,7 @@ DEFINE_METHOD(MultiTouchAndroid, ReinitCB)
 		jobject pobjet = g_env->CallStaticObjectMethod(pMaClasse, getTouchClass, i);
 		mTouchList[i] = g_env->NewGlobalRef(pobjet);
 	}
-	
+	*/
 	return false;
 }
 

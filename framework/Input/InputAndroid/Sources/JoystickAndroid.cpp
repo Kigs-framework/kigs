@@ -8,27 +8,27 @@ IMPLEMENT_CLASS_INFO(JoystickAndroid)
 
 JoystickAndroid::JoystickAndroid(const std::string& name,CLASS_NAME_TREE_ARG) : JoystickDevice(name,PASS_CLASS_NAME_TREE_ARG)
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	
 	jclass  pMaClasse =g_env->FindClass("com/kigs/kigsmain/kigsmainActivity");
 	
 	mActivityClass=(jclass)g_env->NewGlobalRef(pMaClasse);
 	
 	mGetBackKey=g_env->GetStaticMethodID(mActivityClass, "GetBackKeyState", "()Z");
-	mGetMenuKey=g_env->GetStaticMethodID(mActivityClass, "GetMenuKeyState", "()Z");
+	mGetMenuKey=g_env->GetStaticMethodID(mActivityClass, "GetMenuKeyState", "()Z");*/
 }
 
 JoystickAndroid::~JoystickAndroid()
 {  
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	
-	g_env->DeleteGlobalRef(mActivityClass);
+	g_env->DeleteGlobalRef(mActivityClass);*/
 	mActivityClass=0;
 }    
 
 void	JoystickAndroid::UpdateDevice()
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	int currentDevice=0;
 
 	bool keystate=(bool)g_env->CallStaticBooleanMethod(mActivityClass,mGetBackKey);
@@ -54,7 +54,7 @@ void	JoystickAndroid::UpdateDevice()
 	{
 		mDeviceItems[currentDevice++]->getState()->SetValue((int)0);
 	}
-
+*/
 }
 
 void	JoystickAndroid::DoInputDeviceDescription()

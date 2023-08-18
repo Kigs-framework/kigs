@@ -10,7 +10,8 @@ AccelerometerAndroid::AccelerometerAndroid(const std::string& name, CLASS_NAME_T
 	: AccelerometerDevice(name, PASS_CLASS_NAME_TREE_ARG)
 	, mIsRunning(false)
 {
-
+// TODO
+/*
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	jclass pMaClasse = g_env->FindClass("com/kigs/input/KigsAccelerometer");
@@ -29,56 +30,56 @@ AccelerometerAndroid::AccelerometerAndroid(const std::string& name, CLASS_NAME_T
 		mStartMethod = g_env->GetStaticMethodID(mKigsAccelerometer, "startListening", "(I)V");
 
 		mGetValue = g_env->GetStaticMethodID(mKigsAccelerometer, "getValue", "()[B");
-	}
+	}*/
 }
 
 AccelerometerAndroid::~AccelerometerAndroid()
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
-	g_env->DeleteGlobalRef(mKigsAccelerometer);
+	g_env->DeleteGlobalRef(mKigsAccelerometer);*/
 	mKigsAccelerometer = 0;
 }
 
 bool	AccelerometerAndroid::Aquire()
 {
-	if (AccelerometerDevice::Aquire())
+	/*if (AccelerometerDevice::Aquire())
 	{
 		Start();
 		return true;
-	}
+	}*/
 	return false;
 }
 
 bool	AccelerometerAndroid::Release()
 {
-	if (AccelerometerDevice::Release())
+	/*if (AccelerometerDevice::Release())
 	{
 		Stop();
 		return true;
-	}
+	}*/
 	return false;
 }
 
 
 void	AccelerometerAndroid::Start()
 {
-	if (mIsAvailable)
+	/*if (mIsAvailable)
 	{
 		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 		g_env->CallStaticVoidMethod(mKigsAccelerometer, mStartMethod, (int)mRate);
 		mIsRunning = true;
-	}
+	}*/
 }
 
 void	AccelerometerAndroid::Stop()
 {
-	if (mIsAvailable)
+	/*if (mIsAvailable)
 	{
 		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 		g_env->CallStaticVoidMethod(mKigsAccelerometer, mStopMethod, false);
 		mIsRunning = false;
-	}
+	}*/
 }
 
 
@@ -89,7 +90,7 @@ void	AccelerometerAndroid::UpdateDevice()
 	if (!mIsRunning)
 		return;
 
-
+/*
 	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	jbyteArray  arr = (jbyteArray)g_env->CallStaticObjectMethod(mKigsAccelerometer, mGetValue);
@@ -112,7 +113,7 @@ void	AccelerometerAndroid::UpdateDevice()
 	mPosition[2] = val[11];
 
 	g_env->ReleaseByteArrayElements(arr, body, 0);
-
+*/
 }
 
 void	AccelerometerAndroid::DoInputDeviceDescription()

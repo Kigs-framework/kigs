@@ -18,11 +18,16 @@ DisplayDeviceCapsAndroid::DisplayDeviceCapsAndroid(const std::string& name,CLASS
 	toAdd.mMain=true;
 	
 	DisplayDeviceCapacity modeToAdd;
-	
+
+	// TODO : find current resolution
+	modeToAdd.mWidth = 1920;
+	modeToAdd.mHeight = 1080;
+
+	/*
 	JNIEnv* pEnv=KigsJavaIDManager::getEnv(pthread_self());
 
 	modeToAdd.mWidth=(int)pEnv->CallStaticIntMethod(KigsJavaIDManager::Renderer_class,  KigsJavaIDManager::GetResolutionX);
-	modeToAdd.mHeight=(int)pEnv->CallStaticIntMethod(KigsJavaIDManager::Renderer_class,  KigsJavaIDManager::GetResolutionY);
+	modeToAdd.mHeight=(int)pEnv->CallStaticIntMethod(KigsJavaIDManager::Renderer_class,  KigsJavaIDManager::GetResolutionY);*/
 	modeToAdd.mBitPerPixel=16;
 	modeToAdd.mIsCurrent=true;	
 

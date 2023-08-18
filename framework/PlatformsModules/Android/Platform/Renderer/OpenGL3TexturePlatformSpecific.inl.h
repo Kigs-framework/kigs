@@ -17,16 +17,10 @@ namespace Kigs
 		{
 			OpenGLTexturePlatformImpl(uint32_t width, uint32_t height, uint32_t usage, TinyImage::ImageFormat format)
 			{
-				if (KigsJavaIDManager::OsVersion <= 23)
-				{
-					buffers[0] = new AndroidGraphicBuffer(width, height, usage, format);
-					buffers[1] = new AndroidGraphicBuffer(width, height, usage, format);
-				}
-				else
-				{
-					buffers[0] = new AndroidGraphicBufferN(width, height, usage, format);
-					buffers[1] = new AndroidGraphicBufferN(width, height, usage, format);
-				}
+
+				buffers[0] = new AndroidGraphicBufferN(width, height, usage, format);
+				buffers[1] = new AndroidGraphicBufferN(width, height, usage, format);
+
 			}
 
 			~OpenGLTexturePlatformImpl()
@@ -117,8 +111,10 @@ namespace Kigs
 				return false;
 
 			//kigsprintf("os version %d\n", KigsJavaIDManager::OsVersion);
-			if (KigsJavaIDManager::OsVersion > 23) // android N and newer
-				return false;
+			//if (KigsJavaIDManager::OsVersion > 23) // android N and newer
+
+			// TODO
+			return false;
 
 			switch (format)
 			{

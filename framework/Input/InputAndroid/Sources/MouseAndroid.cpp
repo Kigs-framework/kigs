@@ -10,7 +10,7 @@ IMPLEMENT_CLASS_INFO(MouseAndroid)
 
 IMPLEMENT_CONSTRUCTOR(MouseAndroid)
 {
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+/*	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 
 	//printf("retreive KigsGLSurfaceView \n");
 	jclass  pMaClasse =g_env->FindClass("com/kigs/kigsmain/KigsGLSurfaceView");
@@ -35,7 +35,7 @@ IMPLEMENT_CONSTRUCTOR(MouseAndroid)
 	mEventGetX = g_env->GetMethodID(pMaClasse, "getX", "()F");
 	mEventGetY = g_env->GetMethodID(pMaClasse, "getY", "()F");
 	mEventGetAction = g_env->GetMethodID(pMaClasse, "getAction", "()I");
-	
+	*/
 	//printf("ok, that's it\n");
 	mPosX = 0;
 	mPosY = 0;	
@@ -46,19 +46,19 @@ IMPLEMENT_CONSTRUCTOR(MouseAndroid)
 
 MouseAndroid::~MouseAndroid()
 {  
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
-	g_env->DeleteGlobalRef(mTouchList);
+/*	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	g_env->DeleteGlobalRef(mTouchList);*/
 }    
 
 bool	MouseAndroid::Aquire()
 {
-	if (MouseDevice::Aquire())
+	/*if (MouseDevice::Aquire())
 	{
 		mPosX = 0;
 		mPosY = 0;
 		mFrameCountSinceLastValidTouched = 1000; //Any big value
 		return true;
-	}
+	}*/
 	return false;
 }
 
@@ -80,7 +80,7 @@ void	MouseAndroid::UpdateDevice()
 	}
 	else
 	{
-		JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+		/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 		int event_Count=g_env->CallIntMethod(mTouchList,mGetEventCount);
 		int currentDevice=0;
 	
@@ -118,7 +118,7 @@ void	MouseAndroid::UpdateDevice()
 		{
 			mDeviceItems[currentDevice++]->getState()->SetValue((float)0);
 			mDeviceItems[currentDevice++]->getState()->SetValue((float)0);
-		}
+		}*/
 	}
 	// call father update
 	MouseDevice::UpdateDevice();
@@ -160,7 +160,7 @@ DEFINE_METHOD(MouseAndroid, ReinitCB)
 	printf("reinit MouseAndroid\n");
 	if (mMultiTouchPointer) return false;
 	
-	JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
+	/*JNIEnv* g_env = KigsJavaIDManager::getEnv(pthread_self());
 	g_env->DeleteGlobalRef(mTouchList);
 	
 	//printf("retreive KigsGLSurfaceView \n");
@@ -170,6 +170,6 @@ DEFINE_METHOD(MouseAndroid, ReinitCB)
 	//printf("retreive KigsTouchEventList object \n");
 	jobject pobjet = g_env->CallStaticObjectMethod(pMaClasse,getTouchClass,0);	
 	//printf("create global ref \n");
-	mTouchList=g_env->NewGlobalRef(pobjet);
+	mTouchList=g_env->NewGlobalRef(pobjet);*/
 	return false;
 }
