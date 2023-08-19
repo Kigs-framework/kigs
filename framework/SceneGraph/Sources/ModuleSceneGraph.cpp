@@ -173,6 +173,8 @@ void ModuleSceneGraph::DoDefferedAction()
 			if (!FindParentScene((CoreModifiable*)itr->first, &parent))
 				continue;
 			break;
+			default:
+				break;
 		}
 		switch (itr->second)
 		{

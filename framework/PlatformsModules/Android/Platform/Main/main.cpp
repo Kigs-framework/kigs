@@ -64,18 +64,12 @@ void handle_cmd(android_app *pApp, int32_t cmd) {
 				mApp = KIGS_APPLICATION_CLASS::CreateInstance(ApplicationName(KIGS_APPLICATION_CLASS));
 				
 				#ifdef INIT_DEFAULT_MODULES
-				#ifdef BASE_DATA_PATH
-						//! then init
-						mApp->InitApp(BASE_DATA_PATH,true);
-				#else
-						//! then init
-						mApp->InitApp(0,true);
-				#endif //BASE_DATA_PATH
-
+					// on android no BASE_DATA_PATH used
+					//! then init
+					mApp->InitApp(0,true);
 				#else
 					//! then init
 					mApp->Init(0,false);
-
 				#endif //INIT_DEFAULT_MODULES
 				
 				pApp->userData = mApp.get();

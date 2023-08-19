@@ -25,22 +25,38 @@ namespace Kigs
 			switch(hndl->mDeviceID) {
                 case FilePathManager::RESSOURCES: {
                     auto assetManager = mAndroidApp->activity->assetManager;
+					auto fullfilename=hndl->mFullFileName;
 
-                    AAsset * asset=AAssetManager_open(assetManager,hndl->mFullFileName.c_str(),AASSET_MODE_BUFFER);
+					if(fullfilename.substr(0,2) == "./")
+					{
+						fullfilename=fullfilename.substr(2);
+					}
+                    AAsset * asset=AAssetManager_open(assetManager,fullfilename.c_str(),AASSET_MODE_BUFFER);
                     if(!asset)
                     {
                         // check for directory then ?
-                        AAssetDir * assetdir=AAssetManager_openDir(assetManager,hndl->mFullFileName.c_str());
+						// strange behavior : AAssetManager_openDir returns a valid AAssetDir pointer
+						// even if filename is a non existing file
+                        AAssetDir * assetdir=AAssetManager_openDir(assetManager,fullfilename.c_str());
 
                         if(!assetdir) {
                             hndl->resetStatus();
                             return;
                         }
-                        hndl->mStatus |= FileHandle::Exist;
-                        hndl->mStatus |= FileHandle::IsDIr;
+						const char* filename = (const char*) nullptr;
+						if ((filename = AAssetDir_getNextFileName(assetdir)) != nullptr) {
+							hndl->mStatus |= FileHandle::Exist;
+							hndl->mStatus |= FileHandle::IsDIr;
 
-                        hndl->mFile = new ANDROIDFILE();
-                        hndl->mFile->myHandle = assetdir;
+							hndl->mFile = new ANDROIDFILE();
+							hndl->mFile->myHandle = assetdir;
+						}
+						else
+						{
+							AAssetDir_close(assetdir);
+							hndl->resetStatus();
+							return;
+						}
                     }
                     else
                     {
@@ -48,6 +64,7 @@ namespace Kigs
                         hndl->mStatus |= FileHandle::Exist;
                         hndl->mStatus |= FileHandle::Open;
                         hndl->mFile->myHandle = asset;
+						hndl->mSize = AAsset_getLength(static_cast<AAsset*>(hndl->mFile->myHandle));
 						hndl->setOpeningFlags(FileHandle::Read | FileHandle::Binary);
                     }
                 }
@@ -128,9 +145,16 @@ namespace Kigs
 			{
 			case 0: // assets
 			{
+				auto fullfilename=handle->mFullFileName;
+
+				if(fullfilename.substr(0,2) == "./")
+				{
+					fullfilename=fullfilename.substr(2);
+				}
+
 				auto assetManager = mAndroidApp->activity->assetManager;
 
-				fdHandle=AAssetManager_open(assetManager,handle->mFullFileName.c_str(),AASSET_MODE_BUFFER);
+				fdHandle=AAssetManager_open(assetManager,fullfilename.c_str(),AASSET_MODE_BUFFER);
 			}
 			break;
 
