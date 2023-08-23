@@ -74,6 +74,8 @@ function(set_kigsPlatform)
 			set(KIGS_PLATFORM WUP CACHE INTERNAL "")
 		elseif(JAVASCRIPT)
 			set(KIGS_PLATFORM Javascript CACHE INTERNAL "")
+		elseif(LINUX)
+			set(KIGS_PLATFORM Linux CACHE INTERNAL "")	
 		elseif(KIGS_ANDROID)
 			set(KIGS_PLATFORM Android CACHE INTERNAL "")
 		elseif(KIGS_SWITCH)
@@ -87,12 +89,13 @@ function(set_kigsPlatform)
 	
 	elseif(JAVASCRIPT)
 		set(KIGS_PLATFORM Javascript CACHE INTERNAL "")
-
+		
+	elseif(LINUX)
+		set(KIGS_PLATFORM Linux CACHE INTERNAL "")
+		
 	elseif(KIGS_ANDROID) #TODO
 		set(KIGS_PLATFORM Android CACHE INTERNAL "")
-	
-	elseif(UNIX) #TODO
-		set(KIGS_PLATFORM Linux CACHE INTERNAL "")	
+
 	endif()
 
 endfunction(set_kigsPlatform)
@@ -172,6 +175,10 @@ if(WIN32 OR KIGS_ANDROID)
 		set(KIGS_PLATFORM Javascript)
 		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../EmscriptenLibraries)
 		set (CMAKE_VS_PLATFORM_TOOLSET "Emscripten")
+	elseif(LINUX)
+		target_compile_definitions(Base INTERFACE LINUX)
+		set(KIGS_PLATFORM Linux)
+		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries)		
 	elseif(KIGS_ANDROID)
 		#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 		target_compile_options(Base INTERFACE -frtti)
@@ -261,9 +268,22 @@ elseif(JAVASCRIPT)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../EmscriptenLibraries/StaticRelease)
 	endif()
 	
-elseif(UNIX) #TODO
+elseif(LINUX)
 	set(KIGS_PLATFORM Linux)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries)
+
+	if(${CMAKE_BUILD_TYPE} STREQUAL "StaticDebug")
+	message(STATUS "building static debug config")
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries/StaticDebug)
+	elseif(${CMAKE_BUILD_TYPE} STREQUAL "StaticReleaseTools")
+	message(STATUS "building static release tools")
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries/StaticReleaseTools)
+	elseif(${CMAKE_BUILD_TYPE} STREQUAL "StaticRelease")
+	message(STATUS "building static release")
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries/StaticRelease)
+	endif()
+
+
 endif()
 
 
@@ -427,6 +447,10 @@ elseif(${KIGS_PLATFORM} STREQUAL "Javascript")
 	target_sources(BaseExecutable 
 		INTERFACE 
 			"${KIGS_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/mainJavascript.cpp")
+elseif(${KIGS_PLATFORM} STREQUAL "Linux")
+	target_sources(BaseExecutable 
+		INTERFACE 
+			"${KIGS_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/mainLinux.cpp")			
 endif()
 
 if(${KIGS_PLATFORM} STREQUAL "Windows")
