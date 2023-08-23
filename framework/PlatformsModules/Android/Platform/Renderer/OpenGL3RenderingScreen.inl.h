@@ -60,6 +60,23 @@ namespace Kigs
 			InitializeGL(mSize[0], mSize[1]);
 
 		}
+		
+		void	OpenGLPlatformRenderingScreen::SwapBuffer(TravState*)
+		{
+			eglSwapBuffers(mDisplay, mSurface);
+		}
+		void  OpenGLPlatformRenderingScreen::Update(const Timer&  timer, void* addParam) {
+			EGLint width;
+			eglQuerySurface(mDisplay, mSurface, EGL_WIDTH, &width);
 
+			EGLint height;
+			eglQuerySurface(mDisplay, mSurface, EGL_HEIGHT, &height);
+
+			if (width != mSize[0] || height != mSize[1]) {
+				Resize(width, height);
+				mParentWindow->setValue("Size", mSize);
+			}
+			RenderingScreen::Update(timer,addParam);
+		}
 	}
 }

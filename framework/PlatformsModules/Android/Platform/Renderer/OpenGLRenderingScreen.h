@@ -20,6 +20,9 @@ namespace Kigs
 			void	SetWindowByHandle(void* PtrToHandle) override {	}
 			void* GetContextHandle() override { return 0; }
 
+			void	SwapBuffer(TravState*) override;
+
+			void  Update(const Timer&  timer, void* addParam) override;
 
 		protected:
 			virtual ~OpenGLPlatformRenderingScreen();
@@ -29,6 +32,7 @@ namespace Kigs
 			{
 				eglMakeCurrent(mDisplay, mSurface, mSurface, mContext);
 			}
+
 
 			EGLDisplay mDisplay;
 			EGLSurface mSurface;

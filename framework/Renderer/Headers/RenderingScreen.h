@@ -158,6 +158,15 @@ namespace Kigs
 
 			Gui::Window* GetParentWindow() const { return mParentWindow; };
 
+			/**
+			* \brief	to be overloaded on platform needing a display buffer swap
+			* \fn 		void SwapBuffer(TravState*);
+			*/
+			virtual void SwapBuffer(TravState*)
+			{
+				// overloaded if needed
+			}
+
 		protected:
 			// recompute mDesignCoefX,mDesignCoefY;
 			void	InitModifiable() override;

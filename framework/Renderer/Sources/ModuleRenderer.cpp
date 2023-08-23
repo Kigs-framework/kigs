@@ -153,6 +153,7 @@ void	ModuleSpecificRenderer::endFrame(TravState* state)
 	while (it != itE)
 	{
 		((RenderingScreen*)(*it))->ManageFade(state);
+		((RenderingScreen*)(*it))->SwapBuffer(state);
 		++it;
 	}
 

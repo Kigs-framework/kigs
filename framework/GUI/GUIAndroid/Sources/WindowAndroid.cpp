@@ -31,6 +31,9 @@ WindowAndroid::~WindowAndroid()
 //! init the window, and if OK, show it
 void WindowAndroid::ProtectedInit()
 {
+	mFullScreen = true;
+
+
 	Show();
 }
 
