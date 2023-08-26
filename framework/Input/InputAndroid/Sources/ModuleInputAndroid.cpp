@@ -38,7 +38,7 @@ void ModuleInputAndroid::Init(KigsCore* core, const std::vector<CoreModifiableAt
 
 	CMSP conf = CoreModifiable::Import("InputConf.xml");
 	SP<MultiTouchDevice> multitouch(nullptr);
-	if (!conf || conf->getAttribute("NoMultiTouch") == nullptr)
+	/*if (!conf || conf->getAttribute("NoMultiTouch") == nullptr)
 	{
 		multitouch = core->GetInstanceOf("multitouch", "MultiTouch");
 		if (multitouch)
@@ -46,7 +46,7 @@ void ModuleInputAndroid::Init(KigsCore* core, const std::vector<CoreModifiableAt
 			multitouch->DoInputDeviceDescription();
 			addItem((CMSP&)multitouch);
 		}
-	}
+	}*/
 
 	if (!conf || conf->getAttribute("NoMouse") == nullptr)
 	{

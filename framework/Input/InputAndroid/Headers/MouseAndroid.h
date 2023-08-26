@@ -44,16 +44,8 @@ namespace Kigs
 
 		protected:
 
+			uint32_t	mCurrentActionPointer=(uint32_t)0xFFFFFFFF;
 			DECLARE_METHOD(ReinitCB);
-
-			jobject		mTouchList;
-			jmethodID 	mGetEventCount;
-			jmethodID 	mGetEvent;
-			jmethodID 	mClearEventList;
-
-			jmethodID mEventGetX;
-			jmethodID mEventGetY;
-			jmethodID mEventGetAction;
 
 			maReference mMultiTouch = BASE_ATTRIBUTE(MultiTouch, "");
 			MultiTouchDevice* mMultiTouchPointer = nullptr;
