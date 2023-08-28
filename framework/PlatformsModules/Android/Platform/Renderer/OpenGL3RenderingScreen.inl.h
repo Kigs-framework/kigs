@@ -66,15 +66,18 @@ namespace Kigs
 			eglSwapBuffers(mDisplay, mSurface);
 		}
 		void  OpenGLPlatformRenderingScreen::Update(const Timer&  timer, void* addParam) {
-			EGLint width;
-			eglQuerySurface(mDisplay, mSurface, EGL_WIDTH, &width);
+			
+			if(mDisplay && mSurface)
+			{
+				EGLint width;
+				eglQuerySurface(mDisplay, mSurface, EGL_WIDTH, &width);
 
-			EGLint height;
-			eglQuerySurface(mDisplay, mSurface, EGL_HEIGHT, &height);
+				EGLint height;
+				eglQuerySurface(mDisplay, mSurface, EGL_HEIGHT, &height);
 
-			if (width != mSize[0] || height != mSize[1]) {
-				Resize(width, height);
-				mParentWindow->setValue("Size", mSize);
+				if (width != mSize[0] || height != mSize[1]) {
+					Resize(width, height);
+				}
 			}
 			RenderingScreen::Update(timer,addParam);
 		}

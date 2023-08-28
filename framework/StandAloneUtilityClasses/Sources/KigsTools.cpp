@@ -511,7 +511,7 @@ void DragSourceKigsID(KigsID id)
 {
 	if (ImGui::BeginDragDropSource())
 	{
-		ImGui::Text(id._id_name.c_str());
+		ImGui::Text("%s",id._id_name.c_str());
 		ImGui::SetDragDropPayload("DND_KIGS_KIGSID", id._id_name.c_str(), id._id_name.size()+1);
 		ImGui::EndDragDropSource();
 	}
@@ -741,7 +741,7 @@ void Break(CoreModifiable* item)
 #ifdef WIN32
 	__debugbreak();
 #else
-	*(int*)0 = 0;
+	*(volatile int*)0 = 0;
 #endif
 }
 #pragma optimize("", on)
@@ -751,7 +751,7 @@ void CoreModifiableContextMenu(CoreModifiable* item, CoreModifiable* parent=null
 	auto& state = gKigsTools->HierarchyWindow;
 	if (ImGui::BeginPopupContextItem(item->GetRuntimeID().c_str()))
 	{
-		ImGui::Text(item->getName().c_str());
+		ImGui::Text("%s",item->getName().c_str());
 		ImGui::Separator();
 		if (ImGui::MenuItem("Init")) item->Init();
 		if (item->getItems().size() && ImGui::MenuItem("Remove all sons")) item->EmptyItemList();
@@ -1014,7 +1014,7 @@ void RecursiveHierarchyTree(CoreModifiable* parent, const std::vector<CMSP>& ins
 
 			if (ImGui::IsItemHovered())
 			{
-				ImGui::SetTooltip(item->getExactType().c_str());
+				ImGui::SetTooltip("%s",item->getExactType().c_str());
 			}
 
 			if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0) && was_open == opened)
@@ -1427,7 +1427,6 @@ AttributeChange CheckAttributeChange(XMLNode* attr_xml, CoreModifiableAttribute*
 
 	}
 
-	result.value;
 	attr->getValue(result.value, item);
 	result.changed = result.value != result.old_value;
 	return result;
@@ -1508,7 +1507,7 @@ void CustomAttributeEditor(CoreModifiable* item)
 								for (int i = 1; i < step ; ++i)
 									txt = " " + txt;
 
-								ImGui::Text(txt.c_str());
+								ImGui::Text("%s",txt.c_str());
 							}
 
 							if (el.DrawStep == RenderPass::DrawPathElement::Step::PreDraw)
@@ -1783,7 +1782,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 	}
 
 	char tmpStr[2048];
-	ImGui::Text(item->getExactType().c_str());
+	ImGui::Text("%s",item->getExactType().c_str());
 	ImGui::SameLine();
 
 	CoreModifiable* xml_file_item = gKigsTools->ActiveXMLItem; // FindRootXMLFile(item);
@@ -1853,7 +1852,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 		typenode = typenode->mFather;
 	}
 
-	ImGui::Text(typestring.c_str());
+	ImGui::Text("%s",typestring.c_str());
 
 	sprintf(tmpStr, "AttributesEditor##%s", item->getName().c_str());
 		
@@ -2336,7 +2335,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 					AddToXMLChanged(xml_file_item, gKigsTools->ActiveXMLFile);
 				}
 				if (ImGui::IsItemHovered())
-					ImGui::SetTooltip(str.c_str());
+					ImGui::SetTooltip("%s",str.c_str());
 			}
 			else if (lua_initializer)
 			{
@@ -2473,7 +2472,7 @@ void AttributesEditor(CoreModifiable* item, void* id=nullptr, bool nobegin=false
 
 		static maReferenceOrphan connect_to;
 		CoreModifiable* connect_to_item = connect_to;
-		ImGui::Text(connect_to_item ? connect_to_item->getName().c_str() : "DRAG RECEIVER HERE");
+		ImGui::Text("%s", connect_to_item ? connect_to_item->getName().c_str() : "DRAG RECEIVER HERE");
 
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -2724,13 +2723,13 @@ void DrawResources()
 			ImGui::Selectable(label.c_str());
 			if (ImGui::IsItemHovered())
 			{
-				ImGui::SetTooltip(fullpath.c_str());
+				ImGui::SetTooltip("%s",fullpath.c_str());
 			}
 
 			if (ImGui::BeginDragDropSource())
 			{
 				ImGui::SetDragDropPayload("DND_KIGS_STRING", path.first.c_str(), path.first.size() + 1);
-				ImGui::Text(path.first.c_str());
+				ImGui::Text("%s",path.first.c_str());
 				ImGui::EndDragDropSource();
 			}
 			
@@ -2858,10 +2857,12 @@ void DrawAnimationCoreItemRec(const std::string& key,const CoreItemSP& current_i
 	case CoreItem::COREVALUE: name = (std::string)*current_item; break;
 	case CoreItem::COREMAP: name = "map"; break;
 	case CoreItem::COREVECTOR: name = "vector"; break;
+	default:
+		break;
 	} 
 	if (key.size()) name = key + " : " + name;
 
-	if (ImGui::TreeNode((void*)(current_item.get()), name.c_str()))
+	if (ImGui::TreeNode((void*)(current_item.get()), "%s",name.c_str()))
 	{
 		if (!current_item->empty())
 		{
@@ -3340,7 +3341,7 @@ namespace Kigs
 	{
 		using namespace Kigs::Core;
 
-		void SelectObjectKigsTools(CMSP obj) {}
+		void SelectObjectKigsTools(CMSP/* obj*/) {}
 		bool UpdateKigsTools() { return false; }
 		void DestroyKigsTools() {}
 		void ShowKigsTools(bool show) { (void)show; }

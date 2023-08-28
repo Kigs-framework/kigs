@@ -10,7 +10,7 @@
 
 #ifdef INIT_DEFAULT_MODULES
 //! And then I want the base data path to be :
-#define BASE_DATA_PATH "../Data"
+#define BASE_DATA_PATH "."
 #endif //INIT_DEFAULT_MODULES
 
 //! then define it as the application class 

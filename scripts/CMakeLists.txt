@@ -305,6 +305,12 @@ target_compile_definitions(BaseFramework INTERFACE _KIGS_ONLY_STATIC_LIB_ LUA_CO
 target_compile_definitions(BaseFramework INTERFACE $<$<CONFIG:StaticDebug>:KIGS_TOOLS>)
 target_compile_definitions(BaseFramework INTERFACE $<$<CONFIG:StaticReleaseTools>:KIGS_TOOLS>)
 
+
+if(KIGS_ANDROID)
+target_compile_definitions(BaseFramework INTERFACE $<$<CONFIG:Debug>:KIGS_TOOLS>)
+endif()
+
+
 target_include_directories(BaseFramework 
 	INTERFACE 
 		"${KIGS_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}"

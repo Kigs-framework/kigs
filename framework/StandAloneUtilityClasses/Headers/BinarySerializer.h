@@ -729,7 +729,7 @@ namespace Kigs
 			{
 				s32 remaining_bits = bits - 32;
 				u32 low_bits = 0;
-				packer.serialize_bits(low_bits, std::min(bits, 32));
+				packer.serialize_bits(low_bits, std::min(bits, (s32)32));
 				u64 value_u64 = low_bits;
 				if (remaining_bits > 0)
 				{
@@ -781,7 +781,7 @@ namespace Kigs
 			auto write = data;
 			while (size != 0)
 			{
-				auto count = s32(std::min(size, 4llu));
+				auto count = s32(std::min(size, (u64)4));
 				u32 value = 0;
 				packer.serialize_bits(value, count * 8);
 				memcpy(write, &value, count);
@@ -796,7 +796,7 @@ namespace Kigs
 			if (packer.would_read_past_end(bits)) { return false; }
 			while (bits != 0)
 			{
-				auto count = s32(std::min(bits, 32llu));
+				auto count = s32(std::min(bits, (u64)32));
 				u32 value = 0;
 				packer.serialize_bits(value, count);
 				bits -= count;
@@ -863,7 +863,7 @@ namespace Kigs
 			{
 				s32 remaining_bits = bits - 32;
 				u32 low_bits = u32(value_u64 & 0x00000000FFFFFFFF);
-				packer.serialize_bits(low_bits, std::min(bits, 32));
+				packer.serialize_bits(low_bits, std::min(bits, (s32)32));
 
 				if (remaining_bits > 0)
 				{
@@ -890,7 +890,7 @@ namespace Kigs
 			auto read = data;
 			while (size != 0)
 			{
-				auto count = s32(std::min(size, 4llu));
+				auto count = s32(std::min(size, (u64)4));
 				u32 value = 0;
 				memcpy(&value, read, count);
 				packer.serialize_bits(value, count * 8);

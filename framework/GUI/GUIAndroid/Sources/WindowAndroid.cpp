@@ -51,8 +51,12 @@ void  WindowAndroid::Show()
 void  WindowAndroid::Update(const Timer&  timer, void* addParam)
 {
 	//! call screen update
-	if(mScreen)
-		mScreen->CallUpdate(timer,addParam);
+	if(mScreen) {
+		mScreen->CallUpdate(timer, addParam);
+
+		// retrieve new size if it was changed
+		mScreen->as<Draw::RenderingScreen>()->GetSize(mSize[0],mSize[1]);
+	}
 }    
 
 
