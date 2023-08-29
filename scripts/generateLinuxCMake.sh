@@ -31,14 +31,14 @@ fi
 cd "$myDir/../../Build/solutionLinuxCMake/StaticDebug"
 
 echo launching cmake debug
-emcmake cmake ../../../kigs/Scripts/ -DLINUX=TRUE -G"$targetName" -DCMAKE_BUILD_TYPE=StaticDebug
+cmake ../../../kigs/scripts/ -DLINUX=TRUE -G"$targetName" -DCMAKE_BUILD_TYPE=StaticDebug
 
 cd "$myDir/../../Build/solutionLinuxCMake/StaticRelease"
 
 echo launching cmake release
-emcmake cmake ../../../kigs/Scripts/ -DLINUX=TRUE -G"$targetName" -DCMAKE_BUILD_TYPE=StaticRelease
+cmake ../../../kigs/scripts/ -DLINUX=TRUE -G"$targetName" -DCMAKE_BUILD_TYPE=StaticRelease
 
 cd "$myDir/../../Build/solutionLinuxCMake/StaticReleaseTools"
 
 echo launching cmake releasetools
-emcmake cmake ../../../kigs/Scripts/ -DLINUX=TRUE -G"$targetName" -DCMAKE_BUILD_TYPE=StaticReleaseTools
+cmake ../../../kigs/scripts/ -DLINUX=TRUE -G"$targetName" -DCMAKE_BUILD_TYPE=StaticReleaseTools

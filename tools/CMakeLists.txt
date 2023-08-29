@@ -1,6 +1,6 @@
 project(tools)
 
-if(${KIGS_PLATFORM} STREQUAL "Windows")
+if( ("${KIGS_PLATFORM}" STREQUAL "Windows") OR ("${KIGS_PLATFORM}" STREQUAL "Linux")  )
 add_subdirectory(BundleList)
 add_subdirectory(MeshConvert)
 add_subdirectory(KigsPackager)

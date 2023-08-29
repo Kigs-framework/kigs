@@ -9,6 +9,7 @@ cmake_policy(SET CMP0076 NEW)
 if(NOT DEFINED KIGS_ROOT)
 	set(KIGS_ROOT "${CMAKE_SOURCE_DIR}/../../")
 endif()	
+
 set(KIGS_FRAMEWORK "${KIGS_ROOT}/kigs/framework/")
 set(KIGS_PRIVATE_FRAMEWORK "${KIGS_ROOT}/private/framework/")
 set(KIGS_EXTERN_LIBS "${KIGS_ROOT}/kigs/libs/")
@@ -17,39 +18,45 @@ set(KIGS_SIDEPROJECTS "${KIGS_ROOT}/sideProjects/")
 set(KIGS_PUBLICPROJECTS "${KIGS_ROOT}/publicKigsProjects/")
 set(KIGS_TESTS "${KIGS_ROOT}/KigsTests/")
 
-if("${CMAKE_GENERATOR}" MATCHES "(Win64|x64)" OR "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "x64")
-	set(KIGS_PLATFORM_X64 TRUE)
+# 3 possible host
+if(WIN32)
+   set(HOST_PLATFORM "WINDOWS")
+elseif(APPLE)
+    set(HOST_PLATFORM "APPLE")
 else()
-	set(KIGS_PLATFORM_X64 FALSE)
+
+     # on Linux check WSL
+	 execute_process(COMMAND bash "-c" "echo $(grep Microsoft /proc/version)" OUTPUT_VARIABLE CHECK_LINUX_VERSION)
+	 string(FIND "${CHECK_LINUX_VERSION}" "Microsoft" IS_WSL )
+
+	 if(${IS_WSL} EQUAL -1) # IS_WSL -1 = not found
+		set(HOST_PLATFORM "LINUX")
+	 else()
+	    set (HOST_PLATFORM "WINDOWS") # WSL can execute .exe programs so considered WINDOWS
+	 endif()
 endif()
 
-message(STATUS "is x64 ${KIGS_PLATFORM_X64}")
-
 function(add_library)
-	if((${ARGV1} STREQUAL "STATIC" OR ${ARGV1} STREQUAL "SHARED") AND "${ARGV2}" STREQUAL "")
+	if(("${ARGV1}" STREQUAL "STATIC" OR "${ARGV1}" STREQUAL "SHARED") AND "${ARGV2}" STREQUAL "")
 		_add_library(${ARGV} "")
 	else()
 		_add_library(${ARGV})
 	endif()
 
+    # add defines for each librairies
 	if("${ARGV1}" STREQUAL "STATIC" AND NOT ("${ARGV2}" STREQUAL "IMPORTED"))
 		string(TOUPPER ${ARGV0} NAMEUPPER)
 		target_compile_definitions(${ARGV0} INTERFACE "KIGS_${NAMEUPPER}_AVAILABLE=1")
 	endif()
 
-	if(${KIGS_PLATFORM} STREQUAL "WUP" OR ${KIGS_PLATFORM} STREQUAL "Windows")
+	if("${KIGS_PLATFORM}" STREQUAL "WUP" OR "${KIGS_PLATFORM}" STREQUAL "Windows")
 		target_compile_options(${ARGV0} INTERFACE "/wd4018" "/wd4244")
 	endif()
 	
 	string(UUID project_uuid NAMESPACE "B12E62DA-F6A6-4CF5-B710-C2024B3D5547" NAME ${ARGV0} TYPE SHA1 UPPER)
-	#message(STATUS "Setting ${ARGV0} to uid ${project_uuid}")
 	set(${ARGV0}_GUID_CMAKE ${project_uuid} CACHE INTERNAL "${ARGV0} GUID")
 
-	if("${ARGV1}" STREQUAL "SHARED" AND "${KIGS_PLATFORM}" STREQUAL "Android")
-		get_property(xtra GLOBAL PROPERTY VS_GLOBAL_EXTRALINKDIRS)
-		set_property(TARGET ${ARGV0} PROPERTY VS_GLOBAL_EXTRALINKDIRS ${xtra} "${CMAKE_BINARY_DIR}/../AndroidLibraries/$(TargetArchAbi)/$(Configuration)/" "${KIGS_ROOT}/Build/$(Platform)/$(Configuration)/")
-	endif()
-	
+    # add some properties for WUP platform
 	if("${KIGS_PLATFORM}" STREQUAL "WUP" AND "${ARGV1}" STREQUAL "SHARED" )
 		set_target_properties(${ARGV0} PROPERTIES VS_USER_PROPS "${CMAKE_BINARY_DIR}/WUP/WUP.props")
 	endif()
@@ -64,59 +71,67 @@ function(add_executable)
 	_add_executable(${ARGV} "")
 endfunction()
 
+
+# set kigs platform methods
 function(set_kigsPlatform)
 
 	message(STATUS "set kigs platform")
+	message(STATUS ${HOST_PLATFORM})
 
+    # default is Windows
 	set(KIGS_PLATFORM Windows CACHE INTERNAL "")
-	if(WIN32)
-		if(${CMAKE_SYSTEM_NAME} MATCHES WindowsStore)
+	
+	# Windows host build can be UWP, Android with Android Studio and Windows with Visual Studio
+	if("${HOST_PLATFORM}" STREQUAL "WINDOWS")
+		message(STATUS "Host Windows")
+		if("${CMAKE_SYSTEM_NAME}" MATCHES WindowsStore)
 			set(KIGS_PLATFORM WUP CACHE INTERNAL "")
-		elseif(JAVASCRIPT)
+		elseif(JAVASCRIPT) # emscripten in WSL
 			set(KIGS_PLATFORM Javascript CACHE INTERNAL "")
-		elseif(LINUX)
-			set(KIGS_PLATFORM Linux CACHE INTERNAL "")	
 		elseif(KIGS_ANDROID)
 			set(KIGS_PLATFORM Android CACHE INTERNAL "")
-		elseif(KIGS_SWITCH)
-			set(KIGS_PLATFORM Switch CACHE INTERNAL "")
 		else()
 			set(KIGS_PLATFORM Windows CACHE INTERNAL "")
 		endif()
-
-	elseif(APPLE) #TODO : ios / osX
+	elseif("${HOST_PLATFORM}" STREQUAL "APPLE") #TODO iOS platform obsolete
+		message(STATUS "Host Apple")
 		set(KIGS_PLATFORM iOS CACHE INTERNAL "")
-	
-	elseif(JAVASCRIPT)
-		set(KIGS_PLATFORM Javascript CACHE INTERNAL "")
-		
-	elseif(LINUX)
-		set(KIGS_PLATFORM Linux CACHE INTERNAL "")
-		
-	elseif(KIGS_ANDROID) #TODO
-		set(KIGS_PLATFORM Android CACHE INTERNAL "")
-
+	elseif("${HOST_PLATFORM}" STREQUAL "LINUX")  # on Linux 
+		message(STATUS "Host Linux")
+		if(JAVASCRIPT)
+			set(KIGS_PLATFORM Javascript CACHE INTERNAL "")
+		elseif(LINUX)
+			set(KIGS_PLATFORM Linux CACHE INTERNAL "")
+		elseif(KIGS_ANDROID) 
+			set(KIGS_PLATFORM Android CACHE INTERNAL "")
+		endif()
 	endif()
-
+	
+	message(STATUS "building for platform " "${KIGS_PLATFORM}" )
+	
 endfunction(set_kigsPlatform)
 
 set(CMAKE_CONFIGURATION_TYPES StaticDebug StaticRelease StaticReleaseTools)
-
-if(WIN32)
-	string (REPLACE "/DWIN32" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}) 	# no WIN32
-	string (REPLACE "/D_WINDOWS" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}) # no _WINDOWS
-endif()
 
 set_property(GLOBAL PROPERTY DEBUG_CONFIGURATIONS StaticDebug)
 	
 set_kigsPlatform()
 
-# set(UNITY_BUILD 0)
+string (REPLACE "/DWIN32" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") 	# no WIN32
+string (REPLACE "/D_WINDOWS" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # no _WINDOWS
+
 
 add_library(Base INTERFACE)
-add_library(Holographic INTERFACE)
 
-target_sources(Holographic INTERFACE "${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/Holo3DSequenceManager.cpp")
+if("${HOST_PLATFORM}" STREQUAL "WINDOWS")
+	add_library(Holographic INTERFACE)
+	if(USE_D3D) #D3D only on windows host
+		target_compile_definitions(Base INTERFACE USE_D3D)
+	endif()
+	target_sources(Holographic INTERFACE "${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/Holo3DSequenceManager.cpp")
+
+endif()
+
 
 set(CMAKE_C_FLAGS_STATICDEBUG "${CMAKE_C_FLAGS_DEBUG}")
 set(CMAKE_C_FLAGS_STATICRELEASE "${CMAKE_C_FLAGS_RELEASE}")
@@ -139,151 +154,134 @@ set(CMAKE_MODULE_LINKER_FLAGS_STATICRELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE
 set(CMAKE_MODULE_LINKER_FLAGS_STATICRELEASETOOLS "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
 
 
+if("${KIGS_PLATFORM}" STREQUAL "WUP") 
+	target_compile_options(Base INTERFACE /utf-8)
+	target_compile_definitions(Base INTERFACE WUP _CRT_SECURE_NO_WARNINGS NOMINMAX)
+	if(NOT USE_D3D)
+		target_compile_definitions(Base INTERFACE GL_ES2)
+	endif()
 
-if(WIN32 OR KIGS_ANDROID)
+	if("${CMAKE_GENERATOR_PLATFORM}" STREQUAL "ARM64" OR "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "ARM")
+		target_compile_definitions(Base INTERFACE KIGS_HOLOLENS2)
+	endif()
+
+	target_compile_options(Base INTERFACE /await)
+	set(CMAKE_EXE_LINKER_FLAGS_STATICRELEASE "${CMAKE_EXE_LINKER_FLAGS_STATICRELEASE}")
+	set(CMAKE_EXE_LINKER_FLAGS_STATICRELEASETOOLS "${CMAKE_EXE_LINKER_FLAGS_STATICRELEASETOOLS} /DEBUG:FULL")
+	set(CMAKE_SHARED_LINKER_FLAGS_STATICRELEASE "${CMAKE_SHARED_LINKER_FLAGS_STATICRELEASE}")
+	set(CMAKE_SHARED_LINKER_FLAGS_STATICRELEASETOOLS "${CMAKE_SHARED_LINKER_FLAGS_STATICRELEASETOOLS} /DEBUG:FULL")
+
 	if(USE_D3D)
-		target_compile_definitions(Base INTERFACE USE_D3D)
-	endif()
-	if(${CMAKE_SYSTEM_NAME} MATCHES WindowsStore)
-		target_compile_options(Base INTERFACE /utf-8)
-		target_compile_definitions(Base INTERFACE WUP _CRT_SECURE_NO_WARNINGS NOMINMAX)
-		if(NOT USE_D3D)
-			target_compile_definitions(Base INTERFACE GL_ES2)
-		endif()
-
-		if("${CMAKE_GENERATOR_PLATFORM}" STREQUAL "ARM64" OR "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "ARM")
-			target_compile_definitions(Base INTERFACE KIGS_HOLOLENS2)
-		endif()
-
-		target_compile_options(Base INTERFACE /await)
-		set(CMAKE_EXE_LINKER_FLAGS_STATICRELEASE "${CMAKE_EXE_LINKER_FLAGS_STATICRELEASE}")
-		set(CMAKE_EXE_LINKER_FLAGS_STATICRELEASETOOLS "${CMAKE_EXE_LINKER_FLAGS_STATICRELEASETOOLS} /DEBUG:FULL")
-		set(CMAKE_SHARED_LINKER_FLAGS_STATICRELEASE "${CMAKE_SHARED_LINKER_FLAGS_STATICRELEASE}")
-		set(CMAKE_SHARED_LINKER_FLAGS_STATICRELEASETOOLS "${CMAKE_SHARED_LINKER_FLAGS_STATICRELEASETOOLS} /DEBUG:FULL")
-		set(KIGS_PLATFORM WUP)
-
-		if(USE_D3D)
-			set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../WUPLibraries/D3D/${CMAKE_GENERATOR_PLATFORM})
-		else()
-			set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../WUPLibraries/${CMAKE_GENERATOR_PLATFORM})
-		endif()
-
-
-		configure_file(${KIGS_ROOT}/kigs/scripts/WUP.props ${CMAKE_CURRENT_BINARY_DIR}/WUP/WUP.props COPYONLY)
-	elseif(JAVASCRIPT)
-		target_compile_definitions(Base INTERFACE JAVASCRIPT GL_ES2)
-		set(KIGS_PLATFORM Javascript)
-		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../EmscriptenLibraries)
-		set (CMAKE_VS_PLATFORM_TOOLSET "Emscripten")
-	elseif(LINUX)
-		target_compile_definitions(Base INTERFACE LINUX)
-		set(KIGS_PLATFORM Linux)
-		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries)		
-	elseif(KIGS_ANDROID)
-		#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-		target_compile_options(Base INTERFACE -frtti)
-		target_compile_definitions(Base INTERFACE _M_ARM=7 GL_ES2 ANDROID)
-		
-		# Searches for a package provided by the game activity dependency
-		find_package(game-activity REQUIRED CONFIG)
-		
-		target_link_libraries(Base INTERFACE game-activity::game-activity EGL GLESv3 jnigraphics android log)
-		set(KIGS_PLATFORM Android)
-		if(NOT ANDROID_ABI)
-	     	set(ANDROID_ABI armeabi-v7a)
-			message(STATUS "set ANDROID_ABI to ${ANDROID_ABI}")
-		endif()
-		if(NOT TargetArchAbi)
-			set(TargetArchAbi armeabi-v7a)
-			message(STATUS "set TargetArchAbi to ${TargetArchAbi}")
-		endif()
-		
-		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../AndroidLibraries/${ANDROID_ABI})
-		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../AndroidBinairies/${ANDROID_ABI})
-	elseif(KIGS_SWITCH)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-		target_compile_definitions(Base INTERFACE NN_PLATFORM_NX)
-		set(KIGS_PLATFORM Switch)
-		set (CMAKE_VS_PLATFORM_TOOLSET "NX")
-		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../SwitchLibraries)
-		configure_file( ${KIGS_ROOT}/private/scripts/NX.props ${CMAKE_CURRENT_BINARY_DIR}/NX/NX.props COPYONLY)
+		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../WUPLibraries/D3D/${CMAKE_GENERATOR_PLATFORM})
 	else()
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-		target_compile_options(Base INTERFACE /utf-8)
-		target_compile_definitions(Base INTERFACE WIN32 _WINDOWS NOMINMAX _CRT_SECURE_NO_WARNINGS)
-		set(CMAKE_EXE_LINKER_FLAGS_STATICDEBUG "${CMAKE_EXE_LINKER_FLAGS_STATICDEBUG} /SAFESEH:NO /DEBUG:FULL")
-		set(CMAKE_EXE_LINKER_FLAGS_STATICRELEASE "${CMAKE_EXE_LINKER_FLAGS_STATICRELEASE} /SAFESEH:NO")
-		set(CMAKE_EXE_LINKER_FLAGS_STATICRELEASETOOLS "${CMAKE_EXE_LINKER_FLAGS_STATICRELEASETOOLS} /SAFESEH:NO /DEBUG:FULL")
-		set(CMAKE_SHARED_LINKER_FLAGS_STATICDEBUG "${CMAKE_SHARED_LINKER_FLAGS_STATICDEBUG} /SAFESEH:NO /DEBUG:FULL")
-		set(CMAKE_SHARED_LINKER_FLAGS_STATICRELEASE "${CMAKE_SHARED_LINKER_FLAGS_STATICRELEASE} /SAFESEH:NO")
-		set(CMAKE_SHARED_LINKER_FLAGS_STATICRELEASETOOLS "${CMAKE_SHARED_LINKER_FLAGS_STATICRELEASETOOLS} /DEBUG:FULL /SAFESEH:NO")
-		set(KIGS_PLATFORM Windows)
-		if(KIGS_PLATFORM_X64)
-			if(USE_D3D)
-				set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../WindowsLibraries/D3D/x64)
-			else()
-				set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../WindowsLibraries/x64)
-			endif()
-		else()
-			if(USE_D3D)
-				set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../WindowsLibraries/D3D)
-			else()
-				set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../WindowsLibraries/)
-			endif()
-		endif()
-		target_compile_options(Base INTERFACE /permissive-)
-		target_link_libraries(Base INTERFACE Wininet Comctl32)
+		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../WUPLibraries/${CMAKE_GENERATOR_PLATFORM})
 	endif()
+
+	configure_file(${KIGS_ROOT}/kigs/scripts/WUP.props ${CMAKE_CURRENT_BINARY_DIR}/WUP/WUP.props COPYONLY)
 	
-	if(NOT KIGS_ANDROID)
-		target_compile_options(Base INTERFACE $<$<CONFIG:StaticReleaseTools>:/Zi>)
-		if("${CMAKE_GENERATOR_PLATFORM}" STREQUAL "ARM64" OR "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "ARM")
-			target_compile_options(Base INTERFACE $<$<CONFIG:StaticDebug>:/Zi>)
-		else()
-			target_compile_options(Base INTERFACE $<$<CONFIG:StaticDebug>:/ZI>)
-		endif()
-		target_compile_options(Base INTERFACE /bigobj)
-		target_link_options(Base INTERFACE $<$<CONFIG:StaticReleaseTools>:/INCREMENTAL>)
-		target_link_options(Base INTERFACE $<$<CONFIG:StaticDebug>:/INCREMENTAL>)
-		target_compile_options(Base INTERFACE $<$<CONFIG:StaticRelease>:/Zi>)
-		target_link_options(Base INTERFACE $<$<CONFIG:StaticRelease>:/DEBUG:FULL>)
-	endif()
-elseif(APPLE) #TODO : ios / osX
-	set(KIGS_PLATFORM iOS)
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../iOSLibraries)
-elseif(JAVASCRIPT)
+elseif("${KIGS_PLATFORM}" STREQUAL "Javascript") 
 	target_compile_definitions(Base INTERFACE JAVASCRIPT GL_ES2)
-	set(KIGS_PLATFORM Javascript)
-
-#	set(CMAKE_CXX_FLAGS_STATICRELEASE "${CMAKE_CXX_FLAGS_STATICRELEASE} --closure 1")
-
-	if(${CMAKE_BUILD_TYPE} STREQUAL "StaticDebug")
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../EmscriptenLibraries)
+	if("${CMAKE_BUILD_TYPE}" STREQUAL "StaticDebug")
 	message(STATUS "building static debug config")
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../EmscriptenLibraries/StaticDebug)
-	elseif(${CMAKE_BUILD_TYPE} STREQUAL "StaticReleaseTools")
+	elseif("${CMAKE_BUILD_TYPE}" STREQUAL "StaticReleaseTools")
 	message(STATUS "building static release tools")
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../EmscriptenLibraries/StaticReleaseTools)
-	elseif(${CMAKE_BUILD_TYPE} STREQUAL "StaticRelease")
+	elseif("${CMAKE_BUILD_TYPE}" STREQUAL "StaticRelease")
 	message(STATUS "building static release")
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../EmscriptenLibraries/StaticRelease)
+	endif()		
+elseif("${KIGS_PLATFORM}" STREQUAL "Linux") 
+	target_compile_definitions(Base INTERFACE LINUX)
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries)		
+	
+	if("${CMAKE_BUILD_TYPE}" STREQUAL "StaticDebug")
+		message(STATUS "building static debug config")
+		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries/StaticDebug)
+	elseif("${CMAKE_BUILD_TYPE}" STREQUAL "StaticReleaseTools")
+		message(STATUS "building static release tools")
+		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries/StaticReleaseTools)
+	elseif("${CMAKE_BUILD_TYPE}" STREQUAL "StaticRelease")
+		message(STATUS "building static release")
+		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries/StaticRelease)
 	endif()
 	
-elseif(LINUX)
-	set(KIGS_PLATFORM Linux)
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries)
+elseif("${KIGS_PLATFORM}" STREQUAL "iOS")  #TODO
+	target_compile_definitions(Base INTERFACE IOS)
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../iOSLibraries)
+elseif("${KIGS_PLATFORM}" STREQUAL "Android") 
+	target_compile_options(Base INTERFACE -frtti)
+	target_compile_definitions(Base INTERFACE _M_ARM=7 GL_ES2 ANDROID)
+	
+	# Searches for a package provided by the game activity dependency
+	find_package(game-activity REQUIRED CONFIG)
+	
+	target_link_libraries(Base INTERFACE game-activity::game-activity EGL GLESv3 jnigraphics android log)
+	
+	if(NOT ANDROID_ABI)
+		set(ANDROID_ABI armeabi-v7a)
+		message(STATUS "set ANDROID_ABI to ${ANDROID_ABI}")
+	endif()
+	if(NOT TargetArchAbi)
+		set(TargetArchAbi armeabi-v7a)
+		message(STATUS "set TargetArchAbi to ${TargetArchAbi}")
+	endif()
+	
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../AndroidLibraries/${ANDROID_ABI})
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../AndroidBinairies/${ANDROID_ABI})
 
-	if(${CMAKE_BUILD_TYPE} STREQUAL "StaticDebug")
-	message(STATUS "building static debug config")
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries/StaticDebug)
-	elseif(${CMAKE_BUILD_TYPE} STREQUAL "StaticReleaseTools")
-	message(STATUS "building static release tools")
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries/StaticReleaseTools)
-	elseif(${CMAKE_BUILD_TYPE} STREQUAL "StaticRelease")
-	message(STATUS "building static release")
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../LinuxLibraries/StaticRelease)
+    # Android Studio don't use StaticDebug, StaticRelease & StaticReleaseTools build config 
+	target_compile_definitions(BaseFramework INTERFACE $<$<CONFIG:Debug>:KIGS_TOOLS>)
+
+else() #windows 32 or 64
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+	target_compile_options(Base INTERFACE /utf-8)
+	target_compile_definitions(Base INTERFACE WIN32 _WINDOWS NOMINMAX _CRT_SECURE_NO_WARNINGS)
+	set(CMAKE_EXE_LINKER_FLAGS_STATICDEBUG "${CMAKE_EXE_LINKER_FLAGS_STATICDEBUG} /SAFESEH:NO /DEBUG:FULL")
+	set(CMAKE_EXE_LINKER_FLAGS_STATICRELEASE "${CMAKE_EXE_LINKER_FLAGS_STATICRELEASE} /SAFESEH:NO")
+	set(CMAKE_EXE_LINKER_FLAGS_STATICRELEASETOOLS "${CMAKE_EXE_LINKER_FLAGS_STATICRELEASETOOLS} /SAFESEH:NO /DEBUG:FULL")
+	set(CMAKE_SHARED_LINKER_FLAGS_STATICDEBUG "${CMAKE_SHARED_LINKER_FLAGS_STATICDEBUG} /SAFESEH:NO /DEBUG:FULL")
+	set(CMAKE_SHARED_LINKER_FLAGS_STATICRELEASE "${CMAKE_SHARED_LINKER_FLAGS_STATICRELEASE} /SAFESEH:NO")
+	set(CMAKE_SHARED_LINKER_FLAGS_STATICRELEASETOOLS "${CMAKE_SHARED_LINKER_FLAGS_STATICRELEASETOOLS} /DEBUG:FULL /SAFESEH:NO")
+
+	if("${CMAKE_GENERATOR}" MATCHES "(Win64|x64)" OR "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "x64")
+		set(KIGS_PLATFORM_X64 TRUE)
+	else()
+		set(KIGS_PLATFORM_X64 FALSE)
 	endif()
 
+	message(STATUS "is x64 ${KIGS_PLATFORM_X64}")
+	
+	if(KIGS_PLATFORM_X64)
+		if(USE_D3D)
+			set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../WindowsLibraries/D3D/x64)
+		else()
+			set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../WindowsLibraries/x64)
+		endif()
+	else()
+		if(USE_D3D)
+			set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../WindowsLibraries/D3D)
+		else()
+			set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../WindowsLibraries/)
+		endif()
+	endif()
+	target_compile_options(Base INTERFACE /permissive-)
+	target_link_libraries(Base INTERFACE Wininet Comctl32)
+endif()
 
+if(MSVC)
+	target_compile_options(Base INTERFACE $<$<CONFIG:StaticReleaseTools>:/Zi>)
+	if("${CMAKE_GENERATOR_PLATFORM}" STREQUAL "ARM64" OR "${CMAKE_GENERATOR_PLATFORM}" STREQUAL "ARM")
+		target_compile_options(Base INTERFACE $<$<CONFIG:StaticDebug>:/Zi>)
+	else()
+		target_compile_options(Base INTERFACE $<$<CONFIG:StaticDebug>:/ZI>)
+	endif()
+	target_compile_options(Base INTERFACE /bigobj)
+	target_link_options(Base INTERFACE $<$<CONFIG:StaticReleaseTools>:/INCREMENTAL>)
+	target_link_options(Base INTERFACE $<$<CONFIG:StaticDebug>:/INCREMENTAL>)
+	target_compile_options(Base INTERFACE $<$<CONFIG:StaticRelease>:/Zi>)
+	target_link_options(Base INTERFACE $<$<CONFIG:StaticRelease>:/DEBUG:FULL>)
 endif()
 
 
@@ -297,18 +295,12 @@ message(STATUS "platform root : ${KIGS_PLATFORM_ROOT}")
 target_compile_features(Base INTERFACE cxx_std_23)
 target_compile_definitions(Base INTERFACE $<$<CONFIG:StaticDebug>:_DEBUG>)
 
-
 add_library(BaseFramework INTERFACE)
 target_link_libraries(BaseFramework INTERFACE Base)
 
 target_compile_definitions(BaseFramework INTERFACE _KIGS_ONLY_STATIC_LIB_ LUA_COMPAT_5_2)
 target_compile_definitions(BaseFramework INTERFACE $<$<CONFIG:StaticDebug>:KIGS_TOOLS>)
 target_compile_definitions(BaseFramework INTERFACE $<$<CONFIG:StaticReleaseTools>:KIGS_TOOLS>)
-
-
-if(KIGS_ANDROID)
-target_compile_definitions(BaseFramework INTERFACE $<$<CONFIG:Debug>:KIGS_TOOLS>)
-endif()
 
 
 target_include_directories(BaseFramework 
@@ -430,11 +422,11 @@ endfunction()
 
 
 add_library(BaseExecutable INTERFACE)
-if(${KIGS_PLATFORM} STREQUAL "Windows")
+if("${KIGS_PLATFORM}" STREQUAL "Windows")
 	target_sources(BaseExecutable 
 		INTERFACE 
 			"${KIGS_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/mainConsole.cpp")
-elseif(${KIGS_PLATFORM} STREQUAL "WUP")
+elseif("${KIGS_PLATFORM}" STREQUAL "WUP")
 	if(USE_D3D)
 		target_sources(BaseExecutable
 			INTERFACE 
@@ -445,21 +437,21 @@ elseif(${KIGS_PLATFORM} STREQUAL "WUP")
 				"${KIGS_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/BaseApp.cpp")
 	endif()
 	target_link_libraries(BaseExecutable INTERFACE vccorlib)
-elseif(${KIGS_PLATFORM} STREQUAL "Android")
+elseif("${KIGS_PLATFORM}" STREQUAL "Android")
 	target_sources(BaseExecutable 
 		INTERFACE 
 			"${KIGS_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/main.cpp")
-elseif(${KIGS_PLATFORM} STREQUAL "Javascript")
+elseif("${KIGS_PLATFORM}" STREQUAL "Javascript")
 	target_sources(BaseExecutable 
 		INTERFACE 
 			"${KIGS_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/mainJavascript.cpp")
-elseif(${KIGS_PLATFORM} STREQUAL "Linux")
+elseif("${KIGS_PLATFORM}" STREQUAL "Linux")
 	target_sources(BaseExecutable 
 		INTERFACE 
 			"${KIGS_FRAMEWORK}/PlatformsModules/${KIGS_PLATFORM}/Platform/Main/mainLinux.cpp")			
 endif()
 
-if(${KIGS_PLATFORM} STREQUAL "Windows")
+if("${KIGS_PLATFORM}" STREQUAL "Windows")
 	add_library(BaseDLL INTERFACE)
 	target_sources(BaseDLL 
 		INTERFACE 
@@ -492,7 +484,7 @@ IF(EXISTS ${KIGS_ROOT}/private)
 	add_subdirectory(${KIGS_ROOT}/private private)
 endif()
 
-if(NOT ${KIGS_PLATFORM} STREQUAL "Android")
+if(NOT "${KIGS_PLATFORM}" STREQUAL "Android")
 
 	IF(EXISTS ${KIGS_SIDEPROJECTS})
 		message(STATUS "CMake enter sideProjects/")

@@ -31,14 +31,14 @@ fi
 cd "$myDir/../../Build/solutionEmscriptenCMake/StaticDebug"
 
 echo launching cmake debug
-emcmake cmake ../../../kigs/Scripts/ -DJAVASCRIPT=TRUE -G"$targetName" -DCMAKE_BUILD_TYPE=StaticDebug
+emcmake cmake ../../../kigs/scripts/ -DJAVASCRIPT=TRUE -G"$targetName" -DCMAKE_BUILD_TYPE=StaticDebug
 
 cd "$myDir/../../Build/solutionEmscriptenCMake/StaticRelease"
 
 echo launching cmake release
-emcmake cmake ../../../kigs/Scripts/ -DJAVASCRIPT=TRUE -G"$targetName" -DCMAKE_BUILD_TYPE=StaticRelease
+emcmake cmake ../../../kigs/scripts/ -DJAVASCRIPT=TRUE -G"$targetName" -DCMAKE_BUILD_TYPE=StaticRelease
 
 cd "$myDir/../../Build/solutionEmscriptenCMake/StaticReleaseTools"
 
 echo launching cmake releasetools
-emcmake cmake ../../../kigs/Scripts/ -DJAVASCRIPT=TRUE -G"$targetName" -DCMAKE_BUILD_TYPE=StaticReleaseTools
+emcmake cmake ../../../kigs/scripts/ -DJAVASCRIPT=TRUE -G"$targetName" -DCMAKE_BUILD_TYPE=StaticReleaseTools
