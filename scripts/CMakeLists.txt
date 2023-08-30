@@ -19,12 +19,15 @@ set(KIGS_PUBLICPROJECTS "${KIGS_ROOT}/publicKigsProjects/")
 set(KIGS_TESTS "${KIGS_ROOT}/KigsTests/")
 
 # 3 possible host
-if(WIN32)
+
+string(FIND "${CMAKE_HOST_SYSTEM_NAME}" "Windows" IS_Windows )
+
+
+if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
    set(HOST_PLATFORM "WINDOWS")
-elseif(APPLE)
+elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin")
     set(HOST_PLATFORM "APPLE")
 else()
-
      # on Linux check WSL
 	 execute_process(COMMAND bash "-c" "echo $(grep Microsoft /proc/version)" OUTPUT_VARIABLE CHECK_LINUX_VERSION)
 	 string(FIND "${CHECK_LINUX_VERSION}" "Microsoft" IS_WSL )
@@ -123,6 +126,7 @@ string (REPLACE "/D_WINDOWS" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # no _WIND
 
 add_library(Base INTERFACE)
 
+add_library(BaseFramework INTERFACE)
 if("${HOST_PLATFORM}" STREQUAL "WINDOWS")
 	add_library(Holographic INTERFACE)
 	if(USE_D3D) #D3D only on windows host
@@ -295,7 +299,7 @@ message(STATUS "platform root : ${KIGS_PLATFORM_ROOT}")
 target_compile_features(Base INTERFACE cxx_std_23)
 target_compile_definitions(Base INTERFACE $<$<CONFIG:StaticDebug>:_DEBUG>)
 
-add_library(BaseFramework INTERFACE)
+
 target_link_libraries(BaseFramework INTERFACE Base)
 
 target_compile_definitions(BaseFramework INTERFACE _KIGS_ONLY_STATIC_LIB_ LUA_COMPAT_5_2)
