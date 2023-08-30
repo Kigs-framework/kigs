@@ -107,9 +107,9 @@ bool Holo3DPanel::Draw(TravState* travstate)
 
 		// compute position
 
-		Vector3D n = (v3f)mNormal;
-		Vector3D up = (v3f)mUp;
-		Vector3D left = up ^ n;
+		v3f n = (v3f)mNormal;
+		v3f up = (v3f)mUp;
+		v3f left = up ^ n;
 
 		up.Normalize();
 		left.Normalize();

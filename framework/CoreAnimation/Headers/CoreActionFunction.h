@@ -139,7 +139,7 @@ namespace Kigs
 
 		typedef CoreActionFunction < float, 1 > CoreActionFunction1D;
 		typedef CoreActionFunction < Point2D, 2 > CoreActionFunction2D;
-		typedef CoreActionFunction < Point3D, 3 > CoreActionFunction3D;
+		typedef CoreActionFunction < v3f, 3 > CoreActionFunction3D;
 		typedef CoreActionFunction < Vector4D, 4 > CoreActionFunction4D;
 
 

@@ -25,21 +25,21 @@ CoreModifiableAttribute* CoreValue<double>::createAttribute()
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<Point2D>::createAttribute()
+CoreModifiableAttribute* CoreValue<v2f>::createAttribute()
 {
-	return new maVect2DFOrphan("Val", &(this->mValue.x));
+	return new maVect2DFOrphan("Val", &(this->mValue.x()));
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<Point3D>::createAttribute()
+CoreModifiableAttribute* CoreValue<v3f>::createAttribute()
 {
-	return new maVect3DFOrphan("Val", &(this->mValue.x));
+	return new maVect3DFOrphan("Val", &(this->mValue.x()));
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<Vector4D>::createAttribute()
+CoreModifiableAttribute* CoreValue<v4f>::createAttribute()
 {
-	return new maVect4DFOrphan("Val", &(this->mValue.x));
+	return new maVect4DFOrphan("Val", &(this->mValue.x()));
 }
 
 template<>

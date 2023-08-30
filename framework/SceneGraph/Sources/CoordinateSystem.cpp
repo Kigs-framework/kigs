@@ -13,8 +13,8 @@ void	CoordinateSystemUp::Init(CoreModifiable* toUpgrade)
 	KigsCore::Connect(toUpgrade, "NotifyUpdate", toUpgrade, "CoordinateSystemNotifyUpdate");
 
 	// retreive current values ( suppose the matrix is a correct PRS matrix )
-	Matrix3x4 current = ((Node3D*)toUpgrade)->GetLocal();
-	Point3D pos, rot;
+	mat3x4 current = ((Node3D*)toUpgrade)->GetLocal();
+	v3f pos, rot;
 	float scale;
 	current.GetPRS(pos, rot, scale);
 
@@ -61,11 +61,11 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, CoordinateSystemNotifyUpdate)
 			|| KigsID("Position") == labelID
 			|| KigsID("Rotation") == labelID)
 		{
-			Point3D	rot; GetUpgrador()->mRot->getValue(rot, this);
-			Point3D pos; GetUpgrador()->mPos->getValue(pos, this);
+			v3f	rot; GetUpgrador()->mRot->getValue(rot, this);
+			v3f pos; GetUpgrador()->mPos->getValue(pos, this);
 			float scale; GetUpgrador()->mScale->getValue(scale, this);
 
-			Matrix3x4 matrix;
+			mat3x4 matrix;
 			matrix.SetRotationXYZ(rot.x, rot.y, rot.z);
 			matrix.PreScale(scale, scale, scale);
 			matrix.SetTranslation(pos);
@@ -83,23 +83,23 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 	{
 		float angle;
 		params[0]->getValue(angle, this);
-		Point3D axis;
+		v3f axis;
 		params[1]->getValue(axis, this);
 
 		Quaternion q;
 		q.SetAngAxis(axis, angle);
 
-		Matrix3x4	angAxis(q);
+		mat3x4	angAxis(q);
 
-		Point3D	rot;
-		Point3D pos;
+		v3f	rot;
+		v3f pos;
 		float scale;
 
 		getValue("Rotation", rot);
 		getValue("Position", pos);
 		getValue("Scale", scale);
 
-		Matrix3x4 matrix;
+		mat3x4 matrix;
 		matrix.SetRotationXYZ(rot.x, rot.y, rot.z);
 		matrix.PreScale(scale, scale, scale);
 		matrix.SetTranslation(pos);
@@ -119,7 +119,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, localMoveNode)
 {
 	if (!params.empty())
 	{
-		Point3D move;
+		v3f move;
 		params[0]->getValue(move, this);
 
 		localMove(move);
@@ -131,7 +131,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, globalMoveNode)
 {
 	if (!params.empty())
 	{
-		Point3D move;
+		v3f move;
 		params[0]->getValue(move, this);
 
 		globalMove(move);
@@ -145,15 +145,15 @@ DEFINE_UPGRADOR_UPDATE(CoordinateSystemUp)
 
 	if (GetUpgrador()->mWasChanged)
 	{
-		Point3D	rot;
-		Point3D pos;
+		v3f	rot;
+		v3f pos;
 		float scale;
 
 		getValue("Rotation", rot);
 		getValue("Position", pos);
 		getValue("Scale", scale);
 
-		Matrix3x4 matrix;
+		mat3x4 matrix;
 		matrix.SetRotationXYZ(rot.x,rot.y,rot.z);
 		matrix.PreScale(scale, scale, scale);
 		matrix.SetTranslation(pos);
@@ -204,7 +204,7 @@ void	PivotUp::Init(CoreModifiable* toUpgrade)
 	// store current matrix
 	mInitMatrix = ((Node3D*)toUpgrade)->GetLocal();
 	
-	Point3D PivotPosition(0, 0, 0);
+	v3f PivotPosition(0, 0, 0);
 	mAngle = toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "Angle", 0.0f);
 	toUpgrade->setOwnerNotification("Angle", true);
 	mPivotPosition = toUpgrade->AddDynamicVectorAttribute("PivotPosition", (float*)&PivotPosition.x, 3);
@@ -246,9 +246,9 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 		bool isGlobal;
 
 		// get local matrix
-		Matrix3x4 matrix = GetUpgrador()->mInitMatrix;
-		Point3D	ppos;
-		Vector3D paxis;
+		mat3x4 matrix = GetUpgrador()->mInitMatrix;
+		v3f	ppos;
+		v3f paxis;
 		float	pangle;
 		getValue("PivotPosition", ppos);
 		getValue("PivotAxis", paxis);
@@ -265,9 +265,9 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 		Quaternion q;
 		q.SetAngAxis(paxis, pangle);
 
-		Matrix3x4 transform(q);
+		mat3x4 transform(q);
 
-		Vector3D originPos = matrix.GetTranslation();
+		v3f originPos = matrix.GetTranslation();
 		matrix.SetTranslation({ 0,0,0 });
 
 		matrix = transform * matrix;

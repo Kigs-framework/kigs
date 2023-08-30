@@ -120,12 +120,12 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	GetUpgrador()->mCurrentTarget->SetupNodeIfNeeded();
 
 	// target pos in global coordinates
-	Point3D targetpos(*(Point3D*)GetUpgrador()->mCurrentTarget->GetLocalToGlobal().e[3]);
+	v3f targetpos(*(v3f*)GetUpgrador()->mCurrentTarget->GetLocalToGlobal().e[3]);
 
-	Vector3D	targetAxis1, targetAxis2, targetAxis3;
+	v3f	targetAxis1, targetAxis2, targetAxis3;
 	// target vector in global coordinates
 	targetAxis1 =targetpos;
-	targetAxis1 -= *(Point3D*)GetLocalToGlobal().e[3];
+	targetAxis1 -= *(v3f*)GetLocalToGlobal().e[3];
 	// now in father local coordinates
 	getFather()->GetGlobalToLocal().TransformVector(&targetAxis1);
 	targetAxis1.Normalize();
@@ -137,7 +137,7 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	targetAxis2.Normalize();
 
 	// if constant axis and target vector are too near, use mLastValidUpAxis
-	Vector3D tstCross;
+	v3f tstCross;
 	tstCross.CrossProduct(targetAxis1, targetAxis2);
 	if (NormSquare(tstCross) < 0.1f)
 	{
@@ -166,7 +166,7 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 
 	Matrix3x3 result(tm1 * tm2);
 	
-	Matrix3x4	targetm(result);
+	mat3x4	targetm(result);
 	targetm.SetTranslation(mTransform.GetTranslation());
 
 	ChangeMatrix(targetm);

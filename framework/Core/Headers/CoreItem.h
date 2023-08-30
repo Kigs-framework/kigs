@@ -349,7 +349,7 @@ namespace Kigs
 			}
 
 			bool getValue(v2f& _value) const {
-				_value = (v2f)*this;
+				_value = this->operator v2f();
 				return true;
 			}
 

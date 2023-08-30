@@ -4,6 +4,11 @@ project(libs)
 message(STATUS "add imgui")
 add_subdirectory("cross_platform/ImGui")
 
+# eigen
+message(STATUS "add eigen")
+add_subdirectory("cross_platform/eigen/custom_cmake")
+SET_TARGET_PROPERTIES( eigen					PROPERTIES  FOLDER "libs" )
+
 # jpeg
 message(STATUS "add jpeg")
 add_subdirectory("cross_platform/jpeg")

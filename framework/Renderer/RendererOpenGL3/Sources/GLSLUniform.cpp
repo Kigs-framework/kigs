@@ -206,7 +206,7 @@ void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
 
 void API3DUniformFloat3::Normalize()
 {
-	Vector3D v(mValue[0], mValue[1], mValue[2]);
+	v3f v(mValue[0], mValue[1], mValue[2]);
 	v.Normalize();
 
 	mValue[0] = v.x;

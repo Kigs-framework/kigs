@@ -37,7 +37,7 @@ namespace Kigs
 			DECLARE_METHOD(DrawProfiles);
 			COREMODIFIABLE_METHODS(DrawProfiles);
 
-			Vector3D	mColors[MAX_PROFILER_COUNT];
+			v3f	mColors[MAX_PROFILER_COUNT];
 
 			bool			mFirstDraw;
 			unsigned int 	mProfilerCount;

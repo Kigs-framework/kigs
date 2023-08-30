@@ -14,7 +14,7 @@ void DrawableSorter_Camera::SetCamera(Camera *pCam)
 
 void DrawableSorter_Camera::CompleteInformationFor(DrawableSorterItem* pItem,TravState* state)
 {
-	Vector3D D;
+	v3f D;
 	auto matrix = state->GetCurrentLocalToGlobalMatrix();
 	pItem->mWay.mDrawable->GetGlobalPosition(&matrix, D.x, D.y, D.z);
 	D -= mCameraPosition;

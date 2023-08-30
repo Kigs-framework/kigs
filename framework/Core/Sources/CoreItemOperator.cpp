@@ -1332,8 +1332,8 @@ CoreModifiableAttributeOperator<v2f>::operator v2f() const
 			
 			if (!attribute)
 			{
-				v2f val((v2f)(*itOperand));
-				attribute = new maVect2DFOrphan("Val", &(val.x));
+				v2f val((*itOperand)->operator v2f());
+				attribute = new maVect2DFOrphan("Val", &(val.x()));
 			}
 
 			attributes.push_back(attribute);
@@ -1411,8 +1411,8 @@ CoreModifiableAttributeOperator<v3f>::operator v3f() const
 
 			if (!attribute)
 			{
-				v3f val = (v3f)(*itOperand);
-				attribute = new maVect3DFOrphan("Val", &(val.x));
+				v3f val((*itOperand)->operator v3f());
+				attribute = new maVect3DFOrphan("Val", &(val.x()));
 			}
 			attributes.push_back(attribute);
 
@@ -1488,8 +1488,8 @@ CoreModifiableAttributeOperator<v4f>::operator v4f() const
 
 			if (!attribute)
 			{
-				v4f val(*itOperand);
-				attribute = new maVect4DFOrphan("Val", &(val.x));
+				v4f val((*itOperand)->operator v4f());
+				attribute = new maVect4DFOrphan("Val", &(val.x()));
 			}
 			attributes.push_back(attribute);
 
@@ -1658,7 +1658,7 @@ DynamicVariableOperator<v2f>::operator v2f() const
 	CoreItem* var = (CoreItem*)getVariable(mVarName).get();
 	if (var)
 	{
-		return (v2f)(*var);
+		return (var->operator v2f());
 	}
 	return v2f(0,0);
 }
@@ -1669,7 +1669,7 @@ DynamicVariableOperator<v3f>::operator v3f() const
 	CoreItem* var = (CoreItem*)getVariable(mVarName).get();
 	if (var)
 	{
-		return (v3f)(*var);
+		return (var->operator v3f());
 	}
 	return v3f(0, 0,0);
 }
@@ -1680,7 +1680,7 @@ DynamicVariableOperator<v4f>::operator v4f() const
 	CoreItem* var = (CoreItem*)getVariable(mVarName).get();
 	if (var)
 	{
-		return (v4f)*var;
+		return (var->operator v4f());
 	}
 	return v4f(0, 0, 0,0);
 }

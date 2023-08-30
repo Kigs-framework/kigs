@@ -54,29 +54,29 @@ namespace Kigs
 
 			/**
 			 * \brief	Draw quad with the currently bound texture. Vertex order  : winded
-			 * \fn 		virtual void DrawTexturedQuad(Point3D Vertices[4], Point3D UV[4] ,float R,float G,float B) const = 0;
+			 * \fn 		virtual void DrawTexturedQuad(v3f Vertices[4], v3f UV[4] ,float R,float G,float B) const = 0;
 			 * \param	Vertices : vertice position
 			 * \param	UV : texture position
 			 * \param	R : red color
 			 * \param	G : green color
 			 * \param	B : blue color
 			 */
-			virtual void DrawTexturedQuad(Scene::TravState* state, Point3D Vertices[4], Point3D UV[4], float R, float G, float B) const = 0;
+			virtual void DrawTexturedQuad(Scene::TravState* state, v3f Vertices[4], v3f UV[4], float R, float G, float B) const = 0;
 
 			/**
 			 * \brief	Draw non-textured quad. Vertex order  : winded
-			 * \fn 		virtual void DrawSolidQuad(Point3D Vertices[4], float R,float G,float B, bool EnableBlend=false) const = 0;
+			 * \fn 		virtual void DrawSolidQuad(v3f Vertices[4], float R,float G,float B, bool EnableBlend=false) const = 0;
 			 * \param	Vertices : vertice position
 			 * \param	R : red color
 			 * \param	G : green color
 			 * \param	B : blue color
 			 * \param	EnableBlend : should blend
 			 */
-			virtual void DrawSolidQuad(Scene::TravState* state, Point3D Vertices[4], float R, float G, float B, bool EnableBlend = false) const = 0;
+			virtual void DrawSolidQuad(Scene::TravState* state, v3f Vertices[4], float R, float G, float B, bool EnableBlend = false) const = 0;
 
 			/**
 			 * \brief	Draw a rounded rectangle
-			 * \fn 		virtual void DrawRoundedRectangle(Point3D Vertices[2], float R,float G,float B,float RBorder,float GBorder,float BBorder,float Radius) const =0;
+			 * \fn 		virtual void DrawRoundedRectangle(v3f Vertices[2], float R,float G,float B,float RBorder,float GBorder,float BBorder,float Radius) const =0;
 			 * \param	Vertices : vertice position
 			 * \param	R : red color
 			 * \param	G : green color
@@ -86,11 +86,11 @@ namespace Kigs
 			 * \param	BBorder : blue color of the border
 			 * \param	Radius : corner radius
 			 */
-			virtual void DrawRoundedRectangle(Scene::TravState* state, Point3D Vertices[2], float R, float G, float B, float RBorder, float GBorder, float BBorder, float Radius) const = 0;
+			virtual void DrawRoundedRectangle(Scene::TravState* state, v3f Vertices[2], float R, float G, float B, float RBorder, float GBorder, float BBorder, float Radius) const = 0;
 
-			virtual void drawSphere(ModuleSpecificRenderer* state, float r, int lats, int longs, Point3D* pos, float R, float G, float B) const {}
+			virtual void drawSphere(ModuleSpecificRenderer* state, float r, int lats, int longs, v3f* pos, float R, float G, float B) const {}
 
-			virtual void DrawLine(ModuleSpecificRenderer* state, Point3D* Vertices, int VerticeCount, float R, float G, float B) const {}
+			virtual void DrawLine(ModuleSpecificRenderer* state, v3f* Vertices, int VerticeCount, float R, float G, float B) const {}
 
 		protected:
 			/**

@@ -207,7 +207,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 	mFileParser.MoveToString("*MESH_NUMVERTEX");	// jump to the vertices count
 	mFileParser.ReadInt(fake);
 	pMesh->mVertexCount = fake;
-	pMesh->mVertexArray = new Point3D[pMesh->mVertexCount];
+	pMesh->mVertexArray = new v3f[pMesh->mVertexCount];
 	mFileParser.MoveToString("*MESH_NUMFACES");
 	mFileParser.ReadInt(TriangleCount);
 	TempTriangle = new Mesh::TS_Triangle<1>[TriangleCount];
@@ -299,7 +299,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 		}
 
 		pMesh->mNormalCount++;
-		pMesh->mNormalArray = new Vector3D[pMesh->mNormalCount];
+		pMesh->mNormalArray = new v3f[pMesh->mNormalCount];
 		mFileParser.SetPosition(CurrentPosition);
 		for (i=0;i<(unsigned int)TriangleCount;i++)
 		{

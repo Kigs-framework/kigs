@@ -64,7 +64,7 @@ namespace Kigs
 			Maths::Hit current_near_interaction_hit;
 
 			v3f SmoothPosition{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
-			Vector3D SmoothDirection{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
+			v3f SmoothDirection{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
 		};
 
 		// ****************************************

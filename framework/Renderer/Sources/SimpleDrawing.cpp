@@ -6,7 +6,7 @@ using namespace Kigs::Draw;
 
 IMPLEMENT_CLASS_INFO(SimpleDrawing)
 
-void SimpleDrawing::GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const
+void SimpleDrawing::GetNodeBoundingBox(v3f& pmin, v3f& pmax) const
 {
 	if (mVertex)
 	{
@@ -51,12 +51,12 @@ void SimpleDrawing::setColor(float R, float G, float B, float A)
 }
 
 
-void SimpleDrawing::setVertex(int index, Point3D Position)
+void SimpleDrawing::setVertex(int index, v3f Position)
 {
 	int i;
 	if (mVertex==NULL)
 	{
-		mVertex = new Point3D[index+1];
+		mVertex = new v3f[index+1];
 		for (i=0;i<=index;i++) 
 		{
 			mVertex[i]=Position;
@@ -71,9 +71,9 @@ void SimpleDrawing::setVertex(int index, Point3D Position)
 		}
 		else
 		{
-			Point3D *Temp;
-			Temp = new Point3D[index+1];
-			memcpy(Temp,mVertex,mVertexCount*sizeof(Point3D));
+			v3f *Temp;
+			Temp = new v3f[index+1];
+			memcpy(Temp,mVertex,mVertexCount*sizeof(v3f));
 			for (i=mVertexCount;i<=index;i++) Temp[i] = Position;
 			delete [] mVertex;
 			mVertex = Temp;
@@ -82,7 +82,7 @@ void SimpleDrawing::setVertex(int index, Point3D Position)
 	}
 }
 
-void SimpleDrawing::setVertexArray(Point3D *Position, int Count)
+void SimpleDrawing::setVertexArray(v3f *Position, int Count)
 {
 	if (mVertex)
 	{
@@ -91,9 +91,9 @@ void SimpleDrawing::setVertexArray(Point3D *Position, int Count)
 	}
 	if (Count)
 	{
-		mVertex = new Point3D[Count];
+		mVertex = new v3f[Count];
 		mVertexCount = Count;
-		memcpy(mVertex,Position,mVertexCount*sizeof(Point3D));
+		memcpy(mVertex,Position,mVertexCount*sizeof(v3f));
 	}
 }
 
@@ -102,7 +102,7 @@ void SimpleDrawing::setToRectangle(const float &w, const float &h, bool bWire, c
 	if (mVertexCount!=4) 
 	{
 		delete [] mVertex;
-		mVertex = new Point3D[4];
+		mVertex = new v3f[4];
 		mVertexCount = 4;
 	}
 	switch(cNormal)
@@ -155,7 +155,7 @@ void SimpleDrawing::setToBox(const float &w, const float &h, const float &d, boo
 		if (mVertexCount!=17) 
 		{
 			delete [] mVertex;
-			mVertex = new Point3D[17];
+			mVertex = new v3f[17];
 			mVertexCount = 17;
 		}
 		setValue("Mode",4);
@@ -182,7 +182,7 @@ void SimpleDrawing::setToBox(const float &w, const float &h, const float &d, boo
 		if (mVertexCount!=20) 
 		{
 			delete [] mVertex;
-			mVertex = new Point3D[20];
+			mVertex = new v3f[20];
 			mVertexCount = 20;
 		}
 		setValue("Mode",1);
@@ -213,7 +213,7 @@ void SimpleDrawing::setToBox(const float &w, const float &h, const float &d, boo
 void SimpleDrawing::setToDisk(const float &r, const int &precision, bool bWire,  char cNormal)
 {
 	int i;
-	Point3D *V = NULL;
+	v3f *V = NULL;
 
 	if (bWire)
 	{
@@ -221,7 +221,7 @@ void SimpleDrawing::setToDisk(const float &r, const int &precision, bool bWire, 
 		{
 			setValue("Mode",5);
 			delete [] mVertex;
-			mVertex = new Point3D[precision];
+			mVertex = new v3f[precision];
 			mVertexCount = precision;
 			V = mVertex;
 		}
@@ -232,7 +232,7 @@ void SimpleDrawing::setToDisk(const float &r, const int &precision, bool bWire, 
 		{
 			setValue("Mode",2);
 			delete [] mVertex;
-			mVertex = new Point3D[precision+2];
+			mVertex = new v3f[precision+2];
 			mVertexCount = precision+2;
 			mVertex[0].Set(0.0f,0.0f,0.0f);
 			V = &mVertex[1];

@@ -15,7 +15,7 @@ RendererMatrix::~RendererMatrix()
 {
 }    
 
-void	RendererMatrix::Init(const Matrix3x4& matrix)
+void	RendererMatrix::Init(const mat3x4& matrix)
 {
 	mMatrix[0] = { matrix[0] , 0.0f };
 	mMatrix[1] = { matrix[1] , 0.0f };

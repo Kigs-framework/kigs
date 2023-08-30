@@ -34,10 +34,10 @@ namespace Kigs
 
 			/**
 			 * \brief		initialize with a 3x4 matrix
-			 * \fn			void	Init(const Matrix3x4& matrix);
+			 * \fn			void	Init(const mat3x4& matrix);
 			 * \param		matrix : used matrix
 			 */
-			void	Init(const Matrix3x4& matrix);
+			void	Init(const mat3x4& matrix);
 
 			/**
 			 * \brief		initialize with a 4x4 matrix

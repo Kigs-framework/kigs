@@ -220,8 +220,8 @@ void Scene3D::TravDraw(TravState* state)
 			rs->setValue("ActiveDepthBuffer", pass.depth_buffer_index);
 			rs->as<RenderingScreen>()->SetActive(state);
 
-			state->SetCurrentLocalToGlobalMatrix(Matrix3x4::IdentityMatrix());
-			state->SetCurrentGlobalToLocalMatrix(Matrix3x4::IdentityMatrix());
+			state->SetCurrentLocalToGlobalMatrix(mat3x4::IdentityMatrix());
+			state->SetCurrentGlobalToLocalMatrix(mat3x4::IdentityMatrix());
 			state->mCurrentMaterial = 0;
 			
 			state->mPath = 0;
@@ -380,7 +380,7 @@ void Scene3D::SortItemsFrontToBack(Input::SortItemsFrontToBackParam& param)
 				auto bbox_local = param.toSort[i]->as<Node3D>()->GetLocalBoundingBox();
 
 				auto origin_local = param.origin;
-				Vector3D direction_local = param.direction;
+				v3f direction_local = param.direction;
 				
 				auto g2l = param.toSort[i]->as<Node3D>()->GetGlobalToLocal();
 

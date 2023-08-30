@@ -57,11 +57,11 @@ namespace Kigs
 
 			/**
 			 * \brief	retreive the bounding box of the bitmap (point min and point max)
-			 * \fn 		virtual void	GetBoundingBox(Point3D& pmin,Point3D& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
+			 * \fn 		virtual void	GetBoundingBox(v3f& pmin,v3f& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
 			 * \param	pmin : point min of the bounding box (in/out param)
 			 * \param	pmax : point max of the bounding box (in/out param)
 			 */
-			void GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override;
+			void GetNodeBoundingBox(v3f& pmin, v3f& pmax) const override;
 
 			/**
 			 * \brief	set the color
@@ -90,19 +90,19 @@ namespace Kigs
 
 			/**
 			 * \brief	add a vertex in the vertice list at the specified index
-			 * \fn 		void setVertex(int index, Point3D Position);
+			 * \fn 		void setVertex(int index, v3f Position);
 			 * \param	index : index of the vertex
 			 * \param	Position : vertex to add
 			 */
-			void setVertex(int index, Point3D Position);
+			void setVertex(int index, v3f Position);
 
 			/**
 			 * \brief	set the vertice list (cler the old vertice list if not null)
-			 * \fn 		void setVertexArray(Point3D *Position, int Count);
+			 * \fn 		void setVertexArray(v3f *Position, int Count);
 			 * \param	Position : new vertice list
 			 * \param	Count :  number of the vertice
 			 */
-			void setVertexArray(Point3D* Position, int Count);
+			void setVertexArray(v3f* Position, int Count);
 
 			/**
 			 * \brief	set the SimpleDrawing as a rectangle
@@ -185,7 +185,7 @@ namespace Kigs
 			virtual void PrepareDrawing() = 0;
 
 			//! list of vertice
-			Point3D*	mVertex = nullptr;
+			v3f*	mVertex = nullptr;
 			//! number of vertice
 			int			mVertexCount = 0;
 			//! drawing mode

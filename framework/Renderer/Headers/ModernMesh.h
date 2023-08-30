@@ -264,7 +264,7 @@ namespace Kigs
 				return 0;
 
 			}
-			void GetTangent(unsigned char* v1, unsigned char* v2, unsigned char* v3, u32 tcpos, Vector3D& sdir);
+			void GetTangent(unsigned char* v1, unsigned char* v2, unsigned char* v3, u32 tcpos, v3f& sdir);
 			/**
 			* \brief	initialize modifiable
 			* \fn 		void InitModifiable() override

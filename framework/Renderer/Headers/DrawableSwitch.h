@@ -81,11 +81,11 @@ namespace Kigs
 
 			/**
 			 * \brief	retreive the bounding box of the bitmap (point min and point max)
-			 * \fn 		void	GetBoundingBox(Point3D& pmin,Point3D& pmax) const  override
+			 * \fn 		void	GetBoundingBox(v3f& pmin,v3f& pmax) const  override
 			 * \param	pmin : point min of the bounding box (in/out param)
 			 * \param	pmax : point max of the bounding box (in/out param)
 			 */
-			void	GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override { pmin = mBoundingBox.m_Min; pmax = mBoundingBox.m_Max; }
+			void	GetNodeBoundingBox(v3f& pmin, v3f& pmax) const override { pmin = mBoundingBox.m_Min; pmax = mBoundingBox.m_Max; }
 
 			unsigned int	GetSelfDrawingNeeds() override
 			{

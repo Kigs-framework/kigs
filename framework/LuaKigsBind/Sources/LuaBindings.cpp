@@ -983,8 +983,8 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
    */
 	.addFunction("transformPoint", [](const mat3x4* m, v3f* v) { m->TransformPoint(v); })
 		.addFunction("transformPoints", [](const mat3x4* m, const std::vector<v3f*> l) { for (auto v : l) m->TransformPoint(v); })
-		.addFunction("transformVector", [](const mat3x4* m, v3f* v) {m->TransformVector((Vector3D*)v); })
-		.addFunction("transformVectors", [](const mat3x4* m, const std::vector<v3f*> l) { for (auto v : l) m->TransformVector((Vector3D*)v); })
+		.addFunction("transformVector", [](const mat3x4* m, v3f* v) {m->TransformVector((v3f*)v); })
+		.addFunction("transformVectors", [](const mat3x4* m, const std::vector<v3f*> l) { for (auto v : l) m->TransformVector((v3f*)v); })
 	
 		.addFunction("copy", [](const mat3x4* m) -> mat3x4 { return *m; })
 	

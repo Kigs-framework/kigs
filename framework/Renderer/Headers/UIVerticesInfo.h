@@ -52,7 +52,7 @@ namespace Kigs
 
 				inline void setVertex(v2f pos)
 				{
-					v[0] = pos.x;			v[1] = pos.y;
+					v[0] = pos[0];			v[1] = pos[1];
 				}
 				//set color as u8 in [0,255] range
 				inline void setColor(unsigned char cr, unsigned char  cg, unsigned char  cb, unsigned char  ca)
@@ -72,7 +72,7 @@ namespace Kigs
 
 				inline void setTexUV(v2f tex)
 				{
-					t[0] = tex.x;			t[1] = tex.y;
+					t[0] = tex[0];			t[1] = tex[1];
 				}
 			};
 		};

@@ -35,7 +35,7 @@ Billboard3D::~Billboard3D()
 }
 
 
-void Billboard3D::SetPosition(const Point3D &Position)
+void Billboard3D::SetPosition(const v3f &Position)
 {
 	mPosition[0] = Position.x;
 	mPosition[1] = Position.y;
@@ -59,7 +59,7 @@ void Billboard3D::SetTexCoord(const float &u1, const float &v1, const float &u2,
 	PrepareVertexBufferTex();
 }
 
-void Billboard3D::SetPositionAndSize(const Point3D &Position, const float &Width, const float &Height)
+void Billboard3D::SetPositionAndSize(const v3f &Position, const float &Width, const float &Height)
 {
 	mPosition[0] = Position.x;
 	mPosition[1] = Position.y;
@@ -100,14 +100,14 @@ bool Billboard3D::Draw(TravState* _state)
 
 void Billboard3D::UpdateOrientation()
 {
-	const Matrix3x4 &Mat = mCamera->GetLocalToGlobal();
+	const mat3x4 &Mat = mCamera->GetLocalToGlobal();
 	mHorizontalVector.Set(-Mat.e[1][0],-Mat.e[1][1],-Mat.e[1][2]);
 	mVerticalVector.Set(-Mat.e[2][0],-Mat.e[2][1],-Mat.e[2][2]);
 	mHorizontalVector.Normalize();
 	mVerticalVector.Normalize();
 	mFatherNode->SetupNodeIfNeeded();
 
-	//const Matrix3x4 &FatherMat = pFatherNode->GetLocalToGlobal();
+	//const mat3x4 &FatherMat = pFatherNode->GetLocalToGlobal();
 	mFatherNode->GetGlobalToLocal().TransformVector(&mHorizontalVector);
 	mFatherNode->GetGlobalToLocal().TransformVector(&mVerticalVector);
 	PrepareVertexBufferPos();

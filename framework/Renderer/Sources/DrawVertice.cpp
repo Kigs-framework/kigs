@@ -55,7 +55,7 @@ void DrawVertice::RecalculateBBox() const
 	mNeedRecomputeBBox = false;
 }
 
-void DrawVertice::GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const
+void DrawVertice::GetNodeBoundingBox(v3f& pmin, v3f& pmax) const
 {
 	if (mNeedRecomputeBBox)
 	{
@@ -524,8 +524,8 @@ bool DrawVertice::Draw(TravState* travstate)
 			else
 			{
 				int VBO = renderer->getVBO();
-				renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, mVertexCount * sizeof(Point3D), mVertices, KIGS_BUFFER_USAGE_DYNAMIC);
-				renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_VERTEX_ID, 3, KIGS_FLOAT, false, sizeof(Point3D), (void*)0, locs);
+				renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, mVertexCount * sizeof(v3f), mVertices, KIGS_BUFFER_USAGE_DYNAMIC);
+				renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_VERTEX_ID, 3, KIGS_FLOAT, false, sizeof(v3f), (void*)0, locs);
 
 				if (mNormals)
 				{

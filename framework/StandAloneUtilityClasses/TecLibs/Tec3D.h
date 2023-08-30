@@ -14,17 +14,30 @@
 // +---------
 
 // General includes
-#include "TecLibs.h"                // To be Tec
-#include "TecMath.h"                // To use sqrt, cos, etc.
+//#include "TecLibs.h"                // To be Tec
+//#include "TecMath.h"                // To use sqrt, cos, etc.
 
 
-namespace Kigs
+// Shorthand syntax
+using s8 = int8_t;
+using u8 = uint8_t;
+using s16 = int16_t;
+using u16 = uint16_t;
+using s32 = int32_t;
+using u32 = uint32_t;
+using s64 = int64_t;
+using u64 = uint64_t;
+
+using f32 = float;
+using f64 = double;
+
+/*namespace Kigs
 {
 	namespace Maths
 	{
 		constexpr float SMALL_NUM = 0.001f;
 		// Forward declarations
-		struct Vector3D;
+		struct v3f;
 		struct Point3D;
 		struct Vector4D;
 		struct Quaternion;
@@ -43,7 +56,7 @@ namespace Kigs
 #include "2D/Point2DI.h"         //
 
 #include "3D/Point3D.h"             // To use 3D point
-#include "3D/Vector3D.h"            // To use 3D vector
+#include "3D/v3f.h"            // To use 3D vector
 #include "3D/Point3DI.h"             // To use 3D point
 #include "3D/v3d.h"             	// To use 3D point
 
@@ -60,7 +73,7 @@ namespace Kigs
 
 
 // Classes implementations
-#include "3D/Vector3D.inl.h"
+#include "3D/v3f.inl.h"
 #include "3D/Point3D.inl.h"
 #include "3D/v3d.inl.h"
 #include "3D/Point3DI.inl.h"
@@ -75,12 +88,50 @@ namespace Kigs
 #include "2D/Point2D.inl.h"
 #include "2D/Point2DI.inl.h"
 #include "2D/AffineTransform2D.inl.h"
+*/
 
-#include "3D/SIMDv4f.h"
-#include "3D/SIMDv4f.inl.h"
-	
+
+#include "Eigen/Core"
+#include "Eigen/Geometry"
 // Shorthand syntax
-using v2f = Kigs::Maths::Point2D;
+
+using v2f = Eigen::Vector2f;
+using v3f = Eigen::Vector3f;
+using v4f = Eigen::Vector4f;
+
+using v2i = Eigen::Vector2i;
+using v2u = Eigen::Vector2<u32>;
+
+using v3i = Eigen::Vector3i;
+using v3u = Eigen::Vector3<u32>;
+
+using mat3 = Eigen::Matrix3f;
+using mat3x4 = Eigen::Matrix<f32, 3, 4>;
+using mat4 = Eigen::Matrix4f;
+
+
+class KigsQuaternion : public Eigen::Quaternion<f32>
+{
+public:
+
+	using Eigen::Quaternion<f32>::Quaternion;
+
+	inline f32& operator[](size_t index)
+	{
+		return coeffs()[index];
+	}
+
+	inline const f32& operator[](size_t index) const
+	{
+		return coeffs()[index];
+	}
+};
+
+using quat = KigsQuaternion;
+
+
+
+/*using v2f = Kigs::Maths::Point2D;
 using v3f = Kigs::Maths::Point3D;
 using v4f = Kigs::Maths::Vector4D;
 
@@ -95,7 +146,7 @@ using mat3x4 = Kigs::Maths::Matrix3x4;
 using mat4 = Kigs::Maths::Matrix4x4;
 
 using quat = Kigs::Maths::Quaternion;
-
+*/
 #define V4F_FMT(n) "v4(%."#n"f, %."#n"f, %."#n"f, %."#n"f)"
 #define V4F_EXP(v) v.x, v.y, v.z, v.w
 

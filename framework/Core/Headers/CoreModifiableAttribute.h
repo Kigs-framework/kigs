@@ -169,9 +169,9 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_SET(CMSP);
 			DECLARE_SET(void*);
 			DECLARE_SET(const UTF8Char*); // Only for usstring
-			DECLARE_SET(const Point2D&);
-			DECLARE_SET(const Point3D&);
-			DECLARE_SET(const Vector4D&);
+			DECLARE_SET(const v2f&);
+			DECLARE_SET(const v3f&);
+			DECLARE_SET(const v4f&);
 
 #define DECLARE_GET(type) virtual bool getValue(type value,const CoreModifiable* owner) const { return false; }
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, &, DECLARE_GET);
@@ -180,9 +180,9 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_GET(CoreItemSP&);
 			DECLARE_GET(CMSP&);
 			DECLARE_GET(void*&);
-			DECLARE_GET(Point2D&);
-			DECLARE_GET(Point3D&);
-			DECLARE_GET(Vector4D&);
+			DECLARE_GET(v2f&);
+			DECLARE_GET(v3f&);
+			DECLARE_GET(v4f&);
 
 #define DECLARE_SETARRAYVALUE(type)	virtual bool setArrayValue(type /*value*/,CoreModifiable* owner, size_t /* nbElements */){return false;};
 			EXPAND_MACRO_FOR_BASE_TYPES(const, *, DECLARE_SETARRAYVALUE);

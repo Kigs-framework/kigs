@@ -438,7 +438,7 @@ target_link_libraries(BaseApplication INTERFACE BaseExecutable Core FileManager 
 
 add_library(DataDrivenApplication INTERFACE)
 target_sources(DataDrivenApplication INTERFACE "${KIGS_FRAMEWORK}/StandAloneUtilityClasses/Sources/DataDrivenBaseApplication.cpp")
-target_link_libraries(DataDrivenApplication INTERFACE BaseExecutable 2DLayers Renderer LuaKigsBind CoreAnimation ImGui)
+target_link_libraries(DataDrivenApplication INTERFACE BaseExecutable 2DLayers Renderer LuaKigsBind CoreAnimation ImGui eigen)
 
 IF(EXISTS ${KIGS_ROOT}/kigs)
 	message(STATUS "CMake enter kigs")

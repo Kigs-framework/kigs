@@ -44,7 +44,7 @@ namespace Kigs
 			bool					mWasdAutoUpdate = false;
 
 			Node3D* mCurrentTarget;
-			Vector3D				mLastValidUpAxis;
+			v3f				mLastValidUpAxis;
 		};
 
 	}

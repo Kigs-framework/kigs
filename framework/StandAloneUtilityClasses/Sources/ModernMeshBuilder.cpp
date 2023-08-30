@@ -461,7 +461,7 @@ SP<ModernMeshItemGroup> ModernMeshBuilder::EndGroup(int vertex_count, v3f* verti
 			v3f* vertexReader = (v3f*)vertices;
 				
 			memset(nArray, 0, sizeof(v3f)*vertex_count);
-			Vector3D N;
+			v3f N;
 
 			auto calcNormal = [&](u32 a, u32 b, u32 c)
 			{
@@ -569,7 +569,7 @@ SP<ModernMeshItemGroup> ModernMeshBuilder::EndGroup(int vertex_count, v3f* verti
 SP<ModernMeshItemGroup>	ModernMeshBuilder::EndGroup(void * vertex, int vertexCount, void * index, int indexCount)
 {
 	KIGS_WARNING("Deprecated EngGroup function", 3);
-	Vector3D*	nArray = nullptr;
+	v3f*	nArray = nullptr;
 
 	char tmp[32];
 	sprintf(tmp, "group%d", mGroupCount++);
@@ -582,17 +582,17 @@ SP<ModernMeshItemGroup>	ModernMeshBuilder::EndGroup(void * vertex, int vertexCou
 		//compute normal if needed
 		if (mVertexArrayMask & ModuleRenderer::NORMAL_ARRAY_MASK)
 		{
-			Vector3D* vertexReader = (Vector3D*)vertex;
+			v3f* vertexReader = (v3f*)vertex;
 
-			nArray = new Vector3D[vertexCount];
-			memset(nArray, 0, sizeof(Vector3D)*vertexCount);
-			Vector3D N;
+			nArray = new v3f[vertexCount];
+			memset(nArray, 0, sizeof(v3f)*vertexCount);
+			v3f N;
 
 			auto calcNormal = [&](int a, int b, int c)
 			{
-				Vector3D v1 = vertexReader[a];
-				Vector3D v2 = vertexReader[b];
-				Vector3D v3 = vertexReader[c];
+				v3f v1 = vertexReader[a];
+				v3f v2 = vertexReader[b];
+				v3f v3 = vertexReader[c];
 
 				N.CrossProduct(v2 - v1, v3 - v1);
 				N.Normalize();
@@ -1261,7 +1261,7 @@ void ModernMeshBuilder::GenerateTangents()
 	{
 		auto v = mVertexArray[i];
 		auto cn = GetVertexComp<unsigned char>(v, startnormalpos);
-		Vector3D n(((float)(*cn))*(2.0f / 255.0f), ((float)(*(cn + 1)))*(2.0f / 255.0f), ((float)(*(cn + 2)))*(2.0f / 255.0f));
+		v3f n(((float)(*cn))*(2.0f / 255.0f), ((float)(*(cn + 1)))*(2.0f / 255.0f), ((float)(*(cn + 2)))*(2.0f / 255.0f));
 
 		auto ct = GetVertexComp<unsigned char>(v, starttangentpos);
 
