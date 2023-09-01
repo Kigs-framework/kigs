@@ -3,6 +3,7 @@
 #include "CoordinateSystem.h"
 #include "CoreBaseApplication.h"
 #include "TecLibs/Tec3D.h"
+#include "unsupported/Eigen/src/EulerAngles/EulerAngles.h"
 
 using namespace Kigs::Scene;
 
@@ -14,15 +15,23 @@ void	CoordinateSystemUp::Init(CoreModifiable* toUpgrade)
 
 	// retreive current values ( suppose the matrix is a correct PRS matrix )
 	mat3x4 current = ((Node3D*)toUpgrade)->GetLocal();
-	v3f pos, rot;
-	float scale;
-	current.GetPRS(pos, rot, scale);
+
+	Eigen::Transform<f32, 3, Eigen::AffineCompact>	transform(current);
+
+	v3f pos;
+	f32 scale;
+	mat3 rot;
+	
+	pos=transform.translation();
+	transform.computeScalingRotation(&scale, &rot);
+
+	v3f rotangles=rot.eulerAngles(2, 1, 0);
 
 	mScale =toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "Scale", 1.0f);
 	toUpgrade->setOwnerNotification("Scale",true);
-	mPos = toUpgrade->AddDynamicVectorAttribute("Position", (float*)&pos.x, 3);
+	mPos = toUpgrade->AddDynamicVectorAttribute("Position", (float*)&pos.x(), 3);
 	toUpgrade->setOwnerNotification("Position", true);
-	mRot = toUpgrade->AddDynamicVectorAttribute("Rotation", (float*)&rot.x, 3);
+	mRot = toUpgrade->AddDynamicVectorAttribute("Rotation", (float*)&rotangles.x(), 3);
 	toUpgrade->setOwnerNotification("Rotation", true);
 
 	// check if already in auto update mode
@@ -66,9 +75,18 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, CoordinateSystemNotifyUpdate)
 			float scale; GetUpgrador()->mScale->getValue(scale, this);
 
 			mat3x4 matrix;
-			matrix.SetRotationXYZ(rot.x, rot.y, rot.z);
-			matrix.PreScale(scale, scale, scale);
-			matrix.SetTranslation(pos);
+			Eigen::Transform<f32,3, Eigen::AffineCompact>	transform;
+
+			transform.setIdentity();
+			mat3 m;
+			m = Eigen::AngleAxisf(rot.x(), Eigen::Vector3f::UnitX())
+				* Eigen::AngleAxisf(rot.y(), Eigen::Vector3f::UnitY())
+				* Eigen::AngleAxisf(rot.z(), Eigen::Vector3f::UnitZ());
+
+			transform.rotate(m);
+			transform.prescale(scale);
+			transform.translate(pos);
+			matrix = transform.matrix();
 			ChangeMatrix(matrix);
 		}
 
@@ -86,9 +104,8 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 		v3f axis;
 		params[1]->getValue(axis, this);
 
-		Quaternion q;
-		q.SetAngAxis(axis, angle);
-
+		quat q(Eigen::AngleAxis(angle,axis));
+		
 		mat3x4	angAxis(q);
 
 		v3f	rot;

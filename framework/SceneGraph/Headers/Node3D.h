@@ -47,7 +47,7 @@ namespace Kigs
 			virtual void TravDraw(TravState* state);
 			virtual void TravCull(TravState* state);
 
-			const BBox& GetLocalBoundingBox() {
+			const Maths::BBox& GetLocalBoundingBox() {
 				if (isUserFlagSet(BoundingBoxIsDirty))
 					RecomputeBoundingBox();
 				return mLocalBBox;
@@ -59,7 +59,7 @@ namespace Kigs
 				pmin = mLocalBBox.m_Min; pmax = mLocalBBox.m_Max;
 			}
 
-			const BBox& GetBoundingBox() {
+			const Maths::BBox& GetBoundingBox() {
 				if (isUserFlagSet(BoundingBoxIsDirty))
 					RecomputeBoundingBox();
 				return mBBox;
@@ -71,7 +71,7 @@ namespace Kigs
 				pmin = mBBox.m_Min; pmax = mBBox.m_Max;
 			}
 
-			const BBox& GetGlobalBoundingBox() {
+			const Maths::BBox& GetGlobalBoundingBox() {
 				if (isUserFlagSet(GlobalBoundingBoxIsDirty))
 					RecomputeGlobalBoundingBox();
 				return mGlobalBBox;
@@ -191,11 +191,11 @@ namespace Kigs
 			mat3x4 mGlobalToLocal;
 
 			//! AABounding box in local coordinate system
-			BBox mLocalBBox;
+			Maths::BBox mLocalBBox;
 			//! AABounding box in father coordinate system
-			BBox mBBox;
+			Maths::BBox mBBox;
 			//! AABounding box in global "world" coordinate system
-			BBox mGlobalBBox;
+			Maths::BBox mGlobalBBox;
 
 			bool mIgnoreBBox = false;
 
