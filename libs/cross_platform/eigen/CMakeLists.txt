@@ -490,7 +490,6 @@ endif()
 
 install(DIRECTORY Eigen DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
-
 option(EIGEN_BUILD_DOC "Enable creation of Eigen documentation" ON)
 if(EIGEN_BUILD_DOC)
   add_subdirectory(doc EXCLUDE_FROM_ALL)
@@ -583,7 +582,9 @@ message(STATUS "enter unsupported")
 add_subdirectory(unsupported)
 
 message(STATUS "enter demos")
-add_subdirectory(demos EXCLUDE_FROM_ALL)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}demos")
+	add_subdirectory(demos EXCLUDE_FROM_ALL)
+endif()
 
 message(STATUS "enter scripts")
 # must be after test and unsupported, for configuring buildtests.in
@@ -668,7 +669,9 @@ include (CMakePackageConfigHelpers)
 
 # Imported target support
 add_library (eigen INTERFACE)
-add_library (Eigen3::Eigen ALIAS eigen)
+
+
+#add_library (Eigen3::Eigen ALIAS eigen)
 target_include_directories (eigen INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>

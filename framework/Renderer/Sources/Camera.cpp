@@ -207,7 +207,7 @@ bool Camera::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::tou
 		getRenderingScreen()->GetDesignSize(dwidth, dheight);
 		// size or design size here ?
 
-		Point2D pos2D;
+		v2f pos2D;
 
 		pos2D.x = posin.pos.x / dwidth;
 		pos2D.y = posin.pos.y / dheight;
@@ -642,7 +642,7 @@ bool Camera::ManagePinchTouchEvent(Input::PinchEvent& pinch_event)
 
 		if (pinch_event.state == Input::StatePossible)
 		{
-			Point2D currentPos = pinch_event.p1_start.xy;
+			v2f currentPos = pinch_event.p1_start.xy;
 			currentPos += pinch_event.p2_start.xy;
 			currentPos *= 0.5f;
 			currentPos.x /= dwidth;
@@ -722,7 +722,7 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 		float dwidth, dheight;
 		getRenderingScreen()->GetDesignSize(dwidth, dheight);
 
-		Point2D currentPos = scroll_event.position.xy;
+		v2f currentPos = scroll_event.position.xy;
 		currentPos.x /= dwidth;
 		currentPos.y /= dheight;
 
@@ -750,9 +750,9 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 			{
 				currentDataStruct->mOneOnCoef = 2.0f / dwidth;
 			}
-			Point2D		screenCenter;
-			screenCenter.x = dwidth*0.5f;
-			screenCenter.y = dheight*0.5f;
+			v2f		screenCenter;
+			screenCenter.x() = dwidth * 0.5f;
+			screenCenter.y() = dheight * 0.5f;
 
 			currentDataStruct->mStartPt = scroll_event.start_position.xy;
 			currentDataStruct->mStartPt -= screenCenter;
@@ -760,7 +760,7 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 			currentDataStruct->mStartPt *= currentDataStruct->mOneOnCoef;
 
 			currentDataStruct->mState = 0;
-			if (NormSquare(currentDataStruct->mStartPt) < 1.0f)
+			if ((currentDataStruct->mStartPt).squaredNorm() < 1.0f)
 			{
 				currentDataStruct->mState = 1; // rotation
 
@@ -795,20 +795,21 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 			if (currentDataStruct->mState == 1) // rotation
 			{
 				// sphere ray intersection at current position
-				Point2D		screenCenter;
-				screenCenter.x = dwidth*0.5f;
-				screenCenter.y = dheight*0.5f;
+				v2f		screenCenter;
+				screenCenter.x() = dwidth * 0.5f;
+				screenCenter.y() = dheight * 0.5f;
 
-				Point2D currentPos;
-				currentPos = scroll_event.position.xy;
+				v2f currentPos(scroll_event.position.x(), scroll_event.position.y());
 				currentPos -= screenCenter;
 				currentPos *= currentDataStruct->mOneOnCoef;
 
-				if (NormSquare(currentPos) > 1.0f)
+				float d2 = (currentPos).squaredNorm();
+				if (d2 > 1.0f)
 				{
-					currentPos.Normalize();
+					currentPos.normalize();
+					d2 = 1.0f;
 				}
-				float d2 = (currentPos.x*currentPos.x + currentPos.y*currentPos.y);
+				
 				float thc = 1.0f - d2;
 				if (thc > 0.0f)
 				{

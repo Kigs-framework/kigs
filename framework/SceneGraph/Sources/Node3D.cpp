@@ -796,7 +796,7 @@ void Node3D::RecomputeLocalToGlobal()
 		float sy = 1.0f / (l2g.e[1][0] * l2g.e[1][0] + l2g.e[1][1] * l2g.e[1][1] + l2g.e[1][2] * l2g.e[1][2]);
 		float sz = 1.0f / (l2g.e[2][0] * l2g.e[2][0] + l2g.e[2][1] * l2g.e[2][1] + l2g.e[2][2] * l2g.e[2][2]);
 
-		if (NormSquare(v3f{ sx - 1.0f, sy - 1.0f, sz - 1.0f }) > 0.001f)
+		if ((v3f{ sx - 1.0f, sy - 1.0f, sz - 1.0f }).squaredNorm() > 0.001f)
 			nodes[i]->setUserFlag(IsScaledFlag);
 		else
 			nodes[i]->unsetUserFlag(IsScaledFlag);

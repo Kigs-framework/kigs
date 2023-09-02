@@ -18,5 +18,5 @@ void DrawableSorter_Camera::CompleteInformationFor(DrawableSorterItem* pItem,Tra
 	auto matrix = state->GetCurrentLocalToGlobalMatrix();
 	pItem->mWay.mDrawable->GetGlobalPosition(&matrix, D.x, D.y, D.z);
 	D -= mCameraPosition;
-	pItem->mFloatVal = NormSquare(D);
+	pItem->mFloatVal = D.squaredNorm();
 }

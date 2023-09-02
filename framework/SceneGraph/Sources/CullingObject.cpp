@@ -193,7 +193,7 @@ v3f	CullingObject::getIntersection(const CullPlane& p1, const  CullPlane& p2, co
 	v3f dnormal;
 	dnormal.CrossProduct(p1.mNormal, p2.mNormal);
 
-	if (NormSquare(dnormal) > 0.0001)
+	if (dnormal.squaredNorm() > 0.0001)
 	{
 		dnormal.Normalize(); // this is the direction of the line
 		// project p1.myOrigin on p2 to have a point on the line

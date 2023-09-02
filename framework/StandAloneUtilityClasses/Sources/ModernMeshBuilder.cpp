@@ -968,7 +968,7 @@ void ModernMeshBuilder::SnapToGridAndMerge()
 				{
 					v3f pj = *GetVertexComp<v3f>(mVertexArray[j], startvertexpos);
 					//if (NormSquare(pi - pj) <= current_grid_size.pos)
-					if (NormSquare(pi - pj) <= FLT_EPSILON)
+					if ((pi - pj).squaredNorm() <= FLT_EPSILON)
 					{
 						auto cnj = GetVertexComp<signed char>(mVertexArray[j], startnormalpos);
 						v3f nj{ *cnj / 127.5f, *(cnj + 1) / 127.5f, *(cnj + 2) / 127.5f };

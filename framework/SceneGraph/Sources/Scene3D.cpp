@@ -401,7 +401,7 @@ void Scene3D::SortItemsFrontToBack(Input::SortItemsFrontToBackParam& param)
 					dir = param.toSort[i]->as<Node3D>()->GetLocalToGlobal()*bbox_local.Center() - cam_pos;
 				}
 
-				auto d = NormSquare(dir);
+				auto d = dir.squaredNorm();
 				if (Dot(dir, cam_view) < 0)
 					d = -d;
 

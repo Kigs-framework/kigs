@@ -6,7 +6,9 @@ add_subdirectory("cross_platform/ImGui")
 
 # eigen
 message(STATUS "add eigen")
-add_subdirectory("cross_platform/eigen/custom_cmake")
+set (EIGEN_BUILD_DOC OFF CACHE BOOL "no eigen doc" FORCE)
+set (EIGEN_BUILD_TESTING OFF CACHE BOOL "no eigen doc" FORCE)
+add_subdirectory("cross_platform/eigen")
 SET_TARGET_PROPERTIES( eigen					PROPERTIES  FOLDER "libs" )
 
 # jpeg

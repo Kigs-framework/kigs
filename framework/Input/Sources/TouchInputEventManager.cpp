@@ -1853,7 +1853,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 				CurrentInfos& cscroll = (*foundTouch).second;
 				if (cscroll.isValid)
 				{
-					if (NormSquare(cscroll.maindir) < 0.01f) // scroll has not began yet ?
+					if ((cscroll.maindir).squaredNorm() < 0.01f) // scroll has not began yet ?
 					{
 						cscroll.currentpos = position;
 						cscroll.currenttime = timer.GetTime();
@@ -1866,7 +1866,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 								cscroll.maindir.Normalize();
 
 								// if mScrollForceMainDir is set, check if it's OK
-								if (NormSquare(mScrollForceMainDir) > 0.01f)
+								if ((mScrollForceMainDir).squaredNorm() > 0.01f)
 								{
 									float dot = Dot(mScrollForceMainDir, cscroll.maindir);
 									if (fabsf(dot) < 0.6)
@@ -1942,7 +1942,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 		{
 			CurrentInfos& cscroll = it->second;
 
-			if ((cscroll.isValid) && (NormSquare(cscroll.maindir) > 0.01f))
+			if ((cscroll.isValid) && ((cscroll.maindir).squaredNorm() > 0.01f))
 			{
 				v3f	offsetV(cscroll.startpos, cscroll.currentpos, asVector());
 				float offset = Dot(cscroll.maindir, offsetV);
@@ -2026,7 +2026,7 @@ void TouchEventStatePinch::Update(TouchInputEventManager* manager, const Timer& 
 		for (auto& t : mCurrentTouches)
 		{
 			if (t.second.in_use_by_pinch || t.first == touch.ID) continue;
-			float dist = NormSquare(t.second.position - touch.posInfos.pos);
+			float dist = (t.second.position - touch.posInfos.pos).squaredNorm();
 			if (dist <= mPinchMaxStartDistSquared)
 			{
 				possibles_pinches.push_back({ t.first, dist});
