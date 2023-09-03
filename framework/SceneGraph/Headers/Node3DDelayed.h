@@ -30,7 +30,7 @@ namespace Kigs
             DECLARE_CONSTRUCTOR(Node3DDelayed);
 
             static bool sIsFrozen;
-            static BBox sAllowedBBox;
+            static Kigs::Maths::BBox sAllowedBBox;
 
             enum class DisplayState
             {

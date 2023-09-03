@@ -181,7 +181,7 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, v3f & cam
 
 	if (GetTypeOfLight() == DIRECTIONAL_LIGHT) // for directional light, position gives direction as a normal vector
 	{
-		outP.Normalize();
+		outP.normalize();
 	}
 	static_cast<API3DUniformFloat3*>(mPositionUniform.get())->SetValue(&outP.x);
 

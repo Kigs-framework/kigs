@@ -24,7 +24,7 @@ void	TextureMatrix::Init(const mat3x4& matrix)
 	mMatrix[3] = { matrix[3] , 1.0f };
 }
 
-void	TextureMatrix::Init(const Matrix4x4& matrix)
+void	TextureMatrix::Init(const mat4& matrix)
 {
 	mMatrix=	matrix;
 }

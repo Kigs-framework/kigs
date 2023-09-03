@@ -42,12 +42,15 @@ namespace Kigs
 			struct is_array<v2u> : std::true_type {};
 			template<>
 			struct is_array<v3u> : std::true_type {};
+
+			template<typename>
+			struct is_matrix : std::false_type {};
 			template<>
-			struct is_array<mat3> : std::true_type {};
+			struct is_matrix<mat3> : std::true_type {};
 			template<>
-			struct is_array<mat3x4> : std::true_type {};
+			struct is_matrix<mat3x4> : std::true_type {};
 			template<>
-			struct is_array<mat4> : std::true_type {};
+			struct is_matrix<mat4> : std::true_type {};
 
 			template <typename>
 			struct get_array_size;

@@ -275,13 +275,13 @@ void	ModuleSpecificRenderer::LoadIdentity(int mode)
 void	ModuleSpecificRenderer::LoadMatrix(int mode, const float *newMat)
 {
 	mDirtyMatrix |= (1 << mode);
-	Matrix4x4 *mat = &mMatrixStack[mode].back();
+	mat4 *mat = &mMatrixStack[mode].back();
 	mat->Set(newMat);
 }
 
 void	ModuleSpecificRenderer::Translate(int mode, float tx, float ty, float tz)
 {
-	Matrix4x4&	result = mMatrixStack[mode].back();
+	mat4&	result = mMatrixStack[mode].back();
 	/*
 	result[12] += (result[0] * tx + result[4] * ty + result[8] * tz);
 	result[13] += (result[1] * tx + result[5] * ty + result[9] * tz);
@@ -322,7 +322,7 @@ void	ModuleSpecificRenderer::Rotate(int mode, float angle, float x, float y, flo
 	float ys = y * sinAngle;
 	float zs = z * sinAngle;
 
-	Matrix4x4 rotationMatrix;
+	mat4 rotationMatrix;
 
 	/*
 	rotationMatrix[0] = (oneMinusCos * xx) + cosAngle;
@@ -372,7 +372,7 @@ void	ModuleSpecificRenderer::Rotate(int mode, float angle, float x, float y, flo
 
 void	ModuleSpecificRenderer::Scale(int mode, float sx, float sy, float sz)
 {
-	Matrix4x4&	result = mMatrixStack[mode].back();
+	mat4&	result = mMatrixStack[mode].back();
 
 	/*	
 	result[0] *= sx;
@@ -413,7 +413,7 @@ void	ModuleSpecificRenderer::Frustum(int mode, float left, float right, float bo
 	float deltaX = right - left;
 	float deltaY = top - bottom;
 	float deltaZ = farZ - nearZ;
-	Matrix4x4 frust;
+	mat4 frust;
 
 	if ((nearZ <= 0.0f) || (farZ <= 0.0f) || (deltaX <= 0.0f) || (deltaY <= 0.0f) || (deltaZ <= 0.0f))
 	{
@@ -460,7 +460,7 @@ void	ModuleSpecificRenderer::Ortho(int mode, float left, float right, float bott
 	float deltaY = top - bottom;
 	float deltaZ = farZ - nearZ;
 
-	Matrix4x4 ortho;
+	mat4 ortho;
 	ortho.SetIdentity();
 
 	if ((deltaX == 0.0f) || (deltaY == 0.0f) || (deltaZ == 0.0f))

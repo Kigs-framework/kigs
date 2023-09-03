@@ -6,34 +6,34 @@
 namespace std
 {
 	template<>
-	struct hash<v2f>
+	struct hash<Kigs::v2f>
 	{
-		size_t operator()(const v2f& pt)
+		size_t operator()(const Kigs::v2f& pt)
 		{
 			size_t hash = 0;
-			Kigs::Core::hash_combine(hash, pt.x, pt.y);
+			Kigs::Core::hash_combine(hash, pt.x(), pt.y());
 			return hash;
 		}
 	};
 
 	template<>
-	struct hash<v3f>
+	struct hash<Kigs::v3f>
 	{
-		size_t operator()(const v3f& pt)
+		size_t operator()(const Kigs::v3f& pt)
 		{
 			size_t hash = 0;
-			Kigs::Core::hash_combine(hash, pt.x, pt.y, pt.z);
+			Kigs::Core::hash_combine(hash, pt.x(), pt.y(), pt.z());
 			return hash;
 		}
 	};
 
 	template<>
-	struct hash<v4f>
+	struct hash<Kigs::v4f>
 	{
-		size_t operator()(const v4f& pt)
+		size_t operator()(const Kigs::v4f& pt)
 		{
 			size_t hash = 0;
-			Kigs::Core::hash_combine(hash, pt.x, pt.y, pt.z, pt.w);
+			Kigs::Core::hash_combine(hash, pt.x(), pt.y(), pt.z(), pt.w());
 			return hash;
 		}
 	};

@@ -146,21 +146,21 @@ void DebugDraw::removeUser(CoreModifiable* parent)
 
 namespace
 {
-	Point2D current_size(1,1);
+	v2f current_size(1,1);
 };
 
-void dd::set_rendering_size(Point2D size)
+void dd::set_rendering_size(v2f size)
 {
 	current_size = size;
 }
 
-void dd::line2D(Point2D p1, Point2D p2, ddVec3Param color, int duration)
+void dd::line2D(v2f p1, v2f p2, ddVec3Param color, int duration)
 {
 	dd::line({ p1.x*current_size.x, p1.y*current_size.y, 0 }, { p2.x*current_size.x, p2.y*current_size.y, 0 }, color, duration, false);
 }
 
 
-void dd::rect2D(Point2D p1, Point2D p2, ddVec3Param color, int duration)
+void dd::rect2D(v2f p1, v2f p2, ddVec3Param color, int duration)
 {
 	dd::line2D(p1, { p2.x, p1.y }, color, duration);
 	dd::line2D(p2, { p2.x, p1.y }, color, duration);

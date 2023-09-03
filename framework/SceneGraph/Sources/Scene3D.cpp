@@ -133,7 +133,7 @@ void ManageFrontToBackStruct::Init(Camera* cam)
 {
 	cam->GetPosition(camPos.x, camPos.y, camPos.z);
 	cam->GetViewVector(camViewVector.x, camViewVector.y, camViewVector.z);
-	camViewVector.Normalize();
+	camViewVector.normalize();
 
 	if (camViewVector.x > 0)
 	{

@@ -67,7 +67,7 @@ namespace Kigs
 
 			/**
 			 * \brief		initialize with a 4x4 matrix
-			 * \fn			void	Init(const Matrix4x4& matrix);
+			 * \fn			void	Init(const mat4& matrix);
 			 * \param		matrix : used matrix
 			 */
 			void	Init(const mat4& matrix);
@@ -109,9 +109,9 @@ namespace Kigs
 				return ((unsigned int)Need_Predraw) | ((unsigned int)Need_Postdraw);
 			}
 
-			const float* GetMatrixValues() const
+			const f32* GetMatrixValues() const
 			{
-				return &mMatrix[0];
+				return mMatrix.data();
 			}
 
 		protected:

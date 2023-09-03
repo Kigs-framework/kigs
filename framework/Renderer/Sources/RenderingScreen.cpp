@@ -278,7 +278,7 @@ void RenderingScreen::ManageFade(TravState* state)
 		renderer->LoadIdentity(MATRIX_MODE_MODEL);
 		renderer->LoadIdentity(MATRIX_MODE_VIEW);
 
-		Point2D size;
+		v2f size;
 		GetSize(size.x, size.y);
 		renderer->SetScissorValue(0, 0, (s32)size.x, (s32)size.y);
 		renderer->Viewport(0, 0, (u32)size.x, (u32)size.y);

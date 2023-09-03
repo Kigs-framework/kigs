@@ -65,17 +65,17 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 		}
 		SP<Camera>	currentCamera = checkcurrentCamera;
 
-		Point2D result;
+		v2f result;
 		if (currentCamera->Project(result.x, result.y, currentPos))
 		{
 			// fast check if point is in front
 			v3f	cameraView,cameraPos,camObjectVect;
 			currentCamera->GetViewVector(cameraView.x, cameraView.y, cameraView.z);
-			cameraView.Normalize();
+			cameraView.normalize();
 			currentCamera->GetPosition(cameraPos.x, cameraPos.y, cameraPos.z);
 			camObjectVect = currentPos;
 			camObjectVect -=cameraPos;
-			camObjectVect.Normalize();
+			camObjectVect.normalize();
 
 			float objectinfront = Dot(camObjectVect, cameraView);
 			if (objectinfront < 0)
@@ -89,12 +89,12 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 				{
 					// get camera up
 					v3f	cameraUp;
-					Point2D resultUp;
+					v2f resultUp;
 					currentCamera->GetUpVector(cameraUp.x, cameraUp.y, cameraUp.z);
 					if (currentCamera->Project(resultUp.x, resultUp.y, currentPos + cameraUp))
 					{
 						resultUp -= result;
-						resultUp.Normalize();
+						resultUp.normalize();
 						mRotationAngle = (fPI / 2.0f) - atan2f(resultUp.y, resultUp.x);
 					}
 				}
@@ -104,7 +104,7 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 				RenderingScreen* renderingScreen = currentCamera->getRenderingScreen();
 				if (renderingScreen)
 				{
-					Point2D size;
+					v2f size;
 					renderingScreen->GetSize(size.x, size.y);
 					result.x /= size.x;
 					result.y /= size.y;

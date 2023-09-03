@@ -1,9 +1,11 @@
 #include "PrecompiledHeaders.h"
 
+#include <numbers>
+
 #include "CoordinateSystem.h"
 #include "CoreBaseApplication.h"
 #include "TecLibs/Tec3D.h"
-#include "unsupported/Eigen/src/EulerAngles/EulerAngles.h"
+#include "unsupported/Eigen/EulerAngles"
 
 using namespace Kigs::Scene;
 
@@ -15,23 +17,19 @@ void	CoordinateSystemUp::Init(CoreModifiable* toUpgrade)
 
 	// retreive current values ( suppose the matrix is a correct PRS matrix )
 	mat3x4 current = ((Node3D*)toUpgrade)->GetLocal();
-
 	Eigen::Transform<f32, 3, Eigen::AffineCompact>	transform(current);
 
 	v3f pos;
 	f32 scale;
-	mat3 rot;
-	
-	pos=transform.translation();
-	transform.computeScalingRotation(&scale, &rot);
+	v3f rot;
 
-	v3f rotangles=rot.eulerAngles(2, 1, 0);
+	Kigs::Maths::toPRS(current, pos, rot, scale);
 
 	mScale =toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "Scale", 1.0f);
 	toUpgrade->setOwnerNotification("Scale",true);
-	mPos = toUpgrade->AddDynamicVectorAttribute("Position", (float*)&pos.x(), 3);
+	mPos = toUpgrade->AddDynamicVectorAttribute("Position", (float*)pos.data(), 3);
 	toUpgrade->setOwnerNotification("Position", true);
-	mRot = toUpgrade->AddDynamicVectorAttribute("Rotation", (float*)&rotangles.x(), 3);
+	mRot = toUpgrade->AddDynamicVectorAttribute("Rotation", (float*)rot.data(), 3);
 	toUpgrade->setOwnerNotification("Rotation", true);
 
 	// check if already in auto update mode
@@ -74,19 +72,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, CoordinateSystemNotifyUpdate)
 			v3f pos; GetUpgrador()->mPos->getValue(pos, this);
 			float scale; GetUpgrador()->mScale->getValue(scale, this);
 
-			mat3x4 matrix;
-			Eigen::Transform<f32,3, Eigen::AffineCompact>	transform;
-
-			transform.setIdentity();
-			mat3 m;
-			m = Eigen::AngleAxisf(rot.x(), Eigen::Vector3f::UnitX())
-				* Eigen::AngleAxisf(rot.y(), Eigen::Vector3f::UnitY())
-				* Eigen::AngleAxisf(rot.z(), Eigen::Vector3f::UnitZ());
-
-			transform.rotate(m);
-			transform.prescale(scale);
-			transform.translate(pos);
-			matrix = transform.matrix();
+			mat3x4 matrix = Kigs::Maths::fromPRS(pos,rot,scale);
 			ChangeMatrix(matrix);
 		}
 
@@ -106,7 +92,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 
 		quat q(Eigen::AngleAxis(angle,axis));
 		
-		mat3x4	angAxis(q);
+		mat4	angAxis(q);
 
 		v3f	rot;
 		v3f pos;
@@ -116,14 +102,12 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 		getValue("Position", pos);
 		getValue("Scale", scale);
 
-		mat3x4 matrix;
-		matrix.SetRotationXYZ(rot.x, rot.y, rot.z);
-		matrix.PreScale(scale, scale, scale);
-		matrix.SetTranslation(pos);
+		mat3x4 block=Kigs::Maths::fromPRS(pos, rot, scale);
+		mat4 matrix(block);
 
-		matrix.PostMultiply(angAxis);
+		matrix = matrix * angAxis;
 
-		matrix.GetPRS(pos, rot, scale);
+		Kigs::Maths::toPRS(matrix.block<3,4>(0,0), pos, rot, scale);
 
 		setValue("Rotation", rot);
 		setValue("Position", pos);
@@ -170,10 +154,8 @@ DEFINE_UPGRADOR_UPDATE(CoordinateSystemUp)
 		getValue("Position", pos);
 		getValue("Scale", scale);
 
-		mat3x4 matrix;
-		matrix.SetRotationXYZ(rot.x,rot.y,rot.z);
-		matrix.PreScale(scale, scale, scale);
-		matrix.SetTranslation(pos);
+
+		mat3x4 matrix = Kigs::Maths::fromPRS(pos, rot,scale);
 		ChangeMatrix(matrix);
 
 		GetUpgrador()->mWasChanged = false;
@@ -194,13 +176,13 @@ void CoordinateSystemUp::toEuler(float x,float y,float z,float angle,float& head
 	// z /= magnitude;
 	if ((x*y*t + z*s) > 0.998f) { // north pole singularity detected
 		heading = 2.0f*atan2f(x*sinf(angle*0.5f),cosf(angle*0.5f));
-		attitude = fPI*0.5f;
+		attitude = std::numbers::pi_v<float>*0.5f;
 		bank = 0.0f;
 		return;
 	}
 	if ((x*y*t + z*s) < -0.998f) { // south pole singularity detected
 		heading = -2.0f*atan2f(x*sinf(angle*0.5f),cosf(angle*0.5f));
-		attitude = -fPI*0.5f;
+		attitude = -std::numbers::pi_v<float>*0.5f;
 		bank = 0.0f;
 		return;
 	}
@@ -224,10 +206,10 @@ void	PivotUp::Init(CoreModifiable* toUpgrade)
 	v3f PivotPosition(0, 0, 0);
 	mAngle = toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "Angle", 0.0f);
 	toUpgrade->setOwnerNotification("Angle", true);
-	mPivotPosition = toUpgrade->AddDynamicVectorAttribute("PivotPosition", (float*)&PivotPosition.x, 3);
+	mPivotPosition = toUpgrade->AddDynamicVectorAttribute("PivotPosition", (float*)PivotPosition.data(), 3);
 	toUpgrade->setOwnerNotification("PivotPosition", true);
-	PivotPosition.Set(0, 1, 0);
-	mPivotAxis = toUpgrade->AddDynamicVectorAttribute("PivotAxis", (float*)&PivotPosition.x, 3);
+	PivotPosition=v3f(0, 1, 0);
+	mPivotAxis = toUpgrade->AddDynamicVectorAttribute("PivotAxis", (float*)PivotPosition.data(), 3);
 	toUpgrade->setOwnerNotification("PivotAxis", true);
 	mIsGlobal = toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "IsGlobal", false);
 	toUpgrade->setOwnerNotification("IsGlobal", true);
@@ -263,7 +245,8 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 		bool isGlobal;
 
 		// get local matrix
-		mat3x4 matrix = GetUpgrador()->mInitMatrix;
+		mat3x4& initM = GetUpgrador()->mInitMatrix;
+		mat4 matrix(initM);
 		v3f	ppos;
 		v3f paxis;
 		float	pangle;
@@ -275,27 +258,27 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 		if (isGlobal)
 		{
 			// move to local 
-			mGlobalToLocal.TransformPoint(&ppos);
-			mGlobalToLocal.TransformVector(&paxis);
+			Kigs::Maths::TransformPoint(mGlobalToLocal,ppos);
+			Kigs::Maths::TransformVector(mGlobalToLocal,paxis);
 		}
+		
+		Eigen::AngleAxis<f32> angaxis(pangle, paxis);
+		quat q(angaxis);
 
-		Quaternion q;
-		q.SetAngAxis(paxis, pangle);
+		mat4 transform(q);
 
-		mat3x4 transform(q);
-
-		v3f originPos = matrix.GetTranslation();
-		matrix.SetTranslation({ 0,0,0 });
+		v3f originPos = initM.col(3);
+		matrix.col(3)=v4f{ 0,0,0,1 };
 
 		matrix = transform * matrix;
 
 		originPos -= ppos;
-		transform.TransformVector(&originPos);
+		originPos = transform * v4f(originPos.x(), originPos.y(), originPos.z(), 0.0f);
 		originPos += ppos;
 
-		matrix.SetTranslation(originPos);
+		matrix.col(3)= v4f(originPos.x(), originPos.y(), originPos.z(), 0.0f);
 
-		ChangeMatrix(matrix);
+		ChangeMatrix(matrix.block<3,3>(0,0));
 
 		GetUpgrador()->mWasChanged = false;
 	}

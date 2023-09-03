@@ -1002,9 +1002,9 @@ void ModernMesh::GetVertex(int & VCount, float *& VArray)
 
 void ModernMeshItemGroup::GetTangent(unsigned char* v1, unsigned char* v2, unsigned char* v3, unsigned int tcpos, v3f& sdir)
 {
-	const Point2D&		w1 = *(Point2D*)(v1 + tcpos);
-	const Point2D&		w2 = *(Point2D*)(v2 + tcpos);
-	const Point2D&		w3 = *(Point2D*)(v3 + tcpos);
+	const v2f&		w1 = *(v2f*)(v1 + tcpos);
+	const v2f&		w2 = *(v2f*)(v2 + tcpos);
+	const v2f&		w3 = *(v2f*)(v3 + tcpos);
 
 	const v3f&		vt1 = *(v3f*)v1;
 	const v3f&		vt2 = *(v3f*)v2;
@@ -1159,7 +1159,7 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 		v3f	t1;
 		if (!useTextureCoords)
 		{
-			n.Normalize();
+			n.normalize();
 
 			if (fabsf(n.z) > 0.8)
 			{
@@ -1173,15 +1173,15 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 		}
 		else
 		{
-			t.Normalize();
+			t.normalize();
 		}
 		
 		t1.CrossProduct(n, t);
 
-		t1.Normalize();
+		t1.normalize();
 		// and t again
 		t.CrossProduct(t1, n);
-		t.Normalize();
+		t.normalize();
 
 
 		unsigned int*		writeTangent = (unsigned int*)(writeVertex + vsize);
@@ -1244,7 +1244,7 @@ void ModernMeshItemGroup::ComputeNormals()
 			v3f* v3 = (v3f*)(vertexStart + vsize*triangles[i].indices[2]);
 
 			N.CrossProduct(*v2 - *v1, *v3 - *v1);
-			N.Normalize();
+			N.normalize();
 
 			nArray[triangles[i].indices[0]] += N;
 			nArray[triangles[i].indices[1]] += N;
@@ -1262,7 +1262,7 @@ void ModernMeshItemGroup::ComputeNormals()
 			v3f* v3 = (v3f*)(vertexStart + vsize*triangles[i].indices[2]);
 
 			N.CrossProduct(*v2 - *v1, *v3 - *v1);
-			N.Normalize();
+			N.normalize();
 
 			nArray[triangles[i].indices[0]] += N;
 			nArray[triangles[i].indices[1]] += N;
@@ -1285,7 +1285,7 @@ void ModernMeshItemGroup::ComputeNormals()
 	{
 		memcpy(write, read, vsize);
 
-		nArray[i].Normalize();
+		nArray[i].normalize();
 
 		unsigned int*		writeNormal = (unsigned int*)(write + vsize);
 		signed char*		component = (signed char*)writeNormal;

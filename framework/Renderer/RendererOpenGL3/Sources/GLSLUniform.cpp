@@ -207,7 +207,7 @@ void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
 void API3DUniformFloat3::Normalize()
 {
 	v3f v(mValue[0], mValue[1], mValue[2]);
-	v.Normalize();
+	v.normalize();
 
 	mValue[0] = v.x;
 	mValue[1] = v.y;
@@ -533,12 +533,12 @@ void	API3DUniformMatrixArray::NotifyUpdate(const unsigned int  labelid)
 		{
 			delete[] mMatrixArrayPointer;
 		}
-		mMatrixArrayPointer = new Matrix4x4[mArraySize];
+		mMatrixArrayPointer = new mat4[mArraySize];
 		for (int i = 0; i < mArraySize; i++)
 		{
 			mMatrixArrayPointer[i].SetIdentity();
 		}
-		mMatrixArray.SetBuffer(mMatrixArrayPointer, mArraySize * sizeof(Matrix4x4), false);
+		mMatrixArray.SetBuffer(mMatrixArrayPointer, mArraySize * sizeof(mat4), false);
 	}
 	
 }

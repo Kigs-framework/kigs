@@ -47,7 +47,7 @@ namespace Kigs
 			bool isAlpha(float X, float Y)override;
 			void SetTexUV(UIVerticesInfo* aQI)override;
 
-			Point2D mUVMin, mUVMax;
+			v2f mUVMin, mUVMax;
 
 			bool mHasSprite;
 

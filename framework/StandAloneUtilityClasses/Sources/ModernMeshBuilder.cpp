@@ -470,7 +470,7 @@ SP<ModernMeshItemGroup> ModernMeshBuilder::EndGroup(int vertex_count, v3f* verti
 				v3f v3 = vertexReader[c];
 
 				N.CrossProduct(v2 - v1, v3 - v1);
-				N.Normalize();
+				N.normalize();
 
 				nArray[a] += N;
 				nArray[b] += N;
@@ -595,7 +595,7 @@ SP<ModernMeshItemGroup>	ModernMeshBuilder::EndGroup(void * vertex, int vertexCou
 				v3f v3 = vertexReader[c];
 
 				N.CrossProduct(v2 - v1, v3 - v1);
-				N.Normalize();
+				N.normalize();
 
 				nArray[a] += N;
 				nArray[b] += N;
@@ -664,7 +664,7 @@ SP<ModernMeshItemGroup>	ModernMeshBuilder::EndGroup(void * vertex, int vertexCou
 			// write normal (3 unsigned char + 1 char unused)
 			if (mVertexArrayMask & ModuleRenderer::NORMAL_ARRAY_MASK)
 			{
-				nArray[index].Normalize();
+				nArray[index].normalize();
 				writer[NormalPos] = (signed char)(nArray[index].x*127.5f);
 				writer[NormalPos+1] = (signed char)(nArray[index].y*127.5f);
 				writer[NormalPos+2] = (signed char)(nArray[index].z*127.5f);
@@ -979,7 +979,7 @@ void ModernMeshBuilder::SnapToGridAndMerge()
 				}
 			}
 
-			average_n.Normalize();
+			average_n.normalize();
 
 			for (int s1 = 0; s1 < shared.size(); ++s1)
 			{
@@ -1010,7 +1010,7 @@ void ModernMeshBuilder::SnapToGridAndMerge()
 					}
 					if (count >= 2)
 					{
-						true_average.Normalize();
+						true_average.normalize();
 						for (int s2 = s1; s2 < shared.size(); ++s2)
 						{
 							if (mask == shared[s2].merge_mask)
@@ -1173,7 +1173,7 @@ void ModernMeshBuilder::GenerateNormals()
 
 		v3f N;
 		N.CrossProduct(*v1 - *v0, *v2 - *v0);
-		N.Normalize();
+		N.normalize();
 
 		normals[tri->indices[0]] += N;
 		normals[tri->indices[1]] += N;

@@ -94,7 +94,7 @@ void Camera::RecomputeMatrix()
 	view.y=mViewVector[1];
 	view.z=mViewVector[2];
 	
-	view.Normalize();
+	view.normalize();
 	
 	pos.x=mPosition[0];
 	pos.y=mPosition[1];
@@ -105,11 +105,11 @@ void Camera::RecomputeMatrix()
 	up.y=mUpVector[1];
 	up.z=mUpVector[2];
 	
-	up.Normalize();
+	up.normalize();
 	
 	right=up^view;
 	
-	right.Normalize();
+	right.normalize();
 	
 	up=view^right;
 
@@ -222,7 +222,7 @@ bool Camera::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::tou
 		pout.dir.z = -pos2D.y*tt;
 		pout.dir.y = -pos2D.x*tt*aspect;
 		GetLocalToGlobal().TransformVector(&pout.dir);
-		pout.dir.Normalize();
+		pout.dir.normalize();
 
 		pout.origin.x = GetLocalToGlobal().e[3][0];
 		pout.origin.y = GetLocalToGlobal().e[3][1];
@@ -425,7 +425,7 @@ void Camera::getRay(const float &ScreenX, const float &ScreenY, v3f &RayOrigin, 
 	RayOrigin.y = GetLocalToGlobal().e[3][1];
 	RayOrigin.z = GetLocalToGlobal().e[3][2];
 	GetLocalToGlobal().TransformVector(&RayDirection);
-	RayDirection.Normalize();
+	RayDirection.normalize();
 }
 
 
@@ -453,7 +453,7 @@ bool Camera::Project(float &ScreenX, float &ScreenY, v3f Pt)
 	float deltaX = frustumWidth + frustumWidth;
 	float deltaY = frustumHeight + frustumHeight;
 	float deltaZ = mFarPlane - mNearPlane;
-	Matrix4x4 frust;
+	mat4 frust;
 	
 	if ((mNearPlane <= 0.0f) || (mFarPlane <= 0.0f) || (deltaX <= 0.0f) || (deltaY <= 0.0f) || (deltaZ <= 0.0f))
 	{
@@ -832,7 +832,7 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 				v3f	normalV;
 				normalV.CrossProduct(currentDataStruct->mStartV, currentV);
 				
-				normalV.Normalize();
+				normalV.normalize();
 
 				currentDataStruct->mStartMatrix.TransformVector(&normalV);
 

@@ -45,12 +45,12 @@ namespace Kigs
 				return false;
 			}
 
-			inline void	TransformUV(Point2D* totransform, int count) const
+			inline void	TransformUV(v2f* totransform, int count) const
 			{
 				if (!mTexturePointer)
 					return;
 
-				const Matrix4x4& mat = mTexturePointer->getUVTexture();
+				const mat4& mat = mTexturePointer->getUVTexture();
 
 				v2f result;
 				for (size_t i = 0; i < count; i++)

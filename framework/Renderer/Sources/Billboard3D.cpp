@@ -103,8 +103,8 @@ void Billboard3D::UpdateOrientation()
 	const mat3x4 &Mat = mCamera->GetLocalToGlobal();
 	mHorizontalVector.Set(-Mat.e[1][0],-Mat.e[1][1],-Mat.e[1][2]);
 	mVerticalVector.Set(-Mat.e[2][0],-Mat.e[2][1],-Mat.e[2][2]);
-	mHorizontalVector.Normalize();
-	mVerticalVector.Normalize();
+	mHorizontalVector.normalize();
+	mVerticalVector.normalize();
 	mFatherNode->SetupNodeIfNeeded();
 
 	//const mat3x4 &FatherMat = pFatherNode->GetLocalToGlobal();

@@ -4,6 +4,7 @@
 #include "TecLibs/Tec3D.h"
 #include "CoreBaseApplication.h"
 
+using namespace Kigs;
 using namespace Kigs::Scene;
 
 // connect to events and create attributes
@@ -120,20 +121,21 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	GetUpgrador()->mCurrentTarget->SetupNodeIfNeeded();
 
 	// target pos in global coordinates
-	v3f targetpos(*(v3f*)GetUpgrador()->mCurrentTarget->GetLocalToGlobal().e[3]);
+	v3f targetpos(GetUpgrador()->mCurrentTarget->GetLocalToGlobal().col(3));
 
 	v3f	targetAxis1, targetAxis2, targetAxis3;
 	// target vector in global coordinates
 	targetAxis1 =targetpos;
 	targetAxis1 -= GetLocalToGlobal().col(3);
 	// now in father local coordinates
-	getFather()->GetGlobalToLocal().TransformVector(&targetAxis1);
+
+	Kigs::Maths::TransformVector(getFather()->GetGlobalToLocal(),targetAxis1);
 	targetAxis1.normalize();
 
 	// get global targetAxis2
 	GetUpgrador()->mPseudoConstantAxisDir->getValue(targetAxis2, this);
 	// and transform it to father local coordinates
-	getFather()->GetGlobalToLocal().TransformVector(&targetAxis2);
+	Kigs::Maths::TransformVector(getFather()->GetGlobalToLocal(), targetAxis2);
 	targetAxis2.normalize();
 
 	// if constant axis and target vector are too near, use mLastValidUpAxis
@@ -142,7 +144,7 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	if ((tstCross.squaredNorm()) < 0.1f)
 	{
 		targetAxis2 = GetUpgrador()->mLastValidUpAxis;
-		getFather()->GetGlobalToLocal().TransformVector(&targetAxis2);
+		Kigs::Maths::TransformVector(getFather()->GetGlobalToLocal(), targetAxis2);
 		targetAxis2.normalize();
 	}
 
@@ -167,7 +169,7 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	mat3 result(tm1 * tm2);
 	
 	mat3x4	targetm(result);
-	targetm.SetTranslation(mTransform.GetTranslation());
+	targetm.col(3)=mTransform.col(3);
 
 	ChangeMatrix(targetm);
 

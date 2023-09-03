@@ -16,8 +16,8 @@
 #include <array>
 
 #define DEBUG_DRAW_VEC3_TYPE_DEFINED 1
-using ddVec3 = Kigs::Maths::Point3D;
-using ddVec3Param = const Kigs::Maths::Point3D;
+using ddVec3 = Kigs::v3f;
+using ddVec3Param = const Kigs::v3f;
 
 
 #define DEBUG_DRAW_CXX11_SUPPORTED 1
@@ -663,14 +663,14 @@ namespace Kigs
 
 namespace dd
 {
-	void set_rendering_size(Kigs::Maths::Point2D size);
-	void line2D(Kigs::Maths::Point2D p1, Kigs::Maths::Point2D p2, ddVec3Param color, int duration = 0);
-	void rect2D(Kigs::Maths::Point2D p1, Kigs::Maths::Point2D p2, ddVec3Param color, int duration = 0);
+	void set_rendering_size(Kigs::v2f size);
+	void line2D(Kigs::v2f p1, Kigs::v2f p2, ddVec3Param color, int duration = 0);
+	void rect2D(Kigs::v2f p1, Kigs::v2f p2, ddVec3Param color, int duration = 0);
 
 	struct CameraPoints
 	{
-		::std::array<v3f, 4> ptnear;
-		::std::array<v3f, 4> ptfar;
+		::std::array<Kigs::v3f, 4> ptnear;
+		::std::array<Kigs::v3f, 4> ptfar;
 	};
 
 	enum CameraFlags
@@ -681,7 +681,7 @@ namespace dd
 	void camera(Kigs::Draw::Camera* cam, ddVec3Param color, u32 flags = 0, int duration = 0);
 	void camera(const CameraPoints& pts, ddVec3Param color, u32 flags = 0, int duration = 0);
 
-	void local_bbox(const Kigs::Maths::Matrix3x4& local_to_global, Kigs::Maths::BBox bbox, ddVec3Param color, int duration = 0, bool depth_enabled = true);
+	void local_bbox(const Kigs::Maths::mat3x4& local_to_global, Kigs::Maths::BBox bbox, ddVec3Param color, int duration = 0, bool depth_enabled = true);
 
 	CameraPoints camera_points(Kigs::Draw::Camera* cam);
 }
@@ -724,7 +724,7 @@ namespace Kigs
 				return true;
 			};
 
-			void GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override;
+			void GetNodeBoundingBox(v3f& pmin, v3f& pmax) const override;
 
 			void Drawfunc(Scene::TravState* trav, Draw2D::UIItem*) override { Draw(trav); };
 			virtual ~DebugDraw();

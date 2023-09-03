@@ -169,12 +169,12 @@ void Mesh::Triangle::NormalAngle(const v3f* VertexArray, v3f &Na, v3f &Nb,v3f &N
 	u = VertexArray[b]-VertexArray[a];
 	v = VertexArray[c]-VertexArray[b];
 	w = VertexArray[a]-VertexArray[c];
-	u.Normalize();
-	v.Normalize();
-	w.Normalize();
+	u.normalize();
+	v.normalize();
+	w.normalize();
 
 	n.CrossProduct(u,v);
-	n.Normalize();
+	n.normalize();
 	Na =  (float)acosf(fabsf(Dot(u,w))) * n;
 	Nb =  (float)acosf(fabsf(Dot(v,u))) * n;
 	Nc =  (float)acosf(fabsf(Dot(w,v))) * n;
@@ -537,7 +537,7 @@ void	Mesh::RecomputeNormals()
 	// then normalize all again
 	for(i=0;i<mNormalCount;i++)
 	{
-		mNormalArray[i].Normalize();
+		mNormalArray[i].normalize();
 	}
 
 }
@@ -597,6 +597,6 @@ void	Mesh::RecomputeNormalsFast()
 	// then normalize all again
 	for (i = 0; i<(int)mNormalCount; i++)
 	{
-		mNormalArray[i].Normalize();
+		mNormalArray[i].normalize();
 	}
 }

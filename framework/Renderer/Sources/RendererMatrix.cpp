@@ -23,7 +23,7 @@ void	RendererMatrix::Init(const mat3x4& matrix)
 	mMatrix[3] = { matrix[3] , 1.0f };
 }
 
-void	RendererMatrix::Init(const Matrix4x4& matrix)
+void	RendererMatrix::Init(const mat4& matrix)
 {
 	mMatrix = matrix;
 }

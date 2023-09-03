@@ -631,7 +631,7 @@ void UIDynamicText::IterateCharacters(std::function<bool(IterationState&)> func,
 
 UIDynamicText::IterationState UIDynamicText::PickCharacter(v2f pos)
 {
-	Point2D pt[4];
+	v2f pt[4];
 	GetTransformedPoints(pt);
 
 	float sx = ProjectOnLineScalar(pos, pt[0], pt[3]);

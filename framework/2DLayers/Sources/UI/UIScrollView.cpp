@@ -29,7 +29,7 @@ void UIScrollView::InitModifiable()
 	{
 		UpdateContentSize();
 
-		Point2D posViewPort(mPosition[0], mPosition[1]);
+		v2f posViewPort(mPosition[0], mPosition[1]);
 		mVision->Set_Position(posViewPort);
 		mVision->setValue("Size", (v2f)mSize);
 

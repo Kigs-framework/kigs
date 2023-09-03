@@ -52,8 +52,8 @@ void	UIRatioKeeper::RecomputeRatio()
 		}
 		mCurrentScreen = currentScreen;
 
-		Point2D pxSize;
-		Point2D dsSize;
+		v2f pxSize;
+		v2f dsSize;
 
 		currentScreen->GetSize(pxSize.x, pxSize.y);
 		currentScreen->GetDesignSize(dsSize.x, dsSize.y);
@@ -71,7 +71,7 @@ void	UIRatioKeeper::RecomputeRatio()
 		mPreScale = v2f(1.0f, 1.0f);
 
 
-		Point2D ratio(pxSize.x / dsSize.x, pxSize.y / dsSize.y);
+		v2f ratio(pxSize.x / dsSize.x, pxSize.y / dsSize.y);
 
 		if (ratio.x < ratio.y)
 		{

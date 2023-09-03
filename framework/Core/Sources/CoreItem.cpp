@@ -6,6 +6,7 @@
 
 #include <type_traits>
 
+using namespace Kigs;
 using namespace Kigs::Core;
 
 CoreItemSP CoreItemIteratorBase::operator*() const

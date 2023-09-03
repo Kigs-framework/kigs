@@ -59,8 +59,8 @@ bool OpenGLHolo3DPanel::Draw(TravState* travstate)
 		v3f up = (v3f)mUp;
 		v3f left = up^n;
 
-		up.Normalize();
-		left.Normalize();
+		up.normalize();
+		left.normalize();
 
 		VInfo3D vi;
 

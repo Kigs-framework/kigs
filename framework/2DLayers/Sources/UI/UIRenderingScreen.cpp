@@ -129,13 +129,13 @@ bool	UIRenderingScreen::GetDataInTouchSupport(const Input::touchPosInfos& posin,
 {
 	SetUpNodeIfNeeded();
 
-	Point2D pt[4];
+	v2f pt[4];
 	GetTransformedPoints(pt);
 
 	// compute pos
-	Point2D L_PA(posin.pos.x - pt[0].x, posin.pos.y - pt[0].y);
-	Point2D L_PQ = pt[3] - pt[0];
-	Point2D L_PR = pt[1] - pt[0];
+	v2f L_PA(posin.pos.x - pt[0].x, posin.pos.y - pt[0].y);
+	v2f L_PQ = pt[3] - pt[0];
+	v2f L_PR = pt[1] - pt[0];
 
 	float d = (L_PQ.x*L_PR.y - L_PR.x*L_PQ.y);
 	float n = -(L_PA.x*L_PQ.y - L_PQ.x*L_PA.y) / d;

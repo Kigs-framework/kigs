@@ -84,7 +84,7 @@ namespace Kigs
 			 * \param	bbox : start from this bounding box
 			 * \return	the index of the found node
 			 */
-			int   FindSubNode(BBox* bbox);
+			int   FindSubNode(Kigs::Maths::BBox* bbox);
 
 			/**
 			 * \brief	get the father

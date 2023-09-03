@@ -1759,11 +1759,11 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 					{
 						// check swipe "trajectory"
 						v3f nswipeDir(swipemaindir);
-						nswipeDir.Normalize();
+						nswipeDir.normalize();
 						for (u32 i = 3; i < cswipe.touchList.size(); i++)
 						{
 							v3f checkdir(cswipe.touchList[0].pos, cswipe.touchList[i].pos, asVector());
-							checkdir.Normalize();
+							checkdir.normalize();
 
 							float dot = Dot(nswipeDir, checkdir);
 							if (dot < 0.6f)
@@ -1863,7 +1863,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 							//if (duration > 0.25f)
 							{
 								cscroll.maindir.Set(cscroll.startpos, position);
-								cscroll.maindir.Normalize();
+								cscroll.maindir.normalize();
 
 								// if mScrollForceMainDir is set, check if it's OK
 								if ((mScrollForceMainDir).squaredNorm() > 0.01f)

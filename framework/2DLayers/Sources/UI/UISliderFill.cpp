@@ -267,7 +267,7 @@ void UISliderFill::ComputeInitialElementsPosition()
 
 void UISliderFill::RecomputeElementsPosition(float _dockX, float _dockY, float _AnchorX,float _AnchorY, int _posx, int _posy, unsigned int _sizeX, unsigned int _sizeY, int& Xresult, int& Yresult)
 {
-	Point2D	pt((float)_posx, (float)_posy);
+	v2f	pt((float)_posx, (float)_posy);
 
 	TransformPoints(&pt, 1);
 

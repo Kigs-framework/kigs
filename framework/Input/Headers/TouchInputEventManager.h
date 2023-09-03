@@ -536,7 +536,7 @@ namespace Kigs
 			void	forceMainDir(v3f maindir)
 			{
 				mScrollForceMainDir = maindir;
-				mScrollForceMainDir.Normalize();
+				mScrollForceMainDir.normalize();
 			}
 
 		protected:

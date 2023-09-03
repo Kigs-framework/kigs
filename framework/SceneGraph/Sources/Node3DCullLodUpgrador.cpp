@@ -22,10 +22,10 @@ DEFINE_CULL_UPGRADOR_METHOD(Node3DCullLodUpgrador)
 	if (Node3D::Cull(state, CullingMask))
 	{
 		// retreive bbox
-		BBox gbb;
+		Maths::BBox gbb;
 		GetGlobalBoundingBox(gbb.m_Min, gbb.m_Max);
 		auto d = gbb.Distance(state->GetCurrentCamera()->GetGlobalPosition());
-		auto bbsize = Norm(gbb.m_Max - gbb.m_Min);
+		auto bbsize =(gbb.m_Max - gbb.m_Min).norm();
 
 		if (bbsize == 0.0f)
 			return true;

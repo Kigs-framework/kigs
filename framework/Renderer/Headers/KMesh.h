@@ -409,7 +409,7 @@ class Material;
 				v-=VertexArray[b];
 			
 				Na.CrossProduct(u,v);
-				Na.Normalize();
+				Na.normalize();
 			}
 		};
 

@@ -131,7 +131,7 @@ DEFINE_UPGRADOR_METHOD(OrbitCameraUp, ManageDirectTouch)
 			v3f pos = GetUpgrador()->mOperationStartOrbitPosition;
 			v3f up = GetUpgrador()->mOperationStartOrbitUp;
 
-			auto right = v3f(0, 1, 0) ^ dir; right.Normalize();
+			auto right = v3f(0, 1, 0) ^ dir; right.normalize();
 
 			v2f size; getRenderingScreen()->GetSize(size.x, size.y);
 			size = 1.0f / size;

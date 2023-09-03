@@ -83,15 +83,13 @@ namespace Kigs
 				*/
 			void	SetPosition(float x, float y, float z)
 			{
-				mPosition[0] = x;
-				mPosition[1] = y;
-				mPosition[2] = z;
-				RecomputeMatrix();
+				SetPosition({ x,y,z });
 			}
 
 			void	SetPosition(const v3f& pt)
 			{
-				SetPosition(pt.x, pt.y, pt.z);
+				mPosition = pt;
+				RecomputeMatrix();
 			}
 
 			/**
@@ -107,9 +105,9 @@ namespace Kigs
 				y = mPosition[1];
 				z = mPosition[2];
 			}
-			v3f GetPosition() const { return v3f(mPosition[0], mPosition[1], mPosition[2]); }
+			v3f GetPosition() const { return mPosition; }
 
-			v3f GetGlobalPosition() { return GetLocalToGlobal().Pos; }
+			v3f GetGlobalPosition() { return GetLocalToGlobal().col(3); }
 			/**
 				* \brief	set the view factor
 				* \fn 		void	SetViewVector(float x,float y,float z)
@@ -119,14 +117,12 @@ namespace Kigs
 				*/
 			void	SetViewVector(float x, float y, float z)
 			{
-				mViewVector[0] = x;
-				mViewVector[1] = y;
-				mViewVector[2] = z;
-				RecomputeMatrix();
+				SetViewVector({ x,y,z });
 			}
 			void SetViewVector(const v3f& v)
 			{
-				SetViewVector(v.x, v.y, v.z);
+				mViewVector = v;
+				RecomputeMatrix();
 			}
 
 			/**
@@ -142,8 +138,8 @@ namespace Kigs
 				y = mViewVector[1];
 				z = mViewVector[2];
 			}
-			v3f GetViewVector() const { return v3f(mViewVector[0], mViewVector[1], mViewVector[2]); }
-			v3f GetGlobalViewVector() { return GetLocalToGlobal().XAxis.Normalized(); }
+			v3f GetViewVector() const { return mViewVector; }
+			v3f GetGlobalViewVector() { return GetLocalToGlobal().col(0).normalized(); }
 
 
 			std::pair<v3f, v3f> GetGlobalRay() { return { GetGlobalPosition(), GetGlobalViewVector() }; }
@@ -159,15 +155,13 @@ namespace Kigs
 				*/
 			void	SetUpVector(float x, float y, float z)
 			{
-				mUpVector[0] = x;
-				mUpVector[1] = y;
-				mUpVector[2] = z;
-				RecomputeMatrix();
+				SetUpVector({x,y,z});
 			}
 
 			void SetUpVector(const v3f& v)
 			{
-				SetUpVector(v.x, v.y, v.z);
+				mUpVector = v;
+				RecomputeMatrix();
 			}
 
 			/**
@@ -183,15 +177,15 @@ namespace Kigs
 				y = mUpVector[1];
 				z = mUpVector[2];
 			}
-			v3f GetUpVector() const { return v3f(mUpVector[0], mUpVector[1], mUpVector[2]); }
-			v3f GetGlobalUpVector() { return GetLocalToGlobal().ZAxis.Normalized(); }
+			v3f GetUpVector() const { return mUpVector; }
+			v3f GetGlobalUpVector() { return GetLocalToGlobal().col(2).normalized(); }
 
-			v3f GetGlobalRightVector() { return GetLocalToGlobal().YAxis.Normalized(); }
+			v3f GetGlobalRightVector() { return GetLocalToGlobal().col(1).normalized(); }
 
 			/**
 			* \brief	special case for camera has we want it to be init even if have no bounding box
 			*/
-			void	GetNodeBoundingBox(v3f& pmin, v3f& pmax) const override { pmin.Set(-0.5f, -0.5f, -0.5f); pmax.Set(0.5f, 0.5f, 0.5f); }
+			void	GetNodeBoundingBox(v3f& pmin, v3f& pmax) const override { pmin=v3f(-0.5f, -0.5f, -0.5f); pmax=v3f(0.5f, 0.5f, 0.5f); }
 
 			/**
 				* \brief	set the zNear and zFar values
@@ -426,7 +420,7 @@ namespace Kigs
 			struct touchControlledDataStruct
 			{
 				// data
-				Point2D		mStartPt; // used for rotation
+				v2f		mStartPt; // used for rotation
 				float		mOneOnCoef; // used for rotation and zoom
 				float		mTargetPointDist; // used for rotation and zoom
 				v3f	mStartV; // used for rotation and zoom

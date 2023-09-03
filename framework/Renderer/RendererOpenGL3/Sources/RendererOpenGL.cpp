@@ -148,7 +148,7 @@ void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 				// get only needed elements from 4x4 matrix
 
 				Matrix3x3	uvm;
-				Matrix4x4& uvm4x4 = mMatrixStack[3].back();
+				mat4& uvm4x4 = mMatrixStack[3].back();
 				uvm.e[0][0]= uvm4x4.e[0][0];
 				uvm.e[0][1] = uvm4x4.e[1][0];
 				uvm.e[1][0] = uvm4x4.e[0][1];
