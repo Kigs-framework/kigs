@@ -50,7 +50,7 @@ namespace Kigs
 				if (!mTexturePointer)
 					return;
 
-				const Matrix4x4& mat = mTexturePointer->getUVTexture();
+				const mat4& mat = mTexturePointer->getUVTexture();
 
 				v2f result;
 				for (size_t i = 0; i < count; i++)

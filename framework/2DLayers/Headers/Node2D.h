@@ -158,7 +158,7 @@ namespace Kigs
 
 			void	GetGlobalPosition(float& X, float& Y);
 
-			inline const Matrix3x3& GetGlobalTransform() const
+			inline const mat3& GetGlobalTransform() const
 			{
 				return mGlobalTransformMatrix;
 			}
@@ -227,8 +227,8 @@ namespace Kigs
 
 			v2f													mRealSize{ 0,0 };
 
-			Matrix3x3											mLocalTransformMatrix;
-			Matrix3x3											mGlobalTransformMatrix;
+			mat3											mLocalTransformMatrix;
+			mat3											mGlobalTransformMatrix;
 			maEnum<7>											mSizeModeX = BASE_ATTRIBUTE(SizeModeX, "Default", "Multiply", "Add", "Content", "ContentMult", "ContentAdd", "KeepRatio");
 			maEnum<7>											mSizeModeY = BASE_ATTRIBUTE(SizeModeY, "Default", "Multiply", "Add", "Content", "ContentMult", "ContentAdd", "KeepRatio");
 

@@ -533,12 +533,12 @@ void	API3DUniformMatrixArray::NotifyUpdate(const unsigned int  labelid)
 		{
 			delete[] mMatrixArrayPointer;
 		}
-		mMatrixArrayPointer = new Matrix4x4[mArraySize];
+		mMatrixArrayPointer = new mat4[mArraySize];
 		for (int i = 0; i < mArraySize; i++)
 		{
 			mMatrixArrayPointer[i].SetIdentity();
 		}
-		mMatrixArray.SetBuffer(mMatrixArrayPointer, mArraySize * sizeof(Matrix4x4), false);
+		mMatrixArray.SetBuffer(mMatrixArrayPointer, mArraySize * sizeof(mat4), false);
 	}
 	
 }

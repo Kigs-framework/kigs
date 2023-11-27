@@ -111,16 +111,16 @@ namespace Kigs
 
 			Node3D* getFather() { return mFatherNode; }
 
-			const Matrix3x4& GetLocalToGlobal() { if (isUserFlagSet(LocalToGlobalMatrixIsDirty)) RecomputeLocalToGlobal(); return mLocalToGlobal; }
-			const Matrix3x4& GetGlobalToLocal() { if (isUserFlagSet(GlobalToLocalMatrixIsDirty)) RecomputeGlobalToLocal(); return mGlobalToLocal; }
-			const Matrix3x4& GetLocal() { return mTransform; }
+			const mat3x4& GetLocalToGlobal() { if (isUserFlagSet(LocalToGlobalMatrixIsDirty)) RecomputeLocalToGlobal(); return mLocalToGlobal; }
+			const mat3x4& GetGlobalToLocal() { if (isUserFlagSet(GlobalToLocalMatrixIsDirty)) RecomputeGlobalToLocal(); return mGlobalToLocal; }
+			const mat3x4& GetLocal() { return mTransform; }
 
-			virtual void ChangeMatrix(const Matrix3x4& newmatrix);
+			virtual void ChangeMatrix(const mat3x4& newmatrix);
 
-			void ChangeMatrixGlobal(const Matrix3x4& new_global_matrix);
+			void ChangeMatrixGlobal(const mat3x4& new_global_matrix);
 
-			void ApplyLocalTransform(const Matrix3x4& transform);
-			void ApplyGlobalTransform(const Matrix3x4& transform);
+			void ApplyLocalTransform(const mat3x4& transform);
+			void ApplyGlobalTransform(const mat3x4& transform);
 
 			// add rendering matrix before export if needed
 			void PrepareExport(ExportSettings* settings) override;
@@ -184,11 +184,11 @@ namespace Kigs
 			unsigned int mCullingMask;
 
 			//!	Local transformation matrix (father => this local coordinate system)
-			Matrix3x4 mTransform;
+			mat3x4 mTransform;
 			//!	Local to global transformation matrix (Local coordinate system => global "world" coordinate system)
-			Matrix3x4 mLocalToGlobal;
+			mat3x4 mLocalToGlobal;
 			//!	Global to local transformation matrix (Global "world" coordinate system => local coordinate system)
-			Matrix3x4 mGlobalToLocal;
+			mat3x4 mGlobalToLocal;
 
 			//! AABounding box in local coordinate system
 			BBox mLocalBBox;

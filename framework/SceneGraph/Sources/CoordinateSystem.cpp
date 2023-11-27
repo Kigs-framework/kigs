@@ -13,7 +13,7 @@ void	CoordinateSystemUp::Init(CoreModifiable* toUpgrade)
 	KigsCore::Connect(toUpgrade, "NotifyUpdate", toUpgrade, "CoordinateSystemNotifyUpdate");
 
 	// retreive current values ( suppose the matrix is a correct PRS matrix )
-	Matrix3x4 current = ((Node3D*)toUpgrade)->GetLocal();
+	mat3x4 current = ((Node3D*)toUpgrade)->GetLocal();
 	Point3D pos, rot;
 	float scale;
 	current.GetPRS(pos, rot, scale);
@@ -65,7 +65,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, CoordinateSystemNotifyUpdate)
 			Point3D pos; GetUpgrador()->mPos->getValue(pos, this);
 			float scale; GetUpgrador()->mScale->getValue(scale, this);
 
-			Matrix3x4 matrix;
+			mat3x4 matrix;
 			matrix.SetRotationXYZ(rot.x, rot.y, rot.z);
 			matrix.PreScale(scale, scale, scale);
 			matrix.SetTranslation(pos);
@@ -86,10 +86,10 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 		Point3D axis;
 		params[1]->getValue(axis, this);
 
-		Quaternion q;
+		quat q;
 		q.SetAngAxis(axis, angle);
 
-		Matrix3x4	angAxis(q);
+		mat3x4	angAxis(q);
 
 		Point3D	rot;
 		Point3D pos;
@@ -99,7 +99,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 		getValue("Position", pos);
 		getValue("Scale", scale);
 
-		Matrix3x4 matrix;
+		mat3x4 matrix;
 		matrix.SetRotationXYZ(rot.x, rot.y, rot.z);
 		matrix.PreScale(scale, scale, scale);
 		matrix.SetTranslation(pos);
@@ -153,7 +153,7 @@ DEFINE_UPGRADOR_UPDATE(CoordinateSystemUp)
 		getValue("Position", pos);
 		getValue("Scale", scale);
 
-		Matrix3x4 matrix;
+		mat3x4 matrix;
 		matrix.SetRotationXYZ(rot.x,rot.y,rot.z);
 		matrix.PreScale(scale, scale, scale);
 		matrix.SetTranslation(pos);
@@ -246,7 +246,7 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 		bool isGlobal;
 
 		// get local matrix
-		Matrix3x4 matrix = GetUpgrador()->mInitMatrix;
+		mat3x4 matrix = GetUpgrador()->mInitMatrix;
 		Point3D	ppos;
 		Vector3D paxis;
 		float	pangle;
@@ -262,10 +262,10 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 			mGlobalToLocal.TransformVector(&paxis);
 		}
 
-		Quaternion q;
+		quat q;
 		q.SetAngAxis(paxis, pangle);
 
-		Matrix3x4 transform(q);
+		mat3x4 transform(q);
 
 		Vector3D originPos = matrix.GetTranslation();
 		matrix.SetTranslation({ 0,0,0 });

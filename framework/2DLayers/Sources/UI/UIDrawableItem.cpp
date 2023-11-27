@@ -182,8 +182,8 @@ void UIDrawableItem::ProtectedDraw(TravState* state)
 
 	if ((lQI->Flag & UIVerticesInfo_UseModelMatrix) != 0)
 	{
-		Matrix3x3 m = GetGlobalTransform();
-		Matrix4x4 m4 = (Matrix4x4)m;
+		mat3 m = GetGlobalTransform();
+		mat4 m4 = (mat4)m;
 		//renderer->PushMatrix(MATRIX_MODE_MODEL);
 		renderer->PushAndMultMatrix(Draw::MATRIX_MODE_MODEL, &m4.e[0][0]);
 	}

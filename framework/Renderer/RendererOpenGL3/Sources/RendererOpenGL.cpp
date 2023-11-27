@@ -147,8 +147,8 @@ void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 			{
 				// get only needed elements from 4x4 matrix
 
-				Matrix3x3	uvm;
-				Matrix4x4& uvm4x4 = mMatrixStack[3].back();
+				mat3	uvm;
+				mat4& uvm4x4 = mMatrixStack[3].back();
 				uvm.e[0][0]= uvm4x4.e[0][0];
 				uvm.e[0][1] = uvm4x4.e[1][0];
 				uvm.e[1][0] = uvm4x4.e[0][1];
@@ -934,7 +934,7 @@ void RendererOpenGL::SendLightsInfo(TravState* travstate)
 
 	if (cam)
 	{
-		const Matrix3x4& lMatCam = cam->GetLocalToGlobal();
+		const mat3x4& lMatCam = cam->GetLocalToGlobal();
 		Point3D outCam(0.0f, 0.0f, 0.0f);
 		lMatCam.TransformPoint(&outCam, &lCamPos);
 	}

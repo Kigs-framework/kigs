@@ -220,8 +220,8 @@ void Scene3D::TravDraw(TravState* state)
 			rs->setValue("ActiveDepthBuffer", pass.depth_buffer_index);
 			rs->as<RenderingScreen>()->SetActive(state);
 
-			state->SetCurrentLocalToGlobalMatrix(Matrix3x4::IdentityMatrix());
-			state->SetCurrentGlobalToLocalMatrix(Matrix3x4::IdentityMatrix());
+			state->SetCurrentLocalToGlobalMatrix(mat3x4::IdentityMatrix());
+			state->SetCurrentGlobalToLocalMatrix(mat3x4::IdentityMatrix());
 			state->mCurrentMaterial = 0;
 			
 			state->mPath = 0;

@@ -28,7 +28,7 @@ namespace Kigs
 
 
 
-			void setQuaternion(Quaternion q)
+			void setQuaternion(quat q)
 			{
 				q.Normalize();
 				mRotationQuaternion[0] = q.V.x;

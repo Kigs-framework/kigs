@@ -72,7 +72,7 @@ namespace Kigs
 			}
 
 
-			void ChangeMatrix(const Matrix3x4&) override;
+			void ChangeMatrix(const mat3x4&) override;
 
 			/**
 				* \brief	set the position of the camera
@@ -432,7 +432,7 @@ namespace Kigs
 				Vector3D	mStartV; // used for rotation and zoom
 
 				// store starting camera data
-				Matrix3x4	mStartMatrix;
+				mat3x4	mStartMatrix;
 
 				unsigned int mState;
 			};

@@ -238,7 +238,7 @@ void dd::camera(const dd::CameraPoints& pts, ddVec3Param color, u32 flags, int d
 	dd::line((pts.ptnear[0] + pts.ptnear[1] + pts.ptnear[2] + pts.ptnear[3]) / 4, (pts.ptfar[0] + pts.ptfar[1] + pts.ptfar[2] + pts.ptfar[3]) / 4, color, duration);
 }
 
-void dd::local_bbox(const Matrix3x4& local_to_global, BBox bbox, ddVec3Param color, int duration, bool depth_enabled)
+void dd::local_bbox(const mat3x4& local_to_global, BBox bbox, ddVec3Param color, int duration, bool depth_enabled)
 {
 	v3f pts[8];
 	bbox.ConvertToPoint(pts);

@@ -178,7 +178,7 @@ bool UINode3DLayer::GetDataInTouchSupport(const Input::touchPosInfos& posin, Inp
 	Vector3D dir = posin.dir;
 
 	//! transform Ray in local mesh coordinate system if needed				
-	const Matrix3x4& inverseMatrix = GetGlobalToLocal();
+	const mat3x4& inverseMatrix = GetGlobalToLocal();
 	inverseMatrix.TransformPoint(&pos);
 	inverseMatrix.TransformVector(&dir);
 

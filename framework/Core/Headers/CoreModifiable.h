@@ -708,7 +708,7 @@ namespace Kigs
 		#define DECLARE_GET_SET_VALUE_VECTOR(type, nb) DECLARE_SET_VALUE_VECTOR(type, nb) DECLARE_GET_VALUE_VECTOR(type, nb)
 
 
-			DECLARE_GET_SET_VALUE_VECTOR(Quaternion, 4);
+			DECLARE_GET_SET_VALUE_VECTOR(quat, 4);
 
 			DECLARE_GET_SET_VALUE_VECTOR(v2i, 2);
 			DECLARE_GET_SET_VALUE_VECTOR(v3i, 3);
@@ -1375,11 +1375,11 @@ namespace Kigs
 		template<>
 		struct TypeToEnum<v3u> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
 		template<>
-		struct TypeToEnum<Matrix3x3> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		struct TypeToEnum<mat3> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
 		template<>
-		struct TypeToEnum<Matrix3x4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		struct TypeToEnum<mat3x4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
 		template<>
-		struct TypeToEnum<Matrix4x4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		struct TypeToEnum<mat4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
 		template<>
 		struct TypeToEnum<std::any> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ANY> {};
 		template<>
@@ -1417,11 +1417,11 @@ namespace Kigs
 		template<>
 		struct AraryTypeToEnum<v3u> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::UINT> {};
 		template<>
-		struct AraryTypeToEnum<Matrix3x3> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		struct AraryTypeToEnum<mat3> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
 		template<>
-		struct AraryTypeToEnum<Matrix3x4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		struct AraryTypeToEnum<mat3x4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
 		template<>
-		struct AraryTypeToEnum<Matrix4x4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
+		struct AraryTypeToEnum<mat4> : std::integral_constant<CoreModifiable::ATTRIBUTE_TYPE, CoreModifiable::ATTRIBUTE_TYPE::ARRAY> {};
 		
 		template<typename TypeOut, typename TypeIn>
 		TypeOut* KigsDynamicCast(TypeIn* obj)

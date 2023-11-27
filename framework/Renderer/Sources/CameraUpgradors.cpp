@@ -139,10 +139,10 @@ DEFINE_UPGRADOR_METHOD(OrbitCameraUp, ManageDirectTouch)
 			auto rotation_axis = v3f(0, 1, 0);
 			if (Dot(rotation_axis, up) < 0) right = -right;
 
-			Quaternion q;
+			quat q;
 			q.SetAngAxis(v3f(0, 1, 0), 2 * dt.x * size.x);
 
-			Quaternion q2;
+			quat q2;
 			q2.SetAngAxis(right, -2 * dt.y * size.y);
 
 			dir = q2 * q * dir;

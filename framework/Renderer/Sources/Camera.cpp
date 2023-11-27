@@ -113,7 +113,7 @@ void Camera::RecomputeMatrix()
 	
 	up=view^right;
 
-	Matrix3x4 matrix(view, right, up, pos);
+	mat3x4 matrix(view, right, up, pos);
 	ParentClassType::ChangeMatrix(matrix);
 }
 
@@ -453,7 +453,7 @@ bool Camera::Project(float &ScreenX, float &ScreenY, Point3D Pt)
 	float deltaX = frustumWidth + frustumWidth;
 	float deltaY = frustumHeight + frustumHeight;
 	float deltaZ = mFarPlane - mNearPlane;
-	Matrix4x4 frust;
+	mat4 frust;
 	
 	if ((mNearPlane <= 0.0f) || (mFarPlane <= 0.0f) || (deltaX <= 0.0f) || (deltaY <= 0.0f) || (deltaZ <= 0.0f))
 	{
@@ -554,7 +554,7 @@ bool	Camera::Draw(TravState* state)
 	{
 		Point3D outP;
 		Vector3D outV;
-		const Matrix3x4& lMat = mFatherNode->GetLocalToGlobal();
+		const mat3x4& lMat = mFatherNode->GetLocalToGlobal();
 		Point3D* PosOffset = (Point3D*)mPosition.getVector();
 		lMat.TransformPoint(PosOffset, &outP);
 		lMat.TransformVector(&GetViewVector(), &outV);
@@ -841,9 +841,9 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 				currentDataStruct->mStartMatrix.TransformVector(&startV);
 				currentDataStruct->mStartMatrix.TransformVector(&currentV);
 
-				Quaternion	q = RotationArc(currentV, startV);
+				quat	q = RotationArc(currentV, startV);
 
-				Matrix3x3	rotate(q);
+				mat3	rotate(q);
 
 				Vector3D	rview = rotate*currentDataStruct->mStartMatrix.XAxis;
 
@@ -884,7 +884,7 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 }
 
 
-void Camera::ChangeMatrix(const Matrix3x4& m)
+void Camera::ChangeMatrix(const mat3x4& m)
 {
 	mViewVector = m.XAxis;
 	mUpVector = m.ZAxis;

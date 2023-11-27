@@ -67,7 +67,7 @@ namespace Kigs
 
 			s32			mRate = 0;
 			v3f			mRotationVelocity = { 0.0f, 0.0f, 0.0f };
-			Quaternion  mRotationQuaternion = { 0.0f, 0.0f, 0.0f, 0.0f };
+			quat  mRotationQuaternion = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	
 			WRAP_ATTRIBUTES(mRate, mRotationVelocity, mRotationQuaternion);

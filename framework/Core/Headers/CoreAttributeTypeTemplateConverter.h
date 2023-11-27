@@ -30,9 +30,9 @@ namespace Kigs
 			template<>
 			struct is_array<v2f> : std::true_type {};
 			template<>
-			struct is_array<v3f> : std::true_type {};
+			struct is_array<p3f> : std::true_type {};
 			template<>
-			struct is_array<Vector3D> : std::true_type {};
+			struct is_array<v3f> : std::true_type {};
 			template<>
 			struct is_array<v4f> : std::true_type {};
 			template<>
@@ -46,11 +46,11 @@ namespace Kigs
 			template<>
 			struct is_array<v3u> : std::true_type {};
 			template<>
-			struct is_array<Matrix3x3> : std::true_type {};
+			struct is_array<mat3> : std::true_type {};
 			template<>
-			struct is_array<Matrix3x4> : std::true_type {};
+			struct is_array<mat3x4> : std::true_type {};
 			template<>
-			struct is_array<Matrix4x4> : std::true_type {};
+			struct is_array<mat4> : std::true_type {};
 
 			template <typename>
 			struct get_array_size;
@@ -79,11 +79,11 @@ namespace Kigs
 
 			// return line number for matrix
 			template<typename T, typename std::enable_if<
-				std::is_same<std::remove_cv_t<T>, v3f>::value
-				|| std::is_same<std::remove_cv_t<T>, Vector3D>::value
+				std::is_same<std::remove_cv_t<T>, p3f>::value
+				|| std::is_same<std::remove_cv_t<T>, v3f>::value
 				|| std::is_same<std::remove_cv_t<T>, v3i>::value
 				|| std::is_same<std::remove_cv_t<T>, v3u>::value
-				|| std::is_same<std::remove_cv_t<T>, Matrix3x3>::value // column first matrix
+				|| std::is_same<std::remove_cv_t<T>, mat3>::value // column first matrix
 			>::type* = nullptr>
 			constexpr size_t arraySize()
 			{
@@ -94,8 +94,8 @@ namespace Kigs
 			template<typename T, typename std::enable_if<
 				std::is_same<std::remove_cv_t<T>, v4f>::value
 				|| std::is_same<std::remove_cv_t<T>, quat>::value
-				|| std::is_same<std::remove_cv_t<T>, Matrix3x4>::value // colum first matrix
-				|| std::is_same<std::remove_cv_t<T>, Matrix4x4>::value
+				|| std::is_same<std::remove_cv_t<T>, mat3x4>::value // colum first matrix
+				|| std::is_same<std::remove_cv_t<T>, mat4>::value
 			>::type* = nullptr>
 			constexpr size_t arraySize()
 			{
@@ -121,7 +121,7 @@ namespace Kigs
 				|| std::is_same<std::remove_cv_t<T>, v2i>::value
 				|| std::is_same<std::remove_cv_t<T>, v2u>::value
 				|| std::is_same<std::remove_cv_t<T>, v3f>::value
-				|| std::is_same<std::remove_cv_t<T>, Vector3D>::value
+				|| std::is_same<std::remove_cv_t<T>, p3f>::value
 				|| std::is_same<std::remove_cv_t<T>, v3i>::value
 				|| std::is_same<std::remove_cv_t<T>, v3u>::value
 				|| std::is_same<std::remove_cv_t<T>, v4f>::value
@@ -133,8 +133,8 @@ namespace Kigs
 			}
 
 			template<typename T, typename std::enable_if<
-				std::is_same<std::remove_cv_t<T>, Matrix3x3>::value // column first
-				|| std::is_same<std::remove_cv_t<T>, Matrix3x4>::value
+				std::is_same<std::remove_cv_t<T>, mat3>::value // column first
+				|| std::is_same<std::remove_cv_t<T>, mat3x4>::value
 			>::type* = nullptr>
 			constexpr size_t arrayLineCount()
 			{
@@ -142,7 +142,7 @@ namespace Kigs
 			}
 
 			template<typename T, typename std::enable_if<
-				std::is_same<std::remove_cv_t<T>, Matrix4x4>::value
+				std::is_same<std::remove_cv_t<T>, mat4>::value
 			>::type* = nullptr>
 			constexpr size_t arrayLineCount()
 			{
@@ -279,7 +279,7 @@ namespace Kigs
 			inline bool CoreConvertValue_impl(const fromT& fromval, toT& toval, int)
 			{
 				constexpr size_t copySize = std::min(arraySize< std::remove_cv_t<fromT>>(), arraySize<toT>());
-				for (size_t i = 0; i < copySize; i++)
+				for (auto i = 0; i < copySize; i++)
 				{
 					if (!CoreConvertValue_impl(fromval[i], toval[i], int{})) return false;
 				}
@@ -326,7 +326,7 @@ namespace Kigs
 			inline bool CoreConvertValue_impl(const fromT& fromval, toT& toval, int)
 			{
 				constexpr size_t broadcastSize = arraySize<toT>();
-				for (size_t i = 0; i < broadcastSize; i++)
+				for (auto i = 0; i < broadcastSize; i++)
 				{
 					if (!CoreConvertValue_impl(fromval, toval[i], int{})) return false;
 				}

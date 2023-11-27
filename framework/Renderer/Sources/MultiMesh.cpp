@@ -181,7 +181,7 @@ void MultiMesh::RecomputeBoundingBox()
 			mesh->GetItemGroup(group);
 
 			Node3D* parent = (Node3D*)m.node;
-			Matrix3x4 mat; mat.SetIdentity();
+			mat3x4 mat; mat.SetIdentity();
 			
 			while (parent && parent != this)
 			{

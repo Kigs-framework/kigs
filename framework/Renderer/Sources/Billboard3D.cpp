@@ -100,14 +100,14 @@ bool Billboard3D::Draw(TravState* _state)
 
 void Billboard3D::UpdateOrientation()
 {
-	const Matrix3x4 &Mat = mCamera->GetLocalToGlobal();
+	const mat3x4 &Mat = mCamera->GetLocalToGlobal();
 	mHorizontalVector.Set(-Mat.e[1][0],-Mat.e[1][1],-Mat.e[1][2]);
 	mVerticalVector.Set(-Mat.e[2][0],-Mat.e[2][1],-Mat.e[2][2]);
 	mHorizontalVector.Normalize();
 	mVerticalVector.Normalize();
 	mFatherNode->SetupNodeIfNeeded();
 
-	//const Matrix3x4 &FatherMat = pFatherNode->GetLocalToGlobal();
+	//const mat3x4 &FatherMat = pFatherNode->GetLocalToGlobal();
 	mFatherNode->GetGlobalToLocal().TransformVector(&mHorizontalVector);
 	mFatherNode->GetGlobalToLocal().TransformVector(&mVerticalVector);
 	PrepareVertexBufferPos();

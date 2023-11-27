@@ -59,7 +59,7 @@ bool Node3D::addItem(const CMSP& item,ItemPosition pos DECLARE_LINK_NAME)
 			// Support for older xml files
 			RendererMatrix* m = (RendererMatrix*)item.get();
 			const float* values = m->GetMatrixValues();
-			Matrix3x4 matrix = Matrix3x4::IdentityMatrix();
+			mat3x4 matrix = mat3x4::IdentityMatrix();
 			matrix.e[0][0] = values[0];
 			matrix.e[0][1] = values[1];
 			matrix.e[0][2] = values[2];
@@ -143,7 +143,7 @@ bool Node3D::Draw(TravState* state)
 void Node3D::InitModifiable()
 {
 	ParentClassType::InitModifiable();
-	Matrix3x4 m;
+	mat3x4 m;
 	if (getArrayValue("LocalMatrix", &m.e[0][0], 3 * 4))
 	{
 		ChangeMatrix(m);
@@ -159,7 +159,7 @@ void Node3D::InitModifiable()
 	}
 }
 
-void Node3D::ChangeMatrix(const Matrix3x4& newmatrix)
+void Node3D::ChangeMatrix(const mat3x4& newmatrix)
 {
 	if (!CompareMatrix(newmatrix, mTransform))
 	{
@@ -284,7 +284,7 @@ bool Node3D::Cull(TravState* state, unsigned int cullingMask)
 
 void Node3D::PreDrawDrawable(TravState* state)
 {	
-	Matrix4x4 m{ GetLocalToGlobal() };
+	mat4 m{ GetLocalToGlobal() };
 	state->GetRenderer()->PushAndLoadMatrix(MATRIX_MODE_MODEL, m);
 
 	//! when in "path" mode or when no drawablesorter is available, then no question, predraw all drawable
@@ -427,8 +427,8 @@ void Node3D::TravDraw(TravState* state)
 		state->SetCurrentGlobalToLocalMatrix(mGlobalToLocal);
 
 		//! prepare drawing (save states)
-		Matrix3x4 PrevL2GMatrix = state->GetCurrentLocalToGlobalMatrix();
-		Matrix3x4 PrevG2LMatrix = state->GetCurrentGlobalToLocalMatrix();
+		mat3x4 PrevL2GMatrix = state->GetCurrentLocalToGlobalMatrix();
+		mat3x4 PrevG2LMatrix = state->GetCurrentGlobalToLocalMatrix();
 
 
 		bool OldVisibility = state->IsAllVisible();
@@ -644,7 +644,7 @@ void Node3D::TravCull(TravState* state)
 				{
 					nodeDistPair toAdd;
 					toAdd.node = node;
-					const Matrix3x4& nodemat = node->GetLocalToGlobal();
+					const mat3x4& nodemat = node->GetLocalToGlobal();
 					Point3D	nodepos(nodemat.GetTranslation());
 					nodepos -= camPos;
 
@@ -780,7 +780,7 @@ void Node3D::RecomputeLocalToGlobal()
 		father = father->getFather();
 	}
 
-	Matrix3x4 father_local_to_global = Matrix3x4::IdentityMatrix();
+	mat3x4 father_local_to_global = mat3x4::IdentityMatrix();
 	if (father)
 	{
 		father_local_to_global = father->mLocalToGlobal;
@@ -942,7 +942,7 @@ void Node3D::RecomputeBoundingBox()
 	//! if Node3D has a valid local BBox, then we can compute BBox in father coordinate system  
 	if (isInit)
 	{
-		Matrix3x4		BBoxTransformMatrix(mTransform);
+		mat3x4		BBoxTransformMatrix(mTransform);
 
 		BBoxTransformMatrix.e[0][0] = fabsf(BBoxTransformMatrix.e[0][0]);
 		BBoxTransformMatrix.e[1][0] = fabsf(BBoxTransformMatrix.e[1][0]);
@@ -986,7 +986,7 @@ void Node3D::RecomputeGlobalBoundingBox()
 		RecomputeBoundingBox();
 
 	//! use abs(3x3 local to global matrix) to transform bbox
-	Matrix3x4 BBoxTransformMatrix(mLocalToGlobal);
+	mat3x4 BBoxTransformMatrix(mLocalToGlobal);
 
 	BBoxTransformMatrix.e[0][0] = fabsf(BBoxTransformMatrix.e[0][0]);
 	BBoxTransformMatrix.e[1][0] = fabsf(BBoxTransformMatrix.e[1][0]);
@@ -1095,17 +1095,17 @@ mat3x4 GetLocalLookAtPoint(Node3D* node, v3f global_point, bool force_up, v3f up
 		up = right ^ view;
 		up.Normalize();
 	}
-	Matrix3x4 m = Matrix3x4::LookAt(node->GetLocal().Pos, node->GetLocal().Pos + view, up);
+	mat3x4 m = mat3x4::LookAt(node->GetLocal().Pos, node->GetLocal().Pos + view, up);
 	return m;
 }
 
-void Node3D::ApplyLocalTransform(const Matrix3x4& transform)
+void Node3D::ApplyLocalTransform(const mat3x4& transform)
 {
 	auto m = GetLocal();
 	ChangeMatrix(transform * m);
 }
 
-void Node3D::ApplyGlobalTransform(const Matrix3x4& transform)
+void Node3D::ApplyGlobalTransform(const mat3x4& transform)
 {
 	auto f = getFather();
 	if (!f) 
@@ -1114,7 +1114,7 @@ void Node3D::ApplyGlobalTransform(const Matrix3x4& transform)
 		ChangeMatrix(f->GetGlobalToLocal() * transform * f->GetLocalToGlobal() * GetLocal());
 }
 
-void Node3D::ChangeMatrixGlobal(const Matrix3x4& new_global_matrix)
+void Node3D::ChangeMatrixGlobal(const mat3x4& new_global_matrix)
 {
 	auto f = getFather();
 	if (!f) ChangeMatrix(new_global_matrix);

@@ -152,21 +152,21 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	// then compute constantAxis again to orthonormalize matrix
 	targetAxis2.CrossProduct(targetAxis3, targetAxis1);
 
-	Matrix3x3	tm1;
+	mat3	tm1;
 	tm1.Axis[0] = targetAxis1;
 	tm1.Axis[1] = targetAxis2;
 	tm1.Axis[2] = targetAxis3;
 
-	Matrix3x3	tm2;
+	mat3	tm2;
 	tm2.Axis[0] = axis1;
 	tm2.Axis[1] = axis2;
 	tm2.Axis[2] = axis3;
 
 	tm2 = Transpose(tm2);
 
-	Matrix3x3 result(tm1 * tm2);
+	mat3 result(tm1 * tm2);
 	
-	Matrix3x4	targetm(result);
+	mat3x4	targetm(result);
 	targetm.SetTranslation(mTransform.GetTranslation());
 
 	ChangeMatrix(targetm);

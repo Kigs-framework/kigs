@@ -14,6 +14,11 @@ message(STATUS "add png")
 add_subdirectory("cross_platform/png")
 SET_TARGET_PROPERTIES( png   					PROPERTIES  FOLDER "libs" )
 
+# glm
+message(STATUS "add glm")
+add_subdirectory("cross_platform/glm_customcmake")
+SET_TARGET_PROPERTIES( glm						PROPERTIES  FOLDER "libs" )
+
 # tiff
 message(STATUS "add Tiff")
 add_subdirectory("cross_platform/tiff")

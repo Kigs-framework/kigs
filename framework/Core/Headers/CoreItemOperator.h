@@ -114,23 +114,23 @@ namespace Kigs
 				return usString("");
 			}
 
-			virtual inline operator Point2D() const override
+			virtual inline operator v2f() const override
 			{
-				Point2D result;
+				v2f result;
 				KIGS_ERROR("cast operator called on base CoreItem", 2);
 				return result;
 			}
 
-			virtual inline operator Point3D() const override
+			virtual inline operator p3f() const override
 			{
-				Point3D result;
+				p3f result;
 				KIGS_ERROR("cast operator called on base CoreItem", 2);
 				return result;
 			}
 
-			virtual inline operator Vector4D() const override
+			virtual inline operator v4f() const override
 			{
-				Vector4D result;
+				v4f result;
 				KIGS_ERROR("cast operator called on base CoreItem", 2);
 				return result;
 			}
@@ -221,21 +221,21 @@ namespace Kigs
 		}
 
 		template<>
-		inline void	CoreItemOperator<Point2D>::defaultOperandTypeInit(Point2D& _value)
+		inline void	CoreItemOperator<v2f>::defaultOperandTypeInit(v2f& _value)
 		{
-			_value.Set(0.0f, 0.0f);
+			_value = { 0.0f, 0.0f };
 		}
 
 		template<>
-		inline void	CoreItemOperator<Point3D>::defaultOperandTypeInit(Point3D& _value)
+		inline void	CoreItemOperator<p3f>::defaultOperandTypeInit(p3f& _value)
 		{
-			_value.Set(0.0f, 0.0f,0.0f);
+			_value = { 0.0f, 0.0f,0.0f };
 		}
 
 		template<>
-		inline void	CoreItemOperator<Vector4D>::defaultOperandTypeInit(Vector4D& _value)
+		inline void	CoreItemOperator<v4f>::defaultOperandTypeInit(v4f& _value)
 		{
-			_value.Set(0.0f, 0.0f, 0.0f,0.0f);
+			_value = { 0.0f, 0.0f, 0.0f,0.0f };
 		}
 
 
@@ -948,12 +948,23 @@ namespace Kigs
 		}
 
 		template<>
-		inline bool CoreModifiableAttributeOperator<Point2D>::operator == (const CoreItem& other) const
+		inline bool CoreModifiableAttributeOperator<v2f>::operator == (const CoreItem& other) const
 		{
-			Point2D	othervalue;
+			v2f	othervalue;
 			other.getValue(othervalue);
 
-			Point2D	thisvalue;
+			v2f	thisvalue;
+			getValue(thisvalue);
+
+			return (thisvalue == othervalue);
+		}
+
+		template<>
+		inline bool CoreModifiableAttributeOperator<v3f>::operator == (const CoreItem& other) const
+		{
+			v3f	othervalue;
+			other.getValue(othervalue);
+			v3f	thisvalue;
 			getValue(thisvalue);
 
 			return (thisvalue == othervalue);
@@ -961,22 +972,22 @@ namespace Kigs
 
 
 		template<>
-		inline bool CoreModifiableAttributeOperator<Point3D>::operator == (const CoreItem& other) const
+		inline bool CoreModifiableAttributeOperator<p3f>::operator == (const CoreItem& other) const
 		{
-			Point3D	othervalue;
+			p3f	othervalue;
 			other.getValue(othervalue);
-			Point3D	thisvalue;
+			p3f	thisvalue;
 			getValue(thisvalue);
 
 			return (thisvalue == othervalue);
 		}
 
 		template<>
-		inline bool CoreModifiableAttributeOperator<Vector4D>::operator == (const CoreItem& other) const
+		inline bool CoreModifiableAttributeOperator<v4f>::operator == (const CoreItem& other) const
 		{
-			Vector4D	othervalue;
+			v4f	othervalue;
 			other.getValue(othervalue);
-			Vector4D	thisvalue;
+			v4f	thisvalue;
 			getValue(thisvalue);
 
 			return (thisvalue == othervalue);

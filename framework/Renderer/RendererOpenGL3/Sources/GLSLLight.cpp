@@ -174,7 +174,7 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D &
 	Vector3D outV;
 
 	SetupNodeIfNeeded();
-	const Matrix3x4& lMat = GetLocalToGlobal();
+	const mat3x4& lMat = GetLocalToGlobal();
 
 	Point3D PosOffset(0,0,0);
 	lMat.TransformPoint(&PosOffset, &outP);
@@ -214,7 +214,7 @@ bool	API3DLight::Draw(TravState* state)
 	case 1:
 	{
 		Point3D outP;
-		const Matrix3x4& lMat = GetLocalToGlobal();
+		const mat3x4& lMat = GetLocalToGlobal();
 		Point3D PosOffset(0,0,0);
 		lMat.TransformPoint(&PosOffset, &outP);
 		dd::sphere(outP, Vector3D(1, 0, 0), 0.05);
@@ -224,7 +224,7 @@ bool	API3DLight::Draw(TravState* state)
 	{
 		Point3D outP;
 		Vector3D outDir;
-		const Matrix3x4& lMat = GetLocalToGlobal();
+		const mat3x4& lMat = GetLocalToGlobal();
 		Point3D PosOffset(0, 0, 0);
 		lMat.TransformPoint(&PosOffset, &outP);
 

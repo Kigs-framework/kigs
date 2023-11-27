@@ -67,7 +67,7 @@ namespace Kigs
 			CoreModifiableAttribute* mAngle;
 			CoreModifiableAttribute* mIsGlobal;
 
-			Matrix3x4				mInitMatrix;
+			mat3x4				mInitMatrix;
 
 			bool					mWasChanged = false;
 			bool					mWasdAutoUpdate = false;

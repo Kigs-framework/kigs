@@ -1326,7 +1326,7 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 	unsigned int   vsize = mVertexSize;
 
 
-	Matrix3x3 flipped;
+	mat3 flipped;
 	flipped.Clear();
 
 	flipped.XAxis[abs(axisX) - 1] = (axisX < 0) ? -1 : 1;

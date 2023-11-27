@@ -2,7 +2,7 @@
 
 #include "CoreModifiable.h"
 #include "SceneGraphDefines.h"
-#include "TecLibs/3D/Matrix3x4.h"
+#include "TecLibs/3D/mat3x4.h"
 
 namespace Kigs
 {
@@ -17,7 +17,7 @@ namespace Kigs
 
 	namespace Maths
 	{
-		struct Matrix3x4;
+		struct mat3x4;
 	}
 
 	namespace Scene
@@ -41,7 +41,7 @@ namespace Kigs
 			Draw::ShaderBase* shader = nullptr;
 			u32 shader_variant = (u32)-1;
 			s32 priority = 0;
-			std::vector<Matrix3x4> transforms;
+			std::vector<mat3x4> transforms;
 		};
 
 		/*
@@ -199,31 +199,31 @@ namespace Kigs
 
 			/**
 			* \brief	set the current local to global matrix
-			* \fn 		void	SetCurrentLocalToGlobalMatrix(Matrix3x4* m)
+			* \fn 		void	SetCurrentLocalToGlobalMatrix(mat3x4* m)
 			* \param	m : local to global matrix
 			*/
-			void	SetCurrentLocalToGlobalMatrix(const Matrix3x4& m) { mCurrentLocalToGlobalMatrix = m; }
+			void	SetCurrentLocalToGlobalMatrix(const mat3x4& m) { mCurrentLocalToGlobalMatrix = m; }
 
 			/**
 			* \brief	get the current local to global matrix
-			* \fn 		Matrix3x4*  GetCurrentLocalToGlobalMatrix()
+			* \fn 		mat3x4*  GetCurrentLocalToGlobalMatrix()
 			* \return	the current local to global matrix
 			*/
-			Matrix3x4  GetCurrentLocalToGlobalMatrix() { return mCurrentLocalToGlobalMatrix; }
+			mat3x4  GetCurrentLocalToGlobalMatrix() { return mCurrentLocalToGlobalMatrix; }
 
 			/**
 			* \brief	set the current global to local matrix
-			* \fn 		void	SetCurrentGlobalToLocalMatrix(Matrix3x4* m)
+			* \fn 		void	SetCurrentGlobalToLocalMatrix(mat3x4* m)
 			* \param	m : global to local matrix
 			*/
-			void	SetCurrentGlobalToLocalMatrix(const Matrix3x4& m) { mCurrentGlobalToLocalMatrix = m; }
+			void	SetCurrentGlobalToLocalMatrix(const mat3x4& m) { mCurrentGlobalToLocalMatrix = m; }
 
 			/**
 			* \brief	get the current global to local matrix
-			* \fn 		Matrix3x4*  GetCurrentGlobalToLocalMatrix()
+			* \fn 		mat3x4*  GetCurrentGlobalToLocalMatrix()
 			* \return	the the current global to local matrix
 			*/
-			Matrix3x4  GetCurrentGlobalToLocalMatrix() { return mCurrentGlobalToLocalMatrix; }
+			mat3x4  GetCurrentGlobalToLocalMatrix() { return mCurrentGlobalToLocalMatrix; }
 
 			/**
 			* \brief	set the current renderer
@@ -328,8 +328,8 @@ namespace Kigs
 			unsigned int mRenderDisableMask = 0;
 
 
-			Matrix3x4	mCurrentLocalToGlobalMatrix = Matrix3x4::IdentityMatrix();
-			Matrix3x4	mCurrentGlobalToLocalMatrix = Matrix3x4::IdentityMatrix();
+			mat3x4	mCurrentLocalToGlobalMatrix = mat3x4::IdentityMatrix();
+			mat3x4	mCurrentGlobalToLocalMatrix = mat3x4::IdentityMatrix();
 
 		public:
 			//! drawable sorter

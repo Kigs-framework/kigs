@@ -86,7 +86,7 @@ void Octree::RecomputeBoundingBox()
 	mLocalBBox.m_Min = mBoundingBoxMin;
 	mLocalBBox.m_Max = mBoundingBoxMax;
 
-	Matrix3x4		BBoxTransformMatrix(mTransform);
+	mat3x4		BBoxTransformMatrix(mTransform);
 
 	BBoxTransformMatrix.e[0][0] = fabsf(BBoxTransformMatrix.e[0][0]);
 	BBoxTransformMatrix.e[1][0] = fabsf(BBoxTransformMatrix.e[1][0]);

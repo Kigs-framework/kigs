@@ -130,13 +130,13 @@ namespace Kigs
 			using CoreModifiableAttributeData<ArrayType, notificationLevel, isInitT, isReadOnlyT, isOrphanT>::setValue;
 
 			// direct access operators
-			auto& operator=(Point2D pt) {
+			auto& operator=(v2f pt) {
 				if (nbColumns < 2) return *this;
 				at(0, 0) = (T)pt.x;
 				at(0, 1) = (T)pt.y;
 				return *this;
 			}
-			auto& operator=(Point3D pt)
+			auto& operator=(p3f pt)
 			{
 				if (nbColumns < 3) return *this;
 				at(0, 0) = (T)pt.x;
@@ -145,7 +145,7 @@ namespace Kigs
 				return *this;
 			}
 
-			auto& operator=(Vector4D pt) {
+			auto& operator=(v4f pt) {
 				if (nbColumns < 4) return *this;
 				at(0, 0) = (T)pt.x;
 				at(0, 1) = (T)pt.y;
@@ -154,9 +154,9 @@ namespace Kigs
 				return *this;
 			}			
 
-			virtual operator Point2DI() const
+			virtual operator v2i() const
 			{
-				Point2DI tmpValue(0, 0);
+				v2i tmpValue(0, 0);
 				if ((nbLines == 1) && (nbColumns >= 2))
 				{
 					tmpValue.x = (s32)this->at(0, 0);
@@ -165,9 +165,9 @@ namespace Kigs
 				return tmpValue;
 			}
 
-			virtual operator Point3DI() const
+			virtual operator v3i() const
 			{
-				Point3DI tmpValue(0, 0, 0);
+				v3i tmpValue(0, 0, 0);
 				if ((nbLines == 1) && (nbColumns >= 3))
 				{
 					tmpValue.x = (s32)this->at(0, 0);
@@ -177,9 +177,9 @@ namespace Kigs
 				return tmpValue;
 			}
 
-			virtual operator Point2D() const
+			virtual operator v2f() const
 			{
-				Point2D tmpValue(0.0f, 0.0f);
+				v2f tmpValue(0.0f, 0.0f);
 				if ((nbLines == 1) && (nbColumns >= 2))
 				{
 					tmpValue.x = (float)this->at(0, 0);
@@ -188,9 +188,9 @@ namespace Kigs
 				return tmpValue;
 			}
 
-			virtual operator Point3D() const
+			virtual operator p3f() const
 			{
-				Point3D tmpValue(0.0f, 0.0f, 0.0f);
+				p3f tmpValue(0.0f, 0.0f, 0.0f);
 				if ((nbLines == 1) && (nbColumns >= 3))
 				{
 					tmpValue.x = (float)this->at(0, 0);
@@ -200,9 +200,9 @@ namespace Kigs
 				return tmpValue;
 			}
 
-			virtual operator Vector4D() const
+			virtual operator v4f() const
 			{
-				Vector4D tmpValue(0.0f, 0.0f, 0.0f, 0.0f);
+				v4f tmpValue(0.0f, 0.0f, 0.0f, 0.0f);
 				if ((nbLines == 1) && (nbColumns >= 4))
 				{
 					tmpValue.x = (float)this->at(0, 0);

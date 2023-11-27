@@ -6,6 +6,7 @@
 
 #include <type_traits>
 
+using namespace Kigs;
 using namespace Kigs::Core;
 
 CoreItemSP CoreItemIteratorBase::operator*() const
@@ -84,6 +85,7 @@ CoreItemSP::CoreItemSP(const s64& value) { *this = MakeCoreValue(value); }
 CoreItemSP::CoreItemSP(const u64& value) { *this = MakeCoreValue(value); }
 CoreItemSP::CoreItemSP(const v2f& value) { *this = MakeCoreValue(value); }
 CoreItemSP::CoreItemSP(const v3f& value) { *this = MakeCoreValue(value); }
+CoreItemSP::CoreItemSP(const p3f& value) { *this = MakeCoreValue(value); }
 CoreItemSP::CoreItemSP(const v4f& value) { *this = MakeCoreValue(value); }
 CoreItemSP::CoreItemSP(const std::string& value, CoreModifiable* owner) { *this = MakeCoreValue(value, owner); }
 CoreItemSP::CoreItemSP(const char* value, CoreModifiable* owner) { *this = MakeCoreValue(value, owner); }
@@ -164,23 +166,23 @@ CoreItem::operator usString() const
 	return usString("");
 }
 
-CoreItem::operator Point2D() const
+CoreItem::operator v2f() const
 {
-	Point2D result;
+	v2f result;
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
 	return result;
 }
 
-CoreItem::operator Vector4D() const
+CoreItem::operator v4f() const
 {
-	Vector4D result;
+	v4f result;
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
 	return result;
 }
 
-CoreItem::operator Point3D() const
+CoreItem::operator p3f() const
 {
-	Point3D result;
+	p3f result;
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
 	return result;
 }
@@ -267,6 +269,15 @@ CoreItemSP Kigs::Core::MakeCoreValue(const v3f& value)
 	return vector;
 }
 
+CoreItemSP Kigs::Core::MakeCoreValue(const p3f& value)
+{
+	auto vector = MakeCoreVector();
+	vector->set("", MakeCoreValue(value.x));
+	vector->set("", MakeCoreValue(value.y));
+	vector->set("", MakeCoreValue(value.z));
+	return vector;
+}
+
 CoreItemSP Kigs::Core::MakeCoreValue(const v4f& value)
 {
 	auto vector = MakeCoreVector();
@@ -319,17 +330,17 @@ CoreItem& CoreItem::operator=(const usString& other)
 	KIGS_WARNING("trying to assign base CoreItem with value", 2);
 	return *this;
 }
-CoreItem& CoreItem::operator=(const Point2D& other)
+CoreItem& CoreItem::operator=(const v2f& other)
 {
 	KIGS_WARNING("trying to assign base CoreItem with value", 2);
 	return *this;
 }
-CoreItem& CoreItem::operator=(const Point3D& other)
+CoreItem& CoreItem::operator=(const p3f& other)
 {
 	KIGS_WARNING("trying to assign base CoreItem with value", 2);
 	return *this;
 }
-CoreItem& CoreItem::operator=(const Vector4D& other)
+CoreItem& CoreItem::operator=(const v4f& other)
 {
 	KIGS_WARNING("trying to assign base CoreItem with value", 2);
 	return *this;

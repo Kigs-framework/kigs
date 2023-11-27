@@ -298,9 +298,9 @@ namespace Kigs
 				return &mVector;
 			}
 
-			virtual operator Point2D() const override
+			virtual operator v2f() const override
 			{
-				Point2D result;
+				v2f result;
 
 				mVector[0]->getValue(result.x);
 				mVector[1]->getValue(result.y);
@@ -308,9 +308,9 @@ namespace Kigs
 				return result;
 			}
 
-			virtual operator Point3D() const override
+			virtual operator p3f() const override
 			{
-				Point3D result;
+				p3f result;
 
 				mVector[0]->getValue(result.x);
 				mVector[1]->getValue(result.y);
@@ -319,9 +319,9 @@ namespace Kigs
 				return result;
 			}
 
-			virtual operator Vector4D() const override
+			virtual operator v4f() const override
 			{
-				Vector4D result;
+				v4f result;
 
 				mVector[0]->getValue(result.x);
 				mVector[1]->getValue(result.y);
