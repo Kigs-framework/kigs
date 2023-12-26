@@ -18,7 +18,10 @@
 #include "TecMath.h"                // To use sqrt, cos, etc.
 */
 #include "glm/glm.hpp"
+
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/ext.hpp"
+#undef GLM_ENABLE_EXPERIMENTAL
 
 namespace Kigs
 {

@@ -2,7 +2,7 @@
 
 #include "CoreModifiable.h"
 #include "SceneGraphDefines.h"
-#include "TecLibs/3D/mat3x4.h"
+#include "TecLibs/Tec3D.h"
 
 namespace Kigs
 {
@@ -13,11 +13,6 @@ namespace Kigs
 		class Material;
 		class ShaderBase;
 		class ModernMeshItemGroup;
-	}
-
-	namespace Maths
-	{
-		struct mat3x4;
 	}
 
 	namespace Scene
@@ -328,8 +323,8 @@ namespace Kigs
 			unsigned int mRenderDisableMask = 0;
 
 
-			mat3x4	mCurrentLocalToGlobalMatrix = mat3x4::IdentityMatrix();
-			mat3x4	mCurrentGlobalToLocalMatrix = mat3x4::IdentityMatrix();
+			mat3x4	mCurrentLocalToGlobalMatrix = mat3x4(1.0);
+			mat3x4	mCurrentGlobalToLocalMatrix = mat3x4(1.0);
 
 		public:
 			//! drawable sorter

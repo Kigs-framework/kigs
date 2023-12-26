@@ -111,7 +111,7 @@ namespace Kigs
 
 			const float* GetMatrixValues() const
 			{
-				return &mMatrix.e[0][0];
+				return &mMatrix[0][0];
 			}
 
 		protected:

@@ -52,7 +52,7 @@ namespace Kigs
 					RecomputeBoundingBox();
 				return mLocalBBox;
 			}
-			void GetLocalBoundingBox(Point3D& pmin, Point3D& pmax)
+			void GetLocalBoundingBox(v3f& pmin, v3f& pmax)
 			{
 				if (isUserFlagSet(BoundingBoxIsDirty))
 					RecomputeBoundingBox();
@@ -64,7 +64,7 @@ namespace Kigs
 					RecomputeBoundingBox();
 				return mBBox;
 			}
-			void GetBoundingBox(Point3D& pmin, Point3D& pmax)
+			void GetBoundingBox(v3f& pmin, v3f& pmax)
 			{
 				if (isUserFlagSet(BoundingBoxIsDirty))
 					RecomputeBoundingBox();
@@ -76,7 +76,7 @@ namespace Kigs
 					RecomputeGlobalBoundingBox();
 				return mGlobalBBox;
 			}
-			void	GetGlobalBoundingBox(Point3D& pmin, Point3D& pmax)
+			void	GetGlobalBoundingBox(v3f& pmin, v3f& pmax)
 			{
 				if (isUserFlagSet(GlobalBoundingBoxIsDirty))
 					RecomputeGlobalBoundingBox();

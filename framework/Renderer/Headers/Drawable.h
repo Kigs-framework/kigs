@@ -124,7 +124,7 @@ namespace Kigs
 			 * \param	y : coordinate on y axis (in/out param)
 			 * \param	z : coordinate on z axis (in/out param)
 			 */
-			virtual void GetGlobalPosition(mat3x4* pLocalToGlobal, float& x, float& y, float& z) { x = pLocalToGlobal->e[3][0]; y = pLocalToGlobal->e[3][1]; z = pLocalToGlobal->e[3][2]; }
+			virtual void GetGlobalPosition(mat3x4* pLocalToGlobal, float& x, float& y, float& z) { x = (*pLocalToGlobal)[3][0]; y = (*pLocalToGlobal)[3][1]; z = (*pLocalToGlobal)[3][2]; }
 
 			virtual void		UpdateDrawingNeeds();
 

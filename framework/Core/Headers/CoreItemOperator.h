@@ -121,9 +121,9 @@ namespace Kigs
 				return result;
 			}
 
-			virtual inline operator p3f() const override
+			virtual inline operator v3f() const override
 			{
-				p3f result;
+				v3f result;
 				KIGS_ERROR("cast operator called on base CoreItem", 2);
 				return result;
 			}
@@ -227,7 +227,7 @@ namespace Kigs
 		}
 
 		template<>
-		inline void	CoreItemOperator<p3f>::defaultOperandTypeInit(p3f& _value)
+		inline void	CoreItemOperator<v3f>::defaultOperandTypeInit(v3f& _value)
 		{
 			_value = { 0.0f, 0.0f,0.0f };
 		}
@@ -970,18 +970,6 @@ namespace Kigs
 			return (thisvalue == othervalue);
 		}
 
-
-		template<>
-		inline bool CoreModifiableAttributeOperator<p3f>::operator == (const CoreItem& other) const
-		{
-			p3f	othervalue;
-			other.getValue(othervalue);
-			p3f	thisvalue;
-			getValue(thisvalue);
-
-			return (thisvalue == othervalue);
-		}
-
 		template<>
 		inline bool CoreModifiableAttributeOperator<v4f>::operator == (const CoreItem& other) const
 		{
@@ -992,7 +980,6 @@ namespace Kigs
 
 			return (thisvalue == othervalue);
 		}
-
 
 		template<typename operandType>
 		class IfThenElseOperator : public CoreItemOperator<operandType>

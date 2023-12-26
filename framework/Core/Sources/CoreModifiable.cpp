@@ -37,6 +37,7 @@
 
 #include "CorePackage.h"
 
+using namespace Kigs;
 using namespace Kigs::Core;
 using namespace Kigs::File;
 
@@ -772,7 +773,7 @@ bool CoreModifiable::SimpleCallWithCoreItemParams(KigsID methodNameID, const Cor
 				attr << (v2f)*p;
 				break;
 			case 3:
-				attr << (p3f)*p;
+				attr << (v3f)*p;
 				break;
 			case 4:
 				attr << (v4f)*p;
@@ -3014,8 +3015,8 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 			}
 			else if (arraySize == 3)
 			{
-				ItemToEval = CoreItemOperator<p3f>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-				p3f result((p3f)*ItemToEval);
+				ItemToEval = CoreItemOperator<v3f>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+				v3f result((v3f)*ItemToEval);
 				char resultBuffer[128];
 				sprintf(resultBuffer, "[%f,%f,%f]", result.x, result.y,result.z);
 				attr = resultBuffer;

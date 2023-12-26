@@ -1,5 +1,6 @@
 #pragma once
 #include "TecLibs/Tec3D.h"
+#include <limits>
 
 namespace Kigs
 {
@@ -14,23 +15,24 @@ namespace Kigs
 			struct PreInit {};
 
 			BBox() { ; }
-			BBox(const Point3D& P) : m_Min(P), m_Max(P) { ; }
-			BBox(const Point3D& PMin, const Point3D& PMax) : m_Min(PMin), m_Max(PMax) { ; }
-			BBox(const Point3D*& Array, int Count)
+			BBox(const v3f& P) : m_Min(P), m_Max(P) { ; }
+			BBox(const v3f& PMin, const v3f& PMax) : m_Min(PMin), m_Max(PMax) { ; }
+			BBox(const v3f*& Array, int Count)
 			{
 				Init(Array, Count);
 			}
 
 			BBox(const BBox& bb) : m_Min(bb.m_Min), m_Max(bb.m_Max) { ; }
 
-			BBox(PreInit p) : m_Min{ v3f(FLT_MAX, FLT_MAX, FLT_MAX) }, m_Max{ v3f(-FLT_MAX, -FLT_MAX, -FLT_MAX) } {}
+			BBox(PreInit p) : m_Min{ v3f(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max()) }
+							, m_Max{ v3f(std::numeric_limits<float>::min(), std::numeric_limits<float>::min(), std::numeric_limits<float>::min()) } {}
 
-			void Init(const Point3D& P)
+			void Init(const v3f& P)
 			{
 				m_Min = P;
 				m_Max = P;
 			}
-			void Init(const Point3D* Array, int Count)
+			void Init(const v3f* Array, int Count)
 			{
 				int i;
 				Init(Array[0]);
@@ -42,15 +44,15 @@ namespace Kigs
 				m_Max = pBBox.m_Max;
 			}
 
-			inline Float& operator[] (const int nIndex)
+			inline float& operator[] (const int nIndex)
 			{
 				return *((&m_Min[0]) + nIndex);
 			}
 
 			void SetEmpty(void)
 			{
-				m_Min.x = m_Min.y = m_Min.z = Float_Max;
-				m_Max.x = m_Max.y = m_Max.z = -Float_Max;
+				m_Min.x = m_Min.y = m_Min.z = std::numeric_limits<float>::max();
+				m_Max.x = m_Max.y = m_Max.z = std::numeric_limits<float>::min();
 			}
 
 			bool IsEmpty(void) const
@@ -58,7 +60,7 @@ namespace Kigs
 				return m_Max.x < m_Min.x || m_Max.y < m_Min.y || m_Max.z < m_Min.z;
 			}
 
-			Point3D Center() const
+			v3f Center() const
 			{
 				return (m_Min + m_Max) * 0.5f;
 			}
@@ -68,7 +70,7 @@ namespace Kigs
 				return m_Max - m_Min;
 			}
 
-			void Update(const Point3D& P)
+			void Update(const v3f& P)
 			{
 				if (P.x < m_Min.x) m_Min.x = P.x;
 				if (P.y < m_Min.y) m_Min.y = P.y;
@@ -77,7 +79,7 @@ namespace Kigs
 				if (P.y > m_Max.y) m_Max.y = P.y;
 				if (P.z > m_Max.z) m_Max.z = P.z;
 			}
-			void Update(const Point3D* Array, int Count)
+			void Update(const v3f* Array, int Count)
 			{
 				int i;
 				for (i = 0; i < Count; i++) Update(Array[i]);
@@ -91,7 +93,7 @@ namespace Kigs
 				if (pBBox.m_Max.y > m_Max.y) m_Max.y = pBBox.m_Max.y;
 				if (pBBox.m_Max.z > m_Max.z) m_Max.z = pBBox.m_Max.z;
 			}
-			void ConvertToPoint(Point3D* Array) const
+			void ConvertToPoint(v3f* Array) const
 			{
 				Array[0].x = m_Min.x;
 				Array[0].y = m_Min.y;
@@ -118,7 +120,7 @@ namespace Kigs
 				Array[7].y = m_Max.y;
 				Array[7].z = m_Max.z;
 			}
-			bool IsIn(const Point3D& P) const
+			bool IsIn(const v3f& P) const
 			{
 				return (
 					P.x >= m_Min.x && P.x <= m_Max.x
@@ -165,11 +167,11 @@ namespace Kigs
 				return *this;
 			}
 
-			Float	SquaredDistance(const Point3D& p) const
+			float	SquaredDistance(const v3f& p) const
 			{
-				Point3D	dmax(p);
+				v3f	dmax(p);
 				dmax -= m_Max;
-				Point3D	dmin(m_Min);
+				v3f	dmin(m_Min);
 				dmin -= p;
 
 				dmax.x = ((dmax.x) > 0.0f) ? (dmax.x) : 0.0f;
@@ -182,17 +184,17 @@ namespace Kigs
 				return dmax.x * dmax.x + dmax.y * dmax.y + dmax.z * dmax.z;
 			}
 
-			Float	Distance(const Point3D& p) const
+			float	Distance(const v3f& p) const
 			{
-				return sqrtF(SquaredDistance(p));
+				return sqrtf(SquaredDistance(p));
 			}
 
 			union {
 				struct
 				{
-					Point3D m_Min, m_Max;
+					v3f m_Min, m_Max;
 				};
-				Point3D	m_MinMax[2];
+				v3f	m_MinMax[2];
 			};
 
 
