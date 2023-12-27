@@ -34,22 +34,22 @@ void ModuleCoreAnimation::Init(KigsCore* core, const std::vector<CoreModifiableA
 
 	// action using "slow" setValue
 	MiniFactoryRegister(mPrivateMiniFactory,"Linear1D",CoreActionLinear<float>);
-	MiniFactoryRegister(mPrivateMiniFactory,"Linear2D",CoreActionLinear<Point2D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Linear2D",CoreActionLinear<v2f>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Linear3D",CoreActionLinear<Point3D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Linear4D",CoreActionLinear<Vector4D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Hermite1D",CoreActionHermite<float>);
-	MiniFactoryRegister(mPrivateMiniFactory,"Hermite2D",CoreActionHermite<Point2D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Hermite2D",CoreActionHermite<v2f>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Hermite3D",CoreActionHermite<Point3D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Hermite4D",CoreActionHermite<Vector4D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"SetValueString", CoreActionSetValue<std::string>);
 	MiniFactoryRegister(mPrivateMiniFactory,"SetValue1D",CoreActionSetValue<float>);
-	MiniFactoryRegister(mPrivateMiniFactory,"SetValue2D",CoreActionSetValue<Point2D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"SetValue2D",CoreActionSetValue<v2f>);
 	MiniFactoryRegister(mPrivateMiniFactory,"SetValue3D",CoreActionSetValue<Point3D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"SetValue4D",CoreActionSetValue<Vector4D>);
 
 	// Keyframe
 	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame1D",CoreActionKeyFrame<float>);
-	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame2D",CoreActionKeyFrame<Point2D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame2D",CoreActionKeyFrame<v2f>);
 	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame3D",CoreActionKeyFrame<Point3D>);
 	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame4D",CoreActionKeyFrame<Vector4D>);
 

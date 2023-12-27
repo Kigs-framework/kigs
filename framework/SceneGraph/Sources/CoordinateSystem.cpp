@@ -3,6 +3,7 @@
 #include "CoordinateSystem.h"
 #include "CoreBaseApplication.h"
 #include "TecLibs/Tec3D.h"
+#include "glm/gtx/matrix_decompose.hpp"
 
 using namespace Kigs::Scene;
 
@@ -13,16 +14,22 @@ void	CoordinateSystemUp::Init(CoreModifiable* toUpgrade)
 	KigsCore::Connect(toUpgrade, "NotifyUpdate", toUpgrade, "CoordinateSystemNotifyUpdate");
 
 	// retreive current values ( suppose the matrix is a correct PRS matrix )
-	mat3x4 current = ((Node3D*)toUpgrade)->GetLocal();
-	Point3D pos, rot;
-	float scale;
-	current.GetPRS(pos, rot, scale);
+	mat4 current = ((Node3D*)toUpgrade)->GetLocal();
+	v3f scale,pos, skew;
+	quat rot;
+	v4f perspective;
+
+	decompose(current, scale, rot,pos, skew, perspective);
+
+	rot = glm::conjugate(rot);
+
+	glm::vec3 euler = glm::eulerAngles(rot) * 3.14159f / 180.f;
 
 	mScale =toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "Scale", 1.0f);
 	toUpgrade->setOwnerNotification("Scale",true);
 	mPos = toUpgrade->AddDynamicVectorAttribute("Position", (float*)&pos.x, 3);
 	toUpgrade->setOwnerNotification("Position", true);
-	mRot = toUpgrade->AddDynamicVectorAttribute("Rotation", (float*)&rot.x, 3);
+	mRot = toUpgrade->AddDynamicVectorAttribute("Rotation", (float*)&euler.x, 3);
 	toUpgrade->setOwnerNotification("Rotation", true);
 
 	// check if already in auto update mode
@@ -61,14 +68,13 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, CoordinateSystemNotifyUpdate)
 			|| KigsID("Position") == labelID
 			|| KigsID("Rotation") == labelID)
 		{
-			Point3D	rot; GetUpgrador()->mRot->getValue(rot, this);
-			Point3D pos; GetUpgrador()->mPos->getValue(pos, this);
+			v3f	rot; GetUpgrador()->mRot->getValue(rot, this);
+			v3f pos; GetUpgrador()->mPos->getValue(pos, this);
 			float scale; GetUpgrador()->mScale->getValue(scale, this);
 
-			mat3x4 matrix;
-			matrix.SetRotationXYZ(rot.x, rot.y, rot.z);
-			matrix.PreScale(scale, scale, scale);
-			matrix.SetTranslation(pos);
+			mat4 matrix  = glm::eulerAngleYXZ(rot.y, rot.x, rot.z);
+			glm::scale(matrix, { scale ,scale ,scale });
+			translate(matrix, pos);
 			ChangeMatrix(matrix);
 		}
 
@@ -79,11 +85,14 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, CoordinateSystemNotifyUpdate)
 // WARNING ! Not tested
 DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 {
+
+	// TODO
+	/*
 	if (!params.empty())
 	{
 		float angle;
 		params[0]->getValue(angle, this);
-		Point3D axis;
+		v3f axis;
 		params[1]->getValue(axis, this);
 
 		quat q;
@@ -91,8 +100,8 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 
 		mat3x4	angAxis(q);
 
-		Point3D	rot;
-		Point3D pos;
+		v3f	rot;
+		v3f pos;
 		float scale;
 
 		getValue("Rotation", rot);
@@ -111,7 +120,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 		setValue("Rotation", rot);
 		setValue("Position", pos);
 		setValue("Scale", scale);
-	}
+	}*/
 	return false;
 }
 
@@ -119,7 +128,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, localMoveNode)
 {
 	if (!params.empty())
 	{
-		Point3D move;
+		v3f move;
 		params[0]->getValue(move, this);
 
 		localMove(move);
@@ -131,7 +140,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, globalMoveNode)
 {
 	if (!params.empty())
 	{
-		Point3D move;
+		v3f move;
 		params[0]->getValue(move, this);
 
 		globalMove(move);
@@ -141,12 +150,14 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, globalMoveNode)
 
 DEFINE_UPGRADOR_UPDATE(CoordinateSystemUp)
 {
-	return false; // mmhh ?
 
+	return false; // mmhh ?
+	// TODO
+	/*
 	if (GetUpgrador()->mWasChanged)
 	{
-		Point3D	rot;
-		Point3D pos;
+		v3f	rot;
+		v3f pos;
 		float scale;
 
 		getValue("Rotation", rot);
@@ -161,6 +172,7 @@ DEFINE_UPGRADOR_UPDATE(CoordinateSystemUp)
 
 		GetUpgrador()->mWasChanged = false;
 	}
+	*/
 }
 
 
@@ -177,13 +189,13 @@ void CoordinateSystemUp::toEuler(float x,float y,float z,float angle,float& head
 	// z /= magnitude;
 	if ((x*y*t + z*s) > 0.998f) { // north pole singularity detected
 		heading = 2.0f*atan2f(x*sinf(angle*0.5f),cosf(angle*0.5f));
-		attitude = fPI*0.5f;
+		attitude = glm::pi<float>()*0.5f;
 		bank = 0.0f;
 		return;
 	}
 	if ((x*y*t + z*s) < -0.998f) { // south pole singularity detected
 		heading = -2.0f*atan2f(x*sinf(angle*0.5f),cosf(angle*0.5f));
-		attitude = -fPI*0.5f;
+		attitude = -glm::pi<float>()*0.5f;
 		bank = 0.0f;
 		return;
 	}
@@ -204,12 +216,12 @@ void	PivotUp::Init(CoreModifiable* toUpgrade)
 	// store current matrix
 	mInitMatrix = ((Node3D*)toUpgrade)->GetLocal();
 	
-	Point3D PivotPosition(0, 0, 0);
+	v3f PivotPosition(0, 0, 0);
 	mAngle = toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::FLOAT, "Angle", 0.0f);
 	toUpgrade->setOwnerNotification("Angle", true);
 	mPivotPosition = toUpgrade->AddDynamicVectorAttribute("PivotPosition", (float*)&PivotPosition.x, 3);
 	toUpgrade->setOwnerNotification("PivotPosition", true);
-	PivotPosition.Set(0, 1, 0);
+	PivotPosition = { 0.0f, 1.0f, 0.0f };
 	mPivotAxis = toUpgrade->AddDynamicVectorAttribute("PivotAxis", (float*)&PivotPosition.x, 3);
 	toUpgrade->setOwnerNotification("PivotAxis", true);
 	mIsGlobal = toUpgrade->AddDynamicAttribute(CoreModifiable::ATTRIBUTE_TYPE::BOOL, "IsGlobal", false);
@@ -241,14 +253,16 @@ void	PivotUp::Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted)
 
 DEFINE_UPGRADOR_UPDATE(PivotUp)
 {
+	// TODO
+	/*
 	if (GetUpgrador()->mWasChanged)
 	{
 		bool isGlobal;
 
 		// get local matrix
 		mat3x4 matrix = GetUpgrador()->mInitMatrix;
-		Point3D	ppos;
-		Vector3D paxis;
+		v3f	ppos;
+		v3f paxis;
 		float	pangle;
 		getValue("PivotPosition", ppos);
 		getValue("PivotAxis", paxis);
@@ -267,7 +281,7 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 
 		mat3x4 transform(q);
 
-		Vector3D originPos = matrix.GetTranslation();
+		v3f originPos = matrix.GetTranslation();
 		matrix.SetTranslation({ 0,0,0 });
 
 		matrix = transform * matrix;
@@ -281,7 +295,7 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 		ChangeMatrix(matrix);
 
 		GetUpgrador()->mWasChanged = false;
-	}
+	}*/
 	return false;
 }
 

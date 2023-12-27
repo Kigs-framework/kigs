@@ -31,8 +31,8 @@ namespace Kigs
 
 			struct PrecomputedCullInfo
 			{
-				Vector3D	mNormal;
-				Point3D		mOrigin;
+				v3f		mNormal;
+				p3f		mOrigin;
 				int			mPreTests[3]; // index
 			};
 

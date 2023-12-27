@@ -181,9 +181,9 @@ namespace Kigs
 			//! Color
 			float mColor[4];
 			//! Used To make the billboard Facing the Camera... Updated with UpdateOrientation
-			Vector3D mHorizontalVector;
+			v3f mHorizontalVector;
 			//! Used To make the billboard Facing the Camera... Updated with UpdateOrientation
-			Vector3D mVerticalVector;
+			v3f mVerticalVector;
 			//! Used When Billboard Belongs to a BillboardGroup
 			float mDistanceToCamera;
 			//! link to the father node

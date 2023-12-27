@@ -132,7 +132,7 @@ namespace Kigs
 			out1 = -w + out1;
 
 			// get the difference of the two closest points
-			//Vector3D   dP = w + out0 - out1;  // =  L1(sc) - L2(tc)
+			//v3f   dP = w + out0 - out1;  // =  L1(sc) - L2(tc)
 			v3f   dP = out0 - out1;  // =  L1(sc) - L2(tc)
 
 			return Norm(dP);   // return the closest distance

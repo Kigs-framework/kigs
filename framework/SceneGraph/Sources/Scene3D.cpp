@@ -380,7 +380,7 @@ void Scene3D::SortItemsFrontToBack(Input::SortItemsFrontToBackParam& param)
 				auto bbox_local = param.toSort[i]->as<Node3D>()->GetLocalBoundingBox();
 
 				auto origin_local = param.origin;
-				Vector3D direction_local = param.direction;
+				v3f direction_local = param.direction;
 				
 				auto g2l = param.toSort[i]->as<Node3D>()->GetGlobalToLocal();
 
@@ -401,7 +401,7 @@ void Scene3D::SortItemsFrontToBack(Input::SortItemsFrontToBackParam& param)
 					dir = param.toSort[i]->as<Node3D>()->GetLocalToGlobal()*bbox_local.Center() - cam_pos;
 				}
 
-				auto d = NormSquare(dir);
+				auto d = length2(dir);
 				if (Dot(dir, cam_view) < 0)
 					d = -d;
 

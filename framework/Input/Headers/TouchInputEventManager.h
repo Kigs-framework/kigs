@@ -151,9 +151,9 @@ namespace Kigs
 
 		struct touchPosInfos
 		{
-			Vector3D		dir;							// 3D direction if available
-			v3f				origin;							// 3D origin if available
-			v3f				pos;							// 3D position (z is 0 for 2d mouse or touch)
+			v3f				dir;							// 3D direction if available
+			p3f				origin;							// 3D origin if available
+			p3f				pos;							// 3D position (z is 0 for 2d mouse or touch)
 			unsigned int	flag;
 			Maths::Hit		hit = {};
 			double			min_distance = -DBL_MAX;
@@ -337,8 +337,8 @@ namespace Kigs
 			struct PotentialClick
 			{
 				double		 startTime;
-				Vector3D	 startPos;
-				Vector3D	 currentPos;
+				v3f	 startPos;
+				v3f	 currentPos;
 				int			 clickCount;
 				int			 buttonState;
 				bool		 isValid;
@@ -404,7 +404,7 @@ namespace Kigs
 
 			struct CurrentInfos
 			{
-				Vector3D	currentPos;
+				v3f	currentPos;
 				// 1 => hover
 				// 2 => activation down
 				// 4 => not hover down
@@ -485,7 +485,7 @@ namespace Kigs
 
 			struct TimedTouch
 			{
-				Vector3D	pos;
+				v3f	pos;
 				double		time;
 			};
 			struct CurrentInfos
@@ -533,10 +533,9 @@ namespace Kigs
 			{};
 			void Update(TouchInputEventManager* manager, const Time::Timer& timer, CoreModifiable* target, const TouchInfos& touch, u32& swallow_mask) override;
 
-			void	forceMainDir(Vector3D maindir)
+			void	forceMainDir(v3f maindir)
 			{
-				mScrollForceMainDir = maindir;
-				mScrollForceMainDir.Normalize();
+				mScrollForceMainDir = normalize(maindir);
 			}
 
 		protected:
@@ -548,16 +547,16 @@ namespace Kigs
 
 			struct CurrentInfos
 			{
-				Point3D	startpos;
-				Point3D	currentpos;
+				v3f	startpos;
+				v3f	currentpos;
 				double		starttime;
 				double		currenttime;
 				bool		isValid;
-				Vector3D	maindir;
-				Vector3D	currentSpeed;
+				v3f	maindir;
+				v3f	currentSpeed;
 			};
 			std::map<TouchSourceID, CurrentInfos>		mCurrentInfosMap;
-			Vector3D									mScrollForceMainDir;
+			v3f									mScrollForceMainDir;
 		};
 
 

@@ -65,7 +65,7 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 		}
 		SP<Camera>	currentCamera = checkcurrentCamera;
 
-		Point2D result;
+		v2f result;
 		if (currentCamera->Project(result.x, result.y, currentPos))
 		{
 			// fast check if point is in front
@@ -89,7 +89,7 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 				{
 					// get camera up
 					Point3D	cameraUp;
-					Point2D resultUp;
+					v2f resultUp;
 					currentCamera->GetUpVector(cameraUp.x, cameraUp.y, cameraUp.z);
 					if (currentCamera->Project(resultUp.x, resultUp.y, currentPos + cameraUp))
 					{
@@ -104,7 +104,7 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 				RenderingScreen* renderingScreen = currentCamera->getRenderingScreen();
 				if (renderingScreen)
 				{
-					Point2D size;
+					v2f size;
 					renderingScreen->GetSize(size.x, size.y);
 					result.x /= size.x;
 					result.y /= size.y;

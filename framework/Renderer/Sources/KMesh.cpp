@@ -163,9 +163,9 @@ void  Mesh::InitBoundingBox()
 /*
  *	Compute the normal at triangle vertices ponderated by the angle
  */
-void Mesh::Triangle::NormalAngle(const Point3D* VertexArray, Vector3D &Na, Vector3D &Nb,Vector3D &Nc)
+void Mesh::Triangle::NormalAngle(const Point3D* VertexArray, v3f &Na, v3f &Nb,v3f &Nc)
 {
-	Vector3D u,v,w,n;
+	v3f u,v,w,n;
 	u = VertexArray[b]-VertexArray[a];
 	v = VertexArray[c]-VertexArray[b];
 	w = VertexArray[a]-VertexArray[c];
@@ -173,7 +173,7 @@ void Mesh::Triangle::NormalAngle(const Point3D* VertexArray, Vector3D &Na, Vecto
 	v.Normalize();
 	w.Normalize();
 
-	n.CrossProduct(u,v);
+	n=cross(u,v);
 	n.Normalize();
 	Na =  (float)acosf(fabsf(Dot(u,w))) * n;
 	Nb =  (float)acosf(fabsf(Dot(v,u))) * n;
@@ -262,7 +262,7 @@ void Mesh::SetColor(unsigned int index, const Vector4D &v)
 	mColorNeedUpdate=true;	
 }
 
-void Mesh::SetNormal(unsigned int index, const Vector3D &v)
+void Mesh::SetNormal(unsigned int index, const v3f &v)
 {
 	KIGS_ASSERT(index<mNormalCount);
 	mNormalArray[index]=v;
@@ -485,7 +485,7 @@ bool	Mesh::GetTexCoordPointer(CoreModifiable* sender,std::vector<CoreModifiableA
 // rebuild all normals from triangles 
 void	Mesh::RecomputeNormals()
 {
-	Vector3D na,nb,nc;
+	v3f na,nb,nc;
 	unsigned int i;
 
 	if(mNormalCount == 0)
@@ -493,7 +493,7 @@ void	Mesh::RecomputeNormals()
 		return;
 	}
 	
-	memset(mNormalArray,0,mNormalCount*sizeof(Vector3D));
+	memset(mNormalArray,0,mNormalCount*sizeof(v3f));
 	
 	std::vector<ModifiableItemStruct>::const_iterator it;
 
@@ -545,7 +545,7 @@ void	Mesh::RecomputeNormals()
 // recompute all normals with faster but less precise algorithm
 void	Mesh::RecomputeNormalsFast()
 {
-	Vector3D na;
+	v3f na;
 	int i;
 
 	if(mNormalCount == 0)
@@ -553,7 +553,7 @@ void	Mesh::RecomputeNormalsFast()
 		return;
 	}
 	
-	memset(mNormalArray,0,mNormalCount*sizeof(Vector3D));
+	memset(mNormalArray,0,mNormalCount*sizeof(v3f));
 	
 	std::vector<ModifiableItemStruct>::const_iterator it;
 

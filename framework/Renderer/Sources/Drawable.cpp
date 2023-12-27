@@ -187,7 +187,7 @@ bool Drawable::Draw(TravState* state)
 
 
 				parent->GetLocalToGlobal().TransformPoints(p, 8);
-				dd::box(p, Vector3D(255,0,0));
+				dd::box(p, v3f(255,0,0));
 			}
 		}
 #endif

@@ -36,7 +36,7 @@ namespace Kigs
 
 		/*constexpr float SMALL_NUM = 0.001f;
 		// Forward declarations
-		struct Vector3D;
+		struct v3f;
 		struct Point3D;
 		struct Vector4D;
 		struct Quaternion;
@@ -53,11 +53,11 @@ namespace Kigs
 
 // Classes definitions
 /*
-#include "2D/Point2D.h"         // 
-#include "2D/Point2DI.h"         //
+#include "2D/v2f.h"         // 
+#include "2D/v2i.h"         //
 
 #include "3D/Point3D.h"             // To use 3D point
-#include "3D/Vector3D.h"            // To use 3D vector
+#include "3D/v3f.h"            // To use 3D vector
 #include "3D/Point3DI.h"             // To use 3D point
 #include "3D/v3d.h"             	// To use 3D point
 
@@ -74,7 +74,7 @@ namespace Kigs
 
 
 // Classes implementations
-#include "3D/Vector3D.inl.h"
+#include "3D/v3f.inl.h"
 #include "3D/Point3D.inl.h"
 #include "3D/v3d.inl.h"
 #include "3D/Point3DI.inl.h"
@@ -86,8 +86,8 @@ namespace Kigs
 #include "3D/Basis3D.inl.h"
 #include "3D/Reference3D.inl.h"
 
-#include "2D/Point2D.inl.h"
-#include "2D/Point2DI.inl.h"
+#include "2D/v2f.inl.h"
+#include "2D/v2i.inl.h"
 #include "2D/AffineTransform2D.inl.h"
 
 #include "3D/SIMDv4f.h"

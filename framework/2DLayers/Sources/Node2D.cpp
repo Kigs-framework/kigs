@@ -180,7 +180,7 @@ void Node2D::ComputeRealSize()
 		return;
 	}
 	
-	Point2D size(mSize);
+	v2f size(mSize);
 
 	SizeMode	s_mode[2];
 	s_mode[0] = (SizeMode)(int)mSizeModeX;
@@ -188,7 +188,7 @@ void Node2D::ComputeRealSize()
 
 	// as Node2D needs a parent to be init, fsize shoult always be ok
 	Node2D* father = getFather();
-	Point2D fsize(-1.0f,-1.0f);
+	v2f fsize(-1.0f,-1.0f);
 	if (father)
 	{
 		fsize = father->mRealSize;
@@ -291,7 +291,7 @@ void Node2D::ComputeMatrices()
 	
 	ComputeRealSize();
 
-	Point2D	Translate(mAnchor[0] * mRealSize.x, mAnchor[1] * mRealSize.y);
+	v2f	Translate(mAnchor[0] * mRealSize.x, mAnchor[1] * mRealSize.y);
 
 	mLocalTransformMatrix.TransformPoints(&Translate, 1);
 
@@ -433,7 +433,7 @@ void Node2D::TravDraw(Scene::TravState* state)
 	PostTravDraw(state);
 }
 
-void	Node2D::GetTransformedPoints(Point2D * pt)
+void	Node2D::GetTransformedPoints(v2f * pt)
 {
 	pt[0].Set(0.0f, 0.0f);
 	pt[1].Set(0.0f, mRealSize.y);

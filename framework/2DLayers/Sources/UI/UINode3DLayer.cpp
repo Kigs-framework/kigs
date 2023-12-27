@@ -172,10 +172,10 @@ bool UINode3DLayer::GetDataInTouchSupport(const Input::touchPosInfos& posin, Inp
 	double dist = DBL_MAX;
 	
 	Point3D		planePos = v3f(0,0,0);
-	Vector3D	planeNorm = v3f(0,0,1);
+	v3f	planeNorm = v3f(0,0,1);
 
-	Vector3D pos = posin.origin;
-	Vector3D dir = posin.dir;
+	v3f pos = posin.origin;
+	v3f dir = posin.dir;
 
 	//! transform Ray in local mesh coordinate system if needed				
 	const mat3x4& inverseMatrix = GetGlobalToLocal();
@@ -186,8 +186,8 @@ bool UINode3DLayer::GetDataInTouchSupport(const Input::touchPosInfos& posin, Inp
 	{
 		auto hit_pos = pos + ((float)dist * dir);
 
-		Vector3D up(0,1,0);
-		Vector3D left = up ^ Vector3D(0,0,1);
+		v3f up(0,1,0);
+		v3f left = up ^ v3f(0,0,1);
 
 		pout.pos.xy = v2f((Dot(left, hit_pos) / mSize[0]) + 0.5f, (Dot(up, hit_pos) / mSize[1]) + 0.5f);
 		

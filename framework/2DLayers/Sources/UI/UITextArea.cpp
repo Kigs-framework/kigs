@@ -216,7 +216,7 @@ void UITextArea::ProtectedDraw(TravState* state)
 
 	float posY = mSize[1] - ty;
 
-	Point2D pt[4];
+	v2f pt[4];
 	pt[0].Set(0.0f, posY);
 	pt[1].Set(0.0f, posY + ty);
 	pt[2].Set(tx, posY + ty);

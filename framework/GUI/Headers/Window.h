@@ -78,8 +78,8 @@ namespace Kigs
 			//! return the window handle
 			void* GetHandle() { return mHandle; }
 
-			Point2DI	GetPos() { return { mPosition[0], mPosition[1] }; }
-			Point2DI    GetSize() { return { mSize[0], mSize[1] }; }
+			v2i	GetPos() { return { mPosition[0], mPosition[1] }; }
+			v2i    GetSize() { return { mSize[0], mSize[1] }; }
 
 			virtual void	GetMousePosInWindow(int posx, int posy, float& wposx, float& wposy) = 0;
 			virtual void	GetMousePosInDesignWindow(int posx, int posy, float& wposx, float& wposy) = 0;

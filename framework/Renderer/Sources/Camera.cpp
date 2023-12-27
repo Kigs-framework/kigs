@@ -88,7 +88,7 @@ void Camera::NotifyUpdate(const unsigned int  labelid)
 void Camera::RecomputeMatrix()
 {
 	// compute local matrix
-	Vector3D  view,up,right,pos;
+	v3f  view,up,right,pos;
 	
 	view.x=mViewVector[0];
 	view.y=mViewVector[1];
@@ -207,7 +207,7 @@ bool Camera::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::tou
 		getRenderingScreen()->GetDesignSize(dwidth, dheight);
 		// size or design size here ?
 
-		Point2D pos2D;
+		v2f pos2D;
 
 		pos2D.x = posin.pos.x / dwidth;
 		pos2D.y = posin.pos.y / dheight;
@@ -248,7 +248,7 @@ bool Camera::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::tou
 
 void  Camera::InitCullingObject(CullingObject* obj)
 {
-	Vector3D  n;
+	v3f  n;
 	Point3D   o;
 	
 	int i;
@@ -332,7 +332,7 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	FrustumPlanes result;
 
 	v3f o;
-	Vector3D n;
+	v3f n;
 
 	float width, height;
 	getRenderingScreen()->GetSize(width, height);
@@ -405,7 +405,7 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	return result;
 }
 
-void Camera::getRay(const float &ScreenX, const float &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection)
+void Camera::getRay(const float &ScreenX, const float &ScreenY, Point3D &RayOrigin, v3f &RayDirection)
 {
 	SetupNodeIfNeeded();
 	
@@ -553,14 +553,14 @@ bool	Camera::Draw(TravState* state)
 	if (getValue("DebugVisibleIndex", activate) && activate==1)
 	{
 		Point3D outP;
-		Vector3D outV;
+		v3f outV;
 		const mat3x4& lMat = mFatherNode->GetLocalToGlobal();
 		Point3D* PosOffset = (Point3D*)mPosition.getVector();
 		lMat.TransformPoint(PosOffset, &outP);
 		lMat.TransformVector(&GetViewVector(), &outV);
 		
-		dd::sphere(outP, Vector3D(0, 1, 0), 0.08);
-		dd::line(outP, outP + outV, Vector3D(0, 1, 0));
+		dd::sphere(outP, v3f(0, 1, 0), 0.08);
+		dd::line(outP, outP + outV, v3f(0, 1, 0));
 	}
 #endif
 	return Node3D::Draw(state);
@@ -642,7 +642,7 @@ bool Camera::ManagePinchTouchEvent(Input::PinchEvent& pinch_event)
 
 		if (pinch_event.state == Input::StatePossible)
 		{
-			Point2D currentPos = pinch_event.p1_start.xy;
+			v2f currentPos = pinch_event.p1_start.xy;
 			currentPos += pinch_event.p2_start.xy;
 			currentPos *= 0.5f;
 			currentPos.x /= dwidth;
@@ -722,7 +722,7 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 		float dwidth, dheight;
 		getRenderingScreen()->GetDesignSize(dwidth, dheight);
 
-		Point2D currentPos = scroll_event.position.xy;
+		v2f currentPos = scroll_event.position.xy;
 		currentPos.x /= dwidth;
 		currentPos.y /= dheight;
 
@@ -750,7 +750,7 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 			{
 				currentDataStruct->mOneOnCoef = 2.0f / dwidth;
 			}
-			Point2D		screenCenter;
+			v2f		screenCenter;
 			screenCenter.x = dwidth*0.5f;
 			screenCenter.y = dheight*0.5f;
 
@@ -760,7 +760,7 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 			currentDataStruct->mStartPt *= currentDataStruct->mOneOnCoef;
 
 			currentDataStruct->mState = 0;
-			if (NormSquare(currentDataStruct->mStartPt) < 1.0f)
+			if (length2(currentDataStruct->mStartPt) < 1.0f)
 			{
 				currentDataStruct->mState = 1; // rotation
 
@@ -782,8 +782,8 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 
 				// store starting camera data
 
-				Vector3D	right;
-				right.CrossProduct( (Point3D)mUpVector, (Point3D)mViewVector);
+				v3f	right;
+				right=cross( (Point3D)mUpVector, (Point3D)mViewVector);
 				currentDataStruct->mStartMatrix.Set((Point3D)mViewVector, right, (Point3D)mUpVector, (Point3D)mPosition);
 				currentDataStruct->mTargetPointDist = getValue<float>("TargetPointDist");
 			}
@@ -795,16 +795,16 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 			if (currentDataStruct->mState == 1) // rotation
 			{
 				// sphere ray intersection at current position
-				Point2D		screenCenter;
+				v2f		screenCenter;
 				screenCenter.x = dwidth*0.5f;
 				screenCenter.y = dheight*0.5f;
 
-				Point2D currentPos;
+				v2f currentPos;
 				currentPos = scroll_event.position.xy;
 				currentPos -= screenCenter;
 				currentPos *= currentDataStruct->mOneOnCoef;
 
-				if (NormSquare(currentPos) > 1.0f)
+				if (length2(currentPos) > 1.0f)
 				{
 					currentPos.Normalize();
 				}
@@ -820,7 +820,7 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 				}
 				
 
-				Vector3D currentV;
+				v3f currentV;
 
 				// store currentV in "eye" coordinates (depth is on X axis)
 				currentV.Set(-thc, currentPos.x, currentPos.y );
@@ -828,15 +828,15 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 
 				// find normal vector to both currentV & currentDataStruct->mStartV
 
-				Vector3D	normalV;
-				normalV.CrossProduct(currentDataStruct->mStartV, currentV);
+				v3f	normalV;
+				normalV=cross(currentDataStruct->mStartV, currentV);
 				
 				normalV.Normalize();
 
 				currentDataStruct->mStartMatrix.TransformVector(&normalV);
 
 				// quaternion transforming mStartV to currentV
-				Vector3D startV = currentDataStruct->mStartV;
+				v3f startV = currentDataStruct->mStartV;
 
 				currentDataStruct->mStartMatrix.TransformVector(&startV);
 				currentDataStruct->mStartMatrix.TransformVector(&currentV);
@@ -845,18 +845,18 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 
 				mat3	rotate(q);
 
-				Vector3D	rview = rotate*currentDataStruct->mStartMatrix.XAxis;
+				v3f	rview = rotate*currentDataStruct->mStartMatrix.XAxis;
 
 				mViewVector = rview;
 
-				Vector3D	rup = rotate*currentDataStruct->mStartMatrix.ZAxis;
+				v3f	rup = rotate*currentDataStruct->mStartMatrix.ZAxis;
 
 				mUpVector = rup;
 
 				Point3D	rotationCenterPos(currentDataStruct->mStartMatrix.Pos);
 				rotationCenterPos += currentDataStruct->mStartMatrix.XAxis*currentDataStruct->mTargetPointDist;
 
-				Vector3D	posRotation(rotationCenterPos, currentDataStruct->mStartMatrix.Pos,  asVector());
+				v3f	posRotation(rotationCenterPos, currentDataStruct->mStartMatrix.Pos,  asVector());
 
 				posRotation = rotate*posRotation;
 

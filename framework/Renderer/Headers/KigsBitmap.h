@@ -84,7 +84,7 @@ namespace Kigs
 			}
 
 			void	Line(int sx, int sy, int ex, int ey, const KigsBitmapPixel& color);
-			void	Line(Point2DI p1, Point2DI p2, const KigsBitmapPixel& color);
+			void	Line(v2i p1, v2i p2, const KigsBitmapPixel& color);
 
 			void	ScrollX(int offset, const KigsBitmapPixel& color);
 			void	ScrollY(int offset, const KigsBitmapPixel& color);

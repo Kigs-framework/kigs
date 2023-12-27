@@ -227,7 +227,7 @@ void MultiMesh::RecomputeBoundingBox()
 						{
 							auto normal = vertex_buffer_write + i*vsize + offset_normals;
 
-							Vector3D n;
+							v3f n;
 							n.x = *(signed char*)(normal+0) / 127.5f;
 							n.y = *(signed char*)(normal+1) / 127.5f;
 							n.z = *(signed char*)(normal+2) / 127.5f;
@@ -242,7 +242,7 @@ void MultiMesh::RecomputeBoundingBox()
 						{
 							auto tangent = vertex_buffer_write + i*vsize + offset_tangents;
 
-							Vector3D n;
+							v3f n;
 							n.x = *(signed char*)(tangent + 0) / 127.5f;
 							n.y = *(signed char*)(tangent + 1) / 127.5f;
 							n.z = *(signed char*)(tangent + 2) / 127.5f;

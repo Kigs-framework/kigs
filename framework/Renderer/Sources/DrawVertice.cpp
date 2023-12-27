@@ -545,8 +545,8 @@ bool DrawVertice::Draw(TravState* travstate)
 				if (mTexCoords && mTexture)
 				{
 					VBO = renderer->getVBO();
-					renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, mTexCoordCount * sizeof(Point2D), mTexCoords, KIGS_BUFFER_USAGE_DYNAMIC);
-					renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, 2, KIGS_FLOAT, false, sizeof(Point2D), (void*)0, locs);
+					renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, mTexCoordCount * sizeof(v2f), mTexCoords, KIGS_BUFFER_USAGE_DYNAMIC);
+					renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, 2, KIGS_FLOAT, false, sizeof(v2f), (void*)0, locs);
 				}
 
 #ifdef WIN32

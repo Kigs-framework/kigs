@@ -1718,7 +1718,7 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 							// ask for possible start
 							if (cswipe.touchList.size() == 3)
 							{
-								Vector3D swipemaindir(cswipe.touchList[0].pos, addt.pos,asVector());
+								v3f swipemaindir(cswipe.touchList[0].pos, addt.pos,asVector());
 								ev.direction = swipemaindir;
 								ev.state = StateBegan;
 								cswipe.isValid = target->SimpleCall<bool>(mMethodNameID, ev);
@@ -1750,7 +1750,7 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 				if ((duration > mSwipeMinDuration) && (duration < mSwipeMaxDuration))
 				{
 					// call target to check if swipe end is "accepted"
-					Vector3D swipemaindir(cswipe.touchList[0].pos, cswipe.touchList.back().pos, asVector());
+					v3f swipemaindir(cswipe.touchList[0].pos, cswipe.touchList.back().pos, asVector());
 
 					ev.position = cswipe.touchList.back().pos;					
 					ev.direction = swipemaindir;
@@ -1758,11 +1758,11 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 					if (target->SimpleCall<bool>(mMethodNameID, ev))
 					{
 						// check swipe "trajectory"
-						Vector3D nswipeDir(swipemaindir);
+						v3f nswipeDir(swipemaindir);
 						nswipeDir.Normalize();
 						for (u32 i = 3; i < cswipe.touchList.size(); i++)
 						{
-							Vector3D checkdir(cswipe.touchList[0].pos, cswipe.touchList[i].pos, asVector());
+							v3f checkdir(cswipe.touchList[0].pos, cswipe.touchList[i].pos, asVector());
 							checkdir.Normalize();
 
 							float dot = Dot(nswipeDir, checkdir);
@@ -1853,7 +1853,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 				CurrentInfos& cscroll = (*foundTouch).second;
 				if (cscroll.isValid)
 				{
-					if (NormSquare(cscroll.maindir) < 0.01f) // scroll has not began yet ?
+					if (length2(cscroll.maindir) < 0.01f) // scroll has not began yet ?
 					{
 						cscroll.currentpos = position;
 						cscroll.currenttime = timer.GetTime();
@@ -1866,7 +1866,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 								cscroll.maindir.Normalize();
 
 								// if mScrollForceMainDir is set, check if it's OK
-								if (NormSquare(mScrollForceMainDir) > 0.01f)
+								if (length2(mScrollForceMainDir) > 0.01f)
 								{
 									float dot = Dot(mScrollForceMainDir, cscroll.maindir);
 									if (fabsf(dot) < 0.6)
@@ -1901,19 +1901,19 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 					}
 					else // scroll has began, update offset / speed  
 					{
-						Vector3D move(cscroll.currentpos, position, asVector());
+						v3f move(cscroll.currentpos, position, asVector());
 						float dt = float(timer.GetTime() - cscroll.currenttime);
 
 						cscroll.currentpos = position;
 						cscroll.currenttime = timer.GetTime();
 
-						Vector3D speed(move / dt);
+						v3f speed(move / dt);
 
 						float coefInterp = 0.5f + (( dt > 0.5f) ? 0.5f : dt);
 
 						cscroll.currentSpeed = cscroll.currentSpeed*(1.0f - coefInterp) + speed*coefInterp;
 
-						Vector3D	offsetV(cscroll.startpos, cscroll.currentpos, asVector());
+						v3f	offsetV(cscroll.startpos, cscroll.currentpos, asVector());
 						float offset = Dot(cscroll.maindir, offsetV);
 
 						ev.state = StateChanged;
@@ -1942,9 +1942,9 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 		{
 			CurrentInfos& cscroll = it->second;
 
-			if ((cscroll.isValid) && (NormSquare(cscroll.maindir) > 0.01f))
+			if ((cscroll.isValid) && (length2(cscroll.maindir) > 0.01f))
 			{
-				Vector3D	offsetV(cscroll.startpos, cscroll.currentpos, asVector());
+				v3f	offsetV(cscroll.startpos, cscroll.currentpos, asVector());
 				float offset = Dot(cscroll.maindir, offsetV);
 				// send direction, start position, current speed vector, offset
 
@@ -2026,7 +2026,7 @@ void TouchEventStatePinch::Update(TouchInputEventManager* manager, const Timer& 
 		for (auto& t : mCurrentTouches)
 		{
 			if (t.second.in_use_by_pinch || t.first == touch.ID) continue;
-			float dist = NormSquare(t.second.position - touch.posInfos.pos);
+			float dist = length2(t.second.position - touch.posInfos.pos);
 			if (dist <= mPinchMaxStartDistSquared)
 			{
 				possibles_pinches.push_back({ t.first, dist});

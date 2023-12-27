@@ -46,7 +46,7 @@ namespace Kigs
                 Loaded
             };
 
-            void GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override;
+            void GetNodeBoundingBox(v3f& pmin, v3f& pmax) const override;
 
             bool Draw(TravState* state) override;
 

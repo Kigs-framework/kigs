@@ -45,7 +45,7 @@ namespace Kigs
 				return false;
 			}
 
-			inline void	TransformUV(Point2D* totransform, int count) const
+			inline void	TransformUV(v2f* totransform, int count) const
 			{
 				if (!mTexturePointer)
 					return;

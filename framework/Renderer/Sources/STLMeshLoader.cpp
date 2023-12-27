@@ -160,7 +160,7 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 	pMesh->mVertexCount = newgroup->mTriangleCount * 3;
 	pMesh->mVertexArray=new Point3D[pMesh->mVertexCount];
 	pMesh->mNormalCount = newgroup->mTriangleCount;
-	pMesh->mNormalArray=new Vector3D[pMesh->mNormalCount];
+	pMesh->mNormalArray=new v3f[pMesh->mNormalCount];
 
 	int j;
 	unsigned int indexV=0;

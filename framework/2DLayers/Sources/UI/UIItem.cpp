@@ -95,18 +95,18 @@ bool UIItem::Draw(TravState* state)
 	return ParentClassType::Draw(state);
 }
 
-Point2D UIItem::GetCoordsInContainer(float X, float Y)
+v2f UIItem::GetCoordsInContainer(float X, float Y)
 {
-	Point2D result;
+	v2f result;
 	// recompute matrix if needed
 	SetUpNodeIfNeeded();
 
-	Point2D pt[4];
+	v2f pt[4];
 	GetTransformedPoints(pt);
 
-	Point2D L_PA(X - pt[0].x, Y - pt[0].y);
-	Point2D L_PQ = pt[3] - pt[0];
-	Point2D L_PR = pt[1] - pt[0];
+	v2f L_PA(X - pt[0].x, Y - pt[0].y);
+	v2f L_PQ = pt[3] - pt[0];
+	v2f L_PR = pt[1] - pt[0];
 
 	float d = (L_PQ.x*L_PR.y - L_PR.x*L_PQ.y);
 	result.y = -(L_PA.x*L_PQ.y - L_PQ.x*L_PA.y) / d;
@@ -123,12 +123,12 @@ bool UIItem::ContainsPoint(float X, float Y)
 	// recompute matrix if needed
 	SetUpNodeIfNeeded();
 
-	Point2D pt[4];
+	v2f pt[4];
 	GetTransformedPoints(pt);
 
-	Point2D L_PA(X - pt[0].x, Y - pt[0].y);
-	Point2D L_PQ = pt[3] - pt[0];
-	Point2D L_PR = pt[1] - pt[0];
+	v2f L_PA(X - pt[0].x, Y - pt[0].y);
+	v2f L_PQ = pt[3] - pt[0];
+	v2f L_PR = pt[1] - pt[0];
 
 	float d = (L_PQ.x*L_PR.y - L_PR.x*L_PQ.y);
 	float n = -(L_PA.x*L_PQ.y - L_PQ.x*L_PA.y) / d;

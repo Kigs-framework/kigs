@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TecLibs/Tec3D.h"
-#include "kTypes.h"
+#include "coreTypes.h"
 
 namespace Kigs
 {
@@ -134,7 +134,7 @@ namespace Kigs
 		*/
 		inline bool IntersectionRayBBox(const p3f& RayOrigin, const v3f& RayDirection,
 			const p3f& BBoxMin, const p3f& BBoxMax,
-			p3f& IntersectionPoint, p3f& IntersectionNormal,
+			p3f& IntersectionPoint, v3f& IntersectionNormal,
 			double& IntersectionDistance)
 		{
 			enum IRBB_Side

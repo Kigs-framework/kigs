@@ -1698,7 +1698,7 @@ void CustomAttributeEditor(CoreModifiable* item)
 			std::vector<CMSP> nodes = CoreModifiable::GetInstances("Node3D");
 
 			auto origin_global = cam->GetPosition();
-			Vector3D direction_global = cam->GetViewVector();
+			v3f direction_global = cam->GetViewVector();
 
 			std::vector<std::pair<float, Node3D*>> hit;
 

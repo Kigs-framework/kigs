@@ -299,7 +299,7 @@ int ASEMeshLoader::ReadFile(Mesh *pMesh)
 		}
 
 		pMesh->mNormalCount++;
-		pMesh->mNormalArray = new Vector3D[pMesh->mNormalCount];
+		pMesh->mNormalArray = new v3f[pMesh->mNormalCount];
 		mFileParser.SetPosition(CurrentPosition);
 		for (i=0;i<(unsigned int)TriangleCount;i++)
 		{

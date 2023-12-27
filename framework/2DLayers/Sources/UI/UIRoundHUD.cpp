@@ -203,7 +203,7 @@ bool UIRoundHUD::ManageDirectTouchEvent(Input::DirectTouchEvent& direct_touch)
 {
 	bool ret = false;
 	int slot = mSelectedSlot;
-	float dist = NormSquare(mMidPoint - direct_touch.position.xy);
+	float dist = length2(mMidPoint - direct_touch.position.xy);
 
 	bool can_interact = mIsEnabled && mIsTouchable && !mIsHidden && !IsHiddenFlag() && IsInClip(direct_touch.position.xy);
 	float allowedRadius = (mRadius + mRadiusOffset) * (mRadius + mRadiusOffset);
@@ -251,7 +251,7 @@ bool UIRoundHUD::ManageDirectTouchEvent(Input::DirectTouchEvent& direct_touch)
 			for (int i = 0; i < mRealSlotCount; i++)
 			{
 				v2f center = mMidPoint + mSlot[i];
-				float tmpDist = NormSquare(center - direct_touch.position.xy);
+				float tmpDist = length2(center - direct_touch.position.xy);
 
 				if (tmpDist < nearest)
 				{

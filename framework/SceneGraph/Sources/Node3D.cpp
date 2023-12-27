@@ -187,7 +187,7 @@ void	Node3D::localMove(const v3f& move)
 //! move global node position ( gpos = gmove + gpos )
 void	Node3D::globalMove(const v3f& move)
 {
-	Vector3D lmove=move;
+	v3f lmove=move;
 	mGlobalToLocal.TransformVector(&lmove);
 	localMove(lmove);
 }
@@ -627,7 +627,7 @@ void Node3D::TravCull(TravState* state)
 		Camera* cam = state->GetCurrentCamera();
 		Point3D	camPos;
 		cam->GetPosition(camPos.x, camPos.y, camPos.z);
-		Vector3D	viewVector;
+		v3f	viewVector;
 		cam->GetViewVector(viewVector.x, viewVector.y, viewVector.z);
 
 		// insert nodes in sorted list using dist from camera
@@ -796,7 +796,7 @@ void Node3D::RecomputeLocalToGlobal()
 		float sy = 1.0f / (l2g.e[1][0] * l2g.e[1][0] + l2g.e[1][1] * l2g.e[1][1] + l2g.e[1][2] * l2g.e[1][2]);
 		float sz = 1.0f / (l2g.e[2][0] * l2g.e[2][0] + l2g.e[2][1] * l2g.e[2][1] + l2g.e[2][2] * l2g.e[2][2]);
 
-		if (NormSquare(v3f{ sx - 1.0f, sy - 1.0f, sz - 1.0f }) > 0.001f)
+		if (length2(v3f{ sx - 1.0f, sy - 1.0f, sz - 1.0f }) > 0.001f)
 			nodes[i]->setUserFlag(IsScaledFlag);
 		else
 			nodes[i]->unsetUserFlag(IsScaledFlag);
@@ -829,7 +829,7 @@ void Node3D::RecomputeGlobalToLocal()
 	mGlobalToLocal.e[2][2] = mLocalToGlobal.e[2][2] * sz;
 
 	//! then compute inverse translation
-	Vector3D  invtrans(mLocalToGlobal.e[3][0], mLocalToGlobal.e[3][1], mLocalToGlobal.e[3][2]);
+	v3f  invtrans(mLocalToGlobal.e[3][0], mLocalToGlobal.e[3][1], mLocalToGlobal.e[3][2]);
 	mGlobalToLocal.TransformVector(&invtrans);
 
 	//! then set global to local translation
@@ -957,7 +957,7 @@ void Node3D::RecomputeBoundingBox()
 		BBoxTransformMatrix.e[2][2] = fabsf(BBoxTransformMatrix.e[2][2]);
 
 		//! compute center of the bbox so we can move it around origin
-		Vector3D translation(mLocalBBox.m_Min);
+		v3f translation(mLocalBBox.m_Min);
 		translation += mLocalBBox.m_Max;
 		translation *= (0.5f);
 
@@ -965,8 +965,8 @@ void Node3D::RecomputeBoundingBox()
 		mBBox.m_Max -= translation;
 
 		//! transform diagonal to compute diagonal in father coordinate system
-		BBoxTransformMatrix.TransformVector((Vector3D*)&mBBox.m_Max);
-		Vector3D finaltranslate;
+		BBoxTransformMatrix.TransformVector((v3f*)&mBBox.m_Max);
+		v3f finaltranslate;
 		mTransform.TransformPoint((Point3D*)&translation, (Point3D*)&finaltranslate);
 
 		//! and translate computed bbox at its final position in father coordinate system
@@ -1001,7 +1001,7 @@ void Node3D::RecomputeGlobalBoundingBox()
 	BBoxTransformMatrix.e[2][2] = fabsf(BBoxTransformMatrix.e[2][2]);
 
 	//! compute origin to bbox center so we can "move" the bbox at the origin
-	Vector3D translation(mLocalBBox.m_Min);
+	v3f translation(mLocalBBox.m_Min);
 	translation += mLocalBBox.m_Max;
 	translation *= (0.5f);
 
@@ -1010,7 +1010,7 @@ void Node3D::RecomputeGlobalBoundingBox()
 	mGlobalBBox.m_Max -= translation;
 
 	//! transform BBox diagonal vector by BBoxTransformMatrix
-	BBoxTransformMatrix.TransformVector((Vector3D*)&mGlobalBBox.m_Max);
+	BBoxTransformMatrix.TransformVector((v3f*)&mGlobalBBox.m_Max);
 	//! transform local translation in global coordinates
 	Point3D	finalTranslate;
 	mLocalToGlobal.TransformPoint((Point3D*)&translation, (Point3D*)&finalTranslate);
@@ -1076,7 +1076,7 @@ int	Node3D::ComputeNodePriority()
 
 mat3x4 GetLocalLookAtPoint(Node3D* node, v3f global_point, bool force_up, v3f up_axis)
 {
-	Vector3D view = global_point - node->GetLocalToGlobal().Pos;
+	v3f view = global_point - node->GetLocalToGlobal().Pos;
 	view.Normalize();
 
 	auto g2l = node->getFather()->GetGlobalToLocal();

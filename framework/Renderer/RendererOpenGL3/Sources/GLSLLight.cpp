@@ -171,7 +171,7 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D &
 	static_cast<API3DUniformFloat3*>(mCamPosUniform.get())->SetValue(&camPos.x);
 
 	Point3D outP;
-	Vector3D outV;
+	v3f outV;
 
 	SetupNodeIfNeeded();
 	const mat3x4& lMat = GetLocalToGlobal();
@@ -188,8 +188,8 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D &
 	if (mSpotDirUniform)
 	{
 		// spot direction is minus z axis
-		Vector3D dir(0.0f, 0.0f, -1.0f);
-		lMat.TransformVector((Vector3D*)&dir.x, &outV);
+		v3f dir(0.0f, 0.0f, -1.0f);
+		lMat.TransformVector((v3f*)&dir.x, &outV);
 		static_cast<API3DUniformFloat3*>(mSpotDirUniform.get())->SetValue(&outV.x);
 	}
 
@@ -217,22 +217,22 @@ bool	API3DLight::Draw(TravState* state)
 		const mat3x4& lMat = GetLocalToGlobal();
 		Point3D PosOffset(0,0,0);
 		lMat.TransformPoint(&PosOffset, &outP);
-		dd::sphere(outP, Vector3D(1, 0, 0), 0.05);
+		dd::sphere(outP, v3f(1, 0, 0), 0.05);
 	}
 	break;
 	case 2:
 	{
 		Point3D outP;
-		Vector3D outDir;
+		v3f outDir;
 		const mat3x4& lMat = GetLocalToGlobal();
 		Point3D PosOffset(0, 0, 0);
 		lMat.TransformPoint(&PosOffset, &outP);
 
-		Vector3D dir(0.0f,0.0f,-1.0f);
+		v3f dir(0.0f,0.0f,-1.0f);
 		lMat.TransformVector(&dir, &outDir);
-		//dd::cone(outP, outDir*10, Vector3D(1, 0, 0),((1-mSpotCutOff)/PI)*100, 0);
-		dd::sphere(outP, Vector3D(1, 0, 0), 0.05);
-		dd::line(outP, outP + outDir, Vector3D(1, 0, 0));
+		//dd::cone(outP, outDir*10, v3f(1, 0, 0),((1-mSpotCutOff)/PI)*100, 0);
+		dd::sphere(outP, v3f(1, 0, 0), 0.05);
+		dd::line(outP, outP + outDir, v3f(1, 0, 0));
 	}
 	break;
 	}

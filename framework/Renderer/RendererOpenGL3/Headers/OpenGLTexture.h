@@ -36,7 +36,7 @@ namespace Kigs
 			bool	Load()override;
 			bool	CreateFromImage(const SmartPointer<Pict::TinyImage>& image, bool directInit = false) override;
 			//	bool	CreateFromBuffer(unsigned char* buffer, unsigned int width, unsigned int height, TinyImage::ImageFormat format, unsigned char* palettebuffer = 0, unsigned int palattedatasize = 0) override;
-			bool	UpdateBufferZone(unsigned char* bitmapbuffer, const BBox2DI& zone, const Point2DI& bitmapSize) override;
+			bool	UpdateBufferZone(unsigned char* bitmapbuffer, const BBox2DI& zone, const v2i& bitmapSize) override;
 			bool	CreateFromText(const unsigned short* text, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1, float R = 0, float G = 0, float B = 0, float A = 1, Pict::TinyImage::ImageFormat format = Pict::TinyImage::RGBA_32_8888, int a_drawingLimit = -1) override;
 			bool	CreateFromText(const unsigned short* text, unsigned int _maxLineNumber = 0, unsigned int maxSize = 128, unsigned int fontSize = 16, const char* fontName = "arial.ttf", unsigned int a_Alignment = 1, float R = 0, float G = 0, float B = 0, float A = 1, Pict::TinyImage::ImageFormat format = Pict::TinyImage::RGBA_32_8888, int a_drawingLimit = -1) override;
 

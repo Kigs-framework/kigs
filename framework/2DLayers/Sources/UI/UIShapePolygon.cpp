@@ -56,9 +56,9 @@ void	UIShapePolygon::triangulatePolygon()
 			int tindex = 0;
 			for (size_t vi = 1; vi < vcount - 1; vi++)
 			{
-				mTriangulatedPoly[tindex] = (const Point2D&)poly[0];
-				mTriangulatedPoly[tindex + 1] = (const Point2D&)poly[(int)vi];
-				mTriangulatedPoly[tindex + 2] = (const Point2D&)poly[(int)vi+1];
+				mTriangulatedPoly[tindex] = (const v2f&)poly[0];
+				mTriangulatedPoly[tindex + 1] = (const v2f&)poly[(int)vi];
+				mTriangulatedPoly[tindex + 2] = (const v2f&)poly[(int)vi+1];
 				tindex += 3;
 			}
 		}

@@ -88,11 +88,11 @@ namespace Kigs
 			return atan2(dy, dx);
 		}
 
-		inline Vector3D gps_position(double* origin, double* coords)
+		inline v3f gps_position(double* origin, double* coords)
 		{
 			double angle = gps_angle(coords, origin);
 			double dist = gps_distance(origin, coords);
-			return Vector3D((float)(dist * cos(angle)), (float)(dist * sin(angle)), 0.0f);
+			return v3f((float)(dist * cos(angle)), (float)(dist * sin(angle)), 0.0f);
 		}
 
 

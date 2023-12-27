@@ -464,7 +464,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 	fread(&(pMesh->mNormalCount),sizeof(unsigned int),1,mFile);
 	if(pMesh->mNormalCount)
 	{
-		pMesh->mNormalArray=new Vector3D[pMesh->mNormalCount];
+		pMesh->mNormalArray=new v3f[pMesh->mNormalCount];
 
 		ReadFloatArray((float*)pMesh->mNormalArray,pMesh->mNormalCount*3,mFile);
 	}
@@ -847,12 +847,12 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	}
 
 	unsigned int	NormalCount=0;
-	Vector3D*		NormalArray=0;
+	v3f*		NormalArray=0;
 
 	fread(&(NormalCount),sizeof(unsigned int),1,mFile);
 	if(NormalCount)
 	{
-		NormalArray=new Vector3D[NormalCount];
+		NormalArray=new v3f[NormalCount];
 		ReadFloatArray((float*)NormalArray,NormalCount*3,mFile);
 	}
 

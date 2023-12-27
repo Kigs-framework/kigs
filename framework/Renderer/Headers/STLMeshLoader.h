@@ -94,7 +94,7 @@ namespace Kigs
 
 			struct readFacet
 			{
-				Vector3D	mNormal;
+				v3f	mNormal;
 				Point3D		mVertex[3];
 			};
 

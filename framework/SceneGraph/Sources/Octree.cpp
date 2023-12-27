@@ -102,14 +102,14 @@ void Octree::RecomputeBoundingBox()
 
 	// compute local translation of the bounding box
 
-	Vector3D translation(mLocalBBox.m_Min);
+	v3f translation(mLocalBBox.m_Min);
 	translation += mLocalBBox.m_Max;
 	translation *= 0.5f;
 
 	mBBox.m_Max = mLocalBBox.m_Max;
 	mBBox.m_Max -= translation;
 
-	BBoxTransformMatrix.TransformVector((Vector3D*)&mBBox.m_Max);
+	BBoxTransformMatrix.TransformVector((v3f*)&mBBox.m_Max);
 	mTransform.TransformVector(&translation);
 
 	translation += mTransform.GetTranslation();
@@ -420,7 +420,7 @@ void  OctreeSubNode::Divide()
 
 	index = 0;
 
-	Vector3D size_on_two = mBBox.m_Max;
+	v3f size_on_two = mBBox.m_Max;
 	size_on_two -= mBBox.m_Min;
 	size_on_two *= 0.5;
 
@@ -617,8 +617,8 @@ CullingObject::CULLING_RESULT  OctreeSubNode::RecurseCullSubNodes(const std::vec
 
 	std::vector<PrecomputedCullInfo>::const_iterator it;
 
-	Vector3D  toTest1;
-	Vector3D  toTest2;
+	v3f  toTest1;
+	v3f  toTest2;
 
 	int index = 1;
 

@@ -18,29 +18,29 @@ namespace Kigs
 				m_Max.y = from3DBox.m_Max.y;
 			}
 			BBox2DI(int px, int py) : m_Min(px, py), m_Max(px, py) { ; }
-			BBox2DI(const Point2DI& P) : m_Min(P), m_Max(P) { ; }
+			BBox2DI(const v2i& P) : m_Min(P), m_Max(P) { ; }
 			//BBox2DI(const Point3DI &P)  : m_Min(P.xy), m_Max(P.xy){;}
-			BBox2DI(const Point2DI& PMin, const Point2DI& PMax) : m_Min(PMin), m_Max(PMax) { ; }
-			BBox2DI(const Point2DI*& Array, int Count)
+			BBox2DI(const v2i& PMin, const v2i& PMax) : m_Min(PMin), m_Max(PMax) { ; }
+			BBox2DI(const v2i*& Array, int Count)
 			{
 				Init(Array, Count);
 			}
-			void Init(const Point2DI& P)
+			void Init(const v2i& P)
 			{
 				m_Min = P;
 				m_Max = P;
 			}
 			void Init(int px, int py)
 			{
-				m_Min.Set(px, py);
-				m_Max.Set(px, py);
+				m_Min = { px, py };
+				m_Max = { px, py };
 			}
 			/*void Init(const Point3DI &P)
 			{
 				m_Min = P.xy;
 				m_Max = P.xy;
 			}*/
-			void Init(const Point2DI* Array, int Count)
+			void Init(const v2i* Array, int Count)
 			{
 				int i;
 				Init(Array[0]);
@@ -63,7 +63,7 @@ namespace Kigs
 				return m_Max.x < m_Min.x || m_Max.y < m_Min.y;
 			}
 
-			void Update(const Point2DI& P)
+			void Update(const v2i& P)
 			{
 				if (IsEmpty())
 				{
@@ -111,7 +111,7 @@ namespace Kigs
 				}
 			}*/
 
-			void Update(const Point2DI* Array, int Count)
+			void Update(const v2i* Array, int Count)
 			{
 				int i;
 				for (i = 0; i < Count; i++) Update(Array[i]);
@@ -133,7 +133,7 @@ namespace Kigs
 
 				}
 			}
-			void ConvertToPoint(Point2DI* Array) const
+			void ConvertToPoint(v2i* Array) const
 			{
 				Array[0].x = m_Min.x;
 				Array[0].y = m_Min.y;
@@ -148,7 +148,7 @@ namespace Kigs
 				Array[3].y = m_Max.y;
 
 			}
-			bool IsIn(const Point2DI& P) const
+			bool IsIn(const v2i& P) const
 			{
 				return (
 					P.x >= m_Min.x && P.x <= m_Max.x
@@ -177,17 +177,17 @@ namespace Kigs
 				return !operator==(Other);
 			}
 
-			Point2DI Size() const
+			v2i Size() const
 			{
 				if (IsEmpty())
 				{
-					return Point2DI(0, 0);
+					return v2i(0, 0);
 				}
 
-				return Point2DI(m_Max.x - m_Min.x + 1, m_Max.y - m_Min.y + 1);
+				return v2i(m_Max.x - m_Min.x + 1, m_Max.y - m_Min.y + 1);
 			}
 
-			Point2DI m_Min, m_Max;
+			v2i m_Min, m_Max;
 		};
 
 	}

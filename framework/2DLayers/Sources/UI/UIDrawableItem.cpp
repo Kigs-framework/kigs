@@ -42,7 +42,7 @@ void UIDrawableItem::SetVertexArray(UIVerticesInfo * aQI)
 	{
 		aQI->Resize(4);
 		VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
-		Point2D pt[4];
+		v2f pt[4];
 
 		pt[0] = getDrawablePos({ 0.0f,0.0f });
 		pt[1] = getDrawablePos({ 0.0f,1.0f });

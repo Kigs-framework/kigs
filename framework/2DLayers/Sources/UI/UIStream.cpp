@@ -85,7 +85,7 @@ void UIStream::Update(const Timer& timer, void* v)
 		mFrameBufferStream->CallMethod("HasReadyBuffer", params, &is_ready);
 		if(is_ready)
 		{
-			Point2DI size;
+			v2i size;
 			mFrameBufferStream->getValue("Width", size.x);
 			mFrameBufferStream->getValue("Height", size.y);
 			//_temp.resize(size.x*size.y*4);

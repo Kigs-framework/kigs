@@ -50,7 +50,7 @@ void UIShapeRectangle::SetVertexArray(UIItem* item, UIVerticesInfo* aQI)
 	aQI->Resize(4);
 	VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
 
-	Point2D pt[4];
+	v2f pt[4];
 	item->GetTransformedPoints(pt);
 	// triangle strip order
 	buf[0].setVertex(pt[0].x, pt[0].y);

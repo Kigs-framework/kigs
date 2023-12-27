@@ -57,7 +57,7 @@ namespace Kigs
 			/*Setter*/
 			inline void											Set_RotationAngle(float a_radAngle) { mRotationAngle = a_radAngle; SetNodeFlag(Node2D_NeedUpdatePosition); }
 			inline void											Set_Position(float a_x, float a_y) { mPosition[0] = a_x; mPosition[1] = a_y; SetNodeFlag(Node2D_NeedUpdatePosition); }
-			inline void											Set_Position(Point2D a_pos) { Set_Position(a_pos.x, a_pos.y); }
+			inline void											Set_Position(v2f a_pos) { Set_Position(a_pos.x, a_pos.y); }
 			inline void											IsTouchable(bool a_value) { mIsTouchable = a_value; }
 			inline void											Set_Opacity(float a_value) { mOpacity = a_value; SetNodeFlag(Node2D_NeedVerticeInfoUpdate); }
 			inline void											Set_PreScale(float a_valueX, float a_valueY) { mPreScale = v2f(a_valueX, a_valueY); SetNodeFlag(Node2D_NeedUpdatePosition); }
@@ -74,7 +74,7 @@ namespace Kigs
 			bool												ContainsPoint(float X, float Y);
 
 			// utility method
-			Point2D												GetCoordsInContainer(float X, float Y);
+			v2f												GetCoordsInContainer(float X, float Y);
 
 			inline void											TranslateWithOffSet(int a_offsetX, int a_offsetY) { mPosition[0] += a_offsetX; mPosition[1] += a_offsetY; SetNodeFlag(Node2D_NeedUpdatePosition); }
 

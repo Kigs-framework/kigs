@@ -386,29 +386,29 @@ class Material;
 
 			/**
 			* \brief	Compute the normal at triangle vertices ponderated by the angle
-			* \fn 		void NormalAngle(const Point3D* VertexArray, Vector3D &Na, Vector3D &Nb,Vector3D &Nc);
+			* \fn 		void NormalAngle(const Point3D* VertexArray, v3f &Na, v3f &Nb,v3f &Nc);
 			* \param	VertexArray : list of vertice
 			* \param	Na : normal vector at the first triangle's vertex (in/out param)
 			* \param	Nb : normal vector at the second triangle's vertex (in/out param)
 			* \param	Nc : normal vector at the third triangle's vertex (in/out param)
 			*/
-			void NormalAngle(const Point3D* VertexArray, Vector3D &Na, Vector3D &Nb,Vector3D &Nc);
+			void NormalAngle(const Point3D* VertexArray, v3f &Na, v3f &Nb,v3f &Nc);
 
 			/**
 			* \brief	Compute the normal at triangle 
-			* \fn 		void Normal(const Point3D* VertexArray, Vector3D &Na);
+			* \fn 		void Normal(const Point3D* VertexArray, v3f &Na);
 			* \param	VertexArray : list of vertice
 			* \param	Na : normal vector at the triangle (in/out param)
 			*/
-			void Normal(const Point3D* VertexArray, Vector3D &Na)
+			void Normal(const Point3D* VertexArray, v3f &Na)
 			{
-				Vector3D u(VertexArray[a]);
+				v3f u(VertexArray[a]);
 				u-=VertexArray[b];
 				
-				Vector3D v(VertexArray[c]);
+				v3f v(VertexArray[c]);
 				v-=VertexArray[b];
 			
-				Na.CrossProduct(u,v);
+				Na=cross(u,v);
 				Na.Normalize();
 			}
 		};
@@ -1407,19 +1407,19 @@ class Material;
 
 		/**
 		* \brief	get a normal from its index
-		* \fn 		const Vector3D&	GetNormal(unsigned int index)
+		* \fn 		const v3f&	GetNormal(unsigned int index)
 		* \param	index : index asked
 		* \return	normal asked (in/out param)
 		*/	
-		const Vector3D&	GetNormal(unsigned int index){return mNormalArray[index];}
+		const v3f&	GetNormal(unsigned int index){return mNormalArray[index];}
 
 		/**
 		* \brief	set a normal to an index
-		* \fn 		void SetNormal(unsigned int index, const Vector3D &v);
+		* \fn 		void SetNormal(unsigned int index, const v3f &v);
 		* \param	index : new normal index
 		* \param	v : new normal
 		*/
-		void SetNormal(unsigned int index, const Vector3D &v);
+		void SetNormal(unsigned int index, const v3f &v);
 
 		/**
 		* \brief	get a texCoord from its index
@@ -1518,7 +1518,7 @@ class Material;
 		//! number of normal
 		unsigned int		mNormalCount;
 		//! List of All normals
-		Vector3D*			mNormalArray;	
+		v3f*			mNormalArray;	
 
 		//! number of Texture coords
 		unsigned int		mTexCoordCount;
@@ -1567,7 +1567,7 @@ class Material;
 		inline void Set_NormalCount(unsigned int _value){mNormalCount = _value;}
 
 		//! Set List of All normals
-		inline void Set_NormalArray(Vector3D* _value){mNormalArray = _value;}	
+		inline void Set_NormalArray(v3f* _value){mNormalArray = _value;}	
 
 		//! Set number of Texture coords
 		inline void Set_TexCoordCount(unsigned int _value){mTexCoordCount = _value;}

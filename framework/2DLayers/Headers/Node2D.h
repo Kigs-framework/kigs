@@ -144,9 +144,13 @@ namespace Kigs
 			inline const std::set<Node2D*, Node2D::PriorityCompare>& GetSons() { ResortSons(); return mSons; }
 
 			// transform local points to global
-			inline void	TransformPoints(Point2D* totransform, int count) const
+			inline void	TransformPoints(v2f* totransform, int count) const
 			{
-				mGlobalTransformMatrix.TransformPoints(totransform, count);
+				for(auto i=0;i<count;i++)
+				{
+					*totransform = mGlobalTransformMatrix * v3f(totransform->x, totransform->y,1.0f);
+					++totransform;
+				}
 			}
 
 			v2f GetPosition() const { return mPosition; }
@@ -163,7 +167,7 @@ namespace Kigs
 				return mGlobalTransformMatrix;
 			}
 
-			void GetTransformedPoints(Point2D* pt);
+			void GetTransformedPoints(v2f* pt);
 
 
 			virtual void SetUpNodeIfNeeded();
